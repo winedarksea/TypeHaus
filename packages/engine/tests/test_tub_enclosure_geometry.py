@@ -151,3 +151,18 @@ def test_unresolved_enclosure_reference_reports_failure_without_partial_solids()
     assert failure.check_id == "integrity.tub_enclosure" and failure.result == Result.FAIL
     assert failure.element_tags == ("tub",)
     assert model.solids == [existing_solid]
+
+
+def test_occupied_space_includes_the_rim_and_the_whole_framed_deck(catlin_model_ro):
+    model = catlin_model_ro
+    tub = next(c for c in model.canvas_objects if c.tag == "FX-M-BATH2-TUB")
+    deck = next(s for s in model.solids if s.tag == "SL-M-TUBDK")
+    tub_bounds = Polygon(tub.footprint).bounds
+    deck_bounds = Polygon(deck.outline).bounds
+    assert tub_bounds[2]-tub_bounds[0] == pytest.approx(inch(35.75).meters)
+    assert tub_bounds[3]-tub_bounds[1] == pytest.approx(inch(59.6875).meters)
+    assert deck_bounds[2]-deck_bounds[0] == pytest.approx(inch(42.615).meters)
+    assert deck_bounds[3]-deck_bounds[1] == pytest.approx(inch(70.24).meters)
+    assert Polygon(deck.outline).covers(Polygon(tub.footprint))
+    assert tub.body_z1_m-tub.body_z0_m == pytest.approx(inch(21).meters)
+    assert tub.body_z1_m == pytest.approx(deck.z1_m+inch(.5).meters)

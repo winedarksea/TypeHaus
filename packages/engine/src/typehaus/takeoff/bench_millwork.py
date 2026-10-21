@@ -42,24 +42,3 @@ def bench_cut_rows(model, stock_kind: str, max_board_width_in=None) -> list[dict
                                                          part.shape_note, material.source)))
             rows.append(row)
     return rows
-
-
-def bench_fit_notes(spec) -> str:
-    """Fit requirements travel with the generated PDF rather than a second dimension set."""
-    return (
-        f"Seat: {spec.seat_cushion_thickness.inches:g} in HR foam, density "
-        f">={spec.seat_foam_density_lb_ft3:g} lb/ft3, supplier 25% IFD "
-        f"{spec.seat_foam_ifd_min_lbf:g}-{spec.seat_foam_ifd_max_lbf:g} lbf with test "
-        "conditions; waterfall nose, zipped cover, thin wrap and non-slip retention. "
-        f"Deck {spec.deck_height.inches:g} in; nominal occupied seat "
-        f"{spec.occupied_seat_height.inches:g} in must be verified physically. "
-        f"Back: {spec.back_angle_degrees:g} degrees, {spec.back_pad_thickness.inches:g} in "
-        f"padding; removable {spec.lumbar_projection.inches:g} in lumbar insert centered "
-        f"{spec.lumbar_height_above_seat.inches:g} in above occupied seat, adjustable "
-        f"{spec.lumbar_adjustment_min.inches:g}-{spec.lumbar_adjustment_max.inches:g} in. "
-        f"Effective depth {spec.effective_seat_depth.inches:g} in. Adjustable footrest. "
-        "No wall fasteners into pocket-door cavity. Fabrication release requires a "
-        ">=60 minute representative-user mock-up. Record fit adjustments and regenerate "
-        "outputs if construction dimensions change. Laptop-only screen/keyboard coupling "
-        "remains a limitation. See the house's bench construction notes."
-    )

@@ -2,6 +2,7 @@
 
 import pytest
 
+from typehaus.model import inch
 from typehaus.resolve.tub_enclosures import ENCLOSURE_CATEGORIES
 
 pytestmark = pytest.mark.slow
@@ -73,6 +74,12 @@ def test_framed_ifc_has_materialized_insulation_and_the_open_tub(catlin_model_ro
         assert {tuple(p.Coordinates) for p in shape.SweptArea.OuterCurve.Points[:-1]} == {
             tuple(p) for p in solid.outline}
     tub = products['FX-M-BATH2-TUB']
+    points = tub.Representation.Representations[0].Items[0].Coordinates.CoordList
+    xs, ys, zs = zip(*points, strict=True)
+    assert max(xs)-min(xs) == pytest.approx(inch(35.75).meters)
+    assert max(ys)-min(ys) == pytest.approx(inch(59.6875).meters)
+    assert max(zs)-min(zs) == pytest.approx(inch(21).meters)
+    assert max(zs) == pytest.approx(inch(22.75).meters)
     assert tub.is_a('IfcSanitaryTerminal')
     assert tub.Representation.Representations[0].RepresentationType == 'Tessellation'
     assert any(item.is_a('IfcTriangulatedFaceSet')

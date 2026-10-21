@@ -1787,9 +1787,9 @@
 "canvas_objects/FX-M-BATH2-SINK/body_z0_m": 0.0381,
 "canvas_objects/FX-M-BATH2-SINK/body_z1_m": 1.0922,
 "canvas_objects/FX-M-BATH2-SINK/z_m": 0.0381,
-"canvas_objects/FX-M-BATH2-TUB/body_z0_m": 0.0381,
-"canvas_objects/FX-M-BATH2-TUB/body_z1_m": 0.5715,
-"canvas_objects/FX-M-BATH2-TUB/z_m": 0.0381,
+"canvas_objects/FX-M-BATH2-TUB/body_z0_m": 0.04445,
+"canvas_objects/FX-M-BATH2-TUB/body_z1_m": 0.57785,
+"canvas_objects/FX-M-BATH2-TUB/z_m": 0.04445,
 "canvas_objects/FX-M-BATH2-WC/body_z0_m": 0.0381,
 "canvas_objects/FX-M-BATH2-WC/body_z1_m": 0.75565,
 "canvas_objects/FX-M-BATH2-WC/z_m": 0.0381,
@@ -21749,16 +21749,22 @@
 "83408aebaec2"
 ],
 "geometry/CMQ806AAAA-W-M-TUBDK-S-batt-0-0-0/body": [
-0.4318,
-0.4699,
+0.05715,
+0.06985,
 2,
-"714b208c33eb"
+"7885a686c3b7"
+],
+"geometry/CMQ806AAAA-W-M-TUBDK-S-batt-0-1-0/body": [
+0.254,
+0.4318,
+2,
+"f8c5acfbc9e9"
 ],
 "geometry/CMQ806AAAA-W-M-TUBDK-S-batt-1-0-0/body": [
-0.05715,
-0.4318,
+0.06985,
+0.254,
 2,
-"86ff69d05675"
+"ed7d23ea5160"
 ],
 "geometry/CMQ806AAAA-W-M-TUBDK-S-batt-2-0-0/body": [
 0.05715,
@@ -21801,30 +21807,6 @@
 0.06985,
 2,
 "7885a686c3b7"
-],
-"geometry/CMQ806AAAA-W-M-TUBDK-W-batt-5-0-0/body": [
-0.01905,
-0.06985,
-2,
-"9787ee3585bc"
-],
-"geometry/CMQ806AAAA-W-M-TUBDK-W-batt-5-1-0/body": [
-0.4699,
-0.508,
-2,
-"e910cd7d44bd"
-],
-"geometry/CMQ806AAAA-W-M-TUBDK-W-batt-6-0-0/body": [
-0.06985,
-0.1143,
-2,
-"c03320919525"
-],
-"geometry/CMQ806AAAA-W-M-TUBDK-W-batt-7-0-0/body": [
-0.1143,
-0.4318,
-2,
-"648780a8f75f"
 ],
 "geometry/CMQ806AAAA-lower-return-0/body": [
 0.01905,
@@ -94512,10 +94494,12 @@
 "solids/FT-SG-W1/z1_m": -2.7797125,
 "solids/FT-SG-W2/z0_m": -3.0845125,
 "solids/FT-SG-W2/z1_m": -2.7797125,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-0-0-0/z0_m": 0.4318,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-0-0-0/z1_m": 0.4699,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-1-0-0/z0_m": 0.05715,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-1-0-0/z1_m": 0.4318,
+"solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-0-0-0/z0_m": 0.05715,
+"solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-0-0-0/z1_m": 0.06985,
+"solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-0-1-0/z0_m": 0.254,
+"solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-0-1-0/z1_m": 0.4318,
+"solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-1-0-0/z0_m": 0.06985,
+"solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-1-0-0/z1_m": 0.254,
 "solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-2-0-0/z0_m": 0.05715,
 "solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-2-0-0/z1_m": 0.4318,
 "solids/FX-M-BATH2-TUB:W-M-TUBDK-S-batt-3-0-0/z0_m": 0.05715,
@@ -94530,14 +94514,6 @@
 "solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-3-0-0/z1_m": 0.4318,
 "solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-4-0-0/z0_m": 0.05715,
 "solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-4-0-0/z1_m": 0.06985,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-5-0-0/z0_m": 0.01905,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-5-0-0/z1_m": 0.06985,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-5-1-0/z0_m": 0.4699,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-5-1-0/z1_m": 0.508,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-6-0-0/z0_m": 0.06985,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-6-0-0/z1_m": 0.1143,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-7-0-0/z0_m": 0.1143,
-"solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-7-0-0/z1_m": 0.4318,
 "solids/FX-M-BATH2-TUB:lower-return-0/z0_m": 0.01905,
 "solids/FX-M-BATH2-TUB:lower-return-0/z1_m": 0.10795,
 "solids/FX-M-BATH2-TUB:lower-return-1/z0_m": 0.01905,

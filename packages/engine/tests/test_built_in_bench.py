@@ -16,7 +16,13 @@ from typehaus.model.canvas import canvas_object_types
 from typehaus.model.placeable_symbols import place_local
 from typehaus.takeoff.bench_millwork import bench_cut_rows
 from typehaus.takeoff.hardwood import hardwood_takeoff
-from typehaus.takeoff.millwork_pdf import write_millwork_pdf
+from typehaus.takeoff.millwork_pdf import (
+    dimensions,
+    number,
+    quantity,
+    schedule,
+    write_millwork_pdf,
+)
 from typehaus.takeoff.panel_stock import panel_order_rows
 
 INCH = .0254
@@ -166,10 +172,26 @@ def test_panel_exports_preserve_purchasing_grade_and_do_not_add_board_feet(
     markdown = _markdown(hardwood + panels)
     assert "Plywood sheets to order" in markdown and "sheets to order" in markdown
     assert "furniture panel" not in markdown
-    pdf = tmp_path / "millwork.pdf"
-    write_millwork_pdf(pdf, "catlin", _flat_rows(hardwood), flattened)
+    pdf, again = tmp_path / "millwork.pdf", tmp_path / "again.pdf"
+    for path in (pdf, again):
+        write_millwork_pdf(path, "catlin", _flat_rows(hardwood), flattened)
     assert pdf.read_bytes().startswith(b"%PDF-")
-    assert pdf.stat().st_size > 1000
+    assert pdf.read_bytes() == again.read_bytes()
+
+
+def test_millwork_pdf_schedule_formats_and_numbers_its_notes(catlin_model_ro):
+    hardwood = _flat_rows(hardwood_takeoff(catlin_model_ro))
+    panels = _flat_rows(panel_order_rows(bench_cut_rows(catlin_model_ro, "panel")))
+    numbered, notes = schedule(hardwood, panels)
+    assert len(numbered) == len(hardwood) + len(panels)
+    species = [str(row["species"]).casefold() for row, _ in numbered]
+    assert species == sorted(species)
+    texts = [note.text for note in notes]
+    assert len(texts) == len(set(texts)) and all(t and "None" not in t for t in texts)
+    assert {n for _, n in numbered if n is not None} == set(range(1, len(notes) + 1))
+    sheet = next(row for row, _ in numbered if row["stock_kind"] == "panel")
+    assert dimensions(sheet) == ("48 \u00d7 96", True) and quantity(sheet) == "2 sheets"
+    assert number("1.250") == "1.25" and number(8.0) == "8" and number("") == ""
 
 
 def test_bench_orders_one_glued_front_and_two_single_board_trim_pieces(catlin_model_ro):

@@ -105,7 +105,8 @@ def _markdown(rows: list[dict[str, object]]) -> str:
 def millwork(
     house: Path | None = typer.Argument(None),
     csv: Path | None = typer.Option(None, "--csv", help="Write the schedule as CSV."),
-    pdf: Path | None = typer.Option(None, "--pdf", help="Write the shop schedule as PDF."),
+    pdf: Path | None = typer.Option(
+        None, "--pdf", help="Write the one-page shop schedule, plus notes, as PDF."),
     md: Path | None = typer.Option(
         None, "--md", help="Write the schedule as a Markdown table (emailable)."),
     as_json: bool = typer.Option(False, "--json"),
@@ -154,11 +155,7 @@ def millwork(
     if pdf is not None:
         from typehaus.takeoff.millwork_pdf import write_millwork_pdf
 
-        placed_types = {obj.type_ref for obj in model.canvas_objects}
-        bench_specs = [t.built_in_bench for t in model.plan.library.furniture_types
-                       if t.built_in_bench is not None and t.tag in placed_types]
-        write_millwork_pdf(pdf, directory.name, _flat_rows(hardwood), _flat_rows(panels),
-                           bench_specs)
+        write_millwork_pdf(pdf, directory.name, _flat_rows(hardwood), _flat_rows(panels))
         console.print(f"wrote {pdf}")
     if as_json:
         console.print_json(json.dumps({"hardwood": hardwood, "panels": panels,
