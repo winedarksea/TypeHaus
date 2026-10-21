@@ -20569,17 +20569,17 @@
 8,
 "9a68f4b2c829"
 ],
-"geometry/CMD201AAAA/glass": [
-0.075,
-1.957,
-2,
-"f59eacaf4cac"
-],
 "geometry/CMD201AAAA/hardware": [
 0.882,
 0.946,
 12,
 "cc227fd26d3b"
+],
+"geometry/CMD201AAAA/leaf": [
+0.075,
+1.957,
+2,
+"f59eacaf4cac"
 ],
 "geometry/CMD202AAAA-casing-l/body": [
 0.0238125,

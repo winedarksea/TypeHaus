@@ -114,15 +114,15 @@ def test_the_house_has_one_peak_hour_not_four(catlin_model_ro) -> None:
     result = fenestration_gain(catlin_model_ro, walls, openings)
     assert result.peak_hour == pytest.approx(10.5)
     # WIN-M-DINING-E replaces E3 and EAST-MID with 21 sf of fixed east glass, adding 3 sf net.
-    # Named products (2026-10-21): SHGC by line, and D-M-ENTRY glazed (notes/solar_gain_basis.md).
-    assert result.peak_btu_per_hour == pytest.approx(13_829.1, rel=0.01)
+    # Named products (2026-10-21): SHGC by line; D-M-ENTRY opaque (notes/solar_gain_basis.md).
+    assert result.peak_btu_per_hour == pytest.approx(13_528.0, rel=0.01)
     assert result.unknown_inputs == ()
-    # Every facade contributes at the peak hour, and south leads it — but at 58% of the
+    # Every facade contributes at the peak hour, and south leads it — but at 60% of the
     # total, not the 100% the weights implied by putting it at 1.00 alone.
     assert set(result.by_facade) == {"N", "E", "S", "W"}
-    # 0.58 since 2026-10-21: the glazed entry door and the higher-SHGC fixed glass grew the
-    # north, east and west terms more than the shaded south French doors lost.
-    assert result.by_facade["S"] / result.peak_btu_per_hour == pytest.approx(0.58, abs=0.02)
+    # 0.60 since 2026-10-21: the higher-SHGC fixed glass grew the north, east and west terms
+    # more than the shaded south French doors lost.
+    assert result.by_facade["S"] / result.peak_btu_per_hour == pytest.approx(0.60, abs=0.02)
 
 
 def test_a_missing_shgc_is_named_not_assumed(catlin_model_ro) -> None:
@@ -237,7 +237,7 @@ def test_the_aed_excursion_is_the_peak_over_a_diverse_day(catlin_model_ro) -> No
     assert result.excursion_btu_per_hour == pytest.approx(
         result.peak_btu_per_hour - _AED_DIVERSITY_FACTOR * result.average_btu_per_hour,
         abs=1.0)
-    assert result.excursion_btu_per_hour == pytest.approx(684.4, rel=0.02)
+    assert result.excursion_btu_per_hour == pytest.approx(670.5, rel=0.02)
     assert result.design_btu_per_hour == pytest.approx(
         result.peak_btu_per_hour + result.excursion_btu_per_hour)
 

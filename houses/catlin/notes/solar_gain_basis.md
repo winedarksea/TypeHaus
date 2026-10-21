@@ -296,7 +296,7 @@ tables in §§2 and 4 and the 2026-09-23 revision record the former window layou
 
 SHGC is now each product's NFRC row (`plan/window_types.py`, `plan/door_types.py`), not the
 0.35 placeholder: Drutex fixed 0.39, tilt-turn 0.33, tilt-only 0.24; Andersen 400 0.40;
-Cascadia doors 0.33, and `D-M-ENTRY` is now a glazed door. Geometry, irradiance and shading
+Cascadia doors 0.33, and `D-M-ENTRY` is now a glazed door (reverted the same day, below). Geometry, irradiance and shading
 are unchanged, so each facade's 10:30 gain scales by its own Σ A·SHGC, and south by window,
 since its shading differs window to window:
 
@@ -312,3 +312,13 @@ South at 10:30 is 144.2 Btu/h·ft² incident, 98.6 of it direct. Fully shaded (`
 Unshaded (the rest): +1.633 × 144.2 = +235.4. The house still peaks at 10:30, now at
 **13,829 Btu/h**, south 58% of it. The day's average rises 9,489 → 10,111, so the AED
 excursion is 13,829 − 1.3 × 10,111 = **684** (was 740). The engine agrees to the Btu/h.
+
+## Revision 2026-10-21 (later) — `D-M-ENTRY` is opaque
+
+The owner rejected the glazed front door, so it is an opaque Therma-Tru Smooth-Star. North's
+10:30 rate is 685.2 / 15.021 = 45.62 Btu/h per ft² of A·SHGC. The door was 3'-0" × 6'-8" =
+20.0 ft² at SHGC 0.33 = 6.600 ft², so north is 22.267 → 15.667 and its gain is
+1,015.7 → **714.7** (−301.0). The peak stays at 10:30, at 13,829.1 − 301.0 = **13,528 Btu/h**,
+and south rises to 60% of it. The day's average falls by the door's mean north gain, read
+from the engine: 10,111 → 9,890. The AED excursion is 13,528 − 1.3 × 9,890 = **670** (was
+684). The engine agrees to the Btu/h.

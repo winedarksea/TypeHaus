@@ -5374,7 +5374,10 @@
 # Energy Alucover for the tilt-turn, fixed and tilt-only units, Andersen 400 casements for the
 # nine egress windows, Cascadia Universal doors. None publishes a price, so the window bands
 # below are NOT re-based: each comment names its product, and a quote per supplier replaces
-# them. The Drutex rows still need freight, crating and duty from a Chicago dealer
+# them. The one Drutex figure found is Polish list: IGLO Energy white triple tilt-turn,
+# 975x1090 mm, 713 zl net (~$195, kb.pl, undated) — before Alucover, colour, fin, export and
+# a US dealer, so a floor on the base product, not a basis for these rows.
+# The Drutex rows still need freight, crating and duty from a Chicago dealer
 # (`[allowances]`'s delivery line); the Andersen rows are local.
 
 # --- windows ------------------------------------------------------------------------------
@@ -5451,13 +5454,16 @@
 # Unit only. Low is a closeout/builder fiberglass pair ($598 at Door Clearance Center); high is
 # a full-lite Low-E or 10-lite SDL fiberglass double ($2,188-2,829 at doornmore.com). The old
 # $3,600 high was an installed price wearing a material label.
-# 2026-10-21: FRENCH60 and SWING36 are Cascadia Universal triple-glazed fiberglass. Cascadia
-# publishes no price, so neither band is re-based; expect the quote at or above the high end.
+# 2026-10-21: FRENCH60 is Cascadia Universal triple-glazed fiberglass. Cascadia publishes no
+# price, so the band is not re-based; expect the quote at or above the high end. SWING36 is
+# an opaque Therma-Tru Smooth-Star prehung with a multipoint lock, a dealer-stocked line; no
+# price was found, and the old band is kept pending a dealer quote.
 "DT-EXT-FRENCH60" = { material = { low = 1300, high = 2900 }, labour = { low = 450, high = 1050 } }  # 3 ea — sill pan, flashing, and a unit that must stay square for the astragal to latch
-"DT-EXT-SWING36" = { material = { low = 500, high = 1600 }, labour = { low = 320, high = 720 } }  # 1 ea — D-M-ENTRY, Cascadia full-lite
-# D-G-SERVICE's own type since 2026-10-21: a commodity Therma-Tru Smooth-Star flush outswing,
-# the commodity end of the old SWING36 band; same labour.
-"DT-EXT-SWING36-G" = { material = { low = 500, high = 900 }, labour = { low = 320, high = 720 } }  # 1 ea
+"DT-EXT-SWING36" = { material = { low = 500, high = 1600 }, labour = { low = 320, high = 720 } }  # 1 ea — D-M-ENTRY, Therma-Tru Smooth-Star flush, multipoint
+# D-G-SERVICE's own type since 2026-10-21: a commodity Masonite Premium Flush steel prehung
+# outswing (Home Depot 74213; the 6-panel steel outswing lists at $525), field-painted. Same
+# labour.
+"DT-EXT-SWING36-G" = { material = { low = 300, high = 600 }, labour = { low = 320, high = 720 } }  # 1 ea
 # ** LOW END RAISED, not lowered. ** An UNINSULATED 16x7 steel door is $888 at Home Depot and
 # should not be the base case in Climate Zone 6 on a heated-adjacent garage. This now starts at
 # an insulated R-6.5 door ($2,230 with windows) and tops out at a carriage style (Coachman

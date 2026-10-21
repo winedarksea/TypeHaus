@@ -49,9 +49,19 @@ CASCADIA_UNIVERSAL_DOOR = Product(
            "sheet 2022.05.V3).")
 THERMATRU_SMOOTHSTAR = Product(
     tag="PROD-THERMATRU-SMOOTHSTAR", brand="Therma-Tru", model="Smooth-Star flush",
-    name="Smooth-Star fiberglass flush door, outswing", url="https://www.thermatru.com",
-    source="Commodity fiberglass outswing slab for the unconditioned garage. NFRC line "
-           "THC-M-5 (flush, no lite, THC-M-5-03881-00001).")
+    name="Smooth-Star fiberglass flush door, inswing, multipoint lock",
+    url="https://www.thermatru.com",
+    source="Opaque fiberglass, polyurethane foam core, 1 1/4\" engineered-lumber lock stile, "
+           "Therma-Tru Multi-Point Locking System. Stocked by Twin Cities dealers. NFRC line "
+           "THC-M-5 (flush, no lite, THC-M-5-03881-00001). A small lite is a catalog option.")
+MASONITE_STEEL_FLUSH = Product(
+    tag="PROD-MASONITE-STEEL-FLUSH", brand="Masonite", model="Premium Flush steel",
+    name="Premium Flush primed steel prehung, outswing, no brickmold", sku="74213",
+    url="https://www.homedepot.com/p/Masonite-36-in-x-80-in-Premium-Flush-Right-Hand-Outswing-"
+        "Primed-Steel-Prehung-Front-Door-No-Brickmold-74213/301287560",
+    source="Commodity insulated-core steel slab for the rarely heated garage; field-painted "
+           "black. No NFRC rating needed or claimed. 74213 is Home Depot's right-hand "
+           "listing; hand to be confirmed against D-G-SERVICE's flipped hinge.")
 CLOPAY_MODERN_STEEL = Product(
     tag="PROD-CLOPAY-MODERN-STEEL", brand="Clopay", model="Modern Steel, Intellicore",
     name="Modern Steel 16x7 flush, Intellicore R-18.4, Black", sku="GDU011",
@@ -62,5 +72,5 @@ CLOPAY_MODERN_STEEL = Product(
 
 OPENING_PRODUCTS = (
     DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, DRUTEX_ALUCOVER_TILT, ANDERSEN_400_CASEMENT,
-    CASCADIA_UNIVERSAL_DOOR, THERMATRU_SMOOTHSTAR, CLOPAY_MODERN_STEEL,
+    CASCADIA_UNIVERSAL_DOOR, THERMATRU_SMOOTHSTAR, MASONITE_STEEL_FLUSH, CLOPAY_MODERN_STEEL,
 )

@@ -908,8 +908,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   Energy Alucover (aluminium-capped uPVC) for the 11 tilt-turn, 19 fixed and 2 kitchen
   tilt-only units; Andersen 400 casements for the 9 R310 escape windows (`WIN-M-BED-S1`/`S2`,
   `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`); Cascadia
-  fiberglass for `D-M-ENTRY` (now glazed) and the French pairs; Therma-Tru for
-  `D-G-SERVICE` (`DT-EXT-SWING36-G`); Clopay for the overhead. Black outside, white inside.
+  fiberglass for the French pairs (glazed-only line); an OPAQUE Therma-Tru Smooth-Star for
+  `D-M-ENTRY` (owner: a solid, insulated front door, at most a tiny lite); commodity Masonite
+  insulated steel for `D-G-SERVICE` (`DT-EXT-SWING36-G`); Clopay for the overhead. Black outside, white inside.
   `plan/window_types.py`/`plan/door_types.py` redefine every tag the house hangs, each with
   its NFRC CPD row, and `plan/manifest.py` drops the library preset of that tag; catalog-only
   sizes stay presets. **Edit the house file, never `library/windows.py`.** The escape types

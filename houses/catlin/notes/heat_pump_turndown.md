@@ -401,7 +401,7 @@ sum of ΔU × area over its own openings, × 85 °F:
 | HP2 | −13.144 → 134.28 | 14,972 → **13,855** | 8,800 / 13,855 = **0.64** | **11,084** | **23.6 °F** |
 | HP3 | −1.233 → 10.72 | 1,015 → **910** | 2,800 / 910 = **3.08** | **728** | never |
 
-HP3's is `WIN-M-MUD` and the now-glazed `D-M-ENTRY`. `WIN-A-N1` (−0.675) lights the
+HP3's is `WIN-M-MUD` and `D-M-ENTRY` (U 0.20 → 0.15; opaque, so glazing does not enter). `WIN-A-N1` (−0.675) lights the
 `FO-A-HALL` stair void and sits in no zone; it is the 58 Btu/h by which the three zones
 under-sum the block. HP1's crossover: at −22 °F 13,400 − 169.43 × 92 = −2,188, at 5 °F
 14,000 − 169.43 × 65 = +2,987, so T = −22 + 27 × 2,188 / 5,175 = −10.6 °F. HP2's: at 17 °F

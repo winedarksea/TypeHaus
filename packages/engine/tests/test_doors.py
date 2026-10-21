@@ -78,9 +78,9 @@ def test_door_operation_rejects_an_unknown_value():
 def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
     types = {door_type.tag: door_type for door_type in catlin_plan.library.door_types}
     expected = {
-        # D-M-ENTRY: a Cascadia Universal door, glazed like every door in that line.
-        "DT-EXT-SWING36": (36.0, DoorOperation.SWING, True, True),
-        # D-G-SERVICE's own product since 2026-10-21: a flush Therma-Tru outswing.
+        # D-M-ENTRY: an opaque Therma-Tru Smooth-Star (2026-10-21).
+        "DT-EXT-SWING36": (36.0, DoorOperation.SWING, True, False),
+        # D-G-SERVICE's own product since 2026-10-21: a flush Masonite steel outswing.
         "DT-EXT-SWING36-G": (36.0, DoorOperation.SWING, True, False),
         "DT-EXT-FRENCH60": (60.0, DoorOperation.DOUBLE_SWING, True, True),
         "DT-INT-SWING32": (32.0, DoorOperation.SWING, False, False),

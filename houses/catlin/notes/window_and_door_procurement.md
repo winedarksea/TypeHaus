@@ -5,8 +5,9 @@
 - **Drutex IGLO Energy Alucover** (Polish, aluminium-capped uPVC) for the 11 tilt-turn, 19
   fixed and 2 tilt-only units.
 - **Andersen 400 casement** (Bayport, MN) for the 9 R310 escape windows.
-- **Cascadia Universal** fiberglass for `D-M-ENTRY` and the three French pairs; a Therma-Tru
-  flush outswing for `D-G-SERVICE`; a Clopay Modern Steel sectional for `D-G-OVERHEAD`.
+- **Cascadia Universal** fiberglass for the three French pairs; an opaque **Therma-Tru
+  Smooth-Star** for `D-M-ENTRY`; a commodity **Masonite** insulated steel outswing for
+  `D-G-SERVICE`; a Clopay Modern Steel sectional for `D-G-OVERHEAD`.
 
 Black outside, white inside throughout. The products are in the model
 (`plan/opening_products.py`, `plan/window_types.py`, `plan/door_types.py`), each type
@@ -96,13 +97,28 @@ and fixed; LC-PG45/CW-PG80 tilt-turn. Every value is over §1's DP 20.
 
 | Door | Line | CPD | U | SHGC | VT | Notes |
 |---|---|---|---|---|---|---|
-| `D-M-ENTRY` | Cascadia Universal, inswing single | CWL-K-27-00344 | 0.15 | 0.33 | 0.42 | every Cascadia door is glazed; tempered; multipoint; R-PG45 |
+| `D-M-ENTRY` | Therma-Tru Smooth-Star flush, inswing | THC-M-5-03881 | 0.15 | — | — | opaque; polyurethane core; multipoint lock |
 | `D-B-PATIO`, `D-M-BALC`, `D-S-DECK-E` | Cascadia Universal, double | -00344 in / -00415 out | 0.15 | 0.33 | 0.42 | inswing double R-PG35; **CPD lists the single leaf**, the pair's label is a quote item |
-| `D-G-SERVICE` | Therma-Tru Smooth-Star flush, outswing | THC-M-5-03881 | 0.15 | — | — | own type `DT-EXT-SWING36-G` |
+| `D-G-SERVICE` | Masonite Premium Flush steel, outswing (HD 74213) | none | — | — | — | own type `DT-EXT-SWING36-G`; insulated core, unconditioned garage |
 | `D-G-OVERHEAD` | Clopay Modern Steel, Intellicore R-18.4, Black, 16x7 | none | — | — | — | unconditioned; wind rating for q_h 19.3 psf to confirm |
 
 Therma-Tru's best full-lite (THC-M-5-04493) is U 0.21 at VT 0.27; Drutex's uPVC balcony door
-(DRU-K-20) is ~0.17 but foil-black and not fiberglass. Both are the alternates.
+(DRU-K-20) is ~0.17 but foil-black and not fiberglass. Both are the alternates for the pairs.
+
+**The front door is opaque (owner, 2026-10-21, later).** The first pass hung a Cascadia full
+lite at `D-M-ENTRY` because the Cascadia line carries no opaque infill. The owner wants a
+sturdy, well-insulated, solid door: a small lite at most. Smooth-Star is the commodity
+fiberglass slab with a foam core and a 1 1/4" engineered lock stile, a multipoint lock
+option, and Twin Cities stock. Its flush NFRC row matches the Cascadia U 0.15, so heating is
+unchanged, and it drops 6.6 ft² of north A·SHGC (`solar_gain_basis.md`). A small lite is a
+catalog option; if one is taken, it is tempered (R308.4.1) and needs its own CPD row.
+Drutex's MB-86N SI aluminium entry door (Ud 0.83 W/m²K, about U 0.15) would ship with the
+windows. It is the alternate, but has no NFRC row and no US price, and an aluminium leaf in
+Climate Zone 6 is a quote item.
+
+**The garage service door is a commodity steel door.** The garage is unconditioned and only
+rarely heated, so it needs an insulated core and nothing more: no NFRC row is needed or
+claimed.
 
 ### 2.4 Per-type spec (in the model)
 
@@ -120,7 +136,11 @@ Flange: factory nailing fin on all three window lines. Colour: black exterior, w
 
 ### 2.5 Landed price
 
-No line publishes a price; every row in `prices.toml` stays a band with a named product.
+**One factory-market signal** (kb.pl, Polish list, net of VAT, undated): IGLO Energy white,
+triple, single-sash tilt-turn, 975 x 1090 mm, **713 zł**, about $195. Alucover, black, a nail
+fin, export crating, freight, duty and a US dealer all sit on top of that, and none of them
+is published, so it bounds the base product rather than re-bases a row. No US price is
+published for any of the three lines; every row in `prices.toml` stays a band with a named product.
 Drutex sells through dealers (DAKAM, Franklin Park IL, 16 years as a partner; Home One,
 Chicago), and the Chicago dealer is the freight point. The Polish landed cost adds ocean
 freight, crating, US duty on HTS 3925.20 plus the 2025 EU tariff, and 10–14 weeks. Cascadia
@@ -133,14 +153,26 @@ than ±20% without it.
 1. Drutex: written confirmation that Alucover ships with a nail fin, and the NAFS report and
    DP for **Alucover** itself (the Florida approvals cover IGLO 5 / Energy Classic).
 2. Drutex tilt-only minimum sash at a 13 1/2" frame; if not buildable, WT-1424 goes fixed.
-3. Drutex Alucover frame sill rail height and sash overlap (§6); the stools still assume 2.953".
+3. Stool height (§6). **The frame half is confirmed**: Drutex's frame face is 75 mm = 2.95"
+   (Phius W-102033, IGLO Energy Classic, fixed-section frame height), which is the 2.953" the
+   stools already assume, so no fixed unit moves. Two terms are unpublished: the 5-chamber
+   PVC sill adaptor Drutex ships under the frame as standard (Alucover data; IGLO Energy
+   brochure, "5-Kammer-Fensterbankleiste"), which RAISES the rail, and the inward sash's
+   overlap past the frame, which the turn sweep needs the stool to clear. Ask for both
+   on the section drawing; re-strike `plan/window_stools.py` and the main.py east-wall note
+   to rail = 75 mm + adaptor, less the overlap on the tilt-turns.
 4. Andersen 400 triple-pane availability through a Twin Cities dealer; basic-unit frame depth.
-5. Cascadia: NFRC label for the double door; threshold height at D-B-PATIO's 7¼" step and
-   D-S-DECK-E's 0.58".
-6. Dark-colour warranty by orientation: Drutex powder coat, Andersen Perma-Shield black,
-   Cascadia paint.
-7. Clopay: DASMA wind-load rating for the 16x7 at Exp B.
-8. 16 CFR 1201 marks on the 11 tempered units and every glazed door.
+5. Cascadia: NFRC label for the double door — **confirmed absent from the CPD** (none of the
+   1,355 CWL-K-27 rows is a pair), so it is a certification question for Cascadia, not a
+   lookup; threshold height at D-B-PATIO's 7¼" step and D-S-DECK-E's 0.58".
+6. Dark-colour warranty by orientation. Andersen 400 publishes 20 years glass / 10 years
+   non-glass, transferable, not prorated (400 Series product guide), with no black-specific
+   term. Drutex and Cascadia publish no finish term (a Cascadia user reports a factory paint
+   that touches up, less hard than PVDF). Ask all three in writing.
+7. Clopay: Texas TDI approval GDR150 lists Modern Steel residential models 7208/7209,
+   non-impact, at **+38/−42 psf**, about twice §1's worst 18.3 psf. Confirm GDU011 is one of
+   them and that the listing reaches 16'-0" wide (drawing 104859/105042-B-TDI).
+8. 16 CFR 1201 marks on the 11 tempered units and every glazed door (the three French pairs).
 
 ## 3. Frame material by orientation
 

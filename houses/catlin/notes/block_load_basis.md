@@ -327,3 +327,7 @@ which is the same lesson again.
   −25.611 × 85 = −2,177, so heating 31,649 → **29,472**. Cooling: −25.611 × 15 = −384 of
   conduction, +753 of 10:30 glass, −56 of AED excursion (`solar_gain_basis.md`):
   21,707 → **22,020** sensible, 1.952 tons.
+- **2026-10-21 (later), `D-M-ENTRY` opaque.** Its U is still 0.15, so heating stays at
+  **29,472**. Cooling loses the door's 10:30 glass (−301.0) and 13.9 of AED excursion
+  (`solar_gain_basis.md`): 22,020.3 − 315.0 = **21,705** sensible, 1.952 − 315.0/12,000 =
+  **1.925** tons.

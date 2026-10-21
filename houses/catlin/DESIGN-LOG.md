@@ -5584,6 +5584,12 @@ by tag. Engine: `WindowType.net_clear_width/height`, graded by `_meets_r310_2_1`
 0.41" of depth to the 93 mm frame. No price published by any window line; bands kept, the
 overhead re-based on Clopay GDU011's $2,845.
 
+**Later the same day the owner rejected the glazed front door**: `D-M-ENTRY` is an opaque
+Therma-Tru Smooth-Star (flush, foam core, multipoint, U 0.15), since Cascadia makes no opaque
+leaf. `D-G-SERVICE` dropped to a commodity Masonite insulated steel outswing, because the
+garage is unconditioned. Heating is unmoved; the 10:30 glass peak is 13,829 → 13,528 and
+sensible cooling 22,020 → 21,705 (`solar_gain_basis.md`).
+
 ## 2026-10-21 — Hall-bath entry opens beside a shorter vanity
 
 Owner selected a 36x21 sink base, an 18-inch eastern SEKTION (two western units stay
