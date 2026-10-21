@@ -1288,11 +1288,11 @@ OPENINGS = [
     # window on the same bay. Retyped WT-1424-T -> WT-2736-T and moved to 19'-8" on
     # 2026-08-15 for the west face's third column (WIN-S-SUITE2 above it): a 14" RO
     # centres on a bay centre, a 27" on a stud line — 8" apart, so 14" can never column
-    # with 27" (the 8" rule). Also a code gain: 27x36 delivers 6.75/3.375 sf against
-    # R303.3's 3/1.5 sf where 14x24 gave 2.33/1.17. Sill drops to 3'-0" for the shared
-    # 6'-0" head line; `-T` stays since R308.4.5 tempers any bathroom sill under 60".
+    # with 27" (the 8" rule). Sill drops to 3'-0" for the shared 6'-0" head line;
+    # `-T` stays since R308.4.5 tempers any bathroom sill under 60". Fixed since
+    # 2026-10-21; bathroom ventilation is provided by mechanical exhaust.
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
-           type_ref="WT-2736-T", position=from_node("N-M-W3", ft(5, 10.5)),
+           type_ref="WT-2736-FIX-T", position=from_node("N-M-W3", ft(5, 10.5)),
            sill_height=ft(3)),                                               # y 19'-8"
     # Paired with WIN-S-VANITY-W at the centre of the 4'-0" room band. The 14" RO fits
     # wholly between studs. Tempered because the safety-glazing check treats the wet-room
@@ -1308,7 +1308,7 @@ OPENINGS = [
     # lines): they head at 5'-6" and hold 4'-6" instead. The 27" units did NOT move.
     # 1'-3" off N-M-W1 since 2026-08-29, restoring y=25'-3" after that node moved 2" north
     # with the y=26'-6" line — same compensation, same reason, as the WIN-M-MUD-W note below.
-    Window(uid="FGWPV572DB", tag="WIN-M-BATH1-W", host="W-M-W2", type_ref="WT-1424-T",
+    Window(uid="FGWPV572DB", tag="WIN-M-BATH1-W", host="W-M-W2", type_ref="WT-1424-FIX-T",
            position=from_node("N-M-W1", ft(1, 3)), sill_height=ft(3, 6)),       # y 24'-4"
     # Picture unit centred y=31'-4", the bench/aisle centreline (FURN-M-MUD-BENCH,
     # plan/placeables.py). Re-authored off N-M-MECH1: a `from_node` offset is

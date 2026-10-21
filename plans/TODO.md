@@ -260,6 +260,7 @@ the future.
 - [x] Black walnut window stools for the master bedroom RM-M-BED, and quartz window stool for its bathroom window (2026-10-19).
 - Switch D-M-BATH2 and D-M-BED to walnut door casings. Then switch the desk there to walnut top on IKEA SEKTION cabinets
 - [x] Refit RM-M-STUDY: A-1 plywood bench with walnut facing/trim, warm gray seat and reclined lumbar back, shallower walnut desk/leaf; shared fabrication geometry drives 3D and panel/solid-wood cut lists. [Specification and pre-fabrication fit acceptance](../houses/catlin/notes/study_booth.md) (2026-10-19).
+- Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps grab bars.
 
 - [ ] Before fabricating RM-M-STUDY: complete the 60-minute seating mock-up, verify occupied cushion height, lumbar fit and bracket/blocking connections, and record any dimensional changes in the bench spec.
 

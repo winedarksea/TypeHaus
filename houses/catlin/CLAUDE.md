@@ -897,6 +897,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       closes the gap between the units to a 21" clear bearing pier (14" required) without
       moving either centre off its stud line.
 
+- **Fixed picture selection (2026-10-21).** `WIN-S-STAIR-N`, `WIN-A-N1`, `WIN-A-S2`,
+  `WIN-A-S3` and `WIN-M-BATH2` are fixed. All 14x24 units outside the kitchen and mudroom
+  are fixed too, including Bedroom 3's two small windows, the garage pair and tempered
+  wet-room units. Kitchen awnings remain operable; the mudroom was already fixed and stays
+  so. Larger bedroom windows, `WIN-S-HALL-N` and `WIN-A-N2` remain operable. Fixed twins
+  retain dimensions, frame depth, safety glazing and the conservative U-0.25/SHGC-0.35/VT-0.5
+  presets; any improved rated performance awaits the selected manufacturer's data.
+
 - **Facade alignment — ONE GRID PER FACADE.** `EXT_2X6`/`PLANT_EXT_2X6_HUMID` set
   `layout_origin="line"`, so a wall segment lays out from its **layout line** (the derived
   chain of collinear, stacked walls, `resolve/layout_lines.py`), not its own start node.
@@ -963,11 +971,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   32'-0"; second: 4'-0"/9'-4"/14'-8"(door)/21'-4"(door)/26'-8"/32'-0" — every pair sums to
   36'-0"). Attic gables do not join these (see **Gables**).
   West face stacks FIVE (y 4'-0", 10'-8", 20'-0", 24'-8", 31'-4"): first three 27" family on
-  a 3'-0" sill; fourth pairs tempered 14" awnings (`RM-M-BATH1`/`RM-S-VANITY`) on a 3'-6"
+  a 3'-0" sill; fourth pairs tempered 14" picture units (`RM-M-BATH1`/`RM-S-VANITY`) on a 3'-6"
   sill; fifth pairs `WIN-M-MUD`/`WIN-S-BATH-W`, also 3'-6". The 27" units share one 6'-0"
   head line; the two 14" pairs share the 4'-6" centre line instead (see **Head lines**).
-  `WIN-M-BATH2` is WT-2736-T (retyped from WT-1424-T) at a 3'-0" sill to reach the third
-  column (the 8" rule, also satisfying R303.3's window alternative). West attic pair:
+  `WIN-M-BATH2` is WT-2736-FIX-T (formerly WT-2736-T) at a 3'-0" sill to reach the third
+  column (the 8" rule); mechanical exhaust provides bathroom ventilation. West attic pair:
   4'-8"/31'-4", symmetric about y=18'-0" (→ DESIGN-LOG.md for the chase/backing history).
   **The north face has no column, a deliberate trade** (→ DESIGN-LOG.md): the upper facade
   reads as one rectangle instead — `WIN-A-N1`/`WIN-S-STAIR-N` at **12'-0"**,
@@ -976,10 +984,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   second WT-2748), so the two stacks are columns of one width and one rough opening rather
   than four squarish 30x36s. `from_node` resolves to the near JAMB, so every one of those
   four offsets grew 1 1/2" to hold its centre — do the same on any future retype here. `WIN-M-KITCH` stands alone below, dead-centred on the sink run.
-  `WIN-S-BED3-N` (WT-1424, x 34'-0", sill 4'-0") sits over `WIN-M-KITCH-N`, completing a
+  `WIN-S-BED3-N` (WT-1424-FIX, x 34'-0", sill 4'-0") sits over `WIN-M-KITCH-N`, completing a
   **corner pair** with `WIN-S-BED3` (east wall y=34'-0", each 2'-0" off the corner) — a
-  two-storey column — and satisfies R303.1 Exception 1 for `RM-S-BED3` (12.2 sf glazed/6.1
-  sf openable against 10.32 required). The current kitchen counter run is B12 + DW24 +
+  two-storey column. The pair supplies daylight; `WIN-S-HALL-N` remains operable for
+  `RM-S-BED3`. Bedroom 3 and the attic studio use the existing mechanical ventilation
+  and artificial lighting under R303.1 Exception 1 after the fixed retypes.
+  The current kitchen counter run is B12 + DW24 +
   SINK-36 + B18, without a filler. The 32-inch single bowl sits 5/8 inch east inside its
   base to centre under the fixed window (`notes/kitchen_stock_cabinet_details.md`).
 
@@ -1232,7 +1242,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
   | station | tag | type | head | outer jamb | allowed | margin |
   |---|---|---|---|---|---|---|
-  | 11'-4" / 24'-8" | `WIN-A-S2` / `WIN-A-S3` | **WT-1424** (14x24) | 4'-8" | 129" / 128" | 116" | ✓ 12" |
+  | 11'-4" / 24'-8" | `WIN-A-S2` / `WIN-A-S3` | **WT-1424-FIX** (14x24) | 4'-8" | 129" / 128" | 116" | ✓ 12" |
   | 16'-0" / 20'-0" | `WIN-A-S-JUL-W` / `-E` | **WT-2754** (27x54) | 7'-2" | 178 1/2" | 176" | ✓ 2 1/2" |
 
   One 2'-8" sill under all four, heads stepping with the rake. Juliets hold a 21" clear
@@ -1248,7 +1258,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - WT-1424 is still used wherever a bigger unit won't fit — chiefly the mudroom. Under the
   south rake it handed off to WT-1448, then WT-1436, and is back on WT-1424 (→ DESIGN-LOG.md).
 
-- **Tempered twins.** `WT-1424-T`, `WT-2736-T`, `WT-3036-T`, `WT-3048-T` match their parents
+- **Tempered twins.** `WT-1424-FIX-T`, `WT-2736-FIX-T`, `WT-2748-FIX-T`, `WT-2748-T`,
+  `WT-3036-T`, `WT-3048-T` match their parents
   in every dimension, differing only in glass, for the ten R308.4 units (wet room, within
   24" of a door, within 60" of a stair). Not width families — no facade/framing rule sees
   them; adding a tempered unit is a retype, never a move. All three glazed *door* types are

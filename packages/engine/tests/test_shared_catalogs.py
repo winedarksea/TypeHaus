@@ -36,7 +36,7 @@ def test_shared_catalog_tags_are_unique_and_provenanced():
 
 def test_16_inch_module_window_ladder_preserves_dimensions_and_variants():
     types = {item.tag: item for item in WINDOW_TYPES_16_INCH_MODULE}
-    assert len(types) == 21
+    assert len(types) == 25
     assert types["WT-1424"].width.inches == pytest.approx(14)
     assert types["WT-2764"].height.inches == pytest.approx(64)
     assert types["WT-3660-FIX"].operation is WindowOperation.FIXED

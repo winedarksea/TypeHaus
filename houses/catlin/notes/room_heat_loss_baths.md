@@ -109,7 +109,7 @@ interior, and three of its four walls bound conditioned space.
 | surface | area | U or R | working | Btu/h |
 |---|---|---|---|---|
 | west wall, `EXT_2X6` | 76.4 ft² | R-40.7 | 76.4 × 85 / 40.7 | 160 |
-| `WIN-M-BATH2`, WT-2736-T | 6.75 ft² | U-0.25 | 6.75 × 0.25 × 85 | 143 |
+| `WIN-M-BATH2`, WT-2736-FIX-T | 6.75 ft² | U-0.25 | 6.75 × 0.25 × 85 | 143 |
 | ceiling, floor, three walls | — | interior | no ΔT | 0 |
 | | | | | **303** |
 

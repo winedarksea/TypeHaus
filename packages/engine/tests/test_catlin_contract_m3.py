@@ -965,8 +965,8 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model,
     bath_y, bath = _opening_plan_y(catlin_model, "WIN-M-BATH1-W")
     assert vanity_y == pytest.approx(ft(24, 8).meters, abs=1e-6)
     assert bath_y == pytest.approx(ft(24, 8).meters, abs=1e-6)
-    assert vanity.host_wall == "W-S-W2" and vanity.type_ref == "WT-1424-T"
-    assert bath.host_wall == "W-M-W2" and bath.type_ref == "WT-1424-T"
+    assert vanity.host_wall == "W-S-W2" and vanity.type_ref == "WT-1424-FIX-T"
+    assert bath.host_wall == "W-M-W2" and bath.type_ref == "WT-1424-FIX-T"
 
     # The attic pair is gone; the column is two storeys now. WIN-A-W-S/WIN-A-W-N hung on the
     # 5'-0" knee walls at y 4'-8"/31'-4" — the one place in the house the 14" family was

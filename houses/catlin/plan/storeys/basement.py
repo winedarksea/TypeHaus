@@ -1188,7 +1188,7 @@ OPENINGS = [
     # and 3'-7" puts the 14" opening on a bay centre again now N-B-S1F is at 9'-10". `structural.window_framing_module`
     # said so, at 7" off, the moment the wall stopped being concrete.
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2-FR",
-           type_ref="WT-1424-T", position=from_node("N-B-S1F", ft(3, 7)),
+           type_ref="WT-1424-FIX-T", position=from_node("N-B-S1F", ft(3, 7)),
            sill_height=inch(36.75)),
     # --- reveals through the brick veneer -------------------------------------------
     # WIN-B-SAUNA and D-B-PATIO stay on the concrete walls; these are RoughOpenings for the

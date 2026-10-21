@@ -5325,8 +5325,8 @@
 # Everything else here moved 10-25%, which is an ordinary revision.
 #
 # TWO UNITS ARE BELOW A STOCK LINE'S MINIMUM SIZE and may not be orderable as priced:
-#   WT-1424 (14" wide) — Simonton's AWNING minimum is 23.5" wide. A 14x24 awning is a
-#                        specialty unit, and there are eleven of them (6 + 5 tempered).
+#   WT-1424 (14" wide) — Simonton's AWNING minimum is 23.5" wide. The two kitchen awnings
+#                        remain specialty units; the other 14x24 placements are fixed.
 #   WT-1448 (14x48)    — a legal casement at a 3.4:1 aspect, but an odd one; expect the band
 #                        floor, never below it.
 # ** VERIFY AVAILABILITY BEFORE BIDDING THESE. ** An unavailable size is not a price problem.
@@ -5362,9 +5362,10 @@
 
 # --- windows ------------------------------------------------------------------------------
 # The five small units. All were 65-85% low; all sit in the 0-71 UI band with WT-2736.
-"WT-1424" = { material = { low = 520, high = 1000 }, labour = { low = 115, high = 235 } }  # 9 ea — 38 UI; 14" is under the awning minimum, see above
-"WT-1424-FIX" = { material = { low = 400, high = 780 }, labour = { low = 105, high = 215 } }  # 1 ea — fixed runs 75-80% of an operable casement
-"WT-1424-T" = { material = { low = 670, high = 1250 }, labour = { low = 115, high = 240 } }  # 5 ea — +$150/250 flat tempered
+"WT-1424" = { material = { low = 520, high = 1000 }, labour = { low = 115, high = 235 } }  # 2 ea — kitchen only; 38 UI; 14" is under the awning minimum, see above
+"WT-1424-FIX" = { material = { low = 400, high = 780 }, labour = { low = 105, high = 215 } }  # 7 ea — fixed runs 75-80% of an operable casement
+"WT-1424-FIX-T" = { material = { low = 550, high = 1030 }, labour = { low = 105, high = 220 } }  # 4 ea — fixed +$150/250 flat tempered
+"WT-1424-T" = { material = { low = 670, high = 1250 }, labour = { low = 115, high = 240 } }  # 0 ea — catalog-only operable tempered twin
 # 14x36, the south gable's flanker size since 2026-08-29 (WT-1448 shortened for the 6:12
 # rake). 50 UI, INSIDE the 0-71 UI band, so it prices between WT-1424's 38 UI and WT-1448's
 # 62 UI on the same glass-and-frame curve — a third height in a width family whose buck,
@@ -5383,8 +5384,13 @@
 # the from_node offsets in storeys/attic.py are all untouched by the retype.
 "WT-2754" = { material = { low = 720, high = 1360 }, labour = { low = 170, high = 365 } }  # 2 ea — 81 UI
 # The mid units — ordinary 17-26% corrections.
-"WT-2736" = { material = { low = 550, high = 1050 }, labour = { low = 155, high = 320 } }  # 10 ea — the production unit, 63 UI
-"WT-2736-T" = { material = { low = 700, high = 1300 }, labour = { low = 160, high = 330 } }  # 1 ea
+"WT-2736" = { material = { low = 550, high = 1050 }, labour = { low = 155, high = 320 } }  # 6 ea — the production unit, 63 UI
+# Fixed variants (2026-10-21): design allowances using this table's existing 75-80%
+# fixed-sash material basis, rounded to $10, plus the same flat tempered adder. Installation
+# follows the operable twin less $10/$20, matching WT-1424-FIX; no dealer quote is implied.
+"WT-2736-FIX" = { material = { low = 420, high = 820 }, labour = { low = 145, high = 300 } }  # 1 ea — WIN-A-N1
+"WT-2736-FIX-T" = { material = { low = 570, high = 1070 }, labour = { low = 150, high = 310 } }  # 1 ea — WIN-M-BATH2
+"WT-2736-T" = { material = { low = 700, high = 1300 }, labour = { low = 160, high = 330 } }  # 0 ea — catalog-only operable tempered twin
 "WT-3036" = { material = { low = 560, high = 1080 }, labour = { low = 160, high = 330 } }  # 3 ea — 66 UI
 "WT-3036-T" = { material = { low = 710, high = 1330 }, labour = { low = 165, high = 340 } }  # 1 ea
 # ADDED 2026-08-29 — these six units were UNPRICED and fell into the take-off's own
@@ -5397,6 +5403,7 @@
 # three inches narrower, four percent under. Tempered is this table's flat $150/$250 adder.
 "WT-2748" = { material = { low = 670, high = 1265 }, labour = { low = 168, high = 358 } }  # 4 ea — 75 UI
 "WT-2748-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 2 ea
+"WT-2748-FIX-T" = { material = { low = 660, high = 1240 }, labour = { low = 163, high = 345 } }  # 1 ea — WIN-S-STAIR-N
 "WT-3048" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 7 ea — 78 UI, over the band; two-man set
 "WT-3048-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 2 ea — WIN-M-LIV-S2 and WIN-S-STUDY1
 # WIN-M-DINING-E (2026-10-16): a 63x48 fixed picture unit, 111 UI. Priced as the 27x48
@@ -7847,6 +7854,8 @@ wall_structure = false
 "envelope_layers:foundation-protection-panel" = "the named alternate to the acrylic coating, kept priced so the swap stays costed"
 "envelope_layers:white-brick" = "the fireplace surround's blend until 2026-09-13; brown-brick washed white replaced it"
 "envelope_layers:zip-r" = "named alternate to the CDX + ccSPF garage wall; never specified here"
+"openings:WT-1424-T" = "catalog-only: all four tempered 14x24 units became fixed on 2026-10-21"
+"openings:WT-2736-T" = "catalog-only: WIN-M-BATH2 became fixed on 2026-10-21"
 "openings:WT-1448" = "catalog-only: superseded by WT-1436 under the 6:12 south rake"
 "openings:WT-1436" = "catalog-only: the south flankers moved out a bay to WT-1424 on 2026-09-22"
 "openings:WT-2464" = "catalog-only window size, kept per the retired-sizes-stay-priced convention"

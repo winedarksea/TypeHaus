@@ -755,7 +755,7 @@ OPENINGS = [
     # datum (BED1/BED2 still hold it) for the 14" family's own 4'-0", which is the rule the
     # west face keeps and the head line that follows from it. WIN-M-KIT-E's 3'-6" is a
     # counter height and does not travel up.
-    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-1424",
+    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-1424-FIX",
            position=from_node("N-S-E3", ft(6, 9)), sill_height=ft(4)),      # y 34'-0"
     # West suite (bearing wall). SUITE1 moved 13'-0" -> 10'-8" for the third exact
     # main/second west column. Its header crosses W-S-W3's top ladder-backing rung, so the
@@ -810,7 +810,7 @@ OPENINGS = [
     # `structural.window_framing_module` caught it immediately — W-S-W2 lays out from
     # LL-W-A-W1, so its legal stations are 14" + n×16" and a 2" drift interrupts a stud.
     # 1'-3" restores y=25'-3" and with it the exact pairing with WIN-M-BATH1-W below.
-    Window(uid="RGC7QGVF7Y", tag="WIN-S-VANITY-W", host="W-S-W2", type_ref="WT-1424-T",
+    Window(uid="RGC7QGVF7Y", tag="WIN-S-VANITY-W", host="W-S-W2", type_ref="WT-1424-FIX-T",
            position=from_node("N-S-W1", ft(1, 3)), sill_height=ft(3, 6)),       # y 24'-4"
     # Study 2's south pair: resolved centres x=26'-8"/32'-0" are stud lines on the shared
     # facade grid and stack over WIN-M-LIV-S2/S1. Their 2'-8" sills hold the 6'-8" head line.
@@ -833,7 +833,7 @@ OPENINGS = [
     # what left a deep blank sill under each small unit. So these four 14" leaves are a
     # deliberate exception to the west face's 6'-0" head line (houses/catlin/CLAUDE.md, Head
     # lines): they head at 5'-6" and hold 4'-6" instead. The 27" units did NOT move.
-    Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424-T",
+    Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424-FIX-T",
            position=from_node("N-S-CH3", ft(1, 1.875)), sill_height=ft(3, 6)),
     # ** MOVED 29'-4" -> 24'-0" ON 2026-09-06, AND THE THREE-STOREY COLUMN IS SPENT. **
     # It was at 29'-4" to column with WIN-M-KITCH over the kitchen sink below; the 6:12 rake
@@ -911,11 +911,12 @@ OPENINGS = [
     # node N-S-N2 (x 10'-0"), which the jamb pack fits. (This note read "12'-8"" and claimed an
     # 8" miss against WIN-A-N1 until 2026-09-06; the offset always resolved to 13'-4" and
     # the prose was simply wrong. The move below is a real move; that correction was not.)
-    Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-2748-T",
+    # Fixed since 2026-10-21, with the tempered glazing retained over the stairwell.
+    Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-2748-FIX-T",
            position=from_node("N-S-N1", ft(4, 10.5)), sill_height=ft(3, 4)),   # ctr x 12'-0"
     # ** THE NE CORNER PAIR, COMPLETED ONE STOREY UP (2026-09-06). ** RM-S-BED3 already had
     # WIN-S-BED3 on its east wall at y=34'-0"; this is its twin on the north wall at
-    # x=34'-0" — same WT-1424, plain glass, operable awning. The two now wrap the north-east
+    # x=34'-0" — same WT-1424-FIX, plain picture glass. The two now wrap the north-east
     # corner exactly the way WIN-M-KITCH-N and WIN-M-KIT-E wrap it on the main storey below,
     # each unit 2'-0" off the corner on its own wall.
     #
@@ -952,13 +953,15 @@ OPENINGS = [
     # ** IT TAKES RM-S-BED3 OFF R303.1 EXCEPTION 1. ** The room was 9.83 sf glazed against
     # 10.32 required — 0.49 sf short — and had been on the exception since 2026-08-27, when
     # WIN-S-BED3 was retyped to a 14" unit to complete the three-storey east column. 2.33 sf
-    # more takes it to 12.17 glazed / 6.08 openable and it passes outright.
+    # more increased its daylight. Both small units became fixed on 2026-10-21;
+    # WIN-S-HALL-N remains the room's operable window. Existing ERV supply and lighting
+    # cover the reduced openable area under R303.1 Exception 1.
     #
     # The tag had a few hours' prior life the same day on a WT-1436 at x 23'-4", added to
     # fill the facade's lower-east corner and withdrawn when the four existing windows were
     # moved onto one rectangle instead (see WIN-S-HALL-N above). Different station,
     # different type, different argument; the uid is new.
-    Window(uid="A4BAA399PA", tag="WIN-S-BED3-N", host="W-S-N1", type_ref="WT-1424",
+    Window(uid="A4BAA399PA", tag="WIN-S-BED3-N", host="W-S-N1", type_ref="WT-1424-FIX",
            position=from_node("N-S-NE", ft(1, 5)), sill_height=ft(4)),        # ctr x 34'-0"
 ]
 

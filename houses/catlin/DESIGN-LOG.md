@@ -14,6 +14,21 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Selective fixed picture windows (2026-10-21)
+
+Thirteen operable windows become fixed to reduce cost and pursue better thermal
+performance: WIN-S-STAIR-N, WIN-A-N1, WIN-M-BATH2, and every 14x24 unit outside the
+kitchen and mudroom (including WIN-A-S2/S3). This includes the garage pair, Bedroom 3's
+small corner pair and the four tempered wet-room units. Kitchen awnings remain operable;
+the mudroom was already fixed. Larger bedroom windows and the attic's other north unit
+and juliets retain their operation. Sizes, positions, UIDs and tempered glazing stay.
+
+New fixed twins use the existing conservative performance presets pending actual product
+ratings. Prices use the current fixed-sash allowance and flat tempered adder, rather than
+assuming a dealer quote. Bathroom ventilation relies on the existing mechanical exhaust.
+Bedroom 3 and the attic studio retain their egress windows; their reduced openable area
+passes the house's R303.1 Exception 1 check using existing ERV supply and lighting.
+
 ## Bath 2 tub enclosure geometry (2026-10-20)
 
 The drop-in Kohler now shows fitted mineral-wool batts between the two knee walls' actual

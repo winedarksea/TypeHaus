@@ -296,7 +296,8 @@ def test_the_mat_is_sized_to_the_room_with_no_headroom_left():
     lib = plan.library
     wall_r = assembly_r_value(next(a for a in lib.assemblies
                                    if a.tag == "EXT_2X6"), lib).value.r_us
-    window_u = next(t for t in lib.window_types if t.tag == "WT-2736-T").u_factor.u_us
+    window_type_ref = next(o.type_ref for o in model.openings if o.tag == "WIN-M-BATH2")
+    window_u = next(t for t in lib.window_types if t.tag == window_type_ref).u_factor.u_us
     delta_f = 70 - (-15)
 
     depth_in = (_finish_face(model, "W-M-HS1", "y", "min")

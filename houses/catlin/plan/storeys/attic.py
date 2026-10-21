@@ -384,9 +384,10 @@ OPENINGS = [
     # WIN-A-S2 stands in RM-A-STUDIO and WIN-A-S3 in RM-A-STUDY. The old "the study needs
     # 36"" reason read R303.1 off the whole 165 sf; R304.3 nets it to 79 sf (6.3 sf asked),
     # and with its juliet the study has 12.5 sf at WT-1424.
-    Window(uid="CAX302AAAA", tag="WIN-A-S2", host="W-A-S2", type_ref="WT-1424",
+    # Fixed since 2026-10-21; the larger juliet casements remain operable.
+    Window(uid="CAX302AAAA", tag="WIN-A-S2", host="W-A-S2", type_ref="WT-1424-FIX",
            position=from_node("N-A-S1", ft(2, 1)), sill_height=ft(2, 8)),   # ctr x 11'-4"
-    Window(uid="CAX303AAAA", tag="WIN-A-S3", host="W-A-S3", type_ref="WT-1424",
+    Window(uid="CAX303AAAA", tag="WIN-A-S3", host="W-A-S3", type_ref="WT-1424-FIX",
            position=from_node("N-A-S2", ft(6, 1)), sill_height=ft(2, 8)),   # ctr x 24'-8"
     # The blank middle of the same gable: a pair of 27x64 casements straddling the ridge,
     # reading like a juliet balcony without being one (no door/guard/walking surface — the
@@ -490,7 +491,8 @@ OPENINGS = [
     # jamb 1 1/2" east, so the radon riser's clearance went 9 5/8" -> 11 1/8"
     # (mep_venting.py) and the PV junction box's 5" -> 6 1/2" (electrical.py). Both are
     # hand-coordinated, not graded — a later WIDENING here spends that back.
-    Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2B", type_ref="WT-2736",
+    # Only the west north-gable unit becomes fixed (2026-10-21); N2 remains operable.
+    Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2B", type_ref="WT-2736-FIX",
            position=from_node("N-A-N1", ft(4, 10.5)), sill_height=ft(2)),   # ctr x 12'-0"
     Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-2736",
            position=from_node("N-A-NE", ft(10, 10.5)), sill_height=ft(2)),  # ctr x 24'-0"

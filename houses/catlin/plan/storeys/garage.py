@@ -356,13 +356,13 @@ OPENINGS = [
     # RO must land on a bay centre or `structural.window_framing_module` reports it, breaking
     # a stud and pulling in a header a 14" RO exists to avoid. 3'-0" (position 2'-5" + half
     # of the 14" RO) is that bay centre.
-    Window(uid="CGX301AAAA", tag="WIN-G-N1", host="W-G-W", type_ref="WT-1424",
+    Window(uid="CGX301AAAA", tag="WIN-G-N1", host="W-G-W", type_ref="WT-1424-FIX",
            position=from_node("N-G-NW", ft(2, 5)), sill_height=ft(3, 6)),
     # WIN-G-N1's mirror at the south end: 21'-0" off N-G-NW is the exact mirror of N1's
     # 3'-0" about the wall's 12'-0" midpoint, and also a bay centre (12" + 24"x10 on
     # W-G-W's grid), so the pair stays symmetric and both keep the unbroken stud bay a 14" RO
     # exists to get. Same 3'-6" sill (above a workbench).
-    Window(uid="CGX302AAAA", tag="WIN-G-S1", host="W-G-W", type_ref="WT-1424",
+    Window(uid="CGX302AAAA", tag="WIN-G-S1", host="W-G-W", type_ref="WT-1424-FIX",
            position=from_node("N-G-NW", ft(20, 5)), sill_height=ft(3, 6)),
 ]
 
