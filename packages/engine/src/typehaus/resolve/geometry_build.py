@@ -174,8 +174,11 @@ def _solid_geometry(solid: ResolvedSolid, plan) -> ElementGeometry:
         uid=solid.uid, kind=solid.category,
         trades=solid_trades(solid.category, solid_material_ref(plan, solid)),
         parts=(GPart(key="body", solids=(prism,),
-                     material_key=normalize(solid.category),
-                     layer_group="structure",
+                     material_key=(layer_material_key(solid.material, "insulation")
+                                   if solid.category in {"tub_batt", "tub_insulation_return"}
+                                   else normalize(solid.category)),
+                     layer_group=("insulation" if solid.category in
+                                  {"tub_batt", "tub_insulation_return"} else "structure"),
                      catalog=PartCatalogRef(material_ref=solid_material_ref(plan, solid),
                                             role=solid.category, name=solid.tag)),),
     )

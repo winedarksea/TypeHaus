@@ -30,6 +30,7 @@ DFU_BY_SYMBOL: dict[str, float] = {
     "lavatory": 1.0,
     "vanity": 1.0,          # a lavatory in a cabinet
     "tub": 2.0,
+    "kohler-underscore-6036": 2.0,  # same bath load; product geometry is independent
     "tub-shower": 2.0,
     "shower": 2.0,
     # A neo-angle pan is a shower: the cut corner is a plan outline, not a drainage fact.
@@ -62,6 +63,7 @@ WSFU_BY_SYMBOL: dict[str, tuple[float, float, float]] = {
     "lavatory": (1.0, 0.75, 0.75),
     "vanity": (1.0, 0.75, 0.75),
     "tub": (4.0, 3.0, 3.0),
+    "kohler-underscore-6036": (4.0, 3.0, 3.0),
     "tub-shower": (4.0, 3.0, 3.0),
     "shower": (2.0, 1.5, 1.5),
     "shower-neo-angle": (2.0, 1.5, 1.5),

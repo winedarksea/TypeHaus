@@ -246,6 +246,7 @@ from typehaus.model.trim import (
     Gutter,
     MovementJoint,
 )
+from typehaus.model.tub_enclosure import TubEnclosureSpec
 from typehaus.model.types import (
     ApplianceType,
     BookcaseDoorSpec,
@@ -359,7 +360,7 @@ __all__ = [
     "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material", "Product",
     "DoorType", "BookcaseDoorSpec", "WindowType", "FurnitureType", "FurnitureCut",
-    "BuiltInBenchSpec", "FixtureType",
+    "BuiltInBenchSpec", "FixtureType", "TubEnclosureSpec",
     "ApplianceType", "EquipmentType",
     "BuiltInBookcaseBay", "BuiltInBookcaseSpec",
     "HeatPumpRating",

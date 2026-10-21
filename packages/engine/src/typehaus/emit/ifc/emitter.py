@@ -198,7 +198,10 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
         # structural reviewer has to read past. Emitting them as IfcMechanicalFastener is a
         # real and useful deliverable: body_mesh parts have that dimensioned shape and
         # export as mechanical fasteners; generic marker envelopes still stay out.
-        if solid.derived and solid.body_mesh is None:
+        enclosure_part = solid.category in {"tub_batt", "tub_insulation_return", "tub_mortar_bed"}
+        if enclosure_part and lod != "framed":
+            continue
+        if solid.derived and solid.body_mesh is None and not enclosure_part:
             continue
         element = _emit_solid(f, body, solid, storeys, project_uuid, model)
         element_entities.setdefault(solid.tag, element)

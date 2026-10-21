@@ -183,6 +183,9 @@
     "truss_corner_cap": 13415568,
     "truss_filler": 10712639,
     "truss_tab": 13415568,
+    "tub_batt": 13091517,
+    "tub_insulation_return": 13091517,
+    "tub_mortar_bed": 10722959,
     "vacuum_breaker": 12096583,
     "vent": 14737627,
     "wall_corner": 12567756,
@@ -376,6 +379,9 @@
     "truss_corner_cap": 13415568,
     "truss_filler": 10712639,
     "truss_tab": 13415568,
+    "tub_batt": 13091517,
+    "tub_insulation_return": 13091517,
+    "tub_mortar_bed": 10722959,
     "vacuum_breaker": 12096583,
     "vent": 14737627,
     "wall_corner": 12567756,
@@ -617,6 +623,15 @@
     "trellis": [
       "landscaping"
     ],
+    "tub_batt": [
+      "insulation"
+    ],
+    "tub_insulation_return": [
+      "insulation"
+    ],
+    "tub_mortar_bed": [
+      "plumbing"
+    ],
     "vacuum_breaker": [
       "plumbing"
     ],
@@ -711,6 +726,9 @@
     "sump": "drainage",
     "thermal_break": "concrete",
     "trellis": "landscaping",
+    "tub_batt": "insulation",
+    "tub_insulation_return": "insulation",
+    "tub_mortar_bed": "plumbing",
     "vacuum_breaker": "plumbing",
     "vent": "mechanical",
     "wall_corner": "siding",

@@ -278,6 +278,11 @@ def resolved_mount_elevation(storey: object, item: object,
         return floor
     if mount.elevation is not None:
         return floor + mount.elevation.meters
+    enclosure = getattr(item, "tub_enclosure", None)
+    if enclosure is not None and mount.kind.value == "floor":
+        # A drop-in bath sits on bedding over the subfloor, not on the room's tile.
+        # Keeping this in the shared placement contract also gives IFC the same elevation.
+        return structural + enclosure.mortar_bed_thickness.meters
     if mount.kind.value == "ceiling":
         drop = mount.drop.meters if mount.drop is not None else 0.0
         plane = (structural + storey.default_ceiling_height.meters

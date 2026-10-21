@@ -14,6 +14,19 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Bath 2 tub enclosure geometry (2026-10-20)
+
+The drop-in Kohler now shows fitted mineral-wool batts between the two knee walls' actual
+members, plus proposed 3½"-thick lower returns projecting inward up to 3½". The returns
+clear the shell, central mortar support and a panel-width service corridor. No spray foam.
+The 1" mortar bed begins on the ¾" subfloor; its footprint follows the published basin
+bottom as a visualization approximation. The full 21" shell sits
+on that bed, correcting the old finished-floor-based placement by ¼"; its rim is at
+22¾", level with the intended tile and thinset above the deck cap.
+The dedicated symbol uses Kohler's oval basin dimensions and center drain; the downstream
+plumbing connection and provisional deck cutout stay put. Only the new returns add
+insulation takeoff; wall batts are already billed by the assembly.
+
 ## Living east run: dining side only, 24" deep (2026-10-20)
 
 The owner wanted storage only on the dining side. The south bank, END-N's old station,

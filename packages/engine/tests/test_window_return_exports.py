@@ -71,7 +71,9 @@ def test_returns_export_as_ifc_coverings(catlin_model_ro, catlin_ifc_path):
 
     model = catlin_model_ro
     file = ifcopenshell.open(str(catlin_ifc_path))
-    products = {p.Name: p for p in file.by_type('IfcCovering') if '-return-' in p.Name}
+    products = {p.Name: p for p in file.by_type('IfcCovering')
+                if ifcopenshell.util.element.get_psets(p).get(PSET_SOURCE, {}).get(
+                    'category') == 'window_return'}
     solids = [s for s in model.solids if s.category == 'window_return']
     assert len(products) == len(solids) == 324
     for solid in solids:

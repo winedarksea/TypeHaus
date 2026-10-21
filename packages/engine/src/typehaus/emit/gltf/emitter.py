@@ -252,7 +252,8 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             # Not every solid is a pour: a standalone beam or post is framing, a routed pipe
             # run is plumbing, a cast column is concrete (→ emit/trade_rules.py).
             scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid,
-                             category=solid.category)
+                             category=solid.category, host_ref=solid.host_ref,
+                             material_ref=solid.material)
 
     # WallPaneling bands. A band is an applied surface on the room side of a wall. Its
     # colour resolves through the catalog material, the same path the viewer's

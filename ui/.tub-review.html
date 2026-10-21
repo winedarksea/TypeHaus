@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Bath 2 enclosure review</title><style>body{margin:0;background:#f2f1ed;font-family:system-ui}#label{position:absolute;top:24px;left:30px;font-size:23px;color:#252927}#sub{position:absolute;top:60px;left:30px;font-size:14px;color:#5a625b}canvas{display:block}</style></head><body><div id="label"></div><div id="sub">FX-M-BATH2-TUB · mineral wool · separate central mortar bed</div><script type="module">
+import * as THREE from '/node_modules/three/build/three.module.js';
+import {buildSolid} from '/src/three/builders/structure.ts';
+import {buildCanvasObjectParts} from '/src/three/builders/site.ts';
+import {buildWall} from '/src/three/builders/walls.ts';
+import {buildMembers} from '/src/three/members.ts';
+import {RESOLVED_NORDIC_PALETTE} from '/src/nordic/palette.ts';
+import {ALL_TRADES} from '/src/state/vocabulary.ts';
+const model=await (await fetch('/.tub-review.json')).json();
+const scene=new THREE.Scene();scene.background=new THREE.Color('#f2f1ed');
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(1200,900);renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;document.body.appendChild(renderer.domElement);
+const camera=new THREE.PerspectiveCamera(34,1200/900,0.01,100);scene.add(new THREE.HemisphereLight(0xffffff,0x69675c,2));const sun=new THREE.DirectionalLight(0xffffff,3.5);sun.position.set(-3,5,2);scene.add(sun);
+const tub=model.canvas_objects.find(c=>c.tag==='FX-M-BATH2-TUB');
+const center=tub.position_m;const palette=RESOLVED_NORDIC_PALETTE.light;const picks=[],byUid=new Map();
+const body=new THREE.Group(),framing=new THREE.Group(),insulation=new THREE.Group(),deck=new THREE.Group(),shell=new THREE.Group();for(const g of [body,framing,insulation,deck,shell])scene.add(g);
+const groups=Object.fromEntries(ALL_TRADES.map(t=>[t,body]));
+for(const wall of model.walls.filter(w=>w.tag.startsWith('W-M-TUBDK'))){buildWall(groups,{...wall,layers:wall.layers.filter(l=>l.function!=='structure'),members:[]},[],center,'nordic',palette,picks,byUid,model.catalog.materials);buildMembers(framing,wall.members,center,'nordic',palette,wall.uid,model.catalog.materials);}
+for(const solid of model.solids.filter(s=>s.category.startsWith('tub_')))buildSolid(insulation,solid,center,'nordic',palette,model.catalog,picks,byUid);
+const cap=model.solids.find(s=>s.tag==='SL-M-TUBDK');if(cap)buildSolid(deck,cap,center,'nordic',palette,model.catalog,picks,byUid);
+const type=model.catalog.canvas_object_types.find(t=>t.tag===tub.type);
+buildCanvasObjectParts(shell,tub,type.model_parts,center,'nordic',tub.z_m,picks,byUid,model.catalog.materials);
+window.pose=(kind)=>{body.visible=kind==='finished';deck.visible=kind==='finished';framing.visible=kind!=='finished';insulation.visible=true;shell.visible=true;let target=new THREE.Vector3(0,.26,0);if(kind==='underside'){camera.position.set(-2.5,-1.65,3.0);target.set(0,.17,0);}else camera.position.set(-2.05,2.3,2.75);camera.lookAt(target);document.querySelector('#label').textContent=kind==='finished'?'Drop-in tub and deck':kind==='underside'?'Underside · lower returns and mortar support':'Exposed framing · fitted mineral-wool batts';renderer.render(scene,camera);return {parts:insulation.children.length,picks:picks.length};};window.pose('framing');window.ready=true;
+</script></body></html>

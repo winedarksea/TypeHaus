@@ -5,7 +5,7 @@
 # at the repo root (it uses `frozenset(...)`, which the editable dialect forbids).
 
 from typehaus import Appliance, Fixture, Mount, MountKind, deg, ft, inch, pt
-from typehaus.model import Location, WallAttachment, m
+from typehaus.model import Location, TubEnclosureSpec, WallAttachment, m
 
 # --- basement ----------------------------------------------------------------------------
 # Both RM-B-SAUNA fixtures drain under the slab to PR-B-MAIN-DRAIN, not a wall stack
@@ -286,7 +286,10 @@ MAIN_FIXTURES = (
     # K-7272's tee, not the 2" the allowance was drawn at.
     Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-KOHLER-UNDERSCORE-6036",
             room="RM-M-BATH2", position=pt(ft(6, 2.56), ft(19, 4.77)), rotation=deg(90),
-            wall_ref="W-M-BA2E", drain_position=pt(ft(7, 4), ft(19, 4.8))),
+            wall_ref="W-M-BA2E", drain_position=pt(ft(7, 4), ft(19, 4.8)),
+            tub_enclosure=TubEnclosureSpec(
+                knee_wall_refs=("W-M-TUBDK-W", "W-M-TUBDK-S"),
+                access_panel_ref="FURN-M-BATH2-TUBDK-AP", deck_ref="SL-M-TUBDK")),
     # ** A 54" ONE-BASIN VANITY, NOT A KITCHEN SINK ON A WALL MOUNT. ** FX-VANITY-54-SINGLE
     # (plan/fixture_types.py) carries the cabinet, the single basin and the 36"
     # comfort-height counter — unlike the library's DOUBLE-BOWL ``FX-KITCHEN-SINK-33`` this

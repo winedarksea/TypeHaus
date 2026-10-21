@@ -307,6 +307,14 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 areas[(scope, lining_layer.function.value, lining_layer.material_ref,
                        lining_layer.thickness.meters)] += net_m2
 
+    # Enclosure wall batts are already billed above; only the new horizontal returns
+    # add purchased insulation. Net area is the same polygon the viewer and IFC draw.
+    for solid in model.solids:
+        if solid.category == "tub_insulation_return":
+            net_m2 = Polygon(solid.outline, solid.voids).area
+            areas[("tub enclosure", "insulation", solid.material,
+                   solid.z1_m-solid.z0_m)] += net_m2
+
     rows: list[dict[str, object]] = [
         {"scope": scope, "function": function, "material": material,
          "thickness_in": round(thickness / 0.0254, 3),

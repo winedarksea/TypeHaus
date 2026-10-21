@@ -178,6 +178,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_placeables(plan, model))
         # After floors, roofs, soffits and ceilings: a hung fixture's cable runs to them.
         resolve_suspensions(model)
+    with _stage("tub_enclosures"):
+        from typehaus.resolve.tub_enclosures import resolve_tub_enclosures
+
+        findings.extend(resolve_tub_enclosures(model))
     with _stage("millwork"):
         # After placeables and rooms: a shelf bank hosted on a carcass reads that
         # placeable's resolved type, and a stool's room scope reads the resolved rooms.

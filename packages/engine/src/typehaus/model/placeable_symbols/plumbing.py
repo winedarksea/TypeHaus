@@ -27,6 +27,7 @@ from typehaus.model.placeable_symbols._frame import (
     prism,
     rect,
 )
+from typehaus.model.placeable_symbols._kohler_underscore import kohler_underscore
 from typehaus.model.placeable_symbols._undermount_sink import single_bowl_undermount
 
 __all__ = ["NEO_ANGLE_CUT_FRACTION", "PLUMBING_SYMBOLS", "neo_angle_points"]
@@ -526,6 +527,7 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "toilet-wall-hung": toilet_wall_hung(),
     "lavatory": lavatory(pedestal=True),
     "vanity": vanity(),
+    "kohler-underscore-6036": kohler_underscore,
     "tub": tub(),
     "tub-shower": tub_shower(),
     "shower": shower(),

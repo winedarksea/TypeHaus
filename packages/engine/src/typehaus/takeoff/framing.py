@@ -300,7 +300,7 @@ def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             continue
         # Fireblocks and window returns bill by installed area in their own takeoffs.
         # A second volume row could otherwise accept an unrelated bare-category rate.
-        if solid.category in {"fireblock", "window_return"}:
+        if solid.category in {"fireblock", "window_return", "tub_insulation_return"}:
             continue
         # A derived connector marker is a MARKER: the part it stands for is billed by
         # part number in ``takeoff/hardware.py``, off the joint, never off this box. Without

@@ -133,6 +133,12 @@ ROWS: tuple[C, ...] = (
     # so not hard; sheet_goods / fireblocking bill it off model.fireblocks.
     C("fireblock", trade="framing", ifc_class="IfcPlate", ifc_predefined="USERDEFINED",
       ifc_object_type="FIREBLOCK", material_refile="layer", billed_elsewhere=True),
+    C("tub_batt", trade="insulation", ifc_class=_COVER, ifc_predefined="INSULATION",
+      finish_group="element", billed_elsewhere=True),
+    C("tub_insulation_return", trade="insulation", ifc_class=_COVER,
+      ifc_predefined="INSULATION", finish_group="element", billed_elsewhere=True),
+    C("tub_mortar_bed", trade="plumbing", ifc_class="IfcBuildingElementPart",
+      finish_group="element", billed_elsewhere=True),
     # Pours, and what is cast into them.
     C("slab", trade="concrete", ifc_class="IfcSlab", elevation_family="body",
       finish_group="element", material_refile="laid", is_pour=True, slab_family="slab",

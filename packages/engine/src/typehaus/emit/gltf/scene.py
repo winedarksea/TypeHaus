@@ -88,7 +88,8 @@ class _SceneBuilder:
     def add_object(self, mb: _MeshBuilder, trades: tuple[str, ...] | str,
                    kind: str | None = None, uid: str | None = None,
                    facet: str | None = None, category: str | None = None,
-                   material_surfaces: dict | None = None) -> None:
+                   material_surfaces: dict | None = None,
+                   host_ref: str | None = None, material_ref: str | None = None) -> None:
         """Emit one node for ``mb``'s geometry, tagged so the UI can classify and select it.
 
         ``kind`` is one of ``_SELECTION_KINDS`` — the same vocabulary the live viewer's pick
@@ -132,6 +133,10 @@ class _SceneBuilder:
         mesh_index = len(self._meshes)
         self._meshes.append({"primitives": primitives})
         extras: dict[str, object] = {"trade": trade, "trades": list(trade_set)}
+        if host_ref is not None:
+            extras["host_ref"] = host_ref
+        if material_ref is not None:
+            extras["material_ref"] = material_ref
         if kind is not None:
             extras["kind"] = kind
         if uid is not None:

@@ -37,9 +37,9 @@ from typehaus.model import FixtureType, Service, inch
 # SL-M-TUBDK / W-M-TUBDK-W / -S in plan/storeys/main.py.
 #
 # 59 11/16" is the spec drawing's dimension; the marketing name rounds it to 59 3/4".
-# ``height`` is the bath's own 21", so a `Mount.elevation` of 0 puts its bottom on the
-# subfloor where the mortar bed actually holds it — the rim then lands at 21", and the
-# deck's finished top is set 1" higher (the bed) in the SL-M-TUBDK elevation arithmetic.
+# ``height`` is the bath's full 21". Its placed ``tub_enclosure`` seats it on a 1" mortar
+# bed above the ¾" subfloor, independently of the room's tile. The rim is at 22¾",
+# matching the deck cap's 22¼" plus ½" tile/thinset; the rim carries no load.
 #
 # ``Service.POWER_120`` is the Bask heated surface and is NOT decoration: it is what makes
 # the fixture schedule and `mep` see an electrical requirement on a *bathtub*. The service
@@ -51,7 +51,7 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
     name="Underscore drop-in bath with Bask heated surface",
     footprint=(inch(59.6875), inch(35.75)),
     height=inch(21),
-    plan_symbol="tub",
+    plan_symbol="kohler-underscore-6036",
     basin=False,
     product_ref="PROD-KOHLER-5713-W1-0",
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT,

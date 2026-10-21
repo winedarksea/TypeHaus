@@ -16,6 +16,12 @@ MATERIALS: tuple[Material, ...] = (
         color="#a9a9a9",
         source=f"{_UAF}: 'Concrete, 1:2:4 mix' 3.2 perm-in (1.25 perm at 4\")",
     ),
+    Material(
+        tag="mortar", name="Cementitious mortar bedding",
+        hatch="concrete", color="#a39d90",
+        source="Kohler 1196030-2-E: 1-2 in. cement or mortar bed under the bath; "
+               "colour is representative, not a specified mortar mix",
+    ),
     # --- masonry and concrete commodities ------------------------------------------------
     Material(
         tag="cmu",

@@ -412,10 +412,14 @@ def _emit_solid_cut(b, model, solid, plane: CutPlane, crop) -> None:
     element = model.geometry.by_uid(solid.uid)
     if element is None:
         return
-    layer = ("A-WALL-FINI" if solid.category == "window_return" else
+    tub_insulation = solid.category in {"tub_batt", "tub_insulation_return"}
+    layer = ("A-WALL-INSU" if tub_insulation else
+             "A-WALL-FINI" if solid.category == "window_return" else
              "A-SLAB" if in_slab_family(solid.category) else "S-FNDN")
     for part in element.parts:
         material = part.catalog.material_ref if part.catalog is not None else None
+        pattern = (library_hatch(model.plan.library, material, "insulation")
+                   if tub_insulation else material)
         for profile in slice_part(part, plane):
             band = profile_band(profile)
             if band is None:
@@ -425,14 +429,14 @@ def _emit_solid_cut(b, model, solid, plane: CutPlane, crop) -> None:
                     b.add(Polyline(points=points, layer=layer, closed=True, lineweight=REFERENCE,
                                    uid=solid.uid, tag=solid.tag))
                     if material:
-                        b.add(Hatch(boundary=points, pattern=material,
+                        b.add(Hatch(boundary=points, pattern=pattern,
                                     layer="A-WALL-PATT", material=material))
                 continue
             u0, u1, z0, top_left, top_right = band
             rect = clip_rect(u0, u1, z0, max(top_left, top_right), crop)
             if rect is None:
                 continue
-            b.extend(rect_nodes(*rect, layer, material, solid.uid, solid.tag,
+            b.extend(rect_nodes(*rect, layer, pattern, solid.uid, solid.tag,
                                 material=material))
 
 

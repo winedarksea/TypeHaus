@@ -79,6 +79,7 @@ _ORDER = (
     "cedar-tg",
     "cmu",
     "grout",
+    "mortar",
     "stucco",
     "retaining-block",
     "composite-deck",

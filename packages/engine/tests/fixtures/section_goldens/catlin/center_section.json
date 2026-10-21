@@ -12149,6 +12149,62 @@
       "node": "polyline",
       "points": [
         [
+          56.50000000000001,
+          0.7499999999999999
+        ],
+        [
+          60.0,
+          0.7499999999999999
+        ],
+        [
+          60.0,
+          4.25
+        ],
+        [
+          56.50000000000001,
+          4.25
+        ]
+      ],
+      "layer": "A-WALL-INSU",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMQ806AAAA-lower-return-1",
+      "tag": "FX-M-BATH2-TUB:lower-return-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          56.50000000000001,
+          0.7499999999999999
+        ],
+        [
+          60.0,
+          0.7499999999999999
+        ],
+        [
+          60.0,
+          4.25
+        ],
+        [
+          56.50000000000001,
+          4.25
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "mineral-wool"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           425.365,
           81.36500000000002
         ],

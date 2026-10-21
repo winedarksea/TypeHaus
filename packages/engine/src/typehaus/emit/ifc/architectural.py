@@ -637,9 +637,18 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
             type_cache[type_key] = type_object
         element = ll.create_entity(f, ifc_class, name=item.tag)
         element.GlobalId = derive_guid(project_uuid, item.uid)
-        ll.assign_representation(f, element, ll.add_prism_from_profile(
-            f, body, item.footprint, product_type.height.meters, item.z_m,
-        ))
+        if getattr(product_type, "plan_symbol", None) == "kohler-underscore-6036":
+            from typehaus.emit.ifc.placeable_parts import parts_representation
+            from typehaus.model.placeable_symbols import model_parts
+
+            parts = model_parts(product_type.plan_symbol, product_type.footprint[0].meters,
+                                product_type.footprint[1].meters, product_type.height.meters)
+            representation = parts_representation(
+                f, body, parts, item.position, item.rotation_degrees, item.z_m)
+        else:
+            representation = ll.add_prism_from_profile(
+                f, body, item.footprint, product_type.height.meters, item.z_m)
+        ll.assign_representation(f, element, representation)
         ll.ensure_pset(f, element, PSET_SOURCE,
                        {"uid": item.uid, "tag": item.tag,
                         "type": product_type.tag,

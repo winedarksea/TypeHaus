@@ -26,6 +26,7 @@ from typehaus.model.refs import (
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.stair_winders import WinderFramingSpec, WinderTurnSpec
 from typehaus.model.trim import EaveTrim
+from typehaus.model.tub_enclosure import TubEnclosureSpec
 from typehaus.quantities import Length, Pitch, Point2D
 
 
@@ -376,6 +377,7 @@ class Fixture(Element):
     position: Point2D | None = None  # None when location.attachment hosts it
     wall_ref: str | None = None  # drain-stack wall when services need a vertical chase
     drain_position: Point2D | None = None  # contractor override; default = position
+    tub_enclosure: TubEnclosureSpec | None = None
     rotation: object | None = None  # Angle | None
     location: Location | None = None
     mount: Mount = Mount()

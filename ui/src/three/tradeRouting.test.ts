@@ -2,7 +2,7 @@
 // iff any of them is visible. Built with the real wall builder, so a change to how bands are
 // tagged fails here rather than in the browser.
 import * as THREE from "three";
-import type { Wall } from "../model/types";
+import type { Solid, Wall } from "../model/types";
 import {
   allVisibleTrades, baseTrade, defaultVisibleTrades, DEFAULT_OFF_KEYS, onlyTrades,
   primaryTrade, solidTrades, solidVisibilityKeys,
@@ -12,6 +12,7 @@ import { ALL_TRADES, type Trade } from "../state/vocabulary";
 import { applyTradeVisibility, applyVisibility, tagTrades } from "./builders/registry";
 import { snapshot, tagNew, tagStorey } from "./builders/scene";
 import { buildWall } from "./builders/walls";
+import { buildSolid } from "./builders/structure";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -45,6 +46,31 @@ function wall(): Wall {
 }
 
 export function runTradeRoutingTests() {
+  // Resolved tub batts use the ordinary solid path: insulation can be isolated and each
+  // fitted piece remains a pick target even with all framing and plywood hidden.
+  const enclosure = new THREE.Group();
+  const battPicks: THREE.Mesh[] = [];
+  const battMaterials = new Map<string, THREE.Material[]>();
+  for (const category of ["tub_batt", "tub_insulation_return"]) {
+    const solid = {
+      uid: category, tag: category, storey: "main", category,
+      outline: [[0, 0], [0.3, 0], [0.3, 0.0889], [0, 0.0889]],
+      z0_m: 0.01905, z1_m: 0.4, voids: [], assembly: null,
+      material: "mineral-wool", host_ref: "FX-M-BATH2-TUB", trades: ["insulation"],
+    } as unknown as Solid;
+    const before = enclosure.children.length;
+    buildSolid(enclosure, solid, [0, 0], "schematic", RESOLVED_NORDIC_PALETTE.light,
+      undefined, battPicks, battMaterials);
+    tagTrades(enclosure, before, solidVisibilityKeys(solid));
+    assert(battMaterials.has(category), "Each tub insulation part has its own selection identity");
+    assert(solidTrades({ ...solid, trades: undefined } as unknown as Solid)[0] === "insulation",
+      "The generated vocabulary also routes tub insulation without an explicit trade");
+  }
+  assert(battPicks.length === 2, "Both fitted insulation parts are independently pickable");
+  applyTradeVisibility(enclosure, onlyTrades(["insulation"]));
+  assert(battPicks.every((mesh) => mesh.visible), "Insulation isolation exposes the batts");
+  applyTradeVisibility(enclosure, onlyTrades(["framing"]));
+  assert(battPicks.every((mesh) => !mesh.visible), "Framing visibility does not control the batts");
   const tradeGroups = groups();
   const root = new THREE.Group();
   for (const trade of ALL_TRADES) root.add(tradeGroups[trade]);
