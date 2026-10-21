@@ -613,11 +613,12 @@ SECOND_PLACEABLES = [
               room="RM-S-SUITE", position=pt(m(0.43944), m(6.51828))),
     Furniture(uid="CSSNST0002", tag="FURN-S-SUITE-NIGHTSTAND-E", type_ref="FURN-NIGHTSTAND-16",
               room="RM-S-SUITE", position=pt(m(2.59763), m(6.51828))),
-    # The south wall is 106 1/2" clear: a 42" desk plus the 63" dresser leaves
-    # about 1/2" at each end and between them. Desk west, dresser east (owner,
-    # 2026-10-03), backs south; the chair clears the bed's 18" foot-access band.
+    # The south wall is 106 1/2" clear: a 42" desk plus the 63" dresser. Desk west, dresser
+    # east (owner, 2026-10-03), backs south; the chair clears the bed's 18" foot-access band.
+    # 2026-10-21: desk 1/2" east so WIN-S-SUITE1's stool (now ~29" AFF, under the desk top)
+    # clears it by 1/8"; 1/8" left to the dresser.
     Furniture(uid="CSSDSK0001", tag="FURN-S-SUITE-DESK", type_ref="FURN-DESK-42",
-              room="RM-S-SUITE", position=pt(m(0.711424), m(3.10858)),
+              room="RM-S-SUITE", position=pt(m(0.724124), m(3.10858)),
               rotation=deg(180)),
     Furniture(uid="CSSCHR0001", tag="FURN-S-SUITE-DESK-CHAIR", type_ref="FURN-DESK-CHAIR",
               room="RM-S-SUITE", position=pt(m(0.716363), m(3.36318)),

@@ -788,7 +788,7 @@ def test_south_living_windows_stack_under_study_without_cutting_bracing(
             round(expected_x / inch(16).meters), abs=1e-6)
 
     restored = openings["WIN-M-LIV-S2"]
-    assert restored.type_ref == "WT-3048-T"
+    assert restored.type_ref == "WT-3048-TT-T"
     assert next(window_type for window_type in catlin_plan.library.window_types
                 if window_type.tag == restored.type_ref).tempered
     panel = catlin_plan.by_tag("BWP-M-S2-0119")
@@ -951,15 +951,20 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model,
         # centred at 54" too, which is the whole reason the sill dropped 6". Asserting one
         # shared head over both families is what this test did until that change, and it is
         # the assertion that caught it.
+        # 2026-10-21: the second storey's three 27" units went 27x54 on a 2'-3 1/2" sill for
+        # R310 (notes/window_procurement.md §7). The sill's course is then exact, and the
+        # centre sits 1/2" over the 4'-6" line, the nearest a 24" girt module allows.
         for opening in (main, second):
             head = opening.sill_m + opening.height_m
             midline = opening.sill_m + opening.height_m / 2.0
-            assert midline == pytest.approx(ft(4, 6).meters, abs=1e-6), \
-                f"{opening.tag}: every unit on this face holds the 4'-6\" centre line"
             if opening.width_m == pytest.approx(inch(14).meters, abs=1e-6):
-                assert head == pytest.approx(ft(5, 6).meters, abs=1e-6), opening.tag
+                expected_mid, expected_head = ft(4, 6), ft(5, 6)
+            elif opening is second:
+                expected_mid, expected_head = ft(4, 6.5), ft(6, 9.5)
             else:
-                assert head == pytest.approx(ft(6).meters, abs=1e-6), opening.tag
+                expected_mid, expected_head = ft(4, 6), ft(6)
+            assert midline == pytest.approx(expected_mid.meters, abs=1e-6), opening.tag
+            assert head == pytest.approx(expected_head.meters, abs=1e-6), opening.tag
 
     vanity_y, vanity = _opening_plan_y(catlin_model, "WIN-S-VANITY-W")
     bath_y, bath = _opening_plan_y(catlin_model, "WIN-M-BATH1-W")

@@ -32,7 +32,7 @@ const solidStyle = WOOD_PLANK_STYLES["solid-board"];
 const style = legacy ? { ...solidStyle, key: "legacy-solid", faceWidthM: 0.4064,
   tileAlongM: 2.4384, pxPerM: 600 } : solidStyle;
 let houseChecks: unknown;
-const room = params.has("room") ? await (await import("./woodHouseReview")).houseWoodRoom() : null;
+const room = params.has("room") ? await (await import("./woodHouseReview")).houseWoodRoom(renderer) : null;
 if (room) {
   houseChecks = room.checks;
   const bounds = new THREE.Box3().setFromObject(room.group);

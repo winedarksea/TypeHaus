@@ -65,6 +65,13 @@ WINDOW_TYPES_16_INCH_MODULE = (
     _window("WT-2754-T", inch(27), ft(4, 6), "casement", tempered=True),
     _window("WT-3036-T", inch(30), ft(3), "casement", tempered=True),
     _window("WT-3048-T", inch(30), ft(4), "casement", tempered=True),
+    # Tilt-turn twins of the casements, same presets: no label claimed until one is in hand.
+    _window("WT-2736-TT", inch(27), ft(3), "tilt_turn"),
+    _window("WT-2748-TT", inch(27), ft(4), "tilt_turn"),
+    _window("WT-2748-TT-T", inch(27), ft(4), "tilt_turn", tempered=True),
+    _window("WT-3048-TT", inch(30), ft(4), "tilt_turn"),
+    _window("WT-3048-TT-T", inch(30), ft(4), "tilt_turn", tempered=True),
     _window("WT-2736-HP", inch(27), ft(3), "fixed", u_factor=u_us(0.14), frame_depth=inch(4)),
+    _window("WT-2754-HP", inch(27), ft(4, 6), "fixed", u_factor=u_us(0.14), frame_depth=inch(4)),
     _window("WT-3048-HP", inch(30), ft(4), "fixed", u_factor=u_us(0.14), frame_depth=inch(4)),
 )

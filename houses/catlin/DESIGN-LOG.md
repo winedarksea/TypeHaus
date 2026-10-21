@@ -5522,3 +5522,44 @@ western shelf bay remains a sideways reach. Move the vertical light onto the act
 wall ahead of the shelves, and group manual pantry/undercabinet controls on the east
 return at 46 inches. Set the cassette at finished-floor level, RO head 83 1/4 inches
 above it; the engine's existing leaf-height framing-head limitation remains documented.
+
+
+## 2026-10-21 — Imported tilt-turn windows
+
+The owner is pricing imported European windows (Oknoplast, Aluplast via Debesto,
+Aluprof/Aliplast, Chinese suppliers). The 20 operable casements became tilt-turn twins
+(`WT-*-TT`), with the catalog's U-0.25 / SHGC 0.35 / VT 0.5 / 3.25" presets unchanged until a
+label is in hand. The two 14" kitchen awnings stay outward: a Euro sightline of ~4 5/16" a side
+leaves too little glass at 14". The `-TT` price rows mirror the casement bands as placeholders
+pending an import quote with freight and duty.
+
+`notes/window_procurement.md` holds the rest. The code gates (NFRC CPD listing, a NAFS label at
+DP ≥ 20 psf, 16 CFR 1201 marks) are the import risk, more than the U-value. The preferred
+material is aluminium-clad uPVC; the fallback is aluminium south, uPVC elsewhere. Outie flange
+stays the baseline over a Euro strap mount, which would need a visible sill extension.
+
+The finding that matters: `code.R310_egress` credits nominal size. At PAVA's published
+sightline a 27" tilt-turn nets 18 3/8" clear, so BED1, BED2, BED3, the suite and the attic
+studio have no compliant escape opening on a hand check, while the engine reports PASS. Only
+RM-M-BED passes, through its 30x48 south pair. The mitigations (the product's own net clear,
+30" units by R602.7.5's framing-anchor alternative, US egress casements at five windows) are an
+open owner decision, and so are two engine follow-ups: the tilt-turn elevation glyph hinges at
+the head, and R310 has no net-clear field.
+
+Same day, the egress fix. No tilt-turn on the schedule passes a hand check: with RO − 1/2"
+units at PAVA's sightline, even the 30x48 nets 5.64 sf, and Oknoplast publishes no clear
+opening. The 9 escape windows went back to US outward casements; Andersen's published
+formulas net 6.13 sf at 27x48 and 7.09 at 30x48. Both windows of each pair went, so the pairs
+read alike. The suite failed even as a casement (27x36 nets 4.40 sf). Its pair and
+`WIN-S-PLANT3` grew to 27x54 on a 2'-3 1/2" sill, holding the bearing wall's 27" width:
+
+- 6.99 sf.
+- The sill course lands exactly on the girt module; a 2'-6" sill cost three exact hits and
+  failed `test_truss_girt_courses`.
+- The centre is 1/2" over the 4'-6" line.
+- `WIN-S-PLANT3` takes a new `WT-2754-HP` to keep U-0.14.
+- The suite desk moved 1/2" east to clear the lower stool.
+
+The engine measures R312.2 sills from the storey datum, not the finished floor, which is a
+third follow-up.
+

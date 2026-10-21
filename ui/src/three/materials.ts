@@ -314,16 +314,21 @@ export function disposeStandingSeamTextures(): void {
 // 0.48 mm at 20 m, 3.2 mm at 52 m. A film thin enough to be honest is thin enough to fight, and
 // chasing the fight by thickening the layer is a losing race: 0.01", 1/16" and 1/8" all shimmered.
 // `polygonOffset` ends it deterministically at ANY camera distance, which is what it is for, and
-// it frees the layer's thickness to be a thickness rather than a depth-buffer workaround. The
-// same offset also serves flat wall coatings such as latex paint, whose thin resolved layer can
-// otherwise z-fight with its gypsum substrate.
+// it frees the layer's thickness to be a thickness rather than a depth-buffer workaround.
 //
 // NEGATIVE (toward the camera) and small: the wash must win against the substrate directly behind
 // it and nothing else. Back faces are culled, so the wash box's rear face — which IS coincident
-// with the pour — never draws and never competes. Applied to the flat wash, every
-// `MasonryStyle` declaring `coating: true`, and flat wall layers whose material is a coating.
+// with the pour — never draws and never competes. Applied to the flat wash and every
+// `MasonryStyle` declaring `coating: true`.
 export const SURFACE_COATING_POLYGON_OFFSET = {
   polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4,
+};
+
+// Wall paint already has a physical film thickness. A slope-dependent bias can pull it
+// ahead of projecting trim or timber at oblique angles; one fixed depth step is enough
+// to keep the substrate from flickering through without hiding those nearby faces.
+export const WALL_COATING_POLYGON_OFFSET = {
+  polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: -1,
 };
 
 /** Nominal running-bond module including joints: modular brick is 8" × 2⅔" with ⅜" joints. */

@@ -5382,9 +5382,9 @@
 # else changed. 81 UI, still past the 0-71 band, so it keeps the over-band premium but sheds
 # ~9% of glass and frame against the 64" unit. Width-identical, so the pier, the centres and
 # the from_node offsets in storeys/attic.py are all untouched by the retype.
-"WT-2754" = { material = { low = 720, high = 1360 }, labour = { low = 170, high = 365 } }  # 2 ea — 81 UI
+"WT-2754" = { material = { low = 720, high = 1360 }, labour = { low = 170, high = 365 } }  # 4 ea — the juliets and WIN-S-SUITE1/2 (R310 egress casements, 2026-10-21); 81 UI
 # The mid units — ordinary 17-26% corrections.
-"WT-2736" = { material = { low = 550, high = 1050 }, labour = { low = 155, high = 320 } }  # 6 ea — the production unit, 63 UI
+"WT-2736" = { material = { low = 550, high = 1050 }, labour = { low = 155, high = 320 } }  # 0 ea — catalog-only since 2026-10-21 (tilt-turn retype) — the production unit, 63 UI
 # Fixed variants (2026-10-21): design allowances using this table's existing 75-80%
 # fixed-sash material basis, rounded to $10, plus the same flat tempered adder. Installation
 # follows the operable twin less $10/$20, matching WT-1424-FIX; no dealer quote is implied.
@@ -5401,11 +5401,18 @@
 # That sheds ~7% of glass and frame and nothing else; 27" is still a one-man set, so labour
 # barely moves. The result brackets correctly against `WT-3048` (30x48, 78 UI, $700-1,320):
 # three inches narrower, four percent under. Tempered is this table's flat $150/$250 adder.
-"WT-2748" = { material = { low = 670, high = 1265 }, labour = { low = 168, high = 358 } }  # 4 ea — 75 UI
-"WT-2748-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 2 ea
+"WT-2748" = { material = { low = 670, high = 1265 }, labour = { low = 168, high = 358 } }  # 2 ea — WIN-S-BED2, WIN-S-HALL-N (R310 egress casements, 2026-10-21); 75 UI
+"WT-2748-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 1 ea — WIN-S-BED1 (R310 egress casement)
 "WT-2748-FIX-T" = { material = { low = 660, high = 1240 }, labour = { low = 163, high = 345 } }  # 1 ea — WIN-S-STAIR-N
-"WT-3048" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 7 ea — 78 UI, over the band; two-man set
-"WT-3048-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 2 ea — WIN-M-LIV-S2 and WIN-S-STUDY1
+"WT-3048" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 2 ea — WIN-M-BED-S1/S2 (R310 egress casements, 2026-10-21); 78 UI, over the band; two-man set
+"WT-3048-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 0 ea — catalog-only since 2026-10-21 (tilt-turn retype) — WIN-M-LIV-S2 and WIN-S-STUDY1
+# Tilt-turn twins (2026-10-21, notes/window_procurement.md): each mirrors its casement's
+# band. PLACEHOLDER pending an import quote incl. freight and duty.
+"WT-2736-TT" = { material = { low = 550, high = 1050 }, labour = { low = 155, high = 320 } }  # 4 ea
+"WT-2748-TT" = { material = { low = 670, high = 1265 }, labour = { low = 168, high = 358 } }  # 2 ea
+"WT-2748-TT-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 1 ea
+"WT-3048-TT" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 1 ea
+"WT-3048-TT-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 3 ea
 # WIN-M-DINING-E (2026-10-16): a 63x48 fixed picture unit, 111 UI. Priced as the 27x48
 # casement's material per UI with the fixed-sash discount (75-80% of operable, the WT-1424-FIX
 # reading), and a two-man set like WT-3048.
@@ -5417,7 +5424,10 @@
 # no hardware, no second frame profile. The numbers below are unchanged anyway — they were
 # priced off the glass package, which is the term that dominates.
 # WT-3048-HP-T (the tempered twin) is gone with D-S-DECK-W: no door, no hazardous location.
-"WT-2736-HP" = { material = { low = 750, high = 1500 }, labour = { low = 195, high = 390 } }  # 1 ea
+"WT-2736-HP" = { material = { low = 750, high = 1500 }, labour = { low = 195, high = 390 } }  # 0 ea — catalog-only since 2026-10-21, when WIN-S-PLANT3 grew to WT-2754-HP
+# WIN-S-PLANT3 grew 27x36 -> 27x54 (2026-10-21) to match the suite pair. Derived: WT-2736-HP
+# scaled by the casement table's 27x36 -> 27x54 step (+31%), same glass package; no quote.
+"WT-2754-HP" = { material = { low = 980, high = 1960 }, labour = { low = 215, high = 430 } }  # 1 ea
 "WT-3048-HP" = { material = { low = 950, high = 1900 }, labour = { low = 235, high = 470 } }  # 3 ea — two-man set is mandatory
 
 # --- exterior doors -------------------------------------------------------------------------

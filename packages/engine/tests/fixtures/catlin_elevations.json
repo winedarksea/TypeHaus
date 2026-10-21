@@ -2999,10 +2999,10 @@
 "80f8255640b2"
 ],
 "geometry/0P47Q0SJ09/body": [
-4.012,
-4.0374,
+3.7961,
+3.8215,
 2,
-"66e456f9f7a8"
+"b4c374a35f53"
 ],
 "geometry/0Q6WK11T26/body": [
 -0.3413125,
@@ -4481,10 +4481,10 @@
 "aa213eb4a0bd"
 ],
 "geometry/5YJ6CA2KGS/body": [
-4.012,
-4.0374,
+3.7961,
+3.8215,
 2,
-"66e456f9f7a8"
+"b4c374a35f53"
 ],
 "geometry/60X3KRP792/body": [
 -1.6125125,
@@ -42014,49 +42014,49 @@
 3.048,
 6.11505,
 14,
-"9bd37817d6dd"
+"a3a4ffeaec74"
 ],
 "geometry/CSW112AAAA/layer:gwb-int": [
 3.048,
 5.7912,
 14,
-"ef86403d62f7"
+"82bad1e94350"
 ],
 "geometry/CSW112AAAA/layer:outer-girt": [
 3.048,
 6.11505,
 14,
-"9bd37817d6dd"
+"a3a4ffeaec74"
 ],
 "geometry/CSW112AAAA/layer:paint": [
 3.048,
 5.7912,
 14,
-"ef86403d62f7"
+"82bad1e94350"
 ],
 "geometry/CSW112AAAA/layer:sheathing": [
 3.048,
 6.11505,
 14,
-"9bd37817d6dd"
+"a3a4ffeaec74"
 ],
 "geometry/CSW112AAAA/layer:spray-foam": [
 3.048,
 6.11505,
 14,
-"9bd37817d6dd"
+"a3a4ffeaec74"
 ],
 "geometry/CSW112AAAA/layer:stud": [
 3.048,
 6.11505,
 14,
-"9bd37817d6dd"
+"a3a4ffeaec74"
 ],
 "geometry/CSW112AAAA/layer:vent-gap": [
 3.048,
 6.11505,
 14,
-"9bd37817d6dd"
+"a3a4ffeaec74"
 ],
 "geometry/CSW112AAAA::framing/member:block-2-000-00": [
 3.048,
@@ -42095,24 +42095,6 @@
 "78a5a7c9686f"
 ],
 "geometry/CSW112AAAA::framing/member:block-2-001-01": [
-3.6576,
-3.7465,
-8,
-"78a5a7c9686f"
-],
-"geometry/CSW112AAAA::framing/member:block-2-001-02": [
-3.6576,
-3.7465,
-8,
-"78a5a7c9686f"
-],
-"geometry/CSW112AAAA::framing/member:block-2-001-03": [
-3.6576,
-3.7465,
-8,
-"78a5a7c9686f"
-],
-"geometry/CSW112AAAA::framing/member:block-2-001-04": [
 3.6576,
 3.7465,
 8,
@@ -42203,16 +42185,16 @@
 "8669e34b3b2a"
 ],
 "geometry/CSW112AAAA::framing/member:block-2-head-000-00": [
-4.8768,
-4.9657,
+5.1181,
+5.207,
 8,
-"a99d17a7266a"
+"801651aa1d22"
 ],
 "geometry/CSW112AAAA::framing/member:block-2-jamb-000-0-00": [
-3.8735,
-3.9624,
+3.6576,
+3.7465,
 8,
-"8dde2059c226"
+"78a5a7c9686f"
 ],
 "geometry/CSW112AAAA::framing/member:block-2-jamb-000-0-01": [
 4.2672,
@@ -42226,11 +42208,17 @@
 8,
 "a99d17a7266a"
 ],
-"geometry/CSW112AAAA::framing/member:block-2-jamb-000-1-00": [
-3.8735,
-3.9624,
+"geometry/CSW112AAAA::framing/member:block-2-jamb-000-0-03": [
+5.1181,
+5.207,
 8,
-"8dde2059c226"
+"801651aa1d22"
+],
+"geometry/CSW112AAAA::framing/member:block-2-jamb-000-1-00": [
+3.6576,
+3.7465,
+8,
+"78a5a7c9686f"
 ],
 "geometry/CSW112AAAA::framing/member:block-2-jamb-000-1-01": [
 4.2672,
@@ -42244,11 +42232,17 @@
 8,
 "a99d17a7266a"
 ],
-"geometry/CSW112AAAA::framing/member:block-2-jamb-001-0-00": [
-3.8735,
-3.9624,
+"geometry/CSW112AAAA::framing/member:block-2-jamb-000-1-03": [
+5.1181,
+5.207,
 8,
-"8dde2059c226"
+"801651aa1d22"
+],
+"geometry/CSW112AAAA::framing/member:block-2-jamb-001-0-00": [
+3.6576,
+3.7465,
+8,
+"78a5a7c9686f"
 ],
 "geometry/CSW112AAAA::framing/member:block-2-jamb-001-0-01": [
 4.2672,
@@ -42262,11 +42256,17 @@
 8,
 "a99d17a7266a"
 ],
-"geometry/CSW112AAAA::framing/member:block-2-jamb-001-1-00": [
-3.8735,
-3.9624,
+"geometry/CSW112AAAA::framing/member:block-2-jamb-001-0-03": [
+5.1181,
+5.207,
 8,
-"8dde2059c226"
+"801651aa1d22"
+],
+"geometry/CSW112AAAA::framing/member:block-2-jamb-001-1-00": [
+3.6576,
+3.7465,
+8,
+"78a5a7c9686f"
 ],
 "geometry/CSW112AAAA::framing/member:block-2-jamb-001-1-01": [
 4.2672,
@@ -42280,119 +42280,125 @@
 8,
 "a99d17a7266a"
 ],
-"geometry/CSW112AAAA::framing/member:block-2-sill-000-00": [
-3.8735,
-3.9624,
+"geometry/CSW112AAAA::framing/member:block-2-jamb-001-1-03": [
+5.1181,
+5.207,
 8,
-"8dde2059c226"
+"801651aa1d22"
+],
+"geometry/CSW112AAAA::framing/member:block-2-sill-000-00": [
+3.6576,
+3.7465,
+8,
+"78a5a7c9686f"
 ],
 "geometry/CSW112AAAA::framing/member:buck-head-000": [
-4.867275,
-4.8768,
+5.108575,
+5.1181,
 8,
-"5b9f2ee39daf"
+"f00105d01b7e"
 ],
 "geometry/CSW112AAAA::framing/member:buck-head-001": [
-4.867275,
-4.8768,
+5.108575,
+5.1181,
 8,
-"5b9f2ee39daf"
+"f00105d01b7e"
 ],
 "geometry/CSW112AAAA::framing/member:buck-jamb-000-0": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 8,
-"8bd66cb1edce"
+"35736ebc5c41"
 ],
 "geometry/CSW112AAAA::framing/member:buck-jamb-000-1": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 8,
-"8bd66cb1edce"
+"35736ebc5c41"
 ],
 "geometry/CSW112AAAA::framing/member:buck-jamb-001-0": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 8,
-"8bd66cb1edce"
+"35736ebc5c41"
 ],
 "geometry/CSW112AAAA::framing/member:buck-jamb-001-1": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 8,
-"8bd66cb1edce"
+"35736ebc5c41"
 ],
 "geometry/CSW112AAAA::framing/member:buck-sill-000": [
-3.9624,
-3.971925,
+3.7465,
+3.756025,
 8,
-"4bc1f544ed4e"
+"717afc496b84"
 ],
 "geometry/CSW112AAAA::framing/member:buck-sill-001": [
-3.9624,
-3.971925,
+3.7465,
+3.756025,
 8,
-"4bc1f544ed4e"
+"717afc496b84"
 ],
 "geometry/CSW112AAAA::framing/member:cripple-head-0-01": [
-5.06095,
+5.30225,
 5.715,
 8,
-"75f9b58e6e18"
+"4a5b505aff78"
 ],
 "geometry/CSW112AAAA::framing/member:cripple-head-1-01": [
-5.06095,
+5.30225,
 5.715,
 8,
-"75f9b58e6e18"
+"4a5b505aff78"
 ],
 "geometry/CSW112AAAA::framing/member:cripple-sill-0-01": [
 3.0861,
-3.9243,
+3.7084,
 8,
-"9dd755e6e17a"
+"9198f3f81cb5"
 ],
 "geometry/CSW112AAAA::framing/member:cripple-sill-1-01": [
 3.0861,
-3.9243,
+3.7084,
 8,
-"9dd755e6e17a"
+"9198f3f81cb5"
 ],
 "geometry/CSW112AAAA::framing/member:header-0": [
-4.8768,
-5.06095,
+5.1181,
+5.30225,
 8,
-"35a5dea7566f"
+"57aec63e8fe9"
 ],
 "geometry/CSW112AAAA::framing/member:header-1": [
-4.8768,
-5.06095,
+5.1181,
+5.30225,
 8,
-"35a5dea7566f"
+"57aec63e8fe9"
 ],
 "geometry/CSW112AAAA::framing/member:jack-0-l0": [
 3.0861,
-4.8768,
+5.1181,
 8,
-"103afb89fdd0"
+"da73df564278"
 ],
 "geometry/CSW112AAAA::framing/member:jack-0-r0": [
 3.0861,
-4.8768,
+5.1181,
 8,
-"103afb89fdd0"
+"da73df564278"
 ],
 "geometry/CSW112AAAA::framing/member:jack-1-l0": [
 3.0861,
-4.8768,
+5.1181,
 8,
-"103afb89fdd0"
+"da73df564278"
 ],
 "geometry/CSW112AAAA::framing/member:jack-1-r0": [
 3.0861,
-4.8768,
+5.1181,
 8,
-"103afb89fdd0"
+"da73df564278"
 ],
 "geometry/CSW112AAAA::framing/member:king-0-l0": [
 3.0861,
@@ -42419,28 +42425,28 @@
 "50ef2552dcd5"
 ],
 "geometry/CSW112AAAA::framing/member:ladder-head-outer-girt-000": [
-4.8768,
-4.9657,
+5.1181,
+5.207,
 8,
-"a99d17a7266a"
+"801651aa1d22"
 ],
 "geometry/CSW112AAAA::framing/member:ladder-head-outer-girt-001": [
-4.8768,
-4.9657,
+5.1181,
+5.207,
 8,
-"a99d17a7266a"
+"801651aa1d22"
 ],
 "geometry/CSW112AAAA::framing/member:ladder-sill-outer-girt-000": [
-3.8735,
-3.9624,
+3.6576,
+3.7465,
 8,
-"8dde2059c226"
+"78a5a7c9686f"
 ],
 "geometry/CSW112AAAA::framing/member:ladder-sill-outer-girt-001": [
-3.8735,
-3.9624,
+3.6576,
+3.7465,
 8,
-"8dde2059c226"
+"78a5a7c9686f"
 ],
 "geometry/CSW112AAAA::framing/member:plate-bottom-0": [
 3.048,
@@ -42473,40 +42479,40 @@
 "f6380622d682"
 ],
 "geometry/CSW112AAAA::framing/member:sill-0": [
-3.9243,
-3.9624,
+3.7084,
+3.7465,
 8,
-"99cf58d51aaa"
+"d75b71c78a8f"
 ],
 "geometry/CSW112AAAA::framing/member:sill-1": [
-3.9243,
-3.9624,
+3.7084,
+3.7465,
 8,
-"99cf58d51aaa"
+"d75b71c78a8f"
 ],
 "geometry/CSW112AAAA::framing/member:strapping-jamb-outer-girt-000-0": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 8,
-"94a01795851d"
+"1744e07b5971"
 ],
 "geometry/CSW112AAAA::framing/member:strapping-jamb-outer-girt-000-1": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 8,
-"94a01795851d"
+"1744e07b5971"
 ],
 "geometry/CSW112AAAA::framing/member:strapping-jamb-outer-girt-001-0": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 8,
-"94a01795851d"
+"1744e07b5971"
 ],
 "geometry/CSW112AAAA::framing/member:strapping-jamb-outer-girt-001-1": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 8,
-"94a01795851d"
+"1744e07b5971"
 ],
 "geometry/CSW112AAAA::framing/member:strapping-outer-girt-000": [
 3.048,
@@ -42521,10 +42527,10 @@
 "78a5a7c9686f"
 ],
 "geometry/CSW112AAAA::framing/member:strapping-outer-girt-002": [
-4.2672,
-4.3561,
+3.6576,
+3.7465,
 8,
-"60ce759bfe94"
+"78a5a7c9686f"
 ],
 "geometry/CSW112AAAA::framing/member:strapping-outer-girt-003": [
 4.2672,
@@ -42533,10 +42539,10 @@
 "60ce759bfe94"
 ],
 "geometry/CSW112AAAA::framing/member:strapping-outer-girt-004": [
-4.8768,
-4.9657,
+4.2672,
+4.3561,
 8,
-"a99d17a7266a"
+"60ce759bfe94"
 ],
 "geometry/CSW112AAAA::framing/member:strapping-outer-girt-005": [
 4.8768,
@@ -42545,12 +42551,18 @@
 "a99d17a7266a"
 ],
 "geometry/CSW112AAAA::framing/member:strapping-outer-girt-006": [
+4.8768,
+4.9657,
+8,
+"a99d17a7266a"
+],
+"geometry/CSW112AAAA::framing/member:strapping-outer-girt-007": [
 5.4864,
 5.5753,
 8,
 "8673a785de16"
 ],
-"geometry/CSW112AAAA::framing/member:strapping-outer-girt-007": [
+"geometry/CSW112AAAA::framing/member:strapping-outer-girt-008": [
 6.02615,
 6.11505,
 8,
@@ -42596,61 +42608,61 @@
 3.048,
 6.11505,
 8,
-"7c165fff451d"
+"7904c811516c"
 ],
 "geometry/CSW113AAAA/layer:gwb-plant": [
 3.048,
 5.7912,
 8,
-"72fe8d90329c"
+"b83fa20f43ee"
 ],
 "geometry/CSW113AAAA/layer:humid-membrane": [
 3.048,
 5.7912,
 8,
-"72fe8d90329c"
+"b83fa20f43ee"
 ],
 "geometry/CSW113AAAA/layer:liner-furring": [
 3.048,
 5.7912,
 8,
-"72fe8d90329c"
+"b83fa20f43ee"
 ],
 "geometry/CSW113AAAA/layer:outer-girt": [
 3.048,
 6.11505,
 8,
-"7c165fff451d"
+"7904c811516c"
 ],
 "geometry/CSW113AAAA/layer:pvc-panel": [
 3.048,
 5.7912,
 8,
-"72fe8d90329c"
+"b83fa20f43ee"
 ],
 "geometry/CSW113AAAA/layer:sheathing": [
 3.048,
 6.11505,
 8,
-"7c165fff451d"
+"7904c811516c"
 ],
 "geometry/CSW113AAAA/layer:spray-foam": [
 3.048,
 6.11505,
 8,
-"7c165fff451d"
+"7904c811516c"
 ],
 "geometry/CSW113AAAA/layer:stud": [
 3.048,
 6.11505,
 8,
-"7c165fff451d"
+"7904c811516c"
 ],
 "geometry/CSW113AAAA/layer:vent-gap": [
 3.048,
 6.11505,
 8,
-"7c165fff451d"
+"7904c811516c"
 ],
 "geometry/CSW113AAAA::framing/member:block-2-000-00": [
 3.048,
@@ -42683,18 +42695,6 @@
 "78a5a7c9686f"
 ],
 "geometry/CSW113AAAA::framing/member:block-2-001-01": [
-3.6576,
-3.7465,
-8,
-"78a5a7c9686f"
-],
-"geometry/CSW113AAAA::framing/member:block-2-001-02": [
-3.6576,
-3.7465,
-8,
-"78a5a7c9686f"
-],
-"geometry/CSW113AAAA::framing/member:block-2-001-03": [
 3.6576,
 3.7465,
 8,
@@ -42773,10 +42773,10 @@
 "8669e34b3b2a"
 ],
 "geometry/CSW113AAAA::framing/member:block-2-jamb-000-0-00": [
-3.8735,
-3.9624,
+3.6576,
+3.7465,
 8,
-"8dde2059c226"
+"78a5a7c9686f"
 ],
 "geometry/CSW113AAAA::framing/member:block-2-jamb-000-0-01": [
 4.2672,
@@ -42790,11 +42790,17 @@
 8,
 "a99d17a7266a"
 ],
-"geometry/CSW113AAAA::framing/member:block-2-jamb-000-1-00": [
-3.8735,
-3.9624,
+"geometry/CSW113AAAA::framing/member:block-2-jamb-000-0-03": [
+5.1181,
+5.207,
 8,
-"8dde2059c226"
+"801651aa1d22"
+],
+"geometry/CSW113AAAA::framing/member:block-2-jamb-000-1-00": [
+3.6576,
+3.7465,
+8,
+"78a5a7c9686f"
 ],
 "geometry/CSW113AAAA::framing/member:block-2-jamb-000-1-01": [
 4.2672,
@@ -42808,59 +42814,65 @@
 8,
 "a99d17a7266a"
 ],
-"geometry/CSW113AAAA::framing/member:buck-head-000": [
-4.867275,
-4.8768,
+"geometry/CSW113AAAA::framing/member:block-2-jamb-000-1-03": [
+5.1181,
+5.207,
 8,
-"5b9f2ee39daf"
+"801651aa1d22"
+],
+"geometry/CSW113AAAA::framing/member:buck-head-000": [
+5.108575,
+5.1181,
+8,
+"f00105d01b7e"
 ],
 "geometry/CSW113AAAA::framing/member:buck-jamb-000-0": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 8,
-"8bd66cb1edce"
+"35736ebc5c41"
 ],
 "geometry/CSW113AAAA::framing/member:buck-jamb-000-1": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 8,
-"8bd66cb1edce"
+"35736ebc5c41"
 ],
 "geometry/CSW113AAAA::framing/member:buck-sill-000": [
-3.9624,
-3.971925,
+3.7465,
+3.756025,
 8,
-"4bc1f544ed4e"
+"717afc496b84"
 ],
 "geometry/CSW113AAAA::framing/member:cripple-head-0-01": [
-5.06095,
+5.30225,
 5.715,
 8,
-"75f9b58e6e18"
+"4a5b505aff78"
 ],
 "geometry/CSW113AAAA::framing/member:cripple-sill-0-01": [
 3.0861,
-3.9243,
+3.7084,
 8,
-"9dd755e6e17a"
+"9198f3f81cb5"
 ],
 "geometry/CSW113AAAA::framing/member:header-0": [
-4.8768,
-5.06095,
+5.1181,
+5.30225,
 8,
-"35a5dea7566f"
+"57aec63e8fe9"
 ],
 "geometry/CSW113AAAA::framing/member:jack-0-l0": [
 3.0861,
-4.8768,
+5.1181,
 8,
-"103afb89fdd0"
+"da73df564278"
 ],
 "geometry/CSW113AAAA::framing/member:jack-0-r0": [
 3.0861,
-4.8768,
+5.1181,
 8,
-"103afb89fdd0"
+"da73df564278"
 ],
 "geometry/CSW113AAAA::framing/member:king-0-l0": [
 3.0861,
@@ -42875,16 +42887,16 @@
 "50ef2552dcd5"
 ],
 "geometry/CSW113AAAA::framing/member:ladder-head-outer-girt-000": [
-4.8768,
-4.9657,
+5.1181,
+5.207,
 8,
-"a99d17a7266a"
+"801651aa1d22"
 ],
 "geometry/CSW113AAAA::framing/member:ladder-sill-outer-girt-000": [
-3.8735,
-3.9624,
+3.6576,
+3.7465,
 8,
-"8dde2059c226"
+"78a5a7c9686f"
 ],
 "geometry/CSW113AAAA::framing/member:plate-bottom": [
 3.048,
@@ -42905,22 +42917,22 @@
 "f6380622d682"
 ],
 "geometry/CSW113AAAA::framing/member:sill-0": [
-3.9243,
-3.9624,
+3.7084,
+3.7465,
 8,
-"99cf58d51aaa"
+"d75b71c78a8f"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-jamb-outer-girt-000-0": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 8,
-"94a01795851d"
+"1744e07b5971"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-jamb-outer-girt-000-1": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 8,
-"94a01795851d"
+"1744e07b5971"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-liner-furring-000": [
 3.048,
@@ -42941,10 +42953,10 @@
 "f21620fdb10e"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-liner-furring-003": [
-4.2672,
-4.3561,
+3.8608,
+3.9497,
 8,
-"60ce759bfe94"
+"f21620fdb10e"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-liner-furring-004": [
 4.2672,
@@ -42953,10 +42965,10 @@
 "60ce759bfe94"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-liner-furring-005": [
-4.6736,
-4.7625,
+4.2672,
+4.3561,
 8,
-"03f4c2b7900c"
+"60ce759bfe94"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-liner-furring-006": [
 4.6736,
@@ -42965,18 +42977,30 @@
 "03f4c2b7900c"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-liner-furring-007": [
+4.6736,
+4.7625,
+8,
+"03f4c2b7900c"
+],
+"geometry/CSW113AAAA::framing/member:strapping-liner-furring-008": [
 5.08,
 5.1689,
 8,
 "841980b3de84"
 ],
-"geometry/CSW113AAAA::framing/member:strapping-liner-furring-008": [
+"geometry/CSW113AAAA::framing/member:strapping-liner-furring-009": [
+5.08,
+5.1689,
+8,
+"841980b3de84"
+],
+"geometry/CSW113AAAA::framing/member:strapping-liner-furring-010": [
 5.4864,
 5.5753,
 8,
 "8673a785de16"
 ],
-"geometry/CSW113AAAA::framing/member:strapping-liner-furring-009": [
+"geometry/CSW113AAAA::framing/member:strapping-liner-furring-011": [
 5.7023,
 5.7912,
 8,
@@ -42995,10 +43019,10 @@
 "78a5a7c9686f"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-outer-girt-002": [
-4.2672,
-4.3561,
+3.6576,
+3.7465,
 8,
-"60ce759bfe94"
+"78a5a7c9686f"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-outer-girt-003": [
 4.2672,
@@ -43007,10 +43031,10 @@
 "60ce759bfe94"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-outer-girt-004": [
-4.8768,
-4.9657,
+4.2672,
+4.3561,
 8,
-"a99d17a7266a"
+"60ce759bfe94"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-outer-girt-005": [
 4.8768,
@@ -43019,12 +43043,18 @@
 "a99d17a7266a"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-outer-girt-006": [
+4.8768,
+4.9657,
+8,
+"a99d17a7266a"
+],
+"geometry/CSW113AAAA::framing/member:strapping-outer-girt-007": [
 5.4864,
 5.5753,
 8,
 "8673a785de16"
 ],
-"geometry/CSW113AAAA::framing/member:strapping-outer-girt-007": [
+"geometry/CSW113AAAA::framing/member:strapping-outer-girt-008": [
 6.02615,
 6.11505,
 8,
@@ -47867,208 +47897,208 @@
 "108e602d8294"
 ],
 "geometry/CSX304AAAA-RETURN-0-head-front/body": [
-4.860925,
-4.8768,
+5.102225,
+5.1181,
 2,
-"e71b6765f1d6"
+"7842f2a96743"
 ],
 "geometry/CSX304AAAA-RETURN-0-head/body": [
-4.860671,
-4.860925,
+5.101971,
+5.102225,
 2,
-"636cca29ee48"
+"fd22c20baa57"
 ],
 "geometry/CSX304AAAA-RETURN-0-jamb-left-front/body": [
-4.0374,
-4.860925,
+3.8215,
+5.102225,
 2,
-"ab993917f06c"
+"1824737f964e"
 ],
 "geometry/CSX304AAAA-RETURN-0-jamb-left/body": [
-4.0374,
-4.860671,
+3.8215,
+5.101971,
 2,
-"59bdecaefe93"
+"6cbb94e2de08"
 ],
 "geometry/CSX304AAAA-RETURN-0-jamb-right-front/body": [
-4.0374,
-4.860925,
+3.8215,
+5.102225,
 2,
-"ab993917f06c"
+"1824737f964e"
 ],
 "geometry/CSX304AAAA-RETURN-0-jamb-right/body": [
-4.0374,
-4.860671,
+3.8215,
+5.101971,
 2,
-"59bdecaefe93"
+"6cbb94e2de08"
 ],
 "geometry/CSX304AAAA-RETURN-1-head/body": [
-4.860925,
-4.8768,
+5.102225,
+5.1181,
 2,
-"e71b6765f1d6"
+"7842f2a96743"
 ],
 "geometry/CSX304AAAA-RETURN-1-jamb-left/body": [
-4.0374,
-4.860925,
+3.8215,
+5.102225,
 2,
-"ab993917f06c"
+"1824737f964e"
 ],
 "geometry/CSX304AAAA-RETURN-1-jamb-right/body": [
-4.0374,
-4.860925,
+3.8215,
+5.102225,
 2,
-"ab993917f06c"
+"1824737f964e"
 ],
 "geometry/CSX304AAAA-flashing-head/body": [
-4.92506,
-5.0188802,
+5.16636,
+5.2601802,
 48,
-"dcbb35004832"
+"55d08eb4689d"
 ],
 "geometry/CSX304AAAA-flashing-perimeter/body": [
-3.9624,
-5.0696802,
+3.7465,
+5.3109802,
 96,
-"c7c2560b71bc"
+"db48f73383d5"
 ],
 "geometry/CSX304AAAA-flashing-sill-support/body": [
-3.971925,
-4.010025,
+3.756025,
+3.794125,
 14,
-"2e07b57216b7"
+"f743c425dc2c"
 ],
 "geometry/CSX304AAAA-flashing-sill/body": [
-3.952875,
-4.124325,
+3.736975,
+3.908425,
 40,
-"082106764c6e"
+"0b9a1f206a9c"
 ],
 "geometry/CSX304AAAA-headscreen/body": [
-4.9657,
-5.0038,
+5.207,
+5.2451,
 2,
-"cb8eca76729e"
+"a69ecf12a066"
 ],
 "geometry/CSX304AAAA/exterior_trim": [
-3.9304,
-4.9088,
+3.7145,
+5.1501,
 8,
-"ce25d72eb4fa"
+"7754e0a14536"
 ],
 "geometry/CSX304AAAA/frame": [
-3.9624,
-4.8768,
+3.7465,
+5.1181,
 8,
-"98cfe43c7070"
+"ef7a59c4d144"
 ],
 "geometry/CSX304AAAA/glass": [
-4.0374,
-4.8018,
+3.8215,
+5.0431,
 2,
-"8c561a5267e5"
+"5155309ffe31"
 ],
 "geometry/CSX305AAAA-RETURN-0-head-front/body": [
-4.860925,
-4.8768,
+5.102225,
+5.1181,
 2,
-"e71b6765f1d6"
+"7842f2a96743"
 ],
 "geometry/CSX305AAAA-RETURN-0-head/body": [
-4.860671,
-4.860925,
+5.101971,
+5.102225,
 2,
-"636cca29ee48"
+"fd22c20baa57"
 ],
 "geometry/CSX305AAAA-RETURN-0-jamb-left-front/body": [
-4.0374,
-4.860925,
+3.8215,
+5.102225,
 2,
-"ab993917f06c"
+"1824737f964e"
 ],
 "geometry/CSX305AAAA-RETURN-0-jamb-left/body": [
-4.0374,
-4.860671,
+3.8215,
+5.101971,
 2,
-"59bdecaefe93"
+"6cbb94e2de08"
 ],
 "geometry/CSX305AAAA-RETURN-0-jamb-right-front/body": [
-4.0374,
-4.860925,
+3.8215,
+5.102225,
 2,
-"ab993917f06c"
+"1824737f964e"
 ],
 "geometry/CSX305AAAA-RETURN-0-jamb-right/body": [
-4.0374,
-4.860671,
+3.8215,
+5.101971,
 2,
-"59bdecaefe93"
+"6cbb94e2de08"
 ],
 "geometry/CSX305AAAA-RETURN-1-head/body": [
-4.860925,
-4.8768,
+5.102225,
+5.1181,
 2,
-"e71b6765f1d6"
+"7842f2a96743"
 ],
 "geometry/CSX305AAAA-RETURN-1-jamb-left/body": [
-4.0374,
-4.860925,
+3.8215,
+5.102225,
 2,
-"ab993917f06c"
+"1824737f964e"
 ],
 "geometry/CSX305AAAA-RETURN-1-jamb-right/body": [
-4.0374,
-4.860925,
+3.8215,
+5.102225,
 2,
-"ab993917f06c"
+"1824737f964e"
 ],
 "geometry/CSX305AAAA-flashing-head/body": [
-4.92506,
-5.0188802,
+5.16636,
+5.2601802,
 48,
-"dcbb35004832"
+"55d08eb4689d"
 ],
 "geometry/CSX305AAAA-flashing-perimeter/body": [
-3.9624,
-5.0696802,
+3.7465,
+5.3109802,
 96,
-"c7c2560b71bc"
+"db48f73383d5"
 ],
 "geometry/CSX305AAAA-flashing-sill-support/body": [
-3.971925,
-4.010025,
+3.756025,
+3.794125,
 14,
-"2e07b57216b7"
+"f743c425dc2c"
 ],
 "geometry/CSX305AAAA-flashing-sill/body": [
-3.952875,
-4.124325,
+3.736975,
+3.908425,
 40,
-"082106764c6e"
+"0b9a1f206a9c"
 ],
 "geometry/CSX305AAAA-headscreen/body": [
-4.9657,
-5.0038,
+5.207,
+5.2451,
 2,
-"cb8eca76729e"
+"a69ecf12a066"
 ],
 "geometry/CSX305AAAA/exterior_trim": [
-3.9304,
-4.9088,
+3.7145,
+5.1501,
 8,
-"ce25d72eb4fa"
+"7754e0a14536"
 ],
 "geometry/CSX305AAAA/frame": [
-3.9624,
-4.8768,
+3.7465,
+5.1181,
 8,
-"98cfe43c7070"
+"ef7a59c4d144"
 ],
 "geometry/CSX305AAAA/glass": [
-4.0374,
-4.8018,
+3.8215,
+5.0431,
 2,
-"8c561a5267e5"
+"5155309ffe31"
 ],
 "geometry/CSX306AAAA-flashing-head/body": [
 5.12826,
@@ -48167,52 +48197,52 @@
 "40f20a0134fa"
 ],
 "geometry/CSX308AAAA-flashing-head/body": [
-4.92506,
-5.0188802,
+5.16636,
+5.2601802,
 48,
-"dcbb35004832"
+"55d08eb4689d"
 ],
 "geometry/CSX308AAAA-flashing-perimeter/body": [
-3.9624,
-5.0696802,
+3.7465,
+5.3109802,
 96,
-"c7c2560b71bc"
+"db48f73383d5"
 ],
 "geometry/CSX308AAAA-flashing-sill-support/body": [
-3.971925,
-4.010025,
+3.756025,
+3.794125,
 14,
-"2e07b57216b7"
+"f743c425dc2c"
 ],
 "geometry/CSX308AAAA-flashing-sill/body": [
-3.952875,
-4.124325,
+3.736975,
+3.908425,
 40,
-"082106764c6e"
+"0b9a1f206a9c"
 ],
 "geometry/CSX308AAAA-headscreen/body": [
-4.9657,
-5.0038,
+5.207,
+5.2451,
 2,
-"cb8eca76729e"
+"a69ecf12a066"
 ],
 "geometry/CSX308AAAA/exterior_trim": [
-3.9304,
-4.9088,
+3.7145,
+5.1501,
 8,
-"ce25d72eb4fa"
+"7754e0a14536"
 ],
 "geometry/CSX308AAAA/frame": [
-3.9624,
-4.8768,
+3.7465,
+5.1181,
 8,
-"98cfe43c7070"
+"ef7a59c4d144"
 ],
 "geometry/CSX308AAAA/glass": [
-4.0374,
-4.8018,
+3.8215,
+5.0431,
 2,
-"8c561a5267e5"
+"5155309ffe31"
 ],
 "geometry/CSX309AAAA-RETURN-0-head-front/body": [
 5.064125,
@@ -58103,10 +58133,10 @@
 "6fa64beef87b"
 ],
 "geometry/W86GNRQ4ZW/body": [
-4.0074026,
-4.0374,
+3.7915026,
+3.8215,
 2,
-"faa06e069336"
+"e1ea19499412"
 ],
 "geometry/W92SX7DVJ0/body": [
 0.508,
@@ -84316,24 +84346,6 @@
 2,
 "e88eeff6479c"
 ],
-"member/CSW112AAAA/block-2-001-02": [
-3.6576,
-3.7465,
-2,
-"e88eeff6479c"
-],
-"member/CSW112AAAA/block-2-001-03": [
-3.6576,
-3.7465,
-2,
-"e88eeff6479c"
-],
-"member/CSW112AAAA/block-2-001-04": [
-3.6576,
-3.7465,
-2,
-"e88eeff6479c"
-],
 "member/CSW112AAAA/block-2-002-00": [
 4.2672,
 4.3561,
@@ -84419,16 +84431,16 @@
 "1e6871fbce74"
 ],
 "member/CSW112AAAA/block-2-head-000-00": [
-4.8768,
-4.9657,
+5.1181,
+5.207,
 2,
-"cd75a1598fe8"
+"04b916181562"
 ],
 "member/CSW112AAAA/block-2-jamb-000-0-00": [
-3.8735,
-3.9624,
+3.6576,
+3.7465,
 2,
-"20c1e0b75403"
+"e88eeff6479c"
 ],
 "member/CSW112AAAA/block-2-jamb-000-0-01": [
 4.2672,
@@ -84442,11 +84454,17 @@
 2,
 "cd75a1598fe8"
 ],
-"member/CSW112AAAA/block-2-jamb-000-1-00": [
-3.8735,
-3.9624,
+"member/CSW112AAAA/block-2-jamb-000-0-03": [
+5.1181,
+5.207,
 2,
-"20c1e0b75403"
+"04b916181562"
+],
+"member/CSW112AAAA/block-2-jamb-000-1-00": [
+3.6576,
+3.7465,
+2,
+"e88eeff6479c"
 ],
 "member/CSW112AAAA/block-2-jamb-000-1-01": [
 4.2672,
@@ -84460,11 +84478,17 @@
 2,
 "cd75a1598fe8"
 ],
-"member/CSW112AAAA/block-2-jamb-001-0-00": [
-3.8735,
-3.9624,
+"member/CSW112AAAA/block-2-jamb-000-1-03": [
+5.1181,
+5.207,
 2,
-"20c1e0b75403"
+"04b916181562"
+],
+"member/CSW112AAAA/block-2-jamb-001-0-00": [
+3.6576,
+3.7465,
+2,
+"e88eeff6479c"
 ],
 "member/CSW112AAAA/block-2-jamb-001-0-01": [
 4.2672,
@@ -84478,11 +84502,17 @@
 2,
 "cd75a1598fe8"
 ],
-"member/CSW112AAAA/block-2-jamb-001-1-00": [
-3.8735,
-3.9624,
+"member/CSW112AAAA/block-2-jamb-001-0-03": [
+5.1181,
+5.207,
 2,
-"20c1e0b75403"
+"04b916181562"
+],
+"member/CSW112AAAA/block-2-jamb-001-1-00": [
+3.6576,
+3.7465,
+2,
+"e88eeff6479c"
 ],
 "member/CSW112AAAA/block-2-jamb-001-1-01": [
 4.2672,
@@ -84496,119 +84526,125 @@
 2,
 "cd75a1598fe8"
 ],
-"member/CSW112AAAA/block-2-sill-000-00": [
-3.8735,
-3.9624,
+"member/CSW112AAAA/block-2-jamb-001-1-03": [
+5.1181,
+5.207,
 2,
-"20c1e0b75403"
+"04b916181562"
+],
+"member/CSW112AAAA/block-2-sill-000-00": [
+3.6576,
+3.7465,
+2,
+"e88eeff6479c"
 ],
 "member/CSW112AAAA/buck-head-000": [
-4.867275,
-4.8768,
+5.108575,
+5.1181,
 2,
-"87ad117b6316"
+"ff09241c9e2f"
 ],
 "member/CSW112AAAA/buck-head-001": [
-4.867275,
-4.8768,
+5.108575,
+5.1181,
 2,
-"87ad117b6316"
+"ff09241c9e2f"
 ],
 "member/CSW112AAAA/buck-jamb-000-0": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 2,
-"5411ffdb2198"
+"20df0eb7c021"
 ],
 "member/CSW112AAAA/buck-jamb-000-1": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 2,
-"5411ffdb2198"
+"20df0eb7c021"
 ],
 "member/CSW112AAAA/buck-jamb-001-0": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 2,
-"5411ffdb2198"
+"20df0eb7c021"
 ],
 "member/CSW112AAAA/buck-jamb-001-1": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 2,
-"5411ffdb2198"
+"20df0eb7c021"
 ],
 "member/CSW112AAAA/buck-sill-000": [
-3.9624,
-3.971925,
+3.7465,
+3.756025,
 2,
-"34a672422a40"
+"837ce9ff38bb"
 ],
 "member/CSW112AAAA/buck-sill-001": [
-3.9624,
-3.971925,
+3.7465,
+3.756025,
 2,
-"34a672422a40"
+"837ce9ff38bb"
 ],
 "member/CSW112AAAA/cripple-head-0-01": [
-5.06095,
+5.30225,
 5.715,
 2,
-"a4fedeb7c448"
+"ec97109ad585"
 ],
 "member/CSW112AAAA/cripple-head-1-01": [
-5.06095,
+5.30225,
 5.715,
 2,
-"a4fedeb7c448"
+"ec97109ad585"
 ],
 "member/CSW112AAAA/cripple-sill-0-01": [
 3.0861,
-3.9243,
+3.7084,
 2,
-"2c3b27c543b9"
+"e723133d637d"
 ],
 "member/CSW112AAAA/cripple-sill-1-01": [
 3.0861,
-3.9243,
+3.7084,
 2,
-"2c3b27c543b9"
+"e723133d637d"
 ],
 "member/CSW112AAAA/header-0": [
-4.8768,
-5.06095,
+5.1181,
+5.30225,
 2,
-"f7809631728b"
+"81b851241a81"
 ],
 "member/CSW112AAAA/header-1": [
-4.8768,
-5.06095,
+5.1181,
+5.30225,
 2,
-"f7809631728b"
+"81b851241a81"
 ],
 "member/CSW112AAAA/jack-0-l0": [
 3.0861,
-4.8768,
+5.1181,
 2,
-"37a63ad6a09d"
+"e6134313c944"
 ],
 "member/CSW112AAAA/jack-0-r0": [
 3.0861,
-4.8768,
+5.1181,
 2,
-"37a63ad6a09d"
+"e6134313c944"
 ],
 "member/CSW112AAAA/jack-1-l0": [
 3.0861,
-4.8768,
+5.1181,
 2,
-"37a63ad6a09d"
+"e6134313c944"
 ],
 "member/CSW112AAAA/jack-1-r0": [
 3.0861,
-4.8768,
+5.1181,
 2,
-"37a63ad6a09d"
+"e6134313c944"
 ],
 "member/CSW112AAAA/king-0-l0": [
 3.0861,
@@ -84635,28 +84671,28 @@
 "015f08fd3431"
 ],
 "member/CSW112AAAA/ladder-head-outer-girt-000": [
-4.8768,
-4.9657,
+5.1181,
+5.207,
 2,
-"cd75a1598fe8"
+"04b916181562"
 ],
 "member/CSW112AAAA/ladder-head-outer-girt-001": [
-4.8768,
-4.9657,
+5.1181,
+5.207,
 2,
-"cd75a1598fe8"
+"04b916181562"
 ],
 "member/CSW112AAAA/ladder-sill-outer-girt-000": [
-3.8735,
-3.9624,
+3.6576,
+3.7465,
 2,
-"20c1e0b75403"
+"e88eeff6479c"
 ],
 "member/CSW112AAAA/ladder-sill-outer-girt-001": [
-3.8735,
-3.9624,
+3.6576,
+3.7465,
 2,
-"20c1e0b75403"
+"e88eeff6479c"
 ],
 "member/CSW112AAAA/plate-bottom-0": [
 3.048,
@@ -84689,40 +84725,40 @@
 "2608551f5a15"
 ],
 "member/CSW112AAAA/sill-0": [
-3.9243,
-3.9624,
+3.7084,
+3.7465,
 2,
-"731acb23b5d3"
+"579a20f0877e"
 ],
 "member/CSW112AAAA/sill-1": [
-3.9243,
-3.9624,
+3.7084,
+3.7465,
 2,
-"731acb23b5d3"
+"579a20f0877e"
 ],
 "member/CSW112AAAA/strapping-jamb-outer-girt-000-0": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 2,
-"bcbe9d6f2aad"
+"0277ab98ea54"
 ],
 "member/CSW112AAAA/strapping-jamb-outer-girt-000-1": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 2,
-"bcbe9d6f2aad"
+"0277ab98ea54"
 ],
 "member/CSW112AAAA/strapping-jamb-outer-girt-001-0": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 2,
-"bcbe9d6f2aad"
+"0277ab98ea54"
 ],
 "member/CSW112AAAA/strapping-jamb-outer-girt-001-1": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 2,
-"bcbe9d6f2aad"
+"0277ab98ea54"
 ],
 "member/CSW112AAAA/strapping-outer-girt-000": [
 3.048,
@@ -84737,10 +84773,10 @@
 "e88eeff6479c"
 ],
 "member/CSW112AAAA/strapping-outer-girt-002": [
-4.2672,
-4.3561,
+3.6576,
+3.7465,
 2,
-"122cc18ea145"
+"e88eeff6479c"
 ],
 "member/CSW112AAAA/strapping-outer-girt-003": [
 4.2672,
@@ -84749,10 +84785,10 @@
 "122cc18ea145"
 ],
 "member/CSW112AAAA/strapping-outer-girt-004": [
-4.8768,
-4.9657,
+4.2672,
+4.3561,
 2,
-"cd75a1598fe8"
+"122cc18ea145"
 ],
 "member/CSW112AAAA/strapping-outer-girt-005": [
 4.8768,
@@ -84761,12 +84797,18 @@
 "cd75a1598fe8"
 ],
 "member/CSW112AAAA/strapping-outer-girt-006": [
+4.8768,
+4.9657,
+2,
+"cd75a1598fe8"
+],
+"member/CSW112AAAA/strapping-outer-girt-007": [
 5.4864,
 5.5753,
 2,
 "37ccea8542e9"
 ],
-"member/CSW112AAAA/strapping-outer-girt-007": [
+"member/CSW112AAAA/strapping-outer-girt-008": [
 6.02615,
 6.11505,
 2,
@@ -84874,18 +84916,6 @@
 2,
 "e88eeff6479c"
 ],
-"member/CSW113AAAA/block-2-001-02": [
-3.6576,
-3.7465,
-2,
-"e88eeff6479c"
-],
-"member/CSW113AAAA/block-2-001-03": [
-3.6576,
-3.7465,
-2,
-"e88eeff6479c"
-],
 "member/CSW113AAAA/block-2-002-00": [
 4.2672,
 4.3561,
@@ -84959,10 +84989,10 @@
 "1e6871fbce74"
 ],
 "member/CSW113AAAA/block-2-jamb-000-0-00": [
-3.8735,
-3.9624,
+3.6576,
+3.7465,
 2,
-"20c1e0b75403"
+"e88eeff6479c"
 ],
 "member/CSW113AAAA/block-2-jamb-000-0-01": [
 4.2672,
@@ -84976,11 +85006,17 @@
 2,
 "cd75a1598fe8"
 ],
-"member/CSW113AAAA/block-2-jamb-000-1-00": [
-3.8735,
-3.9624,
+"member/CSW113AAAA/block-2-jamb-000-0-03": [
+5.1181,
+5.207,
 2,
-"20c1e0b75403"
+"04b916181562"
+],
+"member/CSW113AAAA/block-2-jamb-000-1-00": [
+3.6576,
+3.7465,
+2,
+"e88eeff6479c"
 ],
 "member/CSW113AAAA/block-2-jamb-000-1-01": [
 4.2672,
@@ -84994,59 +85030,65 @@
 2,
 "cd75a1598fe8"
 ],
-"member/CSW113AAAA/buck-head-000": [
-4.867275,
-4.8768,
+"member/CSW113AAAA/block-2-jamb-000-1-03": [
+5.1181,
+5.207,
 2,
-"87ad117b6316"
+"04b916181562"
+],
+"member/CSW113AAAA/buck-head-000": [
+5.108575,
+5.1181,
+2,
+"ff09241c9e2f"
 ],
 "member/CSW113AAAA/buck-jamb-000-0": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 2,
-"5411ffdb2198"
+"20df0eb7c021"
 ],
 "member/CSW113AAAA/buck-jamb-000-1": [
-3.971925,
-4.867275,
+3.756025,
+5.108575,
 2,
-"5411ffdb2198"
+"20df0eb7c021"
 ],
 "member/CSW113AAAA/buck-sill-000": [
-3.9624,
-3.971925,
+3.7465,
+3.756025,
 2,
-"34a672422a40"
+"837ce9ff38bb"
 ],
 "member/CSW113AAAA/cripple-head-0-01": [
-5.06095,
+5.30225,
 5.715,
 2,
-"a4fedeb7c448"
+"ec97109ad585"
 ],
 "member/CSW113AAAA/cripple-sill-0-01": [
 3.0861,
-3.9243,
+3.7084,
 2,
-"2c3b27c543b9"
+"e723133d637d"
 ],
 "member/CSW113AAAA/header-0": [
-4.8768,
-5.06095,
+5.1181,
+5.30225,
 2,
-"f7809631728b"
+"81b851241a81"
 ],
 "member/CSW113AAAA/jack-0-l0": [
 3.0861,
-4.8768,
+5.1181,
 2,
-"37a63ad6a09d"
+"e6134313c944"
 ],
 "member/CSW113AAAA/jack-0-r0": [
 3.0861,
-4.8768,
+5.1181,
 2,
-"37a63ad6a09d"
+"e6134313c944"
 ],
 "member/CSW113AAAA/king-0-l0": [
 3.0861,
@@ -85061,16 +85103,16 @@
 "015f08fd3431"
 ],
 "member/CSW113AAAA/ladder-head-outer-girt-000": [
-4.8768,
-4.9657,
+5.1181,
+5.207,
 2,
-"cd75a1598fe8"
+"04b916181562"
 ],
 "member/CSW113AAAA/ladder-sill-outer-girt-000": [
-3.8735,
-3.9624,
+3.6576,
+3.7465,
 2,
-"20c1e0b75403"
+"e88eeff6479c"
 ],
 "member/CSW113AAAA/plate-bottom": [
 3.048,
@@ -85091,22 +85133,22 @@
 "2608551f5a15"
 ],
 "member/CSW113AAAA/sill-0": [
-3.9243,
-3.9624,
+3.7084,
+3.7465,
 2,
-"731acb23b5d3"
+"579a20f0877e"
 ],
 "member/CSW113AAAA/strapping-jamb-outer-girt-000-0": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 2,
-"bcbe9d6f2aad"
+"0277ab98ea54"
 ],
 "member/CSW113AAAA/strapping-jamb-outer-girt-000-1": [
-3.8735,
-4.9657,
+3.6576,
+5.207,
 2,
-"bcbe9d6f2aad"
+"0277ab98ea54"
 ],
 "member/CSW113AAAA/strapping-liner-furring-000": [
 3.048,
@@ -85127,10 +85169,10 @@
 "b5e6fec50a6f"
 ],
 "member/CSW113AAAA/strapping-liner-furring-003": [
-4.2672,
-4.3561,
+3.8608,
+3.9497,
 2,
-"122cc18ea145"
+"b5e6fec50a6f"
 ],
 "member/CSW113AAAA/strapping-liner-furring-004": [
 4.2672,
@@ -85139,10 +85181,10 @@
 "122cc18ea145"
 ],
 "member/CSW113AAAA/strapping-liner-furring-005": [
-4.6736,
-4.7625,
+4.2672,
+4.3561,
 2,
-"a23f15b6e9c1"
+"122cc18ea145"
 ],
 "member/CSW113AAAA/strapping-liner-furring-006": [
 4.6736,
@@ -85151,18 +85193,30 @@
 "a23f15b6e9c1"
 ],
 "member/CSW113AAAA/strapping-liner-furring-007": [
+4.6736,
+4.7625,
+2,
+"a23f15b6e9c1"
+],
+"member/CSW113AAAA/strapping-liner-furring-008": [
 5.08,
 5.1689,
 2,
 "127c90fed5de"
 ],
-"member/CSW113AAAA/strapping-liner-furring-008": [
+"member/CSW113AAAA/strapping-liner-furring-009": [
+5.08,
+5.1689,
+2,
+"127c90fed5de"
+],
+"member/CSW113AAAA/strapping-liner-furring-010": [
 5.4864,
 5.5753,
 2,
 "37ccea8542e9"
 ],
-"member/CSW113AAAA/strapping-liner-furring-009": [
+"member/CSW113AAAA/strapping-liner-furring-011": [
 5.7023,
 5.7912,
 2,
@@ -85181,10 +85235,10 @@
 "e88eeff6479c"
 ],
 "member/CSW113AAAA/strapping-outer-girt-002": [
-4.2672,
-4.3561,
+3.6576,
+3.7465,
 2,
-"122cc18ea145"
+"e88eeff6479c"
 ],
 "member/CSW113AAAA/strapping-outer-girt-003": [
 4.2672,
@@ -85193,10 +85247,10 @@
 "122cc18ea145"
 ],
 "member/CSW113AAAA/strapping-outer-girt-004": [
-4.8768,
-4.9657,
+4.2672,
+4.3561,
 2,
-"cd75a1598fe8"
+"122cc18ea145"
 ],
 "member/CSW113AAAA/strapping-outer-girt-005": [
 4.8768,
@@ -85205,12 +85259,18 @@
 "cd75a1598fe8"
 ],
 "member/CSW113AAAA/strapping-outer-girt-006": [
+4.8768,
+4.9657,
+2,
+"cd75a1598fe8"
+],
+"member/CSW113AAAA/strapping-outer-girt-007": [
 5.4864,
 5.5753,
 2,
 "37ccea8542e9"
 ],
-"member/CSW113AAAA/strapping-outer-girt-007": [
+"member/CSW113AAAA/strapping-outer-girt-008": [
 6.02615,
 6.11505,
 2,
@@ -97948,16 +98008,16 @@
 "solids/WIN-S-PLANT2-FLASH-SILL/z1_m": 4.022725,
 "solids/WIN-S-PLANT2-HEADSCREEN/z0_m": 5.1689,
 "solids/WIN-S-PLANT2-HEADSCREEN/z1_m": 5.207,
-"solids/WIN-S-PLANT3-FLASH-HEAD/z0_m": 4.92506,
-"solids/WIN-S-PLANT3-FLASH-HEAD/z1_m": 5.0188802,
-"solids/WIN-S-PLANT3-FLASH-PERIMETER/z0_m": 3.9624,
-"solids/WIN-S-PLANT3-FLASH-PERIMETER/z1_m": 5.0696802,
-"solids/WIN-S-PLANT3-FLASH-SILL-SUPPORT/z0_m": 3.971925,
-"solids/WIN-S-PLANT3-FLASH-SILL-SUPPORT/z1_m": 4.010025,
-"solids/WIN-S-PLANT3-FLASH-SILL/z0_m": 3.952875,
-"solids/WIN-S-PLANT3-FLASH-SILL/z1_m": 4.124325,
-"solids/WIN-S-PLANT3-HEADSCREEN/z0_m": 4.9657,
-"solids/WIN-S-PLANT3-HEADSCREEN/z1_m": 5.0038,
+"solids/WIN-S-PLANT3-FLASH-HEAD/z0_m": 5.16636,
+"solids/WIN-S-PLANT3-FLASH-HEAD/z1_m": 5.2601802,
+"solids/WIN-S-PLANT3-FLASH-PERIMETER/z0_m": 3.7465,
+"solids/WIN-S-PLANT3-FLASH-PERIMETER/z1_m": 5.3109802,
+"solids/WIN-S-PLANT3-FLASH-SILL-SUPPORT/z0_m": 3.756025,
+"solids/WIN-S-PLANT3-FLASH-SILL-SUPPORT/z1_m": 3.794125,
+"solids/WIN-S-PLANT3-FLASH-SILL/z0_m": 3.736975,
+"solids/WIN-S-PLANT3-FLASH-SILL/z1_m": 3.908425,
+"solids/WIN-S-PLANT3-HEADSCREEN/z0_m": 5.207,
+"solids/WIN-S-PLANT3-HEADSCREEN/z1_m": 5.2451,
 "solids/WIN-S-PLANT4-FLASH-HEAD/z0_m": 5.12826,
 "solids/WIN-S-PLANT4-FLASH-HEAD/z1_m": 5.2220802,
 "solids/WIN-S-PLANT4-FLASH-PERIMETER/z0_m": 3.8608,
@@ -98080,62 +98140,62 @@
 "solids/WIN-S-STUDY3-return-1-jamb-left/z1_m": 5.165725,
 "solids/WIN-S-STUDY3-return-1-jamb-right/z0_m": 4.0374,
 "solids/WIN-S-STUDY3-return-1-jamb-right/z1_m": 5.165725,
-"solids/WIN-S-SUITE1-FLASH-HEAD/z0_m": 4.92506,
-"solids/WIN-S-SUITE1-FLASH-HEAD/z1_m": 5.0188802,
-"solids/WIN-S-SUITE1-FLASH-PERIMETER/z0_m": 3.9624,
-"solids/WIN-S-SUITE1-FLASH-PERIMETER/z1_m": 5.0696802,
-"solids/WIN-S-SUITE1-FLASH-SILL-SUPPORT/z0_m": 3.971925,
-"solids/WIN-S-SUITE1-FLASH-SILL-SUPPORT/z1_m": 4.010025,
-"solids/WIN-S-SUITE1-FLASH-SILL/z0_m": 3.952875,
-"solids/WIN-S-SUITE1-FLASH-SILL/z1_m": 4.124325,
-"solids/WIN-S-SUITE1-HEADSCREEN/z0_m": 4.9657,
-"solids/WIN-S-SUITE1-HEADSCREEN/z1_m": 5.0038,
-"solids/WIN-S-SUITE1-return-0-head-front/z0_m": 4.860925,
-"solids/WIN-S-SUITE1-return-0-head-front/z1_m": 4.8768,
-"solids/WIN-S-SUITE1-return-0-head/z0_m": 4.860671,
-"solids/WIN-S-SUITE1-return-0-head/z1_m": 4.860925,
-"solids/WIN-S-SUITE1-return-0-jamb-left-front/z0_m": 4.0374,
-"solids/WIN-S-SUITE1-return-0-jamb-left-front/z1_m": 4.860925,
-"solids/WIN-S-SUITE1-return-0-jamb-left/z0_m": 4.0374,
-"solids/WIN-S-SUITE1-return-0-jamb-left/z1_m": 4.860671,
-"solids/WIN-S-SUITE1-return-0-jamb-right-front/z0_m": 4.0374,
-"solids/WIN-S-SUITE1-return-0-jamb-right-front/z1_m": 4.860925,
-"solids/WIN-S-SUITE1-return-0-jamb-right/z0_m": 4.0374,
-"solids/WIN-S-SUITE1-return-0-jamb-right/z1_m": 4.860671,
-"solids/WIN-S-SUITE1-return-1-head/z0_m": 4.860925,
-"solids/WIN-S-SUITE1-return-1-head/z1_m": 4.8768,
-"solids/WIN-S-SUITE1-return-1-jamb-left/z0_m": 4.0374,
-"solids/WIN-S-SUITE1-return-1-jamb-left/z1_m": 4.860925,
-"solids/WIN-S-SUITE1-return-1-jamb-right/z0_m": 4.0374,
-"solids/WIN-S-SUITE1-return-1-jamb-right/z1_m": 4.860925,
-"solids/WIN-S-SUITE2-FLASH-HEAD/z0_m": 4.92506,
-"solids/WIN-S-SUITE2-FLASH-HEAD/z1_m": 5.0188802,
-"solids/WIN-S-SUITE2-FLASH-PERIMETER/z0_m": 3.9624,
-"solids/WIN-S-SUITE2-FLASH-PERIMETER/z1_m": 5.0696802,
-"solids/WIN-S-SUITE2-FLASH-SILL-SUPPORT/z0_m": 3.971925,
-"solids/WIN-S-SUITE2-FLASH-SILL-SUPPORT/z1_m": 4.010025,
-"solids/WIN-S-SUITE2-FLASH-SILL/z0_m": 3.952875,
-"solids/WIN-S-SUITE2-FLASH-SILL/z1_m": 4.124325,
-"solids/WIN-S-SUITE2-HEADSCREEN/z0_m": 4.9657,
-"solids/WIN-S-SUITE2-HEADSCREEN/z1_m": 5.0038,
-"solids/WIN-S-SUITE2-return-0-head-front/z0_m": 4.860925,
-"solids/WIN-S-SUITE2-return-0-head-front/z1_m": 4.8768,
-"solids/WIN-S-SUITE2-return-0-head/z0_m": 4.860671,
-"solids/WIN-S-SUITE2-return-0-head/z1_m": 4.860925,
-"solids/WIN-S-SUITE2-return-0-jamb-left-front/z0_m": 4.0374,
-"solids/WIN-S-SUITE2-return-0-jamb-left-front/z1_m": 4.860925,
-"solids/WIN-S-SUITE2-return-0-jamb-left/z0_m": 4.0374,
-"solids/WIN-S-SUITE2-return-0-jamb-left/z1_m": 4.860671,
-"solids/WIN-S-SUITE2-return-0-jamb-right-front/z0_m": 4.0374,
-"solids/WIN-S-SUITE2-return-0-jamb-right-front/z1_m": 4.860925,
-"solids/WIN-S-SUITE2-return-0-jamb-right/z0_m": 4.0374,
-"solids/WIN-S-SUITE2-return-0-jamb-right/z1_m": 4.860671,
-"solids/WIN-S-SUITE2-return-1-head/z0_m": 4.860925,
-"solids/WIN-S-SUITE2-return-1-head/z1_m": 4.8768,
-"solids/WIN-S-SUITE2-return-1-jamb-left/z0_m": 4.0374,
-"solids/WIN-S-SUITE2-return-1-jamb-left/z1_m": 4.860925,
-"solids/WIN-S-SUITE2-return-1-jamb-right/z0_m": 4.0374,
-"solids/WIN-S-SUITE2-return-1-jamb-right/z1_m": 4.860925,
+"solids/WIN-S-SUITE1-FLASH-HEAD/z0_m": 5.16636,
+"solids/WIN-S-SUITE1-FLASH-HEAD/z1_m": 5.2601802,
+"solids/WIN-S-SUITE1-FLASH-PERIMETER/z0_m": 3.7465,
+"solids/WIN-S-SUITE1-FLASH-PERIMETER/z1_m": 5.3109802,
+"solids/WIN-S-SUITE1-FLASH-SILL-SUPPORT/z0_m": 3.756025,
+"solids/WIN-S-SUITE1-FLASH-SILL-SUPPORT/z1_m": 3.794125,
+"solids/WIN-S-SUITE1-FLASH-SILL/z0_m": 3.736975,
+"solids/WIN-S-SUITE1-FLASH-SILL/z1_m": 3.908425,
+"solids/WIN-S-SUITE1-HEADSCREEN/z0_m": 5.207,
+"solids/WIN-S-SUITE1-HEADSCREEN/z1_m": 5.2451,
+"solids/WIN-S-SUITE1-return-0-head-front/z0_m": 5.102225,
+"solids/WIN-S-SUITE1-return-0-head-front/z1_m": 5.1181,
+"solids/WIN-S-SUITE1-return-0-head/z0_m": 5.101971,
+"solids/WIN-S-SUITE1-return-0-head/z1_m": 5.102225,
+"solids/WIN-S-SUITE1-return-0-jamb-left-front/z0_m": 3.8215,
+"solids/WIN-S-SUITE1-return-0-jamb-left-front/z1_m": 5.102225,
+"solids/WIN-S-SUITE1-return-0-jamb-left/z0_m": 3.8215,
+"solids/WIN-S-SUITE1-return-0-jamb-left/z1_m": 5.101971,
+"solids/WIN-S-SUITE1-return-0-jamb-right-front/z0_m": 3.8215,
+"solids/WIN-S-SUITE1-return-0-jamb-right-front/z1_m": 5.102225,
+"solids/WIN-S-SUITE1-return-0-jamb-right/z0_m": 3.8215,
+"solids/WIN-S-SUITE1-return-0-jamb-right/z1_m": 5.101971,
+"solids/WIN-S-SUITE1-return-1-head/z0_m": 5.102225,
+"solids/WIN-S-SUITE1-return-1-head/z1_m": 5.1181,
+"solids/WIN-S-SUITE1-return-1-jamb-left/z0_m": 3.8215,
+"solids/WIN-S-SUITE1-return-1-jamb-left/z1_m": 5.102225,
+"solids/WIN-S-SUITE1-return-1-jamb-right/z0_m": 3.8215,
+"solids/WIN-S-SUITE1-return-1-jamb-right/z1_m": 5.102225,
+"solids/WIN-S-SUITE2-FLASH-HEAD/z0_m": 5.16636,
+"solids/WIN-S-SUITE2-FLASH-HEAD/z1_m": 5.2601802,
+"solids/WIN-S-SUITE2-FLASH-PERIMETER/z0_m": 3.7465,
+"solids/WIN-S-SUITE2-FLASH-PERIMETER/z1_m": 5.3109802,
+"solids/WIN-S-SUITE2-FLASH-SILL-SUPPORT/z0_m": 3.756025,
+"solids/WIN-S-SUITE2-FLASH-SILL-SUPPORT/z1_m": 3.794125,
+"solids/WIN-S-SUITE2-FLASH-SILL/z0_m": 3.736975,
+"solids/WIN-S-SUITE2-FLASH-SILL/z1_m": 3.908425,
+"solids/WIN-S-SUITE2-HEADSCREEN/z0_m": 5.207,
+"solids/WIN-S-SUITE2-HEADSCREEN/z1_m": 5.2451,
+"solids/WIN-S-SUITE2-return-0-head-front/z0_m": 5.102225,
+"solids/WIN-S-SUITE2-return-0-head-front/z1_m": 5.1181,
+"solids/WIN-S-SUITE2-return-0-head/z0_m": 5.101971,
+"solids/WIN-S-SUITE2-return-0-head/z1_m": 5.102225,
+"solids/WIN-S-SUITE2-return-0-jamb-left-front/z0_m": 3.8215,
+"solids/WIN-S-SUITE2-return-0-jamb-left-front/z1_m": 5.102225,
+"solids/WIN-S-SUITE2-return-0-jamb-left/z0_m": 3.8215,
+"solids/WIN-S-SUITE2-return-0-jamb-left/z1_m": 5.101971,
+"solids/WIN-S-SUITE2-return-0-jamb-right-front/z0_m": 3.8215,
+"solids/WIN-S-SUITE2-return-0-jamb-right-front/z1_m": 5.102225,
+"solids/WIN-S-SUITE2-return-0-jamb-right/z0_m": 3.8215,
+"solids/WIN-S-SUITE2-return-0-jamb-right/z1_m": 5.101971,
+"solids/WIN-S-SUITE2-return-1-head/z0_m": 5.102225,
+"solids/WIN-S-SUITE2-return-1-head/z1_m": 5.1181,
+"solids/WIN-S-SUITE2-return-1-jamb-left/z0_m": 3.8215,
+"solids/WIN-S-SUITE2-return-1-jamb-left/z1_m": 5.102225,
+"solids/WIN-S-SUITE2-return-1-jamb-right/z0_m": 3.8215,
+"solids/WIN-S-SUITE2-return-1-jamb-right/z1_m": 5.102225,
 "solids/WIN-S-VANITY-W-FLASH-HEAD/z0_m": 4.77266,
 "solids/WIN-S-VANITY-W-FLASH-HEAD/z1_m": 4.8664802,
 "solids/WIN-S-VANITY-W-FLASH-PERIMETER/z0_m": 4.1148,

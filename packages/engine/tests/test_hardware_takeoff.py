@@ -313,7 +313,9 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # mudroom's interior upper closure adds no exterior fastening.
     # Final living-east layout (2026-10-16): E1 is at 4'-0", STUDY3 stays at 5'-4", and
     # two field blocks support the girt courses beside the new 63" dining opening.
-    assert row["count"] == 1134 and furring[0]["count"] == 198
+    # ** 1134 -> 1135 ON 2026-10-21: the second storey's three west 27" units grew to 27x54
+    # for R310, and their ROs now cross one more course, which packs one more jamb station. **
+    assert row["count"] == 1135 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

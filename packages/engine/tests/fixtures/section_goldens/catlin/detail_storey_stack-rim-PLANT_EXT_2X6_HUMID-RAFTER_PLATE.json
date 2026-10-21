@@ -1384,7 +1384,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW113AAAA",
-      "tag": "strapping-liner-furring-008"
+      "tag": "strapping-liner-furring-010"
     },
     {
       "space": "model",
@@ -1440,7 +1440,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW113AAAA",
-      "tag": "strapping-liner-furring-009"
+      "tag": "strapping-liner-furring-011"
     },
     {
       "space": "model",
@@ -1496,7 +1496,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW113AAAA",
-      "tag": "strapping-outer-girt-006"
+      "tag": "strapping-outer-girt-007"
     },
     {
       "space": "model",
@@ -1552,7 +1552,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW113AAAA",
-      "tag": "strapping-outer-girt-007"
+      "tag": "strapping-outer-girt-008"
     },
     {
       "space": "model",

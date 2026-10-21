@@ -494,7 +494,7 @@ OPENINGS = [
     # Only the west north-gable unit becomes fixed (2026-10-21); N2 remains operable.
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2B", type_ref="WT-2736-FIX",
            position=from_node("N-A-N1", ft(4, 10.5)), sill_height=ft(2)),   # ctr x 12'-0"
-    Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-2736",
+    Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-2736-TT",
            position=from_node("N-A-NE", ft(10, 10.5)), sill_height=ft(2)),  # ctr x 24'-0"
     # ** THE FOUR EAVE WINDOWS ARE GONE. ** WIN-A-W-S (CAX308AAAA), WIN-A-W-N
     # (CAX306AAAA), WIN-A-E-S (CAX309AAAA) and WIN-A-E-N (CAX310AAAA) were the knee-wall

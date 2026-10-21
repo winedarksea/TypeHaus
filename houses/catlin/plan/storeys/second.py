@@ -679,7 +679,7 @@ OPENINGS = [
     # so the mirrored 4'-0"/13'-4"/22'-8"/32'-0" beat and every offset below are untouched;
     # the head moves 6'-0" -> 7'-0". 2026-10-14: STUDY3 follows WIN-M-LIV-E1's 2026-10-03
     # move to 5'-4", restoring their column and clearing the compact corner bookshelf.
-    Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2748-T",
+    Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2748-TT-T",
            position=from_node("N-S-SE", ft(4, 2.5)), sill_height=ft(3)),     # y 5'-4"
     # BED1/BED2 ARE BACK ON THE 27" BEARING CAP, AND THE 2026-08-01 NOTE THAT
     # PUT THEM ON 30" WAS WRONG ABOUT WHY IT HAD TO. That note read: "a 27x36 falls a third
@@ -760,10 +760,13 @@ OPENINGS = [
     # West suite (bearing wall). SUITE1 moved 13'-0" -> 10'-8" for the third exact
     # main/second west column. Its header crosses W-S-W3's top ladder-backing rung, so the
     # solver omits that nonstructural rung while preserving the header and every other rung.
-    Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W3", type_ref="WT-2736",
-           position=from_node("N-S-W2", ft(10, 6.5)), sill_height=ft(3)),   # y 10'-8"
-    Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W3", type_ref="WT-2736",
-           position=from_node("N-S-W2", ft(1, 2.5)), sill_height=ft(3)),      # y 20'-0"
+    # 2026-10-21: 27x36 -> 27x54 casement for R310 (a 27x36 nets ~4.4 sf; 27x54 nets 7.0).
+    # Sill 2'-3 1/2" puts its course on the 24" girt line (NEW-OPENING RULE); the centre is
+    # 1/2" over the 14" units' 4'-6" line, and the stool lands at desk height.
+    Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W3", type_ref="WT-2754",
+           position=from_node("N-S-W2", ft(10, 6.5)), sill_height=ft(2, 3.5)),   # y 10'-8"
+    Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W3", type_ref="WT-2754",
+           position=from_node("N-S-W2", ft(1, 2.5)), sill_height=ft(2, 3.5)),      # y 20'-0"
     # Plant room — south glazing: centres 4'-0" and 9'-4" are stud lines on W-S-S1's grid,
     # stacking exactly over WIN-M-BED-S1/2. Sill 2'-8" = the shared 6'-8" head line.
     # Narrowed 42" -> 30" and moved 8" east off the old bay centres (WT-3048, 2026-08-01,
@@ -788,11 +791,12 @@ OPENINGS = [
            position=from_node("N-S-SW", ft(13, 5)), sill_height=ft(2, 8)),    # x 14'-8"
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type, not the 30" south-glazing one ("resize windows to fit the grid", CLAUDE.md).
-    # Sill 3'-0" holds the shared 6'-0" head line. Moved one 16" bay south with
+    # 27x54 on a 2'-3 1/2" sill since 2026-10-21, matching the suite pair's egress retype
+    # and their 6'-9 1/2" head line. Moved one 16" bay south with
     # WIN-M-BED-W1 on 2026-10-04 for bedroom symmetry, retaining the exact column.
     # At y=48" it sits 8.44" south of the plant room's finished west-wall centre.
-    Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736-HP",
-           position=from_node("N-S-W3", ft(3, 10.5)), sill_height=ft(3)),    # y 4'-0"
+    Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2754-HP",
+           position=from_node("N-S-W3", ft(3, 10.5)), sill_height=ft(2, 3.5)),    # y 4'-0"
     # Restores west daylight to the double-vanity alcove without competing with its two
     # north-wall sinks and mirror lights. Paired exactly with WIN-M-BATH1-W below; the 14"
     # RO fits one stud bay.
@@ -815,9 +819,9 @@ OPENINGS = [
     # Study 2's south pair: resolved centres x=26'-8"/32'-0" are stud lines on the shared
     # facade grid and stack over WIN-M-LIV-S2/S1. Their 2'-8" sills hold the 6'-8" head line.
     # The west unit is tempered for its proximity to D-S-DECK-E.
-    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3048-T",
+    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3048-TT-T",
            position=from_node("N-S-S1", ft(7, 5)), sill_height=ft(2, 8)),     # x 26'-8"
-    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3048-T",
+    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3048-TT-T",
            position=from_node("N-S-S1", ft(12, 9)), sill_height=ft(2, 8)),    # x 32'-0"
     # Baths + north. WIN-S-BATH-W has no source counterpart, kept for hall-bath daylight.
     # Re-hosted off W-S-N3: W-S-N3B is now the chase's own wall, not the

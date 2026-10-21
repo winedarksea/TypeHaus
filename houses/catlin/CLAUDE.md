@@ -905,6 +905,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   retain dimensions, frame depth, safety glazing and the conservative U-0.25/SHGC-0.35/VT-0.5
   presets; any improved rated performance awaits the selected manufacturer's data.
 
+- **Imported tilt-turn, US egress casements (2026-10-21).** 11 operable units are `-TT`
+  tilt-turn twins (same presets). The **9 R310 escape windows stay US casements**:
+  `WIN-M-BED-S1`/`S2`, `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`,
+  `WIN-A-S-JUL-W`/`E`. The two kitchen awnings stay outward. **R310 grades the nominal size,
+  so its PASS is not evidence**: no tilt-turn on this schedule nets 5.7 sf at a Euro
+  sightline, and a 27x36 casement nets only 4.4 sf. Before retyping an escape window, redo
+  the hand check in `notes/window_procurement.md` §7.
+
 - **Facade alignment — ONE GRID PER FACADE.** `EXT_2X6`/`PLANT_EXT_2X6_HUMID` set
   `layout_origin="line"`, so a wall segment lays out from its **layout line** (the derived
   chain of collinear, stacked walls, `resolve/layout_lines.py`), not its own start node.
@@ -971,7 +979,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   32'-0"; second: 4'-0"/9'-4"/14'-8"(door)/21'-4"(door)/26'-8"/32'-0" — every pair sums to
   36'-0"). Attic gables do not join these (see **Gables**).
   West face stacks FIVE (y 4'-0", 10'-8", 20'-0", 24'-8", 31'-4"): first three 27" family on
-  a 3'-0" sill; fourth pairs tempered 14" picture units (`RM-M-BATH1`/`RM-S-VANITY`) on a 3'-6"
+  a 3'-0" sill on main, and on the second storey 27x54 on a 2'-3 1/2" sill (`WIN-S-PLANT3`,
+  `WIN-S-SUITE1`/`2`, grown for the suite's R310 escape, 2026-10-21); fourth pairs tempered 14" picture units (`RM-M-BATH1`/`RM-S-VANITY`) on a 3'-6"
   sill; fifth pairs `WIN-M-MUD`/`WIN-S-BATH-W`, also 3'-6". The 27" units share one 6'-0"
   head line; the two 14" pairs share the 4'-6" centre line instead (see **Head lines**).
   `WIN-M-BATH2` is WT-2736-FIX-T (formerly WT-2736-T) at a 3'-0" sill to reach the third
@@ -1194,7 +1203,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `test_each_facade_block_grid_is_one_grid_on_every_storey`). The stair well's east edge
   lost its guard with the wall, so `RL-A-STAIR` gained a 3'-0" east leg (`code.R312_1_guard`).
 
-- **Head lines.** West face: the 27" units head on one 6'-0" line off a 3'-0" sill.
+- **Head lines.** West face: the main storey's 27" units head on one 6'-0" line off a 3'-0"
+  sill; the second storey's three head at 6'-9 1/2" (27x54 on 2'-3 1/2", centre 1/2" over
+  4'-6", the nearest a 24" girt module allows).
   **The 14" family does NOT — it holds the 4'-6" CENTRE line instead (owner, 2026-09-12).**
   Four leaves (`WIN-M-BATH1-W`, `WIN-M-MUD`, `WIN-S-VANITY-W`, `WIN-S-BATH-W`) came off a
   4'-0" sill onto **3'-6"**, so they head at 5'-6". The arithmetic is exact and is the whole

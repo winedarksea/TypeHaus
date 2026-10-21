@@ -379,3 +379,13 @@ HP1/HP2/HP3, with 2,441 Btu/h ground-coupled in HP2. The loads above and the siz
 in §2 reflect this model. HP1's factor is now 0.92 against a 12,108 Btu/h cap; HP2's is
 0.60 against 11,791 Btu/h; HP3's is 2.76 against 813 Btu/h. The crossovers and owner verdicts
 are unchanged.
+
+## Addendum 2026-10-21 — the suite and plant-room windows grew for R310
+
+`WIN-S-SUITE1`/`2` went 27x36 → 27x54 (+6.75 ft² at U-0.25) and `WIN-S-PLANT3` the same
+(+3.375 ft² at U-0.14), all in HP1's zone (`window_procurement.md` §7). That is +2.160 window
+UA and −0.229 wall UA, so the air-coupled UA goes 178.06 → **179.99**, and ×85 °F the design
+load goes 15,135 → **15,299 Btu/h**. The factor is 14,000 / 15,299 = **0.92** against a
+**12,240 Btu/h** cap, and the crossover moves −7.1 → **−6.4 °F** (§4's interpolation of the
+minimum column). HP2 and HP3 do not move; no verdict changes.
+

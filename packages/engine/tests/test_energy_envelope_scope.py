@@ -42,7 +42,9 @@ from typehaus.resolve.solid_categories import in_slab_family
 # WIN-M-LIV-E3 (2026-10-03) added 9 sf: +2.25 window UA, -0.207 wall UA.
 # WIN-M-DINING-E (2026-10-16) replaces E3 and EAST-MID (18 sf total) with a 21 sf picture
 # unit: +3 sf net glass, +0.75 window UA, -0.063 wall UA. The updated block load is pinned.
-_HEATING_BTUH = 31_484.8
+# 2026-10-21, R310: WIN-S-SUITE1/2 27x36 -> 27x54 (+6.75 sf at U-0.25) and WIN-S-PLANT3
+# 27x36 -> 27x54 (+3.375 sf at U-0.14): +2.160 window UA, -0.229 wall UA, x85 F = +164.
+_HEATING_BTUH = 31_648.9
 # SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
 # (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
 # latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2
@@ -50,24 +52,26 @@ _HEATING_BTUH = 31_484.8
 # sol-air term — live once the owner stated the panel colour — put 329 back on top.
 # WIN-A-S2/-S3 WT-1436 -> WT-1424 (c3c46cff): -2.33 sf glass, 21,021.1 -> 20,867.9.
 # Restoring WIN-M-LIV-S2 raises the 10:30 glass peak and the cooling result below.
-_COOLING_SENSIBLE_BTUH = 21_846.7
+# The same west glass lifts the day's average more than its 10:30 peak, so the AED
+# excursion falls 1,070 -> 740 and cooling 21,847 -> 21,707 while the glass peak rises 162.
+_COOLING_SENSIBLE_BTUH = 21_707.0
 _LATENT_BTUH = 1_400.0
-_COOLING_TONS = 1.9372
-_SOLAR_PEAK_BTUH = 12_914.3
+_COOLING_TONS = 1.9256
+_SOLAR_PEAK_BTUH = 13_075.9
 _SOLAR_PEAK_HOUR = 10.5
-_AED_EXCURSION_BTUH = 1_070.4
+_AED_EXCURSION_BTUH = 740.0
 _INTERNAL_SENSIBLE_BTUH = 2_810.0
 
 # ``(kind, area_ft2, ua_btu_per_hour_f)`` in the order the report emits them.
 # The 17'-0" court (2026-09-22): W-B-S2-FR/-S3-FR lost 1' each (2 x 8.52' = -17.0 sf), the
 # concrete W-B-S1/-S4 gained 1' each (+12.2 sf buried, +2.6 sf proud).
 _COMPONENTS = (
-    ("walls", 3197.0, 72.816),
+    ("walls", 3186.9, 72.587),
     ("foundation_walls", 775.5, 28.604),
     ("foundation_walls_above_grade", 255.7, 11.677),
     ("roof", 1547.9, 29.103),
     ("slab", 1296.0, 25.468),
-    ("windows", 280.7, 66.124),
+    ("windows", 290.8, 68.284),
     ("doors", 120.0, 24.000),
 )
 

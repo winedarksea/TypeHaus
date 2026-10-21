@@ -87,7 +87,9 @@ def test_catlin_picture_window_selection_preserves_the_operable_exceptions(catli
 
     # The mudroom was already fixed; the bedroom's larger north unit still opens.
     assert windows["WIN-M-MUD"].type_ref == "WT-1424-FIX"
-    for tag in ("WIN-M-KITCH", "WIN-S-HALL-N", "WIN-S-BED1", "WIN-S-BED2", "WIN-A-N2"):
+    for tag in ("WIN-M-KITCH", "WIN-A-N2"):
+        assert window_types[windows[tag].type_ref].operation is WindowOperation.TILT_TURN, tag
+    for tag in ("WIN-S-HALL-N", "WIN-S-BED1", "WIN-S-BED2"):
         assert window_types[windows[tag].type_ref].operation is WindowOperation.CASEMENT, tag
 
 
@@ -104,24 +106,31 @@ def test_window_operation_coerces_authored_strings_and_rejects_unmodeled_ones():
         WindowType(tag="WT-TEST", width=ft(3), height=ft(5), operation="jalousie")
 
 
-def test_the_attic_juliet_pair_is_a_casement_and_not_an_awning(catlin_plan):
-    by_tag = {wt.tag: wt for wt in catlin_plan.library.window_types}
-    juliet = by_tag["WT-2464"]
-    # The pair's whole premise is a sash that swings like a door leaf; an awning (bottom-hung
-    # only) would open the head and nothing else, which is not the same window. It was a
-    # TILT_TURN for the few hours the pair was 32" wide — narrowing the RO to 18" put it
-    # under the ~500 mm minimum frame that hardware line is made in, and a casement leaf is
-    # what a juliet unit is anyway. The 2026-08-24 widening back to 24" (WT-1864 -> WT-2464)
-    # clears that hardware minimum again but does NOT reopen the question: casement is the
-    # family's operation and the leaf the composition wants.
-    assert juliet.operation is WindowOperation.CASEMENT
-    assert juliet.operation == "casement"
+# Every window a sleeping room relies on for R310 escape (notes/window_procurement.md §7).
+EGRESS_CASEMENTS = (
+    "WIN-M-BED-S1", "WIN-M-BED-S2", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-HALL-N",
+    "WIN-S-SUITE1", "WIN-S-SUITE2", "WIN-A-S-JUL-W", "WIN-A-S-JUL-E",
+)
 
 
-def test_tilt_turn_is_a_modeled_operation_even_with_no_current_placement():
-    # No catlin type carries it today (see above), but the member is the vocabulary's only
-    # dual-axis entry — it is what an authored "tilt_turn" has to coerce to rather than
-    # failing the closed-vocabulary check, and dropping it would silently reject valid source.
+def test_catlin_egress_windows_are_casements_and_the_rest_tilt_turn(catlin_plan):
+    # 2026-10-21: the casements went tilt-turn for import, then the egress set came back. A
+    # 27" tilt-turn nets ~18" clear at a Euro sightline and R310 wants 20"; a US egress-hinge
+    # casement nets ~20 3/4". The 14" kitchen pair stays an outward awning.
+    window_types = {wt.tag: wt for wt in catlin_plan.library.window_types}
+    operations = {
+        element.tag: window_types[element.type_ref].operation
+        for element in catlin_plan.all_elements() if isinstance(element, Window)
+    }
+    casements = {tag for tag, op in operations.items() if op is WindowOperation.CASEMENT}
+    assert casements == set(EGRESS_CASEMENTS)
+    assert sum(op is WindowOperation.TILT_TURN for op in operations.values()) == 11
+    assert {tag for tag, op in operations.items() if op is WindowOperation.AWNING} == {
+        "WIN-M-KITCH-N", "WIN-M-KIT-E"}
+
+
+def test_tilt_turn_coerces_from_authored_source():
+    # The vocabulary's only dual-axis entry: an authored "tilt_turn" must coerce to it.
     unit = WindowType(tag="WT-TEST", width=ft(2, 8), height=ft(6, 4), operation="tilt_turn")
     assert unit.operation is WindowOperation.TILT_TURN
     assert unit.operation == "tilt_turn"

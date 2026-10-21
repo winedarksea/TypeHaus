@@ -5,6 +5,7 @@ import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { buildBaseRun, buildBoardMembers, buildCountertop, buildDoorCasing } from "../three/builders/millwork";
 import { buildPaneling, buildSolid } from "../three/builders/structure";
 import { buildCanvasObjectParts } from "../three/builders/site";
+import { runWallCoatingChecks } from "./wallCoatingChecks";
 
 /** Actual resolved Catlin objects, built through the same entrypoints as the editor. */
 export async function houseWoodSamples() {
@@ -70,7 +71,7 @@ export async function houseWoodSamples() {
 }
 
 /** Full-size cutaway context for checking grain minification across the suite's oak floor. */
-export async function houseWoodRoom() {
+export async function houseWoodRoom(renderer: THREE.WebGLRenderer) {
   const model: Model = await (await fetch("/__wood-review-house")).json();
   const materials = model.catalog!.materials;
   const materialSpecies = (ref?: string | null) => materials.find(m => m.tag === ref)?.species;
@@ -97,6 +98,9 @@ export async function houseWoodRoom() {
     for (const material of Array.isArray(object.material) ? object.material : [object.material])
       if (material.userData.woodSpecies) species.add(material.userData.woodSpecies);
   });
-  return { group, checks: { failures: ["cherry", materialSpecies(room.floor_finish) ?? "oak", "elm"].filter(s => !species.has(s))
-    .map(s => `Room context missing ${s}`), room: room.tag, species: [...species] } };
+  return { group, checks: { failures: [
+    ...["cherry", materialSpecies(room.floor_finish) ?? "oak", "elm"].filter(s => !species.has(s))
+      .map(s => `Room context missing ${s}`),
+    ...runWallCoatingChecks(model, renderer),
+  ], room: room.tag, species: [...species] } };
 }

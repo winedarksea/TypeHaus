@@ -1262,10 +1262,10 @@ OPENINGS = [
     # W1 moved one 16" bay south on 2026-10-04 with WIN-S-PLANT3: the bedroom pair's
     # midpoint is y=88", 7.87" north of the finished room/seat centre instead of 15.87".
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
-           type_ref="WT-2736", position=from_node("N-M-SW", ft(2, 10.5)),
+           type_ref="WT-2736-TT", position=from_node("N-M-SW", ft(2, 10.5)),
            sill_height=ft(3)),                                                # y 4'-0"
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
-           type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 6.5)),
+           type_ref="WT-2736-TT", position=from_node("N-M-SW", ft(9, 6.5)),
            sill_height=ft(3)),                                               # y 10'-8"
     # South face, bedroom: centres 4'-0" and 14'-8", both STUD LINES on W-M-S1's grid.
     # S1 stacks under WIN-S-PLANT1; S2 stacks under WIN-S-PLANT4, which took over this stud
@@ -1334,10 +1334,10 @@ OPENINGS = [
     # 16" stud grid. S2 restores the west column retired in 2026; its RO x=25'-5"..27'-11"
     # is 19" from D-M-BALC's east jamb, so it takes the tempered twin WT-3048-T.
     Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
-           type_ref="WT-3048-T", position=from_node("N-M-S1", ft(7, 5)),
+           type_ref="WT-3048-TT-T", position=from_node("N-M-S1", ft(7, 5)),
            sill_height=ft(2, 8)),
     Window(uid="CMX307AAAA", tag="WIN-M-LIV-S1", host="W-M-S2",
-           type_ref="WT-3048", position=from_node("N-M-SE", ft(2, 9)),
+           type_ref="WT-3048-TT", position=from_node("N-M-SE", ft(2, 9)),
            sill_height=ft(2, 8)),
     # East row respaced (2026-07-30 facade pass): the facade favors within-storey rhythm
     # over between-storey stacking here, so this row runs as even as its own grid allows.
@@ -1356,10 +1356,10 @@ OPENINGS = [
     # 10'-8", still mirrored about the brick's y=88" with each RO 3 3/4" off it. The trio
     # (ROs 2'-10 1/2"..11'-9 1/2") now sits on the LVP. E1 no longer columns with WIN-S-STUDY3.
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
-           type_ref="WT-2748", position=from_node("N-M-SE", ft(2, 10.5)),
+           type_ref="WT-2748-TT", position=from_node("N-M-SE", ft(2, 10.5)),
            sill_height=ft(2, 10)),
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
-           type_ref="WT-2748", position=from_node("N-M-SE", ft(9, 6.5)),
+           type_ref="WT-2748-TT", position=from_node("N-M-SE", ft(9, 6.5)),
            sill_height=ft(2, 10)),
     # ** ONE PICTURE WINDOW ON THE DINING TABLE (2026-10-16). ** Replaces WIN-M-LIV-E3 and
     # WIN-M-EAST-MID (uids retired). Centre y=18'-0" (216", a bay centre), on the table and on
@@ -1388,7 +1388,7 @@ OPENINGS = [
     # plan/placeables.py's kitchen header for the cabinet re-composition. 42" sill = counter
     # height. Host is W-M-N1.
     Window(uid="CMX313AAAA", tag="WIN-M-KITCH", host="W-M-N1",
-           type_ref="WT-2736", position=from_node("N-M-NE", ft(5, 6.5)),
+           type_ref="WT-2736-TT", position=from_node("N-M-NE", ft(5, 6.5)),
            sill_height=ft(3, 6)),
     # Relocated to the NE corner 2026-07-30 with the range/sink wall swap. Kept as a small
     # corner window rather than dropped: centre x=34'-0" is a bay centre off N-M-NE, clear
