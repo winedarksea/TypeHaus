@@ -160,14 +160,27 @@ def _register_builtins() -> None:
             host = getattr(el, "host", None)
             # Explicit rehost (split re-hosts by position) wins over a plain rename.
             target = remap.rehost.get(el.tag) or remap.resolve(host) if host else None
-            if target is None or target == host:
-                return []
-            return [PatchOp("update", kind, el.tag, {"host": target})]
+            changed = {}
+            if target is not None and target != host:
+                changed["host"] = target
+            supports = getattr(el, "frame_end_supports", None)
+            if supports is not None:
+                from typehaus.source.ops import RawExpr
+                from typehaus.source.serialize import value_source
+
+                refs = {field: remap.resolve(ref) or ref
+                        for field in ("start_wall_ref", "end_wall_ref")
+                        if (ref := getattr(supports, field)) is not None}
+                updated = supports.model_copy(update=refs)
+                if updated != supports:
+                    changed["frame_end_supports"] = RawExpr(value_source(updated))
+            return [PatchOp("update", kind, el.tag, changed)] if changed else []
 
         return handler
 
     for _cls in (Door, Window, RoughOpening):
-        remap_handler(_cls, ref_fields=("host",))(_opening_handler(_cls.__name__))
+        fields = ("host", "frame_end_supports") if _cls is Door else ("host",)
+        remap_handler(_cls, ref_fields=fields)(_opening_handler(_cls.__name__))
 
     def _placeable_handler(kind: str) -> RemapHandler:
         def handler(el: Element, remap: ReferenceRemap) -> list[PatchOp]:

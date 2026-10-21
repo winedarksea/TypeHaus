@@ -726,55 +726,36 @@ MAIN_LIGHTING = [
                      position=pt(ft(32), ft(33)), type_ref="ED-T-LT-PSU-200",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.CEILING)),
-    # ** NOT ON W-M-C5, and that is worth stating. ** That wall's east face has no free wall
-    # left on it at all: FURN-M-KIT-PANTRYC covers y 25'-10 7/8"..27'-4 7/8" and the cold
-    # pair covers 27'-4 7/8"..32'-10 5/8" (both extents RE-MEASURED 2026-09-06 — the
-    # figures here were 4" south of the model, stale since PANTRYC last moved), leaving
-    # 2 3/8" of corner stud pack out of 87". This one goes on W-M-PAN-E's EAST face at the
-    # pantry's outside corner, which is the wall you actually pass on the way into the
-    # kitchen from the west. ED-M-KITCH-SW was behind PANTRYC on the strength of that same
-    # dead wall and has now MOVED to W-M-C3 — see its own note above; the sentence that
-    # used to stand here calling it "a pre-existing condition this commit neither causes
-    # nor fixes" is spent.
+    # Shared two-gang installation on the pantry east return, with ED-M-PANTRY-SW.
+    # House gang convention: 4-inch device spacing; both at 46 inches, above the
+    # north base counter and below its uppers. Keep the box out of the corner pack.
     ElectricalDevice(uid="EX3ZQQPM9K", tag="ED-M-KITCH-SW-UC", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-PAN-E", face="right", distance_from_start=inch(0),
+                         wall_ref="W-M-PAN-E", face="right", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # --- RM-M-PANTRY's vertical slot -----------------------------------------------------
-    # A POINT DEVICE, NOT A LightRun — see ED-T-LT-SLOT72's note in plan/lighting_types.py
-    # for why a vertical run silently bills zero feet and sizes its supply at 0 W.
-    # 1'-6" to 7'-6" on the pantry's west wall (W-M-C5B's east face), so the slot lights the
-    # DEPTH behind whatever is on each shelf; overhead alone is the worst option in a
-    # reach-in, because every shelf below the top sits in its own shadow.
-    #
-    # 120V with an integral driver, deliberately: there is no cavity here for a 24V PSU.
-    # Load and switch share CKT-LT-BACKUP, so electrical.lighting_controls draws no NEC
-    # 210.7 finding.
-    #
-    # ** Refinement worth taking at rough-in, not modelled: ** a door-jamb switch instead of
-    # (or wired parallel to) the wall switch, so opening the bypass lights the pantry — the
-    # standard for a closet. Optionally a second layer of shelf-edge strips at the front
-    # underside of each shelf, facing back. 3000-4000K either way.
+    # On the actual west wall, in the 8-inch strip ahead of the shelf noses.
+    # The pocket occupies the south wall; no box or long fastener may enter it.
+    # Preserve the 18-inch base and six-foot lit line; manual control remains on backup.
     ElectricalDevice(uid="2A635YS6VW", tag="ED-M-PANTRY-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SLOT72",
                      circuit="CKT-LT-BACKUP", room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(1, 6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-PAN-S", face="left", distance_from_start=inch(5.125),
-                         normal_gap=inch(0), rotation_offset=deg(90)))),
-    # Switched from the KITCHEN side, the way a closet is. The only wall left on that face
-    # is the 8 7/8" east of D-M-PANTRY's rough opening.
+                         wall_ref="W-M-C5B", face="right", distance_from_start=inch(6.375),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    # Kitchen-side manual control, grouped with ED-M-KITCH-SW-UC on the east return.
     ElectricalDevice(uid="1M4ZM8DRWH", tag="ED-M-PANTRY-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-PAN-S", face="right", distance_from_start=inch(74),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         wall_ref="W-M-PAN-E", face="right", distance_from_start=inch(8),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-M-BED: a four-can grid (ED-M-BED-LT is the SW corner of it, plan/mep.py), on a
     # 3-WAY since 2026-09-15. The only switch in this room stood at the CLOSET door. There

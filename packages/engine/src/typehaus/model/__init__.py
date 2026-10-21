@@ -119,6 +119,7 @@ from typehaus.model.millwork import (
     TrimStandard,
     WindowStool,
 )
+from typehaus.model.opening_supports import OpeningFrameEndSupports
 from typehaus.model.paneling import BoardAndBatten, PanelingSpan, WallPaneling
 from typehaus.model.placeables import (
     ClearancePolicy,
@@ -307,6 +308,7 @@ for _name, _obj in (
     ("outside_of", outside_of), ("inside_of", inside_of),
     ("layers", layers), ("from_node", from_node), ("centered", centered),
     ("in_slab", in_slab), ("under_subfloor", under_subfloor),
+    ("OpeningFrameEndSupports", OpeningFrameEndSupports),
     ("ToRoof", ToRoof), ("FollowRoof", FollowRoof), ("Arch", Arch),
     ("PublishedSpan", PublishedSpan), ("PublishedCapacity", PublishedCapacity),
     ("PublishedReaction", PublishedReaction), ("PublishedCladdingLoad", PublishedCladdingLoad),
@@ -378,7 +380,8 @@ __all__ = [
     "Slice", "Transition", "Continuity", "ExaggerationSpec",
     "DetailAnnotation", "LayerJoin",
     "FaceRef", "face", "LayerMaterial", "ToRoof", "FollowRoof", "Arch", "LayerSpan",
-    "OpeningPosition", "PublishedSpan", "PublishedCapacity", "PublishedReaction",
+    "OpeningFrameEndSupports", "OpeningPosition",
+    "PublishedSpan", "PublishedCapacity", "PublishedReaction",
     "PublishedCladdingLoad", "PublishedHole",
     "ShearPanelSpec", "DiaphragmSpec", "DiaphragmDelivery", "ReceivingLine", "HeadConnector",
     "CollectorBlocking", "JointNailing", "PanelEdgeBlocking",

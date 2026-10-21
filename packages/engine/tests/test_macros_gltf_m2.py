@@ -154,7 +154,7 @@ def test_remap_registry_covers_reference_fields():
     assert not missing
     for kind, names in UNCOVERED.items():
         assert set(names) <= set(kinds[kind].model_fields), kind
-    assert fields["Door"] == ("host",)
+    assert fields["Door"] == ("host", "frame_end_supports")
     assert fields["Fixture"] == ("wall_ref", "location")
 
 

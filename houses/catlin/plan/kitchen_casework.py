@@ -11,7 +11,7 @@ from typehaus.model import deg, ft, inch, mm, pt
 
 MAIN_KITCHEN_CASEWORK = [
     # West run — cold storage and pantry against the centre bearing wall, opening east.
-    # North to south: RM-M-PANTRY's south partition, freezer, refrigerator, closet pantry.
+    # North to south: RM-M-PANTRY's south partition, refrigerator, freezer, closet pantry.
     # Cabinets 24" deep (centre x=19'-3 3/8"); cold boxes 27" deep (centre 19'-4 7/8").
     #
     # ** THE RUN'S NORTH END IS A WALL, NOT A CABINET. ** RM-M-PANTRY's south partition
@@ -28,7 +28,9 @@ MAIN_KITCHEN_CASEWORK = [
     #
     # Fridge/freezer door zones: fronts at x=20'-6 3/8", so a 3'-0" zone reaches 23'-6 3/8"
     # — clear of W-M-PAN-E by 7 1/4" and south of the north counter run. ** DESIGN NOTE, and
-    # no check catches it: ** that zone stands in front of D-M-PANTRY. An open fridge door
+    # no check catches it: ** that zone stands in front of D-M-PANTRY. The pantry
+    # now pockets west: the closed refrigerator obstructed ~23 inches of the old west
+    # bypass opening. Shelves and cabinet positions stay fixed. An open fridge door
     # blocks the pantry. It is the price of putting both on one aisle, and it is the price
     # the owner is paying knowingly.
     # Product: the Frigidaire Professional single-door pair (plan/appliance_types.py).

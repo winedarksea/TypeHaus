@@ -40,7 +40,7 @@ def test_eclisse_rough_opening_is_its_published_table():
 
 def test_catlin_pockets_frame_at_the_eclisse_rough_opening(catlin_model_ro):
     pockets = {op.tag: op for op in catlin_model_ro.openings if op.pocket_run_m}
-    assert set(pockets) == {"D-M-LAUN", "D-B-BATH"}
+    assert set(pockets) == {"D-M-LAUN", "D-B-BATH", "D-M-PANTRY"}
     for op in pockets.values():
         assert (op.width_m + op.pocket_run_m) / inch(1).meters == pytest.approx(74.5)
 

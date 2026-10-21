@@ -1621,12 +1621,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **A split stud that ever reaches the top plate destroys the `W-M-LS` plate tie** — a
     pocket occupies floor to 6'-8" only, so the tie's plates run continuous over/under it and
     only its vertical edge floats.
-  - **Both pockets are Eclisse steel cassettes (2026-10-09)**, `pocket_frame="eclisse"` on the
+  - **All three pockets are Eclisse steel cassettes (pantry added 2026-10-20)**, `pocket_frame="eclisse"` on the
     type: RO 74 1/2" against the commodity 73", so each cavity is 1 1/2" longer. EKC3680 here;
     `D-B-BATH`'s 2x6 EKQ kit is special order, 4-9 weeks. `notes/pocket_frame_eclisse.md`.
   - The closing pack must clear `N-M-C2`, where bearing `W-M-C3` corners in and
     `BM-M-HALL` starts. Full detail, including the 1" fastener limit:
     `notes/pocket_door_at_laundry.md`.
+
+- **Pantry door (2026-10-20):** `D-M-PANTRY` is a 36 x 80 Eclisse EKC3680,
+  pocketing west. The refrigerator obstructed ~23 inches of the old western bypass
+  approach. RO x=218 3/4..293 1/4 inches; nominal doorway 257 1/4..293 1/4.
+  Explicit `frame_end_supports` use `W-M-C5B` and `W-M-PAN-E`, with full-height
+  west backing and the existing east corner studs. Pantry footprint, stock SEKTION
+  run, shelves and center gable stay. Western storage remains a sideways reach.
+  The light is on the actual west wall ahead of the shelves; pantry and undercabinet
+  switches share the east return at 46 inches. See `notes/pocket_frame_eclisse.md`.
 
 ### Basement
 

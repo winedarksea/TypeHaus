@@ -128,8 +128,15 @@ class WallOpening:
     header_spec: str | None = None
     pocket_run_m: float = 0.0
     pocket_sign: int = 0
+    frame_start_supported: bool = False
+    frame_end_supported: bool = False
     #: ``DoorType.exterior`` — what ``stud_stock.stamp_exterior_door_sills`` restocks by.
     exterior: bool = False
+
+
+def frame_end_supported(opening: WallOpening, sign: int) -> bool:
+    return bool(getattr(opening, "frame_start_supported" if sign < 0
+                        else "frame_end_supported", False))
 
 
 def pocket_extent(opening: WallOpening) -> tuple[float, float]:
@@ -234,6 +241,8 @@ def jamb_pack_stations(openings: list[WallOpening], stud_thickness_m: float,
         pocket_sign = 0 if not closed else (1 if opening.pocket_sign > 0 else -1)
         half = opening.width_m / 2
         for sign in (-1, +1):
+            if frame_end_supported(opening, sign):
+                continue
             edge = closed if sign == pocket_sign else opening.center_m + sign * half
             for index in range(jacks + kings):
                 out.append(edge + sign * (stud_thickness_m / 2
@@ -367,6 +376,8 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     for side, sign in (("l", -1), ("r", +1)):
         edge = closed if sign == pocket_sign else center + sign * half
         pack_edges[sign] = edge
+        if frame_end_supported(opening, sign):
+            continue
         for jack_index in range(jacks):
             station = edge + sign * (thickness / 2 + jack_index * thickness)
             position = add(wall_start, scale(direction, station))
@@ -389,8 +400,10 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     # (the pack edge plus the full trimmer stack), so it butts the kings without crossing
     # them. Over a pocket the left/right stations are no longer symmetric about the
     # opening's centre — the header spans the rough opening *and* the cavity.
-    header_left_station = pack_edges[-1] - jacks * thickness
-    header_right_station = pack_edges[+1] + jacks * thickness
+    header_left_station = pack_edges[-1] - (
+        0 if frame_end_supported(opening, -1) else jacks * thickness)
+    header_right_station = pack_edges[+1] + (
+        0 if frame_end_supported(opening, +1) else jacks * thickness)
     header_span = header_right_station - header_left_station
     header_left = add(wall_start, scale(direction, header_left_station))
     header_right = add(wall_start, scale(direction, header_right_station))

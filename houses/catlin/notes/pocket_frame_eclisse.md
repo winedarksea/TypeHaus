@@ -1,13 +1,14 @@
 # Pocket frames — Eclisse steel cassettes
 
 **House:** catlin
-**Structure:** `D-M-LAUN` (2x4, `W-M-HS3`/`W-M-HS4`) and `D-B-BATH` (2x6, `W-B-BA-E`/`W-B-HALL-W`),
-both `DT-POCKET-INT-36` with `pocket_frame="eclisse"`.
+**Structure:** `D-M-LAUN` (2x4, `W-M-HS3`/`W-M-HS4`), `D-M-PANTRY` (2x4,
+`W-M-PAN-S`), and `D-B-BATH` (2x6, `W-B-BA-E`/`W-B-HALL-W`),
+all `DT-POCKET-INT-36` with `pocket_frame="eclisse"`.
 **Written:** 2026-10-09.
 
 ## Why
 
-Both pockets were Johnson kits: the 1500PF and the 1560. Their steel split studs arrive loose,
+The original laundry and basement-bath pockets were Johnson kits: the 1500PF and the 1560. Their steel split studs arrive loose,
 and the framer cuts and nails them to the floor and the header, so how flat the pocket ends up
 depends on the framer. Eclisse ships a factory-assembled galvanized steel cassette with a
 removable track. It is stiffer and much less sensitive to framer skill. It is **not cheaper**:
@@ -31,6 +32,29 @@ the opening, not 37". The engine reads the table off the kit record
 (`StructuralHardware.rough_opening_in_by_length_in`). `D-M-LAUN` closes at x=15'-4 1/2" and
 `D-B-BATH` at y=16'-5 9/16". Both still fit their collinear runs, and `mep.pocket_occupancy`
 guards the longer bands. The 1" fastener limit is unchanged (`POCKET_MAX_FASTENER`).
+
+## Pantry — 2026-10-20
+
+The refrigerator stands in front of about 23 inches of the old western 30-inch bypass
+opening even when closed. The replacement 36 x 80 EKC3680 parks west and exposes the
+usable east approach. The pantry and stock SEKTION cabinets retain their positions.
+
+The entire RO is x=218 3/4..293 1/4 inches, with the nominal doorway at
+257 1/4..293 1/4 and the pocket allocation at 218 3/4..257 1/4. It exactly spans the
+perpendicular stud faces. `Door.frame_end_supports` explicitly connects the low end to
+`W-M-C5B` and high end to `W-M-PAN-E`. The west junction gets full-height LSL backing in
+place of its finish ladder rungs; the east return reuses its solid corner studs. Neither
+end gets a separate jamb pack inside the cassette. Support validation fails closed.
+
+Set the frame at intended finished-floor level and the RO head at 83 1/4 inches above
+that level. Keep every drywall fastener over the cassette at 1 inch maximum. Anchor
+through the cassette's specified fixing points into the perpendicular framing; no
+cabinet, pipe, device box, shelf cleat, or added blocking may enter the cassette.
+
+The light moves to the actual west wall, in the 8-inch strip ahead of the shelves.
+Pantry and undercabinet controls share a two-gang installation on the east return at
+46 inches, with manual pantry control. The two shelf bays and structural gable remain;
+western storage is reached sideways from the east opening.
 
 ## Not modelled
 

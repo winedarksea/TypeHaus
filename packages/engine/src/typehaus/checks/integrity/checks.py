@@ -361,7 +361,9 @@ def opening_fits_host(ctx: CheckContext) -> list[Finding]:
         axis_len = length(sub(rw.axis[1], rw.axis[0]))
         left = op.center_along_m - op.width_m / 2
         right = op.center_along_m + op.width_m / 2
-        if left < min_edge or right > axis_len - min_edge:
+        left_margin = 0.0 if op.frame_start_support_wall else min_edge
+        right_margin = 0.0 if op.frame_end_support_wall else min_edge
+        if left < left_margin or right > axis_len - right_margin:
             out.append(_err("integrity.opening_fits",
                             f"opening {op.tag} does not fit host {op.host_wall} "
                             f"(needs >= {min_edge*39.37:.1f}\" edge distance)", (op.tag,)))

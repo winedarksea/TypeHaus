@@ -36,8 +36,13 @@ from typehaus.resolve.framing.corners import (
     neighbour_band_insets,
     wall_end_framing,
 )
+from typehaus.resolve.framing.frame_end_supports import (
+    complete_frame_end_supports,
+    resolve_frame_end_supports,
+)
 from typehaus.resolve.framing.openings import (
     WallOpening,
+    frame_end_supported,
     frame_opening,
     framed_around,
     in_exclusion,
@@ -268,8 +273,14 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
             ("start", True, start_end, corner_style_start),
             ("end", False, far_end, corner_style_end))
     }
+    supported_frame_zones = opening_exclusions(
+        [opening for opening in openings
+         if frame_end_supported(opening, -1) or frame_end_supported(opening, +1)],
+        thickness, module_spacing, module_phase)
     for endpoint, studs in corner_studs.items():
         for index, stud in enumerate(studs):
+            if in_exclusion(stud.station_m, supported_frame_zones):
+                continue
             suffix = "" if index == 0 else f"-{index + 1}"
             point = add(p0, scale(d, stud.station_m))
             corner_top = top_at(stud.station_m)
@@ -702,6 +713,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     """Attach members using the shared junction decisions; return configuration findings."""
     # The framing pattern is a property of the *product type*, not of the resolved
     # opening, so it is looked up once here rather than per wall.
+    support_connections, support_findings = resolve_frame_end_supports(plan, model)
     door_operations = {door_type.tag: door_type.operation
                        for door_type in plan.library.door_types}
     # Engineered-header overrides: the Door or Window instance's header_spec wins, then a
@@ -727,6 +739,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                          or (type_header_specs.get(op.type_ref) if op.is_door else None)),
             pocket_run_m=op.pocket_run_m,
             pocket_sign=op.pocket_sign,
+            frame_start_supported=bool(op.frame_start_support_wall),
+            frame_end_supported=bool(op.frame_end_support_wall),
             exterior=op.is_door and op.type_ref in exterior_door_types,
         ))
     keepouts = pocket_keepouts(plan, model)
@@ -828,6 +842,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     and endpoint not in corners.butting.get(tag, set())):
                 findings.append(_orphaned_corner_style_finding(tag, endpoint, style))
 
+    findings.extend(support_findings)
     framed: list[ResolvedWall] = []
     resolved_by_tag = {wall.tag: wall for wall in model.walls}
     continuations = continuation_roles(model, lambda tag: _structure_module_signature(
@@ -944,6 +959,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
         findings.extend(short_member_findings(rw.tag, members))
         framed.append(replace(rw, members=members))
     model.walls = framed
+    complete_frame_end_supports(model, support_connections)
     return findings
 
 

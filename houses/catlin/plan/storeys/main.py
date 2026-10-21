@@ -27,6 +27,7 @@ from typehaus import (
     LayerMaterial,
     Node,
     Occupancy,
+    OpeningFrameEndSupports,
     PanelingSpan,
     Post,
     PublishedSpan,
@@ -134,12 +135,7 @@ DOOR_TYPES = [
     # RM-M-MUD-CLOSET's bypass pair: no floor for a swing, same reasoning as
     # FURN-WARDROBE-48. 48" is the largest standard bypass whose RO (50") still fits the
     # partition's 63 1/8" framed span with jamb packs to spare — 60" would leave 1 1/8" total.
-    # RM-M-PANTRY's bypass pair. The 60" leaf the mudroom closet could not
-    # have: W-M-PAN-S offers a 71 1/2" framed span, so a 62" RO leaves 4 3/4" of jamb pack
-    # at each end. ** THE MUDROOM CANNOT FOLLOW IT ** — the arithmetic three lines up still
-    # holds, and D-M-MUDC stays at 48".
-    # Bypass and not a bifold (a bifold's leaves fold out into the cold-storage run) and not
-    # a pocket (a 24" leaf would have to park inside a 30"-deep reach-in).
+    # RM-M-PANTRY uses the shared 36-inch Eclisse pocket type in manifest.py.
     # D-B-PLAY's pair. Solid-core, unglazed: the play room wanted the acoustic
     # separation a solid leaf gives more than it wanted borrowed light, so this is a flush
     # double-swing pair rather than a French pair — hence DOUBLE60, not FRENCH60. With no
@@ -271,34 +267,12 @@ NODES = [
     # argument fails.
     Node(uid="N9H36K3W70", tag="N-M-MUDC1", position=pt(ft(0), ft(29, 7.5))),
     Node(uid="T374Q35GT9", tag="N-M-MUDC2", position=pt(ft(6), ft(29, 7.5))),
-    # RM-M-PANTRY: the framed reach-in pantry in the kitchen's NW corner,
-    # replacing four scattered cabinets — FURN-M-KIT-PANTRY-E (48"), -TALL-N (12"),
-    # -TALL-S (18") and the east run's N1/N2 bases. It closes against W-M-C5B (west) and
-    # W-M-N1B (north), so only these two partitions are new.
-    #
-    # ** x=24'-4" IS NOT ON THE 16" MODULE, AND THAT IS FINE HERE. ** 36' - 24'-4" = 140" =
-    # 8x16 + 12. It costs nothing because W-M-N1's EASTERN segment keeps
-    # ``start_node="N-M-NE"`` through the split, and ``resolve/framing/stud_module.py``
-    # lays a segment out from its OWN start node — so its grid cannot move no matter where
-    # the far end is cut, and WIN-M-KITCH's three-storey x=28'-0" column survives.
-    # 24'-4" is chosen for two reasons of its own: the partition's EAST face lands at
-    # 24'-6 3/8", 5/8" of scribe off FURN-M-KIT-E1's carcass at x=24'-7", and x=24'-0"
-    # would drop the framed span to 66 1/4" and kill the 60" bypass.
-    #
-    # ** y=33'-1", MOVED 4" NORTH (owner). ** It was 32'-9", set by what the
-    # cold-storage run could pay: the partition's south face took 4 3/4" off the north end
-    # of that run, which deleting FURN-M-KIT-COLDSTORE-FILL's 6 1/4" gave back.
-    #
-    # The owner then spent 4" of the PANTRY to buy it back for the PASSAGE. Every inch this
-    # wall moves north comes out of the 6" of standing floor in front of the shelves and
-    # goes to the south end of the cold run, where FURN-M-KIT-PANTRYC oversails W-M-C5's end
-    # at y=25'-10" and hangs into the walk-through. That oversail was 9 1/8", then 5 1/8",
-    # and is gone since PANTRYC narrowed to 18" (2026-09-25); the pantry is a 26" reach-in with 2" of floor, and FURN-M-KIT-PANTRYC-ST grew
-    # 15" -> 18" because its box no longer has to stop as short.
-    #
-    # ** 24" SHELVES ARE FIXED, so this wall cannot go much further. ** At 6" north the floor
-    # is gone entirely and the bypass leaves land on the shelf noses. The next move after
-    # this one is a shelf-depth decision, not a wall decision.
+    # The kitchen's NW reach-in: clear 73 1/4 inches wide by 26 inches deep.
+    # Its east axis stays at 24'-7": the east finish face at x=297 3/8 meets
+    # the stock B12/DW/sink/B18 run without moving the sink or its window.
+    # The north wall keeps N-M-NE as its layout origin across the pantry split.
+    # Eighteen-inch shelves leave an 8-inch strip in front; neither changes for
+    # the west-parking Eclisse cassette in W-M-PAN-S (2026-10-20).
     Node(uid="BVTKY7EE89", tag="N-M-PAN1", position=pt(ft(18), ft(33, 1))),
     Node(uid="4B6ND7KATA", tag="N-M-PAN2", position=pt(ft(24, 7), ft(33, 1))),
     Node(uid="HTWHAAG4SF", tag="N-M-PAN3", position=pt(ft(24, 7), ft(36))),
@@ -879,12 +853,11 @@ WALLS = [
     Wall(uid="21GE85HJDT", tag="W-M-MUDC-E", start_node="N-M-MUDC2", end_node="N-M-BA1",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- RM-M-PANTRY: framed reach-in pantry, kitchen NW corner ----
-    # Interior clear 5'-10 1/4" (E-W) x 2'-6" (N-S): west face is W-M-C5B's east gwb at
-    # 18'-3 3/8", north face W-M-N1B's at 35'-5 3/8", and these two partitions' inner faces
-    # at 32'-11 3/8" and 24'-1 5/8". All three junctions are precedented — two
-    # 2x4-into-host tees (as at N-M-MECH1 / N-M-MECH3) and one 2x4/2x4 L (as at N-M-MECH2).
+    # Clear 73 1/4 x 26 inches. The 74 1/2-inch Eclisse RO spans between
+    # the perpendicular stud faces, with its ends supported by those walls.
     Wall(uid="QY8YCE6XV3", tag="W-M-PAN-S", start_node="N-M-PAN1", end_node="N-M-PAN2",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION", top=ft(9),
+         structural_role=StructuralRole.NONBEARING),
     Wall(uid="HGVY43DYQH", tag="W-M-PAN-E", start_node="N-M-PAN2", end_node="N-M-PAN3",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- the fireplace surround ----------------------------------------------------------
@@ -1151,13 +1124,15 @@ OPENINGS = [
     # (the D-M-MECH king-stud lesson).
     Door(uid="QBTZNWG6AG", tag="D-M-MUDC", host="W-M-MUDC-N", type_ref="DT-INT-BYPASS48",
          position=from_node("N-M-MUDC1", inch(8))),
-    # RM-M-PANTRY's bypass pair. W-M-PAN-S's framed span is 71 1/2" (W-M-C5B's stud face at
-    # 18'-2 3/4" to W-M-PAN-E's at 24'-2 1/4"), so a 62" real RO at 18'-7 1/2"..23'-9 1/2"
-    # leaves 4 3/4" of framing at EACH end and clears both corner stud packs by 1 3/4" —
-    # the D-M-MECH king-stud lesson applied at both ends rather than one.
-    # ``integrity.opening_fits`` sees edge distances of 7 1/2"/8 1/2" against a 1.97" min.
-    Door(uid="MSJJGJTJ42", tag="D-M-PANTRY", host="W-M-PAN-S", type_ref="DT-INT-BYPASS60",
-         position=from_node("N-M-PAN1", inch(7.5))),
+    # The refrigerator obstructs ~23 inches of the old western bypass opening.
+    # A 36-inch Eclisse cassette parks west, with the usable doorway at the east.
+    # Frame x=218 3/4..293 1/4; mouth=257 1/4. Perpendicular walls support both
+    # ends without separate jamb packs. Install RO head 83 1/4 above FINISHED floor;
+    # the generic framing head still draws at leaf height (notes/pocket_frame_eclisse.md).
+    Door(uid="MSJJGJTJ42", tag="D-M-PANTRY", host="W-M-PAN-S", type_ref="DT-POCKET-INT-36",
+         position=from_node("N-M-PAN1", inch(41.25)), flip_hinge=True,
+         frame_end_supports=OpeningFrameEndSupports(
+             start_wall_ref="W-M-C5B", end_wall_ref="W-M-PAN-E")),
     # ** AT x 2'-0 5/8"..4'-6 5/8" SINCE 2026-09-09, FLUSH AGAINST THE VANITY. ** The
     # RO's west jamb lands exactly at FX-M-BATH2-SINK's east face — zero gap, no setback for
     # casing, a scribe/filler against the cabinet end panel taking up the difference. That

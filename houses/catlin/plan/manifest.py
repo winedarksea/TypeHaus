@@ -67,7 +67,7 @@ _library = Library(
     # ** THE CATALOG CARRIES WHAT THE HOUSE HANGS, NOT THE WHOLE LADDER (2026-09-12). ** This
     # was the whole pocket ladder, which pulled all six Johnson 1500PF sizes in and left five of
     # them with no door, no price row and nothing to bill — the same dead weight the two
-    # retired house types in `main.DOOR_TYPES` carried. Both house pockets use 36" frames.
+    # retired house types in `main.DOOR_TYPES` carried. All three house pockets use 36" frames.
     # Bought as Eclisse steel cassettes (2026-10-09): stiffer than loose split studs and
     # forgiving of the framer. Its 74 1/2" RO is 1 1/2" wider than the 2W + 1" commodity one.
     # notes/pocket_frame_eclisse.md.

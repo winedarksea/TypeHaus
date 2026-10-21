@@ -438,6 +438,8 @@ class ResolvedOpening:
     # measures what a person walks through must not.
     pocket_run_m: float = 0.0
     pocket_sign: int = 0
+    frame_start_support_wall: str | None = None
+    frame_end_support_wall: str | None = None
     # ``RoughOpening.depth``: how far a BLIND hole runs in from the room-side finish face.
     # ``None`` is a through hole, which is every door, every window and every rough opening
     # authored before blind ones existed.

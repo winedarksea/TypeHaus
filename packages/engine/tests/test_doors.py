@@ -98,9 +98,7 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
         # RM-M-MUD-CLOSET's bypass slider: the framed replacement for FURN-M-MUD-CLOSET-S,
         # keeping the furniture's sliding-door intent.
         "DT-INT-BYPASS48": (48.0, DoorOperation.SLIDE, False, False),
-        # RM-M-PANTRY's bypass pair. The 60" leaf D-M-MUDC could not have: W-M-MUDC-N's
-        # framed span is 63 1/8" and a 62" RO leaves 1 1/8" for jamb packs, where
-        # W-M-PAN-S offers 71 1/2".
+        # Shared bypass catalog entry; the pantry now uses DT-POCKET-INT-36.
         "DT-INT-BYPASS60": (60.0, DoorOperation.SLIDE, False, False),
         "DT-INT-DOUBLE60": (60.0, DoorOperation.DOUBLE_SWING, False, False),
         # The purchased Murphy unit is ordered as 36x80; DoorType dimensions stay the
@@ -387,7 +385,7 @@ def test_synthetic_slide_door_emits_the_sliding_symbol():
     """A slider must not draw a swing arc into the room.
 
     Synthetic because this pins the operation-to-symbol mapping itself, not a house: the
-    two SLIDE doors catlin does hang are bypass pairs (D-M-MUDC, D-M-PANTRY), and the
+    remaining SLIDE door catlin hangs is the mudroom bypass pair (D-M-MUDC), and the
     docstring here used to claim DT-EXT-SLIDE60 was the only SLIDE type and was
     "deliberately kept in the catalog" while orphaned. It was neither — the bypass pairs
     predate it — and it was deleted on 2026-09-12 along with DT-INT-BIFOLD60.
@@ -717,7 +715,7 @@ def test_catlin_bath_pocket_crosses_into_the_matching_section(catlin_model_ro):
               if member.child_key.startswith("pocketsplit-")]
     assert splits and {member.profile for member in splits} == {"2-1x6"}
     frames = {row["part_number"]: row for row in door_hardware_rows(model)}
-    assert frames["EKC3680"]["count"] == 1  # D-M-LAUN, 2x4
+    assert frames["EKC3680"]["count"] == 2  # D-M-LAUN and D-M-PANTRY, 2x4
     assert frames["POCKET-FRAME-ECLISSE-2X6"]["count"] == 1  # D-B-BATH
 
 

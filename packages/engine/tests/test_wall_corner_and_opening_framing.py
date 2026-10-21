@@ -545,7 +545,15 @@ def test_every_framed_catlin_corner_carries_a_three_stud_pack(catlin_resolved):
         if any(not any(m.category == "stud" for m in wall.members)
                for wall in incident_walls):
             continue
-        assert len(pack) >= 3, (junction.node_tag, [m.child_key for _t, m in pack])
+        incident_tags = {wall.tag for wall in incident_walls}
+        supported_frame = any(
+            opening.host_wall in incident_tags
+            and ({opening.frame_start_support_wall, opening.frame_end_support_wall} - {None})
+            & incident_tags for opening in catlin_resolved.openings)
+        # A cassette replaces the host's third corner stud; its perpendicular wall
+        # keeps the two solid studs supporting the strike end.
+        assert len(pack) >= (2 if supported_frame else 3), (
+            junction.node_tag, [m.child_key for _t, m in pack])
         # The studs of a corner pack touch; they must never share plan area.
         polygons = [Polygon(member_footprint(member)[0]) for _tag, member in pack]
         for i, a in enumerate(polygons):

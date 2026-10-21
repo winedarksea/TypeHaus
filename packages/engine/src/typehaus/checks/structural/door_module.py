@@ -8,8 +8,8 @@ one shared loop:
 bay, two bays less the broken stud, that again less a jack each side — because a window that
 wide breaks more than one stud line and wants a wider header than the prescriptive table gives.
 A door is chosen by what has to pass through it. Run catlin's doors through the ladder and it
-reports ``D-M-PANTRY`` (60" bypass), ``D-B-PLAY``, ``D-B-PATIO`` and ``D-G-OVERHEAD`` (192",
-with a named engineered header) as exceeding a 30" limit: four FAILs the house must not act on,
+reports ``D-B-PLAY``, ``D-B-PATIO`` and ``D-G-OVERHEAD`` (192",
+with a named engineered header) as exceeding a 30" limit: three FAILs the house must not act on,
 because narrowing a garage door to fit a stud module is not a thing anyone does.
 
 So this grades **position only**, and it grades it on one criterion: does the opening interrupt
@@ -29,8 +29,8 @@ Tri-state, and the third state is what makes it usable:
 * a legal station exists   -> **FAIL**, naming the nearest one in inches along the wall.
 * none does                -> **UNKNOWN**, saying so and naming the three remedies.
 
-The second case is not a technicality. Six catlin openings are in it — ``D-M-ENTRY`` (36" in a
-48" wall), ``D-M-PANTRY``, ``D-S-BATH1``, ``D-S-BED3``, ``D-S-NCLOSET``, ``D-S-STUDY2`` — and
+The second case is not a technicality. Several catlin openings are in it — ``D-M-ENTRY`` (36" in a
+48" wall), ``D-S-BATH1``, ``D-S-BED3``, ``D-S-NCLOSET``, ``D-S-STUDY2`` — and
 for every one of them the answer "shift the RO" is wrong. The wall is too short to hold that
 leaf on the module with a jamb pack at each end, and the fix is the start node, the layout
 origin, or a narrower leaf. A check that said FAIL there would be sending somebody to look for
@@ -69,6 +69,10 @@ def door_framing_module(ctx: CheckContext) -> list[Finding]:
         # ``type_ref is None`` catches a bare RoughOpening — a cased opening with no leaf,
         # which frames exactly like a door and which the window check also skips.
         if not (opening.is_door or opening.type_ref is None):
+            continue
+        # A cassette anchored at both perpendicular walls has no conventional jamb
+        # station to align with the host stud module. Its support geometry is validated.
+        if opening.frame_start_support_wall and opening.frame_end_support_wall:
             continue
         wall = ctx.model.wall(opening.host_wall)
         if wall is None:

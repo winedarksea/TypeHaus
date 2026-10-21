@@ -75,7 +75,9 @@ def pocket_segments(plan: PlanModel, model: ResolvedModel,
 
     sign = 1 if opening.pocket_sign > 0 else -1
     station = opening.center_along_m + sign * opening.width_m / 2.0  # the mouth
-    remaining = opening.pocket_run_m + POCKET_PACK_MARGIN_M
+    supported = (getattr(opening, "frame_start_support_wall", None) if sign < 0
+                 else getattr(opening, "frame_end_support_wall", None))
+    remaining = opening.pocket_run_m + (0 if supported else POCKET_PACK_MARGIN_M)
     wall, rw = host, host_rw
     segments: list[PocketSegment] = []
     seen: set[str] = set()

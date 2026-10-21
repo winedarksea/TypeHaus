@@ -250,7 +250,7 @@ the future.
 - [x] ED-M-PORCH-FLOOD: shielded adjustable 60° flood beneath the balcony front, aimed into the sunken garden; shared 3D geometry in viewer/GLB/IFC. Porch fan light and landing sconce share the separate porch control (2026-10-18).
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
 - Sconce ED-S-STUDY2-STAIR-SC1 is a bit close to the floor, perhaps it should go at the top of the stairs on the wall, still on the same circuit but in the room above?
-- Maybe replace D-M-PANTRY with a 36" pocket door
+- [x] Replace D-M-PANTRY with a 36" Eclisse pocket door, parking west (2026-10-20).
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
 - ED-A-STUDIO-BAR-PEND should probably be replaced with a track light on the sloped ceiling
 - Flashing geometry and visibility implemented 2026-10-15: west-draining fitted cap on SB-BW-BAND's exposed 2×6 sill above W-BW-SCREEN; metal heads and concealed perimeter/sill flashing at exterior windows and doors; one Flashing 3D hide/isolate control. [Modeling basis and limits](../houses/catlin/notes/flashing_model.md).

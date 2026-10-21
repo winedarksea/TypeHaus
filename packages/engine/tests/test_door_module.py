@@ -56,9 +56,8 @@ def test_it_grades_doors_and_bare_openings_and_nothing_else(catlin_model, findin
 
 def test_the_ro_ladder_is_not_applied_to_doors(findings):
     """**The reason this is a second file.** ``window_module._ro_caps`` caps an opening's
-    WIDTH at 27"/30". Run catlin's doors through it and four of them — ``D-M-PANTRY`` (60"),
-    ``D-B-PLAY`` (60"), ``D-B-PATIO`` (60") and ``D-G-OVERHEAD`` (192", with a named
-    engineered header) — report as over the limit. Those are four findings the house must not
+    WIDTH at 27"/30". Run catlin's doors through it and three of them — ``D-B-PLAY`` (60"), ``D-B-PATIO`` (60") and ``D-G-OVERHEAD`` (192", with a named
+    engineered header) — report as over the limit. Those are three findings the house must not
     act on: nobody narrows a garage door to fit a stud module.
 
     So no finding here may mention a width limit, and the wide doors are graded on position
@@ -67,7 +66,7 @@ def test_the_ro_ladder_is_not_applied_to_doors(findings):
         assert "exceeds" not in finding.message
         assert "limit" not in finding.message
     named = {tag for f in findings for tag in f.element_tags}
-    # D-G-OVERHEAD is graded — on POSITION, and it is the only one of the four wide doors
+    # D-G-OVERHEAD is graded — on POSITION, and it is the only one of the three wide doors
     # that is off its module at all.
     assert "D-G-OVERHEAD" in named
     assert {"D-B-PLAY", "D-B-PATIO"}.isdisjoint(named)
@@ -102,7 +101,8 @@ def test_the_criterion_is_studs_cut_not_distance_from_ideal(catlin_model, findin
         phase, _ = module_origin(_Ctx(catlin_model), wall, framing, spacing)
         module = opening_stud_module(opening.center_along_m, opening.width_m, spacing,
                                      stud_m, phase)
-        costs = module.interrupted > module.minimum_interrupted
+        costs = (module.interrupted > module.minimum_interrupted
+                 and not (opening.frame_start_support_wall and opening.frame_end_support_wall))
         assert (opening.tag in named) == costs, opening.tag
 
 
@@ -126,14 +126,15 @@ def test_a_fixable_door_fails_and_is_told_where_to_go(findings):
 
 
 def test_a_wall_no_move_can_fix_is_unknown_not_fail(findings):
-    """The state that keeps the check honest. Six catlin openings sit in walls too short to
+    """The state that keeps the check honest. Several catlin openings sit in walls too short to
     hold their leaf on the module with a jamb pack at each end — ``D-M-ENTRY`` is 36" in a
     48" wall. "Shift the RO" is the wrong instruction there, and a FAIL would send somebody
     looking for a position that does not exist."""
     unknowns = {tag for f in findings if f.result is Result.UNKNOWN
                 for tag in f.element_tags}
-    assert {"D-M-ENTRY", "D-S-NCLOSET", "D-S-STUDY2", "D-M-PANTRY", "D-S-BED3",
+    assert {"D-M-ENTRY", "D-S-NCLOSET", "D-S-STUDY2", "D-S-BED3",
             "D-S-BATH1"} <= unknowns
+    assert "D-M-PANTRY" not in unknowns  # Its cassette anchors to perpendicular walls.
     for finding in findings:
         if finding.result is not Result.UNKNOWN:
             continue

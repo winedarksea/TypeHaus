@@ -16,7 +16,7 @@ Interior clear **6'-1 1/4" (E-W) x 2'-2" (N-S)**, 9'-0" to the ceiling.
 | west | `W-M-C5B`'s east gypsum | x = 18'-3 3/8" |
 | east | `W-M-PAN-E`'s west gypsum | x = 24'-4 5/8" (extended another 2 3/8" east 2026-10-03) |
 | north | `W-M-N1B`'s interior gypsum | y = 35'-5 3/8" |
-| south | `W-M-PAN-S`'s north gypsum, with `D-M-PANTRY`'s 60" bypass in it | y = 33'-3 3/8" |
+| south | `W-M-PAN-S`'s north gypsum, with `D-M-PANTRY`'s 36" pocket opening at the east | y = 33'-3 3/8" |
 
 Shelves are **73 1/4" wide** — wall face to wall face, the room's whole clear span — and
 **18" deep** against the north wall (owner's decision, replacing 24"; see *Depth* below).
@@ -162,27 +162,25 @@ were already in this design:
 2. **`ED-M-PANTRY-LT` is a vertical slot**, which lights the depth *behind* what is on each
    shelf. Less critical at 18" than it was at 24", and still the right fixture.
 
-**Check at rough-in that the bypass leaves and their track clear the shelf noses.** This was
-the tightest dimension in the room at 24" and it has 6" more slack now, but the requirement
-is unchanged: the leaves and their two-track head must hang INSIDE the 4 1/2" jamb depth of
-a 2x4 partition. Specify the track with the door, not after the shelves are in.
+**Door change, 2026-10-20:** a 36 x 80 Eclisse EKC3680 pockets west in the south wall.
+The refrigerator already blocked about 23 inches of the old western bypass opening.
+The new doorway exposes the east bay; the west bay is reached sideways across the
+8-inch strip in front of the shelves. Shelf dimensions and the center gable stay fixed.
+No shelf cleat or long screw may enter the cassette. The RO spans the perpendicular
+stud faces, with explicit corner supports; see `pocket_frame_eclisse.md`.
 
 ## Lighting
 
 `ED-M-PANTRY-LT` (`ED-T-LT-SLOT72`, schedule mark **T**) is a 6'-0" vertical LED slot on
-the west wall, base at 1'-6", so the lit line runs 1'-6"..7'-6" past every shelf edge.
+the west wall (`W-M-C5B`, y=33'-7 3/8"), base at 1'-6", so the lit line runs 1'-6"..7'-6" past every shelf edge.
 
 A vertical strip is the correct single fixture for a reach-in, and at 24" deep it stops
 being a preference: **overhead alone is the worst option**, because every shelf below the
-top sits in its own shadow — and the shadow is 24" long here, not 16". Switched from
-the kitchen side (`ED-M-PANTRY-SW`, on the 8 7/8" of `W-M-PAN-S` east of the door's RO).
-
-Two refinements worth taking at rough-in, neither modelled:
-
-- **A door-jamb switch**, instead of or wired parallel to the wall switch, so opening the
-  bypass lights the pantry — the standard for a closet.
-- Optionally a second layer of **shelf-edge strips** at the front underside of each shelf,
-  facing back. 3000–4000 K either way.
+top sits in its own shadow — and the shadow is 24" long here, not 16". Switched manually from
+the kitchen side on `W-M-PAN-E`'s east face, grouped with the undercabinet dimmer at
+46 inches above finished floor. The controls are 8 and 12 inches north of the south
+node, clear of the corner pack. The light is in front of the shelf noses and outside
+the pocket, keeping its existing six-foot lit line and backup circuit.
 
 ## Sources
 

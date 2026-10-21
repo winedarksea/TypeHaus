@@ -120,3 +120,21 @@ def _fails(model):
     return [f for f in run_from_model(model, [], tier=Tier.CODE,
                                       only="mep.pocket_occupancy").findings
             if f.check_id == "mep.pocket_occupancy" and f.result is Result.FAIL]
+
+
+def test_pantry_cassette_rejects_a_device_even_with_shared_end_supports(catlin_model):
+    from typehaus.quantities import inch, pt
+
+    assert not _fails(catlin_model)
+    original = catlin_model.plan.by_tag("ED-M-PANTRY-SW")
+    intruding = original.model_copy(update={
+        "location": None, "position": pt(inch(240), inch(397))})
+    plan = catlin_model.plan.with_elements("main", (
+        intruding if element.tag == original.tag else element
+        for element in catlin_model.plan.storey_elements("main")))
+    model = dataclasses.replace(
+        catlin_model, plan=plan,
+        canvas_objects=[dataclasses.replace(obj, position=(inch(240).meters, inch(397).meters))
+                        if obj.uid == original.uid else obj for obj in catlin_model.canvas_objects])
+    assert ("D-M-PANTRY", "W-M-PAN-S", original.tag) in [
+        finding.element_tags for finding in _fails(model)]

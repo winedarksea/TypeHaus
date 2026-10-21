@@ -491,7 +491,6 @@ suppress = [
   # (or, for D-M-ENTRY and D-B-GYM, a layout line other walls share).
   "structural.door_framing_module:D-B-GYM",
   "structural.door_framing_module:D-M-ENTRY",
-  "structural.door_framing_module:D-M-PANTRY",
   "structural.door_framing_module:D-S-BED3",
   "structural.door_framing_module:D-S-STUDY2",
   "structural.door_framing_module:D-S-BATH1",

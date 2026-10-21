@@ -807,9 +807,9 @@ HYDRANT_BRANCH_MAIN = [
 # A cold branch threading a built assembly, not a trunk. 1/2" stubbed and reduced at the stop, so the tee
 # suits a filtered tap as well as the 1/4" an ice maker wants.
 #
-# Threading the stub through the 1 3/4" between W-M-C5B's stud band and D-M-PANTRY's door
-# king stud (x=18'-9", inside the door's rough opening) is geometrically possible and is
-# rejected: nobody builds a 1 3/4" window.
+# The pantry's south wall now contains the west-parking Eclisse cassette. This route
+# stays in the perpendicular walls and crosses the pantry at 8'-6", above the pocket.
+# No pipe or fastener may enter the cassette (notes/pocket_frame_eclisse.md).
 #
 # THE CORNER IT WOULD CROSS IS A ROOM NOW, so there is no cabinet-back path left there. That
 # is the honest cost of the pantry, not a routing failure: the run's whole premise was
@@ -819,7 +819,7 @@ HYDRANT_BRANCH_MAIN = [
 # clear over FURN-M-PANTRY-SHELVES' 7'-0" top and under the 9'-0" plate. Six feet of it is
 # exposed in the pantry, above the shelves and out of reach, and every vertical is inside a
 # stud cavity parallel to the studs, boring nothing:
-#   * the rise at x=24'-5" is in W-M-PAN-E's cavity (studs 24'-2 1/4"..24'-5 3/4");
+#   * the rise at x=24'-5" is at the pantry's east end, just west of W-M-PAN-E;
 #   * the drop at x=18'-0" is on W-M-C5/C5B's own axis, mid-cavity (17'-9 1/4"..18'-2 3/4"),
 #     and carries on south inside it to y=31' before stepping east to the stub.
 # No penetration of SL-M-DECK, no cast-in sleeve.

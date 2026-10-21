@@ -6,6 +6,7 @@ from typing import Literal
 
 from typehaus.model.base import Element
 from typehaus.model.enums import StructuralRole
+from typehaus.model.opening_supports import OpeningFrameEndSupports
 from typehaus.model.refs import (
     Arch,
     FaceRef,
@@ -120,6 +121,7 @@ class Door(Element):
     host: str
     type_ref: str
     position: OpeningPosition
+    frame_end_supports: OpeningFrameEndSupports | None = None
     sill_height: Length | None = None  # exterior threshold override
     arch: Arch | None = None
     flip_hinge: bool = False

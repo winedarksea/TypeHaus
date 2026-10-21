@@ -1159,7 +1159,7 @@
 # Eclisse steel cassettes since 2026-10-09 (notes/pocket_frame_eclisse.md). EKC3680 listed
 # $341.94 (Home Depot) to $465 (Ferguson). The 2x6 (EKQ series) has no 80" retail listing:
 # 30x84 is $695 at Ferguson, special order, 4-9 weeks, so order D-B-BATH's early.
-"EKC3680" = { low = 340, high = 470 }  # D-M-LAUN
+"EKC3680" = { low = 340, high = 470 }  # 2 ea: D-M-LAUN, D-M-PANTRY
 "POCKET-FRAME-ECLISSE-2X6" = { low = 600, high = 750 }  # D-B-BATH
 # The Johnson kits these replaced, kept priced.
 "153068PF" = { low = 125, high = 220 }  # 0 ea; listed at $149 (homesteadhardware.com)
@@ -5460,9 +5460,8 @@
 # The 36" slab is priced separately from the counted frame kits in [hardware]. Labour
 # includes setting the frame before drywall and hanging and adjusting each leaf. The Eclisse
 # cassette arrives assembled, so the setting half sits nearer the low end.
-"DT-POCKET-INT-36" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 2 ea, slab and installation; frame kits above
+"DT-POCKET-INT-36" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 3 ea, slab and installation; frame kits above
 "DT-INT-BYPASS48" = { material = { low = 200, high = 500 }, labour = { low = 100, high = 220 } }  # 1 ea — stock molded pair + track, to solid-core or mirrored
-"DT-INT-BYPASS60" = { material = { low = 240, high = 600 }, labour = { low = 100, high = 220 } }  # 1 ea — RM-M-PANTRY. Two 30" leaves on one track; same hardware and same hang as the 48", wider leaves
 # D-M-BED2 since 2026-10-05: a push-set in-swing in a site-built kerfed hardwood jamb (see
 # the type in plan/storeys/main.py). ESTIMATE, built up from parts and not quoted:
 #   material: 32" solid-core slab 180-450, kerfed jamb + stop stock 90-220, 3 ball-bearing

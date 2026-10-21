@@ -5481,3 +5481,16 @@ A reviewer's five points and two follow-ups; owner decisions marked.
 - The viewer now draws the tile bases and flash coves, so the baths no longer read
   baseboard-less. Paint for the trim stays in `allowances:paint-trim-and-doors`; the interior
   paint visit gains a `trim` checkpoint after the trim visit.
+
+
+## 2026-10-20 — Pantry pocket door
+
+Replace D-M-PANTRY's 60-inch bypass with a west-parking 36 x 80 Eclisse EKC3680. The
+closed refrigerator obstructed about 23 inches of the western bypass approach. The
+74 1/2-inch RO spans the existing perpendicular stud faces; explicit frame-end supports
+add full-height west backing and reuse the east corner studs without separate jamb packs.
+Keep the pantry footprint, SEKTION kitchen, shelves and structural center gable. The
+western shelf bay remains a sideways reach. Move the vertical light onto the actual west
+wall ahead of the shelves, and group manual pantry/undercabinet controls on the east
+return at 46 inches. Set the cassette at finished-floor level, RO head 83 1/4 inches
+above it; the engine's existing leaf-height framing-head limitation remains documented.
