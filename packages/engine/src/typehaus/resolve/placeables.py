@@ -94,6 +94,17 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             mount_elevation = resolved_mount_elevation(
                 storey, item, floor_m=floor, structural_floor_m=structural_floor,
                 soffit_underside_m=_soffit_underside(model, item))
+            enclosure = getattr(item, "tub_enclosure", None)
+            if enclosure is not None and item.mount.elevation is None:
+                knee_walls = [model.wall(ref) for ref in enclosure.knee_wall_refs]
+                if any(wall is None for wall in knee_walls):
+                    findings.append(_finding("integrity.tub_enclosure", item.tag,
+                                             "Tub enclosure knee wall reference is unresolved"))
+                    continue
+                # The knee walls stand on the subfloor. Bedding belongs on that same
+                # plane, independently of the room's tile and its top-of-joist datum.
+                mount_elevation = (min(wall.z0_m for wall in knee_walls)
+                                   + enclosure.mortar_bed_thickness.meters)
             profile = _body_profile(product_type, item, floor, mount_elevation, local_footprint)
             body_z0 = floor + profile.base_above_storey_floor_m
             body_z1 = (body_z0 + profile.body_height_m
@@ -278,11 +289,6 @@ def resolved_mount_elevation(storey: object, item: object,
         return floor
     if mount.elevation is not None:
         return floor + mount.elevation.meters
-    enclosure = getattr(item, "tub_enclosure", None)
-    if enclosure is not None and mount.kind.value == "floor":
-        # A drop-in bath sits on bedding over the subfloor, not on the room's tile.
-        # Keeping this in the shared placement contract also gives IFC the same elevation.
-        return structural + enclosure.mortar_bed_thickness.meters
     if mount.kind.value == "ceiling":
         drop = mount.drop.meters if mount.drop is not None else 0.0
         plane = (structural + storey.default_ceiling_height.meters
