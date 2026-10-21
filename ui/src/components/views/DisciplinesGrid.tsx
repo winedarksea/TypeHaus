@@ -97,7 +97,7 @@ export function DisciplinesGrid({ viewMode }: { viewMode: "2d" | "split" | "3d" 
               </div>
               {open && chips.length > 1 && (
                 <div className="trade-grid trade-group-chips">
-                  {chips.filter((key) => !FLASHING_FACETS.includes(key as typeof FLASHING_FACETS[number])).map((key) => {
+                  {chips.map((key) => {
                     const chipPlanOnly3D = !TRADE_SURFACES[baseTrade(key)].plan;
                     const label = visibilityKeyLabel(key);
                     return (
