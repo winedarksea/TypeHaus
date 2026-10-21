@@ -902,17 +902,20 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `WIN-A-S3` and `WIN-M-BATH2` are fixed. All 14x24 units outside the kitchen and mudroom
   are fixed too, including Bedroom 3's two small windows, the garage pair and tempered
   wet-room units. Kitchen awnings remain operable; the mudroom was already fixed and stays
-  so. Larger bedroom windows, `WIN-S-HALL-N` and `WIN-A-N2` remain operable. Fixed twins
-  retain dimensions, frame depth, safety glazing and the conservative U-0.25/SHGC-0.35/VT-0.5
-  presets; any improved rated performance awaits the selected manufacturer's data.
+  so. Larger bedroom windows, `WIN-S-HALL-N` and `WIN-A-N2` remain operable.
 
-- **Imported tilt-turn, US egress casements (2026-10-21).** 11 operable units are `-TT`
-  tilt-turn twins (same presets). The **9 R310 escape windows stay US casements**:
-  `WIN-M-BED-S1`/`S2`, `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`,
-  `WIN-A-S-JUL-W`/`E`. The two kitchen awnings stay outward. **R310 grades the nominal size,
-  so its PASS is not evidence**: no tilt-turn on this schedule nets 5.7 sf at a Euro
-  sightline, and a 27x36 casement nets only 4.4 sf. Before retyping an escape window, redo
-  the hand check in `notes/window_procurement.md` §7.
+- **Named products; window and door types are HOUSE-LOCAL (2026-10-21).** Drutex IGLO
+  Energy Alucover (aluminium-capped uPVC) for the 11 tilt-turn, 19 fixed and 2 kitchen
+  tilt-only units; Andersen 400 casements for the 9 R310 escape windows (`WIN-M-BED-S1`/`S2`,
+  `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`); Cascadia
+  fiberglass for `D-M-ENTRY` (now glazed) and the French pairs; Therma-Tru for
+  `D-G-SERVICE` (`DT-EXT-SWING36-G`); Clopay for the overhead. Black outside, white inside.
+  `plan/window_types.py`/`plan/door_types.py` redefine every tag the house hangs, each with
+  its NFRC CPD row, and `plan/manifest.py` drops the library preset of that tag; catalog-only
+  sizes stay presets. **Edit the house file, never `library/windows.py`.** The escape types
+  author Andersen's `net_clear_width`/`_height` and `code.R310_egress` grades it; no Euro
+  sightline nets 20" at 27". Before retyping an escape window, read
+  `notes/window_and_door_procurement.md` §2 and §7; open quote items are §2.6.
 
 - **Facade alignment — ONE GRID PER FACADE.** `EXT_2X6`/`PLANT_EXT_2X6_HUMID` set
   `layout_origin="line"`, so a wall segment lays out from its **layout line** (the derived

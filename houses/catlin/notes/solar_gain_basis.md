@@ -291,3 +291,24 @@ its coincident gain is now **12,313 Btu/h**, including **7,895 Btu/h** from the 
 The 08:00–20:00 average is **8,798 Btu/h**, yielding an AED excursion of **875 Btu/h**.
 The block load is **21,010 Btu/h sensible + 1,400 latent = 1.867 tons**. The earlier
 tables in §§2 and 4 and the 2026-09-23 revision record the former window layout.
+
+## Revision 2026-10-21 — named window and door products
+
+SHGC is now each product's NFRC row (`plan/window_types.py`, `plan/door_types.py`), not the
+0.35 placeholder: Drutex fixed 0.39, tilt-turn 0.33, tilt-only 0.24; Andersen 400 0.40;
+Cascadia doors 0.33, and `D-M-ENTRY` is now a glazed door. Geometry, irradiance and shading
+are unchanged, so each facade's 10:30 gain scales by its own Σ A·SHGC, and south by window,
+since its shading differs window to window:
+
+| facade | Σ A·SHGC old → new (ft²) | 10:30 gain old → new (Btu/h) |
+|---|---|---|
+| N | 15.021 → 22.267 | 685.2 × 22.267/15.021 = **1,015.7** |
+| E | 24.733 → 25.770 | 3,538.9 × 1.0419 = **3,687.3** |
+| W | 20.985 → 22.776 | 957.3 × 1.0853 = **1,038.9** |
+| S | see below | 7,894.6 + 192.5 = **8,087.1** |
+
+South at 10:30 is 144.2 Btu/h·ft² incident, 98.6 of it direct. Fully shaded (`D-B-PATIO`,
+`WIN-B-SAUNA`, `D-M-BALC`, `WIN-M-BED-S2`, `WIN-M-LIV-S2`): Δ A·SHGC −0.941 × 45.6 = −42.9.
+Unshaded (the rest): +1.633 × 144.2 = +235.4. The house still peaks at 10:30, now at
+**13,829 Btu/h**, south 58% of it. The day's average rises 9,489 → 10,111, so the AED
+excursion is 13,829 − 1.3 × 10,111 = **684** (was 740). The engine agrees to the Btu/h.

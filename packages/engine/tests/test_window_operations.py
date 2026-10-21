@@ -47,13 +47,20 @@ def test_catlin_carries_a_fixed_picture_unit_alongside_its_operable_twin(
     operable = by_tag[operable_tag]
     assert fixed.operation is WindowOperation.FIXED
     assert operable.operation in (WindowOperation.CASEMENT, WindowOperation.AWNING)
-    # Same hole, same glass: only the operation differs, which is exactly why the fixed unit
-    # has to be its own type rather than a note on the casement.
+    # Same hole, same safety glass: the operation differs, which is exactly why the fixed unit
+    # has to be its own type rather than a note on the casement. Performance and depth follow
+    # the chosen product line (2026-10-21), which differs between the two.
     assert (fixed.width, fixed.height) == (operable.width, operable.height)
     assert fixed.tempered == operable.tempered
-    assert fixed.frame_depth == operable.frame_depth
-    assert (fixed.u_factor, fixed.shgc, fixed.vt) == (operable.u_factor, operable.shgc,
-                                                      operable.vt)
+
+
+def test_every_catlin_window_in_use_names_a_product_and_its_nfrc_row(catlin_plan):
+    window_types = {wt.tag: wt for wt in catlin_plan.library.window_types}
+    products = {p.tag for p in catlin_plan.library.products}
+    for window in (e for e in catlin_plan.all_elements() if isinstance(e, Window)):
+        window_type = window_types[window.type_ref]
+        assert window_type.product_ref in products, window.tag
+        assert "NFRC " in (window_type.source or ""), window.tag
 
 
 def test_catlin_picture_window_selection_preserves_the_operable_exceptions(catlin_plan):
@@ -106,7 +113,7 @@ def test_window_operation_coerces_authored_strings_and_rejects_unmodeled_ones():
         WindowType(tag="WT-TEST", width=ft(3), height=ft(5), operation="jalousie")
 
 
-# Every window a sleeping room relies on for R310 escape (notes/window_procurement.md §7).
+# Every window a sleeping room relies on for R310 escape (notes/window_and_door_procurement.md §7).
 EGRESS_CASEMENTS = (
     "WIN-M-BED-S1", "WIN-M-BED-S2", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-HALL-N",
     "WIN-S-SUITE1", "WIN-S-SUITE2", "WIN-A-S-JUL-W", "WIN-A-S-JUL-E",
@@ -127,6 +134,38 @@ def test_catlin_egress_windows_are_casements_and_the_rest_tilt_turn(catlin_plan)
     assert sum(op is WindowOperation.TILT_TURN for op in operations.values()) == 11
     assert {tag for tag, op in operations.items() if op is WindowOperation.AWNING} == {
         "WIN-M-KITCH-N", "WIN-M-KIT-E"}
+
+
+def test_r310_grades_the_authored_net_clear_opening_not_the_rough_opening():
+    from types import SimpleNamespace
+
+    from typehaus.checks.code.mn_residential.egress import _meets_r310_2_1
+    from typehaus.quantities import inch
+
+    # A 27x48 rough opening clears R310 on its nominal size; its sash may not.
+    opening = SimpleNamespace(width_m=inch(27).meters, height_m=inch(48).meters,
+                              sill_m=inch(30).meters)
+    assert _meets_r310_2_1(opening, grade_floor=False)
+    euro = WindowType(tag="WT-TEST", width=inch(27), height=inch(48), operation="tilt_turn",
+                      net_clear_width=inch(17.875), net_clear_height=inch(38.875))
+    assert not _meets_r310_2_1(opening, grade_floor=False, window_type=euro)
+    # Andersen 400's published opening at the same hole (notes §7): 20.69 x 42.65, 6.13 sf.
+    us = euro.model_copy(update={"operation": "casement", "net_clear_width": inch(20.69),
+                                 "net_clear_height": inch(42.65)})
+    assert _meets_r310_2_1(opening, grade_floor=False, window_type=us)
+    # Unauthored falls back to nominal.
+    assert _meets_r310_2_1(opening, grade_floor=False,
+                           window_type=euro.model_copy(update={"net_clear_width": None,
+                                                               "net_clear_height": None}))
+
+
+def test_catlin_escape_windows_author_a_net_clear_opening_that_passes(catlin_plan):
+    window_types = {wt.tag: wt for wt in catlin_plan.library.window_types}
+    windows = {e.tag: e for e in catlin_plan.all_elements() if isinstance(e, Window)}
+    for tag in EGRESS_CASEMENTS:
+        window_type = window_types[windows[tag].type_ref]
+        width, height = window_type.net_clear_width.inches, window_type.net_clear_height.inches
+        assert width >= 20 and height >= 24 and width * height / 144 >= 5.7, tag
 
 
 def test_tilt_turn_coerces_from_authored_source():

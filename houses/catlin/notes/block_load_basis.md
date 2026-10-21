@@ -320,3 +320,10 @@ which is the same lesson again.
 - **2026-09-23, WIN-A-S2/-S3 WT-1436 → WT-1424 (c3c46cff).** −2.33 sf of U-0.25 glass
   (UA −0.583) became wall (+2.33 sf × 0.0228 = UA +0.053): net UA −0.530 × 85 = −45 Btu/h.
   31,718 → **31,672**. Sensible cooling is `solar_gain_basis.md`'s, now 20,868 (1.856 tons).
+- **2026-10-21, named window and door products** (`plan/window_types.py`,
+  `plan/door_types.py`). Same 290.8 ft² of window: Drutex fixed U-0.15 (64.5 ft²), tilt-turn
+  0.16 (94.0), tilt-only 0.18 (4.67), Andersen 400 egress 0.20 (87.5), plant-room 0.14
+  (40.1): UA 68.284 → **48.673**. Doors, 120 ft² at U-0.15: UA 24.00 → **18.00**. Net
+  −25.611 × 85 = −2,177, so heating 31,649 → **29,472**. Cooling: −25.611 × 15 = −384 of
+  conduction, +753 of 10:30 glass, −56 of AED excursion (`solar_gain_basis.md`):
+  21,707 → **22,020** sensible, 1.952 tons.

@@ -47,11 +47,13 @@ _CATLIN = {
     # The mudroom upper finish changes the resolved finish-face room volumes slightly.
     # 15,135 / -7.1 °F before the suite and plant-room west windows grew 27x36 -> 27x54
     # for R310 (2026-10-21; the note's addendum of that date).
-    "EQ-M-HP1-OD": (15_299, 14_000, 5.0, 0.92, -6.4, _ADVISED),
+    # 15,299 / -6.4 °F before the named window and door products (2026-10-21; the note's
+    # addendum of that date): every zone's window and door U fell.
+    "EQ-M-HP1-OD": (14_402, 14_000, 5.0, 0.97, -10.6, _ADVISED),
     # The living-east rework replaces two 27x48 windows with one 63x48 unit, adding 3 sf
     # of glass to System 2's main-storey zone (2026-10-16).
-    "EQ-M-HP2-OD": (14_972, 8_800, 5.0, 0.59, 28.4, not _ADVISED),
-    "EQ-M-HP3-OD": (1_015, 2_800, 17.0, 2.76, None, _ADVISED),
+    "EQ-M-HP2-OD": (13_855, 8_800, 5.0, 0.64, 23.6, not _ADVISED),
+    "EQ-M-HP3-OD": (910, 2_800, 17.0, 3.08, None, _ADVISED),
 }
 
 
@@ -143,12 +145,12 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
-    """0.80 as a ratio is a number nobody can act on; ``12,240 Btu/h against this zone's
-    15,299`` is one an equipment selector can shop against."""
+    """0.80 as a ratio is a number nobody can act on; ``11,522 Btu/h against this zone's
+    14,402`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
-    assert "12,240 Btu/h" in finding.message  # 0.80 x the unrounded 15,299.6
+    assert "11,522 Btu/h" in finding.message  # 0.80 x the unrounded 14,401.6
 
 
 # --- §3. the crossover ------------------------------------------------------------------------

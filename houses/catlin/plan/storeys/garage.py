@@ -290,7 +290,7 @@ OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 # sleeve `SP-GF-S-HYD` keeps its host `FT-GF-S-DR` — `integrity.sleeve_in_opening` is what
 # catches a sleeve whose host moved out from under it.
 SERVICE_DOOR_OFFSET = ft(0, 7)
-SERVICE_DOOR_WIDTH = ft(3)  # DT-EXT-SWING36
+SERVICE_DOOR_WIDTH = ft(3)  # DT-EXT-SWING36-G
 
 OPENINGS = [
     # 16' opening is past the prescriptive header table, hence the named engineered beam:
@@ -344,7 +344,7 @@ OPENINGS = [
     # fit, three plies filling the 2x6 wall, and it is the ordinary answer for a tall
     # opening in a garage wall: a continuous header carried at the plate line rather than
     # dropped below it (IRC R602.7.2 lets the header take the top plate's place).
-    Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING36",
+    Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING36-G",
          position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(1),
          flip_hinge=True, flip_swing=True,
          header_spec='3-ply 5.5" LVL'),

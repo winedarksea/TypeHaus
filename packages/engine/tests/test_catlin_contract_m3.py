@@ -952,7 +952,7 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model,
         # shared head over both families is what this test did until that change, and it is
         # the assertion that caught it.
         # 2026-10-21: the second storey's three 27" units went 27x54 on a 2'-3 1/2" sill for
-        # R310 (notes/window_procurement.md §7). The sill's course is then exact, and the
+        # R310 (notes/window_and_door_procurement.md §7). The sill's course is then exact, and the
         # centre sits 1/2" over the 4'-6" line, the nearest a 24" girt module allows.
         for opening in (main, second):
             head = opening.sill_m + opening.height_m

@@ -1,15 +1,21 @@
-# Window procurement: imported tilt-turn, frame material, install method
+# Window and door procurement: the chosen lines, frame material, install method
 
-2026-10-21. Design reasoning, not a calc oracle. The owner is pricing imported European
-windows (Poland or China). 11 operable units are tilt-turn (`WT-*-TT`). The **9 windows
-bedrooms rely on for R310 escape stay US outward casements** (§7), and the two 14" kitchen
-awnings (`WIN-M-KITCH-N`, `WIN-M-KIT-E`) stay outward awnings, since a Euro sightline leaves
-too little glass at 14". Those 11 outward units are a second, US supplier. The catalog presets keep
-U 0.25 / SHGC 0.35 / VT 0.5 / 3.25" depth. **No performance is claimed until a label is
-in hand.**
+2026-10-21. Design reasoning, not a calc oracle. **The owner's selection (2026-10-21):**
 
-The schedule is 41 units: 11 tilt-turn, 9 casement, 2 awning, 19 fixed (4 of them the `-HP`
-plant-room units). 11 are tempered.
+- **Drutex IGLO Energy Alucover** (Polish, aluminium-capped uPVC) for the 11 tilt-turn, 19
+  fixed and 2 tilt-only units.
+- **Andersen 400 casement** (Bayport, MN) for the 9 R310 escape windows.
+- **Cascadia Universal** fiberglass for `D-M-ENTRY` and the three French pairs; a Therma-Tru
+  flush outswing for `D-G-SERVICE`; a Clopay Modern Steel sectional for `D-G-OVERHEAD`.
+
+Black outside, white inside throughout. The products are in the model
+(`plan/opening_products.py`, `plan/window_types.py`, `plan/door_types.py`), each type
+carrying its NFRC CPD row. **Every NFRC number below was read from the CPD itself
+(search.nfrc.org), not from a brochure or a Phius page.** What is still claimed rather than
+in hand is listed in §2.6.
+
+The schedule is 41 units: 11 tilt-turn, 9 casement, 2 tilt-only, 19 fixed (4 of them the
+`-HP` plant-room units). 11 are tempered.
 
 **The import risk is the code gates, more than the U-value.** Without an NFRC label, IECC
 R303.1.3 assigns a default U of about 0.55, and the house fails the energy table. Without a
@@ -41,46 +47,108 @@ width is a = 3.6 ft (0.1 × 36').
 
 Zone 5 governs any unit within 3.6 ft of a corner. Order every unit at one rating, DP ≥ 20.
 
-## 2. Sourcing matrix
+## 2. The lines compared, and the selection
 
-Every row is **claimed** until it is confirmed in the NFRC CPD and against a NAFS test
-report.
+### 2.1 What decided it
 
-| Supplier / line | Material | Flange | NFRC | NAFS / DP | Depth | Sightline | Alu cap | Status |
-|---|---|---|---|---|---|---|---|---|
-| Oknoplast US PAVA | uPVC | steel-reinforced nailing flange offered | claimed | claimed, DP 30–80 | 3¼" | ~4 5/16"/side | ask | claimed; U 0.14–0.26 |
-| Oknoplast US PIXEL | uPVC | ask | ask | ask | ask | narrower than PAVA | ask | unknown |
-| Aluplast Ideal 4000 (Debesto) | uPVC | ask (add-on?) | forum post only | ask | ask | ask | ask | unverified |
-| Aluplast Energeto 8000 (Debesto) | uPVC, bonded | ask | ask | ask | ask | ask | ask | PHI certificate expired 2025-12-31 |
-| Aluplast AluSkin (Debesto) | alu-clad uPVC | ask | ask | ask | ask | ask | **yes** | the preferred material, if it is labelled |
-| Aluprof MB-86 / MB-104 | aluminium, TB | ask | reported none | ask | ask | ask | n/a | reported quotes lacked NFRC |
-| Aliplast | aluminium, TB | ask | reported none | ask | ask | ask | n/a | reported quotes lacked NFRC |
-| Zola ThermoPlus Clad | alu-clad wood | ask | ask | ask | ask | ask | yes | Phius-listed; check the certificate dates |
-| Chinese supplier (generic) | any | ask | **CPD listing only** | test report only | ask | ask | ask | the same gates apply |
+- **NFRC CPD listing** is the gate (§1). Of the Polish makers, only **Drutex** lists every
+  operation the house needs (tilt-turn, fixed, tilt-only, an outswing line and doors), and it
+  is the only one with an **aluminium-capped** uPVC line in the CPD. Oknoplast lists PAVA
+  tilt-turn and fixed only (OKN-K-5/-6), with no casement or awning. Eko-Okna's Ideal 4000
+  (the Debesto/Aluplast candidate) rates U 0.27–0.28, over the 0.25 target. DAKO lists
+  tilt-turn/fixed/awning at U 0.15–0.18, with no aluminium-capped line. Doorwin (Shandong) lists tilt-turn and fixed at
+  U 0.17–0.18, but its casement is U 0.37.
+- **Egress at 27" decides the casements, and no Euro line passes.** A 27" RO is a 26 1/2"
+  unit. R310 wants 20" clear, so the frame and sash may lose at most 3 1/4" a side. Euro
+  sections lose about 4 1/2" (Drutex IGLO 5 DLO = frame − 9 1/8", FL41837). Cascadia's
+  fiberglass frame is 105 mm (4.1"). Marvin Elevate's own table makes egress only from its
+  29"-wide size. **Andersen 400's published opening is 20.69" at this width** (§7), the only
+  line surveyed that clears.
+- **Dark frames.** On Alucover the black is powder-coated aluminium, so no dark uPVC sees the
+  sun on any face (§3's preferred material). Andersen 400 is black Perma-Shield vinyl over
+  wood. Cascadia is painted fiberglass.
+- **14" units.** Cascadia's outswing awning starts at 20" wide and its casement at 18 3/4".
+  The two kitchen units go Drutex tilt-only (inward, bottom-hinged), modelled as `awning`.
 
-**RFQ checklist** (ask every supplier):
+### 2.2 Windows, by role (whole-window NFRC, triple low-e unless noted)
 
-1. NFRC CPD product line and license number, and U/SHGC/VT for *these sizes* in the quoted
-   glazing.
-2. NAFS test report: class, PG/DP, the size tested, and **the anchorage tested** (flange or
-   strap).
-3. Factory nailing flange, or a field add-on? Is the flange in the NAFS test?
-4. Frame depth, frame+sash sightline per side, and the sash overlap past the frame rail
-   (§6).
-5. **Net clear opening in turn mode** for 27×48, 27×54 and 30×48 (§7).
-6. Tempered-lite marking: 16 CFR 1201, not only EN 12150.
-7. Hardware brand, US parts distributor, and the hinge load rating at the quoted IGU weight.
-8. IGU make-up, written down.
-9. Colour: RAL, gloss, foil or powder, the IR-reflective foil option, and the warranty by
-   orientation.
-10. Exterior screen system for an inward sash.
-11. Lead time, crating, freight to St Paul, duty/HTS code, and the breakage/replacement
-    terms.
+| Role | Line | CPD | U | SHGC | VT | Frame | Status |
+|---|---|---|---|---|---|---|---|
+| **Tilt-turn — selected** | Drutex IGLO Energy Alucover | DRU-K-24-00001 | 0.16 | 0.33 | 0.47 | uPVC + alu cap, 93 mm | quote |
+| Tilt-turn — alternate | Cascadia Universal inswing | CWL-K-23-00068 | 0.15 | 0.37 | 0.47 | fiberglass | quote |
+| Tilt-turn | Alpen Tyrol | ALP-M-17-00509 | 0.15 | 0.39 | 0.48 | uPVC/foam | black ext unconfirmed |
+| Tilt-turn | Oknoplast PAVA | OKN-K-5 | 0.16 best | 0.25 | 0.43 | uPVC, 82 mm | no casement/awning in CPD |
+| Tilt-turn | Doorwin 86 | DRN-M-1 | 0.18 best | 0.19 | 0.36 | uPVC | casement U 0.37 |
+| **Fixed — selected** | Drutex Alucover | DRU-K-23-00001 | 0.15 | 0.39 | 0.57 | as above | quote |
+| **Fixed `-HP` — selected** | Drutex Alucover, laminated inner | DRU-K-23-00010 | 0.14 | 0.39 | 0.56 | as above | quote |
+| Fixed — alternate | Cascadia exterior-glazed | CWL-K-25-00118 | 0.14 | 0.43 | 0.55 | fiberglass | quote |
+| **Egress casement — selected** | Andersen 400 | AND-N-1-04162 | 0.20 | 0.40 | 0.51 | wood/vinyl | triple is Northeast-only; dealer to confirm |
+| Egress casement — fallback | Andersen 400 HeatLock double | AND-N-1-03559 | 0.24 | 0.31 | 0.53 | wood/vinyl | stocked |
+| Casement (no 27" egress) | Cascadia outswing | CWL-K-21-00079 | 0.17 | 0.29 | 0.37 | fiberglass | fails 20" |
+| **Tilt-only 14" — selected** | Drutex Alucover | DRU-K-26-00001 | 0.18 | 0.24 | 0.35 | as above | minimum sash to confirm |
+
+NAFS: Drutex holds Florida approvals (FL41835/6/7, AAMA/WDMA/CSA 101/I.S.2/A440-17) for IGLO
+5 Classic casement and tilt-turn and IGLO Energy Classic fixed, **nail-fin plus jamb-strap
+anchorage** — the fin alone is not the tested anchorage. Cascadia: AW-PG60 casement, awning
+and fixed; LC-PG45/CW-PG80 tilt-turn. Every value is over §1's DP 20.
+
+### 2.3 Doors
+
+| Door | Line | CPD | U | SHGC | VT | Notes |
+|---|---|---|---|---|---|---|
+| `D-M-ENTRY` | Cascadia Universal, inswing single | CWL-K-27-00344 | 0.15 | 0.33 | 0.42 | every Cascadia door is glazed; tempered; multipoint; R-PG45 |
+| `D-B-PATIO`, `D-M-BALC`, `D-S-DECK-E` | Cascadia Universal, double | -00344 in / -00415 out | 0.15 | 0.33 | 0.42 | inswing double R-PG35; **CPD lists the single leaf**, the pair's label is a quote item |
+| `D-G-SERVICE` | Therma-Tru Smooth-Star flush, outswing | THC-M-5-03881 | 0.15 | — | — | own type `DT-EXT-SWING36-G` |
+| `D-G-OVERHEAD` | Clopay Modern Steel, Intellicore R-18.4, Black, 16x7 | none | — | — | — | unconditioned; wind rating for q_h 19.3 psf to confirm |
+
+Therma-Tru's best full-lite (THC-M-5-04493) is U 0.21 at VT 0.27; Drutex's uPVC balcony door
+(DRU-K-20) is ~0.17 but foil-black and not fiberglass. Both are the alternates.
+
+### 2.4 Per-type spec (in the model)
+
+| Type | n | Line | RO → unit | CPD | U/SHGC/VT | Depth |
+|---|---|---|---|---|---|---|
+| WT-1424 | 2 | Drutex tilt-only | 14x24 → 13½x23½ | DRU-K-26-00001 | 0.18/0.24/0.35 | 93 mm |
+| WT-1424-FIX(-T) | 7+4 | Drutex fixed | 14x24 → 13½x23½ | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
+| WT-2736-FIX(-T), WT-2748-FIX-T | 1+1+1 | Drutex fixed | — | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
+| WT-6348-FIX | 1 | Drutex fixed | 63x48 → 62½x47½ | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
+| WT-2736-TT, WT-2748-TT(-T), WT-3048-TT(-T) | 4+2+1+1+3 | Drutex tilt-turn | — | DRU-K-24-00001 | 0.16/0.33/0.47 | 93 mm |
+| WT-2754-HP, WT-3048-HP | 1+3 | Drutex fixed, laminated | — | DRU-K-23-00010 | 0.14/0.39/0.56 | 93 mm |
+| WT-2748(-T), WT-2754, WT-3048 | 2+1+4+2 | Andersen 400 casement | — | AND-N-1-04162 | 0.20/0.40/0.51 | 3¼" (preset; confirm) |
+
+Flange: factory nailing fin on all three window lines. Colour: black exterior, white interior.
+
+### 2.5 Landed price
+
+No line publishes a price; every row in `prices.toml` stays a band with a named product.
+Drutex sells through dealers (DAKAM, Franklin Park IL, 16 years as a partner; Home One,
+Chicago), and the Chicago dealer is the freight point. The Polish landed cost adds ocean
+freight, crating, US duty on HTS 3925.20 plus the 2025 EU tariff, and 10–14 weeks. Cascadia
+trucks from Langley BC with no duty under USMCA. Andersen is local. **One quote per supplier
+for the actual schedule** is the next step; price for performance cannot be ranked closer
+than ±20% without it.
+
+### 2.6 Claimed, not yet in hand
+
+1. Drutex: written confirmation that Alucover ships with a nail fin, and the NAFS report and
+   DP for **Alucover** itself (the Florida approvals cover IGLO 5 / Energy Classic).
+2. Drutex tilt-only minimum sash at a 13 1/2" frame; if not buildable, WT-1424 goes fixed.
+3. Drutex Alucover frame sill rail height and sash overlap (§6); the stools still assume 2.953".
+4. Andersen 400 triple-pane availability through a Twin Cities dealer; basic-unit frame depth.
+5. Cascadia: NFRC label for the double door; threshold height at D-B-PATIO's 7¼" step and
+   D-S-DECK-E's 0.58".
+6. Dark-colour warranty by orientation: Drutex powder coat, Andersen Perma-Shield black,
+   Cascadia paint.
+7. Clopay: DASMA wind-load rating for the 16x7 at Exp B.
+8. 16 CFR 1201 marks on the 11 tempered units and every glazed door.
 
 ## 3. Frame material by orientation
 
-**Preferred: aluminium-clad uPVC on every face**, if a flanged NFRC/NAFS option exists. The
-cap carries the dark colour, so the uPVC never sees it.
+**Resolved (2026-10-21): Drutex Alucover is aluminium-clad uPVC on every face**, flanged
+and NFRC-listed (§2). The cap carries the dark colour, so the uPVC never sees it. The
+fallback below stays as the record of why.
+
+**Preferred: aluminium-clad uPVC on every face**, if a flanged NFRC/NAFS option exists.
 
 **Fallback: full aluminium (thermally broken) on the south face only, uPVC on N/E/W and the
 garage.** South is the garden side and gets the most sun, which is where dark uPVC risks
@@ -100,11 +168,11 @@ the same as east and west.
 
 - **11 tilt-turn**: `WIN-M-KITCH`, `WIN-M-LIV-E1`/`E2`/`S1`/`S2`, `WIN-M-BED-W1`/`W2`,
   `WIN-S-STUDY1`/`2`/`3`, `WIN-A-N2`.
-- **9 egress casements, US supplier** (§7): `WIN-M-BED-S1`/`S2`, `WIN-S-BED1`, `WIN-S-BED2`,
+- **9 egress casements, Andersen 400** (§7): `WIN-M-BED-S1`/`S2`, `WIN-S-BED1`, `WIN-S-BED2`,
   `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`. Both of each pair go, so a pair
   reads alike. Order the egress (widest-opening) hinge, not wash mode.
-- **2 kitchen awnings stay outward**, from the same US supplier, since few Euro lines make an
-  outward awning at 14".
+- **2 kitchen units are Drutex tilt-only** (inward, bottom-hinged). No line surveyed builds an
+  outward awning at 14" (§2.1).
 - **Two suppliers on one face.** The south, east and west faces each mix the two products
   (e.g. `WIN-M-BED-S1`/`S2` beside `WIN-M-LIV-S1`/`S2`). §3's colour, gloss and sightline
   match applies between suppliers, not only between materials.
@@ -163,10 +231,16 @@ trim kit is ordered**.
   interior reveal is deep. The leaf cannot fold back against the wall, and it stands in the
   room at 90°.
 
-## 7. Egress: the hand check the engine does not do
+## 7. Egress: the hand check, now graded
 
-`code.R310_egress` grades the **nominal size** (`_meets_r310_2_1`), not the net clear opening,
-so its PASS is not evidence. The 2020 Minnesota Residential Code keeps R310.2.1 unamended:
+**Superseded as a hand check (2026-10-21):** `WindowType.net_clear_width`/`_height` carry
+Andersen's published opening on the 9 escape types, and `code.R310_egress` grades those.
+The tilt-turns still author none (Drutex publishes no turn-mode clear opening), so
+`WIN-M-BED-W1`'s credit for RM-M-BED is still nominal; the room passes on its south pair
+either way. The table below is the derivation.
+
+Until 2026-10-21 `code.R310_egress` graded the **nominal size** (`_meets_r310_2_1`), so its
+PASS was not evidence. The 2020 Minnesota Residential Code keeps R310.2.1 unamended:
 **20" clear width, 24" clear height, 5.7 sf**, measured "by the normal operation of the
 window from the inside" (St Paul DSI handout, MN DLI fact sheet). The house is above a
 grade-floor sill everywhere, so the 5.0 sf row never applies.
@@ -208,15 +282,14 @@ passes on its south pair.
 - `WIN-S-PLANT3` is a fixed `WT-2754-HP`. The plant room's glass must stay U-0.14
   (`building_science.glazing_dew_point`), and it still passes.
 
-Engine follow-up 2 (below) would let the model carry the net clear and grade it.
+Engine follow-up 2 (below) is done.
 
 ## Engine follow-ups (not in this pass; the owner decides)
 
 1. **The tilt-turn elevation glyph is drawn upside down.** `emit/draw/elevation_openings.py`
    draws the tilt hinge at the head, like an awning. A tilt sash hinges at the sill, so the
    apex belongs there. The retype makes this visible on every elevation.
-2. **R310 credits the nominal size.** Add an optional `WindowType.net_clear_width/height`,
-   and have `_meets_r310_2_1` use them when they are authored. Then §7 becomes a graded
-   check rather than this table.
+2. ~~**R310 credits the nominal size.**~~ Done 2026-10-21: `WindowType.net_clear_width/height`,
+   graded by `_meets_r310_2_1` when authored.
 3. **R312.2 measures the sill from the storey datum**, not the finished floor
    (`fall_protection.py`), so a sill can pass at 24" while standing 22½" over an oak floor.

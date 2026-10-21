@@ -44,7 +44,11 @@ from typehaus.resolve.solid_categories import in_slab_family
 # unit: +3 sf net glass, +0.75 window UA, -0.063 wall UA. The updated block load is pinned.
 # 2026-10-21, R310: WIN-S-SUITE1/2 27x36 -> 27x54 (+6.75 sf at U-0.25) and WIN-S-PLANT3
 # 27x36 -> 27x54 (+3.375 sf at U-0.14): +2.160 window UA, -0.229 wall UA, x85 F = +164.
-_HEATING_BTUH = 31_648.9
+# 2026-10-21, named products (plan/window_types.py, plan/door_types.py): window UA
+# 68.284 -> 48.673 over the same 290.8 sf, door UA 24.0 -> 18.0 (U-0.20 -> 0.15) — -25.611
+# x 85 F = -2,177. Cooling: conduction -25.611 x 15 F = -384; the 10:30 glass +753 (SHGC by
+# product, D-M-ENTRY now glazed; notes/solar_gain_basis.md); AED excursion 740 -> 684.
+_HEATING_BTUH = 29_471.9
 # SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
 # (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
 # latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2
@@ -54,12 +58,12 @@ _HEATING_BTUH = 31_648.9
 # Restoring WIN-M-LIV-S2 raises the 10:30 glass peak and the cooling result below.
 # The same west glass lifts the day's average more than its 10:30 peak, so the AED
 # excursion falls 1,070 -> 740 and cooling 21,847 -> 21,707 while the glass peak rises 162.
-_COOLING_SENSIBLE_BTUH = 21_707.0
+_COOLING_SENSIBLE_BTUH = 22_020.3
 _LATENT_BTUH = 1_400.0
-_COOLING_TONS = 1.9256
-_SOLAR_PEAK_BTUH = 13_075.9
+_COOLING_TONS = 1.9517
+_SOLAR_PEAK_BTUH = 13_829.1
 _SOLAR_PEAK_HOUR = 10.5
-_AED_EXCURSION_BTUH = 740.0
+_AED_EXCURSION_BTUH = 684.4
 _INTERNAL_SENSIBLE_BTUH = 2_810.0
 
 # ``(kind, area_ft2, ua_btu_per_hour_f)`` in the order the report emits them.
@@ -71,8 +75,8 @@ _COMPONENTS = (
     ("foundation_walls_above_grade", 255.7, 11.677),
     ("roof", 1547.9, 29.103),
     ("slab", 1296.0, 25.468),
-    ("windows", 290.8, 68.284),
-    ("doors", 120.0, 24.000),
+    ("windows", 290.8, 48.673),
+    ("doors", 120.0, 18.000),
 )
 
 # The whole envelope, by tag. 50 walls.

@@ -45,12 +45,28 @@ HABITABLE_OCCUPANCIES = frozenset({
 })
 
 
-def _meets_r310_2_1(opening, *, grade_floor: bool) -> bool:
-    """Does this opening satisfy the R310.2.1 net-clear dimensions?"""
-    area_sf = opening.width_m * opening.height_m * 10.7639
+def _window_type(ctx: CheckContext, opening):
+    library = getattr(ctx.plan, "library", None)
+    types = library.window_types if library is not None else ()
+    return next((t for t in types if t.tag == opening.type_ref), None)
+
+
+def _meets_r310_2_1(opening, *, grade_floor: bool, window_type=None) -> bool:
+    """Does this opening satisfy the R310.2.1 net-clear dimensions?
+
+    R310.2.1 measures the NET clear opening. A type that authors the maker's published
+    ``net_clear_width``/``net_clear_height`` is graded on them; otherwise on the nominal
+    rough opening, which overstates every operable sash.
+    """
+    width_m, height_m = opening.width_m, opening.height_m
+    if window_type is not None and window_type.net_clear_width is not None:
+        width_m = window_type.net_clear_width.meters
+    if window_type is not None and window_type.net_clear_height is not None:
+        height_m = window_type.net_clear_height.meters
+    area_sf = width_m * height_m * 10.7639
     minimum = 5.0 if grade_floor else _MIN_EGRESS_AREA_SF
-    return (opening.width_m >= _MIN_EGRESS_WIDTH.meters
-            and opening.height_m >= _MIN_EGRESS_HEIGHT.meters
+    return (width_m >= _MIN_EGRESS_WIDTH.meters
+            and height_m >= _MIN_EGRESS_HEIGHT.meters
             and area_sf >= minimum
             and opening.sill_m <= _MAX_EGRESS_SILL.meters)
 
@@ -68,7 +84,8 @@ def egress_windows(ctx: CheckContext) -> list[Finding]:
         # selector, which bands on proximity to the room boundary alone, would credit one as
         # this bedroom's way out of a fire. See `_room_windows`.
         wins = _room_windows(ctx, resolved_room, Point, Polygon, exterior_only=True)
-        best = next((op for op in wins if _meets_r310_2_1(op, grade_floor=False)), None)
+        best = next((op for op in wins if _meets_r310_2_1(op, grade_floor=False,
+                                                      window_type=_window_type(ctx, op))), None)
         if best is not None:
             out.append(_pass("code.R310_egress",
                              f"{room.tag} has egress window {best.tag}", "R310.1"))
@@ -131,7 +148,8 @@ def basement_storey_egress(ctx: CheckContext) -> list[Finding]:
                 continue
             # An exterior door out of the storey is an escape route by itself; R310.1 asks
             # for an opening "opening directly into a public way, yard or court".
-            if opening.is_door or _meets_r310_2_1(opening, grade_floor=True):
+            if opening.is_door or _meets_r310_2_1(
+                    opening, grade_floor=True, window_type=_window_type(ctx, opening)):
                 found = opening
                 break
         if found is not None:
@@ -495,7 +513,9 @@ def _required_escape_openings(ctx: CheckContext) -> list:
         # "the openings R310.1 makes this house depend on", so a window the escape rule cannot
         # credit is not one R310.2.3 should be sizing a well for either.
         for opening in _room_windows(ctx, resolved_room, Point, Polygon, exterior_only=True):
-            if _meets_r310_2_1(opening, grade_floor=False) and opening.tag not in seen:
+            meets = _meets_r310_2_1(opening, grade_floor=False,
+                                    window_type=_window_type(ctx, opening))
+            if meets and opening.tag not in seen:
                 seen.add(opening.tag)
                 credited.append(opening)
                 break
@@ -512,7 +532,8 @@ def _required_escape_openings(ctx: CheckContext) -> list:
                 continue
             if not _wall_is_exterior(ctx, wall, rooms_by_storey):
                 continue
-            if opening.is_door or _meets_r310_2_1(opening, grade_floor=True):
+            if opening.is_door or _meets_r310_2_1(
+                    opening, grade_floor=True, window_type=_window_type(ctx, opening)):
                 if opening.tag not in seen:
                     seen.add(opening.tag)
                     credited.append(opening)

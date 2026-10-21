@@ -5533,7 +5533,7 @@ label is in hand. The two 14" kitchen awnings stay outward: a Euro sightline of 
 leaves too little glass at 14". The `-TT` price rows mirror the casement bands as placeholders
 pending an import quote with freight and duty.
 
-`notes/window_procurement.md` holds the rest. The code gates (NFRC CPD listing, a NAFS label at
+`notes/window_and_door_procurement.md` holds the rest. The code gates (NFRC CPD listing, a NAFS label at
 DP ≥ 20 psf, 16 CFR 1201 marks) are the import risk, more than the U-value. The preferred
 material is aluminium-clad uPVC; the fallback is aluminium south, uPVC elsewhere. Outie flange
 stays the baseline over a Euro strap mount, which would need a visible sill extension.
@@ -5563,6 +5563,26 @@ read alike. The suite failed even as a casement (27x36 nets 4.40 sf). Its pair a
 The engine measures R312.2 sills from the storey datum, not the finished floor, which is a
 third follow-up.
 
+
+## 2026-10-21 — Window and door products named
+
+Phase 1 read the NFRC CPD directly (search.nfrc.org) rather than brochures. The decisive
+findings: (1) of the Polish makers only Drutex lists every operation, and only Drutex lists
+an aluminium-capped line (IGLO Energy Alucover), which is note §3's preferred dark-frame
+material; Oknoplast lists no casement or awning, Eko-Okna's Ideal 4000 rates U 0.27-0.28,
+Doorwin's casement U 0.37. (2) No Euro or fiberglass section nets R310's 20" at a 27" RO
+(~4 1/2" a side lost; Cascadia 4.1"; Marvin Elevate egresses only from 29"), so the egress
+set is Andersen 400, whose published opening is 20.69". (3) No outward awning is made at
+14", so the kitchen pair is a Drutex tilt-only. The owner took every recommended option.
+
+In the model: `plan/opening_products.py`, `plan/window_types.py`, `plan/door_types.py` (the
+first two absorb and retire `plan/living_window_types.py`), merged over the library presets
+by tag. Engine: `WindowType.net_clear_width/height`, graded by `_meets_r310_2_1`. Window UA
+68.3 -> 48.7, doors 24 -> 18: heating 31,649 -> 29,472 Btu/h; the 10:30 glass rises 13,076 ->
+13,829 (SHGC by product, entry glazed). Oracles re-derived in `block_load_basis.md`,
+`solar_gain_basis.md`, `heat_pump_turndown.md`, `room_heat_loss_baths.md`. Drutex stools lose
+0.41" of depth to the 93 mm frame. No price published by any window line; bands kept, the
+overhead re-based on Clopay GDU011's $2,845.
 
 ## 2026-10-21 — Hall-bath entry opens beside a shorter vanity
 

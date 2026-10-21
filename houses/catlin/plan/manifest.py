@@ -37,15 +37,15 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, court_daybed, panel_types,
                   dry_fire_lane, electrical, electrical_attic, electrical_floor_types, equipment_types,
-                  dining_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets,
+                  dining_types, door_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets,
                   landscape, lighting, living_east_run, living_east_run_types,
-                  living_window_types, living_puzzle_table_types,
+                  living_puzzle_table_types,
                   lighting_attic, lighting_types, masonry_joints, mep, millwork,
                   millwork_vanities, placeables,
                   plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
-                  products,
+                  opening_products, products,
                   sauna, sauna_types, site, study_bridge, titanium_types, transitions, views,
-                  wind_clamps, window_stools)
+                  wind_clamps, window_stools, window_types)
 from plan.storeys import attic, attic_studio, basement, garage, main, second
 
 format_version = 1
@@ -59,7 +59,8 @@ _library = Library(
     assemblies=tuple(assemblies.ASSEMBLIES),
     # Brand and model for the products this house has actually chosen — identity only,
     # never a price (#28). The types above point at these by ``product_ref``.
-    products=(*products.PRODUCTS, *bed_frame_types.BED_FRAME_PRODUCTS),
+    products=(*products.PRODUCTS, *bed_frame_types.BED_FRAME_PRODUCTS,
+              *opening_products.OPENING_PRODUCTS),
     # The one library pocket size this house hangs, alongside the house's own catalog. Only
     # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
     # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
@@ -72,8 +73,13 @@ _library = Library(
     # forgiving of the framer. Its 74 1/2" RO is 1 1/2" wider than the 2W + 1" commodity one.
     # notes/pocket_frame_eclisse.md.
     door_types=(DT_POCKET_INT_36.model_copy(update={"pocket_frame": "eclisse"}),
-                *STANDARD_DOOR_TYPES, *main.LOCAL_DOOR_TYPES),
-    window_types=(*WINDOW_TYPES_16_INCH_MODULE, *living_window_types.WINDOW_TYPES),
+                *(t for t in STANDARD_DOOR_TYPES if t.tag not in door_types.HOUSE_DOOR_TAGS),
+                *door_types.DOOR_TYPES, *main.LOCAL_DOOR_TYPES),
+    # The house's chosen window products replace the library preset of the same tag; the
+    # presets stay as they are for other houses, and catalog-only sizes stay presets.
+    window_types=(*(t for t in WINDOW_TYPES_16_INCH_MODULE
+                    if t.tag not in window_types.HOUSE_WINDOW_TAGS),
+                  *window_types.WINDOW_TYPES),
     # The shared catalogs supply every plumbing fixture, appliance, and railing this house
     # uses; only the wall-fitted mudroom closets stay house-local. Tags are disjoint, and
     # `integrity.duplicate_catalog_tag` now proves it rather than asserting it.

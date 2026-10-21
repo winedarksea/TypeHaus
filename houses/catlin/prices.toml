@@ -5331,8 +5331,9 @@
 # Everything else here moved 10-25%, which is an ordinary revision.
 #
 # TWO UNITS ARE BELOW A STOCK LINE'S MINIMUM SIZE and may not be orderable as priced:
-#   WT-1424 (14" wide) — Simonton's AWNING minimum is 23.5" wide. The two kitchen awnings
-#                        remain specialty units; the other 14x24 placements are fixed.
+#   WT-1424 (14" wide) — Simonton's AWNING minimum is 23.5" wide, Cascadia's 20". The two
+#                        kitchen units are a Drutex tilt-only since 2026-10-21, minimum
+#                        sash to confirm; the other 14x24 placements are fixed.
 #   WT-1448 (14x48)    — a legal casement at a 3.4:1 aspect, but an odd one; expect the band
 #                        floor, never below it.
 # ** VERIFY AVAILABILITY BEFORE BIDDING THESE. ** An unavailable size is not a price problem.
@@ -5343,6 +5344,9 @@
 # $2-5/sf. This table uses a flat $150 low / $250 high per unit, applied identically to a
 # 14x24 and a 30x48 — because that is how it is actually sold.
 #
+# 2026-10-21: the `-HP` units are now the SAME Drutex fixed line with a laminated inner lite
+# (DRU-K-23-00010, U 0.14), so the substitution premium argued below no longer applies; the
+# rows are kept until the Drutex quote, and are likely high.
 # THE `-HP` ROWS ARE A DIFFERENT MANUFACTURER, NOT A GLAZING OPTION. U-0.14 is not a checkbox
 # on any mainstream line: Andersen 400 with krypton bottoms out at U-0.17, and neither Pella
 # nor Marvin publishes a 0.14 casement. U-0.14 means Alpen 725 (R-7.1), Zola Thermo Clad or a
@@ -5365,11 +5369,18 @@
 # triple-pane, modernize.com Andersen cost data, fabglassandmirror.com tempered $/sf,
 # doornmore.com, doorclearancecenter.com, superarbor.io (Krosswood), homedepot.com listings.
 # $ each, by door/window type — MATERIAL IS PRE-TAX LIST; labour unchanged from 2026-08-20a
+#
+# ** PRODUCTS NAMED 2026-10-21 (notes/window_and_door_procurement.md §2). ** Drutex IGLO
+# Energy Alucover for the tilt-turn, fixed and tilt-only units, Andersen 400 casements for the
+# nine egress windows, Cascadia Universal doors. None publishes a price, so the window bands
+# below are NOT re-based: each comment names its product, and a quote per supplier replaces
+# them. The Drutex rows still need freight, crating and duty from a Chicago dealer
+# (`[allowances]`'s delivery line); the Andersen rows are local.
 
 # --- windows ------------------------------------------------------------------------------
 # The five small units. All were 65-85% low; all sit in the 0-71 UI band with WT-2736.
-"WT-1424" = { material = { low = 520, high = 1000 }, labour = { low = 115, high = 235 } }  # 2 ea — kitchen only; 38 UI; 14" is under the awning minimum, see above
-"WT-1424-FIX" = { material = { low = 400, high = 780 }, labour = { low = 105, high = 215 } }  # 7 ea — fixed runs 75-80% of an operable casement
+"WT-1424" = { material = { low = 520, high = 1000 }, labour = { low = 115, high = 235 } }  # 2 ea — kitchen only; Drutex Alucover tilt-only; 38 UI
+"WT-1424-FIX" = { material = { low = 400, high = 780 }, labour = { low = 105, high = 215 } }  # 7 ea — Drutex Alucover fixed; fixed runs 75-80% of an operable casement
 "WT-1424-FIX-T" = { material = { low = 550, high = 1030 }, labour = { low = 105, high = 220 } }  # 4 ea — fixed +$150/250 flat tempered
 "WT-1424-T" = { material = { low = 670, high = 1250 }, labour = { low = 115, high = 240 } }  # 0 ea — catalog-only operable tempered twin
 # 14x36, the south gable's flanker size since 2026-08-29 (WT-1448 shortened for the 6:12
@@ -5388,7 +5399,7 @@
 # else changed. 81 UI, still past the 0-71 band, so it keeps the over-band premium but sheds
 # ~9% of glass and frame against the 64" unit. Width-identical, so the pier, the centres and
 # the from_node offsets in storeys/attic.py are all untouched by the retype.
-"WT-2754" = { material = { low = 720, high = 1360 }, labour = { low = 170, high = 365 } }  # 4 ea — the juliets and WIN-S-SUITE1/2 (R310 egress casements, 2026-10-21); 81 UI
+"WT-2754" = { material = { low = 720, high = 1360 }, labour = { low = 170, high = 365 } }  # 4 ea — the juliets and WIN-S-SUITE1/2, Andersen 400 egress casements; 81 UI
 # The mid units — ordinary 17-26% corrections.
 "WT-2736" = { material = { low = 550, high = 1050 }, labour = { low = 155, high = 320 } }  # 0 ea — catalog-only since 2026-10-21 (tilt-turn retype) — the production unit, 63 UI
 # Fixed variants (2026-10-21): design allowances using this table's existing 75-80%
@@ -5407,13 +5418,13 @@
 # That sheds ~7% of glass and frame and nothing else; 27" is still a one-man set, so labour
 # barely moves. The result brackets correctly against `WT-3048` (30x48, 78 UI, $700-1,320):
 # three inches narrower, four percent under. Tempered is this table's flat $150/$250 adder.
-"WT-2748" = { material = { low = 670, high = 1265 }, labour = { low = 168, high = 358 } }  # 2 ea — WIN-S-BED2, WIN-S-HALL-N (R310 egress casements, 2026-10-21); 75 UI
-"WT-2748-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 1 ea — WIN-S-BED1 (R310 egress casement)
+"WT-2748" = { material = { low = 670, high = 1265 }, labour = { low = 168, high = 358 } }  # 2 ea — WIN-S-BED2, WIN-S-HALL-N, Andersen 400 egress casements; 75 UI
+"WT-2748-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 1 ea — WIN-S-BED1, Andersen 400 egress casement
 "WT-2748-FIX-T" = { material = { low = 660, high = 1240 }, labour = { low = 163, high = 345 } }  # 1 ea — WIN-S-STAIR-N
-"WT-3048" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 2 ea — WIN-M-BED-S1/S2 (R310 egress casements, 2026-10-21); 78 UI, over the band; two-man set
+"WT-3048" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 2 ea — WIN-M-BED-S1/S2, Andersen 400 egress casements; 78 UI, over the band; two-man set
 "WT-3048-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 0 ea — catalog-only since 2026-10-21 (tilt-turn retype) — WIN-M-LIV-S2 and WIN-S-STUDY1
-# Tilt-turn twins (2026-10-21, notes/window_procurement.md): each mirrors its casement's
-# band. PLACEHOLDER pending an import quote incl. freight and duty.
+# Tilt-turn twins (2026-10-21): Drutex IGLO Energy Alucover, each on its casement's band.
+# PLACEHOLDER pending the Drutex dealer quote incl. freight and duty.
 "WT-2736-TT" = { material = { low = 550, high = 1050 }, labour = { low = 155, high = 320 } }  # 4 ea
 "WT-2748-TT" = { material = { low = 670, high = 1265 }, labour = { low = 168, high = 358 } }  # 2 ea
 "WT-2748-TT-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 1 ea
@@ -5440,15 +5451,22 @@
 # Unit only. Low is a closeout/builder fiberglass pair ($598 at Door Clearance Center); high is
 # a full-lite Low-E or 10-lite SDL fiberglass double ($2,188-2,829 at doornmore.com). The old
 # $3,600 high was an installed price wearing a material label.
+# 2026-10-21: FRENCH60 and SWING36 are Cascadia Universal triple-glazed fiberglass. Cascadia
+# publishes no price, so neither band is re-based; expect the quote at or above the high end.
 "DT-EXT-FRENCH60" = { material = { low = 1300, high = 2900 }, labour = { low = 450, high = 1050 } }  # 3 ea — sill pan, flashing, and a unit that must stay square for the astragal to latch
-"DT-EXT-SWING36" = { material = { low = 500, high = 1600 }, labour = { low = 320, high = 720 } }  # 2 ea — flush primed fiberglass to decorative-glass
+"DT-EXT-SWING36" = { material = { low = 500, high = 1600 }, labour = { low = 320, high = 720 } }  # 1 ea — D-M-ENTRY, Cascadia full-lite
+# D-G-SERVICE's own type since 2026-10-21: a commodity Therma-Tru Smooth-Star flush outswing,
+# the commodity end of the old SWING36 band; same labour.
+"DT-EXT-SWING36-G" = { material = { low = 500, high = 900 }, labour = { low = 320, high = 720 } }  # 1 ea
 # ** LOW END RAISED, not lowered. ** An UNINSULATED 16x7 steel door is $888 at Home Depot and
 # should not be the base case in Climate Zone 6 on a heated-adjacent garage. This now starts at
 # an insulated R-6.5 door ($2,230 with windows) and tops out at a carriage style (Coachman
 # R-18.4, $6,297) — the low reflects a plain insulated door bought through a door company
 # rather than retail. NOTE the market convention: garage-door companies quote door-plus-install
 # as one number and rarely sell labour separately, so this split is a modelling construct.
-"DT-EXT-OVERHEAD192" = { material = { low = 1400, high = 3300 }, labour = { low = 550, high = 1150 } }  # 1 ea
+# RE-BASED 2026-10-21 on the named door: Clopay Modern Steel 16x7, Intellicore R-18.4, Black,
+# no windows, $2,845 at Home Depot (GDU011); high is a door company's price for the same door.
+"DT-EXT-OVERHEAD192" = { material = { low = 2845, high = 3300 }, labour = { low = 550, high = 1150 } }  # 1 ea
 
 # --- interior doors ---------------------------------------------------------------------------
 # Low is hollow-core molded prehung (Steves 5-pack works out to $161.60 ea at Home Depot);
@@ -7010,17 +7028,19 @@ roof-flashings-boots-and-custom-sheet-metal = { low = 3000, high = 8000 }
 # sealant is `envelope-exterior-sealants-and-caulking`. Three scopes, three rows, no overlap
 # — and the reason a fourth row for liquid flashing would be a double bill.
 #
-# The two `DT-EXT-SWING36` doors' pans are NOT in this row (driver is `[kind=window]`);
+# The two 36" exterior swing doors' pans are NOT in this row (driver is `[kind=window]`);
 # they are `envelope-door-sill-pans` below.
 envelope-opening-flashing-and-sill-pans = { low = 180, high = 262, unit = "ea", driver = "openings.count[kind=window]" }
 # Sloped sill pan with back and end dams under each exterior swing door
-# (`notes/opening_flashing_spec.md` §6). Filtered by TYPE, not `kind=door`: FRENCH60's own
-# row already carries its pan. ~$60-140 of preformed pan or membrane plus about an hour.
-envelope-door-sill-pans = { low = 150, high = 300, unit = "ea", driver = "openings.count[type=DT-EXT-SWING36]" }
+# (`notes/opening_flashing_spec.md` §6). Filtered to single exterior SWINGS, not `kind=door`:
+# FRENCH60 (`double_swing`) carries its own pan in its row. Since 2026-10-21 that is two
+# types, D-M-ENTRY's DT-EXT-SWING36 and D-G-SERVICE's DT-EXT-SWING36-G, both `entry`.
+# ~$60-140 of preformed pan or membrane plus about an hour.
+envelope-door-sill-pans = { low = 150, high = 300, unit = "ea", driver = "openings.count[function=entry,operation=swing]" }
 # D-G-OVERHEAD's perimeter membrane (2026-10-16, `notes/opening_flashing_spec.md` §7): head
 # band and both jambs on the CDX buck, lapped 2" onto the sheathing, from the stem top to the
 # head — ~30 LF on a 16'x7' opening, no pan. Neither row above buys it: one is driven by
-# windows and the other by DT-EXT-SWING36. Its metal head is in `corrugated-panel-24`'s trim
+# windows and the other by the 36" exterior swings. Its metal head is in `corrugated-panel-24`'s trim
 # load, like every other garage opening. ~$8/LF of FastFlash-class material plus ~1.5 h.
 envelope-garage-door-flashing = { low = 250, high = 500, unit = "ea", driver = "openings.count[operation=overhead]" }
 # MN limits to 3.0 ACH50, so the second blower-door test is not optional.

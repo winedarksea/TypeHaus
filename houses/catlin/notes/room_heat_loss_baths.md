@@ -120,6 +120,10 @@ interior, and three of its four walls bound conditioned space.
 | `RM-M-BATH2` | 303 Btu/h | **556 Btu/h** | +253 |
 | `RM-S-BATH1` | not worked by hand | **606 Btu/h** | — |
 
+**\*\* 2026-10-21: `RM-S-BATH1` 606 -> 586. \*\*** Its window, `WIN-S-BATH-W`, became the
+named Drutex fixed unit: U 0.25 -> 0.15 over 2.333 ft², ΔUA −0.233 × 85 °F = −19.8 Btu/h.
+`FH-S-BATH1`'s 612 now covers it by 25.
+
 **\*\* 2026-09-24: 567 -> 556 and 619 -> 606. \*\*** The room areas became finish-face
 areas, which shrinks the conditioned volume and each bath's share of the air-side terms; pass A is conduction
 through the same exterior wall and window and does not move.

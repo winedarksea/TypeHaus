@@ -178,6 +178,10 @@ class WindowType(HausModel):
     # computed without it. None means not authored: the stool reports UNKNOWN and carries no
     # depth rather than guessing one (#32).
     frame_depth: Length | None = None
+    # The maker's published NET clear opening (R310.2.1), sash open in normal operation.
+    # ``code.R310_egress`` grades these when authored and the nominal size otherwise.
+    net_clear_width: Length | None = None
+    net_clear_height: Length | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None

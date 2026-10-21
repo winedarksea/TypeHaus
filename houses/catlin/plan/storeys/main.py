@@ -58,11 +58,8 @@ DOOR_TYPES = [
     # R308.4.1 has no location test to fail: glazing *in a door* is a hazardous location by
     # definition, so this is a property of the product wherever it is hung — which is why it
     # is set on the three glazed types below and needs no tempered variant of any of them.
-    # SHGC/VT on the two GLAZED EXTERIOR leaves (2026-09-11): a glazed door is fenestration
-    # under R202, so the block load's solar term and the energy certificate's area-weighted
-    # average both want a number, and an unstated one is a permanent UNKNOWN rather than a
-    # zero. 0.35 / 0.5 is the house's glazing package — the same numbers every WindowType
-    # carries — and is the spec to hold the supplier to, not a measured NFRC label.
+    # The exterior door types are the chosen products in `plan/door_types.py` (2026-10-21),
+    # each with its NFRC CPD row.
     # DT-EXT-SLIDE60 retired 2026-09-12: a 5'-0" glazed exterior slider that never hung.
     # All three exterior glazed openings (D-M-BALC, D-S-DECK-E, D-B-PATIO) are French pairs
     # on DT-EXT-FRENCH60 — a swing pair weathers better at a threshold this house raises

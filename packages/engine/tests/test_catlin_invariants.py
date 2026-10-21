@@ -242,7 +242,10 @@ def test_the_french_doors_count_as_glazing_in_the_rooms_they_light(catlin_plan,
         assert room.glazed_area_m2 * 10.7639104167 >= FRENCH_DOOR_SF
     # ...and every other room is left alone: no door is credited twice, and the two glazed
     # INTERIOR leaves (D-M-STUDY, D-S-PLANT) are borrowed light, not light to the outdoors.
-    assert not [tag for tag, doors in found.items() if doors and tag not in FRENCH_DOORS.values()]
+    # D-M-ENTRY is a glazed Cascadia door since 2026-10-21 and lights the mudroom.
+    assert found.get("RM-M-MUDROOM") == ["D-M-ENTRY"]
+    lit = {*FRENCH_DOORS.values(), "RM-M-MUDROOM"}
+    assert not [tag for tag, doors in found.items() if doors and tag not in lit]
 
 
 def test_the_glazed_interior_leaves_are_not_daylight(catlin_model_ro):

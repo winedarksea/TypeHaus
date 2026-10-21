@@ -284,11 +284,12 @@ def test_the_mat_is_a_real_cable_and_covers_the_zone_without_exceeding_it():
 
 def test_the_mat_is_sized_to_the_room_with_no_headroom_left():
     """16.0 ft2 of cable delivers ~298 BTU/h at Schluter's 18.6 BTU/h/ft2 of floor surface
-    (82 F floor, 72 F operative), against ~303 BTU/h of design load through one R-40.7 wall
-    and one U-0.25 window at -15 F. ** That is 98%, and the honest reading is "sized to the
-    room", not "has margin". ** The room has no more legal floor to heat — the keepouts are
-    manufacturer minimums — so if this ratio ever drops materially the answer is a SECOND
-    heat source, not a bigger mat. The band below is what would catch that."""
+    (82 F floor, 72 F operative), against ~236 BTU/h of design load through one R-40.7 wall
+    and one U-0.15 window at -15 F: 1.26x. It was 98% at the U-0.25 preset; the named
+    Drutex fixed unit (2026-10-21) took 57 BTU/h off the window term (6.75 ft2 x 0.10 x
+    85 F). The room has no more legal floor to heat — the keepouts are manufacturer
+    minimums — so if this ratio ever drops under 1.0 the answer is a SECOND heat source,
+    not a bigger mat. The band below is what would catch that."""
     from typehaus.analysis import assembly_r_value
 
     model = _model()
@@ -305,8 +306,8 @@ def test_the_mat_is_sized_to_the_room_with_no_headroom_left():
     glass_ft2 = 27 * 36 / 144
     opaque_ft2 = (depth_in / 12) * 9.4 - glass_ft2
     load = opaque_ft2 / wall_r * delta_f + glass_ft2 * window_u * delta_f
-    assert 250 < load < 360
-    assert 0.90 < (16.0 * 18.6) / load < 1.15
+    assert 200 < load < 300
+    assert 1.0 < (16.0 * 18.6) / load < 1.40
 
 
 def test_the_zone_holds_every_manufacturer_keepout():

@@ -116,7 +116,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `system1_return_path.md` | the one return grille, and the six door undercuts that are the whole return path |
 | `wall_backing.md` | the in-wall backing schedule: every height and the authority behind it, what the code actually requires and what it does not, and the 2026-09-12 pass that replaced the wet walls' 3/4" plywood band with three 2x courses |
 | `wood_supply.md` | the owner's log pile against `haus millwork`'s demand after the red-oak reassignment: the International 1/4" rule estimate, the species flags (ash and locust short, the sauna ~120 bf short), and what the sawyer's tally replaces |
-| `window_procurement.md` | the imported tilt-turn swap: the performance spec (NFRC CPD, NAFS DP ≥ 20 psf, 16 CFR 1201), the sourcing matrix and RFQ checklist, frame material by orientation, outie flange vs Euro strap, interior sweep coordination, and the egress hand check that keeps the 9 escape windows US casements and grew the suite pair to 27x54 |
+| `window_and_door_procurement.md` | the chosen window and door lines (Drutex Alucover, Andersen 400 for egress, Cascadia doors) read from the NFRC CPD, the comparison and what is still claimed; the performance spec (NAFS DP ≥ 20 psf, 16 CFR 1201), frame material by orientation, outie flange vs Euro strap, interior sweep coordination, and the egress derivation `code.R310_egress` now grades |
 
 ## Detail notes — drawing content, byte-pinned
 

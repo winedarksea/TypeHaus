@@ -383,9 +383,29 @@ are unchanged.
 ## Addendum 2026-10-21 — the suite and plant-room windows grew for R310
 
 `WIN-S-SUITE1`/`2` went 27x36 → 27x54 (+6.75 ft² at U-0.25) and `WIN-S-PLANT3` the same
-(+3.375 ft² at U-0.14), all in HP1's zone (`window_procurement.md` §7). That is +2.160 window
+(+3.375 ft² at U-0.14), all in HP1's zone (`window_and_door_procurement.md` §7). That is +2.160 window
 UA and −0.229 wall UA, so the air-coupled UA goes 178.06 → **179.99**, and ×85 °F the design
 load goes 15,135 → **15,299 Btu/h**. The factor is 14,000 / 15,299 = **0.92** against a
 **12,240 Btu/h** cap, and the crossover moves −7.1 → **−6.4 °F** (§4's interpolation of the
 minimum column). HP2 and HP3 do not move; no verdict changes.
 
+
+## Addendum 2026-10-21 (later) — named window and door products
+
+Every window and door U fell (`block_load_basis.md`, revision of this date). Per zone, the
+sum of ΔU × area over its own openings, × 85 °F:
+
+| zone | Δ air UA | design load | sizing factor | Manual S cap | crossover |
+|---|---|---|---|---|---|
+| HP1 | −10.559 → 169.43 | 15,299 → **14,402** | 14,000 / 14,402 = **0.97** | **11,522** | **−10.6 °F** |
+| HP2 | −13.144 → 134.28 | 14,972 → **13,855** | 8,800 / 13,855 = **0.64** | **11,084** | **23.6 °F** |
+| HP3 | −1.233 → 10.72 | 1,015 → **910** | 2,800 / 910 = **3.08** | **728** | never |
+
+HP3's is `WIN-M-MUD` and the now-glazed `D-M-ENTRY`. `WIN-A-N1` (−0.675) lights the
+`FO-A-HALL` stair void and sits in no zone; it is the 58 Btu/h by which the three zones
+under-sum the block. HP1's crossover: at −22 °F 13,400 − 169.43 × 92 = −2,188, at 5 °F
+14,000 − 169.43 × 65 = +2,987, so T = −22 + 27 × 2,188 / 5,175 = −10.6 °F. HP2's: at 17 °F
+8,800 − (2,441 + 134.28 × 53) = −758, at 47 °F 8,200 − (2,441 + 134.28 × 23) = +2,671, so
+T = 17 + 30 × 758 / 3,429 = 23.6 °F. HP1 is now a hair under its published minimum, which
+is worse for cycling; HP2 now cycles above 23.6 °F (was 28.4 °F), a wider band. All advisory;
+no verdict moves.
