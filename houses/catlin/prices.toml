@@ -2436,7 +2436,11 @@
 # drawers and shelf links/quantities in plans/bath1-sektion-closet.md. Two lower 15" modules
 # are OPEN beside the unchanged toilet, so those four fronts/drawers are not billed.
 "FURN-S-SEKTION-LINEN-OPEN-24" = { material = { low = 928, high = 1100 }, labour = { low = 150, high = 350 } }  # 2 ea
-"FURN-S-SEKTION-LINEN-DRAWER-24" = { material = { low = 1292, high = 1500 }, labour = { low = 150, high = 350 } }  # 1 ea
+# East unit narrowed to 18" (2026-10-21). IKEA US list core: 002.654.39 frame $171,
+# VOXTORP upper 18x30 $187 + 18x20 $168; lower 2x18x15 $118 + 18x10 $96;
+# MAXIMERA medium $40 + 2 high $47 = $992. Retain $144 for shelves, hinges, legs,
+# rail share and plinth from the 24" allowance; high includes fittings and price movement.
+"FURN-S-SEKTION-LINEN-DRAWER-18" = { material = { low = 1136, high = 1350 }, labour = { low = 150, high = 350 } }  # 1 ea
 # Actual FÖRBÄTTRA 005.678.37 is 1/2 x 24 5/8 x 90", $154, matte white matching VOXTORP.
 # https://www.ikea.com/us/en/p/foerbaettra-cover-panel-matte-white-00567837/
 "FT-S-SEKTION-COVER-90" = { material = { low = 154, high = 175 }, labour = { low = 20, high = 60 } }  # 1 ea
@@ -3262,7 +3266,9 @@
 "FX-VANITY-30-SHALLOW" = { material = { low = 380, high = 1350 }, labour = { low = 220, high = 510 } }  # 2 ea
 "FX-VANITY-30-SINGLE" = { material = { low = 400, high = 1400 }, labour = { low = 220, high = 510 } }  # 1 ea
 "FX-VANITY-36-SHALLOW" = { material = { low = 470, high = 1650 }, labour = { low = 240, high = 560 } }  # 1 ea
-"FX-VANITY-48-SINGLE" = { material = { low = 750, high = 2400 }, labour = { low = 280, high = 660 } }  # 1 ea
+# Hall bath, 2026-10-21: 36x21 sink base, basin and faucet allowance; the fabricated
+# quartz slab bills separately under [countertops]. Full-width shelf is included in host.
+"FX-VANITY-36-SINGLE" = { material = { low = 470, high = 1650 }, labour = { low = 240, high = 560 } }  # 1 ea
 # 36x36 curbed pan plus its three-wall surround panels, set on a mortar bed. The tiled
 # version of this wall is NOT here — see the basis note above.
 # ** THIS ROW ALREADY BUYS THE SURROUND, INCLUDING ITS LABOUR. ** RM-M-BATH2's
@@ -5218,7 +5224,7 @@
 #   CT-M-KIT-PENINSULA    14.67 SF  the SEKTION peninsula's three bases + end panel, 84 1/2"
 #   (the three kitchen tops were 47.67 SF before the 2026-10-02 SEKTION corners; 48.41 now)
 #   CT-M-BATH2-VANITY      6.33 SF  48 x 19
-#   CT-S-BATH1-VANITY      7.33 SF  48 x 22
+#   CT-S-BATH1-VANITY      5.50 SF  36 x 22 (resized 2026-10-21)
 #   STOOL-WIN-S-PLANT1..4  9.26 SF  the plant room's four 3 cm window stools (2026-09-28),
 #   STOOL-WIN-M-KITCH      2.04 SF  the kitchen sink window's 3 cm quartz stool,
 #   STOOL-WIN-M-KITCH-N,

@@ -5563,3 +5563,23 @@ read alike. The suite failed even as a casement (27x36 nets 4.40 sf). Its pair a
 The engine measures R312.2 sills from the storey datum, not the finished floor, which is a
 third follow-up.
 
+
+## 2026-10-21 — Hall-bath entry opens beside a shorter vanity
+
+Owner selected a 36x21 sink base, an 18-inch eastern SEKTION (two western units stay
+24 inches), and an east-hinged inswing. The vanity moves toward the tub, leaving a
+2-inch separation there and 8.5 inches beyond the fully open door tip. Closest cabinet/
+countertop corner spacing grows from 15 to 23.36 inches. A 22-inch circular planning
+envelope can pass with the door open; this remains a compact turn, not a 30-inch route.
+
+The top stays fabricated quartz with a Caxton undermount, resized to 36x22 with flush
+ends. The full-width included shelf grows to 34.5x18.5. The mirror follows the basin;
+the GFCI moves south of the glass, stacked above the existing switch. Existing toilet,
+tub, doorway, drain/vent anchors and radiant cable stay. Matching 18-inch IKEA components
+and configured pricing replace the 24-inch eastern stack. Full house check results are
+unchanged at 1,877 pass / 0 fail / 73 unknown / 61 not applicable. See
+[the measured review](notes/bath1_clearance_review.md) and its reproducible drawing.
+
+The narrower cabinet also exposes a 6 3/16-inch tile-base piece between the run and door
+casing. Reviewed the single new geometry entry in the elevation golden; the snapshot and
+bathroom tests pass, as do the remaining standard verification stages.

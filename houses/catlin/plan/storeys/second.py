@@ -619,33 +619,14 @@ OPENINGS = [
     RoughOpening(uid="CSD215AAAA", tag="O-S-VANITY", host="W-S-VE",
                  position=from_node("N-S-V1", inch(8)), width=ft(2, 8),
                  height=ft(6, 8)),                                       # y 24'-0 5/8"
-    # Pulled 3" west of its original 1'-4.5": at that offset the door's own
-    # king stud landed inside N-S-BA1's corner square and punched into W-S-BA-E1B's end
-    # stud (the same class of overlap as N-M-MECH2 in test_wall_corner_and_opening_framing).
-    # ** IT STAYS AT 1'-1 1/2", AND `structural.door_framing_module` REPORTS IT. ** Centre
-    # 28 1/2" is 3 1/2" off the module and costs one extra stud. The only station on this wall
-    # that would fix it is 32", and 32" leaves the RO 2 1/2" from N-S-V2 — the king and jack
-    # on that side would be inside the corner pack, which is nine `member_interference`
-    # overlaps traded for one stud. (It also needs `flip_swing` there, because at 32" the old
-    # swing sweeps FX-S-BATH1-LAV; that part works, and is moot.) The wall is 5'-1" long and
-    # carries a 30" leaf: there is no station on it that clears both ends.
-    #
-    # ** `flip_hinge` IS LOAD BEARING: IT IS WHAT KEEPS THE LEAF OFF FX-S-BATH1-LAV. **
-    # W-S-BD-N1B runs +x, so the unflipped jamb is the EAST one at x=9'-6", and a leaf hung
-    # there sweeps its FULL quadrant across the vanity — 15.6 in2 of the cabinet, which is
-    # what the plan sheet was drawing until 2026-09-09. Hinged at the WEST jamb the same
-    # leaf clears it: 0.0 sf, 0.21" at the closest point (the arithmetic is in
-    # plan/fixtures.py). Do not "tidy" this flag away.
-    #
-    # The other two ways out were both worse. `flip_swing` throws the leaf into the hall,
-    # and the 4'-0" stub north of this wall is where you stand to open the door
-    # (storeys/attic_studio.py). Shrinking the cabinet costs a volume SKU: 42" is
-    # special-order where 48" is stock, and it buys clearance the door never needed.
-    #
-    # The arc is a 90 DEGREE quarter-disc. Past 90 the leaf does reach the cabinet, so this
-    # door takes a stop. The engine models no such thing — it is a hardware note only.
+    # Keep the 13.5" offset from N-S-V2: moving the opening east puts its king stud
+    # into N-S-BA1's corner pack. The 49.5" wall cannot fit this 30" leaf on the
+    # 16" framing module while clearing both corner packs, so the off-module advisory stays.
+    # Owner, 2026-10-21: hinge on the east jamb (x=114") so the open leaf stays beside
+    # the east wall instead of dividing the entry. The 36" vanity begins 8.5" beyond
+    # the 90-degree leaf tip. Keep a stop to protect the adjacent switch and cabinet.
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-V2", ft(1, 1.5)), flip_hinge=True),     # x 8'-3"
+         position=from_node("N-S-V2", ft(1, 1.5)), flip_hinge=False),     # x 8'-3"
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
          position=from_node("N-S-C3D", ft(0, 8.5)), flip_swing=True, flip_hinge=True),                     # x 19'-11 1/2"
     # O-S-STAIRTOP, the 6'-0" cased stair head, went with its host wall W-S-BD-N2.

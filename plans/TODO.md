@@ -261,7 +261,8 @@ the future.
 - Switch D-M-BATH2 and D-M-BED to walnut door casings. Then switch the desk there to walnut top on IKEA SEKTION cabinets
 - [x] Refit RM-M-STUDY: A-1 plywood bench with walnut facing/trim, warm gray seat and reclined lumbar back, shallower walnut desk/leaf; shared fabrication geometry drives 3D and panel/solid-wood cut lists. [Specification and pre-fabrication fit acceptance](../houses/catlin/notes/study_booth.md) (2026-10-19).
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps grab bars.
-
+- [x] Open up RM-S-BATH1's entry: 36" vanity, 18" eastern SEKTION, east-hinged inswing (2026-10-21). [Measured layout and checks](../houses/catlin/notes/bath1_clearance_review.md): 23⅜" closest corner spacing and 8½" beyond the open door tip; still a compact turn.
+- Need to name actual manufacturer's models for the windows specified here, confirming dimensions, R value, frame material, NFRC, and flange setup.
 - [ ] Before fabricating RM-M-STUDY: complete the 60-minute seating mock-up, verify occupied cushion height, lumbar fit and bracket/blocking connections, and record any dimensional changes in the bench spec.
 
 # Project Management

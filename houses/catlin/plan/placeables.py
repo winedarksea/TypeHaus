@@ -652,13 +652,9 @@ SECOND_PLACEABLES = [
     # millwork as Furniture is this house's existing convention: the mudroom and both sauna
     # benches are priced the same way.
     #
-    # Clearances, all measured against the resolved model (2026-09-28): FX-S-BATH1-LAV ends
-    # at y 32'-10.38", only 0.12" south of the front line and across the case's whole width,
-    # which is why the type closes the case below the counter; ED-S-BATH1-MIRROR ends at
-    # y 32'-3", 7 1/2" of daylight, and the case stops 7/8" short of the east wall as scribe; ED-S-BATH1-RC-MIRROR and -SW are further down at
-    # y <= 31'-2"; D-S-BATH1's leaf hangs at y 26'-4" and sweeps nowhere near, 6'-3" south;
-    # REG-S-EXH1 and both cans are ceiling-mounted and none is over it; and the FH-S-BATH1
-    # radiant zone stops at y 31'-3", so the unit does not stand on the mat.
+    # The resized vanity ends at y=392.5", 2" before this case's front. Keep the closed
+    # base: the gap is a separation joint, not access to the shelves below counter level.
+    # The recentered 30" mirror ends at y=389.5", leaving 5" to the case.
     Furniture(uid="640HBGH1XS", tag="FURN-S-BATH1-SHELF", type_ref="FT-BATH1-SHELF-2030",
               room="RM-S-BATH1", position=pt(m(2.68588), m(10.4013))),
     # The suite bath's twin of it, turned to open west (2026-10-03): FX-S-SUITEBATH-TUBSH's

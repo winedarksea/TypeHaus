@@ -196,12 +196,13 @@ not instruction: when it disagrees with this file or the model, it is the one th
   `FX-VANITY-30-SINGLE` (RM-S-SUITEBATH), `FX-VANITY-36-SHALLOW` (RM-B-BATH — 18" deep
   on the pallet-depth argument alone since 2026-09-05; the door-swing argument that forced
   it went with the room's rotation) and
-  `FX-VANITY-48-SINGLE` (RM-S-BATH1).
+  `FX-VANITY-36-SINGLE` (RM-S-BATH1, 36x21 sink base since 2026-10-21).
   **`-SHALLOW` is 18" deep and `-SINGLE` is 21"**, and shallow is not the premium it sounds
   like: the cheap big-box combos that arrive boxed with their top and bowl already on them
   are 18.6"-18.75" deep, so 18" is the pallet depth. Widths are the stock ladder
-  (24/30/36/48/60) — 18/42/54 are one-SKU-or-special-order, which is why RM-S-BATH1 got 48"
-  rather than the 42" that a bounding-box reading of its door swing would have forced.
+  (24/30/36/48/60). RM-S-BATH1 now uses a 36" vanity with its door hinged east and
+  a 24+24+18" SEKTION run: the former 48" base and west hinge left the entry pinched.
+  See `notes/bath1_clearance_review.md` for the measured turn and unchanged service anchors.
   **`FX-LAV-24` prices ZERO instances and the row is kept anyway** (the
   `glazed-green-brick` convention). **`RM-A-STUBATH` deliberately keeps its
   `FX-LAV-COMPACT`**: its water closet is on the west wall, and the 24"

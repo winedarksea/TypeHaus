@@ -1413,48 +1413,24 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1",
                      controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # The 30" mirror follows the resized vanity's basin at y=374.5". The outlet moves
+    # south of the glass, stacked above the existing switch so test/reset stays exposed.
     ElectricalDevice(uid="QTS000KAAA", tag="ED-S-BATH1-MIRROR", kind=DeviceKind.LIGHT,
-                     # x moved 5/8" east on 2026-09-06: the Robern's body is 1 3/4" deep
-                     # where the authored ring was 3", so the old centre left the glass
-                     # floating 0.6" off W-S-BD-E's face. The FACE has not moved (9'-8 5/8");
-                     # the centre is face less half the new depth.
                      type_ref="ED-T-LT-MIRROR-RING",
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1", controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(28),
+                         wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(25.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Mirror is hardwired *and* gets an outlet beside it (electrical_notes.md line 80), so a
-    # future replacement doesn't need an electrician. GFCI at the RECEPTACLE, not at the
-    # breaker — 210.8(A)(1), and CKT-RC-SECOND is deliberately not GFCI at the panel
-    # (circuits.py: thirty outlets behind one 5 mA trip is not buildable).
-    #
-    # ** MOVED OUT FROM BEHIND THE GLASS, y=31'-0" -> 32'-6 3/4" (2026-09-06). ** At
-    # y=372" it was dead centre of ED-S-BATH1-MIRROR (a 30" Robern, y 357"..387", 42"..72"
-    # AFF) at 54" AFF — sealed behind a hardwired mirror. That is the one thing a GFCI
-    # DEVICE must never be: its circuit is not GFCI at the breaker, so the test/reset button
-    # was the entire protective path and no hand could reach it. The house states this
-    # principle for exactly this case twice already and then took the opposite decision here
-    # (see ED-M-BATH2-TUB-RC in plan/electrical.py, and CKT-BATH2-TUB in plan/circuits.py).
-    #
-    # ** AND IT WAS ALSO THIS ROOM'S ONLY RECEPTACLE, so deleting it was never available: **
-    # code.E3901_6_bathroom_receptacle passes RM-S-BATH1 on this outlet and nothing else.
-    # Moving it keeps that pass — y=390.75" is still hard against FX-S-BATH1-LAV's carcass
-    # (y 346.38"..394.38"), 0" to the basin's outside edge against 210.52(D)'s 36".
-    #
-    # y=390.75" is the 7 1/2" of wall between the mirror's north edge and
-    # FURN-S-BATH1-SHELF at y=394.5": a 4 1/2" plate leaves 1 1/2" and 1 3/4". The 11 1/8"
-    # south of the mirror is wider but ED-S-BATH1-SW already has 4 1/2" of it at y=354".
-    # 54" AFF is kept, not dropped to the house's 44" vanity height: at 44" the plate
-    # (41 3/4"..46 1/4") would foul the mirror's own 42" base line the moment the glass is
-    # centred any further north.
+    # GFCI at 54" AFF, switch at 46": 8" between device centers. Both are at y=354",
+    # 6" beyond the stopped door tip; the mirror's south edge is y=359.5".
     ElectricalDevice(uid="QTS000MAAA", tag="ED-S-BATH1-RC-MIRROR",
                      kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(9.25),
+                         wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(46),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTS000NAAA", tag="ED-S-BATH1-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",

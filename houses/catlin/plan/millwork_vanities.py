@@ -71,15 +71,14 @@ MAIN_VANITY_SHELVES = [
 SECOND_VANITY_SHELVES = [
     ShelfBank(
         uid="FT01G11CY0", tag="SB-S-BATH1-VAN",
-        # The 30" SINK BASE half of the 48" vanity; the north 18" is a drawer
-        # bank and is not shelved. 21" carcass, so 18 1/2" clear.
+        # Full-width 36" sink base, with 21" carcass and 18 1/2" clear shelf depth.
         host="FX-S-BATH1-LAV",
         material_ref="cabinet-plywood",
         thickness=inch(0.75),
         depth=inch(18.5),
         profile="S4S",
         procurement=ShelfProcurement.INCLUDED_IN_HOST,
-        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
+        bays=(ShelfBay(width=inch(34.5), clear_height=inch(29.25), shelf_count=2),),
     ),
     ShelfBank(
         uid="XT028WRQR2", tag="SB-S-SUITEBATH-VAN",

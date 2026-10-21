@@ -8,8 +8,8 @@ that is invisible from the plan source:
   * the wall's own FINISH FACE, which is not ``Room.clear_face`` -- two of these were
     authored off ``clear_face`` and stood *inside* the studs, at 0 FAIL;
   * a WATER CLOSET's Minnesota envelope, which is UPC 402.5's 24"/15" and not the IRC's 21";
-  * a DOOR'S SWING ARC, which is a quarter-disc and not the bounding box -- the hall bath
-    gets 48" instead of a special-order 42" only because the difference is real;
+  * a DOOR'S SWING ARC and its fully open position: the hall bath's 36" base and east
+    hinge restore circulation that a collision-only check could not defend;
   * a RADIANT FLOOR that must not run under a closed-toe cabinet.
 
 Each of those is a silent failure mode from a different file, which is why they are pinned
@@ -18,17 +18,9 @@ here together rather than beside whichever thing they constrain.
 
 from __future__ import annotations
 
-from functools import cache
-
-from pathlib import Path
-
 import pytest
 from shapely.geometry import Polygon, box
 
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 IN = 0.0254
 
 # tag -> (type_ref, storey, backing wall, which face of it the cabinet stands on)
@@ -38,22 +30,11 @@ VANITIES = {
     # stand along the east wall against W-B-CN2's 12" pour.
     "FX-B-BATH-LAV": ("FX-VANITY-36-SHALLOW", "basement", "W-B-CW2", "+y"),
     "FX-M-BATH1-LAV": ("FX-VANITY-24-SHALLOW", "main", "W-M-HS1", "+y"),
-    "FX-S-BATH1-LAV": ("FX-VANITY-48-SINGLE", "second", "W-S-BA-E1B", "-x"),
+    "FX-S-BATH1-LAV": ("FX-VANITY-36-SINGLE", "second", "W-S-BA-E1B", "-x"),
     "FX-S-SUITEBATH-LAV": ("FX-VANITY-30-SINGLE", "second", "W-S-SN3", "-y"),
     "FX-S-VANITY-LAV1": ("FX-VANITY-30-SHALLOW", "second", "W-S-BD-N", "-y"),
     "FX-S-VANITY-LAV2": ("FX-VANITY-30-SHALLOW", "second", "W-S-BD-N", "-y"),
 }
-
-
-@cache
-def _model():
-    """The resolved catlin model — built once for this module.
-
-    Memoised: this was called 11 times and rebuilt the whole house each time. Everything
-    here reads and nothing mutates, which is what makes one shared instance safe (the same
-    rule ``catlin_model_ro`` states in conftest).
-    """
-    return resolve(load_plan(CATLIN_DIR).plan)[0]
 
 
 def _obj(model, tag):
@@ -82,9 +63,9 @@ def _wall_face(model, wall_tag, side):
     return {"-x": min(xs), "+x": max(xs), "-y": min(ys), "+y": max(ys)}[side]
 
 
-def test_every_bathroom_lavatory_is_a_vanity_with_a_cabinet():
+def test_every_bathroom_lavatory_is_a_vanity_with_a_cabinet(catlin_model_ro):
     """The bare bowls are gone; nothing in this house is an FX-LAV-24 any more."""
-    model = _model()
+    model = catlin_model_ro
     for tag, (type_ref, storey, _, _) in VANITIES.items():
         obj = _obj(model, tag)
         assert obj.type_ref == type_ref, f"{tag} is {obj.type_ref}"
@@ -95,7 +76,7 @@ def test_every_bathroom_lavatory_is_a_vanity_with_a_cabinet():
     assert remaining == [], f"a bare 24in bowl survived: {remaining}"
 
 
-def test_the_attic_guest_bath_takes_the_one_vanity_its_wall_measures():
+def test_the_attic_guest_bath_takes_the_one_vanity_its_wall_measures(catlin_model_ro):
     """RM-A-STUBATH got a cabinet on 2026-09-09, and 24" x 18" is not a preference.
 
     This test used to pin the opposite decision -- the room kept its bare 18" x 14" bowl,
@@ -106,7 +87,7 @@ def test_the_attic_guest_bath_takes_the_one_vanity_its_wall_measures():
     plate (E3901.6 wants a receptacle within 36" of the basin), deepen it and it stands in the
     water closet's envelope, slide it east and it runs through the shower pan.
     """
-    model = _model()
+    model = catlin_model_ro
     obj = _obj(model, "FX-A-STUBATH-LAV")
     assert obj.type_ref == "FX-VANITY-24-SHALLOW"
     x0, x1, y0, y1 = _bbox(obj)
@@ -120,7 +101,7 @@ def test_the_attic_guest_bath_takes_the_one_vanity_its_wall_measures():
     assert x1 <= 176.63, f"the carcass ends at x={x1:.3f}, inside the shower pan"
 
 
-def test_the_attic_showers_cut_corner_still_holds_p2708_1():
+def test_the_attic_showers_cut_corner_still_holds_p2708_1(catlin_model_ro):
     """The neo-angle is only legal while its corner cut stays shallow.
 
     IRC P2708.1 wants 900 sq in of interior area and a 30" minimum finished dimension. The
@@ -128,7 +109,7 @@ def test_the_attic_showers_cut_corner_still_holds_p2708_1():
     base) inscribes 30 1/2" -- half an inch of margin. A deeper cut spends it, and nothing in
     the engine grades a shower compartment, so this arithmetic lives here or nowhere.
     """
-    model = _model()
+    model = catlin_model_ro
     shower = _obj(model, "FX-A-STUBATH-SH")
     assert shower.type_ref == "FX-SHOWER-36-NEO-COMBO"
     outline = Polygon([(p[0] / IN, p[1] / IN) for p in shower.footprint])
@@ -140,14 +121,14 @@ def test_the_attic_showers_cut_corner_still_holds_p2708_1():
     assert not interior.buffer(-15.0).is_empty, "a 30in circle no longer fits the compartment"
 
 
-def test_each_vanity_backs_its_walls_finish_face_not_the_rooms_clear_face():
+def test_each_vanity_backs_its_walls_finish_face_not_the_rooms_clear_face(catlin_model_ro):
     """The regression that matters most: two of these used to stand inside the studs.
 
     ``FX-M-BATH1-LAV`` sat at y=268.94" against a finish face at y=271.39" -- 2.45" into the
     wall -- and ``FX-S-BATH1-LAV`` 1.88" into W-S-BA-E1B. Both built and checked clean for
     months, because nothing in the engine grades a Fixture against a wall face.
     """
-    model = _model()
+    model = catlin_model_ro
     for tag, (_, _, wall_tag, side) in VANITIES.items():
         x0, x1, y0, y1 = _bbox(_obj(model, tag))
         face = _wall_face(model, wall_tag, side)
@@ -157,7 +138,7 @@ def test_each_vanity_backs_its_walls_finish_face_not_the_rooms_clear_face():
             f"({'inside the wall' if abs(back) > abs(face) else 'floating'})")
 
 
-def test_no_vanity_stands_in_a_water_closets_minnesota_envelope():
+def test_no_vanity_stands_in_a_water_closets_minnesota_envelope(catlin_model_ro):
     """UPC 402.5, which is what Minnesota actually enforces: 24" in front, 15" each side.
 
     NOT the IRC's 21". Minn. R. 1309.0010 subp. 3.D deletes IRC chapters 25-33 outright and
@@ -165,7 +146,7 @@ def test_no_vanity_stands_in_a_water_closets_minnesota_envelope():
     hand rather than trusting the resolved zone, so it still holds if the code profile is
     ever unset.
     """
-    model = _model()
+    model = catlin_model_ro
     closets = {o.tag: o for o in model.canvas_objects
                if o.kind == "Fixture" and "-WC" in o.tag}
     for tag, (_, _, _, _) in VANITIES.items():
@@ -195,41 +176,30 @@ def test_no_vanity_stands_in_a_water_closets_minnesota_envelope():
                     f"{tag} takes {overlap:.1f} sq in out of {wc.tag}'s 24in/15in envelope")
 
 
-def test_the_hall_baths_forty_eight_fits_between_the_door_arc_and_the_shelf():
-    """48" is a stock width and 42" is special-order, so this inch matters commercially.
-
-    The swing's BOUNDING BOX reaches y=348", which would leave 46.5" and force the 42". The
-    arc is a quarter-disc and the cabinet clears it at y=346.38", which leaves 48.12" -- so
-    the house buys a volume-tier cabinet instead of a one-SKU one. The SEKTION fronts need
-    that station for the vanity approach; the margin to FURN-S-BATH1-SHELF is 0.12".
-    """
-    model = _model()
+def test_the_hall_bath_vanity_clears_the_east_hinged_door_and_tub_return(catlin_model_ro):
+    """The shorter base gives the entry back its turn and keeps the door beside the wall."""
+    model = catlin_model_ro
     x0, x1, y0, y1 = _bbox(_obj(model, "FX-S-BATH1-LAV"))
-    assert round(x1 - x0, 2) == 21.0 and round(y1 - y0, 2) == 48.0
-
-    door = next(o for o in model.openings
-                if o.tag == "D-S-BATH1" and o.swing_clearance)
+    assert (x1 - x0, y1 - y0) == pytest.approx((21, 36))
+    door = next(o for o in model.openings if o.tag == "D-S-BATH1")
+    assert not door.flip_hinge and not door.flip_swing
+    assert door.swing_clearance[0][0] / IN == pytest.approx(114)
+    counter = next(c for c in model.countertops if c.tag == "CT-S-BATH1-VANITY")
+    top = Polygon(counter.outline)
     swing = Polygon(door.swing_clearance)
-    cab = box(x0 * IN, y0 * IN, x1 * IN, y1 * IN)
-    assert not cab.intersects(swing), "the 48in vanity is inside D-S-BATH1's swing"
-    # ** AND IT CLEARS ONLY FROM THE WEST JAMB. ** W-S-BD-N1B runs +x, so the unflipped
-    # jamb is the EAST one at x=114" and a leaf hung there sweeps 15.6 in2 of this carcass —
-    # which is what the plan sheets drew until `_door_swing_clearance` was corrected on
-    # 2026-09-09. `flip_hinge` on the door is the fix, and this is what defends it.
-    # The first vertex of the sector IS the hinge.
-    hinge_x = door.swing_clearance[0][0] / IN
-    assert round(hinge_x, 2) == 84.0, (
-        f"D-S-BATH1 hinged at x={hinge_x:.2f}in; off the WEST jamb the 48in cabinet is gone")
-
-    sx0, _, sy0, _ = _bbox(_obj(model, "FURN-S-BATH1-SHELF"))
-    assert sy0 - y1 >= 0, "the vanity runs past the shower return shelf"
-    assert sy0 - y1 < 1.0, (
-        f"{sy0 - y1:.2f}in to the shelf -- if this grew, a wider cabinet now fits")
+    assert not top.intersects(swing)
+    assert top.distance(swing) / IN == pytest.approx(8.5)
+    _, _, shelf_south, _ = _bbox(_obj(model, "FURN-S-BATH1-SHELF"))
+    assert shelf_south - y1 == pytest.approx(2)
+    assert counter.length_m / IN == pytest.approx(36)
+    assert counter.depth_m / IN == pytest.approx(22)
+    bank = next(b for b in model.shelf_banks if b.tag == "SB-S-BATH1-VAN")
+    assert all(shelf.width_m / IN == pytest.approx(34.5) for shelf in bank.shelves)
 
 
-def test_the_basement_vanity_is_shallow_and_clears_the_pocket_door():
+def test_the_basement_vanity_is_shallow_and_clears_the_pocket_door(catlin_model_ro):
     """The 18" cabinet fits the narrow room and the bathroom door has no sweep."""
-    model = _model()
+    model = catlin_model_ro
     x0, x1, y0, y1 = _bbox(_obj(model, "FX-B-BATH-LAV"))
     assert round(y1 - y0, 2) == 18.0, "the basement vanity stopped being shallow"
     assert round(x1 - x0, 2) == 36.0
@@ -240,7 +210,7 @@ def test_the_basement_vanity_is_shallow_and_clears_the_pocket_door():
     assert door.pocket_sign == 1
 
 
-def test_the_alcove_is_two_bowls_at_exactly_the_code_minimum_spacing():
+def test_the_alcove_is_two_bowls_at_exactly_the_code_minimum_spacing(catlin_model_ro):
     """60" is the smallest legal true double, and this alcove is 61.49" wide.
 
     UPC 402.5 -- the section MN enforces, not IRC P2705.1, which Minn. R. 1309.0010
@@ -248,7 +218,7 @@ def test_the_alcove_is_two_bowls_at_exactly_the_code_minimum_spacing():
     centreline to a side wall. 15 + 30 + 15 = 60, so there is no slack at all: if either
     cabinet ever moves, one of the two numbers below breaks.
     """
-    model = _model()
+    model = catlin_model_ro
     ax0, ax1, _, _ = _bbox(_obj(model, "FX-S-VANITY-LAV1"))
     bx0, bx1, _, _ = _bbox(_obj(model, "FX-S-VANITY-LAV2"))
     assert round(ax1 - ax0, 2) == 30.0 and round(bx1 - bx0, 2) == 30.0
@@ -263,14 +233,14 @@ def test_the_alcove_is_two_bowls_at_exactly_the_code_minimum_spacing():
     assert east - centre_b >= 15.0, f"east bowl is {east - centre_b:.2f}in off its wall"
 
 
-def test_every_vanity_carries_its_own_shelf():
+def test_every_vanity_carries_its_own_shelf(catlin_model_ro):
     """The storage is the point, and doors-plus-a-shelf is why these are not drawer banks.
 
     A drawer base runs about 1.5x a door base of the same width. Each of these cabinets is a
     plain two-door box with the one full-depth adjustable shelf it ships with, priced in the
     vanity row rather than milled from the owner's oak.
     """
-    model = _model()
+    model = catlin_model_ro
     plan = model.plan
     types = {t.tag: t for t in plan.library.fixture_types}
     # Every FX-VANITY-* instance in the house, not only the VANITIES table: RM-M-BATH2's and
@@ -293,7 +263,8 @@ def test_every_vanity_carries_its_own_shelf():
             assert shelf.count == 2, "one shelf plus the case top"
 
 
-def test_the_hall_bath_mat_gave_way_to_the_cabinet_and_is_a_real_cable(catlin_plan):
+def test_the_hall_bath_mat_gave_way_to_the_cabinet_and_is_a_real_cable(
+        catlin_plan, catlin_model_ro):
     """Heating cable under a closed-toe vanity has nowhere to dump its heat.
 
     Schluter forbids it outright, and `advisory.floor_heat_fixture_keepout` FAILed the moment
@@ -301,7 +272,7 @@ def test_the_hall_bath_mat_gave_way_to_the_cabinet_and_is_a_real_cable(catlin_pl
     the wattage that came out of the resize is a PART NUMBER -- DHEHK12027, 26.7 sq ft /
     338 W -- not the `area x 12` the old 510 W was. Cable is sold in uncuttable lengths.
     """
-    model = _model()
+    model = catlin_model_ro
     zone = next(z for z in model.floor_heat if z.tag == "FH-S-BATH1")
     poly = Polygon(zone.zone)
     x0, x1, y0, y1 = _bbox(_obj(model, "FX-S-BATH1-LAV"))

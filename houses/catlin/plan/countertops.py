@@ -97,7 +97,7 @@ MAIN_COUNTERTOPS = [
     ),
 ]
 
-# RM-S-BATH1's deck — the other fabricated one, 22" over the 21" carcass, as its type says.
+# Hall-bath deck: 36" long, 22" over the 21" carcass; flush ends keep the entry margins.
 SECOND_COUNTERTOPS = [
     Countertop(
         uid="8TV9EHG5TV", tag="CT-S-BATH1-VANITY",

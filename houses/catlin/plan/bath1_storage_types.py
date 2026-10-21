@@ -24,37 +24,48 @@ FORBATTRA_MATTE_WHITE_90 = Product(
     url="https://www.ikea.com/us/en/p/foerbaettra-cover-panel-matte-white-00567837/",
     source='IKEA US listing, read 2026-10-02: actual depth 24 5/8", thickness 1/2", height 90".',
 )
-BATH1_STORAGE_PRODUCTS = (SEKTION_HIGH_FRAME_24, FORBATTRA_MATTE_WHITE_90)
+SEKTION_HIGH_FRAME_18 = Product(
+    tag="PROD-IKEA-SEKTION-HIGH-18-24-90", brand="IKEA", model="SEKTION 18x24x90",
+    sku="002.654.39", name='SEKTION white high cabinet frame, 18 x 24 x 90"',
+    url="https://www.ikea.com/us/en/p/sektion-high-cabinet-white-00265439/",
+    source='IKEA US listing, read 2026-10-21: 18" wide, 23 5/8" without rail, '
+           '24" with rail, 90" frame. Legs, rail, shelves, fronts and drawers are additional.',
+)
+BATH1_STORAGE_PRODUCTS = (SEKTION_HIGH_FRAME_24, SEKTION_HIGH_FRAME_18,
+                         FORBATTRA_MATTE_WHITE_90)
 
 _WIDTH = inch(24)
 _DEPTH = inch(24.875)
 _HEIGHT = inch(94.5)
-_SOURCE = ("SEKTION 702.654.45; 4 1/2\" legs and white plinth. Upper VOXTORP doors "
-           "24x30 (102.733.30) + 24x20 (302.733.29), both hinged at east edges; shelf divider "
+_SOURCE = ("4 1/2\" legs and white plinth. Upper VOXTORP doors hinged at east edges; shelf divider "
            "at frame 40\", adjustable shelves at 55/70/80\". Rail offset is included "
            "in the 24\" mounting envelope, not an additional wall gap.")
 
 SEKTION_OPEN_LOWER = FurnitureType(
-    tag="FURN-S-SEKTION-LINEN-OPEN-24", name='SEKTION 24x24x90: open lower 30", one drawer, upper doors',
+    tag="FURN-S-SEKTION-LINEN-OPEN-24",
+    name='SEKTION 24x24x90: open lower 30", one drawer, upper doors',
     footprint=(_WIDTH, _DEPTH), height=_HEIGHT, carcass_depth=inch(24),
     storage=True, work_surface=False, plan_symbol="sektion-tall-open-lower",
     product_ref=SEKTION_HIGH_FRAME_24.tag,
-    source=(_SOURCE + " Owner, 2026-10-02: bottom two drawer positions remain OPEN, "
+    source=(_SOURCE + " SEKTION 702.654.45; upper doors 24x30 (102.733.30) + "
+            "24x20 (302.733.29). Owner, 2026-10-02: bottom two drawer positions remain OPEN, "
             "with shelves at frame 15/30\", because the unchanged toilet blocks their "
             "sweeps. One medium MAXIMERA 802.656.66 with a 24x10 VOXTORP 802.733.41 "
             "front starts at 34 1/2\" AFF, above the toilet's 29 1/8\" top. The model's "
             "clearance zones have no per-zone height, so its sweep is checked in 3D "
             "rather than reporting a false floor-level toilet conflict."),
 )
-SEKTION_DRAWER_LOWER = FurnitureType(
-    tag="FURN-S-SEKTION-LINEN-DRAWER-24", name='SEKTION 24x24x90: three lower drawers, upper doors',
-    footprint=(_WIDTH, _DEPTH), height=_HEIGHT, carcass_depth=inch(24),
+SEKTION_DRAWER_LOWER_18 = FurnitureType(
+    tag="FURN-S-SEKTION-LINEN-DRAWER-18", name='SEKTION 18x24x90: three lower drawers, upper doors',
+    footprint=(inch(18), _DEPTH), height=_HEIGHT, carcass_depth=inch(24),
     storage=True, work_surface=False, plan_symbol="sektion-tall-drawers",
-    product_ref=SEKTION_HIGH_FRAME_24.tag,
-    clearances=(front_zone(_WIDTH, _DEPTH, inch(21.375), "MAXIMERA full-extension drawer"),),
-    source=(_SOURCE + " Two high MAXIMERA 102.656.79 with 24x15 VOXTORP 602.733.42 "
-            "fronts below one medium 802.656.66 / 24x10 front. Bottom-to-top fronts "
-            "15+15+10\"; drawers stand east of the toilet's footprint."),
+    product_ref=SEKTION_HIGH_FRAME_18.tag,
+    clearances=(front_zone(inch(18), _DEPTH, inch(21.375), "MAXIMERA full-extension drawer"),),
+    source=(_SOURCE + " Owner, 2026-10-21: SEKTION 002.654.39; upper doors 18x30 "
+            "(802.733.22) + 18x20 (002.733.21). Two high MAXIMERA 502.656.82 with "
+            "18x15 VOXTORP 202.733.20 fronts below one medium 002.656.65 / "
+            "18x10 front 402.733.38. Bottom-to-top fronts 15+15+10\"; drawers stand "
+            "east of the toilet's footprint. IKEA US listings checked 2026-10-21."),
 )
 SEKTION_END_PANEL = FurnitureType(
     tag="FT-S-SEKTION-COVER-90", name='FÖRBÄTTRA matte white end cover, 1/2 x 24 5/8 x 90"',
@@ -67,5 +78,5 @@ SEKTION_WEST_SCRIBE = FurnitureType(
     footprint=(inch(0.375), _DEPTH), height=inch(90), plan_symbol="sektion-cover-panel",
     source="Site-cut white filler, caulked to the west wall; ends on the cabinet top and bottom.",
 )
-BATH1_STORAGE_TYPES = (SEKTION_OPEN_LOWER, SEKTION_DRAWER_LOWER, SEKTION_END_PANEL,
+BATH1_STORAGE_TYPES = (SEKTION_OPEN_LOWER, SEKTION_DRAWER_LOWER_18, SEKTION_END_PANEL,
                        SEKTION_WEST_SCRIBE)

@@ -1,7 +1,8 @@
 """Hall-bath SEKTION must preserve the WC and avoid its drawer sweeps in three dimensions."""
 
 import pytest
-from shapely.geometry import Point, Polygon, box
+from shapely.geometry import LineString, Point, Polygon, box
+from shapely.ops import unary_union
 
 from typehaus.model.placeable_symbols import model_parts
 
@@ -17,10 +18,10 @@ def _objects(model):
 def test_three_real_sektion_frames_replace_the_placeholder(catlin_plan, catlin_model_ro):
     types = {typ.tag: typ for typ in catlin_plan.library.furniture_types}
     objects = _objects(catlin_model_ro)
-    for tag in CABINET_TAGS:
+    for tag, width in zip(CABINET_TAGS, (24, 24, 18), strict=True):
         typ = types[objects[tag].type_ref]
-        assert typ.product_ref == "PROD-IKEA-SEKTION-HIGH-24-24-90"
-        assert typ.footprint[0].meters == pytest.approx(24 * INCH)
+        assert typ.product_ref == f"PROD-IKEA-SEKTION-HIGH-{width}-24-90"
+        assert typ.footprint[0].meters == pytest.approx(width * INCH)
         assert typ.carcass_depth.meters == pytest.approx(24 * INCH)
         assert typ.footprint[1].meters == pytest.approx(24.875 * INCH)
         assert typ.height.meters == pytest.approx(94.5 * INCH)
@@ -108,7 +109,7 @@ def test_run_is_flush_and_has_a_stock_matte_white_end_panel(catlin_plan, catlin_
     cover = objects["FURN-S-BATH1-CLOSET-COVER"]
     typ = next(t for t in catlin_plan.library.furniture_types if t.tag == cover.type_ref)
     assert typ.product_ref == "PROD-IKEA-FORBATTRA-MATTE-25-90"
-    assert Polygon(cover.footprint).bounds[2:] == pytest.approx((79.625 * INCH, 346.260 * INCH))
+    assert Polygon(cover.footprint).bounds[2:] == pytest.approx((73.625 * INCH, 346.260 * INCH))
     assert cover.body_z1_m == pytest.approx(objects[CABINET_TAGS[0]].body_z1_m)
 
 
@@ -149,3 +150,48 @@ def test_tall_rail_is_backed_on_both_wall_segments_and_stays_below_the_ceiling(
         rail_screw_height = (94.25 + 1.5) * INCH
         band_top = band.elevation.meters + band.height.meters
         assert band.elevation.meters < rail_screw_height < band_top
+
+
+def test_open_entry_has_a_continuous_turn_between_storage_and_countertop(catlin_model_ro):
+    """A 22-inch circular planning envelope can pass with the leaf fully open.
+
+    This is a circulation regression, not a required access width. The narrowest corner
+    is about 23.36 inches; the nominal 30-inch doorway does not promise a 30-inch route.
+    """
+    model = catlin_model_ro
+    objects = _objects(model)
+    counter = Polygon(next(c.outline for c in model.countertops
+                           if c.tag == "CT-S-BATH1-VANITY"))
+    cover = Polygon(objects["FURN-S-BATH1-CLOSET-COVER"].footprint)
+    assert (counter.bounds[0] - cover.bounds[2]) / INCH == pytest.approx(20.995)
+    assert (counter.bounds[1] - cover.bounds[3]) / INCH == pytest.approx(10.24)
+    assert counter.distance(cover) / INCH == pytest.approx(23.35910155)
+    door = next(o for o in model.openings if o.tag == "D-S-BATH1")
+    leaf = LineString((door.swing_clearance[0], door.swing_clearance[-1]))
+    leaf_body = leaf.buffer(door.cased_product.leaf_thickness_m / 2)
+    # Actual finish planes bound the rectangular main room and the opening through its
+    # south wall. Exclude the tub/chase band and stop the sample just inside the doorway.
+    room = box(6.75 * INCH, 321.385 * INCH, 116.615 * INCH, 394.5 * INCH)
+    doorway = box(84 * INCH, 310 * INCH, 114 * INCH, 324 * INCH)
+    bodies = [Polygon(o.footprint) for o in objects.values()
+              if o.room == "RM-S-BATH1" and o.kind in ("Fixture", "Furniture")]
+    free_floor = room.union(doorway).difference(unary_union([*bodies, counter, leaf_body]))
+    usable_centers = free_floor.buffer(-11 * INCH)
+    components = (list(usable_centers.geoms) if hasattr(usable_centers, "geoms")
+                  else [usable_centers])
+    entry = Point(99 * INCH, 323 * INCH)
+    interior = Point(62 * INCH, 366 * INCH)
+    assert any(component.covers(entry) and component.covers(interior)
+               for component in components)
+
+
+def test_mirror_and_accessible_gfci_follow_the_smaller_vanity(catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    vanity = objects["FX-S-BATH1-LAV"]
+    mirror = objects["ED-S-BATH1-MIRROR"]
+    gfci = objects["ED-S-BATH1-RC-MIRROR"]
+    switch = objects["ED-S-BATH1-SW"]
+    assert mirror.position[1] == pytest.approx(vanity.position[1])
+    assert Polygon(gfci.footprint).bounds[3] < Polygon(mirror.footprint).bounds[1]
+    assert gfci.position == pytest.approx(switch.position)
+    assert gfci.body_z0_m > switch.body_z1_m

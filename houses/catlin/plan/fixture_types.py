@@ -21,7 +21,6 @@ from library.placeables.fixtures import (
     VANITY_30_SHALLOW as _LIB_VANITY_30_SHALLOW,
     VANITY_30_SINGLE as _LIB_VANITY_30_SINGLE,
     VANITY_36_SHALLOW as _LIB_VANITY_36_SHALLOW,
-    VANITY_48_SINGLE as _LIB_VANITY_48_SINGLE,
 )
 from plan.fixture_types_wc import WC_AND_SHOWER_TYPES
 from plan.kitchen_sink_types import KITCHEN_SINK_32_SINGLE
@@ -208,8 +207,8 @@ BATH2_VANITY_48 = FixtureType(
 # the premium buys even less there than it does in a kitchen. Each of these carries a
 # full-depth adjustable interior shelf instead (the ``SB-*-VAN`` banks in plan/millwork_vanities.py,
 # cut from the owner's own oak), which roughly doubles usable volume for the price of a
-# board. Only the 48" hall-bath unit gets a drawer bank, because it is the one wall wide
-# enough to hold a 30" sink base AND an 18" bank without giving up the sink base.
+# board. The hall bath's former 48" sink-base/drawer-bank combination became a 36"
+# sink base on 2026-10-21 to open its entry; its tall SEKTION unit retains lower drawers.
 
 # RM-M-BATH1, the small main bath: 62" x 42" between finish faces, with a wall-hung water
 # closet already eating the west half of the north wall. 24" is what is left between that
@@ -267,22 +266,19 @@ VANITY_36_SHALLOW = _LIB_VANITY_36_SHALLOW.model_copy(update={
            'up to 48". Used twice: RM-B-BATH and RM-A-STUBATH.',
 })
 
-# RM-S-BATH1, the second-storey hall bath. The east wall gives 46.5" of usable run -- bounded
-# north by D-S-BATH1's swing arc and south by FURN-S-BATH1-SHELF, the shower's return panel.
-# 48" fits that, but only just and only as a real arc rather than its bounding box: pushed as
-# far north as the swing allows the cabinet runs y 345.75"..393.75", scribing to the shelf
-# with 0.75" to spare. It is the only vanity in the house wide enough to carry a drawer bank
-# without giving up a full-size sink base, so it is the only one that gets one.
-VANITY_48_SINGLE = _LIB_VANITY_48_SINGLE.model_copy(update={
-    "source": 'Hall-bath vanity, owner selection 2026-08-30, top revised 2026-09-06. 48" x '
-           '21" carcass, 49" x 22" QUARTZ top with a Kohler Caxton K-20000-0 undermount '
-           '(PROD-KOHLER-K-20000) -- this and the 51" are the two busiest decks and the '
-           'only two that are fabricated rather than bought boxed. Finished counter 36". '
-           'Cabinet breakdown: 30" sink base at the SOUTH end with two doors and one '
-           'full-depth adjustable shelf (SB-S-BATH1-VAN), plus an 18" three-drawer bank at '
-           'the NORTH end. The drawer bank is the ~1.5x-per-inch cabinet in the house and '
-           'is bought here only because 48" leaves room for it beside a full sink base; '
-           'every other bathroom takes doors and a shelf instead.',
+# The shorter hall-bath cabinet clears an east-hinged entry door and leaves 2" to the tub
+# return. Keep the existing quartz/undermount specification; the fabricated top has flush
+# ends and a 1" front overhang, matching the resolved slab rather than a nominal 37" top.
+VANITY_36_SINGLE = _LIB_VANITY_30_SINGLE.model_copy(update={
+    "tag": "FX-VANITY-36-SINGLE",
+    "name": 'Hall-bath vanity, 36" single basin',
+    "footprint": (inch(36), inch(21)),
+    "clearances": (front_zone(inch(36), inch(21), inch(21), "lavatory front clearance"),),
+    "source": 'Hall-bath vanity, owner revision 2026-10-21. 36" x 21" sink base, two '
+           'doors and one full-width adjustable shelf (SB-S-BATH1-VAN); replaces the '
+           '48" cabinet and its separate 18" drawer bank. Fabricated 36" x 22" QUARTZ '
+           'top, flush ends, with Kohler Caxton K-20000-0 undermount '
+           '(PROD-KOHLER-K-20000); finished counter 36". Single-hole faucet drilling.',
 })
 
 # ---------------------------------------------------------------------------
@@ -298,10 +294,11 @@ VANITY_48_SINGLE = _LIB_VANITY_48_SINGLE.model_copy(update={
 # HOMOGENEOUS material: a scratch or a scorch sands back to new instead of cutting through a
 # skin, and its matte finish reads better against white oak and hides water spots.
 #
-# The 48" and 51" keep quartz with a Kohler Caxton K-20000-0 undermount (PROD-KOHLER-K-20000,
+# The hall-bath 36" and main-bath 48" keep quartz with a Kohler Caxton K-20000-0
+# undermount (PROD-KOHLER-K-20000,
 # chosen over the Verticyl K-2882 first specified: Verticyl's selling point is vertical sides
 # and tight corner radii, which is exactly what stops a cloth reaching the corner in one
-# pass). Those two are the busiest decks and the 51" is fabricated regardless, so they carry
+# pass). These two decks remain fabricated, so they carry
 # no ``product_ref`` -- a fabricated top is not a purchased SKU.
 #
 # ** ORDER EVERY TOP DRILLED SINGLE-HOLE, IN WRITING. ** All eight lavatory faucets are
@@ -314,5 +311,5 @@ VANITY_48_SINGLE = _LIB_VANITY_48_SINGLE.model_copy(update={
 FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_48,
                  KITCHEN_SINK_32_SINGLE,
                  VANITY_24_SHALLOW, VANITY_30_SHALLOW, VANITY_30_SINGLE,
-                 VANITY_36_SHALLOW, VANITY_48_SINGLE,
+                 VANITY_36_SHALLOW, VANITY_36_SINGLE,
                  *WC_AND_SHOWER_TYPES)
