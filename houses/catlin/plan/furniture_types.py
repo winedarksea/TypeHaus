@@ -26,6 +26,7 @@ from typehaus.model import (
     Footprint2D,
     FurnitureCut,
     FurnitureType,
+    ModelRepresentation,
     Mount,
     MountKind,
     PlacementStrategy,
@@ -494,8 +495,7 @@ STUDIO_KITCHENETTE_4422 = FurnitureType(
 # house's existing idiom (FURN-B-PLAY-TV, the kitchen wall cabinets, the CASE-*-ST stacker
 # course) and gives it a real extruded solid.
 #
-# `plan_symbol=None`: the frozen symbol vocabulary has no shelf or mantel, and a plain box
-# is honestly what a mantel is — a slab with nothing under it.
+# Keep the floor-plan glyph unset; the generated board gives the slab its elm appearance.
 #
 # ** `work_surface` IS LEFT UNSET AND THAT IS LOAD-BEARING. ** `work_surface=False` is the
 # value NEC 210.52(A)'s wall-space rule keys on; `None` keeps a shelf 5'-4" in the air out
@@ -504,6 +504,8 @@ MANTEL_ELM_46 = FurnitureType(
     tag="FT-MANTEL-ELM-46", name='Fireplace mantel shelf, 45 1/2" x 11 1/2"',
     footprint=(inch(45.5), inch(11.5)), height=inch(2.25),
     storage=False, plan_symbol=None,
+    model_representation=ModelRepresentation(symbol="closet-board"),
+    wood_material_ref="elm-mantel-12q",
     source="Site-made solid American elm mantel (walnut until 2026-10-16) in 12/4 stock, 45 1/2\" x 11 1/2\" x 2 1/4\", "
            "flush with the brick panel's ends and cantilevered off blocking let into "
            "W-M-FIRE-HEAD's back face. Its underside sits at 64\" AFF, on the head "

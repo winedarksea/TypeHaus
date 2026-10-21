@@ -39,7 +39,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   dry_fire_lane, electrical, electrical_attic, electrical_floor_types, equipment_types,
                   dining_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets,
                   landscape, lighting, living_east_run, living_east_run_types,
-                  living_window_types,
+                  living_window_types, living_puzzle_table_types,
                   lighting_attic, lighting_types, masonry_joints, mep, millwork,
                   millwork_vanities, placeables,
                   plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
@@ -77,7 +77,10 @@ _library = Library(
     # The shared catalogs supply every plumbing fixture, appliance, and railing this house
     # uses; only the wall-fitted mudroom closets stay house-local. Tags are disjoint, and
     # `integrity.duplicate_catalog_tag` now proves it rather than asserting it.
-    furniture_types=(*STARTER_FURNITURE_TYPES, *STARTER_CASEWORK_TYPES,
+    furniture_types=(*(item for item in STARTER_FURNITURE_TYPES
+                       if item.tag != living_puzzle_table_types.PUZZLE_COFFEE_TABLE_ELM_PREVIEW.tag),
+                     living_puzzle_table_types.PUZZLE_COFFEE_TABLE_ELM_PREVIEW,
+                     *STARTER_CASEWORK_TYPES,
                      *SEKTION_CASEWORK_TYPES, *furniture_types.FURNITURE_TYPES,
                      *dining_types.DINING_TYPES,
                      *closet_types.CLOSET_FURNITURE_TYPES,
