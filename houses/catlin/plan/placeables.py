@@ -847,8 +847,6 @@ ATTIC_PLACEABLES = [
     # seat under the table's west end.
     Furniture(uid="CAK702AAAA", tag="FURN-A-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
               room="RM-A-STUDY", position=pt(ft(24, 4), ft(2, 2)), rotation=deg(90)),
-    Furniture(uid="CAK703AAAA", tag="FURN-A-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
-              room="RM-A-STUDY", position=pt(ft(26, 6), ft(4, 2)), rotation=deg(0)),
     # --- the guest studio's wet bar ---------------------------------------
     # ** IT MOVED OFF THE CENTRE WALL ONTO W-A-BATH-S, 2026-09-09. ** The bar used to be three
     # pieces on W-A-C2's west face — a base, a fridge and a sink — with D-A-STUBATH swinging
