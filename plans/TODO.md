@@ -16,16 +16,11 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   leaf width or clear passage. Define leaf/rough-opening sizing together with framing and
   clearance before changing these envelopes (`plans/default-door-appearance.md`).
 
-- **Select the attic equipment-service floor-box assembly.** `ED-A-POCKET-RC1` is
-  the sole remaining attic floor receptacle; `code.E3905_7_floor_boxes` reports UNKNOWN
-  because its generic receptacle type declares no floor-use listing. Select a listed
-  assembly and coordinate its depth and framing. The five inaccessible eave boxes were
-  removed and two gable boxes moved onto walls (`plan/electrical_attic.py`).
-- **Resolve the attic roof-to-floor electrical wall-space interpretation.** Studio and
-  study spacing remains explicitly UNKNOWN at their flat rafter plates. Known wall runs
-  are evaluated with those spans both included and excluded; usable floor area and a 5'
-  headroom cutoff do not determine electrical exemptions. Record the electrical
-  inspector's interpretation before claiming complete compliance.
+- **Record the attic floor-box assemblies and their floor-use listings.** The new
+  `code.E3905_7_floor_boxes` check verifies the living-room Arlington kit but reports
+  UNKNOWN for the eight existing attic floor receptacles whose types still describe
+  generic wall receptacles. Select their listed boxes and coordinate actual cavity
+  depths and framing; see `houses/catlin/plan/electrical_attic.py`.
 
 - **Review `SB-BW-BAND` connector layout before reducing its 24 KBS1Z.** Top-only ties
   would leave two of the four braced mid-band slats per bay untied
@@ -241,7 +236,6 @@ the future.
 - PR-A-STUBATH-VENT_RUN goes right through the middle of the bathroom RM-A-STUBATH
 - PR-B-ERV-COND-RUN runs right though blocking D-B-SHOP door
 - Extra light switches by beds
-- [x] Window drywall returns inherit resolved board and paint, preserve stools, and reach 3D/GLB/IFC plus board, paint, and bead takeoff (2026-10-20). [Behavior and quantities](../houses/catlin/notes/window_drywall_returns.md).
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door. A simpler option is probably to just make sure the hinge can open to close to 180 degrees so the door can be flat against the wall, out of the way of the walking space.
@@ -249,22 +243,18 @@ the future.
 - Choose bracket products for the four dark-steel handrails (RL-S-HANDRAIL-E/-W, RL-A-HANDRAIL, RL-G-SERVICE), including RL-A-HANDRAIL's bracket 6 with its 20 1/2" rise from W-S-SS2's top plate: `code.R301_5_handrail_support_spacing` is UNKNOWN until a `RailingType` states `bracket_spacing_max`
 - Spec sand or gravel backfill around house
 - The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
-- [x] Reduce MEP autorouter context/output: reliable JSON, compact decision reports with full review artifacts, and consolidated [routing documentation](../docs/routing.md).
 - Make W-BW-SCREEN's east passage face prettier (currently 5/8" MDO, not the west structural CDX). [Finish comparison, elevations, quantities, and sample instructions](bw-screen-finish-comparison.md) completed 2026-10-14: natural black locust slats over matte black lead; visible stainless screws preferred. Shiplap and ornamental panels compared. West header symmetry implemented 2026-10-14 (6⅛″ south extension, paired AC6Z); comparison now shows the stairs and landing. Physical samples, actual door/closer clearance, and decorative finish construction/model implementation remain pending.
 - Plan microwave placement
 - [x] ED-M-PORCH-FLOOD: shielded adjustable 60° flood beneath the balcony front, aimed into the sunken garden; shared 3D geometry in viewer/GLB/IFC. Porch fan light and landing sconce share the separate porch control (2026-10-18).
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
 - Sconce ED-S-STUDY2-STAIR-SC1 is a bit close to the floor, perhaps it should go at the top of the stairs on the wall, still on the same circuit but in the room above?
-- [x] Replace D-M-PANTRY with a 36" Eclisse pocket door, parking west (2026-10-20).
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
 - ED-A-STUDIO-BAR-PEND should probably be replaced with a track light on the sloped ceiling
 - Flashing geometry and visibility implemented 2026-10-15: west-draining fitted cap on SB-BW-BAND's exposed 2×6 sill above W-BW-SCREEN; metal heads and concealed perimeter/sill flashing at exterior windows and doors; one Flashing 3D hide/isolate control. [Modeling basis and limits](../houses/catlin/notes/flashing_model.md).
 - Possibly swap the concrete canopy stairway (SL-BW-TIER*) to pressure treated wood and composite treads.
 - Consider adding a gutter along the entryway canopy gable in the narrow space between canopy and house, the goal is for this to mostly fill the space, if it can do so in a way that is buildable and not causing any problems.
 - Make the countertop (and quartz window stools) a "ready to send to manufacturer" design and export. Include rounding corners
-- [x] Black walnut window stools for the master bedroom RM-M-BED, and quartz window stool for its bathroom window (2026-10-19).
 - Switch D-M-BATH2 and D-M-BED to walnut door casings. Then switch the desk there to walnut top on IKEA SEKTION cabinets
-- [x] Refit RM-M-STUDY: A-1 plywood bench with walnut facing/trim, warm gray seat and reclined lumbar back, shallower walnut desk/leaf; shared fabrication geometry drives 3D and panel/solid-wood cut lists. [Specification and pre-fabrication fit acceptance](../houses/catlin/notes/study_booth.md) (2026-10-19).
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps grab bars.
 - [x] Open up RM-S-BATH1's entry: 36" vanity, 18" eastern SEKTION, east-hinged inswing (2026-10-21). [Measured layout and checks](../houses/catlin/notes/bath1_clearance_review.md): 23⅜" closest corner spacing and 8½" beyond the open door tip; still a compact turn.
 - Window/door quotes (products named 2026-10-21): get Drutex (DAKAM, Chicago), Andersen 400 and Cascadia quotes and close `notes/window_and_door_procurement.md` §2.6 — Alucover nail fin + NAFS DP, the 14" tilt-only minimum, Drutex sill rail height (re-strike the 2.953" stools), Andersen triple-pane in MN and frame depth, the Cascadia double-door NFRC label and thresholds, dark-colour warranties.

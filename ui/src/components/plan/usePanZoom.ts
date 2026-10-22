@@ -28,9 +28,10 @@ export function usePanZoom(args: {
   // Written on every pointer move so ortho-lock reads the live shift state without
   // re-subscribing; owned by the caller because the rubber-band memo reads it too.
   shiftRef: MutableRefObject<boolean>;
+  onShiftChange: (pressed: boolean) => void;
   setCursor: (world: Vec2 | null) => void;
 }): PanZoomHandlers {
-  const { svgRef, model, activeStorey, wallsOnStorey, unproject, onTap, shiftRef, setCursor } = args;
+  const { svgRef, model, activeStorey, wallsOnStorey, unproject, onTap, shiftRef, setCursor, onShiftChange } = args;
   const view = useStore((s) => s.view);
   const setView = useStore((s) => s.setView);
   const tool = useStore((s) => s.tool);
@@ -132,6 +133,8 @@ export function usePanZoom(args: {
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
+    shiftRef.current = e.shiftKey;
+    onShiftChange(e.shiftKey);
     // Capturing on the viewport (instead of the pressed wall/image child) keeps the
     // gesture alive after the pointer leaves that child or the SVG bounds.
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -148,8 +151,9 @@ export function usePanZoom(args: {
 
   const onPointerMove = (e: React.PointerEvent) => {
     shiftRef.current = e.shiftKey;
+    onShiftChange(e.shiftKey);
     // Rubber-band / snap preview (wall) and the placement ghost follow the bare pointer.
-    if (tool === "wall" || tool === "placeable" || tool === "room") setCursor(unproject(e.clientX, e.clientY));
+    if (tool === "wall" || tool === "placeable" || tool === "room" || tool === "measure") setCursor(unproject(e.clientX, e.clientY));
     if (!pointers.current.has(e.pointerId)) return;
     pointers.current.set(e.pointerId, [e.clientX, e.clientY]);
     if (pointers.current.size === 2 && pinch.current) {
@@ -172,12 +176,15 @@ export function usePanZoom(args: {
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
+    shiftRef.current = e.shiftKey;
+    onShiftChange(e.shiftKey);
     const wasTap = gesture.current && !gesture.current.moved;
     const wasPan = gesture.current?.moved ?? false;
     pointers.current.delete(e.pointerId);
     if (pointers.current.size < 2) pinch.current = null;
     if (pointers.current.size === 0) panLast.current = null;
     if (wasTap && pointers.current.size === 0) {
+      if (tool === "measure") setCursor(unproject(e.clientX, e.clientY));
       onTap(unproject(e.clientX, e.clientY), [
         e.clientX - e.currentTarget.getBoundingClientRect().left,
         e.clientY - e.currentTarget.getBoundingClientRect().top,

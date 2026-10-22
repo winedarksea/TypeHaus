@@ -4,6 +4,7 @@
 // Split out of components/Canvas2D.tsx. The door/window symbol is the fiddliest drawing in the
 // plan — hinge side, swing side, arc sweep, the sill/head line weights — and memoizing it is
 // what keeps a pan from redrawing every door in the house.
+import { useStore } from "../../state/store";
 import { memo, useRef, useState } from "react";
 import type { DoorOperation, Model, Opening, Stair, Vec2, Wall, WindowOperation } from "../../model/types";
 import { doorStrokeGlyph, hostWallThicknessM, windowStrokeGlyph } from "../../model/doorSymbols";
@@ -118,13 +119,13 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
       onPointerDown={(event) => {
-        if (preview) return;
+        if (preview || useStore.getState().tool !== "select") return;
         event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId);
         downRef.current = [event.clientX, event.clientY];
         movedRef.current = false;
       }}
       onPointerMove={(event) => {
-        if (preview) return;
+        if (preview || useStore.getState().tool !== "select") return;
         if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
         if (!movedRef.current && downRef.current &&
           Math.hypot(event.clientX - downRef.current[0], event.clientY - downRef.current[1]) < DRAG_THRESHOLD_PX) return;
@@ -132,7 +133,7 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
         onPreview?.(o, host, toWorld(event.clientX, event.clientY));
       }}
       onPointerUp={(event) => {
-        if (preview) return;
+        if (preview || useStore.getState().tool !== "select") return;
         if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
         event.currentTarget.releasePointerCapture(event.pointerId);
         downRef.current = null;

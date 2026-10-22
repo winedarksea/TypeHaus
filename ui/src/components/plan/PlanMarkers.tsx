@@ -341,6 +341,12 @@ export function RoomRectDraftLayer({ draft, end, project }: {
   );
 }
 
+export function MeasurementTargetLayer({ point, project }: { point: Vec2; project: (p: Vec2) => Vec2 }) {
+  const [x, y] = project(point);
+  return <circle cx={x} cy={y} r={4} fill="var(--canvas-white)"
+    stroke="var(--canvas-ink)" strokeWidth={1.5} pointerEvents="none" />;
+}
+
 export function MeasureTapeLayer({ measure, end, project }: {
   measure: MeasureDraft;
   end: Vec2;
@@ -350,7 +356,7 @@ export function MeasureTapeLayer({ measure, end, project }: {
   const [ex, ey] = project(end);
   const d_m = Math.hypot(end[0] - measure.start[0], end[1] - measure.start[1]);
   return (
-    <g pointerEvents="none">
+    <g pointerEvents="none" aria-label="Measurement">
       <line x1={sx} y1={sy} x2={ex} y2={ey} stroke="var(--canvas-ink)" strokeWidth={1.5}
         strokeDasharray={measure.end ? undefined : "5 4"} />
       <circle cx={sx} cy={sy} r={4} fill="var(--canvas-white)" stroke="var(--canvas-ink)" strokeWidth={1.5} />

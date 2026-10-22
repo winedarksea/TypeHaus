@@ -19,7 +19,7 @@ import { WallDimension, WallShape } from "./plan/WallShapes";
 import { WallNodeHandles } from "./plan/WallNodeHandles";
 import { OpeningShape, StairShape } from "./plan/OpeningShapes";
 import {
-  DetailMarkerLayer, MeasureTapeLayer, PlanNodesLayer, GradeBeamOutlines, RailingOutlines, RoomLayer, SlabOutlines, SumpOutlines,
+  DetailMarkerLayer, MeasurementTargetLayer, MeasureTapeLayer, PlanNodesLayer, GradeBeamOutlines, RailingOutlines, RoomLayer, SlabOutlines, SumpOutlines,
   RoomRectDraftLayer, WallDraftLayer, WarningMarkerLayer,
 } from "./plan/PlanMarkers";
 import { CanvasOverlays } from "./plan/CanvasOverlays";
@@ -27,6 +27,8 @@ import { PlanLabelLayer } from "./plan/PlanLabelLayer";
 import { useCanvasInteractions } from "./plan/useCanvasInteractions";
 import { useStoreySlice } from "./plan/useStoreySlice";
 import { usePanZoom } from "./plan/usePanZoom";
+import { useMeasurementShift } from "./plan/useMeasurementShift";
+import { resolveMeasurementPoint } from "./plan/measurement";
 import { dispatchTap } from "./plan/toolDispatch";
 import { useCanvasCommits } from "./plan/useCanvasCommits";
 import { usePlaceableKeys } from "./plan/usePlaceableKeys";
@@ -87,6 +89,8 @@ export function Canvas2D() {
   const [pending, setPending] = useState<Pending | null>(null);
   const [draft, setDraft] = useState<WallDraft | null>(null);
   const [measure, setMeasure] = useState<MeasureDraft | null>(null); // read-only two-tap tape
+  const [measurementSnappingEnabled, setMeasurementSnappingEnabled] = useState(false);
+  const [measurementShiftPressed, setMeasurementShiftPressed] = useMeasurementShift(tool === "measure", shift);
   const [roomDraft, setRoomDraft] = useState<RoomRectDraft | null>(null); // room tool first corner
   const [cursor, setCursor] = useState<Vec2 | null>(null); // world-space hover/rubber-band
   const [nodeDrag, setNodeDrag] = useState<NodeDrag | null>(null);
@@ -218,7 +222,7 @@ export function Canvas2D() {
 
   // ---- tool tap dispatch (→ plan/toolDispatch.ts) ----------------------------
   const handleTap = (world: Vec2, screen: Vec2) => dispatchTap({
-    tool, offline, scale: view.scale, placement, draft, measure, shiftRef: shift, wallsOnStorey,
+    tool, offline, scale: view.scale, placement, draft, measure, measurementSnappingEnabled, shiftRef: shift, wallsOnStorey,
     stairsOnStorey, warningMarkers, snapNodes, tolM, gridM, activeStorey, project, select,
     toast, setPlacement, setDraft, setMeasure, setDimWall, setWallAssemblyPopup, setWarningPopup,
     setDoorPopup, setWindowPopup, commitWall, commitStair,
@@ -228,7 +232,7 @@ export function Canvas2D() {
 
   const { zoomBy, onPointerDown, onPointerMove, onPointerUp, onClickCapture } = usePanZoom({
     svgRef, model, activeStorey, wallsOnStorey, unproject, onTap: handleTap,
-    shiftRef: shift, setCursor,
+    shiftRef: shift, setCursor, onShiftChange: setMeasurementShiftPressed,
   });
 
   // ---- keyboard: Esc cancels the in-flight gesture, Delete removes selection --
@@ -262,11 +266,11 @@ export function Canvas2D() {
   }, [selection.uid, selection.kind, offline, deleteSelection, duplicateSelection]);
 
   // End a wall run when leaving the wall tool; the cursor also feeds the Place tool's ghost.
-  useEffect(() => { if (tool !== "wall") setDraft(null); if (tool !== "wall" && tool !== "placeable" && tool !== "room") setCursor(null); }, [tool]);
+  useEffect(() => { if (tool !== "wall") setDraft(null); if (tool !== "wall" && tool !== "placeable" && tool !== "room" && tool !== "measure") setCursor(null); }, [tool]);
   useEffect(() => { if (tool !== "room" || roomMode !== "rect") setRoomDraft(null); }, [tool, roomMode]);
   usePlaceableKeys(wallsOnStorey);
-  // Measurements are scratch, not model state: drop them when the tape is put away.
   useEffect(() => { if (tool !== "measure") setMeasure(null); }, [tool]);
+  useEffect(() => { setMeasure(null); setCursor(null); }, [activeStorey]);
 
   // Mirror the in-flight draw gesture into the store so the ContextBar / interaction-state
   // label and App's Esc hierarchy (Phase 2) can see it.
@@ -280,15 +284,15 @@ export function Canvas2D() {
     const end = shift.current ? orthoLock(draft.start, snap.point) : snap.point;
     return { end, len: Math.hypot(end[0] - draft.start[0], end[1] - draft.start[1]) };
   }, [tool, draft, cursor, snapNodes, tolM, gridM]);
-  // The measured endpoint: the fixed second tap once there is one, otherwise the live cursor
-  // under the same snap + ortho rules the first tap used.
-  const measureEnd = useMemo(() => {
-    if (tool !== "measure" || !measure) return null;
-    if (measure.end) return measure.end;
-    if (!cursor) return null;
-    const snap = snapWorld(cursor, snapNodes, tolM, gridM);
-    return shift.current ? orthoLock(measure.start, snap.point) : snap.point;
-  }, [tool, measure, cursor, snapNodes, tolM, gridM]);
+  const measurementTarget = useMemo(() => {
+    if (tool !== "measure" || !cursor) return null;
+    return resolveMeasurementPoint(cursor, {
+      snappingEnabled: measurementSnappingEnabled, nodes: snapNodes, toleranceM: tolM,
+      gridM, start: measure && !measure.end ? measure.start : null,
+      shiftPressed: measurementShiftPressed,
+    });
+  }, [tool, cursor, measure, measurementSnappingEnabled, snapNodes, tolM, gridM, measurementShiftPressed]);
+  const measureEnd = measure?.end ?? measurementTarget;
 
   draftRef.current = draft;
   rubberRef.current = rubber;
@@ -439,6 +443,8 @@ export function Canvas2D() {
             end={snapWorld(cursor, snapNodes, tolM, gridM).point} project={project} />}
           {workspace === "document" && <DetailMarkerLayer model={model} activeStorey={activeStorey}
             project={project} onSelectWall={selectWall} />}
+          {tool === "measure" && measurementTarget && (!measure || measure.end) &&
+            <MeasurementTargetLayer point={measurementTarget} project={project} />}
           {measure && measureEnd && <MeasureTapeLayer measure={measure} end={measureEnd} project={project} />}
           {/* dimension line for selected wall */}
           {selection.kind === "wall" && (() => {
@@ -481,6 +487,8 @@ export function Canvas2D() {
         activeService={activeService} setActiveService={setActiveService}
         showClearances={showClearances} setShowClearances={setShowClearances}
         tool={tool} draft={Boolean(draft)} wallAssembly={wallAssembly}
+        measurementSnappingEnabled={measurementSnappingEnabled}
+        onMeasurementSnappingChange={setMeasurementSnappingEnabled}
         onAssembly={setDrawAssembly}
         onSplit={selection.kind === "wall" ? () => {
           const w = wallsOnStorey.find((x) => x.uid === selection.uid);

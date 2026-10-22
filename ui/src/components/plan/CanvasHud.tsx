@@ -7,7 +7,7 @@ import { StoreyTabs, ToolHint } from "./PlanChrome";
 
 export function CanvasHud({
   model, serviceOptions, activeService, setActiveService, showClearances, setShowClearances,
-  tool, draft, wallAssembly, onAssembly, onSplit,
+  tool, draft, wallAssembly, onAssembly, onSplit, measurementSnappingEnabled, onMeasurementSnappingChange,
 }: {
   model: Model;
   serviceOptions: string[];
@@ -15,6 +15,8 @@ export function CanvasHud({
   setActiveService: (service: string) => void;
   showClearances: boolean;
   setShowClearances: (show: boolean) => void;
+  measurementSnappingEnabled: boolean;
+  onMeasurementSnappingChange: (enabled: boolean) => void;
   tool: Tool;
   draft: boolean;
   wallAssembly: string;
@@ -38,7 +40,8 @@ export function CanvasHud({
       </div>
       {tool !== "select" && (
         <div className="hud" style={{ left: 12, right: "auto", bottom: "auto", top: "calc(44px + 84px)", maxWidth: 260 }}>
-          <ToolHint tool={tool} draft={draft}
+          <ToolHint measurementSnappingEnabled={measurementSnappingEnabled}
+            onMeasurementSnappingChange={onMeasurementSnappingChange} tool={tool} draft={draft}
             assembly={tool === "wall" ? wallAssembly : null}
             assemblies={model.catalog?.assemblies.map((a) => a.tag) ?? []}
             onAssembly={onAssembly}

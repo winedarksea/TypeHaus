@@ -5,19 +5,22 @@ import type { MutableRefObject } from "react";
 import type { Vec2 } from "../../model/types";
 import type { MeasureDraft, RoomRectDraft } from "./canvasTypes";
 import { dispatchTap, type TapDeps } from "./toolDispatch";
+import { resolveMeasurementPoint } from "./measurement";
 import { thumbScale } from "./PlaceableGlyph";
 
 // A minimal TapDeps: the measure branch only reads tool/offline/measure/shiftRef and the snap
 // inputs, so the rest are no-op stubs. `state` is the measure slot the taps drive.
-function harness(opts: { shift?: boolean; gridM?: number | null; offline?: boolean } = {}) {
+function harness(opts: { shift?: boolean; gridM?: number | null; offline?: boolean; snappingEnabled?: boolean } = {}) {
   const state: { measure: MeasureDraft | null } = { measure: null };
+  const snapNodes = new Map([['corner', { id: 'corner', p: [1, 2] as Vec2, walls: [] }]]);
+  let snappingEnabled = opts.snappingEnabled ?? false;
   const shiftRef = { current: opts.shift ?? false } as MutableRefObject<boolean>;
   const noop = () => {};
   const tap = (world: Vec2) => {
     const deps = {
       tool: "measure", offline: opts.offline ?? false, scale: 100, placement: null, draft: null,
-      measure: state.measure, shiftRef, wallsOnStorey: [], stairsOnStorey: [],
-      warningMarkers: [], snapNodes: new Map(), tolM: 0.2,
+      measure: state.measure, measurementSnappingEnabled: snappingEnabled, shiftRef, wallsOnStorey: [], stairsOnStorey: [],
+      warningMarkers: [], snapNodes, tolM: 0.2,
       gridM: opts.gridM === undefined ? null : opts.gridM, activeStorey: "L1",
       project: (p: Vec2) => p, select: noop, toast: noop,
       setPlacement: noop, setDraft: noop,
@@ -28,7 +31,14 @@ function harness(opts: { shift?: boolean; gridM?: number | null; offline?: boole
     } as unknown as TapDeps;
     dispatchTap(deps, world, [0, 0]);
   };
-  return { state, tap };
+  const preview = (world: Vec2) => state.measure?.end ?? resolveMeasurementPoint(world, {
+    snappingEnabled, nodes: snapNodes, toleranceM: 0.2, gridM: opts.gridM ?? null,
+    start: state.measure?.start ?? null, shiftPressed: shiftRef.current,
+  });
+  return { state, tap, preview,
+    setSnapping: (enabled: boolean) => { snappingEnabled = enabled; },
+    setShift: (pressed: boolean) => { shiftRef.current = pressed; },
+  };
 }
 
 function expectMeasure(actual: MeasureDraft | null, start: Vec2, end: Vec2 | null, what: string) {
@@ -134,10 +144,36 @@ export function runToolDispatchTests() {
   ortho.tap([5, 1]); // dx dominates → the end collapses onto the x axis
   expectMeasure(ortho.state.measure, [0, 0], [5, 0], "Shift ortho-locks the second tap");
 
-  // Both taps run through snapWorld, so an active grid quantises them.
-  const grid = harness({ gridM: 1 });
-  grid.tap([1.1, 1.9]);
-  expectMeasure(grid.state.measure, [1, 2], null, "Measure taps snap to the active grid");
+  const free = harness({ gridM: 1 });
+  free.tap([1.1, 1.9]);
+  expectMeasure(free.state.measure, [1.1, 1.9], null, "Free measurement ignores nearby nodes and active grid");
+  const freePreview = free.preview([4.2, 6.1]);
+  free.tap([4.2, 6.1]);
+  expectMeasure(free.state.measure, [1.1, 1.9], freePreview, "The free endpoint matches its preview");
+
+  const snapped = harness({ gridM: 1, snappingEnabled: true });
+  snapped.tap([1.1, 1.9]);
+  expectMeasure(snapped.state.measure, [1, 2], null, "Optional snapping prefers a nearby node");
+  const snappedPreview = snapped.preview([4.2, 6.1]);
+  snapped.tap([4.2, 6.1]);
+  expectMeasure(snapped.state.measure, [1, 2], [4, 6], "Optional snapping rounds the second point to the grid");
+  expectMeasure(snapped.state.measure, [1, 2], snappedPreview, "The snapped endpoint matches its preview");
+  snapped.setSnapping(false);
+  expectMeasure(snapped.state.measure, [1, 2], snapped.preview([10, 10]), "Toggling snapping leaves a completed measurement fixed");
+
+  const toggled = harness({ gridM: 1 });
+  toggled.tap([1.1, 1.9]);
+  toggled.setSnapping(true);
+  toggled.setShift(true);
+  const constrainedPreview = toggled.preview([5.2, 3.1]);
+  expectMeasure({ start: [1.1, 1.9], end: constrainedPreview }, [1.1, 1.9], [5, 1.9],
+    "Shift applies after snapping and preserves the free anchor");
+  toggled.setShift(false);
+  expectMeasure({ start: [1.1, 1.9], end: toggled.preview([5.2, 3.1]) }, [1.1, 1.9], [5, 3],
+    "Releasing Shift updates the preview without moving the pointer");
+  toggled.setShift(true);
+  toggled.tap([5.2, 3.1]);
+  expectMeasure(toggled.state.measure, [1.1, 1.9], constrainedPreview, "A constrained click matches the preview after toggling snapping");
 
   // Measuring journals nothing, so unlike the authoring tools it survives offline.
   const offline = harness({ offline: true });

@@ -3,6 +3,7 @@
 // in through `TapDeps`, so this module owns the routing (marker > wall > stair under the
 // select tool; snap/ortho under the wall and measure tools; placement popovers; the dimension
 // pick) and nothing else.
+import { resolveMeasurementPoint } from "./measurement";
 import type { MutableRefObject } from "react";
 import type { PlanWarningMarker } from "../../model/planWarnings";
 import type { Stair, Vec2, Wall } from "../../model/types";
@@ -22,6 +23,7 @@ export interface TapDeps {
   placement: Placement | null;
   draft: WallDraft | null;
   measure: MeasureDraft | null;
+  measurementSnappingEnabled: boolean;
   shiftRef: MutableRefObject<boolean>;
   wallsOnStorey: Wall[];
   stairsOnStorey: Stair[];
@@ -57,7 +59,7 @@ export interface TapDeps {
 
 export function dispatchTap(deps: TapDeps, world: Vec2, screen: Vec2): void {
   const {
-    tool, offline, scale, placement, draft, measure, shiftRef, wallsOnStorey, stairsOnStorey,
+    tool, offline, scale, placement, draft, measure, measurementSnappingEnabled, shiftRef, wallsOnStorey, stairsOnStorey,
     warningMarkers, snapNodes, tolM, gridM, activeStorey, project, select, toast,
     setPlacement, setDraft, setMeasure, setDimWall, setWallAssemblyPopup, setWarningPopup,
     setDoorPopup, setWindowPopup, commitWall, commitStair, placementType, commitPlaceable,
@@ -165,17 +167,12 @@ export function dispatchTap(deps: TapDeps, world: Vec2, screen: Vec2): void {
       break;
     }
     case "measure": {
-      // Two taps, same snapping as the wall tool: the first sets the anchor, the second fixes
-      // the segment, and a tap on a fixed segment starts the next measurement.
-      const snap = snapWorld(world, snapNodes, tolM, gridM);
-      if (!measure || measure.end) {
-        setMeasure({ start: snap.point, end: null });
-      } else {
-        setMeasure({
-          start: measure.start,
-          end: shiftRef.current ? orthoLock(measure.start, snap.point) : snap.point,
-        });
-      }
+      const start = measure && !measure.end ? measure.start : null;
+      const point = resolveMeasurementPoint(world, {
+        snappingEnabled: measurementSnappingEnabled, nodes: snapNodes, toleranceM: tolM,
+        gridM, start, shiftPressed: shiftRef.current,
+      });
+      setMeasure(start ? { start, end: point } : { start: point, end: null });
       break;
     }
   }

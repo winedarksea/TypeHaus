@@ -2290,11 +2290,8 @@ PORCH_STAIR_THRESHOLD_RAILS = [
 # beams, aluminum deck. (The two 6x6 pillars and BM-SG-BLC retired 2026-09-22; the history
 # below still names them.)
 # ============================================================================
-# Six pillars. Four land on the two porch side walls at 0'-0"; PT-SG-BF2 lands on the front
-# column's top at -1'-6 1/2"; only PT-SG-BR2 stands on the porch decking. The pillar *tops*
-# are level because height is measured back from the beam soffit. Rear row is 2" taller
-# overall so the deck crowns and drains south, away from the house. Beam soffit = balcony
-# level minus the beam depth, read off the size.
+# Four concrete columns stand on the porch side walls. The rear row rises with the
+# balcony drainage slope; member depths determine the beam soffit below.
 _balcony_beam_depth_ft = cross_section(SPEC.balcony_beam).depth_m / 0.3048
 _balcony_joist_depth_ft = cross_section(SPEC.balcony_joist).depth_m / 0.3048
 # Pillar-height *input* only — the resolver drops beam + post by the deck joist depth
@@ -2355,7 +2352,6 @@ _WALL_UNDER_PILLAR = {
 # That arithmetic is written down because nothing checks it: checks/structural/deck.py
 # grades beam *span* only and has no beam-cantilever rule, so this overhang would pass
 # silently either way — and so would the 8" one at the south end, against the same 22".
-# See notes/beam_water_protection.md, which carries the missing check as an open item.
 # IRC Table R507.5(1) is keyed on the JOIST span, which is unchanged at FS-SG-DECK's 10.00'
 # (limit 9.17' for a 3-2x12), so what this buys is margin: the three balcony beams are at
 # 7.33' against 9.17' span, 22" of headroom. They pass even on the 12' row (8.33'), which is
@@ -2414,8 +2410,7 @@ _FRONT_COLUMN_CANTILEVER_IN = 2.0
 #     R507.5.1 limit = back span / 4                            = 22"      (was 24")
 #
 # 20" against 22" still passes, with 2" left rather than 4". Nothing checks it (checks/
-# structural/deck.py grades beam SPAN only) — that missing check is the open item in
-# notes/beam_water_protection.md. The south overhang is the new 8" against the same 22".
+# structural/deck.py grades beam SPAN only). The south overhang is 8" against the same 22".
 # **The row cannot go north again without moving PT-SG-BR1/2/3 with it.**
 #
 # Modelled the other way round from how it builds — the beam ends stay put on
@@ -2494,17 +2489,7 @@ def _balcony_rise_at(y_ft):
     """
     return inch((y_ft - _y_front_pillar) * 12.0 * _BEAM_RISE_PER_IN)
 
-# The four CORNER pillars became 12" cast concrete columns on 2026-09-03 and the two CENTRE
-# pillars did not. That split is the whole redesign in one loop: four columns FIXED at the
-# base (doweled into the 12" wall tops of W-SG-W1/E1, whose axis they stand on, so the round
-# is flush with both wall faces) are the balcony's entire lateral system, which is what let
-# the eight knee braces and two E-W brace rails be deleted outright. The centres stay wood
-# 6x6 bearing wood-on-wood, strapped and angled down onto the joists — leaning columns,
-# tied in by the deck
-# diaphragm — because nothing asks them to carry moment and a 6x6 is a third the cost of a
-# formed column.
-#
-# Same tags and same uids throughout: these are the same six elements, re-sized.
+# Four concrete corner columns fixed to the wall tops carry the balcony lateral system.
 _CORNER_PILLAR_INDICES = (1, 3)
 PILLARS = []
 PILLAR_BEARINGS = {}  # pillar tag -> (bearing tag, base elevation)
@@ -2528,14 +2513,7 @@ SECOND_NODES = [
     Node(uid="SGNB06AAAA", tag="N-SGB-SE", position=pt(ft(_x_ax_e), ft(_y_balcony_front))),
 ]
 
-# Three N-S treated-glulam beams over the west / center / east column lines.
-#
-# **All three are the same product now**, where the two outer ones used to be white-painted
-# KDAT (BEAM_WHITE_PAINT) and the centre one bare KDAT. A glulam is a manufactured member
-# with laminations that read as the thing it is, and painting the two you can see while
-# leaving the one you cannot would be buying a finish to hide a better member. The white
-# paint stays where it still means something: the two centre 6x6 pillars (POST_WHITE_PAINT)
-# and the porch's front beam pair (BEAM_WHITE_PAINT).
+# Two N-S treated-glulam beams over the west and east concrete column lines.
 #
 # `top_protection=_BEAM_TAPE_WIDE` is unchanged and still correct: the roll width derives
 # from the section's own width, so the 3-1/2" glulam takes the same wide roll the 4-1/2"
@@ -2543,7 +2521,7 @@ SECOND_NODES = [
 # ** NO PUBLISHED ROW (2026-09-22). ** The supplier's deck-guide row was read at a 10' joist
 # span and published DRY-use; neither describes these beams now, and the NDS record
 # (`engineering/glulam_beam`) carries the verdict either way.
-# ** THE THREE BEAMS ARE TILTED, AND THEY ARE AUTHORED SOUTH-END-FIRST ON PURPOSE. **
+# ** THE TWO BEAMS ARE TILTED, AND THEY ARE AUTHORED SOUTH-END-FIRST ON PURPOSE. **
 #
 # ``Beam.top_rise_end`` raises the END node relative to the START, and the START is the end
 # the beam's top elevation is answered at — here the derived one, `elevation - joist_drop`

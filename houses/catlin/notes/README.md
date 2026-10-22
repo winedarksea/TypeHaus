@@ -94,7 +94,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `bath2_lighting.md` | BATH2's 5000 K day and 2700 K evening layers, the CCT rule change (install-selectable banned, user-adjustable allowed), the evening melanopic target, and the product confirms |
 | `bath2_shower.md` | BATH2's thermostatic one-outlet shower: the tank-duration hand calc, the glass heights, the steam path and why the exhaust grille stays outside the enclosure, the wet-wall spec for every shower (§6), the stall-drying fan (§7), and the open finish/SKU confirms |
 | `bath2_swap_review.md` | measured shower/tub swap: the basin aisle, doorway approach, shower entrance and dependent construction |
-| `beam_water_protection.md` | keeping water out of a built-up exterior beam |
+| `beam_water_protection.md` | current garden framing tape, drained column seats, and treatment procurement |
 | `east_breast_bearing.md` | RM-M-LIVING's fireplace surround: why the brick bears on `W-B-E1`'s pour and not on the floor, the opening it needs through `FS-M-EAST`, and the list of things nothing in `haus check` looks at |
 | `fortified_roof_cert.md` | what the FORTIFIED Roof designation asks for |
 | `garage_orientation_lot.md` | the south-lot/east-driveway premise the garage was drawn for, why it never agreed with `plan/site.py`'s own north FRONT setback, what turning the door north moved, the eastward move that followed it, and the revert recipe |

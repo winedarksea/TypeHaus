@@ -321,12 +321,11 @@ Swapping is a purchasing decision, not a modelling one: `prices.toml` can carry 
 number under the Simpson key. Changing the catalog would mean two products per role, which
 `hardware_for_role` refuses by design.
 
-## The beam-cap interaction
+## Framing-top protection
 
-Anything added at a KDAT beam top has to respect `beam_water_protection.md` §2: AWC DCA6, no
-aluminium against copper-treated lumber, and the formed caps are bedded **on** the butyl tape.
-The 8 derived KBS1Z straps land on the post faces, not the beam tops, so they do not
-disturb that order — but a future cap or seat at a beam top would.
+Any hardware added at a treated-wood framing top must preserve the butyl tape
+and the separation between aluminium and copper-treated lumber described in
+`beam_water_protection.md` §1.
 
 ---
 

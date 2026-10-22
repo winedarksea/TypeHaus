@@ -1,260 +1,55 @@
-# Sunken garden — framing-top water protection
+# Sunken garden — framing water protection
 
-Model: `params/sunken_garden.py`; quantities: `takeoff/member_protection.py` (tape) and
-`edge_trim` category `beam_cap` (metal).
+Model: `params/sunken_garden.py`; tape quantities: `takeoff/member_protection.py`.
 
-## What the problem actually was
+The current frame has two porch wall ledgers (`BM-SG-LDGW/E`), two treated-glulam
+balcony beams (`BM-SG-BLW/BLE`), and four concrete balcony columns
+(`PT-SG-B{R,F}{1,3}`). The porch joists span ledger to ledger; the balcony joists
+span between the glulams. See `notes/balcony_moment_columns.md` §12 for the
+2026-09-22 frame redesign.
 
-The question that started this was "are the beams too exposed to rain, and should the
-balcony cantilever further to shelter them". Both halves turned out to be wrong, and the
-measurement is worth keeping because it is the reason nothing was cantilevered.
+## 1. Butyl tape on framing tops
 
-**Overhang does not shelter a post.** The CFD literature (Foroushani, Ge & Naylor, *Effects
-of Overhangs on the Wind-Driven Rain Wetting of a Low-Rise Building*, Buildings XII / ORNL
-2013) puts the fully-dry strip below an overhang at roughly **1.7–2.2x the projection**, and
-finds the overhang has "almost no effect on the lower half of the facade". On a 10'-0"
-pillar, 6" of overhang protects the top ~1'; 18" protects the top ~3'; the bottom half gets
-nothing at any dimension you would build. Sheltering these pillars would take an overhang on
-the order of 5'. And this structure is **freestanding** — open on all four sides — so an
-east/west overhang does nothing at all against the south wind, which is the driving one here.
+Both floor systems and the ledgers and balcony beams carry `top_protection`.
 
-**The beams were never the wet members.** The balcony's three beams sit under `FS-SG-DECK`'s
-watertight aluminium plank; the front edge already has fascia -> drip flashing -> box gutter
--> leader. What is genuinely in the weather is the six pillars, the two front girts and the
-knee braces — and none of those is helped by more deck.
-
-What IS a real defect, and what this note is about, is the **ply seam**. Every beam in this
-structure is three plies of 2x12. A site-built multi-ply beam has an open joint running its
-whole length between each pair of plies; it holds water and the grit that stops the water
-drying, and in this climate it freezes what it holds about a hundred times a year. Fourteen
-such seams here.
-
-## The detail, in the order it goes on
-
-**1. Butyl tape, on every framing top.** `top_protection` on both `FloorSystem`s and on all
-eleven beams and girts. Two SKUs, and the split matters:
-
-| Members | Width | Tag |
+| Members | Framing-top width | Tag |
 |---|---|---|
-| Joists, rims, blocking | 1.25"–1.5" | `butyl-tape` |
-| The four 3-ply 2x12 PORCH beams | **4.5"** | `butyl-tape-beam` |
-| The three BALCONY glulams | **3.5"** | `butyl-tape-beam` |
+| Joists, rims, blocking and porch ledgers | 1.5" | `butyl-tape` |
+| The two balcony glulams | 3.5" | `butyl-tape-beam` |
 
-A 3-2x12 is 4 1/2" across. The common 1 5/8" joist roll and even the 3 1/8" "double joist"
-roll leave both ply seams — the entire point — uncovered under a roll that looks like it did
-the job. The BOM carries each row's member width, read off `cross_section`, so a beam that
-gains a ply re-orders wider tape instead of silently under-covering.
+The BOM reads the member width from `cross_section`. Cover the whole framing top;
+a 3 1/8" roll does not cover a 3 1/2" glulam.
 
-**The balcony's three beams became treated GLULAM on 2026-09-03** (3-1/2" x 11-7/8",
-24F-V5M1/SP; `notes/balcony_moment_columns.md` §5), which removes six of this note's
-fourteen ply seams outright — a glulam arrives as one member. They keep the wide roll all
-the same, at their own 3-1/2" width: an exposed framing top in weather wants a bonded
-membrane whatever the member is made of, and 3-1/2" still rules out the 3 1/8" roll. The
-seam argument now applies to the four PORCH beams only.
+On `FS-SG-DECK`, tape separates the aluminium plank from the treated wood below.
+On `FS-SG-PORCH`, the composite boards are gapped, so rain reaches the framing tops.
+Keep the specified separation between aluminium and copper-treated wood at any
+added flashing or hardware.
 
-**The porch beams stay 3-ply KDAT 2x12 — decided 2026-09-06.** The same glulam trade is
-available there for the same money, and it was declined: the porch beams are **fully
-covered** by items 1 and 2 of this detail — `butyl-tape-beam` bonded over the whole 4 1/2"
-framing top, then a formed 5 1/2" aluminium cap lapping 1/2" past each face and turning
-down 1 1/2". A seam that never sees rain is not the defect that moved the balcony. The
-balcony's beams were a different case: they carry the deck plank and were being re-sectioned
-anyway. Revisit only if the porch is reworked, and re-check the 9" joist-span headroom in
-`plans/TODO.md` before changing any porch beam section.
+## 2. Drained balcony beam seats
 
-**2. Formed aluminium cap, on the four porch beams only.** `TR-SG-CAP-*`: 5 1/2" cap on the
-porch's 4 1/2" ply beams. The three balcony glulams have none (2026-09-16), butyl only: flush
-`BM-SG-BLC` is covered by the plank, and on `BM-SG-BLW/BLE` a cap would be cut into bits
-between joists that already cantilever 9" past the beam and shelter it. The
-cap laps 1/2" past each beam face and turns down 1 1/2"; `thickness` is derived from
-`SPEC.back_beam` / `SPEC.balcony_beam`, not written down.
+Each of the four concrete column heads carries a modelled `SS316-SHIM-35`
+standoff pack (`CN-SG-STDF-*`), with a 1/2"–1" drained gap and no grout island.
+The column top has a wash and drip lip. The pack is 316 stainless, with EPDM or
+HDPE isolation where it meets the zinc-coated `HETA20Z` tie pair.
 
-**The cap is bedded ON the tape, and that order is structural to the detail.** AWC DCA6:
-aluminium must not contact copper-treated lumber — the MCA/ACQ/CA-C copper corrodes it. An
-aluminium cap laid on bare KDAT would be a new defect, not a fix. The tape under it is the
-dielectric. **Anything that removes the tape from these beams has to change this metal too.**
+The pack supports the beam; the cast-in tie pair restrains it. The lapped shim
+leaves accommodate the tilted beam soffit. See
+`notes/balcony_differential_movement.md` §3 for that bearing detail and
+`params/column_heads.py` for the head-connector specification.
 
-The same rule is why the tape is not optional on `FS-SG-DECK` either: that deck is aluminium
-plank laid straight onto copper-treated pine, and the tape is what separates them. On
-`FS-SG-PORCH` the tape is doing the ordinary job instead — the composite plank above it is
-**gapped**, so rain reaches the framing tops directly, on a deck that is a roof over a porch.
+## 3. Treatment procurement and field cuts
 
-**2a. The pillar tops were never covered here — and four of the six joints are gone.**
-This note is exhaustive about beam tops and said nothing about the six pillar tops under
-them. A 6x6 tops out 5.5" square and the beam on it is narrower, so each one leaves exposed
-upward end grain on its east and west faces, directly under a beam whose faces shed onto it.
-**Since 2026-09-03 only the TWO centre pillars are wood**; the four corners are cast concrete
-with a screeded wash and a drip lip, which is a better answer to the same problem than any
-bevel. The exposure at the two that remain is worse per joint, not better: a 3-1/2" glulam on
-a 5-1/2" post leaves **1" of end grain** each side against the 3-2x12's 1/2". Two joints,
-upward end grain, in the weather, on ~24 LF of the most expensive-per-LF wood in the
-structure, and the only elements left here carrying a recurring repaint cost against a
-100-year brief. The answer is a chamfer or bevel on the exposed rim, or a small formed drip
-under the beam seat, and sealing the cut before the pillar is stood: $0–120, and the highest
-durability-per-dollar item in the whole porch. Recorded in `POST_WHITE_PAINT.source`.
+**Confirm the supplier's KDAT preservative before ordering.** The treatment
+chemistry remains open in `notes/catlin_truss_engineering.md` §9; the selected
+fastener and connector coatings must be checked against the supplied treatment.
 
-**2b. The beam soffit at the two cast columns.** `SUNKEN_GARDEN_COLUMN_20.source` already
-specified a >=15° top wash and a level non-shrink-grout island, so the column top sheds. What
-was missing is the AITC/WoodWorks **1/2"–1" standoff** — a grout island is a levelling bed,
-not a standoff, and without one the KDAT soffit sits on concrete that wicks. It must be
-stainless, or hot-dip with an isolator: KDAT is copper-treated and eats plain steel. This is
-at the beam *soffit* and so does not touch the cap/tape order at the beam *top*.
+The exterior-framing specification calls for **2% copper naphthenate on every
+field-cut end, notch and drilled hole**, per AWPA M4. See
+`notes/north_entry_structure.md` §6 and `notes/composite_decking.md`.
 
-**And the standoff ended up INSTEAD OF the grout island, not beside it.** It went in beside
-one, and the 2026-09-02 rebar pass then struck the island outright: an exposed non-shrink
-island is a 10–20 year element, not air-entrained, at the wettest point on the column, and the
-top is cast to line under the beam footprint with the tolerance taken in the shim pack
-instead. `SUNKEN_GARDEN_COLUMN_20` is retired — the 20" front column is a 12" round now — and
-`SUNKEN_GARDEN_COLUMN_12`, which replaced it, says NO GROUT ISLAND. `PIER_CONCRETE_12` did
-not until 2026-09-12, because retyping `PT-SG-COL` on 2026-09-10 was read as closing that
-follow-up and instead rode the island over to `PT-BW-RE`/`-RNE`, the north entry's own beam
-seat. **Twelve standoffs house-wide now, and not one grout island**: six in the garden
-(`CN-SG-STDF-*`), six at the north entry (`CN-BW-STDF-*`).
+## 4. Preserve the watertight balcony surface
 
-**It is a MODELLED PART as of 2026-09-03, and it stopped being prose.** `SS316-SHIM-35`
-(`library/hardware/`, `ROLE_BEARING_STANDOFF`) carries the specification now — 316
-stainless, 3-1/2" square, stacked to the gap, no grout island under it, EPDM or HDPE where it
-meets a zinc-coated tie (the `HETA20Z` pair since 2026-09-21) — and six `CN-SG-STDF-*` connectors put one at every wood-on-concrete beam
-seat in the garden: the four balcony corner column tops and `PT-SG-COL`/`PT-SG-FCOL`. Until
-then it was a purchased part at a real joint with nothing in the BOM, nothing in 3D and
-nothing a reviewer could click; it is priced in `prices.toml` and drawn on S-101 now. The
-assembly `source` strings still describe the detail, but they name the part rather than
-inventing it a second time.
-
-**3. Sequencing — all four caps go on before the joists do.** The porch beams carry their
-joists on top. A cap over a beam that will be joisted has to
-be laid while the beam top is still open, and the joists then bear on it. That is fine for a coil cap under
-a 2x8's bearing area and **impossible to retrofit without pulling the deck**. It is the whole
-labour half of the `beam_cap` price row; it is not a return-visit trade.
-
-## The four beam pockets, and the footnote that made the detail mandatory
-
-The back and front porch beams do not land on a column top: `BM-SG-BKW/BKE/FRW/FRE` end in
-**6" pockets cast in the 12" `W-SG-W1`/`E1` walls**, on the four hangers
-`CN-SG-HGR-W/-E/-FW/-FE`. A pocket is the one place in this structure where a beam end is
-put *inside* concrete, which is the classic end-grain rot detail — and since 2026-09-12 it is
-also a **published condition on the hanger's capacity**, which is what moved it from good
-practice to a requirement.
-
-Those four were retyped from `HUCQ410-SDS` to `HUC212-3` on 2026-09-12 (the HUCQ is a
-wood-header part and its seat was 15/16" too narrow — `library/hardware/`). The HUC's
-concrete loads come from Simpson's masonry/concrete hanger table, C-C p. 280, and **footnote
-5 of that table reads, verbatim: "Products shall be installed such that Titen® screws are not
-exposed to weather."** A pocket in the wall of an open garden is weather until it is detailed
-not to be, so the detail below is what the hanger's 1,800 lbf uplift / 5,085 lbf download is
-conditional on. It is not a durability nicety any more.
-
-The pocket, in the order it goes in:
-
-1. **Form the pocket floor back-sloped to drain outward**, ~1/4" over the 6". A level pocket
-   floor is a cup, and a cup with a beam end in it is the failure this whole note is about.
-2. **A formed pan flashing under the bearing**, turned up at the back of the pocket and
-   lapped OUT over the wall face below, so anything that reaches the pocket leaves it on the
-   outside of the wall rather than behind the flashing.
-3. **An air gap at the end and both sides of the beam** — 1/2" is enough. The beam bears on
-   its 4 1/2" x 6" of sill and touches nothing else; end grain buried tight in a damp socket
-   never dries, whatever the treatment.
-4. **Sealant at the TOP of the pocket only, never at the bottom.** Sealing the bottom is how
-   a drained pocket becomes a cup. This is the one line of this detail a caulk gun gets
-   wrong by instinct.
-5. **The butyl top tape runs over the beam and into the pocket**, continuous with
-   `_BEAM_TAPE_WIDE` on the rest of the run — the ply seams do not stop at the wall face.
-
-**What the hanger is and is not doing here.** 4 1/2" x 6" = **27 sq in** of the three-ply
-bears directly on the cast sill, and that is the gravity path whatever hangs beside it. The
-four hangers take uplift and lateral restraint; the published download is headroom. Do not
-credit the hanger with the sill's work, and do not value-engineer the hanger out on the
-grounds that the sill carries the load.
-`notes/balcony_differential_movement.md` §8 carries the same joint from the hardware side.
-
-## What was deliberately not done
-
-- **No extra cantilever**, for the reason at the top. The deck stays 21'-0" x 8'-8".
-- **No metal frame.** Fortress Evolution steel prices ~$3,000–4,000 over the wood as framing
-  material alone, has no 2x8 profile and no white finish, and its CCRR-0313 listing excludes
-  wood support posts and hands post anchorage to an engineer. Structural aluminium posts are
-  not a residential product. HSS steel columns run ~$350–750 each erected.
-- **No post wrap.** A PVC wrap over a post that gets wet is a moisture trap; it hides the
-  post without drying it.
-
-## The beam tops were also an anchor question
-
-**`FS-SG-DECK` carries no penetrations at all.** Two balcony heat-pump stands were bolted
-through it — eight lags through the waterproof plank, every one landing in sacrificial 2x8
-blocking rather than in a beam, so that no lag pierced the balcony beam caps (since removed) or the butyl under it
-or seated in the ply seams this note exists to close. Both condensers moved to a ground pad
-on 2026-09-02 (`notes/heat_pump_ground_pad.md`) and the stand, its blocking and its holes
-went with them.
-
-The rule that governed them stands and is enforced, not merely written down:
-`mep.deck_equipment_support_coverage` FAILs an anchor that lands on a beam
-(`notes/superseded/heat_pump_deck_mounting.md`, decision #64). **Anything that puts equipment back on
-this deck has to satisfy it.**
-
-## Still open
-
-- **`structural.deck_beam_span` grades a roof deck against a deck table.** AWC DCA6 does not
-  cover a deck that is also a roof and its snow envelope stops at 40 psf against the Twin
-  Cities' ~50 psf ground snow. Still true of the four PORCH beams, which pass the table
-  prescriptively. The three BALCONY beams left the table entirely on 2026-09-03 and are
-  graded as `deck_beam/BM-SG-BL*` by `engineering/glulam_beam.py` — on NDS bending, shear,
-  bearing and deflection with wet-service factors, which is a real design rather than a
-  table lookup, though it still takes 50 psf and inherits this same snow question. The knee
-  braces that were also outside every prescriptive table are gone; four fixed cast columns
-  carry the lateral system and are graded as `deck_post/PT-SG-B*`. What is left for the
-  consultant here is the snow envelope and the `FT-SG-*` frost design.
-- **There is no beam-cantilever check** (`checks/structural/deck.py` grades span only), so
-  an overhang on a beam passes silently rather than being graded against R507.5.1's
-  quarter-of-back-span limit. **This is live, not hypothetical, and it got TIGHTER twice on
-  2026-09-03.** First `PT-SG-BF2` moved 15" north onto the porch deck when `PT-SG-FCOL`
-  shrank to a 12" round; then `PT-SG-BF1`/`BF3` moved 5 1/4" north so their beams would
-  cantilever clear of the cast rounds' tops (`_y_front_pillar`). Both shortened a back span
-  without moving the north overhang at all. The arithmetic is checked by hand in
-  `notes/balcony_moment_columns.md` §5 and beside `_y_rear_pillar` in
-  `params/sunken_garden.py`, because nothing in the engine checks it:
-
-  | | `BM-SG-BLW` / `BLE` | `BM-SG-BLC` |
-  |---|---|---|
-  | back span | **7.33' = 88.0"** (was 93.25") | **7.00' = 84.0"** (was 81.0") |
-  | north overhang (`_y_rear_pillar` → `_y_in_n`) | 20.0" | 20.0" |
-  | south overhang (front column axis → deck edge) | **8.0"** | 12.0" (was 15.0") |
-  | R507.5.1 limit (back span / 4) | **22.0"** | **21.0"** |
-  | margin on the governing overhang | **2.0"** | **1.0"** |
-
-  **`BLC`'s row moved later on 2026-09-03, and the escape below is the move that was taken.**
-  `PT-SG-BF2` went the last 3" south onto the front beam axis, which lengthened the back span
-  and shortened the south overhang at the same time: the limit rose 20.25" → 21.0" while the
-  governing overhang stayed the 20" north one. **The margin went 0.25" → 1.0"** — still not
-  much, but no longer a coincidence. It was moved for the bearing (`notes/centre_pillar_
-  bearing.md`), and this is the second thing it bought.
-
-  An inch is not a margin either, and two inches is not much better. Re-check both by hand if
-  the rear pillar row, `_y_front_pillar`, `_BF2_NORTH_OF_FRONT_AXIS_IN` or the porch depth
-  ever moves again — and note that on `BLC` **the escape has now been spent**: BF2 is on the
-  beam axis, and there is no further south to go without hanging the post off the porch. **On
-  `BLW`/`BLE` it was gone already**: BF1/BF3 cannot go south without putting the 12" rounds
-  back out past the beam ends, which is the ponding detail the move was made to kill. The
-  lever on both is now the REAR row, and moving it means moving the back-beam line.
-
-**Two span knife-edges**, both found while checking whether a longer beam was possible. Neither
-is a finding today; both are one dimension change away from a red suite.
-`structural.deck_beam_span` looks IRC Table R507.5(1) up on the **joist** span the beam carries,
-and the table's rows are 6/8/10/12/14/16/18', so the lookup steps down in cliffs rather than
-sliding.
-
-- **Porch — 9" of joist-span headroom.** `FS-SG-PORCH`'s joists span 7.25', which reads the
-  8' row → a 10.25' limit against the four porch beams' 10.00' span. At a joist span of
-  8.01' the lookup drops to the 10' row (9.17') and **all four porch beams FAIL by 10"**
-  at once. The 9" of headroom is the distance from 7.25' to 8.00'.
-- ~~**Balcony.**~~ **OFF THE TABLE 2026-09-03.** The three balcony beams are glulam and have
-  no row in Table R507.5(1) at all, so there is no lookup for a joist span to step. They are
-  engineered items instead; the cliff cannot reach them.
-- ~~**PWT treated LVL may exist after all.**~~ **ANSWERED, by a different product.** The
-  lead was an unverified Pro Deck Supply listing for PWT treated LVL 1 3/4" x 11 7/8" at
-  $223.20/12', two plies over the three balcony beams for ~$970 against ~$242–413 for the
-  3-2x12s. What was bought instead is **treated SYP structural glulam, 3-1/2" x 11-7/8",
-  24F-V5M1/SP** (Anthony Power Preserved / Boise Cascade, ~$35/LF through Lakeville): one
-  manufactured member with published engineered values, a stocked product rather than a
-  listing, and no ply seam at all. `params/sunken_garden.py`'s rejection note was about
-  **Parallam Plus PSL depths** and said nothing about glulam; it has been rewritten on
-  `SPEC.balcony_beam`. The four PORCH beams are still 3-ply KDAT and the same trade is
-  still open for them.
+`FS-SG-DECK` carries no equipment penetrations. The heat pumps are on ground
+pads (`notes/heat_pump_ground_pad.md`). Any future deck-mounted equipment must
+satisfy `mep.deck_equipment_support_coverage`; its anchors must land in authored
+sacrificial blocking rather than in a beam.

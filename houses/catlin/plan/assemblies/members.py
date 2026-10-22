@@ -9,39 +9,7 @@ from typehaus import (
 )
 
 
-# Finish-only assembly for the balcony 6x6 pillars so they render (glTF) and read (IFC) as
-# white-painted rather than the default bare-wood post colour. Single 5.5" layer = the 6x6.
-# No balcony pillar is wood any more (the last two retired 2026-09-22); today this carries only
-# the four interior stairwell posts. The notes below are kept for the record.
-#
-# **The pillar TOP is the detail this assembly exists to carry.** These six
-# pillars are the most expensive-per-LF elements in the whole frame — 51.4 LF of them costs
-# more than both cast columns and all four porch beams combined — and they are the only
-# elements in the structure carrying a recurring repaint cost against a 100-year brief. So
-# the durability attention belongs here, not on the columns.
-#
-# Two field details the model has no field for:
-#
-# 1. END GRAIN AT THE PILLAR TOP. A 6x6 tops out 5.5" square; the 3-2x12 beam landing on it
-#    is 4.5" wide. That leaves 1/2" of exposed UPWARD end grain on the east and west faces
-#    of all six pillar tops, directly under a beam whose faces shed onto it. Six joints,
-#    upward end grain, in the weather, on the priciest wood in the structure —
-#    notes/beam_water_protection.md covers beam tops exhaustively and never mentions these.
-#    Chamfer or bevel the exposed rim, or form a small drip under the beam seat, and seal
-#    the cut before the pillar is stood. Highest durability-per-dollar item in the porch.
-# 2. PLANK CUT-OUT AT THE TWO CENTRE PILLARS — MOOT since 2026-09-22 (both pillars retired).
-#    PT-SG-BR2 and PT-SG-BF2 bore on FS-SG-PORCH.
-#    Cut a ~9" square through the composite plank at each so the POST ITSELF lands on the
-#    3-ply joist pack: Trex's own spec says composite decking "cannot be used as structural
-#    material". 9", not the 4" this note said until 2026-09-03 — the post is 5-1/2" square,
-#    so 4" never cleared it, and the cut-out has to pass the L50Z angles' legs on the pack
-#    faces as well. Size it to the post plus the connector legs plus a working gap. Not a
-#    strength question (~50 psi on the plank) — it is CREEP at a 140-160 degF summer surface
-#    temperature settling those two pillars relative to the four on concrete and taking the
-#    balcony's watertight aluminium plank out of plane, and REPLACEABILITY, because the
-#    plank is a wear layer and you cannot pull a board from under a loaded 6x6 without
-#    shoring. See params/sunken_garden.py, which records why ``supported_by`` stays the
-#    floor system.
+# White-painted interior 6x6 posts; no sunken-garden pillar uses this assembly.
 POST_WHITE_PAINT = Assembly(
     tag="POST_WHITE_PAINT",
     layers=(
@@ -71,11 +39,7 @@ EQUIP_STAND_ALUM = Assembly(
 )
 
 
-# The two CENTRE pillars, split off POST_WHITE_PAINT on 2026-09-03 for one reason: species.
-# POST_WHITE_PAINT stays on the two interior stairwell posts (P-M-STRWELL-S/SS), which carry
-# no rated connector and have no reason to change stock. Same 5.5" body, same white, same
-# section — only the lumber under the paint differs. See post-df-paint-white above.
-# UNREFERENCED since 2026-09-22: kept as the named revert of the centre-pillar trial.
+# Unreferenced since 2026-09-22; retained for the named centre-pillar trial revert.
 POST_WHITE_PAINT_DF = Assembly(
     tag="POST_WHITE_PAINT_DF",
     layers=(
@@ -83,7 +47,7 @@ POST_WHITE_PAINT_DF = Assembly(
               thickness=inch(5.5), function=LayerFunction.STRUCTURE),
     ),
     # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house balcony CENTRE 6x6 pillars PT-SG-BR2/BF2 — Douglas Fir-Larch, specific gravity 0.50, white-painted finish. THE SPECIES IS A CONNECTOR REQUIREMENT, not a preference: ICC-ES ESR-2604 §3.2.2, ESR-2105 §3.5.2 and ESR-3096 §3.2.2 all carry the SAME clause — sawn or engineered lumber, SG >= 0.50, 19% maximum moisture content — and at SPF 0.42 neither the CCQ46SDS2.5 cap over these posts nor the MSTA12Z strap and L50Z angles that tie their bases down had any published value. The clause is family-wide, so the species call survives every part change at this joint; only the citation widens. The moisture half is still not met by an open deck frame and rides on the seal, while the WET SERVICE half is resolvable and applied: both ESR-2105 §4.1 and ESR-3096 §4.1 send it to the NDS wet service factor, so C_M 0.70 is already inside the 658 lbf and 375 lbf recorded in library/hardware/. Chamfer or bevel the 1/2\" of upward end grain left proud on the east and west faces of each pillar top by the narrower beam over it, and seal the cut before standing. Cut a ~9\" square through the composite porch plank so the POST ITSELF bears on the 3-ply joist pack below, not on decking (Trex: composite decking is not structural material) — 9\" because the post is 5-1/2\" square and the cut must also clear the L50Z angle legs lying on the pack beside it. The post stands directly on the joists with no plate between, so the joint is wood on wood. PT-SG-BF2 also serves as the RL-SG-PORCH south-leg guard post at x 18'-0\", so its top 42\" is a guard post and its rails frame into the 6x6 rather than into a 2x2 beside it",
+    source="Retired balcony centre-pillar trial, PT-SG-BR2/BF2: white-painted Douglas Fir-Larch 6x6, specific gravity 0.50. Both pillars were removed on 2026-09-22; this assembly has no current model instances",
 )
 
 # Guards were split off POST_WHITE_PAINT (they shared it with the balcony's

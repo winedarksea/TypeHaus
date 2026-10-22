@@ -9,7 +9,9 @@ import type { Model, PlanNode, Vec2, Wall } from "../../model/types";
 import { deriveNodes, type Node as GeoNode } from "../../model/geometry";
 import { activeLevelKey, levelsOf } from "../../model/levels";
 
-export function ToolHint({ tool, draft, assembly, assemblies, onAssembly, onSplit }: {
+export function ToolHint({ tool, draft, assembly, assemblies, onAssembly, onSplit, measurementSnappingEnabled, onMeasurementSnappingChange }: {
+  measurementSnappingEnabled: boolean;
+  onMeasurementSnappingChange: (enabled: boolean) => void;
   tool: string;
   draft: boolean;
   assembly: string | null;
@@ -29,6 +31,13 @@ export function ToolHint({ tool, draft, assembly, assemblies, onAssembly, onSpli
     <div>
       <div style={{ fontWeight: 600, textTransform: "capitalize", marginBottom: 4 }}>{tool} tool</div>
       <div className="muted">{hints[tool]}</div>
+      {tool === "measure" && (
+        <label style={{ display: "block", marginTop: 6, fontSize: 12 }}>
+          <input type="checkbox" checked={measurementSnappingEnabled}
+            onChange={(event) => onMeasurementSnappingChange(event.target.checked)} />{" "}
+          Snap to nodes/grid
+        </label>
+      )}
       {tool === "wall" && assembly != null && (
         <label style={{ display: "block", marginTop: 6, fontSize: 12 }}>Assembly{" "}
           <select value={assembly} onChange={(e) => onAssembly(e.target.value)}>
