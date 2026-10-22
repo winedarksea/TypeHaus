@@ -87,11 +87,18 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 and a dated note. `haus check houses/catlin --no-suppress` is the score with every
 suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted at zero.)
 
-- **Filters and access panels are recorded but not graded.** Registers carry
-  `filter_nominal_size` / `filter_merv` / `service_face` (`model/types.py`
-  `AirHandlingProductFacts`); `Equipment.behind_access_panel` / `access_panel_ref` exist but
-  nothing in catlin sets them and nothing grades them. Open: author the panels once the design
-  settles, and decide whether a reachability rule is worth a swing envelope.
+- **Filter and service access is only partly resolved; no reachability rule grades it.**
+  System 1's 28x12x1 MERV 13 return filter is typed and reachable from the hall floor;
+  the Broan ERV's exposed service door, published clearances, and high outdoor screen's ladder
+  access are recorded in `houses/catlin/notes/erv_service_access.md`. Gree wall-head screens
+  are front-access; three high heads require a ladder. The bath-2 stall-dryer intake now
+  specifies an AAF PerfectPleat HC M8, nominal 10x10x1 filter; verify its actual dimensions
+  against the selected grille holder. A ladder below the high intake screen temporarily
+  occupies part of the HP3 disconnect's working-width; confirm that maintenance-time overlap
+  or relocate the disconnect.
+  General open item: grade filter-change/service envelopes and decide
+  whether a reachability rule is worth a swing envelope; `Equipment.behind_access_panel` /
+  `access_panel_ref` remain unused in catlin.
 - **ERV condensate shares `FX-B-SAUNA-FD`** rather than `PR-B-COND` — no gravity connection
   exists (main is at 85"+ where it crosses x=13'-6", best a 21.6" unit can manage under the
   basement ceiling is ~75"). The mechanical-room-sink alternative still has no drain.

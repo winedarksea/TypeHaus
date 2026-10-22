@@ -558,10 +558,13 @@ measured one.
   is only 0.0051 in. behind, so this over-count is now larger than the gap it sits inside.
 - **Leakage.** Sealed rigid pipe leaks; nothing here models it. A duct-leakage test is the
   only answer and it is a commissioning item, not a calculation.
-- **Filter loading.** The curve is a clean-filter curve. MERV 8 at end of life adds
-  meaningfully to the extract-side static; MERV 13, which this machine offers, adds more.
-  The filter is inside the machine, so it is inside the curve's own zero — which means a
-  loaded filter eats the margin this note reports and nothing warns of it but the schedule.
+- **Filter loading and airflow indication.** This budget uses the clean-filter curve and does
+  not model the fan reserve used as filters load. Broan says VIRTUO maintains the selected
+  airflow despite filter clogging in a typical installation; the built-in LCD shows real-time
+  airflow and diagnostics, and the manual's low-airflow warnings direct service to inspect
+  filters, registers, hood screens, and ductwork. The sources describe no dedicated
+  filter-loading alarm, so keep the quarterly cleaning schedule and use the airflow display
+  as a performance check. See `notes/erv_service_access.md` for access and service details.
 - **Frost on the intake hood screen.** `EQ-M-ERV-HOOD-OA` carries a deliberately coarse 1/4"
   bird screen for this reason, and a screen partly blocked at −15 °F is a real static the
   design cannot bound.
@@ -583,6 +586,10 @@ measured one.
   ceiling above which the core deforms. Recirculation defrost, HVI-tested at −13 °F,
   SRE 65 % there.
 - Broan **B210E75RT installation manual** — the 8"-trunk-above-200-cfm instruction (§7).
+- Broan **B210E75RT specification sheet** — VIRTUO airflow regulation, real-time airflow
+  display, the 3" electrical-box-side clearance, and the 13" maintenance clearance.
+- Broan **AI Series installation manual** — quarterly filter and intake-hood inspection,
+  unit-door access, and low-airflow troubleshooting (W22/W32).
 - HVI **Certified Products Directory**, HVI ID 2004940 — 206 cfm net supply at 0.4 in. w.g.
 - Minnesota Rules **1322** (MN amendments to IRC Ch. 11), R403.5 — the 205 cfm whole-house
   rate this building requires, graded by `code.N1103_6_whole_house_ventilation`.

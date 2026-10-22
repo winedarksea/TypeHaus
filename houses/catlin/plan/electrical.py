@@ -344,6 +344,12 @@ BASEMENT_EQUIPMENT = [
               # and 6'-7 3/8" of headroom beneath — over R305.1.1's 6'-4" basement
               # projection floor. PR-B-ERV-COND (plan/mep_drainage.py) falls by gravity from
               # the pan to FX-B-BATH-LAV.
+              #
+              # SERVICE ACCESS (notes/erv_service_access.md): keep this exposed in
+              # RM-B-FURNACE, with 13" clear in front of the hinged maintenance door and
+              # 3" clear on the electrical-box side. The north edge is only 1 1/8" from
+              # W-B-ESS-S, so orient both service zones toward the open room, not that wall.
+              # Quarterly filter/core service uses a portable ladder; do not box the unit in.
               mount=Mount(kind=MountKind.CEILING, elevation=ft(4, 6)),
               pan_drain_ref="PR-B-ERV-COND",
               # Its fresh air reaches the second storey through EQ-S-ERV-MIX and this AH's

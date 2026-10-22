@@ -10,16 +10,19 @@ from typehaus.model.placeable_symbols._flood_light import (
 
 # Retain the 20 W / 1,800 lm planning allowance, but give the garden a flood optic.
 # The shared narrow flood remains available to houses that actually want a spot.
+# The SKU is a 3" recessed trim (plan/products_lighting.py); the symbol and mount stay the
+# surface-hung box until the balcony plank question is settled.
 GARDEN_FLOOD_TYPE = luminaire_class("ED-T-LT-FLOOD-NARROW").model_copy(update={
     "tag": "ED-T-LT-FLOOD-GARDEN",
     "name": "Sunken garden adjustable LED flood, shielded, wet",
     "type_mark": "S",
     "plan_symbol": "flood-light",
     "lamp": f"LED integrated, {FLOOD_BEAM_DEGREES:g} deg beam",
-    "source": f"Design allowance: black wet-rated 3000K flood with cutoff visor; "
-              f"underside-mounted at the balcony front, aimed "
+    "product_ref": "PROD-ALCON-14119-3ND-TFBK-B60",
+    "source": f"Alcon 14119-3ND-TFBK-B60-30K-NC-RB: black 3-inch adjustable wet-listed trim, "
+              f"60 deg full flood, 3000K; underside-mounted at the balcony front, aimed "
               f"{FLOOD_DOWNWARD_AIM_DEGREES:g} deg below horizontal into the open court. "
-              "Manufacturer SKU unselected; 20 W / 1800 lm provisional.",
+              "60 deg delivered lumens unpublished; 20 W / 1800 lm remains the allowance.",
 })
 GARDEN_FLOOD_MOUNT = Mount(
     kind=MountKind.CEILING,

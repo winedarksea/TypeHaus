@@ -119,8 +119,26 @@ INLINE_FAN_4 = Product(
            "published curve of >= 95 cfm at 0.3-0.4 in. w.g. and a moisture-rated housing.",
 )
 
+# The bedroom-side intake filter for the BATH2 stall-drying fan. This 10x10x1 nominal
+# filter sits behind the modeled 12x12 grille face; its face velocity stays well below
+# the published 300 fpm rating point at the fan's 95 cfm design flow.
+BATH2_STALL_FAN_FILTER = Product(
+    tag="PROD-AAF-PERFECTPLEAT-HC-M8-10X10", brand="AAF Flanders",
+    model="PerfectPleat HC M8, 10 x 10 x 1",
+    name="MERV 8 high-capacity pleated panel filter",
+    url="https://aafterms.aafintl.com/-/media/files/aaf/commercial-and-industrial/us-products/pleated-filters/perfectpleat-hc-m8/perfectpleat-hc-m8_prod_mark_sht_afp-1-210.pdf",
+    source="AAF PerfectPleat HC M8 product data sheet, read 2026-10-22: ASHRAE 52.2 "
+           "MERV 8; nominal 10 x 10 x 1 in., actual 9 1/2 x 9 1/2 x 3/4 in.; rated "
+           "airflow 200 cfm at 300 fpm and 350 cfm at 500 fpm. Published initial "
+           "resistance for the 1 in. filter is 0.23 in. w.g. at 300 fpm. The BATH2 "
+           "fan's 95 cfm across the actual filter area is about 152 fpm; ~0.06 in. "
+           "w.g. at that point is a square-law estimate, not a published rating. "
+           "Maintenance recommendation for this intermittent fan: inspect monthly at first "
+           "and replace every 3 months or sooner if visibly loaded.",
+)
+
 SHOWERING_PRODUCTS = (
-    INLINE_FAN_4,
+    INLINE_FAN_4, BATH2_STALL_FAN_FILTER,
     DELTA_MULTICHOICE_ROUGH, DELTA_T14459_TRIM, SPEAKMAN_HOTEL_HEAD, MOEN_ENGAGE_MAGNETIX,
     MOEN_ATTRACT_MAGNETIX, DELTA_17T_THERMO_TRIM, DELTA_UNIVERSAL_HEAD, SOLID_SURFACE_SHOWER,
 )

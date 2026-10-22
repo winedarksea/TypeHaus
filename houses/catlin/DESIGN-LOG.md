@@ -105,6 +105,11 @@ blocking, fastened from below. The framing-derived mount keeps the angled head b
 the fascia and gutter and beyond the porch floor and enclosure. The 60° flood is aimed
 66° below horizontal into the open court; the 20 W / 1,800 lm, black, wet-rated 3000 K
 specification remains a design allowance rather than a selected manufacturer SKU.
+**SKU selected 2026-10-22:** Alcon 14119-3ND-TFBK-B60-30K-NC-RB, a black 3" adjustable
+trim with a 60° full-flood optic, wet-listed on its spec sheet (`plan/products_lighting.py`).
+The surface box, knuckle and mount are unchanged. Its 3" aperture would need a hole in the
+waterproof balcony plank, which the surface-hung design avoids, so the recessed install is
+an open choice.
 
 The garden retains its own switch. `ED-M-STAIR-LT` now shares `ED-M-PORCH-SW` with the
 west-bay fan light, so the porch stays lit with the garden flood off. Fixture UIDs and

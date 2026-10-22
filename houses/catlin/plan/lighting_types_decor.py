@@ -168,8 +168,10 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # cans are seen at once across an open plan, and a CCT mismatch in one sightline reads as
     # a construction error.
     #
-    # ** NO product_ref: THE OWNER IS IMPORTING THIS ONE AND HAS NOT PICKED THE UNIT. ** A
-    # sealed extrusion has almost nothing to dust, which matters more here than anywhere
+    # ** PRODUCT PICKED (owner, 2026-10-22): Flyachilles 2-light, 47.2", `FLYACHILLES_DJ3616_2L`.**
+    # It is dimmable, so its 5,400 lm is a ceiling and it runs in the 2000-3500 band; the
+    # listing's 3000-6000 K range is set to 3000 K on the remote. No UL mark is published, so
+    # confirm it ON THE FIXTURE before ordering. A sealed extrusion has almost nothing to dust, which matters more here than anywhere
     # else because a dining fixture in an open plan collects airborne COOKING GREASE and
     # grease-plus-dust does not dry-dust off. That rules out multi-sleeve fixtures (twelve
     # sleeves to dust individually), crackle glass (the texture IS the dust feature) and
@@ -185,7 +187,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # 220-240. Confirm the driver is ELV/TRIAC-dimmable AND replaceable — a captive
     # proprietary driver is the part that dies at 12-20 years and on an import there is no
     # replacement channel at all, so ** budget a spare driver with the order. ** Dim it on
-    # its own Lutron DVELV-300P, never ganged with the kitchen cans.
+    # its own remote; the wall control is a plain switch (ED-M-DINING-SW), not a dimmer.
     #
     # The look (2026-09-26): a WAVE chandelier — five flat LED strips side by side, each
     # rising and falling out of phase with its neighbours, off one canopy, brushed gold. The gold must be PVD or
@@ -193,11 +195,13 @@ DECORATIVE_LUMINAIRE_TYPES = (
     luminaire_class("ED-T-LT-PENDANT").model_copy(update={
         "type_mark": "M", "name": '48" LED wave chandelier', "plan_symbol": "wave-chandelier",
         "footprint": (ft(4), inch(16)),
-        "source": "Owner selection 2026-09-26: an imported LED wave chandelier "
-                  "(five up-and-down wave strips, brushed gold PVD/lacquer), unit not "
-                  "yet chosen. TARGET THE SPECS, NOT THE LOOK — ~48\" long, "
-                  "2000-3500 lm, 3000 K, CRI 90+, dimmable, 120 V, and a REAL "
-                  "UL/ETL/cETLus mark on the fixture itself."}),
+        "product_ref": "PROD-FLYACHILLES-DJ3616-2L", "lumens": 5400.0,
+        "source": "Owner selection 2026-09-26, unit picked 2026-10-22: Flyachilles DJ3616-16 "
+                  "2-light, 47.2\" long, 5,400 lm max, dimmable, 3000 K by remote, CRI >85, "
+                  "gold. OPEN BEFORE ORDER: a UL/ETL/cETL mark ON THE FIXTURE (none is "
+                  "published), 120 V, a replaceable ELV/TRIAC driver with a spare, and whether "
+                  "the gold is PVD or lacquered. It dims by its own remote; the wall control "
+                  "(ED-M-DINING-SW) is a plain switch."}),
 
     # M1: the attic studio's bar pendant (2026-09-06). A separate mark from M, not a second
     # instance of it: M is a 4'-0" dining fixture and this would have hung over a 4'-7" bar

@@ -2701,9 +2701,8 @@
 # 2000-3500 lm, 3000 K, CRI 90+). The band brackets an import against the domestic fixture
 # to price it by: Visual Comfort Dessau 48 at $1,449 for 2,261 lm / 36 W. ** BUDGET A SPARE
 # DRIVER WITH THE ORDER ** -- a captive proprietary driver is the part that dies at 12-20
-# years and on an import there is no replacement channel at all. The labour high end is its
-# own Lutron DVELV-300P: this fixture must NOT be ganged with the kitchen cans, and a 23 W
-# fixture on a 600 W forward-phase dimmer is the #1 cause of "my chandelier flickers".
+# years and on an import there is no replacement channel at all. It dims by its own remote
+# and has no wall dimmer: ED-M-DINING-SW is a plain ED-T-SWITCH.
 "ED-T-LT-PENDANT" = { material = { low = 250, high = 1500 }, labour = { low = 70, high = 200 } }  # 1 ea
 # ADDED 2026-09-06 with the attic studio's bar pendant (mark M1). Narrower band than mark M:
 # a 36" linear bar pendant is a stocked article at the low end where the dining fixture's

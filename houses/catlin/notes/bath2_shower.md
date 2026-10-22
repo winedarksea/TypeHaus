@@ -222,11 +222,18 @@ crossing, so the fan carries the friction instead:
 |---|---|---|
 | duct friction | 95 cfm in 4" (1,090 fpm): 0.55 / 100 ft x 13 ft | 0.07 |
 | four elbows | ~5-10 ft equivalent each at 0.55 / 100 ft | 0.11-0.22 |
-| filter grille, MERV 8 | 10x10 at ~140 fpm face | 0.05-0.10 |
+| filter grille + filter | 12x12 face; AAF PerfectPleat HC M8, nominal 10x10x1 (actual 9.5x9.5x0.75) | 0.05-0.10 |
 | nozzle + damper | velocity pressure 0.074 x K 1-1.5 | 0.07-0.11 |
 | **total** | | **~0.3-0.4** |
 
 At 0.3-0.4" a WhisperLine-class 4" fan (120 cfm at 0.2", 108 at 0.3") gives **~90-105 cfm**.
+
+The recommended filter's actual media area is 0.626 ft²; 95 cfm gives about 152 fpm. AAF rates
+the 1-inch filter at 0.23 in. w.g. initial resistance at 300 fpm, which gives an estimated
+0.06 in. w.g. at the operating point by square-law interpolation. That is a filter-only
+estimate; the grille allowance is included in the table's 0.05-0.10 in. w.g. range. The
+manufacturer's 10x10x1 size is nominal: verify the final grille holder accepts the stated
+9.5x9.5x0.75 actual dimensions.
 
 ### 7.4 Open confirms
 
@@ -235,8 +242,7 @@ At 0.3-0.4" a WhisperLine-class 4" fan (120 cfm at 0.2", 108 at 0.3") gives **~9
    moisture-rated, insulated housing.
 2. **Nozzle**: a round adjustable diffuser with a gravity backdraft damper, suitable for a
    wet location.
-3. **Filter size** behind the 10x10 grille (MERV 8-11).
-4. **GFCI**: the fan is in the bedroom ceiling, not a shower zone, so the code does not
+3. **GFCI**: the fan is in the bedroom ceiling, not a shower zone, so the code does not
    require it; confirm the fan's own listing does not. ~30 VA on `CKT-LT-MAIN`, stated on
    the circuit (an Equipment adds 0 VA to the derived panel schedule).
 
@@ -246,6 +252,7 @@ At 0.3-0.4" a WhisperLine-class 4" fan (120 cfm at 0.2", 108 at 0.3") gives **~9
   (2.0 before); finishes 26008 (chrome), 26008SRN. Read 2026-10-12.
   https://www.moen.com/products/Attract/Attract-Chrome-Magnetix-Rainshower-Combo/26008
 - Moen 26010SRN product page: 1.75 gpm max. Read 2026-10-12.
+- [AAF PerfectPleat HC M8 product data sheet](https://aafterms.aafintl.com/-/media/files/aaf/commercial-and-industrial/us-products/pleated-filters/perfectpleat-hc-m8/perfectpleat-hc-m8_prod_mark_sht_afp-1-210.pdf), read 2026-10-22: MERV 8, 10x10x1 nominal / 9.5x9.5x0.75 actual, rated airflow and initial resistance.
 - Delta 52535-SS spec sheet (DSP-B-52535): 1.75 gpm at 80 psi, WaterSense, 1/2"-14 NPT.
 - Delta TempAssure 17T Series listings: thermostatic trim for the MultiChoice R10000 body,
   separate volume and temperature controls.

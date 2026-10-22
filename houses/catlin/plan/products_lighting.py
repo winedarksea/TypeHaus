@@ -91,6 +91,18 @@ ROBERN_VITALITY_ROUND = Product(
            "3000 K in 2021 and several dealer pages still print the old figure -- confirm "
            "on the box label at delivery.",
 )
+FLYACHILLES_DJ3616_2L = Product(
+    tag="PROD-FLYACHILLES-DJ3616-2L", brand="Flyachilles", model="DJ3616-16 (2-light)",
+    name='47.2" 2-light modern wave LED linear pendant, gold, dimmable',
+    url="https://flyachilles.com/products/modern-wave-led-linear-pendant-light?variant=54059245109443",
+    source="Flyachilles product page, read 2026-10-22; $348.99. 47.2\" long (the 2-light; the "
+           "1-light is 39.4\" at 2,700 lm, and the page lists both under DJ3616-16). 5,400 lm, "
+           "CRI >85, 3000 K to 6000 K stepless with remote (set 3000 K), dimmable by remote, "
+           "110 V on the spec sheet, gold finish. ** NOT PUBLISHED: ** any UL/ETL/cETL mark, "
+           "driver type or replaceability, wattage, strip count, and whether the gold is PVD or "
+           "lacquered. ** BEFORE ORDERING: ** confirm the variant link is the 2-light, read the "
+           "mark on the fixture, confirm 120 V, and budget a spare driver.",
+)
 MODERN_FORMS_BANTAM = Product(
     tag="PROD-MODERNFORMS-WS-38109", brand="Modern Forms", model="WS-38109-30-BK",
     name="Bantam LED wall sconce, 3000K, black",
@@ -162,8 +174,7 @@ DIODE_OMNIDRIVE_X = Product(
            "** -- they are the part that fails and a plastered-in driver is a demolition "
            "job. ** The wall control is a Lutron DVELV-300P (reverse-phase), NOT the "
            "DVCL-153P used for the cans: ** mis-pairing an LED+ dimmer with an ELV tape "
-           "driver is one of the most common field causes of tape flicker, and the dining "
-           "fixture wants its own DVELV-300P rather than being ganged with the kitchen cans.",
+           "driver is one of the most common field causes of tape flicker.",
 )
 
 LEDSUPPLY_SAUNA_STRIP = Product(
@@ -220,11 +231,32 @@ HUNTER_GALLEGOS = Product(
            "5,174 cfm high, ~43 W, ETL damp. Owner 2026-10-22: no light; blade span is "
            "flexible, the <= 11 in. height is not.",
 )
+# The sunken-garden flood (ED-M-PORCH-FLOOD): a 3" round adjustable trim whose 60 deg
+# full-flood optic is the B60 code, in black, with the 0-30 deg tilt that aims the head
+# 66 deg below horizontal (24 deg off the axis). Spec sheet read 2026-10-22.
+ALCON_14119_GARDEN_FLOOD = Product(
+    tag="PROD-ALCON-14119-3ND-TFBK-B60", brand="Alcon Lighting",
+    model="14119-3ND-TFBK-B60-30K-NC-RB",
+    name='3" round adjustable recessed LED flood, black trim, 60 deg, 3000K',
+    url="https://www.alconlighting.com/14119-3nd-tfbk.html",
+    source="Alcon 14119 Mini Recessed spec sheet (Rev 05/04/26) and product page, read "
+           "2026-10-22. ** WET LISTED: ** cULus for damp AND wet locations, IC ordering "
+           "option NC = non-IC frame kit, which suits an exterior soffit with no insulation "
+           "above. 3000 K fixed (30K), 90+ CRI, 5-19 W selectable, 60 deg full flood (B60), "
+           "0-30 deg tilt with 360 deg rotation, Triac and 0-10 V to 1%, 50,000 h, 5 yr. "
+           "Black flange trim is TFBK with RB reflector. ** NOT PUBLISHED: ** 60 deg delivered "
+           "lumens (the 3\" maximum is 1,700 lm at 19 W, read on the 24 deg beam), so the house's "
+           "20 W / 1,800 lm allowance stands. ** OPEN: ** the 3\" aperture needs a hole in the "
+           "waterproof balcony plank that the surface-hung design avoids; the sheet also lists a "
+           "WL wet-location plate, to confirm for the soffit. Built to order, 3-7 business days "
+           "per the product page.",
+)
+
 LIGHTING_PRODUCTS = (
     HUNTER_GALLEGOS,
     *MAGNETIC_TRACK_PRODUCTS,
     LOTUS_LL4SR_CAN, LOTUS_LL4SR_CAN_50K, LOTUS_LL4SR_CAN_27K, FLEURCO_HALO_MIRROR, WESTGATE_VAPORTIGHT, DOLRIA_PC0008, ROBERN_VITALITY_ROUND,
     MODERN_FORMS_BANTAM, MODERN_FORMS_MYKONOS, CRAFTMADE_FORCE_XL,
     ARMACOST_RIBBONFLEX_COB, DIODE_VALENT_X, DIODE_OMNIDRIVE_X,
-    LEDSUPPLY_SAUNA_STRIP,
+    LEDSUPPLY_SAUNA_STRIP, ALCON_14119_GARDEN_FLOOD, FLYACHILLES_DJ3616_2L,
 )

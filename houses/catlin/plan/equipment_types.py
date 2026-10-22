@@ -423,11 +423,19 @@ EQUIPMENT_TYPES = (
 # terminals, (face, face) with `height` as the body.
 STALL_FAN_REGISTER_TYPES = (
     RegisterType(tag="REG-T-FILTER-GRILLE-10",
-                 name="Filter-back return grille, 10x10, MERV 8-11 filter",
+                 name="12x12 filter grille, 10x10x1 MERV 8 filter",
                  footprint=(inch(12), inch(12)), height=inch(1), plan_symbol="register",
+                 product_ref="PROD-AAF-PERFECTPLEAT-HC-M8-10X10",
+                 filter_nominal_size="10x10x1", filter_merv=8, service_face="bottom",
                  source="Stall fan intake in RM-M-BED's ceiling; the filter keeps lint and "
-                        "dust out of the fan and the stall. Drop the grille to service the "
-                        "fan above it. Confirm the filter size."),
+                        "dust out of the fan and the stall. Specify a nominal 10x10x1 "
+                        "MERV 8 pleated filter. AAF PerfectPleat HC M8 publishes a 10x10x1 "
+                        "size (9.5x9.5x0.75 actual) rated 200 cfm at 300 fpm, against this "
+                        "fan's 95 cfm. At 95 cfm the actual-media face velocity is about "
+                        "152 fpm; its initial filter drop is approximately 0.06 in. w.g. "
+                        "by square-law interpolation from the 0.23 in. w.g. published at "
+                        "300 fpm. Drop the grille to change the filter and reach the fan. "
+                        "Verify the final grille holder accepts the filter's actual size."),
     RegisterType(tag="REG-T-NOZZLE-DAMPER-4",
                  name="4in round adjustable nozzle diffuser with gravity backdraft damper",
                  footprint=(inch(4.2), inch(4.2)), height=inch(2), plan_symbol="register",

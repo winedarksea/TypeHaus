@@ -543,8 +543,11 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-DINING-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(3, 6))),
+    # A plain switch, not a dimmer: the chandelier dims by its own remote (as ED-S-STAIR-SW
+    # does for the stair chandelier). Every light names its switch, so the fixture cannot go
+    # constant-hot.
     ElectricalDevice(uid="QTM0006AAA", tag="ED-M-DINING-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-SWITCH-DIM",
+                     type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(

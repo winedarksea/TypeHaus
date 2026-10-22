@@ -102,23 +102,24 @@ from typehaus.model import Location, WallAttachment, deg
 EQUIPMENT_ERV_HOODS_MAIN = [
     Equipment(uid="0NF97ZR9Z3", tag="EQ-M-ERV-HOOD-OA", kind=EquipmentKind.DUCT_MANIFOLD,
               footprint=(inch(12), inch(12)),
-              # The intake, and it is the LOW one deliberately: an exhaust plume rises, so
-              # the intake belongs under it, not over it. Still twice `erv_terminals`' 36"
-              # rule of thumb off the -2'-10" grade plane, and clear of any drift a 50 psf
-              # ground-snow site puts against a wall.
+              # Keep this intake high for splash and debris clearance. The 12" hood is
+              # centred on +5'-0" main datum by AO-M-ERV-OA's 4'-7 1/2" sill; Mount.elevation
+              # is the body's BASE, so it is +4'-6", not +5'. With site grade at -2'-10",
+              # the screen spans +7'-4"..+8'-4" above grade. Service it from a portable
+              # ladder; keep the temporary ladder setup clear of permanent obstructions.
+              # The exhaust hood centre is +17'-0", leaving 12'-0" between hood centres.
               #
-              # ** +5'-0", AND THE EXTRA FOOT IS NEC 110.26, NOT SNOW. ** ED-M-HP3-DISC
-              # stands on this wall at (4'-4", +3'-6"). Its working space is 30" wide —
-              # x 3'-1"..5'-7", which this hood is inside — and runs from grade to
-              # **the greater of 6'-6" above grade or the top of the equipment**. The can is
-              # 9 1/2" tall on a 3'-6" base, so its top is +4'-3 1/2" and IT, not the 6'-6"
-              # (= +3'-8"), sets the ceiling of the space. A 12" box centred on +4'-0" would
-              # sit from +3'-6" to +4'-6", squarely in it; centred on +5'-0" it starts at
-              # +4'-6" and clears by 6". An air intake is not "equipment associated with the
-              # electrical installation", so 110.26(A)(3)'s 6"-overhang allowance does not
-              # reach it — the box has to be wholly out.
+              # ** THE LAST 6" ABOVE HP3'S DISCONNECT WORK SPACE IS NOT AVAILABLE. **
+              # ED-M-HP3-DISC stands on this wall at (4'-4", +3'-6"). Its working space is
+              # 30" wide — x 3'-1"..5'-7", which this hood overlaps — and runs from grade
+              # to the greater of 6'-6" above grade or the equipment top. The can is 9 1/2"
+              # tall on a 3'-6" base, so its top is +4'-3 1/2" and sets that limit. The
+              # hood starts at +4'-6", giving 2 1/2" of vertical separation. An air intake
+              # is not equipment associated with the electrical installation, so
+              # 110.26(A)(3)'s 6" overhang allowance does not apply: keep the hood wholly
+              # above the work space.
               room=None, type_ref="EQ-T-ERV-HOOD-6",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(5)),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(4, 6)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-N3B", face="right", distance_from_start=inch(32),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
@@ -133,15 +134,16 @@ EQUIPMENT_ERV_HOODS_SECOND = [
               # duct against a member, so it read 0 FAIL. y=34'-0" is the centre of the
               # 400 3/4"..415 1/4" bay: a 7" rough opening clears each stud by 3 15/16".
               # The 9" offset from the intake this spends was only cosmetic — see the hood
-              # note above; 13'-0" of rise is what makes the pair legal.
-              # The discharge, 13'-0" over the intake. Filed on `second`, so this mount
-              # elevation is storey-relative: +7'-0" on a datum of +10'-0" is +17'-0" in the
-              # project frame. The duct behind it leaves the second-storey chase notch in
-              # RM-S-BATH1's NW corner, which is capped at +19'-0" — a 12" hood box centred
-              # on +17'-0" clears that by 1'-6", so nothing on the inside face constrains the
-              # height either. room=None, as above and as EQ-M-HP3-OD is authored.
+              # note above; the 12'-0" centre separation exceeds Broan's 6'-0" guidance.
+              # The discharge centre is +17'-0", 12'-0" above the intake centre. Filed on
+              # `second`, so Mount.elevation is storey-relative and is the body's BASE:
+              # +6'-6" on a +10'-0" datum gives a +16'-6" base and +17'-0" centre. The duct
+              # behind it leaves the second-storey chase notch in RM-S-BATH1's NW corner,
+              # capped at +19'-0"; the 12" box top is +17'-6", leaving 1'-6" of clearance.
+              # This also centres the hood on AO-S-ERV-EA's +17'-0" opening and duct axis.
+              # room=None, as above and as EQ-M-HP3-OD is authored.
               room=None, type_ref="EQ-T-ERV-HOOD-6-EXH",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-N3B", face="right", distance_from_start=inch(8.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
