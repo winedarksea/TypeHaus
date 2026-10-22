@@ -224,10 +224,10 @@ MATERIALS_ISHTAR = [
     # shop-built, bonded 12 mm acrylic piece per element, one fabricator and one lot
     # (notes/bath2_tub_deck_finish.md). Same no-species / no-vapour reading as the panel above.
     Material(tag="solid-surface-fabricated",
-             name="Fabricated acrylic solid surface (12 mm), Corian Glacier White",
+             name="Fabricated acrylic solid surface (12 mm), Corian Glacier White or HI-MACS/Staron equal",
              r_per_inch=0.0, density=1700.0, hatch="stone", color="#f4f5f4",
              product_ref="PROD-CORIAN-GLACIER-WHITE",
-             source="RM-M-BATH2 tub deck, faces, splash, vanity top and stool, owner selection 2026-10-22: Corian Glacier White, Hi-Macs/Staron equivalent acceptable; fabricated and bonded with colour-matched joint adhesive"),
+             source="RM-M-BATH2 tub deck, faces, splash, vanity top and stool, owner selection 2026-10-22: Corian Glacier White or HI-MACS/Staron equal; fabricated and bonded with colour-matched joint adhesive"),
     # The above-grade foundation band on BASEMENT_8/_12: a trowel-applied acrylic
     # coating over the exposed XPS, on the Styro Industries Tuff II product data
     # (styro.net / totalwall.com "Applying TUFF II Over Rigid Foam & ICF"). It is the option

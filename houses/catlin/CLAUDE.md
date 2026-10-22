@@ -208,7 +208,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   the rim laps, 2026-10-21; centered Align filler and twin chrome bars, 2026-10-22,
   documented in `notes/bath2_tub_hardware.md`; one-piece Corian deck, faces and splash,
   2026-10-22, `notes/bath2_tub_deck_finish.md`) and `FX-VANITY-48-SEKTION`
-  (RM-M-BATH2's floating SEKTION vanity under a Corian top, `plan/bath2_vanity_types.py`), plus
+  (RM-M-BATH2's floating SEKTION vanity under a Corian or equal top, `plan/bath2_vanity_types.py`), plus
   the six vanities that replaced this house's remaining bare lavatories:
   `FX-VANITY-24-SHALLOW` (RM-A-STUBATH — 24" is the whole
   width that bath's north wall has between ED-A-STUBATH-GFCI's plate and the neo-angle shower

@@ -1,5 +1,5 @@
 """RM-M-BATH2's vanity: two 15"-deep SEKTION wall frames hung as a floating box, AXSTAD
-matte white fronts (the bed desk's), under a Corian Glacier White top with a bonded Corian
+matte white fronts (the bed desk's), under a Corian Glacier White (or HI-MACS/Staron equal) top with a bonded
 bowl from the deck's fabricator and lot (owner, 2026-10-22; notes/bath2_tub_deck_finish.md).
 
 NOT ``# haus: editable``: ``FixtureType.needs`` is a ``frozenset``. The instance is
@@ -52,18 +52,19 @@ AXSTAD_DRAWER_FRONT_18_10 = Product(
     url="https://www.ikea.com/us/en/p/axstad-drawer-front-matte-white-20426064/",
     source="IKEA US listing, read 2026-10-22: $50; availability not shown, confirm at order.",
 )
-CORIAN_810P_BOWL = Product(
-    tag="PROD-CORIAN-810P", brand="Corian", model="810P",
-    name="810P undermount lavatory bowl, Glacier White, seam-bonded to the top",
-    source=("Corian 810P product sheet, Jan 2026 revision: 16 3/8 x 13 x 5 in. bowl "
+SOLID_SURFACE_LAV_BOWL = Product(
+    tag="PROD-SS-LAV-16X13", brand="Generic", model="solid-surface undermount lavatory, 16 3/8 x 13 x 5",
+    name="Solid-surface undermount lavatory bowl, 16 3/8 x 13 x 5 in., integral front overflow, seam-bonded to the top",
+    source=("Basic generic shape (owner, 2026-10-22): any maker's solid-surface bowl in this envelope. "
+            "Drawn to the Corian 810P sheet, Jan 2026 revision: 16 3/8 x 13 x 5 in. bowl "
             "(415 x 329 x 127 mm), integral front overflow; the Nov 2018 sheet reads "
             "16 1/2 x 13 1/8 x 5 1/2. Fits the 17 1/4 x 13 in. envelope the Caxton held. "
-            "Bonded by the deck's fabricator in the same Glacier White lot. "
+            "Bonded by the deck's fabricator in the same white lot. "
             "https://www.tools.corian.com/IMG/pdf/corian_lav_810p_new.pdf"),
 )
 BATH2_VANITY_PRODUCTS = (SEKTION_WALL_30_15_30, SEKTION_WALL_18_15_30, SEKTION_SUSPENSION_RAIL,
                          MAXIMERA_DRAWER_18_15, AXSTAD_DOOR_15_30, AXSTAD_DRAWER_FRONT_18_10,
-                         CORIAN_810P_BOWL)
+                         SOLID_SURFACE_LAV_BOWL)
 
 # ** 48 x 18 IS FIXED BY THE ROOM. ** 18" holds the 33 11/16" shower aisle, the 27 1/16" to
 # the tub access panel and the water closet's UPC 402.5 envelope 4 1/4" off the north end
@@ -75,7 +76,7 @@ BATH2_VANITY_PRODUCTS = (SEKTION_WALL_30_15_30, SEKTION_WALL_18_15_30, SEKTION_S
 # 18" frame with three 10" drawers at the north. Frame bottoms at 5 1/2" AFF, so the
 # heated tile runs under the box and the 12 mm top finishes at 36".
 #
-# The bowl hole, in the type's local frame (x along the run, +y toward the wall): the 810P's
+# The bowl hole, in the type's local frame (x along the run, +y toward the wall): the bowl's
 # 16 3/8 x 13 over the 30" sink frame, centred 9" south of the cabinet centre (y=14'-5 3/8",
 # where the basin and FX-M-BATH2-SINK's drain have stood since 2026-09-09), with 3" behind
 # it for the faucet.
@@ -102,7 +103,8 @@ BATH2_VANITY_48 = FixtureType(
            "2 1/4 in. ledger chase on W-M-W3, bottoms 5 1/2 in. AFF; two AXSTAD matte white "
            "15x30 doors (304.260.49) on the sink frame, three AXSTAD 18x10 fronts "
            "(204.260.64) on MAXIMERA medium 18x15 drawers (202.656.74). Corian Glacier "
-           "White top CT-M-BATH2-VANITY with a bonded Corian 810P bowl (PROD-CORIAN-810P). "
+           "White (or HI-MACS/Staron equal) top CT-M-BATH2-VANITY with a bonded 16 3/8 x 13 in. "
+           "solid-surface bowl (PROD-SS-LAV-16X13). "
            "Bath2 faucet: chrome Arvo 15840LF (PROD-DELTA-15840LF); single hole. Fallback "
            "if the SEKTION parts cannot be bought as specified: IKEA GODMORGON, about "
            "18 1/2 in. deep, wall-hung, 31 1/2 in. sink + 15 3/4 in. drawer cabinet = "

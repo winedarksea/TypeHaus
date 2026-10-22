@@ -182,9 +182,9 @@ KOHLER_CAXTON_BASIN = Product(
 # RM-M-BATH2's one-piece deck, faces, splash, vanity top and stool (notes/bath2_tub_deck_finish.md).
 CORIAN_GLACIER_WHITE = Product(
     tag="PROD-CORIAN-GLACIER-WHITE", brand="Corian", model="Glacier White",
-    name="Corian Glacier White 12 mm acrylic solid surface, shop-fabricated",
+    name="Corian Glacier White or HI-MACS/Staron equal, 12 mm acrylic solid surface, shop-fabricated",
     source="Owner selection 2026-10-22, against a physical chip beside Swanstone Carrara. "
-           "Hi-Macs or Staron solid white of the same 12 mm acrylic class is an accepted "
+           "HI-MACS or Staron solid white of the same 12 mm acrylic class is an accepted "
            "equivalent. One fabricator and one lot for every Bath2 piece. Fabrication per "
            "Corian bulletins: >= 1/2 in. inside radius on L/U pieces, >= 3/16 in. on "
            "cutouts, router-cut only (notes/bath2_tub_deck_finish.md).",

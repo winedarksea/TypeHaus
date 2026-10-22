@@ -85,7 +85,7 @@ MAIN_COUNTERTOPS = [
     ),
     # RM-M-BATH2's deck: Corian Glacier White since 2026-10-22, from the tub deck's
     # fabricator and lot, in the deck's edge language — 12 mm with a built-up eased front
-    # edge — and a bonded 810P bowl in the type's cutout. 19" over the 18" floating box.
+    # edge — and a bonded solid-surface bowl in the type's cutout. 19" over the 18" floating box.
     Countertop(
         uid="TKX0M17VZQ", tag="CT-M-BATH2-VANITY",
         hosts=("FX-M-BATH2-SINK",),

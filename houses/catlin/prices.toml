@@ -3242,7 +3242,7 @@
 # plan/bath2_vanity_types.py). IKEA US list read 2026-10-22: 702.654.69 30x15x30 frame $78,
 # 802.654.64 18x15x30 frame $58, 602.615.27 rail $20, two AXSTAD 15x30 doors $86, three
 # AXSTAD 18x10 fronts $50, three MAXIMERA medium 18x15 $34, plus hinges, shelf and pulls
-# ~$60: ~$660. Then the Corian 810P bowl ($250-450 bonded, fabricator's) and the chrome
+# ~$60: ~$660. Then the solid-surface bowl ($250-450 bonded, fabricator's) and the chrome
 # Arvo (~$150-250). The Corian TOP is CT-M-BATH2-VANITY in [countertops], not here. Labour
 # is the ledger chase, hanging, the trap and the faucet. Replaces FX-VANITY-51-SINGLE, a
 # row no instance matched since the cabinet became 48" on 2026-09-09.
@@ -3418,26 +3418,24 @@
 # electric heated shell against a generic 60x30 alcove unit.
 #
 # ** THE MATERIAL RANGE IS THE WEAKEST NUMBER IN THIS FILE AND IS NOT FIRMLY SOURCED. **
-# kohler.com would not load when this was priced (2026-08-29); $3,058 MSRP and a $2,220-2,300
-# street price come from search snippets alone. CONFIRM WITH A SUPPLIER BEFORE THIS ESTIMATE
-# GOES ANYWHERE. The low carries the street figure, the high the list.
+# kohler.com would not load when this was priced; the 1130's $3,407 list and $2,492 (biscuit) /
+# $2,556 (black) street come from search snippets alone (2026-10-22). CONFIRM WITH A SUPPLIER
+# BEFORE THIS ESTIMATE GOES ANYWHERE. The low is the biscuit street figure, the high the black
+# street figure. The list price is not used.
 #
 # Labour is the set-and-connect this section's basis defines, and a drop-in's set is not an
 # alcove tub's: float and level a 1"-2" mortar bed, lower a 91 lb shell through the deck
 # opening onto it without loading the rim, shim, set the K-7272 Clearflo waste and overflow,
 # silicone the rim to the tile, and plug the Bask supply into
 # ED-M-BATH2-TUB-RC. Hence ~30% over FX-TUB-60's, which nails a flange to three studs.
-# ** THE K-7272 CLEARFLO IS IN THE MATERIAL RANGE, because nothing else can carry it. ** It
-# is a required separate purchase (PROD-KOHLER-7272, ~$100-200) and the model has no element
-# for a waste-and-overflow — no fixture, no PipeAccessory kind — so there is no row to give
-# it. Folded into the high end here rather than dropped; do not also add it to
-# [plumbing_specialties] or it is billed twice.
+# The K-7272 CLEARFLO is NOT in this row. It is a required separate purchase
+# (PROD-KOHLER-7272) billed as its own [allowances] line, so it is never billed twice.
 # NOT in this row, and each is billed elsewhere: the deck box's framing and insulation
 # ([framing], [envelope_layers], via TUBDECK_INT_2X3), the plywood cap
 # ("slab_platform:TUBDECK_INT_PLY_CAP" and [envelope_layers]), the Corian deck top, faces and
 # splash (`solid-surface-fabricated` in [envelope_layers] and [wood_surfaces]),
 # the dedicated circuit and its outlet, and the two access panels.
-"FX-KOHLER-UNDERSCORE-6032" = { material = { low = 2200, high = 3100 }, labour = { low = 430, high = 1050 } }  # 1 ea
+"FX-KOHLER-UNDERSCORE-6032" = { material = { low = 2490, high = 2560 }, labour = { low = 430, high = 1050 } }  # 1 ea
 # FX-M-BATH2-FILLER: Moen T393 chrome + 4794 rough, read 2026-10-22.
 # Moen rendered T393 $501.40; live /products/t393.js $534.84, /products/4794.js $169.44.
 # Add $100-200 material allowance for the required ASSE 1070 limiting device and fittings;
@@ -5286,7 +5284,7 @@
 # plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the showroom — silica
 # exposure control is the thing to buy here.
 "quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 74.83 SF since CT-M-BATH2-VANITY and STOOL-WIN-M-BATH2 (8.29 SF) left for Corian, 2026-10-22
-# RM-M-BATH2's Corian Glacier White vanity top (12 mm, built-up eased front, 810P bowl
+# RM-M-BATH2's Corian Glacier White vanity top (12 mm, built-up eased front, solid-surface bowl
 # bonded in; the bowl is the vanity row's) and its window stool, same lot as the tub deck.
 # The deck top bills in [envelope_layers] and its faces and splash in [wood_surfaces] under
 # this tag; each row prices only its own area. Roughly $40-80/SF installed. ESTIMATE.
@@ -6684,6 +6682,11 @@ site-drain-tile-daylight-outlet = { low = 250, high = 650 }
 # which is maybe $200-450 of hours and yardage off the top of this range. Left in — it is
 # well inside the spread, and the pour count did not change.
 concrete-pumping = { low = 4600, high = 7800 }
+# RM-M-BATH2's required waste-and-overflow for the Kohler drop-in (PROD-KOHLER-7272, K-7272-CP,
+# 1-1/2" PVC). Its own line, not in FX-KOHLER-UNDERSCORE-6032: no PipeAccessory kind or fixture
+# carries it, and an [install_parts] row bills only through an appliance or pipe accessory.
+# $100-200 is the earlier estimate, not a quote.
+plumbing-kohler-k7272-clearflo-overflow = { low = 100, high = 200 }
 # ** RETIRED 2026-09-12: `foundation-damp-or-waterproofing`, $0.00-12.50/SF, is DELETED. **
 # It was a ladder — dampproofing only / + dimple board / full adhered membrane — over a
 # 1,016 SF below-grade face, and every rung of it is now wrong:

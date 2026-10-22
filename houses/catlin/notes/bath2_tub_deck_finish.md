@@ -49,9 +49,8 @@ deck edge was unfinished, because `resolve/paneling.py` clamped a band to the wa
 | E. Tile | ordinary | slivers, a tile edge on every leg, and it was unbilled | low | rejected |
 
 B wins on the legs: only a bonded acrylic makes a 2" leg, a seamless apron and a stall face
-with no horizontal joint under the glass. **Corian Glacier White**, with Hi-Macs or Staron
-of the same class accepted (`PROD-CORIAN-GLACIER-WHITE`). One fabricator and one lot also
-supply the vanity top and its 810P bowl and the window stool.
+with no horizontal joint under the glass. **Corian Glacier White or HI-MACS/Staron equal** (`PROD-CORIAN-GLACIER-WHITE`). One fabricator and one lot also
+supply the vanity top, its bonded bowl and the window stool.
 
 **The shower walls stay Swanstone** (owner). A Corian floor-to-ceiling stall was considered:
 about $1.5-3k more, one piece to the ceiling. It was **declined**. The SS-3696 panels still
@@ -91,7 +90,7 @@ top out at 96" against the 106" ceiling, so `bath2_shower.md` §5 confirm 3 stay
 
 - **Swanstone Carrara (221)**, veined, for the SS-3636 base and the shower walls. This
   closes the colour item of `bath2_shower.md` §5 confirm 3.
-- **Corian Glacier White**, solid, for the deck, faces, splash, vanity top and stool.
+- **Corian Glacier White or HI-MACS/Staron equal**, solid, for the deck, faces, splash, vanity top and stool.
 - The solid white frames the veined stall. The Calacatta vanity this replaced was the
   room's other pattern; the vanity is now Corian too, so Carrara is the only veining.
 - Rules: never put two different veined imitations side by side. Judge the chips under both
@@ -109,7 +108,7 @@ top out at 96" against the 106" ceiling, so `bath2_shower.md` §5 confirm 3 stay
   to the `deck_ref` solid's finished top, so both faces run 0.75"→22.75".
 - Prices are ESTIMATES in three rows under one tag, each cross-referencing the others:
   `[envelope_layers]` the top, `[wood_surfaces]` the faces and splash, `[countertops]` the
-  vanity top and stool. The 810P bowl is in `FX-VANITY-48-SEKTION`'s row.
+  vanity top and stool. The bonded bowl is in `FX-VANITY-48-SEKTION`'s row.
 - `LR-M-BATH2-TUBDECK` (deck nosing) is retired: no LEDs near the floor. `LR-M-BATH2-TUB-CLG`
   is a damp-rated E3 run in the ceiling 2" off BA2E, y 196"-262", on the same PSU and dimmer.
 
@@ -129,7 +128,7 @@ Read 2026-10-22:
   minimum inside radius) — https://www.4willis.com/wp-content/uploads/2019/10/Corian-SS_Fabrication_Manual-Chapter20_Requirements_k-25705.pdf
 - Corian Solid Surface Cutting and Cutouts, K-25289 (5 mm / 3/16" cutout radius, router only,
   ≥ 10 mm bits) — https://www.corian.com/sites/corian.com/IMG/pdf/k-25289-cutting-and-cutouts.pdf
-- Corian 810P lavatory sheet (Jan 2026: 16⅜ × 13 × 5") —
+- Corian 810P lavatory sheet, the envelope the generic bowl is drawn to (Jan 2026: 16⅜ × 13 × 5") —
   https://www.tools.corian.com/IMG/pdf/corian_lav_810p_new.pdf
 - Swanstone BD-4896 specification (a pre-moulded 48 × 96 bathtub deck; no fabricator sheet
   was found) — https://www.manualsdir.com/manuals/288537/swanstone-bd-4896-specification.html
