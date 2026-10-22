@@ -138,6 +138,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 recommended_clearances=tuple(
                     ring for zone, ring in zones if not _is_required(zone)),
                 attachment_wall=attachment, attachment_face=attachment_face,
+                host_fixture_ref=getattr(item, "host_fixture_ref", None),
                 circuit=getattr(item, "circuit", None),
                 mount=getattr(item, "mount", None),
             ))

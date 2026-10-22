@@ -77,6 +77,16 @@ def best_host(model: ResolvedModel, obj: ResolvedCanvasObject) -> Host | None:
     """The host the body bears on: most overlap, then least gap."""
     z = obj.body_z0_m if obj.body_z0_m is not None else obj.z_m
     body = Polygon(obj.footprint)
+    if obj.kind == "Furniture" and obj.host_fixture_ref is not None:
+        host = next((item for item in model.canvas_objects
+                     if item.tag == obj.host_fixture_ref and item.kind == "Fixture"
+                     and item.storey == obj.storey and item.room == obj.room), None)
+        if (host is None or host.body_z0_m is None or host.body_z1_m is None
+                or host.body_z0_m > z + _EPS
+                or host.body_z1_m < (obj.body_z1_m or z) - _EPS):
+            return None
+        solid = Polygon(host.footprint)
+        return Host(host.tag, solid.intersection(body).area, solid.distance(body), None)
     best: Host | None = None
     for tag, solid, wall in _hosts_at(model, z):
         overlap = solid.intersection(body).area

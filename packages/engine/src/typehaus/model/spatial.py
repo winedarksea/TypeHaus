@@ -399,6 +399,8 @@ class Furniture(Element):
     position: Point2D | None = None  # None when location.attachment hosts it
     rotation: object | None = None  # Angle | None
     room: str | None = None
+    # Fastening support, not a placement transform: e.g. a holder on a vanity side.
+    host_fixture_ref: str | None = None
     location: Location | None = None
     mount: Mount = Mount()
 

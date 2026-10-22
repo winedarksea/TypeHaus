@@ -105,6 +105,23 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
     bands = backing_bands(ctx.plan)
     out: list[Finding] = []
     for body, body_type, mount in bodies:
+        if isinstance(body, Furniture) and body.host_fixture_ref is not None:
+            from typehaus.checks.integrity.wall_mounts import best_host
+
+            placed = next((obj for obj in ctx.model.canvas_objects if obj.uid == body.uid), None)
+            host = best_host(ctx.model, placed) if placed is not None else None
+            if host is not None and host.gap_m <= 1e-6:
+                out.append(not_applicable(
+                    "advisory.wall_backing_present",
+                    f"{body.tag} fastens to fixture {host.tag}; cabinet support replaces "
+                    "in-wall backing (coverage is not a fastening-capacity calculation)",
+                    (body.tag, host.tag)))
+            else:
+                out.append(advisory(
+                    "advisory.wall_backing_present",
+                    f"{body.tag} does not bear on its declared fixture support",
+                    (body.tag, body.host_fixture_ref), Result.FAIL))
+            continue
         found = backing_wall(ctx.plan, ctx.model, body, body_type)
         if found is None:
             # Never a silent skip. ``backing_wall`` matches a body to the wall its back

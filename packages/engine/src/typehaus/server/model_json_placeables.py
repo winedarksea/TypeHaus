@@ -51,6 +51,7 @@ def placeables_json(
         ],
         "furniture": [
             {"uid": furniture.uid, "tag": furniture.tag, "storey": storey.tag,
+             "host_fixture_ref": furniture.host_fixture_ref,
              "type": furniture.type_ref, "position": list(placed_xy(model, furniture) or ()),
              "provenance": _provenance(provenance, furniture.tag),
              "footprint_m": [dimension.meters for dimension in furniture_type.footprint],

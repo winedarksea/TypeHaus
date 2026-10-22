@@ -1456,6 +1456,7 @@ class ResolvedCanvasObject:
     recommended_clearances: tuple[Ring, ...] = ()
     attachment_wall: str | None = None
     attachment_face: str | None = None
+    host_fixture_ref: str | None = None
     # Tag of the furniture group this object belongs to — the anchor's own tag, shared by the
     # anchor and every occupant of its zone (→ resolve/placeable_groups). ``None`` when the
     # object stands alone. Group members do not encroach on each other's recommended

@@ -530,6 +530,15 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
                 representation = parts_representation(
                     f, body, [part.geometry for part in bench_parts(bench)],
                     resolved.position, resolved.rotation_degrees, resolved.z_m)
+            elif furniture_type.plan_symbol == "pivoting-paper-holder":
+                from typehaus.emit.ifc.placeable_parts import parts_representation
+                from typehaus.model.placeable_symbols import model_parts
+
+                representation = parts_representation(
+                    f, body, model_parts(furniture_type.plan_symbol,
+                                        *(d.meters for d in furniture_type.footprint),
+                                        furniture_type.height.meters),
+                    resolved.position, resolved.rotation_degrees, resolved.z_m)
             elif bookcase is None:
                 representation = ll.add_prism_from_profile(
                     f, body, resolved.footprint, furniture_type.height.meters, resolved.z_m
@@ -555,6 +564,7 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
             })
             ll.ensure_pset(f, element, "TypeHaus_Identity", {
                 "uid": furniture.uid, "tag": furniture.tag, "source_type": furniture.type_ref,
+                "host_fixture_ref": furniture.host_fixture_ref or "",
             })
             _emit_service_ports(f, element, furniture_type.ports, project_uuid, furniture.uid)
             ll.assign_type(f, element, ifc_types[furniture.type_ref])

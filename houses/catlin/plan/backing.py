@@ -295,7 +295,7 @@ SECOND_BACKING = [
                 material_ref="spf", purpose="closet shelf and rod (66 in.)"),
     WallBacking(uid="QY4ZK9WZ6S", tag="BK-S-CH-S-AP", wall_ref="W-S-CH-S",
                 start=inch(0), length=inch(15.25),
-                elevation=inch(22), height=inch(7.25), profile="2x8",
+                elevation=inch(34), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="bath 1 chase access panel frame"),
     WallBacking(uid="W2XZ7J1J2X", tag="BK-S-SN3-AP", wall_ref="W-S-SN3",
                 start=inch(72.75), length=inch(14.5),

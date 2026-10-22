@@ -8,5 +8,5 @@ from typehaus.model import deg, m, pt
 
 BED_READING_CORNER = [
     Furniture(uid="NJW8BV7455", tag="FURN-M-BED-ARMCHAIR", type_ref="FURN-ARMCHAIR-STRANDMON",
-              room="RM-M-BED", position=pt(m(1.17423), m(0.799996)), rotation=deg(120)),
+              room="RM-M-BED", position=pt(m(0.882965), m(0.88992)), rotation=deg(120)),
 ]

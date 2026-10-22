@@ -40,6 +40,7 @@ from typehaus.model.placeable_symbols._frame import box, rect
 from typehaus.model.placeable_symbols._hammock_chair import hammock_chair
 from typehaus.model.placeable_symbols._hanging_daybed import hanging_daybed
 from typehaus.model.placeable_symbols._mirrors import arch_shelf_mirror
+from typehaus.model.placeable_symbols._paper_holder import pivoting_paper_holder
 from typehaus.model.placeable_symbols._plants import (
                                                         hanging_vine_planter,
                                                         small_potted_plant,
@@ -99,6 +100,7 @@ CABINET_SHADE = "cabinet-cream-dark"
 CABINET_SINGLE_DOOR_MAX_WIDTH_M = inch(24).meters
 
 FURNITURE_SYMBOLS: dict[str, Builder] = {
+    "pivoting-paper-holder": pivoting_paper_holder,
     "footrest": footrest,
     "curtain-rod": curtain_rod,
     "cellular-blind": cellular_blind,

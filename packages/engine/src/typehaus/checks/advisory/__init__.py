@@ -3,6 +3,7 @@ from __future__ import annotations
 from typehaus.checks.advisory import (  # noqa: F401 - registers checks
     assembly_variety,
     backing,
+    backing_fixings,
     carriers,
     checks,
     countertops,

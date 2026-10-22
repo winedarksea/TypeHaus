@@ -309,6 +309,9 @@ class FurnitureType(HausModel):
     plan_representation: PlanRepresentation | None = None
     model_representation: ModelRepresentation | None = None
     mount: Mount = Mount()
+    # Mounting-post centres: local (width offset, height above body base), on the back
+    # plane (+depth/2). Final screw drilling follows the manufacturer's template.
+    wall_fixing_points: tuple[tuple[Length, Length], ...] = ()
     # Names a generated glyph + massing from ``model/placeable_symbols`` (see SYMBOL_NAMES).
     # An imported ``plan_representation``/``model_representation`` still wins over it.
     plan_symbol: str | None = None

@@ -249,19 +249,12 @@ the future.
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
 - Sconce ED-S-STUDY2-STAIR-SC1 is a bit close to the floor, perhaps it should go at the top of the stairs on the wall, still on the same circuit but in the room above?
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
-- [x] ED-A-STUDIO-BAR-TASK: renamed the studio bar's wall-mounted 24" damp-rated task light; reviewed sloped track and kept the closer task-light position (2026-10-21).
 - Flashing geometry and visibility implemented 2026-10-15: west-draining fitted cap on SB-BW-BAND's exposed 2×6 sill above W-BW-SCREEN; metal heads and concealed perimeter/sill flashing at exterior windows and doors; one Flashing 3D hide/isolate control. [Modeling basis and limits](../houses/catlin/notes/flashing_model.md).
 - Possibly swap the concrete canopy stairway (SL-BW-TIER*) to pressure treated wood and composite treads.
 - Consider adding a gutter along the entryway canopy gable in the narrow space between canopy and house, the goal is for this to mostly fill the space, if it can do so in a way that is buildable and not causing any problems.
 - Make the countertop (and quartz window stools) a "ready to send to manufacturer" design and export. Include rounding corners
 - Switch D-M-BATH2 and D-M-BED to walnut door casings. Then switch the desk there to walnut top on IKEA SEKTION cabinets
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps grab bars.
-- [x] RM-M-BATH1: verified TOTO AP wall-hung geometry and roomier D-Code 070545 basin
-  (2026-10-21), 34" AFF rim, compact B.2 mixer and a solid 2×10 fixing block.
-  South wet-wall basin; INT32 outswing shifted north. Existing STOS shift stays 1½"
-  north; toilet front 24.49", basin aisle 32.365". Holder bracket remains a selection.
-  [Fixture and blocking specification](../houses/catlin/notes/main_bath1_basin_spec.md).
-- [x] Open up RM-S-BATH1's entry: 36" vanity, 18" eastern SEKTION, east-hinged inswing (2026-10-21). [Measured layout and checks](../houses/catlin/notes/bath1_clearance_review.md): 23⅜" closest corner spacing and 8½" beyond the open door tip; still a compact turn.
 - Window/door quotes (products named 2026-10-21): get Drutex (DAKAM, Chicago), Andersen 400 and Cascadia quotes and close `notes/window_and_door_procurement.md` §2.6 — Alucover nail fin + NAFS DP, the 14" tilt-only minimum, Drutex sill rail height (re-strike the 2.953" stools), Andersen triple-pane in MN and frame depth, the Cascadia double-door NFRC label and thresholds, dark-colour warranties.
 - [ ] Before fabricating RM-M-STUDY: complete the 60-minute seating mock-up, verify occupied cushion height, lumbar fit and bracket/blocking connections, and record any dimensional changes in the bench spec.
 
