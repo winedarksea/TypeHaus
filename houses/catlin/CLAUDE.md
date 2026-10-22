@@ -1,8 +1,8 @@
-> **Main powder room, 2026-10-21:** `RM-M-BATH1` uses a north-wall Duravit Vero
-> 19⅝ × 9⅞" wall basin and TOTO AP CT426CFGT40 wall-hung bowl, 21¼" verified projection.
-> STOS/STOS2 and their aligned upper walls move 1½" north: 24.49" toilet front clearance,
-> 35.865" sink aisle, 31¼" mudroom closet depth. Basin services/backing follow; no vanity
-> shelf remains here. See `notes/main_bath1_clearance_review.md` and its manufacturer links.
+> **Main powder room, 2026-10-21:** north-wall Duravit D-Code 07054500002 basin,
+> 17¾ × 13⅜", 34" AFF rim, B.2 compact mixer, two full-depth timber fixing blocks.
+> Basin/toilet/door positions revised for 32.365" basin aisle and 24.49" toilet front
+> clearance. Existing 1½" northward STOS shift retained. Current installation detail:
+> `notes/main_bath1_basin_spec.md`; earlier shallow-Vero descriptions are superseded.
 
 > **West header, 2026-10-14:** BM-BW-RW now has equal 8⅞″ tails from both post centres
 > (6⅛″ south extension), paired AC6Z at both west heads, MAX nailing 14 beam + 14 post 16d

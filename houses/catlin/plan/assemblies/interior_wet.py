@@ -40,6 +40,20 @@ INT_2X4_PLUMBING = Assembly(
 )
 
 
+# Closer studs put a support at x=40/56 without building blocking across the stack at x=60.
+# Same partition thickness and finish faces; only W-M-STOS uses this support layout.
+INT_2X4_BASIN_SUPPORT = Assembly(
+    tag="INT_2X4_BASIN_SUPPORT", variant_of="INT_2X4_PARTITION",
+    substitute=(Substitution(
+        span=layers("stud", "stud"),
+        replacement=(Layer(name="stud", material_ref="spf", thickness=inch(3.5),
+                           function=LayerFunction.STRUCTURE,
+                           framing=FramingSpec(member="2x4", spacing=inch(8))),),
+    ),),
+    source="W-M-STOS basin support: 8 in. stud module and two full-depth 4x10 blocks; see notes/main_bath1_basin_spec.md. Acoustic rating not transferred.",
+)
+
+
 # --- plant room (RM-S-PLANT) ------------------------------------------------------
 # A room held at ~75 F / 70% RH year-round against a -15 F design temperature is a
 # natatorium-class vapour drive in a residential shell, and the failure mode is invisible:

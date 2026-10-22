@@ -916,10 +916,10 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1", controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-STOS", face="right", distance_from_start=inch(53.5),
+                         wall_ref="W-M-STOS", face="right", distance_from_start=inch(48.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTM000MAAA", tag="ED-M-BATH1-SW", kind=DeviceKind.SWITCH,
-                     # East wall, north of the unchanged doorway.
+                     # East wall, north of the shifted doorway.
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),

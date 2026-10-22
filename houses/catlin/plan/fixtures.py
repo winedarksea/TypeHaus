@@ -95,15 +95,16 @@ MAIN_FIXTURES = (
             wall_ref="W-M-BAE",
             mount=Mount(kind=MountKind.WALL, elevation=inch(3)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-M-HS1", face="left", distance_from_start=inch(26.40625),
+                wall_ref="W-M-HS1", face="left", distance_from_start=inch(24.65625),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # 19 5/8 x 9 7/8 in. basin: the entire existing doorway opens onto its aisle.
-    Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-DURAVIT-VERO-070350",
+    # 17 3/4 x 13 3/8 in. basin; 34 in. finished rim. The wall waste stub
+    # remains offset east to miss the hot riser; expose the serviceable trap arm.
+    Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-DURAVIT-DCODE-070545",
             room="RM-M-BATH1", wall_ref="W-M-STOS",
-            drain_position=pt(inch(53.5), inch(319.5)),
-            mount=Mount(kind=MountKind.WALL, elevation=inch(30.125)),
+            drain_position=pt(inch(51), inch(319.5)),
+            mount=Mount(kind=MountKind.WALL, elevation=m(0.7186)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-M-STOS", face="right", distance_from_start=inch(53.5),
+                wall_ref="W-M-STOS", face="right", distance_from_start=inch(48.875),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
     # Backs W-M-HS1 (retyped to the plumbing assembly for it, see storeys/main.py) at
     # rotation 0, which is the rotation that puts the tank on +y.

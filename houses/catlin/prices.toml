@@ -2456,10 +2456,11 @@
 "FT-S-STUDY-NOOK-SEAT-END" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut
 # Custom 72x24x3 HR-foam cushion, welted performance-fabric cover; a quote, not a listing.
 "FT-S-STUDY-NOOK-CUSHION" = { material = { low = 350, high = 750 }, labour = { low = 0, high = 0 } }  # 1 ea
-# RM-M-BED desk, 2026-10-21 (plan/bed_desk_types.py): SEKTION 15x24x30 frame, three medium
-# MAXIMERA 15x24 and three AXSTAD 15x10 fronts, plus a $5-15/front pull allowance. IKEA US
-# list not yet read for these SKUs: confirm at order. The walnut top bills in [countertops].
-"FURN-M-BED-DESK-DRAWERS-15" = { material = { low = 220, high = 320 }, labour = { low = 80, high = 190 } }  # 2 ea
+# RM-M-BED desk, 2026-10-21 (plan/bed_desk_types.py). IKEA US list, read 2026-10-21: SEKTION
+# 15x24x30 frame 002.653.97 $58, three MAXIMERA medium 15x24 002.656.70 at $38, three AXSTAD
+# 15x10 fronts 804.260.61 at $44 = $304, plus a $5-15/front pull allowance. The walnut top
+# bills in [countertops].
+"FURN-M-BED-DESK-DRAWERS-15" = { material = { low = 319, high = 349 }, labour = { low = 80, high = 190 } }  # 2 ea
 # 1x3 poplar knee ledger, painted, screwed to studs.
 "FT-M-BED-DESK-LEDGER-31" = { material = { low = 10, high = 20 }, labour = { low = 20, high = 60 } }  # 1 ea
 "CASE-SINK-BASE-36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 0 ea
@@ -3324,7 +3325,7 @@
 # from the class rows above — setting a skirted one-piece is not a different hour from
 # setting a two-piece.
 "FX-TOTO-AP-WH" = { material = { low = 600, high = 1100 }, labour = { low = 210, high = 500 } }  # 1 ea
-"FX-DURAVIT-VERO-070350" = { material = { low = 400, high = 700 }, labour = { low = 200, high = 470 } } # 1 ea, basin and exposed trap; faucet allowance separate
+"FX-DURAVIT-DCODE-070545" = { material = { low = 250, high = 450 }, labour = { low = 250, high = 500 } } # 1 ea, basin and exposed trap; faucet allowance separate
 # The WASHLET S5 bidet seat rides on the two showpieces and is a SEPARATE purchase from the
 # bowl (~$682 ea), so it is not inside these rows. It is `plumbing-bidet-seats` in
 # [allowances] — the SEAT ONLY since 2026-09-06. The GFCI outlet each one needs and the
@@ -7476,7 +7477,8 @@ plumbing-bidet-seats = { low = 1364, high = 1700 }
 # out of stock on Delta's site when this was priced, and Delta's own T2759-SS page
 # confusingly claims the trim includes a hand shower, which contradicts its being 3-hole --
 # confirm both before ordering.
-plumbing-faucets-and-tub-filler = { low = 2004, high = 3400 }
+# Powder basin: seven Arvo plus one Duravit B.2 S B21010001U10 (chrome), replacing one Arvo; +$135..215.
+plumbing-faucets-and-tub-filler = { low = 2139, high = 3615 }
 # ** WALL TILE HAS NO ELEMENT TO MEASURE ** — [floor_finishes] carries the floors and a shower
 # surround is not a modelled finish, which is the same reason `finish-tile-surrounds-and-
 # waterproofing` above stays a lump. This row is the MATERIAL for the chosen 12x24 (TileBar

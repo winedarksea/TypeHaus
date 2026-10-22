@@ -36,7 +36,7 @@ from typehaus import (
 VENT_BRANCHES_MAIN = [
     # Dry vent remains vertical until above the upper fixtures, then joins their vent.
     PipeRun(uid="J79AT1ZHAV", tag="PR-M-BATH1-LAV-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(53.5), inch(319.5)), pt(inch(53.5), inch(319.5)),
+            path=(pt(inch(51), inch(319.5)), pt(inch(51), inch(319.5)),
                   pt(inch(40), inch(319.5)), pt(inch(40), inch(320.25)),
                   pt(inch(40), inch(320.25)), pt(inch(40), inch(319.5))),
             diameter=inch(1.5),

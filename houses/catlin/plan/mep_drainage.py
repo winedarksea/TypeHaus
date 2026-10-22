@@ -175,10 +175,13 @@ DRAINS = [
     # Falls 0.375"/ft on the short leg and 0.263"/ft on the long one, arriving 1/2" over the
     # main's interpolated 91.96" invert: a side entry into the 4" barrel's upper half.
     PipeRun(uid="5RGKWZZSY0", tag="PR-B-WC1-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(m(0.670778), ft(22, 4)), pt(m(0.670778), ft(22, 4)),
-                  pt(m(0.670778), ft(21, 10)), pt(ft(6), ft(21, 10))),
+            # Offset above the floor inside the carrier; retain the coordinated old drop.
+            path=(pt(inch(24.65625), ft(22, 4)), pt(m(0.670778), ft(22, 4)),
+                  pt(m(0.670778), ft(22, 4)), pt(m(0.670778), ft(21, 10)),
+                  pt(ft(6), ft(21, 10))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(9, 4.75), ft(7, 9.625), ft(7, 9.4375), ft(7, 8.4375)),
+            elevations=(inch(120.75), inch(120.71), ft(7, 9.625),
+                        ft(7, 9.4375), ft(7, 8.4375)),
             serves=("FX-M-BATH1-WC",)),
     # 1 1/2": FX-M-BATH2-TUB is the Kohler K-5713-W1 (plan/fixtures.py), whose spec
     # drawing labels a 1 1/2" bath drain and whose required waste-and-overflow — K-7272
@@ -317,11 +320,11 @@ DRAINS = [
 # so the elevations read as heights on the storey the pipe is actually visible from:
 # +9'-9" is the second floor's underside, the negative inverts are the basement ceiling.
 SECOND_DRAINS = [
-    # North-wall basin arm: 6 1/2" east to the existing 3" stack, 1/4"/ft fall.
+    # North-wall basin arm: 9" east to the existing 3" stack, 1/4"/ft fall.
     PipeRun(uid="CBPD02AAAA", tag="PR-B-LAV1-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(53.5), inch(319.5)), pt(inch(60), inch(319.5))),
+            path=(pt(inch(51), inch(319.5)), pt(inch(60), inch(319.5))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(20), inch(19.864583)),
+            elevations=(inch(20), inch(19.8125)),
             serves=("FX-M-BATH1-LAV",), wall_ref="W-M-STOS"),
 
     # ** STRAIGHT SOUTH ON x=5'-0", EAST OF THE KITCHEN DRAIN (2026-10-08). ** The old

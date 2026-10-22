@@ -395,16 +395,30 @@ KATELAUREL_ESTERO = Product(
            "dimensions only; confirm on delivery. RM-S-SUITEBATH, over FX-S-SUITEBATH-LAV.",
 )
 
-DURAVIT_VERO_070350 = Product(
-    tag="PROD-DURAVIT-0703500008", brand="Duravit", model="0703500008",
-    name="Vero wall-mounted hand basin, single right faucet hole, white",
-    source='Duravit US product 070350, read 2026-10-21: 19 5/8 x 9 7/8 x 5 7/8 in., '
-           'glazed underside, overflow, single right faucet hole. '
-           'Wall fixing into solid blocking; exposed serviceable trap below.',
+DURAVIT_DCODE_070545 = Product(
+    tag="PROD-DURAVIT-07054500002", brand="Duravit", model="07054500002",
+    name="D-Code wall-mounted basin, single central faucet hole, white",
+    source='Duravit US 07054500002, read 2026-10-21: 17 3/4 x 13 3/8 x 5 3/4 in.; '
+           'interior 15 3/8 x 8 1/2 in.; overflow, glazed underside, cUPC listed. '
+           'Two 240 mm-spaced mounting holes, 55 mm below rim. Solid 4x10 blocking '
+           'on W-M-STOS, independent of the 3 in. stack. Duravit B.2 B21010001U10, '
+           'single hole without deck plate; exposed 1 1/4 in. tubular P-trap. '
+           'Installation specification: notes/main_bath1_basin_spec.md.',
+)
+
+DURAVIT_B2_POWDER_FAUCET = Product(
+    tag="PROD-DURAVIT-B21010001U10", brand="Duravit", model="B21010001U10",
+    name="B.2 S single-hole basin mixer with pop-up, chrome",
+    source='Duravit US, read 2026-10-21: 4 in. reach, 3 5/8 in. outlet above deck, '
+           '6 in. overall height, adjustable aerator, 3/8 in. compression hoses, '
+           'WaterSense, cUPC; US pop-up/drain version. D-Code 070545 recommended mixer '
+           'family B21010001. Powder room only, replacing the Arvo allowance here. '
+           'https://pro.duravit.us/pro/html/default/402880943a1b6e1b013a1bd282eb0051.us-en.html'
+           '?ncat=faucets&nser=1821&product=4147387',
 )
 
 INTERIOR_PRODUCTS = (
-    DURAVIT_VERO_070350, TOTO_AP_WALLHUNG, TOTO_DUOFIT_WT173M, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
+    DURAVIT_DCODE_070545, DURAVIT_B2_POWDER_FAUCET, TOTO_AP_WALLHUNG, TOTO_DUOFIT_WT173M, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
     TOTO_WASHLET_S5, KOHLER_CACHET_SEAT,
     DELTA_ARVO_LAV, DELTA_ESSA_KITCHEN, MOEN_ADLER_LAUNDRY,
     *SHOWERING_PRODUCTS,

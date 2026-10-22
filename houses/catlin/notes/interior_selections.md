@@ -79,7 +79,7 @@ These matter more than the product names, because each was passing every check.
 
 | Room | Product | Why |
 |---|---|---|
-| `RM-M-BATH1` | TOTO SP `CT449CFGT60#01` + DuoFit `WT173M` | wall-hung + rimless is the cleanability ceiling: no horizontal ledge, and the china floats clear of the floor joint |
+| `RM-M-BATH1` | TOTO AP `CT426CFGT40#01` + DuoFit `WT173M` | wall-hung + rimless is the cleanability ceiling: no horizontal ledge, and the china floats clear of the floor joint |
 | `RM-M-BATH2` | TOTO Carlyle II `CST614CEFGAT40#01` | one-piece skirted — no tank-to-bowl gasket line, no gap behind the tank |
 | `RM-S-BATH1`, `RM-S-SUITEBATH` | TOTO Aquia IV `CST446CEMGN#01` | skirted trapway, daily-use rooms |
 | `RM-A-STUBATH`, `RM-B-BATH` | TOTO Drake `CST776CEFG#01` | same Tornado Flush and CeFiONtect glaze, half the money; gives up the skirt |
@@ -345,3 +345,13 @@ This is the part of the pass with a deadline on it.
   respirators on faces, and OSHA silica exposure monitoring on file.
 - Prices throughout are 2026 list or street, gathered against retailers that block automated
   fetching. **They are budget figures, not quotes.**
+
+
+### Main powder-room basin, revised 2026-10-21
+
+Use Duravit D-Code **07054500002**, wall hung, 17¾ × 13⅜″, with a 15⅜ × 8½″
+internal bowl and 34″ AFF rim. The earlier Vero hand-rinse basin is superseded.
+Use the compact **B.2 S B21010001U10** chrome mixer in this room, replacing one
+Arvo in the eight-faucet allowance. Two full-depth 4×10 timber blocks support the
+240 mm-spaced mounting holes, with a separate vent bore clear of both bolts.
+[Installation and fixing detail](main_bath1_basin_spec.md).

@@ -14,6 +14,17 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Master bedroom: window seat retired, SEKTION desk (2026-10-21)
+
+The west-wall SEKTION window seat (two seats, two 12" AXSTAD end cabinets, covers, cushion and
+two walnut tops) is gone; the STRANDMON reading chair stays. The HEMNES 61" desk is replaced in
+the same SE-corner footprint by two 15" SEKTION bases with three AXSTAD drawers each, set on the
+floor with no plinth, and a 31" knee between them. One 1" walnut glue-up top, 61" x 24 7/8",
+spans all three at 31" finished. A 3/4" poplar ledger on the east wall carries the top's back
+edge across the knee and is its middle host, because a countertop does not jump a gap.
+`FURN-M-BED-DESK` keeps its uid as that ledger and carries the chair zone. Plan source:
+`plan/bed_desk.py`. The walnut window stools are unchanged.
+
 ## Selective fixed picture windows (2026-10-21)
 
 Thirteen operable windows become fixed to reduce cost and pursue better thermal
@@ -5648,3 +5659,17 @@ positions, floor heat and the two affected floor-member stations; do not suppres
 The upstairs 22 in. circular entry test remains a required check.
 
 Measured layout, primary drawings and consequences: `notes/main_bath1_clearance_review.md`.
+
+
+## 2026-10-21 — roomier powder-room basin and buildable fixing targets
+
+Owner prioritized usable washing space over the shallow Vero's maximum aisle. D-Code
+07054500002 gives a 15⅜ × 8½″ bowl in a 17¾ × 13⅜″ wall basin, with 34″ AFF rim
+and compact B.2 S mixer. Basin center x=48⅞″, AP toilet 1¾″ west, outswing 2″ south:
+32.365″ basin aisle and unchanged 24.49″ toilet front clearance. STOS stays put.
+
+The old full-wall 2×8 backing crossed the stack bay. An 8″ stud module on STOS now
+supports two full-depth 4×10 blocks at the actual 240 mm-spaced fixing holes. The
+right block has a separate vent bore; supplies terminate below it. The WC has an
+above-floor offset to its established drain drop, preserving the conduit crossing.
+See `notes/main_bath1_basin_spec.md` for mounting/connection details and primary drawings.

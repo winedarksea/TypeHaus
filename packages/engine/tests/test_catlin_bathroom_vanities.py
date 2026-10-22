@@ -29,7 +29,7 @@ VANITIES = {
     # it runs ACROSS the room's south end now, backing W-B-CW2's north face, where it used to
     # stand along the east wall against W-B-CN2's 12" pour.
     "FX-B-BATH-LAV": ("FX-VANITY-36-SHALLOW", "basement", "W-B-CW2", "+y"),
-    "FX-M-BATH1-LAV": ("FX-DURAVIT-VERO-070350", "main", "W-M-STOS", "-y"),
+    "FX-M-BATH1-LAV": ("FX-DURAVIT-DCODE-070545", "main", "W-M-STOS", "-y"),
     "FX-S-BATH1-LAV": ("FX-VANITY-36-SINGLE", "second", "W-S-BA-E1B", "-x"),
     "FX-S-SUITEBATH-LAV": ("FX-VANITY-30-SINGLE", "second", "W-S-SN3", "-y"),
     "FX-S-VANITY-LAV1": ("FX-VANITY-30-SHALLOW", "second", "W-S-BD-N", "-y"),
@@ -304,11 +304,11 @@ def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_mo
     assert toilet.type_ref == "FX-TOTO-AP-WH"
     assert room.bounds[3] / IN - ty1 >= 24.25
     assert room.covers(Polygon(toilet.required_clearances[0]))
-    assert by0 - room.bounds[1] / IN >= 35.5
+    assert by0 - room.bounds[1] / IN >= 32.25
     door = next(o for o in model.openings if o.tag == "D-M-BATH1")
     door_north = max(y for _, y in door.swing_clearance) / IN
-    assert by0 > door_north  # entire modeled opening aligns with the sink aisle
-    assert (bx1 - bx0, by1 - by0) == pytest.approx((19.625, 9.875))
+    assert door_north - by0 <= 0.26  # only 1/4 in. of the modeled opening is trimmed
+    assert (bx1 - bx0, by1 - by0) == pytest.approx((17.75, 13.375))
     assert basin.attachment_wall == "W-M-STOS"
     stops = [a for a in model.pipe_accessories
              if a.tag in {"PA-M-BATH1-STOP-CW", "PA-M-BATH1-STOP-HW"}]
@@ -317,3 +317,35 @@ def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_mo
     assert all(0 < stop.z_m < basin.body_z0_m for stop in stops)
     assert not any(bank.host == basin.tag for bank in model.shelf_banks)
     assert Polygon(basin.footprint).disjoint(Polygon(toilet.required_clearances[0]))
+
+
+def test_powder_basin_fixings_land_in_solid_blocking_clear_of_the_stack(catlin_model_ro):
+    """Check the mounting holes, rather than accepting any backing near a fixture's base."""
+    model = catlin_model_ro
+    basin = _obj(model, "FX-M-BATH1-LAV")
+    x0, x1, _, _ = _bbox(basin)
+    fixing_centers = [(x0 + x1) / 2 - 120 / 25.4, (x0 + x1) / 2 + 120 / 25.4]
+    fixing_height = basin.body_z0_m + 0.145 - 0.055
+    wall = next(w for w in model.walls if w.tag == "W-M-STOS")
+    blocks = [member for member in wall.members
+              if member.child_key.startswith("backing-") and member.profile == "3.5x9.25"]
+    assert len(blocks) == 2
+    for fixing_x in fixing_centers:
+        targets = [block for block in blocks
+                   if min(block.p0[0], block.p1[0]) < fixing_x * IN
+                   < max(block.p0[0], block.p1[0])
+                   and block.z0_m < fixing_height < block.z1_m]
+        assert len(targets) == 1, f"no solid timber at fixing x={fixing_x:.3f}in"
+        block = targets[0]
+        # The backing plates are 2in square: each must bear entirely on timber.
+        assert min(block.p0[0], block.p1[0]) + IN < fixing_x * IN
+        assert max(block.p0[0], block.p1[0]) - IN > fixing_x * IN
+        assert block.z0_m + IN < fixing_height < block.z1_m - IN
+    # Both ends land on actual full-height studs; the stack's bay stays open.
+    studs = [m for m in wall.members if m.category == "stud"]
+    for block in blocks:
+        for end in (block.p0[0], block.p1[0]):
+            assert any(abs(abs(end - stud.p0[0]) - 0.75 * IN) < 0.01 * IN
+                       for stud in studs)
+        assert max(block.p0[0], block.p1[0]) / IN < 58.25
+    assert wall.assembly == "INT_2X4_BASIN_SUPPORT"

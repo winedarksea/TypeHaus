@@ -45,11 +45,11 @@ from typehaus.model import m
 WATER_SUPPLY = [
     # A separate tap keeps the main basin's stop independent of the upstairs fixtures.
     PipeRun(uid="KV1KTD2P01", tag="PR-M-CW-BATH1-LAV", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(63), inch(318.75)), pt(inch(63), inch(319.5)),
-                  pt(inch(63), inch(319.5))),
+            path=(pt(inch(63), inch(318.75)), pt(inch(63), inch(316.5)),
+                  pt(inch(56), inch(316.5))),
             diameter=inch(0.5), material="pex",
-            elevations=(inch(24), inch(24), inch(30)),
-            serves=("FX-M-BATH1-LAV",), wall_ref="W-M-STOS"),
+            elevations=(inch(24), inch(24), inch(24)),
+            serves=("FX-M-BATH1-LAV",)),
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
             # ** THIS RUN DID NOT MOVE FOR THE 2026-09-10 NORTH ENTRY PIERS; THEY MOVED
             # AROUND IT. ** Every rerouting tried here traded one clash for another -- the
@@ -347,7 +347,7 @@ SUPPLY = [
                   pt(inch(48), inch(319.5))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(inch(88), inch(97.4375), inch(97.4375),
-                        inch(109.4375), inch(151.4375)),
+                        inch(109.4375), inch(136)),
             wall_refs=(None, None, None, "W-M-STOS"),
             serves=("FX-M-BATH1-LAV",)),
     # ** THE COLD RISER IS IN W-M-HS1 SINCE 2026-09-09, NOT STANDING IN THE ROOM. ** It came

@@ -127,7 +127,7 @@ SUPPLY_STOPS = [
     # Basin stops are 24" above main datum (136" above this basement list's datum).
     # Explicit elevations select the basin taps, not the shared riser's ceiling vertex.
     PipeAccessory(uid="0RA7PE7K5N", tag="PA-M-BATH1-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-M-CW-BATH1-LAV", position=pt(inch(63), inch(319.5)),
+                  pipe_ref="PR-M-CW-BATH1-LAV", position=pt(inch(56), inch(316.5)),
                   elevation=inch(136),
                   accessible=True, room="RM-M-BATH1",
                   model='1/2" quarter-turn basin stop, exposed below wall-mounted basin',

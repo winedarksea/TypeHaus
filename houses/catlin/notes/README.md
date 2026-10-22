@@ -118,6 +118,9 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `wood_supply.md` | the owner's log pile against `haus millwork`'s demand after the red-oak reassignment: the International 1/4" rule estimate, the species flags (ash and locust short, the sauna ~120 bf short), and what the sawyer's tally replaces |
 | `window_and_door_procurement.md` | the chosen window and door lines (Drutex Alucover, Andersen 400 for egress, Cascadia doors) read from the NFRC CPD, the comparison and what is still claimed; the performance spec (NAFS DP ≥ 20 psf, 16 CFR 1201), frame material by orientation, outie flange vs Euro strap, interior sweep coordination, and the egress derivation `code.R310_egress` now grades |
 
+Current powder-room fixture installation: [RM-M-BATH1 basin and solid blocking](main_bath1_basin_spec.md),
+including manufacturer drawings, fittings, fixing positions and coordinated service routes.
+
 ## Detail notes — drawing content, byte-pinned
 
 **Do not edit these as documentation.** Their prose renders onto the detail sheets and

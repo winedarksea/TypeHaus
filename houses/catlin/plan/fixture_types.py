@@ -219,7 +219,7 @@ BATH2_VANITY_48 = FixtureType(
 # sink base on 2026-10-21 to open its entry; its tall SEKTION unit retains lower drawers.
 
 # The attic guest bath retains the 24" shallow cabinet; the main powder room
-# now uses VERO_WALL_BASIN below to leave its entry open.
+# now uses DCODE_WALL_BASIN below to leave its entry open.
 VANITY_24_SHALLOW = _LIB_VANITY_24_SHALLOW.model_copy(update={
     "product_ref": "PROD-SWAN-CONTOUR",
     "source": 'Small-bath vanity, owner selection 2026-08-30. 24" x 18" carcass, 25" x 19" '
@@ -307,31 +307,33 @@ VANITY_36_SINGLE = _LIB_VANITY_30_SINGLE.model_copy(update={
 # no ``product_ref`` -- a fabricated top is not a purchased SKU.
 #
 # ** ORDER EVERY TOP DRILLED SINGLE-HOLE, IN WRITING. ** All eight lavatory faucets are
-# single-hole (Delta Arvo 15840LF-SP): one deck penetration instead of three, in the splash
+# single-hole (Delta Arvo generally; compact Duravit B.2 in the powder room): one deck penetration instead of three, in the splash
 # zone, cheaper in brushed nickel. Stock tops are drilled single-hole or 4" centerset at the
 # factory and 8" widespread is a special-order drilling -- and FIELD-drilling a cast top
 # chips it and voids its warranty. Swan Contour ships single-hole with 4"/8" knockouts you
 # simply never break out; plugging holes with a deck plate afterwards defeats the whole point.
 
-# Manufacturer overall size, including the glazed rim. The free floor below is
-# intentional; there is no vanity case or pedestal in this powder room.
-VERO_WALL_BASIN = FixtureType(
-    tag="FX-DURAVIT-VERO-070350", name="Vero shallow wall-mounted hand basin",
-    footprint=(inch(19.625), inch(9.875)), height=m(0.289225),
+# A real washing bowl replaces the 9 7/8"-projection Vero hand-rinse basin.
+# The drawing gives 145 mm china height; the shared symbol adds its 0.14 m faucet band.
+DCODE_WALL_BASIN = FixtureType(
+    tag="FX-DURAVIT-DCODE-070545", name="D-Code wall-mounted basin, 15 3/8 x 8 1/2 in. bowl",
+    footprint=(inch(17.75), inch(13.375)), height=m(0.285),
     plan_symbol="lavatory-wall-hung", basin=True,
-    mount=Mount(kind=MountKind.WALL, elevation=inch(30.125)),
-    product_ref="PROD-DURAVIT-0703500008",
+    mount=Mount(kind=MountKind.WALL, elevation=m(0.7186)),
+    product_ref="PROD-DURAVIT-07054500002",
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(front_zone(inch(19.625), inch(9.875), inch(30),
+    clearances=(front_zone(inch(17.75), inch(13.375), inch(30),
                            "lavatory front clearance"),),
-    source='Duravit US 0703500008 Vero, read 2026-10-21: wall-mounted, '
-           '19 5/8 x 9 7/8 x 5 7/8 in. china, one faucet hole on right, overflow. '
-           '36 in. design rim height; 41.5 in. overall symbol includes faucet. '
-           'https://pro.duravit.us/pro/content/homepage/series/series/overview/'
-           'products~402880943a1b6e1b013a1bd20b39003d.us-en.html?product=94259',
+    source='Duravit US D-Code 07054500002, read 2026-10-21: white, wall-mounted, '
+           '17 3/4 x 13 3/8 x 5 3/4 in. china; interior 15 3/8 x 8 1/2 in.; '
+           'one central faucet hole, overflow, glazed underside, cUPC listed. '
+           '34 in. rim above finished floor. Drawing 1266560: fixing holes 240 mm apart, '
+           '55 mm below rim. See notes/main_bath1_basin_spec.md for support and fittings. '
+           'https://pro.duravit.us/pro/html/default/402880943a1b6e1b013a1bd282eb0051.us-en.html'
+           '?ncat=washbasins&nser=7120&product=94764',
 )
 
-FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_48, VERO_WALL_BASIN,
+FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_48, DCODE_WALL_BASIN,
                  KITCHEN_SINK_32_SINGLE,
                  VANITY_24_SHALLOW, VANITY_30_SHALLOW, VANITY_30_SINGLE,
                  VANITY_36_SHALLOW, VANITY_36_SINGLE,

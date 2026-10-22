@@ -630,7 +630,7 @@ WALLS = [
          assembly="STAIRWELL_PARTITION_4H", base_elevation=inch(0.9862), top=inch(107.0138),
          interior_room="RM-M-LIVING"),
     Wall(uid="CMW119AAAA", tag="W-M-STOS", start_node="N-M-W1",
-         end_node="N-M-BA1", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-BA1", assembly="INT_2X4_BASIN_SUPPORT", top=ft(9)),
     Wall(uid="CMW120AAAA", tag="W-M-STOS2", start_node="N-M-BA1",
          end_node="N-M-STRJ", assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- powder bath west of hallway -------------------------------------------
@@ -1084,11 +1084,11 @@ OPENINGS = [
     # D-M-ENTRY above it, off the bearing stair wall's jack studs. Renamed with the room.
     Door(uid="CMD204AAAA", tag="D-M-MUD", host="W-M-STOS2", type_ref="DT-INT-SWING32",
          position=from_node("N-M-STRJ", inch(8)), flip_hinge=True),
-    # Keep the existing 30" modeled opening at y=276..306 while the north
-    # wall moves. The 13 1/2" offset is off-module, covered by its existing
-    # framing suppression. South-hinged outswing leaves the basin aisle open.
+    # Move the 30" outswing 2" south (y=274..304) for the deeper wall basin.
+    # The basin trims just 1/4" from the doorway's north end; its aisle is 32.365".
+    # South king remains clear of HS1's tee framing; station suppression retained.
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-BA1", inch(13.5))),
+         position=from_node("N-M-BA1", inch(15.5))),
     # RM-M-MECH's hinged utility door, not the mudroom closets' bypass style.
     # At 2'-1" (was 2'-9"): the 8" west move opens a 10 3/4" bay between the east king and
     # the end stud for the mudroom's 3-gang switch plate (plan/lighting.py). 2'-1" is also
