@@ -2269,6 +2269,11 @@
 "electric" = { material = { low = 1.9, high = 4.7 }, labour = { low = 1.5, high = 3.25 } }
 
 [placeables]
+# 2026-10-22: Moen shop YB0408BN $65.10, list $86.80, excluding tax/shipping.
+# https://shop.moen.com/products/yb0408ch?variant=49905631363382
+# Labour and pad/through-fastener costs are house installation allowances, not vendor quotes.
+"FT-MOEN-ALIGN-TP" = { material = { low = 65.10, high = 86.80 }, labour = { low = 20, high = 45 } }  # 6 ea
+"FT-TP-CABINET-BACKING-12" = { material = { low = 5, high = 12 }, labour = { low = 15, high = 35 } }  # 2 ea, includes bolts/washers/locking nuts
 # RESEARCHED 2026-08-08, LABOUR ADDED 2026-08-20, FX-* REPRICED 2026-08-21 — [low, high] $
 # each, unit price PLUS the labour to set and connect it. (Until 2026-08-20 this section was
 # the unit only, and this header still said so for a day after it stopped being true.) What

@@ -197,6 +197,7 @@ def canvas_objects(plan: PlanModel) -> list[dict[str, Any]]:
             objects.append({
                 "uid": item.uid, "tag": item.tag, "storey": storey.tag,
                 "kind": item.element_kind, "type": getattr(item, "type_ref", None),
+                "host_fixture_ref": getattr(item, "host_fixture_ref", None),
                 "domain": type_domains.get(getattr(item, "type_ref", ""),
                                            item.element_kind.lower()),
                 "room": getattr(item, "room", None),
@@ -235,6 +236,7 @@ def resolved_canvas_objects(
         # The authored mount, not just the z_m resolved from it: the inspector edits the height
         # someone wrote, and needs its units and kind (wall/ceiling) to say so.
         "mount": _mount(item.mount),
+        "host_fixture_ref": item.host_fixture_ref,
         # A hung body's cable and canopy (→ resolve/suspension.py), or null.
         "suspension": _suspension(item, luminaires.get(item.type_ref or "")),
         "attachment": ({"wall": item.attachment_wall, "face": item.attachment_face}
