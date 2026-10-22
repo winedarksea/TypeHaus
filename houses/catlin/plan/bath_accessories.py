@@ -1,6 +1,6 @@
 # haus: editable
 # Mount.elevation is above FINISHED floor; WallBacking.elevation is above wall framing base.
-# Holders are bare hardware. See notes/toilet_paper_holders.md for roll and pivot envelopes.
+# Bare hardware; tests reserve an 8.11 x 6 x 5.5 in. loaded envelope and 33.44 in. pivot top.
 
 from typehaus import Furniture, Location, Mount, MountKind, WallAttachment, deg, inch, pt
 

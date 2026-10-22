@@ -121,7 +121,6 @@ bar midpoint y=300.635″, 8″ ahead of the bowl front and 26″ AFF. `BK-M-BAT
 backs one post; the other fixes to the y=304″ stud. This replaces the unselected
 basin-side projecting bracket. **Do not drill the china or assume its mounting
 bolts accept an accessory bracket.** The holder is not a grab support.
-See [holder schedule and dimensioned reviews](toilet_paper_holders.md).
 
 ## Manufacturer references
 

@@ -5719,3 +5719,11 @@ Heatlok HFO Pro (ER-565) and EcoBay CC (ESR-3076 §4.5). Read against the report
   or ESR-2072.
 The selection stands. The spec's claim was always "only product meeting §1 and listing
 WRB", which still holds. Its wording now says so explicitly.
+
+## 2026-10-22 — Toilet-paper holder support
+
+Six Moen Align YB0408BN holders at 26″ AFF: four wall mounts with five SPF 2×6
+blocks, two vanity mounts with internal plywood pads. Toilets and plumbing stay put.
+Hall-bath shaft panel and its backing rise 12″, putting the panel base at 36″ AFF
+clear of the holder's pivot. Locations and installation details live in the plan configs;
+tests cover post support, clearances, routed services and source/IFC handoff.

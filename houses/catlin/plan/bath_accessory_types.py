@@ -28,6 +28,7 @@ CABINET_BACKING_PAD = FurnitureType(
     source="3/4 in. cabinet plywood inside the vanity side, covering both holder posts. "
            "Through-fasten both factory mounting plates with stainless machine screws "
            "sized to their holes, washers and locking nuts; trim length clear of storage. "
+           "Check the supplied template against hinge pockets, shelf positions and trap. "
            "Do not rely on screw withdrawal from the cabinet side or treat as grab support.",
 )
 
