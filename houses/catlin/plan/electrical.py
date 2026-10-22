@@ -2563,13 +2563,9 @@ NEC_FILL_SECOND = [
                          wall_ref="W-S-SBS", face="right", distance_from_start=inch(16.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
-# Same treatment for the attic's lofts. RM-A-EAST-UNFIN and RM-A-POCKET are STORAGE,
-# outside `_HABITABLE`, so 210.52 spacing is not evaluated for them. RM-A-STUDIO is a
-# habitable bedroom and takes full 210.52 spacing; only the pocket it was split from stayed
-# STORAGE. The room is already most of the way there — the east loft's ring and the study's
-# devices cover its long walls — and `electrical.receptacle_spacing` names the two gaps
-# that are left, both of them around the inside corner the bathroom cuts out of it at
-# (9.9', 17.7'). The three devices at the end of this list are those two gaps and the bath.
+# Storage lofts are outside habitable-room receptacle spacing. The studio and study
+# retain known-wall coverage, with their roof-to-floor rafter plates explicitly UNKNOWN
+# pending an electrical wall-space interpretation; see electrical_attic.py.
 ATTIC_ELEMENTS = [*PV_JBOX, *PV_JBOX_CLAMP, *ATTIC_DATA_DEVICES, *ATTIC_DATA_TRUNKS]
 BASEMENT_ELEMENTS = [*BACKUP_ENCLOSURE, *ESS_EQUIPMENT, *BASEMENT_DEVICES,
                      *BASEMENT_EQUIPMENT, *CONDUIT_TRUNKS, *DATA_HEAD_END, *DATA_TRUNKS,

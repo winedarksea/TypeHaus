@@ -16,11 +16,16 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   leaf width or clear passage. Define leaf/rough-opening sizing together with framing and
   clearance before changing these envelopes (`plans/default-door-appearance.md`).
 
-- **Record the attic floor-box assemblies and their floor-use listings.** The new
-  `code.E3905_7_floor_boxes` check verifies the living-room Arlington kit but reports
-  UNKNOWN for the eight existing attic floor receptacles whose types still describe
-  generic wall receptacles. Select their listed boxes and coordinate actual cavity
-  depths and framing; see `houses/catlin/plan/electrical_attic.py`.
+- **Select the attic equipment-service floor-box assembly.** `ED-A-POCKET-RC1` is
+  the sole remaining attic floor receptacle; `code.E3905_7_floor_boxes` reports UNKNOWN
+  because its generic receptacle type declares no floor-use listing. Select a listed
+  assembly and coordinate its depth and framing. The five inaccessible eave boxes were
+  removed and two gable boxes moved onto walls (`plan/electrical_attic.py`).
+- **Resolve the attic roof-to-floor electrical wall-space interpretation.** Studio and
+  study spacing remains explicitly UNKNOWN at their flat rafter plates. Known wall runs
+  are evaluated with those spans both included and excluded; usable floor area and a 5'
+  headroom cutoff do not determine electrical exemptions. Record the electrical
+  inspector's interpretation before claiming complete compliance.
 
 - **Review `SB-BW-BAND` connector layout before reducing its 24 KBS1Z.** Top-only ties
   would leave two of the four braced mid-band slats per bay untied

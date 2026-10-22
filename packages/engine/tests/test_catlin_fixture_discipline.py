@@ -52,7 +52,7 @@ _BUDGET: dict[str, tuple[int, str]] = {
         3, "needs the LoadResult's FINDINGS (loader.uneditable_movable_element), which "
            "catlin_plan discards"),
     "test_electrical_circuits.py": (
-        3, "each is the baseline a mutated device variant is built from, in a module whose "
+        2, "each is the baseline a mutated device variant is built from, in a module whose "
            "whole subject is what happens when a port or a cabinet is dropped"),
     "test_ifc_structural_enrichment.py": (
         2, "emits an IFC at a NON-default LOD with engineering enrichment; the shared "

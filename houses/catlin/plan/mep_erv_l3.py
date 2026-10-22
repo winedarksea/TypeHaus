@@ -109,8 +109,8 @@ EQUIPMENT_ERV_SECOND = [
 # from FS-S-WEST's trusses (DU-M-ERV-R-PLANT in DUCTS_ERV_LEVEL2), rising inside W-S-C1's
 # 5 1/2" cavity to a HIGH SIDEWALL grille at 8'-6" — still in the warm wet air at the top of
 # the room, so the stratification argument is unaffected; only the direction the boot
-# arrives from changed. ED-A-STUDIO-RC8/RC9 stay: the wall is in the 210.52 test on its own
-# merits whatever is or is not lying at its foot.
+# arrives from changed. The west-eave floor receptacles have since been removed;
+# electrical_attic.py records the rafter plate's unresolved electrical wall-space status.
 #
 # The remaining rejected alternative is unchanged: bore the FS-ATTIC I-joists and run
 # north-south in the bays. The hole chart permits it, but at x=1'-0" every hole would fall

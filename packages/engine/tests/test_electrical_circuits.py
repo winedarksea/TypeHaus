@@ -13,6 +13,7 @@ from typehaus.model import (BackupTier, Building, Circuit, DeviceKind, Electrica
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
 from _helpers import CATLIN as CATLIN_DIR
+from _electrical_helpers import room_plan as _room_plan
 
 
 def _plan(circuits=(), devices=(), types=()):
@@ -121,32 +122,6 @@ def test_service_entrance_device_kinds_get_dedicated_ifc_classes(tmp_path: Path)
     report = build_report(baseline_elems(model), external_elems(tmp_path / "kinds.ifc"))
     assert not report.substantive(), [
         (change.kind, change.tag) for change in report.substantive()]
-
-
-def _room_plan(project, devices=()):
-    """A 20'x14' LIVING room with four walls — the receptacle-spacing fixture."""
-    from typehaus.model import (Assembly, FramingSpec, Layer, LayerFunction, Material, Node,
-                                Occupancy, Room, Wall, ft, inch)
-
-    lib = Library(
-        materials=(Material(tag="spf", name="SPF", r_per_inch=1.25),
-                   Material(tag="gwb", name="GWB", r_per_inch=0.9)),
-        assemblies=(Assembly(tag="EXT", layers=(
-            Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-                  function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),),
-            default_lining=(Layer(name="gwb", material_ref="gwb", thickness=inch(0.625),
-                                  function=LayerFunction.FINISH),)),),
-    )
-    storey = Storey(uid="ST00000001", tag="s1", elevation=ft(0), default_ceiling_height=ft(9))
-    nodes = [Node(uid=f"N{i:09d}", tag=f"N-{i}", position=p) for i, p in enumerate(
-        [pt(ft(0), ft(0)), pt(ft(20), ft(0)), pt(ft(20), ft(14)), pt(ft(0), ft(14))], 1)]
-    walls = [Wall(uid=f"W{i:09d}", tag=f"W-{i}", start_node=f"N-{a}", end_node=f"N-{b}",
-                  assembly="EXT", top=ft(9))
-             for i, (a, b) in enumerate([(1, 2), (2, 3), (3, 4), (4, 1)], 1)]
-    room = Room(uid="RM00000001", tag="RM-1", seed=pt(ft(10), ft(7)),
-                occupancy=Occupancy.LIVING)
-    return (PlanModel(project=project, library=lib, storeys=(storey,))
-            .with_elements("s1", [*nodes, *walls, room, *devices]))
 
 
 def _spacing_findings(plan):
@@ -323,24 +298,23 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
 _ACCEPTED_SPACING_GAPS: set[tuple[str, str]] = set()
 
 
-def test_catlin_receptacle_spacing_passes_after_fill(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY,
+def test_catlin_receptacle_spacing_separates_known_coverage_and_eave_review(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
                             only="electrical.receptacle_spacing")
     findings = [f for f in report.findings if f.check_id == "electrical.receptacle_spacing"]
     fails = [f for f in findings if f.result.value == "fail"
              and (f.check_id, *f.element_tags) not in _ACCEPTED_SPACING_GAPS]
     assert not fails, [f.message for f in fails]
     passes = [f for f in findings if f.result.value == "pass"]
-    # 12, including RM-A-STUDIO. The west attic loft was STORAGE and outside
-    # `_HABITABLE`, so 210.52 spacing was not evaluated for it at all; as a guest BEDROOM it
-    # is, and seven new receptacles (plan/electrical.py) are what close the gaps the check
-    # named. RM-A-EAST-UNFIN and RM-A-POCKET are still storage and still not counted.
-    # Back to 12, 2026-09-09: RM-B-GYM's gap (accepted 2026-09-07 while D-B-GYM was a
-    # door) closed on its own when the door retyped to a bare rough opening — see
-    # `_ACCEPTED_SPACING_GAPS` above.
-    assert len(passes) == 12
-    # The kitchen-counter rule stays visibly unevaluated.
-    assert any(f.result.value == "unknown" for f in findings)
+    assert len(passes) == 10
+    unknown_rooms = {f.element_tags[0]: f for f in findings
+                     if f.result.value == "unknown" and f.element_tags}
+    assert set(unknown_rooms) == {"RM-A-STUDIO", "RM-A-STUDY"}
+    for finding in unknown_rooms.values():
+        assert "rafter plate" in finding.message
+        assert "both included and excluded" in finding.message
+        assert len(finding.element_tags) > 1
+    assert any(f.result.value == "unknown" and not f.element_tags for f in findings)
 
 
 def test_catlin_circuit_refs_reconcile(catlin_model):
@@ -871,32 +845,6 @@ def _room_result(model, room_tag: str) -> str:
                    if f.check_id == "electrical.receptacle_spacing"
                    and f.element_tags == (room_tag,))
     return finding.result.value
-
-
-def test_wall_space_is_not_traced_across_a_stair_well():
-    """210.52(A)(2) measures "along the floor line", and a stair well is where the floor line
-    stops. The only way to satisfy the 6' rule on the strip of wall a well runs up against is
-    to hang a box over the drop, so the well breaks the measurement the way a doorway does —
-    and, once it does, a receptacle already sitting on that strip stops counting.
-
-    FO-A-STAIR takes the north 3'-0" of RM-A-STUDY, leaving 6 5/8" of deck against the east
-    wall. ED-A-STUDY-RC2 was authored on exactly that strip; moved south of the well it both
-    becomes reachable and is what closes the run from RC3 round the southeast corner, so
-    putting it back is the room's only failure.
-    """
-    plan = load_plan(CATLIN_DIR).plan
-    model, _ = resolve(plan)
-    assert _room_result(model, "RM-A-STUDY") == "pass"
-
-    ledge = pt(m(35.83 * 0.3048), m(8.28 * 0.3048))  # a stranded spot off the strip
-    stranded = tuple(
-        element.model_copy(update={"position": ledge})
-        if getattr(element, "tag", None) == "ED-A-STUDY-RC2" else element
-        for element in plan.storey_elements("attic"))
-    plan = plan.model_copy(update={"elements": {**plan.elements, "attic": stranded}})
-    model, _ = resolve(plan)
-
-    assert _room_result(model, "RM-A-STUDY") == "fail"
 
 
 def test_a_combination_receptacle_counts_by_its_125v_half():

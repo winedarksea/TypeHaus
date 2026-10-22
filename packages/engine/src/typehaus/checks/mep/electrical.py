@@ -6,6 +6,10 @@ from typehaus.checks._authoring import advisory
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
+from typehaus.checks.mep.electrical_wall_space import (
+    definite_coverage_gaps,
+    uncertain_wall_space,
+)
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
@@ -83,8 +87,6 @@ _RECEPTACLE_KINDS = {"receptacle", "gfci"}  # the 125V 15/20A devices 210.52 cou
 # like any other. (This is the DeviceKind precedent: the kind stays flat, the type
 # differentiates.)
 _COMBINATION_RECEPTACLE_KIND = "receptacle_240"
-_MAX_TO_RECEPTACLE_M = 6 * 0.3048  # no point along the wall line > 6' from a receptacle
-_MIN_WALL_SPACE_M = 2 * 0.3048  # wall spaces under 2' are exempt
 _NEAR_WALL_M = room_perimeter.NEAR_WALL_M  # how close a device must sit to serve the wall
 _FLOOR_RECEPTACLE_WALL_REACH_M = 18 * 0.0254  # E3901.2.3 / NEC 210.52(A)(3)
 _RECEPTACLE_DISTANCE_TOLERANCE_M = 1e-9  # Include exact limits after polygon projection.
@@ -146,27 +148,6 @@ def _fixed_cabinet_intervals(ctx: CheckContext, ring: list,
         ctx.model, ctx.plan, ring, storey_tag, lambda t: t.work_surface is False)
 
 
-def _coverage_gaps(space: tuple[float, float], positions: list[float]) -> list[float]:
-    """Perimeter coordinates of points in a linear wall space > 6' from any receptacle."""
-    a, b = space
-    inside = sorted(p for p in positions if a - 0.05 <= p <= b + 0.05)
-    if not inside:
-        # A qualifying wall space with no receptacle at all always fails: 210.52(A)(1)
-        # counts only receptacles within the space (doorways break the measurement).
-        return [(a + b) / 2.0]
-    gaps = []
-    if inside[0] - a > _MAX_TO_RECEPTACLE_M:
-        gaps.append(a)
-    # strict=False: the offset-by-one pairwise walk is deliberately ragged — `inside[1:]`
-    # is always exactly one shorter, so strict=True would raise on every call.
-    for left, right in zip(inside, inside[1:], strict=False):
-        if right - left > 2 * _MAX_TO_RECEPTACLE_M:
-            gaps.append((left + right) / 2.0)
-    if b - inside[-1] > _MAX_TO_RECEPTACLE_M:
-        gaps.append(b)
-    return gaps
-
-
 @check(Tier.ADVISORY, "electrical.receptacle_spacing")
 def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
     """NEC 210.52(A)-style 6' rule along every habitable room's wall line (advisory).
@@ -175,7 +156,8 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
     ``clear_face`` ring is unrolled into an arc-length coordinate (so corners measure
     correctly), doorways, floor openings and counterless fixed cabinets break it into wall
     spaces, spaces under 2' are exempt, and every remaining point must be within 6' of a
-    receptacle projected onto the boundary.
+    receptacle projected onto the boundary. Roof-to-floor plate boundaries are evaluated
+    both as wall space and as breaks, with their interpretation explicitly UNKNOWN.
     The kitchen-counter rule (210.52(C)) is not evaluated — counters are casework, not
     resolved geometry — and reports UNKNOWN so the gap stays visible.
     """
@@ -195,11 +177,10 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
             continue
         ring = [tuple(point) for point in room.clear_face]
         if len(ring) < 3:
+            out.append(_unknown(cid, f"room {room.tag}: boundary geometry is unresolved",
+                                (room.tag,)))
             continue
-        perimeter = sum(
-            ((ring[(i + 1) % len(ring)][0] - ring[i][0]) ** 2
-             + (ring[(i + 1) % len(ring)][1] - ring[i][1]) ** 2) ** 0.5
-            for i in range(len(ring)))
+        perimeter = room_perimeter.perimeter_length(ring)
         positions = []
         for device in devices_by_storey.get(room.storey, []):
             if not _counts_as_a_125v_receptacle(ctx, device):
@@ -212,38 +193,23 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
         breaks = (_door_intervals(ctx, ring, room.storey)
                   + _floor_opening_intervals(ctx, ring, room.storey)
                   + _fixed_cabinet_intervals(ctx, ring, room.storey))
-        doors = _merged_intervals(breaks, perimeter)
-        # Wall spaces: the perimeter minus the spans that break it. A room with no break at
-        # all is one circular space, where coverage means the largest receptacle-to-receptacle
-        # arc.
-        gaps: list[float] = []
-        if not doors:
-            if not positions:
-                gaps.append(0.0)
-            else:
-                ordered = sorted(positions)
-                # strict=True: the wrap-around tail restores the length, so both sides are
-                # len(ordered) by construction — a mismatch would mean that stopped holding.
-                for left, right in zip(ordered, ordered[1:] + [ordered[0] + perimeter],
-                                       strict=True):
-                    if right - left > 2 * _MAX_TO_RECEPTACLE_M:
-                        gaps.append(((left + right) / 2.0) % perimeter)
-        else:
-            spaces = []
-            for index, (_a, b) in enumerate(doors):
-                next_a = doors[index + 1][0] if index + 1 < len(doors) else doors[0][0] + perimeter
-                if next_a - b >= _MIN_WALL_SPACE_M:
-                    spaces.append((b, next_a))
-            for space in spaces:
-                wrapped = [p + perimeter if p < space[0] - 0.05 else p for p in positions]
-                gaps.extend(g % perimeter for g in _coverage_gaps(space, wrapped))
+        uncertainty = uncertain_wall_space(ctx.model, room, ring)
+        gaps = definite_coverage_gaps(perimeter, positions, breaks, uncertainty.intervals)
         if gaps:
-            worst = _point_at(ring, gaps[0])
+            worst = _point_at(ring, sum(gaps[0]) / 2.0)
             out.append(_warn_fail(
                 cid, f"room {room.tag}: wall space > 6' from a receptacle near "
                      f"({worst[0] / 0.3048:.1f}', {worst[1] / 0.3048:.1f}') "
                      f"[{len(gaps)} gap(s)]", (room.tag,)))
-        else:
+        if uncertainty.intervals:
+            hosts = ", ".join(uncertainty.hosts) or "unresolved boundary"
+            reasons = "; ".join(uncertainty.reasons)
+            out.append(_unknown(
+                cid, f"room {room.tag}: {reasons} ({hosts}); "
+                     "spacing evaluated with these spans both included and excluded; "
+                     "complete compliance is unresolved",
+                (room.tag, *uncertainty.hosts)))
+        elif not gaps:
             out.append(_pass(cid, f"room {room.tag} meets the 6' receptacle rule",
                              (room.tag,)))
     out.append(_unknown(cid, "kitchen counter rule (210.52(C)) not evaluated — counter "
