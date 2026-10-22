@@ -11,11 +11,12 @@ MATERIALS_FLOORING = [
     Material(tag="catlin-plant-vinyl-raised", name="Plant-room sheet vinyl over SurePly",
              hatch="membrane", color="#f2ede6", finish="veined-marble",
              finish_thickness_in=0.370, floor_waste_fraction=0.12,
-             floor_companion_refs=("catlin-plant-sureply",), base_detail="integral_cove",
+             floor_companion_refs=("catlin-plant-sureply",), base_detail="resilient_base",
              source='Tarkett First Class 0.120" fully adhered sheet over one nominal '
                     '1/4" SurePly resilient-flooring underlayment panel. The combined '
-                    'height is provisional until the installed stack is measured; '
-                    'Tarkett must approve flash coving and 70% design RH in writing.'),
+                    'height is provisional until the installed stack is measured. '
+                    'Perimeter: 4" Johnsonite rubber cove base, silicone at its toe '
+                    '(owner 2026-10-22, no flash cove; notes/plant_room.md).'),
     Material(tag="catlin-plant-sureply", name='SurePly plywood underlayment, nominal 1/4"',
              hatch="lumber", color="#d5c4a6",
              source="Patriot Timber SurePly, nominal 1/4 in, exterior-glue, "

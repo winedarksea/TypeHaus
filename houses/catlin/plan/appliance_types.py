@@ -29,11 +29,8 @@ The cold storage is Frigidaire rather than LG (owner) and the reason is the bay,
 badge: LG's only all-freezer is a 23 7/16" column, which would have left 12 9/16" of hole
 in a 72" run built for two 36" boxes. See the pair's own note below.
 
-What is deliberately NOT here: ``APPL-HOOD-RECIRC`` and ``APPL-DISPOSAL``. LG builds no
-standalone recirculating canopy hood for the US market (its ductless path is an
-over-the-range microwave, which this kitchen has no cabinet for — see the 5'-6" canopy in
-``plan/placeables.py``), and builds no food-waste disposer at all. Both stay generic
-allowances, which is the honest state of an unmade decision.
+LG builds no standalone recirculating hood for the US market and no food-waste disposer, so
+those two are Broan and InSinkErator (owner 2026-10-22).
 """
 
 from __future__ import annotations
@@ -41,7 +38,9 @@ from __future__ import annotations
 from typehaus.model import ApplianceType, Service, ServicePort, ft, inch
 
 from library.placeables import front_zone
-from library.placeables.appliances import BAR_REFRIGERATOR_24, BAR_REFRIGERATOR_CUBE_19
+from library.placeables.appliances import (
+    BAR_REFRIGERATOR_24, BAR_REFRIGERATOR_CUBE_19, DISPOSAL, HOOD_RECIRC,
+)
 
 # --- laundry ---------------------------------------------------------------------------
 #
@@ -302,6 +301,26 @@ BAR_REFRIGERATOR = BAR_REFRIGERATOR_24
 BAR_REFRIGERATOR_CUBE = BAR_REFRIGERATOR_CUBE_19
 
 
-APPLIANCE_TYPES = (LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER,
+# --- the hood and the disposer (owner 2026-10-22) ---------------------------------------
+# The hood keeps the class's 30" x 20" x 18" canopy envelope; the chimney cover above it is
+# not modelled. The disposer's 11 1/2" body hangs from the same sink flange as the 12 1/2"
+# class did, so its placement rises 1" (plan/kitchen_casework.py).
+BROAN_HOOD_30 = HOOD_RECIRC.model_copy(update={
+    "tag": "APPL-BROAN-BWP1304SS", "name": 'Broan BWP1304SS 30" chimney hood, ductless kit',
+    "product_ref": "PROD-BROAN-BWP1304SS",
+    "source": "Broan BWP1304SS with the ARKBWP non-duct kit (plan/products.py).",
+})
+BADGER_5 = DISPOSAL.model_copy(update={
+    "tag": "APPL-ISE-BADGER5", "name": "InSinkErator Badger 5 disposer, 1/2 HP",
+    "footprint": (inch(6.3125), inch(6.3125)), "height": inch(11.5),
+    "ports": (ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
+              ServicePort(tag="drain", service=Service.DRAIN,
+                          position=(ft(0), ft(0), inch(11.5)))),
+    "product_ref": "PROD-ISE-BADGER5",
+    "source": "InSinkErator Badger 5 spec sheet: 11 1/2 in. overall, 6 5/16 in. body.",
+})
+
+
+APPLIANCE_TYPES = (LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER, BROAN_HOOD_30, BADGER_5,
                    FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
                    BAR_REFRIGERATOR, BAR_REFRIGERATOR_CUBE)

@@ -17,6 +17,7 @@ MOVED = {
     "ED-A-STUDIO-RC1": ("923GJB648D", "W-A-S1", "left", 72, 6),
     "ED-A-STUDIO-RC7": ("NZQNA1VMKW", "W-A-STU-N", "right", 72, 6),
     "ED-A-STUDY-RC1": ("NEC056AAAA", "W-A-S3", "left", 144, 30),
+    "ED-A-POCKET-RC1": ("E6RNBJBD76", "W-A-BA-E", "right", 36, 9.71875),
 }
 
 
@@ -48,8 +49,7 @@ def test_attic_boxes_move_to_walls_without_changing_identity_or_protection(catli
     assert devices["ED-A-STUDIO-RC7"].kind.value == "gfci"
     assert devices["ED-A-STUDIO-RC7"].type_ref == "ED-T-RECEPTACLE-GFCI"
     floor_boxes = [d.tag for d in devices.values() if d.mount and d.mount.kind.value == "floor"]
-    assert floor_boxes == ["ED-A-POCKET-RC1"]
-    assert objects["ED-A-POCKET-RC1"].position == pytest.approx((8.5 * .3048, 33 * .3048))
+    assert floor_boxes == []
 
 
 def test_attic_drawing_and_schedules_follow_the_authored_layout(catlin_model_ro):
@@ -58,7 +58,7 @@ def test_attic_drawing_and_schedules_follow_the_authored_layout(catlin_model_ro)
               if isinstance(node, Text)]
     assert all(tag.removeprefix("ED-") not in labels for tag in REMOVED)
     assert all(tag.removeprefix("ED-") in labels for tag in MOVED)
-    assert sum(label.startswith("FLOOR BOX /") for label in labels) == 1
+    assert not any(label.startswith("FLOOR BOX /") for label in labels)
     circuit = next(row for row in panel_schedule(model) if row["circuit"] == "CKT-RC-ATTIC")
     assert REMOVED.isdisjoint(circuit["devices"])
     assert set(MOVED) <= set(circuit["devices"])
@@ -68,13 +68,11 @@ def test_attic_drawing_and_schedules_follow_the_authored_layout(catlin_model_ro)
     assert set(MOVED) <= takeoff_tags
 
 
-def test_attic_protection_and_the_remaining_floor_listing_are_honest(catlin_model_ro):
+def test_attic_protection_holds_and_no_attic_floor_box_remains(catlin_model_ro):
     checks = ("electrical.circuit_refs", "code.E3902_16_afci", "code.E3902_gfci_locations",
               "code.E3905_7_floor_boxes")
     findings = run_from_model(catlin_model_ro, [], only=checks).findings
     assert not [f.message for f in findings if f.result.value == "fail"]
     attic_floor_findings = [f for f in findings if f.check_id == "code.E3905_7_floor_boxes"
                            and any(tag.startswith("ED-A-") for tag in f.element_tags)]
-    assert len(attic_floor_findings) == 1
-    assert attic_floor_findings[0].element_tags == ("ED-A-POCKET-RC1",)
-    assert attic_floor_findings[0].result.value == "unknown"
+    assert attic_floor_findings == []

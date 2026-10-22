@@ -37,8 +37,10 @@ _MEETS_M = 1e-9
 _FROM_FLOOR_M = 0.01
 # A finished piece shorter than this is corner noise, not a board anyone would cut.
 _MIN_PIECE_M = 2 * 0.0254
-# How far a non-board base stands off the face: porcelain + thinset; a 120-mil sheet.
-_SKIN_M = {"tile": 0.375 * 0.0254, "integral_cove": 0.125 * 0.0254}
+# How far a non-board base stands off the face: porcelain + thinset; a 120-mil sheet; a
+# 1/8" rubber cove base.
+_SKIN_M = {"tile": 0.375 * 0.0254, "integral_cove": 0.125 * 0.0254,
+           "resilient_base": 0.125 * 0.0254}
 
 
 def resolve_base_runs(plan, model: ResolvedModel, scope: TrimScope) -> None:

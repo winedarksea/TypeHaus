@@ -15,7 +15,7 @@ from typehaus.model.placeable_symbols import (
 )
 from typehaus.model.placeable_symbols._frame import (
     DEPTH_CYLINDER_SEGMENTS,
-    MIRROR_SURFACE_PROPERTIES,
+    PART_SURFACE_PROPERTIES,
 )
 from typehaus.model.placeables import PlacementStrategy
 from typehaus.model.plan import PlanModel
@@ -88,7 +88,7 @@ def _wood_part(role: str, wood: Any | None) -> dict[str, Any]:
         return {"color": wood.color[:7], "material_ref": wood.tag}
     opacity = PART_COLORS[role][3]
     return {"color": part_hex(role), **({"opacity": opacity} if opacity < 1 else {}),
-            **(MIRROR_SURFACE_PROPERTIES if role == "mirror" else {})}
+            **PART_SURFACE_PROPERTIES.get(role, {})}
 
 
 def model_symbol_for(item: Any) -> str | None:

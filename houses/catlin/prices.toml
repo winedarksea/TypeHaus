@@ -2272,6 +2272,16 @@
 # 2026-10-22: Moen shop YB0408BN $65.10, list $86.80, excluding tax/shipping.
 # https://shop.moen.com/products/yb0408ch?variant=49905631363382
 # Labour and pad/through-fastener costs are house installation allowances, not vendor quotes.
+# Towel hardware, Moen US shop prices read 2026-10-22, excluding tax/shipping.
+# https://shop.moen.com/products/yb0486ch?variant=47989496480054 ($52.46 / list $69.95)
+# https://shop.moen.com/products/yb0424ch?variant=52521639608630 ($77.85 / list $103.80)
+# Hook range: Menards YB0403BN $35.51, FW Webb YB0403BN $43.58, before tax/shipping.
+# https://www.menards.com/main/p-1444427964123.htm
+# https://www.fwwebb.com/product/Moen/Align-Robe-Hook/YB0403BN/519432
+"FT-MOEN-ALIGN-HAND-TOWEL" = { material = { low = 52.46, high = 69.95 }, labour = { low = 20, high = 45 } } # 8 ea
+"FT-MOEN-ALIGN-BATH-TOWEL" = { material = { low = 77.85, high = 103.80 }, labour = { low = 20, high = 45 } } # 3 ea
+"FT-MOEN-ALIGN-TOWEL-HOOK" = { material = { low = 35.51, high = 43.58 }, labour = { low = 15, high = 30 } } # 2 ea
+"FT-TOWEL-CABINET-BACKING-12" = { material = { low = 5, high = 12 }, labour = { low = 15, high = 35 } } # 3 ea; installation allowances, includes through-fasteners
 "FT-MOEN-ALIGN-TP" = { material = { low = 65.10, high = 86.80 }, labour = { low = 20, high = 45 } }  # 6 ea
 "FT-TP-CABINET-BACKING-12" = { material = { low = 5, high = 12 }, labour = { low = 15, high = 35 } }  # 2 ea, includes bolts/washers/locking nuts
 # RESEARCHED 2026-08-08, LABOUR ADDED 2026-08-20, FX-* REPRICED 2026-08-21 — [low, high] $
@@ -2379,11 +2389,11 @@
 # generic rows they replaced are DELETED rather than commented, because a priced row for a
 # type no instance references is a line nobody can reconcile against the BOM.
 #
-# What is still an allowance, and correctly so: the disposer and the recirculating hood.
-# Neither is chosen, and LG makes neither (no US standalone recirc canopy hood, no disposer
-# at all), so both keep the category spread.
-"APPL-DISPOSAL" = { material = { low = 90, high = 300 }, labour = { low = 0, high = 0 } }  # 1 ea
-"APPL-HOOD-RECIRC" = { material = { low = 150, high = 600 }, labour = { low = 100, high = 300 } }  # 1 ea
+# The disposer and hood are named (2026-10-22: InSinkErator Badger 5, Broan BWP1304SS +
+# ARKBWP kit; one US listing showed the hood at $454) but not yet priced, so both keep the
+# category spread. The Evolution Excel upgrade would sit above this disposer row.
+"APPL-ISE-BADGER5" = { material = { low = 90, high = 300 }, labour = { low = 0, high = 0 } }  # 1 ea
+"APPL-BROAN-BWP1304SS" = { material = { low = 150, high = 600 }, labour = { low = 100, high = 300 } }  # 1 ea
 # Named LG products, priced 2026-08-24 off LG.com plus the retailer checks in the research
 # note. Low is the observed street/promo price, high is LG's own MSRP — the honest spread
 # on an appliance nobody buys at list and nobody is guaranteed the promo on. Labour is
@@ -3555,11 +3565,10 @@
 "catlin-ditra-heat" = { material = { low = 5, high = 7 }, labour = { low = 0, high = 0.75 } }
 # The shared sheet serves RM-A-STUBATH, RM-A-STUDIO and RM-B-BATH. RM-S-PLANT has a
 # separate finish row so its SurePly companion is billed only in that room.
-# Plant-room flash-cove compatibility for the selected Tarkett First Class sheet is
-# unresolved (plans/TODO.md); the coved labour allowance is provisional.
-# Re-price the plant row against the approved sheet and doorway detail before buying.
+# RM-S-PLANT takes a set-on rubber base, not a flash cove (2026-10-22); re-price the
+# plant row against the doorway detail before buying.
 "vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }
-"catlin-plant-vinyl-raised" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # cove and doorway scope provisional
+"catlin-plant-vinyl-raised" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # doorway scope provisional
 "catlin-plant-sureply" = { material = { low = 0.65, high = 1.5 }, labour = { low = 0.75, high = 1.5 } }  # provisional plywood panel allowance; confirm with SurePly quote
 # ** TOMBSTONE: `walnut-floor`, rated and retired 2026-09-05. ** For a few hours RM-S-SUITE
 # and RM-S-CLOSET were 181.7 SF net of the family's own site-milled 4/4 walnut T&G, rated
@@ -5304,6 +5313,8 @@
 "tile-base" = { material = { low = 2, high = 5 }, labour = { low = 8, high = 14 } }
 # Sheet-vinyl rooms flash the sheet up the wall on a cove stick with a cap strip.
 "flash-cove" = { material = { low = 1.5, high = 3 }, labour = { low = 6, high = 12 } }
+# RM-S-PLANT: 4" Johnsonite rubber cove base, adhered, silicone bead at the toe. Allowance.
+"resilient-base" = { material = { low = 1.5, high = 3.5 }, labour = { low = 2, high = 4 } }
 
 [stair_treads]
 # Four complete 36 x 11 in tread assemblies, two square-edge boards each, 0.94 in stock.
@@ -7118,7 +7129,7 @@ site-scaffolding-and-lift-rental = { low = 3000, high = 8000 }
 # written against a house that has since changed under it:
 #   dryer  — there is no dryer vent. The laundry is a VENTLESS heat-pump WashTower
 #            (plan/appliance_types.py, APPL-WASHTOWER), which has no exterior penetration.
-#   range  — the hood RECIRCULATES (APPL-HOOD-RECIRC, induction range). No wall cap, no duct.
+#   range  — the hood RECIRCULATES (APPL-BROAN-BWP1304SS, induction range). No wall cap, no duct.
 #   HRV    — the two ERV wall hoods are modelled and priced: EQ-T-ERV-HOOD-6, 2 ea in
 #            [placeables] at $175-415 each. Buying "the HRV hood" here bills them twice.
 # What is left is the FLASHING AND AIR-SEALING RESIDUAL at the penetrations that do exist —
@@ -7218,7 +7229,7 @@ electrical-structured-low-voltage-drops = { low = 200, high = 450, unit = "ea", 
 # ** RE-SCOPED 2026-08-30, renamed from `hvac-range-hood-and-makeup-air`. There is no makeup
 # air to buy and the hood is already bought. ** The old comment — "MN code makeup air follows
 # the hood" — is true and does not apply: makeup air is triggered by a DUCTED exhaust hood, and
-# this kitchen has an induction range under APPL-HOOD-RECIRC, a RECIRCULATING hood
+# this kitchen has an induction range under APPL-BROAN-BWP1304SS, a RECIRCULATING hood
 # (plan/appliance_types.py). Nothing is exhausted, so nothing has to be made up. The hood
 # itself is priced 1 ea in [placeables] at $250-900.
 # What genuinely is not priced anywhere is the recirculating hood's consumable: the charcoal

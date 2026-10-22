@@ -2,9 +2,11 @@
 
 The ``room_perimeter_lf`` a trim lump was always waiting for. One row per (kind, room,
 material). ``kind`` is ``baseboard`` / ``door casing`` for boards, ``tile base`` /
-``flash cove`` for a base the floor trade makes from the floor itself.
+``flash cove`` for a base the floor trade makes from the floor itself, ``resilient base`` for
+a set-on rubber cove base.
 
-``item`` is the price key: the board's stock tag for a board, ``tile-base`` / ``flash-cove``
+``item`` is the price key: the board's stock tag for a board, ``tile-base`` / ``flash-cove`` /
+``resilient-base``
 otherwise, since those are billed by the trade per LF whatever the floor is. ``material``
 stays the true material. A custom-milled board is listed again as rough stock in
 ``hardwood`` (``haus millwork``), which is an unpriced view, so nothing bills twice.
@@ -17,8 +19,9 @@ from collections import defaultdict
 from typehaus.resolve.model import ResolvedModel
 
 _FT = 0.3048
-_KIND = {"trim": "baseboard", "tile": "tile base", "integral_cove": "flash cove"}
-_ITEM = {"tile": "tile-base", "integral_cove": "flash-cove"}
+_KIND = {"trim": "baseboard", "tile": "tile base", "integral_cove": "flash cove",
+         "resilient_base": "resilient base"}
+_ITEM = {"tile": "tile-base", "integral_cove": "flash-cove", "resilient_base": "resilient-base"}
 
 
 def interior_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

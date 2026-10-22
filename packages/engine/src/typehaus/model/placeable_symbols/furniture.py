@@ -76,6 +76,7 @@ from typehaus.model.placeable_symbols._sektion_tall import (
 )
 from typehaus.model.placeable_symbols._sit_stand_desk import sit_stand_desk
 from typehaus.model.placeable_symbols._slat_partition import slat_partition
+from typehaus.model.placeable_symbols._towel_hardware import towel_bar, towel_hook
 from typehaus.model.placeable_symbols._wardrobe import (
                                                         DOUBLE_HANG_INTERIOR,
                                                         DRESS_INTERIOR,
@@ -101,6 +102,8 @@ CABINET_SINGLE_DOOR_MAX_WIDTH_M = inch(24).meters
 
 FURNITURE_SYMBOLS: dict[str, Builder] = {
     "pivoting-paper-holder": pivoting_paper_holder,
+    "towel-bar": towel_bar,
+    "towel-hook": towel_hook,
     "footrest": footrest,
     "curtain-rod": curtain_rod,
     "cellular-blind": cellular_blind,

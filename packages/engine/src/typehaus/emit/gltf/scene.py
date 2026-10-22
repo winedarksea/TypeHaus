@@ -14,7 +14,7 @@ from typehaus.emit.gltf.buffers import (
 )
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.trades import TRADES
-from typehaus.model.placeable_symbols._frame import MIRROR_SURFACE_PROPERTIES, PART_COLORS
+from typehaus.model.placeable_symbols._frame import PART_COLORS, PART_SURFACE_PROPERTIES
 
 # The selection-kind vocabulary the UI honours — mirrors ``SelectionKind`` in
 # ui/src/state/store.ts and the ``kind`` accepted by Panel3D.wholeHouseGlbAssignment. Held as
@@ -59,11 +59,12 @@ class _SceneBuilder:
             self._material_index[key] = index
             translucent = color[3] < 1.0
             # Generated parts are bucketed by palette colour throughout the exporter.
-            # Preserve the mirror role's polished finish instead of the massing default.
-            mirror = color == PART_COLORS["mirror"]
+            # Selected metal and mirror finishes share the viewer's surface properties.
+            properties = next((value for role, value in PART_SURFACE_PROPERTIES.items()
+                               if color == PART_COLORS[role]), None)
             roughness, metalness = surface or (
-                (MIRROR_SURFACE_PROPERTIES["roughness"], MIRROR_SURFACE_PROPERTIES["metalness"])
-                if mirror else (0.9, 0.0))
+                (properties["roughness"], properties["metalness"])
+                if properties else (0.9, 0.0))
             self._materials.append({
                 # A name gives Revit/SketchUp's material browser something other than an
                 # anonymous "Material_0" to show — cosmetic, but it is what a human continuing

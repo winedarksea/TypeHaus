@@ -31,7 +31,9 @@ from params import (breezeway, driveway, entry_band_brace, foundations, hp1_nort
                     second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, bath1_storage,
+                  decking_selection,
                   bath_accessories, bath_accessory_types, backing_bath_accessories,
+                  towel_accessories, towel_accessory_types, backing_towel_accessories,
                   bath1_storage_types, bedroom_wardrobe_types, study_nook, study_nook_types,
                   bed_desk, bed_desk_types, bed_frame_types, bed_reading_corner,
                   bed_reading_corner_types,
@@ -57,12 +59,14 @@ requires_engine = ">=0.1,<0.2"
 PROJECT_UUID = uuid.UUID("c471a000-93b5-4e6e-8f5a-000000000002")
 
 _library = Library(
-    materials=(*assemblies.MATERIALS, *plant_types.FOLIAGE_MATERIALS),
+    materials=(*decking_selection.with_selected_decking(assemblies.MATERIALS),
+               *plant_types.FOLIAGE_MATERIALS),
     assemblies=tuple(assemblies.ASSEMBLIES),
     # Brand and model for the products this house has actually chosen — identity only,
     # never a price (#28). The types above point at these by ``product_ref``.
     products=(*products.PRODUCTS, *bed_frame_types.BED_FRAME_PRODUCTS,
-              *opening_products.OPENING_PRODUCTS, *bath_accessory_types.BATH_ACCESSORY_PRODUCTS),
+              *opening_products.OPENING_PRODUCTS, *bath_accessory_types.BATH_ACCESSORY_PRODUCTS,
+              *towel_accessory_types.TOWEL_PRODUCTS),
     # The one library pocket size this house hangs, alongside the house's own catalog. Only
     # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
     # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
@@ -104,7 +108,7 @@ _library = Library(
                      *living_east_run_types.LIVING_EAST_RUN_TYPES,
                      *kitchen_deep_cabinets.KITCHEN_DEEP_CABINET_TYPES,
                      *plant_room_types.PLANT_ROOM_FURNITURE_TYPES,
-                     *bath_accessory_types.BATH_ACCESSORY_TYPES),
+                     *bath_accessory_types.BATH_ACCESSORY_TYPES, *towel_accessory_types.TOWEL_TYPES),
     # The library's fascia guard plus the house's own surface-mounted one — the porch
     # guard's baseplates land on concrete wall tops and buy no bracket kit, which is a
     # different order at a different rate. Tags are disjoint.
@@ -376,7 +380,9 @@ PLAN = (
          *placeables.BASEMENT_PLACEABLES, *sauna.SAUNA_SEATING, *millwork.BASEMENT_SHELVES,
          *window_stools.BASEMENT_WINDOW_STOOLS,
          *millwork_vanities.BASEMENT_VANITY_SHELVES,
-         *backing.BASEMENT_BACKING, *bath_accessories.BASEMENT_BATH_ACCESSORIES,
+         *backing.BASEMENT_BACKING, *towel_accessories.BASEMENT_TOWEL_ACCESSORIES,
+         *backing_towel_accessories.BASEMENT_TOWEL_BACKING,
+         *bath_accessories.BASEMENT_BATH_ACCESSORIES,
          *backing_bath_accessories.BASEMENT_TP_BACKING],
     )
     .with_elements(
@@ -402,6 +408,8 @@ PLAN = (
          *living_east_run.LIVING_EAST_RUN, *living_east_run.LIVING_EAST_STOOLS,
          *window_stools.MAIN_WINDOW_STOOLS,
          *backing.MAIN_BACKING, *backing_wet.MAIN_WET_BACKING,
+         *towel_accessories.MAIN_TOWEL_ACCESSORIES,
+         *backing_towel_accessories.MAIN_TOWEL_BACKING,
          *bath_accessories.MAIN_BATH_ACCESSORIES, *backing_bath_accessories.MAIN_TP_BACKING,
          *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS,
          *plate_ties.MAIN_PLATE_TIES],
@@ -424,6 +432,8 @@ PLAN = (
                                 *window_stools.SECOND_WINDOW_STOOLS,
                                 *backing.SECOND_BACKING,
                                 *backing_wet.SECOND_WET_BACKING,
+                                *towel_accessories.SECOND_TOWEL_ACCESSORIES,
+                                *backing_towel_accessories.SECOND_TOWEL_BACKING,
                                 *bath_accessories.SECOND_BATH_ACCESSORIES,
                                 *backing_bath_accessories.SECOND_TP_BACKING,
                                 *braced_walls.SECOND_BRACED_WALLS,
@@ -441,6 +451,8 @@ PLAN = (
                              *millwork_vanities.ATTIC_VANITY_SHELVES,
                              *backing.ATTIC_BACKING,
                              *backing_wet.ATTIC_WET_BACKING,
+                             *towel_accessories.ATTIC_TOWEL_ACCESSORIES,
+                             *backing_towel_accessories.ATTIC_TOWEL_BACKING,
                              *bath_accessories.ATTIC_BATH_ACCESSORIES])
     # --- garage ----------------------------------------------------------------------------
     .with_elements("g-foundation", [*foundations.GARAGE_STEM_NODES,

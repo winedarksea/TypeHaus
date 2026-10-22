@@ -237,11 +237,13 @@ NEC_FILL_ATTIC = [
     # At the ERV, in the pocket. IRC M1305.1.3 wants a receptacle (and a light — see
     # ED-A-POCKET-LT1) at the appliance; the pocket is STORAGE so 210.52 spacing never asks
     # for one, which is exactly why it has to be authored deliberately.
-    # ** THE RECEPTACLE IS A FLOOR BOX AT THE MANIFOLD. ** M1305.1.3's receptacle has to be
-    # AT the appliance, which sits at x 7'-0" where a person can reach it (see
-    # EQ-A-ERV-MAN-EXH).
+    # On W-A-BA-E's pocket face, ~5' from EQ-A-ERV-MAN-EXH: "near" the appliance for
+    # M1305.1.3. A wall box, not a floor box (owner 2026-10-22): cheaper, and the 6:12 rake
+    # leaves ~5' of wall here. Clear of VR-M-STACK's jog at y 34'-4".
     ElectricalDevice(uid="E6RNBJBD76", tag="ED-A-POCKET-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(8, 6), ft(33)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.FLOOR), rotation=deg(90)),
+                     type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-ATTIC",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-BA-E", face="right", distance_from_start=inch(36),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]

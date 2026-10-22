@@ -28,14 +28,15 @@ from plan.bed_desk_types import BED_DESK_PRODUCTS
 from plan.bed_reading_corner_types import BED_READING_CORNER_PRODUCTS
 from plan.bedroom_wardrobe_types import BEDROOM_WARDROBE_PRODUCTS
 from plan.closet_types import CLOSET_PRODUCTS
+from plan.decking_selection import TREX_TIDE_POOL_PRODUCT
 from plan.electrical_floor_types import FLOOR_BOX_PRODUCT
+from plan.kitchen_sink_types import KRAUS_KHU100_32
 from plan.living_east_run_types import LIVING_EAST_RUN_PRODUCTS
 from plan.plant_room_types import PLANT_ROOM_PRODUCTS
 from plan.products_interior import INTERIOR_PRODUCTS
 from plan.study_bookcase_types import STUDY_BOOKCASE_PRODUCTS
 from plan.study_nook_types import STUDY_NOOK_PRODUCTS
 from plan.titanium_types import TITANIUM_PRODUCTS
-from typehaus.library import TREX_ENHANCE_BASICS_PRODUCT
 from typehaus.library.placeables import STARTER_FURNITURE_PRODUCTS
 from typehaus.model import Product
 
@@ -55,6 +56,26 @@ LG_INDUCTION_RANGE = Product(
     name="InstaView 30\" induction slide-in range",
     source="LG Pro Builder spec sheet, read 2026-08-24. The LG STUDIO LSIS6338F is the same "
            "chassis in Studio trim; several retailers show it discontinued.",
+)
+# The two kitchen appliances LG does not make (owner 2026-10-22; plan/appliance_types.py).
+ISE_BADGER_5 = Product(
+    tag="PROD-ISE-BADGER5", brand="InSinkErator", model="Badger 5",
+    name="Badger 5 1/2 HP continuous-feed food waste disposer",
+    url="https://insinkerator.emerson.com/documents/badger-5-specifications-en-ca-10443900.pdf",
+    source="InSinkErator Badger 5 specification sheet, read 2026-10-22: 1/2 HP Dura-Drive "
+           "induction motor, 11 1/2 in. overall height, 6 5/16 in. body, 1 1/2 in. slip-joint "
+           "outlet. UPGRADE PICK: Evolution Excel (1 HP, multi-stage grind, quietest), same "
+           "Quick Lock sink mount, if the price is acceptable.",
+)
+BROAN_BWP1304SS = Product(
+    tag="PROD-BROAN-BWP1304SS", brand="Broan", model="BWP1304SS + ARKBWP",
+    name='30" pyramidal wall-chimney hood, 450 CFM, stainless, with the non-duct kit',
+    source="Retailer listings, read 2026-10-22: 30 in. convertible wall chimney, 450 CFM "
+           "internal blower, 3 speeds, LED, HVI. Ductless with Broan's ARKBWP non-duct kit "
+           "(plenum, charcoal filters); replacement charcoal FILTERBWPTS. Confirm ARKBWP "
+           "against the hood's install guide. Chimney, not under-cabinet: nothing hangs over "
+           "the range. A recirculating hood traps grease and some odour, but not heat, "
+           "moisture or most fine particles; the operable windows by the range do that.",
 )
 LG_DISHWASHER = Product(
     tag="PROD-LG-LDTS5552S", brand="LG", model="LDTS5552S",
@@ -258,8 +279,9 @@ LEVITON_EV_RECEPTACLE_1450R = Product(
 # One catalog to every ``product_ref`` and to the manifest; two files only because of the
 # 500-line rule.
 PRODUCTS = (
-    TREX_ENHANCE_BASICS_PRODUCT,
-    LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER,
+    TREX_TIDE_POOL_PRODUCT,
+    LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER, ISE_BADGER_5, BROAN_BWP1304SS,
+    KRAUS_KHU100_32,
     FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,
     BROAN_B210E75RT, MURPHY_BOOKCASE_36,

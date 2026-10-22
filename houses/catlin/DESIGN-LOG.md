@@ -5727,3 +5727,12 @@ blocks, two vanity mounts with internal plywood pads. Toilets and plumbing stay 
 Hall-bath shaft panel and its backing rise 12″, putting the panel base at 36″ AFF
 clear of the holder's pivot. Locations and installation details live in the plan configs;
 tests cover post support, clearances, routed services and source/IFC handoff.
+
+## 2026-10-22 — Towel hardware and support
+
+Eight Moen Align YB0486BN hand-towel bars serve all bathroom basins; three fasten to
+vanity sides with internal plywood pads and through-bolts. YB0424BN 24″ bars serve the
+suite, attic and sauna (dry gym side beside the door). Main bath 2 and the upstairs hall
+bath use YB0403BN hooks where windows and cabinets prevent a useful bar. Nine targeted
+SPF 2×6 blocks supplement existing framing; the attic bar sits at 51″ AFF below the rake.
+Placements and hanging-space allowances live in `plan/towel_accessories.py` and its types.

@@ -16,12 +16,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   leaf width or clear passage. Define leaf/rough-opening sizing together with framing and
   clearance before changing these envelopes (`plans/default-door-appearance.md`).
 
-- **Record the attic floor-box assemblies and their floor-use listings.** The new
-  `code.E3905_7_floor_boxes` check verifies the living-room Arlington kit but reports
-  UNKNOWN for the eight existing attic floor receptacles whose types still describe
-  generic wall receptacles. Select their listed boxes and coordinate actual cavity
-  depths and framing; see `houses/catlin/plan/electrical_attic.py`.
-
 - **Review `SB-BW-BAND` connector layout before reducing its 24 KBS1Z.** Top-only ties
   would leave two of the four braced mid-band slats per bay untied
   (`notes/canopy_west_band.md` §3a).
@@ -34,17 +28,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   chord with its 0.03" splice slip. On receipt, author `Roof.published_reactions` on both
   roofs and record the component seal in `engineering.toml`. Also confirm the retail price
   ranges for AC6Z / ACE6Z / A35Z / CBSQ66-SDS2 in `prices.toml` (marked UNCONFIRMED).
-
-- **Confirm First Class sheet vinyl can be flash-coved** (Tarkett install guide). RM-S-PLANT's
-  waterproofing is a 6" cove behind the wall membrane (`houses/catlin/notes/plant_room.md`).
-  Researched 2026-09-26: the current FiberFloor guide (03/2024) is SILENT on coving, and its
-  loose-lay option wants a 1/4" wall gap a cove cannot have. The 2014/2016 guides allowed it
-  only fully adhered (QBOND-ONE). Get Tarkett Technical Services ((800) 899-8916) to confirm
-  in writing, including use at the room's 70% design RH and the adhesive over SurePly.
-  The guide specifies 40–60% RH around installation. If First Class is not approved,
-  select a sheet whose guide permits the cove and operating humidity, then coordinate
-  its depth, doorway water stop and price before construction. The room has no drain;
-  the 1/4" SurePly layer leaves a nominal 0.380" drop to the study.
 
 - **Two drain turns are boxed in:** `PR-B-SINK2-DRAIN`'s 70.8-degree turn (a 60 needs the turn
   in FS-M-WEST's joist band, where the leg cuts I-joist flanges; a 90 drops it into the x=2'-0"

@@ -194,7 +194,7 @@ def trim_scope(plan: PlanModel, model: ResolvedModel) -> tuple[TrimScope | None,
 
 
 def base_kind(scope: TrimScope, room: ResolvedRoom) -> str:
-    """``trim`` / ``tile`` / ``integral_cove`` / ``none``, off the room's floor material."""
+    """``trim`` / ``tile`` / ``integral_cove`` / ``resilient_base`` / ``none``, off the floor."""
     material = scope.materials.get(room.floor_finish or "")
     detail = getattr(material, "base_detail", None)
     return detail or "trim"

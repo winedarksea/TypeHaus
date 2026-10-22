@@ -2,9 +2,9 @@
 "canvas_objects/APPL-A-STUDIO-FRIDGE/body_z0_m": 6.118098,
 "canvas_objects/APPL-A-STUDIO-FRIDGE/body_z1_m": 6.626098,
 "canvas_objects/APPL-A-STUDIO-FRIDGE/z_m": 6.118098,
-"canvas_objects/APPL-M-DISP/body_z0_m": 0.3367151,
+"canvas_objects/APPL-M-DISP/body_z0_m": 0.3621151,
 "canvas_objects/APPL-M-DISP/body_z1_m": 0.6542151,
-"canvas_objects/APPL-M-DISP/z_m": 0.3367151,
+"canvas_objects/APPL-M-DISP/z_m": 0.3621151,
 "canvas_objects/APPL-M-DW/body_z0_m": 0.0238125,
 "canvas_objects/APPL-M-DW/body_z1_m": 0.8778875,
 "canvas_objects/APPL-M-DW/z_m": 0.0238125,
@@ -53,9 +53,9 @@
 "canvas_objects/ED-A-POCKET-LT1/body_z0_m": 7.14375,
 "canvas_objects/ED-A-POCKET-LT1/body_z1_m": 7.21995,
 "canvas_objects/ED-A-POCKET-LT1/z_m": 7.14375,
-"canvas_objects/ED-A-POCKET-RC1/body_z0_m": 6.11505,
-"canvas_objects/ED-A-POCKET-RC1/body_z1_m": 6.16585,
-"canvas_objects/ED-A-POCKET-RC1/z_m": 6.11505,
+"canvas_objects/ED-A-POCKET-RC1/body_z0_m": 6.52145,
+"canvas_objects/ED-A-POCKET-RC1/body_z1_m": 6.57225,
+"canvas_objects/ED-A-POCKET-RC1/z_m": 6.52145,
 "canvas_objects/ED-A-POCKET-SW/body_z0_m": 7.032498,
 "canvas_objects/ED-A-POCKET-SW/body_z1_m": 7.083298,
 "canvas_objects/ED-A-POCKET-SW/z_m": 7.032498,
@@ -1124,6 +1124,12 @@
 "canvas_objects/EQ-S-HP1-STRIP/body_z0_m": 5.26415,
 "canvas_objects/EQ-S-HP1-STRIP/body_z1_m": 5.51815,
 "canvas_objects/EQ-S-HP1-STRIP/z_m": 5.26415,
+"canvas_objects/FURN-A-STUBATH-BATH-TOWEL/body_z0_m": 7.39648,
+"canvas_objects/FURN-A-STUBATH-BATH-TOWEL/body_z1_m": 7.430516,
+"canvas_objects/FURN-A-STUBATH-BATH-TOWEL/z_m": 7.39648,
+"canvas_objects/FURN-A-STUBATH-HAND-TOWEL/body_z0_m": 7.32028,
+"canvas_objects/FURN-A-STUBATH-HAND-TOWEL/body_z1_m": 7.354316,
+"canvas_objects/FURN-A-STUBATH-HAND-TOWEL/z_m": 7.32028,
 "canvas_objects/FURN-A-STUBATH-TP-PAD/body_z0_m": 6.708648,
 "canvas_objects/FURN-A-STUBATH-TP-PAD/body_z1_m": 6.848348,
 "canvas_objects/FURN-A-STUBATH-TP-PAD/z_m": 6.708648,
@@ -1151,6 +1157,9 @@
 "canvas_objects/FURN-A-STUDY-TABLE/body_z0_m": 6.1341,
 "canvas_objects/FURN-A-STUDY-TABLE/body_z1_m": 6.8961,
 "canvas_objects/FURN-A-STUDY-TABLE/z_m": 6.1341,
+"canvas_objects/FURN-B-BATH-HAND-TOWEL/body_z0_m": -1.5744825,
+"canvas_objects/FURN-B-BATH-HAND-TOWEL/body_z1_m": -1.5404465,
+"canvas_objects/FURN-B-BATH-HAND-TOWEL/z_m": -1.5744825,
 "canvas_objects/FURN-B-BATH-TP/body_z0_m": -2.1332825,
 "canvas_objects/FURN-B-BATH-TP/body_z1_m": -2.0992465,
 "canvas_objects/FURN-B-BATH-TP/z_m": -2.1332825,
@@ -1172,6 +1181,9 @@
 "canvas_objects/FURN-B-PLAY-TV/body_z0_m": -2.0050125,
 "canvas_objects/FURN-B-PLAY-TV/body_z1_m": -0.7324725,
 "canvas_objects/FURN-B-PLAY-TV/z_m": -2.0050125,
+"canvas_objects/FURN-B-SAUNA-BATH-TOWEL/body_z0_m": -1.417193,
+"canvas_objects/FURN-B-SAUNA-BATH-TOWEL/body_z1_m": -1.383157,
+"canvas_objects/FURN-B-SAUNA-BATH-TOWEL/z_m": -1.417193,
 "canvas_objects/FURN-B-SAUNA-LOWER/body_z0_m": -2.7797125,
 "canvas_objects/FURN-B-SAUNA-LOWER/body_z1_m": -2.1701125,
 "canvas_objects/FURN-B-SAUNA-LOWER/z_m": -2.7797125,
@@ -1208,12 +1220,24 @@
 "canvas_objects/FURN-M-BATH1-AP/body_z0_m": 0.6346495,
 "canvas_objects/FURN-M-BATH1-AP/body_z1_m": 1.3712495,
 "canvas_objects/FURN-M-BATH1-AP/z_m": 0.6346495,
+"canvas_objects/FURN-M-BATH1-HAND-TOWEL/body_z0_m": 1.2272315,
+"canvas_objects/FURN-M-BATH1-HAND-TOWEL/body_z1_m": 1.2612675,
+"canvas_objects/FURN-M-BATH1-HAND-TOWEL/z_m": 1.2272315,
 "canvas_objects/FURN-M-BATH1-TP/body_z0_m": 0.6684315,
 "canvas_objects/FURN-M-BATH1-TP/body_z1_m": 0.7024675,
 "canvas_objects/FURN-M-BATH1-TP/z_m": 0.6684315,
+"canvas_objects/FURN-M-BATH2-BATH-TOWEL/body_z0_m": 1.646682,
+"canvas_objects/FURN-M-BATH2-BATH-TOWEL/body_z1_m": 1.680718,
+"canvas_objects/FURN-M-BATH2-BATH-TOWEL/z_m": 1.646682,
 "canvas_objects/FURN-M-BATH2-CAB/body_z0_m": 1.2573,
 "canvas_objects/FURN-M-BATH2-CAB/body_z1_m": 2.7051,
 "canvas_objects/FURN-M-BATH2-CAB/z_m": 1.2573,
+"canvas_objects/FURN-M-BATH2-HAND-TOWEL-PAD/body_z0_m": 0.762,
+"canvas_objects/FURN-M-BATH2-HAND-TOWEL-PAD/body_z1_m": 0.8382,
+"canvas_objects/FURN-M-BATH2-HAND-TOWEL-PAD/z_m": 0.762,
+"canvas_objects/FURN-M-BATH2-HAND-TOWEL/body_z0_m": 0.783082,
+"canvas_objects/FURN-M-BATH2-HAND-TOWEL/body_z1_m": 0.817118,
+"canvas_objects/FURN-M-BATH2-HAND-TOWEL/z_m": 0.783082,
 "canvas_objects/FURN-M-BATH2-TP/body_z0_m": 0.681482,
 "canvas_objects/FURN-M-BATH2-TP/body_z1_m": 0.715518,
 "canvas_objects/FURN-M-BATH2-TP/z_m": 0.681482,
@@ -1502,6 +1526,9 @@
 "canvas_objects/FURN-M-STUDY-FOOTREST/body_z0_m": 0.0250495,
 "canvas_objects/FURN-M-STUDY-FOOTREST/body_z1_m": 0.1012495,
 "canvas_objects/FURN-M-STUDY-FOOTREST/z_m": 0.0250495,
+"canvas_objects/FURN-S-BATH1-BATH-TOWEL/body_z0_m": 4.694682,
+"canvas_objects/FURN-S-BATH1-BATH-TOWEL/body_z1_m": 4.728718,
+"canvas_objects/FURN-S-BATH1-BATH-TOWEL/z_m": 4.694682,
 "canvas_objects/FURN-S-BATH1-CH-AP/body_z0_m": 4.0005,
 "canvas_objects/FURN-S-BATH1-CH-AP/body_z1_m": 4.7371,
 "canvas_objects/FURN-S-BATH1-CH-AP/z_m": 4.0005,
@@ -1520,6 +1547,12 @@
 "canvas_objects/FURN-S-BATH1-CLOSET/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-BATH1-CLOSET/body_z1_m": 5.4864,
 "canvas_objects/FURN-S-BATH1-CLOSET/z_m": 3.0861,
+"canvas_objects/FURN-S-BATH1-HAND-TOWEL-PAD/body_z0_m": 3.81,
+"canvas_objects/FURN-S-BATH1-HAND-TOWEL-PAD/body_z1_m": 3.8862,
+"canvas_objects/FURN-S-BATH1-HAND-TOWEL-PAD/z_m": 3.81,
+"canvas_objects/FURN-S-BATH1-HAND-TOWEL/body_z0_m": 3.831082,
+"canvas_objects/FURN-S-BATH1-HAND-TOWEL/body_z1_m": 3.865118,
+"canvas_objects/FURN-S-BATH1-HAND-TOWEL/z_m": 3.831082,
 "canvas_objects/FURN-S-BATH1-SHELF/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-BATH1-SHELF/body_z1_m": 5.2197,
 "canvas_objects/FURN-S-BATH1-SHELF/z_m": 3.0861,
@@ -1721,6 +1754,15 @@
 "canvas_objects/FURN-S-SUITEBATH-AP/body_z0_m": 3.2385,
 "canvas_objects/FURN-S-SUITEBATH-AP/body_z1_m": 3.5941,
 "canvas_objects/FURN-S-SUITEBATH-AP/z_m": 3.2385,
+"canvas_objects/FURN-S-SUITEBATH-BATH-TOWEL/body_z0_m": 4.440682,
+"canvas_objects/FURN-S-SUITEBATH-BATH-TOWEL/body_z1_m": 4.474718,
+"canvas_objects/FURN-S-SUITEBATH-BATH-TOWEL/z_m": 4.440682,
+"canvas_objects/FURN-S-SUITEBATH-HAND-TOWEL-PAD/body_z0_m": 3.8735,
+"canvas_objects/FURN-S-SUITEBATH-HAND-TOWEL-PAD/body_z1_m": 3.9497,
+"canvas_objects/FURN-S-SUITEBATH-HAND-TOWEL-PAD/z_m": 3.8735,
+"canvas_objects/FURN-S-SUITEBATH-HAND-TOWEL/body_z0_m": 3.894582,
+"canvas_objects/FURN-S-SUITEBATH-HAND-TOWEL/body_z1_m": 3.928618,
+"canvas_objects/FURN-S-SUITEBATH-HAND-TOWEL/z_m": 3.894582,
 "canvas_objects/FURN-S-SUITEBATH-MIRROR/body_z0_m": 4.2545,
 "canvas_objects/FURN-S-SUITEBATH-MIRROR/body_z1_m": 4.9657,
 "canvas_objects/FURN-S-SUITEBATH-MIRROR/z_m": 4.2545,
@@ -1736,6 +1778,12 @@
 "canvas_objects/FURN-S-SUITEBATH-TP/body_z0_m": 3.729482,
 "canvas_objects/FURN-S-SUITEBATH-TP/body_z1_m": 3.763518,
 "canvas_objects/FURN-S-SUITEBATH-TP/z_m": 3.729482,
+"canvas_objects/FURN-S-VANITY-HAND-TOWEL1/body_z0_m": 4.288282,
+"canvas_objects/FURN-S-VANITY-HAND-TOWEL1/body_z1_m": 4.322318,
+"canvas_objects/FURN-S-VANITY-HAND-TOWEL1/z_m": 4.288282,
+"canvas_objects/FURN-S-VANITY-HAND-TOWEL2/body_z0_m": 4.288282,
+"canvas_objects/FURN-S-VANITY-HAND-TOWEL2/body_z1_m": 4.322318,
+"canvas_objects/FURN-S-VANITY-HAND-TOWEL2/z_m": 4.288282,
 "canvas_objects/FURN-SG-DAYBED/body_z0_m": -2.3225125,
 "canvas_objects/FURN-SG-DAYBED/body_z1_m": -1.5859125,
 "canvas_objects/FURN-SG-DAYBED/z_m": -2.3225125,
@@ -13585,6 +13633,18 @@
 6,
 "9bbec3881b04"
 ],
+"geometry/CBW111AAAA::framing/member:backing-0-000": [
+-1.470025,
+-1.330325,
+8,
+"cf718df3aaa7"
+],
+"geometry/CBW111AAAA::framing/member:backing-1-000": [
+-1.470025,
+-1.330325,
+8,
+"cf718df3aaa7"
+],
 "geometry/CBW111AAAA::framing/member:cripple-head-0-01": [
 -0.5635625,
 -0.4175125,
@@ -14610,6 +14670,12 @@
 -0.320675,
 2,
 "a1269395efc9"
+],
+"geometry/CBW122AAAA::framing/member:backing-0-000": [
+-1.6273145,
+-1.4876145,
+8,
+"cb9869d7672d"
 ],
 "geometry/CBW122AAAA::framing/member:plate-bottom": [
 -2.7797125,
@@ -27746,6 +27812,12 @@
 "284e8eb6b8db"
 ],
 "geometry/CMW110AAAA::framing/member:backing-3-000": [
+1.59385,
+1.73355,
+8,
+"51fdd0594823"
+],
+"geometry/CMW110AAAA::framing/member:backing-4-000": [
 1.8288,
 2.01295,
 8,
@@ -41395,6 +41467,12 @@
 8,
 "2c8f28c5aaa5"
 ],
+"geometry/CSW110AAAA::framing/member:backing-0-000": [
+4.64185,
+4.78155,
+8,
+"c9f5da4f5c6b"
+],
 "geometry/CSW110AAAA::framing/member:block-2-000-00": [
 3.048,
 3.1369,
@@ -45962,6 +46040,12 @@
 "b7b31aff550e"
 ],
 "geometry/CSW142AAAA::framing/member:backing-0-000": [
+4.38785,
+4.52755,
+8,
+"bb8c31bd25d4"
+],
+"geometry/CSW142AAAA::framing/member:backing-1-000": [
 4.6228,
 4.80695,
 8,
@@ -46344,6 +46428,18 @@
 5.775325,
 2,
 "b7b31aff550e"
+],
+"geometry/CSW145AAAA::framing/member:backing-0-000": [
+4.23545,
+4.37515,
+8,
+"e27b17463cb7"
+],
+"geometry/CSW145AAAA::framing/member:backing-1-000": [
+4.23545,
+4.37515,
+8,
+"e27b17463cb7"
 ],
 "geometry/CSW145AAAA::framing/member:plate-bottom": [
 3.048,
@@ -54528,6 +54624,12 @@
 8.8565355,
 7,
 "7896bd67cf4d"
+],
+"geometry/RV6PJZ6WWM::framing/member:backing-0-000": [
+7.267448,
+7.407148,
+8,
+"b95651c2d31e"
 ],
 "geometry/RV6PJZ6WWM::framing/member:plate-bottom": [
 6.096,
@@ -65947,6 +66049,18 @@
 2,
 "06ec4ae22310"
 ],
+"member/CBW111AAAA/backing-0-000": [
+-1.470025,
+-1.330325,
+2,
+"952a4be78a2e"
+],
+"member/CBW111AAAA/backing-1-000": [
+-1.470025,
+-1.330325,
+2,
+"952a4be78a2e"
+],
 "member/CBW111AAAA/cripple-head-0-01": [
 -0.5635625,
 -0.4175125,
@@ -66756,6 +66870,12 @@
 -0.396875,
 2,
 "acb389d9be3e"
+],
+"member/CBW122AAAA/backing-0-000": [
+-1.6273145,
+-1.4876145,
+2,
+"3e31c9e40db3"
 ],
 "member/CBW122AAAA/plate-bottom": [
 -2.7797125,
@@ -73796,6 +73916,12 @@
 "75095932ccfb"
 ],
 "member/CMW110AAAA/backing-3-000": [
+1.59385,
+1.73355,
+2,
+"db6fb1a4197f"
+],
+"member/CMW110AAAA/backing-4-000": [
 1.8288,
 2.01295,
 2,
@@ -83719,6 +83845,12 @@
 4,
 "3c1b0ca80ffb"
 ],
+"member/CSW110AAAA/backing-0-000": [
+4.64185,
+4.78155,
+2,
+"865696014c44"
+],
 "member/CSW110AAAA/block-2-000-00": [
 3.048,
 3.1369,
@@ -87656,6 +87788,12 @@
 "64566402ff01"
 ],
 "member/CSW142AAAA/backing-0-000": [
+4.38785,
+4.52755,
+2,
+"665543aa95cf"
+],
+"member/CSW142AAAA/backing-1-000": [
 4.6228,
 4.80695,
 2,
@@ -87978,6 +88116,18 @@
 5.699125,
 2,
 "1c0200ec3328"
+],
+"member/CSW145AAAA/backing-0-000": [
+4.23545,
+4.37515,
+2,
+"860548a9afc8"
+],
+"member/CSW145AAAA/backing-1-000": [
+4.23545,
+4.37515,
+2,
+"860548a9afc8"
 ],
 "member/CSW145AAAA/plate-bottom": [
 3.048,
@@ -89826,6 +89976,12 @@
 8.7708105,
 2,
 "5117dbc35c18"
+],
+"member/RV6PJZ6WWM/backing-0-000": [
+7.267448,
+7.407148,
+2,
+"a32e1663d5c9"
 ],
 "member/RV6PJZ6WWM/plate-bottom": [
 6.096,

@@ -292,32 +292,38 @@ to water. Install on a dry, sound subfloor and follow Patriot's panel layout,
 acclimation, fastening and joint-preparation instructions. Measure the installed
 stack before fabricating the threshold.
 
-The proposed floor waterproofing remains a single seamless sheet **flash-coved 6"**
-up the wall and terminated *behind* the wall membrane. The cove removes the base
-joint, but Tarkett's current FiberFloor guide is silent on coving and its 40–60% RH
-installation condition does not cover this room's 70% design RH. Obtain written
-approval for the product, full-spread adhesive, cove and operating humidity before
-construction. The room has **no floor drain or slope**; it is not hoseable.
+**The perimeter is a set-on base, not a flash cove (owner, 2026-10-22).** The sheet stops
+at the wall under a **4" Johnsonite (Tarkett) rubber cove base**, adhered to the wall finish,
+with a continuous bead of **100% silicone where its toe meets the sheet**. That keeps the
+sheet inside its own install guide, so no written Tarkett approval is needed for coving. The
+cost is the waterproofing argument: the perimeter is now a sealant joint, not a seamless
+turn-up, and it is a maintenance item. Re-tool the toe bead whenever it splits. What still
+sits outside the guide is the room's **70% operating RH** (the guide states 40–60% around
+installation). Install with the room dry and conditioned, and accept the operating RH as the
+owner's risk. The room has **no floor drain or slope**; it is not hoseable.
 
 At `D-S-PLANT`, fit a restrained, shallow solid-surface reducer from the study oak
 plane down to the vinyl over roughly 4 1/2" of run. Turn the vinyl up against a
 continuous water-stop riser under the reducer and seal the turn and both ends into
 the jamb membrane returns, so a spill cannot pass under the profile. The final
 profile follows measured installed planes and the delivered door's swing clearance.
-The nominal 0.380" drop offers limited passive spill storage; a floor leak sensor
-that shuts off the plant-room water supply is still needed.
+The nominal 0.380" drop offers limited passive spill storage. **The leak sensor shuts the
+plant room's branch only (owner, 2026-10-22):** a full-port 3/4" ball valve on
+`PR-M-CW-PLANT-STUB` with a YoLink Valve Controller 2 / EVO actuator, closed directly by
+paired YoLink floor leak sensors with no hub or internet, so a leak here leaves the rest of
+the house's water on. Mount the valve where it stays serviceable: an access panel at the
+tee, or the recessed `PA-S-PLANT-WATER-STUB` box. Two sensors: one at the stub and one at the
+lowest corner. Not modelled as an element.
 
 **No seam, so nothing to weld (2026-09-25).** The room is 17'-0" x 8'-1" clear, so one
 sheet laid across the 8'-1" width covers it whole. That is what retired the earlier
-homogeneous commercial sheet and its heat-welded seams. The cove is still the detail that
-matters: confirm that the First Class install guide permits flash coving on a cove stick;
-if it does not, select a sheet with an approved cove and redesign the sealed perimeter
-and threshold together before construction.
+homogeneous commercial sheet and its heat-welded seams. (The flash cove this paragraph
+used to require is superseded by the rubber base, 2026-10-22.)
 
 **Do not put roofing membrane under the vinyl.** Sheet vinyl is already effectively Class I;
 a second impermeable layer beneath it creates a classic moisture sandwich around the plywood
 subfloor with no drying path in either direction, and no sheet-vinyl adhesive is qualified
-over TPO/EPDM. **The cove *is* the waterproofing.**
+over TPO/EPDM. The sheet plus the sealed base toe is the waterproofing.
 
 ### Openings
 
@@ -482,8 +488,8 @@ misted or hosed.
    the hydrant, whose thread is outdoors. `PR-M-CW-PLANT-STUB` tees off the hydrant riser in
    `W-S-S1`'s bay to `PA-S-PLANT-WATER-STUB`, a capped 1/2" stop in a recessed box 14" AFF,
    gasketed to the membrane (`plan/mep_supply_plant.py`). The no-drain answer below stands
-   for it: bench trays take the drip, the cove holds a spill, and the controller it will
-   feed should be a valve that shuts on a floor leak sensor. Hard-piping irrigation off it
+   for it: bench trays take the drip, the sealed base holds a spill, and the stub's branch
+   valve shuts on a floor leak sensor (2026-10-22, Floor above). Hard-piping irrigation off it
    is P2902.5.3's case (PVB or RPZ). The stated need was never a sink: it is *watering that runs while the house is
    empty*. That is an irrigation question, and irrigation takes no fixture.
    - **The room is served by `FX-S-BALC-HYD`**, already modelled: `PR-M-CW-BALC-HYD` rises

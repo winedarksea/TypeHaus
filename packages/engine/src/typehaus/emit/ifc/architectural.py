@@ -530,7 +530,7 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
                 representation = parts_representation(
                     f, body, [part.geometry for part in bench_parts(bench)],
                     resolved.position, resolved.rotation_degrees, resolved.z_m)
-            elif furniture_type.plan_symbol == "pivoting-paper-holder":
+            elif furniture_type.plan_symbol in {"pivoting-paper-holder", "towel-bar", "towel-hook"}:
                 from typehaus.emit.ifc.placeable_parts import parts_representation
                 from typehaus.model.placeable_symbols import model_parts
 

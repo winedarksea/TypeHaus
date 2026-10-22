@@ -72,7 +72,8 @@ def test_mounting_positions_are_referenced_to_actual_supports(catlin_model_ro):
 
 
 def test_both_posts_have_exact_support_and_blocks_fill_stud_bays(catlin_ctx):
-    findings = wall_fixing_support(catlin_ctx)
+    findings = [f for f in wall_fixing_support(catlin_ctx)
+                if any(tag.endswith("-TP") for tag in f.element_tags)]
     assert len(findings) == 8
     assert all(f.result.value == "pass" for f in findings)
     bands = backing_bands(catlin_ctx.plan)
@@ -202,5 +203,7 @@ def test_ifc_keeps_six_furnishing_occurrences_and_cabinet_support(catlin_ifc_pat
     assert len(holders) == 6
     assert all(obj.Representation.Representations[0].RepresentationType == "Tessellation"
                for obj in holders)
+    assert all(len(item.CoordIndex) >= 100 for obj in holders
+               for item in obj.Representation.Representations[0].Items)
     attic = next(obj for obj in holders if obj.Name == "FURN-A-STUBATH-TP")
     assert get_psets(attic)["TypeHaus_Identity"]["host_fixture_ref"] == "FX-A-STUBATH-LAV"

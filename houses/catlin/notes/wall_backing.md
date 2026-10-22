@@ -10,8 +10,10 @@ backing follows a designated body, and a grab-bar course stands only at a tub, s
 **Oracle for:** nothing. This is a **sources note**, not a calculation note — there is no
 arithmetic here to reproduce, only a set of heights and the authority behind each one.
 `advisory.wall_backing_present` grades coverage against it; no engine table repeats it.
-TP-holder backing is in `plan/backing_bath_accessories.py`; both mounting posts are
-checked against emitted framing by `advisory.wall_fixing_support`.
+TP-holder backing is in `plan/backing_bath_accessories.py`; towel support is in
+`plan/backing_towel_accessories.py`. `advisory.wall_fixing_support` checks every declared
+mounting post against emitted framing. Vanity-mounted bars use internal plywood pads and
+through-fastened plates; their cabinet host and explicit placement are checked separately.
 **Companions:** `notes/interior_selections.md` §"What has to reach a trade before a wall
 closes" — the prose this file finally makes buildable.
 **What is asked of the reviewer:** confirm that each height below is the one *this* family

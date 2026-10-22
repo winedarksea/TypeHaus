@@ -67,8 +67,9 @@ def window_stool_prism(wall: ResolvedWall, opening,
     return GPrism(ring=ring, z0_m=top - stool.thickness_m, z1_m=top)
 
 
-# The trade that sets each base kind: a board, a tile base, a flash cove.
-_BASE_TRADE = {"trim": "millwork", "tile": "tile", "integral_cove": "flooring"}
+# The trade that sets each base kind: a board, a tile base, a flash cove, a rubber base.
+_BASE_TRADE = {"trim": "millwork", "tile": "tile", "integral_cove": "flooring",
+               "resilient_base": "flooring"}
 
 
 def base_run_trade(run: ResolvedBaseRun) -> str:

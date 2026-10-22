@@ -33,7 +33,7 @@ class ResolvedBaseRun:
     """One straight piece of base along one wall of one room.
 
     ``kind`` is the floor's ``Material.base_detail``: only ``trim`` is a board (drawn, cut,
-    priced as wood); ``tile`` and ``integral_cove`` are LF billed with their own trade and
+    priced as wood); the other kinds are LF billed with their own trade and
     carry their floor material as ``material_ref``. ``length_m`` is the cut length, corner
     allowances included. ``start_corner`` / ``end_corner`` are ``inside`` / ``outside`` where
     the run meets its neighbour in a corner and ``None`` where it dies into a break, named

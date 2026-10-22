@@ -78,6 +78,7 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "wood-dark": (0.45, 0.32, 0.20, 1.0),
     "potting-soil": (0.10, 0.08, 0.055, 1.0),
     "metal": (0.62, 0.64, 0.66, 1.0),
+    "brushed-nickel": (0.66, 0.65, 0.62, 1.0),
     "metal-black": (0.025, 0.025, 0.025, 1.0),
     "glass": (0.72, 0.82, 0.86, 0.55),
     "mirror": (0.78, 0.84, 0.87, 1.0),
@@ -171,6 +172,10 @@ CIRCLE_SEGMENTS = 32
 DEPTH_CYLINDER_SEGMENTS = 64
 # The silvered backing is opaque and polished, unlike translucent window glass.
 MIRROR_SURFACE_PROPERTIES = {"metalness": 1.0, "roughness": 0.08}
+PART_SURFACE_PROPERTIES = {
+    "mirror": MIRROR_SURFACE_PROPERTIES,
+    "brushed-nickel": {"metalness": 0.85, "roughness": 0.32},
+}
 
 
 def clamp(value: float, low: float, high: float) -> float:

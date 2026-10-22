@@ -383,7 +383,7 @@ def test_catlin_base_scope_follows_the_standard_and_the_floor(catlin_model_ro) -
     kinds = {r.room: r.kind for r in catlin_model_ro.base_runs}
     assert kinds["RM-M-BATH2"] == "tile" and kinds["RM-S-SUITEBATH"] == "tile"
     assert kinds["RM-B-BATH"] == "integral_cove" and kinds["RM-A-STUDIO"] == "integral_cove"
-    assert kinds["RM-S-PLANT"] == "integral_cove" and kinds["RM-S-HALL"] == "trim"
+    assert kinds["RM-S-PLANT"] == "resilient_base" and kinds["RM-S-HALL"] == "trim"
     # MDF casing; PVC on the wet faces; cedar in the sauna; two hardwood accent faces.
     casing = {(c.opening_ref, c.room): c.material_ref for c in catlin_model_ro.door_casings}
     wet = {"RM-M-BATH1", "RM-M-BATH2", "RM-S-BATH1", "RM-S-SUITEBATH", "RM-S-VANITY",

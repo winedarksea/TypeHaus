@@ -116,8 +116,8 @@ def test_product_labels_key_on_the_section_and_the_price_key(catlin_plan) -> Non
     from typehaus.takeoff.product_labels import product_labels
 
     labels = product_labels(catlin_plan)
-    assert labels[("sheet_goods", "trex-enhance-basics")] == "Trex Enhance Basics"
-    assert labels[("stair_treads", "trex-enhance-basics")] == "Trex Enhance Basics"
+    assert labels[("sheet_goods", "trex-enhance-basics")] == "Trex Enhance Basics, Tide Pool (TP)"
+    assert labels[("stair_treads", "trex-enhance-basics")] == "Trex Enhance Basics, Tide Pool (TP)"
     assert labels[("placeables", "APPL-LG-WASHTOWER")] == "LG WKHC252HBA"
     # The same appliance is priced into both halves of the placeables split.
     assert labels[("furnishings", "APPL-LG-WASHTOWER")] == "LG WKHC252HBA"

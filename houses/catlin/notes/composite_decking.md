@@ -2,7 +2,9 @@
 
 FS-BW-FLOOR, FS-SG-PORCH and ST-G-SERVICE use the main library's
 `TREX_ENHANCE_BASICS` and `TREX_ENHANCE_BASICS_DECK_LAYER`: square-edge
-0.94 x 5.5 inch scalloped capped composite. Color remains unselected. Generic
+0.94 x 5.5 inch scalloped capped composite. Color: **Tide Pool** (owner 2026-10-22), a
+misty warm grey with heat-mitigating cap; `plan/decking_selection.py` swaps the house's copy
+of the material to #8e847b, the mean of Trex's own swatch photo. Confirm on a physical sample. Generic
 `composite-deck` remains available for other products. Product properties and dimensions
 live in `typehaus.library.decking`, not house-local copies.
 

@@ -110,8 +110,9 @@ MAIN_KITCHEN_CASEWORK = [
               room="RM-M-LIVING",
               position=pt(inch(351.375), inch(413.375))),
     # The disposer follows the smaller undermount bowl's rear-centre drain and lower rim.
-    Appliance(uid="ADCW7VPPC1", tag="APPL-M-DISP", type_ref="APPL-DISPOSAL", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(12.319)),
+    # Its gap is 5 11/32" so the Badger 5's 6 5/16" body keeps its centre on the drain.
+    Appliance(uid="ADCW7VPPC1", tag="APPL-M-DISP", type_ref="APPL-ISE-BADGER5", room="RM-M-LIVING",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(13.319)),
               install_parts=("24V Class-2 control transformer, 40 VA",
                              "double-pole contactor, 30 A, 24V coil",
                              "NEMA 1 enclosure, 6x6x4, hinged",
@@ -121,7 +122,7 @@ MAIN_KITCHEN_CASEWORK = [
                              "18/6 CL2 control cable, 50 ft"),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-N1", face="left", distance_from_start=inch(80),
-                  normal_gap=inch(5), rotation_offset=deg(-180)))),
+                  normal_gap=inch(5.34375), rotation_offset=deg(-180)))),
     Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-LG-DISHWASHER", room="RM-M-LIVING",
               position=pt(inch(321.375), inch(413.375))),
     Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="SEKT-B18", room="RM-M-LIVING",
@@ -201,7 +202,7 @@ MAIN_KITCHEN_CASEWORK = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(393.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Appliance(uid="Q0W3FYXJGX", tag="APPL-M-HOOD", type_ref="APPL-HOOD-RECIRC", room="RM-M-LIVING",
+    Appliance(uid="Q0W3FYXJGX", tag="APPL-M-HOOD", type_ref="APPL-BROAN-BWP1304SS", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(372.375),

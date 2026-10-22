@@ -161,6 +161,15 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
                 f"is no height to put a band at", tags, Result.UNKNOWN,
                 fix=f"set Mount.elevation on {body.tag}"))
             continue
+        if isinstance(body, Furniture) and body_type.wall_fixing_points:
+            # A bar spans empty wall between its two posts. Requiring a midpoint band
+            # would add timber where there is no fixing; the discrete check reads actual
+            # emitted wood at every post, including its face and finished-floor datum.
+            out.append(not_applicable(
+                "advisory.wall_backing_present",
+                f"{body.tag} declares discrete fixings; advisory.wall_fixing_support "
+                "grades each post against emitted studs and backing", tags))
+            continue
         low = mount.elevation.meters
         covering = [b for b in bands.get(wall.tag, ())
                     if b.elevation_m - _REACH_M <= low <= b.elevation_m + b.height_m + _REACH_M
