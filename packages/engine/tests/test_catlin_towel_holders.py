@@ -1,6 +1,7 @@
 """Useful towel reach and hanging space, supported fixings, and scheduled hardware."""
 
 from collections import Counter
+from types import SimpleNamespace
 
 import pytest
 from shapely.geometry import Point, Polygon
@@ -19,7 +20,8 @@ HAND = "FT-MOEN-ALIGN-HAND-TOWEL"
 BATH = "FT-MOEN-ALIGN-BATH-TOWEL"
 HOOK = "FT-MOEN-ALIGN-TOWEL-HOOK"
 PAD = "FT-TOWEL-CABINET-BACKING-12"
-HARDWARE = {HAND, BATH, HOOK}
+HAND_CH, BATH_CH, HOOK_CH = (tag + "-CH" for tag in (HAND, BATH, HOOK))
+HARDWARE = {HAND, BATH, HOOK, HAND_CH, BATH_CH, HOOK_CH}
 # Sink identities make omissions visible, including both basins in the separate alcove.
 SINK_HOLDERS = {
     "FX-B-BATH-LAV": "FURN-B-BATH-HAND-TOWEL",
@@ -46,11 +48,11 @@ def _hardware(model):
 
 def _loaded_towel(holder, types):
     width, depth = (v.meters for v in types[holder.type_ref].footprint)
-    if holder.type_ref == HOOK:
+    if holder.type_ref.removesuffix("-CH") == HOOK:
         width, projection, drop = 12 * IN, 6 * IN, 55 * IN
     else:
         projection = 4.5 * IN
-        drop = (18 if holder.type_ref == HAND else 28) * IN
+        drop = (18 if holder.type_ref.removesuffix("-CH") == HAND else 28) * IN
     polygon = Polygon(
         place_local(
             [
@@ -69,7 +71,8 @@ def _loaded_towel(holder, types):
 def test_each_sink_and_shower_has_reachable_selected_hardware(catlin_plan, catlin_model_ro):
     model = catlin_model_ro
     objects = {o.tag: o for o in model.canvas_objects}
-    assert Counter(o.type_ref for o in _hardware(model)) == {HAND: 8, BATH: 3, HOOK: 2}
+    assert Counter(o.type_ref for o in _hardware(model)) == {
+        HAND: 7, HAND_CH: 1, BATH: 3, BATH_CH: 2, HOOK: 1, HOOK_CH: 1}
     bathroom_rooms = {
         r.tag for r in model.rooms if any(word in r.tag for word in ("BATH", "VANITY", "SAUNA"))
     }
@@ -101,11 +104,12 @@ def test_each_sink_and_shower_has_reachable_selected_hardware(catlin_plan, catli
     assert {products[types[t].product_ref].model for t in HARDWARE} == {
         "YB0486BN",
         "YB0424BN",
-        "YB0403BN",
+        "YB0403BN", "YB0486CH", "YB0424CH", "YB0403CH",
     }
     for holder in _hardware(model):
+        assert holder.type_ref.endswith("-CH") == (holder.room == "RM-M-BATH2")
         room = next(r for r in model.rooms if r.tag == holder.room)
-        expected = 48 if holder.type_ref == HAND else 54 if holder.type_ref == BATH else 64
+        expected = 48 if holder.type_ref.removesuffix("-CH") == HAND else 54 if holder.type_ref.removesuffix("-CH") == BATH else 64
         if holder.host_fixture_ref:
             expected = 32.5 if "SUITEBATH" in holder.tag else 30
         if holder.tag == "FURN-A-STUBATH-BATH-TOWEL":
@@ -154,12 +158,12 @@ def test_all_wall_posts_have_support_and_new_courses_fill_their_bays(catlin_ctx)
     findings = [
         f for f in wall_fixing_support(catlin_ctx) if any("TOWEL" in tag for tag in f.element_tags)
     ]
-    assert len(findings) == 18
+    assert len(findings) == 22
     assert all(f.result.value == "pass" for f in findings), findings
     # A post-supported bar needs no timber behind the free span at its midpoint.
     general_findings = [f for f in wall_backing_present(catlin_ctx)
                         if any("TOWEL" in tag for tag in f.element_tags)]
-    assert len(general_findings) == 16  # 13 hardware items and 3 internal pads.
+    assert len(general_findings) == 18  # 15 hardware items and 3 internal pads.
     assert all(f.result.value != "fail" for f in general_findings)
     bands = backing_bands(catlin_ctx.plan)
     emitted = []
@@ -199,7 +203,7 @@ def test_all_wall_posts_have_support_and_new_courses_fill_their_bays(catlin_ctx)
                         block.child_key,
                         peer.child_key,
                     )
-    assert len(emitted) == 9
+    assert len(emitted) == 12
     services = envelopes(catlin_ctx.model)
     for block in emitted:
         ring, low, high = member_footprint(block)
@@ -241,7 +245,7 @@ def test_takeoff_and_ifc_include_all_towel_hardware(catlin_model_ro, catlin_ifc_
     import ifcopenshell
     from ifcopenshell.util.element import get_psets
 
-    expected = {HAND: 8, BATH: 3, HOOK: 2, PAD: 3}
+    expected = {HAND: 7, HAND_CH: 1, BATH: 3, BATH_CH: 2, HOOK: 1, HOOK_CH: 1, PAD: 3}
     rows = placeables_takeoff(catlin_model_ro)
     assert {t: sum(r["count"] for r in rows if r["type"] == t) for t in expected} == expected
     model = ifcopenshell.open(str(catlin_ifc_path))
@@ -263,3 +267,19 @@ def test_takeoff_and_ifc_include_all_towel_hardware(catlin_model_ro, catlin_ifc_
                        for item in obj.Representation.Representations[0].Items)
         if identity.get("source_type") == PAD:
             assert identity.get("host_fixture_ref")
+
+
+def test_bath2_tub_bars_are_centred_separate_and_above_the_rim(catlin_model_ro):
+    objects = {o.tag: o for o in catlin_model_ro.canvas_objects}
+    tub = objects["FX-M-BATH2-TUB"]
+    bars = [objects["FURN-M-BATH2-TUB-TOWEL-" + end] for end in ("S", "N")]
+    assert [bar.position[1] / IN for bar in bars] == pytest.approx([218.77, 246.77])
+    assert sum(bar.position[1] for bar in bars) / 2 == pytest.approx(tub.position[1])
+    assert Polygon(bars[0].footprint).distance(Polygon(bars[1].footprint)) / IN == pytest.approx(2.66)
+    for bar in bars:
+        assert bar.type_ref == BATH_CH
+        assert bar.z_m + 0.67 * IN - 28 * IN > tub.body_z1_m
+    assert bars[0].attachment_wall == "W-M-BA2E"
+    assert any(tag == "W-M-BA2E2" for finding in wall_fixing_support(
+        SimpleNamespace(plan=catlin_model_ro.plan, model=catlin_model_ro))
+        if bars[0].tag in finding.element_tags for tag in finding.element_tags)

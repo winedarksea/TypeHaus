@@ -13,16 +13,17 @@ _HOOK_SCOOP_DEPTH_SHARE = 0.45
 _HOOK_SCOOP_SEGMENTS = 12
 
 
-def towel_bar(width: float, depth: float, height: float
+def towel_bar(width: float, depth: float, height: float, *, color: str = "brushed-nickel"
               ) -> tuple[tuple[Stroke, ...], tuple[Part, ...]]:
     return align_bar(width, depth, height, width_post_ratio=1.34 / 9.17,
-                     depth_post_ratio=1.34 / 3.33)
+                     depth_post_ratio=1.34 / 3.33, color=color)
 
 
 
-def _scooped_seat(radius: float, length: float, center_y: float) -> Part:
+def _scooped_seat(radius: float, length: float, center_y: float, color: str) -> Part:
     """Keep the barrel's underside while scooping the upper surface between its ends."""
-    vertices, triangles = [], []
+    vertices: list[tuple[float, float, float]] = []
+    triangles: list[tuple[int, int, int]] = []
     for course in range(_HOOK_SCOOP_SEGMENTS + 1):
         fraction = course / _HOOK_SCOOP_SEGMENTS
         y = center_y + (fraction - 0.5) * length
@@ -44,10 +45,10 @@ def _scooped_seat(radius: float, length: float, center_y: float) -> Part:
             a = course * ROUND_SEGMENTS + segment
             b = course * ROUND_SEGMENTS + (segment + 1) % ROUND_SEGMENTS
             triangles.append((center, b, a) if sign < 0 else (center, a, b))
-    return mesh_part(vertices, triangles, "brushed-nickel")
+    return mesh_part(vertices, triangles, color)
 
 
-def towel_hook(width: float, depth: float, height: float
+def towel_hook(width: float, depth: float, height: float, *, color: str = "brushed-nickel"
                ) -> tuple[tuple[Stroke, ...], tuple[Part, ...]]:
     radius = min(width, height) / 2
     rear = depth * _HOOK_REAR_LENGTH_SHARE
@@ -56,8 +57,8 @@ def towel_hook(width: float, depth: float, height: float
     # The concave seat represents the product's notch, with a raised round
     # nose to retain fabric. All three solids stay inside the manufacturer's envelope.
     parts = (
-        round_cylinder((0, depth / 2 - rear / 2, radius), radius, rear, axis=1),
-        _scooped_seat(radius, neck, -depth / 2 + lip + neck / 2),
-        round_cylinder((0, -depth / 2 + lip / 2, radius), radius, lip, axis=1),
+        round_cylinder((0, depth / 2 - rear / 2, radius), radius, rear, axis=1, color=color),
+        _scooped_seat(radius, neck, -depth / 2 + lip + neck / 2, color),
+        round_cylinder((0, -depth / 2 + lip / 2, radius), radius, lip, axis=1, color=color),
     )
     return (rect(0, 0, width, depth, fill="metal"),), parts

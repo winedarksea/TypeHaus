@@ -1,4 +1,4 @@
-"""Moen Align towel hardware, in brushed nickel to match the paper holders."""
+"""Moen Align hardware: brushed nickel generally, chrome in Bath2."""
 
 from typehaus import FurnitureType, Product, inch
 
@@ -80,5 +80,35 @@ TOWEL_CABINET_PAD = FurnitureType(
     "trim bolts clear of storage. Suite pad sits above the separate TP pad.",
 )
 
-TOWEL_PRODUCTS = (HAND_TOWEL_PRODUCT, BATH_TOWEL_PRODUCT, TOWEL_HOOK_PRODUCT)
-TOWEL_TYPES = (HAND_TOWEL_BAR, BATH_TOWEL_BAR, TOWEL_HOOK, TOWEL_CABINET_PAD)
+HAND_TOWEL_PRODUCT_CHROME = HAND_TOWEL_PRODUCT.model_copy(update={
+    "tag": "PROD-MOEN-YB0486CH", "model": "YB0486CH",
+    "name": "Align hand towel bar, chrome", "url": "https://shop.moen.com/products/yb0486ch",
+    "source": HAND_TOWEL_PRODUCT.source + " Chrome variant; zinc posts, stainless steel bar.",
+})
+BATH_TOWEL_PRODUCT_CHROME = BATH_TOWEL_PRODUCT.model_copy(update={
+    "tag": "PROD-MOEN-YB0424CH", "model": "YB0424CH",
+    "name": "Align 24 in. towel bar, chrome", "url": "https://shop.moen.com/products/yb0424ch",
+    "source": BATH_TOWEL_PRODUCT.source + " Chrome variant; specification lists zinc construction.",
+})
+TOWEL_HOOK_PRODUCT_CHROME = TOWEL_HOOK_PRODUCT.model_copy(update={
+    "tag": "PROD-MOEN-YB0403CH", "model": "YB0403CH",
+    "name": "Align single robe/towel hook, chrome", "url": "https://shop.moen.com/products/yb0403ch",
+    "source": TOWEL_HOOK_PRODUCT.source + " Chrome variant; zinc construction.",
+})
+HAND_TOWEL_BAR_CHROME = HAND_TOWEL_BAR.model_copy(update={
+    "tag": HAND_TOWEL_BAR.tag + "-CH", "name": "Moen Align YB0486CH hand towel bar",
+    "product_ref": HAND_TOWEL_PRODUCT_CHROME.tag, "plan_symbol": "towel-bar-chrome",
+})
+BATH_TOWEL_BAR_CHROME = BATH_TOWEL_BAR.model_copy(update={
+    "tag": BATH_TOWEL_BAR.tag + "-CH", "name": "Moen Align YB0424CH 24 in. bath towel bar",
+    "product_ref": BATH_TOWEL_PRODUCT_CHROME.tag, "plan_symbol": "towel-bar-chrome",
+})
+TOWEL_HOOK_CHROME = TOWEL_HOOK.model_copy(update={
+    "tag": TOWEL_HOOK.tag + "-CH", "name": "Moen Align YB0403CH bath towel hook",
+    "product_ref": TOWEL_HOOK_PRODUCT_CHROME.tag, "plan_symbol": "towel-hook-chrome",
+})
+
+TOWEL_PRODUCTS = (HAND_TOWEL_PRODUCT, BATH_TOWEL_PRODUCT, TOWEL_HOOK_PRODUCT,
+                  HAND_TOWEL_PRODUCT_CHROME, BATH_TOWEL_PRODUCT_CHROME, TOWEL_HOOK_PRODUCT_CHROME)
+TOWEL_TYPES = (HAND_TOWEL_BAR, BATH_TOWEL_BAR, TOWEL_HOOK, TOWEL_CABINET_PAD,
+               HAND_TOWEL_BAR_CHROME, BATH_TOWEL_BAR_CHROME, TOWEL_HOOK_CHROME)

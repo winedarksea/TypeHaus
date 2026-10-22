@@ -160,7 +160,7 @@ MAIN_FIXTURES = (
     # W-M-BA2E's face, and laps W-M-TUBDK-W's top by the cutout's 1" (2026-10-21; it stood
     # 3/16" clear of a 2x4 wall before). y is unchanged: 2" of tiled deck at the head
     # (y 16'-10 15/16"..21'-10 5/8") and ~5 1/16" of foot bay. The foot bay is not slack: it
-    # holds the Bask receptacle and the R2707 body of FX-M-BATH2-FILLER, both reachable
+    # holds the Bask receptacle and the Moen 4794 body of FX-M-BATH2-FILLER, both reachable
     # through FURN-M-BATH2-TUBDK-AP. The lap and the 1/8" are provisional until template
     # 1268438-7 is measured.
     #
@@ -188,14 +188,11 @@ MAIN_FIXTURES = (
             tub_enclosure=TubEnclosureSpec(
                 knee_wall_refs=("W-M-TUBDK-W", "W-M-TUBDK-S"), batt_thickness=inch(2.5),
                 access_panel_ref="FURN-M-BATH2-TUBDK-AP", deck_ref="SL-M-TUBDK")),
-    # The tub filler, on the foot ledge (2026-10-21): reachable from the aisle, where a
-    # wall mount on W-M-BA2E would be ~38" across the bath. Holes on the foot bay's centre
-    # line (y=16'-8.4"), spout centre x=6'-0", spout reaching north over the rim. The R2707
-    # body hangs in the foot bay behind FURN-M-BATH2-TUBDK-AP, its handles 8" either side and
-    # clear of ED-M-BATH2-TUB-RC at the bay's west face. Seated on the finished deck (22 3/4").
-    Fixture(uid="XSAHT3AEKA", tag="FX-M-BATH2-FILLER", type_ref="FX-DELTA-T2759-ROMAN", room="RM-M-BATH2",
+    # Hole line y=200.41 in. is unchanged; the trim envelope is centred on the tub.
+    # Closed handles point outward. The rough and hoses occupy the serviceable foot bay.
+    Fixture(uid="XSAHT3AEKA", tag="FX-M-BATH2-FILLER", type_ref="FX-MOEN-ALIGN-ROMAN", room="RM-M-BATH2",
             host_fixture_ref="FX-M-BATH2-TUB",
-            position=pt(ft(6), inch(204.16)), rotation=deg(180),
+            position=pt(inch(76.615), inch(203.800625)), rotation=deg(180),
             mount=Mount(kind=MountKind.FLOOR, elevation=inch(21.25))),
     # ** A 54" ONE-BASIN VANITY, NOT A KITCHEN SINK ON A WALL MOUNT. ** FX-VANITY-54-SINGLE
     # (plan/fixture_types.py) carries the cabinet, the single basin and the 36"

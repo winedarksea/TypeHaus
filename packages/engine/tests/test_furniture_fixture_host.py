@@ -81,7 +81,7 @@ def test_post_support_uses_actual_wood_and_correct_face():
 
 def test_holder_symbol_post_centres_match_fixing_stations():
     parts = model_parts("pivoting-paper-holder", 8.11 * IN, 3.34 * IN, 1.34 * IN)
-    plates = [part for part in parts if part["shape"] == "cylinder-depth"
+    plates = [part for part in parts if part["shape"] == "mesh"
               and part["size"][0] == pytest.approx(1.34 * IN)]
     assert [part["center"][0] / IN for part in plates] == pytest.approx([-3.385, 3.385])
     assert all(part["center"][2] / IN == pytest.approx(0.67) for part in plates)

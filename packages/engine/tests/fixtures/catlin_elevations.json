@@ -1241,6 +1241,12 @@
 "canvas_objects/FURN-M-BATH2-TP/body_z0_m": 0.681482,
 "canvas_objects/FURN-M-BATH2-TP/body_z1_m": 0.715518,
 "canvas_objects/FURN-M-BATH2-TP/z_m": 0.681482,
+"canvas_objects/FURN-M-BATH2-TUB-TOWEL-N/body_z0_m": 1.392682,
+"canvas_objects/FURN-M-BATH2-TUB-TOWEL-N/body_z1_m": 1.426718,
+"canvas_objects/FURN-M-BATH2-TUB-TOWEL-N/z_m": 1.392682,
+"canvas_objects/FURN-M-BATH2-TUB-TOWEL-S/body_z0_m": 1.392682,
+"canvas_objects/FURN-M-BATH2-TUB-TOWEL-S/body_z1_m": 1.426718,
+"canvas_objects/FURN-M-BATH2-TUB-TOWEL-S/z_m": 1.392682,
 "canvas_objects/FURN-M-BATH2-TUBDK-AP/body_z0_m": 0.1143,
 "canvas_objects/FURN-M-BATH2-TUBDK-AP/body_z1_m": 0.4699,
 "canvas_objects/FURN-M-BATH2-TUBDK-AP/z_m": 0.1143,
@@ -1824,7 +1830,7 @@
 "canvas_objects/FX-M-BATH1-WC/body_z1_m": 0.4346245,
 "canvas_objects/FX-M-BATH1-WC/z_m": 0.1012495,
 "canvas_objects/FX-M-BATH2-FILLER/body_z0_m": 0.57785,
-"canvas_objects/FX-M-BATH2-FILLER/body_z1_m": 0.83185,
+"canvas_objects/FX-M-BATH2-FILLER/body_z1_m": 0.7405687,
 "canvas_objects/FX-M-BATH2-FILLER/z_m": 0.57785,
 "canvas_objects/FX-M-BATH2-SH/body_z0_m": 0.0381,
 "canvas_objects/FX-M-BATH2-SH/body_z1_m": 2.1717,
@@ -30355,6 +30361,18 @@
 8,
 "7137fecbc92a"
 ],
+"geometry/CMW126AAAA::framing/member:backing-1-000": [
+1.33985,
+1.47955,
+8,
+"0f180e7d4103"
+],
+"geometry/CMW126AAAA::framing/member:backing-2-000": [
+1.33985,
+1.47955,
+8,
+"0f180e7d4103"
+],
 "geometry/CMW126AAAA::framing/member:plate-bottom": [
 0.0,
 0.0381,
@@ -30482,6 +30500,12 @@
 "7137fecbc92a"
 ],
 "geometry/CMW127AAAA::framing/member:backing-1-000": [
+1.33985,
+1.47955,
+8,
+"0f180e7d4103"
+],
+"geometry/CMW127AAAA::framing/member:backing-2-000": [
 1.8288,
 2.01295,
 8,
@@ -76075,6 +76099,18 @@
 2,
 "dbeb6e3c92d0"
 ],
+"member/CMW126AAAA/backing-1-000": [
+1.33985,
+1.47955,
+2,
+"b74b16a4cb9c"
+],
+"member/CMW126AAAA/backing-2-000": [
+1.33985,
+1.47955,
+2,
+"b74b16a4cb9c"
+],
 "member/CMW126AAAA/plate-bottom": [
 0.0,
 0.0381,
@@ -76172,6 +76208,12 @@
 "dbeb6e3c92d0"
 ],
 "member/CMW127AAAA/backing-1-000": [
+1.33985,
+1.47955,
+2,
+"b74b16a4cb9c"
+],
+"member/CMW127AAAA/backing-2-000": [
 1.8288,
 2.01295,
 2,

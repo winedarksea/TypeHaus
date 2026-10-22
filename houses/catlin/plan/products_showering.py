@@ -74,7 +74,8 @@ MOEN_ATTRACT_MAGNETIX = Product(
            "WaterSense. ** FINISH: ONLY CHROME AND 26008SRN (Spot Resist Brushed Nickel) "
            "WERE FOUND -- NO SPOT RESIST STAINLESS. ** Brushed nickel beside Delta Lumicoat "
            "stainless in one room is the mix this house rules out, so BATH2's showering parts "
-           "go CHROME together: this head, the 17T trim and (2026-10-22) the T2759 filler."
+           "go CHROME together: this head, the 17T trim and the Moen Align T393 filler "
+           "(2026-10-22)."
 )
 DELTA_17T_THERMO_TRIM = Product(
     tag="PROD-DELTA-T17T", brand="Delta", model="T17T059",
@@ -83,8 +84,8 @@ DELTA_17T_THERMO_TRIM = Product(
            "17T trim (T17T259 shower-only, T17T459 tub/shower); trim only, on the existing "
            "PROD-DELTA-R10000-UNBX rough. Thermostatic cartridge in the TRIM; separate "
            "temperature and volume levers; no diverter, which one outlet does not need. "
-           "Trinsic, not Ashlyn (owner 2026-10-22): no Ashlyn 17T exists, and Trinsic "
-           "matches the room's T2759 filler. Chrome, with the 26008 head. The cartridge "
+           "Trinsic (owner 2026-10-22), retained with the room's Moen Align T393 filler. "
+           "Chrome, with the 26008 head. The cartridge "
            "carries the ASSE 1016 mark the rough-in argument in fixture_types_wc.py requires.",
 )
 DELTA_UNIVERSAL_HEAD = Product(

@@ -530,7 +530,9 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
                 representation = parts_representation(
                     f, body, [part.geometry for part in bench_parts(bench)],
                     resolved.position, resolved.rotation_degrees, resolved.z_m)
-            elif furniture_type.plan_symbol in {"pivoting-paper-holder", "towel-bar", "towel-hook"}:
+            elif furniture_type.plan_symbol in {
+                    "pivoting-paper-holder", "towel-bar", "towel-hook",
+                    "pivoting-paper-holder-chrome", "towel-bar-chrome", "towel-hook-chrome"}:
                 from typehaus.emit.ifc.placeable_parts import parts_representation
                 from typehaus.model.placeable_symbols import model_parts
 
@@ -647,7 +649,8 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
             type_cache[type_key] = type_object
         element = ll.create_entity(f, ifc_class, name=item.tag)
         element.GlobalId = derive_guid(project_uuid, item.uid)
-        if getattr(product_type, "plan_symbol", None) == "kohler-underscore-6036":
+        if getattr(product_type, "plan_symbol", None) in {
+                "kohler-underscore-6036", "roman-tub-filler"}:
             from typehaus.emit.ifc.placeable_parts import parts_representation
             from typehaus.model.placeable_symbols import model_parts
 

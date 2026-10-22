@@ -1,57 +1,71 @@
-"""Three-hole deck-mount Roman tub filler: two lever handles and an arched spout.
+"""Moen Align T393 at 10-inch handle centres, without a handshower.
 
-Local frame: the hole line sits at the rear (+y), the spout arches toward the front (-y),
-as for the faucet in ``_undermount_sink.py``. Proportions scale from the Delta T2759
-class: 8" handle centres, 8" spout reach, 5 7/8" deck to outlet and 10" overall, on a
-10 1/2" x 10" x 10" type box.
+Local +y is the rear. The origin is the trim envelope centre, not the hole line.
+Published dimensions: t393sp.pdf Rev. 1/18; body/rod diameters without callouts are
+representative. Keep overall reach distinct from the outlet centre's 7 1/4-inch reach.
 """
 
 from typehaus.model.placeable_symbols._families import Geometry
-from typehaus.model.placeable_symbols._frame import DETAIL_WEIGHT, box, circle, line, rect
+from typehaus.model.placeable_symbols._frame import DETAIL_WEIGHT, circle, line, rect
+from typehaus.model.placeable_symbols._round_hardware import round_cylinder
 
-TYPE_WIDTH_IN = 10.5
-TYPE_DEPTH_IN = 10.0
-TYPE_HEIGHT_IN = 10.0
-HANDLE_CENTRES_IN = 8.0
-ESCUTCHEON_DIAMETER_IN = 2.5
-SPOUT_REACH_IN = 8.0
-OUTLET_HEIGHT_IN = 5.875
-LEVER_LENGTH_IN = 3.5
-HANDLE_HEIGHT_IN = 3.0
+HANDLE_CENTRES_IN = 10.0
+LEVER_REACH_IN = 2.96875
+SPOUT_BASE_DIAMETER_IN = 2.25
+HANDLE_BASE_DIAMETER_IN = 1.9375
+SPOUT_OVERALL_REACH_IN = 7.90625
+SPOUT_OUTLET_REACH_IN = 7.25
+OUTLET_UNDERSIDE_IN = 3.71875
+SPOUT_AXIS_HEIGHT_IN = 4.6875
+HANDLE_HEIGHT_IN = 2.5625
+TYPE_WIDTH_IN = HANDLE_CENTRES_IN + 2 * LEVER_REACH_IN
+TYPE_DEPTH_IN = SPOUT_OVERALL_REACH_IN + SPOUT_BASE_DIAMETER_IN / 2
+TYPE_HEIGHT_IN = 6.40625
+# These small, uncalled-out diameters convey the product's cylindrical form.
+NECK_RADIUS_IN = 0.875
+ARM_RADIUS_IN = 0.59375
+OUTLET_RADIUS_IN = 0.5
+LEVER_RADIUS_IN = 0.1875
+BASE_THICKNESS_IN = 0.125
 
 
 def roman_tub_filler(width: float, depth: float, height: float) -> Geometry:
-    """Handles either side of a spout neck; the arch carries the outlet over the basin."""
+    """Outward closed levers flank a straight round spout and a downturned outlet."""
     sx, sy, sz = width / TYPE_WIDTH_IN, depth / TYPE_DEPTH_IN, height / TYPE_HEIGHT_IN
-    hole_y = depth / 2 - sy * ESCUTCHEON_DIAMETER_IN / 2
-    handle_x = sx * HANDLE_CENTRES_IN / 2
-    outlet_y = hole_y - sy * SPOUT_REACH_IN
-    radius = min(sx, sy) * ESCUTCHEON_DIAMETER_IN / 2
-    neck = min(sx, sy) * 1.0
-    escutcheon_t = sz * 0.25
+    radial_scale = min(sx, sy)
+    hole_y = depth / 2 - sy * SPOUT_BASE_DIAMETER_IN / 2
+    outlet_y = hole_y - sy * SPOUT_OUTLET_REACH_IN
+    front_y = hole_y - sy * SPOUT_OVERALL_REACH_IN
+    arm_z = sz * SPOUT_AXIS_HEIGHT_IN
+    neck_r = radial_scale * NECK_RADIUS_IN
+    base_t = sz * BASE_THICKNESS_IN
     strokes = [
-        rect(0, (hole_y + outlet_y) / 2, neck, hole_y - outlet_y),
-        circle(0, hole_y, radius, weight=DETAIL_WEIGHT),
-        circle(0, outlet_y, neck * 0.4, weight=DETAIL_WEIGHT),
+        rect(0, (hole_y + front_y) / 2, 2 * neck_r, hole_y - front_y),
+        circle(0, hole_y, radial_scale * SPOUT_BASE_DIAMETER_IN / 2, weight=DETAIL_WEIGHT),
+        circle(0, outlet_y, radial_scale * OUTLET_RADIUS_IN, weight=DETAIL_WEIGHT),
     ]
     parts = [
-        box(0, hole_y, 0, escutcheon_t, 2 * radius, 2 * radius, "metal"),
-        # Neck up to the crown, the arm across, and the outlet dropping to 5 7/8".
-        box(0, hole_y, escutcheon_t, height, neck, neck, "metal"),
-        box(0, (hole_y + outlet_y) / 2, height - neck, height, neck, hole_y - outlet_y + neck,
-            "metal"),
-        box(0, outlet_y, sz * OUTLET_HEIGHT_IN, height - neck, neck, neck, "metal"),
+        round_cylinder((0, hole_y, base_t / 2), radial_scale * SPOUT_BASE_DIAMETER_IN / 2,
+                       base_t, axis=2, color="metal"),
+        round_cylinder((0, hole_y, height / 2), neck_r, height, axis=2, color="metal"),
+        round_cylinder((0, (hole_y + front_y) / 2, arm_z), radial_scale * ARM_RADIUS_IN,
+                       hole_y - front_y, axis=1, color="metal"),
+        round_cylinder((0, outlet_y, (arm_z + sz * OUTLET_UNDERSIDE_IN) / 2),
+                       radial_scale * OUTLET_RADIUS_IN, arm_z - sz * OUTLET_UNDERSIDE_IN,
+                       axis=2, color="metal"),
     ]
-    lever_y = hole_y - sy * LEVER_LENGTH_IN / 2
-    lever_z = sz * HANDLE_HEIGHT_IN
     for sign in (-1, 1):
-        x = sign * handle_x
-        lever_tip = (x, hole_y - sy * LEVER_LENGTH_IN)
-        strokes.extend((circle(x, hole_y, radius), line((x, hole_y), lever_tip)))
+        x = sign * sx * HANDLE_CENTRES_IN / 2
+        tip = x + sign * sx * LEVER_REACH_IN
+        lever_z = sz * HANDLE_HEIGHT_IN - radial_scale * LEVER_RADIUS_IN
+        strokes.extend((circle(x, hole_y, radial_scale * HANDLE_BASE_DIAMETER_IN / 2),
+                        line((x, hole_y), (tip, hole_y))))
         parts.extend((
-            box(x, hole_y, 0, escutcheon_t, 2 * radius, 2 * radius, "metal"),
-            box(x, hole_y, escutcheon_t, lever_z, neck * 0.8, neck * 0.8, "metal"),
-            box(x, lever_y, lever_z - neck * 0.4, lever_z, neck * 0.5, sy * LEVER_LENGTH_IN,
-                "metal"),
+            round_cylinder((x, hole_y, base_t / 2), radial_scale * HANDLE_BASE_DIAMETER_IN / 2,
+                           base_t, axis=2, color="metal"),
+            round_cylinder((x, hole_y, sz * HANDLE_HEIGHT_IN / 2), neck_r * 0.8,
+                           sz * HANDLE_HEIGHT_IN, axis=2, color="metal"),
+            round_cylinder(((x + tip) / 2, hole_y, lever_z), radial_scale * LEVER_RADIUS_IN,
+                           abs(tip - x), axis=0, color="metal"),
         ))
     return tuple(strokes), tuple(parts)

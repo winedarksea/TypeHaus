@@ -271,3 +271,67 @@ def test_the_filler_sits_on_the_foot_ledge_at_deck_height():
 
 
 pytestmark = pytest.mark.slow
+
+
+def test_align_filler_is_centred_and_its_mounts_and_outlet_clear_the_rim(catlin_plan, catlin_model_ro):
+    from shapely.geometry import Point
+
+    from typehaus.model.placeable_symbols import model_parts, place_local
+    from typehaus.model.placeable_symbols._roman_tub_filler import (
+        HANDLE_CENTRES_IN,
+        LEVER_REACH_IN,
+        NECK_RADIUS_IN,
+        SPOUT_BASE_DIAMETER_IN,
+    )
+
+    model = catlin_model_ro
+    filler = _canvas(model, "FX-M-BATH2-FILLER")
+    tub = _canvas(model, "FX-M-BATH2-TUB")
+    trim = next(t for t in catlin_plan.library.fixture_types if t.tag == filler.type_ref)
+    width, depth = (v.meters for v in trim.footprint)
+    parts = model_parts(trim.plan_symbol, width, depth, trim.height.meters)
+    hole_y = depth / 2 - SPOUT_BASE_DIAMETER_IN / 2 * M_PER_IN
+    hole_line = place_local([(0, hole_y)], filler.position, filler.rotation_degrees)[0]
+    outlet = place_local([parts[3]["center"][:2]], filler.position, filler.rotation_degrees)[0]
+    assert filler.uid == "XSAHT3AEKA" and filler.host_fixture_ref == tub.tag
+    assert filler.position[0] == pytest.approx(tub.position[0])
+    assert hole_line[1] / M_PER_IN == pytest.approx(200.41)
+    assert filler.z_m / M_PER_IN == pytest.approx(22.75)
+    assert outlet[1] / M_PER_IN == pytest.approx(207.66)
+    # Published top basin length, not merely the outside rim or the provisional cutout.
+    basin_south = tub.position[1] - 55.5625 / 2 * M_PER_IN
+    assert (outlet[1] - basin_south) / M_PER_IN == pytest.approx(2.67125)
+    cap = Polygon([p.xy_m for p in catlin_plan.by_tag("SL-M-TUBDK").outline])
+    # Both escutcheons and 1 1/4-inch rough holes remain on the foot deck, ahead of shell.
+    receptacle = _canvas(model, "ED-M-BATH2-TUB-RC")
+    south_wall = next(w for w in model.walls if w.tag == "W-M-TUBDK-S")
+    bay_south = max(y for layer in south_wall.layers if layer.name == "ply-bay"
+                    for _, y in layer.polygon)
+    for x in (-HANDLE_CENTRES_IN / 2, 0, HANDLE_CENTRES_IN / 2):
+        xy = place_local([(x * M_PER_IN, hole_y)], filler.position, filler.rotation_degrees)[0]
+        assert cap.covers(Point(xy).buffer(SPOUT_BASE_DIAMETER_IN / 2 * M_PER_IN))
+        rough_hole = Point(xy).buffer(0.625 * M_PER_IN)
+        assert rough_hole.bounds[1] > bay_south
+        assert rough_hole.bounds[3] < Polygon(tub.footprint).bounds[1]
+        assert rough_hole.distance(Polygon(receptacle.footprint)) > 6 * M_PER_IN
+        if x:
+            # A full disk is conservative for the actual quarter-turn lever sweep.
+            sweep = Point(xy).buffer(LEVER_REACH_IN * M_PER_IN)
+            neck = Point(hole_line).buffer(NECK_RADIUS_IN * M_PER_IN)
+            assert sweep.disjoint(neck)
+    products = {p.tag: p for p in catlin_plan.library.products}
+    assert trim.product_ref == "PROD-MOEN-T393"
+    assert products["PROD-MOEN-4794"].model == "4794"
+    assert products["PROD-KOHLER-7272"].model == "K-7272-CP"
+    assert "PROD-DELTA-15840LF" in next(
+        t.source for t in catlin_plan.library.fixture_types if t.tag == "FX-VANITY-48-SHALLOW")
+
+
+def test_align_filler_exports_its_detailed_geometry(catlin_ifc_path):
+    import ifcopenshell
+
+    model = ifcopenshell.open(str(catlin_ifc_path))
+    filler = next(o for o in model.by_type("IfcSanitaryTerminal") if o.Name == "FX-M-BATH2-FILLER")
+    representation = filler.Representation.Representations[0]
+    assert representation.RepresentationType == "Tessellation"
+    assert len(representation.Items) == 10

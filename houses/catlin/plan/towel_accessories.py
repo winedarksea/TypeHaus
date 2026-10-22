@@ -59,7 +59,7 @@ MAIN_TOWEL_ACCESSORIES = [
     Furniture(
         uid="TWMBHAND02",
         tag="FURN-M-BATH2-HAND-TOWEL",
-        type_ref="FT-MOEN-ALIGN-HAND-TOWEL",
+        type_ref="FT-MOEN-ALIGN-HAND-TOWEL-CH",
         room="RM-M-BATH2",
         host_fixture_ref="FX-M-BATH2-SINK",
         position=pt(inch(18.25), inch(208.04)),
@@ -79,7 +79,7 @@ MAIN_TOWEL_ACCESSORIES = [
     Furniture(
         uid="TWMBHOOK01",
         tag="FURN-M-BATH2-BATH-TOWEL",
-        type_ref="FT-MOEN-ALIGN-TOWEL-HOOK",
+        type_ref="FT-MOEN-ALIGN-TOWEL-HOOK-CH",
         room="RM-M-BATH2",
         mount=Mount(kind=MountKind.WALL, elevation=inch(63.33)),
         location=Location(
@@ -90,6 +90,21 @@ MAIN_TOWEL_ACCESSORIES = [
                 rotation_offset=deg(-180),
             )
         ),
+    ),
+    # A matched pair centred along the tub. The south post is on the continuous BA2E2 face.
+    Furniture(
+        uid="TWMBTUB001", tag="FURN-M-BATH2-TUB-TOWEL-S", type_ref="FT-MOEN-ALIGN-BATH-TOWEL-CH",
+        room="RM-M-BATH2", mount=Mount(kind=MountKind.WALL, elevation=inch(53.33)),
+        location=Location(attachment=WallAttachment(
+            wall_ref="W-M-BA2E", face="right", distance_from_start=inch(49.23),
+            rotation_offset=deg(0))),
+    ),
+    Furniture(
+        uid="TWMBTUB002", tag="FURN-M-BATH2-TUB-TOWEL-N", type_ref="FT-MOEN-ALIGN-BATH-TOWEL-CH",
+        room="RM-M-BATH2", mount=Mount(kind=MountKind.WALL, elevation=inch(53.33)),
+        location=Location(attachment=WallAttachment(
+            wall_ref="W-M-BA2E", face="right", distance_from_start=inch(21.23),
+            rotation_offset=deg(0))),
     ),
 ]
 

@@ -9,7 +9,7 @@ _PIVOT_CAP_RADIUS_SHARE = 0.96
 
 
 def align_bar(width: float, depth: float, height: float, *, width_post_ratio: float,
-              depth_post_ratio: float, pivoting: bool = False
+              depth_post_ratio: float, pivoting: bool = False, color: str = "brushed-nickel"
               ) -> tuple[tuple[Stroke, ...], tuple[Part, ...]]:
     # Plan geometry depends only on the footprint; the 3D post is also limited by height.
     diameter = min(width * width_post_ratio, depth * depth_post_ratio)
@@ -26,11 +26,12 @@ def align_bar(width: float, depth: float, height: float, *, width_post_ratio: fl
             # A recessed circular joint at the nose distinguishes the pivoting carrier.
             cap_depth = min(2 * radius * _PIVOT_END_SHARE, depth / 4)
             parts.append(round_cylinder((x, cap_depth / 2, radius), radius,
-                                         depth - cap_depth, axis=1))
+                                         depth - cap_depth, axis=1, color=color))
             parts.append(round_cylinder((x, -depth / 2 + cap_depth / 2, radius),
-                                         radius * _PIVOT_CAP_RADIUS_SHARE, cap_depth, axis=1))
+                                         radius * _PIVOT_CAP_RADIUS_SHARE, cap_depth,
+                                         axis=1, color=color))
         else:
-            parts.append(round_cylinder((x, 0, radius), radius, depth, axis=1))
+            parts.append(round_cylinder((x, 0, radius), radius, depth, axis=1, color=color))
     parts.append(round_cylinder((0, -depth / 2 + radius, radius),
-                                 radius * _TUBE_TO_POST_DIAMETER, 2 * post_x, axis=0))
+                                 radius * _TUBE_TO_POST_DIAMETER, 2 * post_x, axis=0, color=color))
     return tuple(strokes), tuple(parts)

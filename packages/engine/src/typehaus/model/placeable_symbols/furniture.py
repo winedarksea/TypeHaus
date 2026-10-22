@@ -7,6 +7,8 @@ needs no entry here at all: the same symbol renders at whatever W×D×H the type
 
 from __future__ import annotations
 
+from functools import partial
+
 from typehaus.model.placeable_symbols._cantilever_chair import cantilever_chair
 from typehaus.model.placeable_symbols._cellular_blind import cellular_blind
 from typehaus.model.placeable_symbols._chess_table import chess_table
@@ -104,6 +106,9 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "pivoting-paper-holder": pivoting_paper_holder,
     "towel-bar": towel_bar,
     "towel-hook": towel_hook,
+    "pivoting-paper-holder-chrome": partial(pivoting_paper_holder, color="metal"),
+    "towel-bar-chrome": partial(towel_bar, color="metal"),
+    "towel-hook-chrome": partial(towel_hook, color="metal"),
     "footrest": footrest,
     "curtain-rod": curtain_rod,
     "cellular-blind": cellular_blind,

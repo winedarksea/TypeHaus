@@ -23,7 +23,7 @@ ROOMS = ("RM-B-BATH", "RM-M-BATH1", "RM-M-BATH2", "RM-S-BATH1",
 
 
 def _holders(model):
-    return [obj for obj in model.canvas_objects if obj.type_ref == "FT-MOEN-ALIGN-TP"]
+    return [obj for obj in model.canvas_objects if obj.type_ref in {"FT-MOEN-ALIGN-TP", "FT-MOEN-ALIGN-TP-CH"}]
 
 
 def _envelope(holder, depth=6):
@@ -46,7 +46,10 @@ def test_every_toilet_has_one_selected_holder_at_26_aff(catlin_plan, catlin_mode
     assert product.product_ref == "PROD-MOEN-YB0408BN"
     selected = next(p for p in catlin_plan.library.products if p.tag == product.product_ref)
     assert selected.model == "YB0408BN"
+    types = {t.tag: t for t in catlin_plan.library.furniture_types}
     for holder in holders:
+        expected_product = "PROD-MOEN-YB0408CH" if holder.room == "RM-M-BATH2" else selected.tag
+        assert types[holder.type_ref].product_ref == expected_product
         room = next(room for room in catlin_model_ro.rooms if room.tag == holder.room)
         floor = room_finished_floor_elevation(catlin_model_ro, room)
         assert (holder.z_m + 0.67 * IN - floor) / IN == pytest.approx(26)
@@ -174,10 +177,10 @@ def test_new_blocks_do_not_intersect_routed_services(catlin_model_ro):
 
 def test_holders_and_pads_are_counted_and_keep_host_in_model_json(catlin_model_ro):
     rows = placeables_takeoff(catlin_model_ro)
-    assert sum(row["count"] for row in rows if row["type"] == "FT-MOEN-ALIGN-TP") == 6
+    assert sum(row["count"] for row in rows if row["type"] in {"FT-MOEN-ALIGN-TP", "FT-MOEN-ALIGN-TP-CH"}) == 6
     assert sum(row["count"] for row in rows if row["type"] == "FT-TP-CABINET-BACKING-12") == 2
     payload = model_to_dict(catlin_model_ro)
-    holders = [obj for obj in payload["canvas_objects"] if obj["type"] == "FT-MOEN-ALIGN-TP"]
+    holders = [obj for obj in payload["canvas_objects"] if obj["type"] in {"FT-MOEN-ALIGN-TP", "FT-MOEN-ALIGN-TP-CH"}]
     assert len(holders) == 6
     assert next(obj for obj in holders if obj["tag"] == "FURN-A-STUBATH-TP")[
         "host_fixture_ref"] == "FX-A-STUBATH-LAV"
@@ -199,7 +202,7 @@ def test_ifc_keeps_six_furnishing_occurrences_and_cabinet_support(catlin_ifc_pat
     model = ifcopenshell.open(str(catlin_ifc_path))
     holders = [obj for obj in model.by_type("IfcFurniture")
                if get_psets(obj).get("TypeHaus_Identity", {}).get("source_type")
-               == "FT-MOEN-ALIGN-TP"]
+               in {"FT-MOEN-ALIGN-TP", "FT-MOEN-ALIGN-TP-CH"}]
     assert len(holders) == 6
     assert all(obj.Representation.Representations[0].RepresentationType == "Tessellation"
                for obj in holders)

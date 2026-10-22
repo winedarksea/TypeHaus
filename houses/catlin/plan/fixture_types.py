@@ -70,23 +70,21 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
            "circuit required, outlet behind the bath within 24 in. of the power supply.",
 )
 
-# FX-M-BATH2-TUB's deck trim: the Delta Trinsic T2759 on its R2707 rough (plan/
-# products_interior.py), drawn so the 3D shows where the filler stands. ``needs`` is empty
-# because the supply runs already serve FX-M-BATH2-TUB; this is that tub's trim, not a
-# second fixture to plumb. The box is the trim: hole line at the rear, spout over the rim.
-DELTA_T2759_ROMAN = FixtureType(
-    tag="FX-DELTA-T2759-ROMAN",
-    name="Trinsic 3-hole deck-mount Roman tub filler",
-    footprint=(inch(10.5), inch(10)),
-    height=inch(10),
+# The trim shares the tub's services; its host relation permits the spout over the rim.
+MOEN_ALIGN_ROMAN = FixtureType(
+    tag="FX-MOEN-ALIGN-ROMAN",
+    name="Align T393 three-hole Roman tub filler, chrome",
+    footprint=(inch(15.9375), inch(9.03125)),
+    height=inch(6.40625),
     plan_symbol="roman-tub-filler",
     basin=False,
-    product_ref="PROD-DELTA-T2759",
-    source="Distributor listings for Delta T2759, read 2026-10-21 (Delta's own spec sheet "
-           "not found): 8 in. spout reach, 5 7/8 in. deck to outlet, 10 in. overall height, "
-           "8-16 in. centres (8 in. here), deck up to 1 1/4 in. Ferguson lists a 10 in. reach "
-           "on another basis. Escutcheon (2 1/2 in.) and lever length are representative. "
-           "Confirm against the delivered trim.",
+    product_ref="PROD-MOEN-T393",
+    source="Moen t393sp.pdf Rev. 1/18, read 2026-10-22: 10 in. handle centres, "
+           "7 29/32 in. overall reach, outlet centre 7 1/4 in. from hole, "
+           "3 23/32 in. outlet underside, 6 13/32 in. overall height. "
+           "Outward closed levers reach 2 31/32 in. from each handle centre; "
+           "2 1/4 in. spout and 1 15/16 in. handle bases. "
+           "https://assets.moen.com/shared/docs/product-specifications/t393sp.pdf",
 )
 
 # RM-M-BATH2's vanity, replacing a borrowed FX-KITCHEN-SINK-33 that billed as a kitchen
@@ -162,6 +160,7 @@ BATH2_VANITY_48 = FixtureType(
            "and a 5 1/4 in. bowl -- Kohler Caxton K-20000-0 (PROD-KOHLER-K-20000), chosen "
            "over the Verticyl K-2882 this first named, whose vertical sides and tight "
            "corner radii are exactly what stops a cloth reaching the corner in one pass. "
+           "Bath2 faucet: chrome Arvo 15840LF (PROD-DELTA-15840LF); single hole. "
            "Cabinet breakdown: 30 in. sink base at the SOUTH end with a pair of doors "
            "and 18 in. bank of three drawers at the north end (6/6/6 in. fronts, 16 in. "
            "boxes). The ends were swapped on 2026-09-09: the tub deck stands 26 in. off "
@@ -352,7 +351,7 @@ DCODE_WALL_BASIN = FixtureType(
            '?ncat=washbasins&nser=7120&product=94764',
 )
 
-FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, DELTA_T2759_ROMAN, BATH2_VANITY_48, DCODE_WALL_BASIN,
+FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, MOEN_ALIGN_ROMAN, BATH2_VANITY_48, DCODE_WALL_BASIN,
                  KITCHEN_SINK_32_SINGLE,
                  VANITY_24_SHALLOW, VANITY_30_SHALLOW, VANITY_30_SINGLE,
                  VANITY_36_SHALLOW, VANITY_36_SINGLE,

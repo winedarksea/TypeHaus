@@ -32,5 +32,15 @@ CABINET_BACKING_PAD = FurnitureType(
            "Do not rely on screw withdrawal from the cabinet side or treat as grab support.",
 )
 
-BATH_ACCESSORY_PRODUCTS = (MOEN_ALIGN_PAPER_HOLDER,)
-BATH_ACCESSORY_TYPES = (PAPER_HOLDER, CABINET_BACKING_PAD)
+MOEN_ALIGN_PAPER_HOLDER_CHROME = MOEN_ALIGN_PAPER_HOLDER.model_copy(update={
+    "tag": "PROD-MOEN-YB0408CH", "model": "YB0408CH",
+    "name": "Align pivoting toilet-paper holder, chrome",
+    "url": "https://shop.moen.com/products/yb0408ch",
+})
+PAPER_HOLDER_CHROME = PAPER_HOLDER.model_copy(update={
+    "tag": "FT-MOEN-ALIGN-TP-CH", "name": "Moen Align YB0408CH pivoting paper holder",
+    "product_ref": MOEN_ALIGN_PAPER_HOLDER_CHROME.tag, "plan_symbol": "pivoting-paper-holder-chrome",
+})
+
+BATH_ACCESSORY_PRODUCTS = (MOEN_ALIGN_PAPER_HOLDER, MOEN_ALIGN_PAPER_HOLDER_CHROME)
+BATH_ACCESSORY_TYPES = (PAPER_HOLDER, PAPER_HOLDER_CHROME, CABINET_BACKING_PAD)

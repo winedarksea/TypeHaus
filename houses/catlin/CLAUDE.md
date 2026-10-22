@@ -193,10 +193,12 @@ not instruction: when it disagrees with this file or the model, it is the one th
   ApplianceType/FurnitureType *catalog*, wired in by `plan/manifest.py`. NOT editable: it
   uses `frozenset(...)`, which the dialect forbids. Type libraries stay non-editable;
   movable instances that reference them live in the editable modules above. **`plan/
-  fixture_types.py` holds EIGHT selections** — `FX-KOHLER-UNDERSCORE-6036`
-  (the drop-in bath), `FX-DELTA-T2759-ROMAN` (its deck filler, `FX-M-BATH2-FILLER` on the foot
+  fixture_types.py` holds the selected plumbing fixtures** — `FX-KOHLER-UNDERSCORE-6036`
+  (the drop-in bath), `FX-MOEN-ALIGN-ROMAN` (its deck filler, `FX-M-BATH2-FILLER` on the foot
   ledge, pardoned against the rim by `host_fixture_ref`; the deck narrowed to 2x3 knee walls
-  the rim laps, 2026-10-21) and `FX-VANITY-51-SINGLE` (RM-M-BATH2's vanity), plus
+  the rim laps, 2026-10-21; centered Align filler and twin chrome bars, 2026-10-22,
+  documented in `notes/bath2_tub_hardware.md`) and `FX-VANITY-48-SHALLOW`
+  (RM-M-BATH2's vanity), plus
   the six vanities that replaced this house's remaining bare lavatories:
   `FX-VANITY-24-SHALLOW` (RM-A-STUBATH — 24" is the whole
   width that bath's north wall has between ED-A-STUBATH-GFCI's plate and the neo-angle shower

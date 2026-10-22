@@ -230,12 +230,15 @@ KOHLER_UNDERSCORE_5713_W1 = Product(
 # 1 1/2": the spec sheet's drawing labels a 1 1/2 in. bath drain, and the run was authored
 # at 2" against the FX-TUB-60 allowance.
 KOHLER_CLEARFLO_7272 = Product(
-    tag="PROD-KOHLER-7272", brand="Kohler", model="K-7272",
-    name="Clearflo slotted overflow bath drain, PVC",
+    tag="PROD-KOHLER-7272", brand="Kohler", model="K-7272-CP",
+    name="Clearflo slotted overflow bath drain, PVC with polished chrome trim",
     source="Kohler specification sheet K-7272_spec_US-CA, read 2026-08-29 - 1 1/2 in. PVC "
            "tee with 18 in. supply pipes cut to fit. Listed by K-5713-W1's spec sheet as a "
            "required product (K-7271 brass is the alternate). Below-bath clearance at the "
-           "drain end is 3 15/16 in. / 3 3/8 in., unchanged by this drain.",
+           "drain end is 3 15/16 in. / 3 3/8 in., unchanged by this drain. "
+           "Bath2 chrome trim K-7272-CP selected 2026-10-22; PVC body remains. "
+           "https://www.kohler.com/en/products/bathtubs/shop-bathtubs-shower-drains/"
+           "clearflo-slotted-overflow-bath-drain-7272?skuId=7272-CP",
 )
 
 

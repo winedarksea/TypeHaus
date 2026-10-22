@@ -306,18 +306,32 @@ def test_wall_tv_panel_reaches_its_mount_elevation_without_a_pedestal():
     assert stand_parts[0]["center"][2] - stand_parts[0]["size"][2] / 2 > 0
 
 
-def test_roman_tub_filler_has_two_handles_and_a_spout_inside_its_box():
+def test_roman_tub_filler_matches_the_align_envelope_and_outlet():
+    from typehaus.model.placeable_symbols import _roman_tub_filler as dimensions
+
     inch_m = 0.0254
-    width, depth, height = (value * inch_m for value in (10.5, 10, 10))
+    width, depth, height = (value * inch_m for value in
+                           (dimensions.TYPE_WIDTH_IN, dimensions.TYPE_DEPTH_IN,
+                            dimensions.TYPE_HEIGHT_IN))
     strokes = plan_symbol_strokes("roman-tub-filler", width, depth)
     parts = model_parts("roman-tub-filler", width, depth, height)
-    assert len(strokes) == 7 and parts and {part["color"] for part in parts} == {"metal"}
+    assert len(strokes) == 7 and {part["color"] for part in parts} == {"metal"}
     for part in parts:
         for axis, limit in ((0, width / 2), (1, depth / 2)):
             assert abs(part["center"][axis]) + part["size"][axis] / 2 <= limit + 1e-9
         assert part["center"][2] + part["size"][2] / 2 <= height + 1e-9
-    # The outlet drops to 5 7/8" above the deck, 8" in front of the hole line.
-    outlet_z = min(part["center"][2] - part["size"][2] / 2 for part in parts
-                   if part["center"][1] < 0 and part["size"][2] < height / 2
-                   and part["center"][0] == 0)
-    assert outlet_z / inch_m == pytest.approx(5.875)
+    hole_y = strokes[1]["points"][0][1]  # circle's first point lies on its horizontal radius
+    outlet = parts[3]
+    assert (hole_y - outlet["center"][1]) / inch_m == pytest.approx(7.25)
+    assert (outlet["center"][2] - outlet["size"][2] / 2) / inch_m == pytest.approx(3.71875)
+    assert [parts[i]["center"][0] / inch_m for i in (4, 7)] == pytest.approx([-5, 5])
+
+
+@pytest.mark.parametrize("base", ["towel-bar", "towel-hook", "pivoting-paper-holder"])
+def test_chrome_accessories_keep_their_geometry_with_a_silver_finish(base):
+    size = (0.232918, 0.084582, 0.034036)
+    nickel = model_parts(base, *size)
+    chrome = model_parts(base + "-chrome", *size)
+    assert len(nickel) == len(chrome)
+    assert {p["color"] for p in chrome} == {"metal"}
+    assert [{**p, "color": "metal"} for p in nickel] == list(chrome)

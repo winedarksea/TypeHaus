@@ -118,9 +118,11 @@ BATH2's 20 cfm, so the grille's position is the only lever.
 ### Closed confirms (owner, 2026-10-22)
 
 1. **Finish: all chrome.** The 26008 head (no stainless exists), the 17T trim and the tub
-   filler, now plain `T2759` instead of `T2759-SS`. One finish in the room.
+   filler, now Moen Align `T393` on a `4794` rough (2026-10-22). The Align accessories,
+   Arvo lavatory faucet, and Clearflo drain are chrome too.
 2. **17T trim: Delta T17T059**, the Trinsic valve-only 17T trim on the R10000 rough. No
-   Ashlyn 17T exists (T17264 is Monitor 17 pressure-balance), and Trinsic matches the filler.
+   Ashlyn 17T exists (T17264 is Monitor 17 pressure-balance), and Trinsic remains the
+   selected thermostatic shower trim alongside the Align tub filler.
    T17T259 is the shower-only version with its own head; this shower uses the 26008.
 3. **Base and panels: Swanstone.** SS-3636: 36x36x5 1/2", 4 1/2" threshold, centre Fit-Flo
    drain, 3" drain hole. Still to confirm on the dealer's submittal: the colour, that the

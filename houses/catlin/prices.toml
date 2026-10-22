@@ -2278,11 +2278,17 @@
 # Hook range: Menards YB0403BN $35.51, FW Webb YB0403BN $43.58, before tax/shipping.
 # https://www.menards.com/main/p-1444427964123.htm
 # https://www.fwwebb.com/product/Moen/Align-Robe-Hook/YB0403BN/519432
-"FT-MOEN-ALIGN-HAND-TOWEL" = { material = { low = 52.46, high = 69.95 }, labour = { low = 20, high = 45 } } # 8 ea
+"FT-MOEN-ALIGN-HAND-TOWEL" = { material = { low = 52.46, high = 69.95 }, labour = { low = 20, high = 45 } } # 7 ea
 "FT-MOEN-ALIGN-BATH-TOWEL" = { material = { low = 77.85, high = 103.80 }, labour = { low = 20, high = 45 } } # 3 ea
-"FT-MOEN-ALIGN-TOWEL-HOOK" = { material = { low = 35.51, high = 43.58 }, labour = { low = 15, high = 30 } } # 2 ea
+"FT-MOEN-ALIGN-TOWEL-HOOK" = { material = { low = 35.51, high = 43.58 }, labour = { low = 15, high = 30 } } # 1 ea
+# Chrome variants: Moen shop product JSON, read 2026-10-22; material is current price,
+# before tax/shipping. https://shop.moen.com/products/{yb0486ch,yb0424ch,yb0403ch,yb0408ch}.js
+"FT-MOEN-ALIGN-HAND-TOWEL-CH" = { material = { low = 51.20, high = 51.20 }, labour = { low = 20, high = 45 } } # 1 ea
+"FT-MOEN-ALIGN-BATH-TOWEL-CH" = { material = { low = 75.20, high = 75.20 }, labour = { low = 20, high = 45 } } # 2 ea
+"FT-MOEN-ALIGN-TOWEL-HOOK-CH" = { material = { low = 34.44, high = 34.44 }, labour = { low = 15, high = 30 } } # 1 ea
+"FT-MOEN-ALIGN-TP-CH" = { material = { low = 62.76, high = 62.76 }, labour = { low = 20, high = 45 } } # 1 ea
 "FT-TOWEL-CABINET-BACKING-12" = { material = { low = 5, high = 12 }, labour = { low = 15, high = 35 } } # 3 ea; installation allowances, includes through-fasteners
-"FT-MOEN-ALIGN-TP" = { material = { low = 65.10, high = 86.80 }, labour = { low = 20, high = 45 } }  # 6 ea
+"FT-MOEN-ALIGN-TP" = { material = { low = 65.10, high = 86.80 }, labour = { low = 20, high = 45 } }  # 5 ea
 "FT-TP-CABINET-BACKING-12" = { material = { low = 5, high = 12 }, labour = { low = 15, high = 35 } }  # 2 ea, includes bolts/washers/locking nuts
 # RESEARCHED 2026-08-08, LABOUR ADDED 2026-08-20, FX-* REPRICED 2026-08-21 — [low, high] $
 # each, unit price PLUS the labour to set and connect it. (Until 2026-08-20 this section was
@@ -3432,10 +3438,11 @@
 # ("slab_platform:TUBDECK_INT_PLY_CAP" and [envelope_layers]), the deck tile ([floor_finishes]),
 # the dedicated circuit and its outlet, and the two access panels.
 "FX-KOHLER-UNDERSCORE-6036" = { material = { low = 2200, high = 3100 }, labour = { low = 430, high = 1050 } }  # 1 ea
-# FX-M-BATH2-FILLER, the deck-mount filler on that bath (2026-10-21): T2759 trim (priced -SS $599; chrome since 2026-10-22) +
-# R2707 rough $221. Moved here out of `plumbing-faucets-and-tub-filler`, which no longer
-# carries it. Labour is in the bath's set and the supply rough.
-"FX-DELTA-T2759-ROMAN" = { material = { low = 820, high = 820 }, labour = { low = 0, high = 0 } }  # 1 ea
+# FX-M-BATH2-FILLER: Moen T393 chrome + 4794 rough, read 2026-10-22.
+# Moen rendered T393 $501.40; live /products/t393.js $534.84, /products/4794.js $169.44.
+# Add $100-200 material allowance for the required ASSE 1070 limiting device and fittings;
+# that allowance is not a quote for Moen 104465. Bath set / supply rough carry labour.
+"FX-MOEN-ALIGN-ROMAN" = { material = { low = 770.84, high = 904.28 }, labour = { low = 0, high = 0 } } # 1 ea
 # 60x30 acrylic or gelcoat one-piece unit, or the 3-piece kit a finished second floor takes
 # because a one-piece will not go up the stair. Labour is the set: level the base in mortar,
 # nail the flange to three walls, hang the walls, set the valve and riser, connect the waste
@@ -7480,7 +7487,7 @@ plumbing-bidet-seats = { low = 1364, high = 1700 }
 #   8 x Delta Arvo 15840LF-SP lavatory, SpotShield Brushed Nickel   $105 ea   $840
 #   1 x Delta Essa 9113-AR-DST kitchen, Arctic Stainless            $175      $175
 #   1 x Moen Adler 87233SRS laundry, Spot Resist Stainless          $169      $169
-#   (The Delta T2759-SS trim + R2707 body, $820, bill as "FX-DELTA-T2759-ROMAN" since
+#   (The Moen T393 trim + 4794 body bill as "FX-MOEN-ALIGN-ROMAN"; excluded since
 #   2026-10-21; they are no longer in this row.)
 #
 # ** SINGLE-HOLE ON ALL EIGHT LAVATORIES ** -- one deck penetration in the splash zone
@@ -7502,12 +7509,9 @@ plumbing-bidet-seats = { low = 1364, high = 1700 }
 # OFF THE COLD AT THE LAUNDRY BOX (~$15-25) -- a rough-in item, not a trim item, and it has to
 # reach the plumber before the wall closes. The high end of this row carries it.
 #
-# ** ORDER THE R2707 BODY WITH THE TRIM. ** They ship from different warehouses and the body
-# is needed months earlier; ordering trim alone is the classic failure here. It was showing
-# out of stock on Delta's site when this was priced, and Delta's own T2759-SS page
-# confusingly claims the trim includes a hand shower, which contradicts its being 3-hole --
-# confirm both before ordering.
-# Powder basin: seven Arvo plus one Duravit B.2 S B21010001U10 (chrome), replacing one Arvo; +$135..215.
+# Order Moen 4794 with T393; that pair is billed separately above, not in this allowance.
+# Current lavatory split: six Arvo -SP, one Bath2 Arvo 15840LF chrome, and one powder-room
+# Duravit B.2 S B21010001U10 chrome. The broad installation/material band remains an allowance.
 plumbing-faucets-and-tub-filler = { low = 1319, high = 2795 }
 # ** WALL TILE HAS NO ELEMENT TO MEASURE ** — [floor_finishes] carries the floors and a shower
 # surround is not a modelled finish, which is the same reason `finish-tile-surrounds-and-

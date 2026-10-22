@@ -14,6 +14,23 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Bath2 centered Align filler and twin towel bars (2026-10-22)
+
+The filler stood 4.615 in. west of the tub center. It now shares x=76.615 in., retaining
+its foot-deck hole line and identity. Moen Align T393 chrome on 4794 replaces Delta
+T2759/R2707; the published straight spout replaces the representative Delta arch, with
+its outlet 2.67 in. inside the basin edge. Two chrome Align 24 in. bars sit side by side
+at 54 in. AFF, centered along the tub. Three bathroom-face 2x6 blocks support four posts,
+including the southern post on the continuous wall across the BA2E/BA2E2 authored split.
+Bath2's hand bar, hook, paper holder, Arvo faucet and Clearflo trim are chrome too;
+other rooms' nickel hardware and the genuine stainless cabinet pulls remain.
+
+The 4794 temperature-limiting-device requirement is documented and allowed for in pricing.
+The existing access panel stays; Kohler's guide requires service access but contains no
+20x15 in. minimum, correcting the old selection note. Delivered-part service access and
+final drilling remain installation checks. Dimensions, sources and a regenerated plan /
+elevation are in `notes/bath2_tub_hardware.md`.
+
 ## Master bedroom: window seat retired, SEKTION desk (2026-10-21)
 
 The west-wall SEKTION window seat (two seats, two 12" AXSTAD end cabinets, covers, cushion and

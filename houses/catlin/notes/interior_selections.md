@@ -28,6 +28,10 @@ source:
 
 # Notes
 
+**Bath2 update, 2026-10-22:** centered Moen Align T393 / 4794 filler, twin chrome
+towel bars, and chrome Bath2 fittings/accessories. See [the current selection and
+dimensioned drawing](bath2_tub_hardware.md). Other rooms retain their selected finishes.
+
 ## What this is, and what it is not
 
 A **design and decision note** — the third kind in `notes/README.md`. It is not a
@@ -286,9 +290,12 @@ This is the part of the pass with a deadline on it.
 - **A concealed GFCI receptacle behind the lit mirror**, plus a full-width flat 2× blocking
   band (the outer brackets sit only ±5" from the centreline) and a conductor for a **second
   switch leg**, because the defogger must be switched independently of the lights.
-- **The tub deck's access panel is 20" L × 15" H minimum** — Kohler's own dimension — serving
-  the `R2707` filler body, the K-7272 waste-and-overflow and the Bask connection at once. And
-  the deck stack-up is capped at 2⅛" rough + ¼"–1¼" finished, so decide it before ordering.
+- **Keep the tub's plumbing and Bask components serviceable.** The modeled west-apron
+  access panel is 14 x 14 in. Kohler guide 1196030-2-E requires service access but does
+  **not** state the previously quoted 20 x 15 in. minimum. Fit-check the delivered valve,
+  hose release fittings, power supply, and drain through that panel before closing the
+  enclosure. Moen 4794 permits 2 3/4 in. rough deck plus up to 1 1/4 in. finish; the modeled
+  2 1/4 in. rough stack plus 1/2 in. finish fits. See [Bath2 tub hardware](bath2_tub_hardware.md).
 - **Tee a ½" hose bibb off the cold at the laundry box.** No mainstream pull-down sprayer is
   hose-threaded and every ¾"-hose-threaded utility faucet is a two-handle rigid spout with no
   spray, so the brief cannot be met by one faucet.

@@ -140,29 +140,34 @@ MOEN_ADLER_LAUNDRY = Product(
            "1/2\" HOSE BIBB OFF THE COLD AT THE LAUNDRY BOX -- a rough-in item that has to "
            "reach the plumber before the wall closes.",
 )
-DELTA_TRINSIC_FILLER = Product(
-    tag="PROD-DELTA-T2759", brand="Delta", model="T2759",
-    name="Trinsic 3-hole deck-mount Roman tub filler trim, Chrome",
-    source="Delta Faucet product page, read 2026-09-06. Owner's call 2026-09-06: three "
-           "holes, NO handshower -- the cleaner deck, and the shower next door already has "
-           "one. ** THAT CHOICE DELETES A CODE PROBLEM: ** a DECK-mounted handshower needs "
-           "an integral atmospheric vacuum breaker to ASME A112.18.1 at a required elevation "
-           "above the flood rim, and with no deck handshower that condition does not exist. "
-           "Roughs on PROD-DELTA-R2707. ** Delta's own page confusingly claims this trim "
-           "includes a hand shower, which contradicts it being 3-hole trim -- confirm before "
-           "ordering. ** Chrome, not -SS (owner 2026-10-22), to match BATH2's chrome "
-           "shower set.",
+MOEN_ALIGN_FILLER = Product(
+    tag="PROD-MOEN-T393", brand="Moen", model="T393",
+    name="Align three-hole Roman tub trim, chrome, without handshower",
+    url="https://shop.moen.com/products/t393",
+    source="Moen t393sp.pdf Rev. 1/18, read 2026-10-22. Deck mounted on "
+           "PROD-MOEN-4794; trim and rough ordered together. Independent of tub brand: "
+           "mounts on the constructed foot deck, not the Kohler shell. Final holes "
+           "follow delivered trim and the actual tub template.",
 )
-DELTA_R2707_ROUGH = Product(
-    tag="PROD-DELTA-R2707", brand="Delta", model="R2707",
-    name="Roman tub rough-in valve body, 3-hole",
-    source="Delta Faucet product page, read 2026-09-06. ** ORDER IT WITH THE TRIM. ** They "
-           "ship from different warehouses and the body is needed months earlier; ordering "
-           "trim alone is the classic failure here. It roughs into the SL-M-TUBDK deck, "
-           "which caps the stack-up at 2 1/8\" rough plus 1/4\"-1 1/4\" finished and needs "
-           "the 20\" x 15\" access panel Kohler's own drawing calls for -- serving this "
-           "body, the K-7272 waste-and-overflow and the Bask GFCI connection at once. "
-           "Showing out of stock on Delta's site when read.",
+MOEN_4794_ROUGH = Product(
+    tag="PROD-MOEN-4794", brand="Moen", model="4794",
+    name="M-PACT adjustable three-hole Roman tub rough, cold-expansion PEX adapters",
+    url="https://shop.moen.com/products/4794",
+    source="Moen 4794sp.pdf Rev. 9/15, read 2026-10-22: 10 in. minimum centres, "
+           "2 3/4 in. maximum rough deck plus 1 1/4 in. finish; 24 in. hoses, "
+           "1/2 in. PEX and included ASTM F1960 cold-expansion adapters. "
+           "Rated 13 gpm at 45 psi, not a guaranteed installed flow. Requires an "
+           "ASSE-conforming temperature-limiting device; manufacturer identifies "
+           "separately purchased 104465 (ASSE 1070). Keep valve and hose connections "
+           "serviceable through the foot-bay access panel. "
+           "https://assets.moen.com/shared/docs/product-specifications/4794sp.pdf",
+)
+DELTA_ARVO_LAV_CHROME = Product(
+    tag="PROD-DELTA-15840LF", brand="Delta", model="15840LF",
+    name="Arvo single-hole bathroom faucet, chrome — Bath2",
+    url="https://www.deltafaucet.com/bathroom/product/15840LF.html",
+    source="Delta product page, read 2026-10-22. Chrome variant of the existing "
+           "15840LF-SP selection, Bath2 only; retain single-hole drilling without deck plate.",
 )
 KOHLER_CAXTON_BASIN = Product(
     tag="PROD-KOHLER-K-20000", brand="Kohler", model="K-20000-0",
@@ -423,7 +428,7 @@ INTERIOR_PRODUCTS = (
     TOTO_WASHLET_S5, KOHLER_CACHET_SEAT,
     DELTA_ARVO_LAV, DELTA_ESSA_KITCHEN, MOEN_ADLER_LAUNDRY,
     *SHOWERING_PRODUCTS,
-    DELTA_TRINSIC_FILLER, DELTA_R2707_ROUGH,
+    MOEN_ALIGN_FILLER, MOEN_4794_ROUGH, DELTA_ARVO_LAV_CHROME,
     KOHLER_CAXTON_BASIN, SWAN_CONTOUR_TOP,
     HARVIA_CILINDRO_PC110E, HARVIA_XENIO_CX170, CARIITTI_FIBRE_KIT,
     IKEA_SEKTION, IKEA_VOXTORP_WHITE, IKEA_MAXIMERA, TOPKNOBS_BAR_PULL,
