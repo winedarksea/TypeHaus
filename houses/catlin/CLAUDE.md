@@ -1,7 +1,8 @@
 > **Mirrors, 2026-10-22:** `plan/mirrors.py` + `mirror_types.py` specify all nine mirrors.
 > Hall bath: plain Kohler round with socketed Karlie; suite Estero unchanged; closet plain
-> Hubba Pill. Only bath2 keeps an illuminated mirror, Fleurco **MHAP2436**, own touch
-> dimmer on unswitched GFCI-protected plug power (`CKT-BATH-ATTIC`). See
+> Hubba Pill. Only bath2 keeps an illuminated mirror, Fleurco **MHAP4236** (42 x 36, 116 W,
+> centred on the vanity), own touch dimmer on unswitched GFCI-protected plug power
+> (`CKT-BATH-ATTIC`). See
 > `notes/mirror_selections.md` and its dimensioned elevations; earlier Robern and
 > wall-dimmed-halo descriptions are superseded.
 

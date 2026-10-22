@@ -2008,8 +2008,8 @@ NEC_FILL_MAIN = [
     # the check.
     #
     # It is on W-M-W3's finish face over the counter: x=7 5/8" is the face at 6 5/8" plus the
-    # device's own 1" half-depth. y=16'-2" since 2026-10-12, NORTH of the halo mirror
-    # (ED-M-BATH2-MIRROR-HALO, y 13'-5 3/8"..15'-5 3/8", 42"..78"), whose glass would
+    # device's own 1" half-depth. y=17'-8" since 2026-10-22, NORTH of the 42" halo mirror
+    # (ED-M-BATH2-MIRROR-HALO, y 13'-5 3/8"..16'-11 3/8", 42"..78"), whose glass would
     # otherwise bury it — the BATH1 lesson. 44" puts it 8" above the 36" counter, which is
     # where a backsplash outlet goes; the stall fan's timer is 6" further north.
     #
@@ -2029,7 +2029,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-W3", face="left", distance_from_start=inch(74),
+                         wall_ref="W-M-W3", face="left", distance_from_start=inch(56),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RM-M-BATH1's only receptacle. NEC 210.52(D) requires at least one within 36" of the
     # sink's outside edge, and

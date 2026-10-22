@@ -49,14 +49,15 @@ MAIN_STALL_FAN = [
              position=pt(ft(6, 4), ft(15, 4)), duct_ref="DU-M-BATH2-DRY",
              type_ref="REG-T-NOZZLE-DAMPER-4", design_cfm=95,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # The third control: a countdown timer on W-M-W3 over the counter, 6" north of
-    # ED-M-BATH2-RC1. It did not fit as a third gang on W-M-BDN1 (plan/lighting.py).
+    # The third control: a countdown timer on W-M-W3 over the counter, 5" north of
+    # ED-M-BATH2-RC1 and clear of the 42" halo glass and its cleat. It did not fit as a third
+    # gang on W-M-BDN1 (plan/lighting.py).
     ElectricalDevice(uid="T3ZXRZ1CN3", tag="ED-M-BATH2-SW-DRY", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH-TIMER",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-W3", face="left", distance_from_start=inch(68),
+                         wall_ref="W-M-W3", face="left", distance_from_start=inch(51),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 

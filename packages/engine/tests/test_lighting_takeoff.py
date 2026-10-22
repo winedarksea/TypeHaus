@@ -206,11 +206,11 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     per_circuit = {r["circuit"]: r for r in connected_lighting_va(catlin_model)["per_circuit"]}
     row = per_circuit["CKT-LT-MAIN"]
     # The closet's 40-VA LED mirror is gone and the old 60-VA halo moved to its protected
-    # plug branch as a 70-VA MHAP2436. Powder lighting gains 2 VA and day lighting 3 VA:
+    # plug branch as a 116-VA MHAP4236. Powder lighting gains 2 VA and day lighting 3 VA:
     # 1374.6 - 40 - 60 + 2 + 3 = 1279.6 VA on CKT-LT-MAIN, with two fewer fixtures.
     assert row["runs"] == 3 and row["fixtures"] == 48
     assert row["connected_va"] == pytest.approx(1279.6, abs=0.5)
-    assert per_circuit["CKT-BATH-ATTIC"]["connected_va"] == 70
+    assert per_circuit["CKT-BATH-ATTIC"]["connected_va"] == 116
 
     panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-MAIN"]
     assert panel["connected_va"] == pytest.approx(1279.6, abs=0.5)

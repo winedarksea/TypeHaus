@@ -211,7 +211,7 @@ DRAINS = [
             elevations=(ft(9, 1.4375), inch(87.0625), inch(85.9375), inch(85.3875)),
             serves=("FX-M-BATH2-SH",)),
     PipeRun(uid="CBPD05AAAA", tag="PR-B-SINK2-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(1), ft(14, 5.375)), pt(ft(1), ft(14, 5.375)),
+            path=(pt(ft(1), ft(15, 2.375)), pt(ft(1), ft(15, 2.375)),
                   pt(ft(3), ft(16, 6))),
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), inch(94.5375), inch(83.2375)),

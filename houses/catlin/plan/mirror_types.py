@@ -61,11 +61,12 @@ _UMBRA_MIRROR = FurnitureType(
     product_ref=_UMBRA_PRODUCT.tag, source=_UMBRA_PRODUCT.source,
 )
 _FLEURCO_PRODUCT = Product(
-    tag="PROD-FLEURCO-MHAP2436", brand="Fleurco", model="MHAP2436",
-    name='Halo Plus 24 x 36 illuminated border and rear glow mirror', url=_FLEURCO_SPEC,
-    source=_READ_DATE + "24 W x 36 H x 1.75 D in. Factory plug installation, 120 V, "
-           "70 W TOTAL including defogger, maximum published output 1711 lm (not a "
-           "2700 K photometric measurement). CRI unpublished. ETL/CEC certified. "
+    tag="PROD-FLEURCO-MHAP4236", brand="Fleurco", model="MHAP4236",
+    name='Halo Plus 42 x 36 illuminated border and rear glow mirror', url=_FLEURCO_SPEC,
+    source=_READ_DATE + "42 W x 36 H x 1.75 D in. Factory plug installation, 120 V, "
+           "116 W TOTAL including defogger (spec dated 2023-08-01), maximum published output "
+           "2243 lm (not a 2700 K photometric measurement). The 24 x 36 MHAP2436 was 70 W and "
+           "1711 lm. CRI unpublished. ETL/CEC certified. "
            "Own touch ON/OFF and brightness, 2700/4500/6500 K selection, work at 2700 K. "
            "Light and defogger share the power button; no separate defogger wall leg. "
            "Supply full, unswitched line voltage; no wall dimmer. Five-year limited warranty. "
@@ -131,9 +132,9 @@ _KARLIE_SELECTIONS = (
 _HALO_TYPE = LuminaireType(
     tag="ED-T-LT-MIRROR-HALO-2700", name=_FLEURCO_PRODUCT.name,
     form=LuminaireForm.MIRROR_LIGHT, type_mark="P4",
-    footprint=(inch(24), inch(1.75)), height=inch(36), plan_symbol="halo-mirror-light",
+    footprint=(inch(42), inch(1.75)), height=inch(36), plan_symbol="halo-mirror-light",
     lamp="Factory LED border and rear glow, integral touch dimmer",
-    watts=70, load_va=70, lumens=1711, cct_k=2700, cri=None,
+    watts=116, load_va=116, lumens=2243, cct_k=2700, cri=None,
     dimmable=True, integral_switch=True, damp_rated=True,
     ports=(ServicePort(tag="power", service=Service.POWER_120,
                        position=(inch(0), inch(0.875), inch(22))),),

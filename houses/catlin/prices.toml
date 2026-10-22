@@ -2685,9 +2685,10 @@
 "ED-T-LT-KARLIE-2-CM" = { material = { low = 195, high = 205 }, labour = { low = 60, high = 135 } }  # 1 ea, 54622CM + two 80793-SU
 "ED-T-LT-KARLIE-3-BN" = { material = { low = 218, high = 233 }, labour = { low = 60, high = 135 } }  # 2 ea, 54623BN + three 80793-SU
 "ED-T-LT-MIRROR-DAY" = { material = { low = 218, high = 233 }, labour = { low = 60, high = 135 } }  # 1 ea, 54623CM + three 80795-SU
-# MHAP2436 (not MHA2436): Schillings/Bath Expo retail $968, five-year warranty, own dimmer.
-# https://schillings.com/products/baths/mirrors-medicine-cabinets/fleurco-halo-plus-led-lighted-bathroom-mirror-24-x-36/
-"ED-T-LT-MIRROR-HALO-2700" = { material = { low = 968, high = 1100 }, labour = { low = 90, high = 200 } }  # 1 ea, 70 W including factory defogger
+# MHAP4236 (2026-10-22, replaces the 24 x 36 MHAP2436 at $968): Fleurco's US catalog lists
+# $1,484; Modern Furnishings lists $1,337. Five-year warranty, own dimmer. Quote the dealer.
+# https://fleurco.com/media/website_catalog.usa/5_Fleurco25_LUNA_US.pdf
+"ED-T-LT-MIRROR-HALO-2700" = { material = { low = 1337, high = 1484 }, labour = { low = 90, high = 200 } }  # 1 ea, 116 W including factory defogger
 
 "ED-T-LT-PANEL" = { material = { low = 45, high = 130 }, labour = { low = 48, high = 115 } }  # 4 ea
 # ** THE DINING FIXTURE IS THE OWNER'S OWN IMPORT AND HAS NOT BEEN SELECTED ** (48" linear,
@@ -3238,15 +3239,14 @@
 # constraint above (FX-LAV-24 > FX-LAV-COMPACT) still has to hold if either is edited.
 "FX-LAV-24" = { material = { low = 250, high = 950 }, labour = { low = 200, high = 460 } }  # 0 ea
 "FX-LAV-COMPACT" = { material = { low = 110, high = 420 }, labour = { low = 150, high = 330 } }  # 1 ea — the studio bar bowl only, since RM-A-STUBATH took a vanity 2026-09-09
-# RM-M-BATH2's floating SEKTION vanity, FX-VANITY-48-SEKTION (2026-10-22,
-# plan/bath2_vanity_types.py). IKEA US list read 2026-10-22: 702.654.69 30x15x30 frame $78,
-# 802.654.64 18x15x30 frame $58, 602.615.27 rail $20, two AXSTAD 15x30 doors $86, three
-# AXSTAD 18x10 fronts $50, three MAXIMERA medium 18x15 $34, plus hinges, shelf and pulls
-# ~$60: ~$660. Then the solid-surface bowl ($250-450 bonded, fabricator's) and the chrome
-# Arvo (~$150-250). The Corian TOP is CT-M-BATH2-VANITY in [countertops], not here. Labour
-# is the ledger chase, hanging, the trap and the faucet. Replaces FX-VANITY-51-SINGLE, a
-# row no instance matched since the cabinet became 48" on 2026-09-09.
-"FX-VANITY-48-SEKTION" = { material = { low = 1060, high = 1360 }, labour = { low = 300, high = 720 } }  # 1 ea
+# RM-M-BATH2's floating SEKTION vanity, FX-VANITY-48-SEKTION (plan/bath2_vanity_types.py).
+# Revised 2026-10-22: 36" sink cabinet with two AXSTAD matte white doors $338 (listing
+# S89454945) + 12" storage cabinet with an AXSTAD front $132 (matte-blue price; white not yet
+# read) + 602.615.27 rail $20 + hinges, shelf and pulls ~$60: ~$550. Then the solid-surface
+# bowl ($250-450 bonded, fabricator's) and the chrome Arvo (~$150-250): 950-1250. It replaced
+# the 30" + 18" drawer build (~$660 of parts). The Corian TOP is CT-M-BATH2-VANITY in
+# [countertops], not here. Labour is the ledger chase, hanging, the trap and the faucet.
+"FX-VANITY-48-SEKTION" = { material = { low = 950, high = 1250 }, labour = { low = 300, high = 720 } }  # 1 ea
 # ** THE OTHER FIVE BATHROOMS' VANITIES (2026-08-30). ** Same basis as the 54" row above and
 # as FX-LAV-24 before it: each row is the WHOLE assembly -- cabinet, counter, basin and
 # faucet -- because no CASE-* row covers a bathroom anywhere in this file, so a bowl-only

@@ -51,19 +51,20 @@ MAIN_MIRRORS = [
             location=Location(attachment=WallAttachment(
                 wall_ref="W-M-C2", face="left", distance_from_start=inch(18),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # Bath2 glass, light and plug are centred on the vanity (wall distance 85 5/8" = y 15'-2 3/8").
     ElectricalDevice(uid="QTM000QAAA", tag="ED-M-BATH2-MIRROR", kind=DeviceKind.LIGHT,
             type_ref="ED-T-LT-MIRROR-DAY", room="RM-M-BATH2",
             circuit="CKT-LT-MAIN", controlled_by=("ED-M-BATH2-SW-DAY",),
             mount=Mount(kind=MountKind.WALL, elevation=inch(80)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-M-W3", face="left", distance_from_start=inch(94.625),
+                wall_ref="W-M-W3", face="left", distance_from_start=inch(85.625),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="5AE57JENYW", tag="ED-M-BATH2-MIRROR-HALO", kind=DeviceKind.LIGHT,
             type_ref="ED-T-LT-MIRROR-HALO-2700", room="RM-M-BATH2",
             circuit="CKT-BATH-ATTIC",
             mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-M-W3", face="left", distance_from_start=inch(94.625),
+                wall_ref="W-M-W3", face="left", distance_from_start=inch(85.625),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="783AC05790", tag="ED-M-BATH2-MIRROR-PLUG", kind=DeviceKind.RECEPTACLE,
             type_ref="ED-T-RECEPTACLE", room="RM-M-BATH2",
@@ -71,7 +72,7 @@ MAIN_MIRRORS = [
             mount=Mount(kind=MountKind.WALL, elevation=inch(64),
                         recessed_into_host_surface=True),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-M-W3", face="left", distance_from_start=inch(94.625),
+                wall_ref="W-M-W3", face="left", distance_from_start=inch(85.625),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     WallBacking(uid="440C21E67C", tag="BK-M-HS1-MIRROR-LOW", wall_ref="W-M-HS1", face="left",
         start=inch(48.75), length=inch(14.5),

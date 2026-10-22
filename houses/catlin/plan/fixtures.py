@@ -232,16 +232,13 @@ MAIN_FIXTURES = (
     # runs y 18'-6 1/2"..20'-9 1/2" with a 3'-0" sill, which is the SAME plane as this
     # counter. It clears the cabinet's north end by 20 1/8" of bare wall.
     #
-    # ``drain_position`` MOVED with the basin and had to: the basin sits over the 30" sink
-    # base at the SOUTH end now, centreline y=14'-5 3/8", 20" x 15 1/2" about it — spanning
-    # x 8 3/16"..23 11/16", y 13'-7 3/8"..15'-3 3/8". PR-B-SINK2-DRAIN's first two points
-    # follow it (plan/mep_drainage.py); its tie into PR-B-MAIN-DRAIN at (3'-0", 16'-6") is
-    # UNCHANGED, so the branch simply runs diagonally under the floor instead of straight,
-    # and still holds 4.19"/ft where 0.25" is the floor.
+    # ``drain_position`` follows the basin, which is CENTRED on the vanity (2026-10-22): the
+    # drain sits at y=15'-2 3/8", the cabinet centre, as the bowl does. PR-B-SINK2-DRAIN's
+    # first two points follow it (plan/mep_drainage.py); its tie-in is unchanged.
     Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-VANITY-48-SEKTION",
             room="RM-M-BATH2", position=pt(inch(15.635), inch(182.375)), rotation=deg(90),
             wall_ref="W-M-W3",
-            drain_position=pt(ft(1), ft(14, 5.375))),
+            drain_position=pt(ft(1), ft(15, 2.375))),
     # --- RM-M-LAUNDRY -------------------------------------------------------------------
     # 56 1/4"x47 1/4" clear alcove behind D-M-LAUN's 36" pocket door — a
     # closet, not a room you stand in: both appliances back onto the south wall (rotation

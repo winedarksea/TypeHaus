@@ -80,9 +80,9 @@ def test_bath2_uses_full_line_voltage_and_its_integral_controls(catlin_plan):
     assert halo.circuit == plug.circuit
     assert circuits[plug.circuit].gfci
     assert halo_type.integral_switch and halo_type.dimmable
-    assert halo_type.watts == halo_type.load_va == 70
+    assert halo_type.watts == halo_type.load_va == 116
     assert halo_type.cri is None
-    assert halo_type.product_ref == "PROD-FLEURCO-MHAP2436"
+    assert halo_type.product_ref == "PROD-FLEURCO-MHAP4236"
     assert elements["ED-M-BATH2-MIRROR"].controlled_by == ("ED-M-BATH2-SW-DAY",)
     assert elements["ED-M-BATH2-CAN-SH-EVE"].controlled_by == ("ED-M-BATH2-SW-EVE",)
     for tag in ("ED-T-LT-KARLIE-2-BN", "ED-T-LT-KARLIE-2-CM",
@@ -180,5 +180,5 @@ def test_panel_counts_the_halo_load_once_on_its_plug_branch(catlin_model_ro):
 
     row = next(row for row in panel_schedule(catlin_model_ro)
                if row["circuit"] == "CKT-BATH-ATTIC")
-    assert row["connected_va"] == 70
+    assert row["connected_va"] == 116
     assert {"ED-M-BATH2-MIRROR-HALO", "ED-M-BATH2-MIRROR-PLUG"} <= set(row["devices"])
