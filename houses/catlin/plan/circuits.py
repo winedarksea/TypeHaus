@@ -449,9 +449,11 @@ CIRCUITS = (
     # 220.82 summary because bathroom branch circuits are not in 220.82(B)(1)'s list — which
     # mattered when the margin was 7.9 A against a 200 A service, and is simply free now
     # that the Class 320 service leaves 54.2 A (265.8 A of 320 A).
+    # The unswitched Halo Plus plug shares this protected bathroom-receptacle branch
+    # (2026-10-22); its own touch control takes full line voltage. Reset stays at the panel.
     Circuit(tag="CKT-BATH-ATTIC", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=0,
-            description="Attic guest bath receptacle"),
+            description="Bathroom receptacles — attic guest bath + main bath2 mirror"),
     # FX-M-BATH2-TUB's Bask heated surface (2026-08-29). Kohler's spec sheet lists the
     # REQUIRED service as a dedicated 120 V / 15 A circuit on a Class A GFCI, and that is
     # what this is — not a judgement call the way CKT-BATH-ATTIC above was. The bath is

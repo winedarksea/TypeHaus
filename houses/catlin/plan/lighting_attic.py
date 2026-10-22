@@ -337,23 +337,6 @@ ATTIC_LIGHTING = [
                      # the one station in this bath the new plane keeps.
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(7),
                                  recessed_into_host_surface=True)),
-    # The over-mirror bar (owner, 2026-09-06). On W-A-HALL-S's bath face (y=22'-1 5/8"), on
-    # FX-A-STUBATH-LAV's centreline, back on the face — a 2"-deep body at y=22'-0 5/8".
-    # ** IT FOLLOWED THE BASIN 2 5/8" EAST, 13'-6" -> 13'-8 5/8" (2026-09-09), ** when the
-    # bare bowl became a 24" vanity (plan/fixtures.py). A 24" bar over a 24" carcass is only
-    # centred if both are; off-centre it reads as a mistake from the doorway.
-    # 6'-6" is the height both RM-S-VANITY bars take. ED-T-LT-MIRROR is the
-    # 24" damp-rated bar already in the schedule, so this is a second instance of an
-    # existing row and not a new product: 1,300 lm of front light at a basin, which the
-    # ceiling can (a downlight behind your head) never gave this mirror.
-    ElectricalDevice(uid="3W86JZVH61", tag="ED-A-STUBATH-MIRROR", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
-                     controlled_by=("ED-A-STUBATH-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-HALL-S", face="right", distance_from_start=inch(44.625),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # On W-A-BATH-S's north face — the wall you reach for on the way in. It was first put on
     # W-A-STU-W beside the lavatory, and `test_wall_mounted_devices_resolve_against_a_wall_face`
     # reported it floating 1.6" off that face; the door wall is both the better station and the

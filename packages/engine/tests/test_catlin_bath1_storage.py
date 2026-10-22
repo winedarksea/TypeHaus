@@ -188,7 +188,7 @@ def test_open_entry_has_a_continuous_turn_between_storage_and_countertop(catlin_
 def test_mirror_and_accessible_gfci_follow_the_smaller_vanity(catlin_model_ro):
     objects = _objects(catlin_model_ro)
     vanity = objects["FX-S-BATH1-LAV"]
-    mirror = objects["ED-S-BATH1-MIRROR"]
+    mirror = objects["FURN-S-BATH1-MIRROR"]
     gfci = objects["ED-S-BATH1-RC-MIRROR"]
     switch = objects["ED-S-BATH1-SW"]
     assert mirror.position[1] == pytest.approx(vanity.position[1])

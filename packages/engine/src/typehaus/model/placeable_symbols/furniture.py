@@ -43,6 +43,7 @@ from typehaus.model.placeable_symbols._hammock_chair import hammock_chair
 from typehaus.model.placeable_symbols._hanging_daybed import hanging_daybed
 from typehaus.model.placeable_symbols._mirrors import arch_shelf_mirror
 from typehaus.model.placeable_symbols._paper_holder import pivoting_paper_holder
+from typehaus.model.placeable_symbols._plain_mirrors import plain_mirror
 from typehaus.model.placeable_symbols._plants import (
                                                         hanging_vine_planter,
                                                         small_potted_plant,
@@ -59,8 +60,8 @@ from typehaus.model.placeable_symbols._sektion import (
                                                         sektion_drawer_base,
 )
 from typehaus.model.placeable_symbols._sektion_axstad import (
-    sektion_axstad_base,
-    sektion_axstad_drawers,
+                                                        sektion_axstad_base,
+                                                        sektion_axstad_drawers,
 )
 from typehaus.model.placeable_symbols._sektion_corner_wall import sektion_corner_wall
 from typehaus.model.placeable_symbols._sektion_plinth_base import sektion_plinth_wall_base
@@ -176,6 +177,12 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "peg-rail": peg_rail(pegs=6),
     # A plain mirror is a furnishing, not a luminaire: no lamp, no housing.
     "arch-shelf-mirror": arch_shelf_mirror(),
+    "plain-round-mirror-nickel": plain_mirror("round", "brushed-nickel"),
+    "plain-arch-mirror-nickel": plain_mirror("arch", "brushed-nickel"),
+    "plain-arch-mirror-chrome": plain_mirror("arch", "metal"),
+    "plain-soft-rectangle-mirror-nickel": plain_mirror("soft-rectangle", "brushed-nickel"),
+    "plain-capsule-mirror-nickel": plain_mirror("capsule", "metal"),
+
     "bed": bed(pillows=2, headboard=True),
     "tv": screen(stand=True),
     "tv-wall": screen(stand=False),

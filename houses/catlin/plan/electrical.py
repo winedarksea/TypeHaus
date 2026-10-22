@@ -981,7 +981,7 @@ SECOND_DEVICES = [
                      circuit="CKT-RC-SECOND", room="RM-S-VANITY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD-N", face="right", distance_from_start=inch(64.5),
+                         wall_ref="W-S-BD-N", face="right", distance_from_start=inch(65.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 

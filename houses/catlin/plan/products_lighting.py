@@ -65,32 +65,6 @@ DOLRIA_PC0008 = Product(
            "3 x E26 for exactly that reason, but 14\" of fixture could not fill a 27' void "
            "and 120\" of wire could not reach the hang.",
 )
-ROBERN_VITALITY_ROUND = Product(
-    tag="PROD-ROBERN-YM0030CPFPD3", brand="Robern", model="YM0030CPFPD3",
-    name='Vitality 30" round lighted mirror, Perimeter pattern, 3000K, with defogger',
-    source="Robern spec sheet CR-229-1213 (Vitality_YM0030CPFPD_Spec.pdf) and installation "
-           "sheet CB-209-1277, read 2026-09-06. 30\" dia x 1 3/4\" deep, 26\" mirror field, "
-           "2\" lit band, 3000 K, CRI 90+ with R9 50+, 55 W (85 W with the defogger), 330 "
-           "lux at 18\" from centre, dimmable to 1%, UL 962 + CSA C22.2, damp. ** IT IS "
-           "FRONT-LIT, WHICH IS THE ONLY SPECIFICATION THAT MATTERS HERE. ** The market's "
-           "default 'LED mirror' is BACKLIT -- a halo thrown at the wall behind the glass, "
-           "which photographs beautifully and contributes almost nothing to a face. Tells "
-           "for backlit: 'halo', 'ambient glow', 'floating'. This one's lit band is etched "
-           "into the FRONT of the glass. An earlier pass concluded no round front-lit mirror "
-           "existed; that was true of Seura and of Electric Mirror's premium lines and false "
-           "in general. ** CLEANABILITY: ** polished-edge glass with the frame behind it, so "
-           "the whole wiped surface is one plane, and there is NO capacitive touch button on "
-           "the face -- which is the single strongest argument against the $90-400 tier, "
-           "whose glass is bonded into a tray with an exposed silicone bead all round. "
-           "** CLEAN WITH 50/50 WATER AND ISOPROPYL ON THE CLOTH, NEVER SPRAYED ON THE "
-           "GLASS; ammonia and vinegar damage the mirror. ** ** NOT FIELD-SERVICEABLE, AND "
-           "THE WARRANTY IS ONE YEAR: ** the LED module is permanently enclosed, reported "
-           "failures cluster at five to six years, and the fix is a new mirror. Electric "
-           "Mirror's Fusion has replaceable LED strips and a 7-year warranty but makes no "
-           "round. CCT footnote: the spec sheet records the line moving from 2700 K to "
-           "3000 K in 2021 and several dealer pages still print the old figure -- confirm "
-           "on the box label at delivery.",
-)
 FLYACHILLES_DJ3616_2L = Product(
     tag="PROD-FLYACHILLES-DJ3616-2L", brand="Flyachilles", model="DJ3616-16 (2-light)",
     name='47.2" 2-light modern wave LED linear pendant, gold, dimmable',
@@ -211,17 +185,6 @@ LOTUS_LL4SR_CAN_27K = LOTUS_LL4SR_CAN.model_copy(update={
     "name": '4" deeply regressed LED downlight, white trim, 2700K',
     "source": "BATH2's evening shower can, 2026-10-12: the LL4SR in a FIXED 2700 K "
               "phosphor. CONFIRM THE SKU, as for the 5000 K."})
-# The evening halo mirror. A USER-adjustable fixture (built-in dimmer and 2700/4500/6500 K
-# touch control), which the 2026-10-12 rule allows; it is commissioned and left at 2700 K.
-FLEURCO_HALO_MIRROR = Product(
-    tag="PROD-FLEURCO-MHA2436", brand="Fleurco", model="Halo MHA2436 (class)",
-    name='24" x 36" backlit halo LED mirror with defogger',
-    source="Fleurco Halo collection listings, read 2026-10-12: backlit (halo) LED mirror "
-           "with a defogger pad, built-in dimmer and 2700 / 4500 / 6500 K selection on its "
-           "own touch control; MHA3036 confirmed, the 24\" width to CONFIRM. Listed for "
-           "plug installation: CONFIRM a hardwire kit, or a concealed receptacle on the "
-           "evening dimmer's leg goes behind it. CONFIRM the damp listing (IP44 minimum).",
-)
 HUNTER_GALLEGOS = Product(
     tag="PROD-HUNTER-51583", brand="Hunter", model="Gallegos 51583",
     name='Gallegos 52" low-profile ceiling fan, matte black, no light kit',
@@ -255,7 +218,7 @@ ALCON_14119_GARDEN_FLOOD = Product(
 LIGHTING_PRODUCTS = (
     HUNTER_GALLEGOS,
     *MAGNETIC_TRACK_PRODUCTS,
-    LOTUS_LL4SR_CAN, LOTUS_LL4SR_CAN_50K, LOTUS_LL4SR_CAN_27K, FLEURCO_HALO_MIRROR, WESTGATE_VAPORTIGHT, DOLRIA_PC0008, ROBERN_VITALITY_ROUND,
+    LOTUS_LL4SR_CAN, LOTUS_LL4SR_CAN_50K, LOTUS_LL4SR_CAN_27K, WESTGATE_VAPORTIGHT, DOLRIA_PC0008,
     MODERN_FORMS_BANTAM, MODERN_FORMS_MYKONOS, CRAFTMADE_FORCE_XL,
     ARMACOST_RIBBONFLEX_COB, DIODE_VALENT_X, DIODE_OMNIDRIVE_X,
     LEDSUPPLY_SAUNA_STRIP, ALCON_14119_GARDEN_FLOOD, FLYACHILLES_DJ3616_2L,

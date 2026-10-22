@@ -89,3 +89,27 @@ def arch_shelf_mirror() -> Builder:
         return strokes, parts
 
     return build
+
+
+def halo_mirror_light() -> Builder:
+    """Factory front border plus a rear luminous perimeter; no light through plain glass."""
+    front = mirror_light()
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        strokes, parts = front(width, depth, height)
+        band = min(MIRROR_LIGHT_BAND_WIDTH_M, width * MIRROR_LIGHT_BAND_SHARE)
+        rear_depth = depth * 0.05
+        rear_y = depth / 2 - rear_depth / 2
+        glow = (
+            box(0, rear_y, 0, band, width, rear_depth, "lamp"),
+            box(0, rear_y, height - band, height, width, rear_depth, "lamp"),
+            box(-width / 2 + band / 2, rear_y, band, height - band, band, rear_depth, "lamp"),
+            box(width / 2 - band / 2, rear_y, band, height - band, band, rear_depth, "lamp"),
+        )
+        # Rear LEDs sit beyond the chassis rear face so the opaque housing cannot bury them.
+        housing = dict(parts[0])
+        housing["size"] = (width, depth * 0.70, height)
+        housing["center"] = (0, depth * 0.10, height / 2)
+        return strokes, (housing, *parts[1:], *glow)
+
+    return build

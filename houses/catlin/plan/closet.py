@@ -119,15 +119,6 @@ MAIN_CLOSET = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BDN2", face="left", distance_from_start=inch(67),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # The lit mirror: east wall, centred y 14'-6" between the south corner and the PAX face,
-    # bottom 14", top 74". Hardwired on CKT-LT-MAIN; its own touch switch, so no controlled_by.
-    ElectricalDevice(uid="4JFYZ9V9P7", tag="ED-M-CLOSET-MIRROR", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-MIRROR-CLOSET",
-                     circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(14)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C2", face="left", distance_from_start=inch(18),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The PAX strips' outlet: north wall just above the frames, x 14'-6", SWITCHED by the
     # closet switch, so one switch lights the room. The OVERSIDAN door sensor does nothing on
     # an open frame. On CKT-LT-MAIN: the driver is a lighting load.

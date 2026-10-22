@@ -913,14 +913,6 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1",
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # South-wall basin and mirror move together; hosted placement follows HS1.
-    ElectricalDevice(uid="QTM000KAAA", tag="ED-M-BATH1-MIRROR", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH1", controlled_by=("ED-M-BATH1-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-HS1", face="left", distance_from_start=inch(54.625),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTM000MAAA", tag="ED-M-BATH1-SW", kind=DeviceKind.SWITCH,
                      # East wall, south of the north-shifted doorway.
                      type_ref="ED-T-SWITCH",
@@ -957,26 +949,6 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      controlled_by=("ED-M-BATH2-SW-EVE",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The make-up bar, 1" over the halo mirror's 6'-6" head, centred on the basin.
-    ElectricalDevice(uid="QTM000QAAA", tag="ED-M-BATH2-MIRROR", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-MIRROR-DAY",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
-                     controlled_by=("ED-M-BATH2-SW-DAY",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 7)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-W3", face="left", distance_from_start=inch(94.625),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # The halo mirror IS the luminaire: 24" x 36", 3'-6" to 6'-6", centred on the basin at
-    # y=14'-5 3/8". Backed by BK-M-W3-MID/-HIGH (plan/backing_wet.py). It moved
-    # ED-M-BATH2-RC1 north, clear of its glass.
-    ElectricalDevice(uid="5AE57JENYW", tag="ED-M-BATH2-MIRROR-HALO", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-MIRROR-HALO-2700",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
-                     controlled_by=("ED-M-BATH2-SW-EVE",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-W3", face="left", distance_from_start=inch(94.625),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The evening glow: three E3 runs, 13.0 ft at 3 W/ft = 39 W on a 60 W supply (154%).
     # Toe kick under the vanity's front, 3" back from its face.
     LightRun(uid="X6JKNWY4BF", tag="LR-M-BATH2-TOEKICK", type_ref="ED-T-LT-STRIP24-2700",
@@ -1367,38 +1339,10 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH",
                      controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # ** BACK TO A BAR OVER A PLAIN MIRROR (owner, 2026-10-03). ** The Robern lit round
-    # (2026-09-06) gave way to FURN-S-SUITEBATH-MIRROR, the Estero arch shelf mirror
-    # (plan/placeables.py), and this is the hall bath's 24" damp bar at the same 6'-6",
-    # 4" over the mirror's top. The Robern's own receptacle went with it; ED-S-SUITEBATH-RC1
-    # still carries NEC 210.52(D).
-    ElectricalDevice(uid="QTS000EAAA", tag="ED-S-SUITEBATH-MIRROR", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH",
-                     controlled_by=("ED-S-SUITEBATH-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SN3", face="right", distance_from_start=inch(50.5),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # No lit niche (owner, 2026-10-12): LR-S-NICHE and ED-S-NICHE-PSU are gone. A hole in a
     # one-piece insert has nothing to lap to (FX-TUBSHOWER-60-DIVERTED; superseded note
     # notes/superseded/shower_niche.md). Mark E1 stays in the catalog as a named revert.
 
-    # RM-S-VANITY: two lavatories, two mirror lights, both on the north wet wall.
-    ElectricalDevice(uid="QTS000FAAA", tag="ED-S-VANITY-MIRROR1", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-UPPER", room="RM-S-VANITY", controlled_by=("ED-S-VANITY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD-N", face="right", distance_from_start=inch(21),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
-    ElectricalDevice(uid="QTS000GAAA", tag="ED-S-VANITY-MIRROR2", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-UPPER", room="RM-S-VANITY", controlled_by=("ED-S-VANITY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD-N", face="right", distance_from_start=inch(48),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-S-BATH1: two wet cans, one over the shower, and the mirror the brief is most
     # specific about — a 36" front-lit ring on the room's east wall, on the lavatory's
@@ -1415,15 +1359,6 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1",
                      controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The 30" mirror follows the resized vanity's basin at y=374.5". The outlet moves
-    # south of the glass, stacked above the existing switch so test/reset stays exposed.
-    ElectricalDevice(uid="QTS000KAAA", tag="ED-S-BATH1-MIRROR", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-MIRROR-RING",
-                     circuit="CKT-LT-UPPER", room="RM-S-BATH1", controlled_by=("ED-S-BATH1-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(25.5),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # GFCI at 54" AFF, switch at 46": 8" between device centers. Both are at y=354",
     # 6" beyond the stopped door tip; the mirror's south edge is y=359.5".
     ElectricalDevice(uid="QTS000MAAA", tag="ED-S-BATH1-RC-MIRROR",

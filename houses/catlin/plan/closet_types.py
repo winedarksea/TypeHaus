@@ -155,16 +155,6 @@ CLOSET_FURNITURE_TYPES = (PAX_SHOW, PAX_SHOW_HANG, PAX_DOUBLE_30, CLOSET_CORNER_
 # --- lighting: the lit mirror, the PAX strips and their driver ---------------------------
 
 CLOSET_LUMINAIRE_TYPES = (
-    LuminaireType(tag="ED-T-LT-MIRROR-CLOSET",
-                  name='24" x 60" front-lit full-length LED mirror, hardwired',
-                  form=LuminaireForm.MIRROR_LIGHT, type_mark="P2",
-                  footprint=(inch(24), inch(1.5)), height=inch(60),
-                  plan_symbol="mirror-light",
-                  lamp="LED integrated, front-lit perimeter band", watts=36.0,
-                  lumens=2400.0, cct_k=3000, cri=90, dimmable=True, integral_switch=True,
-                  load_va=40.0, ports=_POWER_120,
-                  source="Allowance: no SKU chosen. Hardwired so no cord shows; its own "
-                         "touch switch, so it names no wall switch."),
     LuminaireType(tag="ED-T-LT-PAX-STRIP", name="IKEA OVERSIDAN wardrobe LED strip",
                   form=LuminaireForm.STRIP, type_mark="E2",
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.5),

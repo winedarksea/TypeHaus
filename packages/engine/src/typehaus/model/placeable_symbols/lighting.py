@@ -39,8 +39,9 @@ from typehaus.model.placeable_symbols._frame import (
     polygon,
     rect,
 )
-from typehaus.model.placeable_symbols._mirrors import mirror_light
+from typehaus.model.placeable_symbols._mirrors import halo_mirror_light, mirror_light
 from typehaus.model.placeable_symbols._track_lighting import track_light
+from typehaus.model.placeable_symbols._vanity_lights import socketed_vanity_light
 from typehaus.model.placeable_symbols._wave_chandelier import wave_chandelier
 
 __all__ = ["LIGHTING_SYMBOLS"]
@@ -434,6 +435,12 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "ceiling-fan-light": ceiling_fan_light(blades=4),
     "linear-light": linear_light(),
     "mirror-light": mirror_light(),
+    "halo-mirror-light": halo_mirror_light(),
+    "socketed-vanity-2-nickel": socketed_vanity_light(2, "brushed-nickel"),
+    "socketed-vanity-2-chrome": socketed_vanity_light(2, "metal"),
+    "socketed-vanity-3-nickel": socketed_vanity_light(3, "brushed-nickel"),
+    "socketed-vanity-3-chrome": socketed_vanity_light(3, "metal"),
+
     "round-mirror-light": mirror_light(round_face=True),
     "mirror-light-bar": mirror_light_bar(),
     "suspended-linear-light": suspended_linear_light(),

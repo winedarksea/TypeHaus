@@ -70,16 +70,17 @@ def test_over_mirror_bar_lens_faces_into_the_room() -> None:
 
 
 def test_catlin_round_and_rectangular_mirrors_use_their_own_shapes(catlin_plan) -> None:
-    types = {kind.tag: kind for kind in catlin_plan.library.electrical_device_types}
-    assert types["ED-T-LT-MIRROR-RING"].plan_symbol == "round-mirror-light"
-    assert types["ED-T-LT-MIRROR-CLOSET"].plan_symbol == "mirror-light"
-    assert types["ED-T-LT-MIRROR"].plan_symbol == "mirror-light-bar"
-    mirror = types["ED-T-LT-MIRROR-RING"]
+    furniture = {kind.tag: kind for kind in catlin_plan.library.furniture_types}
+    lights = {kind.tag: kind for kind in catlin_plan.library.electrical_device_types}
+    mirror = furniture["FT-MIRROR-KOHLER-26050-BNL"]
+    assert mirror.plan_symbol == "plain-round-mirror-nickel"
+    assert lights["ED-T-LT-MIRROR-HALO-2700"].plan_symbol == "halo-mirror-light"
+    assert lights["ED-T-LT-MIRROR"].plan_symbol == "mirror-light-bar"
     record = _symbol_geometry(mirror, mirror.footprint)
     assert all(part["shape"] == "cylinder-depth" for part in record["model_parts"])
-    glass = [part for part in record["model_parts"] if "metalness" in part]
-    assert len(glass) == 2
-    assert all(part["metalness"] == 1 and part["roughness"] < 0.1 for part in glass)
+    glass = [part for part in record["model_parts"] if part.get("metalness") == 1]
+    assert len(glass) == 1
+    assert glass[0]["metalness"] == 1 and glass[0]["roughness"] < 0.1
 
 
 def test_export_keeps_the_polished_mirror_material() -> None:
@@ -96,9 +97,9 @@ def test_exported_bath_mirror_is_circular_on_either_wall_orientation(
     catlin_model_ro, turn: float,
 ) -> None:
     model = catlin_model_ro
-    item = next(item for item in model.canvas_objects if item.tag == "ED-S-BATH1-MIRROR")
+    item = next(item for item in model.canvas_objects if item.tag == "FURN-S-BATH1-MIRROR")
     item = dataclasses.replace(item, rotation_degrees=item.rotation_degrees + turn)
-    mirror = next(kind for kind in model.plan.library.electrical_device_types
+    mirror = next(kind for kind in model.plan.library.furniture_types
                   if kind.tag == item.type_ref)
     mesh = _MeshBuilder()
     assert _add_canvas_parts(mesh, item, mirror, {})
@@ -107,7 +108,7 @@ def test_exported_bath_mirror_is_circular_on_either_wall_orientation(
     # vertical circle, including when the second mirror is on the perpendicular wall.
     for part in model_parts(mirror.plan_symbol, mirror.footprint[0].meters,
                             mirror.footprint[1].meters, mirror.height.meters):
-        role = lamp_role(mirror.cct_k) if part["color"] == "lamp" else part["color"]
+        role = part["color"]
         points, _ = mesh._buckets[PART_COLORS[role]]
         radius = part["size"][0] / 2
         local_depth_faces = [part["center"][1] - part["size"][1] / 2,

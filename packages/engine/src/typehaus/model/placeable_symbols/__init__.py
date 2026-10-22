@@ -50,6 +50,10 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
 # The frozen vocabulary. A catalog entry may only name a symbol listed here; the contract test
 # holds the registry to it in both directions.
 SYMBOL_NAMES = frozenset({
+    "plain-round-mirror-nickel", "plain-arch-mirror-nickel", "plain-arch-mirror-chrome",
+    "plain-soft-rectangle-mirror-nickel", "plain-capsule-mirror-nickel",
+    "halo-mirror-light", "socketed-vanity-2-nickel", "socketed-vanity-2-chrome",
+    "socketed-vanity-3-nickel", "socketed-vanity-3-chrome",
     "pivoting-paper-holder", "towel-bar", "towel-hook",
     "pivoting-paper-holder-chrome", "towel-bar-chrome", "towel-hook-chrome",
     # furniture

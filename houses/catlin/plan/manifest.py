@@ -31,7 +31,7 @@ from params import (breezeway, driveway, entry_band_brace, foundations, hp1_nort
                     second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, bath1_storage,
-                  decking_selection, handrail_types,
+                  decking_selection, handrail_types, mirrors, mirror_types,
                   bath_accessories, bath_accessory_types, backing_bath_accessories,
                   towel_accessories, towel_accessory_types, backing_towel_accessories,
                   bath1_storage_types, bedroom_wardrobe_types, study_nook, study_nook_types,
@@ -64,7 +64,7 @@ _library = Library(
     assemblies=tuple(assemblies.ASSEMBLIES),
     # Brand and model for the products this house has actually chosen — identity only,
     # never a price (#28). The types above point at these by ``product_ref``.
-    products=(*products.PRODUCTS, *bed_frame_types.BED_FRAME_PRODUCTS,
+    products=(*products.PRODUCTS, *mirror_types.MIRROR_PRODUCTS, *bed_frame_types.BED_FRAME_PRODUCTS,
               *opening_products.OPENING_PRODUCTS, *bath_accessory_types.BATH_ACCESSORY_PRODUCTS,
               *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS),
     # The one library pocket size this house hangs, alongside the house's own catalog. Only
@@ -93,7 +93,7 @@ _library = Library(
                        if item.tag != living_puzzle_table_types.PUZZLE_COFFEE_TABLE_ELM_PREVIEW.tag),
                      living_puzzle_table_types.PUZZLE_COFFEE_TABLE_ELM_PREVIEW,
                      *STARTER_CASEWORK_TYPES,
-                     *SEKTION_CASEWORK_TYPES, *furniture_types.FURNITURE_TYPES,
+                     *SEKTION_CASEWORK_TYPES, *furniture_types.FURNITURE_TYPES, *mirror_types.MIRROR_FURNITURE_TYPES,
                      *dining_types.DINING_TYPES,
                      *closet_types.CLOSET_FURNITURE_TYPES,
                      *bedroom_wardrobe_types.BEDROOM_WARDROBE_TYPES,
@@ -133,7 +133,7 @@ _library = Library(
     electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *panel_types.PANEL_TYPES,
                              *mep.ELECTRICAL_DEVICE_TYPES,
                              *electrical.DEVICE_TYPES, *electrical_floor_types.DEVICE_TYPES,
-                             *lighting_types.LIGHTING_TYPES),
+                             *lighting_types.LIGHTING_TYPES, *mirror_types.MIRROR_LIGHT_TYPES),
     circuits=circuits.CIRCUITS,
     # No ``load_managements``: retired 2026-09-12 with the Class 320 service. See the
     # block at the foot of plan/circuits.py.
@@ -377,7 +377,7 @@ PLAN = (
          *foundations.VENEER_PLINTH, *foundations.VENEER_PLINTH_BEDDING,
          *masonry_joints.JOINTS,
          *mep.BASEMENT_ELEMENTS, *electrical.BASEMENT_ELEMENTS,
-         *lighting.BASEMENT_LIGHTING,
+         *lighting.BASEMENT_LIGHTING, *mirrors.BASEMENT_MIRRORS,
          *placeables.BASEMENT_PLACEABLES, *sauna.SAUNA_SEATING, *millwork.BASEMENT_SHELVES,
          *window_stools.BASEMENT_WINDOW_STOOLS,
          *millwork_vanities.BASEMENT_VANITY_SHELVES,
@@ -398,7 +398,7 @@ PLAN = (
          # PBR. Filed on `main` (the run starts below the main datum) though the module
          # that derives them is the roof eave's — it owns the cladding-face constant.
          *roof_trim.MAIN_ELEMENTS,
-         *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING, *porch_lighting.PORCH_LIGHTING,
+         *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING, *mirrors.MAIN_MIRRORS, *porch_lighting.PORCH_LIGHTING,
          *closet.MAIN_CLOSET,
          *bed_reading_corner.BED_READING_CORNER, *bed_desk.BED_DESK,
          *placeables.MAIN_PLACEABLES, *kitchen_casework.MAIN_KITCHEN_CASEWORK, *views.DETAIL_SLICES,
@@ -419,7 +419,7 @@ PLAN = (
                                 *fixtures.SECOND_FIXTURES,
                                 *fixtures.BALCONY_HYDRANT,
                                 *mep.SECOND_ELEMENTS,
-                                *electrical.SECOND_ELEMENTS, *lighting.SECOND_LIGHTING,
+                                *electrical.SECOND_ELEMENTS, *lighting.SECOND_LIGHTING, *mirrors.SECOND_MIRRORS,
                                 *placeables.SECOND_PLACEABLES,
                                 *plant_room.PLANT_ROOM_PLACEABLES, *plant_room.PLANT_ROOM_BACKING,
                                 *bedroom_wardrobes.BEDROOM_WARDROBES,
@@ -444,7 +444,7 @@ PLAN = (
                              *fixtures.ATTIC_FIXTURES,
                              *roof_trim.ATTIC_ELEMENTS,
                              *mep.ATTIC_ELEMENTS, *electrical.ATTIC_ELEMENTS,
-                             *solar.ATTIC_ELEMENTS, *lighting_attic.ATTIC_LIGHTING,
+                             *solar.ATTIC_ELEMENTS, *lighting_attic.ATTIC_LIGHTING, *mirrors.ATTIC_MIRRORS,
                              *electrical_attic.NEC_FILL_ATTIC,
                              *placeables.ATTIC_PLACEABLES,
                              *study_bridge.STUDY_BRIDGE,
