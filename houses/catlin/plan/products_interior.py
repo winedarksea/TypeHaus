@@ -350,25 +350,21 @@ YALE_ASSURE_2 = Product(
 # Named here rather than only on the Material because a slab and a tile are BOUGHT, with a
 # model number, a finish and a lot -- and ``Material.product_ref`` exists for exactly this.
 # These are the first Materials in the repo to use it.
-SILESTONE_ET_CALACATTA = Product(
-    tag="PROD-SILESTONE-ET-CALACATTA-GOLD", brand="Silestone (Cosentino)",
-    model="Et Calacatta Gold, 3 cm, polished",
-    name="Et Calacatta Gold engineered quartz slab, 3 cm",
-    source="Cosentino published literature, read 2026-09-06. ** HybriQ: <=40% crystalline "
-           "silica, against 90-95% for conventional quartz including Cambria. ** Cal/OSHA "
-           "voted 2026-05-21 to initiate a prohibition on fabricating engineered stone over "
-           "1% silica after 592 silicosis cases, 65 lung transplants and 31 deaths among "
-           "California fabricators since 2019; Australia banned it outright. There is NO "
-           "Minnesota or federal ban and quartz buys with zero friction here in 2026 -- but "
-           "the low-silica choice is also the cheapest, which makes it free to take. 3 cm, "
-           "no debate: 2 cm's saving evaporates into a plywood subtop plus a laminated edge "
-           "and it cannot do a good mitre. Eased edge is included; a 2-3\" mitred apron on "
-           "the exposed run is the most visible upgrade in a minimalist kitchen, and a "
-           "waterfall is $700-1200 to kill knee space and date the room. ** THE #1 CAUSE OF "
-           "YELLOWING IS NOT UV, IT IS HIGH-pH CLEANERS ** -- bleach, ammonia, glass cleaner, "
-           "degreasers, scouring powder and melamine sponges all yellow light quartz across "
-           "every brand. #2 is heat scorch, which is irreversible. A warm off-white with "
-           "veining hides both where a stark solid white shows them worst.",
+MSI_Q_QUARTZ_SPECKLED = Product(
+    tag="PROD-MSI-Q-QUARTZ-SPECKLED-WHITE", brand="MSI (M S International)",
+    model="Q Quartz, Frost White, Group 1, 3 cm, polished",
+    name="MSI Q Quartz Frost White engineered quartz slab, 3 cm, Group 1",
+    source="Pencilled 2026-10-22 for cost: Frost White, with Iced White and Sparkling White as "
+           "the consistently cheapest speckled whites. Public sources read 2026-10-22: Granite "
+           "Selection lists MSI Q Quartz Frost White at $35-45/SF retail; no MSI source "
+           "confirmed the Group 1 price level, and no MSI crystalline-silica figure was "
+           "published in what was found. Conventional quartz runs ~90% silica, against <=40% "
+           "for Silestone HybriQ, which the 2026-09-06 pick used. ** Get the MSI SDS and the "
+           "fabricator's silica-control plan before cutting. ** Confirm the colour and the "
+           "price level on the MSI sheet at order. Eased edge and polish are standard. ** THE "
+           "#1 CAUSE OF YELLOWING IS HIGH-pH CLEANERS ** -- bleach, ammonia, glass cleaner, "
+           "degreasers, scouring powder and melamine sponges. #2 is heat scorch, which is "
+           "irreversible.",
 )
 MARAZZI_MODERN_FORMATION = Product(
     tag="PROD-MARAZZI-MF01", brand="Marazzi", model="Modern Formation Peak White MF01",
@@ -444,7 +440,7 @@ INTERIOR_PRODUCTS = (
     HARVIA_CILINDRO_PC110E, HARVIA_XENIO_CX170, CARIITTI_FIBRE_KIT,
     IKEA_SEKTION, IKEA_VOXTORP_WHITE, IKEA_MAXIMERA, TOPKNOBS_BAR_PULL,
     SCHLAGE_LATITUDE, YALE_ASSURE_2,
-    SILESTONE_ET_CALACATTA, MARAZZI_MODERN_FORMATION, TILEBAR_BRONX_WHITE,
+    MSI_Q_QUARTZ_SPECKLED, MARAZZI_MODERN_FORMATION, TILEBAR_BRONX_WHITE,
     SCHLUTER_KERDI_LINE_VARIO, KATELAUREL_ESTERO,
     *LIGHTING_PRODUCTS,
 )

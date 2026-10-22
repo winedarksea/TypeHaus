@@ -43,21 +43,18 @@ MATERIALS = [
     # apron on the exposed run is the most visible upgrade available in a minimalist kitchen,
     # and a WATERFALL is $700-1,200 to kill the knee space at one end of a three-stool run.
     #
-    # ** SILICA IS A REAL CONSIDERATION AND HERE IT IS ALSO FREE. ** Silestone is now HybriQ
-    # at <=40% crystalline silica against 90-95% for conventional quartz including Cambria;
-    # Cal/OSHA voted 2026-05-21 to initiate a prohibition on fabricating engineered stone over
-    # 1% silica after 592 silicosis cases, 65 lung transplants and 31 deaths among California
-    # fabricators since 2019, and Australia banned it outright. There is NO Minnesota or
-    # federal ban and quartz buys with zero friction here — but the low-silica slab is also
-    # the cheaper one, so the choice costs nothing. What it does NOT do is protect the
-    # fabricator by itself: vet the SHOP, not the showroom — wet cutting on every operation
+    # ** SILICA: CONVENTIONAL QUARTZ, CHOSEN ON PRICE (owner, 2026-10-22). ** The 2026-09-06
+    # pick was Silestone HybriQ (<=40% crystalline silica) because the low-silica slab was
+    # also the cheaper one. MSI Q Quartz is a conventional formulation, typically ~90% silica,
+    # and no MSI silica figure was found publicly: the SDS is the gate. What protects the
+    # fabricator is vetting the SHOP, not the showroom — wet cutting on every operation
     # including hand edge-work, respirators on faces, and OSHA silica exposure monitoring on
     # file. That is the strongest argument against the big-box route, which subs the cut to an
     # undisclosed shop you can neither inspect nor hold to a cantilevered overhang.
     Material(tag="quartz-counter", name="Engineered quartz countertop, 3 cm",
              density=2400.0, hatch="masonry", color="#f2efe9", finish="polished",
-             product_ref="PROD-SILESTONE-ET-CALACATTA-GOLD", engineered_stone=True,
-             source="Silestone Et Calacatta Gold, 3 cm, eased edge (owner selection 2026-09-06). Kitchen perimeter and sink run, the 48\" and 51\" vanity tops, and the peninsula's one-piece top, its 15\" seating overhang on hidden steel bars. ** NEVER CLEAN IT WITH ANYTHING HIGH-pH: ** bleach, ammonia, glass cleaner, degreasers, scouring powder and melamine sponges are the #1 cause of light quartz yellowing across every brand — not UV. #2 is heat scorch, which is irreversible; induction helps (no flame spill, no hot grate) but a 400 F pan is still a 400 F pan. Put that in the owner's manual."),
+             product_ref="PROD-MSI-Q-QUARTZ-SPECKLED-WHITE", engineered_stone=True,
+             source="MSI Q Quartz Frost White (pencilled 2026-10-22; confirm at order), speckled white, Group 1, 3 cm, standard polished, standard eased edge (owner selection 2026-10-22; replaces Silestone Et Calacatta Gold of 2026-09-06). Kitchen perimeter and sink run, the 48\" and 51\" vanity tops, and the peninsula's one-piece top, its 15\" seating overhang on hidden steel bars. ** NEVER CLEAN IT WITH ANYTHING HIGH-pH: ** bleach, ammonia, glass cleaner, degreasers, scouring powder and melamine sponges are the #1 cause of light quartz yellowing across every brand — not UV. #2 is heat scorch, which is irreversible; induction helps (no flame spill, no hot grate) but a 400 F pan is still a 400 F pan. Put that in the owner's manual."),
     # RM-M-BED desk top (CT-M-BED-DESK), over two SEKTION drawer bases and the knee ledger.
     Material(tag="walnut-counter", name='Black walnut top, 1", 5/4 S4S',
              r_per_inch=1.0, density=610.0, hatch="lumber", color="#80634f",

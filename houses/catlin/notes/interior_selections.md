@@ -3,7 +3,7 @@ title: "Interior Selections — the 2026-09-06 pass"
 applied_to:
   - product: PROD-TOTO-CT449CFGT60
   - product: PROD-HARVIA-PC110E
-  - product: PROD-SILESTONE-ET-CALACATTA-GOLD
+  - product: PROD-MSI-Q-QUARTZ-SPECKLED-WHITE
   - product: PROD-FLEURCO-MHAP2436
   - product: PROD-KOHLER-26050-BNL
   - material: quartz-counter
