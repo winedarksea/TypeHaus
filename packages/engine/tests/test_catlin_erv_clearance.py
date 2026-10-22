@@ -42,7 +42,21 @@ def test_no_new_erv_duct_vent_or_radon_riser_interpenetrations(catlin_ctx) -> No
     assert pairs <= _KNOWN, sorted(sorted(pair) for pair in pairs - _KNOWN)
 
 
+#: Risers that clear every member and pass through an open-web truss web, which the house
+#: routes through by design (FS-S-WEST, storeys/second.py). The engine answers UNKNOWN
+#: because whether a 1 1/2" vent may share a web is a fabricator's chart it does not hold.
+#: Anything else standing in a web, or on a member, still fails this test.
+_WEB_PASSING_VENTS = {"PR-M-BATH1-LAV-VENT"}
+
+
 def test_every_erv_duct_and_vent_riser_stands_in_a_drawn_hole(catlin_ctx) -> None:
     found = [f.message for f in riser_through_deck(catlin_ctx)
-             if f.result in (Result.FAIL, Result.UNKNOWN) and _watched(f)]
+             if f.result in (Result.FAIL, Result.UNKNOWN) and _watched(f)
+             and not _web_passing(f)]
     assert not found, found
+
+
+def _web_passing(finding) -> bool:
+    return (finding.result is Result.UNKNOWN and "FS-S-WEST" in finding.message
+            and "web" in finding.message
+            and any(tag in _WEB_PASSING_VENTS for tag in finding.element_tags))

@@ -68,8 +68,8 @@ galvanic series, so the pair is benign indoors. Anchors are A4/316.
 - **W rail top return** (y = 26'-7 1/4"): square onto W-M-STRW's stair face. Behind the
   flange are the wall's end stud and corner stud at the W-M-STOS2 L (y 26'-5 3/4" ..
   26'-8 3/4"); the 70 mm flange (y 26'-5 7/8" .. 26'-8 5/8") lands wholly on them, so no
-  backing block is needed. (It was 1 1/2" further south until the 2026-10-21 bath 1 rework
-  moved N-M-STRJ, and the corner studs with it, north.)
+  backing block is needed. Re-pinned 1 1/2" north on 2026-10-21, to the corner studs as the
+  wall now stands; it was at 26'-5 3/4" before.
 - **W rail foot return** (y = 31'-1 5/8", ~6" below the main floor) lands in the floor
   band, behind the stair plywood. W-B-STR's studs stop 13 7/16" below the floor, and
   FS-M-MECH's joist end is 2 5/8" behind the face. **Field item:** block solid between the

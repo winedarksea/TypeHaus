@@ -1976,8 +1976,8 @@ STAIRS = [
 # 2 3/4" (70 mm) off the finish face, so 1.92" clear (R311.7.8.2) and 3.58" projection
 # (R311.7.1). Both ends of each rail return square to the wall on stock elbows. The W rail
 # stops at y=26'-7 1/4", where W-M-STRW's face begins, 4 5/8" short of the top nosing
-# (26'-2 5/8"): its flange centres on the wall's end and corner studs at the L. It moved
-# 1 1/2" north with N-M-STRJ in the 2026-10-21 bath 1 rework.
+# (26'-2 5/8"): its flange centres on the wall's end and corner studs at the L. Re-pinned
+# 1 1/2" north on 2026-10-21 to sit on the corner studs as they now stand.
 STAIR_HANDRAILS = [
     Railing(
         uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", type_ref="RAILING-INT-TI-HANDRAIL-42", path=(

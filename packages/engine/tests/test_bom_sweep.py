@@ -114,7 +114,7 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # the W rail now running to the top nosing), and the dark-steel rails moved 3/8" off
     # their walls for R311.7.8.2's clearance.
     # 9.7 since 2026-10-13: the W rail stops 3 1/8" short, where W-M-STRW's face ends.
-    # 9.5 since 2026-10-21: it stops 4 5/8" short now, after N-M-STRJ moved north.
+    # 9.5 since 2026-10-21: the W rail's return moved 1 1/2" north to the L's corner studs.
     # 39.9 since 2026-10-13: RL-BW-GARAGE-E's 3'-0" left with the garage's interior landing,
     # and RL-G-SERVICE's run went 3'-7 3/4" -> 3'-7 1/4" (head to its new 1 1/2" return).
     # The attic handrail's 10 3/8" lead-in clears WIN-S-STUDY3's lower jamb.
