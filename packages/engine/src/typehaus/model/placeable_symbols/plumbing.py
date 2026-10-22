@@ -28,6 +28,7 @@ from typehaus.model.placeable_symbols._frame import (
     rect,
 )
 from typehaus.model.placeable_symbols._kohler_underscore import kohler_underscore
+from typehaus.model.placeable_symbols._roman_tub_filler import roman_tub_filler
 from typehaus.model.placeable_symbols._undermount_sink import single_bowl_undermount
 
 __all__ = ["NEO_ANGLE_CUT_FRACTION", "PLUMBING_SYMBOLS", "neo_angle_points"]
@@ -538,4 +539,5 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "floor-drain": floor_drain(),
     "kitchen-sink": kitchen_sink(bowls=2),
     "kitchen-sink-undermount-single": single_bowl_undermount,
+    "roman-tub-filler": roman_tub_filler,
 }

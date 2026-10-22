@@ -70,6 +70,25 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
            "circuit required, outlet behind the bath within 24 in. of the power supply.",
 )
 
+# FX-M-BATH2-TUB's deck trim: the Delta Trinsic T2759 on its R2707 rough (plan/
+# products_interior.py), drawn so the 3D shows where the filler stands. ``needs`` is empty
+# because the supply runs already serve FX-M-BATH2-TUB; this is that tub's trim, not a
+# second fixture to plumb. The box is the trim: hole line at the rear, spout over the rim.
+DELTA_T2759_ROMAN = FixtureType(
+    tag="FX-DELTA-T2759-ROMAN",
+    name="Trinsic 3-hole deck-mount Roman tub filler",
+    footprint=(inch(10.5), inch(10)),
+    height=inch(10),
+    plan_symbol="roman-tub-filler",
+    basin=False,
+    product_ref="PROD-DELTA-T2759-SS",
+    source="Distributor listings for Delta T2759, read 2026-10-21 (Delta's own spec sheet "
+           "not found): 8 in. spout reach, 5 7/8 in. deck to outlet, 10 in. overall height, "
+           "8-16 in. centres (8 in. here), deck up to 1 1/4 in. Ferguson lists a 10 in. reach "
+           "on another basis. Escutcheon (2 1/2 in.) and lever length are representative. "
+           "Confirm against the delivered trim.",
+)
+
 # RM-M-BATH2's vanity, replacing a borrowed FX-KITCHEN-SINK-33 that billed as a kitchen
 # sink, drew a two-bowl symbol on the bathroom plan, and gave the room no cabinet at all.
 # The owner wants one basin and as much drawer and shelf as the wall can hold, so this is a
@@ -333,7 +352,7 @@ DCODE_WALL_BASIN = FixtureType(
            '?ncat=washbasins&nser=7120&product=94764',
 )
 
-FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_48, DCODE_WALL_BASIN,
+FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, DELTA_T2759_ROMAN, BATH2_VANITY_48, DCODE_WALL_BASIN,
                  KITCHEN_SINK_32_SINGLE,
                  VANITY_24_SHALLOW, VANITY_30_SHALLOW, VANITY_30_SINGLE,
                  VANITY_36_SHALLOW, VANITY_36_SINGLE,

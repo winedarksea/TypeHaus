@@ -378,6 +378,9 @@ class Fixture(Element):
     wall_ref: str | None = None  # drain-stack wall when services need a vertical chase
     drain_position: Point2D | None = None  # contractor override; default = position
     tub_enclosure: TubEnclosureSpec | None = None
+    # The fixture this one is trim ON (a deck-mount tub filler on its bath). The authored
+    # relation that pardons the two footprints overlapping in `advisory.fixture_overlap`.
+    host_fixture_ref: str | None = None
     rotation: object | None = None  # Angle | None
     location: Location | None = None
     mount: Mount = Mount()

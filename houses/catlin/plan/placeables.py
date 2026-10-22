@@ -419,9 +419,9 @@ MAIN_PLACEABLES = [
 
     # --- RM-M-BATH2 over-toilet cabinet --------------------------
     # The room's only wall storage, on the only free wall left: W-M-HS1's bathroom face,
-    # x 6 5/8" (W-M-W3's finish face, which FX-M-BATH2-SINK is also struck off) to 4'-4"
-    # (W-M-TUBDK-W's west face). 45 3/8" of free run, a 45" carcass, 3/16" of scribe each
-    # end. Faces are struck off W-M-HS1's own layer polygons.
+    # x 6 5/8" (W-M-W3's finish face, which FX-M-BATH2-SINK is also struck off) to 4'-4".
+    # That was W-M-TUBDK-W's west face until 2026-10-21; the face is at 4'-8.24" now, so
+    # the carcass could grow to 48" later. 45" carcass, 3/16" of scribe at the west end. Faces are struck off W-M-HS1's own layer polygons.
     #
     # `Mount.elevation` is the BOTTOM of the body (as for FURN-M-KIT-OVER-FRIDGE), so
     # 48 + 57 = 105", leaving 1" below the actual finished ceiling. The 48" bottom keeps

@@ -5,7 +5,7 @@ substitution — it is a different piece of construction. What is pinned here is
 of dimensions and material choices that the rest of the room was then drawn to, each of
 which is silently breakable by an edit somewhere else:
 
-  * the bath fits its bay with Kohler's clearance and no more;
+  * the rim laps the west knee wall and meets W-M-BA2E at 1/8";
   * the deck's south face IS the shower's north face, which is the whole reason the two
     read as one built element and the reason the room's depth adds up;
   * the knee-wall cavity is MINERAL WOOL, which a house-wide reinsulation sweep would
@@ -73,28 +73,38 @@ def test_the_bath_is_the_kohler_drop_in_and_needs_power():
     assert {"PROD-KOHLER-5713-W1-0", "PROD-KOHLER-7272"} <= products
 
 
-def test_the_bath_fits_its_bay_within_kohlers_eighth_inch():
-    """Kohler allows a maximum 1/8" gap between the rim and the framing, and the bay was
-    drawn to that. Both numbers matter in both directions: a bay that grows leaves a gap
-    the rim cannot span, and one that shrinks will not take the bath at all."""
-    model, _ = resolve(_plan())
+def test_the_rim_laps_the_west_knee_wall_and_meets_the_east_wall_at_an_eighth():
+    """Since 2026-10-21 the rim laps W-M-TUBDK-W's top by no more than the cutout's 1"
+    margin, the wall still clears the modelled shell, and the east rim stands 1/8"-1/4" off
+    W-M-BA2E's face. All provisional until Kohler template 1268438-7 is measured."""
+    from typehaus.model.placeable_symbols._kohler_underscore import shell_half_axes_at
+
+    plan = _plan()
+    model, _ = resolve(plan)
     tub = _bounds(_canvas(model, "FX-M-BATH2-TUB").footprint)
+    cutout = _bounds([p.xy_m for p in next(
+        e for e in plan.storey_elements("main") if getattr(e, "tag", "") == "FO-M-TUBDK").outline])
 
-    west = next(w for w in model.walls if w.tag == "W-M-TUBDK-W")
-    south = next(w for w in model.walls if w.tag == "W-M-TUBDK-S")
-    bay_west = max(p[0] for p in next(x for x in west.layers if x.name == "ply-bay").polygon)
-    bay_south = max(p[1] for p in next(x for x in south.layers if x.name == "ply-bay").polygon)
-    bay_west /= M_PER_IN
-    bay_south /= M_PER_IN
+    def face(tag, layer, axis):
+        wall = next(w for w in model.walls if w.tag == tag)
+        return max(p[axis] for p in next(x for x in wall.layers if x.name == layer).polygon) / M_PER_IN
 
-    # East and north are the room's own walls; the bay is closed by the two knee walls.
-    west_gap = tub[0] - bay_west
-    south_gap = tub[2] - bay_south
-    assert west_gap > 0, "bath overruns the west knee wall"
-    assert west_gap <= 0.25, "bath is not tight to the west knee wall"
-    assert south_gap > 0, "bath overruns the south knee wall"
-    # The foot deck: the surplus is deliberately at the foot, where the outlet lives.
-    assert 3.5 <= south_gap <= 4.5
+    bay_west, bay_south = face("W-M-TUBDK-W", "ply-bay", 0), face("W-M-TUBDK-S", "ply-bay", 1)
+    lap = bay_west - tub[0]
+    assert 0 < lap <= cutout[0] - tub[0] + 1e-6, "rim does not lap the west knee wall"
+
+    kohler = next(t for t in plan.library.fixture_types if t.tag == "FX-KOHLER-UNDERSCORE-6036")
+    width, depth = (v.meters for v in kohler.footprint)
+    # Rotated 90 degrees, so the shell's plan x half-extent is its depth half-axis.
+    shell_x = max(shell_half_axes_at(f / 10, width, depth)[1] for f in range(11)) / M_PER_IN
+    assert (tub[0] + tub[1]) / 2 - shell_x > bay_west, "knee wall cuts the shell"
+
+    ba2e = next(w for w in model.walls if w.tag == "W-M-BA2E")
+    ba2e_face = min(min(p[0] for p in layer.polygon) for layer in ba2e.layers) / M_PER_IN
+    assert 0.125 - 1e-6 <= ba2e_face - tub[1] <= 0.25
+
+    # The foot bay holds the Bask outlet and the filler's R2707 body.
+    assert 4.5 <= tub[2] - bay_south <= 5.5
 
 
 def test_the_deck_and_the_shower_share_one_knee_wall():
@@ -109,7 +119,7 @@ def test_the_deck_and_the_shower_share_one_knee_wall():
 
 def test_the_water_closet_backs_a_wall_with_its_code_clearance_clear():
     """Its 15"-a-side envelope (UPC 402.5, the section MN enforces) is bounded by W-M-W3 on one hand and the tub deck
-    on the other, with about 7" to spare — so this is the assertion that catches the deck
+    on the other, with about 11" to spare — so this is the assertion that catches the deck
     growing westward."""
     model, _ = resolve(_plan())
     wc = _bounds(_canvas(model, "FX-M-BATH2-WC").footprint)
@@ -140,7 +150,7 @@ def test_the_deck_cavity_is_mineral_wool_and_must_stay_that_way():
     house-wide `mineral-wool` -> `fiberglass` sweep must not take it, and nothing else in
     the repo would notice if it did."""
     plan = _plan()
-    box = plan.library.resolve_assembly("TUBDECK_INT_2X4")
+    box = plan.library.resolve_assembly("TUBDECK_INT_2X3")
     stud = next(layer for layer in box.layers if layer.name == "stud")
     assert stud.cavity is not None
     assert stud.cavity.material_ref == "mineral-wool", (
@@ -155,7 +165,7 @@ def test_the_deck_cavity_is_mineral_wool_and_must_stay_that_way():
     # The `INT` token is what keeps mn_energy off both of these. It has to be a whole
     # `_`-delimited token — `_is_interior_assembly` splits, it does not substring-match —
     # so this reproduces that split rather than asserting on the literal.
-    for tag in ("TUBDECK_INT_2X4", "TUBDECK_INT_PLY_CAP"):
+    for tag in ("TUBDECK_INT_2X3", "TUBDECK_INT_PLY_CAP"):
         assert "INT" in tag.split("_"), f"{tag} would be graded against MN Zone 6"
 
 
@@ -175,10 +185,9 @@ def test_the_deck_cap_is_plywood_over_blocking_and_the_bath_hole_is_cut_out_of_i
     outer = Polygon([p.xy_m for p in slab.outline]).area / (M_PER_IN ** 2)
     hole = next(e for e in plan.storey_elements("main") if getattr(e, "tag", "") == "FO-M-TUBDK")
     cut = Polygon([p.xy_m for p in hole.outline]).area / (M_PER_IN ** 2)
-    # ~20.8 sf of deck with ~13.5 sf of it cut away for the bath. The deck grew 2" east
-    # on 2026-09-09 when W-M-BA2E2 came off its jog (storeys/main.py); the CUTOUT did not,
-    # and must not — it is the bath's rim less 1" all round, centred on the bath.
-    assert 20.0 < outer / 144 < 21.5
+    # ~18.7 sf of deck with ~13.5 sf of it cut away for the bath. The deck lost 4.24" on
+    # the west on 2026-10-21; the cutout is still the rim less 1" all round, centred on it.
+    assert 18.0 < outer / 144 < 19.5
     assert 13.0 < cut / 144 < 14.0
 
 
@@ -192,9 +201,9 @@ def test_the_knee_walls_frame_and_stand_on_the_subfloor():
         assert round(wall.z1_m / M_PER_IN, 4) == 20.0
         categories = {m.category for m in wall.members}
         assert {"stud", "plate"} <= categories, f"{tag} framed nothing"
-        # Studs and plates are 2x4. The one member that is not is BK-M-TUBDK-AP
+        # Studs and plates are 2x3 (2026-10-21). The one member that is not is BK-M-TUBDK-AP
         # (plan/backing.py), the 2x8 flat framing the tub access panel in the west skirt.
-        assert all(m.profile == "2x4" for m in wall.members if m.category != "blocking")
+        assert all(m.profile == "2x3" for m in wall.members if m.category != "blocking")
         blocks = [m for m in wall.members if m.category == "blocking"]
         assert {m.profile for m in blocks} <= {"2x8"}, f"{tag} grew unexpected blocking"
 
@@ -230,7 +239,7 @@ def test_the_bask_heated_surface_has_its_dedicated_gfci_circuit_and_outlet():
     tub = _bounds(_canvas(model, "FX-M-BATH2-TUB").footprint)
     x, y = (v / M_PER_IN for v in _canvas(model, outlet.tag).position)
     # "Behind the bath": inside the box, in the foot bay SOUTH of the shell — the only part
-    # of the enclosure with room for a plug, since the bath sits 3/16" off the west face.
+    # of the enclosure with room for a plug, since the rim laps the west knee wall.
     assert tub[0] - 1.0 <= x <= tub[1]
     assert y < tub[2], "the outlet is not behind the bath"
     assert tub[2] - y < 4.0, "the outlet has fallen out of the foot bay"
@@ -243,5 +252,22 @@ def test_the_drain_matches_the_bath_kohler_actually_specifies():
                if getattr(e, "tag", "") == "PR-B-TUB2-DRAIN")
     assert round(run.diameter.meters / M_PER_IN, 4) == 1.5
     assert run.serves == ("FX-M-BATH2-TUB",)
+
+
+def test_the_filler_sits_on_the_foot_ledge_at_deck_height():
+    """FX-M-BATH2-FILLER stands on the finished foot deck (22 3/4"), its hole line over the
+    foot bay and its spout over the rim, inside the room."""
+    model, _ = resolve(_plan())
+    filler = _canvas(model, "FX-M-BATH2-FILLER")
+    tub = _bounds(_canvas(model, "FX-M-BATH2-TUB").footprint)
+    x0, x1, y0, y1 = _bounds(filler.footprint)
+    assert round(filler.z_m / M_PER_IN, 3) == 22.75
+    assert tub[0] < x0 and x1 < tub[1]
+    assert y0 < tub[2] < y1, "the filler is not on the foot ledge reaching over the rim"
+    south = next(w for w in model.walls if w.tag == "W-M-TUBDK-S")
+    assert y0 > max(p[1] for p in next(x for x in south.layers if x.name == "ply-bay").polygon) / M_PER_IN
+    room = next(r for r in model.rooms if r.tag == "RM-M-BATH2")
+    assert Polygon(room.clear_face).contains(Polygon(filler.footprint))
+
 
 pytestmark = pytest.mark.slow

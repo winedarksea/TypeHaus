@@ -3414,10 +3414,14 @@
 # it. Folded into the high end here rather than dropped; do not also add it to
 # [plumbing_specialties] or it is billed twice.
 # NOT in this row, and each is billed elsewhere: the deck box's framing and insulation
-# ([framing], [envelope_layers], via TUBDECK_INT_2X4), the plywood cap
+# ([framing], [envelope_layers], via TUBDECK_INT_2X3), the plywood cap
 # ("slab_platform:TUBDECK_INT_PLY_CAP" and [envelope_layers]), the deck tile ([floor_finishes]),
 # the dedicated circuit and its outlet, and the two access panels.
 "FX-KOHLER-UNDERSCORE-6036" = { material = { low = 2200, high = 3100 }, labour = { low = 430, high = 1050 } }  # 1 ea
+# FX-M-BATH2-FILLER, the deck-mount filler on that bath (2026-10-21): T2759-SS trim $599 +
+# R2707 rough $221. Moved here out of `plumbing-faucets-and-tub-filler`, which no longer
+# carries it. Labour is in the bath's set and the supply rough.
+"FX-DELTA-T2759-ROMAN" = { material = { low = 820, high = 820 }, labour = { low = 0, high = 0 } }  # 1 ea
 # 60x30 acrylic or gelcoat one-piece unit, or the 3-piece kit a finished second floor takes
 # because a one-piece will not go up the stair. Labour is the set: level the base in mortar,
 # nail the flange to three walls, hang the walls, set the valve and riser, connect the waste
@@ -4050,7 +4054,8 @@
 # assemblies by mass and decoupling, not by which wool is in the bay. What is LEFT is every
 # damp, hot or wet case, and each is deliberate — see the batt note in plan/assemblies.py
 # above EXT_2X6_SWINBURNE for the full list and the reasoning:
-#   3-1/2": PLANT_INT_2X4_HUMID, SAUNA_2X4, TUBDECK_INT_2X4
+#   2-1/2": TUBDECK_INT_2X3
+#   3-1/2": PLANT_INT_2X4_HUMID, SAUNA_2X4
 #   5-1/2": the plant room, the sauna liners, and the shared _GARDEN_FRAMED_STUD
 # The old comment read 6,316.6 SF and had been stale since the INT_2X4_RC retype; the real
 # figure the day before this change was 4,972.2.
@@ -7457,8 +7462,8 @@ plumbing-bidet-seats = { low = 1364, high = 1700 }
 #   8 x Delta Arvo 15840LF-SP lavatory, SpotShield Brushed Nickel   $105 ea   $840
 #   1 x Delta Essa 9113-AR-DST kitchen, Arctic Stainless            $175      $175
 #   1 x Moen Adler 87233SRS laundry, Spot Resist Stainless          $169      $169
-#   1 x Delta Trinsic T2759-SS Roman tub filler trim                $599      $599
-#   1 x Delta R2707 Roman tub rough-in body                         $221      $221
+#   (The Delta T2759-SS trim + R2707 body, $820, bill as "FX-DELTA-T2759-ROMAN" since
+#   2026-10-21; they are no longer in this row.)
 #
 # ** SINGLE-HOLE ON ALL EIGHT LAVATORIES ** -- one deck penetration in the splash zone
 # instead of three, and cheaper in brushed nickel besides. That puts a requirement on the TOP
@@ -7485,7 +7490,7 @@ plumbing-bidet-seats = { low = 1364, high = 1700 }
 # confusingly claims the trim includes a hand shower, which contradicts its being 3-hole --
 # confirm both before ordering.
 # Powder basin: seven Arvo plus one Duravit B.2 S B21010001U10 (chrome), replacing one Arvo; +$135..215.
-plumbing-faucets-and-tub-filler = { low = 2139, high = 3615 }
+plumbing-faucets-and-tub-filler = { low = 1319, high = 2795 }
 # ** WALL TILE HAS NO ELEMENT TO MEASURE ** — [floor_finishes] carries the floors and a shower
 # surround is not a modelled finish, which is the same reason `finish-tile-surrounds-and-
 # waterproofing` above stays a lump. This row is the MATERIAL for the chosen 12x24 (TileBar

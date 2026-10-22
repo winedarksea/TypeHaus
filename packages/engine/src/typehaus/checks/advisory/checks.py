@@ -283,13 +283,26 @@ def fixture_overlap(ctx: CheckContext) -> list[Finding]:
     the resolver has already rotated each footprint into the project frame (FX-M-BATH1-WC
     is rotated 90°, and a naive axis-aligned box would test the wrong rectangle) and has
     already transformed each REQUIRED ``ClearanceZone`` ring the same way. Touching edges
-    are fine — only a real shared area (> ~1 in2) is an overlap.
+    are fine — only a real shared area (> ~1 in2) is an overlap. A fixture naming the other
+    as its ``host_fixture_ref`` (trim on a bath's deck) is an authored relation, not a clash.
     """
     from shapely.geometry import Polygon
 
     fixtures = [obj for obj in ctx.model.canvas_objects if obj.kind == "Fixture"]
     out: list[Finding] = []
     reported: set[tuple[str, ...]] = set()
+    tags = {obj.tag for obj in fixtures}
+    for element in ctx.plan.all_elements():
+        host = getattr(element, "host_fixture_ref", None)
+        if element.element_kind != "Fixture" or host is None:
+            continue
+        reported.add(tuple(sorted((element.tag, host))))
+        reported.update(((element.tag, host, "clearance"), (host, element.tag, "clearance")))
+        if host not in tags:
+            out.append(advisory_fail(
+                "advisory.fixture_overlap",
+                f"{element.tag}.host_fixture_ref names {host}, which is no placed fixture",
+                (element.tag,)))
     for source in fixtures:
         source_shape = Polygon(source.footprint)
         for other in fixtures:

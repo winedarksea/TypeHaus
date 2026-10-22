@@ -304,3 +304,20 @@ def test_wall_tv_panel_reaches_its_mount_elevation_without_a_pedestal():
     stand_parts = model_parts("tv", width, 0.4191, height)
     assert {part["color"] for part in stand_parts} == {"screen", "wood-dark", "metal"}
     assert stand_parts[0]["center"][2] - stand_parts[0]["size"][2] / 2 > 0
+
+
+def test_roman_tub_filler_has_two_handles_and_a_spout_inside_its_box():
+    inch_m = 0.0254
+    width, depth, height = (value * inch_m for value in (10.5, 10, 10))
+    strokes = plan_symbol_strokes("roman-tub-filler", width, depth)
+    parts = model_parts("roman-tub-filler", width, depth, height)
+    assert len(strokes) == 7 and parts and {part["color"] for part in parts} == {"metal"}
+    for part in parts:
+        for axis, limit in ((0, width / 2), (1, depth / 2)):
+            assert abs(part["center"][axis]) + part["size"][axis] / 2 <= limit + 1e-9
+        assert part["center"][2] + part["size"][2] / 2 <= height + 1e-9
+    # The outlet drops to 5 7/8" above the deck, 8" in front of the hole line.
+    outlet_z = min(part["center"][2] - part["size"][2] / 2 for part in parts
+                   if part["center"][1] < 0 and part["size"][2] < height / 2
+                   and part["center"][0] == 0)
+    assert outlet_z / inch_m == pytest.approx(5.875)

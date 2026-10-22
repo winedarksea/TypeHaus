@@ -161,7 +161,7 @@ def test_occupied_space_includes_the_rim_and_the_whole_framed_deck(catlin_model_
     deck_bounds = Polygon(deck.outline).bounds
     assert tub_bounds[2]-tub_bounds[0] == pytest.approx(inch(35.75).meters)
     assert tub_bounds[3]-tub_bounds[1] == pytest.approx(inch(59.6875).meters)
-    assert deck_bounds[2]-deck_bounds[0] == pytest.approx(inch(42.615).meters)
+    assert deck_bounds[2]-deck_bounds[0] == pytest.approx(inch(38.375).meters)
     assert deck_bounds[3]-deck_bounds[1] == pytest.approx(inch(70.24).meters)
     assert Polygon(deck.outline).covers(Polygon(tub.footprint))
     assert tub.body_z1_m-tub.body_z0_m == pytest.approx(inch(21).meters)

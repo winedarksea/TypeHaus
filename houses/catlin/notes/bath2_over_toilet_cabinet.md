@@ -11,12 +11,13 @@ RM-M-BATH2 is 72.8 sf with no storage above the vanity drawers. Three of its fou
 spent: the 54" `FX-M-BATH2-SINK` runs the south half of the west wall and its north end stops
 3 1/4" short of `FX-M-BATH2-WC`'s front clearance, and the 36" shower plus the drop-in tub
 deck take the whole east wall. What is left is **W-M-HS1's bathroom (south) face, y = 264.615",
-x from 6.635" to 52.0"** — over the toilet.
+x from 6.635" to 52.0"** — over the toilet. (The tub deck's west face moved to 56.24" on
+2026-10-21; the carcass was not resized and could later grow to 48".)
 
 | | |
 |---|---|
 | West stop | W-M-W3's finish face, **x = 6.635"** (the plane `FX-M-BATH2-SINK` is struck off) |
-| East stop | W-M-TUBDK-W's west face, **x = 52.0"** — 54.25" axis less half of a 2x4 wall |
+| East stop | **x = 52.0"**, W-M-TUBDK-W's west face until 2026-10-21 (now 56.24", 2x3 wall) |
 | Free run | **45 3/8"** |
 | Carcass | **45" W x 6" D x 57" H**, 3/16" of scribe each end |
 | Elevation | bottom **4'-0" AFF**, top **8'-9"**; 1" below the actual finished ceiling |

@@ -303,20 +303,25 @@ PLANT_INT_2X4_HUMID = Assembly(
 # between the cap's 21 1/2" top and the tub rim's 22" — see the elevation arithmetic on
 # SL-M-TUBDK in plan/storeys/main.py. The bathroom-facing west apron is a separate
 # solid-surface panel over the plywood; the south face is already part of the shower surround.
-TUBDECK_INT_2X4 = Assembly(
-    tag="TUBDECK_INT_2X4",
+#
+# 2x3, not 2x4, since 2026-10-21: the narrower box gave the vanity aisle back. Kohler's
+# guide names 2x4 or 2x6; the rim carries nothing, so this is an owner deviation. Both knee
+# walls change together: `resolve/tub_enclosures._wall_batts` matches every cavity to
+# `TubEnclosureSpec.batt_thickness`.
+TUBDECK_INT_2X3 = Assembly(
+    tag="TUBDECK_INT_2X3",
     layers=(
         Layer(name="ply-room", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
-        Layer(name="stud", material_ref="spf", thickness=inch(3.5),
+        Layer(name="stud", material_ref="spf", thickness=inch(2.5),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x4", spacing=inch(16)),
+              framing=FramingSpec(member="2x3", spacing=inch(16)),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="ply-bay", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
     ),
     interfaces=(STUD_BEARING,),
-    source="Kohler Installation and Care Guide 1196030-2 (Bath with Heated Surface): 2x4 or 2x6 stud framing, maximum 1/8 in. gap between the bath rim and the framing/deck. Mineral wool cavity is a moisture decision, not an energy one - see the note above; do not substitute fiberglass",
+    source="Kohler Installation and Care Guide 1196030-2 (Bath with Heated Surface): 2x4 or 2x6 stud framing (2x3 here, an owner deviation: the rim carries no load), maximum 1/8 in. gap between the bath rim and the framing/deck. Mineral wool cavity is a moisture decision, not an energy one - see the note above; do not substitute fiberglass",
 )
 
 # The cap: flat 2x4 blocking at 16" o.c. with 3/4" exterior-grade plywood over it. TWO

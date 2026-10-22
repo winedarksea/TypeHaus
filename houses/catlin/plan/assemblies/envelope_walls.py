@@ -256,7 +256,7 @@ RAFTER_PLATE = Assembly(
 #
 # **Where mineral wool IS kept, and why** — every one of these is a damp, hot or wet case
 # the owner accepted, not an oversight the next sweep should finish:
-#   * `TUBDECK_INT_2X4` — the tub deck box. The long-standing documented exception.
+#   * `TUBDECK_INT_2X3` — the tub deck box. The long-standing documented exception.
 #   * `SAUNA_2X4`, `SAUNA_LINER_INT_2X6_BRG`, `SAUNA_LINER_ON_GARDEN_FRAMED` — non-
 #     combustible and dimensionally stable beside a 10.5 kW heater through repeated
 #     180 F / loyly humidity cycling.

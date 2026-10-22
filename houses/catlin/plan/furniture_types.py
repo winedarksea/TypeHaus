@@ -423,8 +423,9 @@ PANTRY_SHELVES_70 = FurnitureType(
 # The room's only storage above the vanity drawers, and the only wall left to put it on:
 # the vanity runs the south half of the west wall, the shower and the tub deck take the whole
 # east wall, and W-M-HS1's bathroom face x 6 5/8"..4'-4" is what remains. 45" is not a
-# rounding -- it is exactly three 15" flush doors, and the east end stops on W-M-TUBDK-W's
-# west face (x = 52"), a plane already in the room, with 3/8" of scribe taken across the run.
+# rounding -- it is exactly three 15" flush doors. The east end stopped on W-M-TUBDK-W's
+# west face (x = 52") until the 2026-10-21 deck narrowing moved that face to 56.24", so a
+# 48" carcass would now fit.
 #
 # ** SURFACE-MOUNTED, NOT RECESSED, AND THAT IS FORCED. ** W-M-HS1 is
 # INT_2X6_STAGGERED_PLUMBING: every bath-face bay has a hall-face stud 2" back at its

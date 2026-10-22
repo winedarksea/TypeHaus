@@ -21,15 +21,17 @@ from typehaus.takeoff.plumbing_calc import DFU_BY_SYMBOL, WSFU_BY_SYMBOL
 _NO_DRAIN = {"hydrant"}
 # A floor drain is the opening itself — it receives, it is never supplied.
 _NO_SUPPLY = {"floor-drain"}
+# Deck trim on a bath: the bath's own row counts it, so a second row would count it twice.
+_BATH_TRIM = {"roman-tub-filler"}
 
 
 def test_every_plumbing_symbol_carries_a_drainage_fixture_unit() -> None:
-    missing = sorted(set(PLUMBING_SYMBOLS) - set(DFU_BY_SYMBOL) - _NO_DRAIN)
+    missing = sorted(set(PLUMBING_SYMBOLS) - set(DFU_BY_SYMBOL) - _NO_DRAIN - _BATH_TRIM)
     assert not missing, f"no MN Table 702.1 row for {missing}"
 
 
 def test_every_plumbing_symbol_carries_a_water_supply_fixture_unit() -> None:
-    missing = sorted(set(PLUMBING_SYMBOLS) - set(WSFU_BY_SYMBOL) - _NO_SUPPLY)
+    missing = sorted(set(PLUMBING_SYMBOLS) - set(WSFU_BY_SYMBOL) - _NO_SUPPLY - _BATH_TRIM)
     assert not missing, f"no MN Table 610.3 row for {missing}"
 
 

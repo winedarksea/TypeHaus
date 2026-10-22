@@ -277,18 +277,23 @@ NODES = [
     #
     # The consequence to know about: an unclosed component has no recoverable winding, so
     # `resolve/orientation.py` falls back to `outward_sign = +1` for both of these walls.
-    # TUBDECK_INT_2X4 is symmetric (1/2" ply both faces) precisely so that fallback
+    # TUBDECK_INT_2X3 is symmetric (1/2" ply both faces) precisely so that fallback
     # is unobservable — see its note in plan/assemblies.py before making that stack
     # asymmetric.
     #
-    # These axes are CENTRELINES of a 4 1/2" symmetric wall, so each sits 2 1/4" inboard of
-    # the deck's outer face: x=4'-6 1/4" for the 4'-4" west face, y=16'-4 5/8" for the
+    # These axes are CENTRELINES of a 3 1/2" symmetric 2x3 wall, so each sits 1 3/4" inboard
+    # of the deck's outer face: x=4'-9.99" for the 4'-8.24" west face, y=16'-4 1/8" for the
     # 16'-2 3/8" south face. That south face is also FX-M-BATH2-SH's north face — one line,
     # one wall, both jobs.
-    Node(uid="YJ36WFQV9C", tag="N-M-TUBDK-N", position=pt(ft(4, 6.25), ft(22, 0.615)),
+    #
+    # ** THE RIM LAPS THE KNEE WALLS NOW (2026-10-21). ** The west wall's bay face (59.74")
+    # is FO-M-TUBDK's west edge, so the rim's 1" over the cutout lands on the cap above the
+    # wall rather than 3/16" beside it. The east rim meets W-M-BA2E's face at 1/8". The
+    # cutout is provisional, so Kohler template 1268438-7 governs both before anyone cuts.
+    Node(uid="YJ36WFQV9C", tag="N-M-TUBDK-N", position=pt(ft(4, 9.99), ft(22, 0.615)),
          open_end=True),
-    Node(uid="JJJGMEWYJD", tag="N-M-TUBDK-C", position=pt(ft(4, 6.25), ft(16, 4.625))),
-    Node(uid="QSFPKZQV7C", tag="N-M-TUBDK-E", position=pt(ft(7, 10.615), ft(16, 4.625)),
+    Node(uid="JJJGMEWYJD", tag="N-M-TUBDK-C", position=pt(ft(4, 9.99), ft(16, 4.125))),
+    Node(uid="QSFPKZQV7C", tag="N-M-TUBDK-E", position=pt(ft(7, 10.615), ft(16, 4.125)),
          open_end=True),
     # --- RM-M-LIVING's fireplace surround, W-M-FIRE-* -------------------------------------
     #
@@ -661,7 +666,7 @@ WALLS = [
          end_node="N-M-BA2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     # W-M-HS2 follows W-M-HS1 to the same wet-wall assembly and the reason is
     # GEOMETRY, not plumbing: retyping HS1 alone put a 1" step in RM-M-BATH2's north face at
-    # x=6'-0", and the tub deck straddles that line (x 4'-4"..7'-10 5/8"). The deck's head
+    # x=6'-0", and the tub deck straddles that line (x 4'-8.24"..7'-10 5/8"). The deck's head
     # would have had to be a stepped polygon returning 1" behind the bath for no reason
     # anyone could see. One plane at y=22'-0 5/8" costs one assembly swap.
     #
@@ -773,17 +778,17 @@ WALLS = [
     Wall(uid="CMW130AAAA", tag="W-M-CLN2", start_node="N-M-E2",
          end_node="N-M-E4", assembly="INT_2X4_STAGGERED_GWB", top=ft(9)),
     # --- RM-M-BATH2 drop-in tub deck knee walls ---------------------
-    # The two framed sides of the box FX-M-BATH2-TUB drops into. 2x4 at 16" o.c. with
+    # The two framed sides of the box FX-M-BATH2-TUB drops into. 2x3 at 16" o.c. with
     # exterior-grade ply both faces and a mineral wool cavity — and that cavity is the one
     # in this house that must NEVER be swapped to fiberglass; the reasoning is on
-    # TUBDECK_INT_2X4 in plan/assemblies.py and is a moisture argument, not a
+    # TUBDECK_INT_2X3 in plan/assemblies.py and is a moisture argument, not a
     # thermal one.
     #
     # ELEVATION ARITHMETIC, which is the whole of the detail:
     #   0"        main storey datum (top of FS-M-WEST's joists)
     #   3/4"      top of subfloor  = `base_elevation`; the box is framed ON the deck, and
     #             the bath's mortar bed sits on this same sheet, not on the box
-    #   20"       top of the 2x4 framing  = base + `top` (19 1/4"); the cap's flat 2x4
+    #   20"       top of the 2x3 framing  = base + `top` (19 1/4"); the cap's flat 2x4
     #             blocking bears here and on ledgers against W-M-BA2E / W-M-HS1
     #   21 1/2"   top of that blocking (1 1/2" laid flat)
     #   22 1/4"   top of SL-M-TUBDK's 3/4" ply  = its `top_elevation`, its 2 1/4" stack
@@ -805,11 +810,11 @@ WALLS = [
     # two, taking 19.8 ft2 out of its area. As drawn, these are dangles inside the room's
     # face and the room still reads 72.8 ft2.
     Wall(uid="TD5N23A4SZ", tag="W-M-TUBDK-W", start_node="N-M-TUBDK-N",
-         end_node="N-M-TUBDK-C", assembly="TUBDECK_INT_2X4",
+         end_node="N-M-TUBDK-C", assembly="TUBDECK_INT_2X3",
          base_elevation=inch(0.75), top=inch(19.25),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="9HX5HSKNWD", tag="W-M-TUBDK-S", start_node="N-M-TUBDK-C",
-         end_node="N-M-TUBDK-E", assembly="TUBDECK_INT_2X4",
+         end_node="N-M-TUBDK-E", assembly="TUBDECK_INT_2X3",
          base_elevation=inch(0.75), top=inch(19.25),
          structural_role=StructuralRole.NONBEARING),
     # --- bedroom north wall ------------------------------------------------------
@@ -1796,10 +1801,10 @@ FLOOR_OPENINGS = [
     # with the rim landing on nothing there. The 2" the wall move bought belongs to the DECK
     # (SL-M-TUBDK below, which does run east to the new face); the cutout stays rim-less-1".
     FloorOpening(uid="KXX3WKN3R7", tag="FO-M-TUBDK", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(ft(4, 9.685), ft(16, 11.926)),
-                          pt(ft(7, 7.435), ft(16, 11.926)),
-                          pt(ft(7, 7.435), ft(21, 9.614)),
-                          pt(ft(4, 9.685), ft(21, 9.614)))),
+                 outline=(pt(ft(4, 11.74), ft(16, 11.926)),
+                          pt(ft(7, 9.49), ft(16, 11.926)),
+                          pt(ft(7, 9.49), ft(21, 9.614)),
+                          pt(ft(4, 11.74), ft(21, 9.614)))),
     # --- the ERV intake riser's hole through FS-M-MECH ------------------------------------
     #
     # ** FS-M-MECH HAS CARRIED FOUR RISERS AND DECLARED NO OPENING AT ALL. ** Until this pass
@@ -1885,8 +1890,8 @@ FLOOR_OPENINGS = [
 # whose field finish already IS tile.
 SLABS = [
     Slab(uid="W92SX7DVJ0", tag="SL-M-TUBDK", kind="platform",
-         outline=(pt(ft(4, 4), ft(16, 2.375)), pt(ft(7, 10.615), ft(16, 2.375)),
-                  pt(ft(7, 10.615), ft(22, 0.615)), pt(ft(4, 4), ft(22, 0.615))),
+         outline=(pt(ft(4, 8.24), ft(16, 2.375)), pt(ft(7, 10.615), ft(16, 2.375)),
+                  pt(ft(7, 10.615), ft(22, 0.615)), pt(ft(4, 8.24), ft(22, 0.615))),
          thickness=inch(2.25), assembly="TUBDECK_INT_PLY_CAP",
          top_elevation=inch(22.25), openings=("FO-M-TUBDK",)),
 ]
@@ -2160,7 +2165,7 @@ PANELING = [
                                      length=ft(3)),
                         PanelingSpan(wall_ref="W-M-BDN1", start=ft(4, 10.615),
                                      length=ft(3)),
-                        PanelingSpan(wall_ref="W-M-TUBDK-S", start=inch(4.365),
+                        PanelingSpan(wall_ref="W-M-TUBDK-S", start=inch(0.625),
                                      length=ft(3), face="right"))),
     # The tub's bathroom-facing west apron. W-M-TUBDK-W runs north to south, so its right
     # face is west; the access panel lives on this same face. Carry the shower surround's

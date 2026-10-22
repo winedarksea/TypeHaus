@@ -181,7 +181,7 @@ MURPHY_BOOKCASE_36 = Product(
 # the M3 fixture pass. It is a MODEL choice and not just a brand one in three ways that the
 # plan has to answer, which is exactly why it earns a Product record:
 #
-#   * it is a DROP-IN, so it needs a framed deck (TUBDECK_INT_2X4) rather than the
+#   * it is a DROP-IN, so it needs a framed deck (TUBDECK_INT_2X3) rather than the
 #     three-sided alcove FX-TUB-60 assumed;
 #   * the "-W1" suffix IS the Bask heated surface, and that is a 120 V / 15 A dedicated
 #     GFCI circuit (CKT-BATH2-TUB) with a receptacle behind the bath - a plain K-5713 has

@@ -110,8 +110,9 @@ MAIN_FIXTURES = (
     #
     # x=2'-6" is bounded on BOTH sides and there is not much room between them. P2705.1
     # wants 15" clear each side of the centreline: west of 1'-9 5/8" the envelope runs into
-    # W-M-W3's face, east of 3'-1" it runs into the tub deck's west face at x=4'-4". 2'-6"
-    # sits near the middle of that 1'-3 3/8" band, 7" clear of the deck.
+    # W-M-W3's face, east of 3'-5.24" it runs into the tub deck's west face at x=4'-8.24".
+    # 2'-6" sits in that 1'-7 5/8" band, 11 1/4" clear of the deck (7" before the 2026-10-21
+    # deck narrowing).
     # y=20'-10 5/8" is the bowl centre with its tank on the wall's new face (22'-0 5/8"
     # less the type's 14" half-depth). The 21" front clearance then reaches to y=17'-11 5/8"
     # and clears FX-M-BATH2-SINK's south end by 1 1/4" — the tightest dimension in the room
@@ -128,7 +129,7 @@ MAIN_FIXTURES = (
     #
     # The shower sits hard against W-M-BDN1's face at y=13'-2 3/8", and the shower's north
     # face and the tub deck's south face are on the SAME LINE (y=16'-2 3/8"), so
-    # W-M-TUBDK-S is one framed 2x4 run doing both jobs — the deck's south knee wall on its
+    # W-M-TUBDK-S is one framed 2x3 run doing both jobs — the deck's south knee wall on its
     # north side, the shower's north wall on its south. The two wet fixtures read as one
     # built element down the east wall instead of two boxes with dead floor between them.
     # The room's depth is spent exactly: 36" of shower + 70 1/4" of deck = 106 1/4" clear.
@@ -152,12 +153,13 @@ MAIN_FIXTURES = (
     # is explicit that the rim carries no load. So this Fixture is the RIM, and the thing
     # that occupies the room is the framed deck box in storeys/main.py.
     #
-    # Position is the centre of the deck's 36 1/8" x 65 3/4" bay with the bath pushed north:
-    # 2" of tiled deck at the head (x 4'-8 11/16"..7'-8 7/16", y 16'-10 15/16"..21'-10 5/8"),
-    # 4" at the foot, and 3/16" a side — comfortably inside Kohler's 1/8"-gap rule once the
-    # tiling-in bead and the silicone joint take up. The 4" at the foot is not slack: it is
-    # where the deck receptacle for the Bask heated surface lives, behind the bath and
-    # inside the 24" Kohler requires, reachable through FURN-M-BATH2-TUB-AP.
+    # Position: the rim spans x 4'-10.74"..7'-10.49" (the shower's centre line), 1/8" off
+    # W-M-BA2E's face, and laps W-M-TUBDK-W's top by the cutout's 1" (2026-10-21; it stood
+    # 3/16" clear of a 2x4 wall before). y is unchanged: 2" of tiled deck at the head
+    # (y 16'-10 15/16"..21'-10 5/8") and ~5 1/16" of foot bay. The foot bay is not slack: it
+    # holds the Bask receptacle and the R2707 body of FX-M-BATH2-FILLER, both reachable
+    # through FURN-M-BATH2-TUBDK-AP. The lap and the 1/8" are provisional until template
+    # 1268438-7 is measured.
     #
     # ** THE FLOOR UNDER IT IS THE ONE THING THIS PASS COULD NOT SETTLE. ** Kohler states a
     # minimum floor load of 49.3 lb/ft2 and tells the installer to "verify the subfloor is
@@ -178,11 +180,20 @@ MAIN_FIXTURES = (
     # the outlet itself. The run drops to 1 1/2" with this change (plan/mep_drainage.py) —
     # K-7272's tee, not the 2" the allowance was drawn at.
     Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-KOHLER-UNDERSCORE-6036",
-            room="RM-M-BATH2", position=pt(ft(6, 2.56), ft(19, 4.77)), rotation=deg(90),
+            room="RM-M-BATH2", position=pt(ft(6, 4.615), ft(19, 4.77)), rotation=deg(90),
             wall_ref="W-M-BA2E", drain_position=pt(ft(7, 4), ft(19, 4.8)),
             tub_enclosure=TubEnclosureSpec(
-                knee_wall_refs=("W-M-TUBDK-W", "W-M-TUBDK-S"),
+                knee_wall_refs=("W-M-TUBDK-W", "W-M-TUBDK-S"), batt_thickness=inch(2.5),
                 access_panel_ref="FURN-M-BATH2-TUBDK-AP", deck_ref="SL-M-TUBDK")),
+    # The tub filler, on the foot ledge (2026-10-21): reachable from the aisle, where a
+    # wall mount on W-M-BA2E would be ~38" across the bath. Holes on the foot bay's centre
+    # line (y=16'-8.4"), spout centre x=6'-0", spout reaching north over the rim. The R2707
+    # body hangs in the foot bay behind FURN-M-BATH2-TUBDK-AP, its handles 8" either side and
+    # clear of ED-M-BATH2-TUB-RC at the bay's west face. Seated on the finished deck (22 3/4").
+    Fixture(uid="XSAHT3AEKA", tag="FX-M-BATH2-FILLER", type_ref="FX-DELTA-T2759-ROMAN", room="RM-M-BATH2",
+            host_fixture_ref="FX-M-BATH2-TUB",
+            position=pt(ft(6), inch(204.16)), rotation=deg(180),
+            mount=Mount(kind=MountKind.FLOOR, elevation=inch(21.25))),
     # ** A 54" ONE-BASIN VANITY, NOT A KITCHEN SINK ON A WALL MOUNT. ** FX-VANITY-54-SINGLE
     # (plan/fixture_types.py) carries the cabinet, the single basin and the 36"
     # comfort-height counter — unlike the library's DOUBLE-BOWL ``FX-KITCHEN-SINK-33`` this
@@ -209,7 +220,8 @@ MAIN_FIXTURES = (
     # ** 48 x 18, NOT 51 x 21, AND THE ENDS ARE SWAPPED — 2026-09-09. ** All three numbers
     # moved together for one reason: the owner wanted a real aisle at the basin. What the
     # room now holds is 33 11/16" of floor between this face and the shower for the south 36"
-    # of the run, and 27 1/16" to the tub deck's access panel for the north 12". So the 30"
+    # of the run, and 31 5/8" to the tub deck's ply (30 5/8" to its access panel) for the
+    # north 12" — 27 3/8" until the 2026-10-21 deck narrowing. So the 30"
     # SINK BASE goes SOUTH and the drawer bank takes the pinch (see the type's `source`).
     # (The aisle read 41 1/16" for the few hours the shower stood 5 3/8" further east, on the
     # jog W-M-BA2E2 has since come off — see plan/storeys/main.py.)

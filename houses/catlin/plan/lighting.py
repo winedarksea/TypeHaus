@@ -990,7 +990,7 @@ MAIN_LIGHTING = [
     # Under the cap's nosing on W-M-TUBDK-W, the deck's one exposed face (the south face
     # is inside the shower), above FURN-M-BATH2-TUBDK-AP.
     LightRun(uid="WRCE8P7S44", tag="LR-M-BATH2-TUBDECK", type_ref="ED-T-LT-STRIP24-2700",
-             path=(pt(inch(51.75), inch(198)), pt(inch(51.75), inch(263))),
+             path=(pt(inch(55.99), inch(198)), pt(inch(55.99), inch(263))),
              room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
              controlled_by=("ED-M-BATH2-SW-EVE",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(19.5))),

@@ -63,7 +63,7 @@ from .interior_wet import (
     PLANT_EXT_2X6_HUMID,
     PLANT_INT_2X4_HUMID,
     PLANT_INT_2X6_BRG_HUMID,
-    TUBDECK_INT_2X4,
+    TUBDECK_INT_2X3,
     TUBDECK_INT_PLY_CAP,
 )
 from .materials import (
@@ -158,7 +158,7 @@ __all__ = [
     "INT_2X4_PLUMBING",
     "PLANT_INT_2X6_BRG_HUMID",
     "PLANT_INT_2X4_HUMID",
-    "TUBDECK_INT_2X4",
+    "TUBDECK_INT_2X3",
     "TUBDECK_INT_PLY_CAP",
     "MATERIALS",
     "MATERIALS_ISHTAR",

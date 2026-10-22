@@ -553,21 +553,21 @@ MAIN_DEVICES = [
     # there is no hardwired junction box to place, and CKT-BATH2-TUB is the dedicated
     # circuit the spec sheet requires.
     #
-    # Inside SL-M-TUBDK's deck box, on W-M-TUBDK-W's bay face (x=4'-8 1/2") at y=16'-8.9",
+    # Inside SL-M-TUBDK's deck box, on W-M-TUBDK-W's bay face (x=4'-11.74") at y=16'-8.9",
     # facing east, 8" up off the subfloor — above any water that ever finds the box.
     #
-    # x=4'-9 1/2" puts the box's BACK on that face, not its centre — ED-T-RECEPTACLE-GFCI
+    # The attachment puts the box's BACK on that face, not its centre — ED-T-RECEPTACLE-GFCI
     # is a 4" x 2" body and half of it authored at the face resolves inside the studs
     # (`integrity.wall_mount_on_face`, which is how this was
     # caught). The 4" reads along y here because the type has no way to say the box is hung
     # with its long axis vertical, which is how it is actually mounted; the foot bay is
-    # 4 1/16" and would not take a horizontal one.
+    # ~5 1/16" and would barely take a horizontal one.
     #
     # ** y IS IN THE FOOT BAY, SOUTH OF THE BATH, AND THAT IS THE POINT. ** The obvious spot
-    # is further north, on the same face beside the shell — and it does not work: the bath
-    # sits 3/16" off that face, so a receptacle there would have the acrylic hard against
-    # its cover and nowhere for a plug to project. South of the bath's foot (16'-10 15/16")
-    # the bay is 4 1/16" x 36" of open box, and the cord plugs in facing EAST down the 36",
+    # is further north, on the same face beside the shell — and it does not work: the rim
+    # laps that wall, so a receptacle there would have the acrylic hard against its cover
+    # and nowhere for a plug to project. South of the bath's foot (16'-10 15/16") the bay is
+    # ~5 1/16" x 35" of open box, and the cord plugs in facing EAST down the 36",
     # not north into the 4" — which is why this wall and not the south knee wall.
     # FURN-M-BATH2-TUBDK-AP is directly outside it in the same wall (plan/placeables.py);
     # the existing FURN-M-BATH2-TUB-AP in W-M-BA2E's laundry face reaches the trap, not this.

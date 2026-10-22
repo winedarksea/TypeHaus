@@ -40,6 +40,19 @@ assuming a dealer quote. Bathroom ventilation relies on the existing mechanical 
 Bedroom 3 and the attic studio retain their egress windows; their reduced openable area
 passes the house's R303.1 Exception 1 check using existing ERV supply and lighting.
 
+## Bath 2 tub deck narrowed, filler placed (2026-10-21)
+
+The vanity aisle at the deck was 27 3/8" to the ply. Two strips of deck sat outside the
+rim: 2 3/16" on the east, left from the 2026-09-09 wall move, and the whole 4 1/2" west knee
+wall. The bath moved 2.055" east to the shower's centre line, 1/8" off W-M-BA2E. The knee
+walls went to 2x3 (`TUBDECK_INT_2X3`), and the west wall now stands under the rim, which
+laps it by the cutout's 1". The deck's west face moved 52" → 56.24", so the aisle is 31 5/8"
+and the WC envelope clears the deck by 11 1/4". The foot bay grew to ~5 1/16".
+`FX-M-BATH2-FILLER` (Delta T2759/R2707) stands on the foot ledge, reachable from the aisle,
+with its spout over the basin. `Fixture.host_fixture_ref` is the relation that pardons its
+overlap with the rim. The lap and the 1/8" are provisional until template 1268438-7 is
+measured.
+
 ## Bath 2 tub enclosure geometry (2026-10-20)
 
 The drop-in Kohler now shows fitted mineral-wool batts between the two knee walls' actual
