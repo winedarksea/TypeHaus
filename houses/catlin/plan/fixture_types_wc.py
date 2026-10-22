@@ -27,7 +27,7 @@ from library.placeables.fixtures import (
     water_closet_required_clearance,
 )
 
-from typehaus.model import FixtureType, Footprint2D, Service, ft, inch, m, pt
+from typehaus.model import FixtureType, Footprint2D, Mount, MountKind, Service, ft, inch, m, pt
 from typehaus.model.placeable_symbols.plumbing import NEO_ANGLE_CUT_FRACTION, neo_angle_points
 
 # ---------------------------------------------------------------------------
@@ -44,31 +44,26 @@ from typehaus.model.placeable_symbols.plumbing import NEO_ANGLE_CUT_FRACTION, ne
 # ``water_closet_required_clearance`` draws UPC 402.5's 15"/24" envelope off the DEPTH
 # alone, so the manufactured width below is a drawing dimension and changes no finding.
 
-# RM-M-BATH1. ** Built by copying the library type rather than by re-declaring it, and that
-# is deliberate: ** FX-TOILET-WH's ports, its 1 3/8" mount and its 19 3/4" ``carrier_bay_width``
-# are carefully authored against the carrier frame, and ``resolve/framing/carriers.py`` turns
-# that last number into a stud keepout. Re-typing them by hand here would let the two drift.
-# The SP's china is 15" wide, which is the library figure exactly; its projection was NOT
-# confirmable from a spec sheet, so 19.3" stands and is flagged rather than invented.
-TOTO_SP_WALL_HUNG = TOILET_WALL_HUNG.model_copy(update={
-    "tag": "FX-TOTO-SP-WH",
-    "name": "SP wall-hung water closet on a DuoFit carrier",
-    "product_ref": "PROD-TOTO-CT449CFGT60",
-    "source": 'TOTO SP CT449CFGT60#01 bowl on a TOTO DuoFit WT173M in-wall tank '
-              '(PROD-TOTO-CT449CFGT60 + PROD-TOTO-WT173M), owner selection 2026-09-06. '
-              '15" china (confirmed), 16 1/8" rim, 19 3/8" rough-in, 1.28/0.9 gpf dual '
-              'flush, CEFIONTECT. ** PROJECTION NOT CONFIRMED FROM A SPEC SHEET: ** the '
-              '19.3" depth is the library allowance\'s figure, carried unchanged, and the '
-              'clearance envelope is drawn off it. Confirm before the carrier is set. '
-              '** THE CARRIER MUST BE ON AN INTERIOR PARTITION. ** A concealed cistern in a '
-              'EXT_2X6 bay displaces insulation, sits outboard of the vapour control '
-              'and puts standing water in the coldest part of a Minnesota wall. ** CARRIER '
-              'DEPTH IS A DIFFERENT PART NUMBER, not an adjustment ** (Geberit 111.597.00.1 '
-              'for 2x4 against 111.902.00.5 for 2x6), and the wall carries an 880 lb point '
-              'load, so the bay is a purpose-framed opening with a header and a sill. ** THE '
-              'BIDET DECIDES THE CARRIER BRAND: ** a WASHLET+ routes its supply concealed '
-              'through the bowl and only TOTO\'s own frame has that connection; buy Geberit '
-              'and a braided hose crosses the finished tile forever.',
+# AP/S5 drawing SS-02352 v.01: 14 15/16" wide, 21 1/4" projection. Preserve the
+# carrier services' wall-relative setback when replacing the library's shorter bowl.
+TOTO_AP_WALL_HUNG = TOILET_WALL_HUNG.model_copy(update={
+    "tag": "FX-TOTO-AP-WH",
+    "name": "AP wall-hung water closet on a DuoFit carrier",
+    "product_ref": "PROD-TOTO-CT426CFGT40",
+    "footprint": (inch(14.9375), inch(21.25)),
+    "height": inch(13.125),
+    "mount": Mount(kind=MountKind.WALL, elevation=inch(3)),
+    "clearances": (water_closet_required_clearance(inch(21.25)),),
+    "ports": tuple(port.model_copy(update={
+        "position": (port.position[0], inch(12.875), port.position[2]),
+    }) for port in TOILET_WALL_HUNG.ports),
+    "source": 'TOTO SS-02352 v.01 p.2, read 2026-10-21: CT426CFGT40#01 AP '
+              'wall-hung bowl, 14 15/16 x 21 1/4 in., 16 1/8 in. rim installation shown, '
+              '1.28/0.9 gpf. CWT4263446CMFG pairs it with WT173M DuoFit, '
+              'SW3446#01 S5 and THU805 connection kit. Interior carrier wall only. '
+              'Replaces SP CT449CFGT60 (22 7/8 in. overall, SS-01776 p.2). '
+              'https://www.totousa.com/filemanager_uploads/product_assets/SpecSheet/'
+              'SS-02352_CWT4263446CMFG.pdf',
 })
 
 # RM-M-BATH2, the second showpiece. One-piece skirted: no tank-to-bowl gasket line, no gap
@@ -310,6 +305,6 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
 })
 
 WC_AND_SHOWER_TYPES = (
-    TOTO_SP_WALL_HUNG, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
+    TOTO_AP_WALL_HUNG, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
     SHOWER_36_THERMO_COMBO, SHOWER_36_COMBO, SHOWER_36_NEO_COMBO, TUBSHOWER_60_DIVERTED,
 )

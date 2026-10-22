@@ -82,7 +82,13 @@ MAIN_WET_BACKING = [
     WallBacking(uid="82SRRT7F5Z", tag="BK-M-HS1-HIGH", wall_ref="W-M-HS1",
                 elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
-                purpose="FURN-M-BATH2-CAB upper fastening; ED-M-BATH1-MIRROR"),
+                purpose="FURN-M-BATH2-CAB upper fastening"),
+    WallBacking(uid="XVMRGW2TW9", tag="BK-M-STOS-BASIN", wall_ref="W-M-STOS", face="right",
+                elevation=inch(29.5), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="Vero wall-basin mounting bolts, 36 in. rim"),
+    WallBacking(uid="V6XB1CWBFD", tag="BK-M-STOS-MIRROR", wall_ref="W-M-STOS", face="right",
+                elevation=inch(72), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="ED-M-BATH1-MIRROR fastening"),
     # The halo mirror on W-M-W3 (2026-10-12): 24" wide, centred y=14'-5 3/8", 42"-78", so
     # the two stud bays between the 76" and 108" studs (W-M-W3 runs south from y=22'-4").
     WallBacking(uid="WKTYSGFTJZ", tag="BK-M-W3-MID", wall_ref="W-M-W3",

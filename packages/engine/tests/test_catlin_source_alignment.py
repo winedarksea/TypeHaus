@@ -53,14 +53,10 @@ SECOND_LINES = (
     ("N-S-D3", "y", 15, 11, 15.909),
     ("N-S-D4", "y", 22, 4, 22.306),
     ("N-S-W2", "y", 22, 4, 22.306),
-    # Vanity alcove. N-S-V2 is at 26'-6", with N-S-W1, N-S-BA1 and their three main-storey
-    # twins: the whole y=26'-6" line sits 2" north of the survey so RM-M-BATH1 one storey
-    # down can make UPC 402.5's 24" in front of its water closet
-    # (houses/catlin/plan/fixtures.py) — the same class of trade as N-S-B2/B3/E2/E3 above, a
-    # code dimension outranking an interior partition line. 26'-6" is 1.5" off the survey's
-    # 26.374', inside the default 2" band, so it needs no override.
+    # The aligned 26'-7 1/2" wall line provides verified AP toilet clearance below.
+    # This is 3.01" off the survey, an intentional code-driven layout change.
     ("N-S-V1", "x", 5, 10.5, 5.873),
-    ("N-S-V2", "y", 26, 6, 26.374),
+    ("N-S-V2", "y", 26, 7.5, 26.374, 3.1), # verified AP toilet front clearance below
     # North-centre closet. (The hall-bath chase is checked separately: the source gives it
     # as a void, not as centrelines.)
     ("N-S-C3D", "y", 30, 10, 30.853),

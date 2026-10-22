@@ -124,21 +124,19 @@ SUPPLY_DEVICES_BASEMENT = [
 # already arrives at (2'-6" to 3'-6" above the room's own floor). Authoring a number here
 # would only be a second, drift-prone copy of one the run already carries.
 SUPPLY_STOPS = [
-    # RM-M-BATH1 — the wall-hung WC and its lavatory. Cold carries both, hot the lav alone.
-    #
-    # Both stops are on W-M-HS1, 8" apart, AT THEIR OWN RISER HEADS (this file's rule) — the
-    # wall the lavatory backs onto, not the one its door is in. The argument for that wall is
-    # on the BATH1 pair in plan/mep_supply.py. Both land behind FX-M-BATH1-LAV's carcass
-    # (x 41.5"..65.5"), reachable kneeling at the cabinet.
+    # Basin stops are 24" above main datum (136" above this basement list's datum).
+    # Explicit elevations select the basin taps, not the shared riser's ceiling vertex.
     PipeAccessory(uid="0RA7PE7K5N", tag="PA-M-BATH1-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-BATH1", position=pt(ft(5), ft(22, 4)),
+                  pipe_ref="PR-M-CW-BATH1-LAV", position=pt(inch(63), inch(319.5)),
+                  elevation=inch(136),
                   accessible=True, room="RM-M-BATH1",
-                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
-                  serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
+                  model='1/2" quarter-turn basin stop, exposed below wall-mounted basin',
+                  serves=("FX-M-BATH1-LAV",)),
     PipeAccessory(uid="1YCTZR50YR", tag="PA-M-BATH1-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-BATH1", position=pt(ft(4, 4), ft(22, 4)),
+                  pipe_ref="PR-B-HW-BATH1", position=pt(inch(48), inch(319.5)),
+                  elevation=inch(136),
                   accessible=True, room="RM-M-BATH1",
-                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
+                  model='1/2" quarter-turn basin stop, exposed below wall-mounted basin',
                   serves=("FX-M-BATH1-LAV",)),
     # RM-M-BATH2 — WC, shower, tub and sink; the busiest group in the house and the one
     # most worth being able to isolate on its own.
@@ -165,13 +163,13 @@ SUPPLY_STOPS = [
                   serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK")),
     # RM-S-BATH1 — the second floor's hall bath plus the two vanity lavatories it feeds.
     PipeAccessory(uid="B20MFS2ZH2", tag="PA-S-BATH1-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-SBATH", position=pt(ft(5, 7.2), ft(26, 5.25)),
+                  pipe_ref="PR-B-CW-SBATH", position=pt(ft(5, 3), ft(26, 6.75)),
                   accessible=True, room="RM-S-BATH1",
                   model='3/4" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                           "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     PipeAccessory(uid="P6WSEM39FM", tag="PA-S-BATH1-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-SBATH", position=pt(ft(6, 4), ft(26, 6)),
+                  pipe_ref="PR-B-HW-SBATH", position=pt(ft(6, 4), ft(26, 7.5)),
                   accessible=True, room="RM-S-BATH1",
                   model='3/4" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",

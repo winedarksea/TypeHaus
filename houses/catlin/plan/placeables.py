@@ -57,16 +57,17 @@ BASEMENT_PLACEABLES = [
                   wall_ref="W-B-N1", face="left", distance_from_start=inch(111),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The U, opening north at the screen. 11'-0" of back run leaves 2'-9" either side of a
-    # 16'-6" box; y 21'-6" to 29'-6" puts the back run 11'-13' off the panel — right for a
-    # 98" screen — and leaves 2'-2 3/4" of walk between the bookcases and the sectional's
-    # south face. FT-SECTIONAL-U-MEDIA is house-local and says why in plan/furniture_types.py.
+    # 16'-6" box. Moving it 18" north to y 23'-0"..31'-0" leaves 2'-6" beyond the open
+    # D-B-PLAY leaves and 3'-9 5/8" between the bookcases and its south face, easing entry
+    # without reversing the doors into the gym. FT-SECTIONAL-U-MEDIA is house-local;
+    # plan/furniture_types.py records its dimensions.
     #
     # ** ROTATION 180 IS WHAT MAKES IT FACE THE SCREEN. ** Rotation 0 puts a seat's back at
     # +y — the note at the top of this file, and the convention every glyph in
     # `model/placeable_symbols/_families.py` draws to. This is the ONE line to edit if the
     # screen ever moves wall.
     Furniture(uid="1KZNJX16H6", tag="FURN-B-PLAY-SECTIONAL", type_ref="FT-SECTIONAL-U-MEDIA",
-              room="RM-B-PLAY-N", position=pt(ft(26, 9), ft(25, 6)), rotation=deg(180)),
+              room="RM-B-PLAY-N", position=pt(ft(26, 9), ft(27)), rotation=deg(180)),
     # Bookcases either side of D-B-PLAY on the south wall, backs on its 18'-3 3/8" face.
     # The door's framing runs x 23'-10" to 29'-2" and its leaf sweeps x 24'-0"..26'-6",
     # y 18'-0"..20'-6", so both pairs stand clear of the arc: west from the 18'-6" corner to
@@ -105,15 +106,15 @@ BASEMENT_PLACEABLES = [
     #   this storey, so it is a hard flat plane directly over the listening axis.
     #
     # The geometry, worked off the authored pieces rather than a rule of thumb. Ears sit at
-    # about (26'-9", 22'-6") — the U's back run, the row people actually watch from. The
+    # about (26'-9", 24'-0") — the U's back run, the row people actually watch from. The
     # screen centre is (26'-9", 34'-7 3/4"). Taking L/R speakers flanking it at x=22'-6"
     # and x=31'-0" on the north wall, the mirror-image construction puts BOTH side-wall
-    # reflection points at ** y = 30'-7" **, and the room is symmetric so it is the same
-    # figure left and right. A 2'x4' panel centred there covers y 29'-7" to 31'-7", which
+    # reflection points at ** y ≈ 31'-0" **, and the room is symmetric so it is the same
+    # figure left and right. A 2'x4' panel centred there covers y 30'-0" to 32'-0", which
     # is ample margin for the speaker positions being an assumption. Centre it near seated
     # ear height, about 3'-6" AFF.
     #
-    # The ceiling point is the midpoint of the same path: ** y = 28'-6" **, spanning the
+    # The ceiling point is the midpoint of the same path: ** y ≈ 29'-4" **, spanning the
     # L/R pair in x, so roughly x 22' to 31'.
     #
     # ** BOTH SIDE WALLS ARE 12" CONCRETE ** — W-B-CN/CN2 west on FOUNDATION_WALL_12_INT,

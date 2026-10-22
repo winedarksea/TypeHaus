@@ -3155,7 +3155,7 @@
         12.927999999999999,
         -51.09375
       ],
-      "content": "K1",
+      "content": "K2",
       "height": 3.0,
       "height_pt": 9.5,
       "rotation": 0.0,
@@ -3194,67 +3194,67 @@
       "node": "polyline",
       "points": [
         [
-          15.787999999999997,
+          13.787999999999997,
           -63.46275
         ],
         [
-          15.339650446491476,
+          13.339650446491476,
           -61.20874458336962
         ],
         [
-          14.062858941188761,
+          12.062858941188761,
           -59.29789105881124
         ],
         [
-          12.152005416630377,
+          10.152005416630375,
           -58.02109955350852
         ],
         [
-          9.897999999999998,
+          7.897999999999997,
           -57.57275
         ],
         [
-          7.64399458336962,
+          5.643994583369619,
           -58.02109955350852
         ],
         [
-          5.733141058811234,
+          3.733141058811233,
           -59.29789105881124
         ],
         [
-          4.45634955350852,
+          2.4563495535085194,
           -61.20874458336962
         ],
         [
-          4.007999999999999,
+          2.0079999999999982,
           -63.46275
         ],
         [
-          4.456349553508519,
+          2.4563495535085185,
           -65.71675541663038
         ],
         [
-          5.733141058811233,
+          3.733141058811232,
           -67.62760894118877
         ],
         [
-          7.643994583369617,
+          5.643994583369615,
           -68.90440044649148
         ],
         [
-          9.897999999999996,
+          7.897999999999996,
           -69.35275
         ],
         [
-          12.152005416630377,
+          10.152005416630377,
           -68.90440044649148
         ],
         [
-          14.062858941188761,
+          12.062858941188761,
           -67.62760894118877
         ],
         [
-          15.339650446491476,
+          13.339650446491474,
           -65.71675541663038
         ]
       ],
@@ -3269,10 +3269,10 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        9.897999999999998,
+        7.897999999999997,
         -63.46275
       ],
-      "content": "K2",
+      "content": "K7",
       "height": 3.0,
       "height_pt": 9.5,
       "rotation": 0.0,
@@ -3287,17 +3287,17 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -3.060000000000001,
+          -5.060000000000001,
           -51.09375
         ],
         "name": ""
       },
       "at": [
-        9.897999999999998,
+        7.897999999999997,
         -63.46275
       ],
       "to": [
-        -3.060000000000001,
+        -5.060000000000001,
         -51.09375
       ],
       "text": "",
@@ -3930,23 +3930,19 @@
   ],
   "notes": [
     "NOTES:",
-    "• Framed wall: 2x6 at 16\" o.c., R-19 bays, 4\" continuous exterior.",
-    "• Basement wall: 8\" pour, #5 at 41\" o.c., aligned on the concrete face.",
-    "• Waterproofed per Minn. R. 1309.0406, not dampproofed: 60 mil self-adhered asphalt, footing to grade.",
-    "• Basement CI: 4\" XPS in two layers, seams staggered, outer layer taped.",
-    "• Exposed XPS band: 1/8\" acrylic over mesh, 276.3 SF, grade-6\" to wall top.",
-    "• Bearing seat: pour tops at -13 7/16\", then gasket, mudsill and 11 7/8\" rim.",
-    "• Sill: one shared 2x6 PT mudsill, 370.0 LF, on 1/16\" compressed EPDM.",
-    "• Slab: 3-1/2\" at 3,500 psi on 3\" XPS, 10 mil poly, 4\" gravel. Drain: 4\" pipe.",
+    "• D-B-PATIO and WIN-B-SAUNA: no flashing is modelled at either. Build to these notes.",
+    "• Water plane: the 60 mil waterproofing. Opening membranes lap onto it, shingle-fashion.",
+    "• Veneer arches are self-supporting, under the porch: no lintel, no head flashing (IRC R703.8.5).",
+    "• WIN-B-SAUNA is 3'-8\" above the court, clear of the flood line. Liner vapour return seals inside.",
     "",
     "KEYED NOTES:",
-    "K1  Bituthene 3000 or equal on concrete and sheathing. 2\" laps; 2-ply corners; insulation over it; backfill in 30 days.",
-    "K2  Z-flashing with drip at the girt band base, set to the 2\" cavity.",
-    "K3  Perforated aluminium insect closure above it, 1/8\" holes max.",
-    "K4  L-flashing from sheathing base onto the foam; seal its outer end.",
-    "K5  Mudsill anchors per IRC R403.1.6. Plate joint peel-and-stick on the envelope.",
-    "K6  Slab perimeter: 1\" XPS thermal break with 1/2\" polyurethane sealant.",
-    "K7  Veneer: 2\" EPS on the backup wall, 4\" clear air, weeps at the beam. Two-piece adjustable anchors through the full 6\"."
+    "K1  Buck through the 6\" foam to the waterproofing, sealed to it.",
+    "K2  Head: membrane band on the buck, lapped under the waterproofing above. Jamb bands lap over the sill pan.",
+    "K3  Sill pan sloped 1/4\"/ft, with back dam and end dams 6\" up the jambs, lapped over the waterproofing below.",
+    "K4  D-B-PATIO: the court ponds to the threshold. Pan back and end dams stand 6\" above the threshold.",
+    "K5  D-B-PATIO: frame on sealant at the back dam only; pan front open to drain.",
+    "K6  D-B-PATIO: door with a NAFS water-penetration rating at the threshold.",
+    "K7  Veneer cavity: 4\" clear air. Keep the base-course weeps open; they drain it after the court drains."
   ],
   "frame": {
     "paper": [

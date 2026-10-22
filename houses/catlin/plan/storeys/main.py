@@ -171,7 +171,7 @@ NODES = [
     Node(uid="CMN006AAAA", tag="N-M-N1", position=pt(ft(18), ft(36))),
     Node(uid="CMN007AAAA", tag="N-M-N2", position=pt(ft(10), ft(36))),
     Node(uid="CMN008AAAA", tag="N-M-NW", position=pt(ft(0), ft(36))),
-    Node(uid="CMN009AAAA", tag="N-M-W1", position=pt(ft(0), ft(26, 6))),
+    Node(uid="CMN009AAAA", tag="N-M-W1", position=pt(ft(0), ft(26, 7.5))),
     # W-M-HS1..4 pushed 6" north to y=22'-2" for BATH2 shower/tub depth.
     # Both west-wall tees moved again for the residue rule: W-M-W4/W-M-W3 lay
     # studs out from N-M-W3/N-M-W2, and at 13'-4"/22'-2" that grid was 4"/2" out of phase
@@ -196,7 +196,7 @@ NODES = [
     # Interior tees
     # W-M-STRW ends at W-M-STOS2 as an L corner. The former southern stub and its
     # free-end node are retired; FO-S-STAIR's local header stays inside the floor band.
-    Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 6))),
+    Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 7.5))),
     # W-M-WELL's ends: FO-M-STAIR's south edge (the stairhead) and the south face of
     # ST-M2S's level-landing joist (its axis is the landing edge, 31'-11 1/8": one head riser
     # board past the lower flight's last riser line). Both free.
@@ -205,14 +205,10 @@ NODES = [
     # W-M-BAE shifts 2' east; the mudroom door remains at its existing
     # 6" tee clearance.
     #
-    # y 26'-4" -> 26'-6", with N-M-W1 and N-M-STRJ: the whole line moved 2"
-    # north, on BOTH storeys, so RM-M-BATH1 could make its 24" front clearance. Moving all
-    # three together is what keeps W-M-STOS/STOS2 stacked under W-S-BD-N/W-S-BD-N1B —
-    # `resolve/stacking.py::_axis_match` allows 1/2" axis-to-axis and drops the edge SILENTLY
-    # past it, and W-S-BD-N1B is the BEARING wall carrying BM-S-BATH-E's north reaction.
-    # A jog at x=6' would have needed a 2" wall segment on the x=6' line to keep BATH1's
-    # loop closed; a straight line needs nothing.
-    Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(6), ft(26, 6))),
+    # 2026-10-21: another 1 1/2" north, to 26'-7 1/2", for the verified AP
+    # projection. All three junctions and the upper wall line follow together:
+    # W-S-BD-N1B carries BM-S-BATH-E and must keep bearing on W-M-STOS2.
+    Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(6), ft(26, 7.5))),
     Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(6), ft(22, 4))),
     # ** THE BATH'S EAST WALL IS ONE PLANE AT x=8'-2", AND THE JOG IS GONE — 2026-09-09. **
     # It ran x=8'-0" for a year, then briefly jogged: 8 3/8" east at W-M-BA2E2 to buy
@@ -254,14 +250,8 @@ NODES = [
     # depth (see below) and clearing FURN-M-MUD-BENCH's south end by 1/8". East end reuses
     # N-M-BA1's x=6' line to tee into the existing W-M-STOS/STOS2 junction.
     #
-    # ** THE CLOSET IS 32 3/4" DEEP, NOT 34 3/4", AND THESE TWO NODES DID
-    # NOT MOVE. ** Its south wall did: W-M-STOS went to y=26'-6" so RM-M-BATH1 could make
-    # UPC 402.5's 24" in front of its water closet (plan/fixtures.py has the whole argument).
-    # 32 3/4" is the bottom of the 32"-36" reach-in band this comment has always cited, and
-    # the room is a bypass reach-in with no rod or shelf authored in it, so the 2" comes out
-    # of circulation depth rather than out of anything that has to fit. It is the closest
-    # thing in the house to a hard floor under that wall: another inch north and the band
-    # argument fails.
+    # Closet north boundary stays fixed. The powder-room wall's 1 1/2" north
+    # move leaves 31 1/4" here: owner-authorized trade for toilet front clearance.
     Node(uid="N9H36K3W70", tag="N-M-MUDC1", position=pt(ft(0), ft(29, 7.5))),
     Node(uid="T374Q35GT9", tag="N-M-MUDC2", position=pt(ft(6), ft(29, 7.5))),
     # The kitchen's NW reach-in: clear 73 1/4 inches wide by 26 inches deep.
@@ -1094,22 +1084,11 @@ OPENINGS = [
     # D-M-ENTRY above it, off the bearing stair wall's jack studs. Renamed with the room.
     Door(uid="CMD204AAAA", tag="D-M-MUD", host="W-M-STOS2", type_ref="DT-INT-SWING32",
          position=from_node("N-M-STRJ", inch(8)), flip_hinge=True),
-    # 1'-2" off N-M-BA1, not the 1'-0" it read until 2026-08-29. The node moved 2" north
-    # with the y=26'-6" line and a `from_node` offset is measured from it, so the leaf would
-    # have slid north with it — the exact silent drift main.py's WIN-M-MUD-W note records.
-    # The opening stays at y 23'-4"..25'-4": it is dimensioned by the hall side (the switch
-    # ED-M-BATH1-SW sits 2 3/8" north of its RO) and BATH1 grew at the other end.
-    # ** 2'-6" SINCE 2026-09-15, WAS 2'-0". ** A 24" leaf is the narrowest thing in the
-    # house and this is the powder room every guest uses. The swing is into the HALL, not
-    # the room (hinged at the south jamb), so the 23.9 sf fixture layout is untouched by the
-    # extra 6" — FX-M-BATH1-WC and -LAV are both west of W-M-BAE and the arc never reaches
-    # them. `from_node` anchors the north jamb at 1'-0", so the RO grows SOUTH and
-    # ** AND IT STAYS AT 1'-0", OFF THE MODULE, SUPPRESSED — see preferences.toml. ** This
-    # station keeps the north jamb where it has always been, 2 3/8" below the switch, and
-    # leaves 8" at the south end. W-M-BAE is now a standard 2x4 partition, so its framing
-    # module and the old extra-cut-stud rationale need to be re-evaluated.
+    # Keep the existing 30" modeled opening at y=276..306 while the north
+    # wall moves. The 13 1/2" offset is off-module, covered by its existing
+    # framing suppression. South-hinged outswing leaves the basin aisle open.
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-BA1", ft(1))),
+         position=from_node("N-M-BA1", inch(13.5))),
     # RM-M-MECH's hinged utility door, not the mudroom closets' bypass style.
     # At 2'-1" (was 2'-9"): the 8" west move opens a 10 3/4" bay between the east king and
     # the end stud for the mudroom's 3-gang switch plate (plan/lighting.py). 2'-1" is also
@@ -1306,7 +1285,7 @@ OPENINGS = [
     # 1'-3" off N-M-W1 since 2026-08-29, restoring y=25'-3" after that node moved 2" north
     # with the y=26'-6" line — same compensation, same reason, as the WIN-M-MUD-W note below.
     Window(uid="FGWPV572DB", tag="WIN-M-BATH1-W", host="W-M-W2", type_ref="WT-1424-FIX-T",
-           position=from_node("N-M-W1", ft(1, 3)), sill_height=ft(3, 6)),       # y 24'-4"
+           position=from_node("N-M-W1", inch(16.5)), sill_height=ft(3, 6)),       # y 24'-4"
     # Picture unit centred y=31'-4", the bench/aisle centreline (FURN-M-MUD-BENCH,
     # plan/placeables.py). Re-authored off N-M-MECH1: a `from_node` offset is
     # measured from the host's *start* node, so when the 2026-07-28 MECH split made
@@ -1548,7 +1527,7 @@ ROOMS = [
     Room(uid="CMR411AAAA", tag="RM-M-MECH", seed=pt(ft(3), ft(34, 6)),
          occupancy=Occupancy.STORAGE, floor_finish="lvp"),
     # Framed south mudroom closet, replacing FURN-M-MUD-CLOSET-S: the last
-    # furniture closet becomes a real reach-in — 32 3/4" deep clear since W-M-STOS moved
+    # furniture closet becomes a real reach-in — 31 1/4" deep clear after the 2026-10-21 wall move
     # north on 2026-08-29 (34 3/4" before), bypass slider in its north partition. Tagged RM-M-MUD-CLOSET because RM-M-CLOSET (CMR407AAAA) already
     # names the dressing corridor. STORAGE, the same closed-enum reasoning as
     # RM-M-MUDROOM/RM-M-MECH above — and the same wood deck under it (FS-M-MECH, the same

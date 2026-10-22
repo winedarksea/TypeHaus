@@ -910,25 +910,21 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1",
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # Matches FX-M-BATH1-LAV's position, and tracks W-M-HS1's face: RM-M-BATH2 on the wall's
-    # far side retyped it to a 6 3/4" wet wall for its water closet, so BATH1's face is at
-    # 22'-7 3/8", not 22'-6 3/8" — the fitting has to follow or it resolves inside the studs.
-    # Nothing about BATH1 changed; it is the other room's wall.
+    # North-wall basin and mirror move together; hosted placement follows STOS.
     ElectricalDevice(uid="QTM000KAAA", tag="ED-M-BATH1-MIRROR", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1", controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-HS1", face="left", distance_from_start=inch(53.65625),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         wall_ref="W-M-STOS", face="right", distance_from_start=inch(53.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTM000MAAA", tag="ED-M-BATH1-SW", kind=DeviceKind.SWITCH,
-                     # On the west wall, clear of the toilet/lavatory footprints on the
-                     # south wall.
+                     # East wall, north of the unchanged doorway.
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(9.625),
+                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(11.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-M-BATH2: two layers, two controls (2026-10-12, notes/bath2_lighting.md).

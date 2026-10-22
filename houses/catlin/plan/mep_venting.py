@@ -34,6 +34,15 @@ from typehaus import (
 # the I-joist webs, and fall ~1/8"/ft back toward the fixtures so condensate returns to the
 # drainage system rather than pooling in the horizontal leg.
 VENT_BRANCHES_MAIN = [
+    # Dry vent remains vertical until above the upper fixtures, then joins their vent.
+    PipeRun(uid="J79AT1ZHAV", tag="PR-M-BATH1-LAV-VENT", system=PipeSystem.VENT,
+            path=(pt(inch(53.5), inch(319.5)), pt(inch(53.5), inch(319.5)),
+                  pt(inch(40), inch(319.5)), pt(inch(40), inch(320.25)),
+                  pt(inch(40), inch(320.25)), pt(inch(40), inch(319.5))),
+            diameter=inch(1.5),
+            elevations=(inch(20), inch(45), inch(45.04), inch(45.05),
+                        inch(231.49), inch(231.5)),
+            serves=("FX-M-BATH1-LAV",)),
     # BATH1's fixtures are served from the overhead run at x=6' and W-M-BA2E (x=8'-2")
     # rises through W-S-SN2 to the hall-bath vent. 2" for the two water closets' worth of
     # fixtures, plus the kitchen sink tied in below.
@@ -60,7 +69,7 @@ VENT_BRANCHES_MAIN = [
             # directly over that wall on the storey above, so the vent goes up in-wall for
             # two storeys instead of jogging into this chase. `mep.vent_reachability` says
             # so in as many words ("wall W-M-HS1 continues up for the vent").
-            serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
+            serves=("FX-M-BATH1-WC",)),
     # BATH2's shower and tub and the laundry sink: from 58" east of the shower's authored
     # drain point (1'-9", 17'-3") along the 16'-8" bay, then up W-M-BA2E's line on the upper
     # tier onto WC-VENT's riser foot. On one run with WC-VENT their trap arms were 99" and
@@ -93,7 +102,7 @@ VENT_BRANCHES_SECOND = [
             # ** IT TIES INTO THE STACK'S JOG SINCE 2026-09-23, NOT THE CHASE. ** North on
             # x=3'-4" in FS-ATTIC's joist band to the vent riser's 19'-6" jog, east of the
             # chase hole — a run that spanned FO-A-ERV-CHASE had nothing to strap to.
-            path=(pt(ft(9, 8.4), ft(31)), pt(ft(5), ft(26, 6)), pt(ft(3, 4), ft(26, 6)),
+            path=(pt(ft(9, 8.4), ft(31)), pt(ft(5), ft(26, 7.5)), pt(ft(3, 4), ft(26, 7.5)),
                   pt(ft(3, 4), inch(412.9))),
             diameter=inch(2),
             elevations=(ft(9, 3), ft(9, 3.3), ft(9, 3.5), ft(9, 6)),

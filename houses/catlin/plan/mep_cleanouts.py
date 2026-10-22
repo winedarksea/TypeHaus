@@ -66,8 +66,8 @@ BASEMENT_CLEANOUTS = [
 
 MAIN_CLEANOUTS = [
     DrainCleanout(uid="COM0000001", tag="CO-M-BATH1", pipe_ref="PR-M-S-BATH1-DRAIN",
-                  position=pt(ft(5), ft(26, 6)), fitting_elevation=inch(-22),
-                  cap_position=pt(ft(5), ft(26, 7.75)), cap_elevation=ft(2),
+                  position=pt(ft(5), ft(26, 7.5)), fitting_elevation=inch(-22),
+                  cap_position=pt(ft(5), ft(26, 9.25)), cap_elevation=ft(2),
                   access="wall", wall_ref="W-M-STOS",
                   clear_width=inch(24), clear_depth=inch(24)),
     DrainCleanout(uid="COM0000002", tag="CO-M-SUITE", pipe_ref="PR-M-S-SUITE-DRAIN",

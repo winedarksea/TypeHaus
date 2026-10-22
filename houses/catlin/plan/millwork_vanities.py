@@ -43,17 +43,6 @@ BASEMENT_VANITY_SHELVES = [
 
 MAIN_VANITY_SHELVES = [
     ShelfBank(
-        uid="3EWQ9BGVH8", tag="SB-M-BATH1-VAN",
-        # 24" x 18" carcass, the smallest vanity in the house.
-        host="FX-M-BATH1-LAV",
-        material_ref="cabinet-plywood",
-        thickness=inch(0.75),
-        depth=inch(15.5),
-        profile="S4S",
-        procurement=ShelfProcurement.INCLUDED_IN_HOST,
-        bays=(ShelfBay(width=inch(22.5), clear_height=inch(29.25), shelf_count=2),),
-    ),
-    ShelfBank(
         uid="830F8WP640", tag="SB-M-BATH2-VAN",
         # The 30" sink base at the SOUTH end of the 48" vanity; the 18" drawer bank is not
         # shelved. 15 1/2", not 18 1/2": the carcass went 21" -> 18" deep on 2026-09-09 and
@@ -117,7 +106,7 @@ SECOND_VANITY_SHELVES = [
 ATTIC_VANITY_SHELVES = [
     ShelfBank(
         uid="CK6J1BJ391", tag="SB-A-STUBATH-VAN",
-        # FX-VANITY-24-SHALLOW, the twin of SB-M-BATH1-VAN: same carcass, same shelf.
+        # The remaining 24 x 18 in. shallow cabinet has the same stock shelf depth.
         host="FX-A-STUBATH-LAV",
         material_ref="cabinet-plywood",
         thickness=inch(0.75),

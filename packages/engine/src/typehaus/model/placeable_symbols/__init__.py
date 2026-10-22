@@ -86,7 +86,8 @@ SYMBOL_NAMES = frozenset({
     # "toilet-wall-hung" is a THIRD odd one out: no tank, so the china takes the whole
     # footprint and the only in-wall part that shows is the actuator plate. Its carrier is
     # framing, not a glyph — see ``resolve/framing/carriers.py``.
-    "toilet", "toilet-wall-hung", "lavatory", "vanity", "tub", "kohler-underscore-6036",
+    "toilet", "toilet-wall-hung", "lavatory", "lavatory-wall-hung", "vanity", "tub",
+    "kohler-underscore-6036",
     "tub-shower", "shower",
     # "shower-neo-angle" is the square pan with its room-facing corner off at 45 deg. It is
     # its own name rather than a flag on "shower" because the cut is a plan outline a person

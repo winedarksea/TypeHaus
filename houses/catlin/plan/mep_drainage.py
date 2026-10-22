@@ -180,13 +180,6 @@ DRAINS = [
             diameter=inch(3), material="pvc",
             elevations=(ft(9, 4.75), ft(7, 9.625), ft(7, 9.4375), ft(7, 8.4375)),
             serves=("FX-M-BATH1-WC",)),
-    # 22'-10 7/8", 1 1/16" south of the port station: at 22'-11 15/16" the 1.9" OD stood
-    # 0.77" in joist-0-001's bottom flange (FS-M-MECH, face 23'-0 1/8"). Clears it by 5/16".
-    PipeRun(uid="CBPD02AAAA", tag="PR-B-LAV1-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(6), ft(22, 10.875)), pt(ft(6), ft(22, 10.875)), pt(ft(6), ft(22, 7))),
-            diameter=inch(1.5), material="pvc",
-            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 9.6375)),
-            serves=("FX-M-BATH1-LAV",)),
     # 1 1/2": FX-M-BATH2-TUB is the Kohler K-5713-W1 (plan/fixtures.py), whose spec
     # drawing labels a 1 1/2" bath drain and whose required waste-and-overflow — K-7272
     # Clearflo, PROD-KOHLER-7272 — is a 1 1/2" PVC tee.
@@ -324,6 +317,13 @@ DRAINS = [
 # so the elevations read as heights on the storey the pipe is actually visible from:
 # +9'-9" is the second floor's underside, the negative inverts are the basement ceiling.
 SECOND_DRAINS = [
+    # North-wall basin arm: 6 1/2" east to the existing 3" stack, 1/4"/ft fall.
+    PipeRun(uid="CBPD02AAAA", tag="PR-B-LAV1-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(inch(53.5), inch(319.5)), pt(inch(60), inch(319.5))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(20), inch(19.864583)),
+            serves=("FX-M-BATH1-LAV",), wall_ref="W-M-STOS"),
+
     # ** STRAIGHT SOUTH ON x=5'-0", EAST OF THE KITCHEN DRAIN (2026-10-08). ** The old
     # diagonal to a tie at x=3'-0" ran within 1/2" of `PR-B-KITCH-DRAIN`'s x=4'-6" fall line
     # for its last nine feet and crossed it in elevation — a drain-on-drain clash no fitting
@@ -331,7 +331,7 @@ SECOND_DRAINS = [
     # 6" east of the kitchen tie and 12" west of the main's corner. The collector lift
     # reduces the 10'-0" tail's fall to 0.325"/ft and clears D-B-FURN's flat nailer.
     PipeRun(uid="CMPD07AAAA", tag="PR-M-S-BATH1-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(5), ft(26, 6)), pt(ft(5), ft(26, 6)), pt(ft(5), ft(16, 6))),
+            path=(pt(ft(5), ft(26, 7.5)), pt(ft(5), ft(26, 7.5)), pt(ft(5), ft(16, 6))),
             diameter=inch(3), material="pvc",
             # ** THE HEAD IS ABOVE THE SECOND FLOOR NOW, NOT UNDER IT. ** It was 9'-9" —
             # inside the truss depth — for as long as this stack had no branch piping at
@@ -339,7 +339,7 @@ SECOND_DRAINS = [
             # and a stack tops out at its highest inlet, so the barrel rises 6" further to
             # 10'-3" and every other branch ties onto the vertical below it.
             elevations=(ft(10, 3), ft(-1.8333), inch(-25.25)),
-            serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
+            serves=("FX-M-BATH1-LAV", "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # ** THE HEAD IS 1 1/2" LOWER THAN ITS BATH1 TWIN, AND DELIBERATELY. ** The attic bath's
     # branch has to fall 1/4"/ft over the 4.161 ft from its drop inside W-S-DC2 to this head,
@@ -411,7 +411,7 @@ SECOND_BRANCH_DRAINS = [
     PipeRun(uid="K28BQ29KCW", tag="PR-M-S-BATH1-WC-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(m(0.560313), inch(376)), pt(m(0.560313), inch(372.32)),
                   pt(m(0.560313), inch(344)), pt(m(0.560313), inch(344)),
-                  pt(ft(5), inch(344)), pt(ft(5), ft(26, 6))),
+                  pt(ft(5), inch(344)), pt(ft(5), ft(26, 7.5))),
             diameter=inch(3), material="pvc",
             elevations=(ft(10, 0.75), inch(116.75), inch(116), inch(100.5), inch(99.51),
                         inch(98.83)),
@@ -434,7 +434,7 @@ SECOND_BRANCH_DRAINS = [
     # this existing drop and PR-S-BATH1-VENT's takeoff without moving either floor hole.
     PipeRun(uid="E9TA1G01B8", tag="PR-M-S-BATH1-LAV-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(10), ft(31)), pt(ft(10), ft(31)),
-                  pt(ft(5), ft(31)), pt(ft(5), ft(30)), pt(ft(5), ft(26, 6))),
+                  pt(ft(5), ft(31)), pt(ft(5), ft(30)), pt(ft(5), ft(26, 7.5))),
             diameter=inch(1.5), material="pvc",
             elevations=(ft(10, 0.75), ft(9, 9.75), ft(9, 7.1875), ft(9, 6.6875),
                         inch(113.4)),
@@ -450,8 +450,8 @@ SECOND_BRANCH_DRAINS = [
     # are named because both drain here; LAV2 at x=52 3/8" already sat 7 5/8" from the head
     # and passed `fixture_drain_reach` for a reason that was true by accident.
     PipeRun(uid="WJ1ZY1QTET", tag="PR-M-S-VANITY-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(22.375), ft(26, 6)), pt(inch(52.375), ft(26, 6)),
-                  pt(ft(5), ft(26, 6))),
+            path=(pt(inch(22.375), inch(318)), pt(inch(52.375), inch(318)),
+                  pt(ft(5), ft(26, 7.5))),
             diameter=inch(1.5), material="pvc",
             elevations=(ft(10, 3.5), ft(10, 2.75), ft(10, 2.5625)),
             serves=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2"), wall_ref="W-S-BD-N"),

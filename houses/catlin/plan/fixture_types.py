@@ -18,13 +18,20 @@ from __future__ import annotations
 from library.placeables import front_zone
 from library.placeables.fixtures import (
     VANITY_24_SHALLOW as _LIB_VANITY_24_SHALLOW,
+)
+from library.placeables.fixtures import (
     VANITY_30_SHALLOW as _LIB_VANITY_30_SHALLOW,
+)
+from library.placeables.fixtures import (
     VANITY_30_SINGLE as _LIB_VANITY_30_SINGLE,
+)
+from library.placeables.fixtures import (
     VANITY_36_SHALLOW as _LIB_VANITY_36_SHALLOW,
 )
+
 from plan.fixture_types_wc import WC_AND_SHOWER_TYPES
 from plan.kitchen_sink_types import KITCHEN_SINK_32_SINGLE
-from typehaus.model import FixtureType, Service, inch
+from typehaus.model import FixtureType, Mount, MountKind, Service, inch, m
 
 # The Kohler K-5713-W1-0 Underscore, RM-M-BATH2 (plan/products.py carries brand + model).
 # ** THIS IS A DROP-IN, AND THAT IS THE WHOLE REASON IT IS NOT FX-TUB-60. ** The library's
@@ -114,7 +121,8 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
 # The front clearance is the 21" IRC P2705.1 minimum, not NKBA's recommended 30", and the
 # room now beats the recommendation across the whole cabinet: 33 11/16" of aisle to the
 # shower for the south 36" of the run and 27 1/16" to the tub deck's access panel for the
-# north 12". The BASIN sits in the wide half deliberately (see the type's `source`). Authoring 30" as a
+# north 12". The BASIN sits in the wide half deliberately (see the type's `source`).
+# Authoring 30" as a
 # REQUIRED zone would make a guideline read as code in every clearance finding, which it
 # is not -- but the numbers above are what the owner asked the room to hold.
 BATH2_VANITY_48 = FixtureType(
@@ -210,17 +218,14 @@ BATH2_VANITY_48 = FixtureType(
 # board. The hall bath's former 48" sink-base/drawer-bank combination became a 36"
 # sink base on 2026-10-21 to open its entry; its tall SEKTION unit retains lower drawers.
 
-# RM-M-BATH1, the small main bath: 62" x 42" between finish faces, with a wall-hung water
-# closet already eating the west half of the north wall. 24" is what is left between that
-# bowl's 15" side band (x=41.41") and the east wall's face (x=68.62") -- 27.21", so a 24"
-# cabinet fits with 3.2" to spare and a 30" one does not. 18" deep is forced: at 21" the
-# 21" front zone would reach y=316.39" against a south wall face at 313.63".
+# The attic guest bath retains the 24" shallow cabinet; the main powder room
+# now uses VERO_WALL_BASIN below to leave its entry open.
 VANITY_24_SHALLOW = _LIB_VANITY_24_SHALLOW.model_copy(update={
     "product_ref": "PROD-SWAN-CONTOUR",
     "source": 'Small-bath vanity, owner selection 2026-08-30. 24" x 18" carcass, 25" x 19" '
            'one-piece SOLID-SURFACE top with an integral coved bowl, finished counter 36" '
            '(comfort height; NKBA Bathroom Planning Guideline 7 allows 32"-43"). One sink '
-           'base, two doors, one full-depth adjustable shelf (SB-M-BATH1-VAN). This is the '
+           'base, two doors, one full-depth adjustable shelf (SB-A-STUBATH-VAN). This is the '
            'big-box combo tier -- Glacier Bay GB24P2 class, 25" x 18.6", cabinet and top '
            'boxed together for roughly the price of the top alone -- which is why 18" is '
            'the cheap depth here and not a compromise. Replaces an 18" x 14" wall-hung '
@@ -308,7 +313,25 @@ VANITY_36_SINGLE = _LIB_VANITY_30_SINGLE.model_copy(update={
 # chips it and voids its warranty. Swan Contour ships single-hole with 4"/8" knockouts you
 # simply never break out; plugging holes with a deck plate afterwards defeats the whole point.
 
-FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_48,
+# Manufacturer overall size, including the glazed rim. The free floor below is
+# intentional; there is no vanity case or pedestal in this powder room.
+VERO_WALL_BASIN = FixtureType(
+    tag="FX-DURAVIT-VERO-070350", name="Vero shallow wall-mounted hand basin",
+    footprint=(inch(19.625), inch(9.875)), height=m(0.289225),
+    plan_symbol="lavatory-wall-hung", basin=True,
+    mount=Mount(kind=MountKind.WALL, elevation=inch(30.125)),
+    product_ref="PROD-DURAVIT-0703500008",
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+    clearances=(front_zone(inch(19.625), inch(9.875), inch(30),
+                           "lavatory front clearance"),),
+    source='Duravit US 0703500008 Vero, read 2026-10-21: wall-mounted, '
+           '19 5/8 x 9 7/8 x 5 7/8 in. china, one faucet hole on right, overflow. '
+           '36 in. design rim height; 41.5 in. overall symbol includes faucet. '
+           'https://pro.duravit.us/pro/content/homepage/series/series/overview/'
+           'products~402880943a1b6e1b013a1bd20b39003d.us-en.html?product=94259',
+)
+
+FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_48, VERO_WALL_BASIN,
                  KITCHEN_SINK_32_SINGLE,
                  VANITY_24_SHALLOW, VANITY_30_SHALLOW, VANITY_30_SINGLE,
                  VANITY_36_SHALLOW, VANITY_36_SINGLE,

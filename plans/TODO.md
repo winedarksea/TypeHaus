@@ -256,6 +256,10 @@ the future.
 - Make the countertop (and quartz window stools) a "ready to send to manufacturer" design and export. Include rounding corners
 - Switch D-M-BATH2 and D-M-BED to walnut door casings. Then switch the desk there to walnut top on IKEA SEKTION cabinets
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps grab bars.
+- [x] Open RM-M-BATH1's entry with a shallow north-wall basin and verified TOTO AP
+  wall-hung geometry (2026-10-21). Shift STOS/STOS2 and aligned upper walls 1½" north:
+  24.49" toilet front clearance, 35.87" sink aisle; closet depth 31¼".
+  [Coordinated layout and manufacturer drawings](../houses/catlin/notes/main_bath1_clearance_review.md).
 - [x] Open up RM-S-BATH1's entry: 36" vanity, 18" eastern SEKTION, east-hinged inswing (2026-10-21). [Measured layout and checks](../houses/catlin/notes/bath1_clearance_review.md): 23⅜" closest corner spacing and 8½" beyond the open door tip; still a compact turn.
 - Window/door quotes (products named 2026-10-21): get Drutex (DAKAM, Chicago), Andersen 400 and Cascadia quotes and close `notes/window_and_door_procurement.md` §2.6 — Alucover nail fin + NAFS DP, the 14" tilt-only minimum, Drutex sill rail height (re-strike the 2.953" stools), Andersen triple-pane in MN and frame depth, the Cascadia double-door NFRC label and thresholds, dark-colour warranties.
 - [ ] Before fabricating RM-M-STUDY: complete the 60-minute seating mock-up, verify occupied cushion height, lumbar fit and bracket/blocking connections, and record any dimensional changes in the bench spec.

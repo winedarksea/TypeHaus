@@ -1,3 +1,9 @@
+> **Main powder room, 2026-10-21:** `RM-M-BATH1` uses a north-wall Duravit Vero
+> 19⅝ × 9⅞" wall basin and TOTO AP CT426CFGT40 wall-hung bowl, 21¼" verified projection.
+> STOS/STOS2 and their aligned upper walls move 1½" north: 24.49" toilet front clearance,
+> 35.865" sink aisle, 31¼" mudroom closet depth. Basin services/backing follow; no vanity
+> shelf remains here. See `notes/main_bath1_clearance_review.md` and its manufacturer links.
+
 > **West header, 2026-10-14:** BM-BW-RW now has equal 8⅞″ tails from both post centres
 > (6⅛″ south extension), paired AC6Z at both west heads, MAX nailing 14 beam + 14 post 16d
 > per assembly. Its roof-bearing inset keeps canopy/truss geometry fixed. East unchanged.
@@ -54,7 +60,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   y=376"; west/centre lower 30" are open shelves, with a drawer above; east has three
   drawers. Upper VOXTORP doors match the
   kitchen. Installed height 94 1/2", depth 24 7/8" including fronts. Rail backing spans
-  W-S-BD-N / -N1B. FH-S-BATH1 avoids the run, preserving its 338 W cable and 612 Btu/h output.
+  W-S-BD-N / -N1B. FH-S-BATH1 avoids the run, preserving its 338 W cable and about 611 Btu/h output.
 - `plan/study_nook.py` — `# haus: editable`, Study 2's window seat under ST-S2A: an 18" open
   SEKTION shelf frame by the door plus three 24x24x15 SEKTION seat units with lift-up fronts on
   a 2x4 base, 19 1/2" top, under one 3" cushion held 1/2" behind the fronts. Types/products are in `plan/study_nook_types.py`. ED-S-STUDY2-RC3 is
@@ -125,7 +131,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
 - `plan/circuits.py` — the panel schedule (NOT editable: Circuits are schedule data, not
   geometry). Devices point at circuits via `circuit=`; `electrical.circuit_refs` reconciles.
   **BOTH MAIN-FLOOR WATER CLOSETS ARE BIDET TOILETS, AND THE ELECTRICAL FOR THEM IS TWO
-  CIRCUITS THAT MUST NEVER BE GANGED.** `FX-M-BATH1-WC` is a TOTO SP wall-hung on a DuoFit
+  CIRCUITS THAT MUST NEVER BE GANGED.** `FX-M-BATH1-WC` is a TOTO AP wall-hung on a DuoFit
   carrier — **the carrier brand IS the bidet decision**, because only TOTO's frame carries
   the concealed WASHLET+ supply — and `FX-M-BATH2-WC` is a Carlyle II whose `AT40` suffix is
   that same readiness. Two WASHLET S5 seats ride on them (`plumbing-bidet-seats`, the seats
@@ -188,7 +194,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   fixture_types.py` holds SEVEN selections** — `FX-KOHLER-UNDERSCORE-6036`
   (the drop-in bath) and `FX-VANITY-51-SINGLE` (RM-M-BATH2's vanity), plus
   the six vanities that replaced this house's remaining bare lavatories:
-  `FX-VANITY-24-SHALLOW` (RM-M-BATH1 and, since 2026-09-09, RM-A-STUBATH — 24" is the whole
+  `FX-VANITY-24-SHALLOW` (RM-A-STUBATH — 24" is the whole
   width that bath's north wall has between ED-A-STUBATH-GFCI's plate and the neo-angle shower
   it got in the same pass), `FX-VANITY-30-SHALLOW` (RM-S-VANITY, TWICE — a 60"
   double alcove is two 30" bases under one 61" top, which is how one is actually built and

@@ -78,7 +78,7 @@ NODES = [
     Node(uid="CSN009AAAA", tag="N-S-N1", position=pt(ft(18), ft(36))),
     Node(uid="CSN010AAAA", tag="N-S-N2", position=pt(ft(10), ft(36))),
     Node(uid="CSN011AAAA", tag="N-S-NW", position=pt(ft(0), ft(36))),
-    Node(uid="CSN012AAAA", tag="N-S-W1", position=pt(ft(0), ft(26, 6))),
+    Node(uid="CSN012AAAA", tag="N-S-W1", position=pt(ft(0), ft(26, 7.5))),
     Node(uid="CSN013AAAA", tag="N-S-W2", position=pt(ft(0), ft(22, 4))),
     Node(uid="CSN014AAAA", tag="N-S-W3", position=pt(ft(0), ft(9))),
     # Center line ties
@@ -104,9 +104,9 @@ NODES = [
     Node(uid="CSN032AAAA", tag="N-S-D4", position=pt(ft(9, 7.5), ft(22, 4))),
     # Vanity alcove (source 5.873 / 26.374)
     Node(uid="CSN033AAAA", tag="N-S-V1", position=pt(ft(5, 10.5), ft(22, 4))),
-    Node(uid="CSN034AAAA", tag="N-S-V2", position=pt(ft(5, 10.5), ft(26, 6))),
+    Node(uid="CSN034AAAA", tag="N-S-V2", position=pt(ft(5, 10.5), ft(26, 7.5))),
     # Stair shaft west line
-    Node(uid="CSN025AAAA", tag="N-S-BA1", position=pt(ft(10), ft(26, 6))),
+    Node(uid="CSN025AAAA", tag="N-S-BA1", position=pt(ft(10), ft(26, 7.5))),
     # Plain flush split on the east wall: used to be the mechanical chase's SE
     # corner (N-S-CH3); kept as its own node so W-S-BA-E1B's wall_ref in fixtures.py (the
     # hall-bath lav) doesn't move now that the chase itself has moved to the NW corner.
@@ -796,7 +796,7 @@ OPENINGS = [
     # LL-W-A-W1, so its legal stations are 14" + n×16" and a 2" drift interrupts a stud.
     # 1'-3" restores y=25'-3" and with it the exact pairing with WIN-M-BATH1-W below.
     Window(uid="RGC7QGVF7Y", tag="WIN-S-VANITY-W", host="W-S-W2", type_ref="WT-1424-FIX-T",
-           position=from_node("N-S-W1", ft(1, 3)), sill_height=ft(3, 6)),       # y 24'-4"
+           position=from_node("N-S-W1", inch(16.5)), sill_height=ft(3, 6)),       # y 24'-4"
     # Study 2's south pair: resolved centres x=26'-8"/32'-0" are stud lines on the shared
     # facade grid and stack over WIN-M-LIV-S2/S1. Their 2'-8" sills hold the 6'-8" head line.
     # The west unit is tempered for its proximity to D-S-DECK-E.
@@ -1096,8 +1096,8 @@ ALARMS = [
 # the room's 606 Btu/h design loss; see notes/room_heat_loss_baths.md.
 FLOOR_HEAT = [
     FloorHeat(uid="CSH801AAAA", tag="FH-S-BATH1", room_ref="RM-S-BATH1",
-              zone=(pt(inch(114.5), inch(323.5)), pt(inch(81.875), inch(323.5)),
-                    pt(inch(81.875), inch(348.375)), pt(inch(8.75), inch(348.375)),
+              zone=(pt(inch(114.5), inch(323.5)), pt(inch(77.75), inch(323.5)),
+                    pt(inch(77.75), inch(349.875)), pt(inch(8.75), inch(349.875)),
                     pt(inch(8.75), inch(366.25)), pt(inch(37.875), inch(366.25)),
                     pt(inch(37.875), inch(385.75)), pt(inch(8.75), inch(385.75)),
                     pt(inch(8.75), inch(392.1875)), pt(inch(93.5), inch(392.1875)),

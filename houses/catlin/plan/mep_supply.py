@@ -43,6 +43,13 @@ from typehaus.model import m
 # The north-entry piers all bear below this invert. `mep.hydrant_freeze_depth` holds every
 # buried vertex to 72"; the terminal rise is the hydrant's own self-draining barrel.
 WATER_SUPPLY = [
+    # A separate tap keeps the main basin's stop independent of the upstairs fixtures.
+    PipeRun(uid="KV1KTD2P01", tag="PR-M-CW-BATH1-LAV", system=PipeSystem.WATER_COLD,
+            path=(pt(inch(63), inch(318.75)), pt(inch(63), inch(319.5)),
+                  pt(inch(63), inch(319.5))),
+            diameter=inch(0.5), material="pex",
+            elevations=(inch(24), inch(24), inch(30)),
+            serves=("FX-M-BATH1-LAV",), wall_ref="W-M-STOS"),
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
             # ** THIS RUN DID NOT MOVE FOR THE 2026-09-10 NORTH ENTRY PIERS; THEY MOVED
             # AROUND IT. ** Every rerouting tried here traded one clash for another -- the
@@ -332,21 +339,16 @@ SUPPLY = [
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
                         ft(8, 4.6375), ft(9, 1.4375), ft(12, 7.4375)),
             wall_refs=(None, None, None, None, None, "W-M-HS1"),
-            serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
+            serves=("FX-M-BATH1-WC",)),
+    # Basin hot branch rises in W-M-STOS, west of the existing 3" stack.
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
-            # Tees at the trunk's south turn (7'-6", 25'-6"), rises with the branch to its
-            # 8'-1 7/16" band, then runs northwest to the riser at (4'-4", 22'-4") — the west
-            # bay, 1.81" clear each side of the 2 7/8" jacket.
-            # Nothing here shares a lane with PR-B-CW-BATH1, which is why the two risers
-            # land in this order — and since 2026-09-19 they are also 3.2" apart in z
-            # wherever their ceiling legs cross, which is what the convention is for.
-            path=(pt(ft(7, 6), ft(25, 6)), pt(ft(5, 10), ft(24, 2.5)),
-                  pt(ft(4, 4), ft(24, 2.5)), pt(ft(4, 4), ft(22, 4)),
-                  pt(ft(4, 4), ft(22, 4)), pt(ft(4, 4), ft(22, 4))),
+            path=(pt(ft(7, 6), ft(25, 6)), pt(inch(48), inch(314)),
+                  pt(inch(48), inch(319.5)), pt(inch(48), inch(319.5)),
+                  pt(inch(48), inch(319.5))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 4), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375),
-                        ft(9, 1.4375), ft(12, 7.4375)),
-            wall_refs=(None, None, None, None, "W-M-HS1"),
+            elevations=(inch(88), inch(97.4375), inch(97.4375),
+                        inch(109.4375), inch(151.4375)),
+            wall_refs=(None, None, None, "W-M-STOS"),
             serves=("FX-M-BATH1-LAV",)),
     # ** THE COLD RISER IS IN W-M-HS1 SINCE 2026-09-09, NOT STANDING IN THE ROOM. ** It came
     # up at (2'-3", 17'-2.4") and stopped at 3'-0" — three feet of bare PEX in the middle
@@ -514,24 +516,24 @@ SUPPLY = [
             # through FS-S-WEST. The basement leg passes the BATH1 stack on y=26'-2" and turns
             # north onto the riser east of it (west of it, the vanity arm lands on the stack).
             path=(pt(ft(4, 9), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 2)),
-                  pt(ft(5, 3), ft(26, 2)), pt(ft(5, 3), ft(26, 5.25)),
-                  pt(ft(5, 3), ft(26, 5.25)),
-                  pt(ft(5, 3), ft(26, 5.25)), pt(ft(5, 3), ft(26, 5.25))),
+                  pt(ft(5, 3), ft(26, 2)), pt(ft(5, 3), ft(26, 6.75)),
+                  pt(ft(5, 3), ft(26, 6.75)),
+                  pt(ft(5, 3), ft(26, 6.75)), pt(ft(5, 3), ft(26, 6.75))),
             diameter=inch(0.75), material="pex",
             # Two inches OVER the band for the length of the branch: its y=26'-6" leg has to
             # cross the cold trunk's own north-south lane, and two 3/4" pipes on one
             # elevation is a lap rather than a crossing.
             elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, None, None, "W-M-STOS", "W-S-BD-N"),
-            serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
+            serves=("FX-M-BATH1-LAV", "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # x=6'-4" is the first clean bay past N-M-BA1's tee (6 1/2" west of D-M-MUD's jamb pack,
     # 8" west of D-S-BATH1's above); x=6'-2.4" would leave half the pipe in W-M-STOS2's
     # corner pack after W-M-MUDC-E tees in. SP-M-HW-SBATH follows the same station.
     PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(7, 6), ft(25, 6)), pt(ft(6, 4), ft(26, 6)),
-                  pt(ft(6, 4), ft(26, 6)), pt(ft(6, 4), ft(26, 6)),
-                  pt(ft(6, 4), ft(26, 6))),
+            path=(pt(ft(7, 6), ft(25, 6)), pt(ft(6, 4), ft(26, 7.5)),
+                  pt(ft(6, 4), ft(26, 7.5)), pt(ft(6, 4), ft(26, 7.5)),
+                  pt(ft(6, 4), ft(26, 7.5))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(7, 4), ft(8, 1.4375), ft(9, 1.4375),
                         ft(19, 1.4375), ft(21, 7.4375)),

@@ -237,7 +237,7 @@ CIRCUITS = (
             # electric space heating at 100%, so this comes straight off the service demand.
             gfci=True, load_va=338,
             description="Radiant floor heat — NW bathroom, sole heat source "
-                        "(FH-S-BATH1, 26.82 ft2, Schluter DHEHK12027)"),
+                        "(FH-S-BATH1, 26.815 ft2, Schluter DHEHK12027)"),
     # 1,500W at 120V=12.5A, continuous: 12.5x1.25=15.6A fits a 20A breaker's 16A but not
     # a 15A one's 12A — why these two are 20A where the mats are 15A.
     #
@@ -478,7 +478,7 @@ CIRCUITS = (
     # ------------------------------------------------------------------------------------
     # THE TWO WASHLET CIRCUITS (2026-09-06)
     # ------------------------------------------------------------------------------------
-    # Both main-floor bowls were bought WASHLET+-ready — FX-TOTO-SP-WH on a DuoFit carrier
+    # Both main-floor bowls were bought WASHLET+-ready — FX-TOTO-AP-WH on a DuoFit carrier
     # (the frame was chosen over a Geberit *for* this), FX-TOTO-CARLYLE-II's AT40 suffix IS
     # the readiness — and `[allowances] plumbing-bidet-seats` has been buying two TOTO
     # WASHLET S5 seats since the fixtures were selected. ** THE ELECTRICAL FOR THEM EXISTED

@@ -816,7 +816,8 @@ FLOOR = [
                                  # FO-A-STAIR's south trimmer pack (y 66 1/8..69 5/8") takes
                                  # the y=5'-4" line's place: moved into the pack's band, it is
                                  # absorbed instead of standing 1 1/4" off it.
-                                 line_overrides=((inch(64), inch(66)),),
+                                 # Keep the new basin dry vent out of the 320" flange.
+                                 line_overrides=((inch(64), inch(66)), (inch(320), inch(324))),
                                  # ** LSL RIM SINCE 2026-08-29, AND THE REASON IS BEARING,
                                  # NOT BANDING — BUT READ THE GEOMETRY BEFORE BELIEVING
                                  # THAT. ** The joists run in x, so this deck's rims land at

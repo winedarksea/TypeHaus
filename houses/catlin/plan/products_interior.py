@@ -40,15 +40,15 @@ from typehaus.model import Product
 # Drake: same Tornado Flush, same CeFiONtect glaze, half the money, and what it gives up is
 # the skirt.
 #
-# ``CT449CFGT60`` is the BOWL ONLY. The in-wall tank is a second line on the order, and the
+# ``CT426CFGT40`` is the BOWL ONLY. The in-wall tank is a second line on the order, and the
 # reason it is TOTO's DuoFit rather than a Geberit Duofix is the bidet seat: a WASHLET+ routes
 # its supply CONCEALED through the bowl, and only TOTO's own carrier has that connection. Buy
 # Geberit and a braided hose crosses the finished tile forever. Both frames are within an
 # eighth of 500 mm across the uprights, so FX-TOILET-WH's ``carrier_bay_width`` holds either.
-TOTO_SP_WALLHUNG = Product(
-    tag="PROD-TOTO-CT449CFGT60", brand="TOTO", model="CT449CFGT60#01",
-    name="SP wall-hung elongated bowl, CeFiONtect, Cotton White",
-    source="TOTO USA product listing and specification sheet, read 2026-09-06. Bowl only -- "
+TOTO_AP_WALLHUNG = Product(
+    tag="PROD-TOTO-CT426CFGT40", brand="TOTO", model="CT426CFGT40#01",
+    name="AP wall-hung elongated bowl, CeFiONtect, Cotton White",
+    source="TOTO SS-02352 v.01, read 2026-10-21: 14 15/16 x 21 1/4 in. overall. Bowl only -- "
            "the in-wall tank and carrier is PROD-TOTO-WT173M, ordered with it. Rimless "
            "(CEFIONTECT glaze, no rim channel), 1.28/0.9 gpf dual flush.",
 )
@@ -395,8 +395,16 @@ KATELAUREL_ESTERO = Product(
            "dimensions only; confirm on delivery. RM-S-SUITEBATH, over FX-S-SUITEBATH-LAV.",
 )
 
+DURAVIT_VERO_070350 = Product(
+    tag="PROD-DURAVIT-0703500008", brand="Duravit", model="0703500008",
+    name="Vero wall-mounted hand basin, single right faucet hole, white",
+    source='Duravit US product 070350, read 2026-10-21: 19 5/8 x 9 7/8 x 5 7/8 in., '
+           'glazed underside, overflow, single right faucet hole. '
+           'Wall fixing into solid blocking; exposed serviceable trap below.',
+)
+
 INTERIOR_PRODUCTS = (
-    TOTO_SP_WALLHUNG, TOTO_DUOFIT_WT173M, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
+    DURAVIT_VERO_070350, TOTO_AP_WALLHUNG, TOTO_DUOFIT_WT173M, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
     TOTO_WASHLET_S5, KOHLER_CACHET_SEAT,
     DELTA_ARVO_LAV, DELTA_ESSA_KITCHEN, MOEN_ADLER_LAUNDRY,
     *SHOWERING_PRODUCTS,

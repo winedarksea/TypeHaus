@@ -122,14 +122,16 @@ def _deck_height(height: float) -> tuple[float, float]:
     return height - faucet, faucet
 
 
-def lavatory(*, pedestal: bool = False) -> Builder:
+def lavatory(*, pedestal: bool = False, faucet_height_m: float | None = None) -> Builder:
     """A wall-hung or pedestal lavatory: outline, oval basin, drain, faucet at the wall."""
 
     def build(width: float, depth: float, height: float) -> Geometry:
         basin_ry = depth * 0.34
         basin_cy = -depth * 0.06
         rim = min(0.03, width * 0.06)
-        deck_z, faucet = _deck_height(height)
+        deck_z, faucet = (_deck_height(height) if faucet_height_m is None
+                          else (height - min(faucet_height_m, height / 2),
+                                min(faucet_height_m, height / 2)))
         strokes = [rect(0, 0, width, depth, fill="porcelain"),
                    ellipse(0, basin_cy, width * 0.34, basin_ry, weight=DETAIL_WEIGHT),
                    circle(0, basin_cy, min(width, depth) * 0.035, weight=DETAIL_WEIGHT),
@@ -526,6 +528,7 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "toilet": toilet(),
     "toilet-wall-hung": toilet_wall_hung(),
     "lavatory": lavatory(pedestal=True),
+    "lavatory-wall-hung": lavatory(faucet_height_m=FAUCET_HEIGHT_M),
     "vanity": vanity(),
     "kohler-underscore-6036": kohler_underscore,
     "tub": tub(),

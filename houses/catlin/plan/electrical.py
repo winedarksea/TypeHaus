@@ -2046,21 +2046,13 @@ NEC_FILL_MAIN = [
     # measures, which is why the two entries in plans/TODO.md that quoted 42.9" and 37.2" to
     # receptacles in RM-S-SUITE were understating the problem rather than describing it.
     #
-    # W-M-BAE, in the 8 5/8" of wall between the room's north-east corner (y=22'-7 3/8") and
-    # D-M-BATH1's opening (y 23'-4"..25'-4"). That strip is the only piece of wall in this
-    # 62" x 44" room that is not the water closet, the vanity, the mirror over it or the
-    # door: 1 1/8" east of the cabinet's end and about 4" from the basin's nearest edge.
-    # 44" AFF is the house's vanity-outlet height and is well inside (D)(2)'s "not more than
-    # 12 in. below the countertop" (the counter is 36").
-    #
-    # GFCI at the DEVICE on the storey circuit, which is this house's settled treatment for
-    # a bathroom outlet -- see ED-M-BATH2-RC1 above for why the breaker is the wrong place.
+    # North-wall basin outlet, 44" AFF, east of the 24" mirror-light footprint.
     ElectricalDevice(uid="4KMFZPRJPX", tag="ED-M-BATH1-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN", room="RM-M-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(42.25),
+                         wall_ref="W-M-STOS", face="right", distance_from_start=inch(66),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ------------------------------------------------------------------------------------
     # THE TWO WASHLET OUTLETS (2026-09-06) — one stud bay, both baths.

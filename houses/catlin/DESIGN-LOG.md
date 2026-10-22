@@ -5628,3 +5628,23 @@ closes the roof flash's 5"-beyond-E84 question for this product. Heatlok High Li
 SealTite PRO HFO stay qualifying substitutes, each reopening a Minn. R. 1300.0110 request.
 `notes/outie_window_truss_detail.md` still cites ESR-4073 §4.4.2 for the no-backing point:
 it is byte-pinned drawing content, still true of that product, and left for a drawing pass.
+
+
+### Main powder-room entry and verified TOTO projection — 2026-10-21
+
+RM-M-BATH1 now uses a north-wall Duravit Vero 0703500008 basin, 19 5/8 × 9 7/8 in.,
+with a 35.865 in. aisle and the full existing door opening aligned with it. Mirror light,
+GFCI, backing, drain, dry vent and supply stops follow; the former vanity shelf is retired.
+
+The SP was wall hung, but its TOTO SS-01776 drawing gives 22 7/8 in. overall projection,
+not the unconfirmed 19.3 in. library allowance. Swap to the AP CT426CFGT40: SS-02352
+verifies 21 1/4 in. projection, 14 15/16 in. width and compatibility with WT173M/S5.
+The existing tankless wall-hung symbol now uses those dimensions, with a 16 1/8 in. rim.
+
+W-M-STOS/STOS2 and their upper counterparts move 1 1/2 in. north, preserving bearing
+alignment and leaving 24.49 in. in front of the bowl. The mudroom closet becomes
+31 1/4 in. deep. Coordinate bracing stations, stack/cleanout, upper vanity and cabinet
+positions, floor heat and the two affected floor-member stations; do not suppress clashes.
+The upstairs 22 in. circular entry test remains a required check.
+
+Measured layout, primary drawings and consequences: `notes/main_bath1_clearance_review.md`.

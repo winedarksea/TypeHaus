@@ -29,7 +29,7 @@ VANITIES = {
     # it runs ACROSS the room's south end now, backing W-B-CW2's north face, where it used to
     # stand along the east wall against W-B-CN2's 12" pour.
     "FX-B-BATH-LAV": ("FX-VANITY-36-SHALLOW", "basement", "W-B-CW2", "+y"),
-    "FX-M-BATH1-LAV": ("FX-VANITY-24-SHALLOW", "main", "W-M-HS1", "+y"),
+    "FX-M-BATH1-LAV": ("FX-DURAVIT-VERO-070350", "main", "W-M-STOS", "-y"),
     "FX-S-BATH1-LAV": ("FX-VANITY-36-SINGLE", "second", "W-S-BA-E1B", "-x"),
     "FX-S-SUITEBATH-LAV": ("FX-VANITY-30-SINGLE", "second", "W-S-SN3", "-y"),
     "FX-S-VANITY-LAV1": ("FX-VANITY-30-SHALLOW", "second", "W-S-BD-N", "-y"),
@@ -63,7 +63,7 @@ def _wall_face(model, wall_tag, side):
     return {"-x": min(xs), "+x": max(xs), "-y": min(ys), "+y": max(ys)}[side]
 
 
-def test_every_bathroom_lavatory_is_a_vanity_with_a_cabinet(catlin_model_ro):
+def test_bathroom_lavatories_use_the_selected_vanities_or_wall_basin(catlin_model_ro):
     """The bare bowls are gone; nothing in this house is an FX-LAV-24 any more."""
     model = catlin_model_ro
     for tag, (type_ref, storey, _, _) in VANITIES.items():
@@ -188,7 +188,7 @@ def test_the_hall_bath_vanity_clears_the_east_hinged_door_and_tub_return(catlin_
     top = Polygon(counter.outline)
     swing = Polygon(door.swing_clearance)
     assert not top.intersects(swing)
-    assert top.distance(swing) / IN == pytest.approx(8.5)
+    assert top.distance(swing) / IN == pytest.approx(7.0)
     _, _, shelf_south, _ = _bbox(_obj(model, "FURN-S-BATH1-SHELF"))
     assert shelf_south - y1 == pytest.approx(2)
     assert counter.length_m / IN == pytest.approx(36)
@@ -247,7 +247,7 @@ def test_every_vanity_carries_its_own_shelf(catlin_model_ro):
     # RM-A-STUBATH's are vanities too, and the second one had no shelf until 2026-09-28.
     vanities = [el for el in plan.all_elements() if type(el).__name__ == "Fixture"
                 and (el.type_ref or "").startswith("FX-VANITY-")]
-    assert set(VANITIES) <= {v.tag for v in vanities}
+    assert set(VANITIES) - {"FX-M-BATH1-LAV"} <= {v.tag for v in vanities}
     for fixture in vanities:
         banks = [b for b in model.shelf_banks if b.host == fixture.tag]
         assert len(banks) == 1, f"{fixture.tag} has {len(banks)} shelf banks, wants one"
@@ -290,3 +290,30 @@ def test_the_hall_bath_mat_gave_way_to_the_cabinet_and_is_a_real_cable(
     area = poly.area / IN / IN / 144
     assert authored.watts == 338, "wattage is a purchased nameplate, not area x 12"
     assert 26.7 <= area <= 28.0, f"{area:.2f} sq ft no longer suits a 26.7 sq ft cable"
+
+
+def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_model_ro):
+    model = catlin_model_ro
+    room = Polygon(next(r.clear_face for r in model.rooms if r.tag == "RM-M-BATH1"))
+    toilet = _obj(model, "FX-M-BATH1-WC")
+    basin = _obj(model, "FX-M-BATH1-LAV")
+    tx0, tx1, ty0, ty1 = _bbox(toilet)
+    bx0, bx1, by0, by1 = _bbox(basin)
+    # TOTO SS-02352 p.2: overall projection, not the shorter underside dimension.
+    assert (tx1 - tx0, ty1 - ty0) == pytest.approx((14.9375, 21.25))
+    assert toilet.type_ref == "FX-TOTO-AP-WH"
+    assert room.bounds[3] / IN - ty1 >= 24.25
+    assert room.covers(Polygon(toilet.required_clearances[0]))
+    assert by0 - room.bounds[1] / IN >= 35.5
+    door = next(o for o in model.openings if o.tag == "D-M-BATH1")
+    door_north = max(y for _, y in door.swing_clearance) / IN
+    assert by0 > door_north  # entire modeled opening aligns with the sink aisle
+    assert (bx1 - bx0, by1 - by0) == pytest.approx((19.625, 9.875))
+    assert basin.attachment_wall == "W-M-STOS"
+    stops = [a for a in model.pipe_accessories
+             if a.tag in {"PA-M-BATH1-STOP-CW", "PA-M-BATH1-STOP-HW"}]
+    assert len(stops) == 2
+    # A valve inferred from the shared riser's first vertex lands below this floor.
+    assert all(0 < stop.z_m < basin.body_z0_m for stop in stops)
+    assert not any(bank.host == basin.tag for bank in model.shelf_banks)
+    assert Polygon(basin.footprint).disjoint(Polygon(toilet.required_clearances[0]))
