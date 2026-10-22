@@ -211,7 +211,17 @@ FLEURCO_HALO_MIRROR = Product(
            "plug installation: CONFIRM a hardwire kit, or a concealed receptacle on the "
            "evening dimmer's leg goes behind it. CONFIRM the damp listing (IP44 minimum).",
 )
+HUNTER_GALLEGOS = Product(
+    tag="PROD-HUNTER-51583", brand="Hunter", model="Gallegos 51583",
+    name='Gallegos 52" low-profile ceiling fan, matte black, no light kit',
+    url="https://image.hunterfan.com/51583_specification_sheet.pdf",
+    source="Hunter spec sheet and retailer listings, read 2026-10-22: 52 in., 3 blades, "
+           "DC reversible motor, wall control included, ~10 9/16 in. overall flush-mounted, "
+           "5,174 cfm high, ~43 W, ETL damp. Owner 2026-10-22: no light; blade span is "
+           "flexible, the <= 11 in. height is not.",
+)
 LIGHTING_PRODUCTS = (
+    HUNTER_GALLEGOS,
     *MAGNETIC_TRACK_PRODUCTS,
     LOTUS_LL4SR_CAN, LOTUS_LL4SR_CAN_50K, LOTUS_LL4SR_CAN_27K, FLEURCO_HALO_MIRROR, WESTGATE_VAPORTIGHT, DOLRIA_PC0008, ROBERN_VITALITY_ROUND,
     MODERN_FORMS_BANTAM, MODERN_FORMS_MYKONOS, CRAFTMADE_FORCE_XL,

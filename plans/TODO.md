@@ -223,7 +223,7 @@ the future.
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door. A simpler option is probably to just make sure the hinge can open to close to 180 degrees so the door can be flat against the wall, out of the way of the walking space.
 - Gold foil trim or panel accent somewhere
-- Choose bracket products for the four dark-steel handrails (RL-S-HANDRAIL-E/-W, RL-A-HANDRAIL, RL-G-SERVICE), including RL-A-HANDRAIL's bracket 6 with its 20 1/2" rise from W-S-SS2's top plate: `code.R301_5_handrail_support_spacing` is UNKNOWN until a `RailingType` states `bracket_spacing_max`
+- Detail `RL-A-HANDRAIL` bracket 7's fabricated matte black standoff (26 1/2" drop to W-S-SS2's top plate); the other brackets are stock (`plan/handrail_types.py`).
 - Spec sand or gravel backfill around house
 - The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
 - Make W-BW-SCREEN's east passage face prettier (currently 5/8" MDO, not the west structural CDX). [Finish comparison, elevations, quantities, and sample instructions](bw-screen-finish-comparison.md) completed 2026-10-14: natural black locust slats over matte black lead; visible stainless screws preferred. Shiplap and ornamental panels compared. West header symmetry implemented 2026-10-14 (6⅛″ south extension, paired AC6Z); comparison now shows the stairs and landing. Physical samples, actual door/closer clearance, and decorative finish construction/model implementation remain pending.
@@ -240,6 +240,7 @@ the future.
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps grab bars.
 - Window/door quotes (products named 2026-10-21): get Drutex (DAKAM, Chicago), Andersen 400 and Cascadia quotes and close `notes/window_and_door_procurement.md` §2.6 — Alucover nail fin + NAFS DP, the 14" tilt-only minimum, Drutex sill rail height (re-strike the 2.953" stools), Andersen triple-pane in MN and frame depth, the Cascadia double-door NFRC label and thresholds, dark-colour warranties.
 - [ ] Before fabricating RM-M-STUDY: complete the 60-minute seating mock-up, verify occupied cushion height, lumbar fit and bracket/blocking connections, and record any dimensional changes in the bench spec.
+- Plant room needs review on bottom of wall detail (switch to a flash cove capable vinyl?) and also a review on if plumbing or drainage is present.
 
 # Project Management
 

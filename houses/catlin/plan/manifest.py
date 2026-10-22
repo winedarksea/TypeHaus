@@ -31,7 +31,7 @@ from params import (breezeway, driveway, entry_band_brace, foundations, hp1_nort
                     second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, bath1_storage,
-                  decking_selection,
+                  decking_selection, handrail_types,
                   bath_accessories, bath_accessory_types, backing_bath_accessories,
                   towel_accessories, towel_accessory_types, backing_towel_accessories,
                   bath1_storage_types, bedroom_wardrobe_types, study_nook, study_nook_types,
@@ -66,7 +66,7 @@ _library = Library(
     # never a price (#28). The types above point at these by ``product_ref``.
     products=(*products.PRODUCTS, *bed_frame_types.BED_FRAME_PRODUCTS,
               *opening_products.OPENING_PRODUCTS, *bath_accessory_types.BATH_ACCESSORY_PRODUCTS,
-              *towel_accessory_types.TOWEL_PRODUCTS),
+              *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS),
     # The one library pocket size this house hangs, alongside the house's own catalog. Only
     # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
     # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
@@ -112,7 +112,8 @@ _library = Library(
     # The library's fascia guard plus the house's own surface-mounted one — the porch
     # guard's baseplates land on concrete wall tops and buy no bracket kit, which is a
     # different order at a different rate. Tags are disjoint.
-    railing_types=(*ALL_RAILING_TYPES, *titanium_types.RAILING_TYPES),
+    railing_types=(*ALL_RAILING_TYPES, *titanium_types.RAILING_TYPES,
+                   *handrail_types.RAILING_TYPES),
     # The library's plumbing catalog is a planning ALLOWANCE (its own header says final
     # selection is the owner's). `plan/fixture_types.py` is that selection where one has
     # been made — so far the RM-M-BATH2 drop-in bath alone — and rides beside the

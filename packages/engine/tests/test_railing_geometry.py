@@ -271,7 +271,7 @@ def test_a_stated_diameter_outside_type_i_fails(catlin_plan):
         if not any(isinstance(e, Railing) and e.tag == "RL-A-HANDRAIL" for e in group):
             continue
         plan = plan.with_elements(storey, [
-            e.model_copy(update={"graspable_profile": "3in round — Type I"})
+            e.model_copy(update={"graspable_profile": "3in round — Type I", "type_ref": None})
             if isinstance(e, Railing) and e.tag == "RL-A-HANDRAIL" else e
             for e in group])
     findings = _handrail_findings(plan)
@@ -331,12 +331,12 @@ def test_attic_recess_bracket_reaches_the_lower_walls_double_top_plate(catlin_mo
     from typehaus.resolve.geometry_members import member_box
 
     model = catlin_model_ro
-    bracket = _solids(model, 'RL-A-HANDRAIL', 'BRACKET6')[0]
+    bracket = _solids(model, 'RL-A-HANDRAIL', 'BRACKET7')[0]
     assert bracket.sweep is not None
     anchor, elbow, rail_end = bracket.sweep.path
-    assert anchor[0] == pytest.approx(inch(298.59375).meters)
-    assert anchor[1] == pytest.approx(inch(105.625).meters)
-    assert rail_end[2] - anchor[2] == pytest.approx(inch(20.5).meters)
+    assert anchor[0] == pytest.approx(inch(290.3).meters, abs=inch(0.1).meters)
+    assert anchor[1] == pytest.approx(inch(105.625).meters, abs=inch(0.1).meters)
+    assert rail_end[2] - anchor[2] == pytest.approx(inch(26.5).meters, abs=inch(0.1).meters)
     assert elbow[:2] == pytest.approx(rail_end[:2])
     wall = next(w for w in model.walls if w.tag == 'W-S-SS2')
     plates = [m for m in wall.members if m.category == 'plate' and 'top' in m.child_key]

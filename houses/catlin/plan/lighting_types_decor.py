@@ -269,16 +269,17 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # than a drop change on N: a flush-mount fan is a different product, not a shorter
     # downrod — the Mykonos of mark N is a downrod fan and does not hug.
     #
-    # ** NO product_ref ON PURPOSE. ** Follow ED-T-LT-CAN3: state the requirement and say
-    # the SKU is unconfirmed rather than invent a datasheet. TARGET THE SPECS — 52",
-    # flush/hugger mount, <= 11" overall, DC motor, 1400 lm 3000 K CRI 90 integrated light,
-    # and the same constant-hot + wall-control wiring as N.
-    luminaire_class("ED-T-LT-FAN52-FLUSH").model_copy(update={"type_mark": "N3", "source": "Low-ceiling hugger for RM-B-GYM (no product_ref: no flush-mount "
-                         "SKU has been confirmed against a datasheet). ** <= 11\" OVERALL "
-                         "IS THE SPECIFICATION: ** the room's 95 3/8\" clear leaves nothing "
-                         "spare against the 7'-0\" blade-to-floor minimum. ** A DC FAN "
-                         "CANNOT BE SPEED-CONTROLLED BY ANY CONVENTIONAL WALL DIMMER: ** "
-                         "constant hot plus the hardwired wall control, as mark N."}),
+    # 2026-10-22: the Hunter Gallegos 51583. No 52" DC hugger with a light kit fits 11", so
+    # the light went (owner); the gym's four cans light the room. Blade span is flexible.
+    luminaire_class("ED-T-LT-FAN52-FLUSH").model_copy(update={
+        "type_mark": "N3", "name": 'Hunter Gallegos 52" low-profile fan, no light',
+        "height": inch(10.5625), "lamp": None, "watts": None, "lumens": None, "cct_k": None,
+        "cri": None, "load_va": 43.0, "product_ref": "PROD-HUNTER-51583",
+        "source": "Hunter Gallegos 51583 (plan/products_lighting.py), flush-mounted at "
+                  "10 9/16\" overall: the room's 95 3/8\" clear leaves nothing spare "
+                  "against the 7'-0\" blade-to-floor minimum. ** A DC FAN CANNOT BE "
+                  "SPEED-CONTROLLED BY ANY CONVENTIONAL WALL DIMMER: ** constant hot plus "
+                  "its included wall control."}),
     # The plant room's fan. Same 52" fan as N, in a wet-location listed housing with a
     # corrosion-resistant (sealed, non-ferrous) motor and gasketed light kit. N2 rather than
     # a retype of N: this is a different product on the quote, and the reason it is here —

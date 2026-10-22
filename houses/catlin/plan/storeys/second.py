@@ -1420,7 +1420,7 @@ STAIR_GUARDS = [
 # R312.1.3 guard-infill census.
 STAIR_HANDRAILS = [
     Railing(
-        uid="CSRL03AAAA", tag="RL-S-HANDRAIL-E", path=(
+        uid="CSRL03AAAA", tag="RL-S-HANDRAIL-E", type_ref="RAILING-INT-DARK-STEEL-HANDRAIL", path=(
             pt(ft(17, 6.25), ft(26, 0.375)),
             pt(ft(17, 6.25), ft(31, 10.375)),
         ),
@@ -1432,7 +1432,7 @@ STAIR_HANDRAILS = [
         start_termination="wall_return", end_termination="wall_return",
     ),
     Railing(
-        uid="CSRL04AAAA", tag="RL-S-HANDRAIL-W", path=(
+        uid="CSRL04AAAA", tag="RL-S-HANDRAIL-W", type_ref="RAILING-INT-DARK-STEEL-HANDRAIL", path=(
             pt(ft(10, 5.75), ft(31, 11.125)),
             pt(ft(10, 5.75), ft(26, 10.375)),
         ),

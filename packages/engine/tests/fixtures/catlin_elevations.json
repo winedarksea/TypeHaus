@@ -185,9 +185,9 @@
 "canvas_objects/ED-B-GYM-CAN4/body_z0_m": -0.3175,
 "canvas_objects/ED-B-GYM-CAN4/body_z1_m": -0.2667,
 "canvas_objects/ED-B-GYM-CAN4/z_m": -0.3175,
-"canvas_objects/ED-B-GYM-LT/body_z0_m": -0.5969,
+"canvas_objects/ED-B-GYM-LT/body_z0_m": -0.5857875,
 "canvas_objects/ED-B-GYM-LT/body_z1_m": -0.3175,
-"canvas_objects/ED-B-GYM-LT/z_m": -0.5969,
+"canvas_objects/ED-B-GYM-LT/z_m": -0.5857875,
 "canvas_objects/ED-B-GYM-RC1/body_z0_m": -2.365375,
 "canvas_objects/ED-B-GYM-RC1/body_z1_m": -2.314575,
 "canvas_objects/ED-B-GYM-RC1/z_m": -2.365375,
@@ -9446,22 +9446,28 @@
 "126466965b62"
 ],
 "geometry/CARL02AAAA-b03/body": [
-4.6584225,
-4.7346225,
+4.594654,
+4.670854,
 2,
-"50cc65c1a754"
+"da413eff3463"
 ],
 "geometry/CARL02AAAA-b04/body": [
-5.4113906,
-5.4875906,
+5.0953988,
+5.1715988,
 2,
-"0d451c955c34"
+"3866115f8b10"
 ],
 "geometry/CARL02AAAA-b05/body": [
-5.7441703,
-6.2775703,
+5.7273825,
+5.8035825,
+2,
+"ac75db319cad"
+],
+"geometry/CARL02AAAA-b06/body": [
+5.7497663,
+6.4355663,
 16,
-"1741b40b7522"
+"8b4fe0de0934"
 ],
 "geometry/CARL02AAAA-f01/body": [
 4.156,
@@ -12878,10 +12884,10 @@
 "2cecf97daa8b"
 ],
 "geometry/CBPD04AAAA-run/body": [
--0.6334283,
+-0.6362594,
 0.0,
-48,
-"526e60ae85d9"
+72,
+"bafbf2cf1d55"
 ],
 "geometry/CBPD05AAAA-run/body": [
 -0.6896104,
@@ -48966,6 +48972,12 @@
 5.2082,
 2,
 "88ca3a07d400"
+],
+"geometry/CX7KN0MZE0-b01/body": [
+0.4868718,
+0.5630718,
+2,
+"4108c01172d6"
 ],
 "geometry/CX7KN0MZE0-f01/body": [
 0.18852,
@@ -91855,8 +91867,8 @@
 "pipe_runs/PR-B-SH2-DRAIN/z_m": [
 -0.61087,
 0.0,
-3,
-"01dd2647215f"
+4,
+"12c0a701a578"
 ],
 "pipe_runs/PR-B-SH2-DRAIN/z_start_m": 0.0,
 "pipe_runs/PR-B-SINK2-DRAIN/z_end_m": -0.66548,
@@ -96159,7 +96171,7 @@
 "solids/PR-B-SAUNA-FD-DROP-RUN/z1_m": -2.7797125,
 "solids/PR-B-SAUNA-VENT-RUN/z0_m": -2.6924,
 "solids/PR-B-SAUNA-VENT-RUN/z1_m": -0.3124208,
-"solids/PR-B-SH2-DRAIN-RUN/z0_m": -0.6334283,
+"solids/PR-B-SH2-DRAIN-RUN/z0_m": -0.6362594,
 "solids/PR-B-SH2-DRAIN-RUN/z1_m": 0.0,
 "solids/PR-B-SINK2-DRAIN-RUN/z0_m": -0.6896104,
 "solids/PR-B-SINK2-DRAIN-RUN/z1_m": 0.0,
@@ -96341,12 +96353,14 @@
 "solids/RL-A-HANDRAIL-BRACKET2/z1_m": 4.3923404,
 "solids/RL-A-HANDRAIL-BRACKET3/z0_m": 4.4060305,
 "solids/RL-A-HANDRAIL-BRACKET3/z1_m": 4.4822305,
-"solids/RL-A-HANDRAIL-BRACKET4/z0_m": 4.6584225,
-"solids/RL-A-HANDRAIL-BRACKET4/z1_m": 4.7346225,
-"solids/RL-A-HANDRAIL-BRACKET5/z0_m": 5.4113906,
-"solids/RL-A-HANDRAIL-BRACKET5/z1_m": 5.4875906,
-"solids/RL-A-HANDRAIL-BRACKET6/z0_m": 5.7441703,
-"solids/RL-A-HANDRAIL-BRACKET6/z1_m": 6.2775703,
+"solids/RL-A-HANDRAIL-BRACKET4/z0_m": 4.594654,
+"solids/RL-A-HANDRAIL-BRACKET4/z1_m": 4.670854,
+"solids/RL-A-HANDRAIL-BRACKET5/z0_m": 5.0953988,
+"solids/RL-A-HANDRAIL-BRACKET5/z1_m": 5.1715988,
+"solids/RL-A-HANDRAIL-BRACKET6/z0_m": 5.7273825,
+"solids/RL-A-HANDRAIL-BRACKET6/z1_m": 5.8035825,
+"solids/RL-A-HANDRAIL-BRACKET7/z0_m": 5.7497663,
+"solids/RL-A-HANDRAIL-BRACKET7/z1_m": 6.4355663,
 "solids/RL-A-HANDRAIL-ENDPLATE1/z0_m": 4.156,
 "solids/RL-A-HANDRAIL-ENDPLATE1/z1_m": 4.226,
 "solids/RL-A-HANDRAIL-ENDPLATE2/z0_m": 7.0135,
@@ -96443,6 +96457,8 @@
 "solids/RL-BW-ENTRY-POST3/z1_m": 0.9144,
 "solids/RL-BW-ENTRY-RAIL1/z0_m": 0.2259544,
 "solids/RL-BW-ENTRY-RAIL1/z1_m": 0.9322856,
+"solids/RL-G-SERVICE-BRACKET2/z0_m": 0.4868718,
+"solids/RL-G-SERVICE-BRACKET2/z1_m": 0.5630718,
 "solids/RL-G-SERVICE-ENDPLATE1/z0_m": 0.18852,
 "solids/RL-G-SERVICE-ENDPLATE1/z1_m": 0.25852,
 "solids/RL-G-SERVICE-ENDPLATE2/z0_m": 0.8676236,

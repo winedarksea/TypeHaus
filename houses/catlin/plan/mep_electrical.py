@@ -108,13 +108,14 @@ BASEMENT_DEVICES = [
     #
     # ** RETYPED N -> N3 (FLUSH) AND drop 18" -> 11", 2026-09-06, uid PRESERVED. ** The
     # room's resolved clear_height_m is 2.42253 = 95 3/8"; an 18" fan assembly left the
-    # blades at ~6'-5 3/8" in a room people exercise in. 11" puts them at 7'-0 3/8".
+    # blades at ~6'-5 3/8" in a room people exercise in. The Hunter Gallegos (2026-10-22)
+    # is 10 9/16", which puts them at ~7'-0 13/16".
     # ** NOTHING GRADES THIS: ** there is no blade-to-floor check in the engine, so this
     # comment and the height on ED-T-LT-FAN52-FLUSH are the only guard.
     ElectricalDevice(uid="CED010K1AA", tag="ED-B-GYM-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(27), ft(9)), type_ref="ED-T-LT-FAN52-FLUSH", circuit="CKT-LT-BACKUP",
                      room="RM-B-GYM", controlled_by=("ED-B-GYM-SW",),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(11))),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(10.5625))),
     ElectricalDevice(uid="CED010K2AA", tag="ED-B-GYM-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH", circuit="CKT-LT-BACKUP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),

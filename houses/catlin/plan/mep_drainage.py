@@ -202,11 +202,13 @@ DRAINS = [
             elevations=(ft(9, 1.4375), inch(97.875), ft(7, 4.6375)),
             serves=("FX-M-BATH2-TUB",)),
     PipeRun(uid="CBPD04AAAA", tag="PR-B-SH2-DRAIN", system=PipeSystem.DRAIN,
-            # y=17'-1 3/8", not the grate's 17'-3": that stood 1.44" in joist-0-013's flange.
-            path=(pt(ft(1, 9), ft(17, 1.375)), pt(ft(1, 9), ft(17, 1.375)),
-                  pt(ft(3), ft(16, 6))),
+            # Moved to the centre drain (2026-10-22). The drop at y=14'-11" is in joist 11's bay
+            # (flanges 174 3/4"..177 1/4", its underside at 97 9/16" basement). The run stays
+            # below the joists, west along y=14'-11" and south into PR-B-MAIN-DRAIN's corner.
+            path=(pt(ft(6, 4.615), ft(14, 11)), pt(ft(6, 4.615), ft(14, 11)),
+                  pt(ft(3), ft(14, 11)), pt(ft(3), ft(16, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 1.4375), ft(7, 10.0375), inch(85.3875)),
+            elevations=(ft(9, 1.4375), inch(87.0625), inch(85.9375), inch(85.3875)),
             serves=("FX-M-BATH2-SH",)),
     PipeRun(uid="CBPD05AAAA", tag="PR-B-SINK2-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(1), ft(14, 5.375)), pt(ft(1), ft(14, 5.375)),

@@ -841,10 +841,10 @@ STAIR_SEATS = [
 # reaches this rail.
 
 RAILINGS = [
-    Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE",
+    Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE", type_ref="RAILING-INT-DARK-STEEL-HANDRAIL",
             path=(pt(ft(6, 9.125), ft(47, 6.125)), pt(ft(6, 9.125), ft(43, 10.875))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
-            base_elevation=ft(-2, -10), post_spacing=inch(48), post_size="2x2",
+            base_elevation=ft(-2, -10), post_spacing=inch(38.5), post_size="2x2",
             rail_count=1, mount="wall", assembly="RAILING_DARK_METAL",
             role="handrail", serves_stair="ST-G-SERVICE", top_height=inch(36),
             graspable_profile="1.5in round — Type I",

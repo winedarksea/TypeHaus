@@ -118,7 +118,11 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # 39.9 since 2026-10-13: RL-BW-GARAGE-E's 3'-0" left with the garage's interior landing,
     # and RL-G-SERVICE's run went 3'-7 3/4" -> 3'-7 1/4" (head to its new 1 1/2" return).
     # The attic handrail's 10 3/8" lead-in clears WIN-S-STUDY3's lower jamb.
-    assert by_type["(untyped railing)"] == pytest.approx(40.8, abs=0.1)
+    # 2026-10-22: the dark-steel handrails carry RAILING-INT-DARK-STEEL-HANDRAIL; the
+    # untyped bucket keeps the rest. Their sum is the same 40.8 LF.
+    dark_steel = by_type.get("RAILING-INT-DARK-STEEL-HANDRAIL", 0.0)
+    assert dark_steel + by_type["(untyped railing)"] == pytest.approx(40.8, abs=0.1)
+    assert dark_steel > 0
     assert by_type["RAILING-INT-TI-HANDRAIL-42"] == pytest.approx(9.5, abs=0.1)
 
 
