@@ -259,18 +259,19 @@ laps onto, and the opening is an innie: no buck projection, no vent gap.
 
 Both sit in the garden's framed backup walls (`GARDEN_FRAMED_2X6`, `SAUNA_LINER_ON_GARDEN_FRAMED`):
 studs, sheathing, the **60-mil waterproofing** (the water plane), 4" XPS and 2" EPS, then a
-1 1/2" cavity and `W-B-BRICK`, a separate wall with its own arched reveals. The model draws
-**no flashing at either** and says so (`integrity.opening_flashing_coverage`), because the
-derived `[K6]` would be the wrong part: over a veneer opening the head piece is the veneer's
-own through-wall flashing. Specify by hand:
+4" clear cavity and `W-B-BRICK`, a separate wythe on its own beam (`W-SG-BRKBM`) with its own
+arched reveals, sheltered by the porch above. The model draws **no flashing at either** and
+says so (`integrity.opening_flashing_coverage`), because the derived `[K6]` would be the wrong
+part. Specify by hand. **On the set since 2026-10-21:** `notes/court_opening_detail.md`,
+printed on `TR-CATLIN-GARDEN-FRAMED-OPENING`'s starred detail and on G-002. WIN-B-SAUNA takes
+no sheet of its own.
 
 - **Backup opening.** Buck through the foam to the waterproofing; the sill pan and the
   jamb/head band on it, lapped onto the waterproofing (it is on every report's substrate list).
   Pan per §3: sloped, back dam, end dams up the jambs 6".
-- **Veneer, IRC R703.8.5**: through-wall flashing at the arch head and at the base course,
-  lapped up the backup wall behind the waterproofing's face and turned out past the brick with
-  a drip; end dams at the head. **R703.8.6**: weeps immediately above each flashing, 33" o.c.
-  maximum, 3/16" minimum.
+- **Veneer.** The arches are self-supporting, with no lintel or shelf angle, so R703.8.5 asks for
+  no head flashing there; the porch keeps rain off them. The base course is flashed and weeped
+  over the beam (R703.8.6, 33" o.c. max, 3/16" min). Do not over-detail the wythe.
 - **`D-B-PATIO` floods to its threshold.** The court ponds to 7 1/4", exactly the riser, and the
   brick's base course is 1/4" below that line, so its weeps flood too. Treat the cavity as
   wet: the waterproofing runs continuous behind it, the pan's back and end dams stand 6" above

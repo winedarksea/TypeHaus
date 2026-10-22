@@ -1730,7 +1730,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `W-B-CN2` are the only interior pours left. Do not retype any of the nine to 12" without
     cause — `structural.foundation_unbalanced_fill` FAILs correctly otherwise.
   - Cladding: `N-B-BRICK-W`/`-E` stand off `inch(-4.05)` on bare XPS; veneer clear cavity is
-    **1-1/2"** (IRC R703.8.4 min 1"). Never re-strike this node off a parge finish face — it
+    **4"** behind the backup's 2" EPS (IRC R703.8.4 min 1"; `basement_to_framed_wall_detail.md`). Never re-strike this node off a parge finish face — it
     must sit on the foam itself (→ DESIGN-LOG.md, "Basement"). Walls align on
     `face("concrete-ext")`: the furnace room and workshop gained 4" of clear on the inside
     face, and `clear_face` (the finish face) shows it (`notes/basement_to_framed_wall_detail.md`).

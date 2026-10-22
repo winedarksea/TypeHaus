@@ -121,26 +121,28 @@ TRANSITIONS = (
     # flashing here is nothing like a standard framed opening.
     # Same reasoning as the garden arch above, one wall further north: the reveals through
     # W-B-BRICK are open arched holes in a freestanding wythe, and the flashed, bucked,
-    # sealed opening is the one in the concrete/framed wall behind them (TR-CATLIN-
-    # BASEMENT-OPENING already draws that). A second sheet here would detail a perimeter
+    # sealed opening is the one in the framed wall behind them (TR-CATLIN-GARDEN-FRAMED-
+    # OPENING draws that). A second sheet here would detail a perimeter
     # that has no perimeter work.
     Transition(uid="CATR015AAAA", tag="TR-CATLIN-VENEER-OPENING",
                condition_pattern="opening_perimeter:BASEMENT_BRICK_VENEER",
                suppress=True,
                # (single literal: the editable dialect forbids concatenated strings)
-               suppress_reason="the veneer reveal is an open segmental arch in a freestanding brick wythe standing 1-1/2\" off the basement wall — no buck, no frame, no flashing lands at its perimeter, and the opening that does get all three is the window/door in the concrete wall behind it, detailed by TR-CATLIN-BASEMENT-OPENING"),
+               suppress_reason="the veneer reveal is a self-supporting segmental arch in a wythe on its own beam, under the porch — no lintel, buck or frame, so nothing is flashed at its perimeter; the opening behind it is flashed on the backup wall, detailed by TR-CATLIN-GARDEN-FRAMED-OPENING"),
     # The sunken garden's framed walkout. D-B-PATIO is an ordinary innie opening in a 2x6
     # wall — buck, pan, jamb flashing — standing on the 7 1/4" concrete curb.
     # `window-head-jamb-sill` rather than the `outie-window-truss` the above-grade
     # EXT_* walls take: there is no truss plane down here, the unit sits in the stud
     # plane, and the wall's water plane is the waterproofing over the sheathing.
-    # SAUNA_LINER_ON_GARDEN_FRAMED needs nothing here — WIN-B-SAUNA's perimeter is the
-    # vapour-control return TR-CATLIN-SAUNA-OPENING already draws, and its `SAUNA_*`
-    # pattern reaches the framed variant unchanged.
+    # Starred (2026-10-21): the model derives no flashing at either court opening, so
+    # this sheet carries the hand spec (opening_flashing_spec.md §8). WIN-B-SAUNA gets no
+    # sheet of its own; its water side is K1-K3 of the same note, and its vapour return
+    # stays TR-CATLIN-SAUNA-OPENING's (`SAUNA_*` reaches the framed variant).
     Transition(uid="6997Z5EY26", tag="TR-CATLIN-GARDEN-FRAMED-OPENING",
                condition_pattern="opening_perimeter:GARDEN_FRAMED_2X6",
-               notes="notes/basement_to_framed_wall_detail.md",
-               overlay="window-head-jamb-sill", continuity=AIR_WATER_THERMAL),
+               notes="notes/court_opening_detail.md",
+               overlay="window-head-jamb-sill", continuity=AIR_WATER_THERMAL,
+               star=True),
     # ** IT DECLARES ITS OWN CONTINUITY, and it is not AIR_WATER_THERMAL. ** GARAGE_WALL_2X6
     # has no WRB at all — IRC R703.2's exception for an unconditioned detached accessory
     # building — so there is no `spray-foam-ext` band and no taped Zip-R face for the

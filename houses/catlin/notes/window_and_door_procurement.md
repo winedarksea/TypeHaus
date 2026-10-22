@@ -173,6 +173,10 @@ than ±20% without it.
    non-impact, at **+38/−42 psf**, about twice §1's worst 18.3 psf. Confirm GDU011 is one of
    them and that the listing reaches 16'-0" wide (drawing 104859/105042-B-TDI).
 8. 16 CFR 1201 marks on the 11 tempered units and every glazed door (the three French pairs).
+9. **Size standardization, priced, not assumed.** Ask each supplier to quote the schedule
+   as drawn and with sizes merged (e.g. the 27" heights 36/48/54 onto fewer). Take a merge only
+   where the quote shows a real saving. Limits: 27" egress width, the girt-course sill module,
+   R303.1 glazing area per room, and the stool heights.
 
 ## 3. Frame material by orientation
 

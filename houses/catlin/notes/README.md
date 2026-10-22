@@ -121,12 +121,12 @@ reproduces them; they are here because the reasoning is worth keeping.
 ## Detail notes — drawing content, byte-pinned
 
 **Do not edit these as documentation.** Their prose renders onto the detail sheets and
-G-002 and is pinned by `tests/test_section_goldens.py`. Exactly six files reach a drawing —
+G-002 and is pinned by `tests/test_section_goldens.py`. Eight files reach a drawing —
 grep `notes=` in `plan/transitions.py` for the list, which is the only authority:
 
-`basement_to_framed_wall_detail.md` · `garage_wall_detail_side.md` ·
-`outie_window_truss_detail.md` · `plant_room.md` · `roof_wall_eave_detail.md` ·
-`sauna_basement_wall_detail.md`
+`basement_to_framed_wall_detail.md` · `court_opening_detail.md` · `garage_eave_detail.md` ·
+`garage_wall_detail_side.md` · `outie_window_truss_detail.md` · `plant_room.md` ·
+`roof_wall_eave_detail.md` · `sauna_basement_wall_detail.md`
 
 Four files this section used to name — `backup_power.md`, `balcony_irrigation.md`,
 `garage_hydrant.md`, `sauna_shower_basement_detail.md` — are referenced

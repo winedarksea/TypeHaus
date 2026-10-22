@@ -49,7 +49,8 @@ Revised 2026-10-16, after a review measured the built model against the specs:
 - **Jamb membranes stop at the wall's base**: D-G-OVERHEAD's no longer hang over the stem
   end. Overhead doors get head and perimeter flashing without a pan.
 - **Coverage**: `integrity.opening_flashing_coverage` names every exterior opening that draws
-  none. Today that is D-B-PATIO and WIN-B-SAUNA, behind the court's brick veneer (spec §8).
+  none. Today that is D-B-PATIO and WIN-B-SAUNA, behind the court's brick veneer (spec §8);
+  their hand spec prints on D-B-PATIO's starred detail (`court_opening_detail.md`).
   Interior openings and bare rough openings receive no derived flashing.
 - **`integrity.derived_solid_material`** fails a derived solid whose material is not in the
   catalog. `fluid-applied-flashing` and `aluminum` dangled before, so the look fell back to
