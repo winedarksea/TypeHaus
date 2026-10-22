@@ -58,12 +58,12 @@ MATERIALS_HARDWOOD = [
              nominal_quarters=5, milling_profile="eased", requires_custom_milling=True,
              max_board_width_in=7.0,
              source="Owner-milled black locust heartwood, no sapwood, dressed to 1\"; a glue-up (Type III PVA) where the stool is wider than a board. Waterborne film on all six faces before install; stainless fasteners."),
-    # RM-M-BED's four stools, matching the reading corner's natural walnut.
+    # RM-M-BED's four stools, matching the desk's natural walnut top.
     Material(tag="walnut-stool-5q", name="Black walnut window stool, 5/4 S4S (bought)",
              hatch="lumber", density=610.0, color="#80634f", species="walnut",
              finish="clear-satin-hardwax-oil", nominal_quarters=5,
              milling_profile="eased", requires_custom_milling=True,
-             source='Bought black walnut heartwood, 5/4 dressed to 1 inch; eased front edge. Clear satin hardwax oil on all six faces before install, matching the reading corner tops.'),
+             source='Bought black walnut heartwood, 5/4 dressed to 1 inch; eased front edge. Clear satin hardwax oil on all six faces before install, matching the desk top.'),
     # The suite, beside its white painted headboard band and cherry door casing.
     Material(tag="cherry-stool-5q", name="Black cherry window stool, 5/4 S4S", hatch="lumber",
              color="#b77d60", finish="oak-board", species="cherry",

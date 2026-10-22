@@ -55,7 +55,10 @@ from typehaus.model.placeable_symbols._sektion import (
                                                         sektion_corner_points,
                                                         sektion_drawer_base,
 )
-from typehaus.model.placeable_symbols._sektion_axstad import sektion_axstad_base
+from typehaus.model.placeable_symbols._sektion_axstad import (
+    sektion_axstad_base,
+    sektion_axstad_drawers,
+)
 from typehaus.model.placeable_symbols._sektion_corner_wall import sektion_corner_wall
 from typehaus.model.placeable_symbols._sektion_plinth_base import sektion_plinth_wall_base
 from typehaus.model.placeable_symbols._sektion_seat import (
@@ -135,6 +138,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "sektion-open-high": sektion_open_high,
     "sektion-open-base": sektion_open_base,
     "sektion-axstad-base": sektion_axstad_base,
+    "sektion-axstad-drawers": sektion_axstad_drawers,
     "seat-cushion": seat_cushion,
     "dresser": case(rows=3, cols=2),
     "chest": case(rows=5, cols=1),

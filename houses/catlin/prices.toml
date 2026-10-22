@@ -2450,21 +2450,18 @@
 # = $276; low adds a third of the 2x4 base and the 1" top. The 6" shelf is a custom
 # plywood allowance to clear the enlarged winder flight. Covers: FÖRBÄTTRA 205.678.36
 # $127, 405.678.35 $53 (cut).
-"FURN-S-STUDY-NOOK-SEAT-24" = { material = { low = 320, high = 400 }, labour = { low = 80, high = 200 } }  # 3 e5 ea — 3 Study 2, 2 RM-M-BED reading corner
+"FURN-S-STUDY-NOOK-SEAT-24" = { material = { low = 320, high = 400 }, labour = { low = 80, high = 200 } }  # 3 ea — Study 2
 "FURN-S-STUDY-NOOK-SHELF-18" = { material = { low = 230, high = 290 }, labour = { low = 80, high = 200 } }  # 1 ea; SEKTION 18x24x80 frame + shelves
 "FT-S-STUDY-NOOK-COVER-80" = { material = { low = 127, high = 145 }, labour = { low = 20, high = 60 } }  # 1 ea
 "FT-S-STUDY-NOOK-SEAT-END" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut
 # Custom 72x24x3 HR-foam cushion, welted performance-fabric cover; a quote, not a listing.
 "FT-S-STUDY-NOOK-CUSHION" = { material = { low = 350, high = 750 }, labour = { low = 0, high = 0 } }  # 1 ea
-# RM-M-BED reading corner, 2026-10-03 (plan/bed_reading_corner_types.py). IKEA US list: SEKTION
-# base frame 102.653.92 $53, plus two UTRUSTA shelves and a share of the 2x4 base.
-# Added 2026-10-04: AXSTAD 104.260.45 $68 + UTRUSTA 805.248.82 $16/2-pack per cabinet,
-# plus $5-15 knob/handle allowance. Walnut top bills in [countertops].
-# Covers are FÖRBÄTTRA 405.678.35 $53, full 30" panels.
-"FURN-M-BED-NOOK-END-12" = { material = { low = 179, high = 234 }, labour = { low = 80, high = 190 } }  # 2 ea
-"FT-M-BED-NOOK-COVER-30" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 60 } }  # 2 ea
-# Custom 48x24x3 cushion, the Study 2 spec at two-thirds the length; a quote, not a listing.
-"FT-M-BED-NOOK-CUSHION" = { material = { low = 250, high = 500 }, labour = { low = 0, high = 0 } }  # 1 ea
+# RM-M-BED desk, 2026-10-21 (plan/bed_desk_types.py): SEKTION 15x24x30 frame, three medium
+# MAXIMERA 15x24 and three AXSTAD 15x10 fronts, plus a $5-15/front pull allowance. IKEA US
+# list not yet read for these SKUs: confirm at order. The walnut top bills in [countertops].
+"FURN-M-BED-DESK-DRAWERS-15" = { material = { low = 220, high = 320 }, labour = { low = 80, high = 190 } }  # 2 ea
+# 1x3 poplar knee ledger, painted, screwed to studs.
+"FT-M-BED-DESK-LEDGER-31" = { material = { low = 10, high = 20 }, labour = { low = 20, high = 60 } }  # 1 ea
 "CASE-SINK-BASE-36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 0 ea
 # Both TALL-PANTRY rows lost their instances 2026-08-24: FURN-M-KIT-TALL-N/-S stood where
 # RM-M-PANTRY now is. Catalog rows, kept.
@@ -5255,9 +5252,10 @@
 # `haus millwork`; the labour is the glue-up, scribing the back edge, slotted brackets and a
 # six-face waterborne urethane. The material band still reads bought 12/4: owner to revise.
 "ash-counter-6q" = { material = { low = 20, high = 40 }, labour = { low = 30, high = 75 } }
-# The reading nook's two end-cabinet tops (2026-10-03): bought 6/4 walnut at ~$12-20/bf, ~2 bf
-# per SF with waste; labour is a joiner's glue-up, flattening and a six-face hardwax oil.
-"walnut-counter" = { material = { low = 25, high = 45 }, labour = { low = 40, high = 110 } }  # ~4.3 SF
+# RM-M-BED's desk top (2026-10-21; the reading nook's two tops before): bought 5/4 walnut at
+# ~$12-20/bf, ~2 bf per SF with waste; labour is a joiner's glue-up, flattening and a six-face
+# hardwax oil.
+"walnut-counter" = { material = { low = 25, high = 45 }, labour = { low = 40, high = 110 } }  # ~10.5 SF
 
 [interior_trim]
 # Base and door casing by the LF, off the derived runs (resolve/interior_trim.py), keyed on the
@@ -6480,7 +6478,7 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # IKEA HEMNES white stain, article 105.761.91; US listing checked 2026-10-03.
 "FURN-DRESSER-HEMNES-63" = { low = 449.99, high = 449.99 }  # 1 ea
 # IKEA STRANDMON wing chair, US listing checked 2026-10-03: $349 (Sulviken) to $399 (Kelinge).
-"FURN-ARMCHAIR-STRANDMON" = { low = 349, high = 399 }  # 1 ea, RM-M-BED reading corner
+"FURN-ARMCHAIR-STRANDMON" = { low = 349, high = 399 }  # 1 ea, RM-M-BED reading chair
 "FURN-DESK-CHAIR" = { low = 100, high = 600 }  # 6 ea
 "FURN-DINING-2-36" = { low = 120, high = 600 }  # 2 ea
 # Retyped 2026-08-24 to FT-DINING-8-OPEN-CORNERS below — same table, same money, a smaller

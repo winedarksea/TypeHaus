@@ -10,7 +10,7 @@ from typehaus.model import WindowStool, inch
 
 
 MAIN_WINDOW_STOOLS = [
-    # RM-M-BED: black walnut beside the reading corner's walnut tops.
+    # RM-M-BED: black walnut, like the desk's walnut top.
     WindowStool(uid="WNBEDW1001", tag="STOOL-WIN-M-BED-W1", window_ref="WIN-M-BED-W1",
                 material_ref="walnut-stool-5q", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),

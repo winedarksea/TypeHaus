@@ -255,9 +255,7 @@ trim kit is ordered**.
   and drop the stools to clear it. Where a stool is flush with the counter (`WIN-M-LIV-E1`/
   `E2`, and `WIN-M-KITCH` over the counter), turn mode needs a clear counter. Tilt is the
   daily mode there.
-- **Window seats.** In `plan/bed_reading_corner.py`, the cabinet tops are 1.70" under the
-  `WIN-M-BED-W1`/`W2` stools: the sash sweeps over the walnut tops, and anything standing on
-  them blocks turn. In `plan/study_nook.py`, the seat top is 19½" and the
+- **Window seats.** In `plan/study_nook.py`, the seat top is 19½" and the
   `WIN-S-STUDY1`/`2` sills are 32", so it is clear. The suite desk moved ½" east so
   `WIN-S-SUITE1`'s stool (now ~29" AFF, under the 30" desk top) clears it by ⅛".
 - **Shades** (the cellular blinds on `WIN-M-LIV-E1`/`E2`/dining, and any others). The tilt

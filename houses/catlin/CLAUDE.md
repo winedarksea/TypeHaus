@@ -65,11 +65,12 @@ not instruction: when it disagrees with this file or the model, it is the one th
   SEKTION shelf frame by the door plus three 24x24x15 SEKTION seat units with lift-up fronts on
   a 2x4 base, 19 1/2" top, under one 3" cushion held 1/2" behind the fronts. Types/products are in `plan/study_nook_types.py`. ED-S-STUDY2-RC3 is
   at 26" AFF above the seat; the mark-K reading sconce and its seat-side dimmer live in this file.
-- `plan/bed_reading_corner.py` — `# haus: editable`, RM-M-BED's west wall: a STRANDMON chair
-  facing north and a two-seat SEKTION window seat between two 12"
-  open cabinets under 1" walnut countertops (`walnut-counter`, 36" tops, 1.70" under the W1/W2
-  stools). Seat/cabinet run centres on the finished west wall at y=80.13", ends at
-  y=116.63", 7.37" short of D-M-BATH2's open leaf. Types in `_types.py`.
+- `plan/bed_reading_corner.py` — `# haus: editable`, RM-M-BED's STRANDMON reading chair by the
+  west wall (the SEKTION window seat was retired 2026-10-21). Types in `_types.py`.
+- `plan/bed_desk.py` — `# haus: editable`, RM-M-BED's SE-corner desk: two 15" SEKTION/AXSTAD
+  three-drawer bases on the floor and a 3/4" ledger across the 31" knee, under one 61" x 24 7/8"
+  walnut glue-up top (`CT-M-BED-DESK`, `walnut-counter`, 31" finished). `FURN-M-BED-DESK` is the
+  ledger: it carries the chair zone and keeps the slab's hosts one run. Types in `_types.py`.
 - `plan/bedroom_wardrobes.py` — `# haus: editable`, BED1-3's PAX wardrobes; types and products
   in `plan/bedroom_wardrobe_types.py`. BED1/2's doors sit 2 1/2" off module for them (accepted).
   BED1/2 each have an open 19 5/8" six-shelf frame at both ends of the L (2026-10-03).

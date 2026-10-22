@@ -257,15 +257,7 @@ MAIN_PLACEABLES = [
     Furniture(uid="CMN702AAAA", tag="FURN-M-BED-NIGHTSTAND-E", type_ref="FURN-NIGHTSTAND-16", room="RM-M-BED",
               position=pt(inch(161.3175), inch(145.625))),
 
-    # Southeast corner since 2026-10-03: rotation -90 puts the back on the east wall,
-    # with ~1/2" to its 212.115" finish face. D-M-BED2 moved one stud bay north, leaving
-    # 12 3/4" from the desk's north end to its south (hinge) jamb, where its leaf parks. Keep y unchanged so the west-
-    # facing 36" chair zone stays south of the king's foot at 68.445".
-    Furniture(uid="CMD701AAAA", tag="FURN-M-BED-DESK", type_ref="FURN-DESK-HEMNES-61",
-              room="RM-M-BED", position=pt(inch(198.75), inch(37.75)), rotation=deg(-90)),
-    # Its chair faces east, tucked beneath the desk and inside its chair pull-out zone.
-    Furniture(uid="PJSHPJN6TV", tag="FURN-M-BED-DESK-CHAIR", type_ref="FURN-DESK-CHAIR", room="RM-M-BED",
-              position=pt(m(4.80049), m(0.954962)), rotation=deg(90)),
+    # The desk and its chair are in plan/bed_desk.py.
 
     # The south window ROs end/start at x=63/161": centre the touching 70 3/4" pair
     # on x=112", leaving 13 5/8" to either RO. Back edges follow W-M-S1's finish face;

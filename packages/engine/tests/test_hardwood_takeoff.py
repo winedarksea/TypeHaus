@@ -140,7 +140,7 @@ def test_a_stool_is_scheduled_at_its_rough_size_from_five_quarter_stock(rows):
 def test_ash_slabs_and_walnut_tops_are_cut_listed(rows):
     """Custom-milled countertops reach the mill; the stone stays the slab yard's."""
     tops = {tag: row for row in _use(rows, "countertop") for tag in row["tags"]}
-    assert set(tops) == {"CT-M-LIV-E-N", "CT-M-BED-NOOK-S", "CT-M-BED-NOOK-N"}
+    assert set(tops) == {"CT-M-LIV-E-N", "CT-M-BED-DESK"}
     # The owner's ash runs to ~11" (Material.max_board_width_in), so the 25" slab is three.
     slab = tops["CT-M-LIV-E-N"]
     assert slab["nominal_stock"] == "6/4"

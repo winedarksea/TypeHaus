@@ -61,7 +61,7 @@ SYMBOL_NAMES = frozenset({
     "hemnes-bookcase", "corner-bookcase", "slat-partition",
     "sektion-tall-drawers", "sektion-tall-open-lower", "sektion-cover-panel",
     "sektion-seat-base", "sektion-open-high", "sektion-open-base",
-    "sektion-axstad-base", "seat-cushion",
+    "sektion-axstad-base", "sektion-axstad-drawers", "seat-cushion",
     "wardrobe-show", "wardrobe-show-hang", "wardrobe-dress", "wardrobe-double-hang", "closet-board",
     "closet-corner-wire", "closet-wire",
     "wardrobe-shelves", "wardrobe-corner", "wardrobe-sliding-pair",
