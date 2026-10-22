@@ -44,16 +44,17 @@ BASEMENT_VANITY_SHELVES = [
 MAIN_VANITY_SHELVES = [
     ShelfBank(
         uid="830F8WP640", tag="SB-M-BATH2-VAN",
-        # The 30" sink base at the SOUTH end of the 48" vanity; the 18" drawer bank is not
-        # shelved. 15 1/2", not 18 1/2": the carcass went 21" -> 18" deep on 2026-09-09 and
-        # an 18 1/2" shelf would have stood proud of the box it sits in.
+        # The 30" SEKTION sink frame at the SOUTH end of the floating vanity (2026-10-22);
+        # the 18" drawer frame is not shelved. IKEA's own UTRUSTA shelf for the 30 x 14 3/4"
+        # wall frame, bought with the frames (confirm the article at order), so 14" deep
+        # inside the frame's back; one shelf plus the case top, as on every vanity.
         host="FX-M-BATH2-SINK",
         material_ref="cabinet-plywood",
-        thickness=inch(0.75),
-        depth=inch(15.5),
+        thickness=inch(0.625),
+        depth=inch(14),
         profile="S4S",
         procurement=ShelfProcurement.INCLUDED_IN_HOST,
-        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
+        bays=(ShelfBay(width=inch(28.5), clear_height=inch(28.5), shelf_count=2),),
     ),
 ]
 

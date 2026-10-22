@@ -29,6 +29,7 @@ from library.placeables.fixtures import (
     VANITY_36_SHALLOW as _LIB_VANITY_36_SHALLOW,
 )
 
+from plan.bath2_vanity_types import BATH2_VANITY_48
 from plan.fixture_types_wc import WC_AND_SHOWER_TYPES
 from plan.kitchen_sink_types import KITCHEN_SINK_32_SINGLE
 from typehaus.model import FixtureType, Mount, MountKind, Service, inch, m
@@ -45,7 +46,7 @@ from typehaus.model import FixtureType, Mount, MountKind, Service, inch, m
 # 59 11/16" is the spec drawing's dimension; the marketing name rounds it to 59 3/4".
 # ``height`` is the bath's full 21". Its placed ``tub_enclosure`` seats it on a 1" mortar
 # bed above the ¾" subfloor, independently of the room's tile. The rim is at 22¾",
-# matching the deck cap's 22¼" plus ½" tile/thinset; the rim carries no load.
+# flush with the deck's Corian top over the 22¼" ply; the rim carries no load.
 #
 # ``Service.POWER_120`` is the Bask heated surface and is NOT decoration: it is what makes
 # the fixture schedule and `mep` see an electrical requirement on a *bathtub*. The service
@@ -87,91 +88,7 @@ MOEN_ALIGN_ROMAN = FixtureType(
            "https://assets.moen.com/shared/docs/product-specifications/t393sp.pdf",
 )
 
-# RM-M-BATH2's vanity, replacing a borrowed FX-KITCHEN-SINK-33 that billed as a kitchen
-# sink, drew a two-bowl symbol on the bathroom plan, and gave the room no cabinet at all.
-# The owner wants one basin and as much drawer and shelf as the wall can hold, so this is a
-# vanity type rather than a sink type.
-#
-# ** 54" WAS WRONG, AND IT WAS WRONG AGAINST THE WRONG CODE (revised 2026-09-06). ** The
-# original sizing measured the run to the start of FX-M-BATH2-WC's **21" IRC P2705.1** front
-# clearance at y=17'-11 5/8" and reported 3 1/4" of slack. But this file's own header says
-# why IRC P2705.1 has no force in Minnesota -- Minn. R. 1309.0010 subp. 3.D deletes IRC
-# chapters 25-33 -- and the envelope actually drawn and actually enforced is **UPC 402.5's
-# 24"**, which is three inches nearer. Against that, 54" cleared by ** 0.24" **, and the
-# instant the water closet became a real product rather than a 28"-deep allowance the cabinet
-# stood inside a code envelope. TOTO's one-piece skirted bowls run 28 1/2" (Nexus) to 30"
-# (Carlyle II); there is no real toilet the 54" survives.
-#
-# It went to 51" x 21" on 2026-09-06, clearing the Carlyle II's envelope by 1 3/4" instead
-# of a quarter inch, and then to ** 48" x 18" on 2026-09-09 ** for the aisle rather than for
-# the envelope: 48" is on the stock width ladder where 51" never was, 18" is the house's own
-# -SHALLOW depth (the boxed big-box combos measure 18.6"-18.75"), and the pair leaves
-# 4 1/4" to the water closet's envelope. The three inches of length come out of the drawer
-# bank; the 30" sink base is untouched. ** Measure that run off the WALLS' finish faces
-# ** -- `Room.clear_face` is that finish face now; it read six inches out on this 13 7/8"
-# exterior wall while it was axis-derived. The counter overhangs the carcass to 19".
-#
-# ``height`` is 41 1/2" and that is NOT the counter -- this file's library twin explains
-# why: a fixture's height is OVERALL including the spout, and ``_deck_height`` subtracts a
-# fixed 0.14 m faucet band. 41.5" - 5.512" = **35.99"**, which is the 36" comfort-height
-# counter the owner chose (the same plane as the kitchen, and inside NKBA Guideline 7's
-# 32"-43" band) to within a hundredth of an inch. The band is metric and the height is in
-# inches, so no round inch value lands on 36.000"; 41 1/2" is the closest orderable one.
-# Change this number and the counter moves -- it is not a round one by accident.
-#
-# ** ONE BASIN, AND THE STORAGE IS THE POINT. ** 21" four-drawer bank at the SOUTH end,
-# 30" sink base at the NORTH end with the basin over it, so the counter runs unbroken from
-# the drawer bank to the basin rim rather than being cut in half by a second bowl. The
-# basin centreline lands at y=16'-3 5/8" -- 39" off W-M-BDN1's face, comfortably past
-# NKBA G5's recommended 20" to a sidewall. The sink base's interior shelf is authored as
-# SB-M-BATH2-VAN in plan/millwork_vanities.py, because a shelf the owner will stand things on is
-# worth billing; the drawer boxes are not modelled (the engine has no drawer vocabulary)
-# and live in the cabinet breakdown below and in prices.toml.
-#
-# WIN-M-BATH2 is not in the way, and the margin is bigger than a first read of the storey
-# file suggests: its comment quotes "y 19'-8"" for a ``from_node`` offset that is the
-# opening's NEAR EDGE, and W-M-W3 is authored north-to-south, so the 27" unit actually runs
-# y 18'-10 1/2"..21'-1 1/2". Since the 2026-09-09 shuffle this cabinet ends at y=17'-2 3/8"
-# and the gap is 20 1/8", though the window's 3'-0" sill IS the same plane as the 36"
-# counter, so a cabinet that ever runs north has no height to hide in.
-#
-# The front clearance is the 21" IRC P2705.1 minimum, not NKBA's recommended 30", and the
-# room now beats the recommendation across the whole cabinet: 33 11/16" of aisle to the
-# shower for the south 36" of the run and 27 1/16" to the tub deck's access panel for the
-# north 12". The BASIN sits in the wide half deliberately (see the type's `source`).
-# Authoring 30" as a
-# REQUIRED zone would make a guideline read as code in every clearance finding, which it
-# is not -- but the numbers above are what the owner asked the room to hold.
-BATH2_VANITY_48 = FixtureType(
-    tag="FX-VANITY-48-SHALLOW",
-    name='Vanity, 48" single basin with drawer bank',
-    footprint=(inch(48), inch(18)),
-    height=inch(41.5),
-    plan_symbol="vanity",
-    basin=True,
-    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(front_zone(inch(48), inch(18), inch(21), "lavatory front clearance"),),
-    source="RM-M-BATH2 vanity, owner selection 2026-08-29, narrowed 54 in. to 51 in. on "
-           "2026-09-06 when the water closet became a real product, and 51 x 21 in. to "
-           "48 x 18 in. on 2026-09-09 to open the room's approach. 48 x 18 in. carcass, "
-           "22 in. counter with a 1 in. overhang, finished counter 36 in. (comfort height, "
-           "NKBA Bathroom Planning Guideline 7 allows 32-43 in.). ONE basin: a single "
-           "rectangular undermount, 20 x 15 1/2 in. overall with a 17 1/4 x 13 in. cutout "
-           "and a 5 1/4 in. bowl -- Kohler Caxton K-20000-0 (PROD-KOHLER-K-20000), chosen "
-           "over the Verticyl K-2882 this first named, whose vertical sides and tight "
-           "corner radii are exactly what stops a cloth reaching the corner in one pass. "
-           "Bath2 faucet: chrome Arvo 15840LF (PROD-DELTA-15840LF); single hole. "
-           "Cabinet breakdown: 30 in. sink base at the SOUTH end with a pair of doors "
-           "and 18 in. bank of three drawers at the north end (6/6/6 in. fronts, 16 in. "
-           "boxes). The ends were swapped on 2026-09-09: the tub deck stands 26 in. off "
-           "this face at the room's north end and the shower stands 41 in. off it at the "
-           "south, so the basin belongs south and the drawers take the pinch. "
-           "One interior shelf (SB-M-BATH2-VAN), the trap kept high and tight to the "
-           "wall so the base stays usable. QUARTZ with an undermount rather than the "
-           "integral solid-surface top the four small vanities take: this and the hall "
-           "hall-bath unit are the two busiest decks and the two that are fabricated "
-           "rather than bought boxed."
-)
+# RM-M-BATH2's vanity is the floating SEKTION in plan/bath2_vanity_types.py (2026-10-22).
 
 # ---------------------------------------------------------------------------
 # THE OTHER FIVE BATHROOMS' VANITIES (2026-08-30)
@@ -188,8 +105,8 @@ BATH2_VANITY_48 = FixtureType(
 # with a 22" top). ``-SHALLOW`` is 18" deep and is NOT a premium product: the cheap big-box
 # combos -- the ones that arrive boxed with the top and bowl already on them -- measure
 # 18.6"-18.75" deep, so 18" is what is on the pallet. Three of these rooms cannot take 21"
-# and lose nothing by it. (RM-M-BATH2's ``FX-VANITY-48-SHALLOW`` above joined them on
-# 2026-09-09, from 51" x 21".)
+# and lose nothing by it. (RM-M-BATH2's 48" joined them at 18" on 2026-09-09, from 51" x 21",
+# and is a floating SEKTION since 2026-10-22.)
 #
 # ** WIDTHS ARE THE CHEAP STOCK LADDER: 24 / 30 / 36 / 48 / 60. ** Those five are stocked
 # by every big-box and every builder cabinet line, assembled, no lead time. 18", 42", 54"
@@ -317,11 +234,11 @@ VANITY_36_SINGLE = _LIB_VANITY_30_SINGLE.model_copy(update={
 # HOMOGENEOUS material: a scratch or a scorch sands back to new instead of cutting through a
 # skin, and its matte finish reads better against white oak and hides water spots.
 #
-# The hall-bath 36" and main-bath 48" keep quartz with a Kohler Caxton K-20000-0
-# undermount (PROD-KOHLER-K-20000,
-# chosen over the Verticyl K-2882 first specified: Verticyl's selling point is vertical sides
-# and tight corner radii, which is exactly what stops a cloth reaching the corner in one
-# pass). These two decks remain fabricated, so they carry
+# The hall-bath 36" keeps quartz with a Kohler Caxton K-20000-0 undermount
+# (PROD-KOHLER-K-20000, chosen over the Verticyl K-2882 first specified: Verticyl's selling
+# point is vertical sides and tight corner radii, which is exactly what stops a cloth
+# reaching the corner in one pass). The main-bath 48" went to a Corian top and bonded bowl
+# on 2026-10-22 (plan/bath2_vanity_types.py). Both decks are fabricated, so the top carries
 # no ``product_ref`` -- a fabricated top is not a purchased SKU.
 #
 # ** ORDER EVERY TOP DRILLED SINGLE-HOLE, IN WRITING. ** All eight lavatory faucets are

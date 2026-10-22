@@ -77,7 +77,7 @@ until the outlet itself is at about 105. That tail is the whole reason for the s
 
 | side | what | height | open above |
 |---|---|---|---|
-| north (tub) | fixed panel on the `W-M-TUBDK-S` knee wall | to the ceiling | none: water and steam stay off the tub deck |
+| north (tub) | fixed panel on the Corian deck's S leg over `W-M-TUBDK-S`, in a routed channel or clamps (2026-10-22) | to the ceiling | none: water and steam stay off the tub deck |
 | west (front) | fixed panel + door | **90"** (7'-6") | **16"** |
 | east, south | solid-surface panels (`WP-M-BATH2-SURR`) | 106" | none |
 
@@ -124,10 +124,12 @@ BATH2's 20 cfm, so the grille's position is the only lever.
    Ashlyn 17T exists (T17264 is Monitor 17 pressure-balance), and Trinsic remains the
    selected thermostatic shower trim alongside the Align tub filler.
    T17T259 is the shower-only version with its own head; this shower uses the 26008.
-3. **Base and panels: Swanstone.** SS-3636: 36x36x5 1/2", 4 1/2" threshold, centre Fit-Flo
-   drain, 3" drain hole. Still to confirm on the dealer's submittal: the colour, that the
-   flanges suit a W threshold with E/S/N walls, and a panel height that reaches the 106"
-   ceiling above the base (or a top cap).
+3. **Base and panels: Swanstone, in Carrara (221)** (colour closed by the owner 2026-10-22;
+   confirm against a physical chip, `notes/bath2_tub_deck_finish.md` §4). SS-3636:
+   36x36x5 1/2", 4 1/2" threshold, centre Fit-Flo drain, 3" drain hole. Still to confirm on
+   the dealer's submittal: that the flanges suit a W threshold with E/S/N walls, and a panel
+   height that reaches the 106" ceiling above the base (or a top cap). A Corian
+   floor-to-ceiling stall (about $1.5-3k more, one piece) was considered and declined.
 
 ** Drain moved to the pan centre, 2026-10-22. ** The SS-3636's centre drain, (6'-4 5/8",
 14'-8 3/8"), sits over FS-M-WEST joist 11, whose top flange runs y 174 3/4"..177 1/4". A riser
@@ -154,11 +156,20 @@ would retype the whole wall face).
 | shower | behind the finish | rule |
 |---|---|---|
 | BATH2 (`FX-M-BATH2-SH`) | glass-mat gypsum or cement backer, floor to ceiling, on both closed walls; bonded liquid membrane (RedGard / Hydro Ban class) lapped OVER the base flange; panel bonded over that | neither wall is exterior, so no double vapour barrier |
-| BATH2 knee wall `W-M-TUBDK-S` | the same, under a third `WP-M-BATH2-SURR` span over the pan's 3' (19 1/4", 4.8 SF) | cap is a solid-surface sill sloped >= 1/4" into the stall; glass in clamps or a weeped channel, bedded in silicone |
+| BATH2 knee wall `W-M-TUBDK-S` | the Corian stall face (`WP-M-BATH2-TUBDK-APRON`, since 2026-10-22), bonded to the deck top and run 3/4"-22 3/4" with no horizontal joint under the glass; its E end meets the Swanstone E panel in a silicone corner, the base flange tucked behind it | the top slopes >= 1/4" into the stall on the stall side of the glass; glass in a routed channel or clamps, bedded in silicone (`notes/bath2_tub_deck_finish.md` §3) |
 | STUBATH neo-angle | the same backer and membrane under `WP-A-STUBATH-SURR` | priced on `FX-SHOWER-36-NEO-COMBO` |
 | BATH1, SUITEBATH tub-showers | the one-piece insert IS the wall | **nothing penetrates the insert** but the valve and spout knockouts; use the moulded shelves. Both lit niches are dropped (`notes/superseded/shower_niche.md`) |
 | BATH1's back, exterior `W-S-N3` | insert inside, ccSPF outside: ~0 perm both faces | never penetrate it |
 | sauna rinse | model: tile on shiplap; note: foam backer | OPEN — `notes/sauna_shower_basement_detail.md` |
+
+**Backer: the spec above stands** (owner, 2026-10-22, after a reviewer suggested GoBoard).
+Swanstone's shower-wall-kit guide prepares sheetrock/greenboard/cementboard/wood, plaster,
+cement/concrete, old tile, wallpaper and Masonite. It lists no foam board, and it wants
+every one sealed with a water- or oil-based primer/sealer. So **trial-bond Swanstone's tape
+and adhesive to the cured membrane, or prime over the membrane with a water-based primer**
+first. GoBoard (JM polyiso tile backer, ICC-ES ESR-4812) was considered and declined: it is
+a tile backer, Swanstone does not list foam board, and the liquid membrane already provides
+the waterproofing GoBoard would add.
 
 BATH2's base: integral flanges E, S and N, threshold W, fully bedded with no voids, and no
 radiant cable under it. Joints: mould-inhibiting 100% silicone at panel-to-base, the corner
@@ -264,5 +275,9 @@ manufacturer's 10x10x1 size is nominal: verify the final grille holder accepts t
   untreated shower (the plan of 2026-10-12).
 - ASHRAE Fundamentals Ch. 6 (mass transfer, Lewis relation) and Ch. 21 (duct friction,
   fitting losses), for §7.2-7.3's coefficients.
+- Swanstone Shower Wall Kits and Panels installation guide, "Surface Preparation". Read
+  2026-10-22. https://res.cloudinary.com/american-bath-group/image/upload/websites-product-info-and-content/swan/product-info/walls/installation-guides/swan-wall-install-guide-shower-wall-kits.pdf
+- Johns Manville GoBoard tile backer board (polyiso, waterproof core; ICC-ES ESR-4812). Read
+  2026-10-22. https://www.jm.com/en/building-insulation/commercial/tile-backer-board
 - `houses/catlin/out/model.json`: `rooms` (RM-M-BATH2 clear height), and
   `plan/mep_registers.py`, `plan/mep_erv_l2.py`, `plan/fixture_types_wc.py`.

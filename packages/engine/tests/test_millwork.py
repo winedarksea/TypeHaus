@@ -60,8 +60,8 @@ def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
 def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catlin_model_ro):
     """13 windows derive white oak; two authored circulation stools use the same stock.
 
-    The plant room's four and kitchen's three are quartz; the other room overrides
-    select walnut, ash, locust, cherry and cedar.
+    The plant room's four and kitchen's three are quartz, RM-M-BATH2's is Corian (2026-10-22);
+    the other room overrides select walnut, ash, locust, cherry and cedar.
     """
     derived = [stool for stool in stools if stool.derived]
     assert {stool.assembly for stool in derived} == {"EXT_2X6"}
@@ -74,7 +74,7 @@ def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catli
     authored = {stool.window_ref: stool for stool in stools if not stool.derived}
     east = {"WIN-M-LIV-E1", "WIN-M-LIV-E2", "WIN-M-DINING-E"}
     kitchen = {"WIN-M-KITCH", "WIN-M-KITCH-N", "WIN-M-KIT-E"}
-    quartz = {*(f"WIN-S-PLANT{n}" for n in range(1, 5)), *kitchen, "WIN-M-BATH2"}
+    quartz = {*(f"WIN-S-PLANT{n}" for n in range(1, 5)), *kitchen}
     species = {
         **{f"WIN-M-BED-{suffix}": "walnut-stool-5q" for suffix in ("W1", "W2", "S1", "S2")},
         **{ref: "locust-stool-5q" for ref in ("WIN-M-BATH1-W", "WIN-S-BATH-W",
@@ -85,10 +85,11 @@ def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catli
         "WIN-B-SAUNA": "cedar-sauna-stool",
         **{ref: "ash-stool-6q" for ref in east},
         **{ref: "quartz-counter" for ref in quartz},
+        "WIN-M-BATH2": "solid-surface-fabricated",
     }
     assert {ref: stool.material_ref for ref, stool in authored.items()} == species
     assert {stool.window_ref: stool.assembly for stool in authored.values()
-            if stool.window_ref in quartz | east} == {
+            if stool.window_ref in quartz | east | {"WIN-M-BATH2"}} == {
         **{f"WIN-S-PLANT{n}": "PLANT_EXT_2X6_HUMID" for n in range(1, 5)},
         **{ref: "EXT_2X6" for ref in kitchen | east | {"WIN-M-BATH2"}},
     }
@@ -96,6 +97,9 @@ def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catli
     for stool in stools:
         if stool.material_ref == "quartz-counter":
             assert stool.thickness_m == pytest.approx(inch(1.181).meters)
+            continue
+        if stool.material_ref == "solid-surface-fabricated":
+            assert stool.thickness_m == pytest.approx(inch(0.472).meters)
             continue
         expected = 1.25 if stool.material_ref == "ash-stool-6q" else 1.0
         assert stool.thickness_m == pytest.approx(inch(expected).meters), stool.window_ref

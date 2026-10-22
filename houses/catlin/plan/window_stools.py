@@ -23,10 +23,11 @@ MAIN_WINDOW_STOOLS = [
     WindowStool(uid="WNBEDS2001", tag="STOOL-WIN-M-BED-S2", window_ref="WIN-M-BED-S2",
                 material_ref="walnut-stool-5q", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
-    # The en suite matches its 3 cm quartz vanity top.
+    # The en suite matches its Corian vanity top and tub deck (2026-10-22): same lot, 12 mm
+    # with a built-up eased front edge.
     WindowStool(uid="YMJS812EK0", tag="STOOL-WIN-M-BATH2", window_ref="WIN-M-BATH2",
-                material_ref="quartz-counter", thickness=inch(1.181),
-                overhang=inch(0.75), horn=inch(1), profile="eased"),
+                material_ref="solid-surface-fabricated", thickness=inch(0.472),
+                overhang=inch(0.75), horn=inch(1), profile="built-up eased"),
     # Other wet rooms, splash and snowmelt: black locust.
     WindowStool(uid="5STRZYV0G0", tag="STOOL-WIN-M-BATH1-W", window_ref="WIN-M-BATH1-W",
                 material_ref="locust-stool-5q", thickness=inch(1),

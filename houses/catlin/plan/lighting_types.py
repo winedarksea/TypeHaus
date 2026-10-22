@@ -170,7 +170,7 @@ AMBIENT_LUMINAIRE_TYPES = (
 
     # --- E3: RM-M-BATH2's evening glow (2026-10-12) ------------------------------------
     # Mark E's tape in a fixed 2700 K, damp-rated (silicone-coated) because it runs under the
-    # vanity, the over-toilet cabinet and the tub deck's nosing. Soft, low, widespread: the
+    # vanity, the over-toilet cabinet and in the ceiling over the tub. Soft, low, widespread: the
     # evening layer, on the dimmer with the halo mirror. Prices on its own
     # [light_run_materials] keys.
     LuminaireType(tag="ED-T-LT-STRIP24-2700",
@@ -183,7 +183,7 @@ AMBIENT_LUMINAIRE_TYPES = (
                   product_ref="PROD-ARMACOST-RIBBONFLEX-COB",
                   source="Armacost RibbonFlex Pro 24V COB family in 2700K, silicone-coated "
                          "for a damp room (confirm the damp SKU). Toe kick, cabinet underside "
-                         "and tub-deck nosing in RM-M-BATH2."),
+                         "and ceiling over the tub in RM-M-BATH2."),
 
     # --- E1: the shower niche's lit shelf ---------------------------------------------
     # ZERO INSTANCES since 2026-10-12: both niches were dropped (notes/superseded/

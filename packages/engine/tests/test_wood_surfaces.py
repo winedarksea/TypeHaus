@@ -126,8 +126,8 @@ def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
 
     ``marble-look-panel`` is RM-A-STUBATH's alone since 2026-10-12: two 3'-0" x 7'-0" bands,
     42.0 SF net. RM-M-BATH2 took ``solid-surface-panel`` floor to ceiling, two 3'-0" x 8'-10"
-    bands, 53.0 SF net, plus 4.8 SF on the tub-deck knee wall below the north glass since
-    the wet-wall follow-up (57.8 net / 64 ordered). Both are priced in
+    bands, 53.0 SF net (the 4.8 SF knee-wall span went to the Corian stall face on
+    2026-10-22). Both are priced in
     ``[wood_surfaces]`` as an UNSPLIT UPGRADE DELTA and not at a full rate, because
     ``[fixtures]``'s ``FX-SHOWER-36`` row already buys "36x36 curbed pan plus its three-wall
     surround panels" with its labour — a full rate here would buy these same two walls
@@ -138,7 +138,7 @@ def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
     is not a board), and so is ``stock_bf_per_sqft`` — so no board-foot column, and the band
     draws at the 1/2" default, which is the panel's actual thickness.
     """
-    expected = {"marble-look-panel": (42.0, 47.0), "solid-surface-panel": (57.8, 64.0)}
+    expected = {"marble-look-panel": (42.0, 47.0), "solid-surface-panel": (53.0, 59.0)}
     for material, (net, ordered) in expected.items():
         row = next(r for r in bom["wood_surfaces"] if r["material"] == material)
         assert row["kind"] == "override"
@@ -180,9 +180,8 @@ def test_a_replacing_band_nets_only_the_finish_on_its_own_face(catlin_model):
     assert splash == pytest.approx(45.0, abs=0.05)
     surrounds = {p.wall_tag for p in catlin_model.panelings
                  if p.tag in ("WP-M-BATH2-SURR", "WP-A-STUBATH-SURR")}
-    # The tub-deck knee wall's room face is plywood, not a finish: nothing comes off it.
     assert {w for w, layer in replaced if layer.startswith("gwb") and w in surrounds} == (
-        surrounds - {"W-M-TUBDK-S"})
+        surrounds)
 
 
 def test_sauna_ceiling_is_priced_and_on_the_mill_order(catlin_model, bom):

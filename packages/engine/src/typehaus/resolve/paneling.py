@@ -19,6 +19,7 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     materials = {material.tag for material in plan.library.materials}
     rooms = {room.tag: room for room in model.rooms}
     lines = {line.tag: line for line in model.layout_lines}
+    deck_tops = _knee_wall_deck_tops(plan, model)
     for storey in plan.storeys:
         for el in plan.storey_elements(storey.tag):
             if el.element_kind != "WallPaneling":
@@ -100,6 +101,8 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 # assumes the wall top is.
                 if wall.plate_top_z_m is not None:
                     mean_top = min(mean_top, wall.plate_top_z_m)
+                # A tub knee wall's face runs up the deck's edge to its finished top.
+                mean_top = deck_tops.get(wall.tag, mean_top)
                 wall_height = mean_top - wall.base_ref_z_m
                 # A line-scoped band measures from the LINE's base, so the same authored
                 # offset means the same elevation on every storey it crosses; the record
@@ -156,6 +159,20 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
 
     findings.extend(resolve_paneling_trim(plan, model))
     return findings
+
+
+def _knee_wall_deck_tops(plan: PlanModel, model: ResolvedModel) -> dict[str, float]:
+    """Knee wall tag -> its tub deck's finished top (absolute z), from ``TubEnclosureSpec``."""
+    tops: dict[str, float] = {}
+    for storey in plan.storeys:
+        for fixture in plan.storey_elements(storey.tag):
+            spec = getattr(fixture, "tub_enclosure", None)
+            if spec is None:
+                continue
+            decks = [solid.z1_m for solid in model.solids if solid.tag == spec.deck_ref]
+            if decks:
+                tops.update(dict.fromkeys(spec.knee_wall_refs, max(decks)))
+    return tops
 
 
 def _net_cells(lo: float, hi: float, z0: float, z1: float, openings) -> list:

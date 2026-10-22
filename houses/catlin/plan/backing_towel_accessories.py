@@ -65,18 +65,18 @@ MAIN_TOWEL_BACKING = [
     ),
     # Three bathroom-face bays support four posts; the middle block serves both bars.
     WallBacking(
-        uid="TWMBLOCK02", tag="BK-M-BATH2-TUB-TOWEL-N", wall_ref="W-M-BA2E", face="right",
+        uid="QZP8HSX7B7", tag="BK-M-BATH2-TUB-TOWEL-N", wall_ref="W-M-BA2E", face="right",
         start=inch(8.75), length=inch(14.5), elevation=inch(52.75), height=inch(5.5),
         profile="2x6", material_ref="spf", purpose="FURN-M-BATH2-TUB-TOWEL-N north post",
     ),
     WallBacking(
-        uid="TWMBLOCK03", tag="BK-M-BATH2-TUB-TOWEL-MID", wall_ref="W-M-BA2E", face="right",
+        uid="EB35BZZ39C", tag="BK-M-BATH2-TUB-TOWEL-MID", wall_ref="W-M-BA2E", face="right",
         start=inch(24.75), length=inch(14.5), elevation=inch(52.75), height=inch(5.5),
         profile="2x6", material_ref="spf",
         purpose="FURN-M-BATH2-TUB-TOWEL-S north post; FURN-M-BATH2-TUB-TOWEL-N south post",
     ),
     WallBacking(
-        uid="TWMBLOCK04", tag="BK-M-BATH2-TUB-TOWEL-S", wall_ref="W-M-BA2E2", face="right",
+        uid="PP7AAAM7TJ", tag="BK-M-BATH2-TUB-TOWEL-S", wall_ref="W-M-BA2E2", face="right",
         start=inch(8.75), length=inch(14.5), elevation=inch(52.75), height=inch(5.5),
         profile="2x6", material_ref="spf", purpose="FURN-M-BATH2-TUB-TOWEL-S south post",
     ),

@@ -791,13 +791,14 @@ WALLS = [
     #   20"       top of the 2x3 framing  = base + `top` (19 1/4"); the cap's flat 2x4
     #             blocking bears here and on ledgers against W-M-BA2E / W-M-HS1
     #   21 1/2"   top of that blocking (1 1/2" laid flat)
-    #   22 1/4"   top of SL-M-TUBDK's 3/4" ply  = its `top_elevation`, its 2 1/4" stack
-    #             hanging below
-    #   22 3/4"   finished deck, once 1/2" of tile and thinset lands on the cap
+    #   22 1/4"   top of SL-M-TUBDK's 3/4" ply
+    #   22 3/4"   finished deck: the 12 mm Corian top (drawn 1/2") = the slab's
+    #             `top_elevation`, its 2 3/4" stack hanging below
     #   22 3/4"   THE BATH RIM: 21" of bath on a 1" mortar bed on the 3/4" subfloor.
-    # The last two lines are the same number on purpose. Kohler holds the finish 1/8" back
-    # from the bath edge for the silicone joint and sets the rim on max 1/8" spacers, so the
-    # rim is level with the tile and carries nothing — the bed does.
+    # The last two lines are the same number on purpose. The Corian U is cut to the rim
+    # outline plus 1/8" for the silicone joint and the rim sits on max 1/8" spacers, so the
+    # rim is level with the top and carries nothing — the bed does. Both knee walls' Corian
+    # faces run up to 22 3/4" (`resolve/paneling.py` clamps a knee wall's band to its deck).
     #
     # NONBEARING and 20 3/4" tall: `integrity.wall_shorter_than_plates` only warns below the
     # 4 1/2" sole+double-top stack, so this frames as an ordinary wall with real studs,
@@ -1881,19 +1882,19 @@ FLOOR_OPENINGS = [
 # between the knee walls is framing rather than a layer.
 #
 # `top_elevation` wins outright over the storey datum and `datum` (model/floors.py), which is
-# exactly what is wanted: 22 1/4" absolute puts the cap's underside on the knee walls' 21 1/2"
-# framing top with nothing left over. The full elevation ladder, and why 22 3/4" of finished
-# deck equals the bath rim, is on W-M-TUBDK-W above.
+# exactly what is wanted: 22 3/4" absolute is the finished Corian top and puts the cap's
+# underside on the knee walls' 21 1/2" framing top with nothing left over. The ply stays at
+# 22 1/4", so FX-M-BATH2-FILLER's 22 3/4" mount holds. The full elevation ladder is on
+# W-M-TUBDK-W above.
 #
-# No `floor_finish`. This cap is a substrate waiting for tile, not a finished top — setting
-# it would emit a ResolvedFinishZone and bill the deck as its own floor area inside a room
-# whose field finish already IS tile.
+# No `floor_finish`. The top is the assembly's `deck-top` FINISH layer and bills by area in
+# [envelope_layers]; a floor finish would bill the deck as its own floor area as well.
 SLABS = [
     Slab(uid="W92SX7DVJ0", tag="SL-M-TUBDK", kind="platform",
          outline=(pt(ft(4, 8.24), ft(16, 2.375)), pt(ft(7, 10.615), ft(16, 2.375)),
                   pt(ft(7, 10.615), ft(22, 0.615)), pt(ft(4, 8.24), ft(22, 0.615))),
-         thickness=inch(2.25), assembly="TUBDECK_INT_PLY_CAP",
-         top_elevation=inch(22.25), openings=("FO-M-TUBDK",)),
+         thickness=inch(2.75), assembly="TUBDECK_INT_PLY_CAP",
+         top_elevation=inch(22.75), openings=("FO-M-TUBDK",)),
 ]
 
 # 7'-2 3/4" well = two 3'-5 1/16" flights + 4 1/2" partition + 1/8" fit clearance, each flight clearing
@@ -2141,20 +2142,21 @@ PANELING = [
     # D-M-BATH2 now sits at 2'-0 5/8"..4'-6 5/8" on W-M-BDN1 — flush against the vanity,
     # clear of this span by 3 15/16" of wall.
     #
-    # W-M-TUBDK-S, the tub deck's knee wall, is the shower's north side below the
-    # full-height glass, so it gets a third span over the pan's 3' only (2026-10-12). It
-    # clamps to the wall's 19 1/4" top. The knee wall stands INSIDE the room's face, so the
-    # span names its face: "right" of C->E is the stall (south) side. Still `spans`-scoped:
-    # a room band would clad the rest of the deck apron too. The cap is a solid-surface
-    # sill sloped >= 1/4" into the stall, glass in clamps or a weeped channel, in silicone.
+    # The stall's north side, W-M-TUBDK-S under the glass, is NOT this panel since
+    # 2026-10-22: it is the Corian waterfall WP-M-BATH2-TUBDK-APRON below, bonded to the
+    # deck top, so there is no horizontal joint under the glass. Its E end meets this
+    # panel's W-M-BA2E2 span in a silicone colour-break corner, the base flange tucked
+    # behind it (notes/bath2_tub_deck_finish.md).
     #
     # Behind every span: glass-mat or cement backer, then a bonded liquid membrane
     # (RedGard / Hydro Ban class) lapped OVER the base's flange, then the panel. No niche,
-    # no penetration but the sealed valve and head (notes/bath2_shower.md §6).
+    # no penetration but the sealed valve and head (notes/bath2_shower.md §6). Swanstone
+    # lists drywall, greenboard, wood, plaster, cement, tile and Masonite, not foam board,
+    # so GoBoard was declined (2026-10-22): trial-bond the tape and adhesive on the cured
+    # membrane, or prime it first per Swanstone's surface-prep page.
     #
     # Floor to ceiling since 2026-10-12: `inch(106)` is RM-M-BATH2's clear height
-    # (clear_height_m 2.6924). 2 x 3'-0" x 8'-10" = 53.0 SF of solid-surface panel, plus
-    # 3'-0" x 1'-7 1/4" = 4.8 SF on the knee wall: 57.8 SF (notes/bath2_shower.md).
+    # (clear_height_m 2.6924). 2 x 3'-0" x 8'-10" = 53.0 SF of Swanstone Carrara (221).
     #
     # Known limitation: `replaces_wall_finish` only nets out in `wood_surfaces`, so
     # `envelope_layers` still bills about 53 SF of latex paint behind the panel (~$80-155).
@@ -2165,19 +2167,36 @@ PANELING = [
                  spans=(PanelingSpan(wall_ref="W-M-BA2E2", start=ft(1, 9.625),
                                      length=ft(3)),
                         PanelingSpan(wall_ref="W-M-BDN1", start=ft(4, 10.615),
-                                     length=ft(3)),
+                                     length=ft(3)))),
+    # The tub deck's two Corian waterfall faces, mitred and bonded to the deck top in one
+    # shop piece (notes/bath2_tub_deck_finish.md): the W apron on W-M-TUBDK-W's right
+    # (room) face, and the stall face on W-M-TUBDK-S's right (south) face over the pan's
+    # 3'. `height=None` runs each to the deck's finished 22 3/4": `resolve/paneling.py`
+    # clamps a knee wall's band to its tub deck. FURN-M-BATH2-TUBDK-AP is a removable
+    # leaf cut from the apron, 1/8" reveal, on BK-M-TUBDK-AP.
+    WallPaneling(uid="EQGJVGPGEA", tag="WP-M-BATH2-TUBDK-APRON", room="RM-M-BATH2",
+                 material_ref="solid-surface-fabricated",
+                 spans=(PanelingSpan(wall_ref="W-M-TUBDK-W", start=inch(0),
+                                     length=inch(68), face="right"),
                         PanelingSpan(wall_ref="W-M-TUBDK-S", start=inch(0.625),
                                      length=ft(3), face="right"))),
-    # The tub's bathroom-facing west apron. W-M-TUBDK-W runs north to south, so its right
-    # face is west; the access panel lives on this same face. Carry the shower surround's
-    # 1/2" solid-surface family and colour down to the subfloor, over the existing plywood.
-    # Keep the access-panel leaf removable and finish its face to match, with a clear seam.
-    # The separate material tag lets prices.toml prefer a shower-panel offcut instead of
-    # applying the shower surround's kit-upgrade delta to this new scope.
-    WallPaneling(uid="TUBDKAPR01", tag="WP-M-BATH2-TUBDK-APRON", room="RM-M-BATH2",
-                 material_ref="solid-surface-panel-apron", height=inch(19.25),
-                 spans=(PanelingSpan(wall_ref="W-M-TUBDK-W", start=inch(0),
-                                     length=inch(68), face="right"),)),
+    # A 6" Corian splash where the deck meets HS1 (N) and BA2E (E), so neither joint is
+    # silicone to paint. `offset` is wall-local, up from the wall base at the storey datum:
+    # 22 3/4" is the deck top. Spans follow the deck: HS1 from x 56.24" to its end at 72",
+    # HS2 to BA2E's face, BA2E from HS1's face south to its end at y=216", BA2E2 on to the
+    # stall's north line (y 194 3/8"). The N leg is bonded or coved to the deck; the E leg
+    # sits on the rim lip in silicone like an alcove flange. Eased top and end edges.
+    WallPaneling(uid="TY8X80XSK5", tag="WP-M-BATH2-TUB-SPLASH", room="RM-M-BATH2",
+                 material_ref="solid-surface-fabricated", offset=inch(22.75),
+                 height=inch(6),
+                 spans=(PanelingSpan(wall_ref="W-M-HS1", start=inch(56.24),
+                                     length=inch(15.76)),
+                        PanelingSpan(wall_ref="W-M-HS2", start=inch(0),
+                                     length=inch(22.625)),
+                        PanelingSpan(wall_ref="W-M-BA2E", start=inch(3.385),
+                                     length=inch(48.615)),
+                        PanelingSpan(wall_ref="W-M-BA2E2", start=inch(0),
+                                     length=inch(21.625)))),
 ]
 
 

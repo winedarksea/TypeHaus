@@ -1082,9 +1082,9 @@
 "canvas_objects/EQ-M-BATH2-STALL-FAN/body_z0_m": 2.784475,
 "canvas_objects/EQ-M-BATH2-STALL-FAN/body_z1_m": 2.987675,
 "canvas_objects/EQ-M-BATH2-STALL-FAN/z_m": 2.784475,
-"canvas_objects/EQ-M-ERV-HOOD-OA/body_z0_m": 1.524,
-"canvas_objects/EQ-M-ERV-HOOD-OA/body_z1_m": 1.8288,
-"canvas_objects/EQ-M-ERV-HOOD-OA/z_m": 1.524,
+"canvas_objects/EQ-M-ERV-HOOD-OA/body_z0_m": 1.3716,
+"canvas_objects/EQ-M-ERV-HOOD-OA/body_z1_m": 1.6764,
+"canvas_objects/EQ-M-ERV-HOOD-OA/z_m": 1.3716,
 "canvas_objects/EQ-M-ERV-MAN-EXH/body_z0_m": 2.4634495,
 "canvas_objects/EQ-M-ERV-MAN-EXH/body_z1_m": 2.6666495,
 "canvas_objects/EQ-M-ERV-MAN-EXH/z_m": 2.4634495,
@@ -1112,9 +1112,9 @@
 "canvas_objects/EQ-M-HP3-STAIR/body_z0_m": 0.9382125,
 "canvas_objects/EQ-M-HP3-STAIR/body_z1_m": 1.2850813,
 "canvas_objects/EQ-M-HP3-STAIR/z_m": 0.9382125,
-"canvas_objects/EQ-S-ERV-HOOD-EA/body_z0_m": 5.1816,
-"canvas_objects/EQ-S-ERV-HOOD-EA/body_z1_m": 5.4864,
-"canvas_objects/EQ-S-ERV-HOOD-EA/z_m": 5.1816,
+"canvas_objects/EQ-S-ERV-HOOD-EA/body_z0_m": 5.0292,
+"canvas_objects/EQ-S-ERV-HOOD-EA/body_z1_m": 5.334,
+"canvas_objects/EQ-S-ERV-HOOD-EA/z_m": 5.0292,
 "canvas_objects/EQ-S-ERV-MIX/body_z0_m": 5.26415,
 "canvas_objects/EQ-S-ERV-MIX/body_z1_m": 5.72135,
 "canvas_objects/EQ-S-ERV-MIX/z_m": 5.26415,
@@ -3038,10 +3038,10 @@
 "0abc3efc5ec6"
 ],
 "geometry/0NF97ZR9Z3/body": [
-1.524,
-1.8288,
+1.3716,
+1.6764,
 2,
-"4711c9239897"
+"5f42cb78109b"
 ],
 "geometry/0NMTQ0A5A4/body": [
 -2.9321125,
@@ -4022,10 +4022,10 @@
 "27e8eda8b034"
 ],
 "geometry/38M0D2FNXH/body": [
-5.1816,
-5.4864,
+5.0292,
+5.334,
 2,
-"2012124e1a1e"
+"0228df0c8014"
 ],
 "geometry/3BF9ZDQPT1/layer:eps-ci": [
 -2.5955625,
@@ -27806,10 +27806,10 @@
 "fa50686acf57"
 ],
 "geometry/CMW110AAAA::framing/member:backing-0-000": [
-0.62865,
-0.76835,
+0.127,
+0.2667,
 8,
-"d84077115cdd"
+"c5f0167aa39f"
 ],
 "geometry/CMW110AAAA::framing/member:backing-1-000": [
 0.62865,
@@ -27818,18 +27818,30 @@
 "d84077115cdd"
 ],
 "geometry/CMW110AAAA::framing/member:backing-2-000": [
+0.62865,
+0.76835,
+8,
+"d84077115cdd"
+],
+"geometry/CMW110AAAA::framing/member:backing-3-000": [
+0.762,
+0.94615,
+8,
+"1f3275a33ded"
+],
+"geometry/CMW110AAAA::framing/member:backing-4-000": [
 1.1176,
 1.35255,
 8,
 "284e8eb6b8db"
 ],
-"geometry/CMW110AAAA::framing/member:backing-3-000": [
+"geometry/CMW110AAAA::framing/member:backing-5-000": [
 1.59385,
 1.73355,
 8,
 "51fdd0594823"
 ],
-"geometry/CMW110AAAA::framing/member:backing-4-000": [
+"geometry/CMW110AAAA::framing/member:backing-6-000": [
 1.8288,
 2.01295,
 8,
@@ -58299,9 +58311,9 @@
 ],
 "geometry/W92SX7DVJ0/body": [
 0.508,
-0.56515,
+0.57785,
 2,
-"93132b454c51"
+"cf64c2462a14"
 ],
 "geometry/WB6YFR9QB2-00/body": [
 -0.4572,
@@ -58904,10 +58916,10 @@
 "c68cbeb43f99"
 ],
 "geometry/YMJS812EK0/body": [
-0.9594026,
+0.9774112,
 0.9894,
 2,
-"405be237c57e"
+"30179c5a25dc"
 ],
 "geometry/YRS03M2AJW/body": [
 3.9058026,
@@ -59829,7 +59841,7 @@
 ],
 "light_runs/LR-M-BATH2-CAB/z_m": 1.2192,
 "light_runs/LR-M-BATH2-TOEKICK/z_m": 0.0762,
-"light_runs/LR-M-BATH2-TUBDECK/z_m": 0.4953,
+"light_runs/LR-M-BATH2-TUB-CLG/z_m": 2.7432,
 "light_runs/LR-M-CLOSET-PAX-HANG/z_m": 2.3114,
 "light_runs/LR-M-CLOSET-PAX-SHOW/z_m": 2.3114,
 "light_runs/LR-M-KIT-E-WN1/z_m": 1.8542,
@@ -73934,10 +73946,10 @@
 "f16deafda480"
 ],
 "member/CMW110AAAA/backing-0-000": [
-0.62865,
-0.76835,
+0.127,
+0.2667,
 2,
-"0532db772dc7"
+"516fac3b80cc"
 ],
 "member/CMW110AAAA/backing-1-000": [
 0.62865,
@@ -73946,18 +73958,30 @@
 "0532db772dc7"
 ],
 "member/CMW110AAAA/backing-2-000": [
+0.62865,
+0.76835,
+2,
+"0532db772dc7"
+],
+"member/CMW110AAAA/backing-3-000": [
+0.762,
+0.94615,
+2,
+"07ac9df49244"
+],
+"member/CMW110AAAA/backing-4-000": [
 1.1176,
 1.35255,
 2,
 "75095932ccfb"
 ],
-"member/CMW110AAAA/backing-3-000": [
+"member/CMW110AAAA/backing-5-000": [
 1.59385,
 1.73355,
 2,
 "db6fb1a4197f"
 ],
-"member/CMW110AAAA/backing-4-000": [
+"member/CMW110AAAA/backing-6-000": [
 1.8288,
 2.01295,
 2,
@@ -91516,13 +91540,17 @@
 "panelings/WP-B-SAUNA-SPLASH/z0_m": -2.7797125,
 "panelings/WP-B-SAUNA-SPLASH/z1_m": -0.4937125,
 "panelings/WP-M-BATH2-SURR/band_z0_m": 0.0,
-"panelings/WP-M-BATH2-SURR/band_z1_m": 0.48895,
-"panelings/WP-M-BATH2-SURR/z0_m": 0.01905,
-"panelings/WP-M-BATH2-SURR/z1_m": 0.508,
+"panelings/WP-M-BATH2-SURR/band_z1_m": 2.6924,
+"panelings/WP-M-BATH2-SURR/z0_m": 0.0,
+"panelings/WP-M-BATH2-SURR/z1_m": 2.6924,
+"panelings/WP-M-BATH2-TUB-SPLASH/band_z0_m": 0.57785,
+"panelings/WP-M-BATH2-TUB-SPLASH/band_z1_m": 0.73025,
+"panelings/WP-M-BATH2-TUB-SPLASH/z0_m": 0.57785,
+"panelings/WP-M-BATH2-TUB-SPLASH/z1_m": 0.73025,
 "panelings/WP-M-BATH2-TUBDK-APRON/band_z0_m": 0.0,
-"panelings/WP-M-BATH2-TUBDK-APRON/band_z1_m": 0.48895,
+"panelings/WP-M-BATH2-TUBDK-APRON/band_z1_m": 0.5588,
 "panelings/WP-M-BATH2-TUBDK-APRON/z0_m": 0.01905,
-"panelings/WP-M-BATH2-TUBDK-APRON/z1_m": 0.508,
+"panelings/WP-M-BATH2-TUBDK-APRON/z1_m": 0.57785,
 "panelings/WP-M-KIT-BACKSPLASH/band_z0_m": 0.9382125,
 "panelings/WP-M-KIT-BACKSPLASH/band_z1_m": 1.9382125,
 "panelings/WP-M-KIT-BACKSPLASH/z0_m": 0.9382125,
@@ -97144,7 +97172,7 @@
 "solids/SL-M-HP3PAD:capillary-break/z0_m": -1.016,
 "solids/SL-M-HP3PAD:capillary-break/z1_m": -0.9144,
 "solids/SL-M-TUBDK/z0_m": 0.508,
-"solids/SL-M-TUBDK/z1_m": 0.56515,
+"solids/SL-M-TUBDK/z1_m": 0.57785,
 "solids/SL-SG-FIELD/z0_m": -3.2369125,
 "solids/SL-SG-FIELD/z1_m": -2.7797125,
 "solids/SL-SG-FLOOR/z0_m": -2.8686125,

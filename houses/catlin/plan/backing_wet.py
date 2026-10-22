@@ -103,6 +103,18 @@ MAIN_WET_BACKING = [
                 elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
                 purpose="ED-M-BATH2-MIRROR-HALO top cleats; ED-M-BATH2-MIRROR"),
+    # The floating SEKTION vanity (2026-10-22): its 48" run, y 13'-2 3/8"..17'-2 3/8", stands
+    # 61 5/8"..109 5/8" along W-M-W3. Elevations are off the storey datum (1 1/2" floor
+    # build-up): frame tops at 37", so the suspension rail lands on the 30"..37 1/4" course;
+    # the 2 1/4" ledger chase's foot screws to the low course behind the frames' 7" bottoms.
+    WallBacking(uid="92JXG2K65B", tag="BK-M-W3-VANITY-RAIL", wall_ref="W-M-W3",
+                start=inch(61.625), length=inch(48),
+                elevation=inch(30), height=inch(7.25), profile="2x8", material_ref="spf",
+                purpose="FX-M-BATH2-SINK SEKTION suspension rail and ledger chase head"),
+    WallBacking(uid="HXWGPTAPRF", tag="BK-M-W3-VANITY-FOOT", wall_ref="W-M-W3",
+                start=inch(61.625), length=inch(48),
+                elevation=inch(5), height=inch(5.5), profile="2x6", material_ref="spf",
+                purpose="FX-M-BATH2-SINK ledger chase foot"),
 ]
 
 

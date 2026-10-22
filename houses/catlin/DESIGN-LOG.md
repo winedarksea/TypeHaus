@@ -14,6 +14,32 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Bath2 tub deck: one bonded Corian piece; SEKTION vanity (2026-10-22)
+
+The tiled deck left a thin U around the rim: 2½" W, 2" N, 8½" S, ⅛" E. Tiled, that U was
+grout slivers and tile edges, and the tile was never billed. The knee walls' faces stopped
+at the 20" framing top, leaving the 20"→22¾" band under the deck edge bare. The apron was
+Swanstone and the stall face had a horizontal joint under the glass. The owner reviewed
+quartz, Corian-class acrylic, cultured marble, Swanstone deck stock and tile. Corian Glacier
+White won because only bonded acrylic makes the 2" legs and seamless faces. It is one shop
+piece: the U, the W apron and the S stall face. A 6" splash on HS1 and BA2E keeps both
+deck joints off painted gypsum. Shower walls stay Swanstone, now Carrara (221); a Corian
+stall was declined at about $1.5-3k more.
+
+`resolve/paneling.py` now clamps a band on a `TubEnclosureSpec` knee wall to the deck's
+finished top, so both faces reach 22¾". The deck top is a ½" FINISH layer on the cap, and
+the slab's top moved to 22¾" with the ply held at 22¼". The 1" lap under the rim is a
+known overcount. The deck-nosing LED was retired for a ceiling run over the tub: no LEDs
+near the floor.
+
+The vanity joined the palette. It is a floating SEKTION (15"-deep wall frames on the rail,
+AXSTAD matte white like the bed desk) under a Corian top with a bonded 810P bowl. The
+Calacatta quartz and the Caxton left Bath2, and the window stool followed to Corian. Every
+IKEA part was confirmed on IKEA US, including a 15"-deep MAXIMERA medium drawer, so the
+GODMORGON fallback was not needed. The 48" vanity had been unpriced since 2026-09-09: its
+row still said 51". GoBoard was suggested as the shower backer and declined, because
+Swanstone's guide lists no foam board. Record: `notes/bath2_tub_deck_finish.md`.
+
 ## Bath2 centered Align filler and twin towel bars (2026-10-22)
 
 The filler stood 4.615 in. west of the tub center. It now shares x=76.615 in., retaining

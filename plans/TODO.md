@@ -87,6 +87,28 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 and a dated note. `haus check houses/catlin --no-suppress` is the score with every
 suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted at zero.)
 
+- **Correct the HPWH envelope and connections.** `EQ-T-WATER-HEATER` / `EQ-B-WH` model
+  24×24×68 in. Rheem's dimension sheet distinguishes the 74 3/16-in. tank from the full
+  91-in.-high, 29½×24⅝-in. unit. Use the ordered-unit drawing to set the complete envelope,
+  top-port datums, connected runs and service clearances. [Rheem dimension sheet](https://files.myrheem.com/webpartners/ProductDocuments/915C4E4F-0D9A-4591-AAED-454B9A202B66.pdf)
+- **Set the sauna's occupied ventilation basis.** The selected Harvia HPCS11U1H manual calls
+  for adjustable low inlet / opposite upper outlet vents and 5 air changes per hour; the
+  modeled 20-cfm exhaust is about 2.7 ACH in the ~450-ft³ room, with the vents reversed.
+  Confirm the accepted arrangement, makeup air and ERV balance before changing terminals.
+  [Harvia manual](https://www.kbauthority.com/files/PDF/Harvia/HPCS11U1H%20Manual%20Sheet.pdf)
+- **Determine basement backwater protection before under-slab rough-in.** Add the next
+  upstream manhole-cover elevation on the survey datum, compare it with basement fixture
+  floors under UPC 710.1, and protect only affected low branches if required. The existing
+  sewer-permit task records invert, not cover elevation. [UPC 710.1 guidance](https://forms.iapmo.org/email_marketing/codespotlight/2019/Oct17.htm)
+- **Route `EQ-B-WH` condensate.** Rheem places its condensate outlet 59 in. above the floor;
+  no run serves it, and the existing collector is higher. Draw a falling route to an
+  approved receptor or a pump discharge; include it in the existing condensate/pump allowance.
+  [Rheem specification](https://files.myrheem.com/webpartners/ProductDocuments/D4653184-5800-421C-92EE-9517A74AE244.pdf)
+- **Resolve water-heater thermal expansion.** Confirm the service, meter, PRV and
+  `PA-G-HYD-BFP` topology. If they close the system at the heater, add and price a listed,
+  properly sized expansion-control device on the heater side; otherwise record the open-system
+  basis. [UPC 608.3 guidance](https://forms.iapmo.org/email_marketing/codespotlight/2018/aug16.htm)
+
 - **Filter and service access is only partly resolved; no reachability rule grades it.**
   System 1's 28x12x1 MERV 13 return filter is typed and reachable from the hall floor;
   the Broan ERV's exposed service door, published clearances, and high outdoor screen's ladder
@@ -132,6 +154,50 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
     service entrance, and no run feeds it. The trunk was re-routed by hand under the
     `FO-M-ERV-OA` trimmer packs (TJ-9015 refuses the bore: point load, below the middle third).
   - `cli/cmd_route.py` is 571 lines, over the 500-line rule.
+
+### Performance / energy follow-ups
+
+- **Compare the ERV/air-handler interlock's annual fan energy with dedicated ERV supplies.**
+  `EQ-B-ERV.blower_interlock_ref` calls `EQ-S-HP1-AH` so ventilation reaches remote rooms
+  while the heat pump is off (`houses/catlin/plan/mep_erv_l3.py`). Measure incremental
+  ventilation-only watts and annual runtime, then price a balanced dedicated supply
+  alternative. Preserve room delivery and backdraft protection. `mep.erv_blower_interlock`
+  grades the present arrangement but does not compare operating energy or lifecycle cost.
+
+- **Pressure-check smaller hot-water branches before rough-in.** `PR-B-HW-BATH1` is a
+  ¾-inch copper branch serving one basin (8.8 ft); `PR-B-HW-KITCH` is ¾-inch copper for the
+  kitchen sink and dishwasher (49.5 ft). Price ½-inch alternatives and check fixture demand,
+  pressure, developed length, simultaneous use and the selected pipe's internal diameter.
+  Approximate copper volume falls from 0.22 to 0.11 gal at the basin and 1.24 to 0.60 gal in
+  the kitchen. Shorter waits and less cooled water may save energy; quantify with actual use
+  and HPWH performance. Do not resize shared bath/tub trunks without a separate demand
+  calculation. [EPA hot-water distribution guidance](https://www.epa.gov/watersense/watersense-labeled-homes-hot-water).
+
+- **Make the PV layout comply with roof access, then study a second row.** `params/solar.py`
+  calls 12 modules / 5.28 kW a maximum, but generates one row on each slope. Verify the
+  current 1 ft ridge clearance, access pathways and array coverage against MN R324 and final
+  roof geometry; pathways run eave-to-ridge across the slope, not along the ridge. DLI
+  guidance calls for 36-inch pathways and, under the ordinary rule, an 18-inch ridge setback
+  below 33% coverage or 36 inches above it. Study five modules along the ridge and a second
+  row down each slope (20 modules / 8.8 kW as a geometric candidate), checking access, shade,
+  attachments, structural loads and exact 12kPV string/current limits before treating this
+  as feasible. Request incremental installed pricing and site-specific production estimates.
+  [MN DLI solar guidance](https://www.dli.mn.gov/sites/default/files/pdf/fs_res_solar.pdf).
+
+- **Include inverter overhead in backup runtime.** `takeoff/backup_calc.py` applies usable
+  battery capacity directly to circuit-average AC watts; it does not model inverter idle
+  draw or conversion loss. Measure the EG4's grid-connected and islanded overhead and
+  low-load efficiency, then update runtime without double-counting losses. This matters
+  against the always-on tier's small average load and should inform commissioning and any
+  later battery decision; peak-capacity checking remains separate. See
+  `houses/catlin/notes/backup_power.md` for current assumptions and verdict.
+
+- **Resolve the dining radiant floor's operating schedule.** The 58 ft², 700 W
+  `FH-M-DINING` zone supplements heat-pump space heating. `houses/catlin/notes/room_heat_loss_baths.md`
+  already flags warm-up lag and the undecided setback schedule. Test a meal-time/preheat
+  schedule and floor limit with a simple override; compare metered energy and comfort over
+  representative weeks. Keep this tied to the existing note rather than duplicating its
+  heat-output analysis.
 
 ### Structural/framing residuals
 

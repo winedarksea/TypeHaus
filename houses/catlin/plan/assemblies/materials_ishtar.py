@@ -212,21 +212,22 @@ MATERIALS_ISHTAR = [
              name="Marble-look cast shower wall panel (1/2\")",
              r_per_inch=0.0, density=1600.0, hatch="stone", color="#efece6",
              source="RM-M-BATH2 shower surround, 2026-09-02; \"marble-look\" spans cultured marble, cast solid surface and acrylic and the product family is an OPEN OWNER SELECTION — see prices.toml [wood_surfaces] for the price spread that collapses when it is made"),
-    # RM-M-BATH2's shower walls since 2026-10-12, WP-M-BATH2-SURR, floor to ceiling. The
-    # line is Swanstone (2026-10-22), to match the SS-3636 base; the colour is open. Same reasoning as marble-look-panel above: no species, 1/2" default, no vapour field.
+    # RM-M-BATH2's shower walls since 2026-10-12, WP-M-BATH2-SURR, floor to ceiling. Swanstone
+    # Carrara (221) to match the SS-3636 base (owner, 2026-10-22). Same reasoning as
+    # marble-look-panel above: no species, 1/2" default, no vapour field.
     Material(tag="solid-surface-panel",
-             name="Solid-surface shower wall panel (1/2\")",
-             r_per_inch=0.0, density=1700.0, hatch="stone", color="#f2f0ec",
-             product_ref="PROD-SOLID-SURFACE-SHOWER",
-             source="RM-M-BATH2 shower surround, owner selection 2026-10-12: Swanstone solid surface matching the SS-3636 base, colour open (plan/products_showering.py)"),
-    # Same panel family and appearance as the shower, but a separate tag because this apron
-    # is incremental scope rather than an upgrade over the shower kit. The price row prefers
-    # a usable offcut from the shower-panel order and carries a new-piece ceiling.
-    Material(tag="solid-surface-panel-apron",
-             name="Solid-surface tub-deck apron panel (1/2\")",
-             r_per_inch=0.0, density=1700.0, hatch="stone", color="#f2f0ec",
-             product_ref="PROD-SOLID-SURFACE-SHOWER",
-             source="RM-M-BATH2 tub-deck west apron, same Swanstone panel and colour as WP-M-BATH2-SURR; use shower-order offcuts if the fabricator confirms the pieces and edge detail work"),
+             name="Solid-surface shower wall panel (1/2\"), Swanstone Carrara",
+             r_per_inch=0.0, density=1700.0, hatch="stone", color="#ecebe8",
+             finish="veined-marble", product_ref="PROD-SOLID-SURFACE-SHOWER",
+             source="RM-M-BATH2 shower surround, owner selection 2026-10-12, colour 2026-10-22: Swanstone Carrara (221) matching the SS-3636 base (plan/products_showering.py); confirm against a physical chip"),
+    # RM-M-BATH2's tub deck, its waterfall faces, splash, vanity top and window stool: one
+    # shop-built, bonded 12 mm acrylic piece per element, one fabricator and one lot
+    # (notes/bath2_tub_deck_finish.md). Same no-species / no-vapour reading as the panel above.
+    Material(tag="solid-surface-fabricated",
+             name="Fabricated acrylic solid surface (12 mm), Corian Glacier White",
+             r_per_inch=0.0, density=1700.0, hatch="stone", color="#f4f5f4",
+             product_ref="PROD-CORIAN-GLACIER-WHITE",
+             source="RM-M-BATH2 tub deck, faces, splash, vanity top and stool, owner selection 2026-10-22: Corian Glacier White, Hi-Macs/Staron equivalent acceptable; fabricated and bonded with colour-matched joint adhesive"),
     # The above-grade foundation band on BASEMENT_8/_12: a trowel-applied acrylic
     # coating over the exposed XPS, on the Styro Industries Tuff II product data
     # (styro.net / totalwall.com "Applying TUFF II Over Rigid Foam & ICF"). It is the option

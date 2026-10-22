@@ -2254,7 +2254,7 @@
 # the bath's template — a fussy half day for one carpenter, not a deck lay.
 # The 3/4" plywood over it is NOT here. It bills by the square foot as struct-1-plywood in
 # [envelope_layers] (6.3 SF net of the tub cutout); pricing it again here would double-bill
-# the sheet. Nor is the tile: that is [floor_finishes].
+# the sheet. Nor is the Corian top: that is `solid-surface-fabricated` in [envelope_layers].
 "slab_platform:TUBDECK_INT_PLY_CAP" = { material = { low = 625, high = 1500 }, labour = { low = 2000, high = 5000 } }  # 0.04 cy = ~26 bf; $25-60 mat + $80-200 lab
 
 [floor_heat]
@@ -3237,19 +3237,15 @@
 # constraint above (FX-LAV-24 > FX-LAV-COMPACT) still has to hold if either is edited.
 "FX-LAV-24" = { material = { low = 250, high = 950 }, labour = { low = 200, high = 460 } }  # 0 ea
 "FX-LAV-COMPACT" = { material = { low = 110, high = 420 }, labour = { low = 150, high = 330 } }  # 1 ea — the studio bar bowl only, since RM-A-STUBATH took a vanity 2026-09-09
-# RM-M-BATH2's 54" vanity (2026-08-29). Read, like FX-LAV-24 above, as the whole assembly:
-# cabinet, counter, basin and faucet. That is the only reason the numbers are several times
-# a lavatory's — this row carries a 54" carcass with six drawers on soft-close undermount
-# slides, which is the bulk of the cost and has no CASE-* row anywhere covering it.
-# LOW is a stock 60"-class RTA single-sink vanity cut down, with a cultured-marble top.
-# HIGH is a semi-custom 54" box in the house's own millwork, a stone top, and a Kohler
-# Verticyl-class undermount basin. Sources: theRTAstore / Home Depot / Signature Hardware
-# 2026 listings for 54-60" single-sink vanities ($900-2,600 for the cabinet with a top),
-# Willow 72" single-sink line at $1,875-2,250, plus the homeguide 2026 sink-install labour
-# band this section already uses. ** The oak shelf inside the sink base is NOT here ** — it
-# is SB-M-BATH2-VAN and bills as owner-milled hardwood, so counting it again would be a
-# double-bill of the one part of this cabinet the owner is making.
-"FX-VANITY-51-SINGLE" = { material = { low = 950, high = 2900 }, labour = { low = 300, high = 720 } }  # 1 ea
+# RM-M-BATH2's floating SEKTION vanity, FX-VANITY-48-SEKTION (2026-10-22,
+# plan/bath2_vanity_types.py). IKEA US list read 2026-10-22: 702.654.69 30x15x30 frame $78,
+# 802.654.64 18x15x30 frame $58, 602.615.27 rail $20, two AXSTAD 15x30 doors $86, three
+# AXSTAD 18x10 fronts $50, three MAXIMERA medium 18x15 $34, plus hinges, shelf and pulls
+# ~$60: ~$660. Then the Corian 810P bowl ($250-450 bonded, fabricator's) and the chrome
+# Arvo (~$150-250). The Corian TOP is CT-M-BATH2-VANITY in [countertops], not here. Labour
+# is the ledger chase, hanging, the trap and the faucet. Replaces FX-VANITY-51-SINGLE, a
+# row no instance matched since the cabinet became 48" on 2026-09-09.
+"FX-VANITY-48-SEKTION" = { material = { low = 1060, high = 1360 }, labour = { low = 300, high = 720 } }  # 1 ea
 # ** THE OTHER FIVE BATHROOMS' VANITIES (2026-08-30). ** Same basis as the 54" row above and
 # as FX-LAV-24 before it: each row is the WHOLE assembly -- cabinet, counter, basin and
 # faucet -- because no CASE-* row covers a bathroom anywhere in this file, so a bowl-only
@@ -3435,7 +3431,8 @@
 # [plumbing_specialties] or it is billed twice.
 # NOT in this row, and each is billed elsewhere: the deck box's framing and insulation
 # ([framing], [envelope_layers], via TUBDECK_INT_2X3), the plywood cap
-# ("slab_platform:TUBDECK_INT_PLY_CAP" and [envelope_layers]), the deck tile ([floor_finishes]),
+# ("slab_platform:TUBDECK_INT_PLY_CAP" and [envelope_layers]), the Corian deck top, faces and
+# splash (`solid-surface-fabricated` in [envelope_layers] and [wood_surfaces]),
 # the dedicated circuit and its outlet, and the two access panels.
 "FX-KOHLER-UNDERSCORE-6036" = { material = { low = 2200, high = 3100 }, labour = { low = 430, high = 1050 } }  # 1 ea
 # FX-M-BATH2-FILLER: Moen T393 chrome + 4794 rough, read 2026-10-22.
@@ -4511,6 +4508,11 @@
 # rate assumes no staging).
 "roof-adhered-butyl-ht" = { material = { low = 1.3, high = 2.3 }, labour = { low = 1.0, high = 1.8 } }  # 1547.9 SF — the sloped deck plane, out to the fascia; it laps the girt oversail
 "struct-1-plywood" = { material = { low = 0.9, high = 1.7 }, labour = { low = 1, high = 1.9 } }  # 5554.7 SF — +1547.9 on 2026-08-31 as the roof deck came here from the ZIP row below
+# RM-M-BATH2's Corian Glacier White deck top: SL-M-TUBDK's `deck-top` FINISH layer (2026-10-22),
+# the 12 mm U over the cap ply. Its waterfall faces and splash are the same bonded piece and
+# bill in [wood_surfaces] under this tag; the vanity top and stool in [countertops]. Each
+# row prices only its own area. Fabricated and installed, roughly $40-80/SF. ESTIMATE.
+"solid-surface-fabricated" = { material = { low = 25, high = 50 }, labour = { low = 15, high = 30 } }  # 5.2 SF net, including the 1" lap under the rim
 # RETIRED 2026-09-02 — commented out, not deleted, on the `glazed-green-brick` convention
 # stated at the head of this file: a priced row that vanishes silently makes the house
 # cheaper by an amount nobody can attribute. This one is worth about -$1,200 to -$2,460.
@@ -5212,18 +5214,19 @@
 "marble-look-panel" = { low = 4, high = 11 }  # 47 SF ordered: WP-A-STUBATH-SURR only since 2026-10-12
 # ** OPEN: FX-SHOWER-36-NEO-COMBO (STUBATH) buys the pan and glass, not the walls, so its
 # 42 SF bills as a delta over a kit it never had. **
-# 2026-10-12, WP-M-BATH2-SURR, floor to ceiling (53 SF net / 59 ordered; 57.8 / 64 with the
-# W-M-TUBDK-S span added the same day). Same UPGRADE-DELTA
+# 2026-10-12, WP-M-BATH2-SURR, floor to ceiling, Swanstone Carrara (221): 53.0 SF net since
+# 2026-10-22, when the W-M-TUBDK-S span went to the Corian stall face. Same UPGRADE-DELTA
 # basis as marble-look-panel above: FX-SHOWER-36-THERMO-COMBO's material half carries the kit
 # surround and its labour. Compression-moulded solid surface runs ~$12-25/SF; less the kit's
 # own value that leaves $8-20. The ~11 SF above the kit's 7'-0" head has no kit under it,
 # so the high end carries it. ESTIMATE; the owner's brand pick collapses it.
-"solid-surface-panel" = { low = 8, high = 20 }  # 64 SF ordered: WP-M-BATH2-SURR, 57.8 SF net with the knee-wall span (2026-10-12)
-# The 68" x 19 1/4" west apron is incremental area, not covered by the shower-kit delta.
-# Prefer a matching offcut from the shower panels ($0 material); the high end is the existing
-# compression-moulded solid-surface material basis if a new piece is needed. ESTIMATE, not a
-# fabricator quote. The opening leaf stays removable and gets a matching cut panel.
-"solid-surface-panel-apron" = { low = 0, high = 25 }  # 10 SF ordered: WP-M-BATH2-TUBDK-APRON (2026-10-21)
+"solid-surface-panel" = { low = 8, high = 20 }  # WP-M-BATH2-SURR, 53.0 SF net (2026-10-22)
+# RM-M-BATH2's Corian Glacier White (2026-10-22, notes/bath2_tub_deck_finish.md): the two
+# waterfall faces (WP-M-BATH2-TUBDK-APRON) and the 6" splash (WP-M-BATH2-TUB-SPLASH). One
+# bonded shop piece with the deck top, which bills in [envelope_layers] under the same tag;
+# the vanity top and stool bill in [countertops]. Each row prices only its own area.
+# Fabricated and installed, roughly $40-80/SF. ESTIMATE, not a fabricator quote.
+"solid-surface-fabricated" = { material = { low = 25, high = 50 }, labour = { low = 15, high = 30 } }  # 20.4 SF net / 23 ordered: faces 15.9 + splash 4.5
 
 [shelving]
 # $/SF of ordered factory shelf stock (net + 10%), keyed by material tag.
@@ -5253,7 +5256,7 @@
 #   CT-M-KIT-E             8.85 SF  the peninsula-corner carousel's L
 #   CT-M-KIT-PENINSULA    14.67 SF  the SEKTION peninsula's three bases + end panel, 84 1/2"
 #   (the three kitchen tops were 47.67 SF before the 2026-10-02 SEKTION corners; 48.41 now)
-#   CT-M-BATH2-VANITY      6.33 SF  48 x 19
+#   CT-M-BATH2-VANITY      6.33 SF  48 x 19 — Corian since 2026-10-22, billed below
 #   CT-S-BATH1-VANITY      5.50 SF  36 x 22 (resized 2026-10-21)
 #   STOOL-WIN-S-PLANT1..4  9.26 SF  the plant room's four 3 cm window stools (2026-09-28),
 #   STOOL-WIN-M-KITCH      2.04 SF  the kitchen sink window's 3 cm quartz stool,
@@ -5279,7 +5282,12 @@
 # kitchen corner stools add another 2.25 SF since 2026-10-18. See
 # plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the showroom — silica
 # exposure control is the thing to buy here.
-"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 82.88 SF
+"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 74.83 SF since CT-M-BATH2-VANITY and STOOL-WIN-M-BATH2 (8.29 SF) left for Corian, 2026-10-22
+# RM-M-BATH2's Corian Glacier White vanity top (12 mm, built-up eased front, 810P bowl
+# bonded in; the bowl is the vanity row's) and its window stool, same lot as the tub deck.
+# The deck top bills in [envelope_layers] and its faces and splash in [wood_surfaces] under
+# this tag; each row prices only its own area. Roughly $40-80/SF installed. ESTIMATE.
+"solid-surface-fabricated" = { material = { low = 25, high = 50 }, labour = { low = 15, high = 30 } }  # 8.29 SF: vanity top 6.33 + stool 1.96
 # The living room's two ash slabs (2026-10-16, live-edge white oak before): 1 1/4" off 6/4
 # owner ash (2" off 12/4 until the same day), each a two-board glue-up, cut-listed by
 # `haus millwork`; the labour is the glue-up, scribing the back edge, slotted brackets and a

@@ -103,9 +103,10 @@ SOLID_SURFACE_SHOWER = Product(
     source="Owner selection 2026-10-22 (family 2026-10-12). Swan product page, read "
            "2026-10-22: 36 x 36 x 5 1/2 in., 4 1/2 in. threshold, ~32 x 33 1/2 in. interior, "
            "CENTRE molded-in Fit-Flo drain, 3 in. drain hole, 36 in. max door. Base and "
-           "panels from one Swanstone colour. Confirm before ordering: the colour, the "
-           "flange and threshold sides against the W threshold, and a panel height that "
-           "reaches the 106 in. ceiling above the base (or a top cap).",
+           "panels in Carrara (221), owner 2026-10-22; confirm against a physical chip under "
+           "5000 K and 2700 K. Confirm before ordering: the flange and threshold sides "
+           "against the W threshold, and a panel height that reaches the 106 in. ceiling "
+           "above the base (or a top cap).",
 )
 
 # The stall-drying fan (notes/bath2_shower.md §7). A CLASS record: the WhisperLine

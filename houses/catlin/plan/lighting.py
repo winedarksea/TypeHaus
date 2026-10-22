@@ -977,7 +977,7 @@ MAIN_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-W3", face="left", distance_from_start=inch(94.625),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # The evening glow: three E3 runs, 12.9 ft at 3 W/ft = 39 W on a 60 W supply (154%).
+    # The evening glow: three E3 runs, 13.0 ft at 3 W/ft = 39 W on a 60 W supply (154%).
     # Toe kick under the vanity's front, 3" back from its face.
     LightRun(uid="X6JKNWY4BF", tag="LR-M-BATH2-TOEKICK", type_ref="ED-T-LT-STRIP24-2700",
              path=(pt(inch(21.5), inch(159.5)), pt(inch(21.5), inch(205.5))),
@@ -990,13 +990,16 @@ MAIN_LIGHTING = [
              room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
              controlled_by=("ED-M-BATH2-SW-EVE",),
              mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
-    # Under the cap's nosing on W-M-TUBDK-W, the deck's one exposed face (the south face
-    # is inside the shower), above FURN-M-BATH2-TUBDK-AP.
-    LightRun(uid="WRCE8P7S44", tag="LR-M-BATH2-TUBDECK", type_ref="ED-T-LT-STRIP24-2700",
-             path=(pt(inch(55.99), inch(198)), pt(inch(55.99), inch(263))),
+    # Over the tub, in the ceiling 2" off W-M-BA2E's face, north of the glass to HS1: the
+    # LR-M-LIVING-* shadow-gap idiom, fixed to the board. It replaced the deck-nosing run
+    # LR-M-BATH2-TUBDECK (owner, 2026-10-22: no LEDs near the floor). 5.5 ft against the
+    # old 5.4, so the PSU line stands. Damp-rated E3, as NEC 410.10(D) wants within 8' of
+    # the rim. Clear of DU-M-BATH2-DRY (in the stall), the cans and the towel bars at 55".
+    LightRun(uid="WEQM9XB2MM", tag="LR-M-BATH2-TUB-CLG", type_ref="ED-T-LT-STRIP24-2700",
+             path=(pt(inch(92.625), inch(196)), pt(inch(92.625), inch(262))),
              room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
              controlled_by=("ED-M-BATH2-SW-EVE",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(19.5))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # In the ceiling's y 192"-208" bay, outside the shower zone and off the extract trunk.
     ElectricalDevice(uid="ESWYM2QANP", tag="ED-M-BATH2-PSU", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(2, 6), ft(16, 8)), type_ref="ED-T-LT-PSU-60",

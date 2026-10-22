@@ -158,7 +158,7 @@ MAIN_FIXTURES = (
     #
     # Position: the rim spans x 4'-10.74"..7'-10.49" (the shower's centre line), 1/8" off
     # W-M-BA2E's face, and laps W-M-TUBDK-W's top by the cutout's 1" (2026-10-21; it stood
-    # 3/16" clear of a 2x4 wall before). y is unchanged: 2" of tiled deck at the head
+    # 3/16" clear of a 2x4 wall before). y is unchanged: 2" of Corian deck at the head
     # (y 16'-10 15/16"..21'-10 5/8") and ~5 1/16" of foot bay. The foot bay is not slack: it
     # holds the Bask receptacle and the Moen 4794 body of FX-M-BATH2-FILLER, both reachable
     # through FURN-M-BATH2-TUBDK-AP. The lap and the 1/8" are provisional until template
@@ -251,7 +251,7 @@ MAIN_FIXTURES = (
     # follow it (plan/mep_drainage.py); its tie into PR-B-MAIN-DRAIN at (3'-0", 16'-6") is
     # UNCHANGED, so the branch simply runs diagonally under the floor instead of straight,
     # and still holds 4.19"/ft where 0.25" is the floor.
-    Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-VANITY-48-SHALLOW",
+    Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-VANITY-48-SEKTION",
             room="RM-M-BATH2", position=pt(inch(15.635), inch(182.375)), rotation=deg(90),
             wall_ref="W-M-W3",
             drain_position=pt(ft(1), ft(14, 5.375))),

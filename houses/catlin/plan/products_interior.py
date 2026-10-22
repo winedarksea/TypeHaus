@@ -179,6 +179,16 @@ KOHLER_CAXTON_BASIN = Product(
            "Caxton's softer sweep wipes in one motion. It is the less designed bowl and the "
            "more cleanable one.",
 )
+# RM-M-BATH2's one-piece deck, faces, splash, vanity top and stool (notes/bath2_tub_deck_finish.md).
+CORIAN_GLACIER_WHITE = Product(
+    tag="PROD-CORIAN-GLACIER-WHITE", brand="Corian", model="Glacier White",
+    name="Corian Glacier White 12 mm acrylic solid surface, shop-fabricated",
+    source="Owner selection 2026-10-22, against a physical chip beside Swanstone Carrara. "
+           "Hi-Macs or Staron solid white of the same 12 mm acrylic class is an accepted "
+           "equivalent. One fabricator and one lot for every Bath2 piece. Fabrication per "
+           "Corian bulletins: >= 1/2 in. inside radius on L/U pieces, >= 3/16 in. on "
+           "cutouts, router-cut only (notes/bath2_tub_deck_finish.md).",
+)
 SWAN_CONTOUR_TOP = Product(
     tag="PROD-SWAN-CONTOUR", brand="Swan", model="Contour",
     name="Contour one-piece solid-surface vanity top with integral bowl",
@@ -429,7 +439,7 @@ INTERIOR_PRODUCTS = (
     DELTA_ARVO_LAV, DELTA_ESSA_KITCHEN, MOEN_ADLER_LAUNDRY,
     *SHOWERING_PRODUCTS,
     MOEN_ALIGN_FILLER, MOEN_4794_ROUGH, DELTA_ARVO_LAV_CHROME,
-    KOHLER_CAXTON_BASIN, SWAN_CONTOUR_TOP,
+    KOHLER_CAXTON_BASIN, SWAN_CONTOUR_TOP, CORIAN_GLACIER_WHITE,
     HARVIA_CILINDRO_PC110E, HARVIA_XENIO_CX170, CARIITTI_FIBRE_KIT,
     IKEA_SEKTION, IKEA_VOXTORP_WHITE, IKEA_MAXIMERA, TOPKNOBS_BAR_PULL,
     SCHLAGE_LATITUDE, YALE_ASSURE_2,

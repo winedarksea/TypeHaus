@@ -172,15 +172,21 @@ def test_the_deck_cavity_is_mineral_wool_and_must_stay_that_way():
 def test_the_deck_cap_is_plywood_over_blocking_and_the_bath_hole_is_cut_out_of_it():
     """The cap bills the plywood by the square foot only because the sheet is a SHEATHING
     layer over a STRUCTURE one; and the hole has to come out of that area or the estimate
-    orders a deck with no bath in it."""
+    orders a deck with no bath in it. The Corian top (2026-10-22) is a FINISH layer over
+    the ply, so the finished deck is the rim's 22 3/4" and the ply stays at 22 1/4"."""
     plan = _plan()
     cap = plan.library.resolve_assembly("TUBDECK_INT_PLY_CAP")
     functions = {layer.name: layer.function.value for layer in cap.layers}
-    assert functions == {"deck-block": "structure", "deck-ply": "sheathing"}
+    assert functions == {"deck-block": "structure", "deck-ply": "sheathing",
+                         "deck-top": "finish"}
+    top = next(layer for layer in cap.layers if layer.name == "deck-top")
+    assert top.material_ref == "solid-surface-fabricated"
 
     slab = next(e for e in plan.storey_elements("main") if getattr(e, "tag", "") == "SL-M-TUBDK")
     assert slab.openings == ("FO-M-TUBDK",)
-    assert round(slab.top_elevation.meters / M_PER_IN, 4) == 22.25
+    assert round(slab.top_elevation.meters / M_PER_IN, 4) == 22.75
+    ply_top = slab.top_elevation.meters - top.thickness.meters
+    assert round(ply_top / M_PER_IN, 4) == 22.25
 
     outer = Polygon([p.xy_m for p in slab.outline]).area / (M_PER_IN ** 2)
     hole = next(e for e in plan.storey_elements("main") if getattr(e, "tag", "") == "FO-M-TUBDK")
@@ -324,7 +330,7 @@ def test_align_filler_is_centred_and_its_mounts_and_outlet_clear_the_rim(catlin_
     assert products["PROD-MOEN-4794"].model == "4794"
     assert products["PROD-KOHLER-7272"].model == "K-7272-CP"
     assert "PROD-DELTA-15840LF" in next(
-        t.source for t in catlin_plan.library.fixture_types if t.tag == "FX-VANITY-48-SHALLOW")
+        t.source for t in catlin_plan.library.fixture_types if t.tag == "FX-VANITY-48-SEKTION")
 
 
 def test_align_filler_exports_its_detailed_geometry(catlin_ifc_path):

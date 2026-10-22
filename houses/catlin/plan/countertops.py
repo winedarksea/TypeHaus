@@ -83,17 +83,17 @@ MAIN_COUNTERTOPS = [
         length=inch(114.625),
         profile="eased",
     ),
-    # RM-M-BATH2's deck. One of the two vanity tops in the house that is FABRICATED rather
-    # than moulded with its bowl, which is what puts it in this list and the other four in
-    # [placeables]. 19" over an 18" carcass — the type's `source` still says 22", which it
-    # was until the cabinet was narrowed from 51 x 21 to 48 x 18 on 2026-09-09; the top
-    # follows the cabinet here rather than a stale sentence.
+    # RM-M-BATH2's deck: Corian Glacier White since 2026-10-22, from the tub deck's
+    # fabricator and lot, in the deck's edge language — 12 mm with a built-up eased front
+    # edge — and a bonded 810P bowl in the type's cutout. 19" over the 18" floating box.
     Countertop(
         uid="TKX0M17VZQ", tag="CT-M-BATH2-VANITY",
         hosts=("FX-M-BATH2-SINK",),
-        material_ref="quartz-counter",
-        thickness=inch(1.181),
+        cutouts=("FX-M-BATH2-SINK",),
+        material_ref="solid-surface-fabricated",
+        thickness=inch(0.472),
         overhang=inch(1),
+        profile="built-up eased",
     ),
 ]
 

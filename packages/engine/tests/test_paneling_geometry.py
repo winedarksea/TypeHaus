@@ -156,7 +156,7 @@ def test_band_thickness_comes_from_the_material_stock(bands):
                 "tile states no board stock, so the band takes the default"
 
 
-def test_the_catlin_bands_are_the_nine_authored_ones(bands, catlin_model):
+def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     """A guard on scope: the reference house authors exactly these, at these heights."""
     by_tag: dict[str, list] = {}
     for band in bands:
@@ -164,7 +164,7 @@ def test_the_catlin_bands_are_the_nine_authored_ones(bands, catlin_model):
     assert set(by_tag) == {"WP-B-SAUNA-SPLASH", "WP-M-STUDY-WAINSCOT", "WP-M-STUDY-FELT",
                            "WP-M-BATH2-SURR", "WP-S-SUITE-HEADBOARD", "WP-A-STUBATH-SURR",
                            "WP-M-MUDROOM-SHIPLAP", "WP-M-KIT-BACKSPLASH",
-                           "WP-M-BATH2-TUBDK-APRON"}
+                           "WP-M-BATH2-TUBDK-APRON", "WP-M-BATH2-TUB-SPLASH"}
     # The range backsplash: an authored sheet thickness wins over the material's stock.
     (splash,) = by_tag["WP-M-KIT-BACKSPLASH"]
     assert splash.thickness_m == pytest.approx(0.0008, abs=1e-9)
@@ -207,7 +207,7 @@ def test_the_catlin_bands_are_the_nine_authored_ones(bands, catlin_model):
     # `wall_ref` names the riser's wall, which stops four feet NORTH of the pan (it runs
     # y 18'-0"..22'-4"), so it is not a wall this band can land on. That is the trap this
     # assertion exists to hold.
-    closed = [b for b in by_tag["WP-M-BATH2-SURR"] if b.wall_tag != "W-M-TUBDK-S"]
+    closed = by_tag["WP-M-BATH2-SURR"]
     assert {b.wall_tag for b in closed} == {"W-M-BA2E2", "W-M-BDN1"}
     for band in closed:
         assert band.run_m == pytest.approx(3 * 12 * _IN, abs=1e-6)
@@ -218,14 +218,24 @@ def test_the_catlin_bands_are_the_nine_authored_ones(bands, catlin_model):
         # A cast panel states no board stock, so it takes the 1/2" default — which is,
         # again, the panel's own thickness.
         assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
-    # The third span (2026-10-12): the tub deck's knee wall below the north glass, over the
-    # pan's 3' only. It stands INSIDE the room, so the span names its face; the band is on
-    # the stall (south) side and clamps to the wall's 3/4"..20" body.
-    (knee,) = [b for b in by_tag["WP-M-BATH2-SURR"] if b.wall_tag == "W-M-TUBDK-S"]
+    # The tub deck's Corian waterfall (2026-10-22): the W apron and the stall face under the
+    # north glass (the pan's 3' only), one material. Both knee walls stand INSIDE the room,
+    # so each span names its face; the stall face is on the south side. Each runs from the
+    # 3/4" subfloor to the deck's finished 22 3/4", past the 20" framing top.
+    faces = {b.wall_tag: b for b in by_tag["WP-M-BATH2-TUBDK-APRON"]}
+    assert set(faces) == {"W-M-TUBDK-W", "W-M-TUBDK-S"}
+    assert {b.material_ref for b in faces.values()} == {"solid-surface-fabricated"}
+    knee = faces["W-M-TUBDK-S"]
     assert knee.run_m == pytest.approx(3 * 12 * _IN, abs=1e-3)
-    assert (knee.z0_m, knee.z1_m) == pytest.approx((0.75 * _IN, 20 * _IN), abs=1e-6)
+    for band in faces.values():
+        assert (band.z0_m, band.z1_m) == pytest.approx((0.75 * _IN, 22.75 * _IN), abs=1e-6)
     wall = next(w for w in catlin_model.walls if w.tag == "W-M-TUBDK-S")
     assert Polygon(knee.outline).centroid.y < wall.axis[0][1]
+    # The 6" splash where the deck meets HS1/HS2 and BA2E/BA2E2, standing on the deck top.
+    splash_bands = by_tag["WP-M-BATH2-TUB-SPLASH"]
+    assert {b.wall_tag for b in splash_bands} == {"W-M-HS1", "W-M-HS2", "W-M-BA2E", "W-M-BA2E2"}
+    for band in splash_bands:
+        assert (band.z0_m, band.z1_m) == pytest.approx((22.75 * _IN, 28.75 * _IN), abs=1e-6)
     # RM-S-SUITE's headboard band (2026-09-05): the walnut that was briefly the suite FLOOR,
     # stood up behind the bed on the two staggered-stud sound walls between the suite and the
     # vanity. Two walls and not the room's other six — `walls=` is what keeps the band off
@@ -358,3 +368,23 @@ def test_suite_receptacle_remains_in_a_clear_panel_bay(bands, catlin_model):
     attachment = catlin_model.plan.by_tag(device.tag).location.attachment
     assert attachment.normal_gap.meters == pytest.approx(0.25 * _IN)
     assert attachment.distance_from_start.meters == pytest.approx(12.75 * _IN)
+
+
+def test_a_tub_knee_wall_band_reaches_its_deck_top_and_an_ordinary_wall_does_not(catlin_model):
+    """``resolve/paneling.py`` clamps a band to its wall's top, except on a wall a fixture's
+    ``TubEnclosureSpec.knee_wall_refs`` names: there it runs to the ``deck_ref`` solid's
+    finished top, because the face meets the deck's edge rather than stopping at framing."""
+    from typehaus.resolve.paneling import _knee_wall_deck_tops
+
+    tops = _knee_wall_deck_tops(catlin_model.plan, catlin_model)
+    deck = max(s.z1_m for s in catlin_model.solids if s.tag == "SL-M-TUBDK")
+    assert tops == pytest.approx({"W-M-TUBDK-W": deck, "W-M-TUBDK-S": deck})
+    for wall_tag in tops:
+        wall = catlin_model.wall(wall_tag)
+        band = next(b for b in catlin_model.panelings if b.wall_tag == wall_tag)
+        assert band.z1_m == pytest.approx(deck, abs=1e-9)
+        assert band.z1_m > wall.z1_m, "the clamp should reach past the framing top"
+    # An ordinary wall in the same room keeps its own clamp: floor to the 106" ceiling.
+    surround = next(b for b in catlin_model.panelings
+                    if b.tag == "WP-M-BATH2-SURR" and b.wall_tag == "W-M-BA2E2")
+    assert surround.z1_m == pytest.approx(106 * _IN, abs=1e-6)

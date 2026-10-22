@@ -68,7 +68,13 @@ These matter more than the product names, because each was passing every check.
    reported 3¼" of slack. Minn. R. 1309.0010 subp. 3.D deletes IRC chapters 25–33; the
    envelope actually drawn and enforced is **UPC 402.5's 24"**, against which 54" cleared by
    **0.24"**. Every real skirted one-piece toilet is 28½"–30" deep, so the first real product
-   put the cabinet inside a code envelope. The vanity is 51" now.
+   put the cabinet inside a code envelope. The vanity went to 51" here, then 48 x 18 on
+   2026-09-09. **Since 2026-10-22 it is a floating SEKTION** (`FX-VANITY-48-SEKTION`,
+   `plan/bath2_vanity_types.py`): 15"-deep wall frames 30x15x30 + 18x15x30 on the suspension
+   rail, 2 1/4" off W-M-W3 on a ledger chase, matching the bed desk's AXSTAD matte white
+   fronts. On top is a Corian Glacier White top with a bonded 810P bowl, from the tub deck's
+   lot; the Calacatta quartz and the Kohler Caxton left Bath2. GODMORGON is the fallback;
+   HAVBÄCK (21" deep) and Swanstone one-piece tops (22", centred bowl) were rejected.
 3. **Countertops were unpriced scope.** No element, no material, no `prices.toml` row — the
    entire record was one docstring line in `library/placeables/casework.py`. This is why the
    estimate total *rises* on this pass, and the rise is honest: it is scope the house always
@@ -335,6 +341,11 @@ This is the part of the pass with a deadline on it.
   The argument and hand calc are in `notes/bath2_shower.md`; 2026-10-22 closed the finish (all
   chrome), the trim (Trinsic T17T059) and the base (Swanstone SS-3636). The drain still moves:
   see that note.
+- **`RM-M-BATH2`'s colours, 2026-10-22:** Swanstone **Carrara (221)** for the SS-3636 and the
+  shower walls; **Corian Glacier White** for the tub deck (one bonded piece with its
+  waterfall faces and a 6" splash), the vanity top and the window stool. Confirm both with
+  physical chips under 5000 K and 2700 K, next to a quartz offcut and a floor tile. Never put
+  two different veined imitations side by side (`notes/bath2_tub_deck_finish.md`).
 - Confirm the **Robern round unit's cleat spacing** off the sheet in the carton, and its CCT
   on the box label.
 - ~~**`RM-A-STUBATH`'s vanity contradiction**~~ — closed 2026-09-09 at `FX-VANITY-24-SHALLOW`,

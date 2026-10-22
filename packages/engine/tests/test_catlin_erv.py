@@ -285,15 +285,18 @@ def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan, catlin_mod
              if e.tag in ("EQ-M-ERV-HOOD-OA", "EQ-S-ERV-HOOD-EA")}
     assert set(hoods) == {"EQ-M-ERV-HOOD-OA", "EQ-S-ERV-HOOD-EA"}
 
-    # Storey-relative mounts on datums 0'-0" and +10'-0": +4'-0" and +17'-0" absolute.
-    intake_z = hoods["EQ-M-ERV-HOOD-OA"].mount.elevation.meters / _FT
-    exhaust_z = 10.0 + hoods["EQ-S-ERV-HOOD-EA"].mount.elevation.meters / _FT
+    # Storey-relative mounts on datums 0'-0" and +10'-0". Mount.elevation is the 12" body's
+    # BASE (plan/mep_erv_outdoor.py, 2026-10-22), so each centre is 6" above it: +5'-0" and
+    # +17'-0" absolute.
+    intake_base = hoods["EQ-M-ERV-HOOD-OA"].mount.elevation.meters / _FT
+    intake_z = intake_base + 0.5
+    exhaust_z = 10.0 + hoods["EQ-S-ERV-HOOD-EA"].mount.elevation.meters / _FT + 0.5
     assert intake_z == pytest.approx(5.0, abs=0.01)
     assert exhaust_z == pytest.approx(17.0, abs=0.01)
     assert exhaust_z - intake_z >= 3.0, "IRC M1506.3 wants the exhaust >= 3 ft over the intake"
     # NEC 110.26 over ED-M-HP3-DISC: the can is 9 1/2" tall on a +3'-6" base, so its working
-    # space tops at +4'-3 1/2" and a 12" box has to start above that.
-    assert intake_z - 0.5 >= 4.0 + 3.5 / 12.0, "the intake box is inside the disconnect's space"
+    # space tops at +4'-3 1/2" and the 12" box has to start above that.
+    assert intake_base >= 4.0 + 3.5 / 12.0, "the intake box is inside the disconnect's space"
 
     for tag, hood in hoods.items():
         x, y = (v / _FT for v in placed_xy(catlin_model_ro, hood))

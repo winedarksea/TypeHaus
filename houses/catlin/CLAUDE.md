@@ -197,8 +197,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
   (the drop-in bath), `FX-MOEN-ALIGN-ROMAN` (its deck filler, `FX-M-BATH2-FILLER` on the foot
   ledge, pardoned against the rim by `host_fixture_ref`; the deck narrowed to 2x3 knee walls
   the rim laps, 2026-10-21; centered Align filler and twin chrome bars, 2026-10-22,
-  documented in `notes/bath2_tub_hardware.md`) and `FX-VANITY-48-SHALLOW`
-  (RM-M-BATH2's vanity), plus
+  documented in `notes/bath2_tub_hardware.md`; one-piece Corian deck, faces and splash,
+  2026-10-22, `notes/bath2_tub_deck_finish.md`) and `FX-VANITY-48-SEKTION`
+  (RM-M-BATH2's floating SEKTION vanity under a Corian top, `plan/bath2_vanity_types.py`), plus
   the six vanities that replaced this house's remaining bare lavatories:
   `FX-VANITY-24-SHALLOW` (RM-A-STUBATH — 24" is the whole
   width that bath's north wall has between ED-A-STUBATH-GFCI's plate and the neo-angle shower
@@ -2791,7 +2792,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **The owner's oak is RED oak (2026-10-16):** the `oak-*` tags keep their names, with
   `species="red-oak"` and one finish (A/B bleach, Bona NordicSeal, waterborne topcoat).
   Nothing wet gets it: stools are 5/4 at 1", bought white oak by default, with
-  `plan/window_stools.py` naming walnut (RM-M-BED), quartz (RM-M-BATH2), locust
+  `plan/window_stools.py` naming walnut (RM-M-BED), Corian (RM-M-BATH2), locust
   (other wet rooms), ash (the living room), cherry (the suite), white oak (two circulation
   windows) and cedar (the sauna); the tub-end shelves are
   locust. A `Material.max_board_width_in` caps one species' boards (ash 11", locust 7").

@@ -87,9 +87,9 @@ def test_the_vanity_is_one_basin_and_no_longer_a_kitchen_sink():
     kitchen sink; it drew two bowls on a bathroom plan and billed as a kitchen sink."""
     plan = _plan()
     sink = _element(plan, "main", "FX-M-BATH2-SINK")
-    assert sink.type_ref == "FX-VANITY-48-SHALLOW"
+    assert sink.type_ref == "FX-VANITY-48-SEKTION"
 
-    vanity = {t.tag: t for t in plan.library.fixture_types}["FX-VANITY-48-SHALLOW"]
+    vanity = {t.tag: t for t in plan.library.fixture_types}["FX-VANITY-48-SEKTION"]
     assert vanity.plan_symbol == "vanity"
     width, depth = (v.meters / M_PER_IN for v in vanity.footprint)
     assert (round(width, 4), round(depth, 4)) == (48.0, 18.0)
@@ -111,7 +111,7 @@ def test_the_counter_lands_at_thirty_six_inches():
     Change the height and the counter moves; this is the arithmetic that says by how much."""
     from typehaus.model.placeable_symbols.plumbing import _deck_height
 
-    vanity = {t.tag: t for t in _plan().library.fixture_types}["FX-VANITY-48-SHALLOW"]
+    vanity = {t.tag: t for t in _plan().library.fixture_types}["FX-VANITY-48-SEKTION"]
     deck_m, _faucet = _deck_height(vanity.height.meters)
     # 41.5" less the builder's fixed 0.14 m (5.512") faucet band is 35.99", i.e. 36" to
     # within a hundredth. There is no height that lands on 36.000" in round inches.
@@ -247,8 +247,8 @@ def test_the_sink_base_carries_its_own_shelf():
     # A Fixture hosting casework is legal — `resolve/millwork.py` builds its placeable map
     # from `canvas_objects`, which carries Fixtures — but the depth cannot be DERIVED from a
     # FixtureType, so it must be authored or the bank resolves with no depth at all.
-    # 18" carcass less a 3/4" back and a 1 3/4" set-off (it read 18 1/2" off the old 21").
-    assert round(bank.depth_m / M_PER_IN, 2) == 15.5
+    # IKEA's shelf inside the 14 3/4" SEKTION wall frame (2026-10-22; 15 1/2" in the old box).
+    assert round(bank.depth_m / M_PER_IN, 2) == 14.0
 
 
 # --- the radiant floor -----------------------------------------------------------------

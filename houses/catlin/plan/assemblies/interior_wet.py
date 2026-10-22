@@ -296,13 +296,11 @@ PLANT_INT_2X4_HUMID = Assembly(
 # falls back to `outward_sign = +1`. A symmetric stack makes that fallback unobservable —
 # an asymmetric one would build inside-out on a sign flip and nothing would say so.
 # (2) Exterior-grade ply is the right board on the room face too: it is the substrate the
-# deck's tile and the tub's silicone joint land on, 4" from a shower.
+# deck's Corian faces are bonded over, 4" from a shower.
 #
-# The deck top is tiled with RM-M-BATH2's floor finish, which is a finish-schedule fact
-# (`Room.floor_finish`), not an assembly layer. Its 1/2" tile + thinset is the difference
-# between the cap's 21 1/2" top and the tub rim's 22" — see the elevation arithmetic on
-# SL-M-TUBDK in plan/storeys/main.py. The bathroom-facing west apron is a separate
-# solid-surface panel over the plywood; the south face is already part of the shower surround.
+# Both exposed faces are the Corian waterfall WP-M-BATH2-TUBDK-APRON (one bonded piece with
+# the deck top), run up the knee walls to the deck's finished 22 3/4" — see the elevation
+# arithmetic on W-M-TUBDK-W in plan/storeys/main.py and notes/bath2_tub_deck_finish.md.
 #
 # 2x3, not 2x4, since 2026-10-21: the narrower box gave the vanity aisle back. Kohler's
 # guide names 2x4 or 2x6; the rim carries nothing, so this is an owner deviation. Both knee
@@ -342,7 +340,12 @@ TUBDECK_INT_2X3 = Assembly(
 #
 # The tub does not bear on any of this. Kohler is explicit that the rim carries no load and
 # the bath sits on a 1"-2" mortar bed on the subfloor, so the cap carries only itself, its
-# tile, and whoever sits on the deck.
+# Corian top, and whoever sits on the deck.
+#
+# `deck-top` is that top: the one-piece 12 mm Corian U, drawn at 1/2" so the finished deck
+# lands on the rim at 22 3/4". Known approximation: it shares the cap's outline less
+# FO-M-TUBDK, so it includes the 1" lap under the rim; the real U is template-cut to the rim
+# outline plus 1/8" (notes/bath2_tub_deck_finish.md).
 TUBDECK_INT_PLY_CAP = Assembly(
     tag="TUBDECK_INT_PLY_CAP",
     layers=(
@@ -351,6 +354,8 @@ TUBDECK_INT_PLY_CAP = Assembly(
               framing=FramingSpec(member="2x4", spacing=inch(16))),
         Layer(name="deck-ply", material_ref="struct-1-plywood", thickness=inch(0.75),
               function=LayerFunction.SHEATHING),
+        Layer(name="deck-top", material_ref="solid-surface-fabricated", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
     ),
-    source="Kohler Installation and Care Guide 1196030-2 - drop-in deck surround; flat 2x4 blocking at 16 in. o.c. under 3/4 in. exterior-grade plywood, tiled, rim on max 1/8 in. spacers",
+    source="Kohler Installation and Care Guide 1196030-2 - drop-in deck surround; flat 2x4 blocking at 16 in. o.c. under 3/4 in. exterior-grade plywood, Corian solid-surface top flush with the rim on max 1/8 in. spacers",
 )

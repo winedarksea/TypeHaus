@@ -258,8 +258,10 @@ def test_every_vanity_carries_its_own_shelf(catlin_model_ro):
         # every host here is a FixtureType, so it is checked here against the carcass —
         # the carcass less a 3/4" back and a 1 3/4" scribe/trap set-off.
         carcass_depth = types[fixture.type_ref].footprint[1].meters
+        # Except RM-M-BATH2's floating SEKTION (2026-10-22): IKEA's shelf in a 14 3/4" frame.
+        depth = 14 * IN if fixture.type_ref == "FX-VANITY-48-SEKTION" else carcass_depth - 2.5 * IN
         for shelf in bank.shelves:
-            assert shelf.depth_m == pytest.approx(carcass_depth - 2.5 * IN), bank.tag
+            assert shelf.depth_m == pytest.approx(depth), bank.tag
             assert shelf.count == 2, "one shelf plus the case top"
 
 
