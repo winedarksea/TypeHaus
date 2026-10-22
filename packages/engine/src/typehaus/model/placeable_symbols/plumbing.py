@@ -28,6 +28,7 @@ from typehaus.model.placeable_symbols._frame import (
     rect,
 )
 from typehaus.model.placeable_symbols._kohler_underscore import kohler_underscore
+from typehaus.model.placeable_symbols._kohler_underscore_rect import kohler_underscore_rect
 from typehaus.model.placeable_symbols._roman_tub_filler import roman_tub_filler
 from typehaus.model.placeable_symbols._undermount_sink import single_bowl_undermount
 
@@ -532,6 +533,7 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "lavatory-wall-hung": lavatory(faucet_height_m=FAUCET_HEIGHT_M),
     "vanity": vanity(),
     "kohler-underscore-6036": kohler_underscore,
+    "kohler-underscore-6032": kohler_underscore_rect,
     "tub": tub(),
     "tub-shower": tub_shower(),
     "shower": shower(),

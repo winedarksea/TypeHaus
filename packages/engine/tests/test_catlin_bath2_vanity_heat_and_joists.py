@@ -334,14 +334,14 @@ def test_the_keepout_check_reads_the_rotated_footprint():
     """The engine fix this zone depends on.
     `advisory.floor_heat_fixture_keepout` used to rebuild each fixture's box from its TYPE's
     (width, depth) about its centre and never applied rotation, so a bath authored at
-    rotation 90 was graded as a 59"-wide EAST/WEST box. A zone drawn to the phantom PASSED
+    rotation 90 was graded as a 59"-wide EAST/WEST box (the K-5713-W1 then). A zone drawn to the phantom PASSED
     while running under the actual tub, which is the dangerous half of that defect."""
     model = _model()
     tub = _canvas(model, "FX-M-BATH2-TUB")
     assert tub.rotation_degrees == 90.0
     x0, y0, x1, y1 = Polygon(tub.footprint).bounds
-    assert round((x1 - x0) / M_PER_IN, 2) == 35.75      # 35 3/4" ACROSS, not 59 11/16"
-    assert round((y1 - y0) / M_PER_IN, 2) == 59.69
+    assert round((x1 - x0) / M_PER_IN, 2) == 32.0       # 32" ACROSS, not 60"
+    assert round((y1 - y0) / M_PER_IN, 2) == 60.0
 
 
 # --- the joists under the bath ---------------------------------------------------------

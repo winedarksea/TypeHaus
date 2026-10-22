@@ -76,8 +76,8 @@ def test_framed_ifc_has_materialized_insulation_and_the_open_tub(catlin_model_ro
     tub = products['FX-M-BATH2-TUB']
     points = tub.Representation.Representations[0].Items[0].Coordinates.CoordList
     xs, ys, zs = zip(*points, strict=True)
-    assert max(xs)-min(xs) == pytest.approx(inch(35.75).meters)
-    assert max(ys)-min(ys) == pytest.approx(inch(59.6875).meters)
+    assert max(xs)-min(xs) == pytest.approx(inch(32).meters)
+    assert max(ys)-min(ys) == pytest.approx(inch(60).meters)
     assert max(zs)-min(zs) == pytest.approx(inch(21).meters)
     assert max(zs) == pytest.approx(inch(22.75).meters)
     assert tub.is_a('IfcSanitaryTerminal')

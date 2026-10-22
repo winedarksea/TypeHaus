@@ -305,8 +305,8 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 
 # --- RM-M-BATH2's drop-in bath: the answer to plans/TODO.md's 60 psf item ---------
 #
-# The Kohler K-5713-W1 holds 72.017 gal. Filled, with a 200 lb occupant, that is 892 lb
-# over its 14.83 ft2 plan area -- 60 psf, against the 40 psf an IRC residential floor is
+# The Kohler K-1130-W1 holds 81 gal (K-5713-W1's 72 until 2026-10-22). Filled, with a 200 lb
+# occupant, that is 957 lb over its 13.33 ft2 plan area -- ~72 psf, against the 40 psf an IRC residential floor is
 # designed to (R301.5 Table, adopted unamended by MN Rules 1309.0301; there is no bathtub
 # provision or concentrated-load footnote anywhere in it). Boise Cascade's Tech Note IJ-12
 # is the one manufacturer document on point and states the test plainly: "If a whirlpool
@@ -315,13 +315,13 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 # By that test this bath qualifies, so it is answered here rather than argued with.
 #
 # ** THE ARITHMETIC SAYS BLOCKING, NOT A BEAM, AND ORIENTATION IS WHY. ** The bath is
-# authored at rotation 90, so its 59 11/16" length runs NORTH-SOUTH and these joists run
+# authored at rotation 90, so its 60" length runs NORTH-SOUTH and these joists run
 # EAST-WEST: the load crosses four joist lines (y=208", 224", 240", 256") instead of
-# bearing its length on two or three. Each line picks up 60.1 psf over a 16" strip for the
-# bath's 35 3/4" width -- 80.2 plf over 2.98 ft, or 239 lb -- where the parallel
-# orientation would have put 399 lb on one line. Against the 960 lb of live load the code
+# bearing its length on two or three. Each line picks up ~72 psf over a 16" strip for the
+# bath's 32" width -- 96 plf over 2.67 ft, or 256 lb -- where the parallel
+# orientation would have put ~428 lb on one line. Against the 960 lb of live load the code
 # already assigns each 24 ft2 tributary strip, the filled bath with a bather generates
-# ~46% of the code live-load moment. It does not break the design assumption; it fits
+# ~49% of the code live-load moment. It does not break the design assumption; it fits
 # inside it. The floor is not overloaded, and no beam, post or squash block is warranted
 # (a squash block would do nothing anyway -- it transfers bearing at a support, and this
 # load is at midspan).
@@ -371,7 +371,7 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 #
 # What the machine does not have is blocking at its OWN station: the bath's blocks all sit
 # at x=74.56", 40" west. The WashTower is ~450 lb (340 dry + a drum of water) on 6.1 ft2,
-# spread over 2-3 lines at 150-225 lb each — LIGHTER per line than the bath's 239 lb, on a
+# spread over 2-3 lines at 150-225 lb each — LIGHTER per line than the bath's 256 lb, on a
 # line that is already doubled, so this is not a strength entry and no ply is warranted.
 # It is the SPIN CYCLE: a ~20 Hz dynamic point load at essentially midspan of an 18'-0" bay,
 # and blocking is what makes the neighbouring lines take it instead of one line drumming.
@@ -384,7 +384,8 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 # for no ply of its own and tops up nothing; it rides the bath entry's finished cluster.
 # x=114.58"..117.08" at 2 1/2" wide, clear of the bath's 73.31"..75.81". The station
 # follows the machine: it moved 1 3/4" east on 2026-09-09 and this constant went with it.
-_TUB_DECK_X = inch(74.56)          # FX-M-BATH2-TUB's centre, and the blocks' axis station
+_TUB_DECK_X = inch(74.56)          # the blocks' axis: 3.9" west of FX-M-BATH2-TUB's centre (78.49"),
+                                   # clear of the end drain's drop at x=78.49", y=215.18"
 _LAUNDRY_X = inch(115.83)          # FX-M-LAUNDRY's centre, and its own blocks' station
 # ** W-M-CLN2 HAS NOTHING UNDER IT SINCE 2026-09-07. ** W-B-CW2B was the only basement wall
 # beneath that run, and the basement hall's extension to the sauna wall deleted it (see

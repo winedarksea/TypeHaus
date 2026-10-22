@@ -1,7 +1,7 @@
 """RM-M-BATH2's drop-in bath and the framed deck it sits in.
 
-The Kohler K-5713-W1 replaced an FX-TUB-60 alcove allowance, and a drop-in is not a
-substitution — it is a different piece of construction. What is pinned here is the handful
+The Kohler K-1130-W1 (K-5713-W1 until 2026-10-22) replaced an FX-TUB-60 alcove
+allowance, and a drop-in is not a substitution — it is a different piece of construction. What is pinned here is the handful
 of dimensions and material choices that the rest of the room was then drawn to, each of
 which is silently breakable by an edit somewhere else:
 
@@ -10,7 +10,9 @@ which is silently breakable by an edit somewhere else:
     read as one built element and the reason the room's depth adds up;
   * the knee-wall cavity is MINERAL WOOL, which a house-wide reinsulation sweep would
     otherwise take;
-  * the Bask heated surface has its dedicated GFCI circuit and an outlet inside the box.
+  * the Bask heated surface has its dedicated GFCI circuit and an outlet inside the box,
+    at the heater end, with a 20" x 15" service leaf beside it;
+  * the deck's finished west face is the shower's front-glass plane.
 """
 
 from __future__ import annotations
@@ -59,25 +61,26 @@ def test_the_bath_is_the_kohler_drop_in_and_needs_power():
     plan = _plan()
     types = {t.tag: t for t in plan.library.fixture_types}
     tub = next(e for e in plan.storey_elements("main") if getattr(e, "tag", "") == "FX-M-BATH2-TUB")
-    assert tub.type_ref == "FX-KOHLER-UNDERSCORE-6036"
+    assert tub.type_ref == "FX-KOHLER-UNDERSCORE-6032"
 
-    kohler = types["FX-KOHLER-UNDERSCORE-6036"]
-    assert kohler.product_ref == "PROD-KOHLER-5713-W1-0"
+    kohler = types["FX-KOHLER-UNDERSCORE-6032"]
+    assert kohler.product_ref == "PROD-KOHLER-1130-W1-0"
+    assert kohler.plan_symbol == "kohler-underscore-6032"
     assert "power_120" in {s.value for s in kohler.needs}
-    # The spec drawing's dimensions, not the marketing name's 59 3/4".
     width, depth = (v.meters / M_PER_IN for v in kohler.footprint)
-    assert round(width, 4) == 59.6875
-    assert round(depth, 4) == 35.75
+    assert round(width, 4) == 60.0
+    assert round(depth, 4) == 32.0
 
     products = {p.tag for p in plan.library.products}
-    assert {"PROD-KOHLER-5713-W1-0", "PROD-KOHLER-7272"} <= products
+    assert {"PROD-KOHLER-1130-W1-0", "PROD-KOHLER-7272"} <= products
+    assert "PROD-KOHLER-5713-W1-0" not in products
 
 
 def test_the_rim_laps_the_west_knee_wall_and_meets_the_east_wall_at_an_eighth():
-    """Since 2026-10-21 the rim laps W-M-TUBDK-W's top by no more than the cutout's 1"
-    margin, the wall still clears the modelled shell, and the east rim stands 1/8"-1/4" off
-    W-M-BA2E's face. All provisional until Kohler template 1268438-7 is measured."""
-    from typehaus.model.placeable_symbols._kohler_underscore import shell_half_axes_at
+    """The rim laps W-M-TUBDK-W's top by no more than its lap past the published cutout,
+    the wall still clears the modelled shell, and the east rim stands 1/8"-1/4" off
+    W-M-BA2E's face."""
+    from typehaus.model.placeable_symbols._kohler_underscore_rect import shell_section
 
     plan = _plan()
     model, _ = resolve(plan)
@@ -93,18 +96,22 @@ def test_the_rim_laps_the_west_knee_wall_and_meets_the_east_wall_at_an_eighth():
     lap = bay_west - tub[0]
     assert 0 < lap <= cutout[0] - tub[0] + 1e-6, "rim does not lap the west knee wall"
 
-    kohler = next(t for t in plan.library.fixture_types if t.tag == "FX-KOHLER-UNDERSCORE-6036")
+    kohler = next(t for t in plan.library.fixture_types if t.tag == "FX-KOHLER-UNDERSCORE-6032")
     width, depth = (v.meters for v in kohler.footprint)
-    # Rotated 90 degrees, so the shell's plan x half-extent is its depth half-axis.
-    shell_x = max(shell_half_axes_at(f / 10, width, depth)[1] for f in range(11)) / M_PER_IN
+    # Rotated 90 degrees, so the shell's plan x half-extent is its local y half-extent.
+    shell_x = max(shell_section(f / 10, width, depth)[3] for f in range(11)) / M_PER_IN
     assert (tub[0] + tub[1]) / 2 - shell_x > bay_west, "knee wall cuts the shell"
 
     ba2e = next(w for w in model.walls if w.tag == "W-M-BA2E")
     ba2e_face = min(min(p[0] for p in layer.polygon) for layer in ba2e.layers) / M_PER_IN
     assert 0.125 - 1e-6 <= ba2e_face - tub[1] <= 0.25
 
-    # The foot bay holds the Bask outlet and the filler's R2707 body.
+    # The foot bay holds the end drain, K-7272 and the filler's 4794 rough.
     assert 4.5 <= tub[2] - bay_south <= 5.5
+    # Kohler's published 59 1/2" x 31 1/2" cutout, centred on the rim.
+    assert cutout[1] - cutout[0] == pytest.approx(31.5)
+    assert cutout[3] - cutout[2] == pytest.approx(59.5)
+    assert (cutout[0] + cutout[1]) / 2 == pytest.approx((tub[0] + tub[1]) / 2)
 
 
 def test_the_deck_and_the_shower_share_one_knee_wall():
@@ -115,6 +122,11 @@ def test_the_deck_and_the_shower_share_one_knee_wall():
     south = next(w for w in model.walls if w.tag == "W-M-TUBDK-S")
     outer = min(p[1] for p in next(x for x in south.layers if x.name == "ply-room").polygon)
     assert abs(outer / M_PER_IN - shower[3]) < 1e-6
+    # The Corian apron's finished face is the shower's west (front-glass) plane.
+    apron = next(p for p in model.panelings
+                 if p.tag == "WP-M-BATH2-TUBDK-APRON" and p.wall_tag == "W-M-TUBDK-W")
+    west = min(x for x, _ in apron.outline) / M_PER_IN
+    assert west == pytest.approx(shower[0], abs=0.02)
 
 
 def test_the_water_closet_backs_a_wall_with_its_code_clearance_clear():
@@ -191,10 +203,9 @@ def test_the_deck_cap_is_plywood_over_blocking_and_the_bath_hole_is_cut_out_of_i
     outer = Polygon([p.xy_m for p in slab.outline]).area / (M_PER_IN ** 2)
     hole = next(e for e in plan.storey_elements("main") if getattr(e, "tag", "") == "FO-M-TUBDK")
     cut = Polygon([p.xy_m for p in hole.outline]).area / (M_PER_IN ** 2)
-    # ~18.7 sf of deck with ~13.5 sf of it cut away for the bath. The deck lost 4.24" on
-    # the west on 2026-10-21; the cutout is still the rim less 1" all round, centred on it.
-    assert 18.0 < outer / 144 < 19.5
-    assert 13.0 < cut / 144 < 14.0
+    # ~17.3 sf of deck with Kohler's 59 1/2" x 31 1/2" (13.0 sf) cut away for the bath.
+    assert 17.0 < outer / 144 < 17.7
+    assert cut / 144 == pytest.approx(59.5 * 31.5 / 144)
 
 
 def test_the_knee_walls_frame_and_stand_on_the_subfloor():
@@ -244,11 +255,17 @@ def test_the_bask_heated_surface_has_its_dedicated_gfci_circuit_and_outlet():
     model, _ = resolve(plan)
     tub = _bounds(_canvas(model, "FX-M-BATH2-TUB").footprint)
     x, y = (v / M_PER_IN for v in _canvas(model, outlet.tag).position)
-    # "Behind the bath": inside the box, in the foot bay SOUTH of the shell — the only part
-    # of the enclosure with room for a plug, since the rim laps the west knee wall.
-    assert tub[0] - 1.0 <= x <= tub[1]
-    assert y < tub[2], "the outlet is not behind the bath"
-    assert tub[2] - y < 4.0, "the outlet has fallen out of the foot bay"
+    # "Behind the bath", at the HEAD: the K-1130-W1's heater pad and power supply are on the
+    # lumbar (north) end, and Kohler wants the outlet within 24" of the supply.
+    assert tub[0] <= x <= tub[1]
+    assert y > tub[3], "the outlet is not behind the bath's head"
+    assert y - tub[3] < 4.0, "the outlet has left the head of the box"
+    # The heater-end service leaf: Kohler's 20"L x 15"H minimum, overlapping the head.
+    panel = _canvas(model, "FURN-M-BATH2-TUBDK-AP-N")
+    px0, px1, py0, py1 = _bounds(panel.footprint)
+    assert py1 - py0 >= 20 - 1e-6
+    assert (panel.body_z1_m - panel.body_z0_m) / M_PER_IN >= 15 - 1e-6
+    assert py1 > (tub[2] + tub[3]) / 2 + 20 and y - py1 < 24
 
 
 def test_the_drain_matches_the_bath_kohler_actually_specifies():
@@ -304,9 +321,9 @@ def test_align_filler_is_centred_and_its_mounts_and_outlet_clear_the_rim(catlin_
     assert hole_line[1] / M_PER_IN == pytest.approx(200.41)
     assert filler.z_m / M_PER_IN == pytest.approx(22.75)
     assert outlet[1] / M_PER_IN == pytest.approx(207.66)
-    # Published top basin length, not merely the outside rim or the provisional cutout.
-    basin_south = tub.position[1] - 55.5625 / 2 * M_PER_IN
-    assert (outlet[1] - basin_south) / M_PER_IN == pytest.approx(2.67125)
+    # Published top basin length (K-1130-W1, 55 1/8"), not merely the outside rim.
+    basin_south = tub.position[1] - 55.125 / 2 * M_PER_IN
+    assert 2.0 < (outlet[1] - basin_south) / M_PER_IN < 3.0
     cap = Polygon([p.xy_m for p in catlin_plan.by_tag("SL-M-TUBDK").outline])
     # Both escutcheons and 1 1/4-inch rough holes remain on the foot deck, ahead of shell.
     receptacle = _canvas(model, "ED-M-BATH2-TUB-RC")

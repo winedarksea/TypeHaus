@@ -226,7 +226,9 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     assert set(faces) == {"W-M-TUBDK-W", "W-M-TUBDK-S"}
     assert {b.material_ref for b in faces.values()} == {"solid-surface-fabricated"}
     knee = faces["W-M-TUBDK-S"]
-    assert knee.run_m == pytest.approx(3 * 12 * _IN, abs=1e-3)
+    # Node to BA2E; the 1 3/4" west of the node is the knee wall's end, under the W apron's
+    # mitre, so the pan's 3' is faced in full (K-1130-W1 deck, 2026-10-22).
+    assert knee.run_m == pytest.approx(33.75 * _IN, abs=1e-3)
     for band in faces.values():
         assert (band.z0_m, band.z1_m) == pytest.approx((0.75 * _IN, 22.75 * _IN), abs=1e-6)
     wall = next(w for w in catlin_model.walls if w.tag == "W-M-TUBDK-S")

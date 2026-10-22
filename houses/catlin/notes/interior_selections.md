@@ -299,10 +299,10 @@ This is the part of the pass with a deadline on it.
   screws and lift-off access. The GFCI reset is at the bathroom-branch breaker; the mirror's
   own touch controls operate light and defogger. No second defogger switch leg and no
   connection through the evening wall dimmer. See `mirror_selections.md`.
-- **Keep the tub's plumbing and Bask components serviceable.** The modeled west-apron
-  access panel is 14 x 14 in. Kohler guide 1196030-2-E requires service access but does
-  **not** state the previously quoted 20 x 15 in. minimum. Fit-check the delivered valve,
-  hose release fittings, power supply, and drain through that panel before closing the
+- **Keep the tub's plumbing and Bask components serviceable.** The K-1130-W1 sheet calls
+  for a 20 x 15 in. minimum panel at the heater (north) end: `FURN-M-BATH2-TUBDK-AP-N`, with
+  the Bask outlet on HS1 behind the head. The 14 x 14 in. south leaf serves the end drain,
+  overflow and filler rough. Fit-check the delivered parts through both before closing the
   enclosure. Moen 4794 permits 2 3/4 in. rough deck plus up to 1 1/4 in. finish; the modeled
   2 1/4 in. rough stack plus 1/2 in. finish fits. See [Bath2 tub hardware](bath2_tub_hardware.md).
 - **Tee a ½" hose bibb off the cold at the laundry box.** No mainstream pull-down sprayer is

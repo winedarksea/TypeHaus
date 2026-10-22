@@ -271,13 +271,13 @@ PLANT_INT_2X4_HUMID = Assembly(
 )
 
 # --- RM-M-BATH2 drop-in tub deck --------------------------------------------------------
-# The knee-wall box and its plywood cap under FX-M-BATH2-TUB, the Kohler K-5713-W1
+# The knee-wall box and its plywood cap under FX-M-BATH2-TUB, the Kohler K-1130-W1
 # Underscore drop-in with the Bask heated surface (plan/products.py).
 #
 # ** THE MINERAL WOOL IN THIS CAVITY IS NOT INTERCHANGEABLE WITH FIBERGLASS. ** It is the
 # one cavity in the house whose insulation choice is a MOISTURE decision rather than a
-# thermal one: it sits under the rim of a 72-gallon bath, permanently inside a sealed box
-# that can only be reached through a 14x14 panel, in the wettest room in the house. Mineral
+# thermal one: it sits under the rim of an 81-gallon bath, permanently inside a sealed box
+# that can only be reached through two apron panels, in the wettest room in the house. Mineral
 # wool is hydrophobic, non-capillary and dimensionally stable when it does get wet;
 # fiberglass in this box would slump into the bottom of the bay and stay damp. If the
 # reinsulation pass ever sweeps `mineral-wool` -> `fiberglass` across the house, THIS
@@ -306,6 +306,10 @@ PLANT_INT_2X4_HUMID = Assembly(
 # guide names 2x4 or 2x6; the rim carries nothing, so this is an owner deviation. Both knee
 # walls change together: `resolve/tub_enclosures._wall_batts` matches every cavity to
 # `TubEnclosureSpec.batt_thickness`.
+#
+# 24" o.c. under ONE top plate since 2026-10-22 (IRC R602.5, interior nonbearing 2x3): the
+# 21 3/4" x 16 1/4" bays are what give the K-1130-W1's 20" x 15" heater-end access panel a
+# clear opening with no stud cut and no header.
 TUBDECK_INT_2X3 = Assembly(
     tag="TUBDECK_INT_2X3",
     layers=(
@@ -313,7 +317,7 @@ TUBDECK_INT_2X3 = Assembly(
               function=LayerFunction.SHEATHING),
         Layer(name="stud", material_ref="spf", thickness=inch(2.5),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x3", spacing=inch(16)),
+              framing=FramingSpec(member="2x3", spacing=inch(24), double_top_plate=False),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="ply-bay", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),

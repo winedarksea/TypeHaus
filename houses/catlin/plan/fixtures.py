@@ -151,48 +151,35 @@ MAIN_FIXTURES = (
     Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36-THERMO-COMBO", room="RM-M-BATH2",
             position=pt(ft(6, 4.615), ft(14, 8.375)), rotation=deg(-90), wall_ref="W-M-BA2E",
             drain_position=pt(ft(6, 4.615), ft(14, 11))),
-    # ** THE KOHLER K-5713-W1-0 UNDERSCORE, AND IT IS A DROP-IN. ** The bath has no skirt:
-    # it drops through SL-M-TUBDK and sits on a 1"-2" mortar bed on the subfloor, and Kohler
-    # is explicit that the rim carries no load. So this Fixture is the RIM, and the thing
-    # that occupies the room is the framed deck box in storeys/main.py.
+    # ** THE KOHLER K-1130-W1-0 UNDERSCORE, A DROP-IN (2026-10-22; K-5713-W1 before). ** No
+    # skirt: it drops through SL-M-TUBDK onto a 1"-2" mortar bed on the subfloor, and the rim
+    # carries no load. So this Fixture is the RIM; the deck box in storeys/main.py is what
+    # occupies the room.
     #
-    # Position: the rim spans x 4'-10.74"..7'-10.49" (the shower's centre line), 1/8" off
-    # W-M-BA2E's face, and laps W-M-TUBDK-W's top by the cutout's 1" (2026-10-21; it stood
-    # 3/16" clear of a 2x4 wall before). y is unchanged: 2" of Corian deck at the head
-    # (y 16'-10 15/16"..21'-10 5/8") and ~5 1/16" of foot bay. The foot bay is not slack: it
-    # holds the Bask receptacle and the Moen 4794 body of FX-M-BATH2-FILLER, both reachable
-    # through FURN-M-BATH2-TUBDK-AP. The lap and the 1/8" are provisional until template
-    # 1268438-7 is measured.
+    # Rim x 5'-2.49"..7'-10.49", 1/8" off W-M-BA2E; y 16'-10 5/8"..21'-10 5/8", 2" of Corian
+    # deck at the head. Rotation 90 puts the drain end SOUTH (foot, with the filler) and the
+    # lumbar end and Bask heater pad NORTH. Service: FURN-M-BATH2-TUBDK-AP-N at the heater,
+    # FURN-M-BATH2-TUBDK-AP at the drain and filler rough.
     #
-    # ** THE FLOOR UNDER IT IS THE ONE THING THIS PASS COULD NOT SETTLE. ** Kohler states a
-    # minimum floor load of 49.3 lb/ft2 and tells the installer to "verify the subfloor is
-    # adequately supported for" it "plus water and occupant". Filled, this bath is 72.017 gal
-    # = 601 lb of water on 91 lb of shell; with a 200 lb occupant that is 892 lb over its
-    # 14.8 ft2 plan area, or 60 psf — against the 40 psf live load an IRC residential floor
-    # is designed to, on FS-M-WEST's 11 7/8" I-joists at 16" o.c. spanning 18'-0", which
-    # `structural.ijoist_span` passes at 97% of its 18'-6" table limit.
+    # ** THE FLOOR UNDER IT IS STILL NOT SETTLED HERE. ** Kohler's minimum floor load is
+    # 59 lb/ft2. Filled, 81 gal = 676 lb of water on 81 lb of shell; with a 200 lb occupant that
+    # is 957 lb over 13.33 ft2, ~72 psf against the 40 psf live load, on FS-M-WEST's I-joists.
+    # params/main_deck.py blocks and sisters for it; the engineer of record confirms.
     #
-    # That is a LOCAL overload on a joist run already near its limit, and the engine has no
-    # check that would ever say so — `structural.ijoist_span` grades the span against a
-    # table, not the load standing on it. It is very likely fine (14.8 ft2 of a 18'-0" bay
-    # distributes), and it is exactly the kind of "very likely fine" that belongs in front of
-    # whoever stamps the drawings. NOT ANSWERED HERE. Recorded in plans/TODO.md.
-    #
-    # `drain_position` stays at (7'-4", 19'-4.8"): the waste is CENTRE on this bath as it
-    # was on the allowance, and that point is where PR-B-TUB2-DRAIN turns for the stack, not
-    # the outlet itself. The run drops to 1 1/2" with this change (plan/mep_drainage.py) —
-    # K-7272's tee, not the 2" the allowance was drawn at.
-    Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-KOHLER-UNDERSCORE-6036",
-            room="RM-M-BATH2", position=pt(ft(6, 4.615), ft(19, 4.77)), rotation=deg(90),
-            wall_ref="W-M-BA2E", drain_position=pt(ft(7, 4), ft(19, 4.8)),
+    # `drain_position` is the end drain itself: 12 9/16" in from the shell's south end on its
+    # centreline (K-1130-W1 drawing), in the 208"..224" joist bay. PR-B-TUB2-DRAIN drops there.
+    Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-KOHLER-UNDERSCORE-6032",
+            room="RM-M-BATH2", position=pt(inch(78.49), inch(232.615)), rotation=deg(90),
+            wall_ref="W-M-BA2E", drain_position=pt(inch(78.49), inch(215.1775)),
             tub_enclosure=TubEnclosureSpec(
                 knee_wall_refs=("W-M-TUBDK-W", "W-M-TUBDK-S"), batt_thickness=inch(2.5),
-                access_panel_ref="FURN-M-BATH2-TUBDK-AP", deck_ref="SL-M-TUBDK")),
+                access_panel_refs=("FURN-M-BATH2-TUBDK-AP-N", "FURN-M-BATH2-TUBDK-AP"),
+                deck_ref="SL-M-TUBDK", support_width=inch(42), support_depth=inch(23.5))),
     # Hole line y=200.41 in. is unchanged; the trim envelope is centred on the tub.
-    # Closed handles point outward. The rough and hoses occupy the serviceable foot bay.
+    # Closed handles point outward. The rough and hoses share the foot bay with the K-7272.
     Fixture(uid="XSAHT3AEKA", tag="FX-M-BATH2-FILLER", type_ref="FX-MOEN-ALIGN-ROMAN", room="RM-M-BATH2",
             host_fixture_ref="FX-M-BATH2-TUB",
-            position=pt(inch(76.615), inch(203.800625)), rotation=deg(180),
+            position=pt(inch(78.49), inch(203.800625)), rotation=deg(180),
             mount=Mount(kind=MountKind.FLOOR, elevation=inch(21.25))),
     # ** A 54" ONE-BASIN VANITY, NOT A KITCHEN SINK ON A WALL MOUNT. ** FX-VANITY-54-SINGLE
     # (plan/fixture_types.py) carries the cabinet, the single basin and the 36"

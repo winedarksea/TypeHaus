@@ -462,7 +462,7 @@ CIRCUITS = (
     # cord-and-plug and factory-wired; the electrician owes it a GFCI-protected 15 A
     # grounded outlet behind the bath (ED-M-BATH2-TUB-RC), nothing more.
     #
-    # ** 15 A IS THE MANUFACTURER'S NUMBER, NOT THE LOAD. ** The heater draws 1.1 A / 65 W —
+    # ** 15 A IS THE MANUFACTURER'S NUMBER, NOT THE LOAD. ** The heater draws 0.5 A / 65 W (K-1130-W1) —
     # less than a light bulb. `load_va` is that 65, because the 220.82 summary has to see
     # what the house actually draws, and sizing it at the breaker would invent 1,735 VA of
     # demand out of a required circuit rating. `electrical.service_load` has 54.2 A of margin

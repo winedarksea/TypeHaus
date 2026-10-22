@@ -59,6 +59,12 @@ ACCESS_PANEL_1429 = FurnitureType(
     footprint=(inch(14), inch(1)), height=inch(29),
     plan_symbol=None, mount=_WALL, source=_PANEL,
 )
+# 20"L x 15"H: the minimum Kohler publishes for a heated-bath service panel (K-1130-W1).
+ACCESS_PANEL_2015 = FurnitureType(
+    tag="FT-ACCESS-PANEL-2015", name='Access panel, 20" x 15"',
+    footprint=(inch(20), inch(1)), height=inch(15),
+    plan_symbol=None, mount=_WALL, source=_PANEL,
+)
 # A CEILING panel swaps the fields' roles: the clear opening is in PLAN and the frame's
 # projection is the height. Gasketed, because a return-side cavity behind an unsealed lid in
 # a closet ceiling is IMC 601.5(7)'s return-air-from-a-closet.
@@ -95,7 +101,7 @@ CLOSET_SHELF_36 = FurnitureType(
 
 FIT_OUT_TYPES = (
     CURTAIN_ROD_48, CURTAIN_ROD_84, CELLULAR_BLIND_2748,
-    ACCESS_PANEL_1414, ACCESS_PANEL_1429,
+    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_2015,
     ACCESS_PANEL_CLG_3029, CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
     CLOSET_SHELF_36,
 )

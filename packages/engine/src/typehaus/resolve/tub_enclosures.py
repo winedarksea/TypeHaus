@@ -9,6 +9,7 @@ from math import cos, sin
 from shapely.geometry import Point, Polygon, box
 
 from typehaus.findings import Finding, Result, Severity
+from typehaus.model.placeable_symbols import _kohler_underscore_rect as rect_bath
 from typehaus.model.placeable_symbols import place_local
 from typehaus.model.placeable_symbols._kohler_underscore import (
     SEGMENTS,
@@ -40,6 +41,38 @@ def _ellipse(rx, ry, center, rotation):
                                 for i in range(SEGMENTS)], center, rotation))
 
 
+def _rectangle(x0, x1, y0, y1, center, rotation):
+    return Polygon(place_local([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], center, rotation))
+
+
+def _oval_support(spec, width, tub):
+    return _ellipse(spec.support_width.meters/2, spec.support_depth.meters/2,
+                    tub.position, tub.rotation_degrees)
+
+
+def _oval_shell(fraction, width, depth, tub):
+    rx, ry = shell_half_axes_at(fraction, width, depth)
+    return _ellipse(rx, ry, tub.position, tub.rotation_degrees)
+
+
+def _rect_support(spec, width, tub):
+    cx = rect_bath.support_center_x(width)
+    hw, hd = spec.support_width.meters/2, spec.support_depth.meters/2
+    return _rectangle(cx-hw, cx+hw, -hd, hd, tub.position, tub.rotation_degrees)
+
+
+def _rect_shell(fraction, width, depth, tub):
+    return _rectangle(*rect_bath.shell_section(fraction, width, depth),
+                      tub.position, tub.rotation_degrees)
+
+
+# Drop-in bath symbols whose shell this module can clear: (support, shell section).
+_SHELLS = {
+    "kohler-underscore-6036": (_oval_support, _oval_shell),
+    "kohler-underscore-6032": (_rect_support, _rect_shell),
+}
+
+
 def _emit(model, fixture, category, key, polygon, z0, z1, material, derived):
     for index, piece in enumerate(sorted(_polygons(polygon), key=lambda p: p.bounds)):
         if piece.area <= GEOMETRY_TOLERANCE_M**2 or z1-z0 <= GEOMETRY_TOLERANCE_M:
@@ -67,7 +100,7 @@ def _frame(wall):
     return local, world, run
 
 
-def _wall_batts(model, fixture, wall, panel, spec, enclosure_walls):
+def _wall_batts(model, fixture, wall, panels, spec, enclosure_walls):
     local, world, _run = _frame(wall)
     cavity = [layer for layer in wall.layers if layer.is_cavity
               and layer.material_ref == spec.insulation_material_ref]
@@ -96,8 +129,10 @@ def _wall_batts(model, fixture, wall, panel, spec, enclosure_walls):
         cuts.append((min(stations), min(elevations), max(stations), max(elevations)))
     # The access panel is a placed product rather than a RoughOpening. Its opening must
     # nevertheless remove the batts; clearing a whole wall-depth prism also preserves access.
-    panel_points = [local(point) for point in panel.footprint]
-    if panel.attachment_wall == wall.tag:
+    for panel in panels:
+        if panel.attachment_wall != wall.tag:
+            continue
+        panel_points = [local(point) for point in panel.footprint]
         cuts.append((min(p[0] for p in panel_points), panel.body_z0_m,
                      max(p[0] for p in panel_points), panel.body_z1_m))
     available = box(s0, z0, s1, z1).difference(union_all([box(*cut) for cut in cuts]))
@@ -132,7 +167,8 @@ def _wall_batts(model, fixture, wall, panel, spec, enclosure_walls):
 
 def _fit_enclosure(model, fixture, spec):
     canvas = {item.tag: item for item in model.canvas_objects}
-    tub, panel = canvas[fixture.tag], canvas[spec.access_panel_ref]
+    tub = canvas[fixture.tag]
+    panels = [canvas[ref] for ref in spec.access_panel_refs]
     walls = [model.wall(ref) for ref in spec.knee_wall_refs]
     if any(wall is None for wall in walls):
         raise ValueError("Enclosure knee wall reference is unresolved")
@@ -143,29 +179,29 @@ def _fit_enclosure(model, fixture, spec):
                          if item.tag == fixture.type_ref), None)
     if fixture_type is None:
         raise ValueError("Tub fixture type is unresolved")
-    if fixture_type.plan_symbol != "kohler-underscore-6036":
-        raise ValueError("Tub enclosure shell clearance requires the Kohler Underscore symbol")
+    if fixture_type.plan_symbol not in _SHELLS:
+        raise ValueError("Tub enclosure shell clearance requires a Kohler Underscore symbol")
+    support_of, shell_of = _SHELLS[fixture_type.plan_symbol]
     width, depth = (dimension.meters for dimension in fixture_type.footprint)
     height = fixture_type.height.meters
     if spec.insulation_material_ref not in {m.tag for m in model.plan.library.materials}:
         raise ValueError("Enclosure insulation material reference is unresolved")
-    if (any(wall.storey != tub.storey for wall in walls) or panel.storey != tub.storey
+    if (any(wall.storey != tub.storey for wall in walls)
+            or any(panel.storey != tub.storey for panel in panels)
             or deck.storey != tub.storey):
         raise ValueError("Enclosure parts must share the tub's storey")
     floor_z = min(wall.z0_m for wall in walls)
     seat_z = tub.z_m
     if abs(seat_z-floor_z-spec.mortar_bed_thickness.meters) > GEOMETRY_TOLERANCE_M:
         raise ValueError("Tub support seat must meet the mortar bed on the subfloor")
-    support = _ellipse(spec.support_width.meters/2, spec.support_depth.meters/2,
-                       tub.position, tub.rotation_degrees)
+    support = support_of(spec, width, tub)
     # This bottom-basin envelope is an explicit visualization assumption, not bearing design.
     _emit(model, tub, "tub_mortar_bed", "mortar-bed", support, floor_z,
           floor_z+spec.mortar_bed_thickness.meters,
           "mortar", True)
     strips = []
-    panel_wall = None
     for wall in walls:
-        _wall_batts(model, tub, wall, panel, spec, walls)
+        _wall_batts(model, tub, wall, panels, spec, walls)
         local, world, _run = _frame(wall)
         points = [local(point) for layer in wall.depth_layers() for point in layer.polygon]
         side = 1 if local(tub.position)[1] > sum(p[1] for p in points)/len(points) else -1
@@ -173,28 +209,30 @@ def _fit_enclosure(model, fixture, spec):
         lo, hi = min(p[0] for p in points), max(p[0] for p in points)
         far = face+side*spec.lower_return_projection.meters
         strips.append(Polygon([world(lo, face), world(hi, face), world(hi, far), world(lo, far)]))
-        authored_panel = model.plan.by_tag(spec.access_panel_ref)
-        attachment = getattr(getattr(authored_panel, "location", None), "attachment", None)
-        if getattr(attachment, "wall_ref", None) == wall.tag:
-            panel_wall = wall
-    if panel_wall is None:
-        raise ValueError("Access panel must be attached to one of the enclosure knee walls")
-    local, world, _run = _frame(panel_wall)
-    stations = [local(point)[0] for point in panel.footprint]
-    offsets = [local(point)[1] for point in deck.outline]
+    corridors = []
     margin = spec.service_side_clearance.meters
-    corridor = Polygon([world(s, d) for s, d in (
-        (min(stations)-margin, min(offsets)), (max(stations)+margin, min(offsets)),
-        (max(stations)+margin, max(offsets)), (min(stations)-margin, max(offsets)))])
+    for ref, panel in zip(spec.access_panel_refs, panels, strict=True):
+        location = getattr(model.plan.by_tag(ref), "location", None)
+        attachment = getattr(location, "attachment", None)
+        panel_wall = next((wall for wall in walls
+                           if getattr(attachment, "wall_ref", None) == wall.tag), None)
+        if panel_wall is None:
+            raise ValueError(f"Access panel {ref} must be attached to an enclosure knee wall")
+        local, world, _run = _frame(panel_wall)
+        stations = [local(point)[0] for point in panel.footprint]
+        offsets = [local(point)[1] for point in deck.outline]
+        corridors.append(Polygon([world(s, d) for s, d in (
+            (min(stations)-margin, min(offsets)), (max(stations)+margin, min(offsets)),
+            (max(stations)+margin, max(offsets)), (min(stations)-margin, max(offsets)))]))
     top_z = floor_z+spec.lower_return_thickness.meters
     # Subtract the largest shell section within the entire return height. This conservative
     # trim avoids hidden shell penetration without approximating a taper as many thin slices.
     fraction = (top_z-tub.z_m)/height
-    rx, ry = shell_half_axes_at(fraction, width, depth)
-    shell = _ellipse(rx, ry, tub.position, tub.rotation_degrees)
+    shell = shell_of(fraction, width, depth, tub)
     clearance = spec.shell_clearance.meters
     returns = union_all(strips).intersection(Polygon(deck.outline)).difference(
-        union_all([support.buffer(clearance), shell.buffer(clearance)])).difference(corridor)
+        union_all([support.buffer(clearance), shell.buffer(clearance)])).difference(
+        union_all(corridors))
     _emit(model, tub, "tub_insulation_return", "lower-return", returns, floor_z, top_z,
           spec.insulation_material_ref, False)
 

@@ -650,7 +650,7 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
         element = ll.create_entity(f, ifc_class, name=item.tag)
         element.GlobalId = derive_guid(project_uuid, item.uid)
         if getattr(product_type, "plan_symbol", None) in {
-                "kohler-underscore-6036", "roman-tub-filler"}:
+                "kohler-underscore-6036", "kohler-underscore-6032", "roman-tub-filler"}:
             from typehaus.emit.ifc.placeable_parts import parts_representation
             from typehaus.model.placeable_symbols import model_parts
 

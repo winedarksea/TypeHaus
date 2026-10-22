@@ -93,7 +93,7 @@ SYMBOL_NAMES = frozenset({
     # footprint and the only in-wall part that shows is the actuator plate. Its carrier is
     # framing, not a glyph — see ``resolve/framing/carriers.py``.
     "toilet", "toilet-wall-hung", "lavatory", "lavatory-wall-hung", "vanity", "tub",
-    "kohler-underscore-6036",
+    "kohler-underscore-6036", "kohler-underscore-6032",
     # "roman-tub-filler" is a bath's deck trim, placed on the deck beside the rim.
     "roman-tub-filler",
     "tub-shower", "shower",

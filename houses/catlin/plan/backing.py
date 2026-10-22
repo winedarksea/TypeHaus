@@ -246,9 +246,14 @@ MAIN_BACKING = [
     # The tub deck's own skirt is a 19 1/4" wall, so this band sits inside a 16" stud run:
     # 2" clears the sole plate and the 2x8 tops out at 9 1/4", well under it.
     WallBacking(uid="2WV5J50Q0C", tag="BK-M-TUBDK-AP", wall_ref="W-M-TUBDK-W",
-                start=inch(48.75), length=inch(19.25),
+                start=inch(48.75), length=inch(16.99),
                 elevation=inch(2), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="bath 2 tub deck access panel frame"),
+    # The heater-end leaf's frame, filling the knee wall's first 24" o.c. bay stud to stud.
+    WallBacking(uid="AJJ1CQY959", tag="BK-M-TUBDK-AP-N", wall_ref="W-M-TUBDK-W",
+                start=inch(1.5), length=inch(21.75),
+                elevation=inch(2), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="bath 2 tub heater-end access panel frame"),
     # FX-M-PORCH-HYD's seat. The hydrant states a WALL/24" mount on the element as of
     # 2026-09-15 (plan/fixtures.py); before that it inherited a default FLOOR mount and
     # resolved at 1 1/4", so there was nothing at 24" for a band to be missing behind.

@@ -3409,10 +3409,12 @@
 # +$65-100/ea for the 52535-SS head over the boxed one (2026-10-12; street $64-73).
 "FX-TUBSHOWER-60-DIVERTED" = { material = { low = 965, high = 2700 }, labour = { low = 450, high = 1050 } }  # 2 ea
 "FX-TUB-60" = { material = { low = 400, high = 1600 }, labour = { low = 330, high = 800 } }  # 1 ea
-# THE CHOSEN BATH — Kohler K-5713-W1-0 Underscore with the Bask heated surface, RM-M-BATH2
+# THE CHOSEN BATH — Kohler K-1130-W1-0 Underscore 60x32 with the Bask heated surface, RM-M-BATH2
+# (K-5713-W1-0 until 2026-10-22; the range held: 1130-W1 street $2,492 biscuit / $2,556 black,
+# $3,407 list, Ferguson / Ultra Design Center snippets read 2026-10-22)
 # (plan/products.py, plan/fixture_types.py). This row is a real product, not a class
 # allowance, so it sits above FX-TUB-60 on both halves by a wide margin and that ordering is
-# structural rather than a coincidence to preserve: a named 72-gallon acrylic drop-in with an
+# structural rather than a coincidence to preserve: a named 81-gallon acrylic drop-in with an
 # electric heated shell against a generic 60x30 alcove unit.
 #
 # ** THE MATERIAL RANGE IS THE WEAKEST NUMBER IN THIS FILE AND IS NOT FIRMLY SOURCED. **
@@ -3435,7 +3437,7 @@
 # ("slab_platform:TUBDECK_INT_PLY_CAP" and [envelope_layers]), the Corian deck top, faces and
 # splash (`solid-surface-fabricated` in [envelope_layers] and [wood_surfaces]),
 # the dedicated circuit and its outlet, and the two access panels.
-"FX-KOHLER-UNDERSCORE-6036" = { material = { low = 2200, high = 3100 }, labour = { low = 430, high = 1050 } }  # 1 ea
+"FX-KOHLER-UNDERSCORE-6032" = { material = { low = 2200, high = 3100 }, labour = { low = 430, high = 1050 } }  # 1 ea
 # FX-M-BATH2-FILLER: Moen T393 chrome + 4794 rough, read 2026-10-22.
 # Moen rendered T393 $501.40; live /products/t393.js $534.84, /products/4794.js $169.44.
 # Add $100-200 material allowance for the required ASSE 1070 limiting device and fittings;

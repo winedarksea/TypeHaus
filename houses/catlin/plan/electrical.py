@@ -559,31 +559,12 @@ MAIN_DEVICES = [
     # there is no hardwired junction box to place, and CKT-BATH2-TUB is the dedicated
     # circuit the spec sheet requires.
     #
-    # Inside SL-M-TUBDK's deck box, on W-M-TUBDK-W's bay face (x=4'-11.74") at y=16'-8.9",
-    # facing east, 8" up off the subfloor — above any water that ever finds the box.
-    #
-    # The attachment puts the box's BACK on that face, not its centre — ED-T-RECEPTACLE-GFCI
-    # is a 4" x 2" body and half of it authored at the face resolves inside the studs
-    # (`integrity.wall_mount_on_face`, which is how this was
-    # caught). The 4" reads along y here because the type has no way to say the box is hung
-    # with its long axis vertical, which is how it is actually mounted; the foot bay is
-    # ~5 1/16" and would barely take a horizontal one.
-    #
-    # ** y IS IN THE FOOT BAY, SOUTH OF THE BATH, AND THAT IS THE POINT. ** The obvious spot
-    # is further north, on the same face beside the shell — and it does not work: the rim
-    # laps that wall, so a receptacle there would have the acrylic hard against its cover
-    # and nowhere for a plug to project. South of the bath's foot (16'-10 15/16") the bay is
-    # ~5 1/16" x 35" of open box, and the cord plugs in facing EAST down the 36",
-    # not north into the 4" — which is why this wall and not the south knee wall.
-    # FURN-M-BATH2-TUBDK-AP is directly outside it in the same wall (plan/placeables.py);
-    # the existing FURN-M-BATH2-TUB-AP in W-M-BA2E's laundry face reaches the trap, not this.
-    #
-    # ** THE 24" IS THE ONE DIMENSION HERE THAT IS NOT VERIFIED. ** Kohler publishes neither
-    # the cord length nor where on the shell the power supply sits, and this bath is 5'-0"
-    # long: this outlet is within 24" of a board at the foot and is not within 24" of one at
-    # the head. Measure it against the delivered bath before the knee wall is
-    # closed. Moving the box is a 15-minute job while the bay is open and a demolition
-    # afterwards.
+    # ** AT THE HEAD, BESIDE THE HEATER (2026-10-22). ** Inside SL-M-TUBDK's deck box, on
+    # W-M-HS1's bath face at x=5'-6 1/2", 8" up, facing south. The K-1130-W1's heater pad and
+    # power supply are on the lumbar (north) end, and that end's 34-degree slope leaves ~11"
+    # of void between shell and wall at this height, so a plug fits. Reached through
+    # FURN-M-BATH2-TUBDK-AP-N. Until this date it sat in the SOUTH foot bay, 40"+ from a
+    # head-end supply, against Kohler's 24".
     #
     # RECEPTACLE, not RECEPTACLE_GFCI: the protection is at the breaker (CKT-BATH2-TUB's
     # `gfci=True`), which is what the house does everywhere and is the only thing that works
@@ -593,8 +574,8 @@ MAIN_DEVICES = [
                      circuit="CKT-BATH2-TUB", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(8)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-TUBDK-W", face="left", distance_from_start=inch(63.71875),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         wall_ref="W-M-HS1", face="right", distance_from_start=inch(66.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-DINING", room="RM-M-LIVING",

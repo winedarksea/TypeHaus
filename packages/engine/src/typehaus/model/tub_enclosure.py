@@ -15,7 +15,7 @@ class TubEnclosureSpec(HausModel):
     """
 
     knee_wall_refs: tuple[str, str]
-    access_panel_ref: str
+    access_panel_refs: tuple[str, ...]
     deck_ref: str
     insulation_material_ref: str = "mineral-wool"
     batt_thickness: Length = inch(3.5)
@@ -35,6 +35,9 @@ class TubEnclosureSpec(HausModel):
                 raise ValueError(f"{name} must be positive")
         if self.shell_clearance.meters < 0 or self.service_side_clearance.meters < 0:
             raise ValueError("Enclosure clearances cannot be negative")
+        if not self.access_panel_refs or len(set(self.access_panel_refs)) != len(
+                self.access_panel_refs):
+            raise ValueError("A tub enclosure needs one or more distinct access panels")
         if len(set(self.knee_wall_refs)) != 2:
             raise ValueError("A tub enclosure needs two distinct knee walls")
         return self

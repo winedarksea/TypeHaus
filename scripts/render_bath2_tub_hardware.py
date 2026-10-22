@@ -7,10 +7,10 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Ellipse, Polygon, Rectangle
+from matplotlib.patches import Polygon, Rectangle
 
 from typehaus.model.placeable_symbols import model_parts, place_local, plan_symbol_strokes
-from typehaus.model.placeable_symbols._kohler_underscore import (
+from typehaus.model.placeable_symbols._kohler_underscore_rect import (
     BASIN_TOP_DEPTH_IN,
     BASIN_TOP_WIDTH_IN,
 )
@@ -61,8 +61,15 @@ def plan_view(ax, model, tub, filler, bars, types):
                                      fc="#e0dfd9", ec="#b6b5ae", lw=0.3))
     x0, y0, x1, y1 = bounds(tub)
     ax.add_patch(Rectangle((x0, y0), x1 - x0, y1 - y0, fc="white", ec=INK, lw=1.3))
-    ax.add_patch(Ellipse(tuple(v / IN for v in tub.position), BASIN_TOP_DEPTH_IN,
-                         BASIN_TOP_WIDTH_IN, fc="#edf5f7", ec=BLUE))
+    cx, cy = (v / IN for v in tub.position)
+    ax.add_patch(Rectangle((cx - BASIN_TOP_DEPTH_IN / 2, cy - BASIN_TOP_WIDTH_IN / 2),
+                           BASIN_TOP_DEPTH_IN, BASIN_TOP_WIDTH_IN, fc="#edf5f7", ec=BLUE))
+    # Service: the heater-end leaf and Bask outlet (north), the foot leaf (south).
+    for tag in ("FURN-M-BATH2-TUBDK-AP-N", "FURN-M-BATH2-TUBDK-AP", "ED-M-BATH2-TUB-RC"):
+        part = next(c for c in model.canvas_objects if c.tag == tag)
+        px0, py0, px1, py1 = bounds(part)
+        ax.add_patch(Rectangle((px0, py0), px1 - px0, py1 - py0, fc=BLUE, ec=BLUE))
+    ax.text(cx, cy + 24, "heater end", color=BLUE, ha="center", fontsize=8)
     ax.plot([tub.position[0] / IN] * 2, [197, 267], color=BLUE, lw=0.7, ls="--")
     for bar in bars:
         bx0, by0, bx1, by1 = bounds(bar)
@@ -76,14 +83,14 @@ def plan_view(ax, model, tub, filler, bars, types):
                                                                       HANDLE_CENTRES_IN / 2)],
                         filler.position, filler.rotation_degrees)
     ax.scatter([x / IN for x, y in holes], [y / IN for x, y in holes], s=14, color=BLUE)
-    ax.text(64, 235, "Kohler Underscore\nK-5713-W1-0", color=INK, ha="center", fontsize=9,
+    ax.text(68, 235, "Kohler Underscore\nK-1130-W1-0", color=INK, ha="center", fontsize=9,
             rotation=90)
     ax.annotate('Hole line y = 200.41"\n10" handle centres', (holes[1][0] / IN, holes[1][1] / IN),
                 (55, 190), color=INK, fontsize=9, arrowprops={"arrowstyle": "-", "color": BLUE})
     dimension(ax, (x0, 272), (x1, 272), f'{x1 - x0:g}" rim')
     dimension(ax, (49, y0), (49, y1), f'{y1 - y0:g}" rim', vertical=True)
     ax.text(95.8, 234, "EAST WALL", rotation=90, color=INK, ha="center")
-    ax.text(79, 265, 'CL x = 76.615"', color=BLUE, fontsize=9)
+    ax.text(79, 265, f'CL x = {tub.position[0] / IN:g}"', color=BLUE, fontsize=9)
     ax.set(xlim=(44, 102), ylim=(185, 278), xlabel="House x (inches)", ylabel="House y (inches)")
     ax.set_title("PLAN · north up", loc="left", fontweight="bold", color=INK)
 

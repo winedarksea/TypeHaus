@@ -273,7 +273,7 @@ def test_bath2_tub_bars_are_centred_separate_and_above_the_rim(catlin_model_ro):
     objects = {o.tag: o for o in catlin_model_ro.canvas_objects}
     tub = objects["FX-M-BATH2-TUB"]
     bars = [objects["FURN-M-BATH2-TUB-TOWEL-" + end] for end in ("S", "N")]
-    assert [bar.position[1] / IN for bar in bars] == pytest.approx([218.77, 246.77])
+    assert [bar.position[1] / IN for bar in bars] == pytest.approx([218.615, 246.615])
     assert sum(bar.position[1] for bar in bars) / 2 == pytest.approx(tub.position[1])
     assert Polygon(bars[0].footprint).distance(Polygon(bars[1].footprint)) / IN == pytest.approx(2.66)
     for bar in bars:

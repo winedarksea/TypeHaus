@@ -405,16 +405,20 @@ MAIN_PLACEABLES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-HS1", face="left", distance_from_start=inch(24.5),
                   normal_gap=inch(-1), rotation_offset=deg(-180)))),
-    # FX-M-BATH2-TUB drains at SP-M-BATH2-TUB (7'-4", 19'-4.8"), 8" off W-M-BA2E and
-    # behind the tub rather than at either end of it — so the trap and the waste-and-
-    # overflow are unreachable from BATH2 without pulling the tub. They are 8" the other
-    # side of that wall, in RM-M-LAUNDRY, which is where the panel goes: laundry face of
-    # W-M-BA2E at the drain's own y. Base at 6" puts the opening at 6"..1'-8", the band
-    # the tee and trap occupy.
+    # FX-M-BATH2-TUB's two service leaves in the W apron (both removable Corian, 1/8" reveal).
+    # Foot (south): the end drain, K-7272 waste-and-overflow and the Moen 4794 rough.
+    # Head (north): the Bask heater pad's power supply and ED-M-BATH2-TUB-RC. Kohler K-1130-W1
+    # wants 20"L x 15"H minimum at the heater end: this one is centred y=252 1/4", 1"-16" up,
+    # inside the knee wall's first 21 3/4" x 16 1/4" bay. The foot leaf fills the last bay.
+    Furniture(uid="958QHB20S6", tag="FURN-M-BATH2-TUBDK-AP-N", type_ref="FT-ACCESS-PANEL-2015",
+              room="RM-M-BATH2", mount=Mount(kind=MountKind.WALL, elevation=inch(1)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-TUBDK-W", face="right", distance_from_start=inch(12.375),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
     Furniture(uid="1AQVMB4JJD", tag="FURN-M-BATH2-TUBDK-AP", type_ref="FT-ACCESS-PANEL-1414",
               room="RM-M-BATH2", mount=Mount(kind=MountKind.WALL, elevation=inch(3)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-TUBDK-W", face="right", distance_from_start=inch(62.625),
+                  wall_ref="W-M-TUBDK-W", face="right", distance_from_start=inch(57.25),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # --- RM-M-BATH2 over-toilet cabinet --------------------------

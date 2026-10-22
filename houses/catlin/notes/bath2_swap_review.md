@@ -1,5 +1,8 @@
 # Main-floor master bathroom: shower / tub swap study
 
+> 2026-10-22: the tub is now the 60 × 32 K-1130-W1 and the platform is 35.5" wide, under
+> both thresholds below. This study was not re-run.
+
 Investigated 2026-10-09. **Recommendation: keep the current arrangement with the selected
 Kohler 60" × 36" drop-in tub.** Swapping the bathing fixtures fits their footprints into
 the room, but puts the wider tub deck opposite the basin and against the bedroom doorway.

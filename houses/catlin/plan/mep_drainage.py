@@ -188,18 +188,18 @@ DRAINS = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(129.4375), inch(94.6), inch(94.5), inch(94.0)),
             serves=("FX-M-BATH1-LAV",)),
-    # 1 1/2": FX-M-BATH2-TUB is the Kohler K-5713-W1 (plan/fixtures.py), whose spec
+    # 1 1/2": FX-M-BATH2-TUB is the Kohler K-1130-W1 (plan/fixtures.py), whose spec
     # drawing labels a 1 1/2" bath drain and whose required waste-and-overflow — K-7272
     # Clearflo, PROD-KOHLER-7272 — is a 1 1/2" PVC tee.
     # One bathtub at 2 DFU, and 1 1/2" is the trap size the code tables give a
     # bathtub, so nothing about the sizing moves; only the pipe that gets ordered.
     PipeRun(uid="CBPD03AAAA", tag="PR-B-TUB2-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(7, 4), ft(19, 4.8)), pt(ft(7, 4), ft(19, 4.8)),
-                  pt(ft(6), ft(19, 4.8))),
+            path=(pt(inch(78.49), inch(215.1775)), pt(inch(78.49), inch(215.1775)),
+                  pt(ft(6), inch(215.1775))),
             diameter=inch(1.5), material="pvc",
-            # The leg lies in the 224"..240" joist bay, so the turn can sit up in the band:
-            # 9 1/4" of fall over its 16" run is a 30-degree leg, a stock 1/6 bend.
-            elevations=(ft(9, 1.4375), inch(97.875), ft(7, 4.6375)),
+            # The end drain drops in the 208"..224" joist bay and the leg runs west inside it to
+            # PR-B-MAIN-DRAIN: 11 1/4" of fall over 6 1/2", a 60-degree leg (1/6 bend).
+            elevations=(ft(9, 1.4375), inch(97.6), inch(86.35)),
             serves=("FX-M-BATH2-TUB",)),
     PipeRun(uid="CBPD04AAAA", tag="PR-B-SH2-DRAIN", system=PipeSystem.DRAIN,
             # Moved to the centre drain (2026-10-22). The drop at y=14'-11" is in joist 11's bay

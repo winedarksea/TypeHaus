@@ -43,7 +43,7 @@ _MAX_COUNTING_HEIGHT_M = 5.5 * 0.3048
 # without silently moving a code rule's scope.
 _BASIN_SYMBOLS = {"lavatory", "vanity"}
 _NOT_BASIN_SYMBOLS = {"toilet", "toilet-wall-hung", "bidet", "urinal", "tub", "tub-shower",
-                      "kohler-underscore-6036",
+                      "kohler-underscore-6036", "kohler-underscore-6032",
                       "shower", "floor-drain", "kitchen-sink", "laundry-sink", "hydrant",
                       "kitchen-sink-undermount-single",
                       "sauna-heater", "water-heater"}

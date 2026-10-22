@@ -282,17 +282,17 @@ NODES = [
     # asymmetric.
     #
     # These axes are CENTRELINES of a 3 1/2" symmetric 2x3 wall, so each sits 1 3/4" inboard
-    # of the deck's outer face: x=4'-9.99" for the 4'-8.24" west face, y=16'-4 1/8" for the
-    # 16'-2 3/8" south face. That south face is also FX-M-BATH2-SH's north face — one line,
+    # of the deck's outer face: x=5'-0.865" for the 4'-11.115" west face, y=16'-4 1/8" for the
+    # 16'-2 3/8" south face. The west face plus the 1/2" Corian apron (as drawn) is x=4'-10.615", the
+    # shower's front-glass line, so glass and apron are one plane (owner, 2026-10-22). That south face is also FX-M-BATH2-SH's north face — one line,
     # one wall, both jobs.
     #
-    # ** THE RIM LAPS THE KNEE WALLS NOW (2026-10-21). ** The west wall's bay face (59.74")
-    # is FO-M-TUBDK's west edge, so the rim's 1" over the cutout lands on the cap above the
-    # wall rather than 3/16" beside it. The east rim meets W-M-BA2E's face at 1/8". The
-    # cutout is provisional, so Kohler template 1268438-7 governs both before anyone cuts.
-    Node(uid="YJ36WFQV9C", tag="N-M-TUBDK-N", position=pt(ft(4, 9.99), ft(22, 0.615)),
+    # ** THE RIM LAPS THE WEST KNEE WALL (K-1130-W1, 2026-10-22). ** Its bay face is 62.615",
+    # 1/8" inside the rim's 62.49" west edge and 1/8" outside FO-M-TUBDK's published
+    # cutout. The east rim meets W-M-BA2E's face at 1/8". Template 1268438 governs drilling.
+    Node(uid="YJ36WFQV9C", tag="N-M-TUBDK-N", position=pt(ft(5, 0.865), ft(22, 0.615)),
          open_end=True),
-    Node(uid="JJJGMEWYJD", tag="N-M-TUBDK-C", position=pt(ft(4, 9.99), ft(16, 4.125))),
+    Node(uid="JJJGMEWYJD", tag="N-M-TUBDK-C", position=pt(ft(5, 0.865), ft(16, 4.125))),
     Node(uid="QSFPKZQV7C", tag="N-M-TUBDK-E", position=pt(ft(7, 10.615), ft(16, 4.125)),
          open_end=True),
     # --- RM-M-LIVING's fireplace surround, W-M-FIRE-* -------------------------------------
@@ -1778,14 +1778,9 @@ FLOOR_OPENINGS = [
     # closed enum of STAIR|CHASE|HATCH; it is a fixture penetration, and STAIR and HATCH are
     # both further away than "a hole for something to pass through".
     #
-    # ** THIS OUTLINE IS PROVISIONAL AND KOHLER IS THE REASON. ** The spec sheet publishes no
-    # numeric cutout for the K-5713-W1 and says instead "measure your actual product" —
-    # drop-in template 1268438-7 ships in the carton and governs. What is drawn here is the
-    # rim less 1" all round (57 11/16" x 33 3/4", centred on the bath), which is a
-    # deliberately conservative stand-in: it is right for the ply the cap orders and the
-    # tile it carries, and it must be re-struck off the template before anyone cuts. The
-    # basin top (55 9/16" x 28 3/8") is NOT the cutout and must not be used as one — it is
-    # the water, not the shell.
+    # The outline is the K-1130-W1 sheet's published drop-in cutout, 59 1/2" x 31 1/2".
+    # The carton's template still governs the cut. The basin top (55 1/8" x 27 1/8") is NOT
+    # the cutout: it is the water, not the shell.
     # FO-M-FIRE was here — the 47 3/4" x 12 5/8" hole W-M-FIRE-STUB's brick rose through,
     # with a 2-ply LVL header, four full-span 17'-11" trimmer plies, two LUS, two HHUS410
     # and I-joist web stiffeners. RETIRED 2026-09-19, because the premise it was framed on
@@ -1800,12 +1795,14 @@ FLOOR_OPENINGS = [
     # 2" east with W-M-BA2E2's move, which made the hole the rim's full 35 3/4" width and
     # put it 1" off the bath's centre — an open 1" slot through the cap east of the rim,
     # with the rim landing on nothing there. The 2" the wall move bought belongs to the DECK
-    # (SL-M-TUBDK below, which does run east to the new face); the cutout stays rim-less-1".
+    # (SL-M-TUBDK below, which does run east to the new face).
+    # Since 2026-10-22 it is Kohler's PUBLISHED K-1130-W1 cutout, 59 1/2" x 31 1/2", centred
+    # on the 60" x 32" rim: 1/4" of lap a side.
     FloorOpening(uid="KXX3WKN3R7", tag="FO-M-TUBDK", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(ft(4, 11.74), ft(16, 11.926)),
-                          pt(ft(7, 9.49), ft(16, 11.926)),
-                          pt(ft(7, 9.49), ft(21, 9.614)),
-                          pt(ft(4, 11.74), ft(21, 9.614)))),
+                 outline=(pt(ft(5, 2.74), ft(16, 10.865)),
+                          pt(ft(7, 10.24), ft(16, 10.865)),
+                          pt(ft(7, 10.24), ft(21, 10.365)),
+                          pt(ft(5, 2.74), ft(21, 10.365)))),
     # --- the ERV intake riser's hole through FS-M-MECH ------------------------------------
     #
     # ** FS-M-MECH HAS CARRIED FOUR RISERS AND DECLARED NO OPENING AT ALL. ** Until this pass
@@ -1891,8 +1888,8 @@ FLOOR_OPENINGS = [
 # [envelope_layers]; a floor finish would bill the deck as its own floor area as well.
 SLABS = [
     Slab(uid="W92SX7DVJ0", tag="SL-M-TUBDK", kind="platform",
-         outline=(pt(ft(4, 8.24), ft(16, 2.375)), pt(ft(7, 10.615), ft(16, 2.375)),
-                  pt(ft(7, 10.615), ft(22, 0.615)), pt(ft(4, 8.24), ft(22, 0.615))),
+         outline=(pt(ft(4, 11.115), ft(16, 2.375)), pt(ft(7, 10.615), ft(16, 2.375)),
+                  pt(ft(7, 10.615), ft(22, 0.615)), pt(ft(4, 11.115), ft(22, 0.615))),
          thickness=inch(2.75), assembly="TUBDECK_INT_PLY_CAP",
          top_elevation=inch(22.75), openings=("FO-M-TUBDK",)),
 ]
@@ -2172,25 +2169,26 @@ PANELING = [
     # shop piece (notes/bath2_tub_deck_finish.md): the W apron on W-M-TUBDK-W's right
     # (room) face, and the stall face on W-M-TUBDK-S's right (south) face over the pan's
     # 3'. `height=None` runs each to the deck's finished 22 3/4": `resolve/paneling.py`
-    # clamps a knee wall's band to its tub deck. FURN-M-BATH2-TUBDK-AP is a removable
-    # leaf cut from the apron, 1/8" reveal, on BK-M-TUBDK-AP.
+    # clamps a knee wall's band to its tub deck. FURN-M-BATH2-TUBDK-AP (foot: drain, filler
+    # rough) and -AP-N (head: the Bask supply) are removable leaves cut from the apron, 1/8"
+    # reveal, on BK-M-TUBDK-AP / -AP-N.
     WallPaneling(uid="EQGJVGPGEA", tag="WP-M-BATH2-TUBDK-APRON", room="RM-M-BATH2",
                  material_ref="solid-surface-fabricated",
                  spans=(PanelingSpan(wall_ref="W-M-TUBDK-W", start=inch(0),
                                      length=inch(68), face="right"),
-                        PanelingSpan(wall_ref="W-M-TUBDK-S", start=inch(0.625),
-                                     length=ft(3), face="right"))),
+                        PanelingSpan(wall_ref="W-M-TUBDK-S", start=inch(0),
+                                     length=inch(33.75), face="right"))),
     # A 6" Corian splash where the deck meets HS1 (N) and BA2E (E), so neither joint is
     # silicone to paint. `offset` is wall-local, up from the wall base at the storey datum:
-    # 22 3/4" is the deck top. Spans follow the deck: HS1 from x 56.24" to its end at 72",
+    # 22 3/4" is the deck top. Spans follow the deck: HS1 from x 59.115" to its end at 72",
     # HS2 to BA2E's face, BA2E from HS1's face south to its end at y=216", BA2E2 on to the
     # stall's north line (y 194 3/8"). The N leg is bonded or coved to the deck; the E leg
     # sits on the rim lip in silicone like an alcove flange. Eased top and end edges.
     WallPaneling(uid="TY8X80XSK5", tag="WP-M-BATH2-TUB-SPLASH", room="RM-M-BATH2",
                  material_ref="solid-surface-fabricated", offset=inch(22.75),
                  height=inch(6),
-                 spans=(PanelingSpan(wall_ref="W-M-HS1", start=inch(56.24),
-                                     length=inch(15.76)),
+                 spans=(PanelingSpan(wall_ref="W-M-HS1", start=inch(59.115),
+                                     length=inch(12.885)),
                         PanelingSpan(wall_ref="W-M-HS2", start=inch(0),
                                      length=inch(22.625)),
                         PanelingSpan(wall_ref="W-M-BA2E", start=inch(3.385),

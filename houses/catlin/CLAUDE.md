@@ -200,8 +200,10 @@ not instruction: when it disagrees with this file or the model, it is the one th
   ApplianceType/FurnitureType *catalog*, wired in by `plan/manifest.py`. NOT editable: it
   uses `frozenset(...)`, which the dialect forbids. Type libraries stay non-editable;
   movable instances that reference them live in the editable modules above. **`plan/
-  fixture_types.py` holds the selected plumbing fixtures** — `FX-KOHLER-UNDERSCORE-6036`
-  (the drop-in bath), `FX-MOEN-ALIGN-ROMAN` (its deck filler, `FX-M-BATH2-FILLER` on the foot
+  fixture_types.py` holds the selected plumbing fixtures** — `FX-KOHLER-UNDERSCORE-6032`
+  (the K-1130-W1 60x32 drop-in since 2026-10-22: deck face on the shower glass line, 2x3
+  knee walls at 24" o.c. under one plate, a 20x15 heater-end leaf `FURN-M-BATH2-TUBDK-AP-N`
+  with the Bask outlet on HS1 behind the head, `notes/bath2_tub_hardware.md`), `FX-MOEN-ALIGN-ROMAN` (its deck filler, `FX-M-BATH2-FILLER` on the foot
   ledge, pardoned against the rim by `host_fixture_ref`; the deck narrowed to 2x3 knee walls
   the rim laps, 2026-10-21; centered Align filler and twin chrome bars, 2026-10-22,
   documented in `notes/bath2_tub_hardware.md`; one-piece Corian deck, faces and splash,

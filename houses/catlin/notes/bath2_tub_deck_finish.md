@@ -12,7 +12,7 @@ pinned by `tests/test_catlin_bath2_tub_deck.py` and `tests/test_paneling_geometr
 **What is asked of the reviewer:** confirm that the fabricator can make the U, the two faces
 and the splash as one bonded piece to these joints (§3), and that the chips pass §4.
 
-> ⚠ The legs are 2-2½". Only bonded acrylic makes them, the apron and the stall face
+> ⚠ The legs are 2-3⅞". Only bonded acrylic makes them, the apron and the stall face
 > without seams or a breakage risk. Do not let a fabricator substitute quartz, cultured
 > marble or tile on price. Every one was weighed and rejected in §2.
 
@@ -27,10 +27,12 @@ The rim sits on ≤⅛" spacers at 22¾", so the visible deck is a thin U around
 
 | leg | working | visible |
 |---|---|---|
-| W | rim 58.74 − deck 56.24 | 2½" |
-| N, at HS1/HS2 | deck 264.615 − rim 262.61 | 2" |
-| S, the foot ledge | rim 202.93 − deck 194.375 | 8½": filler, glass |
+| W | rim 62.49 − apron face 58.615 | 3⅞": apron on the shower's front-glass line |
+| N, at HS1/HS2 | deck 264.615 − rim 262.615 | 2" |
+| S, the foot ledge | rim 202.615 − deck 194.375 | 8¼": filler, glass |
 | E, at BA2E | deck 94.615 − rim 94.49 | ⅛": silicone only |
+
+(K-1130-W1, 60 × 32, since 2026-10-22.)
 
 Tiled, that U is grout slivers and a cut tile edge on every leg but the south. The knee
 walls' two exposed faces also stopped at the 20" framing top. The 20"→22¾" band under the
@@ -77,8 +79,9 @@ top out at 96" against the 106" ceiling, so `bath2_shower.md` §5 confirm 3 stay
   glass the top slopes ≥ ¼" into the stall. There is no horizontal joint under the glass.
 - **Filler.** The fabricator drills the two 1¼" handle holes and the spout hole to the Moen
   template. 12 mm sits within the 4794's 1¼" finish allowance.
-- **Access panel.** `FURN-M-BATH2-TUBDK-AP` gets a removable leaf cut from the apron, with a
-  ⅛" reveal, on the `BK-M-TUBDK-AP` frame.
+- **Access panels.** Two removable leaves cut from the W apron, ⅛" reveal: the 20 × 15
+  heater-end `FURN-M-BATH2-TUBDK-AP-N` (on `BK-M-TUBDK-AP-N`) and the 14 × 14 foot
+  `FURN-M-BATH2-TUBDK-AP` (on `BK-M-TUBDK-AP`). Leave each out of the bond.
 - **Fabrication.** Corian's bulletins want a ≥ ½" (13 mm) inside radius on an L- or
   U-shaped piece and ≥ 3/16" on a cutout. Cutouts are router-cut only, with bits ≥ 10 mm and
   edges rounded over ≥ 1/16". The rim cutout's corners are the U's inside corners and take
