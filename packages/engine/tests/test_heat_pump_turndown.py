@@ -51,9 +51,10 @@ _CATLIN = {
     # addendum of that date): every zone's window and door U fell.
     "EQ-M-HP1-OD": (14_402, 14_000, 5.0, 0.97, -10.6, _ADVISED),
     # The living-east rework replaces two 27x48 windows with one 63x48 unit, adding 3 sf
-    # of glass to System 2's main-storey zone (2026-10-16).
-    "EQ-M-HP2-OD": (13_855, 8_800, 5.0, 0.64, 23.6, not _ADVISED),
-    "EQ-M-HP3-OD": (910, 2_800, 17.0, 3.08, None, _ADVISED),
+    # of glass to System 2's main-storey zone (2026-10-16). 13,855 / 0.64 / 23.6 °F, and
+    # HP3 910 / 3.08, before the 2026-10-21 bath 1 rework moved the powder room's walls.
+    "EQ-M-HP2-OD": (13_861, 8_800, 5.0, 0.63, 23.7, not _ADVISED),
+    "EQ-M-HP3-OD": (904, 2_800, 17.0, 3.10, None, _ADVISED),
 }
 
 

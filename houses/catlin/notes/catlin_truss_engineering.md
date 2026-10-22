@@ -674,8 +674,10 @@ vapour and thermal in one application, and §1 says so. **Enverge OnePass HFO is
 barrier at ≥ 1-1/2" continuous**, so the item closes on the report. It reopens if the
 product changes: **ICC-ES ESR-4073** (Heatlok HFO High Lift) and **IAPMO ER-565** (Heatlok
 HFO Pro) do not evaluate WRB (re-read 2026-10-21; a reviewer's citation of both was to
-Huntsman's literature, not the reports), nor does ER-720 (SealTite). A substitute's water
-plane runs through **Minn. R. 1300.0110** on **the maker's own ASTM E331 and ASTM E2178 data
+Huntsman's literature, not the reports), nor does ER-720 (SealTite). **BASF WALLTITE LWP
+(ESR-2642 §4.5, ≥ 1") is the one other current WRB listing**; it is 2"/pass, so it is the
+fallback that keeps this item closed at a labour cost (`ccspf_spec.md` §2b). Any other
+substitute's water plane runs through **Minn. R. 1300.0110** on **the maker's own ASTM E331 and ASTM E2178 data
 for the product actually bought**, in hand before the order. Hold the substitution, not the
 inspection.
 

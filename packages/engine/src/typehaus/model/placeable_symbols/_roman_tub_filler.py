@@ -46,7 +46,8 @@ def roman_tub_filler(width: float, depth: float, height: float) -> Geometry:
     lever_z = sz * HANDLE_HEIGHT_IN
     for sign in (-1, 1):
         x = sign * handle_x
-        strokes.extend((circle(x, hole_y, radius), line((x, hole_y), (x, hole_y - sy * LEVER_LENGTH_IN))))
+        lever_tip = (x, hole_y - sy * LEVER_LENGTH_IN)
+        strokes.extend((circle(x, hole_y, radius), line((x, hole_y), lever_tip)))
         parts.extend((
             box(x, hole_y, 0, escutcheon_t, 2 * radius, 2 * radius, "metal"),
             box(x, hole_y, escutcheon_t, lever_z, neck * 0.8, neck * 0.8, "metal"),

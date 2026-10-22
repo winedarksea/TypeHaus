@@ -393,7 +393,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   and JM both say it under-cures and loses adhesion. **A substitute reopens the WRB item**:
   no other qualifier lists WRB in its report (ESR-4073 and ER-565 do not, whatever Huntsman's
   literature says), so its water plane is a Minn. R. 1300.0110 alternate-approval request
-  (notes/catlin_truss_engineering.md §9).
+  (notes/catlin_truss_engineering.md §9). WALLTITE LWP (ESR-2642 §4.5) IS WRB-listed but
+  2"/pass: the fallback if OnePass is unavailable (ccspf_spec.md §2b).
   Wood and the screw pass happen on the FLAT wall before tilt; fillet the foam against the
   block sides (BSI-048), never butt square.
 - Everything outboard of sheathing is KDAT — one BOM row, plus `3-2x4:kdat` for the block.
@@ -1833,7 +1834,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   does not pass). The 5 tubes cover this stair only; ST-M2S needs ~4.5 m more. **Every wall
   handrail stands 2 3/8"+ off its finish face** — `code.R311_7_8_2_handrail_wall_clearance`
   grades the drawn rail, and the old 2" stand-off FAILed it everywhere. The W rail stops at
-  26'-5 3/4", 3 1/8" short of the upper flight's top nosing, so its square return lands on
+  26'-7 1/4", 4 5/8" short of the upper flight's top nosing, so its square return lands on
   W-M-STRW's end and corner studs at the W-M-STOS2 L (owner, 2026-10-13). Cut
   plan, fitting fit and the R301.5 span: `notes/titanium_handrail_backsplash.md`.
 - **Under-stair space.** No `RM-B-UNDERSTAIR` room exists; the storage under the arriving

@@ -1975,8 +1975,9 @@ STAIRS = [
 # 42.4 mm fittings (plan/titanium_types.py, notes/titanium_handrail_backsplash.md): centreline
 # 2 3/4" (70 mm) off the finish face, so 1.92" clear (R311.7.8.2) and 3.58" projection
 # (R311.7.1). Both ends of each rail return square to the wall on stock elbows. The W rail
-# stops at y=26'-5 3/4", where W-M-STRW's face begins, 3 1/8" short of the top nosing
-# (26'-2 5/8"): its flange centres on the wall's end and corner studs at the L.
+# stops at y=26'-7 1/4", where W-M-STRW's face begins, 4 5/8" short of the top nosing
+# (26'-2 5/8"): its flange centres on the wall's end and corner studs at the L. It moved
+# 1 1/2" north with N-M-STRJ in the 2026-10-21 bath 1 rework.
 STAIR_HANDRAILS = [
     Railing(
         uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", type_ref="RAILING-INT-TI-HANDRAIL-42", path=(
@@ -1995,7 +1996,7 @@ STAIR_HANDRAILS = [
             pt(ft(10, 6), ft(31, 1.625)),
             # Pins the mid bracket on W-M-STRW stud-005 rather than at the run's midpoint.
             pt(ft(10, 6), ft(28, 8)),
-            pt(ft(10, 6), ft(26, 5.75)),
+            pt(ft(10, 6), ft(26, 7.25)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
         base_elevation=ft(0), post_spacing=inch(48), post_size="2x2", rail_count=1,

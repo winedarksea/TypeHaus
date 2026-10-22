@@ -882,5 +882,7 @@ def test_catlin_bills_panel_screws_on_the_house_and_garage_walls(catlin_model) -
     # same screws, attributed to the structure that owns them.
     assert field["count"] == 1451
     assert field["by_storey"]["garage"] == 500 and field["by_storey"]["entry-low"] == 21
-    assert sidelap["count"] == 380
+    # 374 since 2026-10-21: bath 1's rework moved the W-M-W1C/W-M-W2 split 1 1/2" and left W-M-W1C
+    # exactly one 36" coverage long, so it has no sidelap joint (6 stitches).
+    assert sidelap["count"] == 374
     assert sidelap["by_storey"]["garage"] == 140 and sidelap["by_storey"]["entry-low"] == 6

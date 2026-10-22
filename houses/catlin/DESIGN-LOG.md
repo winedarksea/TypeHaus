@@ -5705,3 +5705,17 @@ service band. WC drain is straight under the carrier; a 4″ west shift of the d
 without extra bends. Mirror, GFCI, mirror backing and switch follow the revised layout.
 Independent paper-holder bracket remains to be selected; no china drilling.
 See notes/main_bath1_basin_spec.md and assets/main_bath1_basin_spec.svg.
+
+## 2026-10-21 — ccSPF WRB: reviewer's three listings checked
+
+A reviewer said OnePass is not the only WRB-listed foam, citing WALLTITE LWP (ESR-2642 §4.5),
+Heatlok HFO Pro (ER-565) and EcoBay CC (ESR-3076 §4.5). Read against the reports:
+- **LWP: true.** Current report, §4.5, ≥ 1" continuous, HFO. Not selected because BASF caps it
+  at 2"/pass with a 10 min/inch wait (item 2). Recorded as the WRB-listed fallback,
+  `notes/ccspf_spec.md` §2b.
+- **Heatlok HFO Pro: false.** ER-565 mentions a WRB only as a separate component in its
+  NFPA 285 tables.
+- **EcoBay: lapsed.** The 2016 report had §4.5. ICC-ES's directory no longer serves ESR-3076
+  or ESR-2072.
+The selection stands. The spec's claim was always "only product meeting §1 and listing
+WRB", which still holds. Its wording now says so explicitly.

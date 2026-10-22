@@ -86,7 +86,8 @@ def test_stair_opening_clips_joists_and_uses_declared_west_bearing(catlin_model_
     # Only the southern gap on the west edge is headed; the remaining edge bears on wall.
     (header,) = headers
     assert header.child_key == "header-FO-S-STAIR-0"
-    assert header.length_m / 0.0254 == pytest.approx(7.75)
+    # 9 1/4" since the 2026-10-21 bath 1 rework moved the L corner 1 1/2" north.
+    assert header.length_m / 0.0254 == pytest.approx(9.25)
 
 
 def test_framing_plan_scene_snapshot_is_deterministic(catlin_model_ro):

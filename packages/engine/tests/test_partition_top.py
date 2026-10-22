@@ -198,11 +198,12 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     would call for blocking in the bays that already have a joist in them.
     """
     counts = {row["scope"]: row["count"] for row in sdpw_rows}
-    # Current plan counts: 106 perpendicular crossings, 12 parallel-member pitches, and 71
-    # blocked bays between parallel members (a trimmer takes the screw since 2026-09-25). Keep each condition separate because each uses
-    # a different landing rule.
+    # Current plan counts: 105 perpendicular crossings (106 until the 2026-10-21 bath 1
+    # rework moved N-S-W1/-V2/-BA1 1 1/2" north and W-S-BW2 lost one), 12 parallel-member
+    # pitches, and 71 blocked bays between parallel members (a trimmer takes the screw since
+    # 2026-09-25). Keep each condition separate because each uses a different landing rule.
     assert counts == {
-        "partition top plate, perpendicular framing above": 106,
+        "partition top plate, perpendicular framing above": 105,
         "partition top plate, under a parallel member": 12,
         "partition top plate, blocking between parallel members": 71,
     }

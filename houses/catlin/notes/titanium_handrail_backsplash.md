@@ -65,16 +65,17 @@ galvanic series, so the pair is benign indoors. Anchors are A4/316.
 - **E rail (W-B-CN, concrete):** two A4 6 mm screw anchors per plate, three per flange.
 - **W rail mid bracket** (y = 28'-8") is centred on W-M-STRW stud-005; a path vertex
   holds it there, since a bracket otherwise sits at the run's midpoint.
-- **W rail top return** (y = 26'-5 3/4"): square onto W-M-STRW's stair face. Behind the
-  flange are the wall's end stud and corner stud at the W-M-STOS2 L (y 26'-4 1/4" ..
-  26'-7 1/4"); the 70 mm flange (y 26'-4 3/8" .. 26'-7 1/8") lands wholly on them, so no
-  backing block is needed.
+- **W rail top return** (y = 26'-7 1/4"): square onto W-M-STRW's stair face. Behind the
+  flange are the wall's end stud and corner stud at the W-M-STOS2 L (y 26'-5 3/4" ..
+  26'-8 3/4"); the 70 mm flange (y 26'-5 7/8" .. 26'-8 5/8") lands wholly on them, so no
+  backing block is needed. (It was 1 1/2" further south until the 2026-10-21 bath 1 rework
+  moved N-M-STRJ, and the corner studs with it, north.)
 - **W rail foot return** (y = 31'-1 5/8", ~6" below the main floor) lands in the floor
   band, behind the stair plywood. W-B-STR's studs stop 13 7/16" below the floor, and
   FS-M-MECH's joist end is 2 5/8" behind the face. **Field item:** block solid between the
   joist end and the plywood there before the plywood goes on. A `WallBacking` cannot sit
   above its wall's framing.
-- The W rail stops at y = 26'-5 3/4", 3 1/8" short of the upper flight's top nosing
+- The W rail stops at y = 26'-7 1/4", 4 5/8" short of the upper flight's top nosing
   (26'-2 5/8"), because W-M-STRW's face ends at the L corner (owner, 2026-10-13: return
   where there is wall rather than reach into the open hall). `code.R311_7_8_handrail` still
   passes: it skips the arrival station. Read literally, R311.7.8.2 wants the rail over the
