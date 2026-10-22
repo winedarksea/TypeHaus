@@ -2461,6 +2461,8 @@
 # 15x10 fronts 804.260.61 at $44 = $304, plus a $5-15/front pull allowance. The walnut top
 # bills in [countertops].
 "FURN-M-BED-DESK-DRAWERS-15" = { material = { low = 319, high = 349 }, labour = { low = 80, high = 190 } }  # 2 ea
+# North end cover: FÖRBÄTTRA 405.678.35, $53 on the IKEA US list read 2026-10-21.
+"FT-M-BED-DESK-COVER-30" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 60 } }  # 1 ea
 # 1x3 poplar knee ledger, painted, screwed to studs.
 "FT-M-BED-DESK-LEDGER-31" = { material = { low = 10, high = 20 }, labour = { low = 20, high = 60 } }  # 1 ea
 "CASE-SINK-BASE-36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 0 ea
@@ -2657,7 +2659,7 @@
 # upward opening to collect dust. ** CHROME WAS THE ONLY FINISH CONFIRMED IN STOCK, AND
 # CHROME IS THE ONE METAL THAT FIGHTS WARM OAK ** -- confirm a BN SKU before ordering,
 # or take Modern Forms Loft WS-3624-BN at $143.
-"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 6 ea since 2026-10-12 (ED-M-BATH2-MIRROR went to P3) — one is ED-S-SUITEBATH-MIRROR again (2026-10-03); another is ED-A-STUDIO-BAR-PEND (2026-09-10), the studio bar's task light: a wall-mounted 24" damp bar replacing a pendant that could not fit under the 6:12 rake. See plan/lighting_attic.py
+"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 6 ea since 2026-10-12 (ED-M-BATH2-MIRROR went to P3) — one is ED-S-SUITEBATH-MIRROR again (2026-10-03); another is ED-A-STUDIO-BAR-TASK (2026-09-10), the studio bar's task light: a wall-mounted 24" damp bar replacing a pendant that could not fit under the 6:12 rake. See plan/lighting_attic.py
 # ** ONE OF THEM, THE HALL BATH'S (2026-10-03): the suite's went back to a bar over a plain
 # mirror, FT-SUITEBATH-MIRROR-ESTERO. ** Robern Vitality
 # YM0030CPFPD3, 30" round Perimeter, at $831.94 sale against $1,479 list. The old $150-500
@@ -5192,6 +5194,11 @@
 # own value that leaves $8-20. The ~11 SF above the kit's 7'-0" head has no kit under it,
 # so the high end carries it. ESTIMATE; the owner's brand pick collapses it.
 "solid-surface-panel" = { low = 8, high = 20 }  # 64 SF ordered: WP-M-BATH2-SURR, 57.8 SF net with the knee-wall span (2026-10-12)
+# The 68" x 19 1/4" west apron is incremental area, not covered by the shower-kit delta.
+# Prefer a matching offcut from the shower panels ($0 material); the high end is the existing
+# compression-moulded solid-surface material basis if a new piece is needed. ESTIMATE, not a
+# fabricator quote. The opening leaf stays removable and gets a matching cut panel.
+"solid-surface-panel-apron" = { low = 0, high = 25 }  # 10 SF ordered: WP-M-BATH2-TUBDK-APRON (2026-10-21)
 
 [shelving]
 # $/SF of ordered factory shelf stock (net + 10%), keyed by material tag.

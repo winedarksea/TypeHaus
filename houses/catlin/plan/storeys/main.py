@@ -630,7 +630,7 @@ WALLS = [
          assembly="STAIRWELL_PARTITION_4H", base_elevation=inch(0.9862), top=inch(107.0138),
          interior_room="RM-M-LIVING"),
     Wall(uid="CMW119AAAA", tag="W-M-STOS", start_node="N-M-W1",
-         end_node="N-M-BA1", assembly="INT_2X4_BASIN_SUPPORT", top=ft(9)),
+         end_node="N-M-BA1", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW120AAAA", tag="W-M-STOS2", start_node="N-M-BA1",
          end_node="N-M-STRJ", assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- powder bath west of hallway -------------------------------------------
@@ -1084,11 +1084,11 @@ OPENINGS = [
     # D-M-ENTRY above it, off the bearing stair wall's jack studs. Renamed with the room.
     Door(uid="CMD204AAAA", tag="D-M-MUD", host="W-M-STOS2", type_ref="DT-INT-SWING32",
          position=from_node("N-M-STRJ", inch(8)), flip_hinge=True),
-    # Move the 30" outswing 2" south (y=274..304) for the deeper wall basin.
-    # The basin trims just 1/4" from the doorway's north end; its aisle is 32.365".
-    # South king remains clear of HS1's tee framing; station suppression retained.
-    Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-BA1", inch(15.5))),
+    # South-wall basin: INT32 outswing moved north to y=283.5..315.5.
+    # North jamb leaves 1.625 in. to the finish corner; rip its casing to fit.
+    # Basin front y=284.760 stays south of the open leaf's usable passage.
+    Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING32",
+         position=from_node("N-M-BA1", inch(4))),
     # RM-M-MECH's hinged utility door, not the mudroom closets' bypass style.
     # At 2'-1" (was 2'-9"): the 8" west move opens a 10 3/4" bay between the east king and
     # the end stud for the mudroom's 3-gang switch plate (plan/lighting.py). 2'-1" is also
@@ -2162,6 +2162,16 @@ PANELING = [
                                      length=ft(3)),
                         PanelingSpan(wall_ref="W-M-TUBDK-S", start=inch(4.365),
                                      length=ft(3), face="right"))),
+    # The tub's bathroom-facing west apron. W-M-TUBDK-W runs north to south, so its right
+    # face is west; the access panel lives on this same face. Carry the shower surround's
+    # 1/2" solid-surface family and colour down to the subfloor, over the existing plywood.
+    # Keep the access-panel leaf removable and finish its face to match, with a clear seam.
+    # The separate material tag lets prices.toml prefer a shower-panel offcut instead of
+    # applying the shower surround's kit-upgrade delta to this new scope.
+    WallPaneling(uid="TUBDKAPR01", tag="WP-M-BATH2-TUBDK-APRON", room="RM-M-BATH2",
+                 material_ref="solid-surface-panel-apron", height=inch(19.25),
+                 spans=(PanelingSpan(wall_ref="W-M-TUBDK-W", start=inch(0),
+                                     length=inch(68), face="right"),)),
 ]
 
 

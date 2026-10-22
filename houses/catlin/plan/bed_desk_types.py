@@ -4,6 +4,7 @@ with a hidden back ledger carrying the top across the 31" knee. Prices live in p
 
 from __future__ import annotations
 
+from plan.study_nook_types import FORBATTRA_MATTE_WHITE_30
 from typehaus.library.placeables._zones import front_zone
 from typehaus.model import FurnitureType, Product, ft, inch
 
@@ -51,4 +52,11 @@ BED_DESK_LEDGER = FurnitureType(
     source=("1x3 poplar painted wall white, two #10 x 3\" screws per stud, top flush "
             "with the cabinet frames. The walnut top screws up through it in slots."),
 )
-BED_DESK_TYPES = (BED_DESK_DRAWERS, BED_DESK_LEDGER)
+# The north base's room-facing side; the south one is 1/2" off the south wall.
+BED_DESK_COVER = FurnitureType(
+    tag="FT-M-BED-DESK-COVER-30", name='FÖRBÄTTRA matte white cover, 1/2 x 24 5/8 x 30"',
+    footprint=(inch(0.5), inch(24.625)), height=inch(30), plan_symbol="sektion-cover-panel",
+    product_ref=FORBATTRA_MATTE_WHITE_30.tag,
+    source="Exposed north end of CAB-N, on the floor like the frame, under the walnut top.",
+)
+BED_DESK_TYPES = (BED_DESK_DRAWERS, BED_DESK_LEDGER, BED_DESK_COVER)

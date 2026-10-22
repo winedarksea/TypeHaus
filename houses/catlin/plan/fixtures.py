@@ -86,8 +86,7 @@ BASEMENT_FIXTURES = (
             wall_ref="W-B-STR2", drain_position=pt(ft(12), inch(224.375))),
 )
 
-# RM-M-BATH1: AP wall-hung bowl on the south wet wall; shallow wall-mounted
-# basin on the north partition. The aligned storage walls move 1 1/2" north
+# RM-M-BATH1: AP wall-hung bowl and roomier D-Code basin share the south wet wall. The aligned storage walls move 1 1/2" north
 # for 45.74" finished depth and 24.49" in front of the verified 21 1/4" bowl.
 # `wall_ref` on the WC is the overhead vent target; its carrier backs W-M-HS1.
 MAIN_FIXTURES = (
@@ -95,17 +94,17 @@ MAIN_FIXTURES = (
             wall_ref="W-M-BAE",
             mount=Mount(kind=MountKind.WALL, elevation=inch(3)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-M-HS1", face="left", distance_from_start=inch(24.65625),
+                wall_ref="W-M-HS1", face="left", distance_from_start=inch(24.5),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # 17 3/4 x 13 3/8 in. basin; 34 in. finished rim. The wall waste stub
-    # remains offset east to miss the hot riser; expose the serviceable trap arm.
+    # Basin beside the WC screens it from the entry; 34 in. finished rim.
+    # Waste offsets 1 1/8 in. west to a clear wet-wall bay, behind the fixing block.
     Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-DURAVIT-DCODE-070545",
-            room="RM-M-BATH1", wall_ref="W-M-STOS",
-            drain_position=pt(inch(51), inch(319.5)),
+            room="RM-M-BATH1", wall_ref="W-M-HS1",
+            drain_position=pt(inch(53.5), inch(268)),
             mount=Mount(kind=MountKind.WALL, elevation=m(0.7186)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-M-STOS", face="right", distance_from_start=inch(48.875),
-                normal_gap=inch(0), rotation_offset=deg(0)))),
+                wall_ref="W-M-HS1", face="left", distance_from_start=inch(54.625),
+                normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Backs W-M-HS1 (retyped to the plumbing assembly for it, see storeys/main.py) at
     # rotation 0, which is the rotation that puts the tank on +y.
     #

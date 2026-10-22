@@ -9,6 +9,7 @@ INCH = 0.0254
 EAST_FACE_X = 212.115 * INCH
 CABINETS = ("FURN-M-BED-DESK-CAB-S", "FURN-M-BED-DESK-CAB-N")
 LEDGER = "FURN-M-BED-DESK"
+COVER = "FURN-M-BED-DESK-COVER-N"
 TOP = "CT-M-BED-DESK"
 CHAIR = "FURN-M-BED-ARMCHAIR"
 
@@ -37,17 +38,21 @@ def test_bases_and_ledger_back_onto_the_east_face_around_a_31_inch_knee(catlin_m
     assert north[1] - south[3] == pytest.approx(31 * INCH, abs=1e-4)
     assert (ledger[1], ledger[3]) == pytest.approx((south[3], north[1]), abs=1e-4)
     assert (south[1], north[3]) == pytest.approx((7.25 * INCH, 68.25 * INCH), abs=1e-4)
+    # The north base's exposed side takes a 1/2" FÖRBÄTTRA cover, tight to the frame and wall.
+    cover = _bounds(objects, COVER)
+    assert (cover[1], cover[3]) == pytest.approx((north[3], north[3] + 0.5 * INCH), abs=1e-4)
+    assert cover[2] == pytest.approx(EAST_FACE_X, abs=1e-4)
 
 
-def test_one_walnut_top_spans_both_bases_and_the_knee_at_31_inches(catlin_model_ro):
+def test_one_walnut_top_spans_bases_knee_and_cover_at_31_inches(catlin_model_ro):
     objects = _objects(catlin_model_ro)
     top = next(t for t in catlin_model_ro.countertops if t.tag == TOP)
-    assert top.hosts == (CABINETS[0], LEDGER, CABINETS[1])
+    assert top.hosts == (CABINETS[0], LEDGER, CABINETS[1], COVER)
     assert top.material_ref == "walnut-counter"
     x0, y0, x1, y1 = Polygon(top.outline).bounds
     assert x1 == pytest.approx(EAST_FACE_X, abs=1e-4)
     assert x1 - x0 == pytest.approx(24.875 * INCH, abs=1e-4)
-    assert y1 - y0 == pytest.approx(61 * INCH, abs=1e-4)
+    assert y1 - y0 == pytest.approx(61.5 * INCH, abs=1e-4)
     assert Polygon(top.outline).area == pytest.approx((x1 - x0) * (y1 - y0))
     floor = objects[CABINETS[0]].body_z0_m
     assert max(objects[tag].body_z1_m for tag in top.hosts) - floor == pytest.approx(31 * INCH)

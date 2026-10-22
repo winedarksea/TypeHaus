@@ -34,14 +34,14 @@ from typehaus import (
 # the I-joist webs, and fall ~1/8"/ft back toward the fixtures so condensate returns to the
 # drainage system rather than pooling in the horizontal leg.
 VENT_BRANCHES_MAIN = [
-    # Dry vent remains vertical until above the upper fixtures, then joins their vent.
+    # Rise above the basin flood rim before offsetting in the wet wall. The x=58
+    # riser clears the study ERV branch; join WC-VENT on its upper service tier.
     PipeRun(uid="J79AT1ZHAV", tag="PR-M-BATH1-LAV-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(51), inch(319.5)), pt(inch(51), inch(319.5)),
-                  pt(inch(40), inch(319.5)), pt(inch(40), inch(320.25)),
-                  pt(inch(40), inch(320.25)), pt(inch(40), inch(319.5))),
+            path=(pt(inch(53.5), inch(268)), pt(inch(53.5), inch(268)),
+                  pt(inch(58), inch(268)), pt(inch(58), inch(268)),
+                  pt(inch(98.5), inch(268.9))),
             diameter=inch(1.5),
-            elevations=(inch(20), inch(45), inch(45.04), inch(45.05),
-                        inch(231.49), inch(231.5)),
+            elevations=(inch(20), inch(45), inch(45.05), inch(120), inch(120.2)),
             serves=("FX-M-BATH1-LAV",)),
     # BATH1's fixtures are served from the overhead run at x=6' and W-M-BA2E (x=8'-2")
     # rises through W-S-SN2 to the hall-bath vent. 2" for the two water closets' worth of
@@ -56,9 +56,8 @@ VENT_BRANCHES_MAIN = [
                   pt(inch(98.5), inch(354.9))),
             diameter=inch(2),
             elevations=(inch(115.9), inch(116), inch(116.05), inch(231), inch(231.1)),
-            # FX-M-BATH1-LAV: no new pipe needed — this run starts over W-M-BAE, 2'-0" north
-            # of the lavatory's drain point at (6', 23'), so the trap arm rises into it —
-            # well inside Table 1002.2's 42" for 1.5". FX-M-LAUNDRY-SINK, same terms: the
+            # Laundry sink wet-vents from its existing laundry stack. The powder
+            # basin has its own branch joining this riser above the flood rims.
             # x=8'-2 1/2" leg runs over W-M-BA2E and PR-B-LSINK-DRAIN arrives against that
             # wall, so the tub wet-vents off the laundry stack with no new pipe. The
             # trap arm is the 45" that branch runs below the deck, inside Table 1002.2's 60"

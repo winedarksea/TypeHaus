@@ -1631,9 +1631,14 @@ BASEMENT_DATA_TRUNKS = [
     # 2" line at y=18'-10 5/8" (x 6'..12'), too close in plan. y=19'-3" hit PR-B-WASH-DRAIN
     # and y=21'-0" hit PR-B-HW-WASH and PR-B-WC2-DRAIN, so the 3 1/2" step SOUTH is the one that
     # clears. Same elevation; it clears the drain by 2 1/8" in plan.
+    # West leg shifts 4 in. west to clear the relocated WC drop without adding bends.
     ConduitRun(uid="Z9TXYSYKWG", tag="CD-B-DATA-STUDY", trade_size=inch(0.75), service=Service.DATA,
-               path=(pt(inch(10), ft(31)), pt(ft(2), ft(31)), pt(ft(2), ft(18, 8.5)), pt(ft(16), ft(18, 8.5)), pt(ft(16), ft(18, 5)), pt(ft(16), ft(18, 5))),
-               start_elevation=inch(-12.5), end_elevation=ft(2, 8), elevations=(inch(-12.5), inch(-12.5), inch(-12.5), inch(-12.5), inch(-12.5), ft(2, 8)),
+               path=(pt(inch(10), ft(31)), pt(inch(20), ft(31)),
+                     pt(inch(20), ft(18, 8.5)), pt(ft(16), ft(18, 8.5)),
+                     pt(ft(16), ft(18, 5)), pt(ft(16), ft(18, 5))),
+               start_elevation=inch(-12.5), end_elevation=ft(2, 8),
+               elevations=(inch(-12.5), inch(-12.5), inch(-12.5),
+                           inch(-12.5), inch(-12.5), ft(2, 8)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-STUDY-DATA1"),
 ]
 
@@ -2046,14 +2051,14 @@ NEC_FILL_MAIN = [
     # measures, which is why the two entries in plans/TODO.md that quoted 42.9" and 37.2" to
     # receptacles in RM-S-SUITE were understating the problem rather than describing it.
     #
-    # North-wall basin outlet, 44" AFF, east of the 24" mirror-light footprint.
+    # South-wall basin outlet, 44" AFF; below the mirror-light footprint.
     ElectricalDevice(uid="4KMFZPRJPX", tag="ED-M-BATH1-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN", room="RM-M-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-STOS", face="right", distance_from_start=inch(66),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         wall_ref="W-M-HS1", face="left", distance_from_start=inch(60),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ------------------------------------------------------------------------------------
     # THE TWO WASHLET OUTLETS (2026-09-06) — one stud bay, both baths.
     # ------------------------------------------------------------------------------------

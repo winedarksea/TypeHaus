@@ -40,20 +40,6 @@ INT_2X4_PLUMBING = Assembly(
 )
 
 
-# Closer studs put a support at x=40/56 without building blocking across the stack at x=60.
-# Same partition thickness and finish faces; only W-M-STOS uses this support layout.
-INT_2X4_BASIN_SUPPORT = Assembly(
-    tag="INT_2X4_BASIN_SUPPORT", variant_of="INT_2X4_PARTITION",
-    substitute=(Substitution(
-        span=layers("stud", "stud"),
-        replacement=(Layer(name="stud", material_ref="spf", thickness=inch(3.5),
-                           function=LayerFunction.STRUCTURE,
-                           framing=FramingSpec(member="2x4", spacing=inch(8))),),
-    ),),
-    source="W-M-STOS basin support: 8 in. stud module and two full-depth 4x10 blocks; see notes/main_bath1_basin_spec.md. Acoustic rating not transferred.",
-)
-
-
 # --- plant room (RM-S-PLANT) ------------------------------------------------------
 # A room held at ~75 F / 70% RH year-round against a -15 F design temperature is a
 # natatorium-class vapour drive in a residential shell, and the failure mode is invisible:
@@ -312,10 +298,11 @@ PLANT_INT_2X4_HUMID = Assembly(
 # (2) Exterior-grade ply is the right board on the room face too: it is the substrate the
 # deck's tile and the tub's silicone joint land on, 4" from a shower.
 #
-# Tile is NOT a layer here. The deck top and the knee-wall faces are tiled with the room's
-# floor tile, which is a finish-schedule fact about RM-M-BATH2 (`Room.floor_finish`), and
-# the 1/2" of tile + thinset is the difference between the cap's 21 1/2" top and the tub
-# rim's 22" — see the elevation arithmetic on SL-M-TUBDK in plan/storeys/main.py.
+# The deck top is tiled with RM-M-BATH2's floor finish, which is a finish-schedule fact
+# (`Room.floor_finish`), not an assembly layer. Its 1/2" tile + thinset is the difference
+# between the cap's 21 1/2" top and the tub rim's 22" — see the elevation arithmetic on
+# SL-M-TUBDK in plan/storeys/main.py. The bathroom-facing west apron is a separate
+# solid-surface panel over the plywood; the south face is already part of the shower surround.
 TUBDECK_INT_2X4 = Assembly(
     tag="TUBDECK_INT_2X4",
     layers=(

@@ -69,7 +69,7 @@ MAIN_WET_BACKING = [
                 elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
                 purpose="closet wire west-leg upper clips (80 in.)"),
-    # Both WCs and the bath's tub end back onto W-M-HS1; the basin is on STOS.
+    # Both WCs and the bath's tub end back onto W-M-HS1; the basin shares its north face.
     WallBacking(uid="QN93C99PCJ", tag="BK-M-HS1-GRAB", wall_ref="W-M-HS1",
                 elevation=_GRAB_ELEVATION, height=_GRAB_HEIGHT,
                 profile=_GRAB_PROFILE, material_ref="spf",
@@ -82,17 +82,13 @@ MAIN_WET_BACKING = [
                 elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
                 purpose="FURN-M-BATH2-CAB upper fastening"),
-    # Through-depth timber, two short bays: do not bridge or drill through the stack bay.
-    # Holes at x=44.151/53.599, 31.835" AFF (32.821" above main datum).
-    WallBacking(uid="XVMRGW2TW9", tag="BK-M-STOS-BASIN", wall_ref="W-M-STOS", face="right",
-                start=inch(40.75), length=inch(6.5),
-                elevation=inch(28.5), height=inch(9.25), profile="3.5x9.25",
-                material_ref="spf", purpose="D-Code left basin fixing; solid 3.5 in. timber; basin spec"),
-    WallBacking(uid="52A9JF4PC6", tag="BK-M-STOS-BASIN-R", wall_ref="W-M-STOS", face="right",
-                start=inch(48.75), length=inch(6.5),
-                elevation=inch(28.5), height=inch(9.25), profile="3.5x9.25",
-                material_ref="spf", purpose="D-Code right basin fixing; solid 3.5 in. timber; basin spec"),
-    WallBacking(uid="V6XB1CWBFD", tag="BK-M-STOS-MIRROR", wall_ref="W-M-STOS", face="right",
+    # North-face 2x10 fits between the north-row studs at x=48/64, clear of
+    # the opposing staggered stud at x=56. Fixings x=49.901/59.349, 31.835 AFF.
+    WallBacking(uid="XVMRGW2TW9", tag="BK-M-HS1-BASIN", wall_ref="W-M-HS1", face="left",
+                start=inch(48.75), length=inch(14.5),
+                elevation=inch(28.5), height=inch(9.25), profile="2x10",
+                material_ref="spf", purpose="D-Code basin fixings; north-face solid 2x10, wet-wall services behind"),
+    WallBacking(uid="V6XB1CWBFD", tag="BK-M-HS1-BASIN-MIRROR", wall_ref="W-M-HS1", face="left",
                 elevation=inch(72), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="ED-M-BATH1-MIRROR fastening"),
     # The halo mirror on W-M-W3 (2026-10-12): 24" wide, centred y=14'-5 3/8", 42"-78", so

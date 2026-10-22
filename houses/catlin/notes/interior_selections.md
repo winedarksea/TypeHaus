@@ -352,6 +352,6 @@ This is the part of the pass with a deadline on it.
 Use Duravit D-Code **07054500002**, wall hung, 17¾ × 13⅜″, with a 15⅜ × 8½″
 internal bowl and 34″ AFF rim. The earlier Vero hand-rinse basin is superseded.
 Use the compact **B.2 S B21010001U10** chrome mixer in this room, replacing one
-Arvo in the eight-faucet allowance. Two full-depth 4×10 timber blocks support the
-240 mm-spaced mounting holes, with a separate vent bore clear of both bolts.
+Arvo in the eight-faucet allowance. A north-face 2×10 block in the shared south wet wall supports the
+240 mm-spaced mounting holes; services pass behind it. The door is INT32 farther north.
 [Installation and fixing detail](main_bath1_basin_spec.md).

@@ -1,8 +1,9 @@
-> **Main powder room, 2026-10-21:** north-wall Duravit D-Code 07054500002 basin,
-> 17¾ × 13⅜", 34" AFF rim, B.2 compact mixer, two full-depth timber fixing blocks.
-> Basin/toilet/door positions revised for 32.365" basin aisle and 24.49" toilet front
-> clearance. Existing 1½" northward STOS shift retained. Current installation detail:
-> `notes/main_bath1_basin_spec.md`; earlier shallow-Vero descriptions are superseded.
+> **Main powder room, 2026-10-21:** Duravit D-Code 07054500002 basin on the shared
+> south wet wall HS1, 17¾ × 13⅜", 34" AFF rim, B.2 mixer, north-face 2×10 fixing block.
+> INT32 outswing shifted north, basin aisle 32.365", toilet front 24.49". INT32 is
+> a framed opening, not 32" clear. Existing 1½" STOS shift retained; no further move.
+> Current layout and installation: `notes/main_bath1_basin_spec.md` and its SVG.
+> Earlier north-wall basin descriptions are superseded.
 
 > **West header, 2026-10-14:** BM-BW-RW now has equal 8⅞″ tails from both post centres
 > (6⅛″ south extension), paired AC6Z at both west heads, MAX nailing 14 beam + 14 post 16d
@@ -68,9 +69,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
 - `plan/bed_reading_corner.py` — `# haus: editable`, RM-M-BED's STRANDMON reading chair by the
   west wall (the SEKTION window seat was retired 2026-10-21). Types in `_types.py`.
 - `plan/bed_desk.py` — `# haus: editable`, RM-M-BED's SE-corner desk: two 15" SEKTION/AXSTAD
-  three-drawer bases on the floor and a 3/4" ledger across the 31" knee, under one 61" x 24 7/8"
-  walnut glue-up top (`CT-M-BED-DESK`, `walnut-counter`, 31" finished). `FURN-M-BED-DESK` is the
-  ledger: it carries the chair zone and keeps the slab's hosts one run. Types in `_types.py`.
+  three-drawer bases on the floor (FÖRBÄTTRA cover on the north end) and a 3/4" ledger across
+  the 31" knee, under one 61 1/2" x 24 7/8" (`CT-M-BED-DESK`, `walnut-counter`, 31" finished). `FURN-M-BED-DESK` is the ledger: it
+  carries the chair zone and keeps the slab's hosts one run. Types in `_types.py`.
 - `plan/bedroom_wardrobes.py` — `# haus: editable`, BED1-3's PAX wardrobes; types and products
   in `plan/bedroom_wardrobe_types.py`. BED1/2's doors sit 2 1/2" off module for them (accepted).
   BED1/2 each have an open 19 5/8" six-shelf frame at both ends of the L (2026-10-03).

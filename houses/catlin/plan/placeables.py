@@ -403,7 +403,7 @@ MAIN_PLACEABLES = [
     Furniture(uid="RSDC92XMBB", tag="FURN-M-BATH1-AP", type_ref="FT-ACCESS-PANEL-1429", room="RM-M-BATH1",
               mount=Mount(kind=MountKind.WALL, elevation=ft(2), recessed_into_host_surface=True),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-HS1", face="left", distance_from_start=inch(26.40625),
+                  wall_ref="W-M-HS1", face="left", distance_from_start=inch(24.5),
                   normal_gap=inch(-1), rotation_offset=deg(-180)))),
     # FX-M-BATH2-TUB drains at SP-M-BATH2-TUB (7'-4", 19'-4.8"), 8" off W-M-BA2E and
     # behind the tub rather than at either end of it — so the trap and the waste-and-

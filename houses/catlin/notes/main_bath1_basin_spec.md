@@ -1,7 +1,10 @@
 # RM-M-BATH1 — wall basin and timber support
 
 Current selection, 2026-10-21. Replaces the Vero 0703500008 hand-rinse basin.
-The owner chose a roomier bowl and authorized the associated layout adjustments.
+The owner chose a roomier bowl, then returned it to the shared south plumbing wall
+and requested an INT32 outswing farther north. The north-wall layout is superseded.
+
+![Resolved layout and basin blocking](assets/main_bath1_basin_spec.svg)
 
 ## Fixture and fittings
 
@@ -12,8 +15,8 @@ The owner chose a roomier bowl and authorized the associated layout adjustments.
 | Usable bowl | Manufacturer's internal dimensions **15⅜″ × 8½″**. These are plan dimensions, not vertical water depth. The replaced Vero's bowl was 10⅝″ × 7⅛″. |
 | Mounting height | **34″ rim above finished floor**. China underside 718.6 mm / 28.2913″ AFF; the model's additional 140 mm is the generic faucet symbol, not additional china. |
 | Faucet | **Duravit B.2 S B21010001U10**, chrome, single lever, single hole, no cover plate; 4″ reach, 3⅝″ outlet height above deck, adjustable aerator, 3/8″ compression hoses, US pop-up/drain assembly; WaterSense and cUPC listed. This compact mixer replaces the Arvo selection in this room. |
-| Waste | Included overflow-compatible pop-up; 1¼″ chrome-plated brass tubular P-trap with accessible cleanout/slip joints, code-compatible transition to the existing 1½″ wall arm. Exposed trap arm offsets east to the wall stub at x=51″; do not use a corrugated flexible waste. |
-| Supplies | Accessible quarter-turn stops below the basin, hot at x=48″ and cold at x=56″; braided connectors sized to reach without tension. Cold branch passes on the bathroom side of the stack; the hot riser ends below the blocking. |
+| Waste | Included overflow-compatible pop-up; 1¼″ chrome-plated brass tubular P-trap with accessible cleanout/slip joints, code-compatible transition to the existing 1½″ wall arm. Exposed trap arm offsets 1⅛″ west to the wall stub at x=53½″; do not use a corrugated flexible waste. |
+| Supplies | Accessible quarter-turn stops below the basin, hot at x=50½″ and cold at x=60″; braided connectors sized to reach without tension. Both come from the south wet wall. Protect exposed hot supply and waste with smooth removable covers; retain access to stops. |
 
 The bowl is wider and deeper in plan than the previous hand-rinse selection. Confirm
 hand clearance and splash behavior with the actual basin and mixer before final drilling;
@@ -23,58 +26,101 @@ load-rated transfer support.
 
 ## Blocking and fixing detail
 
-`W-M-STOS` retains its existing thickness and location. Its local assembly
-`INT_2X4_BASIN_SUPPORT` uses **2×4 studs at 8″ on center**, adding supports at x=40″
-and 56″. The bathroom-facing finish remains in the same plane. Do not transfer the
-prototype partition's tested acoustic rating to this altered stud layout.
+The basin backs onto the north face of **`W-M-HS1`**, the existing 5½″-cavity
+staggered plumbing wall shared with RM-M-BATH2. No wall faces move. `W-M-STOS`
+returns to the normal 16″-module partition; its former special 8″ stud layout and
+basin fixing blocks are removed.
 
-Provide two **solid nominal 4×10 SPF blocks**, actual **3½″ thick × 9¼″ high**,
-fitted between the full-height studs and flush with their faces:
+Provide one **solid nominal 2×10 SPF block**, actual **1½″ thick × 9¼″ high**,
+flush with the north stud faces, between the north-row studs at **x=48″ and 64″**.
+This shallower support preserves a service lane behind it and clears the opposing
+staggered stud at x=56″. Do not substitute a full-depth block across both stud rows.
 
-| Model element | Horizontal extent, from the west wall axis | Bottom / top above main storey datum |
+| Model element | Horizontal extent from west wall axis | Bottom / top above main storey datum |
 |---|---|---|
-| `BK-M-STOS-BASIN` | x=40¾″ to 47¼″; cut length 6½″ | 28½″ / 37¾″ |
-| `BK-M-STOS-BASIN-R` | x=48¾″ to 55¼″; cut length 6½″ | 28½″ / 37¾″ |
+| `BK-M-HS1-BASIN` | x=48¾″ to 63¼″; cut length 14½″ | 28½″ / 37¾″ |
 
-Fasten **each block end with three 16d common nails, 0.162″ × 3½″**, face-nailed
-through the adjacent stud into the block before closing the wall; stagger the nails
-vertically. Secure the full-height support studs to the sole and top plates using the
-partition framing schedule. The block-to-stud connections are part of the installation,
-not a loose noggin held by drywall.
+The block occupies **y=269¼″ to 270¾″**. Fasten each end with **three 16d common
+nails, 0.162″ × 3½″**, face-nailed through the adjacent stud before closing the wall;
+stagger the nails vertically. Connect the supporting full-height studs to the sole
+and top plates per the partition framing schedule. Photograph the block, connections
+and services before wall closure.
 
-The basin center is **x=48⅞″**. Manufacturer drawing `1266560` gives fixing holes
-**240 mm apart and 55 mm below the rim**. Set the two mounting axes at approximately:
+The basin center is **x=54⅝″**. Manufacturer drawing `1266560` gives fixing holes
+**240 mm apart and 55 mm below the rim**. Set mounting axes approximately at:
 
-- **x=44.151″ and 53.599″**, both within their solid blocking targets.
-- **31.835″ AFF** vertically. With the current 0.9862″ finished-floor build-up, this
-  is **32.821″ above the main storey datum**. Recalculate from actual finished floor
-  if that build-up changes; backing elevations and fixture heights use different datums.
+- **x=49.901″ and 59.349″**, both within solid timber.
+- **31.835″ AFF**, or **32.821″ above main storey datum** with the current 0.9862″
+  finished-floor build-up. Recalculate from actual finished floor if that changes.
 
-Use two **M10 through-bolts**, zinc plated, with **2″ square × ⅛″ steel backing
-washers/plates** at the closet side of the timber and ceramic-compatible nylon shoulder
-bushes, washers and nuts at the basin. Select bolt length from the actual ceramic and
-finish build-up (nominal M10 × 160 mm), with full nut engagement. Recess the rear head
-and plate only enough to keep the closet lining flush. Dry-fit the supplied ceramic
-bushes and confirm the through-bolt arrangement with Duravit's installation requirements.
-Tighten evenly by hand; do not load bare ceramic with a steel nut or impact driver.
+Use two **M10 through-bolts**, zinc plated, with **2″ square × ⅛″ steel rear
+backing plates**, ceramic-compatible nylon shoulder bushes, front washers and nuts.
+Select bolt length from actual china and wall build-up (nominal M10 × 120 mm), with
+full nut engagement. Rear plates bear directly on timber; no gypsum anchors. Keep
+both plates fully on the block, including the left plate near the stud. Confirm the
+through-bolt arrangement and ceramic bushes against Duravit's supplied installation
+requirements before drilling; tighten evenly by hand without bare steel on ceramic.
+This support is for the basin; it is not specified as a grab bar or transfer support.
 
-Photograph both blocks, fastenings and service routes before wall closure. The solid
-blocks stop at x=55¼″, **west of the 3″ stack at x=60″**. Do not notch them for that
-stack, bore a fixing into a pipe, use gypsum anchors, or substitute a thin plywood strip.
-The supply stubs and waste arm are below the blocks. Prebore a 2″ vertical service hole
-through the right block at x=51″ for the 1½″ PVC vent (1.9″ actual OD), centered in
-the 3½″ wall depth. Keep this bore separate from the right fixing at x=53.599″ and its
-2″ backing plate; do not enlarge or slot the hole. The vent remains vertical until
-above the basin flood rim.
+The waste/vent tee is at **x=53½″, y=268″, 20″ above main datum**, behind the
+block. The 1½″ vent rises to 45″ before offsetting east to x=58″ and rising to the
+upper service band, clear of the study ERV branch. It joins the existing WC vent;
+there is **no service bore through the basin block**. Hot is at x=50½″, y=267½″;
+cold comes from the existing x=60″ wet-wall riser. Supply outlets are 24″ above main
+datum, below the block. Check these routes before installing the rear plates.
 
-## Layout effect
+The 1½″ waste drops through the wet wall to the basement service space, then runs
+3″ north and 18½″ east to the head of the existing 4″ collector. Its horizontal
+legs are below the I-joist bottom flange. The hot branch also crosses below that
+flange and stays north of the WC branch. These are modeled routes, not a connection
+to the upstairs stack on the opposite wall.
 
-The AP toilet moves **1¾″ west**, with its carrier following and an above-floor offset to the existing drain drop, so the deeper
-basin stays outside the toilet's required clearance. The 30″ modeled outswing moves
-**2″ south**. Finished basin aisle is **32.365″**; the basin trims **¼″** from the
-north end of the modeled doorway, leaving **29¾″ geometrically aligned** before
-jambs, stops and the door leaf. Toilet front clearance remains **24.49″**.
-No further northward partition move is needed. This does not establish wheelchair access.
+## Door, privacy and movement
+
+The TOTO AP bowl remains **21¼″ projection** and centers at **x=24½″**. Its carrier
+and access panel align with it; the waste drops straight down, without the former
+short lateral offset inside the carrier. The study data conduit’s north–south leg moves 4″ west in the basement ceiling
+to clear this drop, retaining its existing bend count.
+
+The basin and toilet now share the south wall. This restores some visual screening
+from the hall, although an open wall basin provides less screening than a cabinet.
+The north partition is clear of the basin, mirror and basin receptacle.
+
+- Finished basin-front aisle: **32.365″** (about 32⅜″).
+- Toilet front to north finish: **24.49″**.
+- Fixture centers: **30⅛″** apart; basin center to east finish: **15″**.
+- `D-M-BATH1` is now **`DT-INT-SWING32`**, still an outswing, southern hinge.
+  Modeled opening: **y=283½″ to 315½″**. Its north end moves 11½″ north and its
+  south end 9½″ north relative to the prior 30″ opening; center moves 10½″ north.
+- North opening edge to north finish: **1⅝″**; rip the bathroom-side north casing
+  to approximately 2⁷⁄₁₆″ rather than the usual 3½″, and verify the supplier jamb
+  at the corner. Geometric doorway/aisle overlap is **30.740″** before jambs and leaf.
+  The basin front is south of the open leaf's usable passage; it is no longer the
+  controlling restriction once those door components are included.
+
+**INT32 is a 32″ framed model opening, not a guaranteed 32″ clear passage.** With
+this model's 1″ jamb allowance each side, 45 mm leaf and applied stop, allow roughly
+**28″ clear at 90°**, subject to the actual door supplier and hinge. This is an
+improvement over INT30, but still a narrow-chair contingency layout. It does not
+establish a wheelchair turn, seated transfer space or verified basin knee clearance.
+The dashed 24×48″ narrow chair in the drawing is an illustrative parked footprint, not a
+swept-path assessment. A true 32″ clear door would require a larger opening and a
+further layout review. [Clear-width measurement guidance](https://www.access-board.gov/ada/guides/chapter-4-entrances-doors-and-gates/).
+
+The existing **1½″ northward STOS/STOS2 shift stays**; no additional wall move is
+needed for this arrangement. The mirror light, its backing and basin GFCI move to
+HS1 with the basin; the entry switch moves south of the new doorway.
+
+## Toilet-paper holder provision
+
+No factory holder attachment is specified for this D-Code basin. **Do not drill the
+china or assume its mounting bolts accept an accessory bracket.** A holder beside
+its west edge is feasible using a separate wall-fixed projecting bracket or a
+manufacturer-approved accessory. Keep the roll and bracket outside the WC's 15″
+side zone (east boundary x=39½″), below the basin rim, and out of the north entry
+lane. Trial its seated reach and roll-changing access before setting its independent
+blocking. Holder selection and that bracket detail remain open; neither is claimed
+as included with the basin or as a grab support.
 
 ## Manufacturer references
 

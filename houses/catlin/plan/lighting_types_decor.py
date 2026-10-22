@@ -212,8 +212,9 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # ** WHY IT CAME OUT: A PENDANT DOES NOT FIT UNDER THIS RAKE. ** The bar moved onto
     # W-A-BATH-S and FURN-A-STUDIO-BAR-BASE is 54 3/4" tall under a 6:12 underside that is
     # 4'-11 1/4" at the unit's west end and 6'-5 3/4" over the bowl — 17"-23" of air, and the
-    # person at the bowl stands in it. ED-A-STUDIO-BAR-PEND is a wall-mounted ED-T-LT-MIRROR
-    # now; the whole derivation is on the placement in plan/lighting_attic.py.
+    # person at the bowl stands in it. ED-A-STUDIO-BAR-TASK is a wall-mounted ED-T-LT-MIRROR
+    # now; adjustable track on the rake was reviewed and left as an option, not selected.
+    # The placement in plan/lighting_attic.py records the clearance and task-light rationale.
     #
     # ** AND THE LUMEN ARGUMENT BELOW IS RETIRED OUTRIGHT (2026-09-10). ** The "357 lm of
     # slack" was stale when this was written (it counted five sconces) and the 1,450 lm that

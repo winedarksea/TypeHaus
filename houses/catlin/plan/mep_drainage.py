@@ -175,14 +175,19 @@ DRAINS = [
     # Falls 0.375"/ft on the short leg and 0.263"/ft on the long one, arriving 1/2" over the
     # main's interpolated 91.96" invert: a side entry into the 4" barrel's upper half.
     PipeRun(uid="5RGKWZZSY0", tag="PR-B-WC1-DRAIN", system=PipeSystem.DRAIN,
-            # Offset above the floor inside the carrier; retain the coordinated old drop.
-            path=(pt(inch(24.65625), ft(22, 4)), pt(m(0.670778), ft(22, 4)),
-                  pt(m(0.670778), ft(22, 4)), pt(m(0.670778), ft(21, 10)),
-                  pt(ft(6), ft(21, 10))),
+            path=(pt(inch(24.5), ft(22, 4)), pt(inch(24.5), ft(22, 4)),
+                  pt(inch(24.5), ft(21, 10)), pt(ft(6), ft(21, 10))),
             diameter=inch(3), material="pvc",
-            elevations=(inch(120.75), inch(120.71), ft(7, 9.625),
-                        ft(7, 9.4375), ft(7, 8.4375)),
+            elevations=(ft(9, 4.75), ft(7, 9.625), ft(7, 9.4375), ft(7, 8.4375)),
             serves=("FX-M-BATH1-WC",)),
+    # South wet-wall basin: drop below the floor, then north and east to the collector head.
+    # Tee/vent stays behind the north-face timber block, not through a fixing target.
+    PipeRun(uid="CBPD02AAAA", tag="PR-B-LAV1-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(inch(53.5), inch(268)), pt(inch(53.5), inch(268)),
+                  pt(inch(53.5), inch(271)), pt(inch(72), inch(271))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(inch(132), inch(94.6), inch(94.525), inch(94.0)),
+            serves=("FX-M-BATH1-LAV",)),
     # 1 1/2": FX-M-BATH2-TUB is the Kohler K-5713-W1 (plan/fixtures.py), whose spec
     # drawing labels a 1 1/2" bath drain and whose required waste-and-overflow — K-7272
     # Clearflo, PROD-KOHLER-7272 — is a 1 1/2" PVC tee.
@@ -320,13 +325,6 @@ DRAINS = [
 # so the elevations read as heights on the storey the pipe is actually visible from:
 # +9'-9" is the second floor's underside, the negative inverts are the basement ceiling.
 SECOND_DRAINS = [
-    # North-wall basin arm: 9" east to the existing 3" stack, 1/4"/ft fall.
-    PipeRun(uid="CBPD02AAAA", tag="PR-B-LAV1-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(51), inch(319.5)), pt(inch(60), inch(319.5))),
-            diameter=inch(1.5), material="pvc",
-            elevations=(inch(20), inch(19.8125)),
-            serves=("FX-M-BATH1-LAV",), wall_ref="W-M-STOS"),
-
     # ** STRAIGHT SOUTH ON x=5'-0", EAST OF THE KITCHEN DRAIN (2026-10-08). ** The old
     # diagonal to a tie at x=3'-0" ran within 1/2" of `PR-B-KITCH-DRAIN`'s x=4'-6" fall line
     # for its last nine feet and crossed it in elevation — a drain-on-drain clash no fitting

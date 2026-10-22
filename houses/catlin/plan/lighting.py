@@ -904,27 +904,27 @@ MAIN_LIGHTING = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-BATH1: wet-rated can plus a mirror light over the lavatory, which backs onto
-    # the room's north wall (FX-M-BATH1-LAV, plan/fixtures.py).
+    # the shared south wet wall (FX-M-BATH1-LAV, plan/fixtures.py).
     ElectricalDevice(uid="QTM000JAAA", tag="ED-M-BATH1-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(m(0.959081), m(7.35676)), type_ref="ED-T-LT-CAN4-WET",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1",
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # North-wall basin and mirror move together; hosted placement follows STOS.
+    # South-wall basin and mirror move together; hosted placement follows HS1.
     ElectricalDevice(uid="QTM000KAAA", tag="ED-M-BATH1-MIRROR", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1", controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-STOS", face="right", distance_from_start=inch(48.875),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         wall_ref="W-M-HS1", face="left", distance_from_start=inch(54.625),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTM000MAAA", tag="ED-M-BATH1-SW", kind=DeviceKind.SWITCH,
-                     # East wall, north of the shifted doorway.
+                     # East wall, south of the north-shifted doorway.
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(11.125),
+                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(40.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-M-BATH2: two layers, two controls (2026-10-12, notes/bath2_lighting.md).

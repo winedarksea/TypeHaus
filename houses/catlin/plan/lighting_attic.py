@@ -271,8 +271,12 @@ ATTIC_LIGHTING = [
     # incidental — this is directly over a sink.
     #
     # ** THE STATION IS THE BATH WALL, NOT THE CEILING, ** which is the rule the whole storey
-    # went to on 2026-09-06: a flat trim in a 6:12 plane throws its cone 26.6 deg off plumb,
-    # and a surface fitting on the rake would have taken the same aim penalty the cans did.
+    # went to on 2026-09-06: a flat trim in a 6:12 plane throws its cone 26.6 deg off plumb.
+    # An adjustable track head can correct that: PureEdge TS24M's slope adapter supports up
+    # to 60 deg and its Radiant Medium head aims 90 deg. Reviewed 2026-10-21; viable, but not
+    # selected. The wall bar keeps task light closer to the worktop; the track's nominal
+    # 1,320 lm (two 660 lm heads) does not establish equivalent light at the bowl. Keep the
+    # bar unless a ceiling-mounted look is preferred and its photometry is confirmed.
     # On W-A-BATH-S's south face (y=17'-1 5/8"), back on the face — a 2"-deep body at
     # y=17'-0 5/8" — on FX-A-STUDIO-BAR-SINK's own x, exactly the idiom the bath bar uses.
     #
@@ -290,9 +294,10 @@ ATTIC_LIGHTING = [
     # check divides by R304.3's 146 sf now, the room passes on glazing, and Exception 1 is
     # not reached. See this file's header. The 1,300 lm is a task-lighting number today.
     #
-    # Tag and uid are kept so the element's GlobalId follows it across the retype, the way
-    # FURN-A-STUDIO-BAR-BASE kept 4GVQGBXMS3 through the SUNNERSTA swap.
-    ElectricalDevice(uid="7QXE07XJ69", tag="ED-A-STUDIO-BAR-PEND", kind=DeviceKind.LIGHT,
+    # Keep the uid so the element's GlobalId follows it across the retype, the way
+    # FURN-A-STUDIO-BAR-BASE kept 4GVQGBXMS3 through the SUNNERSTA swap. The tag now names
+    # this wall task light (2026-10-21).
+    ElectricalDevice(uid="7QXE07XJ69", tag="ED-A-STUDIO-BAR-TASK", kind=DeviceKind.LIGHT,
                      # ** MOVED 1" OUT WITH W-A-BATH-S'S RETYPE, 2026-09-20 (H8). ** The wall went
                      # INT_2X4_PARTITION -> INT_2X6_PLUMBING so PR-A-BAR-VENT's 2" vent could bore
                      # its studs legally, and both faces moved 1" off the axis with it. This box is

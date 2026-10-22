@@ -19,8 +19,8 @@ bottom has no constraint-index section of its own — the constraints live in
 The west-wall SEKTION window seat (two seats, two 12" AXSTAD end cabinets, covers, cushion and
 two walnut tops) is gone; the STRANDMON reading chair stays. The HEMNES 61" desk is replaced in
 the same SE-corner footprint by two 15" SEKTION bases with three AXSTAD drawers each, set on the
-floor with no plinth, and a 31" knee between them. One 1" walnut glue-up top, 61" x 24 7/8",
-spans all three at 31" finished. A 3/4" poplar ledger on the east wall carries the top's back
+floor with no plinth, and a 31" knee between them; a FÖRBÄTTRA cover closes the north base's
+room-facing side. One 1" walnut glue-up top, 61 1/2" x 24 7/8", spans all four at 31" finished. A 3/4" poplar ledger on the east wall carries the top's back
 edge across the knee and is its middle host, because a countertop does not jump a gap.
 `FURN-M-BED-DESK` keeps its uid as that ledger and carries the chair zone. Plan source:
 `plan/bed_desk.py`. The walnut window stools are unchanged.
@@ -5673,3 +5673,22 @@ supports two full-depth 4×10 blocks at the actual 240 mm-spaced fixing holes. T
 right block has a separate vent bore; supplies terminate below it. The WC has an
 above-floor offset to its established drain drop, preserving the conduit crossing.
 See `notes/main_bath1_basin_spec.md` for mounting/connection details and primary drawings.
+
+
+### 2026-10-21 — Powder basin returns to shared south wet wall
+
+Owner preferred the shared plumbing wall and toilet screening to the north-wall
+basin. D-Code 070545 stays, centered x=54⅝″ on HS1; AP WC centers x=24½″ so
+fixture centers stay over 30″ and basin center stays 15″ off the east finish.
+INT32 outswing moves north: RO y=283½..315½″. Basin aisle 32.365″, WC front
+24.49″, no further STOS/STOS2 shift. INT32 is framed width, about 28″ finished
+clear with current jamb/leaf assumptions; no wheelchair compliance claim.
+
+Replace the north-wall blocks and special stud assembly with one north-face 2×10
+between HS1's x=48/64″ stud row. Through-bolt plates land on timber; waste, vent
+and hot remain behind it. Drain returns to the basement collector, cold taps the
+existing HS1 riser, vent offsets above flood rim then joins WC-VENT in the upper
+service band. WC drain is straight under the carrier; a 4″ west shift of the data conduit’s north–south leg avoids it
+without extra bends. Mirror, GFCI, mirror backing and switch follow the revised layout.
+Independent paper-holder bracket remains to be selected; no china drilling.
+See notes/main_bath1_basin_spec.md and assets/main_bath1_basin_spec.svg.

@@ -29,7 +29,7 @@ VANITIES = {
     # it runs ACROSS the room's south end now, backing W-B-CW2's north face, where it used to
     # stand along the east wall against W-B-CN2's 12" pour.
     "FX-B-BATH-LAV": ("FX-VANITY-36-SHALLOW", "basement", "W-B-CW2", "+y"),
-    "FX-M-BATH1-LAV": ("FX-DURAVIT-DCODE-070545", "main", "W-M-STOS", "-y"),
+    "FX-M-BATH1-LAV": ("FX-DURAVIT-DCODE-070545", "main", "W-M-HS1", "+y"),
     "FX-S-BATH1-LAV": ("FX-VANITY-36-SINGLE", "second", "W-S-BA-E1B", "-x"),
     "FX-S-SUITEBATH-LAV": ("FX-VANITY-30-SINGLE", "second", "W-S-SN3", "-y"),
     "FX-S-VANITY-LAV1": ("FX-VANITY-30-SHALLOW", "second", "W-S-BD-N", "-y"),
@@ -304,12 +304,18 @@ def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_mo
     assert toilet.type_ref == "FX-TOTO-AP-WH"
     assert room.bounds[3] / IN - ty1 >= 24.25
     assert room.covers(Polygon(toilet.required_clearances[0]))
-    assert by0 - room.bounds[1] / IN >= 32.25
+    assert room.bounds[3] / IN - by1 >= 32.25
+    assert room.bounds[2] / IN - (bx0 + bx1) / 2 >= 15
+    assert (bx0 + bx1 - tx0 - tx1) / 2 >= 30
     door = next(o for o in model.openings if o.tag == "D-M-BATH1")
+    assert door.type_ref == "DT-INT-SWING32"
+    assert door.width_m / IN == pytest.approx(32)
+    door_south = min(y for _, y in door.swing_clearance) / IN
     door_north = max(y for _, y in door.swing_clearance) / IN
-    assert door_north - by0 <= 0.26  # only 1/4 in. of the modeled opening is trimmed
+    assert door_north - max(door_south, by1) >= 30.7
+    assert not Polygon(door.swing_clearance).intersects(Polygon(basin.footprint))
     assert (bx1 - bx0, by1 - by0) == pytest.approx((17.75, 13.375))
-    assert basin.attachment_wall == "W-M-STOS"
+    assert basin.attachment_wall == "W-M-HS1"
     stops = [a for a in model.pipe_accessories
              if a.tag in {"PA-M-BATH1-STOP-CW", "PA-M-BATH1-STOP-HW"}]
     assert len(stops) == 2
@@ -319,33 +325,34 @@ def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_mo
     assert Polygon(basin.footprint).disjoint(Polygon(toilet.required_clearances[0]))
 
 
-def test_powder_basin_fixings_land_in_solid_blocking_clear_of_the_stack(catlin_model_ro):
-    """Check the mounting holes, rather than accepting any backing near a fixture's base."""
+def test_powder_basin_fixings_land_in_solid_north_face_blocking(catlin_model_ro):
+    """Both fixing plates must bear on timber that clears the opposing staggered stud."""
     model = catlin_model_ro
     basin = _obj(model, "FX-M-BATH1-LAV")
     x0, x1, _, _ = _bbox(basin)
     fixing_centers = [(x0 + x1) / 2 - 120 / 25.4, (x0 + x1) / 2 + 120 / 25.4]
     fixing_height = basin.body_z0_m + 0.145 - 0.055
-    wall = next(w for w in model.walls if w.tag == "W-M-STOS")
-    blocks = [member for member in wall.members
-              if member.child_key.startswith("backing-") and member.profile == "3.5x9.25"]
-    assert len(blocks) == 2
+    wall = next(w for w in model.walls if w.tag == "W-M-HS1")
+    block = next(member for member in wall.members
+                 if member.child_key.startswith("backing-") and member.profile == "2x10")
     for fixing_x in fixing_centers:
-        targets = [block for block in blocks
-                   if min(block.p0[0], block.p1[0]) < fixing_x * IN
-                   < max(block.p0[0], block.p1[0])
-                   and block.z0_m < fixing_height < block.z1_m]
-        assert len(targets) == 1, f"no solid timber at fixing x={fixing_x:.3f}in"
-        block = targets[0]
-        # The backing plates are 2in square: each must bear entirely on timber.
+        # Two-inch-square rear plates need a full inch of wood on all four sides.
         assert min(block.p0[0], block.p1[0]) + IN < fixing_x * IN
         assert max(block.p0[0], block.p1[0]) - IN > fixing_x * IN
         assert block.z0_m + IN < fixing_height < block.z1_m - IN
-    # Both ends land on actual full-height studs; the stack's bay stays open.
-    studs = [m for m in wall.members if m.category == "stud"]
-    for block in blocks:
-        for end in (block.p0[0], block.p1[0]):
-            assert any(abs(abs(end - stud.p0[0]) - 0.75 * IN) < 0.01 * IN
-                       for stud in studs)
-        assert max(block.p0[0], block.p1[0]) / IN < 58.25
-    assert wall.assembly == "INT_2X4_BASIN_SUPPORT"
+    north_studs = [m for m in wall.members if m.category == "stud"
+                   and m.p0[1] > 268 * IN]
+    for end in (block.p0[0], block.p1[0]):
+        assert any(abs(abs(end - stud.p0[0]) - 0.75 * IN) < 0.01 * IN
+                   for stud in north_studs)
+    assert block.p0[1] / IN - 0.75 == pytest.approx(269.25)
+    opposing_stud = next(m for m in wall.members if m.category == "stud"
+                         and m.p0[0] / IN == pytest.approx(56))
+    assert opposing_stud.p0[1] / IN + 1.75 < block.p0[1] / IN - 0.75
+    assert wall.assembly == "INT_2X6_STAGGERED_PLUMBING"
+    # The service panel and bowl must stay centered on the same carrier.
+    panel = _obj(model, "FURN-M-BATH1-AP")
+    toilet = _obj(model, "FX-M-BATH1-WC")
+    px0, px1, _, _ = _bbox(panel)
+    tx0, tx1, _, _ = _bbox(toilet)
+    assert (px0 + px1) / 2 == pytest.approx((tx0 + tx1) / 2)

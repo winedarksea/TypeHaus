@@ -43,12 +43,11 @@ from typehaus.model import m
 # The north-entry piers all bear below this invert. `mep.hydrant_freeze_depth` holds every
 # buried vertex to 72"; the terminal rise is the hydrant's own self-draining barrel.
 WATER_SUPPLY = [
-    # A separate tap keeps the main basin's stop independent of the upstairs fixtures.
+    # Basin tap from the existing south wet-wall cold riser, below the blocking.
     PipeRun(uid="KV1KTD2P01", tag="PR-M-CW-BATH1-LAV", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(63), inch(318.75)), pt(inch(63), inch(316.5)),
-                  pt(inch(56), inch(316.5))),
+            path=(pt(inch(60), inch(268)), pt(inch(60), inch(271.385))),
             diameter=inch(0.5), material="pex",
-            elevations=(inch(24), inch(24), inch(24)),
+            elevations=(inch(24), inch(24)),
             serves=("FX-M-BATH1-LAV",)),
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
             # ** THIS RUN DID NOT MOVE FOR THE 2026-09-10 NORTH ENTRY PIERS; THEY MOVED
@@ -270,45 +269,9 @@ SUPPLY = [
                         ft(8, 6.6375), ft(5, 8), ft(5, 8))),
     # Main-storey groups.
     #
-    # THE BATH1 PAIR ROUTES AROUND D-M-BATH1'S DOORWAY, WHICH IS THE ONE DEFECT
-    # `mep.wet_wall_occupancy` CANNOT SEE: a riser inside a wall's FOOTPRINT is inside the
-    # wall, and a hole in that footprint (a door) is still footprint. A riser standing in
-    # the door itself — 42" of PEX in a 24" opening with no stud within a foot and a
-    # 2-2x8 header overhead that cannot be bored — passes that check.
-    # `mep.run_through_opening` is what catches it, which is why the pair below is routed
-    # to clear the door entirely.
-    #
-    # ** THEY LEFT W-M-BAE ALTOGETHER, AND THE BAY CENSUS IS WHY. ** Measured off the
-    # resolved wall, faces in project inches along y:
-    #   end stud 271.385"/272.885"  |  SOUTH BAY 4 3/8"  |  2x4 at 277.25"/278.75"
-    #   king 279"/280.5", jack 280.5"/282"  |  D-M-BATH1 RO 282"..306"  |  jack, king to 309"
-    #   2x4 at 309.25"/310.75"  |  NORTH BAY 6 1/2"  |  corner stud from 317.25"
-    # Two bays, one each side of the door, and the 1/4" slivers beside the jambs are not
-    # bays. The pair cannot be split across the door — hot and cold for one lavatory would
-    # then have to cross the head to meet, which is the defect moved up 3'-6" and left
-    # undrawn — so both have to fit the SAME bay, and neither bay takes them:
-    #   * SOUTH BAY. The nearer one, and not empty: PR-B-LAV1-DRAIN (plan/mep_drainage.py)
-    #     drops at y=275.94" and a 1 1/2" DWV pipe is 1.9" over the pipe, leaving 2 3/32"
-    #     between its south side and the end stud. A bare 3/4" PEX fits that. The hot line
-    #     carries a 1" fiberglass sleeve — 2 7/8" over the pipe — and does not, at any
-    #     station and at any depth in the cavity: to pass the drain in x it would have to
-    #     centre outside the 5 1/2" stud space entirely.
-    #   * NORTH BAY. 6 1/2" and empty, and 2 7/8" + 7/8" of pipe in it pushes the second
-    #     riser past y=315.625", which is W-M-STOS's finish face. A stop valve half an inch
-    #     off a finished corner is not a stop anybody can turn. It is also the WRONG END of
-    #     the room: both fixtures are at the south end, so every branch off it would cross
-    #     the door head anyway.
-    #
-    # ** W-M-HS1 IS THE WALL BOTH FIXTURES ACTUALLY PLUMB INTO, AND IT HAS EIGHT BAYS. **
-    # FX-M-BATH1-WC's carrier stands in it and PR-B-WC1-DRAIN already drops through it at
-    # x=26.409"; FX-M-BATH1-LAV's 24" carcass backs onto its finish face at y=271.385",
-    # spanning x 41.5"..65.5". It is INT_2X6_STAGGERED_PLUMBING, nonbearing, 5 1/2" of
-    # continuous cavity, and it carries no opening at all — nothing to stand in. Its studs
-    # resolve on an 8" stagger at x = 7.385", 16", 24", 32", 40", 48", 56", 64", 72", so
-    # every bay is 6 1/2" clear and the two behind the vanity are x 48.75"..55.25" and
-    # x 56.75"..63.25". The pair takes those two: 8" apart on the wall's own module, both
-    # behind the lavatory, with the cold 2'-9 5/8" along the same cavity from the water
-    # closet's carrier at x=26.409", and no door between any of them.
+    # BATH1 cold stays in the shared south wet wall; the basin takes a separate
+    # tap at 24 in. above the main datum. Keep the insulated hot on its own
+    # basement ceiling route so neither line crosses the entry doorway.
     PipeRun(uid="CBPW33AAAA", tag="PR-B-CW-BATH1", system=PipeSystem.WATER_COLD,
             # Riser at (5'-0", 22'-4") — the east bay of the pair, centred with 2.81" of
             # clear to the 2x4 each side, on W-M-HS1's axis so a 7/8" pipe sits mid-cavity.
@@ -340,15 +303,15 @@ SUPPLY = [
                         ft(8, 4.6375), ft(9, 1.4375), ft(12, 7.4375)),
             wall_refs=(None, None, None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH1-WC",)),
-    # Basin hot branch rises in W-M-STOS, west of the existing 3" stack.
+    # Basin hot rises in the shared wet wall; the insulated ceiling run stays below it.
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(7, 6), ft(25, 6)), pt(inch(48), inch(314)),
-                  pt(inch(48), inch(319.5)), pt(inch(48), inch(319.5)),
-                  pt(inch(48), inch(319.5))),
+            path=(pt(ft(7, 6), ft(25, 6)), pt(inch(50.5), inch(276)),
+                  pt(inch(50.5), inch(267.5)), pt(inch(50.5), inch(267.5)),
+                  pt(inch(50.5), inch(267.5))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(inch(88), inch(97.4375), inch(97.4375),
+            elevations=(inch(88), inch(91.5), inch(91.5),
                         inch(109.4375), inch(136)),
-            wall_refs=(None, None, None, "W-M-STOS"),
+            wall_refs=(None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH1-LAV",)),
     # ** THE COLD RISER IS IN W-M-HS1 SINCE 2026-09-09, NOT STANDING IN THE ROOM. ** It came
     # up at (2'-3", 17'-2.4") and stopped at 3'-0" — three feet of bare PEX in the middle
@@ -525,7 +488,7 @@ SUPPLY = [
             # elevation is a lap rather than a crossing.
             elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, None, None, "W-M-STOS", "W-S-BD-N"),
-            serves=("FX-M-BATH1-LAV", "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
+            serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # x=6'-4" is the first clean bay past N-M-BA1's tee (6 1/2" west of D-M-MUD's jamb pack,
     # 8" west of D-S-BATH1's above); x=6'-2.4" would leave half the pipe in W-M-STOS2's

@@ -1,8 +1,8 @@
 # haus: editable
 # RM-M-BED desk in the southeast corner, backs on the east finish face (x=212.115"),
 # 2026-10-21. South to north: a 15" SEKTION drawer base, a 31" knee bay on a hidden
-# ledger, a second base: 61" over y=7.25"..68.25", the HEMNES footprint it replaces.
-# One 1" walnut glue-up top spans all three at 31". 12 3/4" from the north end to
+# ledger, a second base and its 1/2" cover: y=7.25"..68.75", the HEMNES footprint plus
+# the cover. One 1" walnut glue-up top spans all four at 31". 12 1/4" from the north end to
 # D-M-BED2's hinge jamb; the chair zone stays south of the king's foot (y=68.445").
 # Types in `bed_desk_types.py`.
 
@@ -18,8 +18,11 @@ BED_DESK = [
               position=pt(inch(211.74), inch(37.75)), rotation=deg(-90)),
     Furniture(uid="P4W7XCY102", tag="FURN-M-BED-DESK-CAB-N", type_ref="FURN-M-BED-DESK-DRAWERS-15",
               room="RM-M-BED", position=pt(inch(199.74), inch(60.75)), rotation=deg(-90)),
+    Furniture(uid="T1QTQMPKQS", tag="FURN-M-BED-DESK-COVER-N", type_ref="FT-M-BED-DESK-COVER-30",
+              room="RM-M-BED", position=pt(inch(199.8025), inch(68.5)), rotation=deg(-90)),
     Countertop(uid="Z1TG1TK4K3", tag="CT-M-BED-DESK",
-               hosts=("FURN-M-BED-DESK-CAB-S", "FURN-M-BED-DESK", "FURN-M-BED-DESK-CAB-N"),
+               hosts=("FURN-M-BED-DESK-CAB-S", "FURN-M-BED-DESK", "FURN-M-BED-DESK-CAB-N",
+                      "FURN-M-BED-DESK-COVER-N"),
                material_ref="walnut-counter", thickness=inch(1), overhang=inch(0.875),
                depth=inch(24.875)),
     # Its chair faces east, tucked into the knee and inside the ledger's chair zone.

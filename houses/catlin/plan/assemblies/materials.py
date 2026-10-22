@@ -63,7 +63,7 @@ MATERIALS = [
              r_per_inch=1.0, density=610.0, hatch="lumber", color="#80634f",
              finish="clear-satin-hardwax-oil", species="walnut", nominal_quarters=5,
              milling_profile="S4S", requires_custom_milling=True, max_board_width_in=8.0,
-             source="One 61\" x 24 7/8\" x 1\" desk top, an edge-glued panel of bought 5/4 walnut, oversailing 7/8\" past the drawer fronts. Finish all six faces; fix on figure-8s to the cabinets and through slots to the ledger."),
+             source="One 61 1/2\" x 24 7/8\" x 1\" desk top, an edge-glued panel of bought 5/4 walnut, oversailing 7/8\" past the drawer fronts. Finish all six faces; fix on figure-8s to the cabinets and through slots to the ledger."),
     # The east wall's living-room slab (CT-M-LIV-E-N; one since 2026-10-20), ash to match the
     # dining table's ash-6q top. Priced in [countertops], cut-listed by `haus millwork`.
     # Same logs as the table, so the same ~11" widest board: the 25" slab is three boards.
