@@ -46,10 +46,10 @@ def _with_run(model, index, run):
     return clone
 
 
-def test_catlin_is_nine_for_nine_on_the_code_check(catlin_model_ro) -> None:
+def test_catlin_vents_all_pass_the_code_check(catlin_model_ro) -> None:
     """Note §3: nothing in this house drops or sags on its way to a terminal."""
     findings = _grade(catlin_model_ro)
-    assert len(findings) == 9
+    assert len(findings) == 10  # includes the powder basin dry vent
     assert all(f.result is Result.PASS for f in findings)
     assert all(f.code_ref == "MN Plumbing Code (ch. 4714) 905.1" for f in findings)
 

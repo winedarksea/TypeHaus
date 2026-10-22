@@ -65,9 +65,12 @@ This support is for the basin; it is not specified as a grab bar or transfer sup
 The waste/vent tee is at **x=53½″, y=268″, 20″ above main datum**, behind the
 block. The 1½″ vent rises to 45″ before offsetting east to x=58″ and rising to the
 upper service band, clear of the study ERV branch. It joins the existing WC vent;
-there is **no service bore through the basin block**. Hot is at x=50½″, y=267½″;
-cold comes from the existing x=60″ wet-wall riser. Supply outlets are 24″ above main
-datum, below the block. Check these routes before installing the rear plates.
+there is **no service bore through the basin block**. Hot rises at x=50½″, y=266¾″, clear of the rear bolt heads and plates;
+cold comes from the existing x=60″ wet-wall riser. Both supply outlets emerge at the north finish face, y=271.385″, at 24″ above main
+datum, below the block. The basement datum is 109⁷⁄₁₆″ below main, so these
+outlets are authored at 133⁷⁄₁₆″ in that storey; the 20″ waste tee is authored
+at 129⁷⁄₁₆″. The cold riser includes an explicit tee vertex at this height.
+Check these routes before installing the rear plates.
 
 The 1½″ waste drops through the wet wall to the basement service space, then runs
 3″ north and 18½″ east to the head of the existing 4″ collector. Its horizontal
@@ -79,8 +82,8 @@ to the upstairs stack on the opposite wall.
 
 The TOTO AP bowl remains **21¼″ projection** and centers at **x=24½″**. Its carrier
 and access panel align with it; the waste drops straight down, without the former
-short lateral offset inside the carrier. The study data conduit’s north–south leg moves 4″ west in the basement ceiling
-to clear this drop, retaining its existing bend count.
+short lateral offset inside the carrier. The study data conduit’s north–south leg
+moves 4″ west in the basement ceiling to clear this drop, retaining its bend count.
 
 The basin and toilet now share the south wall. This restores some visual screening
 from the hall, although an open wall basin provides less screening than a cabinet.

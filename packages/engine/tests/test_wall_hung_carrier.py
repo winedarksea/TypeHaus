@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import pytest
 
+from typehaus.model import Service
 from typehaus.resolve.framing.carriers import (
     CARRIER_FRAME_HEIGHT_M,
     backing_wall,
@@ -48,8 +49,8 @@ def test_the_carrier_is_located_on_the_wall_it_stands_in_not_its_wet_wall(catlin
     fixture = catlin_plan.by_tag(CARRIER_FIXTURE)
     assert fixture.wall_ref == "W-M-BAE"
     assert bay.wall_tag == CARRIER_WALL
-    # 19 3/4" of clear bay, centred on the bowl at x = 26.41".
-    assert bay.center_m / IN == pytest.approx(26.409, abs=0.01)
+    # 19 3/4" of clear bay, centred on the bowl at x = 24.5".
+    assert bay.center_m / IN == pytest.approx(24.5, abs=0.01)
     assert bay.half_m * 2 / IN == pytest.approx(19.75, abs=1e-6)
 
 
@@ -103,7 +104,8 @@ def test_the_bay_is_framed_rather_than_merely_empty(catlin_model_ro, bay):
                if member.child_key.startswith("carrier-")}
     assert set(carrier) == {"carrier-0-stud-0", "carrier-0-stud-1",
                             "carrier-0-block-0", "carrier-0-head-1",
-                            "carrier-0-cripple-000", "carrier-0-cripple-001"}
+                            "carrier-0-cripple-000", "carrier-0-cripple-001",
+                            "carrier-0-cripple-002"}
     x0 = wall.axis[0][0]
     studs = sorted((carrier[k].p0[0] - x0) / IN for k in ("carrier-0-stud-0", "carrier-0-stud-1"))
     # Stud centres sit half a stud outboard of the clear bay, so their inner faces ARE it.
@@ -133,9 +135,8 @@ def test_cripples_put_the_module_back_above_the_head_course(catlin_model_ro):
     head = next(m for m in wall.members if m.child_key == "carrier-0-head-1")
     cripples = [m for m in wall.members if m.category == "cripple"
                 and m.child_key.startswith("carrier-")]
-    # 24" and 32", not 16": the 16" module lands 0.22" from the jamb stud at 15.78", and a
-    # cripple there would interpenetrate it. The jamb IS the full-height member on that line.
-    assert sorted((m.p0[0] - x0) / IN for m in cripples) == pytest.approx([24.0, 32.0])
+    # The westward WC move leaves all three module stations clear of the carrier jambs.
+    assert sorted((m.p0[0] - x0) / IN for m in cripples) == pytest.approx([16, 24, 32])
     assert all(m.z0_m == pytest.approx(head.z1_m) for m in cripples)
     # They run to the wall's own framing top, like the module studs they replace.
     module_top = max(m.z1_m for m in wall.members if m.category == "stud")
@@ -146,8 +147,8 @@ def test_the_drain_point_is_derived_from_the_type_and_the_host_wall(catlin_plan,
                                                                    catlin_model_ro):
     """No ``drain_position`` on the instance, and the derived point is not the type nominal.
 
-    The type states 11.9" behind the bowl centre, which is a PRODUCT set-back measured off
-    the frame's face — it cannot know the finish thickness in front of it. Projected onto
+    The type states its drain setback behind the bowl centre, measured off the frame's
+    face — it cannot know the finish thickness in front of it. Projected onto
     the host wall's axis, the drop lands centred in the 5 1/2" cavity, 1.135" further back,
     which is where the deleted override used to say it was.
     """
@@ -158,11 +159,14 @@ def test_the_drain_point_is_derived_from_the_type_and_the_host_wall(catlin_plan,
 
     point = _expected_drain_point(catlin_model_ro, CARRIER_FIXTURE)
     wall = catlin_model_ro.wall(CARRIER_WALL)
-    assert point[0] / IN == pytest.approx(26.409, abs=0.01)
+    assert point[0] / IN == pytest.approx(24.5, abs=0.01)
     assert point[1] == pytest.approx(wall.axis[0][1])          # on the wall's own axis
     centre = placed_xy(catlin_model_ro, fixture)               # hosted: derived, not authored
     assert point[1] != pytest.approx(centre[1])                # NOT under the footprint
-    nominal = centre[1] - 11.9 * IN                            # the type's raw set-back
+    fixture_type = next(t for t in catlin_plan.library.fixture_types
+                        if t.tag == fixture.type_ref)
+    port = next(p for p in fixture_type.ports if p.service is Service.DRAIN)
+    nominal = centre[1] - port.position[1].meters
     assert abs(point[1] - nominal) / IN == pytest.approx(1.135, abs=0.01)
 
 

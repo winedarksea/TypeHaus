@@ -10,6 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _helpers import copy_house
 
 from typehaus.model import ft, inch
 from typehaus.source import load_plan
@@ -24,7 +25,6 @@ from typehaus.source.macros import (
     place_placeable,
     slide_placeable,
 )
-from _helpers import copy_house
 
 
 @pytest.fixture
@@ -68,13 +68,13 @@ def _attached_chair(plan):
 
 def test_move_reports_wall_ref_left_behind(catlin_plan):
     # A free fixture naming a wall_ref; a hosted one has no authored point to measure from.
-    fixture = next(e for e in catlin_plan.all_elements() if e.tag == "FX-M-BATH1-LAV")
+    fixture = next(e for e in catlin_plan.all_elements() if e.tag == "FX-S-BATH1-LAV")
     x, y = fixture.position.xy_m
-    near = move_placeable(catlin_plan, "main", tag="FX-M-BATH1-LAV", position=(x, y + 0.05))
+    near = move_placeable(catlin_plan, "second", tag="FX-S-BATH1-LAV", position=(x, y + 0.05))
     assert not [i for i in near.impacts if i.kind == "left_behind"]
-    far = move_placeable(catlin_plan, "main", tag="FX-M-BATH1-LAV", position=(x + 4, y + 4))
+    far = move_placeable(catlin_plan, "second", tag="FX-S-BATH1-LAV", position=(x + 4, y + 4))
     left = [i for i in far.impacts if i.kind == "left_behind"]
-    assert len(left) == 1 and "W-M-BAE" in left[0].reason
+    assert len(left) == 1 and "W-S-BA-E1B" in left[0].reason
     assert left[0].reason in far.warnings
 
 

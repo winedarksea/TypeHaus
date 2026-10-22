@@ -47,3 +47,8 @@ def test_a_neo_angle_pan_is_valued_exactly_as_a_shower() -> None:
     """The cut corner is a plan outline, not a drainage or demand fact."""
     assert DFU_BY_SYMBOL["shower-neo-angle"] == DFU_BY_SYMBOL["shower"]
     assert WSFU_BY_SYMBOL["shower-neo-angle"] == WSFU_BY_SYMBOL["shower"]
+
+
+def test_wall_mounting_does_not_change_a_lavatorys_fixture_units() -> None:
+    assert DFU_BY_SYMBOL["lavatory-wall-hung"] == DFU_BY_SYMBOL["lavatory"]
+    assert WSFU_BY_SYMBOL["lavatory-wall-hung"] == WSFU_BY_SYMBOL["lavatory"]
