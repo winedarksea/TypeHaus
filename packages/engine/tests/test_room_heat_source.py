@@ -100,7 +100,10 @@ def test_both_bath_zones_state_the_corrected_delivered_output(catlin_plan) -> No
 
 
 def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
-    """Note §4's table: 612 against 606 (PASS), and 399 against 556 (28% short).
+    """Note §4's table: 611 against 581 (PASS), and 399 against 556 (28% short).
+
+    **611 against 581 since 2026-10-21**: the bath 1 rework moved its walls and basin, which
+    took 25 Btu/h off the room's design load and left the delivered output where it was.
 
     **Both loads fell 2026-09-24** (619 -> 606, 567 -> 556) when room volume became
     finish-face volume, which shrinks each bath's share of the air terms; FH-S-BATH1 also
@@ -115,7 +118,7 @@ def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
     """
     rows = _by_room(catlin_model_ro)
     assert rows["RM-S-BATH1"].result is Result.PASS
-    assert "delivers 612 Btu/h against a 606 Btu/h design load" in rows["RM-S-BATH1"].message
+    assert "delivers 611 Btu/h against a 581 Btu/h design load" in rows["RM-S-BATH1"].message
 
     bath2 = rows["RM-M-BATH2"]
     assert "delivers 399 Btu/h against a 556 Btu/h design load" in bath2.message

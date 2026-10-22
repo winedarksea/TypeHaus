@@ -34,8 +34,9 @@ def test_the_supply_slot_in_trade_order_is_no_longer_decorative() -> None:
     # fact about the model rather than failing.
     assert result.exit_code in (0, 1), result.output
     printed = " ".join(result.output.split())
-    assert "of 30 targets laid" in printed
-    laid = int(printed.split(" of 30 targets laid")[0].split()[-1])
+    # 31 targets since the 2026-10-21 bath 1 rework added PR-M-CW-BATH1-LAV.
+    assert "of 31 targets laid" in printed
+    laid = int(printed.split(" of 31 targets laid")[0].split()[-1])
     assert laid >= 20, printed
     # And the refusals that remain say which cause applies, not a sentence about a chase.
     assert "chase" not in printed

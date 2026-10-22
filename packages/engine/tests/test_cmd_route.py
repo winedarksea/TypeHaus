@@ -128,8 +128,10 @@ def test_a_tree_branch_ties_at_the_stack_and_not_at_its_basement_leg(runner) -> 
     feet of head to spare, which is a true statement about a pipe nobody can build. With
     it, every one of the bath's five fixtures is inches SHORT at the second floor.
     """
-    result = runner.invoke(app, ["route", str(_CATLIN),
-                                 "--tree", "PR-M-S-BATH1-DRAIN", "--explain"])
+    # The stack also serves FX-M-BATH1-LAV on main (mep_drainage.py), so the second-floor
+    # group is routed on its own with --level, as the refusal asks.
+    result = runner.invoke(app, ["route", str(_CATLIN), "--tree", "PR-M-S-BATH1-DRAIN",
+                                 "--level", "second", "--explain"])
     slacks = [float(line.split('"')[0].split()[-1])
               for line in result.output.splitlines() if "of head to spare" in line]
     shorts = [float(line.split("short ")[1].split('"')[0])

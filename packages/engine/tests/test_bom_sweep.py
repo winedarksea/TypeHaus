@@ -114,11 +114,12 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # the W rail now running to the top nosing), and the dark-steel rails moved 3/8" off
     # their walls for R311.7.8.2's clearance.
     # 9.7 since 2026-10-13: the W rail stops 3 1/8" short, where W-M-STRW's face ends.
+    # 9.5 since 2026-10-21: it stops 4 5/8" short now, after N-M-STRJ moved north.
     # 39.9 since 2026-10-13: RL-BW-GARAGE-E's 3'-0" left with the garage's interior landing,
     # and RL-G-SERVICE's run went 3'-7 3/4" -> 3'-7 1/4" (head to its new 1 1/2" return).
     # The attic handrail's 10 3/8" lead-in clears WIN-S-STUDY3's lower jamb.
     assert by_type["(untyped railing)"] == pytest.approx(40.8, abs=0.1)
-    assert by_type["RAILING-INT-TI-HANDRAIL-42"] == pytest.approx(9.7, abs=0.1)
+    assert by_type["RAILING-INT-TI-HANDRAIL-42"] == pytest.approx(9.5, abs=0.1)
 
 
 def test_the_untyped_group_key_is_also_what_gets_emitted(bom):

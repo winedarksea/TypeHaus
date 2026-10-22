@@ -53,6 +53,14 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
         problems.append(f"{target}: serves no fixture, so nothing feeds it. `--run "
                         f"{target}` re-routes the main itself")
         return [], problems, [], []
+    # `--level` names one storey's group when the stack serves more than one: the tree is
+    # then routed for those fixtures alone, which is the "each storey's group on its own"
+    # the refusal below asks for.
+    if level is not None:
+        fixtures = [tag for tag in fixtures if _storey_of(model, tag) == level]
+        if not fixtures:
+            problems.append(f"{target}: no fixture it serves sits on the {level} storey")
+            return [], problems, [], []
 
     points: dict[str, tuple[float, float]] = {}
     storeys: dict[str, str] = {}
