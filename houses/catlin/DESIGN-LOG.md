@@ -5609,3 +5609,22 @@ unchanged at 1,877 pass / 0 fail / 73 unknown / 61 not applicable. See
 The narrower cabinet also exposes a 6 3/16-inch tile-base piece between the run and door
 casing. Reviewed the single new geometry entry in the elevation golden; the snapshot and
 bathroom tests pass, as do the remaining standard verification stages.
+
+## 2026-10-21 — Exterior ccSPF selected: Enverge OnePass HFO
+
+A reviewer asked that the wall's WRB approval be resolved before the foam is bought, and
+cited Heatlok's IAPMO ER-0565 and ICC-ES ESR-4073 as WRB listings. Neither report
+contains R703.2, IBC 1403.2 or ASTM E331 (current editions and ER-565's 2020 edition were
+read); the citation was Huntsman's "tested WRB" literature. A survey of every ccSPF report
+then found one product meeting the whole of `notes/ccspf_spec.md` §1 that also lists WRB in
+its own report: **Enverge OnePass HFO, IAPMO ER-859 §3.5** (≥ 1.5" continuous). WALLTITE LWP
+lists WRB too but fails the one-visit lift. The owner selected OnePass for every ccSPF line.
+
+R at 4" is 28 against Heatlok High Lift's 30, about 1-2% of whole-wall R; the model's
+generic `closed-cell-spray-foam` (R-6.5/in) is unchanged and remains conservative of both.
+ER-859 also supplies what the design took from ESR-4073: 7-1/2" unbacked on a vertical
+surface (§3.3.4.2.2), and any thickness behind a gypsum thermal barrier (§3.3.2), which
+closes the roof flash's 5"-beyond-E84 question for this product. Heatlok High Lift and
+SealTite PRO HFO stay qualifying substitutes, each reopening a Minn. R. 1300.0110 request.
+`notes/outie_window_truss_detail.md` still cites ESR-4073 §4.4.2 for the no-backing point:
+it is byte-pinned drawing content, still true of that product, and left for a drawing pass.

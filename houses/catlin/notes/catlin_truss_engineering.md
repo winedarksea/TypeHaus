@@ -43,8 +43,9 @@ three reasons, in order of size:
 1. **It sat directly on the sheathing**, so it gave its own screw no thermal break at all,
    and it cost a **10.9 % framing fraction in the first 1-1/2" of the foam** to hold up
    nothing but the tier above it. §7 prices that at R-2.7.
-2. **The foam does not need backing.** ICC-ES **ESR-4073** §4.4.2 permits 7-1/4" of this
-   product on a vertical surface with nothing in it (self-weight ~0.05 psi against ASTM
+2. **The foam does not need backing.** IAPMO **ER-859** §3.3.4.2.2 permits 7-1/2" of the
+   selected product on a vertical surface with nothing in it (ESR-4073 §4.4.2 gives a
+   qualifying alternate 7-1/4") (self-weight ~0.05 psi against ASTM
    D1623 tensile adhesion of 32 psi and up); planed lumber in the foam is a shrinkage-crack
    interface, not a support. **ESL-1372** lists 3-3/4" of ccSPF between horizontal Z-girts
    screwed to studs at 28" o.c. — the same wall with a steel girt instead of a wooden one.
@@ -646,8 +647,8 @@ lifts any more, which is what used to force a second mobilisation.
    no amount of driver is the answer.
 6. **Jamb posts and head/sill courses at each RO**, on their own blocks, screwed at ≤ 24".
 7. **Tilt.**
-8. **Foam: 4" in one visit**, of any product qualifying under `notes/ccspf_spec.md` (this
-   note's ESR citations are to Heatlok HFO High Lift, ESR-4073), sprayed
+8. **Foam: 4" in one visit**, of Enverge OnePass HFO (IAPMO ER-859; any substitute must qualify
+   under `notes/ccspf_spec.md`), sprayed
    through the 20-1/2" clear between courses and behind them — the girt stands 1/2" off the
    foam face, so the whole plane is reachable from outside. **Dry sheathing, 60-80 F.**
    Recommended: a 1" pass picture-framing every block, buck and jamb, then 3" back to back;
@@ -666,17 +667,17 @@ the cladding installer rather than letting them discover it.
 
 ## 9. Risks, stated plainly
 
-**THE FOAM IS THE ONLY WATER PLANE, AND ITS WRB LISTING IS AN OPEN ALTERNATE-APPROVAL ITEM.**
+**THE FOAM IS THE ONLY WATER PLANE, AND ITS WRB LISTING IS WHY THE PRODUCT WAS CHOSEN.**
 This wall has no housewrap, no building paper and no membrane: the ccSPF is air, water,
-vapour and thermal in one application, and §1 says so. **ICC-ES ESR-4073 does not evaluate
-water-resistive barrier.** Icynene ProSeal Eco's listing (ESR-3493 §4.6) expired in 2021.
-**Holcim Enverge OnePass HFO (IAPMO ER-859) does list WRB, at ≥ 1-1/2" on ASTM E331**
-(found 2026-09-16, `notes/ccspf_spec.md`), and buying it closes this item. On any other
-product, approval runs through **Minn. R. 1300.0110** (alternate materials and methods) on
-**the maker's own ASTM E331 and ASTM E2178 data for the product actually bought**.
-That data has to be in hand before the order, not at inspection. It is stated here as an open
-item rather than buried, because a reviewer reading §1 would otherwise reasonably assume the
-WRB question was closed by the ESR, and it is not.
+vapour and thermal in one application, and §1 says so. **Enverge OnePass HFO is selected
+(owner, 2026-10-21): IAPMO ER-859 §3.5 lists it as the R703.2 / IBC 1403.2 water-resistive
+barrier at ≥ 1-1/2" continuous**, so the item closes on the report. It reopens if the
+product changes: **ICC-ES ESR-4073** (Heatlok HFO High Lift) and **IAPMO ER-565** (Heatlok
+HFO Pro) do not evaluate WRB (re-read 2026-10-21; a reviewer's citation of both was to
+Huntsman's literature, not the reports), nor does ER-720 (SealTite). A substitute's water
+plane runs through **Minn. R. 1300.0110** on **the maker's own ASTM E331 and ASTM E2178 data
+for the product actually bought**, in hand before the order. Hold the substitution, not the
+inspection.
 
 
 **Foam shrinkage at the block, and the fillet.** Planed lumber shrinks; a square cold joint
@@ -793,7 +794,9 @@ out of it.
 - ASTM A153, ASTM D1623
 - **IAPMO UES ER-192** (SDWS thread lengths, Table 7 — the superseded screw)
 - **ICC-ES ESR-1078** (FastenMaster TimberLOK, reissued 2026-01; Tables 1A, 2, 3, §4.1.7)
-- **ICC-ES ESR-4073** (Huntsman Heatlok HFO High Lift; §4.2, §4.4.2)
+- **IAPMO UES ER-859** (Enverge OnePass HFO, the selected product; §3.3.4.2.2, §3.5)
+- ICC-ES ESR-4073 (Huntsman Heatlok HFO High Lift; §4.2, §4.4.2 — a qualifying alternate)
+- IAPMO UES ER-565 (Heatlok HFO Pro — no WRB, cited only as not usable)
 - ICC-ES ESR-3493 (Icynene ProSeal Eco §4.6 — expired 2021, cited only as not usable)
 - IAPMO UES ER-309 (AEP Span; the published open-framing alternative, §5)
 - Minn. R. 1300.0110

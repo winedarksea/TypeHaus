@@ -338,7 +338,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   loose 3-1/2"x3-1/2"x1-1/2" KDAT offcuts stacked to 4-1/2" over every OTHER stud, clamped
   by one 8" FASTENMASTER TIMBERLOK (TLOK08) through girt + block + sheathing, 1-1/2" into
   the stud. There is only ONE tier — do not add a second inner one; the foam needs no
-  backing (ESR-4073 §4.4.2) (→ DESIGN-LOG.md, "Shell: framing module and envelope").
+  backing (ER-859 §3.3.4.2.2, 7-1/2" vertical) (→ DESIGN-LOG.md, "Shell: framing module and envelope").
 - **AN INTERIOR PARTITION'S FRAMING STOPS 3/4" CLEAR OF WHATEVER IS OVER IT** (2026-09-19) —
   the rafter soffit in the attic, the joist or SIP soffit everywhere else — and a Simpson
   **SDPW19600 DEFLECTOR** screw spans that gap: braced laterally, RELEASED VERTICALLY, so the
@@ -370,17 +370,20 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   invisible once the foam is on — inspect the pattern before the sprayer arrives. Head seats
   FLUSH; a head that will not pull down means the wrong screw.
 - There is no WRB — the foam is air/water/vapour/thermal; `plan/transitions.py` names
-  `spray-foam-ext` as the water/thermal plane. **THE FOAM IS A PERFORMANCE SPEC, NOT A
-  BRAND** (owner, 2026-09-16): `notes/ccspf_spec.md` §1 is the requirement and §2 the
-  qualifying list — Enverge OnePass HFO, Heatlok HFO High Lift, SealTite PRO HFO,
-  InsulStar OPTIMAXX (report unread). The one that cannot slip: **≥ 4" per pass by the
-  evaluation report**, or the wall needs a cooling wait or a second visit — Heatlok HFO
-  *Pro* (2"/pass) and Corbond IV (ER-146 lapsed 2026-07) do not qualify. Spray only at
+  `spray-foam-ext` as the water/thermal plane. **THE FOAM IS ENVERGE ONEPASS HFO, IAPMO
+  ER-859** (owner, 2026-10-21), selected because its report lists WRB (§3.5, ≥ 1.5"), which
+  closes the water-plane approval. It stays a PERFORMANCE SPEC (owner, 2026-09-16):
+  `notes/ccspf_spec.md` §1 is the requirement, §2 the qualifiers (also Heatlok HFO High
+  Lift, SealTite PRO HFO; OPTIMAXX unread), §2a everything rejected. The one that cannot
+  slip: **≥ 4" per pass by the evaluation report**, or the wall needs a cooling wait or a
+  second visit. Heatlok HFO *Pro* (2"/pass) and Corbond IV (ER-146 lapsed 2026-07) do not
+  qualify. Spray only at
   60-80 F on dry (< 16% MC) sheathing, as two back-to-back passes in one visit (1" picture-
   frame pass, then 3"); one 4" pass is acceptable. **Never a sub-1" flash coat** — Huntsman
-  and JM both say it under-cures and loses adhesion. **WRB listing is the tiebreaker**:
-  only OnePass carries it in its report (ER-859); on any other product the water plane is
-  an open Minn. R. 1300.0110 alternate-approval item (notes/catlin_truss_engineering.md §9).
+  and JM both say it under-cures and loses adhesion. **A substitute reopens the WRB item**:
+  no other qualifier lists WRB in its report (ESR-4073 and ER-565 do not, whatever Huntsman's
+  literature says), so its water plane is a Minn. R. 1300.0110 alternate-approval request
+  (notes/catlin_truss_engineering.md §9).
   Wood and the screw pass happen on the FLAT wall before tilt; fillet the foam against the
   block sides (BSI-048), never butt square.
 - Everything outboard of sheathing is KDAT — one BOM row, plus `3-2x4:kdat` for the block.

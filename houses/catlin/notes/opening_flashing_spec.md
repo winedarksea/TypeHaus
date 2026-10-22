@@ -19,9 +19,9 @@ no visible drip** (`[K5]` rejects a visible drip explicitly). That is two inside
 forty times over. A liquid makes it in one pass and removes the origami at the corners, which
 is where tape actually fails.
 
-It also strengthens an open submittal item. `notes/ccspf_spec.md` §1 item 7 records that
-without a WRB listing in the foam's own evaluation report the water plane is a Minn. R.
-1300.0110 alternate-approval request. Openings are where a reviewer's water question lives,
+It also backs the foam's WRB listing. The selected foam, Enverge OnePass HFO, lists WRB in
+its own report (IAPMO ER-859 §3.5; `notes/ccspf_spec.md`); a substitute without that listing
+makes the water plane a Minn. R. 1300.0110 request. Openings are where a reviewer's water question lives,
 and a membrane with its own ICC-ES number at every one of them is the strongest answer the
 detail can give.
 

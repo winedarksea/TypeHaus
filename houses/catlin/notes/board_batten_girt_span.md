@@ -478,9 +478,9 @@ record rather than in a footnote.
 **One recorded known condition, not a gap and not new.** BBD75-1212's air and water tests are
 published *"with building wrap"* — *"ASTM E 283 Air Leakage, with building wrap"*, *"ASTM
 E 331 Water Penetration, with building wrap"* — and this wall has no wrap. That is not a
-panel-selection issue and it is not new: the ccSPF is the water plane here, which is already
-a logged alternate-approval item under Minn. R. 1300.0110
-(`notes/catlin_truss_engineering.md` §9), and **every** alternative panel in §7 carries the
+panel-selection issue and it is not new: the ccSPF is the water plane here, listed as the
+R703.2 WRB in the selected foam's own report (Enverge OnePass HFO, IAPMO ER-859 §3.5;
+`notes/catlin_truss_engineering.md` §9), and **every** alternative panel in §7 carries the
 same test basis. Recorded so a reviewer meets it here rather than discovering it. Nothing
 changes.
 

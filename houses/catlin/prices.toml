@@ -3675,11 +3675,10 @@
 # the owner's preferred route) with no cooling wait. A 2"/pass product (Heatlok HFO **Pro**,
 # ESL-1372) breaks that; do not let a supplier substitute one without re-pricing.
 #
-# ** WRB: an open alternate-approval item UNLESS the product's report lists it. ** Enverge
-# OnePass HFO (IAPMO ER-859, ≥ 1.5", ASTM E331) is the one qualifier whose report does;
-# ESR-4073 (Heatlok) and ER-720 (SealTite) do not. Otherwise approval runs through Minn. R.
-# 1300.0110 on the maker's own E331 / E2178 data. Nothing is priced against it — it is a
-# submittal, not a line — but the wall has no other water plane, so ask before the order.
+# ** SELECTED: Enverge OnePass HFO, IAPMO ER-859 (owner, 2026-10-21), ** because its report
+# lists WRB (§3.5, ≥ 1.5") and the wall has no other water plane. The rate is unchanged: it
+# is a generic $/bd-ft, not a brand quote. A substitute reopens the WRB as a Minn. R.
+# 1300.0110 request (ESR-4073, ER-565 and ER-720 list none), so quote OnePass by name.
 "closed-cell-spray-foam:4.0" = { material = { low = 1.6, high = 2.4 }, labour = { low = 2.4, high = 3.6 } }  # 3092.6 SF — the one 4" application, filleted at the blocks and shaved to a gauge
 # 2026-08-31 — GARAGE_WALL_2X6's stud-bay fill, 631.3 SF at 2". A DIFFERENT BUILDING and a
 # different visit from the three rows above: the garage is detached, and its bays are

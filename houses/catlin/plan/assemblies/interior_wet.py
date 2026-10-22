@@ -131,20 +131,15 @@ PLANT_EXT_2X6_HUMID = Assembly(
         # THE INNER GIRT TIER: a plain SPF girt buried in the foam (bands B/C) sits directly
         # ON the sheathing, giving its screw no thermal break, and costs 10.9% wood in the
         # first 1-1/2" of the foam to hold up nothing but the tier above it — omitted. The
-        # foam does not need backing (ESR-4073 §4.4.2 permits 7-1/4" on a vertical surface)
+        # foam does not need backing (ER-859 §3.3.4.2.2 permits 7-1/2" on a vertical surface)
         # and its racking contribution is its bond to the sheathing face, unchanged.
         #
-        # THE PRODUCT IS HUNTSMAN HEATLOK HFO HIGH LIFT, ICC-ES ESR-4073. §4.2 permits
-        # 6-1/2" PER PASS and the TDS ladder is 6.5" at or below 70 F, 4" at 70-80 F, 3.25"
-        # above 80 F — so ONE 4" application holds below 80 F, and substrate temperature on
-        # the spray day is the condition, not the 1-1/2"/pass legacy SPFA figure. Heatlok HFO
-        # *Pro* is a different product (ESL-1372, 2"/pass) and would make this two lifts.
-        #
-        # WRB IS NOT IN ESR-4073'S SCOPE. The report does not evaluate water-resistive
-        # barrier, and the only ccSPF report found granting one (Icynene ProSeal Eco
-        # ESR-3493 §4.6) expired in 2021. This wall has no other water plane, so it is an
-        # OPEN alternate-approval item under Minn. R. 1300.0110 on Huntsman's own ASTM E331 /
-        # E2178 data for the product bought. See notes/catlin_truss_engineering.md §9.
+        # THE PRODUCT IS ENVERGE ONEPASS HFO, IAPMO ER-859 (owner, 2026-10-21): 4" PER PASS,
+        # so the 4" is one visit (1" + 3" back to back, or one pass). Its §3.5 lists it as the
+        # R703.2 water-resistive barrier at >= 1.5" continuous, which is why it was picked:
+        # this wall has no other water plane. A substitute must meet notes/ccspf_spec.md §1,
+        # and none of the others lists WRB, so a swap reopens a Minn. R. 1300.0110
+        # alternate-approval item (notes/catlin_truss_engineering.md §9).
         #
         # No framing factor is authored here, deliberately, and it is why the card reads
         # high. The blocks are 1.6% of this band's area and they are modelled by
