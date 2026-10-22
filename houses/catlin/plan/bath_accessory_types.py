@@ -25,7 +25,7 @@ CABINET_BACKING_PAD = FurnitureType(
     tag="FT-TP-CABINET-BACKING-12", name='TP holder internal plywood backing pad, 12 x 5 1/2 in.',
     footprint=(inch(12), inch(0.75)), height=inch(5.5),
     plan_symbol="closet-board", wood_material_ref="cabinet-plywood",
-    source="3/4 in. cabinet plywood inside the vanity side, centred on holder fixings. "
+    source="3/4 in. cabinet plywood inside the vanity side, covering both holder posts. "
            "Through-fasten both factory mounting plates with stainless machine screws "
            "sized to their holes, washers and locking nuts; trim length clear of storage. "
            "Do not rely on screw withdrawal from the cabinet side or treat as grab support.",

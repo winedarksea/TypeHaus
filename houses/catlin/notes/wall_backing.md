@@ -10,6 +10,10 @@ backing follows a designated body, and a grab-bar course stands only at a tub, s
 **Oracle for:** nothing. This is a **sources note**, not a calculation note — there is no
 arithmetic here to reproduce, only a set of heights and the authority behind each one.
 `advisory.wall_backing_present` grades coverage against it; no engine table repeats it.
+The 2026-10-22 [TP-holder schedule](toilet_paper_holders.md) adds five 2×6 blocks in
+`plan/backing_bath_accessories.py` for four wall mounts. Two vanity mounts use separate
+internal plywood pads. Their mounting-post support is checked at both posts by
+`advisory.wall_fixing_support`, against emitted framing on the selected face.
 **Companions:** `notes/interior_selections.md` §"What has to reach a trade before a wall
 closes" — the prose this file finally makes buildable.
 **What is asked of the reviewer:** confirm that each height below is the one *this* family
@@ -32,7 +36,7 @@ wants, and that the fixtures with no grab course (§4) are the trade you mean to
 | Mirror / medicine cabinet | blocks topping at 40" and 76" | Fox Cities Habitat QRG ch. 10a |
 | Towel bar | block topping at 60" (bar lands 48"–54") | Habitat QRG ch. 10a |
 | *(this house)* bath courses | 32"–39 1/4", 44"–53 1/4", 72"–79 1/4" | §4 — CRC R328.1.1 plus two chosen heights |
-| Toilet paper holder | block topping at 26", span ≥ 12" | Habitat QRG ch. 10a |
+| Toilet paper holder | general guide: block topping at 26", span ≥ 12"; selected Catlin hardware: 5½″ band centred at 26″ AFF, cut to actual stud bays | Habitat QRG ch. 10a; [Catlin installation schedule](toilet_paper_holders.md) |
 | Kitchen upper cabinets | ~54" (36" counter + 18" clear) and ~84" for a 30" box | NKBA 2023 Planning Guidelines |
 | Wall-hung vanity | bracket band under a 32"–34" top | manufacturer rough-ins |
 | Closet rod | 66" single; 80" / 40" double | trade practice |

@@ -116,14 +116,12 @@ HS1 with the basin; the entry switch moves south of the new doorway.
 
 ## Toilet-paper holder provision
 
-No factory holder attachment is specified for this D-Code basin. **Do not drill the
-china or assume its mounting bolts accept an accessory bracket.** A holder beside
-its west edge is feasible using a separate wall-fixed projecting bracket or a
-manufacturer-approved accessory. Keep the roll and bracket outside the WC's 15″
-side zone (east boundary x=39½″), below the basin rim, and out of the north entry
-lane. Trial its seated reach and roll-changing access before setting its independent
-blocking. Holder selection and that bracket detail remain open; neither is claimed
-as included with the basin or as a grab support.
+The selected Moen Align YB0408BN mounts independently on the **west wall W-M-W2**,
+bar midpoint y=300.635″, 8″ ahead of the bowl front and 26″ AFF. `BK-M-BATH1-TP`
+backs one post; the other fixes to the y=304″ stud. This replaces the unselected
+basin-side projecting bracket. **Do not drill the china or assume its mounting
+bolts accept an accessory bracket.** The holder is not a grab support.
+See [holder schedule and dimensioned reviews](toilet_paper_holders.md).
 
 ## Manufacturer references
 

@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pytest
-from shapely.geometry import Polygon, box
+from shapely.geometry import Polygon
 
 from typehaus.checks.advisory.backing import floating_band_ends
 from typehaus.checks.advisory.backing_fixings import wall_fixing_support
@@ -56,7 +56,8 @@ def test_mounting_positions_are_referenced_to_actual_supports(catlin_model_ro):
     objects = {obj.tag: obj for obj in catlin_model_ro.canvas_objects}
     for room, y in zip(ROOMS[:3], (267.4375, 300.635, 226.615), strict=True):
         holder = next(obj for obj in _holders(catlin_model_ro) if obj.room == room)
-        toilet = next(obj for obj in objects.values() if obj.room == room and obj.tag.endswith("-WC"))
+        toilet = next(obj for obj in objects.values()
+                      if obj.room == room and obj.tag.endswith("-WC"))
         assert holder.position[1] / IN == pytest.approx(y)
         bowl = Polygon(toilet.footprint).bounds
         distance = (y - bowl[3] / IN if room == "RM-M-BATH1" else bowl[1] / IN - y)
@@ -66,7 +67,8 @@ def test_mounting_positions_are_referenced_to_actual_supports(catlin_model_ro):
         holder = objects[tag]
         vanity = objects[holder.host_fixture_ref]
         assert holder.position[1] / IN == pytest.approx(y)
-        assert Polygon(holder.footprint).bounds[2] == pytest.approx(Polygon(vanity.footprint).bounds[0])
+        assert Polygon(holder.footprint).bounds[2] == pytest.approx(
+            Polygon(vanity.footprint).bounds[0])
 
 
 def test_both_posts_have_exact_support_and_blocks_fill_stud_bays(catlin_ctx):
@@ -90,6 +92,7 @@ def test_both_posts_have_exact_support_and_blocks_fill_stud_bays(catlin_ctx):
 
 
 def test_loaded_roll_and_upward_pivot_clear_bodies_and_door_swings(catlin_model_ro):
+    walls = {wall.tag: wall for wall in catlin_model_ro.walls}
     for holder in _holders(catlin_model_ro):
         for depth, low, high in ((6, 23.25, 28.75), (3.34, 25.33, 33.44)):
             envelope = _envelope(holder, depth)
@@ -103,7 +106,7 @@ def test_loaded_roll_and_upward_pivot_clear_bodies_and_door_swings(catlin_model_
                 assert envelope.intersection(Polygon(peer.footprint)).area < 1e-7, (
                     holder.tag, peer.tag, depth)
             for door in catlin_model_ro.openings:
-                if door.storey == holder.storey and door.swing_clearance:
+                if walls[door.host_wall].storey == holder.storey and door.swing_clearance:
                     assert envelope.intersection(Polygon(door.swing_clearance)).area < 1e-7, (
                         holder.tag, door.tag)
 
@@ -134,6 +137,7 @@ def test_panel_is_raised_and_cabinet_pads_cover_both_post_stations(catlin_plan, 
 
 def test_new_blocks_do_not_intersect_routed_services(catlin_model_ro):
     from shapely.geometry import LineString, Point
+
     from typehaus.checks.mep.routing_geometry import crossing_band
 
     model = catlin_model_ro
@@ -149,9 +153,9 @@ def test_new_blocks_do_not_intersect_routed_services(catlin_model_ro):
     for member in blocks:
         outline, bottom, top = member_footprint(member)
         for _, tag, path, heights in run_polylines(model):
-            half_width, half_depth = sections[tag]
+            half_width, half_depth, _ = sections[tag]
             footprint = Polygon(outline).buffer(half_width)
-            for index, (a, b) in enumerate(zip(path, path[1:])):
+            for index, (a, b) in enumerate(zip(path, path[1:], strict=False)):
                 za, zb = heights[index:index + 2]
                 if a == b:
                     if not footprint.contains(Point(a)):
@@ -193,7 +197,8 @@ def test_ifc_keeps_six_furnishing_occurrences_and_cabinet_support(catlin_ifc_pat
 
     model = ifcopenshell.open(str(catlin_ifc_path))
     holders = [obj for obj in model.by_type("IfcFurniture")
-               if get_psets(obj).get("TypeHaus_Identity", {}).get("source_type") == "FT-MOEN-ALIGN-TP"]
+               if get_psets(obj).get("TypeHaus_Identity", {}).get("source_type")
+               == "FT-MOEN-ALIGN-TP"]
     assert len(holders) == 6
     assert all(obj.Representation.Representations[0].RepresentationType == "Tessellation"
                for obj in holders)
