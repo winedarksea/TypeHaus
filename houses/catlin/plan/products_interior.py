@@ -406,6 +406,7 @@ SCHLUTER_KERDI_LINE_VARIO = Product(
 KATELAUREL_ESTERO = Product(
     tag="PROD-KATELAUREL-221484", brand="Kate and Laurel", model="221484",
     name="Estero arch wall mirror with shelf, 20 x 28, gold",
+    url="https://www.kateandlaurel.com/products/estero-metal-framed-arch-wall-mirror-with-shelf",
     source="Home Depot listing (HD 221484), read 2026-10-03: 20.12\" W x 28\" H x 5.5\" D, "
            "gold metal frame, MDF back, 4\" x 20\" shelf along the bottom. Retailer "
            "dimensions only; confirm on delivery. RM-S-SUITEBATH, over FX-S-SUITEBATH-LAV.",

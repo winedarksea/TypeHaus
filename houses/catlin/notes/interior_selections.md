@@ -4,7 +4,8 @@ applied_to:
   - product: PROD-TOTO-CT449CFGT60
   - product: PROD-HARVIA-PC110E
   - product: PROD-SILESTONE-ET-CALACATTA-GOLD
-  - product: PROD-ROBERN-YM0030CPFPD3
+  - product: PROD-FLEURCO-MHAP2436
+  - product: PROD-KOHLER-26050-BNL
   - material: quartz-counter
   - material: tile-floor-24
   - material: tile-wall-1224
@@ -22,6 +23,8 @@ source:
   - plan/fixture_types_wc.py
   - plan/lighting_types.py
   - plan/lighting_types_decor.py
+  - plan/mirror_types.py
+  - plan/mirrors.py
   - plan/assemblies.py
   - prices.toml
 ---
@@ -82,8 +85,8 @@ These matter more than the product names, because each was passing every check.
 4. **The peninsula's 15" overhang is outside the quartz warranty.** `CASE-PENINSULA-120` is a
    24" carcass with a 15" knee; Caesarstone's rule is max overhang = ⅓ of depth and not more
    than 15", with ≤14" unsupported in 3 cm. 15" on 24" is 38%.
-5. **`ED-T-LT-MIRROR-RING`'s "master's lit mirror" was in the hall bath**, and the 36" /
-   tunable / CRI 95 spec it carried described no product that exists.
+5. **The old hall-bath mirror spec combined unsupported size and light claims.** Closed
+   2026-10-22 with plain selected glass and replaceable bulbs (`mirror_selections.md`).
 
 ## Water closets — the split is deliberate
 
@@ -197,8 +200,8 @@ Most of the choices in this pass fall out of four rules rather than out of taste
 4. **The cleaner is part of the specification, and two of them are destructive.** High-pH
    cleaners — bleach, ammonia, glass cleaner, degreasers, scouring powder, melamine sponges —
    are the **#1 cause of light quartz yellowing**, ahead of UV. Ammonia and vinegar damage a
-   lighted mirror's glass; Robern specifies 50/50 water and isopropyl **on the cloth, never
-   sprayed on the mirror**. And acid is the one thing that removes Minnesota hard-water
+   mirror glass; follow the selected manufacturer's instructions **on the cloth, never
+   sprayed at the mirror edges**. And acid is the one thing that removes Minnesota hard-water
    scale, which is why there is no honed marble anywhere in a shower here. Put all of that in
    the owner's manual.
 
@@ -237,23 +240,22 @@ LED fixture "never needs relamping" — but electrolytic capacitors are rated at
 halve their life per 10 °C above. That single fact chose the stairwell fixture (3 × E26 on
 no driver, over a chandelier lift package that also wants 3 ft of accessible level cavity
 plumb above a peaked trussed ridge, and that cannot fix obsolescence anyway), put the pantry
-slot's driver outside the stud bay, and is why the lit mirror is described here as a
-consumable rather than discovered as one in 2032.
+slot's driver outside the stud bay, and supports keeping mirror glass separate from
+replaceable lighting in ordinary bathrooms.
 
-**The lit mirror.** The owner's requirement is an integrated LED mirror, not sconces. The
-market's default "LED mirror" is **backlit** — a halo thrown at the wall behind the glass,
-which photographs beautifully and puts almost nothing on a face; the tells are "halo",
-"ambient glow", "floating". Robern's Vitality Perimeter is genuinely front-lit (the band is
-etched into the front of the pane), round, 3000 K, CRI 90+ with R9 50+, and carries a
-defogger. It is **not field-serviceable**, the warranty is one year, and reported failures
-cluster at five to six years; the one line with replaceable LED strips and a seven-year
-warranty (Electric Mirror Fusion) makes no round. Since 2026-10-03 it is the hall bath's
-(`RM-S-BATH1`) only.
+**Mirrors and vanity lighting (2026-10-22).** The hall bath's Robern round is replaced by a
+plain Kohler Essential K-26050-BNL with a separate socketed Hinkley Karlie. Its one-year
+warranty and non-serviceable electronics are no longer a planned replacement risk for this
+room. The earlier claim about failures clustering at five to six years was anecdotal, not
+an established product-life estimate, and is retired with that selection.
 
-**The suite bath's mirror (2026-10-03).** The owner chose the Kate and Laurel Estero, a 20" x
-28" gold arch mirror with a 4" shelf along its bottom (HD 221484; retailer dimensions, confirm
-on delivery), lit by the house's 24" damp bar at 6'-6" above it. It hangs with its bottom at
-46" so the shelf clears the faucet, and the Robern's concealed receptacle is gone with it.
+All nine mirrors now have selected products and modeled glass. Only `RM-M-BATH2` keeps an
+illuminated mirror: **Fleurco Halo Plus MHAP2436**, with both a lit border and wall glow,
+its own dimmer, a 2700 K working setting, and its included defogger. The other bathroom
+lights use replaceable E26 bulbs; the closet has a plain full-length Umbra Hubba Pill.
+The suite's existing gold Estero arch/shelf mirror and placement remain unchanged, with a
+separate Karlie above it. See [mirror selections](mirror_selections.md) and its dimensioned
+elevations for exact products, sizes, finishes, mounting heights, controls and sources.
 
 ## What has to reach a trade before a wall closes
 
@@ -293,9 +295,10 @@ This is the part of the pass with a deadline on it.
   wash water are the same appliance and the same purchase — the seat heater is a setting on
   the S5's panel, not a SKU, so turning it off saves standby watts and not one dollar of the
   order. There is no "warm water, cold seat" model in the line to buy instead.
-- **A concealed GFCI receptacle behind the lit mirror**, plus a full-width flat 2× blocking
-  band (the outer brackets sit only ±5" from the centreline) and a conductor for a **second
-  switch leg**, because the defogger must be switched independently of the lights.
+- **Bath2's factory mirror needs unswitched, GFCI-protected plug power**, supported mounting
+  screws and lift-off access. The GFCI reset is at the bathroom-branch breaker; the mirror's
+  own touch controls operate light and defogger. No second defogger switch leg and no
+  connection through the evening wall dimmer. See `mirror_selections.md`.
 - **Keep the tub's plumbing and Bask components serviceable.** The modeled west-apron
   access panel is 14 x 14 in. Kohler guide 1196030-2-E requires service access but does
   **not** state the previously quoted 20 x 15 in. minimum. Fit-check the delivered valve,
@@ -346,8 +349,8 @@ This is the part of the pass with a deadline on it.
   waterfall faces and a 6" splash), the vanity top and the window stool. Confirm both with
   physical chips under 5000 K and 2700 K, next to a quartz offcut and a floor tile. Never put
   two different veined imitations side by side (`notes/bath2_tub_deck_finish.md`).
-- Confirm the **Robern round unit's cleat spacing** off the sheet in the carton, and its CCT
-  on the box label.
+- Fit-check the **selected mirror factory brackets and Karlie mounting plates** before
+  closing the backing zones; exact products and sources are in `mirror_selections.md`.
 - ~~**`RM-A-STUBATH`'s vanity contradiction**~~ — closed 2026-09-09 at `FX-VANITY-24-SHALLOW`,
   not the 36" `fixture_types.py` named. The north wall gives 18 5/8" of depth before the water
   closet's UPC 402.5 envelope and 24" of width between the GFCI plate and the shower, so 24" is

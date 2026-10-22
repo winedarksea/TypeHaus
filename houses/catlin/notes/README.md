@@ -145,3 +145,6 @@ free to be edited as documentation.
 | `superseded/balcony_lateral_bracing_design.md` | `balcony_moment_columns.md` | the wind derivation, and the record of the braced scheme that was not built |
 | `superseded/heat_pump_deck_mounting.md` | `heat_pump_ground_pad.md` | the rule: a fastener through a deck that is a roof lands in a sacrificial member |
 | `superseded/shower_niche.md` | `FX-TUBSHOWER-60-DIVERTED.source` | the KERDI-BOARD-SNLT detail, and the rule: nothing penetrates an integral insert |
+
+- [Mirror selections](mirror_selections.md) — 2026-10-22 decision record, all nine mirrors,
+  replaceable vanity lighting, factory bath2 controls, and dimensioned elevations.

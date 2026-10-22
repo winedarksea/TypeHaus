@@ -182,3 +182,14 @@ the two retired plywood rows at 0 LF.
 * Fox Cities Habitat for Humanity, "Blocking for Bathroom", QRG ch. 10a, Jan 2025.
 * NKBA Kitchen & Bath Planning Guidelines, 2023.
 * IRC R302.11 fireblocking — ICC; City of Austin MN residential fireblocking handout.
+
+## Mirror selection amendment — 2026-10-22
+
+`plan/mirrors.py` adds the selected mirrors' support bands. Its lower courses support the
+body mounting elevations; its separate hanging courses follow the manufacturer rails.
+The Kohler arch rail sits about 9 3/16 in. below the head, requiring backing around
+64.8 in. AFF, rather than the historical generic 72-inch course. `BK-S-BD-N-MID` starts
+at 40 in. for the two 42-inch mirror bottoms. Karlie junction boxes receive their own
+bands, and the attic fixture box fastens to the 168-inch stud with a 5/8-inch offset behind
+its backplate; a high horizontal band would be omitted at the raked wall's low end. Full installation
+heights, factory sources, and drawing: [mirror selections](mirror_selections.md).

@@ -128,7 +128,7 @@ def test_actual_mounting_rails_and_boxes_have_backing(catlin_plan):
         assert band.elevation.meters + band.height.meters > (74 - 9.1875 + 2) * IN
     for tag in ("BK-B-CW2-MIRROR-LIGHT", "BK-M-HS1-MIRROR-LIGHT",
                 "BK-S-BD-N-MIRROR-LIGHT", "BK-S-BA-E1B-MIRROR-LIGHT",
-                "BK-S-SN3-MIRROR-LIGHT", "BK-A-HALL-S-MIRROR-LIGHT"):
+                "BK-S-SN3-MIRROR-LIGHT"):
         assert tag in backing
 
 
@@ -152,3 +152,33 @@ def test_plain_mirror_mesh_has_exposed_glass_and_no_electronics(shape):
     assert parts[1]["center"][1] < parts[0]["center"][1]
     assert all(p["shape"] == "mesh" for p in parts)
     assert parts[1]["size"][0] < parts[0]["size"][0]
+
+
+def test_mirror_support_bands_are_actually_emitted_under_the_roof(catlin_model_ro):
+    from typehaus.resolve.framing.backing_panels import backing_bands
+
+    model = catlin_model_ro
+    for wall in model.walls:
+        bands = sorted(backing_bands(model.plan).get(wall.tag, ()),
+                       key=lambda band: (band.elevation_m, band.tag))
+        for index, band in enumerate(bands):
+            if "MIRROR" not in band.tag:
+                continue
+            assert any(m.child_key.startswith(f"backing-{index}-") for m in wall.members), band.tag
+    light = next(o for o in model.canvas_objects if o.tag == "ED-A-STUBATH-MIRROR")
+    kind = next(t for t in model.plan.library.electrical_device_types if t.tag == light.type_ref)
+    angle = math.radians(light.rotation_degrees)
+    box_x = light.position[0] + math.cos(angle) * kind.ports[0].position[0].meters
+    assert box_x / IN == pytest.approx(165.25)
+    # A 4-in. side-fixed box bears directly on the 168-in. stud's west face.
+    assert box_x / IN + 2 == pytest.approx(168 - 0.75)
+    assert abs(box_x - light.position[0]) + 2 * IN < 7.25 * IN / 2
+
+
+def test_panel_counts_the_halo_load_once_on_its_plug_branch(catlin_model_ro):
+    from typehaus.takeoff.electrical import panel_schedule
+
+    row = next(row for row in panel_schedule(catlin_model_ro)
+               if row["circuit"] == "CKT-BATH-ATTIC")
+    assert row["connected_va"] == 70
+    assert {"ED-M-BATH2-MIRROR-HALO", "ED-M-BATH2-MIRROR-PLUG"} <= set(row["devices"])

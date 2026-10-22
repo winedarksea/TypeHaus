@@ -152,7 +152,7 @@ CLOSET_WEST_WIRE = FurnitureType(
 CLOSET_FURNITURE_TYPES = (PAX_SHOW, PAX_SHOW_HANG, PAX_DOUBLE_30, CLOSET_CORNER_WIRE,
                         CLOSET_WEST_WIRE)
 
-# --- lighting: the lit mirror, the PAX strips and their driver ---------------------------
+# --- lighting: the PAX strips and their driver (plain mirror in mirror_types.py) --------
 
 CLOSET_LUMINAIRE_TYPES = (
     LuminaireType(tag="ED-T-LT-PAX-STRIP", name="IKEA OVERSIDAN wardrobe LED strip",

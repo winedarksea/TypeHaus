@@ -13,7 +13,6 @@ from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.model.canvas import _symbol_geometry
 from typehaus.model.placeable_symbols import (
     PART_COLORS,
-    lamp_role,
     model_parts,
     plan_symbol_strokes,
 )

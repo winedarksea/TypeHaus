@@ -4965,6 +4965,118 @@
       "node": "polyline",
       "points": [
         [
+          117.25,
+          180.0
+        ],
+        [
+          118.75,
+          180.0
+        ],
+        [
+          118.75,
+          191.25000000000003
+        ],
+        [
+          117.25,
+          191.25000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW150AAAA",
+      "tag": "backing-1-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          117.25,
+          180.0
+        ],
+        [
+          118.75,
+          180.0
+        ],
+        [
+          118.75,
+          191.25000000000003
+        ],
+        [
+          117.25,
+          191.25000000000003
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          117.25,
+          198.0
+        ],
+        [
+          118.75,
+          198.0
+        ],
+        [
+          118.75,
+          205.24999999999997
+        ],
+        [
+          117.25,
+          205.24999999999997
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW150AAAA",
+      "tag": "backing-2-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          117.25,
+          198.0
+        ],
+        [
+          118.75,
+          198.0
+        ],
+        [
+          118.75,
+          205.24999999999997
+        ],
+        [
+          117.25,
+          205.24999999999997
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           213.25,
           240.0
         ],

@@ -2671,37 +2671,24 @@
 # to direct weather is an NEC 410.10 violation, so the cheaper band is not available here.
 "ED-T-LT-FAN60" = { material = { low = 270, high = 650 }, labour = { low = 155, high = 320 } }  # 1 ea
 "ED-T-LT-FLOOD-GARDEN" = { material = { low = 80, high = 250 }, labour = { low = 65, high = 145 } }  # 1 ea — shielded 60-degree garden flood, underside box on balcony blocking; provisional allowance
-# 6 ea -> 7 ea on 2026-10-03: RM-S-SUITEBATH is back to a bar over the plain Estero mirror
-# (owner's call). Earlier, 5 ea -> 4 ea on 2026-09-06: its bar had become the second lit mirror. A bar
-# ABOVE a mirror sits above the brow line and casts brow/nose/chin shadows DOWN onto the
-# thing you are trying to see, so running a bar AND a front-lit mirror in one room is
-# worse than either alone. Kuzco Jane-Slim VL6224 at $118 is the pick where a bar stays:
-# 24", 3000 K, CRI 90, damp, ADA, a plain acrylic extrusion with no shade cavity and no
-# upward opening to collect dust. ** CHROME WAS THE ONLY FINISH CONFIRMED IN STOCK, AND
-# CHROME IS THE ONE METAL THAT FIGHTS WARM OAK ** -- confirm a BN SKU before ordering,
-# or take Modern Forms Loft WS-3624-BN at $143.
-"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 6 ea since 2026-10-12 (ED-M-BATH2-MIRROR went to P3) — one is ED-S-SUITEBATH-MIRROR again (2026-10-03); another is ED-A-STUDIO-BAR-TASK (2026-09-10), the studio bar's task light: a wall-mounted 24" damp bar replacing a pendant that could not fit under the 6:12 rake. See plan/lighting_attic.py
-# ** ONE OF THEM, THE HALL BATH'S (2026-10-03): the suite's went back to a bar over a plain
-# mirror, FT-SUITEBATH-MIRROR-ESTERO. ** Robern Vitality
-# YM0030CPFPD3, 30" round Perimeter, at $831.94 sale against $1,479 list. The old $150-500
-# band was a class allowance for a spec that described no real product: 36", tunable and
-# CRI 95 do not co-exist in this market.
-# ** FRONT-LIT IS WHAT THE MONEY BUYS. ** The $90-400 tier is almost entirely BACKLIT -- a
-# halo thrown at the wall behind the glass that contributes nothing to a face -- and it
-# puts a capacitive touch button ON the mirror face, which is a permanently smudged
-# fingerprint target that also mis-triggers when you wipe it. That single feature is the
-# strongest argument against the cheap tier on this owner's top criterion.
-# ** IT IS A CONSUMABLE AND THE BUDGET SHOULD SAY SO: ** the LED module is permanently
-# enclosed, the warranty is ONE YEAR, and reported failures cluster at five to six years
-# (the driver cooking in a sealed 1 3/4" cavity, not the LEDs). Electric Mirror's Fusion
-# has replaceable LED strips and a 7-year warranty at ~$1,429 but makes no round.
-# P3, BATH2's make-up bar: a damp 24" linear with CRI >= 95 and a published R9, fixed
-# 5000 K. A premium over P's $118-300 for the phosphor; ESTIMATE until the product is
-# confirmed. P4, the 24" x 36" halo mirror with a defogger: Fleurco Halo class, listed
-# $400-900; hardwired, so an electrician's box and trim on the labour side.
-"ED-T-LT-MIRROR-DAY" = { material = { low = 180, high = 450 }, labour = { low = 60, high = 135 } }  # 1 ea
-"ED-T-LT-MIRROR-HALO-2700" = { material = { low = 400, high = 900 }, labour = { low = 90, high = 200 } }  # 1 ea
-"ED-T-LT-MIRROR-RING" = { material = { low = 830, high = 1500 }, labour = { low = 60, high = 135 } }  # 1 ea
+# Mirror pass 2026-10-22. ED-T-LT-MIRROR now serves ONLY the studio wet-bar task light.
+# Bathroom lights below include fitted bulbs, so bulbs are not billed a second time.
+# Hinkley retail: 54622CM/BN $189, 54623CM/BN $209, read from hinkley.com product pages.
+# Sunlite 80795-SU-6 listing $16.88/6 ($2.81/bulb), Bulb Center, SOLD OUT:
+# https://bulbcenter.com/products/sunlite-80795-led-a19-standard-household-light-bulb-9-watts-60w-equivalent-800-lumens-medium-base-e26-dimmable-ul-listed-energy-star-90-cri-title-20-5000k-daylight-6-count
+# Carry $3-8 per exact bulb (80793-SU 3000 K / 80795-SU 5000 K); upper end and 3000 K
+# allowance are estimating judgement, not observed quotes. Verify availability; do not silently
+# substitute the V2 lamp without its own CRI/R9 sheet. Tax/freight and spare bulbs excluded.
+"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 1 ea, studio task light unchanged
+"ED-T-LT-KARLIE-2-BN" = { material = { low = 195, high = 205 }, labour = { low = 60, high = 135 } }  # 3 ea, 54622BN + two 80793-SU
+"ED-T-LT-KARLIE-2-BN-ATTIC" = { material = { low = 200, high = 215 }, labour = { low = 60, high = 135 } }  # 1 ea, same fixture/bulbs plus offset box/crossbar allowance
+"ED-T-LT-KARLIE-2-CM" = { material = { low = 195, high = 205 }, labour = { low = 60, high = 135 } }  # 1 ea, 54622CM + two 80793-SU
+"ED-T-LT-KARLIE-3-BN" = { material = { low = 218, high = 233 }, labour = { low = 60, high = 135 } }  # 2 ea, 54623BN + three 80793-SU
+"ED-T-LT-MIRROR-DAY" = { material = { low = 218, high = 233 }, labour = { low = 60, high = 135 } }  # 1 ea, 54623CM + three 80795-SU
+# MHAP2436 (not MHA2436): Schillings/Bath Expo retail $968, five-year warranty, own dimmer.
+# https://schillings.com/products/baths/mirrors-medicine-cabinets/fleurco-halo-plus-led-lighted-bathroom-mirror-24-x-36/
+"ED-T-LT-MIRROR-HALO-2700" = { material = { low = 968, high = 1100 }, labour = { low = 90, high = 200 } }  # 1 ea, 70 W including factory defogger
+
 "ED-T-LT-PANEL" = { material = { low = 45, high = 130 }, labour = { low = 48, high = 115 } }  # 4 ea
 # ** THE DINING FIXTURE IS THE OWNER'S OWN IMPORT AND HAS NOT BEEN SELECTED ** (48" linear,
 # 2000-3500 lm, 3000 K, CRI 90+). The band brackets an import against the domestic fixture
@@ -3051,8 +3038,22 @@
 "FT-M-CLOSET-PLINTH" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 0 ea — retired 2026-10-03
 "FURN-M-CLOSET-PEGS" = { material = { low = 25, high = 90 }, labour = { low = 30, high = 80 } }  # 1 ea
 "FT-SUITEBATH-PEGS-24" = { material = { low = 20, high = 60 }, labour = { low = 30, high = 80 } }  # 1 ea — the closet rail at 24", four knobs
-"FT-SUITEBATH-MIRROR-ESTERO" = { material = { low = 80, high = 160 }, labour = { low = 30, high = 80 } }  # 1 ea — Kate and Laurel Estero 20x28 gold arch shelf mirror (HD 221484); retail band, not a quote
-"ED-T-LT-MIRROR-CLOSET" = { material = { low = 300, high = 900 }, labour = { low = 90, high = 200 } }  # 1 ea — hardwired, so an electrician's box and trim
+# Existing Estero selection retained; current manufacturer retail $191.99, read 2026-10-22.
+# https://www.kateandlaurel.com/products/estero-metal-framed-arch-wall-mirror-with-shelf
+"FT-SUITEBATH-MIRROR-ESTERO" = { material = { low = 192, high = 220 }, labour = { low = 30, high = 80 } }  # 1 ea, gold 221484; existing geometry unchanged
+# Plain glass selections 2026-10-22; separate Karlie lights are billed above.
+# HD/KB Authority: 26052-BNL $283.98, 26050-BNL $328.98, 30638-BNL/CPL $328.98,
+# 31367-BNL $189 (AF Supply). Upper bands are procurement allowance, not quotes.
+# https://www.kbauthority.com/kohler-k-30638-bnl-essential-20-x-32-inch-arch-wall-mounted-bathroom-mirror-brushed-nickel.html
+# https://www.afsupply.com/bath/bath-accessories/mirrors.html?finish=Brushed+Nickel
+"FT-MIRROR-KOHLER-26052-BNL" = { material = { low = 284, high = 350 }, labour = { low = 35, high = 85 } }  # 1 ea
+"FT-MIRROR-KOHLER-30638-CPL" = { material = { low = 329, high = 400 }, labour = { low = 35, high = 85 } }  # 1 ea
+"FT-MIRROR-KOHLER-30638-BNL" = { material = { low = 329, high = 400 }, labour = { low = 35, high = 85 } }  # 2 ea
+"FT-MIRROR-KOHLER-26050-BNL" = { material = { low = 329, high = 400 }, labour = { low = 35, high = 85 } }  # 1 ea
+"FT-MIRROR-KOHLER-31367-BNL" = { material = { low = 189, high = 250 }, labour = { low = 35, high = 85 } }  # 1 ea
+# Umbra Hubba Pill 62x18 retail $220; titanium 1023469-624, not the brass variant.
+# https://www.umbra.com/products/hubba-pill-mirror-62x18 ; availability is not guaranteed.
+"FT-MIRROR-UMBRA-HUBBA-PILL" = { material = { low = 220, high = 280 }, labour = { low = 35, high = 85 } }  # 1 ea, no electrical load
 "ED-T-LT-PSU-TRADFRI-30" = { material = { low = 57, high = 75 }, labour = { low = 0, high = 20 } }  # 1 ea — $45 driver + $12 ANSLUTA cord + connection cords; plug-in
 # BED1-3'S WARDROBES, 2026-10-02 (plan/bedroom_wardrobes.py). IKEA US list read 2026-10-02:
 # PAX/GRIMO corner wardrobe s89560818 $695 (high end adds hinges/rails at list); the 19 5/8"

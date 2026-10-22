@@ -164,7 +164,7 @@ def test_multiway_and_control_kinds_survive_into_the_schedule(catlin_model):
 def test_connected_load_counts_supplies_not_tape_and_sits_under_the_allowance(catlin_model):
     load = connected_lighting_va(catlin_model)
     per_circuit = {row["circuit"]: row for row in load["per_circuit"]}
-    assert set(per_circuit) == {"CKT-LT-BACKUP", "CKT-LT-MAIN", "CKT-LT-UPPER"}
+    assert set(per_circuit) == {"CKT-LT-BACKUP", "CKT-LT-MAIN", "CKT-LT-UPPER", "CKT-BATH-ATTIC"}
     assert load["total_connected_va"] == pytest.approx(
         round(sum(row["connected_va"] for row in load["per_circuit"]), 1))
 
@@ -205,28 +205,14 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
 
     per_circuit = {r["circuit"]: r for r in connected_lighting_va(catlin_model)["per_circuit"]}
     row = per_circuit["CKT-LT-MAIN"]
-    # Runs are counted under their own key — a run has lineal feet, not a unit to count.
-    # 42 fixtures / 1,029 VA since 2026-09-15, both from the interior pass: RM-M-MUDROOM had
-    # no light at all and got two ED-T-LT-CAN3 on the walk plus one ED-T-LT-SCONCE-UD over
-    # the bench (30 VA), and RM-M-BED gained ED-M-BED-LAMP, a mark G reading bar (18 VA).
-    # 1,052.6 since 2026-09-16: LR-G-GABLE-N went from 16' level to 25.45' up the rake.
-    # 43 fixtures / 1,112.6 VA since 2026-09-20: RM-M-BED gained ED-M-BED-FAN, a mark N
-    # ceiling fan at 60 VA (motor AND light kit — that is what `load_va` carries on a fan).
-    # Its switch is ED-T-SWITCH, which like the dimmers below carries no `load_va`.
-    # 44 fixtures / 1,121.6 VA since 2026-09-30: ED-M-MUDROOM-CAN3 adds 9 VA over the bench.
-    # 46 / 1,191.6 VA since 2026-10-01: RM-M-CLOSET's lit mirror (40 VA) and the TRADFRI
-    # driver for its PAX strips (30 VA, the supply's rating).
-    # 50 / 1,343.6 VA since 2026-10-12: RM-M-BATH2's two layers add ED-M-BATH2-CAN-SH and
-    # -CAN-SH-EVE (12 VA each), the halo mirror (60 VA with its defogger) and ED-M-BATH2-PSU
-    # (60 VA, the supply's rating), and the mirror bar became the 24 VA make-up bar (+8).
-    # EQ-M-BATH2-STALL-FAN's ~30 VA is an Equipment and is not in this sum (1,374 with it).
-    assert row["runs"] == 3 and row["fixtures"] == 50
-    # Laundry's 9VA can becomes a 40VA supply; its 22W heads are not counted again.
-    assert row["connected_va"] == pytest.approx(1374.6, abs=0.5)
+    # The closet's 40-VA LED mirror is gone and the old 60-VA halo moved to its protected
+    # plug branch as a 70-VA MHAP2436. Powder lighting gains 2 VA and day lighting 3 VA:
+    # 1374.6 - 40 - 60 + 2 + 3 = 1279.6 VA on CKT-LT-MAIN, with two fewer fixtures.
+    assert row["runs"] == 3 and row["fixtures"] == 48
+    assert row["connected_va"] == pytest.approx(1279.6, abs=0.5)
+    assert per_circuit["CKT-BATH-ATTIC"]["connected_va"] == 70
 
     panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-MAIN"]
-    assert panel["connected_va"] == pytest.approx(1374.6, abs=0.5)
-    # 1,113 VA of a 15A branch: under the 1,440 VA an NEC 210.19(A)(1) continuous load may
-    # take. The three switches added with those fixtures are all ED-T-SWITCH-DIM, which
-    # carries no load_va — a dimmer is free on the circuit and costs only on the estimate.
+    assert panel["connected_va"] == pytest.approx(1279.6, abs=0.5)
+    # The 15A branch remains below the 80% continuous-load allowance.
     assert panel["connected_va"] <= panel["breaker_amps"] * 120 * 0.8

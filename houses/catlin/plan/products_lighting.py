@@ -15,7 +15,7 @@ schedule row. A USER-ADJUSTABLE fixture with a live control (tunable white, RGB)
 and halve their life per 10 C above it, so a 25,000-hour LED behind a captive driver in an
 unventilated cavity is a 12-20 year fixture, not a lifetime one. Every choice below prefers a
 replaceable lamp or an accessible, separately-purchasable driver over a sealed assembly, and
-where that was not available (the lit mirror) the note says so plainly.
+the illuminated-mirror exception and its controls are documented in plan/mirror_types.py.
 """
 
 from __future__ import annotations

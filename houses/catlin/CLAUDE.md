@@ -1,3 +1,10 @@
+> **Mirrors, 2026-10-22:** `plan/mirrors.py` + `mirror_types.py` specify all nine mirrors.
+> Hall bath: plain Kohler round with socketed Karlie; suite Estero unchanged; closet plain
+> Hubba Pill. Only bath2 keeps an illuminated mirror, Fleurco **MHAP2436**, own touch
+> dimmer on unswitched GFCI-protected plug power (`CKT-BATH-ATTIC`). See
+> `notes/mirror_selections.md` and its dimensioned elevations; earlier Robern and
+> wall-dimmed-halo descriptions are superseded.
+
 > **Main powder room, 2026-10-21:** Duravit D-Code 07054500002 basin on the shared
 > south wet wall HS1, 17¾ × 13⅜", 34" AFF rim, B.2 mixer, north-face 2×10 fixing block.
 > INT32 outswing shifted north, basin aisle 32.365", toilet front 24.49". INT32 is

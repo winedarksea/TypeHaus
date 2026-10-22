@@ -68,9 +68,10 @@ MAIN_MIRRORS = [
     ElectricalDevice(uid="783AC05790", tag="ED-M-BATH2-MIRROR-PLUG", kind=DeviceKind.RECEPTACLE,
             type_ref="ED-T-RECEPTACLE", room="RM-M-BATH2",
             circuit="CKT-BATH-ATTIC",
-            mount=Mount(kind=MountKind.WALL, elevation=inch(64)),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(64),
+                        recessed_into_host_surface=True),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-M-W3", face="left", distance_from_start=inch(86),
+                wall_ref="W-M-W3", face="left", distance_from_start=inch(94.625),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     WallBacking(uid="440C21E67C", tag="BK-M-HS1-MIRROR-LOW", wall_ref="W-M-HS1", face="left",
         start=inch(48.75), length=inch(14.5),
@@ -159,7 +160,7 @@ ATTIC_MIRRORS = [
                 wall_ref="W-A-HALL-S", face="right", distance_from_start=inch(44.625),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="3W86JZVH61", tag="ED-A-STUBATH-MIRROR", kind=DeviceKind.LIGHT,
-            type_ref="ED-T-LT-KARLIE-2-BN", room="RM-A-STUBATH",
+            type_ref="ED-T-LT-KARLIE-2-BN-ATTIC", room="RM-A-STUBATH",
             circuit="CKT-LT-UPPER", controlled_by=("ED-A-STUBATH-SW",),
             mount=Mount(kind=MountKind.WALL, elevation=inch(72)),
             location=Location(attachment=WallAttachment(
@@ -173,9 +174,5 @@ ATTIC_MIRRORS = [
         start=inch(32.75), length=inch(30.5),
         elevation=inch(64), height=inch(7.25), profile="2x8",
         material_ref="spf", purpose="K-31367 mirror fastening"),
-    WallBacking(uid="4D4E5B026A", tag="BK-A-HALL-S-MIRROR-LIGHT", wall_ref="W-A-HALL-S", face="right",
-        start=inch(32.75), length=inch(30.5),
-        elevation=inch(75), height=inch(3.5), profile="2x4",
-        material_ref="spf", purpose="Karlie box at 77.5 in. AFF, below the raked top plate"),
 
 ]

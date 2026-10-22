@@ -140,10 +140,23 @@ _HALO_TYPE = LuminaireType(
     product_ref=_FLEURCO_PRODUCT.tag, source=_FLEURCO_PRODUCT.source,
 )
 
+# Under the attic rake a 4-in. octagon box attaches directly to the east stud. Offset
+# its centre 5/8 in. east within Karlie's 7-1/4-in. backplate; local +x faces west.
+_ATTIC_KARLIE = _KARLIE_SELECTIONS[0][1].model_copy(update={
+    "tag": "ED-T-LT-KARLIE-2-BN-ATTIC", "type_mark": "P1A",
+    "ports": (ServicePort(tag="power", service=Service.POWER_120,
+                          position=(inch(-0.625), inch(3), inch(5.5))),),
+    "source": _KARLIE_SELECTIONS[0][1].source +
+              " Attic mounting: 4-in. octagon fixture box centred x=165.25 in., 77.5 in. AFF, "
+              "side-fixed to the x=168-in. stud; manufacturer-approved adjustable crossbar "
+              "keeps the fixture centred x=164.625 in. No high horizontal backing strip "
+              "under the rake. Verify supplied crossbar before rough-in.",
+})
+
 MIRROR_PRODUCTS = (
     *(product for product, _ in _KOHLER_SELECTIONS), _UMBRA_PRODUCT,
     _FLEURCO_PRODUCT, _BULB_3000, _BULB_5000,
     *(product for product, _ in _KARLIE_SELECTIONS),
 )
 MIRROR_FURNITURE_TYPES = (*(kind for _, kind in _KOHLER_SELECTIONS), _UMBRA_MIRROR)
-MIRROR_LIGHT_TYPES = (*(kind for _, kind in _KARLIE_SELECTIONS), _HALO_TYPE)
+MIRROR_LIGHT_TYPES = (*(kind for _, kind in _KARLIE_SELECTIONS), _ATTIC_KARLIE, _HALO_TYPE)

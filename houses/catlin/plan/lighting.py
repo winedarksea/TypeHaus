@@ -924,8 +924,9 @@ MAIN_LIGHTING = [
 
     # RM-M-BATH2: two layers, two controls (2026-10-12, notes/bath2_lighting.md).
     # DAY, 5000 K on a plain toggle (ED-M-BATH2-SW-DAY): three B1 cans and the P3 make-up
-    # bar over the mirror. EVENING, 2700 K on a dimmer (ED-M-BATH2-SW-EVE): the P4 halo
-    # mirror, the B2 shower can and three E3 runs off ED-M-BATH2-PSU. Every can sits in the
+    # Karlie task light (plan/mirrors.py). EVENING, 2700 K on ED-M-BATH2-SW-EVE:
+    # the B2 shower can and three E3 runs off ED-M-BATH2-PSU. The Halo Plus uses its own
+    # touch dimmer and unswitched plug power (2026-10-22). Every can sits in the
     # y 176"-192" FS-S-WEST bay, clear of both chords; CAN1 was on the y=192" chord. The
     # radiant-floor stat ED-M-BATH2-FH-STAT is a separate control and switches none of this.
     ElectricalDevice(uid="QTM000NAAA", tag="ED-M-BATH2-CAN1", kind=DeviceKind.LIGHT,
