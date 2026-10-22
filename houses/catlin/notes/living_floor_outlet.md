@@ -6,7 +6,7 @@ x = 327.9 inches, y = 104 inches in the house frame. It sits between the
 The modeled outer envelope clears framing; verify the actual bay and services before drilling.
 
 Preferred assembly: Arlington FLBR5420 series, a recessed 20A tamper-resistant duplex
-floor-box kit. Finish suffix remains to be selected. Arlington's [P-19 catalog sheet](https://www.aifittings.com/media/catalog-pages/P-19.pdf)
+floor-box kit, **FLBR5420AB** (antique bronze plated cover, owner 2026-10-22). Arlington's [P-19 catalog sheet](https://www.aifittings.com/media/catalog-pages/P-19.pdf)
 gives a 5-inch cutout, 6.625-inch flange diameter and **6.550-inch depth** (dimension B;
 dimension C, 3.775 inches, is body width). The catalog envelope is modeled below the
 finished floor. The thin flange sits over the LVP; the slotted in-use cover keeps plugs

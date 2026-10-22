@@ -81,7 +81,7 @@ DELTA_T2759_ROMAN = FixtureType(
     height=inch(10),
     plan_symbol="roman-tub-filler",
     basin=False,
-    product_ref="PROD-DELTA-T2759-SS",
+    product_ref="PROD-DELTA-T2759",
     source="Distributor listings for Delta T2759, read 2026-10-21 (Delta's own spec sheet "
            "not found): 8 in. spout reach, 5 7/8 in. deck to outlet, 10 in. overall height, "
            "8-16 in. centres (8 in. here), deck up to 1 1/4 in. Ferguson lists a 10 in. reach "

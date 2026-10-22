@@ -1,10 +1,17 @@
-"""Large standard single bowl; Kraus KHU100-32 is a dimensional reference, not an order."""
+"""Large standard single bowl: the Kraus KHU100-32 (owner selection 2026-10-22)."""
 
-from typehaus.model import FixtureType, Footprint2D, Mount, MountKind, Service, inch, pt
+from typehaus.model import FixtureType, Footprint2D, Mount, MountKind, Product, Service, inch, pt
 
 COUNTER_HEIGHT_IN = 36.0
 QUARTZ_THICKNESS_IN = 1.181
 BOWL_DEPTH_IN = 10.0
+
+KRAUS_KHU100_32 = Product(
+    tag="PROD-KRAUS-KHU100-32", brand="Kraus", model="KHU100-32",
+    name='Standart PRO 32" undermount single-bowl kitchen sink, 16 gauge stainless',
+    url="https://www.kraususa.com/media/catalog/product/documentation/KHU100-32-Spec-Sheet.pdf",
+    source="Owner selection 2026-10-22: the dimensional reference is the order.",
+)
 
 KITCHEN_SINK_32_SINGLE = FixtureType(
     tag="FX-KITCHEN-SINK-32-SINGLE",
@@ -20,13 +27,14 @@ KITCHEN_SINK_32_SINGLE = FixtureType(
         pt(inch(15), inch(7)), pt(inch(-15), inch(7)),
     )),
     basin=False,
+    product_ref=KRAUS_KHU100_32.tag,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     source='Kraus KHU100-32 specification sheet (rev. April 30, 2019), read 2026-10-03: '
            '32 x 19 in. exterior, 30 x 17 in. single bowl, 10 in. bowl depth, '
            '36 x 24 in. minimum cabinet, rear-centre drain 4 1/2 in. from exterior rear. '
            'https://www.kraususa.com/media/catalog/product/documentation/'
-           'KHU100-32-Spec-Sheet.pdf. Dimensional reference only; brand remains unselected. '
+           'KHU100-32-Spec-Sheet.pdf. Selected 2026-10-22. '
            '32 x 22 in. placement envelope includes a 3 in. rear faucet zone; '
-           '30 x 17 in. schematic flush-reveal opening. Fabricator must check the actual '
-           'sink/template, corner radii, mounting clips and support before cutting quartz.',
+           '30 x 17 in. schematic flush-reveal opening. Fabricator templates from the delivered '
+           'sink and its template: corner radii, mounting clips and support.',
 )

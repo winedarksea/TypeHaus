@@ -213,13 +213,12 @@ MATERIALS_ISHTAR = [
              r_per_inch=0.0, density=1600.0, hatch="stone", color="#efece6",
              source="RM-M-BATH2 shower surround, 2026-09-02; \"marble-look\" spans cultured marble, cast solid surface and acrylic and the product family is an OPEN OWNER SELECTION — see prices.toml [wood_surfaces] for the price spread that collapses when it is made"),
     # RM-M-BATH2's shower walls since 2026-10-12, WP-M-BATH2-SURR, floor to ceiling. The
-    # family is chosen (compression-moulded solid surface, to match the base); the brand is
-    # not. Same reasoning as marble-look-panel above: no species, 1/2" default, no vapour field.
+    # line is Swanstone (2026-10-22), to match the SS-3636 base; the colour is open. Same reasoning as marble-look-panel above: no species, 1/2" default, no vapour field.
     Material(tag="solid-surface-panel",
              name="Solid-surface shower wall panel (1/2\")",
              r_per_inch=0.0, density=1700.0, hatch="stone", color="#f2f0ec",
              product_ref="PROD-SOLID-SURFACE-SHOWER",
-             source="RM-M-BATH2 shower surround, owner selection 2026-10-12: compression-moulded solid surface matching the 36x36 base, brand open (plan/products_showering.py)"),
+             source="RM-M-BATH2 shower surround, owner selection 2026-10-12: Swanstone solid surface matching the SS-3636 base, colour open (plan/products_showering.py)"),
     # Same panel family and appearance as the shower, but a separate tag because this apron
     # is incremental scope rather than an upgrade over the shower kit. The price row prefers
     # a usable offcut from the shower-panel order and carries a new-piece ceiling.
@@ -227,7 +226,7 @@ MATERIALS_ISHTAR = [
              name="Solid-surface tub-deck apron panel (1/2\")",
              r_per_inch=0.0, density=1700.0, hatch="stone", color="#f2f0ec",
              product_ref="PROD-SOLID-SURFACE-SHOWER",
-             source="RM-M-BATH2 tub-deck west apron, same compression-moulded solid-surface family and open brand selection as WP-M-BATH2-SURR; use shower-order offcuts if the fabricator confirms the pieces and edge detail work"),
+             source="RM-M-BATH2 tub-deck west apron, same Swanstone panel and colour as WP-M-BATH2-SURR; use shower-order offcuts if the fabricator confirms the pieces and edge detail work"),
     # The above-grade foundation band on BASEMENT_8/_12: a trowel-applied acrylic
     # coating over the exposed XPS, on the Styro Industries Tuff II product data
     # (styro.net / totalwall.com "Applying TUFF II Over Rigid Foam & ICF"). It is the option

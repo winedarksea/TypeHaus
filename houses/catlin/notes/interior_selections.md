@@ -325,8 +325,9 @@ This is the part of the pass with a deadline on it.
   being thinned and several sibling SKUs came back discontinued.
 - **`RM-M-BATH2`'s shower went thermostatic on 2026-10-12** (17T trim on the same R10000
   rough, Moen 26008 combo head, solid-surface walls and base, every head now ≤ 1.75 gpm).
-  The argument, the hand calc and three open confirms (26008 finish, 17T SKU, base brand)
-  are in `notes/bath2_shower.md`.
+  The argument and hand calc are in `notes/bath2_shower.md`; 2026-10-22 closed the finish (all
+  chrome), the trim (Trinsic T17T059) and the base (Swanstone SS-3636). The drain still moves:
+  see that note.
 - Confirm the **Robern round unit's cleat spacing** off the sheet in the carton, and its CCT
   on the box label.
 - ~~**`RM-A-STUBATH`'s vanity contradiction**~~ — closed 2026-09-09 at `FX-VANITY-24-SHALLOW`,

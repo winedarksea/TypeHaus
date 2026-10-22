@@ -179,10 +179,10 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
     "name": 'Shower, 36", thermostatic valve with a two-in-one rainshower combo',
     "product_ref": "PROD-DELTA-T17T",
     "source": 'RM-M-BATH2, owner selection 2026-10-12, replacing FX-SHOWER-36-DIVERTED. '
-              'Delta MultiChoice R10000-UNBX rough (ASSE 1016) under a TempAssure 17T '
+              'Delta MultiChoice R10000-UNBX rough (ASSE 1016) under a Trinsic T17T059 17T '
               'thermostatic trim (PROD-DELTA-T17T): separate temperature and volume, no '
               'diverter. Head: Moen Attract Magnetix 26008 rainshower combo, 1.75 gpm, ONE '
-              'outlet. Base: a matching 36x36 compression-moulded solid-surface base '
+              'outlet. Base: a Swanstone SS-3636 36x36 centre-drain solid-surface base '
               '(PROD-SOLID-SURFACE-SHOWER) under floor-to-ceiling panels (WP-M-BATH2-SURR). '
               'GLASS: on the tub (north) side, floor to ceiling on the W-M-TUBDK-S knee wall; on '
               'the front (west) a fixed panel and door to 7\'-6" (90"), leaving ~16" open '

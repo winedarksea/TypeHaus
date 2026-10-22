@@ -74,19 +74,18 @@ MOEN_ATTRACT_MAGNETIX = Product(
            "WaterSense. ** FINISH: ONLY CHROME AND 26008SRN (Spot Resist Brushed Nickel) "
            "WERE FOUND -- NO SPOT RESIST STAINLESS. ** Brushed nickel beside Delta Lumicoat "
            "stainless in one room is the mix this house rules out, so BATH2's showering parts "
-           "go CHROME together: this head and the 17T trim. The -SS tub filler is the open "
-           "question (notes/bath2_shower.md).",
+           "go CHROME together: this head, the 17T trim and (2026-10-22) the T2759 filler."
 )
 DELTA_17T_THERMO_TRIM = Product(
-    tag="PROD-DELTA-T17T", brand="Delta",
-    name="TempAssure 17T Series thermostatic shower trim, Ashlyn line, Chrome (SKU to confirm)",
-    source="Delta Faucet 17T listings, read 2026-10-12. Thermostatic cartridge in the TRIM on "
-           "the existing PROD-DELTA-R10000-UNBX rough; separate temperature and volume "
-           "handles; no integrated diverter, which one outlet does not need. ** SKU OPEN: ** "
-           "no Ashlyn 17T number (the plan's T17T264) was found; T17264 is the Monitor 17 "
-           "PRESSURE-BALANCE trim and is not this. Confirm an Ashlyn-handle 17T in chrome, or "
-           "take the nearest 17T line, before the plumber orders. The cartridge still carries "
-           "the ASSE 1016 mark the rough-in argument in fixture_types_wc.py requires.",
+    tag="PROD-DELTA-T17T", brand="Delta", model="T17T059",
+    name="Trinsic TempAssure 17T Series valve-only thermostatic trim, Chrome",
+    source="Delta Trinsic 17T listings, read 2026-10-22: T17T059 is the Trinsic valve-only "
+           "17T trim (T17T259 shower-only, T17T459 tub/shower); trim only, on the existing "
+           "PROD-DELTA-R10000-UNBX rough. Thermostatic cartridge in the TRIM; separate "
+           "temperature and volume levers; no diverter, which one outlet does not need. "
+           "Trinsic, not Ashlyn (owner 2026-10-22): no Ashlyn 17T exists, and Trinsic "
+           "matches the room's T2759 filler. Chrome, with the 26008 head. The cartridge "
+           "carries the ASSE 1016 mark the rough-in argument in fixture_types_wc.py requires.",
 )
 DELTA_UNIVERSAL_HEAD = Product(
     tag="PROD-DELTA-52535-SS", brand="Delta", model="52535-SS",
@@ -97,12 +96,15 @@ DELTA_UNIVERSAL_HEAD = Product(
            "trim and spout; street ~$64-73. ABS body, not metal.",
 )
 SOLID_SURFACE_SHOWER = Product(
-    tag="PROD-SOLID-SURFACE-SHOWER", brand="(open)",
-    name="Compression-moulded solid-surface 36x36 shower base and matching wall panels",
-    source="RM-M-BATH2, owner selection 2026-10-12: the family is chosen, the brand is not. "
-           "A 36x36 base and floor-to-ceiling panels on the two closed walls from ONE line, "
-           "so the colour matches and there is no grout. Confirm the base's drain position "
-           "against FX-M-BATH2-SH's drain_position before ordering.",
+    tag="PROD-SOLID-SURFACE-SHOWER", brand="Swan", model="Swanstone SS-3636 + wall panels",
+    name="Swanstone 36x36 single-threshold solid-surface shower pan and matching wall panels",
+    url="https://swanstone.com/en/product/ss-3636-36%22-x-36%22-single-threshold-shower-pan_sw000123",
+    source="Owner selection 2026-10-22 (family 2026-10-12). Swan product page, read "
+           "2026-10-22: 36 x 36 x 5 1/2 in., 4 1/2 in. threshold, ~32 x 33 1/2 in. interior, "
+           "CENTRE molded-in Fit-Flo drain, 3 in. drain hole, 36 in. max door. Base and "
+           "panels from one Swanstone colour. Confirm before ordering: the colour, the "
+           "flange and threshold sides against the W threshold, and a panel height that "
+           "reaches the 106 in. ceiling above the base (or a top cap).",
 )
 
 # The stall-drying fan (notes/bath2_shower.md §7). A CLASS record: the WhisperLine

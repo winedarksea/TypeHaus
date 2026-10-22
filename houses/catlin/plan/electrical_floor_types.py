@@ -10,9 +10,10 @@ from typehaus import (
 )
 
 FLOOR_BOX_PRODUCT = Product(
-    tag="PROD-ARLINGTON-FLBR5420", brand="Arlington", model="FLBR5420",
-    name="IN BOX recessed floor-box kit; finish suffix to be selected",
-    source="https://www.aifittings.com/media/catalog-pages/P-19.pdf (2026-10-05)",
+    tag="PROD-ARLINGTON-FLBR5420", brand="Arlington", model="FLBR5420AB",
+    name="IN BOX recessed floor-box kit, antique bronze plated cover",
+    source="https://www.aifittings.com/media/catalog-pages/P-19.pdf (2026-10-05). "
+           "Finish AB, antique bronze plated (owner 2026-10-22; distributor listings).",
 )
 
 DEVICE_TYPES = (

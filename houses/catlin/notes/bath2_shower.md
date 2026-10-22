@@ -115,18 +115,22 @@ BATH2's 20 cfm, so the grille's position is the only lever.
 - **A flow-rate field**: none. Nothing in the engine would read it. 1.75 gpm lives on the
   product records in `plan/products_showering.py`.
 
-### Open confirms (before the plumber orders)
+### Closed confirms (owner, 2026-10-22)
 
-1. **26008 finish.** Only chrome (26008) and Spot Resist Brushed Nickel (26008SRN) were found,
-   with no stainless. Brushed nickel beside Delta Lumicoat stainless in one room is the mix
-   this house rules out, so the head and the 17T go **chrome** together. The room's
-   `FX-M-BATH2-TUB` filler is T2759-**SS**, so either accept chrome beside it, or take the
-   filler in chrome too.
-2. **17T SKU.** No Ashlyn-handle 17T number was found. T17264 is the Monitor 17
-   *pressure-balance* trim and is not this. Confirm a 17T in chrome that fits the R10000
-   before ordering.
-3. **Solid-surface brand**, and that its 36x36 base's drain matches `FX-M-BATH2-SH`'s
-   `drain_position`.
+1. **Finish: all chrome.** The 26008 head (no stainless exists), the 17T trim and the tub
+   filler, now plain `T2759` instead of `T2759-SS`. One finish in the room.
+2. **17T trim: Delta T17T059**, the Trinsic valve-only 17T trim on the R10000 rough. No
+   Ashlyn 17T exists (T17264 is Monitor 17 pressure-balance), and Trinsic matches the filler.
+   T17T259 is the shower-only version with its own head; this shower uses the 26008.
+3. **Base and panels: Swanstone.** SS-3636: 36x36x5 1/2", 4 1/2" threshold, centre Fit-Flo
+   drain, 3" drain hole. Still to confirm on the dealer's submittal: the colour, that the
+   flanges suit a W threshold with E/S/N walls, and a panel height that reaches the 106"
+   ceiling above the base (or a top cap).
+
+** The drain does not match yet. ** `FX-M-BATH2-SH`'s `drain_position` (1'-9", 17'-3"),
+and `PR-B-SH2-DRAIN`'s riser under it, sit ~55" west of the pan. The pan spans
+x 4'-10 5/8"..7'-10 5/8", y 13'-2 3/8"..16'-2 3/8". A centre drain is at (6'-4 5/8", 14'-8 3/8").
+Re-route the drain before ordering.
 
 ## 6. Wet walls (follow-up, 2026-10-12)
 

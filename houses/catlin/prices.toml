@@ -3423,7 +3423,7 @@
 # ("slab_platform:TUBDECK_INT_PLY_CAP" and [envelope_layers]), the deck tile ([floor_finishes]),
 # the dedicated circuit and its outlet, and the two access panels.
 "FX-KOHLER-UNDERSCORE-6036" = { material = { low = 2200, high = 3100 }, labour = { low = 430, high = 1050 } }  # 1 ea
-# FX-M-BATH2-FILLER, the deck-mount filler on that bath (2026-10-21): T2759-SS trim $599 +
+# FX-M-BATH2-FILLER, the deck-mount filler on that bath (2026-10-21): T2759 trim (priced -SS $599; chrome since 2026-10-22) +
 # R2707 rough $221. Moved here out of `plumbing-faucets-and-tub-filler`, which no longer
 # carries it. Labour is in the bath's set and the supply rough.
 "FX-DELTA-T2759-ROMAN" = { material = { low = 820, high = 820 }, labour = { low = 0, high = 0 } }  # 1 ea

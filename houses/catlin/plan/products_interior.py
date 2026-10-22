@@ -141,8 +141,8 @@ MOEN_ADLER_LAUNDRY = Product(
            "reach the plumber before the wall closes.",
 )
 DELTA_TRINSIC_FILLER = Product(
-    tag="PROD-DELTA-T2759-SS", brand="Delta", model="T2759-SS",
-    name="Trinsic 3-hole deck-mount Roman tub filler trim, Stainless",
+    tag="PROD-DELTA-T2759", brand="Delta", model="T2759",
+    name="Trinsic 3-hole deck-mount Roman tub filler trim, Chrome",
     source="Delta Faucet product page, read 2026-09-06. Owner's call 2026-09-06: three "
            "holes, NO handshower -- the cleaner deck, and the shower next door already has "
            "one. ** THAT CHOICE DELETES A CODE PROBLEM: ** a DECK-mounted handshower needs "
@@ -150,7 +150,8 @@ DELTA_TRINSIC_FILLER = Product(
            "above the flood rim, and with no deck handshower that condition does not exist. "
            "Roughs on PROD-DELTA-R2707. ** Delta's own page confusingly claims this trim "
            "includes a hand shower, which contradicts it being 3-hole trim -- confirm before "
-           "ordering. **",
+           "ordering. ** Chrome, not -SS (owner 2026-10-22), to match BATH2's chrome "
+           "shower set.",
 )
 DELTA_R2707_ROUGH = Product(
     tag="PROD-DELTA-R2707", brand="Delta", model="R2707",
