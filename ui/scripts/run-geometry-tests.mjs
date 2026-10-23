@@ -81,6 +81,8 @@ try {
   runSiteStoreTests();
   runRouteTests();
   runViewUrlTests();
+  const { runDoorwayTests } = await server.ssrLoadModule("/src/three/builders/doorway.test.ts");
+  runDoorwayTests();
   const { runCasedDoorTests } = await server.ssrLoadModule("/src/three/builders/casedDoors.test.ts");
   runCasedDoorTests();
   runPlanGeometryTests();

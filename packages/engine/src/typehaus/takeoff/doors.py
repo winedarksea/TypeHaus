@@ -47,4 +47,30 @@ def door_hardware_rows(model: ResolvedModel) -> list[dict]:
             size=f'{width}" door',
             basis=f"one kit per pocket door at {width}\" leaf: {', '.join(sorted(tags))}",
         ))
+    return rows + doorway_purchase_rows(model)
+
+
+def doorway_purchase_rows(model):
+    """One installed cut length per separately purchased component; factory/kit items excluded."""
+    grouped = {}
+    for opening in model.openings:
+        if opening.doorway is None:
+            continue
+        for component in opening.doorway.components:
+            spec = component.specification
+            if spec.purchase != "separate":
+                continue
+            key = (spec.product_ref, spec.variant, spec.source_url, spec.source_drawing)
+            grouped.setdefault(key, []).append((opening.tag, component.span_m))
+    rows = []
+    for (product, variant, source, drawing), entries in sorted(grouped.items()):
+        row = hardware_row(None, scope="doorway transition / hardware", count=len(entries),
+                           part_number=product, size=variant,
+                           length_ft=sum(length for _, length in entries) / 0.3048,
+                           basis="one cut component per doorway: "
+                           + ", ".join(t for t, _ in entries),
+                           tags=[t for t, _ in entries])
+        row.update(hardware_tag=product, description=f"{product} — {variant}",
+                   source=f"{source} — {drawing}")
+        rows.append(row)
     return rows

@@ -1,5 +1,5 @@
 # haus: editable
-# Study 2 window seat under ST-S2A, against W-S-SS2's south face (y=105.625"). 2026-10-02.
+# Study 2 window seat under ST-S2A, against W-S-SS2's south face (y=105.75"; 105.625" before the 1/2" board, 2026-10-23). 2026-10-02.
 # West to east: 1/2" cover, SEKTION 18" open shelves (83 1/2" top), three 24" seat units
 # (19 1/2" top), 1/2" end. x=264"..355"; W-S-SS2 starts at x=263".
 # The east foot cubby is low under the winder stringers (~11 1/2" over the cushion), by

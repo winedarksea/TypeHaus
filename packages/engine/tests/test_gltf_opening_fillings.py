@@ -268,14 +268,16 @@ def test_a_single_operation_door_ships_one_full_width_panel(starter_model):
         gltf, _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid)))
 
     panels = [s for s in solids if s.has_thickness(_DOOR_LEAF_THICKNESS_M)]
-    assert len(solids) == _FRAME_PIECE_COUNT + 1, "a plain door is four frame pieces plus a panel"
+    assert len(solids) == _FRAME_PIECE_COUNT, "a door has two jambs, a head and a panel"
     assert len(hardware) == _LEVER_SET_BOXES, "a swing leaf carries one lever set"
     assert len(panels) == 1, "a single-operation door is one leaf, not two"
     available_height = min(opening.height_m, wall.z1_m - wall.z0_m - opening.sill_m)
     frame_width = _frame_width_m(opening, available_height)
     assert panels[0].plan_dimensions_m[1] == pytest.approx(
         opening.width_m - 2 * frame_width, abs=_DIMENSION_TOLERANCE_M)
-    assert panels[0].height_m == pytest.approx(available_height - 2 * frame_width,
+    assert panels[0].height_m == pytest.approx((wall.base_ref_z_m + opening.sill_m + available_height
+        - frame_width - opening.doorway.leaf_bottom_z_m)
+        if opening.doorway.leaf_bottom_z_m is not None else available_height - 2 * frame_width,
                                                abs=_DIMENSION_TOLERANCE_M)
     # No glazing material anywhere in a door node.
     assert all(gltf["materials"][s.material_index]["alphaMode"] == "OPAQUE" for s in solids)
@@ -408,15 +410,21 @@ def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_m
 
     leaf_thickness = _WINDOW_GLAZING_THICKNESS_M if glazed else _DOOR_LEAF_THICKNESS_M
     leaves = [s for s in solids if s.has_thickness(leaf_thickness)]
+    rough_base = wall.base_ref_z_m + opening.sill_m
+    jamb_base = opening.doorway.jamb_bottom_z_m
+    jamb_height = rough_base + available_height - (max(rough_base, jamb_base)
+                                                  if jamb_base is not None else rough_base)
     full_height = [s for s in solids
-                   if s.height_m == pytest.approx(available_height, abs=_DIMENSION_TOLERANCE_M)]
-    assert len(solids) == _FRAME_PIECE_COUNT + 3, "four frame pieces, a mullion and two leaves"
+                   if s.height_m == pytest.approx(jamb_height, abs=_DIMENSION_TOLERANCE_M)]
+    assert len(solids) == _FRAME_PIECE_COUNT + 2, "three frame pieces, a mullion and two leaves"
     assert len(leaves) == 2, "a double_swing door is two leaves"
     for leaf in leaves:
         assert (gltf["materials"][leaf.material_index]["alphaMode"]
                 == ("BLEND" if glazed else "OPAQUE"))
         assert leaf.plan_dimensions_m[1] == pytest.approx(leaf_width, abs=_DIMENSION_TOLERANCE_M)
-        assert leaf.height_m == pytest.approx(available_height - 2 * frame_width,
+        assert leaf.height_m == pytest.approx((wall.base_ref_z_m + opening.sill_m + available_height
+            - frame_width - opening.doorway.leaf_bottom_z_m)
+            if opening.doorway.leaf_bottom_z_m is not None else available_height - 2 * frame_width,
                                               abs=_DIMENSION_TOLERANCE_M)
 
     # The mullion is the full-height piece standing on the opening's center station — the jambs
@@ -430,7 +438,7 @@ def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_m
     assert len(mullions) == 1, "exactly one center mullion, on the opening's center station"
     mullion_center = mullions[0].center
     leaf_midpoint = tuple(sum(leaf.center[axis] for leaf in leaves) / 2 for axis in range(3))
-    for axis in range(3):
+    for axis in (0, 2):
         assert leaf_midpoint[axis] == pytest.approx(mullion_center[axis],
                                                     abs=_DIMENSION_TOLERANCE_M), (
             "the two leaves must sit symmetrically either side of the mullion")
@@ -455,7 +463,7 @@ def test_the_balcony_door_ships_the_french_door_solid_shape(catlin_model):
     mullion_width = min(frame_width, clear_width / _DOUBLE_SWING_MULLION_CLEAR_WIDTH_DIVISOR)
     leaf_width = (clear_width - mullion_width) / 2
 
-    assert len(solids) == _FRAME_PIECE_COUNT + 3, "four frame pieces, a mullion and two leaves"
+    assert len(solids) == _FRAME_PIECE_COUNT + 2, "three frame pieces, a mullion and two leaves"
     balcony_leaves = [solid for solid in solids
                       if solid.has_thickness(_WINDOW_GLAZING_THICKNESS_M)]
     assert len(balcony_leaves) == 2, "the balcony french door is two glazed leaves"
@@ -491,14 +499,14 @@ def test_the_laundry_pocket_ships_one_leaf_on_a_head_track(catlin_model):
     assert len(leaves) == 1, "a closed pocket door is a single coplanar leaf"
 
 
-def test_a_synthetic_slider_ships_a_stile_track_and_two_panels():
+def test_a_synthetic_slider_ships_two_panels_without_an_assumed_bottom_track():
     """A synthetic opening, since D-M-BALC is a French door: a closed slider stays
     coplanar, with two glazed panels meeting at a narrow stile over a low track.
     """
     parts = opening_parts(_synthetic_wall(), _synthetic_opening("door"),
                           DoorOperation.SLIDE, is_glazed=True)
     solids = [solid for part in parts for solid in part.solids]
-    assert len(solids) == _FRAME_PIECE_COUNT + 4  # frame, stile, track, two panes
+    assert len(solids) == _FRAME_PIECE_COUNT + 2  # three frame pieces, stile, two panes
 
 
 # --- rough openings and raked walls --------------------------------------------------------

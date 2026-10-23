@@ -21,9 +21,12 @@ from typehaus.resolve.model_window_returns import ResolvedWindowReturn
 from typehaus.resolve.model_window_seat import WindowSeat
 from typehaus.resolve.rebar.records import ResolvedRebarSet
 
-if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-only
+if TYPE_CHECKING:
     from typehaus.model.placeables import Mount
     from typehaus.resolve.clear_zones import ResolvedClearZone
+    from typehaus.resolve.doorway import (
+        DoorwayAssembly,  # the IR imports this module, so the reference stays type-only
+    )
     from typehaus.resolve.floor_ends import FloorEnds
     from typehaus.resolve.floor_tilt import DeckPlane
     from typehaus.resolve.geometry_ir import GeometryModel, GMesh
@@ -452,6 +455,7 @@ class ResolvedOpening:
     # Unflipped: hinge on the END-node jamb, leaf sweeps toward the wall's left normal.
     flip_hinge: bool = False
     flip_swing: bool = False
+    doorway: DoorwayAssembly | None = None
     cased_product: CasedDoorSpec | None = None
     # A flashed window's unit envelope inside the RO (``resolve/opening_flashing``).
     window_seat: WindowSeat | None = None
@@ -1087,8 +1091,8 @@ class ResolvedRoom:
     # reached no viewer, emitter or takeoff. ``area_m2`` is the zone clipped to the room, so
     # a takeoff can subtract it from the room's field finish without re-intersecting.
     finish_zones: tuple[ResolvedFinishZone, ...] = ()
-    # The floor the field finish covers: ``clear_face`` less the zones and the deck voids
-    # (stair wells) at the room's level. ``area_m2`` stays gross; takeoff bills this.
+    # Finish covers the clear face less zones/voids, plus coordinated doorway reveals.
+    # ``area_m2`` stays the gross room area; takeoff bills these net finish parts.
     field_finish: tuple[FinishPart, ...] = ()
     field_area_m2: float = 0.0
     # --- derived head and glazing ----------------------------------------------------------

@@ -72,13 +72,13 @@ MAIN_CLOSET = [
     Furniture(uid="PMF55DJ74K", tag="FURN-M-CLOSET-WEST-HI", type_ref="FT-M-CLOSET-WEST-WIRE",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(78.6875)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(42.875),
-                  normal_gap=inch(-0.01), rotation_offset=deg(-180)))),
+                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(42.75),
+                  normal_gap=inch(0.115), rotation_offset=deg(-180)))),
     Furniture(uid="NX7D3QR6WT", tag="FURN-M-CLOSET-WEST-LO", type_ref="FT-M-CLOSET-WEST-WIRE",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(38.6875)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(42.875),
-                  normal_gap=inch(-0.01), rotation_offset=deg(-180)))),
+                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(42.75),
+                  normal_gap=inch(0.115), rotation_offset=deg(-180)))),
 
     # --- south wall: robe pegs -----------------------------------------------------------
     # x 10'-4 3/8"..13'-10 3/8", ~3/4" short of a 2 1/2" casing on

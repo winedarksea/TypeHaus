@@ -159,11 +159,11 @@ def test_attic_stair_well_sits_on_the_source_and_inside_the_finished_faces(catli
     assert max(xs) == pytest.approx(ft(35, 5.375).meters, abs=TOL_M)
     # The opening is the straight flight: its south edge is the flight's south face.
     assert min(ys) == pytest.approx(ft(5, 9.625).meters, abs=1e-9)
-    assert max(ys) == pytest.approx(ft(8, 9.625).meters, abs=TOL_M)
+    assert max(ys) == pytest.approx(ft(8, 9.75).meters, abs=TOL_M)
 
     # run_reversed on x makes `start` the flight's SE corner (resolve/stairs/dispatch.py),
     # and the flight's north side is the well's.
-    assert stair.start.xy_m == pytest.approx((max(xs), ft(4, 9.375).meters), abs=1e-9)
+    assert stair.start.xy_m == pytest.approx((max(xs), ft(4, 9.5).meters), abs=1e-9)
     assert stair.start.xy_m[1] + turn_extent == pytest.approx(max(ys), abs=1e-9)
     assert stair.width.meters == pytest.approx(ft(3).meters, abs=1e-9)
     assert stair.layout == "right_angle_winder" and stair.run_reversed is True

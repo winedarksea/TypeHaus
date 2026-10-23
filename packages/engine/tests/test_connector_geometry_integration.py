@@ -165,6 +165,30 @@ def test_derived_lateral_plates_are_on_the_sill_face(catlin_model_ro):
     assert tested > 100
 
 
+def test_lateral_plate_bodies_clear_the_bedroom_door(catlin_model_ro):
+    model = catlin_model_ro
+    opening = next(opening for opening in model.openings if opening.tag == "D-M-BED2")
+    wall = model.wall(opening.host_wall)
+    origin, end = wall.axis
+    length = math.dist(origin, end)
+    tangent = tuple((end[i] - origin[i]) / length for i in range(2))
+    jamb_start = opening.center_along_m - opening.width_m / 2
+    jamb_end = opening.center_along_m + opening.width_m / 2
+    sill = wall.base_ref_z_m + opening.sill_m
+    head = sill + opening.height_m
+    solids = {solid.uid: solid for solid in _simpson_solids(model)}
+    plates = [joint for joint in derived_joints(model, DEFAULT_HARDWARE_TAKEOFF_CONFIG)
+              if joint.role == "lateral_tie_plate" and joint.members[0] == wall.tag]
+    assert plates, "the wall still needs lateral ties outside the door"
+    for joint in plates:
+        body = solids[marker_uid(joint.key)].body_mesh
+        along = [sum((point[i] - origin[i]) * tangent[i] for i in range(2))
+                 for point in body.positions]
+        elevations = [point[2] for point in body.positions]
+        assert (max(along) <= jamb_start or min(along) >= jamb_end
+                or max(elevations) <= sill or min(elevations) >= head)
+
+
 def test_wall_end_angles_have_vertical_heels(catlin_model_ro):
     solids = {solid.tag: solid for solid in catlin_model_ro.solids}
     for tag in ("CN-BW-GWTIE-LO", "CN-BW-GWTIE-HI"):

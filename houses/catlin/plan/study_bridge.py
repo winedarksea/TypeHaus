@@ -9,8 +9,8 @@ INFILL_WIDTH = inch(6.5)
 BOARD_THICKNESS = inch(0.75)
 INFILL_HEIGHT = inch(60)
 
-# Envelope: x=262 7/8..269 3/8", y=104 7/8..105 5/8"; butts CASING-D-A-STUDY-R's east leg.
-INFILL_POSITION = pt(inch(266.125), inch(105.25))
+# Envelope: x=262 7/8..269 3/8", y=105..105 3/4" (the 1/2" board face); butts CASING-D-A-STUDY-R's east leg.
+INFILL_POSITION = pt(inch(266.125), inch(105.375))
 
 INFILL_SOURCE = """Owner-stock 4/4 oak dressed to 3/4 in.; match the oak-trim casing finish.
 Infill 6 1/2 x 60 x 3/4 in. on W-A-SN's study face, butted to the east casing leg in its plane.

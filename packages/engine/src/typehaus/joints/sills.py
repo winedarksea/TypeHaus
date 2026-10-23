@@ -22,6 +22,7 @@ import math
 from dataclasses import dataclass
 
 from typehaus.hardware.config import FT_TO_M, SillPlateAnchorRules, UpliftTieRules
+from typehaus.hardware.connector_dimensions import LATERAL_TIE_PLATE_DIMENSIONS
 from typehaus.hardware.plan_geometry import centerline_endpoints
 from typehaus.joints.model import axis_of
 from typehaus.model.braced_wall import BracedWallPanel
@@ -226,8 +227,19 @@ def tie_plate_walls(model: ResolvedModel) -> list:
 
 
 def tie_plate_stations(model: ResolvedModel, rules: UpliftTieRules) -> list:
-    """LTP4s along the bottom plate of every wall :func:`tie_plate_walls` returns."""
+    """LTP4s along the bottom plate, excluding bodies that cross an opening.
+
+    Framing can retain a sole plate across a doorway; that temporary board is not a
+    reason to put permanent steel in the passage. Raised openings only exclude a plate
+    when their actual vertical void reaches its body.
+    """
     pitch_m = rules.tie_plate_pitch_ft * FT_TO_M
+    half_width_m = LATERAL_TIE_PLATE_DIMENSIONS.width_in * M_PER_IN / 2
+    half_height_m = LATERAL_TIE_PLATE_DIMENSIONS.height_in * M_PER_IN / 2
+    openings_by_wall: dict[str, list] = {}
+    for opening in model.openings:
+        if opening.depth_m is None:
+            openings_by_wall.setdefault(opening.host_wall, []).append(opening)
     found: list[Station] = []
     for wall in tie_plate_walls(model):
         (x0, y0), (x1, y1) = wall.axis
@@ -236,6 +248,16 @@ def tie_plate_stations(model: ResolvedModel, rules: UpliftTieRules) -> list:
         axis = axis_of(wall.axis[0], wall.axis[1])
         for index in range(count):
             fraction = 0.5 if count == 1 else index / (count - 1)
+            along_m = length_m * fraction
+            if any(
+                opening.center_along_m - opening.width_m / 2 < along_m + half_width_m - 1e-9
+                and opening.center_along_m + opening.width_m / 2 > along_m - half_width_m + 1e-9
+                and wall.base_ref_z_m + opening.sill_m < wall.z0_m + half_height_m - 1e-9
+                and wall.base_ref_z_m + opening.sill_m + opening.height_m
+                > wall.z0_m - half_height_m + 1e-9
+                for opening in openings_by_wall.get(wall.tag, ())
+            ):
+                continue
             found.append(Station(
                 run_tag=wall.tag, storey=wall.storey,
                 point_m=(x0 + (x1 - x0) * fraction, y0 + (y1 - y0) * fraction),

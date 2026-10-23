@@ -438,10 +438,25 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
             "RoughOpeningHeight": opening.height_m,
             "FrameSizeResolved": dimensions is not None,
         })
+    if opening.doorway is not None:
+        import json
+
+        from typehaus.resolve.doorway import doorway_json
+
+        assembly = opening.doorway
+        ll.ensure_pset(f, filling, "TypeHaus_Doorway", {
+            "Status": assembly.status,
+            "RoughOpeningElevation": assembly.rough_opening_z_m,
+            "FloorTreatment": assembly.floor_treatment,
+            "SelectedProducts": ", ".join(s.product_ref for s in assembly.selected_products),
+            "Unresolved": "; ".join(assembly.unknown),
+            "Conflicts": "; ".join(assembly.conflicts),
+            "SourceSpecification": json.dumps(doorway_json(assembly)),
+        })
     door_type = next((item for item in model.plan.library.door_types
                       if item.tag == opening.type_ref), None) if opening.is_door else None
     product = door_type.bookcase_door if door_type is not None else None
-    if (opening.cased_product is not None or (product is None and
+    if (opening.doorway is not None or opening.cased_product is not None or (product is None and
             (opening.effective_frame_material_ref or opening.effective_leaf_material_ref))):
         from typehaus.emit.ifc.door_fillings import cased_door_representation
 

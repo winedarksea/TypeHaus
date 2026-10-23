@@ -737,3 +737,21 @@ def test_catlin_murphy_door_keeps_published_dimensions_and_hinge_clearance(catli
     center_wall = catlin_model_ro.wall("W-A-C1B")
     center_wall_east_face = max(x for layer in center_wall.layers for x, _y in layer.polygon)
     assert casing_west_x - center_wall_east_face >= spec.hinge_side_clearance.meters
+
+
+def test_catlin_exterior_bottom_components_wait_for_approved_sections(catlin_model_ro):
+    """Read-only shared resolve: product identities survive while unapproved shapes stay absent."""
+    types = {t.tag: t for t in catlin_model_ro.plan.library.door_types}
+    selected = {"D-M-ENTRY", "D-M-BALC", "D-G-SERVICE", "D-G-OVERHEAD"}
+    for opening in catlin_model_ro.openings:
+        if opening.tag not in selected:
+            continue
+        assembly = opening.doorway
+        assert assembly is not None and assembly.status == "UNKNOWN"
+        assert not assembly.components
+        assert assembly.selected_products[0].product_ref == types[opening.type_ref].product_ref
+        assert assembly.selected_products[0].verified is False
+        if opening.tag == "D-G-OVERHEAD":
+            assert assembly.selected_products[0].role == "bottom_seal"
+        else:
+            assert assembly.selected_products[0].role == "sill"

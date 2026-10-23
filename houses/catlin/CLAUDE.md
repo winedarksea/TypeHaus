@@ -804,14 +804,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   the explicit `PC-A-STAIR-BOOKCASE` pocket. Only its validated wall geometry can satisfy
   the named north-edge interval of `FO-A-STAIR`; furniture never supplies guard coverage.
 - `FURN-A-STUDY-BUILTIN` is one wall-attached fixed run, x=22'-8"..30'-8 3/4", front at
-  y=8'-9 5/8", with its back on `W-A-SN-REAR`'s south finish. `SB-A-STUDY` is rehosted to
+  y=8'-9 3/4", with its back on `W-A-SN-REAR`'s south finish. `SB-A-STUDY` is rehosted to
   it and keeps the 9 7/8" owner-stock oak shelf depth. A 2 5/8" filler closes the west end.
 - **`D-A-STUDY` is a Murphy flush mount sitting in its framing** (2026-10-14): face frame on
-  W-A-SN's study finish (y=8'-9 5/8"), body through the 38x82 RO, back 3 1/2" proud on the
+  W-A-SN's study finish (y=8'-9 3/4"), body through the 38x82 RO, back 3 3/4" proud on the
   loft (swing) side, nothing over `FO-A-STAIR`. Red oak casing (TRIM-STANDARD's `DoorTrim`, derived) on
   the study face only, lapping the face frame 1/2" (`BookcaseDoorSpec.casing_lap`); the
-  factory casing ships unused. The 4 9/16" jamb is 3/16" short of the 4 3/4" wall: flush it to
-  the study face, scribe the loft side.
+  factory casing ships unused. The 4 9/16" jamb stands 1/16" proud of the 4 1/2" wall: flush it to
+  the study face, ease the loft side.
 - `FURN-A-STUDY-BRIDGE-FRONT` is one 6 1/2 x 60 x 3/4" owner-stock oak infill in the casing
   plane, from the east leg to the bookcase filler; one 4/4 oak row in `haus millwork`.
   `ED-A-STUDY-SW` sits under the east casing leg (`advisory.trim_device_clash`): still open.

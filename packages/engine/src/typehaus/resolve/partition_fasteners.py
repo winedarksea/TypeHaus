@@ -160,7 +160,7 @@ def top_plate_through_in(wall: Any) -> float | None:
     """
     courses = [member for member in wall.members
                if member.category in ("plate", "raked_plate")
-               and not member.child_key.endswith("bottom")]
+               and not member.child_key.startswith("plate-bottom")]
     return sum(member.z1_m - member.z0_m for member in courses) / M_PER_IN if courses else None
 
 

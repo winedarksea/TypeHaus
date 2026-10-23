@@ -12,7 +12,6 @@ from typehaus.emit.gltf.openings import _add_opening_filling
 from typehaus.emit.gltf.palette import _color
 from typehaus.resolve.geometry import wall_frame
 from typehaus.resolve.geometry_door_products import (
-    _CONCEALED_UNDERCUT_M,
     _PUSH_SET_REBATE_M,
     finish_faces,
 )
@@ -67,8 +66,10 @@ def test_study_glass_is_open_between_wood_stiles_and_above_the_undercut(study_do
     for wood in parts["leaf"].solids:
         if wood.z0_m < pane_mid_z < wood.z1_m:
             assert Polygon(wood.ring).intersection(Polygon(pane.ring)).area < 1e-10
-    leaf_bottom = wall.base_ref_z_m + opening.sill_m + _CONCEALED_UNDERCUT_M
+    leaf_bottom = opening.doorway.leaf_bottom_z_m
     assert min(solid.z0_m for solid in parts["leaf"].solids) == pytest.approx(leaf_bottom)
+    bottom_rail = min(parts["leaf"].solids, key=lambda s: s.z1_m)
+    assert pane.z0_m == pytest.approx(bottom_rail.z1_m)
     assert all(solid.z0_m >= leaf_bottom - 1e-9 for key in ("leaf", "glazing", "stop", "shadow_gap")
                for solid in parts[key].solids)
 

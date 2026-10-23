@@ -4,10 +4,10 @@ from typehaus import BuiltInBenchSpec, FurnitureType, inch
 
 STUDY_BENCH = FurnitureType(
     tag="FT-STUDY-BENCH", name="Study upholstered booth bench, solid walnut front",
-    footprint=(inch(48.625), inch(20.819858)), height=inch(36),
+    footprint=(inch(48.875), inch(20.819858)), height=inch(36),
     storage=False, work_surface=False,
     built_in_bench=BuiltInBenchSpec(
-        width=inch(48.625), effective_seat_depth=inch(17), deck_height=inch(17.5),
+        width=inch(48.875), effective_seat_depth=inch(17), deck_height=inch(17.5),
         back_height=inch(36), panel_thickness=inch(.75), seat_cushion_thickness=inch(3),
         back_pad_thickness=inch(1), lumbar_projection=inch(.5),
         lumbar_height_above_seat=inch(7), occupied_seat_height=inch(19.5),
@@ -30,8 +30,8 @@ STUDY_DESK = FurnitureType(
 )
 
 FOLD_LEAF = FurnitureType(
-    tag="FT-STUDY-DESK-LEAF", name='Study walnut fold-down leaf, 19 5/8" x 16"',
-    footprint=(inch(19.625), inch(16)), height=inch(29.5),
+    tag="FT-STUDY-DESK-LEAF", name='Study walnut fold-down leaf, 19 7/8" x 16"',
+    footprint=(inch(19.875), inch(16)), height=inch(29.5),
     storage=False, work_surface=True, plan_symbol="wall-desk",
     wood_material_ref="walnut-shelf-5q",
     source="1 inch walnut leaf, same flitch/grain as fixed top, modeled deployed. Continuous piano hinge and ledger attached to let-in study-face blocking in W-M-CLN2, with bullet catches at fixed top. Pair of Sugatsune EB-303/EP-BL folding brackets, 307 mm (12.087 inch) projection, 165 mm height, supplier P1/P2 capacities 150/75 kgf depending on load position; verify installation and actual front-edge load rather than adding ratings. Continuous hinge/ledger and bullet catches retain lateral restraint. Original 18 7/8 inch Hebgo brackets do NOT fit. Stowed panel hangs approximately 12.5-28.5 inch AFF. Manufacturer installation and wall/blocking connection verification required before fabrication; no through bolts bridging staggered wall leaves.",

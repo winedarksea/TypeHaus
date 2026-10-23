@@ -9,6 +9,7 @@ from __future__ import annotations
 from typehaus.emit.door_surfaces import door_part_color, door_part_surface
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.model.enums import DoorOperation
+from typehaus.resolve.geometry_ir import GSweep
 from typehaus.resolve.geometry_openings import (  # noqa: F401
     _DOOR_LEAF_THICKNESS_M,
     _DOUBLE_SWING_LEAF_COUNT,
@@ -42,5 +43,8 @@ def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
                                 linear_paint_defaults=opening.cased_product is not None)
         surfaces[color] = door_part_surface(part)
         for solid in part.solids:
-            mb.add_prism(list(solid.ring), solid.z0_m, solid.z1_m, color)
+            if isinstance(solid, GSweep):
+                mb.add_sweep(solid, color)
+            else:
+                mb.add_prism(list(solid.ring), solid.z0_m, solid.z1_m, color)
     return surfaces

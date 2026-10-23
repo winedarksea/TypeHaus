@@ -590,7 +590,11 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     rows = sheet_goods_takeoff(catlin_model)
     ceiling = {(row["material"], row["thickness_in"]): row for row in rows
               if row["scope"] == "ceiling"}
-    gwb = ceiling[("gwb", 0.625)]
+    # The gypsum family: plain 5/8" ceilings plus the moisture- and abuse-resistant ones
+    # the baths and mudroom now carry (gwb-mr / gwb-ar), summed into one blanket row here.
+    gwb_rows = [row for (material, thickness), row in ceiling.items()
+                if material.startswith("gwb") and thickness == 0.625]
+    gwb = {"net_area_sqft": str(sum(float(row["net_area_sqft"]) for row in gwb_rows))}
 
     def _gross_sqft(tag: str) -> float:
         floor = next(item for item in catlin_model.floors if item.tag == tag)

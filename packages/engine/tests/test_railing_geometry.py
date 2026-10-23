@@ -335,7 +335,7 @@ def test_attic_recess_bracket_reaches_the_lower_walls_double_top_plate(catlin_mo
     assert bracket.sweep is not None
     anchor, elbow, rail_end = bracket.sweep.path
     assert anchor[0] == pytest.approx(inch(290.3).meters, abs=inch(0.1).meters)
-    assert anchor[1] == pytest.approx(inch(105.625).meters, abs=inch(0.1).meters)
+    assert anchor[1] == pytest.approx(inch(105.75).meters, abs=inch(0.1).meters)
     assert rail_end[2] - anchor[2] == pytest.approx(inch(26.5).meters, abs=inch(0.1).meters)
     assert elbow[:2] == pytest.approx(rail_end[:2])
     wall = next(w for w in model.walls if w.tag == 'W-S-SS2')

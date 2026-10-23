@@ -5,6 +5,7 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     checks,
     clear_zones,
     door_finishes,
+    doorway,
     drip_flashing,
     edge_run_host,
     furniture_host,

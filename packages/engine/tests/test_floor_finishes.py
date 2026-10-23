@@ -313,7 +313,10 @@ def test_a_derived_zone_is_clipped_to_the_room_not_drawn_as_the_slab(catlin_mode
     ring = Polygon(derived.outline)
     face = Polygon(living.clear_face)
     assert face.buffer(1e-6).contains(ring), "the drawn ring never leaves the room"
-    assert ring.area == pytest.approx(derived.area_m2, rel=1e-9)
+    # Net parts also carry the doorway reveals, which are outside the clear-face ring.
+    net = [Polygon(outline, holes=list(holes)) for outline, holes in derived.parts]
+    assert sum(part.intersection(face).area for part in net) == pytest.approx(ring.area, abs=1e-4)
+    assert sum(part.area for part in net) == pytest.approx(derived.area_m2, rel=1e-9)
 
 
 def test_the_billed_finishes_move_with_the_split(catlin_model):

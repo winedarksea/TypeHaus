@@ -270,7 +270,7 @@ def test_rim_band_seals_at_both_plate_lines(catlin_model):
 def test_interior_partition_rim_gets_no_air_seal(catlin_model):
     """An interior partition has conditioned space on both sides — nothing to seal against."""
     _derived, scene = _exact_detail_scene(catlin_model,
-                                          "storey_stack:rim:INT_2X6_BRG")
+                                          "storey_stack:rim:INT_2X6_BRG_HALF")
     assert not _component_tags(scene) & {
         "rim-air-barrier", "rim-cavity-foam", "rim-sealant-bead"}
 
@@ -321,7 +321,7 @@ def test_the_garage_stem_no_longer_steps_out(catlin_model):
 def test_interior_partition_step_gets_no_shelf_flashing(catlin_model):
     """An interior wall stepping in leaves no weather ledge — flashing it would be fiction."""
     _derived, scene = _detail_scene(
-        catlin_model, "stack_width_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING")
+        catlin_model, "stack_width_change:INT_2X4_PARTITION_HALF|INT_2X6_STAGGERED_PLUMBING_HALF")
     assert "stack-shelf-flashing" not in _component_tags(scene)
 
 
@@ -617,7 +617,7 @@ def test_interior_opening_gets_no_applied_vocabulary(catlin_model):
     """An interior door sheds no weather — flashing it would be fiction (id stays in
     UNDRAWN_RECIPES with its reason on the record)."""
     _derived, scene = _exact_detail_scene(catlin_model,
-                                          "opening_perimeter:INT_2X4_PARTITION")
+                                          "opening_perimeter:INT_2X4_PARTITION_HALF")
     assert not _component_tags(scene) & {
         "opening-head-flashing", "opening-sill-pan", "opening-buck"}
 

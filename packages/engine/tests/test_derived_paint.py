@@ -39,7 +39,7 @@ def test_a_face_into_a_chase_takes_no_paint(catlin_model_ro) -> None:
 
 def test_an_authored_paint_layer_is_not_billed_again(catlin_model_ro) -> None:
     """``INT_2X6_BRG`` paints both faces itself, so neither end is bare gypsum."""
-    wall = next(w for w in catlin_model_ro.walls if w.assembly == "INT_2X6_BRG")
+    wall = next(w for w in catlin_model_ro.walls if w.assembly == "INT_2X6_BRG_HALF")
     assert _fractions(catlin_model_ro, wall.tag) == []
 
 
@@ -51,7 +51,7 @@ def test_gypsum_below_the_floor_is_not_facing_a_room(catlin_model_ro) -> None:
 def test_bare_gypsum_ceilings_bill_their_area_and_a_primed_one_does_not(catlin_model_ro) -> None:
     rows = envelope_layer_takeoff(catlin_model_ro)
     bare = sum(abs(Polygon(c.outline).area) for c in catlin_model_ro.ceilings
-               if c.layers and c.layers[0].material_ref == "gwb")
+               if c.layers and c.layers[0].material_ref in ("gwb", "gwb-mr"))
     assert _derived(rows, "ceiling (derived)") == pytest.approx(bare * _M2_TO_FT2, abs=0.1)
     garage = next(c for c in catlin_model_ro.ceilings if c.room_ref == "RM-GARAGE")
     assert garage.layers[0].material_ref == "gwb-primer"

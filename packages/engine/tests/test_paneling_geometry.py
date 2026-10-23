@@ -258,7 +258,7 @@ def test_the_bands_still_bill_what_they_billed(bands):
     """Removing the north walnut reduces both its drawn and ordered area."""
     walnut = sum(b.area_m2 for b in bands if b.tag == "WP-M-STUDY-WAINSCOT") * _M2_TO_FT2
     tile = sum(b.area_m2 for b in bands if b.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
-    assert walnut == pytest.approx(28.185, abs=0.005)
+    assert walnut == pytest.approx(28.3725, abs=0.005)
     assert tile == pytest.approx(45.0, abs=0.5)
 
 

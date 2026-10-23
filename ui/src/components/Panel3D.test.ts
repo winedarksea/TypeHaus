@@ -684,15 +684,15 @@ export function runSelectionRegistrationTests() {
   const bifoldRegistry = registry();
   buildOpening(bifoldGroup, door, wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
     { operation: "bifold" }, bifoldRegistry.picks, bifoldRegistry.byUid);
-  assert(bifoldGroup.children.length === 8,
-    "A closed bifold renders four frame pieces and four coplanar leaves");
+  assert(bifoldGroup.children.length === 7,
+    "A closed bifold renders three frame pieces and four coplanar leaves");
 
   const sliderGroup = new THREE.Group();
   const sliderRegistry = registry();
   buildOpening(sliderGroup, door, wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
     { operation: "slide", glazed: true }, sliderRegistry.picks, sliderRegistry.byUid);
-  assert(sliderGroup.children.length === 8,
-    "A closed slider renders its frame, stile, track, and two panels");
+  assert(sliderGroup.children.length === 6,
+    "A closed slider renders three frame pieces, a stile and two panels; no assumed track");
   assert(new Set(sliderGroup.children.map((child) => child.position.z.toFixed(9))).size === 1,
     "Closed slider panels remain in the wall plane rather than posing open");
 

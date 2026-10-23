@@ -292,11 +292,11 @@ MAIN_PLACEABLES = [
     # Fitted to current RM-M-STUDY gypsum/wainscot faces. See notes/study_booth.md.
     # North has no walnut behind the upholstered back; retain 1/16 inch rear/end scribes.
     Furniture(uid="AZ3GY4JQFH", tag="FURN-M-STUDY-BENCH", type_ref="FT-STUDY-BENCH",
-              room="RM-M-STUDY", position=pt(inch(189.5), inch(256.152571)), rotation=deg(0)),
+              room="RM-M-STUDY", position=pt(inch(189.5), inch(256.277571)), rotation=deg(0)),
     Furniture(uid="90JCARB5PG", tag="FURN-M-STUDY-DESK", type_ref="FT-STUDY-DESK",
-              room="RM-M-STUDY", position=pt(inch(179.6875), inch(228.1875)), rotation=deg(180)),
+              room="RM-M-STUDY", position=pt(inch(179.5625), inch(228.0625)), rotation=deg(180)),
     Furniture(uid="SBR4CFX5EH", tag="FURN-M-STUDY-DESK-LEAF", type_ref="FT-STUDY-DESK-LEAF",
-              room="RM-M-STUDY", position=pt(inch(204), inch(228.1875)), rotation=deg(180)),
+              room="RM-M-STUDY", position=pt(inch(204), inch(228.0625)), rotation=deg(180)),
     Furniture(uid="SBF00TREST", tag="FURN-M-STUDY-FOOTREST", type_ref="FT-STUDY-FOOTREST",
               room="RM-M-STUDY", position=pt(inch(180), inch(232.5)), rotation=deg(180)),
 
@@ -572,7 +572,7 @@ SECOND_PLACEABLES = [
     # rotation 90 leaves the drawer accessible from the east side. The whole group moved
     # 30" west for the southeast corner shelf (owner, 2026-10-14).
     Furniture(uid="TAB701AAAA", tag="FURN-S-STUDY-TABLE", type_ref="FURN-CHESS-TABLE-315",
-              room="RM-S-STUDY2", position=pt(m(8.79495), inch(22.385)), rotation=deg(90)),
+              room="RM-S-STUDY2", position=pt(m(8.79495), inch(22.26)), rotation=deg(90)),
     Furniture(uid="CHR704AAAA", tag="FURN-S-STUDY-CHAIR1", type_ref="FURN-CANTILEVER-CHAIR",
               room="RM-S-STUDY2", position=pt(m(9.4696), m(0.589194)), rotation=deg(-90)),
     Furniture(uid="CHR705AAAA", tag="FURN-S-STUDY-CHAIR2", type_ref="FURN-CANTILEVER-CHAIR",
@@ -582,7 +582,7 @@ SECOND_PLACEABLES = [
     # windows; even the smaller BILLY combination would cover WIN-S-STUDY2.
     Furniture(uid="CSBOOK0001", tag="FURN-S-STUDY-CORNER-BOOKCASE",
               type_ref="FT-STUDY-CORNER-BOOKCASE", room="RM-S-STUDY2",
-              position=pt(inch(413.055), inch(18.945)), rotation=deg(-90)),
+              position=pt(inch(413.18), inch(18.82)), rotation=deg(-90)),
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
               room="RM-S-SUITE", position=pt(m(1.52182), m(5.57379)), rotation=deg(0)),
     # Flush with the queen's sides; backs stop at the 3/4" walnut paneling face.

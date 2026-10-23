@@ -33,7 +33,7 @@ def test_upper_finish_is_on_the_mudroom_face_and_stops_at_the_ceiling(catlin_mod
     # 1/2" MDO since 2026-10-23 (5/8" plywood to 123 1/4" before).
     assert stair_mdo.material_ref == "mdo-plywood-interior"
     assert max(x for x, _ in stair_mdo.polygon) == pytest.approx(inch(123.135).meters)
-    for name, thickness, material in (("gwb-mudroom-upper", 0.5, "gwb"),
+    for name, thickness, material in (("gwb-mudroom-upper", 0.5, "gwb-ar"),
                                       ("paint-mudroom-upper", 0.01, "latex-paint")):
         layer = next(layer for layer in wall.layers if layer.name == name)
         assert layer.material_ref == material
@@ -131,7 +131,7 @@ def test_upper_gypsum_is_stamped_for_the_drywall_view_toggle(catlin_model_ro):
     wall = next(wall for wall in wall_graph_json(catlin_model_ro, None)["walls"]
                 if wall["tag"] == "W-M-STRW")
     layers = {layer["name"]: layer for layer in wall["layers"]}
-    assert layers["gwb-mudroom-upper"]["material"] == "gwb"
+    assert layers["gwb-mudroom-upper"]["material"] == "gwb-ar"
     assert layers["gwb-mudroom-upper"]["trades"] == ["drywall"]
     assert layers["paint-mudroom-upper"]["trades"] == ["paint"]
 

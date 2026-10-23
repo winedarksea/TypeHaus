@@ -22,9 +22,9 @@ from typehaus.takeoff.hardwood import _furniture_board_rows, hardwood_takeoff
 from typehaus.takeoff.placeables import placeables_takeoff
 
 BRIDGE_PREFIX = "FURN-A-STUDY-BRIDGE-"
-BOARD_BOUNDS_IN = {"FRONT": (262.875, 104.875, 269.375, 105.625)}
+BOARD_BOUNDS_IN = {"FRONT": (262.875, 105.0, 269.375, 105.75)}
 # W-A-SN's two finish faces: the study (shelf) face and the loft (swing) face.
-STUDY_FACE_Y_IN, LOFT_FACE_Y_IN = 105.625, 110.375
+STUDY_FACE_Y_IN, LOFT_FACE_Y_IN = 105.75, 110.25
 
 
 def _boards(model):

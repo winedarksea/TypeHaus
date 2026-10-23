@@ -44,13 +44,13 @@ def test_cavity_shares_its_host_polygon_and_adds_no_depth(catlin_model):
     # is the interior lining's Class III vapour retarder (IRC R702.7), so it is a layer with
     # a thickness, not a colour note.
     #
-    # 13.885": the cladding layer's declared thickness is the PBR panel's RIB height (1-1/4"),
+    # 13.76" (13.885" with the 5/8" board, before 2026-10-23): the cladding layer's declared thickness is the PBR panel's RIB height (1-1/4"),
     # not the sheet's, so the whole extra 3/4" over a snap-lock pan is skin, not wall depth.
     #
     # The INNER GIRT's own 1-1/2" of foam is a CavityFill and adds no depth, which is exactly
     # what this test is for. Note the outer girt carries no fill at all: nothing vents inside
     # a solid KDAT band, and its gap is the AIRGAP layer behind it.
-    assert wall.thickness_m * 39.3701 == pytest.approx(13.885, abs=0.01)
+    assert wall.thickness_m * 39.3701 == pytest.approx(13.76, abs=0.01)
 
 
 def test_no_wall_layer_overlaps_another(catlin_model):

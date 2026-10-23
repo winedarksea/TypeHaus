@@ -19,7 +19,7 @@ SECOND_STORY_UI_PLACEMENTS = (
     ("FURN-S-BED1", "FURN-BED-TWIN", "RM-S-BED1", (9.801366875, 3.36872), -90),
     ("FURN-S-DESK1", "FURN-DESK-48", "RM-S-BED1", (10.4995, 4.58763), 90),
     ("FURN-S-DESK-CHAIR1", "FURN-DESK-CHAIR", "RM-S-BED1", (10.0492, 4.62797), 90),
-    ("FURN-S-STUDY-TABLE", "FURN-CHESS-TABLE-315", "RM-S-STUDY2", (8.79495, 0.568579), 90),
+    ("FURN-S-STUDY-TABLE", "FURN-CHESS-TABLE-315", "RM-S-STUDY2", (8.79495, 0.565404), 90),
     ("FURN-S-STUDY-CHAIR1", "FURN-CANTILEVER-CHAIR", "RM-S-STUDY2", (9.4696, 0.589194), -90),
     ("FURN-S-STUDY-CHAIR2", "FURN-CANTILEVER-CHAIR", "RM-S-STUDY2", (8.1304, 0.588713), 90),
     ("FURN-S-PLANT-POT1", "FURN-PLANT-18", "RM-S-PLANT", (1.28957, 0.606871), 0),
@@ -237,8 +237,10 @@ def test_east_pax_frame_meets_corner_and_leaves_outlet_and_erv_access(catlin_mod
     west, south, east, north = shelf_polygon.bounds
     corner_bounds = Polygon(corner.footprint).bounds
     assert shelf.type_ref == objects[f"FURN-S-{bedroom}-PAX-SHELF"].type_ref
-    assert west == pytest.approx(corner_bounds[2])
-    assert south == pytest.approx(corner_bounds[1])
+    # The shelf follows W-S-SS2's face and the corner follows W-S-BW1's; the two faces sit
+    # 1/8" apart since the 1/2" board, so the seam is a 1/8" scribe, not an overlap.
+    assert west == pytest.approx(corner_bounds[2], abs=inch(0.125).meters)
+    assert south == pytest.approx(corner_bounds[1], abs=inch(0.125).meters)
     assert east - west == pytest.approx(inch(19.625).meters)
     assert north - south == pytest.approx(inch(22.875).meters)
     assert east == pytest.approx(ft(27, 4.375).meters)

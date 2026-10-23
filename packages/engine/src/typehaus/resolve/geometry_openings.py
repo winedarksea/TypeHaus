@@ -16,6 +16,7 @@ from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_bookcase_door import bookcase_door_parts
 from typehaus.resolve.geometry_cased_doors import cased_door_parts
 from typehaus.resolve.geometry_door_products import (
+    _GLAZED_LEAF_FRAME_WIDTH_M,
     concealed_frame_parts,
     concealed_leaf,
     finish_faces,
@@ -203,8 +204,9 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                 width / 2.0 - frame_width / 2.0, mid_elev, frame_offset),
             box(width, frame_width, frame_depth, 0.0,
                 z0 + sill + available_height - frame_width / 2.0, frame_offset),
-            box(width, frame_width, frame_depth, 0.0,
-                z0 + sill + frame_width / 2.0, frame_offset),
+            *((box(width, frame_width, frame_depth, 0.0,
+                   z0 + sill + frame_width / 2.0, frame_offset),)
+              if opening.kind == "window" else ()),
         )))
     panel_height = max(_OPENING_MIN_PANEL_DIMENSION_M, available_height - 2.0 * frame_width)
     lever_list: list[GPrism] = []
@@ -239,10 +241,7 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         panel_offset = stile_width / 2.0 + panel_width / 2.0
         parts.append(GPart(key="sliding_stile", material_key=frame_key,
                            solids=(box(stile_width, panel_height, depth, 0.0, panel_elev),)))
-        parts.append(GPart(key="sliding_track", material_key=frame_key, solids=(
-            box(clear_width, min(_SLIDING_TRACK_HEIGHT_M, panel_height), depth, 0.0,
-                z0 + sill + frame_width + min(_SLIDING_TRACK_HEIGHT_M, panel_height) / 2.0),
-        )))
+
         panel_thickness = (_WINDOW_GLAZING_THICKNESS_M if is_glazed
                            else _DOOR_LEAF_THICKNESS_M)
         parts.append(GPart(
@@ -352,8 +351,44 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     parts = _opening_parts(wall, opening, operation, is_glazed=is_glazed,
                            is_trimless=is_trimless, bookcase_door=bookcase_door,
                            leaf_set=leaf_set)
-    if opening.kind != "door" or bookcase_door is not None:
+    if opening.kind != "door":
         return parts
+    from typehaus.resolve.geometry_doorway import doorway_parts
+
+    parts = parts + doorway_parts(wall, opening)
+    assembly = opening.doorway
+    if assembly and assembly.leaf_bottom_z_m is not None:
+        original_leaf_bottom = min((s.z0_m for p in parts if p.key == "leaf"
+                                    for s in p.solids if isinstance(s, GPrism)),
+                                   default=assembly.leaf_bottom_z_m)
+        adjusted = []
+        for part in parts:
+            if part.key in {"leaf", "sliding_panel", "bifold_leaf", "glass"}:
+                bottom = min(s.z0_m for s in part.solids if isinstance(s, GPrism))
+                delta = assembly.leaf_bottom_z_m - bottom
+                solids = []
+                for solid in part.solids:
+                    if isinstance(solid, GPrism) and abs(solid.z0_m - bottom) < 1e-9:
+                        top = solid.z1_m
+                        if len(part.solids) > 2 and (
+                                solid.z1_m - bottom <= _GLAZED_LEAF_FRAME_WIDTH_M + 1e-9):
+                            top += delta  # move a bottom rail, retaining its section
+                        if top > assembly.leaf_bottom_z_m:
+                            solid = replace(solid, z0_m=assembly.leaf_bottom_z_m, z1_m=top)
+                    solids.append(solid)
+                part = replace(part, solids=tuple(solids))
+            if part.key == "glazing":
+                delta = assembly.leaf_bottom_z_m - original_leaf_bottom
+                part = replace(part, solids=tuple(replace(s, z0_m=s.z0_m + delta)
+                               for s in part.solids))
+            if part.key in {"frame", "mullion", "jamb_liner", "stop", "shadow_gap"}:
+                bottom = (assembly.leaf_bottom_z_m if is_trimless
+                          and part.key in {"stop", "shadow_gap"} else assembly.jamb_bottom_z_m)
+                solids = tuple(replace(s, z0_m=bottom) if isinstance(s, GPrism)
+                               and s.z0_m < bottom < s.z1_m else s for s in part.solids)
+                part = replace(part, solids=solids)
+            adjusted.append(part)
+        parts = tuple(adjusted)
     frame_keys = {"frame", "jamb_liner", "stop", "mullion", "sliding_stile"}
     leaf_keys = {"leaf", "sliding_panel", "bifold_leaf"}
     result = []

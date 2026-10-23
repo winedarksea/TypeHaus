@@ -52,7 +52,8 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
                 "Door" if opening.is_door else "Window", opening.type_ref or "RO",
                 f"{_eighths(opening.width_m)}\" × {_eighths(opening.height_m)}\"",
                 *((_frame_size_text(frame),) if kinds == "window" else ()),
-                *_energy_columns(spec, opening.is_door)))
+                *_energy_columns(spec, opening.is_door),
+                *((_doorway_text(opening),) if kinds == "door" else ())))
         # One header tuple for both kinds. A-601 used to stop at U-factor, on the reading
         # that SHGC/VT/tempered are window facts; a glazed door is *fenestration* under
         # R202 and carries all four on ``DoorType``, so the door supplier and the reviewer
@@ -62,7 +63,8 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
         headers: tuple[str, ...] = ("Mark", "Tag", "Kind", "Type",
                                     "Rough opening" if kinds == "window" else "Nominal footprint",
                                     *(("Modeled frame",) if kinds == "window" else ()),
-                                    "U-factor", "SHGC", "VT", "Operation", "Tempered")
+                                    "U-factor", "SHGC", "VT", "Operation", "Tempered",
+                                    *(("Doorway",) if kinds == "door" else ()))
         _add_table(fig, rows, headers, bbox=(0.04, 0.11, 0.92, 0.80))
 
 
@@ -190,3 +192,12 @@ def _room_side_material(ceiling) -> str:
     return ""
 
 
+
+
+def _doorway_text(opening):
+    assembly = opening.doorway
+    if assembly is None:
+        return "UNKNOWN"
+    identities = ", ".join(s.product_ref + " (" + s.purchase + ")"
+                           for s in assembly.selected_products)
+    return f"{assembly.status}: {identities or assembly.floor_treatment}"

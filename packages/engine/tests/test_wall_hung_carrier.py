@@ -149,7 +149,7 @@ def test_the_drain_point_is_derived_from_the_type_and_the_host_wall(catlin_plan,
 
     The type states its drain setback behind the bowl centre, measured off the frame's
     face — it cannot know the finish thickness in front of it. Projected onto
-    the host wall's axis, the drop lands centred in the 5 1/2" cavity, 1.135" further back,
+    the host wall's axis, the drop lands centred in the 5 1/2" cavity, 1.01" further back,
     which is where the deleted override used to say it was.
     """
     from typehaus.resolve.mep_sleeves import _expected_drain_point
@@ -167,7 +167,7 @@ def test_the_drain_point_is_derived_from_the_type_and_the_host_wall(catlin_plan,
                         if t.tag == fixture.type_ref)
     port = next(p for p in fixture_type.ports if p.service is Service.DRAIN)
     nominal = centre[1] - port.position[1].meters
-    assert abs(point[1] - nominal) / IN == pytest.approx(1.135, abs=0.01)
+    assert abs(point[1] - nominal) / IN == pytest.approx(1.01, abs=0.01)
 
 
 def test_a_floor_drained_wc_still_drops_under_its_own_footprint(catlin_model_ro):

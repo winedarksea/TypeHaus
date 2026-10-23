@@ -189,6 +189,9 @@ def room_finish_at(model: ResolvedModel, storey: str, point: tuple[float, float]
                 or _bbox_misses(point, axis_ring(room))):
             continue
         if axis_polygon(room).covers(probe):
+            for zone in room.finish_zones:
+                if len(zone.outline) >= 3 and Polygon(zone.outline).covers(probe):
+                    return room.tag, zone.material_ref, _finish_depth(model, zone.material_ref)
             return room.tag, room.floor_finish, _finish_depth(model, room.floor_finish)
     return None, None, 0.0
 

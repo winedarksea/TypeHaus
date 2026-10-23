@@ -201,7 +201,7 @@ def test_bench_orders_one_glued_front_and_two_single_board_trim_pieces(catlin_mo
     assert front["pieces"] == 1 and front["layup"] == "edge-glued panel"
     assert front["boards_per_piece"] == 2
     assert (front["finished_thickness_in"], front["finished_width_in"],
-            front["finished_length_in"]) == pytest.approx((.75, 14.75, 48.625))
+            front["finished_length_in"]) == pytest.approx((.75, 14.75, 48.875))
     assert "slotted fixings" in front["stock_note"]
     assert "do not glue to plywood supports" in front["stock_note"]
     trim = [row for row in rows if row is not front]

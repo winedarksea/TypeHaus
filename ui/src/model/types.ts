@@ -1,3 +1,4 @@
+import type { DoorwayAssembly } from "./doorway";
 // TypeScript mirror of the server's model.json contract (→ 20 §model.json,
 // server/model_json.py). All geometry is canonical SI meters; the UI is a pure view
 // over this document and never re-measures geometry (→ 21b: every number derives from
@@ -315,6 +316,7 @@ export interface WindowSeat {
 
 export interface Opening {
   cased_product?: CasedDoorSpec | null;
+  doorway?: DoorwayAssembly | null;
   window_seat?: WindowSeat | null;
   frame_material_ref?: string | null;
   leaf_material_ref?: string | null;

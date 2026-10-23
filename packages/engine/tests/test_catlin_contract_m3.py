@@ -242,8 +242,8 @@ def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_
             # the wall's `alignment` holds its studs on x=18'-0" exactly where the plain
             # assembly had them, so the run is unbroken.
             if w.storey == storey
-            and w.assembly in ("INT_2X6_BRG", "PLANT_INT_2X6_BRG_HUMID",
-                               "INT_2X6_BRG_RC")
+            and w.assembly in ("INT_2X6_BRG_HALF", "PLANT_INT_2X6_BRG_HUMID",
+                               "INT_2X6_BRG_RC_HALF")
             and abs(w.axis[0][0] - center_x) < 1e-6 and abs(w.axis[1][0] - center_x) < 1e-6
         ]
         assert segments, storey

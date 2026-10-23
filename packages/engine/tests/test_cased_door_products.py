@@ -121,12 +121,12 @@ def test_specialized_products_keep_their_geometry(product_fixture, update):
     assert resolve_cased_door(wall, opening, product) is None
 
 
-def test_raised_hatch_retains_a_sill(product_fixture):
+def test_raised_hatch_omits_unspecified_product_sill(product_fixture):
     wall, opening, product = product_fixture
     opening = replace(opening, sill_m=0.6)
     assert resolve_cased_door(wall, opening, product) is None
     parts = opening_parts(wall, opening, product.operation)
-    assert len(parts[0].solids) == 4
+    assert len(parts[0].solids) == 3
 
 
 def test_instance_finishes_inherit_independently_and_do_not_touch_casing(starter_model):

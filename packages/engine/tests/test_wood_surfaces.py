@@ -345,7 +345,7 @@ def test_suite_purchased_paneling_and_trim_are_separately_priced(bom):
 
     sheets = [r for r in bom["wood_surfaces"] if r["material"] == "mdf-panel-painted"]
     assert len(sheets) == 1
-    assert sheets[0]["net_area_sqft"] == pytest.approx(52.7, abs=0.1)
+    assert sheets[0]["net_area_sqft"] == pytest.approx(52.9, abs=0.1)
     assert sheets[0]["order_area_sqft"] == 59
     assert sheets[0]["board_feet"] is None
     rows = [r for r in bom["interior_trim"] if r["material"] == "poplar-batten-painted"]

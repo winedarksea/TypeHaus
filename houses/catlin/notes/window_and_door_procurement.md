@@ -368,3 +368,13 @@ Sources checked 2026-10-23:
    receive no nominal-RO credit. The seven narrow escape windows clear at 27½" ROs (§7).
 3. **R312.2 measures the sill from the storey datum**, not the finished floor
    (`fall_protection.py`), so a sill can pass at 24" while standing 22½" over an oak floor.
+
+## Sill, track and floor-transition submittals (2026-10-23)
+
+See [doorway_product_sections.md](doorway_product_sections.md) for the manufacturer
+sources, verified installation dimensions and supplier questions for Therma-Tru, Cascadia,
+Masonite and Clopay. Door-type `doorway` selections now retain these unresolved variants
+in model JSON and schedules. Their sections remain omitted with UNKNOWN findings until
+approved; a product-line name is insufficient. Factory sills/seals are included with the
+unit. Obtain the flooring manufacturer's matching trims before selecting a documented
+Schluter alternative; separately purchased transitions are counted once per installed cut.

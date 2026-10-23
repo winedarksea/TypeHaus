@@ -108,7 +108,7 @@ PLANT_ROOM_PLACEABLES = [
                   normal_gap=inch(0), rotation_offset=deg(0)))),
     Furniture(uid="PLNHANG0NW", tag="FURN-S-PLANT-HANG-NW",
               type_ref="FT-PLANT-ROOM-HANGING-VINE-12", room="RM-S-PLANT",
-              position=pt(inch(25.915), inch(96)),
+              position=pt(inch(25.79), inch(96)),
               mount=Mount(kind=MountKind.CEILING, drop=inch(47.165))),
     Furniture(uid="PLNHANG0NE", tag="FURN-S-PLANT-HANG-NE",
               type_ref="FT-PLANT-ROOM-HANGING-VINE-12", room="RM-S-PLANT",

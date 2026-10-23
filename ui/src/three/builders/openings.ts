@@ -9,8 +9,9 @@ import { categoryColor } from "../members";
 import { projectPointToScene, type PlanCenter } from "../planGeometry";
 import { NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import {
-  type AddBox, type LeafSet, buildConcealedFrame, buildLeverSet, concealedLeaf, finishFaces, handing,
+  GLAZED_LEAF_FRAME_WIDTH_M, type AddBox, type LeafSet, buildConcealedFrame, buildLeverSet, concealedLeaf, finishFaces, handing,
 } from "./doorProducts";
+import { buildDoorway } from "./doorway";
 import { buildCasedDoor } from "./casedDoors";
 import { registerSelectable } from "./registry";
 import { baseRefZ } from "./wallFrame";
@@ -140,6 +141,29 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     frameOffset = (outerEdge + innerEdge) / 2;
   }
   const addBox = (width: number, height: number, thickness: number, along: number, elevation: number, material: THREE.Material, normalOffset = 0) => {
+    const leafBottom = opening.doorway?.leaf_bottom_z_m;
+    if (leafBottom != null && (material === solidLeafMaterial || material === glassMaterial)
+      && elevation + height / 2 > leafBottom) {
+      const oldBottom = elevation - height / 2;
+      if (isTrimless && isGlazed && material === glassMaterial && faces) {
+        const originalBottom = concealedLeaf(faces, swingSign, opening.width_m, floorZ,
+          availableHeight, leafSet)[2];
+        const bottom = oldBottom + leafBottom - originalBottom;
+        const top = elevation + height / 2;
+        height = top - bottom; elevation = (top + bottom) / 2;
+      } else if (height > GLAZED_LEAF_FRAME_WIDTH_M) {
+        const top = elevation + height / 2;
+        height = top - leafBottom; elevation = (top + leafBottom) / 2;
+      } else if (oldBottom < floorZ + availableHeight / 2) {
+        elevation = leafBottom + height / 2;
+      }
+    }
+    const jambBottom = opening.doorway?.jamb_bottom_z_m;
+    if (jambBottom != null && material === frameMaterial && height > GLAZED_LEAF_FRAME_WIDTH_M
+      && elevation - height / 2 < jambBottom && elevation + height / 2 > jambBottom) {
+      const top = elevation + height / 2;
+      height = top - jambBottom; elevation = (top + jambBottom) / 2;
+    }
     const ref = material === frameMaterial ? opening.effective_frame_material_ref
       : material === solidLeafMaterial ? opening.effective_leaf_material_ref : undefined;
     const style = ref ? boardStyleFor(ref, materials) : null;
@@ -170,6 +194,10 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
   const addHardware: AddBox = (w, h, t, a, e, n) => addBox(w, h, t, a, e, hardwareMaterial, n);
   const glassMaterial = standardMaterial(0x8fb7c9, mode, { transparent: true, opacity: 0.48,
     roughness: 0.2, metalness: 0.05, depthWrite: false });
+  buildDoorway(opening, position, direction, center, parent, (ref, materialKey) =>
+    standardMaterial(new THREE.Color(materialColor(ref, palette, materials)), mode,
+      materialKey === "door_hardware" ? { metalness: 0.8, roughness: 0.35 }
+        : { metalness: 0, roughness: 0.45 }));
   const faces = finishFaces(wall);
   if (opening.cased_product) {
     const paintedFrame = opening.effective_frame_material_ref ? frameMaterial
@@ -194,7 +222,22 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
       (w, h, t, a, e, n) => addBox(w, h, t, a, e, material, n);
     buildConcealedFrame(faces, swingSign, opening.width_m, floorZ, availableHeight, {
       liner: withMaterial(linerMaterial), leaf: withMaterial(solidLeafMaterial),
-      stop: withMaterial(linerMaterial), shadow: withMaterial(shadowMaterial),
+      stop: (w, h, t, a, e, n) => {
+        const bottom = opening.doorway?.leaf_bottom_z_m;
+        const oldBottom = e - h / 2;
+        if (bottom != null && oldBottom < bottom && e + h / 2 > bottom) {
+          const top = e + h / 2; h = top - bottom; e = (top + bottom) / 2;
+        }
+        addBox(w, h, t, a, e, linerMaterial, n);
+      },
+      shadow: (w, h, t, a, e, n) => {
+        const bottom = opening.doorway?.leaf_bottom_z_m;
+        const oldBottom = e - h / 2;
+        if (bottom != null && oldBottom < bottom && e + h / 2 > bottom) {
+          const top = e + h / 2; h = top - bottom; e = (top + bottom) / 2;
+        }
+        addBox(w, h, t, a, e, shadowMaterial, n);
+      },
       glazing: isGlazed ? withMaterial(glassMaterial) : undefined,
     }, leafSet);
     const [leafW, , , flush, back] = concealedLeaf(faces, swingSign, opening.width_m, floorZ,
@@ -240,7 +283,9 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     addBox(frameWidth, availableHeight, frameDepth, -opening.width_m / 2 + frameWidth / 2, midElevation, frameMaterial, frameOffset);
     addBox(frameWidth, availableHeight, frameDepth, opening.width_m / 2 - frameWidth / 2, midElevation, frameMaterial, frameOffset);
     addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial, frameOffset);
-    addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + frameWidth / 2, frameMaterial, frameOffset);
+    if (opening.kind === "window") {
+      addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + frameWidth / 2, frameMaterial, frameOffset);
+    }
   }
   const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
   if (opening.kind === "door" && operation === "double_swing") {
@@ -264,13 +309,11 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     const stileWidth = Math.min(frameWidth / 2, clearWidth / 12);
     const panelWidth = Math.max(0.01, (clearWidth - stileWidth) / 2);
     const panelOffset = stileWidth / 2 + panelWidth / 2;
-    const trackHeight = Math.min(0.02, panelHeight);
     const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
     const panelMaterial = isGlazed ? glassMaterial : solidLeafMaterial;
     const panelThickness = isGlazed ? 0.015 : 0.045;
     addBox(stileWidth, panelHeight, depth, 0, panelElevation, frameMaterial);
-    addBox(clearWidth, trackHeight, depth, 0,
-      baseRefZ(wall) + opening.sill_m + frameWidth + trackHeight / 2, frameMaterial);
+
     addBox(panelWidth, panelHeight, panelThickness, -panelOffset, panelElevation, panelMaterial);
     addBox(panelWidth, panelHeight, panelThickness, panelOffset, panelElevation, panelMaterial);
   } else if (opening.kind === "door" && operation === "bifold") {

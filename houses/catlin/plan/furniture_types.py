@@ -58,7 +58,7 @@ STUDY_BUILT_IN_BOOKCASE = FurnitureType(
         west_filler_width=inch(2.625),
     ),
     wood_material_ref="oak-shelf-5q",
-    source="Catlin study fixed casework: front y=105 5/8 in.; x=272..368 3/4 in.; three 31 1/4 in. clear bays with 60/42/30 in. tops and 5/4/3 horizontal boards; 2 5/8 in. west filler closes to W-A-SN-WR.",
+    source="Catlin study fixed casework: front y=105 3/4 in.; x=272..368 3/4 in.; three 31 1/4 in. clear bays with 60/42/30 in. tops and 5/4/3 horizontal boards; 2 5/8 in. west filler closes to W-A-SN-WR.",
 )
 
 # 48" is the standard rod length for main-storey windows that use curtains — the widest RO

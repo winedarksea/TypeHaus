@@ -131,7 +131,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 19 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 6 | ea |  | building |
 | LTP4 lateral tie plate, gable-end truss to top plate | 2 | ea |  | building |
-| LTP4 lateral tie plate | 124 | ea |  | building |
+| LTP4 lateral tie plate | 122 | ea |  | building |
 | LTP4 lateral tie plate | 7 | ea |  | building |
 | LTP4Z lateral tie plate (ZMAX) | 7 | ea |  | building |
 | LUS face-mount joist hanger | 1 | ea |  | building |

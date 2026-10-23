@@ -1,4 +1,4 @@
-// Door products beyond the four-piece frame: the concealed (trimless) frame and lever sets.
+// Concealed (trimless) door jambs, glazed leaves and lever sets.
 // Mirrors resolve/geometry_door_products.py box for box — change both. Every box is laid out
 // in the wall frame: `along` from the opening centre, `normal` along the wall's LEFT normal.
 //
@@ -17,7 +17,7 @@ const SHADOW_STRIP_DEPTH_M = 0.006;
 const CONCEALED_UNDERCUT_M = 0.019;
 const CONCEALED_LEAF_THICKNESS_M = 0.045;
 const PUSH_SET_REBATE_M = 0.016;
-const GLAZED_LEAF_FRAME_WIDTH_M = 0.1016;
+export const GLAZED_LEAF_FRAME_WIDTH_M = 0.1016;
 const GLAZED_LEAF_PANE_THICKNESS_M = 0.015;
 
 // --- lever set (square rose, lever returning toward the hinge) ----------------------------

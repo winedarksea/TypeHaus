@@ -1,4 +1,4 @@
-"""Door products beyond the four-piece frame: the concealed (trimless) frame and lever sets.
+"""Concealed (trimless) door jambs, glazed leaves and lever sets.
 
 Split from ``geometry_openings.py``, which calls in here with its own ``box`` builder so every
 solid stays in the same wall frame: ``along`` the axis from the opening centre, ``normal``

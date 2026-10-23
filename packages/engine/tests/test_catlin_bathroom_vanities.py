@@ -356,7 +356,7 @@ def test_powder_basin_fixings_land_in_solid_north_face_blocking(catlin_model_ro)
     opposing_stud = next(m for m in wall.members if m.category == "stud"
                          and m.p0[0] / IN == pytest.approx(56))
     assert opposing_stud.p0[1] / IN + 1.75 < block.p0[1] / IN - 0.75
-    assert wall.assembly == "INT_2X6_STAGGERED_PLUMBING"
+    assert wall.assembly == "INT_2X6_STAGGERED_PLUMBING_HALF"
     # The service panel and bowl must stay centered on the same carrier.
     panel = _obj(model, "FURN-M-BATH1-AP")
     toilet = _obj(model, "FX-M-BATH1-WC")

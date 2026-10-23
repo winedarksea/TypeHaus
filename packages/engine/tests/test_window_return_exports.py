@@ -28,7 +28,7 @@ def test_catlin_returns_inherit_finishes_and_skip_other_liners(catlin_model_ro):
         layers = walls[reveal.wall_tag].layers
         assert tuple(l.material_ref for l in reveal.layers) == tuple(
             l.material_ref for l in layers[:2])
-        assert reveal.layers[1].thickness_m == pytest.approx(0.015875)
+        assert reveal.layers[1].thickness_m == pytest.approx(0.0127)
     assert sum(r.layers[0].material_ref == 'latex-paint-accent'
                for r in model.window_returns) == 1
     excluded = {o.tag for o in model.openings if o.kind == 'window'} - {

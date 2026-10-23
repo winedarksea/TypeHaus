@@ -1,0 +1,946 @@
+[
+  {
+    "name": "reverse-False-normal--1",
+    "wall": {
+      "axis": [
+        [
+          0,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ]
+    },
+    "opening": {
+      "uid": "door",
+      "tag": "D",
+      "host_wall": "W",
+      "type_ref": "DT",
+      "width_m": 0.9,
+      "height_m": 2.1,
+      "sill_m": 0,
+      "center_along_m": 2,
+      "kind": "door",
+      "is_door": true,
+      "swing_clearance": [],
+      "framing_bumper": [],
+      "arch_rise_m": 0.0,
+      "penetration_for": [],
+      "pocket_run_m": 0.0,
+      "pocket_sign": 0,
+      "frame_start_support_wall": null,
+      "frame_end_support_wall": null,
+      "depth_m": null,
+      "depth_from": "interior",
+      "flip_hinge": false,
+      "flip_swing": false,
+      "doorway": {
+        "rough_opening_z_m": 0,
+        "adjacent_floors": [
+          {
+            "deck_tag": "slab",
+            "deck_top_m": 0,
+            "room_tag": "R-",
+            "finish_ref": "tile",
+            "finish_in": 0.5
+          },
+          {
+            "deck_tag": "slab",
+            "deck_top_m": 0,
+            "room_tag": "R+",
+            "finish_ref": "plank",
+            "finish_in": 0.25
+          }
+        ],
+        "floor_treatment": "transition",
+        "joint_normal_m": 0.0,
+        "components": [
+          {
+            "specification": {
+              "product_ref": "TEST-REDUCER",
+              "variant": "synthetic reducer; not a purchased product",
+              "role": "transition",
+              "source_url": "https://example.test/section.pdf",
+              "source_drawing": "test drawing 1",
+              "installation": "tile high side +normal",
+              "parts": [
+                {
+                  "name": "ramp",
+                  "material_ref": "metal",
+                  "polygon_m": [
+                    [
+                      -0.02,
+                      0.0
+                    ],
+                    [
+                      0.02,
+                      0.0
+                    ],
+                    [
+                      0.02,
+                      0.00635
+                    ],
+                    [
+                      -0.02,
+                      0.001
+                    ]
+                  ]
+                }
+              ],
+              "verified": true,
+              "datum": "lower_floor",
+              "elevation_offset_m": 0.0,
+              "normal_offset_m": 0.0,
+              "positive_normal_sign": -1,
+              "minimum_floor_difference_m": 0.0,
+              "maximum_floor_difference_m": 0.02,
+              "compatible_finish_pairs": [
+                [
+                  "plank",
+                  "tile"
+                ]
+              ],
+              "expansion_gap_m": [
+                0.0,
+                0.0
+              ],
+              "purchase": "separate",
+              "span_m": null,
+              "along_offset_m": 0.0,
+              "leaf_clearance_m": 0.0,
+              "leaf_bottom_m": null,
+              "jamb_bottom_m": null,
+              "higher_floor_side": 1,
+              "floor_contact_heights_m": [
+                0,
+                0.00635
+              ],
+              "floor_finish_edges_m": [
+                -0.02,
+                0.02
+              ]
+            },
+            "base_z_m": 0.00635,
+            "normal_m": 0.0,
+            "span_m": 0.9,
+            "along_m": 0.0
+          }
+        ],
+        "unknown": [],
+        "conflicts": [],
+        "leaf_bottom_z_m": 0.022699999999999998,
+        "selected_products": [
+          {
+            "product_ref": "TEST-REDUCER",
+            "variant": "synthetic reducer; not a purchased product",
+            "role": "transition",
+            "source_url": "https://example.test/section.pdf",
+            "source_drawing": "test drawing 1",
+            "installation": "tile high side +normal",
+            "parts": [
+              {
+                "name": "ramp",
+                "material_ref": "metal",
+                "polygon_m": [
+                  [
+                    -0.02,
+                    0.0
+                  ],
+                  [
+                    0.02,
+                    0.0
+                  ],
+                  [
+                    0.02,
+                    0.00635
+                  ],
+                  [
+                    -0.02,
+                    0.001
+                  ]
+                ]
+              }
+            ],
+            "verified": true,
+            "datum": "lower_floor",
+            "elevation_offset_m": 0.0,
+            "normal_offset_m": 0.0,
+            "positive_normal_sign": -1,
+            "minimum_floor_difference_m": 0.0,
+            "maximum_floor_difference_m": 0.02,
+            "compatible_finish_pairs": [
+              [
+                "plank",
+                "tile"
+              ]
+            ],
+            "expansion_gap_m": [
+              0.0,
+              0.0
+            ],
+            "purchase": "separate",
+            "span_m": null,
+            "along_offset_m": 0.0,
+            "leaf_clearance_m": 0.0,
+            "leaf_bottom_m": null,
+            "jamb_bottom_m": null,
+            "higher_floor_side": 1,
+            "floor_contact_heights_m": [
+              0,
+              0.00635
+            ],
+            "floor_finish_edges_m": [
+              -0.02,
+              0.02
+            ]
+          }
+        ],
+        "jamb_bottom_z_m": 0.00635,
+        "status": "VERIFIED"
+      },
+      "cased_product": null,
+      "window_seat": null,
+      "frame_material_ref": null,
+      "leaf_material_ref": null,
+      "effective_frame_material_ref": null,
+      "effective_leaf_material_ref": null
+    },
+    "profile": [
+      [
+        1.55,
+        0.02,
+        0.00635
+      ],
+      [
+        1.55,
+        -0.02,
+        0.00635
+      ],
+      [
+        1.55,
+        -0.02,
+        0.0127
+      ],
+      [
+        1.55,
+        0.02,
+        0.00735
+      ]
+    ],
+    "extrude": [
+      0.9,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "name": "reverse-False-normal-1",
+    "wall": {
+      "axis": [
+        [
+          0,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ]
+    },
+    "opening": {
+      "uid": "door",
+      "tag": "D",
+      "host_wall": "W",
+      "type_ref": "DT",
+      "width_m": 0.9,
+      "height_m": 2.1,
+      "sill_m": 0,
+      "center_along_m": 2,
+      "kind": "door",
+      "is_door": true,
+      "swing_clearance": [],
+      "framing_bumper": [],
+      "arch_rise_m": 0.0,
+      "penetration_for": [],
+      "pocket_run_m": 0.0,
+      "pocket_sign": 0,
+      "frame_start_support_wall": null,
+      "frame_end_support_wall": null,
+      "depth_m": null,
+      "depth_from": "interior",
+      "flip_hinge": false,
+      "flip_swing": false,
+      "doorway": {
+        "rough_opening_z_m": 0,
+        "adjacent_floors": [
+          {
+            "deck_tag": "slab",
+            "deck_top_m": 0,
+            "room_tag": "R-",
+            "finish_ref": "plank",
+            "finish_in": 0.25
+          },
+          {
+            "deck_tag": "slab",
+            "deck_top_m": 0,
+            "room_tag": "R+",
+            "finish_ref": "tile",
+            "finish_in": 0.5
+          }
+        ],
+        "floor_treatment": "transition",
+        "joint_normal_m": 0.0,
+        "components": [
+          {
+            "specification": {
+              "product_ref": "TEST-REDUCER",
+              "variant": "synthetic reducer; not a purchased product",
+              "role": "transition",
+              "source_url": "https://example.test/section.pdf",
+              "source_drawing": "test drawing 1",
+              "installation": "tile high side +normal",
+              "parts": [
+                {
+                  "name": "ramp",
+                  "material_ref": "metal",
+                  "polygon_m": [
+                    [
+                      -0.02,
+                      0.0
+                    ],
+                    [
+                      0.02,
+                      0.0
+                    ],
+                    [
+                      0.02,
+                      0.00635
+                    ],
+                    [
+                      -0.02,
+                      0.001
+                    ]
+                  ]
+                }
+              ],
+              "verified": true,
+              "datum": "lower_floor",
+              "elevation_offset_m": 0.0,
+              "normal_offset_m": 0.0,
+              "positive_normal_sign": 1,
+              "minimum_floor_difference_m": 0.0,
+              "maximum_floor_difference_m": 0.02,
+              "compatible_finish_pairs": [
+                [
+                  "plank",
+                  "tile"
+                ]
+              ],
+              "expansion_gap_m": [
+                0.0,
+                0.0
+              ],
+              "purchase": "separate",
+              "span_m": null,
+              "along_offset_m": 0.0,
+              "leaf_clearance_m": 0.0,
+              "leaf_bottom_m": null,
+              "jamb_bottom_m": null,
+              "higher_floor_side": 1,
+              "floor_contact_heights_m": [
+                0,
+                0.00635
+              ],
+              "floor_finish_edges_m": [
+                -0.02,
+                0.02
+              ]
+            },
+            "base_z_m": 0.00635,
+            "normal_m": 0.0,
+            "span_m": 0.9,
+            "along_m": 0.0
+          }
+        ],
+        "unknown": [],
+        "conflicts": [],
+        "leaf_bottom_z_m": 0.022699999999999998,
+        "selected_products": [
+          {
+            "product_ref": "TEST-REDUCER",
+            "variant": "synthetic reducer; not a purchased product",
+            "role": "transition",
+            "source_url": "https://example.test/section.pdf",
+            "source_drawing": "test drawing 1",
+            "installation": "tile high side +normal",
+            "parts": [
+              {
+                "name": "ramp",
+                "material_ref": "metal",
+                "polygon_m": [
+                  [
+                    -0.02,
+                    0.0
+                  ],
+                  [
+                    0.02,
+                    0.0
+                  ],
+                  [
+                    0.02,
+                    0.00635
+                  ],
+                  [
+                    -0.02,
+                    0.001
+                  ]
+                ]
+              }
+            ],
+            "verified": true,
+            "datum": "lower_floor",
+            "elevation_offset_m": 0.0,
+            "normal_offset_m": 0.0,
+            "positive_normal_sign": 1,
+            "minimum_floor_difference_m": 0.0,
+            "maximum_floor_difference_m": 0.02,
+            "compatible_finish_pairs": [
+              [
+                "plank",
+                "tile"
+              ]
+            ],
+            "expansion_gap_m": [
+              0.0,
+              0.0
+            ],
+            "purchase": "separate",
+            "span_m": null,
+            "along_offset_m": 0.0,
+            "leaf_clearance_m": 0.0,
+            "leaf_bottom_m": null,
+            "jamb_bottom_m": null,
+            "higher_floor_side": 1,
+            "floor_contact_heights_m": [
+              0,
+              0.00635
+            ],
+            "floor_finish_edges_m": [
+              -0.02,
+              0.02
+            ]
+          }
+        ],
+        "jamb_bottom_z_m": 0.00635,
+        "status": "VERIFIED"
+      },
+      "cased_product": null,
+      "window_seat": null,
+      "frame_material_ref": null,
+      "leaf_material_ref": null,
+      "effective_frame_material_ref": null,
+      "effective_leaf_material_ref": null
+    },
+    "profile": [
+      [
+        1.55,
+        -0.02,
+        0.00635
+      ],
+      [
+        1.55,
+        0.02,
+        0.00635
+      ],
+      [
+        1.55,
+        0.02,
+        0.0127
+      ],
+      [
+        1.55,
+        -0.02,
+        0.00735
+      ]
+    ],
+    "extrude": [
+      0.9,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "name": "reverse-True-normal--1",
+    "wall": {
+      "axis": [
+        [
+          4,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    "opening": {
+      "uid": "door",
+      "tag": "D",
+      "host_wall": "W",
+      "type_ref": "DT",
+      "width_m": 0.9,
+      "height_m": 2.1,
+      "sill_m": 0,
+      "center_along_m": 2,
+      "kind": "door",
+      "is_door": true,
+      "swing_clearance": [],
+      "framing_bumper": [],
+      "arch_rise_m": 0.0,
+      "penetration_for": [],
+      "pocket_run_m": 0.0,
+      "pocket_sign": 0,
+      "frame_start_support_wall": null,
+      "frame_end_support_wall": null,
+      "depth_m": null,
+      "depth_from": "interior",
+      "flip_hinge": false,
+      "flip_swing": false,
+      "doorway": {
+        "rough_opening_z_m": 0,
+        "adjacent_floors": [
+          {
+            "deck_tag": "slab",
+            "deck_top_m": 0,
+            "room_tag": "R+",
+            "finish_ref": "tile",
+            "finish_in": 0.5
+          },
+          {
+            "deck_tag": "slab",
+            "deck_top_m": 0,
+            "room_tag": "R-",
+            "finish_ref": "plank",
+            "finish_in": 0.25
+          }
+        ],
+        "floor_treatment": "transition",
+        "joint_normal_m": 0.0,
+        "components": [
+          {
+            "specification": {
+              "product_ref": "TEST-REDUCER",
+              "variant": "synthetic reducer; not a purchased product",
+              "role": "transition",
+              "source_url": "https://example.test/section.pdf",
+              "source_drawing": "test drawing 1",
+              "installation": "tile high side +normal",
+              "parts": [
+                {
+                  "name": "ramp",
+                  "material_ref": "metal",
+                  "polygon_m": [
+                    [
+                      -0.02,
+                      0.0
+                    ],
+                    [
+                      0.02,
+                      0.0
+                    ],
+                    [
+                      0.02,
+                      0.00635
+                    ],
+                    [
+                      -0.02,
+                      0.001
+                    ]
+                  ]
+                }
+              ],
+              "verified": true,
+              "datum": "lower_floor",
+              "elevation_offset_m": 0.0,
+              "normal_offset_m": 0.0,
+              "positive_normal_sign": -1,
+              "minimum_floor_difference_m": 0.0,
+              "maximum_floor_difference_m": 0.02,
+              "compatible_finish_pairs": [
+                [
+                  "plank",
+                  "tile"
+                ]
+              ],
+              "expansion_gap_m": [
+                0.0,
+                0.0
+              ],
+              "purchase": "separate",
+              "span_m": null,
+              "along_offset_m": 0.0,
+              "leaf_clearance_m": 0.0,
+              "leaf_bottom_m": null,
+              "jamb_bottom_m": null,
+              "higher_floor_side": 1,
+              "floor_contact_heights_m": [
+                0,
+                0.00635
+              ],
+              "floor_finish_edges_m": [
+                -0.02,
+                0.02
+              ]
+            },
+            "base_z_m": 0.00635,
+            "normal_m": 0.0,
+            "span_m": 0.9,
+            "along_m": 0.0
+          }
+        ],
+        "unknown": [],
+        "conflicts": [],
+        "leaf_bottom_z_m": 0.022699999999999998,
+        "selected_products": [
+          {
+            "product_ref": "TEST-REDUCER",
+            "variant": "synthetic reducer; not a purchased product",
+            "role": "transition",
+            "source_url": "https://example.test/section.pdf",
+            "source_drawing": "test drawing 1",
+            "installation": "tile high side +normal",
+            "parts": [
+              {
+                "name": "ramp",
+                "material_ref": "metal",
+                "polygon_m": [
+                  [
+                    -0.02,
+                    0.0
+                  ],
+                  [
+                    0.02,
+                    0.0
+                  ],
+                  [
+                    0.02,
+                    0.00635
+                  ],
+                  [
+                    -0.02,
+                    0.001
+                  ]
+                ]
+              }
+            ],
+            "verified": true,
+            "datum": "lower_floor",
+            "elevation_offset_m": 0.0,
+            "normal_offset_m": 0.0,
+            "positive_normal_sign": -1,
+            "minimum_floor_difference_m": 0.0,
+            "maximum_floor_difference_m": 0.02,
+            "compatible_finish_pairs": [
+              [
+                "plank",
+                "tile"
+              ]
+            ],
+            "expansion_gap_m": [
+              0.0,
+              0.0
+            ],
+            "purchase": "separate",
+            "span_m": null,
+            "along_offset_m": 0.0,
+            "leaf_clearance_m": 0.0,
+            "leaf_bottom_m": null,
+            "jamb_bottom_m": null,
+            "higher_floor_side": 1,
+            "floor_contact_heights_m": [
+              0,
+              0.00635
+            ],
+            "floor_finish_edges_m": [
+              -0.02,
+              0.02
+            ]
+          }
+        ],
+        "jamb_bottom_z_m": 0.00635,
+        "status": "VERIFIED"
+      },
+      "cased_product": null,
+      "window_seat": null,
+      "frame_material_ref": null,
+      "leaf_material_ref": null,
+      "effective_frame_material_ref": null,
+      "effective_leaf_material_ref": null
+    },
+    "profile": [
+      [
+        2.45,
+        -0.02,
+        0.00635
+      ],
+      [
+        2.45,
+        0.02,
+        0.00635
+      ],
+      [
+        2.45,
+        0.02,
+        0.0127
+      ],
+      [
+        2.45,
+        -0.02,
+        0.00735
+      ]
+    ],
+    "extrude": [
+      -0.9,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "name": "reverse-True-normal-1",
+    "wall": {
+      "axis": [
+        [
+          4,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    "opening": {
+      "uid": "door",
+      "tag": "D",
+      "host_wall": "W",
+      "type_ref": "DT",
+      "width_m": 0.9,
+      "height_m": 2.1,
+      "sill_m": 0,
+      "center_along_m": 2,
+      "kind": "door",
+      "is_door": true,
+      "swing_clearance": [],
+      "framing_bumper": [],
+      "arch_rise_m": 0.0,
+      "penetration_for": [],
+      "pocket_run_m": 0.0,
+      "pocket_sign": 0,
+      "frame_start_support_wall": null,
+      "frame_end_support_wall": null,
+      "depth_m": null,
+      "depth_from": "interior",
+      "flip_hinge": false,
+      "flip_swing": false,
+      "doorway": {
+        "rough_opening_z_m": 0,
+        "adjacent_floors": [
+          {
+            "deck_tag": "slab",
+            "deck_top_m": 0,
+            "room_tag": "R+",
+            "finish_ref": "plank",
+            "finish_in": 0.25
+          },
+          {
+            "deck_tag": "slab",
+            "deck_top_m": 0,
+            "room_tag": "R-",
+            "finish_ref": "tile",
+            "finish_in": 0.5
+          }
+        ],
+        "floor_treatment": "transition",
+        "joint_normal_m": 0.0,
+        "components": [
+          {
+            "specification": {
+              "product_ref": "TEST-REDUCER",
+              "variant": "synthetic reducer; not a purchased product",
+              "role": "transition",
+              "source_url": "https://example.test/section.pdf",
+              "source_drawing": "test drawing 1",
+              "installation": "tile high side +normal",
+              "parts": [
+                {
+                  "name": "ramp",
+                  "material_ref": "metal",
+                  "polygon_m": [
+                    [
+                      -0.02,
+                      0.0
+                    ],
+                    [
+                      0.02,
+                      0.0
+                    ],
+                    [
+                      0.02,
+                      0.00635
+                    ],
+                    [
+                      -0.02,
+                      0.001
+                    ]
+                  ]
+                }
+              ],
+              "verified": true,
+              "datum": "lower_floor",
+              "elevation_offset_m": 0.0,
+              "normal_offset_m": 0.0,
+              "positive_normal_sign": 1,
+              "minimum_floor_difference_m": 0.0,
+              "maximum_floor_difference_m": 0.02,
+              "compatible_finish_pairs": [
+                [
+                  "plank",
+                  "tile"
+                ]
+              ],
+              "expansion_gap_m": [
+                0.0,
+                0.0
+              ],
+              "purchase": "separate",
+              "span_m": null,
+              "along_offset_m": 0.0,
+              "leaf_clearance_m": 0.0,
+              "leaf_bottom_m": null,
+              "jamb_bottom_m": null,
+              "higher_floor_side": 1,
+              "floor_contact_heights_m": [
+                0,
+                0.00635
+              ],
+              "floor_finish_edges_m": [
+                -0.02,
+                0.02
+              ]
+            },
+            "base_z_m": 0.00635,
+            "normal_m": 0.0,
+            "span_m": 0.9,
+            "along_m": 0.0
+          }
+        ],
+        "unknown": [],
+        "conflicts": [],
+        "leaf_bottom_z_m": 0.022699999999999998,
+        "selected_products": [
+          {
+            "product_ref": "TEST-REDUCER",
+            "variant": "synthetic reducer; not a purchased product",
+            "role": "transition",
+            "source_url": "https://example.test/section.pdf",
+            "source_drawing": "test drawing 1",
+            "installation": "tile high side +normal",
+            "parts": [
+              {
+                "name": "ramp",
+                "material_ref": "metal",
+                "polygon_m": [
+                  [
+                    -0.02,
+                    0.0
+                  ],
+                  [
+                    0.02,
+                    0.0
+                  ],
+                  [
+                    0.02,
+                    0.00635
+                  ],
+                  [
+                    -0.02,
+                    0.001
+                  ]
+                ]
+              }
+            ],
+            "verified": true,
+            "datum": "lower_floor",
+            "elevation_offset_m": 0.0,
+            "normal_offset_m": 0.0,
+            "positive_normal_sign": 1,
+            "minimum_floor_difference_m": 0.0,
+            "maximum_floor_difference_m": 0.02,
+            "compatible_finish_pairs": [
+              [
+                "plank",
+                "tile"
+              ]
+            ],
+            "expansion_gap_m": [
+              0.0,
+              0.0
+            ],
+            "purchase": "separate",
+            "span_m": null,
+            "along_offset_m": 0.0,
+            "leaf_clearance_m": 0.0,
+            "leaf_bottom_m": null,
+            "jamb_bottom_m": null,
+            "higher_floor_side": 1,
+            "floor_contact_heights_m": [
+              0,
+              0.00635
+            ],
+            "floor_finish_edges_m": [
+              -0.02,
+              0.02
+            ]
+          }
+        ],
+        "jamb_bottom_z_m": 0.00635,
+        "status": "VERIFIED"
+      },
+      "cased_product": null,
+      "window_seat": null,
+      "frame_material_ref": null,
+      "leaf_material_ref": null,
+      "effective_frame_material_ref": null,
+      "effective_leaf_material_ref": null
+    },
+    "profile": [
+      [
+        2.45,
+        0.02,
+        0.00635
+      ],
+      [
+        2.45,
+        -0.02,
+        0.00635
+      ],
+      [
+        2.45,
+        -0.02,
+        0.0127
+      ],
+      [
+        2.45,
+        0.02,
+        0.00735
+      ]
+    ],
+    "extrude": [
+      -0.9,
+      0.0,
+      0.0
+    ]
+  }
+]

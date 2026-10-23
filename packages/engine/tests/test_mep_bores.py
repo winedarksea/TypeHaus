@@ -111,7 +111,7 @@ def test_the_staggered_wall_is_counted_stud_by_stud(catlin_model_ro) -> None:
     wall uses the actual stud positions, never "the wall is empty".
     """
     wall = next(w for w in catlin_model_ro.walls if w.tag == "W-S-SN3")
-    assert wall.assembly == "INT_2X6_STAGGERED_PLUMBING"
+    assert wall.assembly == "INT_2X6_STAGGERED_PLUMBING_HALF"
     counts = {}
     for y in (268.0, 270.0, 266.0):
         cuts = leg_crossings(wall, (120.0 * IN, y * IN), (210.0 * IN, y * IN),

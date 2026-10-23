@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Literal
 
 from typehaus.model.base import Element
+from typehaus.model.doorway import DoorwayTreatment
 from typehaus.model.enums import StructuralRole
 from typehaus.model.opening_supports import OpeningFrameEndSupports
 from typehaus.model.refs import (
@@ -118,11 +119,12 @@ class Wall(Element):
 class Door(Element):
     """A door opening hosted on a wall (→ 10 §Element model)."""
 
+    doorway: DoorwayTreatment | None = None
     host: str
     type_ref: str
     position: OpeningPosition
     frame_end_supports: OpeningFrameEndSupports | None = None
-    sill_height: Length | None = None  # exterior threshold override
+    sill_height: Length | None = None  # authored rough-opening elevation, not product height
     arch: Arch | None = None
     flip_hinge: bool = False
     flip_swing: bool = False

@@ -793,19 +793,20 @@ FLOOR_OPENINGS = [
                  outline=(pt(inch(105.75), inch(416)), pt(inch(119), inch(416)),
                           pt(inch(119), inch(432)), pt(inch(105.75), inch(432))),
                  penetration_for=("VR-M-STACK-radon",)),
+    # North edge on W-A-SN's study face, 8'-9 3/4" since the 1/2" board (2026-10-23).
     FloorOpening(uid="CAF601AAAA", tag="FO-A-STAIR",
                  outline=(pt(inch(256.375), inch(69.625)),
                           pt(ft(35, 5.375), inch(69.625)),
-                          pt(ft(35, 5.375), ft(8, 9.625)),
-                          pt(inch(256.375), ft(8, 9.625))),
+                          pt(ft(35, 5.375), ft(8, 9.75)),
+                          pt(inch(256.375), ft(8, 9.75))),
                  bearing_refs=("W-S-E1",)),
     FloorOpeningPocketClosure(
         uid="P8A4POCK01", tag="PC-A-STAIR-BOOKCASE", opening_ref="FO-A-STAIR",
         edge_interval=FloorOpeningEdgeInterval(edge="north", start=inch(12.25), end=inch(112.375)),
         wall_refs=("W-A-SN-WR", "W-A-SN-REAR", "W-A-SN-ER"),
         pocket_outline=(
-            pt(ft(22, 4.625), ft(8, 9.625)),
-            pt(ft(30, 8.75), ft(8, 9.625)),
+            pt(ft(22, 4.625), ft(8, 9.75)),
+            pt(ft(30, 8.75), ft(8, 9.75)),
             pt(ft(30, 8.75), ft(9, 8.25)),
             pt(ft(22, 4.625), ft(9, 8.25)),
         ),
@@ -1017,7 +1018,7 @@ STAIRS = [
           # them the box corners post down onto bare I-joist deck, which
           # `structural.landing_post_bearing` correctly refuses.
           bearing_refs=("W-S-E1", "W-S-SS2"),
-          start=pt(ft(35, 5.375), inch(57.375)),
+          start=pt(ft(35, 5.375), inch(57.5)),
           # The straight flight runs 10'-0", past sawn 2x12's 6'-0" (DCA 6), so it is carried
           # on three 1 3/4" LSL stringers read off the maker's table
           # (notes/stair_stringer_basis.md).

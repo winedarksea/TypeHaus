@@ -328,6 +328,7 @@ the future.
 - PR-B-HW-BATH2-RUN looks like it is going to the wrong spot on the vanity, it is out in the open.
 - There is an LTP4 connector CN~LTP4~W-M-C1~48 in the middle of door D-M-BED2? Looks like the LTP4 auto generator doesn't consider doors.
 - Door thresholds could probably use some better modeling, right now all we get is standard sill plates of the regular wall.
+- Sink FX-M-BATH1-LAV has a sink that was made smaller to improve accessibility. Now, however, it seems a bit too small now, and could use a selected product and better 3d model.
 
 # Project Management
 
@@ -349,3 +350,7 @@ Still deferred, and each for its own reason:
 Firstly design a house (with permit checks, building science review, floorplan editing in the 2d UI, 3d review, cost reduction and BOM review).
 Secondly gather bids, organize the timeline (inspection gates, etc), then track completed progress.
 Thirdly use the house design as a reference (ie for agents understanding live data on home assistant in context), potentially with feedback loop of updating the design or later running a remodel
+
+- Door thresholds / floor transitions (2026-10-23): added immutable product-section and doorway assembly contracts, type defaults and opening overrides, local walking-surface/finish-zone resolution, continuous-floor and reducer footprints/gaps in shared finish areas, sourced sweeps across viewer/glTF/IFC, UNKNOWN/conflict findings, schedules and separate/included procurement semantics. Generic door bottom frames and assumed slider tracks omitted; obstructing sole plates cut only after floor/support resolution, with raised sills and structural support retained. Supplier sections remain UNKNOWN for Catlin's Therma-Tru/Cascadia/Masonite/Clopay variants and interior trim SKUs; source register and questions: `houses/catlin/notes/doorway_product_sections.md`.
+
+- Doorway validation: standard gate 9,191 passed / 68 pre-existing failures / 32 skipped; isolated baseline comparison found no new failure identities. Starter checks (316), Catlin strict check (zero FAIL), focused engine regressions and UI checks pass. Native IFC/glTF and reviewed sections: `out/doorway-review/`; supplier sections and trim SKUs remain the open items in `houses/catlin/notes/doorway_product_sections.md`.

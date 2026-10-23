@@ -50,10 +50,10 @@ from typehaus.hardware.catalog import (
     ROLE_LATERAL_TIE_PLATE,
     hardware_for_role,
 )
-from typehaus.hardware.config import FT_TO_M, GableEndTieRules, UpliftTieRules
+from typehaus.hardware.config import GableEndTieRules, UpliftTieRules
 from typehaus.joints.bearing import bearing_connections, continuous_bearing_members
 from typehaus.joints.gable import gable_end_ties
-from typehaus.joints.sills import tie_plate_walls
+from typehaus.joints.sills import tie_plate_stations, tie_plate_walls
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_row import hardware_row
 from typehaus.takeoff.uplift_joints import (
@@ -168,14 +168,14 @@ def lateral_tie_plate_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     walls are exactly the upper halves of the resolved stack edges, so the rule follows the
     model's own account of what stands on what.
     """
-    pitch_m = rules.tie_plate_pitch_ft * FT_TO_M
-    by_storey: Counter = Counter()
+    stations = tie_plate_stations(model, rules)
+    by_storey = Counter(station.storey for station in stations)
+    if not stations:
+        return []
     total_length_m, walls = 0.0, 0
     for wall in tie_plate_walls(model):
         (x0, y0), (x1, y1) = wall.axis
         length_m = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
-        by_storey[wall.storey] += max(rules.minimum_tie_plates_per_wall,
-                                      int(length_m / pitch_m) + 1)
         total_length_m += length_m
         walls += 1
     if not walls:
@@ -184,8 +184,9 @@ def lateral_tie_plate_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     return [hardware_row(
         item, scope="wall on floor band", count=int(sum(by_storey.values())),
         by_storey=dict(sorted(by_storey.items())), length_ft=total_length_m * _M_TO_FT,
-        basis=(f"{rules.tie_plate_pitch_ft:g} ft o.c. (min "
-               f"{rules.minimum_tie_plates_per_wall} per wall) along the bottom plate of "
+        basis=(f"{rules.tie_plate_pitch_ft:g} ft o.c. (nominal min "
+               f"{rules.minimum_tie_plates_per_wall} per wall, opening conflicts excluded) "
+               f"along the bottom plate of "
                f"{walls} framed walls standing on a framed floor band (a wall on concrete "
                f"is a sill and is anchored by its mudsill anchors instead), "
                f"{total_length_m * _M_TO_FT:.1f} LF"))]

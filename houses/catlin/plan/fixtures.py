@@ -82,7 +82,7 @@ BASEMENT_FIXTURES = (
     # `drain_position` puts the trap 6" off the south wall face under the basin's back,
     # over SP-B-BATH-LAV.
     Fixture(uid="5BBZTZNBWN", tag="FX-B-BATH-LAV", type_ref="FX-VANITY-36-SHALLOW",
-            room="RM-B-BATH", position=pt(ft(12), inch(227.375)), rotation=deg(180),
+            room="RM-B-BATH", position=pt(ft(12), inch(227.25)), rotation=deg(180),
             wall_ref="W-B-STR2", drain_position=pt(ft(12), inch(224.375))),
 )
 
@@ -149,7 +149,7 @@ MAIN_FIXTURES = (
     # y=14'-8 3/8" the riser stands on joist 11's top flange (174 3/4"..177 1/4"). y=14'-11" is
     # the nearest bay point that clears the flange by 1/2" for a 2" pipe. PR-B-SH2-DRAIN.
     Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36-THERMO-COMBO", room="RM-M-BATH2",
-            position=pt(ft(6, 4.615), ft(14, 8.375)), rotation=deg(-90), wall_ref="W-M-BA2E",
+            position=pt(ft(6, 4.615), ft(14, 8.25)), rotation=deg(-90), wall_ref="W-M-BA2E",
             drain_position=pt(ft(6, 4.615), ft(14, 11))),
     # ** THE KOHLER K-1130-W1-0 UNDERSCORE, A DROP-IN (2026-10-22; K-5713-W1 before). ** No
     # skirt: it drops through SL-M-TUBDK onto a 1"-2" mortar bed on the subfloor, and the rim
@@ -236,7 +236,7 @@ MAIN_FIXTURES = (
     # drain sits at y=15'-2 3/8", the cabinet centre, as the bowl does. PR-B-SINK2-DRAIN's
     # first two points follow it (plan/mep_drainage.py); its tie-in is unchanged.
     Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-VANITY-48-SEKTION",
-            room="RM-M-BATH2", position=pt(inch(15.635), inch(182.375)), rotation=deg(90),
+            room="RM-M-BATH2", position=pt(inch(15.51), inch(182.25)), rotation=deg(90),
             wall_ref="W-M-W3",
             drain_position=pt(ft(1), ft(15, 2.375))),
     # --- RM-M-LAUNDRY -------------------------------------------------------------------
@@ -320,7 +320,7 @@ SECOND_FIXTURES = (
     # The east-hinged door stops at y=348", 8.5" before the cabinet; its open leaf no
     # longer splits the entry. The mirror and full-width shelf follow this smaller base.
     Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-VANITY-36-SINGLE",
-            room="RM-S-BATH1", position=pt(inch(106.12), inch(374.5)), rotation=deg(-90),
+            room="RM-S-BATH1", position=pt(inch(106.245), inch(374.5)), rotation=deg(-90),
             wall_ref="W-S-BA-E1B"),
     # ** `drain_position` IS THE WASTE-AND-OVERFLOW AT THE WEST END, NOT THE WET WALL. **
     # The derived convention projects a hot-served fixture onto `wall_ref`'s axis, which for
@@ -378,7 +378,7 @@ SECOND_FIXTURES = (
     # NEC 210.52(D)'s receptacle is `ED-S-SUITEBATH-RC1` (plan/electrical.py) at x=148",
     # 2 1/2" west of the cabinet's outside edge and far inside the 36" limit.
     Fixture(uid="CSQ805AAAA", tag="FX-S-SUITEBATH-LAV", type_ref="FX-VANITY-30-SINGLE",
-            room="RM-S-SUITEBATH", position=pt(inch(165.5), inch(254.13)),
+            room="RM-S-SUITEBATH", position=pt(inch(165.5), inch(254.255)),
             wall_ref="W-S-SN3"),
     # Suite bath takes a tub-shower (not the old 36" pan): room's clear face is
     # 9'-8 1/8" x ~6'-4", and the east wall has 5'-0" of run for a 60"x30" alcove. Rotated
@@ -442,10 +442,10 @@ SECOND_FIXTURES = (
     # there is no slack to absorb a shift. (This note used to read "THIS ROOM HAS NO
     # RECEPTACLE"; it was stale, and so was the plans/TODO.md item it pointed at.)
     Fixture(uid="CSQ807AAAA", tag="FX-S-VANITY-LAV1", type_ref="FX-VANITY-30-SHALLOW",
-            room="RM-S-VANITY", position=pt(inch(22.375), inch(307.12)),
+            room="RM-S-VANITY", position=pt(inch(22.375), inch(307.245)),
             wall_ref="W-S-BD-N"),
     Fixture(uid="CSQ808AAAA", tag="FX-S-VANITY-LAV2", type_ref="FX-VANITY-30-SHALLOW",
-            room="RM-S-VANITY", position=pt(inch(52.375), inch(307.12)),
+            room="RM-S-VANITY", position=pt(inch(52.375), inch(307.245)),
             wall_ref="W-S-BD-N"),
 )
 

@@ -21,6 +21,7 @@ from typehaus.emit.trade_rules import (
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.spatial import Stair
 from typehaus.resolve.assembly_material import solid_material_ref
+from typehaus.resolve.doorway import doorway_json
 from typehaus.resolve.geometry_build import wall_trades
 from typehaus.resolve.geometry_countertops import countertop_prisms
 from typehaus.resolve.geometry_millwork import (
@@ -164,6 +165,7 @@ def wall_graph_json(
              "center_along_m": o.center_along_m, "arch_rise_m": o.arch_rise_m,
              "cut_layers": _cut_layers(model, o),
              "cased_product": asdict(o.cased_product) if o.cased_product else None,
+             "doorway": doorway_json(o.doorway),
              "window_seat": asdict(o.window_seat) if o.window_seat else None,
              "frame_material_ref": o.frame_material_ref,
              "leaf_material_ref": o.leaf_material_ref,

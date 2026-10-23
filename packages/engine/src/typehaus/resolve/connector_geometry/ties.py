@@ -10,6 +10,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from typehaus.hardware.connector_dimensions import LATERAL_TIE_PLATE_DIMENSIONS
 from typehaus.resolve.connector_geometry.mesh import (
     box_mesh,
     combine_meshes,
@@ -128,8 +129,8 @@ class TieSilhouetteConfig:
 
 SILHOUETTE = TieSilhouetteConfig()
 STUD_TIES = {"SP4": (3.5625, 7.25), "SP6": (5.5625, 7.75)}
-LATERAL_PLATE_WIDTH_IN = 3.0
-LATERAL_PLATE_HEIGHT_IN = 4.25
+LATERAL_PLATE_WIDTH_IN = LATERAL_TIE_PLATE_DIMENSIONS.width_in
+LATERAL_PLATE_HEIGHT_IN = LATERAL_TIE_PLATE_DIMENSIONS.height_in
 
 
 def _xz_leaf(profile_in: tuple[tuple[float, float], ...], thickness_in: float,

@@ -9,6 +9,7 @@ from pydantic import model_validator
 
 from typehaus.model.base import HausModel
 from typehaus.model.built_in_bench import BENCH_ENVELOPE_TOLERANCE_M, BuiltInBenchSpec
+from typehaus.model.doorway import DoorwayTreatment
 from typehaus.model.enums import (
     DoorOperation,
     LuminaireForm,
@@ -68,6 +69,7 @@ class BookcaseDoorSpec(HausModel):
 class DoorType(HausModel):
     """A door product type. Drives schedules, energy checks, and opening appearance."""
 
+    doorway: DoorwayTreatment | None = None
     tag: str
     width: Length
     height: Length
