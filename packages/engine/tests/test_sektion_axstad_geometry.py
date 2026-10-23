@@ -108,3 +108,17 @@ def test_corner_leaf_orientations_and_single_bifold_knob():
     face = next(p for p in diagonal if p["shape"] == "mesh" and p["color"] == "appliance-white")
     assert face["size"][0] == pytest.approx(face["size"][1])
     assert all(math.isfinite(v) for p in diagonal for v in (*p["center"], *p["size"]))
+
+
+def test_aligned_tall_fronts_share_the_cold_upper_band():
+    parts = model_parts(PREFIX + "tall-aligned", 18 * INCH, 24 * INCH, 93.5 * INCH)
+    fronts = [p for p in parts if p["color"] == "appliance-white" and p["shape"] == "mesh"]
+    assert [p["size"][2] / INCH for p in fronts] == pytest.approx([29.875, 39.875, 19.875])
+    assert [p["center"][2] / INCH for p in fronts] == pytest.approx([18.5, 53.5, 83.5])
+    cold_parts = model_parts(PREFIX + "wall", 30 * INCH, 24 * INCH, 20 * INCH)
+    cold_fronts = [
+        p for p in cold_parts if p["color"] == "appliance-white" and p["shape"] == "mesh"
+    ]
+    assert _bounds([fronts[-1]], 2) == pytest.approx(
+        tuple(value + 73.5 * INCH for value in _bounds(cold_fronts, 2))
+    )

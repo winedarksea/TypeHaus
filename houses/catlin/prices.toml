@@ -2577,7 +2577,6 @@
 # keep their full-depth front alignment with the high cabinets and refrigerator pair.
 # Material includes paint-grade carcass and doors; the mixer garage carries extra labour
 # for its pullout and two interior receptacles.
-"FT-KIT-DEEP18-20" = { material = { low = 210, high = 530 }, labour = { low = 150, high = 370 } }  # 1 ea
 "FT-KIT-DEEP24-40" = { material = { low = 420, high = 1050 }, labour = { low = 220, high = 540 } }  # 1 ea
 # Stock installations include doors, shelves, anchoring and the detailed support fit-out.
 "SEKT-W12-30" = { material = { low = 200, high = 320 }, labour = { low = 90, high = 220 } }
@@ -2585,20 +2584,22 @@
 "FT-KIT-STOCK24-30-HUNG" = { material = { low = 300, high = 520 }, labour = { low = 160, high = 360 } }
 
 #
-# High frames. The current 80" carcasses cost less material than the old 90" entries;
-# setting either remains a two-person lift.
+# High frames; setting either height remains a two-person lift.
+# West pantry: 90-inch frame, 30/40/20 AXSTAD fronts and hardware; budget, not a quote.
 "SEKT-HIGH24-90" = { material = { low = 190, high = 520 }, labour = { low = 120, high = 300 } }  # 0 ea
 "SEKT-HIGH24-80" = { material = { low = 170, high = 465 }, labour = { low = 120, high = 300 } }  # 2 ea
-"SEKT-HIGH18-80" = { material = { low = 145, high = 400 }, labour = { low = 120, high = 300 } }  # 1 ea
+"SEKT-HIGH18-90" = { material = { low = 360, high = 600 }, labour = { low = 120, high = 300 } }  # 1 ea
 # East pantry tops: stock 904.997.35 frames with AXSTAD fronts, hinges and rail.
 "SEKT-TS24-15" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
 # West cold-run: stock 402.655.12, two AXSTAD 15x20 fronts, UTRUSTA hinges and rail.
 # Prior VOXTORP configuration 494.549.71 was $384 (2026-10-05); retained as the
 # allowance basis, not represented as an AXSTAD SKU or current AXSTAD quote.
+# Scribes are separate geometry but their material and fitting are included below.
+"FT-KIT-COLD-SCRIBE-20" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 # Includes one site-cut 2 7/8 x 20 end scribe per cabinet and fitting; no custom carcasses.
 "SEKT-TS30-20" = { material = { low = 350, high = 520 }, labour = { low = 90, high = 220 } }  # 2 ea
 # The rest of the SEKTION ladder (SEKT-B12/B18, the 12"/18"/36" wall frames,
-# SEKT-HIGH18-90, SEKT-HIGH30-90, SEKT-TS30-15) has no instance in this house and no row
+# SEKT-HIGH30-90, SEKT-TS30-15) has no instance in this house and no row
 # here. Add one when a box is added; an unpriced type is silently DROPPED from the takeoff
 # and the total falls, which looks like a cheaper kitchen and is not one.
 "ED-T-AP-CEILING" = { material = { low = 100, high = 350 }, labour = { low = 90, high = 200 } }  # 1 ea

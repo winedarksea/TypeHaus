@@ -48,6 +48,28 @@ def test_stock_north_modules_close_without_a_filler(catlin_plan, kitchen_objects
     assert (_bounds(upper)[0], _bounds(upper)[2]) == pytest.approx((297.375, 333.375))
 
 
+def test_west_pantry_and_scribes_align_with_cold_uppers(catlin_plan, kitchen_objects):
+    pantry = kitchen_objects["FURN-M-KIT-PANTRYC"]
+    freezer = kitchen_objects["FURN-M-KIT-OVER-FREEZER"]
+    refrigerator = kitchen_objects["FURN-M-KIT-OVER-FRIDGE"]
+    types = {item.tag: item for item in catlin_plan.library.furniture_types}
+    assert pantry.type_ref == "SEKT-HIGH18-90"
+    assert pantry.body_z1_m == pytest.approx(freezer.body_z1_m)
+    assert "FURN-M-KIT-PANTRYC-ST" not in kitchen_objects
+    assert types[pantry.type_ref].height.inches == pytest.approx(93.5)
+    for tag, south, north in (
+        ("FURN-M-KIT-COLD-SCRIBE-S", _bounds(pantry)[3], _bounds(freezer)[1]),
+        ("FURN-M-KIT-COLD-SCRIBE-N", _bounds(refrigerator)[3], 394.625),
+    ):
+        scribe = kitchen_objects[tag]
+        assert (_bounds(scribe)[1], _bounds(scribe)[3]) == pytest.approx((south, north))
+        assert (_bounds(scribe)[0], _bounds(scribe)[2]) == pytest.approx(
+            (_bounds(freezer)[2], _bounds(freezer)[2] + 0.75)
+        )
+        assert scribe.body_z0_m == pytest.approx(freezer.body_z0_m)
+        assert scribe.body_z1_m == pytest.approx(freezer.body_z1_m)
+
+
 def test_stock_cold_uppers_preserve_hinge_clearance_and_appliance_joint(
     catlin_plan, kitchen_objects
 ):
@@ -405,6 +427,7 @@ def cabinet_ifc(catlin_ifc_path):
 @pytest.mark.parametrize("tag", [
     "FURN-M-KIT-E1", "FURN-M-KIT-SINKBASE", "FURN-M-KIT-PEN-B24-W",
     "FURN-M-KIT-WN1", "FURN-M-KIT-CORNER-NE", "FURN-M-KIT-OVER-FRIDGE",
+    "FURN-M-KIT-PANTRYC", "FURN-M-KIT-COLD-SCRIBE-S",
     "FURN-M-LIV-E-B24", "FURN-M-BED-DESK-CAB-S", "FURN-S-STUDY-NOOK-SEAT-W",
     "FX-M-BATH2-SINK",
 ])

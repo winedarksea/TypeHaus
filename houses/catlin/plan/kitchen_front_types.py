@@ -4,6 +4,8 @@ The same B24 frame is drawers in the peninsula and doors in the living room. Kee
 specifications distinct without changing installation dimensions or the shared catalog.
 """
 
+from typehaus import inch
+
 from typehaus.library.placeables.sektion import SEKTION_CASEWORK_TYPES
 
 PREFIX = "sektion-axstad-kitchen-"
@@ -25,7 +27,9 @@ def _kitchen_symbol(cabinet):
 
 KITCHEN_SEKTION_TYPES = tuple(
     cabinet.model_copy(update={
-        "plan_symbol": _kitchen_symbol(cabinet),
+        "plan_symbol": (PREFIX + "tall-aligned" if cabinet.tag == "SEKT-HIGH18-90"
+                        else _kitchen_symbol(cabinet)),
+        **({"height": inch(93.5)} if cabinet.tag == "SEKT-HIGH18-90" else {}),
         "source": (cabinet.source or "") + " Catlin: AXSTAD matte white fronts; BAGGANÄS "
                   "black knobs on doors, 5 5/8-inch pulls with washers on drawers. "
                   "Nominal frame/rail envelope; 3/4-inch fronts and hardware project beyond it.",

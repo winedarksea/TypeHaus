@@ -1,6 +1,6 @@
 # Kitchen stock-frame installation details
 
-Revision 2026-10-05. Coordinates are inches in the house plan; elevations are above
+Revision 2026-10-23. Coordinates are inches in the house plan; elevations are above
 finished floor. Cabinet widths follow stock modules. These details govern the revised north
 and east runs and the west cold-storage uppers.
 
@@ -234,8 +234,9 @@ The ganged cabinets retain their joint on the appliance joint at y=361 3/4. The 
 bay is y=328 7/8–394 5/8, 65 3/4 wide. Two 30-wide frames leave a 2 7/8-wide,
 20-high site-cut scribe at each outer end, against PANTRYC south and the pantry partition
 north. Price these finish strips with the stock cabinets. Keep the space above open;
-there is no stacker or 10-inch top filler. Cabinet tops sit 10 below the west pantry
-top and about 13 1/16 below the finished ceiling.
+there is no stacker or 10-inch top filler. Cabinet tops align with the revised west pantry at 93 1/2 and sit about
+13 1/16 below the finished ceiling. Both end scribes are explicitly modeled as
+3/4-inch front strips; their cost remains included in the upper cabinet allowances.
 
 The 73 1/2 bottom preserves the one-inch clearance above the Frigidaire pair's
 72 1/2 hinge envelope. Confirm appliance leveling and actual hinge clearance at installation.
@@ -283,3 +284,26 @@ not an AXSTAD order code. Desk, nook and vanity keep their own existing specific
 
 Shared front rail width and the softened inner profile are visual approximations;
 the generated model is not a fabrication or drilling template.
+
+## K8 — West pantry alignment — 2026-10-23
+
+Replace PANTRYC's 80-inch frame and custom 20-inch stacker with one stock
+18 x 24 x 90-inch SEKTION high frame on 3 1/2-inch supports. Installed top is
+93 1/2 AFF, matching both cold-storage uppers. Retain its plan position and width.
+The shared catalog's legacy 3-inch support is overridden only in Catlin's type.
+
+Use AXSTAD matte-white 18 x 30, 18 x 40 and 18 x 20 fronts, bottom to top,
+with black BAGGANÄS knobs. Nominal front bands are 3 1/2–33 1/2,
+33 1/2–73 1/2 and 73 1/2–93 1/2 AFF; retain factory reveals.
+This supersedes the west pantry's former 50/30 front specification above.
+Coordinate hinge drilling, hinge clearance and the frame's fixed shelf with these
+three independent doors before ordering; this is a configured front arrangement,
+not the standard IKEA 60/30 two-door package. Do not remove a structural fixed shelf
+to accommodate a hinge. The model is an elevation intent, not a drilling template.
+
+Fit 2 7/8 x 20-inch matching front scribes at y=328 7/8–331 3/4 and
+391 3/4–394 5/8, bottom 73 1/2 AFF. Their front plane matches the
+3/4-inch cabinet doors, 24 3/4 inches from the wall; fasten on cleats to adjacent
+casework/framing. Keep ventilation openings and the appliance clearance below open.
+Retain the existing cold-upper rail blocking; independently anchor the high frame
+following its actual factory bracket positions. Leave the space above the bank open.

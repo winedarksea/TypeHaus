@@ -39,6 +39,7 @@ class SektionCabinetConfiguration:
     installation: str = "wall"
     fronts: str = "doors"
     hinge_right: bool = False
+    tall_front_heights_in: tuple[float, ...] = ()
 
 
 def _doors(
@@ -150,6 +151,10 @@ def sektion_axstad_cabinet(configuration: SektionCabinetConfiguration) -> Builde
             divisions = (
                 (base, base + TALL_LOWER_FRONT_M * scale, top) if installed_tall else (base, top)
             )
+            if installed_tall and configuration.tall_front_heights_in:
+                divisions = (base,)
+                for front_height in configuration.tall_front_heights_in:
+                    divisions += (divisions[-1] + inch(front_height).meters * scale,)
             for bottom, upper in zip(divisions, divisions[1:], strict=False):
                 parts.extend(
                     _doors(
@@ -263,6 +268,9 @@ KITCHEN_SEKTION_SYMBOLS = {
         SektionCabinetConfiguration(fronts="lift")
     ),
     "sektion-axstad-kitchen-tall": sektion_axstad_cabinet(SektionCabinetConfiguration("tall")),
+    "sektion-axstad-kitchen-tall-aligned": sektion_axstad_cabinet(
+        SektionCabinetConfiguration("tall", tall_front_heights_in=(30, 40, 20))
+    ),
     "sektion-axstad-kitchen-garage": sektion_axstad_cabinet(
         SektionCabinetConfiguration(fronts="garage")
     ),

@@ -24,7 +24,11 @@ def _deep_upper(tag: str, width_in: int, height_in: int) -> FurnitureType:
     )
 
 
-DEEP_18_20 = _deep_upper("FT-KIT-DEEP18-20", 18, 20)
+COLD_UPPER_SCRIBE = FurnitureType(
+    tag="FT-KIT-COLD-SCRIBE-20", name='Matte-white cold-upper end scribe, 2 7/8 x 3/4 x 20 in.',
+    footprint=(inch(2.875), inch(0.75)), height=inch(20), plan_symbol="sektion-cover-panel",
+    source="Site-cut matching white front strip on cleats; fitting included in cold-upper prices.",
+)
 DEEP_24_40 = _deep_upper("FT-KIT-DEEP24-40", 24, 40).model_copy(update={
     "plan_symbol": "sektion-axstad-kitchen-garage",
 })
@@ -38,5 +42,5 @@ STOCK_BASE_FRAME_UPPER = FurnitureType(
             "See notes/kitchen_stock_cabinet_details.md; finished top 106 inches."),
 )
 KITCHEN_DEEP_CABINET_TYPES = (
-    DEEP_18_20, DEEP_24_40, STOCK_BASE_FRAME_UPPER,
+    COLD_UPPER_SCRIBE, DEEP_24_40, STOCK_BASE_FRAME_UPPER,
 )

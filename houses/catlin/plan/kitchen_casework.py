@@ -53,32 +53,30 @@ MAIN_KITCHEN_CASEWORK = [
     Appliance(uid="ZH6G4SNPWT", tag="APPL-M-FREEZER", type_ref="APPL-FRIG-PRO-ALLFREEZER",
               room="RM-M-LIVING",
               position=pt(ft(19, 4.875), ft(28, 9.3125)), rotation=deg(90)),
-    # PANTRYC closes straight up against the freezer now that the filler is gone.
-    # ** 18" WIDE, NOT 24" (owner, 2026-09-25). ** The 24" box oversailed W-M-C5's south end
-    # at y=25'-10" by 5 1/8" into the passage. At 18" its south end is y=25'-10 7/8", 7/8"
-    # inside the wall's end and flush with the PANTRYC-ST stacker over it.
-    Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="SEKT-HIGH18-80",
+    # One 90-inch frame on 3 1/2-inch supports aligns with the cold uppers at 93 1/2.
+    # Retain the 18-inch width: the south end stays 7/8 inch inside W-M-C5's end.
+    # The 30/40/20 fronts put the upper door joint at the cold-upper bottom, 73 1/2.
+    Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="SEKT-HIGH18-90",
               room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(26, 7.875)), rotation=deg(90)),
-    # ** THE TALL UNITS ALIGN BELOW THE FINISHED CEILING. ** The stacker is a 24"-DEEP
-    # box: a tall cabinet's carcass is base depth, so the 15"-deep wall family would float
-    # a shallow box over it and put the step back in a different place. The 3 1/2" support
-    # and 80" frame top at 83 1/2", followed by a custom 20" course.
-    #
-    # 18" wide to match PANTRYC: south end on y=25'-10 7/8", 7/8" clear of W-M-C5's end.
-    Furniture(uid="ZMBSYYRCX5", tag="FURN-M-KIT-PANTRYC-ST", type_ref="FT-KIT-DEEP18-20",
-              room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(83.5)),
+    # Finish both existing end gaps; these are front strips, not full-depth cabinets.
+    Furniture(uid="J7C2SCRB6S", tag="FURN-M-KIT-COLD-SCRIBE-S", type_ref="FT-KIT-COLD-SCRIBE-20",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-C5", face="right", distance_from_start=inch(9.875),
-                  normal_gap=inch(0), rotation_offset=deg(0)))),
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(20.3125),
+                  normal_gap=inch(24), rotation_offset=deg(0)))),
+    Furniture(uid="K7C2SCRB6N", tag="FURN-M-KIT-COLD-SCRIBE-N", type_ref="FT-KIT-COLD-SCRIBE-20",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(83.1875),
+                  normal_gap=inch(24), rotation_offset=deg(0)))),
     # Over the two cold boxes: 24" deep like the talls, so all four fronts land on
     # x=20'-3 3/8" and the appliances stand 3" proud — clearing the fridge/freezer door
     # swing.
     #
     # Stock 30x24x20 fridge-top frames replace the custom 30-high boxes (2026-10-05).
-    # One per appliance, bottoms unchanged at 73 1/2", tops now 93 1/2". The owner
-    # accepts the 10" step below the pantry top; leave the space above open, no stacker.
+    # One per appliance, bottoms unchanged at 73 1/2", tops now 93 1/2". The pantry
+    # shares that top (2026-10-23); leave the space above open, no stacker.
     # Frame 402.655.12, paired AXSTAD matte-white 15x20 doors; installation detail K7.
     #
     # ** THE HINGE CONTROLS THE MOUNT. ** The Frigidaire columns top at 72 1/2" at the
