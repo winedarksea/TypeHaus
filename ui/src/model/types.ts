@@ -305,8 +305,17 @@ export interface CasedDoorSpec {
   pocket_sign: number;
 }
 
+// A flashed window unit's envelope inside its RO. Mirrors resolve/model_window_seat.py.
+export interface WindowSeat {
+  jamb_inset_m: number;
+  sill_rise_m: number;
+  head_drop_m: number;
+  inner_m: number;
+}
+
 export interface Opening {
   cased_product?: CasedDoorSpec | null;
+  window_seat?: WindowSeat | null;
   frame_material_ref?: string | null;
   leaf_material_ref?: string | null;
   effective_frame_material_ref?: string | null;

@@ -18,6 +18,7 @@ from typehaus.resolve.layout_lines import ResolvedLayoutLine
 from typehaus.resolve.model_door_products import CasedDoorSpec
 from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing
 from typehaus.resolve.model_window_returns import ResolvedWindowReturn
+from typehaus.resolve.model_window_seat import WindowSeat
 from typehaus.resolve.rebar.records import ResolvedRebarSet
 
 if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-only
@@ -452,6 +453,8 @@ class ResolvedOpening:
     flip_hinge: bool = False
     flip_swing: bool = False
     cased_product: CasedDoorSpec | None = None
+    # A flashed window's unit envelope inside the RO (``resolve/opening_flashing``).
+    window_seat: WindowSeat | None = None
     frame_material_ref: str | None = None
     leaf_material_ref: str | None = None
     effective_frame_material_ref: str | None = None

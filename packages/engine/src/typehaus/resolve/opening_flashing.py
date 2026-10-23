@@ -7,7 +7,7 @@ membrane or trim allowance. The water and mount planes come from the host's reso
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from typehaus.model.project import Project
 from typehaus.quantities import inch
@@ -22,6 +22,7 @@ from typehaus.resolve.geometry_openings import (
     _exterior_face,
 )
 from typehaus.resolve.model import ResolvedModel, ResolvedOpening, ResolvedWall
+from typehaus.resolve.model_window_seat import WindowSeat
 from typehaus.resolve.rainscreen_closures import rainscreen_band
 from typehaus.resolve.sheet_geometry import combine_sheets, extruded_quad, sheet_between
 
@@ -99,6 +100,18 @@ def opening_flashing_frame(model: ResolvedModel, wall: ResolvedWall) \
                                 buck)
 
 
+def resolve_window_seats(model: ResolvedModel, cfg: FlashingConfig = FLASHING) -> None:
+    """Seat every flashed window before anything reads its product frame (returns, stool)."""
+    walls = {wall.tag: wall for wall in model.walls}
+    seated = []
+    for opening in model.openings:
+        frame = opening_flashing_frame(model, walls[opening.host_wall]) \
+            if opening.kind == "window" else None
+        seated.append(opening if frame is None
+                      else replace(opening, window_seat=window_seat(opening, frame, cfg)))
+    model.openings = seated
+
+
 def is_overhead(model: ResolvedModel, opening: ResolvedOpening) -> bool:
     """An overhead door runs to the slab and takes no sill pan."""
     product = next((p for p in model.plan.library.door_types
@@ -150,8 +163,7 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
     rise = cfg.outie_head_rise_m if frame.outie else cfg.head_rise_m
     # The drip must clear the casing face where there is one, or its downstand is buried
     # in the very trim it protects; a door has none and clears the cladding.
-    front = frame.clad + (_WINDOW_TRIM_PROUD_DEPTH_M if window else 0.0) \
-        + cfg.head_projection_m
+    front = _drip_face(opening, frame, cfg)
     fall = max(0.0, front - frame.water) * cfg.drainage_slope
     # Raise the inboard bend so the fall clears the head course at every depth.
     bend_z = head_seat + fall
@@ -225,10 +237,36 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
     result.append(("perimeter", "opening_flashing_membrane", cfg.membrane_material,
                    combine_sheets(membrane)))
     if pan:
-        result += _sill_pan(frame, front if opening.is_door or not frame.outie
-                            else frame.mount, lo + buck, hi - lo - 2 * buck,
-                            sill + buck, cfg)
+        result += _sill_pan(frame, _pan_outlet(opening, frame, cfg), lo + buck,
+                            hi - lo - 2 * buck, sill + buck, cfg)
     return result
+
+
+def _drip_face(opening: ResolvedOpening, frame: OpeningFlashingFrame,
+               cfg: FlashingConfig) -> float:
+    """The drip must clear the casing face where there is one, else the cladding."""
+    casing = _WINDOW_TRIM_PROUD_DEPTH_M if opening.kind == "window" else 0.0
+    return frame.clad + casing + cfg.head_projection_m
+
+
+def _pan_outlet(opening: ResolvedOpening, frame: OpeningFlashingFrame,
+                cfg: FlashingConfig) -> float:
+    """An outie window's pan discharges at the mount plane; every other pan at the drip."""
+    return frame.mount if frame.outie and not opening.is_door \
+        else _drip_face(opening, frame, cfg)
+
+
+def window_seat(opening: ResolvedOpening, frame: OpeningFlashingFrame,
+                cfg: FlashingConfig = FLASHING) -> WindowSeat:
+    """The unit inside its flashed RO: shimmed off the jambs and head, on the pan's high
+    point at the back dam (a level unit bears there on a sloped pan), outboard of the dam."""
+    dam = frame.back + cfg.back_dam_strip_m
+    fall = (_pan_outlet(opening, frame, cfg) - dam) * cfg.drainage_slope
+    side = frame.buck + cfg.perimeter_membrane_m + cfg.install_gap_m
+    sign = frame.outward[0] * -frame.along[1] + frame.outward[1] * frame.along[0]
+    return WindowSeat(jamb_inset_m=side,
+                      sill_rise_m=frame.buck + fall + cfg.sill_membrane_m,
+                      head_drop_m=side, inner_m=(dam + cfg.sill_membrane_m) * sign)
 
 
 def _sill_pan(frame: OpeningFlashingFrame, outlet: float, lo: float, width: float,

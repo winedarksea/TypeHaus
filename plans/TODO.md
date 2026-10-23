@@ -292,7 +292,7 @@ the future.
 - PR-A-STUBATH-VENT_RUN goes right through the middle of the bathroom RM-A-STUBATH
 - PR-B-ERV-COND-RUN runs right though blocking D-B-SHOP door
 - Extra light switches by beds
-- Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall. Another option might be panels (wood type wainscot or pvc for example) in high impact places.
+- Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall. Another option might be panels (wood type wainscot or pvc for example) in high impact places. We definitely need 5/8" Type X on some walls (probably just garage, perhaps garage side). A reviewer suggested we switch RC-1 to RSIC-1 Clips + Hat Channel for those with channels plus caulking. Their recommendation was also 1/2" drywall as the standard otherwise, with cheaper end 'abuse' resistant drywall 1/2" for major Hallways, Kids' Rooms, Stairwells. Might consider felt backed wood slat panels on W-B-CS or W-B-CE replacing drywall there.
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door. A simpler option is probably to just make sure the hinge can open to close to 180 degrees so the door can be flat against the wall, out of the way of the walking space.
 - Gold foil trim or panel accent somewhere
@@ -315,6 +315,8 @@ the future.
 - [ ] Before fabricating RM-M-STUDY: complete the 60-minute seating mock-up, verify occupied cushion height, lumbar fit and bracket/blocking connections, and record any dimensional changes in the bench spec.
 - Plant room needs review on bottom of wall detail (switch to a flash cove capable vinyl?) and also a review on if plumbing or drainage is present.
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
+- Improve the carpet 3d model and consider a different color as the standard color for catlin house carpet.
+- The bottoms of 3d modeled windows are a bit glitchy in 3d movement, perhaps due to an unnecessary attempt to cast reflections there.
 
 # Project Management
 

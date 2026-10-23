@@ -37,10 +37,10 @@ SLEEVES = [
 SUPPLY_SLEEVES = [
     # Same offset magnitude from the sink centre as SP-M-KITCH above.
     SleevePenetration(uid="CMPS07AAAA", tag="SP-M-CW-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(29, 9.6), ft(34, 1.2)), pipe_diameter=inch(0.75),
+                      position=pt(ft(29, 9.6), inch(421.5)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
     SleevePenetration(uid="CMPS08AAAA", tag="SP-M-HW-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(30, 3.6), ft(33, 7.2)), pipe_diameter=inch(0.75),
+                      position=pt(ft(30, 3.6), inch(421.5)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
 ]
 

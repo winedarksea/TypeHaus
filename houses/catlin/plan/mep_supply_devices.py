@@ -81,7 +81,7 @@ SUPPLY_DEVICES_BASEMENT = [
     # +9" offset, which would put this 41" east of the machine, across the whole carcass.
     PipeAccessory(uid="W4NL8QSJ0M", tag="PA-M-DW-WHA-HW",
                   kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-B-HW-KITCH",
-                  position=pt(ft(27, 10), ft(33, 7.2)), room="RM-M-LIVING",
+                  position=pt(ft(27, 10), inch(421.5)), room="RM-M-LIVING",
                   model="Sioux Chief MiniRester 660-G class, size A",
                   serves=("APPL-M-DW",)),
     # Branch isolation for both wall hydrants, at the tee off the cold trunk. Not a code
@@ -203,12 +203,12 @@ SUPPLY_STOPS = [
     # That is a stop for the kitchen, not a second main: PA-B-MAIN-SHUTOFF is upstream of
     # everything and this is the last 3'-6" of the run.
     PipeAccessory(uid="09MWB7MH7K", tag="PA-M-KITCH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 9.6), ft(34, 1.2)),
+                  pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 9.6), inch(421.5)),
                   accessible=True, room="RM-M-LIVING",
                   model='1 1/4" quarter-turn ball valve, in the sink base cabinet',
                   serves=("FX-M-KITCH-SINK",)),
     PipeAccessory(uid="JPFD6JQM44", tag="PA-M-KITCH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-KITCH", position=pt(ft(30, 3.6), ft(33, 7.2)),
+                  pipe_ref="PR-B-HW-KITCH", position=pt(ft(30, 3.6), inch(421.5)),
                   accessible=True, room="RM-M-LIVING",
                   model='3/4" quarter-turn ball valve, in the sink base cabinet',
                   serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
@@ -308,8 +308,8 @@ SUPPLY_DEVICES_MAIN = [
     # left for a reverse-osmosis unit nobody has bought yet. No fixture/fixture units since
     # a capped stub draws no water; it just saves opening the wall the day one arrives.
     PipeAccessory(uid="L8CY2WRT4K", tag="PA-M-RO-STUB", kind=PipeAccessoryKind.RO_STUB,
-                  pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 9.6), ft(34, 1.2)),
-                  elevation=ft(2, 6), room="RM-M-LIVING", accessible=True,
+                  pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 9.6), inch(421.5)),
+                  elevation=inch(20), room="RM-M-LIVING", accessible=True,
                   model='1/4" compression stop on a capped tee, in the sink base'),
     # The cold-storage bay's twin of the row above, at the far end of
     # PR-M-CW-COLDSTORE-STUB (plan/mep_supply.py). Same reasoning, same nothing-drawn: the

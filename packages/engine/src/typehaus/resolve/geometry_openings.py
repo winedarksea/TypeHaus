@@ -129,6 +129,15 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                                     *(top - z0 - sill for top in jamb_tops)))
     if available_height <= 1e-9:
         return ()
+    # The casing frames the RO; a flashed window's unit sits inside it, on its pan.
+    ro_width, ro_sill, ro_height = width, sill, available_height
+    seat = getattr(opening, "window_seat", None)
+    if seat is not None:
+        width -= 2.0 * seat.jamb_inset_m
+        sill += seat.sill_rise_m
+        available_height -= seat.sill_rise_m + seat.head_drop_m
+        if width <= 1e-9 or available_height <= 1e-9:
+            return ()
     frame_width = min(_OPENING_FRAME_FACE_WIDTH_M,
                       width / _OPENING_FRAME_SPAN_DIVISOR,
                       available_height / _OPENING_FRAME_SPAN_DIVISOR)
@@ -147,6 +156,9 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         plane, sign = exterior
         outer_edge = plane + sign * _WINDOW_TRIM_PROUD_DEPTH_M
         inner_edge = -sign * (depth / 2.0)
+        if seat is not None:
+            # Outboard of the back dam: the unit never stands in the pan's upturn.
+            inner_edge = sign * max(sign * inner_edge, sign * seat.inner_m)
         frame_depth = abs(outer_edge - inner_edge)
         frame_offset = (outer_edge + inner_edge) / 2.0
 
@@ -286,9 +298,11 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                                       (-_DOOR_LEAF_THICKNESS_M / 2.0,
                                        _DOOR_LEAF_THICKNESS_M / 2.0), z0 + sill)
     else:
+        # A seated unit's glass rides in its frame, wherever the frame landed in depth.
+        glass_offset = frame_offset if seat is not None else 0.0
         parts.append(GPart(key="glass", material_key=_GLASS_KEY, solids=(
             box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), panel_height,
-                _WINDOW_GLAZING_THICKNESS_M, 0.0, panel_elev),)))
+                _WINDOW_GLAZING_THICKNESS_M, 0.0, panel_elev, glass_offset),)))
         if opening.kind == "door" and operation in (None, DoorOperation.SWING):
             lever_list = lever_solids(box, -hinge_sign * clear_width / 2.0, hinge_sign,
                                       (-_WINDOW_GLAZING_THICKNESS_M / 2.0,
@@ -300,12 +314,12 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         plane, sign = exterior
         trim_w = _WINDOW_TRIM_FACE_WIDTH_M
         trim_offset = plane + sign * _WINDOW_TRIM_PROUD_DEPTH_M / 2.0
-        head_z = z0 + sill + available_height
+        head_z = z0 + ro_sill + ro_height
         bands = (
-            (trim_w, available_height, -width / 2.0 - trim_w / 2.0, z0 + sill),
-            (trim_w, available_height, width / 2.0 + trim_w / 2.0, z0 + sill),
-            (width + 2.0 * trim_w, trim_w, 0.0, head_z),
-            (width + 2.0 * trim_w, trim_w, 0.0, z0 + sill - trim_w),
+            (trim_w, ro_height, -ro_width / 2.0 - trim_w / 2.0, z0 + ro_sill),
+            (trim_w, ro_height, ro_width / 2.0 + trim_w / 2.0, z0 + ro_sill),
+            (ro_width + 2.0 * trim_w, trim_w, 0.0, head_z),
+            (ro_width + 2.0 * trim_w, trim_w, 0.0, z0 + ro_sill - trim_w),
         )
         trim_solids = []
         for band_w, band_h, along, base_z in bands:

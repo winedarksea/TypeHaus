@@ -195,13 +195,13 @@ SUPPLY = [
                   pt(ft(8), ft(16)), pt(ft(17, 5), ft(16)), pt(ft(17, 5), ft(16, 2.25)),
                   pt(ft(17, 5), ft(16, 2.25)), pt(ft(17, 5), ft(16)),
                   pt(ft(29, 9.6), ft(16)),
-                  pt(ft(29, 9.6), ft(34, 1.2)), pt(ft(29, 9.6), ft(34, 1.2))),
+                  pt(ft(29, 9.6), inch(421.5)), pt(ft(29, 9.6), inch(421.5))),
             diameter=inch(1.25), material="pex",
             elevations=(inch(2), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
                         ft(8, 4.6375), ft(8, 4.6375), inch(93.44), inch(93.44),
                         ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
                         ft(8, 4.6375), ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
-                        ft(7, 10.6375), ft(7, 10.6375), ft(12, 7.4375)),
+                        ft(7, 10.6375), ft(7, 10.6375), ft(10, 9.4375)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK",
                     "FX-M-LAUNDRY", "FX-M-KITCH-SINK",
@@ -440,6 +440,9 @@ SUPPLY = [
     # the leg is in the room and not along the pour.
     # SP-B-CS2-HW moves with it (plan/mep_sleeves.py) — the y=15'-6" hole it was cast for
     # no longer has a pipe in it.
+    # ** BOTH KITCHEN RISERS SURFACE AT THE SINK BASE'S BACK (2026-10-23). ** At y=35'-1 1/2",
+    # 3.9" off its back panel and east of the disposer and drain, stopping 20" AFF under the
+    # bowl. They came up mid-floor and ran on to 3'-6", through the counter.
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
             # Both steps are plumb (2026-09-26): a 3" jog over 2" of plan was a 58-degree
             # bend a 3/4" PEX cannot make in that little tube.
@@ -448,7 +451,7 @@ SUPPLY = [
                   pt(ft(17, 6), ft(16, 5)), pt(ft(17, 6), ft(16, 5)),
                   pt(ft(18, 9), ft(16, 5)), pt(ft(18, 9), ft(16, 5)),
                   pt(ft(18, 9), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
-                  pt(ft(30, 3.6), ft(33, 7.2)), pt(ft(30, 3.6), ft(33, 7.2))),
+                  pt(ft(30, 3.6), inch(421.5)), pt(ft(30, 3.6), inch(421.5))),
             diameter=inch(0.75), material="pex", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
             # ** 1/2" SLEEVE AND THE EAST LEG AT -1'-3 1/16", FOR CD-B-KITCHEN (2026-10-08). **
             # Between SL-M-DECK's -14 1/16" board and RM-B-PLAY-N's 3" finished-air allowance
@@ -467,7 +470,7 @@ SUPPLY = [
             elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 4.6375),
                         ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
                         ft(7, 8.1875), ft(7, 8.1875), ft(7, 10.375),
-                        ft(7, 10.375), ft(12, 7.4375)),
+                        ft(7, 10.375), ft(10, 9.4375)),
             serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
     # Second-storey groups: risers climb two storeys to the hall bath, split at both deck
     # top (ft(9) basement-rel = 0'-0" project) and second floor (ft(19) = 10'-0" project),
@@ -765,9 +768,9 @@ HYDRANT_BRANCH_MAIN = [
 # it. A line fed from *below* would need a cast-in sleeve set before the pour, and coring a
 # structural band afterwards is a different kind of job. This one never goes below the floor:
 # it tees off the kitchen cold where it has already surfaced, at the riser head in the sink
-# base (SP-M-CW-KITCH, ft(29, 9.6) / ft(34, 1.2)) where PA-M-KITCH-STOP-CW and PA-M-RO-STUB
-# already sit, and runs at 2'-6" through the backs of cabinets that are being built anyway —
-# west along the north run, then south down the west run. No penetration, no sleeve, no
+# base (SP-M-CW-KITCH, ft(29, 9.6) / inch(421.5)) where PA-M-KITCH-STOP-CW and PA-M-RO-STUB
+# already sit, and runs at 20" (the stop height) through the backs of cabinets that are
+# being built anyway — west along the north run, then south down the west run. No penetration, no sleeve, no
 # concrete, and every inch of it behind a removable cabinet back.
 #
 # A cold branch threading a built assembly, not a trunk. 1/2" stubbed and reduced at the stop, so the tee
@@ -791,15 +794,15 @@ HYDRANT_BRANCH_MAIN = [
 # No penetration of SL-M-DECK, no cast-in sleeve.
 KITCHEN_STUB_MAIN = [
     PipeRun(uid="N0D5ATAN07", tag="PR-M-CW-COLDSTORE-STUB", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(29, 9.6), ft(34, 1.2)),
-                  pt(ft(24, 5), ft(34, 1.2)),
-                  pt(ft(24, 5), ft(34, 1.2)),
-                  pt(ft(18), ft(34, 1.2)),
-                  pt(ft(18), ft(34, 1.2)),
+            path=(pt(ft(29, 9.6), inch(421.5)),
+                  pt(ft(24, 5), inch(421.5)),
+                  pt(ft(24, 5), inch(421.5)),
+                  pt(ft(18), inch(421.5)),
+                  pt(ft(18), inch(421.5)),
                   pt(ft(18), ft(31)),
                   pt(ft(18, 9), ft(31))),
             diameter=inch(0.5), material="pex",
-            elevations=(ft(2, 6), ft(2, 6), ft(8, 6), ft(8, 6), ft(2, 6), ft(2, 6),
+            elevations=(inch(20), inch(20), ft(8, 6), ft(8, 6), ft(2, 6), ft(2, 6),
                         ft(2, 6))),
 ]
 

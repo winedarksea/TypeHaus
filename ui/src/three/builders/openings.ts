@@ -71,12 +71,21 @@ export interface OpeningProductOptions {
   leafSet?: LeafSet;
 }
 
-export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
+export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: Wall, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
   options: OpeningProductOptions, picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   const { operation, glazed: isGlazed = false, trimless: isTrimless = false, bookcaseDoor,
     materials, leafSet = "pull" } = options;
-  if (opening.kind === "rough_opening") return;
+  if (roughOpening.kind === "rough_opening") return;
+  // The casing frames the RO; a flashed window's unit sits inside it, on its pan.
+  // Mirrors resolve/geometry_openings.py.
+  const seat = roughOpening.window_seat ?? null;
+  const opening: Opening = seat ? {
+    ...roughOpening,
+    width_m: roughOpening.width_m - 2 * seat.jamb_inset_m,
+    sill_m: roughOpening.sill_m + seat.sill_rise_m,
+  } : roughOpening;
+  if (opening.width_m <= 1e-9) return;
   const firstChildIndex = parent.children.length;
   const [[x0, y0], [x1, y1]] = wall.axis;
   const length = Math.hypot(x1 - x0, y1 - y0);
@@ -89,9 +98,12 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     x0 + direction[0] * opening.center_along_m + normal[0] * pocketOffset,
     y0 + direction[1] * opening.center_along_m + normal[1] * pocketOffset,
   ];
-  const availableHeight = Math.max(0, Math.min(opening.height_m,
-    rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m - opening.width_m / 2), y0 + direction[1] * (opening.center_along_m - opening.width_m / 2)) - baseRefZ(wall) - opening.sill_m,
-    rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m + opening.width_m / 2), y0 + direction[1] * (opening.center_along_m + opening.width_m / 2)) - baseRefZ(wall) - opening.sill_m));
+  const ro = roughOpening;
+  const roHeight = Math.max(0, Math.min(ro.height_m,
+    rakedTopAt(wall, x0 + direction[0] * (ro.center_along_m - ro.width_m / 2), y0 + direction[1] * (ro.center_along_m - ro.width_m / 2)) - baseRefZ(wall) - ro.sill_m,
+    rakedTopAt(wall, x0 + direction[0] * (ro.center_along_m + ro.width_m / 2), y0 + direction[1] * (ro.center_along_m + ro.width_m / 2)) - baseRefZ(wall) - ro.sill_m));
+  if (roHeight <= 1e-9) return;
+  const availableHeight = seat ? roHeight - seat.sill_rise_m - seat.head_drop_m : roHeight;
   if (availableHeight <= 1e-9) return;
   const rotation = Math.atan2(direction[1], direction[0]);
   const frameWidth = Math.min(0.075, opening.width_m / 4, availableHeight / 4);
@@ -121,7 +133,9 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   let frameDepth = depth, frameOffset = 0;
   if (exterior) {
     const outerEdge = exterior.plane + exterior.sign * WINDOW_TRIM_PROUD_DEPTH_M;
-    const innerEdge = -exterior.sign * (depth / 2);
+    let innerEdge = -exterior.sign * (depth / 2);
+    // Outboard of the back dam: the unit never stands in the pan's upturn.
+    if (seat) innerEdge = exterior.sign * Math.max(exterior.sign * innerEdge, exterior.sign * seat.inner_m);
     frameDepth = Math.abs(outerEdge - innerEdge);
     frameOffset = (outerEdge + innerEdge) / 2;
   }
@@ -301,8 +315,10 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
         [-thickness / 2, thickness / 2], floorZ);
     }
   } else {
+    // A seated unit's glass rides in its frame, wherever the frame landed in depth.
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.015, 0,
-      baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial);
+      baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial,
+      seat ? frameOffset : 0);
   }
   if (opening.kind === "window") {
     if (exterior) {
@@ -315,12 +331,12 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
       const trimMaterial = standardMaterial(categoryColor("window_trim"), mode,
         { roughness: NORDIC_ROUGHNESS.matte });
       const rakedHost = wall.top_z0_m != null || wall.top_z1_m != null;
-      const sillZ = baseRefZ(wall) + opening.sill_m;
+      const sillZ = baseRefZ(wall) + ro.sill_m;
       const bands: [number, number, number, number][] = [
-        [trimW, availableHeight, -opening.width_m / 2 - trimW / 2, sillZ],
-        [trimW, availableHeight, opening.width_m / 2 + trimW / 2, sillZ],
-        [opening.width_m + 2 * trimW, trimW, 0, sillZ + availableHeight],
-        [opening.width_m + 2 * trimW, trimW, 0, sillZ - trimW],
+        [trimW, roHeight, -ro.width_m / 2 - trimW / 2, sillZ],
+        [trimW, roHeight, ro.width_m / 2 + trimW / 2, sillZ],
+        [ro.width_m + 2 * trimW, trimW, 0, sillZ + roHeight],
+        [ro.width_m + 2 * trimW, trimW, 0, sillZ - trimW],
       ];
       for (const [bandW, bandH, along, baseZ] of bands) {
         let zTop = baseZ + bandH;

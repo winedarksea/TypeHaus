@@ -257,6 +257,7 @@ def _room_side_point(room, wall, lo: float, hi: float) -> tuple[float, float]:
 
 
 _DEFAULT_BAND_THICKNESS_M = 0.0127
+_FLUSH_REVEAL_M = 0.0015
 
 
 def _band_thickness_m(plan: PlanModel, material_ref: str) -> float:
@@ -324,7 +325,9 @@ def _band_outline(wall, lo: float, hi: float, toward: tuple[float, float],
     direction = unit(sub(wall.axis[1], wall.axis[0]))
     sign = _room_side_sign(wall, toward)
     face = _room_side_offset(wall, toward)
-    inner, outer = ((face - thickness_m, face) if replaces_finish
+    # A replacing band shifts _FLUSH_REVEAL_M proud: coplanar with the finish it meets, the
+    # viewer z-fights the two faces.
+    inner, outer = ((face - thickness_m + _FLUSH_REVEAL_M, face + _FLUSH_REVEAL_M) if replaces_finish
                     else (face, face + thickness_m))
     p0 = add(wall.axis[0], scale(direction, lo))
     p1 = add(wall.axis[0], scale(direction, hi))

@@ -166,6 +166,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_rooms(plan, model))
         # After resolve_rooms: needs each room's clear face to hang a ceiling under.
         resolve_ceilings(plan, model)
+    with _stage("window_seats"):
+        # Before clear zones, the stool and the returns: each reads the seated frame.
+        from typehaus.resolve.opening_flashing import resolve_window_seats
+
+        resolve_window_seats(model)
     with _stage("clear_zones"):
         findings.extend(resolve_clear_zones(model))
     with _stage("floor_opening_pockets"):
@@ -267,6 +272,9 @@ def resolve_preview(plan: PlanModel) -> ResolvedModel:
     # from the one the build produces, which is the drag preview's whole contract.
     apply_partition_tops(model)
     resolve_rooms(plan, model)
+    from typehaus.resolve.opening_flashing import resolve_window_seats
+
+    resolve_window_seats(model)
     resolve_placeables(plan, model)
     return model
 
