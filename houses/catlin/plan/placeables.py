@@ -205,45 +205,26 @@ MAIN_PLACEABLES = [
     # FURN-M-MEDIA retired 2026-10-05; its hammock-chair replacement was removed 2026-10-14.
     # The east wall's storage is the SEKTION line in plan/living_east_run.py (2026-10-02),
     # which retired the eight BESTA units that stood here.
-    # ** MOVED NORTH 10 1/2" (2026-10-05). ** The 8' x 3'-6" table is centred on y=18'-0":
-    # x 22'-10 1/2"..30'-10 1/2", y 16'-3"..19'-9". The six side-chair rows are centred
-    # 34" north and south of that line, at y=20'-10" and 15'-2". Its 36" side-clearance
-    # bands span y=13'-3"..22'-9", clear of the sofa and with circulation to the peninsula.
-    #
-    # ** NUDGED 2" WEST WITH ITS SIX CHAIRS (2026-10-02). ** The east chair zone reaches
-    # x 406 1/2". Since 2026-10-20 the 24" run's fronts stand at ~401 3/8" (slab ~400 3/8"),
-    # so the zone overlaps them by ~5" and ~30" of end clearance is left: the owner's call
-    # (2026-10-20), and the expected recommended-zone WARN.
-    #
-    # Only the six side chairs are drawn on this 8-place table — end chairs would block the
-    # hall-to-east-windows walk, so those two places stay unset, brought in when needed.
-    #
-    # ** THE SHARED TYPE DROPS ONLY THE UNUSED CORNERS (owner's call). **
-    # FURN-M-KIT-PANTRY-S2's carcass starts at (33'-5 3/8", 21'-2 3/8"), in the table's
-    # open NE corner square of the 36" chair-use zone: 30 7/8" east and 17 3/8" north of the
-    # table corner. It misses the table and all six chairs; the corner square is outside the
-    # bands, while the full 36" reach remains along each side where chairs actually stand.
-    #
-    # Ash, owner-built (FT-CATLIN-DINING-ASH, 2026-10-16): FT-DINING-8-OPEN-CORNERS's size and zone.
-    # The owner's call was to shrink the zone, and this is the shrink that costs nothing
-    # real: FT-DINING-8-OPEN-CORNERS keeps 36" on all four sides and drops only the four
-    # corner squares, where no chair goes. Retyping rather than reducing the reach is
-    # deliberate — cutting 36" to 27" would have cleared the same 0.4 sf while quietly
-    # unpolicing the two long sides, where the six chairs that actually exist stand.
+    # Dining group moved west 5 1/8" (2026-10-22) to clear the 24" east cabinet run.
+    # Normalize the former metric centre's ~0.019" rounding error to the inch grid:
+    # table x 269 3/8"..365 3/8", east cabinet fronts x 401 3/8" — exactly 36" clear.
+    # Keep y=18' aligned with the dining window; pendant and heated floor follow the table.
+    # Six side chairs stay set; the two end places are brought in only when needed.
+    # The open-corner type retains the full 36" chair-use reach on all four sides.
     Furniture(uid="QWCMN48QST", tag="FURN-M-DINING", type_ref="FT-CATLIN-DINING-ASH",
-              room="RM-M-LIVING", position=pt(m(8.19198), ft(18))),
+              room="RM-M-LIVING", position=pt(inch(317.375), ft(18))),
     Furniture(uid="60XVKZHFAS", tag="FURN-M-CHAIR-S1", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(24, 3), ft(15, 2)), rotation=deg(180)),
+              position=pt(inch(285.875), ft(15, 2)), rotation=deg(180)),
     Furniture(uid="XCW1QKV701", tag="FURN-M-CHAIR-S2", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(26, 9), ft(15, 2)), rotation=deg(180)),
+              position=pt(inch(315.875), ft(15, 2)), rotation=deg(180)),
     Furniture(uid="REJA4QPWC3", tag="FURN-M-CHAIR-S3", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(29, 3), ft(15, 2)), rotation=deg(180)),
+              position=pt(inch(345.875), ft(15, 2)), rotation=deg(180)),
     Furniture(uid="VHHDZ62B5F", tag="FURN-M-CHAIR-N1", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(24, 3), ft(20, 10))),
+              position=pt(inch(285.875), ft(20, 10))),
     Furniture(uid="R3XJVT80XY", tag="FURN-M-CHAIR-N2", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(26, 9), ft(20, 10))),
+              position=pt(inch(315.875), ft(20, 10))),
     Furniture(uid="17F6ZBR67K", tag="FURN-M-CHAIR-N3", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(29, 3), ft(20, 10))),
+              position=pt(inch(345.875), ft(20, 10))),
     # Nectar Japanese-joinery bamboo frame, King natural (plan/bed_frame_types.py), 79.9" wide.
     # Centred on the same 113.3175" midpoint as the former king, so it keeps the 16.6825" each side
     # between the bed edges and the two RO jambs; north-south placement and head-north orientation

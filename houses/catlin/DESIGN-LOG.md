@@ -5784,3 +5784,12 @@ suite, attic and sauna (dry gym side beside the door). Main bath 2 and the upsta
 bath use YB0403BN hooks where windows and cabinets prevent a useful bar. Nine targeted
 SPF 2×6 blocks supplement existing framing; the attic bar sits at 51″ AFF below the rake.
 Placements and hanging-space allowances live in `plan/towel_accessories.py` and its types.
+
+## Dining clearance restored (2026-10-22)
+
+Owner requested moving the dining table 5 1/8" west to clear the east cabinet run,
+superseding the accepted October 20 clearance compromise. The table centre is now
+x=26'-5 3/8", y=18'-0"; this also removes ~0.019" of metric coordinate rounding.
+Its east edge is exactly 36" from the cabinet fronts. All six chairs move 5 1/8" west;
+the pendant and 58.0 ft2 heated-floor zone are centred on the table. The counter's
+1" overhang leaves 35" to its edge; the cabinet-footprint advisory checks clear.

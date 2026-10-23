@@ -539,7 +539,7 @@ MAIN_LIGHTING = [
     # the shade bottom at 5'-6" — about 3' over a 30" table, which is the height that lights
     # the table without blocking the person across it.
     ElectricalDevice(uid="QTM0005AAA", tag="ED-M-DINING-PEND", kind=DeviceKind.LIGHT,
-                     position=pt(ft(26, 11), ft(18)), type_ref="ED-T-LT-PENDANT",
+                     position=pt(inch(317.375), ft(18)), type_ref="ED-T-LT-PENDANT",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-DINING-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(3, 6))),
