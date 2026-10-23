@@ -66,9 +66,9 @@ Manufacturer measurements distinguish the corner's 25 3/4 bare-frame depth from 
 measurement. Set out both rail backs from the finished walls using the assembled frame;
 coordinate the resulting 1/8-inch rail projection and straight-frame front reveals at both
 joins. Do not cut the stock frame to force nominal coordinates. Use the supplied corner
-hinges and one VOXTORP 15 by 30 door (actual width 14 7/8); maintain its factory reveal.
-The [published VOXTORP door measurements](https://www.ikea.com/us/en/p/voxtorp-door-matte-white-00273316/)
-give 29 7/8 actual height and 7/8 thickness as well as the nominal 15 by 30 size.
+hinges and one AXSTAD 15 by 30 door (actual width 14 7/8); maintain its factory reveal.
+The [published AXSTAD door measurements](https://www.ikea.com/us/en/p/axstad-door-matte-white-30426049/)
+give 29 7/8 actual height and 3/4 thickness as well as the nominal 15 by 30 size.
 
 Fasten the top rail/brackets on BOTH walls into BK-M-N1-KIT-TOP and BK-M-E1-KIT-TOP,
 99 1/2–105 above the framing datum (98 9/16–104 1/16 AFF).
@@ -92,8 +92,8 @@ The published 23 5/8 bare and 24 rail depth must be coordinated with the lower c
 front, including the actual door thickness. Do not use a base-cabinet symbol that adds a
 worktop or toe above the lower garage.
 
-The 24-inch model depth is a system dimension: a matching 7/8 front projects to
-24 7/8 from the finished wall. Build the lower frame at 23 5/8 bare depth plus
+The 24-inch model depth is a system dimension: a matching 3/4 front projects to
+24 3/4 from the finished wall. Build the lower frame at 23 5/8 bare depth plus
 3/8 wall/rail stand-off so its doors align with the upper; confirm the lower door track
 within that envelope. Do not describe 24 as the finished frame-plus-door depth.
 
@@ -129,7 +129,7 @@ restraint. No ceiling scribe may consume that lift space.
 
 S1 meets the garage. Each top is `SEKT-TS24-15`, the stock
 [SEKTION 904.997.35 frame](https://www.ikea.com/us/en/p/sektion-top-cabinet-with-ventilation-white-90499735/),
-24 by 24 by 15, with a matching VOXTORP matte white 24 by 15 front and factory hinges.
+24 by 24 by 15, with a matching AXSTAD matte white 24 by 15 front and factory hinges.
 Both retain their 83 1/2 bottoms and finish at 98 1/2, about 8 1/16 below the finished
 ceiling. A 30-inch frame would finish at 113 1/2, about 6 15/16 above the ceiling.
 
@@ -141,7 +141,7 @@ framing and tie adjacent cases through structural sidewalls, following the manuf
 installation instructions. The thin fiberboard back is not a bearing member.
 
 The stock bare frame depth is 23 5/8, or 24 with its suspension rail, matching the
-high frames and garage upper. Matching 7/8 fronts project 24 7/8 from the finished wall.
+high frames and garage upper. Matching 3/4 fronts project 24 3/4 from the finished wall.
 Coordinate factory reveals and the exposed south side finish within the existing module
 width. The price includes frame, front, hinges, rail and installation. The former shallow
 frames, rear decks, restraint cheeks, rear-bay cover and custom 20-high tops are removed.
@@ -155,7 +155,7 @@ intrusion; adjust hinges to preserve that opening. Maintain full manufacturer de
 Since 2026-10-20 the living room's storage is on the dining side only: south of the elm slat
 partition is open wall. The north run is 24-inch stock SEKTION (`SEKT-B24/B36/B18`), body
 centres x=413 3/8, fronts flush with PANTRY-S2, with no fillers. Bases use doors and shelves
-in the VOXTORP matte-white family; legs, plinth and suspension rail are separate. Hang the
+in the AXSTAD matte-white family; legs, plinth and suspension rail are separate. Hang the
 B24's door on its north edge so it opens away from the slats. Keep 3 1/2 support + 30 frame
 + 1 1/4 subtop + 1 1/4 ash = 36-inch installed height.
 
@@ -220,7 +220,7 @@ any slab, panel or pull to enter this clearance.
 Replace the two custom 30 by 24 by 30 carcasses with one stock **30 by 24 by 20**
 top cabinet above each appliance. The owner selected the lower top over stacked frames.
 Use [SEKTION ventilated frame 402.655.12](https://www.ikea.com/us/en/p/sektion-top-cabinet-with-ventilation-white-40265512/),
-two VOXTORP matte-white 15 by 20 doors (202.733.15) per frame and UTRUSTA 110-degree
+two AXSTAD matte-white 15 by 20 doors (504.260.48) per frame and UTRUSTA 110-degree
 soft-close hinges (805.248.82). These are IKEA's
 [494.549.71 configuration](https://www.ikea.com/us/en/p/sektion-top-cab-f-fridge-freezer-w-2-doors-white-voxtorp-matte-white-s49454971/),
 with suspension rail purchased separately; no legs or plinth for this wall installation.
@@ -239,7 +239,7 @@ top and about 13 1/16 below the finished ceiling.
 
 The 73 1/2 bottom preserves the one-inch clearance above the Frigidaire pair's
 72 1/2 hinge envelope. Confirm appliance leveling and actual hinge clearance at installation.
-Stock bare depth is 23 5/8, 24 with rail. Matching 7/8 fronts project 24 7/8 from the
+Stock bare depth is 23 5/8, 24 with rail. Matching 3/4 fronts project 24 3/4 from the
 wall; coordinate front alignment and factory reveals with the adjacent high frame.
 Keep the stock ventilation cut-outs open and retain the appliance clearances.
 
@@ -258,3 +258,28 @@ and garage pull-out/door allowances buy the preserved specialty hardware. The re
 allowance buys the exposed backs' paint and edge band. The existing floor-anchor allowance remains; the new bar-support allowance
 buys the ply sub-top and bar pockets; the five bars bill as `FT-KIT-CT-BRACKET-24`. Kitchen B12/B18/W12/corner and the living B36/B18/B15 rows are priced; removed
 filler and custom top rows are deleted. These are material/labour budget bands, not live delivered quotations.
+
+## AXSTAD/BAGGANÄS visual specification — 2026-10-22
+
+Kitchen and living north-run fronts are AXSTAD matte white. Door knobs are black
+BAGGANÄS 903.384.17; drawer handles are black BAGGANÄS 803.384.13, 5 5/8 inches
+long, 5 1/16-inch mounting centres, with the included washers. Door-front thickness is
+3/4 inch, separate from the nominal frame/rail depth; knobs project a further 15/16
+and handles a further 1 1/4 inch. Frame locations, cabinet heights and clearances stay
+on the existing installation datums. Recheck front alignment against actual shop drawings.
+
+The kitchen B12 is a door/shelf unit; B18 and the peninsula are three 10-inch drawer
+fronts each. Sink fronts are paired doors; carousel fronts are bifold leaves. All four
+living north-run bases have doors and shelves, including the north-hinged B24 beside
+the slat partition. High frames use 50-inch lower and 30-inch upper fronts; retain the
+Rev-A-Shelf inserts and coordinate linked fronts/door brackets with their full deployment.
+The lower appliance garage retains a custom roll-up front and pull-out shelf. Its
+white finish coordinates with AXSTAD; it is not a stock hinged SEKTION cabinet.
+
+Both cold-storage tops remain stock 30x24x20 frames with paired solid 15x20 fronts.
+Glass is deferred: IKEA US lists AXSTAD glass fronts at 30/40-inch heights, not 20.
+The 494.549.71 link above documents the prior VOXTORP frame configuration only; it is
+not an AXSTAD order code. Desk, nook and vanity keep their own existing specifications.
+
+Shared front rail width and the softened inner profile are visual approximations;
+the generated model is not a fabrication or drilling template.

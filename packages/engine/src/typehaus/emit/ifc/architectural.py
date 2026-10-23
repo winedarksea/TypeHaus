@@ -509,6 +509,9 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
         type_object.GlobalId = derive_child_guid(project_uuid, "furniture-types", tag)
         ll.ensure_pset(f, type_object, "TypeHaus_Identity", _type_identity(furniture_type))
         ifc_types[tag] = type_object
+    from typehaus.resolve.geometry_countertops import slab_hosts
+
+    hosted_countertops = slab_hosts(model)
     resolved_furniture = {item.uid: item for item in model.canvas_objects
                           if item.domain == "furniture"}
     for storey in model.plan.storeys:
@@ -530,16 +533,18 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
                 representation = parts_representation(
                     f, body, [part.geometry for part in bench_parts(bench)],
                     resolved.position, resolved.rotation_degrees, resolved.z_m)
-            elif furniture_type.plan_symbol in {
+            elif ((furniture_type.plan_symbol or "").startswith("sektion-")
+                  or furniture_type.plan_symbol in {
                     "pivoting-paper-holder", "towel-bar", "towel-hook",
-                    "pivoting-paper-holder-chrome", "towel-bar-chrome", "towel-hook-chrome"}:
+                    "pivoting-paper-holder-chrome", "towel-bar-chrome", "towel-hook-chrome"}):
                 from typehaus.emit.ifc.placeable_parts import parts_representation
                 from typehaus.model.placeable_symbols import model_parts
 
                 representation = parts_representation(
-                    f, body, model_parts(furniture_type.plan_symbol,
-                                        *(d.meters for d in furniture_type.footprint),
-                                        furniture_type.height.meters),
+                    f, body, (part for part in model_parts(
+                        furniture_type.plan_symbol, *(d.meters for d in furniture_type.footprint),
+                        furniture_type.height.meters)
+                        if furniture.tag not in hosted_countertops or part["color"] != "counter"),
                     resolved.position, resolved.rotation_degrees, resolved.z_m)
             elif bookcase is None:
                 representation = ll.add_prism_from_profile(
@@ -625,6 +630,8 @@ def _type_identity(product_type: Any) -> dict[str, str]:
 def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, Any],
                               project_uuid: Any) -> None:
     """Export resolved plumbing fixtures and appliances with semantic, stable identities."""
+    from typehaus.model.canvas import model_symbol_for
+
     fixture_types = {item.tag: item for item in model.plan.library.fixture_types}
     appliance_types = {item.tag: item for item in model.plan.library.appliance_types}
     type_cache: dict[tuple[str, str], Any] = {}
@@ -649,12 +656,14 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
             type_cache[type_key] = type_object
         element = ll.create_entity(f, ifc_class, name=item.tag)
         element.GlobalId = derive_guid(project_uuid, item.uid)
-        if getattr(product_type, "plan_symbol", None) in {
-                "kohler-underscore-6036", "kohler-underscore-6032", "roman-tub-filler"}:
+        model_symbol = model_symbol_for(product_type)
+        if model_symbol in {
+                "kohler-underscore-6036", "kohler-underscore-6032", "roman-tub-filler",
+                "solid-surface-vanity"}:
             from typehaus.emit.ifc.placeable_parts import parts_representation
             from typehaus.model.placeable_symbols import model_parts
 
-            parts = model_parts(product_type.plan_symbol, product_type.footprint[0].meters,
+            parts = model_parts(model_symbol, product_type.footprint[0].meters,
                                 product_type.footprint[1].meters, product_type.height.meters)
             representation = parts_representation(
                 f, body, parts, item.position, item.rotation_degrees, item.z_m)

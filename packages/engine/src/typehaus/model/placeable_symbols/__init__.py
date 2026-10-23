@@ -32,6 +32,7 @@ from typehaus.model.placeable_symbols._frame import (
     lamp_role,
     part_hex,
 )
+from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS
 from typehaus.model.placeable_symbols.furniture import FURNITURE_SYMBOLS
 from typehaus.model.placeable_symbols.lighting import LIGHTING_SYMBOLS
@@ -45,11 +46,11 @@ __all__ = ["SYMBOL_NAMES", "PART_COLORS", "Part", "Stroke", "lamp_role", "model_
 Builder = Callable[[float, float, float], tuple[tuple[Stroke, ...], tuple[Part, ...]]]
 
 _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLUMBING_SYMBOLS,
-                                 **LIGHTING_SYMBOLS}
+                                 **LIGHTING_SYMBOLS, **KITCHEN_SEKTION_SYMBOLS}
 
 # The frozen vocabulary. A catalog entry may only name a symbol listed here; the contract test
 # holds the registry to it in both directions.
-SYMBOL_NAMES = frozenset({
+SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset({
     "plain-round-mirror-nickel", "plain-arch-mirror-nickel", "plain-arch-mirror-chrome",
     "plain-soft-rectangle-mirror-nickel", "plain-capsule-mirror-nickel",
     "halo-mirror-light", "socketed-vanity-2-nickel", "socketed-vanity-2-chrome",

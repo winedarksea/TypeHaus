@@ -2772,6 +2772,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ### Kitchen: the IKEA SEKTION ladder
 
+- **Fronts (owner, 2026-10-22):** AXSTAD matte white with BAGGANÄS black knobs on doors
+  and 5 5/8-inch black pulls with washers on drawers. Configurations live in
+  `plan/kitchen_front_types.py`; the shared dimensional catalog remains finish-neutral.
+  Living bases are doors/shelves, kitchen B18/peninsula are three-drawer stacks. Cold
+  tops retain paired solid 15x20 doors; glass is deferred. Actual 3/4-inch fronts and
+  hardware project beyond nominal frame/rail footprints. The custom garage retains
+  its roll-up front. Other rooms keep their own fronts and hardware.
+
 - **Current run specification:** `plan/kitchen_casework.py` and
   `notes/kitchen_stock_cabinet_details.md`. Stock frames govern the revised north/east
   runs, except the custom 24x24x40 garage lower. West deep custom uppers retain their scope.
@@ -2789,9 +2797,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Garage faces west**, offsets -180 resolve to -90. Custom lower at36 supports stock
   base frame 902.653.88 at76, top106, with independent wall restraint and no upper legs
   or counter. Its pull-out deploys over supported quartz. Verify the narrow ceiling lift space.
-- **Pantry S2/S1:** y=271 3/8–295 3/8–319 3/8, meeting the garage. Stock shallow
-  24x15x20 tops at83 1/2 align with their fronts via supported rear bays (9 nominal,
-  9 1/4 from actual matching frame/rail/front depths), closed at the exposed south end.
+- **Pantry S2/S1:** y=271 3/8–295 3/8–319 3/8, meeting the garage. Stock deep
+  24x24x15 tops at83 1/2 finish at98 1/2, with independent rail restraint and no rear bays.
 - **Living east run (2026-10-20):** storage on the dining side only; south of the slat
   partition is open wall. North y=156 3/4–271 1/4, 24" stock SEKTION flush with S2, no
   fillers: 1/2 end panel, B24 (door hinged north), B36, B36, B18, then the 1/8 sealed joint

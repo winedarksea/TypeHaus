@@ -4,6 +4,12 @@ from __future__ import annotations
 
 from typehaus.model.placeable_symbols._families import Geometry
 from typehaus.model.placeable_symbols._frame import DETAIL_WEIGHT, box, line, rect
+from typehaus.model.placeable_symbols._sektion_fronts import (
+    DOOR_THICKNESS_M,
+)
+from typehaus.model.placeable_symbols._sektion_fronts import (
+    axstad_front as _front,
+)
 from typehaus.model.placeable_symbols._sektion_seat import (
     BASE_FRAME_HEIGHT_M,
     BASE_HEIGHT_M,
@@ -12,27 +18,8 @@ from typehaus.model.placeable_symbols._sektion_seat import (
     _carcass,
     _plinth,
 )
-from typehaus.quantities import inch
 
-DOOR_THICKNESS_M = inch(0.75).meters
-# Visual approximation of AXSTAD's profile; IKEA publishes overall door dimensions only.
-DOOR_BORDER_M = inch(2).meters
-PANEL_RECESS_M = inch(0.25).meters
 DRAWER_COUNT = 3
-
-
-def _front(face_w: float, front: float, door_t: float, bottom: float, top: float) -> list:
-    """One AXSTAD front between ``bottom`` and ``top``: a border frame round a recessed panel."""
-    border = min(DOOR_BORDER_M, face_w / 4, (top - bottom) / 4)
-    recess = min(PANEL_RECESS_M, door_t / 2)
-    parts = [box(sign * (face_w - border) / 2, front + door_t / 2,
-                 bottom, top, border, door_t, "appliance-white") for sign in (-1, 1)]
-    for z0, z1 in ((bottom, bottom + border), (top - border, top)):
-        parts.append(box(0, front + door_t / 2, z0, z1,
-                         face_w - 2 * border, door_t, "appliance-white"))
-    parts.append(box(0, front + (door_t + recess) / 2, bottom + border, top - border,
-                     face_w - 2 * border, door_t - recess, "appliance-white"))
-    return parts
 
 
 def _strokes(width: float, depth: float, door_t: float) -> tuple:

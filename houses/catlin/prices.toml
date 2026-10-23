@@ -2304,35 +2304,12 @@
 #   CASE-*   RTA/stock casework at $75-200/LF of run (nextdaycabinets.com 2026 RTA guide,
 #            yardandgardenguru.com), converted to a per-box price by the box's own width.
 #
-#            ** THE SYSTEM IS NAMED NOW (2026-09-06), AND THE BAND ABOVE STILL BRACKETS IT.
-#            ** IKEA SEKTION boxes (PROD-IKEA-SEKTION) with VOXTORP matt white slab fronts
-#            (PROD-IKEA-VOXTORP-WH) lands at $4,000-5,500 for this kitchen; Semihandmade
-#            Supermatte White on the same boxes is $6,500-8,000 and is the best-value
-#            splurge available here (real pulls, a crisper edge); Barker's US-made plywood
-#            in the same layout is $9,000-12,000. No product_ref on the CASE-* types
-#            themselves: those are LIBRARY types and a house may not stamp its own purchase
-#            onto the shared catalog, so the identity lives in plan/products_interior.py
-#            and the money lives here.
-#
-#            ** THE TARIFF IS WHY SEKTION AND NOT AN RTA COMPETITOR. ** Section 232 puts
-#            25% on wooden cabinets, vanities AND PARTS THEREOF from 2025-10-14 (the
-#            scheduled 50% was delayed to 2027-01-01; the EU cap is 15%), and SEKTION
-#            CARCASSES ARE MANUFACTURED IN THE US -- so the box half of the kitchen is
-#            structurally insulated from it where nearly every RTA competitor eats it.
-#            Fronts are imported and the German hinge and drawer mechanisms are expected up
-#            10-15%. ** Time the order to the IKEA kitchen event, historically Feb-April,
-#            worth 15-20%; there is no SEKTION offer running now. **
-#
-#            ** ALL WHITE, SLAB, MATTE -- and the door line is a cleanability decision, not
-#            a colour one. ** Ranked for a kitchen with an induction range: matte
-#            foil/laminate > matte-lacquered wood > satin painted MDF > SHAKER of any
-#            material (the inside corner of the rail is where cooking grease lives) > high
-#            gloss > open-pore unfinished oak. So AXSTAD loses despite being durable,
-#            RINGHULT high gloss is the worst possible surface beside an induction range,
-#            and BODBYN's painted MDF chips (IKEA sells touch-up paint for exactly that
-#            reason). VOXTORP's one weakness is its integrated edge pull, which collects
-#            grease on the underside where you cannot see it -- which is why real pulls are
-#            still bought (`finish-cabinet-pulls` in [allowances]).
+#            Kitchen selection revised 2026-10-22: SEKTION frames with AXSTAD matte-white
+#            recessed-panel fronts and BAGGANÄS black hardware. The existing installed
+#            cabinet bands remain budget allowances, not a current IKEA shopping-cart quote.
+#            Fronts, hinges and MAXIMERA mechanisms are in the cabinet bands; loose knobs
+#            and pulls are carried ONCE by finish-cabinet-pulls below. Other rooms retain
+#            their own front and hardware choices.
 #
 #            ** THE OAK GOES ON THE PENINSULA, NOT ON OPEN SHELVING OVER THE RANGE. ** Open
 #            shelving there is a grease magnet and fails the owner's top criterion outright.
@@ -2532,8 +2509,9 @@
 # [placeables] basis note has always read these as INSTALLED casework at $75-200/LF, and a
 # SEKTION carcass arrives flat-packed with no doors, no drawers and no hardware in the
 # number. The material bands here are the same $/box the generic catalog carried at the same
-# size; the VOXTORP fronts, the MAXIMERA drawers (PROD-IKEA-MAXIMERA,
-# plan/products_interior.py) and the TopKnobs pulls are inside the stock bands. The custom
+# size; the AXSTAD fronts, the MAXIMERA drawers (PROD-IKEA-MAXIMERA,
+# plan/products_interior.py) and hinges are inside the stock bands. Loose BAGGANÄS
+# hardware is separate in finish-cabinet-pulls. The custom
 # deep upper rows below include their own matching fronts and shop labour.
 #
 # Labour does NOT come down with a flat pack. It goes the other way — a frameless box is
@@ -2541,19 +2519,25 @@
 # CASE-* rows carry. The 3 1/2" toe kick and the ~1 5/16" counter build-up are carpentry, not
 # cabinet: they are [framing] and the countertop's own substrate.
 #
-# ** WHICH BOXES ARE DRAWER STACKS ** (the TODO's actual question, and the model has no
-# drawer vocabulary to answer it in): the peninsula's SEKT-B36 and two SEKT-B24 are
+# Configured in kitchen_front_types.py: the peninsula SEKT-B36 and two SEKT-B24 are
 # three-drawer MAXIMERA stacks opening to the kitchen; north SEKT-B18 is drawers; SEKT-SINK-B36
 # is doors, because the bowls take the space; the two SEKT-CORNER-B38 are carousels behind a
-# bifold. The new B12 uses a 12x30 door and shelves; every other living-room SEKT-B*-D15 is a MAXIMERA stack (15"-deep MAXIMERA is stock).
+# bifold. B12 uses a 12x30 door and shelves; the living north run is doors/shelves per K5.
+# Kitchen/living configuration was selected 2026-10-22; K5 door storage dates to 2026-10-20.
 
 # Bases. Same box at the same size as the CASE-B* rows, so the same material.
 "SEKT-B12" = { material = { low = 200, high = 360 }, labour = { low = 120, high = 300 } }
 "SEKT-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 0 ea
-"SEKT-B18" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
-"SEKT-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 3 ea
+"SEKT-B18" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }   # 1 ea, kitchen drawers
+"SEKT-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }   # 2 ea, kitchen drawers
 "SEKT-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 0 ea
-"SEKT-B36" = { material = { low = 220, high = 550 }, labour = { low = 90, high = 220 } }  # 3 ea
+"SEKT-B36" = { material = { low = 220, high = 550 }, labour = { low = 90, high = 220 } }   # 1 ea, kitchen drawers
+# AXSTAD door/shelf configurations of the existing frame allowances; loose hardware is
+# priced once in finish-cabinet-pulls, not as separate furniture.
+"SEKT-B18-AXSTAD-DOOR" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }
+"SEKT-B24-AXSTAD-DOOR" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }
+"SEKT-B36-AXSTAD-DOOR" = { material = { low = 220, high = 550 }, labour = { low = 90, high = 220 } }
+
 # The carousel corner (IKEA s79582533, carousel and 13"+13" bifold in the number). Labour
 # is a base and a half: two legs to level and the bifold to hang off the range side.
 "SEKT-CORNER-B38" = { material = { low = 380, high = 750 }, labour = { low = 130, high = 320 } }  # 2 ea
@@ -2605,10 +2589,11 @@
 "SEKT-HIGH24-90" = { material = { low = 190, high = 520 }, labour = { low = 120, high = 300 } }  # 0 ea
 "SEKT-HIGH24-80" = { material = { low = 170, high = 465 }, labour = { low = 120, high = 300 } }  # 2 ea
 "SEKT-HIGH18-80" = { material = { low = 145, high = 400 }, labour = { low = 120, high = 300 } }  # 1 ea
-# East pantry tops: stock 904.997.35 frames with VOXTORP fronts, hinges and rail.
+# East pantry tops: stock 904.997.35 frames with AXSTAD fronts, hinges and rail.
 "SEKT-TS24-15" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
-# West cold-run: stock 402.655.12, two VOXTORP 15x20 fronts, UTRUSTA hinges and rail.
-# IKEA configuration 494.549.71 lists $384 before separate rail (read 2026-10-05).
+# West cold-run: stock 402.655.12, two AXSTAD 15x20 fronts, UTRUSTA hinges and rail.
+# Prior VOXTORP configuration 494.549.71 was $384 (2026-10-05); retained as the
+# allowance basis, not represented as an AXSTAD SKU or current AXSTAD quote.
 # Includes one site-cut 2 7/8 x 20 end scribe per cabinet and fitting; no custom carcasses.
 "SEKT-TS30-20" = { material = { low = 350, high = 520 }, labour = { low = 90, high = 220 } }  # 2 ea
 # The rest of the SEKTION ladder (SEKT-B12/B18, the 12"/18"/36" wall frames,
@@ -3488,6 +3473,7 @@
 # door/wall grille with no damper, no boot and no duct behind it. Bracketed against
 # REG-T-HP-SUP above, which is the same kind of stamped face with a duct collar on it.
 "REG-T-TRANSFER-1210" = { material = { low = 15, high = 55 }, labour = { low = 18, high = 45 } }  # 1 ea
+
 
 [floor_finishes]
 # RESEARCHED 2026-08-08 — [low, high] $/SF on the ORDER quantity (waste already in the
@@ -7481,16 +7467,11 @@ finish-tile-backer-and-waterproofing = { low = 2000, high = 4500 }
 # the derived areas, so the countertop estimate moved by the 2.6% the hand figure was off.
 # Later quartz window stools add 11.30 SF to the quartz row, as noted above; the four
 # plant-room ones moved to Corian on 2026-10-22.
-# ** CABINET PULLS WERE ALSO UNPRICED. ** ~50 pulls, Top Knobs Solid Bar SS304 at $14.20 list
-# with 20-30% off at a dealer. SS304 is the same alloy as the appliances, so it matches
-# without a finish-code hunt, and there is NO PLATING TO WEAR THROUGH — budget plated-brass
-# "satin nickel" wears to yellow at the thumb contact point in five to eight years. The low
-# end of this band is the Amazon-tier multipack at $2-4/pull and is priced here only so the
-# spread is visible; ** if you go there, buy one pack first and check c-to-c with calipers **
-# (the risks are SS201, which pits, and hole-spacing tolerance across a 25-pack, which shows
-# up as crooked pulls down a drawer bank), and do not MIX tiers — a kitchen plus peninsula is
-# one sightline. The hardware splurge belongs on the door levers, which is what people touch.
-finish-cabinet-pulls = { low = 200, high = 750 }
+# Kitchen/living hardware, 2026-10-22: BAGGANÄS black 903.384.17 knobs ($7/2-pack)
+# and 803.384.13 5 5/8-inch handles ($9/2-pack), with included washers. Budget for
+# pack rounding and installation consumables; these loose parts are excluded from the
+# cabinet bands above. Final ordering quantities require a cabinet/hinge shop review.
+finish-cabinet-pulls = { low = 200, high = 300 }
 # ** THE BIDET SEATS ARE A SEPARATE PURCHASE FROM THE BOWLS ** and were inside no row. Two
 # TOTO WASHLET S5 (SW3446#01) at ~$682, on the two main-floor showpieces only. The
 # instantaneous tankless heater replaces the old reservoir and PREMIST wets the bowl before

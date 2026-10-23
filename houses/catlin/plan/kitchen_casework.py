@@ -79,7 +79,7 @@ MAIN_KITCHEN_CASEWORK = [
     # Stock 30x24x20 fridge-top frames replace the custom 30-high boxes (2026-10-05).
     # One per appliance, bottoms unchanged at 73 1/2", tops now 93 1/2". The owner
     # accepts the 10" step below the pantry top; leave the space above open, no stacker.
-    # Frame 402.655.12, paired VOXTORP 15x20 doors; installation detail K7.
+    # Frame 402.655.12, paired AXSTAD matte-white 15x20 doors; installation detail K7.
     #
     # ** THE HINGE CONTROLS THE MOUNT. ** The Frigidaire columns top at 72 1/2" at the
     # hinge and want 1" above (plan/appliance_types.py). A 73 1/2" cabinet starts exactly

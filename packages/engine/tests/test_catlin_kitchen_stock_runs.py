@@ -181,7 +181,7 @@ def test_garage_fronts_face_west_and_pullout_lands_on_counter(
     )
     assert typ.height.inches == 30
     assert typ.product_ref == "PROD-IKEA-SEKTION-BASE24-30"
-    assert typ.plan_symbol == "wall-cabinet"
+    assert typ.plan_symbol == "sektion-axstad-kitchen-wall"
 
 
 def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro, kitchen_objects):
@@ -211,10 +211,10 @@ def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro
     # The 24"-deep north run (2026-10-20): end panel, B24, B36, B36, B18, flush with S2.
     living_run = [
         ("FURN-M-LIV-E-END-N", "FT-LIV-E-END-PANEL", 156.75, 157.25),
-        ("FURN-M-LIV-E-B24", "SEKT-B24", 157.25, 181.25),
-        ("FURN-M-LIV-E-B36-MID", "SEKT-B36", 181.25, 217.25),
-        ("FURN-M-LIV-E-B36-PANTRY", "SEKT-B36", 217.25, 253.25),
-        ("FURN-M-LIV-E-B18-N", "SEKT-B18", 253.25, 271.25),
+        ("FURN-M-LIV-E-B24", "SEKT-B24-AXSTAD-DOOR", 157.25, 181.25),
+        ("FURN-M-LIV-E-B36-MID", "SEKT-B36-AXSTAD-DOOR", 181.25, 217.25),
+        ("FURN-M-LIV-E-B36-PANTRY", "SEKT-B36-AXSTAD-DOOR", 217.25, 253.25),
+        ("FURN-M-LIV-E-B18-N", "SEKT-B18-AXSTAD-DOOR", 253.25, 271.25),
     ]
     for tag, type_ref, y0, y1 in living_run:
         item = kitchen_objects[tag]
@@ -296,7 +296,12 @@ def test_corner_payload_and_glb_share_the_diagonal_geometry(catlin_model_ro, kit
     positions = [point for points, _indices in mesh._buckets.values() for point in points]
     # glTF (x,z,-y) vertices retain the clipped corner instead of its bounding box.
     projected = Polygon([(x, -z) for x, _y, z in positions]).convex_hull
-    assert projected.symmetric_difference(Polygon(corner.footprint)).area < 1e-8
+    footprint = Polygon(corner.footprint)
+    # The nominal clipped footprint stays fixed; the AXSTAD door and knob project outward.
+    assert projected.area < Polygon(corner.footprint).envelope.area
+    assert projected.difference(footprint.buffer(2 * INCH)).area < 1e-8
+    assert any(part.get("shape") == "mesh" for part in row["model_parts"])
+    assert any(part.get("color") == "#060606" for part in row["model_parts"])
 
 
 def test_top_backing_is_emitted_below_the_stud_tops(catlin_plan, catlin_model_ro):
@@ -339,9 +344,12 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
     prices = load_prices(Path(catlin_plan.source_root))
     expected = {
         "SEKT-B12": 1,
-        "SEKT-B18": 2,
-        "SEKT-B24": 3,
-        "SEKT-B36": 3,
+        "SEKT-B18": 1,
+        "SEKT-B24": 2,
+        "SEKT-B36": 1,
+        "SEKT-B18-AXSTAD-DOOR": 1,
+        "SEKT-B24-AXSTAD-DOOR": 1,
+        "SEKT-B36-AXSTAD-DOOR": 2,
         "SEKT-W12-30": 1,
         "SEKT-CORNER-W26-30": 1,
         "SEKT-TS24-15": 2,
@@ -372,3 +380,59 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
     ):
         assert removed not in quantities
         assert removed not in prices.placeables
+
+
+def test_house_configurations_preserve_shared_catalog_and_existing_furniture(catlin_plan):
+    from typehaus.library.placeables.sektion import BASE_24
+
+    types = {t.tag: t for t in catlin_plan.library.furniture_types}
+    assert BASE_24.plan_symbol == "base-cabinet"
+    assert types["SEKT-B24"].plan_symbol == "sektion-axstad-kitchen-drawers"
+    assert types["SEKT-B24-AXSTAD-DOOR"].plan_symbol == "sektion-axstad-kitchen-base-door"
+    assert types["SEKT-TS30-20"].height.inches == 20
+    assert types["FURN-M-BED-DESK-DRAWERS-15"].plan_symbol == "sektion-axstad-drawers"
+    seat = catlin_plan.by_tag("FURN-S-STUDY-NOOK-SEAT-W")
+    assert types[seat.type_ref].plan_symbol == "sektion-seat-base"
+
+
+@pytest.fixture(scope="module")
+def cabinet_ifc(catlin_ifc_path):
+    import ifcopenshell
+
+    return ifcopenshell.open(str(catlin_ifc_path))
+
+
+@pytest.mark.parametrize("tag", [
+    "FURN-M-KIT-E1", "FURN-M-KIT-SINKBASE", "FURN-M-KIT-PEN-B24-W",
+    "FURN-M-KIT-WN1", "FURN-M-KIT-CORNER-NE", "FURN-M-KIT-OVER-FRIDGE",
+    "FURN-M-LIV-E-B24", "FURN-M-BED-DESK-CAB-S", "FURN-S-STUDY-NOOK-SEAT-W",
+    "FX-M-BATH2-SINK",
+])
+def test_configured_geometry_matches_ifc_and_glb(tag, catlin_model_ro, cabinet_ifc):
+    from typehaus.model.placeable_symbols import model_parts
+    from typehaus.resolve.geometry_countertops import slab_hosts
+    from typehaus.model.canvas import model_symbol_for
+
+    obj = next(item for item in catlin_model_ro.canvas_objects if item.tag == tag)
+    types = {t.tag: t for t in (*catlin_model_ro.plan.library.furniture_types,
+                              *catlin_model_ro.plan.library.fixture_types)}
+    typ = types[obj.type_ref]
+    hosted = tag in slab_hosts(catlin_model_ro)
+    parts = [part for part in model_parts(model_symbol_for(typ), *(v.meters for v in typ.footprint),
+                                         typ.height.meters)
+             if not hosted or part["color"] != "counter"]
+    entity_class = "IfcSanitaryTerminal" if obj.domain == "plumbing" else "IfcFurniture"
+    entity = next(item for item in cabinet_ifc.by_type(entity_class) if item.Name == tag)
+    representation = entity.Representation.Representations[0]
+    assert representation.RepresentationType == "Tessellation"
+    assert len(representation.Items) == len(parts)
+    assert all(item.StyledByItem for item in representation.Items)
+    ifc_vertices = [v for item in representation.Items for v in item.Coordinates.CoordList]
+    mesh = _MeshBuilder()
+    assert _add_canvas_parts(mesh, obj, typ, {}, skip_counter=hosted)
+    glb_vertices = [(x, -z, y) for points, _ in mesh._buckets.values() for x, y, z in points]
+    for axis in range(3):
+        assert min(v[axis] for v in ifc_vertices) == pytest.approx(
+            min(v[axis] for v in glb_vertices))
+        assert max(v[axis] for v in ifc_vertices) == pytest.approx(
+            max(v[axis] for v in glb_vertices))

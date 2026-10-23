@@ -352,14 +352,15 @@ TUBDECK_INT_2X3 = Assembly(
 # outline plus 1/8" (notes/bath2_tub_deck_finish.md).
 TUBDECK_INT_PLY_CAP = Assembly(
     tag="TUBDECK_INT_PLY_CAP",
+    # Listed top-down, as every slab stack is (resolve/slab_layers.py): the Corian is the top.
     layers=(
+        Layer(name="deck-top", material_ref="solid-surface-fabricated", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
+        Layer(name="deck-ply", material_ref="struct-1-plywood", thickness=inch(0.75),
+              function=LayerFunction.SHEATHING),
         Layer(name="deck-block", material_ref="spf", thickness=inch(1.5),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x4", spacing=inch(16))),
-        Layer(name="deck-ply", material_ref="struct-1-plywood", thickness=inch(0.75),
-              function=LayerFunction.SHEATHING),
-        Layer(name="deck-top", material_ref="solid-surface-fabricated", thickness=inch(0.5),
-              function=LayerFunction.FINISH),
     ),
     source="Kohler Installation and Care Guide 1196030-2 - drop-in deck surround; flat 2x4 blocking at 16 in. o.c. under 3/4 in. exterior-grade plywood, Corian solid-surface top flush with the rim on max 1/8 in. spacers",
 )

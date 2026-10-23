@@ -1,3 +1,19 @@
+## Kitchen and living casework: AXSTAD and black BAGGANÄS (2026-10-22)
+
+Owner selected AXSTAD matte white rather than BODBYN. This supersedes the kitchen's
+VOXTORP/stainless-pull choice; other rooms retain their own selections. BAGGANÄS black
+knobs go on doors, 5 5/8-inch BAGGANÄS pulls with washers on drawers. The kitchen keeps
+its layout, cabinet heights, counters, custom garage and pantry inserts. The living
+north run remains doors and shelves, with the B24 hinge north, away from the slats.
+
+The fridge/freezer tops stay 30x24x20 with paired solid 15x20 fronts: IKEA's AXSTAD
+glass-door ladder starts at 30 inches high. Glass is deferred rather than invented as
+a stock 20-inch product. The shared geometry library now supplies profiled AXSTAD
+faces, frame panels, recessed plinths and round BAGGANÄS hardware. Desk and vanity
+reuse the front geometry; the nook shares frame components without changing its
+VOXTORP lift-up front. Front/knob/pull projections are separate from nominal frame
+footprints. The dimensions are product references; the inner profile is illustrative.
+
 # Catlin house — design record
 
 Why the house is the way it is. Every entry here was once in `CLAUDE.md` and was moved out

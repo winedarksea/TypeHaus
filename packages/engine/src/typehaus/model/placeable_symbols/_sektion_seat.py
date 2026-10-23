@@ -8,6 +8,12 @@ from __future__ import annotations
 
 from typehaus.model.placeable_symbols._families import Geometry
 from typehaus.model.placeable_symbols._frame import DETAIL_WEIGHT, box, line, rect
+from typehaus.model.placeable_symbols._sektion_frames import (
+    sektion_carcass as _carcass,
+)
+from typehaus.model.placeable_symbols._sektion_frames import (
+    sektion_plinth as _plinth,
+)
 from typehaus.quantities import inch
 
 BASE_HEIGHT_M = inch(3.5).meters
@@ -24,32 +30,6 @@ GROOVE_HEIGHT_M = inch(0.5).meters
 GROOVE_DEPTH_M = inch(0.0625).meters
 # Owner-adjustable shelves, frame inches above the frame's bottom panel.
 HIGH_SHELVES_INCHES = (15, 30, 45, 60)
-
-
-def _carcass(width: float, depth: float, z0: float, z1: float, front_y: float,
-             shelves: tuple[float, ...] = ()) -> list:
-    """Sides, back, bottom and top panels of one frame between ``z0`` and ``z1``."""
-    panel = min(PANEL_M, width / 8, depth / 8, (z1 - z0) / 4)
-    back_y = depth / 2
-    carcass_depth = back_y - front_y
-    cy = (front_y + back_y) / 2
-    inner = width - 2 * panel
-    shelf_depth = carcass_depth - BACK_M
-    shelf_cy = cy - BACK_M / 2
-    parts = [box(sign * (width / 2 - panel / 2), cy, z0, z1, panel, carcass_depth,
-                 "appliance-white") for sign in (-1, 1)]
-    parts.append(box(0, back_y - BACK_M / 2, z0, z1, inner, BACK_M, "appliance-white"))
-    for z in (z0, z1 - panel, *shelves):
-        parts.append(box(0, shelf_cy, z, z + panel, inner, shelf_depth, "appliance-white"))
-    return parts
-
-
-def _plinth(width: float, depth: float, base_h: float) -> list:
-    """The 2x4 base: a frame at the back and a baseboard flush with the fronts."""
-    board = min(BASEBOARD_DEPTH_M, depth / 8)
-    rail = min(inch(1.5).meters, depth / 8)
-    return [box(0, depth / 2 - rail / 2, 0, base_h, width, rail, "appliance-white"),
-            box(0, -depth / 2 + board / 2, 0, base_h, width, board, "appliance-white")]
 
 
 def sektion_seat_base(width: float, depth: float, height: float) -> Geometry:

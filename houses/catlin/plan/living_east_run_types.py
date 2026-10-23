@@ -46,7 +46,7 @@ SEKTION_CORNER_WALL_FRAME = Product(
     tag="PROD-IKEA-SEKTION-CORNER-W26-30", brand="IKEA", model="SEKTION corner wall frame",
     name='SEKTION 26x26x30" corner wall frame', sku="102.655.04",
     url="https://www.ikea.com/us/en/p/sektion-corner-wall-cabinet-white-10265504/",
-    source='Stock diagonal front with a 15-inch VOXTORP door; hinges included, rail separate.',
+    source='Stock diagonal front with a 15-inch AXSTAD matte-white door; hinges included, rail separate.',
 )
 SEKTION_DEEP24_TOP_FRAME = Product(
     tag="PROD-IKEA-SEKTION-TOP24-15", brand="IKEA", model="SEKTION top frame 24x24x15",

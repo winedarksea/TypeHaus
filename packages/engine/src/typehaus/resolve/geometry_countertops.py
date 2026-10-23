@@ -18,7 +18,7 @@ from typehaus.resolve.model import ResolvedCountertop, ResolvedModel
 from typehaus.resolve.overlay import union_all
 
 #: Plan symbols whose own counter is cut round a bowl; the slab leaves their footprint alone.
-SINK_SYMBOLS = frozenset({"sink-base", "vanity"})
+SINK_SYMBOLS = frozenset({"sink-base", "sektion-axstad-kitchen-sink", "vanity"})
 
 _PLACEABLE_TYPE_COLLECTIONS = ("furniture_types", "fixture_types", "appliance_types",
                                "equipment_types")
@@ -46,7 +46,7 @@ def slab_hosts(model: ResolvedModel) -> dict[str, str]:
 def _keeps_symbol_counter(obj: Any, top: ResolvedCountertop,
                          symbols: dict[str, Any]) -> bool:
     symbol = symbols.get(obj.type_ref or "")
-    if symbol == "sink-base" and any(
+    if symbol in {"sink-base", "sektion-axstad-kitchen-sink"} and any(
         Polygon(ring).intersects(Polygon(obj.footprint)) for ring in top.cutouts
     ):
         # An explicitly placed opening replaces the cabinet's centred schematic hole.

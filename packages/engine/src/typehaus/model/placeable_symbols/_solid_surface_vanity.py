@@ -9,6 +9,7 @@ from math import cos, pi, sin, sqrt
 from typehaus.model.placeable_symbols._families import Geometry
 from typehaus.model.placeable_symbols._frame import box, circle, ellipse, rect
 from typehaus.model.placeable_symbols._mesh import mesh_part
+from typehaus.model.placeable_symbols._sektion_fronts import axstad_front
 
 REFERENCE_WIDTH_IN = 48.0
 REFERENCE_DEPTH_IN = 18.0
@@ -92,20 +93,11 @@ def solid_surface_vanity(width: float, depth: float, height: float) -> Geometry:
                          wall, cabinet_depth, "appliance-white"))
     reveal = DOOR_REVEAL_IN * sx
     front_y = -depth / 2 + wall / 2
-    border = min(DOOR_BORDER_IN * sx, (cabinet_top - cabinet_bottom) / 4)
-    # One 12-inch storage door, followed by the sink cabinet's two 18-inch doors.
+    # Preserve the vanity's one 12-inch and two 18-inch doors and its existing envelope.
     for x, nominal_width in ((-3 * width / 8, width / 4),
                              (-width / 16, width * 3 / 8), (5 * width / 16, width * 3 / 8)):
-        door_width = nominal_width - reveal
-        for side in (-1, 1):
-            parts.append(box(x + side * (door_width - border) / 2, front_y,
-                             cabinet_bottom, cabinet_top, border, wall, "appliance-white"))
-        for z in (cabinet_bottom, cabinet_top - border):
-            parts.append(box(x, front_y, z, z + border,
-                             door_width - 2 * border, wall, "appliance-white"))
-        parts.append(box(x, front_y + wall / 4, cabinet_bottom + border,
-                         cabinet_top - border, door_width - 2 * border,
-                         wall / 2, "appliance-white"))
+        parts.extend(axstad_front(nominal_width - reveal, front_y - wall / 2, wall,
+                                  cabinet_bottom, cabinet_top, center_x=x))
 
     shaft = min(width, depth) * 0.035
     faucet_y = depth / 2 - depth / 9

@@ -39,6 +39,7 @@ from typehaus.resolve.roof_bearing import roof_bearings
 from typehaus.resolve.roof_edge_geometry import skin_layers, skin_stand_ins
 from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
 from typehaus.resolve.slab_kind import CATEGORY_FOR_KIND, slab_kind
+from typehaus.resolve.slab_layers import split_top_finish
 from typehaus.resolve.stairs import _resolve_stair
 from typehaus.resolve.sweep import rect_profile
 
@@ -66,14 +67,22 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                     continue
                 z0, z1 = _slab_elevations(element, elevation)
                 kind = slab_kind(model, element, storey.tag, z0)
+                voids = tuple(tuple(point.xy_m for point in model.plan.by_tag(tag).outline)
+                              for tag in element.openings
+                              if isinstance(model.plan.by_tag(tag), FloorOpening))
+                # A top FINISH run (a Corian deck top) is drawn as its own solid, so the
+                # structure beneath it stops at its underside and keeps its own colour.
+                assembly = (model.plan.library.resolve_assembly(element.assembly)
+                            if element.assembly else None)
+                top, finish = split_top_finish(assembly, element.uid, element.tag, storey.tag,
+                                               outline, z1, voids)
                 model.solids.append(ResolvedSolid(
                     element.uid, element.tag, storey.tag, CATEGORY_FOR_KIND[kind], outline,
-                    z0, z1,
+                    z0, top,
                     element.assembly,
-                    tuple(tuple(point.xy_m for point in model.plan.by_tag(tag).outline)
-                          for tag in element.openings
-                          if isinstance(model.plan.by_tag(tag), FloorOpening)),
+                    voids,
                 ))
+                model.solids.extend(finish)
             elif isinstance(element, Pad):
                 outline = [point.xy_m for point in element.outline]
                 if len(outline) < 3:

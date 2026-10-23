@@ -58,16 +58,24 @@ def test_strokes_stay_inside_the_declared_footprint(symbol: str, size: tuple) ->
 
 @pytest.mark.parametrize("symbol", sorted(_REGISTRY))
 @pytest.mark.parametrize("size", SIZES)
-def test_parts_stay_inside_the_declared_box_and_name_a_real_colour(symbol: str, size: tuple) -> None:
+def test_parts_stay_inside_the_declared_box_and_name_a_real_colour(
+    symbol: str, size: tuple,
+) -> None:
     width, depth, height = size
     parts = model_parts(symbol, width, depth, height)
     assert parts, f"{symbol} massed nothing at {size}"
+    # Configured kitchen types retain the legacy FRAME envelope. Door/hardware projection
+    # is explicit; all other symbols continue to promise a finished-product envelope.
+    projection = 2 * 0.0254 if symbol.startswith("sektion-axstad-kitchen-") else 0.0
+    side_projection = projection if symbol.endswith("corner-wall") else 0.0
     for part in parts:
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         assert part["color"] in PART_COLORS
         assert min(sx, sy, sz) > 0, f"{symbol} has a degenerate part"
-        assert abs(cx) + sx / 2 <= width / 2 + TOLERANCE, f"{symbol} part escapes width"
-        assert abs(cy) + sy / 2 <= depth / 2 + TOLERANCE, f"{symbol} part escapes depth"
+        assert abs(cx) + sx / 2 <= width / 2 + side_projection + TOLERANCE, (
+            f"{symbol} part escapes width")
+        assert abs(cy) + sy / 2 <= depth / 2 + projection + TOLERANCE, (
+            f"{symbol} part escapes depth")
         assert cz - sz / 2 >= -TOLERANCE, f"{symbol} part sinks below its base"
         assert cz + sz / 2 <= height + TOLERANCE, f"{symbol} part escapes its height"
 

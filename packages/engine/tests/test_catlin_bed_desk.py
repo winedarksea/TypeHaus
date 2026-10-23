@@ -101,7 +101,8 @@ def test_axstad_drawer_base_has_three_fronts_and_stops_under_the_slab():
     fronts = [p for p in parts
               if p["center"][1] - p["size"][1] / 2 < front + 0.75 * INCH - 1e-6
               and p["color"] != "counter"]
-    assert len(fronts) == 15  # three fronts x (two stiles, two rails, one panel)
+    assert len(fronts) == 3  # one profiled mesh per front
+    assert all(p["shape"] == "mesh" for p in fronts)
     assert min(p["center"][2] - p["size"][2] / 2 for p in parts) == pytest.approx(0)
     counter = [p for p in parts if p["color"] == "counter"]
     assert len(counter) == 1 and counter[0]["size"][2] == pytest.approx(1 * INCH)
@@ -117,7 +118,10 @@ def test_axstad_door_base_keeps_its_recessed_panel():
             if part["center"][1] - part["size"][1] / 2 < front + 0.75 * INCH - 1e-6
             and part["center"][2] - part["size"][2] / 2 > 3.5 * INCH
             and part["color"] != "counter"]
-    assert len(door) == 5
+    assert len(door) == 1
+    positions = door[0]["mesh"]["positions"]
+    # The panel sits behind the rails, with several depths across the softened profile.
+    assert len({round(y, 7) for _x, y, _z in positions}) >= 5
     assert max(p["center"][2] + p["size"][2] / 2 for p in door) - min(
         p["center"][2] - p["size"][2] / 2 for p in door) == pytest.approx(29.875 * INCH)
     body_tops = [p["center"][2] + p["size"][2] / 2 for p in parts if p["color"] != "counter"]

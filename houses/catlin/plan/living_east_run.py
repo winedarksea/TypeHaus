@@ -25,13 +25,13 @@ from typehaus.model import WindowStool, deg, inch, pt
 LIVING_EAST_RUN = [
     Furniture(uid="VYF21YNX09", tag="FURN-M-LIV-E-END-N", type_ref="FT-LIV-E-END-PANEL", room="RM-M-LIVING",
               position=pt(inch(413.375), inch(157)), rotation=deg(-90)),
-    Furniture(uid="TKX5EHYSZW", tag="FURN-M-LIV-E-B24", type_ref="SEKT-B24", room="RM-M-LIVING",
+    Furniture(uid="TKX5EHYSZW", tag="FURN-M-LIV-E-B24", type_ref="SEKT-B24-AXSTAD-DOOR", room="RM-M-LIVING",
               position=pt(inch(413.375), inch(169.25)), rotation=deg(-90)),
-    Furniture(uid="QKGYPHFV12", tag="FURN-M-LIV-E-B36-MID", type_ref="SEKT-B36", room="RM-M-LIVING",
+    Furniture(uid="QKGYPHFV12", tag="FURN-M-LIV-E-B36-MID", type_ref="SEKT-B36-AXSTAD-DOOR", room="RM-M-LIVING",
               position=pt(inch(413.375), inch(199.25)), rotation=deg(-90)),
-    Furniture(uid="WQ2SWGGP5K", tag="FURN-M-LIV-E-B36-PANTRY", type_ref="SEKT-B36", room="RM-M-LIVING",
+    Furniture(uid="WQ2SWGGP5K", tag="FURN-M-LIV-E-B36-PANTRY", type_ref="SEKT-B36-AXSTAD-DOOR", room="RM-M-LIVING",
               position=pt(inch(413.375), inch(235.25)), rotation=deg(-90)),
-    Furniture(uid="TA461J20Q0", tag="FURN-M-LIV-E-B18-N", type_ref="SEKT-B18", room="RM-M-LIVING",
+    Furniture(uid="TA461J20Q0", tag="FURN-M-LIV-E-B18-N", type_ref="SEKT-B18-AXSTAD-DOOR", room="RM-M-LIVING",
               position=pt(inch(413.375), inch(262.25)), rotation=deg(-90)),
     # The slat partition, centred 30 1/4" off the gwb face.
     Furniture(uid="7ES588S8KP", tag="FURN-M-LIV-SLAT-FULL", type_ref="FT-LIV-SLAT-ELM-FULL",

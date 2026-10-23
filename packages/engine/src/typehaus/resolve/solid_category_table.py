@@ -149,6 +149,10 @@ ROWS: tuple[C, ...] = (
         finish_group="element", material_refile="laid", slab_family="slab",
         supports_on_top=True, collision=_HARD)
       for kind in ("deck", "platform", "band")),
+    # A slab's own FINISH layer on its top (resolve/slab_layers.py): drawn apart from the
+    # structure beneath it, so it carries what stands on the slab and what collides with it.
+    C("slab_finish", trade="millwork", ifc_class=_COVER, finish_group="element",
+      supports_on_top=True, collision=_HARD),
     C("footing", trade="concrete", ifc_class=_FOOTING, elevation_family="body",
       finish_group="element", material_refile="laid", is_pour=True, supports_on_top=True,
       collision=_HARD),
