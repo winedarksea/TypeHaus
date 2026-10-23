@@ -172,3 +172,11 @@ def test_countertops_reach_the_glb_in_their_own_material(catlin_model_ro):
         assert tuple(round(value, 4) for value in expected) in colors, ref
     # None is the symbol counter's grey: the slab replaced it.
     assert tuple(round(value, 4) for value in PART_COLORS["counter"]) not in colors
+
+
+def test_bath2_overhang_meets_the_bonded_bowl_deck(catlin_model_ro):
+    top = next(item for item in catlin_model_ro.countertops if item.tag == "CT-M-BATH2-VANITY")
+    vanity = next(obj for obj in catlin_model_ro.canvas_objects if obj.tag == "FX-M-BATH2-SINK")
+    prisms = countertop_prisms(catlin_model_ro, top)
+    assert prisms
+    assert all(prism.z1_m == pytest.approx(vanity.body_z1_m - 0.14) for prism in prisms)

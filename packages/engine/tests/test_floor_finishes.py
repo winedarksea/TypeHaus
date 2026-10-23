@@ -25,7 +25,8 @@ from typehaus.resolve.solid_categories import in_slab_family
 _CATLIN_FINISHES = {"oak-floor-custom", "lvp", "carpet", "sealed-concrete", "rubber",
                     "vinyl-sheet", "catlin-plant-vinyl-raised", "coated-concrete",
                     "catlin-carpet-raised",
-                    "catlin-tile-oak-height", "catlin-tile-heated"}
+                    "catlin-tile-calacatta-gold", "catlin-tile-kaleo-brick",
+                    "catlin-tile-flower-blue", "catlin-tile-carrara"}
 
 
 def _library(catlin_model):
@@ -102,10 +103,9 @@ def test_second_storey_finishes_match_the_doorway_assemblies(catlin_model):
     assert {tag for tag, finish in finishes.items()
             if finish == "catlin-carpet-raised"} == {
         "RM-S-BED1", "RM-S-BED2", "RM-S-BED3"}
-    assert {tag for tag, finish in finishes.items()
-            if finish == "catlin-tile-oak-height"} == {
-        "RM-S-SUITEBATH", "RM-S-VANITY"}
-    assert finishes["RM-S-BATH1"] == "catlin-tile-heated"
+    assert finishes["RM-S-SUITEBATH"] == "catlin-tile-kaleo-brick"
+    assert finishes["RM-S-VANITY"] == "catlin-tile-flower-blue"
+    assert finishes["RM-S-BATH1"] == "catlin-tile-carrara"
     assert finishes["RM-S-PLANT"] == "catlin-plant-vinyl-raised"
     assert "RM-S-LANDING" not in finishes
     assert "RM-S-STAIR" not in finishes
@@ -349,19 +349,23 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     assert (float(rows["vinyl-sheet"]["net_area_sqft"])
             + float(rows["catlin-plant-vinyl-raised"]["net_area_sqft"])) == pytest.approx(
                 525.5, abs=0.5)
-    assert set(rows["catlin-tile-oak-height"]["rooms"]) == {
-        "RM-S-SUITEBATH", "RM-S-VANITY"}
-    assert set(rows["catlin-tile-heated"]["rooms"]) == {
-        "RM-M-BATH2", "RM-S-BATH1"}
-    assert rows["catlin-ditra-xl"]["net_area_sqft"] == rows[
-        "catlin-tile-oak-height"]["net_area_sqft"]
-    assert rows["catlin-ditra-heat"]["net_area_sqft"] == rows[
-        "catlin-tile-heated"]["net_area_sqft"]
-    assert all(rows[tag]["known"] for tag in (
-        "catlin-carpet-raised", "catlin-carpet-underlayment",
-        "catlin-plant-vinyl-raised", "catlin-plant-sureply",
-        "catlin-tile-oak-height", "catlin-tile-heated",
-        "catlin-ditra-xl", "catlin-ditra-heat"))
+    assignments = {
+        "catlin-tile-calacatta-gold": ("RM-M-BATH2", "catlin-ditra-heat"),
+        "catlin-tile-carrara": ("RM-S-BATH1", "catlin-ditra-heat"),
+        "catlin-tile-kaleo-brick": ("RM-S-SUITEBATH", "catlin-ditra-xl"),
+        "catlin-tile-flower-blue": ("RM-S-VANITY", "catlin-mosaic-backer"),
+    }
+    # Two heated finishes share a membrane tag: key companion rows by parent as well.
+    companion_rows = {(row["under"], row["finish"]): row
+                      for row in floor_finish_rows(catlin_model) if "under" in row}
+    for finish, (room, companion) in assignments.items():
+        assert rows[finish]["rooms"] == [room]
+        companion_row = companion_rows[finish, companion]
+        assert companion_row["net_area_sqft"] == rows[finish]["net_area_sqft"]
+        assert companion_row["rooms"] == [room]
+        assert rows[finish]["known"] and companion_row["known"]
+    assert "catlin-tile-heated" not in rows
+    assert "catlin-tile-oak-height" not in rows
 
 
 # --- 5. a sealer needs a slab to seal ----------------------------------------------------
@@ -429,3 +433,26 @@ def test_the_garage_slab_is_not_reported_though_it_is_not_fully_covered(catlin_m
     assert 0.8 < fraction < 0.95, fraction
     assert not any("RM-GARAGE" in f.element_tags
                    for f in _concrete_finish_findings(catlin_model))
+
+
+def test_bathroom_tile_product_contracts(catlin_plan):
+    materials = {material.tag: material for material in catlin_plan.library.materials}
+    products = {product.tag: product for product in catlin_plan.library.products}
+    for tag, product, recipe, companion in (
+        ("catlin-tile-calacatta-gold", "PROD-QUBE-BODE-CALACATTA-HEX", "tile-calacatta-gold-hex",
+         "catlin-ditra-heat"),
+        ("catlin-tile-kaleo-brick", "PROD-IVY-KALEO-BRICK", "tile-kaleo-running-bond",
+         "catlin-ditra-xl"),
+        ("catlin-tile-flower-blue", "PROD-SUNWINGS-FLOWER-BLUE", "tile-flower-blue",
+         "catlin-mosaic-backer"),
+        ("catlin-tile-carrara", "PROD-FLORIDA-CARRARA-MATTE", "tile-carrara-grid",
+         "catlin-ditra-heat"),
+    ):
+        material = materials[tag]
+        assert material.product_ref == product
+        assert material.finish == recipe
+        assert material.finish_thickness_in == 0.75
+        assert material.floor_companion_refs == (companion,)
+        assert "epoxy grout" in material.source
+        assert products[product].url
+        assert products[product].model

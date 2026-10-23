@@ -3562,9 +3562,16 @@
 # Generic tile remains available for rooms not assigned one of Catlin's coordinated stacks.
 "tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }
 "tile-uncoupling-membrane" = { material = { low = 1.5, high = 2.5 }, labour = { low = 0, high = 0.5 } }
-# Porcelain finish pricing; the membrane is a separately measured companion.
-"catlin-tile-oak-height" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }
-"catlin-tile-heated" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }
+# Product-specific estimates, 2026-10-22, $/SF: tile + setting supplies + epoxy grout.
+# Tile-only anchors: Qube $9.49/0.84-SF sheet (~$11.30/SF), Kaleo $7.99,
+# Sunwings $7.69-9.09, Florida Tile Carrara $2.38. Freight/tax not included.
+# Installed labour includes epoxy application/cleanup. No separate grout row is billed.
+# Membrane/backer companions below are additional; heat cable stays in its existing scope.
+"catlin-tile-calacatta-gold" = { material = { low = 12.9, high = 16.4 }, labour = { low = 12, high = 20 } }
+"catlin-tile-kaleo-brick" = { material = { low = 9, high = 12 }, labour = { low = 9, high = 16 } }
+"catlin-tile-flower-blue" = { material = { low = 10, high = 14 }, labour = { low = 14, high = 24 } }
+"catlin-tile-carrara" = { material = { low = 3.5, high = 6 }, labour = { low = 8, high = 15 } }
+"catlin-mosaic-backer" = { material = { low = 1.5, high = 3 }, labour = { low = 2, high = 4 } } # provisional, includes leveling
 "catlin-ditra-xl" = { material = { low = 2.5, high = 4.5 }, labour = { low = 0, high = 0.75 } }
 "catlin-ditra-heat" = { material = { low = 5, high = 7 }, labour = { low = 0, high = 0.75 } }
 # The shared sheet serves RM-A-STUBATH, RM-A-STUDIO and RM-B-BATH. RM-S-PLANT has a

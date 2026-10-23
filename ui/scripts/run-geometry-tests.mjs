@@ -126,6 +126,8 @@ try {
   const { runWoodSpeciesTests } = await server.ssrLoadModule("/src/three/woodSpecies.test.ts");
   runWoodSpeciesTests();
   runMarbleMaterialTests();
+  const { runTileMaterialTests } = await server.ssrLoadModule("/src/three/tileMaterial.test.ts");
+  runTileMaterialTests();
   runMemberColorTests();
   runSkinBandUvTests();
   runDetailAnnotationTests();

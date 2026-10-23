@@ -29,9 +29,14 @@ BASIN_LEVELS = 12
 BASIN_FLOOR_FRACTION = 0.22
 
 
+def deck_height(height: float) -> float:
+    """Deck below the faucet band, shared with the separately emitted overhang."""
+    return height - min(FAUCET_HEIGHT_M, height * 0.16)
+
+
 def solid_surface_vanity(width: float, depth: float, height: float) -> Geometry:
     sx, sy = width / REFERENCE_WIDTH_IN, depth / REFERENCE_DEPTH_IN
-    deck = height - min(FAUCET_HEIGHT_M, height * 0.16)
+    deck = deck_height(height)
     sz = deck / (CABINET_BOTTOM_IN + CABINET_HEIGHT_IN + TOP_THICKNESS_IN)
     top_thickness = TOP_THICKNESS_IN * sz
     basin_width, basin_depth = BOWL_WIDTH_IN * sx, BOWL_DEPTH_IN * sy

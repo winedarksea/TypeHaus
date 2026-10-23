@@ -19,6 +19,7 @@ import {
   applyDeckBoardUv, createDeckBoardMaterial, createStandingSeamMaterial,
   isAluminumDeckBoard, isStandingSeam, metalPanelProfileForFinish, SEAM_PROFILE,
 } from "../materials";
+import { applyTileUv, createTileMaterial, tileStyleOrNull } from "../tileMaterial";
 import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
 import { buildMembers, isRoofFramingMember, memberColor, type SkinLine } from "../members";
 import { buildBoardMembers } from "./millwork";
@@ -292,14 +293,17 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
   // A plank floor is boards, not a sheet: oak, owner-milled plank and LVP take the board
   // treatment, by declared recipe first so a house-local tag needs no needle (#57). A
   // veined-marble print takes one world-fixed tile, so the pattern runs on unbroken from
-  // room to room as one sheet would. Carpet and tile stay a flat fill. Boards run along the
-  // room's long axis — a floor is laid the long way.
+  // room to room as one sheet would. Tile uses product-sized joints and surface maps;
+  // carpet stays a flat fill. Boards run along the room's long axis.
   const declared = authoredAppearance(finish, materials)?.finish;
   const surface = floorSurface(finish, declared);
   const plankStyle = plankStyleOrNull(finish, declared);
   const marble = !plankStyle && isVeinedMarble(declared);
+  const tileStyle = tileStyleOrNull(declared);
   if (plankStyle) {
     applyPlankPlaneUv(geometry, center, planLongAxis(outline), plankTileSizeM(plankStyle));
+  } else if (tileStyle) {
+    applyTileUv(geometry, center, tileStyle);
   } else if (marble) {
     applyPlankPlaneUv(geometry, center, [1, 0], [MARBLE_TILE_M, MARBLE_TILE_M]);
   }
@@ -308,6 +312,8 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
     plankStyle
       ? createPlankMaterial(mode, plankStyle, materialColor(finish, palette, materials), roughness,
         authoredAppearance(finish, materials))
+      : tileStyle
+      ? createTileMaterial(mode, tileStyle, materialColor(finish, palette, materials))
       : marble
       ? createMarbleMaterial(mode, materialColor(finish, palette, materials), roughness)
       : standardMaterial(new THREE.Color(materialColor(finish, palette, materials)), mode, {

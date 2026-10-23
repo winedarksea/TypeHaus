@@ -1501,7 +1501,7 @@ ROOMS = [
     Room(uid="CMR403AAAA", tag="RM-M-BATH1", seed=pt(ft(2), ft(24, 6)),
          occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
     Room(uid="CMR404AAAA", tag="RM-M-BATH2", seed=pt(ft(4), ft(18)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-heated"),
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-calacatta-gold"),
     Room(uid="CMR405AAAA", tag="RM-M-LAUNDRY", seed=pt(ft(10, 6), ft(20)),
          occupancy=Occupancy.LAUNDRY, floor_finish="lvp"),
     Room(uid="CMR406AAAA", tag="RM-M-STUDY", seed=pt(ft(15, 8), ft(20)),

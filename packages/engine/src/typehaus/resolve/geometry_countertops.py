@@ -11,6 +11,8 @@ from typing import Any
 
 from shapely.geometry import Polygon
 
+from typehaus.model.canvas import model_symbol_for
+from typehaus.model.placeable_symbols._solid_surface_vanity import deck_height
 from typehaus.resolve.geometry_ir import GPrism
 from typehaus.resolve.model import ResolvedCountertop, ResolvedModel
 from typehaus.resolve.overlay import union_all
@@ -58,7 +60,19 @@ def countertop_prisms(model: ResolvedModel, top: ResolvedCountertop,
     symbols = symbols if symbols is not None else _plan_symbols(model)
     objects = {obj.tag: obj for obj in model.canvas_objects}
     hosts = [objects[tag] for tag in top.hosts if tag in objects]
-    tops = [obj.body_z1_m for obj in hosts if obj.body_z1_m is not None]
+    types = {item.tag: item for name in _PLACEABLE_TYPE_COLLECTIONS
+             for item in getattr(model.plan.library, name)}
+    tops = []
+    for obj in hosts:
+        if obj.body_z1_m is None:
+            continue
+        product_type = types.get(obj.type_ref)
+        if model_symbol_for(product_type) == "solid-surface-vanity":
+            # Overall fixture height includes the spout; the overhang meets the bonded deck.
+            tops.append(obj.body_z1_m - product_type.height.meters
+                        + deck_height(product_type.height.meters))
+        else:
+            tops.append(obj.body_z1_m)
     if len(top.outline) < 3 or not tops or top.thickness_m <= 0:
         return ()
     z1 = max(tops)

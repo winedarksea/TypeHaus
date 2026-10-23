@@ -5813,3 +5813,94 @@ x=26'-5 3/8", y=18'-0"; this also removes ~0.019" of metric coordinate rounding.
 Its east edge is exactly 36" from the cabinet fronts. All six chairs move 5 1/8" west;
 the pendant and 58.0 ft2 heated-floor zone are centred on the table. The counter's
 1" overhang leaves 35" to its edge; the cabinet-footprint advisory checks clear.
+
+## 2026-10-22 — Four bathroom floor tile selections and visible 3D patterns
+
+Owner selected Calacatta Gold hex for RM-M-BATH2, Kaleo Brick terracotta for
+RM-S-SUITEBATH (half-offset running bond), Sunwings Flower Blue on white for
+RM-S-VANITY, and economical Carrara for RM-S-BATH1. All four use epoxy grout:
+white, warm cream/slightly yellow, light gray, and white, respectively. Vinyl and
+all other floor assignments remain as before. Owner subsequently authorized
+substitutions when selections fail installation criteria.
+
+Two substitutions are now the design selections:
+
+- RM-M-BATH2: Jeffrey Court 13343, 3-inch textured matte Calacatta Gold/White hex,
+  replacing MSI CALGLD-2HEXM. Schluter requires at least 2 x 2-inch tiles over
+  DITRA-HEAT; the requested nominal 2-inch hex does not establish actual minimum
+  chip dimensions. The larger chip removes that ambiguity without changing the
+  existing heating system. JC describes residential floor use and textured matte;
+  DCOF is untested, so no numeric slip rating is claimed.
+- RM-S-BATH1: TileBar TLMELTHCG24X24M, DreamStone Carrara Giola 24x24 matte,
+  replacing polished HDC NHDCAR2424P. The requested HDC listing reports DCOF <0.42;
+  TileBar publishes >0.42. This retains the square Carrara look at a higher tile-only
+  price ($6.40/SF observed, versus $1.97/SF), still below the feature mosaics.
+
+Product identity, source URLs and dimensions live in plan/products_floor_tiles.py;
+assembly and grout descriptions live in plan/assemblies/materials_flooring.py.
+The source records preserve the originally requested products and reasons for changes.
+
+Floor planes still target 3/4 inch above the framed subfloor. DITRA-HEAT remains in
+both heated bathrooms; Kaleo retains DITRA-XL. Small glass petals at the vanity now
+use a continuous 1/4-inch cement backer instead of DITRA-XL's unsupported small-chip
+application. Stack arithmetic (inches): hex 0.250 + 9.5/25.4 + 0.126 = ~0.750;
+Carrara 0.250 + 8.3/25.4 + 0.173 = ~0.750; Kaleo 0.3125 + provisional 0.3125 +
+0.125 = 0.750; glass 0.250 + 6/25.4 + 0.264 = ~0.750. These are coordinated height
+allowances, not validated setting-bed prescriptions. Confirm Kaleo supplied thickness,
+backer-compatible leveling (not excess thinset), and glass-compatible white mortar.
+Test the chosen epoxy's cleanup on the glossy glass and textured hex samples.
+
+Prices are separate per finish and explicitly estimated. Each finish rate includes tile,
+setting supplies and epoxy material/application; no extra grout row. Membrane/backer
+companions bill separately, and the existing floor-heating cable scope remains intact.
+The existing finish takeoff already groups by material and bills declared companions;
+no house-specific takeoff branching was needed.
+
+The interactive viewer now renders cached procedural color, normal and roughness maps
+at product scale with recessed grout. Hex and marble veining, terracotta variation and
+blue/white marquise glass chips are deterministic approximations, not photographed
+product scans. Rectangles follow project axes; Carrara uses the manufacturer's 3/16-inch
+joint. Other visual joints are provisional (hex/Kaleo 1/8 inch, glass 1/16 inch); mesh
+spacing and setter requirements govern installation. Room clipping, penetrations,
+selection, elevations and schematic colors retain the existing floor builder behavior.
+IFC/GLB geometry is unchanged; catalog identities and authored floor colors follow the
+new materials. Procedural maps are an interactive-viewer feature.
+
+Validation: focused engine floor-finish, BOM, floor-datum and fixture-discipline tests;
+UI geometry suite and TypeScript checks; actual resolved-room screenshots through
+`npm --prefix ui run tile-review` (out/tile-review/rooms.png and detail.png). The browser
+review also checks map caching/disposal, all three texture maps, UVs and room picking.
+
+Sources read 2026-10-22:
+- https://www.schluter.com/schluter-us/en_US/faq/ditraheat-mosaic-tile
+- https://www.homedepot.com/p/333539281
+- https://www.homedepot.com/p/318462525
+- https://www.homedepot.com/p/341936080
+- https://www.homedepot.com/p/305849487
+- https://www.tilebar.com/product/paradox-carrara-giola-24x24-matte-porcelain-tile.html
+
+### 2026-10-22 follow-up — restore the bathroom tile budget
+
+The owner clarified that substitutions must stay close to original prices, especially
+RM-S-BATH1's approximately $2/SF tile. The preceding Jeffrey Court ($14.90/SF) and
+TileBar ($6.40/SF) selections are superseded. Current choices:
+
+- RM-M-BATH2: Qube Bode Calacatta Gold nominal 3-inch matte hex, actual 2.86-inch
+  chips and 0.26-inch thickness; $9.49 per 0.84-SF sheet, approximately $11.30/SF.
+  White epoxy grout; existing DITRA-HEAT retained. Coordinated build-up is now
+  0.25 + 0.26 + 0.24-inch bedding/approved leveling allowance = 0.75 inch;
+  verify leveling compatibility with the heating system and do not use excess thinset.
+- RM-S-BATH1: Florida Tile CHDEAJ0212X24 matte Carrara at $2.38/SF. Budget takes
+  precedence over the former 24-inch square: use 12x24 rectangles, straight grid,
+  white epoxy grout with 1/8-inch joints, wet DCOF >=0.42. Nominal 9 mm tile +
+  0.25-inch DITRA-HEAT + 0.146-inch combined mortar = approximately 0.75 inch;
+  verify supplied thickness because retailer thickness fields conflict.
+
+Product records, material sources, procedural dimensions, tests and finish price
+allowances reflect these selections. Other floor selections and epoxy grout remain.
+The takeoff is 75 SF / 83 SF ordered, including 15% waste. Tile-only rate comparison
+is about $147 above the originals; comparing whole case/sheet purchases is $14.71
+above original whole-case purchases, before tax/delivery. Original single-sheet MSI
+pricing was unavailable; do not assume the whole-case comparison is guaranteed.
+Qube project freight needs a delivered quote. Full arithmetic and sources:
+notes/bathroom_tile_budget.md. The earlier product and build-up paragraphs are historical.

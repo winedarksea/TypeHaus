@@ -70,26 +70,8 @@ MATERIALS = [
              species="ash", nominal_quarters=6, milling_profile="eased",
              requires_custom_milling=True, max_board_width_in=11.0,
              source="Two slabs on the living-room SEKTION banks, 1 1/4\" finished off 6/4 (sawn full, ~1 5/8\" green), 16 1/2\" deep, straight eased front edge. Each is an edge-glued panel of two ~8 1/4\" boards (Type II PVA), the glue line straight on the front edge; the 160 5/8\" slab needs a 14'+ ash log. Back edge scribed to the gwb, where the ash stools meet it in one plane. Fix on slotted brackets; waterborne urethane on all six faces, matching the stools: flat-sawn ash still moves."),
-    # ** THE FLOOR TILE, AND THE SELECTION IS ARITHMETIC BEFORE IT IS TASTE. ** Grout length
-    # per square foot is 144 x (1/a + 1/b): a 24x24 gives 1.0 lineal ft/sf, a 3x12 subway
-    # gives 5.0, a penny round gives 24+. Large-format is ~3x easier to keep clean than
-    # subway and ~9x easier than mosaic, and THAT is the cleanability decision; grout colour
-    # and grout chemistry come second and third.
-    #
-    # ** "RECTIFIED" IS THE HIGHEST-LEVERAGE WORD ON THE SPEC SHEET. ** ANSI A108.02 4.3.8.1:
-    # tile with any side over 15" takes a 1/8" minimum joint if rectified and 3/16" if not —
-    # so a non-rectified 24x24 gives the same look and three times the grout area. Confirm it
-    # on the spec sheet and not in the sales copy. The price of rectified is that square
-    # arrises show lippage: budget a levelling-clip system and a flat substrate.
-    #
-    # ** PATTERN IS STACK BOND, 0% OFFSET, AND A 50% RUNNING BOND IS OUT OF STANDARD HERE. **
-    # There is no "TCNA 5% rule" — the governing text is ANSI A108.02 4.3.8.2: where the
-    # offset side exceeds 15" nominal, only offsets of 33% or less shall be specified. So a
-    # third is the MAXIMUM permitted and a half is not available without an owner-approved
-    # mock-up (long tiles crown slightly, and a 50% offset lands the neighbour's edge at the
-    # peak). Stack bond is simultaneously the lowest-lippage install, the easiest to mop and
-    # the correct minimalist language. Align wall and floor joints at the base of the wall
-    # where geometry allows; that single move is what makes a room read designed.
+    # Legacy 2026-09-06 selection, retained for existing non-room references only.
+    # Bathroom floors now use materials_flooring.py's product-specific epoxy-grouted stacks.
     Material(tag="tile-floor-24", name='Porcelain floor tile, 24x24 matte rectified',
              hatch="masonry", color="#e8e4dc",
              product_ref="PROD-MARAZZI-MF01",
@@ -105,11 +87,8 @@ MATERIALS = [
     # threshold for LEVEL surfaces, and a sloped soapy floor is past what it contemplates.
     # The pan is 12-16 sf, so the grout accepted is trivial and the traction is not.
     #
-    # ** EPOXY THE SHOWER, CEMENT THE FLOORS, AND NEVER EPOXY THE MUDROOM. ** At a 1/8" joint
-    # on rectified 24x24 the grout is ~1% of the floor; epoxy's advantage is per unit of
-    # grout SURFACE, matte warm-white porcelain is the worst possible haze substrate, and
-    # PERMACOLOR needs no sealer ever. Epoxying the floors is a $1,200-1,800 decision to
-    # improve 1% of the floor at ~2.5x the grouting labour.
+    # Shower walls retain their epoxy specification. The four room floors also use epoxy
+    # under the owner's 2026-10-22 selection; the earlier cement-floor preference is superseded.
     Material(tag="tile-wall-1224", name='Porcelain wall tile, 12x24 matte rectified',
              hatch="masonry", color="#f0eeea",
              product_ref="PROD-TILEBAR-BRONX-WHITE",

@@ -1037,12 +1037,12 @@ ROOMS = [
          exposed_services="owner accepts exposed duct in the primary suite: the supply branch runs on the face of the ceiling rather than inside it"),
     Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(14), ft(10, 8)),
          occupancy=Occupancy.STORAGE, floor_finish="oak-floor-custom"),
-    # Nonheated porcelain matches the oak plane at the suite bath and vanity.
-    # DITRA-XL and mortar are coordinated as one 3/4" stack above subfloor.
+    # The nonheated suite bath uses DITRA-XL; the small glass vanity mosaic uses
+    # continuous cement backer. Both assemblies target the adjacent 3/4-inch oak plane.
     Room(uid="CSR412AAAA", tag="RM-S-SUITEBATH", seed=pt(ft(14), ft(19)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-oak-height"),
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-kaleo-brick"),
     Room(uid="CSR413AAAA", tag="RM-S-VANITY", seed=pt(ft(3), ft(24, 4)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-oak-height"),
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-flower-blue"),
     # The heated bath uses DITRA-HEAT with the cable in its studs, matched
     # to the hall oak at D-S-BATH1. This is not ordinary DITRA-XL.
     #
@@ -1059,7 +1059,7 @@ ROOMS = [
     # roughly the mudroom's own 9.9' span, and at half the table limit the L/360 basis
     # is no longer the binding number it would have been out in the 18' field.
     Room(uid="CSR408AAAA", tag="RM-S-BATH1", seed=pt(ft(5), ft(31)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-heated"),
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-carrara"),
     # RM-S-HALL is the source's single 181.02 sf "Hallway" again: taking the centre line
     # out between y 22'-4" and 30'-10" left one polygonized face spanning the old hall,
     # landing and open stair well, so RM-S-LANDING/RM-S-STAIR were retired into this claim

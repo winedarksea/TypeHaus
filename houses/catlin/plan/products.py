@@ -30,11 +30,12 @@ from plan.bed_reading_corner_types import BED_READING_CORNER_PRODUCTS
 from plan.bedroom_wardrobe_types import BEDROOM_WARDROBE_PRODUCTS
 from plan.closet_types import CLOSET_PRODUCTS
 from plan.decking_selection import TREX_TIDE_POOL_PRODUCT
-from plan.plant_liner_selection import EXTRUTECH_P1600
 from plan.electrical_floor_types import FLOOR_BOX_PRODUCT
 from plan.kitchen_sink_types import KRAUS_KHU100_32
 from plan.living_east_run_types import LIVING_EAST_RUN_PRODUCTS
+from plan.plant_liner_selection import EXTRUTECH_P1600
 from plan.plant_room_types import PLANT_ROOM_PRODUCTS
+from plan.products_floor_tiles import FLOOR_TILE_PRODUCTS
 from plan.products_interior import INTERIOR_PRODUCTS
 from plan.study_bookcase_types import STUDY_BOOKCASE_PRODUCTS
 from plan.study_nook_types import STUDY_NOOK_PRODUCTS
@@ -292,8 +293,10 @@ PRODUCTS = (
     KOHLER_UNDERSCORE_1130_W1, KOHLER_CLEARFLO_7272,
     LEVITON_EV_RECEPTACLE_1450R,
     FLOOR_BOX_PRODUCT,
-    *INTERIOR_PRODUCTS, *CLOSET_PRODUCTS, *BEDROOM_WARDROBE_PRODUCTS, *BATH1_STORAGE_PRODUCTS,
+    *INTERIOR_PRODUCTS, *FLOOR_TILE_PRODUCTS, *CLOSET_PRODUCTS,
+    *BEDROOM_WARDROBE_PRODUCTS, *BATH1_STORAGE_PRODUCTS,
     *STUDY_NOOK_PRODUCTS, *STUDY_BOOKCASE_PRODUCTS,
-    *BED_READING_CORNER_PRODUCTS, *BED_DESK_PRODUCTS, *BATH2_VANITY_PRODUCTS, *LIVING_EAST_RUN_PRODUCTS,
+    *BED_READING_CORNER_PRODUCTS, *BED_DESK_PRODUCTS,
+    *BATH2_VANITY_PRODUCTS, *LIVING_EAST_RUN_PRODUCTS,
     *PLANT_ROOM_PRODUCTS, *STARTER_FURNITURE_PRODUCTS, *TITANIUM_PRODUCTS,
 )

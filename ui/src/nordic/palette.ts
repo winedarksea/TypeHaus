@@ -70,6 +70,10 @@ const FLOOR_RECIPE_SURFACE: Record<string, FloorSurface> = {
   "lvp-plank": FLOOR_FINISH_SURFACE.lvp,
   "carpet-pile": FLOOR_FINISH_SURFACE.carpet,
   "porcelain-tile": FLOOR_FINISH_SURFACE.tile,
+  "tile-calacatta-gold-hex": FLOOR_FINISH_SURFACE.tile,
+  "tile-kaleo-running-bond": FLOOR_FINISH_SURFACE.tile,
+  "tile-flower-blue": FLOOR_FINISH_SURFACE.tile,
+  "tile-carrara-grid": FLOOR_FINISH_SURFACE.tile,
 };
 
 /** The lighting response for a floor finish (tag, then declared recipe); never undefined. */

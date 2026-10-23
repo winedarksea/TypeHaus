@@ -6,7 +6,6 @@ are design allowances; verify the installed planes with the selected tile and se
 
 from typehaus import Material
 
-
 MATERIALS_FLOORING = [
     Material(tag="catlin-plant-vinyl-raised", name="Plant-room sheet vinyl over SurePly",
              hatch="membrane", color="#f2ede6", finish="veined-marble",
@@ -28,20 +27,51 @@ MATERIALS_FLOORING = [
              floor_companion_refs=("carpet-pad", "catlin-carpet-underlayment"),
              source='1/4" rigid plywood underlayment + 1/4" bonded cushion + 1/4" '
                     'nominal carpet. Verify compressed edge at oak and tile doors.'),
-    Material(tag="catlin-tile-oak-height", name="Porcelain over DITRA-XL to oak height",
-             hatch="masonry", color="#dfe2e5", finish="porcelain-tile",
-             finish_thickness_in=0.75, base_detail="tile",
-             floor_waste_fraction=0.15, floor_companion_refs=("catlin-ditra-xl",),
-             product_ref="PROD-MARAZZI-MF01",
-             source='5/16" DITRA-XL + 5/16" Marazzi MF01 24x24 matte porcelain + '
-                    '1/8" combined mortar beds = 3/4" above subfloor. Verify beds.'),
-    Material(tag="catlin-tile-heated", name="Porcelain over DITRA-HEAT to oak height",
-             hatch="masonry", color="#dce0e3", finish="porcelain-tile",
-             finish_thickness_in=0.75, base_detail="tile",
-             floor_waste_fraction=0.15, floor_companion_refs=("catlin-ditra-heat",),
-             product_ref="PROD-MARAZZI-MF01",
-             source='1/4" DITRA-HEAT + 5/16" Marazzi MF01 24x24 matte porcelain + '
-                    '3/16" combined mortar beds = 3/4"; cable occupies studs.'),
+    Material(tag="catlin-tile-calacatta-gold", name="Calacatta Gold hex mosaic, white epoxy grout",
+             hatch="masonry", color="#f2efe8", finish="tile-calacatta-gold-hex",
+             finish_thickness_in=0.75, base_detail="tile", floor_waste_fraction=0.15,
+             floor_companion_refs=("catlin-ditra-heat",),
+             product_ref="PROD-QUBE-BODE-CALACATTA-HEX",
+             source='RM-M-BATH2: nominal 3-inch matte hex (actual 2.86-inch chips), '
+                    'white epoxy grout. '
+                    '1/4-inch DITRA-HEAT + 0.26-inch tile + '
+                    '0.24-inch combined bedding/approved leveling '
+                    '= 3/4 inch. Beds provisional; verify installed stack. '
+                    'Larger chips replace nominal MSI 2-inch hex to clear the membrane minimum.'),
+    Material(tag="catlin-tile-kaleo-brick", name="Kaleo Brick terracotta, cream epoxy grout",
+             hatch="masonry", color="#bc7658", finish="tile-kaleo-running-bond",
+             finish_thickness_in=0.75, base_detail="tile", floor_waste_fraction=0.15,
+             floor_companion_refs=("catlin-ditra-xl",), product_ref="PROD-IVY-KALEO-BRICK",
+             source='RM-S-SUITEBATH: 7.08 x 14.17-inch matte rectangles, half-offset '
+                    'running bond, warm cream slightly yellow epoxy grout. 5/16-inch '
+                    'DITRA-XL + provisional 5/16-inch tile + 1/8-inch combined mortar '
+                    '= 3/4 inch. Confirm tile thickness and beds before installation.'),
+    Material(tag="catlin-tile-flower-blue", name="Flower Blue mosaic, light gray epoxy grout",
+             hatch="masonry", color="#c7d9e2", finish="tile-flower-blue",
+             finish_thickness_in=0.75, base_detail="tile", floor_waste_fraction=0.15,
+             floor_companion_refs=("catlin-mosaic-backer",),
+             product_ref="PROD-SUNWINGS-FLOWER-BLUE",
+             source='RM-S-VANITY: glossy glass petal mosaic, white base/white mortar, '
+                    'light gray epoxy grout. 1/4-inch cement backer + 6 mm tile + '
+                    '0.264-inch combined bedding/approved leveling allowance = 3/4 inch. '
+                    'Provisional: select backer-compatible leveling system, not thick thinset. '
+                    'Small chips are not placed directly over DITRA-XL.'),
+    Material(tag="catlin-tile-carrara", name="Budget Carrara matte 12x24, white epoxy grout",
+             hatch="masonry", color="#e9edf0", finish="tile-carrara-grid",
+             finish_thickness_in=0.75, base_detail="tile", floor_waste_fraction=0.15,
+             floor_companion_refs=("catlin-ditra-heat",),
+             product_ref="PROD-FLORIDA-CARRARA-MATTE",
+             source='RM-S-BATH1: budget 12 x 24-inch matte porcelain, straight grid, 1/8-inch '
+                    'white epoxy grout joints. 1/4-inch DITRA-HEAT + nominal 9 mm tile + '
+                    '0.146-inch combined mortar = 3/4 inch. Verify thickness and beds; '
+                    'matte selected '
+                    'instead of requested polished HDC for published wet DCOF >=0.42.'),
+    Material(tag="catlin-mosaic-backer", name="Continuous cement backer for glass mosaic, 1/4 inch",
+             hatch="cement", color="#aaa69c",
+             source='Nonheated RM-S-VANITY; fastened cement backer bedded in mortar. '
+                    'Include approved height leveling in this assembly allowance. '
+                    'Use white glass-compatible setting mortar above; '
+                    'no DITRA minimum chip restriction.'),
     Material(tag="catlin-carpet-underlayment", name='Rigid plywood carpet underlayment, 1/4"',
              hatch="lumber", color="#bfae91",
              source="Rigid height build-up under Catlin raised carpet; cushion is separate."),
