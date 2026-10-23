@@ -1,4 +1,3 @@
-from typehaus.resolve.paneling import _FLUSH_REVEAL_M
 """BATH2's stock front, supported custom return, and molded pan drain."""
 
 import ifcopenshell
@@ -15,6 +14,7 @@ from typehaus.model.placeable_symbols._swanstone_flex import (
     front_opening_limits,
 )
 from typehaus.model.placeable_symbols._swanstone_flex_config import BATH2_SHOWER
+from typehaus.resolve.paneling import _FLUSH_REVEAL_M
 
 INCH = 0.0254
 

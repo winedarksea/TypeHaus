@@ -329,8 +329,8 @@ def _band_outline(wall, lo: float, hi: float, toward: tuple[float, float],
     face = _room_side_offset(wall, toward)
     # A replacing band shifts _FLUSH_REVEAL_M proud: coplanar with the finish it meets, the
     # viewer z-fights the two faces.
-    inner, outer = ((face - thickness_m + _FLUSH_REVEAL_M, face + _FLUSH_REVEAL_M) if replaces_finish
-                    else (face, face + thickness_m))
+    inner, outer = ((face - thickness_m + _FLUSH_REVEAL_M, face + _FLUSH_REVEAL_M)
+                    if replaces_finish else (face, face + thickness_m))
     p0 = add(wall.axis[0], scale(direction, lo))
     p1 = add(wall.axis[0], scale(direction, hi))
     return [(float(x), float(y))
