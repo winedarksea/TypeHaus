@@ -1,4 +1,4 @@
-"""Generic solid hardwoods, independent of any house's milling order or stock thickness."""
+"""Generic solid woods, independent of any house's milling order or stock thickness."""
 
 from typehaus.library.wood_appearance import NATURAL_WOOD_COLORS, WOOD_SPECIES_NAMES
 from typehaus.model.materials import Material

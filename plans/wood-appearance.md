@@ -21,6 +21,8 @@ requires literals; the model JSON test checks those against the library defaults
 | `red-oak` | `#cbaa8d` | [Red oak](https://www.wood-database.com/red-oak/): pinkish tan-brown, open grain; smaller quartered rays than white oak. |
 | `sugar-maple` | `#e6d9bf` | [Sugar maple](https://www.wood-database.com/hard-maple/): creamy sapwood, fine restrained grain; no default birdseye/curl. |
 
+| `douglas-fir` | `#d9b077` | Warm golden tan; pronounced growth bands, straight figure, no hardwood pores or ray fleck. Select Structural framing baseline with restrained variation. |
+
 The references inform species character and color relationships. Their sealed samples do
 not establish an exact water-based polyurethane color, sheen, or aging interval. Display,
 lighting, individual trees, and finishing preparation affect the final appearance.
@@ -32,6 +34,9 @@ lighting, individual trees, and finishing preparation affect the final appearanc
   `solid-board` is the neutral jointless recipe; `oak-board` remains supported.
 - `wood_surface` independently selects `natural-clear` (default for supported species),
   `unfinished`, or `painted`. Painted wood keeps joints but loses wood-color variation.
+- `df-select-s4s` uses the Douglas fir profile with its existing satin hardwax-oil finish.
+  W-M-STRW studs render as individual boards with vertical grain, crosscut ends, and member picking;
+  its red-oak bay courses also use the wood renderer. KDAT and unspecified framing stay batched.
 - The sauna liner and locust trim remain unfinished. Hardwax-oil construction notes remain
   intact; the natural-clear rendering baseline does not revise their finish specifications.
 - Species profiles control growth-ring spacing, pores, rays, interlock, color spread, and

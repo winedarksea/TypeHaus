@@ -142,6 +142,8 @@ MATERIALS: tuple[Material, ...] = (
         hatch="lumber",
         color="#d9b077",
         finish="clear-satin-hardwax-oil",
+        species="douglas-fir",
+        wood_surface="natural-clear",
         source="Douglas-fir lumber thermal/permeance reference values; NDS 2018 "
                "Table 12.3.3A Douglas Fir-Larch specific gravity 0.50.",
     ),

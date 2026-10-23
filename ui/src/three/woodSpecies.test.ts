@@ -5,14 +5,16 @@ import { applyPieceGrainUv, boardBoxGeometry, woodMaterialsForGeometry } from ".
 import { createPlanPrismGeometry } from "./planGeometry";
 import { buildSolid } from "./builders/structure";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
-import type { Catalog, Solid } from "../model/types";
+import { buildWallSkinMembers } from "./builders/wallSkin";
+import { resolveMemberPickUid } from "./memberPicking";
+import type { Catalog, Member, Solid } from "../model/types";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }
 export function runWoodSpeciesTests() {
   const solid = WOOD_PLANK_STYLES["solid-board"];
-  assert(Object.keys(WOOD_SPECIES_PROFILES).length === 9, "Nine distinct species");
+  assert(Object.keys(WOOD_SPECIES_PROFILES).length === 10, "Ten distinct species");
   assert(woodSpeciesProfile("oak")?.key === "oak", "Existing oak means white oak");
   assert(woodSpeciesProfile("plywood") === null, "No species guess for sheet goods");
   assert(plankStyleOrNull("local-top", "clear-satin-hardwax-oil", "walnut") === solid,
@@ -31,6 +33,29 @@ export function runWoodSpeciesTests() {
     const schematic = createPlankMaterial("schematic", solid, "#b77d60", undefined, { species: key });
     assert(schematic.roughness === 1 && !schematic.map, "Schematic remains flat");
   }
+  const fir = WOOD_SPECIES_PROFILES["douglas-fir"];
+  assert(fir.poreContrast === 0 && fir.rayStrength === 0 && fir.interlock === 0,
+    "Douglas fir has growth bands without hardwood pores, rays or interlock");
+  const framing = new THREE.Group(), body = new THREE.Group();
+  const stud = { key: "stud-001", category: "stud", profile: "2x6", shape: "rect",
+    material: "df-select-s4s", p0: [0, 0], p1: [0, 0], z0_m: 0, z1_m: 2.7,
+    width_m: 0.0381, depth_m: 0.1397, plies: 1, length_m: 2.7, orient: [1, 0] } as unknown as Member;
+  buildWallSkinMembers({ framing } as Parameters<typeof buildWallSkinMembers>[0], body,
+    "mudroom", [stud, { ...stud, key: "plain", material: null }], [0, 0], "nordic",
+    RESOLVED_NORDIC_PALETTE.light, [{ tag: "df-select-s4s", name: "Douglas fir", r_per_inch: 1,
+      perm_rating: 2.9, density: 530, color: "#d9b077",
+      species: "douglas-fir", finish: "clear-satin-hardwax-oil", wood_surface: "natural-clear" }]);
+  const firMesh = framing.children.find(c => c instanceof THREE.Mesh && c.geometry.getAttribute("woodEnd")) as THREE.Mesh;
+  assert(firMesh && body.children.length === 0 && framing.children.length === 2,
+    "Authored fir gets a textured board in framing; plain stock remains batched");
+  assert(resolveMemberPickUid(firMesh, null, 0) === "mudroom::stud-001",
+    "Textured framing keeps its per-member picking identity");
+  assert(firMesh.userData.trades?.includes("framing"), "Textured studs keep framing visibility");
+  const studUv = firMesh.geometry.getAttribute("uv"), studEnds = firMesh.geometry.getAttribute("woodEnd");
+  const studFaceV = Array.from({ length: studUv.count }, (_, i) => i).filter(i => !studEnds.getX(i))
+    .map(i => studUv.getY(i));
+  assert(Math.abs((Math.max(...studFaceV) - Math.min(...studFaceV)) * solid.tileAlongM - 2.7) < 1e-5,
+    "Fir stud grain runs vertically at physical scale");
   const basswood = WOOD_SPECIES_PROFILES.basswood, ash = WOOD_SPECIES_PROFILES.ash;
   const energy = (profile: typeof ash) => Array.from({ length: 200 }, (_, i) =>
     sampleWoodFigure(i * 0.0009, 0.5, 4, profile).tone).reduce((sum, n) => sum + n * n, 0);

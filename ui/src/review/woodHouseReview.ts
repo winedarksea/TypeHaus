@@ -5,6 +5,7 @@ import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { buildBaseRun, buildBoardMembers, buildCountertop, buildDoorCasing } from "../three/builders/millwork";
 import { buildPaneling, buildSolid } from "../three/builders/structure";
 import { buildCanvasObjectParts } from "../three/builders/site";
+import { buildWallSkinMembers } from "../three/builders/wallSkin";
 import { runWallCoatingChecks } from "./wallCoatingChecks";
 
 /** Actual resolved Catlin objects, built through the same entrypoints as the editor. */
@@ -67,6 +68,16 @@ export async function houseWoodSamples() {
   const painted = model.panelings!.find(p => isSpecies(p.material_ref, "oak") && appearanceFor(p.material_ref)?.wood_surface === "painted")!;
   add("White oak · painted shiplap", "oak", "painted", (g, p, s) =>
     buildPaneling(g, painted, [0, 0], "nordic", palette, materials, p, s));
+  const mudroomWall = model.walls.find(w => w.tag === "W-M-STRW")!;
+  add("Douglas fir · mudroom studs", "douglas-fir", "natural-clear", (g, p, s) => {
+    buildWallSkinMembers({ framing: g } as Parameters<typeof buildWallSkinMembers>[0], g,
+      mudroomWall.uid, mudroomWall.members, [0, 0], "nordic", palette, materials);
+    g.traverse(object => {
+      if (!(object instanceof THREE.Mesh)) return;
+      p.push(object);
+      s.set(mudroomWall.uid, Array.isArray(object.material) ? object.material : [object.material]);
+    });
+  });
   return { groups, checks: { failures, objects: groups.map(({ name, species, surface }) => ({ name, species, surface })) } };
 }
 

@@ -39,6 +39,9 @@ export const WOOD_SPECIES_PROFILES: Readonly<Record<string, WoodSpeciesProfile>>
     fiberContrast: 0.022, interlock: 0.02, rayStrength: 0.05, variation: 0.065, sapwood: 0.07, marking: 0.03 },
   "sugar-maple": { key: "sugar-maple", ringSpacingM: 0.003, ringContrast: 0.029, poreContrast: 0.006,
     fiberContrast: 0.012, interlock: 0.02, rayStrength: 0, variation: 0.028, sapwood: 0, marking: 0.04 },
+  // Select framing: growth bands and straight figure, without hardwood pores or rays.
+  "douglas-fir": { key: "douglas-fir", ringSpacingM: 0.004, ringContrast: 0.16, poreContrast: 0,
+    fiberContrast: 0.014, interlock: 0, rayStrength: 0, variation: 0.055, sapwood: 0.06, marking: 0 },
 };
 
 export function woodSpeciesProfile(species?: string | null): WoodSpeciesProfile | null {

@@ -10,6 +10,7 @@ import {
 } from "../../nordic/palette";
 import { composeMemberBoxMatrix, isRakedMember } from "../memberBox";
 import { memberColor } from "../members";
+import { memberUidsFor, tagMergedMemberIdentity } from "../memberPicking";
 import { createPlanPrismGeometry, projectPointToScene, type PlanCenter } from "../planGeometry";
 import {
   createPlankMaterial, planLongAxis, plankStyleOrNull,
@@ -179,6 +180,8 @@ export function buildBoardMembers(parent: THREE.Group, members: readonly Member[
     }
     const mesh = makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry));
     mesh.userData.memberKey = m.key;
+    const triangleCount = (geometry.index?.count ?? geometry.getAttribute("position").count) / 3;
+    tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, [m]), [0, triangleCount]);
     parent.add(mesh);
   }
   return rest;

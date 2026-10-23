@@ -14,10 +14,12 @@ NATURAL_WOOD_COLORS = {
     "basswood": "#e5dcc4",
     "red-oak": "#cbaa8d",
     "sugar-maple": "#e6d9bf",
+    "douglas-fir": "#d9b077",
 }
 
 WOOD_SPECIES_NAMES = {
     "cherry": "Black cherry", "ash": "White ash", "elm": "American elm",
     "walnut": "Black walnut", "oak": "White oak", "locust": "Black locust",
     "basswood": "Basswood", "red-oak": "Red oak", "sugar-maple": "Sugar maple",
+    "douglas-fir": "Douglas fir",
 }

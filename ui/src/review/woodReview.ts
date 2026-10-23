@@ -11,6 +11,7 @@ const legacyColors = [
   ["oak", "White oak", "#c9b08c"], ["locust", "Black locust", "#b59a5c"],
   ["basswood", "Basswood", "#e6d4ae"], ["red-oak", "Red oak", "#c9ab91"],
   ["sugar-maple", "Sugar maple", "#e5d9be"],
+  ["douglas-fir", "Douglas fir", "#d9b077"],
 ];
 const samples: { species: string; name: string; color: string }[] =
   await (await fetch("/__wood-review-palette")).json();
@@ -49,12 +50,15 @@ if (house) {
   document.querySelector("p")!.textContent = "Production builders · original grain scale · objects uniformly fitted to cards";
   camera.position.set(1, 5.5, 12); camera.lookAt(0, 0, 0);
 }
-for (const [index, sample] of (room ? [] : samples).entries()) {
+const cards = house ? house.groups.map(g => ({ species: g.species, name: g.name, color: "" })) : samples;
+const cardRows = Math.ceil(cards.length / 3);
+if (!room && !params.has("detail")) camera.zoom = Math.min(1, 3 / cardRows);
+for (const [index, sample] of (room ? [] : cards).entries()) {
   const { species, name } = sample;
   const color = legacy ? legacyColors[index][2] : sample.color;
   const appearance = legacy ? undefined : { species };
   const group = new THREE.Group();
-  group.position.set((index % 3 - 1) * 2.05, (1 - Math.floor(index / 3)) * 1.5, 0);
+  group.position.set((index % 3 - 1) * 2.05, ((cardRows - 1) / 2 - Math.floor(index / 3)) * 1.5, 0);
   if (house) {
     const content = house.groups[index].group;
     const box = new THREE.Box3().setFromObject(content);
@@ -93,7 +97,7 @@ for (const [index, sample] of (room ? [] : samples).entries()) {
 }
 if (params.has("far")) camera.zoom = 0.55;
 if (params.has("detail")) {
-  camera.zoom = 2.85; camera.position.set(-2.05, 3.2, 12); camera.lookAt(-2.05, 1.5, 0);
+  camera.zoom = 2.85; camera.position.set(-2.05, 3.2, 12); camera.lookAt(-2.05, (cardRows - 1) / 2 * 1.5, 0);
 }
 camera.updateProjectionMatrix();
 if (house || room) {

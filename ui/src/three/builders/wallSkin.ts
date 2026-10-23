@@ -15,6 +15,7 @@ import type { ResolvedNordicPalette } from "../../nordic/palette";
 import { buildMembers, isSkinMember, type SkinLine } from "../members";
 import type { PlanCenter } from "../planGeometry";
 import type { Trade } from "../../state/vocabulary";
+import { buildBoardMembers } from "./millwork";
 import { tagTrades } from "./registry";
 
 /** The trade set a wall member rides: lumber and furring closures are framing; a skin band
@@ -51,7 +52,8 @@ export function buildWallSkinMembers(
   }
   for (const { parent, trades, members: skin } of skinByBucket.values()) {
     const firstChildIndex = parent.children.length;
-    buildMembers(parent, skin, center, mode, palette, wallUid, materials, lines);
+    const remaining = buildBoardMembers(parent, skin, center, mode, palette, materials, wallUid);
+    buildMembers(parent, remaining, center, mode, palette, wallUid, materials, lines);
     tagTrades(parent, firstChildIndex, trades);
   }
 }

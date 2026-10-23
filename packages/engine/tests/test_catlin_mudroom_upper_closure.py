@@ -132,3 +132,18 @@ def test_upper_gypsum_is_stamped_for_the_drywall_view_toggle(catlin_model_ro):
     assert layers["gwb-mudroom-upper"]["material"] == "gwb"
     assert layers["gwb-mudroom-upper"]["trades"] == ["drywall"]
     assert layers["paint-mudroom-upper"]["trades"] == ["paint"]
+
+
+def test_exposed_studs_export_the_douglas_fir_appearance(catlin_model_ro):
+    from typehaus.library.wood_appearance import NATURAL_WOOD_COLORS
+
+    material = next(m for m in catlin_model_ro.plan.library.materials
+                    if m.tag == "df-select-s4s")
+    assert material.species == "douglas-fir"
+    assert material.color == NATURAL_WOOD_COLORS[material.species]
+    assert material.wood_surface == "natural-clear"
+    assert material.finish == "clear-satin-hardwax-oil"
+    wall = next(w for w in wall_graph_json(catlin_model_ro, None)["walls"]
+                if w["tag"] == "W-M-STRW")
+    studs = [m for m in wall["members"] if m["category"] == "stud"]
+    assert studs and all(m["material"] == material.tag for m in studs)
