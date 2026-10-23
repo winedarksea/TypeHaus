@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typehaus.resolve.model import ResolvedOpening
 
 
 @dataclass(frozen=True)
@@ -21,3 +25,17 @@ class WindowSeat:
     head_drop_m: float
     #: The unit's interior face as a signed wall-normal offset: the back dam's front face.
     inner_m: float
+
+
+def window_frame_dimensions(opening: ResolvedOpening) -> tuple[float, float, float] | None:
+    """Frame width, height and bottom above the floor; None means no resolved seat.
+
+    The rough opening remains the framing contract. A manually flashed opening cannot
+    claim a product size until its installation detail supplies a seat.
+    """
+    seat = getattr(opening, "window_seat", None)
+    if getattr(opening, "kind", "window") != "window" or seat is None:
+        return None
+    return (opening.width_m - 2 * seat.jamb_inset_m,
+            opening.height_m - seat.sill_rise_m - seat.head_drop_m,
+            opening.sill_m + seat.sill_rise_m)

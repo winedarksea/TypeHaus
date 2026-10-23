@@ -33,8 +33,8 @@ class FlashingConfig:
     perimeter_lap_m: float = inch(2).meters
     hem_m: float = inch(0.25).meters
     drainage_slope: float = 0.25 / 12
-    #: Shim space between a window unit and its flashed RO at each jamb and the head
-    #: (RO = unit + 1/2", the makers' usual call-out); the sill bears on the pan.
+    #: Shim space between a window unit and the membrane at each jamb and the head.
+    #: Buck and flashing consume additional RO space; the sill bears on the pan.
     install_gap_m: float = inch(0.25).meters
     obstacle_clearance_m: float = inch(0.0625).meters
     membrane_material: str = "fluid-applied-flashing"

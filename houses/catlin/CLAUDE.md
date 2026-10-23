@@ -947,8 +947,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `plan/window_types.py`/`plan/door_types.py` redefine every tag the house hangs, each with
   its NFRC CPD row, and `plan/manifest.py` drops the library preset of that tag; catalog-only
   sizes stay presets. **Edit the house file, never `library/windows.py`.** The escape types
-  author Andersen's `net_clear_width`/`_height` and `code.R310_egress` grades it; no Euro
-  sightline nets 20" at 27". Before retyping an escape window, read
+  author Andersen's `net_clear_width_deduction`/`net_clear_height_deduction`, applied to
+  the resolved flashed frame. **2026-10-23: seven 27" escape openings yield only 19.90"
+  clear width, exposing five room failures.** Keep the stud-spacing-driven RO widths;
+  supplier/product and installation details must resolve the clearance. Before retyping an escape window, read
   `notes/window_and_door_procurement.md` §2 and §7; open quote items are §2.6.
 
 - **Facade alignment — ONE GRID PER FACADE.** `EXT_2X6`/`PLANT_EXT_2X6_HUMID` set

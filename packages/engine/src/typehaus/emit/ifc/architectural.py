@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import replace
 from typing import Any
 
 from shapely.geometry import Polygon
@@ -32,6 +33,7 @@ from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.geometry_walls import layer_solids
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
+from typehaus.resolve.model_window_seat import window_frame_dimensions
 from typehaus.resolve.overlay import intersection, union_all
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.topology import _added_thicknesses
@@ -419,12 +421,23 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
 
     # Filling: a thin frame prism (a Revit-style panel), tagged for the round-trip.
     ifc_class = "IfcDoor" if opening.is_door else "IfcWindow"
-    a, b, _thickness = _opening_segment(rw, opening)
+    dimensions = window_frame_dimensions(opening)
+    filling_opening = (replace(opening, width_m=dimensions[0], height_m=dimensions[1],
+                               sill_m=dimensions[2]) if dimensions is not None else opening)
+    a, b, _thickness = _opening_segment(rw, filling_opening)
     frame_profile = rect_between(a, b, -0.025, 0.025)
     filling = ll.create_entity(f, ifc_class, name=opening.tag)
     filling.GlobalId = derive_guid(project_uuid, opening.uid)
-    filling.OverallWidth = opening.width_m
-    filling.OverallHeight = opening.height_m
+    filling.OverallWidth = filling_opening.width_m
+    filling.OverallHeight = filling_opening.height_m
+    if opening.kind == "window":
+        if dimensions is None:
+            filling.OverallWidth = filling.OverallHeight = None
+        ll.ensure_pset(f, filling, "TypeHaus_WindowDimensions", {
+            "RoughOpeningWidth": opening.width_m,
+            "RoughOpeningHeight": opening.height_m,
+            "FrameSizeResolved": dimensions is not None,
+        })
     door_type = next((item for item in model.plan.library.door_types
                       if item.tag == opening.type_ref), None) if opening.is_door else None
     product = door_type.bookcase_door if door_type is not None else None
@@ -435,7 +448,8 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
         filling_body = cased_door_representation(f, body, model, opening)
     elif product is None:
         filling_body = ll.add_prism_from_profile(
-            f, body, frame_profile, opening.height_m, z0)
+            f, body, frame_profile, filling_opening.height_m,
+            rw.base_ref_z_m + filling_opening.sill_m)
     else:
         parts = opening_parts(rw, opening, door_type.operation,
                               bookcase_door=product)

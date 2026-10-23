@@ -11,6 +11,7 @@ from typehaus.emit.draw.schedules.tables import _add_table
 from typehaus.emit.draw.sheet_writer import schedule_sheet, section
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model_window_seat import window_frame_dimensions
 
 
 def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
@@ -45,10 +46,12 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
             if not opening.is_door and not want_windows:
                 continue
             spec = (doors if opening.is_door else windows).get(opening.type_ref or "")
+            frame = window_frame_dimensions(opening)
             rows.append((
                 marks.get(opening.type_ref or "", "—"), opening.tag,
                 "Door" if opening.is_door else "Window", opening.type_ref or "RO",
                 f"{opening.width_m / M_PER_IN:.0f}\" × {opening.height_m / M_PER_IN:.0f}\"",
+                *((_frame_size_text(frame),) if kinds == "window" else ()),
                 *_energy_columns(spec, opening.is_door)))
         # One header tuple for both kinds. A-601 used to stop at U-factor, on the reading
         # that SHGC/VT/tempered are window facts; a glazed door is *fenestration* under
@@ -56,9 +59,18 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
         # read the same columns. ``_add_table`` zips rows against headers, so this arity
         # and ``_energy_columns``' must agree for every kind — they now do (5 each), which
         # is also what lets ``kinds="all"`` put doors and windows in one table.
-        headers: tuple[str, ...] = ("Mark", "Tag", "Kind", "Type", "Nominal footprint",
+        headers: tuple[str, ...] = ("Mark", "Tag", "Kind", "Type",
+                                    "Rough opening" if kinds == "window" else "Nominal footprint",
+                                    *(("Modeled frame",) if kinds == "window" else ()),
                                     "U-factor", "SHGC", "VT", "Operation", "Tempered")
         _add_table(fig, rows, headers, bbox=(0.04, 0.11, 0.92, 0.80))
+
+
+def _frame_size_text(frame: tuple[float, float, float] | None) -> str:
+    if frame is None:
+        return "UNRESOLVED"
+    width, height, _sill = frame
+    return f'{width / M_PER_IN:.3f}″ × {height / M_PER_IN:.3f}″'
 
 
 def _energy_columns(spec, is_door: bool) -> tuple[str, ...]:

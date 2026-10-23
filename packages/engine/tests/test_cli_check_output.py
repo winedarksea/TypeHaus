@@ -108,8 +108,7 @@ def test_tier_is_a_choice_so_a_typo_is_not_a_traceback() -> None:
 def test_check_hides_passing_findings_by_default() -> None:
     """Default output is failures + unevaluable rules only — never the passing majority.
 
-    On catlin that is now the unevaluable ones alone: the house carries no FAIL. The
-    assertion that matters here is the *filter*, so it is stated against both houses.
+    The assertion that matters here is the filter, regardless of the current house findings.
     """
     result = runner.invoke(app, ["check", str(CATLIN), "--plain"])
     lines = [ln for ln in result.output.splitlines() if ln[:1].isupper() and ":" in ln]
@@ -121,9 +120,8 @@ def test_check_hides_passing_findings_by_default() -> None:
 def test_check_exits_1_on_a_fail() -> None:
     """The gate half of the contract, on a house that actually fails.
 
-    catlin exits 0 clean, so it cannot prove an exit code it does not produce. starter is
-    unfinished by design — it carries real advisory FAILs at WARN severity, which is exactly
-    the case the default gate exists to catch.
+    Starter is unfinished by design — it carries real advisory FAILs at WARN severity,
+    which is exactly the case the default gate exists to catch.
     """
     result = runner.invoke(app, ["check", str(STARTER), "--plain"])
     assert result.exit_code == 1
@@ -138,18 +136,17 @@ def test_exit_on_error_is_the_looser_gate() -> None:
     stops. starter is what shows the gap — it carries advisory FAILs and no ERROR-severity
     finding at all, so the default gate closes on it and ERROR-only opens.
 
-    Catlin no longer carries the hall-bath WC / floor-truss ERROR after the fixture and drain
-    moved into the adjacent bay, so its ERROR-only gate opens.
+    Catlin's window-sizing review exposes five R310 errors, so its ERROR-only gate closes.
     """
     assert runner.invoke(app, ["check", str(STARTER), "--plain"]).exit_code == 1
     assert runner.invoke(
         app, ["check", str(STARTER), "--exit-on", ExitOn.error.value]).exit_code == 0
     assert runner.invoke(
-        app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value]).exit_code == 0
+        app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value]).exit_code == 1
 
 
-def test_catlin_has_no_unsuppressed_failures(catlin_json) -> None:
-    """The moved WC drain clears its truss, and no other finding is left visible."""
+def test_catlin_keeps_the_window_sizing_failures_visible(catlin_json) -> None:
+    """The strict gate must expose unresolved sizing, without reviving unrelated errors."""
     import json
 
     payload = json.loads(catlin_json.output)
@@ -157,8 +154,11 @@ def test_catlin_has_no_unsuppressed_failures(catlin_json) -> None:
         (f["check_id"], tuple(sorted(f["element_tags"] or ())))
         for f in payload["findings"] if f["result"] == "fail"
     ]
-    assert not failures, sorted(failures)
-    assert payload["fail"] == 0
+    assert len(failures) == 5
+    assert {cid for cid, _tags in failures} == {"code.R310_egress"}
+    assert {next(tag for tag in tags if tag.startswith("RM-")) for _cid, tags in failures} \
+        == {"RM-S-BED1", "RM-S-BED2", "RM-S-BED3", "RM-S-SUITE", "RM-A-STUDIO"}
+    assert payload["fail"] == 5
 
 
 def test_exit_on_none_never_gates() -> None:
@@ -253,7 +253,8 @@ def test_no_suppress_lifts_the_house_suppressions_and_writes_nothing() -> None:
 
     # The WC drain no longer fails. `--no-suppress` adds the house's other suppressed
     # findings without changing preferences.
-    assert quiet["fail"] == 0, "the moved drain clears the floor truss"
+    assert quiet["fail"] == 5
+    assert quiet["failing_check_ids"] == ["code.R310_egress"]
     assert "mep.run_through_floor_member" not in quiet["failing_check_ids"]
     assert loud["fail"] > quiet["fail"], "the suppressed debt is real and is now visible"
     assert "mep.riser_through_deck" in loud["failing_check_ids"]

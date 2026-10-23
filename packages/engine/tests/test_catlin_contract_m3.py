@@ -709,13 +709,12 @@ def test_exterior_corners_include_strength_first_third_stud(catlin_model):
 def test_bedroom_egress_is_associated_with_its_own_bounding_wall(catlin_check_report):
     report = catlin_check_report()
     findings = [finding for finding in report.findings if finding.check_id == "code.R310_egress"]
-    # Six sleeping rooms: RM-A-STUDIO, the west attic loft retyped to Occupancy.BEDROOM as a
-    # guest studio. It is the reason R310 reaches the attic at all —
-    # a STORAGE loft is out of this rule's scope — and it passes on WIN-A-S-JUL-W with
-    # nothing added: WT-2764's raw opening is 27" x 64" = 12.0 sf against 5.7, width 27"
-    # against 20", height 64" against 24", sill 2'-8" against 44".
+    # The flashed 27-inch openings leave only 19.90 inches clear with the selected
+    # Andersen hinge. Keep those design conflicts visible until a fitting product exists.
     assert len(findings) == 6
-    assert all(finding.result is Result.PASS for finding in findings)
+    assert {finding.element_tags[0] for finding in findings if finding.result is Result.FAIL} \
+        == {"RM-S-BED1", "RM-S-BED2", "RM-S-BED3", "RM-S-SUITE", "RM-A-STUDIO"}
+    assert sum(finding.result is Result.PASS for finding in findings) == 1
     assert all("WIN-B-SAUNA" not in finding.message for finding in findings)
 
 
@@ -725,7 +724,7 @@ def test_every_credited_egress_window_is_in_an_exterior_wall(catlin_ctx,
 
     The house-side half of the ``exterior_only`` fix; the two-sided synthetic pair lives in
     ``test_code_coverage_expansion.py``. This one is the standing guard: it
-    re-derives, from the resolved model rather than from a tag prefix, that each of the six
+    re-derives, from the resolved model rather than from a tag prefix, that each of the
     windows ``code.R310_egress`` credits is on a wall with modeled space on one side only.
     Author a borrowed-light sash into a bedroom partition and the *other* file's test proves
     the rule rejects it; this one proves nobody quietly re-pointed a real bedroom at one.
@@ -735,9 +734,10 @@ def test_every_credited_egress_window_is_in_an_exterior_wall(catlin_ctx,
     ctx = catlin_ctx
     findings = [f for f in catlin_check_report().findings
                 if f.check_id == "code.R310_egress"]
-    credited = {word for finding in findings for word in finding.message.split()
+    credited = {word for finding in findings if finding.result is Result.PASS
+                for word in finding.message.split()
                 if word.startswith("WIN-")}
-    assert len(credited) == 6, sorted(credited)
+    assert credited == {"WIN-M-BED-S1"}
     rooms_by_storey = _rooms_by_storey(ctx)
     for tag in sorted(credited):
         opening = next(o for o in ctx.model.openings if o.tag == tag)

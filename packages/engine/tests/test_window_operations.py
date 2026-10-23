@@ -159,13 +159,45 @@ def test_r310_grades_the_authored_net_clear_opening_not_the_rough_opening():
                                                                "net_clear_height": None}))
 
 
-def test_catlin_escape_windows_author_a_net_clear_opening_that_passes(catlin_plan):
-    window_types = {wt.tag: wt for wt in catlin_plan.library.window_types}
-    windows = {e.tag: e for e in catlin_plan.all_elements() if isinstance(e, Window)}
+def test_catlin_escape_windows_are_graded_on_the_flashed_frame(catlin_model_ro):
+    from typehaus.checks.code.mn_residential.egress import (
+        _meets_r310_2_1,
+        _net_clear_dimensions_m,
+    )
+
+    window_types = {wt.tag: wt for wt in catlin_model_ro.plan.library.window_types}
+    windows = {e.tag: e for e in catlin_model_ro.openings}
+    failing = set()
     for tag in EGRESS_CASEMENTS:
-        window_type = window_types[windows[tag].type_ref]
-        width, height = window_type.net_clear_width.inches, window_type.net_clear_height.inches
-        assert width >= 20 and height >= 24 and width * height / 144 >= 5.7, tag
+        opening = windows[tag]
+        window_type = window_types[opening.type_ref]
+        width, height = _net_clear_dimensions_m(opening, window_type)
+        if not _meets_r310_2_1(opening, grade_floor=False, window_type=window_type):
+            failing.add(tag)
+            assert width / .0254 == pytest.approx(19.90)
+        else:
+            assert width / .0254 == pytest.approx(22.90)
+        assert height / .0254 > 24
+    assert failing == set(EGRESS_CASEMENTS) - {"WIN-M-BED-S1", "WIN-M-BED-S2"}
+
+
+def test_selected_product_cannot_claim_rough_opening_as_net_clear():
+    from types import SimpleNamespace
+
+    from typehaus.checks.code.mn_residential.egress import _meets_r310_2_1
+
+    opening = SimpleNamespace(width_m=ft(3).meters, height_m=ft(5).meters, sill_m=ft(2).meters)
+    product = WindowType(tag="WT", width=ft(3), height=ft(5), product_ref="P")
+    assert not _meets_r310_2_1(opening, grade_floor=False, window_type=product)
+
+
+@pytest.mark.parametrize("update", [
+    {"net_clear_width": ft(2), "net_clear_width_deduction": ft(1)},
+    {"net_clear_height_deduction": ft(-1)},
+])
+def test_clear_opening_formula_rejects_ambiguous_or_negative_dimensions(update):
+    with pytest.raises(ValidationError):
+        WindowType(tag="WT", width=ft(3), height=ft(5), **update)
 
 
 def test_tilt_turn_coerces_from_authored_source():

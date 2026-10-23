@@ -7,10 +7,11 @@ stay presets. Owner's selection, notes/window_and_door_procurement.md §2:
 - Drutex IGLO Energy Alucover (aluminium-capped uPVC, black outside, white inside) for every
   tilt-turn, fixed and tilt-only unit.
 - Andersen 400 casement, egress hinge, for the nine R310 escape windows, whose 27" width no
-  Euro sightline clears. ``net_clear_*`` is Andersen's published opening; R310 grades it.
+  Euro sightline clears. R310 applies Andersen's deductions to the resolved frame size.
 
-Width/height stay the ROUGH OPENING (the framing module grades it); the unit is RO - 1/2"
-each way. U/SHGC/VT are the whole-window NFRC CPD rows cited in each ``source`` (read
+Width/height stay the ROUGH OPENING (the framing module grades it); frame size comes from
+the resolved buck, pan, membranes and installation gaps. U/SHGC/VT are the whole-window
+NFRC CPD rows cited in each ``source`` (read
 2026-10-21 at search.nfrc.org). A tempered twin carries its parent's row: tempering does not
 change the rating, and the 16 CFR 1201 mark is an order item.
 """
@@ -41,7 +42,7 @@ _TILT = ("NFRC DRU-K-26-00001: CGPrem2/ARG90/ExtraClr/ARG90/CGPrem2 (4/4/4) 48mm
 _AND = ("NFRC AND-N-1-04162: LowE(180/180/i89) triple, argon, U 0.20, SHGC 0.40, VT 0.51. "
         "Andersen sells 400 triple in the Northeast only; if a Twin Cities dealer cannot, "
         "the HeatLock double AND-N-1-03559 is U 0.24.")
-_SIZE = "Unit = RO - 1/2\" each way."
+_SIZE = "Frame size follows the resolved flashed opening; supplier confirmation pending."
 
 
 def _drutex(tag, width, height, operation, row, product, *, tempered=False,
@@ -67,13 +68,12 @@ def _hp(tag, width, height) -> WindowType:
                    u=0.14, shgc=0.39, vt=0.56)
 
 
-def _egress(tag, width, height, clear_height, *, tempered=False) -> WindowType:
+def _egress(tag, width, height, height_deduction, *, tempered=False) -> WindowType:
     # Andersen 400 widest-clear-opening hinge (§7): clear width = unit - 5.81".
-    unit_width = width.inches - 0.5
     return WindowType(
         tag=tag, width=width, height=height, operation="casement", tempered=tempered,
         u_factor=u_us(0.20), shgc=0.40, vt=0.51, frame_depth=_ANDERSEN_DEPTH,
-        net_clear_width=inch(round(unit_width - 5.81, 2)), net_clear_height=clear_height,
+        net_clear_width_deduction=inch(5.81), net_clear_height_deduction=height_deduction,
         product_ref=ANDERSEN_400_CASEMENT.tag, source=f"{_AND} {_SIZE}")
 
 
@@ -95,10 +95,10 @@ WINDOW_TYPES = (
     _tt("WT-3048-TT-T", inch(30), ft(4), tempered=True),
     _hp("WT-2754-HP", inch(27), ft(4, 6)),
     _hp("WT-3048-HP", inch(30), ft(4)),
-    _egress("WT-2748", inch(27), ft(4), inch(47.5 - 4.85)),
-    _egress("WT-2748-T", inch(27), ft(4), inch(47.5 - 4.85), tempered=True),
-    _egress("WT-2754", inch(27), ft(4, 6), inch(53.5 - 4.85)),
-    _egress("WT-3048", inch(30), ft(4), inch(47.5 - 4.43)),
+    _egress("WT-2748", inch(27), ft(4), inch(4.85)),
+    _egress("WT-2748-T", inch(27), ft(4), inch(4.85), tempered=True),
+    _egress("WT-2754", inch(27), ft(4, 6), inch(4.85)),
+    _egress("WT-3048", inch(30), ft(4), inch(4.43)),
 )
 
 HOUSE_WINDOW_TAGS = frozenset(t.tag for t in WINDOW_TYPES)

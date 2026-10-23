@@ -179,12 +179,28 @@ class WindowType(HausModel):
     # depth rather than guessing one (#32).
     frame_depth: Length | None = None
     # The maker's published NET clear opening (R310.2.1), sash open in normal operation.
-    # ``code.R310_egress`` grades these when authored and the nominal size otherwise.
+    # Selected products need exact openings or deductions below to receive R310 credit.
     net_clear_width: Length | None = None
     net_clear_height: Length | None = None
+    # Manufacturer deductions from the resolved frame, for custom sizes. Exact published
+    # openings above and sizing formulas are alternative contracts on each axis.
+    net_clear_width_deduction: Length | None = None
+    net_clear_height_deduction: Length | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None
+
+    @model_validator(mode="after")
+    def _validate_clear_opening_dimensions(self) -> WindowType:
+        for axis in ("width", "height"):
+            exact = getattr(self, f"net_clear_{axis}")
+            deduction = getattr(self, f"net_clear_{axis}_deduction")
+            if exact is not None and deduction is not None:
+                raise ValueError(f"{self.tag}: state net clear {axis} or its deduction, not both")
+            if deduction is not None and (not math.isfinite(deduction.meters)
+                                          or deduction.meters < 0):
+                raise ValueError(f"{self.tag}: net clear {axis} deduction must be nonnegative")
+        return self
 
 
 class MeshRef(HausModel):

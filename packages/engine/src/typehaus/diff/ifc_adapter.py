@@ -8,6 +8,7 @@ matcher and report stay dependency-light and unit-testable).
 from __future__ import annotations
 
 import uuid
+from dataclasses import replace
 from pathlib import Path
 
 from typehaus._meta import PSET_SOURCE
@@ -22,6 +23,7 @@ from typehaus.resolve.geometry import (
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.model_window_seat import window_frame_dimensions
 
 
 def _guid(project_uuid: uuid.UUID, uid: str) -> str:
@@ -89,9 +91,12 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
                                      min(board.z0_m for board in boards),
                                      max(board.z1_m for board in boards))
         else:
-            frame_points = _opening_frame_bounds(host, o)
-            centroid, bbox = _bounds(frame_points, host.base_ref_z_m + o.sill_m,
-                                     host.base_ref_z_m + o.sill_m + o.height_m)
+            dimensions = window_frame_dimensions(o)
+            filling = (replace(o, width_m=dimensions[0], height_m=dimensions[1],
+                               sill_m=dimensions[2]) if dimensions is not None else o)
+            frame_points = _opening_frame_bounds(host, filling)
+            centroid, bbox = _bounds(frame_points, host.base_ref_z_m + filling.sill_m,
+                                     host.base_ref_z_m + filling.sill_m + filling.height_m)
         elems.append(DiffElem(
             global_id=(derive_child_guid(puid, o.uid, "void") if o.kind == "rough_opening"
                        else _guid(puid, o.uid)),

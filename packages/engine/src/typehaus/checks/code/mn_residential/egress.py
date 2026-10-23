@@ -26,6 +26,7 @@ from typehaus.findings import Finding
 from typehaus.model.enums import SLEEPING_OCCUPANCIES, Occupancy
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import wall_frame
+from typehaus.resolve.model_window_seat import window_frame_dimensions
 from typehaus.resolve.solid_categories import in_slab_family
 
 _MIN_EGRESS_WIDTH = inch(20)
@@ -51,24 +52,45 @@ def _window_type(ctx: CheckContext, opening):
     return next((t for t in types if t.tag == opening.type_ref), None)
 
 
+def _net_clear_dimensions_m(opening, window_type=None) -> tuple[float, float] | None:
+    frame = window_frame_dimensions(opening)
+    dimensions = list(frame[:2] if frame is not None
+                      else (opening.width_m, opening.height_m))
+    for index, axis in enumerate(("width", "height")):
+        exact = getattr(window_type, f"net_clear_{axis}", None)
+        deduction = getattr(window_type, f"net_clear_{axis}_deduction", None)
+        if exact is None and deduction is None and getattr(window_type, "product_ref", None):
+            # A selected product without clear-opening data cannot inherit an RO-sized
+            # escape opening. That would let an unverified tilt-turn mask a failed casement.
+            return None
+        if deduction is not None:
+            if frame is None:
+                return None
+            dimensions[index] -= deduction.meters
+        elif exact is not None:
+            dimensions[index] = exact.meters
+    return dimensions[0], dimensions[1]
+
+
 def _meets_r310_2_1(opening, *, grade_floor: bool, window_type=None) -> bool:
     """Does this opening satisfy the R310.2.1 net-clear dimensions?
 
-    R310.2.1 measures the NET clear opening. A type that authors the maker's published
-    ``net_clear_width``/``net_clear_height`` is graded on them; otherwise on the nominal
-    rough opening, which overstates every operable sash.
+    Published exact openings override nominal dimensions; custom-size formulas deduct
+    from the flashed frame. A selected product with missing clear-opening data cannot pass.
+    Unselected schematic types retain their legacy nominal estimate.
     """
-    width_m, height_m = opening.width_m, opening.height_m
-    if window_type is not None and window_type.net_clear_width is not None:
-        width_m = window_type.net_clear_width.meters
-    if window_type is not None and window_type.net_clear_height is not None:
-        height_m = window_type.net_clear_height.meters
+    dimensions = _net_clear_dimensions_m(opening, window_type)
+    if dimensions is None:
+        return False
+    width_m, height_m = dimensions
+    seat = getattr(opening, "window_seat", None)
+    sill_m = opening.sill_m + (seat.sill_rise_m if seat is not None else 0.0)
     area_sf = width_m * height_m * 10.7639
     minimum = 5.0 if grade_floor else _MIN_EGRESS_AREA_SF
     return (width_m >= _MIN_EGRESS_WIDTH.meters
             and height_m >= _MIN_EGRESS_HEIGHT.meters
             and area_sf >= minimum
-            and opening.sill_m <= _MAX_EGRESS_SILL.meters)
+            and sill_m <= _MAX_EGRESS_SILL.meters)
 
 
 @check(Tier.CODE, "code.R310_egress")
@@ -94,9 +116,16 @@ def egress_windows(ctx: CheckContext) -> list[Finding]:
                              f"sleeping room {room.tag} has no window on an exterior wall to "
                              "escape through", (room.tag,), "R310.1"))
         else:
+            dimensions = []
+            for opening in wins:
+                clear = _net_clear_dimensions_m(opening, _window_type(ctx, opening))
+                size = (f'{clear[0] / .0254:.2f}" × {clear[1] / .0254:.2f}" clear'
+                        if clear is not None else "clear opening unresolved")
+                dimensions.append(f"{opening.tag}: {size}")
             out.append(_fail("code.R310_egress",
-                             f"sleeping room {room.tag} window fails egress dimensions",
-                             (room.tag,), "R310.2"))
+                             f"sleeping room {room.tag} has no verified compliant escape "
+                             f"window ({'; '.join(dimensions)})",
+                             (room.tag, *(op.tag for op in wins)), "R310.2"))
     return out
 
 
