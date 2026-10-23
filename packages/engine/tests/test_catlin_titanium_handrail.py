@@ -71,7 +71,8 @@ def test_the_west_top_return_is_square_onto_the_corner_studs(catlin_model_ro):
     bar_end = solids[f"{rail.tag}-RAIL1"].sweep.path[-1]
     ret = solids[f"{rail.tag}-RETURN2"].sweep.path
     assert ret[0] == bar_end
-    assert ret[1] == pytest.approx((123.26 * _IN, bar_end[1], bar_end[2]), abs=1e-4)
+    # The painted MDO face (123.26" on the 5/8" plywood until 2026-10-23).
+    assert ret[1] == pytest.approx((123.145 * _IN, bar_end[1], bar_end[2]), abs=1e-4)
     a, _b = solids[f"{rail.tag}-ENDPLATE2"].sweep.path
     rings = [member_footprint(m)[0] for m in catlin_model_ro.wall("W-M-STRW").members
              if m.category in ("stud", "corner")]

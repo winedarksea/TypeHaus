@@ -329,9 +329,10 @@ def test_the_landing_decks_are_scheduled_and_flagged(rows):
         assert row["nominal_stock"] == "5/4"
         assert row["finished_width_in"] == pytest.approx(3.5)
         assert row["milling_profile"] == "landing tread"
+    # 44.625 until 2026-10-23: ST-M2S's lanes widened 1/16" with W-M-STRW's MDO face.
     assert nosings[("landing-lower", ("ST-M2S",))]["finished_length_in"] == \
-        pytest.approx(44.625)
-    assert nosings[("stairhead", ("ST-M2S",))]["finished_length_in"] == pytest.approx(42.375)
+        pytest.approx(44.687)
+    assert nosings[("stairhead", ("ST-M2S",))]["finished_length_in"] == pytest.approx(42.437)
     assert nosings[("stairhead", ("ST-S2A",))]["finished_length_in"] == pytest.approx(36.0)
 
     boards = {row["location"]: row for row in _use(rows, "stair landing board")}
@@ -348,7 +349,7 @@ def test_the_landing_decks_are_scheduled_and_flagged(rows):
         assert row["material"] == "oak-floor-custom"
         assert row["finished_thickness_in"] == pytest.approx(0.75)
         assert row["finished_width_in"] == pytest.approx(3.5)
-        assert row["finished_length_in"] == pytest.approx(44.625)
+        assert row["finished_length_in"] == pytest.approx(44.687)  # 44.625 before the 2026-10-23 1/16" lane widening
         assert row["milling_profile"] == "T&G"
     assert not _use(rows, "stair landing deck")
 

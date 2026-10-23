@@ -594,17 +594,18 @@ WALLS = [
     # front edge behind the gypsum), a 6'-0" shelf and the support course under
     # FURN-M-STRW-BENCH, a notched oak 2x10 seat at 18". The sole plate is KDAT: boots drip
     # on it, and LVP butts it (R602.3.4 keeps a 2x plate). No switch box on this face —
-    # below 7' it is open bays; the mudroom switches are on W-M-MECH-S. 5/8" painted
-    # plywood closes the stair face —
-    # `interior_room` picks the
+    # below 7' it is open bays; the mudroom switches are on W-M-MECH-S. 1/2" MDO, painted
+    # white both faces, closes the stair face and backs every nook; painted poplar 1x4 hook
+    # rails (BK-M-STRW-HOOK-*) sit on its back at 42"/60" AFF. `interior_room` picks the
     # mudroom side as layer 0.
     # Until 2026-07-30 the mudroom segment was plain INT_2X6_BRG (spf vs. df-select-s4s),
     # which `integrity.junction_fallback` flagged at N-M-STRJ. The species was its own tag
     # (MUDROOM_INT_2X6_EXPOSED) until 2026-09-12; a material is not a wall (#70).
     #
     # ALIGNMENT: pin the stud face, matching the basement wall below at
-    # 9'-9 1/8"..10'-2 5/8". The nominal 5/8" plywood ends at x=10'-3 1/4", level with
-    # the under-stair Type X and the adjacent drywall; the bearing band does not move.
+    # 9'-9 1/8"..10'-2 5/8". The 1/2" MDO ends at x=10'-3 1/8" (5/8" ply ended at
+    # 10'-3 1/4" until 2026-10-23); FO-S-STAIR and ST-M2S are struck off that face, so a
+    # leaf thickness change moves them too. The bearing band does not move.
     #
     # MEP: keep wiring/plumbing out — a bored stud shows. One exception: REG-M-XFER-MUD, a
     # 12" transfer-louver cut centred y=34'-0" in the clear bay between studs at 33'-4" and

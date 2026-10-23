@@ -209,11 +209,11 @@
           0.0
         ],
         [
-          123.25,
+          122.635,
           0.0
         ],
         [
-          123.25,
+          122.635,
           21.65354330708662
         ],
         [
@@ -226,26 +226,54 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW117AAAA",
-      "tag": "W-M-STRW/ply-stair"
+      "tag": "W-M-STRW/paint-nook"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          122.635,
+          0.0
+        ],
+        [
+          123.13500000000002,
+          0.0
+        ],
+        [
+          123.13500000000002,
+          21.65354330708662
+        ],
+        [
+          122.635,
+          21.65354330708662
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW117AAAA",
+      "tag": "W-M-STRW/mdo-stair"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          122.62500000000001,
+          122.635,
           0.0
         ],
         [
-          123.25,
+          123.13500000000002,
           0.0
         ],
         [
-          123.25,
+          123.13500000000002,
           21.65354330708662
         ],
         [
-          122.62500000000001,
+          122.635,
           21.65354330708662
         ]
       ],
@@ -254,27 +282,27 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "cabinet-plywood",
-      "fill": "#c8a97a"
+      "material": "mdo-plywood-interior",
+      "fill": "#f0ede6"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          123.25,
+          123.13500000000002,
           0.0
         ],
         [
-          123.26,
+          123.14500000000001,
           0.0
         ],
         [
-          123.26,
+          123.14500000000001,
           21.65354330708662
         ],
         [
-          123.25,
+          123.13500000000002,
           21.65354330708662
         ]
       ],
@@ -1433,7 +1461,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          122.9375,
+          122.63000000000001,
           17.94104330708662
         ],
         "name": ""
@@ -1443,10 +1471,10 @@
         17.94104330708662
       ],
       "to": [
-        122.9375,
+        122.63000000000001,
         17.94104330708662
       ],
-      "text": "ply-stair 0.625\"",
+      "text": "paint-nook 0.01\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1458,7 +1486,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          123.255,
+          122.88500000000002,
           16.045209973753288
         ],
         "name": ""
@@ -1468,8 +1496,33 @@
         16.045209973753288
       ],
       "to": [
-        123.255,
+        122.88500000000002,
         16.045209973753288
+      ],
+      "text": "mdo-stair 0.5\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          123.14000000000001,
+          14.149376640419954
+        ],
+        "name": ""
+      },
+      "at": [
+        106.28248031496064,
+        14.149376640419954
+      ],
+      "to": [
+        123.14000000000001,
+        14.149376640419954
       ],
       "text": "paint-stair 0.01\"",
       "height": 1.6,
@@ -1617,7 +1670,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-571",
+      "content": "SHEET A-570",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -1974,8 +2027,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "cabinet-plywood",
-      "fill": "#c8a97a"
+      "material": "mdo-plywood-interior",
+      "fill": "#f0ede6"
     },
     {
       "space": "paper",
@@ -2012,7 +2065,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "cabinet-plywood  0.625\"",
+      "content": "mdo-plywood-interior  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

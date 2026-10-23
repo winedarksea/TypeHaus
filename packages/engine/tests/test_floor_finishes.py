@@ -295,7 +295,8 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     # not over SL-M-DECK is one plank floor — south bay, stair lane and hall band alike.
     field = (living.area_m2 - zone.area_m2) * _M2_TO_FT2
     # Removing the stair-wall stub changes the resolved L corner's clear floor boundary.
-    assert field == pytest.approx(327.2, abs=0.5)  # finish faces (355.6 axis-derived)
+    # 327.2 until W-M-STRW's stair face moved 1/8" west and the stair lane widened (2026-10-23).
+    assert field == pytest.approx(327.8, abs=0.5)  # finish faces (355.6 axis-derived)
 
 
 def test_a_derived_zone_is_clipped_to_the_room_not_drawn_as_the_slab(catlin_model):

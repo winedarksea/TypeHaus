@@ -31,7 +31,7 @@ try {
   await session.send("Emulation.setDeviceMetricsOverride", { width: 1800, height: 1490, deviceScaleFactor: 1, mobile: false });
   await mkdir(output, { recursive: true });
   for (const [name, query] of [["overview", ""], ["distance", "?far"], ["detail", "?detail"],
-    ...(houseSnapshot ? [["catlin", "?house"], ["suite", "?room"]] : [])]) {
+    ...(houseSnapshot ? [["catlin", "?house"], ["suite", "?room"], ["mudroom", "?mudroom"]] : [])]) {
     if (selectedView && selectedView !== name) continue;
     const url = `http://127.0.0.1:${address.port}/wood-review.html${query}${label === "before" ? (query ? "&legacy" : "?legacy") : ""}`;
     console.log(`Rendering ${name}…`);

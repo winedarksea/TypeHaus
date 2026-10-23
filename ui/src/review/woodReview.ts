@@ -43,7 +43,8 @@ if (room) {
   document.querySelector("h1")!.textContent = "Catlin suite · wood at room scale";
   document.querySelector("p")!.textContent = "Actual red oak floor, white painted headboard and base, cherry casing, elm posts · full-size geometry";
 }
-const house = params.has("house") ? await (await import("./woodHouseReview")).houseWoodSamples() : null;
+const house = params.has("mudroom") ? await (await import("./woodHouseReview")).houseMudroomSamples()
+  : params.has("house") ? await (await import("./woodHouseReview")).houseWoodSamples() : null;
 if (house) {
   houseChecks = house.checks;
   document.querySelector("h1")!.textContent = "Catlin · actual resolved wood objects";
@@ -52,13 +53,14 @@ if (house) {
 }
 const cards = house ? house.groups.map(g => ({ species: g.species, name: g.name, color: "" })) : samples;
 const cardRows = Math.ceil(cards.length / 3);
-if (!room && !params.has("detail")) camera.zoom = Math.min(1, 3 / cardRows);
+const cardColumns = Math.min(3, cards.length);
+if (!room && !params.has("detail")) camera.zoom = params.has("mudroom") ? 2.4 : Math.min(1, 3 / cardRows);
 for (const [index, sample] of (room ? [] : cards).entries()) {
   const { species, name } = sample;
   const color = legacy ? legacyColors[index][2] : sample.color;
   const appearance = legacy ? undefined : { species };
   const group = new THREE.Group();
-  group.position.set((index % 3 - 1) * 2.05, ((cardRows - 1) / 2 - Math.floor(index / 3)) * 1.5, 0);
+  group.position.set((index % 3 - (cardColumns - 1) / 2) * 2.05, ((cardRows - 1) / 2 - Math.floor(index / 3)) * 1.5, 0);
   if (house) {
     const content = house.groups[index].group;
     const box = new THREE.Box3().setFromObject(content);

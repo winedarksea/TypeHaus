@@ -560,4 +560,5 @@ def test_stair_finish_flags_the_stairs_a_nosing_allowance_cannot_reach(catlin_mo
 
     billed = sum(float(row["tread_lf"]) for row in rows.values()
                  if row["conditioned"] and row["has_nosing"])
-    assert billed == pytest.approx(136.4)  # winders' cross-stair edges, round a 12 1/4" notch
+    # 136.4 until ST-M2S's lanes widened 1/16" (2026-10-23).
+    assert billed == pytest.approx(136.5)  # winders' cross-stair edges, round a 12 1/4" notch

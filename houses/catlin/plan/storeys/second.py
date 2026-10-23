@@ -1047,7 +1047,7 @@ ROOMS = [
     # to the hall oak at D-S-BATH1. This is not ordinary DITRA-XL.
     #
     # ** THE DECK UNDER IT IS THE SHORT END OF FS-S-WEST, NOT THE 18' BAY. ** FO-S-STAIR
-    # takes x 10'-3 1/4"..17'-8 5/8" out of this deck from y=26'-0 3/8" north, so the eight
+    # takes x 10'-3 1/8"..17'-8 5/8" out of this deck from y=26'-0 3/8" north, so the eight
     # trusses over this room land on that opening's west header instead of running through
     # to the x=18' line: 10'-1 5/8" tip to tip, ~9'-9" clear, against the 17'-11" the twenty
     # trusses south of the well really do span. `structural.ijoist_span` grades a deck by its
@@ -1317,10 +1317,12 @@ FLOOR_OPENINGS = [
                           pt(inch(25.2), inch(347.5)), pt(inch(19), inch(347.5))),
                  penetration_for=("PR-M-S-BATH1-WC-DRAIN",)),
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
-                 outline=(pt(ft(10, 3.25), ft(26, 0.375)),
+                 # West edge on W-M-STRW's 1/2" MDO stair face (10'-3 1/8" since 2026-10-23);
+                 # off the wall's face the whole edge reads as unsupported.
+                 outline=(pt(ft(10, 3.125), ft(26, 0.375)),
                           pt(ft(17, 8.625), ft(26, 0.375)),
                           pt(ft(17, 8.625), ft(35, 5.375)),
-                          pt(ft(10, 3.25), ft(35, 5.375))),
+                          pt(ft(10, 3.125), ft(35, 5.375))),
                  # East edge is carried by bearing wall, so it needs no header: W-M-C5
                  # (which since 2026-07-28 starts at N-M-C3 on the stair wall's line, so it
                  # still reaches this edge's south end even though W-M-C4B under it is gone),
@@ -1483,10 +1485,12 @@ STAIRS = [
     # at ft(3) until 2026-09-24. The turn is level at 61.2431" with 7 tread boards on
     # each run; the former split turn put one of the 16 risers between the half-decks.
     Stair(uid="CST702AAAA", tag="ST-M2S", floor_opening="FO-S-STAIR",
-          from_storey="main", to_storey="second", width=ft(3, 6.375),
+          from_storey="main", to_storey="second", width=ft(3, 6.4375),
           base_elevation=inch(0.9862), top_elevation=inch(121.5),
           layout="u_level_landing", run_direction="y", turn_direction="left",
-          start=pt(ft(10, 3.25), ft(26, 0.375)), landing_depth=ft(3, 6.25),
+          # Start and width follow W-M-STRW's 1/2" MDO face (2026-10-23): 1/8" west, 1/16"
+          # a lane, so the east lane still meets the opening's east edge.
+          start=pt(ft(10, 3.125), ft(26, 0.375)), landing_depth=ft(3, 6.25),
           bearing_refs=("W-M-N2",),
           # 5/4 oak S2S to 1", the stock tread. The landing is 3/4" oak over 3/4" subfloor,
           # its framing dropped 1/2" to suit, under a 3/4"-body landing tread whose lip is

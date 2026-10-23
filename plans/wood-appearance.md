@@ -87,3 +87,6 @@ countertop, oak tread, basswood ceiling, locust base, and painted oak shiplap th
 production builders. A separate suite cutaway shows the oak floor, painted MDF/poplar headboard, painted base, cherry door casing,
 and elm posts at their full-size relative positions. Card objects are uniformly fitted, so their on-screen sizes differ
 from room-scale use. Browser checks verify species, finish, selection, and solid atlas lanes.
+
+Review resolved W-M-STRW framing independently with `node ui/scripts/wood-review.mjs --house --view mudroom`;
+the scene checks Douglas fir face/end maps, stud picking, and framing visibility.

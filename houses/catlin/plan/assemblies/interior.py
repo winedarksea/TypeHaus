@@ -347,7 +347,8 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 # (#70), so the mudroom's exposed Select Structural DF is `Wall.layer_materials` on those
 # two walls and the tag is neutral about where it stands.
 # W-M-STRW now uses interior_mudroom.py's upper-gypsum variant: the same bearing
-# stack, with the coat nooks capped at seven feet.
+# stack, with the coat nooks capped at seven feet and the plywood leaf swapped for 1/2" MDO
+# painted both faces (2026-10-23). Nothing references the 5/8" plywood leaf any more.
 #
 # No default_lining, deliberately (like SAUNA_2X4): the mudroom face is a finished face made
 # of the framing itself, not drywall left off. The open 2x6 bays are the coat nooks, so no
@@ -383,7 +384,7 @@ INT_2X6_BRG_EXPOSED_PLY = Assembly(
               function=LayerFunction.FINISH),
     ),
     interfaces=(STUD_BEARING,),
-    source="catlin stair-line bearing wall (W-B-STR2/STR3B basement, W-M-STRW main): 2x6 bearing studs at 16 in. o.c. on a gasketed PT sill, nominal 5/8 in. paint-grade veneer-core plywood on the stair face, painted. The mudroom pair carries exposed Select Structural S4S DF studs (open bays = coat nooks) via Wall.layer_materials; everything below is plain spf, where nothing is exposed to a finished room. The basement segments swap the plywood leaf for 5/8 in. gwb via Wall.layer_materials.",
+    source="catlin stair-line bearing wall (W-B-STR2/STR3B basement, W-M-STRW main): 2x6 bearing studs at 16 in. o.c. on a gasketed PT sill, nominal 5/8 in. paint-grade veneer-core plywood on the stair face, painted. The mudroom pair carries exposed Select Structural S4S DF studs (open bays = coat nooks) via Wall.layer_materials; everything below is plain spf, where nothing is exposed to a finished room. The basement segments swap the plywood leaf for 5/8 in. gwb via Wall.layer_materials; W-M-STRW's variant swaps it for 1/2 in. MDO painted both faces.",
 )
 
 # ** The same wall where it walls the under-stair storage (2026-09-05). ** W-B-STR3's

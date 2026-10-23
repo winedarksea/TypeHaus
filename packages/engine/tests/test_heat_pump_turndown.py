@@ -146,12 +146,13 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
-    """0.80 as a ratio is a number nobody can act on; ``11,522 Btu/h against this zone's
+    """0.80 as a ratio is a number nobody can act on; ``11,521 Btu/h against this zone's
     14,402`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
-    assert "11,522 Btu/h" in finding.message  # 0.80 x the unrounded 14,401.6
+    # 11,522 until FO-S-STAIR widened 1/8" (2026-10-23) and the zone load dipped under 14,401.25.
+    assert "11,521 Btu/h" in finding.message  # 0.80 x the unrounded design load
 
 
 # --- §3. the crossover ------------------------------------------------------------------------

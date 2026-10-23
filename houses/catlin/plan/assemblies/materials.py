@@ -318,6 +318,12 @@ MATERIALS = [
              hatch="lumber", color="#e7e2d8", finish="satin-enamel", species="poplar",
              wood_surface="painted", milling_profile="S4S", requires_custom_milling=False,
              source="Bought S4S tulip poplar: 1x3 battens and 1x4 top rail, actual 3/4 inch thick. Prime and warm white satin enamel (#e7e2d8), subtly contrasting the MDF field (#f0ede6); installation/painting priced by LF, not owner milling."),
+    # W-M-STRW's stair-face leaf, which is also the back of the mudroom coat nooks. Overlay on
+    # both faces because both are painted. Plywood-series thermal/vapour numbers.
+    Material(tag="mdo-plywood-interior", name='1/2" MDO plywood, two-sided overlay, painted white',
+             r_per_inch=1.25, density=610.0, perm_rating=0.30, hatch="lumber", color="#f2f0ea",
+             finish="satin-enamel",
+             source="1/2 in. medium density overlay plywood, overlay both faces (MDO 2S), interior paint grade. Resin-fibre face takes paint without grain telegraphing and holds hook screws. Seal edges, prime and paint both faces with the same white scrubbable enamel as the mudroom shiplap (#f2f0ea) before hanging."),
     *MATERIALS_HARDWOOD,
     *MATERIALS_STUDY_BOOTH,
     *MATERIALS_METAL,

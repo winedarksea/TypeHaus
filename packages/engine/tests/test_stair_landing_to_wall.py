@@ -72,7 +72,10 @@ def test_runs_over_the_excess_landing_are_an_advisory_not_a_fail(catlin_ctx):
 
 
 def test_stair_wall_studs_remain_plumb_beneath_the_flush_finish(catlin_model_ro):
-    """The 5/8" plywood and under-stair Type X share a face without moving bearing studs."""
+    """The stair-face leaves land on their faces without moving bearing studs.
+
+    W-M-STRW's 1/2" MDO (2026-10-23) sits behind a 0.01" nook coat and ends 1/8" short of
+    the basement's 5/8" faces."""
     wall_tags = (
         "W-B-STR", "W-B-STR3", "W-B-STR3B", "W-B-STR2",
         "W-M-STRW",
@@ -83,8 +86,9 @@ def test_stair_wall_studs_remain_plumb_beneath_the_flush_finish(catlin_model_ro)
         stud_x = [point[0] / _INCH for point in layers["stud"].polygon]
         assert min(stud_x) == pytest.approx(117.125)
         assert max(stud_x) == pytest.approx(122.625)
-        stair_finish = layers.get("ply-stair", layers.get("gwb-x"))
+        stair_finish = layers.get("ply-stair", layers.get("gwb-x", layers.get("mdo-stair")))
         assert stair_finish is not None
         finish_x = [point[0] / _INCH for point in stair_finish.polygon]
-        assert min(finish_x) == pytest.approx(122.625)
-        assert max(finish_x) == pytest.approx(123.25)
+        mdo = stair_finish.name == "mdo-stair"
+        assert min(finish_x) == pytest.approx(122.635 if mdo else 122.625)
+        assert max(finish_x) == pytest.approx(123.135 if mdo else 123.25)

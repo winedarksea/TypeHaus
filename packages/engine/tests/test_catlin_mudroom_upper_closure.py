@@ -26,11 +26,13 @@ def test_only_the_mudroom_wall_uses_the_upper_closure(catlin_plan, catlin_model_
 def test_upper_finish_is_on_the_mudroom_face_and_stops_at_the_ceiling(catlin_model_ro):
     wall = catlin_model_ro.wall("W-M-STRW")
     studs = next(layer for layer in wall.layers if layer.name == "stud")
-    stair_plywood = next(layer for layer in wall.layers if layer.name == "ply-stair")
+    stair_mdo = next(layer for layer in wall.layers if layer.name == "mdo-stair")
     # The bearing band's x bounds and stair face are fixed construction datums.
     assert min(x for x, _ in studs.polygon) == pytest.approx(inch(117.125).meters)
     assert max(x for x, _ in studs.polygon) == pytest.approx(inch(122.625).meters)
-    assert max(x for x, _ in stair_plywood.polygon) == pytest.approx(inch(123.25).meters)
+    # 1/2" MDO since 2026-10-23 (5/8" plywood to 123 1/4" before).
+    assert stair_mdo.material_ref == "mdo-plywood-interior"
+    assert max(x for x, _ in stair_mdo.polygon) == pytest.approx(inch(123.135).meters)
     for name, thickness, material in (("gwb-mudroom-upper", 0.5, "gwb"),
                                       ("paint-mudroom-upper", 0.01, "latex-paint")):
         layer = next(layer for layer in wall.layers if layer.name == name)

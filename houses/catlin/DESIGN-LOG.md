@@ -1,3 +1,22 @@
+## W-M-STRW: 1/2" MDO stair face and poplar hook rails (2026-10-23)
+
+- **A reviewer's suggestion, taken.** The 5/8" paint-grade plywood leaf, which is both the
+  stair face and the back of every coat nook, became 1/2" MDO, overlay on both faces and
+  painted white on both. MDO paints better than a veneer face, still holds hook screws, and
+  1/2" matches the house's coming switch to 1/2" drywall. `mdo-plywood-interior` is
+  house-local; `cabinet-plywood` now bills 0 SF and keeps its price row.
+- **Two painted poplar 1x4 hook rails** (`BK-M-STRW-HOOK-LOW`/`-HIGH`, bottoms 42"/60" AFF)
+  fit between the studs on the MDO's back. The low rail stops at the 34'-0" stud, because
+  `REG-M-XFER-MUD`'s louver fills the bay north of it at 42"-52". Nothing grades a register
+  against a backing band, so that check was done by hand.
+- **The thinner leaf moved the stair well 1/8".** The studs are pinned, so the stair face
+  went from x=10'-3 1/4" to 10'-3 1/8". `FO-S-STAIR`'s west edge had been struck on the old
+  face: off the wall, `structural.floor_opening_header` read the whole 9.5' edge as
+  unsupported and put a phantom LVL in the path of `PR-M-S-BATH1-LAV-DRAIN` (2 FAIL). With
+  only the edge moved, a 4" strip at the stair head was left unguarded (`code.R312_1_guard`),
+  because `ST-M2S.start` is authored and does not follow its opening. Both moved 1/8" west,
+  and each lane widened 1/16" so the east edge holds.
+
 ## Kitchen and living casework: AXSTAD and black BAGGANÄS (2026-10-22)
 
 Owner selected AXSTAD matte white rather than BODBYN. This supersedes the kitchen's

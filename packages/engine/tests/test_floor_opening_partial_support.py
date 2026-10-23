@@ -118,7 +118,8 @@ def test_catlin_local_header_seats_on_the_plate_and_hangs_from_the_south_trimmer
     # ...and stops short of the next truss, which keeps its full bearing on the plate.
     (truss,) = [m for m in floor.members if m.child_key == "joist-0-020-0"]
     assert header.p1[1] < truss.p0[1] - inch(0.875).meters
-    assert max(truss.p0[0], truss.p1[0]) == pytest.approx(inch(122.625).meters)
+    # On FO-S-STAIR's west edge less its lining: 10'-3 1/8" since the MDO face (2026-10-23).
+    assert max(truss.p0[0], truss.p1[0]) == pytest.approx(inch(122.5).meters)
     assert header.z0_m >= wall.plate_top_z_m
     (trimmer,) = [m for m in floor.members if m.child_key == "trimmer-FO-S-STAIR-0-0"]
     assert (header.z0_m, header.z1_m) == (trimmer.z0_m, trimmer.z1_m)

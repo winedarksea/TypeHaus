@@ -6,6 +6,7 @@ import { buildBaseRun, buildBoardMembers, buildCountertop, buildDoorCasing } fro
 import { buildPaneling, buildSolid } from "../three/builders/structure";
 import { buildCanvasObjectParts } from "../three/builders/site";
 import { buildWallSkinMembers } from "../three/builders/wallSkin";
+import { resolveMemberPickUid } from "../three/memberPicking";
 import { runWallCoatingChecks } from "./wallCoatingChecks";
 
 /** Actual resolved Catlin objects, built through the same entrypoints as the editor. */
@@ -114,4 +115,27 @@ export async function houseWoodRoom(renderer: THREE.WebGLRenderer) {
       .map(s => `Room context missing ${s}`),
     ...runWallCoatingChecks(model, renderer),
   ], room: room.tag, species: [...species] } };
+}
+
+/** Resolved exposed mudroom framing, including its oak courses and KDAT sole plate. */
+export async function houseMudroomSamples() {
+  const model: Model = await (await fetch("/__wood-review-house")).json();
+  const wall = model.walls.find(w => w.tag === "W-M-STRW")!;
+  const group = new THREE.Group(), failures: string[] = [];
+  buildWallSkinMembers({ framing: group } as Parameters<typeof buildWallSkinMembers>[0], group,
+    wall.uid, wall.members, [0, 0], "nordic", RESOLVED_NORDIC_PALETTE.light, model.catalog!.materials);
+  const studs = wall.members.filter(m => m.category === "stud");
+  const texturedStuds = group.children.filter(object => object instanceof THREE.Mesh
+    && studs.some(stud => resolveMemberPickUid(object, null, 0) === `${wall.uid}::${stud.key}`)) as THREE.Mesh[];
+  if (!studs.length || texturedStuds.length !== studs.length) failures.push("Mudroom studs missing individual picking");
+  for (const mesh of texturedStuds) {
+    const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+    if (materials.length !== 2 || materials.some(m => m.userData.woodSpecies !== "douglas-fir"
+      || m.userData.woodSurface !== "natural-clear" || !(m as THREE.MeshStandardMaterial).map))
+      failures.push("Mudroom stud missing Douglas fir face/end maps");
+    if (!mesh.geometry.getAttribute("woodEnd") || !mesh.userData.trades?.includes("framing"))
+      failures.push("Mudroom stud missing grain UVs or framing visibility");
+  }
+  return { groups: [{ name: "Douglas fir · W-M-STRW", group, species: "douglas-fir", surface: "natural-clear" }],
+    checks: { failures, wall: wall.tag, texturedStuds: texturedStuds.length } };
 }

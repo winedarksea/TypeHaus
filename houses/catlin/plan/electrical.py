@@ -1377,7 +1377,7 @@ DATA_TRUNKS = [
 MAIN_DATA_TRUNKS = [
     # ** NEITHER RUN CROSSES THE STAIRWELL. ** Routed straight east at +9'-2" from the
     # chase at y=34'-6", they would be inside FS-S-WEST — the SECOND storey's floor, whose
-    # joists run 9'-0 1/8" to 10'-0" — and FS-S-WEST's deck void is x 10'-3 1/4"..17'-8 5/8",
+    # joists run 9'-0 1/8" to 10'-0" — and FS-S-WEST's deck void is x 10'-3 1/8"..17'-8 5/8",
     # y 26'-0 3/8"..35'-5 3/8". KITCH would span **7.27 ft** of that opening and PORCH
     # **15.52 ft**, because PORCH's south leg would run down x=17'-6", which is 2 5/8"
     # INSIDE the second floor's trimmer even though it is exactly ON the main floor's —

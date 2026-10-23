@@ -29455,19 +29455,25 @@
 2,
 "b6f5d92c9524"
 ],
+"geometry/CMW117AAAA/layer:mdo-stair": [
+0.0,
+2.7432,
+2,
+"08fa410dc44f"
+],
 "geometry/CMW117AAAA/layer:paint-mudroom-upper": [
 2.1336,
 2.7432,
 2,
 "b6f5d92c9524"
 ],
-"geometry/CMW117AAAA/layer:paint-stair": [
+"geometry/CMW117AAAA/layer:paint-nook": [
 0.0,
 2.7432,
 2,
 "08fa410dc44f"
 ],
-"geometry/CMW117AAAA/layer:ply-stair": [
+"geometry/CMW117AAAA/layer:paint-stair": [
 0.0,
 2.7432,
 2,
@@ -29478,6 +29484,18 @@
 2.7432,
 2,
 "08fa410dc44f"
+],
+"geometry/CMW117AAAA::framing/member:backing-0-000": [
+1.0922,
+1.1811,
+8,
+"d4d6c2b6fe2c"
+],
+"geometry/CMW117AAAA::framing/member:backing-1-000": [
+1.5494,
+1.6383,
+8,
+"9755c35bb4ae"
 ],
 "geometry/CMW117AAAA::framing/member:blocking-0-000": [
 0.381,
@@ -75468,6 +75486,18 @@
 2.667,
 2,
 "eebc11b3c6f0"
+],
+"member/CMW117AAAA/backing-0-000": [
+1.0922,
+1.1811,
+2,
+"f18735071276"
+],
+"member/CMW117AAAA/backing-1-000": [
+1.5494,
+1.6383,
+2,
+"9d68060eed9a"
 ],
 "member/CMW117AAAA/blocking-0-000": [
 0.381,

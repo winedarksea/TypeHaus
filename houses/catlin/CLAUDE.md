@@ -640,6 +640,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     may go on that face below 7'; the mudroom switches are a 3-gang plate on `W-M-MECH-S`
     east of `D-M-MECH`. `W-M-MECH-S` is authored EAST to WEST so its studs lay out from the
     east end and leave that bay clear. Reverse it and a module stud lands in the box.
+    The bays are backed by the stair leaf, **1/2" MDO painted white on both faces**
+    (2026-10-23), with two painted poplar 1x4 hook rails on its back at 42"/60" AFF
+    (`BK-M-STRW-HOOK-*`; the low one stops short of `REG-M-XFER-MUD`'s bay). **The stair face
+    is x=10'-3 1/8", and `FO-S-STAIR`'s west edge and `ST-M2S.start` are struck off it**:
+    change the leaf thickness and move both, or the opening edge reads as unsupported
+    (`notes/stair_wall_finish.md`).
   - LVP +0.9862" and the coated cap +15/16" meet flush on both legs of the living-room
     L. The main bedroom entry and second-storey plant room retain reducers. Oak +1 1/2"
     now runs through the second hall and linen closet as well as the suite and studies;
