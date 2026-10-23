@@ -39,6 +39,8 @@ def test_fit_uses_current_finishes_and_preserves_working_gap(catlin_model_ro, be
     objects = {obj.tag: obj for obj in model.canvas_objects}
     room = next(r for r in model.rooms if r.tag == "RM-M-STUDY")
     west, south, east, north = Polygon(room.clear_face).bounds
+    assert (west / INCH, south / INCH, east / INCH, north / INCH) == pytest.approx(
+        (164.25, 219.25, 214.75, 266.75))
     bench = objects[BENCH_TAG]
     bx0, by0, bx1, by1 = Polygon(bench.footprint).bounds
     assert (bx0 - west, east - bx1) == pytest.approx((.8125 * INCH,) * 2)

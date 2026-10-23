@@ -68,10 +68,10 @@ def test_laundry_pocket_follows_the_aligned_stud_cavity(catlin_model_ro) -> None
     structure_center_y = (min(y for _x, y in structure.polygon)
                           + max(y for _x, y in structure.polygon)) / 2
     north_faces = [max(y for layer in catlin_model_ro.wall(tag).layers
-                       if layer.material_ref == "gwb"
+                       if layer.material_ref.startswith("gwb")
                        for _x, y in layer.polygon)
                    for tag in ("W-M-HS2", "W-M-HS3", "W-M-HS4")]
-    assert north_faces == pytest.approx([271.375 * 0.0254] * 3)
+    assert north_faces == pytest.approx([271.25 * 0.0254] * 3)  # 1/2" board
     assert structure_center_y - wall.axis[0][1] == pytest.approx(0.0254)
     assert opening_center(wall, door)[1] == pytest.approx(structure_center_y)
     assert band.centroid.y == pytest.approx(structure_center_y)

@@ -49,9 +49,9 @@ rough lumber and does not acquire board-foot quantities.
 
 ## Fit and upholstery
 
-The current room's gypsum bounds are x=164⅜″..214⅝″, y=219⅜″..266⅝″. Keep west,
+The current room's gypsum bounds are x=164¼″..214¾″, y=219¼″..266¾″. Keep west,
 south and east doorway-return walnut at ¾″. Omit north walnut below 36″, keep its gypsum,
-and retain north/south acoustic felt above 36″. Bench width is 48⅝″ with 1/16″ end scribes;
+and retain north/south acoustic felt above 36″. Bench width is 48⅞″ with 1/16″ end scribes;
 rear is 1/16″ off north gypsum. Dimensions are relative to finished room floor, not the
 storey datum. Bench overall depth is derived from its back rake and lumbar contact face.
 
@@ -78,7 +78,7 @@ storey datum. Bench overall depth is derived from its back rake and lumbar conta
   south-wall ventilation grille unobstructed.
 
 The fixed walnut desk remains 29″ wide and 29½″ high; both desk and folding leaf are
-16″ deep. The leaf fills the remaining finished width with 1/16″ end scribes. Both tops
+16″ deep. The 19⅞″ leaf fills the remaining finished width with 1/16″ end scribes. Both tops
 use the same flitch, 1″ finished off 5/4 stock, grain east–west. The refit has approximately
 9½″ between desk and bench fronts; feet extend beneath the desk. The leaf is modeled
 deployed but normally folded down for entry. Do not treat its deployed footprint as

@@ -1,3 +1,41 @@
+## Wall board policy (2026-10-23)
+
+- **The reviewer case, taken in part.** Walls go to 1/2" regular: it is cheaper, it fits the
+  stock 4 9/16" and 6 9/16" prehung jambs (the study bookcase door no longer scribes to a
+  4 3/4" wall), and the 1/2" face moved every wall's finish plane 1/8". Ceilings stay 5/8": the
+  framing is 24" o.c. and code does not allow plain 1/2" ceiling board at that spacing.
+- **Upgrades go where they earn the cost, by material swap only.** `gwb-ar` (paper-faced abuse
+  resistant) on hall and stair faces and in the mudroom; `gwb-mr` on bath faces and the laundry;
+  `gwb-c` (Type C) only on solid acoustic walls. All are 1/2" and are set with
+  `Wall.layer_materials`, never by a new thickness. Prices: `prices.toml`, with the sources and
+  their confidence beside each row.
+- **STC is spent only on a door-less wall.** `advisory.acoustic_adjacency` (decision #50) grades
+  every wall whose two faces bound a sleeping room and a noisy room (or two sleeping rooms) with
+  no door or opening in any shared wall. Undercut doors bypass a wall's STC: this house undercuts
+  every upstairs bedroom, suite, study and studio door by 1 1/4" to 1 3/4" as the System 1 return
+  path (`notes/system1_return_path.md`), so a channel or Type C face on those walls buys little.
+  The advisory's target is `[acoustics] min_partition_stc = 45`.
+- **Resilient channel is dropped from the door walls.** `W-S-SBS`, `W-S-BW1`, `W-S-BW2`, `W-S-BW3`
+  and `W-S-BW4` are plain 1/2" partitions. `W-S-BW4` stays plain against `SF-S-HP1`'s rectangle,
+  and `mep.duct_soffit_occupancy` still finds it. `W-S-SS2` keeps its channel on the north face:
+  R311.7.1 and the stair handrail need it there.
+- **Kept at 5/8":** the ESS closet (advisory owner rule); `W-B-STR`/`W-B-STR3` (Type X, R302.7);
+  the garage walls and the `gwb-stem` band (unconditioned shop, impact); `FO-S-STAIR`'s
+  `gwb-well` lining (the joist clip is struck behind it, and moving it reopens the 2026-10-23
+  FAIL class); and `W-S-BD1`/`W-S-BD2`, which keep the 5/8" `INT_2X4_RC` (cited STC 48). The
+  only 1/2" channel preset with a citation (`INT_2X4_RC_HALF`) cites STC 42, below the
+  advisory's 45, and the Type C preset has no published STC, so neither would pass.
+- **Accepted gaps, kept:** `W-S-C2C` and `W-M-C2` stay on the no-channel `INT_2X6_BRG_HALF`
+  with their `gwb-mr`/`gwb-ar` face swaps. A channel would step a face in the open where neither
+  has tees at both ends to absorb the 1/2" offset. `W-M-HS3` (laundry to living) remains a
+  decision, not an oversight; see "The laundry is not acoustically treated".
+- **Wet walls and the humid room:** a paper-faced board (`gypsum_facer="paper"`) still fails the
+  humid-room check. Mold-resistant paper board is no answer in a WET or HUMID room; glass-mat is.
+- **Viewer colour by board type.** Each board's colour is its authored `Material.color`. Coplanar
+  finish faces are ranked by `WALL_FINISH_POLYGON_OFFSET` (`ui/src/three/builders/walls.ts`), not
+  by thickening the layer; glTF has no `polygonOffset`, so an exported `.glb` can still shimmer.
+
+
 ## W-M-STRW: 1/2" MDO stair face and poplar hook rails (2026-10-23)
 
 - **A reviewer's suggestion, taken.** The 5/8" paint-grade plywood leaf, which is both the

@@ -432,7 +432,7 @@ def test_a_lifted_envelope_wall_exports_its_interior_finishes_as_parts(catlin_mo
     assert wall_type.Name == "EXT_2X6"
     # House-wide: a ``~lining`` suffix on a lifted EXT_2X6 wall means a real override
     # (``Room.wall_lining`` or ``Wall.layer_materials``: B&B cladding, main-storey LSL
-    # studs; W-S-E2's accent paint), never the trim. 7 of the 28 have no override at all and
+    # studs; W-S-E2's accent paint), never the trim. 5 of the 28 have no override at all and
     # every one of them is on the bare type.
     lifted = [w for w in catlin_model_ro.walls
               if w.assembly == "EXT_2X6" and w.plate_top_z_m is not None]
@@ -440,4 +440,4 @@ def test_a_lifted_envelope_wall_exports_its_interior_finishes_as_parts(catlin_mo
     bare = [w for w in lifted
             if next(iter(_wall(catlin_ifc, w.tag).IsTypedBy)).RelatingType.Name
             == "EXT_2X6"]
-    assert len(bare) == 7
+    assert len(bare) == 5

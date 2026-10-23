@@ -50,13 +50,15 @@ _CATLIN = {
     # 15,299 / -6.4 °F before the named window and door products (2026-10-21; the note's
     # addendum of that date): every zone's window and door U fell.
     # 14,402 / -10.6 °F before the 27" family widened to 27 1/2" ROs (2026-10-23).
-    "EQ-M-HP1-OD": (14_428, 14_000, 5.0, 0.97, -10.5, _ADVISED),
+    # 14,446 / -10.4 °F after the 1/2" walls (2026-10-23): the 1/2" board changed the wall
+    # build-up, and the design load and the Manual S cap moved with it.
+    "EQ-M-HP1-OD": (14_446, 14_000, 5.0, 0.97, -10.4, _ADVISED),
     # The living-east rework replaces two 27x48 windows with one 63x48 unit, adding 3 sf
     # of glass to System 2's main-storey zone (2026-10-16). 13,855 / 0.64 / 23.6 °F, and
     # HP3 910 / 3.08, before the 2026-10-21 bath 1 rework moved the powder room's walls.
-    # 13,861 before the 27 1/2" ROs (2026-10-23).
-    "EQ-M-HP2-OD": (13_870, 8_800, 5.0, 0.63, 23.7, not _ADVISED),
-    "EQ-M-HP3-OD": (904, 2_800, 17.0, 3.10, None, _ADVISED),
+    # 13,861 before the 27 1/2" ROs (2026-10-23); 13,879 after the 1/2" walls (2026-10-23).
+    "EQ-M-HP2-OD": (13_879, 8_800, 5.0, 0.63, 23.7, not _ADVISED),
+    "EQ-M-HP3-OD": (906, 2_800, 17.0, 3.09, None, _ADVISED),
 }
 
 
@@ -148,13 +150,13 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
-    """0.80 as a ratio is a number nobody can act on; ``11,542 Btu/h against this zone's
-    14,428`` is one an equipment selector can shop against."""
+    """0.80 as a ratio is a number nobody can act on; ``11,557 Btu/h against this zone's
+    14,446`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
     # 11,522 until FO-S-STAIR widened 1/8" (2026-10-23) and the zone load dipped under 14,401.25.
-    assert "11,542 Btu/h" in finding.message  # 0.80 x the unrounded design load
+    assert "11,557 Btu/h" in finding.message  # 0.80 x the unrounded design load
 
 
 # --- §3. the crossover ------------------------------------------------------------------------

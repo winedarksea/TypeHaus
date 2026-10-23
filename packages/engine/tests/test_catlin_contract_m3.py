@@ -1615,7 +1615,9 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
                      if m.parent_uid == wall.uid
                      and m.child_key.startswith("plate-bottom")),
                     key=lambda m: -m.p0[0])
-    assert [m.child_key for m in plates] == ["plate-bottom-0", "plate-bottom-1"]
+    # The east piece is "-passage-0": an opening edge lands on its start, so the doorway
+    # pass re-keys it. Same run, same ends (9' 1/2" to 7' 11 3/16", and 3' 1/2" to 1' 11").
+    assert [m.child_key for m in plates] == ["plate-bottom-0-passage-0", "plate-bottom-1"]
     # The gap is the rough opening exactly, so every trimmer still bears on a plate end.
     gap = math.dist(plates[0].p1, plates[1].p0)
     assert gap == pytest.approx(door.width_m, abs=1e-6)
@@ -2592,7 +2594,7 @@ def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
     # nowhere near the _BAND_Y line this test moves, so the 7' x 18' arithmetic below is
     # unaffected.
     # The pantry's 2 3/8-inch eastward extension reduces the living finish zone.
-    assert before == pytest.approx(371.6, abs=0.5)
+    assert before == pytest.approx(372.9, abs=0.5)  # 1/2" walls moved the faces 1/8" (2026-10-23)
     assert before - after == pytest.approx(7.0 * 17.9, rel=0.05)
 
 

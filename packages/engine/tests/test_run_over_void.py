@@ -53,9 +53,9 @@ def test_it_catches_a_run_drawn_across_the_stairwell(catlin_model):
     """The defect it exists for, reproduced by putting a run back where one used to be.
 
     ``CD-M-DATA-KITCH`` ran east at y=34'-6" and +9'-2" from the chase to x=19'-0". At that
-    height it is inside FS-S-WEST, whose opening is x 10'-3 3/8"..17'-8 5/8", so 7'-5 1/4" of
+    height it is inside FS-S-WEST, whose opening is x 10'-3 1/8"..17'-8 3/4" (the 1/2" MDO stair face, 2026-10-23), so 7'-5 3/8" of
     that leg was over a two-storey shaft; buffered inward 1" it measures 7.27 ft, and
-    **7.19 ft** since the ends within a clamp's reach of the trimmers count as supported
+    **7.21 ft** since the ends within a clamp's reach of the trimmers count as supported
     (``SIDE_STRAP_REACH_M``).
 
     Note which floor it is measured against. ``FS-M-STAIR``, directly underneath, has an
@@ -83,7 +83,7 @@ def test_it_catches_a_run_drawn_across_the_stairwell(catlin_model):
     fails = [f for f in findings if f.result is Result.FAIL]
     assert len(fails) == 1, [f.message for f in fails]
     assert "CD-M-DATA-KITCH" in fails[0].element_tags
-    assert "7.19 ft" in fails[0].message
+    assert "7.21 ft" in fails[0].message
     assert "FS-S-WEST" in fails[0].message
 
 

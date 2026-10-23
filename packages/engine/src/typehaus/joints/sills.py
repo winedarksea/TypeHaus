@@ -244,22 +244,39 @@ def tie_plate_stations(model: ResolvedModel, rules: UpliftTieRules) -> list:
     for wall in tie_plate_walls(model):
         (x0, y0), (x1, y1) = wall.axis
         length_m = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
-        count = max(rules.minimum_tie_plates_per_wall, int(length_m / pitch_m) + 1)
-        axis = axis_of(wall.axis[0], wall.axis[1])
-        for index in range(count):
-            fraction = 0.5 if count == 1 else index / (count - 1)
-            along_m = length_m * fraction
-            if any(
-                opening.center_along_m - opening.width_m / 2 < along_m + half_width_m - 1e-9
-                and opening.center_along_m + opening.width_m / 2 > along_m - half_width_m + 1e-9
-                and wall.base_ref_z_m + opening.sill_m < wall.z0_m + half_height_m - 1e-9
+        # Split the usable centreline at jambs, allowing the full plate body to clear.
+        # Spacing across a void is meaningless; each solid segment needs its own ties.
+        usable_segments = [(0.0, length_m)]
+        for opening in openings_by_wall.get(wall.tag, ()):
+            if not (
+                wall.base_ref_z_m + opening.sill_m < wall.z0_m + half_height_m - 1e-9
                 and wall.base_ref_z_m + opening.sill_m + opening.height_m
                 > wall.z0_m - half_height_m + 1e-9
-                for opening in openings_by_wall.get(wall.tag, ())
             ):
                 continue
-            found.append(Station(
-                run_tag=wall.tag, storey=wall.storey,
-                point_m=(x0 + (x1 - x0) * fraction, y0 + (y1 - y0) * fraction),
-                z_m=wall.z0_m, axis=axis))
+            excluded_start = opening.center_along_m - opening.width_m / 2 - half_width_m
+            excluded_end = opening.center_along_m + opening.width_m / 2 + half_width_m
+            remaining_segments = []
+            for segment_start, segment_end in usable_segments:
+                if excluded_end <= segment_start or excluded_start >= segment_end:
+                    remaining_segments.append((segment_start, segment_end))
+                    continue
+                if segment_start < excluded_start:
+                    remaining_segments.append((segment_start, excluded_start))
+                if excluded_end < segment_end:
+                    remaining_segments.append((excluded_end, segment_end))
+            usable_segments = remaining_segments
+        axis = axis_of(wall.axis[0], wall.axis[1])
+        for segment_start, segment_end in usable_segments:
+            segment_length = segment_end - segment_start
+            count = max(rules.minimum_tie_plates_per_wall,
+                        math.ceil(segment_length / pitch_m) + 1)
+            for index in range(count):
+                along_m = (segment_start + segment_end) / 2 if count == 1 else (
+                    segment_start + segment_length * index / (count - 1))
+                fraction = along_m / length_m if length_m else 0.5
+                found.append(Station(
+                    run_tag=wall.tag, storey=wall.storey,
+                    point_m=(x0 + (x1 - x0) * fraction, y0 + (y1 - y0) * fraction),
+                    z_m=wall.z0_m, axis=axis))
     return found

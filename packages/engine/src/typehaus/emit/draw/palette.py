@@ -169,7 +169,7 @@ DETAIL_FILL: dict[str, str] = {
     "polycarbonate-multiwall": "#cfe3e8",
     "aluminum-extrusion": "#b6bac0",
     "composite-deck": "#8a7f70",
-    "trex-enhance-basics": "#8a7f70",
+    "trex-enhance-basics": "#a3a6a4",
 }
 
 # Material tag → hatch family (the writers map families to their own pattern syntax).

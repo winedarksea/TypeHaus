@@ -185,7 +185,7 @@ def lateral_tie_plate_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
         item, scope="wall on floor band", count=int(sum(by_storey.values())),
         by_storey=dict(sorted(by_storey.items())), length_ft=total_length_m * _M_TO_FT,
         basis=(f"{rules.tie_plate_pitch_ft:g} ft o.c. (nominal min "
-               f"{rules.minimum_tie_plates_per_wall} per wall, opening conflicts excluded) "
+               f"{rules.minimum_tie_plates_per_wall} per solid segment, bodies clear openings) "
                f"along the bottom plate of "
                f"{walls} framed walls standing on a framed floor band (a wall on concrete "
                f"is a sill and is anchored by its mudsill anchors instead), "

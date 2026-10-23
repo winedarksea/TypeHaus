@@ -289,7 +289,8 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     # UNMOVED by either 2026-09-05 finishes change, and that is the point: both touched only
     # what is SOUTH of _BAND_Y, and the band is north of it.
     # The enlarged pantry takes another 0.69 SF from the living finish zone.
-    assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(371.6, abs=0.5)
+    # 372.9 after the 1/2" walls (2026-10-23): each wall face moved 1/8", and the zone is clear floor.
+    assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(372.9, abs=0.5)
     # 355.1 until the hall zone, 307.0 with it, 123.9 with the oak bay taken out as well.
     # Back to 355.6 now that both authored zones are gone: everything in this room that is
     # not over SL-M-DECK is one plank floor — south bay, stair lane and hall band alike.
@@ -333,8 +334,8 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     assert rows["coated-concrete"]["rooms"] == ["RM-M-LIVING", "RM-M-PANTRY"]
     assert rows["coated-concrete"]["coating"] is True
     assert rows["coated-concrete"]["waste_pct"] == 0.0
-    # 384.9 since the clear face became the finish face (410.2 axis-derived).
-    assert float(rows["coated-concrete"]["net_area_sqft"]) == pytest.approx(384.9, abs=0.5)
+    # 384.9 since the clear face became the finish face (410.2 axis-derived); 386.8 after the 1/2" walls.
+    assert float(rows["coated-concrete"]["net_area_sqft"]) == pytest.approx(386.8, abs=0.5)
     assert "RM-M-MUDROOM" in rows["lvp"]["rooms"]
     assert {"RM-M-MECH", "RM-M-MUD-CLOSET"} <= set(rows["lvp"]["rooms"])
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
@@ -349,10 +350,11 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
         "catlin-plant-vinyl-raised"]["net_area_sqft"]
     assert rows["catlin-plant-sureply"]["order_area_sqft"] == rows[
         "catlin-plant-vinyl-raised"]["order_area_sqft"]
-    # The original 525.5 SF of sheet vinyl is split by assembly, not changed in area.
+    # The sheet vinyl is split by assembly, not changed in area: 525.5 SF before the 1/2" walls
+    # (2026-10-23), 529.6 after (each wall face moved 1/8").
     assert (float(rows["vinyl-sheet"]["net_area_sqft"])
             + float(rows["catlin-plant-vinyl-raised"]["net_area_sqft"])) == pytest.approx(
-                525.5, abs=0.5)
+                529.6, abs=0.5)
     assignments = {
         "catlin-tile-calacatta-gold": ("RM-M-BATH2", "catlin-ditra-heat"),
         "catlin-tile-carrara": ("RM-S-BATH1", "catlin-ditra-heat"),

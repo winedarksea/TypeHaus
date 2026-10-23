@@ -345,7 +345,7 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # the sauna does now: W-B-CS3 is a plain 2x6 bearing wall between the room and the
         # y=18' cross line, and it is what meets W-B-CS2's 12" pour here. The same
         # wood-against-concrete detail this node always carried, one assembly along.
-        "assembly_change:FOUNDATION_WALL_12_INT|INT_2X6_BRG",
+        "assembly_change:FOUNDATION_WALL_12_INT|INT_2X6_BRG_HALF",
         # The framed walkout's two nodes are the same condition one storey down from each
         # other: N-B-S2 where the two 7 1/4" curbs meet, and N-B-S2F where the two framed
         # walls on them do. The liner starts at x=18' on both, so both are real changes of
@@ -363,7 +363,7 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # wood-against-concrete reason, and that key is the drawing which answers it.)
         # N-B-STR, the y=18' line's surviving change: W-B-CW2's playroom partition against
         # W-B-CW3's painted wet-wall finish, on the same 2x4 stud depth.
-        "assembly_change:INT_2X4_PARTITION|INT_2X4_PLUMBING",
+        "assembly_change:INT_2X4_PARTITION_HALF|INT_2X4_PLUMBING",
         # N-S-B1 on the second storey: the sleeping-side partitions carry INT_2X4_RC
         # (STC 34 -> 48) and the plain partitions they meet do not. W-S-BW4 joined the RC
         # family on 2026-09-04 — SF-S-HP1 spans it and W-S-BW3 both, and a 1/2" jog in the
@@ -372,13 +372,13 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # real change of construction and a real detail: the resilient channel and its own
         # leaf of board stop at that node, and a builder who carries them through has
         # shorted the acoustic wall by one leaf.
-        "assembly_change:INT_2X4_PARTITION|INT_2X4_RC",
-        "assembly_change:INT_2X4_PARTITION|INT_2X6_BRG|PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID",
-        "assembly_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
+        "assembly_change:INT_2X4_PARTITION_HALF|INT_2X4_RC_HALF",
+        "assembly_change:INT_2X4_PARTITION_HALF|INT_2X6_BRG_HALF|PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID",
+        "assembly_change:INT_2X4_PARTITION_HALF|INT_2X6_STAGGERED_PLUMBING_HALF",
         # N-S-D4, W-S-SN2 -> W-S-SN3 (see the docstring above): a wet wall meeting a
         # staggered sound wall, the one node where this key still fires against a plain
         # INT_2X4_PARTITION neighbour.
-        "assembly_change:INT_2X4_STAGGERED_GWB|INT_2X6_STAGGERED_PLUMBING",
+        "assembly_change:INT_2X4_STAGGERED_X_HALF|INT_2X6_STAGGERED_PLUMBING_HALF",
         # N-B-BA-NW. W-B-STR3 (the closet's Type X face) hands off to W-B-STR3B, which keeps
         # the family's stair plywood — the leaf stops here because the closet does. The base
         # tag was STAIRWALL_INT_2X6_BRG until 2026-09-12, when it merged with the mudroom's
@@ -391,18 +391,18 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # for the same reason: the channel and its own leaf of board STOP at this node, and
         # a builder who runs them through to W-M-C2 has shorted the acoustic wall by a leaf
         # while gaining 1/2" of wall the drawings do not show.
-        "assembly_change:INT_2X6_BRG|INT_2X6_BRG_RC",
+        "assembly_change:INT_2X6_BRG_HALF|INT_2X6_BRG_RC_HALF",
         # N-B-SA-NE, new with the rotation: the sauna's east liner stops at the room's north
         # face and the same 2x6 bearing wall carries on without it. The liner RETURNS into
         # the corner here — the hot side's vapour control is continuous on all four faces or
         # it is not vapour control — which is exactly what this key exists to put on a sheet.
-        "assembly_change:INT_2X6_BRG|SAUNA_LINER_INT_2X6_BRG",
+        "assembly_change:INT_2X6_BRG_HALF|SAUNA_LINER_INT_2X6_BRG",
         # N-B-BA-NE. The bathroom's staggered wet wall meets the stair well's partition on
         # one continuous plane — 6 3/4" of plumbing wall butting 4 1/2" of stud-and-board,
         # both faces jogging 1 5/16" as they cross. A real change of construction and the
         # whole point of sliding the wall onto this line: without the key the jog was there
         # and nothing drew it either.
-        "assembly_change:INT_2X6_STAGGERED_PLUMBING|STAIRWELL_PARTITION_4H",
+        "assembly_change:INT_2X6_STAGGERED_PLUMBING_HALF|STAIRWELL_PARTITION_4H",
         # N-B-ESS-SE. It was a FOUR-assembly key for one afternoon on 2026-09-05 — the two
         # partitions arriving here, INT_ESS_CLOSET_STEEL from the west and W-B-CL-N's plain
         # INT_2X4_PARTITION leaving east, joined the stair wall's own split. **W-B-CL-N is

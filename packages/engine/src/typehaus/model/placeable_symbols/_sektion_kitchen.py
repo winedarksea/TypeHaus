@@ -150,9 +150,12 @@ def sektion_axstad_cabinet(configuration: SektionCabinetConfiguration) -> Builde
                 (base, base + TALL_LOWER_FRONT_M * scale, top) if installed_tall else (base, top)
             )
             if installed_tall and configuration.tall_front_heights_in:
+                # Fronts split the span in proportion, so a scaled cabinet still fills its box.
+                # At full scale the span is the stated 90" and each front keeps its own height.
+                total_in = sum(configuration.tall_front_heights_in)
                 divisions = (base,)
                 for front_height in configuration.tall_front_heights_in:
-                    divisions += (divisions[-1] + inch(front_height).meters * scale,)
+                    divisions += (divisions[-1] + (top - base) * front_height / total_in,)
             for bottom, upper in zip(divisions, divisions[1:], strict=False):
                 parts.extend(
                     _doors(

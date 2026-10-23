@@ -62,7 +62,7 @@ MAIN_TOWEL_ACCESSORIES = [
         type_ref="FT-MOEN-ALIGN-HAND-TOWEL-CH",
         room="RM-M-BATH2",
         host_fixture_ref="FX-M-BATH2-SINK",
-        position=pt(inch(18.25), inch(208.04)),
+        position=pt(inch(18.25), inch(207.915)),
         rotation=deg(180),
         mount=Mount(kind=MountKind.WALL, elevation=inch(29.33)),
     ),

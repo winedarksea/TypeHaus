@@ -452,8 +452,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Stud bay is FIBREGLASS, not mineral wool, EXCEPT tub deck, saunas, plant rooms, and
   `_GARDEN_FRAMED_STUD` — do not sweep those next time (list in `plan/assemblies.py` above
   `EXT_2X6_SWINBURNE`).
-- `INT_2X4_PARTITION` has NO insulation. Exception: `W-S-SS2` uses `INT_2X4_RC` (resilient
-  channel, STC 48) instead of a batt.
+- **Wall board policy (2026-10-23).** Walls are 1/2" regular (`INT_2X4_PARTITION_HALF` and its
+  siblings, `*_HALF` in `library/assemblies/partitions_half.py`). Ceilings stay 5/8" (rafters
+  and trusses at 24" o.c.). The walls that keep 5/8" are the ESS closet (advisory owner rule),
+  `W-B-STR`/`W-B-STR3` (Type X, R302.7, "do not retype it back"), the garage walls and the
+  `gwb-stem` band, and `FO-S-STAIR`'s `gwb-well` lining (the joist clip is struck behind it).
+  Upgrade boards are all 1/2" and are swapped by material only: `gwb-ar` on hall and stair faces
+  and in the mudroom; `gwb-mr` on bath faces and the laundry; `gwb-c` on solid acoustic walls.
+  STC upgrades go only where `advisory.acoustic_adjacency` finds a sleeping room sharing a wall
+  with a noisy room and no door between them. Resilient channel is dropped on the door walls
+  (undercut doors leak more than a channel saves). Bath ceilings are 5/8" mold-resistant via
+  `Room.ceiling_lining`. Owner's rule and the reasons: DESIGN-LOG.md, "Wall board policy (2026-10-23)".
+- `INT_2X4_PARTITION` has NO insulation. Exception: `W-S-SS2` uses `INT_2X4_RC_HALF` (resilient
+  channel, STC 42 cited) instead of a batt.
   - Rated STC 34 (USG SA924/UL U305/U314) at 16" o.c. — do not difference against the old
     insulated 36; different test series. Card over-reports it too: no `CavityFill` means
     `analysis._layer_rsi` bills the stud layer as solid SPF (R-6.4 vs honest ~R-2.5-3),
@@ -461,19 +472,20 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - Knowingly left uninsulated (fix, if wanted, is a retype to `INT_2X4_RC`, not a batt):
     `W-A-BATH-S`, `W-M-HS3`. `W-M-HS3` (laundry ↔ living) is a decision, not an oversight
     — see DESIGN-LOG.md, "The laundry is not acoustically treated".
-  - **`W-S-SBS` left this list on 2026-09-15**, retyped to `INT_2X4_RC`: the channel faces the
-    BATH and `interior_room` does not select it — the alignment does, and both spellings
-    resolve identically.
+  - **`W-S-SBS`, `W-S-BW1`, `W-S-BW2`, `W-S-BW3` and `W-S-BW4` are plain 1/2" partitions
+    (2026-10-23).** Each has an undercut door into the hall, so the channel's STC does not
+    reach the room. `W-S-BW4` stays plain against `SF-S-HP1`'s rectangle (`mep.duct_soffit_occupancy`
+    still finds it). `W-S-BD1`/`W-S-BD2` keep the 5/8" `INT_2X4_RC` (cited STC 48), the only
+    cited channel wall that clears 45; the 1/2" channel cites 42.
   - **`W-M-BDN1` returned to `INT_2X4_PARTITION` on 2026-09-30.** The ensuite serves this
     bedroom's occupants; removing the channel avoids a 1/2" face step where it meets
     `W-M-BDN2`. Its bathroom face and the 3 1/2" plumbing cavity remain in place.
-- `INT_2X6_BRG` also has an EMPTY cavity and no channel, and two segments of it stand
-  between a sleeping room and something noisy: **`W-S-C2C`** (RM-S-SUITE ↔ the second
-  storey's east rooms) and **`W-M-C2`** (RM-M-BED's line continued north past N-M-C1).
-  Both are known, accepted gaps as of 2026-09-15 — the fix is the same retype `W-S-C2B`
-  took that day, to `INT_2X6_BRG_RC` with `alignment=face("stud-ext", offset=inch(-2.75))`.
-  Neither was done, because unlike `W-S-C2B` neither has tees at both ends to absorb the
-  channel's 1/2", so each would step a face in the open.
+- `INT_2X6_BRG` (now `INT_2X6_BRG_HALF`) has an EMPTY cavity and no channel. Two segments of
+  it stand between a sleeping room and something noisy: **`W-S-C2C`** (RM-S-SUITE ↔ the second
+  storey's east rooms) and **`W-M-C2`** (RM-M-BED's line continued north past N-M-C1). Both are
+  accepted gaps (2026-10-23): their faces carry `gwb-mr`/`gwb-ar` swaps, not a channel, because a
+  channel would step a face in the open where neither has tees at both ends (see DESIGN-LOG,
+  "Wall board policy (2026-10-23)").
   - On `W-S-SS2` the channel must stay on the NORTH face: the south face carries ST-S2A's
     stringer ledger/handrail and a void boundary `attic.py` defines off it; moving it south
     leaves 35-1/2" against R311.7.1's 36".

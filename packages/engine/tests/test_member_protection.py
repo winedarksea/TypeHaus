@@ -53,7 +53,9 @@ def test_only_authored_members_are_taped(rows):
         "BM-BW-SCSILL",
         "BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT", "ST-G-SERVICE",
         # The slat brace's sill under TR-BW-SCREEN-CAP (2026-10-16).
-        "SB-BW-BAND"}
+        "SB-BW-BAND",
+        # The porch stair's composite treads top-protected with butyl (params/sunken_garden.py).
+        "ST-SG-PORCH"}
 
 
 def test_the_beams_take_the_wide_roll_at_their_own_widths(rows):
