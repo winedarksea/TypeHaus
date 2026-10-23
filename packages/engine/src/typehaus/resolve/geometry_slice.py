@@ -328,21 +328,17 @@ def _sweep_profiles(solid: GSweep, plane: CutPlane) -> list[SectionProfile]:
 
 
 def sweep_mesh(solid: GSweep) -> GMesh:
-    """A swept solid tessellated: two caps by fan triangulation plus one quad per edge.
+    """A swept solid tessellated with concavity-aware caps and one quad per edge."""
+    from typehaus.triangulation import planar_ring_triangles
 
-    The fan is only valid for a convex profile, and a birdsmouth's is not — but the caps of a
-    member sweep are its *ends*, which no section ever needs and which no viewer sees inside
-    a wall. Callers that need a watertight non-convex cap should triangulate properly; this
-    exists so the slice kernel has a general fallback and glTF has something to draw.
-    """
     count = len(solid.profile)
     dx, dy, dz = solid.extrude
     positions = list(solid.profile) + [(x + dx, y + dy, z + dz)
                                        for (x, y, z) in solid.profile]
     triangles: list[tuple[int, int, int]] = []
-    for index in range(1, count - 1):
-        triangles.append((0, index + 1, index))
-        triangles.append((count, count + index, count + index + 1))
+    for a, b, c in planar_ring_triangles(solid.profile):
+        triangles.append((a, c, b))
+        triangles.append((count + a, count + b, count + c))
     for index in range(count):
         nxt = (index + 1) % count
         triangles.append((index, nxt, count + nxt))

@@ -19,6 +19,7 @@ from typehaus.emit.gltf.geometry import (
 )
 from typehaus.emit.gltf.triangulate import HAS_CDT, fan_is_exact, polygon_parts, triangles
 from typehaus.model.placeable_symbols._frame import DEPTH_CYLINDER_SEGMENTS
+from typehaus.triangulation import planar_ring_triangles
 
 if TYPE_CHECKING:  # the IR types are annotations only — importing them at runtime would
     # make the glTF emitter depend on the resolver package it is fed from.
@@ -311,9 +312,7 @@ class _MeshBuilder:
         """Add an IR swept solid: a planar profile plus the vector it runs along.
 
         ``add_gbox``'s shape, with the two rings related by a translation instead of stated
-        separately. The caps are fan-triangulated, which is exact for a convex profile and
-        adequate for the birdsmouth's single reflex vertex — its caps are the member's *ends*,
-        buried in a wall and never seen.
+        separately. Concave caps preserve cut seats and birdsmouths.
         """
         positions, indices = self._bucket(color)
         base = len(positions)
@@ -321,9 +320,9 @@ class _MeshBuilder:
         dx, dy, dz = sweep.extrude
         positions.extend(_to_gltf(*point) for point in sweep.profile)
         positions.extend(_to_gltf(x + dx, y + dy, z + dz) for (x, y, z) in sweep.profile)
-        for index in range(1, count - 1):
-            indices.extend((base, base + index + 1, base + index))
-            indices.extend((base + count, base + count + index, base + count + index + 1))
+        for a, b, c in planar_ring_triangles(sweep.profile):
+            indices.extend((base + a, base + c, base + b))
+            indices.extend((base + count + a, base + count + b, base + count + c))
         for index in range(count):
             nxt = (index + 1) % count
             a, b = base + index, base + nxt

@@ -363,7 +363,7 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
       colors.push(col.r, col.g, col.b);
     }
     const triangles = seated
-      ? pushSweepIndices(indices, base, verts.length / 2)
+      ? pushSweepIndices(indices, base, verts.length / 2, verts)
       : (pushBoxIndices(indices, base), TRIANGLES_PER_MEMBER_BOX);
     triangleStarts.push(triangleStarts[triangleStarts.length - 1] + triangles);
     drawn.push(m);

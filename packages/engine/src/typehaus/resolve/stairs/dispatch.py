@@ -38,6 +38,7 @@ from typehaus.resolve.stairs.finish import (
     stairhead_nosing_part,
 )
 from typehaus.resolve.stairs.straight import _straight_stair_members
+from typehaus.resolve.stairs.stringer_cuts import cut_stringer_profiles
 from typehaus.resolve.stairs.u_split import _u_split_landing_members
 from typehaus.resolve.stairs.winder import (
     _winder_stair_members,
@@ -259,8 +260,10 @@ def _resolve_stair(
     # Structural guards: the flight never drops below the subfloor it springs from (so a
     # U-stair well partition cannot poke through the foundation), and every flight is
     # borne on the walls beside it — posted down wherever none reaches.
+    unclipped_members = members
     members = _clip_stair_to_subfloor(members, support_floor_m)
     members = _bear_stair_on_walls(model, stair, members, support_floor_m)
+    members = cut_stringer_profiles(members, unclipped_members, support_floor_m)
     surfaces = _finish_materials(model, stair)
     members = _in_stair_material(stair, members, surfaces)
     finish_parts = (stair_finish_parts(members, stair.finish_material,

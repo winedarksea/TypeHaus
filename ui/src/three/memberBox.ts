@@ -234,15 +234,36 @@ export function elevationProfileVertices(
 }
 
 /**
- * Triangles for a swept profile laid out as [near ring, far ring]: two fan caps plus one quad
+ * Triangles for a swept profile laid out as [near ring, far ring]: two caps plus one quad
  * per profile edge. Returns how many triangles it pushed, which is what the picking table
  * needs — a seated member is not a 12-triangle box.
  */
-export function pushSweepIndices(indices: number[], base: number, profileCount: number): number {
+export function pushSweepIndices(indices: number[], base: number, profileCount: number,
+  vertices: readonly [number, number, number][]): number {
   const before = indices.length;
-  for (let i = 1; i < profileCount - 1; i++) {
-    indices.push(base, base + i + 1, base + i);
-    indices.push(base + profileCount, base + profileCount + i, base + profileCount + i + 1);
+  const origin = new THREE.Vector3(...vertices[0]);
+  const ring = vertices.slice(0, profileCount).map((v) => new THREE.Vector3(...v).sub(origin));
+  const normal = new THREE.Vector3();
+  for (let i = 0; i < ring.length; i++) {
+    normal.add(new THREE.Vector3().crossVectors(ring[i], ring[(i + 1) % ring.length]));
+  }
+  const magnitudes = [Math.abs(normal.x), Math.abs(normal.y), Math.abs(normal.z)];
+  const drop = magnitudes.indexOf(Math.max(...magnitudes));
+  const contour = ring.map((v) => {
+    const coords = v.toArray().filter((_, axis) => axis !== drop);
+    return new THREE.Vector2(coords[0], coords[1]);
+  });
+  const area = contour.reduce((sum, point, i) => {
+    const next = contour[(i + 1) % contour.length];
+    return sum + point.x * next.y - next.x * point.y;
+  }, 0);
+  for (const triangle of THREE.ShapeUtils.triangulateShape(contour, [])) {
+    const [a, rawB, rawC] = triangle;
+    const signed = new THREE.Vector2().subVectors(contour[rawB], contour[a])
+      .cross(new THREE.Vector2().subVectors(contour[rawC], contour[a]));
+    const [b, c] = signed * area < 0 ? [rawC, rawB] : [rawB, rawC];
+    indices.push(base + a, base + c, base + b);
+    indices.push(base + profileCount + a, base + profileCount + b, base + profileCount + c);
   }
   for (let i = 0; i < profileCount; i++) {
     const next = (i + 1) % profileCount;
@@ -265,7 +286,7 @@ export function rakedBoxGeometry(
   const positions: number[] = [];
   for (const v of verts) positions.push(v[0], v[1], v[2]);
   const indices: number[] = [];
-  if (ringed) pushSweepIndices(indices, 0, verts.length / 2);
+  if (ringed) pushSweepIndices(indices, 0, verts.length / 2, verts);
   else pushBoxIndices(indices, 0);
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));

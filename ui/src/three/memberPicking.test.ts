@@ -5,7 +5,8 @@ import { buildMembers } from "./members";
 import { buildRebarMeshes, isStraightBar, tubePath } from "./rebar";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import {
-  elevationProfileVertices, sectionRingVertices, seatedProfileVertices, TRIANGLES_PER_MEMBER_BOX,
+  elevationProfileVertices, rakedBoxGeometry, sectionRingVertices, seatedProfileVertices,
+  TRIANGLES_PER_MEMBER_BOX,
 } from "./memberBox";
 import { createSolidBodyMesh } from "./solidBodyMesh";
 import {
@@ -308,6 +309,7 @@ function checkRebarHoopPickResolvesToOneHoop() {
 }
 
 export function runMemberPickingTests() {
+  checkSawtoothStringerCaps();
   checkCutProfileAndConnectorMesh();
   checkMemberUidScheme();
   checkInstancedBucketResolvesPerStud();
@@ -320,6 +322,51 @@ export function runMemberPickingTests() {
   checkHighlightOutlineMatchesTheMember();
   checkLocateMemberAgainstTheModel();
   checkRebarHoopPickResolvesToOneHoop();
+}
+
+function checkSawtoothStringerCaps() {
+  const profile: [number, number][] = [[0, 0], [3, 1.5], [3, 2.5], [2, 2.5],
+    [2, 2], [1, 2], [1, 1.5], [0.5, 1.5], [0, 1.5]];
+  for (const reversed of [false, true]) {
+    const stringer = member({
+      key: "stringer-0", category: "stringer", p0: [2, 3], p1: [2, reversed ? 0 : 6],
+      z0_m: 0, z1_m: 1.5, z0_end_m: 1.5, z1_end_m: 2.5,
+      elevation_profile: profile, plan_width_m: 0.0381,
+    });
+    const geometry = rakedBoxGeometry(stringer, CENTER)!;
+    const positions = geometry.getAttribute("position");
+    const indices = geometry.getIndex()!;
+    let capArea = 0;
+    const capNormal = new THREE.Vector3();
+    for (let i = 0; i < indices.count; i += 3) {
+      const corners = [indices.getX(i), indices.getX(i + 1), indices.getX(i + 2)];
+      if (!corners.every((index) => index < profile.length)) continue;
+      const [a, b, c] = corners.map((index) => new THREE.Vector3().fromBufferAttribute(positions, index));
+      const normal = new THREE.Vector3().crossVectors(b.clone().sub(a), c.clone().sub(a));
+      capArea += normal.length() / 2;
+      if (capNormal.lengthSq() === 0) capNormal.copy(normal);
+      else assert(normal.dot(capNormal) > 0, "Every cap triangle has consistent winding");
+    }
+    const area = Math.abs(profile.reduce((sum, [s, z], i) => {
+      const [nextS, nextZ] = profile[(i + 1) % profile.length];
+      return sum + s * nextZ - nextS * z;
+    }, 0)) / 2;
+    assert(Math.abs(capArea - area) < 1e-6, "Cap triangles tile the seats without filling notches");
+    const acrossWidth = new THREE.Vector3().fromBufferAttribute(positions, profile.length)
+      .sub(new THREE.Vector3().fromBufferAttribute(positions, 0));
+    assert(capNormal.dot(acrossWidth) < 0, "The near cap faces outward on either run direction");
+    const group = new THREE.Group();
+    buildMembers(group, [stringer, { ...stringer, key: "stringer-1" }], CENTER,
+      "schematic", RESOLVED_NORDIC_PALETTE.light, "ST1");
+    const mesh = group.children.find((child) => child instanceof THREE.Mesh) as THREE.Mesh;
+    const lastTriangle = mesh.geometry.getIndex()!.count / 3 - 1;
+    assert(resolveMemberPickUid(mesh, null, 0) === "ST1::stringer-0"
+      && resolveMemberPickUid(mesh, null, lastTriangle) === "ST1::stringer-1",
+    "Concave cap triangle counts preserve stringer picking");
+    const highlight = buildMemberHighlight(stringer, CENTER, "#ffcc00");
+    assert(highlight, "The highlight uses the cut stringer silhouette");
+    geometry.dispose();
+  }
 }
 
 function checkCutProfileAndConnectorMesh() {
