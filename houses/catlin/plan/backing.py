@@ -52,7 +52,7 @@ from typehaus import WallBacking, ft, inch
 #
 # ** THE SCHEME MOVED WITH THE 2026-09-29 FINISHED-CEILING CORRECTION. ** Counter uppers
 # now start at 53 1/2", their top course at 83 1/2", and the over-cold boxes at 73 1/2".
-# The mixer garage's upper box remains at 76"; living-room curtain rods remain at 84".
+# The mixer garage's stock courses start at 56" and 86"; living-room rods remain at 84".
 #
 # A 2x8 laid flat is 7 1/4", so one band covers a spread of hangs.
 #
@@ -137,13 +137,19 @@ MAIN_BACKING = [
                 start=inch(64.5), length=inch(47),
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="FURN-M-FIRE-MANTEL (64 in.)"),
-    # FURN-M-KIT-MIXER-GARAGE-UP's bottom rail. The old one-piece 72" garage spanned 36" to
-    # the ceiling and was caught by whichever bands it crossed; split at 76" it has a rail of
-    # its own, between BK-M-E1-MID's top at 71 1/4" and BK-M-E1-ROD's bottom at 82".
+    # Retained for the adjacent diagonal corner and WN2, independently of the garage.
     WallBacking(uid="Z31Y1280S2", tag="BK-M-E1-GARAGE", wall_ref="W-M-E1",
                 start=inch(320.75), length=inch(111.25),
                 elevation=inch(74), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="garage lower restraint (76 in.) and kitchen uppers (73 1/2 in.)"),
+                material_ref="spf", purpose="kitchen upper lower restraint (73 1/2 in.)"),
+    WallBacking(uid="QGPJ6QRH9R", tag="BK-M-E1-MIXER-CAP", wall_ref="W-M-E1",
+                start=inch(320.75), length=inch(32),
+                elevation=inch(54), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="bottomless mixer enclosure cap restraint at 56 in. AFF"),
+    WallBacking(uid="A0K3GFYRYY", tag="BK-M-E1-MIXER-UPPER", wall_ref="W-M-E1",
+                start=inch(320.75), length=inch(32),
+                elevation=inch(82), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="stock garage upper top rail and stacker lower restraint at 86 in. AFF"),
     WallBacking(uid="VXX1ME3YWS", tag="BK-M-E1-ROD", wall_ref="W-M-E1",
                 start=inch(32.75), length=inch(142.75),
                 elevation=inch(82), height=inch(7.25), profile="2x8",

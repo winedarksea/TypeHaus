@@ -1379,11 +1379,14 @@
 "canvas_objects/FURN-M-KIT-E2/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-KIT-E2/body_z1_m": 0.9382125,
 "canvas_objects/FURN-M-KIT-E2/z_m": 0.0238125,
-"canvas_objects/FURN-M-KIT-MIXER-GARAGE-UP/body_z0_m": 1.9542125,
-"canvas_objects/FURN-M-KIT-MIXER-GARAGE-UP/body_z1_m": 2.7162125,
-"canvas_objects/FURN-M-KIT-MIXER-GARAGE-UP/z_m": 1.9542125,
+"canvas_objects/FURN-M-KIT-MIXER-GARAGE-ST/body_z0_m": 2.2082125,
+"canvas_objects/FURN-M-KIT-MIXER-GARAGE-ST/body_z1_m": 2.5892125,
+"canvas_objects/FURN-M-KIT-MIXER-GARAGE-ST/z_m": 2.2082125,
+"canvas_objects/FURN-M-KIT-MIXER-GARAGE-UP/body_z0_m": 1.4462125,
+"canvas_objects/FURN-M-KIT-MIXER-GARAGE-UP/body_z1_m": 2.2082125,
+"canvas_objects/FURN-M-KIT-MIXER-GARAGE-UP/z_m": 1.4462125,
 "canvas_objects/FURN-M-KIT-MIXER-GARAGE/body_z0_m": 0.9382125,
-"canvas_objects/FURN-M-KIT-MIXER-GARAGE/body_z1_m": 1.9542125,
+"canvas_objects/FURN-M-KIT-MIXER-GARAGE/body_z1_m": 1.4462125,
 "canvas_objects/FURN-M-KIT-MIXER-GARAGE/z_m": 0.9382125,
 "canvas_objects/FURN-M-KIT-OVER-FREEZER/body_z0_m": 1.8907125,
 "canvas_objects/FURN-M-KIT-OVER-FREEZER/body_z1_m": 2.3987125,
@@ -24425,10 +24428,10 @@
 "0edec6c6a9c0"
 ],
 "geometry/CMW103AAAA::framing/member:backing-1-000": [
-1.6256,
-1.80975,
+1.3716,
+1.55575,
 8,
-"654891f0dccb"
+"bcf39b6987cd"
 ],
 "geometry/CMW103AAAA::framing/member:backing-2-000": [
 1.6256,
@@ -24437,22 +24440,16 @@
 "654891f0dccb"
 ],
 "geometry/CMW103AAAA::framing/member:backing-3-000": [
+1.6256,
+1.80975,
+8,
+"654891f0dccb"
+],
+"geometry/CMW103AAAA::framing/member:backing-4-000": [
 1.8796,
 2.06375,
 8,
 "63a7202554c5"
-],
-"geometry/CMW103AAAA::framing/member:backing-4-000": [
-2.0828,
-2.26695,
-8,
-"8458aa6a7b11"
-],
-"geometry/CMW103AAAA::framing/member:backing-4-001": [
-2.0828,
-2.26695,
-8,
-"8458aa6a7b11"
 ],
 "geometry/CMW103AAAA::framing/member:backing-5-000": [
 2.0828,
@@ -24461,12 +24458,30 @@
 "8458aa6a7b11"
 ],
 "geometry/CMW103AAAA::framing/member:backing-6-000": [
+2.0828,
+2.26695,
+8,
+"8458aa6a7b11"
+],
+"geometry/CMW103AAAA::framing/member:backing-6-001": [
+2.0828,
+2.26695,
+8,
+"8458aa6a7b11"
+],
+"geometry/CMW103AAAA::framing/member:backing-7-000": [
+2.0828,
+2.26695,
+8,
+"8458aa6a7b11"
+],
+"geometry/CMW103AAAA::framing/member:backing-8-000": [
 2.4257,
 2.5146,
 8,
 "37cdba4dd5f0"
 ],
-"geometry/CMW103AAAA::framing/member:backing-7-000": [
+"geometry/CMW103AAAA::framing/member:backing-9-000": [
 2.5273,
 2.667,
 8,
@@ -70967,10 +70982,10 @@
 "0c50e3443c7b"
 ],
 "member/CMW103AAAA/backing-1-000": [
-1.6256,
-1.80975,
+1.3716,
+1.55575,
 2,
-"425a339899d8"
+"07fc55c16a51"
 ],
 "member/CMW103AAAA/backing-2-000": [
 1.6256,
@@ -70979,22 +70994,16 @@
 "425a339899d8"
 ],
 "member/CMW103AAAA/backing-3-000": [
+1.6256,
+1.80975,
+2,
+"425a339899d8"
+],
+"member/CMW103AAAA/backing-4-000": [
 1.8796,
 2.06375,
 2,
 "d8079c5cac48"
-],
-"member/CMW103AAAA/backing-4-000": [
-2.0828,
-2.26695,
-2,
-"a1a479d66f95"
-],
-"member/CMW103AAAA/backing-4-001": [
-2.0828,
-2.26695,
-2,
-"a1a479d66f95"
 ],
 "member/CMW103AAAA/backing-5-000": [
 2.0828,
@@ -71003,12 +71012,30 @@
 "a1a479d66f95"
 ],
 "member/CMW103AAAA/backing-6-000": [
+2.0828,
+2.26695,
+2,
+"a1a479d66f95"
+],
+"member/CMW103AAAA/backing-6-001": [
+2.0828,
+2.26695,
+2,
+"a1a479d66f95"
+],
+"member/CMW103AAAA/backing-7-000": [
+2.0828,
+2.26695,
+2,
+"a1a479d66f95"
+],
+"member/CMW103AAAA/backing-8-000": [
 2.4257,
 2.5146,
 2,
 "fecffc8e3a93"
 ],
-"member/CMW103AAAA/backing-7-000": [
+"member/CMW103AAAA/backing-9-000": [
 2.5273,
 2.667,
 2,

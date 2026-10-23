@@ -183,8 +183,15 @@ def test_diagonal_corner_closes_to_both_upper_runs(catlin_plan, kitchen_objects)
 def test_garage_fronts_face_west_and_pullout_lands_on_counter(
     catlin_plan, catlin_model_ro, kitchen_objects
 ):
-    for tag in ("FURN-M-KIT-MIXER-GARAGE", "FURN-M-KIT-MIXER-GARAGE-UP"):
+    for tag, bottom, top in (
+        ("FURN-M-KIT-MIXER-GARAGE", 36, 56),
+        ("FURN-M-KIT-MIXER-GARAGE-UP", 56, 86),
+        ("FURN-M-KIT-MIXER-GARAGE-ST", 86, 101),
+    ):
         obj = kitchen_objects[tag]
+        assert (obj.body_z0_m, obj.body_z1_m) == pytest.approx(
+            ((bottom + 0.9375) * INCH, (top + 0.9375) * INCH))
+        assert _bounds(obj) == pytest.approx(_bounds(kitchen_objects["FURN-M-KIT-MIXER-GARAGE"]))
         radians = math.radians(obj.rotation_degrees)
         assert (math.sin(radians), -math.cos(radians)) == pytest.approx((-1, 0), abs=1e-9)
     garage = kitchen_objects["FURN-M-KIT-MIXER-GARAGE"]
@@ -204,6 +211,24 @@ def test_garage_fronts_face_west_and_pullout_lands_on_counter(
     assert typ.height.inches == 30
     assert typ.product_ref == "PROD-IKEA-SEKTION-BASE24-30"
     assert typ.plan_symbol == "sektion-axstad-kitchen-wall"
+    assert kitchen_objects["FURN-M-KIT-MIXER-GARAGE-ST"].type_ref == "SEKT-TS24-15"
+    assert _bounds(kitchen_objects["APPL-M-RANGE"])[1] - y1 == pytest.approx(14.0625)
+
+
+def test_mixer_storage_envelope_has_no_floor_threshold_or_shelf(catlin_plan):
+    from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
+
+    typ = next(t for t in catlin_plan.library.furniture_types if t.tag == "FT-KIT-MIXER24-20")
+    _, parts = KITCHEN_SEKTION_SYMBOLS[typ.plan_symbol](
+        *(value.meters for value in typ.footprint), typ.height.meters)
+    # An 18-inch envelope above a 1/4-inch slider must be free of carcass panels.
+    clearance_min = tuple(value * INCH for value in (-10.75, -10, 0))
+    clearance_max = tuple(value * INCH for value in (10.75, 10, 18.25))
+    for part in parts:
+        overlaps = [min(center + size / 2, upper) - max(center - size / 2, lower)
+                    for center, size, lower, upper in zip(
+                        part["center"], part["size"], clearance_min, clearance_max, strict=True)]
+        assert min(overlaps) <= 1e-9, "cabinet geometry obstructs the mixer storage envelope"
 
 
 def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro, kitchen_objects):
@@ -374,7 +399,8 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
         "SEKT-B36-AXSTAD-DOOR": 2,
         "SEKT-W12-30": 1,
         "SEKT-CORNER-W26-30": 1,
-        "SEKT-TS24-15": 2,
+        "SEKT-TS24-15": 3,
+        "FT-KIT-MIXER24-20": 1,
         "SEKT-TS30-20": 2,
         "FT-KIT-STOCK24-30-HUNG": 1,
         "FT-LIV-E-END-PANEL": 1,
@@ -383,6 +409,7 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
         assert quantities[type_ref] == count
         assert prices.placeables[type_ref].low > 0
     for removed in (
+        "FT-KIT-DEEP24-40",
         "FT-KIT-FILLER-2375",
         "FT-LIV-E-FILLER-050",
         "SEKT-W24-20",
@@ -428,13 +455,14 @@ def cabinet_ifc(catlin_ifc_path):
     "FURN-M-KIT-E1", "FURN-M-KIT-SINKBASE", "FURN-M-KIT-PEN-B24-W",
     "FURN-M-KIT-WN1", "FURN-M-KIT-CORNER-NE", "FURN-M-KIT-OVER-FRIDGE",
     "FURN-M-KIT-PANTRYC", "FURN-M-KIT-COLD-SCRIBE-S",
+    "FURN-M-KIT-MIXER-GARAGE", "FURN-M-KIT-MIXER-GARAGE-UP", "FURN-M-KIT-MIXER-GARAGE-ST",
     "FURN-M-LIV-E-B24", "FURN-M-BED-DESK-CAB-S", "FURN-S-STUDY-NOOK-SEAT-W",
     "FX-M-BATH2-SINK",
 ])
 def test_configured_geometry_matches_ifc_and_glb(tag, catlin_model_ro, cabinet_ifc):
+    from typehaus.model.canvas import model_symbol_for
     from typehaus.model.placeable_symbols import model_parts
     from typehaus.resolve.geometry_countertops import slab_hosts
-    from typehaus.model.canvas import model_symbol_for
 
     obj = next(item for item in catlin_model_ro.canvas_objects if item.tag == tag)
     types = {t.tag: t for t in (*catlin_model_ro.plan.library.furniture_types,

@@ -315,7 +315,8 @@ MEDIA_SECTIONAL_U = FurnitureType(
 # deep upper types in plan/kitchen_deep_cabinets.py:
 #
 #  * over-cold boxes now use stock SEKT-TS30-20 at 73 1/2" (2026-10-05), tops 93 1/2";
-#  * the mixer garage is FT-KIT-DEEP24-40 under stock FT-KIT-STOCK24-30-HUNG, topping at 106".
+#  * the mixer garage is bottomless FT-KIT-MIXER24-20, stock FT-KIT-STOCK24-30-HUNG
+#    and SEKT-TS24-15, topping at 101" (2026-10-23).
 #
 # Deleted rather than left unused, per FT-KIT-COLDSTORE-FILLER's rule above: an
 # unreferenced house-local type reads as a size someone might reach for. The fit-out prose

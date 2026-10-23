@@ -17,8 +17,9 @@ def sektion_carcass(
     shelves: tuple[float, ...] = (),
     *,
     include_top: bool = True,
+    include_bottom: bool = True,
 ) -> list:
-    """Sides, back, bottom and top panels of one frame between ``z0`` and ``z1``."""
+    """Sides and back with optional horizontal panels between ``z0`` and ``z1``."""
     panel = min(PANEL_M, width / 8, depth / 8, (z1 - z0) / 4)
     back_y = depth / 2
     carcass_depth = back_y - front_y
@@ -31,7 +32,10 @@ def sektion_carcass(
         for sign in (-1, 1)
     ]
     parts.append(box(0, back_y - BACK_M / 2, z0, z1, inner, BACK_M, "appliance-white"))
-    for z in (z0, *((z1 - panel,) if include_top else ()), *shelves):
+    horizontal_panels = (
+        *((z0,) if include_bottom else ()), *((z1 - panel,) if include_top else ()), *shelves
+    )
+    for z in horizontal_panels:
         parts.append(box(0, shelf_cy, z, z + panel, inner, shelf_depth, "appliance-white"))
     return parts
 

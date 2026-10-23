@@ -2572,12 +2572,10 @@
 "SEKT-W15-20" = { material = { low = 95, high = 235 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W30-20" = { material = { low = 155, high = 375 }, labour = { low = 90, high = 220 } }  # 1 ea
 "SEKT-W36-20" = { material = { low = 185, high = 455 }, labour = { low = 90, high = 220 } }  # 2 ea
-# The west pantry top and lower garage need custom plywood carcasses.
-# The garage UPPER uses the stock base frame row below. These custom carcasses
-# keep their full-depth front alignment with the high cabinets and refrigerator pair.
-# Material includes paint-grade carcass and doors; the mixer garage carries extra labour
-# for its pullout and two interior receptacles.
-"FT-KIT-DEEP24-40" = { material = { low = 420, high = 1050 }, labour = { low = 220, high = 540 } }  # 1 ea
+# Bottomless 24x24x20 mixer enclosure, sides/cap/back and finish only. Budget allowance,
+# not a supplier quote; smaller than the retired 40-high carcass. The AXSTAD front,
+# lift-up fittings and thin appliance slider are included once in the fit-out allowance.
+"FT-KIT-MIXER24-20" = { material = { low = 260, high = 650 }, labour = { low = 160, high = 360 } }  # 1 ea
 # Stock installations include doors, shelves, anchoring and the detailed support fit-out.
 "SEKT-W12-30" = { material = { low = 200, high = 320 }, labour = { low = 90, high = 220 } }
 "SEKT-CORNER-W26-30" = { material = { low = 280, high = 460 }, labour = { low = 140, high = 300 } }
@@ -2589,8 +2587,8 @@
 "SEKT-HIGH24-90" = { material = { low = 190, high = 520 }, labour = { low = 120, high = 300 } }  # 0 ea
 "SEKT-HIGH24-80" = { material = { low = 170, high = 465 }, labour = { low = 120, high = 300 } }  # 2 ea
 "SEKT-HIGH18-90" = { material = { low = 360, high = 600 }, labour = { low = 120, high = 300 } }  # 1 ea
-# East pantry tops: stock 904.997.35 frames with AXSTAD fronts, hinges and rail.
-"SEKT-TS24-15" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
+# East pantry tops and garage stacker: stock 904.997.35, AXSTAD fronts, hinges and rail.
+"SEKT-TS24-15" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 3 ea
 # West cold-run: stock 402.655.12, two AXSTAD 15x20 fronts, UTRUSTA hinges and rail.
 # Prior VOXTORP configuration 494.549.71 was $384 (2026-10-05); retained as the
 # allowance basis, not represented as an AXSTAD SKU or current AXSTAD quote.
@@ -2935,9 +2933,9 @@
 # 72" counter-to-ceiling box) were here and are DELETED with their types on 2026-09-11: both
 # were custom sizes invented because the generic catalog could not reach a number. A 2026-09-29
 # catalog review found the 24"-deep dimensions are still not stock SEKTION: the over-cold
-# pair switched to stock 20-high frames on 2026-10-05; the west pantry top and lower
-# mixer garage retain explicit custom FT-KIT-DEEP* rows above. The garage's
-# pull-out shelf and door hardware stay in [allowances], where they always were.
+# pair switched to stock 20-high frames on 2026-10-05. Only the bottomless lower mixer
+# enclosure remains custom (FT-KIT-MIXER24-20); both storage courses above it are stock.
+# The garage's appliance slider, front and lift hardware stay in [allowances].
 # RM-M-PANTRY's shelf stack, and it is NOT a closet system — see the type's `source` and
 # notes/pantry_climbable_shelving.md. ** MATERIAL FELL BY ~2/3 ON 2026-08-29 AND THE SHELVES
 # DID NOT GET CHEAPER. ** The twelve shelves are 1 1/4" (6/4 since 2026-10-16) solid red oak off the owner's own
@@ -7657,9 +7655,10 @@ cabinet-pantry-swing-out-inserts = { low = 900, high = 2200 }  # 2 x Rev-A-Shelf
 # FURN-M-KIT-MIXER-GARAGE's fitting-out. ** A LIFT WAS PRICED HERE UNTIL 2026-08-24 ** —
 # a Rev-A-Shelf RAS-ML-HDSCOG spring lift in a base bay, which was a misreading of the
 # brief: the mixer sits at counter level in the garage and slides out level, so what is
-# actually bought is a heavy-duty FULL-EXTENSION pull-out shelf rated for a ~30 lb machine
-# plus bowl, and a door that does not swing into the room (roll-up or lift-up). Dearer than
-# the lift was; use a non-swinging front on the 40-inch lower garage opening.
+# bought is a maximum 1/4-inch appliance slider supported continuously by the counter,
+# rated for the actual mixer plus bowl, and AXSTAD 204.260.78 with lift-up hardware.
+# Preserve an 18-inch clear opening with the front fully raised. No internal tambour
+# coil, fixed slides or raised cabinet floor. Retained budget band pending a hardware quote.
 # WIRE ED-M-LIVING-KGF4/KMX1 BEFORE THE BOX GOES IN.
 cabinet-mixer-garage-pullout-and-door = { low = 400, high = 1100 }
 cabinet-peninsula-rear-finish = { low = 70, high = 180 }  # paint and edge-band 25 inches; no projecting cover

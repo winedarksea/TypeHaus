@@ -29,8 +29,13 @@ COLD_UPPER_SCRIBE = FurnitureType(
     footprint=(inch(2.875), inch(0.75)), height=inch(20), plan_symbol="sektion-cover-panel",
     source="Site-cut matching white front strip on cleats; fitting included in cold-upper prices.",
 )
-DEEP_24_40 = _deep_upper("FT-KIT-DEEP24-40", 24, 40).model_copy(update={
+MIXER_GARAGE_24_20 = _deep_upper("FT-KIT-MIXER24-20", 24, 20).model_copy(update={
     "plan_symbol": "sektion-axstad-kitchen-garage",
+    "source": ("Custom bottomless 3/4-inch plywood enclosure on the continuous 36-inch "
+               "counter; 24x24x20 nominal, cap underside 55 1/4 inches AFF. No internal "
+               "shelf. Stock AXSTAD 204.260.78 24x20 front with lift-up hardware; preserve "
+               "18 inches clear above the maximum 1/4-inch appliance slider when open. "
+               "Door, lift hardware and slider are priced in the garage fit-out allowance."),
 })
 
 STOCK_BASE_FRAME_UPPER = FurnitureType(
@@ -38,9 +43,10 @@ STOCK_BASE_FRAME_UPPER = FurnitureType(
     footprint=(inch(24), inch(24)), height=inch(30), plan_symbol="sektion-axstad-kitchen-wall",
     storage=True, product_ref="PROD-IKEA-SEKTION-BASE24-30",
     source=("Stock 902.653.88 frame without legs or countertop, supported on the custom "
-            "lower garage carcass at 76 inches and independently restrained to wall backing. "
-            "See notes/kitchen_stock_cabinet_details.md; finished top 106 inches."),
+            "lower garage carcass at 56 inches and independently restrained to wall backing. "
+            "Stock SEKT-TS24-15 above at 86 inches; finished stack top 101 inches. "
+            "See notes/kitchen_stock_cabinet_details.md."),
 )
 KITCHEN_DEEP_CABINET_TYPES = (
-    COLD_UPPER_SCRIBE, DEEP_24_40, STOCK_BASE_FRAME_UPPER,
+    COLD_UPPER_SCRIBE, MIXER_GARAGE_24_20, STOCK_BASE_FRAME_UPPER,
 )

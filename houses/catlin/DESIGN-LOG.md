@@ -5957,3 +5957,19 @@ ST-SG-PORCH now shares ST-G-SERVICE's 0.94-inch Trex Enhance Basics treads,
 Closed KDAT risers remain. The shared decking product now selects Tide Pool,
 with an approximate misty-grey render color and restrained embossed grain / board
 joints in the viewer, so the matching decks and both stairs use the same finish.
+
+## 2026-10-23 — Storage-height mixer garage with stock uppers
+
+Retain the west-facing 24-inch footprint and 14-inch range landing. Replace the custom
+40-inch enclosure with a bottomless 20-inch enclosure from 36 to 56 AFF, a stock
+24x24x30 base frame above from 56 to 86, and a stock 24x24x15 top to 101. Pantry heights
+remain 53 1/2 / 83 1/2 / 98 1/2 at their front divisions; the garage divisions sit
+2 1/2 inches higher. The 30-inch-wide alternative was rejected because it consumes six
+inches of range landing and its full-width deployment crosses the corner-counter notch.
+
+The counter is the garage floor. Remove the symbol's former bottom panel and middle shelf.
+A maximum 1/4-inch appliance slider replaces the raised full-extension shelf; the stock
+AXSTAD 24x20 front uses lift-up hardware, with an 18-inch minimum clear opening to be
+verified on the hardware shop detail. No internal tambour coil. Add cap and upper-rail
+backing, retain the two outlets, and update the custom-carcase and stock-frame quantities.
+Installation, support and clearance dimensions are in kitchen_stock_cabinet_details.md K3.

@@ -259,15 +259,20 @@ MAIN_KITCHEN_CASEWORK = [
               position=pt(inch(372.375), inch(319.375))),
 
     # Both fronts face WEST: east-wall tangent 90 degrees + offset -180 = -90.
-    # Heavy-duty full-extension mixer shelf at counter level; two outlets wired before assembly.
-    Furniture(uid="5T1VTCY3EV", tag="FURN-M-KIT-MIXER-GARAGE", type_ref="FT-KIT-DEEP24-40",
+    # Bottomless storage enclosure: the mixer slides across the continuous counter.
+    Furniture(uid="5T1VTCY3EV", tag="FURN-M-KIT-MIXER-GARAGE", type_ref="FT-KIT-MIXER24-20",
               room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(331.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Stock base FRAME only: no legs or counter. Supported by the lower carcass and restrained to wall.
     Furniture(uid="34W6S0G5EX", tag="FURN-M-KIT-MIXER-GARAGE-UP", type_ref="FT-KIT-STOCK24-30-HUNG",
-              room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(56)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(331.375),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+    Furniture(uid="WE8N6P0JJK", tag="FURN-M-KIT-MIXER-GARAGE-ST", type_ref="SEKT-TS24-15",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(86)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(331.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),

@@ -97,9 +97,14 @@ def sektion_axstad_cabinet(configuration: SektionCabinetConfiguration) -> Builde
         front = -depth / 2 - thickness
         reveal = min(REVEAL_M, width / 20, (top - base) / 20)
         sink = configuration.fronts == "sink"
-        shelves = () if sink or configuration.fronts == "drawers" else (base + (top - base) / 2,)
+        garage = configuration.fronts == "garage"
+        shelves = (
+            () if sink or garage or configuration.fronts == "drawers"
+            else (base + (top - base) / 2,)
+        )
         parts = sektion_carcass(
-            width, depth, base, top, -depth / 2, shelves, include_top=not installed_base
+            width, depth, base, top, -depth / 2, shelves, include_top=not installed_base,
+            include_bottom=not garage,
         )
         if base:
             parts.extend(sektion_plinth(width, depth, base, recess=min(TOE_RECESS_M, depth / 4)))
@@ -123,28 +128,11 @@ def sektion_axstad_cabinet(configuration: SektionCabinetConfiguration) -> Builde
                     )
                 )
         elif configuration.fronts == "garage":
-            # The garage retains its custom roll-up front rather than becoming hinged doors.
-            slats = max(1, round((top - base) / inch(2).meters))
-            for index in range(slats):
-                lower = base + (top - base) * index / slats + reveal / 4
-                upper = base + (top - base) * (index + 1) / slats - reveal / 4
-                parts.append(
-                    box(
-                        0,
-                        front + thickness / 2,
-                        lower,
-                        upper,
-                        width - reveal,
-                        thickness,
-                        "appliance-white",
-                    )
-                )
+            # A lift-up front preserves headroom without an internal tambour coil.
             parts.extend(
-                bagganas_pull(
-                    0,
-                    front,
-                    base + min(inch(2).meters, height / 4),
-                    min(1.0, width / inch(8).meters),
+                _doors(
+                    width, front, thickness, base + reveal / 2, top - reveal / 2,
+                    lift=True,
                 )
             )
         else:

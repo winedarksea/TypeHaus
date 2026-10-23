@@ -82,42 +82,57 @@ below the actual finished ceiling.
 
 ## K3 — West-facing mixer garage, section through its supports
 
-Both boxes resolve to rotation -90 degrees; their doors face west. They occupy the
-peninsula carousel's supported corner square, y=319 3/8–343 3/8. The lower box remains
-a custom carcass: 24 by 24 by 40, bottom 36, top 76.
+All three boxes face west and retain the 24-inch footprint at y=319 3/8–343 3/8.
+Keep the pantry stacks at their existing heights and the nominal 14-inch landing to the
+range. The garage divisions are deliberately 2 1/2 inches above the pantry divisions;
+matching them would require moving the pantries or reducing the appliance clearance.
 
-The upper is [stock base frame 902.653.88](https://www.ikea.com/us/en/p/sektion-base-cabinet-white-90265388/),
-24 by 24 by 30, bottom 76, top 106. The installed-height type omits legs and a counter.
-The published 23 5/8 bare and 24 rail depth must be coordinated with the lower custom
-front, including the actual door thickness. Do not use a base-cabinet symbol that adds a
-worktop or toe above the lower garage.
+| Item | Width × system depth × height | Bottom AFF | Top AFF |
+|---|---|---:|---:|
+| Bottomless custom mixer enclosure | 24 × 24 × 20 | 36 | 56 |
+| Stock base frame, no legs/worktop | 24 × 24 × 30 | 56 | 86 |
+| Stock deep top frame | 24 × 24 × 15 | 86 | 101 |
 
-The 24-inch model depth is a system dimension: a matching 3/4 front projects to
-24 3/4 from the finished wall. Build the lower frame at 23 5/8 bare depth plus
-3/8 wall/rail stand-off so its doors align with the upper; confirm the lower door track
-within that envelope. Do not describe 24 as the finished frame-plus-door depth.
+The lower enclosure has 3/4-inch plywood sides, back and a continuous cap, with **no
+bottom panel or internal shelf**. Its floor is the continuous quartz counter. The cap
+underside is 55 1/4 AFF, giving 19 1/4 inches above the counter. Use a removable appliance
+slider no more than 1/4 inch thick, supported by the counter throughout its nominal
+18 1/2-inch westward travel. This leaves 19 inches above the slider before door hardware;
+reserve at least 18 inches clear with the door fully open. Rate the slider for the actual
+mixer plus bowl. The mixer is stored here and used after sliding out onto the peninsula.
+Do not install fixed drawer slides, a raised shelf, a bottom threshold or an appliance lift.
 
-Load path: upper sidewalls → continuous 3/4 plywood cap at 76 → aligned lower
-3/4 plywood sidewalls → supported 36-inch counter/substrate → carousel sidewalls and
-anchored base support. The cap is included within the lower box's 40-inch envelope.
-Fit doubled plywood bearing strips under the upper sidewalls, screwed to the lower sides;
-keep the centre opening clear for the appliance. Attach each box independently to framing:
-upper factory brackets at its top into the 99 1/2–105 framing-datum band and
-continuous double top plate above; lower restraint through its
-rear cleat near 76 into the 74–81 1/4 band. Tie adjacent cases together through sidewalls.
-The thin fiberboard back is not a restraint or bearing member. Support and fasteners are
-included in the installed-upper and custom-lower price rows.
+Use stock [AXSTAD 204.260.78, 24 × 20](https://www.ikea.com/us/en/p/axstad-door-matte-white-20426078/)
+with lift-up hardware selected for its actual size and weight. Verify the open front,
+linkages and handle clear the 18-inch appliance envelope and upper door. Do not use an
+internal roll-up coil that consumes this headroom. The closed front is modeled; the
+hardware remains a shop-detail selection within the fit-out allowance.
 
-Use the retained lift-up/roll-up garage door and full-extension shelf rated for a 30-lb
-mixer plus bowl. The nominal 18 1/2-inch westward deployment lands wholly over the quartz
-on the carousel and peninsula. Put full-extension slides at counter level, with the shelf
-level with the landing; do not add a spring appliance lift. Wire the two existing 42-inch
-receptacles before closing the case. Leave the outlet plates accessible.
+The middle box is [SEKTION base frame 902.653.88](https://www.ikea.com/us/en/p/sektion-base-cabinet-white-90265388/),
+installed without legs or worktop. The top is [SEKTION 904.997.35](https://www.ikea.com/us/en/p/sektion-top-cabinet-with-ventilation-white-90499735/),
+the same 15-high deep frame as the pantry tops. Their factory doors, shelves, hinges and
+rail are included in the casework allowances. The top frame's bottom closes the base
+frame's open top; support it on the aligned frame sides rather than the thin steel rails.
 
-Top 106 leaves about 9/16 below the finished ceiling, just above the required 1/2 lift
-space. Confirm the measured ceiling and actual rail installation sequence before final
-assembly; the stacked upper bears on the lower, with the rail providing independent
-restraint. No ceiling scribe may consume that lift space.
+Load path: top frame sides → middle frame sides → continuous plywood cap at 56 → lower
+plywood sides → supported counter/substrate → carousel sides and anchored base support.
+Fit bearing strips beneath the cap at the sidewalls without entering the appliance opening.
+Attach each box independently to framing and tie adjacent cases through structural sides.
+The thin fiberboard back is not a bearing or restraint member.
+
+BK-M-E1-MIXER-CAP, 54–61 1/4 above framing datum, catches the lower rear cap cleat.
+BK-M-E1-MIXER-UPPER, 82–89 1/4, catches the middle frame's top brackets and top-frame
+lower restraint. BK-M-E1-KIT-TOP, 99 1/2–105, catches the top frame's top brackets.
+Subtract the 15/16 floor finish when setting out these bands from finished floor; locate
+screws from the actual factory brackets. Maintain the installation guide's 1/2-inch lift
+space above each suspension rail. Top 101 leaves approximately 5 9/16 below the finished
+ceiling. Coordinate the 23 5/8 bare depth plus 3/8 rail stand-off so all fronts align;
+matching 3/4-inch doors project to 24 3/4 from the finished wall.
+
+Retain the two existing 42-inch receptacles, wire before closing the enclosure, and leave
+plates accessible. The counter and existing range landing do not move. Custom carcass,
+stock frames and garage fit-out are separate price rows; the front is counted only in the
+fit-out allowance.
 
 ## K4 — Tall pantry and full-depth stock tops
 
@@ -274,8 +289,8 @@ fronts each. Sink fronts are paired doors; carousel fronts are bifold leaves. Al
 living north-run bases have doors and shelves, including the north-hinged B24 beside
 the slat partition. High frames use 50-inch lower and 30-inch upper fronts; retain the
 Rev-A-Shelf inserts and coordinate linked fronts/door brackets with their full deployment.
-The lower appliance garage retains a custom roll-up front and pull-out shelf. Its
-white finish coordinates with AXSTAD; it is not a stock hinged SEKTION cabinet.
+The lower appliance garage now uses a stock AXSTAD 24x20 lift-up front on a custom
+bottomless enclosure, with a thin appliance slider on the counter (2026-10-23, K3).
 
 Both cold-storage tops remain stock 30x24x20 frames with paired solid 15x20 fronts.
 Glass is deferred: IKEA US lists AXSTAD glass fronts at 30/40-inch heights, not 20.
