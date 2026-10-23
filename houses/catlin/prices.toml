@@ -5336,7 +5336,8 @@
 "resilient-base" = { material = { low = 1.5, high = 3.5 }, labour = { low = 2, high = 4 } }
 
 [stair_treads]
-# Four complete 36 x 11 in tread assemblies, two square-edge boards each, 0.94 in stock.
+# Eight complete 36 x 11 in tread assemblies across ST-G-SERVICE and ST-SG-PORCH,
+# two square-edge boards each, 0.94 in stock.
 # Carry the deck material allowance per 2.75 SF assembly; retain the existing $11.5-23/LF stair installation rate, including 316 stainless Cap-Tor xd screws.
 "trex-enhance-basics:tread" = { material = { low = 11.171875, high = 27.5 }, labour = { low = 34.5, high = 69 } }
 # The oak flights' walking surfaces by the piece (2026-09-28), moved out of [framing] where

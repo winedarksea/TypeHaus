@@ -5949,3 +5949,11 @@ and trackless preference. The return/post sits on the deck; the manufacturer/gla
 approve the hybrid jamb, flat threshold bearing and supports before ordering. The molded
 center drain remains centered in the model; its offset pipe connection remains open.
 Record: `notes/bath2_shower.md` §3.
+
+## Porch stair composite and Tide Pool appearance (2026-10-23)
+
+ST-SG-PORCH now shares ST-G-SERVICE's 0.94-inch Trex Enhance Basics treads,
+9-inch maximum stringer spacing (five KDAT stringers), and butyl top protection.
+Closed KDAT risers remain. The shared decking product now selects Tide Pool,
+with an approximate misty-grey render color and restrained embossed grain / board
+joints in the viewer, so the matching decks and both stairs use the same finish.

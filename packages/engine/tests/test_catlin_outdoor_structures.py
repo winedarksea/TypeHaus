@@ -1009,7 +1009,9 @@ def test_the_porch_stair_climbs_five_risers_from_the_pad_to_the_plank(catlin_mod
     for tread in treads:
         assert tread.length_m / FT == pytest.approx(3.0)
     stringers = [m for m in stair.members if m.category == "stringer"]
-    assert len(stringers) == 2
+    assert len(stringers) == 5
+    assert {t.material for t in treads} == {"trex-enhance-basics"}
+    assert all(t.z1_m - t.z0_m == pytest.approx(0.94 * INCH) for t in treads)
     # It lands on its own pad, not beside it — and not on the condensers', which since
     # 2026-09-04 is a separate pour 2'-8" north.
     from shapely.geometry import Polygon

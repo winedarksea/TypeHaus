@@ -153,7 +153,7 @@ const DETAIL_FILL: Record<string, string> = {
   "zip-sheathing": "#3f6d3a", "roof-deck-vapor-barrier": "#1e3a5f",
   "roof-underlayment-synthetic": "#8f8578", "roof-vent-mat": "#dfe6ea",
   "fiberglass-r19": "#ddecc8", "blown-fiberglass": "#e7f2d8",
-  polyethylene: "#3f4246", "composite-deck": "#8a7f70", "trex-enhance-basics": "#8a7f70",
+  polyethylene: "#3f4246", "composite-deck": "#8a7f70", "trex-enhance-basics": "#a3a6a4",
   "aluminum-extrusion": "#b6bac0", "polycarbonate-multiwall": "#cfe3e8",
 };
 

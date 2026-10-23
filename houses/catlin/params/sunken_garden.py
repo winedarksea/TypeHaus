@@ -79,7 +79,11 @@ from typehaus import (
     TrimKind,
 )
 
-from typehaus.library import TREX_ENHANCE_BASICS_DECK_LAYER
+from typehaus.library import (
+    TREX_ENHANCE_BASICS,
+    TREX_ENHANCE_BASICS_DECK_LAYER,
+    TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING,
+)
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.model.structure import CompliantLayer
 from params.column_heads import HETA20Z_PAIR_HEAD
@@ -2157,7 +2161,7 @@ _y_porch_guard_block = _y_ax_front + 2.0 / 12.0
 # east edge into the yard pocket, from the clear stretch of W-SG-E1's top between its two
 # columns, landing on STAIR_PAD below. See notes/porch_stair.md.
 #
-# 5 risers at 6 3/5", 4 treads at 11" and NO nosing, 36" wide, KDAT — the ST-G-SERVICE
+# 5 risers at 6 3/5", 4 treads at 11" and NO nosing, 36" wide, composite on KDAT — the ST-G-SERVICE
 # pattern (plan/storeys/garage.py), which is the same 0'-0"-to-grade five-riser flight and is
 # already priced and tested. `start` is the FOOT, on the pad at the east end; the flight
 # climbs west (`run_reversed`) to the wall top, and `width` runs +y from `start`, so
@@ -2214,7 +2218,11 @@ PORCH_STAIR = Stair(
     width=ft(3), start=pt(ft(_PORCH_STAIR_X1), ft(_PORCH_STAIR_Y1)),
     run_direction="x", run_reversed=True,
     tread_depth=inch(11), nosing_depth=inch(0),
-    # The top step's open riser tops out 31.5" over the pad (R311.7.5.1).
+    tread_material=TREX_ENHANCE_BASICS.tag,
+    tread_thickness=TREX_ENHANCE_BASICS_DECK_LAYER.thickness,
+    stringer_spacing=TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING,
+    top_protection="butyl-tape",
+    # Closed KDAT risers stay independent of the composite wear boards.
     riser_thickness=inch(0.75),
     material="kdat")
 

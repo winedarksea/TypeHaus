@@ -99,6 +99,12 @@ const SOLID_BOARD_STYLE: PlankStyle = {
  * engine's finish vocabulary (model/materials.py), the same contract MASONRY_STYLES follows.
  */
 export const WOOD_PLANK_STYLES: Readonly<Record<string, PlankStyle>> = {
+  // Monochrome capped composite: restrained embossed grain and square drainage joints.
+  "composite-deck-board": {
+    ...SHIPLAP_STYLE, key: "composite-deck-board",
+    faceWidthM: 5.75 * INCH, jointFraction: 0.25 / 5.75, jointProfile: "butt",
+    jitter: 0.015, grain: 0.12, reliefScale: 0.18,
+  },
   "tg-board": TG_BOARD_STYLE,
   "shiplap": SHIPLAP_STYLE,
   "strip-floor": STRIP_FLOOR_STYLE,

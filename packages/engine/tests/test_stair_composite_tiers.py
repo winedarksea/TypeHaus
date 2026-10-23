@@ -133,6 +133,8 @@ def test_shared_trex_product_dimensions_and_catalog_registration():
         TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING,
     )
 
+    assert TREX_ENHANCE_BASICS.finish == "composite-deck-board"
+    assert "Tide Pool" in TREX_ENHANCE_BASICS.name
     assert TREX_ENHANCE_BASICS in ALL_MATERIALS
     assert sum(m.tag == "trex-enhance-basics" for m in ALL_MATERIALS) == 1
     assert any(m.tag == "composite-deck" for m in ALL_MATERIALS)

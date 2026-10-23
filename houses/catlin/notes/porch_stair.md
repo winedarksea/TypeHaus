@@ -34,7 +34,7 @@ that yet — `plans/TODO.md` carries it.
 
 ## The flight
 
-`ST-SG-PORCH`: **5 risers at 6.60", 4 treads at 11" with no nosing, 36" wide, KDAT** — the
+`ST-SG-PORCH`: **5 risers at 6.60", 4 treads at 11" with no nosing, 36" wide, Trex Enhance Basics Tide Pool treads on KDAT** — the
 `ST-G-SERVICE` pattern in `plan/storeys/garage.py`, which is the same five-riser
 0'-0"-to-grade flight and is already priced and tested.
 
@@ -220,8 +220,9 @@ difference back.
 
 Also +6.4 LF of `RAILING-EXT-ALUMINUM-SURFACE` net (−3.0 for the doorway, +7.4 over four new
 runs; the 2026-09-04 split of `RL-SG-PORCH` moved 5.2 LF onto `RL-SG-PORCH-NE` and changed
-the total by nothing), the KDAT flight (32 LF of 2x12 stringer, 32 LF of 11x1.5 tread, shared
-with `ST-G-SERVICE` in the BOM's kdat groups), one exterior sconce, 3 sf of unmodelled
+the total by nothing), the composite-on-KDAT flight (five 2x12 stringers at no more than 9" o.c.,
+four 0.94" composite tread assemblies, closed 3/4" KDAT risers and butyl stringer tape,
+matching `ST-G-SERVICE`), one exterior sconce, 3 sf of unmodelled
 composite threshold board, and one more run start and two more end posts of railing labour.
 The line sets got **shorter** on 2026-09-04, not longer — both cabinets now stand 1'-9" from
 the band penetration instead of 5'-0" of run along a pad — so the ~8 LF the 2026-09-03 turn
