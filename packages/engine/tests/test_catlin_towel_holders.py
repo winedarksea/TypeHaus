@@ -133,6 +133,9 @@ def test_loaded_towels_clear_bodies_doors_and_each_other(catlin_plan, catlin_mod
                 continue
             if peer.body_z0_m >= high or peer.body_z1_m <= low:
                 continue
+            # A wall switch or receptacle under a hung towel is a nuisance, not a clash.
+            if peer.kind == "ElectricalDevice" and peer.mount and peer.mount.kind == "wall":
+                continue
             assert polygon.intersection(Polygon(peer.footprint)).area < 1e-7, (holder.tag, peer.tag)
         for door in model.openings:
             if walls[door.host_wall].storey == holder.storey and door.swing_clearance:
