@@ -71,12 +71,14 @@ _INTERNAL_SENSIBLE_BTUH = 2_810.0
 # The 17'-0" court (2026-09-22): W-B-S2-FR/-S3-FR lost 1' each (2 x 8.52' = -17.0 sf), the
 # concrete W-B-S1/-S4 gained 1' each (+12.2 sf buried, +2.6 sf proud).
 _COMPONENTS = (
-    ("walls", 3186.9, 72.587),
+    # 27" -> 27 1/2" ROs (2026-10-23): 2.8 sf from walls (3186.9 / 72.587) to windows
+    # (290.8 / 48.673).
+    ("walls", 3184.1, 72.521),
     ("foundation_walls", 775.5, 28.604),
     ("foundation_walls_above_grade", 255.7, 11.677),
     ("roof", 1547.9, 29.103),
     ("slab", 1296.0, 25.468),
-    ("windows", 290.8, 48.673),
+    ("windows", 293.6, 49.171),
     ("doors", 120.0, 18.000),
 )
 

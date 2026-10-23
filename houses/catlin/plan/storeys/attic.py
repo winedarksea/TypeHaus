@@ -417,14 +417,17 @@ OPENINGS = [
     # from the nearer eave) the roof underside is 90 3/4" over the floor, and a 64" unit on
     # the gable's 2'-8" sill wants 98". At 54" the head lands at 7'-2" and needs 88" —
     # 2 3/4" of margin. If a framer wants air, WT-2748 buys another 6".
+    # 2026-10-23: WT-2754 widened to the 27 1/2" jack-to-jack RO for R310 clear width;
+    # offsets dropped 1/4" so the centres hold. Jambs 14'-10 1/4"/17'-1 3/4" and
+    # 18'-10 1/4"/21'-1 3/4"; the pier is 20 1/2" and the rake margin about 2 5/8".
     Window(uid="CAX311AAAA", tag="WIN-A-S-JUL-W", host="W-A-S2", type_ref="WT-2754",
            # +16", and it is NOT a move: N-A-S1 went 10'-0" -> 8'-8" that day
            # (see the node), and this offset is measured off it, so 4'-10 1/2" would have
-           # dragged the unit to 14'-8". 6'-2 1/2" holds the CENTRE on 16'-0" where it has
+           # dragged the unit to 14'-8". 6'-2 1/4" holds the CENTRE on 16'-0" where it has
            # always been. The pier, the jambs and the bearing arithmetic below are unchanged.
-           position=from_node("N-A-S1", ft(6, 2.5)), sill_height=ft(2, 8)),  # ctr x 16'-0"
+           position=from_node("N-A-S1", ft(6, 2.25)), sill_height=ft(2, 8)),  # ctr x 16'-0"
     Window(uid="CAX312AAAA", tag="WIN-A-S-JUL-E", host="W-A-S3", type_ref="WT-2754",
-           position=from_node("N-A-S2", ft(0, 10.5)), sill_height=ft(2, 8)),  # ctr x 20'-0"
+           position=from_node("N-A-S2", ft(0, 10.25)), sill_height=ft(2, 8)),  # ctr x 20'-0"
     # NORTH GABLE, a mirrored pair. The source attic has no north opening at all; these two
     # are kept for daylight and cross-ventilation.
     #
@@ -493,9 +496,9 @@ OPENINGS = [
     # hand-coordinated, not graded — a later WIDENING here spends that back.
     # Only the west north-gable unit becomes fixed (2026-10-21); N2 remains operable.
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2B", type_ref="WT-2736-FIX",
-           position=from_node("N-A-N1", ft(4, 10.5)), sill_height=ft(2)),   # ctr x 12'-0"
+           position=from_node("N-A-N1", ft(4, 10.25)), sill_height=ft(2)),  # ctr x 12'-0"
     Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-2736-TT",
-           position=from_node("N-A-NE", ft(10, 10.5)), sill_height=ft(2)),  # ctr x 24'-0"
+           position=from_node("N-A-NE", ft(10, 10.25)), sill_height=ft(2)), # ctr x 24'-0"
     # ** THE FOUR EAVE WINDOWS ARE GONE. ** WIN-A-W-S (CAX308AAAA), WIN-A-W-N
     # (CAX306AAAA), WIN-A-E-S (CAX309AAAA) and WIN-A-E-N (CAX310AAAA) were the knee-wall
     # pair on each side — WT-1424s chosen for HEIGHT rather than width, because a 5'-0" knee

@@ -661,7 +661,7 @@ OPENINGS = [
     # the head moves 6'-0" -> 7'-0". 2026-10-14: STUDY3 follows WIN-M-LIV-E1's 2026-10-03
     # move to 5'-4", restoring their column and clearing the compact corner bookshelf.
     Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2748-TT-T",
-           position=from_node("N-S-SE", ft(4, 2.5)), sill_height=ft(3)),     # y 5'-4"
+           position=from_node("N-S-SE", ft(4, 2.25)), sill_height=ft(3)),    # y 5'-4"
     # BED1/BED2 ARE BACK ON THE 27" BEARING CAP, AND THE 2026-08-01 NOTE THAT
     # PUT THEM ON 30" WAS WRONG ABOUT WHY IT HAD TO. That note read: "a 27x36 falls a third
     # short [of R303.1] ... 27" cannot reach it at any height that fits under the 9'-0"
@@ -714,9 +714,9 @@ OPENINGS = [
     # centreline are unchanged (same 27" bearing RO), so nothing on the facade or in the
     # framing moved. BED1 keeps the -T twin for R308.4.5's stair band.
     Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-2748-T",
-           position=from_node("N-S-E1", ft(3, 2.5)), sill_height=ft(3)),    # y 13'-4"
+           position=from_node("N-S-E1", ft(3, 2.25)), sill_height=ft(3)),   # y 13'-4"
     Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-2748",
-           position=from_node("N-S-E2", ft(3, 10.5)), sill_height=ft(3)),   # y 22'-8"
+           position=from_node("N-S-E2", ft(3, 10.25)), sill_height=ft(3)),  # y 22'-8"
     # BED3 MOVED OFF THE ROW: retyped WT-2736 -> WT-1424 and moved 32'-0" ->
     # 34'-0" centre, matching WIN-M-KIT-E below in both size and station so the two column.
     # RM-S-BED3 loses 4.4 sf of glass by it (6.75 -> 2.33 from THIS window) and joined
@@ -745,9 +745,9 @@ OPENINGS = [
     # Sill 2'-3 1/2" puts its course on the 24" girt line (NEW-OPENING RULE); the centre is
     # 1/2" over the 14" units' 4'-6" line, and the stool lands at desk height.
     Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W3", type_ref="WT-2754",
-           position=from_node("N-S-W2", ft(10, 6.5)), sill_height=ft(2, 3.5)),   # y 10'-8"
+           position=from_node("N-S-W2", ft(10, 6.25)), sill_height=ft(2, 3.5)),  # y 10'-8"
     Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W3", type_ref="WT-2754",
-           position=from_node("N-S-W2", ft(1, 2.5)), sill_height=ft(2, 3.5)),      # y 20'-0"
+           position=from_node("N-S-W2", ft(1, 2.25)), sill_height=ft(2, 3.5)),     # y 20'-0"
     # Plant room — south glazing: centres 4'-0" and 9'-4" are stud lines on W-S-S1's grid,
     # stacking exactly over WIN-M-BED-S1/2. Sill 2'-8" = the shared 6'-8" head line.
     # Narrowed 42" -> 30" and moved 8" east off the old bay centres (WT-3048, 2026-08-01,
@@ -777,7 +777,7 @@ OPENINGS = [
     # WIN-M-BED-W1 on 2026-10-04 for bedroom symmetry, retaining the exact column.
     # At y=48" it sits 8.44" south of the plant room's finished west-wall centre.
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2754-HP",
-           position=from_node("N-S-W3", ft(3, 10.5)), sill_height=ft(2, 3.5)),    # y 4'-0"
+           position=from_node("N-S-W3", ft(3, 10.25)), sill_height=ft(2, 3.5)),   # y 4'-0"
     # Restores west daylight to the double-vanity alcove without competing with its two
     # north-wall sinks and mirror lights. Paired exactly with WIN-M-BATH1-W below; the 14"
     # RO fits one stud bay.
@@ -870,14 +870,14 @@ OPENINGS = [
     # correction, not a move — the move is the one above it.)
     #
     # 24'-0" clears node N-S-B5 (x 21'-11", the closet/BED3 partition): the RO runs
-    # 22'-10 1/2"..25'-1 1/2", so the west jamb has 11 1/2" to the node — enough for the
+    # 22'-10 1/4"..25'-1 3/4", so the west jamb has 11 1/4" to the node — enough for the
     # jamb pack, which 22'-8" itself would not have had at any width. FURN-S-BED3-WARD stood
     # 6'-6" tall right here (x 22'-1.5"..24'-1.5") and swaps slots with FURN-S-DESK3 in
     # placeables.py. FURN-S-DESK3's top is 30", so it clears this 40" sill by 10" — a desk
     # under a window, the way the study table sits under WIN-S-STUDY1, and nothing in the
     # engine grades it either way.
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-2748",
-           position=from_node("N-S-NE", ft(10, 10.5)), sill_height=ft(3, 4)),  # ctr x 24'-0"
+           position=from_node("N-S-NE", ft(10, 10.25)), sill_height=ft(3, 4)),  # ctr x 24'-0"
     # Stairwell daylight (2026-07-30 facade pass): the north facade was blank from the
     # entry column to x=21'-11". W-S-N2 runs 18'-0" -> 10'-0", so the offset is measured
     # east-to-west and 4'-10 1/2" off N-S-N1 is a near jamb at 13'-1 1/2", a CENTRE at
@@ -898,7 +898,7 @@ OPENINGS = [
     # the prose was simply wrong. The move below is a real move; that correction was not.)
     # Fixed since 2026-10-21, with the tempered glazing retained over the stairwell.
     Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-2748-FIX-T",
-           position=from_node("N-S-N1", ft(4, 10.5)), sill_height=ft(3, 4)),   # ctr x 12'-0"
+           position=from_node("N-S-N1", ft(4, 10.25)), sill_height=ft(3, 4)),  # ctr x 12'-0"
     # ** THE NE CORNER PAIR, COMPLETED ONE STOREY UP (2026-09-06). ** RM-S-BED3 already had
     # WIN-S-BED3 on its east wall at y=34'-0"; this is its twin on the north wall at
     # x=34'-0" — same WT-1424-FIX, plain picture glass. The two now wrap the north-east

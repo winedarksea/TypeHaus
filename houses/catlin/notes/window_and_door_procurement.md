@@ -59,11 +59,10 @@ Zone 5 governs any unit within 3.6 ft of a corner. Order every unit at one ratin
   (the Debesto/Aluplast candidate) rates U 0.27–0.28, over the 0.25 target. DAKO lists
   tilt-turn/fixed/awning at U 0.15–0.18, with no aluminium-capped line. Doorwin (Shandong) lists tilt-turn and fixed at
   U 0.17–0.18, but its casement is U 0.37.
-- **Egress at 27" remains unresolved (2026-10-23).** The flashed frame is 25.71" wide,
-  and Andersen 400's widest-opening hinge deducts 5.81", leaving **19.90" clear**.
-  The previous 20.69" claim assumed a 26.5" frame that does not fit the modeled buck and
-  flashing. Keep the stud-spacing-driven rough openings; confirm a product/installation
-  detail that clears 20" within them. See §7.
+- **Egress at 27½" (2026-10-23).** A 27" RO nets a 25⅝" Andersen 400 unit and 19.8"
+  clear. The 27" family widened to the full 27½" jack-to-jack clear, which seats a 26⅛"
+  unit at **20.3" clear**; still one stud broken. Calculated; supplier confirmation
+  outstanding. See §7.
 - **Dark frames.** On Alucover the black is powder-coated aluminium, so no dark uPVC sees the
   sun on any face (§3's preferred material). Andersen 400 is black Perma-Shield vinyl over
   wood. Cascadia is painted fiberglass.
@@ -268,24 +267,29 @@ trim kit is ordered**.
 
 ## 7. Frame sizing and egress review (2026-10-23)
 
-**The rough openings stay controlled by stud spacing.** The owner confirmed that frames
-should generally get smaller rather than openings wider. A frame is the clear envelope
-inside the buck, flashing and installation gaps, not RO minus ½". The schedule now prints
-rough opening and modeled frame separately. These are design envelopes for supplier
-confirmation, not verified ordered or installed dimensions.
-Andersen custom sizes use ⅛" increments; an order must round down to fit this envelope
-and recalculate its clear opening. The decimal envelopes below are not order sizes.
+**Every 27" RO is now 27½", the full jack-to-jack clear of a one-stud break** (30½" bay
+less two 1½" jacks, `preferences.toml`). The owner asked for one buck pattern across the
+family, so all eighteen former 27" openings widened, not only the seven escape casements.
+Centres, studs broken, headers, sills and heads are unchanged; each `from_node` jamb offset
+dropped ¼" to hold its centre, and each adjoining braced panel gave up ¼". The perimeter
+detail is unchanged: ⅜" buck, 0.020" membrane and ¼" shim gap at each jamb and the head;
+the sill consumes about 0.550" (buck + pan fall + 0.060" membrane). Only the unit grows.
 
-For the 38 outie windows, each jamb/head consumes 0.645" (⅜" buck + 0.020" membrane +
-¼" gap). The sill consumes about 0.550" (buck + pan fall + 0.060" membrane).
+The resolved seat now sizes an orderable unit where the type states one
+(`WindowType.frame_size_increment` and `minimum_rough_opening_allowance`). The four
+Andersen types carry ⅛" and ½": the unit must clear both the shim gaps and Andersen's
+RO = unit + ½" inside the **flashed** opening, rounds **down** to ⅛", stays centred between
+the jambs and bears on the pan; the head takes the remaining slack. Schedule, IFC, renders
+and R310 all read that one seat. Drutex types state no step (made to the mm) and keep the
+continuous envelope.
 
-| RO | Modeled frame |
+| RO | Modeled unit / frame |
 |---|---|
-| 14×24 | 12.710×22.805 |
-| 27×36 | 25.710×34.805 |
-| 27×48 | 25.710×46.805 |
-| 27×54 | 25.710×52.805 |
-| 30×48 | 28.710×46.805 |
+| 14×24 | 12.710×22.805 (Drutex) |
+| 27½×36 | 26.210×34.805 (Drutex) |
+| 27½×48 | 26.210×46.805 (Drutex) · **26⅛×46½ (Andersen)** |
+| 27½×54 | 26.210×52.805 (Drutex) · **26⅛×52½ (Andersen)** |
+| 30×48 | 28.710×46.805 (Drutex) · **28⅝×46½ (Andersen)** |
 | 63×48 | 61.710×46.805 |
 
 The two garage frames are about 13.460×23.509". **WIN-B-SAUNA is unresolved:** its
@@ -295,29 +299,63 @@ Add a dimensioned buck/pan/seat detail before ordering it. Stool heights still r
 supplier's sill adaptor and sash-overlap section (§2.6).
 
 For the selected Andersen 400 widest-opening hinge, the engine applies the published
-**frame-width deduction of 5.81"** to the resolved frame. The height deduction is 4.43" for
-WT-3048's resolved size and 4.85" for the narrower types. Exact published clear openings
-remain supported for other catalog products; they are separate from sizing formulas.
-A selected product without clear-opening data (including the Drutex tilt-turns) receives
-no nominal-RO escape credit.
+**unit-width deduction of 5.81"** to the resolved unit. The height deduction is 4.43" for
+WT-3048's unit (inside 28⅜"–31½" × 40 13/16"–48") and 4.85" for the narrower types. Exact
+published clear openings remain supported for other catalog products. A selected product
+without clear-opening data (including the Drutex tilt-turns) receives no nominal-RO credit.
 
-| Escape windows | RO | Modeled frame | Calculated clear | Result |
+| Escape windows | RO | Unit | Calculated clear | Area |
 |---|---|---|---|---|
-| WIN-M-BED-S1/S2 | 30×48 | 28.710×46.805 | 22.900×42.375 | dimensions pass |
-| WIN-S-BED1, BED2, HALL-N | 27×48 | 25.710×46.805 | 19.900×41.955 | width fails |
-| WIN-S-SUITE1/2, WIN-A-S-JUL-W/E | 27×54 | 25.710×52.805 | 19.900×47.955 | width fails |
+| WIN-M-BED-S1/S2 | 30×48 | 28⅝×46½ | 22.815×42.070 | 6.67 sf |
+| WIN-S-BED1, BED2, HALL-N | 27½×48 | 26⅛×46½ | 20.315×41.650 | 5.88 sf |
+| WIN-S-SUITE1/2, WIN-A-S-JUL-W/E | 27½×54 | 26⅛×52½ | 20.315×47.650 | 6.72 sf |
 
-Seven intended escape windows fall below 20" clear width. The room check reports five
-sleeping-room failures: RM-S-BED1, RM-S-BED2, RM-S-BED3, RM-S-SUITE and RM-A-STUDIO.
-These are exposed design conflicts, not waived findings. Confirm a product and installation
-that fit the existing RO **and** provide the required clear opening; do not shrink a
-previously specified unit while retaining its old net-clear dimensions. The current
-framing-module check reports no unsuppressed window-width or alignment violations. The
-existing 63" dining picture window is an explicit owner-approved exception with its own
-LVL header (`preferences.toml`, `notes/dining_window_header.md`); it stays unchanged.
+All six sleeping rooms pass `code.R310_egress` (20" × 24", 5.7 sf). This is **calculated
+compliance with procurement confirmation outstanding.** Before ordering, obtain written
+confirmation of the exact units, widest-opening hinges, glazing, operator and any opening-
+control device, the actual net clear openings, and the installation requirements; the
+installer must confirm the finished flashed openings and attachment detail accept those
+units. If confirmation fails, the thinner-buck path below is the fallback to revisit.
+The 63" dining picture window stays an owner-approved exception with its own LVL header
+(`preferences.toml`, `notes/dining_window_header.md`).
 
 Sources checked 2026-10-23:
 [Andersen 400 opening specifications](https://www.andersenwindows.com/-/media/Project/AndersenCorporation/AndersenWindows/AndersenWindows/files/technical-docs/area-and-opening-specifications/area-openingspecifications-windows--400series-casement.pdf),
+[Minnesota R310](https://www.revisor.mn.gov/rules/1309.0310/).
+
+### Fallback, not taken: a thinner buck at the 27" RO (investigated 2026-10-23)
+
+Superseded by the 27½" RO above; kept in case supplier confirmation fails.
+
+The narrowest product path found is the already-selected Andersen 400 casement with its
+widest-clear-opening hinge, paired with a thinner buck detail. Andersen's 2025–26 guide
+allows custom widths in ⅛" increments, gives clear width as unit width minus 5.81", and
+specifies minimum RO as unit width plus ½". At the current 25.710" modeled frame envelope,
+the largest size that rounds down is 25⅝", for 19.815" clear. The next size, 25⅞", gives
+20.065" clear and fits a 27" RO only if the combined buck and membrane thickness is at most
+⅝", preserving Andersen's ½" installation allowance. With the 0.020" membrane each side,
+that means buck thickness no greater than about 9/32" per jamb; the current buck is ⅜".
+
+This is a concrete supplier/installer question, not an approved detail. Confirm that a
+25⅞" unit is available with the specified hinge and glass, that its actual egress opening
+meets R310 with the selected operator and any opening-control device, and that a 9/32" buck
+can be securely fastened and flashed in the outie wall. The 27×48 units would then have
+about 20.065" × 41.955" clear (5.84 sf); the 27×54 units about 20.065" × 47.955" (6.68 sf).
+The existing 30×48 pair remains ample. The check must use the supplier's confirmed ordered
+dimensions, not these screening calculations.
+
+No second catalog product was verified to fit the present 27" RO/frame envelope and
+provide the required clear width. Andersen 100 Series' published widest-opening formula
+loses 7.790" from unit width; it does not help at this size. Do not treat fixed jamb width
+as opening width: the sash swings outside, but the jambs stay in the passage. Andersen's
+published 400-series clear-opening formula already captures that distinction. The adopted
+2020 Minnesota Residential Code (2018 IRC base) requires a 20" net clear width, 24" height,
+the applicable minimum area, and dimensions achieved by normal operation from inside; the
+Minnesota amendments do not change R310.2.1.
+
+Sources checked 2026-10-23:
+[Andersen 400 opening specifications](https://www.andersenwindows.com/-/media/Project/AndersenCorporation/AndersenWindows/AndersenWindows/files/technical-docs/area-and-opening-specifications/area-openingspecifications-windows--400series-casement.pdf),
+[Andersen 100 opening specifications](https://www.andersenwindows.com/-/media/Project/AndersenCorporation/AndersenWindows/AndersenWindows/files/technical-docs/area-and-opening-specifications/area-openingspecifications-windows--100series-casement.pdf),
 [Minnesota R310](https://www.revisor.mn.gov/rules/1309.0310/).
 
 ## Engine follow-ups (not in this pass; the owner decides)
@@ -326,7 +364,7 @@ Sources checked 2026-10-23:
    draws the tilt hinge at the head, like an awning. A tilt sash hinges at the sill, so the
    apex belongs there. The retype makes this visible on every elevation.
 2. **R310 sizing calculation corrected 2026-10-23.** Andersen clear-opening deductions
-   now read the flashed frame, and selected products without clear-opening data receive no
-   nominal-RO credit. Seven intended escape windows still need a physical sizing solution (§7).
+   read the resolved, orderable unit, and selected products without clear-opening data
+   receive no nominal-RO credit. The seven narrow escape windows clear at 27½" ROs (§7).
 3. **R312.2 measures the sill from the storey datum**, not the finished floor
    (`fall_protection.py`), so a sill can pass at 24" while standing 22½" over an oak floor.

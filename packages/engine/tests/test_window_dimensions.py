@@ -105,5 +105,70 @@ def test_schedule_labels_both_sizes_and_identifies_the_manual_detail(catlin_mode
     assert headers[4:6] == ("Rough opening", "Modeled frame")
     assert all(len(row) == len(headers) for row in rows)
     by_tag = {row[1]: row for row in rows}
-    assert by_tag["WIN-S-BED1"][4:6] == ('27" × 48"', '25.710″ × 46.805″')
+    assert by_tag["WIN-S-BED1"][4:6] == ('27.5" × 48"', '26.125″ × 46.500″')
+    assert by_tag["WIN-S-PLANT3"][4:6] == ('27.5" × 54"', '26.210″ × 52.805″')
     assert by_tag["WIN-B-SAUNA"][5] == "UNRESOLVED"
+
+
+def test_orderable_size_rounds_down_and_never_past_the_envelope():
+    from typehaus.resolve.model_window_seat import orderable_size
+
+    step = inch(0.125)
+    assert orderable_size(inch(26.125).meters, step) == pytest.approx(inch(26.125).meters)
+    assert orderable_size(inch(26.125).meters - 1e-6, step) == pytest.approx(inch(26).meters)
+    assert orderable_size(inch(26.21).meters, step) <= inch(26.21).meters
+    assert orderable_size(inch(26.21).meters, None) == inch(26.21).meters
+
+
+def _seat(width_in, height_in, product=None):
+    from typehaus.resolve.flashing_config import FLASHING
+    from typehaus.resolve.opening_flashing import OpeningFlashingFrame, window_seat
+
+    # Mount at the back dam: a level pan, so the sill rise is buck + membrane alone.
+    frame = OpeningFlashingFrame((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), 0.0, 0.1,
+                                 FLASHING.back_dam_strip_m, 0.2, True, inch(0.375).meters)
+    opening = ResolvedOpening("window", "WIN", "W", "WT", inch(width_in).meters,
+                              inch(height_in).meters, inch(30).meters, 1, "window", False)
+    return replace(opening, window_seat=window_seat(opening, frame, FLASHING, product))
+
+
+def test_seat_sizes_an_orderable_unit_inside_the_flashed_opening():
+    product = WindowType(tag="WT", width=inch(27.5), height=inch(48), operation="casement",
+                         frame_size_increment=inch(0.125),
+                         minimum_rough_opening_allowance=inch(0.5))
+    sized = _seat(27.5, 48, product)
+    width, height, bottom = window_frame_dimensions(sized)
+    # 48 - (3/8 buck + 0.060 pan membrane) - (3/8 + 0.020 head) - 1/2 = 46.67 -> 46 5/8.
+    assert (width / .0254, height / .0254) == pytest.approx((26.125, 46.625))
+    # Centred between the jambs; it still bears on the pan, so the head takes the slack.
+    seat = sized.window_seat
+    unsized = _seat(27.5, 48).window_seat
+    assert seat.sill_rise_m == unsized.sill_rise_m
+    assert 2 * seat.jamb_inset_m + width == pytest.approx(sized.width_m)
+    assert seat.head_drop_m > unsized.head_drop_m
+    assert bottom == pytest.approx(sized.sill_m + seat.sill_rise_m)
+
+
+def test_the_larger_of_the_gaps_and_the_maker_allowance_governs_each_axis():
+    def unit(allowance_in):
+        product = WindowType(tag="WT", width=inch(27.5), height=inch(48),
+                             minimum_rough_opening_allowance=inch(allowance_in))
+        return window_frame_dimensions(_seat(27.5, 48, product))[:2]
+
+    plain = window_frame_dimensions(_seat(27.5, 48))[:2]
+    # 1/4" shims at both jambs already make 1/2" across; the head has only one 1/4" shim.
+    assert unit(0.5)[0] == pytest.approx(plain[0])
+    assert unit(0.5)[1] == pytest.approx(plain[1] - inch(0.25).meters)
+    assert unit(1.0)[0] == pytest.approx(plain[0] - inch(0.5).meters)
+    assert unit(0)[0] == pytest.approx(plain[0])
+
+
+@pytest.mark.parametrize("update", [
+    {"frame_size_increment": inch(0)},
+    {"minimum_rough_opening_allowance": inch(-0.5)},
+])
+def test_orderable_size_fields_reject_nonsense(update):
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        WindowType(tag="WT", width=inch(27), height=inch(48), **update)

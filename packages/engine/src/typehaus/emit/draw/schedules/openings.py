@@ -50,7 +50,7 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
             rows.append((
                 marks.get(opening.type_ref or "", "—"), opening.tag,
                 "Door" if opening.is_door else "Window", opening.type_ref or "RO",
-                f"{opening.width_m / M_PER_IN:.0f}\" × {opening.height_m / M_PER_IN:.0f}\"",
+                f"{_eighths(opening.width_m)}\" × {_eighths(opening.height_m)}\"",
                 *((_frame_size_text(frame),) if kinds == "window" else ()),
                 *_energy_columns(spec, opening.is_door)))
         # One header tuple for both kinds. A-601 used to stop at U-factor, on the reading
@@ -64,6 +64,11 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
                                     *(("Modeled frame",) if kinds == "window" else ()),
                                     "U-factor", "SHGC", "VT", "Operation", "Tempered")
         _add_table(fig, rows, headers, bbox=(0.04, 0.11, 0.92, 0.80))
+
+
+def _eighths(length_m: float) -> str:
+    """Inches to the nearest 1/8": a 27 1/2" RO must not print as 28"."""
+    return f"{round(length_m / M_PER_IN * 8) / 8:g}"
 
 
 def _frame_size_text(frame: tuple[float, float, float] | None) -> str:

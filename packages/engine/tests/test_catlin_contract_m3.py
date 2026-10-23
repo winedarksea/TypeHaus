@@ -109,16 +109,17 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     west_spans = {round(m.length_m / ft(1).meters, 3) for m in west_joists}
     assert WEST_TRUSS_FT in west_spans
     # FO-S-STAIR is drawn to the finished well and lined in 5/8" gypsum, so the clip lands
-    # 5/8" behind W-M-STRW's stair-side face, at x=10'-2 5/8". 8 lines clip here,
+    # 5/8" behind W-M-STRW's stair-side face (1/2" MDO since 2026-10-23), at x=10'-2 1/2".
+    # 8 lines clip here,
     # not the 7 that only cross the opening's own y-range: the doubled trimmer pair
     # along the opening's long edge (a floor truss's 3 1/2" chord is wider than an
     # I-joist's 2 1/2" flange at this depth) reaches past the opening into the next
     # regular joist line's own footprint, so that line is clipped too rather than left
     # to interpenetrate the trimmer (structural.member_interference).
     # Five since 2026-09-24: FO-S-ERV-CHASE's trimmer pack and header took the other three.
-    assert 10.073 in west_spans
+    assert 10.063 in west_spans
     assert sum(1 for s in (round(m.length_m / ft(1).meters, 3) for m in west_joists)
-              if s == 10.073) == 5
+              if s == 10.063) == 5
 
 
 def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
@@ -709,12 +710,13 @@ def test_exterior_corners_include_strength_first_third_stud(catlin_model):
 def test_bedroom_egress_is_associated_with_its_own_bounding_wall(catlin_check_report):
     report = catlin_check_report()
     findings = [finding for finding in report.findings if finding.check_id == "code.R310_egress"]
-    # The flashed 27-inch openings leave only 19.90 inches clear with the selected
-    # Andersen hinge. Keep those design conflicts visible until a fitting product exists.
+    # 27 1/2" jack-to-jack ROs seat a 26 1/8" Andersen unit, 20.3" clear (2026-10-23).
     assert len(findings) == 6
-    assert {finding.element_tags[0] for finding in findings if finding.result is Result.FAIL} \
-        == {"RM-S-BED1", "RM-S-BED2", "RM-S-BED3", "RM-S-SUITE", "RM-A-STUDIO"}
-    assert sum(finding.result is Result.PASS for finding in findings) == 1
+    assert all(finding.result is Result.PASS for finding in findings)
+    credited = {finding.message.split()[0]: finding.message.split()[-1] for finding in findings}
+    assert credited == {"RM-M-BED": "WIN-M-BED-S1", "RM-S-BED1": "WIN-S-BED1",
+                        "RM-S-BED2": "WIN-S-BED2", "RM-S-BED3": "WIN-S-HALL-N",
+                        "RM-S-SUITE": "WIN-S-SUITE1", "RM-A-STUDIO": "WIN-A-S-JUL-W"}
     assert all("WIN-B-SAUNA" not in finding.message for finding in findings)
 
 
@@ -737,7 +739,8 @@ def test_every_credited_egress_window_is_in_an_exterior_wall(catlin_ctx,
     credited = {word for finding in findings if finding.result is Result.PASS
                 for word in finding.message.split()
                 if word.startswith("WIN-")}
-    assert credited == {"WIN-M-BED-S1"}
+    assert credited == {"WIN-M-BED-S1", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-HALL-N",
+                        "WIN-S-SUITE1", "WIN-A-S-JUL-W"}
     rooms_by_storey = _rooms_by_storey(ctx)
     for tag in sorted(credited):
         opening = next(o for o in ctx.model.openings if o.tag == tag)
@@ -843,14 +846,14 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
     assert east_x == pytest.approx(ft(20).meters, abs=1e-6)
     assert ft(18).meters - west_x == pytest.approx(east_x - ft(18).meters, abs=1e-9)
     # Each RO sits centred on its own stud line and breaks exactly that one stud. The units
-    # are 27" wide, closing the clear pier between the pair to 21" (14" is what RB-HOUSE's
-    # south bearing point needs), which is why the half-width here is 13 1/2" and not 12".
-    # Outboard jambs land 14'-10 1/2" and 21'-1 1/2", each 2 1/2" inside the next stud line
+    # are 27 1/2" wide (jack to jack, 2026-10-23), closing the clear pier between the pair to
+    # 20 1/2" (14" is what RB-HOUSE's south bearing point needs).
+    # Outboard jambs land 14'-10 1/4" and 21'-1 3/4", each 2 1/4" inside the next stud line
     # out (14'-8" and 21'-4"), so the king packs against that stud rather than standing free.
-    assert west_x - inch(13.5).meters == pytest.approx(ft(14, 10.5).meters, abs=1e-6)
-    assert east_x + inch(13.5).meters == pytest.approx(ft(21, 1.5).meters, abs=1e-6)
-    assert west.width_m == pytest.approx(inch(27).meters, abs=1e-6)
-    assert east.width_m == pytest.approx(inch(27).meters, abs=1e-6)
+    assert west_x - inch(13.75).meters == pytest.approx(ft(14, 10.25).meters, abs=1e-6)
+    assert east_x + inch(13.75).meters == pytest.approx(ft(21, 1.75).meters, abs=1e-6)
+    assert west.width_m == pytest.approx(inch(27.5).meters, abs=1e-6)
+    assert east.width_m == pytest.approx(inch(27.5).meters, abs=1e-6)
 
     for opening in (west, east):
         # The storey-wide south sill line, held here deliberately — and 8" above the 24"
@@ -870,12 +873,12 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
     # carries the bearing with 2-1/2" to spare. It is also the composition's mullion, and
     # between the two it is what forbids the pair from growing INWARD.
     #
-    # 21", not 24": the pair banks 12 1/2" of slack over the 14" the bearing needs, and
-    # closing the gap is what the owner asked the extra 3" per unit for. 7" of that slack is
-    # left. Asserted as an exact number so the next "just make them a bit wider" has to come
+    # 20 1/2", not 24": the pair banks slack over the 14" the bearing needs, and closing the
+    # gap is what the owner asked the extra width for. 6 1/2" of that slack is left.
+    # Asserted as an exact number so the next "just make them a bit wider" has to come
     # back through this line rather than spending the rest.
-    pier = (east_x - inch(13.5).meters) - (west_x + inch(13.5).meters)
-    assert pier == pytest.approx(inch(21).meters, abs=1e-6)
+    pier = (east_x - inch(13.75).meters) - (west_x + inch(13.75).meters)
+    assert pier == pytest.approx(inch(20.5).meters, abs=1e-6)
     assert pier >= inch(14).meters
 
     report = catlin_check_report()

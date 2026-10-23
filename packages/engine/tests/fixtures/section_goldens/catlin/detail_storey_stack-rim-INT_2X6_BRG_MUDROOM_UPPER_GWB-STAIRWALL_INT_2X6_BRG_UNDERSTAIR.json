@@ -283,7 +283,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "mdo-plywood-interior",
-      "fill": "#f0ede6"
+      "fill": "#f2f0ea"
     },
     {
       "space": "model",
@@ -2028,7 +2028,7 @@
       "layer": "A-DETL-CMPT",
       "uid": null,
       "material": "mdo-plywood-interior",
-      "fill": "#f0ede6"
+      "fill": "#f2f0ea"
     },
     {
       "space": "paper",

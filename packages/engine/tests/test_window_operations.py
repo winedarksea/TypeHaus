@@ -35,8 +35,10 @@ def test_every_catlin_window_type_declares_a_modeled_operation(catlin_plan):
     ("WT-3660-FIX", "WT-3660"),
     ("WT-1424-FIX", "WT-1424"),
     ("WT-1424-FIX-T", "WT-1424-T"),
-    ("WT-2736-FIX", "WT-2736"),
-    ("WT-2736-FIX-T", "WT-2736-T"),
+    # The house's 27" family is 27 1/2" (jack to jack); the library's 27" casement presets
+    # are catalog-only, so these pair with the house's own operable twins.
+    ("WT-2736-FIX", "WT-2736-TT"),
+    ("WT-2748-FIX-T", "WT-2748-TT-T"),
     ("WT-2748-FIX-T", "WT-2748-T"),
 ])
 def test_catlin_carries_a_fixed_picture_unit_alongside_its_operable_twin(
@@ -46,7 +48,8 @@ def test_catlin_carries_a_fixed_picture_unit_alongside_its_operable_twin(
     fixed = by_tag[fixed_tag]
     operable = by_tag[operable_tag]
     assert fixed.operation is WindowOperation.FIXED
-    assert operable.operation in (WindowOperation.CASEMENT, WindowOperation.AWNING)
+    assert operable.operation in (WindowOperation.CASEMENT, WindowOperation.AWNING,
+                                  WindowOperation.TILT_TURN)
     # Same hole, same safety glass: the operation differs, which is exactly why the fixed unit
     # has to be its own type rather than a note on the casement. Performance and depth follow
     # the chosen product line (2026-10-21), which differs between the two.
@@ -164,21 +167,24 @@ def test_catlin_escape_windows_are_graded_on_the_flashed_frame(catlin_model_ro):
         _meets_r310_2_1,
         _net_clear_dimensions_m,
     )
+    from typehaus.resolve.model_window_seat import window_frame_dimensions
 
     window_types = {wt.tag: wt for wt in catlin_model_ro.plan.library.window_types}
     windows = {e.tag: e for e in catlin_model_ro.openings}
-    failing = set()
+    # Orderable units (1/8" steps, RO >= unit + 1/2"): 26 1/8" in a 27 1/2" RO, 28 5/8" in 30".
+    expected = {"WT-2748": (26.125, 46.5, 20.315, 41.65),
+                "WT-2748-T": (26.125, 46.5, 20.315, 41.65),
+                "WT-2754": (26.125, 52.5, 20.315, 47.65),
+                "WT-3048": (28.625, 46.5, 22.815, 42.07)}
     for tag in EGRESS_CASEMENTS:
         opening = windows[tag]
         window_type = window_types[opening.type_ref]
+        unit_w, unit_h, clear_w, clear_h = expected[opening.type_ref]
+        frame = window_frame_dimensions(opening)
+        assert (frame[0] / .0254, frame[1] / .0254) == pytest.approx((unit_w, unit_h)), tag
         width, height = _net_clear_dimensions_m(opening, window_type)
-        if not _meets_r310_2_1(opening, grade_floor=False, window_type=window_type):
-            failing.add(tag)
-            assert width / .0254 == pytest.approx(19.90)
-        else:
-            assert width / .0254 == pytest.approx(22.90)
-        assert height / .0254 > 24
-    assert failing == set(EGRESS_CASEMENTS) - {"WIN-M-BED-S1", "WIN-M-BED-S2"}
+        assert (width / .0254, height / .0254) == pytest.approx((clear_w, clear_h)), tag
+        assert _meets_r310_2_1(opening, grade_floor=False, window_type=window_type), tag
 
 
 def test_selected_product_cannot_claim_rough_opening_as_net_clear():

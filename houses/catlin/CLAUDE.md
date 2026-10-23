@@ -883,9 +883,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   |----|--------------|-------------------|--------------|
   | **14"** | 0 | one bay: `16 - 1.5 = 14.5"` clear | none — the bay's own two studs carry sill/head nailer |
   | **30"** | 1 | `32 - 1.5 = 30.5"` clear | R602.7.4 NONBEARING: single flat 2x4 header, no jack |
-  | **27"** | 1 | 30.5" less a jack each side | R602.7.5 BEARING: header on a jack each end, packed against kings |
+  | **27½"** | 1 | 30.5" less a jack each side (jack to jack) | R602.7.5 BEARING: header on a jack each end, packed against kings |
 
-  - The 3" between the 30" and 27" caps IS the pair of jacks — the cap is purely a function
+  - **Every "27"" unit in this guide is a 27½" RO since 2026-10-23** (one buck pattern, and
+    R310 clear width; tags keep their 27xx names). Each centre held; adjoining braced panels
+    gave up ¼" a jamb.
+  - The 3" between the 30" and 27½" caps IS the pair of jacks — the cap is purely a function
     of the wall's bearing status, same module/stud/broken line both ways. R602.7.5's
     approved-framing-anchor alternative would buy the 3" back but is declined deliberately
     (per-opening hardware/detail costs more than it saves); raise `max_window_ro_bearing_in`
@@ -948,9 +951,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   its NFRC CPD row, and `plan/manifest.py` drops the library preset of that tag; catalog-only
   sizes stay presets. **Edit the house file, never `library/windows.py`.** The escape types
   author Andersen's `net_clear_width_deduction`/`net_clear_height_deduction`, applied to
-  the resolved flashed frame. **2026-10-23: seven 27" escape openings yield only 19.90"
-  clear width, exposing five room failures.** Keep the stud-spacing-driven RO widths;
-  supplier/product and installation details must resolve the clearance. Before retyping an escape window, read
+  the resolved unit: the seat rounds an Andersen unit DOWN to ⅛" inside the flashed opening
+  less ½" (`frame_size_increment`/`minimum_rough_opening_allowance`). **2026-10-23: at 27½"
+  the escape casements are 26⅛" units, 20.3" clear, and every sleeping room passes R310** —
+  calculated, supplier confirmation outstanding. Before retyping an escape window, read
   `notes/window_and_door_procurement.md` §2 and §7; open quote items are §2.6.
 
 - **Facade alignment — ONE GRID PER FACADE.** `EXT_2X6`/`PLANT_EXT_2X6_HUMID` set
@@ -1072,7 +1076,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   wall south of the slat partition. The dining thermostat is at 14', 54" AFF.
   The fireplace pier sits between `WIN-M-LIV-E1`/`E2`: a 45 1/2" facebrick surround
   centred y=7'-4", elm mantel at 5'-4". The brick centre is a bay centre on `W-M-E1`'s
-  grid, and E1/E2 are mirrored about it at 4'-0"/10'-8", each RO 3 3/4" off the brick.
+  grid, and E1/E2 are mirrored about it at 4'-0"/10'-8", each RO 3 1/2" off the brick.
   No device sits on the brick (RC14/RC17 retired 2026-10-20). **The firebox sill NO LONGER shares the east row's 2'-8" line**
   (2026-09-11): the owner reversed that morning's decision to raise it and it is back at
   **24" AFF**, so the one-datum-four-openings argument is retired and the fire does not
@@ -1272,7 +1276,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Gables** read symmetric about the ridge before answering to anything below. The north
   gable is symmetric at **12'-0" / 24'-0"** (144"/288", both stud lines, mirrored about the
   18'-0" ridge — see **Columns** for why those stations also stack the second storey).
-  **The rake is binding here and holds by 6 1/2"**: outer jambs land 130 1/2" from their
+  **The rake is binding here and holds by 6 1/4"**: outer jambs land 130 1/4" from their
   eaves against the 124" a 5'-0" head needs; `structural.truss_wall_opening_support`
   confirms both jamb pairs bear on an outrigger within 1", and there is no third bay
   outboard — **this pair cannot move out again without a shorter unit.** The pair is
@@ -1283,8 +1287,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   Recheck before any further move: the vent riser is 11 1/8" clear of `WIN-A-N1`'s west
   jamb (`mep_venting.py`), the PV junction box 6 1/2" clear of its framing bumper
   (`electrical.py`) — both widened by the narrowing, and a rewidening spends them back.
-  `WIN-A-N1` (hosted on `W-A-N2B`) has RO 10'-10 1/2"..13'-1 1/2", clearing the x=10'-0"
-  split by 10 1/2";
+  `WIN-A-N1` (hosted on `W-A-N2B`) has RO 10'-10 1/4"..13'-1 3/4", clearing the x=10'-0"
+  split by 10 1/4";
   at x=12'-0" it fronts `FO-A-HALL`, daylighting the stair void rather than a room — an
   amenity, not a code problem.
   **The south gable carries FOUR openings**, mirrored about x=18', reading west→east S2,
@@ -1294,9 +1298,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   | station | tag | type | head | outer jamb | allowed | margin |
   |---|---|---|---|---|---|---|
   | 11'-4" / 24'-8" | `WIN-A-S2` / `WIN-A-S3` | **WT-1424-FIX** (14x24) | 4'-8" | 129" / 128" | 116" | ✓ 12" |
-  | 16'-0" / 20'-0" | `WIN-A-S-JUL-W` / `-E` | **WT-2754** (27x54) | 7'-2" | 178 1/2" | 176" | ✓ 2 1/2" |
+  | 16'-0" / 20'-0" | `WIN-A-S-JUL-W` / `-E` | **WT-2754** (27½x54) | 7'-2" | 178 1/4" | 176" | ✓ 2 1/4" |
 
-  One 2'-8" sill under all four, heads stepping with the rake. Juliets hold a 21" clear
+  One 2'-8" sill under all four, heads stepping with the rake. Juliets hold a 20½" clear
   bearing pier under `RB-HOUSE`'s south bearing point (14" required).
   **The corner pair (`WIN-A-S1`/`S4` at 3'-4"/32'-8") is deleted, and its 8" column miss**
   (against the 4'-0"/32'-0" column below) **is permanent** — at 6:12 there's 21 1/2" of roof
@@ -1316,7 +1320,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   them; adding a tempered unit is a retype, never a move. All three glazed *door* types are
   tempered outright (R308.4.1 has no location test).
 
-- The east bearing wall (`WIN-S-BED1`/`BED2`) takes the standard bearing cap — 27"
+- The east bearing wall (`WIN-S-BED1`/`BED2`) takes the standard bearing cap — 27½"
   (`WT-2754`/`WT-2754-T`), same rule as every other bearing wall. An earlier 30" exception
   here was tried and reversed (→ DESIGN-LOG.md). Lesson: when a width cap looks like it
   forces an R303.1 area failure, check height before moving the cap — area is width x

@@ -1247,10 +1247,10 @@ OPENINGS = [
     # W1 moved one 16" bay south on 2026-10-04 with WIN-S-PLANT3: the bedroom pair's
     # midpoint is y=88", 7.87" north of the finished room/seat centre instead of 15.87".
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
-           type_ref="WT-2736-TT", position=from_node("N-M-SW", ft(2, 10.5)),
+           type_ref="WT-2736-TT", position=from_node("N-M-SW", ft(2, 10.25)),
            sill_height=ft(3)),                                                # y 4'-0"
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
-           type_ref="WT-2736-TT", position=from_node("N-M-SW", ft(9, 6.5)),
+           type_ref="WT-2736-TT", position=from_node("N-M-SW", ft(9, 6.25)),
            sill_height=ft(3)),                                               # y 10'-8"
     # South face, bedroom: centres 4'-0" and 14'-8", both STUD LINES on W-M-S1's grid.
     # S1 stacks under WIN-S-PLANT1; S2 stacks under WIN-S-PLANT4, which took over this stud
@@ -1277,7 +1277,7 @@ OPENINGS = [
     # `-T` stays since R308.4.5 tempers any bathroom sill under 60". Fixed since
     # 2026-10-21; bathroom ventilation is provided by mechanical exhaust.
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
-           type_ref="WT-2736-FIX-T", position=from_node("N-M-W3", ft(5, 10.5)),
+           type_ref="WT-2736-FIX-T", position=from_node("N-M-W3", ft(5, 10.25)),
            sill_height=ft(3)),                                               # y 19'-8"
     # Paired with WIN-S-VANITY-W at the centre of the 4'-0" room band. The 14" RO fits
     # wholly between studs. Tempered because the safety-glazing check treats the wet-room
@@ -1341,10 +1341,10 @@ OPENINGS = [
     # 10'-8", still mirrored about the brick's y=88" with each RO 3 3/4" off it. The trio
     # (ROs 2'-10 1/2"..11'-9 1/2") now sits on the LVP. E1 no longer columns with WIN-S-STUDY3.
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
-           type_ref="WT-2748-TT", position=from_node("N-M-SE", ft(2, 10.5)),
+           type_ref="WT-2748-TT", position=from_node("N-M-SE", ft(2, 10.25)),
            sill_height=ft(2, 10)),
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
-           type_ref="WT-2748-TT", position=from_node("N-M-SE", ft(9, 6.5)),
+           type_ref="WT-2748-TT", position=from_node("N-M-SE", ft(9, 6.25)),
            sill_height=ft(2, 10)),
     # ** ONE PICTURE WINDOW ON THE DINING TABLE (2026-10-16). ** Replaces WIN-M-LIV-E3 and
     # WIN-M-EAST-MID (uids retired). Centre y=18'-0" (216", a bay centre), on the table and on
@@ -1373,7 +1373,7 @@ OPENINGS = [
     # plan/placeables.py's kitchen header for the cabinet re-composition. 42" sill = counter
     # height. Host is W-M-N1.
     Window(uid="CMX313AAAA", tag="WIN-M-KITCH", host="W-M-N1",
-           type_ref="WT-2736-TT", position=from_node("N-M-NE", ft(5, 6.5)),
+           type_ref="WT-2736-TT", position=from_node("N-M-NE", ft(5, 6.25)),
            sill_height=ft(3, 6)),
     # Relocated to the NE corner 2026-07-30 with the range/sink wall swap. Kept as a small
     # corner window rather than dropped: centre x=34'-0" is a bay centre off N-M-NE, clear

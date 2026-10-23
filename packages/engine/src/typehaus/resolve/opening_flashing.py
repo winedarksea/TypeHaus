@@ -10,6 +10,7 @@ import math
 from dataclasses import dataclass, replace
 
 from typehaus.model.project import Project
+from typehaus.model.types import WindowType
 from typehaus.quantities import inch
 from typehaus.resolve.flashing_config import FLASHING, FlashingConfig
 from typehaus.resolve.flashing_solids import flashing_solid
@@ -22,7 +23,7 @@ from typehaus.resolve.geometry_openings import (
     _exterior_face,
 )
 from typehaus.resolve.model import ResolvedModel, ResolvedOpening, ResolvedWall
-from typehaus.resolve.model_window_seat import WindowSeat
+from typehaus.resolve.model_window_seat import WindowSeat, orderable_size
 from typehaus.resolve.rainscreen_closures import rainscreen_band
 from typehaus.resolve.sheet_geometry import combine_sheets, extruded_quad, sheet_between
 
@@ -107,8 +108,10 @@ def resolve_window_seats(model: ResolvedModel, cfg: FlashingConfig = FLASHING) -
     for opening in model.openings:
         frame = opening_flashing_frame(model, walls[opening.host_wall]) \
             if opening.kind == "window" else None
-        seated.append(opening if frame is None
-                      else replace(opening, window_seat=window_seat(opening, frame, cfg)))
+        product = next((t for t in model.plan.library.window_types
+                        if t.tag == opening.type_ref), None) if frame is not None else None
+        seated.append(opening if frame is None else replace(
+            opening, window_seat=window_seat(opening, frame, cfg, product)))
     model.openings = seated
 
 
@@ -257,16 +260,31 @@ def _pan_outlet(opening: ResolvedOpening, frame: OpeningFlashingFrame,
 
 
 def window_seat(opening: ResolvedOpening, frame: OpeningFlashingFrame,
-                cfg: FlashingConfig = FLASHING) -> WindowSeat:
+                cfg: FlashingConfig = FLASHING, product: WindowType | None = None) -> WindowSeat:
     """The unit inside its flashed RO: shimmed off the jambs and head, on the pan's high
-    point at the back dam (a level unit bears there on a sloped pan), outboard of the dam."""
+    point at the back dam (a level unit bears there on a sloped pan), outboard of the dam.
+
+    A product with an orderable size is rounded down inside that envelope, centred between
+    the jambs; the head takes the rest of the vertical slack.
+    """
     dam = frame.back + cfg.back_dam_strip_m
     fall = (_pan_outlet(opening, frame, cfg) - dam) * cfg.drainage_slope
-    side = frame.buck + cfg.perimeter_membrane_m + cfg.install_gap_m
+    lining = frame.buck + cfg.perimeter_membrane_m
+    sill_rise = frame.buck + fall + cfg.sill_membrane_m
+    side = head = lining + cfg.install_gap_m
+    allowance = getattr(product, "minimum_rough_opening_allowance", None)
+    step = getattr(product, "frame_size_increment", None)
+    if allowance is not None or step is not None:
+        extra = allowance.meters if allowance is not None else 0.0
+        flashed_w = opening.width_m - 2 * lining
+        flashed_h = opening.height_m - sill_rise - lining
+        unit_w = orderable_size(flashed_w - max(2 * cfg.install_gap_m, extra), step)
+        unit_h = orderable_size(flashed_h - max(cfg.install_gap_m, extra), step)
+        side = (opening.width_m - unit_w) / 2
+        head = opening.height_m - sill_rise - unit_h
     sign = frame.outward[0] * -frame.along[1] + frame.outward[1] * frame.along[0]
-    return WindowSeat(jamb_inset_m=side,
-                      sill_rise_m=frame.buck + fall + cfg.sill_membrane_m,
-                      head_drop_m=side, inner_m=(dam + cfg.sill_membrane_m) * sign)
+    return WindowSeat(jamb_inset_m=side, sill_rise_m=sill_rise, head_drop_m=head,
+                      inner_m=(dam + cfg.sill_membrane_m) * sign)
 
 
 def _sill_pan(frame: OpeningFlashingFrame, outlet: float, lo: float, width: float,

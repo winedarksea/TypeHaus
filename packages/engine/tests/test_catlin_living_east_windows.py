@@ -16,8 +16,8 @@ JAMB_MEMBERS_NORTH_OF_BRICK = 8
 PACK_TO_PANTRY_IN = 20.875
 # tag: (centre, width, type, blind, blind type)
 EAST_WINDOWS = {
-    "WIN-M-LIV-E1": (48, 27, "WT-2748-TT", "FURN-M-LIV-BLIND-E1", "FT-CELLULAR-BLIND-2748"),
-    "WIN-M-LIV-E2": (128, 27, "WT-2748-TT", "FURN-M-LIV-BLIND-E2", "FT-CELLULAR-BLIND-2748"),
+    "WIN-M-LIV-E1": (48, 27.5, "WT-2748-TT", "FURN-M-LIV-BLIND-E1", "FT-CELLULAR-BLIND-2748"),
+    "WIN-M-LIV-E2": (128, 27.5, "WT-2748-TT", "FURN-M-LIV-BLIND-E2", "FT-CELLULAR-BLIND-2748"),
     "WIN-M-DINING-E": (216, 63, "WT-6348-FIX", "FURN-M-LIV-BLIND-DINING",
                        "FT-CELLULAR-BLIND-6348"),
 }
@@ -57,7 +57,7 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
     assert pantry_south - north_pack_end == pytest.approx(PACK_TO_PANTRY_IN * INCH)
     brick_north = max(point[1] for point in model.wall("W-M-FIRE-JAMB-N").axis)
     south_pack_start = jamb_members[0].p0[1] - cross_section(jamb_members[0].profile).width_m / 2
-    assert south_pack_start - brick_north == pytest.approx(0.75 * INCH)
+    assert south_pack_start - brick_north == pytest.approx(0.5 * INCH)
     for window_tag, (_, _, _, blind_tag, blind_type) in EAST_WINDOWS.items():
         blind = objects[blind_tag]
         opening = openings[window_tag]

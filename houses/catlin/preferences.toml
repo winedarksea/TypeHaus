@@ -39,11 +39,13 @@ max_window_ro_unbroken_in = 14
 #        the file from permitting a size the house had already decided against.
 max_window_ro_nonbearing_in = 30
 #
-#   27"  ONE stud broken, WITH jacks. A BEARING header lands on a jack at each end
+#   27.5" ONE stud broken, WITH jacks. A BEARING header lands on a jack at each end
 #        (R602.7.5), and each jack packs against its king, so the same 30.5" of clear bay
 #        loses 2 x 1.5" = 27.5". THE 3" BETWEEN THIS RUNG AND THE ONE ABOVE IS THE PAIR OF
 #        JACKS — that is the whole rule, and it is why the cap is a function of bearing
 #        status and nothing else.
+#        27 -> 27.5 on 2026-10-23: the full jack-to-jack clear, for R310. A 27" RO nets a
+#        25 5/8" Andersen unit (19.8" clear); 27.5" nets 26 1/8" (20.3"). Same stud count.
 #        Went 27 -> 30 on 2026-08-01 to let WIN-S-BED1/BED2 reach R303.1's 8% glazing, and
 #        came BACK to 27 on 2026-08-25 when that turned out to be avoidable: R303.1 binds
 #        on area, and area can be bought in height. The two bedrooms are 27x54 (WT-2754)
@@ -55,7 +57,7 @@ max_window_ro_nonbearing_in = 30
 # a real option, not a fiction — it is declined here because it is per-opening hardware and
 # a detail the framer has to be told about, which is exactly the cost this preference exists
 # to avoid. If a future opening needs it, raise this number deliberately and say so.
-max_window_ro_bearing_in = 27
+max_window_ro_bearing_in = 27.5
 
 [structural]
 # Design snow on the two garden decks (owner, 2026-09-22): the MN roof snow, 35 psf. IRC

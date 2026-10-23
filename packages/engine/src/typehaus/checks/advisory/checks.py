@@ -45,7 +45,8 @@ def window_size_variety(ctx: CheckContext) -> list[Finding]:
             sizes[key] = sizes.get(key, 0) + 1
     if len(sizes) <= 1:
         return []
-    hist = ", ".join(f"{w*39.37:.0f}x{h*39.37:.0f}\"×{n}" for (w, h), n in sizes.items())
+    hist = ", ".join(f"{round(w / 0.0254 * 8) / 8:g}x{round(h / 0.0254 * 8) / 8:g}\"×{n}"
+                     for (w, h), n in sizes.items())
     total = sum(sizes.values())
     return [passed("advisory.window_size_variety",
                    f"{len(sizes)} unique window sizes across {total} windows — fewer eases "

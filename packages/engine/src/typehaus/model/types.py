@@ -186,6 +186,10 @@ class WindowType(HausModel):
     # openings above and sizing formulas are alternative contracts on each axis.
     net_clear_width_deduction: Length | None = None
     net_clear_height_deduction: Length | None = None
+    # Orderable custom sizes: the unit rounds DOWN to this step inside its flashed opening,
+    # which must exceed the unit by at least the allowance (total, per dimension).
+    frame_size_increment: Length | None = None
+    minimum_rough_opening_allowance: Length | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None
@@ -200,6 +204,12 @@ class WindowType(HausModel):
             if deduction is not None and (not math.isfinite(deduction.meters)
                                           or deduction.meters < 0):
                 raise ValueError(f"{self.tag}: net clear {axis} deduction must be nonnegative")
+        step, allowance = self.frame_size_increment, self.minimum_rough_opening_allowance
+        if step is not None and not (math.isfinite(step.meters) and step.meters > 0):
+            raise ValueError(f"{self.tag}: frame size increment must be positive")
+        if allowance is not None and not (math.isfinite(allowance.meters)
+                                          and allowance.meters >= 0):
+            raise ValueError(f"{self.tag}: rough opening allowance must be nonnegative")
         return self
 
 

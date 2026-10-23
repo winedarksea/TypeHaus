@@ -107,10 +107,10 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
         if width_in > maximum + 1e-6:
             out.append(_advisory(
                 "structural.window_framing_module",
-                f"window {opening.tag} RO {width_in:.0f}\" exceeds the {maximum:.0f}\" "
+                f"window {opening.tag} RO {width_in:g}\" exceeds the {maximum:g}\" "
                 f"{role.value} framing limit ({break_note})", (opening.tag,), Result.FAIL,
                 fix_hint=(
-                    f"keep RO <= {maximum:.0f}\" so the opening breaks ONE stud line on the "
+                    f"keep RO <= {maximum:g}\" so the opening breaks ONE stud line on the "
                     f"{module_in:.0f}\" module this wall is framed on. The bearing cap is "
                     f"just the nonbearing one ({nonbearing_in:.0f}\") less a jack each "
                     f"side, because a BEARING header lands "

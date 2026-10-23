@@ -32,7 +32,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from shapely.geometry import LineString, Polygon, box
+from shapely.geometry import LineString, MultiPolygon, Polygon, box
 from shapely.geometry.base import BaseGeometry
 
 from typehaus.emit.draw.elevation_project import ElevationView, VisiblePiece
@@ -41,6 +41,7 @@ from typehaus.model.enums import DoorOperation, WindowOperation
 from typehaus.model.types import DoorType, WindowType
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve import overlay
+from typehaus.resolve.ceiling_over import polygon_parts
 from typehaus.resolve.model import ResolvedModel, ResolvedOpening, ResolvedWall
 
 #: Lever/lockset height above the door's own threshold. ANSI A117.1 puts operable hardware at
@@ -260,5 +261,8 @@ def _clip(panel: _Panel) -> BaseGeometry:
               if getattr(part, "exterior", None) is not None]
     if not filled:
         return panel.visible
-    return overlay.intersection(box(panel.u0, panel.z0, panel.u1, panel.z1),
+    clip = overlay.intersection(box(panel.u0, panel.z0, panel.u1, panel.z1),
                                 overlay.union_all(filled))
+    # An edge grazing the panel box comes back as a zero-area line beside the polygons, and
+    # GEOS refuses to intersect a glyph with that mixed-dimension collection.
+    return MultiPolygon(polygon_parts(clip))

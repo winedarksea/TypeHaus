@@ -76,7 +76,7 @@ def test_eight_foot_sheets_fail_two_lines(catlin_model_ro):
     BWL-W-G-N clears (0.94 -> 1.34)."""
     ratios = _ratios(_with_sheets(catlin_model_ro, ft(8)))
     failing = {key: round(r, 2) for key, r in ratios.items() if r < 1.0}
-    assert failing == {("main", "BWL-W-A-E1"): 0.77, ("main", "BWL-W-A-S1"): 0.77}
+    assert failing == {("main", "BWL-W-A-E1"): 0.76, ("main", "BWL-W-A-S1"): 0.77}
     e1 = next(ev for ev in evaluate_storey(_with_sheets(catlin_model_ro, ft(8)), "main")
               if ev.line.tag == "BWL-W-A-E1")
     item8 = [f for f in e1.factors if "item 8" in f.row]

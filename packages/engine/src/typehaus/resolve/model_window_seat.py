@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from typehaus.quantities import Length
     from typehaus.resolve.model import ResolvedOpening
 
 
@@ -17,14 +19,22 @@ class WindowSeat:
     is drawn this far inside it, so it never shares space with the flashing it sits on.
     """
 
-    #: Each jamb: buck + jamb membrane + shim space.
+    #: Each jamb: buck + jamb membrane + shim space, or half the slack around a sized unit.
     jamb_inset_m: float
     #: Unit bottom above the RO bottom: buck + the pan's high point (at the back dam).
     sill_rise_m: float
-    #: Head: buck + head membrane + shim space.
+    #: Head: buck + head membrane + shim space, or all the slack above a sized unit.
     head_drop_m: float
     #: The unit's interior face as a signed wall-normal offset: the back dam's front face.
     inner_m: float
+
+
+def orderable_size(available_m: float, step: Length | None) -> float:
+    """The largest product size on ``step`` that fits; never rounds up past the envelope."""
+    if step is None:
+        return available_m
+    # The epsilon keeps an exact multiple from flooring one step short on float noise.
+    return math.floor(available_m / step.meters + 1e-9) * step.meters
 
 
 def window_frame_dimensions(opening: ResolvedOpening) -> tuple[float, float, float] | None:

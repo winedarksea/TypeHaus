@@ -237,7 +237,7 @@ def test_the_aed_excursion_is_the_peak_over_a_diverse_day(catlin_model_ro) -> No
     assert result.excursion_btu_per_hour == pytest.approx(
         result.peak_btu_per_hour - _AED_DIVERSITY_FACTOR * result.average_btu_per_hour,
         abs=1.0)
-    assert result.excursion_btu_per_hour == pytest.approx(670.5, rel=0.02)
+    assert result.excursion_btu_per_hour == pytest.approx(655.6, rel=0.02)
     assert result.design_btu_per_hour == pytest.approx(
         result.peak_btu_per_hour + result.excursion_btu_per_hour)
 
