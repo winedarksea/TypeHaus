@@ -98,6 +98,7 @@ PAX_SHOW = FurnitureType(
     name='PAX 39 3/8" open frame: drawers below (some glass-front for show), tall shelves above',
     footprint=(inch(39.375), inch(22.875)), height=inch(92.875),
     storage=True, work_surface=False, plan_symbol="wardrobe-show",
+    wood_material_ref="pax-frame-white",
     product_ref="PROD-IKEA-PAX-WALL", source=_PAX_SOURCE,
 )
 # The east 39 3/8" slot (owner, 2026-10-03; two 19 5/8" frames since 2026-10-02): SHOW's
@@ -107,6 +108,7 @@ PAX_SHOW_HANG = FurnitureType(
     name='PAX 39 3/8" open frame: the display drawers below, one long rail above (~40" hang)',
     footprint=(inch(39.375), inch(22.875)), height=inch(92.875),
     storage=True, work_surface=False, plan_symbol="wardrobe-show-hang",
+    wood_material_ref="pax-frame-white",
     product_ref="PROD-IKEA-PAX-WALL", source=_PAX_SOURCE,
 )
 PAX_DOUBLE_30 = FurnitureType(

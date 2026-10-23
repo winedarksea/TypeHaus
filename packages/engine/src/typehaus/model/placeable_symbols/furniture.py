@@ -79,6 +79,7 @@ from typehaus.model.placeable_symbols._sektion_tall import (
 )
 from typehaus.model.placeable_symbols._sit_stand_desk import sit_stand_desk
 from typehaus.model.placeable_symbols._slat_partition import slat_partition
+from typehaus.model.placeable_symbols._tannforsen import tannforsen_wall
 from typehaus.model.placeable_symbols._towel_hardware import towel_bar, towel_hook
 from typehaus.model.placeable_symbols._wardrobe import (
                                                         DOUBLE_HANG_INTERIOR,
@@ -230,6 +231,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
         rows=1, cols=3, pulls=True, color=CABINET, face_color=CABINET_SHADE,
         single_door_max_width_m=CABINET_SINGLE_DOOR_MAX_WIDTH_M),
     "besta": besta(),
+    "tannforsen-wall": tannforsen_wall,
     # A hidden steel flat bar under a cantilevered top: the type's own W x D x H, in steel.
     "countertop-bracket": lambda width, depth, height: (
         (rect(0, 0, width, depth),), (box(0, 0, 0, height, width, depth, "metal"),)),

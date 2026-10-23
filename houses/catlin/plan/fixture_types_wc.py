@@ -29,8 +29,8 @@ from library.placeables.fixtures import (
 
 from typehaus.model import FixtureType, Footprint2D, Mount, MountKind, Service, ft, inch, m, pt
 from typehaus.model.placeable_symbols._swanstone_flex_config import BATH2_SHOWER
-from typehaus.model.placeables import ModelRepresentation
 from typehaus.model.placeable_symbols.plumbing import NEO_ANGLE_CUT_FRACTION, neo_angle_points
+from typehaus.model.placeables import ModelRepresentation
 
 # ---------------------------------------------------------------------------
 # WATER CLOSETS
@@ -174,12 +174,13 @@ TOTO_DRAKE = FixtureType(
 # RM-M-BATH2's 36" shower — the primary, used daily and long. Thermostatic trim on the same
 # R10000 rough, one magnetic combo outlet (the diverter rough, second riser and slide bar of
 # FX-SHOWER-36-DIVERTED are gone, 2026-10-12), solid-surface walls and base, and glass that
-# stops short of the ceiling on purpose. There is no glass element in the engine, so this
-# text and the prices.toml row carry the glass, as on FX-SHOWER-36-NEO-COMBO.
+# stops short of the ceiling on purpose. The generated model carries the stock Flex
+# front and the independently supported custom return; shop connections remain open.
 SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
     "tag": "FX-SHOWER-36-THERMO-COMBO",
     "height": inch(BATH2_SHOWER.model_height),
-    "model_representation": ModelRepresentation(symbol="swanstone-flex-3636"),
+    "model_representation": ModelRepresentation(
+        symbol="swanstone-flex-3636", material_refs={"carrara": "solid-surface-panel"}),
     "name": 'Shower, 36", thermostatic valve with a two-in-one rainshower combo',
     "product_ref": "PROD-DELTA-T17T",
     "source": 'RM-M-BATH2, owner selection 2026-10-12, replacing FX-SHOWER-36-DIVERTED. '
@@ -192,16 +193,23 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
               'GLASS: on the tub (north) side, floor to ceiling on the Corian deck\'s S leg over '
               'W-M-TUBDK-S, in a routed channel or clamps, the top sloped >= 1/4 in. into the '
               'stall, no joint under the glass (notes/bath2_tub_deck_finish.md); on '
-              'the front (west) a fixed panel and door to 7\'-6" (90"), leaving ~16" open '
-              'under the 106" ceiling. No transom: that gap is the steam path to REG-M-EXH2, '
+              'the front (west), DreamLine Flex SHDR-22327200-01, chrome, 32-36 in. opening, '
+              '72 in. above the 4 1/2 in. threshold, with supplied rails, seals and south-side '
+              'pivot. PROD-DREAMLINE-FLEX-3272. A preliminary 1 1/2 in. north post sits on '
+              'the Corian deck with ceiling backing; its inside face forms the north jamb. '
+              'Custom north glass in channels to the 106 in. ceiling. Manufacturer/glazier '
+              'confirmation required for the post, channels, glass thickness and hybrid '
+              'connection before ordering. Front rail top 78 in. above storey datum, '
+              'leaving 28 in. open to the ceiling. No transom: the gap leads to REG-M-EXH2, '
               'which sits just outside it (notes/bath2_shower.md). WET WALLS: behind every '
               'panel, floor to ceiling, glass-mat gypsum or cement backer, then a bonded '
               'liquid membrane (RedGard / Hydro Ban class) lapped OVER the base flange, then '
               'the panel bonded over that. Base flanged E/S/N, threshold W, fully bedded, no '
               'radiant cable under it. Mould-inhibiting 100% silicone at panel-to-base, the '
               'corner and the Corian stall face; escutcheons sealed to the panel and the R10000 '
-              'plaster guard set to the panel face. No niche, and no bottom track on the '
-              'door: a sweep and drip rail.',
+              'plaster guard set to the panel face. No niche. The stock Flex bottom rail '
+              'supersedes the earlier trackless-door preference. Molded pan drain remains '
+              'central; the offset plumbing connection remains unresolved (bath2_shower.md).',
 })
 
 # RM-B-SAUNA's rinse and RM-A-STUBATH's guest shower. ** ONE OUTLET, ON PURPOSE. ** A

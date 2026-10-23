@@ -427,7 +427,7 @@ PANTRY_SHELVES_70 = FurnitureType(
 TANNFORSEN_1806 = FurnitureType(
     tag="FT-IKEA-TANNFORSEN-1806", name='IKEA TÄNNFORSEN wall cabinet, 18" x 6"',
     footprint=(inch(18), inch(6)), height=inch(37),
-    storage=True, work_surface=False, plan_symbol="wall-cabinet",
+    storage=True, work_surface=False, plan_symbol="tannforsen-wall",
     source="IKEA TÄNNFORSEN wall cabinet with door, white, art. 405.354.20, $199: "
            "18\" W x 6\" D x 37\" H, one reversible 5/8\" door on two soft-close hinges, "
            "4 adjustable glass shelves, hung on the included suspension rail. Knobs sold separately.",

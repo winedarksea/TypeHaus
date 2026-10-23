@@ -161,7 +161,9 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     if symbol is None or footprint is None or height is None:
         return False
     width_m, depth_m = (part.meters for part in footprint)
-    parts = model_parts(symbol, width_m, depth_m, height.meters)
+    parts = model_parts(symbol, width_m, depth_m, height.meters,
+                        material_refs=getattr(getattr(product_type, "model_representation", None),
+                                              "material_refs", None))
     track = getattr(product_type, "track_lighting", None)
     if track is not None:
         from typehaus.model.placeable_symbols._track_lighting import track_geometry

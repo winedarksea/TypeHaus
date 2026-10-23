@@ -22,7 +22,7 @@ a symbol before its builder exists.
 from __future__ import annotations
 
 import math
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 
 from typehaus.model.placeable_symbols._frame import (
     PART_COLORS,
@@ -82,7 +82,7 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset({
     # kitchen/bath casework — the fitted millwork a room is built around
     "base-cabinet", "sink-base", "corner-base", "wall-cabinet", "corner-wall-cabinet",
     "sektion-plinth-wall-base", "tall-cabinet",
-    "tall-cabinet-double", "tall-cabinet-triple", "besta", "countertop-bracket",
+    "tall-cabinet-double", "tall-cabinet-triple", "besta", "tannforsen-wall", "countertop-bracket",
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
     "microwave", "hood",
@@ -145,9 +145,14 @@ def plan_symbol_strokes(symbol: str | None, width_m: float,
 
 
 def model_parts(symbol: str | None, width_m: float, depth_m: float,
-                height_m: float) -> tuple[Part, ...]:
+                height_m: float, *, material_refs: Mapping[str, str] | None = None
+                ) -> tuple[Part, ...]:
     """The generated 3D parts for ``symbol`` at a W×D×H size, in the local frame."""
-    return symbol_geometry(symbol, width_m, depth_m, height_m)[1]
+    parts = symbol_geometry(symbol, width_m, depth_m, height_m)[1]
+    if not material_refs:
+        return parts
+    return tuple({**part, "material_ref": material_refs[part["color"]]}
+                 if part["color"] in material_refs else part for part in parts)
 
 
 def place_local(points: Sequence[Point], position: tuple[float, float],

@@ -74,6 +74,7 @@ class Part(TypedDict):
 # and export cannot disagree about what a cushion looks like.
 PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "carrara": (0.925, 0.922, 0.910, 1.0),
+    "clear-glass": (0.78, 0.89, 0.92, 0.24),
     "chrome": (0.78, 0.80, 0.82, 1.0),
     "seal": (0.85, 0.88, 0.89, 0.65),
     "upholstery": (0.55, 0.56, 0.58, 1.0),
@@ -181,6 +182,10 @@ PART_SURFACE_PROPERTIES = {
     "mirror": MIRROR_SURFACE_PROPERTIES,
     "brushed-nickel": {"metalness": 0.85, "roughness": 0.32},
 }
+
+# Product-specific roles can retain an identifiable finish in a portable material browser.
+PART_MATERIAL_NAMES = {"carrara": "Swanstone Carrara (221)", "chrome": "Chrome",
+                       "clear-glass": "Clear shower glass"}
 
 
 def clamp(value: float, low: float, high: float) -> float:

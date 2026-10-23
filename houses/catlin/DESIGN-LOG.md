@@ -5920,3 +5920,13 @@ above original whole-case purchases, before tax/delivery. Original single-sheet 
 pricing was unavailable; do not assume the whole-case comparison is guaranteed.
 Qube project freight needs a delivered quote. Full arithmetic and sources:
 notes/bathroom_tile_budget.md. The earlier product and build-up paragraphs are historical.
+
+### 2026-10-22 — BATH2 stock shower front and modeled Carrara
+
+Keep the Swanstone Carrara SS-3636 and wall panels, Corian deck and custom north glass.
+Select the chrome DreamLine Flex SHDR-22327200-01 front (72 inches above threshold), with
+its rails and a separately supported north post. This replaces the custom 90-inch front
+and trackless preference. The return/post sits on the deck; the manufacturer/glazier must
+approve the hybrid jamb, flat threshold bearing and supports before ordering. The molded
+center drain remains centered in the model; its offset pipe connection remains open.
+Record: `notes/bath2_shower.md` §3.

@@ -30,7 +30,7 @@ class SwanstoneFlexDimensions:
     front_maximum_width: float = 36.0
     door_swing_radius: float = 22.875
     post_width: float = 1.5
-    wall_panel_thickness: float = 0.5
+    finished_wall_inset: float = 0.0
     rail_width: float = 0.875
     channel_width: float = 0.625
     front_glass_thickness: float = 0.25
@@ -39,6 +39,13 @@ class SwanstoneFlexDimensions:
     handle_height: float = 8.0
     handle_projection: float = 1.0
     handle_center_height: float = 36.0
+    head_diameter: float = 6.75  # Moen 26008; mounting positions below are visual allowances.
+    head_height: float = 78.0
+    head_projection: float = 4.0
+    head_thickness: float = 0.5
+    valve_height: float = 44.0
+    valve_plate_diameter: float = 6.5
+    valve_projection: float = 1.5
     basin_segments: int = 32
     swing_segments: int = 36
 
@@ -49,7 +56,7 @@ class SwanstoneFlexDimensions:
     @property
     def finished_opening(self) -> float:
         # The post sits on the deck, outside the pan; its inside face is the pan edge.
-        return self.pan_width - self.wall_panel_thickness
+        return self.pan_width - self.finished_wall_inset
 
 
 BATH2_SHOWER = SwanstoneFlexDimensions()

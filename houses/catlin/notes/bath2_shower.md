@@ -31,7 +31,7 @@ temperature). Disagree with one and redo the table.
 | Head flow | Speakman S-2005-H, 2.5 gpm | 1.75 gpm |
 | Walls | marble-look panel to 7'-0" | solid-surface panel floor to ceiling (106"), 53.0 SF net |
 | Base | kit pan | matching 36x36 solid-surface base |
-| Glass | unspecified | tub (north) side floor to ceiling; front (west) fixed panel + door to 90" |
+| Glass | unspecified | tub (north) side floor to ceiling; front (west) stock Flex door, 72" above threshold (2026-10-22) |
 | Exhaust | `REG-M-EXH2` at (4'-0", 18'-0"), by the tub | (4'-2", 15'-4"), ~8" west of the front glass |
 
 **The thermostatic argument is about the tank, not about the outlet count.** A
@@ -77,12 +77,44 @@ until the outlet itself is at about 105. That tail is the whole reason for the s
 
 | side | what | height | open above |
 |---|---|---|---|
-| north (tub) | fixed panel on the Corian deck's S leg over `W-M-TUBDK-S`, in a routed channel or clamps (2026-10-22) | to the ceiling | none: water and steam stay off the tub deck |
-| west (front) | fixed panel + door | **90"** (7'-6") | **16"** |
-| east, south | solid-surface panels (`WP-M-BATH2-SURR`) | 106" | none |
+| north (tub) | custom fixed pane on Corian, independently supported at the east wall, ceiling and west post | deck 22¾" to ceiling 106" (83¼" high) | none |
+| west (front) | DreamLine Flex SHDR-22327200-01, chrome, stock pivot front | 72" above threshold; top at datum 78" | 28" |
+| east, south | Swanstone Carrara panels (`WP-M-BATH2-SURR`) | 106" | none |
 
-There is no glass element in the engine, so the heights live in the type's `source` and in
-the `FX-SHOWER-36-THERMO-COMBO` price row, as on `FX-SHOWER-36-NEO-COMBO`.
+**Selected 2026-10-22:** a stock framed pivot front and a custom north pane replace the
+90" custom front. The supplied top/bottom rails supersede the earlier trackless preference.
+The pan stands on the 1½" finished floor; its 4½" threshold puts the front's head at 78"
+above storey datum. There is no transom, and the gap to the ceiling remains the steam path.
+
+`ModelRepresentation.symbol="swanstone-flex-3636"` generates the pan, door, post and return
+for the viewer, GLB and IFC. `WP-M-BATH2-SURR` supplies the two wall panels separately.
+The return is inset ¾" north onto the deck; the 1½" post sits wholly on Corian, with its
+inside face on the pan's north edge. Its front-to-back centre is 1⅜" in from the pan's west
+edge, so its base clears the deck's west edge. The resolved south panel's finished face is already flush with the pan edge (its ½"
+thickness is on the wall side), so there is **36"** between it and the post: the upper
+limit of the Flex's 32–36" adjustment range. Do not subtract the wall panel twice.
+Field-measure the finished opening and confirm tolerances before ordering.
+Post and channel dimensions are preliminary visualization allowances, not a shop drawing.
+
+**Procurement confirms:** DreamLine requires finished solid jambs and at least **1⅜" of
+flat threshold**. The pan's modeled 2¾" threshold footprint is not certification of its flat
+bearing width: verify the top land and corner radii on the Carrara dealer's submittal.
+Have DreamLine/glazier approve the supported-post jamb connection; size the post, its
+connections into deck/ceiling backing, channels and tempered north pane. Do not transfer
+the door's load to the unsupported edge of the return. No glass drilling after tempering.
+The front pivots at the south wall and swings out toward the vanity; the integration test
+checks its conservative sweep, including the handle, against the vanity and bathroom door.
+
+**Appearance:** the live viewer applies the existing illustrative veined-marble texture
+to the Carrara panels and base; it is not a photograph of Swan's colour chip. GLB/IFC retain
+shared geometry and glass transparency but export flat Carrara colour rather than the
+procedural texture. IFC surface styles identify the solid-surface material. Physical chip
+and supplier shop drawings govern fabrication.
+
+Sources, read 2026-10-22:
+- [Flex front product](https://dreamline.com/product/dreamline-flex-32-36-inch-w-x-72-inch-h-semi-frameless-pivot-shower-door/shdr-22327200/shdr-22327200-01)
+- [Flex installation requirements](https://dreamline.com/media/manuals/FLEX_28x72_32x72_and_Single_Threshold_Base_Manual_Ver_2_082022.pdf)
+- [Swan SS-3636 specification](https://assets.unilogcorp.com/267/ITEM/DOC/Swan_SF03636MD_130_Specification_Sheet.pdf)
 
 ## 4. Steam path and the grille
 
@@ -90,7 +122,7 @@ The Broan B210E75RT delivers ~206.6 cfm against the 205 cfm the code requires
 (`mep.erv_static_budget`; `notes/erv_static_budget.md`). There is no headroom to boost
 BATH2's 20 cfm, so the grille's position is the only lever.
 
-- Warm, wet air rises and leaves the enclosure through the front's 16" open top.
+- Warm, wet air rises and leaves the enclosure through the front's 28" open top.
 - `REG-M-EXH2` now sits at **(4'-2", 15'-4")**. The front glass is at x = 4'-10 5/8", so the
   grille is **8 5/8" outside it**, right where the plume comes over. Before, it was ~4' away by
   the tub.
@@ -174,7 +206,7 @@ the waterproofing GoBoard would add.
 BATH2's base: integral flanges E, S and N, threshold W, fully bedded with no voids, and no
 radiant cable under it. Joints: mould-inhibiting 100% silicone at panel-to-base, the corner
 and the cap; escutcheons sealed to the panel; the R10000's plaster guard set to the panel
-face. No niche. No bottom track on the door: a sweep and a drip rail.
+face. No niche. Stock Flex front with its supplied bottom rail and seals (2026-10-22).
 
 The knee-wall span needed one engine addition: `W-M-TUBDK-S` stands inside the room's face,
 so both its faces are the room's and no side can be derived. `PanelingSpan.face` names it
@@ -185,7 +217,7 @@ so both its faces are the room's and no side can be derived. `PanelingSpan.face`
 **What it is.** `EQ-M-BATH2-STALL-FAN`, a moisture-rated 4" inline fan in RM-M-BED's ceiling,
 draws filtered bedroom air through `REG-M-BATH2-DRY-IN` and blows it down into the stall
 through `REG-M-BATH2-DRY-OUT`, a damped round nozzle at (6'-4", 15'-4"), on a 30-60 min
-countdown (`ED-M-BATH2-SW-DRY`). The air leaves over the front glass's 16" open top, past
+countdown (`ED-M-BATH2-SW-DRY`). The air leaves over the front glass's 28" open top, past
 `REG-M-EXH2`, and returns to the bedroom under `D-M-BATH2`.
 
 ### 7.1 The three options

@@ -109,6 +109,19 @@ SOLID_SURFACE_SHOWER = Product(
            "above the base (or a top cap).",
 )
 
+BATH2_FLEX_FRONT = Product(
+    tag="PROD-DREAMLINE-FLEX-3272", brand="DreamLine", model="SHDR-22327200-01",
+    name="Flex 32-36 x 72 in. pivot shower door, clear glass, chrome",
+    url="https://dreamline.com/product/dreamline-flex-32-36-inch-w-x-72-inch-h-semi-frameless-pivot-shower-door/shdr-22327200/shdr-22327200-01",
+    source="Owner selection 2026-10-22: stock FRONT ONLY, not the enclosure/base kit. "
+           "DreamLine Flex manual: 32-36 in. finished opening, 72 in. above threshold; "
+           "minimum 1 3/8 in. FLAT threshold, finished solid jambs. Supplied top/bottom "
+           "rails, pivot hardware and seals. Chrome with the room's plumbing. North "
+           "jamb is a preliminary supported post on the Corian deck, not a bare glass "
+           "edge; confirm the hybrid mounting with DreamLine and the glazier. Custom "
+           "north pane and post are separately budgeted. See notes/bath2_shower.md §3.",
+)
+
 # The stall-drying fan (notes/bath2_shower.md §7). A CLASS record: the WhisperLine
 # FV-10NLF1E the hand calc read was DISCONTINUED 2024-04-02.
 INLINE_FAN_4 = Product(
@@ -140,7 +153,7 @@ BATH2_STALL_FAN_FILTER = Product(
 )
 
 SHOWERING_PRODUCTS = (
-    INLINE_FAN_4, BATH2_STALL_FAN_FILTER,
+    INLINE_FAN_4, BATH2_STALL_FAN_FILTER, BATH2_FLEX_FRONT,
     DELTA_MULTICHOICE_ROUGH, DELTA_T14459_TRIM, SPEAKMAN_HOTEL_HEAD, MOEN_ENGAGE_MAGNETIX,
     MOEN_ATTRACT_MAGNETIX, DELTA_17T_THERMO_TRIM, DELTA_UNIVERSAL_HEAD, SOLID_SURFACE_SHOWER,
 )

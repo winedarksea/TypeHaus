@@ -27,7 +27,7 @@ The rim sits on ≤⅛" spacers at 22¾", so the visible deck is a thin U around
 
 | leg | working | visible |
 |---|---|---|
-| W | rim 62.49 − apron face 58.615 | 3⅞": apron on the shower's front-glass line |
+| W | rim 62.49 − apron face 58.615 | 3⅞": apron at the pan's west edge; Flex rail is inset 1⅜" |
 | N, at HS1/HS2 | deck 264.615 − rim 262.615 | 2" |
 | S, the foot ledge | rim 202.615 − deck 194.375 | 8¼": filler, glass |
 | E, at BA2E | deck 94.615 − rim 94.49 | ⅛": silicone only |
@@ -74,8 +74,12 @@ top out at 96" against the 106" ceiling, so `bath2_shower.md` §5 confirm 3 stay
   silicone, like an alcove flange. Painted gypsum above meets only the splash's eased top
   edge, and its SW and E ends are finished, eased edges. It clears the towel-bar posts
   (54") and every bathroom-face device on BA2E/HS1, all above 28" or west of the deck.
-- **Glass.** It stands on the S leg in a routed channel or clamps. On the stall side of the
-  glass the top slopes ≥ ¼" into the stall. There is no horizontal joint under the glass.
+- **Glass.** The custom north pane stands ¾" onto the S leg, in support channels to the
+  east wall, ceiling and a preliminary 1½" chrome post on the west end. The stock Flex
+  front rail is inset 1⅜" from the pan/apron west edge, on the threshold. Confirm the
+  hybrid jamb and post connections with DreamLine/glazier (`bath2_shower.md` §3). On the
+  stall side of the glass the top slopes ≥ ¼" into the stall. There is no horizontal
+  joint under the glass.
 - **Filler.** The fabricator drills the two 1¼" handle holes and the spout hole to the Moen
   template. 12 mm sits within the 4794's 1¼" finish allowance.
 - **Access panels.** Two removable leaves cut from the W apron, ⅛" reveal: the 20 × 15

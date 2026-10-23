@@ -72,6 +72,8 @@ _BUDGET: dict[str, tuple[int, str]] = {
         1, "a @cache'd module helper — one load for the module, not one per test"),
     "test_catlin_bath2_vanity_heat_and_joists.py": (
         1, "a @cache'd module helper — one load for the module, not one per test"),
+    "test_catlin_bath2_shower.py": (
+        0, "shared read-only Catlin model and IFC; no additional loads or emissions"),
     "test_winder_integration.py": (
         0, "shared read-only Catlin model/context; no additional loads"),
     "test_winder_ifc.py": (

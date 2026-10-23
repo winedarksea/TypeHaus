@@ -664,7 +664,9 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
             from typehaus.model.placeable_symbols import model_parts
 
             parts = model_parts(model_symbol, product_type.footprint[0].meters,
-                                product_type.footprint[1].meters, product_type.height.meters)
+                                product_type.footprint[1].meters, product_type.height.meters,
+                                material_refs=product_type.model_representation.material_refs
+                                if product_type.model_representation else None)
             representation = parts_representation(
                 f, body, parts, item.position, item.rotation_degrees, item.z_m)
         else:

@@ -152,7 +152,9 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
         strokes, parts = track_geometry(track)
     else:
         strokes = plan_symbol_strokes(symbol, width_m, depth_m)
-        parts = model_parts(model_symbol, width_m, depth_m, height_m)
+        parts = model_parts(model_symbol, width_m, depth_m, height_m,
+                            material_refs=getattr(getattr(item, "model_representation", None),
+                                                  "material_refs", None))
     return {
         "plan_strokes": [{"points": [list(point) for point in stroke["points"]],
                           "closed": stroke["closed"], "weight": stroke["weight"],

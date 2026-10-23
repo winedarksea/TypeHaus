@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from enum import Enum
 
+from pydantic import Field
+
 from typehaus.model.base import HausModel
 from typehaus.model.enums import Service
 from typehaus.quantities import Length, Point2D, m
@@ -126,6 +128,8 @@ class ModelRepresentation(HausModel):
     glb: str | None = None
     # Generated 3D geometry can be specified without adding a floor-plan glyph.
     symbol: str | None = None
+    # Generated part role -> catalog material tag; the builder never names house materials.
+    material_refs: dict[str, str] = Field(default_factory=dict)
 
 
 class WallAttachment(HausModel):

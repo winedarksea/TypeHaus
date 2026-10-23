@@ -9,7 +9,8 @@ door-and-handle family can express.
 from __future__ import annotations
 
 from typehaus.model.placeable_symbols._families import Builder, Geometry, appliance_case
-from typehaus.model.placeable_symbols._frame import DETAIL_WEIGHT, box, circle, clamp, line, rect
+from typehaus.model.placeable_symbols._frame import (DETAIL_WEIGHT, box, circle, clamp, line,
+                                                     prism, rect)
 
 __all__ = ["APPLIANCE_SYMBOLS"]
 
@@ -27,23 +28,34 @@ def cooktop(*, burners: int = 4, oven: bool = True) -> Builder:
         rows = max(1, burners // max(1, columns))
         strokes = [rect(0, 0, width, depth, fill="appliance-steel"),
                    rect(0, depth / 2 - control_d / 2, width, control_d, weight=DETAIL_WEIGHT)]
-        parts = [box(0, cook_cy, 0.0, height - deck_t, width, cook_d, "appliance-white"),
-                 box(0, cook_cy, height - deck_t, height, width, cook_d, "appliance-steel"),
-                 box(0, depth / 2 - control_d / 2, height - deck_t, height, width, control_d,
-                     "appliance-steel")]
+        # 3D: steel carcass, black glass top, black door + drawer. Every face sits on its own
+        # plane (door proud of the carcass, rings proud of the glass) so nothing z-fights.
+        handle_d = clamp(depth * 0.03, 0.0, 0.025) if oven else 0.0
+        door_t = min(0.02, depth * 0.2) if oven else 0.0
+        body_y0 = -depth / 2 + handle_d + door_t
+        top = height - deck_t
+        parts = [box(0, (body_y0 + depth / 2) / 2, 0.0, top, width, depth / 2 - body_y0,
+                     "appliance-steel"),
+                 box(0, 0, top, height - 0.0015, width, depth, "metal-black")]
         for column in range(columns):
             for row in range(rows):
                 cx = -width / 2 + width * (column + 0.5) / columns
                 cy = cook_cy - cook_d / 2 + cook_d * (row + 0.5) / rows
                 strokes.append(circle(cx, cy, burner_r, weight=DETAIL_WEIGHT))
-                parts.append(box(cx, cy, height - deck_t, height, burner_r * 1.9,
-                                 burner_r * 1.9, "metal"))
-        if oven:  # the oven door face + its handle, the same front-plane convention as a fridge
-            door_t = min(0.02, depth * 0.2)
+                parts.append(prism(circle(cx, cy, burner_r)["points"], height - 0.0015, height,
+                                   "luminaire-housing"))
+        if oven:  # door + warming drawer, both black, with a steel bar handle on the door
             strokes.append(line((-width * 0.4, -depth / 2 + door_t),
                                 (width * 0.4, -depth / 2 + door_t)))
-            parts.append(box(0, -depth / 2 + door_t / 2, height * 0.08, height * 0.72,
-                             width * 0.94, door_t, "appliance-steel"))
+            face_w, face_y = width - 0.012, body_y0 - door_t / 2
+            door_z0 = height * 0.22
+            parts.append(box(0, face_y, door_z0, top - 0.008, face_w, door_t, "metal-black"))
+            parts.append(box(0, face_y, height * 0.04, door_z0 - 0.008, face_w, door_t,
+                             "metal-black"))
+            bar = min(0.009, height * 0.01)
+            handle_z = clamp(top - 0.05, door_z0 + bar, top - bar)
+            parts.append(box(0, -depth / 2 + handle_d / 2, handle_z - bar, handle_z + bar,
+                             width * 0.8, handle_d, "appliance-steel"))
         return tuple(strokes), tuple(parts)
 
     return build

@@ -645,7 +645,7 @@ export interface ModelPart {
     normals: [number, number, number][];
   };
   radial_segments?: number;
-  /** The catalog material a `wood` part is made of (`FurnitureType.wood_material_ref`). */
+  /** Catalog material for a generated part, including wood and solid-surface finishes. */
   material_ref?: string;
   /** Optional grain direction in the part's local plan frame. */
   grain_axis?: [number, number, number];

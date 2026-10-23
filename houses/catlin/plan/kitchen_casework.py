@@ -212,9 +212,10 @@ MAIN_KITCHEN_CASEWORK = [
     # 372 3/8". `offset` is from the wall base, so the counter top (36" AFF) is 36 15/16";
     # the top (75 3/8" AFF) hides behind the hood and laps 1 7/8" behind FURN-M-KIT-WN2.
     # Bonded over the painted gypsum. notes/titanium_handrail_backsplash.md §5.
+    # Drawn 4 mm, not 0.8: the teardrop hem (2 x 0.8 + 2.0 bend) plus the adhesive bed.
     WallPaneling(uid="6T69T5QZQP", tag="WP-M-KIT-BACKSPLASH", room="RM-M-LIVING",
                  material_ref="titanium-gr2-sheet-brushed", offset=inch(36.9375),
-                 height=mm(1000), thickness=mm(0.8),
+                 height=mm(1000), thickness=mm(4),
                  spans=(PanelingSpan(wall_ref="W-M-E1", start=inch(352.6875),
                                      length=mm(1000)),)),
 

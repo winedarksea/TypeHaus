@@ -14,7 +14,11 @@ from typehaus.emit.gltf.buffers import (
 )
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.trades import TRADES
-from typehaus.model.placeable_symbols._frame import PART_COLORS, PART_SURFACE_PROPERTIES
+from typehaus.model.placeable_symbols._frame import (
+    PART_COLORS,
+    PART_MATERIAL_NAMES,
+    PART_SURFACE_PROPERTIES,
+)
 
 # The selection-kind vocabulary the UI honours — mirrors ``SelectionKind`` in
 # ui/src/state/store.ts and the ``kind`` accepted by Panel3D.wholeHouseGlbAssignment. Held as
@@ -69,10 +73,10 @@ class _SceneBuilder:
                 # A name gives Revit/SketchUp's material browser something other than an
                 # anonymous "Material_0" to show — cosmetic, but it is what a human continuing
                 # the import sees first (→ #48's "continue the model rather than redraw it").
-                # Hex-of-the-colour rather than the semantic category name (e.g. "stud"): many
-                # categories collapse onto the same RGBA (§_PALETTE), so a colour is the only
-                # key this dedup table actually has.
-                "name": _color_name(color),
+                # Product roles retain their finish names; generic categories collapse onto
+                # shared RGBA values, so their labels remain colour-based.
+                "name": next((name for role, name in PART_MATERIAL_NAMES.items()
+                              if color == PART_COLORS[role]), _color_name(color)),
                 "pbrMetallicRoughness": {
                     "baseColorFactor": list(color),
                     "metallicFactor": metalness,

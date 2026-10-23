@@ -3381,8 +3381,10 @@
 #   material  FX-SHOWER-36 band                                  300-1000
 #             solid-surface base over an acrylic pan             +150-500
 #             R10000 rough $55-65 + 17T trim $250-450 + 26008 $130-180   +435-695
-#             custom frameless 3/8" glass: one floor-to-ceiling panel on the
-#             tub knee wall, a 90" fixed panel and door on the front     +1300-3000
+#             stock chrome Flex SHDR-22327200-01 front (allowance)       +550-800
+#             custom north pane + post/channels/backing (allowance)     +650-1600
+#             2026-10-22: separate allowances, NOT current supplier quotes;
+#             replaces the $1300-3000 custom 90-inch front/return allowance.
 #             wet walls (2026-10-12): glass-mat or cement backer behind the ~58 SF
 #             of panel in place of paper-faced gypsum +70-120, and a bonded liquid
 #             membrane, two coats lapped over the base flange (1-2 gal RedGard /
@@ -3390,7 +3392,7 @@
 #   labour    FX-SHOWER-36 band 200-470 + thermostatic trim set 60-130 + glass hang 300-700
 #             + membrane coats and cure 180-380
 # The glass is the biggest and widest number; a glazier's measure-and-quote collapses it.
-"FX-SHOWER-36-THERMO-COMBO" = { material = { low = 2370, high = 5530 }, labour = { low = 740, high = 1680 } }  # 1 ea
+"FX-SHOWER-36-THERMO-COMBO" = { material = { low = 2270, high = 4930 }, labour = { low = 740, high = 1680 } }  # 1 ea
 # +$65-100/ea for the 52535-SS head over the boxed one (2026-10-12; street $64-73).
 "FX-TUBSHOWER-60-DIVERTED" = { material = { low = 965, high = 2700 }, labour = { low = 450, high = 1050 } }  # 2 ea
 "FX-TUB-60" = { material = { low = 400, high = 1600 }, labour = { low = 330, high = 800 } }  # 1 ea

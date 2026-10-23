@@ -284,7 +284,9 @@ NODES = [
     # These axes are CENTRELINES of a 3 1/2" symmetric 2x3 wall, so each sits 1 3/4" inboard
     # of the deck's outer face: x=5'-0.865" for the 4'-11.115" west face, y=16'-4 1/8" for the
     # 16'-2 3/8" south face. The west face plus the 1/2" Corian apron (as drawn) is x=4'-10.615", the
-    # shower's front-glass line, so glass and apron are one plane (owner, 2026-10-22). That south face is also FX-M-BATH2-SH's north face — one line,
+    # shower pan's west edge. The stock Flex front rail is now inset 1 3/8" on the
+    # threshold (2026-10-22, notes/bath2_shower.md §3). That south face is also
+    # FX-M-BATH2-SH's north face — one line,
     # one wall, both jobs.
     #
     # ** THE RIM LAPS THE WEST KNEE WALL (K-1130-W1, 2026-10-22). ** Its bay face is 62.615",
