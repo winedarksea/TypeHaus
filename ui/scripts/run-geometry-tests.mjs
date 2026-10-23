@@ -38,6 +38,7 @@ try {
   const { runPlankLayoutTests } = await server.ssrLoadModule("/src/three/plankLayout.test.ts");
   const { runWoodPieceTests } = await server.ssrLoadModule("/src/three/woodPiece.test.ts");
   const { runMarbleMaterialTests } = await server.ssrLoadModule("/src/three/marbleMaterial.test.ts");
+  const { runCarpetMaterialTests } = await server.ssrLoadModule("/src/three/carpetMaterial.test.ts");
   const { runDetailAnnotationTests } = await server.ssrLoadModule("/src/components/DetailCanvas.test.ts");
   const { runMemberPickingTests } = await server.ssrLoadModule("/src/three/memberPicking.test.ts");
   const { runRoomFloorTests } = await server.ssrLoadModule("/src/three/builders/roomFloor.test.ts");
@@ -127,6 +128,7 @@ try {
   const { runWoodSpeciesTests } = await server.ssrLoadModule("/src/three/woodSpecies.test.ts");
   runWoodSpeciesTests();
   runMarbleMaterialTests();
+  runCarpetMaterialTests();
   const { runTileMaterialTests } = await server.ssrLoadModule("/src/three/tileMaterial.test.ts");
   runTileMaterialTests();
   runMemberColorTests();

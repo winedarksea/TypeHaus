@@ -21,6 +21,7 @@ import {
 } from "../materials";
 import { applyTileUv, createTileMaterial, tileStyleOrNull } from "../tileMaterial";
 import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
+import { applyCarpetUv, createCarpetMaterial, isCarpetPile } from "../carpetMaterial";
 import { buildMembers, isRoofFramingMember, memberColor, type SkinLine } from "../members";
 import { buildBoardMembers } from "./millwork";
 import { addStairFinishParts } from "./stairFinish";
@@ -294,18 +295,21 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
   // treatment, by declared recipe first so a house-local tag needs no needle (#57). A
   // veined-marble print takes one world-fixed tile, so the pattern runs on unbroken from
   // room to room as one sheet would. Tile uses product-sized joints and surface maps;
-  // carpet stays a flat fill. Boards run along the room's long axis.
+  // cut-pile carpet takes tuft, sheen and roughness maps. Boards run along the room's long axis.
   const declared = authoredAppearance(finish, materials)?.finish;
   const surface = floorSurface(finish, declared);
   const plankStyle = plankStyleOrNull(finish, declared);
   const marble = !plankStyle && isVeinedMarble(declared);
   const tileStyle = tileStyleOrNull(declared);
+  const carpet = !plankStyle && !tileStyle && !marble && isCarpetPile(declared);
   if (plankStyle) {
     applyPlankPlaneUv(geometry, center, planLongAxis(outline), plankTileSizeM(plankStyle));
   } else if (tileStyle) {
     applyTileUv(geometry, center, tileStyle);
   } else if (marble) {
     applyPlankPlaneUv(geometry, center, [1, 0], [MARBLE_TILE_M, MARBLE_TILE_M]);
+  } else if (carpet) {
+    applyCarpetUv(geometry, center);
   }
   const roughness = mode === "nordic" ? surface.roughness : 1;
   const mesh = new THREE.Mesh(geometry,
@@ -316,6 +320,8 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
       ? createTileMaterial(mode, tileStyle, materialColor(finish, palette, materials))
       : marble
       ? createMarbleMaterial(mode, materialColor(finish, palette, materials), roughness)
+      : carpet
+      ? createCarpetMaterial(mode, materialColor(finish, palette, materials), roughness)
       : standardMaterial(new THREE.Color(materialColor(finish, palette, materials)), mode, {
         roughness,
         metalness: mode === "nordic" ? surface.metalness : 0,

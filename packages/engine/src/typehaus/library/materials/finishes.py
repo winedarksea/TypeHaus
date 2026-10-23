@@ -342,6 +342,7 @@ MATERIALS: tuple[Material, ...] = (
         name="Cut-pile carpet",
         hatch="batt",
         color="#9c8f80",
+        finish="carpet-pile",
         finish_thickness_in=0.5,
         floor_companion_refs=("carpet-pad",),
         source="finish covering, not an assembly layer; thermal/vapour fields unset. "
