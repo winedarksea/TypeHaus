@@ -4027,13 +4027,15 @@
 #   sold as a self-adhered "smart"/Class I membrane in 200-SF rolls at $110-190 a roll,
 #   i.e. $0.55-0.95/SF. It sits above `air-barrier` (a mechanically-fastened housewrap)
 #   because it is adhesive-backed and is the barrier, not a drainage plane.
-#   pvc-panel — 1/2" T&G interlocking PVC wall panel, quoted per 16" x 8' plank (10.7 SF)
-#   at $45-80, i.e. $4.20-7.50/SF. Comparable per SF to the sauna's basswood T&G, which is
-#   the right sanity check: both are a finished, jointed, non-cellulose liner rather than a
-#   sheet of board. Sources: Trusscore/Extrutech published plank pricing, and the same
-#   sheet-membrane surveys behind the `air-barrier` row above.
-"humid-room-membrane" = { material = { low = 0.55, high = 0.95 }, labour = { low = 1.2, high = 2.2 } }  # 445.2 SF
-"pvc-panel" = { material = { low = 3.5, high = 7 }, labour = { low = 3, high = 5.5 } }  # 445.2 SF
+#   pvc-panel — 1/2" x 16" T&G PVC liner, walls and ceiling. Since 2026-10-22 a named
+#   product (plan/plant_liner_selection.py): Extrutech P1600 white, $4.00/LF of panel
+#   = ~$3.00/SF at Kleen-Rite (read 2026-10-22) plus freight; Trusscore Wall&CeilingBoard
+#   white is the accepted equal at ~$3.90/SF (Home Depot GTC1608 8-pack, $334.95 / 85.31
+#   SF). Band re-struck from $3.50-7 to $3.00-4.50 on those two reads; trims and stainless
+#   screws stay in the labour band. The 445.2 SF both rows quoted was stale: walls + ceiling
+#   resolve 565.8 SF, unchanged by the selection.
+"humid-room-membrane" = { material = { low = 0.55, high = 0.95 }, labour = { low = 1.2, high = 2.2 } }  # 565.8 SF
+"pvc-panel" = { material = { low = 3.0, high = 4.5 }, labour = { low = 3, high = 5.5 } }  # 565.8 SF
 "gwb-x" = { material = { low = 0.6, high = 1 }, labour = { low = 1.3, high = 2.2 } }  # 92.3 SF
 # ZEROED 2026-08-29 — THIS WAS A DOUBLE BILL, $6,191-10,954. The old comment ("forms only;
 # ready-mix is in [wall_structure]") was wrong about what [wall_structure] carries.
@@ -5259,11 +5261,11 @@
 #   (the three kitchen tops were 47.67 SF before the 2026-10-02 SEKTION corners; 48.41 now)
 #   CT-M-BATH2-VANITY      6.33 SF  48 x 19 — Corian since 2026-10-22, billed below
 #   CT-S-BATH1-VANITY      5.50 SF  36 x 22 (resized 2026-10-21)
-#   STOOL-WIN-S-PLANT1..4  9.26 SF  the plant room's four 3 cm window stools (2026-09-28),
+#   (STOOL-WIN-S-PLANT1..4, 9.55 SF, left for Corian on 2026-10-22 — UV; billed below)
 #   STOOL-WIN-M-KITCH      2.04 SF  the kitchen sink window's 3 cm quartz stool,
 #   STOOL-WIN-M-KITCH-N,
 #   STOOL-WIN-M-KIT-E      2.25 SF  the kitchen corner pair, matching the sink (2026-10-18).
-#                                   All seven stools bill as stone, outside `haus millwork`.
+#                                   All three bill as stone, outside `haus millwork`.
 # The other four vanity tops are one-piece solid surface moulded with their bowls and bought
 # boxed with the cabinet: they bill in [placeables] and must never appear here.
 #
@@ -5280,18 +5282,20 @@
 # Earlier: $50-95/SF was fabricated-and-installed low-silica quartz, the band the retired
 # `finish-countertops-quartz` allowance carried. The five existing tops total
 # 61.34 SF, or $3,067-5,827 against that lump's $3,200-6,000. Five quartz window stools
-# add 11.30 SF (the plant room's four, then WIN-M-KITCH). CT-M-CLOSET's 5.50 SF went with
+# add 11.30 SF (the plant room's four, then WIN-M-KITCH; the plant four left for Corian
+# 2026-10-22). CT-M-CLOSET's 5.50 SF went with
 # the closet SEKTIONs on 2026-10-03: 78.47 SF before, 72.97 SF after. The peninsula's
 # 15" bracketed knee went to quartz on 2026-10-04 and added 7.65 SF: 80.62 SF. The two
 # kitchen corner stools add another 2.25 SF since 2026-10-18. See
 # plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the showroom — silica
 # exposure control is the thing to buy here.
-"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 74.83 SF since CT-M-BATH2-VANITY and STOOL-WIN-M-BATH2 (8.29 SF) left for Corian, 2026-10-22
+"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 65.28 SF since CT-M-BATH2-VANITY, STOOL-WIN-M-BATH2 and the four plant-room stools left for Corian, 2026-10-22
 # RM-M-BATH2's Corian Glacier White vanity top (12 mm, built-up eased front, solid-surface bowl
-# bonded in; the bowl is the vanity row's) and its window stool, same lot as the tub deck.
+# bonded in; the bowl is the vanity row's) and its window stool, same lot as the tub deck, plus
+# RM-S-PLANT's four window stools (off quartz for UV, 2026-10-22).
 # The deck top bills in [envelope_layers] and its faces and splash in [wood_surfaces] under
 # this tag; each row prices only its own area. Roughly $40-80/SF installed. ESTIMATE.
-"solid-surface-fabricated" = { material = { low = 25, high = 50 }, labour = { low = 15, high = 30 } }  # 8.29 SF: vanity top 6.33 + stool 1.96
+"solid-surface-fabricated" = { material = { low = 25, high = 50 }, labour = { low = 15, high = 30 } }  # 17.84 SF: vanity top 6.33 + Bath2 stool 1.96 + plant stools 9.55
 # The living room's two ash slabs (2026-10-16, live-edge white oak before): 1 1/4" off 6/4
 # owner ash (2" off 12/4 until the same day), each a two-board glue-up, cut-listed by
 # `haus millwork`; the labour is the glue-up, scribing the back edge, slotted brackets and a
@@ -7468,7 +7472,8 @@ finish-tile-backer-and-waterproofing = { low = 2000, high = 4500 }
 #
 # At the 2026-09-11 move, the rates in [countertops] were set from these two bands divided by
 # the derived areas, so the countertop estimate moved by the 2.6% the hand figure was off.
-# Later quartz window stools add 11.30 SF to the quartz row, as noted above.
+# Later quartz window stools add 11.30 SF to the quartz row, as noted above; the four
+# plant-room ones moved to Corian on 2026-10-22.
 # ** CABINET PULLS WERE ALSO UNPRICED. ** ~50 pulls, Top Knobs Solid Bar SS304 at $14.20 list
 # with 20-30% off at a dealer. SS304 is the same alloy as the appliances, so it matches
 # without a finish-code hunt, and there is NO PLATING TO WEAR THROUGH — budget plated-brass
@@ -7593,7 +7598,8 @@ finish-door-closer-hold-open = { low = 500, high = 1000 }
 # and stays unpriced until one exists. The four bedroom walnut stools are also bought,
 # pending a stock quote. Locust, ash and cherry stools are owner stock;
 # the sauna's is the owner's cedar (plan/window_stools.py).
-#   the 8 quartz stools, 3 cm remnants                -> [countertops] "quartz-counter", as
+#   the stone/Corian stools (3 kitchen quartz,        -> [countertops] "quartz-counter" /
+#   5 Corian since 2026-10-22)                           "solid-surface-fabricated", as
 #                                                       area (takeoff/countertops.py); their
 #                                                       apron/jamb/casing work stays here
 # ~$18-45 of the old band was stool stock, so the row goes to $55-125. It stays PER WINDOW

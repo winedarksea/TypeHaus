@@ -179,13 +179,15 @@ KOHLER_CAXTON_BASIN = Product(
            "Caxton's softer sweep wipes in one motion. It is the less designed bowl and the "
            "more cleanable one.",
 )
-# RM-M-BATH2's one-piece deck, faces, splash, vanity top and stool (notes/bath2_tub_deck_finish.md).
+# RM-M-BATH2's one-piece deck, faces, splash, vanity top and stool (notes/bath2_tub_deck_finish.md),
+# and RM-S-PLANT's four window stools (2026-10-22).
 CORIAN_GLACIER_WHITE = Product(
     tag="PROD-CORIAN-GLACIER-WHITE", brand="Corian", model="Glacier White",
     name="Corian Glacier White or HI-MACS/Staron equal, 12 mm acrylic solid surface, shop-fabricated",
     source="Owner selection 2026-10-22, against a physical chip beside Swanstone Carrara. "
            "HI-MACS or Staron solid white of the same 12 mm acrylic class is an accepted "
-           "equivalent. One fabricator and one lot for every Bath2 piece. Fabrication per "
+           "equivalent. One fabricator and one lot for every Bath2 piece and the four "
+           "plant-room window stools (moved off quartz for UV, 2026-10-22). Fabrication per "
            "Corian bulletins: >= 1/2 in. inside radius on L/U pieces, >= 3/16 in. on "
            "cutouts, router-cut only (notes/bath2_tub_deck_finish.md).",
 )

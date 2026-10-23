@@ -31,7 +31,7 @@ from params import (breezeway, driveway, entry_band_brace, foundations, hp1_nort
                     second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, bath1_storage,
-                  decking_selection, handrail_types, mirrors, mirror_types,
+                  decking_selection, plant_liner_selection, handrail_types, mirrors, mirror_types,
                   bath_accessories, bath_accessory_types, backing_bath_accessories,
                   towel_accessories, towel_accessory_types, backing_towel_accessories,
                   bath1_storage_types, bedroom_wardrobe_types, study_nook, study_nook_types,
@@ -59,7 +59,8 @@ requires_engine = ">=0.1,<0.2"
 PROJECT_UUID = uuid.UUID("c471a000-93b5-4e6e-8f5a-000000000002")
 
 _library = Library(
-    materials=(*decking_selection.with_selected_decking(assemblies.MATERIALS),
+    materials=(*plant_liner_selection.with_selected_liner(
+                   decking_selection.with_selected_decking(assemblies.MATERIALS)),
                *plant_types.FOLIAGE_MATERIALS),
     assemblies=tuple(assemblies.ASSEMBLIES),
     # Brand and model for the products this house has actually chosen — identity only,

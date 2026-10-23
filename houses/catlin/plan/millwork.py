@@ -33,10 +33,10 @@ from typehaus.model import (
 # The one declaration. Scope is EXT_2X6 alone — 34 of the 41 windows are in scope:
 # The kitchen's three are quartz (plan/countertops.py); the east living-room three are ash
 # (plan/living_east_run.py). The rest derive bought white oak unless plan/window_stools.py
-# names a room override (walnut, quartz, locust, ash, cherry, or white oak in circulation).
+# names a room override (walnut, Corian, locust, ash, cherry, or white oak in circulation).
 #   * PLANT_EXT_2X6_HUMID (4) is the plant room, which runs at 70% RH by design. Oak in
 #     that room is a cupped stool and a black tannin stain, so those four are authored
-#     3 cm quartz remnants instead (PLANT_STOOLS, plan/countertops.py).
+#     Corian instead (PLANT_STOOLS, plan/countertops.py).
 #   * SAUNA_LINER_ON_GARDEN_FRAMED (1) is lined in basswood for a burn-safety reason
 #     (low-conductivity species, plan/assemblies.py) that a hardwood stool would defeat, so
 #     its stool is authored in clear cedar (`cedar-sauna-stool`, plan/window_stools.py).

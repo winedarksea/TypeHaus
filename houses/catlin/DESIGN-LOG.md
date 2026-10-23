@@ -14,6 +14,26 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Plant room UV review: Corian stools, a named PVC liner (2026-10-22)
+
+A materials review flagged UV in RM-S-PLANT.
+
+- **Stools.** The four were 3 cm quartz remnants and sit at south/west glass in full sun.
+  Quartz resin yellows under UV, and Wilsonart and HanStone exclude UV exposure from their
+  warranties. They moved to Corian Glacier White, the Bath2 lot (9.55 SF from quartz to
+  `solid-surface-fabricated`). Granite remnants and Dekton were offered; the owner took the
+  Corian match. The kitchen's three stay quartz: north/east glass, and they match the tops.
+- **Walls.** The reviewer suggested 1/4"–5/16" painted architectural fiber cement or
+  ASA-capped WPC slats. Both were rejected:
+  - fiber cement: weight, sealed joints and repainting in a misted room, and a thinner
+    layer that moves room polygons;
+  - WPC slats: grooves trap dirt and water, and cut ends expose a wood-flour core.
+- **PVC kept, and named.** Sun reaches only patches of the north/east partitions, through
+  low-E glass. Extrutech P1600 white (exterior-grade PVC, ESR-4583) is the basis of
+  design, with Trusscore Wall&CeilingBoard white as an accepted equal, one brand per room.
+  The price row moved to $3.00–4.50/SF, and its stale 445.2 SF read 565.8 SF.
+  `notes/plant_room.md`.
+
 ## Bath2 tub deck: one bonded Corian piece; SEKTION vanity (2026-10-22)
 
 The tiled deck left a thin U around the rim: 2½" W, 2" N, 8½" S, ⅛" E. Tiled, that U was

@@ -27,6 +27,8 @@ source:
   - plan/electrical.py
   - plan/plant_room.py
   - plan/plant_room_types.py
+  - plan/plant_liner_selection.py
+  - plan/countertops.py
 ---
 
 ## Sheet notes
@@ -44,11 +46,15 @@ source:
 ### Keyed
 - [K1] Lap the floor cove up the wall and terminate it behind the wall membrane.
 - [K2 @ host#layer:humid-membrane:out] Membrane continuous from wall to ceiling at the perimeter; seal each penetration.
-- [K3] Drained sill pan under each unit: sloped, flashed into the wall membrane, draining to the room and never into framing.
+- [K3] Drained sill pan under each unit: sloped, flashed into the wall membrane, over the Corian stool, draining to the room, never into framing.
 - [K4 @ host#layer:liner-furring:out] Keep the 3/4" furring gap open behind the panel; it is the drying path.
 - [K5] Wet-location listed luminaires, gasketed, corrosion-resistant housings.
 - [K6] Receptacles WR-listed and GFCI, in non-metallic gasketed boxes with in-use covers.
 - [K7] Grow tubes listed to UL 8800 per NEC Article 410 Part XVI.
+
+### Spec 06 64 00
+- Extrutech P1600 white, or Trusscore white equal. One brand and its own trims throughout.
+- Ends 1/4" short; stainless screws snug. Heaters and grow tubes 24" off the panel.
 
 ### Spec 07 26 00
 - If this wall is ever built with board insulation, use glass-faced or unfaced polyiso. Never foil-faced.
@@ -170,6 +176,35 @@ extremely low moisture conditions", must be installed at 60–75 °F and 35–55
 Trusscore-class solid PVC is the opposite: 1/2" tongue-and-groove interlocking, concealed
 screw flange, mounts direct to furring with no cellulose substrate, third-party mould-tested
 to ISO 846, explicitly marketed for indoor grow rooms.
+
+### The panel is a named product (2026-10-22)
+
+A materials review asked about UV on the PVC. Answer: keep PVC, name the product
+(`plan/plant_liner_selection.py`, `PROD-EXTRUTECH-P1600`).
+
+- **Basis of design: Extrutech P1600, white, glossy, flat, 1/2" x 16".** It is 100% virgin
+  *exterior-grade* PVC, the only UV-relevant claim anyone in this class publishes. Also:
+  ICC-ES ESR-4583, Class A (FSI 10 / SDI 450), ASTM D3273/D3274, 20-yr warranty on white.
+  Cut to the inch up to 20', so walls and ceiling run in single lengths. ~$3.00/SF.
+- **Accepted equal: Trusscore Wall&CeilingBoard white**, semi-gloss, LRV 0.90, SDI 380,
+  ~$3.90/SF. No UV claim, and its warranty excludes sun discolouration.
+- **One brand for the whole room**, walls and ceiling, with that brand's own trims. The
+  sheens and T&G profiles do not mix.
+- **SDI 450 is exactly IRC R302.9.2's limit.** Confirm it on the current ESR at order.
+- **White, not gray**: most light back onto the plants; matches the white uPVC window
+  frames inside and sets off the black SKUGGRÖNA stands and grow tubes. A touch cooler than
+  the warm-white sheet floor (#f2ede6), accepted.
+- **Install** per Extrutech's panel instructions: ends cut 1/4-5/16" short, seam gap by
+  install temperature, stainless screws snug, not tight. **PVC heat-distorts at 120 F**:
+  keep heaters and the grow tubes 24" off it. Confirm support spacing against ESR-4583;
+  the furring is 1x4 at 16" o.c.
+
+**UV is a cosmetic risk here, not a durability one.** Sun reaches only patches on the north
+and east partitions, through triple low-E glass (SHGC 0.39) that stops most UV. The worst
+case is yellowing on a few replaceable T&G panels; UV film on the glass is the fallback.
+Rejected: painted 5/16" fiber cement (weight, sealed joints and repainting in a misted room,
+and a thinner layer that moves room polygons) and ASA-capped WPC slats (grooves hold dirt
+and water; cut ends expose a wood-flour core to 70% RH).
 
 ### The panel is *not* the vapour barrier
 
@@ -347,8 +382,11 @@ over TPO/EPDM. The sheet plus the sealed base toe is the waterproofing.
   and no room on this storey's SW corner carries an egress duty.
 - **Drained sill pan** under each unit: sloped, flashed into the wall membrane, draining to
   the room, never into framing. Drawn by `TR-CATLIN-PLANT-OPENING`.
-- **Window stools are 3 cm quartz remnants, not oak** (owner, 2026-09-28; `PLANT_STOOLS` in
-  `plan/countertops.py`): the pan laps over the stool's back edge, so the stone discharges it.
+- **Window stools are Corian Glacier White, not oak or quartz** (owner, 2026-10-22; 3 cm
+  quartz remnants from 2026-09-28; `PLANT_STOOLS` in `plan/countertops.py`): 12 mm with a
+  built-up eased front, the same lot as RM-M-BATH2. They sit at south/west glass in full
+  sun, quartz resin yellows under UV, and quartz warranties exclude UV. The pan laps over
+  the stool's back edge, so the impervious Corian discharges it.
 - **Keep the glass-wash airflow.** `REG-S-HP-PLANT`'s throw washes the south glass, and that
   function survives the damper retype below.
 - **`D-S-DECK-W` IS DELETED (2026-09-03), and `WIN-S-PLANT4` stands on its centre.** A 60"

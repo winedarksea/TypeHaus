@@ -19,7 +19,7 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
     walls = {wall.tag: wall for wall in catlin_model_ro.walls}
     openings = {opening.tag: opening for opening in catlin_model_ro.openings}
     stools = catlin_model_ro.window_stools
-    # 31 wood stools and eight quartz stools.
+    # 31 wood stools, three quartz and five Corian.
     assert len(stools) == 39
     assert len({stool.uid for stool in stools}) == 39
     for stool in stools:
@@ -53,8 +53,11 @@ def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     payload = model_to_dict(catlin_model_ro)
     rows = payload["window_stools"]
     assert len(rows) == 39
-    # Every stool is eased; RM-M-BATH2's Corian one builds its eased edge up (2026-10-22).
-    assert {row["profile"] for row in rows if row["tag"] != "STOOL-WIN-M-BATH2"} == {"eased"}
+    # Every stool is eased; the five Corian ones build their eased edge up (2026-10-22).
+    built_up = {row["tag"] for row in rows if row["material_ref"] == "solid-surface-fabricated"}
+    assert built_up == {"STOOL-WIN-M-BATH2", *(f"STOOL-WIN-S-PLANT{n}" for n in range(1, 5))}
+    assert {row["profile"] for row in rows if row["tag"] in built_up} == {"built-up eased"}
+    assert {row["profile"] for row in rows if row["tag"] not in built_up} == {"eased"}
     assert {row["material_ref"] for row in rows} == {
         "oak-stool", "quartz-counter", "ash-stool-6q", "locust-stool-5q",
         "cherry-stool-5q", "cedar-sauna-stool", "walnut-stool-5q", "solid-surface-fabricated"}

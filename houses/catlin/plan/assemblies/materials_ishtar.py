@@ -195,7 +195,7 @@ MATERIALS_ISHTAR = [
     # WP-A-STUBATH-SURR's panel (RM-M-BATH2's until 2026-10-12, when it took
     # `solid-surface-panel` below). Everything said here applies to both.
     #
-    # **Not `pvc-panel`.** That tag is RM-S-PLANT's Trusscore liner and is priced over 445.8
+    # **Not `pvc-panel`.** That tag is RM-S-PLANT's Extrutech P1600 liner and is priced over 565.8
     # SF; folding 47 SF of a different product into it would make both unseparable and would
     # price a bathroom surround at a greenhouse liner's rate. This is its own tag so the
     # owner's selection (see prices.toml) lands on one line.
@@ -227,7 +227,7 @@ MATERIALS_ISHTAR = [
              name="Fabricated acrylic solid surface (12 mm), Corian Glacier White or HI-MACS/Staron equal",
              r_per_inch=0.0, density=1700.0, hatch="stone", color="#f4f5f4",
              product_ref="PROD-CORIAN-GLACIER-WHITE",
-             source="RM-M-BATH2 tub deck, faces, splash, vanity top and stool, owner selection 2026-10-22: Corian Glacier White or HI-MACS/Staron equal; fabricated and bonded with colour-matched joint adhesive"),
+             source="RM-M-BATH2 tub deck, faces, splash, vanity top and stool, and RM-S-PLANT's four window stools (UV, 2026-10-22), owner selection 2026-10-22: Corian Glacier White or HI-MACS/Staron equal; fabricated and bonded with colour-matched joint adhesive"),
     # The above-grade foundation band on BASEMENT_8/_12: a trowel-applied acrylic
     # coating over the exposed XPS, on the Styro Industries Tuff II product data
     # (styro.net / totalwall.com "Applying TUFF II Over Rigid Foam & ICF"). It is the option

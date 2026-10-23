@@ -30,6 +30,7 @@ from plan.bed_reading_corner_types import BED_READING_CORNER_PRODUCTS
 from plan.bedroom_wardrobe_types import BEDROOM_WARDROBE_PRODUCTS
 from plan.closet_types import CLOSET_PRODUCTS
 from plan.decking_selection import TREX_TIDE_POOL_PRODUCT
+from plan.plant_liner_selection import EXTRUTECH_P1600
 from plan.electrical_floor_types import FLOOR_BOX_PRODUCT
 from plan.kitchen_sink_types import KRAUS_KHU100_32
 from plan.living_east_run_types import LIVING_EAST_RUN_PRODUCTS
@@ -280,7 +281,7 @@ LEVITON_EV_RECEPTACLE_1450R = Product(
 # One catalog to every ``product_ref`` and to the manifest; two files only because of the
 # 500-line rule.
 PRODUCTS = (
-    TREX_TIDE_POOL_PRODUCT,
+    TREX_TIDE_POOL_PRODUCT, EXTRUTECH_P1600,
     LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER, ISE_BADGER_5, BROAN_BWP1304SS,
     KRAUS_KHU100_32,
     FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,

@@ -108,35 +108,39 @@ SECOND_COUNTERTOPS = [
     ),
 ]
 
-# --- quartz window stools: slab-yard remnants -------------------------------------------
+# --- window stools: plant-room Corian, kitchen quartz -----------------------------------
 #
 # The four plant-room windows sit in PLANT_EXT_2X6_HUMID, which MW-STANDARD leaves out: oak
-# cups and tannin-stains at 70% RH (plan/millwork.py). So each gets a 3 cm remnant of the
-# vanity stone instead, cut by the same yard. All three kitchen windows get matching stone
-# stools. They bill as quartz in [countertops]; `haus millwork` skips them (not
-# custom-milled).
+# cups and tannin-stains at 70% RH (plan/millwork.py). They were 3 cm quartz remnants until
+# 2026-10-22; a materials review moved them to Corian Glacier White, the same lot as
+# STOOL-WIN-M-BATH2. They sit at south/west glass in full sun, a quartz resin binder yellows
+# under UV, and quartz warranties (Wilsonart, HanStone) exclude UV exposure. Acrylic solid
+# surface does not. 12 mm with a built-up eased front, billed as `solid-surface-fabricated`;
+# `haus millwork` skips them (not custom-milled).
 #
 # `depth` is derived from the wall, as the oak ones are. Same 3/4" overhang and 1" horn.
 # DRAINAGE: the sill pan (TR-CATLIN-PLANT-OPENING) laps OVER the stool's back edge and the
-# stone is set with a slight fall to the room, no sealant bead at the back — the impervious
-# stool is the pan's discharge surface, not a dam. Kerf a drip under the eased front edge.
+# Corian is set with a slight fall to the room, no sealant bead at the back — the impervious
+# stool is the pan's discharge surface, not a dam. Kerf a drip under the built-up front and
+# leave Corian's expansion gap at the jamb returns.
 PLANT_STOOLS = [
     WindowStool(uid="XP74RX3EKK", tag="STOOL-WIN-S-PLANT1", window_ref="WIN-S-PLANT1",
-                material_ref="quartz-counter", thickness=inch(1.181),
-                overhang=inch(0.75), horn=inch(1), profile="eased"),
+                material_ref="solid-surface-fabricated", thickness=inch(0.472),
+                overhang=inch(0.75), horn=inch(1), profile="built-up eased"),
     WindowStool(uid="TCHNPGC1RT", tag="STOOL-WIN-S-PLANT2", window_ref="WIN-S-PLANT2",
-                material_ref="quartz-counter", thickness=inch(1.181),
-                overhang=inch(0.75), horn=inch(1), profile="eased"),
+                material_ref="solid-surface-fabricated", thickness=inch(0.472),
+                overhang=inch(0.75), horn=inch(1), profile="built-up eased"),
     WindowStool(uid="W86GNRQ4ZW", tag="STOOL-WIN-S-PLANT3", window_ref="WIN-S-PLANT3",
-                material_ref="quartz-counter", thickness=inch(1.181),
-                overhang=inch(0.75), horn=inch(1), profile="eased"),
+                material_ref="solid-surface-fabricated", thickness=inch(0.472),
+                overhang=inch(0.75), horn=inch(1), profile="built-up eased"),
     WindowStool(uid="YRS03M2AJW", tag="STOOL-WIN-S-PLANT4", window_ref="WIN-S-PLANT4",
-                material_ref="quartz-counter", thickness=inch(1.181),
-                overhang=inch(0.75), horn=inch(1), profile="eased"),
+                material_ref="solid-surface-fabricated", thickness=inch(0.472),
+                overhang=inch(0.75), horn=inch(1), profile="built-up eased"),
 ]
 
-# The sink and corner pair share the countertop's quartz for one continuous kitchen palette.
-# Match the plant-room stools' 3 cm stone and eased edge; depth follows each host wall.
+# The sink and corner pair share the countertop's 3 cm quartz and eased edge for one
+# continuous kitchen palette; depth follows each host wall. North and east glass, little
+# direct sun: they stay stone (2026-10-22 review).
 KITCHEN_STOOLS = [
     WindowStool(uid="N7C4V2M8QK", tag="STOOL-WIN-M-KITCH", window_ref="WIN-M-KITCH",
                 material_ref="quartz-counter", thickness=inch(1.181),

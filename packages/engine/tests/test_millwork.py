@@ -60,7 +60,7 @@ def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
 def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catlin_model_ro):
     """13 windows derive white oak; two authored circulation stools use the same stock.
 
-    The plant room's four and kitchen's three are quartz, RM-M-BATH2's is Corian (2026-10-22);
+    The kitchen's three are quartz; RM-M-BATH2's and the plant room's four are Corian (2026-10-22);
     the other room overrides select walnut, ash, locust, cherry and cedar.
     """
     derived = [stool for stool in stools if stool.derived]
@@ -74,7 +74,8 @@ def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catli
     authored = {stool.window_ref: stool for stool in stools if not stool.derived}
     east = {"WIN-M-LIV-E1", "WIN-M-LIV-E2", "WIN-M-DINING-E"}
     kitchen = {"WIN-M-KITCH", "WIN-M-KITCH-N", "WIN-M-KIT-E"}
-    quartz = {*(f"WIN-S-PLANT{n}" for n in range(1, 5)), *kitchen}
+    plant = {f"WIN-S-PLANT{n}" for n in range(1, 5)}
+    corian = {*plant, "WIN-M-BATH2"}
     species = {
         **{f"WIN-M-BED-{suffix}": "walnut-stool-5q" for suffix in ("W1", "W2", "S1", "S2")},
         **{ref: "locust-stool-5q" for ref in ("WIN-M-BATH1-W", "WIN-S-BATH-W",
@@ -84,13 +85,13 @@ def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catli
         "WIN-S-HALL-N": "oak-stool", "WIN-S-STAIR-N": "oak-stool",
         "WIN-B-SAUNA": "cedar-sauna-stool",
         **{ref: "ash-stool-6q" for ref in east},
-        **{ref: "quartz-counter" for ref in quartz},
-        "WIN-M-BATH2": "solid-surface-fabricated",
+        **{ref: "quartz-counter" for ref in kitchen},
+        **{ref: "solid-surface-fabricated" for ref in corian},
     }
     assert {ref: stool.material_ref for ref, stool in authored.items()} == species
     assert {stool.window_ref: stool.assembly for stool in authored.values()
-            if stool.window_ref in quartz | east | {"WIN-M-BATH2"}} == {
-        **{f"WIN-S-PLANT{n}": "PLANT_EXT_2X6_HUMID" for n in range(1, 5)},
+            if stool.window_ref in kitchen | corian | east} == {
+        **{ref: "PLANT_EXT_2X6_HUMID" for ref in plant},
         **{ref: "EXT_2X6" for ref in kitchen | east | {"WIN-M-BATH2"}},
     }
     # Every stool off the mill is 5/4 at 1", except the living room's ash: 6/4 at 1 1/4".
