@@ -66,12 +66,16 @@ class Part(TypedDict):
     points: tuple[Point, ...]
     shape: str  # box, prism, or a supported oriented primitive
     mesh: NotRequired[PartMesh]
+    material_ref: NotRequired[str]
 
 
 # Linear RGBA, matching the convention ``emit/gltf/emitter._PALETTE`` already uses: the same
 # numbers feed a glTF baseColorFactor and (via ``part_hex``) a three.js material, so viewer
 # and export cannot disagree about what a cushion looks like.
 PART_COLORS: dict[str, tuple[float, float, float, float]] = {
+    "carrara": (0.925, 0.922, 0.910, 1.0),
+    "chrome": (0.78, 0.80, 0.82, 1.0),
+    "seal": (0.85, 0.88, 0.89, 0.65),
     "upholstery": (0.55, 0.56, 0.58, 1.0),
     "cushion": (0.68, 0.69, 0.70, 1.0),
     "wood": (0.70, 0.52, 0.33, 1.0),
@@ -173,6 +177,7 @@ DEPTH_CYLINDER_SEGMENTS = 64
 # The silvered backing is opaque and polished, unlike translucent window glass.
 MIRROR_SURFACE_PROPERTIES = {"metalness": 1.0, "roughness": 0.08}
 PART_SURFACE_PROPERTIES = {
+    "chrome": {"metalness": 1.0, "roughness": 0.12},
     "mirror": MIRROR_SURFACE_PROPERTIES,
     "brushed-nickel": {"metalness": 0.85, "roughness": 0.32},
 }

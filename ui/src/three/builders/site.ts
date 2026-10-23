@@ -18,6 +18,8 @@ import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces
 import { applyPieceGrainUv, boardBoxGeometry, pieceSeed, woodMaterialsForGeometry } from "../woodPiece";
 import { boardStyleFor } from "./millwork";
 import { createModelPartMeshGeometry } from "../modelPartMesh";
+import { applyPlankPlaneUv } from "../plankMaterial";
+import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
 import {
   DEFAULT_EARTH_OPACITY, DEFAULT_EARTH_TONE, EARTH_TONE_HEX, type EarthTone,
 } from "../../state/vocabulary";
@@ -220,12 +222,14 @@ export function buildCanvasObjectParts(
   const materials = new Map<string, THREE.Material>();
   for (const [index, part] of parts.entries()) {
     const board = boardStyleFor(part.material_ref, catalog);
+    const marble = !board && isVeinedMarble(authoredAppearance(part.material_ref, catalog)?.finish);
     const opacity = part.opacity ?? 1;
     const key = `${board ? board.key : ""}|${part.material_ref}|${part.color}|${opacity}|${part.metalness}|${part.roughness}`;
     let material = materials.get(key);
     if (!material) {
       material = board ? createPlankMaterial(mode, board, part.color, part.roughness,
         authoredAppearance(part.material_ref, catalog))
+        : marble ? createMarbleMaterial(mode, part.color, 0.3)
         : standardMaterial(new THREE.Color(part.color), mode,
           { roughness: mode === "nordic" ? (part.roughness ?? NORDIC_ROUGHNESS.massing) : 1,
             metalness: mode === "nordic" ? (part.metalness ?? 0) : 0 });
@@ -266,6 +270,9 @@ export function buildCanvasObjectParts(
       ? boardBoxGeometry(new THREE.Matrix4().makeTranslation(cx, cz, -cy)
         .scale(new THREE.Vector3(sx, sz, sy)), board, seed) : null;
     const geometry = curvedMesh ?? ring ?? depthCylinder ?? box ?? new THREE.BoxGeometry(sx, sz, sy);
+    if (marble) {
+      applyPlankPlaneUv(geometry, [0, 0], [1, 0], [MARBLE_TILE_M, MARBLE_TILE_M]);
+    }
     const mesh = makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry));
     if (!ring && !box && !curvedMesh) mesh.position.set(cx, cz, -cy);
     mesh.userData.uid = item.uid;

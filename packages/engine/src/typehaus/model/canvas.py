@@ -162,6 +162,8 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
         # ``role: counter`` lets a viewer drop the symbol's counter under a drawn slab.
         "model_parts": [{"center": list(part["center"]), "size": list(part["size"]),
                          **_wood_part(_lamp(part["color"], lamp), wood),
+                         **({"material_ref": part["material_ref"]}
+                            if "material_ref" in part else {}),
                          **({"role": "counter"} if part["color"] == "counter" else {}),
                          **({"shape": part["shape"], "radial_segments": DEPTH_CYLINDER_SEGMENTS}
                             if part["shape"] == "cylinder-depth" else {}),

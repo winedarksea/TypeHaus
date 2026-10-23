@@ -353,9 +353,11 @@ export function buildPaneling(parent: THREE.Group, band: Paneling, center: PlanC
   const plankStyle = plankStyleOrNull(band.material_ref,
     authoredAppearance(band.material_ref, materials)?.finish,
     authoredAppearance(band.material_ref, materials)?.species);
+  const marble = !plankStyle && isVeinedMarble(authoredAppearance(band.material_ref, materials)?.finish);
   const material = plankStyle
     ? createPlankMaterial(mode, plankStyle, materialColor(band.material_ref, palette, materials),
       undefined, authoredAppearance(band.material_ref, materials))
+    : marble ? createMarbleMaterial(mode, materialColor(band.material_ref, palette, materials), 0.3)
     : standardMaterial(
       new THREE.Color(materialColor(band.material_ref, palette, materials)), mode);
   // UVs off the GROSS band's axis and base, so the boards stay in phase across a door.
@@ -369,6 +371,8 @@ export function buildPaneling(parent: THREE.Group, band: Paneling, center: PlanC
       // applied OVER a finished wall rather than fastened to furring, so there is no furring
       // layer for `board_run` to derive from — and vertical is what a board wainscot is.
       applyPlankWallUv(geometry, axis, center, plankTileSizeM(plankStyle), bandZ0, "vertical");
+    } else if (marble) {
+      applyPlankWallUv(geometry, axis, center, [MARBLE_TILE_M, MARBLE_TILE_M], bandZ0, "vertical");
     }
     parent.add(makeSurfaceMesh(geometry, material));
   }

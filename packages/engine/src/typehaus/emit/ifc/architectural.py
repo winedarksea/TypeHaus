@@ -659,7 +659,7 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
         model_symbol = model_symbol_for(product_type)
         if model_symbol in {
                 "kohler-underscore-6036", "kohler-underscore-6032", "roman-tub-filler",
-                "solid-surface-vanity"}:
+                "solid-surface-vanity", "swanstone-flex-3636"}:
             from typehaus.emit.ifc.placeable_parts import parts_representation
             from typehaus.model.placeable_symbols import model_parts
 

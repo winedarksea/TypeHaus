@@ -33,6 +33,7 @@ from typehaus.model.placeable_symbols._frame import (
     part_hex,
 )
 from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
+from typehaus.model.placeable_symbols._swanstone_flex import swanstone_flex
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS
 from typehaus.model.placeable_symbols.furniture import FURNITURE_SYMBOLS
 from typehaus.model.placeable_symbols.lighting import LIGHTING_SYMBOLS
@@ -46,7 +47,8 @@ __all__ = ["SYMBOL_NAMES", "PART_COLORS", "Part", "Stroke", "lamp_role", "model_
 Builder = Callable[[float, float, float], tuple[tuple[Stroke, ...], tuple[Part, ...]]]
 
 _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLUMBING_SYMBOLS,
-                                 **LIGHTING_SYMBOLS, **KITCHEN_SEKTION_SYMBOLS}
+                                 **LIGHTING_SYMBOLS, **KITCHEN_SEKTION_SYMBOLS,
+                                 "swanstone-flex-3636": swanstone_flex}
 
 # The frozen vocabulary. A catalog entry may only name a symbol listed here; the contract test
 # holds the registry to it in both directions.
@@ -98,7 +100,7 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset({
     "kohler-underscore-6036", "kohler-underscore-6032",
     # "roman-tub-filler" is a bath's deck trim, placed on the deck beside the rim.
     "roman-tub-filler",
-    "tub-shower", "shower",
+    "tub-shower", "shower", "swanstone-flex-3636",
     # "shower-neo-angle" is the square pan with its room-facing corner off at 45 deg. It is
     # its own name rather than a flag on "shower" because the cut is a plan outline a person
     # walks past, not a finish: the glyph, the massing and the catalog ``footprint_shape``

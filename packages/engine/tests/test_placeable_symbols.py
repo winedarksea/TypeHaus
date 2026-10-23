@@ -68,6 +68,9 @@ def test_parts_stay_inside_the_declared_box_and_name_a_real_colour(
     # is explicit; all other symbols continue to promise a finished-product envelope.
     projection = 2 * 0.0254 if symbol.startswith("sektion-axstad-kitchen-") else 0.0
     side_projection = projection if symbol.endswith("corner-wall") else 0.0
+    if symbol == "swanstone-flex-3636":
+        # The separately supported return/post sits on the adjacent tub deck.
+        side_projection = width * 1.5 / 36
     for part in parts:
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         assert part["color"] in PART_COLORS

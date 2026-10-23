@@ -43,7 +43,7 @@ def parts_representation(f, body, parts, center, rotation, z_base):
         rgb = f.createIfcColourRgb(None, *color[:3])
         shading = f.create_entity("IfcSurfaceStyleShading", SurfaceColour=rgb,
                                   Transparency=1 - color[3])
-        style = f.create_entity("IfcSurfaceStyle", Name=part["color"], Side="BOTH",
+        style = f.create_entity("IfcSurfaceStyle", Name=part.get("material_ref", part["color"]), Side="BOTH",
                                 Styles=[shading])
         f.create_entity("IfcStyledItem", Item=item, Styles=[style])
         items.append(item)

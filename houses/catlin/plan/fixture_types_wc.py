@@ -28,6 +28,8 @@ from library.placeables.fixtures import (
 )
 
 from typehaus.model import FixtureType, Footprint2D, Mount, MountKind, Service, ft, inch, m, pt
+from typehaus.model.placeable_symbols._swanstone_flex_config import BATH2_SHOWER
+from typehaus.model.placeables import ModelRepresentation
 from typehaus.model.placeable_symbols.plumbing import NEO_ANGLE_CUT_FRACTION, neo_angle_points
 
 # ---------------------------------------------------------------------------
@@ -176,6 +178,8 @@ TOTO_DRAKE = FixtureType(
 # text and the prices.toml row carry the glass, as on FX-SHOWER-36-NEO-COMBO.
 SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
     "tag": "FX-SHOWER-36-THERMO-COMBO",
+    "height": inch(BATH2_SHOWER.model_height),
+    "model_representation": ModelRepresentation(symbol="swanstone-flex-3636"),
     "name": 'Shower, 36", thermostatic valve with a two-in-one rainshower combo',
     "product_ref": "PROD-DELTA-T17T",
     "source": 'RM-M-BATH2, owner selection 2026-10-12, replacing FX-SHOWER-36-DIVERTED. '
