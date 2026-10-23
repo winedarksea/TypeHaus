@@ -777,14 +777,14 @@ HYDRANT_BRANCH_MAIN = [
 # suits a filtered tap as well as the 1/4" an ice maker wants.
 #
 # The pantry's south wall now contains the west-parking Eclisse cassette. This route
-# stays in the perpendicular walls and crosses the pantry at 8'-6", above the pocket.
+# stays in the perpendicular walls and crosses the pantry at 8'-4", above the pocket.
 # No pipe or fastener may enter the cassette (notes/pocket_frame_eclisse.md).
 #
 # THE CORNER IT WOULD CROSS IS A ROOM NOW, so there is no cabinet-back path left there. That
 # is the honest cost of the pantry, not a routing failure: the run's whole premise was
 # "behind removable cabinet backs the whole way", and between x=18'-0" and 24'-4" the
 # cabinets that made that true have become RM-M-PANTRY. So the crossing is made where a
-# plumber would actually make it — UP into the framing at each end, ACROSS at 8'-6",
+# plumber would actually make it — UP into the framing at each end, ACROSS at 8'-4",
 # clear over FURN-M-PANTRY-SHELVES' 7'-0" top and under the 9'-0" plate. Six feet of it is
 # exposed in the pantry, above the shelves and out of reach, and every vertical is inside a
 # stud cavity parallel to the studs, boring nothing:
@@ -802,7 +802,7 @@ KITCHEN_STUB_MAIN = [
                   pt(ft(18), ft(31)),
                   pt(ft(18, 9), ft(31))),
             diameter=inch(0.5), material="pex",
-            elevations=(inch(20), inch(20), ft(8, 6), ft(8, 6), ft(2, 6), ft(2, 6),
+            elevations=(inch(20), inch(20), ft(8, 4), ft(8, 4), ft(2, 6), ft(2, 6),
                         ft(2, 6))),
 ]
 

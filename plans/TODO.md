@@ -317,6 +317,7 @@ the future.
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
 - Improve the carpet 3d model and consider a different color as the standard color for catlin house carpet.
 - The bottoms of 3d modeled windows are a bit glitchy in 3d movement, perhaps due to an unnecessary attempt to cast reflections there.
+- Do passes to confirm geometry and dimensions of select products all align together correctly for real world build dimensions.
 
 # Project Management
 

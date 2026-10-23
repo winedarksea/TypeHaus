@@ -234,16 +234,30 @@ def test_a_window_ships_a_four_piece_frame_and_one_glass_pane(starter_model):
         "baseColorFactor"][3] == pytest.approx(0.48)
     assert gltf["materials"][frame[0].material_index]["alphaMode"] == "OPAQUE"
 
-    available_height = min(opening.height_m, wall.z1_m - wall.z0_m - opening.sill_m)
-    frame_width = _frame_width_m(opening, available_height)
+    # A flashed window's unit sits inside its RO, on its pan.
+    seat = opening.window_seat
+    assert seat is not None, "a window in a clad wall is seated on its sill pan"
+    unit_width = opening.width_m - 2 * seat.jamb_inset_m
+    available_height = min(opening.height_m, wall.z1_m - wall.z0_m - opening.sill_m) \
+        - seat.sill_rise_m - seat.head_drop_m
+    frame_width = min(_OPENING_FRAME_FACE_WIDTH_M, unit_width / _OPENING_FRAME_SPAN_DIVISOR,
+                      available_height / _OPENING_FRAME_SPAN_DIVISOR)
     jambs = [s for s in frame if s.height_m == pytest.approx(available_height, abs=_DIMENSION_TOLERANCE_M)]
     heads = [s for s in frame if s.height_m == pytest.approx(frame_width, abs=_DIMENSION_TOLERANCE_M)]
     assert len(jambs) == 2, "two full-height jambs"
     assert len(heads) == 2, "a head and a sill, each one frame-width tall"
     for head in heads:
-        assert head.plan_dimensions_m[1] == pytest.approx(opening.width_m, abs=_DIMENSION_TOLERANCE_M)
+        assert head.plan_dimensions_m[1] == pytest.approx(unit_width, abs=_DIMENSION_TOLERANCE_M)
     assert panes[0].plan_dimensions_m[1] == pytest.approx(
-        opening.width_m - 2 * frame_width, abs=_DIMENSION_TOLERANCE_M)
+        unit_width - 2 * frame_width, abs=_DIMENSION_TOLERANCE_M)
+    # The apron's top is the RO bottom: the casing frames the RO, the unit bears on the pan.
+    def bottom(solid):
+        return solid.center[1] - solid.height_m / 2
+
+    apron = min(trim, key=bottom)
+    sill = min(heads, key=bottom)
+    assert bottom(sill) - (bottom(apron) + apron.height_m) == pytest.approx(
+        seat.sill_rise_m, abs=_DIMENSION_TOLERANCE_M)
 
 
 def test_a_single_operation_door_ships_one_full_width_panel(starter_model):

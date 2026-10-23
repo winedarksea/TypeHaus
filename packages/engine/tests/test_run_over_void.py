@@ -224,8 +224,8 @@ def test_the_worst_graded_run_leaves_a_documented_margin(catlin_model):
     """If this shrinks to nothing, the threshold has stopped meaning anything and somebody
     should look at the run rather than at the number.
 
-    Looked at on 2026-10-01: ``PR-B-CW-BATH`` leads at 2.42 after the water-heater cold
-    branch was rerouted. The coldstore stub (2.41) is next, then ``DU-A-ERV-R-BED3`` (2.26).
+    Looked at on 2026-10-23: the coldstore stub leads at 2.47 since it tees off the kitchen
+    cold at 20" (it was 2'-6"). ``PR-B-CW-BATH`` (2.42) is next.
     """
     from typehaus.takeoff.runs import run_schedule
 
@@ -234,5 +234,5 @@ def test_the_worst_graded_run_leaves_a_documented_margin(catlin_model):
               if r["ratio"] is not None and r["developed_ft"] >= 20
               and terminals.get(r["tag"], 0) < 3]
     worst = max(graded, key=lambda r: r["ratio"])
-    assert worst["tag"] == "PR-B-CW-BATH"
-    assert worst["ratio"] == pytest.approx(2.42, abs=0.01)
+    assert worst["tag"] == "PR-M-CW-COLDSTORE-STUB"
+    assert worst["ratio"] == pytest.approx(2.47, abs=0.01)
