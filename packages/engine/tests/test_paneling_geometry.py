@@ -167,7 +167,7 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
                            "WP-M-BATH2-TUBDK-APRON", "WP-M-BATH2-TUB-SPLASH"}
     # The range backsplash: an authored sheet thickness wins over the material's stock.
     (splash,) = by_tag["WP-M-KIT-BACKSPLASH"]
-    assert splash.thickness_m == pytest.approx(0.0008, abs=1e-9)
+    assert splash.thickness_m == pytest.approx(0.004, abs=1e-9)
     assert splash.run_m == pytest.approx(1.0, abs=1e-6)
     # The mudroom's three east-facing walls to 6'-0"; W-M-MECH-E is the L's inner-corner
     # wall that a single room-wide interior point once put on the closet's face.
@@ -379,7 +379,9 @@ def test_a_tub_knee_wall_band_reaches_its_deck_top_and_an_ordinary_wall_does_not
     from typehaus.resolve.paneling import _knee_wall_deck_tops
 
     tops = _knee_wall_deck_tops(catlin_model.plan, catlin_model)
-    deck = max(s.z1_m for s in catlin_model.solids if s.tag == "SL-M-TUBDK")
+    # The finished top is the Corian `slab_finish` solid over the structure.
+    deck = max(s.z1_m for s in catlin_model.solids if s.tag.startswith("SL-M-TUBDK"))
+    assert deck == pytest.approx(22.75 * _IN, abs=1e-6)
     assert tops == pytest.approx({"W-M-TUBDK-W": deck, "W-M-TUBDK-S": deck})
     for wall_tag in tops:
         wall = catlin_model.wall(wall_tag)

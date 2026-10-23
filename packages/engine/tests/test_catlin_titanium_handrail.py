@@ -102,7 +102,7 @@ def test_the_note_r301_5_hand_calc():
 
 def test_the_backsplash_is_two_uncut_sheets_behind_the_range(catlin_model_ro):
     (band,) = [p for p in catlin_model_ro.panelings if p.tag == "WP-M-KIT-BACKSPLASH"]
-    assert band.thickness_m == pytest.approx(0.0008, abs=1e-9)
+    assert band.thickness_m == pytest.approx(0.004, abs=1e-9)  # hem + adhesive bed
     assert band.run_m == pytest.approx(1.0, abs=1e-6)            # two 1000 mm sheets wide
     assert band.band_z1_m - band.band_z0_m == pytest.approx(1.0, abs=1e-6)  # two 500 tall
     assert band.area_m2 * 10.7639 == pytest.approx(10.76, abs=0.01)

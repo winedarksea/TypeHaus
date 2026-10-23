@@ -46,6 +46,7 @@ from typehaus.quantities import M_PER_IN, m, pt
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals, slice_part
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_plane_z
+from typehaus.resolve.slab_layers import FINISH_CATEGORY as SLAB_FINISH_CATEGORY
 from typehaus.resolve.solid_categories import in_slab_family
 
 # ``section.py`` is the name every caller — the CLI, the server, the detail package and the
@@ -98,7 +99,8 @@ def build_section(model: ResolvedModel, view: Slice, joints=None,
     for solid in model.solids:
         # A marker for a part billed elsewhere is not a thing the section cuts through: a
         # 1/4" tie in a wall cut is noise, and drawing it would move all 86 section goldens.
-        if solid.derived:
+        # A slab's lifted FINISH run is derived too, but it is cut material (a Corian top).
+        if solid.derived and solid.category != SLAB_FINISH_CATEGORY:
             continue
         _emit_solid_cut(b, model, solid, plane, crop)
 

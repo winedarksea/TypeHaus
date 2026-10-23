@@ -1,3 +1,4 @@
+from typehaus.resolve.paneling import _FLUSH_REVEAL_M
 """BATH2's stock front, supported custom return, and molded pan drain."""
 
 import ifcopenshell
@@ -38,7 +39,8 @@ def test_actual_finished_opening_and_outward_swing(catlin_model_ro):
                        if panel.tag == "WP-M-BATH2-SURR" and panel.wall_tag == "W-M-BDN1")
     south_face = max(point[1] for point in south_panel.outline)
     jamb = place_local([(south, -depth / 2)], fixture.position, fixture.rotation_degrees)[0]
-    assert jamb[1] == pytest.approx(south_face)
+    # A replacing band stands _FLUSH_REVEAL_M proud of the finish plane (z-fighting).
+    assert jamb[1] == pytest.approx(south_face - _FLUSH_REVEAL_M)
     sweep = Polygon(place_local(door_swing_outline(width, depth), fixture.position,
                                 fixture.rotation_degrees))
     vanity = next(obj for obj in model.canvas_objects if obj.tag == "FX-M-BATH2-SINK")

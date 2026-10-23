@@ -118,10 +118,10 @@ def test_every_supply_is_sized_at_125_percent_of_what_it_drives(catlin_model):
     supplies = light_run_takeoff(catlin_model)["supplies"]
     assert supplies
     for supply in supplies:
-        # Both figures are rounded for display, so compare within that rounding rather
-        # than re-deriving one from the other's rounded value.
+        # Both figures are rounded to 0.1 W for display; the error bound is half a step on
+        # each, the connected one scaled by the factor.
         assert supply["required_watts"] == pytest.approx(
-            supply["connected_watts"] * PSU_SIZING_FACTOR, abs=0.1)
+            supply["connected_watts"] * PSU_SIZING_FACTOR, abs=0.05 * (1 + PSU_SIZING_FACTOR) + 1e-9)
         assert supply["adequate"] is True, supply
         assert supply["rated_watts"] >= supply["required_watts"]
     # Two runs share the living-room supply, so its demand is their sum, not the larger.

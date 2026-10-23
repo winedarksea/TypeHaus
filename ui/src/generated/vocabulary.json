@@ -162,6 +162,7 @@
     "slab": 9211793,
     "slab_band": 9211793,
     "slab_deck": 9211793,
+    "slab_finish": 15592422,
     "slab_platform": 9211793,
     "snow_guard": 12106431,
     "soffit": 14737625,
@@ -358,6 +359,7 @@
     "slab": 9211793,
     "slab_band": 9211793,
     "slab_deck": 9211793,
+    "slab_finish": 15592422,
     "slab_platform": 9211793,
     "snow_guard": 12106431,
     "soffit": 14737625,
@@ -602,6 +604,9 @@
     "slab_deck": [
       "concrete"
     ],
+    "slab_finish": [
+      "millwork"
+    ],
     "slab_platform": [
       "concrete"
     ],
@@ -719,6 +724,7 @@
     "slab": "concrete",
     "slab_band": "concrete",
     "slab_deck": "concrete",
+    "slab_finish": "millwork",
     "slab_platform": "concrete",
     "snow_guard": "roofing",
     "soffit": "drywall",

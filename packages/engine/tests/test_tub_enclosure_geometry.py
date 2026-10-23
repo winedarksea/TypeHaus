@@ -186,5 +186,8 @@ def test_occupied_space_includes_the_rim_and_the_whole_framed_deck(catlin_model_
     assert deck_bounds[3]-deck_bounds[1] == pytest.approx(inch(70.24).meters)
     assert Polygon(deck.outline).covers(Polygon(tub.footprint))
     assert tub.body_z1_m-tub.body_z0_m == pytest.approx(inch(21).meters)
-    # The rim is flush with the deck's finished Corian top (2026-10-22; tile above it before).
-    assert tub.body_z1_m == pytest.approx(deck.z1_m)
+    # The rim is flush with the deck's finished Corian top (2026-10-22; tile above it before),
+    # which is drawn as its own `slab_finish` solid over the structure.
+    top = next(s for s in model.solids if s.tag == "SL-M-TUBDK:deck-top")
+    assert top.z0_m == pytest.approx(deck.z1_m)
+    assert tub.body_z1_m == pytest.approx(top.z1_m)

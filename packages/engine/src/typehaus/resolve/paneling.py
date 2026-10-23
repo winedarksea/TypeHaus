@@ -169,7 +169,9 @@ def _knee_wall_deck_tops(plan: PlanModel, model: ResolvedModel) -> dict[str, flo
             spec = getattr(fixture, "tub_enclosure", None)
             if spec is None:
                 continue
-            decks = [solid.z1_m for solid in model.solids if solid.tag == spec.deck_ref]
+            # The deck's top FINISH run is its own `slab_finish` solid (resolve/slab_layers.py).
+            decks = [solid.z1_m for solid in model.solids
+                     if solid.tag == spec.deck_ref or solid.tag.startswith(f"{spec.deck_ref}:")]
             if decks:
                 tops.update(dict.fromkeys(spec.knee_wall_refs, max(decks)))
     return tops

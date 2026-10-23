@@ -30,6 +30,7 @@ DFU_BY_SYMBOL: dict[str, float] = {
     "lavatory": 1.0,
     "lavatory-wall-hung": 1.0,
     "vanity": 1.0,          # a lavatory in a cabinet
+    "solid-surface-vanity": 1.0,  # an integral-bowl top: a lavatory
     "tub": 2.0,
     "kohler-underscore-6036": 2.0,  # same bath load; product geometry is independent
     "kohler-underscore-6032": 2.0,
@@ -65,6 +66,7 @@ WSFU_BY_SYMBOL: dict[str, tuple[float, float, float]] = {
     "lavatory": (1.0, 0.75, 0.75),
     "lavatory-wall-hung": (1.0, 0.75, 0.75),
     "vanity": (1.0, 0.75, 0.75),
+    "solid-surface-vanity": (1.0, 0.75, 0.75),
     "tub": (4.0, 3.0, 3.0),
     "kohler-underscore-6036": (4.0, 3.0, 3.0),
     "kohler-underscore-6032": (4.0, 3.0, 3.0),

@@ -286,6 +286,7 @@ _SOLID_TRADE_CODES: dict[str, CostCode] = {
     "landscaping": CostCode("1100", "32 90 00", "landscaping"),  # the putting green
     "masonry": CostCode("1200", "07 92 00", "masonry"),        # a wythe's sealant joints
     "earth": CostCode("1000", "31 20 00", "earth"),            # terrace fill, slab base
+    "millwork": CostCode("4100", "12 36 00", "millwork"),      # a slab's Corian top
 }
 
 
