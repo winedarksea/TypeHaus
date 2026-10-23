@@ -119,7 +119,7 @@ DRAINS = [
     # pack/concrete face at 35'-4". Clamped to that face: `mep.run_over_void` counts it.
     # West of x=9'-10 3/4" it hangs 1/16" clear of FS-M-MECH's joists.
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(352), inch(416.875)), pt(inch(352), inch(416.875)),
+            path=(pt(inch(352), inch(416.99)), pt(inch(352), inch(416.99)),
                   pt(ft(18), ft(35)), pt(ft(17, 9.25), ft(35, 2.75)),
                   pt(ft(9, 10.75), ft(35, 2.75)), pt(ft(9, 8), ft(35)),
                   pt(ft(6), ft(35)), pt(inch(32.5), ft(35)),

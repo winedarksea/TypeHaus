@@ -28,7 +28,7 @@ def test_catlin_returns_inherit_finishes_and_skip_other_liners(catlin_model_ro):
         layers = walls[reveal.wall_tag].layers
         assert tuple(l.material_ref for l in reveal.layers) == tuple(
             l.material_ref for l in layers[:2])
-        assert reveal.layers[1].thickness_m == pytest.approx(0.0127)
+        assert reveal.layers[1].thickness_m == pytest.approx(layers[1].thickness_m)
     assert sum(r.layers[0].material_ref == 'latex-paint-accent'
                for r in model.window_returns) == 1
     excluded = {o.tag for o in model.openings if o.kind == 'window'} - {
@@ -94,12 +94,14 @@ def test_bom_estimate_csv_and_drywall_bid_bill_each_item_once(catlin_model_ro, r
     assert solid_category('window_return').billed_elsewhere
     assert not any(r['category'] == 'window_return' for r in return_bom['structural_solids'])
     rows = [r for r in return_bom['envelope_layers'] if r['scope'] == 'window return']
-    assert {r['material'] for r in rows} == {'gwb', 'latex-paint', 'latex-paint-accent'}
+    assert {r['material'] for r in rows} == {
+        'gwb', 'gwb-ar', 'gwb-mr', 'latex-paint', 'latex-paint-accent'}
     assert all(not r['also_in_sheet_goods'] for r in rows)
     board_area = sum(l.area_m2 for r in model.window_returns for l in r.layers
                      if not l.coating)
-    assert next(r['net_area_sqft'] for r in rows if r['material'] == 'gwb') == round(
-        board_area / 0.09290304, 1)
+    # The gypsum family: the plain board plus the AR and MR returns, each rounded to 0.1 SF.
+    gypsum = sum(r['net_area_sqft'] for r in rows if r['material'].startswith('gwb'))
+    assert gypsum == pytest.approx(board_area / 0.09290304, abs=0.2)
     beads = return_bom['window_return_beads']
     assert len(beads) == 2
     labels = LabelIndex.from_plan(model.plan)

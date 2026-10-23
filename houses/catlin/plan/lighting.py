@@ -708,7 +708,7 @@ MAIN_LIGHTING = [
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
     LightRun(uid="0ZE5GQV7CQ", tag="LR-M-KIT-N-WE2", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(inch(369.375), ft(34, 3.375)), pt(inch(399.375), ft(34, 3.375))),
+             path=(pt(inch(369.49), ft(34, 3.375)), pt(inch(399.49), ft(34, 3.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),

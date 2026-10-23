@@ -91,7 +91,7 @@ def test_stock_cold_uppers_preserve_hinge_clearance_and_appliance_joint(
         assert (cabinet.body_z0_m - finished_floor_z) / INCH == pytest.approx(73.5)
         assert (cabinet.body_z1_m - finished_floor_z) / INCH == pytest.approx(93.5)
         assert (cabinet.body_z0_m - appliance.body_z1_m) / INCH == pytest.approx(1)
-        assert _bounds(cabinet)[2] == pytest.approx(243.375, abs=0.03125)
+        assert _bounds(cabinet)[2] == pytest.approx(243.26, abs=0.03125)
         assert f"{cabinet.tag}-ST" not in kitchen_objects
     assert (_bounds(freezer)[1], _bounds(freezer)[3]) == pytest.approx((331.75, 361.75))
     assert (_bounds(refrigerator)[1], _bounds(refrigerator)[3]) == pytest.approx(
@@ -120,7 +120,7 @@ def test_sink_centres_on_fixed_window_and_drain_components_move_together(catlin_
     window_x = wall.axis[0][0] - window.center_along_m
     assert sink.position[0] == pytest.approx(window_x)
     plan = catlin_model_ro.plan
-    expected = (352 * INCH, 416.875 * INCH)
+    expected = (352 * INCH, 416.99 * INCH)
     assert objects["APPL-M-DISP"].position == pytest.approx(expected, abs=FINISH_TOLERANCE)
     assert plan.by_tag("FX-M-KITCH-SINK").drain_position.xy_m == pytest.approx(expected)
     assert plan.by_tag("SP-M-KITCH").position.xy_m == pytest.approx(expected)
@@ -140,7 +140,7 @@ def test_single_bowl_opening_fits_offset_base_and_meets_quartz_underside(catlin_
     base = objects["FURN-M-KIT-SINKBASE"]
     top = next(item for item in model.countertops if item.tag == "CT-M-KIT-N")
     hole = Polygon(top.cutouts[0])
-    expected_bounds = tuple(value * INCH for value in (337, 403.375, 367, 420.375))
+    expected_bounds = tuple(value * INCH for value in (337, 403.49, 367, 420.49))
     assert hole.bounds == pytest.approx(expected_bounds, abs=FINISH_TOLERANCE)
     assert hole.area == pytest.approx(30 * 17 * INCH * INCH)
     assert Polygon(base.footprint).buffer(-0.75 * INCH).contains(hole)
@@ -162,7 +162,7 @@ def test_diagonal_corner_closes_to_both_upper_runs(catlin_plan, kitchen_objects)
     assert corner.rotation_degrees == 0
     assert len(corner.footprint) == 5
     assert Polygon(corner.footprint).area < Polygon(corner.footprint).envelope.area
-    assert _bounds(corner) == pytest.approx((399.375, 399.375, 425.375, 425.375), abs=0.03125)
+    assert _bounds(corner) == pytest.approx((399.49, 399.375, 425.49, 425.375), abs=0.03125)
     for neighbor in ("FURN-M-KIT-WE5-ST", "FURN-M-KIT-WN2"):
         assert (
             Polygon(corner.footprint).distance(Polygon(kitchen_objects[neighbor].footprint))

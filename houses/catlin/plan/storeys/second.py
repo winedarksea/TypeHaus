@@ -1393,12 +1393,14 @@ FLOOR_OPENINGS = [
                           pt(inch(25.2), inch(347.5)), pt(inch(19), inch(347.5))),
                  penetration_for=("PR-M-S-BATH1-WC-DRAIN",)),
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
+                 # North edge on W-M-N2's 1/2" face (35'-5 1/2" since 2026-10-23), the same as the
+                 # living room's clear face, or a 1/8" sliver is left uncut under the deck.
                  # West edge on W-M-STRW's 1/2" MDO stair face (10'-3 1/8" since 2026-10-23);
                  # off the wall's face the whole edge reads as unsupported.
                  outline=(pt(ft(10, 3.125), ft(26, 0.375)),
                           pt(ft(17, 8.75), ft(26, 0.375)),
-                          pt(ft(17, 8.75), ft(35, 5.375)),
-                          pt(ft(10, 3.125), ft(35, 5.375))),
+                          pt(ft(17, 8.75), ft(35, 5.5)),
+                          pt(ft(10, 3.125), ft(35, 5.5))),
                  # East edge on W-M-C5's 1/2" gypsum face (17'-8 3/4" since 2026-10-23) and
                  # carried by bearing wall, so it needs no header: W-M-C5
                  # (which since 2026-07-28 starts at N-M-C3 on the stair wall's line, so it

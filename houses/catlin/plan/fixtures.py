@@ -279,11 +279,11 @@ MAIN_FIXTURES = (
     # Window-centred x=352", 5/8" east within the fixed 36" base. The 32x19 flange
     # sits forward of a 3" rear faucet zone in the 32x22 installation envelope.
     # Rim meets the underside of 3 cm quartz: 36 - 1.181 - 10 = 24.819" bowl base.
-    # Rear-centre drain is 4 1/2" forward of the flange rear, at y=416 7/8".
+    # Rear-centre drain is 4 1/2" forward of the flange rear, at y=416.99" (moved 1/8" with the 1/2" board, 2026-10-23).
     Fixture(uid="WZRCBGNDFW", tag="FX-M-KITCH-SINK", type_ref="FX-KITCHEN-SINK-32-SINGLE", room="RM-M-LIVING",
             wall_ref="W-M-N1",
             mount=Mount(kind=MountKind.WALL, elevation=inch(24.819)),
-            drain_position=pt(inch(352), inch(416.875)),
+            drain_position=pt(inch(352), inch(416.99)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-M-N1", face="left", distance_from_start=inch(80), normal_gap=inch(1),
                 rotation_offset=deg(-180)))),

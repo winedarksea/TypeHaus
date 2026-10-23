@@ -93,11 +93,15 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
   if (length < 1e-9) return;
   const direction: [number, number] = [(x1 - x0) / length, (y1 - y0) / length];
   const normal: [number, number] = [-direction[1], direction[0]];
+  const openingCenter: [number, number] = [
+    x0 + direction[0] * opening.center_along_m,
+    y0 + direction[1] * opening.center_along_m,
+  ];
   const pocketOffset = operation === "pocket"
     ? pocketCenterlineOffset(wall, normal[0], normal[1]) : 0;
   const position: [number, number] = [
-    x0 + direction[0] * opening.center_along_m + normal[0] * pocketOffset,
-    y0 + direction[1] * opening.center_along_m + normal[1] * pocketOffset,
+    openingCenter[0] + normal[0] * pocketOffset,
+    openingCenter[1] + normal[1] * pocketOffset,
   ];
   const ro = roughOpening;
   const roHeight = Math.max(0, Math.min(ro.height_m,
@@ -194,7 +198,8 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
   const addHardware: AddBox = (w, h, t, a, e, n) => addBox(w, h, t, a, e, hardwareMaterial, n);
   const glassMaterial = standardMaterial(0x8fb7c9, mode, { transparent: true, opacity: 0.48,
     roughness: 0.2, metalness: 0.05, depthWrite: false });
-  buildDoorway(opening, position, direction, center, parent, (ref, materialKey) =>
+  // Section normal offsets are relative to the wall axis, independent of the pocket leaf.
+  buildDoorway(opening, openingCenter, direction, center, parent, (ref, materialKey) =>
     standardMaterial(new THREE.Color(materialColor(ref, palette, materials)), mode,
       materialKey === "door_hardware" ? { metalness: 0.8, roughness: 0.35 }
         : { metalness: 0, roughness: 0.45 }));

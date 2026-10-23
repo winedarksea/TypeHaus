@@ -41,6 +41,10 @@ DECLARED_DIVERGENCES = {
         "reference 1\" sauna board; Catlin mills 4/4 to 3/4\" (2026-10-16). Finnish panel is "
         "1/2\"-5/8\" and the foil polyiso, not the board, insulates"
     ),
+    "wall/drywall_in": (
+        "reference 5/8\" gypsum; Catlin's walls are 1/2\" gwb (the 1/2\" drywall redesign, "
+        "2026-10-22), so the interior face sits 1/8\" further in than the reference's"
+    ),
     "wall/sheathing_in": (
         "reference 5/8\" Struct 1; Catlin uses 1/2\" Struct 1 — thinner sheathing over "
         "4\" of exterior CI, where the sheathing is a nailbase rather than the thermal layer"

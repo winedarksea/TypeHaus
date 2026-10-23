@@ -146,12 +146,12 @@ MAIN_KITCHEN_CASEWORK = [
     Furniture(uid="2V68CXXCNR", tag="FURN-M-KIT-WE5", type_ref="SEKT-W30-30", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(53.5)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-N1", face="left", distance_from_start=inch(47.625),
+                  wall_ref="W-M-N1", face="left", distance_from_start=inch(47.51),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="T0QD4C4KHD", tag="FURN-M-KIT-WE5-ST", type_ref="SEKT-W30-20", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(83.5)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-N1", face="left", distance_from_start=inch(47.625),
+                  wall_ref="W-M-N1", face="left", distance_from_start=inch(47.51),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # Existing cooking wall: reversible carousel doors fold away from the range.
@@ -170,10 +170,10 @@ MAIN_KITCHEN_CASEWORK = [
     # Their west-opening doors and racks need the clear area reserved at the bar's end.
     Furniture(uid="77DB93R0QZ", tag="FURN-M-KIT-PANTRY-S1", type_ref="SEKT-HIGH24-80",
               room="RM-M-LIVING",
-              position=pt(inch(413.375), inch(307.375)), rotation=deg(-90)),
+              position=pt(inch(413.5), inch(307.375)), rotation=deg(-90)),
     Furniture(uid="K09MANH37J", tag="FURN-M-KIT-PANTRY-S2", type_ref="SEKT-HIGH24-80",
               room="RM-M-LIVING",
-              position=pt(inch(413.375), inch(283.375)), rotation=deg(-90)),
+              position=pt(inch(413.5), inch(283.375)), rotation=deg(-90)),
     # Stock 80-inch pantry frames on 6-inch levelers align with the garage at 86/101.
     Furniture(uid="4WFET9VXWK", tag="FURN-M-KIT-PANTRY-S1-ST", type_ref="SEKT-TS24-15",
               room="RM-M-LIVING",
