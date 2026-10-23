@@ -78,10 +78,11 @@ MAIN_WET_BACKING = [
                 elevation=_MID_ELEVATION, height=_MID_HEIGHT,
                 profile=_MID_PROFILE, material_ref="spf",
                 purpose="FURN-M-BATH2-CAB-W/-E bottom fastening (48 in.)"),
+    # Raised from the 72" course: the TÄNNFORSEN suspension rail sits just under the 85" tops.
     WallBacking(uid="82SRRT7F5Z", tag="BK-M-HS1-HIGH", wall_ref="W-M-HS1",
-                elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
+                elevation=inch(78), height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
-                purpose="FURN-M-BATH2-CAB-W/-E upper fastening"),
+                purpose="FURN-M-BATH2-CAB-W/-E suspension rail (~83 in.)"),
     # North-face 2x10 fits between the north-row studs at x=48/64, clear of
     # the opposing staggered stud at x=56. Fixings x=49.901/59.349, 31.835 AFF.
     WallBacking(uid="XVMRGW2TW9", tag="BK-M-HS1-BASIN", wall_ref="W-M-HS1", face="left",

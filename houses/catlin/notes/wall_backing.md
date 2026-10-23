@@ -112,6 +112,7 @@ stands proud, nothing is dadoed, and the framer cuts to the bay.
 | `-GRAB` | 2x8 | 32" | 39 1/4" | CRC R328.1.1 verbatim — 2x8 nominal min, 32"–39 1/4", flush with the framing |
 | `-MID` | 2x10 | 44" | 53 1/4" | mirror bottom cleats, `FURN-M-BATH2-CAB`'s 48" rail |
 | `-HIGH` | 2x8 | 72" | 79 1/4" | mirror top cleats, the closet wire shelf's 80" clips |
+| `BK-M-HS1-HIGH` | 2x8 | 78" | 85 1/4" | exception: the TÄNNFORSEN pair's suspension rail (~83") |
 
 **The policy since 2026-10-10: backing follows a designated body.** Until then these were
 three standard anchor heights on 16 wet walls, authored where a screw *might* land. That put
