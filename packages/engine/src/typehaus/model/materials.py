@@ -154,6 +154,11 @@ class Material(HausModel):
     # ``code.R302_5_garage_separation`` reads it for R302.6's 5/8" Type X requirement where
     # habitable space sits above a garage; without it that sub-rule can only report UNKNOWN.
     gypsum_type: Literal["regular", "type-x", "type-c"] | None = None
+    # The board's facer: paper fails a WET/HUMID room (R702.3.7 asks for a water-resistant
+    # backer), glass-mat does not. None on anything that is not gypsum.
+    gypsum_facer: Literal["paper", "glass-mat"] | None = None
+    # Performance upgrades printed on the board, beyond the fire grade above.
+    gypsum_upgrades: tuple[Literal["abuse-resistant", "mold-resistant"], ...] = ()
     # This material is a FOAM PLASTIC in the sense of IRC R316 — a cellular plastic
     # insulation, whether rigid board, spray-applied or a stay-in-place form. Authored, for
     # the same reason ``gypsum_type`` is: ``code.R316_4`` has to know which layers the

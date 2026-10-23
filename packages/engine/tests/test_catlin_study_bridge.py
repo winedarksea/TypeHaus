@@ -50,10 +50,10 @@ def test_cabinet_sits_in_the_rough_opening_flush_with_the_study_face(catlin_mode
                                             "bookcase_shelves", "bookcase_back"}
     cabinet = unary_union([Polygon(solid.ring) for part in parts for solid in part.solids])
     x0, y0, x1, y1 = _bounds_in(cabinet)
-    # Face frame on the study finish (nothing over FO-A-STAIR), back 3 1/2" past the loft
-    # face: Murphy's 8 1/4" body less a 4 3/4" wall, the jamb's 3 3/4" on a 4 9/16" wall.
+    # Face frame on the study finish (nothing over FO-A-STAIR), back 3 3/4" past the loft
+    # face: Murphy's 8 1/4" body less a 4 1/2" wall (1/2" board since 2026-10-23).
     assert y0 == pytest.approx(STUDY_FACE_Y_IN)
-    assert y1 - LOFT_FACE_Y_IN == pytest.approx(3.5)
+    assert y1 - LOFT_FACE_Y_IN == pytest.approx(3.75)
     center = (catlin_model_ro.wall("W-A-SN").axis[0][0] + door.center_along_m) / M_PER_IN
     half_ro = door.width_m / 2 / M_PER_IN
     assert center - half_ro < x0 and x1 < center + half_ro

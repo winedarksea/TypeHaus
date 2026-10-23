@@ -8,10 +8,11 @@ from typehaus.model import Material
 MATERIALS: tuple[Material, ...] = (
     Material(
         tag="gwb",
-        name='5/8" gypsum board',
+        name="Gypsum board",
         r_per_inch=0.9,
         perm_rating=18.8,
         gypsum_type="regular",
+        gypsum_facer="paper",
         hatch="gypsum",
         color="#efeae2",
         source=f"{_UAF}: 'Gypsum wall board, plain' 50 perm at 0.375\" = 18.8 perm-in "
@@ -23,14 +24,55 @@ MATERIALS: tuple[Material, ...] = (
     # question R302.6 asks about a garage ceiling with habitable space over it.
     Material(
         tag="gwb-x",
-        name='5/8" Type X gypsum board',
+        name="Type X gypsum board",
         r_per_inch=0.9,
         perm_rating=18.8,
         gypsum_type="type-x",
+        gypsum_facer="paper",
         hatch="gypsum",
         color="#efeae2",
         source="thermal and vapour properties as 'gwb' above; the Type X core changes "
         "fire performance, not conductivity or permeance",
+    ),
+    # Upgrade boards. Thickness lives on the Layer; these differ from 'gwb' in core or
+    # facer treatment only, not in any thermal or vapour property this engine computes.
+    Material(
+        tag="gwb-c",
+        name="Type C gypsum board",
+        r_per_inch=0.9,
+        perm_rating=18.8,
+        gypsum_type="type-c",
+        gypsum_facer="paper",
+        hatch="gypsum",
+        color="#f2dcdc",
+        source="thermal and vapour properties as 'gwb'; ASTM C1396 Type C (e.g. USG "
+        "Firecode C, Gold Bond Fire-Shield C) — denser fibre-and-vermiculite core",
+    ),
+    Material(
+        tag="gwb-ar",
+        name="Abuse-resistant gypsum board",
+        r_per_inch=0.9,
+        perm_rating=18.8,
+        gypsum_type="regular",
+        gypsum_facer="paper",
+        gypsum_upgrades=("abuse-resistant",),
+        hatch="gypsum",
+        color="#d3dbe3",
+        source="thermal and vapour properties as 'gwb'; paper-faced ASTM C1629 abuse "
+        "resistance (e.g. USG Sheetrock AR, Gold Bond Hi-Abuse XP)",
+    ),
+    Material(
+        tag="gwb-mr",
+        name="Mold-resistant gypsum board",
+        r_per_inch=0.9,
+        perm_rating=18.8,
+        gypsum_type="regular",
+        gypsum_facer="paper",
+        gypsum_upgrades=("mold-resistant",),
+        hatch="gypsum",
+        color="#e0d6ec",
+        source="thermal and vapour properties as 'gwb'; paper-faced, ASTM D3273 score 10 "
+        "(e.g. Gold Bond XP, USG Sheetrock Mold Tough). Still paper: not a wet-area backer",
     ),
     # A hat channel is a spaced 25 ga. section, not a continuous metal skin: vapour crosses
     # the still-air space between channels, so the layer is rated as that air space.

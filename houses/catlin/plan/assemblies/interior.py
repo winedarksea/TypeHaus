@@ -44,7 +44,7 @@ _PAINT_FINISH_ACCENT = Layer(name="paint", material_ref="latex-paint-accent",
 # `wall_lining_exceptions` moves no face and changes no clear-floor inset — only the colour.
 ACCENT_GWB_LINING = (
     _PAINT_FINISH_ACCENT,
-    Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.625),
+    Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.5),
           function=LayerFunction.FINISH),
 )
 
@@ -257,7 +257,7 @@ SAUNA_2X4 = Assembly(
         Layer(name="stud", material_ref="spf", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4"),
               cavity=CavityFill(material_ref="mineral-wool")),
-        Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
+        Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.5),
               function=LayerFunction.FINISH),
     ),
     interfaces=(STUD_BEARING,),
@@ -320,7 +320,7 @@ SAUNA_2X6 = Assembly(
 # RM-B-PLAY-N side, which is the paint every other face of that room already has.
 SAUNA_LINER_INT_2X6_BRG = Assembly(
     tag="SAUNA_LINER_INT_2X6_BRG",
-    variant_of="INT_2X6_BRG",
+    variant_of="INT_2X6_BRG_HALF",
     substitute=(
         Substitution(
             span=layers("paint-a", "stud"),

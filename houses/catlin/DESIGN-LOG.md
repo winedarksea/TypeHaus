@@ -5973,3 +5973,20 @@ AXSTAD 24x20 front uses lift-up hardware, with an 18-inch minimum clear opening 
 verified on the hardware shop detail. No internal tambour coil. Add cap and upper-rail
 backing, retain the two outlets, and update the custom-carcase and stock-frame quantities.
 Installation, support and clearance dimensions are in kitchen_stock_cabinet_details.md K3.
+
+## 2026-10-23 — Align pantry and garage using standard cabinet supports
+
+Supersedes the 2 1/2-inch step in the preceding mixer entry. Keep the garage's 20/30/15
+stack and raise both stock 80-inch pantry frames from 3 1/2-inch supports to standard
+6-inch Häfele AXILO 637.76.355 levelers. Their stock 15-inch tops now start at 86 and
+finish at 101; the 50/30-inch pantry door joint at 56 also matches the garage. No
+shortened SEKTION frames or custom-height fronts. Include screw-mount plates and
+cut-to-fit cover-panel toe kicks in the pantry installation allowance; move the top
+rail backing to the revised height.
+
+The living north-run cabinets were modeled by raising the entire symbol 9/16 inch,
+which also floated their toe kicks off the floor. Instead model standard SEKTION legs
+at 4 1/16 inches and a 36 9/16-inch installed envelope, with floor mounts at zero.
+The actual 30-inch frames, ash countertop and window alignment retain their heights.
+Both support configurations now emit four feet and a separate recessed toe panel.
+The end cover reaches the floor while retaining its former top elevation. See K4–K5.

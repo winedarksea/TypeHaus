@@ -226,13 +226,18 @@ def humid_room_liner(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+def _paper_gypsum(material) -> bool:
+    return (getattr(material, "gypsum_type", None) is not None
+            and getattr(material, "gypsum_facer", None) != "glass-mat")
+
+
 @check(Tier.BUILDING_SCIENCE, FINISH_CHECK_ID)
 def humid_room_finish(ctx: CheckContext) -> list[Finding]:
     """No paper-faced gypsum on the room face of a wet or humid room — room-side of any
     sealed air+vapour membrane, which is where room air reaches.
 
-    ``Material.gypsum_type`` is the test, and its vocabulary is entirely paper-faced today
-    (regular / type-x / type-c), so carrying it *is* carrying a paper facer. Paint over it
+    Any gypsum (``gypsum_type`` set) whose ``gypsum_facer`` is not glass-mat: mold-resistant
+    paper board still fails, and an unstated facer is read as paper. Paint over it
     changes nothing that matters here: latex is a Class III film, it slows diffusion and
     stops neither liquid water nor the mould that eats the facer behind it.
     """
@@ -241,8 +246,7 @@ def humid_room_finish(ctx: CheckContext) -> list[Finding]:
         tags = (surface.room_tag, surface.wall_tag)
         offenders = [ly.material_ref for ly in _room_air_span(surface.layers)
                      if ly.function == LayerFunction.FINISH
-                     and getattr(ctx.plan.library.material(ly.material_ref),
-                                 "gypsum_type", None) is not None]
+                     and _paper_gypsum(ctx.plan.library.material(ly.material_ref))]
         if offenders:
             out.append(advisory(
                 FINISH_CHECK_ID,

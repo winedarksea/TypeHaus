@@ -81,7 +81,8 @@ class Library(HausModel):
             "tag": asm.tag,
             "layers": tuple(layers),
             "variant_of": asm.variant_of,
-            "stc": asm.stc if asm.stc is not None else base.stc,
+            # Never inherited: a substituted stack is not the assembly the base's test measured.
+            "stc": asm.stc,
             "interfaces": asm.interfaces or base.interfaces,
         }
         # A variant's own scalar fields are its own. Copying the base and overriding only

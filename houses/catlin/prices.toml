@@ -2585,7 +2585,9 @@
 # High frames; setting either height remains a two-person lift.
 # West pantry: 90-inch frame, 30/40/20 AXSTAD fronts and hardware; budget, not a quote.
 "SEKT-HIGH24-90" = { material = { low = 190, high = 520 }, labour = { low = 120, high = 300 } }  # 0 ea
-"SEKT-HIGH24-80" = { material = { low = 170, high = 465 }, labour = { low = 120, high = 300 } }  # 2 ea
+# Stock 80-inch frames; 6-inch AXILO 637.76.355 legs with screw-mount plates and
+# cut-to-fit white cover-panel toe kicks. Budget includes four legs per cabinet; no frame cuts.
+"SEKT-HIGH24-80" = { material = { low = 250, high = 585 }, labour = { low = 140, high = 330 } }  # 2 ea
 "SEKT-HIGH18-90" = { material = { low = 360, high = 600 }, labour = { low = 120, high = 300 } }  # 1 ea
 # East pantry tops and garage stacker: stock 904.997.35, AXSTAD fronts, hinges and rail.
 "SEKT-TS24-15" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 3 ea

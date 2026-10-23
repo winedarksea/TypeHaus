@@ -83,9 +83,9 @@ below the actual finished ceiling.
 ## K3 — West-facing mixer garage, section through its supports
 
 All three boxes face west and retain the 24-inch footprint at y=319 3/8–343 3/8.
-Keep the pantry stacks at their existing heights and the nominal 14-inch landing to the
-range. The garage divisions are deliberately 2 1/2 inches above the pantry divisions;
-matching them would require moving the pantries or reducing the appliance clearance.
+Keep the nominal 14-inch range landing. Raise both pantry stacks 2 1/2 inches on
+standard 6-inch levelers (K4), matching the garage divisions at 56, 86 and 101 AFF.
+All SEKTION frames and fronts remain at their standard sizes.
 
 | Item | Width × system depth × height | Bottom AFF | Top AFF |
 |---|---|---:|---:|
@@ -138,19 +138,30 @@ fit-out allowance.
 
 | Item | South y | North y | Bottom | Top |
 |---|---:|---:|---:|---:|
-| S2, 24-wide high frame | 271 3/8 | 295 3/8 | 3 1/2 | 83 1/2 |
-| S1, 24-wide high frame | 295 3/8 | 319 3/8 | 3 1/2 | 83 1/2 |
-| Both 24-wide, 24-deep stock tops | same | same | 83 1/2 | 98 1/2 |
+| S2, 24-wide high frame | 271 3/8 | 295 3/8 | 6 | 86 |
+| S1, 24-wide high frame | 295 3/8 | 319 3/8 | 6 | 86 |
+| Both 24-wide, 24-deep stock tops | same | same | 86 | 101 |
 
 S1 meets the garage. Each top is `SEKT-TS24-15`, the stock
 [SEKTION 904.997.35 frame](https://www.ikea.com/us/en/p/sektion-top-cabinet-with-ventilation-white-90499735/),
 24 by 24 by 15, with a matching AXSTAD matte white 24 by 15 front and factory hinges.
-Both retain their 83 1/2 bottoms and finish at 98 1/2, about 8 1/16 below the finished
-ceiling. A 30-inch frame would finish at 113 1/2, about 6 15/16 above the ceiling.
+Both start at 86 and finish at 101, matching the garage top with about 5 9/16 inches
+below the finished ceiling. Keep the stock 80-inch high frames and 50/30-inch doors.
+The lower door joint is 56 AFF, also matching the garage enclosure top.
+
+Each pantry uses four standard Häfele AXILO 637.76.355 levelers with screw-mount plates
+under the structural sidewalls, adjusted to a total 6-inch installation height (152.4 mm).
+The [manufacturer catalog](https://hafelethailand.com/wp-content/uploads/2025/12/10-Table-and-Furniture-Base-Fittings.pdf)
+lists a 140–170 mm adjustment range for this foot; coordinate plate fixing with the actual
+SEKTION bottom/side joint. Keep the factory wall rail as independent restraint. Do not
+stretch IKEA legs beyond their adjustment range: current SEKTION 905.560.71 is rated
+3 1/2–5 1/8 inches. Cut the 6-inch recessed toe panels from standard white cover-panel
+stock and clip them to the feet. These panels conceal the legs; they do not carry the cases.
+This is a standard hardware installation, not a shortened or custom cabinet frame.
 
 Bear the stock frame sides directly on the high cabinet sides. Fasten the factory
-suspension rail into BK-M-E1-PANTRY-TOP, 95 1/2–99 above framing datum
-(94 9/16–98 1/16 AFF). Set the rail screw line from the actual factory bracket holes
+suspension rail into BK-M-E1-PANTRY-TOP, 98–101 1/2 above framing datum
+(97 1/16–100 9/16 AFF). Set the rail screw line from the actual factory bracket holes
 and maintain the required 1/2-inch lift clearance. Restrain each top independently to
 framing and tie adjacent cases through structural sidewalls, following the manufacturer
 installation instructions. The thin fiberboard back is not a bearing member.
@@ -171,8 +182,12 @@ Since 2026-10-20 the living room's storage is on the dining side only: south of 
 partition is open wall. The north run is 24-inch stock SEKTION (`SEKT-B24/B36/B18`), body
 centres x=413 3/8, fronts flush with PANTRY-S2, with no fillers. Bases use doors and shelves
 in the AXSTAD matte-white family; legs, plinth and suspension rail are separate. Hang the
-B24's door on its north edge so it opens away from the slats. Keep 3 1/2 support + 30 frame
-+ 1 1/4 subtop + 1 1/4 ash = 36-inch installed height.
+B24's door on its north edge so it opens away from the slats. Standard SEKTION legs
+adjusted to 4 1/16 + 30 frame + 1 1/4 subtop + 1 1/4 ash = 36 9/16 installed height,
+retaining the dining-window alignment. The legs and recessed toe panels begin at the
+finished floor. Do not raise the complete cabinet symbol by 9/16: that leaves a floating
+toe kick. The render includes four load-bearing feet and a separate toe panel per cabinet.
+The taller 6-inch pantry toe is intentional to align its door joints with the garage.
 
 | Cabinet | South y | North y |
 |---|---:|---:|
@@ -189,7 +204,7 @@ The gap to S2 remains exactly 1/8 inch, y=271 1/4–271 3/8. The ash slab runs y
 271 3/8 (114 5/8) at 25 deep, a three-board glue-up; its front stands 1" proud of S2's, which
 is a straight-out pull-out, so check only at fabrication. Seal the cabinet-to-tall joint
 with flexible colour-matched sealant; this is an installation joint, not a custom frame.
-PANTRY-S2 and everything north of it retain their existing scope.
+PANTRY-S2 keeps its plan position; its frame is raised on the standard levelers in K4.
 
 The elm slat partition is one floor-to-ceiling piece, 60 1/2 west from the gwb, south of
 END-N; it no longer stands on the counter.

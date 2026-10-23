@@ -328,6 +328,13 @@ export const SURFACE_COATING_POLYGON_OFFSET = {
 // ahead of projecting trim or timber at oblique angles; one fixed depth step is enough
 // to keep the substrate from flickering through without hiding those nearby faces.
 export const WALL_COATING_POLYGON_OFFSET = {
+  polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: -2,
+};
+
+// The tier below it: a finish board wins a coplanar tie with structure (a junction overlap,
+// a stud end on a board plane) and loses one to its own paint. Fixed units, no slope bias,
+// for the reason above. glTF has no polygonOffset, so an exported .glb keeps the tie.
+export const WALL_FINISH_POLYGON_OFFSET = {
   polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: -1,
 };
 

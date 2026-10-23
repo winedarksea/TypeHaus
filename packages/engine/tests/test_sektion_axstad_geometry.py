@@ -22,6 +22,29 @@ def _bounds(parts, axis):
     )
 
 
+@pytest.mark.parametrize(("symbol", "height", "support", "front_heights"), [
+    ("base-door-raised", 36.5625, 4.0625, (29.875,)),
+    ("tall-raised", 86, 6, (49.875, 29.875)),
+])
+def test_standard_frames_keep_their_front_sizes_on_floor_bearing_legs(
+    symbol, height, support, front_heights,
+):
+    parts = model_parts(PREFIX + symbol, 24 * INCH, 24 * INCH, height * INCH)
+    feet = [p for p in parts if p["color"] == "metal-black"
+            and p["center"][2] < support * INCH]
+    assert len(feet) == 4
+    for foot in feet:
+        assert (foot["center"][2] - foot["size"][2] / 2,
+                foot["center"][2] + foot["size"][2] / 2) == pytest.approx((0, support * INCH))
+    fronts = [p for p in parts if p["shape"] == "mesh" and p["color"] == "appliance-white"]
+    assert [p["size"][2] / INCH for p in fronts] == pytest.approx(front_heights)
+    toe = [p for p in parts if p["shape"] == "box"
+           and p["size"][0] == pytest.approx(24 * INCH)
+           and p["size"][2] == pytest.approx(support * INCH)]
+    assert len(toe) == 1
+    assert toe[0]["center"][2] - toe[0]["size"][2] / 2 == pytest.approx(0)
+
+
 def test_bagganas_published_dimensions_and_round_stock():
     knob = bagganas_knob(0, 0, 0)
     assert _bounds(knob, 0) == pytest.approx((-13 / 32 * INCH, 13 / 32 * INCH))

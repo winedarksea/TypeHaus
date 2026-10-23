@@ -6,6 +6,8 @@ from typehaus.quantities import inch
 PANEL_M = inch(0.75).meters
 BACK_M = inch(0.125).meters
 BASEBOARD_DEPTH_M = inch(0.75).meters
+LEVELING_LEG_WIDTH_M = inch(2).meters
+LEVELING_LEG_INSET_M = inch(2).meters
 
 
 def sektion_carcass(
@@ -48,3 +50,21 @@ def sektion_plinth(width: float, depth: float, base_h: float, *, recess: float =
         box(0, depth / 2 - rail / 2, 0, base_h, width, rail, "appliance-white"),
         box(0, -depth / 2 + recess + board / 2, 0, base_h, width, board, "appliance-white"),
     ]
+
+
+def sektion_leveling_legs(width: float, depth: float, base_h: float, *, recess: float) -> list:
+    """Four floor-bearing legs behind a recessed, non-structural toe-kick panel."""
+    leg_width = min(LEVELING_LEG_WIDTH_M, width / 4, depth / 4)
+    side_inset = min(LEVELING_LEG_INSET_M, width / 4)
+    rear_inset = min(LEVELING_LEG_INSET_M, depth / 4)
+    board = min(BASEBOARD_DEPTH_M, depth / 8)
+    front_leg_y = -depth / 2 + recess + board + leg_width / 2
+    parts = [
+        box(sign * (width / 2 - side_inset), y, 0, base_h,
+            leg_width, leg_width, "metal-black")
+        for sign in (-1, 1)
+        for y in (front_leg_y, depth / 2 - rear_inset)
+    ]
+    parts.append(box(0, -depth / 2 + recess + board / 2, 0, base_h,
+                     width, board, "appliance-white"))
+    return parts

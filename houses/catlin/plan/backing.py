@@ -113,8 +113,8 @@ MAIN_BACKING = [
                 material_ref="spf", purpose="stock garage frame top restraint"),
     WallBacking(uid="PT15STOCK1", tag="BK-M-E1-PANTRY-TOP", wall_ref="W-M-E1",
                 start=inch(272.75), length=inch(46.5),
-                elevation=inch(95.5), height=inch(3.5), profile="2x4",
-                material_ref="spf", purpose="stock 15-inch pantry top frame suspension rail (98 1/2-inch tops)"),
+                elevation=inch(98), height=inch(3.5), profile="2x4",
+                material_ref="spf", purpose="stock pantry top frame suspension rail (101-inch tops)"),
     WallBacking(uid="EA1DMVPCVN", tag="BK-M-N1-CORNER", wall_ref="W-M-N1", length=inch(32.75),
                 elevation=inch(72), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="diagonal corner upper north leg at 73 1/2 inches"),
@@ -157,7 +157,7 @@ MAIN_BACKING = [
     WallBacking(uid="KC1M7649AZ", tag="BK-M-E1-STACKER", wall_ref="W-M-E1",
                 start=inch(272.75), length=inch(46.5),
                 elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="FURN-M-KIT-PANTRY-S1/S2-ST stacker rail (83 1/2 in.)"),
+                material_ref="spf", purpose="FURN-M-KIT-PANTRY-S1/S2-ST lower restraint and high-frame top rail (86 in.)"),
     # ** HOSTING SURFACED THESE, 2026-09-25. ** Until the wall-mounted bodies were hosted on
     # their faces, `advisory.wall_backing_present` could not square them onto a wall and
     # said UNKNOWN; hosted, it names the wall and there was nothing behind them.

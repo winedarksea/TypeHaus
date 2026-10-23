@@ -240,7 +240,8 @@ WALLS = [
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C1"),
     Wall(uid="CSW115AAAA", tag="W-S-C2", start_node="N-S-C1", end_node="N-S-C2",
-         assembly="INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C1"),
     # ** W-S-C2B IS INT_2X6_BRG_RC SINCE 2026-09-15 — the suite's own door wall. ** It is
     # the segment between RM-S-SUITE and RM-S-HALL, it hosts D-S-SUITE, and it carried an
@@ -261,18 +262,21 @@ WALLS = [
     # exactly as W-M-C1's does downstairs, which is what
     # test_the_centreline_bearing_wall_is_one_stud_grid_on_every_storey reads.
     Wall(uid="CSW138AAAA", tag="W-S-C2B", start_node="N-S-C2", end_node="N-S-C2B",
-         assembly="INT_2X6_BRG_RC", interior_room="RM-S-SUITE", top=ft(9),
+         assembly="INT_2X6_BRG_RC_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), interior_room="RM-S-SUITE", top=ft(9),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C2"),
     Wall(uid="CSW139AAAA", tag="W-S-C2C", start_node="N-S-C2B", end_node="N-S-C2C",
-         assembly="INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C3"),
     # y 22'-4" .. 30'-10" IS NOT A WALL — it is the BM-S-HALL flitch of LVL below.
     # W-S-C3 / W-S-C3C / W-S-C4 used to stand here; the whole 8'-6" is now open so the
     # hall, the landing and the stair well read as one room. The bearing
     # stack is unbroken because the beam is *in* it: see BEAMS below.
     Wall(uid="CSW140AAAA", tag="W-S-C4B", start_node="N-S-C3D", end_node="N-S-N1",
-         assembly="INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C5"),
     # --- south band north wall, y=9'-0" (source 9.035): plant room | study2 ------
     # These two are the plant room's north side, so they leave INT_2X4_PARTITION for
@@ -297,7 +301,8 @@ WALLS = [
     # `structural.member_interference` from one overlap to three. Two pieces of wood in the
     # same place is a worse answer than one extra cut stud, so the UNKNOWN stands and says so.
     Wall(uid="CSW120AAAA", tag="W-S-SS1", start_node="N-S-C1", end_node="N-S-B1",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
     # ** W-S-SS2 IS INT_2X4_RC, AND THE CHANNEL IS ON THE NORTH FACE. **
     # RM-S-BED1 (sleeping) on the north, RM-S-STUDY2 (office) on the south — the one
     # bedroom-facing partition left on the plain preset when INT_2X4_PARTITION lost its
@@ -322,7 +327,7 @@ WALLS = [
     # Nothing is hosted on either face: no device, fixture, luminaire or MEP run names this
     # wall, so unlike the 2026-08-30 block there is nothing to follow the face.
     Wall(uid="CSW121AAAA", tag="W-S-SS2", start_node="N-S-B1", end_node="N-S-E1",
-         assembly="INT_2X4_RC", interior_room="RM-S-BED1", top=ft(9),
+         assembly="INT_2X4_RC_HALF", interior_room="RM-S-BED1", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
     # --- east bedroom block ------------------------------------------------------
     #
@@ -357,14 +362,19 @@ WALLS = [
     # thickness never enters and R303.1 / R304 / egress are untouched. Four wall-mounted
     # devices follow the face (plan/electrical.py). The rooms lose 1/2" of real width the
     # model does not record.
+    # BW1-BW4 and W-S-SBS dropped their channel on 2026-10-23: each has an undercut door
+    # (the System 1 return path) that leaks more than RC saves. The stud stays on the line.
     Wall(uid="CSW122AAAA", tag="W-S-BW1", start_node="N-S-B1", end_node="N-S-B2",
-         assembly="INT_2X4_RC", interior_room="RM-S-HALL", top=ft(9),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
     Wall(uid="CSW123AAAA", tag="W-S-BW2", start_node="N-S-B2", end_node="N-S-B3",
-         assembly="INT_2X4_RC", interior_room="RM-S-HALL", top=ft(9),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
     Wall(uid="CSW124AAAA", tag="W-S-BW3", start_node="N-S-B3", end_node="N-S-B4",
-         assembly="INT_2X4_RC", interior_room="RM-S-HALL", top=ft(9),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
     # W-S-BW4 is RC too, and the reason is GEOMETRIC before it is acoustic. SF-S-HP1 now
     # spans this wall and W-S-BW3 both: BW3 (RC, channel to the hall) puts the hall's east
@@ -377,7 +387,7 @@ WALLS = [
     # 1/2", to 40 3/4". The STC 34 -> 48 next to a bedroom now sharing a wall with the air
     # handler is the bonus, not the argument.
     Wall(uid="CSW125AAAA", tag="W-S-BW4", start_node="N-S-B4", end_node="N-S-B5",
-         assembly="INT_2X4_RC", interior_room="RM-S-NCLOSET", top=ft(9),
+         assembly="INT_2X4_PARTITION_HALF", interior_room="RM-S-NCLOSET", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
     Wall(uid="CSW126AAAA", tag="W-S-BD1", start_node="N-S-B2", end_node="N-S-E2",
          assembly="INT_2X4_RC", interior_room="RM-S-BED1", top=ft(9),
@@ -389,10 +399,11 @@ WALLS = [
     # Stops at SF-S-HP1's underside (7'-3 1/4"): the box runs across it wall to wall, and
     # EQ-S-HP1-AH's 43 1/2" case straddles this line inside the box.
     Wall(uid="CSW141AAAA", tag="W-S-CLN-S", start_node="N-S-C3D", end_node="N-S-B4",
-         assembly="INT_2X4_PARTITION", top=inch(87.25)),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=inch(87.25)),
     # --- west block: walk-in, suite, suite bath, vanity alcove ------------------
     Wall(uid="CSW129AAAA", tag="W-S-DC1", start_node="N-S-D1", end_node="N-S-D2",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION_HALF", top=ft(9)),
     # RM-S-SUITEBATH's west wall carries the WC's drain stack, so it is the staggered
     # wet-wall assembly (2x4 studs on 2x6 plates, 5.5" continuous cavity):
     # `advisory.wet_wall_depth` reads preferences.toml's
@@ -402,9 +413,10 @@ WALLS = [
     # modelled `PipeRun` — no `PipeRun.wall_refs` names DC2 or SBS at all, so this is planning
     # allowance, not a real chase a 2x4-plus-resilient-channel retype could borrow room from.
     Wall(uid="CSW142AAAA", tag="W-S-DC2", start_node="N-S-D3", end_node="N-S-D4",
-         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+         assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     Wall(uid="CSW143AAAA", tag="W-S-CLN", start_node="N-S-D2", end_node="N-S-C2",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION_HALF", top=ft(9)),
     # South wall — plain 2x4. Nothing actually backs onto this wall: the lav
     # that used to point its `wall_ref` here for the depth allowance stands against W-S-SN3
     # instead (10.5" north of its centreline, `plan/fixtures.py`'s `FX-S-SUITEBATH-LAV`), and
@@ -428,7 +440,8 @@ WALLS = [
     # ED-S-SUITE-RC8 sit on the suite face, which does not move. Both ends are tees —
     # W-S-DC2 at x=9'-7 1/2", W-S-C2B at x=18'-0" — so nothing steps in the open.
     Wall(uid="CSW144AAAA", tag="W-S-SBS", start_node="N-S-D3", end_node="N-S-C2B",
-         assembly="INT_2X4_RC", interior_room="RM-S-SUITEBATH", top=ft(9),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), interior_room="RM-S-SUITEBATH", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
     # The suite's north wall: RM-S-SUITE (sleeping) on one face, the vanity alcove and the
     # suite bath on the other. Both runs are the library's staggered-stud partition (2x4
@@ -443,9 +456,10 @@ WALLS = [
     # fiberglass. It is 6.75" wide against the partition's 4.75", which the suite and the
     # vanity split.
     Wall(uid="CSW145AAAA", tag="W-S-SN1", start_node="N-S-W2", end_node="N-S-V1",
-         assembly="INT_2X4_STAGGERED_GWB", top=ft(9)),
+         assembly="INT_2X4_STAGGERED_X_HALF", top=ft(9)),
     Wall(uid="CSW146AAAA", tag="W-S-SN2", start_node="N-S-V1", end_node="N-S-D4",
-         assembly="INT_2X4_STAGGERED_GWB", top=ft(9)),
+         assembly="INT_2X4_STAGGERED_X_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
     # NOT BEARING (reverted 2026-08-30; was BEARING from 2026-08-29 to 2026-08-30). The
     # BEARING call was reasoned from FO-A-HALL's doubled trimmer pair delivering the attic
     # floor opening's south edge to "two points" — one on BM-S-BATH-E, whose own south end
@@ -487,16 +501,20 @@ WALLS = [
     # 8'-0"..13'-4", which is also where W-M-HS4 (D-M-LAUN's 3'-0" pocket, off-limits per
     # CLAUDE.md) would otherwise have been the only other candidate.
     Wall(uid="CSW147AAAA", tag="W-S-SN3", start_node="N-S-D4", end_node="N-S-C2C",
-         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9), stacks_on="W-M-HS3"),
+         assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9), stacks_on="W-M-HS3"),
     Wall(uid="CSW148AAAA", tag="W-S-VE", start_node="N-S-V1", end_node="N-S-V2",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9)),
     Wall(uid="CSW132AAAA", tag="W-S-BD-N", start_node="N-S-W1", end_node="N-S-V2",
-         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+         assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     # Retyped and declared BEARING on 2026-08-29 with the two x=10' segments below: it
     # carries BM-S-BATH-E's north end at N-S-BA1. Same swap, same reason, same price —
     # plan/assemblies.py's INT_2X6_BRG_PLUMBING has the whole argument.
     Wall(uid="CSW149AAAA", tag="W-S-BD-N1B", start_node="N-S-V2", end_node="N-S-BA1",
-         assembly="INT_2X6_BRG_PLUMBING", top=ft(9),
+         assembly="INT_2X6_BRG_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-STOS2"),
     # W-S-BD-N2 (the stair's south wall on y=25', with the 6'-0" O-S-STAIRTOP through it)
     # came out on 2026-07-28 with the centre line: a wall pierced by a 6' hole between two
@@ -532,10 +550,12 @@ WALLS = [
     # W-M-STRW too; that is the ambiguity the tiebreaker exists to resolve, from the other
     # side.
     Wall(uid="CSW134AAAA", tag="W-S-BA-E", start_node="N-S-N2", end_node="N-S-BA-SPLIT",
-         assembly="INT_2X6_BRG_PLUMBING", top=ft(9),
+         assembly="INT_2X6_BRG_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
          structural_role=StructuralRole.BEARING),
     Wall(uid="CSW150AAAA", tag="W-S-BA-E1B", start_node="N-S-BA-SPLIT", end_node="N-S-BA1",
-         assembly="INT_2X6_BRG_PLUMBING", top=ft(9),
+         assembly="INT_2X6_BRG_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-STRW"),
     # W-S-BA-E2 (N-S-BA1 to the stair shaft's freed N-S-STR2 corner) came out with this
     # edit: since W-S-BD-N2 came out it was a stub dead-ending on an open node, poking into
@@ -547,9 +567,11 @@ WALLS = [
     # source's shaft was 2'x2' and test_hall_bath_chase_is_the_source_two_foot_shaft still
     # grades it against that to +/- 3".
     Wall(uid="CSW151AAAA", tag="W-S-CH-W", start_node="N-S-CH1", end_node="N-S-CH2",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     Wall(uid="CSW152AAAA", tag="W-S-CH-S", start_node="N-S-CH1", end_node="N-S-CH3",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), top=ft(9)),
 ]
 
 # Openings are placed on the gaps measured in the source wall polygon. `from_node` offsets
@@ -1001,7 +1023,7 @@ ROOMS = [
                      Layer(name="paint", material_ref="latex-paint-accent",
                            thickness=inch(0.01), function=LayerFunction.FINISH,
                            control={ControlLayer.VAPOR}),
-                     Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.625),
+                     Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.5),
                            function=LayerFunction.FINISH),
                  )),
          )),
@@ -1040,9 +1062,28 @@ ROOMS = [
     # The nonheated suite bath uses DITRA-XL; the small glass vanity mosaic uses
     # continuous cement backer. Both assemblies target the adjacent 3/4-inch oak plane.
     Room(uid="CSR412AAAA", tag="RM-S-SUITEBATH", seed=pt(ft(14), ft(19)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-kaleo-brick"),
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-kaleo-brick",
+         ceiling_lining=(
+             Layer(name="gwb-ceil", material_ref="gwb-mr", thickness=inch(0.625),
+                   function=LayerFunction.FINISH),
+         )),
     Room(uid="CSR413AAAA", tag="RM-S-VANITY", seed=pt(ft(3), ft(24, 4)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-flower-blue"),
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-flower-blue",
+         wall_lining_exceptions=(
+             WallLiningException(
+                 uid="S8D686HMRF", tag="LX-S-VANITY-W2", wall_ref="W-S-W2",
+                 lining=(
+                     Layer(name="paint", material_ref="latex-paint",
+                           thickness=inch(0.01), function=LayerFunction.FINISH,
+                           control={ControlLayer.VAPOR}),
+                     Layer(name="gwb-int", material_ref="gwb-mr", thickness=inch(0.5),
+                           function=LayerFunction.FINISH),
+                 )),
+         ),
+         ceiling_lining=(
+             Layer(name="gwb-ceil", material_ref="gwb-mr", thickness=inch(0.625),
+                   function=LayerFunction.FINISH),
+         )),
     # The heated bath uses DITRA-HEAT with the cable in its studs, matched
     # to the hall oak at D-S-BATH1. This is not ordinary DITRA-XL.
     #
@@ -1059,13 +1100,48 @@ ROOMS = [
     # roughly the mudroom's own 9.9' span, and at half the table limit the L/360 basis
     # is no longer the binding number it would have been out in the 18' field.
     Room(uid="CSR408AAAA", tag="RM-S-BATH1", seed=pt(ft(5), ft(31)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-carrara"),
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-carrara",
+         wall_lining_exceptions=(
+             WallLiningException(
+                 uid="SMVSX6ZSCT", tag="LX-S-BATH1-N3", wall_ref="W-S-N3",
+                 lining=(
+                     Layer(name="paint", material_ref="latex-paint",
+                           thickness=inch(0.01), function=LayerFunction.FINISH,
+                           control={ControlLayer.VAPOR}),
+                     Layer(name="gwb-int", material_ref="gwb-mr", thickness=inch(0.5),
+                           function=LayerFunction.FINISH),
+                 )),
+             WallLiningException(
+                 uid="RGCQ5R7WJH", tag="LX-S-BATH1-W1", wall_ref="W-S-W1",
+                 lining=(
+                     Layer(name="paint", material_ref="latex-paint",
+                           thickness=inch(0.01), function=LayerFunction.FINISH,
+                           control={ControlLayer.VAPOR}),
+                     Layer(name="gwb-int", material_ref="gwb-mr", thickness=inch(0.5),
+                           function=LayerFunction.FINISH),
+                 )),
+         ),
+         ceiling_lining=(
+             Layer(name="gwb-ceil", material_ref="gwb-mr", thickness=inch(0.625),
+                   function=LayerFunction.FINISH),
+         )),
     # RM-S-HALL is the source's single 181.02 sf "Hallway" again: taking the centre line
     # out between y 22'-4" and 30'-10" left one polygonized face spanning the old hall,
     # landing and open stair well, so RM-S-LANDING/RM-S-STAIR were retired into this claim
     # rather than billing the same face three times. RL-S-STAIR guards the well's east edge.
     Room(uid="CSR409AAAA", tag="RM-S-HALL", seed=pt(ft(20), ft(20)),
-         occupancy=Occupancy.HALLWAY, floor_finish="oak-floor-custom"),
+         occupancy=Occupancy.HALLWAY, floor_finish="oak-floor-custom",
+         wall_lining_exceptions=(
+             WallLiningException(
+                 uid="N4J17KNJFP", tag="LX-S-HALL-N2", wall_ref="W-S-N2",
+                 lining=(
+                     Layer(name="paint", material_ref="latex-paint",
+                           thickness=inch(0.01), function=LayerFunction.FINISH,
+                           control={ControlLayer.VAPOR}),
+                     Layer(name="gwb-int", material_ref="gwb-ar", thickness=inch(0.5),
+                           function=LayerFunction.FINISH),
+                 )),
+         )),
     # The linen closet continues the hall oak through D-S-NCLOSET.
     Room(uid="CSR415AAAA", tag="RM-S-NCLOSET", seed=pt(ft(20), ft(33)),
          occupancy=Occupancy.STORAGE, floor_finish="oak-floor-custom"),
@@ -1320,10 +1396,11 @@ FLOOR_OPENINGS = [
                  # West edge on W-M-STRW's 1/2" MDO stair face (10'-3 1/8" since 2026-10-23);
                  # off the wall's face the whole edge reads as unsupported.
                  outline=(pt(ft(10, 3.125), ft(26, 0.375)),
-                          pt(ft(17, 8.625), ft(26, 0.375)),
-                          pt(ft(17, 8.625), ft(35, 5.375)),
+                          pt(ft(17, 8.75), ft(26, 0.375)),
+                          pt(ft(17, 8.75), ft(35, 5.375)),
                           pt(ft(10, 3.125), ft(35, 5.375))),
-                 # East edge is carried by bearing wall, so it needs no header: W-M-C5
+                 # East edge on W-M-C5's 1/2" gypsum face (17'-8 3/4" since 2026-10-23) and
+                 # carried by bearing wall, so it needs no header: W-M-C5
                  # (which since 2026-07-28 starts at N-M-C3 on the stair wall's line, so it
                  # still reaches this edge's south end even though W-M-C4B under it is gone),
                  # plus W-M-C5B, joined 2026-08-24: the centre wall split at N-M-PAN1
@@ -1382,8 +1459,8 @@ BEAMS = [
 STAIR_GUARDS = [
     Railing(
         uid="CSRL01AAAA", tag="RL-S-STAIR", type_ref="RAILING-INT-STAIR-GUARD", path=(
-            pt(ft(17, 8.625), ft(26, 0.375)),
-            pt(ft(17, 8.625), ft(30, 10)),
+            pt(ft(17, 8.75), ft(26, 0.375)),
+            pt(ft(17, 8.75), ft(30, 10)),
         ),
         kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
         base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,
@@ -1403,7 +1480,7 @@ STAIR_GUARDS = [
         uid="CSRL02AAAA", tag="RL-S-STAIRHEAD", type_ref="RAILING-INT-STAIR-GUARD", path=(
             pt(ft(13, 10.75), ft(30, 2.375)),
             pt(ft(13, 10.75), ft(26, 0.375)),
-            pt(ft(17, 8.625), ft(26, 0.375)),
+            pt(ft(17, 8.75), ft(26, 0.375)),
         ),
         kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
         base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,

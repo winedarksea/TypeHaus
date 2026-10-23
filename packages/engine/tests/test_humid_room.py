@@ -41,6 +41,11 @@ CLASS_III = Material(tag="paint", name="Latex paint", r_per_inch=0.0,
                      vapor_permeance_perms=5.0)
 GWB = Material(tag="gwb", name='5/8" gypsum board', r_per_inch=0.9, perm_rating=18.8,
                gypsum_type="regular")
+MR = Material(tag="gwb-mr", name="Mold-resistant gypsum", r_per_inch=0.9,
+              gypsum_type="regular", gypsum_facer="paper",
+              gypsum_upgrades=("mold-resistant",))
+GLASS_MAT = Material(tag="glass-mat", name="Glass-mat gypsum", r_per_inch=0.9,
+                     gypsum_type="regular", gypsum_facer="glass-mat")
 PVC = Material(tag="pvc-panel", name="PVC panel", r_per_inch=1.0)
 SPF = Material(tag="spf", name="SPF", r_per_inch=1.24, perm_rating=2.9)
 
@@ -85,8 +90,17 @@ _LINED_OVER_GWB = _assembly("HUMID_GWB", [
     _layer("gwb-plant", "gwb", LayerFunction.FINISH, thickness=inch(0.625)),
     _LINED.layers[2],
 ])
-_ASSEMBLIES = {a.tag: a for a in (_LINED, _UNLINED, _VAPOR_ONLY, _TOO_OPEN, _LINED_OVER_GWB)}
-_MATERIALS = {m.tag: m for m in (CLASS_I, CLASS_III, GWB, PVC, SPF)}
+_MR_FACE = _assembly("MR_FACE", [
+    _layer("gwb-int", "gwb-mr", LayerFunction.FINISH, thickness=inch(0.5)),
+    _layer("stud", "spf", LayerFunction.STRUCTURE, thickness=inch(5.5)),
+])
+_GLASS_FACE = _assembly("GLASS_FACE", [
+    _layer("gwb-int", "glass-mat", LayerFunction.FINISH, thickness=inch(0.5)),
+    _layer("stud", "spf", LayerFunction.STRUCTURE, thickness=inch(5.5)),
+])
+_ASSEMBLIES = {a.tag: a for a in (_LINED, _UNLINED, _VAPOR_ONLY, _TOO_OPEN, _LINED_OVER_GWB,
+                                  _MR_FACE, _GLASS_FACE)}
+_MATERIALS = {m.tag: m for m in (CLASS_I, CLASS_III, GWB, MR, GLASS_MAT, PVC, SPF)}
 
 
 def _wall(tag, assembly, axis=((0.0, 0.0), (4.0, 0.0))):
@@ -197,6 +211,16 @@ def test_a_non_cellulose_room_face_passes():
 
 def test_gypsum_sealed_behind_the_membrane_is_not_on_the_room_face():
     findings = humid_room_finish(_ctx(assembly="HUMID_GWB"))
+    assert [f.result for f in findings] == [Result.PASS]
+
+
+def test_mold_resistant_paper_board_still_fails():
+    findings = humid_room_finish(_ctx(assembly="MR_FACE"))
+    assert [f.result for f in findings] == [Result.FAIL]
+
+
+def test_glass_mat_board_passes():
+    findings = humid_room_finish(_ctx(assembly="GLASS_FACE"))
     assert [f.result for f in findings] == [Result.PASS]
 
 

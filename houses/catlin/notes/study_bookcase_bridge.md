@@ -1,7 +1,7 @@
 # Study bookcase door — flush mount, oak casing, oak infill
 
 `D-A-STUDY` is a Murphy Door 36 x 80 nominal pre-hung flush-mount bookcase door, in-swing,
-hinged west, in W-A-SN (2x4 partition, 5/8" board both faces, 4 3/4" overall). The shelf face
+hinged west, in W-A-SN (2x4 partition, 1/2" board both faces, 4 1/2" overall since 2026-10-23). The shelf face
 is the study (south); the door swings north into the loft.
 
 ## What the manufacturer says
@@ -35,8 +35,9 @@ past it, as trim on the wall. The back is 3 1/2" past the loft finish (110 3/8),
 swing clearance. The resolved framing needed no change: jack and king each side, a flat
 2x4 nonbearing header, and the east king (263..264 1/2) beside the W-A-SN-WR corner post.
 
-**Jamb depth.** The jamb is 3/16" short of the 4 3/4" wall. Set it flush to the study face
-(the cased side) and scribe/caulk the loft side, or ask Murphy for a 4 3/4" jamb.
+**Jamb depth.** The 4 9/16" jamb stands 1/16" proud of the 4 1/2" wall (it was 3/16" short
+of the old 4 3/4" one). Set it flush to the study face (the cased side) and ease the 1/16" on
+the loft side; no scribe or special jamb is needed. The body's back stands 3 3/4" proud.
 
 ## Casing and infill
 

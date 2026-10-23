@@ -696,7 +696,8 @@ WALLS = [
     # segment D-B-GYM moved onto — a framed host in place of the 12" pour it used to be
     # formed through — which is the whole point of the rotation.
     Wall(uid="NJ21M7MF6R", tag="W-B-CS3", start_node="N-B-C1",
-         end_node="N-B-SA-NE", assembly="INT_2X6_BRG", top=ft(8),
+         end_node="N-B-SA-NE", assembly="INT_2X6_BRG_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING),
     FoundationWall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
@@ -757,7 +758,8 @@ WALLS = [
     # Nothing runs in this one and nothing bears on it — a plain 2x4 partition. Keep the
     # tag: W-M-CLN and W-M-CLN2 name it in `stacks_on`.
     Wall(uid="CBW119AAAA", tag="W-B-CW2", start_node="N-B-STR",
-         end_node="N-B-BA-SE", assembly="INT_2X4_PARTITION", top=ft(8)),
+         end_node="N-B-BA-SE", assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), top=ft(8)),
     # ** W-B-CW2B IS GONE (2026-09-07) AND THE MERGE IT USED TO PREVENT IS THE POINT. **
     # It was the last 4'-1 5/16" of the y=18' line, carrying O-B-HALL, the cased opening
     # the hall crossed to reach the workshop. The note here used to say the wall had to
@@ -770,7 +772,7 @@ WALLS = [
     # glazed double). Staggered studs: it is the long wall between the playroom and the gym,
     # and it also runs under the concrete band, so it wants the sound break.
     Wall(uid="CBW115AAAA", tag="W-B-CE", start_node="N-B-C",
-         end_node="N-B-E1", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8)),
+         end_node="N-B-E1", assembly="INT_2X6_STAGGERED_PLUMBING_HALF", top=ft(8)),
     # Stair shaft's west wall — 2x6 bearing studs on x=10', full north-row depth
     # (reference: "Stairway 7' x 16' 6 1/2""). Framed, not poured: it
     # holds back no earth (`unbalanced_fill` was ft(0) the whole time it was concrete), and
@@ -825,7 +827,7 @@ WALLS = [
     Wall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
          end_node="N-B-ESS-SE", assembly="STAIRWALL_INT_2X6_BRG_TYPEX", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
-         layer_materials=(LayerMaterial(layer="ply-stair", material="gwb"),),
+         layer_materials=(LayerMaterial(layer="ply-stair", material="gwb-ar"),),
          interior_room="RM-B-ESS",
          structural_role=StructuralRole.BEARING),
     # The same wall south of the closet: no Type X leaf, RM-B-FURNACE on the west face.
@@ -851,7 +853,7 @@ WALLS = [
     Wall(uid="VZPMT59XVQ", tag="W-B-STR3B", start_node="N-B-BA-NW",
          end_node="N-B-BA-W", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
-         layer_materials=(LayerMaterial(layer="ply-stair", material="gwb"),),
+         layer_materials=(LayerMaterial(layer="ply-stair", material="gwb-mr"),),
          interior_room="RM-B-FURNACE",
          structural_role=StructuralRole.BEARING),
     # The stub south of it: RM-B-BATH's west enclosure, nothing bearing on it, nothing
@@ -870,7 +872,7 @@ WALLS = [
     Wall(uid="CBW122AAAA", tag="W-B-STR2", start_node="N-B-BA-W",
          end_node="N-B-STR", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
-         layer_materials=(LayerMaterial(layer="ply-stair", material="gwb"),),
+         layer_materials=(LayerMaterial(layer="ply-stair", material="gwb-mr"),),
          interior_room="RM-B-FURNACE"),
     # Sauna partitions — SAUNA_2X4 carries the hot-side liner (T&G/furring/foil-faced
     # polyiso) as part of the wall type, not a room finish override; the east wall (the
@@ -901,7 +903,8 @@ WALLS = [
     # the riser one inch west into the clear stud bay; neither north segment needs deeper
     # framing. The liner stack stays the same, so both the sauna hot face and hall face align.
     Wall(uid="CM3FCDT2ST", tag="W-B-SA-N2", start_node="N-B-HALL-S",
-         end_node="N-B-SA-NE", assembly="SAUNA_2X4", top=ft(7, 6),
+         end_node="N-B-SA-NE", assembly="SAUNA_2X4",
+         layer_materials=(LayerMaterial(layer="gwb-cold", material="gwb-ar"),), top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
     # ** THE HALL'S WEST SIDE, NEW 2026-09-07. ** x=13'-10 11/16" from the y=18' line south
     # to the sauna's north wall, walling the workshop off the hall and hosting D-B-SHOP.
@@ -913,7 +916,8 @@ WALLS = [
     # here; a staggered wall's 2x4 studs cannot take a 3 1/4" bore.
     # top=ft(8) is the bearing seat like every other partition in this basement.
     Wall(uid="CQRJZCM0R1", tag="W-B-HALL-W", start_node="N-B-BA-SE",
-         end_node="N-B-HALL-S", assembly="INT_2X6_PLUMBING", top=ft(8)),
+         end_node="N-B-HALL-S", assembly="INT_2X6_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(8)),
     # ** RETYPED AND RE-NODED 2026-09-05, AND IT IS DRY NOW. ** This was the stair-foot
     # bathroom's only framed wall and it carried the whole room's plumbing. What is left
     # here is the bathroom's north end: a plain 2x4 partition running
@@ -921,13 +925,15 @@ WALLS = [
     # shorter since W-B-BA-E slid onto the well-partition line.
     # Top=8'-0" is the bearing seat, like every other partition in this basement.
     Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-NW",
-         end_node="N-B-BA-NE", assembly="INT_2X4_PARTITION", top=ft(8),
+         end_node="N-B-BA-NE", assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
          interior_room="RM-B-BATH"),
     # This 2x6 staggered partition now holds D-B-BATH and its split pocket frame. The
     # services moved into W-B-STR2 so the leaf can pass south into W-B-HALL-W. Its north
     # segment keeps the WC grab-bar backing; the cavity has no wall-mounted fixtures.
     Wall(uid="8BRZAXSW73", tag="W-B-BA-E", start_node="N-B-BA-NE",
-         end_node="N-B-BA-SE", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8),
+         end_node="N-B-BA-SE", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
          interior_room="RM-B-BATH"),
     # ESS closet's two framed walls (moved to the NE corner, same uids, so the enclosure is
     # the same two walls relocated rather than a new pair).
@@ -981,7 +987,8 @@ WALLS = [
     # it is FO-M-STAIR's void, not joists, so nothing lands on it and it is not BEARING.
     # It carries no framing of its own — see the assembly.
     Wall(uid="9AYPA03VAE", tag="W-B-WELL", start_node="N-B-BA-NE",
-         end_node="N-B-CL-NE", assembly="STAIRWELL_PARTITION_4H", top=ft(8),
+         end_node="N-B-CL-NE", assembly="STAIRWELL_PARTITION_4H",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
          interior_room="RM-B-STAIR"),
     # Unglazed buff brick veneer over the exposed run of W-B-S2/W-B-S3, where the sunken
     # garden is dug against them — everywhere else this wall is buried and the parge is a
@@ -1305,7 +1312,11 @@ ROOMS = [
     # and dies behind the wall finish: floor and wall are one tray with no base joint, and
     # the cove IS the waterproofing — nothing impermeable goes under it.
     Room(uid="CBR407AAAA", tag="RM-B-BATH", seed=pt(ft(12), ft(22)),
-         occupancy=Occupancy.BATHROOM, floor_finish="vinyl-sheet"),
+         occupancy=Occupancy.BATHROOM, floor_finish="vinyl-sheet",
+         ceiling_lining=(
+             Layer(name="gwb-ceil", material_ref="gwb-mr", thickness=inch(0.625),
+                   function=LayerFunction.FINISH),
+         )),
     Room(uid="CBR402AAAA", tag="RM-B-WORKSHOP", seed=pt(ft(8), ft(14)),
          occupancy=Occupancy.UTILITY, floor_finish="sealed-concrete"),
     # ** ROTATED ONTO THE GARDEN WALL 2026-09-05, THEN SHORTENED EAST THE SAME DAY ** — long

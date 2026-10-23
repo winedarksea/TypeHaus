@@ -53,8 +53,6 @@ from typehaus.resolve.braced_walls import (
 from typehaus.resolve.sheet_stock import sheet_label, wall_sheathing
 from typehaus.wind import wind_basis
 
-_GYPSUM_MATERIALS = frozenset({"gwb", "gypsum", "gypsum-board", "type-x-gwb", "gwb-type-x"})
-
 
 @dataclass(frozen=True)
 class PanelGrade:
@@ -271,8 +269,10 @@ def _panels_without_gypsum(model, line, panels) -> list[str]:
             wall = walls.get(tag)
             if wall is None:
                 continue
-            if not any(layer.material_ref in _GYPSUM_MATERIALS for layer in wall.layers
-                       if layer.function == "finish"):
+            # Any board stating a gypsum grade counts — AR, MR, Type X and C included.
+            if not any(getattr(model.plan.library.material(layer.material_ref),
+                               "gypsum_type", None) is not None
+                       for layer in wall.layers if layer.function == "finish"):
                 bare.append(tag)
     return sorted(set(bare))
 

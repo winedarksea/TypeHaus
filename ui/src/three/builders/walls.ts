@@ -13,7 +13,7 @@ import {
 import {
   applyMasonryWallUv, applyMineralWashUv, applyStandingSeamWallUv, createMasonryMaterial,
   createMineralWashMaterial, createStandingSeamMaterial, isMasonry, isMineralWashFinish,
-  isStandingSeam, masonryStyleFor, masonryTileSizeM, WALL_COATING_POLYGON_OFFSET,
+  isStandingSeam, masonryStyleFor, masonryTileSizeM, WALL_COATING_POLYGON_OFFSET, WALL_FINISH_POLYGON_OFFSET,
   metalPanelProfileForFinish, type MetalPanelProfile, SEAM_PROFILE,
 } from "../materials";
 import {
@@ -163,7 +163,8 @@ export function buildWall(
           // The resolved paint film is already ahead of its sheet. Only a fixed depth step
           // is needed here: slope bias can paint over timber projecting beyond the wall.
           : standardMaterial(new THREE.Color(materialColor(ly.material, palette, materials)), mode,
-            appearance?.coating ? WALL_COATING_POLYGON_OFFSET : {});
+            appearance?.coating ? WALL_COATING_POLYGON_OFFSET
+              : ly.function === "finish" ? WALL_FINISH_POLYGON_OFFSET : {});
     mats.push(mat);
     // A banded layer (`Layer.extent`, or one region of a split row via `Layer.slot`) covers
     // only part of the wall's height, and BOTH geometry paths have to honour that. Clamping

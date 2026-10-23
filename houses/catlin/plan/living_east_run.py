@@ -3,9 +3,10 @@
 # plan/living_east_run_types.py; slab CT-M-LIV-E-N in plan/countertops.py.
 #
 # All on W-M-E1, rotation -90 (back on the gwb at x=35'-5 3/8"). 24"-deep stock SEKTION,
-# body centres x=34'-5 3/8", fronts flush with FURN-M-KIT-PANTRY-S2. The kitchen's 3 1/2" leg
-# + 30" frame + 1 1/4" sub-top + 1 1/4" ash slab = 36". The bases stand 9/16" up on their
-# adjustable legs (36 9/16" top) so the slab meets WIN-M-DINING-E's seated frame rail, which
+# body centres x=34'-5 3/8", fronts flush with FURN-M-KIT-PANTRY-S2. Standard SEKTION legs
+# adjusted to 4 1/16" + 30" frames + 1 1/4" sub-top + 1 1/4" ash slab = 36 9/16".
+# Supports and toe panels start at the finished floor; the leg adjustment raises the
+# frames rather than floating the entire symbol. The slab meets the seated frame rail, which
 # sits 0.55" over its RO sill on the pan (resolve/opening_flashing.py).
 #
 # South of the slat partition is open wall: no bank, no counter. North of it, no fillers:
@@ -27,19 +28,19 @@ from typehaus.model import WindowStool, deg, inch, pt
 LIVING_EAST_RUN = [
     Furniture(uid="VYF21YNX09", tag="FURN-M-LIV-E-END-N", type_ref="FT-LIV-E-END-PANEL", room="RM-M-LIVING",
               position=pt(inch(413.375), inch(157)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.5625))),
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(0))),
     Furniture(uid="TKX5EHYSZW", tag="FURN-M-LIV-E-B24", type_ref="SEKT-B24-AXSTAD-DOOR", room="RM-M-LIVING",
               position=pt(inch(413.375), inch(169.25)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.5625))),
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(0))),
     Furniture(uid="QKGYPHFV12", tag="FURN-M-LIV-E-B36-MID", type_ref="SEKT-B36-AXSTAD-DOOR", room="RM-M-LIVING",
               position=pt(inch(413.375), inch(199.25)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.5625))),
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(0))),
     Furniture(uid="WQ2SWGGP5K", tag="FURN-M-LIV-E-B36-PANTRY", type_ref="SEKT-B36-AXSTAD-DOOR", room="RM-M-LIVING",
               position=pt(inch(413.375), inch(235.25)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.5625))),
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(0))),
     Furniture(uid="TA461J20Q0", tag="FURN-M-LIV-E-B18-N", type_ref="SEKT-B18-AXSTAD-DOOR", room="RM-M-LIVING",
               position=pt(inch(413.375), inch(262.25)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.5625))),
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(0))),
     # The slat partition, centred 30 1/4" off the gwb face.
     Furniture(uid="7ES588S8KP", tag="FURN-M-LIV-SLAT-FULL", type_ref="FT-LIV-SLAT-ELM-FULL",
               room="RM-M-LIVING", position=pt(inch(395.125), inch(155.5)), rotation=deg(0)),

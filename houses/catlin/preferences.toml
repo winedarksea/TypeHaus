@@ -268,6 +268,10 @@ permit_drop = ["A-502", "A-507"]
 # 2026-10-08 and `test_catlin_erv_clearance.py` ratchets it at zero, every pair.
 [checks]
 suppress = [
+  # W-S-PS1 (plant room | suite) is the humid liner on a mineral-wool 2x4: no published
+  # test covers it, so it is UNKNOWN by construction. Accepted 2026-10-23 (DESIGN-LOG,
+  # "Wall board policy"); a cited rating would need a tested liner wall.
+  "advisory.acoustic_adjacency:W-S-PS1",
   # ** mep.run_through_plate: 8 UNKNOWNs AND NO FAIL, BY NAME (2026-09-24; 9 and one
   # ERROR-severity FAIL on 2026-09-20). IT WAS A BLANKET ENTRY CLAIMING "15 UNKNOWNs" BEFORE. **
   #
@@ -521,3 +525,8 @@ suppress = [
   "mep.room_heat_source:RM-M-BATH2",
 
 ]
+
+[acoustics]
+# advisory.acoustic_adjacency: a doorless wall between a bedroom and a noisy room (bath,
+# laundry, living, kitchen, mechanical) or another bedroom must cite at least this STC.
+min_partition_stc = 45

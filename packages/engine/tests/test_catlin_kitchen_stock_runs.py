@@ -247,7 +247,10 @@ def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro
         )
         assert top.body_z0_m == pytest.approx(base.body_z1_m)
         assert (top.body_z1_m - top.body_z0_m) / INCH == pytest.approx(15)
-        assert (top.body_z1_m - base.body_z0_m) / INCH == pytest.approx(98.5)
+        assert (top.body_z1_m - base.body_z0_m) / INCH == pytest.approx(101)
+        garage_top = kitchen_objects["FURN-M-KIT-MIXER-GARAGE-ST"]
+        assert (top.body_z0_m, top.body_z1_m) == pytest.approx(
+            (garage_top.body_z0_m, garage_top.body_z1_m))
         assert f"FURN-M-KIT-PANTRY-S{n}-REAR-DECK" not in kitchen_objects
     assert "FURN-M-KIT-PANTRY-TOP-END" not in kitchen_objects
     shelf_type = next(
@@ -266,6 +269,7 @@ def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro
     for tag, type_ref, y0, y1 in living_run:
         item = kitchen_objects[tag]
         assert item.type_ref == type_ref
+        assert item.body_z0_m == pytest.approx(0.9375 * INCH)
         assert (_bounds(item)[1], _bounds(item)[3]) == pytest.approx((y0, y1))
         assert (_bounds(item)[0], _bounds(item)[2]) == pytest.approx(
             (_bounds(s2)[0], _bounds(s2)[2])
@@ -437,7 +441,7 @@ def test_house_configurations_preserve_shared_catalog_and_existing_furniture(cat
     types = {t.tag: t for t in catlin_plan.library.furniture_types}
     assert BASE_24.plan_symbol == "base-cabinet"
     assert types["SEKT-B24"].plan_symbol == "sektion-axstad-kitchen-drawers"
-    assert types["SEKT-B24-AXSTAD-DOOR"].plan_symbol == "sektion-axstad-kitchen-base-door"
+    assert types["SEKT-B24-AXSTAD-DOOR"].plan_symbol == "sektion-axstad-kitchen-base-door-raised"
     assert types["SEKT-TS30-20"].height.inches == 20
     assert types["FURN-M-BED-DESK-DRAWERS-15"].plan_symbol == "sektion-axstad-drawers"
     seat = catlin_plan.by_tag("FURN-S-STUDY-NOOK-SEAT-W")

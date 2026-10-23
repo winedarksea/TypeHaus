@@ -5,6 +5,7 @@ from __future__ import annotations
 from typehaus.library.assemblies._layers import (
     CONCRETE_BEARING,
     GWB_LINING,
+    GWB_LINING_HALF,
     PAINT_FINISH,
     PAINT_FINISH_A,
     PAINT_FINISH_B,
@@ -45,6 +46,18 @@ from typehaus.library.assemblies.partitions import (
     INT_2X8_PLUMBING,
     INT_ESS_CLOSET_STEEL,
     INT_ESS_CLOSET_STEEL_6,
+)
+from typehaus.library.assemblies.partitions_half import (
+    HALF_PARTITIONS,
+    INT_2X4_PARTITION_HALF,
+    INT_2X4_RC_HALF,
+    INT_2X4_STAGGERED_X_HALF,
+    INT_2X4_TYPEC_BATT,
+    INT_2X6_BRG_HALF,
+    INT_2X6_BRG_PLUMBING_HALF,
+    INT_2X6_BRG_RC_HALF,
+    INT_2X6_PLUMBING_HALF,
+    INT_2X6_STAGGERED_PLUMBING_HALF,
 )
 from typehaus.library.assemblies.structural import (
     BEAM_GLULAM_TREATED,
@@ -92,9 +105,19 @@ ALL_ASSEMBLIES: tuple[Assembly, ...] = (
     FROST_WING_XPS_2IN,
     POST_KDAT,
     RETAINING_BLOCK_12,
+    *HALF_PARTITIONS,
 )
 
 __all__ = [
+    "INT_2X4_PARTITION_HALF",
+    "INT_2X4_RC_HALF",
+    "INT_2X4_STAGGERED_X_HALF",
+    "INT_2X4_TYPEC_BATT",
+    "INT_2X6_BRG_HALF",
+    "INT_2X6_BRG_PLUMBING_HALF",
+    "INT_2X6_BRG_RC_HALF",
+    "INT_2X6_PLUMBING_HALF",
+    "INT_2X6_STAGGERED_PLUMBING_HALF",
     "FOOTING_STONE_20",
     "BEAM_LVL",
     "BEAM_KDAT",
@@ -113,6 +136,7 @@ __all__ = [
     "ALL_ASSEMBLIES",
     "CONCRETE_BEARING",
     "GWB_LINING",
+    "GWB_LINING_HALF",
     "PAINT_FINISH",
     "PAINT_FINISH_A",
     "PAINT_FINISH_B",

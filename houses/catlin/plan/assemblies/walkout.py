@@ -216,7 +216,7 @@ SAUNA_LINER_ON_GARDEN_CURB = Assembly(
 GARDEN_FRAMED_2X6 = Assembly(
     tag="GARDEN_FRAMED_2X6",
     layers=(
-        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.5),
               function=LayerFunction.FINISH),
         _GARDEN_FRAMED_STUD,
         *_GARDEN_FRAMED_OUTBOARD,

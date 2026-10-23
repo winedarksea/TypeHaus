@@ -13,6 +13,7 @@ from typehaus import (
 from library import (
     STUD_BEARING,
     GWB_LINING,
+    GWB_LINING_HALF,
 )
 
 
@@ -183,7 +184,7 @@ EXT_2X6 = Assembly(
               function=LayerFunction.CLADDING),
     ),
     interfaces=(STUD_BEARING,),
-    default_lining=GWB_LINING,
+    default_lining=GWB_LINING_HALF,
     source="catlin-house ifcplot/catlin_house.py wall siding stack; main-storey studs are LSL, second/attic standard dimensional 2x6",
 )
 
@@ -321,7 +322,7 @@ EXT_2X6_SWINBURNE = Assembly(
               function=LayerFunction.CLADDING),
     ),
     interfaces=(STUD_BEARING,),
-    default_lining=GWB_LINING,
+    default_lining=GWB_LINING_HALF,
     source="the 2026-08-23 EXT_2X6 outrigger stack, retired 2026-08-26 in favour of the catlin truss; kept unreferenced so the revert is a swap",
 )
 

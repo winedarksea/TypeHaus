@@ -62,8 +62,8 @@ LIVING_EAST_RUN_PRODUCTS = (SEKTION_CORNER_CAROUSEL, SEKTION_FLOOR_ANCHOR, SEKTI
 _PANEL = "PROD-IKEA-FORBATTRA-MATTE-25-80"
 
 LIVING_END_PANEL = FurnitureType(
-    tag="FT-LIV-E-END-PANEL", name='FÖRBÄTTRA end panel, 1/2 x 24 x 34"',
-    footprint=(inch(0.5), inch(24)), height=inch(34), plan_symbol="sektion-cover-panel",
+    tag="FT-LIV-E-END-PANEL", name='FÖRBÄTTRA end panel, 1/2 x 24 x 34 9/16"',
+    footprint=(inch(0.5), inch(24)), height=inch(34.5625), plan_symbol="sektion-cover-panel",
     product_ref=_PANEL,
     source=("Closes the north run against the slat partition, floor to slab; seen through "
             "the slats. Cut from one 25x80 panel."),

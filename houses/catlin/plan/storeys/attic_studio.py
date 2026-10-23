@@ -36,6 +36,7 @@ from typehaus import (
     FloorOpening,
     FloorOpeningPurpose,
     FollowRoof,
+    LayerMaterial,
     Node,
     Occupancy,
     PanelingSpan,
@@ -236,7 +237,7 @@ WALLS = [
     # DOES say — flange >= 1-1/8", edge distance >= 5/8", penetration into the web permitted
     # — is answered off the resolved section, not from this string.
     Wall(uid="9WC345CCP1", tag="W-A-BA-E", start_node="N-A-N3", end_node="N-A-H1",
-         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE"),
+         assembly="INT_2X4_PARTITION_HALF", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING,
          published_span=PublishedSpan(
              source="Simpson Strong-Tie, IAPMO UES ER-192 Table 37, also printed in Fastening Systems Technical Guide C-F-2025TECHSUP",
@@ -266,7 +267,8 @@ WALLS = [
     # the studio's north end into a mezzanine over the double-height hall — better architecture,
     # worse separation. The studio is a SLEEPING ROOM, so separation wins.
     Wall(uid="RV6PJZ6WWM", tag="W-A-HALL-S", start_node="N-A-H1", end_node="N-A-C3",
-         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE"),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING),
     # POCKET | STUDIO, y=22'-4", x 0..10'. With W-A-BA-E this is what makes the storage pocket a
     # closed face rather than the north end of a bedroom.
@@ -280,7 +282,7 @@ WALLS = [
     # bare tee and the wall is NOT split for it: rooms polygonize off noded linework, so the face
     # closes, and a 4 1/2" second segment would be a stick nobody can build.
     Wall(uid="3TKS0Y8EH7", tag="W-A-STU-N", start_node="N-A-PK-W", end_node="N-A-H1",
-         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE"),
+         assembly="INT_2X4_PARTITION_HALF", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING),
     # ** THE WET WALL — the only 2x6 in this suite, and the reason the bath is where it is. **
     # Its 5.5" cavity is the plumbing chase. It stays NONBEARING.
@@ -299,7 +301,8 @@ WALLS = [
     # shower on its east face, the wet-bar sink back-to-back on its WEST face — so one stack, one
     # vent and one cavity serve the whole storey addition.
     Wall(uid="ZEF56D047J", tag="W-A-STU-W", start_node="N-A-WW-S", end_node="N-A-WW-N",
-         assembly="INT_2X6_PLUMBING", top=ToRoof(roof_ref="RF-HOUSE"),
+         assembly="INT_2X6_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING),
     # STUDIO | BATH, y=17'-4" — a joist line (208" = 13 x 16), so this plate has a joist under it
     # and needs no blocking. Hosts D-A-STUBATH.
@@ -315,7 +318,8 @@ WALLS = [
     # sconce hangs on it; the bath side is the SOUTH face. Both were re-measured after the
     # retype and neither moved into anything (see the finding delta in the commit).
     Wall(uid="REREWJKFAZ", tag="W-A-BATH-S", start_node="N-A-WW-S", end_node="N-A-BW-E",
-         assembly="INT_2X6_PLUMBING", top=ToRoof(roof_ref="RF-HOUSE"),
+         assembly="INT_2X6_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING),
 ]
 

@@ -25,7 +25,7 @@ from library import (
 # retain the longer segments' painted finish specification.
 INT_2X4_PLUMBING = Assembly(
     tag="INT_2X4_PLUMBING",
-    variant_of="INT_2X6_PLUMBING",
+    variant_of="INT_2X6_PLUMBING_HALF",
     substitute=(
         Substitution(
             span=layers("stud", "stud"),
@@ -104,7 +104,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
     tag="PLANT_EXT_2X6_HUMID",
     layers=(
         *_HUMID_LINER,
-        Layer(name="gwb-plant", material_ref="gwb", thickness=inch(0.625),
+        Layer(name="gwb-plant", material_ref="gwb", thickness=inch(0.5),
               function=LayerFunction.FINISH),
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
@@ -235,7 +235,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
 # the same 5/8"+0.01" the hand-written `gwb-cold`+`paint-b` was).
 PLANT_INT_2X6_BRG_HUMID = Assembly(
     tag="PLANT_INT_2X6_BRG_HUMID",
-    variant_of="INT_2X6_BRG",
+    variant_of="INT_2X6_BRG_HALF",
     substitute=(
         Substitution(
             span=layers("paint-a", "stud"),
@@ -262,7 +262,7 @@ PLANT_INT_2X4_HUMID = Assembly(
         Layer(name="stud", material_ref="spf", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4"),
               cavity=CavityFill(material_ref="mineral-wool")),
-        Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
+        Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.5),
               function=LayerFunction.FINISH),
         PAINT_FINISH_B,
     ),

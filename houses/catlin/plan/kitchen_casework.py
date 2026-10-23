@@ -174,16 +174,16 @@ MAIN_KITCHEN_CASEWORK = [
     Furniture(uid="K09MANH37J", tag="FURN-M-KIT-PANTRY-S2", type_ref="SEKT-HIGH24-80",
               room="RM-M-LIVING",
               position=pt(inch(413.375), inch(283.375)), rotation=deg(-90)),
-    # Stock 15-high deep tops finish at 98 1/2; 30-high frames would cross the ceiling.
+    # Stock 80-inch pantry frames on 6-inch levelers align with the garage at 86/101.
     Furniture(uid="4WFET9VXWK", tag="FURN-M-KIT-PANTRY-S1-ST", type_ref="SEKT-TS24-15",
               room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(83.5)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(86)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(307.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="785R3FDGRK", tag="FURN-M-KIT-PANTRY-S2-ST", type_ref="SEKT-TS24-15",
               room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(83.5)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(86)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(283.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),

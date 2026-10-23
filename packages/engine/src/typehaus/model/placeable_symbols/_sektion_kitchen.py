@@ -12,7 +12,11 @@ from typehaus.model.placeable_symbols._frame import box, line, polygon, prism, r
 from typehaus.model.placeable_symbols._mesh import mesh_part
 from typehaus.model.placeable_symbols._sektion import _inset_l, sektion_corner_points
 from typehaus.model.placeable_symbols._sektion_corner_wall import sektion_corner_wall_points
-from typehaus.model.placeable_symbols._sektion_frames import sektion_carcass, sektion_plinth
+from typehaus.model.placeable_symbols._sektion_frames import (
+    sektion_carcass,
+    sektion_leveling_legs,
+    sektion_plinth,
+)
 from typehaus.model.placeable_symbols._sektion_fronts import (
     DOOR_THICKNESS_M,
     HARDWARE_EDGE_OFFSET_M,
@@ -40,6 +44,8 @@ class SektionCabinetConfiguration:
     fronts: str = "doors"
     hinge_right: bool = False
     tall_front_heights_in: tuple[float, ...] = ()
+    support_height_in: float = 3.5
+    leveling_legs: bool = False
 
 
 def _doors(
@@ -89,9 +95,10 @@ def sektion_axstad_cabinet(configuration: SektionCabinetConfiguration) -> Builde
     def build(width: float, depth: float, height: float) -> Geometry:
         installed_base = configuration.installation == "base"
         installed_tall = configuration.installation == "tall"
-        nominal = inch(36 if installed_base else 83.5).meters
+        support_height = inch(configuration.support_height_in).meters
+        nominal = inch(36 if installed_base else 83.5).meters + support_height - BASE_SUPPORT_M
         scale = min(1.0, height / nominal) if installed_base or installed_tall else 1.0
-        base = BASE_SUPPORT_M * scale if installed_base or installed_tall else 0.0
+        base = support_height * scale if installed_base or installed_tall else 0.0
         top = base + BASE_FRAME_M * scale if installed_base else height
         thickness = min(DOOR_THICKNESS_M, depth / 8)
         front = -depth / 2 - thickness
@@ -107,7 +114,10 @@ def sektion_axstad_cabinet(configuration: SektionCabinetConfiguration) -> Builde
             include_bottom=not garage,
         )
         if base:
-            parts.extend(sektion_plinth(width, depth, base, recess=min(TOE_RECESS_M, depth / 4)))
+            support_builder = (
+                sektion_leveling_legs if configuration.leveling_legs else sektion_plinth
+            )
+            parts.extend(support_builder(width, depth, base, recess=min(TOE_RECESS_M, depth / 4)))
         if installed_base:
             counter_bottom = height - min(COUNTER_M, (height - top) / 2)
             # Substrate and frame-top rails leave the sink opening clear as well.
@@ -242,6 +252,9 @@ def sektion_axstad_corner_wall(width: float, depth: float, height: float) -> Geo
 
 KITCHEN_SEKTION_SYMBOLS = {
     "sektion-axstad-kitchen-base-door": sektion_axstad_cabinet(SektionCabinetConfiguration("base")),
+    "sektion-axstad-kitchen-base-door-raised": sektion_axstad_cabinet(
+        SektionCabinetConfiguration("base", support_height_in=4.0625, leveling_legs=True)
+    ),
     "sektion-axstad-kitchen-base-door-right": sektion_axstad_cabinet(
         SektionCabinetConfiguration("base", hinge_right=True)
     ),
@@ -256,6 +269,9 @@ KITCHEN_SEKTION_SYMBOLS = {
         SektionCabinetConfiguration(fronts="lift")
     ),
     "sektion-axstad-kitchen-tall": sektion_axstad_cabinet(SektionCabinetConfiguration("tall")),
+    "sektion-axstad-kitchen-tall-raised": sektion_axstad_cabinet(
+        SektionCabinetConfiguration("tall", support_height_in=6, leveling_legs=True)
+    ),
     "sektion-axstad-kitchen-tall-aligned": sektion_axstad_cabinet(
         SektionCabinetConfiguration("tall", tall_front_heights_in=(30, 40, 20))
     ),

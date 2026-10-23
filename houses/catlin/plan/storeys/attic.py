@@ -210,10 +210,10 @@ WALLS = [
     # wall, no thrust on the 5' knee walls). Opening this line without a beam would dump
     # ~1.5 klf of thrust into the knee walls. 2x6 to match the bearing stack below (W-S-C1/C3).
     Wall(uid="CAW109AAAA", tag="W-A-C1", start_node="N-A-S2", end_node="N-A-C1",
-         assembly="INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
+         assembly="INT_2X6_BRG_HALF", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C1"),
     Wall(uid="CAW115AAAA", tag="W-A-C1B", start_node="N-A-C1", end_node="N-A-C2",
-         assembly="INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
+         assembly="INT_2X6_BRG_HALF", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C2"),
     # SPLIT AT N-A-C3 (y=22'-4"), for the same reason W-A-N2 was: W-A-HALL-S
     # tees in there, and a mid-span tee leaves the junction solver without a shared
@@ -233,17 +233,18 @@ WALLS = [
     # Both southern pieces stand on W-S-C2C (y ..22'-4") and both keep BEARING: this is the
     # ridge line, and RB-HOUSE names every segment of it.
     Wall(uid="CAW110AAAA", tag="W-A-C2", start_node="N-A-C2", end_node="N-A-BW-E",
-         assembly="INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
+         assembly="INT_2X6_BRG_HALF", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C2C"),
     Wall(uid="78VGE6A81J", tag="W-A-C2M", start_node="N-A-BW-E", end_node="N-A-C3",
-         assembly="INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
+         assembly="INT_2X6_BRG_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C2C"),
     # y 22'-4"..36'-0". Between y=22'-4" and 30'-10" the storey below carries no wall —
     # BM-S-HALL (three plies 11-7/8" LVL) is there instead — so this wall (and RB-HOUSE
     # through it) lands on that beam. `stacks_on` names W-S-C4B since the tiebreaker needs
     # a *wall*. It is also the east edge of FO-A-HALL: the void's maxx is this wall's axis.
     Wall(uid="S9N320V34H", tag="W-A-C2B", start_node="N-A-C3", end_node="N-A-N1",
-         assembly="INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
+         assembly="INT_2X6_BRG_HALF", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C4B"),
     # ** THE DEN IS GONE (2026-08-27, by decision). ** W-A-DN (N-A-D1 -> N-A-C1) and W-A-DW
     # (N-A-S1 -> N-A-D1) stood here, boxing a 43 sf nook at x 10'-0"..18'-0", y 0..5'-7"
@@ -267,19 +268,19 @@ WALLS = [
     # relation validates that barrier before the guard check may credit it. W-A-SN retains its
     # identity and the purchased Murphy door. All five segments follow the roof.
     Wall(uid="CAW113AAAA", tag="W-A-SN", start_node="N-A-C2", end_node="N-A-SN-WF",
-         assembly="INT_2X4_PARTITION", interior_room="RM-A-STUDY",
+         assembly="INT_2X4_PARTITION_HALF", interior_room="RM-A-STUDY",
          structural_role=StructuralRole.NONBEARING, top=ToRoof(roof_ref="RF-HOUSE")),
     Wall(uid="P8A4WWAL01", tag="W-A-SN-WR", start_node="N-A-SN-WF", end_node="N-A-SN-WB",
-         assembly="INT_2X4_PARTITION", structural_role=StructuralRole.NONBEARING,
+         assembly="INT_2X4_PARTITION_HALF", structural_role=StructuralRole.NONBEARING,
          top=ToRoof(roof_ref="RF-HOUSE")),
     Wall(uid="P8A4BWAL02", tag="W-A-SN-REAR", start_node="N-A-SN-WB", end_node="N-A-SN-EB",
-         assembly="INT_2X4_PARTITION", structural_role=StructuralRole.NONBEARING,
+         assembly="INT_2X4_PARTITION_HALF", structural_role=StructuralRole.NONBEARING,
          top=ToRoof(roof_ref="RF-HOUSE")),
     Wall(uid="P8A4EWAL03", tag="W-A-SN-ER", start_node="N-A-SN-EB", end_node="N-A-SN-EF",
-         assembly="INT_2X4_PARTITION", structural_role=StructuralRole.NONBEARING,
+         assembly="INT_2X4_PARTITION_HALF", structural_role=StructuralRole.NONBEARING,
          top=ToRoof(roof_ref="RF-HOUSE")),
     Wall(uid="P8A4CWAL04", tag="W-A-SN-EAST", start_node="N-A-SN-EF", end_node="N-A-E1",
-         assembly="INT_2X4_PARTITION", structural_role=StructuralRole.NONBEARING,
+         assembly="INT_2X4_PARTITION_HALF", structural_role=StructuralRole.NONBEARING,
          top=ToRoof(roof_ref="RF-HOUSE")),
     # ** THE STAIR WELL'S SOUTH-EAST CLOSURE. A GUARD CANNOT STAND HERE. **
     # RL-A-STAIR was drawn along the whole south edge, when the east end of
@@ -311,7 +312,7 @@ WALLS = [
     # RM-A-STUDY where the railing continues, so no new room polygon is carved and no outward
     # sign flips. Non-bearing, no opening, and it stops 5/8" short of the rafter plate.
     Wall(uid="HKFW104YS3", tag="W-A-GC-S", start_node="N-A-GC1", end_node="N-A-GC2",
-         assembly="INT_2X4_PARTITION", interior_room="RM-A-STUDY",
+         assembly="INT_2X4_PARTITION_HALF", interior_room="RM-A-STUDY",
          top=ToRoof(roof_ref="RF-HOUSE")),
     # ** THE STAIR VESTIBULE SCREEN IS GONE. ** W-A-VE (CAW116AAAA),
     # W-A-VN (CAW117AAAA) and D-A-VEST (CAD204AAAA) were the source's Den east and north

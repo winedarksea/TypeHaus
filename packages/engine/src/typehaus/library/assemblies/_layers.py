@@ -36,6 +36,13 @@ GWB_LINING = (
           function=LayerFunction.FINISH),
 )
 
+# The 1/2" wall sibling: catlin's walls are 1/2", its ceilings 5/8" (24" o.c. framing).
+GWB_LINING_HALF = (
+    PAINT_FINISH,
+    Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.5),
+          function=LayerFunction.FINISH),
+)
+
 # The same film named per face, for partitions that carry their gypsum in ``layers``.
 PAINT_FINISH_A = Layer(name="paint-a", material_ref="latex-paint", thickness=inch(0.01),
                        function=LayerFunction.FINISH,

@@ -28,6 +28,14 @@ from library import (
     INT_2X4_STAGGERED_GWB,
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,
+    INT_2X4_PARTITION_HALF,
+    INT_2X4_RC_HALF,
+    INT_2X4_STAGGERED_X_HALF,
+    INT_2X6_BRG_HALF,
+    INT_2X6_BRG_PLUMBING_HALF,
+    INT_2X6_BRG_RC_HALF,
+    INT_2X6_PLUMBING_HALF,
+    INT_2X6_STAGGERED_PLUMBING_HALF,
 )
 from .envelope_masonry import (
     BASEMENT_BRICK_VENEER,
@@ -257,6 +265,16 @@ ASSEMBLIES = [
     INT_2X6_STAGGERED_PLUMBING,
     INT_2X4_PARTITION,
     INT_2X4_RC,
+    # The 1/2" wall siblings (2026-10-23 wall board policy); the 5/8" tags above stay
+    # as the named revert.
+    INT_2X4_PARTITION_HALF,
+    INT_2X4_RC_HALF,
+    INT_2X4_STAGGERED_X_HALF,
+    INT_2X6_BRG_HALF,
+    INT_2X6_BRG_PLUMBING_HALF,
+    INT_2X6_BRG_RC_HALF,
+    INT_2X6_PLUMBING_HALF,
+    INT_2X6_STAGGERED_PLUMBING_HALF,
     # Kept, referenced by nothing — W-M-LS/CLN/CLN2 retyped to the
     # single-gwb INT_2X4_STAGGERED_GWB below for the material cost, same convention
     # glazed-green-brick is kept under.

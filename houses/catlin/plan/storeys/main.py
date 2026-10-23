@@ -17,6 +17,7 @@ from typehaus import (
     BookcaseDoorSpec,
     Connector,
     ConnectorKind,
+    ControlLayer,
     Door,
     DoorType,
     FloorHeat,
@@ -40,6 +41,7 @@ from typehaus import (
     Stair,
     StructuralRole,
     Wall,
+    WallLiningException,
     WallPaneling,
     Window,
     WindowType,
@@ -547,17 +549,17 @@ WALLS = [
     # axis slides 1/4" and W-S-C1's `stacks_on` is inside `_axis_match`'s tolerance of
     # dropping. Both are explained in full at the assembly (plan/assemblies.py).
     Wall(uid="CMW112AAAA", tag="W-M-C1", start_node="N-M-S1", end_node="N-M-C1",
-         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
-         assembly="INT_2X6_BRG_RC", interior_room="RM-M-BED", top=ft(9),
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"), LayerMaterial(layer="gwb-b", material="gwb-ar"),),
+         assembly="INT_2X6_BRG_RC_HALF", interior_room="RM-M-BED", top=ft(9),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS"),
     Wall(uid="CMW113AAAA", tag="W-M-C2", start_node="N-M-C1", end_node="N-M-E4",
-         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
-         assembly="INT_2X6_BRG", top=ft(9),
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"), LayerMaterial(layer="gwb-b", material="gwb-ar"),),
+         assembly="INT_2X6_BRG_HALF", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS2"),
     Wall(uid="CMW114AAAA", tag="W-M-C3", start_node="N-M-E4", end_node="N-M-C2",
-         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
-         assembly="INT_2X6_BRG", top=ft(9),
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"), LayerMaterial(layer="gwb-b", material="gwb-ar"),),
+         assembly="INT_2X6_BRG_HALF", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS2"),
     # y 21'-8" .. 25'-10" IS NOT A WALL — it is the BM-M-HALL flitch of LVL, the main-storey
     # twin of BM-S-HALL directly above it. W-M-C4 / W-M-C4B used to stand here; the whole
@@ -573,11 +575,11 @@ WALLS = [
     # ``stacks_on``, so the load path is unchanged and only the junction framing is new.
     Wall(uid="CMW116AAAA", tag="W-M-C5", start_node="N-M-C3", end_node="N-M-PAN1",
          layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
-         assembly="INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG_HALF", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     Wall(uid="A5K4RVWPWW", tag="W-M-C5B", start_node="N-M-PAN1", end_node="N-M-N1",
          layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
-         assembly="INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG_HALF", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     # --- stair / storage block --------------------------------------------------
     # W-M-STRW carries the cut second-floor joists and stacks over the basement
@@ -612,7 +614,7 @@ WALLS = [
     # 34'-8", so no stud is cut and no header is needed.
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
          end_node="N-M-STRJ", assembly="INT_2X6_BRG_MUDROOM_UPPER_GWB", top=ft(9),
-         layer_materials=(LayerMaterial(layer="stud", material="df-select-s4s"),),
+         layer_materials=(LayerMaterial(layer="stud", material="df-select-s4s"), LayerMaterial(layer="gwb-mudroom-upper", material="gwb-ar"),),
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
@@ -635,15 +637,19 @@ WALLS = [
     # at 9'-0" like every main wall — higher runs into FO-S-STAIR's south trimmer
     # (structural.through_deck_clearance).
     Wall(uid="SNNBY9M3CE", tag="W-M-WELL", start_node="N-M-WELL-S", end_node="N-M-WELL-N",
-         assembly="STAIRWELL_PARTITION_4H", base_elevation=inch(0.9862), top=inch(107.0138),
+         assembly="STAIRWELL_PARTITION_4H",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), base_elevation=inch(0.9862), top=inch(107.0138),
          interior_room="RM-M-LIVING"),
     Wall(uid="CMW119AAAA", tag="W-M-STOS", start_node="N-M-W1",
-         end_node="N-M-BA1", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-BA1", assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     Wall(uid="CMW120AAAA", tag="W-M-STOS2", start_node="N-M-BA1",
-         end_node="N-M-STRJ", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-STRJ", assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
     # --- powder bath west of hallway -------------------------------------------
     Wall(uid="CMW121AAAA", tag="W-M-BAE", start_node="N-M-BA1",
-         end_node="N-M-BA2", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-BA2", assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     # --- hallway south wall band ------------------------------------------------
     # W-M-HS1 is a wet wall since 2026-08-29, not the 2x4 partition it was: the RM-M-BATH2
     # drop-in bath pass moved FX-M-BATH2-WC off the middle of the floor and backed it onto
@@ -666,7 +672,8 @@ WALLS = [
     # use the room's full remaining depth with nothing spare — moving this wall again means
     # redrawing both.
     Wall(uid="CMW122AAAA", tag="W-M-HS1", start_node="N-M-W2",
-         end_node="N-M-BA2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+         end_node="N-M-BA2", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     # W-M-HS2 follows W-M-HS1 to the same wet-wall assembly and the reason is
     # GEOMETRY, not plumbing: retyping HS1 alone put a 1" step in RM-M-BATH2's north face at
     # x=6'-0", and the tub deck straddles that line (x 4'-8.24"..7'-10 5/8"). The deck's head
@@ -678,19 +685,23 @@ WALLS = [
     # what a tub filler wants. The hall's south face moves 1" north over these 2'-0" with
     # it, matching HS1 — the band reads as one wall, which it always did.
     Wall(uid="CMW123AAAA", tag="W-M-HS2", start_node="N-M-BA2",
-         end_node="N-M-D1", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+         end_node="N-M-D1", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     # The 2x4 sections are 2" thinner than HS2. Move their whole sections 1" north
     # from the shared node line so the hall-side gypsum stays flush across the change.
     # Keep the nodes on y=22'-4" for the bath/laundry/study tees and pocket travel.
     Wall(uid="CMW124AAAA", tag="W-M-HS3", start_node="N-M-D1",
-         end_node="N-M-E3", assembly="INT_2X4_PARTITION", top=ft(9),
+         end_node="N-M-E3", assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
          alignment=face("center", offset=inch(1))),
     Wall(uid="CMW125AAAA", tag="W-M-HS4", start_node="N-M-E3",
-         end_node="N-M-C2", assembly="INT_2X4_PARTITION", top=ft(9),
+         end_node="N-M-C2", assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9),
          alignment=face("center", offset=inch(1))),
     # --- bath2 / laundry / study / closet block ---------------------------------
     Wall(uid="CMW126AAAA", tag="W-M-BA2E", start_node="N-M-D1",
-         end_node="N-M-D2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+         end_node="N-M-D2", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     # ** SAME ASSEMBLY AS W-M-BA2E, SAME AXIS, AND BOTH HALVES OF THAT ARE DELIBERATE. **
     # This segment spent a few hours as an `INT_2X4_PARTITION` 8 3/8" (then 4 3/8") east of
     # the line, which is what a jog costs: two assemblies, a 1" step in both the bath's and
@@ -701,7 +712,8 @@ WALLS = [
     # only because W-M-CLN tees in at N-M-D2. The 6.75" assembly puts its bath face at
     # x=7'-10 5/8", which is what FX-M-BATH2-SH's pan is struck off.
     Wall(uid="CMW127AAAA", tag="W-M-BA2E2", start_node="N-M-D2",
-         end_node="N-M-D3", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+         end_node="N-M-D3", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     # W-M-LS and W-M-CLN2 (below) are RM-M-STUDY's west and south walls, and the study is
     # now a built-in call booth (FURN-M-STUDY-BENCH / -DESK). STAGGERED, originally
     # STAGGERED_DOUBLE_GWB at STC 52, not INT_2X4_RC_DOUBLE_GWB, which reaches STC 54 in
@@ -734,7 +746,8 @@ WALLS = [
     # Since 2026-08-29 it also carries DU-M-ERV-R-STUDY's riser and REG-M-SUP4 in its 5 1/2"
     # cavity, which only a staggered or a 2x6 wall has room for.
     Wall(uid="CMW128AAAA", tag="W-M-LS", start_node="N-M-E2",
-         end_node="N-M-E3", assembly="INT_2X4_STAGGERED_GWB", top=ft(9)),
+         end_node="N-M-E3", assembly="INT_2X4_STAGGERED_X_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), top=ft(9)),
     # The closet's north line, y=18'-0" since 2026-08-03 (was 17'-4"). See the NODES note
     # over N-M-D2: the 8" came out of RM-M-LAUNDRY and RM-M-STUDY, and the laundry's 40"
     # stacked pair is what says it could not be more.
@@ -767,7 +780,8 @@ WALLS = [
     # between W-M-BA2E and W-M-BA2E2. The two are collinear again, so it has no length and is
     # deleted rather than shrunk. Never reuse the uid.)
     Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2",
-         end_node="N-M-E2", assembly="INT_2X4_STAGGERED_GWB", top=ft(9),
+         end_node="N-M-E2", assembly="INT_2X4_STAGGERED_X_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), top=ft(9),
          stacks_on="W-B-CW2"),
     # Staggered per the W-M-LS note. ** IT STACKS ON NOTHING SINCE 2026-09-07, AND THAT IS
     # AUTHORED, NOT AN OMISSION. ** W-B-CW2B was the only basement wall under this run, and
@@ -779,7 +793,7 @@ WALLS = [
     # ALONG them at y=216" mid-bay between the 208" and 224" lines, so
     # params/main_deck.py carries two `JoistReinforcement` blocking entries under it.
     Wall(uid="CMW130AAAA", tag="W-M-CLN2", start_node="N-M-E2",
-         end_node="N-M-E4", assembly="INT_2X4_STAGGERED_GWB", top=ft(9)),
+         end_node="N-M-E4", assembly="INT_2X4_STAGGERED_X_HALF", top=ft(9)),
     # --- RM-M-BATH2 drop-in tub deck knee walls ---------------------
     # The two framed sides of the box FX-M-BATH2-TUB drops into. 2x3 at 16" o.c. with
     # exterior-grade ply both faces and a mineral wool cavity — and that cavity is the one
@@ -828,34 +842,39 @@ WALLS = [
     # vanity, floor-heat stat and switch are fitted. PR-M-BATH2-* still has its 3 1/2"
     # cavity for the 3/4" PEX riser, and D-M-BATH2 remains hosted here.
     Wall(uid="CMW131AAAA", tag="W-M-BDN1", start_node="N-M-W3",
-         end_node="N-M-D3", assembly="INT_2X4_PARTITION", interior_room="RM-M-BED", top=ft(9)),
+         end_node="N-M-D3", assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), interior_room="RM-M-BED", top=ft(9)),
     Wall(uid="CMW132AAAA", tag="W-M-BDN2", start_node="N-M-D3",
-         end_node="N-M-C1", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-C1", assembly="INT_2X4_PARTITION_HALF", top=ft(9)),
     # --- RM-M-MECH: framed MEP shaft closet, NW corner -------------
     # Authored east to west so its 16" layout runs from the east end: the module studs land
     # at 56"/40"/24" (in or beside D-M-MECH's opening), leaving 58"..68 3/4" clear for the
     # switch box.
     Wall(uid="CMW137AAAA", tag="W-M-MECH-S", start_node="N-M-MECH2",
-         end_node="N-M-MECH1", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-MECH1", assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
     Wall(uid="CMW138AAAA", tag="W-M-MECH-E", start_node="N-M-MECH2",
-         end_node="N-M-MECH3", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-MECH3", assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9)),
     # --- RM-M-MUD-CLOSET: framed south mudroom closet --------------
     # Replaces FURN-M-MUD-CLOSET-S (plan/furniture_types.py, now empty). The north
     # partition carries the closet's opening — the bypass slider in D-M-MUDC — and the
     # east return dies into the existing N-M-BA1 tee, so the room closes against
     # W-M-W1C (west), W-M-STOS (south) and these two.
     Wall(uid="KKVYSAJKZF", tag="W-M-MUDC-N", start_node="N-M-MUDC1", end_node="N-M-MUDC2",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
     Wall(uid="21GE85HJDT", tag="W-M-MUDC-E", start_node="N-M-MUDC2", end_node="N-M-BA1",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
     # --- RM-M-PANTRY: framed reach-in pantry, kitchen NW corner ----
     # Clear 73 1/4 x 26 inches. The 74 1/2-inch Eclisse RO spans between
     # the perpendicular stud faces, with its ends supported by those walls.
     Wall(uid="QY8YCE6XV3", tag="W-M-PAN-S", start_node="N-M-PAN1", end_node="N-M-PAN2",
-         assembly="INT_2X4_PARTITION", top=ft(9),
+         assembly="INT_2X4_PARTITION_HALF", top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="HGVY43DYQH", tag="W-M-PAN-E", start_node="N-M-PAN2", end_node="N-M-PAN3",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION_HALF", top=ft(9)),
     # --- the fireplace surround ----------------------------------------------------------
     #
     # See the nodes above for the pier arithmetic and the 3 5/8"-wythe reasoning. This is the
@@ -1502,9 +1521,39 @@ ROOMS = [
     # waterproof core. RM-M-BATH2 upstairs of the plumbing wall keeps its tile — it is a
     # full bath on its own radiant zone (FH-M-BATH2), which is where tile earns the mass.
     Room(uid="CMR403AAAA", tag="RM-M-BATH1", seed=pt(ft(2), ft(24, 6)),
-         occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
+         occupancy=Occupancy.BATHROOM, floor_finish="lvp",
+         wall_lining_exceptions=(
+             WallLiningException(
+                 uid="J0FSF34P94", tag="LX-M-BATH1-W2", wall_ref="W-M-W2",
+                 lining=(
+                     Layer(name="paint", material_ref="latex-paint",
+                           thickness=inch(0.01), function=LayerFunction.FINISH,
+                           control={ControlLayer.VAPOR}),
+                     Layer(name="gwb-int", material_ref="gwb-mr", thickness=inch(0.5),
+                           function=LayerFunction.FINISH),
+                 )),
+         ),
+         ceiling_lining=(
+             Layer(name="gwb-ceil", material_ref="gwb-mr", thickness=inch(0.625),
+                   function=LayerFunction.FINISH),
+         )),
     Room(uid="CMR404AAAA", tag="RM-M-BATH2", seed=pt(ft(4), ft(18)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-calacatta-gold"),
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-calacatta-gold",
+         wall_lining_exceptions=(
+             WallLiningException(
+                 uid="0DBYNX5F4F", tag="LX-M-BATH2-W3", wall_ref="W-M-W3",
+                 lining=(
+                     Layer(name="paint", material_ref="latex-paint",
+                           thickness=inch(0.01), function=LayerFunction.FINISH,
+                           control={ControlLayer.VAPOR}),
+                     Layer(name="gwb-int", material_ref="gwb-mr", thickness=inch(0.5),
+                           function=LayerFunction.FINISH),
+                 )),
+         ),
+         ceiling_lining=(
+             Layer(name="gwb-ceil", material_ref="gwb-mr", thickness=inch(0.625),
+                   function=LayerFunction.FINISH),
+         )),
     Room(uid="CMR405AAAA", tag="RM-M-LAUNDRY", seed=pt(ft(10, 6), ft(20)),
          occupancy=Occupancy.LAUNDRY, floor_finish="lvp"),
     Room(uid="CMR406AAAA", tag="RM-M-STUDY", seed=pt(ft(15, 8), ft(20)),
@@ -1527,7 +1576,27 @@ ROOMS = [
     # LVP matches the hall and both closets. The exterior sill is a separate
     # weather detail; keep boot water away from plank edges at D-M-ENTRY.
     Room(uid="CMR409AAAA", tag="RM-M-MUDROOM", seed=pt(ft(5), ft(31)),
-         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
+         occupancy=Occupancy.STORAGE, floor_finish="lvp",
+         wall_lining_exceptions=(
+             WallLiningException(
+                 uid="7P4Y8EG912", tag="LX-M-MUDROOM-N3", wall_ref="W-M-N3",
+                 lining=(
+                     Layer(name="paint", material_ref="latex-paint",
+                           thickness=inch(0.01), function=LayerFunction.FINISH,
+                           control={ControlLayer.VAPOR}),
+                     Layer(name="gwb-int", material_ref="gwb-ar", thickness=inch(0.5),
+                           function=LayerFunction.FINISH),
+                 )),
+             WallLiningException(
+                 uid="Z7Q35P12Q0", tag="LX-M-MUDROOM-W1", wall_ref="W-M-W1",
+                 lining=(
+                     Layer(name="paint", material_ref="latex-paint",
+                           thickness=inch(0.01), function=LayerFunction.FINISH,
+                           control={ControlLayer.VAPOR}),
+                     Layer(name="gwb-int", material_ref="gwb-ar", thickness=inch(0.5),
+                           function=LayerFunction.FINISH),
+                 )),
+         )),
     # Framed MEP shaft closet, replacing FURN-M-MUD-CLOSET-N: the
     # radon+plumbing riser rides its SW corner. STORAGE is the closed enum's closest fit
     # for a mechanical closet, same reasoning as RM-M-MUDROOM above.
