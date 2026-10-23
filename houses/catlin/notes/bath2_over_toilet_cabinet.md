@@ -1,5 +1,11 @@
 # RM-M-BATH2 — the over-toilet cabinet, and why the engine had to be corrected first
 
+> **2026-10-22: replaced.** The site-built 45" box is now `FURN-M-BATH2-CAB-W`/`-E`, two
+> IKEA TÄNNFORSEN cabinets (`FT-IKEA-TANNFORSEN-1806`, 18" x 6" x 37", art. 405.354.20, $199
+> each), butted and centred on the WC at x 12"–48", doors opposed and hinged outboard. The
+> 6" depth and the 4'-0" bottom, and everything below about why, still hold; the carcass
+> rows of the table and the `[placeables]` row describe the old box.
+
 `FURN-M-BATH2-CAB` / `FT-BATH2-CAB-4506`. This note exists because the
 cabinet's two hard dimensions — 6" deep, bottom at 4'-0" AFF — are not styling, and because
 adding it required changing a code check that was reporting a violation this house does not

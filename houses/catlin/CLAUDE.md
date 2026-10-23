@@ -241,7 +241,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   of the thing in the room — `FX-M-BATH2-SINK` no longer borrows `FX-KITCHEN-SINK-33` (a
   double-bowl kitchen sink) for exactly that reason; it modelled no cabinet.
   **RM-M-BATH2 has storage above the toilet**:
-  `FURN-M-BATH2-CAB` / `FT-BATH2-CAB-4506`, a 45" x 6" x 60" flush-fronted box on the room's
+  `FURN-M-BATH2-CAB-W`/`-E`, a butted pair of IKEA TÄNNFORSEN 18" x 6" x 37" (`FT-IKEA-TANNFORSEN-1806`), centred on the WC on the room's
   only free wall (W-M-HS1's bath face), bottom at 4'-0" AFF — which is a **code line, not a
   comfort choice**: below `FX-TOILET-STD`'s own 30" top the wall face would move 6" south and
   take the bowl's front clearance 2.8" into the vanity. It is also why

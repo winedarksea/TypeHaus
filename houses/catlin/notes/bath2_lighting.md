@@ -56,7 +56,7 @@ The separate 5000 K Karlie remains the daytime task light.
 | P3 Karlie task light | 80" body bottom, 87 1/2" top, 2" over mirror head | same uid, 54623CM + three 80795-SU bulbs |
 | `ED-M-BATH2-RC1` | moved 85" -> 74" along `W-M-W3`, now y=16'-2", 44" | the mirror's glass would have buried it (the BATH1 lesson) |
 | mirror backing | `BK-M-W3-MID` (44") and `-HIGH` (72"), stud face 76 3/4" to 107 1/4" | whole bays between the 76" and 108" studs; a free end FAILs `advisory.wall_backing_bearing` |
-| E3 runs | toe kick 3" behind the vanity face (46"); `FURN-M-BATH2-CAB`'s front edge at 4'-0" (43.5"); the ceiling over the tub, 2" off `W-M-BA2E` (66", 2026-10-22) | 13.0 ft x 3 W/ft = 39 W on a 60 W supply: 154% (>= 125%), unchanged |
+| E3 runs | toe kick 3" behind the vanity face (46"); the `FURN-M-BATH2-CAB-W/-E` pair's front edge at 4'-0" (35", 2026-10-22); the ceiling over the tub, 2" off `W-M-BA2E` (66", 2026-10-22) | 12.25 ft x 3 W/ft = 36.75 W on a 60 W supply: 163% (>= 125%) |
 | `ED-M-BATH2-PSU` | ceiling at (2'-6", 16'-8"), in the 192"-208" bay | outside the shower zone, off the extract trunk |
 
 **Controls.** The old single switch on `W-M-BDN1` (box x 17.7"-21.7", uid kept, now

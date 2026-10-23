@@ -20,7 +20,7 @@
 #   course   profile   bottom   top        what it backs
 #   -GRAB    2x8       32"      39 1/4"    CRC R328.1.1 verbatim — 2x8 nominal minimum,
 #                                          32" to 39 1/4", flush with the framing
-#   -MID     2x10      44"      53 1/4"    mirror bottom cleats, FURN-M-BATH2-CAB's 48" rail
+#   -MID     2x10      44"      53 1/4"    mirror bottom cleats, FURN-M-BATH2-CAB-W/-E bottoms
 #   -HIGH    2x8       72"      79 1/4"    mirror top cleats, closet wire clips at 80"
 #
 # ** A GRAB COURSE STANDS ONLY WHERE A TUB, SHOWER OR WC DOES, read off geometry** (the wall
@@ -77,11 +77,11 @@ MAIN_WET_BACKING = [
     WallBacking(uid="RNKWND9P9B", tag="BK-M-HS1-MID", wall_ref="W-M-HS1",
                 elevation=_MID_ELEVATION, height=_MID_HEIGHT,
                 profile=_MID_PROFILE, material_ref="spf",
-                purpose="FURN-M-BATH2-CAB bottom rail (48 in.)"),
+                purpose="FURN-M-BATH2-CAB-W/-E bottom fastening (48 in.)"),
     WallBacking(uid="82SRRT7F5Z", tag="BK-M-HS1-HIGH", wall_ref="W-M-HS1",
                 elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
-                purpose="FURN-M-BATH2-CAB upper fastening"),
+                purpose="FURN-M-BATH2-CAB-W/-E upper fastening"),
     # North-face 2x10 fits between the north-row studs at x=48/64, clear of
     # the opposing staggered stud at x=56. Fixings x=49.901/59.349, 31.835 AFF.
     WallBacking(uid="XVMRGW2TW9", tag="BK-M-HS1-BASIN", wall_ref="W-M-HS1", face="left",

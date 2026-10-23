@@ -2964,7 +2964,7 @@
 # (3.75 LF -> $656-1,313) because this is a flat box: no scribe beyond 3/8", no face frame,
 # no stepped top, no counter, no hardware to line up. High end is a cabinet shop spraying
 # it; low end is the carpenter who is already hanging the gypsum.
-"FT-BATH2-CAB-4506" = { material = { low = 175, high = 450 }, labour = { low = 275, high = 800 } }  # 1 ea
+"FT-IKEA-TANNFORSEN-1806" = { material = { low = 199, high = 199 }, labour = { low = 75, high = 150 } }  # 2 ea, IKEA 405.354.20
 # RM-A-STUDIO's wet bar (2026-09-01, retagged and repriced 2026-09-09). It was a house-local
 # 24" x 18" base standing in for the casework FX-A-STUDIO-BAR-SINK's Mount(WALL, 27") always
 # implied; the owner bought an IKEA SUNNERSTA mini-kitchen instead — article 40313363, ONE

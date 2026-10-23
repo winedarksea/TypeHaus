@@ -402,23 +402,23 @@ MAIN_PLACEABLES = [
                   wall_ref="W-M-TUBDK-W", face="right", distance_from_start=inch(57.25),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # --- RM-M-BATH2 over-toilet cabinet --------------------------
-    # The room's only wall storage, on the only free wall left: W-M-HS1's bathroom face,
-    # x 6 5/8" (W-M-W3's finish face, which FX-M-BATH2-SINK is also struck off) to 4'-4".
-    # That was W-M-TUBDK-W's west face until 2026-10-21; the face is at 4'-8.24" now, so
-    # the carcass could grow to 48" later. 45" carcass, 3/16" of scribe at the west end. Faces are struck off W-M-HS1's own layer polygons.
-    #
-    # `Mount.elevation` is the BOTTOM of the body (as for FURN-M-KIT-OVER-FRIDGE), so
-    # 48 + 57 = 105", leaving 1" below the actual finished ceiling. The 48" bottom keeps
-    # the cabinet clear of the 30" toilet tank; lowering it would take elbow room and
-    # could force the bowl south, landing its front clearance inside the vanity. See
-    # plan/furniture_types.py and
-    # notes/bath2_over_toilet_cabinet.md.
-    Furniture(uid="N688X4AYJ4", tag="FURN-M-BATH2-CAB", type_ref="FT-BATH2-CAB-4506",
+    # --- RM-M-BATH2 over-toilet cabinets --------------------------
+    # A pair of IKEA TÄNNFORSEN wall cabinets (2026-10-22), replacing the site-built 45"
+    # box, on W-M-HS1's bathroom face. Butted as one 36" unit centred on FX-M-BATH2-WC
+    # (x = 30"): x 12" to 48". Doors opposed, hinged outboard. `Mount.elevation` is the
+    # body BOTTOM: 48" keeps 18" over the 30" tank (notes/bath2_over_toilet_cabinet.md),
+    # top at 85".
+    Furniture(uid="N688X4AYJ4", tag="FURN-M-BATH2-CAB-W", type_ref="FT-IKEA-TANNFORSEN-1806",
               room="RM-M-BATH2",
               mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-HS1", face="right", distance_from_start=inch(29.3125),
+                  wall_ref="W-M-HS1", face="right", distance_from_start=inch(21),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
+    Furniture(uid="ED95QYWF6A", tag="FURN-M-BATH2-CAB-E", type_ref="FT-IKEA-TANNFORSEN-1806",
+              room="RM-M-BATH2",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-HS1", face="right", distance_from_start=inch(39),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # --- porch enclosure track ------------------------------------

@@ -957,9 +957,9 @@ MAIN_LIGHTING = [
              room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
              controlled_by=("ED-M-BATH2-SW-EVE",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(3))),
-    # Under FURN-M-BATH2-CAB's front edge at 4'-0".
+    # Under the FURN-M-BATH2-CAB-W/-E pair's front edge at 4'-0", x 12" to 48".
     LightRun(uid="ZCNWQ40D9A", tag="LR-M-BATH2-CAB", type_ref="ED-T-LT-STRIP24-2700",
-             path=(pt(inch(7.5), inch(259.25)), pt(inch(51), inch(259.25))),
+             path=(pt(inch(12.5), inch(259.25)), pt(inch(47.5), inch(259.25))),
              room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
              controlled_by=("ED-M-BATH2-SW-EVE",),
              mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
