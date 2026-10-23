@@ -91,6 +91,7 @@ def test_the_vanity_is_one_basin_and_no_longer_a_kitchen_sink():
 
     vanity = {t.tag: t for t in plan.library.fixture_types}["FX-VANITY-48-SEKTION"]
     assert vanity.plan_symbol == "vanity"
+    assert vanity.model_representation.symbol == "solid-surface-vanity"
     width, depth = (v.meters / M_PER_IN for v in vanity.footprint)
     assert (round(width, 4), round(depth, 4)) == (48.0, 18.0)
     assert _element(plan, "main", "FX-M-KITCH-SINK").type_ref == "FX-KITCHEN-SINK-32-SINGLE"

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from library.placeables import front_zone
 
-from typehaus.model import FixtureType, Footprint2D, Product, Service, inch, pt
+from typehaus.model import FixtureType, Footprint2D, ModelRepresentation, Product, Service, inch, pt
 
 # IKEA parts. The 36" listing (2 AXSTAD matte white doors) was read 2026-10-22; article numbers
 # are read off the listing URL and marked to confirm at order. The 12" storage cabinet's
@@ -66,14 +66,15 @@ BATH2_VANITY_PRODUCTS = (SEKTION_WALL_36_CAB, SEKTION_WALL_12_CAB, SEKTION_SUSPE
 # clear of its south side by 3 13/16", with 3" behind it for the faucet.
 #
 # ``height`` is OVERALL with the spout: ``_deck_height`` takes a fixed 0.14 m faucet band
-# off it, and 41 1/2" - 5.512" = 35.99", the 36" counter. Known approximation: the
-# ``vanity`` symbol draws a toe kick where the real box floats 5 1/2" clear.
+# off it, and 41 1/2" - 5.512" = 35.99", the 36" counter. The dedicated
+# 3D symbol draws the floating white cabinet and bonded bowl.
 BATH2_VANITY_48 = FixtureType(
     tag="FX-VANITY-48-SEKTION",
     name='Vanity, 48" floating SEKTION, single basin, 12" storage + 36" sink cabinet',
     footprint=(inch(48), inch(18)),
     height=inch(41.5),
     plan_symbol="vanity",
+    model_representation=ModelRepresentation(symbol="solid-surface-vanity"),
     basin=True,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(front_zone(inch(48), inch(18), inch(21), "lavatory front clearance"),),
