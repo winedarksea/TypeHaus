@@ -42,26 +42,18 @@ def _section(model, tag):
 
 # --- the four hand-computed numbers, re-derived ------------------------------------------
 
-def test_sf_s_duct_derives_the_thirty_and_three_quarter_inches(catlin_model) -> None:
-    """35" finished, less 2 x 5/8" gypsum and 2 x 1 1/2" of 2x2 ladder rail."""
+def test_sf_s_duct_derives_clearance_from_the_wall_width(catlin_model) -> None:
+    """The conservative section retains allowances for both exposed ladder returns."""
+    soffit, section = _section(catlin_model, "SF-S-DUCT")
+    width = max(x for x, _ in soffit.outline) - min(x for x, _ in soffit.outline)
+    assert section.width_m / M_PER_IN == pytest.approx(width / M_PER_IN - 4.25)
+    assert section.width_m / M_PER_IN == pytest.approx(37.24)
+
+
+def test_open_top_recovers_the_fictional_top_board_allowance(catlin_model) -> None:
+    """Only the bottom board and rung consume height in the middle of the cavity."""
     _, section = _section(catlin_model, "SF-S-DUCT")
-    assert section.width_m / M_PER_IN == pytest.approx(30.75, abs=1e-6)
-
-
-def test_a_fourteen_inch_drop_clears_an_eight_inch_duct(catlin_model) -> None:
-    """11 1/4", not 9 3/4": the box's TOP rail sits directly over its bottom rail, one stock
-    depth in from each long face and therefore outside the clear width entirely. Subtracting
-    it as well would take 1 1/2" off the middle of the box where there is nothing — and that
-    inch and a half is the difference between EQ-S-HP1-AH's 11" case fitting and not.
-
-    ** 11 3/8" SINCE 2026-09-07, AND THE 1/8" IS THE DECK, NOT THE BOX. ** A soffit used to
-    hang from `storey.default_ceiling_height`; it now hangs from the real underside of the
-    deck over its outline (`resolve/envelope.py`), and the second floor's nominal 9'-0" was
-    an eighth of an inch under the truth. SF-S-DUCT's FACE did not move — its 7'-10" is now
-    pinned with `underside_elevation` precisely so it cannot — so the extra eighth all lands
-    in the cavity. The clearance this test is about got slightly better, not worse."""
-    _, section = _section(catlin_model, "SF-S-DUCT")
-    assert section.drop_m / M_PER_IN == pytest.approx(11.375, abs=1e-6)
+    assert section.drop_m / M_PER_IN == pytest.approx(12.0, abs=1e-6)
     assert section.drop_m > 8 * M_PER_IN
 
 

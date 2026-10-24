@@ -14,6 +14,8 @@ So the model stays authored, and the router argues.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import model_validator
 
 from typehaus.model.base import Element, HausModel
@@ -566,6 +568,11 @@ class LightRun(Element):
     controlled_by: tuple[str, ...] = ()
     psu_ref: str | None = None  # ElectricalDevice tag of the AC/DC supply (24V runs)
     room: str | None = None
+    # A south-open, three-sided recessed perimeter channel follows its host's two x
+    # edges and north edge. The authored path retains the two south end stations.
+    soffit_ref: str | None = None
+    soffit_edge_offset: Length | None = None
+    emission_side: Literal["left", "right"] = "left"
 
 
 for _name, _obj in (

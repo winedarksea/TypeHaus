@@ -12,9 +12,26 @@ import uuid
 
 import pytest
 
-from typehaus.model import (Building, ElectricalDevice, ElectricalDeviceType, DeviceKind,
-                            LightRun, Library, LuminaireForm, LuminaireType, Mount,
-                            MountKind, PlanModel, Project, Site, Storey, degF, ft, inch, pt)
+from typehaus.model import (
+    Building,
+    DeviceKind,
+    ElectricalDevice,
+    ElectricalDeviceType,
+    Library,
+    LightRun,
+    LuminaireForm,
+    LuminaireType,
+    Mount,
+    MountKind,
+    PlanModel,
+    Project,
+    Site,
+    Storey,
+    degF,
+    ft,
+    inch,
+    pt,
+)
 from typehaus.resolve import resolve
 
 
@@ -140,3 +157,14 @@ def test_light_run_is_not_a_placeable():
 
     model = _plan(_run())
     assert not [item for item in canvas_objects(model) if item["kind"] == "LightRun"]
+
+
+def test_channel_emission_side_faces_the_named_side_of_the_path():
+    from typehaus.resolve.geometry import light_run_band_shells
+
+    path = [(0.0, 0.0), (0.0, 1.0)]
+    # A north-going leg's left is west. Its full-height back must sit to the east.
+    for side, sign in (("left", 1), ("right", -1)):
+        back = next(faces for key, faces in light_run_band_shells(path, [1.0, 1.0], side)
+                    if key == "back")
+        assert all(sign * point[0] > 0 for face in back for point in face)

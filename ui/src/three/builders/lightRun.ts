@@ -68,7 +68,8 @@ export function buildLightRun(parent: THREE.Group, run: LightRun, center: PlanCe
         const t = Math.min(Math.max(((point[0] - p0[0]) * dx + (point[1] - p0[1]) * dy) / run2, 0), 1);
         return [point[0] - center[0], za + t * (zb - za) - drop, -(point[1] - center[1])] as const;
       };
-      const ring = rectBetween(p0, p1, left, right);
+      const ring = run.emission_side === "right"
+        ? rectBetween(p0, p1, -right, -left) : rectBetween(p0, p1, left, right);
       const bottom = ring.map((point) => corner(point, bottomDrop));
       const top = ring.map((point) => corner(point, topDrop));
       const push = (...points: (readonly [number, number, number])[]) => {

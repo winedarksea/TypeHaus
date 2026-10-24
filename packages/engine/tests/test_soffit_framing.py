@@ -20,8 +20,24 @@ from __future__ import annotations
 import uuid
 
 from typehaus.model import (
-    Assembly, Building, FramingSpec, Layer, LayerFunction, Library, Material, Node,
-    PlanModel, Project, Site, Soffit, Storey, Wall, degF, ft, inch, pt,
+    Assembly,
+    Building,
+    FramingSpec,
+    Layer,
+    LayerFunction,
+    Library,
+    Material,
+    Node,
+    PlanModel,
+    Project,
+    Site,
+    Soffit,
+    Storey,
+    Wall,
+    degF,
+    ft,
+    inch,
+    pt,
 )
 from typehaus.resolve import resolve
 
@@ -128,7 +144,7 @@ def test_every_member_stays_inside_the_lined_soffit_box() -> None:
     lining = inch(LINING_IN).meters
     x0, x1 = ft(4).meters + lining, ft(6, 8).meters - lining
     y0, y1 = ft(1).meters + lining, ft(13).meters - lining
-    z0, z1 = soffit.z0_m + lining, soffit.z1_m - lining
+    z0, z1 = soffit.z0_m + lining, soffit.z1_m
     assert abs((soffit.z1_m - soffit.z0_m) - inch(14).meters) < 1e-9
     for member in soffit.members:
         for x, y in (member.p0, member.p1):
@@ -138,7 +154,7 @@ def test_every_member_stays_inside_the_lined_soffit_box() -> None:
 
 
 def test_members_are_inset_from_the_finished_faces() -> None:
-    """No member touches the finished box: the 5/8" lining wraps all six faces."""
+    """Lining covers the underside and returns; top rails meet the overhead structure."""
     model, _ = _framed()
     soffit = model.soffits[0]
     lining = inch(LINING_IN).meters
@@ -149,7 +165,7 @@ def test_members_are_inset_from_the_finished_faces() -> None:
     assert min(ys) >= ft(1).meters + lining - 1e-9
     assert max(ys) <= ft(13).meters - lining + 1e-9
     assert min(m.z0_m for m in soffit.members) >= soffit.z0_m + lining - 1e-9
-    assert max(m.z1_m for m in soffit.members) <= soffit.z1_m - lining + 1e-9
+    assert max(m.z1_m for m in soffit.members) <= soffit.z1_m + 1e-9
 
 
 def test_clear_width_between_the_ladders_is_the_full_stack() -> None:
@@ -197,11 +213,9 @@ def test_catlin_duct_soffit_frames_and_clears_the_two_trunks(catlin_model) -> No
     The synthetic case above is this soffit in miniature and deliberately *fails* the
     clearance at the old 32" width. The box was widened to 35" (x 18'-6 1/2" ..
     21'-5 1/2", plan/storeys/second.py), so the arithmetic here comes out the other way:
-    35" - 2 x 5/8" lining - 2 x 1.5" ladder = 30.75" clear, against the 30" the pair of
-    14" trunks needs (14 + 2" hanger/flange gap + 14).
-
-    Asserted as a real clearance rather than as arithmetic — if someone narrows the
-    soffit, retypes the ladder stock to 2x4, or thickens the lining, this fails.
+    The wall-width box has 37.24" conservative clearance, with rungs extending further
+    to wall-backed ledgers. Assert the built span and attachment records rather than a
+    stale authored width.
     """
     soffit = next(s for s in catlin_model.soffits if s.tag == "SF-S-DUCT")
     assert soffit.framing is not None and soffit.framing.member == "2x2"
@@ -210,15 +224,15 @@ def test_catlin_duct_soffit_frames_and_clears_the_two_trunks(catlin_model) -> No
     assert soffit.members
     categories = {member.category for member in soffit.members}
     assert {"plate", "stud", "blocking"} <= categories
-    assert len(_by_category(soffit, "plate")) == 4  # two ladders, top + bottom rail each
+    assert any(member.connection and "screw-to-studs" in member.connection
+               for member in soffit.members)
     assert all(member.profile == "2x2" for member in soffit.members)
     assert all(member.parent_uid == soffit.uid for member in soffit.members)
 
     rungs = [m for m in soffit.members if m.child_key.startswith("soffit-rung-")]
     assert rungs, "a 28'-long soffit must have interior rungs"
     clear_in = min(rung.length_m for rung in rungs) / inch(1).meters
-    assert abs(clear_in - (35 - 2 * LINING_IN - 2 * STOCK_IN)) < 1e-6
-    assert abs(clear_in - 30.75) < 1e-6
+    assert clear_in >= 37.24
     assert clear_in >= 30.0  # 14" + 2" gap + 14", the reason the box was widened
 
 
@@ -231,3 +245,180 @@ def test_non_rectangular_soffit_warns_instead_of_guessing() -> None:
     warning = next(f for f in findings if f.check_id == "framing.soffit_shape")
     assert warning.severity.value == "warn" and warning.result.value == "unknown"
     assert warning.element_tags == ("SF-1",)
+
+
+def test_finish_geometry_is_board_with_an_open_service_cavity() -> None:
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.takeoff.framing import structural_solids_takeoff
+
+    model, _ = _framed()
+    soffit = model.soffits[0]
+    middle = Polygon(soffit.outline).centroid
+    assert any(panel.key.startswith("underside") for panel in soffit.finish_panels)
+    assert not any(Polygon(panel.prism.ring).contains(Point(middle.x, middle.y))
+                   and panel.prism.z1_m == soffit.z1_m for panel in soffit.finish_panels)
+    geometry = model.geometry.by_uid(soffit.uid)
+    assert [part.solids[0] for part in geometry.parts] == [
+        panel.prism for panel in soffit.finish_panels]
+    row = next(row for row in structural_solids_takeoff(model) if row["category"] == "soffit")
+    actual_board_area = sum(panel.area_m2 for panel in soffit.finish_panels)
+    assert abs(row["finish_area_sqft"] - actual_board_area / ft(1).meters ** 2) < 0.05
+    assert row["volume_cuft"] < 10  # The old service-envelope volume was over 37 cu ft.
+
+
+def test_access_hatch_cuts_the_underside_board() -> None:
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.model import SoffitOpening
+
+    plan = _plan(FramingSpec(member="2x2", spacing=inch(16)))
+    host = plan.by_tag("SF-1")
+    opening = SoffitOpening(tag="HATCH", outline=(
+        pt(ft(4, 6), ft(5)), pt(ft(6, 2), ft(5)),
+        pt(ft(6, 2), ft(7)), pt(ft(4, 6), ft(7))))
+    host = host.model_copy(update={"openings": (opening,)})
+    elements = [host if element.tag == host.tag else element
+                for element in plan.storey_elements("main")]
+    model, _ = resolve(plan.with_elements("main", elements))
+    center = Point(ft(5).meters, ft(6).meters)
+    underside = [panel.prism for panel in model.soffits[0].finish_panels
+                 if panel.key.startswith("underside")]
+    assert underside
+    assert not any(Polygon(prism.ring, prism.voids).contains(center) for prism in underside)
+
+
+def test_partial_wall_contact_removes_only_the_backed_return() -> None:
+    from dataclasses import replace
+
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.resolve.soffits import resolve_soffit_contacts, resolve_soffit_finishes
+
+    model, _ = _framed()
+    soffit = model.soffits[0]
+    # Reuse the synthetic west wall, shortening its body layers halfway down the box.
+    wall = model.walls[3]
+    edge_x = min(x for x, _ in soffit.outline)
+    wall = replace(wall, layers=[replace(layer, polygon=[
+        (edge_x - inch(5.5).meters, ft(1).meters), (edge_x, ft(1).meters),
+        (edge_x, ft(7).meters), (edge_x - inch(5.5).meters, ft(7).meters)])
+        for layer in wall.layers])
+    model.walls = [wall]
+    resolve_soffit_contacts(model)
+    resolve_soffit_finishes(model)
+    assert soffit.wall_contacts
+    backed = Point(edge_x + inch(0.25).meters, ft(4).meters)
+    exposed = Point(edge_x + inch(0.25).meters, ft(10).meters)
+    returns = [Polygon(panel.prism.ring) for panel in soffit.finish_panels
+               if panel.key.startswith("return")]
+    assert not any(polygon.contains(backed) for polygon in returns)
+    assert any(polygon.contains(exposed) for polygon in returns)
+
+
+def test_adjacent_boxes_have_no_internal_cap_but_keep_the_step() -> None:
+    from dataclasses import replace
+
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.resolve.soffits import resolve_soffit_finishes
+
+    model, _ = _framed()
+    host = model.soffits[0]
+    next_box = replace(host, uid="SF00000002", tag="SF-2", outline=[
+        (x, y + ft(12).meters) for x, y in host.outline],
+        z0_m=host.z0_m - inch(6).meters, members=[])
+    model.soffits.append(next_box)
+    resolve_soffit_finishes(model)
+    x = ft(5).meters
+    seam = ft(13).meters
+    hidden_z = host.z0_m + inch(3).meters
+    assert not any(panel.prism.z0_m < hidden_z < panel.prism.z1_m
+                   and Polygon(panel.prism.ring).contains(Point(x, seam - inch(0.25).meters))
+                   for panel in host.finish_panels)
+    step_z = host.z0_m - inch(3).meters
+    assert any(panel.prism.z0_m < step_z < panel.prism.z1_m
+               and Polygon(panel.prism.ring).contains(Point(x, seam + inch(0.25).meters))
+               for panel in next_box.finish_panels)
+
+
+def test_catlin_width_channel_and_wall_support_share_the_boundaries(catlin_model_ro) -> None:
+    from shapely.geometry import LineString, Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+    from typehaus.resolve.soffits import wall_footprint
+
+    model = catlin_model_ro
+    host = next(host for host in model.soffits if host.tag == "SF-S-DUCT")
+    west = next(wall for wall in model.walls if wall.tag == "W-S-C2B")
+    east = next(wall for wall in model.walls if wall.tag == "W-S-BW1")
+    xmin, _ymin, xmax, _ymax = Polygon(host.outline).bounds
+    assert abs(xmin - wall_footprint(west).bounds[2]) < 1e-9
+    assert abs(xmax - wall_footprint(east).bounds[0]) < 1e-9
+    assert abs(host.z0_m / inch(1).meters - 214) < 1e-9
+    run = next(run for run in model.light_runs if run.tag == "LR-S-HALL-GAP")
+    assert run.soffit_ref == host.tag and run.emission_side == "left"
+    assert abs(min(x for x, _ in run.path) - xmin - inch(0.25).meters) < 1e-9
+    assert abs(max(x for x, _ in run.path) - xmax + inch(0.25).meters) < 1e-9
+    slot = LineString(run.path).buffer(inch(0.25).meters, cap_style=2, join_style=2)
+    for panel in host.finish_panels:
+        if panel.key.startswith("underside"):
+            assert Polygon(panel.prism.ring, panel.prism.voids).intersection(slot).area < 1e-9
+    for member in host.members:
+        assert member.z0_m >= run.z_m - 1e-9  # The recessed channel fits below its backing.
+        footprint = Polygon(member_footprint(member)[0])
+        for wall in model.walls:
+            if wall.storey == host.storey and wall.z0_m < member.z1_m and wall.z1_m > member.z0_m:
+                assert footprint.intersection(wall_footprint(wall)).area < 1e-8, (
+                    member.child_key, wall.tag)
+
+
+def test_exports_contain_the_board_volume_and_separate_framing(tmp_path) -> None:
+    import struct
+
+    import ifcopenshell
+    import pytest
+
+    from typehaus.emit.gltf.emitter import emit_gltf_dict
+    from typehaus.emit.ifc import emit_ifc
+
+    model, _ = _framed()
+    host = model.soffits[0]
+    expected = sum(panel.area_m2 for panel in host.finish_panels) * inch(LINING_IN).meters
+    gltf, binary = emit_gltf_dict(model, lod="framed")
+    nodes = [node for node in gltf["nodes"] if node.get("extras", {}).get("uid") == host.uid]
+    assert {node["extras"]["trade"] for node in nodes} == {"drywall", "framing"}
+    drywall = next(node for node in nodes if node["extras"]["trade"] == "drywall")
+    signed_volume = 0.0
+    for primitive in gltf["meshes"][drywall["mesh"]]["primitives"]:
+        accessor = gltf["accessors"][primitive["attributes"]["POSITION"]]
+        view = gltf["bufferViews"][accessor["bufferView"]]
+        offset = view.get("byteOffset", 0) + accessor.get("byteOffset", 0)
+        positions = [struct.unpack_from("<fff", binary, offset + index * 12)
+                     for index in range(accessor["count"])]
+        for index in range(0, len(positions), 3):
+            a, b, c = positions[index:index + 3]
+            signed_volume += (a[0] * (b[1] * c[2] - b[2] * c[1])
+                              + a[1] * (b[2] * c[0] - b[0] * c[2])
+                              + a[2] * (b[0] * c[1] - b[1] * c[0])) / 6
+    assert abs(signed_volume) == pytest.approx(expected, abs=1e-5)
+    path = tmp_path / "soffit.ifc"
+    emit_ifc(model, path)
+    file = ifcopenshell.open(str(path))
+    covering = next(product for product in file.by_type("IfcCovering") if product.Name == host.tag)
+    items = covering.Representation.Representations[0].Items
+    assert len(items) == len(host.finish_panels)
+    assert sorted(item.Depth for item in items) == pytest.approx(sorted(
+        panel.prism.z1_m - panel.prism.z0_m for panel in host.finish_panels))
+    assert len([member for member in file.by_type("IfcMember")
+                if member.Name.startswith(host.tag + "/")]) == len(host.members)
+
+
+def test_missing_width_wall_reports_a_resolve_error() -> None:
+    plan = _plan(FramingSpec(member="2x2", spacing=inch(16)))
+    host = plan.by_tag("SF-1").model_copy(update={"width_between_walls": ("W-4", "MISSING")})
+    elements = [host if element.tag == host.tag else element
+                for element in plan.storey_elements("main")]
+    model, findings = resolve(plan.with_elements("main", elements))
+    assert not model.soffits
+    assert any(finding.check_id == "integrity.soffit_width" for finding in findings)

@@ -1,3 +1,21 @@
+## Hallway soffit meets the walls (2026-10-23)
+
+`SF-S-DUCT` now derives its width from the hallway-facing finishes of `W-S-C2B` and
+`W-S-BW1`: x=219.26"..260.75", 41.49" overall. Its y extents and 94" underside stay put;
+the wider rectangle continues through the study and landing. Exposed sides keep board and
+ladders, while wall-backed stretches use bottom ledgers screwed through to studs. The
+hallway side grille moves west with the face; the study grille and boot move east.
+
+Dropped soffits now carry physical 5/8" finish panels separately from their service
+envelopes: no top board, concealed wall returns or shared internal caps. Hatches and the
+recessed LED channel cut the underside. End ties are stock-height underside supports,
+leaving the ducts' exits open. glTF, IFC, viewer fallback, sections and quantities read the
+same panels; framing remains separately visible and now reaches IFC as members too.
+`LR-S-HALL-GAP` follows three underside perimeter edges at 94.5" channel-top elevation,
+opening outward toward the walls, with its driver and controls preserved. The rung-span
+oracle is updated in `notes/soffit_rung_deflection.md`. Pricing uses actual board volume
+rather than service-cavity air and leaves lumber to the separate framing takeoff.
+
 ## Bath2 shower south jamb closed (2026-10-23)
 
 Owner chose to move the south tub-deck knee wall and shower 1/8" south, retaining the

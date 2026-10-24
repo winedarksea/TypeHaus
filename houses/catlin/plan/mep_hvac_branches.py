@@ -33,7 +33,7 @@ DUCTS_HVAC_BRANCHES_SECOND = [
     # EXPOSED follows the bedroom-collar idiom: the soffit occupancy check requires
     # named runs to remain inside the box's clear width. Framing clearance is tested.
     DuctRun(uid="STDYBOOT01", tag="DU-S-HP-STUDY2", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), inch(43.5)), pt(inch(258), inch(43.5))),
+            path=(pt(ft(19, 6), inch(43.5)), pt(inch(261.25), inch(43.5))),
             elevations=(inch(99.125), inch(99.125)),
             diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=75),

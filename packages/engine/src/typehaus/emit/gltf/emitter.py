@@ -227,13 +227,22 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
     # A plant with a procedural model draws as an instance (→ plants.py), not its prism.
     instanced = plant_instance_uids(model)
+    soffits_by_uid = {host.uid: host for host in model.soffits}
     for solid in sorted(model.solids, key=lambda item: item.uid):
         if solid.uid in instanced:
             continue
         # A run — handrail, drain, raceway — is one mitred tube per leg rather than a plan
         # prism (→ resolve/sweep.py). One ``add_object`` either way.
         legs = sweep_legs(solid.sweep) if solid.sweep is not None else []
-        if solid.body_mesh is not None:
+        if solid.uid in soffits_by_uid:
+            mb = _MeshBuilder()
+            for panel in soffits_by_uid[solid.uid].finish_panels:
+                prism = panel.prism
+                mb.add_prism_with_rectangular_voids(list(prism.ring), prism.voids,
+                    prism.z0_m, prism.z1_m, _solid_color(model, solid))
+            scene.add_object(mb, ("drywall",), kind="solid", uid=solid.uid,
+                             category=solid.category)
+        elif solid.body_mesh is not None:
             mb = _MeshBuilder()
             mb.add_mesh(solid.body_mesh, _solid_color(model, solid))
             scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid,
@@ -460,7 +469,7 @@ _LIGHT_RUN_BAND_ROLE = {"back": "cove_channel", "base": "cove_channel", "lip": "
 def _add_light_run(mb: _MeshBuilder, run) -> None:
     """The cove channel + tape, one prism per band per leg (→ resolve/geometry.py
     ``light_run_band_profiles``, mirrored in ui/src/three/builders/structure.ts)."""
-    for key, faces in light_run_band_shells(list(run.path), run.vertex_z()):
+    for key, faces in light_run_band_shells(list(run.path), run.vertex_z(), run.emission_side):
         triangles = []
         for face in faces:
             quad = [_to_gltf(*point) for point in face]

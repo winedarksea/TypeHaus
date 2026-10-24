@@ -73,6 +73,7 @@ from typehaus.emit.ifc.structural import (
     _emit_brace,
     _emit_construction_return,
     _emit_floor,
+    _emit_framed_member,
     _emit_solid,
     _emit_stair,
 )
@@ -222,6 +223,13 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
 
     for ret in sorted(model.construction_returns, key=lambda item: item.uid):
         _emit_construction_return(f, body, ret, storeys, project_uuid)
+
+    if lod == "framed":
+        for soffit in model.soffits:
+            for member in soffit.members:
+                child = _emit_framed_member(f, body, soffit.tag, soffit.uid,
+                                             member, project_uuid)
+                ll.assign_container(f, child, storeys[soffit.storey])
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         emit_roof(f, body, roof, storeys, project_uuid, lod, model)

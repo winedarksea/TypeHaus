@@ -142,6 +142,30 @@ def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Find
                     f"{len(path)} path points — one per point, or none for a level run",
             element_tags=(run.tag,), result=Result.FAIL,
         )]
+    if run.soffit_ref is not None:
+        host = next((host for host in model.soffits if host.tag == run.soffit_ref), None)
+        if host is None or run.soffit_edge_offset is None:
+            return [Finding(severity=Severity.ERROR, check_id="integrity.light_run_host",
+                            message=f"light run {run.tag} needs a soffit host and edge offset",
+                            element_tags=(run.tag,), result=Result.FAIL)]
+        from shapely.geometry import Polygon
+
+        from typehaus.resolve.geometry import LIGHT_STRIP_WIDTH_M
+
+        minx, miny, maxx, maxy = Polygon(host.outline).bounds
+        offset = run.soffit_edge_offset.meters
+        if not LIGHT_STRIP_WIDTH_M / 2 <= offset < min(maxx - minx, maxy - miny) / 2:
+            return [Finding(severity=Severity.ERROR, check_id="integrity.light_run_host",
+                            message=f"light run {run.tag} has an invalid perimeter offset",
+                            element_tags=(run.tag,), result=Result.FAIL)]
+        # The authored three-sided path keeps its open end; the other three edges follow
+        # the host. This contract avoids a second set of wall-finish coordinates in source.
+        old_minx = min(x for x, _y in path)
+        old_maxx = max(x for x, _y in path)
+        old_maxy = max(y for _x, y in path)
+        path = [(minx + offset if x == old_minx else maxx - offset
+                 if x == old_maxx else x,
+                 maxy - offset if y == old_maxy else y) for x, y in path]
     z_m = resolved_mount_elevation(storey, run)
     z_path = [z_m + r.meters for r in run.rise] if run.rise else [z_m] * len(path)
     developed = sum(math.hypot(length(sub(path[i], path[i + 1])), z_path[i + 1] - z_path[i])
@@ -152,6 +176,7 @@ def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Find
         type_ref=run.type_ref, circuit=run.circuit, psu_ref=run.psu_ref,
         controlled_by=tuple(run.controlled_by), room=run.room,
         z_path_m=tuple(z_path) if run.rise else (),
+        soffit_ref=run.soffit_ref, emission_side=run.emission_side,
     ))
     return []
 

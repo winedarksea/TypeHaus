@@ -11,6 +11,7 @@ from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.framing.profiles import _RE_PANEL, cross_section
 from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.soffits import SOFFIT_LINING_THICKNESS
 from typehaus.resolve.strap_braces import STRAP_CATEGORY
 from typehaus.takeoff.fabrication import FABRICATED_SHAPES
 from typehaus.takeoff.sheet_rips import rip_stock
@@ -295,6 +296,7 @@ def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # a $/cy ready-mix rate on a steel angle is both a wrong price and a second one.
     billed_as_steel = steel_member_tags(model)
     groups: dict[tuple[str, str], Row] = {}
+    soffits = {soffit.uid: soffit for soffit in model.soffits}
     for solid in model.solids:
         if solid.tag in billed_as_steel:
             continue
@@ -311,6 +313,9 @@ def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         net_area_m2 = abs(polygon_area(list(solid.outline))) - sum(
             abs(polygon_area(list(void))) for void in solid.voids)
         volume_m3 = max(0.0, net_area_m2) * max(0.0, solid.z1_m - solid.z0_m)
+        if solid.uid in soffits:
+            panels = soffits[solid.uid].finish_panels
+            volume_m3 = sum(panel.area_m2 for panel in panels) * SOFFIT_LINING_THICKNESS.meters
         key = (solid.category, solid.assembly or "")
         row = groups.get(key)
         if row is None:
@@ -324,6 +329,9 @@ def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                                      model.plan, solid.assembly),
                                  "count": 0, "plan_area_sqft": 0.0, "volume_cuft": 0.0,
                                  "tags": []}
+        if solid.uid in soffits:
+            row["finish_area_sqft"] = float(row.get("finish_area_sqft", 0.0)) + sum(
+                panel.area_m2 for panel in soffits[solid.uid].finish_panels) * _M2_TO_FT2
         row["count"] = int(row["count"]) + 1
         row["plan_area_sqft"] = float(row["plan_area_sqft"]) + max(0.0, net_area_m2) * _M2_TO_FT2
         row["volume_cuft"] = float(row["volume_cuft"]) + volume_m3 * _M3_TO_FT3
@@ -334,6 +342,8 @@ def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     for key in sorted(groups):
         row = groups[key]
+        if "finish_area_sqft" in row:
+            row["finish_area_sqft"] = round(float(row["finish_area_sqft"]), 1)
         volume_cuft = round(float(row["volume_cuft"]), 1)
         rows.append({**row, "plan_area_sqft": round(float(row["plan_area_sqft"]), 1),
                      "volume_cuft": volume_cuft,

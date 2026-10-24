@@ -121,7 +121,7 @@ REGISTERS_HVAC_SECOND = [
     # 100 1/8" (`ResolvedDuct.z_m`), so a 6" face centred on it runs 97 1/8"..103 1/8", inside
     # the cavity's 96 1/8"..107 3/8". Change the trunk's depth or the drop and this moves.
     Register(uid="CSRH04AAAA", tag="REG-S-HP-STAIR", kind=DuctSystem.SUPPLY, room="RM-S-HALL",
-             position=pt(inch(222), ft(24)), duct_ref="DU-S-HP-SUP", rotation=deg(90),
+             position=pt(inch(218.76), ft(24)), duct_ref="DU-S-HP-SUP", rotation=deg(90),
              type_ref="REG-T-HP-SUP-SIDE", design_cfm=50,
              mount=Mount(kind=MountKind.WALL, elevation=inch(97.125))),
     # The suite's high sidewall supply over D-S-SUITE, throwing west into RM-S-SUITE. Its
@@ -133,7 +133,7 @@ REGISTERS_HVAC_SECOND = [
              location=Location(attachment=WallAttachment(
                  wall_ref="W-S-C2B", face="left", distance_from_start=inch(20.875),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
-    # East face of SF-S-DUCT near its south end, throwing across the study.
+    # East face of the wall-width SF-S-DUCT (260 3/4"), throwing across the study.
     # The 8x6 grille and its 6" boot clear the ladder rails at a 99 1/8" centreline;
     # y=3'-7 1/2" puts the full face between the end blocking and first side stud.
     # The boot tees off the soffit leg before it rises, so this room no longer
@@ -142,7 +142,7 @@ REGISTERS_HVAC_SECOND = [
     # Mount height is above the finished floor: 99 1/8 - 3 - 1 1/2 = 94 5/8".
     # See notes/system1_study_supply.md for grille selection and vane setting.
     Register(uid="DMVENAN0DW", tag="REG-S-HP-STUDY2", kind=DuctSystem.SUPPLY, room="RM-S-STUDY2",
-             position=pt(inch(258), inch(43.5)), rotation=deg(90),
+             position=pt(inch(261.25), inch(43.5)), rotation=deg(90),
              duct_ref="DU-S-HP-STUDY2", type_ref="REG-T-HP-STUDY-SIDE", design_cfm=75,
              mount=Mount(kind=MountKind.WALL, elevation=inch(94.625))),
     # RM-S-PLANT at (12'-0", 3'-4"): the branch's west terminus, moved 2'-8" east on

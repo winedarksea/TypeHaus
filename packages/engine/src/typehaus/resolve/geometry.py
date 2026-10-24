@@ -225,6 +225,7 @@ def light_run_segment_profiles(path: list[Vec]) -> list[list[Vec]]:
 
 def light_run_band_profiles(
     path: list[Vec], width_m: float = LIGHT_STRIP_WIDTH_M, depth_m: float = LIGHT_STRIP_HEIGHT_M,
+    emission_side: str = "left",
 ) -> list[tuple[str, list[list[Vec]], float, float]]:
     """The channel+tape cross-section of a linear-luminaire run, swept along every leg.
 
@@ -242,6 +243,8 @@ def light_run_band_profiles(
     out: list[tuple[str, list[list[Vec]], float, float]] = []
     for key, offset, band_t, bottom_drop, top_drop in led_cove_bands(width_m, depth_m):
         left, right = -half + offset, -half + offset + band_t
+        if emission_side == "right":
+            left, right = -right, -left
         profiles: list[list[Vec]] = []
         for index in range(len(path) - 1):
             p0, p1 = path[index], path[index + 1]
@@ -256,7 +259,8 @@ Vec3 = tuple[float, float, float]
 
 
 def light_run_band_shells(path: list[Vec],
-                          z_path: list[float]) -> list[tuple[str, list[list[Vec3]]]]:
+                          z_path: list[float],
+                          emission_side: str = "left") -> list[tuple[str, list[list[Vec3]]]]:
     """:func:`light_run_band_profiles` as closed 3-D box shells that follow ``z_path``.
 
     One ``(key, faces)`` per band per leg; faces wind outward (bottom reversed, top, sides).
@@ -265,7 +269,8 @@ def light_run_band_shells(path: list[Vec],
     shells: list[tuple[str, list[list[Vec3]]]] = []
     legs = [(path[i], path[i + 1], z_path[i], z_path[i + 1]) for i in range(len(path) - 1)
             if length(sub(path[i + 1], path[i])) >= 1e-6]
-    for key, profiles, bottom_drop, top_drop in light_run_band_profiles(path):
+    for key, profiles, bottom_drop, top_drop in light_run_band_profiles(
+            path, emission_side=emission_side):
         for (p0, p1, za, zb), profile in zip(legs, profiles, strict=True):
             d = sub(p1, p0)
             run2 = d[0] * d[0] + d[1] * d[1]

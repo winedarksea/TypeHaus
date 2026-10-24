@@ -1668,6 +1668,8 @@ export interface Solid {
   // that has not been taught about sweeps degrades honestly rather than breaking.
   sweep?: { path: Vec3[]; profile: Vec2[] } | null;
   provenance: Provenance | null;
+  // A dropped ceiling keeps its service envelope above, but renders only these boards.
+  finish_panels?: { outline: Vec2[]; voids: Vec2[][]; z0_m: number; z1_m: number }[] | null;
 }
 
 // A ConstructionRule return (→ resolve/model.py ResolvedConstructionReturn): the membrane /
@@ -1728,6 +1730,8 @@ export interface LightRun {
   psu_ref: string | null;
   controlled_by: string[];
   provenance: Provenance | null;
+  soffit_ref?: string | null;
+  emission_side?: "left" | "right";
 }
 
 export interface FootingBedding {

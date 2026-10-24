@@ -15,8 +15,24 @@ from typehaus.checks import run_from_model
 from typehaus.checks.registry import Tier
 from typehaus.findings import Result
 from typehaus.model import (
-    Assembly, Building, FramingSpec, Layer, LayerFunction, Library, Material, Node,
-    PlanModel, Project, Site, Soffit, Storey, Wall, degF, ft, inch, pt,
+    Assembly,
+    Building,
+    FramingSpec,
+    Layer,
+    LayerFunction,
+    Library,
+    Material,
+    Node,
+    PlanModel,
+    Project,
+    Site,
+    Soffit,
+    Storey,
+    Wall,
+    degF,
+    ft,
+    inch,
+    pt,
 )
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve import resolve
@@ -140,8 +156,8 @@ def test_the_rails_take_the_plate_stock_and_the_rungs_take_the_member() -> None:
     rungs = {m.profile for m in soffit.members if m.child_key.startswith("soffit-rung-")}
     ends = {m.profile for m in soffit.members if m.child_key.startswith("soffit-end-")}
     assert rungs == {"2x4"}
-    # End blocking closes the box against the rails, so it is rail stock, not rung stock.
-    assert ends == {"2x2"}
+    # End ties support underside board at the same elevation and stock as interior rungs.
+    assert ends == {"2x4"}
 
 
 def test_defaulting_plate_member_frames_byte_identically() -> None:

@@ -214,6 +214,7 @@ def wall_graph_json(
 
 def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str, Any]:
     """Massing that is not a wall: solids, construction returns, footing beds, roofs."""
+    soffits_by_uid = {host.uid: host for host in model.soffits}
     return {
         "solids": [
             {"uid": solid.uid, "tag": solid.tag, "storey": solid.storey,
@@ -222,6 +223,12 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "z0_m": solid.z0_m, "z1_m": solid.z1_m, "assembly": solid.assembly,
              "material": solid.material,
              "host_ref": solid.host_ref,
+             "finish_panels": ([
+                 {"outline": [list(point) for point in panel.prism.ring],
+                  "voids": [[list(point) for point in ring] for ring in panel.prism.voids],
+                  "z0_m": panel.prism.z0_m, "z1_m": panel.prism.z1_m}
+                 for panel in soffits_by_uid[solid.uid].finish_panels]
+                 if solid.uid in soffits_by_uid else None),
              "trades": list(solid_trades(solid.category,
                                          solid_material_ref(model.plan, solid))),
              # Manufacturer part number where the solid IS a purchased part (connectors);

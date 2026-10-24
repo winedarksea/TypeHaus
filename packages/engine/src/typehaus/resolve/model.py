@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     )
     from typehaus.resolve.floor_ends import FloorEnds
     from typehaus.resolve.floor_tilt import DeckPlane
-    from typehaus.resolve.geometry_ir import GeometryModel, GMesh
+    from typehaus.resolve.geometry_ir import GeometryModel, GMesh, GPrism
     from typehaus.resolve.stairs.winder_geometry import WinderLayout
 
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
@@ -599,16 +599,32 @@ class ResolvedSolid:
     host_ref: str | None = None
 
 
+@dataclass(frozen=True)
+class SoffitWallContact:
+    """Wall-backed interval of one outline edge, in metres from that edge's start."""
+
+    edge_index: int
+    start_m: float
+    end_m: float
+    wall_ref: str
+
+
+@dataclass(frozen=True)
+class SoffitFinishPanel:
+    """Physical board; its prism is shared by exports, sections and takeoff."""
+
+    key: str
+    prism: GPrism
+    area_m2: float
+
+
 @dataclass
 class ResolvedSoffit:
-    """A dropped ceiling box, carried as a record so it can be *framed*.
+    """Service envelope and construction of a dropped ceiling.
 
-    The soffit's finished shape is already emitted as a ``ResolvedSolid`` (category
-    "soffit") — the box a renderer draws and a room reads its clear height from. This
-    record is the framing host beside it: the authored ``FramingSpec`` (``framing``,
-    ``None`` when the soffit is drawn but not yet framed) and the members
-    :mod:`typehaus.resolve.framing.soffit` generates from it. Mutable, because the
-    framing stage fills ``members`` after the envelope stage creates the record.
+    The matching ResolvedSolid preserves the enclosure for mechanical and ceiling-height
+    queries. finish_panels carry the actual board; members carry the independently visible
+    framing. Wall contacts coordinate the two without inventing concealed returns.
     """
 
     uid: str
@@ -623,6 +639,8 @@ class ResolvedSoffit:
     # the framing stage, the check and the emitters all see one list.
     openings: tuple[tuple[str, Ring], ...] = ()
     members: list[FramedMember] = field(default_factory=list)
+    wall_contacts: tuple[SoffitWallContact, ...] = ()
+    finish_panels: tuple[SoffitFinishPanel, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -1297,6 +1315,9 @@ class ResolvedLightRun:
     controlled_by: tuple[str, ...] = ()
     room: str | None = None
     z_path_m: tuple[float, ...] = ()  # per path vertex; empty reads as level at z_m
+
+    soffit_ref: str | None = None
+    emission_side: str = "left"
 
     def vertex_z(self) -> list[float]:
         return list(self.z_path_m) if self.z_path_m else [self.z_m] * len(self.path)

@@ -23,6 +23,26 @@ boxes. `SF-B-BATH` is framed by the same generator and graded by the same check 
 never been in the table below. (`SF-B-HALL` and `SF-B-GYM` stood in the same position and
 were retired on 2026-09-13, so the gap is one box wide now instead of three.)
 
+## Wall-width hallway revision — 2026-10-23
+
+The construction described below is historical where it assumes a 35" hallway box or
+lining on top. `SF-S-DUCT` now resolves between the current hallway finishes at
+x=219.26" and 260.75": 41.49" overall, with its underside still 94" above the storey datum.
+The cavity is open to the overhead structure. Only the 5/8" underside and 1 1/2" bottom
+rung consume vertical space, leaving 12" clear in this box.
+
+The conservative across-cavity query retains both exposed-return allowances:
+41.49 − 2×0.625 − 2×1.5 = **37.24"**. Wall-backed portions replace the exposed ladder
+with a ledger against the wall finish, fastened through to studs; rungs extend to that
+ledger. The longest rung therefore spans **38.49"**, which is the span the structural
+check must read from the actual members. End ties are also stock-height pieces at the
+bottom, rather than full-height caps obstructing duct exits.
+
+At 16" tributary width, E=1,400,000 psi, I=1.5⁴/12=0.421875 in⁴ and 5 psf, the
+38.49" rung deflects **0.0269"**, versus L/360=0.1069": approximately **L/1432**.
+The perimeter LED channel fits within the underside board, below the framing. Board
+quantities now sum the physical panels; enclosure air and top lining are excluded.
+
 ## What had to be decided
 
 `SF-S-HP1` was a 77" x 80" bulkhead built to hold System 1's air handler in

@@ -1126,39 +1126,16 @@ FLOOR_HEAT = [
               stat=pt(ft(1, 6), ft(32))),
 ]
 
-# The hallway duct soffit (HRV + heat mains), plans/TODO.md's "2nd floor hallway dropped
-# ceiling for HVAC" — dashed on plan, framed in 3D. Widened 2026-07-29 to enclose BOTH of
-# System 1's ducts side by side; 14" drop clears duct + 2x4 framing/hangers.
-# LR-S-HALL-GAP already washes the soffit's flanks at x=18'-6"/21'-6", so no new lighting.
+# SF-S-DUCT is one wall-width rectangle, including the study and open landing portions.
+# Its short-axis limits resolve from W-S-C2B and W-S-BW1's room-facing finishes, so a
+# partition finish change cannot leave a second set of inset dimensions behind here.
+# The west wall ends at the landing; only exposed portions receive vertical board and
+# ladders. Wall-backed portions use stud-fastened bottom ledgers. The top remains open.
 #
-# ** IT NOW RUNS y 2'-10"..27'-8", AND BOTH ENDS MOVED ON THE 2026-09-04 HP1 MOVE. **
-# The air handler used to live at this box's south end; then (2026-08-30) in SF-S-HP1 in
-# RM-S-STUDY2's ceiling; it is now in the ceiling of RM-S-NCLOSET and the north hall, and
-# the trunk runs SOUTH out of it. So:
-#
-#   NORTH END y=27'-8" — it ABUTS SF-S-HP1 there, never overlaps it. Overlapping soffits
-#   are unchecked *as soffits*, but SF-S-HP1's end blocking would interpenetrate this box's
-#   bottom rails, and that is a plate/blocking pair away from any junction, so the 10" gate
-#   in checks/structural/interference.py does NOT excuse it. Abut, or take a new FAIL.
-#
-#   SOUTH END y=2'-10" — back out to where it was before 2026-08-30, because reversing the
-#   trunk strands DU-S-HP-SOUTH-RISE, which has to reach y=3'-4" to hand off to
-#   DU-S-HP-SOUTH. The old argument for stopping at 7'-6" was ledger-W-S-SS2-stringer-1,
-#   the 2x10 carrying ST-S2A's stringer on the wall at y 104 1/8"..105 5/8", raking through
-#   this z band from x=273 7/8" eastward. That argument bound a 77"-wide box reaching
-#   x >= 22'-9 7/8". This box is 35" wide and tops out at x=21'-5 1/2"; it never touches
-#   the ledger. The 4.4 sf of RM-S-STUDY2 ceiling south of y=7'-6" comes back down to
-#   7'-10", and that is a real, chosen cost.
-#
-# WIDTH: widened from the plan's 2'-8" to 35" (x 18'-6 1/2"..21'-5 1/2", centred on the duct
-# centrelines) because the two 14" trunks need 28" side by side plus 2" for hangers and
-# flanges, and a finished box gives up its lining and both ladder rails before any of that.
-# The arithmetic used to be written out here and was nobody's to re-run; since 2026-08-25
-# `mep.duct_soffit_occupancy` derives the clear section from THIS soffit's own drop, member
-# and lining and measures every occupant against it. Read the check, not a comment.
-# The box now carries the 18x8 supply trunk and, at its south cap, DU-S-HP-SOUTH-RISE as a
-# COLLINEAR reducer — the old east dogleg only ever existed to clear the old machine.
-# Face elevation unchanged at 7'-10"; ED-S-HALL-CAN1/2/3 (all south of y=27'-8") set into it.
+# North y=27'-8" abuts SF-S-HP1; south y=2'-10" encloses DU-S-HP-SOUTH-RISE's handoff.
+# Even at the wider east face, the box clears the stair ledger beginning at x=273 7/8".
+# The 94" face stays pinned. LR-S-HALL-GAP follows its underside perimeter with a recessed
+# channel opening toward the walls, rather than lighting tall gaps beside a narrow box.
 SOFFITS = [
     Soffit(uid="CSF601AAAA", tag="SF-S-DUCT",
            outline=(pt(ft(18, 6.5), ft(2, 10)), pt(ft(21, 5.5), ft(2, 10)),
@@ -1170,6 +1147,7 @@ SOFFITS = [
            # deck's real underside (`resolve/envelope.py`): 1/8" of ceiling took 1/8" of
            # cavity with it and the duct read 0.1" proud. 94" states the face itself.
            underside_elevation=inch(94),
+           width_between_walls=("W-S-C2B", "W-S-BW1"),
            framing=FramingSpec(member="2x2", spacing=inch(16))),
     # THE AIR-HANDLER BOX — the ceiling of RM-S-NCLOSET and the north end of RM-S-HALL,
     # abutting SF-S-DUCT on the y=27'-8" seam and reading as one continuous soffit with it.

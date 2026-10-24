@@ -300,7 +300,8 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
     # Framing rides its owner, so a wall's studs stay addressable as that wall's parts —
     # which is what lets the exporter merge them into one node per owner and still resolve a
     # pick back to the individual stick.
-    for owner in (model.walls, model.floors, model.roofs, getattr(model, "stairs", ()),
+    for owner in (model.walls, model.floors, model.roofs, model.soffits,
+                  getattr(model, "stairs", ()),
                           # A brace (and a wedge — same record) hosts itself, so its sticks
                           # reach the IR the same way a wall's studs do. Without this the
                           # section pipeline cannot cut them and a detail whose whole subject
@@ -378,8 +379,17 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
         if deck is not None:
             elements.append(deck)
 
+    soffits = {soffit.uid: soffit for soffit in model.soffits}
     for solid in model.solids:
-        elements.append(_solid_geometry(solid, model.plan))
+        soffit = soffits.get(solid.uid)
+        if soffit is None:
+            elements.append(_solid_geometry(solid, model.plan))
+        else:
+            elements.append(ElementGeometry(
+                uid=solid.uid, kind="soffit", trades=("drywall",),
+                parts=tuple(GPart(key=panel.key, solids=(panel.prism,),
+                                  material_key="soffit", layer_group="finish")
+                            for panel in soffit.finish_panels)))
     for panel in getattr(model, "solar_panels", ()):
         elements.append(_solar_geometry(panel))
 

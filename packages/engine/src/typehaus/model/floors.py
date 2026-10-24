@@ -377,6 +377,9 @@ class Soffit(Element):
     drop: Length | None = None
     underside_elevation: Length | None = None
     framing: object | None = None  # FramingSpec | None (avoids import cycle)
+    # Opposing wall tags, low then high across the rectangle's short axis. The resolved
+    # room-facing finishes determine the width; the authored outline still sets its run.
+    width_between_walls: tuple[str, str] | None = None
     # Framed holes through the ladder — access hatches. See SoffitOpening: authoring one
     # is what makes the generator cut the rungs it crosses and head them off, instead of
     # laying lumber straight through a panel drawn below it.

@@ -1,27 +1,10 @@
-"""Soffit framing: the two-ladder box that hangs a dropped ceiling (→ 11 §Framing).
+"""Frame rectangular dropped ceilings with exposed ladders and wall-backed ledgers.
 
-A soffit resolved only as a solid is a shape, not construction — nothing in the BOM, the
-framing sheets, or the interference check knows there is lumber inside it. This module
-turns a soffit's authored ``FramingSpec`` into the members a carpenter actually builds:
-two vertical ladder frames, one per long side, tied together by rungs.
-
-**Why the stock size is load-bearing.** catlin's SF-S-DUCT is 32" wide and carries two
-14" round ducts side by side — 28" of duct. Two 2x2 ladders leave ~29.5" between their
-inner faces before lining; two 2x4 ladders leave 25" and the ducts do not fit at all.
-So the spec on that soffit is deliberately 2x2, and this generator frames whatever stock
-the spec names — never widening to a default 2x4, and never assuming a size when the
-spec is absent (a soffit with ``framing=None`` frames nothing at all).
-
-The lining costs more than that rationale allows for, and this module is where it
-becomes visible: a 32" *finished* box gives up 2 x 5/8" of gypsum before any lumber, so
-the clear span between two 2x2 ladders is 27.75" — a quarter inch short of the pair of
-ducts. The generator does not quietly recover it by framing to the finished face; the
-box has to be drawn wider (see ``tests/test_soffit_framing.py``).
-
-v1 handles axis-aligned rectangles only. A non-rectangular soffit gets a WARN/UNKNOWN
-finding rather than guessed geometry: an L-shaped duct chase is a different framing
-problem (it has an internal corner to post), and inventing a ladder for it would put
-wrong lumber in the take-off under a passing build.
+The underside and exposed returns carry 5/8" board; the top is open to the structure.
+Rail and rung stock come from the authored FramingSpec. End ties use rung stock and
+height, leaving the service cavity open rather than inventing a full-height timber cap.
+Wall contacts replace backed ladder portions with bottom ledgers attached to wall studs.
+Non-rectangular hosts report UNKNOWN instead of generating guessed lumber.
 """
 
 from __future__ import annotations
@@ -30,14 +13,11 @@ from dataclasses import dataclass
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.quantities import inch
+from typehaus.resolve.framing.soffit_support import coordinate_soffit_support
 from typehaus.resolve.framing.solver import _module_stations
 from typehaus.resolve.framing.tables import DEFAULT_SPACING, member_actual
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedSoffit
-
-# The gypsum lining wrapping the finished box. Members are framed *inside* it on every
-# face, so the resolved solid stays the finished dimension the drawings carry and the
-# lumber does not poke through its own skin.
-SOFFIT_LINING_THICKNESS = inch(0.625)
+from typehaus.resolve.soffits import SOFFIT_LINING_THICKNESS
 
 #: The ``FramedMember.key`` prefix every ladder rung carries. Exported because
 #: ``checks/structural/soffit.py`` grades exactly these members and nothing else — the
@@ -65,8 +45,8 @@ class SoffitClearSection:
     source of truth for a number the framing already states.
 
     So the section comes off exactly the geometry :func:`_frame_one` builds — the lining
-    on every face, then a ladder rail of stock depth down each long side, then the rails
-    top and bottom — and the check reads it. ``long_axis`` is the direction the box runs;
+    on the underside and exposed sides, then the side rails — and the check reads it.
+    ``long_axis`` is the direction the box runs;
     ``across`` and ``z`` bound the cavity, ``along`` bounds the run.
     """
 
@@ -105,7 +85,7 @@ def soffit_clear_section(soffit: ResolvedSoffit) -> SoffitClearSection | None:
     minx, miny, maxx, maxy = box
     x0, x1 = minx + lining, maxx - lining
     y0, y1 = miny + lining, maxy - lining
-    z_bottom, z_top = soffit.z0_m + lining, soffit.z1_m - lining
+    z_bottom, z_top = soffit.z0_m + lining, soffit.z1_m
     if x1 <= x0 or y1 <= y0 or z_top - z_bottom <= rail_thickness + rung_thickness:
         return None
     long_is_x = (x1 - x0) >= (y1 - y0)
@@ -136,7 +116,7 @@ def frame_soffits(model: ResolvedModel) -> list[Finding]:
         if soffit.framing is None:
             continue
         members, soffit_findings = _frame_one(soffit)
-        soffit.members = members
+        soffit.members = coordinate_soffit_support(model, soffit, members)
         findings.extend(soffit_findings)
     return findings
 
@@ -218,10 +198,10 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
 
     lining = SOFFIT_LINING_THICKNESS.meters
     minx, miny, maxx, maxy = box
-    # Every face of the finished box gives up the lining before any lumber is placed.
+    # Keep the exposed-return allowance in plan; the structure above carries no top board.
     x0, x1 = minx + lining, maxx - lining
     y0, y1 = miny + lining, maxy - lining
-    z_bottom, z_top = soffit.z0_m + lining, soffit.z1_m - lining
+    z_bottom, z_top = soffit.z0_m + lining, soffit.z1_m
     if x1 - x0 <= 0 or y1 - y0 <= 0 or z_top - z_bottom <= thickness + rung_thickness:
         return [], [Finding(
             severity=Severity.WARN, check_id="framing.soffit_shape",
@@ -328,12 +308,12 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
                 z_bottom, z_bottom + rung_thickness, head_hi - head_lo,
             ))
 
-    # --- end blocking: the full-depth piece closing each end of the box ---------
+    # --- end ties: underside support without a full-height cap across the ducts ---
     for end_key, station in zip(end_keys, end_stations, strict=True):
         members.append(FramedMember(
-            soffit.uid, f"soffit-end-{end_key}", "blocking", rail_profile,
+            soffit.uid, f"soffit-end-{end_key}", "blocking", rung_profile,
             point(station, span_low), point(station, span_high),
-            stud_z0, stud_z1, rung_length,
+            z_bottom, z_bottom + rung_thickness, rung_length,
         ))
 
     return members, findings

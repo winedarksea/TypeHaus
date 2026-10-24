@@ -46,6 +46,7 @@ from typehaus.resolve.platform import (
 from typehaus.resolve.roof_edge import resolve_roof_edges
 from typehaus.resolve.roof_geometry import apply_to_roof_wall_tops, apply_truss_heel_lift
 from typehaus.resolve.rooms import resolve_rooms
+from typehaus.resolve.soffits import resolve_soffit_contacts, resolve_soffit_finishes
 from typehaus.resolve.solar import resolve_solar
 from typehaus.resolve.stacking import resolve_stacking
 from typehaus.resolve.suspension import resolve_suspensions
@@ -125,6 +126,7 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         # what frames the outriggers this pass hangs everything off (→ framing/truss_wall.py).
         findings.extend(frame_truss_walls(plan, model))
         # Soffit ladders hang off records the envelope stage already created.
+        resolve_soffit_contacts(model)
         findings.extend(frame_soffits(model))
         findings.extend(frame_roofs(model))
         # After roof framing: the wall→roof closure and the eave/rake trim attach to the
@@ -248,6 +250,7 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         # instead of re-deriving solids from the records themselves.
         from typehaus.resolve.geometry_build import build_geometry
 
+        findings.extend(resolve_soffit_finishes(model))
         model.geometry = build_geometry(model)
 
     model.index_by_tag()

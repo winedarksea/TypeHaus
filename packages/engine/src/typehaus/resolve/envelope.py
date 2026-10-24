@@ -40,6 +40,7 @@ from typehaus.resolve.roof_edge_geometry import skin_layers, skin_stand_ins
 from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
 from typehaus.resolve.slab_kind import CATEGORY_FOR_KIND, slab_kind
 from typehaus.resolve.slab_layers import split_top_finish
+from typehaus.resolve.soffits import fit_soffit_outline
 from typehaus.resolve.stairs import _resolve_stair
 from typehaus.resolve.sweep import rect_profile
 
@@ -117,7 +118,12 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                 # Its own ``underside_elevation`` (storey-relative) wins; otherwise ``drop``
                 # measures down from the storey's default ceiling. Both absent is a
                 # modelling gap, not a zero-depth box, so it is named rather than guessed.
-                outline = [point.xy_m for point in element.outline]
+                try:
+                    outline = fit_soffit_outline(model, element)
+                except (KeyError, ValueError) as error:
+                    findings.append(element_error("integrity.soffit_width",
+                        f"soffit {element.tag}: {error}", element.tag))
+                    continue
                 if len(outline) < 3:
                     findings.append(element_error("integrity.soffit_outline",
                                            f"soffit {element.tag} needs a closed outline",

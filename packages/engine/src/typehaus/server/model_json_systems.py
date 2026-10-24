@@ -70,6 +70,7 @@ def systems_json(
              "length_m": run.length_m, "type": run.type_ref, "room": run.room,
              "circuit": run.circuit, "psu_ref": run.psu_ref,
              "controlled_by": list(run.controlled_by),
+             "soffit_ref": run.soffit_ref, "emission_side": run.emission_side,
              "provenance": _provenance(provenance, run.tag)}
             for run in sorted(model.light_runs, key=lambda item: item.uid)
         ],

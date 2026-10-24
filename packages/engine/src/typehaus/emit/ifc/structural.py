@@ -106,7 +106,20 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
     if object_type is not None:
         element.ObjectType = object_type
     element.GlobalId = derive_guid(project_uuid, solid.uid)
-    representation = _solid_body(f, body, solid)
+    soffit = (next((host for host in model.soffits if host.uid == solid.uid), None)
+              if model is not None else None)
+    if soffit is None:
+        representation = _solid_body(f, body, solid)
+    else:
+        items = []
+        for panel in soffit.finish_panels:
+            prism = panel.prism
+            panel_representation = ll.add_prism_from_profile(
+                f, body, list(prism.ring), prism.z1_m - prism.z0_m, prism.z0_m,
+                prism.voids)
+            items.extend(panel_representation.Items)
+        representation = (f.createIfcShapeRepresentation(body, "Body", "SweptSolid", items)
+                          if items else None)
     if representation is not None:
         ll.assign_representation(f, element, representation)
     if model is not None:

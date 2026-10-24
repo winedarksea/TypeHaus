@@ -92,7 +92,8 @@ def _strip_shells(run: Any) -> list[list[list[tuple[float, ...]]]]:
     """One closed box shell per band per plan leg: the channel (back/base/lip) and the tape
     it carries, not one plain bar — see :func:`~typehaus.resolve.geometry.light_run_band_profiles`.
     """
-    return [faces for _key, faces in light_run_band_shells(list(run.path), run.vertex_z())]
+    return [faces for _key, faces in light_run_band_shells(
+        list(run.path), run.vertex_z(), run.emission_side)]
 
 
 def emit_solar_panels(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, Any],
