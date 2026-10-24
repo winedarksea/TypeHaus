@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from typing import Literal
 
-from pydantic import model_validator
+from pydantic import Field, model_validator
 
 from typehaus.model.base import HausModel
 from typehaus.model.built_in_bench import BENCH_ENVELOPE_TOLERANCE_M, BuiltInBenchSpec
@@ -406,6 +406,14 @@ class RailingType(HausModel):
     source: str | None = None
 
 
+class FixturePart(HausModel):
+    """A separately procured component, counted for each placed fixture."""
+
+    role: Literal["basin", "faucet", "trap", "top", "drain"]
+    product_ref: str
+    quantity: int = Field(default=1, gt=0)
+
+
 class FixtureType(HausModel):
     """A plumbing/equipment fixture type — needs services, has clearances (M3)."""
 
@@ -416,6 +424,7 @@ class FixtureType(HausModel):
     needs: frozenset[Service] = frozenset()
     clearance: tuple[Length, Length, Length, Length] | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
+    parts: tuple[FixturePart, ...] = ()
     product_ref: str | None = None
     source: str | None = None
     import_provenance: dict[str, object] | None = None
@@ -424,6 +433,9 @@ class FixtureType(HausModel):
     # Finished counter opening in the fixture's local frame, separate from its flange
     # and faucet installation envelope. Countertop.cutouts follows the placed fixture.
     countertop_cutout: Footprint2D | None = None
+    # Solid cabinet sides below an overhanging purchased top, in the type's local frame.
+    # Cabinet-mounted accessories fasten to these faces, not to the ceramic/quartz envelope.
+    cabinet_body_footprint: Footprint2D | None = None
     clearances: tuple[ClearanceZone, ...] = ()
     ports: tuple[ServicePort, ...] = ()
     plan_representation: PlanRepresentation | None = None
@@ -993,6 +1005,7 @@ for _name, _obj in (
     ("FurnitureType", FurnitureType),
     ("RailingType", RailingType),
     ("FixtureType", FixtureType),
+    ("FixturePart", FixturePart),
     ("ApplianceType", ApplianceType),
     ("EquipmentType", EquipmentType),
     ("HeatPumpRating", HeatPumpRating),

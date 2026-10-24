@@ -71,7 +71,7 @@ def test_mounting_positions_are_referenced_to_actual_supports(catlin_model_ro):
         vanity = objects[holder.host_fixture_ref]
         assert holder.position[1] / IN == pytest.approx(y)
         assert Polygon(holder.footprint).bounds[2] == pytest.approx(
-            Polygon(vanity.footprint).bounds[0])
+            Polygon(vanity.footprint).bounds[0] + (0.46875 * IN if vanity.tag == "FX-S-SUITEBATH-LAV" else 0))
 
 
 def test_both_posts_have_exact_support_and_blocks_fill_stud_bays(catlin_ctx):
@@ -136,7 +136,7 @@ def test_panel_is_raised_and_cabinet_pads_cover_both_post_stations(catlin_plan, 
         # Pads sit inward of a 3/4 in. cabinet side; their through-fasteners stay on
         # the side panel, clear of the front plane and basin plumbing in the centre.
         assert Polygon(pad.footprint).bounds[0] == pytest.approx(
-            Polygon(vanity.footprint).bounds[0] + 0.75 * IN)
+            Polygon(vanity.footprint).bounds[0] + (0.46875 * IN if vanity.tag == "FX-S-SUITEBATH-LAV" else 0) + 0.75 * IN)
 
 
 def test_new_blocks_do_not_intersect_routed_services(catlin_model_ro):

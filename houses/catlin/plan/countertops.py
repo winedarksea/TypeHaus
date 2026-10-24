@@ -97,15 +97,18 @@ MAIN_COUNTERTOPS = [
     ),
 ]
 
-# Hall-bath deck: 36" long, 22" over the 21" carcass; flush ends keep the entry margins.
+# Two sink fixtures share one fabricated slab; ORRSJÖN and Chulton include their tops.
 SECOND_COUNTERTOPS = [
-    Countertop(
-        uid="8TV9EHG5TV", tag="CT-S-BATH1-VANITY",
-        hosts=("FX-S-BATH1-LAV",),
-        material_ref="quartz-counter",
-        thickness=inch(1.181),
-        overhang=inch(1),
-    ),
+    Countertop(uid="1F694EGPAW", tag="CT-S-VANITY", hosts=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2"),
+               cutouts=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2"),
+               material_ref="solid-surface-fabricated", thickness=inch(0.472),
+               length=inch(61), depth=inch(18), overhang=inch(0), profile="built-up eased"),
+]
+ATTIC_COUNTERTOPS = [
+    Countertop(uid="0FZ728B09A", tag="CT-A-STUBATH-VANITY", hosts=("FX-A-STUBATH-LAV",),
+               cutouts=("FX-A-STUBATH-LAV",), material_ref="solid-surface-fabricated",
+               thickness=inch(0.472), length=inch(24), depth=inch(18),
+               overhang=inch(0), profile="built-up eased"),
 ]
 
 # --- window stools: plant-room Corian, kitchen quartz -----------------------------------

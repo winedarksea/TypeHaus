@@ -85,6 +85,7 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "wood": (0.70, 0.52, 0.33, 1.0),
     "wood-dark": (0.45, 0.32, 0.20, 1.0),
     "potting-soil": (0.10, 0.08, 0.055, 1.0),
+    "faucet": (0.72, 0.75, 0.78, 1.0),
     "metal": (0.62, 0.64, 0.66, 1.0),
     "brushed-nickel": (0.66, 0.65, 0.62, 1.0),
     "metal-black": (0.025, 0.025, 0.025, 1.0),

@@ -3195,53 +3195,32 @@
 # constraint above (FX-LAV-24 > FX-LAV-COMPACT) still has to hold if either is edited.
 "FX-LAV-24" = { material = { low = 250, high = 950 }, labour = { low = 200, high = 460 } }  # 0 ea
 "FX-LAV-COMPACT" = { material = { low = 110, high = 420 }, labour = { low = 150, high = 330 } }  # 1 ea — the studio bar bowl only, since RM-A-STUBATH took a vanity 2026-09-09
-# RM-M-BATH2's floating SEKTION vanity, FX-VANITY-48-SEKTION (plan/bath2_vanity_types.py).
-# Revised 2026-10-22: 36" sink cabinet with two AXSTAD matte white doors $338 (listing
-# S89454945) + 12" storage cabinet with an AXSTAD front $132 (matte-blue price; white not yet
-# read) + 602.615.27 rail $20 + hinges, shelf and pulls ~$60: ~$550. Then the solid-surface
-# bowl ($250-450 bonded, fabricator's) and the chrome Arvo (~$150-250): 950-1250. It replaced
-# the 30" + 18" drawer build (~$660 of parts). The Corian TOP is CT-M-BATH2-VANITY in
-# [countertops], not here. Labour is the ledger chase, hanging, the trap and the faucet.
-"FX-VANITY-48-SEKTION" = { material = { low = 950, high = 1250 }, labour = { low = 300, high = 720 } }  # 1 ea
-# ** THE OTHER FIVE BATHROOMS' VANITIES (2026-08-30). ** Same basis as the 54" row above and
-# as FX-LAV-24 before it: each row is the WHOLE assembly -- cabinet, counter, basin and
-# faucet -- because no CASE-* row covers a bathroom anywhere in this file, so a bowl-only
-# price would drop every vanity carcass out of the estimate.
-#
-# LOW is the big-box combo tier: an assembled vanity that arrives boxed WITH its cultured-
-# marble top and integral bowl already on it, plus a builder-grade faucet. That tier is real
-# and it is cheap -- Glacier Bay GB24P2-WH is a 25" cabinet-and-top at about $159 -- and it
-# is why the LOW numbers here are close to what the bare FX-LAV-24 bowl was priced at. It is
-# also why the shallow rows are not discounted against the 21"-deep ones: the combo tier is
-# 18.6"-18.75" deep to begin with, so 18" is the pallet depth, not a special order.
-#
-# HIGH is a builder cabinet line (Menards Quality One, Diamond NOW, Home Decorators) or a
-# semi-custom box, with a quartz top and a separate undermount basin, and a mid-range
-# widespread faucet. The spread is wide on purpose -- a 30" vanity genuinely spans $250 to
-# $1,400 depending only on which of those two ways you buy it.
-#
-# Widths are the stock ladder (24/30/36/48/60) and the prices step with it rather than
-# scaling linearly: 24-36" are the volume sizes, and 48" is where the per-inch price starts
-# to climb. The 48" row carries a drawer bank as well as a sink base, which is worth roughly
-# +50% on the 18" of carcass it occupies (Home Decorators 21" drawer base $818 against the
-# same-width sink base $552), and that is inside its band.
-#
-# ** THE OAK SHELVES ARE NOT IN ANY OF THESE ROWS. ** SB-B-BATH-VAN,
-# SB-S-BATH1-VAN, SB-S-SUITEBATH-VAN, SB-S-VANITY-VAN1/2 and SB-A-STUBATH-VAN bill as
-# owner-milled hardwood in
-# [hardwood]. Counting them here would double-bill the one part of each cabinet the owner is
-# making, exactly as the 54" row's note says.
-#
-# Sources: homedepot.com / lowes.com / menards.com 2026 in-stock vanity and vanity-top
-# listings, Home Decorators Cabinetry 2026 list prices for vanity sink bases against drawer
-# bases, and the homeguide 2026 sink-install labour band this section already uses.
-"FX-VANITY-24-SHALLOW" = { material = { low = 300, high = 1100 }, labour = { low = 200, high = 470 } }  # 1 ea — RM-A-STUBATH; main powder room now has a wall basin
-"FX-VANITY-30-SHALLOW" = { material = { low = 380, high = 1350 }, labour = { low = 220, high = 510 } }  # 2 ea
-"FX-VANITY-30-SINGLE" = { material = { low = 400, high = 1400 }, labour = { low = 220, high = 510 } }  # 1 ea
-"FX-VANITY-36-SHALLOW" = { material = { low = 470, high = 1650 }, labour = { low = 240, high = 560 } }  # 1 ea
-# Hall bath, 2026-10-21: 36x21 sink base, basin and faucet allowance; the fabricated
-# quartz slab bills separately under [countertops]. Full-width shelf is included in host.
-"FX-VANITY-36-SINGLE" = { material = { low = 470, high = 1650 }, labour = { low = 240, high = 560 } }  # 1 ea
+# Selected lavatory assemblies (2026-10-24). Cabinet rows exclude separately counted
+# basins, traps and fabricated tops. Faucets bill once in the allowance below; their
+# role-tagged Product rows remain visible at zero so the BOM names each ordered fitting.
+# Included SEKTION shelves bill in the cabinet; there is no owner-hardwood shelf charge.
+"FX-VANITY-48-SEKTION" = { material = { low = 550, high = 650 }, labour = { low = 300, high = 720 } }
+"FX-ANGSJON-36" = { material = { low = 369, high = 369 }, labour = { low = 240, high = 560 } }
+"FX-ANGSJON-36-SS" = { material = { low = 369, high = 369 }, labour = { low = 240, high = 560 } }
+"FX-CHULTON-30" = { material = { low = 600, high = 1000 }, labour = { low = 220, high = 510 } } # allowance; top/bowl included
+"FX-VANITY-30-SEKTION" = { material = { low = 324, high = 380 }, labour = { low = 220, high = 510 } } # $304 cabinet + rail/ledger
+"FX-VANITY-24-SEKTION-SS" = { material = { low = 280, high = 340 }, labour = { low = 200, high = 470 } } # $260 cabinet + rail/ledger
+"FX-SUNNERSTA-BAR-SINK" = { material = 0, labour = { low = 100, high = 200 } } # sink included in kitchenette
+"PROD-IKEA-ORRSJON-37" = { material = 210, labour = { low = 80, high = 140 } } # US combination includes separately packaged RANNILEN
+"PROD-IKEA-RANNILEN" = { material = 0, labour = { low = 40, high = 80 } } # included in ORRSJON combination price
+"PROD-SS-LAV-16X13" = { material = { low = 250, high = 450 }, labour = { low = 100, high = 200 } }
+"PROD-CORIAN-GLACIER-WHITE" = { material = 0, labour = 0 } # fabricated area bills in [countertops]
+"PROD-DEARBORN-707BN-1" = { material = { low = 45, high = 80 }, labour = { low = 50, high = 100 } }
+"PROD-MOEN-6702" = { material = 0, labour = 0 } # faucet allowance
+"PROD-MOEN-6702BN" = { material = 0, labour = 0 } # faucet allowance
+"PROD-KRAUS-KBF-1401-SFS" = { material = 0, labour = 0 } # faucet allowance
+"PROD-DURAVIT-B21010001U10" = { material = 0, labour = 0 } # faucet allowance
+# Retired types retained at zero, following glazed-green-brick's convention.
+"FX-VANITY-24-SHALLOW" = { material = 0, labour = 0 }
+"FX-VANITY-30-SHALLOW" = { material = 0, labour = 0 }
+"FX-VANITY-30-SINGLE" = { material = 0, labour = 0 }
+"FX-VANITY-36-SHALLOW" = { material = 0, labour = 0 }
+"FX-VANITY-36-SINGLE" = { material = 0, labour = 0 }
 # 36x36 curbed pan plus its three-wall surround panels, set on a mortar bed. The tiled
 # version of this wall is NOT here — see the basis note above.
 # ** THIS ROW ALREADY BUYS THE SURROUND, INCLUDING ITS LABOUR. ** RM-M-BATH2's
@@ -3300,7 +3279,7 @@
 # from the class rows above — setting a skirted one-piece is not a different hour from
 # setting a two-piece.
 "FX-TOTO-AP-WH" = { material = { low = 600, high = 1100 }, labour = { low = 210, high = 500 } }  # 1 ea
-"FX-DURAVIT-DCODE-070545" = { material = { low = 250, high = 450 }, labour = { low = 250, high = 500 } } # 1 ea, basin and exposed trap; faucet allowance separate
+"FX-DURAVIT-DCODE-070545" = { material = { low = 250, high = 450 }, labour = { low = 250, high = 500 } } # 1 ea, basin only; role-tagged trap and faucet priced separately
 # The WASHLET S5 bidet seat rides on the two showpieces and is a SEPARATE purchase from the
 # bowl (~$682 ea), so it is not inside these rows. It is `plumbing-bidet-seats` in
 # [allowances] — the SEAT ONLY since 2026-09-06. The GFCI outlet each one needs and the
@@ -7512,35 +7491,14 @@ finish-cabinet-pulls = { low = 200, high = 300 }
 # spread on the seats alone. ** The warm water IS the electrical **: an S5 heats from the
 # COLD supply instantaneously, so no toilet in this house takes a hot run and none should.
 plumbing-bidet-seats = { low = 1364, high = 1700 }
-# ** FAUCETS AND THE TUB FILLER WERE IN NO ROW EITHER. ** The vanity rows in [placeables] buy
-# a cabinet and a top; the shower rows buy a valve and its trim. Nothing bought the deck
-# fittings. ** SCOPED SO IT CANNOT DOUBLE-COUNT: ** shower valves, shower trim and showerheads
-# are inside FX-SHOWER-36-* / FX-TUBSHOWER-60-DIVERTED and are NOT here.
-#
-#   8 x Delta Arvo 15840LF-SP lavatory, SpotShield Brushed Nickel   $105 ea   $840
-#   Kitchen Bolden is excluded: one named [install_parts] row on PA-M-KITCH-STOP-CW.
-#   1 x Moen Adler 87233SRS laundry, Spot Resist Stainless          $169      $169
-#   (The Moen T393 trim + 4794 body bill as "FX-MOEN-ALIGN-ROMAN"; excluded since
-#   2026-10-21; they are no longer in this row.)
-#
-# ** SINGLE-HOLE ON ALL EIGHT LAVATORIES ** -- one deck penetration in the splash zone
-# instead of three, and cheaper in brushed nickel besides. That puts a requirement on the TOP
-# order: every top DRILLED SINGLE-HOLE, in writing (field-drilling a cast top chips it and
-# voids its warranty). Both faucets ship with a deck plate covering a 3-hole 4" top, which is
-# the recovery from the likeliest ordering error and part of why they were chosen.
-#
-# ** THE LAUNDRY BRIEF CANNOT BE MET BY A FAUCET. ** No mainstream pull-down sprayer is
-# hose-threaded (sprayheads use proprietary threads) and every 3/4"-hose-threaded utility
-# faucet is a two-handle rigid spout with no spray. Take the sprayer and TEE A 1/2" HOSE BIBB
-# OFF THE COLD AT THE LAUNDRY BOX (~$15-25) -- a rough-in item, not a trim item, and it has to
-# reach the plumber before the wall closes. The high end of this row carries it.
-#
-# Order Moen 4794 with T393; that pair is billed separately above, not in this allowance.
-# Current lavatory split: six Arvo -SP, one Bath2 Arvo 15840LF chrome, and one powder-room
-# Duravit B.2 S B21010001U10 chrome. The broad installation/material band remains an allowance.
-# 2026-10-24: subtract the former $175 kitchen faucet from BOTH allowance endpoints.
-# Its installation remains in the kitchen sink set/connect labour; no second fitting charge.
-plumbing-faucets-and-tub-filler = { low = 1144, high = 2620 }
+# Lavatory faucets, read/selected 2026-10-24: five Genta LX 6702 single-hole sets,
+# three Kraus Indy KBF-1401SFS utility mixers, one Duravit B.2 chrome in the powder room.
+# Budget bands, pending supplier quotes: Genta 5 x $150-250;
+# Indy 3 x $100-160; B.2 $160-260; laundry Adler $169-220 and hose tee $15-25.
+# Faucet installation is included in the fixture connection labour, with no second labour
+# allowance. Kitchen Bolden and Align T393/4794 tub filler bill in their named rows.
+# Theme chrome/brushed-nickel changes Product identity and finish, within this shared band.
+plumbing-faucets-and-tub-filler = { low = 1394, high = 2235 }
 # ** WALL TILE HAS NO ELEMENT TO MEASURE ** — [floor_finishes] carries the floors and a shower
 # surround is not a modelled finish, which is the same reason `finish-tile-surrounds-and-
 # waterproofing` above stays a lump. This row is the MATERIAL for the chosen 12x24 (TileBar

@@ -9,8 +9,10 @@ NOT ``# haus: editable``: ``FixtureType.needs`` is a ``frozenset``. The instance
 from __future__ import annotations
 
 from library.placeables import front_zone
+from plan.bath_finish import THEME_FAUCET_PART, THEME_MATERIAL_REFS
+from plan.lav_ports import lav_ports
 
-from typehaus.model import FixtureType, Footprint2D, ModelRepresentation, Product, Service, inch, pt
+from typehaus.model import FixturePart, FixtureType, Footprint2D, ModelRepresentation, Product, Service, inch, pt
 
 # IKEA parts. The 36" listing (2 AXSTAD matte white doors) was read 2026-10-22; article numbers
 # are read off the listing URL and marked to confirm at order. The 12" storage cabinet's
@@ -74,15 +76,19 @@ BATH2_VANITY_48 = FixtureType(
     footprint=(inch(48), inch(18)),
     height=inch(41.5),
     plan_symbol="vanity",
-    model_representation=ModelRepresentation(symbol="solid-surface-vanity"),
+    model_representation=ModelRepresentation(symbol="solid-surface-vanity", material_refs=THEME_MATERIAL_REFS),
     basin=True,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(front_zone(inch(48), inch(18), inch(21), "lavatory front clearance"),),
     countertop_cutout=Footprint2D(points=(
-        pt(inch(-8.1875), inch(-7)), pt(inch(8.1875), inch(-7)),
-        pt(inch(8.1875), inch(6)), pt(inch(-8.1875), inch(6)),
+        pt(inch(-8.1875), inch(-7.625)), pt(inch(8.1875), inch(-7.625)),
+        pt(inch(8.1875), inch(5.375)), pt(inch(-8.1875), inch(5.375)),
     )),
     product_ref=SEKTION_WALL_36_CAB.tag,
+    ports=lav_ports(18),
+    parts=(THEME_FAUCET_PART, FixturePart(role="trap", product_ref="PROD-DEARBORN-707BN-1"),
+           FixturePart(role="basin", product_ref="PROD-SS-LAV-16X13"),
+           FixturePart(role="top", product_ref="PROD-CORIAN-GLACIER-WHITE")),
     source="RM-M-BATH2 vanity, owner selection 2026-10-22, revised: SEKTION 36x15x30 sink cabinet "
            "with two AXSTAD matte white doors (894.549.45, to confirm) at the north end and a "
            "12x15x30 storage cabinet with an AXSTAD matte white door at the south end, both on a "
@@ -90,7 +96,7 @@ BATH2_VANITY_48 = FixtureType(
            "AFF; both carry AXSTAD matte white shelving (door-and-shelf storage, no drawers). "
            "Corian Glacier White (or HI-MACS/Staron equal) top CT-M-BATH2-VANITY with a bonded "
            "16 3/8 x 13 in. solid-surface bowl (PROD-SS-LAV-16X13), centred on the vanity. "
-           "Bath2 faucet: chrome Arvo 15840LF (PROD-DELTA-15840LF); single hole. Fallback "
+           "Bath2 faucet: Moen Genta LX 6702 (theme finish); single hole. Fallback "
            "if the SEKTION parts cannot be bought as specified: IKEA GODMORGON, about "
            "18 1/2 in. deep, wall-hung, 31 1/2 in. sink + 15 3/4 in. drawer cabinet = "
            "47 1/4 in. Rejected: US HAVBACK (21 in. deep), Swanstone one-piece tops "

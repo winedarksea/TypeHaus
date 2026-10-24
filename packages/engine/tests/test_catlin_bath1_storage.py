@@ -118,7 +118,7 @@ def test_heating_keeps_its_cable_and_clearance_from_all_fixed_storage(catlin_pla
     zone = next(zone for zone in catlin_model_ro.floor_heat if zone.tag == "FH-S-BATH1")
     polygon = Polygon(zone.zone)
     assert polygon.is_valid
-    assert polygon.area / SQFT == pytest.approx(26.81477865)
+    assert polygon.area / SQFT == pytest.approx(26.789921875)
     assert polygon.area / SQFT >= 26.7
     authored_zone = next(e for e in catlin_plan.all_elements() if e.tag == zone.tag)
     assert authored_zone.watts == 338
@@ -160,12 +160,11 @@ def test_open_entry_has_a_continuous_turn_between_storage_and_countertop(catlin_
     """
     model = catlin_model_ro
     objects = _objects(model)
-    counter = Polygon(next(c.outline for c in model.countertops
-                           if c.tag == "CT-S-BATH1-VANITY"))
+    counter = Polygon(objects["FX-S-BATH1-LAV"].footprint)
     cover = Polygon(objects["FURN-S-BATH1-CLOSET-COVER"].footprint)
-    assert (counter.bounds[0] - cover.bounds[2]) / INCH == pytest.approx(21.12)
-    assert (counter.bounds[1] - cover.bounds[3]) / INCH == pytest.approx(8.865)
-    assert counter.distance(cover) / INCH == pytest.approx(22.905078585)
+    assert (counter.bounds[0] - cover.bounds[2]) / INCH == pytest.approx(21.37)
+    assert (counter.bounds[1] - cover.bounds[3]) / INCH == pytest.approx(8.365)
+    assert counter.distance(cover) / INCH == pytest.approx(22.948858904)
     door = next(o for o in model.openings if o.tag == "D-S-BATH1")
     leaf = LineString((door.swing_clearance[0], door.swing_clearance[-1]))
     leaf_body = leaf.buffer(door.cased_product.leaf_thickness_m / 2)

@@ -86,7 +86,7 @@ def test_erv_condensate_falls_to_the_bath_lavatory(catlin_model_ro):
     run = next(r for r in catlin_model_ro.pipe_runs if r.tag == "PR-B-ERV-COND")
     assert run.path[-1] == pytest.approx((144 * M_PER_IN, 224.375 * M_PER_IN))
     bath = next(r for r in catlin_model_ro.rooms if r.tag == "RM-B-BATH")
-    assert (run.z_m[-1] - room_floor_elevation(catlin_model_ro, bath)) / M_PER_IN == pytest.approx(24)
+    assert (run.z_m[-1] - room_floor_elevation(catlin_model_ro, bath)) / M_PER_IN == pytest.approx(38)
     for a, b, za, zb in zip(run.path, run.path[1:], run.z_m, run.z_m[1:]):
         run_ft = math.dist(a, b) / M_PER_IN / 12
         assert za - zb >= 0

@@ -108,3 +108,9 @@ assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
 "sunken_garden.planting_width_in" = 36
 "sunken_garden.planter_setback_in" = 36
 "sunken_garden.cladding" = "fiber-cement"
+
+[[variant]]
+name = "brushed-nickel"
+description = "Genta LX theme faucets in brushed nickel; utility Indy stays stainless."
+[variant.parameters]
+"finish.bath_theme" = "brushed-nickel"

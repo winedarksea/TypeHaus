@@ -56,6 +56,8 @@ class PlumbingPreferences:
     """Planning allowances for advisory service checks, not plumbing sizing."""
 
     drain_stack_required_structure_in: float = 5.5
+    fixture_port_exact_tolerance_in: float = 1.0
+    fixture_port_approximate_tolerance_in: float = 3.0
     # The house's own rule for what visible supply pipe is made of. Not code — copper and
     # PEX are both listed for potable water everywhere in the house — but it is a rule the
     # model can hold to, which is the difference between a style decision and a memory.

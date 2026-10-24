@@ -35,10 +35,10 @@ def test_the_basement_branches_derive_their_trunk(catlin_model_ro) -> None:
 
 def test_every_supply_run_gets_a_record_and_most_get_a_parent(catlin_model_ro) -> None:
     records = list(_records(catlin_model_ro).values())
-    assert len(records) == 31  # includes the powder basin tap from the south wet-wall riser
+    assert len(records) == 47  # includes the powder basin tap from the south wet-wall riser
     # 25 tee onto a run (the coldstore stub since it starts on the kitchen riser head); the
     # 26th is PR-B-HW-TRUNK, fed by the water heater's hot port.
-    assert sum(rec.accepted for rec in records) == 26
+    assert sum(rec.accepted for rec in records) == 42
     # Every basement branch, which is what a campaign needs to re-lane supply at all.
     basement = [rec for rec in records if rec.child.startswith("PR-B-")
                 and rec.child != "PR-B-CW-TRUNK"]

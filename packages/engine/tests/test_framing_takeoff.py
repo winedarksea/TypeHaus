@@ -515,7 +515,10 @@ def test_placeables_takeoff_reconciles_with_canvas_objects(catlin_model) -> None
     rows = placeables_takeoff(catlin_model)
     assert rows, "the catlin house places furniture/appliances/fixtures"
     billable = [item for item in catlin_model.canvas_objects if item.domain != "opening"]
-    assert sum(int(row["count"]) for row in rows) == len(billable)
+    primary_rows = [row for row in rows if "roles" not in row]
+    assert sum(int(row["count"]) for row in primary_rows) == len(billable)
+    parts = [row for row in rows if "roles" in row]
+    assert parts and all(row["count"] > 0 for row in parts)
     assert {tag for row in rows for tag in row["tags"]} == {item.tag for item in billable}
     assert all(row["domain"] != "opening" for row in rows)
     # Grouping key is (type, domain, storey) — each appears exactly once.

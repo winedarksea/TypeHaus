@@ -391,29 +391,14 @@ def _expected_drain_point(model: ResolvedModel,
                          if t.tag == fixture.type_ref), None)
     if fixture_type is None:
         return None
-    # A fixture whose type MOUNTS ON THE WALL and drains does not drop under its own
-    # footprint: the waste turns down inside the wall, behind the body, in the carrier's
-    # bay. The type says where — its DRAIN ``ServicePort`` is stated in the product's own
-    # local frame — so read that and rotate it into the plan rather than making a human
-    # restate it as a ``drain_position`` on every instance.
-    #
-    # This branch has to come FIRST. A wall-hung water closet has no hot connection either,
-    # so the "no WATER_HOT" heuristic below would otherwise claim it and put the drop a
-    # foot in front of where the pipe actually is.
-    if fixture_type.mount.kind is MountKind.WALL:
-        port = next((p for p in fixture_type.ports if p.service is Service.DRAIN), None)
-        backing = backing_wall(model.plan, model, fixture, fixture_type)
-        if port is not None:
-            local = (port.position[0].meters, port.position[1].meters)
-            point = rotate_into_plan(fixture, local, model)
-            # The port's set-back is a PRODUCT nominal, measured off the frame's own face:
-            # "1 3/4" behind the frame" says nothing about how thick the gypsum in front of
-            # it is, and the type cannot know. What is actually true of the pipe is that it
-            # runs down the middle of the bay it stands in, so the nominal is projected onto
-            # the host wall's axis — the same wall ``framing/carriers`` frames the bay in.
-            # At catlin that is the difference between a 3" (3.5" OD) drop centred in a
-            # 5 1/2" cavity and one poking an eighth of an inch out through the drywall.
-            return point if backing is None else _project_onto_line(point, backing[0].axis)
+    point = expected_port_point(model, fixture_tag, Service.DRAIN)
+    if point is not None:
+        plan_point = point[:2]
+        if fixture_type.mount.kind is MountKind.WALL:
+            backing = backing_wall(model.plan, model, fixture, fixture_type)
+            if backing is not None:
+                return _project_onto_line(plan_point, backing[0].axis)
+        return plan_point
     # A water closet is the only common fixture with no hot-water connection — the one
     # reliable signal in this schema that a fixture is floor-drained (drain at its own
     # footprint) rather than wall-drained (trap arm back to a wet-wall stack).
@@ -428,6 +413,31 @@ def _expected_drain_point(model: ResolvedModel,
     if wall is None:
         return None
     return _project_onto_line(placed[0], wall.axis)
+
+
+def expected_port_point(model: ResolvedModel, fixture_tag: str,
+                        service: Service) -> tuple[float, float, float] | None:
+    """Placed service station, with z relative to the fixture's storey datum."""
+    fixture = model.plan.by_tag(fixture_tag)
+    if not isinstance(fixture, (Fixture, Appliance)):
+        return None
+    fixture_type = next((entry for entry in (*model.plan.library.fixture_types,
+                                             *model.plan.library.appliance_types)
+                         if entry.tag == fixture.type_ref), None)
+    if fixture_type is None:
+        return None
+    port = next((port for port in fixture_type.ports if port.service is service), None)
+    if port is None:
+        return None
+    x, y = rotate_into_plan(fixture, tuple(v.meters for v in port.position[:2]), model)
+    placed = next((obj for obj in model.canvas_objects if obj.tag == fixture_tag), None)
+    if placed is not None:
+        storey = next((s for s in model.plan.storeys if s.tag == placed.storey), None)
+        if storey is not None:
+            # The body's mount is above FINISHED floor, while pipe inverts use storey datum.
+            return x, y, placed.z_m - storey.elevation.meters + port.position[2].meters
+    elevation = fixture.mount.elevation or fixture_type.mount.elevation
+    return x, y, (elevation.meters if elevation is not None else 0.0) + port.position[2].meters
 
 
 def rotate_into_plan(placeable, local: tuple[float, float],

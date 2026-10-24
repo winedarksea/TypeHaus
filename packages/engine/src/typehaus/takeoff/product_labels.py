@@ -74,6 +74,11 @@ def product_labels(plan: PlanModel) -> dict[tuple[str, str], str]:
                 if product is None:
                     continue
                 labels[(section, entry.tag)] = product_label(product)
+    for entry in library.fixture_types:
+        for part in entry.parts:
+            product = library.product(part.product_ref)
+            if product is not None:
+                labels[("placeables", part.product_ref)] = product_label(product)
     return labels
 
 

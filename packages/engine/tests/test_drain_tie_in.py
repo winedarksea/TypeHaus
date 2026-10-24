@@ -26,7 +26,7 @@ def test_catlin_is_clean(catlin_plan, catlin_model_ro) -> None:
     findings = drain_tie_in(check_context(plan=catlin_plan, model=catlin_model_ro))
     fails = [f for f in findings if f.result is Result.FAIL]
     assert not fails, [f.message for f in fails]
-    assert len(findings) == 30  # includes the two local kitchen waste connections
+    assert len(findings) == 34  # includes the two local kitchen waste connections
 
 
 def test_terminal_runs_are_not_graded_as_rejected_junctions(catlin_model_ro) -> None:

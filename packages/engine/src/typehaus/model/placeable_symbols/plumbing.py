@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.model.placeable_symbols._drawer_vanity import drawer_vanity
 from typehaus.model.placeable_symbols._families import Builder, Geometry
 from typehaus.model.placeable_symbols._frame import (
     DETAIL_WEIGHT,
@@ -144,7 +145,7 @@ def lavatory(*, pedestal: bool = False, faucet_height_m: float | None = None) ->
         parts = [*_basin(0, basin_cy, width * 0.8, basin_ry * 2, deck_z - bowl_h, deck_z,
                          rim, "porcelain"),
                  box(0, depth / 2 - depth * 0.1, deck_z, deck_z + faucet, width * 0.1,
-                     depth * 0.12, "metal")]
+                     depth * 0.12, "faucet")]
         if pedestal:
             parts.append(box(0, 0, 0.0, deck_z - bowl_h, width * 0.3, depth * 0.35,
                              "porcelain"))
@@ -534,6 +535,9 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "lavatory-wall-hung": lavatory(faucet_height_m=FAUCET_HEIGHT_M),
     "vanity": vanity(),
     "solid-surface-vanity": solid_surface_vanity,
+    "sektion-vanity": lambda w, d, h: solid_surface_vanity(w, d, h, fronts=(0.5, 0.5)),
+    "drawer-vanity": drawer_vanity,
+    "door-drawer-vanity": lambda w, d, h: drawer_vanity(w, d, h, door_fronts=True),
     "kohler-underscore-6036": kohler_underscore,
     "kohler-underscore-6032": kohler_underscore_rect,
     "tub": tub(),

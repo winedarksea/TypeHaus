@@ -30,7 +30,7 @@ from params import (breezeway, driveway, entry_band_brace, foundations, hp1_nort
                     landscape_gardens, landscape_walk, main_deck, raised_garden, roof_trim,
                     second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
-from plan import (appliance_types, assemblies, backing, backing_wet, bath1_storage,
+from plan import (appliance_types, assemblies, bath_finish, lav_types, products_bath_lavs, backing, backing_wet, bath1_storage,
                   decking_selection, plant_liner_selection, handrail_types, mirrors, mirror_types,
                   bath_accessories, bath_accessory_types, backing_bath_accessories,
                   towel_accessories, towel_accessory_types, backing_towel_accessories,
@@ -44,7 +44,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   dining_types, door_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets, kitchen_front_types,
                   landscape, lighting, living_east_run, living_east_run_types,
                   living_puzzle_table_types,
-                  lighting_attic, lighting_types, masonry_joints, mep, millwork,
+                  lighting_attic, lighting_types, masonry_joints, mep, mep_lavatories, millwork,
                   millwork_vanities, placeables,
                   plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
                   opening_products, products,
@@ -61,13 +61,13 @@ PROJECT_UUID = uuid.UUID("c471a000-93b5-4e6e-8f5a-000000000002")
 _library = Library(
     materials=(*plant_liner_selection.with_selected_liner(
                    decking_selection.with_selected_decking(assemblies.MATERIALS)),
-               *plant_types.FOLIAGE_MATERIALS),
+               *plant_types.FOLIAGE_MATERIALS, *bath_finish.FAUCET_MATERIALS),
     assemblies=tuple(assemblies.ASSEMBLIES),
     # Brand and model for the products this house has actually chosen — identity only,
     # never a price (#28). The types above point at these by ``product_ref``.
     products=(*products.PRODUCTS, *mirror_types.MIRROR_PRODUCTS, *bed_frame_types.BED_FRAME_PRODUCTS,
               *opening_products.OPENING_PRODUCTS, *bath_accessory_types.BATH_ACCESSORY_PRODUCTS,
-              *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS),
+              *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS, *products_bath_lavs.BATH_LAV_PRODUCTS),
     # The one library pocket size this house hangs, alongside the house's own catalog. Only
     # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
     # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
@@ -120,7 +120,7 @@ _library = Library(
     # selection is the owner's). `plan/fixture_types.py` is that selection where one has
     # been made — so far the RM-M-BATH2 drop-in bath alone — and rides beside the
     # allowances rather than replacing them, the same split `appliance_types` uses.
-    fixture_types=(*STARTER_FIXTURE_TYPES, *fixture_types.FIXTURE_TYPES),
+    fixture_types=(*STARTER_FIXTURE_TYPES, *fixture_types.FIXTURE_TYPES, *lav_types.LAV_TYPES),
     # The library's appliance catalog is a planning ALLOWANCE — its own header says final
     # selection is the owner's. `plan/appliance_types.py` is that selection, and rides
     # beside the allowances rather than replacing them: the disposer and the recirculating
@@ -378,12 +378,12 @@ PLAN = (
          *foundations.HOUSE_FOOTINGS, *foundations.HOUSE_FOOTING_BEDDING,
          *foundations.VENEER_PLINTH, *foundations.VENEER_PLINTH_BEDDING,
          *masonry_joints.JOINTS,
-         *mep.BASEMENT_ELEMENTS, *electrical.BASEMENT_ELEMENTS,
+         *mep.BASEMENT_ELEMENTS, *mep_lavatories.BASEMENT_LAV_CONNECTIONS, *electrical.BASEMENT_ELEMENTS,
          *lighting.BASEMENT_LIGHTING, *mirrors.BASEMENT_MIRRORS,
          *placeables.BASEMENT_PLACEABLES, *sauna.SAUNA_SEATING, *millwork.BASEMENT_SHELVES,
          *window_stools.BASEMENT_WINDOW_STOOLS,
          *millwork_vanities.BASEMENT_VANITY_SHELVES,
-         *backing.BASEMENT_BACKING, *towel_accessories.BASEMENT_TOWEL_ACCESSORIES,
+         *backing.BASEMENT_BACKING, *backing_wet.BASEMENT_WET_BACKING, *towel_accessories.BASEMENT_TOWEL_ACCESSORIES,
          *backing_towel_accessories.BASEMENT_TOWEL_BACKING,
          *bath_accessories.BASEMENT_BATH_ACCESSORIES,
          *backing_bath_accessories.BASEMENT_TP_BACKING],
@@ -395,7 +395,7 @@ PLAN = (
         # hydrant you reach from the porch still belongs to the wall it penetrates. Same for
         # `BALCONY_HYDRANT` on `second` (`W-S-S1`, `RM-S-PLANT`).
         [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *fixtures.PORCH_HYDRANT,
-         *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
+         *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS, *mep_lavatories.MAIN_LAV_CONNECTIONS,
          # The four wall corners where the north/south board & batten meets the east/west
          # PBR. Filed on `main` (the run starts below the main datum) though the module
          # that derives them is the roof eave's — it owns the cladding-face constant.
@@ -451,6 +451,7 @@ PLAN = (
                              *placeables.ATTIC_PLACEABLES,
                              *study_bridge.STUDY_BRIDGE,
                              *millwork.ATTIC_SHELVES,
+                             *countertops.ATTIC_COUNTERTOPS,
                              *millwork_vanities.ATTIC_VANITY_SHELVES,
                              *backing.ATTIC_BACKING,
                              *backing_wet.ATTIC_WET_BACKING,

@@ -85,7 +85,16 @@ def best_host(model: ResolvedModel, obj: ResolvedCanvasObject) -> Host | None:
                 or host.body_z0_m > z + _EPS
                 or host.body_z1_m < (obj.body_z1_m or z) - _EPS):
             return None
-        solid = Polygon(host.footprint)
+        fixture_type = next((entry for entry in model.plan.library.fixture_types
+                             if entry.tag == host.type_ref), None)
+        cabinet = getattr(fixture_type, "cabinet_body_footprint", None)
+        if cabinet is not None:
+            from typehaus.model.placeable_symbols import place_local
+
+            solid = Polygon(place_local([point.xy_m for point in cabinet.points],
+                                        host.position, host.rotation_degrees))
+        else:
+            solid = Polygon(host.footprint)
         return Host(host.tag, solid.intersection(body).area, solid.distance(body), None)
     best: Host | None = None
     for tag, solid, wall in _hosts_at(model, z):

@@ -71,20 +71,19 @@ def unknown_product_ref(ctx: CheckContext) -> list[Finding]:
     findings: list[Finding] = []
     for catalog in _PRODUCT_REF_CATALOGS:
         for entry in getattr(library, catalog, ()) or ():
-            ref = getattr(entry, "product_ref", None)
-            if ref is None or ref in known:
-                continue
-            tag = getattr(entry, "tag", "?")
-            findings.append(Finding(
-                severity=Severity.ERROR,
-                check_id="integrity.unknown_product_ref",
-                message=(f"library.{catalog} entry {tag!r} names product_ref {ref!r}, which no "
-                         "entry in library.products defines"),
-                element_tags=(tag,),
-                fix_hint=(f"add a Product(tag={ref!r}, ...) to the house's product catalog, or "
-                          "correct the reference"),
-                result=Result.FAIL,
-            ))
+            references = [("product_ref", getattr(entry, "product_ref", None))]
+            references.extend((f"{part.role} part", part.product_ref)
+                              for part in getattr(entry, "parts", ()))
+            for role, ref in references:
+                if ref is None or ref in known:
+                    continue
+                findings.append(Finding(
+                    severity=Severity.ERROR, check_id="integrity.unknown_product_ref",
+                    message=(f"library.{catalog} entry {entry.tag!r} {role} names "
+                             f"{ref!r}, which library.products does not define"),
+                    element_tags=(entry.tag,), result=Result.FAIL,
+                    fix_hint=f"add Product(tag={ref!r}, ...) or correct the reference",
+                ))
     return findings
 
 

@@ -121,13 +121,24 @@ MAIN_WET_BACKING = [
 
 
 SECOND_WET_BACKING = [
+    WallBacking(uid="5BYDW5KHPC", tag="BK-S-BA-E1B-VANITY-RAIL", wall_ref="W-S-BA-E1B", face="right",
+                start=inch(0.75), length=inch(46.5), elevation=inch(30), height=inch(7.25),
+                profile="2x8", material_ref="spf", purpose="ÄNGSJÖN suspension rail"),
+    WallBacking(uid="WNR3T3DGRA", tag="BK-S-BA-E1B-VANITY-FOOT", wall_ref="W-S-BA-E1B", face="right",
+                start=inch(0.75), length=inch(46.5), elevation=inch(7), height=inch(5.5),
+                profile="2x6", material_ref="spf", purpose="ÄNGSJÖN lower wall fixing"),
+    WallBacking(uid="932YVPEJFQ", tag="BK-S-BD-N-VANITY-FOOT", wall_ref="W-S-BD-N", face="right",
+                start=inch(7.375), length=inch(63.125), elevation=inch(5), height=inch(5.5),
+                profile="2x6", material_ref="spf", purpose="SEKTION 30 pair ledger feet"),
+
     WallBacking(uid="V4E88WNW8H", tag="BK-S-BA-E1B-MID", wall_ref="W-S-BA-E1B",
                 start=inch(0), length=inch(47.25),
                 elevation=_MID_ELEVATION, height=_MID_HEIGHT,
                 profile=_MID_PROFILE, material_ref="spf",
                 purpose="FURN-S-BATH1-MIRROR, plain Kohler round bottom (44 in.)"),
-    WallBacking(uid="NJJYT7QAMA", tag="BK-S-BD-N-GRAB", wall_ref="W-S-BD-N",
-                elevation=_GRAB_ELEVATION, height=_GRAB_HEIGHT,
+    WallBacking(uid="NJJYT7QAMA", tag="BK-S-BD-N-VANITY-RAIL", wall_ref="W-S-BD-N", face="right",
+                start=inch(7.375), length=inch(63.125),
+                elevation=inch(30), height=_GRAB_HEIGHT,
                 profile=_GRAB_PROFILE, material_ref="spf",
                 purpose="FX-S-VANITY-LAV1/LAV2 cabinet top rails"),
     WallBacking(uid="0BHT64WFKQ", tag="BK-S-BD-N-MID", wall_ref="W-S-BD-N",
@@ -157,6 +168,12 @@ SECOND_WET_BACKING = [
 
 
 ATTIC_WET_BACKING = [
+    WallBacking(uid="C2K7J70A4N", tag="BK-A-HALL-S-VANITY-RAIL", wall_ref="W-A-HALL-S", face="right",
+                start=inch(32.625), length=inch(32.125), elevation=inch(30), height=inch(7.25),
+                profile="2x8", material_ref="spf", purpose="SEKTION 24 suspension rail and ledger head"),
+    WallBacking(uid="NC7DEA0992", tag="BK-A-HALL-S-VANITY-FOOT", wall_ref="W-A-HALL-S", face="right",
+                start=inch(32.625), length=inch(32.125), elevation=inch(5), height=inch(5.5),
+                profile="2x6", material_ref="spf", purpose="SEKTION 24 ledger foot"),
     # W-A-STU-W's plate is at 72 3/4" and `CARF01AAAA:rafter-020` rakes across it 60 7/8"
     # above its floor, so a course here stays low; the WC's own bay is all it needs.
     WallBacking(uid="GCV1Y8MJ5J", tag="BK-A-STU-W-GRAB", wall_ref="W-A-STU-W",
@@ -164,4 +181,15 @@ ATTIC_WET_BACKING = [
                 elevation=_GRAB_ELEVATION, height=_GRAB_HEIGHT,
                 profile=_GRAB_PROFILE, material_ref="spf",
                 purpose="FX-A-STUBATH-WC grab bar (CRC R328.1.1)"),
+]
+
+
+# Suspension rails and ledger feet for the selected floating boxes (2026-10-24).
+BASEMENT_WET_BACKING = [
+    WallBacking(uid="D9Q5V8QJ9N", tag="BK-B-CW2-VANITY-RAIL", wall_ref="W-B-CW2", face="left",
+                start=inch(0.75), length=inch(41.25), elevation=inch(30), height=inch(7.25),
+                profile="2x8", material_ref="spf", purpose="ÄNGSJÖN suspension rail"),
+    WallBacking(uid="V6VG5D1HF1", tag="BK-B-CW2-VANITY-FOOT", wall_ref="W-B-CW2", face="left",
+                start=inch(0.75), length=inch(41.25), elevation=inch(7), height=inch(5.5),
+                profile="2x6", material_ref="spf", purpose="ÄNGSJÖN lower wall fixing"),
 ]

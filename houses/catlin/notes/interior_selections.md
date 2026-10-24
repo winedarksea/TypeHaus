@@ -377,3 +377,5 @@ Use the compact **B.2 S B21010001U10** chrome mixer in this room, replacing one
 Arvo in the eight-faucet allowance. A north-face 2×10 block in the shared south wet wall supports the
 240 mm-spaced mounting holes; services pass behind it. The door is INT32 farther north.
 [Installation and fixing detail](main_bath1_basin_spec.md).
+
+Bathroom lavatory selections and faucet finishes are superseded by [the 2026-10-24 lavatory specification](bathroom_lavatories_spec.md).

@@ -92,7 +92,7 @@ def test_selected_products_and_installation_parts_bill_once(catlin_model_ro):
     for part in plan.by_tag("APPL-M-DISP").install_parts:
         assert prices["install_parts"][part]["low"] > 0
     assert prices["install_parts"][faucet]["low"] == 179.95
-    assert prices["allowances"]["plumbing-faucets-and-tub-filler"] == {"low": 1144, "high": 2620}
+    assert prices["allowances"]["plumbing-faucets-and-tub-filler"] == {"low": 1394, "high": 2235}
     # The graph's generic wye is replaced by the upright sanitary tee in the loose kit.
     tie = next(row for row in fitting_takeoff(catlin_model_ro)
                if row["fitting"] == "wye-2x1.5in")

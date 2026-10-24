@@ -175,7 +175,11 @@ def _endpoints(model: ResolvedModel, target: str, mode: str,
                             "mep.trap_arm_length uses, and the same cause")
             return None
         storey = _storey_of(model, target)
-        floor_m = _storey_datum(model, storey)
+        from typehaus.model.enums import Service
+        from typehaus.resolve.mep_sleeves import expected_port_point
+
+        port = expected_port_point(model, target, Service.DRAIN)
+        floor_m = _storey_datum(model, storey) + (port[2] if port is not None else 0.0)
         near = _nearest_main(model, point, floor_m, problems, target, exclude=target)
         if near is None:
             return None

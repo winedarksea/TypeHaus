@@ -9,6 +9,8 @@ ever translated.
 
 from __future__ import annotations
 
+import math
+
 from typehaus.model.enums import Service
 from typehaus.model.plan import PlanModel
 from typehaus.model.remap import Impact
@@ -107,6 +109,22 @@ def _convention_drain_point(plan: PlanModel, storey: str, item: object,
     fixture_type = _placeable_type(plan, item)
     if fixture_type is None:
         return None
+    port = next((port for port in fixture_type.ports if port.service is Service.DRAIN), None)
+    if port is not None:
+        from typehaus.model.placeables import MountKind
+
+        radians = math.radians(getattr(getattr(item, "rotation", None), "degrees", 0.0))
+        x, y = (v.meters for v in port.position[:2])
+        point = (at_m[0] + x * math.cos(radians) - y * math.sin(radians),
+                 at_m[1] + x * math.sin(radians) + y * math.cos(radians))
+        if fixture_type.mount.kind is not MountKind.WALL:
+            return point
+        axis = _wall_axis(plan, storey, getattr(item, "wall_ref", None))
+        if axis is None:
+            return point
+        p0, p1 = axis
+        t = _project_param(p0, p1, point)
+        return p0[0] + t * (p1[0] - p0[0]), p0[1] + t * (p1[1] - p0[1])
     if Service.WATER_HOT not in fixture_type.needs:
         return at_m
     wall_ref = getattr(item, "wall_ref", None)

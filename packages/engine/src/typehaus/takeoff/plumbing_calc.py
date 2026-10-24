@@ -29,6 +29,9 @@ DFU_BY_SYMBOL: dict[str, float] = {
     "toilet-wall-hung": 3.0,
     "lavatory": 1.0,
     "lavatory-wall-hung": 1.0,
+    "drawer-vanity": 1.0,
+    "door-drawer-vanity": 1.0,
+    "sektion-vanity": 1.0,
     "vanity": 1.0,          # a lavatory in a cabinet
     "solid-surface-vanity": 1.0,  # an integral-bowl top: a lavatory
     "tub": 2.0,
@@ -65,6 +68,9 @@ WSFU_BY_SYMBOL: dict[str, tuple[float, float, float]] = {
     "toilet-wall-hung": (2.5, 0.0, 2.5),  # concealed flush tank, same demand
     "lavatory": (1.0, 0.75, 0.75),
     "lavatory-wall-hung": (1.0, 0.75, 0.75),
+    "drawer-vanity": (1.0, 0.75, 0.75),
+    "door-drawer-vanity": (1.0, 0.75, 0.75),
+    "sektion-vanity": (1.0, 0.75, 0.75),
     "vanity": (1.0, 0.75, 0.75),
     "solid-surface-vanity": (1.0, 0.75, 0.75),
     "tub": (4.0, 3.0, 3.0),

@@ -6,6 +6,10 @@
 from typehaus import WallBacking, inch
 
 BASEMENT_TOWEL_BACKING = [
+    WallBacking(uid="75HJPPS83V", tag="BK-B-BATH-HAND-TOWEL-N", wall_ref="W-B-STR2", face="left",
+                start=inch(0), length=inch(12.625), elevation=inch(45.37),
+                height=inch(5.5), profile="2x6", material_ref="spf",
+                purpose="FURN-B-BATH-HAND-TOWEL north post, beside first stud"),
     # Bath floor +0.12 in.; gym floor +0.3125 in. above wall framing datum.
     WallBacking(
         uid="TWBBLOCK01",

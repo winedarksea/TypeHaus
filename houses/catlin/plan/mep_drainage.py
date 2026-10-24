@@ -187,7 +187,7 @@ DRAINS = [
             path=(pt(inch(53.5), inch(268)), pt(inch(53.5), inch(268)),
                   pt(inch(53.5), inch(271)), pt(inch(72), inch(271))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(129.4375), inch(94.6), inch(94.5), inch(94.0)),
+            elevations=(inch(130.4237), inch(94.6), inch(94.5), inch(94.0),),
             serves=("FX-M-BATH1-LAV",)),
     # 1 1/2": FX-M-BATH2-TUB is the Kohler K-1130-W1 (plan/fixtures.py), whose spec
     # drawing labels a 1 1/2" bath drain and whose required waste-and-overflow — K-7272
@@ -283,9 +283,9 @@ DRAINS = [
     # It arrives at -8", inside the 3" branch's upper half there (invert -9 15/16",
     # crown -6 7/16").
     PipeRun(uid="CBPD09AAAA", tag="PR-B-BATH-LAV-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(12), inch(224.375)), pt(ft(12), inch(224.375))),
+            path=(pt(inch(144), inch(218.25)), pt(inch(144), inch(224.375)), pt(inch(144), inch(224.375)),),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(1, 6), inch(-8)),
+            elevations=(inch(20.12), inch(19.99), inch(-8.0),),
             serves=("FX-B-BATH-LAV",)),
     # The sauna group: the curbed pan's drop at the NE corner, then a 1/8 bend south-west to
     # y=5'-10", then west beneath the removable foot platform. The cleanout fitting stays
@@ -437,11 +437,9 @@ SECOND_BRANCH_DRAINS = [
     # bay. The basin moved to y=374.5"; a 2.5" connection within the sink base reaches
     # this existing drop and PR-S-BATH1-VENT's takeoff without moving either floor hole.
     PipeRun(uid="E9TA1G01B8", tag="PR-M-S-BATH1-LAV-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(10), ft(31)), pt(ft(10), ft(31)),
-                  pt(ft(5), ft(31)), pt(ft(5), ft(30)), pt(ft(5), ft(26, 7.5))),
+            path=(pt(inch(116.745), inch(374.5)), pt(inch(120), inch(374.5)), pt(inch(120), inch(372)), pt(inch(120), inch(372)), pt(inch(60), inch(372)), pt(inch(60), inch(360)), pt(inch(60), inch(319.5)),),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(10, 0.75), ft(9, 9.75), ft(9, 7.1875), ft(9, 6.6875),
-                        inch(113.4)),
+            elevations=(inch(141.5), inch(141.43), inch(141.375), inch(117.75), inch(115.1875), inch(114.6875), inch(113.4),),
             # No `wall_ref`: only the first vertex is in W-S-BA-E1B, and the drop leaves
             # the wall's own z band the moment it passes the deck at 10'-0". `wall_ref`
             # claims EVERY segment is in that wall, which this run cannot honestly say.
@@ -454,10 +452,9 @@ SECOND_BRANCH_DRAINS = [
     # are named because both drain here; LAV2 at x=52 3/8" already sat 7 5/8" from the head
     # and passed `fixture_drain_reach` for a reason that was true by accident.
     PipeRun(uid="WJ1ZY1QTET", tag="PR-M-S-VANITY-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(22.375), inch(318)), pt(inch(52.375), inch(318)),
-                  pt(ft(5), ft(26, 7.5))),
+            path=(pt(inch(22.375), inch(318)), pt(inch(52.375), inch(318)), pt(inch(60), inch(319.5)), pt(inch(60), inch(319.5)),),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(10, 3.5), ft(10, 2.75), ft(10, 2.5625)),
+            elevations=(inch(140.5), inch(139.875), inch(139.6875), inch(122.5625),),
             serves=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2"), wall_ref="W-S-BD-N"),
     # ** THE SUITE BATH'S 3" COLLECTOR. ** The water closet is floor-drained and its flange
     # at (134.81", 250.625") lands cleanly in the 241.75"..254.25" bay, so this one drops
@@ -485,10 +482,9 @@ SECOND_BRANCH_DRAINS = [
     # The tie is at y=246" and not at the 240" truss line, which is where the arithmetic
     # first put it — a wye centred on a chord is not a fitting anybody can install.
     PipeRun(uid="HNBWJNTS71", tag="PR-M-S-SUITE-LAV-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(165.5), ft(22, 4)), pt(inch(165.5), ft(22, 4)),
-                  pt(inch(165.5), inch(246)), pt(inch(134.81), inch(246))),
+            path=(pt(inch(165.5), inch(264.755)), pt(inch(165.5), inch(268)), pt(inch(165.5), inch(268)), pt(inch(165.5), inch(246)), pt(inch(134.81), inch(246)),),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(10, 0.75), ft(9, 9.5625), ft(9, 9), ft(9, 8.25)),
+            elevations=(inch(141.5), inch(141.43), inch(117.5625), inch(117.0), inch(116.25),),
             serves=("FX-S-SUITEBATH-LAV",)),
     # The tub-shower's 1 1/2" waste, from the north-end waste-and-overflow at
     # (197.615", 261.125"): down its own bay, south under the tub across three trusses, then
@@ -575,14 +571,14 @@ LAUNDRY_MAIN = [
 # pan, south out of the case to y 28'-4", east along EQ-B-WH's south face to x 9'-7 1/2",
 # then south there, west of W-B-STR3, to y 18'-8 3/8", and east through W-B-STR2's cavity to
 # the lavatory drain at 12'-0". It falls about 1.8"/ft (no pump; 1/8"/ft is the floor) and
-# ends 24" AFF, over the trap weir.
+# ends 38 in. above datum, visibly over the basin flood rim; no receptor behind drawers.
 ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(inch(80.6), inch(352)), pt(inch(80.6), inch(340)),
                   pt(inch(115.5), inch(340)), pt(inch(115.5), inch(224.375)),
                   pt(inch(144), inch(224.375))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(52.5), inch(50.71), inch(45.5), inch(28.26), inch(24))),
+            elevations=(inch(52.5), inch(50.71), inch(45.5), inch(39), inch(38),)),
 ]
 
 # ** THE COLLECTOR MOVED ONTO THE SERVICE BAND, AND THE HEAD CAME UP 2 5/8" (2026-09-09). **
@@ -805,15 +801,14 @@ STUDIO_DRAINS = [
     # no web to cut — and turns north to the stack on the x 9'-7 1/2" wet-wall line. The old
     # 4" tailpiece dog-leg onto a bay centre is gone with it.
     PipeRun(uid="ZY2V3KWMVK", tag="PR-A-BAR-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(152.5), inch(194.625)), pt(ft(9, 7.5), inch(194.625)),
-                  pt(ft(9, 7.5), ft(19, 4))),
+            path=(pt(inch(152.5), inch(201.74)), pt(inch(152.5), inch(194.625)), pt(inch(152.5), inch(194.625)), pt(inch(115.5), inch(194.625)), pt(inch(115.5), inch(232)),),
             diameter=inch(2), material="pvc",
             # 1" over the 3'-1" west leg and 1" over the 3'-1 3/8" north one — both clear
             # 708.0's 1/4"/ft, which `mep.drain_slope` grades segment by segment. The whole
             # profile sits inside FS-ATTIC's 11 7/8" joist band (19'-0 1/8"..20'-0"), and it
             # lands at 19'-5 3/4" — above PR-A-STUBATH-DRAIN's own 19'-3 1/2" entry on the
             # same vertical, so the two inlets do not collide.
-            elevations=(ft(19, 7.75), ft(19, 6.75), ft(19, 5.75)),
+            elevations=(inch(260.87), inch(260.72), inch(235.75), inch(234.75), inch(233.75),),
             serves=("FX-A-STUDIO-BAR-SINK",)),
 
     # ** THE LAVATORY AND THE SHOWER, COLLECTED IN THE WET WALL. ** Both were 15"-27" from any

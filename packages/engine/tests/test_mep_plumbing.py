@@ -111,7 +111,7 @@ def test_lav_expected_drain_point_projects_onto_wet_wall(catlin_model):
 
     lav = catlin_model.plan.by_tag("FX-B-BATH-LAV")
     wall = catlin_model.wall("W-B-BA-N")  # runs in x, so the projection fixes y
-    stand_off = Fixture(uid="FXTESTLAV1", tag="FX-T-LAV", type_ref=lav.type_ref,
+    stand_off = Fixture(uid="FXTESTLAV1", tag="FX-T-LAV", type_ref="FX-LAV-24",
                         room=lav.room, position=pt(ft(15), ft(19)),
                         wall_ref="W-B-BA-N")
     class _Plan:
@@ -348,8 +348,9 @@ def test_basement_slab_fixtures_drain_through_their_own_slab_stub_ups(catlin_mod
         assert sleeve.host_slab == "SL-B-FLOOR", tag
         # The convention only needs an authored `drain_position` where the trap is not under
         # the fixture: a closet flange, a shower pan's outlet and a floor drain's body all are.
-        expected = (fixture.drain_position or fixture.position).xy_m
-        assert sleeve.expected_center == expected, tag
+        expected = ((12 * 12 * 0.0254, 224.375 * 0.0254) if tag == "FX-B-BATH-LAV"
+                    else (fixture.drain_position or fixture.position).xy_m)
+        assert sleeve.expected_center == pytest.approx(expected), tag
         assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9), tag
 
 

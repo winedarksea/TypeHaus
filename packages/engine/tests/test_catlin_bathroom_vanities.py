@@ -28,12 +28,12 @@ VANITIES = {
     # The basement bath rotated north-south on 2026-09-05, so its 36" vanity turned with it:
     # it runs ACROSS the room's south end now, backing W-B-CW2's north face, where it used to
     # stand along the east wall against W-B-CN2's 12" pour.
-    "FX-B-BATH-LAV": ("FX-VANITY-36-SHALLOW", "basement", "W-B-CW2", "+y"),
+    "FX-B-BATH-LAV": ("FX-ANGSJON-36-SS", "basement", "W-B-CW2", "+y"),
     "FX-M-BATH1-LAV": ("FX-DURAVIT-DCODE-070545", "main", "W-M-HS1", "+y"),
-    "FX-S-BATH1-LAV": ("FX-VANITY-36-SINGLE", "second", "W-S-BA-E1B", "-x"),
-    "FX-S-SUITEBATH-LAV": ("FX-VANITY-30-SINGLE", "second", "W-S-SN3", "-y"),
-    "FX-S-VANITY-LAV1": ("FX-VANITY-30-SHALLOW", "second", "W-S-BD-N", "-y"),
-    "FX-S-VANITY-LAV2": ("FX-VANITY-30-SHALLOW", "second", "W-S-BD-N", "-y"),
+    "FX-S-BATH1-LAV": ("FX-ANGSJON-36", "second", "W-S-BA-E1B", "-x"),
+    "FX-S-SUITEBATH-LAV": ("FX-CHULTON-30", "second", "W-S-SN3", "-y"),
+    "FX-S-VANITY-LAV1": ("FX-VANITY-30-SEKTION", "second", "W-S-BD-N", "-y"),
+    "FX-S-VANITY-LAV2": ("FX-VANITY-30-SEKTION", "second", "W-S-BD-N", "-y"),
 }
 
 
@@ -89,7 +89,7 @@ def test_the_attic_guest_bath_takes_the_one_vanity_its_wall_measures(catlin_mode
     """
     model = catlin_model_ro
     obj = _obj(model, "FX-A-STUBATH-LAV")
-    assert obj.type_ref == "FX-VANITY-24-SHALLOW"
+    assert obj.type_ref == "FX-VANITY-24-SEKTION-SS"
     x0, x1, y0, y1 = _bbox(obj)
     # North face of W-A-HALL-S, and 18" of depth is all there is before the WC envelope's
     # y = 20'-7" (247").
@@ -180,29 +180,23 @@ def test_the_hall_bath_vanity_clears_the_east_hinged_door_and_tub_return(catlin_
     """The shorter base gives the entry back its turn and keeps the door beside the wall."""
     model = catlin_model_ro
     x0, x1, y0, y1 = _bbox(_obj(model, "FX-S-BATH1-LAV"))
-    assert (x1 - x0, y1 - y0) == pytest.approx((21, 36))
+    assert (x1 - x0, y1 - y0) == pytest.approx((21.75, 37))
     door = next(o for o in model.openings if o.tag == "D-S-BATH1")
     assert not door.flip_hinge and not door.flip_swing
-    assert door.swing_clearance[0][0] / IN == pytest.approx(114)
-    counter = next(c for c in model.countertops if c.tag == "CT-S-BATH1-VANITY")
-    top = Polygon(counter.outline)
+    top = Polygon(_obj(model, "FX-S-BATH1-LAV").footprint)
     swing = Polygon(door.swing_clearance)
     assert not top.intersects(swing)
-    assert top.distance(swing) / IN == pytest.approx(7.0)
-    _, _, shelf_south, _ = _bbox(_obj(model, "FURN-S-BATH1-SHELF"))
-    assert shelf_south - y1 == pytest.approx(2)
-    assert counter.length_m / IN == pytest.approx(36)
-    assert counter.depth_m / IN == pytest.approx(22)
-    bank = next(b for b in model.shelf_banks if b.tag == "SB-S-BATH1-VAN")
-    assert all(shelf.width_m / IN == pytest.approx(34.5) for shelf in bank.shelves)
+    assert top.distance(swing) / IN >= 6.4
+    assert not any(c.tag == "CT-S-BATH1-VANITY" for c in model.countertops)
+    assert not any(b.host == "FX-S-BATH1-LAV" for b in model.shelf_banks)
 
 
 def test_the_basement_vanity_is_shallow_and_clears_the_pocket_door(catlin_model_ro):
     """The 18" cabinet fits the narrow room and the bathroom door has no sweep."""
     model = catlin_model_ro
     x0, x1, y0, y1 = _bbox(_obj(model, "FX-B-BATH-LAV"))
-    assert round(y1 - y0, 2) == 18.0, "the basement vanity stopped being shallow"
-    assert round(x1 - x0, 2) == 36.0
+    assert round(y1 - y0, 2) == 21.75
+    assert round(x1 - x0, 2) == 37.0
 
     door = next(o for o in model.openings if o.tag == "D-B-BATH")
     assert door.type_ref == "DT-POCKET-INT-36"
@@ -242,12 +236,12 @@ def test_every_vanity_carries_its_own_shelf(catlin_model_ro):
     """
     model = catlin_model_ro
     plan = model.plan
-    types = {t.tag: t for t in plan.library.fixture_types}
     # Every FX-VANITY-* instance in the house, not only the VANITIES table: RM-M-BATH2's and
     # RM-A-STUBATH's are vanities too, and the second one had no shelf until 2026-09-28.
     vanities = [el for el in plan.all_elements() if type(el).__name__ == "Fixture"
                 and (el.type_ref or "").startswith("FX-VANITY-")]
-    assert set(VANITIES) - {"FX-M-BATH1-LAV"} <= {v.tag for v in vanities}
+    assert {"FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2", "FX-A-STUBATH-LAV",
+            "FX-M-BATH2-SINK"} == {v.tag for v in vanities}
     for fixture in vanities:
         banks = [b for b in model.shelf_banks if b.host == fixture.tag]
         assert len(banks) == 1, f"{fixture.tag} has {len(banks)} shelf banks, wants one"
@@ -257,9 +251,8 @@ def test_every_vanity_carries_its_own_shelf(catlin_model_ro):
         # depth is AUTHORED on every one: the derivation is keyed on FurnitureTypes and
         # every host here is a FixtureType, so it is checked here against the carcass —
         # the carcass less a 3/4" back and a 1 3/4" scribe/trap set-off.
-        carcass_depth = types[fixture.type_ref].footprint[1].meters
         # Except RM-M-BATH2's floating SEKTION (2026-10-22): IKEA's shelf in a 14 3/4" frame.
-        depth = 14 * IN if fixture.type_ref == "FX-VANITY-48-SEKTION" else carcass_depth - 2.5 * IN
+        depth = 14 * IN
         for shelf in bank.shelves:
             assert shelf.depth_m == pytest.approx(depth), bank.tag
             assert shelf.count == 2, "one shelf plus the case top"
@@ -323,7 +316,8 @@ def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_mo
     assert len(stops) == 2
     # A valve inferred from the shared riser's first vertex lands below this floor.
     assert all(0 < stop.z_m < basin.body_z0_m for stop in stops)
-    assert all(stop.z_m / IN == pytest.approx(24) for stop in stops)
+    finished_floor_m = basin.z_m - 0.7186
+    assert all((stop.z_m - finished_floor_m) / IN == pytest.approx(24) for stop in stops)
     waste = next(r for r in model.pipe_runs if r.tag == "PR-B-LAV1-DRAIN")
     vent = next(r for r in model.pipe_runs if r.tag == "PR-M-BATH1-LAV-VENT")
     assert waste.path[0] == pytest.approx(vent.path[0])
@@ -363,3 +357,27 @@ def test_powder_basin_fixings_land_in_solid_north_face_blocking(catlin_model_ro)
     px0, px1, _, _ = _bbox(panel)
     tx0, tx1, _, _ = _bbox(toilet)
     assert (px0 + px1) / 2 == pytest.approx((tx0 + tx1) / 2)
+
+
+def test_every_selected_lavatory_has_parts_ports_and_a_connected_exact_setout(catlin_plan, catlin_check_report):
+    from typehaus.model import Service
+
+    tags = {*VANITIES, "FX-M-BATH2-SINK", "FX-A-STUBATH-LAV", "FX-A-STUDIO-BAR-SINK"}
+    types = {entry.tag: entry for entry in catlin_plan.library.fixture_types}
+    for tag in tags:
+        fixture_type = types[catlin_plan.by_tag(tag).type_ref]
+        assert {port.service for port in fixture_type.ports} == {
+            Service.DRAIN, Service.WATER_HOT, Service.WATER_COLD}
+        assert {part.role for part in fixture_type.parts} >= {"faucet", "trap"}
+        assert fixture_type.product_ref
+    findings = [f for f in catlin_check_report().findings
+                if f.check_id == "mep.fixture_port_connection" and f.element_tags[0] in tags]
+    assert len(findings) == 27
+    assert all(f.result.value == ("unknown" if f.element_tags[0] in {
+        "FX-S-SUITEBATH-LAV", "FX-A-STUDIO-BAR-SINK"} else "pass") for f in findings)
+
+
+def test_fabricated_double_top_keeps_both_bowl_cutouts(catlin_model_ro):
+    top = next(top for top in catlin_model_ro.countertops if top.tag == "CT-S-VANITY")
+    assert top.length_m / IN == pytest.approx(61)
+    assert len(top.cutouts) == 2

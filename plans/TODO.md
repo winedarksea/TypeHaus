@@ -327,9 +327,7 @@ the future.
 - Lets get the BOM showing all IKEA SEKTION parts needed (knobs, scribes, hinges, feet, etc), and soft close pieces too.
 - Can we widen D-M-BATH2 to 36"? Not sure if/how the casing would work as that puts it into the shower area (the casing).
 - A couple of options to reduce echo in the gym. One is swapping drywall for drop ceiling tile framing (perhaps with some fiberglass in the cavity above). Another was vulcanized recycled crumb-rubber rolls or 4'x6' stall mats for the floor. A third was W-B-CE losing its south side drywall and having fabric plus simple wood slats (ie 1x2 finger jointed pine) as an effectively slat wall arrangement.
-- PR-B-HW-BATH2-RUN looks like it is going to the wrong spot on the vanity, it is out in the open.
 - Door thresholds could probably use some better modeling, right now all we get is standard sill plates of the regular wall.
-- Sink FX-M-BATH1-LAV has a sink that was made smaller to improve accessibility. Now, however, it seems a bit too small now, and could use a selected product and better 3d model.
 - Improve the wainscot of the mudrooms
 
 # Project Management

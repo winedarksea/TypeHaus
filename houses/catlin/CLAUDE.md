@@ -212,45 +212,18 @@ not instruction: when it disagrees with this file or the model, it is the one th
   documented in `notes/bath2_tub_hardware.md`; one-piece Corian deck, faces and splash,
   2026-10-22, `notes/bath2_tub_deck_finish.md`) and `FX-VANITY-48-SEKTION`
   (RM-M-BATH2's floating SEKTION vanity under a Corian or equal top, `plan/bath2_vanity_types.py`), plus
-  the six vanities that replaced this house's remaining bare lavatories:
-  `FX-VANITY-24-SHALLOW` (RM-A-STUBATH — 24" is the whole
-  width that bath's north wall has between ED-A-STUBATH-GFCI's plate and the neo-angle shower
-  it got in the same pass), `FX-VANITY-30-SHALLOW` (RM-S-VANITY, TWICE — a 60"
-  double alcove is two 30" bases under one 61" top, which is how one is actually built and
-  which keeps two drains and two lavatories in the schedule instead of collapsing them),
-  `FX-VANITY-30-SINGLE` (RM-S-SUITEBATH), `FX-VANITY-36-SHALLOW` (RM-B-BATH — 18" deep
-  on the pallet-depth argument alone since 2026-09-05; the door-swing argument that forced
-  it went with the room's rotation) and
-  `FX-VANITY-36-SINGLE` (RM-S-BATH1, 36x21 sink base since 2026-10-21).
-  **`-SHALLOW` is 18" deep and `-SINGLE` is 21"**, and shallow is not the premium it sounds
-  like: the cheap big-box combos that arrive boxed with their top and bowl already on them
-  are 18.6"-18.75" deep, so 18" is the pallet depth. Widths are the stock ladder
-  (24/30/36/48/60). RM-S-BATH1 now uses a 36" vanity with its door hinged east and
-  a 24+24+18" SEKTION run: the former 48" base and west hinge left the entry pinched.
-  See `notes/bath1_clearance_review.md` for the measured turn and unchanged service anchors.
-  **`FX-LAV-24` prices ZERO instances and the row is kept anyway** (the
-  `glazed-green-brick` convention). **`RM-A-STUBATH` deliberately keeps its
-  `FX-LAV-COMPACT`**: its water closet is on the west wall, and the 24"
-  front envelope that creates crosses the only wall a vanity could have used.
-  **The 21" front zone on every vanity type is a design convention, NOT a Minnesota code
-  minimum** — Minn. R. 1309.0010 subp. 3.D deletes IRC chapters 25-33, ch. 4714 adopts the
-  2018 UPC, and UPC 402.5 names only water closets and bidets, so a lavatory has no MN
-  plumbing front clearance at all. (An earlier comment cited a UPC "Exception 1" giving
-  lavatories 21" in dwelling units; that text is a *Washington* amendment.) The guest
-  studio's wet bar uses `FX-LAV-COMPACT` (18" x 14"), dimensionally exact for a bar bowl
-  and costing no catalog entry. **Borrowing a catalog type from the other direction** is
-  free only while the borrowed type's footprint, symbol and schedule line are all still true
-  of the thing in the room — `FX-M-BATH2-SINK` no longer borrows `FX-KITCHEN-SINK-33` (a
-  double-bowl kitchen sink) for exactly that reason; it modelled no cabinet.
-  **RM-M-BATH2 has storage above the toilet**:
-  `FURN-M-BATH2-CAB-W`/`-E`, a butted pair of IKEA TÄNNFORSEN 18" x 6" x 37" (`FT-IKEA-TANNFORSEN-1806`), centred on the WC on the room's
-  only free wall (W-M-HS1's bath face), bottom at 4'-0" AFF — which is a **code line, not a
-  comfort choice**: below `FX-TOILET-STD`'s own 30" top the wall face would move 6" south and
-  take the bowl's front clearance 2.8" into the vanity. It is also why
-  `resolve/placeables.py::_mounted_over_the_fixture` exists (→ `plans/01-decisions.md` #67,
-  `notes/bath2_over_toilet_cabinet.md`): the engine was calling a 6"-deep cabinet 4' up an
-  ERROR against UPC 402.5, whose 15" is elbow room for a *seated* person and not a column of
-  air.
+  the selected lavatory assemblies in `plan/lav_types.py`: ÄNGSJÖN 36 / ORRSJÖN 37
+  in the basement and kids bath, two SEKTION 30 halves below one 61 in. Corian top in
+  RM-S-VANITY, Chulton 30 in the suite, and SEKTION 24 / Corian in the attic guest bath.
+  SUNNERSTA's own bar sink has its own type. Each declares basin, faucet and trap identity
+  through its primary Product and role-tagged parts, and drain/hot/cold connection ports.
+  `plan/bath_finish.py` selects chrome or brushed nickel Genta LX with `finish.bath_theme`;
+  utility Indy faucets stay stainless and the powder room keeps B.2 chrome.
+  Kohler's white Chulton drawing states one faucet hole, so it also takes 6702.
+  **Selected 2026-10-24.** Setout, remaining product uncertainties, backing and plumbing:
+  `notes/bathroom_lavatories_spec.md`. The 21 in. lavatory front zone is advisory;
+  water-closet envelopes remain governed by Minnesota's adopted UPC.
+
 - `params/sunken_garden.py` — the freestanding arched porch/garden structure (math OK here).
 - `params/foundations.py` — house footings, garage ICF stem + slab.
 - `params/north_entry_frame.py` — the north entry STRUCTURE: geometry constants, the beam

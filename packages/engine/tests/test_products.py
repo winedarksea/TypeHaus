@@ -169,3 +169,33 @@ def test_hardware_reads_its_product_off_the_bom_row(catlin_plan, catlin_areas) -
     assert rows and any(r.get("product", "").startswith("Simpson Strong-Tie") for r in rows)
 
 pytestmark = pytest.mark.slow
+
+
+def test_unknown_fixture_part_names_its_role(starter_dir):
+    from typehaus.model import FixturePart
+
+    plan = load_plan(starter_dir).plan
+    fixture_type = plan.library.fixture_types[0].model_copy(update={
+        "parts": (FixturePart(role="faucet", product_ref="MISSING-FAUCET"),),
+    })
+    plan = _library_with(plan, fixture_types=(fixture_type, *plan.library.fixture_types[1:]))
+    ctx, _ = build_context(plan, starter_dir)
+    finding = next(f for f in unknown_product_ref(ctx) if "MISSING-FAUCET" in f.message)
+    assert "faucet part" in finding.message
+
+
+def test_fixture_parts_bill_per_instance_and_quantity(catlin_model_ro):
+    from typehaus.takeoff.placeables import placeables_takeoff
+    from typehaus.takeoff.product_labels import product_labels
+
+    rows = placeables_takeoff(catlin_model_ro)
+    from collections import Counter
+
+    faucets = Counter()
+    for row in rows:
+        if "faucet" in row.get("roles", ()):
+            faucets[row["type"]] += row["count"]
+    assert faucets["PROD-MOEN-6702"] == 5
+    assert faucets["PROD-KRAUS-KBF-1401-SFS"] == 3
+    assert faucets["PROD-DURAVIT-B21010001U10"] == 1
+    assert "Moen" in product_labels(catlin_model_ro.plan)[("placeables", "PROD-MOEN-6702")]

@@ -206,7 +206,7 @@ def test_all_wall_posts_have_support_and_new_courses_fill_their_bays(catlin_ctx)
                         block.child_key,
                         peer.child_key,
                     )
-    assert len(emitted) == 12
+    assert len(emitted) == 13
     services = envelopes(catlin_ctx.model)
     for block in emitted:
         ring, low, high = member_footprint(block)

@@ -46,6 +46,19 @@ def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         tags = row["tags"]
         assert isinstance(tags, list)
         tags.append(item.tag)
+        product = types.get(item.type_ref or "")
+        for part in getattr(product, "parts", ()):
+            part_key = (part.product_ref, item.domain, item.storey)
+            part_product = model.plan.library.product(part.product_ref)
+            part_row = groups.setdefault(part_key, {
+                "type": part.product_ref, "domain": item.domain, "storey": item.storey,
+                "count": 0, "tags": [], "name": getattr(part_product, "name", None),
+                "services": [], "equipment_kind": None, "roles": [],
+            })
+            part_row["count"] += part.quantity
+            part_row["tags"].append(item.tag)
+            if part.role not in part_row["roles"]:
+                part_row["roles"].append(part.role)
     return [{**groups[key], "tags": sorted(groups[key]["tags"])} for key in sorted(groups)]
 
 

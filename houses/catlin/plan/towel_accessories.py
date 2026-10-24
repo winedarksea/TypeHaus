@@ -15,7 +15,7 @@ BASEMENT_TOWEL_ACCESSORIES = [
             attachment=WallAttachment(
                 wall_ref="W-B-STR2",
                 face="left",
-                distance_from_start=inch(19.375),
+                distance_from_start=inch(15.625),
                 rotation_offset=deg(-180),
             )
         ),
@@ -148,7 +148,7 @@ SECOND_TOWEL_ACCESSORIES = [
         type_ref="FT-MOEN-ALIGN-HAND-TOWEL",
         room="RM-S-BATH1",
         host_fixture_ref="FX-S-BATH1-LAV",
-        position=pt(inch(106.125), inch(354.835)),
+        position=pt(inch(105.87), inch(354.835)),
         mount=Mount(kind=MountKind.WALL, elevation=inch(29.33)),
     ),
     Furniture(
@@ -157,7 +157,7 @@ SECOND_TOWEL_ACCESSORIES = [
         type_ref="FT-TOWEL-CABINET-BACKING-12",
         room="RM-S-BATH1",
         host_fixture_ref="FX-S-BATH1-LAV",
-        position=pt(inch(106.125), inch(357.625)),
+        position=pt(inch(105.87), inch(357.625)),
         mount=Mount(kind=MountKind.WALL, elevation=inch(28.5), recessed_into_host_surface=True),
     ),
     # No bar-sized gap remains between the linen cabinet and the west window casing.

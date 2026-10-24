@@ -148,3 +148,5 @@ free to be edited as documentation.
 
 - [Mirror selections](mirror_selections.md) — 2026-10-22 decision record, all nine mirrors,
   replaceable vanity lighting, factory bath2 controls, and dimensioned elevations.
+
+- [Bathroom lavatories, faucets and plumbing setout](bathroom_lavatories_spec.md) — 2026-10-24 selections, connections and finish variant.

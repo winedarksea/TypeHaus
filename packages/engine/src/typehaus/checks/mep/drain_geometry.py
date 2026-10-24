@@ -202,6 +202,12 @@ def fixture_drain_reach(ctx: CheckContext) -> list[Finding]:
                 out.append(_unknown(cid, f"fixture {fixture.tag} has no resolvable "
                                          "drain point", (fixture.tag,)))
                 continue
+            from typehaus.resolve.mep_sleeves import expected_port_point
+
+            port = expected_port_point(ctx.model, fixture.tag, Service.DRAIN)
+            station_z = datum + (port[2] if port is not None else 0.0)
+            low = station_z - _REACH_BELOW_FT / _M_TO_FT
+            high = station_z + _REACH_ABOVE_FT / _M_TO_FT
             runs = [r for r in ctx.model.pipe_runs
                     if r.system == "drain" and fixture.tag in r.serves]
             if not runs:

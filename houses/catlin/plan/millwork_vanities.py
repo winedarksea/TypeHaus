@@ -1,45 +1,12 @@
 # haus: editable
-# Catlin house millwork — the one shelf inside each bath vanity's sink base.
-#
-# Split out of plan/millwork.py (which had passed the 500-line rule): eight banks, one per
-# vanity, all the same reasoning.
-#
-# ** THE CABINET'S OWN SHELF, NOT OWNER OAK ** (owner, 2026-10-07). Each is the one
-# adjustable shelf a plain two-door sink base ships with, so it is INCLUDED_IN_HOST: priced
-# in the FX-VANITY-* row, out of `haus millwork`. Hidden under a trap is the worst place in
-# a bath for hardwood. `material_ref` is `cabinet-plywood` for that reason.
-#
-# The owner asked for drawer AND shelf space. Drawers are NOT modelled (no drawer
-# vocabulary), but the bank keeps the shelf on record. `shelf_count=2` is that shelf plus the
-# case top, per ShelfBay's convention. A drawer base runs ~1.5x a door base, which is why
-# these are door boxes.
-#
-# `host` IS A FIXTURE, which is legal: `resolve/millwork.py` builds its placeable map from
-# `model.canvas_objects`, which carries Fixtures alongside Furniture.
-#
-# `depth` IS AUTHORED ON EVERY ONE, AND MUST BE: `_carcass_depth_m` is keyed on
-# FurnitureTypes and every host here is a FixtureType, so an underived depth is a hard
-# finding. It is the carcass less a 3/4" back and a 1 3/4" scribe/trap set-off — 18 1/2"
-# in a 21" (-SINGLE) cabinet, 15 1/2" in an 18" (-SHALLOW) one. `width` is the sink base
-# less 1 1/2" of case sides. `clear_height` is 34 1/2" of carcass less a 4 1/2" toe kick
-# and the 3/4" counter substrate.
+# Cabinet-included shelves in the SEKTION vanities only. ÄNGSJÖN drawers and Chulton's
+# purchased interior have no additional shelf-bank charge. Each bay includes its stock
+# adjustable shelf and cabinet top; these are excluded from owner-milled hardwood takeoff.
 
 from typehaus import inch
 from typehaus.model import ShelfBank, ShelfBay, ShelfProcurement
 
-BASEMENT_VANITY_SHELVES = [
-    ShelfBank(
-        uid="6BNKG0ZT0K", tag="SB-B-BATH-VAN",
-        # 36" x 18" carcass; the depth is the door swing's, not a preference.
-        host="FX-B-BATH-LAV",
-        material_ref="cabinet-plywood",
-        thickness=inch(0.75),
-        depth=inch(15.5),
-        profile="S4S",
-        procurement=ShelfProcurement.INCLUDED_IN_HOST,
-        bays=(ShelfBay(width=inch(34.5), clear_height=inch(29.25), shelf_count=2),),
-    ),
-]
+BASEMENT_VANITY_SHELVES = []
 
 MAIN_VANITY_SHELVES = [
     ShelfBank(
@@ -60,60 +27,38 @@ MAIN_VANITY_SHELVES = [
 
 SECOND_VANITY_SHELVES = [
     ShelfBank(
-        uid="FT01G11CY0", tag="SB-S-BATH1-VAN",
-        # Full-width 36" sink base, with 21" carcass and 18 1/2" clear shelf depth.
-        host="FX-S-BATH1-LAV",
-        material_ref="cabinet-plywood",
-        thickness=inch(0.75),
-        depth=inch(18.5),
-        profile="S4S",
-        procurement=ShelfProcurement.INCLUDED_IN_HOST,
-        bays=(ShelfBay(width=inch(34.5), clear_height=inch(29.25), shelf_count=2),),
-    ),
-    ShelfBank(
-        uid="XT028WRQR2", tag="SB-S-SUITEBATH-VAN",
-        host="FX-S-SUITEBATH-LAV",
-        material_ref="cabinet-plywood",
-        thickness=inch(0.75),
-        depth=inch(18.5),
-        profile="S4S",
-        procurement=ShelfProcurement.INCLUDED_IN_HOST,
-        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
-    ),
-    ShelfBank(
         uid="Q97KQAVZHT", tag="SB-S-VANITY-VAN1",
-        # The alcove's two 30" bases under one 61" double top: two cabinets,
-        # so two banks. 18" carcasses, so 15 1/2" clear.
+        # Two 30 in. wall cabinets under one fabricated 61 in. top; stock 14 in. shelves.
         host="FX-S-VANITY-LAV1",
         material_ref="cabinet-plywood",
         thickness=inch(0.75),
-        depth=inch(15.5),
+        depth=inch(14),
         profile="S4S",
         procurement=ShelfProcurement.INCLUDED_IN_HOST,
-        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
+        bays=(ShelfBay(width=inch(28.5), clear_height=inch(28.5), shelf_count=2),),
     ),
     ShelfBank(
         uid="BHTA4WVJDW", tag="SB-S-VANITY-VAN2",
         host="FX-S-VANITY-LAV2",
         material_ref="cabinet-plywood",
         thickness=inch(0.75),
-        depth=inch(15.5),
+        depth=inch(14),
         profile="S4S",
         procurement=ShelfProcurement.INCLUDED_IN_HOST,
-        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
+        bays=(ShelfBay(width=inch(28.5), clear_height=inch(28.5), shelf_count=2),),
     ),
 ]
 
 ATTIC_VANITY_SHELVES = [
     ShelfBank(
         uid="CK6J1BJ391", tag="SB-A-STUBATH-VAN",
-        # The remaining 24 x 18 in. shallow cabinet has the same stock shelf depth.
+        # SEKTION 24 wall cabinet with its included stock shelf.
         host="FX-A-STUBATH-LAV",
         material_ref="cabinet-plywood",
         thickness=inch(0.75),
-        depth=inch(15.5),
+        depth=inch(14),
         profile="S4S",
         procurement=ShelfProcurement.INCLUDED_IN_HOST,
-        bays=(ShelfBay(width=inch(22.5), clear_height=inch(29.25), shelf_count=2),),
+        bays=(ShelfBay(width=inch(22.5), clear_height=inch(28.5), shelf_count=2),),
     ),
 ]

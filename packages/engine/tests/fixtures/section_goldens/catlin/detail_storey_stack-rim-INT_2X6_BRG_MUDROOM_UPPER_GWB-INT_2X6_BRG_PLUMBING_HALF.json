@@ -995,6 +995,62 @@
     },
     {
       "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          117.25,
+          127.0
+        ],
+        [
+          118.75,
+          127.0
+        ],
+        [
+          118.75,
+          132.5
+        ],
+        [
+          117.25,
+          132.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW150AAAA",
+      "tag": "backing-0-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          117.25,
+          127.0
+        ],
+        [
+          118.75,
+          127.0
+        ],
+        [
+          118.75,
+          132.5
+        ],
+        [
+          117.25,
+          132.5
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",

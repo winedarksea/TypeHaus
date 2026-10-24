@@ -24,6 +24,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     erv_terminals,
     exhaust,
     fitting_pattern,
+    fixture_ports,
     floor_members,
     hvac,
     hvac_sizing,
