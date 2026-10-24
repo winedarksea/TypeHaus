@@ -107,16 +107,13 @@ def test_the_vanity_stands_on_the_floor_rather_than_hanging_on_the_wall():
 
 
 def test_the_counter_lands_at_thirty_six_inches():
-    """`FixtureType.height` is OVERALL including the spout — the symbol builder subtracts a
-    fixed 0.14 m faucet band — so 41.5" is what puts the deck at the chosen comfort height.
-    Change the height and the counter moves; this is the arithmetic that says by how much."""
-    from typehaus.model.placeable_symbols.plumbing import _deck_height
+    """The Genta envelope leaves the fabricated counter at exactly 36 inches."""
+    import pytest
+
+    from typehaus.model.placeable_symbols._solid_surface_vanity import deck_height
 
     vanity = {t.tag: t for t in _plan().library.fixture_types}["FX-VANITY-48-SEKTION"]
-    deck_m, _faucet = _deck_height(vanity.height.meters)
-    # 41.5" less the builder's fixed 0.14 m (5.512") faucet band is 35.99", i.e. 36" to
-    # within a hundredth. There is no height that lands on 36.000" in round inches.
-    assert round(deck_m / M_PER_IN, 1) == 36.0
+    assert deck_height(vanity.height.meters) / M_PER_IN == pytest.approx(36)
 
 
 def test_the_vanity_fits_the_west_wall_without_entering_the_toilets_clearance():

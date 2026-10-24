@@ -33,6 +33,7 @@ from typehaus.model.placeable_symbols._frame import (
     part_hex,
 )
 from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
+from typehaus.model.placeable_symbols._sunnersta import sunnersta_frame
 from typehaus.model.placeable_symbols._swanstone_flex import swanstone_flex
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS
 from typehaus.model.placeable_symbols.furniture import FURNITURE_SYMBOLS
@@ -48,7 +49,8 @@ Builder = Callable[[float, float, float], tuple[tuple[Stroke, ...], tuple[Part, 
 
 _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLUMBING_SYMBOLS,
                                  **LIGHTING_SYMBOLS, **KITCHEN_SEKTION_SYMBOLS,
-                                 "swanstone-flex-3636": swanstone_flex}
+                                 "swanstone-flex-3636": swanstone_flex,
+                                 "sunnersta-frame": sunnersta_frame}
 
 # The frozen vocabulary. A catalog entry may only name a symbol listed here; the contract test
 # holds the registry to it in both directions.
@@ -97,7 +99,8 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset({
     # framing, not a glyph — see ``resolve/framing/carriers.py``.
     "toilet", "toilet-wall-hung", "lavatory", "lavatory-wall-hung", "vanity",
     "solid-surface-vanity", "sektion-vanity", "drawer-vanity",
-    "door-drawer-vanity", "solid-surface-access-leaf", "tub",
+    "door-drawer-vanity", "drawer-vanity-indy", "sektion-vanity-indy",
+    "sunnersta-sink", "sunnersta-frame", "solid-surface-access-leaf", "tub",
     "kohler-underscore-6036", "kohler-underscore-6032",
     # "roman-tub-filler" is a bath's deck trim, placed on the deck beside the rim.
     "roman-tub-filler",

@@ -841,13 +841,15 @@ STAIR_SEATS = [
 # reaches this rail.
 
 RAILINGS = [
-    Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE", type_ref="RAILING-INT-DARK-STEEL-HANDRAIL",
-            path=(pt(ft(6, 9.125), ft(47, 6.125)), pt(ft(6, 9.125), ft(43, 10.875))),
+    Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE", type_ref="RAILING-INT-ALUM-HANDRAIL",
+            # 3/16" east of 9 1/8": the 1.9" aluminum rail sits 0.2" closer to W-G-W than the
+            # old 1.5" rail, and R311.7.8.2 needs 1 1/2" clear (1.42" at 9 1/8").
+            path=(pt(ft(6, 9.3125), ft(47, 6.125)), pt(ft(6, 9.3125), ft(43, 10.875))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
             base_elevation=ft(-2, -10), post_spacing=inch(38.5), post_size="2x2",
             rail_count=1, mount="wall", assembly="RAILING_DARK_METAL",
             role="handrail", serves_stair="ST-G-SERVICE", top_height=inch(36),
-            graspable_profile="1.5in round — Type I",
+            graspable_profile="1.9in round — Type I",
             start_termination="wall_return", end_termination="wall_return"),
 ]
 

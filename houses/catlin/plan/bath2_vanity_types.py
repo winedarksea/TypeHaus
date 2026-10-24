@@ -67,14 +67,12 @@ BATH2_VANITY_PRODUCTS = (SEKTION_WALL_36_CAB, SEKTION_WALL_12_CAB, SEKTION_SUSPE
 # which is where FX-M-BATH2-SINK's drain sits. It lies inside the 36" sink cabinet (x -12..+24),
 # clear of its south side by 3 13/16", with 3" behind it for the faucet.
 #
-# ``height`` is OVERALL with the spout: ``_deck_height`` takes a fixed 0.14 m faucet band
-# off it, and 41 1/2" - 5.512" = 35.99", the 36" counter. The dedicated
-# 3D symbol draws the floating white cabinet and bonded bowl.
+# Overall height includes the Genta raised-handle envelope above the 36 in. deck.
 BATH2_VANITY_48 = FixtureType(
     tag="FX-VANITY-48-SEKTION",
     name='Vanity, 48" floating SEKTION, single basin, 12" storage + 36" sink cabinet',
     footprint=(inch(48), inch(18)),
-    height=inch(41.5),
+    height=inch(36 + 8.4375),
     plan_symbol="vanity",
     model_representation=ModelRepresentation(symbol="solid-surface-vanity", material_refs=THEME_MATERIAL_REFS),
     basin=True,

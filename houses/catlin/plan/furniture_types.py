@@ -458,6 +458,7 @@ STUDIO_KITCHENETTE_4422 = FurnitureType(
     tag="FT-STUDIO-KITCHENETTE-4422", name='SUNNERSTA kitchenette, 44 1/8" x 22"',
     footprint=(inch(44.125), inch(22)), height=inch(54.75),
     storage=True, work_surface=True, plan_symbol="sink-base",
+    model_representation=ModelRepresentation(symbol="sunnersta-frame"),
     source="IKEA SUNNERSTA mini-kitchen, article 40313363, $149. 44 1/8\" x 22\" x 54 3/4\", "
            "sink at the right-hand end facing the unit (top is NOT reversible). The US "
            "listing sells the faucet separately; other markets bundle a LAGAN mixer tap and "

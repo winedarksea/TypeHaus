@@ -91,6 +91,17 @@ def _wood_part(role: str, wood: Any | None) -> dict[str, Any]:
             **PART_SURFACE_PROPERTIES.get(role, {})}
 
 
+def _generated_part_appearance(part, wood, materials):
+    appearance = _wood_part(part["color"], wood)
+    material = (materials or {}).get(part.get("material_ref"))
+    if part["color"] == "faucet" and material is not None:
+        if material.color:
+            appearance.update(color=material.color[:7], material_ref=material.tag)
+        polished = material.finish == "polished"
+        appearance.update(PART_SURFACE_PROPERTIES["chrome" if polished else "brushed-nickel"])
+    return appearance
+
+
 def model_symbol_for(item: Any) -> str | None:
     """An explicit generated model takes precedence over the plan symbol's massing."""
     representation = getattr(item, "model_representation", None)
@@ -163,7 +174,8 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
         # Ring outlines and oriented primitives are opt-in, keeping ordinary box models small.
         # ``role: counter`` lets a viewer drop the symbol's counter under a drawn slab.
         "model_parts": [{"center": list(part["center"]), "size": list(part["size"]),
-                         **_wood_part(_lamp(part["color"], lamp), wood),
+                         **_generated_part_appearance({**part, "color": _lamp(part["color"], lamp)},
+                                                     wood, materials),
                          **({"material_ref": part["material_ref"]}
                             if "material_ref" in part else {}),
                          **({"role": "counter"} if part["color"] == "counter" else {}),

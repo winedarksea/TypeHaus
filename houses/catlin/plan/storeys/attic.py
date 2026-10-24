@@ -944,7 +944,7 @@ FLIGHT_SKIRT = Railing(
 # Continuous wall rail wraps the outer faces of the turn and follows the straight run,
 # 2 3/8" off both faces (R311.7.8.2's 1 1/2" clear + the bar's radius); both ends return.
 STAIR_HANDRAIL = Railing(
-    uid="CARL02AAAA", tag="RL-A-HANDRAIL", type_ref="RAILING-INT-DARK-STEEL-HANDRAIL", path=(
+    uid="CARL02AAAA", tag="RL-A-HANDRAIL", type_ref="RAILING-INT-ALUM-HANDRAIL", path=(
         # Return south of WIN-S-STUDY3; a support north of its jamb prevents automatic
         # subdivision from putting the middle bracket into the window.
         pt(inch(423), inch(46)),
@@ -956,7 +956,7 @@ STAIR_HANDRAIL = Railing(
     base_elevation=ft(20), post_spacing=inch(38.5), post_size="2x2", rail_count=1,
     mount="wall", assembly="RAILING_DARK_METAL",
     role="handrail", serves_stair="ST-S2A", top_height=inch(36),
-    graspable_profile="1.5in round — Type I",
+    graspable_profile="1.9in round — Type I",
     start_termination="wall_return", end_termination="wall_return",
     # Keep the grip over the top riser, but angle its return east to the fixed door
     # jamb. The whole 70 mm flange clears D-A-STUDY's x=261 1/2" rough jamb.

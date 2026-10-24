@@ -8,7 +8,7 @@ BOX_TRIANGLES = ((0, 2, 1), (0, 3, 2), (4, 5, 6), (4, 6, 7),
                  (2, 3, 7), (2, 7, 6), (3, 0, 4), (3, 4, 7))
 
 
-def parts_representation(f, body, parts, center, rotation, z_base):
+def parts_representation(f, body, parts, center, rotation, z_base, *, materials=None):
     items = []
     for part in parts:
         if "mesh" in part:
@@ -40,6 +40,9 @@ def parts_representation(f, body, parts, center, rotation, z_base):
         item = f.create_entity("IfcTriangulatedFaceSet", Coordinates=points, Closed=True,
                                CoordIndex=tuple(tuple(i + 1 for i in t) for t in triangles))
         color = PART_COLORS[part["color"]]
+        material = (materials or {}).get(part.get("material_ref"))
+        if part["color"] == "faucet" and material is not None and material.color:
+            color = tuple(int(material.color[i:i + 2], 16) / 255 for i in (1, 3, 5)) + (1.0,)
         rgb = f.createIfcColourRgb(None, *color[:3])
         shading = f.create_entity("IfcSurfaceStyleShading", SurfaceColour=rgb,
                                   Transparency=1 - color[3])

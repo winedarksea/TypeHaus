@@ -138,3 +138,21 @@ Read 2026-10-24:
   house setout rather than a fixed factory dimension.
 
 Manufacturer dimensions and missing facts remain distinguished in `Product.source`.
+
+## 3D product portrayal (2026-10-24)
+
+Generated assemblies distinguish ÄNGSJÖN's two glossy slab drawers and 2½ in. ORRSJÖN
+ceramic top, AXSTAD's matte white recessed-panel doors and Corian bowls, and Chulton's
+raised panels, chrome pulls, feet and 3 5/16 in. backsplash. ORRSJÖN and Chulton bowl
+mouths are approximate photo-based silhouettes; they do not establish fabrication cutouts.
+The SUNNERSTA has an open white frame, steel work surface and stainless basin rather
+than a closed cabinet and porcelain lavatory. Its sink rests on the floor-supported frame;
+the fixture's 16 in. local base includes the visible waste and keeps its rim at 36 in.
+
+The Genta and Indy have separate bodies, spouts and levers, using the archived sheets'
+reach and height envelopes (8 7/16 and 6¼ in. above the deck). Fixture overall heights
+include these faucet envelopes; vanity decks remain at 36 in. Chrome, brushed nickel and
+utility stainless resolve through the selected materials in the viewer, GLB and IFC.
+RÄNNILEN is represented by white plastic rear-routed waste; the house tubular traps are
+chrome. Trap curves, bowl curvature and decorative profiles are illustrative, with plumbing
+connections still controlled by ServicePorts rather than these visual meshes.

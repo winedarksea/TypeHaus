@@ -178,6 +178,8 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         color = (wood_color if wood_color and part["color"] in MATERIAL_WOOD_ROLES
                  else PART_COLORS[lamp if part["color"] == "lamp" else part["color"]])
+        if part["color"] == "faucet" and part.get("material_ref") in materials:
+            color = _authored_material_color(materials[part["material_ref"]])
         if "mesh" in part:
             mesh = part["mesh"]
             placed = place_local([(x, y) for x, y, _ in mesh["positions"]],

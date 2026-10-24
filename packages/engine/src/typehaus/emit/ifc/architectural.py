@@ -45,7 +45,8 @@ def is_parts_furniture(furniture_type: Any) -> bool:
 
     symbol = model_symbol_for(furniture_type) or ""
     return symbol.startswith("sektion-") or symbol in {
-        "solid-surface-access-leaf", "pivoting-paper-holder", "towel-bar", "towel-hook",
+        "sunnersta-frame", "solid-surface-access-leaf",
+        "pivoting-paper-holder", "towel-bar", "towel-hook",
         "pivoting-paper-holder-chrome", "towel-bar-chrome", "towel-hook-chrome"}
 
 
@@ -53,7 +54,9 @@ def is_parts_fixture(model_symbol: str | None) -> bool:
     """Whether the emitter draws this fixture from its generated parts, not a prism."""
     return model_symbol in {
         "kohler-underscore-6036", "kohler-underscore-6032", "roman-tub-filler",
-        "solid-surface-vanity", "swanstone-flex-3636"}
+        "solid-surface-vanity", "sektion-vanity", "sektion-vanity-indy",
+        "drawer-vanity", "drawer-vanity-indy", "door-drawer-vanity",
+        "sunnersta-sink", "swanstone-flex-3636"}
 
 
 def _full_height_layers(wall: ResolvedWall) -> tuple[ResolvedLayer, ...]:
@@ -713,7 +716,8 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
                                 material_refs=product_type.model_representation.material_refs
                                 if product_type.model_representation else None)
             representation = parts_representation(
-                f, body, parts, item.position, item.rotation_degrees, item.z_m)
+                f, body, parts, item.position, item.rotation_degrees, item.z_m,
+                materials={material.tag: material for material in model.plan.library.materials})
         else:
             representation = ll.add_prism_from_profile(
                 f, body, item.footprint, product_type.height.meters, item.z_m)

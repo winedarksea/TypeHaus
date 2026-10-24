@@ -32,6 +32,7 @@ from typehaus.model.placeable_symbols._kohler_underscore import kohler_underscor
 from typehaus.model.placeable_symbols._kohler_underscore_rect import kohler_underscore_rect
 from typehaus.model.placeable_symbols._roman_tub_filler import roman_tub_filler
 from typehaus.model.placeable_symbols._solid_surface_vanity import solid_surface_vanity
+from typehaus.model.placeable_symbols._sunnersta import sunnersta_sink
 from typehaus.model.placeable_symbols._undermount_sink import single_bowl_undermount
 
 __all__ = ["NEO_ANGLE_CUT_FRACTION", "PLUMBING_SYMBOLS", "neo_angle_points"]
@@ -537,6 +538,10 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "solid-surface-vanity": solid_surface_vanity,
     "sektion-vanity": lambda w, d, h: solid_surface_vanity(w, d, h, fronts=(0.5, 0.5)),
     "drawer-vanity": drawer_vanity,
+    "drawer-vanity-indy": lambda w, d, h: drawer_vanity(w, d, h, faucet="indy"),
+    "sektion-vanity-indy": lambda w, d, h: solid_surface_vanity(
+        w, d, h, fronts=(.5, .5), faucet="indy"),
+    "sunnersta-sink": sunnersta_sink,
     "door-drawer-vanity": lambda w, d, h: drawer_vanity(w, d, h, door_fronts=True),
     "kohler-underscore-6036": kohler_underscore,
     "kohler-underscore-6032": kohler_underscore_rect,

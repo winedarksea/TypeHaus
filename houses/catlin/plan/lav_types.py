@@ -18,7 +18,7 @@ CORIAN_TOP = FixturePart(role="top", product_ref="PROD-CORIAN-GLACIER-WHITE")
 
 ANGSJON_36 = FixtureType(
     tag="FX-ANGSJON-36", name='ÄNGSJÖN 36 with ORRSJÖN 37 single-bowl top',
-    footprint=(inch(37), inch(21.75)), height=inch(27.625 + 0.14 / 0.0254),
+    footprint=(inch(37), inch(21.75)), height=inch(27.625 + 8.4375),
     mount=Mount(elevation=inch(8.375)),
     plan_symbol="drawer-vanity", basin=True, needs=NEEDS,
     product_ref="PROD-IKEA-ANGSJON-36",
@@ -37,9 +37,10 @@ ANGSJON_36 = FixtureType(
            "for adjustable RÄNNILEN, not manufacturer-published fixed outlets.",
 )
 ANGSJON_36_SS = ANGSJON_36.model_copy(update={
-    "tag": "FX-ANGSJON-36-SS", "name": 'ÄNGSJÖN 36 / ORRSJÖN 37, Indy stainless',
+    "tag": "FX-ANGSJON-36-SS", "height": inch(27.625 + 6.25),
+    "name": 'ÄNGSJÖN 36 / ORRSJÖN 37, Indy stainless',
     "parts": (ANGSJON_36.parts[0], UTILITY_FAUCET_PART, ANGSJON_36.parts[2]),
-    "model_representation": ModelRepresentation(symbol="drawer-vanity", material_refs=UTILITY_MATERIAL_REFS),
+    "model_representation": ModelRepresentation(symbol="drawer-vanity-indy", material_refs=UTILITY_MATERIAL_REFS),
 })
 
 
@@ -47,8 +48,9 @@ def sektion_vanity(width_in, product_ref, *, utility=False):
     return FixtureType(
         tag=f"FX-VANITY-{width_in}-SEKTION" + ("-SS" if utility else ""),
         name=f'{width_in} in. floating SEKTION / AXSTAD, bonded Corian bowl',
-        footprint=(inch(width_in), inch(18)), height=inch(41.5),
-        plan_symbol="vanity", model_representation=ModelRepresentation(symbol="sektion-vanity",
+        footprint=(inch(width_in), inch(18)), height=inch(36 + (6.25 if utility else 8.4375)),
+        plan_symbol="vanity", model_representation=ModelRepresentation(
+            symbol="sektion-vanity-indy" if utility else "sektion-vanity",
             material_refs=UTILITY_MATERIAL_REFS if utility else THEME_MATERIAL_REFS),
         product_ref=product_ref, basin=True, needs=NEEDS,
         parts=(UTILITY_FAUCET_PART if utility else THEME_FAUCET_PART,
@@ -69,7 +71,7 @@ SEKTION_30 = sektion_vanity(30, "PROD-IKEA-SEKTION-WALL-30-AXSTAD")
 SEKTION_24_SS = sektion_vanity(24, "PROD-IKEA-SEKTION-WALL-24-AXSTAD", utility=True)
 CHULTON_30 = FixtureType(
     tag="FX-CHULTON-30", name='Kohler Chulton 30, white quartz and undermount basin',
-    footprint=(inch(30.9375), inch(22.4375)), height=inch(41.5),
+    footprint=(inch(30.9375), inch(22.4375)), height=inch(36 + 8.4375),
     plan_symbol="drawer-vanity", basin=True, needs=NEEDS,
     product_ref="PROD-KOHLER-REC39579",
     model_representation=ModelRepresentation(symbol="door-drawer-vanity", material_refs=THEME_MATERIAL_REFS),
@@ -86,12 +88,12 @@ CHULTON_30 = FixtureType(
 )
 SUNNERSTA_BAR_SINK = FixtureType(
     tag="FX-SUNNERSTA-BAR-SINK", name="SUNNERSTA integral bar sink, Indy stainless",
-    footprint=(inch(18), inch(14)), height=inch(14.5), basin=True,
-    mount=Mount(elevation=inch(27)), plan_symbol="lavatory-wall-hung", needs=NEEDS,
+    footprint=(inch(18), inch(14)), height=inch(20 + 6.25), basin=True,
+    mount=Mount(elevation=inch(16)), plan_symbol="lavatory-wall-hung", needs=NEEDS,
     product_ref="PROD-IKEA-SUNNERSTA-SINK",
     parts=(UTILITY_FAUCET_PART, TUBULAR_TRAP),
-    model_representation=ModelRepresentation(symbol="lavatory-wall-hung", material_refs=UTILITY_MATERIAL_REFS),
-    ports=lav_ports(14, base_in=27, certainty=PortCertainty.APPROXIMATE),
+    model_representation=ModelRepresentation(symbol="sunnersta-sink", material_refs=UTILITY_MATERIAL_REFS),
+    ports=lav_ports(14, base_in=16, certainty=PortCertainty.APPROXIMATE),
     source="Existing SUNNERSTA sink, owner 2026-10-24; exact bowl station unpublished. "
            "Plumbing stations approximate; included sink bills with the kitchenette.",
 )

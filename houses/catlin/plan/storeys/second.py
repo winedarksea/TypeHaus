@@ -1422,7 +1422,7 @@ STAIR_GUARDS = [
 # R312.1.3 guard-infill census.
 STAIR_HANDRAILS = [
     Railing(
-        uid="CSRL03AAAA", tag="RL-S-HANDRAIL-E", type_ref="RAILING-INT-DARK-STEEL-HANDRAIL", path=(
+        uid="CSRL03AAAA", tag="RL-S-HANDRAIL-E", type_ref="RAILING-INT-ALUM-HANDRAIL", path=(
             pt(ft(17, 6.25), ft(26, 0.375)),
             pt(ft(17, 6.25), ft(31, 10.375)),
         ),
@@ -1430,11 +1430,11 @@ STAIR_HANDRAILS = [
         base_elevation=ft(0), post_spacing=inch(48), post_size="2x2", rail_count=1,
         mount="wall", assembly="RAILING_DARK_METAL",
         role="handrail", serves_stair="ST-M2S", top_height=inch(36),
-        graspable_profile="1.5in round — Type I",
+        graspable_profile="1.9in round — Type I",
         start_termination="wall_return", end_termination="wall_return",
     ),
     Railing(
-        uid="CSRL04AAAA", tag="RL-S-HANDRAIL-W", type_ref="RAILING-INT-DARK-STEEL-HANDRAIL", path=(
+        uid="CSRL04AAAA", tag="RL-S-HANDRAIL-W", type_ref="RAILING-INT-ALUM-HANDRAIL", path=(
             pt(ft(10, 5.75), ft(31, 11.125)),
             pt(ft(10, 5.75), ft(26, 10.375)),
         ),
@@ -1442,7 +1442,7 @@ STAIR_HANDRAILS = [
         base_elevation=ft(10), post_spacing=inch(48), post_size="2x2", rail_count=1,
         mount="wall", assembly="RAILING_DARK_METAL",
         role="handrail", serves_stair="ST-M2S", top_height=inch(36),
-        graspable_profile="1.5in round — Type I",
+        graspable_profile="1.9in round — Type I",
         start_termination="wall_return", end_termination="wall_return",
     ),
 ]

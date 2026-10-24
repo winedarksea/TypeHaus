@@ -495,7 +495,7 @@ ATTIC_FIXTURES = (
     # Bowl station is unpublished: APPROXIMATE ports remain explicit in the catalog.
     Fixture(uid="11TZJE81BZ", tag="FX-A-STUDIO-BAR-SINK", type_ref="FX-SUNNERSTA-BAR-SINK", room="RM-A-STUDIO",
             wall_ref="W-A-STU-W",
-            mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
+            mount=Mount(kind=MountKind.FLOOR, elevation=inch(16)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-A-BATH-S", face="right", distance_from_start=inch(37),
                 normal_gap=inch(3), rotation_offset=deg(0)))),

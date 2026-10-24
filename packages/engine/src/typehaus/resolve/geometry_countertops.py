@@ -67,10 +67,13 @@ def countertop_prisms(model: ResolvedModel, top: ResolvedCountertop,
         if obj.body_z1_m is None:
             continue
         product_type = types.get(obj.type_ref)
-        if model_symbol_for(product_type) == "solid-surface-vanity":
+        symbol = model_symbol_for(product_type)
+        if symbol in {"solid-surface-vanity", "sektion-vanity", "sektion-vanity-indy"}:
             # Overall fixture height includes the spout; the overhang meets the bonded deck.
             tops.append(obj.body_z1_m - product_type.height.meters
-                        + deck_height(product_type.height.meters))
+                        + deck_height(product_type.height.meters,
+                                      "indy" if symbol.endswith("-indy")
+                                      else "genta"))
         else:
             tops.append(obj.body_z1_m)
     if len(top.outline) < 3 or not tops or top.thickness_m <= 0:

@@ -179,4 +179,4 @@ def test_bath2_overhang_meets_the_bonded_bowl_deck(catlin_model_ro):
     vanity = next(obj for obj in catlin_model_ro.canvas_objects if obj.tag == "FX-M-BATH2-SINK")
     prisms = countertop_prisms(catlin_model_ro, top)
     assert prisms
-    assert all(prism.z1_m == pytest.approx(vanity.body_z1_m - 0.14) for prism in prisms)
+    assert all(prism.z1_m == pytest.approx(vanity.body_z0_m + 36 * INCH) for prism in prisms)

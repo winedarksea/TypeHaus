@@ -6181,9 +6181,10 @@
 # internal splice sleeves, structural epoxy and A4 anchors (~$220-580 the lot). Labour is
 # above a steel rail's: titanium is cut and deburred slow, and every fitting is dry-fitted
 # then bonded. LOW confidence until the fittings are bought.
-# RAILING-INT-DARK-STEEL-HANDRAIL (2026-10-22): the four dark-steel handrails, same rate as the
-# placeholder row above; stock matte-black brackets at 48" max spacing, attic standoff fabricated.
-"RAILING-INT-DARK-STEEL-HANDRAIL" = { material = { low = 25, high = 60 }, labour = { low = 18, high = 35 } }
+# RAILING-INT-ALUM-HANDRAIL (2026-10-24): the four matte black handrails, EZ Handrail 8 ft kit
+# at $158 = $19.75/LF, plus 4' bracket spacing and end caps; the attic standoff is still
+# fabricated steel. Labour is the placeholder rate above.
+"RAILING-INT-ALUM-HANDRAIL" = { material = { low = 20, high = 30 }, labour = { low = 18, high = 35 } }
 "RAILING-INT-TI-HANDRAIL-42" = { material = { low = 20, high = 60 }, labour = { low = 40, high = 90 } }  # 9.9 LF — owner-furnished tube; fittings + labour only
 "RAILING-EXT-ALUMINUM-FASCIA" = { material = { low = 30, high = 45 }, labour = { low = 35, high = 55 } }  # 40.3 LF — RL-SG-BALCONY only. Williams ESR-3485 / Fortress Al13 Home; material dropped from 55-80 when the product left Trex Signature on 2026-09-02. Fascia-mount labour keeps its 25-40% premium over surface mount (through-bolting into rim blocking, cantilevered 200 lb load). NOT INCLUDED: fascia-mount bracket kits at $40-60 per post and their four 5/16" x 4" through-bolts each, ~8 posts at 60" o.c., which no $/LF rail price carries
 # 2026-09-03: 42.7 LF over FIVE runs, where it was 36.3 LF over one. RL-SG-PORCH LOST 3.0 LF
