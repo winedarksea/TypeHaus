@@ -13,11 +13,12 @@ from typehaus.takeoff.envelope import envelope_layer_takeoff
 _M2_TO_FT2 = 10.7639104
 
 
-def _fractions(model, wall_tag: str) -> list[float]:
+def _fractions(model, wall_tag: str, *, beneath_paint: bool = False) -> list[float]:
     """The facing fraction of each gypsum end of ``wall_tag``, in stack order."""
     wall = next(w for w in model.walls if w.tag == wall_tag)
     rooms = dp._used_rooms(model)
-    layers = [layer for layer in wall.layers if not layer.is_cavity]
+    layers = [layer for layer in wall.layers if not layer.is_cavity
+              and not (beneath_paint and layer.material_ref == dp.PAINT)]
     return [dp._facing_fraction(wall, row, rooms) for row in dp._end_rows(layers)
             if any(dp._is_gypsum(model, layer.material_ref) for layer in row)]
 
@@ -28,18 +29,24 @@ def _derived(rows, scope: str) -> float:
 
 
 def test_a_partition_between_two_rooms_paints_both_faces(catlin_model_ro) -> None:
-    """``INT_2X4_PARTITION`` is an STC preset and authors no paint; both faces are rooms."""
-    assert _fractions(catlin_model_ro, "W-M-PAN-E") == [1.0, 1.0]
+    """Both gypsum faces beneath the pantry partition's paint bound used rooms."""
+    assert _fractions(catlin_model_ro, "W-M-PAN-E", beneath_paint=True) == [1.0, 1.0]
 
 
 def test_a_face_into_a_chase_takes_no_paint(catlin_model_ro) -> None:
     """``W-S-CH-S`` closes the second-storey chase: one face is a room, one is the shaft."""
-    assert sorted(_fractions(catlin_model_ro, "W-S-CH-S")) == [0.0, 1.0]
+    assert sorted(_fractions(catlin_model_ro, "W-S-CH-S", beneath_paint=True)) == [0.0, 1.0]
 
 
-def test_an_authored_paint_layer_is_not_billed_again(catlin_model_ro) -> None:
-    """``INT_2X6_BRG`` paints both faces itself, so neither end is bare gypsum."""
-    wall = next(w for w in catlin_model_ro.walls if w.assembly == "INT_2X6_BRG_HALF")
+@pytest.mark.parametrize("assembly_tag", [
+    "INT_2X6_BRG_HALF", "INT_2X4_PARTITION_HALF", "INT_2X4_STAGGERED_X_HALF",
+    "STAIRWELL_PARTITION_4H", "STAIRWALL_INT_2X6_BRG_TYPEX",
+])
+def test_an_authored_paint_layer_is_not_billed_again(catlin_model_ro, assembly_tag) -> None:
+    """Explicit latex on both faces prevents derived paint from billing them again."""
+    wall = next(w for w in catlin_model_ro.walls if w.assembly == assembly_tag)
+    layers = [layer for layer in wall.layers if not layer.is_cavity]
+    assert layers[0].material_ref == layers[-1].material_ref == dp.PAINT
     assert _fractions(catlin_model_ro, wall.tag) == []
 
 
@@ -59,9 +66,9 @@ def test_bare_gypsum_ceilings_bill_their_area_and_a_primed_one_does_not(catlin_m
 
 
 def test_catlin_derived_paint_is_the_unpainted_gypsum(catlin_model_ro) -> None:
-    """A band, not a figure: about 3,700 SF of partition faces and 3,300 of deck ceilings."""
+    """A band, not a figure: about 1,150 SF of bare partition faces and 3,300 of deck ceilings."""
     rows = envelope_layer_takeoff(catlin_model_ro)
-    assert 3000 < _derived(rows, "wall (derived)") < 4500
+    assert 900 < _derived(rows, "wall (derived)") < 1400
     assert 2800 < _derived(rows, "ceiling (derived)") < 3800
 
 
@@ -79,7 +86,7 @@ def test_a_coating_is_not_ordered_as_sheets(catlin_model_ro) -> None:
 
 
 def test_an_unconditioned_room_takes_no_paint(catlin_model) -> None:
-    """Mark the pantry unconditioned: its ceiling and its face of W-M-PAN-E drop out."""
+    """Mark the pantry unconditioned: its ceiling drops out and its gypsum face is unused."""
     full = envelope_layer_takeoff(catlin_model)
     rooms = catlin_model.rooms
     try:
@@ -87,7 +94,7 @@ def test_an_unconditioned_room_takes_no_paint(catlin_model) -> None:
                               if r.tag == "RM-M-PANTRY" else r for r in rooms]
         rows = envelope_layer_takeoff(catlin_model)
         assert _derived(rows, "ceiling (derived)") < _derived(full, "ceiling (derived)")
-        assert sorted(_fractions(catlin_model, "W-M-PAN-E")) == [0.0, 1.0]
+        assert sorted(_fractions(catlin_model, "W-M-PAN-E", beneath_paint=True)) == [0.0, 1.0]
     finally:
         catlin_model.rooms = rooms
 

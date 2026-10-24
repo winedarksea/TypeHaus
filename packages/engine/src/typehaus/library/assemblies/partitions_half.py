@@ -1,5 +1,7 @@
 """1/2" gypsum siblings of the partition presets in ``partitions.py``.
 
+``_HALF`` denotes 1/2-inch gypsum thickness, not wall height.
+
 Same framing, same face names (``gwb-a``/``gwb-b``, ``gwb-resilient``/``gwb-direct``) so a
 per-wall ``layer_materials`` swap carries over. ``stc`` is set only from a published test of
 the same build with 1/2" board; elsewhere it is None and the source says why.
@@ -47,10 +49,12 @@ _RC = Layer(name="resilient-channel", material_ref="resilient-channel", thicknes
 INT_2X4_PARTITION_HALF = Assembly(
     tag="INT_2X4_PARTITION_HALF",
     layers=(
+        PAINT_FINISH_A,
         _gwb("gwb-a"),
         Layer(name="stud", material_ref="spf", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4")),
         _gwb("gwb-b"),
+        PAINT_FINISH_B,
     ),
     source=("2x4 at 16 in. o.c., 1/2 in. gypsum each side, uninsulated. No STC: "
             f"{_IR761} tests no uninsulated 13 mm wood-stud wall, and USG SA924 lists "
@@ -75,11 +79,13 @@ INT_2X4_RC_HALF = Assembly(
             "the other face: also 42)"),
 )
 
+# Latex is a finish over the cited acoustic build; STC describes the tested gypsum/stud core.
 # Type X, not regular board, because Type X is what NRC tested at the target: the same build
 # in regular 13 mm board is STC 42-43 (p.269 TL-93-434, p.268 TL-93-228).
 INT_2X4_STAGGERED_X_HALF = Assembly(
     tag="INT_2X4_STAGGERED_X_HALF",
     layers=(
+        PAINT_FINISH_A,
         _gwb("gwb-a", "gwb-x"),
         Layer(name="staggered-studs", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
@@ -87,6 +93,7 @@ INT_2X4_STAGGERED_X_HALF = Assembly(
                                   layout=PartitionLayout.STAGGERED),
               cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
         _gwb("gwb-b", "gwb-x"),
+        PAINT_FINISH_B,
     ),
     stc=45,
     source=(f"{_IR761} p.266, G13_SWS140(406)_GFB90_G13, test TL-93-208: one layer 13 mm "

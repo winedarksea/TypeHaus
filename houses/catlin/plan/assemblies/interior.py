@@ -1,6 +1,12 @@
 # haus: editable
 # Catlin assemblies — accent lining, sauna walls and the stair-line bearing walls.
 # Split out of plan/assemblies.py verbatim.
+from library import (
+    PAINT_FINISH_A,
+    PAINT_FINISH_B,
+    STUD_BEARING,
+)
+
 from typehaus import (
     Assembly,
     CavityFill,
@@ -15,9 +21,6 @@ from typehaus import (
     inch,
     inside_of,
     layers,
-)
-from library import (
-    STUD_BEARING,
 )
 
 
@@ -432,6 +435,7 @@ STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
         Substitution(
             span=inside_of("stud"),
             replacement=(
+                PAINT_FINISH_A,
                 Layer(name="gwb-x", material_ref="gwb-x", thickness=inch(0.625),
                       function=LayerFunction.FINISH),
             ),
@@ -453,7 +457,8 @@ STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
 # Author one here and every stud interpenetrates its generated twin —
 # `structural.member_interference` said so, twelve times, on the first build.
 #
-# The thickness IS the specification and must stay locked to `_WELL_PARTITION_THICKNESS_M`:
+# The board-and-stud core stays locked to `_WELL_PARTITION_THICKNESS_M`; the finish
+# adds the standard 0.01 in. latex film per face:
 # INT_2X4_PARTITION is 4 3/4" on its 5/8" leaves and would push 1/8" into each inner
 # stringer. 1/2" gwb is already precedented in the library.
 #
@@ -463,13 +468,19 @@ STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
 STAIRWELL_PARTITION_4H = Assembly(
     tag="STAIRWELL_PARTITION_4H",
     layers=(
+        PAINT_FINISH_A,
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.5),
               function=LayerFunction.FINISH),
         Layer(name="stud", material_ref="spf", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE),
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.5),
               function=LayerFunction.FINISH),
+        PAINT_FINISH_B,
     ),
     interfaces=(STUD_BEARING,),
-    source="catlin basement stair-well partition (W-B-WELL), 2026-09-05: 1/2 in. board each face of the 2x4 studs resolve/stairs/u_split.py already generates, so the built thickness is exactly the 4 1/2 in. resolve/stairs/common.py reserves between the flights",
+    source=("catlin stair-well partitions (W-B-WELL, W-M-WELL): 1/2 in. board each face "
+            "of the 2x4 studs resolve/stairs/u_split.py already generates, with standard "
+            "latex both faces; the board-and-stud core matches the 4 1/2 in. "
+            "resolve/stairs/common.py reserves between the flights, plus 0.01 in. "
+            "paint per face"),
 )
