@@ -31,7 +31,7 @@ from plan.bedroom_wardrobe_types import BEDROOM_WARDROBE_PRODUCTS
 from plan.closet_types import CLOSET_PRODUCTS
 from plan.decking_selection import TREX_TIDE_POOL_PRODUCT
 from plan.electrical_floor_types import FLOOR_BOX_PRODUCT
-from plan.kitchen_sink_types import KRAUS_KHU100_32
+from plan.kitchen_sink_types import DEARBORN_KITCHEN_TRAP, KRAUS_BOLDEN, KRAUS_KHU100_32
 from plan.living_east_run_types import LIVING_EAST_RUN_PRODUCTS
 from plan.plant_liner_selection import EXTRUTECH_P1600
 from plan.plant_room_types import PLANT_ROOM_PRODUCTS
@@ -65,11 +65,15 @@ LG_INDUCTION_RANGE = Product(
 ISE_BADGER_5 = Product(
     tag="PROD-ISE-BADGER5", brand="InSinkErator", model="Badger 5",
     name="Badger 5 1/2 HP continuous-feed food waste disposer",
-    url="https://insinkerator.emerson.com/documents/badger-5-specifications-en-ca-10443900.pdf",
+    url="https://www.insinkerator.com/documents/badger-5-specifications-en-us-121004.pdf",
     source="InSinkErator Badger 5 specification sheet, read 2026-10-22: 1/2 HP Dura-Drive "
            "induction motor, 11 1/2 in. overall height, 6 5/16 in. body, 1 1/2 in. slip-joint "
            "outlet. UPGRADE PICK: Evolution Excel (1 HP, multi-stage grind, quietest), same "
-           "Quick Lock sink mount, if the price is acceptable.",
+           "Quick Lock sink mount, if the price is acceptable. Rechecked 2026-10-24: "
+           "current US sheet drawing says 12 5/8 in. overall but table says 11 1/2; "
+           "outlet is 6 in. below sink bottom plus 1/2 in. for stainless. Retain the "
+           "existing model envelope pending delivered-unit dry-fit; see "
+           "notes/kitchen_sink_installation.md section 5.",
 )
 BROAN_BWP1304SS = Product(
     tag="PROD-BROAN-BWP1304SS", brand="Broan", model="BWP1304SS + ARKBWP",
@@ -285,7 +289,7 @@ LEVITON_EV_RECEPTACLE_1450R = Product(
 PRODUCTS = (
     TREX_TIDE_POOL_PRODUCT, EXTRUTECH_P1600,
     LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER, ISE_BADGER_5, BROAN_BWP1304SS,
-    KRAUS_KHU100_32,
+    KRAUS_KHU100_32, KRAUS_BOLDEN, DEARBORN_KITCHEN_TRAP,
     FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,
     BROAN_B210E75RT, MURPHY_BOOKCASE_36,

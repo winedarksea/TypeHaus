@@ -206,11 +206,14 @@ SUPPLY_STOPS = [
                   pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 9.6), inch(421.5)),
                   accessible=True, room="RM-M-LIVING",
                   model='1 1/4" quarter-turn ball valve, in the sink base cabinet',
+                  install_parts=("Kraus Bolden KPF-1610SFS faucet, spot-free stainless",
+                                 "Kitchen cold PEX manifold reducer and 3/8-inch compression fixture stop"),
                   serves=("FX-M-KITCH-SINK",)),
     PipeAccessory(uid="JPFD6JQM44", tag="PA-M-KITCH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-B-HW-KITCH", position=pt(ft(30, 3.6), inch(421.5)),
                   accessible=True, room="RM-M-LIVING",
                   model='3/4" quarter-turn ball valve, in the sink base cabinet',
+                  install_parts=("Kitchen hot PEX tee, dishwasher branch and 3/8-inch compression fixture stop",),
                   serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
     # The laundry. These land on the same two vertices as PA-M-WASH-WHA-CW/HW above — the
     # machine box is where the arrestors already are, and a washer box with stops in it is

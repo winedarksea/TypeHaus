@@ -121,15 +121,6 @@ DELTA_ARVO_LAV = Product(
            "arc against the bar bowl's and the attic lav's actual depth ** before ordering "
            "eight; a low-spout faucet is the substitute in a shallow bowl.",
 )
-DELTA_ESSA_KITCHEN = Product(
-    tag="PROD-DELTA-9113-AR-DST", brand="Delta", model="9113-AR-DST",
-    name="Essa single-handle pull-down kitchen faucet, Arctic Stainless",
-    source="Delta Faucet product page, read 2026-09-06. MagnaTite magnetic docking and "
-           "DIAMOND Seal. The docking is the whole selection: it has no wear surface, where "
-           "a counterweight-and-collar is the mechanism behind the near-universal "
-           "five-to-ten-year sagging-wand complaint. ** VERIFY spout reach against the 33\" "
-           "double-bowl layout ** if the faucet hole is offset from the divider.",
-)
 MOEN_ADLER_LAUNDRY = Product(
     tag="PROD-MOEN-87233SRS", brand="Moen", model="87233SRS",
     name="Adler single-handle pull-down kitchen faucet, Spot Resist Stainless",
@@ -454,7 +445,7 @@ DURAVIT_B2_POWDER_FAUCET = Product(
 INTERIOR_PRODUCTS = (
     DURAVIT_DCODE_070545, DURAVIT_B2_POWDER_FAUCET, TOTO_AP_WALLHUNG, TOTO_DUOFIT_WT173M, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
     TOTO_WASHLET_S5, KOHLER_CACHET_SEAT,
-    DELTA_ARVO_LAV, DELTA_ESSA_KITCHEN, MOEN_ADLER_LAUNDRY,
+    DELTA_ARVO_LAV, MOEN_ADLER_LAUNDRY,
     *SHOWERING_PRODUCTS,
     MOEN_ALIGN_FILLER, MOEN_4794_ROUGH, DELTA_ARVO_LAV_CHROME,
     KOHLER_CAXTON_BASIN, SWAN_CONTOUR_TOP, CORIAN_GLACIER_WHITE,

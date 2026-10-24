@@ -268,6 +268,12 @@ permit_drop = ["A-502", "A-507"]
 # 2026-10-08 and `test_catlin_erv_clearance.py` ratchets it at zero, every pair.
 [checks]
 suppress = [
+  # Kitchen local vent, 2026-10-24: 22-inch 45-degree rise below the window and
+  # 18-inch high tie-in deliberately bore the 2x6 wall. This advisory flags any
+  # travel >16 inches, not a failed bore calculation. The focused installation test
+  # rejects cavity/placement problems directly; independent member/bore checks
+  # remain active. See kitchen_sink_installation.md §3/5.
+  "mep.wet_wall_occupancy:PR-M-KITCH-LOCAL-VENT",
   # W-S-PS1 (plant room | suite) is the humid liner on a mineral-wool 2x4: no published
   # test covers it, so it is UNKNOWN by construction. Accepted 2026-10-23 (DESIGN-LOG,
   # "Wall board policy"); a cited rating would need a tested liner wall.

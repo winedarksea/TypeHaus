@@ -126,7 +126,8 @@ DRAINS = [
                   pt(inch(32.5), inch(406.5)), pt(inch(32.5), inch(406.5)),
                   pt(ft(3), inch(406.5))),
             diameter=inch(2), material="pvc",
-            # Starts on the cap's own top (+15/16" project = 9'-2 3/8" basement-relative) and
+            # Starts 5 1/2" AFF at the local sink waste return; passes through the cap's
+            # plane (+15/16" project = 9'-2 3/8" basement-relative) and
             # drops clear of the deck's SOFFIT, the bearing seat at -13 7/16" — a drop that
             # stops inside the pour is what `mep.sleeve_coverage` reads as a sleeve serving
             # nothing.
@@ -134,7 +135,7 @@ DRAINS = [
             # Preserve the theater/stair profile; the final ceiling legs hold
             # 0.3"/ft, as does the short buried wye leg. Its -19.25" arrival is
             # 3/32" above the main's -19.34375" centreline at y406.5".
-            elevations=(ft(9, 2.375), ft(8, 5.9375), ft(8, 2.6875), ft(8, 2.59375),
+            elevations=(ft(9, 7.875), ft(8, 5.9375), ft(8, 2.6875), ft(8, 2.59375),
                         ft(8, 0.3125), ft(8, 0.21875),
                         ft(7, 11.25), inch(94.2625), inch(93.925), inch(-19.1625), inch(-19.25)),
             serves=("FX-M-KITCH-SINK",)),

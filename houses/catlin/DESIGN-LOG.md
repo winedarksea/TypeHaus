@@ -1,3 +1,38 @@
+## Kitchen sink: Bolden faucet and Dearborn trap (2026-10-24)
+
+The selected KHU100-32 bowl now has a Kraus Bolden KPF-1610SFS in spot-free
+stainless and a Dearborn P9703WBG 1½-inch tubular P-trap on the Badger 5. The
+faucet is a single 1⅜-inch hole at (352,423.49), two inches behind the steel
+flange, with a forward-moving right-hand lever. This supersedes the older Delta
+Essa product and kitchen faucet allowance. PEX remains the supply; compression
+fixture stops connect the factory faucet hoses, while PVC receives the trap.
+
+The disposer points west, away from the east-side supply risers. A short 8-inch
+rigid arm falls ⅙ inch to a vented sanitary tee at 16 AFF; the waste returns on
+two 45s to the existing floor sleeve. The protecting vent rises on 45-degree
+offsets into the north wall, below the window, then vertically east of its
+framing, and joins the existing high vent. An accessible upper-arm cleanout is
+specified as well as the existing floor cleanout. All local pipe elevations use
+the resolved concrete-cap finish (+15/16 inch), not the wood-bay datum.
+
+The installation note and dimensioned SVG record clearances and release checks.
+**Fit is not certified for fabrication.** The inward-opening tilt-turn window
+may obstruct full turn behind the 54¾-inch-AFF faucet top; prove the actual tilt
+and handle sweep. The current Badger sheet contradicts itself (12⅝-inch drawing,
+11½-inch table), so verify the delivered mount stack/outlet before cutting the
+elbow. Sink clips, faucet washer/rail access, hose travel, cleanout access and
+fitting take-outs need a physical dry-fit in the assembled SEKTION box.
+
+Pricing now bills one named faucet and one trap, separates their connectors,
+and excludes them from the bowl/support material and general faucet allowance.
+One narrowly scoped advisory is documented in preferences: the vent deliberately
+crosses the 2x6 wall's studs. The existing vertical waste extends to the 5½-inch-AFF
+return elbow, keeping the complete local offset a terminal cabinet connection.
+Independent bore and interference checks remain active; the focused tests
+directly reject cavity/placement errors on the declared wall.
+
+See [kitchen_sink_installation.md](notes/kitchen_sink_installation.md).
+
 ## Hallway soffit meets the walls (2026-10-23)
 
 `SF-S-DUCT` now derives its width from the hallway-facing finishes of `W-S-C2B` and

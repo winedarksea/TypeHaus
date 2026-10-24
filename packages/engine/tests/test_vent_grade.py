@@ -49,7 +49,7 @@ def _with_run(model, index, run):
 def test_catlin_vents_all_pass_the_code_check(catlin_model_ro) -> None:
     """Note §3: nothing in this house drops or sags on its way to a terminal."""
     findings = _grade(catlin_model_ro)
-    assert len(findings) == 10  # includes the powder basin dry vent
+    assert len(findings) == 11  # includes powder basin and local kitchen protecting vents
     assert all(f.result is Result.PASS for f in findings)
     assert all(f.code_ref == "MN Plumbing Code (ch. 4714) 905.1" for f in findings)
 
@@ -101,14 +101,13 @@ def test_bath2_vent_is_the_interpolated_branch_and_both_branches_agree(
                 "PR-M-BATH2-VENT").result is Result.PASS
 
 
-def test_three_runs_clear_the_house_grade(catlin_model_ro) -> None:
-    """Note §3's last column: 0.152"/ft, 0.300"/ft and 2.217"/ft are the only vents in
-    catlin built at a grade a plumber would recognise as one."""
+def test_four_runs_clear_the_house_grade(catlin_model_ro) -> None:
+    """The three original graded vents plus the local kitchen protecting vent clear 1/8 inch/ft."""
     findings = _margin(catlin_model_ro)
     assert _MIN_VENT_GRADE_IN_PER_FT == 0.125
     plain = [f for f in findings if not f.message.startswith("ADVISORY — ")]
     assert {t for f in plain for t in f.element_tags} == {
-        "PR-A-STUBATH-VENT", "PR-A-BAR-VENT", "PR-B-BATH-VENT"}
+        "PR-A-STUBATH-VENT", "PR-A-BAR-VENT", "PR-B-BATH-VENT", "PR-M-KITCH-LOCAL-VENT"}
     assert '2.217"/ft' in _for(findings, "PR-B-BATH-VENT").message
     assert '0.152"/ft' in _for(findings, "PR-A-STUBATH-VENT").message
     assert '0.300"/ft' in _for(findings, "PR-A-BAR-VENT").message

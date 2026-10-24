@@ -1,6 +1,6 @@
 # Kitchen stock-frame installation details
 
-Revision 2026-10-23. Coordinates are inches in the house plan; elevations are above
+Revision 2026-10-24. Coordinates are inches in the house plan; elevations are above
 finished floor. Cabinet widths follow stock modules. These details govern the revised north
 and east runs and the west cold-storage uppers.
 
@@ -26,17 +26,25 @@ than packing a thin FÖRBÄTTRA cover board into a fictitious solid cabinet.
 The cabinet centre remains x=351 3/8. The 32-inch single-bowl undermount sink and faucet
 centre on the unchanged window at x=352, offset 5/8 east inside the 36-inch base.
 Use the [Kraus KHU100-32 specification](https://www.kraususa.com/media/catalog/product/documentation/KHU100-32-Spec-Sheet.pdf)
-as a dimensional reference, not a committed brand: exterior 32 x 19, bowl 30 x 17,
+as the selected bowl: exterior 32 x 19, bowl 30 x 17,
 10 deep, minimum cabinet 36 x 24. The model's 32 x 22 installation envelope includes
 three inches behind the steel flange for the separately quartz-mounted faucet.
 
-Flange centre y=411 7/8, exterior x=336–368 and y=402 3/8–421 3/8. The schematic
-flush-reveal opening is x=337–367, y=403 3/8–420 3/8, with faucet centre x=352,
-y=423 3/8. Its opening follows the fixture rather than the cabinet's centre. Quartz
-top is 36 AFF, underside 34.819; the 10-inch bowl bottom is 24.819 AFF. The disposer
+Flange centre y=411.99, exterior x=336–368 and y=402.49–421.49. The schematic
+flush-reveal opening is x=337–367, y=403.49–420.49, with faucet centre x=352,
+y=423.49 (two inches behind the rear flange). Its opening follows the fixture rather
+than the cabinet's centre. Quartz top is 36 AFF, underside 34.819; the 10-inch bowl
+bottom is 24.819 AFF. The disposer
 top meets that bottom. Drain flange, floor sleeve, cleanout and the first two basement
-drain points share x=352, y=416 7/8 (drain 4 1/2 forward of the flange rear).
-Subsequent drain points remain in place; supply and vent remain inside the cabinet.
+drain points share x=352, y=416.99 (drain 4 1/2 forward of the flange rear).
+Subsequent basement drain points remain in place. The protecting vent rises into W-M-N1
+on 45-degree offsets and joins PR-M-KITCH-VENT; it does not terminate in the cabinet.
+
+Selected faucet: Kraus Bolden KPF-1610SFS, spot-free stainless, single 1 3/8-inch
+quartz hole without escutcheon. Selected trap: Dearborn P9703WBG, on the Badger 5
+discharge elbow rather than the unused basket strainer. The full set-out, supplies,
+window restrictions and fabrication hold points are in
+[kitchen_sink_installation.md](kitchen_sink_installation.md).
 
 With 3/4-inch cabinet sides, the flange has 5/8-inch clearance to the east interior
 side and 1 7/8-inch clearance west. These are geometric clearances, not a mounting-clip

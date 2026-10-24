@@ -35,6 +35,7 @@ from __future__ import annotations
 
 from plan import (
                   electrical_floor,
+                  kitchen_sink_plumbing,
                   mep_bath2_dryer,
                   mep_cleanouts,
                   mep_drainage,
@@ -61,6 +62,7 @@ EQUIPMENT_TYPES = (*mep_hvac.EQUIPMENT_TYPES, *mep_erv_types.EQUIPMENT_TYPES_ERV
 ELECTRICAL_DEVICE_TYPES = mep_electrical.ELECTRICAL_DEVICE_TYPES
 
 MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
+                 *kitchen_sink_plumbing.KITCHEN_CONNECTIONS,
                  *mep_cleanouts.MAIN_CLEANOUTS,
                  *mep_sleeves.SUPPLY_SLEEVES,
                  *mep_sleeves.STACK_SLEEVES,

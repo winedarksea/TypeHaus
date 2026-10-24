@@ -111,6 +111,14 @@ attic runs and the basement bath vent are the only ones built at a grade a plumb
 recognise as a grade. The long runs are held flat by what they pass under — the ERV bank in
 FS-S-WEST, the supply lines, the attic joists' flanges — and 905.1 does not ask for more.
 
+**2026-10-24 update:** the powder-basin dry vent and
+`PR-M-KITCH-LOCAL-VENT` bring the current code-grade total to eleven. The kitchen
+local connection rises on 45-degree offsets below the window, then vertically,
+then 3/16 inch over an 18-inch high-level tie-in: its minimum grade is 1/8 inch/ft.
+It is the fourth run clearing the house's grade preference. The nine-row table
+above remains the dated September snapshot; the current kitchen set-out and
+fabrication checks are in [kitchen_sink_installation.md](kitchen_sink_installation.md).
+
 ## 4. What this does not claim
 
 Not a venting *design*: whether a vent is required, where it may connect, its size and its

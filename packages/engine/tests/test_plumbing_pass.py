@@ -121,7 +121,8 @@ def test_wet_wall_occupancy_passes_for_the_bath1_risers(code_report):
     ``W-M-HS1`` -- the wall the water closet's carrier stands in and the lavatory backs
     onto. See the BATH1 pair in ``houses/catlin/plan/mep_supply.py``.
     """
-    rows = [f for f in code_report.findings if f.check_id == "mep.wet_wall_occupancy"]
+    rows = [f for f in code_report.findings if f.check_id == "mep.wet_wall_occupancy"
+            and {"PR-B-CW-BATH1", "PR-B-HW-BATH1"}.intersection(f.element_tags)]
     assert rows and all(f.result.value == "pass" for f in rows)
     assert any("W-M-HS1" in f.message for f in rows)
 

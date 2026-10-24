@@ -3178,9 +3178,12 @@
 "FX-HYDRANT-SD34" = { material = { low = 110, high = 260 }, labour = { low = 120, high = 310 } }  # 2 ea
 "FX-HYDRANT-Y34SS" = { material = { low = 180, high = 500 }, labour = { low = 140, high = 360 } }  # 1 ea
 "FX-KITCHEN-SINK-33" = { material = { low = 220, high = 800 }, labour = { low = 250, high = 600 } }  # 0 ea — retired 2026-10-03
-# Same planning allowance, now a 32-inch undermount single bowl with deck-mounted faucet.
-# Includes faucet, strainer, mounting/support and set/connect; brand not selected.
-"FX-KITCHEN-SINK-32-SINGLE" = { material = { low = 220, high = 800 }, labour = { low = 250, high = 600 } }  # 1 ea
+# Kraus KHU100-32 bowl, mounting/support and set/connect labour only.
+# Faucet and trap/connectors bill once through [install_parts]; Badger bills separately.
+# Supplied BST-1 basket strainer is unused with the InSinkErator mounting flange.
+# Kraus direct KHU100-32 $369.95, read 2026-10-24 at https://www.kraususa.com/
+# Add $30-100 support/sealant allowance, rounded; no faucet or drain kit in this material.
+"FX-KITCHEN-SINK-32-SINGLE" = { material = { low = 400, high = 470 }, labour = { low = 250, high = 600 } }  # 1 ea
 "FX-LAUNDRY-SINK-24" = { material = { low = 130, high = 450 }, labour = { low = 120, high = 290 } }  # 1 ea
 # Read as the lavatory AND its vanity: no CASE-* row covers the bathrooms, so if this were
 # the bowl alone the vanities would be missing from the estimate entirely.
@@ -5677,6 +5680,12 @@
 "water_hot" = { material = { low = 0.9, high = 2.2 }, labour = { low = 3.25, high = 7.5 } }  # 194.3 LF
 
 [pipe_fittings]
+# Kitchen local vent, 2026-10-24: same derived allowance basis as the other elbows.
+"elbow-45-1.5in" = { low = 1.75, high = 4 }
+"bend-60-1.5in" = { low = 3.5, high = 8 }  # two rolled 45s and connecting nipple
+# Only PR-M-KITCH-LOCAL-DRAIN: graph labels the upright tee as a generic wye.
+# Purchase the specified sanitary tee in the named connector kit, never this wye.
+"wye-2x1.5in" = { low = 0, high = 0 }
 # DERIVED 2026-08-24 — $ each, MATERIAL ONLY. The other half of the [pipe_runs] re-base
 # above: fittings are counted off the runs' own 3D polylines and the drainage graph
 # (takeoff/plumbing.py::fitting_takeoff), so the money that used to ride inside the drain and
@@ -5978,6 +5987,23 @@
 "water_hammer_arrestor" = { material = { low = 12, high = 35 }, labour = { low = 25, high = 70 } }  # 3 ea
 
 [install_parts]
+# Kitchen selection 2026-10-24. Material only; set/connect labour stays in the sink row.
+# Bolden: Home Depot internet 309953628, $179.95 sale / $214.95 regular, read 2026-10-24:
+# https://www.homedepot.com/p/309953628
+# Dearborn: WebstaurantStore item 835P9703WBG, $1.89 each, read 2026-10-24:
+# https://www.webstaurantstore.com/dearborn-p9703wbg-1-1-2-p-trap-with-reversible-j-bend-and-threaded-adapter/835P9703WBG.html
+# Trap high allows small-order shipping/local supply; connector/PEX kits are explicit
+# planning allowances, NOT vendor quotes. Included trap adapter/washers are not bought again.
+"Kraus Bolden KPF-1610SFS faucet, spot-free stainless" = { low = 179.95, high = 214.95 }
+"Dearborn P9703WBG 1-1/2-inch tubular P-trap with PVC adapter" = { low = 1.89, high = 15 }
+"Kitchen trap PVC connector kit: reducing sanitary tee, vent reducer, joint consumables" = { low = 10.96, high = 20.96 }
+"Kitchen upper-arm cleanout fitting, access extension and threaded cap" = { low = 15, high = 40 }
+"Kitchen cold PEX manifold reducer and 3/8-inch compression fixture stop" = { low = 15, high = 40 }
+"Kitchen hot PEX tee, dishwasher branch and 3/8-inch compression fixture stop" = { low = 20, high = 50 }
+# Connector kit includes Charlotte PVC004010800HD reducing sanitary tee, $5.96,
+# https://www.homedepot.com/p/203396197 (2026-10-24); reducer/consumables add $5-15.
+# Actual upright tee is NOT a wye: generic wye-2x1.5in graph row is zeroed below.
+# Rigid elbows bill separately through [pipe_fittings]; cleanout kit is material only.
 # 2026-08-24: the twin pairing kit for the Frigidaire column pair (plan/placeables.py, on
 # APPL-M-FRIDGE). It is a row here rather than folded into either appliance price because it
 # is ONE kit for TWO cabinets — carried on an appliance row it would read as a per-unit
@@ -7492,7 +7518,7 @@ plumbing-bidet-seats = { low = 1364, high = 1700 }
 # are inside FX-SHOWER-36-* / FX-TUBSHOWER-60-DIVERTED and are NOT here.
 #
 #   8 x Delta Arvo 15840LF-SP lavatory, SpotShield Brushed Nickel   $105 ea   $840
-#   1 x Delta Essa 9113-AR-DST kitchen, Arctic Stainless            $175      $175
+#   Kitchen Bolden is excluded: one named [install_parts] row on PA-M-KITCH-STOP-CW.
 #   1 x Moen Adler 87233SRS laundry, Spot Resist Stainless          $169      $169
 #   (The Moen T393 trim + 4794 body bill as "FX-MOEN-ALIGN-ROMAN"; excluded since
 #   2026-10-21; they are no longer in this row.)
@@ -7503,13 +7529,6 @@ plumbing-bidet-seats = { low = 1364, high = 1700 }
 # voids its warranty). Both faucets ship with a deck plate covering a 3-hole 4" top, which is
 # the recovery from the likeliest ordering error and part of why they were chosen.
 #
-# The kitchen faucet is Delta rather than Moen for one reason: ** MagnaTite magnetic docking
-# has no wear surface **, where a counterweight-and-collar is the mechanism behind the
-# near-universal five-to-ten-year sagging-wand complaint. The runner-up (Moen Arbor 7594SRS,
-# $332) wins on exactly one axis -- the Moen 1255 is the most widely stocked faucet cartridge
-# in North America -- and an all-Moen house at ~$1,885 would put ONE cartridge in every
-# lavatory and the laundry, which is ~$700 for parts commonality. Defensible; not taken.
-#
 # ** THE LAUNDRY BRIEF CANNOT BE MET BY A FAUCET. ** No mainstream pull-down sprayer is
 # hose-threaded (sprayheads use proprietary threads) and every 3/4"-hose-threaded utility
 # faucet is a two-handle rigid spout with no spray. Take the sprayer and TEE A 1/2" HOSE BIBB
@@ -7519,7 +7538,9 @@ plumbing-bidet-seats = { low = 1364, high = 1700 }
 # Order Moen 4794 with T393; that pair is billed separately above, not in this allowance.
 # Current lavatory split: six Arvo -SP, one Bath2 Arvo 15840LF chrome, and one powder-room
 # Duravit B.2 S B21010001U10 chrome. The broad installation/material band remains an allowance.
-plumbing-faucets-and-tub-filler = { low = 1319, high = 2795 }
+# 2026-10-24: subtract the former $175 kitchen faucet from BOTH allowance endpoints.
+# Its installation remains in the kitchen sink set/connect labour; no second fitting charge.
+plumbing-faucets-and-tub-filler = { low = 1144, high = 2620 }
 # ** WALL TILE HAS NO ELEMENT TO MEASURE ** — [floor_finishes] carries the floors and a shower
 # surround is not a modelled finish, which is the same reason `finish-tile-surrounds-and-
 # waterproofing` above stays a lump. This row is the MATERIAL for the chosen 12x24 (TileBar

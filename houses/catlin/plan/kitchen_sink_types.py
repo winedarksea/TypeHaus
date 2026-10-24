@@ -6,6 +6,27 @@ COUNTER_HEIGHT_IN = 36.0
 QUARTZ_THICKNESS_IN = 1.181
 BOWL_DEPTH_IN = 10.0
 
+KRAUS_BOLDEN = Product(
+    tag="PROD-KRAUS-KPF-1610SFS", brand="Kraus", model="KPF-1610SFS",
+    name="Bolden single-handle pull-down faucet, spot-free stainless",
+    url="https://www.kraususa.com/media/catalog/product/documentation/KPF-1610-IM.pdf",
+    source="Owner selection 2026-10-24. Single 1 3/8 in. hole through 3 cm quartz, no "
+           "escutcheon; right-hand lever moves forward. June 2024 manual/spec: 18 3/4 in. "
+           "overall, 8 5/8 in. reach, 2 1/8 in. base, 3 3/8 in. maximum deck, "
+           "3/8 in. compression supplies. See notes/kitchen_sink_installation.md.",
+)
+DEARBORN_KITCHEN_TRAP = Product(
+    tag="PROD-DEARBORN-P9703WBG", brand="Dearborn by Oatey", model="P9703WBG",
+    name="1 1/2-inch white polypropylene tubular P-trap with threaded PVC adapter",
+    url="https://www.oatey.com/products/P_041193009241/"
+        "dearborn-112-in-plastic-tubular-ptraps-with-threaded-adapter?upc=041193009241",
+    source="Selected 2026-10-24; Oatey LCS1353 submittal: reversible J-bend, "
+           "3 1/2 in. inlet/outlet spacing, 4 5/8 in. inlet-top to outside bottom, "
+           "approximately 2 1/2 in. seal. Includes PVC adapter, nuts and washers. "
+           "Connect to Badger discharge, not the unused Kraus basket strainer; "
+           "see notes/kitchen_sink_installation.md for set-out and dry-fit hold points.",
+)
+
 KRAUS_KHU100_32 = Product(
     tag="PROD-KRAUS-KHU100-32", brand="Kraus", model="KHU100-32",
     name='Standart PRO 32" undermount single-bowl kitchen sink, 16 gauge stainless',
@@ -36,5 +57,9 @@ KITCHEN_SINK_32_SINGLE = FixtureType(
            'KHU100-32-Spec-Sheet.pdf. Selected 2026-10-22. '
            '32 x 22 in. placement envelope includes a 3 in. rear faucet zone; '
            '30 x 17 in. schematic flush-reveal opening. Fabricator templates from the delivered '
-           'sink and its template: corner radii, mounting clips and support.',
+           'sink and its template: corner radii, mounting clips and support. '
+           'Faucet PROD-KRAUS-KPF-1610SFS: single 1 3/8 in. hole, centred across bowl, '
+           '2 in. behind rear flange. Trap PROD-DEARBORN-P9703WBG on APPL-M-DISP; '
+           'InSinkErator flange replaces the BST-1 basket strainer. Installation and '
+           'fabrication hold points: notes/kitchen_sink_installation.md.',
 )

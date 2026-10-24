@@ -111,7 +111,10 @@ MAIN_KITCHEN_CASEWORK = [
     # Its gap is 5 11/32" so the Badger 5's 6 5/16" body keeps its centre on the drain.
     Appliance(uid="ADCW7VPPC1", tag="APPL-M-DISP", type_ref="APPL-ISE-BADGER5", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(13.319)),
-              install_parts=("24V Class-2 control transformer, 40 VA",
+              install_parts=("Dearborn P9703WBG 1-1/2-inch tubular P-trap with PVC adapter",
+                             "Kitchen trap PVC connector kit: reducing sanitary tee, vent reducer, joint consumables",
+                             "Kitchen upper-arm cleanout fitting, access extension and threaded cap",
+                             "24V Class-2 control transformer, 40 VA",
                              "double-pole contactor, 30 A, 24V coil",
                              "NEMA 1 enclosure, 6x6x4, hinged",
                              "guarded illuminated toggle switch, 24V",

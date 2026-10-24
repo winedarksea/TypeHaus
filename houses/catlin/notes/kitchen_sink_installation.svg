@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="880" viewBox="0 0 1200 880" role="img" aria-label="Catlin kitchen sink dimensioned installation plan and section">
+<style>text{font:14px system-ui,sans-serif;fill:#182b3a}.title{font-size:22px;font-weight:700}.small{font-size:12px}.pipe{fill:none;stroke:#1978a5;stroke-width:5;stroke-linejoin:round}.vent{fill:none;stroke:#309762;stroke-width:5;stroke-linejoin:round}.outline{fill:none;stroke:#647581;stroke-width:2}.dash{fill:none;stroke:#a46d24;stroke-width:2;stroke-dasharray:6 4}</style>
+<rect width="1200" height="880" fill="#fff"/>
+<text x="40" y="36" class="title">CATLIN · KITCHEN SINK INSTALLATION</text>
+<text x="40" y="61" class="">2026-10-24 · Dimensions in inches, elevations AFF · Fit and fabrication hold points in companion note</text>
+<text x="40" y="87" class="">PLAN · north ↑ · 36-inch sink-base module</text>
+<rect class="outline" x="58.0" y="150.75" width="504.0" height="336.0"/>
+<rect class="outline" x="94.75" y="205.13999999999987" width="448.0" height="266.0"/>
+<rect class="dash" x="108.75" y="219.13999999999987" width="420.0" height="238.0"/>
+<circle cx="318.75" cy="268.1399999999999" r="44.1875" fill="#d8e4eb" stroke="#455c6e"/>
+<circle cx="318.75" cy="177.13999999999987" r="14.875" fill="#c8d8ec" stroke="#455c6e"/>
+<polyline class="pipe" points="318.75,268.14 248.75,268.14 248.75,219.14 248.75,177.14 318.75,177.14"/>
+<polyline class="vent" points="318.75,177.14 318.75,100.00 626.75,100.00"/>
+<rect class="dash" x="346.75" y="163.0" width="28.0" height="14.0"/>
+<text x="80" y="465" class="">Bowl opening: 30 × 17; flange: 32 × 19</text>
+<text x="80" y="489" class="">Faucet: (352, 423.49), Ø1⅜ hole, Ø2⅛ base</text>
+<text x="80" y="513" class="">Drain / existing floor sleeve: (352, 416.99)</text>
+<text x="80" y="537" class="">Badger discharge points west to x=347</text>
+<text x="80" y="561" class="">Arm: north 3, east 5 → tee (352, 423.49)</text>
+<text x="80" y="585" class="">Blue: waste · green: protecting vent</text>
+<text x="80" y="609" class="">Dashed lane: proposed hose/weight clearance</text>
+<text x="80" y="633" class="">PEX risers stay east at x=357.6 and 363.6</text>
+<text x="650" y="87" class="">SECTION · unfolded pipe route (horizontal offsets schematic)</text>
+<polyline class="outline" points="665.00,670.00 1135.00,670.00"/>
+<text x="670" y="665" class="small">Finished floor 0</text>
+<polyline class="outline" points="665.00,619.88 1135.00,619.88"/>
+<text x="670" y="614.879" class="small">Cabinet bottom top ≈5.57</text>
+<polyline class="outline" points="665.00,446.63 1135.00,446.63"/>
+<text x="670" y="441.629" class="small">Bowl bottom 24.819</text>
+<polyline class="outline" points="665.00,356.63 1135.00,356.63"/>
+<text x="670" y="351.62899999999996" class="small">Quartz underside 34.819</text>
+<polyline class="outline" points="665.00,346.00 1135.00,346.00"/>
+<text x="670" y="341" class="small">Countertop 36</text>
+<polyline class="outline" points="700.00,356.63 700.00,446.63 950.00,446.63 950.00,356.63"/>
+<rect x="775" y="446.629" width="80" height="103.5" fill="#d8e4eb" stroke="#647581"/>
+<polyline class="pipe" points="775.00,505.13 740.00,505.13 740.00,562.00 910.00,562.00 910.00,524.50 1010.00,526.00"/>
+<polyline class="pipe" points="1010.00,526.00 1010.00,562.00 1065.00,620.50 1065.00,670.00"/>
+<polyline class="vent" points="1010.00,526.00 1010.00,490.00 1060.00,440.41 1110.00,242.41 1110.00,175.00"/>
+<text x="830" y="164" class="small">Vent continues to (374,429) at 109.875 AFF</text>
+<text x="830" y="184" class="small">then joins existing vent at 110.0625 AFF</text>
+<text x="830" y="208" class="small">Low offsets rise 45°; no low flat vent</text>
+<text x="660" y="177.25" class="small">Bolden top 54.75 AFF</text>
+<text x="770" y="501" class="small">Outlet 18.319 nominal</text>
+<text x="650" y="578" class="small">Trap reserve 10–19 AFF</text>
+<text x="925" y="513" class="small">Tee 16 AFF</text>
+<text x="650" y="727" class="">Trap: Dearborn P9703WBG · 3½ axis spacing · ≈2½ water seal</text>
+<text x="650" y="751" class="">Rigid trap arm: 8 developed; ¼ inch/ft fall; verify final 3–42</text>
+<text x="650" y="775" class="">Two 45s reconnect waste to existing sleeve; retain cleanout access</text>
+<text x="40" y="822" class="">HOLD: delivered Badger revision, clip/washer access, hub take-outs, window swing, full hose stroke and service access.</text>
+<text x="40" y="849" class="">Pipe axes and reserved envelopes only. Do not fabricate from this drawing. See kitchen_sink_installation.md §3–5.</text>
+</svg>
