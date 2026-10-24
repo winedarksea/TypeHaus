@@ -60,7 +60,7 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset({
     "pivoting-paper-holder", "towel-bar", "towel-hook",
     "pivoting-paper-holder-chrome", "towel-bar-chrome", "towel-hook-chrome",
     # furniture
-    "sofa", "loveseat", "sectional", "armchair", "dining-chair", "cantilever-chair",
+    "sofa", "loveseat", "sectional", "armchair", "strandmon", "dining-chair", "cantilever-chair",
     "office-chair",
     "dining-table", "rounded-dining-table", "round-table", "coffee-table", "end-table",
     "chess-table", "hammock-chair", "hanging-daybed", "curtain-rod", "cellular-blind",

@@ -80,6 +80,7 @@ from typehaus.model.placeable_symbols._sektion_tall import (
 )
 from typehaus.model.placeable_symbols._sit_stand_desk import sit_stand_desk
 from typehaus.model.placeable_symbols._slat_partition import slat_partition
+from typehaus.model.placeable_symbols._strandmon import strandmon
 from typehaus.model.placeable_symbols._tannforsen import tannforsen_wall
 from typehaus.model.placeable_symbols._towel_hardware import towel_bar, towel_hook
 from typehaus.model.placeable_symbols._wardrobe import (
@@ -126,6 +127,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "sofa": seating(arms=True, seats=3),
     "loveseat": seating(arms=True, seats=2),
     "armchair": seating(arms=True, seats=1),
+    "strandmon": strandmon,
     "sectional": sectional(),
     # A dining chair has no arms and a slim back; its "seats" count is the single pad.
     "dining-chair": seating(arms=False, seats=1, back_depth_m=0.10),
