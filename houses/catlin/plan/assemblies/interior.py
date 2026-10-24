@@ -478,9 +478,5 @@ STAIRWELL_PARTITION_4H = Assembly(
         PAINT_FINISH_B,
     ),
     interfaces=(STUD_BEARING,),
-    source=("catlin stair-well partitions (W-B-WELL, W-M-WELL): 1/2 in. board each face "
-            "of the 2x4 studs resolve/stairs/u_split.py already generates, with standard "
-            "latex both faces; the board-and-stud core matches the 4 1/2 in. "
-            "resolve/stairs/common.py reserves between the flights, plus 0.01 in. "
-            "paint per face"),
+    source="catlin stair-well partitions (W-B-WELL, W-M-WELL): 1/2 in. board each face of the 2x4 studs resolve/stairs/u_split.py already generates, with standard latex both faces; the board-and-stud core matches the 4 1/2 in. resolve/stairs/common.py reserves between the flights, plus 0.01 in. paint per face",
 )
