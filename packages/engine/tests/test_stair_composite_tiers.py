@@ -142,7 +142,8 @@ def test_shared_trex_product_dimensions_and_catalog_registration():
     assert TREX_ENHANCE_BASICS_DECK_LAYER.thickness.inches == pytest.approx(0.94)
     assert TREX_ENHANCE_BASICS_BOARD_WIDTH.inches == pytest.approx(5.5)
     assert TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING.inches == pytest.approx(9)
-    assert DETAIL_FILL["trex-enhance-basics"] == DETAIL_FILL["composite-deck"]
+    # Tide Pool is its own colour, so the detail fill follows the Material, not the generic deck.
+    assert DETAIL_FILL["trex-enhance-basics"] == TREX_ENHANCE_BASICS.color
     assert DETAIL_HATCH["trex-enhance-basics"] == DETAIL_HATCH["composite-deck"]
 
 

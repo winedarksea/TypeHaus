@@ -25,7 +25,7 @@ MAIN_BATH_ACCESSORIES = [
     Furniture(uid="4APHG6FW5N", tag="FURN-M-BATH2-TP", type_ref="FT-MOEN-ALIGN-TP-CH",
               room="RM-M-BATH2", mount=Mount(kind=MountKind.WALL, elevation=_HOLDER_BASE),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-W3", face="left", distance_from_start=inch(41.385),
+                  wall_ref="W-M-W3", face="left", distance_from_start=inch(41.26),
                   rotation_offset=deg(-180)))),
 ]
 

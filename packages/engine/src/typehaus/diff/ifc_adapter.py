@@ -12,6 +12,13 @@ from dataclasses import replace
 from pathlib import Path
 
 from typehaus._meta import PSET_SOURCE
+from typehaus.diff.ifc_bounds import (
+    _bounds,
+    _cased_door_bounds,
+    _cased_filling,
+    _emitted_parts_bounds,
+    _parts_bounds,
+)
 from typehaus.diff.model import DiffElem
 from typehaus.model.ids import derive_child_guid
 from typehaus.resolve.geometry import (
@@ -81,7 +88,9 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         if host is None:
             continue
         door_type = door_types.get(o.type_ref)
-        if (o.is_door and door_type is not None
+        if o.is_door and _cased_filling(o, door_type):
+            centroid, bbox = _cased_door_bounds(model, o)
+        elif (o.is_door and door_type is not None
                 and (door_type.bookcase_door is not None or o.cased_product is not None
                      or o.effective_frame_material_ref or o.effective_leaf_material_ref)):
             boards = [solid for part in opening_parts(
@@ -130,6 +139,9 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         "disconnect": "IfcSwitchingDevice", "data_outlet": "IfcOutlet",
     }
     device_types = {t.tag: t for t in model.plan.library.electrical_device_types}
+    from typehaus.resolve.geometry_countertops import slab_hosts
+
+    hosted_countertops = slab_hosts(model)
     for item in model.canvas_objects:
         source = model.plan.by_tag(item.tag)
         source_kind = getattr(getattr(source, "kind", None), "value", "")
@@ -158,7 +170,10 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         centroid, bbox = _bounds(item.footprint, body_z0, body_z1)
         product_type = device_types.get(item.type_ref or "")
         track = getattr(product_type, "track_lighting", None)
-        if track is not None:
+        emitted = _emitted_parts_bounds(model, item, hosted_countertops, body_z0)
+        if emitted is not None:
+            centroid, bbox = emitted
+        elif track is not None:
             from typehaus.model.placeable_symbols import place_local
             from typehaus.model.placeable_symbols._track_lighting import track_geometry
 
@@ -281,19 +296,6 @@ def _storey_name(prod: object) -> str:
     return ""
 
 
-def _bounds(
-    points: list[tuple[float, float]], z0: float, z1: float,
-) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
-    if not points:
-        return ((0.0, 0.0, (z0 + z1) / 2), (0.0, 0.0, z1 - z0))
-    # ``points`` is a list of 2-tuples by annotation and by every caller, so the transpose
-    # is square; strict= turns a stray 3-tuple into a loud error instead of a dropped axis.
-    xs, ys = zip(*points, strict=True)
-    minimum, maximum = (min(xs), min(ys), z0), (max(xs), max(ys), z1)
-    return (tuple((minimum[index] + maximum[index]) / 2 for index in range(3)),
-            tuple(maximum[index] - minimum[index] for index in range(3)))  # type: ignore[return-value]
-
-
 def _placeable_symbol_bounds(
     symbol: str,
     width_m: float,
@@ -304,28 +306,10 @@ def _placeable_symbol_bounds(
     base_z_m: float,
 ) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
     """Project the generated parts onto the same bounds the IFC tessellation carries."""
-    from typehaus.model.placeable_symbols import model_parts, place_local
+    from typehaus.model.placeable_symbols import model_parts
 
-    local_vertices: list[tuple[float, float, float]] = []
-    for part in model_parts(symbol, width_m, depth_m, height_m):
-        mesh = part.get("mesh")
-        if mesh is not None:
-            local_vertices.extend(mesh["positions"])
-            continue
-        center_x, center_y, center_z = part["center"]
-        size_x, size_y, size_z = part["size"]
-        local_vertices.extend(
-            (center_x + x * size_x / 2, center_y + y * size_y / 2,
-             center_z + z * size_z / 2)
-            for x, y, z in ((-1, -1, -1), (1, -1, -1), (1, 1, -1), (-1, 1, -1),
-                            (-1, -1, 1), (1, -1, 1), (1, 1, 1), (-1, 1, 1))
-        )
-    if not local_vertices:
-        return _bounds([], base_z_m, base_z_m)
-    world_xy = place_local([(x, y) for x, y, _z in local_vertices], position,
-                           rotation_degrees)
-    z_values = [base_z_m + z for _x, _y, z in local_vertices]
-    return _bounds(world_xy, min(z_values), max(z_values))
+    return _parts_bounds(model_parts(symbol, width_m, depth_m, height_m),
+                         position, rotation_degrees, base_z_m)
 
 
 def _opening_frame_bounds(wall: ResolvedWall, opening: object) -> list[tuple[float, float]]:

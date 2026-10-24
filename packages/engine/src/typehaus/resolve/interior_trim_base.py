@@ -33,6 +33,9 @@ _WELL_LEDGE_M = 4 * 0.0254
 # Float slop between a casing's face and the room ring it lands on: a nanometre, so the
 # shared face is found and the base still stops at the casing.
 _MEETS_M = 1e-9
+# A casing leg set off the face by a board-thickness change (1/2" over a 5/8" casing) still
+# meets the base. Wider than this is another wall's casing, not this face's.
+_CASING_STANDOFF_M = 0.25 * 0.0254
 # A band starting this close to the floor is "from the floor".
 _FROM_FLOOR_M = 0.01
 # A finished piece shorter than this is corner noise, not a board anyone would cut.
@@ -53,7 +56,7 @@ def resolve_base_runs(plan, model: ResolvedModel, scope: TrimScope) -> None:
 
 def _room_runs(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
                kind: str) -> list[ResolvedBaseRun]:
-    from shapely.geometry import Polygon
+    from shapely.geometry import LineString, Polygon
     from shapely.geometry.polygon import orient
 
     ring = _corners_only(list(orient(Polygon(room.clear_face), 1.0).exterior.coords)[:-1])
@@ -88,9 +91,16 @@ def _room_runs(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
         for a, b in rp.fronting_intervals(ring, [polygon], _AGAINST_M):
             breaks.append((a, b, tag))
     # A casing leg stands proud of the face at a door corner: the base butts its outer edge.
+    # Each side of the ring reaches the leg by that side's own standoff, so a leg set off one
+    # face by a board-thickness change still stops the base on that face.
+    sides = [LineString([ring[i], ring[(i + 1) % len(ring)]]) for i in range(len(ring))]
     for tag, polygon in _casing_footprints(model, room, floor_z, height):
-        for a, b in rp.fronting_intervals(ring, [polygon], _MEETS_M):
-            breaks.append((a, b, tag))
+        for side in sides:
+            standoff = side.distance(polygon)
+            if standoff > _CASING_STANDOFF_M:
+                continue
+            for a, b in rp.fronting_intervals(ring, [polygon], standoff + _MEETS_M):
+                breaks.append((a, b, tag))
     wood: list[tuple[float, float, float]] = []
     for band in model.panelings:
         if band.room != room.tag or band.band_z0_m > _FROM_FLOOR_M or not band.outline:

@@ -203,7 +203,7 @@ def test_mudroom_upper_closure_and_flat_caps_export_at_the_authored_height(catli
     settings = geom.settings()
     settings.set(settings.USE_WORLD_COORDS, True)
     targets = {
-        "W-M-STRW:gwb-mudroom-upper": (84, 108, "gwb"),
+        "W-M-STRW:gwb-mudroom-upper": (84, 108, "gwb-ar"),
         "W-M-STRW:paint-mudroom-upper": (84, 108, "latex-paint"),
         **{f"W-M-STRW/blocking-{course}-{index:03d}": (bottom, bottom + 1.5, "oak-8q")
            for course, bottom in ((0, 15), (1, 70.5), (2, 84)) for index in range(6)},

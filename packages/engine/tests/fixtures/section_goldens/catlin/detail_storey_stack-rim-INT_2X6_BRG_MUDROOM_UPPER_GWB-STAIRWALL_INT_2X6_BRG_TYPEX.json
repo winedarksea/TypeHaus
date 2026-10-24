@@ -169,7 +169,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb"
+      "material": "gwb-ar",
+      "fill": "#d3dbe3"
     },
     {
       "space": "model",
@@ -1198,7 +1199,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-569",
+      "content": "SHEET A-570",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -1410,7 +1411,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb"
+      "material": "gwb-ar",
+      "fill": "#d3dbe3"
     },
     {
       "space": "paper",
@@ -1447,7 +1449,7 @@
         0.7,
         1.058
       ],
-      "content": "gwb  0.625\"",
+      "content": "gwb-ar  0.625\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

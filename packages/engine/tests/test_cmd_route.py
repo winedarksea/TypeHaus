@@ -514,7 +514,7 @@ def test_a_port_rooted_trunk_proposal_starts_on_the_port(runner) -> None:
     # Each real cause, asserted AS TEXT: a refusal's wording is its contract, and one
     # sentence about a vent chase was false about all of them.
     ("PR-M-CW-PORCH-HYD", "no run of any system passes under its first vertex"),
-    ("PR-M-CW-COLDSTORE-STUB", "passes under its first vertex but 12.0\" above it"),
+    ("PR-M-CW-PLANT-STUB", "passes under its first vertex but 10.0\" above it"),
 ])
 def test_a_parentless_supply_run_refuses_naming_which_cause(runner, tag, fragment) -> None:
     result = runner.invoke(app, ["route", str(_CATLIN), "--run", tag])

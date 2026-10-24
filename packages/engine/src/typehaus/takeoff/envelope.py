@@ -294,7 +294,14 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         scope = solid.category
         net_m2 = max(0.0, abs(polygon_area(list(solid.outline)))
                      - sum(abs(polygon_area(list(void))) for void in solid.voids))
+        # A slab with its own ``ceiling_below`` bills that board once, as the sheet-goods
+        # ceiling row (``takeoff/sheet_goods.py``). Its FINISH layer here is the same board
+        # under the same slab, so it is skipped rather than billed a second time.
+        source = model.plan.by_tag(solid.tag)
+        ceiled = bool(getattr(source, "ceiling_below", None))
         for slab_layer in assembly.layers:
+            if ceiled and slab_layer.function is LayerFunction.FINISH:
+                continue
             if slab_layer.function in _BILLABLE:
                 areas[(scope, slab_layer.function.value, slab_layer.material_ref,
                        slab_layer.thickness.meters)] += net_m2

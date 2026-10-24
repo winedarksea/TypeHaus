@@ -121,7 +121,7 @@ MAIN_FIXTURES = (
     # No `drain_position`: the convention (under the bowl) is correct, and PR-B-WC2-DRAIN
     # follows the bowl to its new flange rather than the reverse.
     Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOTO-CARLYLE-II", room="RM-M-BATH2",
-            position=pt(ft(2, 6), inch(249.615)), rotation=deg(0), wall_ref="W-M-HS1"),
+            position=pt(ft(2, 6), inch(249.74)), rotation=deg(0), wall_ref="W-M-HS1"),
     # BATH2 has separate bathing fixtures: the 36" shower at the south end of the east
     # plumbing wall, the drop-in bath north of it. Intentionally separate instances/types
     # rather than a tub-shower combination, so the permit schedule and future owner
@@ -143,13 +143,13 @@ MAIN_FIXTURES = (
     # pan's east edge is x=7'-10 5/8" (94.615"), the wall's own PAINTED face, which is the
     # datum N-M-TUBDK-E already uses on this same wall four feet north and the reason for
     # the file's 0.01" rounding convention — struck on the gwb at 94.625" instead, the pan
-    # would sit 1/100" inside the finish. y is untouched, so the north face still shares
-    # W-M-TUBDK-S's line. The aisle to the vanity is 33 11/16".
+    # would sit 1/100" inside the finish. y moved 1/8" north with the 1/2" knee-wall board
+    # (2026-10-23), so the north face still shares W-M-TUBDK-S's line. The aisle to the vanity is 33 11/16".
     # Centre drain (Swanstone SS-3636) at x of the pan centre, but y 2 5/8" south of it: at
     # y=14'-8 3/8" the riser stands on joist 11's top flange (174 3/4"..177 1/4"). y=14'-11" is
     # the nearest bay point that clears the flange by 1/2" for a 2" pipe. PR-B-SH2-DRAIN.
     Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36-THERMO-COMBO", room="RM-M-BATH2",
-            position=pt(ft(6, 4.615), ft(14, 8.25)), rotation=deg(-90), wall_ref="W-M-BA2E",
+            position=pt(ft(6, 4.615), ft(14, 8.375)), rotation=deg(-90), wall_ref="W-M-BA2E",
             drain_position=pt(ft(6, 4.615), ft(14, 11))),
     # ** THE KOHLER K-1130-W1-0 UNDERSCORE, A DROP-IN (2026-10-22; K-5713-W1 before). ** No
     # skirt: it drops through SL-M-TUBDK onto a 1"-2" mortar bed on the subfloor, and the rim

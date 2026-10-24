@@ -39,6 +39,21 @@ from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.topology import _added_thicknesses
 
 
+def is_parts_furniture(furniture_type: Any) -> bool:
+    """Whether the emitter draws this furniture from its generated parts, not a prism."""
+    symbol = furniture_type.plan_symbol or ""
+    return symbol.startswith("sektion-") or symbol in {
+        "pivoting-paper-holder", "towel-bar", "towel-hook",
+        "pivoting-paper-holder-chrome", "towel-bar-chrome", "towel-hook-chrome"}
+
+
+def is_parts_fixture(model_symbol: str | None) -> bool:
+    """Whether the emitter draws this fixture from its generated parts, not a prism."""
+    return model_symbol in {
+        "kohler-underscore-6036", "kohler-underscore-6032", "roman-tub-filler",
+        "solid-surface-vanity", "swanstone-flex-3636"}
+
+
 def _full_height_layers(wall: ResolvedWall) -> tuple[ResolvedLayer, ...]:
     """The depth-bearing layers that run the whole wall — the ones a layer set may hold.
 
@@ -562,10 +577,7 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
                 representation = parts_representation(
                     f, body, [part.geometry for part in bench_parts(bench)],
                     resolved.position, resolved.rotation_degrees, resolved.z_m)
-            elif ((furniture_type.plan_symbol or "").startswith("sektion-")
-                  or furniture_type.plan_symbol in {
-                    "pivoting-paper-holder", "towel-bar", "towel-hook",
-                    "pivoting-paper-holder-chrome", "towel-bar-chrome", "towel-hook-chrome"}):
+            elif is_parts_furniture(furniture_type):
                 from typehaus.emit.ifc.placeable_parts import parts_representation
                 from typehaus.model.placeable_symbols import model_parts
 
@@ -686,9 +698,7 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
         element = ll.create_entity(f, ifc_class, name=item.tag)
         element.GlobalId = derive_guid(project_uuid, item.uid)
         model_symbol = model_symbol_for(product_type)
-        if model_symbol in {
-                "kohler-underscore-6036", "kohler-underscore-6032", "roman-tub-filler",
-                "solid-surface-vanity", "swanstone-flex-3636"}:
+        if is_parts_fixture(model_symbol):
             from typehaus.emit.ifc.placeable_parts import parts_representation
             from typehaus.model.placeable_symbols import model_parts
 

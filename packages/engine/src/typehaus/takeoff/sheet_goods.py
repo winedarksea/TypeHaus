@@ -166,13 +166,18 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         # out of each one's blanket billing, or the second subtraction credits back area
         # that deck never billed (catlin's RM-B-GYM is 234 SF of FS-M-EAST and 90 of
         # SL-M-DECK, not 324 of each).
-        for region in ceiling_regions(model.plan, room.storey, face, model.walls):
+        # The lining bills what it carved, not ``room.area_m2``: a strip of the room over a
+        # deck hole (catlin's RM-S-BATH1 over FO-A-ERV-BATH1) or past every deck has no
+        # ceiling to line, and billing it added area the blanket never gave up.
+        regions = ceiling_regions(model.plan, room.storey, face, model.walls)
+        for region in regions:
             for layer in _sheets(model, region.deck.ceiling_below):
                 areas[("ceiling", layer.material_ref, layer.thickness.meters,
                        layer_sheet_length_in(layer))] -= region.face.area
+        carved = sum(region.face.area for region in regions)
         for layer in _sheets(model, plan_room.ceiling_lining):
             areas[("ceiling", layer.material_ref, layer.thickness.meters,
-                   layer_sheet_length_in(layer))] += room.area_m2
+                   layer_sheet_length_in(layer))] += carved
 
     rows = [
         {"scope": scope, "material": material, "thickness_in": round(thickness / 0.0254, 3),

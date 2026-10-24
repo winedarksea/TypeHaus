@@ -121,7 +121,7 @@ def test_per_condition_overrides_curate_the_permit_sheet_set(catlin_model_ro,
     # with two `starred_conditions` named. The house eave and the garage eave are two
     # different drawings; an interior partition dying into the roof deck is not an eave at
     # all and is drawn on the framing plan.
-    interior = "wall_roof:INT_2X6_BRG|ROOF"
+    interior = "wall_roof:INT_2X4_PARTITION_HALF|ROOF"
     exterior = "wall_roof:EXT_2X6|ROOF"
     # Same transition, same pattern-wide star, opposite effective answers.
     assert rows[interior]["transition"] == rows[exterior]["transition"]
@@ -169,7 +169,7 @@ def test_stale_override_keys_are_reported(catlin_model_ro):
     said = messages(inert)
     assert len(said) == 1 and "does not match" in said[0]
     # A live, matching key is what an override is supposed to look like: silence.
-    live = "storey_stack:rim:INT_2X4_PARTITION|INT_2X4_STAGGERED_GWB"
+    live = "storey_stack:rim:INT_2X4_PARTITION_HALF|INT_2X4_RC_HALF"
     assert messages(_transition(unstarred_conditions=(live,))) == []
 
 
