@@ -98,8 +98,8 @@ ACCENT_GWB_LINING = (
 # so the wall bears exactly as it did. Two second-storey BEARING walls stack on this one.
 #
 # ** `alignment` IS NOT OPTIONAL, FOR THE SAME REASON INT_2X4_RC's IS NOT. ** Adding the
-# channel makes the stack ASYMMETRIC — 0.01 paint + 0.625 gwb + 0.5 channel + 5.5 stud +
-# 0.625 gwb + 0.01 paint = 7.27", against the plain wall's symmetric 6.77" — so a default
+# channel makes the stack ASYMMETRIC — 0.01 paint + 0.5 gwb + 0.5 channel + 5.5 stud +
+# 0.5 gwb + 0.01 paint = 7.02", against the plain wall's symmetric 6.52" — so a default
 # centred alignment would put the axis 0.25" off the stud centre and slide every stud on
 # this segment off the line. `face("stud-ext", offset=inch(-2.75))` is half the 2x6 stud,
 # putting the axis at the stud's own centre: the studs stay at x 213.250-218.750 and the
@@ -156,7 +156,7 @@ ACCENT_GWB_LINING = (
 # NOT a substitute for the retype: the staggered LAYOUT is what fails the check, not the
 # insulation.
 #
-# Total thickness is identical either way — 0.01 + 0.625 + 5.5 + 0.625 + 0.01 = 6.77" — so
+# Total thickness is identical either way — 0.01 + 0.5 + 5.5 + 0.5 + 0.01 = 6.52" — so
 # NO FACE MOVES, no room area changes, no fixture moves, and FX-S-BATH1-LAV's `wall_ref` is
 # untouched. `plan/fixtures.py`'s comment already described this wall AS INT_2X6_PLUMBING;
 # the swap makes that true rather than aspirational.

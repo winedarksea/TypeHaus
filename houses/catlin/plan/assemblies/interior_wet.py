@@ -232,7 +232,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
 # puts a jog in a line that is otherwise continuous. Same line, humid liner.
 # A VARIANT of INT_2X6_BRG (#70): the liner replaces the base's room-side leaf and the bay
 # gains mineral wool; the study face is the base's own painted gypsum (`gwb-b`+`paint-b`,
-# the same 5/8"+0.01" the hand-written `gwb-cold`+`paint-b` was).
+# 1/2"+0.01"; the hand-written `gwb-cold`+`paint-b` used 5/8"+0.01").
 PLANT_INT_2X6_BRG_HUMID = Assembly(
     tag="PLANT_INT_2X6_BRG_HUMID",
     variant_of="INT_2X6_BRG_HALF",

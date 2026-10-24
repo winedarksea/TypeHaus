@@ -99,8 +99,9 @@ SECOND_ELEMENTS = [
 # than the obvious one:
 #
 #   minx 10'-0"     the wall AXIS. This is a header edge where joists are cut, and every bearing cut
-#                   in the house is at an axis (resolve/floors.py). A 6.77" wall centred on x=10'
-#                   leaves the cut joist 3.4" of plate against `_MIN_BEARING_IN` = 1.5".
+#                   in the house is at an axis (resolve/floors.py). W-A-BA-E is 4.5" wide and
+#                   centred on x=10', leaving the cut joist 2.25" of plate against
+#                   `_MIN_BEARING_IN` = 1.5".
 #   maxx 18'-0"     the centreline axis; W-A-C2B stands on it and BM-S-HALL is under it.
 #   miny 22'-6 3/8" the NORTH FACE of W-A-HALL-S, not its 22'-4" axis. A trimmer edge follows the
 #                   finished face — FO-S-STAIR's own idiom — and on the axis the partition would
@@ -313,8 +314,8 @@ WALLS = [
     # 2x6 studs allow 3.30". It is also the assembly the wall it tees into now carries, which is
     # the simpler answer — one wet-wall type around the whole bar/bath corner.
     #
-    # ** THE FACES MOVE 1" EACH WAY. ** 4.75" of wall becomes 6.76", and the axis does not move,
-    # so both faces come in by ~1 1/64". The bar millwork backs the NORTH face and the studio
+    # ** THE FACES MOVE 1.01" EACH WAY. ** 4.5" of wall becomes 6.52", and the axis does not
+    # move, so both faces come in by 1.01". The bar millwork backs the NORTH face and the studio
     # sconce hangs on it; the bath side is the SOUTH face. Both were re-measured after the
     # retype and neither moved into anything (see the finding delta in the commit).
     Wall(uid="REREWJKFAZ", tag="W-A-BATH-S", start_node="N-A-WW-S", end_node="N-A-BW-E",

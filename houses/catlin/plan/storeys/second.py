@@ -249,7 +249,7 @@ WALLS = [
     # 2026-08-30 retype missed, because that pass walked the bedroom partitions and this is
     # a bearing wall. W-M-C1 downstairs is the precedent for the whole move, down to the
     # -2 3/4" alignment (half the 2x6, putting the axis back on the stud centre against the
-    # channel's asymmetric 7.27" stack).
+    # channel's asymmetric 7.02" stack).
     #
     # ** IT LEAVES NO STEP, WHICH IS WHY ONLY THIS SEGMENT MOVES. ** W-S-C2/C2B/C2C are
     # collinear on x=18'-0" and only the middle one changes, so the 1/2" has to go
@@ -331,39 +331,15 @@ WALLS = [
          alignment=face("stud-ext", offset=inch(-1.75))),
     # --- east bedroom block ------------------------------------------------------
     #
-    # ** THE FIVE SLEEPING-SIDE PARTITIONS ARE INT_2X4_RC. ** They were
-    # INT_2X4_PARTITION, then at STC 36 with a batt in it — a bedroom-to-bedroom wall you
-    # can hold a conversation through, and three corridor walls between the stair head and
-    # every bedroom door. (That preset is UNINSULATED and STC 34 since 2026-08-31, which
-    # only sharpens the argument for this retype: there is no batt left to fall back on.)
-    # INT_2X4_RC is the same 2x4 stud and the same 5/8" board with 1/2" resilient channel on
-    # ONE face: STC 48, twelve points, and 12 points is the difference between "audible" and
-    # "not a nuisance" on every published scale. W-S-BW4 joined them on the HP1 move (see
-    # its own block below) — geometry, not acoustics, is what forced it.
+    # W-S-BD1 and W-S-BD2 retain INT_2X4_RC: 5/8" gypsum on both faces, 1/2" channel on
+    # one face, 3.5" studs, and the tested STC 48 assembly. Their explicit stud-face
+    # alignment keeps the studs on the node line; centering the asymmetric 5.25" stack
+    # would put the axis 1/4" off the stud centre. `interior_room` selects the bedroom
+    # face for the channel, independent of node order.
     #
-    # Two things have to be authored or the retype moves the framing.
-    #
-    # `alignment` — the assembly is ASYMMETRIC (0.625 gwb + 0.5 channel + 3.5 stud +
-    # 0.625 gwb = 5.25", against the partition's symmetric 4.75"), so the default centred
-    # alignment would put the axis at 2.625" from the channel face and the studs 0.25" off
-    # the node line. `face("stud-ext", offset=inch(-1.75))` puts the axis 2.875" in — the
-    # stud layer's own centre — so every stud stands exactly where it stood before and every
-    # stacking, opening and interference verdict on this block is unchanged.
-    #
-    # `interior_room` — layer 0 is the resilient-channel face, and which side gets it is an
-    # acoustic decision the geometry cannot make. The corridor is the noise source for
-    # BW1/2/3 (stair head, three doors, one landing), so the channel faces the hall; between
-    # two bedrooms the channel goes on the lower-numbered one, arbitrarily but consistently.
-    # It is a Room reference rather than a flip so that swapping the nodes cannot silently
-    # invert it.
-    #
-    # What moves: the channel-side face, by 1/2". Room AREAS do not change at all —
-    # `resolve/rooms.py` polygonises from wall AXES and insets only by lining, so wall
-    # thickness never enters and R303.1 / R304 / egress are untouched. Four wall-mounted
-    # devices follow the face (plan/electrical.py). The rooms lose 1/2" of real width the
-    # model does not record.
-    # BW1-BW4 and W-S-SBS dropped their channel on 2026-10-23: each has an undercut door
-    # (the System 1 return path) that leaks more than RC saves. The stud stays on the line.
+    # W-S-BW1-BW4 and W-S-SBS use the plain 1/2"-board partition. Their channels were
+    # removed on 2026-10-23 because the undercut doors provide the System 1 return path,
+    # which leaks more sound than the channels would save.
     Wall(uid="CSW122AAAA", tag="W-S-BW1", start_node="N-S-B1", end_node="N-S-B2",
          assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
@@ -376,16 +352,9 @@ WALLS = [
          assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
-    # W-S-BW4 is RC too, and the reason is GEOMETRIC before it is acoustic. SF-S-HP1 now
-    # spans this wall and W-S-BW3 both: BW3 (RC, channel to the hall) puts the hall's east
-    # finished face at 21'-8 1/8", and BW4 as a plain partition put the closet's at
-    # 21'-8 5/8". A box drawn to both would jog 1/2" at y=30'-10", and `_rectangle` returns
-    # None on a non-rectangle — sending EVERY occupant of the box to UNKNOWN. The
-    # alternative, drawing to the wider face, leaves a 1/2" ledge.
-    # Channel on the RM-S-NCLOSET side is forced as well: FURN-S-BED3-WARD stands 0.113"
-    # off the BED3 face and has nowhere to go. Stated plainly: this NARROWS the closet by
-    # 1/2", to 40 3/4". The STC 34 -> 48 next to a bedroom now sharing a wall with the air
-    # handler is the bonus, not the argument.
+    # W-S-BW4 stays a plain half-board partition like W-S-BW3. Their matching thicknesses
+    # keep SF-S-HP1's east boundary rectangular at y=30'-10"; adding channel here would
+    # create a 1/2" step in the soffit's footprint.
     Wall(uid="CSW125AAAA", tag="W-S-BW4", start_node="N-S-B4", end_node="N-S-B5",
          assembly="INT_2X4_PARTITION_HALF", interior_room="RM-S-NCLOSET", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
@@ -417,44 +386,18 @@ WALLS = [
          layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     Wall(uid="CSW143AAAA", tag="W-S-CLN", start_node="N-S-D2", end_node="N-S-C2",
          assembly="INT_2X4_PARTITION_HALF", top=ft(9)),
-    # South wall — plain 2x4. Nothing actually backs onto this wall: the lav
-    # that used to point its `wall_ref` here for the depth allowance stands against W-S-SN3
-    # instead (10.5" north of its centreline, `plan/fixtures.py`'s `FX-S-SUITEBATH-LAV`), and
-    # the `wall_ref` moved there with it, so `advisory.wet_wall_depth` no longer reads this
-    # wall at all.
-    # ** INT_2X4_RC SINCE 2026-09-15, CHANNEL ON THE BATH FACE. ** RM-S-SUITE sleeps on one
-    # side of this and RM-S-SUITEBATH runs a shower and a WC on the other, and it was on the
-    # plain uninsulated preset at STC 34 — the upstairs twin of W-M-BDN1, and it was missed
-    # by the same 2026-08-30 pass.
-    #
-    # ** THE FACE IS NOT SELECTABLE HERE AND `interior_room` DOES NOT PICK IT. ** On this
-    # wall the alignment fixes which leaf the channel lands on; authoring `interior_room` as
-    # RM-S-SUITE and as RM-S-SUITEBATH resolves to the identical stack, with the channel on
-    # the north (bath) leaf both ways. It is written as RM-S-SUITEBATH so the source agrees
-    # with the geometry instead of stating an intent the model does not honour. Acoustically
-    # nothing is lost — decoupling one leaf works whichever leaf it is (see W-S-SS2's note
-    # above) — and the bath is the noise source, so this is the leaf one would pick anyway.
-    #
-    # The 1/2" therefore comes out of RM-S-SUITEBATH, not the sleeping room, and exactly ONE
-    # thing follows it: ED-S-SUITEBATH-SW (plan/mep_electrical.py). ED-S-SUITE-RC1 and
-    # ED-S-SUITE-RC8 sit on the suite face, which does not move. Both ends are tees —
-    # W-S-DC2 at x=9'-7 1/2", W-S-C2B at x=18'-0" — so nothing steps in the open.
+    # South wall — plain 2x4. Nothing actually backs onto this wall: the lav that used to
+    # point its `wall_ref` here for the depth allowance stands against W-S-SN3 instead
+    # (10.5" north of its centreline, `plan/fixtures.py`'s `FX-S-SUITEBATH-LAV`), so
+    # `advisory.wet_wall_depth` no longer reads this wall.
     Wall(uid="CSW144AAAA", tag="W-S-SBS", start_node="N-S-D3", end_node="N-S-C2B",
          assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), interior_room="RM-S-SUITEBATH", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
-    # The suite's north wall: RM-S-SUITE (sleeping) on one face, the vanity alcove and the
-    # suite bath on the other. Both runs are the library's staggered-stud partition (2x4
-    # studs alternating on 2x6 plates, 3.5" fiberglass) rather than the house's default
-    # single-stud INT_2X4_PARTITION, because a wall whose far face carries a vanity and a
-    # bath is the one the sleeper hears through — the staggered studs decouple the two
-    # faces even without a second gypsum layer (`library/assemblies/`, no STC claimed,
-    # a comparable single-layer build lists around STC 48 against the partition's 34).
-    # Single 5/8" gypsum each face since 2026-08-30 (was two): the double layer only buys
-    # a few more points over the staggered studs' own decoupling, at a gypsum-heavy cost
-    # (`prices.toml`), so it was the more expensive half of the assembly to cut, not the
-    # fiberglass. It is 6.75" wide against the partition's 4.75", which the suite and the
-    # vanity split.
+    # The suite's north wall: RM-S-SUITE (sleeping) on one face, the vanity alcove and suite
+    # bath on the other. Both runs use the 6.5" staggered-stud assembly with 3.5" fiberglass
+    # and 1/2" gypsum each face. W-S-SN1 retains Type X on both faces (the tested STC 45
+    # build); W-S-SN2 changes one face to regular board, so that rating does not transfer.
     Wall(uid="CSW145AAAA", tag="W-S-SN1", start_node="N-S-W2", end_node="N-S-V1",
          assembly="INT_2X4_STAGGERED_X_HALF", top=ft(9)),
     Wall(uid="CSW146AAAA", tag="W-S-SN2", start_node="N-S-V1", end_node="N-S-D4",
@@ -476,18 +419,18 @@ WALLS = [
     # for "hung on a trimmer" — `Beam.bearing_refs` only resolves Wall/Beam tags — so this
     # is a framing call recorded here in prose, not something a check can verify either way.)
     #
-    # Back to INT_2X6_STAGGERED_PLUMBING accordingly — the original ask, and valid again now
+    # Back to INT_2X6_STAGGERED_PLUMBING_HALF accordingly — the original ask, and valid again now
     # that nothing requires continuous studs: `FX-S-SUITEBATH-WC` and `FX-S-SUITEBATH-LAV`
     # both back onto this wall and `PR-S-SUITEBATH-VENT` takes off on it
     # (`plan/fixtures.py`, `plan/mep_venting.py`), so this is the suite bath's real wet wall,
     # not W-S-SBS across the room — and SBS gave up its own staggered assembly in the same
     # pass, because nothing was ever against it.
     #
-    # ** THE WALL IS 2.02" THICKER THAN THE PARTITION IT REPLACED (4.75" -> 6.77"), SO BOTH
-    # FACES MOVED 1.000" AND EIGHT THINGS HAD TO FOLLOW. ** South (bath) face 265.625" ->
-    # 264.625": FX-S-SUITEBATH-LAV, ED-S-SUITEBATH-RC1, ED-S-SUITEBATH-MIRROR. North (hall)
-    # face 270.375" -> 271.375": ED-S-LANDING-SW, ED-S-STAIR-SW. Only the vanity is caught by
-    # a test; the four devices were found by
+    # ** THE 6.52" WALL IS 2.02" THICKER THAN THE 4.5" PARTITION. ** With the axis fixed at
+    # y=22'-4", its finished faces are at 264.74" (bath) and 271.26" (hall). Those are
+    # 0.125" inward from the formerly documented 6.77" faces; check attached fixtures and
+    # devices against this current geometry. Only the vanity is caught by a test. The four
+    # devices were found by
     # `test_wall_mounted_devices_resolve_against_a_wall_face`, which grades the resolved body
     # against the wall solid, and a fixture other than a vanity is graded by nothing at all —
     # which is how FX-S-SUITEBATH-WC turned out to have been standing 1.92" off this wall
@@ -511,7 +454,7 @@ WALLS = [
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     # Retyped and declared BEARING on 2026-08-29 with the two x=10' segments below: it
     # carries BM-S-BATH-E's north end at N-S-BA1. Same swap, same reason, same price —
-    # plan/assemblies.py's INT_2X6_BRG_PLUMBING has the whole argument.
+    # the library's INT_2X6_BRG_PLUMBING_HALF has the whole argument.
     Wall(uid="CSW149AAAA", tag="W-S-BD-N1B", start_node="N-S-V2", end_node="N-S-BA1",
          assembly="INT_2X6_BRG_PLUMBING_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
@@ -530,7 +473,7 @@ WALLS = [
     #
     # The assembly changed with the role, and that is not decoration —
     # `structural.wet_wall_bearing` FAILs any BEARING wall framed with staggered studs.
-    # INT_2X6_BRG_PLUMBING is the same 6.77" total, so no face moves, no room area
+    # INT_2X6_BRG_PLUMBING_HALF is the same 6.52" total, so no face moves, no room area
     # changes, and FX-S-BATH1-LAV's `wall_ref` is untouched. Read that assembly's own note.
     #
     # `stacks_on="W-M-STRW"` is MANDATORY, not decorative: `resolve/stacking.py` walks each
@@ -540,7 +483,7 @@ WALLS = [
     # `integrity.stack_ambiguous` raises as a hard ERROR without a tiebreaker. W-M-STRW
     # is already BEARING, already a bearing ref of FO-S-STAIR, and already
     # `stacks_on="W-B-STR"`, so the path runs footings -> W-B-STR -> W-M-STRW -> here ->
-    # attic joists, unbroken and already built. Its `alignment=face(...)` on a 6.75"
+    # attic joists, unbroken and already built. Its `alignment=face(...)` on a 6.52"
     # assembly puts its axis on x=10'-0" exactly, inside `_axis_match`'s 1/2" tolerance.
     # ** ONLY ONE UPPER SEGMENT MAY CLAIM IT ** — the resolver links one upper wall per
     # lower wall (resolve/stacking.py) — so W-S-BA-E1B takes it and W-S-BA-E carries NO
@@ -1583,7 +1526,7 @@ STAIRS = [
 ]
 
 PANELING = [
-    # White painted headboard band over intact 5/8" gypsum on the staggered sound wall.
+    # White painted headboard band over intact 1/2" gypsum on the staggered sound wall.
     # Restrict to the two north runs; room-only scope would panel all eight suite walls.
     # The 1/4" MDF continues behind the existing base, building it out flush with the
     # 3/4" poplar battens. The top of the 1x4 rail is 6'-0" AFF; no projecting cap.

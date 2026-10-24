@@ -608,8 +608,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   storey and in both materials.
 - **Second storey has a fourth bearing line, x=10'-0".** `W-S-BA-E`, `W-S-BA-E1B`,
   `W-S-BD-N1B` carry `FO-A-HALL`'s attic joist cut ends: `structural_role=BEARING` and
-  `INT_2X6_BRG_PLUMBING` (continuous studs, not staggered — `structural.wet_wall_bearing`
-  FAILs a staggered BEARING wall). Thickness unchanged (6.77"): no face/area moved,
+  `INT_2X6_BRG_PLUMBING_HALF` (continuous studs, not staggered — `structural.wet_wall_bearing`
+  FAILs a staggered BEARING wall). Thickness unchanged (6.52"): no face/area moved,
   `FX-S-BATH1-LAV.wall_ref` untouched.
   - `stacks_on` is MANDATORY: `W-M-STRW` has two collinear upper candidates (`W-S-BA-E`,
     `W-S-BA-E1B`) and `integrity.stack_ambiguous` is a hard ERROR without one. Only

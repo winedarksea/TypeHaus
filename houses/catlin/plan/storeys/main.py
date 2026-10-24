@@ -219,8 +219,9 @@ NODES = [
     # thing the line still has to do is clear the shower pan — and it does that at ONE
     # station, +2" east of where it always sat, with no jog wall, no second assembly and no
     # step in either room's face. What the 2" buys is the tub deck: N-M-TUBDK-E and
-    # SL-M-TUBDK follow this wall's west face, and RM-M-BATH2 pays RM-M-LAUNDRY back through
-    # W-M-LS (below) rather than taking it all out of the laundry.
+    # SL-M-TUBDK still use the former west-face datum; the half-board wall is now 1/8" east.
+    # RM-M-BATH2 pays RM-M-LAUNDRY back through W-M-LS (below) rather than taking it all out
+    # of the laundry.
     Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8, 2), ft(22, 4))),
     # The closet/laundry line moved north 8" (y 17'-4" -> 18'-0"), taking
     # W-M-CLN/CLN2 with it. Costs 8" each off RM-M-LAUNDRY and RM-M-STUDY; bounded by
@@ -273,9 +274,9 @@ NODES = [
     # ** BOTH FREE ENDS ARE `open_end=True` AND THEY HAVE TO BE. ** `integrity.wall_loop_open`
     # is an ERROR on any node with exactly one wall edge, and these two genuinely die into a
     # finished wall face rather than tee into another wall. The positions ARE those faces —
-    # y=22'-0 5/8" is W-M-HS1's room side after its retype, x=7'-10 5/8" is W-M-BA2E's new
-    # west face (moved +2" east 2026-09-09 with the jog realignment) — so the knee walls
-    # butt them with no gap to caulk.
+    # y=22'-0 5/8" is W-M-HS1's room side after its retype; x=7'-10 5/8" was W-M-BA2E's west
+    # face after the 2026-09-09 jog realignment. The half-board wall is now 1/8" east of the
+    # tub-deck endpoint.
     #
     # The consequence to know about: an unclosed component has no recoverable winding, so
     # `resolve/orientation.py` falls back to `outward_sign = +1` for both of these walls.
@@ -545,7 +546,7 @@ WALLS = [
     # `interior_room` is what puts the channel on the bedroom side — layer 0 is the
     # channel face, and naming the Room (rather than relying on node order) is what stops a
     # later node swap silently building the channel into the living room. `alignment` holds
-    # the studs on x=216.000" against the assembly's new 7.27" asymmetry; without it the
+    # the studs on x=216.000" against the assembly's new 7.02" asymmetry; without it the
     # axis slides 1/4" and W-S-C1's `stacks_on` is inside `_axis_match`'s tolerance of
     # dropping. Both are explained in full at the assembly (plan/assemblies.py).
     Wall(uid="CMW112AAAA", tag="W-M-C1", start_node="N-M-S1", end_node="N-M-C1",
@@ -709,8 +710,8 @@ WALLS = [
     # room a shower valve, a spout and a shower arm actually land on (BK-M-BA2E2 has always
     # called it a wet wall). It is back on N-M-D2 and back on the plumbing assembly: the two
     # segments are ONE wall on the drawing and one 5 1/2" staggered cavity on the job, split
-    # only because W-M-CLN tees in at N-M-D2. The 6.75" assembly puts its bath face at
-    # x=7'-10 5/8", which is what FX-M-BATH2-SH's pan is struck off.
+    # only because W-M-CLN tees in at N-M-D2. Its current 6.52" thickness puts the west
+    # face at x=94.74"; FX-M-BATH2-SH's pan east edge remains at x=94.615", leaving 1/8".
     Wall(uid="CMW127AAAA", tag="W-M-BA2E2", start_node="N-M-D2",
          end_node="N-M-D3", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
          layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
@@ -2206,8 +2207,8 @@ PANELING = [
     #   * W-M-BA2E2 runs south from N-M-D2 (y=18'-0"), so the pan's north edge is
     #     18'-0" - 16'-2 1/4" = 1'-9 3/4" along it.
     #   * W-M-BDN1 runs east from N-M-W3 (x=0), so 4'-10 5/8" along it, ending on
-    #     x = 7'-10 5/8" — which IS W-M-BA2E2's bath face, so the two spans meet in the
-    #     pan's corner with nothing between them.
+    #     x = 7'-10 5/8"; W-M-BA2E2's current west face is x=94.74", leaving 1/8" between
+    #     the pan and wall rather than the former flush corner.
     # D-M-BATH2 now sits at 2'-0 5/8"..4'-6 5/8" on W-M-BDN1 — flush against the vanity,
     # clear of this span by 3 15/16" of wall.
     #

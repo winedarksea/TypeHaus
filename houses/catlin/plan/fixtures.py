@@ -140,11 +140,11 @@ MAIN_FIXTURES = (
     # ** -5 3/8" WEST, 2026-09-09, AND THE WALL IS WHY. ** W-M-BA2E2 was flush (0" clearance)
     # against this pan's east edge, so taking that wall off its jog and back onto W-M-BA2E's
     # line — one plane, one plumbing assembly (storeys/main.py) — took the pan with it. The
-    # pan's east edge is x=7'-10 5/8" (94.615"), the wall's own PAINTED face, which is the
-    # datum N-M-TUBDK-E already uses on this same wall four feet north and the reason for
-    # the file's 0.01" rounding convention — struck on the gwb at 94.625" instead, the pan
-    # would sit 1/100" inside the finish. The owner moved the knee wall and pan 1/8"
-    # south (2026-10-23), closing the south jamb gap while keeping the 36" pan and
+    # pan's east edge is x=94.615" (7'-10 5/8" nominal). This matched the wall's painted
+    # west face at the former 6.77" thickness; the current 6.52" wall face is x=94.74", so
+    # the pan and N-M-TUBDK-E now stop 1/8" short. At the old face, striking the pan to the
+    # gwb at 94.625" put it 1/100" inside the finish. The owner moved the knee wall and pan
+    # 1/8" south (2026-10-23), closing the south jamb gap while keeping the 36" pan and
     # north shared line. The aisle to the vanity is 33 11/16".
     # Centre drain (Swanstone SS-3636) at x of the pan centre, but y 2 3/4" north of it: at
     # y=14'-8 1/4" the riser stands on joist 11's top flange (174 3/4"..177 1/4"). y=14'-11" is
@@ -296,7 +296,8 @@ MAIN_FIXTURES = (
 #
 # Tub-shower stays centre-north (crosses x=5', the SL-D-SHOWER detail slice line). WC
 # backs west onto exterior 2x6 W-S-W1 (rotation 90), its REQUIRED clearance zone stopping
-# 3 1/2" south of the tub-shower. Lav backs east onto W-S-BA-E1B (INT_2X6_PLUMBING). All three
+# 3 1/2" south of the tub-shower. Lav backs east onto W-S-BA-E1B
+# (INT_2X6_BRG_PLUMBING_HALF). All three
 # footprints are pairwise disjoint with 9"+ clearance between any two.
 #
 # ALCOVE CHECK. FX-TUBSHOWER-60 is a 60"x30" flanged insert, which is exactly the standard
@@ -367,14 +368,15 @@ SECOND_FIXTURES = (
     # `wall_ref` is W-S-SN3 — the wall this vanity backs onto is also the WET wall it
     # drains into, so the split convention the attic suite still uses (`wall_ref` names the
     # drain wall, not the physical back) does not apply here: W-S-SN3 is
-    # INT_2X6_STAGGERED_PLUMBING for exactly this fixture (`plan/storeys/second.py`), so the
+    # INT_2X6_STAGGERED_PLUMBING_HALF for exactly this fixture
+    # (`plan/storeys/second.py`), so the
     # two agree.
     #
-    # ** THE BACK IS AT y=264.63", NOT 265.63". ** SN3 is a 6.77" wet wall whose south face
-    # sits 1.000" INTO this room from a plain 4 3/4" partition's line, so every fixture and
-    # device on that face — this cabinet, ED-S-SUITEBATH-RC1, ED-S-SUITEBATH-MIRROR — follows
-    # it by exactly 1.000". `test_each_vanity_backs_its_walls_finish_face_not_the_rooms_
-    # clear_face` is what catches this one; nothing catches the other two.
+    # ** THE AUTHORED BACK IS AT y=264.625" (264.63"). ** With SN3 now 6.52" thick, its
+    # south face is y=264.74", 0.115" north of this cabinet datum. The older 6.77" wall face
+    # was at y=264.615"; its move also changes the fit of devices on that face. The vanity
+    # test checks the cabinet against the wall finish; the electrical devices have a
+    # separate wall-face check.
     #
     # NEC 210.52(D)'s receptacle is `ED-S-SUITEBATH-RC1` (plan/electrical.py) at x=148",
     # 2 1/2" west of the cabinet's outside edge and far inside the 36" limit.
