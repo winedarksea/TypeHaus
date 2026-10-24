@@ -5,7 +5,6 @@ from __future__ import annotations
 import math
 
 from shapely.geometry import LineString, Point, Polygon
-from shapely.ops import unary_union
 
 from typehaus.findings import Finding, element_error
 from typehaus.quantities import inch
@@ -16,6 +15,7 @@ from typehaus.resolve.model import (
     SoffitFinishPanel,
     SoffitWallContact,
 )
+from typehaus.resolve.overlay import union_all
 
 SOFFIT_LINING_THICKNESS = inch(0.625)
 CONTACT_TOLERANCE_M = 1e-6
@@ -49,7 +49,7 @@ def fit_soffit_outline(model: ResolvedModel, element) -> list[tuple[float, float
 
 
 def wall_footprint(wall) -> Polygon:
-    return unary_union([Polygon(layer.polygon) for layer in wall.body_layers()
+    return union_all([Polygon(layer.polygon) for layer in wall.body_layers()
                         if len(layer.polygon) >= 3])
 
 
@@ -62,7 +62,7 @@ def resolve_soffit_contacts(model: ResolvedModel) -> None:
             edge = LineString((start, end))
             for wall in model.walls:
                 if (wall.storey != soffit.storey or wall.z0_m > soffit.z0_m
-                        or wall.z1_m < soffit.z0_m + SOFFIT_LINING_THICKNESS.meters):
+                        or wall.z1_m < soffit.z1_m - SOFFIT_LINING_THICKNESS.meters):
                     continue
                 intersection = edge.intersection(wall_footprint(wall).buffer(
                     CONTACT_TOLERANCE_M, join_style=2))
@@ -71,7 +71,15 @@ def resolve_soffit_contacts(model: ResolvedModel) -> None:
                     if piece.geom_type != "LineString" or piece.length <= 4 * CONTACT_TOLERANCE_M:
                         continue
                     stations = [edge.project(Point(point)) for point in piece.coords]
-                    contacts.append(SoffitWallContact(index, min(stations), max(stations),
+                    # Undo the roundoff buffer along the run, so adjacent walls do not
+                    # manufacture micrometre-long ledger pieces at a shared endpoint.
+                    start_station = min(stations) + CONTACT_TOLERANCE_M
+                    end_station = max(stations) - CONTACT_TOLERANCE_M
+                    if start_station <= 2 * CONTACT_TOLERANCE_M:
+                        start_station = 0.0
+                    if edge.length - end_station <= 2 * CONTACT_TOLERANCE_M:
+                        end_station = edge.length
+                    contacts.append(SoffitWallContact(index, start_station, end_station,
                                                       wall.tag))
         soffit.wall_contacts = tuple(contacts)
 

@@ -1424,6 +1424,174 @@
         ],
         [
           260.125,
+          205.75000000000003
+        ],
+        [
+          219.375,
+          205.75000000000003
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "6DAADXAD7P",
+      "tag": "SF-S-HP1"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          259.5,
+          205.75000000000003
+        ],
+        [
+          260.125,
+          205.75000000000003
+        ],
+        [
+          260.125,
+          207.25
+        ],
+        [
+          259.5,
+          207.25
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "6DAADXAD7P",
+      "tag": "SF-S-HP1"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          259.5,
+          207.25
+        ],
+        [
+          260.125,
+          207.25
+        ],
+        [
+          260.125,
+          214.0
+        ],
+        [
+          259.5,
+          214.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "6DAADXAD7P",
+      "tag": "SF-S-HP1"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          259.5,
+          214.0
+        ],
+        [
+          260.125,
+          214.0
+        ],
+        [
+          260.125,
+          228.12500000000003
+        ],
+        [
+          259.5,
+          228.12500000000003
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "6DAADXAD7P",
+      "tag": "SF-S-HP1"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          219.375,
+          205.75000000000003
+        ],
+        [
+          220.0,
+          205.75000000000003
+        ],
+        [
+          220.0,
+          207.25
+        ],
+        [
+          219.375,
+          207.25
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "6DAADXAD7P",
+      "tag": "SF-S-HP1"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          219.375,
+          207.25
+        ],
+        [
+          220.0,
+          207.25
+        ],
+        [
+          220.0,
+          214.0
+        ],
+        [
+          219.375,
+          214.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "6DAADXAD7P",
+      "tag": "SF-S-HP1"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          219.375,
+          214.0
+        ],
+        [
+          220.0,
+          214.0
+        ],
+        [
+          220.0,
           228.12500000000003
         ],
         [
@@ -1437,34 +1605,6 @@
       "closed": true,
       "uid": "6DAADXAD7P",
       "tag": "SF-S-HP1"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          219.375,
-          205.12500000000003
-        ],
-        [
-          260.125,
-          205.12500000000003
-        ],
-        [
-          260.125,
-          228.12500000000003
-        ],
-        [
-          219.375,
-          228.12500000000003
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
     },
     {
       "space": "model",

@@ -18,6 +18,7 @@ from typehaus.model.placeable_symbols._curtain_rod import curtain_rod
 from typehaus.model.placeable_symbols._desk import drawer_desk
 from typehaus.model.placeable_symbols._families import (
                                                         Builder,
+                                                        Geometry,
                                                         bed,
                                                         besta,
                                                         case,
@@ -104,6 +105,12 @@ CABINET_SHADE = "cabinet-cream-dark"
 # SEKTION offers doors up to 24" wide, so cabinets through that width keep one door.
 CABINET_SINGLE_DOOR_MAX_WIDTH_M = inch(24).meters
 
+
+def solid_surface_access_leaf(width: float, depth: float, height: float) -> Geometry:
+    """Draw and model the flush solid-surface access panel at its declared footprint."""
+    return ((rect(0, 0, width, depth, fill="solid-surface-white"),),
+            (box(0, 0, 0, height, width, depth, "solid-surface-white"),))
+
 FURNITURE_SYMBOLS: dict[str, Builder] = {
     "pivoting-paper-holder": pivoting_paper_holder,
     "towel-bar": towel_bar,
@@ -114,8 +121,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "footrest": footrest,
     "curtain-rod": curtain_rod,
     "cellular-blind": cellular_blind,
-    "solid-surface-access-leaf": lambda w, d, h: (
-        (), (box(0, 0, 0, h, w, d, "solid-surface-white"),)),
+    "solid-surface-access-leaf": solid_surface_access_leaf,
     # Seating. Seat count is what separates a sofa from a loveseat from an armchair.
     "sofa": seating(arms=True, seats=3),
     "loveseat": seating(arms=True, seats=2),

@@ -118,6 +118,9 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
                 f, body, list(prism.ring), prism.z1_m - prism.z0_m, prism.z0_m,
                 prism.voids)
             items.extend(panel_representation.Items)
+            # The final soffit body owns these solids. Leaving each helper representation
+            # behind creates orphaned IfcShapeRepresentation entities that fail EXPRESS.
+            f.remove(panel_representation)
         representation = (f.createIfcShapeRepresentation(body, "Body", "SweptSolid", items)
                           if items else None)
     if representation is not None:

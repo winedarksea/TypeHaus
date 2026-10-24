@@ -6,10 +6,10 @@ import math
 from dataclasses import replace
 
 from shapely.geometry import LineString, Point, Polygon
-from shapely.ops import unary_union
 
 from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.tables import member_actual
+from typehaus.resolve.overlay import difference, union_all
 from typehaus.resolve.soffits import (
     CONTACT_TOLERANCE_M,
     SOFFIT_LINING_THICKNESS,
@@ -113,16 +113,27 @@ def coordinate_soffit_support(model, soffit, members):
             result.append(member)
             continue
         footprint = Polygon(member_footprint(member)[0])
-        blocked = unary_union(obstacles)
+        blocked = union_all(obstacles)
         if footprint.intersection(blocked).area < CONTACT_TOLERANCE_M ** 2:
             result.append(member)
             continue
         if math.dist(member.p0, member.p1) <= CONTACT_TOLERANCE_M:
             continue
         line = LineString((member.p0, member.p1))
-        # Buffer only by roundoff here: transverse clipping uses the footprint test above;
-        # expanding a supporting wall by half the stock would erase its adjacent ledger.
-        remaining = line.difference(blocked.buffer(CONTACT_TOLERANCE_M, join_style=2))
+        # Project the actual footprint overlap onto the stock's axis. A centreline-only
+        # clip misses walls touching just the side of a member; projecting cuts the whole
+        # stock clear without inventing an ungraded notch in its cross-section.
+        overlap = footprint.intersection(blocked)
+        polygons = ([overlap] if overlap.geom_type == "Polygon"
+                    else [part for part in getattr(overlap, "geoms", ())
+                          if part.geom_type == "Polygon"])
+        intervals = []
+        for polygon in polygons:
+            stations = [line.project(Point(point)) for point in polygon.exterior.coords]
+            low, high = min(stations), max(stations)
+            if high - low > CONTACT_TOLERANCE_M:
+                intervals.append(LineString((line.interpolate(low), line.interpolate(high))))
+        remaining = difference(line, union_all(intervals))
         for index, piece in enumerate(_pieces(remaining)):
             p0, p1 = tuple(piece.coords[0]), tuple(piece.coords[-1])
             if line.project(Point(p1)) < line.project(Point(p0)):

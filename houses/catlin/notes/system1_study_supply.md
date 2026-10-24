@@ -1,7 +1,9 @@
 # Second-storey study: soffit sidewall supply
 
 Owner-approved 2026-10-04. `REG-S-HP-STUDY2` stays at 75 cfm but moves to
-SF-S-DUCT's east face, x=21'-5 1/2", y=3'-7 1/2", throwing east across the study.
+SF-S-DUCT's east face, now x=21'-8 3/4", y=3'-7 1/2", throwing east across the study.
+The 2026-10-23 wall-width revision moved the face and extended its boot by 3 1/4"; airflow
+and mounting heights are unchanged.
 Its 8x6 face runs from 94 5/8" to 100 5/8" AFF, centred on the soffit leg's
 99 1/8" centreline above the storey datum (97 5/8" AFF). The finished floor
 is 1 1/2" above that datum; wall mounts are measured from the finished floor.
@@ -34,4 +36,4 @@ DU-S-HP-SOUTH-RISE carries 250 cfm before this take-off and 175 cfm after it.
 DU-S-HP-SOUTH now carries 175 cfm to the attic desk (100) and plant room (75),
 and ends east at its x=19'-6" riser station. Its length is 7'-6", down from
 10'-8" after the attic register relocation. The new sidewall boot adds
-2'-0" of 6" round duct; the removed 3'-2" was 10x6 rectangular duct.
+2'-3 1/4" of 6" round duct; the removed 3'-2" was 10x6 rectangular duct.

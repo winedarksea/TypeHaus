@@ -207,7 +207,7 @@ def test_soffit_members_reach_the_shared_member_set() -> None:
 
 
 # ---------------------------------------------------------------- the real house
-def test_catlin_duct_soffit_frames_and_clears_the_two_trunks(catlin_model) -> None:
+def test_catlin_duct_soffit_frames_and_clears_the_two_trunks(catlin_model_ro) -> None:
     """SF-S-DUCT, resolved from the catlin plan, actually fits the ducts it exists for.
 
     The synthetic case above is this soffit in miniature and deliberately *fails* the
@@ -217,7 +217,7 @@ def test_catlin_duct_soffit_frames_and_clears_the_two_trunks(catlin_model) -> No
     to wall-backed ledgers. Assert the built span and attachment records rather than a
     stale authored width.
     """
-    soffit = next(s for s in catlin_model.soffits if s.tag == "SF-S-DUCT")
+    soffit = next(s for s in catlin_model_ro.soffits if s.tag == "SF-S-DUCT")
     assert soffit.framing is not None and soffit.framing.member == "2x2"
 
     # It resolves real ladder framing, not an empty box.
@@ -422,3 +422,27 @@ def test_missing_width_wall_reports_a_resolve_error() -> None:
     model, findings = resolve(plan.with_elements("main", elements))
     assert not model.soffits
     assert any(finding.check_id == "integrity.soffit_width" for finding in findings)
+
+
+def test_wall_clipping_clears_the_stock_width_even_when_the_axis_misses() -> None:
+    from dataclasses import replace
+
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+    from typehaus.resolve.framing.soffit_support import coordinate_soffit_support
+
+    model, _ = _framed()
+    host = model.soffits[0]
+    rail = next(member for member in host.members if member.child_key == "soffit-plate-bottom-w")
+    # This wall overlaps the rail's outer half, while its plan axis remains unobstructed.
+    x = rail.p0[0] - inch(0.25).meters
+    obstruction = [(x - inch(5.5).meters, ft(5).meters), (x, ft(5).meters),
+                   (x, ft(7).meters), (x - inch(5.5).meters, ft(7).meters)]
+    wall = model.walls[3]
+    model.walls = [replace(wall, layers=tuple(
+        replace(layer, polygon=obstruction) for layer in wall.layers))]
+    pieces = coordinate_soffit_support(model, host, [rail])
+    assert len(pieces) == 2
+    assert all(Polygon(member_footprint(piece)[0]).intersection(
+        Polygon(obstruction)).area < 1e-9 for piece in pieces)

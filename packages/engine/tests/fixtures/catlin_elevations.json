@@ -4647,11 +4647,275 @@
 2,
 "d23d62963b26"
 ],
-"geometry/6DAADXAD7P/body": [
-5.210175,
+"geometry/6DAADXAD7P/return-0-0-0": [
+5.22605,
+5.26415,
+2,
+"a47636a56d8b"
+],
+"geometry/6DAADXAD7P/return-0-1-0": [
+5.26415,
+5.4356,
+2,
+"5d7403cd18cd"
+],
+"geometry/6DAADXAD7P/return-1-0-0": [
+5.22605,
+5.26415,
+2,
+"a47636a56d8b"
+],
+"geometry/6DAADXAD7P/return-1-0-1": [
+5.22605,
+5.26415,
+2,
+"a47636a56d8b"
+],
+"geometry/6DAADXAD7P/return-1-1-0": [
+5.26415,
+5.4356,
+2,
+"5d7403cd18cd"
+],
+"geometry/6DAADXAD7P/return-1-2-0": [
+5.4356,
 5.794375,
 2,
-"2b348e087e54"
+"8d83051d20b5"
+],
+"geometry/6DAADXAD7P/return-2-0-0": [
+5.22605,
+5.26415,
+2,
+"a47636a56d8b"
+],
+"geometry/6DAADXAD7P/return-2-1-0": [
+5.26415,
+5.4356,
+2,
+"5d7403cd18cd"
+],
+"geometry/6DAADXAD7P/return-2-2-0": [
+5.4356,
+5.794375,
+2,
+"8d83051d20b5"
+],
+"geometry/6DAADXAD7P/return-3-0-0": [
+5.22605,
+5.26415,
+2,
+"a47636a56d8b"
+],
+"geometry/6DAADXAD7P/return-3-0-1": [
+5.22605,
+5.26415,
+2,
+"a47636a56d8b"
+],
+"geometry/6DAADXAD7P/return-3-1-0": [
+5.26415,
+5.4356,
+2,
+"5d7403cd18cd"
+],
+"geometry/6DAADXAD7P/return-3-2-0": [
+5.4356,
+5.794375,
+2,
+"8d83051d20b5"
+],
+"geometry/6DAADXAD7P/underside-0": [
+5.210175,
+5.22605,
+2,
+"5f2e8abf93ed"
+],
+"geometry/6DAADXAD7P/underside-1": [
+5.210175,
+5.22605,
+2,
+"5f2e8abf93ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-end-n": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-end-s": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-header-AO-S-HP1-AP-hi": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-header-AO-S-HP1-AP-lo": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-plate-bottom-e-cut-000": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-plate-bottom-e-cut-001": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-plate-bottom-w-cut-000": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-plate-bottom-w-cut-001": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-plate-top-e": [
+5.756275,
+5.794375,
+8,
+"d9c4a8757612"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-plate-top-w": [
+5.756275,
+5.794375,
+8,
+"d9c4a8757612"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-rung-001": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-rung-002": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-rung-003": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-rung-004a": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-rung-004b": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-rung-005": [
+5.22605,
+5.26415,
+8,
+"828c619762ed"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-000-e": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-000-w": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-001-e": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-001-w": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-002-e": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-002-w": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-003-e": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-003-w": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-004-e": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-004-w": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-005-e": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-005-w": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-006-e": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
+],
+"geometry/6DAADXAD7P::framing/member:soffit-stud-006-w": [
+5.26415,
+5.756275,
+8,
+"031f278c2ea6"
 ],
 "geometry/6KE3VP3HY1-FB0/body": [
 0.0,
@@ -15321,11 +15585,131 @@
 16,
 "fc6be1875817"
 ],
-"geometry/CEWX9GPQMQ/body": [
--0.581025,
+"geometry/CEWX9GPQMQ/return-0-0-0": [
+-0.56515,
 -0.301625,
 2,
-"aa1a4a9ffe42"
+"cb9d922afe27"
+],
+"geometry/CEWX9GPQMQ/return-1-0-0": [
+-0.56515,
+-0.301625,
+2,
+"cb9d922afe27"
+],
+"geometry/CEWX9GPQMQ/return-2-0-0": [
+-0.56515,
+-0.301625,
+2,
+"cb9d922afe27"
+],
+"geometry/CEWX9GPQMQ/return-3-0-0": [
+-0.56515,
+-0.301625,
+2,
+"cb9d922afe27"
+],
+"geometry/CEWX9GPQMQ/underside-0": [
+-0.581025,
+-0.56515,
+2,
+"c9b40601ad7a"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-end-e": [
+-0.56515,
+-0.52705,
+8,
+"2ca773388d34"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-end-w": [
+-0.56515,
+-0.52705,
+8,
+"2ca773388d34"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-plate-bottom-n": [
+-0.56515,
+-0.52705,
+8,
+"2ca773388d34"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-plate-bottom-s": [
+-0.56515,
+-0.52705,
+8,
+"2ca773388d34"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-plate-top-n": [
+-0.339725,
+-0.301625,
+8,
+"67bb0d4ceaa3"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-plate-top-s": [
+-0.339725,
+-0.301625,
+8,
+"67bb0d4ceaa3"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-rung-001": [
+-0.56515,
+-0.52705,
+8,
+"2ca773388d34"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-rung-002": [
+-0.56515,
+-0.52705,
+8,
+"2ca773388d34"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-stud-000-n": [
+-0.52705,
+-0.339725,
+8,
+"30d5d1ffc584"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-stud-000-s": [
+-0.52705,
+-0.339725,
+8,
+"30d5d1ffc584"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-stud-001-n": [
+-0.52705,
+-0.339725,
+8,
+"30d5d1ffc584"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-stud-001-s": [
+-0.52705,
+-0.339725,
+8,
+"30d5d1ffc584"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-stud-002-n": [
+-0.52705,
+-0.339725,
+8,
+"30d5d1ffc584"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-stud-002-s": [
+-0.52705,
+-0.339725,
+8,
+"30d5d1ffc584"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-stud-003-n": [
+-0.52705,
+-0.339725,
+8,
+"30d5d1ffc584"
+],
+"geometry/CEWX9GPQMQ::framing/member:soffit-stud-003-s": [
+-0.52705,
+-0.339725,
+8,
+"30d5d1ffc584"
 ],
 "geometry/CF001AAAAA/body": [
 -2.9829125,
@@ -22244,6 +22628,12 @@
 0.4699,
 2,
 "ba57f84e23d1"
+],
+"geometry/CMQ806AAAA-W-M-TUBDK-W-batt-7-0-0/body": [
+0.06985,
+0.254,
+2,
+"ed7d23ea5160"
 ],
 "geometry/CMQ806AAAA-lower-return-0/body": [
 0.01905,
@@ -34263,11 +34653,299 @@
 192,
 "1d0e8795afa1"
 ],
-"geometry/CSF601AAAA/body": [
-5.4356,
+"geometry/CSF601AAAA/return-0-0-0": [
+5.451475,
+5.7912,
+2,
+"a24f1542f5f0"
+],
+"geometry/CSF601AAAA/return-0-1-0": [
+5.7912,
 5.794375,
 2,
-"8d83051d20b5"
+"3fb38a278edf"
+],
+"geometry/CSF601AAAA/return-1-0-0": [
+5.451475,
+5.7912,
+2,
+"a24f1542f5f0"
+],
+"geometry/CSF601AAAA/return-1-1-0": [
+5.7912,
+5.794375,
+2,
+"3fb38a278edf"
+],
+"geometry/CSF601AAAA/return-3-0-0": [
+5.451475,
+5.7912,
+2,
+"a24f1542f5f0"
+],
+"geometry/CSF601AAAA/return-3-1-0": [
+5.7912,
+5.794375,
+2,
+"3fb38a278edf"
+],
+"geometry/CSF601AAAA/underside-0": [
+5.4356,
+5.451475,
+2,
+"148010a3370a"
+],
+"geometry/CSF601AAAA/underside-1": [
+5.4356,
+5.451475,
+2,
+"148010a3370a"
+],
+"geometry/CSF601AAAA::framing/member:soffit-end-n": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-end-s": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-e-000": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-e-003": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-e-005": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-e-006": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-w-000": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-w-003": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-w-005": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-w-006": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-w-007": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-top-e-000": [
+5.756275,
+5.794375,
+8,
+"d9c4a8757612"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-top-w-007": [
+5.756275,
+5.794375,
+8,
+"d9c4a8757612"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-001": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-002": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-003": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-004": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-005": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-006": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-007": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-008": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-009": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-010": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-011": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-012": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-013": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-014": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-015": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-016": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-017": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-rung-018": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-stud-000-e": [
+5.489575,
+5.756275,
+8,
+"82cf094910da"
+],
+"geometry/CSF601AAAA::framing/member:soffit-stud-001-e": [
+5.489575,
+5.756275,
+8,
+"82cf094910da"
+],
+"geometry/CSF601AAAA::framing/member:soffit-stud-002-e": [
+5.489575,
+5.756275,
+8,
+"82cf094910da"
+],
+"geometry/CSF601AAAA::framing/member:soffit-stud-003-e": [
+5.489575,
+5.756275,
+8,
+"82cf094910da"
+],
+"geometry/CSF601AAAA::framing/member:soffit-stud-004-e": [
+5.489575,
+5.756275,
+8,
+"82cf094910da"
+],
+"geometry/CSF601AAAA::framing/member:soffit-stud-015-w": [
+5.489575,
+5.756275,
+8,
+"82cf094910da"
+],
+"geometry/CSF601AAAA::framing/member:soffit-stud-016-w": [
+5.489575,
+5.756275,
+8,
+"82cf094910da"
+],
+"geometry/CSF601AAAA::framing/member:soffit-stud-017-w": [
+5.489575,
+5.756275,
+8,
+"82cf094910da"
+],
+"geometry/CSF601AAAA::framing/member:soffit-stud-018-w": [
+5.489575,
+5.756275,
+8,
+"82cf094910da"
+],
+"geometry/CSF601AAAA::framing/member:soffit-stud-019-w": [
+5.489575,
+5.756275,
+8,
+"82cf094910da"
 ],
 "geometry/CSF602AAAA-LN0E/body": [
 2.7305,
@@ -60110,7 +60788,7 @@
 "light_runs/LR-M-KIT-N-WE3/z_m": 1.8542,
 "light_runs/LR-M-LIVING-E/z_m": 2.7432,
 "light_runs/LR-M-LIVING-W/z_m": 2.7432,
-"light_runs/LR-S-HALL-GAP/z_m": 5.7912,
+"light_runs/LR-S-HALL-GAP/z_m": 5.4483,
 "member/03GPR9ZAA5/W-A-N2B-closure-0-cladding": [
 8.001,
 9.2390847,
@@ -61426,16 +62104,16 @@
 "be59298b6de7"
 ],
 "member/6DAADXAD7P/soffit-end-n": [
+5.22605,
 5.26415,
-5.7404,
 2,
-"0815019dd714"
+"a47636a56d8b"
 ],
 "member/6DAADXAD7P/soffit-end-s": [
+5.22605,
 5.26415,
-5.7404,
 2,
-"0815019dd714"
+"a47636a56d8b"
 ],
 "member/6DAADXAD7P/soffit-header-AO-S-HP1-AP-hi": [
 5.22605,
@@ -61449,29 +62127,41 @@
 2,
 "a47636a56d8b"
 ],
-"member/6DAADXAD7P/soffit-plate-bottom-e": [
+"member/6DAADXAD7P/soffit-plate-bottom-e-cut-000": [
 5.22605,
 5.26415,
 2,
 "a47636a56d8b"
 ],
-"member/6DAADXAD7P/soffit-plate-bottom-w": [
+"member/6DAADXAD7P/soffit-plate-bottom-e-cut-001": [
+5.22605,
+5.26415,
+2,
+"a47636a56d8b"
+],
+"member/6DAADXAD7P/soffit-plate-bottom-w-cut-000": [
+5.22605,
+5.26415,
+2,
+"a47636a56d8b"
+],
+"member/6DAADXAD7P/soffit-plate-bottom-w-cut-001": [
 5.22605,
 5.26415,
 2,
 "a47636a56d8b"
 ],
 "member/6DAADXAD7P/soffit-plate-top-e": [
-5.7404,
-5.7785,
+5.756275,
+5.794375,
 2,
-"438ca5ac67ae"
+"167a37f3d5e1"
 ],
 "member/6DAADXAD7P/soffit-plate-top-w": [
-5.7404,
-5.7785,
+5.756275,
+5.794375,
 2,
-"438ca5ac67ae"
+"167a37f3d5e1"
 ],
 "member/6DAADXAD7P/soffit-rung-001": [
 5.22605,
@@ -61511,87 +62201,87 @@
 ],
 "member/6DAADXAD7P/soffit-stud-000-e": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-000-w": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-001-e": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-001-w": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-002-e": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-002-w": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-003-e": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-003-w": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-004-e": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-004-w": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-005-e": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-005-w": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-006-e": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/6DAADXAD7P/soffit-stud-006-w": [
 5.26415,
-5.7404,
+5.756275,
 2,
-"0815019dd714"
+"b8783d6bf1df"
 ],
 "member/78VGE6A81J/plate-bottom": [
 6.096,
@@ -67456,16 +68146,16 @@
 "acb389d9be3e"
 ],
 "member/CEWX9GPQMQ/soffit-end-e": [
+-0.56515,
 -0.52705,
--0.3556,
 2,
-"ca632a195932"
+"7667746f9b66"
 ],
 "member/CEWX9GPQMQ/soffit-end-w": [
+-0.56515,
 -0.52705,
--0.3556,
 2,
-"ca632a195932"
+"7667746f9b66"
 ],
 "member/CEWX9GPQMQ/soffit-plate-bottom-n": [
 -0.56515,
@@ -67480,16 +68170,16 @@
 "7667746f9b66"
 ],
 "member/CEWX9GPQMQ/soffit-plate-top-n": [
--0.3556,
--0.3175,
+-0.339725,
+-0.301625,
 2,
-"451fe48b55ad"
+"f0de00c704df"
 ],
 "member/CEWX9GPQMQ/soffit-plate-top-s": [
--0.3556,
--0.3175,
+-0.339725,
+-0.301625,
 2,
-"451fe48b55ad"
+"f0de00c704df"
 ],
 "member/CEWX9GPQMQ/soffit-rung-001": [
 -0.56515,
@@ -67505,51 +68195,51 @@
 ],
 "member/CEWX9GPQMQ/soffit-stud-000-n": [
 -0.52705,
--0.3556,
+-0.339725,
 2,
-"ca632a195932"
+"3e5e9dfeca1d"
 ],
 "member/CEWX9GPQMQ/soffit-stud-000-s": [
 -0.52705,
--0.3556,
+-0.339725,
 2,
-"ca632a195932"
+"3e5e9dfeca1d"
 ],
 "member/CEWX9GPQMQ/soffit-stud-001-n": [
 -0.52705,
--0.3556,
+-0.339725,
 2,
-"ca632a195932"
+"3e5e9dfeca1d"
 ],
 "member/CEWX9GPQMQ/soffit-stud-001-s": [
 -0.52705,
--0.3556,
+-0.339725,
 2,
-"ca632a195932"
+"3e5e9dfeca1d"
 ],
 "member/CEWX9GPQMQ/soffit-stud-002-n": [
 -0.52705,
--0.3556,
+-0.339725,
 2,
-"ca632a195932"
+"3e5e9dfeca1d"
 ],
 "member/CEWX9GPQMQ/soffit-stud-002-s": [
 -0.52705,
--0.3556,
+-0.339725,
 2,
-"ca632a195932"
+"3e5e9dfeca1d"
 ],
 "member/CEWX9GPQMQ/soffit-stud-003-n": [
 -0.52705,
--0.3556,
+-0.339725,
 2,
-"ca632a195932"
+"3e5e9dfeca1d"
 ],
 "member/CEWX9GPQMQ/soffit-stud-003-s": [
 -0.52705,
--0.3556,
+-0.339725,
 2,
-"ca632a195932"
+"3e5e9dfeca1d"
 ],
 "member/CGRF01AAAA/eave-hi-drip-edge-face": [
 2.2648333,
@@ -77830,40 +78520,82 @@
 "acb389d9be3e"
 ],
 "member/CSF601AAAA/soffit-end-n": [
+5.451475,
 5.489575,
-5.7404,
 2,
-"ba854dd4564e"
+"1c64b3fe4977"
 ],
 "member/CSF601AAAA/soffit-end-s": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-plate-bottom-e": [
 5.451475,
 5.489575,
 2,
 "1c64b3fe4977"
 ],
-"member/CSF601AAAA/soffit-plate-bottom-w": [
+"member/CSF601AAAA/soffit-plate-bottom-e-000": [
 5.451475,
 5.489575,
 2,
 "1c64b3fe4977"
 ],
-"member/CSF601AAAA/soffit-plate-top-e": [
-5.7404,
-5.7785,
+"member/CSF601AAAA/soffit-plate-bottom-e-003": [
+5.451475,
+5.489575,
 2,
-"438ca5ac67ae"
+"1c64b3fe4977"
 ],
-"member/CSF601AAAA/soffit-plate-top-w": [
-5.7404,
-5.7785,
+"member/CSF601AAAA/soffit-plate-bottom-e-005": [
+5.451475,
+5.489575,
 2,
-"438ca5ac67ae"
+"1c64b3fe4977"
+],
+"member/CSF601AAAA/soffit-plate-bottom-e-006": [
+5.451475,
+5.489575,
+2,
+"1c64b3fe4977"
+],
+"member/CSF601AAAA/soffit-plate-bottom-w-000": [
+5.451475,
+5.489575,
+2,
+"1c64b3fe4977"
+],
+"member/CSF601AAAA/soffit-plate-bottom-w-003": [
+5.451475,
+5.489575,
+2,
+"1c64b3fe4977"
+],
+"member/CSF601AAAA/soffit-plate-bottom-w-005": [
+5.451475,
+5.489575,
+2,
+"1c64b3fe4977"
+],
+"member/CSF601AAAA/soffit-plate-bottom-w-006": [
+5.451475,
+5.489575,
+2,
+"1c64b3fe4977"
+],
+"member/CSF601AAAA/soffit-plate-bottom-w-007": [
+5.451475,
+5.489575,
+2,
+"1c64b3fe4977"
+],
+"member/CSF601AAAA/soffit-plate-top-e-000": [
+5.756275,
+5.794375,
+2,
+"167a37f3d5e1"
+],
+"member/CSF601AAAA/soffit-plate-top-w-007": [
+5.756275,
+5.794375,
+2,
+"167a37f3d5e1"
 ],
 "member/CSF601AAAA/soffit-rung-001": [
 5.451475,
@@ -77975,243 +78707,63 @@
 ],
 "member/CSF601AAAA/soffit-stud-000-e": [
 5.489575,
-5.7404,
+5.756275,
 2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-000-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
+"b1883d40a2ee"
 ],
 "member/CSF601AAAA/soffit-stud-001-e": [
 5.489575,
-5.7404,
+5.756275,
 2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-001-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
+"b1883d40a2ee"
 ],
 "member/CSF601AAAA/soffit-stud-002-e": [
 5.489575,
-5.7404,
+5.756275,
 2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-002-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
+"b1883d40a2ee"
 ],
 "member/CSF601AAAA/soffit-stud-003-e": [
 5.489575,
-5.7404,
+5.756275,
 2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-003-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
+"b1883d40a2ee"
 ],
 "member/CSF601AAAA/soffit-stud-004-e": [
 5.489575,
-5.7404,
+5.756275,
 2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-004-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-005-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-005-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-006-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-006-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-007-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-007-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-008-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-008-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-009-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-009-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-010-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-010-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-011-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-011-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-012-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-012-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-013-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-013-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-014-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-014-w": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-015-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
+"b1883d40a2ee"
 ],
 "member/CSF601AAAA/soffit-stud-015-w": [
 5.489575,
-5.7404,
+5.756275,
 2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-016-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
+"b1883d40a2ee"
 ],
 "member/CSF601AAAA/soffit-stud-016-w": [
 5.489575,
-5.7404,
+5.756275,
 2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-017-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
+"b1883d40a2ee"
 ],
 "member/CSF601AAAA/soffit-stud-017-w": [
 5.489575,
-5.7404,
+5.756275,
 2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-018-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
+"b1883d40a2ee"
 ],
 "member/CSF601AAAA/soffit-stud-018-w": [
 5.489575,
-5.7404,
+5.756275,
 2,
-"ba854dd4564e"
-],
-"member/CSF601AAAA/soffit-stud-019-e": [
-5.489575,
-5.7404,
-2,
-"ba854dd4564e"
+"b1883d40a2ee"
 ],
 "member/CSF601AAAA/soffit-stud-019-w": [
 5.489575,
-5.7404,
+5.756275,
 2,
-"ba854dd4564e"
+"b1883d40a2ee"
 ],
 "member/CSF603AAAA/bearing-block-0-000": [
 2.746375,
@@ -95175,6 +95727,8 @@
 "solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-5-0-0/z1_m": 0.06985,
 "solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-6-0-0/z0_m": 0.254,
 "solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-6-0-0/z1_m": 0.4699,
+"solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-7-0-0/z0_m": 0.06985,
+"solids/FX-M-BATH2-TUB:W-M-TUBDK-W-batt-7-0-0/z1_m": 0.254,
 "solids/FX-M-BATH2-TUB:lower-return-0/z0_m": 0.01905,
 "solids/FX-M-BATH2-TUB:lower-return-0/z1_m": 0.10795,
 "solids/FX-M-BATH2-TUB:lower-return-1/z0_m": 0.01905,

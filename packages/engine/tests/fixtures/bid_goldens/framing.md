@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 6513a57d79f70266  
+**Model hash:** 5ad01a74ec93a0a8  
 **Lines:** 177
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -44,9 +44,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 40 | LF ordered | 7 pcs, 24.2 LF cut | building |
 | 2x12 — blocking, joist (2x12:kdat) | 424 | LF ordered | 46 pcs, 387.6 LF cut | building |
 | 2x12 SPF framing lumber — blocking (2x12:spf) | 16 | LF ordered | 4 pcs, 10.8 LF cut | building |
-| 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.9 LF cut | building |
-| 2x3 — corner stud, plate, stud (2x3) | 48 | LF ordered | 12 pcs, 27.9 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,718 | LF ordered | 643 pcs, 3992.8 LF cut | building |
+| 2x2 — blocking, plate, stud (2x2) | 260 | LF ordered | 77 pcs, 209.2 LF cut | building |
+| 2x3 — corner stud, plate, stud (2x3) | 48 | LF ordered | 12 pcs, 28.0 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,726 | LF ordered | 645 pcs, 3998.9 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | 2,894 | LF ordered | 484 pcs, 2472.9 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 56.0 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,028 | LF ordered | 1157 pcs, 6078.2 LF cut | building |

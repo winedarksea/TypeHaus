@@ -329,6 +329,7 @@ the future.
 - PR-B-HW-BATH2-RUN looks like it is going to the wrong spot on the vanity, it is out in the open.
 - Door thresholds could probably use some better modeling, right now all we get is standard sill plates of the regular wall.
 - Sink FX-M-BATH1-LAV has a sink that was made smaller to improve accessibility. Now, however, it seems a bit too small now, and could use a selected product and better 3d model.
+- Improve the wainscot of the mudrooms
 
 # Project Management
 

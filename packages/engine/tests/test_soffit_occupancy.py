@@ -42,17 +42,17 @@ def _section(model, tag):
 
 # --- the four hand-computed numbers, re-derived ------------------------------------------
 
-def test_sf_s_duct_derives_clearance_from_the_wall_width(catlin_model) -> None:
+def test_sf_s_duct_derives_clearance_from_the_wall_width(catlin_model_ro) -> None:
     """The conservative section retains allowances for both exposed ladder returns."""
-    soffit, section = _section(catlin_model, "SF-S-DUCT")
+    soffit, section = _section(catlin_model_ro, "SF-S-DUCT")
     width = max(x for x, _ in soffit.outline) - min(x for x, _ in soffit.outline)
     assert section.width_m / M_PER_IN == pytest.approx(width / M_PER_IN - 4.25)
     assert section.width_m / M_PER_IN == pytest.approx(37.24)
 
 
-def test_open_top_recovers_the_fictional_top_board_allowance(catlin_model) -> None:
+def test_open_top_recovers_the_fictional_top_board_allowance(catlin_model_ro) -> None:
     """Only the bottom board and rung consume height in the middle of the cavity."""
-    _, section = _section(catlin_model, "SF-S-DUCT")
+    _, section = _section(catlin_model_ro, "SF-S-DUCT")
     assert section.drop_m / M_PER_IN == pytest.approx(12.0, abs=1e-6)
     assert section.drop_m > 8 * M_PER_IN
 

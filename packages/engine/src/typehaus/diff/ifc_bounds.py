@@ -31,7 +31,7 @@ def _emitted_parts_bounds(model: ResolvedModel, item, hosted_countertops, base_z
             and is_parts_furniture(furniture)):
         # Hosted countertops drop their counter-coloured parts (emit/ifc/architectural).
         parts = [part for part in model_parts(
-            furniture.plan_symbol, *(d.meters for d in furniture.footprint),
+            model_symbol_for(furniture), *(d.meters for d in furniture.footprint),
             furniture.height.meters)
             if item.tag not in hosted_countertops or part.get("color") != "counter"]
         return _parts_bounds(parts, item.position, item.rotation_degrees, base_z_m)

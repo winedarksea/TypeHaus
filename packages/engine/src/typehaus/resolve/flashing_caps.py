@@ -42,20 +42,39 @@ def clipped_sheet(a, b, run, thickness, obstacles, clearance=0.0, *, normal_hint
         normal = tuple(-value for value in normal)
     cuts = []
     for mesh in obstacles:
-        points = [(_dot(_sub(p, a), u), _dot(_sub(p, a), v)) for p in mesh.positions
-                  if -_EPS <= _dot(_sub(p, a), normal) <= thickness + _EPS]
+        # Each vertex participates in the face clipping below as well as the initial
+        # containment check. Project once so large connector meshes do not repeat the same
+        # three dot products for every incident triangle.
+        projected = []
+        for vertex in mesh.positions:
+            delta = _sub(vertex, a)
+            projected.append((_dot(delta, u), _dot(delta, v), _dot(delta, normal)))
+        points = [(s, t) for s, t, distance in projected
+                  if -_EPS <= distance <= thickness + _EPS]
         # The finite sheet occupies the interval [0, thickness] normal to its plane.
         for offset in (0.0, thickness):
             for triangle in mesh.triangles:
-                ring = [mesh.positions[i] for i in triangle]
-                for p, q in zip(ring, (*ring[1:], ring[0]), strict=True):
-                    dp, dq = _dot(_sub(p, a), normal) - offset, _dot(_sub(q, a), normal) - offset
+                indices = list(triangle)
+                ring = [projected[i] for i in indices]
+                next_indices = (*indices[1:], indices[0])
+                for index_p, index_q, p, q in zip(
+                    indices, next_indices, ring, (*ring[1:], ring[0]), strict=True
+                ):
+                    dp, dq = p[2] - offset, q[2] - offset
                     if abs(dp) < _EPS:
-                        points.append((_dot(_sub(p, a), u), _dot(_sub(p, a), v)))
+                        points.append((p[0], p[1]))
                     if dp * dq < 0:
                         t = dp / (dp - dq)
-                        point = tuple(p[i] + t * (q[i] - p[i]) for i in range(3))
-                        points.append((_dot(_sub(point, a), u), _dot(_sub(point, a), v)))
+                        # Keep the original 3D interpolation and projection order here.
+                        # Shapely's hull can distinguish sub-ulp changes at a cut edge,
+                        # which needlessly changes the emitted mesh's triangulation.
+                        start, end = mesh.positions[index_p], mesh.positions[index_q]
+                        intersection = tuple(
+                            start[axis] + t * (end[axis] - start[axis])
+                            for axis in range(3)
+                        )
+                        delta = _sub(intersection, a)
+                        points.append((_dot(delta, u), _dot(delta, v)))
         if points:
             # Convex hull is conservative for punched hardware: never fill a fastener hole
             # with cap metal and imply the cap can be installed through the connector.

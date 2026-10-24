@@ -181,3 +181,17 @@ def test_an_unframed_soffit_gets_no_finding_at_all() -> None:
     findings = [f for f in run_from_model(model, [], tier=Tier.STRUCTURAL, only=_CHECK_ID).findings
                 if f.check_id == _CHECK_ID]
     assert [f.result for f in findings] == [Result.NOT_APPLICABLE]
+
+
+def test_wider_end_tie_stock_stays_inside_the_box():
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+
+    model, _findings = resolve(_plan(FramingSpec(member="2x4", plate_member="2x2")))
+    host = model.soffits[0]
+    envelope = Polygon(host.outline)
+    for member in host.members:
+        if member.child_key.startswith("soffit-end-"):
+            assert envelope.covers(Polygon(member_footprint(member)[0]))
+            assert member.z1_m - member.z0_m == pytest.approx(inch(1.5).meters)

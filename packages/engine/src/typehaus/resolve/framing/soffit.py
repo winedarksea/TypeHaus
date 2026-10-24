@@ -192,7 +192,7 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
     spec = soffit.framing
     rail_profile, rung_profile = _ladder_stock(spec)
     thickness, depth = _stock_actual_m(rail_profile)
-    rung_thickness, _rung_depth = _stock_actual_m(rung_profile)
+    rung_thickness, rung_depth = _stock_actual_m(rung_profile)
     spacing_q = getattr(spec, "spacing", None) or DEFAULT_SPACING
     spacing = spacing_q.meters
 
@@ -309,7 +309,8 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
             ))
 
     # --- end ties: underside support without a full-height cap across the ducts ---
-    for end_key, station in zip(end_keys, end_stations, strict=True):
+    end_tie_stations = (rung_depth / 2.0, run_length - rung_depth / 2.0)
+    for end_key, station in zip(end_keys, end_tie_stations, strict=True):
         members.append(FramedMember(
             soffit.uid, f"soffit-end-{end_key}", "blocking", rung_profile,
             point(station, span_low), point(station, span_high),
