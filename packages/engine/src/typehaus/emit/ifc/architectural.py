@@ -41,9 +41,11 @@ from typehaus.resolve.topology import _added_thicknesses
 
 def is_parts_furniture(furniture_type: Any) -> bool:
     """Whether the emitter draws this furniture from its generated parts, not a prism."""
-    symbol = furniture_type.plan_symbol or ""
+    from typehaus.model.canvas import model_symbol_for
+
+    symbol = model_symbol_for(furniture_type) or ""
     return symbol.startswith("sektion-") or symbol in {
-        "pivoting-paper-holder", "towel-bar", "towel-hook",
+        "solid-surface-access-leaf", "pivoting-paper-holder", "towel-bar", "towel-hook",
         "pivoting-paper-holder-chrome", "towel-bar-chrome", "towel-hook-chrome"}
 
 
@@ -553,6 +555,7 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
         type_object.GlobalId = derive_child_guid(project_uuid, "furniture-types", tag)
         ll.ensure_pset(f, type_object, "TypeHaus_Identity", _type_identity(furniture_type))
         ifc_types[tag] = type_object
+    from typehaus.model.canvas import model_symbol_for
     from typehaus.resolve.geometry_countertops import slab_hosts
 
     hosted_countertops = slab_hosts(model)
@@ -583,8 +586,11 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
 
                 representation = parts_representation(
                     f, body, (part for part in model_parts(
-                        furniture_type.plan_symbol, *(d.meters for d in furniture_type.footprint),
-                        furniture_type.height.meters)
+                        model_symbol_for(furniture_type),
+                        *(d.meters for d in furniture_type.footprint),
+                        furniture_type.height.meters,
+                        material_refs=furniture_type.model_representation.material_refs
+                        if furniture_type.model_representation else None)
                         if furniture.tag not in hosted_countertops or part["color"] != "counter"),
                     resolved.position, resolved.rotation_degrees, resolved.z_m)
             elif bookcase is None:

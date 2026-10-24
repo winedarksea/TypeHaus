@@ -26,6 +26,7 @@ class TubEnclosureSpec(HausModel):
     support_depth: Length = inch(25.625)
     shell_clearance: Length = inch(0.125)
     service_side_clearance: Length = inch(0)
+    access_panel_reveal: Length = inch(0.125)
 
     @model_validator(mode="after")
     def _positive_dimensions(self):
@@ -33,7 +34,8 @@ class TubEnclosureSpec(HausModel):
                      "mortar_bed_thickness", "support_width", "support_depth"):
             if getattr(self, name).meters <= 0:
                 raise ValueError(f"{name} must be positive")
-        if self.shell_clearance.meters < 0 or self.service_side_clearance.meters < 0:
+        if any(getattr(self, name).meters < 0 for name in (
+                "shell_clearance", "service_side_clearance", "access_panel_reveal")):
             raise ValueError("Enclosure clearances cannot be negative")
         if not self.access_panel_refs or len(set(self.access_panel_refs)) != len(
                 self.access_panel_refs):

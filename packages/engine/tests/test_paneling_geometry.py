@@ -85,10 +85,14 @@ def test_the_drawn_band_agrees_with_the_billed_area(bands, catlin_model):
 
 
 def test_the_drawn_pieces_are_the_billed_area(bands):
-    """``pieces`` is the band net of its openings: face area summed equals ``area_m2``."""
+    """Drawn material plus removable-leaf stock/kerf equals the ordered face area."""
     for band in (b for b in bands if b.outline):
         drawn = sum(max(_edges(ring)) * (z1 - z0) for ring, z0, z1 in band.pieces)
-        assert drawn == pytest.approx(band.area_m2, abs=1e-6), \
+        # The two Corian leaves come from this sheet; their cutouts are not stock savings.
+        leaf_stock = ((20.25 * 15.25 + 14.25 * 14.25) * _IN**2
+                      if (band.tag, band.wall_tag) ==
+                      ("WP-M-BATH2-TUBDK-APRON", "W-M-TUBDK-W") else 0.0)
+        assert drawn + leaf_stock == pytest.approx(band.area_m2, abs=1e-6), \
             f"{band.tag} on {band.wall_tag}: drawn pieces disagree with the billed area"
 
 

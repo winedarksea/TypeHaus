@@ -332,7 +332,6 @@ the future.
 - There is an LTP4 connector CN~LTP4~W-M-C1~48 in the middle of door D-M-BED2? Looks like the LTP4 auto generator doesn't consider doors.
 - Door thresholds could probably use some better modeling, right now all we get is standard sill plates of the regular wall.
 - Sink FX-M-BATH1-LAV has a sink that was made smaller to improve accessibility. Now, however, it seems a bit too small now, and could use a selected product and better 3d model.
-- Double check the design of the two access panels in the corian tub enclosure FURN-M-BATH2-TUBDK
 
 # Project Management
 

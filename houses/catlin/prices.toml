@@ -2913,7 +2913,12 @@
 # truss chords over its intake grille and lands the circuit. ESTIMATE; confirm the model.
 "EQ-T-INLINE-FAN-4" = { material = { low = 130, high = 260 }, labour = { low = 150, high = 350 } }  # 1 ea
 "EQ-T-WATER-HEATER" = { material = { low = 1900, high = 3000 }, labour = { low = 550, high = 1300 } }  # 1 ea
-"FT-ACCESS-PANEL-1414" = { material = { low = 35, high = 90 }, labour = { low = 45, high = 110 } }  # 2 ea
+"FT-ACCESS-PANEL-1414" = { material = { low = 35, high = 90 }, labour = { low = 45, high = 110 } }  # 1 ea, standard metal panel
+# Bath2 Corian leaves: sheet stock already included in the GROSS apron paneling area.
+# Incremental cutting/edge finishing, concealed retainers/stops and fitting only.
+# ESTIMATE pending fabricator detail/quote; no second solid-surface sheet charge.
+"FT-CATLIN-TUB-ACCESS-1414" = { material = { low = 35, high = 90 }, labour = { low = 45, high = 110 } }  # 1 ea
+"FT-CATLIN-TUB-ACCESS-2015" = { material = { low = 35, high = 90 }, labour = { low = 45, high = 110 } }  # 1 ea
 "FT-ACCESS-PANEL-1429" = { material = { low = 55, high = 140 }, labour = { low = 45, high = 110 } }  # 2 ea
 # The mechanical hatch under EQ-S-HP1-AH, new 2026-09-04. It is a bigger article than the two
 # rows above in three ways and each of them is money: it is 30 x 29 against 14 x 29, it is
@@ -5246,6 +5251,8 @@
 # waterfall faces (WP-M-BATH2-TUBDK-APRON) and the 6" splash (WP-M-BATH2-TUB-SPLASH). One
 # bonded shop piece with the deck top, which bills in [envelope_layers] under the same tag;
 # the vanity top and stool bill in [countertops]. Each row prices only its own area.
+# Apron area includes the two removable leaves; the modeled reveal holes do not deduct
+# their sheet stock. Access-specific cutting/retention bills under FT-CATLIN-TUB-ACCESS-*.
 # Fabricated and installed, roughly $40-80/SF. ESTIMATE, not a fabricator quote.
 "solid-surface-fabricated" = { material = { low = 25, high = 50 }, labour = { low = 15, high = 30 } }  # 20.4 SF net / 23 ordered: faces 15.9 + splash 4.5
 

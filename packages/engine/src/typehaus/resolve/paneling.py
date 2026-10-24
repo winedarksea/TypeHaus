@@ -1,7 +1,8 @@
 """Resolve ``WallPaneling`` bands onto their room's bounding walls (→ model/paneling.py).
 
 Each authored paneling becomes one :class:`ResolvedPaneling` per covered wall, its area
-already net of the openings that punch the band, so downstream consumers sum rather than
+already net of architectural openings; apron leaves stay in the sheet order while their
+cutouts are removed from the fixed-face geometry. Downstream consumers sum rather than
 re-intersect. Refs that resolve to nothing are ERROR findings, never a silent zero — a
 typo'd room tag must not make a wainscot vanish from the order (#32).
 """
@@ -11,6 +12,7 @@ from __future__ import annotations
 from typehaus.findings import Finding, failed
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedModel, ResolvedPaneling
+from typehaus.resolve.paneling_access import tub_access_cutouts
 from typehaus.resolve.room_walls import bounding_walls
 
 
@@ -20,6 +22,7 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     rooms = {room.tag: room for room in model.rooms}
     lines = {line.tag: line for line in model.layout_lines}
     deck_tops = _knee_wall_deck_tops(plan, model)
+    access_cutouts = tub_access_cutouts(model)
     for storey in plan.storeys:
         for el in plan.storey_elements(storey.tag):
             if el.element_kind != "WallPaneling":
@@ -135,11 +138,15 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     outline = ([] if toward is None else
                                _band_outline(wall, lo, hi, toward, thickness_m,
                                              el.replaces_wall_finish))
+                    panel_face = (None if toward is None else
+                                  "left" if _room_side_sign(wall, toward) > 0 else "right")
                     pieces = () if not outline else tuple(
                         (_band_outline(wall, a, b, toward, thickness_m,
                                        el.replaces_wall_finish),
                          wall.base_ref_z_m + z0, wall.base_ref_z_m + z1)
-                        for a, b, z0, z1 in _net_cells(lo, hi, band_z0, band_z1, openings))
+                        for a, b, z0, z1 in _net_cells(
+                            lo, hi, band_z0, band_z1, openings,
+                            access_cutouts.get((wall.tag, panel_face), ())))
                     model.panelings.append(ResolvedPaneling(
                         uid=el.uid, tag=el.tag, storey=wall.storey,
                         room=room.tag if room is not None else None,
@@ -177,14 +184,15 @@ def _knee_wall_deck_tops(plan: PlanModel, model: ResolvedModel) -> dict[str, flo
     return tops
 
 
-def _net_cells(lo: float, hi: float, z0: float, z1: float, openings) -> list:
+def _net_cells(lo: float, hi: float, z0: float, z1: float, openings,
+               extra_cutouts=()) -> list:
     """The band's ``lo..hi`` x ``z0..z1`` rectangle minus its openings, as ``(u0, u1, z0, z1)``.
 
     Split along the wall at every opening edge; in each stretch keep the band's height less
     the openings covering it. The same openings the area subtracts, so drawing and billing
     punch the same holes.
     """
-    holes = []
+    holes = list(extra_cutouts)
     for o in openings:
         a, b = o.center_along_m - o.width_m / 2.0, o.center_along_m + o.width_m / 2.0
         s0, s1 = o.sill_m, o.sill_m + o.height_m

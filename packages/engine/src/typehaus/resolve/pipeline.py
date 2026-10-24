@@ -191,12 +191,13 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         # After floors, walls and rooms: a pocket must be physically bounded on the
         # adjacent deck and may not silently consume a room seed or stair arrival.
         findings.extend(resolve_floor_opening_pockets(plan, model))
-    with _stage("paneling"):
-        findings.extend(resolve_paneling(plan, model))
     with _stage("placeables"):
         findings.extend(resolve_placeables(plan, model))
         # After floors, roofs, soffits and ceilings: a hung fixture's cable runs to them.
         resolve_suspensions(model)
+    # Apron cutouts use the resolved service leaves, including their final elevations.
+    with _stage("paneling"):
+        findings.extend(resolve_paneling(plan, model))
     with _stage("tub_enclosures"):
         from typehaus.resolve.tub_enclosures import resolve_tub_enclosures
 

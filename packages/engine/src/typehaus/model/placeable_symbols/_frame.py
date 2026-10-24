@@ -91,6 +91,7 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "pillow": (0.85, 0.86, 0.88, 1.0),
     "screen": (0.14, 0.15, 0.17, 1.0),
     "appliance-white": (0.94, 0.94, 0.93, 1.0),
+    "solid-surface-white": (244 / 255, 245 / 255, 244 / 255, 1.0),
     "appliance-steel": (0.76, 0.78, 0.80, 1.0),
     # Recessed joins in painted furniture. The shade is light enough to read as a real
     # contact shadow at a narrow seam, without turning white drawer gaps into dark graphic

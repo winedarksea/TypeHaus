@@ -183,7 +183,8 @@ def test_occupied_space_includes_the_rim_and_the_whole_framed_deck(catlin_model_
     assert tub_bounds[2]-tub_bounds[0] == pytest.approx(inch(32).meters)
     assert tub_bounds[3]-tub_bounds[1] == pytest.approx(inch(60).meters)
     assert deck_bounds[2]-deck_bounds[0] == pytest.approx(inch(35.5).meters)
-    assert deck_bounds[3]-deck_bounds[1] == pytest.approx(inch(70.24).meters)
+    # Cap y = 16'2.25" .. 22'0.615"; the old 70.24" expectation predates the rim gap.
+    assert deck_bounds[3]-deck_bounds[1] == pytest.approx(inch(70.365).meters)
     assert Polygon(deck.outline).covers(Polygon(tub.footprint))
     assert tub.body_z1_m-tub.body_z0_m == pytest.approx(inch(21).meters)
     # The rim is flush with the deck's finished Corian top (2026-10-22; tile above it before),
@@ -191,3 +192,58 @@ def test_occupied_space_includes_the_rim_and_the_whole_framed_deck(catlin_model_
     top = next(s for s in model.solids if s.tag == "SL-M-TUBDK:deck-top")
     assert top.z0_m == pytest.approx(deck.z1_m)
     assert tub.body_z1_m == pytest.approx(top.z1_m)
+
+
+def test_corian_service_leaves_are_flush_and_have_real_perimeter_gaps(catlin_model_ro):
+    from typehaus.model.canvas import canvas_object_types
+    from typehaus.model.placeable_symbols import part_hex
+    from typehaus.resolve.paneling_access import tub_access_cutouts
+
+    model = catlin_model_ro
+    apron = next(band for band in model.panelings
+                 if band.tag == "WP-M-BATH2-TUBDK-APRON" and band.wall_tag == "W-M-TUBDK-W")
+    wall = model.wall(apron.wall_tag)
+    local, _world, _run = _frame(wall)
+    types = {row["tag"]: row for row in canvas_object_types(model.plan)}
+    material = next(m for m in model.plan.library.materials if m.tag == apron.material_ref)
+    panels = [item for item in model.canvas_objects
+              if item.tag in {"FURN-M-BATH2-TUBDK-AP", "FURN-M-BATH2-TUBDK-AP-N"}]
+    assert len(panels) == 2
+    face_depths = [local(point)[1] for point in apron.outline]
+    fixed_face = unary_union([
+        Polygon([(min(local(p)[0] for p in ring), bottom),
+                 (max(local(p)[0] for p in ring), bottom),
+                 (max(local(p)[0] for p in ring), top),
+                 (min(local(p)[0] for p in ring), top)])
+        for ring, bottom, top in apron.pieces])
+    hole_area = 0.0
+    for panel in panels:
+        row = types[panel.type_ref]
+        part, = row["model_parts"]
+        assert part["color"] == material.color
+        assert part["material_ref"] == apron.material_ref
+        assert part["size"][1] == pytest.approx(apron.thickness_m)
+        leaf_depths = [local(point)[1] for point in panel.footprint]
+        assert (min(leaf_depths), max(leaf_depths)) == pytest.approx(
+            (min(face_depths), max(face_depths)))
+    assert part_hex("solid-surface-white") == material.color
+    from shapely.geometry import box
+
+    cutouts = tub_access_cutouts(model)[(wall.tag, "right")]
+    assert len(cutouts) == 2
+    for left, right, bottom, top in cutouts:
+        opening = box(left, bottom + wall.base_ref_z_m,
+                      right, top + wall.base_ref_z_m)
+        assert fixed_face.intersection(opening).area < 1e-10
+        hole_area += opening.area
+    # Sheet ordering retains the leaf stock; geometry removes the leaves plus their reveals.
+    assert fixed_face.area == pytest.approx(apron.area_m2 - hole_area)
+    reveal = model.plan.by_tag("FX-M-BATH2-TUB").tub_enclosure.access_panel_reveal.meters
+    for panel, dimensions in zip(sorted(panels, key=lambda p: p.tag),
+                                 ((14, 14), (20, 15)), strict=True):
+        stations = [local(point)[0] for point in panel.footprint]
+        width = max(stations) - min(stations)
+        height = panel.body_z1_m - panel.body_z0_m
+        assert (width, height) == pytest.approx(tuple(inch(v).meters for v in dimensions))
+        leaf = box(min(stations), panel.body_z0_m, max(stations), panel.body_z1_m)
+        assert fixed_face.distance(leaf) == pytest.approx(reveal)

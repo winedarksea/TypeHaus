@@ -82,9 +82,24 @@ top out at 96" against the 106" ceiling, so `bath2_shower.md` §5 confirm 3 stay
   joint under the glass.
 - **Filler.** The fabricator drills the two 1¼" handle holes and the spout hole to the Moen
   template. 12 mm sits within the 4794's 1¼" finish allowance.
-- **Access panels.** Two removable leaves cut from the W apron, ⅛" reveal: the 20 × 15
-  heater-end `FURN-M-BATH2-TUBDK-AP-N` (on `BK-M-TUBDK-AP-N`) and the 14 × 14 foot
-  `FURN-M-BATH2-TUBDK-AP` (on `BK-M-TUBDK-AP`). Leave each out of the bond.
+- **Access panels (reviewed 2026-10-23).** Two flush lift-out leaves of the same 12 mm
+  Corian as the W apron (drawn ½" thick), with a ⅛" reveal on **each** edge. These are
+  removable sheet pieces, with no hinges, exposed metal frames or handles. The **leaf**
+  sizes remain 20 × 15" at the heater end (`FURN-M-BATH2-TUBDK-AP-N`, on
+  `BK-M-TUBDK-AP-N`) and 14 × 14" at the foot (`FURN-M-BATH2-TUBDK-AP`, on
+  `BK-M-TUBDK-AP`). Their apron cutouts are therefore 20¼ × 15¼" and 14¼ × 14¼".
+  Keep at least 20 × 15" **clear service access** at the heater after removing the leaf;
+  substrate and retention hardware must not reduce it. Each opening must continue through
+  the plywood, with no fixed blocking across the service path. Leave both leaves out of
+  all permanent bonds, including the apron-to-plywood bond.
+  Concealed retainers and stops hold the leaves flush; remove with a suction cup.
+  Fabricator to submit retention, edge finishing and removal details before fabrication;
+  hardware is not modeled or selected. Match the fixed apron’s eased edges.
+  Existing positions are retained: north bottom 1" / top 16" AFF; south bottom 3" / top 17" AFF.
+  These unequal edges follow the service bays; this review does not resize or relocate them.
+  The model now cuts real reveal gaps out of the fixed Corian face and uses matching white
+  leaves rather than generic 1" metal panels. The gross apron quantity includes both leaves;
+  per-leaf allowances cover only access-specific fabrication and retention.
 - **Fabrication.** Corian's bulletins want a ≥ ½" (13 mm) inside radius on an L- or
   U-shaped piece and ≥ 3/16" on a cutout. Cutouts are router-cut only, with bits ≥ 10 mm and
   edges rounded over ≥ 1/16". The rim cutout's corners are the U's inside corners and take

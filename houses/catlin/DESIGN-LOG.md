@@ -7,6 +7,19 @@ edge, west apron and east surround/splash spans follow. The tub stays put and it
 foot bay grows from 4.740" to 4.865". Field dimensions, threshold bearing and the hybrid
 post connection still require the supplier/glazier confirms in `notes/bath2_shower.md` §3.
 
+## Bath2 apron service leaves: matching Corian in 3D (2026-10-23)
+
+The two service panels were described as removable Corian but instantiated as generic
+1" metal panels over an unbroken Corian face. They now use house-specific ½"-thick white
+solid-surface leaves, flush with the fixed apron, with actual ⅛" perimeter reveal gaps.
+Leaf sizes and positions stay 20 × 15" north and 14 × 14" south; these are lift-out sheet
+pieces, not hinged doors. The cutouts include the reveals, and the heater must retain
+20 × 15" clear service access after removal. Concealed retainers/stops and suction-cup
+removal are the fabrication intent; the fabricator must detail hardware and unobstructed
+substrate openings before closing the enclosure. Gross apron stock includes the leaves;
+separate access allowances cover only fabrication and retention. See
+`notes/bath2_tub_deck_finish.md` §3 and `notes/bath2_tub_hardware.md`.
+
 ## Wall board policy (2026-10-23)
 
 - **The reviewer case, taken in part.** Walls go to 1/2" regular: it is cheaper, it fits the

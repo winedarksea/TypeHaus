@@ -1,7 +1,7 @@
 """House-local furniture catalog for items specific to the Catlin plan.
 
 Only items *made to fit this house* belong here: nothing here is a product anyone would
-reuse across plans (the test for house-local). The curtain rods, access panels and closet
+reuse across plans (the test for house-local). The curtain rods, standard metal access panels and closet
 shelving this house places are library rows (``library.placeables.allowances``).
 """
 
@@ -10,7 +10,6 @@ from __future__ import annotations
 from library.placeables.allowances import (
     ACCESS_PANEL_1414,
     ACCESS_PANEL_1429,
-    ACCESS_PANEL_2015,
     ACCESS_PANEL_CLG_3029,
     CELLULAR_BLIND_2748,
     CLOSET_SHELF_36,
@@ -37,6 +36,7 @@ from typehaus.model import (
 )
 
 from .study_booth_types import FOLD_LEAF, STUDY_BENCH, STUDY_DESK, STUDY_FOOTREST
+from .tub_access_panel_types import TUB_ACCESS_PANEL_1414, TUB_ACCESS_PANEL_2015
 
 _WALL_MOUNT = Mount(kind=MountKind.WALL)
 
@@ -537,7 +537,8 @@ FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
                    CURTAIN_ROD_48, CURTAIN_ROD_84, CELLULAR_BLIND_2748, CELLULAR_BLIND_6348,
                    PORCH_TRACK_176,
                    PORCH_TRACK_102,
-                   ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_2015, ACCESS_PANEL_CLG_3029,
+                   ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
+                   TUB_ACCESS_PANEL_1414, TUB_ACCESS_PANEL_2015,
                    BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, SUITEBATH_SHELF_1130,
                    SUITEBATH_PEGS_24, SUITEBATH_MIRROR_ESTERO,

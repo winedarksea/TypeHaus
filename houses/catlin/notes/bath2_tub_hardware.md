@@ -60,9 +60,12 @@ Moen's sheet identifies separately purchased 104465 as ASSE 1070 certified. The 
 includes a $100–200 material allowance for this device and its fittings; that is an allowance,
 not a vendor quote or an additional routed valve element.
 
-Two removable west-apron leaves. **North, 20×15 in.** (`FURN-M-BATH2-TUBDK-AP-N`, Kohler's
-published minimum at the heater end) reaches the Bask power supply and its outlet on HS1
-behind the head. **South, 14×14 in.** reaches the end drain, K-7272 and the 4794. The knee
+Two flush, lift-out west-apron leaves in matching 12 mm Corian (drawn ½ in.), not hinged
+metal doors. Sizes below are the leaves, with a ⅛ in. reveal on every edge. See
+`bath2_tub_deck_finish.md` §3 for cutouts, retention and removal. **North, 20×15 in.**
+(`FURN-M-BATH2-TUBDK-AP-N`, matching Kohler's published minimum clear service size at the
+heater end; keep retainers out of that opening) reaches the Bask power supply and its
+outlet on HS1 behind the head. **South, 14×14 in.** reaches the end drain, K-7272 and the 4794. The knee
 walls are 2x3 at 24 in. o.c. under one top plate (IRC R602.5), so both leaves sit in whole
 bays. Before closing the apron, demonstrate access to each valve nut, hose release, drain
 connection, Bask plug and power supply with the actual parts installed. Hose loops and the limiting

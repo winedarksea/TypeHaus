@@ -204,7 +204,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
   fixture_types.py` holds the selected plumbing fixtures** — `FX-KOHLER-UNDERSCORE-6032`
   (the K-1130-W1 60x32 drop-in since 2026-10-22: deck face on the shower glass line, 2x3
   knee walls at 24" o.c. under one plate, a 20x15 heater-end leaf `FURN-M-BATH2-TUBDK-AP-N`
-  with the Bask outlet on HS1 behind the head, `notes/bath2_tub_hardware.md`), `FX-MOEN-ALIGN-ROMAN` (its deck filler, `FX-M-BATH2-FILLER` on the foot
+  with the Bask outlet on HS1 behind the head; both service leaves are flush 12 mm
+  Corian, 20x15 head / 14x14 foot, 1/8" perimeter reveals, concealed retainers and
+  suction-cup removal pending fabricator detail, `notes/bath2_tub_hardware.md`), `FX-MOEN-ALIGN-ROMAN` (its deck filler, `FX-M-BATH2-FILLER` on the foot
   ledge, pardoned against the rim by `host_fixture_ref`; the deck narrowed to 2x3 knee walls
   the rim laps, 2026-10-21; centered Align filler and twin chrome bars, 2026-10-22,
   documented in `notes/bath2_tub_hardware.md`; one-piece Corian deck, faces and splash,

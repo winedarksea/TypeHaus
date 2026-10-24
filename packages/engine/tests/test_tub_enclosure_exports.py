@@ -73,6 +73,16 @@ def test_framed_ifc_has_materialized_insulation_and_the_open_tub(catlin_model_ro
         assert shape.Depth == pytest.approx(solid.z1_m-solid.z0_m)
         assert {tuple(p.Coordinates) for p in shape.SweptArea.OuterCurve.Points[:-1]} == {
             tuple(p) for p in solid.outline}
+    for tag in ("FURN-M-BATH2-TUBDK-AP-N", "FURN-M-BATH2-TUBDK-AP"):
+        leaf = products[tag].Representation.Representations[0].Items[0]
+        assert leaf.is_a("IfcTriangulatedFaceSet")
+        xs, _ys, _zs = zip(*leaf.Coordinates.CoordList, strict=True)
+        assert max(xs) - min(xs) == pytest.approx(inch(0.5).meters)
+        style = leaf.StyledByItem[0].Styles[0]
+        assert style.Name == "solid-surface-fabricated"
+        rgb = style.Styles[0].SurfaceColour
+        assert (rgb.Red, rgb.Green, rgb.Blue) == pytest.approx(
+            (244 / 255, 245 / 255, 244 / 255))
     tub = products['FX-M-BATH2-TUB']
     points = tub.Representation.Representations[0].Items[0].Coordinates.CoordList
     xs, ys, zs = zip(*points, strict=True)

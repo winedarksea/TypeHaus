@@ -114,6 +114,8 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "footrest": footrest,
     "curtain-rod": curtain_rod,
     "cellular-blind": cellular_blind,
+    "solid-surface-access-leaf": lambda w, d, h: (
+        (), (box(0, 0, 0, h, w, d, "solid-surface-white"),)),
     # Seating. Seat count is what separates a sofa from a loveseat from an armchair.
     "sofa": seating(arms=True, seats=3),
     "loveseat": seating(arms=True, seats=2),

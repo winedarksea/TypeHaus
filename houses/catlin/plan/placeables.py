@@ -390,13 +390,15 @@ MAIN_PLACEABLES = [
     # Foot (south): the end drain, K-7272 waste-and-overflow and the Moen 4794 rough.
     # Head (north): the Bask heater pad's power supply and ED-M-BATH2-TUB-RC. Kohler K-1130-W1
     # wants 20"L x 15"H minimum at the heater end: this one is centred y=252 1/4", 1"-16" up,
-    # inside the knee wall's first 21 3/4" x 16 1/4" bay. The foot leaf fills the last bay.
-    Furniture(uid="958QHB20S6", tag="FURN-M-BATH2-TUBDK-AP-N", type_ref="FT-ACCESS-PANEL-2015",
+    # inside the knee wall's first 21 3/4" x 16 1/4" bay. The foot leaf is in the last bay.
+    # Leaf sizes exclude the 1/8" perimeter reveals; flush 1/2" stock matches the apron.
+    # Concealed retention/removal detail: notes/bath2_tub_deck_finish.md, not metal doors.
+    Furniture(uid="958QHB20S6", tag="FURN-M-BATH2-TUBDK-AP-N", type_ref="FT-CATLIN-TUB-ACCESS-2015",
               room="RM-M-BATH2", mount=Mount(kind=MountKind.WALL, elevation=inch(1)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-TUBDK-W", face="right", distance_from_start=inch(12.375),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    Furniture(uid="1AQVMB4JJD", tag="FURN-M-BATH2-TUBDK-AP", type_ref="FT-ACCESS-PANEL-1414",
+    Furniture(uid="1AQVMB4JJD", tag="FURN-M-BATH2-TUBDK-AP", type_ref="FT-CATLIN-TUB-ACCESS-1414",
               room="RM-M-BATH2", mount=Mount(kind=MountKind.WALL, elevation=inch(3)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-TUBDK-W", face="right", distance_from_start=inch(57.25),
