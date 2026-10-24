@@ -4031,7 +4031,8 @@
 # Wall gypsum, split by thickness (2026-10-23): envelope_layers qualifies on thickness_in, so
 # the 1/2" and 5/8" faces price apart. Ceilings stay 5/8" and bill from [sheet_goods] "gwb".
 # 1/2" regular: $10-14/sheet retail (2026 guide, homeadvisor-class listings) = $0.31-0.44/SF
-# before waste, banded to $0.35-0.55 for yard pricing. 5/8": the old band, unchanged.
+# before waste, banded to $0.35-0.55 for yard pricing; standard weight, not lightweight
+# (UltraLight) board. 5/8": the old band, unchanged.
 # Labour is the same hang + tape + Level 4 for both.
 "gwb:0.5" = { material = { low = 0.35, high = 0.55 }, labour = { low = 1.1, high = 1.9 } }  # 6141.2 SF
 "gwb:0.625" = { material = { low = 0.45, high = 0.75 }, labour = { low = 1.1, high = 1.9 } }  # 3757.0 SF
@@ -4041,6 +4042,8 @@
 # CAD, USD unconfirmed, so the band is a low-confidence $0.60-1.00/SF. Type C (gwb-c): the one
 # Canadian fire-rated Type C listing reads ~$1.02/SF, which is not a sound-board price; the
 # owner's +$0.10-0.15/SF premium over plain 1/2" is used instead. Re-quote before purchase.
+# gwb-ar is a supply-yard item: if it is not readily stocked at a reasonable price, 1/2"
+# standard-weight regular or Type C substitutes (owner, 2026-10-23), at the gwb:0.5 row's band.
 "gwb-ar" = { material = { low = 0.60, high = 1.00 }, labour = { low = 1.3, high = 2.2 } }  # 1491.7 SF
 "gwb-mr" = { material = { low = 0.65, high = 0.85 }, labour = { low = 1.1, high = 1.9 } }  # 1793.0 SF
 "gwb-c" = { material = { low = 0.45, high = 0.70 }, labour = { low = 1.1, high = 1.9 } }  # 0 SF until a solid acoustic wall takes it

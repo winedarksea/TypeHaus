@@ -51,6 +51,13 @@ separate access allowances cover only fabrication and retention. See
   with their `gwb-mr`/`gwb-ar` face swaps. A channel would step a face in the open where neither
   has tees at both ends to absorb the 1/2" offset. `W-M-HS3` (laundry to living) remains a
   decision, not an oversight; see "The laundry is not acoustically treated".
+- **Sourcing (owner, later 2026-10-23).** Wall board is standard weight, not lightweight: STC
+  follows mass, and the cited presets were tested with full-weight board. 1/2" paper-faced AR
+  is not stocked at retail (Gold Bond Hi-Abuse XP lists only 5/8" Type X), so `gwb-ar` stays
+  specified, but 1/2" standard-weight regular or Type C is an accepted substitute where it is
+  not readily stocked at a reasonable price. AR is a durability upgrade, not a code item.
+  `gwb-mr` is a stock board everywhere (GP ToughRock Mold-Guard, 1.7 lb/SF, D3273 score 10).
+  USG UltraLight Tough is not abuse-resistant: C1396 only, and it is a lightweight board.
 - **Wet walls and the humid room:** a paper-faced board (`gypsum_facer="paper"`) still fails the
   humid-room check. Mold-resistant paper board is no answer in a WET or HUMID room; glass-mat is.
 - **Viewer colour by board type.** Each board's colour is its authored `Material.color`. Coplanar

@@ -325,11 +325,10 @@ the future.
 - The bottoms of 3d modeled windows are a bit glitchy in 3d movement, perhaps due to an unnecessary attempt to cast reflections there.
 - Do passes to confirm geometry and dimensions of select products all align together correctly for real world build dimensions.
 - A reviewer says that making a rule: standard rule on acoustic walls to offset outlets by at least one stud bay (so they aren't in the same cavity) improves STC and is cheaper than putty on electrical boxes (which is only needed they say when boxes are in the same stud bay). This would be an advisory, not a failure on check.
-- Lets get the BOM showing all IKEA SEKTION parts needed (knobs, scribes, hinges, etc), and soft close pieces too.
+- Lets get the BOM showing all IKEA SEKTION parts needed (knobs, scribes, hinges, feet, etc), and soft close pieces too.
 - Can we widen D-M-BATH2 to 36"? Not sure if/how the casing would work as that puts it into the shower area (the casing).
 - A couple of options to reduce echo in the gym. One is swapping drywall for drop ceiling tile framing (perhaps with some fiberglass in the cavity above). Another was vulcanized recycled crumb-rubber rolls or 4'x6' stall mats for the floor. A third was W-B-CE losing its south side drywall and having fabric plus simple wood slats (ie 1x2 finger jointed pine) as an effectively slat wall arrangement.
 - PR-B-HW-BATH2-RUN looks like it is going to the wrong spot on the vanity, it is out in the open.
-- There is an LTP4 connector CN~LTP4~W-M-C1~48 in the middle of door D-M-BED2? Looks like the LTP4 auto generator doesn't consider doors.
 - Door thresholds could probably use some better modeling, right now all we get is standard sill plates of the regular wall.
 - Sink FX-M-BATH1-LAV has a sink that was made smaller to improve accessibility. Now, however, it seems a bit too small now, and could use a selected product and better 3d model.
 

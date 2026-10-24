@@ -8,7 +8,7 @@ from typehaus.model import Material
 MATERIALS: tuple[Material, ...] = (
     Material(
         tag="gwb",
-        name="Gypsum board",
+        name="Standard-weight gypsum board",
         r_per_inch=0.9,
         perm_rating=18.8,
         gypsum_type="regular",
@@ -16,7 +16,9 @@ MATERIALS: tuple[Material, ...] = (
         hatch="gypsum",
         color="#efeae2",
         source=f"{_UAF}: 'Gypsum wall board, plain' 50 perm at 0.375\" = 18.8 perm-in "
-        '(≈30 perm at 5/8", consistent with USG\'s 34.2 perm at 1/2")',
+        '(≈30 perm at 5/8", consistent with USG\'s 34.2 perm at 1/2"). Standard weight '
+        '(~1.6-1.8 lb/SF at 1/2"), not lightweight board (e.g. Sheetrock UltraLight): STC '
+        "follows mass, and the cited STC presets were tested with full-weight board",
     ),
     # Type X differs from regular board in its glass-fibre core, not in any property this
     # engine calculates with — same R per inch, same permeance. It exists as a separate
@@ -59,7 +61,10 @@ MATERIALS: tuple[Material, ...] = (
         hatch="gypsum",
         color="#d3dbe3",
         source="thermal and vapour properties as 'gwb'; paper-faced ASTM C1629 abuse "
-        "resistance (e.g. USG Sheetrock AR, Gold Bond Hi-Abuse XP)",
+        "resistance (e.g. USG Sheetrock AR, Gold Bond Hi-Abuse XP). An upgrade, not a code "
+        "requirement: 1/2\" is a supply-yard item. Where it is not readily stocked at a "
+        "reasonable price, standard-weight regular ('gwb') or Type C ('gwb-c') of the same "
+        "thickness may be substituted",
     ),
     Material(
         tag="gwb-mr",
@@ -72,7 +77,8 @@ MATERIALS: tuple[Material, ...] = (
         hatch="gypsum",
         color="#e0d6ec",
         source="thermal and vapour properties as 'gwb'; paper-faced, ASTM D3273 score 10 "
-        "(e.g. Gold Bond XP, USG Sheetrock Mold Tough). Still paper: not a wet-area backer",
+        "(e.g. Gold Bond XP, USG Sheetrock Mold Tough, GP ToughRock Mold-Guard at 1.7 lb/SF "
+        "1/2\"). Still paper: not a wet-area backer",
     ),
     # A hat channel is a spaced 25 ga. section, not a continuous metal skin: vapour crosses
     # the still-air space between channels, so the layer is rated as that air space.
