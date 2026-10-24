@@ -284,8 +284,8 @@ NODES = [
     # asymmetric.
     #
     # These axes are CENTRELINES of a 3 1/2" symmetric 2x3 wall, so each sits 1 3/4" inboard
-    # of the deck's outer face: x=5'-0.865" for the 4'-11.115" west face, y=16'-4 1/8" for the
-    # 16'-2 3/8" south face. The west face plus the 1/2" Corian apron (as drawn) is x=4'-10.615", the
+    # of the deck's outer face: x=5'-0.865" for the 4'-11.115" west face, y=16'-4" for the
+    # 16'-2 1/4" south face. The west face plus the 1/2" Corian apron (as drawn) is x=4'-10.615", the
     # shower pan's west edge. The stock Flex front rail is now inset 1 3/8" on the
     # threshold (2026-10-22, notes/bath2_shower.md §3). That south face is also
     # FX-M-BATH2-SH's north face — one line,
@@ -296,8 +296,8 @@ NODES = [
     # cutout. The east rim meets W-M-BA2E's face at 1/8". Template 1268438 governs drilling.
     Node(uid="YJ36WFQV9C", tag="N-M-TUBDK-N", position=pt(ft(5, 0.865), ft(22, 0.615)),
          open_end=True),
-    Node(uid="JJJGMEWYJD", tag="N-M-TUBDK-C", position=pt(ft(5, 0.865), ft(16, 4.125))),
-    Node(uid="QSFPKZQV7C", tag="N-M-TUBDK-E", position=pt(ft(7, 10.615), ft(16, 4.125)),
+    Node(uid="JJJGMEWYJD", tag="N-M-TUBDK-C", position=pt(ft(5, 0.865), ft(16, 4))),
+    Node(uid="QSFPKZQV7C", tag="N-M-TUBDK-E", position=pt(ft(7, 10.615), ft(16, 4)),
          open_end=True),
     # --- RM-M-LIVING's fireplace surround, W-M-FIRE-* -------------------------------------
     #
@@ -1960,7 +1960,7 @@ FLOOR_OPENINGS = [
 # [envelope_layers]; a floor finish would bill the deck as its own floor area as well.
 SLABS = [
     Slab(uid="W92SX7DVJ0", tag="SL-M-TUBDK", kind="platform",
-         outline=(pt(ft(4, 11.115), ft(16, 2.375)), pt(ft(7, 10.615), ft(16, 2.375)),
+         outline=(pt(ft(4, 11.115), ft(16, 2.25)), pt(ft(7, 10.615), ft(16, 2.25)),
                   pt(ft(7, 10.615), ft(22, 0.615)), pt(ft(4, 11.115), ft(22, 0.615))),
          thickness=inch(2.75), assembly="TUBDECK_INT_PLY_CAP",
          top_elevation=inch(22.75), openings=("FO-M-TUBDK",)),
@@ -2202,9 +2202,9 @@ PANELING = [
     # "6'-2 5/8"" figure once quoted here — the honest centre was 7'-0" and is now
     # 6'-4 5/8", moved -5 3/8" west 2026-09-09 when W-M-BA2E2 came off its jog and back
     # onto W-M-BA2E's line — so the 36" pan occupies x 4'-10 5/8"..7'-10 5/8" and
-    # y 13'-2 3/8"..16'-2 3/8" (y unchanged):
+    # y 13'-2 1/4"..16'-2 1/4" after the 2026-10-23 jamb correction:
     #   * W-M-BA2E2 runs south from N-M-D2 (y=18'-0"), so the pan's north edge is
-    #     18'-0" - 16'-2 3/8" = 1'-9 5/8" along it. Unchanged — the shower's y never moved.
+    #     18'-0" - 16'-2 1/4" = 1'-9 3/4" along it.
     #   * W-M-BDN1 runs east from N-M-W3 (x=0), so 4'-10 5/8" along it, ending on
     #     x = 7'-10 5/8" — which IS W-M-BA2E2's bath face, so the two spans meet in the
     #     pan's corner with nothing between them.
@@ -2233,7 +2233,7 @@ PANELING = [
     WallPaneling(uid="AWV1DA0P86", tag="WP-M-BATH2-SURR", room="RM-M-BATH2",
                  material_ref="solid-surface-panel", height=inch(106),
                  replaces_wall_finish=True,
-                 spans=(PanelingSpan(wall_ref="W-M-BA2E2", start=ft(1, 9.625),
+                 spans=(PanelingSpan(wall_ref="W-M-BA2E2", start=ft(1, 9.75),
                                      length=ft(3)),
                         PanelingSpan(wall_ref="W-M-BDN1", start=ft(4, 10.615),
                                      length=ft(3)))),
@@ -2247,14 +2247,14 @@ PANELING = [
     WallPaneling(uid="EQGJVGPGEA", tag="WP-M-BATH2-TUBDK-APRON", room="RM-M-BATH2",
                  material_ref="solid-surface-fabricated",
                  spans=(PanelingSpan(wall_ref="W-M-TUBDK-W", start=inch(0),
-                                     length=inch(68), face="right"),
+                                     length=inch(68.125), face="right"),
                         PanelingSpan(wall_ref="W-M-TUBDK-S", start=inch(0),
                                      length=inch(33.75), face="right"))),
     # A 6" Corian splash where the deck meets HS1 (N) and BA2E (E), so neither joint is
     # silicone to paint. `offset` is wall-local, up from the wall base at the storey datum:
     # 22 3/4" is the deck top. Spans follow the deck: HS1 from x 59.115" to its end at 72",
     # HS2 to BA2E's face, BA2E from HS1's face south to its end at y=216", BA2E2 on to the
-    # stall's north line (y 194 3/8"). The N leg is bonded or coved to the deck; the E leg
+    # stall's north line (y 194 1/4"). The N leg is bonded or coved to the deck; the E leg
     # sits on the rim lip in silicone like an alcove flange. Eased top and end edges.
     WallPaneling(uid="TY8X80XSK5", tag="WP-M-BATH2-TUB-SPLASH", room="RM-M-BATH2",
                  material_ref="solid-surface-fabricated", offset=inch(22.75),
@@ -2266,7 +2266,7 @@ PANELING = [
                         PanelingSpan(wall_ref="W-M-BA2E", start=inch(3.385),
                                      length=inch(48.615)),
                         PanelingSpan(wall_ref="W-M-BA2E2", start=inch(0),
-                                     length=inch(21.625)))),
+                                     length=inch(21.75)))),
 ]
 
 

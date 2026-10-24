@@ -40,9 +40,18 @@ def test_actual_finished_opening_and_outward_swing(catlin_model_ro):
     south_face = max(point[1] for point in south_panel.outline)
     jamb = place_local([(south, -depth / 2)], fixture.position, fixture.rotation_degrees)[0]
     # A replacing band stands _FLUSH_REVEAL_M proud of the finish plane (z-fighting).
-    # The knee wall's 1/2" board moved the pan's north face 1/8" (its 36" depth is fixed), so the
-    # south jamb stands 1/8" off the surround until the owner decides the pan or knee wall.
-    assert jamb[1] == pytest.approx(south_face - _FLUSH_REVEAL_M + 0.125 * 0.0254)
+    # The owner moved the knee wall and unchanged pan south to close the jamb gap.
+    finished_south_face = south_face - _FLUSH_REVEAL_M
+    assert jamb[1] == pytest.approx(finished_south_face)
+    north_jamb = place_local([(north, -depth / 2)], fixture.position, fixture.rotation_degrees)[0]
+    actual_finished_opening = (north_jamb[1] - finished_south_face) / INCH
+    assert actual_finished_opening == pytest.approx(36)
+    deck = next(solid for solid in model.solids if solid.tag == "SL-M-TUBDK")
+    assert min(y for _, y in deck.outline) == pytest.approx(north_jamb[1])
+    east_panel = next(panel for panel in model.panelings
+                      if panel.tag == "WP-M-BATH2-SURR" and panel.wall_tag == "W-M-BA2E2")
+    assert min(y for _, y in east_panel.outline) == pytest.approx(finished_south_face)
+    assert max(y for _, y in east_panel.outline) == pytest.approx(north_jamb[1])
     sweep = Polygon(place_local(door_swing_outline(width, depth), fixture.position,
                                 fixture.rotation_degrees))
     vanity = next(obj for obj in model.canvas_objects if obj.tag == "FX-M-BATH2-SINK")

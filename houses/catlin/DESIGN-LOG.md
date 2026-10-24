@@ -1,3 +1,12 @@
+## Bath2 shower south jamb closed (2026-10-23)
+
+Owner chose to move the south tub-deck knee wall and shower 1/8" south, retaining the
+Swanstone 36x36 pan. The finished opening was 36 1/8", beyond the selected Flex front's
+32–36" range; it is now nominally 36" with the south jamb on the surround face. The deck
+edge, west apron and east surround/splash spans follow. The tub stays put and its internal
+foot bay grows from 4.740" to 4.865". Field dimensions, threshold bearing and the hybrid
+post connection still require the supplier/glazier confirms in `notes/bath2_shower.md` §3.
+
 ## Wall board policy (2026-10-23)
 
 - **The reviewer case, taken in part.** Walls go to 1/2" regular: it is cheaper, it fits the
@@ -6028,3 +6037,35 @@ at 4 1/16 inches and a 36 9/16-inch installed envelope, with floor mounts at zer
 The actual 30-inch frames, ash countertop and window alignment retain their heights.
 Both support configurations now emit four feet and a separate recessed toe panel.
 The end cover reaches the floor while retaining its former top elevation. See K4–K5.
+
+## 2026-10-23 — Provisional bedroom carpet and cushion
+
+Select STAINMASTER PetProtect Sweet Spot I Romano, model 7L89100101, for RM-M-BED,
+RM-M-CLOSET and RM-S-BED1/2/3: textured nylon, 48.8 oz/yd² face weight and 0.56-inch
+pile height; twist unverified. Warm ivory/cream is the provisional color direction,
+with light warm greige as the alternative. Pair provisionally with Future Foam
+150553488-33, 8 lb/ft³ rebond cushion at 7/16 inch. A manufacturer-approved 3/8-inch,
+8 lb/ft³ cushion remains an alternative for height coordination.
+
+Prioritize decent comfort, durability and cost effectiveness. Face weight of roughly
+35–60 oz/yd², preferably 0.4–0.6-inch pile and roughly 5–6+ turns/in remain shopping
+guidelines, not automated pass/fail requirements. Carry $3–4/SF carpet material and
+$0.35–1/SF pad allowances; the displayed expired $2.84/SF promotion is not a current
+quote. Carpet labor includes cushion installation once. The bedroom cushion has its
+own material/product, estimate row and carpet installation visit; theater/stair carpet
+and pad remain on their existing specification. Bedroom presentation is approximate
+warm ivory (#e5dccb) with the existing carpet-pile recipe.
+
+Retain the modeled 3/4-inch bedroom assembly depth as a provisional coordination
+allowance. Its previous 1/4-inch plywood + 1/4-inch pad + 1/4-inch carpet assumption
+does not establish the new product's installed height. Plywood is still an allowance,
+not an approved buildup. Before construction, measure carpet including backing,
+cushion and compressed doorway edges, then reconcile plywood, transitions, door
+clearances and affected elevations together. The doorway schedule and its numerical
+tests remain design targets pending that measurement.
+
+Open procurement work: Romano sample beside adjacent finishes, current local quote,
+cushion acceptance and warranty documentation, and roll/seam layout before ordering.
+Product provenance and the full specification are in notes/bedroom_carpet.md; the
+floor-height note and TODO carry the pending reconciliation. Regression coverage checks
+the product join, bedroom-only cushion quantities, priced layers and installation visit.

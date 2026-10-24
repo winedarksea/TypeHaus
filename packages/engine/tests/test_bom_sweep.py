@@ -316,7 +316,7 @@ def test_a_finish_brings_the_layer_it_implies(bom):
                   if "under" in row}
     assert set(companions) == {
         ("carpet", "carpet-pad"),
-        ("catlin-carpet-raised", "carpet-pad"),
+        ("catlin-carpet-raised", "catlin-bedroom-carpet-pad"),
         ("catlin-carpet-raised", "catlin-carpet-underlayment"),
         ("catlin-plant-vinyl-raised", "catlin-plant-sureply"),
         ("lvp", "lvp-underlayment"),

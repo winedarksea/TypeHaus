@@ -7,12 +7,18 @@ nominal difference no greater than **1/16 in**. The opening probes in
 on the correct deck. Nominal heights are design targets; the installer must mock up and
 measure compressed carpet edges and set tile elevations before fixing thresholds.
 
+**Bedroom carpet amendment, 2026-10-23:** Sweet Spot I Romano over 7/16-in, 8 lb/ft³
+Future Foam cushion is provisionally selected. The retained 3/4-in modeled bedroom
+assembly and its plywood buildup are coordination allowances awaiting a measured sample,
+not verified installed dimensions. Bedroom doorway heights below remain design targets.
+See [bedroom carpet specification and purchasing checks](bedroom_carpet.md).
+
 ## Assemblies above the 3/4-in framed subfloor
 
 | Tag / location | Build-up above subfloor | Finished height |
 | --- | --- | ---: |
 | `oak-floor-custom`, second hall/linen/suite/study | 3/4-in site-milled oak | +1.5000 |
-| `catlin-carpet-raised`, east bedrooms and main bedroom/closet | 1/4-in rigid plywood underlayment + 1/4-in dense bonded cushion + 1/4-in nominal cut pile | +1.5000 |
+| `catlin-carpet-raised`, east bedrooms and main bedroom/closet | Provisional 3/4-in modeled assembly allowance; Sweet Spot I Romano and 7/16-in cushion selected, plywood need/thickness and installed depth unconfirmed | +1.5000 target |
 | `catlin-tile-oak-height`, suite bath/vanity | 5/16-in nominal DITRA-XL + 5/16-in Marazzi Modern Formation MF01 24x24 matte porcelain + nominal 1/8-in combined mortar beds | +1.5000 |
 | `catlin-tile-heated`, both heated baths | 1/4-in nominal DITRA-HEAT + same 5/16-in MF01 porcelain + nominal 3/16-in combined mortar beds, cable in studs | +1.5000 |
 | `catlin-plant-vinyl-raised`, second plant | Nominal 1/4-in SurePly underlayment + 0.120-in fully adhered sheet; no floor drain or slope | +1.1200 at doorway |
@@ -30,9 +36,13 @@ where bath use calls for it. Do not replace the heated membrane with DITRA-XL. T
 `floor_heat` estimate must be a **cable-only** quote; the DITRA-HEAT base is billed
 once on the whole heated bathroom area by the floor-finish companion row.
 
-The 1/4-in rigid layer under carpet is structural plywood, not a thicker cushion used as
-a shim. The nominal 1/4-in pile is the existing catalog assumption. Compress the sample
-at the actual door edge to confirm that its walking plane meets oak/tile within 1/16 in.
+The former 1/4-in plywood + 1/4-in pad + 1/4-in carpet assumption is superseded by the
+provisional bedroom selection. The 0.56-in published pile height is not the total carpet
+thickness including backing. Measure that carpet, the selected cushion and compressed
+doorway edges; reconcile plywood, transitions, door clearances and affected elevations
+together before construction. The existing 1/4-in plywood takeoff remains an allowance,
+not an approved buildup. The flush oak/tile target remains within 1/16 in, pending that
+reconciliation; the model tests establish numerical consistency, not physical fit.
 Confirm the LVP maker permits a separate mat below its attached pad. If it does not,
 remove that takeoff companion before ordering. Measure the installed LVP/mat stack and
 keep the mudroom and hall on the same stack; any height change at the concrete joint
@@ -40,8 +50,10 @@ must stay within this schedule's 1/16-in flush target.
 
 ## Opening schedule
 
-All numbers are finished planes, in inches above the relevant storey datum. An edge or
-movement joint may be required even where the height difference is zero.
+All numbers are modeled finished planes, in inches above the relevant storey datum.
+Bedroom carpet entries and their transition details are design targets awaiting measured
+assembly reconciliation. An edge or movement joint may be required even where the
+modeled height difference is zero.
 
 | Opening | Side A | Side B | Difference | Detail |
 | --- | ---: | ---: | ---: | --- |
@@ -122,6 +134,10 @@ and `plans/TODO.md` require Tarkett's written approval for First Class flash cov
 the adhesive and the 70%-RH design condition before construction.
 
 ## Estimate comparison
+
+Historical comparison predating the 2026-10-23 bedroom selection. Its combined pad area
+is now split between `carpet-pad` and `catlin-bedroom-carpet-pad`; the bedroom carpet
+material allowance is now $3–4/SF. Totals below have not been repriced for that amendment.
 
 `haus takeoff --json` against the previous room schedule and this schedule, using the
 same engine, gave the following net/order areas in square feet:

@@ -565,7 +565,8 @@ rows = ["allowances:finish-floor-prep-and-self-levelling",
 [visits."task/flooring/building/carpet"]
 label = "Carpet — BED, BED1-3, the main closet and PLAY-N, tucked under the base"
 rows = ["floor_finishes:carpet", "floor_finishes:carpet-pad",
-        "floor_finishes:catlin-carpet-raised", "floor_finishes:catlin-carpet-underlayment"]
+        "floor_finishes:catlin-carpet-raised", "floor_finishes:catlin-bedroom-carpet-pad",
+        "floor_finishes:catlin-carpet-underlayment"]
 depends_on = ["task/millwork/building/trim"]
 
 # The rows are keyed by STOCK: switching TRIM-STANDARD's material renames them here.

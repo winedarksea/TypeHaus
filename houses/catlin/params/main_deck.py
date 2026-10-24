@@ -332,7 +332,7 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 # is what makes four joists deflect together instead of the loaded one dishing between its
 # neighbours -- which is the actual risk here, since the governing number was never
 # strength. It is also what carries W-M-TUBDK-S, the deck's south knee wall, which runs
-# PARALLEL to the joists at y=196 5/8" and lands in a bay rather than on a line.
+# PARALLEL to the joists at y=196" and lands in a bay rather than on a line.
 #
 # ``plies=1`` is blocking with no sister (``resolve/floors.py`` runs ``range(plies - 1)``);
 # ``plies=2`` is one sister ply plus blocking. The y=240" entry carries the sister, which

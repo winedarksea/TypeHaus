@@ -93,6 +93,11 @@ inside face on the pan's north edge. Its front-to-back centre is 1⅜" in from t
 edge, so its base clears the deck's west edge. The resolved south panel's finished face is already flush with the pan edge (its ½"
 thickness is on the wall side), so there is **36"** between it and the post: the upper
 limit of the Flex's 32–36" adjustment range. Do not subtract the wall panel twice.
+**Owner confirmed 2026-10-23:** move `W-M-TUBDK-S` and the unchanged 36" pan ⅛" south
+to close the south jamb gap introduced by the thinner wall board. The pan now runs
+y=158.25"–194.25", flush with the south surround. The deck edge, west apron and east-wall
+surround/splash spans follow; the tub and its service connections stay put. Its internal
+foot-bay clearance grows from 4.740" to 4.865".
 Field-measure the finished opening and confirm tolerances before ordering.
 Post and channel dimensions are preliminary visualization allowances, not a shop drawing.
 
@@ -163,18 +168,18 @@ BATH2's 20 cfm, so the grille's position is the only lever.
    height that reaches the 106" ceiling above the base (or a top cap). A Corian
    floor-to-ceiling stall (about $1.5-3k more, one piece) was considered and declined.
 
-** Drain moved to the pan centre, 2026-10-22. ** The SS-3636's centre drain, (6'-4 5/8",
-14'-8 3/8"), sits over FS-M-WEST joist 11, whose top flange runs y 174 3/4"..177 1/4". A riser
+**Drain coordination, updated 2026-10-23.** The SS-3636's centre drain, (6'-4 5/8",
+14'-8 1/4"), sits over FS-M-WEST joist 11, whose top flange runs y 174 3/4"..177 1/4". A riser
 there cuts the flange: `mep.run_in_joist_flange` FAILs it and `mep.riser_through_deck` finds no
 opening to head it. `drain_position` is now (6'-4 5/8", 14'-11"), the nearest bay point that
-clears the flange for a 2" pipe, 2 5/8" south of centre. `PR-B-SH2-DRAIN` drops from the drain
+clears the flange for a 2" pipe, 2 3/4" north of centre. `PR-B-SH2-DRAIN` drops from the drain
 into that bay, runs below the joists (underside 97 9/16" basement) west along y=14'-11" from
 87 1/16" to 85 15/16", and enters PR-B-MAIN-DRAIN's corner at (3', 16'-6") at the old 85 3/8"
 invert. Flattest slope 0.33"/ft, against the 1/4" minimum. `haus route --run` was no use here:
 it routes to the main's sewer exit at 37', 35 ft long, with footing, sleeve and cleanout
 FAILs, so the run is hand-authored. Checks: `haus check` 0 FAIL, no new UNKNOWN. Under
 `--no-suppress` the only SH2 line is the riser through the deck (2.38" against the 2" undrawn
-allowance), the same class the old run carried. **OPEN, owner:** a 2 5/8" offset from a moulded
+allowance), the same class the old run carried. **OPEN, owner:** a 2 3/4" offset from a moulded
 centre drain sits off the pan's low point. Confirm with Swanstone that the SS-3636 takes it, or
 frame a centre floor opening with joist 11 cut and headed (a structural call).
 

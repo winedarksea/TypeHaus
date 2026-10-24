@@ -21,12 +21,27 @@ MATERIALS_FLOORING = [
              source="Patriot Timber SurePly, nominal 1/4 in, exterior-glue, "
                     "sanded resilient-flooring underlayment. Interior weather-protected "
                     "use only; fasten per Patriot instructions over the existing subfloor."),
-    Material(tag="catlin-carpet-raised", name="Cut-pile carpet over rigid underlayment",
-             hatch="batt", color="#9d9080", finish="carpet-pile",
+    Material(tag="catlin-carpet-raised", name="Sweet Spot I Romano bedroom carpet (provisional)",
+             hatch="batt", color="#e5dccb", finish="carpet-pile",
              finish_thickness_in=0.75,
-             floor_companion_refs=("carpet-pad", "catlin-carpet-underlayment"),
-             source='1/4" rigid plywood underlayment + 1/4" bonded cushion + 1/4" '
-                    'nominal carpet. Verify compressed edge at oak and tile doors.'),
+             floor_companion_refs=("catlin-bedroom-carpet-pad", "catlin-carpet-underlayment"),
+             product_ref="PROD-STAINMASTER-SWEET-SPOT-I-ROMANO",
+             source='Provisional owner selection 2026-10-23: textured nylon, warm ivory/cream; '
+                    'light warm greige alternative. Color is a schematic approximation. '
+                    'The retained 3/4-inch modeled depth is a coordination allowance, '
+                    'not the selected installed stack: its former 1/4-inch plywood + '
+                    '1/4-inch pad + 1/4-inch carpet assumption is superseded. '
+                    'Measure carpet including backing, cushion and compressed doorway '
+                    'edges before resolving plywood, transitions, door clearances and '
+                    'affected elevations together; notes/bedroom_carpet.md.'),
+    Material(tag="catlin-bedroom-carpet-pad",
+             name='Provisional bedroom rebond cushion, 8 lb/ft3, 7/16 inch',
+             hatch="batt", color="#c8b7a0",
+             product_ref="PROD-FUTURE-FOAM-150553488-33",
+             source='Companion to catlin-carpet-raised only; installation is included '
+                    'once in carpet labor. Confirm manufacturer acceptance and warranty '
+                    'requirements. Manufacturer-approved 3/8-inch, 8 lb/ft3 cushion is '
+                    'the height-coordination alternative; notes/bedroom_carpet.md.'),
     Material(tag="catlin-tile-calacatta-gold", name="Calacatta Gold hex mosaic, white epoxy grout",
              hatch="masonry", color="#f2efe8", finish="tile-calacatta-gold-hex",
              finish_thickness_in=0.75, base_detail="tile", floor_waste_fraction=0.15,
@@ -72,9 +87,13 @@ MATERIALS_FLOORING = [
                     'Include approved height leveling in this assembly allowance. '
                     'Use white glass-compatible setting mortar above; '
                     'no DITRA minimum chip restriction.'),
-    Material(tag="catlin-carpet-underlayment", name='Rigid plywood carpet underlayment, 1/4"',
+    Material(tag="catlin-carpet-underlayment",
+             name='Provisional rigid plywood carpet underlayment allowance, 1/4"',
              hatch="lumber", color="#bfae91",
-             source="Rigid height build-up under Catlin raised carpet; cushion is separate."),
+             source="Provisional rigid buildup and takeoff allowance; cushion is separate. "
+                    "The selected carpet/pad has not been measured. Reconcile whether "
+                    "plywood is needed and its thickness with transitions, door clearances "
+                    "and affected elevations before construction; notes/bedroom_carpet.md."),
     Material(tag="catlin-ditra-xl", name='DITRA-XL uncoupling membrane, 5/16"',
              hatch="membrane", color="#da7433",
              source="Nonheated tile membrane; seams and perimeters waterproofed where required."),

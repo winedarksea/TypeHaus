@@ -3493,8 +3493,13 @@
 # RM-B-PLAY-N keeps the basic carpet (310 SF ordered). The three east bedrooms,
 # main bedroom and its closet use the raised variant (648 SF ordered).
 "carpet" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }  # 310 SF — labour includes pad and tack strip
-"carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 958 SF over both carpet stacks; pad labour is inside the carpet rates
-"catlin-carpet-raised" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }
+"carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # basic theater pad; labor is inside carpet rates
+# 2026-10-23 provisional Sweet Spot I Romano bedroom selection; notes/bedroom_carpet.md.
+# $3-4/SF carpet material target, not a quote. Lowe's displayed $2.84/SF promotion had
+# an expired end date; do not use it as a current rate. Cushion retains the pad allowance.
+"catlin-carpet-raised" = { material = { low = 3, high = 4 }, labour = { low = 1, high = 2.25 } }
+"catlin-bedroom-carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 8 lb/ft3, 7/16 in; labor included once in carpet
+# Plywood remains a provisional allowance until the selected assembly is measured.
 "catlin-carpet-underlayment" = { material = { low = 0.65, high = 1.5 }, labour = { low = 0.75, high = 1.5 } }
 # 2026-09-12: SL-M-DECK's cap, COATED. This is the finish BLD-03's resolution moved the deck
 # to — see plans/buildability.md and notes/mixed_deck_movement_joint.md. The cap is billed in
@@ -8053,7 +8058,7 @@ member_protection = "material plus installed labour. Applied by the framer WITH 
 railings        = "material plus installed labour. RAILING-INT-STAIR-GUARD is priced as a COMPONENT system; a shop-welded guard moves cost from labour into material and the two models must not be stacked"
 drainage        = "material plus installed labour, BLENDED over two products that differ 3x (seamless K-style vs fabricated box gutter). Seamless is roll-formed on site, so its own split is inseparable and every quote will come back merged"
 floor_heat      = "material plus installed labour, backed out of published $/SF-of-floor prices. The 3 floor sensors are not in it"
-floor_finishes  = "material plus installed labour on the ORDER quantity. carpet-pad carries labour = 0 on purpose: laying the pad is inside the carpet rate"
+floor_finishes  = "material plus installed labour on the ORDER quantity. carpet-pad and catlin-bedroom-carpet-pad carry labour = 0 on purpose: laying the pad is inside the carpet rate"
 placeables      = "unit price plus INSTALL labour. Rough-in is billed by the foot in [pipe_runs], [ducts] and [conduit]; branch-circuit conductors are in neither and are the largest single omission in the file"
 envelope_layers = "material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is NINE rows keyed on fixing method, seam profile and gauge, not one: mechanical seam, snap lock, nail strip, 26 ga nail strip, exposed-fastener PBR in BOTH gauges, 7/8 in corrugated in BOTH gauges, and 24 ga concealed-fastener board & batten differ by up to $4.50/SF of LABOUR and must never be re-merged. Since 2026-09-14 the live wall rows are all 24 ga (PVDF is a 24 ga product at Metal Sales) and the two 26 ga rows sit at 0 SF as the documented reverts, alongside snap-lock and 26 ga nail strip. The two EXPOSED-fastener rows are the odd ones out and the split matters beyond labour: PBR and corrugated are the wall panels whose FIXINGS are billed as a separate counted part ([hardware] T09150HWAM, 1,804 screws), because a face-fastened panel opts in via Material.exposed_fastener. Every other row, board & batten included, has its clips and fixings inside its $/SF rate. Folding those screws back into this section, or adding a screw count against any of the concealed rows, double-bills them"
 framing         = "material plus installed labour, $/LF of ordered stock. Add 10-15% for framing general conditions (mobilisation, bracing, layout, hardware, punch-out), which no per-unit rate captures"

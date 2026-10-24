@@ -127,12 +127,12 @@ MAIN_FIXTURES = (
     # rather than a tub-shower combination, so the permit schedule and future owner
     # selections can treat them independently.
     #
-    # The shower sits hard against W-M-BDN1's face at y=13'-2 3/8", and the shower's north
-    # face and the tub deck's south face are on the SAME LINE (y=16'-2 3/8"), so
+    # The shower sits hard against W-M-BDN1's face at y=13'-2 1/4", and the shower's north
+    # face and the tub deck's south face are on the SAME LINE (y=16'-2 1/4"), so
     # W-M-TUBDK-S is one framed 2x3 run doing both jobs — the deck's south knee wall on its
     # north side, the shower's north wall on its south. The two wet fixtures read as one
     # built element down the east wall instead of two boxes with dead floor between them.
-    # The room's depth is spent exactly: 36" of shower + 70 1/4" of deck = 106 1/4" clear.
+    # The room's depth is spent exactly: 36" of shower + 70.365" of deck = 106.365" clear.
     #
     # `drain_position` is unchanged and is NOT the pan's centre — it never was; it is where
     # PR-B-SH2-DRAIN picks the waste up on its way to the stack. Left alone deliberately.
@@ -143,13 +143,14 @@ MAIN_FIXTURES = (
     # pan's east edge is x=7'-10 5/8" (94.615"), the wall's own PAINTED face, which is the
     # datum N-M-TUBDK-E already uses on this same wall four feet north and the reason for
     # the file's 0.01" rounding convention — struck on the gwb at 94.625" instead, the pan
-    # would sit 1/100" inside the finish. y moved 1/8" north with the 1/2" knee-wall board
-    # (2026-10-23), so the north face still shares W-M-TUBDK-S's line. The aisle to the vanity is 33 11/16".
-    # Centre drain (Swanstone SS-3636) at x of the pan centre, but y 2 5/8" south of it: at
-    # y=14'-8 3/8" the riser stands on joist 11's top flange (174 3/4"..177 1/4"). y=14'-11" is
+    # would sit 1/100" inside the finish. The owner moved the knee wall and pan 1/8"
+    # south (2026-10-23), closing the south jamb gap while keeping the 36" pan and
+    # north shared line. The aisle to the vanity is 33 11/16".
+    # Centre drain (Swanstone SS-3636) at x of the pan centre, but y 2 3/4" north of it: at
+    # y=14'-8 1/4" the riser stands on joist 11's top flange (174 3/4"..177 1/4"). y=14'-11" is
     # the nearest bay point that clears the flange by 1/2" for a 2" pipe. PR-B-SH2-DRAIN.
     Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36-THERMO-COMBO", room="RM-M-BATH2",
-            position=pt(ft(6, 4.615), ft(14, 8.375)), rotation=deg(-90), wall_ref="W-M-BA2E",
+            position=pt(ft(6, 4.615), ft(14, 8.25)), rotation=deg(-90), wall_ref="W-M-BA2E",
             drain_position=pt(ft(6, 4.615), ft(14, 11))),
     # ** THE KOHLER K-1130-W1-0 UNDERSCORE, A DROP-IN (2026-10-22; K-5713-W1 before). ** No
     # skirt: it drops through SL-M-TUBDK onto a 1"-2" mortar bed on the subfloor, and the rim
@@ -195,7 +196,7 @@ MAIN_FIXTURES = (
     # `Room.clear_face` put RM-M-BATH2's west edge at x=5/8" (W-M-W3's paint face is x=6 5/8")
     # and a cabinet placed on it stood six inches in the studs; it is the finish face now.
     # The faces here are read off the walls' own layer polygons: W-M-W3 at x=6.635",
-    # W-M-BDN1 at y=158.375", W-M-HS1 at y=264.615", W-M-BA2E at x=94.625".
+    # W-M-BDN1 at y=158.25", W-M-HS1 at y=264.615", W-M-BA2E at x=94.625".
     #
     # So the centre is x=15 5/8" (18" of depth off the west face) and y=15'-2 3/8" (48" of
     # length off the south face), hard into the room's real south-west corner. It runs NORTH

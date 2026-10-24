@@ -29,7 +29,7 @@ The rim sits on ≤⅛" spacers at 22¾", so the visible deck is a thin U around
 |---|---|---|
 | W | rim 62.49 − apron face 58.615 | 3⅞": apron at the pan's west edge; Flex rail is inset 1⅜" |
 | N, at HS1/HS2 | deck 264.615 − rim 262.615 | 2" |
-| S, the foot ledge | rim 202.615 − deck 194.375 | 8¼": filler, glass |
+| S, the foot ledge | rim 202.615 − deck 194.25 | 8.365": filler, glass |
 | E, at BA2E | deck 94.615 − rim 94.49 | ⅛": silicone only |
 
 (K-1130-W1, 60 × 32, since 2026-10-22.)
