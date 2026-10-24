@@ -85,7 +85,9 @@ def best_host(model: ResolvedModel, obj: ResolvedCanvasObject) -> Host | None:
                 or host.body_z0_m > z + _EPS
                 or host.body_z1_m < (obj.body_z1_m or z) - _EPS):
             return None
-        fixture_type = next((entry for entry in model.plan.library.fixture_types
+        fixture_types = getattr(getattr(getattr(model, "plan", None), "library", None),
+                                "fixture_types", ())
+        fixture_type = next((entry for entry in fixture_types
                              if entry.tag == host.type_ref), None)
         cabinet = getattr(fixture_type, "cabinet_body_footprint", None)
         if cabinet is not None:

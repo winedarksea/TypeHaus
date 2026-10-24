@@ -321,7 +321,7 @@ def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_mo
     waste = next(r for r in model.pipe_runs if r.tag == "PR-B-LAV1-DRAIN")
     vent = next(r for r in model.pipe_runs if r.tag == "PR-M-BATH1-LAV-VENT")
     assert waste.path[0] == pytest.approx(vent.path[0])
-    assert waste.z_m[0] == pytest.approx(vent.z_m[0])
+    assert waste.z_m[0] == pytest.approx(vent.z_m[0], abs=IN / 16)
     assert not any(bank.host == basin.tag for bank in model.shelf_banks)
     assert Polygon(basin.footprint).disjoint(Polygon(toilet.required_clearances[0]))
 

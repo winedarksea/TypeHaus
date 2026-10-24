@@ -93,8 +93,11 @@ def test_selected_products_and_installation_parts_bill_once(catlin_model_ro):
         assert prices["install_parts"][part]["low"] > 0
     assert prices["install_parts"][faucet]["low"] == 179.95
     assert prices["allowances"]["plumbing-faucets-and-tub-filler"] == {"low": 1394, "high": 2235}
-    # The graph's generic wye is replaced by the upright sanitary tee in the loose kit.
+    # This fitting type also serves the attic lav and basement sink branch.
     tie = next(row for row in fitting_takeoff(catlin_model_ro)
                if row["fitting"] == "wye-2x1.5in")
-    assert tie["tags"] == ["PR-M-KITCH-LOCAL-DRAIN"] and tie["count"] == 1
+    assert set(tie["tags"]) == {
+        "PR-A-STUBATH-LAV-DRAIN", "PR-B-SINK2-DRAIN", "PR-M-KITCH-LOCAL-DRAIN",
+    }
+    assert tie["count"] == 3
     assert prices["pipe_fittings"][tie["fitting"]] == {"low": 0, "high": 0}

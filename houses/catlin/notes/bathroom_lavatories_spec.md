@@ -49,11 +49,13 @@ connection and the 3D port at the same height.
 
 These EXACT ports are **chosen installation setout**, not claims that a maker publishes a
 fixed trap height. IKEA's assembly instructions give adjustable plumbing, not fixed outlet
-coordinates. The fabricated bowls' mouths are 16⅜ × 13 in., centered across each cabinet,
-with local y = -1⅛ in.; the faucet hole is 2½ in. off the back, leaving its 2¼ in. base
-clear of the bowl mouth. This moves the bowl ⅝ in. forward from the earlier generic symbol.
-Unpublished ORRSJÖN bowl and faucet center setbacks must be checked against the physical top;
-the massing is illustrative. Do not fabricate a bowl template from that mesh.
+coordinates. The fabricated SEKTION/Corian bowls' mouths are 16⅜ × 13 in., centered across
+each cabinet, with local y = -1⅛ in.; their faucet holes are 2½ in. off the back, leaving
+the 2¼ in. faucet base clear of the bowl mouth. This moves those bowls ⅝ in. forward from
+the earlier generic symbol. Those dimensions do not describe the purchased ORRSJÖN,
+Chulton, or SUNNERSTA basins. Their bowl and faucet setbacks must be checked against the
+physical products; the model massing is illustrative. Do not fabricate a bowl template
+from those meshes.
 
 | Fixture | Drain (x, y; AFF z) | Hot (x, y; AFF z) | Cold (x, y; AFF z) | Certainty |
 |---|---|---|---|---|
@@ -67,8 +69,10 @@ the massing is illustrative. Do not fabricate a bowl template from that mesh.
 | `FX-A-STUBATH-LAV` | (164.625, 265.625; 20.000) | (161.625, 265.625; 24.000) | (167.625, 265.625; 24.000) | EXACT setout |
 | `FX-A-STUDIO-BAR-SINK` | (152.500, 201.740; 20.000) | (149.500, 201.740; 24.000) | (155.500, 201.740; 24.000) | APPROXIMATE |
 
-The common installation stations are **20 in. waste and 24 in. supply AFF**. Their
-storey-relative authored elevations include each room's finished-floor thickness. `mep.fixture_port_connection` checks
+The standard installation stations are **20 in. waste and 24 in. supply AFF**. Resolved
+storey-relative elevations also include each room's finished-floor thickness; the powder
+bowl's 20 in. AFF drain is authored at 20.9862 in. above the main-floor storey datum.
+`mep.fixture_port_connection` checks
 serving run endpoints in plan and elevation (1 in. exact tolerance; 3 in. reporting band for
 approximate ports). An approximate station always returns UNKNOWN. Authored drain overrides
 more than 1 in. from the port fail independently. Carrier-wall drain snapping is retained.
