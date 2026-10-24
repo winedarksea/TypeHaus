@@ -16,6 +16,15 @@ _BEDROOM_CUSHION = "catlin-bedroom-carpet-pad"
 _BEDROOM_ROOMS = {"RM-M-BED", "RM-M-CLOSET", "RM-S-BED1", "RM-S-BED2", "RM-S-BED3"}
 
 
+def test_bedroom_carpet_presentation_matches_the_provisional_selection(catlin_plan):
+    material = next(item for item in catlin_plan.library.materials
+                    if item.tag == _BEDROOM_FINISH)
+    assert material.color == "#e5dccb"
+    assert material.finish == "carpet-pile"
+    # Product pile height is not the installed assembly depth; keep coordination pending.
+    assert material.finish_thickness_in == 0.75
+
+
 @pytest.fixture(scope="module")
 def floor_rows(catlin_model_ro):
     return floor_finish_rows(catlin_model_ro)

@@ -10,6 +10,7 @@ import {
   buildRoomFloor, storeyFloorTopM,
 } from "./structure";
 import { plankTileSizeM, WOOD_PLANK_STYLES } from "../plankMaterial";
+import { CARPET_TILE_M } from "../carpetMaterial";
 import {
   DEFAULT_FLOOR_SURFACE, FLOOR_FINISH_SURFACE, floorSurface, materialColor,
   RESOLVED_NORDIC_PALETTE, type MaterialAppearance,
@@ -28,6 +29,7 @@ const MATERIALS: MaterialAppearance[] = [
   // A house-local floor: no needle matches its tag, so only its declared recipe boards it.
   { tag: "house-oak", color: "#c9b08c", finish: "plank-floor" },
   { tag: "carpet", color: "#9c8f80" },
+  { tag: "catlin-carpet-raised", color: "#e5dccb", finish: "carpet-pile", finish_thickness_in: 0.75 },
   { tag: "tile", color: "#dfe3e5" },
   { tag: "house-tile", color: "#f2efe8", finish: "tile-calacatta-gold-hex", finish_thickness_in: 0.75 },
   // Sealed concrete is a *coating*: a sealer on the slab, no thickness of its own.
@@ -178,6 +180,18 @@ export function runRoomFloorTests() {
     "…and takes oak's roughness through its recipe, not the default");
   assert("#" + (houseOak.material as THREE.MeshStandardMaterial).color.getHexString()
     === "#c9b08c", "…in its own authored colour");
+
+  const bedroomCarpet = build(room("catlin-carpet-raised")).group;
+  const carpetMesh = bedroomCarpet.children[0] as THREE.Mesh;
+  const carpetMaterial = carpetMesh.material as THREE.MeshStandardMaterial;
+  const carpetUv = carpetMesh.geometry.getAttribute("uv");
+  const carpetU = Array.from({ length: carpetUv.count }, (_, i) => carpetUv.getX(i));
+  assert(Math.abs(Math.max(...carpetU) - Math.min(...carpetU) - 4 / CARPET_TILE_M) < 1e-4,
+    "The bedroom carpet recipe gets world-scaled pile UVs through the room builder");
+  assert(carpetMaterial.color.getHexString() === "e5dccb" && carpetMaterial.roughness === 1,
+    "Bedroom carpet keeps the selected warm cream and matte pile surface");
+  assert(Math.abs(new THREE.Box3().setFromObject(bedroomCarpet).max.y - (3 + 0.75 * 0.0254)) < 1e-6,
+    "The carpet presentation retains the provisional assembly elevation");
 
   // --- 4. geometry: over the deck, and not capping the stair well ------------------------
 
