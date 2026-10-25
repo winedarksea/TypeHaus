@@ -46,6 +46,15 @@ from plan.titanium_types import TITANIUM_PRODUCTS
 from typehaus.library.placeables import STARTER_FURNITURE_PRODUCTS
 from typehaus.model import Product
 
+SEVERIN_WK3422 = Product(
+    tag="PROD-SEVERIN-WK3422", brand="SEVERIN", model="WK 3422",
+    name="Professional tea maker with automatic lift function, UK plug",
+    url="https://severin.com/en-en/nutrition-preparation/coffee-breakfast/"
+        "kettles-tea-makers/wk-3422-professional-tea-maker-with-automatic-lift-function/",
+    source="Manufacturer dimensions and 3000 W rating, read 2026-10-25. UK plug and "
+           "no-true-neutral requirement confirmed by owner; see APPL-SEVERIN-WK3422.",
+)
+
 # --- the LG kitchen and laundry ---------------------------------------------------------
 #
 # The owner's LG choice, three machines (plan/appliance_types.py). The model number IS the
@@ -289,6 +298,7 @@ LEVITON_EV_RECEPTACLE_1450R = Product(
 # One catalog to every ``product_ref`` and to the manifest; two files only because of the
 # 500-line rule.
 PRODUCTS = (
+    SEVERIN_WK3422,
     TREX_TIDE_POOL_PRODUCT, EXTRUTECH_P1600,
     LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER, ISE_BADGER_5, BROAN_BWP1304SS,
     KRAUS_KHU100_32, KRAUS_BOLDEN, DEARBORN_KITCHEN_TRAP,

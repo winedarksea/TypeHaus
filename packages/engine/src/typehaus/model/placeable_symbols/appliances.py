@@ -18,6 +18,7 @@ from typehaus.model.placeable_symbols._frame import (
     prism,
     rect,
 )
+from typehaus.model.placeable_symbols._tea_kettle import tea_kettle
 
 __all__ = ["APPLIANCE_SYMBOLS"]
 
@@ -305,6 +306,7 @@ def grille(*, louvers: int = 5) -> Builder:
 
 
 APPLIANCE_SYMBOLS: dict[str, Builder] = {
+    "tea-kettle": tea_kettle,
     # A French-door refrigerator: two fresh-food doors over a freezer drawer would need a
     # nested split, so the pair of full-height doors is the honest simplification.
     "refrigerator": appliance_case(doors=2, split="vertical", body="appliance-steel"),

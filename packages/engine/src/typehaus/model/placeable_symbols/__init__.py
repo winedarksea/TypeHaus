@@ -87,7 +87,7 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset({
     "tall-cabinet-double", "tall-cabinet-triple", "besta", "tannforsen-wall", "countertop-bracket",
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
-    "microwave", "hood",
+    "microwave", "hood", "tea-kettle",
     "furnace", "erv", "heat-pump-outdoor", "water-heater", "sauna-heater", "panel", "register",
     "disconnect", "meter", "junction-box",
     # plumbing fixtures. "hydrant" is the odd one out: it is a standpipe, not a vessel, so

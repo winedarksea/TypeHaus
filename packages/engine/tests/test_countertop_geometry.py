@@ -14,6 +14,22 @@ from typehaus.server.model_json import model_to_dict
 INCH = 0.0254
 
 
+def test_tea_kettle_stands_on_north_counter_clear_of_sink_and_uppers(catlin_model_ro):
+    model = catlin_model_ro
+    objects = {obj.tag: obj for obj in model.canvas_objects}
+    kettle = objects["APPL-M-KETTLE"]
+    top = next(item for item in model.countertops if item.tag == "CT-M-KIT-N")
+    assert Polygon(top.outline).covers(Polygon(kettle.footprint))
+    assert kettle.body_z0_m == pytest.approx(countertop_prisms(model, top)[0].z1_m)
+    assert kettle.body_z1_m - kettle.body_z0_m == pytest.approx(0.275)
+    assert not Polygon(kettle.footprint).intersects(
+        Polygon(objects["FX-M-KITCH-SINK"].footprint))
+    assert kettle.body_z1_m < objects["FURN-M-KIT-WE1"].body_z0_m
+    # The intended outlet remains within a short countertop cord run.
+    assert Polygon(kettle.footprint).distance(
+        Polygon(objects["ED-M-LIVING-KET1"].footprint)) < 0.30
+
+
 def test_the_peninsula_draws_its_notched_slab_at_the_counter(catlin_model_ro):
     top = next(item for item in catlin_model_ro.countertops
                if item.tag == "CT-M-KIT-PENINSULA")

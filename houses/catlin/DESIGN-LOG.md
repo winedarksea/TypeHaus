@@ -6191,3 +6191,22 @@ swing; its abrasion-resistant gypsum and ERV supply manifold keep their physical
 The closet, mudroom and exterior-entry switches now form a 3-gang bank on the east
 face of W-M-MUDC-E, at 13", 9" and 5" from its north end, still 46" above the datum.
 This clears the first stud bay and avoids the open entry leaf at W-M-MECH-E.
+
+## Countertop tea maker selected (2026-10-25)
+
+SEVERIN WK 3422, UK plug, is APPL-M-KETTLE on CT-M-KIT-N above the B12 west of
+the dishwasher. Manufacturer envelope is 240 W × 220 D × 275 H mm; the glass jug,
+steel bands, automatic-lift basket, side handle and control base have a shared
+plan/3D symbol with approximate internal proportions. Base elevation is 36" AFF,
+matching the stone top; the upper cabinet starts at 53 1/2" AFF.
+
+The owner confirmed that this unit does not require a true neutral. Planned supply
+is the existing ED-M-LIVING-KET1 6-20R on CKT-KETTLE, 240 V line-to-line plus
+protective earth, through a grounded NEMA 6-20P to international/UK Type G adapter.
+The adapter is counted once in the appliance's installation parts. The owner's
+example listing has multiple plug variants; the specified variant is 6-20P.
+Compatibility is recorded as owner confirmed, not independently certified by the
+model. The existing 3,000 VA circuit allowance now names the selected 3,000 W kettle.
+
+Manufacturer: https://severin.com/en-en/nutrition-preparation/coffee-breakfast/kettles-tea-makers/wk-3422-professional-tea-maker-with-automatic-lift-function/
+Adapter example: https://www.amazon.com/Universal-110-250V-American-Electrical-converter/dp/B07FKLRLRT

@@ -20,6 +20,25 @@ from typehaus.model import Product
 from typehaus.source import load_plan
 
 
+def test_catlin_tea_kettle_product_and_supply(catlin_plan):
+    from typehaus.model import Appliance, Service
+
+    kettle_type = next(item for item in catlin_plan.library.appliance_types
+                       if item.tag == "APPL-SEVERIN-WK3422")
+    product = catlin_plan.library.product(kettle_type.product_ref)
+    assert (product.brand, product.model) == ("SEVERIN", "WK 3422")
+    assert tuple(d.meters for d in kettle_type.footprint) == pytest.approx((0.240, 0.220))
+    assert kettle_type.needs == frozenset({Service.POWER_240})
+    elements = catlin_plan.elements["main"]
+    kettle = next(item for item in elements if isinstance(item, Appliance)
+                  and item.tag == "APPL-M-KETTLE")
+    assert len(kettle.install_parts) == 1
+    assert "6-20P" in kettle.install_parts[0]
+    circuit = next(item for item in catlin_plan.library.circuits if item.tag == "CKT-KETTLE")
+    assert (circuit.poles, circuit.breaker_amps, circuit.load_va) == (2, 20, 3000)
+    assert circuit.gfci
+
+
 def _library_with(plan, **updates):
     return plan.model_copy(update={"library": plan.library.model_copy(update=updates)})
 

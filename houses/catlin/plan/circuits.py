@@ -144,12 +144,12 @@ CIRCUITS = (
     # 3.2' from the kitchen sink. E3902.10 reaches it despite being 240V (it covers 125V
     # through 250V receptacles at 50A or less), and a 2-pole GFCI breaker is the only
     # place to protect a 6-20R.
-    # load_va 3,000 is a typical 240 V kettle nameplate; replace it with the purchased unit's
-    # rating. The old 3,840 was the breaker (20 A x 240 V), not a load. Run time (~5 min/day)
+    # SEVERIN WK 3422 selected 2026-10-25: published 3,000 W nameplate.
+    # The old 3,840 was the breaker (20 A x 240 V), not a load. Run time (~5 min/day)
     # earns nothing in 220.82; only a 120 V kettle on a small-appliance circuit leaves the count.
     Circuit(uid="CKT011AAAA", tag="CKT-KETTLE", slot=14, panel_ref=_PANEL, breaker_amps=20, poles=2,
             nema="6-20R", gfci=True, load_va=3000,
-            description="Kitchen kettle outlet (6-20R half)"),
+            description="SEVERIN WK 3422 tea maker via UK adapter (6-20R half)"),
     # The EG4 12kPV's grid port, at the opposite end of the bus from the main (120% rule
     # headroom is why the panel is a 225A bus on a 200A main). Both PV and battery reach the
     # service through this one breaker — the array lands on the inverter's MPPTs

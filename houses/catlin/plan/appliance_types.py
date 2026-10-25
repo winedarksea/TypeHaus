@@ -35,7 +35,7 @@ those two are Broan and InSinkErator (owner 2026-10-22).
 
 from __future__ import annotations
 
-from typehaus.model import ApplianceType, Service, ServicePort, ft, inch
+from typehaus.model import ApplianceType, Service, ServicePort, ft, inch, mm
 
 from library.placeables import front_zone
 from library.placeables.appliances import (
@@ -321,6 +321,22 @@ BADGER_5 = DISPOSAL.model_copy(update={
 })
 
 
-APPLIANCE_TYPES = (LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER, BROAN_HOOD_30, BADGER_5,
+SEVERIN_TEA_KETTLE = ApplianceType(
+    tag="APPL-SEVERIN-WK3422", name="SEVERIN WK 3422 automatic-lift tea maker (UK plug)",
+    product_ref="PROD-SEVERIN-WK3422",
+    footprint=(mm(240), mm(220)), height=mm(275), plan_symbol="tea-kettle",
+    needs=frozenset({Service.POWER_240}),
+    ports=(ServicePort(tag="power", service=Service.POWER_240,
+                       position=(mm(0), mm(110), mm(0))),),
+    source="SEVERIN WK 3422 product page, read 2026-10-25: 240 W x 220 D x 275 H mm, "
+           "3000 W, 1.7 L water / 1.0 L tea. UK Type G plug per owner. Owner confirmed "
+           "2026-10-25 that this unit does not require a true neutral; planned supply is "
+           "240 V line-to-line plus protective earth from ED-M-LIVING-KET1 / CKT-KETTLE "
+           "through a grounded NEMA 6-20P to international/UK adapter. Adapter is a plug "
+           "adapter, not a voltage converter; compatibility confirmation is owner supplied.",
+)
+
+
+APPLIANCE_TYPES = (SEVERIN_TEA_KETTLE, LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER, BROAN_HOOD_30, BADGER_5,
                    FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
                    BAR_REFRIGERATOR, BAR_REFRIGERATOR_CUBE)

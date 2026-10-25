@@ -104,6 +104,15 @@ MAIN_KITCHEN_CASEWORK = [
     # Pantry face x=297 3/8; 12 + 24 DW + 36 sink + 18 = 90 inches to the carousel.
     Furniture(uid="49B0RDP4NW", tag="FURN-M-KIT-E1", type_ref="SEKT-B12", room="RM-M-LIVING",
               position=pt(inch(303.375), inch(413.375))),
+    # On CT-M-KIT-N above B12, west of the dishwasher/sink, beside KET1 at x=306".
+    # Base cabinets' 36" envelope includes the stone; the kettle stands on that top.
+    # Owner-confirmed UK line-to-line use; selected adapter example:
+    # https://www.amazon.com/Universal-110-250V-American-Electrical-converter/dp/B07FKLRLRT
+    # Select the grounded 6-20P variant. The wall receptacle is 6-20R (P is the plug).
+    Appliance(uid="TEAKET3422", tag="APPL-M-KETTLE", type_ref="APPL-SEVERIN-WK3422",
+              room="RM-M-LIVING", position=pt(inch(303.375), inch(416.375)),
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(36)),
+              install_parts=("Grounded NEMA 6-20P to international UK Type G plug adapter",)),
     Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="SEKT-SINK-B36",
               room="RM-M-LIVING",
               position=pt(inch(351.375), inch(413.375))),
