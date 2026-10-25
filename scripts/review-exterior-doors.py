@@ -114,7 +114,7 @@ def render_cuts(model):
             ax.set_xlim(-9,12)
             if row==0:
                 ax.set_ylim(-5,10)
-                ax.text(.02,.95,"Threshold/support unresolved — visual acceptance pending",
+                ax.text(.02,.95,"Sill design envelope — factory section / structural support pending",
                         transform=ax.transAxes,va="top",fontsize=8,color="#a02e27")
             elif row==1:
                 ax.set_ylim(70,90)

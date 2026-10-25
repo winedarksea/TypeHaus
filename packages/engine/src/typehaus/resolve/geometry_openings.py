@@ -392,6 +392,9 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
             if part.key in {"frame", "mullion", "jamb_liner", "stop", "shadow_gap"}:
                 bottom = (assembly.leaf_bottom_z_m if is_trimless
                           and part.key in {"stop", "shadow_gap"} else assembly.jamb_bottom_z_m)
+                if (part.key == "mullion" and assembly.exterior_placement
+                        and assembly.exterior_placement.sill_design_status == "SCHEMATIC"):
+                    bottom = assembly.leaf_bottom_z_m
                 solids = tuple(replace(s, z0_m=bottom) if isinstance(s, GPrism)
                                and s.z0_m < bottom < s.z1_m else s for s in part.solids)
                 part = replace(part, solids=solids)

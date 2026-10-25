@@ -8,7 +8,9 @@ def door_part_color(part, authored, *, linear_paint_defaults=False):
     ref = part.catalog.material_ref if part.catalog else None
     # Installation boards retain their lumber identity for purchasing; their finish
     # is the specified painted trim palette, shared with the live viewer.
-    if part.catalog and part.catalog.role == "door_installation":
+    if part.catalog and (part.catalog.role == "door_installation"
+                         or part.catalog.role == "door_sill_design"
+                         and part.material_key == "window_trim"):
         ref = None
     if not ref:
         color = _color(part.material_key)

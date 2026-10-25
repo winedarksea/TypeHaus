@@ -207,12 +207,15 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     roughness: 0.2, metalness: 0.05, depthWrite: false });
   // Section normal offsets are relative to the wall axis, independent of the pocket leaf.
   buildDoorway(opening, openingCenter, direction, center, parent, (ref, materialKey) =>
-    standardMaterial(new THREE.Color(materialColor(ref, palette, materials)), mode,
+    standardMaterial(materialKey === "window_trim" ? categoryColor("window_trim")
+      : new THREE.Color(materialColor(ref, palette, materials)), mode,
       materialKey === "door_hardware" ? { metalness: 0.8, roughness: 0.35 }
         : { metalness: 0, roughness: 0.45 }));
   for (const board of placement?.boards ?? []) {
-    const material = standardMaterial(categoryColor(board.material_key === "window_trim"
-      ? "window_trim" : "door_frame"), mode, { roughness: 0.45 });
+    const material = standardMaterial(board.role && board.role !== "door_installation"
+      ? materialColor(board.material_ref, palette, materials)
+      : categoryColor(board.material_key === "window_trim" ? "window_trim" : "door_frame"),
+    mode, { roughness: 0.45 });
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(board.width_m, board.height_m,
       board.depth_m), material);
     mesh.position.copy(projectPointToScene([
@@ -318,7 +321,12 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     const mullionWidth = Math.min(frameWidth, (opening.width_m - 2 * frameWidth) / 6);
     const leafWidth = Math.max(0.01, (opening.width_m - 2 * frameWidth - mullionWidth) / 2);
     const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
-    addBox(mullionWidth, availableHeight, depth, 0, midElevation, frameMaterial);
+    const astragalBottom = placement?.sill_design_status === "SCHEMATIC"
+      ? opening.doorway?.leaf_bottom_z_m : null;
+    const astragalTop = baseRefZ(wall) + opening.sill_m + availableHeight;
+    addBox(mullionWidth, astragalBottom == null ? availableHeight : astragalTop - astragalBottom,
+      depth, 0, astragalBottom == null ? midElevation : (astragalTop + astragalBottom) / 2,
+      frameMaterial);
     const leafMaterial = isGlazed ? glassMaterial : solidLeafMaterial;
     const leafThickness = isGlazed ? 0.015 : 0.045;
     addBox(leafWidth, panelHeight, leafThickness, -mullionWidth / 2 - leafWidth / 2, panelElevation, leafMaterial);

@@ -29,11 +29,13 @@ def test_catlin_doors_have_structural_mount_and_independent_returns(catlin_model
     assert all(f is not None and f.surface_m is not None for f in assembly.adjacent_floors)
     assert assembly.adjacent_floors[0].room_tag is None
     assert placement.frame_outer_m != placement.frame_inner_m
-    assert len([b for b in placement.boards if b.name.startswith("exterior-return")]) == 3
-    assert len([b for b in placement.boards if b.name.startswith("exterior-casing")]) == 3
+    wood_boards = [b for b in placement.boards if b.role == "door_installation"]
+    assert len([b for b in wood_boards if b.name.startswith("exterior-return")]) == 3
+    assert len([b for b in wood_boards if b.name.startswith("exterior-casing")]) == 3
     assert all(b.height_m > 0 and b.depth_m > 0 for b in placement.boards)
     parts = opening_parts(wall, opening, next(t.operation for t in model.plan.library.door_types
-                                            if t.tag == opening.type_ref), is_glazed=tag=="D-M-BALC")
+                                            if t.tag == opening.type_ref),
+                          is_glazed=tag == "D-M-BALC")
     origin, tangent, normal, _ = wall_frame(wall)
     for part in parts:
         if part.key != "frame":
@@ -60,12 +62,13 @@ def test_catlin_doors_have_structural_mount_and_independent_returns(catlin_model
     head = next(mesh for key, _, _, mesh in opening_flashing_meshes(wall, opening, frame)
                 if key == "head")
     assert max(z for _, _, z in head.positions) > assembly.rough_opening_z_m + opening.height_m
-    rows = [r for r in door_installation_rows(model) if tag in r.get("element_tags", r.get("tags", []))]
-    assert len(rows) == len(placement.boards)
-    assert all(r["cut_pieces"][0]["thickness_in"] == pytest.approx(.75) for r in rows)
+    rows = [r for r in door_installation_rows(model) if tag in r.get("tags", [])]
+    lumber_rows = [r for r in rows if r["cut_pieces"]]
+    assert len(lumber_rows) == len(wood_boards)
+    assert all(r["cut_pieces"][0]["thickness_in"] == pytest.approx(.75) for r in lumber_rows)
     trim = [r for r in interior_trim_takeoff(model)
             if tag in r["tags"] and "painted site-built board" in r["description"]]
-    assert rows == trim
+    assert lumber_rows == trim
     assert not any(r["scope"] == "exterior door installation trim"
                    for r in door_hardware_rows(model))
 
@@ -224,3 +227,132 @@ def test_catlin_garage_keeps_raised_service_support_and_overhead_operation(catli
     parts = opening_parts(catlin_model_ro.wall(overhead.host_wall), overhead, product.operation)
     assert not any(p.key.startswith("installation:") for p in parts)
     assert len(next(p for p in parts if p.key == "frame").solids) == 3
+
+
+@pytest.mark.parametrize("tag", ["D-M-ENTRY", "D-M-BALC"])
+def test_sill_design_conceals_pan_without_claiming_factory_approval(catlin_model_ro, tag):
+    from shapely.geometry import LineString
+    from shapely.ops import unary_union
+
+    from typehaus.resolve.flashing_config import FLASHING
+    from typehaus.resolve.opening_flashing import _pan_outlet
+
+    model = catlin_model_ro
+    opening = next(o for o in model.openings if o.tag == tag)
+    wall = model.wall(opening.host_wall)
+    assembly = opening.doorway
+    placement = assembly.exterior_placement
+    sign = placement.outward_sign
+    assert placement.sill_design_status == "SCHEMATIC"
+    assert assembly.section_status == "UNKNOWN" and assembly.supplier_status == "PENDING"
+    assert assembly.status == "UNKNOWN" and not assembly.conflicts
+    assert any("structural support/anchorage" in message for message in assembly.unknown)
+    frame = opening_flashing_frame(model, wall, opening)
+    outlet = _pan_outlet(opening, frame, FLASHING)
+    base = assembly.rough_opening_z_m
+    polygons = {s.name: Polygon([(sign * n, z) for n, z in s.polygon_m])
+                for s in placement.sections}
+    assert all(p.is_valid and p.area > 0 for p in polygons.values())
+    pan_top = LineString(((sign * placement.frame_inner_m,
+        base + (outlet - sign * placement.frame_inner_m) * FLASHING.drainage_slope),
+        (outlet, base)))
+    for name, polygon in polygons.items():
+        if "nosing" not in name:
+            assert polygon.intersection(pan_top).length == 0
+    walk = [p for name, p in polygons.items() if "bearing-strip" not in name]
+    covered = unary_union([LineString(((p.bounds[0], 0), (p.bounds[2], 0))) for p in walk])
+    expected = LineString(((sign * placement.frame_inner_m, 0), (outlet, 0)))
+    assert expected.difference(covered).length < 1e-8
+    crest = max(p.bounds[3] for p in walk)
+    assert assembly.leaf_bottom_z_m > crest
+    plate = polygons["approach-walking-plate"]
+    assert plate.exterior.coords[2][1] < plate.exterior.coords[3][1]
+    strips = [s for s in placement.sections if "bearing-strip" in s.name]
+    assert all(b.along_m - a.along_m > a.span_m
+               for a, b in zip(strips, strips[1:], strict=False))
+    assert all(s.span_m < opening.width_m for s in strips)
+    isolation = placement.specification.wrap_isolation_thickness.meters
+    for strip in strips:
+        wood = polygons[strip.name]
+        assert wood.distance(polygons["approach-walking-plate"]) >= isolation * .99
+        assert wood.distance(polygons["threshold-design-envelope"]) >= isolation * .99
+    deck = next(f for f in model.floors if f.tag == assembly.adjacent_floors[0].deck_tag)
+    center = opening_center(wall, opening)
+    _, tangent, normal, _ = wall_frame(wall)
+    def local(point):
+        delta = tuple(point[i] - center[i] for i in (0, 1))
+        return (sum(delta[i] * tangent[i] for i in (0, 1)),
+                sign * sum(delta[i] * normal[i] for i in (0, 1)))
+    deck_footprint = Polygon([local(p) for p in deck.deck_outline])
+    nose = polygons["approach-drip-nosing"]
+    from shapely.geometry import box
+
+    nose_footprint = box(-opening.width_m / 2, nose.bounds[0],
+                         opening.width_m / 2, nose.bounds[2])
+    assert nose_footprint.intersection(deck_footprint).area < 1e-10
+    pan = next(mesh for key, _, _, mesh in opening_flashing_meshes(wall, opening, frame)
+               if key == "sill")
+    origin = wall.axis[0]
+    # Tall side dams end behind the return, rather than projecting as red fins at the drip.
+    assert all(sum((p[i] - origin[i]) * frame.outward[i] for i in (0, 1))
+               <= frame.clad + 1e-8 for p in pan.positions if p[2] > base + .05)
+    parts = opening_parts(wall, opening, next(t.operation for t in model.plan.library.door_types
+                         if t.tag == opening.type_ref), is_glazed=tag == "D-M-BALC")
+    if tag == "D-M-BALC":
+        assert min(s.z0_m for p in parts if p.key == "mullion" for s in p.solids) \
+            >= assembly.leaf_bottom_z_m
+    site_rows = [r for r in door_installation_rows(model)
+                 if tag in r["tags"] and r["kind"] == "exterior door approach"]
+    assert len(site_rows) == len([s for s in placement.sections if s.purchase == "site"])
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("exterior_side", [-1, 1])
+def test_sill_and_steel_wrap_follow_mirrored_structural_wall(reverse, exterior_side):
+    from typehaus.model import ExteriorDoorSillDesign
+    from typehaus.quantities import inch
+    from typehaus.resolve.exterior_door import place_exterior_door
+
+    model = structural_door_model(reverse, exterior_side)
+    wall, opening = model.walls[0], model.openings[0]
+    sign = exterior_side * wall_frame(wall)[2][1]
+    floors = (FloorSurface("landing", 0, None, None, 0),
+              FloorSurface("interior", 0, "room", "wood", .25))
+    if sign > 0:
+        floors = floors[::-1]
+    assembly = DoorwayAssembly(0, floors, "transition", 0)
+    specification = ExteriorDoorInstallation(interior_material_ref="wood",
+        exterior_wrap_material_ref="steel", sill_design=ExteriorDoorSillDesign(
+            source_url="https://example.test/design", source_drawing="synthetic design",
+            threshold_depth=inch(4.5), threshold_height=inch(1.5), cap_depth=inch(1.5)))
+    placed = place_exterior_door(model, wall, opening, assembly, specification)
+    assert not placed.conflicts
+    placement = placed.exterior_placement
+    assert placement.sill_design_status == "SCHEMATIC"
+    for board in placement.boards:
+        if board.role != "door_trim_wrap" or "outer-edge" in board.name:
+            continue
+        substrate = next(b for b in placement.boards
+                         if b.name == board.name.removesuffix("-door_trim_wrap"))
+        if "casing" in board.name:
+            gap = sign * (board.normal_m - substrate.normal_m) \
+                - (board.depth_m + substrate.depth_m) / 2
+        elif "jamb" in board.name:
+            gap = abs(board.along_m - substrate.along_m) \
+                - (board.width_m + substrate.width_m) / 2
+        else:
+            gap = substrate.z_m - board.z_m - (board.height_m + substrate.height_m) / 2
+        assert gap == pytest.approx(specification.wrap_isolation_thickness.meters)
+        assert board.material_ref == "steel"
+    for section in placement.sections:
+        assert Polygon(section.polygon_m).is_valid
+
+
+def test_local_deck_cutback_reaches_model_json(catlin_model_ro):
+    from typehaus.server.model_json import model_to_dict
+
+    floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-BW-FLOOR")
+    assert len(floor.deck_outline) > 4
+    packet = next(f for f in model_to_dict(catlin_model_ro)["floors"] if f["tag"] == floor.tag)
+    assert packet["deck_outline"] == [list(p) for p in floor.deck_outline]
+    assert packet["deck_voids"] == [[list(p) for p in ring] for ring in floor.deck_voids]

@@ -54,7 +54,7 @@ def doorway_assembly(ctx: CheckContext) -> list:
                                            (opening.tag,)))
         placement = assembly.exterior_placement
         if placement:
-            for board in placement.boards:
+            for board in (*placement.boards, *placement.sections):
                 if board.material_ref not in materials:
                     findings.append(failed(_ID, "unknown installation material "
                                            f"{board.material_ref}",

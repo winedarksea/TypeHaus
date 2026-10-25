@@ -21,6 +21,7 @@ from typehaus import (
     Door,
     DoorType,
     ExteriorDoorInstallation,
+    ExteriorDoorSillDesign,
     FloorHeat,
     FloorOpening,
     FloorOpeningPurpose,
@@ -1101,14 +1102,24 @@ OPENINGS = [
     # door reaches the west wall almost whole. See RM-M-MUDROOM below.
     Door(uid="CMD201AAAA", tag="D-M-ENTRY", host="W-M-N3", type_ref="DT-EXT-SWING36",
          position=from_node("N-M-N2", ft(0, 6)),
-         exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base")),
+         exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
+             exterior_wrap_material_ref="metal-dark-exterior",
+             sill_design=ExteriorDoorSillDesign(
+                 source_url="https://outdoorsandsecurity.widen.net/content/6ybzlyty7g/original/2026-Arch-Comp-BOOK---COMP-7-Sills.pdf",
+                 source_drawing="2026 Comp 7.3: 7-3/4 inch inswing; schematic design envelope",
+                 threshold_depth=inch(7.75), threshold_height=inch(1.5), cap_depth=inch(1.5)))),
     # Centre 21'-4" (2026-08-24, was 21'-10"): D-S-DECK-E moved to 21'-4" when the two
     # balcony doors slid 1'-0" inward, and this door stands directly under it, so the south
     # face reads as one column of French pairs rather than a 6" jog. 10" of wall to the
     # inside corner at N-M-S1, the same remnant D-S-DECK-E leaves above it.
     Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-EXT-FRENCH60",
          position=from_node("N-M-S1", ft(0, 10)), flip_swing=True,
-         exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base")),
+         exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
+             exterior_wrap_material_ref="metal-dark-exterior",
+             sill_design=ExteriorDoorSillDesign(
+                 source_url="https://www.cascadiawindows.com/products/doors",
+                 source_drawing="UW6 + v5 DWG sill outlines; schematic design envelope",
+                 threshold_depth=inch(4.5), threshold_height=inch(1.375), cap_depth=inch(1.5)))),
     # Interior
     # D-M-STAIR was here — the 32" swing in the west lane, onto the flight ST-B2M arrives in.
     # Retired 2026-08-24 with its host wall W-M-STRS; see WALLS. The stair head is open.

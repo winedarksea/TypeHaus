@@ -248,8 +248,11 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
     result.append(("perimeter", "opening_flashing_membrane", cfg.membrane_material,
                    combine_sheets(membrane)))
     if pan:
+        design = placement.specification.sill_design if placement else None
         result += _sill_pan(frame, _pan_outlet(opening, frame, cfg), lo + buck,
-                            hi - lo - 2 * buck, sill + buck, cfg)
+                            hi - lo - 2 * buck, sill + buck, cfg,
+                            end_dam_stop=frame.clad if design else None,
+                            outlet_lip=design.drainage_clearance.meters if design else 0.0)
     return result
 
 
@@ -259,12 +262,20 @@ def _drip_face(opening: ResolvedOpening, frame: OpeningFlashingFrame,
     placement = opening.doorway.exterior_placement if opening.doorway else None
     casing = (_WINDOW_TRIM_PROUD_DEPTH_M if opening.kind == "window" else
               placement.specification.casing_thickness.meters if placement else 0.0)
+    if placement and placement.specification.exterior_wrap_material_ref:
+        casing += (placement.specification.exterior_wrap_thickness.meters
+                   + placement.specification.wrap_isolation_thickness.meters)
     return frame.clad + casing + cfg.head_projection_m
 
 
 def _pan_outlet(opening: ResolvedOpening, frame: OpeningFlashingFrame,
                 cfg: FlashingConfig) -> float:
     """An outie window's pan discharges at the mount plane; every other pan at the drip."""
+    placement = opening.doorway.exterior_placement if opening.doorway else None
+    if placement and placement.specification.sill_design:
+        from typehaus.resolve.exterior_door_sill import sill_outlet_depth
+
+        return sill_outlet_depth(frame.clad, placement.specification)
     return frame.mount if frame.outie and not opening.is_door \
         else _drip_face(opening, frame, cfg)
 
@@ -298,7 +309,8 @@ def window_seat(opening: ResolvedOpening, frame: OpeningFlashingFrame,
 
 
 def _sill_pan(frame: OpeningFlashingFrame, outlet: float, lo: float, width: float,
-              seat: float, cfg: FlashingConfig) -> list[tuple[str, str, str, GMesh]]:
+              seat: float, cfg: FlashingConfig, *, end_dam_stop: float | None = None,
+              outlet_lip: float = 0.0) -> list[tuple[str, str, str, GMesh]]:
     """A sloped pan on a tapered shim, its back dam turned up a rigid strip.
 
     A window's outie pan discharges at the mount plane, behind the cladding; a door's, and
@@ -322,10 +334,21 @@ def _sill_pan(frame: OpeningFlashingFrame, outlet: float, lo: float, width: floa
                       ((dam, seat + fall), (outlet, seat)),
                       ((outlet, seat), (outlet, seat - cfg.pan_drop_m)))]
     for station, sign in ((lo, 1.0), (lo + width, -1.0)):
-        pan_meshes.append(frame.section(station, (
-            (dam, seat + fall), (outlet, seat),
-            (outlet, seat + cfg.end_dam_m), (dam, seat + cfg.end_dam_m)),
-            cfg.sill_membrane_m, sign))
+        if end_dam_stop is None:
+            profile = ((dam, seat + fall), (outlet, seat),
+                       (outlet, seat + cfg.end_dam_m), (dam, seat + cfg.end_dam_m))
+        else:
+            # Full-height upstands are buried behind the returns. Beyond them a low
+            # edge lip stays below the walking plate; a six-inch fin at the drip is exposed.
+            lip_top = seat + (outlet - end_dam_stop) * cfg.drainage_slope + outlet_lip
+            stop_bottom = seat + (outlet - end_dam_stop) * cfg.drainage_slope
+            pan_meshes.append(frame.section(station, (
+                (end_dam_stop, stop_bottom), (outlet, seat),
+                (outlet, seat + outlet_lip), (end_dam_stop, lip_top)),
+                cfg.sill_membrane_m, sign))
+            profile = ((dam, seat + fall), (end_dam_stop, stop_bottom),
+                       (end_dam_stop, seat + cfg.end_dam_m), (dam, seat + cfg.end_dam_m))
+        pan_meshes.append(frame.section(station, profile, cfg.sill_membrane_m, sign))
     return [("sill", "opening_sill_pan", cfg.membrane_material, combine_sheets(pan_meshes)),
             ("sill-support", "opening_sill_pan", cfg.sill_shim_material,
              combine_sheets(support_meshes))]

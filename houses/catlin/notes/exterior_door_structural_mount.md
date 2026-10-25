@@ -10,11 +10,14 @@ the factory frame no longer impersonates a full-depth exterior jamb extension.
 Until the factory jamb/hinge dimensions are documented, the frame is explicitly
 schematic within the stud depth. This does not certify a factory jamb size.
 
-Outboard of the factory frame, three **3/4-inch painted KDAT return boards** close
+Outboard of the factory frame, three **3/4-inch KDAT return substrates** close
 the two jambs and head through the exterior wall build-up. **3-1/2-inch face ×
-3/4-inch thick painted KDAT casing** finishes the exterior perimeter in the existing
-charcoal trim color. The head flashing clears this casing, including its thickness
-and end laps. Interior extensions use painted finger-jointed pine where necessary.
+3/4-inch thick KDAT casing substrates** finish the exterior perimeter. Owner selected
+**charcoal PVDF steel over wood**, matching the house trim. The model separates the
+0.024-inch steel skins from the 0.020-inch isolation membrane and the wood beneath;
+the casing jambs also have outer edge returns. These are finish skins, not factory
+jambs or structural threshold plates. The head flashing clears the complete wrapped
+casing, including its thickness and end laps. Interior extensions use painted pine.
 These are separate measured boards in the trim takeoff, with cut dimensions and
 material references; factory-included sill components are not billed again.
 
@@ -72,9 +75,47 @@ purchase confirmation. Doorway JSON/IFC expose section, supplier and fit statuse
 Missing geometry or installation data remains UNKNOWN; measured conflicts remain FAIL.
 Existing `verified` section records retain their behavior for compatibility.
 
-**Neither reported doorway passes finished-threshold visual acceptance yet.** The
-placement, trim, flooring, sole-plate and head-flashing changes are modeled, but no
-invented sill or unsupported approach is inserted to cover the remaining pan.
+The follow-up to c1b1b25f adds a **separately identified schematic sill design** to both
+doors, rather than leaving the exposed pan as the only bottom geometry. It does **not**
+set `section_documented`, `supplier_confirmed`, or a VERIFIED fit. The factory frame,
+threshold internals, cap, jamb/leaf terminations and seals still require supplier data.
+`exterior_placement.sill_design_status` is `SCHEMATIC`; approved product sections cannot
+be overlaid with this design envelope.
+
+The entry envelope uses the published 7-3/4 × 1-1/2-inch Therma-Tru option. The balcony
+envelope uses the 4-1/2 × 1-3/8-inch bounds of the recovered Cascadia v5 sill outlines.
+These overall dimensions do not establish the chosen cap width, cap height, ramp shape,
+seat, underside, or seal. Those are explicit project design parameters. The solids are
+simplified masses, not traced or verified extrusions; the generic composite cap material
+is illustrative. The leaf bottom clears the design crest, the factory jamb envelope
+starts at the design seat, and the French-door astragal ends above the sill.
+
+A separate **1/4-inch aluminum walking plate**, pitched outward 1/4 inch per foot,
+covers the remaining deep approach. It sits on outward-running KDAT bearing strips at
+no more than 8 inches o.c.; the channels between strips remain open.
+The strips' metal contact faces have separate 0.020-inch isolation films; the aluminum
+does not bear directly on treated wood. These films use the opening-flashing allowance.
+A 1/8-inch side joint separates the plate from the steel-wrapped returns.
+The nosing shields the pan's downturned
+edge, with an open discharge behind it and no bottom return. The tall pan end dams now
+end behind the jamb returns; beyond that, only a low edge lip continues beneath the
+approach. Previously, six-inch fins projected past the casing into open air.
+The sill outlet projects 1/8 inch beyond the wrapped casing; the separate head drip still
+projects 1/2 inch. The nosing's vertical leg is 1/16-inch aluminum, with 1/8 inch of open
+drainage behind it. At the entry, decking originally overlapped this outlet. The resolved
+deck cover now has a local notch leaving 1/2 inch beyond the nosing; the joists are not
+cut. Board-end blocking at that notch remains part of the unresolved support detail.
+The viewer reads the resolved deck outline and voids, including this notch, rather than
+reconstructing a smaller rectangle from the joist centerlines.
+
+**The approach support is not structurally resolved.** The plate gauge, strip spacing,
+seat adjustment and nosing are reviewable design choices, not a capacity calculation or
+manufacturer installation. A load path from the strips/pan substrate through the exterior
+build-up to structure, plate sizing, connections, isolation and anchorage still need a
+designed detail. Foam, the plywood buck and the return boards are not bearing supports.
+The model explicitly reports this as UNKNOWN. Do not use these envelopes as fabrication
+or installation drawings. The interior back-dam cover is also a project design envelope,
+not an assertion that either manufacturer's optional cap supplies it.
 
 Reproduce actual sill/head/jamb cuts, JSON and optional framed IFC/glTF with:
 
@@ -85,10 +126,28 @@ node ui/scripts/door-review.mjs --exterior
 
 Artifacts, manufacturer PDFs/DWG, CAD inspection plots and validation logs are under
 `out/exterior-door-review/`. The section plots and screenshots explicitly label the
-unfinished threshold condition. The garage service raised rough sill, overhead door,
+schematic threshold condition. The garage service raised rough sill, overhead door,
 other French pairs and the outie window detail are not reinstalled by this change.
 
-## Measured review, 2026-10-24
+## Follow-up validation
+
+- Doorway, flashing and IR/export parity: **142 passed, 12 skipped**. Includes mirrored
+  walls, pan coverage, metal/treated-wood isolation, drainage slope, local deck clearance,
+  material vocabulary, sweep exports and factory-cost exclusion.
+- UI typechecking and geometry tests pass, including resolved deck cutbacks/voids and
+  installation sweep placement. Nine production-builder review views were regenerated.
+- Starter: **318 checks passed**. Catlin's three FAIL findings are the same acoustic-box
+  spacing advisories on clean `b94c1e7e`; neither reported door has a measured FAIL.
+- The standard gate initially had **9,441 passes, 23 failures, 33 skips**. Its three new
+  failures (one invalid finish key and two prism-only parity tests) were fixed and rerun
+  in the passing focused suite. All other **20 failing test identities reproduce on clean
+  `b94c1e7e`**. Existing section/elevation goldens also contain the intentional door changes;
+  unrelated differences were not blessed. The full gate is not green.
+- Refreshed JSON, sections, framed IFC/glTF and `followup-*` validation logs are in
+  `out/exterior-door-review/`. Supplier sections and structural bearing/anchorage remain
+  explicitly unresolved; these tests do not certify them.
+
+## Prior review, 2026-10-24 (before the wrapped-trim/sill-design follow-up)
 
 Elevations below use the main-floor datum. The 5-1/2-inch structural frame envelope
 is schematic; it is not a documented factory jamb depth.

@@ -83,6 +83,8 @@ try {
   runViewUrlTests();
   const { runDoorwayTests } = await server.ssrLoadModule("/src/three/builders/doorway.test.ts");
   runDoorwayTests();
+  const { runFloorCoverTests } = await server.ssrLoadModule("/src/three/builders/floorCover.test.ts");
+  runFloorCoverTests();
   const { runCasedDoorTests } = await server.ssrLoadModule("/src/three/builders/casedDoors.test.ts");
   runCasedDoorTests();
   runPlanGeometryTests();

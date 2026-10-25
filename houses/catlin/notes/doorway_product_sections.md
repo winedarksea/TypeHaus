@@ -7,6 +7,11 @@ line is not approval of a particular sill. The `doorway` records in `plan/door_t
 are deliberately **unverified** and contain no polygons. UNKNOWN is the correct result
 until the supplier identifies the installed variant, dimensioned section and revision.
 Factory sills and kit components are included in the door/kit price, not separate BOM items.
+The two main-floor doors now also have explicitly **schematic project sill/approach
+envelopes** in their `exterior_installation.sill_design`. These do not change the
+unverified factory records below; see the structural-mount note for their assumptions
+and unresolved structural support. They must be removed when actual factory sections
+are installed in the model.
 
 | Opening/product | Verified source information | Supplier question / unresolved dimensions |
 |---|---|---|

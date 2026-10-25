@@ -8,6 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 
 from typehaus.model.exterior_door import ExteriorDoorInstallation
+from typehaus.resolve.exterior_door_sill import DoorInstallationSection, add_sill_design
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_door_products import finish_faces
 from typehaus.resolve.geometry_ir import GPart, GPrism, PartCatalogRef
@@ -25,6 +26,7 @@ class DoorInstallationBoard:
     normal_m: float
     material_ref: str
     material_key: str = "window_trim"
+    role: str = "door_installation"
 
     @property
     def cut_dimensions_m(self):
@@ -47,6 +49,8 @@ class ExteriorDoorPlacement:
     exterior_finish_stop_m: float
     boards: tuple[DoorInstallationBoard, ...]
     factory_depth_documented: bool
+    sections: tuple[DoorInstallationSection, ...] = ()
+    sill_design_status: str = "UNKNOWN"
 
 
 def exterior_landing(model, wall, point, outward, installation):
@@ -136,8 +140,16 @@ def place_exterior_door(model, wall, opening, assembly, specification):
         else leaf if c.specification.role == "bottom_seal" else frame_inner))
         for c in assembly.components)
     # Finish extension must stop at the frame until a documented sill supplies its own edge.
-    return replace(assembly, exterior_placement=placement, joint_normal_m=frame_inner,
-                   components=components, unknown=tuple(unknown))
+    assembly = replace(assembly, exterior_placement=placement, joint_normal_m=frame_inner,
+                       components=components, unknown=tuple(unknown))
+    assembly = add_sill_design(assembly, opening, clad)
+    if specification.exterior_wrap_material_ref:
+        from typehaus.resolve.exterior_door_wrap import wrapped_installation_boards
+
+        placement = assembly.exterior_placement
+        assembly = replace(assembly, exterior_placement=replace(placement,
+            boards=wrapped_installation_boards(placement)))
+    return assembly
 
 
 def installation_parts(wall, opening):
@@ -160,5 +172,7 @@ def installation_parts(wall, opening):
             solids=(GPrism(ring, board.z_m - board.height_m / 2,
                            board.z_m + board.height_m / 2),),
             catalog=PartCatalogRef(material_ref=board.material_ref,
-                                   role="door_installation", name=board.name)))
-    return tuple(parts)
+                                   role=board.role, name=board.name)))
+    from typehaus.resolve.geometry_doorway import installation_section_parts
+
+    return tuple(parts) + installation_section_parts(wall, opening)

@@ -3,7 +3,7 @@ import { createServer } from "vite";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { launchChromium, attachToPage, evaluate, captureScreenshot } from "./lib/cdp.mjs";
+import { launchChromium, attachToPage, navigate, evaluate, captureScreenshot } from "./lib/cdp.mjs";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const exterior = process.argv.includes("--exterior");
 const output = resolve(root, exterior ? "../out/exterior-door-review" : "../out/door-review");
@@ -12,7 +12,11 @@ const snapshot = await readFile(resolve(root, exterior ? "../out/exterior-door-r
   : before ? "../out/door-review/before-model.json"
   : "../houses/catlin/out/model.json"), "utf8");
 const legacy = before ? await readFile(resolve(output, "before-openings.ts"), "utf8") : null;
-const server = await createServer({ root, configFile: false, plugins: [{ name: "door-review",
+const server = await createServer({ root, configFile: false,
+  cacheDir: resolve(output, ".vite-cache"),
+  optimizeDeps: { noDiscovery: true,
+    include: ["three", "react", "react/jsx-runtime", "react/jsx-dev-runtime", "zustand"] },
+  plugins: [{ name: "door-review",
   enforce: "pre",
   transform(_code, id) {
     if (legacy && id.endsWith("/three/builders/openings.ts")) {
@@ -42,7 +46,7 @@ try {
     : ["faces", "jamb", "floor", "synthetic"]) {
     for (const theme of ["light", "dark", "schematic"]) {
       const url = `http://127.0.0.1:${server.httpServer.address().port}/door-review.html?view=${view}&theme=${theme}`;
-      await session.send("Page.navigate", { url });
+      await navigate(session, url);
       const deadline = Date.now() + 60000;
       while (!(await evaluate(session, "return window.doorReviewReady === true"))) {
         if (Date.now() > deadline) throw new Error(`Review timed out: ${view}/${theme}`);

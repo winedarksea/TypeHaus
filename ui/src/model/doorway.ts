@@ -20,7 +20,10 @@ export interface ExteriorDoorPlacement {
   factory_depth_documented: boolean;
   boards: { name: string; width_m: number; height_m: number; depth_m: number;
     along_m: number; z_m: number; normal_m: number; material_ref: string;
-    material_key: string }[];
+    material_key: string; role?: string }[];
+  sections?: { name: string; polygon_m: [number, number][]; span_m: number;
+    along_m: number; material_ref: string; material_key: string; purchase: string }[];
+  sill_design_status?: "UNKNOWN" | "SCHEMATIC";
 }
 export interface DoorwayAssembly {
   rough_opening_z_m: number;

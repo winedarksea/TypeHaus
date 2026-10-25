@@ -174,6 +174,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
 
         resolve_door_products(model)
         resolve_doorways(model)
+        from typehaus.resolve.exterior_door_approach import clear_exterior_door_approaches
+
+        clear_exterior_door_approaches(model)
         from typehaus.resolve.doorway_floors import extend_doorway_finishes
 
         extend_doorway_finishes(model)

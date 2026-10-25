@@ -27,3 +27,23 @@ def doorway_parts(wall, opening):
                 catalog=PartCatalogRef(material_ref=part.material_ref, role=spec.role,
                                        name=spec.product_ref)))
     return tuple(result)
+
+
+def installation_section_parts(wall, opening):
+    placement = opening.doorway.exterior_placement
+    if placement is None:
+        return ()
+    center = opening_center(wall, opening)
+    _, tangent, normal, _ = wall_frame(wall)
+    parts = []
+    for section in placement.sections:
+        along = section.along_m - section.span_m / 2
+        profile = tuple((center[0] + tangent[0] * along + normal[0] * n,
+                         center[1] + tangent[1] * along + normal[1] * n, z)
+                        for n, z in section.polygon_m)
+        parts.append(GPart(key=f"installation:{section.name}", material_key=section.material_key,
+            solids=(GSweep(profile, (tangent[0] * section.span_m,
+                                     tangent[1] * section.span_m, 0)),),
+            catalog=PartCatalogRef(material_ref=section.material_ref,
+                                   role="door_sill_design", name=section.name)))
+    return tuple(parts)

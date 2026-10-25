@@ -20,7 +20,7 @@ const cedarRef = materials.find(material => material.species === "cedar")?.tag;
 if (!oakRef || !cedarRef) failures.push("Review requires catalog oak and cedar materials");
 if (dark) { document.body.style.background = "#22262a"; document.body.style.color = "#eaeaea"; }
 const cases = exteriorReview ? ["D-M-ENTRY", "D-M-BALC"].flatMap(tag => [-1, 1].map(side =>
-  ({ tag, side, label: `${tag} · ${side < 0 ? "exterior" : "interior"} · threshold unresolved` })))
+  ({ tag, side, label: `${tag} · ${side < 0 ? "exterior" : "interior"} · sill design / factory details pending` })))
   : view === "synthetic" ? [
   { tag: "D-M-MUD", side: 1, label: "Shared swing type · inherited white frame" },
   { tag: "D-M-MUD", side: 1, label: "Shared swing type · oak frame", frame: oakRef },

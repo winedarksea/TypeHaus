@@ -13,15 +13,17 @@ disagreements allowed:
 from __future__ import annotations
 
 import math
+from collections import Counter
 from pathlib import Path
 
 import pytest
+from _helpers import HOUSES
 
+from typehaus.emit.draw.elevation_project import solid_vertices
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.geometry_members import MINIMUM_EXTENT_M, member_box, member_uid
 from typehaus.source import load_plan
-from _helpers import HOUSES
 
 TOL = 1e-6
 
@@ -405,8 +407,7 @@ def test_opening_products_match_the_emitter_box_for_box(model, geometry) -> None
         assert element is not None, opening.uid
         got = {(round(x, 9), round(y, 9), round(z, 9))
                for part in element.parts for solid in part.solids
-               for (px, py) in solid.ring for x, y, z in
-               ((px, py, solid.z0_m), (px, py, solid.z1_m))}
+               for x, y, z in solid_vertices(solid)}
         want = {(round(x, 9), round(y, 9), round(z, 9))
                 for x, y, z in _emitter_opening_points(model, host, opening)}
         assert got == want, opening.uid
@@ -562,7 +563,7 @@ def test_earth_is_cut_by_every_excavated_slab(model, geometry) -> None:
 # the IR, including the subfloor deck and the site earth.
 
 def test_the_glb_opening_product_is_the_ir_product(model, geometry) -> None:
-    """The emitter draws exactly the boxes `opening_parts` produced, and no others.
+    """The emitter draws the prisms and swept sections `opening_parts` produced.
 
     A regression here means the emitter grew geometry of its own again.
     """
@@ -588,34 +589,16 @@ def test_the_glb_opening_product_is_the_ir_product(model, geometry) -> None:
             bookcase_door=door_type.bookcase_door if door_type is not None else None,
             leaf_set=door_type.leaf_set if door_type is not None else "pull",
         )
-        want = {
-            tuple(sorted((round(x, 9), round(y, 9), round(z, 9))
-                         for (x, y) in solid.ring for z in (solid.z0_m, solid.z1_m)))
-            for part in element.parts for solid in part.solids
-        }
-        # Corners, back out of the glTF swizzle: every box the emitter drew has to be one of
-        # the IR's, and every one of the IR's has to have been drawn.
-        got = {
-            tuple(sorted(corners))
-            for corners in _emitted_box_corners(builder)
-        }
-        assert got == {tuple(sorted(box)) for box in want}, opening.uid
+        want = Counter((round(x, 9), round(y, 9), round(z, 9))
+                       for part in element.parts for solid in part.solids
+                       for x, y, z in solid_vertices(solid))
+        # Sweeps have variable vertex counts. Count all IR corners, including repeated
+        # contacts, rather than partitioning the emitter buffer into eight-vertex boxes.
+        got = Counter((round(x, 9), round(-z, 9), round(y, 9))
+                      for positions, _ in builder._buckets.values() for x, y, z in positions)
+        assert got == want, opening.uid
         checked += 1
     assert checked, "house has no hosted openings"
-
-
-def _emitted_box_corners(builder) -> list[list[tuple[float, float, float]]]:
-    """The distinct 8-corner sets the mesh builder accumulated, in the plan frame."""
-    boxes = []
-    for positions, _indices in builder._buckets.values():
-        # add_prism appends one bottom loop then one top loop per box.
-        for start in range(0, len(positions), 8):
-            chunk = positions[start:start + 8]
-            if len(chunk) < 8:
-                continue
-            boxes.append([(round(px, 9), round(-pz, 9), round(py, 9))
-                          for (px, py, pz) in chunk])
-    return boxes
 
 
 def test_the_glb_ships_the_subfloor_deck_and_the_site_earth(model) -> None:

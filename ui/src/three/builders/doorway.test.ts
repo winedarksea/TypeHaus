@@ -57,6 +57,29 @@ export function runDoorwayTests() {
       volume += a.dot(b.cross(c)) / 6;
     }
     if (volume <= 0) throw new Error(`${fixture.name}: inside-out section`);
+    const component = opening.doorway!.components[0];
+    const part = component.specification.parts[0];
+    const schematic = structuredClone(opening);
+    schematic.doorway!.components = [];
+    schematic.doorway!.exterior_placement = {
+      outward_sign: 1, frame_inner_m: 0, frame_outer_m: 0.1, leaf_normal_m: 0,
+      interior_finish_stop_m: 0, exterior_finish_stop_m: 0.1,
+      factory_depth_documented: false, boards: [], sill_design_status: "SCHEMATIC",
+      sections: [{ name: "test-approach", span_m: component.span_m, along_m: component.along_m,
+        material_ref: part.material_ref, material_key: part.material_key ?? "door_hardware",
+        purchase: "site", polygon_m: part.polygon_m.map(([x, z]) =>
+          [component.normal_m + component.specification.positive_normal_sign * x,
+            component.base_z_m + z]) }],
+    };
+    const designGroup = new THREE.Group();
+    buildDoorway(schematic, position, direction, [0, 0], designGroup,
+      () => new THREE.MeshBasicMaterial());
+    const designMesh = designGroup.children[0] as THREE.Mesh;
+    const designPoints = designMesh.geometry.getAttribute("position");
+    if (designGroup.children.length !== 1 || designPoints.count !== points.count || actual.some(
+      (point, i) => point.some((v, axis) => Math.abs(v - designPoints.getComponent(i, axis)) > 1e-6))) {
+      throw new Error(`${fixture.name}: installation section loses wall placement`);
+    }
   }
   console.log("Sourced doorway Python/viewer sweep parity tests passed.");
 }

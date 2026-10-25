@@ -9,7 +9,12 @@ export function buildDoorway(
   center: Parameters<typeof projectPointToScene>[2], parent: THREE.Object3D,
   materialFor: (ref: string, materialKey: string) => THREE.Material,
 ) {
-  for (const component of opening.doorway?.components ?? []) {
+  const designSections = (opening.doorway?.exterior_placement?.sections ?? []).map(section => ({
+    ...section, normal_m: 0, base_z_m: 0,
+    specification: { product_ref: "Project sill design (schematic)", positive_normal_sign: 1,
+      parts: [{ ...section }] },
+  }));
+  for (const component of [...(opening.doorway?.components ?? []), ...designSections]) {
     const spec = component.specification;
     for (const part of spec.parts) {
       const points = part.polygon_m.map(([x, z]) => new THREE.Vector2(x, z));

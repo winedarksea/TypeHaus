@@ -1756,6 +1756,8 @@ export interface Floor {
   tag: string;
   storey: string;
   direction: "x" | "y";
+  deck_outline?: Vec2[];
+  deck_voids?: Vec2[][];
   // `trades` tells a plywood deck (sheathing) from the porch's composite plank and the
   // balcony's aluminium one (flooring — the finished walking surface).
   subfloor: { material: string; thickness_m: number; trades?: string[] } | null;

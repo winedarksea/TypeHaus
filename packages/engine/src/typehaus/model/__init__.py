@@ -66,7 +66,7 @@ from typehaus.model.enums import (
     TrimKind,
     UtilityKind,
 )
-from typehaus.model.exterior_door import ExteriorDoorInstallation
+from typehaus.model.exterior_door import ExteriorDoorInstallation, ExteriorDoorSillDesign
 from typehaus.model.flashing import FormedFlashingSection
 from typehaus.model.floors import (
     DeckLayer,
@@ -334,6 +334,7 @@ for _name, _obj in (
 
 __all__ = [
     "DoorwayProductSpec", "DoorwaySectionPart", "DoorwayTreatment", "ExteriorDoorInstallation",
+    "ExteriorDoorSillDesign",
     "WinderTurnSpec", "WinderFramingSpec",
     "ReinforcementSpec",
     "BarSpec",

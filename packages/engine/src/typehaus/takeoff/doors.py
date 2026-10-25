@@ -58,6 +58,9 @@ def door_installation_rows(model):
         if placement is None:
             continue
         for board in placement.boards:
+            if board.role != "door_installation":
+                # Skins and isolation belong to the cladding/flashing allowances.
+                continue
             dimensions = board.cut_dimensions_m
             row = dict(kind="exterior door casing" if "casing" in board.name
                        else "door jamb extension", room=None, material=board.material_ref,
@@ -70,6 +73,18 @@ def door_installation_rows(model):
                                         length_in=dimensions[2] / .0254)],
                        volume_m3=board.width_m * board.height_m * board.depth_m)
             rows.append(row)
+        for section in placement.sections:
+            if section.purchase != "site":
+                continue
+            from shapely.geometry import Polygon
+
+            profile = Polygon(section.polygon_m)
+            rows.append(dict(kind="exterior door approach", room=None,
+                material=section.material_ref, item=section.material_ref, pieces=1,
+                description=f"{opening.tag}: {section.name}; schematic, support design pending",
+                length_ft=section.span_m / .3048, tags=[opening.tag],
+                inside_corners=0, outside_corners=0, cut_pieces=[],
+                volume_m3=profile.area * section.span_m))
     return rows
 
 

@@ -182,10 +182,11 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
     const maxY = Math.max(...points.map((point) => point[1]));
     const z = Math.max(...floor.members.map((member) => member.z1_m));
     const geometry = createPlanPrismGeometry(
-      [[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]],
+      floor.deck_outline?.length ? floor.deck_outline
+        : [[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]],
       z,
       z + floor.subfloor.thickness_m,
-      floor.openings,
+      floor.deck_voids ?? floor.openings,
       center,
     );
     if (!geometry) return;
