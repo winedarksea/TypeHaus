@@ -325,7 +325,6 @@ the future.
 - Lets get the BOM showing all IKEA SEKTION parts needed (knobs, scribes, hinges, feet, etc), and soft close pieces too.
 - Can we widen D-M-BATH2 to 36"? Not sure if/how the casing would work as that puts it into the shower area (the casing).
 - A couple of options to reduce echo in the gym. One is swapping drywall for drop ceiling tile framing (perhaps with some fiberglass in the cavity above). Another was vulcanized recycled crumb-rubber rolls or 4'x6' stall mats for the floor. A third was W-B-CE losing its south side drywall and having fabric plus simple wood slats (ie 1x2 finger jointed pine) as an effectively slat wall arrangement.
-- Door thresholds could probably use some better modeling, right now all we get is standard sill plates of the regular wall.
 - Improve the wainscot of the mudrooms
 - Oksana wants an elm slab sofa table
 - Plan microwave placement. Leading options are peninsula drawer, replacing FURN-M-KIT-MIXER-GARGE with a countertop microwave, replacing FURN-M-KIT-MIXER-GARGE with a built in drop down door microwave (such as https://www.frigidaire.com/en/p/kitchen/microwaves/built-in-microwaves/GMBD3068AF and we need to make sure it gets adaquate cooling), or putting it in the pantry near the door.
@@ -334,7 +333,6 @@ the future.
 - Update the LVP to https://coretecfloors.com/en-us/products/coretec-pro-classics/quincy-oak-vv017-01018
 - [x] Move D-M-MECH and D-M-MUDC 8" east within the existing walls (owner-approved instead of a full stud bay); relocate the three switches to W-M-MUDC-E.
 - The main door D-M-ENTRY should be 36" fiberglass. Possibly painted black on site (may be cheaper than factory painted). We are going to specify a DS2000 Door Viewer "Door Scope" (2 inch wide viewer), caulked, in it since there won't be any window lites. Also we should specify ccspf spray foam (not the usual fiberglass batts) in the studs immediately around the exterior doors since they don't get as much exterior continuous insulation. Also ideally have the composite frame and specify Therma-Tru’s "Security Strike Plate" if they don't add tons of cost.
-- Confirm the Therma-Tru / Endura French-pair system approval and NFRC/NAFS label, laminated-triple CPD/SHGC, BE365 compatibility, ≥ 4" stile, and patio/deck threshold heights; see `houses/catlin/notes/window_and_door_procurement.md` §2.6.
 - Exterior door locks and handles. Schlage Passage Lever and Schlange Smart lock on D-M-ENTRY with heavy reinforcement plate (like a StrikeMaster II Pro or Door Armor) and 3-inch screws (not multipoint there).
 - Solid Blocking at Lock/Hinge Heights in the framing, possibly also Double Jack & King Studs. Maybe specify in the  installation notes that the window/door installers must install solid composite shims directly behind the strike plate and behind every multipoint keep
 - See if we can easily source factory Laminated Glass that has a security film inside it for the main floor windows

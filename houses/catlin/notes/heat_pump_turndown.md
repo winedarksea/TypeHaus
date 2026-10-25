@@ -409,3 +409,17 @@ under-sum the block. HP1's crossover: at −22 °F 13,400 − 169.43 × 92 = −
 T = 17 + 30 × 758 / 3,429 = 23.6 °F. HP1 is now a hair under its published minimum, which
 is worse for cycling; HP2 now cycles above 23.6 °F (was 28.4 °F), a wider band. All advisory;
 no verdict moves.
+
+## Addendum 2026-10-25 — Smooth-Star / Endura French pairs
+
+The three 33⅓ ft² pairs go U 0.15 → 0.21. HP1 carries one (+2 UA × 85 = +170 Btu/h);
+HP2 carries two (+4 UA × 85 = +340 Btu/h). The current resolved values are:
+
+| zone | design load (Btu/h) | sizing factor | Manual S cap (Btu/h) | crossover |
+|---|---|---|---|---|
+| HP1 | 14,446 → **14,616** | **0.96** | **11,693** | **−9.5 °F** |
+| HP2 | 13,879 → **14,219** | **0.62** | **11,375** | **25.3 °F** |
+| HP3 | **906** unchanged | **3.09** | **725** | never |
+
+Equipment and verdicts are unchanged: HP1/HP3 remain advisory, HP2 passes the sizing cap.
+These loads use the provisional CPD U 0.21; the laminated-triple pair's label is pending.
