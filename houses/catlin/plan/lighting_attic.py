@@ -308,7 +308,7 @@ ATTIC_LIGHTING = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(58)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-BATH-S", face="right", distance_from_start=inch(37),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # On W-A-C1B's west face at 6'-0", position unchanged: the two centre-wall segments are
     # collinear, but the wall south of y=5'-7" faces RM-A-STUDY and the studio does not start
     # until that line. A station 5" further south is a switch in the wrong room.

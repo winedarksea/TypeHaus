@@ -140,3 +140,40 @@ def test_playroom_tv_uses_a_thin_wall_panel_seated_on_the_host(catlin_model_ro):
     assert tv.type_ref == "FURN-TV-98-WALL"
     face, edge = _face_distance(catlin_model_ro, tv.tag, "W-B-N1")
     assert edge == pytest.approx(face, abs=1e-9)
+
+
+def test_wall_lights_face_away_from_their_host_in_both_symbol_frames(catlin_model_ro):
+    from typehaus.model.placeable_symbols import model_parts, place_local, plan_symbol_strokes
+
+    types = {product.tag: product for product in
+             catlin_model_ro.plan.library.electrical_device_types}
+    checked = set()
+    for item in catlin_model_ro.canvas_objects:
+        product = types.get(item.type_ref)
+        symbol = getattr(product, "plan_symbol", None)
+        if not item.attachment_wall or not symbol or not (
+            symbol.startswith("sconce") or "mirror-light" in symbol
+        ):
+            continue
+        wall = catlin_model_ro.wall(item.attachment_wall)
+        (x0, y0), (x1, y1) = wall.axis
+        length = math.hypot(x1 - x0, y1 - y0)
+        side = 1 if item.attachment_face == "left" else -1
+        outward = (-side * (y1 - y0) / length, side * (x1 - x0) / length)
+        back = place_local([(0, 1)], (0, 0), item.rotation_degrees)[0]
+        assert sum(a * b for a, b in zip(back, outward, strict=True)) == pytest.approx(-1), (
+            f"{item.tag}: symbol back faces away from its wall")
+        if item.tag == "ED-M-ENTRY-LT":
+            width, depth = (dimension.meters for dimension in product.footprint)
+            strokes = plan_symbol_strokes(symbol, width, depth)
+            parts = model_parts(symbol, width, depth, product.height.meters)
+            # The plan backplate and 3D housing must both sit wallward of their light face.
+            plan_plate_y = sum(y for _, y in strokes[0]["points"]) / len(strokes[0]["points"])
+            plan_throw_y = min(y for _, y in strokes[-1]["points"])
+            for rear_y, front_y in [(plan_plate_y, plan_throw_y),
+                                    (parts[0]["center"][1], parts[-1]["center"][1])]:
+                rear, front = place_local([(0, rear_y), (0, front_y)], item.position,
+                                          item.rotation_degrees)
+                assert sum((f - r) * n for r, f, n in zip(rear, front, outward, strict=True)) > 0
+        checked.add(item.tag)
+    assert {"ED-M-ENTRY-LT", "ED-A-STUDIO-BAR-TASK"} <= checked

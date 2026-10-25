@@ -133,7 +133,11 @@ class ModelRepresentation(HausModel):
 
 
 class WallAttachment(HausModel):
-    """Persistent finish-face relationship, measured from the wall start node."""
+    """Persistent finish-face relationship, measured from the wall start node.
+
+    Rotation is the wall tangent plus ``rotation_offset``. Symbols put their back at +y,
+    so a wall-facing back uses offset 0 on the right face, 180 degrees on the left face.
+    """
 
     wall_ref: str
     face: str  # left | right, relative to authored wall direction

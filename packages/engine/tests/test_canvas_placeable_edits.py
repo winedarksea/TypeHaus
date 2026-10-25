@@ -6,6 +6,7 @@ Beside ``test_canvas_placeables.py``, which is past the 500-line guideline.
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -23,6 +24,7 @@ from typehaus.source.macros import (
     duplicate_canvas_object,
     move_placeable,
     place_placeable,
+    rotate_placeable,
     slide_placeable,
 )
 
@@ -146,6 +148,49 @@ def test_place_placeable_carries_rotation_and_kind(starter_plan):
     gfci = place_placeable(starter_plan, "main", type_ref="ED-T-RECEPTACLE", position=(1, 1),
                            kind="gfci")
     assert gfci.ops[0].fields["kind"].expr == "DeviceKind.RECEPTACLE_GFCI"
+
+
+@pytest.mark.parametrize("wall", ["W-101", "W-102"])
+@pytest.mark.parametrize("face", ["left", "right"])
+@pytest.mark.parametrize("degrees,free_rotation,expected", [(0, False, 0), (31, False, 30),
+                                                          (37, True, 37), (180, False, 180)])
+def test_hosted_rotation_reaches_resolved_symbols(
+    starter_plan, wall, face, degrees, free_rotation, expected,
+):
+    from typehaus.model.canvas import resolved_canvas_objects
+    from typehaus.resolve import resolve
+    from typehaus.resolve.placeables import _transformed_polygon
+
+    plan = _attached_chair(starter_plan)
+    plan = _apply(plan, attach_placeable(plan, "main", tag="F-CHAIR", wall=wall,
+                                         face=face, distance=1, gap=0.05))
+    original = plan.by_tag("F-CHAIR").location.attachment
+    plan = _apply(plan, rotate_placeable(plan, "main", tag="F-CHAIR", degrees=degrees,
+                                         free_rotation=free_rotation))
+    attachment = plan.by_tag("F-CHAIR").location.attachment
+    assert attachment.model_dump(exclude={"rotation_offset"}) == original.model_dump(
+        exclude={"rotation_offset"})
+    model, _ = resolve(plan)
+    item = next(obj for obj in model.canvas_objects if obj.tag == "F-CHAIR")
+    assert item.rotation_degrees == pytest.approx(expected)
+    record = next(obj for obj in resolved_canvas_objects(model) if obj["tag"] == "F-CHAIR")
+    assert record["rotation"] == pytest.approx(expected)  # shared by the 2D and 3D viewers
+    product = next(t for t in plan.library.furniture_types if t.tag == item.type_ref)
+    width, depth = (dimension.meters for dimension in product.footprint)
+    expected_footprint = _transformed_polygon(
+        [(-width / 2, -depth / 2), (width / 2, -depth / 2),
+         (width / 2, depth / 2), (-width / 2, depth / 2)], item.position, expected)
+    for actual, point in zip(item.footprint, expected_footprint, strict=True):
+        assert actual == pytest.approx(point)
+    host = model.wall(wall)
+    (x0, y0), (x1, y1) = host.axis
+    length = math.hypot(x1 - x0, y1 - y0)
+    side = 1 if face == "left" else -1
+    nx, ny = -side * (y1 - y0) / length, side * (x1 - x0) / length
+    finish_offset = max((x - x0) * nx + (y - y0) * ny
+                        for layer in host.layers for x, y in layer.polygon)
+    wallward_edge = min((x - x0) * nx + (y - y0) * ny for x, y in item.footprint)
+    assert wallward_edge - finish_offset == pytest.approx(attachment.normal_gap.meters)
 
 
 def test_equipment_kind_inference_matches_catlin(catlin_plan):

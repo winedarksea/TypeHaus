@@ -90,6 +90,21 @@ def rotate_placeable(plan: PlanModel, storey: str, *, tag: str, degrees: float,
         raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
     resolved_degrees = (float(degrees) if free_rotation
                         else round(float(degrees) / ROTATION_SNAP_DEGREES) * ROTATION_SNAP_DEGREES)
+    location = getattr(item, "location", None)
+    attachment = getattr(location, "attachment", None)
+    if attachment is not None:
+        axis = next((axis for candidate in plan.storeys
+                     if (axis := _wall_axis(plan, candidate.tag, attachment.wall_ref)) is not None),
+                    None)
+        if axis is None or _dist(*axis) == 0:
+            raise MacroError(f"cannot rotate {tag!r}: host wall axis is unresolved")
+        (x0, y0), (x1, y1) = axis
+        # The inspector supplies a project angle; hosting consumes a wall-relative offset.
+        offset = resolved_degrees - math.degrees(math.atan2(y1 - y0, x1 - x0))
+        rotated_attachment = attachment.model_copy(update={"rotation_offset": deg(offset)})
+        rotated_location = location.model_copy(update={"attachment": rotated_attachment})
+        return MutationResult(ops=[PatchOp("update", item.element_kind, tag,
+                                           {"location": RawExpr(_source(rotated_location))})])
     return MutationResult(ops=[PatchOp("update", item.element_kind, tag,
                                        {"rotation": RawExpr(deg(resolved_degrees).to_source())})])
 
