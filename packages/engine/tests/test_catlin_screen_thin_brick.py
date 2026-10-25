@@ -27,10 +27,12 @@ def test_east_brick_does_not_move_studs_or_west_skin(catlin_model_ro):
 
 
 def test_veneer_uses_its_own_net_area_and_purchased_slip_appearance(catlin_model_ro):
+    # Rows are per (scope, function, material, thickness) and carry no wall tags; the veneer
+    # is the only thin brick in the house, so its one row is the screen's net area.
     rows = [row for row in envelope_layer_takeoff(catlin_model_ro)
-            if "W-BW-SCREEN" in row.get("tags", ())]
-    brick = next(row for row in rows if row["material"] == "thin-brick-brown")
-    assert brick["area_ft2"] == pytest.approx(78.875 * 45.5 / 144, abs=0.1)
+            if row["material"] == "thin-brick-brown"]
+    assert len(rows) == 1
+    assert rows[0]["net_area_sqft"] == pytest.approx(78.875 * 45.5 / 144, abs=0.1)
     material = next(m for m in catlin_model_ro.plan.library.materials if m.tag == "thin-brick-brown")
     assert (material.finish, material.color) == ("brown-brick", "#a07c5c")
     assert material.product_ref == "PROD-BW-THIN-BRICK"

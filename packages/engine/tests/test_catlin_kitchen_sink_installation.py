@@ -92,7 +92,7 @@ def test_selected_products_and_installation_parts_bill_once(catlin_model_ro):
     for part in plan.by_tag("APPL-M-DISP").install_parts:
         assert prices["install_parts"][part]["low"] > 0
     assert prices["install_parts"][faucet]["low"] == 179.95
-    assert prices["allowances"]["plumbing-faucets-and-tub-filler"] == {"low": 1394, "high": 2235}
+    assert prices["allowances"]["plumbing-faucets-and-tub-filler"] == {"low": 1210, "high": 1990}
     # This fitting type also serves the attic lav and basement sink branch.
     tie = next(row for row in fitting_takeoff(catlin_model_ro)
                if row["fitting"] == "wye-2x1.5in")

@@ -172,7 +172,8 @@ def wall_graph_json(
              "effective_frame_material_ref": o.effective_frame_material_ref,
              "effective_leaf_material_ref": o.effective_leaf_material_ref,
              "swing_clearance": [list(point) for point in o.swing_clearance],
-             "maximum_opening_degrees": getattr(model.plan.by_tag(o.tag), "maximum_opening_degrees", 90.0),
+             "maximum_opening_degrees": getattr(
+                 model.plan.by_tag(o.tag), "maximum_opening_degrees", 90.0),
              "framing_bumper": [list(point) for point in o.framing_bumper],
              # Handing is authored data, rather than resolved geometry, but it changes the
              # plan symbol and must therefore cross the UI boundary with the opening.

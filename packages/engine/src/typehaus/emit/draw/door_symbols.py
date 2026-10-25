@@ -208,7 +208,8 @@ class _SymbolFrame:
 
 
 def _swing_leaf(hinge: Pt, rotation_deg: float, swing_sign: float, leaf_length_in: float,
-                closed_leaf_sign: float, maximum_opening_degrees: float = 90.0) -> DoorSymbolGeometry:
+                closed_leaf_sign: float,
+                maximum_opening_degrees: float = 90.0) -> DoorSymbolGeometry:
     """One hinged leaf standing at its positive stop plus its swing arc, pivoting on ``hinge``.
 
     ``closed_leaf_sign`` is the direction along the wall (+1 = the frame's ``u``) the shut

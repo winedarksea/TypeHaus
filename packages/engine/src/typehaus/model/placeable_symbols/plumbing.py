@@ -505,7 +505,8 @@ def laundry_tub() -> Builder:
         kick = min(0.09, deck_z * 0.12)
         rim = clamp(min(width, depth) * 0.05, 0.012, 0.03)
         basin_w = min(LAUNDRY_TUB_BASIN_IN[0] * 0.0254, width * 0.94)
-        basin_d = min(LAUNDRY_TUB_BASIN_IN[1] * 0.0254, depth * 0.94)
+        # The basin sits 5% of depth toward the back, so 90% is the most that fits inside.
+        basin_d = min(LAUNDRY_TUB_BASIN_IN[1] * 0.0254, depth * 0.90)
         basin_cy = -depth * 0.05
         bowl_top = deck_z - top_t
         bowl_z0 = max(kick, bowl_top - min(LAUNDRY_TUB_BASIN_DEPTH_M,

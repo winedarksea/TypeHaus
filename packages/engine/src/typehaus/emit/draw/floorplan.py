@@ -214,7 +214,8 @@ def _emit_door_symbol(b: SceneBuilder, model: ResolvedModel, op, center: tuple[f
                                   -1.0 if getattr(authored, "flip_swing", False) else 1.0,
                                   hinge_jamb_sign=hinge_jamb_sign,
                                   host_wall_thickness_in=host_wall_thickness_in,
-                                  maximum_opening_degrees=getattr(authored, "maximum_opening_degrees", 90.0)),
+                                  maximum_opening_degrees=getattr(
+                                      authored, "maximum_opening_degrees", 90.0)),
     ))
 
 
