@@ -24047,6 +24047,12 @@
 2,
 "e54999b416c7"
 ],
+"geometry/CMR409AAAA-base-KKVYSAJKZF-1/body": [
+0.0250495,
+0.1139495,
+2,
+"e54999b416c7"
+],
 "geometry/CMR409AAAA-ceiling/body": [
 2.7305,
 2.746375,
@@ -33846,6 +33852,12 @@
 "5b1c8c335af3"
 ],
 "geometry/CMW137AAAA::framing/member:stud-001": [
+0.0381,
+2.651125,
+8,
+"5b1c8c335af3"
+],
+"geometry/CMW137AAAA::framing/member:stud-002": [
 0.0381,
 2.651125,
 8,
@@ -51588,6 +51600,12 @@
 "e54999b416c7"
 ],
 "geometry/G01HFSH967-base-KKVYSAJKZF-0/body": [
+0.0250495,
+0.1139495,
+2,
+"e54999b416c7"
+],
+"geometry/G01HFSH967-base-KKVYSAJKZF-1/body": [
 0.0250495,
 0.1139495,
 2,
@@ -80148,6 +80166,12 @@
 "e1eb918c8160"
 ],
 "member/CMW137AAAA/stud-001": [
+0.0381,
+2.651125,
+2,
+"e1eb918c8160"
+],
+"member/CMW137AAAA/stud-002": [
 0.0381,
 2.651125,
 2,
