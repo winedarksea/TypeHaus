@@ -100,6 +100,17 @@ def test_differing_finishes_remain_unknown_without_compatible_trim(doorway_model
     assert "transition is unspecified" in " ".join(assembly.unknown)
 
 
+def test_documented_selected_section_is_rendered_before_order_confirmation(doorway_model):
+    different_finishes(doorway_model)
+    spec = reducer(verified=False, section_documented=True, supplier_confirmed=False)
+    assembly = resolve_one(doorway_model, DoorwayTreatment(transition=spec))
+    assert len(assembly.components) == 1
+    assert assembly.section_status == "DOCUMENTED"
+    assert assembly.supplier_status == "PENDING"
+    assert assembly.fit_status == "VERIFIED"
+    assert doorway_parts(doorway_model.walls[0], doorway_model.openings[0])
+
+
 def test_explicit_continuous_override_reports_conflict_without_moving_floors(doorway_model):
     different_finishes(doorway_model)
     assembly = resolve_one(doorway_model, DoorwayTreatment(floor_treatment="continuous"))

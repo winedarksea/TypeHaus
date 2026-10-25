@@ -7495,11 +7495,12 @@ plumbing-bidet-seats = { low = 1364, high = 1700 }
 # Lavatory faucets, read/selected 2026-10-24: five Genta LX 6702 single-hole sets,
 # three Kraus Indy KBF-1401SFS utility mixers, one Duravit B.2 chrome in the powder room.
 # Budget bands, pending supplier quotes: Genta 5 x $150-250;
-# Indy 3 x $100-160; B.2 $160-260; laundry Adler $169-220 and hose tee $15-25.
+# Indy 3 x $100-160; B.2 $160-260. The laundry tub's bundled faucet is in its cabinet row
+# (FX-LAUNDRY-SINK-24); the Adler and hose tee were dropped 2026-10-24.
 # Faucet installation is included in the fixture connection labour, with no second labour
 # allowance. Kitchen Bolden and Align T393/4794 tub filler bill in their named rows.
 # Theme chrome/brushed-nickel changes Product identity and finish, within this shared band.
-plumbing-faucets-and-tub-filler = { low = 1394, high = 2235 }
+plumbing-faucets-and-tub-filler = { low = 1210, high = 1990 }
 # ** WALL TILE HAS NO ELEMENT TO MEASURE ** — [floor_finishes] carries the floors and a shower
 # surround is not a modelled finish, which is the same reason `finish-tile-surrounds-and-
 # waterproofing` above stays a lump. This row is the MATERIAL for the chosen 12x24 (TileBar

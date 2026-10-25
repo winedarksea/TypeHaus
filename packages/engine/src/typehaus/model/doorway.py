@@ -12,6 +12,7 @@ from typing import Literal
 from pydantic import Field, model_validator
 
 from typehaus.model.base import HausModel
+from typehaus.model.exterior_door import ExteriorDoorInstallation
 from typehaus.model.registry import register_constructor
 
 
@@ -42,8 +43,11 @@ class DoorwayProductSpec(HausModel):
     source_drawing: str = Field(min_length=1)
     installation: str = Field(min_length=1)
     parts: tuple[DoorwaySectionPart, ...] = ()
-    # Only a complete, approved section may produce solids. Research candidates stay false.
+    # Legacy complete-section flag; order confirmation is tracked independently below.
     verified: bool = False
+    # A documented design selection can be modeled before the purchase is confirmed.
+    section_documented: bool = False
+    supplier_confirmed: bool = False
     datum: Literal["rough_opening", "lower_floor", "higher_floor"] = "rough_opening"
     elevation_offset_m: float = 0.0
     normal_offset_m: float = 0.0
@@ -94,9 +98,10 @@ class DoorwayProductSpec(HausModel):
             raise ValueError("bearing points must be finite")
         if len({part.name for part in self.parts}) != len(self.parts):
             raise ValueError("section part names must be unique")
-        if self.verified and not self.parts:
+        if (self.verified or self.section_documented) and not self.parts:
             raise ValueError("verified product requires a sourced cross-section")
-        if self.role in ("guide", "bottom_seal") and self.verified and self.span_m is None:
+        if (self.role in ("guide", "bottom_seal") and (self.verified or self.section_documented)
+                and self.span_m is None):
             raise ValueError("guide/seal requires a documented span")
         return self
 
@@ -105,6 +110,7 @@ class DoorwayTreatment(HausModel):
     floor_treatment: Literal["auto", "continuous", "transition"] = "auto"
     threshold: DoorwayProductSpec | None = None
     transition: DoorwayProductSpec | None = None
+    exterior_installation: ExteriorDoorInstallation | None = None
 
     @model_validator(mode="after")
     def valid_roles(self):

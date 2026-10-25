@@ -6,6 +6,10 @@ def door_part_color(part, authored, *, linear_paint_defaults=False):
     from typehaus.emit.gltf.palette import _color, _material_finish_color
 
     ref = part.catalog.material_ref if part.catalog else None
+    # Installation boards retain their lumber identity for purchasing; their finish
+    # is the specified painted trim palette, shared with the live viewer.
+    if part.catalog and part.catalog.role == "door_installation":
+        ref = None
     if not ref:
         color = _color(part.material_key)
         if not linear_paint_defaults or part.material_key not in ("door_frame", "door_leaf"):

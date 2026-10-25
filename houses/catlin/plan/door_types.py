@@ -24,18 +24,22 @@ _CASCADIA = ("NFRC CWL-K-27-00344-00001 (inswing) / -00415-00001 (outswing): E18
 
 # Source-backed research records, not approved shop sections. The selected door lines
 # do not establish the ordered sill variant (notes/doorway_product_sections.md).
-THERMATRU_SILL = DoorwayTreatment(threshold=DoorwayProductSpec(
-    product_ref=THERMATRU_SMOOTHSTAR.tag, variant="UNKNOWN — ordered inswing sill variant",
-    role="sill", source_url="https://store.thermatru.com/collections/sills",
-    source_drawing="Supplier must identify dimensioned sill section and revision",
-    installation="Inswing single; positive-normal orientation and seat height unverified"))
-CASCADIA_SILL = DoorwayTreatment(threshold=DoorwayProductSpec(
+THERMATRU_SECTION = DoorwayProductSpec(
+    product_ref=THERMATRU_SMOOTHSTAR.tag,
+    variant="Composite adjustable inswing sill — design selection; installed section pending",
+    role="sill", source_url="https://outdoorsandsecurity.widen.net/content/6ybzlyty7g/"
+    "original/2026-Arch-Comp-BOOK---COMP-7-Sills.pdf",
+    source_drawing="2026 Comp 7.3/7.10; supplier must identify depth, sweep and installed section",
+    installation="Inswing single; positive-normal orientation and seat height unverified")
+CASCADIA_SECTION = DoorwayProductSpec(
     product_ref=CASCADIA_UNIVERSAL_DOOR.tag,
-    variant="UNKNOWN — high-performance versus low-profile inswing sill",
+    variant="High-performance inswing sill — design selection; installed section pending",
     role="sill", source_url="https://www.cascadiawindows.com/files/file/6a7e455007bf8/"
     "Door-Page---Profile--Install-Details-Inswing-Door-double--triple-glazed---20260813.pdf",
     source_drawing="UW6, 2026-07-30, detail 2 (2026-08-13 download); pair approval pending",
-    installation="Inswing French pair; installed section, angle, support and drainage need supplier approval"))
+    installation="Inswing French pair; installed section, angle, support and drainage need supplier approval")
+THERMATRU_SILL = DoorwayTreatment(threshold=THERMATRU_SECTION)
+CASCADIA_SILL = DoorwayTreatment(threshold=CASCADIA_SECTION)
 MASONITE_SILL = DoorwayTreatment(threshold=DoorwayProductSpec(
     product_ref=MASONITE_STEEL_FLUSH.tag, variant="UNKNOWN — prehanger's outswing sill",
     role="sill", source_url="https://www.masonite.com/discover-and-learn/door-buying-key-terms/",

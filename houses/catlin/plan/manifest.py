@@ -120,7 +120,9 @@ _library = Library(
     # selection is the owner's). `plan/fixture_types.py` is that selection where one has
     # been made — so far the RM-M-BATH2 drop-in bath alone — and rides beside the
     # allowances rather than replacing them, the same split `appliance_types` uses.
-    fixture_types=(*STARTER_FIXTURE_TYPES, *fixture_types.FIXTURE_TYPES, *lav_types.LAV_TYPES),
+    # The house's laundry tub replaces the library preset of its tag (`lav_types.LAUNDRY_TUB`).
+    fixture_types=(*(t for t in STARTER_FIXTURE_TYPES if t.tag != lav_types.LAUNDRY_TUB.tag),
+                   *fixture_types.FIXTURE_TYPES, *lav_types.LAV_TYPES),
     # The library's appliance catalog is a planning ALLOWANCE — its own header says final
     # selection is the owner's. `plan/appliance_types.py` is that selection, and rides
     # beside the allowances rather than replacing them: the disposer and the recirculating

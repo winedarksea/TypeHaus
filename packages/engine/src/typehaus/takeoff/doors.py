@@ -50,6 +50,29 @@ def door_hardware_rows(model: ResolvedModel) -> list[dict]:
     return rows + doorway_purchase_rows(model)
 
 
+def door_installation_rows(model):
+    """Site-built boards are measured separately from factory-included door components."""
+    rows = []
+    for opening in model.openings:
+        placement = opening.doorway.exterior_placement if opening.doorway else None
+        if placement is None:
+            continue
+        for board in placement.boards:
+            dimensions = board.cut_dimensions_m
+            row = dict(kind="exterior door casing" if "casing" in board.name
+                       else "door jamb extension", room=None, material=board.material_ref,
+                       item=board.material_ref, pieces=1,
+                       description=f"{opening.tag}: {board.name}; painted site-built board",
+                       length_ft=dimensions[2] / .3048, tags=[opening.tag],
+                       inside_corners=0, outside_corners=0,
+                       cut_pieces=[dict(thickness_in=dimensions[0] / .0254,
+                                        width_in=dimensions[1] / .0254,
+                                        length_in=dimensions[2] / .0254)],
+                       volume_m3=board.width_m * board.height_m * board.depth_m)
+            rows.append(row)
+    return rows
+
+
 def doorway_purchase_rows(model):
     """One installed cut length per separately purchased component; factory/kit items excluded."""
     grouped = {}

@@ -200,4 +200,6 @@ def _doorway_text(opening):
         return "UNKNOWN"
     identities = ", ".join(s.product_ref + " (" + s.purchase + ")"
                            for s in assembly.selected_products)
-    return f"{assembly.status}: {identities or assembly.floor_treatment}"
+    suffix = (f"; section {assembly.section_status}; supplier {assembly.supplier_status}"
+              if assembly.exterior_placement else "")
+    return f"{assembly.status}: {identities or assembly.floor_treatment}{suffix}"

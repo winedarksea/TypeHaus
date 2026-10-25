@@ -26,8 +26,9 @@ def doorway_assembly(ctx: CheckContext) -> list:
             findings.append(failed(_ID, message, (opening.tag,)))
         wall = ctx.model.wall(opening.host_wall)
         floors = assembly.adjacent_floors
-        if wall is not None and all(f is not None and f.surface_m is not None for f in floors):
-            walking = min(f.surface_m for f in floors)
+        known_surfaces = [f.surface_m for f in floors if f is not None and f.surface_m is not None]
+        if wall is not None and known_surfaces:
+            walking = min(known_surfaces)
             origin, tangent, _, _ = wall_frame(wall)
             for member in wall.members:
                 if (not member.child_key.startswith("plate-bottom")
@@ -51,6 +52,15 @@ def doorway_assembly(ctx: CheckContext) -> list:
                 if part.material_ref not in materials:
                     findings.append(failed(_ID, f"unknown section material {part.material_ref}",
                                            (opening.tag,)))
+        placement = assembly.exterior_placement
+        if placement:
+            for board in placement.boards:
+                if board.material_ref not in materials:
+                    findings.append(failed(_ID, "unknown installation material "
+                                           f"{board.material_ref}",
+                                           (opening.tag,)))
+            if placement.outward_sign * (placement.leaf_normal_m - placement.frame_inner_m) < 0:
+                findings.append(failed(_ID, "door leaf lies behind installed jamb", (opening.tag,)))
         if len(findings) == before:
             findings.append(passed(_ID, "resolved continuous floor or sourced doorway components",
                                    (opening.tag,)))

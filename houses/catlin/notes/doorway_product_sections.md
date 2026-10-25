@@ -1,6 +1,8 @@
 # Doorway product sections — research and supplier register
 
-Reviewed 2026-10-23. Authored opening/landing elevations remain fixed. An ordered door
+Reviewed 2026-10-23; main-floor structural mounting updated 2026-10-24 in
+[exterior_door_structural_mount.md](exterior_door_structural_mount.md).
+Authored opening/landing elevations remain fixed. An ordered door
 line is not approval of a particular sill. The `doorway` records in `plan/door_types.py`
 are deliberately **unverified** and contain no polygons. UNKNOWN is the correct result
 until the supplier identifies the installed variant, dimensioned section and revision.
@@ -43,6 +45,10 @@ actual adjacent walking surfaces, including finish zones, decide continuity. Dif
 finishes meet beneath the closed leaf. A documented transition reserves its footprint and
 its two expansion gaps in the shared finish polygons and takeoff area.
 
+Documented selected sections may be modeled before supplier order confirmation.
+`section_documented` and `supplier_confirmed` track these separately; legacy `verified`
+records remain supported. Section, supplier and fit statuses are serialized independently.
+
 Verified multipart sections use metres `(normal, height)` and an explicit installed normal
 sign, datum and offset. Floor profiles also require documented finish-stop positions and
 floor contact planes; overlapping cap wings do not remove the flooring underneath them.
@@ -53,8 +59,9 @@ an explicit span; door operation never invents a floor-spanning section.
 
 The generic bottom frame and assumed slider track are omitted. A plate above a known
 walking surface is interrupted across the passage unless it carries the documented sill;
-structural mudsills, support below the floor and raised rough sills remain. If the adjacent
-floor is unknown, potential support remains and the assembly reports UNKNOWN. The pan
+structural mudsills, support below the floor and raised rough sills remain. One known walking surface can establish a floor-level obstruction even if the opposite
+side is unknown. If neither floor is known, potential support remains and the assembly
+reports UNKNOWN. The pan
 coordinator checks the documented sill against existing back dam, support, membrane,
 width and outlet; it reports conflicts instead of moving the authored installation.
 

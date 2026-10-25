@@ -97,5 +97,18 @@ SUNNERSTA_BAR_SINK = FixtureType(
     source="Existing SUNNERSTA sink, owner 2026-10-24; exact bowl station unpublished. "
            "Plumbing stations approximate; included sink bills with the kitchenette.",
 )
+# Same tag as the library's LAUNDRY_SINK, which the manifest drops. Not a lavatory: basin=False,
+# so 210.52(D) stays off it and 210.52(F) governs. Footprint and declared height are the
+# library's; the 34 in. rim is the cabinet top the listing sells it as.
+LAUNDRY_TUB = FixtureType(
+    tag="FX-LAUNDRY-SINK-24", name="Glacier Bay QL033Y utility tub, white cabinet, bundled faucet",
+    footprint=(inch(24), inch(21)), height=inch(43), plan_symbol="laundry-sink",
+    basin=False, needs=NEEDS,
+    product_ref="PROD-GLACIER-BAY-QL033Y",
+    parts=(FixturePart(role="faucet", product_ref="PROD-GLACIER-BAY-QL033Y-FAUCET"),),
+    source="Owner selection 2026-10-24: Glacier Bay QL033Y, Home Depot #206057007 (spec sheet "
+           "not retrieved). Bundled flex-neck faucet; its hose adapter is not used, so no "
+           "hose-bibb tee is carried on the cold. Ports are the library's allowance.",
+)
 LAV_TYPES = (ANGSJON_36, ANGSJON_36_SS, SEKTION_30, SEKTION_24_SS, CHULTON_30,
-             SUNNERSTA_BAR_SINK)
+             SUNNERSTA_BAR_SINK, LAUNDRY_TUB)

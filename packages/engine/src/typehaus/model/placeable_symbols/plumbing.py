@@ -485,10 +485,11 @@ def hydrant() -> Builder:
 # So this family authors the deck as the ratio it actually is and lets the faucet take the
 # remainder, which keeps the rim at 34" for the catalog size and still scales cleanly.
 LAUNDRY_TUB_DECK_FRACTION = 34.0 / 43.0
-# How deep the basin itself goes. A utility tub is deep — that is the whole reason to buy one
-# rather than a lavatory — so the bowl runs most of the way down the cabinet instead of
-# hanging a few inches under a counter.
-LAUNDRY_TUB_BASIN_DEPTH_M = 0.36
+# The basin's plan and depth, in inches. Taken from the Glacier Bay QL039 listing (sibling of
+# the QL033Y the house selected, 2026-10-24): 22.31 in. across the cabinet, 19.5 in. front to
+# back, 9 in. deep. The QL033Y's own basin is unverified; replace these when its spec is read.
+LAUNDRY_TUB_BASIN_IN = (22.31, 19.5)
+LAUNDRY_TUB_BASIN_DEPTH_M = 9.0 * 0.0254
 
 
 def laundry_tub() -> Builder:
@@ -503,7 +504,8 @@ def laundry_tub() -> Builder:
         top_t = min(0.03, deck_z * 0.2)
         kick = min(0.09, deck_z * 0.12)
         rim = clamp(min(width, depth) * 0.05, 0.012, 0.03)
-        basin_w, basin_d = width * 0.82, depth * 0.70
+        basin_w = min(LAUNDRY_TUB_BASIN_IN[0] * 0.0254, width * 0.94)
+        basin_d = min(LAUNDRY_TUB_BASIN_IN[1] * 0.0254, depth * 0.94)
         basin_cy = -depth * 0.05
         bowl_top = deck_z - top_t
         bowl_z0 = max(kick, bowl_top - min(LAUNDRY_TUB_BASIN_DEPTH_M,

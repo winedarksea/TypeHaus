@@ -466,6 +466,9 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
         assembly = opening.doorway
         ll.ensure_pset(f, filling, "TypeHaus_Doorway", {
             "Status": assembly.status,
+            "SectionStatus": assembly.section_status,
+            "SupplierStatus": assembly.supplier_status,
+            "FitStatus": assembly.fit_status,
             "RoughOpeningElevation": assembly.rough_opening_z_m,
             "FloorTreatment": assembly.floor_treatment,
             "SelectedProducts": ", ".join(s.product_ref for s in assembly.selected_products),

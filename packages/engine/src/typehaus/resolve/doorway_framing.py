@@ -30,10 +30,13 @@ def clear_doorway_sole_plates(model):
             for opening in openings.get(wall.tag, ()):
                 assembly = opening.doorway
                 floors = assembly.adjacent_floors
-                if any(f is None or f.surface_m is None for f in floors):
-                    # Unknown floors cannot distinguish support from obstruction.
+                known_surfaces = [f.surface_m for f in floors
+                                  if f is not None and f.surface_m is not None]
+                if not known_surfaces:
                     continue
-                walking = min(f.surface_m for f in floors)
+                # One known floor proves a sole plate obstructs a floor-level passage.
+                # Raised access openings and documented sill bearings are preserved below.
+                walking = min(known_surfaces)
                 if member.z1_m <= walking + DOORWAY.height_tolerance_m:
                     continue
                 if assembly.rough_opening_z_m > member.z1_m + DOORWAY.height_tolerance_m:

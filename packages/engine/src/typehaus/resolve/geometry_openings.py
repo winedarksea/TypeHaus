@@ -163,8 +163,15 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         frame_depth = abs(outer_edge - inner_edge)
         frame_offset = (outer_edge + inner_edge) / 2.0
 
+    placement = opening.doorway.exterior_placement if opening.doorway else None
+    product_offset = placement.leaf_normal_m if placement else 0.0
+    if placement:
+        frame_depth = abs(placement.frame_outer_m - placement.frame_inner_m)
+        frame_offset = (placement.frame_outer_m + placement.frame_inner_m) / 2 - product_offset
+
     def box(box_w: float, box_h: float, box_t: float, along: float,
             elevation: float, normal_offset: float = 0.0) -> GPrism:
+        normal_offset += product_offset
         cx = posx + ux * along + nx * normal_offset
         cy = posy + uy * along + ny * normal_offset
         hw, ht = box_w / 2.0, box_t / 2.0
@@ -353,9 +360,10 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                            leaf_set=leaf_set)
     if opening.kind != "door":
         return parts
+    from typehaus.resolve.exterior_door import installation_parts
     from typehaus.resolve.geometry_doorway import doorway_parts
 
-    parts = parts + doorway_parts(wall, opening)
+    parts = parts + doorway_parts(wall, opening) + installation_parts(wall, opening)
     assembly = opening.doorway
     if assembly and assembly.leaf_bottom_z_m is not None:
         original_leaf_bottom = min((s.z0_m for p in parts if p.key == "leaf"

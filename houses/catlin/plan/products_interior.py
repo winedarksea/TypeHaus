@@ -121,16 +121,6 @@ DELTA_ARVO_LAV = Product(
            "arc against the bar bowl's and the attic lav's actual depth ** before ordering "
            "eight; a low-spout faucet is the substitute in a shallow bowl.",
 )
-MOEN_ADLER_LAUNDRY = Product(
-    tag="PROD-MOEN-87233SRS", brand="Moen", model="87233SRS",
-    name="Adler single-handle pull-down kitchen faucet, Spot Resist Stainless",
-    source="Moen product page, read 2026-09-06. Serves FX-M-LAUNDRY-SINK. ** THE BRIEF "
-           "CANNOT BE MET AS WRITTEN: ** no mainstream pull-down sprayer is hose-threaded "
-           "(sprayheads use proprietary threads) and every 3/4\"-hose-threaded utility "
-           "faucet is a two-handle rigid spout with no spray. Take the sprayer and TEE A "
-           "1/2\" HOSE BIBB OFF THE COLD AT THE LAUNDRY BOX -- a rough-in item that has to "
-           "reach the plumber before the wall closes.",
-)
 MOEN_ALIGN_FILLER = Product(
     tag="PROD-MOEN-T393", brand="Moen", model="T393",
     name="Align three-hole Roman tub trim, chrome, without handshower",
@@ -445,7 +435,7 @@ DURAVIT_B2_POWDER_FAUCET = Product(
 INTERIOR_PRODUCTS = (
     DURAVIT_DCODE_070545, DURAVIT_B2_POWDER_FAUCET, TOTO_AP_WALLHUNG, TOTO_DUOFIT_WT173M, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
     TOTO_WASHLET_S5, KOHLER_CACHET_SEAT,
-    DELTA_ARVO_LAV, MOEN_ADLER_LAUNDRY,
+    DELTA_ARVO_LAV,
     *SHOWERING_PRODUCTS,
     MOEN_ALIGN_FILLER, MOEN_4794_ROUGH, DELTA_ARVO_LAV_CHROME,
     KOHLER_CAXTON_BASIN, SWAN_CONTOUR_TOP, CORIAN_GLACIER_WHITE,

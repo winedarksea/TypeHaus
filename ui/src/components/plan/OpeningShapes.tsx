@@ -82,8 +82,9 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
   const dx = Math.cos(ang) * halfPx;
   const dy = Math.sin(ang) * halfPx;
   const hingeDirection = o.flip_hinge ? -1 : 1;
-  const hingeX = cx + hingeDirection * dx;
-  const hingeY = cy + hingeDirection * dy;
+  const leafOffsetPx = (o.doorway?.exterior_placement?.leaf_normal_m ?? 0) * scale;
+  const hingeX = cx + hingeDirection * dx + Math.sin(ang) * leafOffsetPx;
+  const hingeY = cy + hingeDirection * dy - Math.cos(ang) * leafOffsetPx;
   const swingSign = o.flip_swing ? -1 : 1;
   // SVG's y axis is inverted from plan coordinates, so the screen-space +90° normal is
   // [sin(angle), -cos(angle)].  It matches the shared drawing IR's handed plan symbol.

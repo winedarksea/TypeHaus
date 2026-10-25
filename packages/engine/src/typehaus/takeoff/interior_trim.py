@@ -17,6 +17,7 @@ from __future__ import annotations
 from collections import defaultdict
 
 from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff.doors import door_installation_rows
 
 _FT = 0.3048
 _KIND = {"trim": "baseboard", "tile": "tile base", "integral_cove": "flash cove",
@@ -58,7 +59,7 @@ def interior_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             cuts[key].append({"length_in": round(board.length_m / 0.0254, 3),
                               "width_in": round(board.width_m / 0.0254, 3),
                               "thickness_in": round(board.thickness_m / 0.0254, 3)})
-    return [{
+    rows = [{
         "kind": kind, "room": room, "material": material, "item": item,
         "description": f"{kind.capitalize()}, {names.get(material, material)} — {room}",
         "length_ft": round(length[key] / _FT, 2),
@@ -69,3 +70,4 @@ def interior_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         "tags": sorted(set(tags[key])),
         **({"cut_pieces": cuts[key]} if cuts[key] else {}),
     } for key in sorted(length) for kind, room, material, item in (key,)]
+    return rows + door_installation_rows(model)

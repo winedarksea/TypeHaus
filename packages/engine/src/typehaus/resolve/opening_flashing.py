@@ -59,7 +59,7 @@ class OpeningFlashingFrame:
                              (*[sign * v * thickness for v in self.along], 0.0))
 
 
-def opening_flashing_frame(model: ResolvedModel, wall: ResolvedWall) \
+def opening_flashing_frame(model: ResolvedModel, wall: ResolvedWall, opening=None) \
         -> OpeningFlashingFrame | None:
     exterior = _exterior_face(wall)
     if exterior is None:
@@ -97,6 +97,12 @@ def opening_flashing_frame(model: ResolvedModel, wall: ResolvedWall) \
                         and layer.function != "cladding"]
         water = max(extent(water_layers[-1])) if water_layers else sheath_out
         back = min(extent(structures[-1])) if structures else min(extent(substrate))
+    placement = opening.doorway.exterior_placement if opening and opening.doorway else None
+    if placement:
+        # A structural-wall door's pan starts behind its actual jamb, not at the
+        # outboard window buck; the exterior reveal still drains to the cladding outlet.
+        back = placement.outward_sign * placement.frame_inner_m - FLASHING.back_dam_strip_m
+        buck = 0.0
     return OpeningFlashingFrame((x0, y0), along, outward, back, water, mount, clad, outie,
                                 buck)
 
@@ -133,7 +139,7 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
         if opening.kind not in ("window", "door"):
             continue
         wall = walls[opening.host_wall]
-        frame = opening_flashing_frame(model, wall)
+        frame = opening_flashing_frame(model, wall, opening)
         if frame is None:
             continue
         meshes = opening_flashing_meshes(wall, opening, frame, cfg,
@@ -161,7 +167,9 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
     courses = [m for m in wall.members if m.category == "truss_blocking"
                and abs(m.z0_m - head) < _HEAD_COURSE_TOLERANCE_M]
     window = opening.kind == "window"
-    casing = _WINDOW_TRIM_FACE_WIDTH_M if window else 0.0
+    placement = opening.doorway.exterior_placement if opening.doorway else None
+    casing = (_WINDOW_TRIM_FACE_WIDTH_M if window else
+              placement.specification.casing_width.meters if placement else 0.0)
     head_seat = max(head + casing, max((m.z1_m for m in courses), default=head))
     rise = cfg.outie_head_rise_m if frame.outie else cfg.head_rise_m
     # The drip must clear the casing face where there is one, or its downstand is buried
@@ -248,7 +256,9 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
 def _drip_face(opening: ResolvedOpening, frame: OpeningFlashingFrame,
                cfg: FlashingConfig) -> float:
     """The drip must clear the casing face where there is one, else the cladding."""
-    casing = _WINDOW_TRIM_PROUD_DEPTH_M if opening.kind == "window" else 0.0
+    placement = opening.doorway.exterior_placement if opening.doorway else None
+    casing = (_WINDOW_TRIM_PROUD_DEPTH_M if opening.kind == "window" else
+              placement.specification.casing_thickness.meters if placement else 0.0)
     return frame.clad + casing + cfg.head_projection_m
 
 

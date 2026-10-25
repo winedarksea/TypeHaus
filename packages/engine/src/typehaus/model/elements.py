@@ -7,6 +7,7 @@ from typing import Literal
 from typehaus.model.base import Element
 from typehaus.model.doorway import DoorwayTreatment
 from typehaus.model.enums import StructuralRole
+from typehaus.model.exterior_door import ExteriorDoorInstallation
 from typehaus.model.opening_supports import OpeningFrameEndSupports
 from typehaus.model.refs import (
     Arch,
@@ -120,6 +121,7 @@ class Door(Element):
     """A door opening hosted on a wall (→ 10 §Element model)."""
 
     doorway: DoorwayTreatment | None = None
+    exterior_installation: ExteriorDoorInstallation | None = None
     host: str
     type_ref: str
     position: OpeningPosition

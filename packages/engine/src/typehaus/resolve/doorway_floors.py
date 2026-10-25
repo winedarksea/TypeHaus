@@ -19,15 +19,11 @@ def extend_doorway_finishes(model):
     walls = {wall.tag: wall for wall in model.walls}
     for opening in model.openings:
         assembly = opening.doorway
-        if assembly is None or any(f is None or f.surface_m is None
-                                   for f in assembly.adjacent_floors):
+        if assembly is None:
             continue
         if assembly.conflicts:
             continue
         # A raised access opening does not pull the floor up to its rough sill.
-        if assembly.rough_opening_z_m > min(f.surface_m for f in assembly.adjacent_floors
-                                           ) + DOORWAY.height_tolerance_m:
-            continue
         wall = walls[opening.host_wall]
         faces = finish_faces(wall)
         if faces is None:
@@ -48,6 +44,11 @@ def extend_doorway_finishes(model):
             bounds[0] = min(bounds[0], lo - gaps[0])
             bounds[1] = max(bounds[1], hi + gaps[1])
         for index, floor in enumerate(assembly.adjacent_floors):
+            if floor is None or floor.surface_m is None:
+                continue
+            # Each room can finish its own reveal even when the other side is unknown.
+            if assembly.rough_opening_z_m > floor.surface_m + DOORWAY.height_tolerance_m:
+                continue
             room = rooms.get(floor.room_tag)
             if room is None or floor.finish_ref is None:
                 continue

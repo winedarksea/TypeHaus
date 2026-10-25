@@ -4,10 +4,12 @@ import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { buildOpening } from "../three/builders/openings";
 import { buildDoorCasing } from "../three/builders/millwork";
 import { buildWall } from "../three/builders/walls";
+import { buildFloor, buildRoomFloor, buildSolid } from "../three/builders/structure";
 import { ALL_TRADES, type Trade } from "../state/vocabulary";
 
 const model: Model = await (await fetch("/__door-review-house")).json();
 const params = new URLSearchParams(location.search), view = params.get("view");
+const exteriorReview = view?.startsWith("exterior") ?? false;
 const dark = params.get("theme") === "dark";
 const mode = params.get("theme") === "schematic" ? "schematic" : "nordic";
 const palette = RESOLVED_NORDIC_PALETTE[dark ? "dark" : "light"];
@@ -17,7 +19,9 @@ const oakRef = materials.find(material => material.species === "oak")?.tag;
 const cedarRef = materials.find(material => material.species === "cedar")?.tag;
 if (!oakRef || !cedarRef) failures.push("Review requires catalog oak and cedar materials");
 if (dark) { document.body.style.background = "#22262a"; document.body.style.color = "#eaeaea"; }
-const cases = view === "synthetic" ? [
+const cases = exteriorReview ? ["D-M-ENTRY", "D-M-BALC"].flatMap(tag => [-1, 1].map(side =>
+  ({ tag, side, label: `${tag} · ${side < 0 ? "exterior" : "interior"} · threshold unresolved` })))
+  : view === "synthetic" ? [
   { tag: "D-M-MUD", side: 1, label: "Shared swing type · inherited white frame" },
   { tag: "D-M-MUD", side: 1, label: "Shared swing type · oak frame", frame: oakRef },
   { tag: "D-M-MUD", side: -1, label: "Independent oak frame / cedar leaf", frame: oakRef, leaf: cedarRef },
@@ -51,23 +55,39 @@ for (const sample of cases) {
   for (const casing of model.door_casings ?? []) if (casing.opening_uid === opening.uid) {
     buildDoorCasing(group, casing, center, mode, palette, materials, picks, byUid);
   }
+  if (exteriorReview) {
+    for (const solid of (model.solids ?? []).filter(s => s.tag.startsWith(`${opening.tag}-FLASH-`))) {
+      buildSolid(group, solid, center, mode, palette, model.catalog, [], new Map(), materials);
+    }
+    for (const adjacent of opening.doorway?.adjacent_floors ?? []) {
+      if (!adjacent) continue;
+      const deck = model.floors?.find(f => f.tag === adjacent.deck_tag);
+      if (deck) buildFloor(group, deck, center, mode, palette, [], new Map(), groups.framing, materials);
+      const room = model.rooms.find(r => r.tag === adjacent.room_tag);
+      if (room) buildRoomFloor(group, room, adjacent.deck_top_m, center, mode, palette,
+        materials, [], new Map());
+    }
+  }
   const base = opening.cased_product?.base_z_m ?? (wall.plate_base_z_m ?? wall.z0_m) + opening.sill_m;
   group.position.y = -base; group.rotation.y = angle; scene.add(group);
   const floor = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4),
     new THREE.MeshStandardMaterial({ color: dark ? 0x77756e : 0xc2b6a1, roughness: 0.8 }));
-  floor.position.y = -0.02; scene.add(floor);
+  floor.position.y = -0.02;
+  if (!exteriorReview) scene.add(floor);
   const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   renderer.setSize(775, 480); renderer.setPixelRatio(1);
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   scene.traverse(object => { if (object instanceof THREE.Mesh) { object.castShadow = true; object.receiveShadow = true; } });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1;
-  const detail = view === "jamb" || view === "floor";
-  const span = detail ? 0.34 : 2.5;
+  const floorView = view === "floor" || view === "exterior-floor";
+  const jambView = view === "jamb" || view === "exterior-jamb";
+  const detail = jambView || floorView;
+  const span = detail ? (exteriorReview ? 0.8 : 0.34) : 2.5;
   const camera = new THREE.OrthographicCamera(-span * 775 / 480 / 2, span * 775 / 480 / 2,
     span / 2, -span / 2, 0.01, 50);
-  const target = new THREE.Vector3(view === "jamb" ? opening.width_m / 2 - 0.02 : 0,
-    view === "floor" ? 0.08 : view === "jamb" ? 1.25 : 1.08, 0);
+  const target = new THREE.Vector3(jambView ? opening.width_m / 2 - 0.02 : 0,
+    floorView ? 0.08 : jambView ? 1.25 : 1.08, 0);
   camera.position.copy(target).add(new THREE.Vector3(detail ? 1.6 : 0.18, detail ? 0.24 : 0.08, -sample.side * 4));
   camera.lookAt(target); renderer.render(scene, camera);
   const figure = document.createElement("figure"), caption = document.createElement("figcaption");

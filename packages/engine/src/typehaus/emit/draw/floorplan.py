@@ -200,6 +200,10 @@ def _emit_door_symbol(b: SceneBuilder, model: ResolvedModel, op, center: tuple[f
     name = symbol_name_for_operation(_door_operation(model, op.type_ref))
     width_in = op.width_m / M_PER_IN
     hinge_jamb_sign = -1.0 if getattr(authored, "flip_hinge", False) else 1.0
+    placement = op.doorway.exterior_placement if op.doorway else None
+    if placement:
+        center = (center[0] - axis_delta[1] / length * placement.leaf_normal_m,
+                  center[1] + axis_delta[0] / length * placement.leaf_normal_m)
     insert = center if symbol_is_centre_anchored(name) else (
         center[0] + hinge_jamb_sign * axis_delta[0] / length * op.width_m / 2,
         center[1] + hinge_jamb_sign * axis_delta[1] / length * op.width_m / 2)

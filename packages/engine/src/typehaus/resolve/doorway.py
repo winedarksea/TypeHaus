@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, fields, is_dataclass, replace
 from itertools import pairwise
+from typing import TYPE_CHECKING
 
 from typehaus.model.base import HausModel
 from typehaus.model.doorway import DoorwayProductSpec, DoorwayTreatment
@@ -15,12 +16,16 @@ from typehaus.resolve.geometry_door_products import finish_faces
 from typehaus.resolve.room_floor import SLAB_MATCH_TOLERANCE_M
 from typehaus.resolve.walking_surface import FloorSurface, surfaces_at
 
+if TYPE_CHECKING:
+    from typehaus.resolve.exterior_door import ExteriorDoorPlacement
+
 
 @dataclass(frozen=True)
 class DoorwayConfig:
     floor_probe_m: float = 0.015
     height_tolerance_m: float = 0.001
     leaf_undercut_m: float = 0.010
+    leaf_thickness_m: float = 0.045
 
 
 DOORWAY = DoorwayConfig()
@@ -67,6 +72,21 @@ class DoorwayAssembly:
     leaf_bottom_z_m: float | None = None
     selected_products: tuple[DoorwayProductSpec, ...] = ()
     jamb_bottom_z_m: float | None = None
+    exterior_placement: ExteriorDoorPlacement | None = None
+
+    @property
+    def section_status(self):
+        return "DOCUMENTED" if self.selected_products and all(
+            s.verified or s.section_documented for s in self.selected_products) else "UNKNOWN"
+
+    @property
+    def supplier_status(self):
+        return "CONFIRMED" if self.selected_products and all(
+            s.supplier_confirmed for s in self.selected_products) else "PENDING"
+
+    @property
+    def fit_status(self):
+        return "FAIL" if self.conflicts else "UNKNOWN" if self.unknown else "VERIFIED"
 
     @property
     def status(self):
@@ -81,6 +101,9 @@ def doorway_json(value):
         result = {f.name: doorway_json(getattr(value, f.name)) for f in fields(value)}
         if isinstance(value, DoorwayAssembly):
             result["status"] = value.status
+            result["section_status"] = value.section_status
+            result["supplier_status"] = value.supplier_status
+            result["fit_status"] = value.fit_status
         return result
     if isinstance(value, (tuple, list)):
         return [doorway_json(v) for v in value]
@@ -124,11 +147,21 @@ def resolve_doorway(model, wall, opening, door_type, treatment=None):
     faces = finish_faces(wall)
     unknown, conflicts = [], []
     floors = []
+    installation = treatment.exterior_installation
+    from typehaus.resolve.geometry_openings import _exterior_face
+
+    exterior = _exterior_face(wall) if installation else None
     for side, face in zip((-1, 1), faces or (0, 0), strict=True):
         samples = []
         offset = face + side * DOORWAY.floor_probe_m
         for point in _floor_sample_stations(model, wall, opening, center, tangent, normal, offset):
-            samples.append(adjacent_floor(model, wall, point))
+            if exterior and side == exterior[1]:
+                from typehaus.resolve.exterior_door import exterior_landing
+
+                samples.append(exterior_landing(model, wall, point,
+                    tuple(side * n for n in normal), installation))
+            else:
+                samples.append(adjacent_floor(model, wall, point))
         signatures = {(s.finish_ref, s.room_tag, s.surface_m is None) if s else None
                       for s in samples}
         elevations = [s.surface_m for s in samples if s is not None and s.surface_m is not None]
@@ -172,7 +205,7 @@ def resolve_doorway(model, wall, opening, door_type, treatment=None):
     for spec in selected:
         if spec is None:
             continue
-        if not spec.verified:
+        if not (spec.verified or spec.section_documented):
             unknown.append(f"{spec.product_ref}: section/installation variant is unverified")
             continue
         if spec.role in ("sill", "track", "transition") and spec.maximum_floor_difference_m is None:
@@ -233,9 +266,10 @@ def resolve_doorway(model, wall, opening, door_type, treatment=None):
         components.append(component)
     leaf = None
     jamb = None
-    if known:
-        jamb = max(base, min(f.surface_m for f in floors))
-        leaf = max(base, *(f.surface_m for f in floors)) + DOORWAY.leaf_undercut_m
+    known_surfaces = [f.surface_m for f in floors if f is not None and f.surface_m is not None]
+    if known or installation and known_surfaces:
+        jamb = max(base, min(known_surfaces))
+        leaf = max(base, *known_surfaces) + DOORWAY.leaf_undercut_m
         for component in components:
             if component.specification.role != "bottom_seal":
                 leaf = max(leaf, component.top_z_m + component.specification.leaf_clearance_m)
@@ -272,11 +306,29 @@ def resolve_doorways(model):
             continue
         authored = model.plan.by_tag(opening.tag)
         treatment = getattr(authored, "doorway", None) or product.doorway
+        installation = getattr(authored, "exterior_installation", None)
+        if installation:
+            treatment = (treatment or DoorwayTreatment()).model_copy(
+                update={"exterior_installation": installation})
         assembly = resolve_doorway(model, walls[opening.host_wall], opening, product, treatment)
+        if treatment and treatment.exterior_installation:
+            from typehaus.resolve.exterior_door import place_exterior_door
+
+            assembly = place_exterior_door(model, walls[opening.host_wall], opening, assembly,
+                                          treatment.exterior_installation)
+        if assembly.exterior_placement:
+            previous = opening.doorway.exterior_placement if opening.doorway else None
+            offset = assembly.exterior_placement.leaf_normal_m
+            delta = offset - (previous.leaf_normal_m if previous else 0.0)
+            _, _, normal, _ = wall_frame(walls[opening.host_wall])
+            opening = replace(opening, swing_clearance=[
+                (x + normal[0] * delta, y + normal[1] * delta)
+                for x, y in opening.swing_clearance])
         cased = opening.cased_product
         if cased and assembly.leaf_bottom_z_m is not None:
             cased = replace(cased, leaf_bottom_z_m=assembly.leaf_bottom_z_m,
                             base_z_m=assembly.jamb_bottom_z_m,
-                            finished_floor_z_m=tuple(f.surface_m for f in assembly.adjacent_floors))
+                            finished_floor_z_m=tuple(f.surface_m if f else None
+                                                    for f in assembly.adjacent_floors))
         resolved.append(replace(opening, doorway=assembly, cased_product=cased))
     model.openings = resolved

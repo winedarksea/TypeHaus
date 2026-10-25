@@ -305,9 +305,9 @@ This is the part of the pass with a deadline on it.
   overflow and filler rough. Fit-check the delivered parts through both before closing the
   enclosure. Moen 4794 permits 2 3/4 in. rough deck plus up to 1 1/4 in. finish; the modeled
   2 1/4 in. rough stack plus 1/2 in. finish fits. See [Bath2 tub hardware](bath2_tub_hardware.md).
-- **Tee a ½" hose bibb off the cold at the laundry box.** No mainstream pull-down sprayer is
-  hose-threaded and every ¾"-hose-threaded utility faucet is a two-handle rigid spout with no
-  spray, so the brief cannot be met by one faucet.
+- **Laundry tub: Glacier Bay QL033Y with its bundled flex-neck faucet (2026-10-24).** The
+  owner declined the garden-hose adapter for this room, so no hose-bibb tee is carried on the
+  cold at the laundry box. The Adler 87233SRS pull-down and its tee are retired.
 - **Write "unmodified ANSI A118.1 mortar" into the tile contract** where DITRA-HEAT is used.
   The membrane is impervious, so a modified latex mortar cannot air-dry and may take 14–60+
   days to cure — a setter defaulting to modified out of habit produces a floor that looks

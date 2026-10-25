@@ -5,9 +5,11 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { launchChromium, attachToPage, evaluate, captureScreenshot } from "./lib/cdp.mjs";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const output = resolve(root, "../out/door-review");
+const exterior = process.argv.includes("--exterior");
+const output = resolve(root, exterior ? "../out/exterior-door-review" : "../out/door-review");
 const before = process.argv.includes("--before"), label = before ? "before" : "after";
-const snapshot = await readFile(resolve(root, before ? "../out/door-review/before-model.json"
+const snapshot = await readFile(resolve(root, exterior ? "../out/exterior-door-review/model.json"
+  : before ? "../out/door-review/before-model.json"
   : "../houses/catlin/out/model.json"), "utf8");
 const legacy = before ? await readFile(resolve(output, "before-openings.ts"), "utf8") : null;
 const server = await createServer({ root, configFile: false, plugins: [{ name: "door-review",
@@ -36,7 +38,8 @@ try {
     width: 1600, height: 1150, deviceScaleFactor: 1, mobile: false,
   });
   await mkdir(output, { recursive: true });
-  for (const view of ["faces", "jamb", "floor", "synthetic"]) {
+  for (const view of exterior ? ["exterior-faces", "exterior-jamb", "exterior-floor"]
+    : ["faces", "jamb", "floor", "synthetic"]) {
     for (const theme of ["light", "dark", "schematic"]) {
       const url = `http://127.0.0.1:${server.httpServer.address().port}/door-review.html?view=${view}&theme=${theme}`;
       await session.send("Page.navigate", { url });

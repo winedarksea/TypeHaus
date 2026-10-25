@@ -20,6 +20,7 @@ from typehaus import (
     ControlLayer,
     Door,
     DoorType,
+    ExteriorDoorInstallation,
     FloorHeat,
     FloorOpening,
     FloorOpeningPurpose,
@@ -1099,13 +1100,15 @@ OPENINGS = [
     # studs and the stair wall's own king studs both want — so the closet run west of the
     # door reaches the west wall almost whole. See RM-M-MUDROOM below.
     Door(uid="CMD201AAAA", tag="D-M-ENTRY", host="W-M-N3", type_ref="DT-EXT-SWING36",
-         position=from_node("N-M-N2", ft(0, 6))),
+         position=from_node("N-M-N2", ft(0, 6)),
+         exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base")),
     # Centre 21'-4" (2026-08-24, was 21'-10"): D-S-DECK-E moved to 21'-4" when the two
     # balcony doors slid 1'-0" inward, and this door stands directly under it, so the south
     # face reads as one column of French pairs rather than a 6" jog. 10" of wall to the
     # inside corner at N-M-S1, the same remnant D-S-DECK-E leaves above it.
     Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-M-S1", ft(0, 10)), flip_swing=True),
+         position=from_node("N-M-S1", ft(0, 10)), flip_swing=True,
+         exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base")),
     # Interior
     # D-M-STAIR was here — the 32" swing in the west lane, onto the flight ST-B2M arrives in.
     # Retired 2026-08-24 with its host wall W-M-STRS; see WALLS. The stair head is open.

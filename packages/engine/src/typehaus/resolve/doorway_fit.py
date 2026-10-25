@@ -18,7 +18,7 @@ def coordinate_doorway_pans(model):
             openings.append(opening)
             continue
         wall = walls[opening.host_wall]
-        frame = opening_flashing_frame(model, wall)
+        frame = opening_flashing_frame(model, wall, opening)
         conflicts, unknown = list(assembly.conflicts), list(assembly.unknown)
         for component in assembly.components:
             if component.specification.role not in ("sill", "track"):

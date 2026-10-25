@@ -144,7 +144,14 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     frameDepth = Math.abs(outerEdge - innerEdge);
     frameOffset = (outerEdge + innerEdge) / 2;
   }
+  const placement = opening.doorway?.exterior_placement;
+  const productOffset = placement?.leaf_normal_m ?? 0;
+  if (placement) {
+    frameDepth = Math.abs(placement.frame_outer_m - placement.frame_inner_m);
+    frameOffset = (placement.frame_outer_m + placement.frame_inner_m) / 2 - productOffset;
+  }
   const addBox = (width: number, height: number, thickness: number, along: number, elevation: number, material: THREE.Material, normalOffset = 0) => {
+    normalOffset += productOffset;
     const leafBottom = opening.doorway?.leaf_bottom_z_m;
     if (leafBottom != null && (material === solidLeafMaterial || material === glassMaterial)
       && elevation + height / 2 > leafBottom) {
@@ -203,6 +210,19 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     standardMaterial(new THREE.Color(materialColor(ref, palette, materials)), mode,
       materialKey === "door_hardware" ? { metalness: 0.8, roughness: 0.35 }
         : { metalness: 0, roughness: 0.45 }));
+  for (const board of placement?.boards ?? []) {
+    const material = standardMaterial(categoryColor(board.material_key === "window_trim"
+      ? "window_trim" : "door_frame"), mode, { roughness: 0.45 });
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(board.width_m, board.height_m,
+      board.depth_m), material);
+    mesh.position.copy(projectPointToScene([
+      openingCenter[0] + direction[0] * board.along_m - direction[1] * board.normal_m,
+      openingCenter[1] + direction[1] * board.along_m + direction[0] * board.normal_m,
+    ], board.z_m, center));
+    mesh.rotation.y = rotation;
+    mesh.userData.doorInstallation = board.name;
+    parent.add(mesh);
+  }
   const faces = finishFaces(wall);
   if (opening.cased_product) {
     const paintedFrame = opening.effective_frame_material_ref ? frameMaterial

@@ -207,6 +207,11 @@ the foam was sprayed in (60-80 F, `ccspf_spec.md` §3) and set the windows behin
 
 ## 6. The two exterior swing doors (2026-10-13)
 
+**2026-10-24 update:** D-M-ENTRY and D-M-BALC now use structural-wall mounting
+with deep exterior returns. Their coordinated frame/pan/support detail and remaining
+supplier requirements are in [exterior_door_structural_mount.md](exterior_door_structural_mount.md).
+The older entry description below does not establish its factory sill or support.
+
 `DT-EXT-SWING36` is `D-M-ENTRY` and `D-G-SERVICE`. Both open onto the north-entry deck, and
 both take a pan. `prices.toml [allowances] envelope-door-sill-pans` bills them, driven on
 `openings.count[type=DT-EXT-SWING36]`. `DT-EXT-FRENCH60`'s own row already carries its pan.
