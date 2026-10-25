@@ -1,3 +1,20 @@
+## French pairs: Therma-Tru Smooth-Star / Endura (2026-10-25)
+
+All three DT-EXT-FRENCH60 pairs replace Cascadia with Smooth-Star full-lite on composite
+frames, Endura ZAI sill, Ultimate Flip-Lever Astragal and PanoLock+ / Schlage BE365 / passage
+lever. One laminated low-E triple spec throughout; impact full-lite fallback. The FE595
+cannot drive PanoLock+'s deadbolt-operated top/bottom bolts. Confirm double bore at 5-1/2
+inches, BE365 compatibility and ≥ 4-inch stile; FLA operates both passive-leaf flush bolts.
+
+Provisional CPD THC-M-5-04493-00001, read today: U 0.21 / SHGC 0.12 / VT 0.27, versus
+Cascadia U 0.15 / SHGC 0.33 / VT 0.42: more heat loss and dimmer glass, still below modeled
+MN U 0.32. This row is not certification of laminated triple or the assembled pair.
+The prehanger must supply Therma-Tru system approval and the pair's NFRC/NAFS label.
+Cascadia and imported European uPVC (Drutex DRU-K-20, ~U 0.17) remain alternatives to revert
+to. Keep price bands pending quotes, including laminated glass and BE365 / passage hardware.
+D-M-BALC now uses a schematic 4-9/16 × 1-3/8-inch ZAI envelope; installed section, support,
+drainage and patio/deck threshold heights remain supplier questions.
+
 ## Kitchen sink: Bolden faucet and Dearborn trap (2026-10-24)
 
 The selected KHU100-32 bowl now has a Kraus Bolden KPF-1610SFS in spot-free

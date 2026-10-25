@@ -39,14 +39,17 @@ ANDERSEN_400_CASEMENT = Product(
            "in 1/8\" steps, factory installation flange. NFRC line AND-N-1. Clear opening "
            "per Andersen's 2025-26 opening specifications (notes/window_and_door_procurement.md "
            "§7).")
-CASCADIA_UNIVERSAL_DOOR = Product(
-    tag="PROD-CASCADIA-UNIVERSAL-DOOR", brand="Cascadia Windows & Doors",
-    model="Universal Series swing door", name="Universal Series fiberglass swing door",
-    url="https://www.cascadiawindows.com",
-    source="Cascadia Windows Ltd., Langley BC. Fiberglass, any colour (black ext / white int), "
-           "European multipoint lock, triple glazed. NFRC line CWL-K-27; NAFS inswing single "
-           "R-PG45, inswing double R-PG35, outswing single CW-PG40 (Universal Series data "
-           "sheet 2022.05.V3).")
+THERMATRU_SMOOTHSTAR_FULLLITE = Product(
+    tag="PROD-THERMATRU-SMOOTHSTAR-FULLLITE", brand="Therma-Tru",
+    model="Smooth-Star full-lite", name="Smooth-Star full-lite inswing French pair, composite frame",
+    url="https://www.thermatru.com",
+    source="Local prehanger: composite jambs/head, Endura Z-Series Adjustable Inswing (ZAI) sill, "
+           "Ultimate Flip-Lever Astragal (FLA) with top/bottom passive-leaf flush bolts, "
+           "PanoLock+ with Schlage BE365 keypad deadbolt and passage lever on all three pairs. "
+           "Double bore at 5-1/2 inch spacing; confirm stile >= 4 inches and BE365 compatibility. "
+           "One glass spec: laminated low-E triple, special quote; impact full-lite fallback. "
+           "NFRC THC-M-5-04493-00001 is the provisional performance basis, not a laminated-triple "
+           "or pair certification. Prehanger must supply Therma-Tru system approval and pair label.")
 THERMATRU_SMOOTHSTAR = Product(
     tag="PROD-THERMATRU-SMOOTHSTAR", brand="Therma-Tru", model="Smooth-Star flush",
     name="Smooth-Star fiberglass flush door, inswing, multipoint lock",
@@ -75,5 +78,5 @@ CLOPAY_MODERN_STEEL = Product(
 
 OPENING_PRODUCTS = (
     DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, DRUTEX_ALUCOVER_TILT, ANDERSEN_400_CASEMENT,
-    CASCADIA_UNIVERSAL_DOOR, THERMATRU_SMOOTHSTAR, MASONITE_STEEL_FLUSH, CLOPAY_MODERN_STEEL,
+    THERMATRU_SMOOTHSTAR_FULLLITE, THERMATRU_SMOOTHSTAR, MASONITE_STEEL_FLUSH, CLOPAY_MODERN_STEEL,
 )

@@ -1,11 +1,12 @@
 # Window and door procurement: the chosen lines, frame material, install method
 
-2026-10-21. Design reasoning, not a calc oracle. **The owner's selection (2026-10-21):**
+2026-10-21. Design reasoning, not a calc oracle. **The owner's selection (updated 2026-10-25):**
 
 - **Drutex IGLO Energy Alucover** (Polish, aluminium-capped uPVC) for the 11 tilt-turn, 19
   fixed and 2 tilt-only units.
 - **Andersen 400 casement** (Bayport, MN) for the 9 R310 escape windows.
-- **Cascadia Universal** fiberglass for the three French pairs; an opaque **Therma-Tru
+- **Therma-Tru Smooth-Star full-lite** fiberglass / composite frames / Endura hardware
+  for all three French pairs; an opaque **Therma-Tru
   Smooth-Star** for `D-M-ENTRY`; a commodity **Masonite** insulated steel outswing for
   `D-G-SERVICE`; a Clopay Modern Steel sectional for `D-G-OVERHEAD`.
 
@@ -65,7 +66,7 @@ Zone 5 governs any unit within 3.6 ft of a corner. Order every unit at one ratin
   outstanding. See §7.
 - **Dark frames.** On Alucover the black is powder-coated aluminium, so no dark uPVC sees the
   sun on any face (§3's preferred material). Andersen 400 is black Perma-Shield vinyl over
-  wood. Cascadia is painted fiberglass.
+  wood. Smooth-Star doors are painted fiberglass.
 - **14" units.** Cascadia's outswing awning starts at 20" wide and its casement at 18 3/4".
   The two kitchen units go Drutex tilt-only (inward, bottom-hinged), modelled as `awning`.
 
@@ -96,12 +97,27 @@ and fixed; LC-PG45/CW-PG80 tilt-turn. Every value is over §1's DP 20.
 | Door | Line | CPD | U | SHGC | VT | Notes |
 |---|---|---|---|---|---|---|
 | `D-M-ENTRY` | Therma-Tru Smooth-Star flush, inswing | THC-M-5-03881 | 0.15 | — | — | opaque; polyurethane core; multipoint lock |
-| `D-B-PATIO`, `D-M-BALC`, `D-S-DECK-E` | Cascadia Universal, double | -00344 in / -00415 out | 0.15 | 0.33 | 0.42 | inswing double R-PG35; **CPD lists the single leaf**, the pair's label is a quote item |
+| `D-B-PATIO`, `D-M-BALC`, `D-S-DECK-E` | Therma-Tru Smooth-Star full-lite, composite frame / Endura | THC-M-5-04493-00001 | 0.21 | 0.12 | 0.27 | provisional CPD basis; laminated triple and assembled pair NFRC/NAFS label are dealer items |
 | `D-G-SERVICE` | Masonite Premium Flush steel, 32in outswing, full composite poly-fiber jambs/head (reference 26849 family only; prehanger to confirm frame/RO and reinforcement) | none | — | — | — | own type `DT-EXT-SWING32-G`; insulated core, detached unconditioned garage; see garage_service_door_outswing.md for prehung/stop confirmation |
 | `D-G-OVERHEAD` | Clopay Modern Steel, Intellicore R-18.4, Black, 16x7 | none | — | — | — | unconditioned; wind rating for q_h 19.3 psf to confirm |
 
-Therma-Tru's best full-lite (THC-M-5-04493) is U 0.21 at VT 0.27; Drutex's uPVC balcony door
-(DRU-K-20) is ~0.17 but foil-black and not fiberglass. Both are the alternates for the pairs.
+**French pairs (owner, 2026-10-25).** All three use one glass specification: laminated
+low-E triple, special quote, with Therma-Tru impact full-lite as the fallback. No separate
+balcony type. The [CPD basis row](https://search.nfrc.org/search/cpd/cpd_search_detail.aspx?cpdnum=THC-M-5-04493-00001),
+read 2026-10-25, is full-lite E366/Argon/i89, U 0.21 / SHGC 0.12 / VT 0.27;
+it does not certify laminated triple or the assembled pair. U rises from 0.15 and VT drops
+from 0.42; the modeled U remains below the MN 0.32 glazed-door limit. Certification requires
+the prehung assembly to follow a Therma-Tru product approval and carry its own label.
+Alternates to revert to: Cascadia Universal triple fiberglass (U 0.15 / SHGC 0.33 / VT 0.42;
+pair label also unresolved), or imported European uPVC such as Drutex DRU-K-20 (~U 0.17,
+foil-black), potentially shipped with the windows.
+
+**Hardware.** All three pairs use Endura PanoLock+ with Schlage BE365 keypad deadbolt and
+passage lever, double-bored at 5-1/2 inches. The deadbolt drives the tapered top and bottom
+bolts; the lever drives only the latch, so the deadbolt-free FE595 cannot engage PanoLock+
+and was dropped. Confirm BE365 compatibility and stile width ≥ 4 inches with the prehanger.
+The Ultimate Flip-Lever Astragal's single lever drives both passive-leaf flush bolts.
+The sill is Endura Z-Series Adjustable Inswing (ZAI); installed section remains pending.
 
 **The front door is opaque (owner, 2026-10-21, later).** The first pass hung a Cascadia full
 lite at `D-M-ENTRY` because the Cascadia line carries no opaque infill. The owner wants a
@@ -141,8 +157,9 @@ is published, so it bounds the base product rather than re-bases a row. No US pr
 published for any of the three lines; every row in `prices.toml` stays a band with a named product.
 Drutex sells through dealers (DAKAM, Franklin Park IL, 16 years as a partner; Home One,
 Chicago), and the Chicago dealer is the freight point. The Polish landed cost adds ocean
-freight, crating, US duty on HTS 3925.20 plus the 2025 EU tariff, and 10–14 weeks. Cascadia
-trucks from Langley BC with no duty under USMCA. Andersen is local. **One quote per supplier
+freight, crating, US duty on HTS 3925.20 plus the 2025 EU tariff, and 10–14 weeks. Therma-Tru and Andersen are Twin Cities dealer-stocked lines; the
+composite-frame Endura pair and laminated triple still need a special quote and lead time.
+**One quote per supplier
 for the actual schedule** is the next step; price for performance cannot be ranked closer
 than ±20% without it.
 
@@ -162,13 +179,13 @@ than ±20% without it.
    on the section drawing; re-strike `plan/window_stools.py` and the main.py east-wall note
    to rail = 75 mm + adaptor, less the overlap on the tilt-turns.
 4. Andersen 400 triple-pane availability through a Twin Cities dealer; basic-unit frame depth.
-5. Cascadia: NFRC label for the double door — **confirmed absent from the CPD** (none of the
-   1,355 CWL-K-27 rows is a pair), so it is a certification question for Cascadia, not a
-   lookup; threshold height at D-B-PATIO's 7¼" step and D-S-DECK-E's 0.58".
+5. Therma-Tru pair NFRC/NAFS label under its product approval with the specified Endura
+   components; laminated triple CPD row and SHGC (0.12 is only the provisional basis row);
+   BE365 on PanoLock+'s compatibility list; stile width ≥ 4 inches; installed threshold
+   heights at D-B-PATIO's 7¼" step and D-S-DECK-E's 0.58".
 6. Dark-colour warranty by orientation. Andersen 400 publishes 20 years glass / 10 years
    non-glass, transferable, not prorated (400 Series product guide), with no black-specific
-   term. Drutex and Cascadia publish no finish term (a Cascadia user reports a factory paint
-   that touches up, less hard than PVDF). Ask all three in writing.
+   term. Get Drutex and Therma-Tru finish terms for the selected black exterior in writing.
 7. Clopay: Texas TDI approval GDR150 lists Modern Steel residential models 7208/7209,
    non-impact, at **+38/−42 psf**, about twice §1's worst 18.3 psf. Confirm GDU011 is one of
    them and that the listing reaches 16'-0" wide (drawing 104859/105042-B-TDI).
@@ -372,7 +389,7 @@ Sources checked 2026-10-23:
 ## Sill, track and floor-transition submittals (2026-10-23)
 
 See [doorway_product_sections.md](doorway_product_sections.md) for the manufacturer
-sources, verified installation dimensions and supplier questions for Therma-Tru, Cascadia,
+sources, verified installation dimensions and supplier questions for Therma-Tru / Endura,
 Masonite and Clopay. Door-type `doorway` selections now retain these unresolved variants
 in model JSON and schedules. Their sections remain omitted with UNKNOWN findings until
 approved; a product-line name is insufficient. Factory sills/seals are included with the

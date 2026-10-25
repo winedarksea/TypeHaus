@@ -331,3 +331,14 @@ which is the same lesson again.
   **29,472**. Cooling loses the door's 10:30 glass (−301.0) and 13.9 of AED excursion
   (`solar_gain_basis.md`): 22,020.3 − 315.0 = **21,705** sensible, 1.952 − 315.0/12,000 =
   **1.925** tons.
+
+- **2026-10-25, Smooth-Star / Endura French pairs.** The same 100 ft² of French pairs
+  goes U 0.15 → 0.21: +6.00 UA, +510 Btu/h heating and +90 cooling conduction.
+  Door UA is now 24.00 (including the unchanged opaque entry). Relative to the prior
+  pinned basis, heating is 29,471.9 + 510 = **29,981.9 Btu/h**. The current model
+  resolves **30,049.6 Btu/h**, within the oracle's 0.5% tolerance for intervening details.
+  `solar_gain_basis.md` records SHGC 0.33 → 0.12: peak glass 13,528.0 → 12,075.8,
+  AED 670.5 → 487.3. Sensible cooling changes by +90 − 1,452.2 − 183.2 = −1,545.4,
+  so the pinned basis is **20,159.9 Btu/h**, **1.7967 tons** including 1,400 latent.
+  Current model: **20,144.6 Btu/h**, **1.7954 tons**. These use provisional CPD
+  THC-M-5-04493-00001, not a certified laminated-triple pair rating.

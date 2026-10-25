@@ -5406,7 +5406,7 @@
 #
 # ** PRODUCTS NAMED 2026-10-21 (notes/window_and_door_procurement.md §2). ** Drutex IGLO
 # Energy Alucover for the tilt-turn, fixed and tilt-only units, Andersen 400 casements for the
-# nine egress windows, Cascadia Universal doors. None publishes a price, so the window bands
+# nine egress windows, Therma-Tru Smooth-Star doors. None publishes a price, so the window bands
 # below are NOT re-based: each comment names its product, and a quote per supplier replaces
 # them. The one Drutex figure found is Polish list: IGLO Energy white triple tilt-turn,
 # 975x1090 mm, 713 zl net (~$195, kb.pl, undated) — before Alucover, colour, fin, export and
@@ -5488,8 +5488,9 @@
 # Unit only. Low is a closeout/builder fiberglass pair ($598 at Door Clearance Center); high is
 # a full-lite Low-E or 10-lite SDL fiberglass double ($2,188-2,829 at doornmore.com). The old
 # $3,600 high was an installed price wearing a material label.
-# 2026-10-21: FRENCH60 is Cascadia Universal triple-glazed fiberglass. Cascadia publishes no
-# price, so the band is not re-based; expect the quote at or above the high end. SWING36 is
+# 2026-10-25: FRENCH60 is a locally prehung Therma-Tru Smooth-Star full-lite pair with
+# composite Endura frame, ZAI sill, FLA and PanoLock+. Laminated low-E triple is a quote
+# item; retain the band pending a sourced assembled-pair quote. SWING36 is
 # an opaque Therma-Tru Smooth-Star prehung with a multipoint lock, a dealer-stocked line; no
 # price was found, and the old band is kept pending a dealer quote.
 "DT-EXT-FRENCH60" = { material = { low = 1300, high = 2900 }, labour = { low = 450, high = 1050 } }  # 3 ea — sill pan, flashing, and a unit that must stay square for the astragal to latch
@@ -7457,6 +7458,9 @@ finish-tile-backer-and-waterproofing = { low = 2000, high = 4500 }
 # prices the leaf and its install, not
 # the lockset, the hinges or the stop. $84-306 each spans a builder-grade passage set and a
 # solid-brass privacy set on a solid-core door, which is why the range is 3.6x.
+# French pairs: BE365 keypad deadbolt + passage lever is not specifically priced here;
+# expect the top of this band. Flag for dealer quote, without an unsourced rate change.
+# PanoLock+ and FLA belong in the prehung-pair quote, not a second hardware allowance.
 # ** TWO OF THE 37 TAKE NO DOOR HARDWARE. ** D-G-OVERHEAD is the sectional garage door — it has
 # no lockset and no butt hinges, and its operator is the `finish-garage-door-opener` row below.
 # D-M-LAUN is a pocket door: its hardware is the track, jamb kit and edge pull that come with

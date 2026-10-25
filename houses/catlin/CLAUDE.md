@@ -933,8 +933,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Named products; window and door types are HOUSE-LOCAL (2026-10-21).** Drutex IGLO
   Energy Alucover (aluminium-capped uPVC) for the 11 tilt-turn, 19 fixed and 2 kitchen
   tilt-only units; Andersen 400 casements for the 9 R310 escape windows (`WIN-M-BED-S1`/`S2`,
-  `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`); Cascadia
-  fiberglass for the French pairs (glazed-only line); an OPAQUE Therma-Tru Smooth-Star for
+  `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`); Therma-Tru Smooth-Star full-lite / Endura
+  for the French pairs (2026-10-25; laminated triple and pair label pending); an OPAQUE Therma-Tru Smooth-Star for
   `D-M-ENTRY` (owner: a solid, insulated front door, at most a tiny lite); commodity Masonite
   insulated steel for `D-G-SERVICE` (`DT-EXT-SWING32-G`); Clopay for the overhead. Black outside, white inside.
   `plan/window_types.py`/`plan/door_types.py` redefine every tag the house hangs, each with

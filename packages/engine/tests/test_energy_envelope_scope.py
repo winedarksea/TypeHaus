@@ -49,7 +49,8 @@ from typehaus.resolve.solid_categories import in_slab_family
 # x 85 F = -2,177. Cooling: conduction -25.611 x 15 F = -384; the 10:30 glass +753 (SHGC by
 # product; notes/solar_gain_basis.md); AED excursion 740 -> 684. D-M-ENTRY opaque again
 # (later that day): -301.0 of north glass, -13.9 of excursion -> 21,705.3.
-_HEATING_BTUH = 29_471.9
+# 2026-10-25 French pairs: 100 sf x (0.21 - 0.15) = +6 UA, x85 F = +510 heating.
+_HEATING_BTUH = 29_981.9
 # SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
 # (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
 # latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2
@@ -59,12 +60,13 @@ _HEATING_BTUH = 29_471.9
 # Restoring WIN-M-LIV-S2 raises the 10:30 glass peak and the cooling result below.
 # The same west glass lifts the day's average more than its 10:30 peak, so the AED
 # excursion falls 1,070 -> 740 and cooling 21,847 -> 21,707 while the glass peak rises 162.
-_COOLING_SENSIBLE_BTUH = 21_705.3
+# French pairs: +90 conduction -1,452.2 peak glass -183.2 AED = -1,545.4 sensible.
+_COOLING_SENSIBLE_BTUH = 20_159.9
 _LATENT_BTUH = 1_400.0
-_COOLING_TONS = 1.9254
-_SOLAR_PEAK_BTUH = 13_528.0
-_SOLAR_PEAK_HOUR = 10.5
-_AED_EXCURSION_BTUH = 670.5
+_COOLING_TONS = 1.7967
+_SOLAR_PEAK_BTUH = 12_076.0
+_SOLAR_PEAK_HOUR = 10.0
+_AED_EXCURSION_BTUH = 487.3
 _INTERNAL_SENSIBLE_BTUH = 2_810.0
 
 # ``(kind, area_ft2, ua_btu_per_hour_f)`` in the order the report emits them.
@@ -79,7 +81,7 @@ _COMPONENTS = (
     ("roof", 1547.9, 29.103),
     ("slab", 1296.0, 25.468),
     ("windows", 293.6, 49.171),
-    ("doors", 120.0, 18.000),
+    ("doors", 120.0, 24.000),
 )
 
 # The whole envelope, by tag. 50 walls.

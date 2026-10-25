@@ -42,20 +42,14 @@ factory jamb depth/hinge position, finish-stop/expansion-gap locations and suppo
 Use the applicable [installation manual](https://outdoorsandsecurity.widen.net/content/cjranjizwq/original/2026-Site-Manual---SITE-1-Installation.pdf)
 for sealant and anchorage; do not generalize the garage note's back-dam-only sealant rule.
 
-**Cascadia:** design family selected: high-performance inswing threshold.
-The current [door download page](https://www.cascadiawindows.com/products/doors)
-links [UW6 PDF, dated July 30, 2026](https://www.cascadiawindows.com/files/file/6a7e455007bf8/Door-Page---Profile--Install-Details-Inswing-Door-double--triple-glazed---20260813.pdf)
-and [version 5 DWG library](https://www.cascadiawindows.com/files/file/6a7e43e438e0c/Cascadia-Windows---Detail-Library---Version-5---20260813.dwg).
-The DWG was downloaded, converted with LibreDWG, and its UW6 layout inspected in
-inch units. Its sill outlines are recoverable as research geometry, including the
-`CW-DOOR SILL-FRAME` outlines. Neither the generic inswing layout nor its outlines
-establish the ordered high-performance French pair's complete installed contract.
-Needed: variant applicability to the triple-glazed pair, dimensioned factory frame,
-leaf/sweep and jamb terminations, finished-floor stops, bearing/shim contact datums,
-and the coordinated interior angle/beauty cap and drainage section. UW6 specifies
-an angle 1-1/4 × 1-1/4 × 1/8 inch, shims at 8 inches o.c. and sill screws at
-6 inches o.c., kept 3 inches from vertical frame members. Those installation notes
-alone do not define an installed threshold model. Do not scale the N.T.S. PDF.
+**French pairs: Therma-Tru Smooth-Star / Endura ZAI (2026-10-25).**
+The [ZAI product page](https://www.enduraproducts.com/adjustable-door-sills-2/) and
+[Z-Series Sill Options](https://marketing.poweredbyendura.com/hubfs/Sills_TechnicalDocuments/Z-Series%20Sills%20-%20Line%20Drawings.pdf),
+p.5, publish ZAI4565FN at 4-9/16 × 1-3/8 inches with a 5° deck. This supports the schematic
+envelope, not an installed product section. Needed from the prehanger: Therma-Tru approval
+and NFRC/NAFS label for the composite-frame pair with ZAI, FLA and PanoLock+; exact sill,
+frame, leaf/sweep and jamb terminations; floor stops, support/seat contacts and drainage
+coordinated with the pan. The requested laminated triple remains a special-quote item.
 
 **Support and drainage:** the threshold needs manufacturer-required support tied to
 the structure. The exterior approach also needs its own support; painted return
@@ -83,7 +77,7 @@ threshold internals, cap, jamb/leaf terminations and seals still require supplie
 be overlaid with this design envelope.
 
 The entry envelope uses the published 7-3/4 × 1-1/2-inch Therma-Tru option. The balcony
-envelope uses the 4-1/2 × 1-3/8-inch bounds of the recovered Cascadia v5 sill outlines.
+envelope uses the published 4-9/16 × 1-3/8-inch Endura ZAI4565FN dimensions.
 These overall dimensions do not establish the chosen cap width, cap height, ramp shape,
 seat, underside, or seal. Those are explicit project design parameters. The solids are
 simplified masses, not traced or verified extrusions; the generic composite cap material

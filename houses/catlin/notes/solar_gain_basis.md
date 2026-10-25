@@ -322,3 +322,15 @@ The owner rejected the glazed front door, so it is an opaque Therma-Tru Smooth-S
 and south rises to 60% of it. The day's average falls by the door's mean north gain, read
 from the engine: 10,111 → 9,890. The AED excursion is 13,528 − 1.3 × 9,890 = **670** (was
 684). The engine agrees to the Btu/h.
+
+## Revision 2026-10-25 — Smooth-Star / Endura French pairs
+
+The three French pairs move from Cascadia SHGC 0.33 to provisional
+[THC-M-5-04493-00001](https://search.nfrc.org/search/cpd/cpd_search_detail.aspx?cpdnum=THC-M-5-04493-00001)
+SHGC **0.12**, read today (U 0.21 / VT 0.27). The requested laminated low-E triple
+and assembled-pair label remain dealer items; this row does not certify them.
+The solar oracle now uses the current model: the coincident peak moves from 10:30
+to **10:00**, at **12,075.8 Btu/h** (S 5,922.4; E 4,431.8; W 1,019.5; N 702.1).
+The 08:00–20:00 average is **8,914.2 Btu/h**, and AED is
+12,075.8 − 1.3 × 8,914.2 = **487.3 Btu/h**. South contributes 49.0% at the peak.
+Earlier tables retain their dated layouts and product assumptions.

@@ -62,8 +62,9 @@ DOOR_TYPES = [
     # R308.4.1 has no location test to fail: glazing *in a door* is a hazardous location by
     # definition, so this is a property of the product wherever it is hung — which is why it
     # is set on the three glazed types below and needs no tempered variant of any of them.
-    # The exterior door types are the chosen products in `plan/door_types.py` (2026-10-21),
-    # each with its NFRC CPD row.
+    # Exterior products live in `plan/door_types.py` (updated 2026-10-25).
+    # French pairs: Smooth-Star full-lite / Endura ZAI, PanoLock+ / BE365 / passage lever
+    # (2026-10-25). Laminated low-E triple and the assembled pair label remain quote items.
     # DT-EXT-SLIDE60 retired 2026-09-12: a 5'-0" glazed exterior slider that never hung.
     # All three exterior glazed openings (D-M-BALC, D-S-DECK-E, D-B-PATIO) are French pairs
     # on DT-EXT-FRENCH60 — a swing pair weathers better at a threshold this house raises
@@ -1116,9 +1117,9 @@ OPENINGS = [
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
              exterior_wrap_material_ref="metal-dark-exterior",
              sill_design=ExteriorDoorSillDesign(
-                 source_url="https://www.cascadiawindows.com/products/doors",
-                 source_drawing="UW6 + v5 DWG sill outlines; schematic design envelope",
-                 threshold_depth=inch(4.5), threshold_height=inch(1.375), cap_depth=inch(1.5)))),
+                 source_url="https://marketing.poweredbyendura.com/hubfs/Sills_TechnicalDocuments/Z-Series%20Sills%20-%20Line%20Drawings.pdf",
+                 source_drawing="Endura Z-Series Sill Options p.5, ZAI4565FN: 4-9/16 x 1-3/8 inches; schematic envelope, installed section and pair approval pending",
+                 threshold_depth=inch(4.5625), threshold_height=inch(1.375), cap_depth=inch(1.5)))),
     # Interior
     # D-M-STAIR was here — the 32" swing in the west lane, onto the flight ST-B2M arrives in.
     # Retired 2026-08-24 with its host wall W-M-STRS; see WALLS. The stair head is open.
