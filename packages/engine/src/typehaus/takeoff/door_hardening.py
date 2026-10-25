@@ -1,6 +1,10 @@
 """Purchased hardware sets and per-face field coatings."""
 from collections import defaultdict
 
+from shapely.geometry import Polygon
+
+from typehaus.resolve.geometry import wall_frame
+from typehaus.resolve.overlay import union_all
 from typehaus.takeoff.hardware_row import hardware_row
 
 
@@ -38,10 +42,6 @@ def door_field_paint_rows(model):
             continue
         geometry = model.geometry.by_uid(opening.uid)
         # Projected leaf/frame face area, once per face; glass is never painted.
-        from shapely.geometry import Polygon
-
-        from typehaus.resolve.geometry import wall_frame
-
         wall = model.wall(opening.host_wall)
         origin, tangent, _normal, _run = wall_frame(wall)
         face_area = 0.0
@@ -59,7 +59,6 @@ def door_field_paint_rows(model):
                 low, high = min(stations), max(stations)
                 projections.append(Polygon([(low, solid.z0_m), (high, solid.z0_m),
                                             (high, solid.z1_m), (low, solid.z1_m)]))
-            from typehaus.resolve.overlay import union_all
             face_area += union_all(projections).area
         for material in spec.field_finish:
             areas[material] += face_area

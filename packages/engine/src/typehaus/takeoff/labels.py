@@ -247,8 +247,9 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         function = str(g("function") or "").split(" ")[0]
         if any(word in name.lower() for word in _FUNCTION_WORDS) or function == "structure":
             function = ""
-        return (f"{name} {function}, {thickness} — {g('scope') or ''}"
-                .replace(" ,", ",").strip(" —,"))
+        head = " ".join(part for part in (name, function) if part)
+        detail = f"{head}, {thickness}" if thickness else head
+        return f"{detail} — {g('scope') or ''}".strip(" —")
     if section in SOLID_SECTIONS:
         head = KEY_GLOSSARY.get(("concrete", bare), bare.replace("_", " ").capitalize())
         assembly = g("assembly")
