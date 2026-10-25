@@ -1047,19 +1047,15 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-MECH",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The mudroom's 3-gang plate, on W-M-MECH-S's mudroom face in the 10 3/4" bay between
-    # D-M-MECH's east king and the end stud: on the door's latch side, around the corner from
-    # D-M-ENTRY. Devices at the 4" banked-plate pitch, x=62 1/2"/66 1/2"/70 1/2" (the wall
-    # starts at N-M-MECH2, x=6'-0"):
-    # this one nearest D-M-MECH, the dimmer, then ED-M-ENTRY-SW nearest the front door. Not
-    # W-M-MECH-E's east face — the open D-M-ENTRY leaf parks 3.6" off it — and not W-M-STRW,
-    # whose mudroom face below 7' is open bays with no surface for a box.
+    # Keep the 3-gang bank on W-M-MUDC-E's east (mudroom) face after the door moves.
+    # The first 16" stud bay holds the bank at 4" pitch, clear of the corner pack.
+    # W-M-MECH-E would put it behind the open D-M-ENTRY leaf.
     ElectricalDevice(uid="QTM000ZAAA", tag="ED-M-STORAGE-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-MECH-S", face="left", distance_from_start=inch(9.5),
+                         wall_ref="W-M-MUDC-E", face="left", distance_from_start=inch(13),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # ** THE NORTH ENTRY'S OWN LIGHT, AND UNTIL 2026-09-11 IT DID NOT EXIST. **
@@ -1089,14 +1085,14 @@ MAIN_LIGHTING = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Its switch, inside the dwelling (R303.8.1 — the garage's ED-G-EXT-SW is in the wrong
     # building for this one). D-M-ENTRY fills W-M-N3 to within 6" of both ends, so there is
-    # no north-wall station beside the door; it is the east gang of the mudroom's 3-gang plate
-    # on W-M-MECH-S (see ED-M-STORAGE-SW), the one nearest the front door.
+    # no north-wall station beside the door; use the north gang on W-M-MUDC-E
+    # (see ED-M-STORAGE-SW), the one nearest the front door.
     ElectricalDevice(uid="1XT4G5S2XX", tag="ED-M-ENTRY-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-MECH-S", face="left", distance_from_start=inch(1.5),
+                         wall_ref="W-M-MUDC-E", face="left", distance_from_start=inch(5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # ** THE MUDROOM ITSELF HAD NO LIGHT AT ALL UNTIL 2026-09-15. ** It is the front door,
@@ -1155,7 +1151,7 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-W1", face="left", distance_from_start=inch(24),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** A DIMMER, AND IT IS NOT ON THE NORTH WALL. ** D-M-ENTRY fills W-M-N3 to within 6"
-    # of both ends, so this is the middle gang of the 3-gang plate on W-M-MECH-S (see
+    # of both ends, so this is the middle gang of the 3-gang plate on W-M-MUDC-E (see
     # ED-M-STORAGE-SW): closet cans, house light, porch light.
     #
     # ED-T-SWITCH-DIM carries no load_va, so the dimmer is free electrically; what it buys
@@ -1166,7 +1162,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-MECH-S", face="left", distance_from_start=inch(5.5),
+                         wall_ref="W-M-MUDC-E", face="left", distance_from_start=inch(9),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-HALL: three 3" cans down the run, on a 3-way pair — a 14' hall switched from

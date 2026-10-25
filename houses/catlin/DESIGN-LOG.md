@@ -6160,3 +6160,17 @@ also replaces the missing screen/door coordination note.
 Full-envelope verification also found the exterior entry guard's top post in the early
 swing. Owner approved moving RL-BW-ENTRY's top termination 1.5in east, onto the top tier
 (x=116.5in); garage stair/handrail and all deck structural datums stay fixed.
+
+
+## Mudroom closet doors shift east (2026-10-25)
+
+D-M-MECH moves 8" east, from a 25" to a 33" west-node offset; the owner chose
+this within-wall move because a full 16" bay would overrun the east return.
+D-M-MUDC also moves 8" east, from an 8" to a 16" west-node offset.
+Their host walls lay out west-to-east and east-to-west respectively to avoid
+cutting extra module studs. The mechanical door retains its west hinge and south
+swing; its abrasion-resistant gypsum and ERV supply manifold keep their physical faces.
+
+The closet, mudroom and exterior-entry switches now form a 3-gang bank on the east
+face of W-M-MUDC-E, at 13", 9" and 5" from its north end, still 46" above the datum.
+This clears the first stud bay and avoids the open entry leaf at W-M-MECH-E.

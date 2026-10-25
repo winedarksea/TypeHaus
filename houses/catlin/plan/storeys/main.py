@@ -599,7 +599,7 @@ WALLS = [
     # front edge behind the gypsum), a 6'-0" shelf and the support course under
     # FURN-M-STRW-BENCH, a notched oak 2x10 seat at 18". The sole plate is KDAT: boots drip
     # on it, and LVP butts it (R602.3.4 keeps a 2x plate). No switch box on this face —
-    # below 7' it is open bays; the mudroom switches are on W-M-MECH-S. 1/2" MDO, painted
+    # below 7' it is open bays; the mudroom switches are on W-M-MUDC-E. 1/2" MDO, painted
     # white both faces, closes the stair face and backs every nook; painted poplar 1x4 hook
     # rails (BK-M-STRW-HOOK-*) sit on its back at 42"/60" AFF. `interior_room` picks the
     # mudroom side as layer 0.
@@ -850,12 +850,10 @@ WALLS = [
     Wall(uid="CMW132AAAA", tag="W-M-BDN2", start_node="N-M-D3",
          end_node="N-M-C1", assembly="INT_2X4_PARTITION_HALF", top=ft(9)),
     # --- RM-M-MECH: framed MEP shaft closet, NW corner -------------
-    # Authored east to west so its 16" layout runs from the east end: the module studs land
-    # at 56"/40"/24" (in or beside D-M-MECH's opening), leaving 58"..68 3/4" clear for the
-    # switch box.
-    Wall(uid="CMW137AAAA", tag="W-M-MECH-S", start_node="N-M-MECH2",
-         end_node="N-M-MECH1", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
+    # Lay out west to east so the shifted D-M-MECH interrupts only one module stud.
+    Wall(uid="CMW137AAAA", tag="W-M-MECH-S", start_node="N-M-MECH1",
+         end_node="N-M-MECH2", assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9)),
     Wall(uid="CMW138AAAA", tag="W-M-MECH-E", start_node="N-M-MECH2",
          end_node="N-M-MECH3", assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9)),
@@ -864,9 +862,10 @@ WALLS = [
     # partition carries the closet's opening — the bypass slider in D-M-MUDC — and the
     # east return dies into the existing N-M-BA1 tee, so the room closes against
     # W-M-W1C (west), W-M-STOS (south) and these two.
-    Wall(uid="KKVYSAJKZF", tag="W-M-MUDC-N", start_node="N-M-MUDC1", end_node="N-M-MUDC2",
+    # Lay out from the east end so the shifted bypass cuts only three module studs.
+    Wall(uid="KKVYSAJKZF", tag="W-M-MUDC-N", start_node="N-M-MUDC2", end_node="N-M-MUDC1",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9)),
     Wall(uid="21GE85HJDT", tag="W-M-MUDC-E", start_node="N-M-MUDC2", end_node="N-M-BA1",
          assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
@@ -1133,16 +1132,13 @@ OPENINGS = [
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING32",
          position=from_node("N-M-BA1", inch(4))),
     # RM-M-MECH's hinged utility door, not the mudroom closets' bypass style.
-    # At 2'-1" (was 2'-9"): the 8" west move opens a 10 3/4" bay between the east king and
-    # the end stud for the mudroom's 3-gang switch plate (plan/lighting.py). 2'-1" is also
-    # the wall's module station (one stud cut), and the hinge clears FURN-M-MUD-BENCH by 7/8".
+    # Shift 8" east to 2'-9", keeping both jamb packs inside the existing walls.
+    # Both flips preserve the west hinge and south swing after reversing the host axis.
     Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-S", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-MECH1", ft(2, 1))),
-    # RM-M-MUD-CLOSET's bypass slider, no swing to clear. Near jamb 1'-1" off N-M-MUDC1
-    # centres the 50" RO in the partition's framed span, leaving both corner stud packs clear
-    # (the D-M-MECH king-stud lesson).
+         position=from_node("N-M-MECH1", ft(2, 9)), flip_hinge=True, flip_swing=True),
+    # Shift the bypass opening 8" east; its 50" RO still clears the east corner pack.
     Door(uid="QBTZNWG6AG", tag="D-M-MUDC", host="W-M-MUDC-N", type_ref="DT-INT-BYPASS48",
-         position=from_node("N-M-MUDC1", inch(8))),
+         position=from_node("N-M-MUDC1", inch(16))),
     # The refrigerator obstructs ~23 inches of the old western bypass opening.
     # A 36-inch Eclisse cassette parks west, with the usable doorway at the east.
     # Frame x=218 3/4..293 1/4; mouth=257 1/4. Perpendicular walls support both

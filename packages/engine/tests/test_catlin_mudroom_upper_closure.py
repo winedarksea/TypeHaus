@@ -100,13 +100,13 @@ def test_the_bench_sits_on_the_support_course_and_stands_proud(catlin_model_ro):
         inch(3.75).meters, abs=1e-6)
 
 
-def test_the_mudroom_switches_are_on_mech_s_and_clear_of_its_door(catlin_plan, catlin_model_ro):
+def test_the_mudroom_switches_are_on_mudc_e_and_clear_of_framing(catlin_plan, catlin_model_ro):
     from typehaus.resolve.framing.footprint import member_footprint as footprint
 
     tags = ("ED-M-STORAGE-SW", "ED-M-MUDROOM-SW", "ED-M-ENTRY-SW")
     devices = {e.tag: e for e in catlin_plan.all_elements() if e.tag in tags}
-    assert {d.location.attachment.wall_ref for d in devices.values()} == {"W-M-MECH-S"}
-    # face "left" of an east-to-west wall is its south, mudroom face.
+    assert {d.location.attachment.wall_ref for d in devices.values()} == {"W-M-MUDC-E"}
+    # face "left" of this north-to-south return is its east, mudroom face.
     assert {d.location.attachment.face for d in devices.values()} == {"left"}
     # W-M-STRW's mudroom ("right") face is open bays below 7'; its stair face keeps a switch.
     on_strw = [getattr(getattr(e, "location", None), "attachment", None)
@@ -114,17 +114,17 @@ def test_the_mudroom_switches_are_on_mech_s_and_clear_of_its_door(catlin_plan, c
                if (getattr(e, "type_ref", None) or "").startswith("ED-T-SWITCH")]
     assert not [a for a in on_strw if getattr(a, "wall_ref", None) == "W-M-STRW"
                 and a.face == "right"]
-    # The plate's bay: D-M-MECH's east king to the wall's end stud, with no stud between.
-    wall = catlin_model_ro.wall("W-M-MECH-S")
-    xs = sorted((min(x for x, _ in footprint(m)[0]), max(x for x, _ in footprint(m)[0]))
-                for m in wall.members if m.category in ("stud", "king", "jack"))
-    king_face = max(hi for _, hi in xs if hi < inch(60).meters)
-    end_stud = min(lo for lo, _ in xs if lo > inch(60).meters)
-    assert end_stud - king_face >= inch(10.5).meters
-    # Every device stands east of the king, so its box is in that bay.
-    bodies = [o for o in catlin_model_ro.canvas_objects if o.tag in tags]
+    # All three device bodies fit the same bay without crossing a stud or corner pack.
+    wall = catlin_model_ro.wall("W-M-MUDC-E")
+    stud_spans = [(min(y for _, y in footprint(member)[0]),
+                   max(y for _, y in footprint(member)[0]))
+                  for member in wall.members if member.category in ("stud", "king", "jack")]
+    bodies = [obj for obj in catlin_model_ro.canvas_objects if obj.tag in tags]
     assert len(bodies) == 3
-    assert all(min(x for x, _ in o.footprint) >= king_face for o in bodies)
+    bank_min = min(y for obj in bodies for _, y in obj.footprint)
+    bank_max = max(y for obj in bodies for _, y in obj.footprint)
+    assert min(y for _, y in wall.axis) < bank_min < bank_max < max(y for _, y in wall.axis)
+    assert all(hi <= bank_min or lo >= bank_max for lo, hi in stud_spans)
 
 
 def test_upper_gypsum_is_stamped_for_the_drywall_view_toggle(catlin_model_ro):

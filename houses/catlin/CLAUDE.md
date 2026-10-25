@@ -626,9 +626,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     gypsum) and `FURN-M-STRW-BENCH`, a notched red-oak 2x10 seated on the support course, 3 3/4"
     proud. Its sole plate is KDAT (`FramingSpec.sole_plate_material_ref`): boots drip on it,
     and LVP butts it, because R602.3.4 keeps a nominal 2x plate on a bearing wall. No device
-    may go on that face below 7'; the mudroom switches are a 3-gang plate on `W-M-MECH-S`
-    east of `D-M-MECH`. `W-M-MECH-S` is authored EAST to WEST so its studs lay out from the
-    east end and leave that bay clear. Reverse it and a module stud lands in the box.
+    may go on that face below 7'; the mudroom switches are a 3-gang plate on the east
+    face of `W-M-MUDC-E`, clear of the open entry leaf. The mechanical door wall lays out
+    west to east; the mudroom closet door wall lays out east to west. This keeps their
+    shifted openings on the stud module.
     The bays are backed by the stair leaf, **1/2" MDO painted white on both faces**
     (2026-10-23), with two painted poplar 1x4 hook rails on its back at 42"/60" AFF
     (`BK-M-STRW-HOOK-*`; the low one stops short of `REG-M-XFER-MUD`'s bay). **The stair face
