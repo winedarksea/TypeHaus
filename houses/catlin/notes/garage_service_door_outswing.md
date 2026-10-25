@@ -54,6 +54,17 @@ now nominal **32 × 80 inches**, `DT-EXT-SWING32-G`. Ordinary west hinges; outsw
 the deck. Model opening/hinge x=83", east jamb x=115", centre x=99". Offset from the
 west wall axis is 11". The existing header, raised rough sill and threshold datum remain.
 
+- **Full composite poly-fiber side jambs and head required**, furnished as part of the
+  Masonite steel prehung assembly by the prehanger. Plastpro PF or an equivalent full
+  composite system is the material basis; supplier must approve compatibility with this
+  steel outswing leaf, jamb depth, sill, weather seals, hinge fasteners and overhead-stop
+  reinforcement/template. Obtain the revised frame/RO and hinge-axis dimensions and quote
+  before ordering; the reference stock SKU does not establish the specified frame.
+  [Plastpro PF](https://www.plastproinc.com/uploads/literature/Plastpro_PF_Frame_Brochure_2023_Web.pdf)
+  describes full polyfiber frames. Standard
+  [Endura FrameSaver](https://resources.enduraproducts.com/blog/3-wood-door-frame-problems-solved-with-framesaver)
+  joins a composite bottom to wood; that construction alone does not meet this full
+  composite jamb/head requirement. Finish black outside/white inside per the door finish.
 - **Frame-mounted mechanical overhead stop, stop-only, set to 90°**. No closer or hold-open
   requirement. Confirm the stop's template, door/head reinforcement and fasteners with the
   prehanger; attach nothing to the brick. Ordinary hinges, lockset and stop use the existing
@@ -92,7 +103,10 @@ clear passage. Retain the plan-review question in §1. The stair remains 36" wid
 existing stringer seats, handrail, backing and lighting. The exterior entry guard `RL-BW-ENTRY` terminates 1½" east of the deck edge (x=116½"),
 on the top tier: the former post at x=115" collided with the early leaf swing. This
 owner-approved adjustment leaves the garage handrail unchanged and keeps the guard end
-gap below 4". The longitudinal section moves to
+gap below 4". Fabricate the upper guard post to reach and anchor to the actual top tier
+at −6.6", rather than treating the renderer's interpolated nosing-line post base (−0.55")
+as its mounting surface; confirm this post length/base detail with the guard supplier.
+The longitudinal section moves to
 x=99"; deck edge, edge beam and piers retain their existing datums. Minnesota's
 [stair provisions](https://www.revisor.mn.gov/rules/1309.0311/) remain the stair-width basis.
 

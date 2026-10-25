@@ -61,7 +61,9 @@ DOOR_TYPES = (
         tag="DT-EXT-SWING32-G", width=ft(2, 8), height=ft(6, 8), exterior=True, function="entry",
         product_ref=MASONITE_STEEL_FLUSH.tag, doorway=MASONITE_SILL,
         source="D-G-SERVICE, outswing onto the deck from the rarely heated garage. Insulated steel, flush; "
-               "unconditioned, so no NFRC rating is needed or claimed. Confirm actual prehung frame, RO, hinge axis and sill dimensions before ordering."),
+               "unconditioned, so no NFRC rating is needed or claimed. Full composite poly-fiber jambs "
+               "and head required; prehanger to approve steel-leaf compatibility and hinge/overhead-stop "
+               "reinforcement. Confirm actual frame, RO, hinge axis and sill dimensions before ordering."),
     DoorType(
         tag="DT-EXT-FRENCH60", width=ft(5), height=ft(6, 8), exterior=True, function="entry",
         operation="double_swing", glazed=True, tempered=True,

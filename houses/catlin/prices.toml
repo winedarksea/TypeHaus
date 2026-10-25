@@ -5496,7 +5496,8 @@
 "DT-EXT-SWING36" = { material = { low = 500, high = 1600 }, labour = { low = 320, high = 720 } }  # 1 ea — D-M-ENTRY, Therma-Tru Smooth-Star flush, multipoint
 # D-G-SERVICE's own type since 2026-10-21: a commodity Masonite Premium Flush steel prehung
 # 32in outswing, field-painted; retained $300-600 material budget pending prehanger quote. Same
-# labour.
+# labour. Quote must include full composite poly-fiber jambs/head and stop reinforcement;
+# the retained stock-unit budget does not establish the composite-frame upgrade price.
 "DT-EXT-SWING32-G" = { material = { low = 300, high = 600 }, labour = { low = 320, high = 720 } }  # 1 ea
 # ** LOW END RAISED, not lowered. ** An UNINSULATED 16x7 steel door is $888 at Home Depot and
 # should not be the base case in Climate Zone 6 on a heated-adjacent garage. This now starts at

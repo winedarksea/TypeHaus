@@ -60,7 +60,8 @@ MASONITE_STEEL_FLUSH = Product(
     url="https://superarbor.io/products/masonite-32-in-x-80-in-premium-right-hand-outswing-"
         "flush-primed-steel-prehung-front-exterior-door-with-no-brickmold",
     source="Same Premium Flush insulated steel family, nominal 32x80, field-painted black. "
-           "26849 is a reference right-hand outswing listing, not an approved order. Confirm "
+           "Full composite poly-fiber jambs and head required, supplied/approved by prehanger. "
+           "26849 is a slab/family reference; its stock frame is not the specified frame. Confirm "
            "west hinge handing, actual frame/RO, hinge axis, sill and stop reinforcement "
            "with prehanger. No NFRC rating needed or claimed for this unconditioned garage.")
 
