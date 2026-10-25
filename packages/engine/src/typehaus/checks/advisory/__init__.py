@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typehaus.checks.advisory import (  # noqa: F401 - registers checks
+    acoustic_boxes,
     acoustics,
     assembly_variety,
     backing,

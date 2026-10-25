@@ -74,6 +74,31 @@ def _graded(a: str, b: str) -> bool:
         b in _SLEEPING and a in _NOISY)
 
 
+def _graded_pairs(model, wall, occupancy: dict[str, str], joined: set[tuple[str, str]]):
+    """Doorless sleeping/noisy room pairs along a wall."""
+    return [pair for pair in sorted(_pairs_along(model, wall))
+            if pair not in joined and _graded(occupancy[pair[0]], occupancy[pair[1]])]
+
+
+def acoustic_wall_tags(ctx: CheckContext) -> set[str]:
+    """Walls graded here or carrying a tested STC assembly, for related advisories."""
+    model = ctx.model
+    occupancy = {room.tag: room.occupancy for room in model.rooms}
+    joined = _joined(model)
+    tags: set[str] = set()
+    for wall in model.walls:
+        if wall.is_foundation:
+            continue
+        room_pairs = _pairs_along(model, wall)
+        assembly = ctx.plan.library.resolve_assembly(wall.assembly)
+        if getattr(assembly, "stc", None) is not None and room_pairs:
+            tags.add(wall.tag)
+        if any(pair not in joined and _graded(occupancy[pair[0]], occupancy[pair[1]])
+               for pair in room_pairs):
+            tags.add(wall.tag)
+    return tags
+
+
 @check(Tier.ADVISORY, CHECK_ID)
 def acoustic_adjacency(ctx: CheckContext) -> list[Finding]:
     """A doorless wall between a sleeping room and a noisy one meets the house's STC."""
@@ -85,8 +110,7 @@ def acoustic_adjacency(ctx: CheckContext) -> list[Finding]:
     for wall in model.walls:
         if wall.is_foundation:
             continue
-        pairs = [p for p in sorted(_pairs_along(model, wall))
-                 if p not in joined and _graded(occupancy[p[0]], occupancy[p[1]])]
+        pairs = _graded_pairs(model, wall, occupancy, joined)
         if not pairs:
             continue
         rooms = " / ".join(f"{a}-{b}" for a, b in pairs)
