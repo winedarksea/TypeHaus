@@ -29,7 +29,8 @@ from typehaus.resolve.model import ResolvedWall
 def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
                          operation: DoorOperation | None, is_glazed: bool = False,
                          is_trimless: bool = False, bookcase_door=None,
-                         authored: dict | None = None, leaf_set: str = "pull") -> dict:
+                         authored: dict | None = None, leaf_set: str = "pull",
+                         hardware=(), field_finish=None) -> dict:
     """Draw the product standing in ``opening`` — frame + panel/leaf/glass — as boxes.
 
     Emitted regardless of LOD so the leaf geometry shows for both the core wall prism and the
@@ -38,7 +39,7 @@ def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
     surfaces = {}
     for part in opening_parts(wall, opening, operation, is_glazed=is_glazed,
                               is_trimless=is_trimless, bookcase_door=bookcase_door,
-                              leaf_set=leaf_set):
+                              leaf_set=leaf_set, hardware=hardware, field_finish=field_finish):
         color = door_part_color(part, authored,
                                 linear_paint_defaults=opening.cased_product is not None)
         surfaces[color] = door_part_surface(part)

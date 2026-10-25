@@ -96,7 +96,7 @@ and fixed; LC-PG45/CW-PG80 tilt-turn. Every value is over §1's DP 20.
 
 | Door | Line | CPD | U | SHGC | VT | Notes |
 |---|---|---|---|---|---|---|
-| `D-M-ENTRY` | Therma-Tru Smooth-Star flush, inswing | THC-M-5-03881 | 0.15 | — | — | opaque; polyurethane core; multipoint lock |
+| `D-M-ENTRY` | Therma-Tru Smooth-Star flush, inswing | THC-M-5-03881 | 0.15 | — | — | opaque; polyurethane core; single-point Encode Plus; DS2000; black / white field paint |
 | `D-B-PATIO`, `D-M-BALC`, `D-S-DECK-E` | Therma-Tru Smooth-Star full-lite, composite frame / Endura | THC-M-5-04493-00001 | 0.21 | 0.12 | 0.27 | provisional CPD basis; laminated triple and assembled pair NFRC/NAFS label are dealer items |
 | `D-G-SERVICE` | Masonite Premium Flush steel, 32in outswing, full composite poly-fiber jambs/head (reference 26849 family only; prehanger to confirm frame/RO and reinforcement) | none | — | — | — | own type `DT-EXT-SWING32-G`; insulated core, detached unconditioned garage; see garage_service_door_outswing.md for prehung/stop confirmation |
 | `D-G-OVERHEAD` | Clopay Modern Steel, Intellicore R-18.4, Black, 16x7 | none | — | — | — | unconditioned; wind rating for q_h 19.3 psf to confirm |
@@ -122,8 +122,12 @@ The sill is Endura Z-Series Adjustable Inswing (ZAI); installed section remains 
 **The front door is opaque (owner, 2026-10-21, later).** The first pass hung a Cascadia full
 lite at `D-M-ENTRY` because the Cascadia line carries no opaque infill. The owner wants a
 sturdy, well-insulated, solid door: a small lite at most. Smooth-Star is the commodity
-fiberglass slab with a foam core and a 1 1/4" engineered lock stile, a multipoint lock
-option, and Twin Cities stock. Its flush NFRC row matches the Cascadia U 0.15, so heating is
+fiberglass slab with a foam core and a 1 1/4" engineered lock stile, and Twin Cities stock.
+The 2026-10-25 owner selection is single-point Encode Plus BE499WB plus Century / Latitude
+passage lever, DS2000 viewer, composite frame and strike reinforcement. Field paint is
+black exterior / white interior; factory black is a quote alternate. All four house
+exterior swings get doubled packs, solid hardware backing, composite strike/keep shims
+and local ccSPF; see `exterior_door_hardening.md` for installation and open dealer items. Its flush NFRC row matches the Cascadia U 0.15, so heating is
 unchanged, and it drops 6.6 ft² of north A·SHGC (`solar_gain_basis.md`). A small lite is a
 catalog option; if one is taken, it is tempered (R308.4.1) and needs its own CPD row.
 Drutex's MB-86N SI aluminium entry door (Ud 0.83 W/m²K, about U 0.15) would ship with the

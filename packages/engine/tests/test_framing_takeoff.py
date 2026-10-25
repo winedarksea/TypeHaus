@@ -386,6 +386,7 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # countertop is a purchased fabricated top, not stock the owner's mill saws.
     "countertops": ("countertops",),
     # Derived base and door casing, by the LF; custom-milled stock lists again as a cut list.
+    "jamb_fills": ("envelope_layers",),  # Local ccSPF replaces the host cavity batt area.
     "base_runs": ("interior_trim", "hardwood"),
     "door_casings": ("interior_trim", "hardwood"),
     # Illustrative planting, counted by type and deliberately unpriced.

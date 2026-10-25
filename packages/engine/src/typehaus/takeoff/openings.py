@@ -135,6 +135,7 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         rows.append({
             "kind": kind,
             "type": type_ref or None,
+            "hardware_authored": bool(getattr(product, "hardware", ())),
             "takes_hardware": kind == "door" and raw_operation not in _NO_DOOR_HARDWARE,
             "host_assembly": host_assembly or None,
             "host_structure": host_structure or None,

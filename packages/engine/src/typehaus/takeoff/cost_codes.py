@@ -358,6 +358,8 @@ def _placeable_trade(row: Mapping[str, Any]) -> str | None:
 def _fact_code(section: str, row: Mapping[str, Any]) -> CostCode | None:
     """A trade read from the row's own facts, or ``None`` to fall through."""
     trade: str | None = None
+    if section == "hardware" and row.get("scope") == "door hardware (authored)":
+        return CostCode("2400", "08 71 00", "openings")
     if section == "hardware" and row.get("role") == "pocket_door_frame_kit":
         return _POCKET_FRAME_CODE
     if section in ("placeables", "furnishings"):

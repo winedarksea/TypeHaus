@@ -4,8 +4,10 @@ Geometry math happens once, in ``resolve/``, and the emitters are serializers: I
 owns entity classes, psets and containment; glTF still owns buffers and materials; neither
 owns the shape of a stud.
 
-Both Python emitters read it today. The viewer's three.js builders deliberately still do not:
-that render path is staying (→ ``ui/src/three/wholeHouseGlb.ts`` ``WHOLE_HOUSE_GLB_PRIMARY``),
+Both Python emitters read it today. Most three.js builders retain their own geometry;
+authored door products serialize selected parts to preserve hardware and field finishes.
+The broader viewer render path is staying
+(→ ``ui/src/three/wholeHouseGlb.ts`` ``WHOLE_HOUSE_GLB_PRIMARY``),
 so the vocabularies it shares with these — finish keys, layer visibility groups, the opening
 product's constants — are pinned by parity tests rather than by deletion.
 
@@ -149,9 +151,8 @@ class PartCatalogRef:
     ``palette.DETAIL_HATCH`` and ``Hatch.material`` both key on the *raw* ref.
 
     One nested record rather than five flat fields: ``GPart``'s constructor stays legible,
-    and ``None`` states "no catalog provenance" once. Deliberately **not** mirrored into
-    ``model.json`` — that would demand a TS type for it and a fifth surface to keep in sync,
-    for no viewer benefit.
+    and ``None`` states "no catalog provenance" once. The generic record stays in the IR;
+    the authored-door serializer projects only the material fields its viewer needs.
     """
 
     material_ref: str | None = None   # "polyiso", "standing-seam"; None for plain lumber

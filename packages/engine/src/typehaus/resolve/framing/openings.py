@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from typehaus.hardware.catalog import ROLE_POCKET_DOOR_FRAME_KIT
+from typehaus.model.door_hardware import JambFraming
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
 from typehaus.quantities import m as _m
@@ -132,6 +133,7 @@ class WallOpening:
     frame_end_supported: bool = False
     #: ``DoorType.exterior`` — what ``stud_stock.stamp_exterior_door_sills`` restocks by.
     exterior: bool = False
+    jamb_framing: JambFraming | None = None
 
 
 def frame_end_supported(opening: WallOpening, sign: int) -> bool:
@@ -192,7 +194,8 @@ def opening_exclusions(openings: list[WallOpening], stud_thickness_m: float,
         if not needs_jamb_pack(opening, spacing_m, stud_thickness_m, phase_m):
             continue
         kings, jacks = jamb_pack_counts(_m(opening.width_m),
-                                        opening_framing_pattern(opening.operation))
+                                        opening_framing_pattern(opening.operation),
+                                        getattr(opening, "jamb_framing", None))
         reach = (kings + jacks + 0.5) * stud_thickness_m + 0.005
         low = opening.center_m - opening.width_m / 2 - reach
         high = opening.center_m + opening.width_m / 2 + reach
@@ -236,7 +239,8 @@ def jamb_pack_stations(openings: list[WallOpening], stud_thickness_m: float,
         if not needs_jamb_pack(opening, spacing_m, stud_thickness_m, phase_m):
             continue
         pattern = opening_framing_pattern(opening.operation)
-        kings, jacks = jamb_pack_counts(_m(opening.width_m), pattern)
+        kings, jacks = jamb_pack_counts(
+            _m(opening.width_m), pattern, getattr(opening, "jamb_framing", None))
         _mouth, closed = pocket_extent(opening)
         pocket_sign = 0 if not closed else (1 if opening.pocket_sign > 0 else -1)
         half = opening.width_m / 2
@@ -336,7 +340,8 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     cripples_at = spacing if cripple_spacing is None else cripple_spacing
     pattern = opening_framing_pattern(opening.operation)
     thickness = member_actual(member)[0] * M_PER_IN  # stud face dimension along the wall
-    kings, jacks = jamb_pack_counts(_m(opening.width_m), pattern)
+    jamb_framing = getattr(opening, "jamb_framing", None)
+    kings, jacks = jamb_pack_counts(_m(opening.width_m), pattern, jamb_framing)
     center, half = opening.center_m, opening.width_m / 2
     # ``z0`` is where a vertical member BEARS — the top of the bottom plate. It is not the
     # datum a sill is measured from: ``ResolvedWall.base_ref_z_m`` is, and every other
@@ -383,14 +388,16 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
             position = add(wall_start, scale(direction, station))
             out.append(FramedMember(rw.uid, f"jack-{opening_index}-{side}{jack_index}",
                                     "jack", member, position, position, z0, header_bottom,
-                                    header_bottom - z0, orient=direction))
+                                    header_bottom - z0, orient=direction,
+                                    opening_tag=opening.tag if jamb_framing else None))
         for king_index in range(kings):
             station = edge + sign * (thickness / 2 + (jacks + king_index) * thickness)
             position = add(wall_start, scale(direction, station))
             king_top = top_at(station)
             out.append(FramedMember(rw.uid, f"king-{opening_index}-{side}{king_index}",
                                     "king", member, position, position, z0, king_top,
-                                    king_top - z0, orient=direction))
+                                    king_top - z0, orient=direction,
+                                    opening_tag=opening.tag if jamb_framing else None))
 
     if pocket_sign:
         _append_pocket_cavity(out, rw, direction, wall_start, opening_index, mouth, closed,

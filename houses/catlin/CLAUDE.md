@@ -1,3 +1,7 @@
+> **Exterior door hardening, 2026-10-25:** `plan/door_types.py` owns hardware, doubled
+> jamb packs, local ccSPF and entry field finish. `notes/exterior_door_hardening.md`
+> records installation, the W-M-N3 fit and open dealer items. A-601 prints the HW sets.
+
 > **Mirrors, 2026-10-22:** `plan/mirrors.py` + `mirror_types.py` specify all nine mirrors.
 > Hall bath: plain Kohler round with socketed Karlie; suite Estero unchanged; closet plain
 > Hubba Pill. Only bath2 keeps an illuminated mirror, Fleurco **MHAP4236** (42 x 36, 116 W,

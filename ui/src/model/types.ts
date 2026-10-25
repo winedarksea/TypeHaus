@@ -314,7 +314,15 @@ export interface WindowSeat {
   inner_m: number;
 }
 
+export interface AuthoredDoorPart {
+  key: string;
+  material_key: string;
+  material_ref: string | null;
+  solids: { ring: [number, number][]; z0_m: number; z1_m: number }[];
+}
+
 export interface Opening {
+  authored_product_parts?: AuthoredDoorPart[] | null;
   cased_product?: CasedDoorSpec | null;
   doorway?: DoorwayAssembly | null;
   window_seat?: WindowSeat | null;
@@ -1422,6 +1430,11 @@ export interface WindowTypeSpec {
 }
 
 export interface DoorTypeSpec {
+  hardware?: { role: string; product_ref: string; quantity: number;
+    height_m: number | null; installation: string }[];
+  jamb_framing?: { kings: number; jacks: number; blocking: boolean;
+    bay_fill_ref: string | null } | null;
+  field_finish?: [string, string] | null;
   tag: string;
   width_m: number;
   height_m: number;

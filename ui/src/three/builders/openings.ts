@@ -226,6 +226,35 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     mesh.userData.doorInstallation = board.name;
     parent.add(mesh);
   }
+  if (opening.authored_product_parts?.length) {
+    // The engine supplies final part geometry so hardware heights and two-face paint
+    // share one answer with IFC and GLB, including the supplier sill/leaf placement.
+    for (const part of opening.authored_product_parts) {
+      const material = part.material_ref ? productMaterial(part.material_ref)
+        : part.material_key === "door_hardware" ? hardwareMaterial
+        : part.material_key === "glass" ? glassMaterial
+        : standardMaterial(categoryColor(part.material_key), mode, { roughness: 0.45 });
+      for (const solid of part.solids) {
+        const along = solid.ring.map(([x, y]) =>
+          (x - position[0]) * direction[0] + (y - position[1]) * direction[1]);
+        const across = solid.ring.map(([x, y]) =>
+          (x - position[0]) * normal[0] + (y - position[1]) * normal[1]);
+        const a0 = Math.min(...along), a1 = Math.max(...along);
+        const n0 = Math.min(...across), n1 = Math.max(...across);
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(a1 - a0,
+          solid.z1_m - solid.z0_m, n1 - n0), material);
+        mesh.position.copy(projectPointToScene([
+          position[0] + direction[0] * (a0 + a1) / 2 + normal[0] * (n0 + n1) / 2,
+          position[1] + direction[1] * (a0 + a1) / 2 + normal[1] * (n0 + n1) / 2,
+        ], (solid.z0_m + solid.z1_m) / 2, center));
+        mesh.rotation.y = rotation;
+        mesh.userData.doorPart = part.key;
+        parent.add(mesh);
+      }
+    }
+    registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
+    return;
+  }
   const faces = finishFaces(wall);
   if (opening.cased_product) {
     const paintedFrame = opening.effective_frame_material_ref ? frameMaterial

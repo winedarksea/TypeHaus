@@ -7,11 +7,12 @@ from typehaus.emit.ifc import lowlevel as ll
 from typehaus.resolve.geometry_ir import GSweep
 
 
-def cased_door_representation(f, body, model, opening):
+def cased_door_representation(f, body, model, opening, *, parts=None):
     geometry = model.geometry.by_uid(opening.uid)
     colors = authored_colors(model)
     solids = []
-    for part in geometry.parts:
+    for part in (parts if parts is not None else
+                 (part for part in geometry.parts if not part.key.startswith("hardware:"))):
         representations = []
         for solid in part.solids:
             if isinstance(solid, GSweep):
@@ -55,3 +56,30 @@ def cased_door_representation(f, body, model, opening):
             solids.append(solid)
         f.remove(representation)
     return f.createIfcShapeRepresentation(body, "Body", "SweptSolid", solids)
+
+
+def emit_door_hardware(f, body, model, opening, door_type, filling, storey, project_uuid):
+    """One discrete accessory per authored item; all geometry shares the GLB parts."""
+    from typehaus.model.ids import derive_guid
+
+    accessories = []
+    geometry = model.geometry.by_uid(opening.uid)
+    for index, item in enumerate(door_type.hardware):
+        part = next(part for part in geometry.parts if part.key == f"hardware:{index}")
+        accessory = ll.create_entity(f, "IfcDiscreteAccessory",
+                                     name=f"{opening.tag}: {item.product_ref}")
+        accessory.GlobalId = derive_guid(project_uuid, f"{opening.uid}/hardware/{index}")
+        representation = cased_door_representation(f, body, model, opening, parts=(part,))
+        ll.assign_representation(f, accessory, representation)
+        ll.assign_container(f, accessory, storey)
+        ll.ensure_pset(f, accessory, "TypeHaus_DoorHardware", {
+            "ProductRef": item.product_ref, "Role": item.role, "Quantity": item.quantity,
+            "Installation": item.installation,
+            **({"HeightAboveLeafBottom": item.height.meters} if item.height else {}),
+        })
+        accessories.append(accessory)
+    if accessories:
+        relationship = ll.create_entity(f, "IfcRelNests", name="Door hardware set")
+        relationship.GlobalId = derive_guid(project_uuid, f"{opening.uid}/hardware")
+        relationship.RelatingObject = filling
+        relationship.RelatedObjects = accessories

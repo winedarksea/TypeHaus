@@ -164,7 +164,9 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                              bookcase_door=(door_type.bookcase_door
                                             if door_type is not None else None),
                              authored=authored,
-                             leaf_set=door_type.leaf_set if door_type is not None else "pull")
+                             leaf_set=door_type.leaf_set if door_type is not None else "pull",
+                             hardware=door_type.hardware if door_type else (),
+                             field_finish=door_type.field_finish if door_type else None)
         scene.add_object(mb, ("openings",), kind="opening", uid=op.uid,
                          material_surfaces=surfaces)
 

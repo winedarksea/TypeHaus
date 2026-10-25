@@ -117,6 +117,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(apply_construction_rules(model))
     with _stage("framing"):
         findings.extend(frame_model(plan, model))
+        from typehaus.resolve.jamb_fill import resolve_jamb_fills
+
+        resolve_jamb_fills(model)
         # Strapping over whatever the wall turned out to be: a separate pass because a
         # FURRING layer frames its own grid in its own band even when the wall behind it
         # is a pour, and `frame_wall` returns early for those (→ framing/furring.py).

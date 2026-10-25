@@ -59,7 +59,7 @@ MEMBER_KEYS = frozenset({
     "king", "jack", "cripple", "sill", "bearing_stiffener", "landing", "landing_framing",
     "newel", "partition", "trimmer", "hanger", "joist", "rim", "ridge_beam", "brace",
     "strap",
-    "rafter", "blocking", "outlooker", "barge_rafter", "roof_truss", "seat_cut",
+    "rafter", "blocking", "door_blocking", "outlooker", "barge_rafter", "roof_truss", "seat_cut",
 })
 
 MATERIAL_KEYS = LAYER_KEYS | ELEMENT_KEYS | ACCESSORY_KEYS | MEMBER_KEYS | FAMILY_KEYS

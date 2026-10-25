@@ -194,6 +194,8 @@ def _opening_geometry(wall: ResolvedWall, opening, door_types) -> ElementGeometr
         is_trimless=door_type is not None and door_type.trimless,
         bookcase_door=door_type.bookcase_door if door_type is not None else None,
         leaf_set=door_type.leaf_set if door_type is not None else "pull",
+        hardware=door_type.hardware if door_type else (),
+        field_finish=door_type.field_finish if door_type else None,
     )
     return ElementGeometry(uid=opening.uid, kind="opening", trades=("openings",), parts=parts)
 

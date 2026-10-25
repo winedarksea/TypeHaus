@@ -32,6 +32,7 @@ from typehaus.model.diaphragm_attachment import (
     JointNailing,
     PanelEdgeBlocking,
 )
+from typehaus.model.door_hardware import DoorHardwareItem, JambFraming
 from typehaus.model.doorway import DoorwayProductSpec, DoorwaySectionPart, DoorwayTreatment
 from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
@@ -333,6 +334,7 @@ for _name, _obj in (
     register_constructor(_name, _obj)
 
 __all__ = [
+    "DoorHardwareItem", "JambFraming",
     "DoorwayProductSpec", "DoorwaySectionPart", "DoorwayTreatment", "ExteriorDoorInstallation",
     "ExteriorDoorSillDesign",
     "WinderTurnSpec", "WinderFramingSpec",

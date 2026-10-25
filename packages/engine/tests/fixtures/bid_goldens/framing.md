@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** bab802ac9d646858  
+**Model hash:** daeffdb0d0151779
 **Lines:** 182
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -33,11 +33,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | 20 | LF ordered | 1 pcs, 16.7 LF cut | building |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | 36 | LF ordered | 1 pcs, 36.0 LF cut | building |
 | 2-1.75x9.5 LVL — header (2-1.75x9.5 LVL) | 8 | LF ordered | 1 pcs, 5.5 LF cut | building |
-| 2-2x10 — header (2-2x10) | 32 | LF ordered | 4 pcs, 21.0 LF cut | building |
+| 2-2x10 — header (2-2x10) | 32 | LF ordered | 4 pcs, 21.8 LF cut | building |
 | 2-2x10 SPF framing lumber — blocking (2-2x10:spf) | 16 | LF ordered | 6 pcs, 11.3 LF cut | building |
 | 2-2x6 — header (2-2x6) | 32 | LF ordered | 4 pcs, 24.0 LF cut | building |
 | 2-2x6 SPF framing lumber — blocking (2-2x6:spf) | 24 | LF ordered | 10 pcs, 18.4 LF cut | building |
-| 2-2x8 — header (2-2x8) | 184 | LF ordered | 55 pcs, 149.7 LF cut | building |
+| 2-2x8 — header (2-2x8) | 184 | LF ordered | 55 pcs, 149.9 LF cut | building |
 | 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 48.0 LF cut; 48.0 LF in the takeoff | building |
 | 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 336.0 LF cut; 336.0 LF in the takeoff | building |
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 344 | LF ordered | 38 pcs, 314.6 LF cut | building |
@@ -47,20 +47,20 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 SPF framing lumber — blocking (2x12:spf) | 16 | LF ordered | 4 pcs, 10.8 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 260 | LF ordered | 77 pcs, 209.2 LF cut | building |
 | 2x3 — corner stud, plate, stud (2x3) | 48 | LF ordered | 12 pcs, 28.0 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,718 | LF ordered | 646 pcs, 3996.4 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,728 | LF ordered | 647 pcs, 4005.0 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | 2,894 | LF ordered | 484 pcs, 2472.9 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 56.0 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,002 | LF ordered | 1160 pcs, 6065.2 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,078 | LF ordered | 1180 pcs, 6131.3 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | 90 | LF ordered | 9 pcs, 77.6 LF cut | building |
-| 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.8 LF cut | building |
-| 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | 1,654 | LF ordered | 200 pcs, 1406.3 LF cut | building |
+| 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.5 LF cut | building |
+| 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | 1,742 | LF ordered | 228 pcs, 1478.9 LF cut | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:oak-8q) | 32 | LF ordered | 21 pcs, 23.9 LF cut | building |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | 74 | LF ordered | 25 pcs, 65.2 LF cut | building |
 | 2x8 — header, joist, landing framing (2x8) | 240 | LF ordered | 63 pcs, 194.5 LF cut | building |
-| 2x8 SPF framing lumber — blocking (2x8:spf) | 412 | LF ordered | 96 pcs, 344.7 LF cut | building |
-| 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
+| 2x8 SPF framing lumber — blocking (2x8:spf) | 412 | LF ordered | 96 pcs, 344.4 LF cut | building |
+| 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 2.9 LF cut | building |
 | 3-2x12 — joist (3-2x12:kdat) | 40 | LF ordered | 2 pcs, 33.5 LF cut | building |
-| 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1135 pcs, 331.0 LF cut | building |
+| 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1137 pcs, 331.6 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | 8 | LF ordered | 1 pcs, 2.1 LF cut | building |
 | hanger — hanger board (hanger) | 24 | LF ordered | 4 pcs, 17.9 LF cut | building |
@@ -71,7 +71,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | Aspen shiplap sauna ceiling liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-ceiling-shiplap:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 65.1 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.8 SF net | building |
-| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 661.6 SF net | building |
+| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 663.8 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
 | 5/8" APA Exterior plywood, 4x9 stock, 5/8" exterior wall (entry-screen-exterior-plywood:exterior wall) | 1 | sheets 4x9 | 1 sheets 4x9 over 26.8 SF net | building |
 | 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" exterior wall (permabase-exterior:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.8 SF net | building |
@@ -156,13 +156,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | slat brace infill screw (SDWS22300DB) | 8 | ea |  | main |
 | slat brace plate screw (SDWS22400DB) | 16 | ea |  | main |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
-| SP6 stud plate tie (2x6) | 316 | ea |  | building |
+| SP6 stud plate tie (2x6) | 322 | ea |  | building |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | 4 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 13 | ea |  | building |
 | THA422 top-flange floor truss hanger | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 1 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,135 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,137 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 72 | ea |  | building |
 
 ## Other structural solids
@@ -224,7 +224,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | 688.4 | SF net |  | building |
+| 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | 690.6 | SF net |  | building |
 | 5/8" APA Exterior plywood, 4x9 stock sheathing, 5/8" — wall (entry-screen-exterior-plywood:0.625) | 26.8 | SF net |  | building |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | 84.4 | SF net |  | building |
 | 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" — wall (permabase-exterior:0.5) | 24.9 | SF net |  | building |
@@ -297,10 +297,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | — |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | — |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | — |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | — |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | — |
 | 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | — |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | — |
-| 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | — |
+| 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | — |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:oak-8q) | — |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | — |
 | 2x8 — header, joist, landing framing (2x8) | — |

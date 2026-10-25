@@ -722,6 +722,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                          for door_type in plan.library.door_types}
     exterior_door_types = {door_type.tag for door_type in plan.library.door_types
                            if door_type.exterior}
+    door_types = {item.tag: item for item in plan.library.door_types}
     opening_header_specs = {element.tag: element.header_spec
                             for element in plan.all_elements()
                             if isinstance(element, (Door, Window))}
@@ -742,6 +743,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             frame_start_supported=bool(op.frame_start_support_wall),
             frame_end_supported=bool(op.frame_end_support_wall),
             exterior=op.is_door and op.type_ref in exterior_door_types,
+            jamb_framing=(door_types[op.type_ref].jamb_framing
+                          if op.is_door and op.type_ref in door_types else None),
         ))
     keepouts = pocket_keepouts(plan, model)
     # Two producers, one seam. A carrier bay and a pocket cavity are the same instruction to

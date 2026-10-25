@@ -6,6 +6,7 @@ import math
 import re
 from dataclasses import dataclass
 
+from typehaus.model.door_hardware import JambFraming
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import Length, ft, inch
 
@@ -236,13 +237,16 @@ _DEFAULT_OPENING_PATTERN = OpeningFramingPattern()
 
 
 def jamb_pack_counts(opening_width: Length,
-                     pattern: OpeningFramingPattern) -> tuple[int, int]:
+                     pattern: OpeningFramingPattern,
+                     jamb_framing: JambFraming | None = None) -> tuple[int, int]:
     """King + jack studs per side for an opening framed under ``pattern``.
 
     Patterns without a ``span_per_jack`` fall back to the prescriptive width table; those
     with one size the trimmer pack from the actual span and match kings to jacks, since a
     jack that is not backed by a king has nothing to transfer its load into.
     """
+    if jamb_framing is not None:
+        return jamb_framing.kings, jamb_framing.jacks
     if pattern.span_per_jack is None:
         return king_jack_counts(opening_width)
     jacks = max(1, math.ceil(opening_width.meters / pattern.span_per_jack.meters))

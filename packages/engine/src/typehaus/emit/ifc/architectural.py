@@ -479,7 +479,9 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     door_type = next((item for item in model.plan.library.door_types
                       if item.tag == opening.type_ref), None) if opening.is_door else None
     product = door_type.bookcase_door if door_type is not None else None
-    if (opening.doorway is not None or opening.cased_product is not None or (product is None and
+    if (opening.doorway is not None or opening.cased_product is not None
+            or (door_type and (door_type.hardware or door_type.field_finish))
+            or (product is None and
             (opening.effective_frame_material_ref or opening.effective_leaf_material_ref))):
         from typehaus.emit.ifc.door_fillings import cased_door_representation
 
@@ -527,6 +529,11 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     if opening.type_ref in opening_types:
         ll.assign_type(f, filling, opening_types[opening.type_ref])
     ll.add_filling(f, void, filling)
+    if door_type and door_type.hardware:
+        from typehaus.emit.ifc.door_fillings import emit_door_hardware
+
+        emit_door_hardware(f, body, model, opening, door_type, filling,
+                           storeys[rw.storey], project_uuid)
 
 
 def _emit_space(f: Any, body: Any, room: Any, storeys: dict[str, Any],

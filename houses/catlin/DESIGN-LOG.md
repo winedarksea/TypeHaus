@@ -1,3 +1,24 @@
+## Exterior swing hardening and single-point entry (2026-10-25)
+
+Owner confirmed all four house exterior swings receive doubled kings/jacks, full-depth
+hardware backing, composite strike/keep shims and jamb-bay ccSPF. Basement walkout batts
+are mineral wool and are deducted accordingly. Garage doors are excluded.
+
+D-M-ENTRY keeps the opaque 36-inch Smooth-Star, composite frame and sill. Replace the
+multipoint lock with Century / Latitude 622 passage lever at 36 inches and Encode Plus
+BE499WB CEN 622 at 41½ inches; caulked DS2000 viewer at 60 inches (owner-approved heights).
+Field paint black exterior / white interior, factory-black quote alternate. StrikeMaster
+II Pro (Door Armor alternate), requested factory Security Strike Plate and approved
+3-inch screws require coordinated prehanger approval. See `notes/exterior_door_hardening.md`.
+
+Both doubled entry packs fit the 6-inch side returns. Full-height kings replace redundant
+tee backing rungs; no structural tee studs or doubled members are dropped. Foam/backing
+continue into the actual adjoining bays across the W-M-N2 / W-M-N3B authored seams.
+Two additional south-wall girt support blocks close the gaps created by the doubled packs.
+Hinge/keep heights remain shop-drawing coordination items. The foam sandwich is documented
+as a reasoned dry-sheathing exception, with no claim of a Glaser pass. Hardware, local
+foam/batt deductions and field-paint areas reach takeoff; A-601 carries the install text.
+
 ## French pairs: Therma-Tru Smooth-Star / Endura (2026-10-25)
 
 All three DT-EXT-FRENCH60 pairs replace Cascadia with Smooth-Star full-lite on composite

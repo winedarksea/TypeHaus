@@ -81,6 +81,12 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
         ],
         "door_types": [
             {"tag": dt.tag, "width_m": dt.width.meters, "height_m": dt.height.meters,
+             "hardware": [dict(role=item.role, product_ref=item.product_ref,
+                               quantity=item.quantity,
+                               height_m=item.height.meters if item.height else None,
+                               installation=item.installation) for item in dt.hardware],
+             "jamb_framing": dt.jamb_framing.model_dump() if dt.jamb_framing else None,
+             "field_finish": dt.field_finish,
              "operation": dt.operation, "exterior": dt.exterior, "glazed": dt.glazed,
              "frame_material_ref": dt.frame_material_ref, "leaf_material_ref": dt.leaf_material_ref,
              "trimless": dt.trimless, "leaf_set": dt.leaf_set, "product_ref": dt.product_ref,

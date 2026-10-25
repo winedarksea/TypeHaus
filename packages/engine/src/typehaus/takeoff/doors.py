@@ -5,7 +5,8 @@ lockset. For a pocket door it is not: the frame kit *is* the pocket (split studs
 track, hangers, guides), bought one per door, and which one you buy is decided by the leaf
 width, the host wall's depth and the type's ``pocket_frame`` family.
 
-Only pocket kits are derived here so far. ``ResolvedOpening.pocket_run_m`` is non-zero for
+Authored type hardware replaces the generic allowance; doorway components and pocket kits
+retain their own procurement paths. ``ResolvedOpening.pocket_run_m`` is non-zero for
 exactly the pocket doors, and ``width_m`` is what selects the kit.
 """
 
@@ -47,7 +48,9 @@ def door_hardware_rows(model: ResolvedModel) -> list[dict]:
             size=f'{width}" door',
             basis=f"one kit per pocket door at {width}\" leaf: {', '.join(sorted(tags))}",
         ))
-    return rows + doorway_purchase_rows(model)
+    from typehaus.takeoff.door_hardening import authored_hardware_rows
+
+    return rows + doorway_purchase_rows(model) + authored_hardware_rows(model)
 
 
 def door_installation_rows(model):

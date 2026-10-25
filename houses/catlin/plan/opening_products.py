@@ -52,10 +52,12 @@ THERMATRU_SMOOTHSTAR_FULLLITE = Product(
            "or pair certification. Prehanger must supply Therma-Tru system approval and pair label.")
 THERMATRU_SMOOTHSTAR = Product(
     tag="PROD-THERMATRU-SMOOTHSTAR", brand="Therma-Tru", model="Smooth-Star flush",
-    name="Smooth-Star fiberglass flush door, inswing, multipoint lock",
+    name="Smooth-Star fiberglass flush door, inswing, single-point bored prep",
     url="https://www.thermatru.com",
     source="Opaque fiberglass, polyurethane foam core, 1 1/4\" engineered-lumber lock stile, "
-           "Therma-Tru Multi-Point Locking System. Stocked by Twin Cities dealers. NFRC line "
+           "Single-point double bore, 2-3/8 inch backset, 5-1/2 inch centres. Composite jambs/head, "
+           "primed for site paint: black exterior, white interior; quote factory black alternate. "
+           "Therma-Tru Security Strike Plate requested, dealer cost/compatibility pending. NFRC line "
            "THC-M-5 (flush, no lite, THC-M-5-03881-00001). A small lite is a catalog option.")
 MASONITE_STEEL_FLUSH = Product(
     tag="PROD-MASONITE-STEEL-FLUSH", brand="Masonite", model="Premium Flush steel",
@@ -76,7 +78,31 @@ CLOPAY_MODERN_STEEL = Product(
     source="3-layer steel, polyurethane core, R-18.4. GDU011 is Home Depot's 16x7 black, "
            "no-window listing. Wind rating for Exp B (q_h 19.3 psf) to confirm with the dealer.")
 
+
+# Purchased sets, with no price data in the product catalog.
+ENCODE_PLUS = Product(tag='PROD-SCHLAGE-ENCODE-PLUS', brand='Schlage', model='BE499WB CEN 622',
+    name='Encode Plus Century matte black deadbolt', url='https://www.schlage.com/en/home/products/BE499WBCENFFF.html', source='Single-point entry deadbolt; 2-3/8 inch backset, 1-3/4 inch leaf.')
+PASSAGE_LEVER = Product(tag='PROD-SCHLAGE-PASSAGE-LATITUDE', brand='Schlage', model='F10 LAT 622 CEN',
+    name='Century / Latitude passage lever, matte black', url='https://www.schlage.com', source='Passage function; no second keyed lock.')
+STRIKE_REINFORCEMENT = Product(tag='PROD-STRIKEMASTER-II-PRO', brand='Safe Homes International', model='StrikeMaster II Pro',
+    name='StrikeMaster II Pro jamb reinforcement', url='https://www.asafehome.net', source='Door Armor alternate. Prehanger to coordinate with composite frame and factory security strike; no unapproved stacking.')
+DOORSCOPE = Product(tag='PROD-DOORSCOPE-DS2000', brand='Door Scope', model='DS2000',
+    name='DoorScope DS2000 viewer', url='https://www.metropolitandoor.com/wp-content/uploads/2018/07/door-scope-installation.pdf', source='2-3/8 inch bore; seal exposed foam core and caulk flange; prehanger to confirm warranty.')
+DOOR_SCREWS = Product(tag='PROD-DOOR-3IN-SCREWS', brand='Prehanger approved', model='3 inch structural screw kit',
+    name='3 inch hinge / strike screw kit', url='https://www.thermatru.com', source='One installation kit per opening; screw gauge, head and count per approved hinge/strike instructions.')
+DOOR_HINGE = Product(tag='PROD-THERMATRU-HINGE', brand='Therma-Tru', model='Prehanger approved hinge',
+    name='Exterior door hinge, factory included', url='https://www.thermatru.com', source='Three per leaf; 10/40/70 inch centres are coordination locations pending shop drawings. Included in prehung price.')
+PANOLOCK = Product(tag='PROD-ENDURA-PANOLOCK-PLUS', brand='Endura', model='PanoLock+',
+    name='PanoLock+ multipoint set', url='https://www.enduraproducts.com/panolock/', source='One set per French pair. Keep locations 10/40/70 inches are coordination positions pending approved shop drawings.')
+BE365 = Product(tag='PROD-SCHLAGE-BE365', brand='Schlage', model='BE365',
+    name='BE365 keypad deadbolt', url='https://www.schlage.com', source='French active leaf; confirm PanoLock+ compatibility with prehanger.')
+FLA_ASTRAGAL = Product(tag='PROD-ENDURA-FLA', brand='Endura', model='Ultimate Flip Lever Astragal',
+    name='Ultimate FLA astragal with passive flush bolts', url='https://www.enduraproducts.com', source='One full-height astragal per French pair; included in pair price.')
+SECURITY_STRIKE = Product(tag='PROD-THERMATRU-SECURITY-STRIKE', brand='Therma-Tru', model='Security Strike Plate',
+    name='Therma-Tru Security Strike Plate', url='https://www.thermatru.com/explore-products/safety-and-security/', source='Requested factory component; dealer to confirm price and compatibility with reinforcement and approved 3 inch screws.')
+
 OPENING_PRODUCTS = (
+    ENCODE_PLUS, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS, DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
     DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, DRUTEX_ALUCOVER_TILT, ANDERSEN_400_CASEMENT,
     THERMATRU_SMOOTHSTAR_FULLLITE, THERMATRU_SMOOTHSTAR, MASONITE_STEEL_FLUSH, CLOPAY_MODERN_STEEL,
 )

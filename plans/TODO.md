@@ -332,9 +332,6 @@ the future.
 - Check the basement stair carpet, and swap the carpet from the theater with an partial coverage area rug in the theater (technically not installed with tack strips or glue)
 - Update the LVP to https://coretecfloors.com/en-us/products/coretec-pro-classics/quincy-oak-vv017-01018
 - [x] Move D-M-MECH and D-M-MUDC 8" east within the existing walls (owner-approved instead of a full stud bay); relocate the three switches to W-M-MUDC-E.
-- The main door D-M-ENTRY should be 36" fiberglass. Possibly painted black on site (may be cheaper than factory painted). We are going to specify a DS2000 Door Viewer "Door Scope" (2 inch wide viewer), caulked, in it since there won't be any window lites. Also we should specify ccspf spray foam (not the usual fiberglass batts) in the studs immediately around the exterior doors since they don't get as much exterior continuous insulation. Also ideally have the composite frame and specify Therma-Tru’s "Security Strike Plate" if they don't add tons of cost.
-- Exterior door locks and handles. Schlage Passage Lever and Schlange Smart lock on D-M-ENTRY with heavy reinforcement plate (like a StrikeMaster II Pro or Door Armor) and 3-inch screws (not multipoint there).
-- Solid Blocking at Lock/Hinge Heights in the framing, possibly also Double Jack & King Studs. Maybe specify in the  installation notes that the window/door installers must install solid composite shims directly behind the strike plate and behind every multipoint keep
 - See if we can easily source factory Laminated Glass that has a security film inside it for the main floor windows
 
 # Project Management

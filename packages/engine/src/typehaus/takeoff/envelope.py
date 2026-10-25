@@ -197,6 +197,8 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             # A cavity layer shares the structure layer's polygon and adds no depth; billing
             # it as its own area would order insulation for a wall band twice.
             if getattr(layer, "is_cavity", False):
+                covered -= sum(fill.area_m2 for fill in model.jamb_fills
+                               if fill.host_wall == wall.tag and fill.replaced_layer == layer.name)
                 areas[(scope, "insulation (cavity)", layer.material_ref,
                        layer.thickness_m)] += covered
                 continue
@@ -322,6 +324,10 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             areas[("tub enclosure", "insulation", solid.material,
                    solid.z1_m-solid.z0_m)] += net_m2
 
+    for fill in model.jamb_fills:
+        areas[("jamb (derived)", "insulation (cavity)", fill.material_ref,
+               fill.depth_m)] += fill.area_m2
+
     rows: list[dict[str, object]] = [
         {"scope": scope, "function": function, "material": material,
          "thickness_in": round(thickness / 0.0254, 3),
@@ -336,9 +342,11 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         for (scope, function, material, thickness), area in sorted(areas.items())
     ]
     # The paint no assembly authors, on exposed gypsum facing a used room.
+    from typehaus.takeoff.door_hardening import door_field_paint_rows
     from typehaus.takeoff.window_returns import window_return_finish_rows
 
-    return rows + derived_paint_rows(model, net_areas) + window_return_finish_rows(model)
+    return (rows + derived_paint_rows(model, net_areas)
+            + window_return_finish_rows(model) + door_field_paint_rows(model))
 
 
 def bug_screen_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

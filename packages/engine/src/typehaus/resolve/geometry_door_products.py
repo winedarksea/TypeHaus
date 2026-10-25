@@ -147,13 +147,14 @@ def concealed_frame_parts(box: BoxFn, faces: tuple[float, float], swing_sign: fl
 
 
 def lever_solids(box: BoxFn, latch_along: float, toward_hinge: float,
-                 leaf_faces: tuple[float, float], floor_z: float) -> list[GPrism]:
+                 leaf_faces: tuple[float, float], floor_z: float,
+                 height_m: float | None = None) -> list[GPrism]:
     """A rose, neck and lever on each face of one leaf, the lever pointing at the hinge.
 
     ``leaf_faces`` are the leaf's two face offsets; ``latch_along`` its latch edge.
     """
     rose_along = latch_along + toward_hinge * _LEVER_BACKSET_M
-    z = floor_z + _LEVER_HEIGHT_M
+    z = floor_z + (_LEVER_HEIGHT_M if height_m is None else height_m)
     solids: list[GPrism] = []
     lo, hi = sorted(leaf_faces)
     for face, out in ((hi, 1.0), (lo, -1.0)):

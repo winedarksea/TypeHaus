@@ -315,7 +315,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # two field blocks support the girt courses beside the new 63" dining opening.
     # ** 1134 -> 1135 ON 2026-10-21: the second storey's three west 27" units grew to 27x54
     # for R310, and their ROs now cross one more course, which packs one more jamb station. **
-    assert row["count"] == 1135 and furring[0]["count"] == 198
+    # Doubled exterior-door packs add one supported girt block on each south wall (2026-10-25).
+    assert row["count"] == 1137 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

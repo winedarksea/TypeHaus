@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     from typehaus.resolve.floor_ends import FloorEnds
     from typehaus.resolve.floor_tilt import DeckPlane
     from typehaus.resolve.geometry_ir import GeometryModel, GMesh, GPrism
+    from typehaus.resolve.jamb_fill import ResolvedJambFill
     from typehaus.resolve.stairs.winder_geometry import WinderLayout
 
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
@@ -1563,6 +1564,8 @@ class ResolvedModel:
     window_returns: list[ResolvedWindowReturn] = field(default_factory=list)
     shelf_banks: list[ResolvedShelfBank] = field(default_factory=list)
     countertops: list[ResolvedCountertop] = field(default_factory=list)
+    # Clear jamb-bay replacements share their net area with foam and batt takeoff.
+    jamb_fills: list[ResolvedJambFill] = field(default_factory=list)
     # Derived base and door casing off the house's ``TrimStandard`` (→ resolve/interior_trim.py).
     base_runs: list[ResolvedBaseRun] = field(default_factory=list)
     door_casings: list[ResolvedDoorCasing] = field(default_factory=list)

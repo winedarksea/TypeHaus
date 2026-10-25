@@ -431,7 +431,14 @@ def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_m
     gltf, blob = emit_gltf_dict(catlin_model)
     solids, hardware = _split_hardware(
         gltf, _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid)))
-    assert len(hardware) == 2 * _LEVER_SET_BOXES, "a lever set on each leaf of the pair"
+    spec = next(spec for spec in catlin_model.plan.library.door_types
+                if spec.tag == opening.type_ref)
+    if spec.hardware:
+        # One active-leaf passage set, six hinges, deadbolt faces, multipoint keep,
+        # full-height astragal and a fastener-kit marker replace two generic levers.
+        assert len(hardware) == 17
+    else:
+        assert len(hardware) == 2 * _LEVER_SET_BOXES, "a lever set on each leaf of the pair"
 
     available_height = min(opening.height_m, wall.z1_m - wall.z0_m - opening.sill_m)
     frame_width = _frame_width_m(opening, available_height)

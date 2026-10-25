@@ -353,7 +353,8 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
 
 def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                   is_glazed: bool = False, is_trimless: bool = False,
-                  bookcase_door=None, leaf_set: str = "pull") -> tuple[GPart, ...]:
+                  bookcase_door=None, leaf_set: str = "pull", hardware=(),
+                  field_finish=None) -> tuple[GPart, ...]:
     """Product shapes with independent frame/leaf surface refs; casing stays separate."""
     parts = _opening_parts(wall, opening, operation, is_glazed=is_glazed,
                            is_trimless=is_trimless, bookcase_door=bookcase_door,
@@ -409,4 +410,6 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         ref = getattr(opening, field, None) if field else None
         result.append(replace(part, catalog=PartCatalogRef(material_ref=ref, role=part.key))
                       if ref else part)
-    return tuple(result)
+    from typehaus.resolve.geometry_door_hardware import authored_door_parts
+
+    return authored_door_parts(wall, opening, tuple(result), hardware, field_finish, operation)

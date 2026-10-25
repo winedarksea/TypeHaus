@@ -58,4 +58,29 @@ export function runTrimlessGlazedDoorTests() {
       new Set(meshes.map((mesh) => mesh.material)).forEach((material) => material.dispose());
     }
   }
+  const authored = new THREE.Group(), authoredPicks: THREE.Mesh[] = [];
+  const authoredOpening: Opening = { ...opening, authored_product_parts: [
+    { key: "leaf:exterior", material_key: "door_leaf", material_ref: "door-black",
+      solids: [{ ring: [[1.6, 0], [2.4, 0], [2.4, 0.022], [1.6, 0.022]], z0_m: 0.02, z1_m: 2 }] },
+    { key: "leaf:interior", material_key: "door_leaf", material_ref: "door-white",
+      solids: [{ ring: [[1.6, -0.022], [2.4, -0.022], [2.4, 0], [1.6, 0]], z0_m: 0.02, z1_m: 2 }] },
+    { key: "hardware:viewer", material_key: "door_hardware", material_ref: null,
+      solids: [{ ring: [[1.97, 0.022], [2.03, 0.022], [2.03, 0.035], [1.97, 0.035]],
+        z0_m: 1.514, z1_m: 1.574 }] },
+  ] };
+  buildOpening(authored, authoredOpening, wall, [0, 0], "nordic", RESOLVED_NORDIC_PALETTE.light,
+    { operation: "swing", materials: [{ tag: "door-black", color: "#181818" },
+      { tag: "door-white", color: "#f4f3ee" }] }, authoredPicks, new Map());
+  const meshes = authored.children as THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>[];
+  assert(meshes.length === 3 && authoredPicks.length === 3,
+    "Authored parts replace default product geometry and remain selectable");
+  assert(meshes[0].material.color.getHexString() === "181818"
+    && meshes[1].material.color.getHexString() === "f4f3ee",
+  "The entry keeps independent black and white faces");
+  const viewer = new THREE.Box3().setFromObject(meshes[2]);
+  assert(Math.abs(viewer.getCenter(new THREE.Vector3()).y - 1.544) < 1e-6,
+    "Viewer height is measured above the resolved leaf bottom");
+  assert(meshes[2].material.metalness === 0.8, "Authored hardware retains its metal finish");
+  meshes.forEach(mesh => { mesh.geometry.dispose(); mesh.material.dispose(); });
+
 }

@@ -88,6 +88,7 @@ from typehaus.resolve.framing.furring import (  # noqa: F401 - re-exported by tr
     course_elevations,
     opening_margin,
 )
+from typehaus.resolve.framing.girt_support_spacing import complete_support_stations
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.solver import band_axis
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
@@ -374,11 +375,15 @@ class GirtFrame(BandFrame):
                 for segment in segments[tier]:
                     seg_lo = self.station_of(segment)
                     seg_hi = seg_lo + length(sub(segment.p1, segment.p0))
-                    for station in self._block_stations(segment, tier, butts):
-                        if self._in_void(station, segment.z0_m, voids):
-                            continue
-                        station = self.snap(station, segment.z0_m, verticals, voids,
-                                            (seg_lo, seg_hi))
+                    stations = [self.snap(station, segment.z0_m, verticals, voids,
+                                          (seg_lo, seg_hi))
+                                for station in self._block_stations(segment, tier, butts)
+                                if not self._in_void(station, segment.z0_m, voids)]
+                    stations = complete_support_stations(stations, spacing=self._module(tier)[0],
+                        face=self.stock_face, verticals=verticals, z0=segment.z0_m,
+                        bounds=(seg_lo, seg_hi),
+                        in_void=lambda station, z0=segment.z0_m: self._in_void(station, z0, voids))
+                    for station in stations:
                         out.append(self._block(tier, station, segment.z0_m,
                                                f"block-{tier}-{course:03d}-{count:02d}"))
                         count += 1

@@ -37,6 +37,12 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
     want_windows = kinds in ("all", "window")
     windows = {item.tag: item for item in model.plan.library.window_types}
     doors = {item.tag: item for item in model.plan.library.door_types}
+    from typehaus.emit.draw.schedules.door_hardware import (
+        draw_hardware_schedule,
+        hardware_set_marks,
+    )
+
+    hardware_marks = hardware_set_marks(model)
     with schedule_sheet(pdf, model, number, name) as fig:
         marks = opening_type_marks(model)
         rows = []
@@ -53,7 +59,8 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
                 f"{_eighths(opening.width_m)}\" × {_eighths(opening.height_m)}\"",
                 *((_frame_size_text(frame),) if kinds == "window" else ()),
                 *_energy_columns(spec, opening.is_door),
-                *((_doorway_text(opening),) if kinds == "door" else ())))
+                *((hardware_marks.get(opening.type_ref, "—"), _doorway_text(opening))
+                  if kinds == "door" else ())))
         # One header tuple for both kinds. A-601 used to stop at U-factor, on the reading
         # that SHGC/VT/tempered are window facts; a glazed door is *fenestration* under
         # R202 and carries all four on ``DoorType``, so the door supplier and the reviewer
@@ -64,8 +71,12 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
                                     "Rough opening" if kinds == "window" else "Nominal footprint",
                                     *(("Modeled frame",) if kinds == "window" else ()),
                                     "U-factor", "SHGC", "VT", "Operation", "Tempered",
-                                    *(("Doorway",) if kinds == "door" else ()))
-        _add_table(fig, rows, headers, bbox=(0.04, 0.11, 0.92, 0.80))
+                                    *(("HW set", "Doorway") if kinds == "door" else ()))
+        has_hardware = kinds == "door" and bool(hardware_marks)
+        _add_table(fig, rows, headers,
+                   bbox=(.04, .55, .92, .37) if has_hardware else (.04, .11, .92, .80))
+        if has_hardware:
+            draw_hardware_schedule(fig, model)
 
 
 def _eighths(length_m: float) -> str:
@@ -198,7 +209,7 @@ def _doorway_text(opening):
     assembly = opening.doorway
     if assembly is None:
         return "UNKNOWN"
-    identities = ", ".join(s.product_ref + " (" + s.purchase + ")"
+    identities = ", ".join(s.product_ref + " (" + s.purchase.removesuffix("_included") + ")"
                            for s in assembly.selected_products)
     suffix = (f"; section {assembly.section_status}; supplier {assembly.supplier_status}"
               if assembly.exterior_placement else "")

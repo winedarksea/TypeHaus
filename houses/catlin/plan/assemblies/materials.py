@@ -17,6 +17,10 @@ from .materials_study_booth import MATERIALS_STUDY_BOOTH
 
 
 MATERIALS = [
+    Material(tag="door-paint-black", name="Black exterior door field paint", coating=True,
+             color="#181818", finish="paint", source="Site-applied coating approved for fiberglass/composite frame; factory black quote alternate."),
+    Material(tag="door-paint-white", name="White interior door field paint", coating=True,
+             color="#f4f3ee", finish="paint", source="Site-applied interior face finish; seal all leaf edges per manufacturer."),
     *ALL_MATERIALS,
     Material(tag="pax-frame-white", name="White PAX frame and shelf panels",
              color="#f0f0ed",
