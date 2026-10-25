@@ -475,3 +475,26 @@ pad did not change). Reapply §0's series-spring arithmetic:
 This updates the dated 46.32 reproduction, without changing its verdict or reviving a
 retired load path. These landing-pier rows remain arithmetic only: the active landing
 is laterally tied to the garage, as §10h/§10i of north_entry_piers.md describe.
+
+## Addendum 2026-10-25 — `W-BW-SCREEN`'s east thin brick (landing arithmetic only)
+
+The veneer took the screen wall 30.54 → 75.23 plf, worked layer by layer in
+`north_entry_piers.md` §2. Over the 4.5208' run on `BM-BW-SCSILL` the share above each of
+`W`/`GW` goes 104.55 → 205.56 lb, so `D +101.01`. L, k_θ, I_g and both exposed lengths are
+unchanged; EI moves only through β = 1.2D/P_u.
+
+| column | D | L | P_u | β | EI | δ 0.25" | δ 1.0" |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `PT-BW-W` | 1,945.3 | 3,168.1 | 7,403.3 | 0.3153 | 2.3114e9 | 1.0803 | 1.3316 |
+| `PT-BW-GW` | 1,522.8 | 3,155.5 | 6,876.1 | 0.2657 | 2.4019e9 | 1.3404 | 352.88 |
+
+Worked, `PT-BW-GW` at 1.0" (L 60.56", D off the 2026-10-15 P_u of 6,754.904):
+- `Pc,rigid = π² × 2.4019e9 / (2.1 × 60.56)² = 1,465,697`
+- `R = 7.5109e5 × 60.56 / 2.4019e9 = 0.01894`
+- `Pc,flex = 1,465,697 / (1 + 3/0.01894) = 9,194.2`
+- `0.75 × 9,194.2 = 6,895.7`, now **19.5 lb** over `P_u`
+- `δ = 1 / (1 − 6,876.1 / 6,895.7) = 352.9`
+
+A tenth of a pound of P_u moves that δ by half a percent, so the test pins `1/δ` here. No
+verdict moves: the landing is tied (`north_entry_piers.md` §10h), and these rows stay
+arithmetic only. The next ~20 lb of dead load on the west seat makes `GW` a mechanism again.

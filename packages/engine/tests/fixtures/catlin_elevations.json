@@ -3917,6 +3917,18 @@
 2,
 "4cd3770f4a5a"
 ],
+"geometry/21GE85HJDT/layer:paint-a": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
+"geometry/21GE85HJDT/layer:paint-b": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
 "geometry/21GE85HJDT/layer:stud": [
 0.0,
 2.727325,
@@ -4290,6 +4302,18 @@
 "f34c41fa58d0"
 ],
 "geometry/3TKS0Y8EH7/layer:gwb-b": [
+6.096,
+7.680325,
+18,
+"f34c41fa58d0"
+],
+"geometry/3TKS0Y8EH7/layer:paint-a": [
+6.096,
+7.680325,
+18,
+"f34c41fa58d0"
+],
+"geometry/3TKS0Y8EH7/layer:paint-b": [
 6.096,
 7.680325,
 18,
@@ -5891,6 +5915,18 @@
 2,
 "c0fa4924d6c7"
 ],
+"geometry/9AYPA03VAE/layer:paint-a": [
+-2.7797125,
+-0.3413125,
+2,
+"c0fa4924d6c7"
+],
+"geometry/9AYPA03VAE/layer:paint-b": [
+-2.7797125,
+-0.3413125,
+2,
+"c0fa4924d6c7"
+],
 "geometry/9AYPA03VAE/layer:stud": [
 -2.7797125,
 -0.3413125,
@@ -5976,6 +6012,18 @@
 "612163f83ba7"
 ],
 "geometry/9WC345CCP1/layer:gwb-b": [
+6.096,
+7.680325,
+6,
+"612163f83ba7"
+],
+"geometry/9WC345CCP1/layer:paint-a": [
+6.096,
+7.680325,
+6,
+"612163f83ba7"
+],
+"geometry/9WC345CCP1/layer:paint-b": [
 6.096,
 7.680325,
 6,
@@ -6467,6 +6515,18 @@
 2,
 "0593dbb109c8"
 ],
+"geometry/BWBRFL0001-00/body": [
+0.0341154,
+0.136525,
+32,
+"79de15ba0167"
+],
+"geometry/BWBRFL0002-00/body": [
+1.1961654,
+1.216025,
+32,
+"6e86db31a9c0"
+],
 "geometry/BWCB0AAAAA/body": [
 -0.566801,
 -0.169926,
@@ -6941,17 +7001,47 @@
 24,
 "527867f33533"
 ],
+"geometry/BWWS01AAAA/layer:bond-membrane-in": [
+0.0508,
+1.2065,
+2,
+"7aafe5a90170"
+],
 "geometry/BWWS01AAAA/layer:cdx-out": [
 -0.023876,
 1.2192,
 2,
 "97fac89ec9b8"
 ],
+"geometry/BWWS01AAAA/layer:cement-board-in": [
+0.0508,
+1.2065,
+2,
+"7aafe5a90170"
+],
 "geometry/BWWS01AAAA/layer:cladding-out": [
 -0.023876,
 1.2192,
 2,
 "97fac89ec9b8"
+],
+"geometry/BWWS01AAAA/layer:drainage-in": [
+0.0508,
+1.2065,
+2,
+"7aafe5a90170"
+],
+"geometry/BWWS01AAAA/layer:packing-in": [
+-0.023876,
+1.2192,
+2,
+"97fac89ec9b8"
+],
+"geometry/BWWS01AAAA/layer:setting-mortar-in": [
+0.0508,
+1.2065,
+2,
+"7aafe5a90170"
 ],
 "geometry/BWWS01AAAA/layer:siding-in": [
 -0.023876,
@@ -6960,6 +7050,18 @@
 "97fac89ec9b8"
 ],
 "geometry/BWWS01AAAA/layer:stud": [
+-0.023876,
+1.2192,
+2,
+"97fac89ec9b8"
+],
+"geometry/BWWS01AAAA/layer:thin-brick-in": [
+0.0508,
+1.2065,
+2,
+"7aafe5a90170"
+],
+"geometry/BWWS01AAAA/layer:wrb-in": [
 -0.023876,
 1.2192,
 2,
@@ -7018,6 +7120,42 @@
 1.1811,
 8,
 "fc08846b0a42"
+],
+"geometry/BWWS01AAAA::framing/member:strapping-packing-in-000": [
+-0.023876,
+1.2192,
+8,
+"29e2cea4e28b"
+],
+"geometry/BWWS01AAAA::framing/member:strapping-packing-in-001": [
+-0.023876,
+1.2192,
+8,
+"29e2cea4e28b"
+],
+"geometry/BWWS01AAAA::framing/member:strapping-packing-in-002": [
+-0.023876,
+1.2192,
+8,
+"29e2cea4e28b"
+],
+"geometry/BWWS01AAAA::framing/member:strapping-packing-in-003": [
+-0.023876,
+1.2192,
+8,
+"29e2cea4e28b"
+],
+"geometry/BWWS01AAAA::framing/member:strapping-packing-in-004": [
+-0.023876,
+1.2192,
+8,
+"29e2cea4e28b"
+],
+"geometry/BWWS01AAAA::framing/member:strapping-packing-in-005": [
+-0.023876,
+1.2192,
+8,
+"29e2cea4e28b"
 ],
 "geometry/BWWS01AAAA::framing/member:stud-000": [
 0.014224,
@@ -9900,22 +10038,22 @@
 "a167d08af85b"
 ],
 "geometry/CARL02AAAA-r00/body": [
-4.1719503,
-7.0643032,
+4.1668704,
+7.0685174,
 208,
-"0e6a7984a627"
+"3f840f81e789"
 ],
 "geometry/CARL02AAAA-t01/body": [
-4.17195,
-4.21005,
+4.16687,
+4.21513,
 16,
-"ad8316f13164"
+"8b7df4796f98"
 ],
 "geometry/CARL02AAAA-t02/body": [
-7.02945,
-7.06755,
+7.02437,
+7.07263,
 16,
-"7f66e65ae683"
+"e78f9b270244"
 ],
 "geometry/CAW101AAAA/layer:cladding": [
 6.096,
@@ -12275,6 +12413,18 @@
 18,
 "3620acfe0ca1"
 ],
+"geometry/CAW113AAAA/layer:paint-a": [
+6.096,
+8.858123,
+18,
+"39356bd82c37"
+],
+"geometry/CAW113AAAA/layer:paint-b": [
+6.096,
+8.858123,
+18,
+"06b99745ab96"
+],
 "geometry/CAW113AAAA/layer:stud": [
 6.096,
 8.858123,
@@ -14615,6 +14765,12 @@
 2,
 "c0fa4924d6c7"
 ],
+"geometry/CBW116AAAA/layer:paint-a": [
+-2.7797125,
+-0.3413125,
+2,
+"c0fa4924d6c7"
+],
 "geometry/CBW116AAAA/layer:paint-stair": [
 -2.7797125,
 -0.3413125,
@@ -14993,6 +15149,18 @@
 2,
 "c0fa4924d6c7"
 ],
+"geometry/CBW119AAAA/layer:paint-a": [
+-2.7797125,
+-0.3413125,
+2,
+"c0fa4924d6c7"
+],
+"geometry/CBW119AAAA/layer:paint-b": [
+-2.7797125,
+-0.3413125,
+2,
+"c0fa4924d6c7"
+],
 "geometry/CBW119AAAA/layer:stud": [
 -2.7797125,
 -0.3413125,
@@ -15096,6 +15264,18 @@
 "a1269395efc9"
 ],
 "geometry/CBW120AAAA/layer:gwb-b": [
+-2.7797125,
+-0.320675,
+2,
+"a1269395efc9"
+],
+"geometry/CBW120AAAA/layer:paint-a": [
+-2.7797125,
+-0.320675,
+2,
+"a1269395efc9"
+],
+"geometry/CBW120AAAA/layer:paint-b": [
 -2.7797125,
 -0.320675,
 2,
@@ -21469,27 +21649,27 @@
 ],
 "geometry/CMD201AAAA-flashing-head/body": [
 2.08026,
-2.1736844,
+2.1741045,
 48,
-"a0fe5ea20a7a"
+"9039ed2b13de"
 ],
 "geometry/CMD201AAAA-flashing-perimeter/body": [
 0.0,
-2.2244844,
+2.2249045,
 96,
-"76ad431ba47b"
+"24929db4b3fe"
 ],
 "geometry/CMD201AAAA-flashing-sill-support/body": [
-0.009525,
-0.047625,
+0.0,
+0.0381,
 16,
-"945828ebfe6a"
+"ed6829ea015c"
 ],
 "geometry/CMD201AAAA-flashing-sill/body": [
--0.009525,
-0.161925,
-40,
-"1e0d732230bd"
+-0.01905,
+0.1524,
+56,
+"a542bba6bf48"
 ],
 "geometry/CMD201AAAA-headscreen/body": [
 2.1209,
@@ -21498,10 +21678,10 @@
 "eb46c68bbca2"
 ],
 "geometry/CMD201AAAA/frame": [
-0.0,
+0.0127,
 2.032,
 6,
-"c593ad98a359"
+"dfd073274810"
 ],
 "geometry/CMD201AAAA/hardware": [
 0.882,
@@ -21509,11 +21689,335 @@
 12,
 "cc227fd26d3b"
 ],
+"geometry/CMD201AAAA/installation:approach-drip-nosing": [
+-0.01905,
+0.01905,
+12,
+"70846ee9e772"
+],
+"geometry/CMD201AAAA/installation:approach-walking-plate": [
+0.0127,
+0.0223488,
+8,
+"8e51c3ae8ba2"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-approach-0": [
+0.012192,
+0.0159988,
+8,
+"564ff4cb6ecc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-approach-1": [
+0.012192,
+0.0159988,
+8,
+"564ff4cb6ecc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-approach-2": [
+0.012192,
+0.0159988,
+8,
+"564ff4cb6ecc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-approach-3": [
+0.012192,
+0.0159988,
+8,
+"564ff4cb6ecc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-approach-4": [
+0.012192,
+0.0159988,
+8,
+"564ff4cb6ecc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-approach-5": [
+0.012192,
+0.0159988,
+8,
+"564ff4cb6ecc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-sill-0": [
+0.012192,
+0.0127,
+8,
+"ec735fb10ebc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-sill-1": [
+0.012192,
+0.0127,
+8,
+"ec735fb10ebc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-sill-2": [
+0.012192,
+0.0127,
+8,
+"ec735fb10ebc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-sill-3": [
+0.012192,
+0.0127,
+8,
+"ec735fb10ebc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-sill-4": [
+0.012192,
+0.0127,
+8,
+"ec735fb10ebc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-sill-5": [
+0.012192,
+0.0127,
+8,
+"ec735fb10ebc"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-step-0": [
+0.012192,
+0.0154802,
+8,
+"5cb6e013dc9e"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-step-1": [
+0.012192,
+0.0154802,
+8,
+"5cb6e013dc9e"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-step-2": [
+0.012192,
+0.0154802,
+8,
+"5cb6e013dc9e"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-step-3": [
+0.012192,
+0.0154802,
+8,
+"5cb6e013dc9e"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-step-4": [
+0.012192,
+0.0154802,
+8,
+"5cb6e013dc9e"
+],
+"geometry/CMD201AAAA/installation:bearing-isolation-step-5": [
+0.012192,
+0.0154802,
+8,
+"5cb6e013dc9e"
+],
+"geometry/CMD201AAAA/installation:draining-bearing-strip-0": [
+0.001524,
+0.0154802,
+12,
+"553600a6e39f"
+],
+"geometry/CMD201AAAA/installation:draining-bearing-strip-1": [
+0.001524,
+0.0154802,
+12,
+"553600a6e39f"
+],
+"geometry/CMD201AAAA/installation:draining-bearing-strip-2": [
+0.001524,
+0.0154802,
+12,
+"553600a6e39f"
+],
+"geometry/CMD201AAAA/installation:draining-bearing-strip-3": [
+0.001524,
+0.0154802,
+12,
+"553600a6e39f"
+],
+"geometry/CMD201AAAA/installation:draining-bearing-strip-4": [
+0.001524,
+0.0154802,
+12,
+"553600a6e39f"
+],
+"geometry/CMD201AAAA/installation:draining-bearing-strip-5": [
+0.001524,
+0.0154802,
+12,
+"553600a6e39f"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-head": [
+2.032,
+2.1209,
+2,
+"2e338a8a2966"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-head-door_trim_isolation": [
+2.032,
+2.1209,
+2,
+"2e338a8a2966"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-head-door_trim_wrap": [
+2.032,
+2.1209,
+2,
+"2e338a8a2966"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-jamb--1": [
+0.0,
+2.032,
+2,
+"dc3c6372a2d7"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-jamb--1-door_trim_isolation": [
+0.0,
+2.032,
+2,
+"dc3c6372a2d7"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-jamb--1-door_trim_isolation-outer-edge": [
+0.0,
+2.032,
+2,
+"dc3c6372a2d7"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-jamb--1-door_trim_wrap": [
+0.0,
+2.032,
+2,
+"dc3c6372a2d7"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-jamb--1-door_trim_wrap-outer-edge": [
+0.0,
+2.032,
+2,
+"dc3c6372a2d7"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-jamb-1": [
+0.0,
+2.032,
+2,
+"dc3c6372a2d7"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-jamb-1-door_trim_isolation": [
+0.0,
+2.032,
+2,
+"dc3c6372a2d7"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-jamb-1-door_trim_isolation-outer-edge": [
+0.0,
+2.032,
+2,
+"dc3c6372a2d7"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-jamb-1-door_trim_wrap": [
+0.0,
+2.032,
+2,
+"dc3c6372a2d7"
+],
+"geometry/CMD201AAAA/installation:exterior-casing-jamb-1-door_trim_wrap-outer-edge": [
+0.0,
+2.032,
+2,
+"dc3c6372a2d7"
+],
+"geometry/CMD201AAAA/installation:exterior-return-head": [
+2.01295,
+2.032,
+2,
+"21545462b031"
+],
+"geometry/CMD201AAAA/installation:exterior-return-head-door_trim_isolation": [
+2.012442,
+2.01295,
+2,
+"ae48ea7d1bfe"
+],
+"geometry/CMD201AAAA/installation:exterior-return-head-door_trim_wrap": [
+2.0118324,
+2.012442,
+2,
+"6f58558c03e3"
+],
+"geometry/CMD201AAAA/installation:exterior-return-jamb--1": [
+0.0,
+2.01295,
+2,
+"3ebbbb92521d"
+],
+"geometry/CMD201AAAA/installation:exterior-return-jamb--1-door_trim_isolation": [
+0.0,
+2.01295,
+2,
+"3ebbbb92521d"
+],
+"geometry/CMD201AAAA/installation:exterior-return-jamb--1-door_trim_wrap": [
+0.0,
+2.01295,
+2,
+"3ebbbb92521d"
+],
+"geometry/CMD201AAAA/installation:exterior-return-jamb-1": [
+0.0,
+2.01295,
+2,
+"3ebbbb92521d"
+],
+"geometry/CMD201AAAA/installation:exterior-return-jamb-1-door_trim_isolation": [
+0.0,
+2.01295,
+2,
+"3ebbbb92521d"
+],
+"geometry/CMD201AAAA/installation:exterior-return-jamb-1-door_trim_wrap": [
+0.0,
+2.01295,
+2,
+"3ebbbb92521d"
+],
+"geometry/CMD201AAAA/installation:interior-back-dam-cover": [
+0.0250495,
+0.0508,
+12,
+"2b511efe248f"
+],
+"geometry/CMD201AAAA/installation:interior-extension-head": [
+2.01295,
+2.032,
+2,
+"21545462b031"
+],
+"geometry/CMD201AAAA/installation:interior-extension-jamb--1": [
+0.0,
+2.01295,
+2,
+"3ebbbb92521d"
+],
+"geometry/CMD201AAAA/installation:interior-extension-jamb-1": [
+0.0,
+2.01295,
+2,
+"3ebbbb92521d"
+],
+"geometry/CMD201AAAA/installation:threshold-cap-design-envelope": [
+0.04445,
+0.0508,
+8,
+"099d4054c034"
+],
+"geometry/CMD201AAAA/installation:threshold-design-envelope": [
+0.0127,
+0.04445,
+10,
+"af574d1550e4"
+],
 "geometry/CMD201AAAA/leaf": [
-0.075,
+0.053975,
 1.957,
 2,
-"f59eacaf4cac"
+"2303d5f43960"
 ],
 "geometry/CMD202AAAA-casing-l/body": [
 0.0238125,
@@ -21523,27 +22027,27 @@
 ],
 "geometry/CMD202AAAA-flashing-head/body": [
 2.08026,
-2.1736844,
+2.1741045,
 48,
-"a0fe5ea20a7a"
+"9039ed2b13de"
 ],
 "geometry/CMD202AAAA-flashing-perimeter/body": [
 0.0,
-2.2244844,
+2.2249045,
 96,
-"76ad431ba47b"
+"24929db4b3fe"
 ],
 "geometry/CMD202AAAA-flashing-sill-support/body": [
-0.009525,
-0.047625,
+0.0,
+0.0381,
 16,
-"945828ebfe6a"
+"ed6829ea015c"
 ],
 "geometry/CMD202AAAA-flashing-sill/body": [
--0.009525,
-0.161925,
-40,
-"1e0d732230bd"
+-0.01905,
+0.1524,
+56,
+"a542bba6bf48"
 ],
 "geometry/CMD202AAAA-headscreen/body": [
 2.1209,
@@ -21552,10 +22056,10 @@
 "eb46c68bbca2"
 ],
 "geometry/CMD202AAAA/frame": [
-0.0,
+0.0225446,
 2.032,
 6,
-"c593ad98a359"
+"5d6158beab57"
 ],
 "geometry/CMD202AAAA/hardware": [
 0.882,
@@ -21563,17 +22067,413 @@
 24,
 "114ed4a46cad"
 ],
-"geometry/CMD202AAAA/leaf": [
-0.075,
-1.957,
-4,
-"686bf0eb706e"
+"geometry/CMD202AAAA/installation:approach-drip-nosing": [
+-0.01905,
+0.030226,
+12,
+"a872d2e28ead"
 ],
-"geometry/CMD202AAAA/mullion": [
-0.0,
+"geometry/CMD202AAAA/installation:approach-walking-plate": [
+0.023876,
+0.0352446,
+8,
+"a534d24cf624"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-approach-0": [
+0.023368,
+0.0288946,
+8,
+"93948184a4d0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-approach-1": [
+0.023368,
+0.0288946,
+8,
+"93948184a4d0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-approach-2": [
+0.023368,
+0.0288946,
+8,
+"93948184a4d0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-approach-3": [
+0.023368,
+0.0288946,
+8,
+"93948184a4d0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-approach-4": [
+0.023368,
+0.0288946,
+8,
+"93948184a4d0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-approach-5": [
+0.023368,
+0.0288946,
+8,
+"93948184a4d0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-approach-6": [
+0.023368,
+0.0288946,
+8,
+"93948184a4d0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-approach-7": [
+0.023368,
+0.0288946,
+8,
+"93948184a4d0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-approach-8": [
+0.023368,
+0.0288946,
+8,
+"93948184a4d0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-sill-0": [
+0.0220366,
+0.0225446,
+8,
+"e8fe6c51bfc0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-sill-1": [
+0.0220366,
+0.0225446,
+8,
+"e8fe6c51bfc0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-sill-2": [
+0.0220366,
+0.0225446,
+8,
+"e8fe6c51bfc0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-sill-3": [
+0.0220366,
+0.0225446,
+8,
+"e8fe6c51bfc0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-sill-4": [
+0.0220366,
+0.0225446,
+8,
+"e8fe6c51bfc0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-sill-5": [
+0.0220366,
+0.0225446,
+8,
+"e8fe6c51bfc0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-sill-6": [
+0.0220366,
+0.0225446,
+8,
+"e8fe6c51bfc0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-sill-7": [
+0.0220366,
+0.0225446,
+8,
+"e8fe6c51bfc0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-sill-8": [
+0.0220366,
+0.0225446,
+8,
+"e8fe6c51bfc0"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-step-0": [
+0.0220366,
+0.028376,
+8,
+"3ac10a57d9d6"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-step-1": [
+0.0220366,
+0.028376,
+8,
+"3ac10a57d9d6"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-step-2": [
+0.0220366,
+0.028376,
+8,
+"3ac10a57d9d6"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-step-3": [
+0.0220366,
+0.028376,
+8,
+"3ac10a57d9d6"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-step-4": [
+0.0220366,
+0.028376,
+8,
+"3ac10a57d9d6"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-step-5": [
+0.0220366,
+0.028376,
+8,
+"3ac10a57d9d6"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-step-6": [
+0.0220366,
+0.028376,
+8,
+"3ac10a57d9d6"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-step-7": [
+0.0220366,
+0.028376,
+8,
+"3ac10a57d9d6"
+],
+"geometry/CMD202AAAA/installation:bearing-isolation-step-8": [
+0.0220366,
+0.028376,
+8,
+"3ac10a57d9d6"
+],
+"geometry/CMD202AAAA/installation:draining-bearing-strip-0": [
+0.001524,
+0.028376,
+12,
+"6d5a34b6e800"
+],
+"geometry/CMD202AAAA/installation:draining-bearing-strip-1": [
+0.001524,
+0.028376,
+12,
+"6d5a34b6e800"
+],
+"geometry/CMD202AAAA/installation:draining-bearing-strip-2": [
+0.001524,
+0.028376,
+12,
+"6d5a34b6e800"
+],
+"geometry/CMD202AAAA/installation:draining-bearing-strip-3": [
+0.001524,
+0.028376,
+12,
+"6d5a34b6e800"
+],
+"geometry/CMD202AAAA/installation:draining-bearing-strip-4": [
+0.001524,
+0.028376,
+12,
+"6d5a34b6e800"
+],
+"geometry/CMD202AAAA/installation:draining-bearing-strip-5": [
+0.001524,
+0.028376,
+12,
+"6d5a34b6e800"
+],
+"geometry/CMD202AAAA/installation:draining-bearing-strip-6": [
+0.001524,
+0.028376,
+12,
+"6d5a34b6e800"
+],
+"geometry/CMD202AAAA/installation:draining-bearing-strip-7": [
+0.001524,
+0.028376,
+12,
+"6d5a34b6e800"
+],
+"geometry/CMD202AAAA/installation:draining-bearing-strip-8": [
+0.001524,
+0.028376,
+12,
+"6d5a34b6e800"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-head": [
+2.032,
+2.1209,
+2,
+"2e338a8a2966"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-head-door_trim_isolation": [
+2.032,
+2.1209,
+2,
+"2e338a8a2966"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-head-door_trim_wrap": [
+2.032,
+2.1209,
+2,
+"2e338a8a2966"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-jamb--1": [
+0.023876,
 2.032,
 2,
-"dc3c6372a2d7"
+"4423ebc78a52"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-jamb--1-door_trim_isolation": [
+0.023876,
+2.032,
+2,
+"4423ebc78a52"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-jamb--1-door_trim_isolation-outer-edge": [
+0.023876,
+2.032,
+2,
+"4423ebc78a52"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-jamb--1-door_trim_wrap": [
+0.023876,
+2.032,
+2,
+"4423ebc78a52"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-jamb--1-door_trim_wrap-outer-edge": [
+0.023876,
+2.032,
+2,
+"4423ebc78a52"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-jamb-1": [
+0.023876,
+2.032,
+2,
+"4423ebc78a52"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-jamb-1-door_trim_isolation": [
+0.023876,
+2.032,
+2,
+"4423ebc78a52"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-jamb-1-door_trim_isolation-outer-edge": [
+0.023876,
+2.032,
+2,
+"4423ebc78a52"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-jamb-1-door_trim_wrap": [
+0.023876,
+2.032,
+2,
+"4423ebc78a52"
+],
+"geometry/CMD202AAAA/installation:exterior-casing-jamb-1-door_trim_wrap-outer-edge": [
+0.023876,
+2.032,
+2,
+"4423ebc78a52"
+],
+"geometry/CMD202AAAA/installation:exterior-return-head": [
+2.01295,
+2.032,
+2,
+"21545462b031"
+],
+"geometry/CMD202AAAA/installation:exterior-return-head-door_trim_isolation": [
+2.012442,
+2.01295,
+2,
+"ae48ea7d1bfe"
+],
+"geometry/CMD202AAAA/installation:exterior-return-head-door_trim_wrap": [
+2.0118324,
+2.012442,
+2,
+"6f58558c03e3"
+],
+"geometry/CMD202AAAA/installation:exterior-return-jamb--1": [
+0.023876,
+2.01295,
+2,
+"360a4a331805"
+],
+"geometry/CMD202AAAA/installation:exterior-return-jamb--1-door_trim_isolation": [
+0.023876,
+2.01295,
+2,
+"360a4a331805"
+],
+"geometry/CMD202AAAA/installation:exterior-return-jamb--1-door_trim_wrap": [
+0.023876,
+2.01295,
+2,
+"360a4a331805"
+],
+"geometry/CMD202AAAA/installation:exterior-return-jamb-1": [
+0.023876,
+2.01295,
+2,
+"360a4a331805"
+],
+"geometry/CMD202AAAA/installation:exterior-return-jamb-1-door_trim_isolation": [
+0.023876,
+2.01295,
+2,
+"360a4a331805"
+],
+"geometry/CMD202AAAA/installation:exterior-return-jamb-1-door_trim_wrap": [
+0.023876,
+2.01295,
+2,
+"360a4a331805"
+],
+"geometry/CMD202AAAA/installation:interior-back-dam-cover": [
+0.0250495,
+0.0574696,
+12,
+"5749194985d5"
+],
+"geometry/CMD202AAAA/installation:interior-extension-head": [
+2.01295,
+2.032,
+2,
+"21545462b031"
+],
+"geometry/CMD202AAAA/installation:interior-extension-jamb--1": [
+0.023876,
+2.01295,
+2,
+"360a4a331805"
+],
+"geometry/CMD202AAAA/installation:interior-extension-jamb-1": [
+0.023876,
+2.01295,
+2,
+"360a4a331805"
+],
+"geometry/CMD202AAAA/installation:threshold-cap-design-envelope": [
+0.0511196,
+0.0574696,
+8,
+"3138fd66da9e"
+],
+"geometry/CMD202AAAA/installation:threshold-design-envelope": [
+0.0225446,
+0.0511196,
+10,
+"1914378f5eb3"
+],
+"geometry/CMD202AAAA/leaf": [
+0.0606446,
+1.957,
+4,
+"4f0ff6cad976"
+],
+"geometry/CMD202AAAA/mullion": [
+0.0606446,
+2.032,
+2,
+"c58839023c7a"
 ],
 "geometry/CMD204AAAA-casing-l/body": [
 0.0250495,
@@ -25019,7 +25919,13 @@
 8,
 "c6b5dd60991c"
 ],
-"geometry/CMW102AAAA::framing/member:plate-bottom": [
+"geometry/CMW102AAAA::framing/member:plate-bottom-passage-0": [
+0.0,
+0.0381,
+8,
+"c1d27a37c961"
+],
+"geometry/CMW102AAAA::framing/member:plate-bottom-passage-1": [
 0.0,
 0.0381,
 8,
@@ -27989,7 +28895,13 @@
 8,
 "683653b83f44"
 ],
-"geometry/CMW107AAAA::framing/member:plate-bottom": [
+"geometry/CMW107AAAA::framing/member:plate-bottom-passage-0": [
+0.0,
+0.0381,
+8,
+"c1d27a37c961"
+],
+"geometry/CMW107AAAA::framing/member:plate-bottom-passage-1": [
 0.0,
 0.0381,
 8,
@@ -30587,6 +31499,18 @@
 2,
 "4cd3770f4a5a"
 ],
+"geometry/CMW119AAAA/layer:paint-a": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
+"geometry/CMW119AAAA/layer:paint-b": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
 "geometry/CMW119AAAA/layer:stud": [
 0.0,
 2.727325,
@@ -30660,6 +31584,18 @@
 "279d618cde3c"
 ],
 "geometry/CMW120AAAA/layer:gwb-b": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/CMW120AAAA/layer:paint-a": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/CMW120AAAA/layer:paint-b": [
 0.0,
 2.727325,
 6,
@@ -30750,6 +31686,18 @@
 "279d618cde3c"
 ],
 "geometry/CMW121AAAA/layer:gwb-b": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/CMW121AAAA/layer:paint-a": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/CMW121AAAA/layer:paint-b": [
 0.0,
 2.727325,
 6,
@@ -31151,6 +32099,18 @@
 6,
 "279d618cde3c"
 ],
+"geometry/CMW124AAAA/layer:paint-a": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/CMW124AAAA/layer:paint-b": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
 "geometry/CMW124AAAA/layer:stud": [
 0.0,
 2.727325,
@@ -31284,6 +32244,18 @@
 "4cd3770f4a5a"
 ],
 "geometry/CMW125AAAA/layer:gwb-b": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
+"geometry/CMW125AAAA/layer:paint-a": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
+"geometry/CMW125AAAA/layer:paint-b": [
 0.0,
 2.727325,
 2,
@@ -31595,6 +32567,18 @@
 2,
 "4cd3770f4a5a"
 ],
+"geometry/CMW128AAAA/layer:paint-a": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
+"geometry/CMW128AAAA/layer:paint-b": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
 "geometry/CMW128AAAA/layer:staggered-studs": [
 0.0,
 2.727325,
@@ -31674,6 +32658,18 @@
 "4cd3770f4a5a"
 ],
 "geometry/CMW129AAAA/layer:gwb-b": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
+"geometry/CMW129AAAA/layer:paint-a": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
+"geometry/CMW129AAAA/layer:paint-b": [
 0.0,
 2.727325,
 2,
@@ -31817,6 +32813,18 @@
 2,
 "4cd3770f4a5a"
 ],
+"geometry/CMW130AAAA/layer:paint-a": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
+"geometry/CMW130AAAA/layer:paint-b": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
 "geometry/CMW130AAAA/layer:staggered-studs": [
 0.0,
 2.727325,
@@ -31902,6 +32910,18 @@
 "279d618cde3c"
 ],
 "geometry/CMW131AAAA/layer:gwb-b": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/CMW131AAAA/layer:paint-a": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/CMW131AAAA/layer:paint-b": [
 0.0,
 2.727325,
 6,
@@ -32034,6 +33054,18 @@
 "279d618cde3c"
 ],
 "geometry/CMW132AAAA/layer:gwb-b": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/CMW132AAAA/layer:paint-a": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/CMW132AAAA/layer:paint-b": [
 0.0,
 2.727325,
 6,
@@ -32729,6 +33761,18 @@
 6,
 "279d618cde3c"
 ],
+"geometry/CMW137AAAA/layer:paint-a": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/CMW137AAAA/layer:paint-b": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
 "geometry/CMW137AAAA/layer:stud": [
 0.0,
 2.727325,
@@ -32771,7 +33815,13 @@
 8,
 "5b1c8c335af3"
 ],
-"geometry/CMW137AAAA::framing/member:plate-bottom": [
+"geometry/CMW137AAAA::framing/member:plate-bottom-passage-0": [
+0.0,
+0.0381,
+8,
+"c1d27a37c961"
+],
+"geometry/CMW137AAAA::framing/member:plate-bottom-passage-1": [
 0.0,
 0.0381,
 8,
@@ -32808,6 +33858,18 @@
 "4cd3770f4a5a"
 ],
 "geometry/CMW138AAAA/layer:gwb-b": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
+"geometry/CMW138AAAA/layer:paint-a": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
+"geometry/CMW138AAAA/layer:paint-b": [
 0.0,
 2.727325,
 2,
@@ -34841,19 +35903,19 @@
 8,
 "5bf8cfc1b765"
 ],
-"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-e-003": [
+"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-e-002": [
+5.451475,
+5.489575,
+8,
+"5bf8cfc1b765"
+],
+"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-e-004": [
 5.451475,
 5.489575,
 8,
 "5bf8cfc1b765"
 ],
 "geometry/CSF601AAAA::framing/member:soffit-plate-bottom-e-005": [
-5.451475,
-5.489575,
-8,
-"5bf8cfc1b765"
-],
-"geometry/CSF601AAAA::framing/member:soffit-plate-bottom-e-006": [
 5.451475,
 5.489575,
 8,
@@ -36432,22 +37494,22 @@
 "05f3e5c7a04c"
 ],
 "geometry/CSRL03AAAA-r00/body": [
-1.1346802,
-2.4858219,
+1.1306225,
+2.4900478,
 32,
-"2d1448012e12"
+"2ea5c88f2b35"
 ],
 "geometry/CSRL03AAAA-t01/body": [
-1.1308467,
-1.1689467,
+1.1257667,
+1.1740267,
 16,
-"d3b0ff96f1dd"
+"5ab344dd25a3"
 ],
 "geometry/CSRL03AAAA-t02/body": [
-2.4509247,
-2.4890247,
+2.4458447,
+2.4941047,
 16,
-"d748a61a55a2"
+"59b234a59c01"
 ],
 "geometry/CSRL04AAAA-b01/body": [
 3.1853433,
@@ -36468,22 +37530,22 @@
 "036c27f670da"
 ],
 "geometry/CSRL04AAAA-r00/body": [
-2.6652055,
-3.8578811,
+2.6611477,
+3.8619388,
 16,
-"6f0a3c56b6cb"
+"d01f53ecf249"
 ],
 "geometry/CSRL04AAAA-t01/body": [
-2.661372,
-2.699472,
+2.656292,
+2.704552,
 16,
-"534198544f42"
+"e856fdfa7db0"
 ],
 "geometry/CSRL04AAAA-t02/body": [
-3.8236146,
-3.8617146,
+3.8185346,
+3.8667946,
 16,
-"ee0e5912045a"
+"67f942f52edf"
 ],
 "geometry/CST701AAAA::finish/landing-lower:nosing": [
 -1.5089236,
@@ -45179,6 +46241,18 @@
 6,
 "e7d8ff18ab19"
 ],
+"geometry/CSW120AAAA/layer:paint-a": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
+"geometry/CSW120AAAA/layer:paint-b": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
 "geometry/CSW120AAAA/layer:stud": [
 3.048,
 5.775325,
@@ -45443,6 +46517,18 @@
 6,
 "e7d8ff18ab19"
 ],
+"geometry/CSW122AAAA/layer:paint-a": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
+"geometry/CSW122AAAA/layer:paint-b": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
 "geometry/CSW122AAAA/layer:stud": [
 3.048,
 5.775325,
@@ -45570,6 +46656,18 @@
 "e7d8ff18ab19"
 ],
 "geometry/CSW123AAAA/layer:gwb-b": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
+"geometry/CSW123AAAA/layer:paint-a": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
+"geometry/CSW123AAAA/layer:paint-b": [
 3.048,
 5.775325,
 6,
@@ -45707,6 +46805,18 @@
 6,
 "e7d8ff18ab19"
 ],
+"geometry/CSW124AAAA/layer:paint-a": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
+"geometry/CSW124AAAA/layer:paint-b": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
 "geometry/CSW124AAAA/layer:stud": [
 3.048,
 5.775325,
@@ -45816,6 +46926,18 @@
 "b7b31aff550e"
 ],
 "geometry/CSW125AAAA/layer:gwb-b": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
+"geometry/CSW125AAAA/layer:paint-a": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
+"geometry/CSW125AAAA/layer:paint-b": [
 3.048,
 5.775325,
 2,
@@ -46194,6 +47316,18 @@
 "b7b31aff550e"
 ],
 "geometry/CSW129AAAA/layer:gwb-b": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
+"geometry/CSW129AAAA/layer:paint-a": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
+"geometry/CSW129AAAA/layer:paint-b": [
 3.048,
 5.775325,
 2,
@@ -47063,6 +48197,18 @@
 6,
 "1e90330c76da"
 ],
+"geometry/CSW141AAAA/layer:paint-a": [
+3.048,
+5.26415,
+6,
+"1e90330c76da"
+],
+"geometry/CSW141AAAA/layer:paint-b": [
+3.048,
+5.26415,
+6,
+"1e90330c76da"
+],
 "geometry/CSW141AAAA/layer:stud": [
 3.048,
 5.26415,
@@ -47267,6 +48413,18 @@
 6,
 "e7d8ff18ab19"
 ],
+"geometry/CSW143AAAA/layer:paint-a": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
+"geometry/CSW143AAAA/layer:paint-b": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
 "geometry/CSW143AAAA/layer:stud": [
 3.048,
 5.775325,
@@ -47381,6 +48539,18 @@
 6,
 "e7d8ff18ab19"
 ],
+"geometry/CSW144AAAA/layer:paint-a": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
+"geometry/CSW144AAAA/layer:paint-b": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
 "geometry/CSW144AAAA/layer:stud": [
 3.048,
 5.775325,
@@ -47472,6 +48642,18 @@
 "b7b31aff550e"
 ],
 "geometry/CSW145AAAA/layer:gwb-b": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
+"geometry/CSW145AAAA/layer:paint-a": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
+"geometry/CSW145AAAA/layer:paint-b": [
 3.048,
 5.775325,
 2,
@@ -47598,6 +48780,18 @@
 "b7b31aff550e"
 ],
 "geometry/CSW146AAAA/layer:gwb-b": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
+"geometry/CSW146AAAA/layer:paint-a": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
+"geometry/CSW146AAAA/layer:paint-b": [
 3.048,
 5.775325,
 2,
@@ -47856,6 +49050,18 @@
 "e7d8ff18ab19"
 ],
 "geometry/CSW148AAAA/layer:gwb-b": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
+"geometry/CSW148AAAA/layer:paint-a": [
+3.048,
+5.775325,
+6,
+"e7d8ff18ab19"
+],
+"geometry/CSW148AAAA/layer:paint-b": [
 3.048,
 5.775325,
 6,
@@ -48161,6 +49367,18 @@
 2,
 "b7b31aff550e"
 ],
+"geometry/CSW151AAAA/layer:paint-a": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
+"geometry/CSW151AAAA/layer:paint-b": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
 "geometry/CSW151AAAA/layer:stud": [
 3.048,
 5.775325,
@@ -48210,6 +49428,18 @@
 "b7b31aff550e"
 ],
 "geometry/CSW152AAAA/layer:gwb-b": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
+"geometry/CSW152AAAA/layer:paint-a": [
+3.048,
+5.775325,
+2,
+"b7b31aff550e"
+],
+"geometry/CSW152AAAA/layer:paint-b": [
 3.048,
 5.775325,
 2,
@@ -50076,22 +51306,22 @@
 "8f8ec6e95584"
 ],
 "geometry/CX7KN0MZE0-r00/body": [
-0.2073162,
-0.9188275,
+0.2029952,
+0.9231485,
 16,
-"63bfba299df0"
+"1224ec879a4e"
 ],
 "geometry/CX7KN0MZE0-t01/body": [
-0.20447,
-0.24257,
+0.19939,
+0.24765,
 16,
-"5fe874331c87"
+"62a838e5d0fd"
 ],
 "geometry/CX7KN0MZE0-t02/body": [
-0.8835736,
-0.9216736,
+0.8784936,
+0.9267536,
 16,
-"d51e4a21c7d2"
+"69510d4e8704"
 ],
 "geometry/CZJZNX97MB-00/body": [
 -0.3429,
@@ -53645,6 +54875,18 @@
 2,
 "4cd3770f4a5a"
 ],
+"geometry/HGVY43DYQH/layer:paint-a": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
+"geometry/HGVY43DYQH/layer:paint-b": [
+0.0,
+2.727325,
+2,
+"4cd3770f4a5a"
+],
 "geometry/HGVY43DYQH/layer:stud": [
 0.0,
 2.727325,
@@ -53700,6 +54942,18 @@
 "ebf703ccff1b"
 ],
 "geometry/HKFW104YS3/layer:gwb-b": [
+6.096,
+7.165975,
+6,
+"ebf703ccff1b"
+],
+"geometry/HKFW104YS3/layer:paint-a": [
+6.096,
+7.165975,
+6,
+"ebf703ccff1b"
+],
+"geometry/HKFW104YS3/layer:paint-b": [
 6.096,
 7.165975,
 6,
@@ -53874,6 +55128,18 @@
 "279d618cde3c"
 ],
 "geometry/KKVYSAJKZF/layer:gwb-b": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/KKVYSAJKZF/layer:paint-a": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/KKVYSAJKZF/layer:paint-b": [
 0.0,
 2.727325,
 6,
@@ -54419,6 +55685,18 @@
 6,
 "5b3421583dca"
 ],
+"geometry/P8A4BWAL02/layer:paint-a": [
+6.096,
+8.251825,
+6,
+"1b2916c01c88"
+],
+"geometry/P8A4BWAL02/layer:paint-b": [
+6.096,
+8.22325,
+6,
+"b35c18bfe754"
+],
 "geometry/P8A4BWAL02/layer:stud": [
 6.096,
 8.251825,
@@ -54509,6 +55787,18 @@
 6,
 "d3cb4e22afd7"
 ],
+"geometry/P8A4CWAL04/layer:paint-a": [
+6.096,
+6.9008625,
+6,
+"0315d381de4f"
+],
+"geometry/P8A4CWAL04/layer:paint-b": [
+6.096,
+6.9294375,
+6,
+"d3cb4e22afd7"
+],
 "geometry/P8A4CWAL04/layer:stud": [
 6.096,
 6.9294375,
@@ -54575,6 +55865,18 @@
 6,
 "a2dbd8a8d0da"
 ],
+"geometry/P8A4EWAL03/layer:paint-a": [
+6.096,
+6.9294375,
+6,
+"a2dbd8a8d0da"
+],
+"geometry/P8A4EWAL03/layer:paint-b": [
+6.096,
+6.9294375,
+6,
+"a2dbd8a8d0da"
+],
 "geometry/P8A4EWAL03/layer:stud": [
 6.096,
 6.9294375,
@@ -54624,6 +55926,18 @@
 "b982335bc7f9"
 ],
 "geometry/P8A4WWAL01/layer:gwb-b": [
+6.096,
+8.251825,
+6,
+"b982335bc7f9"
+],
+"geometry/P8A4WWAL01/layer:paint-a": [
+6.096,
+8.251825,
+6,
+"b982335bc7f9"
+],
+"geometry/P8A4WWAL01/layer:paint-b": [
 6.096,
 8.251825,
 6,
@@ -55008,6 +56322,18 @@
 "a1961d0bdcae"
 ],
 "geometry/QY8YCE6XV3/layer:gwb-b": [
+0.0,
+2.727325,
+6,
+"279d618cde3c"
+],
+"geometry/QY8YCE6XV3/layer:paint-a": [
+0.0,
+2.727325,
+4,
+"a1961d0bdcae"
+],
+"geometry/QY8YCE6XV3/layer:paint-b": [
 0.0,
 2.727325,
 6,
@@ -55836,6 +57162,18 @@
 "b18e51d4989e"
 ],
 "geometry/RV6PJZ6WWM/layer:gwb-b": [
+6.096,
+8.858123,
+6,
+"b18e51d4989e"
+],
+"geometry/RV6PJZ6WWM/layer:paint-a": [
+6.096,
+8.858123,
+6,
+"b18e51d4989e"
+],
+"geometry/RV6PJZ6WWM/layer:paint-b": [
 6.096,
 8.858123,
 6,
@@ -58667,6 +60005,18 @@
 2,
 "98a4cf57ca23"
 ],
+"geometry/SNNBY9M3CE/layer:paint-a": [
+0.0250495,
+2.727325,
+2,
+"98a4cf57ca23"
+],
+"geometry/SNNBY9M3CE/layer:paint-b": [
+0.0250495,
+2.727325,
+2,
+"98a4cf57ca23"
+],
 "geometry/SNNBY9M3CE/layer:stud": [
 0.0250495,
 2.727325,
@@ -60737,7 +62087,13 @@
 8,
 "53b39e549478"
 ],
-"geometry/Z4NRTGEDY5::framing/member:plate-bottom": [
+"geometry/Z4NRTGEDY5::framing/member:plate-bottom-passage-0": [
+-2.5955625,
+-2.5574625,
+8,
+"f5962a2f7d38"
+],
+"geometry/Z4NRTGEDY5::framing/member:plate-bottom-passage-1": [
 -2.5955625,
 -2.5574625,
 8,
@@ -63178,6 +64534,42 @@
 1.1811,
 2,
 "29c6065b9401"
+],
+"member/BWWS01AAAA/strapping-packing-in-000": [
+-0.023876,
+1.2192,
+2,
+"97fac89ec9b8"
+],
+"member/BWWS01AAAA/strapping-packing-in-001": [
+-0.023876,
+1.2192,
+2,
+"97fac89ec9b8"
+],
+"member/BWWS01AAAA/strapping-packing-in-002": [
+-0.023876,
+1.2192,
+2,
+"97fac89ec9b8"
+],
+"member/BWWS01AAAA/strapping-packing-in-003": [
+-0.023876,
+1.2192,
+2,
+"97fac89ec9b8"
+],
+"member/BWWS01AAAA/strapping-packing-in-004": [
+-0.023876,
+1.2192,
+2,
+"97fac89ec9b8"
+],
+"member/BWWS01AAAA/strapping-packing-in-005": [
+-0.023876,
+1.2192,
+2,
+"97fac89ec9b8"
 ],
 "member/BWWS01AAAA/stud-000": [
 0.014224,
@@ -71981,7 +73373,13 @@
 2,
 "c083e0a92094"
 ],
-"member/CMW102AAAA/plate-bottom": [
+"member/CMW102AAAA/plate-bottom-passage-0": [
+0.0,
+0.0381,
+2,
+"216e2360d69a"
+],
+"member/CMW102AAAA/plate-bottom-passage-1": [
 0.0,
 0.0381,
 2,
@@ -74735,7 +76133,13 @@
 2,
 "f31f36c7a90b"
 ],
-"member/CMW107AAAA/plate-bottom": [
+"member/CMW107AAAA/plate-bottom-passage-0": [
+0.0,
+0.0381,
+2,
+"216e2360d69a"
+],
+"member/CMW107AAAA/plate-bottom-passage-1": [
 0.0,
 0.0381,
 2,
@@ -78713,7 +80117,13 @@
 2,
 "e1eb918c8160"
 ],
-"member/CMW137AAAA/plate-bottom": [
+"member/CMW137AAAA/plate-bottom-passage-0": [
+0.0,
+0.0381,
+2,
+"216e2360d69a"
+],
+"member/CMW137AAAA/plate-bottom-passage-1": [
 0.0,
 0.0381,
 2,
@@ -78881,19 +80291,19 @@
 2,
 "1c64b3fe4977"
 ],
-"member/CSF601AAAA/soffit-plate-bottom-e-003": [
+"member/CSF601AAAA/soffit-plate-bottom-e-002": [
+5.451475,
+5.489575,
+2,
+"1c64b3fe4977"
+],
+"member/CSF601AAAA/soffit-plate-bottom-e-004": [
 5.451475,
 5.489575,
 2,
 "1c64b3fe4977"
 ],
 "member/CSF601AAAA/soffit-plate-bottom-e-005": [
-5.451475,
-5.489575,
-2,
-"1c64b3fe4977"
-],
-"member/CSF601AAAA/soffit-plate-bottom-e-006": [
 5.451475,
 5.489575,
 2,
@@ -92573,7 +93983,13 @@
 2,
 "b6b252624237"
 ],
-"member/Z4NRTGEDY5/plate-bottom": [
+"member/Z4NRTGEDY5/plate-bottom-passage-0": [
+-2.5955625,
+-2.5574625,
+2,
+"43e0540ac7f0"
+],
+"member/Z4NRTGEDY5/plate-bottom-passage-1": [
 -2.5955625,
 -2.5574625,
 2,
@@ -95936,23 +97352,23 @@
 "solids/D-G-SERVICE-FLASH-SILL/z0_m": -0.01905,
 "solids/D-G-SERVICE-FLASH-SILL/z1_m": 0.1524,
 "solids/D-M-BALC-FLASH-HEAD/z0_m": 2.08026,
-"solids/D-M-BALC-FLASH-HEAD/z1_m": 2.1736844,
+"solids/D-M-BALC-FLASH-HEAD/z1_m": 2.1741045,
 "solids/D-M-BALC-FLASH-PERIMETER/z0_m": 0.0,
-"solids/D-M-BALC-FLASH-PERIMETER/z1_m": 2.2244844,
-"solids/D-M-BALC-FLASH-SILL-SUPPORT/z0_m": 0.009525,
-"solids/D-M-BALC-FLASH-SILL-SUPPORT/z1_m": 0.047625,
-"solids/D-M-BALC-FLASH-SILL/z0_m": -0.009525,
-"solids/D-M-BALC-FLASH-SILL/z1_m": 0.161925,
+"solids/D-M-BALC-FLASH-PERIMETER/z1_m": 2.2249045,
+"solids/D-M-BALC-FLASH-SILL-SUPPORT/z0_m": 0.0,
+"solids/D-M-BALC-FLASH-SILL-SUPPORT/z1_m": 0.0381,
+"solids/D-M-BALC-FLASH-SILL/z0_m": -0.01905,
+"solids/D-M-BALC-FLASH-SILL/z1_m": 0.1524,
 "solids/D-M-BALC-HEADSCREEN/z0_m": 2.1209,
 "solids/D-M-BALC-HEADSCREEN/z1_m": 2.159,
 "solids/D-M-ENTRY-FLASH-HEAD/z0_m": 2.08026,
-"solids/D-M-ENTRY-FLASH-HEAD/z1_m": 2.1736844,
+"solids/D-M-ENTRY-FLASH-HEAD/z1_m": 2.1741045,
 "solids/D-M-ENTRY-FLASH-PERIMETER/z0_m": 0.0,
-"solids/D-M-ENTRY-FLASH-PERIMETER/z1_m": 2.2244844,
-"solids/D-M-ENTRY-FLASH-SILL-SUPPORT/z0_m": 0.009525,
-"solids/D-M-ENTRY-FLASH-SILL-SUPPORT/z1_m": 0.047625,
-"solids/D-M-ENTRY-FLASH-SILL/z0_m": -0.009525,
-"solids/D-M-ENTRY-FLASH-SILL/z1_m": 0.161925,
+"solids/D-M-ENTRY-FLASH-PERIMETER/z1_m": 2.2249045,
+"solids/D-M-ENTRY-FLASH-SILL-SUPPORT/z0_m": 0.0,
+"solids/D-M-ENTRY-FLASH-SILL-SUPPORT/z1_m": 0.0381,
+"solids/D-M-ENTRY-FLASH-SILL/z0_m": -0.01905,
+"solids/D-M-ENTRY-FLASH-SILL/z1_m": 0.1524,
 "solids/D-M-ENTRY-HEADSCREEN/z0_m": 2.1209,
 "solids/D-M-ENTRY-HEADSCREEN/z1_m": 2.159,
 "solids/D-S-DECK-E-FLASH-HEAD/z0_m": 5.12826,
@@ -97963,12 +99379,12 @@
 "solids/RL-A-HANDRAIL-ENDPLATE1/z1_m": 4.226,
 "solids/RL-A-HANDRAIL-ENDPLATE2/z0_m": 7.0135,
 "solids/RL-A-HANDRAIL-ENDPLATE2/z1_m": 7.0835,
-"solids/RL-A-HANDRAIL-RAIL1/z0_m": 4.1719503,
-"solids/RL-A-HANDRAIL-RAIL1/z1_m": 7.0643032,
-"solids/RL-A-HANDRAIL-RETURN1/z0_m": 4.17195,
-"solids/RL-A-HANDRAIL-RETURN1/z1_m": 4.21005,
-"solids/RL-A-HANDRAIL-RETURN2/z0_m": 7.02945,
-"solids/RL-A-HANDRAIL-RETURN2/z1_m": 7.06755,
+"solids/RL-A-HANDRAIL-RAIL1/z0_m": 4.1668704,
+"solids/RL-A-HANDRAIL-RAIL1/z1_m": 7.0685174,
+"solids/RL-A-HANDRAIL-RETURN1/z0_m": 4.16687,
+"solids/RL-A-HANDRAIL-RETURN1/z1_m": 4.21513,
+"solids/RL-A-HANDRAIL-RETURN2/z0_m": 7.02437,
+"solids/RL-A-HANDRAIL-RETURN2/z1_m": 7.07263,
 "solids/RL-A-STAIR-BAL1/z0_m": 6.11505,
 "solids/RL-A-STAIR-BAL1/z1_m": 7.14375,
 "solids/RL-A-STAIR-BAL10/z0_m": 6.11505,
@@ -98061,12 +99477,12 @@
 "solids/RL-G-SERVICE-ENDPLATE1/z1_m": 0.25852,
 "solids/RL-G-SERVICE-ENDPLATE2/z0_m": 0.8676236,
 "solids/RL-G-SERVICE-ENDPLATE2/z1_m": 0.9376236,
-"solids/RL-G-SERVICE-RAIL1/z0_m": 0.2073162,
-"solids/RL-G-SERVICE-RAIL1/z1_m": 0.9188275,
-"solids/RL-G-SERVICE-RETURN1/z0_m": 0.20447,
-"solids/RL-G-SERVICE-RETURN1/z1_m": 0.24257,
-"solids/RL-G-SERVICE-RETURN2/z0_m": 0.8835736,
-"solids/RL-G-SERVICE-RETURN2/z1_m": 0.9216736,
+"solids/RL-G-SERVICE-RAIL1/z0_m": 0.2029952,
+"solids/RL-G-SERVICE-RAIL1/z1_m": 0.9231485,
+"solids/RL-G-SERVICE-RETURN1/z0_m": 0.19939,
+"solids/RL-G-SERVICE-RETURN1/z1_m": 0.24765,
+"solids/RL-G-SERVICE-RETURN2/z0_m": 0.8784936,
+"solids/RL-G-SERVICE-RETURN2/z1_m": 0.9267536,
 "solids/RL-M-HANDRAIL-E-BRACKET2/z0_m": -1.1748776,
 "solids/RL-M-HANDRAIL-E-BRACKET2/z1_m": -1.0986776,
 "solids/RL-M-HANDRAIL-E-ENDPLATE1/z0_m": -1.69463,
@@ -98097,24 +99513,24 @@
 "solids/RL-S-HANDRAIL-E-ENDPLATE1/z1_m": 1.1848967,
 "solids/RL-S-HANDRAIL-E-ENDPLATE2/z0_m": 2.4349747,
 "solids/RL-S-HANDRAIL-E-ENDPLATE2/z1_m": 2.5049747,
-"solids/RL-S-HANDRAIL-E-RAIL1/z0_m": 1.1346802,
-"solids/RL-S-HANDRAIL-E-RAIL1/z1_m": 2.4858219,
-"solids/RL-S-HANDRAIL-E-RETURN1/z0_m": 1.1308467,
-"solids/RL-S-HANDRAIL-E-RETURN1/z1_m": 1.1689467,
-"solids/RL-S-HANDRAIL-E-RETURN2/z0_m": 2.4509247,
-"solids/RL-S-HANDRAIL-E-RETURN2/z1_m": 2.4890247,
+"solids/RL-S-HANDRAIL-E-RAIL1/z0_m": 1.1306225,
+"solids/RL-S-HANDRAIL-E-RAIL1/z1_m": 2.4900478,
+"solids/RL-S-HANDRAIL-E-RETURN1/z0_m": 1.1257667,
+"solids/RL-S-HANDRAIL-E-RETURN1/z1_m": 1.1740267,
+"solids/RL-S-HANDRAIL-E-RETURN2/z0_m": 2.4458447,
+"solids/RL-S-HANDRAIL-E-RETURN2/z1_m": 2.4941047,
 "solids/RL-S-HANDRAIL-W-BRACKET2/z0_m": 3.1853433,
 "solids/RL-S-HANDRAIL-W-BRACKET2/z1_m": 3.2615433,
 "solids/RL-S-HANDRAIL-W-ENDPLATE1/z0_m": 2.645422,
 "solids/RL-S-HANDRAIL-W-ENDPLATE1/z1_m": 2.715422,
 "solids/RL-S-HANDRAIL-W-ENDPLATE2/z0_m": 3.8076646,
 "solids/RL-S-HANDRAIL-W-ENDPLATE2/z1_m": 3.8776646,
-"solids/RL-S-HANDRAIL-W-RAIL1/z0_m": 2.6652055,
-"solids/RL-S-HANDRAIL-W-RAIL1/z1_m": 3.8578811,
-"solids/RL-S-HANDRAIL-W-RETURN1/z0_m": 2.661372,
-"solids/RL-S-HANDRAIL-W-RETURN1/z1_m": 2.699472,
-"solids/RL-S-HANDRAIL-W-RETURN2/z0_m": 3.8236146,
-"solids/RL-S-HANDRAIL-W-RETURN2/z1_m": 3.8617146,
+"solids/RL-S-HANDRAIL-W-RAIL1/z0_m": 2.6611477,
+"solids/RL-S-HANDRAIL-W-RAIL1/z1_m": 3.8619388,
+"solids/RL-S-HANDRAIL-W-RETURN1/z0_m": 2.656292,
+"solids/RL-S-HANDRAIL-W-RETURN1/z1_m": 2.704552,
+"solids/RL-S-HANDRAIL-W-RETURN2/z0_m": 3.8185346,
+"solids/RL-S-HANDRAIL-W-RETURN2/z1_m": 3.8667946,
 "solids/RL-S-STAIR-BAL1/z0_m": 3.06705,
 "solids/RL-S-STAIR-BAL1/z1_m": 4.09575,
 "solids/RL-S-STAIR-BAL10/z0_m": 3.06705,
@@ -98797,6 +100213,10 @@
 "solids/TB-SG-W1-STEM/z1_m": 0.0,
 "solids/TB-SG-W1/z0_m": -2.9829125,
 "solids/TB-SG-W1/z1_m": -2.7797125,
+"solids/TR-BW-BRICK-BASE-1/z0_m": 0.0341154,
+"solids/TR-BW-BRICK-BASE-1/z1_m": 0.136525,
+"solids/TR-BW-BRICK-HEAD-1/z0_m": 1.1961654,
+"solids/TR-BW-BRICK-HEAD-1/z1_m": 1.216025,
 "solids/TR-BW-SCREEN-CAP/z0_m": 1.23825,
 "solids/TR-BW-SCREEN-CAP/z1_m": 1.2614199,
 "solids/TR-G-LEADER-E-EXT-RISER/z0_m": -1.2192,

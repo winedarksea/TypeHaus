@@ -17,7 +17,7 @@ MOVED = {
     "ED-A-STUDIO-RC1": ("923GJB648D", "W-A-S1", "left", 72, 6),
     "ED-A-STUDIO-RC7": ("NZQNA1VMKW", "W-A-STU-N", "right", 72, 6),
     "ED-A-STUDY-RC1": ("NEC056AAAA", "W-A-S3", "left", 144, 30),
-    "ED-A-POCKET-RC1": ("E6RNBJBD76", "W-A-BA-E", "right", 36, 9.729166667),
+    "ED-A-POCKET-RC1": ("E6RNBJBD76", "W-A-BA-E", "right", 36, 9.728333333),  # on the painted face
 }
 
 

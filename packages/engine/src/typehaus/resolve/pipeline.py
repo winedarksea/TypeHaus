@@ -657,7 +657,12 @@ def _layers_equivalent(plan: PlanModel, asm_tag_a: str, asm_tag_b: str) -> bool:
     if a is None or b is None:
         return False
 
+    # Framing is construction, not thickness: a 2x4 run meeting a staggered 2x6 wet wall
+    # jogs both faces, which material and role alone (and paint on both) cannot see.
     def signature(asm) -> tuple:
-        return tuple((layer.material_ref, layer.function) for layer in asm.layers)
+        return tuple((layer.material_ref, layer.function,
+                      getattr(getattr(layer, "framing", None), "member", None),
+                      getattr(getattr(layer, "framing", None), "layout", None))
+                     for layer in asm.layers)
 
     return signature(a) == signature(b)

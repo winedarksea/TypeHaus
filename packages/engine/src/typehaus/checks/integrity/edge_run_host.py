@@ -71,8 +71,12 @@ def _top_range(solid) -> tuple[float, float]:
     profile: a swept solid's ``z1_m`` is its HIGH top, and the low top is that less however
     far the path climbs. A prismatic solid (no sweep, or a level one) collapses to a single
     value, so this stays a tight test where the host really is flat — it only opens up by
-    exactly the amount the host is out of level.
+    exactly the amount the host is out of level. A wall host states its own range: a
+    veneer's base and head flashings both trim its face, not only its top.
     """
+    face = getattr(solid, "face_range", None)
+    if face is not None:
+        return face
     sweep = getattr(solid, "sweep", None)
     path = getattr(sweep, "path", None) if sweep is not None else None
     if not path:
@@ -84,7 +88,11 @@ def _top_range(solid) -> tuple[float, float]:
 
 
 class _WallHost:
-    """A resolved wall seen as a solid: the hull of its layer polygons, level at its top."""
+    """A resolved wall seen as a solid: the hull of its layer polygons, base to top.
+
+    A run on a wall may sit anywhere up its face (TR-BW-BRICK-BASE flashes the veneer's
+    foot), so elevation is graded against the whole height; plan still catches a wrong host.
+    """
 
     def __init__(self, wall) -> None:
         points = [p for layer in wall.layers for p in layer.polygon]
@@ -92,6 +100,7 @@ class _WallHost:
         self.outline = (list(hull.exterior.coords)[:-1]
                         if hull is not None and hull.geom_type == "Polygon" else None)
         self.z1_m = wall.z1_m
+        self.face_range = (wall.z0_m, wall.z1_m)
 
 
 class _BraceSillHost:
@@ -180,13 +189,15 @@ def edge_run_host(ctx: CheckContext) -> list[Finding]:
                         "re-point it at the element the path actually follows"))
                 continue
             if not (low - _Z_TOLERANCE_M <= top <= high + _Z_TOLERANCE_M):
+                on_face = getattr(solid, "face_range", None) is not None
                 where = (f"{low / M_PER_IN:.2f}\"" if low == high
-                         else f"{low / M_PER_IN:.2f}\"-{high / M_PER_IN:.2f}\" "
-                              f"(it is out of level)")
+                         else f"{low / M_PER_IN:.2f}\"-{high / M_PER_IN:.2f}\""
+                              + ("" if on_face else " (it is out of level)"))
                 findings.append(failed(
                     _CHECK_ID,
-                    f"{run.tag} tops out at {top / M_PER_IN:.2f}\" but {host_tag}'s top "
-                    f"is {where} — the run is not on the element it trims",
+                    f"{run.tag} tops out at {top / M_PER_IN:.2f}\" but {host_tag}'s "
+                    f"{'face spans' if on_face else 'top is'} {where} — the run is not on "
+                    f"the element it trims",
                     tags=(run.tag, host_tag),
                     fix="check top_elevation against the host's own top; an _EdgeRun has "
                         "one elevation and cannot be raked, so on a sloping host it must "

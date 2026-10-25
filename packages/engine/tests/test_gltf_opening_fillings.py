@@ -132,6 +132,37 @@ def _solids_of_node(gltf: dict, blob: bytes, node: dict) -> list[_Solid]:
     return solids
 
 
+def _product_solids_of_node(gltf: dict, blob: bytes, model, opening) -> list[_Solid]:
+    """The node's door-PRODUCT boxes: frame, mullion, leaves, hardware.
+
+    An exterior door's node also ships its installation (casings, returns, threshold, the
+    swept sill pan), and some of it shares the frame's colour, so the product is picked out
+    by matching each shipped box to a non-installation part from ``opening_parts``.
+    """
+    door_type = next(t for t in model.plan.library.door_types if t.tag == opening.type_ref)
+    wall = model.wall(opening.host_wall)
+    centers = [(sum(x for x, _ in solid.ring) / len(solid.ring), (solid.z0_m + solid.z1_m) / 2,
+                -sum(y for _, y in solid.ring) / len(solid.ring))
+               for part in opening_parts(wall, opening, door_type.operation,
+                                         is_glazed=door_type.glazed,
+                                         leaf_set=door_type.leaf_set)
+               if not part.key.startswith("installation:")
+               for solid in part.solids if hasattr(solid, "ring")]
+    solids: list[_Solid] = []
+    for primitive in gltf["meshes"][_opening_node(gltf, opening.uid)["mesh"]]["primitives"]:
+        positions = _read_vec3_accessor(gltf, blob, primitive["attributes"]["POSITION"])
+        if len(positions) % _VERTICES_PER_BOX:
+            continue  # a sweep (the formed sill pan), never a product box
+        for chunk in _box_vertex_chunks(positions):
+            corners = sorted({_vertex_key(vertex) for vertex in chunk})
+            center = tuple(sum(c[axis] for c in corners) / len(corners) for axis in range(3))
+            if len(corners) == 8 and any(math.dist(center, c) < _DIMENSION_TOLERANCE_M
+                                         for c in centers):
+                plan_dimensions, height, center = _measure_box(corners)
+                solids.append(_Solid(plan_dimensions, height, center, primitive["material"]))
+    return solids
+
+
 def _split_hardware(gltf: dict, solids: list[_Solid]) -> tuple[list[_Solid], list[_Solid]]:
     """``(product, hardware)``: lever sets are appended to every swing leaf and counted apart."""
     rgba = list(_PALETTE["door_hardware"])
@@ -455,7 +486,7 @@ def test_the_balcony_door_ships_the_french_door_solid_shape(catlin_model):
     balcony = next(op for op in catlin_model.openings if op.tag == "D-M-BALC")
     wall = _host_wall(catlin_model, balcony)
     solids, _hardware = _split_hardware(
-        gltf, _solids_of_node(gltf, blob, _opening_node(gltf, balcony.uid)))
+        gltf, _product_solids_of_node(gltf, blob, catlin_model, balcony))
 
     available_height = min(balcony.height_m, wall.z1_m - wall.z0_m - balcony.sill_m)
     frame_width = _frame_width_m(balcony, available_height)

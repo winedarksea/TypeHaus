@@ -498,15 +498,18 @@ def test_dragging_a_floor_drained_wc_carries_its_sleeve_and_drain_run() -> None:
 
 def test_an_authored_drain_position_pins_the_drain_while_the_fixture_moves() -> None:
     """``drain_position`` is the author saying where the waste leaves, independently of the
-    bowl — FX-B-BATH-LAV authors one on W-B-BA-N's centreline and its waste leaves there,
-    not under the basin. Moving the basin says nothing about that outlet, so the macro emits
-    its one op and keeps its hands off SP-B-BATH-LAV."""
+    fixture — FX-B-SAUNA-SH authors one at its grate, which PR-B-SAUNA-DRAIN's first two
+    vertices already sit on. Moving the pan says nothing about that outlet, so the macro emits
+    its one op and drags no pipe or sleeve with it. (FX-B-BATH-LAV carried this test until
+    the 2026-10-24 lavatory selection drained it from its product's own port instead.)"""
     house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     plan = load_plan(house).plan
     assert plan is not None
-    result = move_placeable(plan, "basement", tag="FX-B-BATH-LAV", position=(5.1, 6.2))
-    assert [(op.type, op.tag) for op in result.ops] == [("Fixture", "FX-B-BATH-LAV")]
-    assert len(result.warnings) == 1 and "W-B-STR2" in result.warnings[0]
+    shower = plan.by_tag("FX-B-SAUNA-SH")
+    assert shower.drain_position is not None
+    x, y = shower.position.xy_m
+    result = move_placeable(plan, "basement", tag="FX-B-SAUNA-SH", position=(x + 0.1, y - 0.05))
+    assert [(op.type, op.tag) for op in result.ops] == [("Fixture", "FX-B-SAUNA-SH")]
 
 
 def test_coupled_drain_move_writes_source_that_reloads(tmp_path: Path) -> None:

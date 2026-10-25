@@ -37,9 +37,11 @@ _WORKED = {
     # The garage landing went 2026-10-13 (addendum 2026-10-13): 3.91 ft2 off each; GW's soft
     # end is a hair inside 0.75 Pc. The 0.06 inch raised bearing (2026-10-15 addendum)
     # makes L=60.56 inch and the soft-end magnifier 48.8372, still arithmetic only.
-    "PT-BW-W": (1.0787, 1.3242, Status.INCOMPLETE),
+    # W-BW-SCREEN's thin brick (addendum 2026-10-25): +101.0 lb D on W/GW; GW's soft end
+    # is 19.5 lb inside 0.75 Pc, so δ 352.88.
+    "PT-BW-W": (1.0803, 1.3316, Status.INCOMPLETE),
     "PT-BW-E": (1.0220, 1.0658, Status.OK),
-    "PT-BW-GW": (1.33234, 48.8372, Status.OVER),
+    "PT-BW-GW": (1.3404, 352.88, Status.OVER),
     "PT-BW-GE": (1.0529, 1.2398, Status.INCOMPLETE),
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->
     # 4,855 lb (front), 4,877 (rear); wall-top k_θ unchanged. Front R 6.616 / 6.242.
@@ -126,6 +128,10 @@ def test_both_band_ends_reproduce_the_note(tag, ectx) -> None:
     assert at_stiff.delta == pytest.approx(stiff, abs=0.002)
     if soft is None:
         assert at_soft.delta is None
+    elif soft > 10.0:
+        # Near-singular: 0.1 lb of P_u moves δ ~0.5%. Pin 1/δ = 1 - P_u/(0.75 Pc), which is
+        # what the note works, to ~0.7 lb of P_u.
+        assert 1.0 / at_soft.delta == pytest.approx(1.0 / soft, abs=1e-4)
     else:
         assert at_soft.delta == pytest.approx(soft, abs=0.002, rel=1e-3)
 

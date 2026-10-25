@@ -22,6 +22,7 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     rooms = {room.tag: room for room in model.rooms}
     lines = {line.tag: line for line in model.layout_lines}
     deck_tops = _knee_wall_deck_tops(plan, model)
+    coatings = frozenset(m.tag for m in plan.library.materials if getattr(m, "coating", False))
     access_cutouts = tub_access_cutouts(model)
     for storey in plan.storeys:
         for el in plan.storey_elements(storey.tag):
@@ -75,6 +76,8 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             offset = el.offset.meters if el.offset is not None else 0.0
             thickness_m = (el.thickness.meters if el.thickness is not None
                            else _band_thickness_m(plan, el.material_ref))
+            # A band that replaces the finish replaces its paint film too.
+            skip = coatings if el.replaces_wall_finish else frozenset()
             # Which side of its walls the band is on. A room-scoped band faces into its room,
             # judged per stretch beside the band (`_room_side_point`): one interior point for
             # the whole room puts an L's inner-corner wall on its far face. A line-scoped band
@@ -137,12 +140,12 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                               else _room_side_point(room, wall, lo, hi))
                     outline = ([] if toward is None else
                                _band_outline(wall, lo, hi, toward, thickness_m,
-                                             el.replaces_wall_finish))
+                                             el.replaces_wall_finish, skip))
                     panel_face = (None if toward is None else
                                   "left" if _room_side_sign(wall, toward) > 0 else "right")
                     pieces = () if not outline else tuple(
                         (_band_outline(wall, a, b, toward, thickness_m,
-                                       el.replaces_wall_finish),
+                                       el.replaces_wall_finish, skip),
                          wall.base_ref_z_m + z0, wall.base_ref_z_m + z1)
                         for a, b, z0, z1 in _net_cells(
                             lo, hi, band_z0, band_z1, openings,
@@ -302,10 +305,12 @@ def _room_side_sign(wall, toward: tuple[float, float]) -> float:
     return 1.0 if (n[0] * to_room[0] + n[1] * to_room[1]) >= 0.0 else -1.0
 
 
-def _room_side_offset(wall, toward: tuple[float, float]) -> float:
+def _room_side_offset(wall, toward: tuple[float, float],
+                      skip: frozenset[str] = frozenset()) -> float:
     """How far the wall's face stands off its axis, on the side ``toward`` points to.
 
     Measured from the wall's own resolved layer polygons: they are where its material is.
+    Layers whose material is in ``skip`` (paint films under a replacing band) are ignored.
     """
     from typehaus.resolve.geometry import normal, sub, unit
 
@@ -315,6 +320,8 @@ def _room_side_offset(wall, toward: tuple[float, float]) -> float:
     x0, y0 = wall.axis[0]
     best = 0.0
     for layer in wall.layers:
+        if layer.material_ref in skip:
+            continue
         for (px, py) in layer.polygon:
             offset = ((px - x0) * n[0] + (py - y0) * n[1]) * sign
             best = max(best, offset)
@@ -322,7 +329,8 @@ def _room_side_offset(wall, toward: tuple[float, float]) -> float:
 
 
 def _band_outline(wall, lo: float, hi: float, toward: tuple[float, float],
-                  thickness_m: float, replaces_finish: bool):
+                  thickness_m: float, replaces_finish: bool,
+                  skip: frozenset[str] = frozenset()):
     """The band's plan rectangle: the ``lo``..``hi`` stretch of the wall's room-side face.
 
     A band that *replaces* the wall finish occupies the depth that finish had, so it lies
@@ -334,7 +342,7 @@ def _band_outline(wall, lo: float, hi: float, toward: tuple[float, float],
 
     direction = unit(sub(wall.axis[1], wall.axis[0]))
     sign = _room_side_sign(wall, toward)
-    face = _room_side_offset(wall, toward)
+    face = _room_side_offset(wall, toward, skip)
     # A replacing band shifts _FLUSH_REVEAL_M proud: coplanar with the finish it meets, the
     # viewer z-fights the two faces.
     inner, outer = ((face - thickness_m + _FLUSH_REVEAL_M, face + _FLUSH_REVEAL_M)

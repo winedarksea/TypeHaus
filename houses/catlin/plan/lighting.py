@@ -1086,7 +1086,7 @@ MAIN_LIGHTING = [
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 4)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N2", face="right", distance_from_start=inch(80),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         normal_gap=inch(0), rotation_offset=deg(-180))), rotation=deg(180)),
     # Its switch, inside the dwelling (R303.8.1 — the garage's ED-G-EXT-SW is in the wrong
     # building for this one). D-M-ENTRY fills W-M-N3 to within 6" of both ends, so there is
     # no north-wall station beside the door; it is the east gang of the mudroom's 3-gang plate

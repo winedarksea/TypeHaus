@@ -185,7 +185,7 @@ def test_halving_the_delivered_output_widens_the_shortfall(catlin_plan) -> None:
     plan = _retype_zone(catlin_plan, "FH-S-BATH1", delivered_btuh_per_ft2=11.4)
     rows = _by_room(plan, plan=True)
     assert rows["RM-S-BATH1"].result is Result.UNKNOWN
-    assert "306 Btu/h" in rows["RM-S-BATH1"].message
+    assert "305 Btu/h" in rows["RM-S-BATH1"].message  # area inside the painted faces
 
 
 def test_a_zone_that_delivers_nothing_at_all_is_the_fail_branch(catlin_plan) -> None:

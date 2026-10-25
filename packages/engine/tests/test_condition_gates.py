@@ -285,10 +285,9 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
     single-gwb wall meets a plain `INT_2X4_PARTITION`, because that gate's signature is
     `(material_ref, function)` per layer only — it does not see `FramingSpec.layout`, so a
     staggered gwb/structure/gwb sequence and a continuous gwb/structure/gwb sequence read as
-    the same "thickness-only" construction. That is exactly what happens at N-M-E3 (W-M-HS3
-    `INT_2X4_PARTITION` meeting W-M-LS): it is absent from this list, and
-    TR-CATLIN-ASSEMBLY-JOG does not detail that jog. A builder still needs telling where the
-    staggered studs start; the gate does not tell them there. Known gap, not fixed here.
+    the same "thickness-only" construction. **Fixed 2026-10-25**: the signature carries each
+    layer's framing member and layout, after painting the plain partitions made four
+    assemblies read identical and dropped three real keys. A stagger starting is now a key.
 
     W-B-STR/W-B-STR3: the two segments differ by the ESS closet's 5/8" Type X leaf, they
     meet collinear at N-B-ESS-SE, and one rated leaf against none is not a thickness-only
@@ -361,9 +360,9 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # (N-B-C1's key is INT_2X6_BRG|FOUNDATION_WALL_12_INT above since the
         # rotation. `integrity.junction_fallback` reports the same node UNKNOWN for the same
         # wood-against-concrete reason, and that key is the drawing which answers it.)
-        # N-B-STR, the y=18' line's surviving change: W-B-CW2's playroom partition against
-        # W-B-CW3's painted wet-wall finish, on the same 2x4 stud depth.
-        "assembly_change:INT_2X4_PARTITION_HALF|INT_2X4_PLUMBING",
+        # (N-B-STR is not a key since 2026-10-24: W-B-CW2's partition took the same latex as
+        # W-B-CW3's wet wall, and on the same 2x4 studs with flush faces nothing is left to
+        # tell a builder. The key only ever fired on the paint difference.)
         # N-S-B1 on the second storey: the sleeping-side partitions carry INT_2X4_RC
         # (STC 34 -> 48) and the plain partitions they meet do not. W-S-BW4 joined the RC
         # family on 2026-09-04 — SF-S-HP1 spans it and W-S-BW3 both, and a 1/2" jog in the
@@ -397,6 +396,12 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # the corner here — the hot side's vapour control is continuous on all four faces or
         # it is not vapour control — which is exactly what this key exists to put on a sheet.
         "assembly_change:INT_2X6_BRG_HALF|SAUNA_LINER_INT_2X6_BRG",
+        # Framing joined the equivalence signature on 2026-10-25, so a stagger starting is
+        # a key. W-S-BD-N1B is a BEARING plumbing wall (continuous studs, wet_wall_bearing)
+        # and W-S-BD-N the staggered wet wall it meets.
+        "assembly_change:INT_2X6_BRG_PLUMBING_HALF|INT_2X6_STAGGERED_PLUMBING_HALF",
+        # W-B-HALL-W's continuous 2x6 plumbing section hands off to W-B-BA-E's stagger.
+        "assembly_change:INT_2X6_PLUMBING_HALF|INT_2X6_STAGGERED_PLUMBING_HALF",
         # N-B-BA-NE. The bathroom's staggered wet wall meets the stair well's partition on
         # one continuous plane — 6 3/4" of plumbing wall butting 4 1/2" of stud-and-board,
         # both faces jogging 1 5/16" as they cross. A real change of construction and the

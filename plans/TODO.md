@@ -328,11 +328,13 @@ the future.
 - Door thresholds could probably use some better modeling, right now all we get is standard sill plates of the regular wall.
 - Improve the wainscot of the mudrooms
 - Oksana wants an elm slab sofa table
-- Plan microwave placement. Leading options are peninsula drawer, replacing FURN-M-KIT-MIXER-GARGE with a countertop microwave, replacing FURN-M-KIT-MIXER-GARGE with a built in drop down door microwave (such as https://www.frigidaire.com/en/p/kitchen/microwaves/built-in-microwaves/GMBD3068AF and we need to make sure it gets adaquate cooling), or putting it in the pantry near the door
+- Plan microwave placement. Leading options are peninsula drawer, replacing FURN-M-KIT-MIXER-GARGE with a countertop microwave, replacing FURN-M-KIT-MIXER-GARGE with a built in drop down door microwave (such as https://www.frigidaire.com/en/p/kitchen/microwaves/built-in-microwaves/GMBD3068AF and we need to make sure it gets adaquate cooling), or putting it in the pantry near the door.
 - Model a coffee machine and kettle
 - Check the basement stair carpet, and swap the carpet from the theater with an partial coverage area rug in the theater (technically not installed with tack strips or glue)
 - Update the LVP to https://coretecfloors.com/en-us/products/coretec-pro-classics/quincy-oak-vv017-01018
-- Looks like D-G-SERVICE got some sort of complex "doesn't open all the way" hardware, when really it should just open 90 degrees, very nearly, with perhaps making the screen wall a little thinner?
+- Looks like D-G-SERVICE got some sort of complex "doesn't open all the way" hardware, when really it should just open 90 degrees, very nearly, with perhaps making the screen wall a little thinner? Likely swapping D-G-SERVICE to a 32" door and moving it's hinge starting point about 4" east would clear this up.
+- Move D-M-MECH another stud bay east, and move D-M-MUDC east as well, and then move the switches that displaces either to W-M-MECH-E or W-M-MUDC-E
+- The main door D-M-ENTRY should be 36" fiberglass. Possibly painted black on site (may be cheaper than factory painted). We are going to specify a DS2000 Door Viewer "Door Scope" (2 inch wide viewer), caulked, in it since there won't be any window lites. Also we should specify ccspf spray foam (not the usual fiberglass batts) in the studs immediately around the exterior doors since they don't get as much exterior continuous insulation.
 
 # Project Management
 

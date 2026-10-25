@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 5ad01a74ec93a0a8  
-**Lines:** 177
+**Model hash:** bab802ac9d646858  
+**Lines:** 182
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -17,6 +17,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade — blocking (0.75x3.5:poplar-trim-paint) | 18 | LF ordered | 2 pcs, 16.8 LF cut | building |
+| 1.125x1.5 KDAT southern yellow pine (treated exterior framing) — girt strapping (1.125x1.5:kdat) | 48 | LF ordered | 6 pcs, 24.5 LF cut | building |
 | 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | 20 | LF ordered | 2 pcs, 19.1 LF cut | building |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | 140 | LF ordered | 6 pcs, 135.0 LF cut | building |
 | 1.25x7.25 rim — rim board (1.25x7.25 rim) | 8 | LF ordered | 2 pcs, 5.7 LF cut | building |
@@ -46,17 +47,17 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 SPF framing lumber — blocking (2x12:spf) | 16 | LF ordered | 4 pcs, 10.8 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 260 | LF ordered | 77 pcs, 209.2 LF cut | building |
 | 2x3 — corner stud, plate, stud (2x3) | 48 | LF ordered | 12 pcs, 28.0 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,726 | LF ordered | 645 pcs, 3998.9 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,718 | LF ordered | 646 pcs, 3996.4 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | 2,894 | LF ordered | 484 pcs, 2472.9 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 56.0 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,028 | LF ordered | 1157 pcs, 6078.2 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,002 | LF ordered | 1160 pcs, 6065.2 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | 90 | LF ordered | 9 pcs, 77.6 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.8 LF cut | building |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | 1,654 | LF ordered | 200 pcs, 1406.3 LF cut | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:oak-8q) | 32 | LF ordered | 21 pcs, 23.9 LF cut | building |
-| 2x6 SPF framing lumber — blocking (2x6:spf) | 58 | LF ordered | 20 pcs, 48.9 LF cut | building |
+| 2x6 SPF framing lumber — blocking (2x6:spf) | 74 | LF ordered | 25 pcs, 65.2 LF cut | building |
 | 2x8 — header, joist, landing framing (2x8) | 240 | LF ordered | 63 pcs, 194.5 LF cut | building |
-| 2x8 SPF framing lumber — blocking (2x8:spf) | 404 | LF ordered | 93 pcs, 335.3 LF cut | building |
+| 2x8 SPF framing lumber — blocking (2x8:spf) | 412 | LF ordered | 96 pcs, 344.7 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
 | 3-2x12 — joist (3-2x12:kdat) | 40 | LF ordered | 2 pcs, 33.5 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1135 pcs, 331.0 LF cut | building |
@@ -72,6 +73,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.8 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 661.6 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
+| 5/8" APA Exterior plywood, 4x9 stock, 5/8" exterior wall (entry-screen-exterior-plywood:exterior wall) | 1 | sheets 4x9 | 1 sheets 4x9 over 26.8 SF net | building |
+| 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" exterior wall (permabase-exterior:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.8 SF net | building |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 10.5 SF net | building |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 99 | sheets 4x8 | 99 sheets 4x8 over 3166.9 SF net | building |
@@ -222,7 +225,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | 688.4 | SF net |  | building |
+| 5/8" APA Exterior plywood, 4x9 stock sheathing, 5/8" — wall (entry-screen-exterior-plywood:0.625) | 26.8 | SF net |  | building |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | 84.4 | SF net |  | building |
+| 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" — wall (permabase-exterior:0.5) | 24.9 | SF net |  | building |
 | Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,207.4 | SF net |  | building |
 | Structural 1 plywood sheathing, 5/8" — roof (struct-1-plywood:0.625) | 1,547.9 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — roof (struct-1-plywood:0.75) | 882.8 | SF net |  | building |
@@ -259,6 +264,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | elements |
 |---|---|
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade — blocking (0.75x3.5:poplar-trim-paint) | — |
+| 1.125x1.5 KDAT southern yellow pine (treated exterior framing) — girt strapping (1.125x1.5:kdat) | — |
 | 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | — |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | — |
 | 1.25x7.25 rim — rim board (1.25x7.25 rim) | — |
@@ -309,6 +315,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | — |
+| 5/8" APA Exterior plywood, 4x9 stock, 5/8" exterior wall (entry-screen-exterior-plywood:exterior wall) | — |
+| 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" exterior wall (permabase-exterior:exterior wall) | — |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | — |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | — |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | — |
@@ -419,7 +427,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Sill seal foam gasket, under the sill plate (sill-seal-foam) | — |
 | Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | — |
 | 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | — |
+| 5/8" APA Exterior plywood, 4x9 stock sheathing, 5/8" — wall (entry-screen-exterior-plywood:0.625) | — |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | — |
+| 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" — wall (permabase-exterior:0.5) | — |
 | Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | — |
 | Structural 1 plywood sheathing, 5/8" — roof (struct-1-plywood:0.625) | — |
 | Structural 1 plywood sheathing, 3/4" — roof (struct-1-plywood:0.75) | — |

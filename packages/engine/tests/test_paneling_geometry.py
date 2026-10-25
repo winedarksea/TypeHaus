@@ -214,7 +214,9 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     closed = by_tag["WP-M-BATH2-SURR"]
     assert {b.wall_tag for b in closed} == {"W-M-BA2E2", "W-M-BDN1"}
     for band in closed:
-        assert band.run_m == pytest.approx(3 * 12 * _IN, abs=1e-6)
+        # The pan's 3'; one side stops 0.01" short, on the paint film of the face it meets.
+        assert band.run_m in (pytest.approx(36 * _IN, abs=1e-6),
+                              pytest.approx(35.99 * _IN, abs=1e-6)), band.wall_tag
         assert band.z0_m == pytest.approx(0.0, abs=1e-6)
         # Floor to ceiling since 2026-10-12: RM-M-BATH2's 106" clear height.
         assert band.z1_m == pytest.approx(106 * _IN, abs=1e-6)
@@ -262,7 +264,7 @@ def test_the_bands_still_bill_what_they_billed(bands):
     """Removing the north walnut reduces both its drawn and ordered area."""
     walnut = sum(b.area_m2 for b in bands if b.tag == "WP-M-STUDY-WAINSCOT") * _M2_TO_FT2
     tile = sum(b.area_m2 for b in bands if b.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
-    assert walnut == pytest.approx(28.3725, abs=0.005)
+    assert walnut == pytest.approx(28.36, abs=0.005)  # runs end on painted faces
     assert tile == pytest.approx(45.0, abs=0.5)
 
 

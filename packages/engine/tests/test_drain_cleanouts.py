@@ -134,7 +134,7 @@ def test_catlin_sewer_cleanout_is_inside_by_the_north_exit(catlin_model_ro):
 
 def test_catlin_cleanouts_have_plan_schedule_and_three_solids(catlin_model_ro):
     model = catlin_model_ro
-    assert len(model.drain_cleanouts) == 11
+    assert len(model.drain_cleanouts) == 12  # CO-M-KITCH-ARM joined with the sink (8be669d5)
     wc2_cleanouts = {item.tag: item for item in model.drain_cleanouts
                      if item.pipe_ref == "PR-B-WC2-DRAIN"}
     assert set(wc2_cleanouts) == {"CO-B-WC2-HEAD"}

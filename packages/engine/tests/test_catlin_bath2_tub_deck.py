@@ -346,7 +346,9 @@ def test_align_filler_is_centred_and_its_mounts_and_outlet_clear_the_rim(catlin_
     assert trim.product_ref == "PROD-MOEN-T393"
     assert products["PROD-MOEN-4794"].model == "4794"
     assert products["PROD-KOHLER-7272"].model == "K-7272-CP"
-    assert "PROD-DELTA-15840LF" in next(
+    # The vanity's faucet is the 2026-10-24 lavatory selection (Delta 15840LF before).
+    assert products["PROD-MOEN-6702"].model == "Genta LX 6702"
+    assert "Genta LX 6702" in next(
         t.source for t in catlin_plan.library.fixture_types if t.tag == "FX-VANITY-48-SEKTION")
 
 

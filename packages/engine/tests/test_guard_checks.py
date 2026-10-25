@@ -48,6 +48,9 @@ def test_catlin_grades_one_guard_wall_and_it_is_not_masonry(catlin_ctx):
     line. The assertion is on the ORDER of magnitude, not the digits — a framed screen wall
     is tens of plf and a grouted-CMU parapet is hundreds, and this check only means anything
     while it can tell them apart.
+
+    2026-10-25: the east thin-brick veneer took it to ~75 plf, under catlin's 80 plf wood
+    allowance. The floor of 50 says the veneer is weighed at all.
     """
     findings = masonry_guard_bearing(catlin_ctx)
     assert len(findings) == 1, [f.message for f in findings]
@@ -56,7 +59,7 @@ def test_catlin_grades_one_guard_wall_and_it_is_not_masonry(catlin_ctx):
     assert "W-BW-SCREEN" in finding.message
     assert "does not have to be hard" in finding.message
     plf = float(finding.message.split("weighs ")[1].split(" plf")[0])
-    assert 20 <= plf <= 50, finding.message
+    assert 50 <= plf <= 100, finding.message
     assert [w.tag for w in catlin_ctx.plan.all_elements()
             if getattr(w, "guard", False)] == ["W-BW-SCREEN"]
 

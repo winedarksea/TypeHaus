@@ -732,62 +732,6 @@
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          0.5,
-          -102.1875
-        ],
-        [
-          6.000000000000001,
-          -102.1875
-        ],
-        [
-          6.000000000000001,
-          -100.6875
-        ],
-        [
-          0.5,
-          -100.6875
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "Z4NRTGEDY5",
-      "tag": "plate-bottom"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          0.5,
-          -102.1875
-        ],
-        [
-          6.000000000000001,
-          -102.1875
-        ],
-        [
-          6.000000000000001,
-          -100.6875
-        ],
-        [
-          0.5,
-          -100.6875
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",

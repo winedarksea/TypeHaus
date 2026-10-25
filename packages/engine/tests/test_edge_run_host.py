@@ -110,6 +110,29 @@ def test_a_level_beam_still_gets_a_tight_test(catlin_plan, catlin_model_ro) -> N
     assert verdicts(on_top + 2.0) == [Result.FAIL]
 
 
+def test_a_wall_host_is_graded_base_to_top(catlin_plan, catlin_model_ro) -> None:
+    """A wall's runs sit anywhere up its face: TR-BW-BRICK-BASE flashes the veneer's foot.
+
+    The range is the wall's own height, not a blanket loosening — a run 2" over the top
+    still FAILs, and so does one 2" under the base.
+    """
+    from typehaus.resolve import resolve
+
+    wall = next(w for w in catlin_model_ro.walls if w.tag == "W-BW-SCREEN")
+
+    def verdicts(top_in: float):
+        model, resolve_findings = resolve(_catlin_with_a_cap_on(
+            catlin_plan, "W-BW-SCREEN", top_in))
+        return [f.result for f in run_from_model(model, resolve_findings, only=_CHECK_ID).findings
+                if f.check_id == _CHECK_ID and "TR-TEST-CAP" in f.element_tags]
+
+    base, top = wall.z0_m / M_PER_IN, wall.z1_m / M_PER_IN
+    assert Result.FAIL not in verdicts(base + 2.0)
+    assert Result.FAIL not in verdicts(top)
+    assert verdicts(top + 2.0) == [Result.FAIL]
+    assert verdicts(base - 2.0) == [Result.FAIL]
+
+
 def test_the_gutter_hangs_below_its_fascia_and_that_is_not_a_defect(findings) -> None:
     """TR-SG-GUTTER names TR-SG-FASCIA and is authored 3" below it, on purpose.
 

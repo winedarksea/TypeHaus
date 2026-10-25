@@ -30,13 +30,13 @@ def test_the_supply_slot_in_trade_order_is_no_longer_decorative() -> None:
     catlin = pathlib.Path(__file__).resolve().parents[3] / "houses" / "catlin"
     result = CliRunner().invoke(
         app, ["route", str(catlin), "--house", "--trades", "supply"])
-    # Exit 1: seven runs are still honestly parentless, which is the campaign reporting a
+    # Exit 1: six runs are still honestly parentless, which is the campaign reporting a
     # fact about the model rather than failing.
     assert result.exit_code in (0, 1), result.output
     printed = " ".join(result.output.split())
-    # 31 targets at HEAD 9b9740ad as well; the pin of 30 was stale before this work.
-    assert "of 31 targets laid" in printed
-    laid = int(printed.split(" of 31 targets laid")[0].split()[-1])
+    # 47 since the 2026-10-24 lavatory selections added their CW/HW stubs (31 before).
+    assert "of 47 targets laid" in printed
+    laid = int(printed.split(" of 47 targets laid")[0].split()[-1])
     assert laid >= 20, printed
     # And the refusals that remain say which cause applies, not a sentence about a chase.
     assert "chase" not in printed

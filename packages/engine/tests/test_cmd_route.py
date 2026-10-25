@@ -145,12 +145,12 @@ def test_a_tree_branch_ties_at_the_stack_and_not_at_its_basement_leg(runner) -> 
 def test_a_tree_terminal_short_of_head_is_reported_with_the_number(runner) -> None:
     """An infeasible branch names its shortfall in inches, and blocks the proposal.
 
-    `PR-B-KITCH-DRAIN` is the kitchen sink's own main and a tree onto it is tight: the
-    branch the router finds is short of head at the code minimum grade. "No feasible
-    route" is not actionable and is not what comes out — an inch count is, and it is what
-    `gravity.HeadBudget.shortfall_in` exists to say.
+    A tree onto `PR-B-WC1-DRAIN` is ~3.3" short of head at the code minimum grade.
+    "No feasible route" is not actionable and is not what comes out — an inch count is, and
+    it is what `gravity.HeadBudget.shortfall_in` exists to say. (`PR-B-KITCH-DRAIN` carried
+    this until the 2026-10 sink rework stood the sink's outlet straight over it.)
     """
-    result = runner.invoke(app, ["route", str(_CATLIN), "--tree", "PR-B-KITCH-DRAIN"])
+    result = runner.invoke(app, ["route", str(_CATLIN), "--tree", "PR-B-WC1-DRAIN"])
     assert result.exit_code == 1, result.output
     assert "of head" in result.output
     assert "PROPOSED" not in result.output

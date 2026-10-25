@@ -23,13 +23,13 @@ From Murphy Door's *Pre-Hung Flush Mount Installation* sheet and its spec table:
 | Item | x | y |
 |---|---|---|
 | Rough opening | 223 1/2..261 1/2 | (W-A-SN, axis y=108) |
-| Cabinet (face frame to back) | 225 1/8..259 7/8 | 105 3/4..114 |
-| Casing, west leg | 222 1/8..225 5/8 | 105..105 3/4 |
-| Casing, east leg | 259 3/8..262 7/8 | 105..105 3/4 |
-| Oak infill | 262 7/8..269 3/8 | 105..105 3/4 |
-| Bookcase filler starts | 269 3/8 | front 105 3/4 |
+| Cabinet (face frame to back) | 225 1/8..259 7/8 | 105.74..113.99 |
+| Casing, west leg | 222 1/8..225 5/8 | 104.99..105.74 |
+| Casing, east leg | 259 3/8..262 7/8 | 104.99..105.74 |
+| Oak infill | 262 7/8..269 3/8 | 104.99..105.74 |
+| Bookcase filler starts | 269 3/8 | front 105.74 |
 
-The face frame lies on the study finish (105 3/4; 105 5/8 before the 1/2" board). `FO-A-STAIR`'s north edge is that same
+The face frame lies on the study finish (105.74, the 0.01" paint film since 2026-10-24; 105 3/4 on bare board, 105 5/8 before the 1/2" board). `FO-A-STAIR`'s north edge is that same
 line, so no part of the cabinet stands over the well. Only the 3/4" casing and infill lap
 past it, as trim on the wall. The back is 3 3/4" past the loft finish (110 1/4), inside the
 swing clearance. The resolved framing needed no change: jack and king each side, a flat

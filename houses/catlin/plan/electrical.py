@@ -2454,15 +2454,16 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-E4", face="left", distance_from_start=inch(37),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # x 25'-6", west of the PAX run (x 27'-2 3/8"..35'-4 3/4", plan/bedroom_wardrobes.py),
-    # 2026-10-02. At 29'-2" it was behind the shelf frame; the frames are work_surface=False,
-    # so `electrical.receptacle_spacing` now breaks the wall space they cover.
+    # x 22'-8 1/2", W-S-BD2's west end bay, west of the PAX run (x 27'-2 3/8"..35'-4 3/4",
+    # plan/bedroom_wardrobes.py). At 25'-6" it shared a stud bay with ED-S-BED2-SW/-RC1 on
+    # the other face, 4"-10" off (`advisory.acoustic_box_spacing`, 2026-10-25). At 29'-2" it
+    # was behind the shelf frame.
     ElectricalDevice(uid="NEC040AAAA", tag="ED-S-BED3-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD2", face="left", distance_from_start=inch(43),
+                         wall_ref="W-S-BD2", face="left", distance_from_start=inch(9.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # RM-S-BED3's west wall, y 34'-0", behind FURN-S-DESK3 (2026-10-02). ED-S-BED3-RC1 left
     # the NW corner for x 35'-0", so the run from D-S-BED3's north jamb round to
@@ -2494,12 +2495,14 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-CLN", face="left", distance_from_start=inch(90.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # x 8'-8", the 96"-112" stud bay: at 6'-5" it shared a bay with ED-S-PLANT-RC4 on the
+    # plant face, 5.9" off (`advisory.acoustic_box_spacing`, 2026-10-25).
     ElectricalDevice(uid="NEC043AAAA", tag="ED-S-SUITE-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-PS1", face="left", distance_from_start=inch(77),
+                         wall_ref="W-S-PS1", face="left", distance_from_start=inch(104),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC044AAAA", tag="ED-S-SUITE-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",

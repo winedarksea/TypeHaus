@@ -459,6 +459,34 @@
       "node": "polyline",
       "points": [
         [
+          74.25,
+          0.0
+        ],
+        [
+          74.26,
+          0.0
+        ],
+        [
+          74.26,
+          19.68503937007874
+        ],
+        [
+          74.25,
+          19.68503937007874
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW138AAAA",
+      "tag": "W-M-MECH-E/paint-b"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           58.87499999999999,
           -17.6
         ],
@@ -1130,6 +1158,31 @@
         11.874622703412074
       ],
       "text": "gwb-b 0.5\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          74.25500000000001,
+          9.876706036745407
+        ],
+        "name": ""
+      },
+      "at": [
+        57.77248031496064,
+        9.876706036745407
+      ],
+      "to": [
+        74.25500000000001,
+        9.876706036745407
+      ],
+      "text": "paint-b 0.01\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
