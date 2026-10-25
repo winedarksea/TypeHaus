@@ -72,10 +72,9 @@ deck_snow_psf = 35.0
 # which is what a deck rim designed to R507's 40 psf live + 10 psf dead was drawn expecting.
 # The porch's grouted-CMU-and-white-brick parapet is ~420 plf against it — which is the point:
 # it lands on the concrete sunken-garden walls, and it could not land on a wood deck.
-# 80, not 50 (owner, 2026-10-25): the only wood-borne guard is W-BW-SCREEN, a shear panel on
-# its own seat beams that the pier calcs load directly (north_entry_piers.md §2), not a deck
-# rim. Its east thin-brick veneer took it 31 -> 75 plf. Still a tenth of a masonry parapet.
-max_guard_dead_load_on_wood_plf = 80
+# W-BW-SCREEN (75 plf with its thin brick) is over this, and passes on scope instead: it
+# stands on BM-BW-SCSILL, which the pier calcs load with its line (north_entry_piers.md §2).
+max_guard_dead_load_on_wood_plf = 50
 
 # Dynamic factor on a hung seat's rated load (structural.suspension_anchor; owner, 2026-10-05):
 # a swing or a drop into the seat. Basis: notes/hanging_seat_anchor.md §2.

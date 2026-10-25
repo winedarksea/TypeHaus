@@ -213,10 +213,10 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     # assertion exists to hold.
     closed = by_tag["WP-M-BATH2-SURR"]
     assert {b.wall_tag for b in closed} == {"W-M-BA2E2", "W-M-BDN1"}
+    # The pan's 3'; BA2E2 stops 0.01" short, on the paint film of the face it meets.
+    runs_in = {"W-M-BA2E2": 35.99, "W-M-BDN1": 36.0}
     for band in closed:
-        # The pan's 3'; one side stops 0.01" short, on the paint film of the face it meets.
-        assert band.run_m in (pytest.approx(36 * _IN, abs=1e-6),
-                              pytest.approx(35.99 * _IN, abs=1e-6)), band.wall_tag
+        assert band.run_m == pytest.approx(runs_in[band.wall_tag] * _IN, abs=1e-6)
         assert band.z0_m == pytest.approx(0.0, abs=1e-6)
         # Floor to ceiling since 2026-10-12: RM-M-BATH2's 106" clear height.
         assert band.z1_m == pytest.approx(106 * _IN, abs=1e-6)

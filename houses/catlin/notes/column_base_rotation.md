@@ -498,3 +498,7 @@ Worked, `PT-BW-GW` at 1.0" (L 60.56", D off the 2026-10-15 P_u of 6,754.904):
 A tenth of a pound of P_u moves that δ by half a percent, so the test pins `1/δ` here. No
 verdict moves: the landing is tied (`north_entry_piers.md` §10h), and these rows stay
 arithmetic only. The next ~20 lb of dead load on the west seat makes `GW` a mechanism again.
+
+> **UNVERIFIED.** This addendum, the layer table in `north_entry_piers.md` §2 and the test
+> pins share one author; their agreement is self-consistency, not an oracle. Needs an
+> independent re-work before it is cited.

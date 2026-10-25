@@ -89,11 +89,17 @@ def _grade(ctx: CheckContext, tag: str, wall, allowance_plf: float) -> Finding:
         return _advisory(_CHECK_ID, f"guard wall {tag} weighs {load_plf:.0f} plf, at or "
                          f"under the {allowance_plf:.0f} plf ordinary wood framing carries; "
                          "its support does not have to be hard", (tag,), Result.PASS)
-    if any(kind is None for kind, _name in supports):
+    # A station over a beam the pier calcs weigh this wall onto is not a deck rim drawn for
+    # 10 psf: the load is in an engineered record, so the allowance does not apply there.
+    carried, whole_run = _engineered_supports(ctx, tag, wall)
+    on_beam = [whole_run or any(p.covers(point) for p in carried.values())
+               for point in _stations(wall)]
+    rest = [s for s, covered in zip(supports, on_beam) if not covered]
+    if any(kind is None for kind, _name in rest):
         return _unknown(_CHECK_ID, f"guard wall {tag} carries {load_plf:.0f} plf but part "
                         "of its run has nothing modeled under it at its base elevation, so "
                         "what it bears on cannot be identified", (tag,))
-    soft = sorted({name for kind, name in supports if kind == "wood"})
+    soft = sorted({name for kind, name in rest if kind == "wood"})
     if soft:
         return _advisory(
             _CHECK_ID,
@@ -102,6 +108,14 @@ def _grade(ctx: CheckContext, tag: str, wall, allowance_plf: float) -> Finding:
             (tag, *soft), Result.FAIL,
             fix_hint=("carry the guard on a concrete or masonry bearing line, or author a "
                       "lighter guard (a stick Railing rather than a masonry parapet)"))
+    if any(on_beam):
+        beams = ", ".join(sorted(carried))
+        return _advisory(
+            _CHECK_ID,
+            f"guard wall {tag} weighs {load_plf:.0f} plf, over the {allowance_plf:.0f} plf "
+            f"wood allowance, but its run is weighed onto {beams} in the pier calcs "
+            "(pier_basis.wall_line_loads), not left on a deck rim",
+            (tag, *sorted(carried)), Result.PASS)
     return _advisory(
         _CHECK_ID,
         f"guard wall {tag} weighs {load_plf:.0f} plf and bears on "
@@ -109,13 +123,31 @@ def _grade(ctx: CheckContext, tag: str, wall, allowance_plf: float) -> Finding:
         (tag, *named), Result.PASS)
 
 
+def _engineered_supports(ctx: CheckContext, tag: str, wall) -> tuple[dict, bool]:
+    """(beam tag -> footprint, whole run weighed) for the beams ``pier_basis`` loads with
+    this guard's line. A shear panel on its beam's own chords is weighed end to end."""
+    from shapely.geometry import Polygon
+
+    from typehaus.checks.structural._engineering import engineering_context
+    from typehaus.engineering.pier_basis import beams_weighing_wall
+
+    weighed = beams_weighing_wall(engineering_context(ctx), tag)
+    (x0, y0), (x1, y1) = wall.axis
+    whole_run = sum(weighed.values()) >= math.hypot(x1 - x0, y1 - y0) - 1e-6
+    return ({solid.tag: Polygon(solid.outline).buffer(1e-6) for solid in ctx.model.solids
+             if solid.tag in weighed}, whole_run)
+
+
+def _stations(wall) -> list:
+    """Points along the guard's run, base to tip, ``_STATION_STEP_M`` apart."""
+    from shapely.geometry import Point
+
+    (x0, y0), (x1, y1) = wall.axis
+    steps = max(int(math.ceil(math.hypot(x1 - x0, y1 - y0) / _STATION_STEP_M)), 1)
+    return [Point(x0 + (x1 - x0) * i / steps, y0 + (y1 - y0) * i / steps)
+            for i in range(steps + 1)]
+
+
 def _supports_along(ctx: CheckContext, wall) -> list[tuple[str | None, str | None]]:
     """``(kind, name)`` under each station of the guard's run, walked base to tip."""
-    (x0, y0), (x1, y1) = wall.axis
-    run = math.hypot(x1 - x0, y1 - y0)
-    steps = max(int(math.ceil(run / _STATION_STEP_M)), 1)
-    out: list[tuple[str | None, str | None]] = []
-    for index in range(steps + 1):
-        t = index / steps
-        out.append(support_at(ctx, wall, (x0 + (x1 - x0) * t, y0 + (y1 - y0) * t)))
-    return out
+    return [support_at(ctx, wall, (point.x, point.y)) for point in _stations(wall)]

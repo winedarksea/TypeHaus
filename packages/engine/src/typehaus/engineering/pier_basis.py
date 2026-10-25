@@ -550,7 +550,11 @@ _WALL_PARALLEL_TOL = 0.02
 
 
 def _wall_beam_pairs(ctx: EngineeringContext):
-    """``(wall, beam_tag, overlap_m, delivered)`` for every wall bearing along a beam.
+    """``(wall, beam_tag, overlap_m, outboard_m, delivered)`` for every wall on a beam.
+
+    ``outboard_m`` is the run past the beam's footprint of a shear panel whose chords ARE the
+    beam's bearings: the sheathed panel carries its ends to the chords, so its own weight
+    there lands on the same posts. Zero for any other wall.
 
     ONE walk, read by :func:`wall_line_loads` and :func:`wall_line_basis` — the pounds and
     the prose about them must describe the same pairs, and a second copy of the pairing rule
@@ -595,9 +599,13 @@ def _wall_beam_pairs(ctx: EngineeringContext):
             overlap_m = axis.intersection(Polygon(solid.outline)).length
             if overlap_m <= 0.0:
                 continue
+            panel = getattr(ctx.plan.by_tag(wall.tag), "shear_panel", None)
+            chords = set(getattr(panel, "chord_refs", ()) or ())
+            on_chords = bool(beam.bearing_refs) and set(beam.bearing_refs) <= chords
+            outboard_m = max(0.0, axis.length - overlap_m) if on_chords else 0.0
             delivered = _delivered_to_posts(ctx, beam.bearing_refs or ())
             if delivered:
-                yield wall, tag, overlap_m, delivered
+                yield wall, tag, overlap_m, outboard_m, delivered
 
 
 def wall_line_loads(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]:
@@ -629,22 +637,43 @@ def wall_line_loads(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]
     same pounds into R507.3.1's own currency, and two answers about one load is what a shared
     reading exists to prevent.
     """
-    from typehaus.resolve.assembly_weight import wall_line_plf
-
-    weights: dict[str, float | None] = {}
+    weights: dict[str, tuple[float, float] | None] = {}
     out: dict[str, float] = {}
     accounted: set[str] = set()
-    for wall, tag, overlap_m, delivered in _wall_beam_pairs(ctx):
+    for wall, tag, overlap_m, outboard_m, delivered in _wall_beam_pairs(ctx):
         if wall.tag not in weights:
-            weights[wall.tag] = wall_line_plf(ctx, wall)[0]
-        plf = weights[wall.tag]
-        if plf is None:
+            weights[wall.tag] = _line_and_own_plf(ctx, wall)
+        if weights[wall.tag] is None:
             continue
-        load_lb = plf * overlap_m / _M_PER_FT
+        line, own = weights[wall.tag]
+        load_lb = (line * overlap_m + own * outboard_m) / _M_PER_FT
         for post_tag, fraction in delivered.items():
             out[post_tag] = out.get(post_tag, 0.0) + load_lb * fraction
         accounted.add(tag)
     return out, accounted
+
+
+def beams_weighing_wall(ctx: EngineeringContext, wall_tag: str) -> dict[str, float]:
+    """Beam tag -> metres of ``wall_tag``'s run :func:`wall_line_loads` weighs onto it.
+
+    Empty where the wall states no weight: an unweighed line is carried by nobody's calc.
+    """
+    return {tag: overlap_m + outboard_m
+            for wall, tag, overlap_m, outboard_m, _delivered in _wall_beam_pairs(ctx)
+            if wall.tag == wall_tag and _line_and_own_plf(ctx, wall) is not None}
+
+
+def _line_and_own_plf(ctx: EngineeringContext, wall: Any) -> tuple[float, float] | None:
+    """(line plf over the beam, the wall's own plf past it); None where either is unweighed.
+
+    Past the beam only the panel itself runs on: what stands on its plate (a slat band
+    between the chords) is in the line plf, over the beam.
+    """
+    from typehaus.resolve.assembly_weight import dead_load_plf, wall_line_plf
+
+    line = wall_line_plf(ctx, wall)[0]
+    own = dead_load_plf(ctx, wall, wall.z1_m - wall.z0_m)
+    return None if line is None or own is None else (line, own)
 
 
 def landed_wall_line_loads(ctx: EngineeringContext) -> dict[str, float]:
@@ -681,17 +710,22 @@ def wall_line_basis(ctx: EngineeringContext, post_tag: str) -> str:
     from typehaus.resolve.assembly_weight import wall_line_plf
 
     parts: list[str] = []
-    for wall, tag, overlap_m, delivered in _wall_beam_pairs(ctx):
+    for wall, tag, overlap_m, outboard_m, delivered in _wall_beam_pairs(ctx):
         if post_tag not in delivered:
             continue
         plf, basis = wall_line_plf(ctx, wall)
-        if plf is None:
+        weights = _line_and_own_plf(ctx, wall)
+        if weights is None:
             parts.append(f"{wall.tag} on {tag}: NOT WEIGHED — {basis}")
             continue
+        own = weights[1]
+        load_lb = (plf * overlap_m + own * outboard_m) / _M_PER_FT
+        past = (f" + its own {own:.2f} plf over the {outboard_m / _M_PER_FT:.2f}' it runs "
+                f"past {tag} to its chords" if outboard_m > 0.0 else "")
         parts.append(
             f"{wall.tag} on {tag}: {basis}; {plf:.2f} plf over the "
-            f"{overlap_m / _M_PER_FT:.2f}' the two share in plan = "
-            f"{plf * overlap_m / _M_PER_FT:,.0f} lb, {delivered[post_tag]:.0%} of it here")
+            f"{overlap_m / _M_PER_FT:.2f}' the two share in plan{past} = "
+            f"{load_lb:,.0f} lb, {delivered[post_tag]:.0%} of it here")
     return " | ".join(parts)
 
 

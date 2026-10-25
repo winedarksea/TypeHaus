@@ -92,6 +92,7 @@ def test_selected_products_and_installation_parts_bill_once(catlin_model_ro):
     for part in plan.by_tag("APPL-M-DISP").install_parts:
         assert prices["install_parts"][part]["low"] > 0
     assert prices["install_parts"][faucet]["low"] == 179.95
+    # 2026-10-24 lavatory selection: 5 Genta $150-250 + 3 Indy $100-160 + B.2 $160-260.
     assert prices["allowances"]["plumbing-faucets-and-tub-filler"] == {"low": 1210, "high": 1990}
     # This fitting type also serves the attic lav and basement sink branch.
     tie = next(row for row in fitting_takeoff(catlin_model_ro)
