@@ -52,3 +52,9 @@
   Service-Worker-Allowed: /app/
 /app/manifest.webmanifest
   Cache-Control: no-cache
+
+# Snapshot chunks contain their SHA-256 in the filename. They are JSON text fragments;
+# text/plain permits CDN compression, while the loader concatenates their raw bytes.
+/app/catlin-model/*
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: text/plain

@@ -9,7 +9,7 @@ import { attachToPage, evaluate, launchChromium, navigate } from "./lib/cdp.mjs"
 const root = resolve(fileURLToPath(new URL("../../site/", import.meta.url)));
 const mime = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css",
   ".json": "application/json", ".wasm": "application/wasm", ".gz": "application/octet-stream",
-  ".tar": "application/octet-stream", ".svg": "image/svg+xml" };
+  ".tar": "application/octet-stream", ".bin": "text/plain", ".svg": "image/svg+xml" };
 let mode = "normal";
 const server = createServer(async (request, response) => {
   const path = new URL(request.url, "http://localhost").pathname;
@@ -19,6 +19,15 @@ const server = createServer(async (request, response) => {
   if (path.endsWith("/catlin-model.json") && mode === "corrupt") {
     response.writeHead(200, { "Content-Type": "application/json" }); response.end("{broken"); return;
   }
+  if (path.includes("/catlin-model/") && mode === "missing-chunk") {
+    response.writeHead(404); response.end("missing chunk"); return;
+  }
+  if (path.includes("/catlin-model/") && mode === "corrupt-chunk") {
+    const bytes = await readFile(resolve(root, "." + path));
+    bytes[0] ^= 1;
+    response.writeHead(200, { "Content-Type": "application/octet-stream" });
+    response.end(bytes); return;
+  }
   if (path.endsWith("/typehaus-engine.tar.gz") && mode === "engine-failure") {
     response.writeHead(503); response.end("engine unavailable"); return;
   }
@@ -27,7 +36,7 @@ const server = createServer(async (request, response) => {
   try {
     const body = await readFile(file);
     response.writeHead(200, { "Content-Type": mime[extname(file)] ?? "application/octet-stream",
-      "Cache-Control": path.endsWith(".json") || path.endsWith(".gz") ? "public, max-age=0, must-revalidate" : "no-cache" });
+      "Cache-Control": path.includes("/catlin-model/") ? "public, max-age=31536000, immutable" : path.endsWith(".json") || path.endsWith(".gz") ? "public, max-age=0, must-revalidate" : "no-cache" });
     response.end(body);
   } catch { response.writeHead(404); response.end("missing"); }
 });
@@ -53,7 +62,7 @@ async function until(test, timeout = 30_000) {
   throw new Error(`timeout in ${mode}: ${JSON.stringify(await state())}`);
 }
 try {
-  for (const scenario of ["missing", "corrupt"]) {
+  for (const scenario of ["missing", "corrupt", "missing-chunk", "corrupt-chunk"]) {
     mode = scenario;
     await navigate(page, `http://127.0.0.1:8878/app/?scenario=${scenario}`);
     const outcome = await until((s) => s.ready);
@@ -78,7 +87,9 @@ try {
     const keys = await caches.keys();
     const urls = (await Promise.all(keys.map(async key =>
       (await (await caches.open(key)).keys()).map(request => request.url)))).flat();
-    return ['catlin-model.json', 'catlin-house.json', 'typehaus-engine.tar.gz']
+    const manifest = await (await fetch('catlin-model.json')).json();
+    return ['catlin-model.json', 'catlin-house.json', 'typehaus-engine.tar.gz',
+      ...manifest.chunks.map(chunk => chunk.file)]
       .every(name => urls.some(url => url.endsWith('/' + name)));
   `);
   if (!cached) throw new Error("returning visitor assets were not cached");
@@ -86,6 +97,16 @@ try {
   const returning = await until((s) => s.ready);
   if (!returning.visible || returning.error) throw new Error(`returning: ${JSON.stringify(returning)}`);
   console.log("returning visitor: house and engine rendered with cache enabled");
+  await page.send("Network.emulateNetworkConditions", {
+    offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0,
+  });
+  await navigate(page, "http://127.0.0.1:8878/app/?scenario=offline");
+  const offline = await until((s) => s.preview && s.visible);
+  if (offline.error) throw new Error(`offline: ${JSON.stringify(offline)}`);
+  console.log("offline visitor: cached manifest and chunks rendered the house");
+  await page.send("Network.emulateNetworkConditions", {
+    offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1,
+  });
 } finally {
   page.close();
   await browser.close();

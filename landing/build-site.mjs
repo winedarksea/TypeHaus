@@ -6,6 +6,7 @@
 // Then serve ./site with any static server; the landing links to /app and /install.sh.
 // Deployment (host, DNS, CI) is documented in landing/DEPLOY.md.
 
+import { validateSiteAssets } from "./validate-site-assets.mjs";
 import { execFileSync } from "node:child_process";
 import { cpSync, mkdirSync, rmSync, readdirSync, statSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
@@ -21,7 +22,7 @@ const siteDir = resolve(repoRoot, "site");
 const SITE_ORIGIN = process.env.SITE_ORIGIN ?? "https://type-haus.com";
 
 // Landing sources that are build machinery or docs, not shipped files.
-const NOT_SHIPPED = new Set(["build-site.mjs", "DEPLOY.md", "node_modules"]);
+const NOT_SHIPPED = new Set(["build-site.mjs", "DEPLOY.md", "node_modules", "validate-site-assets.mjs"]);
 
 // The offline PWA is worthless without these: the engine sources it unpacks into Pyodide and
 // the bundled house a first-time visitor lands in. A missing one only fails in the browser, so
@@ -36,9 +37,6 @@ const REQUIRED_APP_FILES = ["index.html", "sw.js", "manifest.webmanifest", "type
 // would carry a 24 MB drawing set too.
 const houseOut = resolve(repoRoot, "houses", "catlin", "out");
 const SHEET_FILES = ["permit_set.pdf", "permit_set.json"];
-// Cloudflare Pages refuses a file over 25 MB. A set that crosses it fails the deploy at
-// upload time with nothing to point at; better to say so here, naming the file.
-const MAX_ASSET_BYTES = 25 * 1024 * 1024;
 
 console.log("[site] building standalone PWA...");
 execFileSync("npm", ["run", "build"], {
@@ -70,12 +68,6 @@ mkdirSync(sheetsDir, { recursive: true });
 for (const name of SHEET_FILES) {
   const src = join(houseOut, name);
   if (!existsSync(src)) continue; // REQUIRED_APP_FILES below is what actually fails the build
-  const size = statSync(src).size;
-  if (size > MAX_ASSET_BYTES) {
-    console.error(`[site] ${name} is ${(size / 1e6).toFixed(1)} MB — over the 25 MB `
-      + `per-file cap on Cloudflare Pages. Print at --paper ledger, or thin the set.`);
-    process.exit(1);
-  }
   cpSync(src, join(sheetsDir, name));
 }
 
@@ -99,5 +91,7 @@ writeFileSync(
     `  <url><loc>${SITE_ORIGIN}/</loc><lastmod>${lastModifiedIsoDate}</lastmod></url>\n` +
     `</urlset>\n`,
 );
+
+validateSiteAssets(siteDir);
 
 console.log("[site] done. Serve ./site (root = landing, /app = PWA).");

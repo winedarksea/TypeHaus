@@ -10,6 +10,7 @@ on:
       # either has to redeploy even though nothing under landing/ or ui/ was touched.
       - "landing/**"
       - "ui/**"
+      - "scripts/pyodide/**"
       - "packages/engine/src/**"
       - "packages/engine/src/typehaus/library/**"
       - "houses/catlin/**"
@@ -18,6 +19,7 @@ on:
     paths:
       - "landing/**"
       - "ui/**"
+      - "scripts/pyodide/**"
       # The deploy now prints the permit set, and the print is gated on the permit
       # checklist — so a PR that touches the engine, the library or the house has to
       # exercise it here rather than discovering the refusal on main.

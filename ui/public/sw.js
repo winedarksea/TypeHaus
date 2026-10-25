@@ -114,7 +114,7 @@ async function staleWhileRevalidate(request, cacheName) {
 
 // Vite writes content-hashed filenames into this directory, so these URLs are immutable.
 function isImmutableBuildAsset(url) {
-  return url.pathname.includes("/assets/");
+  return url.pathname.includes("/assets/") || /\/catlin-model\/[a-f0-9]{64}\.bin$/.test(url.pathname);
 }
 
 // The assets that keep a stable URL across deploys and must match the app build that asks for

@@ -15,7 +15,8 @@
 // owner\u2019s business — the UI\u2019s gate (ui/src/state/public.ts) hides the pages, this keeps the
 // data out of the download.
 
-import { readdirSync, statSync, readFileSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { clearSnapshotAssets } from "../../scripts/pyodide/snapshot-assets.mjs";
+import { readdirSync, statSync, readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve, relative, join, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
@@ -81,9 +82,8 @@ console.log(`[pwa] wrote ${outFile} (${Object.keys(files).length} files)`
   + (IS_PUBLIC ? ` — public build, ${[...PUBLIC_EXCLUDE].join("/")} withheld` : ""));
 
 // The snapshot must be resolved from this just-written filtered asset, not the source house.
+clearSnapshotAssets(outDir);
 if (IS_PUBLIC) {
   execFileSync("node", [resolve(repoRoot, "scripts/pyodide/build-snapshot.mjs")],
     { stdio: "inherit" });
-} else {
-  rmSync(resolve(outDir, "catlin-model.json"), { force: true });
 }

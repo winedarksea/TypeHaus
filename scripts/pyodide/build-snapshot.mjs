@@ -1,6 +1,7 @@
 // Resolve the public browser bundle under the same Pyodide runtime and GEOS as the worker.
+import { writeSnapshotAssets } from "./snapshot-assets.mjs";
 import { loadPyodide } from "pyodide";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -24,8 +25,7 @@ try {
   if (!result.ok || !payload.storeys?.length || !payload.walls?.length) {
     throw new Error(`bundled house did not resolve: ${JSON.stringify(result.findings?.slice(0, 5))}`);
   }
-  writeFileSync(asset("catlin-model.json"), JSON.stringify(payload));
-  console.log(`[pwa] wrote ${asset("catlin-model.json")} (${readFileSync(asset("catlin-model.json")).length} bytes, revision ${payload.revision})`);
+  writeSnapshotAssets(asset("."), payload);
 } finally {
   fileProxy.destroy();
   engine.destroy();

@@ -147,3 +147,16 @@ Worth knowing before you debug a "why am I still seeing the old build" report:
 The in-browser engine downloads Pyodide from `cdn.jsdelivr.net` on first load, then caches it in
 the service worker for offline use. That is the one external dependency of the deployed site —
 the landing page itself has none.
+
+### Public model snapshot
+
+`catlin-model.json` is a versioned manifest, referencing SHA-256-named binary chunks
+under `catlin-model/`. Each chunk is at most 8 MiB. The packed JSON stores identical
+catalog meshes once; the loader restores the original model without rounding or
+removing geometry. The live engine API and worker format are unchanged.
+
+The manifest revalidates on each visit; hashed chunks are immutable and cached for
+offline startup. A missing or corrupt chunk rejects the snapshot and lets the engine
+resolve the house. Public and non-public builds remove old snapshot artifacts first.
+Site assembly checks every file against Pages' 25 MiB limit and verifies every
+manifest chunk's size and SHA-256 before deployment.
