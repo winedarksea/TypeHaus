@@ -43,7 +43,7 @@ def dead_load_plf(ctx: Any, wall: Any, height_m: float) -> float | None:
     density nobody stated, it is a layer with no material in it. ``None`` where any solid
     layer's material states neither a density nor an areal density.
     """
-    mass_per_area = 0.0
+    mass_per_length = 0.0
     materials = {material.tag: material for material in ctx.plan.library.materials}
     # ``ResolvedLayer`` carries no ``framing``: the stud layout is a property of the AUTHORED
     # layer, and a cavity fill resolves as its own layer rather than as a field on its host.
@@ -52,8 +52,16 @@ def dead_load_plf(ctx: Any, wall: Any, height_m: float) -> float | None:
                      if a.tag == getattr(wall, "assembly", None)), None)
     authored = {getattr(layer, "name", ""): layer
                 for layer in (getattr(assembly, "layers", ()) if assembly else ())}
-    for layer in wall.depth_layers():
+    # Slot regions share a depth, but each contributes its own height and mass.
+    layers = wall.body_layers() if hasattr(wall, "body_layers") else wall.depth_layers()
+    for layer in layers:
         if layer.function in (LayerFunction.AIRGAP.value, "air_gap"):
+            continue
+        layer_height = height_m
+        if getattr(layer, "z0_m", None) is not None or getattr(layer, "z1_m", None) is not None:
+            bottom, top = layer.band(wall)
+            layer_height = max(0.0, min(top, wall.z1_m) - max(bottom, wall.z0_m))
+        if layer_height <= 0:
             continue
         # A FRAMED layer is mostly cavity. Weighing a 2x4 stud layer as 3 1/2" of solid wood
         # over the whole wall face is the same overstatement a profiled sheet makes, and in
@@ -72,28 +80,29 @@ def dead_load_plf(ctx: Any, wall: Any, height_m: float) -> float | None:
             density = getattr(material, "density", None)
             if density is None:
                 return None
-            mass_per_area += layer.thickness_m * density * factor
+            mass_per_length += layer.thickness_m * density * factor * layer_height
             for fill in fills:
                 fill_material = materials.get(getattr(fill, "material_ref", "") or "")
                 fill_density = getattr(fill_material, "density", None)
                 if fill_density is None:
                     return None
                 thickness = getattr(fill, "thickness", None)
-                mass_per_area += ((thickness.meters if thickness is not None
-                                   else layer.thickness_m) * fill_density * (1.0 - factor))
+                mass_per_length += ((thickness.meters if thickness is not None
+                                     else layer.thickness_m) * fill_density * (1.0 - factor)
+                                    * layer_height)
             continue
         material = materials.get(layer.material_ref or "")
         # A profiled sheet states its own kg/m2 and that wins: its `thickness` is the depth
         # it occupies in the wall, not a depth of material (→ Material.areal_density_kg_m2).
         areal = getattr(material, "areal_density_kg_m2", None)
         if areal is not None:
-            mass_per_area += areal
+            mass_per_length += areal * layer_height
             continue
         density = getattr(material, "density", None)
         if density is None:
             return None
-        mass_per_area += layer.thickness_m * density
-    return mass_per_area * height_m * KG_PER_M_TO_PLF
+        mass_per_length += layer.thickness_m * density * layer_height
+    return mass_per_length * KG_PER_M_TO_PLF
 
 
 

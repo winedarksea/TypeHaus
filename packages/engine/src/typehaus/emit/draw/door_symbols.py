@@ -111,7 +111,8 @@ def symbol_is_centre_anchored(name: str) -> bool:
 
 def door_symbol_params(name: str, width_in: float, height_in: float, swing_sign: float, *,
                        hinge_jamb_sign: float,
-                       host_wall_thickness_in: float) -> dict[str, float]:
+                       host_wall_thickness_in: float,
+                       maximum_opening_degrees: float = 90.0) -> dict[str, float]:
     """Resolve every parameter the glyph needs, so no writer computes geometry constants.
 
     ``swing_sign`` is the handed operating side (+1/-1 along the wall normal) — the side a
@@ -126,6 +127,8 @@ def door_symbol_params(name: str, width_in: float, height_in: float, swing_sign:
     if name == DOOR_SWING:
         # A leaf shuts *away* from its hinge, and the arc has to sweep that quadrant.
         params["closed_leaf_sign"] = -hinge_jamb_sign
+        if maximum_opening_degrees != 90.0:
+            params["maximum_opening_degrees"] = maximum_opening_degrees
     elif name == DOOR_OVERHEAD:
         params["track_depth_in"] = height_in * OVERHEAD_TRACK_DEPTH_PER_DOOR_HEIGHT
     elif name == DOOR_BIFOLD:
@@ -168,7 +171,8 @@ def door_symbol_geometry(node: Symbol) -> DoorSymbolGeometry:
     frame = _SymbolFrame(node.insert, node.rotation, swing_sign)
     if node.name == DOOR_SWING:
         return _swing_leaf(node.insert, node.rotation, swing_sign, width_in,
-                           float(node.params["closed_leaf_sign"]))
+                           float(node.params["closed_leaf_sign"]),
+                           float(node.params.get("maximum_opening_degrees", 90.0)))
     if node.name == DOOR_SWING_DOUBLE:
         return _double_swing(frame, node.rotation, swing_sign, width_in)
     if node.name == DOOR_OVERHEAD:
@@ -204,8 +208,8 @@ class _SymbolFrame:
 
 
 def _swing_leaf(hinge: Pt, rotation_deg: float, swing_sign: float, leaf_length_in: float,
-                closed_leaf_sign: float) -> DoorSymbolGeometry:
-    """One hinged leaf standing open at 90° plus its swing arc, pivoting on ``hinge``.
+                closed_leaf_sign: float, maximum_opening_degrees: float = 90.0) -> DoorSymbolGeometry:
+    """One hinged leaf standing at its positive stop plus its swing arc, pivoting on ``hinge``.
 
     ``closed_leaf_sign`` is the direction along the wall (+1 = the frame's ``u``) the shut
     leaf lies in, i.e. toward the strike jamb. The arc has to sweep from the shut leaf to
@@ -213,12 +217,15 @@ def _swing_leaf(hinge: Pt, rotation_deg: float, swing_sign: float, leaf_length_i
     a single handing drew the arc over the wall beside the door rather than across the
     opening, which is what read as a convex swing.
     """
-    open_end = _SymbolFrame(hinge, rotation_deg, swing_sign).at(0.0, leaf_length_in)
     closed_angle = rotation_deg if closed_leaf_sign > 0 else rotation_deg + 180.0
+    open_angle = closed_angle + closed_leaf_sign * swing_sign * maximum_opening_degrees
+    angle = math.radians(open_angle)
+    open_end = (hinge[0] + math.cos(angle) * leaf_length_in,
+                hinge[1] + math.sin(angle) * leaf_length_in)
     return DoorSymbolGeometry(
         strokes=(SymbolStroke(points=(hinge, open_end)),),
         arcs=(_quarter_swing_arc(hinge, leaf_length_in, closed_angle,
-                                 rotation_deg + 90.0 * swing_sign),),
+                                 open_angle),),
     )
 
 

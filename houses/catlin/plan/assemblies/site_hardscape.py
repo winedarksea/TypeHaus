@@ -14,6 +14,7 @@ from typehaus import (
     inch,
 )
 from .mixes import EXPOSED_MIX, _WASH_FILM
+from .entry_screen import ENTRY_SCREEN_WALL  # re-export for catalog/source compatibility
 
 
 # Raised-garden outer face: Allan Block AB Stones (8"H x 12"D x 18"L, 12° setback), one unit
@@ -130,53 +131,6 @@ BALCONY_DECK_ALUMINUM = Assembly(
 # paint finish nobody is applying. These are bare KDAT 6x6 with a clear water repellent —
 # the breezeway reads as structure, not as trim. 5.5" is the true 6x6 section, matching
 # POST_WHITE_PAINT's body.
-# ** THE NORTH ENTRY'S WEST SCREEN, LOWER PANEL: THIS IS A SHEAR WALL, NOT A SKIRT. **
-# `W-BW-SCREEN` closes the west side of the passage from the pier tops at -1'-3 1/2" up to
-# +4'-0", with `SB-BW-BAND`'s 45° slats bracing the band above it to the header soffit. Three jobs,
-# one element (owner, 2026-09-10):
-#
-#  1. **It is the canopy's north-south lateral system.** The canopy is freestanding, its two
-#     east columns are cast concrete fixed at the base, and this panel is what answers the
-#     west side. The WEST face carries the shear panel; the east siding ply is not counted,
-#     which is conservative and needs no new calc (it is a rated panel and could be).
-#  2. **It is the guard.** `Wall.guard=True`; a solid wall admits no 4" sphere, which is the
-#     reasoning `code.R312_1_3_guard_opening_limit` already applies to a masonry parapet.
-#  3. **It closes the deck framing.** The panel starts at the pier tops, so the joists, the
-#     two seat beams and the whole -1" to -1'-3 1/2" band are behind it rather than on show.
-#     That is also what puts the shear straight into the piers instead of through the deck.
-#
-# 2x4 KDAT at 16" o.c. and no insulation: this is an outdoor screen, there is nothing on
-# either side of it to condition, and a cavity that cannot dry is the one thing to avoid
-# here. It carries NO `control` set for the same reason -- there is no assembly behind it to
-# keep water off, so nothing here is a WRB and nothing should claim to be.
-#
-# Corrugated on the WEST FACE ONLY, `corrugated-panel-24`, which is the garage's own panel:
-# the two structures already share a roof plane and a sheathing plane, and a different profile
-# on the one wall standing under that joint would read as a mistake. The 7/8" flute is the
-# drainage and vent cavity exactly as it is on the garage (no furring), open at the bottom.
-#
-# The EAST face takes no corrugated panel (owner, 2026-09-11). It stands UNDER the canopy
-# roof, so it is a finish problem, not a weather problem, and buying the house's
-# exposed-fastener steel for a sheltered face is paying weather money for it. `siding-in` is
-# one 5/8" APA Rated Siding 303 panel doing both jobs -- a rated wood structural panel that
-# takes paint. It is NOT named `cdx-in`: a layer called CDX that is not CDX is how the next
-# reader gets it wrong.
-ENTRY_SCREEN_WALL = Assembly(
-    tag="ENTRY_SCREEN_WALL",
-    layers=(
-        Layer(name="siding-in", material_ref="siding-303-mdo", thickness=inch(0.625),
-              function=LayerFunction.SHEATHING),
-        Layer(name="stud", material_ref="kdat", thickness=inch(3.5),
-              function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x4", spacing=inch(16))),
-        Layer(name="cdx-out", material_ref="cdx-plywood", thickness=inch(0.625),
-              function=LayerFunction.SHEATHING),
-        Layer(name="cladding-out", material_ref="corrugated-panel-24", thickness=inch(0.875),
-              function=LayerFunction.CLADDING),
-    ),
-    source="north entry west screen, lower panel — KDAT 2x4 at 16in o.c.; WEST face 5/8in CDX under 7/8in corrugated, EAST face one 5/8in APA Rated Siding 303 panel doing shear and finish together. The shear rests on the west face alone; the east ply is not counted. Guard per IRC R312.1, and the closure over the deck framing. No cavity fill and no control layers: an outdoor screen wall, sheltered on the east by the canopy",
-)
-
 # ** THE SAME SHEET, CARRIED DOWN OVER THE DECK FRAMING (owner, 2026-09-11). **
 # `W-BW-SCREEN` bottoms at -0'-1" on BM-BW-SCSILL, and below it sit that 2x8 KDAT sill/rim,
 # the two seat beams, and the ABU66SS standoff bases under PT-BW-CW/-CNW, all the way to the

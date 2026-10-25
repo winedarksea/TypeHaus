@@ -10,6 +10,7 @@ from library import (
 from .materials_ishtar import MATERIALS_ISHTAR
 from .materials_metal import MATERIALS_METAL
 from .materials_flooring import MATERIALS_FLOORING
+from .materials_entry_screen import MATERIALS_ENTRY_SCREEN
 from .materials_titanium import MATERIALS_TITANIUM
 from .materials_hardwood import MATERIALS_HARDWOOD
 from .materials_study_booth import MATERIALS_STUDY_BOOTH
@@ -324,6 +325,7 @@ MATERIALS = [
              r_per_inch=1.25, density=610.0, perm_rating=0.30, hatch="lumber", color="#f2f0ea",
              finish="satin-enamel",
              source="1/2 in. medium density overlay plywood, overlay both faces (MDO 2S), interior paint grade. Resin-fibre face takes paint without grain telegraphing and holds hook screws. Seal edges, prime and paint both faces with the same white scrubbable enamel as the mudroom shiplap (#f2f0ea) before hanging."),
+    *MATERIALS_ENTRY_SCREEN,
     *MATERIALS_HARDWOOD,
     *MATERIALS_STUDY_BOOTH,
     *MATERIALS_METAL,

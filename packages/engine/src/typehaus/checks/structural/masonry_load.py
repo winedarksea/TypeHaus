@@ -57,6 +57,14 @@ def support_at(ctx: Any, wall: Any, point: tuple[float, float]) -> tuple[str | N
         reach = other.thickness_m / 2.0 + BEARING_PLAN_TOL_M
         if LineString(other.axis).distance(probe) > reach:
             continue
+        # A nearby skin is not a bearing line. The screen's west metal skirt is within
+        # the broad search tolerance, but lies entirely west of its stud/sill axis.
+        structure_polygons = [getattr(layer, "polygon", ()) for layer in other.depth_layers()
+                              if layer.function == LayerFunction.STRUCTURE.value]
+        if any(structure_polygons) and not any(
+                Polygon(polygon).buffer(1e-9).covers(probe)
+                for polygon in structure_polygons if polygon):
+            continue
         return (wall_support_kind(ctx, other), other.tag)
     for solid in ctx.model.solids:
         if not (solid.category in ("footing", "pad") or is_pour_slab(solid.category)):

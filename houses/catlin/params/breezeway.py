@@ -23,6 +23,7 @@ from typehaus.library import TREX_ENHANCE_BASICS_DECK_LAYER
 
 from params.foundations import SITE_GRADE
 from params.landing_tie import LANDING_TIES
+from params.entry_screen_finish import FINISH_ELEMENTS
 from params.north_entry_frame import (
     BEARING_TOP_FT,
     COLUMN_HALF_FT,
@@ -313,7 +314,7 @@ SCREEN_PANEL = Wall(
         fastening=('8d common (0.131" x 2 1/2") at 4" o.c. at every panel edge and 12" '
                    'o.c. in the field, panel edges BLOCKED, the sheet nailed to both 6x6 '
                    'chords; 2x4 KDAT framing at 16" o.c. — the WEST face alone, the east '
-                   '303 ply is finish and is not counted'),
+                   'east veneer/backing is finish and is not counted'),
         source=("AWC SDPWS-2015 Table 4.3A, wood structural panels - sheathing, 15/32\" "
                 "with 8d at 4\" edges, v_w 530 plf nominal / 2.0 — quoted for this 5/8\" "
                 "panel because thicker sheathing at the same schedule is not weaker; G_a "
@@ -334,7 +335,7 @@ SCREEN_PANEL = Wall(
         aspect_ratio_limit=3.5,
     ),
 )
-GARAGE_STOREY_ELEMENTS.extend([*SCREEN_PANEL_NODES, SCREEN_PANEL])
+GARAGE_STOREY_ELEMENTS.extend([*SCREEN_PANEL_NODES, SCREEN_PANEL, *FINISH_ELEMENTS])
 
 # ** THE BAND BELOW THE PANEL IS CLOSED AFTER ALL (owner, 2026-09-11). ** The paragraph above
 # leaves 7 1/4" of deck framing and the seat beams over their piers on show, "both meant to be

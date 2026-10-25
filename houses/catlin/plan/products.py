@@ -37,6 +37,7 @@ from plan.plant_liner_selection import EXTRUTECH_P1600
 from plan.plant_room_types import PLANT_ROOM_PRODUCTS
 from plan.products_bedroom_carpet import BEDROOM_CARPET_PRODUCTS
 from plan.products_floor_tiles import FLOOR_TILE_PRODUCTS
+from plan.products_entry_screen import ENTRY_SCREEN_PRODUCTS
 from plan.products_interior import INTERIOR_PRODUCTS
 from plan.products_laundry import LAUNDRY_PRODUCTS
 from plan.study_bookcase_types import STUDY_BOOKCASE_PRODUCTS
@@ -299,6 +300,7 @@ PRODUCTS = (
     KOHLER_UNDERSCORE_1130_W1, KOHLER_CLEARFLO_7272,
     LEVITON_EV_RECEPTACLE_1450R,
     FLOOR_BOX_PRODUCT,
+    *ENTRY_SCREEN_PRODUCTS,
     *INTERIOR_PRODUCTS, *LAUNDRY_PRODUCTS, *FLOOR_TILE_PRODUCTS, *BEDROOM_CARPET_PRODUCTS, *CLOSET_PRODUCTS,
     *BEDROOM_WARDROBE_PRODUCTS, *BATH1_STORAGE_PRODUCTS,
     *STUDY_NOOK_PRODUCTS, *STUDY_BOOKCASE_PRODUCTS,

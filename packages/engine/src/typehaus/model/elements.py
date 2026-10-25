@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Literal
 
+from pydantic import Field
+
 from typehaus.model.base import Element
 from typehaus.model.doorway import DoorwayTreatment
 from typehaus.model.enums import StructuralRole
@@ -130,6 +132,8 @@ class Door(Element):
     arch: Arch | None = None
     flip_hinge: bool = False
     flip_swing: bool = False
+    # A positive stop limits a real leaf; default preserves the ordinary quarter sweep.
+    maximum_opening_degrees: float = Field(default=90.0, gt=0, le=180, allow_inf_nan=False)
     # Surface appearance only; None inherits the type/product default.
     frame_material_ref: str | None = None
     leaf_material_ref: str | None = None

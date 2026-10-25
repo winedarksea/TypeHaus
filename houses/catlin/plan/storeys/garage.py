@@ -346,7 +346,7 @@ OPENINGS = [
     # dropped below it (IRC R602.7.2 lets the header take the top plate's place).
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING36-G",
          position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(1),
-         flip_hinge=True, flip_swing=True,
+         flip_hinge=True, flip_swing=True, maximum_opening_degrees=85,
          header_spec='3-ply 5.5" LVL'),
     # This 8' wall (vs. the house's 10') is why the 27" family is 36" tall: a 60" height at
     # this 42" sill would push the header above the top plate.
@@ -868,7 +868,7 @@ SERVICE_DOOR_HARDWARE = [
     Annotation(uid="GTREXSPEC1", tag="AN-G-COMPOSITE-DECKING", position=pt(ft(8), ft(44)),
                text="FS-BW-FLOOR, FS-SG-PORCH and ST-G-SERVICE: TREX ENHANCE BASICS, actual 0.94 x 5.5in square-edge, color TBD. Service treads: four 36 x 11in assemblies, each front 5.5in + 1/4in gap + rear rip 5.25in; five KDAT stringers <=9in o.c., EACH on a 316 stainless stem seat. BUTYL TAPE all deck framing tops and stepped stringer cuts; field-treat wood cuts. Both decks and treads: 316 stainless Cap-Tor xd #10 x 2-3/4in, TWO per board at EVERY support, flush; support all board ends. Retain KDAT rough sill under sloped pan, 1/2in open drainage gap, no board through doorway. See notes/composite_decking.md"),
     Annotation(uid="VJDMQAGNCA", tag="AN-G-SERVICE-DOOR", position=pt(ft(8, 1), ft(42, 6)),
-               text="D-G-SERVICE: OUTSWING, hinged on the WEST jamb, onto the entry deck. Surface closer with a HOLD-OPEN arm (parallel-arm, exterior-rated, adjustable latch speed) so the leaf stays parked along W-BW-SCREEN and nobody reaches out over the deck from the top tread of ST-G-SERVICE. Leaf must not swing over the stair (IRC R311.7.6 exception, MN 1309); exterior sill stands on the deck at 0ft 0in"),
+               text="D-G-SERVICE: OUTSWING, hinged on the WEST jamb, onto the entry deck. LCN 4040XP HCUSH, non-spring 85deg positive stop/hold-open, push-side garage mounting with reinforced door/head and adjustable latch speed; Schlage F51A LAT 622 lever. See bw_screen_thin_brick.md for the full hardware envelope and release checks so the leaf stays parked along W-BW-SCREEN and nobody reaches out over the deck from the top tread of ST-G-SERVICE. Leaf must not swing over the stair (IRC R311.7.6 exception, MN 1309); exterior sill stands on the deck at 0ft 0in"),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS,

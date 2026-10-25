@@ -360,6 +360,7 @@
 # RE-SCOPED 2026-08-23: 5,536 LF of this was the exterior rainscreen furring, and the truss
 # wall took it (a KDAT 2x4 outrigger on edge does that job now — "2x4:kdat" below). What is
 # left is the sauna/plant liner strapping and the garage's own rainscreen.
+"1.125x1.5:kdat" = { material = { low = 0.65, high = 1.2 }, labour = { low = 1.5, high = 3 } } # entry veneer packing, includes structural attachment
 "1x4" = { material = { low = 0.45, high = 0.7 }, labour = { low = 0.35, high = 0.7 } }  # 742 LF
 # "1x6.81165 panel" =    # 112 LF — cellular-PVC fascia, billed in [edge_trim]
 # One ply of the row below: floor-opening trimmer packs on the I-joist decks run bearing to
@@ -400,6 +401,16 @@
 "3-2x12:kdat" = { material = { low = 7.2, high = 10.8 }, labour = { low = 4.2, high = 7.8 } }  # 40 LF ordered — FS-SG-PORCH lines 003 and 006
 "2x2" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 816 LF
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
+# W-BW-SCREEN east veneer, 2026-10-25. Preliminary budgets, not supplier quotes.
+# Brick rate includes pointing mortar/labour; setting bed is a separate purchase below.
+# Attachment consumables ride in packing/plywood/backer installation, never a second allowance.
+"thin-brick-brown" = { material = { low = 10, high = 18 }, labour = { low = 15, high = 28 } }
+"mvis-thin-brick-mortar" = { material = { low = 1.4, high = 2.5 }, labour = { low = 0, high = 0 } }
+"permabase-exterior" = { material = { low = 1.5, high = 2.6 }, labour = { low = 3, high = 5 } }
+"mvis-air-water-barrier" = { material = { low = 1.1, high = 2.2 }, labour = { low = 1, high = 2 } }
+"entry-screen-wrb" = { material = { low = 0.2, high = 0.45 }, labour = { low = 0.5, high = 1 } }
+"thin-brick-drainage-mat" = { material = { low = 0.9, high = 1.8 }, labour = { low = 0.5, high = 1 } }
+"entry-screen-exterior-plywood" = { material = { low = 1.6, high = 2.6 }, labour = { low = 1.2, high = 2.2 } }
 # polyiso rate of $1.20-2.20/SF.
 "2x2 panel" = { low = 0.2, high = 0.45 }  # 316 LF
 # RE-SCOPED AGAIN 2026-09-01, back to what it was before the truss: ordinary framing and
@@ -603,6 +614,8 @@
 "hanger" = { material = { low = 1.5, high = 4 }, labour = { low = 1.3, high = 2.6 } }  # 32 LF — stair hanger board, 2x stock
 
 [sheet_goods]
+"entry-screen-exterior-plywood" = { material = { low = 58, high = 94 }, labour = { low = 43, high = 79 } } # 4x9; overlaps envelope SF row
+"permabase-exterior" = { material = { low = 48, high = 83 }, labour = { low = 96, high = 160 } } # 4x8; overlaps envelope SF row
 # RESEARCHED 2026-08-07 — [low, high] $/4x8 sheet, material only. Basis: 1/2" drywall
 # $12-22/sheet, 1/2" CDX plywood $28-52/sheet, subfloor plywood a grade up from that,
 # ZIP-R quoted per SF ($2.20-4.20) and multiplied by 32 SF. Sources: homeguide.com drywall
@@ -7547,7 +7560,7 @@ finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.c
 # finish-door-hardware above is lockset/hinges/stop only, so this is its own lump. Retail read
 # 2026-10-13: Norton 7500H $403 (absupply), CLP7500-T $443 (qualitydoor), UNI7500H $630-768
 # (qualitydoor / nationallocksupply); plus $100-250 to hang it on a fiberglass leaf.
-finish-door-closer-hold-open = { low = 500, high = 1000 }
+finish-door-closer-hold-open = { low = 650, high = 1200 } # LCN 4040XP HCUSH 695, non-spring 85deg, reinforced push-side mount; provisional quote
 # DRIVEN 2026-08-27 off the window count; 41 are authored as of 2026-09-27. It was
 # $73-164 per window covering stool
 # STOCK, apron, jamb extension and the carpenter's hour.

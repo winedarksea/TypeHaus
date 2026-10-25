@@ -343,6 +343,7 @@ export interface Opening {
   // behind the recess. null/absent = a through hole that cuts every layer.
   cut_layers?: string[] | null;
   swing_clearance?: Vec2[];
+  maximum_opening_degrees?: number;
   framing_bumper?: Vec2[];
   flip_hinge: boolean;
   flip_swing: boolean;

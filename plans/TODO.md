@@ -304,7 +304,7 @@ the future.
 - Make sure all handrail brackets are stock, avoid custom needs. Remaining: titanium railing brackets (aim to use standard as much as possible). Also attic rail, bracket 7 needs a rethink, ideally to an off the shelf part.
 - Spec sand or gravel backfill around house
 - The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
-- Make W-BW-SCREEN's east passage face prettier (currently 5/8" MDO, not the west structural CDX). [Finish comparison, elevations, quantities, and sample instructions](bw-screen-finish-comparison.md) completed 2026-10-14: natural black locust slats over matte black lead; visible stainless screws preferred. Shiplap and ornamental panels compared. West header symmetry implemented 2026-10-14 (6⅛″ south extension, paired AC6Z); comparison now shows the stairs and landing. Physical samples, actual door/closer clearance, and decorative finish construction/model implementation remain pending. Another option to consider is a thin brick over foam or cement backer board (ASTM C1088 Exterior Grade brick, Polyurethane Construction Adhesive, Polymer-Modified Mortar), possibly thin brick ordered, or saw cut from extra brick from the other brick work.
+- Make W-BW-SCREEN's east passage face prettier (currently 5/8" MDO, not the west structural CDX). [Finish comparison, elevations, quantities, and sample instructions](bw-screen-finish-comparison.md) completed 2026-10-14: natural black locust slats over matte black lead; visible stainless screws preferred. Shiplap and ornamental panels compared. West header symmetry implemented 2026-10-14 (6⅛″ south extension, paired AC6Z); comparison now shows the stairs and landing. Physical samples, actual door/closer clearance, and decorative finish construction/model implementation remain pending. Another option to consider is a thin brick over foam or cement backer board or lath (ASTM C1088 Exterior Grade brick, Polyurethane Construction Adhesive, Polymer-Modified Mortar), possibly thin brick ordered, or saw cut from extra brick from the other brick work.
 - ED-M-PORCH-FLOOD: shielded adjustable 60° flood beneath the balcony front, aimed into the sunken garden; shared 3D geometry in viewer/GLB/IFC. However it seems to be a recessed light, not one that is angled at the sunken garden.
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
 - Sconce ED-S-STUDY2-STAIR-SC1 is a bit close to the floor, perhaps it should go at the top of the stairs on the wall, still on the same circuit but in the room above?
@@ -331,6 +331,7 @@ the future.
 - Plan microwave placement
 - Model a coffee machine and kettle
 - Check the basement stair carpet, and swap the carpet from the theater with an partial coverage area rug in the theater (technically not installed with tack strips or glue)
+- Update the LVP to https://coretecfloors.com/en-us/products/coretec-pro-classics/quincy-oak-vv017-01018
 
 # Project Management
 

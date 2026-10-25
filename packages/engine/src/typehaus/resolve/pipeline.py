@@ -517,7 +517,8 @@ def _door_swing_clearance(wall, center_along_m: float, width_m: float, door,
     radius = width_m * sweep
     points = [hinge]
     for index in range(9):
-        angle = direction * math.pi / 2 * index / 8
+        angle = (direction * math.radians(getattr(door, "maximum_opening_degrees", 90.0))
+                 * index / 8)
         cos, sin = math.cos(angle), math.sin(angle)
         points.append((hinge[0] + radius * (closed[0] * cos - closed[1] * sin),
                        hinge[1] + radius * (closed[0] * sin + closed[1] * cos)))
