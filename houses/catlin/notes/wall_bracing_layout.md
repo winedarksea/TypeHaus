@@ -150,7 +150,7 @@ height (the taller of the two openings a panel stands between, R602.10.5).
 Not authored, and each is deliberate: main E1's two 9-1/2" slivers beside the fire niche
 (since 2026-10-16); the two 17" ends
 beside WIN-M-KIT-E and WIN-M-KITCH-N;
-second S1's 19" beside the deck door; the garage's 7" beside D-G-SERVICE.
+second S1's 19" beside the deck door; the garage's 11" beside D-G-SERVICE.
 
 The garage's blind east wall and its south wall are each drawn as **two** panels rather than
 one. R602.10.2.3: a braced wall line over 16 feet carries not less than two braced wall
@@ -190,9 +190,9 @@ for that reason, and this house otherwise frames SPF.
 
 ## 7. The garage SW corner takes a fifth device
 
-`D-G-SERVICE` sits 7" off that corner, so `W-G-S` has no 24" return to give `W-G-W`'s end
+`D-G-SERVICE` sits 11" off that corner, so `W-G-S` has no 24" return to give `W-G-W`'s end
 panel, and the 29" panel at that end therefore meets end condition **2** (panel at the end
-of the line with a hold-down) rather than 1. The alternative is to move the service door 17"
+of the line with a hold-down) rather than 1. The alternative is to move the service door another 13"
 east, which `plan/storeys/garage.py` warns drags the landing, both carriers, two backing
 bands, three lighting stations and a section cut along with it. One cast-in strap is
 cheaper. Note the asymmetry that makes this corner odd: the same 29" panel IS the return

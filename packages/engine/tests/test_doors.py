@@ -81,7 +81,7 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
         # D-M-ENTRY: an opaque Therma-Tru Smooth-Star (2026-10-21).
         "DT-EXT-SWING36": (36.0, DoorOperation.SWING, True, False),
         # D-G-SERVICE's own product since 2026-10-21: a flush Masonite steel outswing.
-        "DT-EXT-SWING36-G": (36.0, DoorOperation.SWING, True, False),
+        "DT-EXT-SWING32-G": (32.0, DoorOperation.SWING, True, False),
         "DT-EXT-FRENCH60": (60.0, DoorOperation.DOUBLE_SWING, True, True),
         "DT-INT-SWING32": (32.0, DoorOperation.SWING, False, False),
         # The basement equipment route, 2026-09-07: D-B-FURN and D-B-SHOP are the two leaves

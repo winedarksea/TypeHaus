@@ -1,8 +1,11 @@
 # W-BW-SCREEN — east-face finish comparison
 
-**Study date:** 2026-10-14. **Status:** finish design comparison; west-header symmetry implemented in the house model on 2026-10-14. Decorative finishes remain unmodeled and have no construction fastening schedule.
+**Study date:** 2026-10-14; coordination updated 2026-10-25. **Current selection:** the modeled
+thin-brick assembly stays full thickness. The wood alternatives and illustration below are
+archived comparison material. Current door: 32in Masonite, hinge x=83in, 90° stop-only;
+see §4 and the [current door note](../houses/catlin/notes/garage_service_door_outswing.md).
 
-**Recommendation:** develop **A, natural black locust vertical slats over matte black MDO**, first. It adds a fine vertical rhythm below the much heavier diagonal brace band, uses narrow clear stock well, and makes individual pieces replaceable. Keep **C, ornamental panels**, as the stronger alternative if the sample feels too repetitive. Shiplap ranks third: it loses the black shadow contrast, consumes wider stock, and needs the deepest support assembly in this study.
+**Original study recommendation (superseded by thin brick):** develop **A, natural black locust vertical slats over matte black MDO**, first. It adds a fine vertical rhythm below the much heavier diagonal brace band, uses narrow clear stock well, and makes individual pieces replaceable. Keep **C, ornamental panels**, as the stronger alternative if the sample feels too repetitive. Shiplap ranks third: it loses the black shadow contrast, consumes wider stock, and needs the deepest support assembly in this study.
 
 Owner priorities: appearance and craftsmanship; own/local locust and own milling; visible stainless screws; natural wood over black; include ornamental onlays rather than limiting panels to plain rectangles.
 
@@ -14,7 +17,8 @@ Owner priorities: appearance and craftsmanship; own/local locust and own milling
 
 The sheet shows three alternatives, with botanical and geometric versions of C. Each screen elevation now includes an oblique landing/stair view with visible tread tops and side faces: five equal 6.6″ risers down to the walk at −33″ and four 18″ treads. The screen remains in true elevation; the stairs project east/down and to the right so their depth reads clearly. The approach plan shows their 72″ run and 72½″ width. Roof and stair rail details are omitted for clarity. Existing brace members are schematic, not a fabrication drawing. The blue dashed door rectangle is a projection of the **90° open leaf in front of the screen**; the closed garage door lies on a perpendicular return and cannot be shown face-on in this elevation.
 
-Source geometry was checked by loading and resolving the current Catlin plan after the header change; resolve returned zero error findings. Model datums, in inches:
+Original study geometry was checked after the header change; resolve returned zero error findings.
+Historical study datums below, except the updated door row, in inches:
 
 | Datum | Value / consequence |
 |---|---|
@@ -25,10 +29,10 @@ Source geometry was checked by loading and resolving the current Catlin plan aft
 | Existing MDO east face | x = **74⅜″**, with ⅝″ backing |
 | Two west post centres | y = 450″ and 509¾″; 5½″ square, east face x = 74¾″ |
 | Brace / header | Brace band starts at +48″; header soffit +76⅛″, top +88″ |
-| Garage service door | 36″ × 80″ nominal; west RO/idealized hinge x = **79″** |
+| Garage service door | 32″ × 80″ nominal; modeled west hinge x = **83″**, east jamb **115″** (2026-10-25) |
 | East deck edge | x = **115″**; an edge datum, not a second wall |
 
-Source of truth: [screen assembly](../houses/catlin/plan/assemblies/site_hardscape.py), [screen placement](../houses/catlin/params/breezeway.py), [entry datums](../houses/catlin/params/north_entry_frame.py), [brace band](../houses/catlin/params/entry_band_brace.py), and [service door](../houses/catlin/plan/storeys/garage.py). The [door note](../houses/catlin/notes/garage_service_door_outswing.md) requires an exterior hold-open closer but does not select its product or opening angle.
+Source of truth: [screen assembly](../houses/catlin/plan/assemblies/entry_screen.py), [screen placement](../houses/catlin/params/breezeway.py), [entry datums](../houses/catlin/params/north_entry_frame.py), [brace band](../houses/catlin/params/entry_band_brace.py), and [service door](../houses/catlin/plan/storeys/garage.py). The [door note](../houses/catlin/notes/garage_service_door_outswing.md) now specifies ordinary hinges and a frame-mounted mechanical overhead stop-only at 90°, with no closer or hold-open requirement.
 
 All finish alternatives share the revised header and south west cap described below. They retain the west CDX and corrugated plane, structural connections, guard geometry, skirt drainage and access below the east face. Do not carry decorative work into the open band under the deck or attach it to the diagonal braces. Low-level decorative panels cover the lower post positions; the posts remain exposed above them, as in the drawing.
 
@@ -94,35 +98,41 @@ Optional ¼″ Exterior-rated face overlay adds ¼″ everywhere, including at t
 
 **49″ backing height:** a single standard 48″ × 96″ sheet cannot cover the entire modeled 49″ × 78⅞″ rectangle. The existing model is not a sheet-cut plan. If buying backing, develop an oversized-sheet or supported multi-piece layout that protects the below-deck edge; do not hide an unsupported 1″ strip behind finish. The quantities below state net area rather than promising a one-sheet purchase.
 
-## 4. Door and passage clearance
+## 4. Current door and passage clearance (2026-10-25)
 
-The model's resolved door sweep runs from hinge `(79, 518.625)` to parked tip `(79, 482.625)` at 90°. It is a **zero-thickness, hardware-free sector**, not a selected door assembly. The generic rendered leaf and lever do not establish the actual hinge, handle or closer clearances.
+`D-G-SERVICE` is `DT-EXT-SWING32-G`, the same Masonite Premium Flush insulated steel
+family in nominal 32 × 80in. The hinge moves from x=79in to **83in**; the east jamb stays
+**115in** and the longitudinal section moves to **99in**. The deck, edge beam, piers and
+36in garage stair, seats, handrail, backing and lighting retain their datums.
 
-`79 − 74.375 = 4.625″` is the available datum offset before adding finish. The following table includes support depth and a **⅛″ cap/drip budget**. Widths are geometric distance to the east deck edge with the door absent, not certified egress or landing widths.
+The retained brick face is x=76.905in; head/base flashing nose x=77.030in. With a 1¾in
+leaf, 2½in lever face projection and ⅛in installation allowance, preliminary clearance at
+90° is **2.47in**. The regression encloses the continuous sweep through **91°**, including
+1° stop tolerance, and requires **¼in** minimum to nearby resolved geometry. No screen
+thinning is required. The exterior entry guard's top termination moves 1½in east onto the
+top tier (owner approved), clearing the early leaf swing. The garage handrail stays fixed.
 
-| Assembly | Added wood face / maximum trim depth | Maximum east face x | Offset to idealized hinge | Finish-to-deck-edge width |
-|---|---:|---:|---:|---:|
-| Existing ⅝″ MDO only | 0″ / 0″ | 74⅜″ | 4⅝″ | 40⅝″ |
-| A — slats | 1″ / 1⅛″ | 75½″ | **3½″** | **39½″** |
-| B — shiplap | 1½″ / 1⅝″ | 76″ | **3″** | **39″** |
-| C — ornamental panels | ⅞″ / 1″ | 75⅜″ | **3⅝″** | **39⅝″** |
+Require the purchased sill plus undercut to place the **leaf bottom at least 1in above
+the rough sill**, clearing the east HETA20Z deck-tie strap, which reaches 0.56in above the
+deck. This is an unconfirmed supplier requirement. The full budget sweep's minimum is
+approximately **0.396in** after installation allowance at that strap. Tests exclude the
+opening's own fitted frame/flashing; those details have separate installation checks.
 
-A ¾″ replacement backing reduces every remaining dimension by another ⅛″; an optional ¼″ panel overlay reduces it by ¼″. Any trim or screw head projecting beyond these envelopes must be added separately.
+Use ordinary hinges and a **frame-mounted mechanical overhead stop, stop-only, set to
+90°**. Confirm reinforcement and the mounting template with the prehanger; no brick
+attachments. The LCN closer product, special 85° specification, hold-open requirement and
+separate closer allowance are removed. The stop remains in the general hardware budget.
 
-For a preliminary 90° hardware check, if the real hinge were on the model datum and centered on the slab thickness:
+Before order/framing release, confirm actual frame/rough opening, handing/hinge axis,
+leaf, operated lever, sill/undercut and reinforced stop template. The 32in nominal leaf is
+neither a 32in prehung rough opening nor 32in clear passage; the reference prehung listing
+calls for a wider RO. Reconcile those shop dimensions with the fixed east-jamb/deck datum
+and rerun the sweep. This detached garage service door retains the existing stair-head
+plan-review question in the [door note](../houses/catlin/notes/garage_service_door_outswing.md).
 
-`remaining gap = hinge offset − leaf thickness / 2 − westward hardware projection`.
-
-An **illustrative**, unselected 1¾″ slab with hardware projecting 2½″ west of its face leaves only **⅛″ for A**, **−⅜″ for B**, and **¼″ for C** at the maximum trim envelope. Set **¼″ residual clearance** as a study target, not a code requirement; A would need a smaller hardware projection, a changed hinge offset, or a slimmer local detail to reach it in this example. Check the maximum trim only where it overlaps the hardware vertically; handles are low, while closer bodies/arms may overlap the brace and header instead.
-
-**Overtravel matters:** at 95°, the far edge moves `36 × sin(5°) = 3.138″` west of the hinge datum. Even before hardware, the illustrative half-slab allowance uses up A's remaining space. Do not assume a closer's “hold-open” feature limits opening travel. Require a compatible opening stop/limiter and approved hold-open setting if the selected design relies on 90° operation; verify its effect on access and door operation.
-
-**Finding:** the proposed finish faces lie outside the model's 0–90° zero-thickness sweep, but **full door/hardware clearance is not confirmed**. No selected hinge offsets, handle or closer submittal exists in the inspected source. Before release:
-
-1. Obtain the actual frame, hinge axis, leaf thickness, both lever projections, closer body/arm envelope, and permitted hold-open/maximum opening angles.
-2. Template the complete assembly at the doorway, including the final cap, stand-offs and any overlay. Check closed-to-maximum travel, not only the parked position.
-3. Check the lower finish against the leaf/handle and the upper brace/header against the closer. Provide an independent compatible stop where required by the hardware design.
-4. Measure the usable route with the door both closed and parked. The parked leaf at x≈79″ leaves only **36″ nominal** to x=115″ before its thickness and hardware; the finish-to-edge table does not represent this condition.
+Regenerate the current plan and x=99in section with
+`.venv/bin/python scripts/review-garage-service-door.py`; outputs are in
+`out/garage-service-door-review/`. The earlier comparison SVG remains historical.
 
 ## 5. Quantities, yield and owner effort
 

@@ -56,7 +56,7 @@ EAST_POST_SYSTEM = "kdat"
 HOUSE_CLADDING_Y_FT = 36 + 7.25 / 12
 GARAGE_CLADDING_Y_FT = GARAGE_Y_SOUTH.feet - 0.875 / 12
 # ** THE SERVICE DOOR SETS THE EAST EDGE OF EVERYTHING HERE (2026-09-11). ** D-G-SERVICE's
-# rough opening is 6'-7"..9'-7" since it moved into the garage's SW corner
+# rough opening is 6'-11"..9'-7" with the 32in door in the garage's SW corner
 # (plan/storeys/garage.py::SERVICE_DOOR_OFFSET), and the whole landing derives from it:
 # the exterior deck ends on its east jamb and the east edge beam sits just inside it. The
 # west edge is the canopy column line.
@@ -64,7 +64,7 @@ SERVICE_RO_WEST_FT = GARAGE_X_WEST.feet + SERVICE_DOOR_OFFSET.feet
 SERVICE_RO_EAST_FT = SERVICE_RO_WEST_FT + SERVICE_DOOR_WIDTH.feet
 LANDING_WEST_FT = 6.0  # the column line; also the screen panel and the west door patch's edge
 # The deck used to reach 11'-6" to cover two offset door patches (`D-M-ENTRY` at 8'-0",
-# `D-G-SERVICE` at 10'-0"); with the doors an inch apart the RO's east jamb covers both.
+# `D-G-SERVICE` at 10'-0"); with the door centres three inches apart the RO's east jamb covers both.
 LANDING_EAST_FT = SERVICE_RO_EAST_FT
 # ** THE WEST CORRUGATED PLANE, PUBLISHED SO NOTHING RE-DERIVES IT. ** `W-BW-SCREEN` carries
 # `alignment=face("stud-ext", offset=inch(-1.75))` (params/breezeway.py): its 2x4s centre on

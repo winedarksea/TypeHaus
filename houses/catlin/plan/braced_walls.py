@@ -32,7 +32,7 @@
 # taken: move those four windows 16" inboard, which buys the returns and deletes all four
 # devices. **Never move them TOWARD the corner** — that is the one direction with no answer.
 #
-# ** THE GARAGE SW CORNER TAKES A FIFTH. ** D-G-SERVICE sits 7" off that corner, so W-G-S has
+# ** THE GARAGE SW CORNER TAKES A FIFTH. ** D-G-SERVICE sits 11" off that corner, so W-G-S has
 # no 24" return to give W-G-W's end panel. The alternative is to move the service door 17"
 # east, which `plan/storeys/garage.py` warns drags the landing, the carriers, two backing
 # bands, three lighting stations and a section cut with it; one cast-in strap is cheaper.
@@ -242,7 +242,7 @@ GARAGE_BRACED_WALLS = [
                     width=inch(144.0)),
     BracedWallPanel(uid="ZQBZQNBQ1T", tag="BWP-G-W-0259", wall_ref="W-G-W", start=inch(259.0),
                     width=inch(29.0), hold_down_ref="CN-G-BWHD-SW",
-                    note="SW corner: only 7in of return beside D-G-SERVICE, so end condition 2"),
+                    note="SW corner: only 11in of return beside D-G-SERVICE, so end condition 2"),
     BracedWallPanel(uid="APCR31K2YY", tag="BWP-G-W-0043", wall_ref="W-G-W", start=inch(43.0),
                     width=inch(202.0)),
     BracedWallPanel(uid="0SABZSFPT6", tag="BWP-G-W-0000", wall_ref="W-G-W", start=inch(0.0),

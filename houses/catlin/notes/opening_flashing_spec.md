@@ -212,7 +212,7 @@ with deep exterior returns. Their coordinated frame/pan/support detail and remai
 supplier requirements are in [exterior_door_structural_mount.md](exterior_door_structural_mount.md).
 The older entry description below does not establish its factory sill or support.
 
-`DT-EXT-SWING36` is `D-M-ENTRY` and `D-G-SERVICE`. Both open onto the north-entry deck, and
+`DT-EXT-SWING36` is `D-M-ENTRY`; `DT-EXT-SWING32-G` is `D-G-SERVICE`. Both open onto the north-entry deck, and
 both take a pan. `prices.toml [allowances] envelope-door-sill-pans` bills them, driven on
 `openings.count[type=DT-EXT-SWING36]`. `DT-EXT-FRENCH60`'s own row already carries its pan.
 

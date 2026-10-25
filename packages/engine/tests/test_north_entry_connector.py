@@ -55,10 +55,11 @@ def test_both_full_door_landing_patches_fit_the_shared_deck(catlin_plan):
     deck_south = house_face + ft(0, 0.5).meters
     assert surface.buffer(1e-8).covers(box(ft(6.5).meters, deck_south,
                                          ft(9.5).meters, deck_south + ft(3).meters))
-    # D-G-SERVICE's RO is 6'-7"..9'-7" since 2026-09-11 (the garage's SW corner), one inch
-    # off D-M-ENTRY's; the deck's east edge IS that jamb, so this patch fits exactly.
-    assert surface.buffer(1e-8).covers(box(ft(6, 7).meters, garage_face - ft(0, 0.5).meters - ft(3).meters,
-                                         ft(9, 7).meters, garage_face - ft(0, 0.5).meters))
+    # The 32in service opening is now 6'-11"..9'-7"; its east jamb and the deck edge
+    # stay fixed. The retained deck also covers the former, wider 36in landing patch.
+    assert surface.buffer(1e-8).covers(box(
+        ft(6, 7).meters, garage_face - ft(0, 0.5).meters - ft(3).meters,
+        ft(9, 7).meters, garage_face - ft(0, 0.5).meters))
     assert max(p.y.meters for p in floor.subfloor_outline) == pytest.approx(
         garage_face - inch(0.5).meters)
     assert max(p.x.meters for p in floor.subfloor_outline) == pytest.approx(ft(9, 7).meters)
@@ -85,6 +86,16 @@ def test_the_service_flight_rises_to_the_threshold_with_no_interior_landing(catl
     assert not edge.engineering_note
     tip = max(model.plan.by_tag(n).position.y.meters for n in (edge.start_node, edge.end_node))
     assert tip == pytest.approx(ft(43, 1.75).meters)
+
+
+def test_service_door_narrowing_retains_stair_and_clears_exterior_guard(catlin_plan):
+    stair = catlin_plan.by_tag("ST-G-SERVICE")
+    assert stair.width.meters / inch(1).meters == pytest.approx(36)
+    assert stair.start.x.meters / inch(1).meters == pytest.approx(83.625)
+    guard = catlin_plan.by_tag("RL-BW-ENTRY")
+    assert min(point.x.meters for point in guard.path) / inch(1).meters == pytest.approx(116.5)
+    door = catlin_plan.by_tag("D-G-SERVICE")
+    assert door.header_spec == '3-ply 5.5" LVL'
 
 
 def test_tiers_are_cast_pours_at_an_18in_going_over_a_clear_lower_landing(catlin_model_ro):

@@ -83,8 +83,8 @@ GARAGE_Y_NORTH = ft(67, 2.625)
 # at 6'-7"..9'-7" puts the king at 6'-4"..6'-5 1/2" (3/8" clear) and interrupts the one stud
 # at 8'-0", exactly what the old station at 8'-6"..11'-6" interrupted at 10'-0".
 #
-# ** SO THE DOOR IS IN THE CORNER SINCE 2026-09-11, CENTRE x=8'-1", ** one inch off
-# `D-M-ENTRY`'s 8'-0" — the concentric pair the 2026-09-07 move gave up. `D-M-ENTRY` still
+# ** THE DOOR REMAINS IN THE CORNER: 32in, CENTRE x=8'-3" (2026-10-25), ** three inches off
+# `D-M-ENTRY`'s 8'-0". The earlier 36in opening above is historical. `D-M-ENTRY` still
 # cannot move: its east jamb is 6" west of `N-M-N2` at x=10'-0", the tee where `W-M-STRW`'s
 # bearing stack lands on the north wall and runs to the footings. The shared landing
 # `FS-BW-FLOOR` is 3'-7" wide (x 6'-0"..9'-7") and covers both complete 36" patches; HP3 is
@@ -269,16 +269,11 @@ OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 # sill is +1'-0" over the garage storey (0'-0" absolute, the breezeway deck), so the ICF stem
 # runs continuous under it and the landing carriers pass 3 3/4" over the stem top.
 #
-# ** 0'-7" OFF N-G-SW SINCE 2026-09-11: THE DOOR IS HARD IN THE SW CORNER. ** 7" is the
-# minimum this offset can be: the corner pack owns the first 3 5/8" of wall (see
-# GARAGE_X_WEST above) and the king wants 3" before the RO, so the king at 6'-4"..6'-5 1/2"
-# clears the corner by 3/8". RO 6'-7"..9'-7", centre x=8'-1", one inch off `D-M-ENTRY`'s
-# 8'-0". It was 2'-6" (RO 8'-6"..11'-6", centre 10'-0") from 2026-09-07 to 2026-09-11 and
-# 6'-6" off a wall at x=0'-0" before that — every one of those stations a 24" multiple,
-# under a "must sit on the stud module" rule this file invented and the engine never had.
-# What the corner buys: the stair sits against `W-G-W`, so its handrail is wall-mounted on
-# ordinary blocking; the
-# exterior landing covers both door patches at 3'-7" instead of 5'-6".
+# ** 11in OFFSET / 32in LEAF (2026-10-25). ** Hinge shifts 4in east while the east jamb
+# stays x=115in, preserving the deck edge, edge beam and piers. Ordinary hinges and a 90deg
+# overhead stop-only clear the full-thickness screen. The 36in stair, seats, rail, backing
+# and lighting retain their stations; the longitudinal section alone moves to x=99in.
+# Nominal width is not a prehung RO: supplier confirmation lives in the outswing note.
 #
 # ** MOVING THIS CONSTANT MOVES MORE THAN A DOOR. ** params/north_entry_frame.py derives the
 # east edge beam BM-BW-FE and the exterior landing's east edge from it
@@ -289,8 +284,8 @@ OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 # gap left them (2'-3" and 5'-9" off `N-GF-SW`) as a fossil split, so the water service's
 # sleeve `SP-GF-S-HYD` keeps its host `FT-GF-S-DR` — `integrity.sleeve_in_opening` is what
 # catches a sleeve whose host moved out from under it.
-SERVICE_DOOR_OFFSET = ft(0, 7)
-SERVICE_DOOR_WIDTH = ft(3)  # DT-EXT-SWING36-G
+SERVICE_DOOR_OFFSET = ft(0, 11)
+SERVICE_DOOR_WIDTH = ft(2, 8)  # DT-EXT-SWING32-G
 
 OPENINGS = [
     # 16' opening is past the prescriptive header table, hence the named engineered beam:
@@ -329,9 +324,10 @@ OPENINGS = [
     # waives the top landing of an interior flight, garage stairs named, provided no door
     # swings over the stairs; MN 1309 adopts the 2018 IRC (notes/garage_service_door_outswing.md).
     # `flip_swing` puts the sweep on the deck; `flip_hinge` hangs it on the west jamb, so the
-    # open leaf parks along W-BW-SCREEN at x=6'-7" and leaves the tier approach and D-M-ENTRY's
+    # open leaf parks along W-BW-SCREEN at x=6'-11" and leaves the tier approach and D-M-ENTRY's
     # sweep (y <= 36'-0") clear. The frame's own sill stands on the deck at 0'-0", so the leaf
-    # clears the boards by the sill and nothing re-rises. CLOSER WITH HOLD-OPEN: AN-G-SERVICE-DOOR.
+    # requires a leaf bottom >=1in above the rough sill (supplier confirmation); nothing re-rises.
+    # Frame-mounted overhead STOP-ONLY at 90deg: AN-G-SERVICE-DOOR.
     # Its rough sill sits flush with the deck: KDAT under a sloped, back-dammed pan
     # (notes/opening_flashing_spec.md §6).
     #
@@ -344,9 +340,9 @@ OPENINGS = [
     # fit, three plies filling the 2x6 wall, and it is the ordinary answer for a tall
     # opening in a garage wall: a continuous header carried at the plate line rather than
     # dropped below it (IRC R602.7.2 lets the header take the top plate's place).
-    Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING36-G",
+    Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING32-G",
          position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(1),
-         flip_hinge=True, flip_swing=True, maximum_opening_degrees=85,
+         flip_hinge=True, flip_swing=True, maximum_opening_degrees=90,
          header_spec='3-ply 5.5" LVL'),
     # This 8' wall (vs. the house's 10') is why the 27" family is 36" tall: a 60" height at
     # this 42" sill would push the header above the top plate.
@@ -863,12 +859,12 @@ TRUSS_ORDER = [
                text="TRUSS ORDER — RF-GARAGE and RF-BW-CANOPY, one fabricator, SEALED component design and reaction schedule. Both are 4:12 2x4 finks at 24in o.c. with a STANDARD HEEL: the top chord springs off the 3.5in bottom chord, no raised or energy heel. (1) A reaction at EVERY bearing, gravity and uplift, stating its basis: ground snow 50 psf, flat 42 psf balanced, the roof-step DRIFT surcharge of 50 psf peak over 9.8ft off the house gable (ASCE 7-16 §7.7), wind V_ult 115 mph Exposure B Risk Category II, 10 psf dead. (2) DRIFT TRUSSES: all three canopy trusses and RF-GARAGE's two southernmost (truss-000/-001) carry the drift case, not ground snow. (3) The canopy's SOUTH-END truss stands at the open south edge with no wall under it: design it for the out-of-plane wind on the gable-end triangle (2.22ft x 26.67ft, 16.8 psf ASD) braced at the deck, and say how it is braced. (4) The N-S diaphragm CHORD: both canopy end trusses' top chords, combined with gravity, and the peak splice's slip — the lateral design assumes 0.03in. (5) The heel ties are H2.5ASS stainless on the canopy (CN-BW-TRTIE-*) and H2.5A on the garage; confirm or supersede from the uplift reactions. (6) PERMANENT BRACING per BCSI-B3: show every web continuous lateral restraint and its diagonal brace, and the gable-end bracing at RF-GARAGE's north gable (W-G-N, over the 16ft overhead door) and south gable; state whether the 5/8in gypsum ceiling is relied on as bottom-chord restraint"),
 ]
 
-# `Door` and `DoorType` carry no hardware field, so the closer is a drawing note (2026-10-13).
+# `Door` and `DoorType` carry no hardware field, so the stop is a drawing note (2026-10-13).
 SERVICE_DOOR_HARDWARE = [
     Annotation(uid="GTREXSPEC1", tag="AN-G-COMPOSITE-DECKING", position=pt(ft(8), ft(44)),
                text="FS-BW-FLOOR, FS-SG-PORCH and ST-G-SERVICE: TREX ENHANCE BASICS, actual 0.94 x 5.5in square-edge, color TBD. Service treads: four 36 x 11in assemblies, each front 5.5in + 1/4in gap + rear rip 5.25in; five KDAT stringers <=9in o.c., EACH on a 316 stainless stem seat. BUTYL TAPE all deck framing tops and stepped stringer cuts; field-treat wood cuts. Both decks and treads: 316 stainless Cap-Tor xd #10 x 2-3/4in, TWO per board at EVERY support, flush; support all board ends. Retain KDAT rough sill under sloped pan, 1/2in open drainage gap, no board through doorway. See notes/composite_decking.md"),
     Annotation(uid="VJDMQAGNCA", tag="AN-G-SERVICE-DOOR", position=pt(ft(8, 1), ft(42, 6)),
-               text="D-G-SERVICE: OUTSWING, hinged on the WEST jamb, onto the entry deck. LCN 4040XP HCUSH, non-spring 85deg positive stop/hold-open, push-side garage mounting with reinforced door/head and adjustable latch speed; Schlage F51A LAT 622 lever. See bw_screen_thin_brick.md for the full hardware envelope and release checks so the leaf stays parked along W-BW-SCREEN and nobody reaches out over the deck from the top tread of ST-G-SERVICE. Leaf must not swing over the stair (IRC R311.7.6 exception, MN 1309); exterior sill stands on the deck at 0ft 0in"),
+               text="D-G-SERVICE: 32in Masonite insulated steel OUTSWING, ordinary hinges on WEST jamb. Frame-mounted mechanical overhead stop, STOP-ONLY, set to 90deg; no hold-open or closer. Confirm stop template and door/head reinforcement against ordered prehung unit; no attachments to brick. Schlage F51A LAT 622 lever. See notes/garage_service_door_outswing.md for swing envelope and supplier dimensions. Leaf must not swing over ST-G-SERVICE; detached garage stair-head arrangement remains a plan-review question. Require leaf bottom >=1in above rough sill to clear deck-tie strap; confirm sill/undercut. Exterior rough sill at deck datum 0ft 0in"),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS,

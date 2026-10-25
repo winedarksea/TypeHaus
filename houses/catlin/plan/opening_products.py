@@ -56,12 +56,14 @@ THERMATRU_SMOOTHSTAR = Product(
            "THC-M-5 (flush, no lite, THC-M-5-03881-00001). A small lite is a catalog option.")
 MASONITE_STEEL_FLUSH = Product(
     tag="PROD-MASONITE-STEEL-FLUSH", brand="Masonite", model="Premium Flush steel",
-    name="Premium Flush primed steel prehung, outswing, no brickmold", sku="74213",
-    url="https://www.homedepot.com/p/Masonite-36-in-x-80-in-Premium-Flush-Right-Hand-Outswing-"
-        "Primed-Steel-Prehung-Front-Door-No-Brickmold-74213/301287560",
-    source="Commodity insulated-core steel slab for the rarely heated garage; field-painted "
-           "black. No NFRC rating needed or claimed. 74213 is Home Depot's right-hand "
-           "listing; hand to be confirmed against D-G-SERVICE's flipped hinge.")
+    name="Premium Flush primed steel prehung, outswing, no brickmold, 32in", sku="26849",
+    url="https://superarbor.io/products/masonite-32-in-x-80-in-premium-right-hand-outswing-"
+        "flush-primed-steel-prehung-front-exterior-door-with-no-brickmold",
+    source="Same Premium Flush insulated steel family, nominal 32x80, field-painted black. "
+           "26849 is a reference right-hand outswing listing, not an approved order. Confirm "
+           "west hinge handing, actual frame/RO, hinge axis, sill and stop reinforcement "
+           "with prehanger. No NFRC rating needed or claimed for this unconditioned garage.")
+
 CLOPAY_MODERN_STEEL = Product(
     tag="PROD-CLOPAY-MODERN-STEEL", brand="Clopay", model="Modern Steel, Intellicore",
     name="Modern Steel 16x7 flush, Intellicore R-18.4, Black", sku="GDU011",

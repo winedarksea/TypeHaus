@@ -26,13 +26,13 @@
 > garage and through `W-BW-SCREEN`, whose 2'-4 1/8" band up to the header is braced by a CS16 X
 > on each face (`params/entry_band_brace.py`). Hand oracle: `notes/canopy_west_band.md`.
 >
-> **2026-09-11: `D-G-SERVICE` is hard in the garage's SW corner** (RO 6'-7"..9'-7", centre
-> x=8'-1", an inch off `D-M-ENTRY`), the landing narrowed to its east jamb (3'-7" wide, piers
+> **2026-09-11: `D-G-SERVICE` is hard in the garage's SW corner** (model opening now 6'-11"..9'-7", centre
+> x=8'-3", three inches off `D-M-ENTRY`), the landing narrowed to its east jamb (3'-7" wide, piers
 > at x=6'-0"/9'-7"), `ST-G-SERVICE` stands against `W-G-W` with a
 > wall-mounted handrail, the stem gap under the door is closed, and
 > `ED-M-ENTRY-LT` lights the entry landing. Garage +30in north; bridge composite finish 0; SL-G-STEP-0,
 > pads, glazing and the six invented seat connectors retired; HP3 west in open yard.
-> **2026-10-13: `D-G-SERVICE` swings OUT, hinged west, with a hold-open closer, and the
+> **2026-10-13: `D-G-SERVICE` swings OUT, hinged west, now 32in with a 90° frame-mounted overhead stop-only, and the
 > interior garage landing is gone** (R311.7.6 exception, AHJ to confirm:
 > `notes/garage_service_door_outswing.md`). `ST-G-SERVICE` rises straight to the threshold and
 > its stringers seat on the `W-G-S` stem; deck tie line 1 is two HL43HDG from `BM-BW-FE`. See
@@ -935,7 +935,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`); Cascadia
   fiberglass for the French pairs (glazed-only line); an OPAQUE Therma-Tru Smooth-Star for
   `D-M-ENTRY` (owner: a solid, insulated front door, at most a tiny lite); commodity Masonite
-  insulated steel for `D-G-SERVICE` (`DT-EXT-SWING36-G`); Clopay for the overhead. Black outside, white inside.
+  insulated steel for `D-G-SERVICE` (`DT-EXT-SWING32-G`); Clopay for the overhead. Black outside, white inside.
   `plan/window_types.py`/`plan/door_types.py` redefine every tag the house hangs, each with
   its NFRC CPD row, and `plan/manifest.py` drops the library preset of that tag; catalog-only
   sizes stay presets. **Edit the house file, never `library/windows.py`.** The escape types
@@ -1952,12 +1952,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   2026-09-07.** `GARAGE_X_WEST`/`GARAGE_X_EAST` are published beside the two y lines; stem,
   slab, and landing derive from them. Footprint did not rotate — windows stay on `W-G-W`,
   `D-G-SERVICE` on `W-G-S`. (→ DESIGN-LOG.md, "Decks and the garage")
-  - `D-G-SERVICE`'s centre is **x=8'-1"** since 2026-09-11 (`SERVICE_DOOR_OFFSET` 0'-7", RO
-    6'-7"..9'-7"), an inch off `D-M-ENTRY`'s 8'-0"; it was 10'-0" from 2026-09-07. **The
+  - `D-G-SERVICE`'s centre is **x=8'-3"** since 2026-10-25 (`SERVICE_DOOR_OFFSET` 0'-11", 32in model opening
+    6'-11"..9'-7"), three inches off `D-M-ENTRY`'s 8'-0"; it was 10'-0" from 2026-09-07. **The
     "24-inch steps" rule that held it there was the house's own invention** — the engine
     grades how many studs an opening interrupts, and the only hard bound is the corner pack
-    (x 6'-0"..6'-3 5/8"); the king at 6'-4" clears it by 3/8" and the RO interrupts the one
-    stud at 8'-0". `D-M-ENTRY` still cannot move (its east jamb is 6" west of `N-M-N2`, the
+    (x 6'-0"..6'-3 5/8"). The narrower leaf preserves the east jamb/deck datum; actual
+    prehung frame and hinge dimensions require supplier confirmation (see outswing note).
+    `D-M-ENTRY` still cannot move (its east jamb is 6" west of `N-M-N2`, the
     bearing tee). `code.R311_3_exterior_landing` passes both on a 3'-7" deck (x 6'-0"..9'-7").
     **Do not answer anything here by moving the garage back.**
   - **No interior landing since 2026-10-13.** `D-G-SERVICE` swings OUT, hinged on the west
@@ -2007,10 +2008,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   an 8'-4" wall). At 3'-0" the piers would still clear by 1"; below that the garage adopts
   Method CS-PF (R602.10.6.4) and its portal-frame straps and anchorage. The door's
   suppression of `structural.door_framing_module` is untouched and unrelated.
-  - **The SW corner takes a fifth hold-down.** `D-G-SERVICE` sits 7" off it, so `W-G-S` has
+  - **The SW corner takes a fifth hold-down.** `D-G-SERVICE` sits 11" off it, so `W-G-S` has
     no 24" return to give `W-G-W`'s 29" end panel and that end meets R602.10.7's end
     condition **2** instead: `CN-G-BWHD-SW`, an STHD14 cast into the ICF-6 core (ESR-2920's
-    6" stem row, 3,065 lb). The alternative is moving the service door 17" east, which drags
+    6" stem row, 3,065 lb). The alternative is moving the service door another 13" east, which drags
     the landing, both carriers, two backing bands, three lighting stations and a section cut
     with it. The same 29" panel IS the return the SOUTH line's end uses — the corner is
     short in one direction only.

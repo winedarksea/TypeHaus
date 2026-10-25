@@ -6142,3 +6142,21 @@ cushion acceptance and warranty documentation, and roll/seam layout before order
 Product provenance and the full specification are in notes/bedroom_carpet.md; the
 floor-height note and TODO carry the pending reconciliation. Regression coverage checks
 the product join, bedroom-only cushion quantities, priced layers and installation visit.
+
+## Garage service door: normal 90° swing (2026-10-25)
+
+D-G-SERVICE keeps the Masonite Premium Flush insulated steel family, now nominal 32in,
+11in offset (west hinge x=83in), with the east jamb fixed at x=115in. DT-EXT-SWING32-G
+replaces its 36in type. Ordinary hinges and a frame-mounted overhead stop-only at 90°
+replace the 85° LCN positive-stop/hold-open closer and its separate allowance. No brick
+attachments. Screen thickness, deck/beam/piers, header, sill and the 36in service stair,
+seats, handrail, backing and lighting retain their datums. Longitudinal cut x=99in.
+The continuous 0..91° thick-leaf/lever clearance regression includes installation allowance.
+Supplier must confirm actual prehung/RO, hinge, lever, sill and stop reinforcement/template;
+nominal 32in is neither a 32in prehung RO nor 32in clear passage. The detached-garage
+stair-head plan-review question remains in notes/garage_service_door_outswing.md, which
+also replaces the missing screen/door coordination note.
+
+Full-envelope verification also found the exterior entry guard's top post in the early
+swing. Owner approved moving RL-BW-ENTRY's top termination 1.5in east, onto the top tier
+(x=116.5in); garage stair/handrail and all deck structural datums stay fixed.

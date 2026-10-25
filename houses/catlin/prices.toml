@@ -5495,9 +5495,9 @@
 "DT-EXT-FRENCH60" = { material = { low = 1300, high = 2900 }, labour = { low = 450, high = 1050 } }  # 3 ea — sill pan, flashing, and a unit that must stay square for the astragal to latch
 "DT-EXT-SWING36" = { material = { low = 500, high = 1600 }, labour = { low = 320, high = 720 } }  # 1 ea — D-M-ENTRY, Therma-Tru Smooth-Star flush, multipoint
 # D-G-SERVICE's own type since 2026-10-21: a commodity Masonite Premium Flush steel prehung
-# outswing (Home Depot 74213; the 6-panel steel outswing lists at $525), field-painted. Same
+# 32in outswing, field-painted; retained $300-600 material budget pending prehanger quote. Same
 # labour.
-"DT-EXT-SWING36-G" = { material = { low = 300, high = 600 }, labour = { low = 320, high = 720 } }  # 1 ea
+"DT-EXT-SWING32-G" = { material = { low = 300, high = 600 }, labour = { low = 320, high = 720 } }  # 1 ea
 # ** LOW END RAISED, not lowered. ** An UNINSULATED 16x7 steel door is $888 at Home Depot and
 # should not be the base case in Climate Zone 6 on a heated-adjacent garage. This now starts at
 # an insulated R-6.5 door ($2,230 with windows) and tops out at a carriage style (Coachman
@@ -7106,7 +7106,7 @@ envelope-opening-flashing-and-sill-pans = { low = 180, high = 262, unit = "ea", 
 # Sloped sill pan with back and end dams under each exterior swing door
 # (`notes/opening_flashing_spec.md` §6). Filtered to single exterior SWINGS, not `kind=door`:
 # FRENCH60 (`double_swing`) carries its own pan in its row. Since 2026-10-21 that is two
-# types, D-M-ENTRY's DT-EXT-SWING36 and D-G-SERVICE's DT-EXT-SWING36-G, both `entry`.
+# types, D-M-ENTRY's DT-EXT-SWING36 and D-G-SERVICE's DT-EXT-SWING32-G, both `entry`.
 # ~$60-140 of preformed pan or membrane plus about an hour.
 envelope-door-sill-pans = { low = 150, high = 300, unit = "ea", driver = "openings.count[function=entry,operation=swing]" }
 # D-G-OVERHEAD's perimeter membrane (2026-10-16, `notes/opening_flashing_spec.md` §7): head
@@ -7555,12 +7555,8 @@ finish-wall-tile-material = { low = 900, high = 1800 }
 # type before a per-function count means anything. Until both are done this stays one lump
 # at the researched rate — the same money, and the same 34 openings.
 finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.count[takes_hardware=True]" }
-# D-G-SERVICE's surface closer with a HOLD-OPEN arm (AN-G-SERVICE-DOOR, 2026-10-13): the
-# outswing leaf parks along W-BW-SCREEN so nobody reaches out over the deck from the top tread.
-# finish-door-hardware above is lockset/hinges/stop only, so this is its own lump. Retail read
-# 2026-10-13: Norton 7500H $403 (absupply), CLP7500-T $443 (qualitydoor), UNI7500H $630-768
-# (qualitydoor / nationallocksupply); plus $100-250 to hang it on a fiberglass leaf.
-finish-door-closer-hold-open = { low = 650, high = 1200 } # LCN 4040XP HCUSH 695, non-spring 85deg, reinforced push-side mount; provisional quote
+# D-G-SERVICE: ordinary hinges and frame-mounted overhead stop-only are included in
+# finish-door-hardware; confirm reinforced mounting with the prehanger. No closer allowance.
 # DRIVEN 2026-08-27 off the window count; 41 are authored as of 2026-09-27. It was
 # $73-164 per window covering stool
 # STOCK, apron, jamb extension and the carpenter's hour.

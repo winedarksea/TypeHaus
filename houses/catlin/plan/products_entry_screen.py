@@ -20,11 +20,6 @@ ENTRY_SCREEN_PRODUCTS = (
             url="https://keenebuilding.com/products/driwall-rainscreen/driwall-rainscreen-020-1/"),
     Product(tag="PROD-BW-WRB", brand="DuPont", model="Tyvek HomeWrap",
             url="https://www.dupont.com/products/tyvek-homewrap.html"),
-    Product(tag="PROD-G-SERVICE-CLOSER", brand="LCN", model="4040XP HCUSH 695",
-            url="https://www.lcnclosers.com/en/products/surface-mounted/4040xp-series-closers.html",
-            source="Non-spring HCUSH positive stop/hold-open, 85 degree template 28266, "
-                   "push side INSIDE garage; all-weather fluid. Steel door/head reinforcement "
-                   "and mounting clearances require shop-template confirmation. Not SCUSH/HSCUSH."),
     Product(tag="PROD-G-SERVICE-LEVER", brand="Schlage", model="F51A LAT 622",
             url="https://www.schlage.com/en/home/products/F51ALATFFF.html",
             source="Matte black Latitude keyed entry, 2-3/8in backset; use a conservative "

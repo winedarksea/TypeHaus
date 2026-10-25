@@ -56,5 +56,5 @@ ENTRY_SCREEN_WALL = Assembly(
            "1-1/8in KDAT packing at studs clears the projecting posts by 1/8in; no veneer "
            "fixings into post faces. WEST 5/8in CDX alone supplies shear; west corrugated, "
            "stud axis and guard geometry retained. Masonry band +2 to +47.5in. See "
-           "notes/bw_screen_thin_brick.md for attachment, joints and construction-release gates.",
+           "notes/garage_service_door_outswing.md for door coordination and release checks.",
 )

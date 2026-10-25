@@ -1,6 +1,6 @@
 """W-BW-SCREEN east veneer design basis; inches unless explicitly named otherwise.
 
-Product/field release items live in notes/bw_screen_thin_brick.md. The packing lifts
+Product/field release items live in notes/garage_service_door_outswing.md. The packing lifts
 primary sheathing clear of the 6x6s, without fastening the brittle finish to their faces.
 """
 
@@ -18,8 +18,10 @@ HEAD_PROJECTION_IN = 0.125
 BRICK_LENGTH_IN = 7.625
 BRICK_HEIGHT_IN = 2.25
 MORTAR_JOINT_IN = 0.375
-DOOR_STOP_DEGREES = 85.0
+DOOR_STOP_DEGREES = 90.0
 DOOR_STOP_TOLERANCE_DEGREES = 1.0
+# Minimum sill + undercut release requirement, not a confirmed factory dimension.
+DOOR_LEAF_BOTTOM_ABOVE_ROUGH_SILL_IN = 1.0
 DOOR_LEAF_THICKNESS_IN = 1.75
 LEVER_PROJECTION_BUDGET_IN = 2.5
 LEVER_HINGEWARD_EXTENT_IN = 4.125

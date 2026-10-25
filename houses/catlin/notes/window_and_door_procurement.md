@@ -97,7 +97,7 @@ and fixed; LC-PG45/CW-PG80 tilt-turn. Every value is over §1's DP 20.
 |---|---|---|---|---|---|---|
 | `D-M-ENTRY` | Therma-Tru Smooth-Star flush, inswing | THC-M-5-03881 | 0.15 | — | — | opaque; polyurethane core; multipoint lock |
 | `D-B-PATIO`, `D-M-BALC`, `D-S-DECK-E` | Cascadia Universal, double | -00344 in / -00415 out | 0.15 | 0.33 | 0.42 | inswing double R-PG35; **CPD lists the single leaf**, the pair's label is a quote item |
-| `D-G-SERVICE` | Masonite Premium Flush steel, outswing (HD 74213) | none | — | — | — | own type `DT-EXT-SWING36-G`; insulated core, unconditioned garage |
+| `D-G-SERVICE` | Masonite Premium Flush steel, 32in outswing (reference 26849; confirm handing/frame/RO) | none | — | — | — | own type `DT-EXT-SWING32-G`; insulated core, detached unconditioned garage; see garage_service_door_outswing.md for prehung/stop confirmation |
 | `D-G-OVERHEAD` | Clopay Modern Steel, Intellicore R-18.4, Black, 16x7 | none | — | — | — | unconditioned; wind rating for q_h 19.3 psf to confirm |
 
 Therma-Tru's best full-lite (THC-M-5-04493) is U 0.21 at VT 0.27; Drutex's uPVC balcony door

@@ -49,7 +49,8 @@ def test_shared_landing_covers_both_door_widths(catlin_model):
         x, y = _opening_world_center(catlin_model, tag)
         # Measure the landing from the board edge, beyond cladding and the drainage gap.
         south = y - 3 * FT - 1.375 * INCH if tag == SERVICE_DOOR else y + 7.75 * INCH
-        patch = box(x - 1.5 * FT, south, x + 1.5 * FT, south + 3 * FT)
+        door = next(opening for opening in catlin_model.openings if opening.tag == tag)
+        patch = box(x - door.width_m / 2, south, x + door.width_m / 2, south + 3 * FT)
         assert surface.buffer(1e-8).covers(patch), tag
 
 
