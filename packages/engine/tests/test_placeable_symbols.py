@@ -32,6 +32,27 @@ def test_every_vocabulary_name_is_implemented_or_explicitly_pending() -> None:
     assert not (set(_REGISTRY) & PENDING_SYMBOLS)
 
 
+def test_espresso_machine_has_front_dispensing_space_and_top_hopper() -> None:
+    width, depth, height = 0.24765, 0.4318, 0.37465
+    parts = model_parts("espresso-machine", width, depth, height)
+    hopper = [part for part in parts if part["color"] == "glass"
+              and part["center"][2] > height * 0.8]
+    assert len(hopper) == 1
+    assert hopper[0]["center"][1] > 0
+    assert any(part["color"] == "screen" and part["center"][2] > height * 0.75
+               for part in parts)
+    # The tray is below the twin spouts, leaving a real cup-sized space in front.
+    spouts = [part for part in parts if part["color"] == "metal-black"
+              and part["size"][0] == pytest.approx(width * 0.045)]
+    assert len(spouts) == 2
+    assert all(part["center"][1] < -depth * 0.26 for part in spouts)
+    assert min(part["center"][2] - part["size"][2] / 2 for part in spouts) > height * 0.30
+    assert any(part["color"] == "glass" and part["center"][0] < 0
+               and part["center"][1] < 0 for part in parts)  # attached milk carafe
+    assert any(part["color"] == "glass" and part["center"][0] > 0
+               and part["center"][1] > 0 for part in parts)  # side water tank
+
+
 def test_unknown_and_missing_symbols_yield_no_geometry() -> None:
     for symbol in (None, "", "not-a-symbol"):
         assert plan_symbol_strokes(symbol, 1.0, 1.0) == ()

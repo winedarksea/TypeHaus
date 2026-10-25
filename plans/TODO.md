@@ -328,7 +328,7 @@ the future.
 - Improve the wainscot of the mudrooms
 - Oksana wants an elm slab sofa table
 - Plan microwave placement. Leading options are peninsula drawer, replacing FURN-M-KIT-MIXER-GARGE with a countertop microwave, replacing FURN-M-KIT-MIXER-GARGE with a built in drop down door microwave (such as https://www.frigidaire.com/en/p/kitchen/microwaves/built-in-microwaves/GMBD3068AF and we need to make sure it gets adaquate cooling), or putting it in the pantry near the door.
-- Model a coffee machine and kettle
+- [x] Model a coffee machine and kettle — SEVERIN WK 3422 and Arctic White De’Longhi Rivelia EXAM44055W on the north kitchen counter (2026-10-25); see DESIGN-LOG for the accepted overhead-clearance shortfall.
 - Check the basement stair carpet, and swap the carpet from the theater with an partial coverage area rug in the theater (technically not installed with tack strips or glue)
 - Update the LVP to https://coretecfloors.com/en-us/products/coretec-pro-classics/quincy-oak-vv017-01018
 - [x] Move D-M-MECH and D-M-MUDC 8" east within the existing walls (owner-approved instead of a full stud bay); relocate the three switches to W-M-MUDC-E.

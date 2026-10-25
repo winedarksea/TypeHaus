@@ -337,6 +337,27 @@ SEVERIN_TEA_KETTLE = ApplianceType(
 )
 
 
-APPLIANCE_TYPES = (SEVERIN_TEA_KETTLE, LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER, BROAN_HOOD_30, BADGER_5,
-                   FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
-                   BAR_REFRIGERATOR, BAR_REFRIGERATOR_CUBE)
+DELONGHI_RIVELIA = ApplianceType(
+    tag="APPL-DELONGHI-EXAM44055W",
+    name="De’Longhi Rivelia EXAM44055W espresso machine, Arctic White",
+    product_ref="PROD-DELONGHI-EXAM44055W",
+    footprint=(inch(9.75), inch(17)), height=inch(14.75),
+    plan_symbol="espresso-machine", needs=frozenset({Service.POWER_120}),
+    ports=(ServicePort(tag="power", service=Service.POWER_120,
+                       position=(inch(0), inch(8.5), inch(0))),),
+    source="De’Longhi US EXAM44055W specifications, read 2026-10-25: "
+           "9.75 W x 17 D x 14.75 H inches, 120 V, 1450 W. Refillable water tank; "
+           "no plumbed supply or drain. Planned power is the 120 V receptacle at "
+           "ED-M-LIVING-KET1, not its 240 V CKT-KETTLE supply; circuit schedule unchanged. "
+           "Owner accepts the 2.75-inch overhead gap on 2026-10-25, below the manual's "
+           "5.90-inch recommendation. Moisture exposure and hopper-removal access need "
+           "checking before permanent use; ventilation and moisture resistance are unverified.",
+)
+
+
+APPLIANCE_TYPES = (
+    DELONGHI_RIVELIA, SEVERIN_TEA_KETTLE, LG_WASHTOWER, LG_INDUCTION_RANGE,
+    LG_DISHWASHER, BROAN_HOOD_30, BADGER_5,
+    FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
+    BAR_REFRIGERATOR, BAR_REFRIGERATOR_CUBE,
+)

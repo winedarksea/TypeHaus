@@ -2350,6 +2350,8 @@
 # The disposer and hood are named (2026-10-22: InSinkErator Badger 5, Broan BWP1304SS +
 # ARKBWP kit; one US listing showed the hood at $454) but not yet priced, so both keep the
 # category spread. The Evolution Excel upgrade would sit above this disposer row.
+# De’Longhi US EXAM44055W listing, read 2026-10-25; owner-placed countertop appliance.
+"APPL-DELONGHI-EXAM44055W" = { material = { low = 1299.95, high = 1299.95 }, labour = { low = 0, high = 0 } }  # 1 ea
 "APPL-ISE-BADGER5" = { material = { low = 90, high = 300 }, labour = { low = 0, high = 0 } }  # 1 ea
 "APPL-BROAN-BWP1304SS" = { material = { low = 150, high = 600 }, labour = { low = 100, high = 300 } }  # 1 ea
 # Named LG products, priced 2026-08-24 off LG.com plus the retailer checks in the research

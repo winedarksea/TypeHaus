@@ -113,6 +113,11 @@ MAIN_KITCHEN_CASEWORK = [
               room="RM-M-LIVING", position=pt(inch(303.375), inch(416.375)),
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(36)),
               install_parts=("Grounded NEMA 6-20P to international UK Type G plug adapter",)),
+    # Beside the kettle over the dishwasher. Owner accepts 2 3/4" under WE1;
+    # the manufacturer's overhead recommendation is 5.90" (see appliance type source).
+    Appliance(uid="RIVELIA001", tag="APPL-M-COFFEE", type_ref="APPL-DELONGHI-EXAM44055W",
+              room="RM-M-LIVING", position=pt(inch(321.375), inch(413.875)),
+              rotation=deg(0), mount=Mount(kind=MountKind.FLOOR, elevation=inch(36))),
     Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="SEKT-SINK-B36",
               room="RM-M-LIVING",
               position=pt(inch(351.375), inch(413.375))),

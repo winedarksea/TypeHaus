@@ -30,6 +30,28 @@ def test_tea_kettle_stands_on_north_counter_clear_of_sink_and_uppers(catlin_mode
         Polygon(objects["ED-M-LIVING-KET1"].footprint)) < 0.30
 
 
+def test_rivelia_stands_beside_kettle_with_accepted_overhead_gap(catlin_model_ro):
+    objects = {obj.tag: obj for obj in catlin_model_ro.canvas_objects}
+    coffee = objects["APPL-M-COFFEE"]
+    footprint = Polygon(coffee.footprint)
+    top = next(item for item in catlin_model_ro.countertops if item.tag == "CT-M-KIT-N")
+    assert Polygon(top.outline).covers(footprint)
+    assert coffee.position == pytest.approx((321.375 * INCH, 413.875 * INCH))
+    assert coffee.rotation_degrees == pytest.approx(0)
+    assert coffee.body_z0_m == pytest.approx(
+        countertop_prisms(catlin_model_ro, top)[0].z1_m)
+    assert coffee.body_z1_m - coffee.body_z0_m == pytest.approx(14.75 * INCH)
+    assert footprint.distance(Polygon(objects["APPL-M-KETTLE"].footprint)) / INCH == (
+        pytest.approx(8.401, abs=0.001))
+    assert footprint.distance(Polygon(objects["FX-M-KITCH-SINK"].footprint)) == (
+        pytest.approx(9.75 * INCH))
+    upper = objects["FURN-M-KIT-WE1"]
+    assert footprint.intersects(Polygon(upper.footprint))
+    assert (upper.body_z0_m - coffee.body_z1_m) / INCH == pytest.approx(2.75)
+    # Proximity proves a short route is possible, not that branch wiring is resolved.
+    assert footprint.distance(Polygon(objects["ED-M-LIVING-KET1"].footprint)) < 0.30
+
+
 def test_the_peninsula_draws_its_notched_slab_at_the_counter(catlin_model_ro):
     top = next(item for item in catlin_model_ro.countertops
                if item.tag == "CT-M-KIT-PENINSULA")

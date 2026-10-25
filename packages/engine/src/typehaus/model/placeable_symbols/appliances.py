@@ -8,6 +8,7 @@ door-and-handle family can express.
 
 from __future__ import annotations
 
+from typehaus.model.placeable_symbols._espresso_machine import espresso_machine
 from typehaus.model.placeable_symbols._families import Builder, Geometry, appliance_case
 from typehaus.model.placeable_symbols._frame import (
     DETAIL_WEIGHT,
@@ -307,6 +308,7 @@ def grille(*, louvers: int = 5) -> Builder:
 
 APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "tea-kettle": tea_kettle,
+    "espresso-machine": espresso_machine,
     # A French-door refrigerator: two fresh-food doors over a freezer drawer would need a
     # nested split, so the pair of full-height doors is the honest simplification.
     "refrigerator": appliance_case(doors=2, split="vertical", body="appliance-steel"),

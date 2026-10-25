@@ -6210,3 +6210,32 @@ model. The existing 3,000 VA circuit allowance now names the selected 3,000 W ke
 
 Manufacturer: https://severin.com/en-en/nutrition-preparation/coffee-breakfast/kettles-tea-makers/wk-3422-professional-tea-maker-with-automatic-lift-function/
 Adapter example: https://www.amazon.com/Universal-110-250V-American-Electrical-converter/dp/B07FKLRLRT
+
+
+## Rivelia coffee machine beside the kettle (2026-10-25)
+
+Arctic White De’Longhi Rivelia EXAM44055W is APPL-M-COFFEE on CT-M-KIT-N,
+above the dishwasher, centred at x=321.375", y=413.875" and facing south into
+the kitchen aisle. The 9.75 W × 17 D × 14.75 H inch assembled envelope stands
+on the 36" AFF stone top, approximately 8.4" from the kettle, 9.75" from the
+sink footprint and 3" from the rear wall. Shared plan/3D geometry approximates
+the housing, hopper, screen, dispensing head, tray, side tank and attached carafe;
+spare hoppers and cups are omitted. The dated appliance price is $1,299.95.
+
+The owner accepts retaining the upper cabinets with 2.75" above the machine.
+The manufacturer manual §2.2 requires 15 cm / 5.90" above and 3 cm / 1.18"
+at side/rear walls, and advises against placement near taps or sinks. This is
+an owner-accepted placement shortfall, not manufacturer-compliant overhead
+clearance. Cabinet finishes stay unchanged. Check moisture exposure, airflow
+and hopper-removal access before permanent use; the model establishes neither
+adequate ventilation nor cabinet moisture resistance.
+
+The machine requires 120 V / 1450 W and has a refillable tank, with no plumbed
+water or drain. Intended supply is the existing ED-M-LIVING-KET1 combination
+outlet's 120 V receptacle. Its 240 V CKT-KETTLE supply is for the tea maker;
+the coffee machine is not assigned to that circuit. The existing single-circuit
+device record does not separately document the combination outlet's 120 V branch;
+this addition leaves the circuit schedule unchanged.
+
+Manufacturer: https://www.delonghi.com/en-us/p/rivelia-rivelia-fully-automatic-espresso-machine--arctic-white/EXAM44055W.html?pid=0132250087
+Manual: https://library.delonghigroup.com/assetbank-delonghi/action/directLinkImage?assetId=325611&download=true

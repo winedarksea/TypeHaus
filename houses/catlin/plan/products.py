@@ -55,6 +55,17 @@ SEVERIN_WK3422 = Product(
            "no-true-neutral requirement confirmed by owner; see APPL-SEVERIN-WK3422.",
 )
 
+DELONGHI_RIVELIA = Product(
+    tag="PROD-DELONGHI-EXAM44055W", brand="De’Longhi", model="EXAM44055W",
+    name="Rivelia fully automatic espresso machine, Arctic White",
+    url="https://www.delonghi.com/en-us/p/"
+        "rivelia-rivelia-fully-automatic-espresso-machine--arctic-white/"
+        "EXAM44055W.html?pid=0132250087",
+    source="De’Longhi US product specifications, read 2026-10-25: "
+           "9.75 W x 17 D x 14.75 H inches, matte Arctic White, 120 V, 1450 W. "
+           "Assembled envelope; internal symbol proportions approximate product photographs.",
+)
+
 # --- the LG kitchen and laundry ---------------------------------------------------------
 #
 # The owner's LG choice, three machines (plan/appliance_types.py). The model number IS the
@@ -298,7 +309,7 @@ LEVITON_EV_RECEPTACLE_1450R = Product(
 # One catalog to every ``product_ref`` and to the manifest; two files only because of the
 # 500-line rule.
 PRODUCTS = (
-    SEVERIN_WK3422,
+    SEVERIN_WK3422, DELONGHI_RIVELIA,
     TREX_TIDE_POOL_PRODUCT, EXTRUTECH_P1600,
     LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER, ISE_BADGER_5, BROAN_BWP1304SS,
     KRAUS_KHU100_32, KRAUS_BOLDEN, DEARBORN_KITCHEN_TRAP,

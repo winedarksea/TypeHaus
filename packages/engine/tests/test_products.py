@@ -39,6 +39,29 @@ def test_catlin_tea_kettle_product_and_supply(catlin_plan):
     assert circuit.gfci
 
 
+def test_catlin_rivelia_product_and_supply(catlin_plan):
+    from typehaus.model import Appliance, Service
+
+    appliance_type = next(item for item in catlin_plan.library.appliance_types
+                          if item.tag == "APPL-DELONGHI-EXAM44055W")
+    product = catlin_plan.library.product(appliance_type.product_ref)
+    assert (product.brand, product.model) == ("De’Longhi", "EXAM44055W")
+    assert product.url.endswith("EXAM44055W.html?pid=0132250087")
+    assert tuple(d.meters for d in appliance_type.footprint) == pytest.approx(
+        (9.75 * 0.0254, 17 * 0.0254))
+    assert appliance_type.height.meters == pytest.approx(14.75 * 0.0254)
+    assert appliance_type.plan_symbol == "espresso-machine"
+    assert appliance_type.needs == frozenset({Service.POWER_120})
+    assert len(appliance_type.ports) == 1
+    port = appliance_type.ports[0]
+    assert port.service == Service.POWER_120
+    assert tuple(d.meters for d in port.position) == pytest.approx((0, 8.5 * 0.0254, 0))
+    appliance = next(item for item in catlin_plan.elements["main"]
+                     if isinstance(item, Appliance) and item.tag == "APPL-M-COFFEE")
+    assert appliance.type_ref == appliance_type.tag
+    assert not appliance.install_parts
+
+
 def _library_with(plan, **updates):
     return plan.model_copy(update={"library": plan.library.model_copy(update=updates)})
 
