@@ -354,12 +354,12 @@ Worst case is `PT-BW-W`, which carries the west roof column **and** the landing'
 |---|---|---|
 | roof tributary | 160.0 / 2 headers / 2 supports per header | 40.0 ft² |
 | deck tributary | 23.5 ft² of landing / 2 seat lines | 11.8 ft² |
-| wall line load | `W-BW-SCREEN` + `SB-BW-BAND` on `BM-BW-SCSILL`, half | 206 lb |
+| wall line load | `W-BW-SCREEN` + `SB-BW-BAND` on `BM-BW-SCSILL`, half | 283 lb |
 | roof live | 40.0 × **73.7** psf (§3's design snow) | 2,948 lb |
 | deck live | 11.8 × 40 psf | 470 lb |
-| dead | (40.0 + 11.8) × 10 psf + 1,188 lb self weight + carried + wall | 1,807 lb |
-| service | | **5,225 lb** |
-| factored | 1.2 D + 1.6 L | **7,636 lb** |
+| dead | (40.0 + 11.8) × 10 psf + 1,188 lb self weight + carried + wall | 1,884 lb |
+| service | | **5,302 lb** |
+| factored | 1.2 D + 1.6 L | **7,729 lb** |
 
 (2026-10-13: the garage's interior landing, 13.2 ft², retired with the inswing door, and the
 two carriers that brought it to the seats with it: 18.4 → 11.8 ft², service 5,456 → 5,124,
@@ -378,8 +378,17 @@ never needed a tributary area: it is a plf times a run.
 | `SB-BW-BAND` | 2x6 sill and top plate, 6x6 centre post, 14 slats (25.75 LF of 2x4): 1.90 ft³ of kdat at 600 kg/m³, over its own 4.52' | 15.71 plf |
 | line | | **90.94 plf** |
 | run | the wall's axis inside `BM-BW-SCSILL`'s own footprint | 4.52' (54 1/4") |
-| total | | **411.1 lb** |
-| each column | two bearings | **205.6 lb** |
+| on the beam | 90.94 × 4.5208' | 411.1 lb |
+| past the beam | the panel alone, 75.23 × (6.5729' − 4.5208') = 75.23 × 2.0521' | 154.4 lb |
+| total | | **565.5 lb** |
+| each column | two bearings | **282.8 lb** |
+
+**The panel's ends are weighed too (2026-10-25).** The wall runs 36'-7 3/4" to 43'-2 5/8"
+and the sill only 37'-8 3/4" to 42'-3", between the chord posts. The 2.05' past the sill —
+the two post tops and the ends cantilevered past them — is sheathed panel carried to its
+chords, `PT-BW-CW`/`-CNW`, which are the sill's own bearings. So `pier_basis` weighs it onto
+the same two posts (`_wall_beam_pairs`' `outboard_m`). Only the panel runs past the sill;
+`SB-BW-BAND` stands between the chords and stays in the 4.52'.
 
 **`W-BW-SCREEN`, layer by layer (2026-10-25).** kg/m² × height × 0.672 = plf. Full height
 is 48.94" (1.2431 m); the veneer band +2" to +47.5" is 45.5" (1.1557 m). Framed layers are
@@ -405,10 +414,12 @@ KDAT at 600 kg/m³ × the engine's 0.23 field framing factor.
 The pre-veneer stack (MDO, studs, CDX, corrugated) works to 30.54 at 49.0" the same way,
 which is the figure this table carried. 0.23 is conservative here: studs at 1.5/16 plus three
 plates over 48.94" is 0.177, and packing 1.5/16 is 0.094, for **70.9 plf**. 75 plf is over the
-guard check's old 50 plf wood allowance; `preferences.toml` raised it to 80 on this basis.
+guard check's 50 plf wood allowance, which stays at 50: `structural.masonry_guard_bearing`
+passes the screen because its whole run is weighed here, not left on a deck rim.
 
-(2026-10-25: the east thin brick took the wall 30.54 → 75.23 plf; the line was 46.25 plf, 104.5
-lb a column, and the factored axial 7,515 lb. 2026-09-30: the slats shortened 2.40' → 2.34' when the header became an 11 7/8" glulam,
+(2026-10-25: the east thin brick took the wall 30.54 → 75.23 plf, and the panel's ends were
+weighed; the line was 46.25 plf over 4.52' only, 104.5 lb a column, and the factored axial
+7,515 lb. 2026-09-30: the slats shortened 2.40' → 2.34' when the header became an 11 7/8" glulam,
 `canopy_west_band.md` §7; the line was 43.48 plf, 98.3 lb a column. 2026-10-04: the vertical
 `SC-BW-WEST`, 12.66 plf over 6.57', became the braced slat band `SB-BW-BAND`,
 `canopy_west_band.md` §3; the line was 43.20 plf, 97.7 lb a column. 2026-10-08: the slat gap
@@ -420,7 +431,7 @@ down. The plf is the one `checks/structural/guards.py` already printed ("guard w
 `W-BW-SCREEN` weighs 31 plf") in the same run that called this load unknown; it moved to
 `resolve/assembly_weight.py` so a calc could read it, because `engineering` may not import
 `checks`. `checks/structural/deck.py` divides the same pounds into R507.3.1's currency —
-205.6 / 50 psf = 4.11 ft² — rather than holding a second answer about one load.
+282.8 / 50 psf = 5.66 ft² — rather than holding a second answer about one load.
 
 > ⚠ **WITHDRAWN 2026-09-21 as a DEMAND, kept as built.** With the landing tied to the garage (§10)
 > the four landing piers lean: `deck_post` grades them "axial, tied column" (d/c 0.007-0.027)
@@ -431,7 +442,8 @@ down. The plf is the one `checks/structural/guards.py` already printed ("guard w
 `deck_post._detailing_only`'s six load-independent states for `_moment_column`'s twelve, and
 the twelfth is dowel ANCHORAGE into the base — ACI 318-19 §25.4.3.1's ℓ_dh, 7.115" for a #5.
 `PT-BW-GW` had an 8" pad giving 5.375" and **no base dowels at all**: d/c 1.32. It was never
-the wall load (105 lb then, 1.3% of factored axial; 206 lb with the veneer, 2.7%). `_MOMENT_PIERS` had covered the landing's
+the wall load (105 lb then, 1.3% of factored axial; 283 lb with the veneer and the panel's
+ends, 3.7%). `_MOMENT_PIERS` had covered the landing's
 EAST column and not its west, while `pier_basis._base_moments` split the lateral case "over
 4 fixed column(s)" and `structural.lateral_racking` named all four — so the west pair carried
 its twins' base moment with nothing detailed to deliver it, and nobody saw it because their
@@ -442,8 +454,8 @@ hold, `column_base`'s embedment (grade to pad top) does not move and
 `entry_column_base_fixity.md` §6e's claim is undisturbed.
 
 **`pier_basis` reads the same roof and wall as this line, and half its deck** (re-read
-2026-10-13): 5.50 ft² of deck and 40.0 ft² of roof on `PT-BW-W` plus the 206 lb of wall above,
-for D 1,945 + L 3,168 = 5,113 lb service and 7,403 lb factored, against the 7,636 hand-worked
+2026-10-13): 5.50 ft² of deck and 40.0 ft² of roof on `PT-BW-W` plus the 283 lb of wall above,
+for D 2,023 + L 3,168 = 5,191 lb service and 7,497 lb factored, against the 7,729 hand-worked
 here. The 5.50 is the house seat's strip, `0.792' cantilever + 4.979' / 2 = 3.281'`, over the
 seat's 3.3542' and split between its two piers; `PT-BW-GW`/`-GE` read the garage seat's
 `4.979' / 2 + 0.604' = 3.094'` the same way, 5.19 ft². Each pier carried 3.91 ft² more (9.41 /

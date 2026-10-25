@@ -5,8 +5,11 @@ import pytest
 from shapely.geometry import Point, Polygon
 
 from typehaus.resolve.assembly_weight import dead_load_plf, wall_line_plf
-from typehaus.takeoff.envelope import (envelope_layer_takeoff, wall_layer_net_area_m2,
-                                       wall_net_areas_m2)
+from typehaus.takeoff.envelope import (
+    envelope_layer_takeoff,
+    wall_layer_net_area_m2,
+    wall_net_areas_m2,
+)
 
 INCH = 0.0254
 

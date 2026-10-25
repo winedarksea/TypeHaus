@@ -94,7 +94,7 @@ def _grade(ctx: CheckContext, tag: str, wall, allowance_plf: float) -> Finding:
     carried, whole_run = _engineered_supports(ctx, tag, wall)
     on_beam = [whole_run or any(p.covers(point) for p in carried.values())
                for point in _stations(wall)]
-    rest = [s for s, covered in zip(supports, on_beam) if not covered]
+    rest = [s for s, covered in zip(supports, on_beam, strict=True) if not covered]
     if any(kind is None for kind, _name in rest):
         return _unknown(_CHECK_ID, f"guard wall {tag} carries {load_plf:.0f} plf but part "
                         "of its run has nothing modeled under it at its base elevation, so "

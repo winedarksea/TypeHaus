@@ -478,27 +478,30 @@ is laterally tied to the garage, as §10h/§10i of north_entry_piers.md describe
 
 ## Addendum 2026-10-25 — `W-BW-SCREEN`'s east thin brick (landing arithmetic only)
 
-The veneer took the screen wall 30.54 → 75.23 plf, worked layer by layer in
-`north_entry_piers.md` §2. Over the 4.5208' run on `BM-BW-SCSILL` the share above each of
-`W`/`GW` goes 104.55 → 205.56 lb, so `D +101.01`. L, k_θ, I_g and both exposed lengths are
-unchanged; EI moves only through β = 1.2D/P_u.
+The veneer took the screen wall 30.54 → 75.23 plf, and the panel's 2.05' past the sill is now
+weighed onto its chords too (`north_entry_piers.md` §2). The share above each of `W`/`GW`
+goes 104.55 → 282.76 lb, so `D +178.2`. L, k_θ, I_g and both exposed lengths are unchanged;
+EI moves only through β = 1.2D/P_u.
 
 | column | D | L | P_u | β | EI | δ 0.25" | δ 1.0" |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `PT-BW-W` | 1,945.3 | 3,168.1 | 7,403.3 | 0.3153 | 2.3114e9 | 1.0803 | 1.3316 |
-| `PT-BW-GW` | 1,522.8 | 3,155.5 | 6,876.1 | 0.2657 | 2.4019e9 | 1.3404 | 352.88 |
+| `PT-BW-W` | 2,023.2 | 3,168.1 | 7,496.8 | 0.3239 | 2.2965e9 | 1.0816 | 1.3378 |
+| `PT-BW-GW` | 1,600.0 | 3,155.5 | 6,968.8 | 0.2755 | 2.3835e9 | 1.3467 | — |
 
-Worked, `PT-BW-GW` at 1.0" (L 60.56", D off the 2026-10-15 P_u of 6,754.904):
-- `Pc,rigid = π² × 2.4019e9 / (2.1 × 60.56)² = 1,465,697`
-- `R = 7.5109e5 × 60.56 / 2.4019e9 = 0.01894`
-- `Pc,flex = 1,465,697 / (1 + 3/0.01894) = 9,194.2`
-- `0.75 × 9,194.2 = 6,895.7`, now **19.5 lb** over `P_u`
-- `δ = 1 / (1 − 6,876.1 / 6,895.7) = 352.9`
+Worked, `PT-BW-GW` at 1.0" (L 60.56"):
+- `EI = 2.4019e9 × 1.2657 / 1.2755 = 2.3835e9`
+- `Pc,rigid = π² × 2.3835e9 / (2.1 × 60.56)² = 1,454,479`
+- `R = 7.5109e5 × 60.56 / 2.3835e9 = 0.019084`
+- `Pc,flex = 1,454,479 / (1 + 3/0.019084) = 9,193.9`
+- `0.75 × 9,193.9 = 6,895.4`, **73.5 lb under** `P_u`: no δ, a mechanism at the soft end
 
-A tenth of a pound of P_u moves that δ by half a percent, so the test pins `1/δ` here. No
-verdict moves: the landing is tied (`north_entry_piers.md` §10h), and these rows stay
-arithmetic only. The next ~20 lb of dead load on the west seat makes `GW` a mechanism again.
+No verdict moves: `GW` was already OVER, the landing is tied (`north_entry_piers.md`
+§10h), and these rows stay arithmetic only.
+
+`W`'s D before this addendum was 1,946.0 in the engine, not the 1,945.3 an earlier draft of
+it printed; that 0.7 lb slip sat inside the old pin's tolerance.
 
 > **UNVERIFIED.** This addendum, the layer table in `north_entry_piers.md` §2 and the test
-> pins share one author; their agreement is self-consistency, not an oracle. Needs an
-> independent re-work before it is cited.
+> pins share one author. The run and the share (565.5 lb, 282.75 lb a column) were re-worked
+> by hand from the plan geometry and agree with the engine's 282.76; the rest is
+> self-consistency, not an oracle. Needs an independent re-work before it is cited.
