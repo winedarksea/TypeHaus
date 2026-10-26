@@ -1392,7 +1392,10 @@ that same 1/2-inch south extension in §10h's two-joint distribution: E-W at W i
 **564.7 / 1,480 + 295.0 / 740 ≈ 0.7802** with unrounded forces. It now governs;
 N-S remains **0.7779**, and guard is **0.6340**. All rows pass.
 
-The screen's dead line load stays about **87.64 lb/ft**. Its added 1/2-inch run adds
-87.64 / 24 = **3.65 lb** total, or **1.83 lb** to each of its two column reactions:
-about **276.7 lb each**, replacing §2's previous 274.9 lb. The foam, support wood,
+The screen's dead line load stays about **87.64 lb/ft** over the beam's 4.52'. The added
+1/2-inch lies PAST the beam, where only the panel runs (§2: "the panel alone … past the beam"),
+so it carries the panel's **74.84 plf**, not the line: 74.84 / 24 = **3.12 lb** total, or
+**1.56 lb** to each of its two column reactions: about **276.45 lb each**, replacing §2's
+previous 274.9 lb. (An earlier draft of this paragraph charged the 1/2" at 87.64 plf and
+read 276.7; the code, which the `wall_line_loads` docstring states, never did.) The foam, support wood,
 fasteners, and panel engineering properties have not changed.

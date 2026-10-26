@@ -60,8 +60,9 @@ _CATLIN = {
     # HP3 910 / 3.08, before the 2026-10-21 bath 1 rework moved the powder room's walls.
     # 13,861 before the 27 1/2" ROs (2026-10-23); 13,879 after the 1/2" walls (2026-10-23).
     # Two French pairs: +4 UA x85 F = +340 Btu/h.
-    "EQ-M-HP2-OD": (14_219, 8_800, 5.0, 0.62, 25.3, not _ADVISED),
-    "EQ-M-HP3-OD": (906, 2_800, 17.0, 3.09, None, _ADVISED),
+    # BBD75 layer depth correction (2026-10-25): -1 Btu/h, the same envelope-area shift as HP1.
+    "EQ-M-HP2-OD": (14_218, 8_800, 5.0, 0.62, 25.3, not _ADVISED),
+    "EQ-M-HP3-OD": (905, 2_800, 17.0, 3.09, None, _ADVISED),
 }
 
 
@@ -154,7 +155,7 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
     """0.80 as a ratio is a number nobody can act on; ``11,691 Btu/h against this zone's
-    14,616`` is one an equipment selector can shop against."""
+    14,614`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message

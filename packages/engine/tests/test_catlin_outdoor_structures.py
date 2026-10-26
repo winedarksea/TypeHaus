@@ -1302,15 +1302,20 @@ def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
     assert walk.is_valid
     assert pad.intersection(walk).area == pytest.approx(0.0)
     assert pad.distance(walk) == pytest.approx(0.0)
-    shared_edge = pad.boundary.intersection(walk.boundary)
-    assert shared_edge.length / INCH == pytest.approx(104.0)
+    # Walk and pad edges match to the last float bit, and an exact intersection drops the
+    # collinear north run, so the contact is measured inside a 1/1000" band.
+    shared_edge = pad.boundary.buffer(INCH / 1000).intersection(walk.boundary)
+    assert shared_edge.length / INCH == pytest.approx(104.0, abs=0.01)
     lane_south = pad.bounds[3]
     lane = box(pad.bounds[0], lane_south,
                pad.bounds[2], lane_south + 36 * INCH)
-    assert walk.covers(lane), "the continuous pour must retain a 36-inch walk beyond the pad"
+    assert walk.buffer(INCH / 1000).covers(lane), \
+        "the continuous pour must retain a 36-inch walk beyond the pad"
     section = walk.intersection(LineString([(cabinet.centroid.x, lane_south),
                                             (cabinet.centroid.x, garage_face_y)]))
-    assert section.length / INCH == pytest.approx(42.75)
+    # 43.25": the pad's north edge follows the house's north cladding, which came in 1/2"
+    # with the BBD75 depth correction (2026-10-25). The walk's own north edge did not move.
+    assert section.length / INCH == pytest.approx(43.25)
     drainage = next(surface for surface in catlin_model.plan.project.site.impervious_surfaces
                     if surface.label == "hp1 pad")
     assert Polygon([p.xy_m for p in drainage.outline]).equals_exact(pad, 1e-8, normalize=True)

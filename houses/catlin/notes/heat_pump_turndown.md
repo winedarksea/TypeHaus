@@ -417,9 +417,12 @@ HP2 carries two (+4 UA × 85 = +340 Btu/h). The current resolved values are:
 
 | zone | design load (Btu/h) | sizing factor | Manual S cap (Btu/h) | crossover |
 |---|---|---|---|---|
-| HP1 | 14,446 → **14,616** | **0.96** | **11,693** | **−9.5 °F** |
-| HP2 | 13,879 → **14,219** | **0.62** | **11,375** | **25.3 °F** |
-| HP3 | **906** unchanged | **3.09** | **725** | never |
+| HP1 | 14,446 → 14,616 → **14,614** | **0.96** | **11,691** | **−9.5 °F** |
+| HP2 | 13,879 → 14,219 → **14,218** | **0.62** | **11,375** | **25.3 °F** |
+| HP3 | 906 → **905** | **3.09** | **724** | never |
+
+The last step (2026-10-25) is the BBD75 layer depth correction: the board's depth moved the
+envelope area by a fraction of a percent, which is −2 Btu/h on HP1 and −1 on HP2 and HP3.
 
 Equipment and verdicts are unchanged: HP1/HP3 remain advisory, HP2 passes the sizing cap.
 These loads use the provisional CPD U 0.21; the laminated-triple pair's label is pending.

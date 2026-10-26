@@ -320,7 +320,7 @@ the future.
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
 - Bedroom carpet provisionally selected 2026-10-23: Sweet Spot I Romano (warm ivory/cream), Future Foam 8 lb/ft³ 7/16-in cushion; light warm greige alternative. [Specification and purchasing checks](../houses/catlin/notes/bedroom_carpet.md). Confirm sample, current local quote, cushion acceptance/warranty and roll/seam layout; measure the installed assembly and reconcile plywood, transitions, door clearances and affected elevations. The existing 3/4-in model depth remains provisional.
 - The bottoms of 3d modeled windows are a bit glitchy in 3d movement, perhaps due to an unnecessary attempt to cast reflections there.
-- Do passes to confirm geometry and dimensions of select products all align together correctly for real world build dimensions. Major items to check: stairs, doors and windows (and their trim), framing, cabinets.
+- Do passes to confirm geometry and dimensions of select products all align together correctly for real world build dimensions. Major items to check: stairs, doors and windows (and their trim/flashing), framing, cabinets, trusses.
 - Kitchen sink fabrication hold: dry-fit KHU100-32 / Bolden KPF-1610SFS / Badger 5 / Dearborn P9703WBG in the 36-inch SEKTION. Verify delivered Badger revision, clip/washer and rail access, full hose stroke, cleanout clearance, vent fitting/bore envelopes and the inward tilt-turn window sweep (full turn likely obstructed). See houses/catlin/notes/kitchen_sink_installation.md; product/connection specification is complete, physical fit is not released.
 - Lets get the BOM showing all IKEA SEKTION parts needed (knobs, scribes, hinges, feet, etc), and soft close pieces too.
 - Can we widen D-M-BATH2 to 36"? Not sure if/how the casing would work as that puts it into the shower area (the casing).
@@ -337,6 +337,7 @@ the future.
 - [x] Simplify W-BW-SCREEN thin brick (2026-10-25): omit the face liquid membrane and bond mortar directly to prepared cement board; retain post-clearance packing, plywood, WRB, drainage mat and flashing. Complete MVIS system warranty not pursued for this small sheltered screen.
 - See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
 - Fix the missing horizontal trim of the board and batten (instructions says max panel length of aroudn 20', no end lapping, so needs to have a mid point 'board' trim likely)
+- Seam clamps as minor snow retainer?
 
 # Project Management
 
