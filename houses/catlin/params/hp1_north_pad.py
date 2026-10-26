@@ -25,6 +25,8 @@ from __future__ import annotations
 
 from typehaus import Connector, ConnectorKind, Post, Slab, ft, inch, pt
 
+from params.cladding import HOUSE_NS_OUTBOARD_IN
+
 # --- the cabinet this serves, restated ------------------------------------------------
 # EQ-T-GREE-FLEXX-ULTRA-24-OD: 39" wide x 14 9/16" deep, 187.4 lb, foot pattern
 # 29 3/4" x 15 9/16" from the submittal (the same pattern params/sunken_garden.py used
@@ -35,8 +37,8 @@ _FOOT_W_IN = 29.75
 _FOOT_D_IN = 15.5625
 #: House north cladding face. y=36'-0" is the sheathing line (``face("sheathing-ext")`` on
 #: W-M-N2) and the rainscreen/girt/board-batten stack outboard of it is
-#: ``params/roof_trim.py::_WALL_OUTBOARD_IN``, 7 1/4".
-_CLADDING_Y_IN = 36 * 12 + 7.25
+#: ``params/cladding.py::HOUSE_NS_OUTBOARD_IN``, 6 3/4".
+_CLADDING_Y_IN = 36 * 12 + HOUSE_NS_OUTBOARD_IN
 #: ** 6", NOT THE PUBLISHED 4". ** Gree's back clearance for this chassis is 4"; the
 #: `hp3_pad` idiom is "published plus two" where the ground has the room, and here it has.
 #: The two extra inches are not comfort, they are what makes the pad buildable: at 4" the
@@ -46,10 +48,10 @@ _CLADDING_Y_IN = 36 * 12 + 7.25
 _BACK_CLEAR_IN = 6.0
 
 #: The cabinet centre, in inches from the project origin. **This pair is also written in
-#: plan/electrical.py** as ``pt(ft(26, 9.5), ft(37, 8.53125))`` and the two files cannot
+#: plan/electrical.py** as ``pt(ft(26, 9.5), ft(37, 8.03125))`` and the two files cannot
 #: import each other. The Y mirrors the centre the unit had in the pocket
 #: (``ft(-1, -8.53125)`` about the same cladding offset), which is not a coincidence: it is
-#: the same cabinet at the same back clearance off the same 7 1/4" cladding stack.
+#: the same cabinet at the same back clearance off the same 6 3/4" cladding stack.
 #:
 #: Pier west face 29'-5", less 12" service space and half the 39" cabinet.
 _CX_IN = 26 * 12 + 9.5                                      # 26'-9 1/2"
@@ -69,7 +71,8 @@ _CY_IN = _CLADDING_Y_IN + _BACK_CLEAR_IN + _CAB_D_IN / 2.0  # 37'-8 17/32"
 #: Derived off the centre rather than restated, so the pad follows the cabinet: the east
 #: and west edges run 2 3/4" past it, which is the pocket pad's own rule.
 _PAD_X0_IN, _PAD_X1_IN = _CX_IN - (_CAB_W_IN / 2.0 + 2.75), _CX_IN + (_CAB_W_IN / 2.0 + 2.75)
-_PAD_Y0_IN, _PAD_Y1_IN = 36 * 12 + 10.0, 39 * 12 + 4.0
+_PAD_Y0_IN = _CLADDING_Y_IN + 2.75
+_PAD_Y1_IN = _PAD_Y0_IN + 30.0
 #: Two inches proud of the -2'-10" site grade, the same top as both other pads, so all
 #: three cabinets' bases resolve to one number.
 _PAD_TOP = ft(-2, -8)

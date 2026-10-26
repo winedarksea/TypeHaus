@@ -51,6 +51,7 @@ TRANSITIONS = (
                continuity=AIR_WATER_THERMAL, star=False,
                starred_conditions=(
                    "wall_roof:EXT_2X6|ROOF",
+                   "wall_roof:EXT_2X6_BOARD_BATTEN|ROOF",
                )),
     # The envelope crossing — concrete to framed wall, where the thermal, air and water
     # layers all have to hand off. Named keys rather than a pattern-wide star, and two of the five: the perimeter
@@ -68,6 +69,7 @@ TRANSITIONS = (
                star=False,
                starred_conditions=(
                    "wall_foundation:BASEMENT_12|EXT_2X6",
+                   "wall_foundation:BASEMENT_12|EXT_2X6_BOARD_BATTEN",
                    "wall_foundation:GARAGE_ICF_6|GARAGE_WALL_2X6",
                )),
     # ** UNSTARRED WHOLE. ** Sixteen conditions derived off this one pattern and every one

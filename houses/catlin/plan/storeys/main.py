@@ -405,27 +405,11 @@ NODES = [
 
 # --- board & batten on the north and south elevations -----------------------
 #
-# Every wall below whose face runs EAST-WEST — the north and south elevations — carries a
-# `layer_materials=` override swapping its cladding layer from `pbr-panel-24` to
-# `board-batten-24` (Metal Sales BBD75-1212, 24 ga concealed direct-fastened, 12" net
-# coverage, the same PVDF Linen White). The east and west walls keep PBR. Twenty walls across main/second/attic; the full list and the
-# supplier/gauge/thickness reasoning live on the Material in plan/assemblies.py.
-#
-# ** NO SIBLING ASSEMBLY, and that is the point. ** A second Assembly tag would silently
-# strip the oak window stools from every window in a B&B wall (plan/millwork.py scopes them
-# to `("EXT_2X6",)`), mint new `opening_perimeter:` / `wall_roof:` /
-# `wall_foundation:` detail keys and goldens, break the exact-key star overrides in
-# plan/transitions.py, and add a key to every table keyed by assembly. `layer_materials`
-# substitutes a material and nothing else — thickness, framing, banding and every derived
-# geometry stay the assembly's — which is exactly the change being made here. It is
-# applied at resolve/topology.py and typo-guarded by checks/integrity/wall_layer_material.py.
-#
-# Note W-S-S1 is PLANT_EXT_2X6_HUMID and so is W-S-W4 on the east/west side: the plant room
-# straddles the split, and this override handles it without forking either assembly.
-#
-# ** The revert is deleting the `cladding` entries. ** `pbr-panel-24` and its
-# prices.toml row are still live on the east/west walls, so going back to one skin is a
-# twenty-line deletion with no price archaeology.
+# North/south walls use EXT_2X6_BOARD_BATTEN (and the plant-room variant): the
+# BBD75-1212 is 3/4 inch deep, while east/west PBR remains 1-1/4 inch. The
+# variants reuse the same support stack and sheathing datum. Millwork scopes,
+# transition stars, and assembly-keyed vent-screen prices include both variants.
+# LayerMaterial remains an appearance-only substitution, used below for LSL studs.
 #
 # --- LSL studs on the main storey ---------------------------------------------
 # Every exterior wall and the x=18' centreline below also carries `stud` -> `lsl`, by the
@@ -437,14 +421,12 @@ NODES = [
 WALLS = [
     # --- exterior loop (CCW), sheathing-ext on the line -----------------------
     Wall(uid="CMW101AAAA", tag="W-M-S1", start_node="N-M-SW", end_node="N-M-S1",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
-                         LayerMaterial(layer="stud", material="lsl")),
-         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
+         assembly="EXT_2X6_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CMW102AAAA", tag="W-M-S2", start_node="N-M-S1", end_node="N-M-SE",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
-                         LayerMaterial(layer="stud", material="lsl")),
-         assembly="EXT_2X6",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
+         assembly="EXT_2X6_BOARD_BATTEN",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # W-M-E1/W-M-E2 merged into one wall so WIN-M-EAST-MID could land inside
@@ -477,37 +459,32 @@ WALLS = [
     # — an ERROR, not an advisory. An authored tiebreaker on the upper wall is what it asks
     # for. Second storey: W-S-N1B is re-pointed to W-M-N1B for the same reason (second.py).
     Wall(uid="CMW105AAAA", tag="W-M-N1", start_node="N-M-NE", end_node="N-M-PAN3",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
-                         LayerMaterial(layer="stud", material="lsl")),
-         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
+         assembly="EXT_2X6_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N1"),
     Wall(uid="R0STSQM95Y", tag="W-M-N1B", start_node="N-M-PAN3", end_node="N-M-N1",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
-                         LayerMaterial(layer="stud", material="lsl")),
-         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
+         assembly="EXT_2X6_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N1"),
     Wall(uid="CMW106AAAA", tag="W-M-N2", start_node="N-M-N1", end_node="N-M-N2",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
-                         LayerMaterial(layer="stud", material="lsl")),
-         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
+         assembly="EXT_2X6_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # Split at N-M-MECH3, where RM-M-MECH's east wall tees into the north wall
     # (2026-07-28, MEP shaft closet). W-M-N3B carries the actual NW building corner —
     # its four-stud pack now comes from the assembly's own ``corner_style``, not a
     # per-wall override (2026-08-25, see houses/catlin/CLAUDE.md's corner section).
     Wall(uid="CMW107AAAA", tag="W-M-N3", start_node="N-M-N2", end_node="N-M-MECH3",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
-                         LayerMaterial(layer="stud", material="lsl")),
-         assembly="EXT_2X6",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
+         assembly="EXT_2X6_BOARD_BATTEN",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N3"),
     # stacks_on W-B-N4, not W-B-N3: the basement's north wall was split at this same
     # x=6'-0" line on 2026-08-23 (the ESS closet's west partition tees in there), so the
     # two storeys now break in the same place and each main segment has one wall under it.
     Wall(uid="CMW135AAAA", tag="W-M-N3B", start_node="N-M-MECH3", end_node="N-M-NW",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
-                         LayerMaterial(layer="stud", material="lsl")),
-         assembly="EXT_2X6",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
+         assembly="EXT_2X6_BOARD_BATTEN",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N4"),
     # Split at N-M-MECH1, where RM-M-MECH's south wall tees into the west wall

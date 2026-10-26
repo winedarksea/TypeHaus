@@ -664,7 +664,7 @@ MAIN_EQUIPMENT = [
     # `mount.elevation` is UNCHANGED at -14": the pad tops out at the same -2'-8" under the
     # same 18" stand, so all three cabinets keep one base plane at -1'-2".
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(26, 9.5), ft(37, 8.53125)), footprint=(inch(39), inch(14.5625)),
+              position=pt(ft(26, 9.5), ft(37, 8.03125)), footprint=(inch(39), inch(14.5625)),
               rotation=deg(180), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-FLEXX-ULTRA-24-OD", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
@@ -679,7 +679,7 @@ MAIN_EQUIPMENT = [
     # its route. Refrigerant geometry is not an engine element; outdoor_ref preserves the
     # connection to the indoor head. Defrost drains to the west-yard gravel, off the walk.
     Equipment(uid="CEE027AAAA", tag="EQ-M-HP3-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(1, 5.1875), ft(38, 2.6484375)),
+              position=pt(ft(1, 5.1875), ft(38, 2.1484375)),
               footprint=(inch(34.375), inch(14.796875)), rotation=deg(180),
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-SAPPHIRE-9-OD", circuit="CKT-HP3", room=None),

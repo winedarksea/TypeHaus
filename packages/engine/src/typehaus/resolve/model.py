@@ -99,6 +99,8 @@ class ResolvedLayer:
     framed: bool = False
     # Optional viewer lens authored on the source assembly layer; distinct from bid trade.
     view_trade: str | None = None
+    # Optional display skin; depth and takeoff accounting keep the nominal layer envelope.
+    surface_mesh: GMesh | None = None
 
     def band(self, wall: ResolvedWall) -> tuple[float, float]:
         """This layer's absolute (z0, z1), falling back to the wall's where unbanded."""
@@ -280,6 +282,8 @@ class FramedMember:
     # The hardware ROLE whose product ships this member (a pocket kit's split studs). It is
     # drawn and cleared like any member and billed with the kit, never as lumber.
     supplied_by: str | None = None
+    # Profiled closure skin shared by the interactive viewer and portable 3D export.
+    surface_mesh: GMesh | None = None
 
 
 @dataclass(frozen=True)

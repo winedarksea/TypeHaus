@@ -10,10 +10,12 @@ from __future__ import annotations
 
 from typehaus import Beam, Connector, ConnectorKind, Node, Post, Slab, ft, inch, pt
 
+from params.cladding import HOUSE_NS_OUTBOARD_IN
+
 # SAP09HP230V1R32AO cabinet dimensions, Gree Sapphire R32 service manual p. 3.
 _CAB_W_IN = 34.375
 _CAB_D_IN = 14.796875
-_CLADDING_Y_IN = 36 * 12 + 7.25
+_CLADDING_Y_IN = 36 * 12 + HOUSE_NS_OUTBOARD_IN
 # Service manual p. 44: rear/left 300 mm, right/top 500 mm, discharge 2000 mm.
 # Round up rear to 12" and reserve 24" sides/top, 80" north discharge; the manufacturer
 # FAQ's larger 24" right/top values therefore also fit. Sources read 2026-09-10:
@@ -28,7 +30,8 @@ _CY_IN = _CLADDING_Y_IN + _BACK_CLEAR_IN + _CAB_D_IN / 2.0
 # The 3" west overrun past the house corner remains inside the west yard; defrost drains
 # north to gravel, away from the east entry. The slab does not touch either building.
 _PAD_X0_IN, _PAD_X1_IN = -3.0, 37.0
-_PAD_Y0_IN, _PAD_Y1_IN = 446.25, 471.0
+_PAD_Y0_IN = _CLADDING_Y_IN + 7.0
+_PAD_Y1_IN = _PAD_Y0_IN + 24.75
 _PAD_TOP = ft(-2, -8)
 
 HP3_PAD = Slab(

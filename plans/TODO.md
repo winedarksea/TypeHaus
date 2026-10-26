@@ -336,6 +336,7 @@ the future.
 - Conduit for floor thermostats for heated floor
 - [x] Simplify W-BW-SCREEN thin brick (2026-10-25): omit the face liquid membrane and bond mortar directly to prepared cement board; retain post-clearance packing, plywood, WRB, drainage mat and flashing. Complete MVIS system warranty not pursued for this small sheltered screen.
 - See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
+- Fix the missing horizontal trim of the board and batten (instructions says max panel length of aroudn 20', no end lapping, so needs to have a mid point 'board' trim likely)
 
 # Project Management
 

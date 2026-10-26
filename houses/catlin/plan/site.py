@@ -491,8 +491,8 @@ SITE = Site(
         # the wall it abuts.
         ImperviousSurface(
             label="hp3 pad",
-            outline=(pt(ft(0, -3), ft(37, 2.25)), pt(ft(3, 1), ft(37, 2.25)),
-                     pt(ft(3, 1), ft(39, 3)), pt(ft(0, -3), ft(39, 3))),
+            outline=(pt(ft(0, -3), ft(37, 1.75)), pt(ft(3, 1), ft(37, 1.75)),
+                     pt(ft(3, 1), ft(39, 2.5)), pt(ft(0, -3), ft(39, 2.5))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -9),
             kind="pad",
@@ -538,8 +538,8 @@ SITE = Site(
         # west, north and east edges as one continuous pour. Defrost drains onto the walk.
         ImperviousSurface(
             label="hp1 pad",
-            outline=(pt(ft(24, 11.25), ft(36, 10)), pt(ft(28, 7.75), ft(36, 10)),
-                     pt(ft(28, 7.75), ft(39, 4)), pt(ft(24, 11.25), ft(39, 4))),
+            outline=(pt(ft(24, 11.25), ft(36, 9.5)), pt(ft(28, 7.75), ft(36, 9.5)),
+                     pt(ft(28, 7.75), ft(39, 3.5)), pt(ft(24, 11.25), ft(39, 3.5))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -8.75),
             kind="pad",

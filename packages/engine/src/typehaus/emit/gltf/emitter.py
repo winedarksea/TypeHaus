@@ -24,6 +24,7 @@ from shapely.geometry import Polygon
 # Re-exported for callers that reach past the entry point (tests pinning palette parity, the
 # arch-soffit tessellation, the wall/roof builders). Import them from their own modules in new
 # code; this list keeps ``from typehaus.emit.gltf.emitter import ...`` working unchanged.
+from typehaus.emit.gltf.board_batten import add_profiled_wall_surfaces
 from typehaus.emit.gltf.buffers import _deindex_with_normals  # noqa: F401
 from typehaus.emit.gltf.canvas_objects import _add_canvas_objects, _add_countertops
 from typehaus.emit.gltf.geometry import (  # noqa: F401
@@ -138,9 +139,12 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         # Wall layer prisms are the selectable "walls" body; its framing members are their own
         # "framing" node so the framing visibility toggle reaches the studs.
         body = _MeshBuilder()
-        _add_wall_body(body, wall, lod, openings_by_wall.get(wall.tag, ()), authored)
+        _add_wall_body(body, wall, lod, openings_by_wall.get(wall.tag, ()), authored,
+                       include_surface_meshes=False)
         for member in closures.get(wall.uid, ()):
-            _add_member(body, member, authored)
+            if member.surface_mesh is None:
+                _add_member(body, member, authored)
+        add_profiled_wall_surfaces(scene, wall, closures.get(wall.uid, ()), authored, lod)
         scene.add_object(body, wall_trades(wall), kind="wall", uid=wall.uid)
         if wall.members:
             framing = _MeshBuilder()

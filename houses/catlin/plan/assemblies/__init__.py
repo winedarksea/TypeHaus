@@ -9,6 +9,7 @@ sibling modules; the assembly editor adds to catalog.ASSEMBLIES and
 materials.MATERIALS.
 """
 
+from .board_batten import EXT_2X6_BOARD_BATTEN, PLANT_EXT_2X6_HUMID_BOARD_BATTEN
 from .catalog import (
     ASSEMBLIES,
     CONSTRUCTION_RULES,
@@ -128,6 +129,8 @@ __all__ = [
     "ROOF",
     "GARAGE_ROOF",
     "CANOPY_ROOF",
+    "EXT_2X6_BOARD_BATTEN",
+    "PLANT_EXT_2X6_HUMID_BOARD_BATTEN",
     "EXT_2X6",
     "RAFTER_PLATE",
     "EXT_2X6_SWINBURNE",

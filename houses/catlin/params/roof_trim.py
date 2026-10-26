@@ -70,6 +70,8 @@ from __future__ import annotations
 
 import math
 
+from params.cladding import HOUSE_EW_OUTBOARD_IN, HOUSE_NS_OUTBOARD_IN
+
 from typehaus import DischargeExtension, Downspout, Flashing, Gutter, TrimKind, ft, inch, pt
 
 _HOUSE_FT = 36.0
@@ -87,7 +89,7 @@ _HOUSE_FT = 36.0
 #   6.5"  — the girts under 1/2" snap-lock seam
 #   5.5"  — the Swinburne truss: 1.5 foam + 3.5 outrigger band + 0.5 seam
 #   5.02" — the CI boards before it: 0.02 WRB + 2" polyiso + 2" EPS + 0.5 furring + 0.5 seam
-_WALL_OUTBOARD_IN = 4.0 + 0.5 + 1.5 + 1.25  # 7.25"
+_WALL_OUTBOARD_IN = HOUSE_EW_OUTBOARD_IN  # compatibility for E/W consumers
 _EAVE_X_W = ft(0) - inch(_WALL_OUTBOARD_IN)
 _EAVE_X_E = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)
 
@@ -155,10 +157,10 @@ def _above_deck(vertical_in: float):
 
 
 # The eaves run the full roof footprint, which reaches the *cladding* face at both gable
-# ends — not the sheathing datum. Stopping at ft(0)/ft(36) left 7.25" of open roof stack
+# ends — not the sheathing datum. North/south board-batten now stands 6.75 inches out
 # at each rake corner with no gutter under it, which is the hole the 3D view showed.
-_EAVE_Y0 = ft(0) - inch(_WALL_OUTBOARD_IN)
-_EAVE_Y1 = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)
+_EAVE_Y0 = ft(0) - inch(HOUSE_NS_OUTBOARD_IN)
+_EAVE_Y1 = ft(_HOUSE_FT) + inch(HOUSE_NS_OUTBOARD_IN)
 
 
 def _run(x):
@@ -264,7 +266,7 @@ ATTIC_ELEMENTS = [
 # not pick the wrong metal: it simply billed nothing. That gap is closed here.
 #
 # ** WHY THIS IS IN ``params/`` AND NOT AN EDITABLE PLAN FILE. ** Every offset below is
-# measured off ``_WALL_OUTBOARD_IN``, the one constant the cladding face is measured by, and
+# measured off the assembly-derived east/west and north/south cladding faces, and
 # the whole hazard this house already carries is that four *other* consumers of that face
 # hand-transcribe it (breezeway, sunken garden, the exterior devices, and this module's own
 # eave lines). The editable dialect forbids arithmetic, so authoring these in ``plan/`` would

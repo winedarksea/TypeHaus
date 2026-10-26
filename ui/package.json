@@ -13,6 +13,7 @@
     "test": "node scripts/test-model-snapshot.mjs && node scripts/run-geometry-tests.mjs",
     "tile-review": "node scripts/tile-review.mjs",
     "wood-review": "node scripts/wood-review.mjs",
+    "siding-review": "node scripts/siding-review.mjs",
     "door-review": "node scripts/door-review.mjs",
     "shots": "npm run build && node scripts/shoot.mjs",
     "shots:landing": "npm run build && node scripts/shoot-landing.mjs",

@@ -153,13 +153,11 @@ WALLS = [
     # names which face the liner lands on; without it an asymmetric wall would take the
     # component's outward sign and could line the wrong side.
     Wall(uid="CSW101AAAA", tag="W-S-S1", start_node="N-S-SW", end_node="N-S-S1",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="PLANT_EXT_2X6_HUMID", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="PLANT_EXT_2X6_HUMID_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
          interior_room="RM-S-PLANT",
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-S1"),
     Wall(uid="CSW102AAAA", tag="W-S-S2", start_node="N-S-S1", end_node="N-S-SE",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-S2"),
     Wall(uid="CSW103AAAA", tag="W-S-E1", start_node="N-S-SE", end_node="N-S-E1",
          assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
@@ -179,8 +177,7 @@ WALLS = [
          assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E1"),
     Wall(uid="CSW107AAAA", tag="W-S-N1", start_node="N-S-NE", end_node="N-S-B5",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N1"),
     # Re-pointed W-M-N1 -> W-M-N1B: the main storey's north wall split at
     # x=24'-4" for RM-M-PANTRY's east partition, and this segment (x 21'-11"..18'-0") sits
@@ -188,22 +185,18 @@ WALLS = [
     # authored tiebreakers for the same lower wall, and the resolver links only one upper
     # wall per lower — so the segment actually over it would have lost the edge.
     Wall(uid="CSW135AAAA", tag="W-S-N1B", start_node="N-S-B5", end_node="N-S-N1",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N1B"),
     Wall(uid="CSW108AAAA", tag="W-S-N2", start_node="N-S-N1", end_node="N-S-N2",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N2"),
     # Split at N-S-CH2, where the mechanical chase's east wall tees into the north wall
     # (moved to the NW corner 2026-07-28 — see the node comment above).
     Wall(uid="CSW109AAAA", tag="W-S-N3", start_node="N-S-N2", end_node="N-S-CH2",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N3"),
     Wall(uid="CSW153AAAA", tag="W-S-N3B", start_node="N-S-CH2", end_node="N-S-NW",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6_BOARD_BATTEN", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N3B"),
     # Split at N-S-CH3, where the chase's south wall tees into the west wall
     #.

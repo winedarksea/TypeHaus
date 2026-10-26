@@ -30,7 +30,7 @@ source:
 - Girts: KDAT 2x4 laid flat, horizontal, 24" o.c., on three-ply 4-1/2" KDAT blocks.
 - Blocks land on every other stud, 32" o.c. from the layout line.
 - One 8" TimberLOK TLOK08 per crossing, 1-1/2" into the stud. 1,131 total.
-- Cladding: PBR board-and-batten on the girts, face 7-1/4" off the sheathing.
+- Cladding: PBR on east/west walls, face 7-1/4" off sheathing; BBD75-1212 board-and-batten on north/south walls, face 6-3/4" off sheathing. Both bear on the same girt plane.
 - Block stands 1/2" proud of the foam. That gap is the drainage plane.
 - Window mount plane is the girt face, 6" outboard of the sheathing.
 - Everything outboard of the sheathing is KDAT. No WRB; the foam is the water plane.
@@ -71,7 +71,7 @@ blocks** — all 2x4 stock, all laid flat, nothing on edge:
 | girt | **KDAT** 2x4 flat, horizontal, 24" o.c. | on the blocks, 4-1/2" → 6", standing in free air; the cladding nailer and the window mount plane |
 | jamb post | KDAT 2x4 flat, vertical | at every RO edge, inner face ON the edge |
 | head/sill course | KDAT 2x4 flat | spanning the RO between the two posts |
-| cladding | PBR / board & batten panel | screwed to the girts, 6" → 7-1/4" |
+| cladding | PBR / BBD75-1212 | screwed to the girts, 6" → 7-1/4" (E/W) or 6-3/4" (N/S) |
 
 Foam total 4", in ONE application, crossed only by the blocks. The block stands **1/2" proud**
 of the foam face, and that proud half inch is the **vented gap** behind every course — the

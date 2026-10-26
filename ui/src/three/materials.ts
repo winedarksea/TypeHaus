@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { createBoardBattenMaterial } from "./boardBattenMaterial";
 import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
 import { familyOf } from "../nordic/palette";
 import { tiledFbm } from "./valueNoise";
@@ -90,33 +91,10 @@ export const CORRUGATED_PROFILE: MetalPanelProfile = {
   striations: 0, oilCanning: 0.010,
 };
 
-/**
- * Board & batten concealed-fastener panel: a flat 20" pan with a ~1-1/2" applied batten
- * standing at each edge, screwed through a hidden leg. The house's north and south walls.
- *
- * The terms that separate it from "PBR with a wider module", which is exactly what it would
- * read as if they were copied:
- *  - `moduleM` = 20", the net coverage. Two and a half times a PBR rib pitch — the batten
- *    rhythm is the thing you identify this panel by from across the street.
- *  - `ribHalfWidth: 0.05` — a 2" batten on a 20" module (`ribHalfWidth` is the HALF width,
- *    so the drawn cap spans `2 x 0.05 x 20"`). A batten is NARROW relative to its module in
- *    a way no other profile here is, and copying PBR's 0.14 would draw a 5-1/2" one. 2" is
- *    the wide end of the 1-1/2"-2" the profile is made in, chosen deliberately: the shared
- *    512 px / 4-module canvas gives this cap only 6.4 px, and the module docstring records
- *    that a ridge near 4 px is where mip generation starts eating it unevenly and the
- *    rhythm survives at some distances and not others.
- *  - `squareness: 0.9` — a batten is a square applied cap with parallel sides, squarer than
- *    PBR's roll-formed crown (0.65) and far from a folded seam's point (0).
- *  - `striations: 0` — anti-oil-canning striations are rolled into NARROW flats. A 20" pan
- *    is smooth, which is half the reason it oil-cans as much as it does.
- *  - `oilCanning: 0.028` — ABOVE PBR's 0.018 and near the seam profile's 0.03, and this is
- *    the term that makes it read as board & batten rather than as wide PBR. A concealed
- *    panel floats between its legs instead of being pulled tight to a girt every 24", and
- *    the pan is unstiffened across its whole 12" width.
- */
+/** BBD75-1212 dimensions; physical folds arrive in the engine's surface_mesh. */
 export const BOARD_BATTEN_PROFILE: MetalPanelProfile = {
-  key: "board-and-batten", moduleM: BATTEN_PITCH_M, ribHalfWidth: 0.0833, squareness: 0.9,
-  striations: 0, oilCanning: 0.028,
+  key: "board-and-batten", moduleM: BATTEN_PITCH_M, ribHalfWidth: 1 / 12, squareness: 1,
+  striations: 0, oilCanning: 0,
 };
 
 /** Tile size in meters for a profile, i.e. `PANS_PER_TILE` modules of it. */
@@ -232,6 +210,7 @@ export function createStandingSeamMaterial(
   worldScaledUv = false,
   profile: MetalPanelProfile = SEAM_PROFILE,
 ): THREE.Material {
+  if (profile.key === "board-and-batten") return createBoardBattenMaterial(mode, color);
   if (mode === "schematic") {
     return new THREE.MeshStandardMaterial({ color, roughness: 1, metalness: 0, flatShading: true });
   }

@@ -1,6 +1,8 @@
 import * as THREE from "three";
+import { createSurfaceMeshGeometry } from "./surfaceMesh";
 import { metalPanelProfileFor } from "./builders/walls";
 import {
+  createStandingSeamMaterial,
   applyMasonryWallUv,
   applyStandingSeamWallUv,
   BRICK_UNIT_M,
@@ -200,7 +202,7 @@ export function runMaterialGeometryTests() {
   // At the old (wrong) 20" the module was the widest of the four and two assertions here
   // leaned on that. BBD75-1212 covers 12", which is exactly PBR's rib pitch and NARROWER
   // than a 16" seam pan — so what separates board & batten from PBR at the same module is
-  // the applied cap and the oil-canning below, not the rhythm.
+  // the physical square folds, not the rhythm.
   assert(Math.abs(BOARD_BATTEN_PROFILE.moduleM - RIBBED_PANEL_PROFILE.moduleM) < 1e-9,
     "A 12in batten pitch coincides with PBR's 12in rib pitch");
   assert(BOARD_BATTEN_PROFILE.moduleM < SEAM_PROFILE.moduleM,
@@ -209,19 +211,30 @@ export function runMaterialGeometryTests() {
   assert(BOARD_BATTEN_PROFILE.ribHalfWidth < RIBBED_PANEL_PROFILE.ribHalfWidth,
     "A batten is NARROW relative to its module where a PBR rib is not");
   assert(BOARD_BATTEN_PROFILE.squareness > RIBBED_PANEL_PROFILE.squareness,
-    "A batten is a square applied cap; a PBR crown is roll-formed and a seam is folded");
+    "A batten has a flat folded crown; a PBR crown is roll-formed and a seam is folded");
   assert(BOARD_BATTEN_PROFILE.striations === 0,
     "A 12in pan is smooth — striations are rolled into narrow flats");
-  assert(BOARD_BATTEN_PROFILE.oilCanning > RIBBED_PANEL_PROFILE.oilCanning,
-    "A concealed panel floats between its legs instead of being screwed tight every 24in, "
-    + "and a 3/4in batten stiffens its pan far less than PBR's 1-1/4in rib does at the "
-    + "same 12in pitch — this is the term that says board & batten");
+  assert(BOARD_BATTEN_PROFILE.oilCanning === 0,
+    "The physical BBD75 profile has clean flat pans without procedural waviness");
   // A ~2in cap on a 12in module: `ribHalfWidth` is the HALF width, so the drawn batten is
   // 2 x 0.0833 x 12in. Pinned because it is a FRACTION of the module: when the pitch went
   // 20in -> 12in (BBD75-1212) the fraction had to be re-struck or the cap would have
   // narrowed to 1-1/4in with it.
   assert(Math.abs(2 * BOARD_BATTEN_PROFILE.ribHalfWidth * BATTEN_PITCH_M - 0.0508) < 1e-4,
     "The batten draws about 2in wide, the wide end of the profile's real range");
+
+  const foldedMaterial = createStandingSeamMaterial("nordic", [1, 1], 0xe8e8e2,
+    true, BOARD_BATTEN_PROFILE) as THREE.MeshPhysicalMaterial;
+  assert(foldedMaterial.normalMap === null,
+    "Physical battens must not receive a second batten pattern from a normal map");
+  const surface = createSurfaceMeshGeometry({ positions: [[10, 20, 3], [11, 20, 3], [10, 20, 4]],
+    normals: [[0, -1, 0], [0, -1, 0], [0, -1, 0]], triangles: [[0, 1, 2]] }, [9, 19]);
+  const position = surface.getAttribute("position"), normal = surface.getAttribute("normal");
+  assert(position.getX(0) === 1 && position.getY(0) === 3 && position.getZ(0) === -1,
+    "Engine surface coordinates receive only project centring and the scene swizzle");
+  assert(normal.getX(0) === 0 && normal.getY(0) === 0 && normal.getZ(0) === 1,
+    "Fold normals retain the engine's outward direction");
+  surface.dispose(); foldedMaterial.dispose();
 
   // Three more brick faces on the sunken garden's wythe. Every one of them is a tag
   // substring inference CANNOT reach — "glazed-lapis-brick" and "brown-brick" say nothing

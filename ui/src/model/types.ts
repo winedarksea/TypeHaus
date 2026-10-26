@@ -36,7 +36,15 @@ export interface Provenance {
   editable: boolean;
 }
 
+/** Engine-generated finish geometry in project metres, with crisp per-face normals. */
+export interface SurfaceMesh {
+  positions: Vec3[];
+  triangles: [number, number, number][];
+  normals: Vec3[];
+}
+
 export interface Layer {
+  surface_mesh?: SurfaceMesh | null;
   name: string;
   function: string;
   material: string;
@@ -108,6 +116,7 @@ export interface MemberSeat {
 }
 
 export interface Member {
+  surface_mesh?: SurfaceMesh | null;
   // Semantic, resolver-minted, unique within the parent wall/roof/floor/stair ("stud-007",
   // "plate-bottom"). Joined to the parent uid it is the member's stable identity — see
   // model/memberIdentity.ts, which is what per-member 3D picking selects with.

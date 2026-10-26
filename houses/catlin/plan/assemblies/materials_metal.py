@@ -321,14 +321,8 @@ MATERIALS_METAL = [
     # {"standing-seam"} and the flush zero-overhang edge survives on all four edges. Omit it
     # and the edge silently reverts to fascia-and-drip-edge, including on the PBR walls.
     #
-    # ** Thickness stays 1-1/4", and that is not a rounding. ** The cladding face is
-    # hand-transcribed into house constants that feed the north/south faces this material
-    # lands on: `params/roof_trim.py` `_WALL_OUTBOARD_IN`, `params/breezeway.py`
-    # `HOUSE_CLADDING_Y_FT`, `params/sunken_garden.py` `gap_to_house_in`, and the exterior
-    # devices in `plan/electrical.py`. The roof footprint re-derives from the bearing walls'
-    # outermost layer polygons and those constants do not, so any thickness change makes
-    # derived geometry and authored constants silently disagree at the rake ends. The
-    # BBD75-1212 rib is 3/4" and the panel plus batten sits inside 1-1/4".
+    # Installed profile depth is 3/4 inch in the board-batten assembly variants.
+    # Material overrides alone cannot change an assembly layer thickness.
     Material(tag="board-batten-24", name="Metal Sales BBD75-1212 board & batten panel, 12\" coverage, 24 ga., PVDF Linen White (81)",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#6b7076", finish="board-and-batten",

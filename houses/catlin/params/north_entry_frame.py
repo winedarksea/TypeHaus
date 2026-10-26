@@ -41,6 +41,7 @@ from typehaus import (
 
 from typehaus.library import TREX_ENHANCE_BASICS_DECK_LAYER
 
+from params.cladding import HOUSE_NS_OUTBOARD_IN
 from params.column_heads import CBSQ66_HEAD, HETA20Z_PAIR_HEAD
 from params.east_posts import east_supports, full_height_columns, moment_piers
 from plan.storeys.garage import (
@@ -53,7 +54,7 @@ from plan.storeys.garage import (
 # `haus check`.
 EAST_POST_SYSTEM = "kdat"
 
-HOUSE_CLADDING_Y_FT = 36 + 7.25 / 12
+HOUSE_CLADDING_Y_FT = 36 + HOUSE_NS_OUTBOARD_IN / 12
 GARAGE_CLADDING_Y_FT = GARAGE_Y_SOUTH.feet - 0.875 / 12
 # ** THE SERVICE DOOR SETS THE EAST EDGE OF EVERYTHING HERE (2026-09-11). ** D-G-SERVICE's
 # rough opening is 6'-11"..9'-7" with the 32in door in the garage's SW corner

@@ -30,6 +30,10 @@ def _provenance(prov: Provenance | None, tag: str) -> dict[str, Any] | None:
     return {"file": loc.file, "line": loc.line, "editable": prov.is_editable(tag)}
 
 
+def _surface_mesh_json(mesh) -> dict[str, Any]:
+    return {"positions": mesh.positions, "triangles": mesh.triangles, "normals": mesh.normals}
+
+
 def _member_json(m: FramedMember) -> dict[str, Any]:
     """The one member serialization every trade (walls/roofs/floors/stairs) shares.
 
@@ -45,6 +49,8 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
     """
     section = cross_section(m.profile)
     return {
+        **({"surface_mesh": _surface_mesh_json(m.surface_mesh)}
+           if m.surface_mesh is not None else {}),
         "key": m.child_key, "category": m.category, "profile": m.profile,
         # Who the member *belongs* to, which is not always the container it is serialized
         # under: a wall→roof closure band is resolved by the roof but is the wall's own skin
@@ -103,7 +109,9 @@ def _layer_json(layer, scope: str = "wall") -> dict[str, Any]:
     and drawing it full height puts a protection panel over nine feet of buried foam, or
     stacks three brick colours on top of each other in one place.
     """
-    return {"name": layer.name, "material": layer.material_ref, "function": layer.function,
+    return {**({"surface_mesh": _surface_mesh_json(layer.surface_mesh)}
+               if layer.surface_mesh is not None else {}),
+            "name": layer.name, "material": layer.material_ref, "function": layer.function,
             "thickness_m": layer.thickness_m, "polygon": [list(point) for point in layer.polygon],
             "control": sorted(layer.control),
             "view_trade": layer.view_trade,

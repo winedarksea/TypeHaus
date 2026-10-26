@@ -257,6 +257,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.geometry_build import build_geometry
 
         findings.extend(resolve_soffit_finishes(model))
+        from typehaus.resolve.board_batten import resolve_board_batten_surfaces
+
+        resolve_board_batten_surfaces(model)
         model.geometry = build_geometry(model)
 
     model.index_by_tag()

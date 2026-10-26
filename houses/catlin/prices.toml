@@ -2181,7 +2181,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # dearer than the strip because a head piece is cut and fitted one opening at a time. x 6 for
 # $/SF. No firm quote is on file: ask the siding sub or a sheet-metal shop.
 "bug_screen:EXT_2X6" = { unit = "SF", material = { low = 12, high = 27 }, labour = { low = 9, high = 18 } }  # 42.0 SF = 248.6 LF (144 base + 104.6 heads)
+"bug_screen:EXT_2X6_BOARD_BATTEN" = { unit = "SF", material = { low = 12, high = 27 }, labour = { low = 9, high = 18 } }  # Same vent screen, 3/4-inch panel variant.
 "bug_screen:PLANT_EXT_2X6_HUMID" = { unit = "SF", material = { low = 12, high = 27 }, labour = { low = 9, high = 18 } }  # 2.0 SF = 12.1 LF, 4 plant-room heads
+"bug_screen:PLANT_EXT_2X6_HUMID_BOARD_BATTEN" = { unit = "SF", material = { low = 12, high = 27 }, labour = { low = 9, high = 18 } }  # Same vent screen, 3/4-inch panel variant.
 # RETIRED 2026-08-20, kept for the rate. The garage lost its 3/8" rainscreen furring that
 # day, so GARAGE_WALL_2X6 has no vented cavity and bills no screen; the row is left because
 # the number was researched and the wall could get its cavity back. It reads 0 SF today.

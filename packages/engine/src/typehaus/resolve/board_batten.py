@@ -1,0 +1,256 @@
+"""BBD75-1212 exposed folded skin, shared by model.json and glTF.
+
+MBCI's product section specifies 12 inch coverage, a 2 inch crown and a 3/4 inch
+profile. The nominal envelope is measured from the support, including sheet thickness;
+concealed interlocks and fasteners are omitted. Horizontal panel joint design is separate.
+https://www.mbci.com/products/board-and-batten-bbd75-1212-wall-panel/
+"""
+
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass, replace
+
+from typehaus.resolve.geometry_ir import GMesh
+from typehaus.resolve.geometry_members import member_box
+from typehaus.resolve.geometry_prims import (
+    _arch_soffit_sample,
+    _arch_soffit_segment_count,
+    arch_soffit_circle,
+)
+from typehaus.resolve.geometry_walls import cuts_layer, wall_top_at
+from typehaus.resolve.surface_clipping import (
+    CLIP_TOLERANCE_M,
+    box_faces,
+    clip_faces,
+    mesh_from_faces,
+    subtract_convex,
+)
+from typehaus.triangulation import planar_ring_triangles
+
+
+@dataclass(frozen=True)
+class BoardBattenProfile:
+    pitch_m: float = 0.3048
+    crown_width_m: float = 0.0508
+    depth_m: float = 0.01905
+    sheet_thickness_m: float = 0.00060706  # nominal 24 ga base steel, .0239 inch
+
+
+BBD75_PROFILE = BoardBattenProfile()
+PROFILE_DEPTH_TOLERANCE_M = 1e-6
+
+
+def _polygon_planes(ring):
+    area = sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(ring, ring[1:] + ring[:1], strict=True))
+    ring = ring if area > 0 else list(reversed(ring))
+    return [
+        (b[1] - a[1], a[0] - b[0], 0.0, (b[1] - a[1]) * a[0] + (a[0] - b[0]) * a[1])
+        for a, b in zip(ring, ring[1:] + ring[:1], strict=True)
+    ]
+
+
+def _convex_footprints(ring):
+    planes = _polygon_planes(ring)
+    if all(all(a * x + b * y <= d + CLIP_TOLERANCE_M for x, y in ring) for a, b, _, d in planes):
+        return [planes]
+    return [
+        _polygon_planes([ring[i] for i in tri])
+        for tri in planar_ring_triangles([(x, y, 0.0) for x, y in ring])
+    ]
+
+
+def _opening_planes(wall, opening, project):
+    (ax, ay), (bx, by) = wall.axis
+    length = math.hypot(bx - ax, by - ay)
+    center = project(
+        (
+            ax + (bx - ax) * opening.center_along_m / length,
+            ay + (by - ay) * opening.center_along_m / length,
+        )
+    )[0]
+    half = opening.width_m / 2
+    bottom = wall.base_ref_z_m + opening.sill_m
+    top = bottom + opening.height_m
+    rise = opening.arch_rise_m
+    ring = [(center - half, bottom), (center + half, bottom)]
+    if rise > CLIP_TOLERANCE_M:
+        spring = top - rise
+        radius, angle, depth = arch_soffit_circle(half, rise)
+        count = _arch_soffit_segment_count(radius, angle)
+        ring.extend(
+            (center + offset, spring + height)
+            for offset, height in (
+                _arch_soffit_sample(i, count, radius, angle) for i in range(count, -1, -1)
+            )
+        )
+    else:
+        ring.extend(((center + half, top), (center - half, top)))
+    # The polygon lives in along/elevation, with no restriction across the skin.
+    return [(a, 0.0, b, d) for a, b, _, d in _polygon_planes(ring)]
+
+
+def profile_mesh(
+    wall,
+    polygon,
+    z0,
+    z1,
+    datum,
+    *,
+    openings=(),
+    layer_name=None,
+    lower_at=None,
+    upper_at=None,
+    height_breakpoints=(),
+    profile=BBD75_PROFILE,
+) -> GMesh:
+    """Fold and clip a skin in a facade's stable (along, outward, elevation) frame."""
+    if z1 - z0 <= CLIP_TOLERANCE_M:
+        return GMesh((), (), ())
+    if len(polygon) < 3:
+        raise ValueError(f"{wall.tag}: invalid siding footprint")
+    (ox, oy), (ex, ey) = datum
+    run = math.hypot(ex - ox, ey - oy)
+    if run <= CLIP_TOLERANCE_M:
+        raise ValueError(f"{wall.tag}: degenerate siding datum")
+    ux, uy = (ex - ox) / run, (ey - oy) / run
+    nx, ny = -uy, ux
+    # The stack, rather than the run's direction, determines the exterior side.
+    inner, outer = wall.layers[0].polygon, wall.layers[-1].polygon
+
+    def mean_across(ring):
+        return sum((x - ox) * nx + (y - oy) * ny for x, y in ring) / len(ring)
+
+    if mean_across(outer) < mean_across(inner):
+        nx, ny = -nx, -ny
+
+    def project(p):
+        return ((p[0] - ox) * ux + (p[1] - oy) * uy, (p[0] - ox) * nx + (p[1] - oy) * ny)
+
+    def world(p):
+        return (ox + ux * p[0] + nx * p[1], oy + uy * p[0] + ny * p[1], p[2])
+
+    ring = [project(p) for p in polygon]
+    low, high = min(s for s, _ in ring), max(s for s, _ in ring)
+    support = min(n for _, n in ring)
+    crown = max(n for _, n in ring)
+    if abs(crown - support - profile.depth_m) > PROFILE_DEPTH_TOLERANCE_M:
+        raise ValueError(f"{wall.tag}: BBD75 skin envelope must be 3/4 inch deep")
+    footprints = _convex_footprints(ring)
+    holes = [
+        _opening_planes(wall, op, project) for op in openings if cuts_layer(wall, layer_name, op)
+    ]
+    stations = sorted(
+        {low, high, *(project(p)[0] for p in height_breakpoints if low < project(p)[0] < high)}
+    )
+    height_regions = []
+    for start, end in zip(stations[:-1], stations[1:], strict=True):
+        planes = [(1.0, 0.0, 0.0, end), (-1.0, 0.0, 0.0, -start)]
+        for at, lower in ((lower_at, True), (upper_at, False)):
+            if at is None:
+                continue
+            a, b = world((start, 0.0, 0.0)), world((end, 0.0, 0.0))
+            za, zb = at(a[0], a[1]), at(b[0], b[1])
+            slope = (zb - za) / (end - start)
+            plane = (-slope, 0.0, 1.0, za - slope * start)
+            planes.append(tuple(-v for v in plane) if lower else plane)
+        height_regions.append(planes)
+    pieces = []
+    half = profile.crown_width_m / 2
+    sheet = profile.sheet_thickness_m
+    for station in range(
+        math.floor((low - half) / profile.pitch_m), math.ceil((high + half) / profile.pitch_m) + 1
+    ):
+        center = station * profile.pitch_m
+        left, right = center - half, center + half
+        # Butt the webs into the pan and crown: no coincident exposed faces at folds.
+        ribbons = (
+            (left, right, crown - sheet, crown),
+            (left, left + sheet, support + sheet, crown - sheet),
+            (right - sheet, right, support + sheet, crown - sheet),
+            (right, center + profile.pitch_m - half, support, support + sheet),
+        )
+        for s0, s1, n0, n1 in ribbons:
+            if s1 <= low or s0 >= high:
+                continue
+            for footprint in footprints:
+                for height_planes in height_regions:
+                    faces = box_faces(max(s0, low), min(s1, high), n0, n1, z0, z1)
+                    for plane in footprint + height_planes:
+                        faces = clip_faces(faces, plane)
+                        if not faces:
+                            break
+                    fragments = [faces] if faces else []
+                    for hole in holes:
+                        fragments = [
+                            part
+                            for fragment in fragments
+                            for part in subtract_convex(fragment, hole)
+                        ]
+                    pieces.extend(fragments)
+    return mesh_from_faces(pieces, world, ux * ny - uy * nx < 0)
+
+
+def resolve_board_batten_surfaces(model) -> None:
+    """Attach display meshes after platform extension, roof closures and opening resolution."""
+    finishes = {material.tag: material.finish for material in model.plan.library.materials}
+    lines = {
+        member.wall_tag: (
+            line.origin,
+            (line.origin[0] + line.direction[0], line.origin[1] + line.direction[1]),
+        )
+        for line in model.layout_lines
+        for member in line.members
+    }
+    walls = {wall.uid: wall for wall in model.walls}
+
+    def finish(ref):
+        return finishes.get(ref) == "board-and-batten"
+
+    for i, wall in enumerate(model.walls):
+        layers = []
+        for layer in wall.layers:
+            if finish(layer.material_ref) and not layer.is_cavity:
+                z0, z1 = layer.band(wall)
+                mesh = profile_mesh(
+                    wall,
+                    layer.polygon,
+                    z0,
+                    z1,
+                    lines.get(wall.tag, wall.axis),
+                    openings=[op for op in model.openings if op.host_wall == wall.tag],
+                    layer_name=layer.name,
+                    upper_at=lambda x, y, w=wall: wall_top_at(w, x, y),
+                    height_breakpoints=wall.axis,
+                )
+                layer = replace(layer, surface_mesh=mesh)
+            layers.append(layer)
+        model.walls[i] = replace(wall, layers=tuple(layers))
+    for i, roof in enumerate(model.roofs):
+        members = []
+        for member in roof.members:
+            wall = walls.get(member.parent_uid)
+            if wall and member.category == "cladding" and finish(member.material):
+                box = member_box(member)
+                if box is None:
+                    raise ValueError(f"{member.child_key}: invalid cladding closure")
+                polygon = [(x, y) for x, y, _ in box.corners_bottom]
+                dx, dy = member.p1[0] - member.p0[0], member.p1[1] - member.p0[1]
+                length2 = dx * dx + dy * dy
+
+                def height(x, y, start, end, member=member, dx=dx, dy=dy, length2=length2):
+                    t = ((x - member.p0[0]) * dx + (y - member.p0[1]) * dy) / length2
+                    return start + t * ((start if end is None else end) - start)
+
+                mesh = profile_mesh(
+                    wall,
+                    polygon,
+                    min(p[2] for p in box.corners_bottom),
+                    max(p[2] for p in box.corners_top),
+                    lines.get(wall.tag, wall.axis),
+                    lower_at=lambda x, y, h=height, m=member: h(x, y, m.z0_m, m.z0_end_m),
+                    upper_at=lambda x, y, h=height, m=member: h(x, y, m.z1_m, m.z1_end_m),
+                )
+                member = replace(member, surface_mesh=mesh)
+            members.append(member)
+        model.roofs[i] = replace(roof, members=tuple(members))

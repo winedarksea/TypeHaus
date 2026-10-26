@@ -59,7 +59,7 @@ MILLWORK = [
         # past the return so the stool reads as a board, not a shelf.
         stool_horn=inch(1),
         stool_profile="eased",
-        stool_assemblies=("EXT_2X6",),
+        stool_assemblies=("EXT_2X6", "EXT_2X6_BOARD_BATTEN"),
         # 29 oak treads: ST-M2S (14) and ST-S2A (15, three of them winders). ST-B2M is the
         # basement flight and is carpeted, ST-G-SERVICE is the garage's. This scope is also
         # what stamps the resolved treads red oak and the landings `oak-floor-custom` (the 3D and

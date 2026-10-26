@@ -87,7 +87,7 @@ from typehaus.library import (
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.model.structure import CompliantLayer
 from params.column_heads import HETA20Z_PAIR_HEAD
-from params.roof_trim import _WALL_OUTBOARD_IN
+from params.cladding import HOUSE_NS_OUTBOARD_IN
 from params.landscape_walk import D_X0 as WALK_D_X0
 from params.landscape_walk import GAP_FT as WALK_GAP_FT
 from params.sunken_garden_options import OPTION
@@ -152,10 +152,10 @@ class SunkenGardenSpec:
     # gap: it was paired with `house_ext_layers_in = 5.0`, a cladding stand-off two
     # generations stale (the CI-board 5.02" stack), while the real face went to 7.25". The
     # sum `_y_out_n` is what the whole porch is laid out from and it does NOT move, so the
-    # honest split of the same -0'-10" is 7.25" of wall + 2.75" of air. Widening the gap
+    # current split of the same -0'-10" is 6.75" of wall + 3.25" of air. Widening the gap
     # back to 5" is a DESIGN MOVE, not a cleanup: it pushes the court 2.25" south, off
     # D-B-PATIO's landing patch (coverage drops under R311.3's 85% and the check FAILs).
-    gap_to_house_in: float = 10.0 - _WALL_OUTBOARD_IN  # 2.75"
+    gap_to_house_in: float = 10.0 - HOUSE_NS_OUTBOARD_IN  # 3.25 inches to BBD75 crown
     # The house's real BELOW-GRADE outboard face, on the south run: 0.06" waterproofing +
     # 2" + 2" XPS + 0.125" acrylic foundation coating over BASEMENT_8's pour
     # (FOUNDATION_WALL_XPS4_OUTBOARD, plan/assemblies.py). Transcribed, not imported, the
@@ -223,9 +223,9 @@ class SunkenGardenSpec:
     pier_levelling_bedding_in: float = 7.0
     house_size_ft: float = 36.0
     # The live above-grade cladding stand-off, DERIVED rather than transcribed:
-    # ccSPF 4" + vent 0.5" + girt 1.5" + PBR 1.25" = 7.25". It was a frozen 5.0"
+    # ccSPF 4" + vent 0.5" + girt 1.5" + BBD75 0.75" = 6.75". It was a frozen 5.0"
     # (the retired CI-board stack) long after the face moved.
-    house_ext_layers_in: float = _WALL_OUTBOARD_IN
+    house_ext_layers_in: float = HOUSE_NS_OUTBOARD_IN
     # 109.4375" is ``params/main_deck.BASEMENT_DATUM``; this module may import, but it is one
     # house-wide number transcribed rather than a second derivation, and
     # ``integrity.basement_bearing_seat`` checks the two agree. This is the BASEMENT floor
@@ -3205,7 +3205,7 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS,
                      GARDEN_FIELD, *FROST_WINGS, *ISOLATION_BOARDS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------
 # ** THE VERTICAL BUG PATH, AND THE ONE THE CURTAIN CANNOT CLOSE. ** `_y_out_n` (-0'-10")
-# is the porch deck edge; the house cladding face is at -0'-7 1/4" (`_WALL_OUTBOARD_IN`).
+# is the porch deck edge; the house cladding face is at -0'-7 1/4" (`HOUSE_NS_OUTBOARD_IN`).
 # The 2 3/4" between them (`SPEC.gap_to_house_in`) is a deliberate insulation gap and it is
 # open down to grade for the whole 17' — an insect route from the garden straight up into
 # the enclosure, past a curtain that seals perfectly. The enclosure's flank panels stop at

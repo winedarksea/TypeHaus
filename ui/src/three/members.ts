@@ -17,6 +17,7 @@
 // Every bucket records the member uids it drew, in draw order, so a click resolves to one
 // member (→ three/memberPicking.ts) instead of to the wall/floor/roof that owns it.
 import * as THREE from "three";
+import { createSurfaceMeshGeometry } from "./surfaceMesh";
 import type { Member } from "../model/types";
 import { buildFloorTrusses } from "./floorTruss";
 import { buildRoofTrusses } from "./roofTruss";
@@ -458,7 +459,17 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
 export function buildMembers(group: THREE.Group, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string,
   materials?: readonly MaterialAppearance[], lines?: readonly SkinLine[]) {
-  const boxMembers = members.filter((member) => !member.plan_outline?.length);
+  for (const member of members.filter((item) => item.surface_mesh)) {
+    const geometry = createSurfaceMeshGeometry(member.surface_mesh!, center);
+    const profile = metalPanelProfileFor(member, materials) ?? SEAM_PROFILE;
+    const material = createStandingSeamMaterial(mode, [1, 1],
+      new THREE.Color(memberColor(member, palette, materials)).getHex(), true, profile);
+    const mesh = makeSurfaceMesh(geometry, material);
+    tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, [member]),
+      [0, member.surface_mesh!.triangles.length]);
+    group.add(mesh);
+  }
+  const boxMembers = members.filter((member) => !member.surface_mesh && !member.plan_outline?.length);
   if (!boxMembers.length) return;
   const buckets = bucket(boxMembers, materials);
   buildRectInstances(group, buckets.rect, center, mode, palette, ownerUid, materials);

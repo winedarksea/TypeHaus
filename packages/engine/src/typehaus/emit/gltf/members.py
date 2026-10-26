@@ -47,6 +47,9 @@ def _add_member(mb: _MeshBuilder, member: FramedMember,
     rather than by review.
     """
     color = member_color(member, authored)
+    if member.surface_mesh is not None:
+        mb.add_mesh(member.surface_mesh, color)
+        return
     if member.plan_outline is not None:
         mb.add_prism(member.plan_outline, member.z0_m, member.z1_m, color)
         return

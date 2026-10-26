@@ -5,6 +5,7 @@
 // real geometry of its own (arch tessellation, the piece decomposition around openings, the
 // raked top of a gable or ToRoof wall) rather than a straight extrusion of a resolved polygon.
 import * as THREE from "three";
+import { createSurfaceMeshGeometry } from "../surfaceMesh";
 import { layerVisibilityKeys, primaryTrade, wallTrades } from "../../model/tradeVisibility";
 import type { Layer, MaterialSpec, Opening, Wall } from "../../model/types";
 import {
@@ -177,8 +178,10 @@ export function buildWall(
     // so the clamp has no live subject and the rule stays because `Layer.slot` does.
     // A blind recess cuts only the layers the engine says its depth reaches.
     const layerOpenings = openings.filter((op) => !op.cut_layers || op.cut_layers.includes(ly.name));
-    const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, layerOpenings, center, ly);
-    const geometries: (THREE.BufferGeometry | null)[] = smoothArchGeometry
+    const smoothArchGeometry = ly.surface_mesh ? null : createSmoothArchedWallLayerGeometry(w, ly.polygon, layerOpenings, center, ly);
+    const geometries: (THREE.BufferGeometry | null)[] = ly.surface_mesh
+      ? [createSurfaceMeshGeometry(ly.surface_mesh, center)]
+      : smoothArchGeometry
       ? [smoothArchGeometry]
       : clampPiecesToBand(wallLayerPieces(w, ly.polygon, layerOpenings), ly).map((piece) => piece.topIsRaked
         ? createRakedPlanPrismGeometry(piece.polygon, piece.z0_m,

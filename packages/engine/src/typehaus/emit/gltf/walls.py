@@ -32,7 +32,7 @@ def _add_solid(mb: _MeshBuilder, solid, color) -> None:
 
 
 def _add_wall_body(mb: _MeshBuilder, wall: ResolvedWall, lod: str, openings=(),
-                   authored: dict | None = None) -> None:
+                   authored: dict | None = None, *, include_surface_meshes: bool = True) -> None:
     """Draw a wall's selectable body (its depth-layer prisms). Framing members are emitted as a
     separate ``framing`` node by the caller, so the framed LOD leaves the body empty and lets the
     stud model stand on its own. ``authored`` is the catalog's authored-colour map
@@ -48,6 +48,10 @@ def _add_wall_body(mb: _MeshBuilder, wall: ResolvedWall, lod: str, openings=(),
         if not layer.polygon:
             continue
         color = _layer_color(layer, authored)
+        if layer.surface_mesh is not None:
+            if include_surface_meshes:
+                mb.add_mesh(layer.surface_mesh, color)
+            continue
         band = layer.band(wall) if layer.is_banded else None
         for solid in layer_solids(wall, layer.polygon, openings, band=band,
                                   layer_name=layer.name):
