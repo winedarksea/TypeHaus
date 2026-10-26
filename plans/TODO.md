@@ -333,6 +333,8 @@ the future.
 - Update the LVP to https://coretecfloors.com/en-us/products/coretec-pro-classics/quincy-oak-vv017-01018
 - [x] Move D-M-MECH and D-M-MUDC 8" east within the existing walls (owner-approved instead of a full stud bay); relocate the three switches to W-M-MUDC-E.
 - See if we can easily source factory Laminated Glass that has a security film inside it for the main floor windows
+- Conduit for floor thermostats for heated floor
+- The layup of W-BW-SCREEN for the thin brick might be a little extreme. It's got furring AND drainage AND a WRB even though it's exposed to open air on both sides?
 
 # Project Management
 

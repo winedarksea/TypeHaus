@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1740" height="1190" viewBox="0 0 1740 1190" role="img" aria-labelledby="title desc">
+<title id="title">W-BW-SCREEN — thin brick, three brace treatments</title>
+<desc id="desc">Matched east elevations: fourteen current slats, two slender corner-to-corner knee braces, and two wider corner-to-corner knee braces. Brown thin brick remains identical. Centre post and band plates remain. Alternatives need structural design.</desc>
+<defs><pattern id="wood" width="22" height="100" patternUnits="userSpaceOnUse"><rect width="22" height="100" fill="#b88c57"/><path d="M5 0Q13 26 6 54T8 100M17 0Q10 40 18 76T16 100" fill="none" stroke="#946f43" stroke-width=".6" opacity=".55"/></pattern>
+<pattern id="brick" width="40.0" height="26.25" patternUnits="userSpaceOnUse">
+<rect x="0" y="0" width="40.0" height="26.25" fill="#98958e" stroke="none" />
+<rect x="-40.0" y="0.0" width="38.125" height="11.25" fill="#79503b" stroke="none" />
+<rect x="0.0" y="0.0" width="38.125" height="11.25" fill="#79503b" stroke="none" />
+<rect x="40.0" y="0.0" width="38.125" height="11.25" fill="#79503b" stroke="none" />
+<rect x="-20.0" y="13.125" width="38.125" height="11.25" fill="#895e45" stroke="none" />
+<rect x="20.0" y="13.125" width="38.125" height="11.25" fill="#895e45" stroke="none" />
+<rect x="60.0" y="13.125" width="38.125" height="11.25" fill="#895e45" stroke="none" />
+</pattern></defs><g font-family="Arial, Helvetica, sans-serif">
+<rect x="0" y="0" width="1740" height="1190" fill="#f3f1eb" stroke="none" />
+<text x="30" y="45" font-size="29" fill="#2c3031" font-weight="700">W-BW-SCREEN  /  KEEP THE BRICK. SIMPLIFY THE BRACES.</text>
+<text x="30" y="77" font-size="17" fill="#2c3031" font-weight="400">East-face comparison · 2026-10-25 · south left / garage right · matched scale</text>
+<text x="30" y="103" font-size="15" fill="#646b68" font-weight="400">Brown thin brick + grey joints throughout. Roof, rails and open door omitted for clarity; hardware is on the west face.</text>
+<g transform="translate(30,120)">
+<rect x="0" y="0" width="550" height="855" fill="#fffdf8" stroke="#d9d4c9" rx="10"/>
+<text x="24" y="33" font-size="21" fill="#2c3031" font-weight="700">A  /  CURRENT SLAT BAND</text>
+<text x="24" y="59" font-size="14" fill="#646b68" font-weight="400">7 slats per bay · 1½″ visible edge</text>
+<rect x="23.0" y="160.0" width="25.0" height="440.0" fill="#eae8e1" stroke="none" />
+<rect x="447.375" y="160.0" width="25.0" height="440.0" fill="#e4e6df" stroke="none" />
+<rect x="90.5" y="219.375" width="27.5" height="380.625" fill="url(#wood)" stroke="none" />
+<rect x="389.25" y="219.375" width="27.5" height="380.625" fill="url(#wood)" stroke="none" />
+<polygon points="167.504,226.875 156.897,226.875 118.000,265.772 118.000,276.379" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="194.020,226.875 183.414,226.875 118.000,292.289 118.000,302.895" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="220.537,226.875 209.930,226.875 118.000,318.805 118.000,329.412" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="118.000,352.500 121.428,352.500 239.875,234.053 239.875,226.875 236.447,226.875 118.000,345.322" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="137.338,352.500 147.945,352.500 239.875,260.570 239.875,249.963" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="163.855,352.500 174.461,352.500 239.875,287.086 239.875,276.480" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="190.371,352.500 200.978,352.500 239.875,313.603 239.875,302.996" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="339.746,226.875 350.353,226.875 389.250,265.772 389.250,276.379" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="313.230,226.875 323.836,226.875 389.250,292.289 389.250,302.895" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="286.713,226.875 297.320,226.875 389.250,318.805 389.250,329.412" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="389.250,352.500 385.822,352.500 267.375,234.053 267.375,226.875 270.803,226.875 389.250,345.322" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="369.912,352.500 359.305,352.500 267.375,260.570 267.375,249.963" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="343.395,352.500 332.789,352.500 267.375,287.086 267.375,276.480" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="316.879,352.500 306.272,352.500 267.375,313.603 267.375,302.996" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<rect x="239.875" y="226.875" width="27.5" height="125.625" fill="url(#wood)" stroke="none" />
+<rect x="118.0" y="352.5" width="271.25" height="7.5" fill="url(#wood)" stroke="none" />
+<rect x="118.0" y="219.375" width="271.25" height="7.5" fill="url(#wood)" stroke="none" />
+<rect x="59.875" y="160.0" width="387.5" height="59.375" fill="url(#wood)" stroke="none" />
+<rect x="53.0" y="360.0" width="394.375" height="245.0" fill="#343b39" stroke="none" />
+<rect x="53.0" y="362.5" width="394.375" height="227.5" fill="url(#brick)" stroke="none" />
+<rect x="53.0" y="360.0" width="394.375" height="2.5" fill="#515855" stroke="none" />
+<polygon points="53.000,600.000 447.375,600.000 469.375,610.000 75.000,610.000" fill="#d5d2c7" stroke="#8f948b" stroke-width="0.7"/>
+<polygon points="75.000,610.000 469.375,610.000 469.375,643.000 75.000,643.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="469.375,610.000 479.375,615.000 479.375,648.000 469.375,643.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="75.000,643.000 469.375,643.000 479.375,648.000 85.000,648.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="85.000,648.000 479.375,648.000 479.375,681.000 85.000,681.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="479.375,648.000 489.375,653.000 489.375,686.000 479.375,681.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="85.000,681.000 479.375,681.000 489.375,686.000 95.000,686.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="95.000,686.000 489.375,686.000 489.375,719.000 95.000,719.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="489.375,686.000 499.375,691.000 499.375,724.000 489.375,719.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="95.000,719.000 489.375,719.000 499.375,724.000 105.000,724.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="105.000,724.000 499.375,724.000 499.375,757.000 105.000,757.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="499.375,724.000 509.375,729.000 509.375,762.000 499.375,757.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="105.000,757.000 499.375,757.000 509.375,762.000 115.000,762.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="115.000,762.000 509.375,762.000 509.375,795.000 115.000,795.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<text x="53" y="809" font-size="14" fill="#646b68" font-weight="400">78⅞″ screen run  ·  +48″ lower wall</text>
+<text x="53" y="832" font-size="14" fill="#646b68" font-weight="400">Same landing / five risers in every view</text>
+</g>
+<text x="54" y="1010" font-size="15" fill="#2c3031" font-weight="400">Fine chevron rhythm; 14 pieces total.</text>
+<text x="54" y="1035" font-size="15" fill="#2c3031" font-weight="400">Retains the current structural scheme.</text>
+<text x="54" y="1060" font-size="15" fill="#2c3031" font-weight="400">6 rated braces + 1 infill slat per bay.</text>
+<g transform="translate(600,120)">
+<rect x="0" y="0" width="550" height="855" fill="#fffdf8" stroke="#d9d4c9" rx="10"/>
+<text x="24" y="33" font-size="21" fill="#2c3031" font-weight="700">B  /  ONE SLENDER KNEE EACH SIDE</text>
+<text x="24" y="59" font-size="14" fill="#646b68" font-weight="400">2 braces total · same 1½″ visible edge</text>
+<rect x="23.0" y="160.0" width="25.0" height="440.0" fill="#eae8e1" stroke="none" />
+<rect x="447.375" y="160.0" width="25.0" height="440.0" fill="#e4e6df" stroke="none" />
+<rect x="90.5" y="219.375" width="27.5" height="380.625" fill="url(#wood)" stroke="none" />
+<rect x="389.25" y="219.375" width="27.5" height="380.625" fill="url(#wood)" stroke="none" />
+<polygon points="118.000,352.500 123.225,352.500 239.875,232.261 239.875,226.875 234.650,226.875 118.000,347.114" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="389.250,352.500 384.025,352.500 267.375,232.261 267.375,226.875 272.600,226.875 389.250,347.114" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<rect x="239.875" y="226.875" width="27.5" height="125.625" fill="url(#wood)" stroke="none" />
+<rect x="118.0" y="352.5" width="271.25" height="7.5" fill="url(#wood)" stroke="none" />
+<rect x="118.0" y="219.375" width="271.25" height="7.5" fill="url(#wood)" stroke="none" />
+<rect x="59.875" y="160.0" width="387.5" height="59.375" fill="url(#wood)" stroke="none" />
+<rect x="53.0" y="360.0" width="394.375" height="245.0" fill="#343b39" stroke="none" />
+<rect x="53.0" y="362.5" width="394.375" height="227.5" fill="url(#brick)" stroke="none" />
+<rect x="53.0" y="360.0" width="394.375" height="2.5" fill="#515855" stroke="none" />
+<polygon points="53.000,600.000 447.375,600.000 469.375,610.000 75.000,610.000" fill="#d5d2c7" stroke="#8f948b" stroke-width="0.7"/>
+<polygon points="75.000,610.000 469.375,610.000 469.375,643.000 75.000,643.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="469.375,610.000 479.375,615.000 479.375,648.000 469.375,643.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="75.000,643.000 469.375,643.000 479.375,648.000 85.000,648.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="85.000,648.000 479.375,648.000 479.375,681.000 85.000,681.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="479.375,648.000 489.375,653.000 489.375,686.000 479.375,681.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="85.000,681.000 479.375,681.000 489.375,686.000 95.000,686.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="95.000,686.000 489.375,686.000 489.375,719.000 95.000,719.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="489.375,686.000 499.375,691.000 499.375,724.000 489.375,719.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="95.000,719.000 489.375,719.000 499.375,724.000 105.000,724.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="105.000,724.000 499.375,724.000 499.375,757.000 105.000,757.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="499.375,724.000 509.375,729.000 509.375,762.000 499.375,757.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="105.000,757.000 499.375,757.000 509.375,762.000 115.000,762.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="115.000,762.000 509.375,762.000 509.375,795.000 115.000,795.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<text x="53" y="809" font-size="14" fill="#646b68" font-weight="400">78⅞″ screen run  ·  +48″ lower wall</text>
+<text x="53" y="832" font-size="14" fill="#646b68" font-weight="400">Same landing / five risers in every view</text>
+</g>
+<text x="624" y="1010" font-size="15" fill="#2c3031" font-weight="400">Much more open; the braces read lightly.</text>
+<text x="624" y="1035" font-size="15" fill="#2c3031" font-weight="400">Corner-to-corner knees, rising inward.</text>
+<text x="624" y="1060" font-size="15" fill="#2c3031" font-weight="400">Current force-sharing check does not apply.</text>
+<g transform="translate(1170,120)">
+<rect x="0" y="0" width="550" height="855" fill="#fffdf8" stroke="#d9d4c9" rx="10"/>
+<text x="24" y="33" font-size="21" fill="#2c3031" font-weight="700">C  /  ONE WIDER KNEE EACH SIDE</text>
+<text x="24" y="59" font-size="14" fill="#646b68" font-weight="400">2 braces total · 3½″ face study / depth TBD</text>
+<rect x="23.0" y="160.0" width="25.0" height="440.0" fill="#eae8e1" stroke="none" />
+<rect x="447.375" y="160.0" width="25.0" height="440.0" fill="#e4e6df" stroke="none" />
+<rect x="90.5" y="219.375" width="27.5" height="380.625" fill="url(#wood)" stroke="none" />
+<rect x="389.25" y="219.375" width="27.5" height="380.625" fill="url(#wood)" stroke="none" />
+<polygon points="118.000,352.500 130.191,352.500 239.875,239.441 239.875,226.875 227.684,226.875 118.000,339.934" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<polygon points="389.250,352.500 377.059,352.500 267.375,239.441 267.375,226.875 279.566,226.875 389.250,339.934" fill="url(#wood)" stroke="#86613c" stroke-width="0.7"/>
+<rect x="239.875" y="226.875" width="27.5" height="125.625" fill="url(#wood)" stroke="none" />
+<rect x="118.0" y="352.5" width="271.25" height="7.5" fill="url(#wood)" stroke="none" />
+<rect x="118.0" y="219.375" width="271.25" height="7.5" fill="url(#wood)" stroke="none" />
+<rect x="59.875" y="160.0" width="387.5" height="59.375" fill="url(#wood)" stroke="none" />
+<rect x="53.0" y="360.0" width="394.375" height="245.0" fill="#343b39" stroke="none" />
+<rect x="53.0" y="362.5" width="394.375" height="227.5" fill="url(#brick)" stroke="none" />
+<rect x="53.0" y="360.0" width="394.375" height="2.5" fill="#515855" stroke="none" />
+<polygon points="53.000,600.000 447.375,600.000 469.375,610.000 75.000,610.000" fill="#d5d2c7" stroke="#8f948b" stroke-width="0.7"/>
+<polygon points="75.000,610.000 469.375,610.000 469.375,643.000 75.000,643.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="469.375,610.000 479.375,615.000 479.375,648.000 469.375,643.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="75.000,643.000 469.375,643.000 479.375,648.000 85.000,648.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="85.000,648.000 479.375,648.000 479.375,681.000 85.000,681.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="479.375,648.000 489.375,653.000 489.375,686.000 479.375,681.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="85.000,681.000 479.375,681.000 489.375,686.000 95.000,686.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="95.000,686.000 489.375,686.000 489.375,719.000 95.000,719.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="489.375,686.000 499.375,691.000 499.375,724.000 489.375,719.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="95.000,719.000 489.375,719.000 499.375,724.000 105.000,724.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="105.000,724.000 499.375,724.000 499.375,757.000 105.000,757.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="499.375,724.000 509.375,729.000 509.375,762.000 499.375,757.000" fill="#959d90" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="105.000,757.000 499.375,757.000 509.375,762.000 115.000,762.000" fill="#d1d5c9" stroke="#858d82" stroke-width="0.7"/>
+<polygon points="115.000,762.000 509.375,762.000 509.375,795.000 115.000,795.000" fill="#b1b7ac" stroke="#858d82" stroke-width="0.7"/>
+<text x="53" y="809" font-size="14" fill="#646b68" font-weight="400">78⅞″ screen run  ·  +48″ lower wall</text>
+<text x="53" y="832" font-size="14" fill="#646b68" font-weight="400">Same landing / five risers in every view</text>
+</g>
+<text x="1194" y="1010" font-size="15" fill="#2c3031" font-weight="400">Stronger visual balance with brick + posts.</text>
+<text x="1194" y="1035" font-size="15" fill="#2c3031" font-weight="400">Same brace axes as B; heavier face only.</text>
+<text x="1194" y="1060" font-size="15" fill="#2c3031" font-weight="400">Section and both end joints need design.</text>
+<text x="30" y="1130" font-size="17" fill="#2c3031" font-weight="700">Visual preference: C. Keep the centre post and plates for this comparison; removing them would be a separate frame study.</text>
+<text x="30" y="1160" font-size="15" fill="#646b68" font-weight="400">The wider face is a design envelope, not a specified 4×4 or a capacity claim. No structural model changes. See companion study for sources.</text>
+</g></svg>
