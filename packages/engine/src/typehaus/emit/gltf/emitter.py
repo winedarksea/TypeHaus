@@ -299,10 +299,10 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         mb = _MeshBuilder()
-        flashing_categories = frozenset({"drip_edge", "corner_trim", "ridge_cap"})
-        _add_roof(mb, roof, model, authored, exclude_categories=flashing_categories)
+        flashing_categories = frozenset({"drip_edge", "corner_trim", "ridge_cap", "ridge_closure"})
+        surfaces = _add_roof(mb, roof, model, authored, exclude_categories=flashing_categories)
         scene.add_object(mb, assembly_trades(model.plan, roof.assembly, "roof"),
-                         kind="roof", uid=roof.uid)
+                         kind="roof", uid=roof.uid, material_surfaces=surfaces)
         for category in sorted(flashing_categories):
             metal = _MeshBuilder()
             for member in roof.members:

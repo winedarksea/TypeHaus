@@ -48,7 +48,7 @@ Geometry facts this module derives from (see plan/storeys/attic.py + plan/assemb
   rides the I-joist rise above it: 11.875" - 5.5" x 6/12 seat drop = 9.125", so eave_z is
   20'-11 3/8";
 - roof stack above the deck (perpendicular): 5/8" CDX plywood (deck surface at 0.625") ->
-  0.04" adhered butyl membrane -> metal 0.5". That is the whole of it. The 6:12 slope factor
+  0.04" adhered butyl membrane -> metal 1" profile envelope. That is the whole of it. The 6:12 slope factor
   turns those perpendicular offsets into the vertical ones an authored elevation is
   measured in;
 - the wall cladding's head lands at the roofing's own underside (MatingFaces with a
@@ -71,6 +71,7 @@ from __future__ import annotations
 import math
 
 from params.cladding import HOUSE_EW_OUTBOARD_IN, HOUSE_NS_OUTBOARD_IN
+from params.roof_panel import ROOFING_BASE_IN
 
 from typehaus import DischargeExtension, Downspout, Flashing, Gutter, TrimKind, ft, inch, pt
 
@@ -105,7 +106,7 @@ _SLOPE_FACTOR = math.hypot(1.0, 6.0 / 12.0)  # 6:12 -> 1.1180
 #: The values this has had, kept beside it so the revert is a line and not a
 #: re-derivation: 7.475 under the screwed nailbase over 6" of polyiso, 4.25 under the vented
 #: batten roof before it.
-_CLADDING_HEAD_IN = 0.665 * _SLOPE_FACTOR    # 0.74" — roofing underside == wall panel heads
+_CLADDING_HEAD_IN = ROOFING_BASE_IN * _SLOPE_FACTOR    # 0.74" — roofing underside == wall panel heads
 
 # The derived drip edge's FACE (resolve/roof_drip_edge.py, on the plane the corner trim it
 # replaced stood on): 1.25" out from the footprint edge, one sheet thick at the outboard side

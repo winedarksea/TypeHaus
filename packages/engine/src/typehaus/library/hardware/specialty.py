@@ -20,6 +20,7 @@ from typehaus.hardware.catalog import (
     ROLE_POST_BASE,
     ROLE_POST_CAP,
     ROLE_PV_SEAM_CLAMP,
+    ROLE_SNAP_LOCK_SEAM_CLAMP,
     ROLE_THROUGH_PANEL_PIPE_STRAP,
     AllowableLoads,
     StructuralHardware,
@@ -347,7 +348,9 @@ S5_PV_KIT = StructuralHardware(
     role=ROLE_PV_SEAM_CLAMP,
     manufacturer="S-5!",
     model="S-5-PVKIT",
-    source="S-5! PVKIT 2.0 (s-5.com/pvkit) — non-penetrating standing-seam clamp with "
+    requires_role=ROLE_SNAP_LOCK_SEAM_CLAMP,
+    source="S-5! PVKIT 2.0 (s-5.com/pvkit) — module mounting kit on a separately ordered "
+           "profile-matched seam clamp with "
            "integrated module clamp; one kit per module corner support point",
 )
 

@@ -20,7 +20,7 @@ source:
 - Roof: 11-7/8" TJI 230 at 24" o.c., LSSR hangers to a structural ridge beam.
 - Bay: 5" ccSPF on the deck, R-30C batt below. The foam is the air and vapour barrier; paint-only ceiling.
 - Deck: 5/8" CDX, 40/20, oversailing the rafter ends to the girt face.
-- Butyl membrane, 240 F min, full field. 24 ga standing seam on floating clips.
+- Butyl membrane, 240 F min, full field. 24 ga Image II Striated, direct-fastened through its nail flange.
 - Wall: 2x6, 1/2" sheathing, 4" ccSPF around 3-ply blocks, 1/2" vent gap, 1-1/2" KDAT girts at 24", 1-1/4" PBR. No WRB.
 
 ### Keyed
@@ -101,7 +101,7 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
   it — under which outward drying is not required. `code.R806_5_unvented_roof` grades it and
   the condensation gate defers to it by name.
 
-- Roofing: 24 ga architectural standing seam, mechanically field-seamed, concealed floating clips.
+- Roofing: 24 ga Metal Sales Image II Striated, 16" coverage, 1" rib, direct-fastened nail-flange snap-seam.
 
 - Eave bay blocking: a **2x6 on edge in every rafter bay**, standing on the rafter plate with its outer face tight to the wall sheathing band (`Roof.eave_blocking`). It restrains each rafter laterally at its bearing and is the back-nailer the gutter girt screws into. It fills only the lower 5-1/2" of the 11-7/8" bay, so the cold upper corner stays wood-free and the ccSPF fills over the block, sealing to the webs, the deck and the sheathing. **The air barrier across the eave is the sheathing band plus that foam**, not the block. With a paint-only interior there is no second line of defence inboard of it, and an unsealed bay vents the ceiling into the joist bay itself.
 

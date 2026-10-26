@@ -245,7 +245,8 @@ MEMBER_CATEGORY_TRADE: dict[str, str] = {
     **{k: _TRADE[k] for k in ("insulation", "airgap", "furring", "cladding")},
     "air_gap": _TRADE["airgap"],
     "corner_trim": "siding", "fascia": "siding", "soffit": "siding",
-    "ridge_cap": "roofing", "drip_edge": "roofing",
+    "ridge_cap": "roofing", "ridge_closure": "roofing",
+    "roof_panel_hem": "roofing", "drip_edge": "roofing",
 }
 
 

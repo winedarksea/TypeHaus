@@ -9,19 +9,19 @@
         "kind": "point",
         "xy": [
           432.75000000000006,
-          310.02300109970616
+          310.30250959689363
         ],
         "name": ""
       },
       "at": [
         453.75000000000006,
-        308.84522332192836
+        308.035842930227
       ],
       "to": [
         432.75000000000006,
-        310.02300109970616
+        310.30250959689363
       ],
-      "text": "standing seam on concealed floating\nclips",
+      "text": "Metal Sales Image II Striated 16 in, 24\nga, 70% PVDF Kynar 500 Linen White (81),\ndirect-fastened through nail flange",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -40,7 +40,7 @@
       },
       "at": [
         453.75000000000006,
-        304.1980010997061
+        302.2997318191159
       ],
       "to": [
         437.0000000000001,
@@ -65,13 +65,38 @@
       },
       "at": [
         453.75000000000006,
-        299.5507788774839
+        297.65250959689365
       ],
       "to": [
         439.98400000000004,
         307.74349260251864
       ],
       "text": "drip edge face caps the wall panel\nheads, kick into the gutter",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          438.6000000000001,
+          308.8615265912686
+        ],
+        "name": ""
+      },
+      "at": [
+        453.75000000000006,
+        294.0941762635603
+      ],
+      "to": [
+        438.6000000000001,
+        308.8615265912686
+      ],
+      "text": "corner trim caps the wall panel heads",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -312,7 +337,7 @@
     "• Roof: 11-7/8\" TJI 230 at 24\" o.c., LSSR hangers to a structural ridge beam.",
     "• Bay: 5\" ccSPF on the deck, R-30C batt below. The foam is the air and vapour barrier; paint-only ceiling.",
     "• Deck: 5/8\" CDX, 40/20, oversailing the rafter ends to the girt face.",
-    "• Butyl membrane, 240 F min, full field. 24 ga standing seam on floating clips.",
+    "• Butyl membrane, 240 F min, full field. 24 ga Image II Striated, direct-fastened through its nail flange.",
     "• Wall: 2x6, 1/2\" sheathing, 4\" ccSPF around 3-ply blocks, 1/2\" vent gap, 1-1/2\" KDAT girts at 24\", 1-1/4\" PBR. No WRB.",
     "",
     "KEYED NOTES:",

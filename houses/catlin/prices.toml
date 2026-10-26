@@ -1166,10 +1166,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 #
 # Both rows STAY, with their counts commented rather than deleted, and that is deliberate:
 # nothing else in the catalog serves ROLE_PIPE_CLAMP, so reverting the cladding is a
-# `size=` change in the plan and nothing here. Contrast the S-5-S row below, which was
-# deleted — a snap-lock CORNER clamp has no revert path short of re-authoring 48
-# connectors, so leaving its rate behind would only read as coverage for a part the model
-# no longer contains.
+# `size=` change in the plan and nothing here.
 "S-5! CanDuit #11" = { low = 10, high = 22 }  # 0 ea (was 3 — vent riser, now a strap)
 "S-5! CanDuit #13" = { low = 10, high = 22 }  # 0 ea (was 8 — roof leaders, now straps)
 # ColorGard is a BAR system quoted by the foot of rail plus its clamps; the clamps are
@@ -1177,10 +1174,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # modeled units as one 8' crossbar + colour strip at $10-16/LF. If the snow-retention
 # layout is ever run through the S-5! calculator, replace it with that output.
 "S-5! ColorGard" = { low = 80, high = 180 }  # 2 ea
-# PVKIT 2.0 mid-grab kits list around $14; the range tops out at $35 because the kit that
-# includes its own seam clamp (which this one must, since no separate PV clamp is billed)
-# costs materially more than the bare grab.
-"S-5-PVKIT" = { low = 14, high = 35 }  # 48 ea
+# PVKIT 2.0 module grabs exclude the profile-matched seam clamp, ordered below.
+# S-5-S: published MSRP $7.34 (s-5.com/products/s-5-s-clamps/); carton/street range.
+"S-5-PVKIT" = { low = 14, high = 35 }  # 48 ea, clamp ordered separately
+"S-5-S" = { low = 6, high = 10 }  # 48 PVKIT carriers + 12 house roof wind clamps
 # Eclisse steel cassettes since 2026-10-09 (notes/pocket_frame_eclisse.md). EKC3680 listed
 # $341.94 (Home Depot) to $465 (Ferguson). The 2x6 (EKQ series) has no 80" retail listing:
 # 30x84 is $695 at Ferguson, special order, 4-9 weeks, so order D-B-BATH's early.
@@ -1194,14 +1191,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # snap-lock leg. Priced per SKU rather than as a family:
 #   S-5-N  MSRP $7.11; street $7.62 to $9.50
 #
-# ** The S-5-S row is GONE (2026-08-26), and with it the 48 house-wall corner clamps. **
-# Those walls are `pbr-panel-24` now, an exposed-fastener panel with no seam of any kind, so
-# the S clamp is not merely unneeded but uninstallable. What it resisted is resisted by the
-# panel's own face screws, billed as "T09150HWAM" below. The row is deleted rather than
-# zeroed because a rate for a part the model cannot contain reads as coverage — and unlike
-# the CanDuit rings above, nothing about the swap back would go through this file.
-# The range widens downward from street for contractor-carton pricing, the same 25-40%
-# adjustment this whole section carries.
+# House-wall clamps remain retired: PBR walls have no seam. The S-5-S row now
+# serves Image II roof PVKIT carriers and the authored house-roof corner layout.
 #
 # ** NOT the S-5! WindClamp. ** The WindClamp line (DL/UD/2X) is $2.73-3.52 a piece and would
 # be the obvious answer to "which clamp for wind" — but all three fit COMMERCIAL trapezoidal
@@ -1220,8 +1211,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # ** THE 16 GARAGE-WALL CLAMPS WENT ON 2026-08-31, and 12 garage-ROOF clamps remain. **
 # GARAGE_WALL_2X6 is a 7/8" corrugated exposed-fastener panel now, with no seam of any kind
 # for an N clamp to close on — the same swap, and the same argument, as the 48 S-5-S house-
-# wall clamps that went on 2026-08-26. The row is NOT deleted the way the S-5-S row was,
-# because the garage ROOF is still nail strip and still carries its twelve.
+# wall clamps that went on 2026-08-26. The garage roof remains nail strip.
 "S-5-N" = { low = 6, high = 10 }  # 12 ea — garage roof only, nail strip (was 28 with the walls)
 # 2026-08-26 — the exposed-fastener wall panel's own screws (takeoff/fasteners.py
 # `exposed_fastener_cladding_screw_rows`). 1,804 ea over two BOM rows: 1,430 field (one per

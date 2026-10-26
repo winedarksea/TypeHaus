@@ -7,7 +7,8 @@ import { launchChromium, attachToPage, evaluate, captureScreenshot } from "./lib
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const snapshot = await readFile(resolve(root, "../houses/catlin/out/model.json"), "utf8");
-const output = resolve(root, "../out/siding-review");
+const roofMode = process.argv.includes("--roof");
+const output = resolve(root, roofMode ? "../out/roof-review" : "../out/siding-review");
 const server = await createServer({ root, configFile: false, plugins: [{ name: "siding-review",
   configureServer(server) { server.middlewares.use("/__siding-review-house", (_req, res) => {
     res.setHeader("Content-Type", "application/json"); res.end(snapshot);
@@ -20,11 +21,14 @@ try {
   session = await attachToPage(browser.port);
   await session.send("Emulation.setDeviceMetricsOverride", { width: 1500, height: 1190, deviceScaleFactor: 1, mobile: false });
   await mkdir(output, { recursive: true });
-  const views = [["board-and-batten", "north"], ["ribbed-panel", "east"], ["corrugated", "north"]];
-  for (const [profile, face] of views) for (const detail of ["facade", "opening",
-    ...(profile === "corrugated" ? ["head"] : [])]) {
+  const views = roofMode ? [["roof", "north"]]
+    : [["board-and-batten", "north"], ["ribbed-panel", "east"], ["corrugated", "north"]];
+  for (const [profile, face] of views) for (const detail of (roofMode ? ["roof", "eave", "rake", "ridge"] : ["facade", "opening",
+    ...(profile === "corrugated" ? ["head"] : [])])) {
     const label = `${profile}-${face}-${detail === "opening" ? "detail" : detail}`;
-    const url = `http://127.0.0.1:${server.httpServer.address().port}/siding-review.html?profile=${profile}&face=${face}${detail === "facade" ? "" : `&detail=${detail}`}`;
+    const page = roofMode ? `roof-review.html?view=${detail}`
+      : `siding-review.html?profile=${profile}&face=${face}${detail === "facade" ? "" : `&detail=${detail}`}`;
+    const url = `http://127.0.0.1:${server.httpServer.address().port}/${page}`;
     await session.send("Page.navigate", { url });
     const deadline = Date.now() + 60_000;
     while (!await evaluate(session, `return location.href === ${JSON.stringify(url)} && window.sidingReviewReady === true`)) {

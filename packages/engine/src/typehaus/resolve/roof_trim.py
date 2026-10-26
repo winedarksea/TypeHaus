@@ -45,30 +45,21 @@ from typehaus.resolve.roof_edge_geometry import (
     mating_faces,
     mitred_span,
     roof_edge_runs,
-    roof_ridge_run,
     roof_slope,
     skin_layers,
     wall_face_inset,
 )
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
+from typehaus.resolve.roof_panel_trim import (
+    panel_profile_for_layer,
+    rake_panel_trim,
+)
+from typehaus.resolve.roof_ridge_trim import ridge_vent_members as _ridge_vent_members
 from typehaus.resolve.trim_bands import formed_edge_bands, open_channel_bands
 
 # A fascia board is envelope trim by category, but it is also the nailer the carpenter hangs
 # off the rafter tails — so it has to show up under a framing view toggle too.
 _FASCIA_TRADE = "framing"
-
-# Vented ridge cap defaults (no schema field carries these): a formed metal cap wide enough
-# to cover the vent slot plus a fastening flange each side, standing a couple of inches over
-# the roofing on its vent riser.
-#
-# The cap is *formed*, not a flat bar, but the member IR is boxes only and a stepped
-# composition of risers/shoulders/skirts read as a stack of ledges rather than as trim. One
-# box straddling the peak reads better: it spans the full width, seats where the roof plane
-# has fallen away under its outer edges, and stands a little proud of the ridge — the wedge
-# of air it encloses over the slope is what gives the impression of the raised vent space.
-# It carries the roofing's own material, so it reads as the same metal as the roof.
-_RIDGE_CAP_HALF_WIDTH_IN = 6.0                                    # 12" edge to edge
-_RIDGE_CAP_STAND_IN = 2.0                                         # proud of the ridge
 
 # The corner trim capping a wrapped (continuous standing-seam) roof edge: a formed angle
 # read as a box straddling the wall-cladding/roofing joint. Its plan thickness clears the
@@ -297,8 +288,13 @@ def _edge_cladding_members(
     # needs no band at all: the wall→roof closure carries the wall's own metal up to the
     # roofing underside, and the joint gets a corner trim piece instead of a drip-edge band.
     if continuous_skin_cladding(model, roof, walls):
-        return _corner_trim_members(roof, cladding, mating, slope_factor,
-                                    model.plan.by_tag(roof.tag), layers, walls)
+        element = model.plan.by_tag(roof.tag)
+        members = _corner_trim_members(roof, cladding, mating, slope_factor, element, layers, walls)
+        profile = panel_profile_for_layer(model, cladding)
+        if profile:
+            members += rake_panel_trim(roof, profile, mating.cladding_under,
+                                       _edge_trim_material(element, cladding.material_ref))
+        return members
     base = mating.foam_under * slope_factor          # where the wall cladding stops
     height = mating.cladding_under * slope_factor - base
     if height <= CLOSURE_TOLERANCE_M:
@@ -364,6 +360,9 @@ def _corner_trim_members(
     A declared ``EaveTrim.drip_edge`` replaces this piece on its edges with the formed drip
     edge (:mod:`typehaus.resolve.roof_drip_edge`), on the same face plane and leg.
     """
+    # Eave pan/hem stays at the membrane, independent of the seam crown.
+    # Image II guide pp. 20–23; hot-roof design currently leaves rib ends open,
+    # with no vent closure. Manufacturer rib-end sealing remains a design TODO.
     top = (mating.cladding_under + cladding.thickness.meters) * slope_factor
     z_lo = mating.cladding_under * slope_factor - _CORNER_TRIM_LEG_M
     bands = formed_edge_bands(_CORNER_TRIM_THICKNESS_M, top - z_lo, FLASHING.sheet_m)
@@ -419,70 +418,3 @@ def _wall_cladding_m(walls: tuple[ResolvedWall, ...]) -> float:
     """The thickest wall cladding layer under the roof — the closure head's width."""
     return max((layer.thickness_m for wall in walls for layer in skin_layers(wall)
                 if layer.function == LayerFunction.CLADDING.value), default=0.0)
-
-
-# --- vented ridge cap --------------------------------------------------------------------
-
-def _ridge_vent_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[FramedMember, ...]:
-    """The ridge cap along a gable's ridge — vented where the roof breathes through it.
-
-    **Every gable with a covering gets one.** Two slopes meet at the peak in an open joint
-    and something has to close it; whether that closure also VENTS is a separate question,
-    answered by ``connection`` (``ridge:vented-cap`` against ``ridge:closed-cap``) and not by
-    whether the piece exists — an unvented ridge must still get a cap, or an open ridge on a
-    standing-seam roof goes unreported in the model and the bill.
-
-    Vented is still the common case and the two constructions that reach it both appear on
-    catlin: a vented attic (the garage — its vented soffits feed the truss space, which
-    exhausts through a slot cut at the ridge), and an over-deck vent channel (the furring/
-    batten gap between the foam and the standing seam runs eave to ridge and exhausts at the
-    top). Either way the cap is a formed metal member riding the roofing surface, centred on
-    the ridge line. A truss roof has no ridge beam, so everything keys off
-    ``ResolvedRoof.ridge_z_m`` — the plane's own peak — never off a framing member.
-
-    A roof that is neither vented NOR clad is the one case that still returns nothing, and it
-    is earned rather than assumed: there is no slot to vent and no covering for a cap to
-    close over, and a "ridge cap" on a bare deck would be trim on a roof nobody has finished.
-
-    "Formed" is composed rather than swept: see ``_RIDGE_CAP_BANDS``. Every band keeps the
-    ``ridge_cap`` category, the ``ridge:vented-cap`` connection and the roofing's own
-    material, so the IFC covering map, the glTF skin routing and the viewer's material
-    lookup all key off the cap exactly as they did when it was one box.
-    """
-    ridge = roof_ridge_run(roof)
-    if ridge is None:
-        return ()
-    element = model.plan.by_tag(roof.tag)
-    trim = element.eave_trim if isinstance(element, Roof) else None
-    assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
-    layers = above_structure_layers(assembly)
-    vented_attic = trim is not None and trim.soffit_vented
-    vented_over_deck = any(
-        layer.function in (LayerFunction.AIRGAP, LayerFunction.FURRING) for layer in layers)
-    cladding = next((layer for layer in reversed(layers)
-                     if layer.function is LayerFunction.CLADDING), None)
-    if not (vented_attic or vented_over_deck or cladding is not None):
-        return ()
-    # The cap sits on the roofing's top surface at the peak: the stack is offset
-    # perpendicular to the slope, so its vertical height over the ridge is slope-corrected.
-    slope_factor = math.hypot(1.0, roof_slope(roof))
-    stack = sum(layer.thickness.meters for layer in layers) * slope_factor
-    z0 = ridge.z_m + stack
-    slope = abs(roof_slope(roof))
-    length = math.hypot(ridge.p1[0] - ridge.p0[0], ridge.p1[1] - ridge.p0[1])
-    material = cladding.material_ref if cladding is not None else "aluminum"
-    # The cap is formed trim, so it follows the roof's trim coil when one is named — the ridge
-    # is part of the same outline the rake trim draws, and a light cap inside a dark edge reads
-    # as a mistake rather than as a choice.
-    material = _edge_trim_material(element, material)
-    # The plane falls away from the peak, so the cap's underside is set by its outer edges.
-    bottom = z0 - inch(_RIDGE_CAP_HALF_WIDTH_IN).meters * slope
-    top = z0 + inch(_RIDGE_CAP_STAND_IN).meters
-    return (FramedMember(
-        parent_uid=roof.uid, child_key="ridge-vent-cap", category="ridge_cap",
-        profile=panel_profile(2.0 * _RIDGE_CAP_HALF_WIDTH_IN, (top - bottom) / M_PER_IN),
-        p0=ridge.p0, p1=ridge.p1, z0_m=bottom, z1_m=top, length_m=length,
-        connection=("ridge:vented-cap" if vented_attic or vented_over_deck
-                    else "ridge:closed-cap"),
-        material=material,
-    ),)

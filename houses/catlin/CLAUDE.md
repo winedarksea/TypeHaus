@@ -835,7 +835,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `condensation._r806_5_deferral` defers ONLY where `code.R806_5_unvented_roof` passes.
   - Do not restore a permeable underlayment/vent mat — the impermeable panel above now
     leaves no gap to dry into. The butyl membrane replacing both self-seals ~1,160
-    standing-seam clip screws, this roof's real water risk.
+    standing-seam nail-flange screws, this roof's real water risk.
   - 24" o.c. spacing is NOT FINAL: `structural.rafter_span` is UNKNOWN/engineered at both
     16" and 24" o.c., and the printed TJ-4000 table assumes bearing at the high end where
     these joists instead HANG off the ridge on 38 LSSR hangers — confirm in ForteWEB

@@ -679,7 +679,9 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
     eave = roof.eave_z_m
     # The house eave has no fascia: siding and roofing are one continuous standing-seam
     # skin over the flush edge, and the drip edge replaces the corner trim at the joint.
-    assert not [m for m in roof.members if m.category in ("fascia", "corner_trim")]
+    assert not [m for m in roof.members if m.category == "fascia"
+                or m.connection == "roof:corner-trim"]
+    assert any(m.connection == "roof:panel-rake" for m in roof.members)
     drip = [m for m in roof.members if m.category == "drip_edge"]
     # Six runs (two eaves + four rake halves), each one formed piece of four legs.
     assert len(drip) == 24

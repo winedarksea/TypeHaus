@@ -464,20 +464,20 @@
       "node": "polyline",
       "points": [
         [
+          105.92897637795276,
+          308.73470180382617
+        ],
+        [
           136.03952755905513,
-          324.3222733764212
-        ],
-        [
-          105.92897637795276,
-          309.26699778587005
-        ],
-        [
-          105.92897637795276,
-          308.70798079149506
+          323.7899773943774
         ],
         [
           136.03952755905513,
           323.7632563820463
+        ],
+        [
+          105.92897637795276,
+          308.70798079149506
         ]
       ],
       "layer": "A-ROOF",
@@ -492,20 +492,20 @@
       "node": "hatch",
       "boundary": [
         [
+          105.92897637795276,
+          308.73470180382617
+        ],
+        [
           136.03952755905513,
-          324.3222733764212
-        ],
-        [
-          105.92897637795276,
-          309.26699778587005
-        ],
-        [
-          105.92897637795276,
-          308.70798079149506
+          323.7899773943774
         ],
         [
           136.03952755905513,
           323.7632563820463
+        ],
+        [
+          105.92897637795276,
+          308.70798079149506
         ]
       ],
       "pattern": "metal",
@@ -914,7 +914,7 @@
         "kind": "point",
         "xy": [
           130.01741732283466,
-          321.0317097611235
+          320.7655617701016
         ],
         "name": ""
       },
@@ -924,9 +924,9 @@
       ],
       "to": [
         130.01741732283466,
-        321.0317097611235
+        320.7655617701016
       ],
-      "text": "roofing 0.5\"",
+      "text": "roofing 1\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1737,7 +1737,7 @@
         2.85,
         1.228
       ],
-      "content": "standing-seam-linen-white  0.5\"",
+      "content": "standing-seam-linen-white  1\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1752,7 +1752,7 @@
     "• Roof: 11-7/8\" TJI 230 at 24\" o.c., LSSR hangers to a structural ridge beam.",
     "• Bay: 5\" ccSPF on the deck, R-30C batt below. The foam is the air and vapour barrier; paint-only ceiling.",
     "• Deck: 5/8\" CDX, 40/20, oversailing the rafter ends to the girt face.",
-    "• Butyl membrane, 240 F min, full field. 24 ga standing seam on floating clips.",
+    "• Butyl membrane, 240 F min, full field. 24 ga Image II Striated, direct-fastened through its nail flange.",
     "• Wall: 2x6, 1/2\" sheathing, 4\" ccSPF around 3-ply blocks, 1/2\" vent gap, 1-1/2\" KDAT girts at 24\", 1-1/4\" PBR. No WRB.",
     "",
     "KEYED NOTES:",

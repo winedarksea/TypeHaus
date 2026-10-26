@@ -51,7 +51,7 @@ from library import (
 # decision.** Above the underlayment sits an impermeable metal panel: the only thing a
 # 20-perm underlayment can dry into is the vented gap the mat made. Delete the mat and the
 # permeable sheet is drying into a sealed panel underside — it buys nothing while still
-# being a mechanically-fastened, non-self-sealing water layer under ~1,160 clip screws. So
+# being a mechanically-fastened, non-self-sealing water layer under ~1,160 nail-flange screws. So
 # it is mat + permeable sheet, or adhered membrane + nothing. The second wins on labour, on
 # oil canning, and on water control, and the membrane's butyl self-seals around every one of
 # those screws — which is the actual water risk on a roof with no field penetrations
@@ -59,7 +59,7 @@ from library import (
 #
 # **5/8" CDX plywood, not 1/2" ZIP and not a grooved panel.** Smooth (the best bed an
 # adhered membrane and an oil-canning-prone pan can have), span-rated 40/20 so 24" o.c. is
-# well inside it, holds clip screws uniformly, and dries several times faster than OSB while
+# well inside it, holds nail-flange screws uniformly, and dries several times faster than OSB while
 # recovering strength after wetting. **It oversails the last joist at each eave, spanning the
 # wall girts** — which is why the deck, the membrane and the panel bill on the roof's sloped
 # `surface_area_m2` (1,547.9 SF) while the bay fills bill on `roof_ceiling_area_m2`
@@ -83,7 +83,7 @@ from library import (
 # BEARING at the high end where these joists HANG off the ridge on LSSR hangers: confirm in
 # ForteWEB, and see notes/roof_rafter_span_read.md §3, which is the open item.
 #
-# The metal itself is unchanged: 24 ga mechanically field-seamed, hidden floating clips.
+# Metal Sales Image II Striated: 24 ga, direct-fastened through its nail flange.
 ROOF = Assembly(
     tag="ROOF",
     layers=(
@@ -123,7 +123,8 @@ ROOF = Assembly(
         # `standing-seam-linen-white`, not the library's generic `standing-seam`: identical
         # in every building-science number, and it carries the published SR this roof's
         # SOL-AIR cooling term reads (notes/solar_gain_basis.md section 6).
-        Layer(name="roofing", material_ref="standing-seam-linen-white", thickness=inch(0.5),
+        # Profile envelope, measured perpendicular to the deck.
+        Layer(name="roofing", material_ref="standing-seam-linen-white", thickness=inch(1.0),
               function=LayerFunction.CLADDING),
     ),
     default_lining=(

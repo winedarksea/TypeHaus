@@ -5,6 +5,8 @@
 // — each is geometry the resolver computed from something else — so all of them extrude a
 // resolved outline or lay out a member list, and none carries an editing path.
 import * as THREE from "three";
+import { createSurfaceMeshGeometry } from "../surfaceMesh";
+import { createProfiledMetalSkinMaterial } from "../boardBattenMaterial";
 import { applySprayFoamUv, createSprayFoamMaterial, isSprayFoamFinish } from "../sprayFoamMaterial";
 import { soffitPanelGeometry } from "./soffitPanels";
 import type {
@@ -481,6 +483,19 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   let base = 0;
   for (const layer of stack) {
     const top = base + layer.thickness_m;
+    const surface = roof.layer_surface_meshes?.find(item => item.layer === layer.name);
+    if (surface) {
+      const paint = new THREE.Color(finishBaseColor(
+        authoredAppearance(layer.material, catalog?.materials)?.finish) ?? 0xE8E8E2).getHex();
+      const mesh = makeSurfaceMesh(createSurfaceMeshGeometry(surface.surface_mesh, center),
+        createProfiledMetalSkinMaterial(mode, paint));
+      const stamped = roofLayerTrade.get(layer);
+      mesh.userData.trades = layerTrades({ function: layer.function,
+        trades: stamped ? [stamped] : undefined } as Parameters<typeof layerTrades>[0]);
+      parent.add(mesh);
+      base = top;
+      continue;
+    }
     const entry = setbacks.get(layer.name);
     let layerTriangles = triangles, layerOffsetAt = offsetAt, layerPerimeter = perimeter;
     if (entry) {

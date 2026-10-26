@@ -699,6 +699,7 @@ class ResolvedRoof:
     # resolve/roof_layer_setbacks.py from the golden eave detail's clip rules; consumed by BOTH
     # the glTF emitter and the three.js viewer (ui/src/three/roofGeometry.ts).
     layer_edge_setbacks: tuple = ()
+    layer_surface_meshes: tuple[tuple[str, GMesh], ...] = ()
 
 
 @dataclass(frozen=True)

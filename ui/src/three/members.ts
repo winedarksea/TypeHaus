@@ -466,13 +466,10 @@ export function buildMembers(group: THREE.Group, members: Member[], center: Plan
   members = buildSprayFoamMembers(group, members, center, mode, palette, ownerUid, materials);
   for (const member of members.filter((item) => item.surface_mesh)) {
     const geometry = createSurfaceMeshGeometry(member.surface_mesh!, center);
-    const profile = metalPanelProfileFor(member, materials) ?? SEAM_PROFILE;
     // The physical closure continues the painted sheet, just like the procedural bands.
     // Its catalog color is the drawing hatch tone, not the exposed coil finish.
     const color = metalPanelPaintColor(member, materials);
-    const material = profile.key === "standing-seam"
-      ? createStandingSeamMaterial(mode, [1, 1], color, true, profile)
-      : createProfiledMetalSkinMaterial(mode, color);
+    const material = createProfiledMetalSkinMaterial(mode, color);
     const mesh = makeSurfaceMesh(geometry, material);
     tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, [member]),
       [0, member.surface_mesh!.triangles.length]);

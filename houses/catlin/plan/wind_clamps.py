@@ -30,11 +30,8 @@
 #                  concealed clips at all — uplift is resisted by the face-fastened flange
 #                  alone — so the corner zone is exactly where a clamp earns its keep.
 #
-#   ** The main house roof gets NONE, on purpose. ** It is mechanically field-seamed
-#   (`standing-seam`): the seam is folded 180 degrees over the clip by a powered seamer, which
-#   is already the strongest uplift connection in the metal-roofing catalogue. Adding external
-#   clamps to it would be belt over a belt. The 48 PV clamps up there (`params/solar.py`) are
-#   a different part doing a different job.
+#   house roof      4 eave corners x 3 seams = 12 S-5-S clamps. Image II is a
+#                   direct-fastened nail-flange snap-seam with no floating clips.
 #
 # ** THIS IS AN AUTHORED LAYOUT, NOT AN ENGINEERED ONE. ** `plan/site.py` carries a design
 # wind speed (V_ult = 115 mph, Exposure B, Risk Category II, MN Rules 1309.0301), so the
@@ -42,7 +39,7 @@
 # a design pressure, and **no zone width has been calculated**, which is the input this
 # layout actually turns on. A clamp grid is a map of corner/perimeter/field zones; having V
 # without the zone map buys nothing. The grid above is a reasonable builder's layout, and
-# the count it produces (12, all on the garage ROOF) is what the estimate bills. The same
+# the count it produces (24 across the house and garage roofs) is what the estimate bills. The same
 # caveat covers both the HOUSE and the GARAGE walls, in a different form: the screw
 # schedule that replaced the clamps there is a uniform field grid, so it carries no
 # corner-zone densification at all. **That densification is the lever** if a wind analysis
@@ -57,7 +54,7 @@
 # setscrews to be verified with a DIAL-calibrated torque wrench (explicitly not a clicking one)
 # where published load values are relied on, which is a QA pass beyond the screw gun.
 
-from typehaus import Connector, ConnectorKind, ft, pt
+from typehaus import Connector, ConnectorKind, ft, inch, pt
 
 # ** THE 16 GARAGE-WALL CLAMPS ARE GONE TOO, for the same reason and by the same argument.
 # ** They were `S-5-N`, and an N clamp closes on a nail strip's bulb-and-lip seam.
@@ -118,4 +115,43 @@ GARAGE_ROOF_WIND_CLAMPS = [
     Connector(uid="CM84J5D2KA", tag="CN-G-WIND-RFNW-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(4, 6.25), ft(65, 2.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
+]
+
+HOUSE_ROOF_WIND_CLAMPS = [
+    Connector(uid="YK8A1SM9QY", tag="CN-A-WIND-RFSW-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(-6.6), inch(8)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
+    Connector(uid="4WN1JM8CEM", tag="CN-A-WIND-RFSW-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(-6.6), inch(24)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
+    Connector(uid="QBF8MEM0Y2", tag="CN-A-WIND-RFSW-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(-6.6), inch(40)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
+    Connector(uid="4S2GHP86NJ", tag="CN-A-WIND-RFNW-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(-6.6), inch(424)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
+    Connector(uid="1975K7T22B", tag="CN-A-WIND-RFNW-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(-6.6), inch(408)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
+    Connector(uid="P82E2WK4H5", tag="CN-A-WIND-RFNW-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(-6.6), inch(392)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
+    Connector(uid="TA82SFQ7ET", tag="CN-A-WIND-RFSE-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(438.6), inch(8)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
+    Connector(uid="69ERPP5H3P", tag="CN-A-WIND-RFSE-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(438.6), inch(24)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
+    Connector(uid="BDR46H1QRE", tag="CN-A-WIND-RFSE-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(438.6), inch(40)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
+    Connector(uid="9HRSYREBH3", tag="CN-A-WIND-RFNE-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(438.6), inch(424)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
+    Connector(uid="6VZ2BHET24", tag="CN-A-WIND-RFNE-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(438.6), inch(408)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
+    Connector(uid="0E7Y1BH1RN", tag="CN-A-WIND-RFNE-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(inch(438.6), inch(392)), elevation=inch(253.5615266),
+              connects=("RF-HOUSE",), size="S-5-S"),
 ]

@@ -83,7 +83,11 @@ def eave_girts(
                     connection=EAVE_GIRT_CONNECTION, material=band.material,
                 ))
             if band.z1_m > z1 and band.z0_m < z1:
-                trimmed[id(band)] = replace(band, z0_m=z1, z0_end_m=z1)
+                # Formed sections are relative to z0; trimming the foot must preserve
+                # the scribed roof-plane top rather than translating it upward.
+                ring = (tuple((u, max(0., z+band.z0_m-z1)) for u, z in band.section_ring)
+                        if band.section_ring else None)
+                trimmed[id(band)] = replace(band, z0_m=z1, z0_end_m=z1, section_ring=ring)
     return tuple(trimmed[id(m)] for m in closure), tuple(added)
 
 

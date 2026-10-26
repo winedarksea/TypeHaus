@@ -61,7 +61,8 @@ _COVERING_PREDEFINED_TYPE = {
     "fascia": "MOLDING", "soffit": "CEILING", "cladding": "CLADDING",
     "sheathing": "CLADDING", "furring": "CLADDING", "airgap": "CLADDING",
     "membrane": "MEMBRANE", "insulation": "INSULATION",
-    "ridge_cap": "MOLDING", "corner_trim": "MOLDING", "drip_edge": "MOLDING",
+    "ridge_cap": "MOLDING", "ridge_closure": "MOLDING", "roof_panel_hem": "MOLDING",
+    "corner_trim": "MOLDING", "drip_edge": "MOLDING",
     # The Larsen/Swinburne plywood corner box closes a cladding void, not a load path —
     # a covering, like the sheathing and cladding it sits beside, rather than an IfcMember.
     "truss_corner_cap": "CLADDING",

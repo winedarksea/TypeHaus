@@ -17,7 +17,7 @@ from typehaus.model.mep import VentRun
 from typehaus.model.refs import ToRoof
 from typehaus.quantities import inch
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof
-from typehaus.resolve.roof_geometry import roof_height_at
+from typehaus.resolve.roof_geometry import roof_height_at, roof_slope_factor
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 VENT_TERMINATION_CLEARANCE_M = inch(12).meters
@@ -86,7 +86,8 @@ def derived_termination_elevation(model: ResolvedModel, vent: VentRun,
     skin_m = (sum(layer.thickness.meters for layer in above_structure_layers(assembly))
               if assembly is not None else 0.0)
     point = at if at is not None else exterior_riser_point(vent)
-    return roof_height_at(roof, point) + skin_m + VENT_TERMINATION_CLEARANCE_M
+    return (roof_height_at(roof, point) + skin_m * roof_slope_factor(roof)
+            + VENT_TERMINATION_CLEARANCE_M)
 
 
 #: The five legs of a riser, in order, as ``(uid suffix, tag suffix, is horizontal)``. The

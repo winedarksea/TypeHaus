@@ -151,7 +151,7 @@ export function buildWall(
     const foam = isSprayFoamFinish(appearance?.finish);
     const seamPaint = finishBaseColor(appearance?.finish);
     const mat = seam
-      ? ly.surface_mesh && seamProfile?.key !== "standing-seam"
+      ? ly.surface_mesh
         ? createProfiledMetalSkinMaterial(mode,
           seamPaint ? new THREE.Color(seamPaint).getHex() : 0xE8E8E2)
         : createStandingSeamMaterial(mode, [

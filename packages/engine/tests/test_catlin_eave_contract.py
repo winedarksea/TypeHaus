@@ -213,7 +213,7 @@ def test_a_closure_band_belongs_to_its_wall_not_to_the_roof(eave):
     """
     walls = {wall.uid: wall.tag for wall in eave.model.walls}
     closures = [(roof, m) for roof in eave.model.roofs for m in roof.members
-                if "-closure-" in m.child_key]
+                if m.connection == "roof:wall-top-closure"]
     assert closures, "the reference house's walls all close to a roof"
     orphans = [m.child_key for _roof, m in closures if m.parent_uid not in walls]
     assert orphans == [], "a closure band's parent is the wall whose skin it continues"

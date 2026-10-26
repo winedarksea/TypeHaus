@@ -34,12 +34,12 @@ _M_TO_FT = 3.280839895013123
 #: purpose (``drainage`` bills it); everything else the roof derives along an edge is trim
 #: somebody orders in sticks or brake-formed lengths.
 _DERIVED_CATEGORIES = frozenset({"fascia", "soffit", "cladding", "corner_trim", "ridge_cap",
-                                 "drip_edge"})
+                                 "drip_edge", "ridge_closure"})
 
 #: Banded derived categories resolve one run as several thin bands sharing a span; billing
 #: every band would multiply the order. Per run, only the named band's length is counted —
 #: the same dedupe ``takeoff/drainage.py::_add_derived_eave_gutters`` does with ``bottom``.
-_BANDED_MEASURE = {"corner_trim": "face", "drip_edge": "face"}
+_BANDED_MEASURE = {"corner_trim": "face", "drip_edge": "face", "ridge_closure": "face"}
 
 #: The order line a derived category bills under, where it is not its own name: the formed
 #: drip edge is the same brake-formed piece an authored ``drip_flashing`` run is.

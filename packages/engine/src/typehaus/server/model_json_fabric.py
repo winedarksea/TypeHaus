@@ -38,6 +38,7 @@ from typehaus.server.model_json_shared import (
     _layer_json,
     _member_json,
     _provenance,
+    _surface_mesh_json,
 )
 from typehaus.source.provenance import Provenance
 
@@ -315,6 +316,9 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              # Plate top the roof bears on (eave_z_m is the deck plane above it) and the
              # per-layer edge setbacks (golden eave detail clips) the 3D viewer consumes.
              "bearing_z_m": roof.bearing_z_m,
+             "layer_surface_meshes": [
+                 {"layer": name, "surface_mesh": _surface_mesh_json(mesh)}
+                 for name, mesh in roof.layer_surface_meshes],
              "layer_edge_setbacks": [dict(entry) for entry in roof.layer_edge_setbacks],
              "ridge_direction": roof.ridge_direction, "assembly": roof.assembly,
              "trades": list(assembly_trades(model.plan, roof.assembly, "roof")),

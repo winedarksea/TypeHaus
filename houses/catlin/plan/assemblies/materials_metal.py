@@ -17,47 +17,8 @@ MATERIALS_METAL = [
              color="#1c1f24",
              source="PT-BW-RE/-RNE steel variant — ASTM A500 Gr C, ASTM A123 then powder coat (notes/canopy_garage_diaphragm.md §5)"),
     # --- the metal skins --------------------------------------------------------
-    # The house is clad in metal in FIVE specifications. They are all the same white PVDF
-    # steel to look at; what separates them is SEAM PROFILE and GAUGE, and both are labour
-    # and material facts rather than architectural ones. Splitting them into separate tags
-    # is what lets `prices.toml` bill each at its own rate — one tag carrying all 6,300 SF
-    # at the dearest of the four would overstate the biggest line in the house by roughly
-    # $5,000-18,000.
-    #
-    #   `standing-seam` (library/materials/) — 24 ga, MECHANICALLY FIELD-SEAMED.
-    #       ROOF and nothing else. Every seam takes a separate powered-seamer pass:
-    #       +$1.50-3.00/SF of labour and ~50% more crew-hours than a hand-closed profile,
-    #       plus a seamer rental. It is on the main house roof on purpose — this is the roof
-    #       that carries the PV array, sheds onto occupied ground, and must not be re-roofed
-    #       in 25 years.
-    #   `standing-seam-snaplock` — 24 ga, SNAP-LOCK. Concealed floating clips like the
-    #       seamed roof, but the male and female legs engage under hand pressure, so there
-    #       is no seaming pass. Roughly $2-4/SF cheaper installed than mechanical seam.
-    #       It clad the house walls before the truss girts and is now taken by nothing but
-    #       EXT_2X6_SWINBURNE, the revert wall — which is exactly what keeps the
-    #       swap back to it a one-line `material_ref` change.
-    #   `standing-seam-nailstrip` — 24 ga, NAIL-STRIP. GARAGE_ROOF only. Nail strip has NO
-    #       concealed clips at all: an integral flange is face-fastened to the deck and the
-    #       next panel's leg snaps over it, dropping both the clip material and the
-    #       clip-setting labour. The trade-off is that face-fastening restricts thermal
-    #       movement, so it wants SHORT runs — which is exactly what a garage is, and is why
-    #       it stops at the garage and does not come onto the house.
-    #   `standing-seam-nailstrip-26` — 26 ga, nail strip, same white paint.
-    #       GARAGE_WALL_2X6 only. One gauge thinner (0.0179" vs 0.0239" base metal, ~25%
-    #       less steel) for 20-35% less material. It oil-cans more visibly than 24 ga on a
-    #       flat wall, which is acceptable on a detached garage and would not be on the
-    #       house; specify a striated pan rather than a flat one.
-    #
-    # Every building-science number on all five is `standing-seam`'s verbatim — continuous
-    # sheet steel is vapour-impermeable and carries no R whatever its gauge or seam — so
-    # nothing here changes an energy or a Glaser result. Keep them in step by hand.
-    #
-    # The FIRST FOUR tags keep the substring "seam" ON PURPOSE:
-    # `ui/src/three/materials.isStandingSeam` and `nordic/palette.familyOf` both key the
-    # ribbed metal finish off it, and a tag like "nail-strip-steel" would render this
-    # house's walls as flat grey. The two PBR rows deliberately do NOT play that game — they
-    # declare `finish="ribbed-panel"` and the renderers dispatch on the declaration, which
-    # is what the substring fallback was always standing in for.
+    # House roof: Image II Striated direct-fastened snap-seam, 24 ga PVDF.
+    # Garage roof: nail strip. Wall panels retain their separate profile/gauge records.
     # `standing-seam-nailstrip-26-green` — the same 26 ga. nail-strip panel as
     # the rest of the garage, in Western States Metal Roofing "Classic Green"
     # (westernstatesmetalroofing.com/classic-green) instead of white, on W-G-E only (the
@@ -120,34 +81,14 @@ MATERIALS_METAL = [
     # corner-zone demand. This wall stays PRESCRIPTIVE — `exposed_fastener=True` keeps it
     # out of `engineering/wall_panel.py`'s enumeration, which is the correct scope: a
     # face-fastened panel's wall capacity is published.
-    # `standing-seam-linen-white` — the ROOF panel, and it exists for exactly one field the
-    # library's generic `standing-seam` cannot carry for every house: `solar_absorptance`.
-    #
-    # ** IT IS A DIFFERENT PANEL FROM THE WALLS AND THE SAME COLOUR. ** The walls are
-    # `pbr-panel-24`, an exposed-fastener PBR profile; this is a concealed-clip standing seam.
-    # Both are 24 ga PVDF steel in Metal Sales Linen White (81), SR 0.73 / TE 0.86 / SRI 89,
-    # which is where the absorptance comes from: alpha = 1 - SR = 0.27.
-    #
-    # ** WHY THE NUMBER MATTERS, AND WHY `color` COULD NOT STAND IN. ** A roof is
-    # solar-dominated and nearly delta-T-independent: at the cooling peak hour this roof's
-    # SOL-AIR temperature is 101 F against a 90 F design day, a 26 F CTD where the plain air
-    # delta-T is 15 (notes/solar_gain_basis.md section 6). At alpha 0.90 — a black roof — it
-    # would be 144 F and a 69 F CTD, five times the air delta-T. `color` is an sRGB
-    # presentation triple and says nothing about the near-infrared, where most of the energy
-    # is; only a published SR answers it.
-    #
-    # HOUSE-LOCAL rather than an edit to `library/materials/`: a colour is this house's
-    # choice and the library's `standing-seam-snaplock` is the shared, reviewed catalog
-    # entry (CONTRIBUTING section Promotion flow). Every other building-
-    # science number is `standing-seam`'s verbatim — continuous sheet steel carries no R and
-    # no vapour permeance whatever its colour — so nothing but the cooling load moves.
     Material(tag="standing-seam-linen-white",
-             name="Standing-seam steel, 24 ga., PVDF Linen White (81)",
+             name="Metal Sales Image II Striated 16 in, 24 ga, 70% PVDF Kynar 500 Linen White (81), direct-fastened through nail flange",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#6b7076",
              skin_family="standing-seam",
+             finish="standing-seam",
              solar_absorptance=0.27,
-             source="Metal Sales 24 ga. PVDF-coated steel standing seam, concealed-clip snap-lock profile, in PVDF Linen White (81) — the same colour as `pbr-panel-24` on the walls and `corrugated-panel-24` on the garage, on a different profile. SR 0.73 / TE 0.86 / SRI 89 from the Metal Sales PVDF colour guide, so solar_absorptance = 1 - 0.73 = 0.27. Caveat carried from the wall panel's own record: SRI is NIR-weighted, no visible LRV is published, and it is NOT a low-gloss colour."),
+             source="Metal Sales Image II Striated, 16 inch coverage, 1 inch rib, 24 ga, 70% PVDF Kynar 500, direct-fastened snap-seam nail flange, ESR-2385; minimum 3:12 on solid substrate, maximum recommended length 30 ft, UL 580 Class 90 / UL 2218 Class 4 (MS/0426 brochure), in PVDF Linen White (81) — the same colour as `pbr-panel-24` on the walls and `corrugated-panel-24` on the garage, on a different profile. SR 0.73 / TE 0.86 / SRI 89 from the Metal Sales PVDF colour guide, so solar_absorptance = 1 - 0.73 = 0.27. Caveat carried from the wall panel's own record: SRI is NIR-weighted, no visible LRV is published, and it is NOT a low-gloss colour."),
     # `corrugated-panel-24` (a library row since 2026-09-24, as are `pbr-panel-24/-26` and
     # the three seam profiles) — `corrugated-panel-26` one gauge heavier, ordered here in
     # Linen White, on GARAGE_WALL_2X6 and both ENTRY_SCREEN faces. Same gauge reasoning as

@@ -104,8 +104,10 @@ def roof_labels(model, roof, clad_out: float, junction_z: float, out_sign: float
 
     entries: list[tuple[Anchor, str]] = []
     if "cladding" in bands:
-        entries.append(((clad_out - out_sign * 6.0, mid("cladding")),
-                        "standing seam on concealed floating clips"))
+        roofing = next(layer for layer, _, _ in above_structure_bands(model, roof)
+                       if layer.function.value == "cladding")
+        material = model.plan.library.material(roofing.material_ref)
+        entries.append(((clad_out - out_sign * 6.0, mid("cladding")), material.name))
     if "airgap" in bands:
         entries.append(((clad_out - out_sign * 3.0, mid("airgap")),
                         "vent mat intake, insect screened — the roof's only outward "

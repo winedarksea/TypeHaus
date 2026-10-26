@@ -31,7 +31,7 @@ from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof, model: ResolvedModel,
               authored: dict | None = None, *,
-              exclude_categories: frozenset[str] = frozenset()) -> None:
+              exclude_categories: frozenset[str] = frozenset()) -> dict:
     """Render the roof as its authored above-structure assembly stack, then its skin members.
 
     Each band is a closed solid, so it reads (and imports into Revit/SketchUp) as real
@@ -41,6 +41,7 @@ def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof, model: ResolvedModel,
     """
     assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
     layers = {layer.name: layer for layer in above_structure_layers(assembly)}
+    surfaces = {}
     for part in roof_parts(roof, assembly):
         layer = layers.get(part.key.split(":", 1)[1])
         if layer is None:  # the no-layers-above-structure fallback band
@@ -49,6 +50,9 @@ def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof, model: ResolvedModel,
         else:
             color = _material_finish_color(layer.material_ref, layer.function.value,
                                            authored)
+        if part.key.split(":", 1)[1] in dict(roof.layer_surface_meshes):
+            from typehaus.emit.gltf.board_batten import PAINTED_METAL_SURFACE
+            surfaces[color] = PAINTED_METAL_SURFACE
         for solid in part.solids:
             mb.add_mesh(solid, color)
     for member in roof.members:
@@ -58,3 +62,5 @@ def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof, model: ResolvedModel,
         # emits it into that wall's node instead (``owned_elsewhere``).
         if not is_roof_framing_member(member) and not owned_elsewhere(member, roof.uid):
             _add_member(mb, member, authored)
+
+    return surfaces

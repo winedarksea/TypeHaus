@@ -161,15 +161,18 @@ def test_the_roof_structure_is_drawn_once(catlin_model):
 
 def test_a_plain_section_shows_the_roof_as_its_real_stack(catlin_model):
     """The coarse single band is gone: a building section reads the assembly it is cut
-    through, and the band count is exactly the above-structure layer count."""
+    through. Folded sheets produce a separate closed outline on each slope."""
     from typehaus.emit.draw.section import build_center_section
     from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
     scene = build_center_section(catlin_model)
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
-    assert sorted(_roof_bands(scene, "RF-HOUSE")) == \
-        sorted(layer.name for layer in above_structure_layers(assembly))
+    from collections import Counter
+    bands = Counter(_roof_bands(scene, "RF-HOUSE"))
+    assert set(bands) == {layer.name for layer in above_structure_layers(assembly)}
+    assert bands["roofing"] == 2  # separate thin sheets at the ridge
+    assert all(count == 1 for name, count in bands.items() if name != "roofing")
 
 
 def test_the_bay_fill_still_draws_under_the_rafters(catlin_model):

@@ -316,7 +316,8 @@ the future.
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
 - Flashing geometry and visibility implemented 2026-10-15: west-draining fitted cap on SB-BW-BAND's exposed 2×6 sill above W-BW-SCREEN; metal heads and concealed perimeter/sill flashing at exterior windows and doors; one Flashing 3D hide/isolate control. [Modeling basis and limits](../houses/catlin/notes/flashing_model.md).
 - Possibly swap the concrete canopy stairway (SL-BW-TIER*) to pressure treated wood and composite treads or with brick stairs.
-- Consider adding a gutter along the entryway canopy gable in the narrow space between canopy and house, the goal is for this to mostly fill the space, if it can do so in a way that is buildable and not causing any problems. A more minimal fix might be flashing on the exposed south glulam beam end.
+- Consider adding a gutter along the entryway canopy gable in the narrow space between canopy and house, the goal is for this to mostly fill the space, if it can do so in a way that is buildable and not causing any problems. A more minimal fix might be flashing on the exposed south glulam beam end. 
+- Related to the above, beams of the canopy, BM-BW-RE and BM-BW-RW might be able to be extended into the garage framing to provide more structural strength to the canopy (possibly allowing us to drop the sheathing bracing need on the W-BW-SCREEN). Downsides are that it puts the garage itself more on engineered terms and is a weakness in the garage weather seal.
 - Make the countertop (and quartz window stools) a "ready to send to manufacturer" design and export. Include rounding corners
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps grab bars.
 - Window/door quotes (products named 2026-10-21): get Drutex (DAKAM, Chicago), Andersen 400 and Cascadia quotes and close `notes/window_and_door_procurement.md` §2.6 — Alucover nail fin + NAFS DP, the 14" tilt-only minimum, Drutex sill rail height (re-strike the 2.953" stools), Andersen triple-pane in MN and frame depth, the Cascadia double-door NFRC label and thresholds, dark-colour warranties.
@@ -365,3 +366,6 @@ Still deferred, and each for its own reason:
 Firstly design a house (with permit checks, building science review, floorplan editing in the 2d UI, 3d review, cost reduction and BOM review).
 Secondly gather bids, organize the timeline (inspection gates, etc), then track completed progress.
 Thirdly use the house design as a reference (ie for agents understanding live data on home assistant in context), potentially with feedback loop of updating the design or later running a remodel
+
+- [ ] Confirm S-5-S compatibility and loads for Metal Sales Image II 1" snap-seam with the S-5! configurator / Metal Sales; verify Aptos 440 W clamp zones for the seam-snapped PVKIT columns.
+- [ ] Confirm Image II eave rib-end treatment: installation guide pp. 20–22 calls for sealant or field-closed rib ends; current hot-roof design keeps rib ends open without a vent closure.

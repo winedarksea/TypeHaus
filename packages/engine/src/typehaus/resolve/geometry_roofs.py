@@ -217,6 +217,7 @@ def roof_parts(roof: ResolvedRoof, assembly) -> tuple[GPart, ...]:
                               _boundary_edges(layer_triangles), base, base + thickness)
         else:
             band = _band_mesh(triangles, offset_at, perimeter, base, base + thickness)
+        band = dict(roof.layer_surface_meshes).get(name, band)
         parts.append(GPart(key=f"layer:{name}", solids=(band,),
                            material_key=layer_material_key(material_ref, function),
                            layer_group=layer_visibility_group(function),

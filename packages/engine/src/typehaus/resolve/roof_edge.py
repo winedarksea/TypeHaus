@@ -42,7 +42,12 @@ from typehaus.resolve.roof_edge_geometry import (
     skin_layers,
     skin_stand_ins,
 )
-from typehaus.resolve.roof_geometry import roof_height_at, roof_structure_depth_m
+from typehaus.resolve.roof_geometry import (
+    roof_height_at,
+    roof_plane_z,
+    roof_slope_coordinate,
+    roof_structure_depth_m,
+)
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 from typehaus.resolve.roof_trim import roof_trim_members
 
@@ -348,6 +353,22 @@ def _closure_segment(
         if max(targets[0] - tops[0], targets[1] - tops[1]) < CLOSURE_TOLERANCE_M:
             continue  # this layer already reaches its face (a ToRoof rake, or a flush eave)
         thickness_in = layer.thickness_m / M_PER_IN
+        section_ring = None
+        dx, dy = p1[0]-p0[0], p1[1]-p0[1]
+        run = math.hypot(dx, dy)
+        along_ridge = abs(dy if roof.ridge_direction == "y" else dx)
+        if (mating is not None and layer.function in ("furring", "cladding")
+                and run > 0 and abs(run-along_ridge) < CLOSURE_TOLERANCE_M):
+            # A flat closure top projected through the newly thin roof pan at its outer
+            # face. Scribe across the layer width while retaining its centre datum.
+            nx, ny = -dy/run, dx/run
+            half = layer.thickness_m/2
+            def top_at(across, p0=p0, nx=nx, ny=ny, perpendicular=perpendicular, tops=tops):
+                point = (p0[0]+nx*across, p0[1]+ny*across)
+                return (roof_plane_z(roof, roof_slope_coordinate(roof, point))
+                        + perpendicular*slope_factor - tops[0])
+            section_ring = ((-half, 0.), (half, 0.),
+                            (half, top_at(half)), (-half, top_at(-half)))
         members.append(FramedMember(
             parent_uid=wall.uid,
             child_key=f"{wall.tag}-closure-{segment}-{layer.name}",
@@ -357,6 +378,6 @@ def _closure_segment(
             length_m=math.hypot(p1[0] - p0[0], p1[1] - p0[1]),
             z0_end_m=tops[1], z1_end_m=max(tops[1], targets[1]),
             connection="roof:wall-top-closure",
-            material=layer.material_ref,
+            material=layer.material_ref, section_ring=section_ring,
         ))
     return tuple(members)

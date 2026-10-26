@@ -182,3 +182,19 @@ def test_concealed_lap_cannot_consume_the_entire_profile_depth():
     profile = CORRUGATED_PROFILE
     with pytest.raises(ValueError, match="concealed flashing exceeds"):
         panel_mesh(panel_wall(profile), profile, support_clearance_m=profile.depth_m)
+
+
+def test_image_ii_striated_section_and_bounded_fold_miters():
+    from typehaus.resolve.metal_skin_profiles import IMAGE_II_16_PROFILE, _inset_section
+
+    profile = IMAGE_II_16_PROFILE
+    assert profile.pitch_m == pytest.approx(16 * .0254)
+    assert profile.depth_m == pytest.approx(.0254)
+    assert profile.section_points_m[0][1] == profile.depth_m
+    assert profile.section_points_m[-1][1] == profile.depth_m
+    heights = {h for _, h in profile.section_points_m}
+    assert all(h - profile.sheet_thickness_m < .125 * .0254
+               for h in heights if h != profile.depth_m)
+    inset = _inset_section(profile.section_points_m, profile.sheet_thickness_m)
+    assert all(math.dist(a, b) / profile.sheet_thickness_m < 4
+               for a, b in zip(profile.section_points_m, inset, strict=True))

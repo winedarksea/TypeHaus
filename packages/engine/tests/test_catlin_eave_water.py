@@ -118,7 +118,10 @@ def test_no_authored_drip_duplicates_the_derived_piece(catlin_model) -> None:
     """One piece of metal per edge: the old level drips and corner trim are gone."""
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-DRIP")]
-    assert not [m for m in roof.members if m.category == "corner_trim"]
+    assert not [m for m in roof.members if m.connection == "roof:corner-trim"]
+    assert any(m.connection == "roof:panel-rake" for m in roof.members)
+    assert not [m for m in roof.members if m.connection == "roof:panel-rake"
+                and m.child_key.startswith("eave")]
     assert {m.child_key.rsplit("-drip-edge-", 1)[0] for m in roof.members
             if m.category == "drip_edge"} == {
         "eave-lo", "eave-hi", "rake-lo-0", "rake-lo-1", "rake-hi-0", "rake-hi-1"}
@@ -145,7 +148,11 @@ def test_the_lap_chain_runs_unbroken_from_the_roofing_to_the_trough(eave) -> Non
     """Each piece overlaps the next one down, so no seam in the chain faces upward."""
     setback = next(e for e in eave.roof.layer_edge_setbacks if e["layer"] == "roofing")
     roofing_out = -setback["east"] / inch(1).meters
-    roofing = (-6.0, roofing_out, CLADDING_HEAD_IN, (0.665 + 0.5) * SLOPE_FACTOR + 3.0)
+    assembly = eave.model.plan.library.resolve_assembly(eave.roof.assembly)
+    roofing_depth = next(layer.thickness.inches for layer in assembly.layers
+                         if layer.name == "roofing")
+    roofing = (-6.0, roofing_out, CLADDING_HEAD_IN,
+               CLADDING_HEAD_IN + roofing_depth * SLOPE_FACTOR + 3.0)
     nose, face, kick = eave.leg("nose"), eave.leg("face"), eave.leg("kick")
     back = eave.solid("TR-RF-GUTTER-E-1-BACK")
     front = eave.solid("TR-RF-GUTTER-E-1-FRONT")

@@ -1,7 +1,7 @@
 """Rooftop PV array — parametric module (plans/electrical_notes.md lines 31-33).
 
 One row of 440 W modules each side of the house gable ridge (RF-HOUSE: ridge N-S at
-x=18', 4:12, 36' footprint), landscape orientation (69.4" edge along the ridge), max fit:
+x=18', 6:12, 36' footprint), landscape orientation (69.4" edge along the ridge), max fit:
 floor(36' / 5.783') = 6 modules per row, centred, 12 x 440 W = 5,280 W installed. Mounted
 on S-5! PVKIT standing-seam kits (no penetrations), four per module; the DC/AC run leaves
 the roof at ED-A-PV-JB beside the radon-vent riser (plan/electrical.py) and lands on the
@@ -11,13 +11,14 @@ its own any more; the inverter's grid port does, on CKT-ESS-GRID (plan/circuits.
 Generated — max fit is computed, so this cannot live in a ``# haus: editable`` module
 (the dialect forbids loops); ``SolarPanel`` is not a UI-movable kind, so a params home is
 legal. The resolver (resolve/solar.py) owns the tilt math; clamp elevations here follow
-the resolved deck plane (RF-HOUSE eave_z 25.84' at the footprint edge, ridge 32.04',
-4:12), good to an inch — the clamps are count-and-marker hardware, not located geometry.
+the assembly-derived seam crowns. Clamp columns follow the shared 16 inch stations.
 """
 
 from __future__ import annotations
 
 import math
+
+from params.roof_panel import PITCH, EAVE_DECK_IN, clamp_columns_inches, seam_top_inches
 
 from typehaus import Connector, ConnectorKind, SolarPanel, ft, inch, pt
 
@@ -63,13 +64,12 @@ CLAMPS_PER_PANEL = 4
 # pitch. At 6:12 the array's tilt is 26.6 degrees — closer to the 45-degrees-north latitude
 # optimum, so December yield is favoured over June; net annual is a wash to slightly
 # positive, a side effect of the pitch (chosen for headroom) rather than its reason.
-PLANE_Z_AT_X0_FT = 20.948  # resolved RF-HOUSE deck plane at the footprint edge (eave_z)
-PITCH = 6.0 / 12.0
+PLANE_Z_AT_X0_FT = EAVE_DECK_IN / 12
 
 _w_ft = PANEL_W_IN / 12.0
 _count = math.floor(FOOTPRINT_FT / _w_ft)  # 6
 _row_start_ft = (FOOTPRINT_FT - _count * _w_ft) / 2.0
-# Plan projection of the down-slope edge (44.6" at 4:12).
+# Plan projection of the down-slope edge (44.6" at 6:12).
 _plan_l_ft = (PANEL_L_IN / 12.0) / math.sqrt(1.0 + PITCH * PITCH)
 
 
@@ -94,16 +94,18 @@ def _build():
                 string=f"STR-{side}", voc=PANEL_VOC, voc_cold=PANEL_VOC_COLD,
                 rsd=PANEL_RSD,
             ))
-            # Four PVKIT clamps per module, inset 6" from each corner in plan.
+            # Keep both seam-snapped columns at least six inches inside the module ends.
+            column_a, column_b = (value / 12 for value in
+                                  clamp_columns_inches(origin_y * 12, PANEL_W_IN))
             near_x = origin_x + sign * 0.5
             far_x = origin_x + sign * (_plan_l_ft - 0.5)
             for letter, (cx, cy) in zip("ABCD", (
-                    (near_x, origin_y + 0.5), (near_x, origin_y + _w_ft - 0.5),
-                    (far_x, origin_y + 0.5), (far_x, origin_y + _w_ft - 0.5))):
+                    (near_x, column_a), (near_x, column_b),
+                    (far_x, column_a), (far_x, column_b))):
                 clamps.append(Connector(
                     uid=f"SPC{side}{n}{letter}AAA", tag=f"CN-A-PV-{side}{n}{letter}",
                     kind=ConnectorKind.STANDING_SEAM_CLAMP,
-                    position=pt(ft(cx), ft(cy)), elevation=ft(_plane_z_ft(cx)),
+                    position=pt(ft(cx), ft(cy)), elevation=inch(seam_top_inches(cx * 12)),
                     size="S-5-PVKIT", connects=(tag, ROOF_TAG)))
     return panels, clamps
 

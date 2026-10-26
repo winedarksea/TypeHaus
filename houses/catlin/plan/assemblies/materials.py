@@ -147,7 +147,7 @@ MATERIALS = [
     # High-temp self-adhered BUTYL, rated >= 240 F, over the whole deck rather than as an
     # eave band (Grace Ultra / Henry Blueskin PE200HT class). Butyl rather than SBS for one
     # reason that outranks every other property here: it self-seals around a fastener, and
-    # ~1,160 standing-seam clip screws through the field are this roof's actual water risk —
+    # ~1,160 standing-seam nail-flange screws through the field are this roof's actual water risk —
     # not pipes, not curbs, and not the 48 non-penetrating S-5! PV clamps.
     #
     # Its 0.05 perm is NOT a hedge to be argued with. Under a 0-perm metal panel there is no

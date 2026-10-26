@@ -1585,6 +1585,7 @@ export interface Roof {
   layer_trades?: string[];
   bearing_z_m?: number | null;
   layer_edge_setbacks?: RoofLayerSetback[];
+  layer_surface_meshes?: { layer: string; surface_mesh: SurfaceMesh }[];
 }
 
 // One wall's share of a WallPaneling band — a wainscot, a tile splash (→ resolve/model.py

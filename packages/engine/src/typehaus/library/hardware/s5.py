@@ -46,8 +46,10 @@ S5_S_SNAP_LOCK_CLAMP = StructuralHardware(
     name="S-5-S snap-lock seam clamp",
     manufacturer="S-5!",
     model="S-5-S",
-    source="S-5! S-5-S clamp (s-5.com/s-5-s-clamps) — two-setscrew non-penetrating clamp "
-           "for 1.5\"-1.75\" snap-lock/snap-together vertical seams",
+    source="S-5! S-5-S clamp (s-5.com/products/s-5-s-clamps) — two-setscrew non-penetrating clamp "
+           "for snap-lock vertical seams >=1.00\" high (typically 1.5\"-1.75\"), "
+           "<=0.54\" finished width; male leg must engage both seam portions; confirm "
+           "Image II with the S-5! configurator / Metal Sales",
 )
 
 S5_N_NAIL_STRIP_CLAMP = StructuralHardware(
