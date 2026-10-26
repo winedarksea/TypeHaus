@@ -5,7 +5,8 @@ fitting; no inquiries, custom metal fabrication or purchases. Keep the nominal
 60 × 80 pairs and their centerlines. Exterior finish is composite/PVC/aluminum,
 with no exposed wood. Main-floor door installations and WIN-B-SAUNA are unchanged.
 
-**Status: design coordination, NOT construction-ready.** The exterior boundaries,
+**Status: incomplete design coordination, NOT construction-ready. Patio fit FAIL;
+study fit UNKNOWN.** The exterior boundaries,
 formed patio seat, catalog sill outline, approach boards, support envelopes and
 flashing-end envelopes are modeled. Member feasibility and installed-height checks
 are calculated. Root connections, concrete bar development, cross-bearer bearing and
@@ -18,7 +19,7 @@ questions: the two installation TODOs remain open until these design issues clos
 | --- | --- | --- |
 | Leaves | Therma-Tru Smooth-Star full-lite, nominal pair 60 × 80 | Laminated triple, exact assembled pair NFRC/NAFS and performance label remain unconfirmed; the existing U/SHGC/VT row is provisional |
 | Frame | Therma-Tru composite 4-9/16 inch jamb; 2026 Comp 6.4 | Factory machining, hinge axis and hinge locations of an assembled Endura pair |
-| Returns / casing | Composite exterior returns, 3/4 inch coordination thickness; Therma-Tru 3-1/2 inch flat composite casing | The deep returns are board envelopes, not proof that a single stock jamb extension reaches their full depth; exact extension SKU and permissible dark finish still need documentation |
+| Returns / casing | AZEK Captivate Graphite Gray, 3/4 × 48 × 96 smooth sheet; PaintPro substrate AS03448096. Field-rip the deep returns and 3-1/2 inch flat casings from two sheets | Catalog product/color selection; no exact color match to the steel or purchase/finish warranty confirmation claimed |
 | Sill | Endura ZAI4565FN, dimensioned 4-9/16 inch width and 1-3/8 inch rear-fin height; digitized exterior outline | Adjustment limits, actual installed cap setting and bearing contacts; the drawing does not dimension the highest cap outline |
 | Sweep / pads | Endura DBK-R double-bulb kerfed bottom and compatible corner-pad family are catalog candidates | Therma-Tru leaf kerf fit, installed compression and selected pad variant; no substitute sweep geometry is invented |
 | Passive leaf | Ultimate Flip Lever Astragal; field instructions include the lower receiver | Receiver is drilled 5/8 inch diameter, at least 1-3/8 inch deep; delivered assembly setting and cap/screw clearances remain unconfirmed |
@@ -41,6 +42,15 @@ Primary documents:
 - [SureSill installation documents](https://www.suresill.com/install-guide), [height allowance](https://www.suresill.com/faq), [HeadFlash sizes and kit](https://www.suresill.com/product/headflash).
 - [AridDek installation](https://wahoobuildingproducts.com/ariddek-installation-guide/).
 - [Proglaze ETA System 1 instructions](https://www.tremcosealants.com/resource/download/Proglaze_ETA_System_1_AI.pdf), §§3.1, 4.1 and 5; the review and adhesion requirements are not waived by buying standard components.
+
+**Exposed trim is a sourced sheet product.** The [AZEK 2026 product guide](https://assets.timbertech.com/content/dam/wp-content/TimberTech-AZEK-Exteriors-Product-Guide.pdf)
+lists AS03448096, a 3/4 × 48 × 96 smooth sheet. [Captivate](https://azekexteriors.com/products/prefinished/captivate)
+lists Graphite Gray, includes sheet trim and lists Minnesota among its distribution states.
+Use the factory prefinished product and its matching cut-edge touch-up instructions; this
+selection does not authorize ordinary dark field paint on white PVC. The two sheets can
+be ripped into lengthwise strips: patio returns on one, study returns plus both doors'
+six casing pieces on the other. The review script checks cut lengths and strip widths
+including 1/8 inch saw kerfs; there is no custom extrusion or shop-bent wrap.
 
 ### Outline provenance
 
@@ -78,6 +88,13 @@ as a flood barrier. Overflow drainage and the sump remain the backup provisions.
 
 The pan's level bearing envelope is over the concrete seat. The pan drops outward
 into a lower sloped apron below the thick AridDek approach and its cross bearers.
+**This candidate arrangement fails the actual curb-layer interference check.** The
+formed pocket cuts the concrete from its interior face; it leaves the exterior
+insulation/water-control layers at their original height. The low approach and pan
+drop overlap remaining curb material. Lowering the threshold alone does not resolve
+that collision. Revise the exterior curb profile, supported sill nose and outlet
+together, then rerun the solid-intersection check; no clearance is assumed from a
+positive apron-to-cross-bearer distance. This is a design hold, not a procurement item.
 A concrete cantilever envelope supports the approach without relying on the veneer,
 foam or plywood buck. It is a **candidate six-inch reinforced section**, not an
 approved pour: root reinforcement, hooked-bar development, the curb/footing interface,

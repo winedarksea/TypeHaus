@@ -17,6 +17,8 @@ from .materials_study_booth import MATERIALS_STUDY_BOOTH
 
 
 MATERIALS = [
+    Material(tag="captivate-graphite-sheet", name="AZEK Captivate Graphite Gray 3/4 inch sheet trim",
+             color="#41464a", source="AZEK 2026 product guide AS03448096, 3/4 x 48 x 96 smooth sheet; Captivate Graphite Gray factory finish. Field-rip returns/casing; two sheets for both doors."),
     Material(tag="pvc-opening-flashing", name="SureSill PVC opening flashing",
              color="#eeeeee", source="SureSill stock HeadFlash/sloped sill pan; catalog coordination envelopes."),
     Material(tag="silicone-transition", name="Proglaze ETA standard silicone transition",

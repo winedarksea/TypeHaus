@@ -67,11 +67,16 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     assert placement.sill_design_status == "CATALOG_DESIGN"
     assert placement.factory_depth_documented
     assert assembly.supplier_status == "PENDING"
-    assert assembly.fit_status == "UNKNOWN"
-    assert not assembly.conflicts
+    if tag == "D-B-PATIO":
+        assert assembly.fit_status == "FAIL"
+        assert any("intersects remaining W-B-S3" in c for c in assembly.conflicts)
+        assert placement.installation_report["seat_interference_status"] == "FAIL"
+    else:
+        assert assembly.fit_status == "UNKNOWN"
+        assert not assembly.conflicts
     assert placement.specification.exterior_wrap_material_ref is None
     assert all(
-        b.material_ref == "composite-door-frame"
+        b.material_ref == placement.specification.exterior_material_ref
         for b in placement.boards
         if b.name.startswith("exterior")
     )

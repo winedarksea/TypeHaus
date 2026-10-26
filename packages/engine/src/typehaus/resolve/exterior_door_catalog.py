@@ -360,9 +360,16 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
         for s in sections
     ]
     placement = replace(placement, sections=tuple(sections))
-    from typehaus.resolve.exterior_door_catalog_fit import catalog_drainage_conflicts
+    from typehaus.resolve.exterior_door_catalog_fit import (
+        catalog_drainage_conflicts,
+        catalog_seat_conflicts,
+    )
 
     conflicts.extend(catalog_drainage_conflicts(placement))
+    seat_conflicts = catalog_seat_conflicts(model, wall, opening, placement)
+    report["seat_interference_status"] = "FAIL" if seat_conflicts else "PASS"
+    report["seat_interference_conflicts"] = seat_conflicts
+    conflicts.extend(seat_conflicts)
     unknown.append(
         "stock HeadFlash and silicone end-transition outlines require "
         "installed sections/bond evidence"

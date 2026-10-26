@@ -28,6 +28,9 @@ from typehaus.source import load_plan
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "out/exterior-door-review"
 TAGS = ("D-M-ENTRY", "D-M-BALC", "D-S-DECK-E", "D-B-PATIO")
+TRIM_SHEET_WIDTH_IN = 48
+TRIM_SHEET_LENGTH_IN = 96
+TRIM_SAW_KERF_IN = 0.125
 
 
 def color(part):
@@ -162,9 +165,32 @@ def write_catalog_review(model):
                              report["crest_above_exterior_in"],
                              (report["conservative_crest_z_m"]-report["nominal_crest_z_m"])/.0254,
                              report["support"]["member_status"],
-                             report["support"]["connection_status"], "UNKNOWN"))
+                             report["support"]["connection_status"],
+                             next(o.doorway.fit_status for o in model.openings if o.tag == tag)))
     rows = [r for r in door_installation_rows(model) if any(t in reports for t in r["tags"])]
     (OUTPUT / "catalog-installation-takeoff.json").write_text(json.dumps(rows, indent=2) + "\n")
+    sheets = [[], []]
+    for opening in model.openings:
+        if opening.tag not in reports:
+            continue
+        for board in opening.doorway.exterior_placement.boards:
+            if not board.name.startswith("exterior"):
+                continue
+            thickness, width, length = board.cut_dimensions_m
+            index = 0 if opening.tag == "D-B-PATIO" and "return" in board.name else 1
+            sheets[index].append(dict(door=opening.tag, part=board.name,
+                                      thickness_in=thickness/.0254, width_in=width/.0254,
+                                      length_in=length/.0254))
+    layouts = [dict(stock="AZEK Captivate 3/4 x 48 x 96; AS03448096 substrate",
+                    finish="Graphite Gray", pieces=pieces,
+                    used_width_in=sum(p["width_in"] for p in pieces)
+                    + len(pieces) * TRIM_SAW_KERF_IN,
+                    maximum_length_in=max(p["length_in"] for p in pieces))
+               for pieces in sheets]
+    if any(s["used_width_in"] > TRIM_SHEET_WIDTH_IN
+           or s["maximum_length_in"] > TRIM_SHEET_LENGTH_IN for s in layouts):
+        raise ValueError("exterior trim no longer fits the two catalog sheets")
+    (OUTPUT / "catalog-trim-sheet-layout.json").write_text(json.dumps(layouts, indent=2) + "\n")
     figure, axes = plt.subplots(1, 2, figsize=(14, 6))
     study = next(o for o in model.openings if o.tag == "D-S-DECK-E")
     placement = study.doorway.exterior_placement

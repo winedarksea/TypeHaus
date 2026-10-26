@@ -26,12 +26,12 @@ def catalog_installation(*, concrete=False):
 
 PATIO_INSTALLATION = ExteriorDoorInstallation(
     factory_frame_depth=inch(4.5625), interior_material_ref='pine-fj-base',
-    exterior_material_ref='composite-door-frame', exterior_opening_ref='AO-B-BRICK-DOOR',
+    exterior_material_ref='captivate-graphite-sheet', exterior_opening_ref='AO-B-BRICK-DOOR',
     seat_opening_ref='AO-B-PATIO-SEAT', landing_search=inch(12),
     catalog_installation=catalog_installation(concrete=True))
 STUDY_INSTALLATION = ExteriorDoorInstallation(
     factory_frame_depth=inch(4.5625), interior_material_ref='pine-fj-base',
-    exterior_material_ref='composite-door-frame', catalog_installation=catalog_installation())
+    exterior_material_ref='captivate-graphite-sheet', catalog_installation=catalog_installation())
 
 
 def with_catalog_installations(elements):

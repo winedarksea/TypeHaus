@@ -1,6 +1,55 @@
 """Independent geometric checks on generated catalog-installation coordination parts."""
 
+from dataclasses import replace
+
 from shapely.geometry import Polygon
+
+
+def catalog_seat_conflicts(model, wall, opening, placement):
+    """Intersect remaining seat/reveal layers with the central installation section."""
+    from typehaus.resolve.geometry import opening_center, wall_frame
+    from typehaus.resolve.geometry_ir import GMesh
+    from typehaus.resolve.geometry_slice import CutPlane, slice_solid
+    from typehaus.resolve.geometry_walls import layer_solids
+
+    reference = placement.specification.seat_opening_ref
+    notch = next((o for o in model.openings if o.tag == reference), None)
+    if notch is None:
+        return ()
+    targets = {notch.host_wall}
+    reveal = next((o for o in model.openings
+                   if o.tag == placement.specification.exterior_opening_ref), None)
+    if reveal is not None:
+        targets.add(reveal.host_wall)
+    center = opening_center(wall, opening)
+    _, tangent, normal, _ = wall_frame(wall)
+    profiles = [s for s in placement.sections if s.name.startswith(
+        ("ariddek-approach-board", "pan-outlet-drop", "approach-cross-bearer"))]
+    def local(point):
+        delta = tuple(point[i] - center[i] for i in (0, 1))
+        return (sum(delta[i] * normal[i] for i in (0, 1)),
+                sum(delta[i] * tangent[i] for i in (0, 1)))
+
+    collisions = set()
+    for tag in sorted(targets):
+        target = model.wall(tag)
+        cuts = [o for o in model.openings if o.host_wall == tag]
+        for layer in target.body_layers():
+            for solid in layer_solids(target, layer.polygon, cuts, layer_name=layer.name):
+                if isinstance(solid, GMesh):
+                    transformed = replace(solid, positions=tuple(
+                        (*local(p), p[2]) for p in solid.positions))
+                else:
+                    transformed = replace(solid, ring=tuple(local(p) for p in solid.ring),
+                                          voids=tuple(tuple(local(p) for p in ring)
+                                                      for ring in solid.voids))
+                for profile in slice_solid(transformed, CutPlane("x", 0)):
+                    body = Polygon(profile.outline, profile.voids)
+                    for section in profiles:
+                        if Polygon(section.polygon_m).intersection(body).area > 1e-8:
+                            collisions.add(f"{section.name.split('-board')[0]} intersects "
+                                           f"remaining {target.tag}/{layer.name}")
+    return tuple(sorted(collisions))
 
 
 def catalog_drainage_conflicts(placement):
