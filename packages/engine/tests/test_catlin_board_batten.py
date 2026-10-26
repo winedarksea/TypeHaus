@@ -15,13 +15,18 @@ def test_catlin_cladding_depths_supports_and_gable_meshes(catlin_model_ro):
         assert skin.thickness_m == pytest.approx(.01905)
         assert skin.surface_mesh is not None
         assert skin.surface_mesh.triangles
-        assert next(layer for layer in wall.layers if layer.name == 'vent-gap').thickness_m == pytest.approx(.0127)
-        assert next(layer for layer in wall.layers if layer.name == 'outer-girt').thickness_m == pytest.approx(.0381)
+        vent_gap = next(layer for layer in wall.layers if layer.name == 'vent-gap')
+        outer_girt = next(layer for layer in wall.layers if layer.name == 'outer-girt')
+        assert vent_gap.thickness_m == pytest.approx(.0127)
+        assert outer_girt.thickness_m == pytest.approx(.0381)
     for wall in model.walls:
         for layer in wall.layers:
             if layer.material_ref == 'pbr-panel-24':
                 assert layer.thickness_m == pytest.approx(.03175)
-                assert layer.surface_mesh is None
+                assert layer.surface_mesh and layer.surface_mesh.triangles
+            if layer.material_ref == 'corrugated-panel-24':
+                assert layer.thickness_m == pytest.approx(.022225)
+                assert layer.surface_mesh and layer.surface_mesh.triangles
     closures = [member for roof in model.roofs for member in roof.members
                 if member.material == 'board-batten-24' and member.category == 'cladding']
     assert closures
@@ -43,12 +48,14 @@ def test_catlin_cladding_depths_supports_and_gable_meshes(catlin_model_ro):
 def test_catlin_profiled_export_is_valid_and_has_its_own_painted_material(catlin_model_ro):
     gltf,blob = emit_gltf_dict(catlin_model_ro)
     assert validate_gltf(gltf,buffer_lengths=[len(blob)]) == []
-    skins = [node for node in gltf['nodes'] if node.get('extras',{}).get('material_ref') == 'board-batten-24']
-    assert skins
-    for node in skins:
-        assert node['extras']['kind'] == 'wall'
-        assert node['extras']['trade'] == 'siding'
-        for primitive in gltf['meshes'][node['mesh']]['primitives']:
-            material = gltf['materials'][primitive['material']]['pbrMetallicRoughness']
-            assert material['roughnessFactor'] == .45
-            assert material['metallicFactor'] == .05
+    for material_ref in ('board-batten-24', 'pbr-panel-24', 'corrugated-panel-24'):
+        skins = [node for node in gltf['nodes']
+                 if node.get('extras',{}).get('material_ref') == material_ref]
+        assert skins
+        for node in skins:
+            assert node['extras']['kind'] == 'wall'
+            assert node['extras']['trade'] == 'siding'
+            for primitive in gltf['meshes'][node['mesh']]['primitives']:
+                material = gltf['materials'][primitive['material']]['pbrMetallicRoughness']
+                assert material['roughnessFactor'] == .45
+                assert material['metallicFactor'] == .05

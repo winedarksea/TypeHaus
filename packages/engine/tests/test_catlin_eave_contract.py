@@ -188,15 +188,16 @@ def test_the_roof_footprint_laps_the_wall_cladding_and_does_not_collapse_to_the_
     footprint silently shrinks by the wall stack's whole outboard depth on every side. The
     ridge drops with it, the rafter tails stop short of the cladding, and nothing errors.
 
-    36'-0" of wall axis plus 7 1/4" of stack outboard of the structure face, both sides.
+    The E/W cladding projects 7 1/4" from structure; the N/S board-and-batten face projects
+    6 3/4". The roof follows each resolved face rather than applying one shared offset.
     """
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     xs = [point[0] / M_PER_IN for point in roof.footprint]
     ys = [point[1] / M_PER_IN for point in roof.footprint]
     assert min(xs) == pytest.approx(-7.25, abs=1e-3)
     assert max(xs) == pytest.approx(439.25, abs=1e-3)
-    assert min(ys) == pytest.approx(-7.25, abs=1e-3)
-    assert max(ys) == pytest.approx(439.25, abs=1e-3)
+    assert min(ys) == pytest.approx(-6.75, abs=1e-3)
+    assert max(ys) == pytest.approx(438.75, abs=1e-3)
 
 
 def test_a_closure_band_belongs_to_its_wall_not_to_the_roof(eave):

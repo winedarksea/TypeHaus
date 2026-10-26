@@ -13,7 +13,8 @@ import {
 } from "../../nordic/palette";
 import {
   applyMasonryWallUv, applyMineralWashUv, applyStandingSeamWallUv, createMasonryMaterial,
-  createMineralWashMaterial, createStandingSeamMaterial, isMasonry, isMineralWashFinish,
+  createMineralWashMaterial, createProfiledMetalSkinMaterial, createStandingSeamMaterial,
+  isMasonry, isMineralWashFinish,
   isStandingSeam, masonryStyleFor, masonryTileSizeM, WALL_COATING_POLYGON_OFFSET, WALL_FINISH_POLYGON_OFFSET,
   metalPanelProfileForFinish, type MetalPanelProfile, SEAM_PROFILE,
 } from "../materials";
@@ -148,7 +149,10 @@ export function buildWall(
     // Mirrors the declared-finish branch in emit/gltf/palette.py::_material_finish_color.
     const seamPaint = finishBaseColor(appearance?.finish);
     const mat = seam
-      ? createStandingSeamMaterial(mode, [
+      ? ly.surface_mesh && seamProfile?.key !== "standing-seam"
+        ? createProfiledMetalSkinMaterial(mode,
+          seamPaint ? new THREE.Color(seamPaint).getHex() : 0xE8E8E2)
+        : createStandingSeamMaterial(mode, [
         Math.hypot(w.axis[1][0] - w.axis[0][0], w.axis[1][1] - w.axis[0][1]),
         Math.max(0.1, w.z1_m - w.z0_m),
       ], seamPaint ? new THREE.Color(seamPaint).getHex() : 0xE8E8E2, true,

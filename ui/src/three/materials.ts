@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { createBoardBattenMaterial } from "./boardBattenMaterial";
+export { createProfiledMetalSkinMaterial } from "./boardBattenMaterial";
 import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
 import { familyOf } from "../nordic/palette";
 import { tiledFbm } from "./valueNoise";

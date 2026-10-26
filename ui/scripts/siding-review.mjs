@@ -20,9 +20,10 @@ try {
   session = await attachToPage(browser.port);
   await session.send("Emulation.setDeviceMetricsOverride", { width: 1500, height: 1190, deviceScaleFactor: 1, mobile: false });
   await mkdir(output, { recursive: true });
-  for (const face of ["north", "south"]) for (const detail of [false, true]) {
-    const label = `${face}-${detail ? "detail" : "facade"}`;
-    const url = `http://127.0.0.1:${server.httpServer.address().port}/siding-review.html?face=${face}${detail ? "&detail" : ""}`;
+  const views = [["board-and-batten", "north"], ["ribbed-panel", "east"], ["corrugated", "north"]];
+  for (const [profile, face] of views) for (const detail of [false, true]) {
+    const label = `${profile}-${face}-${detail ? "detail" : "facade"}`;
+    const url = `http://127.0.0.1:${server.httpServer.address().port}/siding-review.html?profile=${profile}&face=${face}${detail ? "&detail" : ""}`;
     await session.send("Page.navigate", { url });
     const deadline = Date.now() + 60_000;
     while (!await evaluate(session, `return location.href === ${JSON.stringify(url)} && window.sidingReviewReady === true`)) {

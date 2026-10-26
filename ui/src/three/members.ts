@@ -26,7 +26,7 @@ import {
   type ResolvedNordicPalette, statesOwnColor,
 } from "../nordic/palette";
 import {
-  createStandingSeamMaterial, isStandingSeam, type MetalPanelProfile,
+  createProfiledMetalSkinMaterial, createStandingSeamMaterial, isStandingSeam, type MetalPanelProfile,
   metalPanelProfileForFinish, panelTileSizeM, SEAM_PROFILE,
 } from "./materials";
 import {
@@ -462,8 +462,10 @@ export function buildMembers(group: THREE.Group, members: Member[], center: Plan
   for (const member of members.filter((item) => item.surface_mesh)) {
     const geometry = createSurfaceMeshGeometry(member.surface_mesh!, center);
     const profile = metalPanelProfileFor(member, materials) ?? SEAM_PROFILE;
-    const material = createStandingSeamMaterial(mode, [1, 1],
-      new THREE.Color(memberColor(member, palette, materials)).getHex(), true, profile);
+    const color = new THREE.Color(memberColor(member, palette, materials)).getHex();
+    const material = profile.key === "standing-seam"
+      ? createStandingSeamMaterial(mode, [1, 1], color, true, profile)
+      : createProfiledMetalSkinMaterial(mode, color);
     const mesh = makeSurfaceMesh(geometry, material);
     tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, [member]),
       [0, member.surface_mesh!.triangles.length]);

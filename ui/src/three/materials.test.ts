@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { createSurfaceMeshGeometry } from "./surfaceMesh";
 import { metalPanelProfileFor } from "./builders/walls";
 import {
+  createProfiledMetalSkinMaterial,
   createStandingSeamMaterial,
   applyMasonryWallUv,
   applyStandingSeamWallUv,
@@ -227,6 +228,13 @@ export function runMaterialGeometryTests() {
     true, BOARD_BATTEN_PROFILE) as THREE.MeshPhysicalMaterial;
   assert(foldedMaterial.normalMap === null,
     "Physical battens must not receive a second batten pattern from a normal map");
+  for (const profile of [RIBBED_PANEL_PROFILE, CORRUGATED_PROFILE]) {
+    const material = createProfiledMetalSkinMaterial("nordic", 0xe8e8e2) as THREE.MeshPhysicalMaterial;
+    assert(material.normalMap === null && material.roughness === 0.45
+      && material.metalness === 0.05,
+    `${profile.key} folded geometry receives painted-metal shading without fake relief`);
+    material.dispose();
+  }
   const surface = createSurfaceMeshGeometry({ positions: [[10, 20, 3], [11, 20, 3], [10, 20, 4]],
     normals: [[0, -1, 0], [0, -1, 0], [0, -1, 0]], triangles: [[0, 1, 2]] }, [9, 19]);
   const position = surface.getAttribute("position"), normal = surface.getAttribute("normal");

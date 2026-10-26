@@ -91,8 +91,12 @@ def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catli
     assert {ref: stool.material_ref for ref, stool in authored.items()} == species
     assert {stool.window_ref: stool.assembly for stool in authored.values()
             if stool.window_ref in kitchen | corian | east} == {
-        **{ref: "PLANT_EXT_2X6_HUMID" for ref in plant},
-        **{ref: "EXT_2X6" for ref in kitchen | east | {"WIN-M-BATH2"}},
+        **{f"WIN-S-PLANT{number}": "PLANT_EXT_2X6_HUMID_BOARD_BATTEN"
+           for number in (1, 2, 4)},
+        "WIN-S-PLANT3": "PLANT_EXT_2X6_HUMID",
+        **{ref: "EXT_2X6_BOARD_BATTEN" for ref in {"WIN-M-KITCH", "WIN-M-KITCH-N"}},
+        **{ref: "EXT_2X6" for ref in kitchen | east | {"WIN-M-BATH2"}
+           if ref not in {"WIN-M-KITCH", "WIN-M-KITCH-N"}},
     }
     # Every stool off the mill is 5/4 at 1", except the living room's ash: 6/4 at 1 1/4".
     for stool in stools:

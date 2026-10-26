@@ -7,7 +7,7 @@ const PAINTED_METAL_SURFACE = {
   metalness: 0.05, roughness: 0.45, clearcoat: 0.3, clearcoatRoughness: 0.1,
 };
 
-export function createBoardBattenMaterial(
+export function createProfiledMetalSkinMaterial(
   mode: "nordic" | "schematic", color: number,
 ): THREE.MeshStandardMaterial {
   const material = mode === "schematic"
@@ -20,6 +20,8 @@ export function createBoardBattenMaterial(
     );
     shader.vertexShader = shader.vertexShader.replace("#include <shadowmap_vertex>", shadowChunk);
   };
-  material.customProgramCacheKey = () => "board-batten-sheet-shadows-v1";
+  material.customProgramCacheKey = () => "profiled-metal-sheet-shadows-v1";
   return material;
 }
+
+export const createBoardBattenMaterial = createProfiledMetalSkinMaterial;
