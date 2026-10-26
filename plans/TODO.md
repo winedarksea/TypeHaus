@@ -327,7 +327,7 @@ the future.
 - A couple of options to reduce echo in the gym. One is swapping drywall for drop ceiling tile framing (perhaps with some fiberglass in the cavity above). Another was vulcanized recycled crumb-rubber rolls or 4'x6' stall mats for the floor. A third was W-B-CE losing its south side drywall and having fabric plus simple wood slats (ie 1x2 finger jointed pine) as an effectively slat wall arrangement.
 - Improve the wainscot of the mudrooms
 - Oksana wants an elm slab sofa table
-- Plan microwave placement. Leading options are peninsula drawer, replacing FURN-M-KIT-MIXER-GARGE with a countertop microwave, replacing FURN-M-KIT-MIXER-GARGE with a built in drop down door microwave (such as https://www.frigidaire.com/en/p/kitchen/microwaves/built-in-microwaves/GMBD3068AF and we need to make sure it gets adaquate cooling), or putting it in the pantry near the door.
+- Trial a countertop microwave in the east-counter cave (KGF4) vs the pantry east bay (RC1); pick one and record it.
 - [x] Model a coffee machine and kettle — SEVERIN WK 3422 and Arctic White De’Longhi Rivelia EXAM44055W on the north kitchen counter (2026-10-25); see DESIGN-LOG for the accepted overhead-clearance shortfall.
 - Check the basement stair carpet, and swap the carpet from the theater with an partial coverage area rug in the theater (technically not installed with tack strips or glue)
 - Update the LVP to https://coretecfloors.com/en-us/products/coretec-pro-classics/quincy-oak-vv017-01018

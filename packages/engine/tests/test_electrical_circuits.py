@@ -894,7 +894,7 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     surfaces" alongside doorways as things wall space is unbroken by.
 
     RM-M-LIVING's counterless fixed cabinets are the east tall bank
-    (FURN-M-KIT-PANTRY-S1/S2) and the mixer garage. The room has enough receptacles that it
+    (FURN-M-KIT-PANTRY-S1/S2) and the hung upper FURN-M-KIT-E-HUNG. The room has enough receptacles that it
     passes 210.52(A) WITH OR WITHOUT their break, so a room-verdict mutation would be vacuous
     here (and no other room in the house depends on the break: RM-S-BATH1's closet is in a
     bathroom, which is not habitable and is not graded).

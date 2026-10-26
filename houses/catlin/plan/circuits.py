@@ -391,7 +391,7 @@ CIRCUITS = (
             description="Kitchen small-appliance 1 (counter west)"),
     Circuit(uid="CKT021AAAA", tag="CKT-KITCH-SA2", slot=32, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1500,
-            description="Kitchen small-appliance 2 (counter east)"),
+            description="Kitchen small-appliance 2 (counter east + pantry)"),
     # GFCI here too: ED-M-LIVING-KDW1 is ~11" from the kitchen sink (E3902.10; was 2.7'
     # before the 2026-08-26 sink/dishwasher re-composition moved both into the same base).
     Circuit(uid="CKT022AAAA", tag="CKT-DISHWASHER", slot=34, panel_ref=_PANEL, breaker_amps=20, poles=1,

@@ -124,6 +124,12 @@ governs, which is the whole reason for the gable and the nose.
 | middle | 12"–14" | boxes, bottles |
 | top | 8"–10" | cans, jars |
 
+That is the **west** bay; its 20" bottom bay takes the stand mixer. The **east** bay carries
+the microwave trial (2026-10-25): shelf top at ~35", the next shelf's underside at 53" or
+higher (18" clear), ED-M-PANTRY-RC1 behind it on CKT-KITCH-SA2. Pick a unit 15½" deep or
+less so the 18" shelf leaves rear vent clearance, and run it with the pocket door open.
+Still six shelves per bay — a spacing spec only.
+
 Uniform 16" wastes roughly two shelves' worth of volume. **Every shelf is rated to be stood
 on regardless of pitch**, so climbing does not require an even rung spacing — the two
 requirements do not actually fight.

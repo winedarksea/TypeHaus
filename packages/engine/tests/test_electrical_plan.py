@@ -445,7 +445,7 @@ def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
     bases read as islands — the scope bug this test pins shut.
 
     ** THIS IS AN HONEST REGRESSION IN COVERAGE, NOT A FIX. ** The peninsula's countertop
-    receptacles are ED-M-LIVING-KGF4 and KMX1, inside FURN-M-KIT-MIXER-GARAGE at 42", which
+    receptacles are ED-M-LIVING-KGF4 and KMX1, under FURN-M-KIT-E-HUNG at 42", which
     is "above the counter surface" under 210.52(C)(3) — but nothing grades 210.52(C).
     """
     from typehaus.checks import run_from_model

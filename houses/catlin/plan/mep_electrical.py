@@ -200,7 +200,7 @@ MAIN_DEVICES = [
                          wall_ref="W-M-E1", face="left", distance_from_start=inch(349.25),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The NE carousel's east leg (y 32'-3 3/8"..35'-5 3/8"); KGF2 serves its north leg.
-    # KGF3 at 29'-1 1/4" serves the 14" landing between the mixer garage and the range,
+    # KGF3 at 29'-1 1/4" serves the 14" landing between the hung upper and the range,
     # its box on the south side of the 29'-4" stud. Nothing in the
     # engine checks 210.52(C) — the counter rule reports UNKNOWN by design.
     # y=34'-8" clears WIN-M-KIT-E's north jamb at 34'-7".
@@ -211,34 +211,16 @@ MAIN_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-E1", face="left", distance_from_start=inch(416),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # --- FURN-M-KIT-MIXER-GARAGE's outlets ---------------------------------------------
-    # ** BOTH OF THESE LIVE INSIDE THE CABINET, AND THAT IS THE POINT. ** The stand mixer
-    # slides straight out onto the peninsula with the outlet in the cabinet. KGF4 keeps its
-    # uid, a shipped IFC GlobalId.
+    # --- Under FURN-M-KIT-E-HUNG: the 20" countertop-appliance cave (36-56") -------------
+    # Ordinary countertop receptacles since the mixer box was retired (2026-10-25). KGF4 (SA2)
+    # is the MICROWAVE trial outlet; KMX1 (SA1) is the stand mixer's. 42" sits behind a
+    # 12-13" tall unit and within a 30-36" cord. KGF4 keeps its uid, a shipped IFC GlobalId.
     #
-    # 42": 6" above the peninsula's 36" top, so a cord reaches an appliance standing on the
-    # pull-out shelf and coils clear of it when the shelf travels. x=35'-4 3/8" is the east
-    # wall's finish face plus 1" — the garage's back IS that wall, so these are ordinary
-    # wall-hosted boxes, not floating in-cabinet ones. y=27'-2" and 28'-2 3/4" (KMX1's box
-    # beside the 28'-0" stud) are inside the garage's y 26'-7 3/8"..28'-7 3/8" (both moved
-    # north with it onto the carousel, 2026-10-03).
+    # GFCI: ~10'-7" from FX-M-KITCH-SINK, outside E3902.10's 6' reach, but a countertop
+    # appliance a step from a sink is where an inspector wants the device.
     #
-    # ** GFCI, and it is not merely belt-and-braces here. ** These sit ~10'-7" from
-    # FX-M-KITCH-SINK, outside E3902.10's 6' reach, and CKT-KITCH-SA1 is a GFCI breaker
-    # anyway — but a receptacle serving a countertop appliance a step from a sink is exactly
-    # where an inspector will want the device, and a GFCI device costs less than an argument.
-    #
-    # ** NEC note, and it is a real one. ** 2023 NEC 210.52(C)(2) no longer REQUIRES a
-    # receptacle at an island or peninsular countertop, but where none is installed it wants
-    # provisions for adding one; 210.52(C)(3) confines any receptacle that does serve the
-    # top to on/above/IN the surface. These are ABOVE it, inside a cabinet whose bottom is
-    # the counter plane, which satisfies (C)(3) — and they are the peninsula's only
-    # countertop-serving outlets now that the pop-ups are gone. A cord from here reaches the
-    # east end of the counter and not the west; if the owner wants power at the seating end
-    # later, that is a second device on this circuit, not a redesign.
-    #
-    # ** WIRE THEM BEFORE THE BOX GOES IN. ** Retrofitting behind an installed
-    # counter-to-ceiling cabinet is miserable, and that sequencing belongs in the source.
+    # NEC 210.52(C)(3) confines a receptacle serving the counter to on/above/in the surface:
+    # these are on the wall above it.
     ElectricalDevice(uid="CEDKGF4AAA", tag="ED-M-LIVING-KGF4", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-KITCH-SA2",
@@ -246,8 +228,7 @@ MAIN_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-E1", face="left", distance_from_start=inch(326.0),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # The mixer's own outlet, on the SMALL-APPLIANCE partner circuit so a 1,000 W machine
-    # and whatever else is plugged in up here are not on one 20 A branch.
+    # The stand mixer's outlet, on SA1 so it never shares a branch with the microwave.
     ElectricalDevice(uid="NXKCFS9YGV", tag="ED-M-LIVING-KMX1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-KITCH-SA1",

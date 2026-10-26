@@ -52,7 +52,7 @@ from typehaus import WallBacking, ft, inch
 #
 # ** THE SCHEME MOVED WITH THE 2026-09-29 FINISHED-CEILING CORRECTION. ** Counter uppers
 # now start at 53 1/2", their top course at 83 1/2", and the over-cold boxes at 73 1/2".
-# The mixer garage's stock courses start at 56" and 86"; living-room rods remain at 84".
+# The east hung frame's stock courses start at 56" and 86"; living-room rods remain at 84".
 #
 # A 2x8 laid flat is 7 1/4", so one band covers a spread of hangs.
 #
@@ -145,7 +145,7 @@ MAIN_BACKING = [
     WallBacking(uid="QGPJ6QRH9R", tag="BK-M-E1-MIXER-CAP", wall_ref="W-M-E1",
                 start=inch(320.75), length=inch(32),
                 elevation=inch(54), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="bottomless mixer enclosure cap restraint at 56 in. AFF"),
+                material_ref="spf", purpose="hung base frame bottom back-rail fixing at 56 in. AFF"),
     WallBacking(uid="A0K3GFYRYY", tag="BK-M-E1-MIXER-UPPER", wall_ref="W-M-E1",
                 start=inch(320.75), length=inch(32),
                 elevation=inch(82), height=inch(7.25), profile="2x8",
@@ -229,11 +229,11 @@ MAIN_BACKING = [
                 elevation=inch(12), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="APPL-M-DISP switch box and air-switch bracket (14 in.)"),
     # Dropped 34" -> 31 1/2" (2026-10-02) so one band takes both the SEKTION base suspension
-    # rail at the frame top (33 1/2") down the whole wall and the mixer garage's box at 36".
+    # rail at the frame top (33 1/2") down the whole wall.
     WallBacking(uid="GRFFVAA88Y", tag="BK-M-E1-MIXER", wall_ref="W-M-E1",
                 elevation=inch(31.5), height=inch(7.25), profile="2x8",
                 material_ref="spf",
-                purpose="SEKTION base suspension rail (33 1/2 in.), mixer garage lower box (36 in.)"),
+                purpose="SEKTION base suspension rail (33 1/2 in.)"),
     WallBacking(uid="SBE1761N5C", tag="BK-M-C5-MID", wall_ref="W-M-C5",
                 elevation=inch(71.5), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="over-fridge and over-freezer lower restraint (73 1/2 in.)"),

@@ -651,7 +651,7 @@ MAIN_LIGHTING = [
     # clear of FURN-M-KIT-WE5. LR-M-KIT-E-WN1 lights the corner's east leg.
     #
     # CAN4 at (33'-5 3/8", 29'-2 3/8") is mid-landing on FURN-M-KIT-CORNER-PEN's east-leg
-    # front edge, 7" clear of both the mixer garage and APPL-M-RANGE (2026-10-03).
+    # front edge, 7" clear of both the hung upper's front and APPL-M-RANGE (2026-10-03).
     ElectricalDevice(uid="QTM000BAAA", tag="ED-M-KITCH-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(33, 2), ft(33, 5.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",

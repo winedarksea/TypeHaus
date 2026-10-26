@@ -2460,7 +2460,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 12" is the narrowest wall box on the ladder; scaled off CASE-W24 by width.
 "CASE-W12" = { material = { low = 95, high = 240 }, labour = { low = 90, high = 220 } }  # 0 ea
 # The other rung the wall ladder was missing. The BASE ladder has had CASE-B15 since the
-# beginning; 15" is stock in both families and only turned up here when the mixer garage
+# beginning; 15" is stock in both families and only turned up here when the (since retired) mixer garage
 # left a 15" gap on the east wall.
 "CASE-W15" = { material = { low = 115, high = 290 }, labour = { low = 90, high = 220 } }  # 0 ea
 "CASE-W24" = { material = { low = 140, high = 350 }, labour = { low = 90, high = 220 } }  # 0 ea
@@ -2560,11 +2560,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "SEKT-W15-20" = { material = { low = 95, high = 235 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W30-20" = { material = { low = 155, high = 375 }, labour = { low = 90, high = 220 } }  # 1 ea
 "SEKT-W36-20" = { material = { low = 185, high = 455 }, labour = { low = 90, high = 220 } }  # 2 ea
-# Bottomless 24x24x20 mixer enclosure, sides/cap/back and finish only. Budget allowance,
-# not a supplier quote; smaller than the retired 40-high carcass. The AXSTAD front,
-# lift-up fittings and thin appliance slider are included once in the fit-out allowance.
-"FT-KIT-MIXER24-20" = { material = { low = 260, high = 650 }, labour = { low = 160, high = 360 } }  # 1 ea
 # Stock installations include doors, shelves, anchoring and the detailed support fit-out.
+# FT-KIT-STOCK24-30-HUNG: wall-hung at 56" on the suspension rail, nothing under it; the
+# underside cover and back-rail fixing bill in [allowances].
 "SEKT-W12-30" = { material = { low = 200, high = 320 }, labour = { low = 90, high = 220 } }
 "SEKT-CORNER-W26-30" = { material = { low = 280, high = 460 }, labour = { low = 140, high = 300 } }
 "FT-KIT-STOCK24-30-HUNG" = { material = { low = 300, high = 520 }, labour = { low = 160, high = 360 } }
@@ -2928,9 +2926,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 72" counter-to-ceiling box) were here and are DELETED with their types on 2026-09-11: both
 # were custom sizes invented because the generic catalog could not reach a number. A 2026-09-29
 # catalog review found the 24"-deep dimensions are still not stock SEKTION: the over-cold
-# pair switched to stock 20-high frames on 2026-10-05. Only the bottomless lower mixer
-# enclosure remains custom (FT-KIT-MIXER24-20); both storage courses above it are stock.
-# The garage's appliance slider, front and lift hardware stay in [allowances].
+# pair switched to stock 20-high frames on 2026-10-05. The bottomless mixer enclosure
+# FT-KIT-MIXER24-20 was retired 2026-10-25; both stock courses now hang over an open
+# countertop-appliance cave, and their underside/fixing is in [allowances].
 # RM-M-PANTRY's shelf stack, and it is NOT a closet system — see the type's `source` and
 # notes/pantry_climbable_shelving.md. ** MATERIAL FELL BY ~2/3 ON 2026-08-29 AND THE SHELVES
 # DID NOT GET CHEAPER. ** The twelve shelves are 1 1/4" (6/4 since 2026-10-16) solid red oak off the owner's own
@@ -7642,15 +7640,10 @@ finish-garage-door-opener = { low = 500, high = 1400, unit = "ea", driver = "ope
 # 22 1/4" clear opening, so it fits the frameless 24" carcass by 1/4" and would NOT fit a
 # face-framed one; see kitchen_stock_cabinet_details.md for the installation clearances.
 cabinet-pantry-swing-out-inserts = { low = 900, high = 2200 }  # 2 x Rev-A-Shelf 5374-24
-# FURN-M-KIT-MIXER-GARAGE's fitting-out. ** A LIFT WAS PRICED HERE UNTIL 2026-08-24 ** —
-# a Rev-A-Shelf RAS-ML-HDSCOG spring lift in a base bay, which was a misreading of the
-# brief: the mixer sits at counter level in the garage and slides out level, so what is
-# bought is a maximum 1/4-inch appliance slider supported continuously by the counter,
-# rated for the actual mixer plus bowl, and AXSTAD 204.260.78 with lift-up hardware.
-# Preserve an 18-inch clear opening with the front fully raised. No internal tambour
-# coil, fixed slides or raised cabinet floor. Retained budget band pending a hardware quote.
-# WIRE ED-M-LIVING-KGF4/KMX1 BEFORE THE BOX GOES IN.
-cabinet-mixer-garage-pullout-and-door = { low = 400, high = 1100 }
+# FURN-M-KIT-E-HUNG's underside and fixing (2026-10-25, replacing the mixer-garage pull-out
+# and door): white cover panel over the exposed melamine underside, and the back-rail screws
+# into BK-M-E1-MIXER-CAP. Budget band, not a quote.
+cabinet-hung-frame-underside-and-fixing = { low = 60, high = 180 }
 cabinet-peninsula-rear-finish = { low = 70, high = 180 }  # paint and edge-band 25 inches; no projecting cover
 # The bars themselves bill in [placeables] as FT-KIT-CT-BRACKET-24. This is what they bear
 # on: a 3/4 ply sub-top over the three bases, legs lowered 1/2", five routed pockets, screws.

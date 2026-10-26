@@ -180,62 +180,42 @@ def test_diagonal_corner_closes_to_both_upper_runs(catlin_plan, kitchen_objects)
     assert math.dist(door[0], door[1]) / INCH == pytest.approx(14.875)
 
 
-def test_garage_fronts_face_west_and_pullout_lands_on_counter(
+def test_hung_upper_faces_west_over_an_open_appliance_cave(
     catlin_plan, catlin_model_ro, kitchen_objects
 ):
-    for tag, bottom, top in (
-        ("FURN-M-KIT-MIXER-GARAGE", 36, 56),
-        ("FURN-M-KIT-MIXER-GARAGE-UP", 56, 86),
-        ("FURN-M-KIT-MIXER-GARAGE-ST", 86, 101),
-    ):
+    hung = kitchen_objects["FURN-M-KIT-E-HUNG"]
+    for tag, bottom, top in (("FURN-M-KIT-E-HUNG", 56, 86), ("FURN-M-KIT-E-HUNG-ST", 86, 101)):
         obj = kitchen_objects[tag]
         assert (obj.body_z0_m, obj.body_z1_m) == pytest.approx(
             ((bottom + 0.9375) * INCH, (top + 0.9375) * INCH))
-        assert _bounds(obj) == pytest.approx(_bounds(kitchen_objects["FURN-M-KIT-MIXER-GARAGE"]))
+        assert _bounds(obj) == pytest.approx(_bounds(hung))
         radians = math.radians(obj.rotation_degrees)
         assert (math.sin(radians), -math.cos(radians)) == pytest.approx((-1, 0), abs=1e-9)
-    garage = kitchen_objects["FURN-M-KIT-MIXER-GARAGE"]
-    x0, y0, _, y1 = _bounds(garage)
-    deployed = box((x0 - PANTRY_RACK_EXTENSION_IN) * INCH, y0 * INCH, x0 * INCH, y1 * INCH)
-    counters = [
-        Polygon(top.outline)
-        for top in catlin_model_ro.countertops
-        if top.tag in ("CT-M-KIT-E", "CT-M-KIT-PENINSULA")
-    ]
-    assert counters[0].union(counters[1]).buffer(FINISH_TOLERANCE).covers(deployed)
-    typ = next(
-        t
-        for t in catlin_plan.library.furniture_types
-        if t.tag == kitchen_objects["FURN-M-KIT-MIXER-GARAGE-UP"].type_ref
-    )
+    # 20" clear over the 36" counter, and no furniture occupies it.
+    assert (hung.body_z0_m / INCH - 0.9375) - 36 == pytest.approx(20)
+    x0, y0, x1, y1 = _bounds(hung)
+    cave = box(x0 * INCH, y0 * INCH, x1 * INCH, y1 * INCH).buffer(-FINISH_TOLERANCE)
+    for tag, obj in kitchen_objects.items():
+        if not tag.startswith(("FURN-", "APPL-")) or tag.startswith("FURN-M-KIT-E-HUNG"):
+            continue
+        z0, z1 = obj.body_z0_m / INCH - 0.9375, obj.body_z1_m / INCH - 0.9375
+        if z1 <= 36 + 1e-6 or z0 >= 56 - 1e-6:
+            continue
+        ox0, oy0, ox1, oy1 = _bounds(obj)
+        assert not cave.intersects(box(ox0 * INCH, oy0 * INCH, ox1 * INCH, oy1 * INCH)), tag
+    typ = next(t for t in catlin_plan.library.furniture_types if t.tag == hung.type_ref)
     assert typ.height.inches == 30
     assert typ.product_ref == "PROD-IKEA-SEKTION-BASE24-30"
     assert typ.plan_symbol == "sektion-axstad-kitchen-wall"
-    assert kitchen_objects["FURN-M-KIT-MIXER-GARAGE-ST"].type_ref == "SEKT-TS24-15"
+    assert kitchen_objects["FURN-M-KIT-E-HUNG-ST"].type_ref == "SEKT-TS24-15"
     assert _bounds(kitchen_objects["APPL-M-RANGE"])[1] - y1 == pytest.approx(14.0625)
-
-
-def test_mixer_storage_envelope_has_no_floor_threshold_or_shelf(catlin_plan):
-    from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
-
-    typ = next(t for t in catlin_plan.library.furniture_types if t.tag == "FT-KIT-MIXER24-20")
-    _, parts = KITCHEN_SEKTION_SYMBOLS[typ.plan_symbol](
-        *(value.meters for value in typ.footprint), typ.height.meters)
-    # An 18-inch envelope above a 1/4-inch slider must be free of carcass panels.
-    clearance_min = tuple(value * INCH for value in (-10.75, -10, 0))
-    clearance_max = tuple(value * INCH for value in (10.75, 10, 18.25))
-    for part in parts:
-        overlaps = [min(center + size / 2, upper) - max(center - size / 2, lower)
-                    for center, size, lower, upper in zip(
-                        part["center"], part["size"], clearance_min, clearance_max, strict=True)]
-        assert min(overlaps) <= 1e-9, "cabinet geometry obstructs the mixer storage envelope"
 
 
 def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro, kitchen_objects):
     s1, s2 = (kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}"] for n in (1, 2))
     assert (_bounds(s2)[1], _bounds(s1)[3]) == pytest.approx((271.375, 319.375))
     assert _bounds(s2)[3] == pytest.approx(_bounds(s1)[1])
-    assert _bounds(s1)[3] == pytest.approx(_bounds(kitchen_objects["FURN-M-KIT-MIXER-GARAGE"])[1])
+    assert _bounds(s1)[3] == pytest.approx(_bounds(kitchen_objects["FURN-M-KIT-E-HUNG"])[1])
     for n in (1, 2):
         top = kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}-ST"]
         base = kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}"]
@@ -243,12 +223,12 @@ def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro
         assert _bounds(top) == pytest.approx(_bounds(base), abs=0.03125)
         assert _bounds(top)[2] - _bounds(top)[0] == pytest.approx(24)
         assert _bounds(top)[0] == pytest.approx(
-            _bounds(kitchen_objects["FURN-M-KIT-MIXER-GARAGE-UP"])[0]
+            _bounds(kitchen_objects["FURN-M-KIT-E-HUNG"])[0]
         )
         assert top.body_z0_m == pytest.approx(base.body_z1_m)
         assert (top.body_z1_m - top.body_z0_m) / INCH == pytest.approx(15)
         assert (top.body_z1_m - base.body_z0_m) / INCH == pytest.approx(101)
-        garage_top = kitchen_objects["FURN-M-KIT-MIXER-GARAGE-ST"]
+        garage_top = kitchen_objects["FURN-M-KIT-E-HUNG-ST"]
         assert (top.body_z0_m, top.body_z1_m) == pytest.approx(
             (garage_top.body_z0_m, garage_top.body_z1_m))
         assert f"FURN-M-KIT-PANTRY-S{n}-REAR-DECK" not in kitchen_objects
@@ -404,7 +384,6 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
         "SEKT-W12-30": 1,
         "SEKT-CORNER-W26-30": 1,
         "SEKT-TS24-15": 3,
-        "FT-KIT-MIXER24-20": 1,
         "SEKT-TS30-20": 2,
         "FT-KIT-STOCK24-30-HUNG": 1,
         "FT-LIV-E-END-PANEL": 1,
@@ -459,7 +438,7 @@ def cabinet_ifc(catlin_ifc_path):
     "FURN-M-KIT-E1", "FURN-M-KIT-SINKBASE", "FURN-M-KIT-PEN-B24-W",
     "FURN-M-KIT-WN1", "FURN-M-KIT-CORNER-NE", "FURN-M-KIT-OVER-FRIDGE",
     "FURN-M-KIT-PANTRYC", "FURN-M-KIT-COLD-SCRIBE-S",
-    "FURN-M-KIT-MIXER-GARAGE", "FURN-M-KIT-MIXER-GARAGE-UP", "FURN-M-KIT-MIXER-GARAGE-ST",
+    "FURN-M-KIT-E-HUNG", "FURN-M-KIT-E-HUNG-ST",
     "FURN-M-LIV-E-B24", "FURN-M-BED-DESK-CAB-S", "FURN-S-STUDY-NOOK-SEAT-W",
     "FX-M-BATH2-SINK",
 ])

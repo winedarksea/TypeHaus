@@ -1955,8 +1955,10 @@ NEC_FILL_MAIN = [
     # floor-to-ceiling carcass. A receptacle behind a fixed cabinet is not wall space under
     # 210.52(A) and is not reachable under any reading of it. The tombstone is here rather
     # than a silent removal because the uid is an IFC GlobalId that has shipped.
-    # RM-M-PANTRY's reach-in outlet. NEC 210.52(B)(1) puts a pantry receptacle on a
-    # small-appliance branch circuit, so CKT-KITCH-SA1 and not CKT-RC-MAIN. NOT GFCI: E3902
+    # RM-M-PANTRY's reach-in outlet and the pantry MICROWAVE trial outlet (east bay, at
+    # x~258", inside the 36" door mouth, 2" east of the centre gable). NEC 210.52(B)(1) puts
+    # a pantry receptacle on a small-appliance branch circuit; SA2 (2026-10-25) so the
+    # microwave never shares with the coffee machine on SA1. NOT GFCI: E3902
     # keys on room occupancy (STORAGE is not in the map) and on the 6' sink reach, and
     # FX-M-KITCH-SINK is 8'-1" away.
     #
@@ -1966,7 +1968,7 @@ NEC_FILL_MAIN = [
     # (4 3/4" of 2x4 with the door pack in it).
     ElectricalDevice(uid="ZC14VSGCST", tag="ED-M-PANTRY-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-KITCH-SA1", room="RM-M-PANTRY",
+                     circuit="CKT-KITCH-SA2", room="RM-M-PANTRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N1B", face="left", distance_from_start=inch(37),

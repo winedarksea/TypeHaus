@@ -6260,3 +6260,25 @@ this addition leaves the circuit schedule unchanged.
 
 Manufacturer: https://www.delonghi.com/en-us/p/rivelia-rivelia-fully-automatic-espresso-machine--arctic-white/EXAM44055W.html?pid=0132250087
 Manual: https://library.delonghigroup.com/assetbank-delonghi/action/directLinkImage?assetId=325611&download=true
+
+## 2026-10-25 — Microwave: retire mixer box, two trial outlets
+
+Four options were on the table: a peninsula microwave drawer, a countertop unit in the
+mixer-garage spot, a built-in drop-door unit there (Frigidaire GMBD3068AF), or the pantry
+by the door. The built-in needs ventilated custom millwork around it; the drawer is the
+expensive one. The owner chose not to buy a built-in yet and to trial a countertop unit
+in place at two spots before choosing.
+
+- FURN-M-KIT-MIXER-GARAGE and FT-KIT-MIXER24-20 are deleted. The stock 30" base frame now
+  hangs on the wall at 56" (suspension rail + BK-M-E1-MIXER-CAP), leaving a 20" × 24" × 24"
+  cave over the counter, closed by PANTRY-S1 to the north and open to the range landing.
+  The pair is retagged FURN-M-KIT-E-HUNG / -ST; geometry and uids unchanged.
+- **A, east counter:** ED-M-LIVING-KGF4 (SA2) at 42" is the microwave outlet; KMX1 (SA1)
+  stays for the stand mixer.
+- **B, pantry east bay:** ED-M-PANTRY-RC1 moves SA1 → SA2, so the microwave is on SA2 at
+  either spot and never shares with the coffee machine. A shelf at ~35" with ≥18" clear
+  above; unit ≤15½" deep; run with the pocket door open. The stand mixer moves to the west
+  bay's 20" bottom shelf.
+- The pull-out/door allowance becomes `cabinet-hung-frame-underside-and-fixing`.
+
+No microwave is modelled. Supersedes the two 2026-10-23 garage entries.

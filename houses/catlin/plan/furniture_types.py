@@ -315,8 +315,9 @@ MEDIA_SECTIONAL_U = FurnitureType(
 # deep upper types in plan/kitchen_deep_cabinets.py:
 #
 #  * over-cold boxes now use stock SEKT-TS30-20 at 73 1/2" (2026-10-05), tops 93 1/2";
-#  * the mixer garage is bottomless FT-KIT-MIXER24-20, stock FT-KIT-STOCK24-30-HUNG
-#    and SEKT-TS24-15, topping at 101" (2026-10-23).
+#  * the mixer garage became bottomless FT-KIT-MIXER24-20 under stock FT-KIT-STOCK24-30-HUNG
+#    and SEKT-TS24-15 (2026-10-23); FT-KIT-MIXER24-20 itself RETIRED 2026-10-25, the frame
+#    now hangs at 56" over an open countertop-appliance cave.
 #
 # Deleted rather than left unused, per FT-KIT-COLDSTORE-FILLER's rule above: an
 # unreferenced house-local type reads as a size someone might reach for. The fit-out prose
@@ -388,7 +389,11 @@ PANTRY_SHELVES_70 = FurnitureType(
            "Design load: treat as floor, not shelf — 40 psf uniform PLUS a 250-300 lb "
            "concentrated load anywhere, which governs. Graduated spacing: ~20\" bottom bay "
            "(small appliances, bulk), 12\"-14\" middle (boxes, bottles), 8\"-10\" top (cans, "
-           "jars). 18\" DEEP by owner's decision (2026-08-29, replacing 24\"), which leaves "
+           "jars) in the west bay; the 20\" bottom bay takes the stand mixer. East bay: a "
+           "microwave shelf top at ~35\" with the next shelf underside at 53\" or higher "
+           "(18\" clear), ED-M-PANTRY-RC1 behind it; a unit 15 1/2\" deep or less keeps "
+           "rear vent clearance; run it with the pocket door open. Still 6 shelves per bay. "
+           "18\" DEEP by owner's decision (2026-08-29, replacing 24\"), which leaves "
            "8\" of floor in front of the stack.",
 )
 
