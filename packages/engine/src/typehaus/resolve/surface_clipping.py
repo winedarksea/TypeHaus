@@ -12,6 +12,7 @@ from typehaus.resolve.geometry_ir import GMesh, Vec3
 
 CLIP_TOLERANCE_M = 1e-9
 MINIMUM_FACE_AREA_M2 = 1e-12
+CLIP_VERTEX_DECIMAL_PLACES = 10
 Plane = tuple[float, float, float, float]  # a*x + b*y + c*z <= d
 Faces = list[list[Vec3]]
 
@@ -88,7 +89,9 @@ def clip_faces(faces: Faces, plane: Plane) -> Faces:
                 crossings.append(a)
         if len(clipped) >= 3 and face_normal(clipped):
             result.append(clipped)
-    unique = list({tuple(round(v, 10) for v in p): p for p in crossings}.values())
+    unique = list(
+        {tuple(round(v, CLIP_VERTEX_DECIMAL_PLACES) for v in p): p for p in crossings}.values()
+    )
     if len(unique) >= 3:
         center = tuple(sum(p[i] for p in unique) / len(unique) for i in range(3))
         first = subtract(unique[0], center)

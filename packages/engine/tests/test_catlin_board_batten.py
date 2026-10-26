@@ -30,6 +30,14 @@ def test_catlin_cladding_depths_supports_and_gable_meshes(catlin_model_ro):
     north = model.wall('W-M-N1')
     assert min(y for x,y in south.layers[-1].polygon) == pytest.approx(-6.75*.0254)
     assert max(y for x,y in north.layers[-1].polygon) == pytest.approx((36*12+6.75)*.0254)
+    # A 45-degree equal-depth mitre would leave the PBR endpoints half an inch proud.
+    for wall in model.walls:
+        if wall.storey == 'main' and wall.tag.startswith('W-M-'):
+            for layer in wall.layers:
+                if layer.material_ref == 'pbr-panel-24':
+                    assert all(-6.75*.0254-1e-8 <= y <= (36*12+6.75)*.0254+1e-8
+                               for _,y in layer.polygon)
+
 
 
 def test_catlin_profiled_export_is_valid_and_has_its_own_painted_material(catlin_model_ro):

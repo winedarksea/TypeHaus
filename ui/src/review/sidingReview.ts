@@ -6,6 +6,7 @@ import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { buildWall } from "../three/builders/walls";
 import { buildWallSkinMembers } from "../three/builders/wallSkin";
 import { buildOpening } from "../three/builders/openings";
+import { disposeGroup } from "../three/members";
 
 const model: Model = await (await fetch("/__siding-review-house")).json();
 const params = new URLSearchParams(location.search);
@@ -30,20 +31,33 @@ light.shadow.mapSize.set(4096, 4096);
 Object.assign(light.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: .1, far: 60 });
 light.shadow.normalBias = 0; light.shadow.bias = -.0001;
 scene.add(light);
-const start = performance.now();
-const picks: THREE.Mesh[] = [], selected = new Map<string, THREE.Material[]>();
 const walls = model.walls.filter(wall => wall.layers.some(layer =>
   ["board-and-batten", "ribbed-panel"].includes(
     materials.find(material => material.tag === layer.material)?.finish ?? "")));
-for (const wall of walls) {
-  const openings = model.openings.filter(opening => opening.host === wall.tag);
-  buildWall(groups, { ...wall, members: [] }, openings, center, "nordic", palette, picks, selected, materials);
-  const closures = (model.roofs ?? []).flatMap(roof => roof.members).filter(member =>
-    member.parent_uid === wall.uid && member.category === "cladding");
-  buildWallSkinMembers(groups, groups.siding, wall.uid, closures, center, "nordic", palette, materials);
-  for (const opening of openings) buildOpening(groups.openings, opening, wall, center, "nordic", palette,
-    { materials }, picks, selected);
+function buildFacades(targetGroups: Record<Trade, THREE.Group>, profiled: boolean) {
+  const picks: THREE.Mesh[] = [], selected = new Map<string, THREE.Material[]>();
+  for (const wall of walls) {
+    const openings = model.openings.filter(opening => opening.host === wall.tag);
+    const displayed = { ...wall, members: [], layers: wall.layers.map(layer =>
+      profiled ? layer : { ...layer, surface_mesh: null }) };
+    buildWall(targetGroups, displayed, openings, center, "nordic", palette, picks, selected, materials);
+    const closures = (model.roofs ?? []).flatMap(roof => roof.members).filter(member =>
+      member.parent_uid === wall.uid && member.category === "cladding").map(member =>
+        profiled ? member : { ...member, surface_mesh: null });
+    buildWallSkinMembers(targetGroups, targetGroups.siding, wall.uid, closures, center, "nordic", palette, materials);
+    for (const opening of openings) buildOpening(targetGroups.openings, opening, wall, center,
+      "nordic", palette, { materials }, picks, selected);
+  }
 }
+// Warm the shared procedural textures before comparing geometry build costs.
+const warmGroups = Object.fromEntries(ALL_TRADES.map(trade => [trade, new THREE.Group()])) as Record<Trade, THREE.Group>;
+buildFacades(warmGroups, true);
+for (const group of Object.values(warmGroups)) { disposeGroup(group); group.clear(); }
+// Same resolved dimensions and materials: this comparison isolates the added mesh cost.
+const flatGroups = Object.fromEntries(ALL_TRADES.map(trade => [trade, new THREE.Group()])) as Record<Trade, THREE.Group>;
+const flatStart = performance.now(); buildFacades(flatGroups, false);
+const flatBuildMs = performance.now() - flatStart;
+const start = performance.now(); buildFacades(groups, true);
 const buildMs = performance.now() - start;
 const target = detail ? new THREE.Vector3(north ? -2.7 : 2.7, 4.5, north ? -5.66 : 5.66)
   : new THREE.Vector3(0, 3.5, 0);
@@ -63,6 +77,6 @@ scene.traverse(object => {
 });
 if (physicalMeshes === 0) errors.push("No physical siding meshes rendered");
 renderer.render(scene,camera);
-const info = { buildMs, physicalMeshes, triangles, drawCalls: renderer.info.render.calls, errors };
+const info = { buildMs, flatBuildMs, physicalMeshes, triangles, drawCalls: renderer.info.render.calls, errors };
 document.querySelector("#status")!.textContent = `${north ? "North" : "South"} ${detail ? "detail" : "facade"} · 12″ pitch · 2″ crown · ¾″ depth · ${buildMs.toFixed(0)} ms scene build`;
 Object.assign(window, { sidingReviewReady: true, sidingReviewChecks: info });
