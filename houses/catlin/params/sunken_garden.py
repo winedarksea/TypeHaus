@@ -3116,16 +3116,19 @@ BALCONY_DRIP = Flashing(
 # steel trim coil) screwed through the panel into the girts with the cladding's gasketed
 # screws, its top leg in butyl, lapping 2" down over the upstand with 1/2" of air beside it
 # and ~1" over the plank. Neither touches the other or crosses the gap fastened.
-# Both break at D-S-DECK-E (RO x 18'-10".. 23'-10", plus its head's 1" laps): the upstand
-# would be a step at the threshold and the counterflashing would cross the door. The
-# door's own sill pan discharges into the gap there. Hand-transcribed; a test pins it.
+# Both break beyond D-S-DECK-E's wrapped 3-1/2" casing with a 1/8" side joint. The
+# door pan discharges into the gap; the flashing end transition still needs detailing.
 _REAR_CLAD_Y_IN = -SPEC.house_ext_layers_in       # house cladding face
 _REAR_DECK_Y_IN = _y_in_n * 12.0                  # deck north edge
 _REAR_PLANK_TOP = _deck_walking_surface + _balcony_beam_rise
 _REAR_UPSTAND_IN = 3.5
 _REAR_BASE_W_IN = 4.0
 _REAR_COUNTER_W_IN = _REAR_CLAD_Y_IN - _REAR_DECK_Y_IN + 0.5
-_REAR_BREAKS_FT = ((_deck_x_w, 18.75), (23.0 + 11.0 / 12.0, _deck_x_e))
+_REAR_DOOR_RO_W_FT = 18.0 + 10.0 / 12.0
+_REAR_DOOR_RO_E_FT = 23.0 + 10.0 / 12.0
+_REAR_CASING_CLEARANCE_IN = 3.5 + 0.125
+_REAR_BREAKS_FT = ((_deck_x_w, _REAR_DOOR_RO_W_FT - _REAR_CASING_CLEARANCE_IN / 12.0),
+                   (_REAR_DOOR_RO_E_FT + _REAR_CASING_CLEARANCE_IN / 12.0, _deck_x_e))
 
 
 def _rear_run(y_in, x0, x1):

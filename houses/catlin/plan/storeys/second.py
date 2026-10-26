@@ -29,6 +29,8 @@ from typehaus import (
     ConnectorKind,
     ControlLayer,
     Door,
+    ExteriorDoorInstallation,
+    ExteriorDoorSillDesign,
     FloorHeat,
     FloorOpening,
     FloorOpeningPurpose,
@@ -601,7 +603,13 @@ OPENINGS = [
     # cannot be a fixed, gasketed, thermally broken unit. WIN-S-PLANT4 takes its station.
     # The study still reaches the balcony through D-S-DECK-E, which is what the source drew.
     Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-S-S1", ft(0, 10)), flip_swing=True),                       # x 21'-4"
+         position=from_node("N-S-S1", ft(0, 10)), flip_swing=True,
+         exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
+             exterior_wrap_material_ref="metal-dark-exterior",
+             sill_design=ExteriorDoorSillDesign(
+                 source_url="https://marketing.poweredbyendura.com/hubfs/Sills_TechnicalDocuments/Z-Series%20Sills%20-%20Line%20Drawings.pdf",
+                 source_drawing="Endura Z-Series Sill Options p.5, ZAI4565FN: 4-9/16 x 1-3/8 inches; schematic envelope, installed section and pair approval pending",
+                 threshold_depth=inch(4.5625), threshold_height=inch(1.375), cap_depth=inch(1.5)))),
     # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap).
     # WIN-S-STUDY3 moved off its source position (y 3'-10") to y=5'-4" for an
     # exact 9'-0" rhythm on one sill line — within-storey rhythm wins over between-storey

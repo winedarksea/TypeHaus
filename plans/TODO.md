@@ -344,7 +344,7 @@ the future.
 - Fix the missing horizontal trim of the board and batten (instructions says max panel length of around 20', no end lapping, so needs to have a mid point 'board' trim likely)
 - Seam clamps as minor snow retainer?
 - Some 240V options to consider: 240V power supplies for electronics.
-- Looks like D-S-DECK-E might be missing a sill or composite jamb. D-M-BALC seems to show it better.
+- D-S-DECK-E: obtain the prehanger's composite frame/hinge and preferred ZAI sill/sweep/FLA receiver sections, installation and assembled-system compatibility/warranty/approval; price a complete Therma-Tru Tru-Defense-eligible fallback. Design the structure-supported level sill seat, independent approach support and movable balcony flashing end transitions. Schematic crest is 0.720" above oak and 1.311" above the probed landing; verify with the supplied section (notes/exterior_door_structural_mount.md).
 - Research most commonly failed residential code items and make sure checks or tests exist for those here.
 
 # Project Management

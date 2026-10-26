@@ -117,7 +117,10 @@ passage lever, double-bored at 5-1/2 inches. The deadbolt drives the tapered top
 bolts; the lever drives only the latch, so the deadbolt-free FE595 cannot engage PanoLock+
 and was dropped. Confirm BE365 compatibility and stile width ≥ 4 inches with the prehanger.
 The Ultimate Flip-Lever Astragal's single lever drives both passive-leaf flush bolts.
-The sill is Endura Z-Series Adjustable Inswing (ZAI); installed section remains pending.
+The preferred sill is Endura Z-Series Adjustable Inswing (ZAI); the owner expects
+compatibility, and the installed section and assembled-system approval remain pending.
+Ask for a complete Therma-Tru Tru-Defense-eligible pair as a priced fallback, identifying
+whether the requested glazing and hardware are available and any substitutions required.
 
 **The front door is opaque (owner, 2026-10-21, later).** The first pass hung a Cascadia full
 lite at `D-M-ENTRY` because the Cascadia line carries no opaque infill. The owner wants a
@@ -186,7 +189,13 @@ than ±20% without it.
 5. Therma-Tru pair NFRC/NAFS label under its product approval with the specified Endura
    components; laminated triple CPD row and SHGC (0.12 is only the provisional basis row);
    BE365 on PanoLock+'s compatibility list; stile width ≥ 4 inches; installed threshold
-   heights at D-B-PATIO's 7¼" step and D-S-DECK-E's 0.58".
+   heights at D-B-PATIO's 7¼" step and D-S-DECK-E (the older 0.58" is floor-to-landing
+   drop, not threshold height). Request the composite frame/hinge section, ZAI sill and
+   compatible sweep, corner seals, FLA sill receiver and installation details, bearing
+   contacts, and written assembled-system compatibility, approval and warranty. Price a
+   complete Therma-Tru Tru-Defense-eligible fallback with any glazing or hardware changes.
+   The study's schematic crest is 0.720" above oak and 1.311" above the probed balcony;
+   confirm those dimensions against the actual installed section and landing.
 6. Dark-colour warranty by orientation. Andersen 400 publishes 20 years glass / 10 years
    non-glass, transferable, not prorated (400 Series product guide), with no black-specific
    term. Get Drutex and Therma-Tru finish terms for the selected black exterior in writing.

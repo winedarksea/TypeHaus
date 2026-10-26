@@ -373,16 +373,19 @@ def test_balcony_rear_edge_is_two_pieces_that_lap_without_touching(catlin_model_
     lo = door.center_along_m - door.width_m / 2
     wall = next(w for w in model.walls if w.tag == door.host_wall)
     x0 = min(wall.axis[0][0], wall.axis[1][0])
+    installation = door.doorway.exterior_placement.specification
+    casing_clearance = installation.casing_width.meters + installation.sill_design.side_clearance.meters
     for side in ("W", "E"):
         base, counter = solids[f"TR-SG-BASE-FLASH-{side}"], solids[f"TR-SG-COUNTER-FLASH-{side}"]
         # The counterflashing's drip laps the upstand by 2", above the plank, beside it.
         assert base.z1_m - counter.z0_m >= inch_m(2.0) - 1e-6
         assert counter.z0_m > base.z0_m + inch_m(0.5)
         assert min(y for _x, y in counter.outline) < max(y for _x, y in base.outline)
-        # Neither crosses the door: the threshold would trip on one and the leaf hit the other.
+        # Both end outside the casing, leaving its separate drainage joint unobstructed.
         for solid in (base, counter):
             xs = [x for x, _y in solid.outline]
-            assert max(xs) <= x0 + lo + 1e-6 or min(xs) >= x0 + lo + door.width_m - 1e-6
+            assert (max(xs) <= x0 + lo - casing_clearance + 1e-6
+                    or min(xs) >= x0 + lo + door.width_m + casing_clearance - 1e-6)
     meshes = {k: solids[k].body_mesh.positions for k in solids}
     gap = min(math.dist(a, b) for a in meshes["TR-SG-BASE-FLASH-W"]
               for b in meshes["TR-SG-COUNTER-FLASH-W"])

@@ -1,6 +1,7 @@
-# Main-floor exterior doors: structural-wall mounting
+# Exterior doors: structural-wall mounting
 
-Design decision, 2026-10-24. Applies to **D-M-ENTRY** and **D-M-BALC** only.
+Design decision, 2026-10-24; extended to **D-S-DECK-E** on 2026-10-26.
+Applies to **D-M-ENTRY**, **D-M-BALC**, and **D-S-DECK-E**.
 Their door products, handing, rough openings and landings remain as authored.
 
 The factory jambs anchor into the structural stud opening. The 3/8-inch plywood
@@ -21,7 +22,7 @@ casing, including its thickness and end laps. Interior extensions use painted pi
 These are separate measured boards in the trim takeoff, with cut dimensions and
 material references; factory-included sill components are not billed again.
 
-The interior LVP extends to the frame's interior edge until a documented threshold
+The interior floor finish extends to the frame's interior edge until a documented threshold
 provides the actual finish-stop and expansion-gap dimensions. Each side resolves
 independently; an exterior deck needs no room or interior finish assignment.
 The bounded exterior probe crosses the intentional drainage gap and reads actual
@@ -69,7 +70,7 @@ purchase confirmation. Doorway JSON/IFC expose section, supplier and fit statuse
 Missing geometry or installation data remains UNKNOWN; measured conflicts remain FAIL.
 Existing `verified` section records retain their behavior for compatibility.
 
-The follow-up to c1b1b25f adds a **separately identified schematic sill design** to both
+The follow-up to c1b1b25f adds a **separately identified schematic sill design** to these
 doors, rather than leaving the exposed pan as the only bottom geometry. It does **not**
 set `section_documented`, `supplier_confirmed`, or a VERIFIED fit. The factory frame,
 threshold internals, cap, jamb/leaf terminations and seals still require supplier data.
@@ -111,6 +112,75 @@ The model explicitly reports this as UNKNOWN. Do not use these envelopes as fabr
 or installation drawings. The interior back-dam cover is also a project design envelope,
 not an assertion that either manufacturer's optional cap supplies it.
 
+**Study balcony, 2026-10-26.** D-S-DECK-E uses the same ZAI envelope as D-M-BALC,
+with its frame anchored schematically at the structural wall, wrapped exterior returns,
+and painted pine interior extensions. Its oak floor and the sloping FS-SG-DECK surface
+are independently resolved; the deck's existing edge clears the nosing without a cutback.
+The rear deck-side base flashing and house-side counterflashing now stop 1/8 inch outside
+the 3-1/2-inch casing on both sides. Their end transitions into the door pan and casing
+remain to be designed for drainage and independent movement. The factory composite frame,
+its actual section and hinge datum, sill and sweep, and structural approach bearing and
+anchorage remain unconfirmed. The model's simplified geometry is not an installed detail.
+
+### Study door: installation research and design criteria, 2026-10-26
+
+The [Therma-Tru site manual, pre-hung unit installation, pp. 1.3–1.6](https://outdoorsandsecurity.widen.net/content/cjranjizwq/original/2026-Site-Manual---SITE-1-Installation.pdf)
+specifies a flat, level, solid weight-bearing surface for the sill pan or sill. For its
+rigid pan, it specifies a sealed pan-to-subfloor joint and no sealant on the bottom of
+the sill when using the pan; retain a free outward drainage path. Its composite-frame
+instructions call for shims and screws into the studs at hinges and between hinge
+locations, with additional anchorage as applicable. Double doors need alignment and
+weatherstrip contact checked at both leaves. The inswing installation calls for sealant
+at each cap-to-jamb joint and corner seal pads. Adjust the cap to the door bottom and
+check contact; follow the actual prehanger's instructions for the Endura sill, astragal,
+pan, sealant compatibility and anchorage. These general instructions do not establish
+the factory-specific geometry or authorize drilling through the custom pan.
+
+The [Endura ZAI description](https://www.enduraproducts.com/products/sills-sill-systems/z-series-adjustable-inswing-sill/)
+identifies an adjustable cap, composite substrate and integrated high-dam seal; it does
+not supply the installed leaf, sweep or frame section. Require a compatible sweep, jamb
+end seals and passive-leaf bolt receiver from the prehanger, with cap adjustment and
+receiver installation instructions. The modeled cap and leaf clearance do not represent
+the sweep's compression. Therma-Tru's [general installation guide](https://projectcenter.thermatru.com/knowledge/full_door_installation)
+describes a sill receiver for a double-door slide bolt, but the selected Endura FLA's
+receiver and its location must be confirmed rather than assumed interchangeable.
+
+The modeled opening-relative elevations are: oak finished floor **+1.500 in**; balcony
+walking surface at the door probe **+0.910 in**; schematic cap crest **+2.220 in**.
+Thus the crest is approximately **0.720 in above the interior floor** and **1.311 in
+above the probed exterior landing**. The older 0.58-inch value describes floor-to-landing
+drop without the sill, not the installed threshold height. These are model estimates,
+not a product or code determination; recheck with the supplier's section and tolerances.
+
+For the approach, develop a continuous, level structural seat under the factory sill,
+and independently support the sloped walking plate and bearing strips back to the house
+structure. The support design must preserve the pan's outlet and isolation, and identify
+members, fasteners, load path, thermal/water-control transitions, deflection and bearing;
+neither the insulation nor the thin buck is a support. A useful precedent is the
+[Building Science Corporation exterior-door sill detail](https://buildingscience.com/sites/default/files/migrate/pdf/GM_DER_Guide_2013-01-18.pdf),
+which uses structure-connected blocking and retains drainage; its retrofit wall section
+is not a structural design for this independently supported balcony.
+
+At each interrupted rear flashing, develop a formed end closure and a house-side
+water-shedding transition that directs water outward without sealing the pan outlet or
+bridging the independently moving house/deck joint. Confirm laps, end dams, metal
+isolation, joint movement and inspection access in a three-dimensional detail. The
+[BSC pan-flashing guidance](https://buildingscience.com/documents/information-sheets/pan-flashing-for-exterior-wall-openings)
+explains the need for end dams and an open outlet; the present model does not yet show
+these proposed flashing-end pieces, so the transition remains open.
+
+The [Therma-Tru Tru-Defense component requirements](https://www.thermatru.com/project-center/faqs/)
+list specific Therma-Tru sill, sweep, corner-pad, astragal and hardware requirements for
+the rider. The selected Endura ZAI and FLA cannot be assumed to meet those requirements;
+the owner prefers the Endura ZAI basis and expects it to be compatible. Request the
+actual assembled system's compatibility, warranty, product approval and performance
+label in writing. As a fallback, ask the prehanger to quote a complete Therma-Tru
+Tru-Defense-eligible pair, with the requested glazing and hardware where available,
+and identify any substitutions, dimensions, performance and price differences.
+The manufacturer's composite-frame sample demonstrates a 4-9/16-inch option, but does
+not establish the depth or hinge datum of this ordered pair. Keep the modeled factory
+frame schematic until the prehanger confirms its section and mounting.
+
 Reproduce actual sill/head/jamb cuts, JSON and optional framed IFC/glTF with:
 
 ```sh
@@ -121,7 +191,7 @@ node ui/scripts/door-review.mjs --exterior
 Artifacts, manufacturer PDFs/DWG, CAD inspection plots and validation logs are under
 `out/exterior-door-review/`. The section plots and screenshots explicitly label the
 schematic threshold condition. The garage service raised rough sill, overhead door,
-other French pairs and the outie window detail are not reinstalled by this change.
+basement French pair and the outie window detail are not reinstalled by this change.
 
 ## Follow-up validation
 

@@ -18,7 +18,7 @@ from typehaus.takeoff.doors import door_hardware_rows, door_installation_rows
 from typehaus.takeoff.interior_trim import interior_trim_takeoff
 
 
-@pytest.mark.parametrize("tag", ["D-M-ENTRY", "D-M-BALC"])
+@pytest.mark.parametrize("tag", ["D-M-ENTRY", "D-M-BALC", "D-S-DECK-E"])
 def test_catlin_doors_have_structural_mount_and_independent_returns(catlin_model_ro, tag):
     model = catlin_model_ro
     opening = next(o for o in model.openings if o.tag == tag)
@@ -35,7 +35,7 @@ def test_catlin_doors_have_structural_mount_and_independent_returns(catlin_model
     assert all(b.height_m > 0 and b.depth_m > 0 for b in placement.boards)
     parts = opening_parts(wall, opening, next(t.operation for t in model.plan.library.door_types
                                             if t.tag == opening.type_ref),
-                          is_glazed=tag == "D-M-BALC")
+                          is_glazed=tag != "D-M-ENTRY")
     origin, tangent, normal, _ = wall_frame(wall)
     for part in parts:
         if part.key != "frame":
@@ -229,7 +229,7 @@ def test_catlin_garage_keeps_raised_service_support_and_overhead_operation(catli
     assert len(next(p for p in parts if p.key == "frame").solids) == 3
 
 
-@pytest.mark.parametrize("tag", ["D-M-ENTRY", "D-M-BALC"])
+@pytest.mark.parametrize("tag", ["D-M-ENTRY", "D-M-BALC", "D-S-DECK-E"])
 def test_sill_design_conceals_pan_without_claiming_factory_approval(catlin_model_ro, tag):
     from shapely.geometry import LineString
     from shapely.ops import unary_union
@@ -297,13 +297,30 @@ def test_sill_design_conceals_pan_without_claiming_factory_approval(catlin_model
     assert all(sum((p[i] - origin[i]) * frame.outward[i] for i in (0, 1))
                <= frame.clad + 1e-8 for p in pan.positions if p[2] > base + .05)
     parts = opening_parts(wall, opening, next(t.operation for t in model.plan.library.door_types
-                         if t.tag == opening.type_ref), is_glazed=tag == "D-M-BALC")
-    if tag == "D-M-BALC":
+                         if t.tag == opening.type_ref), is_glazed=tag != "D-M-ENTRY")
+    if tag != "D-M-ENTRY":
         assert min(s.z0_m for p in parts if p.key == "mullion" for s in p.solids) \
             >= assembly.leaf_bottom_z_m
     site_rows = [r for r in door_installation_rows(model)
                  if tag in r["tags"] and r["kind"] == "exterior door approach"]
     assert len(site_rows) == len([s for s in placement.sections if s.purchase == "site"])
+    assert all(section.name not in row["description"] for section in placement.sections
+               if section.purchase == "factory_included" for row in site_rows)
+
+
+def test_study_door_uses_oak_floor_and_sloping_balcony(catlin_model_ro):
+    opening = next(o for o in catlin_model_ro.openings if o.tag == "D-S-DECK-E")
+    exterior, interior = opening.doorway.adjacent_floors
+    assert exterior.deck_tag == "FS-SG-DECK" and exterior.room_tag is None
+    assert interior.room_tag == "RM-S-STUDY2" and interior.finish_ref == "oak-floor-custom"
+    deck = next(f for f in catlin_model_ro.floors if f.tag == exterior.deck_tag)
+    low, high = deck.deck_top_range()
+    assert high > low
+    assert low <= exterior.surface_m <= high
+    assert exterior.surface_m < interior.surface_m < opening.doorway.leaf_bottom_z_m
+    sills = [product for product in opening.doorway.selected_products if product.role == "sill"]
+    assert sills and all(product.purchase == "factory_included" and not product.section_documented
+                         for product in sills)
 
 
 @pytest.mark.parametrize("reverse", [False, True])

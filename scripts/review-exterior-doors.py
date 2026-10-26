@@ -1,4 +1,4 @@
-"""Export actual resolved sill/head/jamb cuts and provenance for the two reported doors.
+"""Export actual resolved sill/head/jamb cuts and provenance for the selected doors.
 
 Run with .venv/bin/python scripts/review-exterior-doors.py [--export]. Artifacts go to
 out/exterior-door-review; unresolved factory sections remain visible in the review.
@@ -25,7 +25,7 @@ from typehaus.source import load_plan
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "out/exterior-door-review"
-TAGS = ("D-M-ENTRY", "D-M-BALC")
+TAGS = ("D-M-ENTRY", "D-M-BALC", "D-S-DECK-E")
 
 
 def color(part):
@@ -40,14 +40,15 @@ def color(part):
 
 
 def render_cuts(model):
-    figure, axes = plt.subplots(3, 2, figsize=(15, 12))
+    figure, axes = plt.subplots(3, len(TAGS), figsize=(7.5 * len(TAGS), 12))
     for column, tag in enumerate(TAGS):
         opening = next(o for o in model.openings if o.tag == tag)
         wall = model.wall(opening.host_wall)
         center = opening_center(wall, opening)
         _, tangent, normal, _ = wall_frame(wall)
         sign = opening.doorway.exterior_placement.outward_sign
-        station = -opening.width_m / 4 if tag == "D-M-BALC" else 0.0
+        base = opening.doorway.rough_opening_z_m
+        station = -opening.width_m / 4 if tag != "D-M-ENTRY" else 0.0
         def local(point):
             delta = (point[0] - center[0], point[1] - center[1])
             return (sum(delta[i] * tangent[i] for i in (0, 1)),
@@ -64,7 +65,7 @@ def render_cuts(model):
                             if not ring.is_valid or ring.is_empty:
                                 continue
                             if row == 2:
-                                if not solid.z0_m < 1.0 < solid.z1_m:
+                                if not solid.z0_m < base + 1.0 < solid.z1_m:
                                     continue
                                 if not ring.intersects(Polygon([
                                         (-opening.width_m/2-.14,-.23),
@@ -76,8 +77,9 @@ def render_cuts(model):
                                     for x,y in ring.exterior.coords], facecolor=color(part),
                                     edgecolor="#777", linewidth=.45))
                             else:
-                                zlo,zhi = ((-.13,.25) if row == 0 else (1.78,2.28))
-                                if solid.z1_m < zlo or solid.z0_m > zhi:
+                                zlo,zhi = ((-.13,.25) if row == 0 else
+                                           (opening.height_m - .25, opening.height_m + .25))
+                                if solid.z1_m < base + zlo or solid.z0_m > base + zhi:
                                     continue
                                 crossing = ring.intersection(LineString([(station,-1),(station,1)]))
                                 for line in getattr(crossing,"geoms",(crossing,)):
@@ -85,17 +87,17 @@ def render_cuts(model):
                                         continue
                                     depths=[p[1]/.0254 for p in line.coords]
                                     ax.add_patch(PlotPolygon([
-                                        (min(depths),solid.z0_m/.0254),
-                                        (max(depths),solid.z0_m/.0254),
-                                        (max(depths),solid.z1_m/.0254),
-                                        (min(depths),solid.z1_m/.0254)],facecolor=color(part),
+                                        (min(depths),(solid.z0_m-base)/.0254),
+                                        (max(depths),(solid.z0_m-base)/.0254),
+                                        (max(depths),(solid.z1_m-base)/.0254),
+                                        (min(depths),(solid.z1_m-base)/.0254)],facecolor=color(part),
                                         edgecolor="#777",linewidth=.45))
                         elif isinstance(solid, (GSweep, GMesh)) and row != 2:
                             # Cut boundary faces at the same station as the prism cut.
                             # Projecting the whole sweep would include off-station geometry.
                             for face in solid_faces(solid):
                                 distances = [local(p)[0] - station for p in face]
-                                hits = [(local(point)[1] / .0254, point[2] / .0254)
+                                hits = [(local(point)[1] / .0254, (point[2] - base) / .0254)
                                         for point, distance in zip(face, distances, strict=True)
                                         if abs(distance) <= 1e-9]
                                 for i in range(len(face)):
@@ -105,7 +107,7 @@ def render_cuts(model):
                                         t = a / (a - b)
                                         point = tuple(face[i][k] + t * (face[j][k] - face[i][k])
                                                       for k in (0, 1, 2))
-                                        hits.append((local(point)[1] / .0254, point[2] / .0254))
+                                        hits.append((local(point)[1] / .0254, (point[2] - base) / .0254))
                                 hits = list(dict.fromkeys(tuple(round(v, 8) for v in hit)
                                                           for hit in hits))
                                 if len(hits) >= 2:
@@ -117,12 +119,12 @@ def render_cuts(model):
                 ax.text(.02,.95,"Sill design envelope — factory section / structural support pending",
                         transform=ax.transAxes,va="top",fontsize=8,color="#a02e27")
             elif row==1:
-                ax.set_ylim(70,90)
+                ax.set_ylim(opening.height_m / .0254 - 10, opening.height_m / .0254 + 10)
             else:
                 jamb=-opening.width_m/2/.0254
                 ax.set_ylim(jamb-5,jamb+5)
             ax.set_xlabel("Outward from wall axis (in)")
-            ax.set_ylabel("Elevation (in)" if row<2 else "Along opening (in)")
+            ax.set_ylabel("Elevation above rough opening (in)" if row<2 else "Along opening (in)")
             ax.grid(alpha=.2)
     figure.suptitle("Structural-wall doors — actual resolved geometry; red = flashing")
     figure.tight_layout()
