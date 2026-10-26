@@ -53,7 +53,8 @@ _CATLIN = {
     # 14,446 / -10.4 °F after the 1/2" walls (2026-10-23): the 1/2" board changed the wall
     # build-up, and the design load and the Manual S cap moved with it.
     # 2026-10-25 French pair U 0.15 -> 0.21: +2 UA x85 F = +170 Btu/h.
-    "EQ-M-HP1-OD": (14_616, 14_000, 5.0, 0.96, -9.5, _ADVISED),
+    # BBD75 layer depth correction (2026-10-25): the envelope area moves slightly.
+    "EQ-M-HP1-OD": (14_614, 14_000, 5.0, 0.96, -9.5, _ADVISED),
     # The living-east rework replaces two 27x48 windows with one 63x48 unit, adding 3 sf
     # of glass to System 2's main-storey zone (2026-10-16). 13,855 / 0.64 / 23.6 °F, and
     # HP3 910 / 3.08, before the 2026-10-21 bath 1 rework moved the powder room's walls.
@@ -152,13 +153,13 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
-    """0.80 as a ratio is a number nobody can act on; ``11,693 Btu/h against this zone's
+    """0.80 as a ratio is a number nobody can act on; ``11,691 Btu/h against this zone's
     14,616`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
     # The French-pair swap adds 170 Btu/h to HP1; the cap follows the unrounded load.
-    assert "11,693 Btu/h" in finding.message  # 0.80 x the unrounded design load
+    assert "11,691 Btu/h" in finding.message  # 0.80 x the unrounded design load
 
 
 # --- §3. the crossover ------------------------------------------------------------------------

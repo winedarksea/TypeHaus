@@ -53,7 +53,7 @@ def test_veneer_uses_its_own_net_area_and_purchased_slip_appearance(catlin_model
     veneer = next(layer for layer in wall.layers if layer.name == "thin-brick-in")
     net = wall_net_areas_m2(catlin_model_ro)[wall.tag]
     screen_ft2 = wall_layer_net_area_m2(catlin_model_ro, wall, veneer, net) * 10.7639104
-    assert screen_ft2 == pytest.approx(78.875 * 45.5 / 144, abs=0.1)
+    assert screen_ft2 == pytest.approx(79.375 * 45.5 / 144, abs=0.1)
     # Rows carry no wall tags; the takeoff's one thin-brick row is the screen's area alone.
     envelope_rows = envelope_layer_takeoff(catlin_model_ro)
     rows = [

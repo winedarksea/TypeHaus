@@ -103,8 +103,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CBW101AAAA",
-      "tag": "W-B-S1/concrete"
+      "uid": "CBW109AAAA",
+      "tag": "W-B-W1/concrete"
     },
     {
       "space": "model",
@@ -159,8 +159,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CBW101AAAA",
-      "tag": "W-B-S1/waterproofing"
+      "uid": "CBW109AAAA",
+      "tag": "W-B-W1/waterproofing"
     },
     {
       "space": "model",
@@ -215,8 +215,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CBW101AAAA",
-      "tag": "W-B-S1/xps-a"
+      "uid": "CBW109AAAA",
+      "tag": "W-B-W1/xps-a"
     },
     {
       "space": "model",
@@ -271,8 +271,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CBW101AAAA",
-      "tag": "W-B-S1/xps-b"
+      "uid": "CBW109AAAA",
+      "tag": "W-B-W1/xps-b"
     },
     {
       "space": "model",
@@ -327,8 +327,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CBW101AAAA",
-      "tag": "W-B-S1/foundation-coating"
+      "uid": "CBW109AAAA",
+      "tag": "W-B-W1/foundation-coating"
     },
     {
       "space": "model",
@@ -384,8 +384,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1/paint"
+      "uid": "WM8EB2TX38",
+      "tag": "W-M-W1C/paint"
     },
     {
       "space": "model",
@@ -412,8 +412,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1/gwb-int"
+      "uid": "WM8EB2TX38",
+      "tag": "W-M-W1C/gwb-int"
     },
     {
       "space": "model",
@@ -468,8 +468,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1/stud"
+      "uid": "WM8EB2TX38",
+      "tag": "W-M-W1C/stud"
     },
     {
       "space": "model",
@@ -524,8 +524,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1/sheathing"
+      "uid": "WM8EB2TX38",
+      "tag": "W-M-W1C/sheathing"
     },
     {
       "space": "model",
@@ -580,8 +580,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1/spray-foam"
+      "uid": "WM8EB2TX38",
+      "tag": "W-M-W1C/spray-foam"
     },
     {
       "space": "model",
@@ -637,8 +637,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1/vent-gap"
+      "uid": "WM8EB2TX38",
+      "tag": "W-M-W1C/vent-gap"
     },
     {
       "space": "model",
@@ -693,8 +693,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1/outer-girt"
+      "uid": "WM8EB2TX38",
+      "tag": "W-M-W1C/outer-girt"
     },
     {
       "space": "model",
@@ -749,8 +749,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1/cladding"
+      "uid": "WM8EB2TX38",
+      "tag": "W-M-W1C/cladding"
     },
     {
       "space": "model",
@@ -778,7 +778,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "board-batten-24",
+      "material": "pbr-panel-24",
       "fill": "#2f2f2f"
     },
     {
@@ -814,112 +814,232 @@
       "node": "polyline",
       "points": [
         [
-          11.500000000000002,
-          -27.5
+          10.5,
+          -21.937500000000014
         ],
         [
-          11.566987298107781,
-          -27.75
+          10.767949192431123,
+          -22.937500000000014
         ],
         [
-          11.75,
-          -27.93301270189222
-        ],
-        [
-          12.000000000000002,
-          -28.000000000000004
-        ],
-        [
-          12.250000000000002,
-          -27.93301270189222
-        ],
-        [
-          12.43301270189222,
-          -27.75
+          11.5,
+          -23.66955080756889
         ],
         [
           12.5,
-          -27.5
+          -23.93750000000001
         ],
         [
-          12.43301270189222,
-          -27.250000000000004
+          13.5,
+          -23.66955080756889
         ],
         [
-          12.250000000000002,
-          -27.066987298107783
+          14.232050807568877,
+          -22.937500000000014
         ],
         [
-          12.000000000000002,
-          -27.0
+          14.500000000000002,
+          -21.937500000000014
         ],
         [
-          11.75,
-          -27.066987298107783
+          14.232050807568879,
+          -20.937500000000014
         ],
         [
-          11.566987298107781,
-          -27.250000000000004
+          13.5,
+          -20.20544919243114
+        ],
+        [
+          12.5,
+          -19.937500000000014
+        ],
+        [
+          11.500000000000002,
+          -20.20544919243114
+        ],
+        [
+          10.767949192431123,
+          -20.937500000000014
         ]
       ],
       "layer": "S-FNDN",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CDT004AAAA-run",
-      "tag": "CD-B-SPA-RUN"
+      "uid": "VXGA0P0V72-run",
+      "tag": "DU-B-ERV-R-SAUNA-SUP-RUN"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          11.500000000000002,
-          -27.5
+          10.5,
+          -21.937500000000014
         ],
         [
-          11.566987298107781,
-          -27.75
+          10.767949192431123,
+          -22.937500000000014
         ],
         [
-          11.75,
-          -27.93301270189222
-        ],
-        [
-          12.000000000000002,
-          -28.000000000000004
-        ],
-        [
-          12.250000000000002,
-          -27.93301270189222
-        ],
-        [
-          12.43301270189222,
-          -27.75
+          11.5,
+          -23.66955080756889
         ],
         [
           12.5,
-          -27.5
+          -23.93750000000001
         ],
         [
-          12.43301270189222,
-          -27.250000000000004
+          13.5,
+          -23.66955080756889
         ],
         [
-          12.250000000000002,
-          -27.066987298107783
+          14.232050807568877,
+          -22.937500000000014
         ],
         [
-          12.000000000000002,
-          -27.0
+          14.500000000000002,
+          -21.937500000000014
         ],
         [
-          11.75,
-          -27.066987298107783
+          14.232050807568879,
+          -20.937500000000014
         ],
         [
-          11.566987298107781,
-          -27.250000000000004
+          13.5,
+          -20.20544919243114
+        ],
+        [
+          12.5,
+          -19.937500000000014
+        ],
+        [
+          11.500000000000002,
+          -20.20544919243114
+        ],
+        [
+          10.767949192431123,
+          -20.937500000000014
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          10.5,
+          -26.937500000000007
+        ],
+        [
+          10.767949192431123,
+          -27.937500000000004
+        ],
+        [
+          11.5,
+          -28.669550807568882
+        ],
+        [
+          12.5,
+          -28.937500000000004
+        ],
+        [
+          13.5,
+          -28.669550807568882
+        ],
+        [
+          14.232050807568877,
+          -27.937500000000004
+        ],
+        [
+          14.500000000000002,
+          -26.937500000000007
+        ],
+        [
+          14.232050807568879,
+          -25.937500000000007
+        ],
+        [
+          13.5,
+          -25.20544919243113
+        ],
+        [
+          12.5,
+          -24.937500000000007
+        ],
+        [
+          11.500000000000002,
+          -25.20544919243113
+        ],
+        [
+          10.767949192431123,
+          -25.937500000000007
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1Y457X9DMH-run",
+      "tag": "DU-B-ERV-R-SAUNA-EXH-RUN"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          10.5,
+          -26.937500000000007
+        ],
+        [
+          10.767949192431123,
+          -27.937500000000004
+        ],
+        [
+          11.5,
+          -28.669550807568882
+        ],
+        [
+          12.5,
+          -28.937500000000004
+        ],
+        [
+          13.5,
+          -28.669550807568882
+        ],
+        [
+          14.232050807568877,
+          -27.937500000000004
+        ],
+        [
+          14.500000000000002,
+          -26.937500000000007
+        ],
+        [
+          14.232050807568879,
+          -25.937500000000007
+        ],
+        [
+          13.5,
+          -25.20544919243113
+        ],
+        [
+          12.5,
+          -24.937500000000007
+        ],
+        [
+          11.500000000000002,
+          -25.20544919243113
+        ],
+        [
+          10.767949192431123,
+          -25.937500000000007
         ]
       ],
       "pattern": "concrete",
@@ -954,8 +1074,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA-bugscreen",
-      "tag": "W-M-S1-BUGSCREEN"
+      "uid": "WM8EB2TX38-bugscreen",
+      "tag": "W-M-W1C-BUGSCREEN"
     },
     {
       "space": "model",
@@ -1010,8 +1130,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CBR402AAAA-ceiling",
-      "tag": "CEIL-RM-B-WORKSHOP"
+      "uid": "CBR401AAAA-ceiling",
+      "tag": "CEIL-RM-B-FURNACE"
     },
     {
       "space": "model",
@@ -1046,7 +1166,7 @@
       "node": "polyline",
       "points": [
         [
-          -1.25,
+          0.0,
           -11.875
         ],
         [
@@ -1058,7 +1178,7 @@
           0.0
         ],
         [
-          -1.25,
+          0.0,
           0.0
         ]
       ],
@@ -1066,15 +1186,15 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMFS01AAAA",
-      "tag": "joist-0-000-0"
+      "uid": "CMFS03AAAA",
+      "tag": "rim-0"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          -1.25,
+          0.0,
           -11.875
         ],
         [
@@ -1086,7 +1206,7 @@
           0.0
         ],
         [
-          -1.25,
+          0.0,
           0.0
         ]
       ],
@@ -1096,142 +1216,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -1.25,
-          -10.5
-        ],
-        [
-          1.25,
-          -10.5
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS01AAAA",
-      "tag": "joist-0-000-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -1.25,
-          -1.375
-        ],
-        [
-          1.25,
-          -1.375
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS01AAAA",
-      "tag": "joist-0-000-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          14.75,
-          -11.875
-        ],
-        [
-          17.25,
-          -11.875
-        ],
-        [
-          17.25,
-          0.0
-        ],
-        [
-          14.75,
-          0.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMFS01AAAA",
-      "tag": "joist-0-001-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          14.75,
-          -11.875
-        ],
-        [
-          17.25,
-          -11.875
-        ],
-        [
-          17.25,
-          0.0
-        ],
-        [
-          14.75,
-          0.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          14.75,
-          -10.5
-        ],
-        [
-          17.25,
-          -10.5
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS01AAAA",
-      "tag": "joist-0-001-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          14.75,
-          -1.375
-        ],
-        [
-          17.25,
-          -1.375
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS01AAAA",
-      "tag": "joist-0-001-0/flange"
     },
     {
       "space": "model",
@@ -1258,7 +1242,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMFS01AAAA",
+      "uid": "CMFS03AAAA",
       "tag": "deck"
     },
     {
@@ -1314,7 +1298,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA",
+      "uid": "WM8EB2TX38",
       "tag": "plate-bottom"
     },
     {
@@ -1370,7 +1354,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA",
+      "uid": "WM8EB2TX38",
       "tag": "strapping-outer-girt-000"
     },
     {
@@ -1426,7 +1410,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW101AAAA",
+      "uid": "WM8EB2TX38",
       "tag": "strapping-outer-girt-001"
     },
     {
@@ -1784,230 +1768,6 @@
     },
     {
       "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -0.12,
-          -14.875
-        ],
-        [
-          0.0,
-          -14.875
-        ],
-        [
-          0.0,
-          3.0
-        ],
-        [
-          -0.12,
-          3.0
-        ]
-      ],
-      "pattern": "membrane",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "air-barrier"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -0.12,
-          -14.875
-        ],
-        [
-          0.0,
-          -14.875
-        ],
-        [
-          0.0,
-          3.0
-        ],
-        [
-          -0.12,
-          3.0
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:rim-air-barrier"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          0.4999999999999996,
-          -11.875
-        ],
-        [
-          2.4999999999999996,
-          -11.875
-        ],
-        [
-          2.4999999999999996,
-          0.0
-        ],
-        [
-          0.4999999999999996,
-          0.0
-        ]
-      ],
-      "pattern": "foam",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "spray-foam"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          0.4999999999999996,
-          -11.875
-        ],
-        [
-          2.4999999999999996,
-          -11.875
-        ],
-        [
-          2.4999999999999996,
-          0.0
-        ],
-        [
-          0.4999999999999996,
-          0.0
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:rim-cavity-foam"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          0.4999999999999996,
-          -11.875
-        ],
-        [
-          5.999999999999999,
-          -11.875
-        ],
-        [
-          5.999999999999999,
-          -11.275
-        ],
-        [
-          0.4999999999999996,
-          -11.275
-        ]
-      ],
-      "pattern": "foam",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "sealant"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          0.4999999999999996,
-          -11.875
-        ],
-        [
-          5.999999999999999,
-          -11.875
-        ],
-        [
-          5.999999999999999,
-          -11.275
-        ],
-        [
-          0.4999999999999996,
-          -11.275
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:rim-sealant-bead"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          0.4999999999999996,
-          0.0
-        ],
-        [
-          5.999999999999999,
-          0.0
-        ],
-        [
-          5.999999999999999,
-          0.6
-        ],
-        [
-          0.4999999999999996,
-          0.6
-        ]
-      ],
-      "pattern": "foam",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "sealant"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          0.4999999999999996,
-          0.0
-        ],
-        [
-          5.999999999999999,
-          0.0
-        ],
-        [
-          5.999999999999999,
-          0.6
-        ],
-        [
-          0.4999999999999996,
-          0.6
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:rim-sealant-bead"
-    },
-    {
-      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2105,80 +1865,6 @@
         {
           "kind": "point",
           "xy": [
-            -4.0,
-            -7.437499999999998
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            0.0,
-            -7.437499999999998
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        -4.0,
-        -7.437499999999998
-      ],
-      "p1": [
-        0.0,
-        -7.437499999999998
-      ],
-      "offset": 4.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "4\" CI",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            0.4999999999999996,
-            0.5625000000000018
-          ],
-          "name": ""
-        },
-        {
-          "kind": "point",
-          "xy": [
-            5.999999999999999,
-            0.5625000000000018
-          ],
-          "name": ""
-        }
-      ],
-      "p0": [
-        0.4999999999999996,
-        0.5625000000000018
-      ],
-      "p1": [
-        5.999999999999999,
-        0.5625000000000018
-      ],
-      "offset": 3.0,
-      "height_pt": 9.5,
-      "layer": "A-ANNO-DIMS",
-      "text": "5.5\" stud",
-      "text_along": 0.0,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
             -4.06,
             -61.4375
           ],
@@ -2247,7 +1933,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-548",
+      "content": "SHEET A-552",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -3108,7 +2794,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "board-batten-24",
+      "material": "pbr-panel-24",
       "fill": "#2f2f2f"
     },
     {
@@ -3146,7 +2832,7 @@
         4.999999999999999,
         1.228
       ],
-      "content": "board-batten-24  1.25\"",
+      "content": "pbr-panel-24  1.25\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

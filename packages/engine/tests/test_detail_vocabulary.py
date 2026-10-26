@@ -254,14 +254,14 @@ def test_rim_band_air_seal_draws_the_air_control_vocabulary(catlin_model):
     Reference: the basement→framed notes' "prioritize air sealing at sill plate (sealant +
     spray foam)", applied at every floor line rather than only the first.
     """
-    _derived, scene = _detail_scene(catlin_model, "storey_stack:rim:EXT_2X6")
+    _derived, scene = _exact_detail_scene(catlin_model, "storey_stack:rim:EXT_2X6")
     tags = _component_tags(scene)
     assert {"rim-air-barrier", "rim-cavity-foam", "rim-sealant-bead"} <= tags
 
 
 def test_rim_band_seals_at_both_plate_lines(catlin_model):
     """Two beads, not one: the plate below and the plate above are separate joints."""
-    _derived, scene = _detail_scene(catlin_model, "storey_stack:rim:EXT_2X6")
+    _derived, scene = _exact_detail_scene(catlin_model, "storey_stack:rim:EXT_2X6")
     beads = _component_nodes(scene, "rim-sealant-bead")
     elevations = sorted({round(min(z for _u, z in bead.points), 3) for bead in beads})
     assert len(elevations) == 2, f"expected a bead at each plate line, got {elevations}"
@@ -375,7 +375,7 @@ def test_buried_foundation_foam_gets_no_protection_board(catlin_model):
 
     (The perimeter stands 2'-6" out of the ground — see the test below.)"""
     _derived, scene = _exact_detail_scene(
-        catlin_model, "wall_foundation:EXT_2X6|GARDEN_CURB_6")
+        catlin_model, "wall_foundation:EXT_2X6_BOARD_BATTEN|GARDEN_CURB_6")
     assert "foam-protection-board" not in _component_tags(scene)
 
 

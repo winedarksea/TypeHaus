@@ -1074,7 +1074,7 @@ def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catl
 # the same one SL-SG-HPPAD has, written across two modules that cannot import each other.
 _HP3_PAD = "SL-M-HP3PAD"
 _HP3_CAB_W_IN, _HP3_CAB_D_IN = 34.375, 14.796875
-_HP3_CLADDING_Y_IN = 36 * 12 + 7.25   # params/roof_trim.py::_WALL_OUTBOARD_IN off y=36'
+_HP3_CLADDING_Y_IN = 36 * 12 + 6.75   # params/roof_trim.py::_WALL_OUTBOARD_IN off y=36'
 _HP3_GARAGE_CLADDING_Y_IN = 40 * 12 + 7.75  # params/north_entry_frame.py::GARAGE_CLADDING_Y_FT
 
 
@@ -1203,7 +1203,7 @@ def test_hp3_has_open_yard_airflow_and_its_coordinated_pad(catlin_model):
 # machine bears on.
 _HP1_PAD = "SL-M-HP1PAD"
 _HP1_CAB_W_IN, _HP1_CAB_D_IN = 39.0, 14.5625
-_HP1_CLADDING_Y_IN = 36 * 12 + 7.25   # params/roof_trim.py::_WALL_OUTBOARD_IN off y=36'
+_HP1_CLADDING_Y_IN = 36 * 12 + 6.75   # params/roof_trim.py::_WALL_OUTBOARD_IN off y=36'
 
 
 def test_hp1_stands_on_a_pad_at_the_same_top_and_height_as_the_other_two(catlin_model
@@ -1279,7 +1279,7 @@ def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
     assert (pier.bounds[0] - cabinet.bounds[2]) / INCH == pytest.approx(12.0)
     garage = _wall(catlin_model, "W-G-S")
     garage_face_y = min(p[1] for layer in garage.layers for p in layer.polygon)
-    assert (garage_face_y - cabinet.bounds[3]) / INCH == pytest.approx(57.9375)
+    assert (garage_face_y - cabinet.bounds[3]) / INCH == pytest.approx(58.4375)
     canopy = next(r for r in catlin_model.roofs if r.tag == "RF-BW-CANOPY")
     assert Polygon(canopy.footprint).covers(cabinet.centroid)
     # It laps the kitchen sink window. Unavoidable, and stated rather than discovered.

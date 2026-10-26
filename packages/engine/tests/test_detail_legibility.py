@@ -28,7 +28,7 @@ from typehaus.emit.draw.scene import Hatch, Leader, Polyline, Text
 
 
 def _eave(model):
-    detail = next(d for d in derive_detail_slices(model) if d.key.startswith("wall_roof"))
+    detail = next(d for d in derive_detail_slices(model) if d.key == "wall_roof:EXT_2X6|ROOF")
     return build_detail(model, detail)[0]
 
 

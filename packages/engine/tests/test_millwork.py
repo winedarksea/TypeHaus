@@ -64,7 +64,7 @@ def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catli
     the other room overrides select walnut, ash, locust, cherry and cedar.
     """
     derived = [stool for stool in stools if stool.derived]
-    assert {stool.assembly for stool in derived} == {"EXT_2X6"}
+    assert {stool.assembly for stool in derived} == {"EXT_2X6", "EXT_2X6_BOARD_BATTEN"}
     # Seven of the 41 are out of scope because of their host wall: the four plant-room
     # windows, sauna, and two garage windows. The sauna's is authored anyway.
     assert len(derived) == 13
@@ -139,7 +139,7 @@ def test_a_stools_depth_is_derived_from_its_host_wall_not_authored(stools):
         assert stool.depth_m == pytest.approx(expected, abs=1e-9)
 
 
-def test_the_four_host_assemblies_derive_four_different_returns(catlin_model_ro):
+def test_host_assembly_variants_preserve_their_window_mount_returns(catlin_model_ro):
     """The reason a stool cannot carry an authored depth.
 
     A window's host wall decides its interior return, and the reference house hosts windows
@@ -151,7 +151,7 @@ def test_the_four_host_assemblies_derive_four_different_returns(catlin_model_ro)
     walls = {wall.tag: wall for wall in catlin_model_ro.walls}
     hosts = {walls[o.host_wall].assembly for o in catlin_model_ro.openings
              if o.kind == "window" and o.host_wall in walls}
-    assert len(hosts) == 4
+    assert len(hosts) == 6
     returns = {}
     for assembly in hosts:
         wall = next(w for w in catlin_model_ro.walls if w.assembly == assembly)
@@ -162,6 +162,8 @@ def test_the_four_host_assemblies_derive_four_different_returns(catlin_model_ro)
     # The two truss walls differ by exactly the plant room's extra liner and furring, which
     # is the whole point: the same window in the two walls needs two different boards.
     assert returns["PLANT_EXT_2X6_HUMID"] > returns["EXT_2X6"]
+    assert returns["EXT_2X6_BOARD_BATTEN"] == returns["EXT_2X6"]
+    assert returns["PLANT_EXT_2X6_HUMID_BOARD_BATTEN"] == returns["PLANT_EXT_2X6_HUMID"]
 
 
 def test_the_mount_plane_ignores_furring_on_the_inside_face(catlin_model_ro):

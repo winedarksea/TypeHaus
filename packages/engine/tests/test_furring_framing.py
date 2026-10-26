@@ -180,7 +180,7 @@ def test_the_outer_girt_tier_is_untouched_by_the_trim(catlin_model_ro):
     """The counterweight. A girt tier is OUTBOARD of the studs on an envelope wall, so
     nothing trims it and it still runs the rim band it is there to nail — which is the
     reason ``band_tops`` runs courses to ``rw.z1_m`` rather than to the plate."""
-    girts = [(w, m) for w in catlin_model_ro.walls if w.assembly == "EXT_2X6"
+    girts = [(w, m) for w in catlin_model_ro.walls if w.assembly in {"EXT_2X6", "EXT_2X6_BOARD_BATTEN"}
              for m in w.members if m.child_key.startswith("strapping-outer-girt-")]
     assert len(girts) > 200, f"only {len(girts)} outer girts; the tier stopped resolving"
     over_plate = [f"{w.tag}/{m.child_key}" for w, m in girts

@@ -35,7 +35,8 @@ def test_catlin_returns_inherit_finishes_and_skip_other_liners(catlin_model_ro):
         r.window_ref for r in model.window_returns}
     assert len(excluded) == 5
     assert {walls[o.host_wall].assembly for o in model.openings if o.tag in excluded} == {
-        'SAUNA_LINER_ON_GARDEN_FRAMED', 'PLANT_EXT_2X6_HUMID'}
+        'SAUNA_LINER_ON_GARDEN_FRAMED', 'PLANT_EXT_2X6_HUMID',
+        'PLANT_EXT_2X6_HUMID_BOARD_BATTEN'}
     stool_windows = {s.window_ref for s in model.window_stools}
     assert len([r for r in model.window_returns if r.window_ref not in stool_windows]) == 2
 

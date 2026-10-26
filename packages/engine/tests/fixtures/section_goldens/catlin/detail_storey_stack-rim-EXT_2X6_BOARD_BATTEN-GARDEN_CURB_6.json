@@ -1,5 +1,5 @@
 {
-  "name": "detail-D-storey_stack-rim-EXT_2X6-GARDEN_CURB_6",
+  "name": "detail-D-storey_stack-rim-EXT_2X6_BOARD_BA-1b46e4",
   "units": "in",
   "nodes": [
     {
@@ -1164,7 +1164,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-550",
+      "content": "SHEET A-556",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

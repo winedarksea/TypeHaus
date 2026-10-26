@@ -314,10 +314,12 @@ def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model_ro):
     authored = authored_colors(catlin_model_ro)
     # A wall emits two nodes with one uid — its body and, at the framed LOD, its members —
     # so the trade set is what picks the body out: the members are exactly ("framing",).
-    nodes = {n["extras"]["uid"]: n for n in gltf["nodes"]
-             if n.get("extras", {}).get("kind") == "wall"
-             and n["extras"].get("trades") != ["framing"]
-             and "facet" not in n["extras"]}  # a wall's rebar is its own facet node
+    nodes = {}
+    for node in gltf["nodes"]:
+        extras = node.get("extras", {})
+        if (extras.get("kind") == "wall" and extras.get("trades") != ["framing"]
+                and "facet" not in extras):
+            nodes.setdefault(extras["uid"], []).append(node)
     # The body node also carries the wall's closure bands: the roof resolves them (only the
     # roof planes say how high each layer climbs) but they are this wall's own skin carried
     # past the top plate, and they draw with the wall so the walls toggle keeps them. Their
@@ -330,14 +332,15 @@ def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model_ro):
 
     mismatches = []
     for wall in catlin_model_ro.walls:
-        node = nodes.get(wall.uid)
-        if node is None or "mesh" not in node:
+        wall_nodes = nodes.get(wall.uid, [])
+        if not wall_nodes:
             continue
         expected = {_layer_color(ly, authored) for ly in wall.body_layers() if ly.polygon}
         expected |= {member_color(m, authored) for m in closures.get(wall.uid, ())}
-        actual = len(gltf["meshes"][node["mesh"]]["primitives"])
-        if actual != len(expected):
-            mismatches.append((wall.tag, len(expected), actual))
+        actual = {tuple(gltf["materials"][primitive["material"]]["pbrMetallicRoughness"]["baseColorFactor"])
+                  for node in wall_nodes for primitive in gltf["meshes"][node["mesh"]]["primitives"]}
+        if actual != expected:
+            mismatches.append((wall.tag, expected, actual))
     assert not mismatches, mismatches
 
 
@@ -438,9 +441,9 @@ def test_a_lifted_envelope_wall_exports_its_interior_finishes_as_parts(catlin_mo
     # studs; W-S-E2's accent paint), never the trim. 5 of the 28 have no override at all and
     # every one of them is on the bare type.
     lifted = [w for w in catlin_model_ro.walls
-              if w.assembly == "EXT_2X6" and w.plate_top_z_m is not None]
+              if w.assembly in {"EXT_2X6", "EXT_2X6_BOARD_BATTEN"} and w.plate_top_z_m is not None]
     assert len(lifted) == 28
-    bare = [w for w in lifted
+    bare = [w for w in lifted if w.assembly == "EXT_2X6"
             if next(iter(_wall(catlin_ifc, w.tag).IsTypedBy)).RelatingType.Name
             == "EXT_2X6"]
     assert len(bare) == 5

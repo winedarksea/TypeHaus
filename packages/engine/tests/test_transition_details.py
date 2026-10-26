@@ -14,7 +14,7 @@ from typehaus.emit.draw.scene import ArchDimension, Hatch, Polyline, Text
 
 def _eave(model):
     detail = next((d for d in derive_detail_slices(model)
-                   if d.key.startswith("wall_roof")), None)
+                   if d.key == "wall_roof:EXT_2X6|ROOF"), None)
     assert detail is not None, "catlin should scaffold a wall_roof (eave) detail"
     return detail
 

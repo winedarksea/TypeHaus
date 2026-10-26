@@ -1374,3 +1374,25 @@ The two joints and capacities do not change. N-S governs at **0.777886** (W forc
 1,151.3 lb / 1,480); E-W at W is **557.6 / 1,480 + 293.1 / 740 = 0.772809**
 (using unrounded forces); guard remains **0.631351**. All pass. Older §10h numbers
 above retain their dated geometry; these are the current actual-stock oracles.
+
+### 10j. 2026-10-25 — BBD75 installed profile depth
+
+The north/south siding is nominally 3/4 inch deep, rather than the PBR assembly's
+1-1/4 inch. The girt face stays 6 inches beyond sheathing; the batten crowns now sit
+6-3/4 inches beyond it. Preserve the landing's house clearance by moving its south
+edge 1/2 inch south. The garage and pier lines stay fixed, so the screen run grows
+78-7/8 to 79-3/8 inches. The two tie joints and published capacities stay unchanged.
+
+Reapply §10i's pressures to the longer exposed faces: E-W deck wind is
+66.9232 × (79.375 / 78.875) = **67.3549 lb**, screen face
+406.9998 × (79.375 / 78.875) = **409.5798 lb**, and skirt
+112.2701 × (79.375 / 78.875) = **112.9818 lb**. The N-S projected width and canopy
+shear stay **98.6669 lb** and **1,038.3506 lb**. Recompute the force centroids for
+that same 1/2-inch south extension in §10h's two-joint distribution: E-W at W is
+**564.7 / 1,480 + 295.0 / 740 ≈ 0.7802** with unrounded forces. It now governs;
+N-S remains **0.7779**, and guard is **0.6340**. All rows pass.
+
+The screen's dead line load stays about **87.64 lb/ft**. Its added 1/2-inch run adds
+87.64 / 24 = **3.65 lb** total, or **1.83 lb** to each of its two column reactions:
+about **276.7 lb each**, replacing §2's previous 274.9 lb. The foam, support wood,
+fasteners, and panel engineering properties have not changed.

@@ -339,6 +339,7 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # at x=18'; at N-S-C1 the bearing line, the two partitions and both plant
         # assemblies meet at once, which is one node and therefore one key. Real changes of
         # construction, and the returns they imply are what TR-CATLIN-ASSEMBLY-JOG records.
+        "assembly_change:EXT_2X6_BOARD_BATTEN|PLANT_EXT_2X6_HUMID_BOARD_BATTEN",
         "assembly_change:EXT_2X6|PLANT_EXT_2X6_HUMID",
         # N-B-C1 since 2026-09-05. The x=18' line's framed run reaches further north than
         # the sauna does now: W-B-CS3 is a plain 2x6 bearing wall between the room and the

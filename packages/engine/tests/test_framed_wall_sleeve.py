@@ -25,8 +25,8 @@ def test_the_sleeve_spans_the_sheathing_to_the_cladding_face(catlin_model_ro):
     assert sleeve.host_category == "framed_wall"
     assert sleeve.seal and sleeve.insulation
     assert sleeve.offset_m == pytest.approx(0.0, abs=1e-6)  # on the barrel's own line
-    # W-S-S1: cladding face -7 1/4", sheathing inner face +1/2". Studs and liner unsleeved.
-    assert sleeve.length_m / M_PER_IN == pytest.approx(7.75, abs=0.01)
+    # W-S-S1: cladding face -6 3/4", sheathing inner face +1/2". Studs and liner unsleeved.
+    assert sleeve.length_m / M_PER_IN == pytest.approx(7.25, abs=0.01)
     ys = [y / M_PER_IN for solid in catlin_model_ro.solids
           if solid.tag == _TAG and solid.category == "pipe_sleeve"
           for _x, y in solid.outline]

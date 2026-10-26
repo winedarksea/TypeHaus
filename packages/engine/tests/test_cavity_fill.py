@@ -50,7 +50,7 @@ def test_cavity_shares_its_host_polygon_and_adds_no_depth(catlin_model):
     # The INNER GIRT's own 1-1/2" of foam is a CavityFill and adds no depth, which is exactly
     # what this test is for. Note the outer girt carries no fill at all: nothing vents inside
     # a solid KDAT band, and its gap is the AIRGAP layer behind it.
-    assert wall.thickness_m * 39.3701 == pytest.approx(13.76, abs=0.01)
+    assert wall.thickness_m * 39.3701 == pytest.approx(13.26, abs=0.01)
 
 
 def test_no_wall_layer_overlaps_another(catlin_model):

@@ -265,7 +265,7 @@ def test_the_porch_stair_has_its_R303_8_top_landing_light(catlin_model):
     assert light.controlled_by == ("ED-M-PORCH-SW",)
     x_ft, y_ft = (c / 0.3048 for c in placed_xy(catlin_model, light))
     # 5" body, footprint CENTRED, back on W-M-S2's -0'-7 1/4" cladding face at this station.
-    assert y_ft == pytest.approx(-9.75 / 12.0)
+    assert y_ft == pytest.approx(-9.25 / 12.0)
     assert light.mount.elevation.inches == pytest.approx(84.0)
     # Clear of both openings' ROs, and on the half of the lane that is over the porch.
     assert 23.0 + 10.0 / 12.0 < x_ft < 27.5

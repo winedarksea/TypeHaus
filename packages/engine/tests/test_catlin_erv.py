@@ -303,7 +303,7 @@ def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan, catlin_mod
         # The NORTH wall, not the west facade and not the north gable: y is outboard of the
         # cladding at 36'-7 1/4", x is inside the house's width. A negative x on either of
         # these is the old west-facade station; a y near 36'-0" is the stud-cavity bug.
-        assert y == pytest.approx(445.25 / 12.0, abs=0.01), tag
+        assert y == pytest.approx(444.75 / 12.0, abs=0.01), tag
         assert 0.0 < x < 6.0, f"{tag} must stand on W-M-N3B / W-S-N3B, which end at x=6'-0\""
 
 

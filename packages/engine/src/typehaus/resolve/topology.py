@@ -779,6 +779,9 @@ def _clip_l_corner(walls: dict[str, ResolvedWall], junction: ResolvedJunction) -
             )
             clipped_rings[index] = _normalized_ring(Polygon(clipped), layer.polygon)
         walls[own.wall_tag] = _with_layer_polygons(wall, clipped_rings)
+    from typehaus.resolve.cladding_corner import meet_cladding_faces
+
+    meet_cladding_faces(walls, junction, unclipped)
     butt_sheathing(walls, junction, unclipped, _normalized_ring)
 
 

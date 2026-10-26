@@ -19,7 +19,8 @@ from typehaus.resolve.rainscreen_closures import (
 )
 from typehaus.takeoff.envelope import bug_screen_takeoff
 
-_RAINSCREEN = ("EXT_2X6", "PLANT_EXT_2X6_HUMID")
+_RAINSCREEN = ("EXT_2X6", "PLANT_EXT_2X6_HUMID",
+               "EXT_2X6_BOARD_BATTEN", "PLANT_EXT_2X6_HUMID_BOARD_BATTEN")
 _M_TO_FT = 3.280839895
 
 

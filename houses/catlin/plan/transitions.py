@@ -69,7 +69,7 @@ TRANSITIONS = (
                star=False,
                starred_conditions=(
                    "wall_foundation:BASEMENT_12|EXT_2X6",
-                   "wall_foundation:BASEMENT_12|EXT_2X6_BOARD_BATTEN",
+                   "wall_foundation:BASEMENT_8|EXT_2X6_BOARD_BATTEN",
                    "wall_foundation:GARAGE_ICF_6|GARAGE_WALL_2X6",
                )),
     # ** UNSTARRED WHOLE. ** Sixteen conditions derived off this one pattern and every one
