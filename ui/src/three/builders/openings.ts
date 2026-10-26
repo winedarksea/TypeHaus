@@ -31,6 +31,14 @@ import { createPlankMaterial } from "../plankMaterial";
 const WINDOW_TRIM_FACE_WIDTH_M = 0.032;
 const WINDOW_TRIM_PROUD_DEPTH_M = 0.019;
 
+// The door's charcoal wrap is a sub-millimetre skin over a red isolation film. At normal
+// house-view distances, the flashing material's coating bias can put that film ahead of the
+// wrap in the depth buffer. Let the visible steel win the tie without changing either layer's
+// measured geometry.
+const DOOR_TRIM_WRAP_DEPTH_BIAS = {
+  polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2,
+} as const;
+
 // Mirrors resolve/geometry_openings.py::_exterior_face — the exterior cladding plane as a
 // signed offset along the wall's right-hand normal, or null when the outermost depth layer
 // is not cladding (a concrete wall or interior partition has no plane to sit a casing on).
@@ -215,7 +223,10 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     const material = standardMaterial(board.role && board.role !== "door_installation"
       ? materialColor(board.material_ref, palette, materials)
       : categoryColor(board.material_key === "window_trim" ? "window_trim" : "door_frame"),
-    mode, { roughness: 0.45 });
+    mode, {
+      roughness: 0.45,
+      ...(board.role === "door_trim_wrap" ? DOOR_TRIM_WRAP_DEPTH_BIAS : {}),
+    });
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(board.width_m, board.height_m,
       board.depth_m), material);
     mesh.position.copy(projectPointToScene([
