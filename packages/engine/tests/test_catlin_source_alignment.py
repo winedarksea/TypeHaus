@@ -310,8 +310,9 @@ def test_balcony_french_door_uses_the_standard_60_inch_type(catlin_plan):
     opening = next(opening for opening in model.openings if opening.tag == "D-S-DECK-E")
     door_type = next(door_type for door_type in model.plan.library.door_types
                      if door_type.tag == opening.type_ref)
-    assert door_type.tag == "DT-EXT-FRENCH60"
-    assert opening.width_m == pytest.approx(ft(5).meters)
+    assert door_type.tag == "DT-EXT-FRENCH60-CATALOG"
+    assert door_type.catalog_dimensions.nominal_width.meters == pytest.approx(ft(5).meters)
+    assert opening.width_m > door_type.catalog_dimensions.unit_width.meters
     assert door_type.operation.value == "double_swing"
     assert door_type.glazed
 

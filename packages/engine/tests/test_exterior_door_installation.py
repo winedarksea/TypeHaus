@@ -63,11 +63,13 @@ def test_catlin_doors_have_structural_mount_and_independent_returns(catlin_model
                 if key == "head")
     assert max(z for _, _, z in head.positions) > assembly.rough_opening_z_m + opening.height_m
     rows = [r for r in door_installation_rows(model) if tag in r.get("tags", [])]
-    lumber_rows = [r for r in rows if r["cut_pieces"]]
+    lumber_rows = [r for r in rows if r["cut_pieces"]
+                   and r["kind"] in ("exterior door casing", "door jamb extension")]
     assert len(lumber_rows) == len(wood_boards)
     assert all(r["cut_pieces"][0]["thickness_in"] == pytest.approx(.75) for r in lumber_rows)
     trim = [r for r in interior_trim_takeoff(model)
-            if tag in r["tags"] and "painted site-built board" in r["description"]]
+            if tag in r["tags"] and r.get("cut_pieces")
+            and r.get("kind") in ("exterior door casing", "door jamb extension")]
     assert lumber_rows == trim
     assert not any(r["scope"] == "exterior door installation trim"
                    for r in door_hardware_rows(model))
@@ -229,7 +231,7 @@ def test_catlin_garage_keeps_raised_service_support_and_overhead_operation(catli
     assert len(next(p for p in parts if p.key == "frame").solids) == 3
 
 
-@pytest.mark.parametrize("tag", ["D-M-ENTRY", "D-M-BALC", "D-S-DECK-E"])
+@pytest.mark.parametrize("tag", ["D-M-ENTRY", "D-M-BALC"])
 def test_sill_design_conceals_pan_without_claiming_factory_approval(catlin_model_ro, tag):
     from shapely.geometry import LineString
     from shapely.ops import unary_union

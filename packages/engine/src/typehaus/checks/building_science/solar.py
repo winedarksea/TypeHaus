@@ -43,6 +43,7 @@ import math
 from dataclasses import dataclass
 
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.opening_product_dimensions import opening_product_area_m2
 from typehaus.resolve.solid_categories import in_slab_family
 
 # The four orientations, and the surface azimuth of each measured from SOUTH, positive west.
@@ -405,7 +406,7 @@ def _glazing(model: ResolvedModel, walls: dict[str, ResolvedWall],
         head_m = sill_m + opening.height_m
         out.append(_Glazing(
             tag=opening.tag, facade=_facade_for_wall(wall, model),
-            area_ft2=opening.width_m * opening.height_m * 10.7639104167,
+            area_ft2=opening_product_area_m2(model, opening) * 10.7639104167,
             shgc=product.shgc, sill_m=sill_m, head_m=head_m,
             planes=_shade_planes(model, wall, opening, head_m)))
     return out

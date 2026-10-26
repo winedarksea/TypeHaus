@@ -61,7 +61,15 @@ class OpeningFlashingFrame:
 
 def opening_flashing_frame(model: ResolvedModel, wall: ResolvedWall, opening=None) \
         -> OpeningFlashingFrame | None:
-    exterior = _exterior_face(wall)
+    from typehaus.resolve.exterior_door_boundary import (
+        ExteriorDoorBoundaryError,
+        exterior_door_boundary,
+    )
+
+    try:
+        exterior = exterior_door_boundary(model, wall, opening) if opening else _exterior_face(wall)
+    except ExteriorDoorBoundaryError:
+        return None  # The doorway resolver reports the invalid explicit reference.
     if exterior is None:
         return None
     (x0, y0), (x1, y1) = wall.axis
@@ -80,7 +88,7 @@ def opening_flashing_frame(model: ResolvedModel, wall: ResolvedWall, opening=Non
         return None
     substrate = sheaths[-1] if sheaths else structures[-1]
     sheath_out = max(extent(substrate))
-    clad = max(extent(bodies[-1]))
+    clad = exterior[1] * exterior[0]
     kind = truss_kind(model.plan, wall.assembly)
     cavity = rainscreen_band(wall.layers)
     outie = kind is not None and cavity is not None
@@ -142,8 +150,14 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
         frame = opening_flashing_frame(model, wall, opening)
         if frame is None:
             continue
+        placement = opening.doorway.exterior_placement if opening.doorway else None
+        catalog = placement and placement.specification.catalog_installation
         meshes = opening_flashing_meshes(wall, opening, frame, cfg,
                                          pan=not is_overhead(model, opening), metal=metal)
+        if catalog:
+            # Stock head/pan envelopes are already opening IR parts; retain the
+            # continuous jamb/head water-plane tie, not the legacy formed-metal hood.
+            meshes = [m for m in meshes if m[0] == "perimeter"]
         for key, category, material, mesh in meshes:
             model.solids.append(flashing_solid(
                 uid=f"{opening.uid}-flashing-{key}", tag=f"{opening.tag}-FLASH-{key.upper()}",

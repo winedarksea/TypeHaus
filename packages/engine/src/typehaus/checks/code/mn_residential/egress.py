@@ -259,7 +259,25 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
         # for an ordinary wall and differ by exactly the curb for a framed wall standing
         # on one (``Wall.base_elevation``): reading the storey put D-B-PATIO's threshold
         # 7 1/4" low and reported its step down into the sunken garden as 0.0".
-        threshold = wall.base_ref_z_m + opening.sill_m
+        from typehaus.resolve.doorway_heights import installed_threshold_elevation
+
+        threshold, threshold_basis = installed_threshold_elevation(opening, wall)
+        if threshold is None:
+            out.append(_unknown(cid, f"{opening.tag}: {threshold_basis}; cannot grade "
+                                "the landing from the rough sill", (opening.tag,), code))
+            continue
+        assembly = getattr(opening, "doorway", None)
+        placement = assembly.exterior_placement if assembly else None
+        if placement and placement.specification.catalog_installation:
+            index = 1 if placement.outward_sign < 0 else 0
+            interior = assembly.adjacent_floors[index]
+            if interior is None or interior.surface_m is None:
+                out.append(_unknown(cid, f"{opening.tag}: interior finished floor is missing",
+                                    (opening.tag,), code))
+            elif threshold - interior.surface_m > _MAX_NONREQUIRED_STEP_DOWN.meters + 1e-6:
+                out.append(_fail(cid, f"{opening.tag}: installed threshold is "
+                                 f'{(threshold-interior.surface_m)/.0254:.2f}" above the interior '
+                                 "floor; exceeds 7.75 inches", (opening.tag,), code))
         # A tilted deck is read where the foot lands: its own edge nearest the door.
         (ax, ay), (bx, by) = list(patch.exterior.coords)[:2]
         at_door = Point((ax + bx) / 2.0, (ay + by) / 2.0)
@@ -457,8 +475,15 @@ def _landing_patch(ctx: CheckContext, wall, opening, rooms_by_storey):
         sign = -1.0
     half = max(opening.width_m, 0.1) / 2.0
     depth = _MIN_LANDING_DEPTH.meters
-    base_x = cx + nx * sign * wall.thickness_m / 2.0
-    base_y = cy + ny * sign * wall.thickness_m / 2.0
+    face = sign * wall.thickness_m / 2.0
+    assembly = getattr(opening, "doorway", None)
+    placement = assembly.exterior_placement if assembly else None
+    if placement and placement.specification.exterior_opening_ref:
+        from typehaus.resolve.exterior_door_boundary import exterior_door_boundary
+
+        face, sign = exterior_door_boundary(ctx.model, wall, opening, placement.specification)
+    base_x = cx + nx * face
+    base_y = cy + ny * face
     corners = [
         (base_x - ux * half, base_y - uy * half),
         (base_x + ux * half, base_y + uy * half),

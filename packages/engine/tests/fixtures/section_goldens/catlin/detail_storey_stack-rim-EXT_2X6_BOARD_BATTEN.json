@@ -1456,7 +1456,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW102AAAA",
-      "tag": "plate-bottom"
+      "tag": "plate-bottom-passage-1"
     },
     {
       "space": "model",
@@ -2185,7 +2185,7 @@
         0.25,
         120.0
       ],
-      "text": "air continuity — sheathing-ext →\nsheathing-ext",
+      "text": "air continuity \u2014 sheathing-ext \u2192\nsheathing-ext",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2210,7 +2210,7 @@
         -2.0,
         120.0
       ],
-      "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
+      "text": "water continuity \u2014 spray-foam-ext \u2192\nspray-foam-ext",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2235,7 +2235,7 @@
         -2.0,
         120.0
       ],
-      "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
+      "text": "thermal continuity \u2014 spray-foam-ext \u2192\nspray-foam-ext",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2248,7 +2248,7 @@
         -16.59251968503937,
         94.34645669291339
       ],
-      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
+      "content": "TR-CATLIN-RIM-BAND  \u00b7  rim-band-air-seal",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -2354,7 +2354,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
+      "content": "TR-CATLIN-RIM-BAND  \u00b7  rim-band-air-seal",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -2386,7 +2386,7 @@
         0.5,
         7.298611111111112
       ],
-      "content": "Type:Haus — derived transition detail",
+      "content": "Type:Haus \u2014 derived transition detail",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

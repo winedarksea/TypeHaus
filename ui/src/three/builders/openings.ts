@@ -361,7 +361,7 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     const mullionWidth = Math.min(frameWidth, (opening.width_m - 2 * frameWidth) / 6);
     const leafWidth = Math.max(0.01, (opening.width_m - 2 * frameWidth - mullionWidth) / 2);
     const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
-    const astragalBottom = placement?.sill_design_status === "SCHEMATIC"
+    const astragalBottom = (placement?.sill_design_status === "SCHEMATIC" || placement?.sill_design_status === "CATALOG_DESIGN")
       ? opening.doorway?.leaf_bottom_z_m : null;
     const astragalTop = baseRefZ(wall) + opening.sill_m + availableHeight;
     addBox(mullionWidth, astragalBottom == null ? availableHeight : astragalTop - astragalBottom,

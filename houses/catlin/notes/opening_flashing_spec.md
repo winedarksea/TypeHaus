@@ -277,12 +277,24 @@ no sheet of its own.
 - **Veneer.** The arches are self-supporting, with no lintel or shelf angle, so R703.8.5 asks for
   no head flashing there; the porch keeps rain off them. The base course is flashed and weeped
   over the beam (R703.8.6, 33" o.c. max, 3/16" min). Do not over-detail the wythe.
-- **`D-B-PATIO` floods to its threshold.** The court ponds to 7 1/4", exactly the riser, and the
-  brick's base course is 1/4" below that line, so its weeps flood too. Treat the cavity as
-  wet: the waterproofing runs continuous behind it, the pan's back and end dams stand 6" above
-  the threshold, the frame sets on sealant at the back dam only, and the unit is one rated for
-  water penetration at the threshold. The weeps drain the cavity back out when the court
-  drains; do not close them.
+- **`D-B-PATIO` rainproofing basis (owner, 2026-10-26).** The concrete curb is
+  intended to contain flooding, backed by overflow drainage and a sump pump. Design the
+  door for standard rain exposure, not as a flood barrier. The curb top is the rough
+  opening datum, not the installed threshold height. Retain a drained sill pan with
+  jamb end dams, a continuous lap to the waterproofing and an unobstructed outlet;
+  confirm the sealant and bearing arrangement with the actual door and pan instructions.
+  The separate veneer cavity and its base-course weeps must remain able to drain.
+  The concrete-supported sill seat, approach across the foam and cavity, and the junction
+  at the brick reveal still need a coordinated detail; the existing notes are not an
+  installed product section.
+- **Catalog coordination update, 2026-10-26:** D-B-PATIO now references its separate
+  brick opening and draws the backup-wall flashing band, formed concrete seat recess,
+  sill/pan/approach coordination envelopes and composite returns. The seat is 5-1/2 inches
+  above the court; adjacent curb tops remain 7-1/4 inches. The threshold calculation
+  includes the catalog cap outline and an installation allowance. Root connections,
+  concrete reinforcement development and installed pan/apron bonds are still UNKNOWN.
+  See [french_door_catalog_installation.md](french_door_catalog_installation.md) for the
+  parts/evidence matrix, public-price gaps, dimensions and remaining design holds.
 - **`WIN-B-SAUNA`** sits 3'-8" above the court floor, clear of the flood line; §3 applies as written.
 
 ## Sources

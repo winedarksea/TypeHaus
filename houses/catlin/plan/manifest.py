@@ -28,7 +28,7 @@ from library import (
 
 from params import (breezeway, driveway, entry_band_brace, foundations, hp1_north_pad, hp3_pad,
                     landscape_gardens, landscape_walk, main_deck, raised_garden, roof_trim,
-                    second_deck, solar,
+                    roof_wind_clamps, second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, bath_finish, lav_types, products_bath_lavs, backing, backing_wet, bath1_storage,
                   decking_selection, plant_liner_selection, handrail_types, mirrors, mirror_types,
@@ -50,6 +50,7 @@ from plan import (appliance_types, assemblies, bath_finish, lav_types, products_
                   opening_products, products,
                   sauna, sauna_types, site, study_bridge, titanium_types, transitions, views,
                   wind_clamps, window_stools, window_types)
+from plan import french_door_installations
 from plan.storeys import attic, attic_studio, basement, garage, main, second
 
 format_version = 1
@@ -376,7 +377,7 @@ PLAN = (
         # footings and hydrant drywell in one list; the four garage names are spread onto
         # `g-foundation` below instead. Spread by name rather than by editing params/, which
         # already named all four at module level.
-        [*basement.ELEMENTS, *dry_fire_lane.DRY_FIRE_LANE, *fixtures.BASEMENT_FIXTURES,
+        [*french_door_installations.with_catalog_installations(basement.ELEMENTS), *dry_fire_lane.DRY_FIRE_LANE, *fixtures.BASEMENT_FIXTURES,
          *foundations.HOUSE_FOOTINGS, *foundations.HOUSE_FOOTING_BEDDING,
          *foundations.VENEER_PLINTH, *foundations.VENEER_PLINTH_BEDDING,
          *masonry_joints.JOINTS,
@@ -419,7 +420,7 @@ PLAN = (
          *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS,
          *plate_ties.MAIN_PLATE_TIES],
     )
-    .with_elements("second", [*second.ELEMENTS, *attic_studio.SECOND_ELEMENTS,
+    .with_elements("second", [*french_door_installations.with_catalog_installations(second.ELEMENTS), *attic_studio.SECOND_ELEMENTS,
                                 *fixtures.SECOND_FIXTURES,
                                 *fixtures.BALCONY_HYDRANT,
                                 *mep.SECOND_ELEMENTS,
@@ -448,7 +449,7 @@ PLAN = (
                              *fixtures.ATTIC_FIXTURES,
                              *roof_trim.ATTIC_ELEMENTS,
                              *mep.ATTIC_ELEMENTS, *electrical.ATTIC_ELEMENTS,
-                             *wind_clamps.HOUSE_ROOF_WIND_CLAMPS,
+                             *roof_wind_clamps.HOUSE_ROOF_WIND_CLAMPS,
                               *solar.ATTIC_ELEMENTS, *lighting_attic.ATTIC_LIGHTING, *mirrors.ATTIC_MIRRORS,
                              *electrical_attic.NEC_FILL_ATTIC,
                              *placeables.ATTIC_PLACEABLES,

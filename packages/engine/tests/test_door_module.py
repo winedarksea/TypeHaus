@@ -69,7 +69,10 @@ def test_the_ro_ladder_is_not_applied_to_doors(findings):
     # D-G-OVERHEAD is graded — on POSITION, and it is the only one of the three wide doors
     # that is off its module at all.
     assert "D-G-OVERHEAD" in named
-    assert {"D-B-PLAY", "D-B-PATIO"}.isdisjoint(named)
+    assert "D-B-PLAY" not in named
+    # The catalog pair's wider RO now interrupts an extra stud at its held centerline.
+    patio = next(f for f in findings if "D-B-PATIO" in f.element_tags)
+    assert "stud(s)" in patio.message
 
 
 def test_the_criterion_is_studs_cut_not_distance_from_ideal(catlin_model, findings):

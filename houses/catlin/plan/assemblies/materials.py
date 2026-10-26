@@ -17,6 +17,14 @@ from .materials_study_booth import MATERIALS_STUDY_BOOTH
 
 
 MATERIALS = [
+    Material(tag="pvc-opening-flashing", name="SureSill PVC opening flashing",
+             color="#eeeeee", source="SureSill stock HeadFlash/sloped sill pan; catalog coordination envelopes."),
+    Material(tag="silicone-transition", name="Proglaze ETA standard silicone transition",
+             color="#bbbbbb", source="Tremco ETA System 1 standard 6 inch extrusion and molded corners; project application unconfirmed."),
+    Material(tag="composite-door-frame", name="Therma-Tru composite exterior frame and trim",
+             color="#41464a", source="2026 Comp 6.4/6.46; composite profiles, finish per Therma-Tru. No exposed wood."),
+    Material(tag="impermeable-door-flashing", name="Impermeable door pan/apron membrane",
+             color="#444444", source="opening_flashing_spec.md hybrid; exact PVC-pan bond remains unconfirmed."),
     Material(tag="door-paint-black", name="Black exterior door field paint", coating=True,
              color="#181818", finish="paint", source="Site-applied coating approved for fiberglass/composite frame; factory black quote alternate."),
     Material(tag="door-paint-white", name="White interior door field paint", coating=True,

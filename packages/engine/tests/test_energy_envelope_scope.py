@@ -81,7 +81,8 @@ _COMPONENTS = (
     ("roof", 1547.9, 29.103),
     ("slab", 1296.0, 25.468),
     ("windows", 293.6, 49.171),
-    ("doors", 120.0, 24.000),
+    # Two revised catalog pairs use assembled unit area, not their wider framed ROs.
+    ("doors", 124.585, 24.963),
 )
 
 # The whole envelope, by tag. 50 walls.

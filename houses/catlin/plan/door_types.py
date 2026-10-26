@@ -8,7 +8,7 @@ The opaque front entry, steel garage service door and sectional retain separate 
 
 from __future__ import annotations
 
-from typehaus import DoorHardwareItem, JambFraming, inch, DoorType, DoorwayProductSpec, DoorwayTreatment, u_us
+from typehaus import DoorCatalogDimensions, DoorHardwareItem, JambFraming, inch, DoorType, DoorwayProductSpec, DoorwayTreatment, u_us
 from typehaus.quantities import ft
 
 from plan.opening_products import (
@@ -81,7 +81,7 @@ _FRENCH_HARDWARE = (
     DoorHardwareItem(role="passage", product_ref=PASSAGE_LEVER.tag, height=inch(36),
         installation="One passage set on active leaf; verify PanoLock+ compatibility."),
     DoorHardwareItem(role="deadbolt", product_ref=BE365.tag, height=inch(41.5),
-        installation=_SHIM + "BE365 on active leaf; prehanger to confirm PanoLock+ compatibility."),
+        installation=_SHIM + "BE365 on active leaf; Endura 2026 Schlage compatibility list: adapter F. Confirm selected trim and passage adapter."),
     DoorHardwareItem(role="multipoint", product_ref=PANOLOCK.tag, height=inch(40),
         installation=_SHIM + "One set per pair; keep coordination at 10/40/70 inches, "
         "confirm factory positions before blocking. " + _SCREWS),
@@ -120,5 +120,21 @@ DOOR_TYPES = (
         source="Clopay Modern Steel, Intellicore R-18.4, Black. Unconditioned garage: no "
                "NFRC rating is needed or claimed."),
 )
+
+# This catalog RO applies only to the two installations in this pass. The main-floor
+# balcony retains its existing authored dimensions until its separate installation review.
+DOOR_TYPES = (*DOOR_TYPES, DOOR_TYPES[2].model_copy(update={
+    "tag": "DT-EXT-FRENCH60-CATALOG", "width": inch(63.3125), "height": inch(82.875),
+    "catalog_dimensions": DoorCatalogDimensions(
+        nominal_width=inch(60), nominal_height=inch(80),
+        unit_width=inch(62.5625), unit_height=inch(82),
+        source_url="https://outdoorsandsecurity.widen.net/content/lpxemo2dti/original/"
+                   "2026-Arch-Comp-BOOK---ARCH-1-Dimensional-Data.pdf",
+        source_drawing="2026 Arch 1.4 French inswing, 7/8 astragal; Endura assembly dimension confirmation pending"),
+    "source": "Catalog nominal 60x80 pair; 62-9/16x82 unit; 63-5/16x82-7/8 RO "
+              "includes the 3/8-inch pan allowance over the published 82-1/2-inch RO. "
+              "These are Therma-Tru 7/8-astragal dimensions, not confirmation of the FLA assembly. "
+              + DOOR_TYPES[2].source,
+}))
 
 HOUSE_DOOR_TAGS = frozenset(t.tag for t in DOOR_TYPES)

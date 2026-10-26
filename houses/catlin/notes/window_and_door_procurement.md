@@ -244,6 +244,15 @@ Obtain separate add prices for ordinary safety lamination and the proposed secur
 lamination, including any hardware, freight and duty changes. No confirmed security
 upgrade allowance is entered in the model or prices.
 
+**Patio/study catalog coordination, 2026-10-26:** use
+[french_door_catalog_installation.md](french_door_catalog_installation.md) for the current
+component/evidence matrix, separate nominal/unit/RO sizes, adapter F, installed-height
+calculations and public-price comparison. No inquiry or order was made. Complete preferred
+and Tru-Defense pair prices are not established; replacement-part prices are not whole-unit
+quotes. The Endura assembly's exact unit size, installed frame/sweep/pan interfaces,
+performance label and warranty remain unconfirmed, and structural connection design is
+still required. The two installation TODOs have not been marked complete.
+
 ## 3. Frame material by orientation
 
 **Resolved (2026-10-21): Drutex Alucover is aluminium-clad uPVC on every face**, flanged

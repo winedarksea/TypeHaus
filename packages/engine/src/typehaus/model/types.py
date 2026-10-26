@@ -18,6 +18,7 @@ from typehaus.model.enums import (
     Service,
     WindowOperation,
 )
+from typehaus.model.exterior_door import DoorCatalogDimensions
 from typehaus.model.furniture_cut import FurnitureCut
 from typehaus.model.placeables import (
     ClearanceZone,
@@ -70,6 +71,7 @@ class BookcaseDoorSpec(HausModel):
 class DoorType(HausModel):
     """A door product type. Drives schedules, energy checks, and opening appearance."""
 
+    catalog_dimensions: DoorCatalogDimensions | None = None
     hardware: tuple[DoorHardwareItem, ...] = ()
     jamb_framing: JambFraming | None = None
     field_finish: tuple[str, str] | None = None

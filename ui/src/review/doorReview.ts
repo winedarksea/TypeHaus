@@ -19,7 +19,7 @@ const oakRef = materials.find(material => material.species === "oak")?.tag;
 const cedarRef = materials.find(material => material.species === "cedar")?.tag;
 if (!oakRef || !cedarRef) failures.push("Review requires catalog oak and cedar materials");
 if (dark) { document.body.style.background = "#22262a"; document.body.style.color = "#eaeaea"; }
-const cases = exteriorReview ? ["D-M-ENTRY", "D-M-BALC", "D-S-DECK-E"].flatMap(tag => [-1, 1].map(side =>
+const cases = exteriorReview ? ["D-M-ENTRY", "D-M-BALC", "D-S-DECK-E", "D-B-PATIO"].flatMap(tag => [-1, 1].map(side =>
   ({ tag, side, label: `${tag} · ${side < 0 ? "exterior" : "interior"} · sill design / factory details pending` })))
   : view === "synthetic" ? [
   { tag: "D-M-MUD", side: 1, label: "Shared swing type · inherited white frame" },
@@ -56,6 +56,14 @@ for (const sample of cases) {
     buildDoorCasing(group, casing, center, mode, palette, materials, picks, byUid);
   }
   if (exteriorReview) {
+    if (opening.tag === "D-B-PATIO") {
+      for (const tag of ["W-B-BRICK", "W-B-S3"]) {
+        const adjacentWall = model.walls.find(w => w.tag === tag);
+        if (adjacentWall) buildWall(groups, adjacentWall,
+          model.openings.filter(o => o.host === tag), center, mode, palette,
+          [], new Map(), materials);
+      }
+    }
     for (const solid of (model.solids ?? []).filter(s => s.tag.startsWith(`${opening.tag}-FLASH-`)
       || (opening.tag === "D-S-DECK-E" && /^TR-SG-(BASE|COUNTER)-FLASH-/.test(s.tag)))) {
       buildSolid(group, solid, center, mode, palette, model.catalog, [], new Map(), materials);

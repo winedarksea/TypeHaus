@@ -5502,6 +5502,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # an opaque Therma-Tru Smooth-Star prehung, single-point bored, a dealer-stocked line; no
 # price was found, and the old band is kept pending a dealer quote.
 "DT-EXT-FRENCH60" = { material = { low = 1300, high = 2900 }, labour = { low = 450, high = 1050 } }  # 3 ea — sill pan, flashing, and a unit that must stay square for the astragal to latch
+"DT-EXT-FRENCH60-CATALOG" = { material = { low = 1300, high = 2900 }, labour = { low = 450, high = 1050 } }  # Existing French-pair allowance carried to the two revised ROs; NOT a catalog quote.
+
 "DT-EXT-SWING36" = { material = { low = 500, high = 1600 }, labour = { low = 320, high = 720 } }  # 1 ea — D-M-ENTRY, Smooth-Star flush, single-point bored prep; field paint billed separately
 # D-G-SERVICE's own type since 2026-10-21: a commodity Masonite Premium Flush steel prehung
 # 32in outswing, field-painted; retained $300-600 material budget pending prehanger quote. Same

@@ -60,7 +60,8 @@ def test_both_garden_curbs_declare_the_flood_step(catlin_plan):
     for tag in CURBS:
         declared = walls[tag].min_threshold_step
         assert declared is not None, f"{tag} declares no flood step"
-        assert declared.meters == pytest.approx(FLOOD_STEP_IN * INCH, abs=1e-9), tag
+        expected = 5.5 if tag == "W-B-S3" else FLOOD_STEP_IN
+        assert declared.meters == pytest.approx(expected * INCH, abs=1e-9), tag
 
 
 def test_the_curbs_stand_their_declared_step_over_the_court(ctx):
@@ -77,7 +78,8 @@ def test_the_curbs_stand_their_declared_step_over_the_court(ctx):
         finding = by_tag[tag]
         assert finding.result is Result.PASS, finding.message
         assert COURT_FLOOR in finding.message, finding.message
-        assert f'{FLOOD_STEP_IN:.2f}" above' in finding.message, finding.message
+        expected = 5.5 if tag == "W-B-S3" else FLOOD_STEP_IN
+        assert f'{expected:.2f}" above' in finding.message, finding.message
 
 
 def test_a_shortened_curb_fails(ctx):

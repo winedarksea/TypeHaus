@@ -316,7 +316,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # ** 1134 -> 1135 ON 2026-10-21: the second storey's three west 27" units grew to 27x54
     # for R310, and their ROs now cross one more course, which packs one more jamb station. **
     # Doubled exterior-door packs add one supported girt block on each south wall (2026-10-25).
-    assert row["count"] == 1137 and furring[0]["count"] == 198
+    # The wider study RO removes one girt block; its centerline remains held.
+    assert row["count"] == 1136 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

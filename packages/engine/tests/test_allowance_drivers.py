@@ -287,7 +287,8 @@ def test_an_undriven_allowance_can_never_report_an_overlap(tmp_path) -> None:
 #: ``concrete-window-bucks-and-blockouts`` joined this list on 2026-09-05: the basement's
 #: west-side replan retired ``D-B-NE`` and moved ``D-B-GYM`` onto framed ``W-B-CS3``, so
 #: catlin has no opening left whose host wall's STRUCTURE layer is concrete.
-_DRIVES_TO_ZERO = {"concrete-window-bucks-and-blockouts"}
+# The patio seat now requires one formed concrete blockout (2026-10-26).
+_DRIVES_TO_ZERO: set[str] = set()
 
 
 def test_catlin_drives_most_of_its_allowance_block(catlin_model, catlin_areas) -> None:
@@ -312,6 +313,7 @@ def test_catlin_drives_most_of_its_allowance_block(catlin_model, catlin_areas) -
         assert key not in rows or rows[key]["quantity"] == 0, f"{key} unexpectedly drove"
     # And the rows deliberately LEFT as lump sums are still lump sums — the residual is the
     # honest half of this change, not an oversight.
+    assert rows["concrete-window-bucks-and-blockouts"]["quantity"] == 1.0
     assert rows["site-general-conditions"]["quantity"] == 1.0
     assert rows["permits-design-testing-and-insurance"]["unit"] == "ls"
 

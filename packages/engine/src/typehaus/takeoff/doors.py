@@ -68,7 +68,10 @@ def door_installation_rows(model):
             row = dict(kind="exterior door casing" if "casing" in board.name
                        else "door jamb extension", room=None, material=board.material_ref,
                        item=board.material_ref, pieces=1,
-                       description=f"{opening.tag}: {board.name}; painted site-built board",
+                       description=f"{opening.tag}: {board.name}; " + (
+                           "catalog composite trim" if placement.specification.catalog_installation
+                           and board.name.startswith("exterior")
+                           else "painted site-built board"),
                        length_ft=dimensions[2] / .3048, tags=[opening.tag],
                        inside_corners=0, outside_corners=0,
                        cut_pieces=[dict(thickness_in=dimensions[0] / .0254,
@@ -82,11 +85,20 @@ def door_installation_rows(model):
             from shapely.geometry import Polygon
 
             profile = Polygon(section.polygon_m)
+            cut_length = (profile.bounds[2] - profile.bounds[0]
+                          if section.name.startswith("ariddek-approach-board") else section.span_m)
             rows.append(dict(kind="exterior door approach", room=None,
                 material=section.material_ref, item=section.material_ref, pieces=1,
-                description=f"{opening.tag}: {section.name}; schematic, support design pending",
-                length_ft=section.span_m / .3048, tags=[opening.tag],
-                inside_corners=0, outside_corners=0, cut_pieces=[],
+                description=f"{opening.tag}: {section.name}; " + (
+                    "catalog coordination; see installation report"
+                    if placement.specification.catalog_installation
+                    else "schematic, support design pending"),
+                length_ft=cut_length / .3048, tags=[opening.tag],
+                inside_corners=0, outside_corners=0,
+                cut_pieces=([dict(length_in=cut_length/.0254,
+                    width_in=section.span_m/.0254,
+                    thickness_in=placement.specification.catalog_installation.approach_thickness.meters/.0254)]
+                    if section.name.startswith("ariddek-approach-board") else []),
                 volume_m3=profile.area * section.span_m))
     return rows
 

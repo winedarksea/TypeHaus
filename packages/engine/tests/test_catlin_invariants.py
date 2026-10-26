@@ -85,32 +85,14 @@ PATIO_LANDING = "SL-SG-FLOOR"
 MAX_NONREQUIRED_STEP_DOWN_IN = 7.75
 
 
-def test_the_patio_door_keeps_its_seven_inch_flood_threshold(catlin_model):
-    """`D-B-PATIO` stands 7 1/4" above the basement floor, and nothing else says so.
-
-    The sunken garden is a walled well with a drywell at the bottom and one door out of the
-    basement into it. The threshold is flood resistance: a blocked outlet, a cloudburst, or a
-    spring thaw ponding against the house, and it is the only thing between that and the
-    finished basement. It used to be one keyword in plan/storeys/basement.py —
-    `sill_height=inch(7)` — carried in a comment and asserted by nothing, so any edit that
-    retyped the door or rebuilt the wall could have dropped it to the floor silently.
-
-    Derived from the resolved model rather than read off the source: `sill_height` reads
-    `inch(0)` in the plan, and the built threshold is still 7 1/4" because the door's host
-    wall is the framed walkout now and its base is the top of a 7 1/4" concrete curb — the
-    threshold is built rather than authored, and it is a quarter inch higher than the raw
-    `inch(7)` sill would suggest because 7 1/4" is the actual width of a 2x8. Reading the
-    source would call that a regression; reading the model calls it what it is.
-    """
+def test_patio_concrete_seat_is_lower_than_the_adjacent_curb(catlin_model):
+    """The owner permits a formed recess to fit the installed catalog sill above the floor."""
     door = next(o for o in catlin_model.openings if o.tag == PATIO_DOOR)
-    wall = next(w for w in catlin_model.walls if w.tag == door.host_wall)
+    wall = catlin_model.wall(door.host_wall)
     floor = next(s for s in catlin_model.solids if s.tag == "SL-B-FLOOR")
-
-    threshold = wall.z0_m + door.sill_m
-    assert threshold - floor.z1_m == pytest.approx(7.25 * INCH, abs=0.05 * INCH), (
-        f"{PATIO_DOOR} stands {(threshold - floor.z1_m) / INCH:.2f}\" above SL-B-FLOOR; "
-        "the sunken garden's flood threshold is 7 1/4\" (plan/storeys/basement.py)"
-    )
+    assert wall.base_ref_z_m + door.sill_m - floor.z1_m == pytest.approx(5.5 * INCH)
+    assert wall.base_ref_z_m - floor.z1_m == pytest.approx(7.25 * INCH)
+    assert door.doorway.exterior_placement.threshold_upper_z_m - floor.z1_m < 7.75 * INCH
 
 
 def test_the_flood_threshold_stays_under_one_riser_of_step_down(catlin_model):
@@ -178,7 +160,9 @@ def test_the_landing_check_measures_the_step_the_curb_actually_makes(catlin_plan
     door = next(o for o in ctx.model.openings if o.tag == PATIO_DOOR)
     wall = next(w for w in ctx.model.walls if w.tag == door.host_wall)
     landing = next(s for s in ctx.model.solids if s.tag == PATIO_LANDING)
-    expected = ((wall.base_ref_z_m + door.sill_m) - landing.z1_m) / INCH
+    from typehaus.resolve.doorway_heights import installed_threshold_elevation
+    threshold, _ = installed_threshold_elevation(door, wall)
+    expected = (threshold - landing.z1_m) / INCH
 
     assert expected > 1.0, "the curb is the point of this test; it has gone flush"
     assert f"{expected:.1f}\"" in finding.message, finding.message

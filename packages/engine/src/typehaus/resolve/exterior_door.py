@@ -51,6 +51,9 @@ class ExteriorDoorPlacement:
     factory_depth_documented: bool
     sections: tuple[DoorInstallationSection, ...] = ()
     sill_design_status: str = "UNKNOWN"
+    threshold_crest_z_m: float | None = None
+    threshold_upper_z_m: float | None = None
+    installation_report: dict | None = None
 
 
 def exterior_landing(model, wall, point, outward, installation):
@@ -71,9 +74,15 @@ def exterior_landing(model, wall, point, outward, installation):
 
 def place_exterior_door(model, wall, opening, assembly, specification):
     from typehaus.resolve.doorway import DOORWAY
-    from typehaus.resolve.geometry_openings import _exterior_face
+    from typehaus.resolve.exterior_door_boundary import (
+        ExteriorDoorBoundaryError,
+        exterior_door_boundary,
+    )
 
-    exterior = _exterior_face(wall)
+    try:
+        exterior = exterior_door_boundary(model, wall, opening, specification)
+    except ExteriorDoorBoundaryError as error:
+        return replace(assembly, unknown=(*assembly.unknown, str(error)))
     faces = finish_faces(wall)
     if exterior is None or faces is None:
         return replace(assembly, unknown=(*assembly.unknown,
@@ -142,7 +151,12 @@ def place_exterior_door(model, wall, opening, assembly, specification):
     # Finish extension must stop at the frame until a documented sill supplies its own edge.
     assembly = replace(assembly, exterior_placement=placement, joint_normal_m=frame_inner,
                        components=components, unknown=tuple(unknown))
-    assembly = add_sill_design(assembly, opening, clad)
+    if specification.catalog_installation:
+        from typehaus.resolve.exterior_door_catalog import add_catalog_installation
+
+        assembly = add_catalog_installation(model, wall, opening, assembly, clad)
+    else:
+        assembly = add_sill_design(assembly, opening, clad)
     if specification.exterior_wrap_material_ref:
         from typehaus.resolve.exterior_door_wrap import wrapped_installation_boards
 

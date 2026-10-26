@@ -1,4 +1,4 @@
-"""The flood step: how far a wall's top stands above a court that ponds.
+"""The flood step: how far a wall's lowest concrete edge stands above a court that ponds.
 
 A sunken garden is a bowl. Catlin's is a court whose floor is flush with the basement slab
 and whose only way out is a drain, so heavy rain — or a plugged drain in a thaw — stands in
@@ -120,18 +120,25 @@ def flood_step_threshold(ctx: CheckContext) -> list[Finding]:
                                (tag,)))
             continue
         name, top = max(below, key=lambda item: item[1])
-        step = wall.z1_m - top
+        # A formed door-seat recess lowers the concrete containment edge locally.
+        notches = [wall.base_ref_z_m + opening.sill_m for opening in ctx.model.openings
+                   if opening.host_wall == wall.tag
+                   and wall.base_ref_z_m + opening.sill_m + opening.height_m >= wall.z1_m - 1e-6]
+        edge = min(wall.z1_m, *notches) if notches else wall.z1_m
+        step = edge - top
         want = required[tag].meters
         if step + 1e-6 < want:
             # ``advisory`` and not ``failed``: this reports as a FAIL and holds catlin's
             # clean report, but at WARN severity, so a house rule with no code article
             # behind it does not brick the permit gate the way an ERROR does.
-            out.append(advisory(_CHECK_ID, f"{tag}'s top stands {step / 0.0254:.2f}\" above "
+            out.append(advisory(_CHECK_ID, f"{tag}'s lowest concrete edge stands "
+                                f"{step / 0.0254:.2f}\" above "
                                 f"{name}, less than the {required[tag].fmt()} flood step it "
                                 "declares; standing water in that court reaches whatever is "
                                 "built on this wall", (tag, name), Result.FAIL))
         else:
-            out.append(passed(_CHECK_ID, f"{tag}'s top stands {step / 0.0254:.2f}\" above "
+            out.append(passed(_CHECK_ID, f"{tag}'s lowest concrete edge stands "
+                                f"{step / 0.0254:.2f}\" above "
                               f"{name}, at or over the {required[tag].fmt()} flood step it "
                               "declares"))
     return out

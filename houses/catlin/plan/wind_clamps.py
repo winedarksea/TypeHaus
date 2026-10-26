@@ -54,7 +54,7 @@
 # setscrews to be verified with a DIAL-calibrated torque wrench (explicitly not a clicking one)
 # where published load values are relied on, which is a QA pass beyond the screw gun.
 
-from typehaus import Connector, ConnectorKind, ft, inch, pt
+from typehaus import Connector, ConnectorKind, ft, pt
 
 # ** THE 16 GARAGE-WALL CLAMPS ARE GONE TOO, for the same reason and by the same argument.
 # ** They were `S-5-N`, and an N clamp closes on a nail strip's bulb-and-lip seam.
@@ -116,42 +116,5 @@ GARAGE_ROOF_WIND_CLAMPS = [
               position=pt(ft(4, 6.25), ft(65, 2.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
 ]
-
-HOUSE_ROOF_WIND_CLAMPS = [
-    Connector(uid="YK8A1SM9QY", tag="CN-A-WIND-RFSW-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(-6.6), inch(8)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-    Connector(uid="4WN1JM8CEM", tag="CN-A-WIND-RFSW-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(-6.6), inch(24)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-    Connector(uid="QBF8MEM0Y2", tag="CN-A-WIND-RFSW-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(-6.6), inch(40)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-    Connector(uid="4S2GHP86NJ", tag="CN-A-WIND-RFNW-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(-6.6), inch(424)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-    Connector(uid="1975K7T22B", tag="CN-A-WIND-RFNW-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(-6.6), inch(408)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-    Connector(uid="P82E2WK4H5", tag="CN-A-WIND-RFNW-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(-6.6), inch(392)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-    Connector(uid="TA82SFQ7ET", tag="CN-A-WIND-RFSE-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(438.6), inch(8)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-    Connector(uid="69ERPP5H3P", tag="CN-A-WIND-RFSE-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(438.6), inch(24)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-    Connector(uid="BDR46H1QRE", tag="CN-A-WIND-RFSE-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(438.6), inch(40)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-    Connector(uid="9HRSYREBH3", tag="CN-A-WIND-RFNE-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(438.6), inch(424)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-    Connector(uid="6VZ2BHET24", tag="CN-A-WIND-RFNE-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(438.6), inch(408)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-    Connector(uid="0E7Y1BH1RN", tag="CN-A-WIND-RFNE-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(inch(438.6), inch(392)), elevation=inch(253.5615266),
-              connects=("RF-HOUSE",), size="S-5-S"),
-]
+# The twelve house-roof clamps are in params/roof_wind_clamps.py: their elevation is the
+# standing-seam top, derived, and a typed number here would drift from the roof.

@@ -56,6 +56,7 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
             rows.append((
                 marks.get(opening.type_ref or "", "—"), opening.tag,
                 "Door" if opening.is_door else "Window", opening.type_ref or "RO",
+                _door_dimensions_text(spec, opening) if opening.is_door else
                 f"{_eighths(opening.width_m)}\" × {_eighths(opening.height_m)}\"",
                 *((_frame_size_text(frame),) if kinds == "window" else ()),
                 *_energy_columns(spec, opening.is_door),
@@ -68,7 +69,8 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
         # and ``_energy_columns``' must agree for every kind — they now do (5 each), which
         # is also what lets ``kinds="all"`` put doors and windows in one table.
         headers: tuple[str, ...] = ("Mark", "Tag", "Kind", "Type",
-                                    "Rough opening" if kinds == "window" else "Nominal footprint",
+                                    ("RO / catalog nominal and unit" if kinds == "door"
+                                     else "Rough opening"),
                                     *(("Modeled frame",) if kinds == "window" else ()),
                                     "U-factor", "SHGC", "VT", "Operation", "Tempered",
                                     *(("HW set", "Doorway") if kinds == "door" else ()))
@@ -214,3 +216,14 @@ def _doorway_text(opening):
     suffix = (f"; section {assembly.section_status}; supplier {assembly.supplier_status}"
               if assembly.exterior_placement else "")
     return f"{assembly.status}: {identities or assembly.floor_treatment}{suffix}"
+
+
+def _door_dimensions_text(spec, opening):
+    dimensions = getattr(spec, "catalog_dimensions", None)
+    rough = f'{opening.width_m/M_PER_IN:g} × {opening.height_m/M_PER_IN:g} RO'
+    if dimensions is None:
+        return rough
+    return (f'{dimensions.nominal_width.meters/M_PER_IN:g} × '
+            f'{dimensions.nominal_height.meters/M_PER_IN:g} nominal; '
+            f'{dimensions.unit_width.meters/M_PER_IN:g} × '
+            f'{dimensions.unit_height.meters/M_PER_IN:g} unit; {rough}')

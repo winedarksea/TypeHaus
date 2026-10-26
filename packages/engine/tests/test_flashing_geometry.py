@@ -344,7 +344,7 @@ def test_every_exterior_opening_is_flashed_or_named(catlin_model_ro):
                 for layer in wall.layers):
             assert (opening.tag in flashed) != (opening.tag in named), opening.tag
     # The two openings behind the court's brick veneer: spec'd by hand (spec §8).
-    assert named == {"D-B-PATIO", "WIN-B-SAUNA"}
+    assert named == {"WIN-B-SAUNA"}
 
 
 def test_opening_membranes_stay_on_their_wall(catlin_model_ro):
@@ -374,7 +374,7 @@ def test_balcony_rear_edge_is_two_pieces_that_lap_without_touching(catlin_model_
     wall = next(w for w in model.walls if w.tag == door.host_wall)
     x0 = min(wall.axis[0][0], wall.axis[1][0])
     installation = door.doorway.exterior_placement.specification
-    casing_clearance = installation.casing_width.meters + installation.sill_design.side_clearance.meters
+    casing_clearance = installation.casing_width.meters + installation.drainage_gap.meters
     for side in ("W", "E"):
         base, counter = solids[f"TR-SG-BASE-FLASH-{side}"], solids[f"TR-SG-COUNTER-FLASH-{side}"]
         # The counterflashing's drip laps the upstand by 2", above the plank, beside it.

@@ -83,6 +83,7 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
         # D-G-SERVICE's own product since 2026-10-21: a flush Masonite steel outswing.
         "DT-EXT-SWING32-G": (32.0, DoorOperation.SWING, True, False),
         "DT-EXT-FRENCH60": (60.0, DoorOperation.DOUBLE_SWING, True, True),
+        "DT-EXT-FRENCH60-CATALOG": (63.3125, DoorOperation.DOUBLE_SWING, True, True),
         "DT-INT-SWING32": (32.0, DoorOperation.SWING, False, False),
         # The basement equipment route, 2026-09-07: D-B-FURN and D-B-SHOP are the two leaves
         # an air handler or a water heater actually passes through, so both went to a full

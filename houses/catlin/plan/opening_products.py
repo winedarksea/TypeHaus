@@ -95,7 +95,7 @@ DOOR_HINGE = Product(tag='PROD-THERMATRU-HINGE', brand='Therma-Tru', model='Preh
 PANOLOCK = Product(tag='PROD-ENDURA-PANOLOCK-PLUS', brand='Endura', model='PanoLock+',
     name='PanoLock+ multipoint set', url='https://www.enduraproducts.com/panolock/', source='One set per French pair. Keep locations 10/40/70 inches are coordination positions pending approved shop drawings.')
 BE365 = Product(tag='PROD-SCHLAGE-BE365', brand='Schlage', model='BE365',
-    name='BE365 keypad deadbolt', url='https://www.schlage.com', source='French active leaf; confirm PanoLock+ compatibility with prehanger.')
+    name='BE365 keypad deadbolt', url='https://www.schlage.com', source='French active leaf; Endura 2026 Schlage compatibility guide lists BE365 CAM/PLY with adapter F. Selected trim/passage adapter and assembly prep remain unconfirmed.')
 FLA_ASTRAGAL = Product(tag='PROD-ENDURA-FLA', brand='Endura', model='Ultimate Flip Lever Astragal',
     name='Ultimate FLA astragal with passive flush bolts', url='https://www.enduraproducts.com', source='One full-height astragal per French pair; included in pair price.')
 SECURITY_STRIKE = Product(tag='PROD-THERMATRU-SECURITY-STRIKE', brand='Therma-Tru', model='Security Strike Plate',

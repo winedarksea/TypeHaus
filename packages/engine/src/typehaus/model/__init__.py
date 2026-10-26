@@ -67,7 +67,11 @@ from typehaus.model.enums import (
     TrimKind,
     UtilityKind,
 )
-from typehaus.model.exterior_door import ExteriorDoorInstallation, ExteriorDoorSillDesign
+from typehaus.model.exterior_door import (
+    ExteriorDoorCatalogInstallation,
+    ExteriorDoorInstallation,
+    ExteriorDoorSillDesign,
+)
 from typehaus.model.flashing import FormedFlashingSection
 from typehaus.model.floors import (
     DeckLayer,
@@ -255,6 +259,7 @@ from typehaus.model.types import (
     BookcaseDoorSpec,
     BuiltInBookcaseBay,
     BuiltInBookcaseSpec,
+    DoorCatalogDimensions,
     DoorType,
     DuctProductType,
     ElectricalDeviceType,
@@ -336,7 +341,7 @@ for _name, _obj in (
 __all__ = [
     "DoorHardwareItem", "JambFraming",
     "DoorwayProductSpec", "DoorwaySectionPart", "DoorwayTreatment", "ExteriorDoorInstallation",
-    "ExteriorDoorSillDesign",
+    "ExteriorDoorSillDesign", "ExteriorDoorCatalogInstallation", "DoorCatalogDimensions",
     "WinderTurnSpec", "WinderFramingSpec",
     "ReinforcementSpec",
     "BarSpec",

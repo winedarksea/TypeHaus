@@ -187,7 +187,7 @@ SECOND_BRACED_WALLS = [
     BracedWallPanel(uid="D8D3P9T2E3", tag="BWP-S-S1-0191", wall_ref="W-S-S1", start=inch(191.0),
                     width=inch(25.0)),
     BracedWallPanel(uid="0WQ9ZYZ3XH", tag="BWP-S-S2-0000", wall_ref="W-S-S2", start=inch(0.0),
-                    width=inch(10.0)),
+                    width=inch(8.34375)),
     BracedWallPanel(uid="CWYKFJ7J49", tag="BWP-S-S2-0119", wall_ref="W-S-S2", start=inch(119.0),
                     width=inch(34.0)),
     BracedWallPanel(uid="THTV68V314", tag="BWP-S-S2-0183", wall_ref="W-S-S2", start=inch(183.0),

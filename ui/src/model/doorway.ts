@@ -23,7 +23,10 @@ export interface ExteriorDoorPlacement {
     material_key: string; role?: string }[];
   sections?: { name: string; polygon_m: [number, number][]; span_m: number;
     along_m: number; material_ref: string; material_key: string; purchase: string }[];
-  sill_design_status?: "UNKNOWN" | "SCHEMATIC";
+  sill_design_status?: "UNKNOWN" | "SCHEMATIC" | "CATALOG_DESIGN";
+  threshold_crest_z_m?: number | null;
+  threshold_upper_z_m?: number | null;
+  installation_report?: Record<string, unknown> | null;
 }
 export interface DoorwayAssembly {
   rough_opening_z_m: number;

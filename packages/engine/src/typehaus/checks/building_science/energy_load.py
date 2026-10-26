@@ -66,6 +66,7 @@ from typehaus.checks.registry import Preferences
 from typehaus.resolve.envelope_geometry import envelope_geometry
 from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.opening_product_dimensions import opening_product_area_m2
 from typehaus.resolve.site_earth import (
     heated_floor_footprint,
     local_grade_elevation_m,
@@ -366,7 +367,7 @@ def estimate_block_load(
     opening_area_ft2: dict[str, float] = {wall.tag: 0.0 for wall in envelope_walls}
     for opening in envelope_openings:
         opening_area_ft2[opening.host_wall] = opening_area_ft2.get(opening.host_wall, 0.0) + (
-            opening.width_m * opening.height_m * _M2_TO_FT2
+            opening_product_area_m2(model, opening) * _M2_TO_FT2
         )
     # Fenestration gain is an HOURLY walk with ONE peak hour for the whole house (→
     # ``solar``), and it is taken here rather than in the opening loop below because the
@@ -580,7 +581,7 @@ def estimate_block_load(
             # which this model does not carry — so it is DROPPED here, deliberately, and the
             # envelope is understated by that much.
             continue
-        area = opening.width_m * opening.height_m * _M2_TO_FT2
+        area = opening_product_area_m2(model, opening) * _M2_TO_FT2
         if opening.is_door:
             kind, product = "doors", next((d for d in model.plan.library.door_types
                                              if d.tag == opening.type_ref), None)

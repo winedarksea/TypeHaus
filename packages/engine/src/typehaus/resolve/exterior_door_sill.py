@@ -18,6 +18,8 @@ class DoorInstallationSection:
     material_ref: str
     material_key: str
     purchase: str = "site"
+    source_url: str | None = None
+    geometry_status: str = "PROJECT_DESIGN"
 
 
 def sill_outlet_depth(clad, installation):

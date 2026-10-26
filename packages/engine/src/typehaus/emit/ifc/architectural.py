@@ -478,6 +478,18 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
         })
     door_type = next((item for item in model.plan.library.door_types
                       if item.tag == opening.type_ref), None) if opening.is_door else None
+    dimensions = door_type.catalog_dimensions if door_type is not None else None
+    if dimensions:
+        ll.ensure_pset(f, filling, "TypeHaus_DoorCatalogDimensions", {
+            "NominalWidth": dimensions.nominal_width.meters,
+            "NominalHeight": dimensions.nominal_height.meters,
+            "UnitWidth": dimensions.unit_width.meters,
+            "UnitHeight": dimensions.unit_height.meters,
+            "RoughOpeningWidth": opening.width_m,
+            "RoughOpeningHeight": opening.height_m,
+            "AssemblyConfirmed": dimensions.assembly_confirmed,
+            "Source": dimensions.source_url + " — " + dimensions.source_drawing,
+        })
     product = door_type.bookcase_door if door_type is not None else None
     if (opening.doorway is not None or opening.cased_product is not None
             or (door_type and (door_type.hardware or door_type.field_finish))

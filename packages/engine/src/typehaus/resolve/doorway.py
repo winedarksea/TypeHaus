@@ -148,12 +148,21 @@ def resolve_doorway(model, wall, opening, door_type, treatment=None):
     unknown, conflicts = [], []
     floors = []
     installation = treatment.exterior_installation
-    from typehaus.resolve.geometry_openings import _exterior_face
+    from typehaus.resolve.exterior_door_boundary import (
+        ExteriorDoorBoundaryError,
+        exterior_door_boundary,
+    )
 
-    exterior = _exterior_face(wall) if installation else None
+    try:
+        exterior = (exterior_door_boundary(model, wall, opening, installation)
+                    if installation else None)
+    except ExteriorDoorBoundaryError as error:
+        exterior = None
+        unknown.append(str(error))
     for side, face in zip((-1, 1), faces or (0, 0), strict=True):
         samples = []
-        offset = face + side * DOORWAY.floor_probe_m
+        boundary_face = exterior[0] if exterior and side == exterior[1] else face
+        offset = boundary_face + side * DOORWAY.floor_probe_m
         for point in _floor_sample_stations(model, wall, opening, center, tangent, normal, offset):
             if exterior and side == exterior[1]:
                 from typehaus.resolve.exterior_door import exterior_landing

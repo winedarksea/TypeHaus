@@ -5,11 +5,13 @@ out/exterior-door-review; unresolved factory sections remain visible in the revi
 """
 from __future__ import annotations
 
+import csv
 import json
 import sys
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon as PlotPolygon
@@ -25,7 +27,7 @@ from typehaus.source import load_plan
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "out/exterior-door-review"
-TAGS = ("D-M-ENTRY", "D-M-BALC", "D-S-DECK-E")
+TAGS = ("D-M-ENTRY", "D-M-BALC", "D-S-DECK-E", "D-B-PATIO")
 
 
 def color(part):
@@ -49,7 +51,7 @@ def render_cuts(model):
         sign = opening.doorway.exterior_placement.outward_sign
         base = opening.doorway.rough_opening_z_m
         station = -opening.width_m / 4 if tag != "D-M-ENTRY" else 0.0
-        def local(point):
+        def local(point, center=center, tangent=tangent, sign=sign, normal=normal):
             delta = (point[0] - center[0], point[1] - center[1])
             return (sum(delta[i] * tangent[i] for i in (0, 1)),
                     sign * sum(delta[i] * normal[i] for i in (0, 1)))
@@ -107,17 +109,29 @@ def render_cuts(model):
                                         t = a / (a - b)
                                         point = tuple(face[i][k] + t * (face[j][k] - face[i][k])
                                                       for k in (0, 1, 2))
-                                        hits.append((local(point)[1] / .0254, (point[2] - base) / .0254))
-                                hits = list(dict.fromkeys(tuple(round(v, 8) for v in hit)
+                                        hits.append((local(point)[1] / .0254,
+                                                     (point[2] - base) / .0254))
+                                hits = list(dict.fromkeys(tuple(round(v, 8)
+                                                                   for v in hit)
                                                           for hit in hits))
                                 if len(hits) >= 2:
                                     line = hits + hits[:1] if len(hits) > 2 else hits
-                                    ax.plot(*zip(*line), color=color(part), lw=.65)
-            ax.set_xlim(-9,12)
+                                    ax.plot(*zip(*line, strict=True), color=color(part), lw=.65)
+            ax.set_xlim(-9, 18 if tag == "D-B-PATIO" else 12)
             if row==0:
                 ax.set_ylim(-5,10)
-                ax.text(.02,.95,"Sill design envelope — factory section / structural support pending",
-                        transform=ax.transAxes,va="top",fontsize=8,color="#a02e27")
+                report = opening.doorway.exterior_placement.installation_report
+                label = ("Catalog coordination — installation incomplete" if report else
+                         "Sill design envelope — factory section / structural support pending")
+                ax.text(.02, .95, label, transform=ax.transAxes, va="top", fontsize=8,
+                        color="#a02e27")
+                if report:
+                    for key, tone in (("interior_surface_z_m", "#458545"),
+                                      ("exterior_surface_z_m", "#5577aa"),
+                                      ("conservative_crest_z_m", "#a02e27")):
+                        value = report.get(key)
+                        if value is not None:
+                            ax.axhline((value-base)/.0254, color=tone, ls="--", lw=.6)
             elif row==1:
                 ax.set_ylim(opening.height_m / .0254 - 10, opening.height_m / .0254 + 10)
             else:
@@ -130,6 +144,49 @@ def render_cuts(model):
     figure.tight_layout()
     figure.savefig(OUTPUT/"door-sections.png",dpi=170)
     figure.savefig(OUTPUT/"door-sections.pdf")
+
+
+def write_catalog_review(model):
+    from typehaus.takeoff.doors import door_installation_rows
+
+    reports = {o.tag: o.doorway.exterior_placement.installation_report
+               for o in model.openings if o.tag in TAGS and o.doorway.exterior_placement
+               and o.doorway.exterior_placement.installation_report}
+    (OUTPUT / "catalog-installation-report.json").write_text(json.dumps(reports, indent=2) + "\n")
+    with (OUTPUT / "catalog-height-review.csv").open("w") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(("door", "crest_above_interior_in", "crest_above_exterior_in",
+                         "height_tolerance_in", "support_member", "root_connection", "fit"))
+        for tag, report in reports.items():
+            writer.writerow((tag, report["crest_above_interior_in"],
+                             report["crest_above_exterior_in"],
+                             (report["conservative_crest_z_m"]-report["nominal_crest_z_m"])/.0254,
+                             report["support"]["member_status"],
+                             report["support"]["connection_status"], "UNKNOWN"))
+    rows = [r for r in door_installation_rows(model) if any(t in reports for t in r["tags"])]
+    (OUTPUT / "catalog-installation-takeoff.json").write_text(json.dumps(rows, indent=2) + "\n")
+    figure, axes = plt.subplots(1, 2, figsize=(14, 6))
+    study = next(o for o in model.openings if o.tag == "D-S-DECK-E")
+    placement = study.doorway.exterior_placement
+    base = study.doorway.rough_opening_z_m
+    for axis, side in zip(axes, (-1, 1), strict=True):
+        for section in placement.sections:
+            if 'flashing-end-' not in section.name or not section.name.endswith(f'-{side}'):
+                continue
+            points = [(placement.outward_sign*x/.0254, (z-base)/.0254)
+                      for x, z in section.polygon_m]
+            axis.add_patch(PlotPolygon(points, alpha=.6, label=section.name))
+        axis.autoscale_view()
+        axis.set_aspect('equal')
+        axis.set_title(f'D-S-DECK-E end {side}: envelopes, bonds unconfirmed')
+        axis.set_xlabel('Outward from host axis (in)')
+        axis.set_ylabel('Above rough sill (in)')
+        axis.grid(alpha=.2)
+        axis.legend(fontsize=6)
+    figure.tight_layout()
+    figure.savefig(OUTPUT / 'catalog-flashing-ends.png', dpi=150)
+    figure.savefig(OUTPUT / 'catalog-flashing-ends.pdf')
+    plt.close(figure)
 
 
 def main():
@@ -146,6 +203,7 @@ def main():
     report={o.tag:doorway_json(o.doorway) for o in model.openings if o.tag in TAGS}
     (OUTPUT/"doorway-report.json").write_text(json.dumps(report,indent=2))
     render_cuts(model)
+    write_catalog_review(model)
     if "--export" in sys.argv:
         from typehaus.emit.gltf import emit_glb
         from typehaus.emit.ifc import emit_ifc

@@ -532,7 +532,7 @@ WALLS = [
                    alignment=face("concrete-ext"),
                    unbalanced_fill=ft(0),
                    top_elevation=inch(-102.1875), bottom_elevation=inch(-109.4375),
-                   min_threshold_step=inch(7.25),
+                   min_threshold_step=inch(5.5),
                    lateral_support="top_and_bottom"),
     # The framed run itself: base on the curb top (-102 3/16"), 88 3/4" to the same
     # -13 7/16" bearing seat every other wall in this basement stops on. `base_elevation`
@@ -1171,8 +1171,12 @@ OPENINGS = [
     # into the court, over the very landing being measured, which voids the relief and
     # drops the limit to 1 1/2". Swinging north into the gym is what makes the 7 1/4"
     # legal. `code.R311_3_exterior_landing` now tests `swing_clearance` and will say so.
-    Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3-FR", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-B-S2F", inch(10)), sill_height=inch(0)),
+    Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3-FR", type_ref="DT-EXT-FRENCH60-CATALOG",
+         position=from_node("N-B-S2F", inch(8.34375)), sill_height=inch(-1.75)),
+    RoughOpening(uid="CBPSEAT0001", tag="AO-B-PATIO-SEAT", host="W-B-S3",
+                 position=from_node("N-B-S2", inch(8.34375)),
+                 width=inch(63.3125), height=inch(1.75), sill_height=inch(5.5),
+                 depth=inch(6), depth_from="interior"),
     # WT-1424: a sauna wants a small window, less glass to lose heat through. The 14"
     # family's one appearance in a concrete wall, where the usual 16" stud-module reason for
     # that width doesn't apply — size is the point here. The retired WT-3660 type and
@@ -1233,8 +1237,8 @@ OPENINGS = [
     # on its own wall and nothing carried the reveal with it. `integrity.reveal_concentric`
     # grades that now, and test_catlin_contract_m3 pins both pairs. Edit the two together.
     RoughOpening(uid="CBO602AAAA", tag="AO-B-BRICK-DOOR", host="W-B-BRICK",
-                 position=from_node("N-B-BRICK-W", ft(9)),
-                 width=ft(5), height=inch(78), sill_height=ft(0),
+                 position=from_node("N-B-BRICK-W", inch(106.34375)),
+                 width=inch(63.3125), height=inch(86.25), sill_height=ft(0),
                  arch=Arch(rise=inch(8))),
 ]
 

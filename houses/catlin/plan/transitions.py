@@ -31,6 +31,11 @@ AIR_WATER_THERMAL = (
 # The test a key has to pass to stay starred: does a plan checker or a framer open THIS
 # sheet, and is it a different drawing from the one next to it?
 TRANSITIONS = (
+    Transition(uid="CATPATIOSEAT", tag="TR-CATLIN-PATIO-SEAT",
+               condition_pattern="opening_perimeter:GARDEN_CURB_6",
+               notes="notes/french_door_catalog_installation.md", star=False,
+               suppress=True,
+               suppress_reason="formed concrete door-seat recess, not a framed opening; coordinated in the patio installation review"),
     # Two eaves in this project and they are genuinely two drawings: the house's
     # zero-overhang eave over EXT_2X6, and the garage's over a trussed roof with a raised
     # heel on a wall with no WRB. The four interior-partition-to-roof keys are unstarred —

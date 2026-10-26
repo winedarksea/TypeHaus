@@ -489,6 +489,10 @@ suppress = [
   # leaves one extra interrupted stud on W-M-HS3; the nearest module station would move the
   # opening, so keep the advisory visible in the raw report but accept it by tag.
   "structural.door_framing_module:D-M-LAUN",
+  # Owner 2026-10-26: retain the patio/study centerlines with nominal 60x80 catalog
+  # pairs. Their wider ROs interrupt one additional stud; headers/jamb packs still grade.
+  "structural.door_framing_module:D-B-PATIO",
+  "structural.door_framing_module:D-S-DECK-E",
 
   # D-M-BATH1 went 2'-0" -> 2'-6" on 2026-09-15 (the aging-in-place pass): a 24" leaf was
   # the narrowest thing in the house and this is the powder room every guest uses. The
