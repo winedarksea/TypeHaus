@@ -383,6 +383,15 @@ never needed a tributary area: it is a plf times a run.
 | total | | **563.0 lb** |
 | each column | two bearings | **281.5 lb** |
 
+**2026-10-25 single-knee amendment.** The table above records the former fourteen-slat
+chevron. The adopted two 4x6 knees (`canopy_west_band.md` §3) leave the frame unchanged:
+2 × 54.25 × 1.5 × 5.5 + 25.125 × 5.5² + 2 × 26.33973 × 3.5 × 5.5 =
+2,669.236 in³ = **1.5447 ft³**. At 600 kg/m³ (37.4568 pcf) that is 57.859 lb,
+**12.80 plf** over 4.520833′. With the panel's 74.8417 plf, the line becomes **87.640 plf**.
+The same 2.052083′ of panel past the beam adds 153.581 lb: total **549.788 lb**, or
+**274.894 lb at each column and its cast pier**. Those replace 563.0/281.5 lb in the
+former chevron rows; the panel's own weight and the load path stay as worked below.
+
 **The panel's ends are weighed too (2026-10-25).** The wall runs 36'-7 3/4" to 43'-2 5/8"
 and the sill only 37'-8 3/4" to 42'-3", between the chord posts. The 2.05' past the sill —
 the two post tops and the ends cantilevered past them — is sheathed panel carried to its

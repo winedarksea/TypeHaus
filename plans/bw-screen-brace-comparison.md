@@ -13,27 +13,21 @@ Roof, rails, door and west-face connector details are omitted for clarity.
 
 | Option | Visible arrangement | Assessment |
 |---|---|---|
-| A — current | Seven 1½″-edge slats per bay, fourteen total | Fine chevron texture; retains the modeled structural scheme |
+| A — former chevron | Seven 1½″-edge slats per bay, fourteen total | Fine chevron texture; retains the modeled structural scheme |
 | B — single slender | One 1½″-edge knee per bay, two total | Much more open; the diagonals look light against the brick |
-| C — single wider | One 3½″-face knee per bay, two total; depth unspecified | Preferred visually: stronger balance with the brick and 5½″ posts |
+| C — adopted, single wider | One 3½″-face knee per bay, two total; adopted as 4x6, 5½″ deep | Preferred visually: stronger balance with the brick and 5½″ posts |
 
-B and C run truly corner to corner in each bay, mirrored so both knees rise inward
-from the outer post/sill corner to the centre-post/top-plate corner. Their axes follow
-the actual 24⅜″ × 25⅛″ bay, about 45.9° and 35″ corner to corner; both strip widths
-are clipped to those boundaries. These are visual envelopes, not cutting templates.
-The current KBS1Z connection cannot fit at these frame corners, so adopting this
-arrangement requires a different end-connection detail.
+**C adopted, 2026-10-25:** one standard 4x6 per bay, with its 3½″ face in elevation and
+5½″ depth matching the frame. The built centreline is 45°, chord → top plate at
+c = −6½″: 6½″ above the sill at the chord, 18⅝″ from the chord face at the top,
+26.34″ long. Two KBS1Z at each end, one on each flush face, use ER-280 Table 7 type 1:
+734.2 / 1,010 lb = 0.727 on the conservative SPF/HF row. Eight connectors total.
 
-The existing structural pass relies on multiple connected slats sharing force. Each
-current bay has six connected braces and one screwed infill slat; four connected
-slats per bay cross mid-band. Reducing this to one changes the force distribution
-and the loads delivered into the posts and top plate. A thicker member alone does
-not establish adequate end connections. In particular, the existing note already
-rejects a simple 4×4/KBS1Z substitution because its required connection arrangement
-does not match the recessed east face. C therefore specifies only its visible face,
-not a 4×4 member or a connector schedule. Neither single-brace alternative has been
-structurally checked; section, connections and complete frame load path need a
-separate calculation before adopting either. The structural model is unchanged.
+The sheet records the original visual study: its B/C corner-to-corner envelopes are
+not cutting templates. The adopted offset leaves room for the KBS1Z's obtuse-side bend
+and 5.475″ heel reach; the top margin is 0.275″. A 4x4's recessed east face remains
+refused. The complete updated force path and post/screw rows are in the basis note's
+2026-10-25 §3 re-work and §5b-c. Option A is retained there in §8 as the chevron backup.
 
 Source geometry and connection rationale:
 [band parameters](../houses/catlin/params/entry_band_brace.py),

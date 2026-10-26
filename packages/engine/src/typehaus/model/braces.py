@@ -63,7 +63,9 @@ class SlatBrace(Element):
     with ``slat`` stock on edge, ``clear_gap`` apart square to the slats, mirrored so every
     slat rises toward the centre post (a chevron). One ``connector`` at each slat end makes
     each slat work in tension and compression, which is what lets the two bays share the
-    push (``notes/canopy_west_band.md`` §3b).
+    push (``notes/canopy_west_band.md`` §3b). Set ``brace_offset`` for a single brace
+    per bay instead of infill, and ``connectors_per_end=2`` for equal-width members
+    connected on both flush faces.
 
     The layout is ``resolve/slat_braces.slat_layout``'s, one rule for the resolver, the dead
     load and the engineering. Lumber bills off the resolved members; the connectors, the plate
@@ -86,7 +88,10 @@ class SlatBrace(Element):
     plane_offset: Length = inch(0)
     #: A slat shorter than this cannot take a connector leg at both ends and is left out.
     min_slat_length: Length = inch(8)
-    connector: str = "KBS1Z"  # one per slat end
+    #: One brace per bay at z = u - c; ignores clear_gap and pitch.
+    brace_offset: Length | None = None
+    connectors_per_end: int = 1
+    connector: str = "KBS1Z"
     #: A slat whose connector leg would run off its bearing face (a frame corner) is screwed
     #: infill instead, toe-screwed at each end and carrying none of the brace force.
     infill_fastener: str = "SDWS22300DB"
@@ -103,6 +108,13 @@ class SlatBrace(Element):
     top_protection: str | None = None
     connects: tuple[str, ...] = ()
     source: str = ""
+
+    @field_validator("connectors_per_end")
+    @classmethod
+    def _connector_count(cls, value: int) -> int:
+        if value not in (1, 2):
+            raise ValueError("connectors_per_end must be 1 or 2")
+        return value
 
 
 register_constructor("SlatBrace", SlatBrace)

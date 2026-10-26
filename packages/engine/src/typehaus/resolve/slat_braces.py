@@ -94,11 +94,12 @@ def slat_layout(el: SlatBrace) -> SlatLayout | None:
         return None
     pitch = (face + el.clear_gap.meters) * _ROOT2
     c_mid = (width - height) / 2.0
-    reach = int((width + height) / pitch) + 1
+    reach = int((width + height) / pitch) + 1 if el.brace_offset is None else 0
     slats = []
     for bay in (0, 1):
         for j in range(-reach, reach + 1):
-            c = c_mid + j * pitch
+            c = (c_mid + j * pitch if el.brace_offset is None
+                 else el.brace_offset.meters)
             u0, u1 = max(0.0, c), min(width, height + c)
             if u1 <= u0 or (u1 - u0) * _ROOT2 < el.min_slat_length.meters - 1e-9:
                 continue
@@ -129,8 +130,22 @@ def resolve_slat_brace(model: ResolvedModel, el: SlatBrace, storey: str) -> list
     if layout is None:
         return [element_error("integrity.slat_brace", "the frame leaves no bay between the "
                               "chords, plates and centre post", el.tag)]
+    if el.connectors_per_end == 2:
+        depth = cross_section(el.slat).depth_m
+        frame_depths = [cross_section(profile).depth_m
+                        for profile in (el.chord_size, el.plate, el.centre_post)]
+        if (any(not math.isclose(depth, width, abs_tol=1e-9) for width in frame_depths)
+                or abs(el.plane_offset.meters) > 1e-9):
+            return [element_error(
+                "integrity.slat_brace", "two connectors per end require equal-width members "
+                "with both faces flush (zero plane_offset)", el.tag)]
+    if el.brace_offset is not None and (len(layout.slats) != 2
+                                      or not all(s.braced for s in layout.slats)):
+        return [element_error(
+            "integrity.slat_brace", "brace_offset leaves no brace or a KBS1Z leg runs off "
+            "its bearing face; move the brace away from the frame corner", el.tag)]
     need = kbs_heel_spacing()
-    if el.connector == "KBS1Z" and layout.pitch < need - 1e-9:
+    if el.brace_offset is None and el.connector == "KBS1Z" and layout.pitch < need - 1e-9:
         return [element_error(
             "integrity.slat_brace",
             f"slats {layout.pitch / 0.0254:.3f}\" apart along a plate, but a KBS1Z at each end "

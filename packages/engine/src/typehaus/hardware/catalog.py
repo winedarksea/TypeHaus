@@ -67,6 +67,7 @@ ROLE_FLOOR_TRUSS_HANGER = "floor_truss_hanger"
 ROLE_SCL_FACE_MOUNT_HANGER = "scl_face_mount_hanger"
 ROLE_CONCRETE_FACE_MOUNT_HANGER = "concrete_face_mount_hanger"
 ROLE_KNEE_BRACE = "knee_brace"
+ROLE_KNEE_BRACE_EQUAL_WIDTH = "knee_brace_equal_width"
 ROLE_BRACE_THROUGH_BOLT = "brace_through_bolt"
 # The bolt a FACE-LAPPED brace foot takes, and its own role for one dimensional reason:
 # a lapped foot is bolted through the brace AND the whole post behind it, so the wood it
@@ -481,7 +482,7 @@ def allowable_for_model(model: str, *, role: str | None = None) -> AllowableLoad
     ``role`` disambiguates a part catalogued for more than one joint. The KBS1Z is the case:
     ER-280 Table 7 tabulates it by *connection type*, and a beam-to-post cap and a knee brace
     read different rows of the same table — 1,000 lbf uplift for one, 540 lbf F1 for the
-    other. Two catalog records carry the two rows, so a lookup by model alone gets whichever
+    other. Separate catalog roles carry each connection type, so a lookup by model gets whichever
     is listed first, which is a coin flip dressed as an answer. Pass the role of the joint
     being checked and the right row comes back; omit it and the first record wins, which is
     correct for every part catalogued once.

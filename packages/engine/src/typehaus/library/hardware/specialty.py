@@ -13,6 +13,7 @@ from typehaus.hardware.catalog import (
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_GLAZING_PANEL_FASTENER,
     ROLE_KNEE_BRACE,
+    ROLE_KNEE_BRACE_EQUAL_WIDTH,
     ROLE_LEDGER_ANCHOR,
     ROLE_MODELED_CONNECTOR,
     ROLE_POCKET_DOOR_FRAME_KIT,
@@ -115,6 +116,29 @@ KBS1Z_KNEE_BRACE = StructuralHardware(
                   "<= 19 %; the > 19 % columns are 385 and 330). Footnote 3 permits "
                   "interpolation between the two angles. Footnote 2: values already include "
                   "C_D = 1.60 for wind, no further increase allowed"),
+    ),
+)
+
+# Type 1 rates the pair as one joint; never double the type-2 single-strap row.
+KBS1Z_KNEE_BRACE_EQUAL_WIDTH = StructuralHardware(
+    tag="simpson-kbs1z-knee-brace-equal-width",
+    name="KBS1Z knee-brace stabilizer (ZMAX), two per brace end",
+    role=ROLE_KNEE_BRACE_EQUAL_WIDTH,
+    manufacturer=_SIMPSON,
+    model="KBS1Z",
+    source="Simpson Strong-Tie KBS1Z, equal-width members, connection type 1",
+    allowable=AllowableLoads(
+        lateral_f1_lb=1010.0,
+        load_duration_factor=1.6,
+        species="SPF/HF — the column recorded; DF/SP is 1,175 lbf for the same row",
+        fasteners="12 - 8d x 2-1/2 in per connector, two connectors at each end of brace "
+                  "on opposite flush faces (connection type 1)",
+        citation="IAPMO UES ER-280 Table 7, connection type 1; Simpson C-C-2019 KBS1Z "
+                 "table: SPF/HF 1,010 lbf at 45 deg, 720 lbf at 30 or 60 deg; "
+                 "DF/SP 1,175 and 835 lbf respectively; in-service MC <= 19%; "
+                 "C_D = 1.60 already included, no further increase; read 2026-10-25, "
+                 "https://assets.unilogcorp.com/187/ITEM/DOC/"
+                 "Simpson_Strong_Tie_100313582_Specification_Sheet.pdf",
     ),
 )
 

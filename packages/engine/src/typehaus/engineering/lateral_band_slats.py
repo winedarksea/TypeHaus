@@ -1,4 +1,4 @@
-"""A slat band across ``lateral_band``'s gap: 45° slats as knee braces, one connector an end.
+"""A slat band across ``lateral_band``'s gap: 45° slats as knee braces.
 
 ``resolve/slat_braces.slat_layout`` says which slats there are; this grades them. The two bays
 are mirror images with the same joints, so they share the push equally, one in tension and one
@@ -26,14 +26,12 @@ from typehaus.engineering.item import LimitState, Quantity
 
 _M_PER_FT = 0.3048
 _IN_PER_M = 1.0 / 0.0254
-#: AWC NDS 2018 Supplement Table 4B, Southern Pine No. 2, 2"-4" thick, 2"-4" wide: Fc and
+#: AWC NDS 2018 Supplement Table 4B, Southern Pine No. 2, 2"-4" thick: Fc and
 #: E_min, with Table 4B's wet-service C_M (0.8 on Fc, 0.9 on E_min). The slats stand in the
-#: weather.
-SLAT_FC_PSI = 1450.0
-SLAT_EMIN_PSI = 510_000.0
+#: weather. Profiles select the 2"-4" wide or 5"-6" wide row respectively.
+SLAT_DESIGN_VALUES = {"2x4": (1450.0, 510_000.0), "4x6": (1400.0, 510_000.0)}
 SLAT_FC_CM = 0.8
 SLAT_EMIN_CM = 0.9
-SLAT_PROFILE = "2x4"
 CD_WIND = 1.6
 
 
@@ -64,8 +62,17 @@ class SlatBand:
         el, lay = self.band, self.layout
         return (el.base_elevation.meters + lay.plate + lay.height / 2.0) / _M_PER_FT
 
+    @property
+    def chord_landing_ft(self) -> float:
+        """Force centroid of the chord landings, all carrying the same end force."""
+        landings = [s.u0 - s.c for s in self.layout.braces(0) if s.low == "chord"]
+        if not landings:
+            return self.mid_band_ft  # zero chord push; the lever has no effect
+        return (self.band.base_elevation.meters + self.layout.plate
+                + sum(landings) / len(landings)) / _M_PER_FT
+
     def chord_push_lb(self) -> float:
-        """A compression bay's outward push on its chord, at mid-band (note §3f)."""
+        """A compression bay's outward push on its chord, at their landing centroid (note §3f)."""
         return self.landings("chord") * self.per_end_lb
 
     def couple_lb_ft(self) -> float:
@@ -120,7 +127,11 @@ def band_for_wall(ctx: Any, wall: Any, roof_tag: str, shear_lb: float) -> SlatBa
 def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[LimitState],
               notes: list[str], missing: list[str], inputs: list[Quantity]) -> None:
     """The band's own rows (note §3b, §3f, §3g); the frame around it is ``lateral_band``'s."""
-    from typehaus.hardware.catalog import ROLE_KNEE_BRACE, allowable_for_model
+    from typehaus.hardware.catalog import (
+        ROLE_KNEE_BRACE,
+        ROLE_KNEE_BRACE_EQUAL_WIDTH,
+        allowable_for_model,
+    )
 
     el, lay = sb.band, sb.layout
     p, h = sb.slat_lb, sb.per_end_lb
@@ -135,14 +146,16 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
         f"equally (mirror images, the same joints); the {sb.crossing} crossing mid-band, "
         f"where the verticals carry no shear, take a bay's half: {p:,.1f} lb a slat, tension "
         f"or compression.")
-    allow = allowable_for_model(el.connector, role=ROLE_KNEE_BRACE)
+    role = ROLE_KNEE_BRACE_EQUAL_WIDTH if el.connectors_per_end == 2 else ROLE_KNEE_BRACE
+    allow = allowable_for_model(el.connector, role=role)
     if allow is None or not allow.lateral_f1_lb:
         missing.append(f"a published F1 along the brace for {el.connector!r}, the connector "
                        f"at each end of {el.tag}'s slats")
     else:
         states.append(LimitState(
             f"{el.tag} slat end, {el.connector}", p, allow.lateral_f1_lb, "lb",
-            f"one {el.connector} each end, {allow.citation.split(';')[0]}; {allow.species}; "
+            f"{'two' if el.connectors_per_end == 2 else 'one'} {el.connector} each end, "
+            f"{allow.citation.split(';')[0]}; {allow.species}; "
             f"in-service MC <= 19% (the canopy's dry-service condition)"))
     _slat_buckling(el, lay, p, states, missing)
     _centre_post(el, lay, sb, states, missing)
@@ -157,22 +170,23 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
 def _slat_buckling(el, lay, p, states, missing) -> None:
     from typehaus.resolve.framing.profiles import cross_section
 
-    if el.slat != SLAT_PROFILE:
+    if el.slat not in SLAT_DESIGN_VALUES:
         missing.append(f"NDS Table 4B values for the {el.slat!r} slats of {el.tag}")
         return
+    fc_psi, emin_psi = SLAT_DESIGN_VALUES[el.slat]
     section = cross_section(el.slat)
     d_in, b_in = section.width_m * _IN_PER_M, section.depth_m * _IN_PER_M
     length_in = max(s.length for s in lay.slats if s.braced) * _IN_PER_M
-    fc_star = SLAT_FC_PSI * SLAT_FC_CM * CD_WIND
-    fce = 0.822 * SLAT_EMIN_PSI * SLAT_EMIN_CM / (length_in / d_in) ** 2
+    fc_star = fc_psi * SLAT_FC_CM * CD_WIND
+    fce = 0.822 * emin_psi * SLAT_EMIN_CM / (length_in / d_in) ** 2
     ratio = fce / fc_star
     term = (1.0 + ratio) / 1.6
     cp = term - math.sqrt(term ** 2 - ratio / 0.8)
     states.append(LimitState(
         f"{el.tag} slat buckling", p, fc_star * cp * d_in * b_in, "lb",
         f"NDS §3.7, the longest braced slat {length_in:.2f}\" about its {d_in:g}\" face, l/d "
-        f"{length_in / d_in:.2f}; Table 4B SP No. 2 Fc {SLAT_FC_PSI:g} x wet {SLAT_FC_CM} x "
-        f"C_D {CD_WIND}, E_min {SLAT_EMIN_PSI:,.0f} x {SLAT_EMIN_CM}: FcE {fce:.1f} psi, "
+        f"{length_in / d_in:.2f}; Table 4B SP No. 2 Fc {fc_psi:g} x wet {SLAT_FC_CM} x "
+        f"C_D {CD_WIND}, E_min {emin_psi:,.0f} x {SLAT_EMIN_CM}: FcE {fce:.1f} psi, "
         f"C_P {cp:.4f}"))
 
 

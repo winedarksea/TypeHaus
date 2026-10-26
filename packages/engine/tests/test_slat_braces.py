@@ -1,8 +1,9 @@
 """SlatBrace: a framed band of 45° slats, each a knee brace — layout, members, bill, IFC.
 
-The frame is catlin's west band (``notes/canopy_west_band.md`` §3a) on a bare two-post frame,
+The frame is catlin's former chevron (``notes/canopy_west_band.md`` §8) on a bare frame,
 so the layout numbers are the note's: 24.375" x 25.125" bays, seven slats a bay at 2 1/4"
-clear, j = 0 screwed infill, four braces across mid-band.
+clear, j = 0 screwed infill, four braces across mid-band. Single-brace tests use the
+2026-10-25 §3 geometry with paired connectors on flush 4x6 faces.
 """
 
 from __future__ import annotations
@@ -221,7 +222,7 @@ def test_actual_slat_faces_meet_the_frame_without_interpenetration(band_model) -
         member = members[f"slat-{slat.bay}{slat.j:+d}"]
         solid = member_solid(member)
         assert isinstance(solid, GSweep)
-        for x, y, z in solid.profile:
+        for x, _y, z in solid.profile:
             assert sill - 1e-9 <= z <= ceiling + 1e-9
             station = (x - layout.chord_face if slat.bay == 0
                        else layout.length - layout.chord_face - x)
@@ -289,3 +290,91 @@ def test_punched_kbs_cells_are_closed_steel_not_flat_markers() -> None:
     assert set(edges.values()) == {2}
     assert max(y for _, y, _ in mesh.positions) == pytest.approx(KBS_GEOMETRY.steel_thickness_m)
     assert min(y for _, y, _ in mesh.positions) == pytest.approx(-KBS_GEOMETRY.flange_width_m)
+
+
+def _single_band(**overrides):
+    fields = dict(slat="4x6", plane_offset=inch(0), brace_offset=inch(-6.5),
+                  connectors_per_end=2, clear_gap=inch(0))
+    fields.update(overrides)
+    return _band(**fields)
+
+
+def test_single_brace_geometry_and_both_flush_faces() -> None:
+    from typehaus.resolve.slat_braces import slat_layout
+    from typehaus.takeoff.framing import framing_takeoff
+    from typehaus.takeoff.hardware import hardware_takeoff
+
+    element = _single_band(start=pt(ft(8), ft(10)),
+                           end=pt(ft(8), ft(10 + _SPAN_FT)))
+    layout = slat_layout(element)
+    assert len(layout.slats) == 2
+    from typehaus.resolve.framing.profiles import cross_section
+
+    assert cross_section(element.slat).width_m / IN == pytest.approx(3.5)
+    for bay in (0, 1):
+        slat, = layout.bay(bay)
+        assert slat.c / IN == pytest.approx(-6.5)
+        assert slat.length / IN == pytest.approx(18.625 * math.sqrt(2))
+        assert (slat.low, slat.high, slat.braced) == ("chord", "top", True)
+        assert layout.crossing_mid(bay) == 1
+    model, findings = _frame(element)
+    assert not findings
+    connectors = [s for s in model.solids if s.product == "KBS1Z"]
+    assert len(connectors) == len({s.uid for s in connectors}) == 8
+    assert len({s.tag for s in connectors}) == 8
+    for side in (-1, 1):
+        face_x = 8 * FT + side * 2.75 * IN
+        on_face = [s for s in connectors if any(abs(x - face_x) < 1e-9
+                   for x, _, _ in s.body_mesh.positions)]
+        assert len(on_face) == 4
+    hardware = next(r for r in hardware_takeoff(model) if r["scope"] == "slat brace connector")
+    assert hardware["count"] == 8
+    assert hardware["role"] == "knee_brace_equal_width"
+    lumber = next(r for r in framing_takeoff(model) if r["category"] == "brace")
+    assert lumber["profile"] == "4x6" and lumber["pieces"] == 2
+
+
+@pytest.mark.parametrize("overrides", [dict(slat="4x4"), dict(chord_size="4x4"),
+                                          dict(plate="2x4"),
+                                          dict(centre_post="4x4"), dict(plane_offset=inch(1))])
+def test_type_one_requires_both_faces_flush(overrides) -> None:
+    model, findings = _frame(_single_band(**overrides))
+    assert not model.braces
+    assert findings[0].check_id == "integrity.slat_brace"
+    assert "equal-width" in findings[0].message
+
+
+@pytest.mark.parametrize("offset", [-6.0, 0, 100])
+def test_explicit_brace_with_unbuildable_connector_is_refused(offset) -> None:
+    model, findings = _frame(_single_band(brace_offset=inch(offset)))
+    assert not model.braces
+    assert findings[0].check_id == "integrity.slat_brace"
+    assert "brace_offset" in findings[0].message
+
+
+def test_type_one_capacity_is_a_joint_rating_and_preserves_type_two() -> None:
+    from typehaus.hardware.catalog import (
+        ROLE_KNEE_BRACE,
+        ROLE_KNEE_BRACE_EQUAL_WIDTH,
+        allowable_for_model,
+        hardware_for_role,
+    )
+
+    assert allowable_for_model("KBS1Z", role=ROLE_KNEE_BRACE).lateral_f1_lb == 540
+    assert allowable_for_model("KBS1Z", role=ROLE_KNEE_BRACE_EQUAL_WIDTH).lateral_f1_lb == 1010
+    assert hardware_for_role(ROLE_KNEE_BRACE_EQUAL_WIDTH).model == "KBS1Z"
+
+
+def test_chord_push_uses_its_landing_and_empty_centre_has_zero_demand() -> None:
+    from typehaus.engineering.lateral_band_slats import SlatBand, _centre_post
+    from typehaus.resolve.slat_braces import slat_layout
+
+    element = _single_band()
+    layout = slat_layout(element)
+    band = SlatBand(element, layout, 1038.35, 1)
+    assert band.chord_landing_ft == pytest.approx(4 + (1.5 + 6.5) / 12)
+    assert band.chord_push_lb() == pytest.approx(519.175)
+    assert band.couple_lb_ft() == pytest.approx(519.175 * 2 * 8.5 / 12, abs=0.01)
+    states, missing = [], []
+    _centre_post(element, layout, band, states, missing)
+    assert not missing and all(state.demand == 0 for state in states)

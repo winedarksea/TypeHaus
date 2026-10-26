@@ -22,7 +22,8 @@ from typehaus.engineering.registry import EngineeringContext, calc, keys, oracle
 KIND = "wood_roof_post"
 #: 2: head and base lateral rows in both directions; the panel chords join (2026-09-30).
 #: 3: a slat band's outward push on its chords, N-S (2026-10-04).
-BASIS_VERSION = "3"
+#: 4: chord push acts at the centroid of its actual brace landings (2026-10-25).
+BASIS_VERSION = "4"
 BASIS = ("AWC NDS 2018 Supplement Table 4D, Southern Pine No. 2 timbers, wet-service row; "
          "NDS §3.7 column stability and §3.9 combined stress; ICC-ES ESR-2604 Table 3 "
          "(AC/ACE); ICC-ES ESR-3096 Table 5 (A35); ICC-ES ESR-3050 Table 1 (CBSQ)")
@@ -191,7 +192,7 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
     uplift = max(trib * (case.pressure_psf - 0.6 * DECK_DEAD_LOAD_PSF), 0.0)
     head_uplift = uplift
     couple_note = ""
-    push = push_head = push_base = 0.0
+    push = push_head = push_base = push_height_ft = 0.0
     moment_basis = "own drag" + (f" + {plate_basis}" if plate else "")
     chords = panel_chords_ft(ctx, case.wall) if case.wall is not None else None
     if chords is not None:
@@ -212,7 +213,8 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
             # A compression bay pushes this chord OUTWARD, off the plates, so it spans base
             # to head under the push (note §5b). The N-S case: it does not meet the plate.
             push = band.chord_push_lb()
-            a_p = band.mid_band_ft - base_ft
+            push_height_ft = band.chord_landing_ft
+            a_p = push_height_ft - base_ft
             push_head = push * a_p / case.length_ft
             push_base = push * (case.length_ft - a_p) / case.length_ft
             ns_moment = (drag_plf * case.length_ft ** 2 / 8.0
@@ -272,7 +274,8 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
                 Quantity("uplift_lb", uplift, "lb", 1.0),
                 Quantity("head_uplift_lb", head_uplift, "lb", 1.0),
                 Quantity("plate_load_lb", plate, "lb", 1.0),
-                Quantity("band_push_lb", push, "lb", 1.0)),
+                Quantity("band_push_lb", push, "lb", 1.0),
+                Quantity("band_push_height_ft", push_height_ft, "ft", 0.001)),
         limit_states=tuple(states), element_tags=tags,
         notes=(("The PVC wrap is a nonstructural finish. It needs an open, drained base and "
                 "an inspectable/removable panel; it contributes no column capacity."

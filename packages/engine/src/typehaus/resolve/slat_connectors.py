@@ -24,8 +24,6 @@ def resolve_slat_connectors(model, element, layout, storey: str) -> None:
     depth = cross_section(element.slat).depth_m
     half = face / math.sqrt(2.0)
     exterior_sign = -1.0 if element.plane_offset.meters < 0.0 else 1.0
-    face_offset = element.plane_offset.meters + exterior_sign * depth / 2.0
-    inward = (exterior_sign * uy, -exterior_sign * ux, 0.0)
     sill = element.base_elevation.meters + layout.plate
     for slat in (s for s in layout.slats if s.braced):
         mirror = 1.0 if slat.bay == 0 else -1.0
@@ -51,18 +49,24 @@ def resolve_slat_connectors(model, element, layout, storey: str) -> None:
                 u += half
                 support, support_face, inside = (1, 0), (0, 1), (-1, 1)
             station = layout.station(slat.bay, u)
-            heel = (x0 + ux * station - uy * face_offset,
-                    y0 + uy * station + ux * face_offset, sill + z)
-            sign = 1.0 if end == "low" else -1.0
-            root = math.sqrt(2.0)
-            mesh = kbs_mesh(heel, vector(*support), vector(*support_face),
-                            vector(sign / root, sign / root),
-                            vector(inside[0] / root, inside[1] / root), inward)
-            xs, ys, zs = zip(*mesh.positions, strict=True)
-            key = f"{element.uid or element.tag}:slat-{slat.bay}{slat.j:+d}:{end}:KBS1Z"
-            model.solids.append(ResolvedSolid(
-                uid=marker_uid(key), tag=f"CN~KBS1Z~{element.tag}~{slat.bay}{slat.j:+d}~{end}",
-                storey=storey, category="connector", product="KBS1Z", derived=True,
-                outline=[(min(xs), min(ys)), (max(xs), min(ys)),
-                         (max(xs), max(ys)), (min(xs), max(ys))],
-                z0_m=min(zs), z1_m=max(zs), body_mesh=mesh))
+            for face_index in range(element.connectors_per_end):
+                face_sign = exterior_sign * (1 if face_index == 0 else -1)
+                face_offset = element.plane_offset.meters + face_sign * depth / 2.0
+                inward = (face_sign * uy, -face_sign * ux, 0.0)
+                suffix = f":face-{face_index}" if element.connectors_per_end == 2 else ""
+                heel = (x0 + ux * station - uy * face_offset,
+                        y0 + uy * station + ux * face_offset, sill + z)
+                sign = 1.0 if end == "low" else -1.0
+                root = math.sqrt(2.0)
+                mesh = kbs_mesh(heel, vector(*support), vector(*support_face),
+                                vector(sign / root, sign / root),
+                                vector(inside[0] / root, inside[1] / root), inward)
+                xs, ys, zs = zip(*mesh.positions, strict=True)
+                key = f"{element.uid or element.tag}:slat-{slat.bay}{slat.j:+d}:{end}:KBS1Z{suffix}"
+                model.solids.append(ResolvedSolid(
+                    uid=marker_uid(key),
+                    tag=f"CN~KBS1Z~{element.tag}~{slat.bay}{slat.j:+d}~{end}{suffix}",
+                    storey=storey, category="connector", product="KBS1Z", derived=True,
+                    outline=[(min(xs), min(ys)), (max(xs), min(ys)),
+                             (max(xs), max(ys)), (min(xs), max(ys))],
+                    z0_m=min(zs), z1_m=max(zs), body_mesh=mesh))
