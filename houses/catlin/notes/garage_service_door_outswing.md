@@ -71,14 +71,18 @@ west wall axis is 11". The existing header, raised rough sill and threshold datu
   `finish-door-hardware` budget; the separate closer allowance is removed.
 - Retain the Schlage F51A LAT 622 lever. Design budgets: 1¾" leaf, 2½" lever projection
   from the leaf face, 2⅜" backset, 4⅛" hingeward lever extent, ⅛" installation allowance.
-- The screen assembly stays full thickness: brick face x=76.905", flashing nose x=77.030".
-  At 90°, the conservative hardware budget leaves about **2.47"** after installation
+- The screen omits its 0.020in face liquid membrane: brick face x=76.885", flashing nose x=77.010".
+  At 90°, the conservative hardware budget leaves about **2.49"** after installation
   allowance. The regression encloses the continuous sweep from 0° through **91°** (1° stop
   tolerance), including both leaf faces and levers, and requires **¼"** minimum to resolved
   brick, flashing, posts and nearby geometry. This is a design envelope; purchased hinge,
   lever and stop dimensions must be checked against it.
-- No screen thinning. Retain its sheathing, packing, drainage, backer, mortar and brick,
-  independent post joints and existing flashing. See `plans/bw-screen-finish-comparison.md`
+- Retain the sheathing, packing, WRB, drainage mat, backer, mortar and brick,
+  independent post joints and existing flashing. Bond MVIS Thin Brick Mortar directly to
+  prepared cement board with full brick-back coverage; use 4in alkali-resistant mesh tape
+  embedded in mortar at exterior board joints. Keep movement joints and drainage outlets
+  open. Owner accepts omitting the face membrane without the complete MVIS system warranty.
+  See `plans/bw-screen-finish-comparison.md`
   for the screen finish comparison; `plan/entry_screen_finish_spec.py` owns the budget.
 - The rough sill remains at deck datum 0'-0". Require the **leaf bottom at least 1" above
   that rough sill**, established by the purchased sill plus undercut. The resolved east

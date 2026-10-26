@@ -12,16 +12,14 @@ MATERIALS_ENTRY_SCREEN = [
                     "Glen-Gery Hanley Classics technical data; revise to accepted lot weight."),
     Material(tag="mvis-thin-brick-mortar", product_ref="PROD-BW-MVIS-MORTAR", name='LATICRETE MVIS Thin Brick Mortar, 1/8" bed',
              density=1800, hatch="masonry", color="#8c8982",
-             source="MVIS DS-248, ANSI A118.4/118.15; full back coverage. "
+             source="MVIS DS-248, ANSI A118.4/118.15; direct bond to prepared exterior cement "
+                    "board, full back coverage. "
                     "1800 kg/m3 design dead-load allowance, verify cured installed mass."),
     Material(tag="permabase-exterior", product_ref="PROD-BW-PERMABASE", name='1/2" PermaBASE Cement Board, exterior CBMV',
              areal_density_kg_m2=14.65, hatch="concrete", color="#b5b1a7",
              source="PermaBASE exterior applications guide: 1/2in board ~3 psf. "
-                    "Use exterior joint treatment and primary plywood sheathing."),
-    Material(tag="mvis-air-water-barrier", product_ref="PROD-BW-MVIS-AWB", name="LATICRETE MVIS Air & Water Barrier",
-             areal_density_kg_m2=0.5, hatch="membrane", color="#719e78",
-             source="MVIS DS-661.5; cured face membrane design thickness 20 mil; "
-                    "apply and gauge wet films per current instructions, no bond to plywood."),
+                    "Use 4in alkali-resistant mesh tape embedded in mortar at exterior joints, "
+                    "primary plywood sheathing, and retained movement joints."),
     Material(tag="entry-screen-wrb", product_ref="PROD-BW-WRB", name="DuPont Tyvek HomeWrap behind drained veneer",
              areal_density_kg_m2=0.07, hatch="membrane", color="#deded8",
              source="One primary WRB plus separate drainage mat; shingle-lap to base "

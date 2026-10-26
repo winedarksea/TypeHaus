@@ -12,8 +12,6 @@ ENTRY_SCREEN_PRODUCTS = (
             source="Exterior CBMV over primary plywood; 4in exterior mesh tape; follow current exterior guide."),
     Product(tag="PROD-BW-MVIS-MORTAR", brand="LATICRETE", model="MVIS Thin Brick Mortar",
             url="https://www.laticrete.com/products/mvis-thin-brick-mortar"),
-    Product(tag="PROD-BW-MVIS-AWB", brand="LATICRETE", model="MVIS Air & Water Barrier",
-            url="https://www.laticrete.com/products/mvis-air-and-water-barrier"),
     Product(tag="PROD-BW-MVIS-POINTING", brand="LATICRETE", model="MVIS Pointing Mortar 24 Natural Grey",
             url="https://www.laticrete.com/en/products/mvis-pointing-mortar"),
     Product(tag="PROD-BW-DRAINAGE", brand="Keene Building Products", model="Driwall Rainscreen 020-1",

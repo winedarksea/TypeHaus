@@ -229,10 +229,11 @@ def test_the_sauna_liner_no_longer_runs_across_its_own_door_and_window(catlin_mo
 
 
 def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc):
-    """60 of the 66 do not split, and their GUIDs must not move because the call changed.
+    """59 of the 65 do not split, and their GUIDs must not move because the call changed.
 
-    66 since 2026-10-25: W-BW-SCREEN's east veneer stack adds five banded layers (brick, setting
-    mortar, membrane, cement board, drainage mat), all of them whole-height and unsplit.
+    65 since 2026-10-25: W-BW-SCREEN's east veneer stack adds four banded layers (brick,
+    setting mortar, cement board, drainage mat), all whole-height and unsplit; the face
+    liquid membrane is omitted.
     47 since 2026-09-16: W-SG-W1/E1's dimpleboard stops at grade. 61 since the platform
     trim (``layer_bands.clamp_to_plates``): a lifted or dropped ENVELOPE wall's interior
     finish stops at the plate while its skin runs the rim band, so the finish is now a part
@@ -250,8 +251,8 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     parts = {p.Name: p.GlobalId for p in catlin_ifc.by_type("IfcBuildingElementPart")}
     unsplit = [(w, ly) for w in catlin_model_ro.walls for ly in w.body_layers()
                if f"{w.tag}:{ly.name}" in parts]
-    assert len(unsplit) == 60, \
-        f"expected the 66 banded layers less the 6 that split, got {len(unsplit)}"
+    assert len(unsplit) == 59, \
+        f"expected the 65 banded layers less the 6 that split, got {len(unsplit)}"
     for wall, layer in unsplit:
         assert parts[f"{wall.tag}:{layer.name}"] == derive_child_guid(
             project_uuid, "wall-parts", f"{wall.uid}/{layer.name}")

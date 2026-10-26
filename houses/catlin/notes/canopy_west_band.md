@@ -314,6 +314,10 @@ T = 1,038.35 x 8.625 / 4.9792 = 1,798.6 lb
   = 2,227.6 lb vs CBSQ66-SDS2 cracked 3,060 (ESR-3050 Table 1)       0.728
 ```
 
+The 2026-10-25 face-membrane removal does not change this demand: no screen-wall dead
+weight is credited against uplift. At the current resolved collector/base elevations,
+the engine gives 2,226.5 / 3,060 lb (0.728); the rounded hand-work above retains 8.625' height.
+
 The cracked value is graded. The wet-service reduction ESR-3050 §4.1 names does not move it:
 the cracked column is the concrete's (uncracked is 4,375), and 0.7 x 4,375 = 3,062 is above it.
 

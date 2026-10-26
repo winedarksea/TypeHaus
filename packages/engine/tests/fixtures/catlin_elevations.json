@@ -6519,16 +6519,16 @@
 "0593dbb109c8"
 ],
 "geometry/BWBRFL0001-00/body": [
-0.0341154,
+0.034126,
 0.136525,
 32,
-"79de15ba0167"
+"f828bd19f083"
 ],
 "geometry/BWBRFL0002-00/body": [
-1.1961654,
+1.196176,
 1.216025,
 32,
-"6e86db31a9c0"
+"689e602231b6"
 ],
 "geometry/BWCB0AAAAA/body": [
 -0.566801,
@@ -7003,12 +7003,6 @@
 2.3320375,
 24,
 "527867f33533"
-],
-"geometry/BWWS01AAAA/layer:bond-membrane-in": [
-0.0508,
-1.2065,
-2,
-"7aafe5a90170"
 ],
 "geometry/BWWS01AAAA/layer:cdx-out": [
 -0.023876,
@@ -101026,9 +101020,9 @@
 "solids/TB-SG-W1-STEM/z1_m": 0.0,
 "solids/TB-SG-W1/z0_m": -2.9829125,
 "solids/TB-SG-W1/z1_m": -2.7797125,
-"solids/TR-BW-BRICK-BASE-1/z0_m": 0.0341154,
+"solids/TR-BW-BRICK-BASE-1/z0_m": 0.034126,
 "solids/TR-BW-BRICK-BASE-1/z1_m": 0.136525,
-"solids/TR-BW-BRICK-HEAD-1/z0_m": 1.1961654,
+"solids/TR-BW-BRICK-HEAD-1/z0_m": 1.196176,
 "solids/TR-BW-BRICK-HEAD-1/z1_m": 1.216025,
 "solids/TR-BW-SCREEN-CAP/z0_m": 1.23825,
 "solids/TR-BW-SCREEN-CAP/z1_m": 1.2614199,

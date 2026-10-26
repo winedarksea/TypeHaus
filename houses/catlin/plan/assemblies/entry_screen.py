@@ -4,7 +4,7 @@ from typehaus import (
     LayerFunction, inch,
 )
 from plan.entry_screen_finish_spec import (
-    BACKER_THICKNESS_IN, BOND_MEMBRANE_THICKNESS_IN, BRICK_THICKNESS_IN,
+    BACKER_THICKNESS_IN, BRICK_THICKNESS_IN,
     DRAINAGE_THICKNESS_IN, FINISH_BOTTOM_IN, FINISH_TOP_IN, PACKING_THICKNESS_IN,
     PLYWOOD_THICKNESS_IN, SETTING_MORTAR_THICKNESS_IN, WRB_THICKNESS_IN,
 )
@@ -23,9 +23,6 @@ ENTRY_SCREEN_WALL = Assembly(
               extent=_VENEER_EXTENT),
         Layer(name="setting-mortar-in", material_ref="mvis-thin-brick-mortar",
               thickness=inch(SETTING_MORTAR_THICKNESS_IN), function=LayerFunction.FINISH,
-              extent=_VENEER_EXTENT),
-        Layer(name="bond-membrane-in", material_ref="mvis-air-water-barrier",
-              thickness=inch(BOND_MEMBRANE_THICKNESS_IN), function=LayerFunction.MEMBRANE,
               extent=_VENEER_EXTENT),
         Layer(name="cement-board-in", material_ref="permabase-exterior",
               thickness=inch(BACKER_THICKNESS_IN), function=LayerFunction.SHEATHING,
@@ -51,8 +48,11 @@ ENTRY_SCREEN_WALL = Assembly(
               function=LayerFunction.CLADDING),
     ),
     source="W-BW-SCREEN east finish, 2026-10-25: purchased 1/2in ASTM C1088 Exterior thin "
-           "brick matching the house brown blend, grey joints, over MVIS mortar/membrane, "
+           "brick matching the house brown blend, grey joints, direct-bonded with MVIS mortar to "
            "1/2in exterior PermaBASE, 1/4in drainage mat, WRB and 5/8in Exterior plywood. "
+           "Exterior joints: 4in alkali-resistant mesh tape embedded in mortar; full brick "
+           "back coverage, movement joints and open drainage outlets retained. Face liquid "
+           "membrane omitted by owner preference; complete MVIS system warranty not pursued. "
            "1-1/8in KDAT packing at studs clears the projecting posts by 1/8in; no veneer "
            "fixings into post faces. WEST 5/8in CDX alone supplies shear; west corrugated, "
            "stud axis and guard geometry retained. Masonry band +2 to +47.5in. See "

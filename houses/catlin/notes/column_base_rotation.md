@@ -505,3 +505,17 @@ it printed; that 0.7 lb slip sat inside the old pin's tolerance.
 > pins share one author. The run and the share (565.5 lb, 282.75 lb a column) were re-worked
 > by hand from the plan geometry and agree with the engine's 282.76; the rest is
 > self-consistency, not an oracle. Needs an independent re-work before it is cited.
+
+### Face-membrane simplification, 2026-10-25
+
+Omitting the 0.50 kg/m² face liquid membrane reduces the above wall to **74.84 plf**,
+with **563.0 lb** total delivery and **281.48 lb** per column (−1.27 lb D each).
+Using the same L, base springs and section, the revised arithmetic is:
+
+| column | D | L | P_u | β | EI | δ 0.25" | δ 1.0" |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `PT-BW-W` | 2,021.9 | 3,168.1 | 7,495.3 | 0.3237 | 2.2967e9 | 1.0816 | 1.3377 |
+| `PT-BW-GW` | 1,598.8 | 3,155.5 | 6,967.3 | 0.2754 | 2.3838e9 | 1.3466 | — |
+
+At GW's soft end, Pc,flex = 9,193.8 lb; 0.75 Pc = 6,895.3 lb remains **72.0 lb**
+under P_u. The existing verdicts and the addendum's independent-review limitation remain.

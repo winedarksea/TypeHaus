@@ -354,7 +354,7 @@ Worst case is `PT-BW-W`, which carries the west roof column **and** the landing'
 |---|---|---|
 | roof tributary | 160.0 / 2 headers / 2 supports per header | 40.0 ft² |
 | deck tributary | 23.5 ft² of landing / 2 seat lines | 11.8 ft² |
-| wall line load | `W-BW-SCREEN` + `SB-BW-BAND` on `BM-BW-SCSILL`, half | 283 lb |
+| wall line load | `W-BW-SCREEN` + `SB-BW-BAND` on `BM-BW-SCSILL`, half | 281 lb |
 | roof live | 40.0 × **73.7** psf (§3's design snow) | 2,948 lb |
 | deck live | 11.8 × 40 psf | 470 lb |
 | dead | (40.0 + 11.8) × 10 psf + 1,188 lb self weight + carried + wall | 1,884 lb |
@@ -374,14 +374,14 @@ never needed a tributary area: it is a plf times a run.
 
 | term | working | value |
 |---|---|---|
-| `W-BW-SCREEN` | worked below, 4.08' high with a 3.79' thin-brick band | 75.23 plf |
+| `W-BW-SCREEN` | worked below, 4.08' high with a 3.79' thin-brick band | 74.84 plf |
 | `SB-BW-BAND` | 2x6 sill and top plate, 6x6 centre post, 14 slats (25.75 LF of 2x4): 1.90 ft³ of kdat at 600 kg/m³, over its own 4.52' | 15.71 plf |
-| line | | **90.94 plf** |
+| line | | **90.56 plf** |
 | run | the wall's axis inside `BM-BW-SCSILL`'s own footprint | 4.52' (54 1/4") |
-| on the beam | 90.94 × 4.5208' | 411.1 lb |
-| past the beam | the panel alone, 75.23 × (6.5729' − 4.5208') = 75.23 × 2.0521' | 154.4 lb |
-| total | | **565.5 lb** |
-| each column | two bearings | **282.8 lb** |
+| on the beam | 90.56 × 4.5208' | 409.4 lb |
+| past the beam | the panel alone, 74.84 × (6.5729' − 4.5208') = 74.84 × 2.0521' | 153.6 lb |
+| total | | **563.0 lb** |
+| each column | two bearings | **281.5 lb** |
 
 **The panel's ends are weighed too (2026-10-25).** The wall runs 36'-7 3/4" to 43'-2 5/8"
 and the sill only 37'-8 3/4" to 42'-3", between the chord posts. The 2.05' past the sill —
@@ -390,7 +390,7 @@ chords, `PT-BW-CW`/`-CNW`, which are the sill's own bearings. So `pier_basis` we
 the same two posts (`_wall_beam_pairs`' `outboard_m`). Only the panel runs past the sill;
 `SB-BW-BAND` stands between the chords and stays in the 4.52'.
 
-**`W-BW-SCREEN`, layer by layer (2026-10-25).** kg/m² × height × 0.672 = plf. Full height
+**`W-BW-SCREEN`, layer by layer (2026-10-25, face membrane omitted).** kg/m² × height × 0.672 = plf. Full height
 is 48.94" (1.2431 m); the veneer band +2" to +47.5" is 45.5" (1.1557 m). Framed layers are
 KDAT at 600 kg/m³ × the engine's 0.23 field framing factor.
 
@@ -398,10 +398,9 @@ KDAT at 600 kg/m³ × the engine's 0.23 field framing factor.
 |---|---|---:|---:|
 | thin brick, pointed | 6.50 psf laid (0.8 lb × 6.86/SF + 1.012 psf pointing) | 31.74 | 24.65 |
 | MVIS mortar | 1/8" × 1,800 | 5.72 | 4.44 |
-| MVIS membrane | stated | 0.50 | 0.39 |
 | PermaBASE 1/2" | ~3 psf | 14.65 | 11.38 |
 | Driwall mat | stated | 0.50 | 0.39 |
-| *band* | | | *41.24* |
+| *band* | | | *40.85* |
 | Tyvek | stated | 0.07 | 0.06 |
 | 5/8" Exterior ply | 0.625" × 610 | 9.68 | 8.09 |
 | 1-1/8" KDAT packing | 1.125" × 600 × 0.23 | 3.94 | 3.29 |
@@ -409,11 +408,15 @@ KDAT at 600 kg/m³ × the engine's 0.23 field framing factor.
 | 5/8" CDX | 0.625" × 600 | 9.53 | 7.96 |
 | corrugated 24 ga | stated | 5.20 | 4.34 |
 | *full height* | | | *33.99* |
-| wall | | | **75.23** |
+| wall | | | **74.84** |
+
+The owner-selected direct bond to cement board omits the 0.50 kg/m² face liquid membrane:
+wall weight falls 75.23 → 74.84 plf, total delivery 565.5 → 563.0 lb, each column
+282.8 → 281.5 lb. The WRB and drainage mat remain.
 
 The pre-veneer stack (MDO, studs, CDX, corrugated) works to 30.54 at 49.0" the same way,
 which is the figure this table carried. 0.23 is conservative here: studs at 1.5/16 plus three
-plates over 48.94" is 0.177, and packing 1.5/16 is 0.094, for **70.9 plf**. 75 plf is over the
+plates over 48.94" is 0.177, and packing 1.5/16 is 0.094, for **70.5 plf**. 75 plf is over the
 guard check's 50 plf wood allowance, which stays at 50: `structural.masonry_guard_bearing`
 passes the screen because its whole run is weighed here, not left on a deck rim.
 
@@ -431,7 +434,7 @@ down. The plf is the one `checks/structural/guards.py` already printed ("guard w
 `W-BW-SCREEN` weighs 31 plf") in the same run that called this load unknown; it moved to
 `resolve/assembly_weight.py` so a calc could read it, because `engineering` may not import
 `checks`. `checks/structural/deck.py` divides the same pounds into R507.3.1's currency —
-282.8 / 50 psf = 5.66 ft² — rather than holding a second answer about one load.
+281.5 / 50 psf = 5.63 ft² — rather than holding a second answer about one load.
 
 > ⚠ **WITHDRAWN 2026-09-21 as a DEMAND, kept as built.** With the landing tied to the garage (§10)
 > the four landing piers lean: `deck_post` grades them "axial, tied column" (d/c 0.007-0.027)

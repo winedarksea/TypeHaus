@@ -334,7 +334,8 @@ the future.
 - [x] Move D-M-MECH and D-M-MUDC 8" east within the existing walls (owner-approved instead of a full stud bay); relocate the three switches to W-M-MUDC-E.
 - See if we can easily source factory Laminated Glass that has a security film inside it for the main floor windows
 - Conduit for floor thermostats for heated floor
-- The layup of W-BW-SCREEN for the thin brick might be a little extreme. It's got furring AND drainage AND a WRB even though it's exposed to open air on both sides?
+- [x] Simplify W-BW-SCREEN thin brick (2026-10-25): omit the face liquid membrane and bond mortar directly to prepared cement board; retain post-clearance packing, plywood, WRB, drainage mat and flashing. Complete MVIS system warranty not pursued for this small sheltered screen.
+- See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
 
 # Project Management
 

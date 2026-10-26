@@ -1,9 +1,16 @@
 # W-BW-SCREEN — east-face finish comparison
 
 **Study date:** 2026-10-14; coordination updated 2026-10-25. **Current selection:** the modeled
-thin-brick assembly stays full thickness. The wood alternatives and illustration below are
-archived comparison material. Current door: 32in Masonite, hinge x=83in, 90° stop-only;
+thin-brick assembly omits the face liquid membrane; its WRB and drainage mat remain.
+The wood alternatives and illustration below are archived comparison material. Current door: 32in Masonite, hinge x=83in, 90° stop-only;
 see §4 and the [current door note](../houses/catlin/notes/garage_service_door_outswing.md).
+
+The small sheltered screen uses MVIS Thin Brick Mortar directly on prepared ½in PermaBASE,
+with 4in alkali-resistant mesh tape embedded in mortar at exterior board joints and full
+brick-back mortar coverage. Retain movement separation from posts, the plywood/packing,
+WRB, ¼in drainage mat, cap and open bottom drainage outlets. The owner accepts omitting
+the face liquid membrane without pursuing the complete MVIS system warranty; no replacement
+membrane or drainage product is introduced. [Mortar substrate guidance](https://www.laticrete.com/products/mvis-thin-brick-mortar).
 
 **Original study recommendation (superseded by thin brick):** develop **A, natural black locust vertical slats over matte black MDO**, first. It adds a fine vertical rhythm below the much heavier diagonal brace band, uses narrow clear stock well, and makes individual pieces replaceable. Keep **C, ornamental panels**, as the stronger alternative if the sample feels too repetitive. Shiplap ranks third: it loses the black shadow contrast, consumes wider stock, and needs the deepest support assembly in this study.
 
@@ -105,12 +112,12 @@ family in nominal 32 × 80in. The hinge moves from x=79in to **83in**; the east 
 **115in** and the longitudinal section moves to **99in**. The deck, edge beam, piers and
 36in garage stair, seats, handrail, backing and lighting retain their datums.
 
-The retained brick face is x=76.905in; head/base flashing nose x=77.030in. With a 1¾in
+The retained brick face is x=76.885in; head/base flashing nose x=77.010in. With a 1¾in
 leaf, 2½in lever face projection and ⅛in installation allowance, preliminary clearance at
-90° is **2.47in**. The regression encloses the continuous sweep through **91°**, including
-1° stop tolerance, and requires **¼in** minimum to nearby resolved geometry. No screen
-thinning is required. The exterior entry guard's top termination moves 1½in east onto the
-top tier (owner approved), clearing the early leaf swing. The garage handrail stays fixed.
+90° is **2.49in**. The regression encloses the continuous sweep through **91°**, including
+1° stop tolerance, and requires **¼in** minimum to nearby resolved geometry. The 0.020in
+membrane reduction improves screen clearance. The exterior entry guard's top termination
+moves 1½in east onto the top tier (owner approved), clearing the early leaf swing. The garage handrail stays fixed.
 
 Require the purchased sill plus undercut to place the **leaf bottom at least 1in above
 the rough sill**, clearing the east HETA20Z deck-tie strap, which reaches 0.56in above the

@@ -24,16 +24,28 @@ def test_east_brick_does_not_move_studs_or_west_skin(catlin_model_ro):
         "stud": (70.25, 73.75),
         "cdx-out": (69.625, 70.25),
         "cladding-out": (68.75, 69.625),
+        "packing-in": (73.75, 74.875),
         "siding-in": (74.875, 75.5),
-        "thin-brick-in": (76.405, 76.905),
+        "wrb-in": (75.5, 75.51),
+        "drainage-in": (75.51, 75.76),
+        "cement-board-in": (75.76, 76.26),
+        "thin-brick-in": (76.385, 76.885),
     }.items():
         xs = [x / INCH for x, _y in layers[name].polygon]
         assert (min(xs), max(xs)) == pytest.approx(expected)
+    assert "bond-membrane-in" not in layers
+    mortar_xs = [x / INCH for x, _ in layers["setting-mortar-in"].polygon]
+    backer_xs = [x / INCH for x, _ in layers["cement-board-in"].polygon]
+    assert min(mortar_xs) == pytest.approx(max(backer_xs))
     assert wall.axis[0][0] / INCH == pytest.approx(72)
     assert tuple(v / INCH for v in layers["thin-brick-in"].band(wall)) == pytest.approx((2, 47.5))
     assert layers["thin-brick-in"].thickness_m / INCH == pytest.approx(0.5)
     assert min(x for x, _ in layers["siding-in"].polygon) / INCH - 74.75 == pytest.approx(0.125)
     assert catlin_model_ro.plan.by_tag(wall.tag).shear_panel.sheathing_layer == "cdx-out"
+    for tag in ("TR-BW-BRICK-BASE", "TR-BW-BRICK-HEAD"):
+        flashing = catlin_model_ro.plan.by_tag(tag)
+        nose = flashing.path[0].x.meters + flashing.thickness.meters / 2
+        assert nose / INCH == pytest.approx(77.010)
 
 
 def test_veneer_uses_its_own_net_area_and_purchased_slip_appearance(catlin_model_ro):
@@ -43,11 +55,16 @@ def test_veneer_uses_its_own_net_area_and_purchased_slip_appearance(catlin_model
     screen_ft2 = wall_layer_net_area_m2(catlin_model_ro, wall, veneer, net) * 10.7639104
     assert screen_ft2 == pytest.approx(78.875 * 45.5 / 144, abs=0.1)
     # Rows carry no wall tags; the takeoff's one thin-brick row is the screen's area alone.
+    envelope_rows = envelope_layer_takeoff(catlin_model_ro)
     rows = [
         row
-        for row in envelope_layer_takeoff(catlin_model_ro)
+        for row in envelope_rows
         if row["material"] == "thin-brick-brown"
     ]
+    assert not any(
+        row["material"] == "mvis-air-water-barrier"
+        for row in envelope_rows
+    )
     assert len(rows) == 1
     assert rows[0]["net_area_sqft"] == pytest.approx(screen_ft2, abs=0.05)  # row rounds to 0.1
     material = next(
@@ -62,7 +79,7 @@ def test_screen_load_is_known_and_skirt_is_not_its_bearing(catlin_ctx):
 
     wall = catlin_ctx.model.wall("W-BW-SCREEN")
     own = dead_load_plf(catlin_ctx, wall, wall.z1_m - wall.z0_m)
-    assert own is not None and 70 < own < 80
+    assert own == pytest.approx(74.84, abs=0.02)
     total, basis = wall_line_plf(catlin_ctx, wall)
     assert total is not None and total > own
     assert "SB-BW-BAND" in basis
