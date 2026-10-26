@@ -477,8 +477,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW104AAAA",
-      "tag": "W-S-E3/paint"
+      "uid": "CSW103AAAA",
+      "tag": "W-S-E1/paint"
     },
     {
       "space": "model",
@@ -505,8 +505,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW104AAAA",
-      "tag": "W-S-E3/gwb-int"
+      "uid": "CSW103AAAA",
+      "tag": "W-S-E1/gwb-int"
     },
     {
       "space": "model",
@@ -561,8 +561,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW104AAAA",
-      "tag": "W-S-E3/stud"
+      "uid": "CSW103AAAA",
+      "tag": "W-S-E1/stud"
     },
     {
       "space": "model",
@@ -617,8 +617,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW104AAAA",
-      "tag": "W-S-E3/sheathing"
+      "uid": "CSW103AAAA",
+      "tag": "W-S-E1/sheathing"
     },
     {
       "space": "model",
@@ -673,8 +673,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW104AAAA",
-      "tag": "W-S-E3/spray-foam"
+      "uid": "CSW103AAAA",
+      "tag": "W-S-E1/spray-foam"
     },
     {
       "space": "model",
@@ -730,8 +730,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW104AAAA",
-      "tag": "W-S-E3/vent-gap"
+      "uid": "CSW103AAAA",
+      "tag": "W-S-E1/vent-gap"
     },
     {
       "space": "model",
@@ -786,8 +786,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW104AAAA",
-      "tag": "W-S-E3/outer-girt"
+      "uid": "CSW103AAAA",
+      "tag": "W-S-E1/outer-girt"
     },
     {
       "space": "model",
@@ -842,8 +842,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW104AAAA",
-      "tag": "W-S-E3/cladding"
+      "uid": "CSW103AAAA",
+      "tag": "W-S-E1/cladding"
     },
     {
       "space": "model",
@@ -1187,62 +1187,6 @@
       "node": "polyline",
       "points": [
         [
-          426.0,
-          98.34645669291339
-        ],
-        [
-          431.50000000000006,
-          98.34645669291339
-        ],
-        [
-          431.50000000000006,
-          105.00000000000001
-        ],
-        [
-          426.0,
-          105.00000000000001
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW103AAAA",
-      "tag": "cripple-head-2-02"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          426.0,
-          98.34645669291339
-        ],
-        [
-          431.50000000000006,
-          98.34645669291339
-        ],
-        [
-          431.50000000000006,
-          105.00000000000001
-        ],
-        [
-          426.0,
-          105.00000000000001
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "lsl"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           436.5,
           98.34645669291339
         ],
@@ -1375,7 +1319,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW104AAAA",
+      "uid": "CSW103AAAA",
       "tag": "plate-bottom"
     },
     {
@@ -1431,7 +1375,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW104AAAA",
+      "uid": "CSW103AAAA",
       "tag": "strapping-outer-girt-000"
     },
     {
@@ -1861,6 +1805,230 @@
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          432.0,
+          105.125
+        ],
+        [
+          432.12,
+          105.125
+        ],
+        [
+          432.12,
+          123.0
+        ],
+        [
+          432.0,
+          123.0
+        ]
+      ],
+      "pattern": "membrane",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "air-barrier"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          432.0,
+          105.125
+        ],
+        [
+          432.12,
+          105.125
+        ],
+        [
+          432.12,
+          123.0
+        ],
+        [
+          432.0,
+          123.0
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:rim-air-barrier"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          429.50000000000006,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          120.0
+        ],
+        [
+          429.50000000000006,
+          120.0
+        ]
+      ],
+      "pattern": "foam",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "spray-foam"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          429.50000000000006,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          120.0
+        ],
+        [
+          429.50000000000006,
+          120.0
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:rim-cavity-foam"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          426.00000000000006,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          108.725
+        ],
+        [
+          426.00000000000006,
+          108.725
+        ]
+      ],
+      "pattern": "foam",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "sealant"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          426.00000000000006,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          108.725
+        ],
+        [
+          426.00000000000006,
+          108.725
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:rim-sealant-bead"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          426.00000000000006,
+          120.0
+        ],
+        [
+          431.50000000000006,
+          120.0
+        ],
+        [
+          431.50000000000006,
+          120.6
+        ],
+        [
+          426.00000000000006,
+          120.6
+        ]
+      ],
+      "pattern": "foam",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "sealant"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          426.00000000000006,
+          120.0
+        ],
+        [
+          431.50000000000006,
+          120.0
+        ],
+        [
+          431.50000000000006,
+          120.6
+        ],
+        [
+          426.00000000000006,
+          120.6
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:rim-sealant-bead"
     },
     {
       "space": "model",

@@ -33,8 +33,12 @@ Each gable splits at its ridge (x = 18'); a half goes to the leaders that claim 
 |---|---|---|---|
 | RF-GARAGE west / east | (18.000 − 4.667) × (68.552 − 43.146) = 13.333 × 25.406 | 338.75 | TR-G-LEADER-W / -E |
 | RF-BW-CANOPY west / east | 13.333 × 6.000 | 80.0 | TR-G-LEADER-W / -E |
-| RF-HOUSE west / east | (18.000 − (−0.604)) × (36.604 − (−0.604)) / 2 → 18.604 × 37.208 | 692.2 | TR-RF-LEADER-W / -E |
-| **per basin** | 338.75 + 80.0 + 692.2 | **1,110.95** | |
+| RF-HOUSE west / east | (18.000 − (−0.604)) × (36.5625 − (−0.5625)) / 2 → 18.604 × 37.125 | 690.7 | TR-RF-LEADER-W / -E |
+| **per basin** | 338.75 + 80.0 + 690.7 | **1,109.45** | |
+
+RF-HOUSE reaches the cladding face: 7.25" (0.604') of PBR stand-off at the E/W eaves, 6.75"
+(0.5625') of BBD75 board-and-batten at the N/S rakes (`params/cladding.py`). Before the N/S
+walls went board-and-batten (2026-10-25) both read 0.604' and the half was 692.2 sf.
 
 The canopy's trough is continuous with the garage's and falls north to both garage leaders.
 Its `EaveGutter.downspout_ref` names BOTH, and each claims the canopy half on its own side;
@@ -45,7 +49,7 @@ Each 3" garage leader therefore carries 418.75 sf against the ~425 sf a 3" round
 
 ## 2. Demand, per basin
 
-1.0" over 1,110.95 sf = 1,110.95 / 12 = **92.6 cf**.
+1.0" over 1,109.45 sf = 1,109.45 / 12 = **92.5 cf**.
 
 ## 3. Basin, per side
 
@@ -54,7 +58,7 @@ West rim x −6'..−1', y 47'..82'; east rim x 37'..42', the mirror. 5' × 35' 
 1' × 31' = 31 sf at −4'-1". Mid-depth (inset 1.0'): 3 × 33 = 99 sf.
 
 Prismoidal: V = h/6 · (A_top + 4 A_mid + A_bottom) = 1.0/6 × (175 + 396 + 31) =
-602 / 6 = **100.3 cf ≥ 92.6 cf**, a 7.7 cf margin. Overflow is over the rim at the north end
+602 / 6 = **100.3 cf ≥ 92.5 cf**, a 7.8 cf margin. Overflow is over the rim at the north end
 to daylight, falling to the street.
 
 (At the old 9" the same rim held 88.5 cf, 4.1 cf short once the canopy half was counted.)
@@ -114,7 +118,7 @@ not the 8.77" the clamps still quote.
 −40" inlet. So the west basin also takes pumped groundwater — the house perimeter tile and,
 through the one-tie bridge, the court's relief — which is **not in §2's design volume**, by
 the owner's choice (2026-09-23): `drainage.rain_garden_capacity` reports it as an UNKNOWN
-beside the PASS. The 7.7 cf margin is unclaimed headroom for it, not a credit. In winter the
+beside the PASS. The 7.8 cf margin is unclaimed headroom for it, not a credit. In winter the
 buried line freezes; the pump's ice guard spills at the foundation foot, where the water can
 recirculate to the perimeter tile and the pit.
 

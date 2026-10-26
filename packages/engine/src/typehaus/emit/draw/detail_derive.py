@@ -62,7 +62,8 @@ def _condition_opening(model: ResolvedModel, cond: BoundaryCondition):
 def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
     """One derived DETAIL slice per distinct bound condition key (skip authored-claimed keys).
 
-    The cut plane runs perpendicular to the host wall at its midpoint; the crop is a junction
+    The cut plane runs perpendicular to the host wall at its midpoint, slid clear of any
+    opening (``_clear_fraction``); the crop is a junction
     z-window × u-window sized to the junction kind.
     """
     claimed = {
@@ -192,6 +193,66 @@ def _trim_reach(model, cond, direction: str, station: float, u_lo: float,
     return min(us), max(us)
 
 
+# Clearance kept between a wall-junction cut and any opening's framed extent.
+_OPENING_CLEAR_M = 0.15
+
+
+def _clear_fraction(model, cond, wall) -> float:
+    """Axis fraction for a wall-junction cut: inside every named wall, clear of their openings.
+
+    A wall-junction detail (rim, foundation, eave) is about the wall, not a window, and a
+    stack is only a stack where both walls exist: a 9' upper wall over a 36' lower one has
+    no rim at the lower wall's midpoint. The midpoint stands when it cuts cleanly; otherwise
+    the cut slides to the nearest station inside the walls' common span that misses every
+    opening on any of them.
+    """
+    from typehaus.emit.draw.detail_components.geometry import condition_walls
+
+    (x0, y0), (x1, y1) = wall.axis
+    length = math.hypot(x1 - x0, y1 - y0)
+    if length <= 1e-9:
+        return 0.5
+    ux, uy = (x1 - x0) / length, (y1 - y0) / length
+    walls = [w for w in condition_walls(model, cond) if w.tag != wall.tag]
+    tags = {w.tag for w in walls} | {wall.tag}
+
+    def along(px, py):
+        return (px - x0) * ux + (py - y0) * uy
+
+    span_lo, span_hi = 0.0, length
+    for other in walls:
+        a, b = (along(*point) for point in other.axis)
+        span_lo, span_hi = max(span_lo, min(a, b)), min(span_hi, max(a, b))
+    if span_hi - span_lo <= 2 * _OPENING_CLEAR_M:
+        span_lo, span_hi = 0.0, length
+    blocked: list[tuple[float, float]] = []
+    for opening in model.openings:
+        host = model.wall(opening.host_wall) if opening.host_wall in tags else None
+        if host is None:
+            continue
+        (hx0, hy0), (hx1, hy1) = host.axis
+        h_len = math.hypot(hx1 - hx0, hy1 - hy0)
+        if h_len <= 1e-9:
+            continue
+        hux, huy = (hx1 - hx0) / h_len, (hy1 - hy0) / h_len
+        lo = opening.center_along_m - opening.width_m / 2
+        hi = opening.center_along_m + opening.width_m / 2
+        if opening.pocket_sign > 0:
+            hi += opening.pocket_run_m
+        elif opening.pocket_sign < 0:
+            lo -= opening.pocket_run_m
+        ends = [along(hx0 + hux * a, hy0 + huy * a) for a in (lo, hi)]
+        blocked.append((min(ends) - _OPENING_CLEAR_M, max(ends) + _OPENING_CLEAR_M))
+    lo_ok, hi_ok = span_lo + _OPENING_CLEAR_M, span_hi - _OPENING_CLEAR_M
+    mid = length / 2
+    if lo_ok <= mid <= hi_ok and not any(lo < mid < hi for lo, hi in blocked):
+        return 0.5  # the midpoint already cuts the junction cleanly
+    target = min(max(mid, lo_ok), hi_ok)
+    candidates = [a for a in (target, *(edge for pair in blocked for edge in pair))
+                  if lo_ok <= a <= hi_ok and not any(lo < a < hi for lo, hi in blocked)]
+    return min(candidates, key=lambda a: abs(a - mid), default=target) / length
+
+
 def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
     (x0, y0), (x1, y1) = wall.axis
     opening = (_condition_opening(model, cond)
@@ -203,7 +264,8 @@ def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
         t = opening.center_along_m / length if length > 1e-9 else 0.5
         mx, my = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
     else:
-        mx, my = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+        t = _clear_fraction(model, cond, wall)
+        mx, my = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
     dx, dy = abs(x1 - x0), abs(y1 - y0)
     if dx >= dy:
         # wall runs along x → cut perpendicular is a plane at x=const (u = world y).

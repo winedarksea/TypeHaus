@@ -311,7 +311,7 @@ the future.
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
 - Flashing geometry and visibility implemented 2026-10-15: west-draining fitted cap on SB-BW-BAND's exposed 2×6 sill above W-BW-SCREEN; metal heads and concealed perimeter/sill flashing at exterior windows and doors; one Flashing 3D hide/isolate control. [Modeling basis and limits](../houses/catlin/notes/flashing_model.md).
 - Possibly swap the concrete canopy stairway (SL-BW-TIER*) to pressure treated wood and composite treads or with brick stairs.
-- Consider adding a gutter along the entryway canopy gable in the narrow space between canopy and house, the goal is for this to mostly fill the space, if it can do so in a way that is buildable and not causing any problems.
+- Consider adding a gutter along the entryway canopy gable in the narrow space between canopy and house, the goal is for this to mostly fill the space, if it can do so in a way that is buildable and not causing any problems. A more minimal fix might be flashing on the exposed south glulam beam end.
 - Make the countertop (and quartz window stools) a "ready to send to manufacturer" design and export. Include rounding corners
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps grab bars.
 - Window/door quotes (products named 2026-10-21): get Drutex (DAKAM, Chicago), Andersen 400 and Cascadia quotes and close `notes/window_and_door_procurement.md` §2.6 — Alucover nail fin + NAFS DP, the 14" tilt-only minimum, Drutex sill rail height (re-strike the 2.953" stools), Andersen triple-pane in MN and frame depth, the Cascadia double-door NFRC label and thresholds, dark-colour warranties.
@@ -332,11 +332,10 @@ the future.
 - Check the basement stair carpet, and swap the carpet from the theater with an partial coverage area rug in the theater (technically not installed with tack strips or glue)
 - Update the LVP to https://coretecfloors.com/en-us/products/coretec-pro-classics/quincy-oak-vv017-01018
 - [x] Move D-M-MECH and D-M-MUDC 8" east within the existing walls (owner-approved instead of a full stud bay); relocate the three switches to W-M-MUDC-E.
-- See if we can easily source factory Laminated Glass that has a security film inside it for the main floor windows
+- [x] Add factory-laminated glass with an internal security interlayer for all main-floor windows to the supplier quote request (2026-10-26): [window sourcing notes §2.6, item 10](../houses/catlin/notes/window_and_door_procurement.md#26-claimed-not-yet-in-hand). Availability, cost, lead time and performance remain pending with the window/door quotes.
 - Conduit for floor thermostats for heated floor
-- [x] Simplify W-BW-SCREEN thin brick (2026-10-25): omit the face liquid membrane and bond mortar directly to prepared cement board; retain post-clearance packing, plywood, WRB, drainage mat and flashing. Complete MVIS system warranty not pursued for this small sheltered screen.
 - See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
-- Fix the missing horizontal trim of the board and batten (instructions says max panel length of aroudn 20', no end lapping, so needs to have a mid point 'board' trim likely)
+- Fix the missing horizontal trim of the board and batten (instructions says max panel length of around 20', no end lapping, so needs to have a mid point 'board' trim likely)
 - Seam clamps as minor snow retainer?
 
 # Project Management

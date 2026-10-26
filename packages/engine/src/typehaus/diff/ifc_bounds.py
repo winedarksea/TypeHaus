@@ -74,6 +74,7 @@ def _cased_filling(opening, door_type) -> bool:
     """Whether the emitter sweeps this door's own solids (``emit/ifc/architectural``)."""
     product = door_type.bookcase_door if door_type is not None else None
     return (opening.doorway is not None or opening.cased_product is not None
+            or bool(door_type and (door_type.hardware or door_type.field_finish))
             or (product is None and bool(opening.effective_frame_material_ref
                                          or opening.effective_leaf_material_ref)))
 
@@ -83,6 +84,8 @@ def _cased_door_bounds(model: ResolvedModel, opening):
     points: list[tuple[float, float]] = []
     zs: list[float] = []
     for part in model.geometry.by_uid(opening.uid).parts:
+        if part.key.startswith("hardware:"):
+            continue  # emitted as its own IfcDiscreteAccessory
         for solid in part.solids:
             if isinstance(solid, GSweep):
                 ex, ey, _ = solid.extrude

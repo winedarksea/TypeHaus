@@ -106,6 +106,9 @@ def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
     day (the bath 1 rework and the tub deck narrowing). The two were not isolated one by
     one; BATH2's delivered output is unchanged at 399.
 
+    **582 -> 580 with the 2026-10-25 board-and-batten work**, which moved the N/S cladding
+    face 1/2" in (BBD75 is 3/4" against PBR's 1-1/4"). Verdict unchanged.
+
     **Both loads fell 2026-09-24** (619 -> 606, 567 -> 556) when room volume became
     finish-face volume, which shrinks each bath's share of the air terms; FH-S-BATH1 also
     lost 0.48 ft2 to its 2" wall standoff (623 -> 612). Neither verdict changed.
@@ -119,7 +122,7 @@ def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
     """
     rows = _by_room(catlin_model_ro)
     assert rows["RM-S-BATH1"].result is Result.PASS
-    assert "delivers 611 Btu/h against a 582 Btu/h design load" in rows["RM-S-BATH1"].message
+    assert "delivers 611 Btu/h against a 580 Btu/h design load" in rows["RM-S-BATH1"].message
 
     bath2 = rows["RM-M-BATH2"]
     assert "delivers 399 Btu/h against a 501 Btu/h design load" in bath2.message

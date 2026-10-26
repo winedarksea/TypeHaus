@@ -198,6 +198,42 @@ than ±20% without it.
    as drawn and with sizes merged (e.g. the 27" heights 36/48/54 onto fewer). Take a merge only
    where the quote shows a real saving. Limits: 27" egress width, the girt-course sill module,
    R303.1 glazing area per room, and the stool heights.
+10. **Main-floor security glazing (owner request, 2026-10-26).** Ask Drutex / DAKAM and
+    the Andersen dealer to price an alternate for every main-floor (`WIN-M-*`) window:
+    factory-laminated security glass with a clear PVB (polyvinyl butyral) or manufacturer-
+    specified security interlayer bonded between the glass plies, incorporated as a
+    laminated lite in the insulating glass unit (IGU). Ask
+    Cascadia for the same alternate if quoting that line. Confirm availability for each
+    scheduled size and operation, added cost per unit and total, lead time, and warranty.
+    Request the proposed glass make-up, interlayer product and thickness, and any tested
+    forced-entry rating for the complete window assembly; identify ordinary safety
+    lamination separately from a security-rated option. Confirm the quoted configuration's
+    NFRC U/SHGC/VT, NAFS rating, required safety-glazing marks, sash/hardware weight limits
+    and bedroom egress clear opening. This is a quote alternate pending supplier responses
+    and owner selection; availability and security performance are not yet confirmed.
+
+**Security-glazing sourcing check (2026-10-26).**
+[Drutex's glass options](https://www.drutex.eu/en/products/addons/type/3/) explicitly
+include **44.4 anti-burglary** glass. Ask for that option's availability in the scheduled
+Alucover triple IGUs and its documented EN 356 class.
+[Eurostaklo's make-up table](https://www.eurostaklo.hr/en/staklo-lamistal) lists 44.4 as
+4 mm glass + 1.52 mm PVB + 4 mm glass, P4A. Treat this as a useful quote reference,
+not proof of Drutex's rating or of whole-window forced-entry resistance.
+[Andersen's July 2026 acoustic report](https://www.andersenwindows.com/-/media/Project/AndersenCorporation/AndersenWindows/AndersenWindows/files/technical-docs/performance/400-series-stc-oitc-web.pdf)
+lists **non-coastal laminated, insulating** glass for the 400 Series Perma-Shield casement
+(AND-N-1). Ask for this first and confirm whether it can be combined with triple glazing;
+the report lists laminated and triple as separate options. A monolithic laminated option
+is not an insulating-glass substitute. Glass impact classifications and acoustic results
+do not establish a forced-entry rating for the complete window.
+
+**Cost signal, not a project quote.**
+[European-window supplier Debesto](https://debesto.com/en-us/blog/european-custom-windows/)
+publishes an indicative **+10% of window price for safe glass**. It does not specify a
+44.4/P4A security package or establish a Drutex/Andersen surcharge. For illustration,
+10% on a $500–$1,000 base unit is $50–$100 extra; that arithmetic is not a supplier quote.
+Obtain separate add prices for ordinary safety lamination and the proposed security
+lamination, including any hardware, freight and duty changes. No confirmed security
+upgrade allowance is entered in the model or prices.
 
 ## 3. Frame material by orientation
 

@@ -27,7 +27,7 @@ def test_rain_garden_catchment_and_volume(catlin_model_ro) -> None:
     for side in ("W", "E"):
         # Garage half 338.75 + canopy half 80.0: the canopy's trough names both leaders.
         assert catchment.by_leader[f"TR-G-LEADER-{side}"] * _SF == pytest.approx(418.75, abs=0.1)
-        assert catchment.by_leader[f"TR-RF-LEADER-{side}"] * _SF == pytest.approx(692.2, abs=0.2)
+        assert catchment.by_leader[f"TR-RF-LEADER-{side}"] * _SF == pytest.approx(690.7, abs=0.2)
         basin = catlin_model_ro.plan.by_tag(f"RG-{side}-BASIN")
         assert ponding_volume_m3(basin) * _CF == pytest.approx(100.33, abs=0.05)
     assert catchment.uncounted == []
@@ -53,7 +53,7 @@ def test_garden_checks_read_as_the_note_says(catlin_model_ro) -> None:
     capacity = rain_garden_capacity(ctx)
     for side in ("W", "E"):
         assert any(f.result is Result.PASS and f"RG-{side}-BASIN ponds 100.3 cf against "
-                   "92.6 cf" in f.message for f in capacity)
+                   "92.5 cf" in f.message for f in capacity)
     setbacks = infiltration_setback(ctx)
     assert any(f.result is Result.PASS and "RG-W-BASIN is 10.5 ft" in f.message
                for f in setbacks)

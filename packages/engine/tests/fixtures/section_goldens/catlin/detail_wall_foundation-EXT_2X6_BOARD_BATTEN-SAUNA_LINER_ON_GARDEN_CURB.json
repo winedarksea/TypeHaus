@@ -1327,14 +1327,14 @@
       "points": [
         [
           -27.713543307086614,
-          -112.93750000000001
+          -121.4375
         ],
         [
-          -22.0,
-          -112.93750000000001
+          -6.6850000000000005,
+          -121.4375
         ],
         [
-          -22.0,
+          -6.6850000000000005,
           -109.4375
         ],
         [
@@ -1342,12 +1342,12 @@
           -109.4375
         ]
       ],
-      "layer": "A-SLAB",
+      "layer": "S-FNDN",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "SGS501AAAA",
-      "tag": "SL-SG-FLOOR"
+      "uid": "SGF102AAAA",
+      "tag": "FT-SG-W1"
     },
     {
       "space": "model",
@@ -1355,14 +1355,14 @@
       "boundary": [
         [
           -27.713543307086614,
-          -112.93750000000001
+          -121.4375
         ],
         [
-          -22.0,
-          -112.93750000000001
+          -6.6850000000000005,
+          -121.4375
         ],
         [
-          -22.0,
+          -6.6850000000000005,
           -109.4375
         ],
         [
@@ -1376,62 +1376,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -27.713543307086614,
-          -114.9375
-        ],
-        [
-          -10.0,
-          -114.9375
-        ],
-        [
-          -10.0,
-          -112.9375
-        ],
-        [
-          -27.713543307086614,
-          -112.9375
-        ]
-      ],
-      "layer": "A-SLAB",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "SGFW01AAAA",
-      "tag": "SL-SG-FROST-W"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -27.713543307086614,
-          -114.9375
-        ],
-        [
-          -10.0,
-          -114.9375
-        ],
-        [
-          -10.0,
-          -112.9375
-        ],
-        [
-          -27.713543307086614,
-          -112.9375
-        ]
-      ],
-      "pattern": "xps",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "xps"
     },
     {
       "space": "model",
@@ -1544,6 +1488,62 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -6.6850000000000005,
+          -117.4375
+        ],
+        [
+          -4.1850000000000005,
+          -117.4375
+        ],
+        [
+          -4.1850000000000005,
+          -109.4375
+        ],
+        [
+          -6.6850000000000005,
+          -109.4375
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "SGTB01AAAA-board",
+      "tag": "TB-SG-W1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.6850000000000005,
+          -117.4375
+        ],
+        [
+          -4.1850000000000005,
+          -117.4375
+        ],
+        [
+          -4.1850000000000005,
+          -109.4375
+        ],
+        [
+          -6.6850000000000005,
+          -109.4375
+        ]
+      ],
+      "pattern": "xps",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "xps"
     },
     {
       "space": "model",
@@ -1704,62 +1704,6 @@
         [
           0.5,
           -100.6875
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          0.5,
-          -66.93749999999999
-        ],
-        [
-          6.000000000000001,
-          -66.93749999999999
-        ],
-        [
-          6.000000000000001,
-          -66.75442913385827
-        ],
-        [
-          0.5,
-          -66.75442913385827
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "3BF9ZDQPT1",
-      "tag": "sill-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          0.5,
-          -66.93749999999999
-        ],
-        [
-          6.000000000000001,
-          -66.93749999999999
-        ],
-        [
-          6.000000000000001,
-          -66.75442913385827
-        ],
-        [
-          0.5,
-          -66.75442913385827
         ]
       ],
       "pattern": "lumber",
@@ -2821,190 +2765,6 @@
       "closed": true,
       "uid": null,
       "tag": "detail-component:sill-gasket"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          8.0,
-          -112.9375
-        ],
-        [
-          9.25,
-          -112.9375
-        ],
-        [
-          9.25,
-          -106.9375
-        ],
-        [
-          8.0,
-          -106.9375
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "fiber-cement"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          8.0,
-          -112.9375
-        ],
-        [
-          9.25,
-          -112.9375
-        ],
-        [
-          9.25,
-          -106.9375
-        ],
-        [
-          8.0,
-          -106.9375
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:sauna-baseboard"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -7.3100000000000005,
-          -106.3375
-        ],
-        [
-          -5.8100000000000005,
-          -106.3375
-        ],
-        [
-          -5.8100000000000005,
-          -107.28750000000001
-        ],
-        [
-          -6.3100000000000005,
-          -107.28750000000001
-        ],
-        [
-          -6.3100000000000005,
-          -106.8375
-        ],
-        [
-          -7.3100000000000005,
-          -106.8375
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "flashing"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -7.3100000000000005,
-          -106.3375
-        ],
-        [
-          -5.8100000000000005,
-          -106.3375
-        ],
-        [
-          -5.8100000000000005,
-          -107.28750000000001
-        ],
-        [
-          -6.3100000000000005,
-          -107.28750000000001
-        ],
-        [
-          -6.3100000000000005,
-          -106.8375
-        ],
-        [
-          -7.3100000000000005,
-          -106.8375
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.7,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:sauna-baseboard-flashing"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -6.3100000000000005,
-          -112.9375
-        ],
-        [
-          -6.0600000000000005,
-          -112.9375
-        ],
-        [
-          -6.0600000000000005,
-          -106.9375
-        ],
-        [
-          -6.3100000000000005,
-          -106.9375
-        ]
-      ],
-      "pattern": "membrane",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "air-barrier"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -6.3100000000000005,
-          -112.9375
-        ],
-        [
-          -6.0600000000000005,
-          -112.9375
-        ],
-        [
-          -6.0600000000000005,
-          -106.9375
-        ],
-        [
-          -6.3100000000000005,
-          -106.9375
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.25,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:sauna-membrane"
     },
     {
       "space": "model",

@@ -420,13 +420,15 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
         # above-deck insulation, the deck IS that plane — it oversails the last rafter, spans
         # the girts, and the panel clips straight to it. Anything else cantilevers the
         # roofing over open air. `roof_layer_setbacks.layer_edge_setbacks` carries this.
-        assert deck == pytest.approx(inch(1.25).meters)
+        # E/W is 1-1/4" PBR; the N/S rakes are 3/4" BBD75 board-and-batten.
+        cladding_in = 1.25 if edge in ("west", "east") else 0.75
+        assert deck == pytest.approx(inch(cladding_in).meters)
         # ``metal`` is ``batten - _METAL_PROUD_M``: the roofing is clipped 0.6" proud of the
         # plane it is fixed to, which is a roof-side dimension and does not know how thick
-        # the wall panel is. 1-1/4" of PBR leaves the wall panel 0.65" proud of the roofing —
-        # a DETAILING note for the zero-overhang edge: the corner trim covers a 0.65" step
-        # rather than overhanging the wall by 0.1", so its lower leg kicks out over the panel.
-        assert metal == pytest.approx(inch(0.65).meters)
+        # the wall panel is. The wall panel stands 0.65" (PBR) or 0.15" (BBD75) proud of the
+        # roofing — a DETAILING note for the zero-overhang edge: the corner trim covers that
+        # step rather than overhanging the wall, so its lower leg kicks out over the panel.
+        assert metal == pytest.approx(inch(cladding_in - 0.6).meters)
         # The membrane is bonded to the deck, so it rides the deck and not the panel.
         assert setbacks["membrane"][edge] == setbacks["sheathing"][edge]
     # The garage/truss roof is deferred: no setbacks, geometry unchanged.
