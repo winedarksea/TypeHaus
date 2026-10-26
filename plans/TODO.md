@@ -16,12 +16,14 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   leaf width or clear passage. Define leaf/rough-opening sizing together with framing and
   clearance before changing these envelopes (`plans/default-door-appearance.md`).
 
-- **Finish the true corner-to-corner `SB-BW-BAND` connection basis.**
-  The 2026-10-25 single-4x6 scheme already reduced the hardware to eight KBS1Z.
-  The corrected 2026-10-26 candidate fits with KBS1Z heels directly on the contacts and
-  tighter bends. Geometry, eight connectors and a 3D review export are implemented;
-  verify the tighter-fold capacity and clipped-corner bearing/fastener load path before
-  adopting it. See [study](bw-corner-brace-feasibility.md).
+- **Finish the true corner-to-corner `SB-BW-BAND` connection basis.** The adopted
+  offset scheme uses eight KBS1Z. The 2026-10-26 candidate's simplified leaves fit,
+  but actual tabs and the 44°–46° inside fold remain unverified. The KBS1Z patent
+  describes a preferred 90°–180° included angle; ordinary brace-angle interpolation
+  does not close this gap. Conditional demand is 745.6 lb per brace with equal share;
+  corner contact also loads the sill/centre post. Obtain an applicable joint detail
+  and complete that load path before adoption. See [study](bw-corner-brace-feasibility.md)
+  and [draft technical inquiry](bw-corner-brace-simpson-inquiry.md).
 
 - **Order the canopy and garage trusses from a fabricator who seals them** — the last four
   canopy UNKNOWNs (`rafter/RF-BW-CANOPY`, `rafter/RF-GARAGE`, `structural.truss_reactions`,
@@ -340,6 +342,8 @@ the future.
 - See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
 - Fix the missing horizontal trim of the board and batten (instructions says max panel length of around 20', no end lapping, so needs to have a mid point 'board' trim likely)
 - Seam clamps as minor snow retainer?
+- Some 240V options to consider: 240V power supplies for electronics.
+- Looks like D-S-DECK-E might be missing a sill or composite jamb. D-M-BALC seems to show it better.
 
 # Project Management
 

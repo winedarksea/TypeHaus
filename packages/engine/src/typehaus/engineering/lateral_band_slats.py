@@ -144,15 +144,22 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
                    Quantity(f"slat_bay_width_{el.tag}", lay.width * _IN_PER_M, "in", 0.01),
                    Quantity(f"slat_bay_height_{el.tag}", lay.height * _IN_PER_M, "in", 0.01)))
     if el.corner_to_corner:
+        from typehaus.resolve.framing.profiles import cross_section
+        from typehaus.resolve.slat_connector_landings import slat_connector_ends
+
+        ends = slat_connector_ends(lay.braces(0)[0], cross_section(el.slat).width_m)
+        angles = "/".join(f"{end.included_angle_degrees:.3f}°" for end in ends)
         missing.append(
             f"{el.tag}: an allowable load for the tightly bent {el.connector} corner joints "
-            "and the clipped-corner bearing/fastener load path; the open-knee rating is "
-            "not assigned to this configuration")
+            f"({angles} included), actual tab/fastener placement, and the clipped-corner "
+            "bearing load path; ER-280 Table 7 brace-angle interpolation does not "
+            "establish this inside-corner installation")
         notes.append(
             f"BAND, {el.tag}: true corner geometry at "
             f"{math.degrees(math.atan(lay.braces(0)[0].slope)):.3f}°, connectors on the "
-            "inside brace edges. Physical placement is modelled; joint, plate and post "
-            "design rows await the corner connection basis.")
+            "inside brace edges. Simplified leaves are modelled, without the product's "
+            "interlocking tabs. Joint, plate and post design rows await the corner "
+            "connection basis, including centre-post contact under compression.")
         return
     notes.append(
         f"BAND, {el.tag}: {len(lay.slats)} slats at 45°, {len(lay.bay(0))} a bay, mirrored to "

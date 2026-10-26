@@ -5,6 +5,7 @@
 // — each is geometry the resolver computed from something else — so all of them extrude a
 // resolved outline or lay out a member list, and none carries an editing path.
 import * as THREE from "three";
+import { applySprayFoamUv, createSprayFoamMaterial, isSprayFoamFinish } from "../sprayFoamMaterial";
 import { soffitPanelGeometry } from "./soffitPanels";
 import type {
   Brace, Catalog, FinishPart, FootingBedding, Floor, Member, Paneling, Roof, Room, Solid,
@@ -86,6 +87,8 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
       applyPieceGrainUv(geo, grain, plankStyle, pieceSeed(solid.uid));
     } else applyPlankPlaneUv(geo, center, planLongAxis(solid.outline), plankTileSizeM(plankStyle));
   }
+  const foam = !deckBoards && !plankStyle && isSprayFoamFinish(authoredAppearance(woodRef, appearances)?.finish);
+  if (foam) applySprayFoamUv(geo, center);
   const firstChildIndex = parent.children.length;
   const material =
     deckBoards ? createDeckBoardMaterial(mode)
@@ -93,6 +96,7 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
         ? createPlankMaterial(mode, plankStyle,
           materialColor(woodRef, palette, appearances), undefined,
           authoredAppearance(woodRef, appearances))
+        : foam ? createSprayFoamMaterial(mode, materialColor(woodRef!, palette, appearances))
         : createSolidMaterial(solid, catalog, mode, palette);
   const mesh = makeSurfaceMesh(geo, woodMaterialsForGeometry(material, geo));
   parent.add(mesh);
@@ -505,6 +509,7 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
         ?? (isStandingSeam(layer.material) ? SEAM_PROFILE : null))
       : null;
     const seam = seamProfile !== null;
+    const foam = isSprayFoamFinish(roofAppearance?.finish);
     const roofPaint = finishBaseColor(roofAppearance?.finish);
     // World-scaled UVs, applied to the geometry below: a roof plane carries none of its own
     // (`createProjectedSurfaceGeometry` sets position and normal only), which is why the
@@ -512,11 +517,15 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
     const mat = seam
       ? createStandingSeamMaterial(mode, [1, 1],
         roofPaint ? new THREE.Color(roofPaint).getHex() : 0xE8E8E2, true, seamProfile)
+      : foam ? createSprayFoamMaterial(mode, materialColor(layer.material, palette, catalog?.materials))
       : standardMaterial(new THREE.Color(materialColor(layer.material, palette, catalog?.materials)), mode, {
         roughness: mode === "nordic" ? NORDIC_ROUGHNESS.matte : 1,
         side: THREE.DoubleSide,
       });
-    if (seam) applyStandingSeamRoofUv(geo, roof, center, seamProfile);
+    if (foam) {
+      applySprayFoamUv(geo, center);
+      mat.side = THREE.DoubleSide;
+    } else if (seam) applyStandingSeamRoofUv(geo, roof, center, seamProfile);
     const mesh = makeSurfaceMesh(geo, mat);
     // Through `layerTrades` rather than used raw, so the roof's own sheathing deck takes the
     // framing FACET the wall's does. Without that the deck and the rafter band sat on the

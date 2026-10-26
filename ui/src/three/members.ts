@@ -40,8 +40,8 @@ import {
 } from "./memberPicking";
 import { projectPlanDirectionToScene, projectPointToScene, type PlanCenter } from "./planGeometry";
 import { makeSurfaceMesh, markShadowCaster, standardMaterial } from "./surfaces";
+import { buildSprayFoamMembers } from "./sprayFoamMembers";
 import vocabulary from "../generated/vocabulary.json";
-
 // Generated from emit/gltf/palette.py's `_PALETTE` (member-category keys; layer-function
 // colors live in nordic/palette.ts for wall fills) — see
 // packages/engine/src/typehaus/emit/vocabulary_manifest.py. The per-category rationale
@@ -463,6 +463,7 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
 export function buildMembers(group: THREE.Group, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string,
   materials?: readonly MaterialAppearance[], lines?: readonly SkinLine[]) {
+  members = buildSprayFoamMembers(group, members, center, mode, palette, ownerUid, materials);
   for (const member of members.filter((item) => item.surface_mesh)) {
     const geometry = createSurfaceMeshGeometry(member.surface_mesh!, center);
     const profile = metalPanelProfileFor(member, materials) ?? SEAM_PROFILE;

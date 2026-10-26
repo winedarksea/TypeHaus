@@ -4,7 +4,8 @@
 // that tells textile from matte paint. No fibres, shells or displacement. The colour map is
 // luminance only and `material.color` tints it, so one tile serves every carpet colour.
 import * as THREE from "three";
-import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
+import type { PlanCenter } from "./planGeometry";
+import { applyWorldBoxUv } from "./worldBoxUv";
 import { latticeHash, tiledFbm } from "./valueNoise";
 
 const CARPET_TEX_PX = 512;
@@ -120,25 +121,9 @@ export function createCarpetMaterial(
   return material;
 }
 
-/**
- * World-scaled box projection on each vertex's dominant normal axis. Treads and floors read
- * plan coordinates, so clipped parts stay in phase; risers read (along-face, height).
- */
+/** World-scaled pile on floors, treads and risers. */
 export function applyCarpetUv(geometry: THREE.BufferGeometry, center: PlanCenter): void {
-  if (!geometry.getAttribute("normal")) geometry.computeVertexNormals();
-  const positions = geometry.getAttribute("position");
-  const normals = geometry.getAttribute("normal");
-  const uv = new Float32Array(positions.count * 2);
-  for (let i = 0; i < positions.count; i++) {
-    const sy = positions.getY(i);
-    const [px, py] = projectScenePointToPlan(positions.getX(i), positions.getZ(i), center);
-    const nx = Math.abs(normals.getX(i));
-    const ny = Math.abs(normals.getY(i));
-    const nz = Math.abs(normals.getZ(i));
-    const [a, b] = ny >= nx && ny >= nz ? [px, py] : nx >= nz ? [py, sy] : [px, sy];
-    uv[i * 2] = a / CARPET_TILE_M; uv[i * 2 + 1] = b / CARPET_TILE_M;
-  }
-  geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+  applyWorldBoxUv(geometry, center, CARPET_TILE_M);
 }
 
 /** Drop the shared carpet maps — only for teardown in tests/hot reload. */

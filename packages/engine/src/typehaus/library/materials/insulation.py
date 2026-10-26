@@ -51,6 +51,7 @@ MATERIALS: tuple[Material, ...] = (
         perm_rating=1.6,
         hatch="batt",
         color="#e8d9b5",
+        finish="spray-foam",
         foam_plastic=True,
         air_impermeable=True,
         source="published ccSPF range R-5.9 to R-7.0 per inch and ASTM E96 permeance "

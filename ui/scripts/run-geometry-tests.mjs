@@ -135,6 +135,10 @@ try {
   runWoodSpeciesTests();
   runMarbleMaterialTests();
   runCarpetMaterialTests();
+  const { runSprayFoamMaterialTests } = await server.ssrLoadModule("/src/three/sprayFoamMaterial.test.ts");
+  runSprayFoamMaterialTests();
+  const { runSprayFoamBuilderTests } = await server.ssrLoadModule("/src/three/builders/sprayFoam.test.ts");
+  runSprayFoamBuilderTests();
   const { runTileMaterialTests } = await server.ssrLoadModule("/src/three/tileMaterial.test.ts");
   runTileMaterialTests();
   runMemberColorTests();

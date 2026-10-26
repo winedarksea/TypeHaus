@@ -456,6 +456,9 @@ def test_corner_geometry_does_not_inherit_the_open_knee_connection_rating() -> N
               band, states, notes, missing, inputs)
     assert not states
     assert "tightly bent KBS1Z" in missing[0]
+    assert "included" in missing[0]
+    assert "tab/fastener placement" in missing[0]
+    assert "centre-post contact under compression" in notes[0]
 
 
 def test_corner_layout_refuses_conflicting_offset_and_insufficient_connector_room() -> None:

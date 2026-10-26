@@ -5,6 +5,7 @@
 // real geometry of its own (arch tessellation, the piece decomposition around openings, the
 // raked top of a gable or ToRoof wall) rather than a straight extrusion of a resolved polygon.
 import * as THREE from "three";
+import { applySprayFoamUv, createSprayFoamMaterial, isSprayFoamFinish } from "../sprayFoamMaterial";
 import { createSurfaceMeshGeometry } from "../surfaceMesh";
 import { layerVisibilityKeys, primaryTrade, wallTrades } from "../../model/tradeVisibility";
 import type { Layer, MaterialSpec, Opening, Wall } from "../../model/types";
@@ -147,6 +148,7 @@ export function buildWall(
     // 0xE8E8E2, which is what all five of the house's white skins author (their catalog
     // `color` is the drawing hatch tone, not the paint, so it must not be read here).
     // Mirrors the declared-finish branch in emit/gltf/palette.py::_material_finish_color.
+    const foam = isSprayFoamFinish(appearance?.finish);
     const seamPaint = finishBaseColor(appearance?.finish);
     const mat = seam
       ? ly.surface_mesh && seamProfile?.key !== "standing-seam"
@@ -165,8 +167,9 @@ export function buildWall(
         : plankStyle
           ? createPlankMaterial(mode, plankStyle,
             materialColor(ly.material, palette, materials), undefined, appearance)
-          // The resolved paint film is already ahead of its sheet. Only a fixed depth step
-          // is needed here: slope bias can paint over timber projecting beyond the wall.
+          : foam ? createSprayFoamMaterial(mode, materialColor(ly.material, palette, materials))
+          // A fixed depth step keeps the resolved paint film ahead of its sheet without
+          // letting slope bias paint over timber projecting beyond the wall.
           : standardMaterial(new THREE.Color(materialColor(ly.material, palette, materials)), mode,
             appearance?.coating ? WALL_COATING_POLYGON_OFFSET
               : ly.function === "finish" ? WALL_FINISH_POLYGON_OFFSET : {});
@@ -195,7 +198,8 @@ export function buildWall(
       if (!geo) continue;
       // The line, not the wall: the pan module belongs to the facade, and the outriggers it
       // clips to are laid out on that same line (resolve/framing/furring.py).
-      if (seam) applyStandingSeamWallUv(geo, w.layout_axis ?? w.axis, center, seamProfile ?? SEAM_PROFILE);
+      if (foam) applySprayFoamUv(geo, center);
+      else if (seam) applyStandingSeamWallUv(geo, w.layout_axis ?? w.axis, center, seamProfile ?? SEAM_PROFILE);
       else if (wash) {
         // The mottle belongs to the WALL, not to the triangle: without world-scaled UVs a tall
         // court wall and a 20 SF fireplace panel would show the same cloud at two scales.
