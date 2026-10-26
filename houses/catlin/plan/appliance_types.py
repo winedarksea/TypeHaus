@@ -69,9 +69,10 @@ LG_WASHTOWER = ApplianceType(
     quick_closing=True,  # the washer half's hot and cold fill solenoids — P2903.5
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN,
                      Service.POWER_120, Service.POWER_240}),
-    # Two circuits, one appliance: LG's own spec sheet rates the washer at 120V/10A and the
-    # dryer at 240V, and the install literature calls for a 30A 4-wire cord. The house is
-    # already built that way (CKT-LAUNDRY 20A 1-pole and CKT-DRYER 30A 2-pole in
+    # Two circuits, one appliance: LG's spec sheet rates the washer at 120V/10A and the
+    # dryer at 240V/830W (or 208V/820W) on a 15A circuit. The dryer uses a separate 4-wire
+    # cord and 14-30R receptacle; its 2-pole breaker is 15A per LG's installation requirement.
+    # CKT-LAUNDRY is 20A 1-pole and CKT-DRYER 15A 2-pole in
     # plan/circuits.py, ED-M-LAUNDRY-RC1 and ED-M-LAUNDRY-DR1 in plan/electrical.py, whose
     # note already named an LG heat-pump dryer as the intended machine). Port elevations
     # follow the tower: washer plug low, dryer plug at the stacking bracket.
@@ -95,11 +96,12 @@ LG_WASHTOWER = ApplianceType(
     # is the doorway you stand in — still builds.
     clearances=(front_zone(inch(27), inch(32.75), inch(30),
                            "front-loader door swing and loading"),),
-    source=("LG WashTower WKHC252HBA / WKHC252HWA, US spec sheet read 2026-08-24: 27\" W x "
+    source=("LG WashTower WKHC252HBA / WKHC252HWA, LG US spec sheet read 2026-10-26: 27\" W x "
             "74 3/8\" H x 32 3/4\" D, 57 1/2\" deep with the door open, alcove cutout 29\" x "
             "75 3/8\" x 36 3/4\". Washer 5.0 cu ft (LG USA; LG Canada's sheet says 5.8 — 5.0 "
-            "is the US figure), 120V/10A on a 15A branch. Dryer 7.8 cu ft ventless heat "
-            "pump, 240V 4-wire, 30A cord per the install guide, condensate drain outlet "
+            "is the US figure), washer 120V/10A. Dryer 7.8 cu ft ventless heat pump, "
+            "240V/830W (or 208V/820W), 15A circuit per LG's US spec sheet; separate "
+            "4-wire cord. Condensate drain outlet "
             "behind the stacking bracket, no duct. Supply 20-120 psi both inlets. 1\" side "
             "clearance. 353 lb."),
 )

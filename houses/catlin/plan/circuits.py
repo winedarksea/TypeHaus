@@ -55,12 +55,12 @@ CIRCUITS = (
     # 210.21(B)(3)). 220.82(B)(3) counts the nameplate, not the breaker.
     Circuit(uid="CKT001AAAA", tag="CKT-RANGE", slot=1, panel_ref=_PANEL, breaker_amps=40, poles=2,
             nema="14-50R", load_va=11900, description="Kitchen range"),
-    # load_va is the *nameplate*, 830 W (LG DLHC5502V ventless heat-pump dryer, see
-    # ED-M-LAUNDRY-DR1 in plan/electrical.py) — not the 5,000 VA the 14-30R receptacle
-    # type carries. 220.82(B)(3) counts a dryer's nameplate rating; 220.54's 5,000 VA
-    # minimum belongs to the standard method, not this one. The 30A branch stays as
-    # deliberate provision for a future vented dryer.
-    Circuit(uid="CKT002AAAA", tag="CKT-DRYER", slot=5, panel_ref=_PANEL, breaker_amps=30, poles=2,
+    # LG's WKHC252HBA spec sheet gives the dryer as 830 W at 240 V and requires a 15 A
+    # circuit. Keep the 14-30R for its specified four-wire dryer cord, but protect this
+    # appliance circuit at 15 A. load_va is its nameplate, not the receptacle's rating;
+    # 220.82(B)(3) counts a dryer's nameplate rating, while 220.54's 5,000 VA minimum is
+    # for the standard method.
+    Circuit(uid="CKT002AAAA", tag="CKT-DRYER", slot=5, panel_ref=_PANEL, breaker_amps=15, poles=2,
             nema="14-30R", load_va=830, description="Dryer"),
     # The two EV circuits author load_va explicitly (same figures as their receptacle
     # types), so the schedule reads the same number the conductors are sized for whether or

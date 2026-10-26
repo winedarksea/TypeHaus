@@ -408,9 +408,10 @@ MAIN_DEVICES = [
     # difference between washer and dryer tops. Both boxes here are
     # `recessed_into_host_surface`, so a stale y does not merely float — it resolves inside
     # the studs; ED-M-LAUNDRY-RC1 below shares this wall for the same reason.
-    # CKT-DRYER stays a 30A/14-30R even though the LG DLHC5502V heat-pump dryer only needs
-    # 830W/15A minimum branch: it still ships a 4-prong cord needing 30A, and the oversize
-    # lets a future conventional vented dryer go in without repulling wire.
+    # The LG WKHC252HBA heat-pump dryer is 830 W and requires 15A/240V protection. LG calls
+    # for its separate 4-wire dryer cord; retain the 14-30R receptacle, but size the breaker
+    # to the appliance's 15A requirement (circuits.py). A future conventional dryer would
+    # need its own 30A circuit protection review.
     ElectricalDevice(uid="CEE007AAAA", tag="ED-M-LAUNDRY-DR1", kind=DeviceKind.RECEPTACLE_240,
                      type_ref="ED-T-RECEPTACLE-1430",
                      circuit="CKT-DRYER",
