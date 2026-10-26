@@ -21,9 +21,10 @@ try {
   await session.send("Emulation.setDeviceMetricsOverride", { width: 1500, height: 1190, deviceScaleFactor: 1, mobile: false });
   await mkdir(output, { recursive: true });
   const views = [["board-and-batten", "north"], ["ribbed-panel", "east"], ["corrugated", "north"]];
-  for (const [profile, face] of views) for (const detail of [false, true]) {
-    const label = `${profile}-${face}-${detail ? "detail" : "facade"}`;
-    const url = `http://127.0.0.1:${server.httpServer.address().port}/siding-review.html?profile=${profile}&face=${face}${detail ? "&detail" : ""}`;
+  for (const [profile, face] of views) for (const detail of ["facade", "opening",
+    ...(profile === "corrugated" ? ["head"] : [])]) {
+    const label = `${profile}-${face}-${detail === "opening" ? "detail" : detail}`;
+    const url = `http://127.0.0.1:${server.httpServer.address().port}/siding-review.html?profile=${profile}&face=${face}${detail === "facade" ? "" : `&detail=${detail}`}`;
     await session.send("Page.navigate", { url });
     const deadline = Date.now() + 60_000;
     while (!await evaluate(session, `return location.href === ${JSON.stringify(url)} && window.sidingReviewReady === true`)) {

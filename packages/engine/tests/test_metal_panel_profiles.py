@@ -163,3 +163,22 @@ def test_corrugated_section_is_a_sampled_sine_with_exact_wall_pitch():
     assert section[6][1] == pytest.approx(
         (CORRUGATED_PROFILE.depth_m + CORRUGATED_PROFILE.sheet_thickness_m) / 2,
     )
+
+
+@pytest.mark.parametrize("profile", [BBD75_PROFILE, PBR_PROFILE, CORRUGATED_PROFILE])
+def test_seated_folds_clear_concealed_laps_and_keep_the_nominal_crown(profile):
+    wall = panel_wall(profile)
+    clearance = 0.0013208  # .032 inch metal plus .020 inch strip-in membrane
+    mesh = panel_mesh(wall, profile, support_clearance_m=clearance)
+    assert min(y for _, y, _ in mesh.positions) == pytest.approx(-0.1 - profile.depth_m)
+    # A curved valley's miter can leave its rear face slightly farther out than the seat.
+    assert max(y for _, y, _ in mesh.positions) <= -0.1 - clearance + 1e-9
+    assert max(y for _, y, _ in mesh.positions) > -0.1 - clearance - profile.sheet_thickness_m
+    front = [y for (_, y, _), n in zip(mesh.positions, mesh.normals, strict=True) if n[1] < 0]
+    assert max(front) == pytest.approx(-0.1 - clearance - profile.sheet_thickness_m)
+
+
+def test_concealed_lap_cannot_consume_the_entire_profile_depth():
+    profile = CORRUGATED_PROFILE
+    with pytest.raises(ValueError, match="concealed flashing exceeds"):
+        panel_mesh(panel_wall(profile), profile, support_clearance_m=profile.depth_m)

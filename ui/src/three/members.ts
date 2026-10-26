@@ -262,14 +262,18 @@ function seamGroupsFor(members: Member[], materials?: readonly MaterialAppearanc
     if (!profile) continue;
     // The coil white default, exactly as builders/walls.ts resolves it: a paint named by the
     // member's own authored finish wins, everything else keeps the standard 0xE8E8E2 coil.
-    const paintHex = finishBaseColor(authoredAppearance(m.material, materials)?.finish);
-    const paint = paintHex ? new THREE.Color(paintHex).getHex() : 0xE8E8E2;
+    const paint = metalPanelPaintColor(m, materials);
     const key = `${profile.key}|${paint}`;
     const g = groups.get(key) ?? { profile, paint, members: [] };
     g.members.push(m);
     groups.set(key, g);
   }
   return groups;
+}
+
+function metalPanelPaintColor(member: Member, materials?: readonly MaterialAppearance[]): number {
+  return new THREE.Color(finishBaseColor(authoredAppearance(member.material, materials)?.finish)
+    ?? 0xE8E8E2).getHex();
 }
 
 // Standing-seam / ribbed-panel skin bands (gable closure cladding, roof-edge cladding) merged
@@ -462,7 +466,9 @@ export function buildMembers(group: THREE.Group, members: Member[], center: Plan
   for (const member of members.filter((item) => item.surface_mesh)) {
     const geometry = createSurfaceMeshGeometry(member.surface_mesh!, center);
     const profile = metalPanelProfileFor(member, materials) ?? SEAM_PROFILE;
-    const color = new THREE.Color(memberColor(member, palette, materials)).getHex();
+    // The physical closure continues the painted sheet, just like the procedural bands.
+    // Its catalog color is the drawing hatch tone, not the exposed coil finish.
+    const color = metalPanelPaintColor(member, materials);
     const material = profile.key === "standing-seam"
       ? createStandingSeamMaterial(mode, [1, 1], color, true, profile)
       : createProfiledMetalSkinMaterial(mode, color);

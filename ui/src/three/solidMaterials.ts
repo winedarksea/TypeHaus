@@ -146,9 +146,10 @@ export function createSolidMaterial(
     // A pane is a thin prism: without both faces it disappears from one side.
     side: translucent ? THREE.DoubleSide : THREE.FrontSide,
     depthWrite: !translucent,
-    // Depth bias exposes a coating on its substrate without thickening physical geometry.
+    // Fixed steps expose the film on its substrate while letting the profiled siding
+    // cover it. Slope bias can pull concealed flashing through the corrugation valleys.
     polygonOffset: flashingMembrane,
-    polygonOffsetFactor: flashingMembrane ? -1 : 0,
+    polygonOffsetFactor: 0,
     polygonOffsetUnits: flashingMembrane ? -1 : 0,
   });
 }

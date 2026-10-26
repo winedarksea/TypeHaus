@@ -378,3 +378,106 @@ def test_chord_push_uses_its_landing_and_empty_centre_has_zero_demand() -> None:
     states, missing = [], []
     _centre_post(element, layout, band, states, missing)
     assert not missing and all(state.demand == 0 for state in states)
+
+
+def test_true_corner_braces_resolve_both_corners_and_eight_flush_connectors() -> None:
+    from typehaus.resolve.slat_braces import slat_layout
+    from typehaus.resolve.slat_cuts import clipped_slat_profile
+    from typehaus.takeoff.hardware import hardware_takeoff
+
+    element = _single_band(corner_to_corner=True, brace_offset=None)
+    layout = slat_layout(element)
+    model, findings = _frame(element)
+    assert not findings
+    assert len(model.solids) == 8
+    for slat in layout.slats:
+        assert slat.slope == pytest.approx(layout.height / layout.width)
+        assert slat.length == pytest.approx(math.hypot(layout.width, layout.height))
+        profile = clipped_slat_profile(slat, layout, 3.5 * IN)
+        assert any(u == pytest.approx(0) and z == pytest.approx(0) for u, z in profile)
+        assert any(u == pytest.approx(layout.width) and z == pytest.approx(layout.height)
+                   for u, z in profile)
+        member = next(m for m in model.braces[0].members
+                      if m.child_key == f"slat-{slat.bay}+0")
+        assert member.cut_length_m == pytest.approx(slat.length)
+    hardware = next(r for r in hardware_takeoff(model) if r["scope"] == "slat brace connector")
+    assert hardware["count"] == 8
+    assert layout.crossing_mid(0) == layout.crossing_mid(1) == 1
+
+
+@pytest.mark.parametrize("low", ["chord", "sill"])
+@pytest.mark.parametrize("high", ["top", "centre"])
+def test_tighter_corner_bends_bear_on_real_wood_for_either_support_face(low, high) -> None:
+    from dataclasses import replace
+
+    from shapely.geometry import LineString, Polygon, box
+
+    from typehaus.resolve.kbs_geometry import KBS_GEOMETRY
+    from typehaus.resolve.slat_braces import slat_layout
+    from typehaus.resolve.slat_connector_landings import slat_connector_ends
+    from typehaus.resolve.slat_cuts import clipped_slat_profile
+
+    layout = slat_layout(_single_band(corner_to_corner=True, brace_offset=None))
+    slat = replace(layout.bay(0)[0], low=low, high=high)
+    brace = Polygon(clipped_slat_profile(slat, layout, 3.5 * IN)).buffer(1e-10)
+    w, h, p = layout.width, layout.height, layout.plate
+    supports = {"chord": box(-2 * layout.chord_face, 0, 0, h),
+                "centre": box(w, 0, w + 2 * layout.centre_half, h),
+                "sill": box(0, -p, w, 0), "top": box(0, h, w, h + p)}
+    leg, flange = KBS_GEOMETRY.leg_length_m, KBS_GEOMETRY.flange_width_m
+    for placement in slat_connector_ends(slat, 3.5 * IN):
+        assert 0 < placement.included_angle_degrees < 90
+        for wood, along, across in (
+                (brace, placement.brace_axis, placement.brace_face),
+                (supports[placement.landing].buffer(1e-10),
+                 placement.support, placement.support_face)):
+            leaf = Polygon([(placement.u + s * along[0] + t * across[0],
+                             placement.z + s * along[1] + t * across[1])
+                            for s, t in ((0, 0), (leg, 0), (leg, flange), (0, flange))])
+            assert wood.covers(leaf)
+            assert wood.covers(LineString([
+                (placement.u, placement.z),
+                (placement.u + leg * along[0], placement.z + leg * along[1])]))
+
+
+def test_corner_geometry_does_not_inherit_the_open_knee_connection_rating() -> None:
+    from types import SimpleNamespace
+
+    from typehaus.engineering.lateral_band_slats import SlatBand, slat_rows
+    from typehaus.resolve.slat_braces import slat_layout
+
+    element = _single_band(corner_to_corner=True, brace_offset=None)
+    layout = slat_layout(element)
+    band = SlatBand(element, layout, 1038.35, 1)
+    assert band.slat_lb == pytest.approx(519.175 * math.hypot(1, layout.height / layout.width))
+    assert band.vertical_per_end_lb > band.per_end_lb
+    states, notes, missing, inputs = [], [], [], []
+    slat_rows(None, SimpleNamespace(tag="W"), SimpleNamespace(tag="HEADER"),
+              band, states, notes, missing, inputs)
+    assert not states
+    assert "tightly bent KBS1Z" in missing[0]
+
+
+def test_corner_layout_refuses_conflicting_offset_and_insufficient_connector_room() -> None:
+    _, findings = _frame(_single_band(corner_to_corner=True))
+    assert "alternative layouts" in findings[0].message
+    model, findings = _frame(_single_band(corner_to_corner=True, brace_offset=None,
+                                        end=pt(inch(14), inch(0))))
+    assert not model.braces
+    assert "leg runs off" in findings[0].message
+
+
+def test_corner_draft_exports_cut_profiles_and_eight_connectors(tmp_path) -> None:
+    ifcopenshell = pytest.importorskip("ifcopenshell")
+    from typehaus.emit.gltf.emitter import emit_gltf_dict
+    from typehaus.emit.ifc.emitter import emit_ifc
+
+    model, _ = _frame(_single_band(corner_to_corner=True, brace_offset=None))
+    exported = ifcopenshell.open(str(emit_ifc(model, tmp_path / "corners.ifc")))
+    assert len(exported.by_type("IfcMechanicalFastener")) == 8
+    braces = [m for m in exported.by_type("IfcMember") if m.PredefinedType == "BRACE"]
+    assert len(braces) == 2
+    assert all(m.Representation.Representations[0].RepresentationType == "SweptSolid"
+               for m in braces)
+    gltf, _ = emit_gltf_dict(model, lod="framed")
+    assert {s.uid for s in model.solids} <= {n.get("extras", {}).get("uid") for n in gltf["nodes"]}

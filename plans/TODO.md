@@ -16,9 +16,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   leaf width or clear passage. Define leaf/rough-opening sizing together with framing and
   clearance before changing these envelopes (`plans/default-door-appearance.md`).
 
-- **Review `SB-BW-BAND` connector layout before reducing its 24 KBS1Z.** Top-only ties
-  would leave two of the four braced mid-band slats per bay untied
-  (`notes/canopy_west_band.md` §3a).
+- **Finish the true corner-to-corner `SB-BW-BAND` connection basis.**
+  The 2026-10-25 single-4x6 scheme already reduced the hardware to eight KBS1Z.
+  The corrected 2026-10-26 candidate fits with KBS1Z heels directly on the contacts and
+  tighter bends. Geometry, eight connectors and a 3D review export are implemented;
+  verify the tighter-fold capacity and clipped-corner bearing/fastener load path before
+  adopting it. See [study](bw-corner-brace-feasibility.md).
 
 - **Order the canopy and garage trusses from a fabricator who seals them** — the last four
   canopy UNKNOWNs (`rafter/RF-BW-CANOPY`, `rafter/RF-GARAGE`, `structural.truss_reactions`,

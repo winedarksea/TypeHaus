@@ -66,6 +66,8 @@ class SlatBrace(Element):
     push (``notes/canopy_west_band.md`` §3b). Set ``brace_offset`` for a single brace
     per bay instead of infill, and ``connectors_per_end=2`` for equal-width members
     connected on both flush faces.
+    ``corner_to_corner`` selects the exact bay diagonal and tighter connector bends;
+    that draft layout reports its unverified corner connection basis as incomplete.
 
     The layout is ``resolve/slat_braces.slat_layout``'s, one rule for the resolver, the dead
     load and the engineering. Lumber bills off the resolved members; the connectors, the plate
@@ -90,6 +92,9 @@ class SlatBrace(Element):
     min_slat_length: Length = inch(8)
     #: One brace per bay at z = u - c; ignores clear_gap and pitch.
     brace_offset: Length | None = None
+    #: One exact bay diagonal, with KBS1Z heels on the inside edges and tighter bends.
+    #: Geometry is supported; its acute-fold connection rating must be supplied separately.
+    corner_to_corner: bool = False
     connectors_per_end: int = 1
     connector: str = "KBS1Z"
     #: A slat whose connector leg would run off its bearing face (a frame corner) is screwed

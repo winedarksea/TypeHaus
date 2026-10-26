@@ -204,6 +204,10 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
                        f"depth / {chords[0]:.3f}'")
         band = band_for_wall(ctx, case.wall, case.wind.roof_tag, shear)
         if band is not None:
+            if band.band.corner_to_corner:
+                return _incomplete(case.tag, tags, [
+                    f"{band.band.tag}'s clipped-corner connection and bearing load path "
+                    "before grading its chord reactions"])
             # The slats' own couple on the header (note §3h); the larger of the two, and
             # nothing favourable credited.
             if band.couple_lb_ft() > couple:

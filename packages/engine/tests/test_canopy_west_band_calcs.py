@@ -119,6 +119,26 @@ def test_an_unbridged_band_is_incomplete_by_name(catlin_ctx) -> None:
     assert any("band between W-BW-SCREEN's top" in text for text in found.missing)
 
 
+def test_corner_draft_keeps_connection_and_chord_design_incomplete(catlin_ctx) -> None:
+    from typehaus.engineering.lateral_system import compute as lateral_records
+    from typehaus.engineering.wood_roof_post import compute as post_records
+
+    plan = catlin_ctx.plan
+    band = plan.by_tag("SB-BW-BAND")
+    draft = band.model_copy(update={"corner_to_corner": True, "brace_offset": None})
+    elements = {storey: tuple(draft if el.uid == band.uid else el for el in members)
+                for storey, members in plan.elements.items()}
+    ctx = replace(catlin_ctx.engineering.context,
+                  plan=plan.model_copy(update={"elements": elements}))
+    lateral = next(r for r in lateral_records(ctx) if r.item_id == _ITEM)
+    assert lateral.status is Status.INCOMPLETE
+    assert any("tightly bent KBS1Z" in reason for reason in lateral.missing)
+    assert not any(state.name == "SB-BW-BAND slat end, KBS1Z" for state in lateral.limit_states)
+    chord = next(r for r in post_records(ctx) if r.item_id == "wood_roof_post/PT-BW-CW")
+    assert chord.status is Status.INCOMPLETE
+    assert any("clipped-corner connection" in reason for reason in chord.missing)
+
+
 #: §5c, ``post -> {row: ratio}``; a chord's along rows and its column carry the band push.
 _POSTS = {
     "PT-BW-CW": {"AC6Z head, uplift + lateral along the beam": 0.435,

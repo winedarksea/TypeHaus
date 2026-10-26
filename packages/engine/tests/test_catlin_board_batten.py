@@ -59,3 +59,28 @@ def test_catlin_profiled_export_is_valid_and_has_its_own_painted_material(catlin
                 material = gltf['materials'][primitive['material']]['pbrMetallicRoughness']
                 assert material['roughnessFactor'] == .45
                 assert material['metallicFactor'] == .05
+
+
+def test_garage_north_valleys_clear_the_head_lap_and_continue_through_the_gable(catlin_model_ro):
+    model = catlin_model_ro
+    wall = model.wall('W-G-N')
+    skin = next(layer for layer in wall.layers if layer.function == 'cladding')
+    membrane = next(solid for solid in model.solids
+                    if solid.tag == 'D-G-OVERHEAD-FLASH-PERIMETER')
+    flashing_face = max(y for _, y, _ in membrane.body_mesh.positions)
+    assert min(y for _, y, _ in skin.surface_mesh.positions) >= flashing_face - 1e-9
+    # Clearance is the thin head lap, never the exposed drip's much larger projection.
+    assert min(y for _, y, _ in skin.surface_mesh.positions) == pytest.approx(
+        flashing_face, abs=1e-5)
+    assert max(y for _, y, _ in skin.surface_mesh.positions) == pytest.approx(
+        max(y for _, y in skin.polygon))
+
+    def seam(mesh):
+        return {(round(x, 9), round(y, 9)) for x, y, z in mesh.positions
+                if abs(z - wall.z1_m) < 1e-9 and 2 < x < 9}
+
+    closures = [member.surface_mesh for roof in model.roofs for member in roof.members
+                if member.parent_uid == wall.uid and member.category == 'cladding']
+    assert len(closures) == 2
+    assert all(min(y for _, y, _ in mesh.positions) >= flashing_face - 1e-9 for mesh in closures)
+    assert seam(skin.surface_mesh) == set().union(*(seam(mesh) for mesh in closures))

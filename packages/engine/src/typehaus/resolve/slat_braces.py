@@ -1,4 +1,4 @@
-"""Resolve a :class:`~typehaus.model.braces.SlatBrace`: the band frame and its 45° slats.
+"""Resolve a SlatBrace: the frame, 45° slats, or one exact corner diagonal per bay.
 
 ``slat_layout`` is the ONE rule for which slats there are and where they land; the resolver,
 the dead load (``resolve/assembly_weight``) and the engineering (``engineering/
@@ -11,6 +11,8 @@ centre, and ``c_j = (W - H)/2 + j * pitch`` centres the set on the bay.
 A slat is ``braced`` when a KBS1Z's support leg stays on its bearing face at both ends. One
 ending in a frame corner (catlin's j = 0) would run its leg into the plate, so it is screwed
 infill: drawn and billed as lumber, but no connector, and no share of the brace force.
+The explicit corner layout instead puts tighter-bend connectors on the inside edges;
+physical fit is distinct from its as-yet-unverified connection design basis.
 """
 
 from __future__ import annotations
@@ -42,10 +44,15 @@ class Slat:
     low: str
     high: str
     braced: bool = True  # False: screwed infill, no connector (module docstring)
+    slope: float = 1.0
+    closed_connectors: bool = False
+
+    def elevation(self, u: float) -> float:
+        return self.slope * u - self.c
 
     @property
     def length(self) -> float:
-        return (self.u1 - self.u0) * _ROOT2
+        return (self.u1 - self.u0) * math.hypot(1.0, self.slope)
 
 
 @dataclass(frozen=True)
@@ -71,7 +78,7 @@ class SlatLayout:
     def crossing_mid(self, index: int) -> int:
         """Braced slats crossing mid-band in one bay. The verticals' shear is zero there."""
         z = self.height / 2.0
-        return sum(1 for s in self.braces(index) if s.u0 <= s.c + z <= s.u1)
+        return sum(1 for s in self.braces(index) if s.u0 <= (s.c + z) / s.slope <= s.u1)
 
     def station(self, bay: int, u: float) -> float:
         """Distance along start→end of a bay-frame ``u``."""
@@ -92,6 +99,18 @@ def slat_layout(el: SlatBrace) -> SlatLayout | None:
     face = cross_section(el.slat).width_m or 0.0
     if width <= 0.0 or height <= 0.0 or face <= 0.0:
         return None
+    if el.corner_to_corner:
+        # Inside-edge heels lie on the actual clipped ends. The support legs point
+        # away from the corners along the post/top plate instead of off their ends.
+        half_vertical = face * math.hypot(1.0, height / width) / 2.0
+        half_horizontal = half_vertical * width / height
+        fits = (height >= half_vertical + KBS_GEOMETRY.leg_length_m
+                and width >= half_horizontal + KBS_GEOMETRY.leg_length_m)
+        slats = tuple(Slat(bay, 0, 0.0, 0.0, width, "chord", "top",
+                           el.connector != "KBS1Z" or fits, height / width, True)
+                      for bay in (0, 1)
+                      if math.hypot(width, height) >= el.min_slat_length.meters - 1e-9)
+        return SlatLayout(length, chord_face, centre_half, plate, width, height, 0.0, slats)
     pitch = (face + el.clear_gap.meters) * _ROOT2
     c_mid = (width - height) / 2.0
     reach = int((width + height) / pitch) + 1 if el.brace_offset is None else 0
@@ -127,6 +146,9 @@ def resolve_slat_brace(model: ResolvedModel, el: SlatBrace, storey: str) -> list
     Engineering uses its centreline; lumber nesting uses the blank spanning its miters.
     """
     layout = slat_layout(el)
+    if el.corner_to_corner and el.brace_offset is not None:
+        return [element_error("integrity.slat_brace",
+                              "corner_to_corner and brace_offset are alternative layouts", el.tag)]
     if layout is None:
         return [element_error("integrity.slat_brace", "the frame leaves no bay between the "
                               "chords, plates and centre post", el.tag)]
@@ -139,13 +161,15 @@ def resolve_slat_brace(model: ResolvedModel, el: SlatBrace, storey: str) -> list
             return [element_error(
                 "integrity.slat_brace", "two connectors per end require equal-width members "
                 "with both faces flush (zero plane_offset)", el.tag)]
-    if el.brace_offset is not None and (len(layout.slats) != 2
-                                      or not all(s.braced for s in layout.slats)):
+    if (el.brace_offset is not None or el.corner_to_corner) and (
+            len(layout.slats) != 2 or not all(s.braced for s in layout.slats)):
         return [element_error(
-            "integrity.slat_brace", "brace_offset leaves no brace or a KBS1Z leg runs off "
+            "integrity.slat_brace", "brace_offset/corner_to_corner leaves no brace "
+            "or a KBS1Z leg runs off "
             "its bearing face; move the brace away from the frame corner", el.tag)]
     need = kbs_heel_spacing()
-    if el.brace_offset is None and el.connector == "KBS1Z" and layout.pitch < need - 1e-9:
+    if (el.brace_offset is None and not el.corner_to_corner
+            and el.connector == "KBS1Z" and layout.pitch < need - 1e-9):
         return [element_error(
             "integrity.slat_brace",
             f"slats {layout.pitch / 0.0254:.3f}\" apart along a plate, but a KBS1Z at each end "
@@ -177,13 +201,13 @@ def resolve_slat_brace(model: ResolvedModel, el: SlatBrace, storey: str) -> list
                layout.height, orient=(ux, uy)),
     ]
     face = cross_section(el.slat).width_m or 0.0
-    half = face / _ROOT2  # half the slat's vertical extent at 45°
     z_sill = base + layout.plate
     offset = el.plane_offset.meters
     for s in layout.slats:
+        half = face * math.hypot(1.0, s.slope) / 2.0
         profile = clipped_slat_profile(s, layout, face)
         u0, u1 = min(u for u, _ in profile), max(u for u, _ in profile)
-        z_lo, z_hi = z_sill + (u0 - s.c), z_sill + (u1 - s.c)
+        z_lo, z_hi = z_sill + s.elevation(u0), z_sill + s.elevation(u1)
         members.append(member(
             f"slat-{s.bay}{s.j:+d}", "brace", el.slat,
             at(layout.station(s.bay, u0), offset), at(layout.station(s.bay, u1), offset),
@@ -191,7 +215,7 @@ def resolve_slat_brace(model: ResolvedModel, el: SlatBrace, storey: str) -> list
             z0_end_m=max(z_sill, z_hi - half),
             z1_end_m=min(z_sill + layout.height, z_hi + half),
             elevation_profile=tuple((u - u0, z_sill + z) for u, z in profile),
-            cut_length_m=slat_blank_length(profile),
+            cut_length_m=slat_blank_length(profile, s.slope),
             plan_width_m=cross_section(el.slat).depth_m,
             connection=(f"kneebrace:{el.connector}" if s.braced
                         else f"screwed:{el.infill_fastener}")))

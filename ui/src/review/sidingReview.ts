@@ -15,6 +15,8 @@ const face = params.get("face") ?? "north";
 const profileKey = params.get("profile") ?? "board-and-batten";
 const detail = params.has("detail");
 const baseDetail = params.get("detail") === "base";
+const headDetail = params.get("detail") === "head";
+const JUNCTION_TOLERANCE_M = 1e-6;
 const palette = RESOLVED_NORDIC_PALETTE.light;
 const materials = model.catalog!.materials;
 const center: [number, number] = [5.4864, 5.4864];
@@ -70,7 +72,7 @@ const detailPlan = openingWall && chosenOpening ? (() => {
     y0 + (y1 - y0) * chosenOpening.center_along_m / length] as [number, number];
 })() : profileCenterPlan;
 const detailElevation = openingWall && chosenOpening
-  ? openingWall.z0_m + chosenOpening.sill_m + chosenOpening.height_m / 2
+  ? openingWall.z0_m + chosenOpening.sill_m + chosenOpening.height_m * (headDetail ? 1 : 0.5)
   : profileCenterElevation;
 const faceNormals = walls.map(wallOutward);
 const outwardPlan: [number, number] = [
@@ -107,19 +109,30 @@ function buildFacades(targetGroups: Record<Trade, THREE.Group>, profiled: boolea
       profiled ? layer : { ...layer, surface_mesh: null }) };
     buildWall(targetGroups, displayed, openings, center, "nordic", palette, picks, selected, materials);
     const closures = (model.roofs ?? []).flatMap(roof => roof.members).filter(member =>
-      member.parent_uid === wall.uid && member.category === "cladding").map(member =>
+      member.parent_uid === wall.uid).map(member =>
         profiled ? member : { ...member, surface_mesh: null });
     buildWallSkinMembers(targetGroups, targetGroups.siding, wall.uid, closures, center, "nordic", palette, materials);
-    for (const opening of openings) buildOpening(targetGroups.openings, opening, wall, center,
-      "nordic", palette, { materials }, picks, selected);
+    for (const opening of openings) {
+      const product = model.catalog?.door_types.find(type => type.tag === opening.type_ref);
+      buildOpening(targetGroups.openings, opening, wall, center, "nordic", palette,
+        { materials, operation: product?.operation, glazed: product?.glazed,
+          trimless: product?.trimless, bookcaseDoor: product?.bookcase_door,
+          leafSet: product?.leaf_set }, picks, selected);
+    }
+  }
+  const openingTags = new Set(selectedOpenings.map(opening => opening.tag));
+  for (const flashing of model.solids?.filter(solid => openingTags.has(solid.host_ref ?? "")) ?? []) {
+    buildSolid(targetGroups.roofing, flashing, center, "nordic", palette,
+      model.catalog, picks, selected, materials);
   }
   if (profileKey === "corrugated") {
     for (const wall of model.walls.filter(wall => onFace(wall)
-      && wall.layers.some(layer => layer.material === "aluminum-flat-pvdf"))) {
+      && wall.is_foundation && Math.abs(wall.z1_m - wallBase) < JUNCTION_TOLERANCE_M)) {
       buildWall(targetGroups, wall, model.openings.filter(opening => opening.host === wall.tag),
         center, "nordic", palette, picks, selected, materials);
     }
-    for (const flashing of model.solids?.filter(solid => solid.tag.startsWith("TR-G-STEMZ-")) ?? []) {
+    for (const flashing of model.solids?.filter(solid => solid.category === "flashing"
+      && solid.z0_m <= wallBase && solid.z1_m >= wallBase) ?? []) {
       buildSolid(targetGroups.roofing, flashing, center, "nordic", palette,
         model.catalog, picks, selected, materials);
     }
@@ -135,7 +148,7 @@ const flatStart = performance.now(); buildFacades(flatGroups, false);
 const flatBuildMs = performance.now() - flatStart;
 const start = performance.now(); buildFacades(groups, true);
 const buildMs = performance.now() - start;
-const span = baseDetail ? 0.3 : detail ? 1.9 : Math.max(4.5, Math.min(8, (wallTop - wallBase) * 0.7));
+const span = baseDetail || headDetail ? 0.3 : detail ? 1.9 : Math.max(4.5, Math.min(8, (wallTop - wallBase) * 0.7));
 // Match Panel3D's perspective depth range: an orthographic review conceals thin-sheet fights.
 const camera = new THREE.PerspectiveCamera(50, 1500/1100, .05, 500);
 const distance = Number(params.get("distance") ?? (detail ? 7 : 23));
@@ -155,5 +168,5 @@ scene.traverse(object => {
 if (physicalMeshes === 0) errors.push("No physical siding meshes rendered");
 renderer.render(scene,camera);
 const info = { buildMs, flatBuildMs, physicalMeshes, triangles, drawCalls: renderer.info.render.calls, errors };
-document.querySelector("#status")!.textContent = `${profileKey} · ${face} ${detail ? "detail" : "facade"} · ${physicalMeshes} profiled meshes · ${triangles.toLocaleString()} triangles · ${buildMs.toFixed(0)} ms build`;
+document.querySelector("#status")!.textContent = `${profileKey} · ${face} ${headDetail ? "head" : detail ? "detail" : "facade"} · ${physicalMeshes} profiled meshes · ${triangles.toLocaleString()} triangles · ${buildMs.toFixed(0)} ms build`;
 Object.assign(window, { sidingReviewReady: true, sidingReviewChecks: info });

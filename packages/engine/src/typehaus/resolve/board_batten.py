@@ -23,6 +23,7 @@ from typehaus.resolve.geometry_prims import (
     arch_soffit_circle,
 )
 from typehaus.resolve.geometry_walls import cuts_layer, wall_top_at
+from typehaus.resolve.panel_support import panel_support_clearance_m
 from typehaus.resolve.surface_clipping import (
     CLIP_TOLERANCE_M,
     clip_faces,
@@ -249,6 +250,7 @@ def profile_mesh(
     upper_at=None,
     height_breakpoints=(),
     profile=BBD75_PROFILE,
+    support_clearance_m=0.0,
 ) -> GMesh:
     """Fold and clip a skin in a facade's stable (along, outward, elevation) frame."""
     if z1 - z0 <= CLIP_TOLERANCE_M:
@@ -305,7 +307,15 @@ def profile_mesh(
             planes.append(tuple(-v for v in plane) if lower else plane)
         height_regions.append(planes)
     pieces = []
-    section = profile.section_points_m
+    relief_depth = profile.depth_m - profile.sheet_thickness_m
+    if not 0 <= support_clearance_m < relief_depth:
+        raise ValueError(f"{wall.tag}: concealed flashing exceeds the {profile.key} skin envelope")
+    # Thin sheet seats over the concealed laps. Relieve the shallow folds continuously
+    # through wall and closure, keeping the crown and the nominal stack depth fixed.
+    section = tuple(
+        (s, depth + support_clearance_m * (profile.depth_m - depth) / relief_depth)
+        for s, depth in profile.section_points_m
+    )
     inset = _inset_section(section, profile.sheet_thickness_m)
     half = profile.pitch_m / 2
     for station in range(
@@ -356,6 +366,7 @@ def resolve_profiled_metal_surfaces(model) -> None:
         for member in line.members
     }
     walls = {wall.uid: wall for wall in model.walls}
+    support_clearances = {}
 
     def profile_for(ref):
         return PANEL_PROFILES.get(finishes.get(ref))
@@ -366,6 +377,8 @@ def resolve_profiled_metal_surfaces(model) -> None:
             profile = profile_for(layer.material_ref)
             if profile is not None and not layer.is_cavity:
                 z0, z1 = layer.band(wall)
+                clearance = panel_support_clearance_m(model, wall, layer)
+                support_clearances[wall.uid, layer.material_ref] = clearance
                 mesh = profile_mesh(
                     wall,
                     layer.polygon,
@@ -377,6 +390,7 @@ def resolve_profiled_metal_surfaces(model) -> None:
                     upper_at=lambda x, y, w=wall: wall_top_at(w, x, y),
                     height_breakpoints=wall.axis,
                     profile=profile,
+                    support_clearance_m=clearance,
                 )
                 layer = replace(layer, surface_mesh=mesh)
             layers.append(layer)
@@ -407,6 +421,7 @@ def resolve_profiled_metal_surfaces(model) -> None:
                     lower_at=lambda x, y, h=height, m=member: h(x, y, m.z0_m, m.z0_end_m),
                     upper_at=lambda x, y, h=height, m=member: h(x, y, m.z1_m, m.z1_end_m),
                     profile=profile,
+                    support_clearance_m=support_clearances[wall.uid, member.material],
                 )
                 member = replace(member, surface_mesh=mesh)
             members.append(member)
