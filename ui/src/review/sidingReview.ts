@@ -6,6 +6,7 @@ import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { buildWall } from "../three/builders/walls";
 import { buildWallSkinMembers } from "../three/builders/wallSkin";
 import { buildOpening } from "../three/builders/openings";
+import { buildSolid } from "../three/builders/structure";
 import { disposeGroup } from "../three/members";
 
 const model: Model = await (await fetch("/__siding-review-house")).json();
@@ -13,6 +14,7 @@ const params = new URLSearchParams(location.search);
 const face = params.get("face") ?? "north";
 const profileKey = params.get("profile") ?? "board-and-batten";
 const detail = params.has("detail");
+const baseDetail = params.get("detail") === "base";
 const palette = RESOLVED_NORDIC_PALETTE.light;
 const materials = model.catalog!.materials;
 const center: [number, number] = [5.4864, 5.4864];
@@ -78,9 +80,9 @@ const outwardPlan: [number, number] = [
 const outwardLength = Math.hypot(...outwardPlan) || 1;
 outwardPlan[0] /= outwardLength; outwardPlan[1] /= outwardLength;
 const outwardScene = new THREE.Vector3(outwardPlan[0], 0, -outwardPlan[1]);
-const targetPlan = detail ? detailPlan : profileCenterPlan;
+const targetPlan = detail && !baseDetail ? detailPlan : profileCenterPlan;
 const target = new THREE.Vector3(targetPlan[0] - center[0],
-  detail ? detailElevation : profileCenterElevation, center[1] - targetPlan[1]);
+  baseDetail ? wallBase : detail ? detailElevation : profileCenterElevation, center[1] - targetPlan[1]);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#e5e3df");
 for (const group of Object.values(groups)) scene.add(group);
@@ -101,7 +103,7 @@ function buildFacades(targetGroups: Record<Trade, THREE.Group>, profiled: boolea
   const picks: THREE.Mesh[] = [], selected = new Map<string, THREE.Material[]>();
   for (const wall of walls) {
     const openings = selectedOpenings.filter(opening => opening.host === wall.tag);
-    const displayed = { ...wall, members: [], layers: wall.layers.map(layer =>
+    const displayed = { ...wall, layers: wall.layers.map(layer =>
       profiled ? layer : { ...layer, surface_mesh: null }) };
     buildWall(targetGroups, displayed, openings, center, "nordic", palette, picks, selected, materials);
     const closures = (model.roofs ?? []).flatMap(roof => roof.members).filter(member =>
@@ -110,6 +112,17 @@ function buildFacades(targetGroups: Record<Trade, THREE.Group>, profiled: boolea
     buildWallSkinMembers(targetGroups, targetGroups.siding, wall.uid, closures, center, "nordic", palette, materials);
     for (const opening of openings) buildOpening(targetGroups.openings, opening, wall, center,
       "nordic", palette, { materials }, picks, selected);
+  }
+  if (profileKey === "corrugated") {
+    for (const wall of model.walls.filter(wall => onFace(wall)
+      && wall.layers.some(layer => layer.material === "aluminum-flat-pvdf"))) {
+      buildWall(targetGroups, wall, model.openings.filter(opening => opening.host === wall.tag),
+        center, "nordic", palette, picks, selected, materials);
+    }
+    for (const flashing of model.solids?.filter(solid => solid.tag.startsWith("TR-G-STEMZ-")) ?? []) {
+      buildSolid(targetGroups.roofing, flashing, center, "nordic", palette,
+        model.catalog, picks, selected, materials);
+    }
   }
 }
 // Warm the shared procedural textures before comparing geometry build costs.
@@ -122,10 +135,13 @@ const flatStart = performance.now(); buildFacades(flatGroups, false);
 const flatBuildMs = performance.now() - flatStart;
 const start = performance.now(); buildFacades(groups, true);
 const buildMs = performance.now() - start;
-const span = detail ? 1.9 : Math.max(4.5, Math.min(8, (wallTop - wallBase) * 0.7));
-const camera = new THREE.OrthographicCamera(-span * 1500/1100, span * 1500/1100, span, -span, .01, 100);
-camera.position.copy(target).addScaledVector(outwardScene, detail ? 7 : 23)
-  .add(new THREE.Vector3(0, detail ? 0.4 : 2.5, 0));
+const span = baseDetail ? 0.3 : detail ? 1.9 : Math.max(4.5, Math.min(8, (wallTop - wallBase) * 0.7));
+// Match Panel3D's perspective depth range: an orthographic review conceals thin-sheet fights.
+const camera = new THREE.PerspectiveCamera(50, 1500/1100, .05, 500);
+const distance = Number(params.get("distance") ?? (detail ? 7 : 23));
+camera.position.copy(target).addScaledVector(outwardScene, distance)
+  .add(new THREE.Vector3(0, distance * (detail ? 0.4/7 : 2.5/23), 0));
+camera.zoom = camera.position.distanceTo(target) * Math.tan(THREE.MathUtils.degToRad(25)) / span;
 camera.lookAt(target); camera.updateProjectionMatrix();
 const errors: string[] = [];
 let physicalMeshes = 0, triangles = 0;
