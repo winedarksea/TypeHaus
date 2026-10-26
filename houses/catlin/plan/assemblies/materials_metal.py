@@ -19,6 +19,8 @@ MATERIALS_METAL = [
     # --- the metal skins --------------------------------------------------------
     # House roof: Image II Striated direct-fastened snap-seam, 24 ga PVDF.
     # Garage roof: nail strip. Wall panels retain their separate profile/gauge records.
+    # Seam-profile tags keep the substring "seam": `ui/src/three/materials.isStandingSeam`
+    # keys the ribbed finish off it.
     # `standing-seam-nailstrip-26-green` — the same 26 ga. nail-strip panel as
     # the rest of the garage, in Western States Metal Roofing "Classic Green"
     # (westernstatesmetalroofing.com/classic-green) instead of white, on W-G-E only (the
@@ -81,6 +83,13 @@ MATERIALS_METAL = [
     # corner-zone demand. This wall stays PRESCRIPTIVE — `exposed_fastener=True` keeps it
     # out of `engineering/wall_panel.py`'s enumeration, which is the correct scope: a
     # face-fastened panel's wall capacity is published.
+    # `standing-seam-linen-white` — the ROOF panel. It exists for one field the library's
+    # generic `standing-seam` cannot carry: `solar_absorptance`. Same PVDF Linen White (81) as
+    # the walls (SR 0.73 / TE 0.86 / SRI 89, so alpha = 1 - SR = 0.27), on a direct-fastened
+    # profile. A roof is solar-dominated: at alpha 0.90 the cooling-peak SOL-AIR is 144 F, not
+    # 101 F (notes/solar_gain_basis.md section 6), and `color` cannot carry that. House-local
+    # because the colour is this house's choice; every other building-science number is
+    # `standing-seam`'s (continuous steel carries no R and no vapour permeance).
     Material(tag="standing-seam-linen-white",
              name="Metal Sales Image II Striated 16 in, 24 ga, 70% PVDF Kynar 500 Linen White (81), direct-fastened through nail flange",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",

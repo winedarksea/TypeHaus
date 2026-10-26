@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 37f2f9cc4a0865ae  
-**Lines:** 182
+**Model hash:** da570c4e5ee9e8e4  
+**Lines:** 184
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -150,6 +150,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | 2 | ea |  | building |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | 50 | ea |  | basement, main |
+| S-5-S snap-lock seam clamp | 12 | ea |  | building |
+| S-5-S snap-lock seam clamp | 48 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | 4 | ea |  | basement |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 71 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 105 | ea |  | building |
@@ -387,6 +389,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUSZ) | — |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | — |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | SL-B-FLOOR, SL-M-DECK |
+| S-5-S snap-lock seam clamp | — |
+| S-5-S snap-lock seam clamp | — |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | HA-SG-DAYBED-NE, HA-SG-DAYBED-NW, HA-SG-DAYBED-SE, HA-SG-DAYBED-SW |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |

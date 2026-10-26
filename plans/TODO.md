@@ -345,6 +345,7 @@ the future.
 - Seam clamps as minor snow retainer?
 - Some 240V options to consider: 240V power supplies for electronics.
 - Looks like D-S-DECK-E might be missing a sill or composite jamb. D-M-BALC seems to show it better.
+- Research most commonly failed residential code items and make sure checks or tests exist for those here.
 
 # Project Management
 

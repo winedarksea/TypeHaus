@@ -372,7 +372,7 @@ def test_foam_length_overrides_the_bar_row_and_defaults_to_it(catlin_model) -> N
 
 
 def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
-    from typehaus.resolve.roof_geometry import roof_height_at
+    from typehaus.resolve.roof_geometry import roof_height_at, roof_slope_factor
     from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
     vent = _solids(catlin_model, "vent")
@@ -413,19 +413,17 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     # Each pipe terminates 12" over the rake at its OWN station: the pair stands side by side
     # across the gable (vent on 9'-7 1/2", radon 6.2" west), so the two tops differ.
     stations = {"vent": ft(9, 7.5).meters, "radon": ft(9, 7.5).meters - inch(6.2).meters}
-    # eave_z_m is the deck plane, and the ROOF skin (zip + vapour barrier +
-    # foam + nailbase deck + underlayment + vent mat + standing seam) adds ~7.975" above
-    # that deck plane, so the derived termination rides that much higher than the bare-plate
-    # datum. The skin is summed here rather than written down, so a roof rebuild moves the
-    # vent with it. A 6:12 plane climbs twice as fast as the 4:12 it replaced, so this number
-    # is sensitive to the riser's station; it stays BELOW the ridge either way, which is the
-    # claim that matters — a termination over the ridge is a pipe with no roof under it.
+    # The roof skin is every above-structure layer, perpendicular to the 6:12 plane, so its
+    # vertical height is the sum times the slope factor (as derived_termination_elevation does).
+    # It is summed here rather than written down, so a roof rebuild moves the vent with it.
+    # The termination stays BELOW the ridge either way: a termination over the ridge is a pipe
+    # with no roof under it.
     for t in terms:
         system = t.tag.split("-")[-2]
         x = (min(p[0] for p in t.outline) + max(p[0] for p in t.outline)) / 2
         assert abs(x - stations[system]) < 1e-3, t.tag
         expected = (roof_height_at(roof, (stations[system], t.outline[0][1]))
-                    + skin + inch(12).meters)
+                    + skin * roof_slope_factor(roof) + inch(12).meters)
         assert expected < 30 * FT
         assert expected < roof.ridge_z_m
         assert abs(t.z0_m - exit_z) < 0.05
