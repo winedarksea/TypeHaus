@@ -381,12 +381,12 @@ CIRCUITS = (
             backup_va=500, duty_cycle=0.15,
             description="Water heater, Rheem ProTerra 80gal hybrid HPWH (EQ-B-WH; "
                         "EcoNet-automated to Heat-Pump-Only on backup)"),
-    # GFCI at the breaker (2026-08-01): RM-B-FURNACE is unfinished below-grade space under
-    # E3902.11 (the 2020 cycle removed the old sump-pump exception). 0.05 is a pump
+    # GFCI at the DEVICE (2026-10-27): ED-B-SUMP-RC is an audible-alarm GFCI, so a trip is
+    # heard (NEC 2023 210.8(A)(5)) and the breaker is not GFCI. 0.05 is a pump
     # running a minute or two an hour in wet weather — the peak matters, not the average,
     # hence the shed tier despite the small energy number.
     Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=7, panel_ref=_BACKUP_PANEL,
-            breaker_amps=20, poles=1, backup_tier=BackupTier.SHED, gfci=True,
+            breaker_amps=20, poles=1, backup_tier=BackupTier.SHED,
             load_va=1000, duty_cycle=0.05, description="Sump pump"),
 
     # --- general-use 120V ------------------------------------------------------------

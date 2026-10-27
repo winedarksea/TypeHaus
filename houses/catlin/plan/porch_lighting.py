@@ -14,7 +14,7 @@ PORCH_LIGHTING = [
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 5))),
     ElectricalDevice(uid="QTM0018AAA", tag="ED-M-PORCH-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-SWITCH",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-S2", face="left", distance_from_start=inch(78),
@@ -28,7 +28,7 @@ PORCH_LIGHTING = [
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-FLOOD-SW",)),
     # Adjacent indoor gangs: porch ambient/landing on one, garden utility light on the other.
     ElectricalDevice(uid="QTM001FAAA", tag="ED-M-PORCH-FLOOD-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-SWITCH",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-S2", face="left", distance_from_start=inch(82),

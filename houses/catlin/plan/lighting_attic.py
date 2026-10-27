@@ -313,7 +313,7 @@ ATTIC_LIGHTING = [
     # collinear, but the wall south of y=5'-7" faces RM-A-STUDY and the studio does not start
     # until that line. A station 5" further south is a switch in the wrong room.
     ElectricalDevice(uid="QTA000CAAA", tag="ED-A-STUDIO-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-SWITCH",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
@@ -355,7 +355,7 @@ ATTIC_LIGHTING = [
                      # its studs legally, and both faces moved 1" off the axis with it. This box is
                      # authored 1.000" off the GYPSUM face (the 0.01" paint film is not in the
                      # offset), so it moves the same 1".
-                     type_ref="ED-T-SWITCH",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
@@ -390,7 +390,7 @@ ATTIC_LIGHTING = [
     # ** 3'-0" SINCE 2026-09-25. ** At 3'-10" the box stood 6 1/2" above W-A-STU-N's raked
     # top (41 1/2" AFF at this station) and through the roof; ED-A-STUDIO-AP went to 2'-2".
     ElectricalDevice(uid="G5RDBXPZVD", tag="ED-A-POCKET-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-SWITCH",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
                      location=Location(attachment=WallAttachment(

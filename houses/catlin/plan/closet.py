@@ -113,7 +113,7 @@ MAIN_CLOSET = [
     # ** MOVED OFF THE WEST WALL (2026-10-01): ** at y 16'-10" it stood behind the west
     # bay's hanging clothes. Now on the south wall at x 13'-9", latch side of D-M-BED, 46".
     ElectricalDevice(uid="QTM000WAAA", tag="ED-M-CLOSET-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-SWITCH",
+                     type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
@@ -123,7 +123,7 @@ MAIN_CLOSET = [
     # closet switch, so one switch lights the room. The OVERSIDAN door sensor does nothing on
     # an open frame. On CKT-LT-MAIN: the driver is a lighting load.
     ElectricalDevice(uid="1VBBCZK5TY", tag="ED-M-CLOSET-RC1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-LEV-DUPLEX-15",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
                      controlled_by=("ED-M-CLOSET-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(96)),

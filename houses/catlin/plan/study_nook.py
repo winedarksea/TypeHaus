@@ -68,7 +68,7 @@ STUDY_NOOK = [
                          wall_ref="W-S-SS2", face="right", distance_from_start=inch(31.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="17T7VZK2WG", tag="ED-S-STUDY2-NOOK-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-SWITCH-DIM",
+                     type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-UPPER", room="RM-S-STUDY2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(34)),
                      location=Location(attachment=WallAttachment(

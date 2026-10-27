@@ -40,7 +40,7 @@ from plan import (appliance_types, assemblies, bath_finish, lav_types, products_
                   study_bookcase_types,
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, court_daybed, panel_types,
-                  dry_fire_lane, electrical, electrical_attic, electrical_floor_types, equipment_types,
+                  dry_fire_lane, device_types, electrical, electrical_attic, electrical_floor_types, equipment_types,
                   dining_types, door_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets, kitchen_front_types,
                   landscape, lighting, living_east_run, living_east_run_types,
                   living_puzzle_table_types,
@@ -69,7 +69,8 @@ _library = Library(
     # never a price (#28). The types above point at these by ``product_ref``.
     products=(*products.PRODUCTS, *mirror_types.MIRROR_PRODUCTS, *bed_frame_types.BED_FRAME_PRODUCTS,
               *opening_products.OPENING_PRODUCTS, *bath_accessory_types.BATH_ACCESSORY_PRODUCTS,
-              *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS, *products_bath_lavs.BATH_LAV_PRODUCTS),
+              *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS, *products_bath_lavs.BATH_LAV_PRODUCTS,
+              *device_types.DEVICE_PRODUCTS),
     # The one library pocket size this house hangs, alongside the house's own catalog. Only
     # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
     # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
@@ -139,6 +140,7 @@ _library = Library(
     electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *panel_types.PANEL_TYPES,
                              *mep.ELECTRICAL_DEVICE_TYPES,
                              *electrical.DEVICE_TYPES, *electrical_floor_types.DEVICE_TYPES,
+                             *device_types.DEVICE_TYPES,
                              *lighting_types.LIGHTING_TYPES, *mirror_types.MIRROR_LIGHT_TYPES),
     circuits=circuits.CIRCUITS,
     # No ``load_managements``: retired 2026-09-12 with the Class 320 service. See the

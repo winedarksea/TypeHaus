@@ -53,7 +53,7 @@ MAIN_STALL_FAN = [
     # ED-M-BATH2-RC1 and clear of the 42" halo glass and its cleat. It did not fit as a third
     # gang on W-M-BDN1 (plan/lighting.py).
     ElectricalDevice(uid="T3ZXRZ1CN3", tag="ED-M-BATH2-SW-DRY", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-SWITCH-TIMER",
+                     type_ref="ED-T-LUT-COUNTDOWN",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(

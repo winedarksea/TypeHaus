@@ -67,7 +67,7 @@ MAIN_MIRRORS = [
                 wall_ref="W-M-W3", face="left", distance_from_start=inch(85.625),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="783AC05790", tag="ED-M-BATH2-MIRROR-PLUG", kind=DeviceKind.RECEPTACLE,
-            type_ref="ED-T-RECEPTACLE", room="RM-M-BATH2",
+            type_ref="ED-T-LEV-DUPLEX-20", room="RM-M-BATH2",
             circuit="CKT-BATH-ATTIC",
             mount=Mount(kind=MountKind.WALL, elevation=inch(64),
                         recessed_into_host_surface=True),
