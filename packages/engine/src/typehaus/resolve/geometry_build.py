@@ -239,9 +239,13 @@ def _tilted_deck_solids(floor: ResolvedFloor) -> tuple[GBox, ...]:
     sheet = Polygon(floor.deck_outline, holes=[list(v) for v in floor.deck_voids])
     if not floor.deck_voids and abs(sheet.convex_hull.area - sheet.area) <= 1e-9:
         rings = [list(floor.deck_outline)]
-    else:
+    elif hasattr(shapely, "constrained_delaunay_triangles"):
         rings = [list(t.exterior.coords)[:-1]
                  for t in shapely.constrained_delaunay_triangles(sheet).geoms]
+    else:  # Pyodide's Shapely 2.0: unconstrained Delaunay, kept where it lies in the sheet
+        from shapely.ops import triangulate
+        rings = [list(t.exterior.coords)[:-1] for t in triangulate(sheet)
+                 if sheet.contains(t.representative_point())]
 
     def box(ring) -> GBox:
         return GBox(corners_bottom=tuple((x, y, floor.deck_bottom_at(x, y)) for x, y in ring),
