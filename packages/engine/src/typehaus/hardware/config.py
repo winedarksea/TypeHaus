@@ -68,7 +68,8 @@ class ExposedFastenerCladdingRules:
     support_pitch_in: float = 24.0
     # One panel's net coverage, which is the horizontal spacing of the sidelap joints.
     panel_coverage_in: float = 36.0
-    # Stitch screws down a sidelap, between the supports.
+    # Stitch screws down a sidelap, between the supports: 24" o.c. is Metal Sales' PBR wall
+    # approval (FL9482), with a 1/4-14 x 7/8" self-drilling lap screw.
     sidelap_stitch_pitch_in: float = 24.0
     # Panel + support embedment sets the screw length. The screw is meant to take the full
     # thickness of the nailer it lands in, not to stop part-way through it.

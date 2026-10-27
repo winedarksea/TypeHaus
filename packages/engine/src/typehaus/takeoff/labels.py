@@ -36,6 +36,7 @@ SECTION_LABELS: dict[str, str] = {
     "plumbing_specialties": "Plumbing specialties", "install_parts": "Installation kits",
     "pipe_insulation": "Pipe insulation", "freeze_protection": "Freeze protection",
     "edge_trim": "Edge trim and flashing", "member_protection": "Member protection tape",
+    "cladding_trim": "Cladding and roof-edge trim",
     "fireblock_sealant": "Firestop sealant",
     "window_return_beads": "Window return beads",
     "wall_structure": "Wall structure by the yard", "reinforcement": "Reinforcing steel",
@@ -294,6 +295,9 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
     if section == "edge_trim":
         kind = KEY_GLOSSARY.get((section, bare), bare.replace("_", " ").capitalize())
         return f"{kind}, {g('profile') or ''} {labels.material(g('material'))}".strip(", ")
+    if section == "cladding_trim":
+        name = g("profile") or bare
+        return f"{name}, {g('stock_length_in'):g} in stock" if g("stock_length_in") else name
     if section == "member_protection":
         width = _fraction_in(g("width_in")) if g("width_in") else ""
         return f"{labels.material(g('material'))}, {width} on {g('scope') or ''}".strip(", ")

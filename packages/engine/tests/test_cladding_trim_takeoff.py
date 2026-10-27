@@ -13,7 +13,7 @@ def test_inventory_groups_stock_by_part_and_length():
     model = SimpleNamespace(solids=[piece("long", 243.0, 5.0),
                                     piece("short-a", 122.0, 1.0),
                                     piece("short-b", 122.0, 2.0)])
-    rows = cladding_trim_takeoff(model)
+    rows = [r for r in cladding_trim_takeoff(model) if r["kind"] == "trim"]
     assert [(row["part"], row["stock_length_in"], row["count"]) for row in rows] == [
         ("58132XX", 122.0, 2), ("58136XX", 243.0, 1),
     ]

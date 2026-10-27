@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typehaus.library.materials._common import _UAF
 from typehaus.model import Material
+from typehaus.model.cladding_trim import CORRUGATED_KIT, PBR_KIT
 
 _BASE_ROWS: tuple[Material, ...] = (
     # Solid PVC tongue-and-groove wall/ceiling panel (Trusscore-class): concealed screw
@@ -59,7 +60,8 @@ _BASE_ROWS: tuple[Material, ...] = (
     # 7/8" corrugated, the third profile in the site's one white steel skin, and the
     # detached garage's wall panel — GARAGE_WALL_2X6 over 5/8" CDX. A sinusoidal
     # exposed-fastener sheet: 7/8" deep on a 2-2/3" pitch, 32" net coverage, screwed
-    # through the crowns into the studs.
+    # in the valleys, where the washer bears on panel backed by the sheathing. Crest
+    # fastening is a roof practice: on a wall it hangs the washer over a 7/8" void.
     #
     # `finish="corrugated"` is the whole dispatch. `isStandingSeam` (ui materials.ts) and
     # `_is_standing_seam` (emit/gltf/palette.py) are substring tests, and this tag carries
@@ -95,8 +97,8 @@ _BASE_ROWS: tuple[Material, ...] = (
         'above. 26 ga. PVDF-coated steel, 7/8" corrugation depth on a 2-2/3" '
         'pitch, 34-2/3" net WALL coverage (32" is the ROOF figure, one more '
         'corrugation of side lap; this row read 32" until 2026-09-14), '
-        "face-fastened with gasketed screws through the "
-        "crowns. TWO KNOWN APPROXIMATIONS, recorded here rather than fixed: "
+        "face-fastened with gasketed screws in the "
+        "valleys. TWO KNOWN APPROXIMATIONS, recorded here rather than fixed: "
         "hardware/config.py::ExposedFastenerCladdingRules is one frozen "
         'dataclass with PBR geometry hard-coded (12" rib pitch, 36" coverage), so '
         "the field screw count is a fair proxy but the sidelap count runs slightly "
@@ -319,7 +321,7 @@ _VARIANTS: tuple[Material, ...] = (
                   "236 psf outward at 2'-0\" (wall table)"}),
     _SEAM.model_copy(update={
         "tag": "pbr-panel-24", "name": "PBR exposed-fastener steel panel, 24 ga.", **_PBR,
-        "trim_kit": {"outside_corner": "WIDE_OUTSIDE_CORNER"},
+        "trim_kit": PBR_KIT,
         "source": "Metal Sales PBR-Panel Condensed Technical Reference (1/2026): 24 ga. "
                   "PVDF-coated steel purlin-bearing-rib wall panel, 36\" net coverage, "
                   "1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; "
@@ -327,12 +329,12 @@ _VARIANTS: tuple[Material, ...] = (
     _CORRUGATED.model_copy(update={
         "tag": "corrugated-panel-24",
         "name": "7/8\" corrugated exposed-fastener steel panel, 24 ga.",
-        "trim_kit": {"outside_corner": "CORRUGATED_OUTSIDE_CORNER"},
+        "trim_kit": CORRUGATED_KIT,
         "areal_density_kg_m2": 5.2,
         "source": "Metal Sales 7/8\" Corrugated Wall CTR (1/2024): 24 ga. PVDF-coated steel, "
                   "7/8\" corrugation on a 2-2/3\" pitch, 34-2/3\" net wall coverage, "
                   "3'-45' lengths, over open framing or solid substrate, 412 psf outward at "
-                  "2'-0\"; face-fastened with gasketed screws through the crowns. 24 ga. is "
+                  "2'-0\"; face-fastened with gasketed screws in the valleys. 24 ga. is "
                   "0.0239\" of steel, 4.7 kg/m2 flat, ~10% more developed length: 5.2"}),
 )
 

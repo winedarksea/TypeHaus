@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from typehaus.hardware.catalog import (
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
+    ROLE_SIDELAP_STITCH_SCREW,
+    hardware_for_role,
     screw_for_required_length,
 )
 from typehaus.hardware.config import (
@@ -434,7 +436,8 @@ def exposed_fastener_cladding_screw_rows(model: ResolvedModel,
 
     *Sidelap* — a stitch line down each panel-to-panel joint, at one joint per panel
     coverage width, spaced along its height. The field grid cannot produce these: a sidelap
-    is not a support, so no support crossing lands on it.
+    is not a support, so no support crossing lands on it. It bills a different part — a
+    self-drilling lap screw, metal to metal — because there is no wood behind a sidelap.
 
     Openings are not deducted, following the convention of
     :func:`exterior_insulation_screw_rows`: trim, closures and jamb returns take those
@@ -448,6 +451,7 @@ def exposed_fastener_cladding_screw_rows(model: ResolvedModel,
     required_in = rules.panel_thickness_in + rules.support_embedment_in
     item, length_in, part_number = screw_for_required_length(
         ROLE_EXPOSED_FASTENER_PANEL_SCREW, required_in)
+    stitch = hardware_for_role(ROLE_SIDELAP_STITCH_SCREW)
 
     field_by_storey: Counter = Counter()
     sidelap_by_storey: Counter = Counter()
@@ -471,21 +475,21 @@ def exposed_fastener_cladding_screw_rows(model: ResolvedModel,
                  f"{rules.support_embedment_in:g} in support embedment = "
                  f"{required_in:.2f} in required")
     rows = []
-    for scope, by_storey, basis in (
+    for scope, by_storey, basis, part, part_no, size in (
         ("exposed-fastener panel field", field_by_storey,
          f"{rules.rib_pitch_in:g} in o.c. flats between major ribs x "
          f"{rules.support_pitch_in:g} in o.c. supports, openings not deducted "
-         f"({embedment})"),
+         f"({embedment})", item, part_number, f"{length_in:g} in"),
         ("exposed-fastener panel sidelap", sidelap_by_storey,
          f"one stitch line per {rules.panel_coverage_in:g} in panel coverage at "
-         f"{rules.sidelap_stitch_pitch_in:g} in o.c. ({embedment})"),
+         f"{rules.sidelap_stitch_pitch_in:g} in o.c., metal to metal through the lap",
+         stitch, None, "7/8 in"),
     ):
         count = sum(by_storey.values())
         if count <= 0:
             continue
         rows.append(hardware_row(
-            item, scope=scope, count=int(count), part_number=part_number,
-            size=f"{length_in:g} in", by_storey=dict(sorted(by_storey.items())),
-            basis=basis,
+            part, scope=scope, count=int(count), part_number=part_no, size=size,
+            by_storey=dict(sorted(by_storey.items())), basis=basis,
         ))
     return rows

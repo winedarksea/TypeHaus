@@ -10,7 +10,6 @@ from typehaus.hardware.catalog import (
     ROLE_BEARING_STANDOFF,
     ROLE_DECK_EQUIPMENT_ANCHOR,
     ROLE_EQUIPMENT_PAD_ANCHOR,
-    ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_GLAZING_PANEL_FASTENER,
     ROLE_KNEE_BRACE,
     ROLE_KNEE_BRACE_EQUAL_WIDTH,
@@ -143,30 +142,6 @@ KBS1Z_KNEE_BRACE_EQUAL_WIDTH = StructuralHardware(
                  "https://assets.unilogcorp.com/187/ITEM/DOC/"
                  "Simpson_Strong_Tie_100313582_Specification_Sheet.pdf",
     ),
-)
-
-# The screw an exposed-fastener wall panel is hung on. Driven through the panel flat (not
-# the rib) into the support behind, it is the ONLY penetration in the water plane, so the
-# gasket — not the steel — sets the service life of the wall.
-#
-# 316, not 304: this is a lakeside/road-salt exposure, and a stainless screw head that
-# streaks or pits is both the leak path and the thing you look at from the driveway.
-#
-# Length arithmetic, so the choice is auditable: 1-1/2" through a ~0.02" 26 ga panel into
-# the flat 1.5" KDAT outer girt leaves ~1.4" of embedment — the full thickness of the
-# nailer, with the tip breaking through into the blind 0.5" vent gap behind it rather than
-# stopping in the sheathing. Longer is not better here: a screw that reaches the WRB adds a
-# second penetration in a plane that is meant to stay unbroken.
-EXPOSED_FASTENER_PANEL_SCREW = StructuralHardware(
-    tag="simpson-t09150hwam-panel-screw",
-    name="#9 x 1-1/2\" 316 stainless metal-panel screw, EPDM washer",
-    role=ROLE_EXPOSED_FASTENER_PANEL_SCREW,
-    manufacturer=_SIMPSON,
-    model="T09150HWAM",
-    part_number_by_length_in={1.5: "T09150HWAM"},
-    source="Simpson Strong-Tie T09150HWAM (strongtie.com) — #9 x 1-1/2\" Type 316 stainless "
-           "metal-panel screw, hex washer head with a bonded EPDM sealing washer, for "
-           "through-fastening metal panel to a wood support",
 )
 
 # The strap that carries a round pipe on an exposed-fastener panel. The CanDuit ring above

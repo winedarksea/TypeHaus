@@ -204,6 +204,10 @@ ROLE_GLAZING_PANEL_FASTENER = "glazing_panel_fastener"
 # and it exists at all only because ``Material.exposed_fastener`` panels bill their fixings
 # as a counted part instead of inside the $/SF cladding rate.
 ROLE_EXPOSED_FASTENER_PANEL_SCREW = "exposed_fastener_panel_screw"
+# The self-drilling screw that stitches two exposed-fastener panels together down their
+# sidelap, metal to metal and between supports. Not the panel screw: there is no wood behind
+# a sidelap for a wood thread to bite, and the panel screw's sharp point does not drill.
+ROLE_SIDELAP_STITCH_SCREW = "sidelap_stitch_screw"
 # The frame kit a pocket door slides in: split studs, an aluminium head track, hangers and
 # the leaf's guides, bought as one boxed unit per door and selected by door width. It is the
 # first door hardware in this catalog — before it, a door's ironmongery could only be carried

@@ -1,119 +1,202 @@
-"""Grade modeled window trim spans and report the remaining coverage gaps."""
+"""Grade that every free cladding and roof edge ends in a modeled trim piece."""
 
+from __future__ import annotations
+
+import math
+
+from typehaus.checks.integrity.cladding_trim_runs import (
+    along_extent,
+    door_opening_trim,
+    metal_wall_openings,
+    spans_cover,
+    z_extent,
+)
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import failed, not_applicable, passed, unknown
-from typehaus.library.trim.metal_sales import PROFILES
+from typehaus.model.cladding_trim import TrimCondition
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.cladding_trim.openings import is_profiled_metal_wall
+from typehaus.resolve.cladding_trim.base import _DOOR_REACH_M
+from typehaus.resolve.cladding_trim.openings import SMALL_PENETRATION_M, is_profiled_metal_wall
+from typehaus.resolve.cladding_trim.runs import covered_below, kit_faces, subtract_spans
 from typehaus.resolve.opening_flashing import opening_flashing_frame
+from typehaus.takeoff.cladding_trim import cladding_trim_takeoff
 
-_COVERAGE = "integrity.cladding_trim_coverage"
-_FIT = "integrity.cladding_trim_fit"
-_TOLERANCE_M = 1e-6
+COVERAGE = "integrity.cladding_trim_coverage"
 _SIDES = ("HEAD", "SILL", "JAMB-LEFT", "JAMB-RIGHT")
+_CORNER_RADIUS_M = 8 * M_PER_IN
 
 
-def _spans_cover(spans, start, end):
-    cursor = start
-    for low, high in sorted(spans):
-        if high < cursor - _TOLERANCE_M:
+def _pieces(model):
+    return [solid for solid in model.solids if solid.category == "cladding_trim"]
+
+
+def _window_like(ctx, pieces):
+    """Four-side trim on every metal-wall window and every rough opening above a penetration."""
+    model, findings, checked = ctx.model, [], 0
+    for opening, wall in metal_wall_openings(model, kinds=("window", "rough_opening")):
+        small = max(opening.width_m, opening.height_m) < SMALL_PENETRATION_M
+        if opening.kind == "rough_opening" and small:
+            findings.append(not_applicable(
+                COVERAGE, "a penetration under 6 in is closed by its fixture's own flange",
+                (opening.tag,)))
             continue
-        if low > cursor + _TOLERANCE_M:
-            return False
-        cursor = max(cursor, high)
-    return cursor >= end - _TOLERANCE_M
-
-
-def _windows(model):
-    for opening in model.openings:
-        if opening.kind != "window":
-            continue
-        wall = model.wall(opening.host_wall)
-        if wall is not None and is_profiled_metal_wall(model, wall):
-            yield opening, wall
-
-
-@check(Tier.INTEGRITY, _COVERAGE)
-def cladding_trim_coverage(ctx: CheckContext) -> list:
-    model = ctx.model
-    walls = [wall for wall in model.walls if is_profiled_metal_wall(model, wall)]
-    if not walls:
-        return [not_applicable(_COVERAGE, "no profiled metal walls")]
-    pieces = [solid for solid in model.solids if solid.category == "cladding_trim"]
-    findings = []
-    checked = 0
-    for opening, wall in _windows(model):
         frame = opening_flashing_frame(model, wall)
         seat = opening.window_seat
-        if frame is None or seat is None:
-            findings.append(unknown(_COVERAGE, "window seat or wall frame is unavailable",
-                                    (opening.tag,)))
+        if frame is None:
+            findings.append(unknown(COVERAGE, "wall frame is unavailable", (opening.tag,)))
             continue
         low = opening.center_along_m - opening.width_m / 2
-        high = low + opening.width_m
         bottom = wall.base_ref_z_m + opening.sill_m
-        top = bottom + opening.height_m - seat.head_drop_m
         for side in _SIDES:
-            selected = [piece for piece in pieces if piece.host_ref == opening.tag
-                        and f"-TRIM-{side}-" in piece.tag]
+            selected = [p for p in pieces if p.host_ref == opening.tag
+                        and f"-TRIM-{side}-" in p.tag]
             if not selected:
-                findings.append(failed(_COVERAGE, f"{opening.tag} lacks {side.lower()} trim",
+                findings.append(failed(COVERAGE, f"{opening.tag} lacks {side.lower()} trim",
                                        (opening.tag,)))
                 continue
-            if any(piece.body_mesh is None or not piece.body_mesh.positions for piece in selected):
-                findings.append(unknown(_COVERAGE, f"{opening.tag} {side.lower()} has no mesh",
-                                        (opening.tag,)))
-                continue
             if side.startswith("JAMB"):
-                spans = [(min(point[2] for point in piece.body_mesh.positions),
-                          max(point[2] for point in piece.body_mesh.positions)) for piece in selected]
-                expected = (bottom, top)
+                top = bottom + opening.height_m - (seat.head_drop_m if seat else 0.0)
+                ok = spans_cover(z_extent(selected), bottom, top)
             else:
-                def station(point):
-                    return sum((point[i] - frame.origin[i]) * frame.along[i] for i in range(2))
-                spans = [(min(map(station, piece.body_mesh.positions)),
-                          max(map(station, piece.body_mesh.positions))) for piece in selected]
-                expected = (low, high)
-            if not _spans_cover(spans, *expected):
-                findings.append(failed(_COVERAGE, f"{opening.tag} {side.lower()} has a gap",
+                ok = spans_cover(along_extent(selected, frame), low, low + opening.width_m)
+            if not ok:
+                findings.append(failed(COVERAGE, f"{opening.tag} {side.lower()} has a gap",
                                        (opening.tag,)))
         checked += 1
     if checked and not findings:
-        findings.append(passed(_COVERAGE, f"all four trim runs span {checked} metal-wall windows"))
-    findings.append(unknown(_COVERAGE,
-        "complete wall-edge, door, small-opening and roof coverage is not yet graded; "
-        "window span checks do not establish weatherproofing"))
+        findings.append(passed(COVERAGE, f"all four trim runs span {checked} metal-wall "
+                                         "windows and rough openings"))
     return findings
 
 
-@check(Tier.INTEGRITY, _FIT)
-def cladding_trim_fit(ctx: CheckContext) -> list:
-    model = ctx.model
-    windows = list(_windows(model))
-    if not windows:
-        return [not_applicable(_FIT, "no profiled metal wall windows")]
-    pieces = [solid for solid in model.solids if solid.category == "cladding_trim"]
-    findings = []
-    checked = 0
-    for opening, wall in windows:
-        heads = [piece for piece in pieces if piece.host_ref == opening.tag
-                 and "-TRIM-HEAD-" in piece.tag]
-        if not heads:
-            findings.append(unknown(_FIT, "no modeled head trim to grade", (opening.tag,)))
+def _doors(ctx, pieces):
+    findings, checked = [], 0
+    for opening, wall in metal_wall_openings(ctx.model, kinds=("door",)):
+        problem = door_opening_trim(ctx.model, wall, opening, pieces)
+        if problem is None:
             continue
-        cladding = next((layer for layer in wall.layers if layer.function == "cladding"), None)
-        for head in heads:
-            profile = PROFILES.get(head.product or "")
-            if cladding is None or profile is None or profile.receiver_throat_in is None:
-                findings.append(unknown(_FIT, "head throat or panel depth unavailable", (opening.tag,)))
-                continue
-            checked += 1
-            if profile.receiver_throat_in * M_PER_IN + _TOLERANCE_M < cladding.thickness_m:
-                findings.append(failed(_FIT, f"{opening.tag} head throat is smaller than the panel depth",
-                                       (opening.tag,), code=profile.source))
+        checked += 1
+        if problem:
+            findings.append(failed(COVERAGE, f"{opening.tag} {problem}", (opening.tag,)))
     if checked and not findings:
-        findings.append(passed(_FIT, f"{checked} window head throats clear the nominal panel depth",
-                               code="PBR Install Guide 4/2024 pp. 19, 68–72"))
-    findings.append(unknown(_FIT, "frame laps, sill upstands, lap order, panel lengths and "
-                            "door-head clearance are not yet graded from installed geometry"))
+        findings.append(passed(COVERAGE, f"{checked} metal-wall doors carry both jambs and a "
+                                         "head drip (or the band over a catalog unit)"))
+    return findings
+
+
+def _bases(ctx, pieces):
+    model, findings, checked = ctx.model, [], 0
+    entries = list(kit_faces(model, TrimCondition.BASE))
+    faces = [face for face, _ in entries]
+    for face, _ in entries:
+        if covered_below(face, faces):
+            continue
+        cuts = [(a, b) for opening, a, b in face.openings(model)
+                if face.wall.base_ref_z_m + opening.sill_m < face.z0 + _DOOR_REACH_M]
+        needed = subtract_spans(face.lo, face.hi, cuts)
+        mine = [p for p in pieces if p.tag.startswith(f"TRIM-{face.wall.tag}-BASE-")]
+        spans = []
+        for piece in mine:
+            stations = [sum(c * d for c, d in zip(pt[:2], face.d, strict=True))
+                        for pt in piece.body_mesh.positions]
+            spans.append((min(stations), max(stations)))
+        checked += 1
+        if not all(spans_cover(spans, a, b) for a, b in needed):
+            findings.append(failed(COVERAGE, f"{face.wall.tag} has a free panel bottom with no "
+                                             "base trim", (face.wall.tag,)))
+    if checked and not findings:
+        findings.append(passed(COVERAGE, f"every free panel bottom ({checked} wall stacks) "
+                                         "carries its kit's base trim"))
+    return findings
+
+
+def _corner_kit(model, materials, wall_tag):
+    wall = model.wall(wall_tag)
+    for layer in (wall.layers if wall else ()):
+        material = materials.get(layer.material_ref)
+        key = material.trim_kit.get(TrimCondition.OUTSIDE_CORNER) if material else None
+        if layer.function == "cladding" and key:
+            return key
+    return None
+
+
+def _corners_and_ends(ctx, pieces):
+    model, findings = ctx.model, []
+    materials = {m.tag: m for m in model.plan.library.materials}
+    convex = 0
+    for junction in model.junctions:
+        if junction.kind != "l" or len(junction.incidents) != 2:
+            continue
+        if not all(_corner_kit(model, materials, i.wall_tag) for i in junction.incidents):
+            continue
+        near = [p for p in pieces if "CORNER" in p.tag and p.outline and math.dist(
+            junction.point,
+            (sum(x for x, _ in p.outline) / len(p.outline),
+             sum(y for _, y in p.outline) / len(p.outline))) < _CORNER_RADIUS_M]
+        convex += 1
+        if not near and not _upper_storey_corner(model, junction):
+            findings.append(failed(COVERAGE, f"corner {junction.node_tag} has no outside "
+                                             "corner trim", (junction.node_tag,)))
+    screens = {f.wall.tag for f, _ in kit_faces(model, TrimCondition.SCREEN_END)}
+    for junction in model.junctions:
+        for incident in junction.incidents if junction.kind == "open_end" else ():
+            if incident.wall_tag in screens and not any(
+                    p.tag.startswith(f"TRIM-{incident.wall_tag}-END-") for p in pieces):
+                findings.append(failed(COVERAGE, f"{incident.wall_tag} has an open end with "
+                                                 "no end trim", (incident.wall_tag,)))
+    if convex and not findings:
+        findings.append(passed(COVERAGE, f"{convex} outside corners and every screen end carry "
+                                         "trim"))
+    return findings
+
+
+def _upper_storey_corner(model, junction) -> bool:
+    """A stacked corner is trimmed once, by the run through its lowest storey."""
+    return any(other is not junction and other.storey != junction.storey
+               and other.kind == "l"
+               and math.dist(other.point, junction.point) < 1e-6 for other in model.junctions)
+
+
+def _roof_edges(ctx):
+    model = ctx.model
+    rows = [r for r in cladding_trim_takeoff(model) if r["kind"] == "roof"]
+    tagged = {tag for r in rows for tag in r["tags"]}
+    findings, runs = [], 0
+    for roof in model.roofs:
+        for member in roof.members:
+            key = member.child_key
+            if member.category == "drip_edge" and key.endswith("-drip-edge-face"):
+                tag = f"{roof.tag}:{key[:-len('-drip-edge-face')]}"
+                if roof.tag == "RF-HOUSE" and key.startswith("rake"):
+                    continue    # billed as the panel rake below
+            elif member.category == "corner_trim" and key.endswith("-panel-rake-face"):
+                tag = f"{roof.tag}:{key.removesuffix('-panel-rake-face')}"
+            elif member.category == "ridge_cap" and member.connection == "ridge:closed-cap":
+                tag = f"{roof.tag}:{key}"
+            else:
+                continue
+            runs += 1
+            if tag not in tagged:
+                findings.append(failed(COVERAGE, f"{tag} has no catalog roof-edge piece",
+                                       (roof.tag,)))
+    if runs and not findings:
+        findings.append(passed(COVERAGE, f"{runs} Image II eave, rake and closed-ridge runs "
+                                         "map to catalog pieces"))
+    return findings
+
+
+@check(Tier.INTEGRITY, COVERAGE)
+def cladding_trim_coverage(ctx: CheckContext) -> list:
+    model = ctx.model
+    if not [wall for wall in model.walls if is_profiled_metal_wall(model, wall)]:
+        return [not_applicable(COVERAGE, "no profiled metal walls")]
+    pieces = _pieces(model)
+    findings = [*_window_like(ctx, pieces), *_doors(ctx, pieces), *_bases(ctx, pieces),
+                *_corners_and_ends(ctx, pieces), *_roof_edges(ctx)]
+    findings.append(unknown(
+        COVERAGE,
+        "the garage's vented ridge keeps its modeled cap until Metal Sales confirms the Image II "
+        "vented assembly's part numbers; the stock part-number anomalies (58937XX, "
+        "59904XX/58904XX, 58974XX/58794XX, the duplicated 58206XX) are unconfirmed too",
+        fix="send the questions in notes/metal_trim_kit.md to Metal Sales"))
     return findings

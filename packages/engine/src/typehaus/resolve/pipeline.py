@@ -268,6 +268,14 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.cladding_trim.bands import resolve_band_trim
 
         resolve_band_trim(model)
+        from typehaus.resolve.cladding_trim.base import resolve_base_trim
+        from typehaus.resolve.cladding_trim.ends import resolve_screen_ends
+
+        resolve_base_trim(model)
+        from typehaus.resolve.cladding_trim.openings import resolve_small_opening_trim
+
+        resolve_small_opening_trim(model)
+        resolve_screen_ends(model)
         from typehaus.resolve.roof_panel_skin import resolve_profiled_roof_surfaces
 
         resolve_profiled_roof_surfaces(model)

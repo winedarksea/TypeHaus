@@ -42,12 +42,14 @@ from typehaus.library.hardware.diaphragm import (
     LTP4Z_LATERAL_TIE_PLATE,
 )
 from typehaus.library.hardware.fasteners import (
+    EXPOSED_FASTENER_PANEL_SCREW,
     FASTENMASTER_TIMBERLOK,
     PDPAWL_SLAB_PLATE_PIN,
     SDPW19_DEFLECTOR_SCREW,
     SDPW_DEFLECTOR_SCREW,
     SDWH_TIMBER_HEX_SCREW,
     SDWS_TIMBER_SCREW,
+    SIDELAP_STITCH_SCREW,
 )
 from typehaus.library.hardware.nails import DIAPHRAGM_NAILS
 from typehaus.library.hardware.roof_ties import (
@@ -119,7 +121,6 @@ from typehaus.library.hardware.specialty import (
     BEARING_STANDOFF_SHIM,
     DECK_EQUIPMENT_ANCHOR,
     EQUIPMENT_PAD_ANCHOR,
-    EXPOSED_FASTENER_PANEL_SCREW,
     HSS_BASE_PLATE_HDG,
     HSS_SADDLE_HDG,
     KBS1Z_KNEE_BRACE,
@@ -197,6 +198,7 @@ STRUCTURAL_HARDWARE: tuple = (
     EQUIPMENT_PAD_ANCHOR,
     SS316_HEX_BOLT_38,
     EXPOSED_FASTENER_PANEL_SCREW,
+    SIDELAP_STITCH_SCREW,
     THROUGH_PANEL_PIPE_STRAP,
     POCKET_FRAME_KIT_1500PF,
     POCKET_FRAME_KIT_1560,

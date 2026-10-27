@@ -4,6 +4,8 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     catalog_tags,
     checks,
     cladding_trim,
+    cladding_trim_coverage,
+    cladding_trim_fit,
     clear_zones,
     door_finishes,
     door_hardware,

@@ -18,6 +18,10 @@ class TrimProfile:
     hem_notch_in: float = 0.0
     closure: str | None = None
     fastener_role: str = "trim_stitch_screw"
+    fastener_spacing_in: float = 12.0
+    fastener_rows: int = 1
+    #: Extra fasteners through each lap (PBR corner laps are riveted 2 in o.c.; BBD75 takes none).
+    lap_fasteners: int = 0
     source: str = ""
     custom: bool = False
     maker: str = "Metal Sales"
@@ -42,6 +46,8 @@ WIDE_OUTSIDE_CORNER = TrimProfile(
     ((0.0, 5.5), (0.0, 0.0), (5.5, 0.0)),
     min_lap_in=3.0,
     fastener_role="trim_pop_rivet",
+    fastener_rows=2,
+    lap_fasteners=4,
     source="PBR Install Guide 4/2024 pp. 16, 58",
 )
 BBD_BASE = TrimProfile(
@@ -66,6 +72,7 @@ BBD_TRANSITION = TrimProfile(
     receiver_throat_in=1.0,
     hem_notch_in=2,
     fastener_role="trim_pop_rivet",
+    fastener_rows=2,
     source="BBD75 Install Guide 10/2025 pp. 14, 40",
 )
 OPENING_HEAD = TrimProfile(
@@ -86,7 +93,17 @@ WINDOW_SILL_CUSTOM = TrimProfile(
     source="Window-first outie detail, houses/catlin/notes/metal_trim_kit.md",
 )
 BBD_PANEL_STARTER = TrimProfile(
-    "Panel Starter", _pvdf("58728XX"), hem_notch_in=2, source="BBD75 Install Guide 10/2025 p. 14"
+    "Panel Starter",
+    _pvdf("58728XX"),
+    section_in=((0, 2.625), (0, 0), (1.125, 0)),
+    receiver_throat_in=1.125,
+    hem_notch_in=2,
+    source="BBD75 Install Guide 10/2025 p. 14 (2-5/8 in and 1-1/8 in legs; hems not drawn)",
+)
+DOOR_HEAD_CUSTOM = TrimProfile(
+    "Door head drip cap, custom brake",
+    custom=True,
+    source="Door head over casing, houses/catlin/notes/metal_trim_kit.md",
 )
 CORRUGATED_BASE = TrimProfile(
     "Corrugated 1.25 inch Base",
@@ -102,7 +119,7 @@ CORRUGATED_OUTSIDE_CORNER = TrimProfile(
 )
 CORRUGATED_JAMB = TrimProfile(
     "Corrugated Jamb",
-    section_in=((0, 2.5), (0, 0), (1, 0), (1, 1)),
+    section_in=((0, 2.5), (0, 0), (1, 0), (1, 1)),  # (outboard, along); back leg under panel
     receiver_throat_in=1.0,
     source="7/8 inch Corrugated product manual 9/2011 p. P7/8-4",
 )
@@ -136,5 +153,40 @@ IMAGE_II_Z_CLOSURE = TrimProfile(
 IMAGE_II_RESIDENTIAL_PEAK = TrimProfile(
     "Residential Peak", _pvdf("52134XX"), source="Residential Design Manual 5/2024 p. 41"
 )
+
+IMAGE_II_RAKE_4IN_CUSTOM = TrimProfile(
+    "Residential Rake, 4 in face, custom brake",
+    custom=True,
+    source="52126XX main leg extended 1-3/8 in; houses/catlin/notes/metal_trim_kit.md",
+)
+IMAGE_II_FLAT_CLEAT = TrimProfile(
+    "Flat Cleat", ((24, "varies", 122.0, "5806199"),), source="Residential Design Manual 5/2024"
+)
+IMAGE_II_VENTED_RIDGE = TrimProfile(
+    "Image II vented ridge (13 in step cover, Cobra vent)",
+    custom=True,
+    source="Image II PIM 3/2021 p. 20; part numbers unconfirmed with Metal Sales",
+)
+
+#: Stock face of the catalog Residential Rake's main leg (Residential Design Manual p. 9).
+RESIDENTIAL_RAKE_FACE_IN = 2.625
+
+#: Loose closures, sealant and tape: part -> (name, unit, source). Priced by the house.
+SUPPLIES = {
+    "6460800": ("PBR Inside Closure", "LF", "PBR Install Guide 4/2024 p. 69"),
+    "55548XX": ("BBD75 C-Closure", "LF", "BBD75 Install Guide 10/2025 p. 22"),
+    "corrugated-closure": ("Corrugated profile closure", "LF", "Corrugated manual p. P7/8-4"),
+    "6411499": ("Universal Closure", "LF", "Residential Design Manual 5/2024"),
+    "58603XX": ("Image II Z-Closure", "LF", "Residential Design Manual 5/2024"),
+    "6403899": ("Double-bead tape", "LF", "Residential Design Manual 5/2024"),
+    "butyl-tape": ("Butyl tape", "LF", "PBR Install Guide 4/2024 p. 69"),
+    "tube-sealant": ("Tube sealant", "LF", "PBR Install Guide 4/2024 pp. 16-21"),
+    "trim-stitch-screw": ("1/4-14 x 7/8 in stitch screw", "ea", "Metal Sales trim guides"),
+    "trim-pop-rivet": ("1/8 in pop rivet", "ea", "Metal Sales trim guides"),
+}
+
+#: The profile-matched closure behind a head or sill trim, by the panel's finish.
+PANEL_CLOSURE = {"ribbed-panel": "6460800", "board-and-batten": "55548XX",
+                 "corrugated": "corrugated-closure"}
 
 PROFILES = {key: value for key, value in globals().copy().items() if isinstance(value, TrimProfile)}

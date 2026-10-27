@@ -6,7 +6,7 @@ from typehaus import (
     PublishedCladdingLoad,
     inch,
 )
-from typehaus.model.cladding_trim import WIDE_CORNER_KIT
+from typehaus.model.cladding_trim import BBD_KIT
 
 
 MATERIALS_METAL = [
@@ -284,7 +284,7 @@ MATERIALS_METAL = [
     # Material overrides alone cannot change an assembly layer thickness.
     Material(tag="board-batten-24", name="Metal Sales BBD75-1212 board & batten panel, 12\" coverage, 24 ga., PVDF Linen White (81)",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
-             color="#6b7076", finish="board-and-batten", trim_kit=WIDE_CORNER_KIT,
+             color="#6b7076", finish="board-and-batten", trim_kit=BBD_KIT,
              skin_family="standing-seam",
              published_cladding=PublishedCladdingLoad(
                  source="Metal Sales BBD75 Install Guide 10/2025 p.13",

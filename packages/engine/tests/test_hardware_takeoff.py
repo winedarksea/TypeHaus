@@ -15,6 +15,7 @@ from typehaus.hardware.catalog import (
     ROLE_KNEE_BRACE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_PIPE_CLAMP,
+    ROLE_SIDELAP_STITCH_SCREW,
     ROLE_SLAB_PLATE_PIN,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_THROUGH_PANEL_PIPE_STRAP,
@@ -773,6 +774,19 @@ def test_panel_screws_are_a_rib_by_support_grid_plus_a_sidelap_line() -> None:
     assert by_scope["exposed-fastener panel sidelap"]["count"] == 11 * 13 == 143
 
 
+def test_the_sidelap_bills_a_metal_to_metal_stitch_screw_not_the_panel_screw() -> None:
+    """There is no wood behind a sidelap, so the wood-thread panel screw cannot bite there.
+    The stitch is Metal Sales' 1/4-14 x 7/8 in self-drilling lap screw, stainless."""
+    rows = _panel_rows([_FakeWall(36.0, 24.0, "pbr")], {"pbr": True})
+    by_scope = {row["scope"]: row for row in rows}
+    field = by_scope["exposed-fastener panel field"]
+    sidelap = by_scope["exposed-fastener panel sidelap"]
+    assert field["role"] == ROLE_EXPOSED_FASTENER_PANEL_SCREW
+    assert sidelap["role"] == ROLE_SIDELAP_STITCH_SCREW
+    assert sidelap["part_number"] == "SL2 #14 Bi-Met 300" and sidelap["size"] == "7/8 in"
+    assert "304 Stainless" in hardware_for_role(ROLE_SIDELAP_STITCH_SCREW).source
+
+
 def test_a_partial_last_panel_still_makes_a_joint() -> None:
     """4.5 panels of run is 5 panels and 4 laps: the rip is lapped like any other."""
     rows = _panel_rows([_FakeWall(13.5, 8.0, "pbr")], {"pbr": True})
@@ -840,18 +854,18 @@ def test_the_canduit_ring_is_still_the_one_part_serving_the_pipe_clamp_role() ->
 
 def test_catlin_bills_panel_screws_on_the_house_and_garage_walls(catlin_model) -> None:
     """The house is PBR and the garage is 7/8" corrugated — both are exposed-fastener, both
-    land on this one SKU, and both must appear here.
+    land on the same two SKUs (field screw, sidelap stitch), and both must appear here.
 
     The double-billing guard this test polices is that a CONCEALED-fastener material
     (``standing-seam-nailstrip-26``, still worn by the garage roof) must never appear here,
     not that any particular storey must not — nail strip's fixings are inside its $/SF rate.
     """
     rows = [row for row in hardware_takeoff(catlin_model)
-            if row["role"] == ROLE_EXPOSED_FASTENER_PANEL_SCREW]
+            if row["role"] in (ROLE_EXPOSED_FASTENER_PANEL_SCREW, ROLE_SIDELAP_STITCH_SCREW)]
     assert {row["scope"] for row in rows} == {
         "exposed-fastener panel field", "exposed-fastener panel sidelap"}
     for row in rows:
-        assert row["part_number"] == "T09150HWAM" and row["size"] == "1.5 in"
+        assert row["part_number"] in ("T09150HWAM", "SL2 #14 Bi-Met 300")
         assert row["count"] == sum(row["by_storey"].values()) > 0
         # Every storey with an exposed-fastener wall skin bills here, garage included.
         #

@@ -68,8 +68,11 @@ def is_profiled_metal_wall(model, wall) -> bool:
     } for layer in wall.layers)
 
 
-def window_trim_solids(model, wall, opening, frame, material):
-    """Sweep the stock head and custom jamb/sill around a seated metal-wall window."""
+def window_trim_solids(model, wall, opening, frame, material, seat=None):
+    """Sweep the stock head and custom jamb/sill around a seated metal-wall window.
+
+    ``seat`` stands in for ``opening.window_seat`` on a rough opening with no unit.
+    """
     from dataclasses import replace
 
     from typehaus.library.trim.metal_sales import (
@@ -82,7 +85,7 @@ def window_trim_solids(model, wall, opening, frame, material):
     from typehaus.resolve.flashing_solids import flashing_solid
     from typehaus.resolve.metal_skin_profiles import INCH_M, SHEET_24_GA_M
 
-    seat = opening.window_seat
+    seat = seat or opening.window_seat
     lo = opening.center_along_m - opening.width_m / 2
     hi = lo + opening.width_m
     sill = wall.base_ref_z_m + opening.sill_m
@@ -122,3 +125,28 @@ def window_trim_solids(model, wall, opening, frame, material):
         frame.point(lo - INCH_M, frame.mount, head), outward, axis_up, along,
         opening.width_m + 2 * INCH_M)
     return solids
+
+
+# Buck + membrane + shim around a rough opening that carries no window unit.
+_RO_LINING_M = 0.645 * 0.0254
+# A penetration this small is closed by its fixture's own flange and sealant, not by trim.
+SMALL_PENETRATION_M = 6 * 0.0254
+
+
+def resolve_small_opening_trim(model) -> None:
+    """Four-side trim around each rough opening through a profiled metal wall."""
+    from typehaus.resolve.model_window_seat import WindowSeat
+    from typehaus.resolve.opening_flashing import opening_flashing_frame
+
+    metal = model.plan.project.opening_flashing_material
+    seat = WindowSeat(jamb_inset_m=_RO_LINING_M, sill_rise_m=_RO_LINING_M + 0.125 * 0.0254,
+                      head_drop_m=0.0, inner_m=0.0)
+    for opening in model.openings:
+        wall = model.wall(opening.host_wall)
+        if (opening.kind != "rough_opening" or wall is None
+                or not is_profiled_metal_wall(model, wall)
+                or max(opening.width_m, opening.height_m) < SMALL_PENETRATION_M):
+            continue
+        frame = opening_flashing_frame(model, wall)
+        if frame is not None:
+            model.solids.extend(window_trim_solids(model, wall, opening, frame, metal, seat))

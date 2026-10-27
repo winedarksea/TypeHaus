@@ -122,6 +122,7 @@ ESTIMATE_PLANS = (
     # pipe the cable follows, never the cable.
     ("freeze_protection", "freeze_protection", "spec", "length_ft", "LF"),
     ("edge_trim", "edge_trim", "category", "length_ft", "LF"),
+    ("cladding_trim", "cladding_trim", "part", "count", "ea"),
     # Framing-top membrane by the foot, keyed on the material tag. Mirrors nothing: `framing`
     # bills the stick the tape covers, not the tape.
     ("member_protection", "member_protection", "material", "length_ft", "LF"),

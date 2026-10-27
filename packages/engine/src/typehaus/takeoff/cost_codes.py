@@ -88,6 +88,8 @@ _SECTION_TRADE_CODES: dict[tuple[str, str], CostCode] = {
     ("hardware", "mechanical"): CostCode("3200", "23 05 29", "mechanical"),
     ("edge_trim", "roofing"): CostCode("2500", "07 62 00", "roofing"),
     ("edge_trim", "siding"): CostCode("2100", "07 62 00", "siding"),
+    ("cladding_trim", "roofing"): CostCode("2500", "07 62 00", "roofing"),
+    ("cladding_trim", "siding"): CostCode("2100", "07 62 00", "siding"),
     ("edge_trim", "masonry"): CostCode("1200", "07 92 00", "masonry"),
     ("install_parts", "electrical"): CostCode("3300", "26 05 33", "electrical"),
     ("install_parts", "plumbing"): CostCode("3100", "22 05 00", "plumbing"),
@@ -233,6 +235,7 @@ SECTION_CODES: dict[str, CostCode] = {
     # Heater cable is an ELECTRICAL buy on a plumbing run.
     "freeze_protection": CostCode("3200", "26 05 33", "electrical"),
     "edge_trim": CostCode("2500", "07 62 00", "roofing"),
+    "cladding_trim": CostCode("2100", "07 62 00", "siding"),
     # Self-adhered membrane on framing tops: applied by the framer, with the framing.
     "member_protection": CostCode("2000", "07 26 00", "framing"),
     # Fireblock penetration seal: the framer's, at the framing inspection.
@@ -322,6 +325,7 @@ _ROOFING_HARDWARE_ROLES = frozenset({"snow_retention", "standing_seam_clamp",
 #: because it shared ``exterior_insulation_screw``'s role, which put the screw in a
 #: different package from the wood it holds.
 _SIDING_HARDWARE_ROLES = frozenset({"exposed_fastener_panel_screw",
+                                    "sidelap_stitch_screw",
                                     "exterior_insulation_screw"})
 _CAST_HARDWARE_ROLES = frozenset({"post_base_anchor", "mudsill_anchor",
                                   "embedded_strap_holdown"})
@@ -384,6 +388,8 @@ def _fact_code(section: str, row: Mapping[str, Any]) -> CostCode | None:
             trade = "concrete"
         elif role == "equipment_pad_anchor":
             trade = "mechanical"
+    elif section == "cladding_trim":
+        trade = "roofing" if row.get("kind") == "roof" else "siding"
     elif section == "edge_trim":
         category = str(row.get("category") or "")
         if category in _SIDING_EDGE_TRIM:

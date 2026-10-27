@@ -1,4 +1,4 @@
-"""Structural screws through exterior insulation and deflection screws.
+"""Structural screws through exterior insulation, deflection screws, and panel screws.
 
 Split out of the former ``library/hardware.py``; see the package docstring.
 """
@@ -7,9 +7,11 @@ from __future__ import annotations
 
 from typehaus.hardware.catalog import (
     EXPOSURE_DRY,
+    ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_GIRT_STANDOFF_SCREW,
     ROLE_PARTITION_DEFLECTION_SCREW,
+    ROLE_SIDELAP_STITCH_SCREW,
     ROLE_SLAB_PLATE_PIN,
     AllowableLoads,
     StructuralHardware,
@@ -210,4 +212,64 @@ PDPAWL_SLAB_PLATE_PIN = StructuralHardware(
            "ICC-ES ESR-2138. 2-7/8 in through a 1-1/2 in plate leaves ~1-3/8 in in the "
            "slab. Non-structural partition attachment at 24 in o.c.; a 1/4 in Titen "
            "concrete screw is the like-for-like substitute",
+)
+
+
+# The screw an exposed-fastener wall panel is hung on. Driven through the panel flat (not
+# the rib) into the support behind, it is the ONLY penetration in the water plane, so the
+# gasket — not the steel — sets the service life of the wall.
+#
+# 316, not 304: this is a lakeside/road-salt exposure, and a stainless screw head that
+# streaks or pits is both the leak path and the thing you look at from the driveway.
+#
+# Length arithmetic, so the choice is auditable: 1-1/2" through a ~0.02" 26 ga panel into
+# the flat 1.5" KDAT outer girt leaves ~1.4" of embedment — the full thickness of the
+# nailer, with the tip breaking through into the blind 0.5" vent gap behind it rather than
+# stopping in the sheathing. Longer is not better here: a screw that reaches the WRB adds a
+# second penetration in a plane that is meant to stay unbroken.
+#
+# Service life (review of 2026-10-27). The EPDM washer, not the screw, is the limiter, and a
+# "capped head" was considered and rejected: the offered caps (ST ZXL zinc-alloy heads,
+# Dynamic Fastener stainless caps) sit on CARBON-steel shanks, which would put carbon steel in
+# copper-treated KDAT under road salt; the true domed-stainless-washer screws (Rothoblaas
+# WBAZ, DIN 7995 + EPDM) are 304 only and WBAZ starts at 2-3/8", past the girt. What buys
+# washer life here is the order and the gun, not the head:
+#   * confirm on the submittal that the washer is a stainless dished washer bonded to EPDM
+#     (one retailer says 316; Simpson's page was not read for it);
+#   * painted heads;
+#   * drive with a depth-setting nosepiece, never an impact driver — an overdriven washer is
+#     the leak, and a crushed one is the one that cracks first;
+#   * confirm the sharp point is rated through 24 ga STEEL: Simpson markets it for aluminium.
+# Fastened in the FLAT on every profile, corrugated included. Crest fastening is a roof
+# practice; on a wall it hangs the washer over a 7/8" void and dents the crown when overdriven.
+EXPOSED_FASTENER_PANEL_SCREW = StructuralHardware(
+    tag="simpson-t09150hwam-panel-screw",
+    name="#9 x 1-1/2\" 316 stainless metal-panel screw, EPDM washer",
+    role=ROLE_EXPOSED_FASTENER_PANEL_SCREW,
+    manufacturer=_SIMPSON,
+    model="T09150HWAM",
+    part_number_by_length_in={1.5: "T09150HWAM"},
+    source="Simpson Strong-Tie T09150HWAM (strongtie.com) — #9 x 1-1/2\" Type 316 stainless "
+           "metal-panel screw, hex washer head with a bonded EPDM sealing washer, for "
+           "through-fastening metal panel to a wood support",
+)
+
+# The sidelap stitch: Metal Sales' PBR wall approval (FL9482) asks for a 1/4-14 x 7/8"
+# self-drilling screw with washer at 24" o.c. down each sidelap. Two laps of 24 ga are
+# 0.048", inside the SL2's 0.060" drill capacity. Bi-metal because 300-series stainless cannot
+# be hardened to drill: the carbon point ends up in open air behind the lap and does no work.
+# 304, not 316, is the owner's call (2026-10-27): it is the stocked part. Both sheets at a lap
+# are one metal at one temperature, so the lap does not slip and nothing shears this screw;
+# the movement a wall panel takes is against the girt, on the field screws.
+SIDELAP_STITCH_SCREW = StructuralHardware(
+    tag="sfs-sl2-14-bimet-304-stitch-screw",
+    name="#14 (1/4-14) x 7/8\" 304 stainless bi-metal lap screw, bonded seal washer",
+    role=ROLE_SIDELAP_STITCH_SCREW,
+    manufacturer="SFS",
+    model="SL2 #14 Bi-Met 300",
+    source="SFS SL2 #14 Metal Self-Drill Lap Screw Bi-Met, HWH, 304 Stainless (us.sfs.com, "
+           "read 2026-10-27): SD1 point, 0.060\" max drill, stainless bond seal washer, for "
+           "panel-to-panel side lap stitching; 0-2000 rpm gun with depth-sensing nosepiece, "
+           "no impact. The 7/8\" length is Metal Sales' and was not listed on the SFS page — "
+           "confirm on order",
 )

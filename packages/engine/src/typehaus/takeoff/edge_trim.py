@@ -27,6 +27,7 @@ import math
 
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff.cladding_trim import catalog_roof_edge
 
 _M_TO_FT = 3.280839895013123
 
@@ -142,7 +143,7 @@ def _add_derived_roof_trim(model: ResolvedModel, rows: _Rows) -> None:
     for roof in model.roofs:
         for member in roof.members:
             category = member.category
-            if category not in _DERIVED_CATEGORIES:
+            if category not in _DERIVED_CATEGORIES or catalog_roof_edge(member):
                 continue
             band = _BANDED_MEASURE.get(category)
             # One band per run reaches the order: the composed piece mitres as one.

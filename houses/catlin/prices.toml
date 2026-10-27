@@ -1217,10 +1217,13 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # placeholder range pending a quote; MSRP is below the full S-5-N's.
 "S-5-N Mini" = { low = 4, high = 8 }  # 24 ea — 12 house roof + 12 garage roof wind clamps
 # 2026-08-26 — the exposed-fastener wall panel's own screws (takeoff/fasteners.py
-# `exposed_fastener_cladding_screw_rows`). 1,804 ea over two BOM rows: 1,430 field (one per
-# rib flat at every 24" support crossing) + 374 sidelap stitch (one line per panel-to-panel
-# JOINT, which is one fewer than the panel count on each run). Openings are NOT deducted, following the furring-screw convention — trim,
+# `exposed_fastener_cladding_screw_rows`). 1,451 field, one per rib flat at every 24" support
+# crossing. Openings are NOT deducted, following the furring-screw convention — trim,
 # closures and jamb returns take those screws back.
+#
+# ** SINCE 2026-10-27 THE 374 SIDELAP STITCHES ARE A SEPARATE PART ** ("SL2 #14 Bi-Met 300"
+# below). They were billed as this screw, which cannot work there: a sidelap has no wood
+# behind it, and a sharp-point wood thread in 0.048" of lapped steel strips.
 #
 # ** IT FELL FROM 3,263 THE SAME DAY, and the drop is not a saving — it is the board & batten
 # switch. ** The north and south elevations went to `board-batten-24`, a CONCEALED-fastener
@@ -1230,7 +1233,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 #
 # ** TWO PANELS ON ONE SKU SINCE 2026-08-31. ** 1,164 of these are the house's remaining
 # EAST/WEST PBR (EXT_2X6 / PLANT_EXT_2X6_HUMID) and 640 are the garage's 7/8"
-# corrugated (GARAGE_WALL_2X6, 500 field + 140 sidelap). It is genuinely one part: the SKU is chosen
+# corrugated (GARAGE_WALL_2X6, 500 field + 140 sidelap). (Counts as of that date, sidelaps
+# included; the field split is 930 house / 500 garage.) It is genuinely one part: the SKU is chosen
 # by `screw_for_required_length` off panel thickness + support embedment, both panels are
 # 26 ga on wood, and both want the same 316 stainless gasketed washer head. The house count
 # was quoted as 3,098 here until this date, which was stale — the 2026-08-29 attic redesign
@@ -1271,7 +1275,21 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # painted Galvalume "Yes" with fine print assuming "the fastener will also be painted", it
 # costs nothing, and it looks better. Recorded with the same standing as the paint's own
 # recoverable end-of-life (a ~$1-3/SF Kynar Aquatec field recoat at year 40-50).
-"T09150HWAM" = { low = 0.579, high = 0.725 }  # 1,804 ea — 1,430 field + 374 sidelap
+#
+# ** "CAPPED HEAD" SCREWS WERE REVIEWED AND REJECTED, 2026-10-27. ** The ones offered (ST
+# ZXL, Dynamic Fastener stainless caps) put a CARBON shank in copper-treated KDAT; the true
+# domed-stainless-washer screws are 304 and WBAZ starts at 2-3/8", past the girt. Cost was
+# never the argument: switching the E/W PBR to BBD75 to lose these screws nets +$1,900-4,000.
+# What the order must carry instead: confirm the washer is stainless bonded to EPDM, confirm
+# the point is rated through 24 ga STEEL (Simpson markets it for aluminium), and drive with a
+# depth-setting nosepiece, never an impact driver. Valley-fastened on the corrugated too.
+"T09150HWAM" = { low = 0.579, high = 0.725 }  # 1,451 ea field
+# The sidelap stitch, Metal Sales' 1/4-14 x 7/8" self-drilling lap screw at 24" o.c. (PBR wall
+# approval FL9482), as SFS's 304 bi-metal SL2 with a bonded seal washer — 304 is the owner's
+# call over 316, for availability. ** AN ESTIMATE, NOT A QUOTE: ** SFS publishes no price.
+# Bracketed by listings read 2026-10-27 — 410 stainless 1/4-14 x 7/8" at $0.36-0.42 (CDE) and
+# the 316 T09 above at $0.58 — with the high end for bi-metal and a small order.
+"SL2 #14 Bi-Met 300" = { low = 0.45, high = 0.90 }  # 374 ea sidelap stitch
 # The through-panel pipe straps that replaced the CanDuit rings on the two roof leaders (#13,
 # 4.0" OD) and the north-gable vent riser (#11, 3.5" OD). A commodity 316 stainless two-hole
 # strap on a moulded standoff block, ~$2-4 the pair of holes; the range is per POINT and
@@ -4244,7 +4262,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # principal facades". Load was never the reason: 318 psf outward at 2'-0" in 24 ga and 236 in
 # 26 (Metal Sales PBR Condensed Technical Reference 1/2026), both an order of magnitude over
 # the -18.3 psf ASD corner-zone demand, and this wall stays PRESCRIPTIVE either way.
-"pbr-panel-24" = { material = { low = 2.15, high = 3.3 }, labour = { low = 2.75, high = 4.5 } }
+"pbr-panel-24" = { material = { low = 1.9, high = 2.9 }, labour = { low = 2.75, high = 4.5 } }
 # 1,678.3 SF — the NORTH AND SOUTH elevations of the house walls (EXT_2X6 and
 # PLANT_EXT_2X6_HUMID), from 2026-08-31, via a per-wall `layer_materials=` override on twenty
 # walls. The east and west walls' 1,416.6 SF stay on the PBR row above; the split is 54.2% /
@@ -4418,7 +4436,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # a standard no-upcharge colour but the Rogers stock charts are 29/26 ga SMP only, so treat it
 # as a made-to-order coil run until told otherwise. That number is what decides whether this
 # material band moves.
-"board-batten-24" = { material = { low = 2.3, high = 4.05 }, labour = { low = 4.15, high = 6.75 } }
+"board-batten-24" = { material = { low = 2.0, high = 3.55 }, labour = { low = 4.15, high = 6.75 } }
 # Retired RF-GARAGE nail-strip rate; Image II now uses standing-seam-image-ii-garage.
 # Formerly 749.6 SF. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
 # lifted for the Twin Cities and for a 749 SF roof being a minimum-mobilisation job for any
@@ -4492,7 +4510,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # The ENTRY SCREEN moves with the garage because CLAUDE.md records that its west face must
 # stay in the same plane and the same reading as the garage panel; `ENTRY_SCREEN_SKIRT`'s own
 # $/SF row in [wall_structure] is derived from THIS rate by name and moves with it.
-"corrugated-panel-24" = { material = { low = 2.0, high = 3.15 }, labour = { low = 2.6, high = 4.75 } }
+"corrugated-panel-24" = { material = { low = 1.75, high = 2.75 }, labour = { low = 2.6, high = 4.75 } }
 # The roof's two membranes, and they were NOT interchangeable — the deck barrier was the
 # vapour control (0.04 perm, self-adhered to the ZIP under the foam) and the field
 # underlayment above the top deck had to stay vapour-OPEN (20 perm) or the foam was sealed
@@ -6144,6 +6162,55 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "soffit" = { material = { low = 3.5, high = 9 }, labour = { low = 3, high = 5.5 } }  # 101.1 LF — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x
 "wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # ~29 LF since 2026-10-16: the balcony's rear edge is TWO pieces either side of D-S-DECK-E, a deck-side base flashing and a house-side counterflashing (params/sunken_garden.py) — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate
 
+[cladding_trim]
+# NEW 2026-10-27 — Metal Sales trim by PART NUMBER and stock length, with the closures,
+# tape, sealant and fasteners that go with it. Bought, not allowanced: the pieces come off
+# `notes/metal_trim_kit.md` and the model's resolved runs (takeoff/cladding_trim.py). Unit
+# `ea` is a stock stick (10'-2" unless the key's length says 20'-3"), a cleat or a fastener;
+# unit `LF` is a custom-brake cut, a closure strip, a tape or sealant bead.
+#
+# ** THESE ARE ESTIMATES, NOT QUOTES. ** No Metal Sales price list is public. Stick prices
+# are the published generic-trim bands in `envelope_layers."board-batten-24"`'s note
+# (Steeldash J-channel $2.62-3.41/LF, outside corner $5.24-6.82/LF in 24 ga) lifted for PVDF
+# and for the 10'-2" lengths the mill actually stocks. Image II pieces sit above them: an
+# Extended Eave and a Residential Rake are deeper brake work than flat J. Custom-brake cuts
+# are priced by the foot at the short-run shop rate; the supplier has published no brake
+# limits (General Information manual, PGI-10), so the numbers are a placeholder until the
+# RFQ in `haus bids` comes back. Closures use the $0.45-0.72/LF die-cut foam band recorded
+# under [envelope_layers] "TRIM IS PARITY". Labour rides on the sticks and the LF cuts;
+# fasteners, tape and closures carry a token labour or none (set with the trim, not apart).
+#
+# Per-stick material is $/stick, so the $/LF in each comment is that over 10.17 LF.
+"58132XX" = { material = { low = 52, high = 70 }, labour = { low = 24, high = 40 } }   # Outside Corner - Wide, 10'-2" ($5.1-6.9/LF)
+"58136XX" = { material = { low = 104, high = 140 }, labour = { low = 44, high = 74 } }  # Outside Corner - Wide, 20'-3"
+"CORRUGATED_OUTSIDE_CORNER" = { material = { low = 52, high = 70 }, labour = { low = 24, high = 40 } }  # made to order, same brake as the Wide corner
+"58138XX" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }   # PBR 1.25" Base ($3.1-4.3/LF)
+"55545XX" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }   # BBD75 Base Trim (vertical)
+"CORRUGATED_BASE" = { material = { low = 30, high = 42 }, labour = { low = 18, high = 30 } }  # no part number published
+"55536XX" = { material = { low = 40, high = 54 }, labour = { low = 24, high = 38 } }   # BBD75 Transition Trim at the +17'-4" band
+"58114XX" = { material = { low = 36, high = 50 }, labour = { low = 14, high = 24 } }   # 1.5" Sill/Head at every window head
+"58728XX" = { material = { low = 34, high = 46 }, labour = { low = 16, high = 28 } }   # BBD75 Panel Starter at door jambs
+"CORRUGATED_JAMB" = { material = { low = 30, high = 42 }, labour = { low = 16, high = 28 } }  # screen ends and garage door jambs
+"WINDOW_JAMB_CUSTOM" = { material = { low = 6, high = 10 }, labour = { low = 3, high = 5 }, unit = "LF" }
+"WINDOW_SILL_CUSTOM" = { material = { low = 6.5, high = 11 }, labour = { low = 3, high = 5 }, unit = "LF" }
+"DOOR_HEAD_CUSTOM" = { material = { low = 7, high = 12 }, labour = { low = 3, high = 5.5 }, unit = "LF" }
+"52124XX" = { material = { low = 72, high = 110 }, labour = { low = 30, high = 52 } }   # Image II Extended Eave, specify pitch
+"5806499" = { material = { low = 24, high = 38 }, labour = { low = 8, high = 16 } }      # Offset Cleat, 10'-2"
+"52126XX" = { material = { low = 56, high = 86 }, labour = { low = 26, high = 44 } }     # Residential Rake (garage and canopy, over the fascia)
+"IMAGE_II_RAKE_4IN_CUSTOM" = { material = { low = 9, high = 14 }, labour = { low = 3.5, high = 6 }, unit = "LF" }  # house rakes: 4" face where the stock 2-5/8" leg does not cover
+"52132XX" = { material = { low = 24, high = 38 }, labour = { low = 8, high = 16 } }     # Residential Rake Cleat, 10'-2"
+"5806199" = { material = { low = 1.5, high = 3 }, labour = { low = 0.5, high = 1 } }  # 5806199 at 18" o.c. along the garage/canopy rakes
+"52131XX" = { material = { low = 62, high = 96 }, labour = { low = 26, high = 44 } }     # 7" Ridge/Hip Cover, specify pitch
+"58603XX" = { material = { low = 0.9, high = 1.6 }, labour = { low = 0.6, high = 1.2 }, unit = "LF" }  # Image II Z-Closure, each side of the closed ridges
+"6403899" = { material = { low = 0.6, high = 1.2 }, labour = { low = 0, high = 0 }, unit = "LF" }                      # double-bead tape at the ridge covers
+"6460800" = { material = { low = 0.45, high = 0.72 }, labour = { low = 0.4, high = 0.9 }, unit = "LF" }  # PBR Inside Closure
+"55548XX" = { material = { low = 3.1, high = 4.3 }, labour = { low = 0.6, high = 1.2 }, unit = "LF" }  # BBD75 C-Closure is a formed 10'-2" trim stick
+"corrugated-closure" = { material = { low = 0.45, high = 0.72 }, labour = { low = 0.4, high = 0.9 }, unit = "LF" }
+"butyl-tape" = { material = { low = 0.3, high = 0.6 }, labour = { low = 0, high = 0 }, unit = "LF" }
+"tube-sealant" = { material = { low = 0.15, high = 0.35 }, labour = { low = 0.3, high = 0.7 }, unit = "LF" }
+"trim-stitch-screw" = { material = { low = 0.06, high = 0.12 }, labour = { low = 0, high = 0 } }
+"trim-pop-rivet" = { material = { low = 0.08, high = 0.16 }, labour = { low = 0, high = 0 } }
+
 [member_protection]
 # RESEARCHED 2026-08-27 — [low, high] $/LF of MEMBER covered, by material tag. New section,
 # and new BOM table behind it (takeoff/member_protection.py): self-adhered butyl over the
@@ -7229,7 +7296,8 @@ envelope-exterior-hoods-and-flashing = { low = 200, high = 500 }
 # profile-matched closure (foam or EPDM, cut to the 2-2/3" pitch) sits at the top of that
 # band where a straight Cor-A-Vent section sits at the bottom, which is why this row does
 # not go below it. 192 LF x $2.00-4.50 = $384-864.
-envelope-garage-corrugated-closure-strips = { low = 384, high = 864 }
+# DELETED 2026-10-27: envelope-garage-corrugated-closure-strips ($384-864) is now counted LF
+# of `corrugated-closure` under [cladding_trim].
 # NEW 2026-10-10 — the house's PBR profile closures, the same job as the garage row above.
 # PBR (`pbr-panel-24`, the E/W walls) is ribbed, so every horizontal termination leaves the rib
 # voids open into the rainscreen cavity (see [cladding]'s note: "every horizontal termination
@@ -7242,7 +7310,8 @@ envelope-garage-corrugated-closure-strips = { low = 384, high = 864 }
 #  238.6 LF  total; each closure bedded in butyl tape. Board & batten (N/S) needs none by its
 #            guide; its rat guard and C-closure are a BBD75 install-guide CONFIRM, not a row.
 # $2.00-4.50/LF installed, the garage row's band: 238.6 LF x $2.00-4.50 = $477-1,074.
-envelope-pbr-profile-closures = { low = 477, high = 1074 }
+# DELETED 2026-10-27: envelope-pbr-profile-closures ($477-1,074) is now counted LF of PBR
+# Inside Closure 6460800 (and the BBD75 C-Closure) under [cladding_trim].
 
 # --- MEP ------------------------------------------------------------------------------------
 # REMOVED 2026-08-27: electrical-pv-array-modules-and-racking, $24,000-46,000. The money went
@@ -7965,6 +8034,9 @@ wall_structure = false
 "reinforcement:#6" = "black #6: no black pour carries it; priced so one would cost at once"
 "placeables:FURN-M-PAX-DOUBLE" = "RM-M-CLOSET's 19 5/8\" double-hang frame, 2026-10-02 to -03; kept priced"
 
+"edge_trim:wall_corner" = "the four TR-H-CORNER runs are gone; the Wide Outside Corner bills under [cladding_trim]"
+"edge_trim:corner_trim" = "the roof rake face and drip are Image II pieces under [cladding_trim]; kept priced"
+
 [basis]
 framing              = "material"
 sheet_goods          = "material"
@@ -7999,6 +8071,7 @@ plumbing_specialties = "material"
 install_parts        = "material"
 pipe_insulation      = "material"
 edge_trim            = "material"
+cladding_trim        = "material"
 member_protection    = "material"
 wall_structure       = "installed"
 reinforcement        = "material"
@@ -8032,6 +8105,7 @@ solar_modules   = "$/W DC installed, split 65/35 on the industry norm. Modules, 
 data_raceways   = "material plus installed labour, $/LF of EMPTY PIPE. It is not the drops: cable, boxes, jacks and termination are the driven electrical-structured-low-voltage-drops allowance. Disjoint from [conduit] by construction — conduit_takeoff and data_raceway_takeoff partition model.conduits on service"
 ducts           = "material plus installed labour, UN-BLENDED 2026-08-27 by qualifying on `material` and 2026-08-30 by qualifying on `diameter_in` as well: `supply:semi_rigid:3.0` is the 75 mm radial, `supply:semi_rigid:6.0` the 6-inch riser, and a bare `supply` the 14x8 galvanized trunk, which the model leaves unnamed. Lookups fall back through the shorter keys, so the `material`-only and bare rows still price anything the finer rows do not name. The 08-27 blend it replaces was a sheet-metal rate carried over the radial pass, so the section fell rather than rose; the 08-30 diameter split is rate-neutral on today's mix and exists so it stays right when the mix moves"
 edge_trim       = "material plus installed labour. Two rows, drip_flashing and ridge_cap, are commonly inside a roofer's price — check for a double count against any roofing bid"
+cladding_trim   = "ESTIMATES, NOT QUOTES: material plus installed labour per Metal Sales stock stick (ea) or per foot of custom cut, closure, tape and sealant bead (LF); fasteners each. RECONCILIATION 2026-10-27: this section ADDS the wall base, corners, band, window and door trim, screen ends, Image II eave/rake/ridge and their closures, sealant and fasteners; it REPLACES [allowances] envelope-pbr-profile-closures and envelope-garage-corrugated-closure-strips (both deleted), the derived drip/ridge-closed/panel-rake LF formerly in [edge_trim] (drip_flashing, corner_trim, ridge_cap now cover only the authored runs and the garage's vented ridge), and ~12% of the three wall panels' MATERIAL $/SF (pbr-panel-24 2.15-3.30 to 1.90-2.90, board-batten-24 2.30-4.05 to 2.00-3.55, corrugated-panel-24 2.00-3.15 to 1.75-2.75), the trim share TRIM IS PARITY left inside them. The 12% is an assumption with no source: re-strike it when a supplier quote lands. Estimate moved $880k-1,738k to $895k-1,762k. The vented garage ridge stays in [edge_trim] ridge_cap until Metal Sales confirms the Image II vented assembly's part numbers; the box gutters stay custom pending a hydraulic capacity review"
 member_protection = "material plus installed labour. Applied by the framer WITH the framing, not by a trade on a return visit — five of the seven capped beams carry joists on top, so the tape and the cap over it go on before the deck frames or not at all"
 railings        = "material plus installed labour. RAILING-INT-STAIR-GUARD is priced as a COMPONENT system; a shop-welded guard moves cost from labour into material and the two models must not be stacked"
 drainage        = "material plus installed labour, BLENDED over two products that differ 3x (seamless K-style vs fabricated box gutter). Seamless is roll-formed on site, so its own split is inseparable and every quote will come back merged"

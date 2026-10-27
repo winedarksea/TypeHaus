@@ -24,6 +24,7 @@ from typehaus import (
     PanelEdgeBlocking,
     Door,
     ExteriorDoorInstallation,
+    ExteriorDoorSillDesign,
     DischargeExtension,
     Downspout,
     EaveDripEdge,
@@ -346,7 +347,14 @@ OPENINGS = [
          flip_hinge=True, flip_swing=True, maximum_opening_degrees=90,
          header_spec='3-ply 5.5" LVL',
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
-             exterior_wrap_material_ref="metal-dark-exterior")),
+             exterior_wrap_material_ref="metal-dark-exterior",
+             # MMI publishes no sill section: this is a coordination envelope (frame depth, a
+             # 1" composite sill, inside R311.3.2's 1-1/2" outswing allowance) that closes the
+             # pan's ends behind the returns.
+             sill_design=ExteriorDoorSillDesign(
+                 source_url="https://hdsupplysolutions.com/p/doors-00-145-10/mmi-door-6-panel-32-x-80-rh-out-on-6-9-16-primed-composite-frame-p219385",
+                 source_drawing="MMI Z0364688R listing: 6-9/16 inch composite frame, fixed sill; schematic envelope, no published section",
+                 threshold_depth=inch(6.5625), threshold_height=inch(1.0), cap_depth=inch(1.5)))),
     # This 8' wall (vs. the house's 10') is why the 27" family is 36" tall: a 60" height at
     # this 42" sill would push the header above the top plate.
     #

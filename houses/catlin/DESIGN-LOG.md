@@ -6357,3 +6357,26 @@ faces need a horizontal transition at +17 ft 4 in to keep both panel runs within
 window-first outies need custom jamb and sill profiles. The schedule is a design basis,
 not a statement that every detail has already been modeled, checked or priced. Verify
 box-gutter capacity and supplier part numbers before procurement.
+
+## Exposed-fastener screws: a reviewer's service-life pass (2026-10-27)
+
+A reviewer proposed capped-head field screws, stainless or Fab-Lok sidelap stitching, and
+crest fastening on the corrugated. Owner's decisions, and why:
+
+- **Field screw stays T09150HWAM (316).** Cost was never the issue: switching the E/W PBR to
+  BBD75 to lose the screws nets about +$1,900-4,000. The capped heads offered (ST ZXL's cast
+  zinc-alloy head, Dynamic Fastener's stainless cap) both sit on CARBON shanks, which would put
+  carbon steel in copper-treated KDAT under road salt. The real domed-stainless-washer screws
+  (Rothoblaas WBAZ, DIN 7995 + EPDM) are 304 only, and WBAZ starts at 2-3/8", past the girt.
+  What goes on the order instead: confirm the washer is stainless bonded to EPDM, confirm the
+  point is rated through 24 ga steel (Simpson markets it for aluminium), painted heads, and a
+  depth-setting nosepiece with no impact driver. The washer campaign at ~year 30-40 stands.
+- **Sidelaps are a separate part: SFS SL2 #14 Bi-Met 300, 1/4-14 x 7/8", 304.** The 374
+  stitches had been billed as the 1-1/2" wood screw, which has no wood to bite at a lap.
+  Metal Sales' PBR wall approval (FL9482) asks for a 1/4-14 x 7/8" self-drilling screw at 24"
+  o.c. 304 over 316 for availability. Fab-Lok (~$1.49 ea) was more than a 24 ga lap needs. The
+  "thermal shearing" argument does not apply at a lap: both sheets are one metal at one
+  temperature. Priced as an estimate ($0.45-0.90), no quote.
+- **Corrugated is valley-fastened.** Crest fastening is a roof practice; on a wall it hangs the
+  washer over a 7/8" void and needs a ~2-1/2" screw. The material record said "through the
+  crowns" and was corrected.

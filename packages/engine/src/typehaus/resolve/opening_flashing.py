@@ -167,6 +167,11 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
 
             model.solids.extend(window_trim_solids(model, wall, opening, frame, metal))
             meshes = [mesh for mesh in meshes if mesh[0] != "head"]
+        elif opening.kind == "door":
+            from typehaus.resolve.cladding_trim.doors import add_door_trim
+
+            if add_door_trim(model, wall, opening, frame, cfg, metal, catalog=bool(catalog)):
+                meshes = [mesh for mesh in meshes if mesh[0] != "head"]
         if catalog:
             # Stock head/pan envelopes are already opening IR parts; retain the
             # continuous jamb/head water-plane tie, not the legacy formed-metal hood.
@@ -178,18 +183,24 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
                 host_ref=opening.tag))
 
 
-def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
-                            frame: OpeningFlashingFrame, cfg: FlashingConfig = FLASHING,
-                            *, pan: bool = True, metal: str = _DEFAULT_METAL) \
-        -> list[tuple[str, str, str, GMesh]]:
+@dataclass(frozen=True)
+class HeadSection:
+    """The drip head's (depth, z) centreline, its end stations along the wall and dam seats."""
+
+    start: float
+    span: float
+    points: tuple[tuple[float, float], ...]
+    bend_z: float
+    head_seat: float
+    front: float
+
+
+def head_flashing_section(wall: ResolvedWall, opening: ResolvedOpening,
+                          frame: OpeningFlashingFrame, cfg: FlashingConfig = FLASHING) \
+        -> HeadSection:
     lo = opening.center_along_m - opening.width_m / 2
     hi = lo + opening.width_m
-    sill = wall.base_ref_z_m + opening.sill_m
-    head = sill + opening.height_m
-    buck = frame.buck
-    # A membrane is applied to the wall it seals: below the wall's base (an overhead door
-    # down to the slab) there is only the stem end, which is not this wall's opening.
-    base = max(sill, wall.z0_m)
+    head = wall.base_ref_z_m + opening.sill_m + opening.height_m
     # Read the actual head course, including a girt's flat 2x4 rather than guessing its height.
     courses = [m for m in wall.members if m.category == "truss_blocking"
                and abs(m.z0_m - head) < _HEAD_COURSE_TOLERANCE_M]
@@ -205,17 +216,34 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
     fall = max(0.0, front - frame.water) * cfg.drainage_slope
     # Raise the inboard bend so the fall clears the head course at every depth.
     bend_z = head_seat + fall
-    start = lo - casing - cfg.head_end_lap_m
-    span = hi - lo + 2 * (casing + cfg.head_end_lap_m)
-    top = bend_z + rise
+    drop = head_seat - cfg.head_drop_m
+    points = ((frame.water, bend_z + rise), (frame.water, bend_z), (front, head_seat),
+              (front, drop), (front - cfg.hem_m, drop))
+    return HeadSection(lo - casing - cfg.head_end_lap_m,
+                       hi - lo + 2 * (casing + cfg.head_end_lap_m), points, bend_z, head_seat,
+                       front)
+
+
+def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
+                            frame: OpeningFlashingFrame, cfg: FlashingConfig = FLASHING,
+                            *, pan: bool = True, metal: str = _DEFAULT_METAL) \
+        -> list[tuple[str, str, str, GMesh]]:
+    lo = opening.center_along_m - opening.width_m / 2
+    hi = lo + opening.width_m
+    sill = wall.base_ref_z_m + opening.sill_m
+    head = sill + opening.height_m
+    buck = frame.buck
+    # A membrane is applied to the wall it seals: below the wall's base (an overhead door
+    # down to the slab) there is only the stem end, which is not this wall's opening.
+    base = max(sill, wall.z0_m)
+    section = head_flashing_section(wall, opening, frame, cfg)
+    start, span, bend_z, head_seat, front = (section.start, section.span, section.bend_z,
+                                             section.head_seat, section.front)
+    top = section.points[0][1]
+    courses = [m for m in wall.members if m.category == "truss_blocking"
+               and abs(m.z0_m - head) < _HEAD_COURSE_TOLERANCE_M]
     sheets = [frame.leg(start, span, a, b, cfg.sheet_m)
-              for a, b in (
-                  ((frame.water, top), (frame.water, bend_z)),
-                  ((frame.water, bend_z), (front, head_seat)),
-                  ((front, head_seat), (front, head_seat - cfg.head_drop_m)),
-                  ((front, head_seat - cfg.head_drop_m),
-                   (front - cfg.hem_m, head_seat - cfg.head_drop_m)),
-              )]
+              for a, b in zip(section.points, section.points[1:], strict=False)]
     for station, sign in ((start, 1.0), (start + span, -1.0)):
         dam = cfg.head_end_dam_m
         sheets.append(frame.section(station, ((frame.water, bend_z), (front, head_seat),
@@ -289,6 +317,7 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
     result.append(("perimeter", "opening_flashing_membrane", cfg.membrane_material,
                    combine_sheets(membrane)))
     if pan:
+        placement = opening.doorway.exterior_placement if opening.doorway else None
         design = placement.specification.sill_design if placement else None
         result += _sill_pan(frame, _pan_outlet(opening, frame, cfg), lo + buck,
                             hi - lo - 2 * buck, sill + buck, cfg,

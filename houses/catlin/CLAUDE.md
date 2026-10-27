@@ -504,7 +504,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (`_WALL_OUTBOARD_IN`, `HOUSE_CLADDING_Y_FT`, `gap_to_house_in`, `plan/electrical.py`).
     `skin_family="standing-seam"` must stay on BOTH panels or the flush zero-overhang edge
     reverts to fascia-and-drip-edge on all four edges. `exposed_fastener` is deliberately
-    ABSENT (`T09150HWAM` is 1,804: 640 garage + 1,164 E/W PBR; `attic` storey has none).
+    ABSENT (`T09150HWAM` is 1,451 field: 930 E/W PBR, 500 garage, 21 entry screen, plus 374 sidelap
+    stitches as `SL2 #14 Bi-Met 300`; `attic` storey has none).
   - Ten separate registrations render the appearance across `ui/src/three/materials.ts`,
     `ui/src/nordic/palette.ts`, `emit/gltf/palette.py`, `emit/draw/palette.py`,
     `ui/src/components/DetailCanvas.tsx`, and `emit/draw/elevation_finish.py`'s
@@ -573,7 +574,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **The EPDM washer is the 100-year limiter, not the screw** — 15-40 yr against 300-series
     stainless in painted Galvalume "matching the expected life" of the cladding (MCA 09/2025)
     and painted AZ50 at 50-375 yr. Annual look, washer campaign ~yr 30-40, painted heads on
-    the order. Ranked after it: base-of-wall salt zone (ungraded here), treated-wood contact
+    the order. **Capped-head screws were reviewed and rejected (2026-10-27)**: the ones
+    offered have carbon shanks (into treated KDAT) and the domed-washer ones are 304 and too
+    long. Instead the order confirms a stainless bonded washer and a 24 ga steel rating, and
+    the crew drives with a depth-setting nosepiece, never an impact. Sidelaps are a 304
+    bi-metal 1/4-14 x 7/8" lap screw (no wood behind a lap); corrugated is screwed in the
+    VALLEYS. Record: `library/hardware/fasteners.py`, `prices.toml` [hardware].
+    Ranked after it: base-of-wall salt zone (ungraded here), treated-wood contact
     (KEEP THE GIRTS — `notes/board_batten_girt_span.md` §7.10; read the end tag before
     ordering and upgrade the BACKER coat), sealants, then paint.
   - Revert = select the corresponding PBR assemblies on the twenty walls; `pbr-panel-24` and its
