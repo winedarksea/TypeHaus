@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** da570c4e5ee9e8e4  
-**Lines:** 183
+**Model hash:** 6772f33500e1f9ea  
+**Lines:** 185
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -33,7 +33,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | 20 | LF ordered | 1 pcs, 16.7 LF cut | building |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | 36 | LF ordered | 1 pcs, 36.0 LF cut | building |
 | 2-1.75x9.5 LVL — header (2-1.75x9.5 LVL) | 8 | LF ordered | 1 pcs, 5.5 LF cut | building |
-| 2-2x10 — header (2-2x10) | 32 | LF ordered | 4 pcs, 21.8 LF cut | building |
+| 2-2x10 — header (2-2x10) | 32 | LF ordered | 4 pcs, 22.3 LF cut | building |
 | 2-2x10 SPF framing lumber — blocking (2-2x10:spf) | 16 | LF ordered | 6 pcs, 11.3 LF cut | building |
 | 2-2x6 — header (2-2x6) | 32 | LF ordered | 4 pcs, 24.0 LF cut | building |
 | 2-2x6 SPF framing lumber — blocking (2-2x6:spf) | 24 | LF ordered | 10 pcs, 18.4 LF cut | building |
@@ -50,7 +50,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,728 | LF ordered | 647 pcs, 4005.1 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,862 | LF ordered | 470 pcs, 2445.6 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 56.0 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,078 | LF ordered | 1180 pcs, 6131.3 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,070 | LF ordered | 1177 pcs, 6121.5 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | 90 | LF ordered | 9 pcs, 77.6 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.5 LF cut | building |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | 1,742 | LF ordered | 228 pcs, 1478.9 LF cut | building |
@@ -60,7 +60,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 412 | LF ordered | 96 pcs, 344.4 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 2.9 LF cut | building |
 | 3-2x12 — joist (3-2x12:kdat) | 40 | LF ordered | 2 pcs, 33.5 LF cut | building |
-| 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1137 pcs, 331.6 LF cut | building |
+| 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1136 pcs, 331.3 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — brace, stud (6x6:kdat) | 16 | LF ordered | 3 pcs, 7.9 LF cut | building |
 | hanger — hanger board (hanger) | 24 | LF ordered | 4 pcs, 17.9 LF cut | building |
@@ -81,9 +81,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SPF framing lumber, 3/4" ceiling (spf:ceiling) | 5 | sheets 4x8 | 5 sheets 4x8 over 137.8 SF net | building |
 | SPF framing lumber, 11 1/4" ceiling (spf:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 65.1 SF net | building |
 | Structural 1 plywood, 23/32" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 50.1 SF net | building |
-| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 10 | sheets 4x8 | 10 sheets 4x8 over 242.5 SF net | building |
+| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 10 | sheets 4x8 | 10 sheets 4x8 over 243.0 SF net | building |
 | Structural 1 plywood, 1/2" ceiling (struct-1-plywood:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 65.1 SF net | building |
-| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3076.6 SF net | building |
+| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3073.5 SF net | building |
 | Structural 1 plywood, 5/8" roof (struct-1-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1544.4 SF net | building |
 | Structural 1 plywood, 3/4" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.3 SF net | building |
@@ -135,7 +135,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 19 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 6 | ea |  | building |
 | LTP4 lateral tie plate, gable-end truss to top plate | 2 | ea |  | building |
-| LTP4 lateral tie plate | 165 | ea |  | building |
+| LTP4 lateral tie plate | 164 | ea |  | building |
 | LTP4 lateral tie plate | 7 | ea |  | building |
 | LTP4Z lateral tie plate (ZMAX) | 7 | ea |  | building |
 | LUS face-mount joist hanger | 1 | ea |  | building |
@@ -163,7 +163,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | THA422 top-flange floor truss hanger | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 1 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,137 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,136 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 72 | ea |  | building |
 
 ## Other structural solids
@@ -229,7 +229,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 5/8" APA Exterior plywood, 4x9 stock sheathing, 5/8" — wall (entry-screen-exterior-plywood:0.625) | 27 | SF net |  | building |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | 84.4 | SF net |  | building |
 | 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" — wall (permabase-exterior:0.5) | 25.1 | SF net |  | building |
-| Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,207.4 | SF net |  | building |
+| Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,201.2 | SF net |  | building |
 | Structural 1 plywood sheathing, 5/8" — roof (struct-1-plywood:0.625) | 1,544.4 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — roof (struct-1-plywood:0.75) | 882.8 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | 4.3 | SF net |  | building |
@@ -252,7 +252,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 32" x 80" (no type) (None) | 1 | ea | 32" x 80" | second |
 | rough opening, 34" x 25" (no type) (None) | 1 | ea | 34" x 25" | main |
 | rough opening, 36" x 80" (no type) (None) | 1 | ea | 36" x 80" | basement |
-| rough opening, 60" x 78" arched (no type) (None) | 1 | ea | 60" x 78" | basement |
+| rough opening, 63.31" x 1.75" (no type) (None) | 1 | ea | 63 5/16" x 1 3/4" | basement |
+| rough opening, 63.31" x 6.5" (no type) (None) | 1 | ea | 63 5/16" x 6 1/2" | basement |
+| rough opening, 63.31" x 86.25" arched (no type) (None) | 1 | ea | 63 5/16" x 86 1/4" | basement |
 
 ## Steel members
 
@@ -445,7 +447,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 32" x 80" (no type) (None) | O-S-VANITY |
 | rough opening, 34" x 25" (no type) (None) | AO-M-FIRE-NICHE |
 | rough opening, 36" x 80" (no type) (None) | D-B-GYM |
-| rough opening, 60" x 78" arched (no type) (None) | AO-B-BRICK-DOOR |
+| rough opening, 63.31" x 1.75" (no type) (None) | AO-B-PATIO-SEAT |
+| rough opening, 63.31" x 6.5" (no type) (None) | AO-B-PATIO-CURB-APPROACH |
+| rough opening, 63.31" x 86.25" arched (no type) (None) | AO-B-BRICK-DOOR |
 | L3 1/2" x 3 1/2" x 1/4" steel angle (L3.5x3.5x0.25) | BM-M-FIRE-LINTEL |
 
 ## Appendix B — drawings

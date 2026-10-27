@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { authoredAppearance, type MaterialAppearance } from "../nordic/palette";
 import { tiledValueNoise } from "./valueNoise";
 
 // Visual approximation of MSI's Frost White close-up: fine translucent aggregate in a
@@ -17,8 +18,9 @@ export const FROST_WHITE_SURFACE = {
 } as const;
 
 /** Keep this selection on kitchen pieces even if a vanity later shares the slab ref. */
-export function isKitchenFrostWhite(piece: { tag: string; material_ref: string }): boolean {
-  return piece.material_ref === "quartz-counter"
+export function isKitchenFrostWhite(piece: { tag: string; material_ref: string },
+  materials: readonly MaterialAppearance[] | undefined): boolean {
+  return authoredAppearance(piece.material_ref, materials)?.finish === "polished"
     && /^(CT-M-KIT(?:-|$)|STOOL-WIN-M-KIT(?:CH)?(?:-|$))/.test(piece.tag);
 }
 

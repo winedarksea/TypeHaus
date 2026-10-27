@@ -11,6 +11,7 @@ function assert(condition: unknown, message: string): asserts condition {
 export function runCountertopTests() {
   const materials: MaterialAppearance[] = [
     { tag: "oak-counter", color: "#c9a978", finish: "hardwax-oil" },
+    { tag: "quartz-counter", color: "#f2efe9", finish: "polished" },
   ];
   const palette = RESOLVED_NORDIC_PALETTE.light;
   // A 3 m x 0.3 m cantilever with a notch-free ring and a 0.1 m hole (a cut-out sink).
