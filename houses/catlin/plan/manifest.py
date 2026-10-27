@@ -21,7 +21,7 @@ from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_bas
 from library import (
     ALL_DUCT_PRODUCT_TYPES, ALL_ELECTRICAL_DEVICE_TYPES, ALL_RAILING_TYPES,
     ALL_REGISTER_TYPES, ALL_VENTILATION_EQUIPMENT_TYPES, DT_POCKET_INT_36,
-    STANDARD_DOOR_TYPES, STARTER_APPLIANCE_TYPES,
+    MICROWAVE_COUNTERTOP_NN_SN686S, STANDARD_DOOR_TYPES, STARTER_APPLIANCE_TYPES,
     STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES,
     WINDOW_TYPES_16_INCH_MODULE,
 )
@@ -131,7 +131,8 @@ _library = Library(
     # beside the allowances rather than replacing them: the disposer and the recirculating
     # hood are still unchosen and still correctly generic. Tags are disjoint (APPL-LG-*
     # vs APPL-*), which `integrity.duplicate_catalog_tag` proves rather than assumes.
-    appliance_types=(*STARTER_APPLIANCE_TYPES, *appliance_types.APPLIANCE_TYPES),
+    appliance_types=(*STARTER_APPLIANCE_TYPES, MICROWAVE_COUNTERTOP_NN_SN686S,
+                     *appliance_types.APPLIANCE_TYPES),
     register_types=(*ALL_REGISTER_TYPES, *mep.REGISTER_TYPES,
                     *equipment_types.STALL_FAN_REGISTER_TYPES),
     duct_product_types=ALL_DUCT_PRODUCT_TYPES,

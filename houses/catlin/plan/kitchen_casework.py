@@ -288,6 +288,11 @@ MAIN_KITCHEN_CASEWORK = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(331.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # Microwave trial in the cave, centred (1 5/8" a side), front facing west, 2" off the wall
+    # so the plug behind it clears. Plugs into ED-M-LIVING-KGF4 (SA2) at 42".
+    Appliance(uid="72YP0N77T2", tag="APPL-M-MICROWAVE", type_ref="APPL-MICROWAVE-NN-SN686S", room="RM-M-LIVING",
+              position=pt(inch(415.6), inch(331.375)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(36))),
 
     # Reach-in shelves remain 18 inches deep, leaving 8 inches of standing floor.
     # 73 1/4-inch width with a structural centre gable gives two 36 1/4-inch clear spans.

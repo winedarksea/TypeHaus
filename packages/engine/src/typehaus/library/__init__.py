@@ -84,6 +84,7 @@ from typehaus.library.hvac import (
 )
 from typehaus.library.materials import ALL_MATERIALS
 from typehaus.library.placeables import (
+    MICROWAVE_COUNTERTOP_NN_SN686S,
     SEKTION_CASEWORK_TYPES,
     STARTER_APPLIANCE_TYPES,
     STARTER_CASEWORK_TYPES,
@@ -158,6 +159,7 @@ __all__ = [
     "STARTER_FURNITURE_PRODUCTS", "STARTER_FURNITURE_TYPES",
     "STARTER_CASEWORK_TYPES",
     "SEKTION_CASEWORK_TYPES",
+    "MICROWAVE_COUNTERTOP_NN_SN686S",
     "STARTER_APPLIANCE_TYPES",
     "STARTER_FIXTURE_TYPES",
     "POCKET_DOOR_TYPES",

@@ -8,6 +8,7 @@ door-and-handle family can express.
 
 from __future__ import annotations
 
+from typehaus.model.placeable_symbols._countertop_microwave import countertop_microwave
 from typehaus.model.placeable_symbols._espresso_machine import espresso_machine
 from typehaus.model.placeable_symbols._families import Builder, Geometry, appliance_case
 from typehaus.model.placeable_symbols._frame import (
@@ -323,6 +324,7 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "washer-dryer-stacked": appliance_case(doors=2, split="horizontal", porthole=True,
                                            porthole_per_door=True, controls=True),
     "microwave": appliance_case(doors=1, body="appliance-steel"),
+    "countertop-microwave": countertop_microwave,
     "hood": canopy_hood(),
     "furnace": air_handler(),
     "heat-pump-outdoor": outdoor_condenser(),

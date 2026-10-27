@@ -379,3 +379,15 @@ def test_chrome_accessories_keep_their_geometry_with_a_silver_finish(base):
     assert len(nickel) == len(chrome)
     assert {p["color"] for p in chrome} == {"metal"}
     assert [{**p, "color": "metal"} for p in nickel] == list(chrome)
+
+
+def test_countertop_microwave_door_window_and_control_column() -> None:
+    width, depth, height = 0.5255, 0.4015, 0.3112
+    parts = model_parts("countertop-microwave", width, depth, height)
+    assert parts
+    assert all(abs(part["center"][0]) <= width / 2 + 1e-9 for part in parts)
+    assert max(part["center"][2] + part["size"][2] / 2 for part in parts) == pytest.approx(height)
+    assert any(part["color"] == "screen" and part["center"][0] > 0 for part in parts)
+    window = [part for part in parts if part["color"] == "metal-black"
+              and part["size"][0] > width * 0.5]
+    assert window and window[0]["center"][0] < 0

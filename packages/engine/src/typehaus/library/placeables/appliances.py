@@ -53,6 +53,20 @@ MICROWAVE_OTR = ApplianceType(
     ports=(ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),),
 )
 
+# Panasonic NN-SN686S, 1.2 cu ft inverter countertop unit. Opt-in: not in the starter set.
+# Cord-and-plug 120 V; the power port is the cord's exit at the back, low.
+MICROWAVE_COUNTERTOP_NN_SN686S = ApplianceType(
+    tag="APPL-MICROWAVE-NN-SN686S", name="Panasonic NN-SN686S countertop microwave",
+    footprint=(inch(20.69), inch(15.81)), height=inch(12.25),
+    plan_symbol="countertop-microwave",
+    needs=frozenset({Service.POWER_120}),
+    ports=(ServicePort(tag="power", service=Service.POWER_120,
+                       position=(ft(0), inch(7.9), inch(2))),),
+    source="Panasonic NA spec page for NN-SN686SAZH, read 2026-10-27: exterior 310 x 525 x "
+           "401 mm (12.25 H x 20.69 W x 15.81 D in), cavity 9.94 x 13.94 x 14.38 in, 1.2 cu ft, "
+           "120 V. Rear/side/top ventilation clearances NOT found; take them from the manual.",
+)
+
 # A second cold box beside the refrigerator, for a household that buys and freezes in bulk.
 # Same 3' door zone as the fridge: an upright freezer's door is the full face of the cabinet.
 FREEZER_UPRIGHT = ApplianceType(
