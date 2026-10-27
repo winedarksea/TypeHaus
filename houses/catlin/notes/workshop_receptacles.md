@@ -1,7 +1,15 @@
 # Receptacles and devices
 
 Leviton Decora, white (`-W`), tamper-resistant (NEC 2023 406.12) house-wide. Owner decisions
-2026-10-27; not yet applied to the model.
+2026-10-27. Applied to the model the same day: types in `plan/device_types.py` (`ED-T-LEV-*`,
+`ED-T-LUT-*`), instances retyped, `CKT-SUMP` breaker no longer GFCI, pantry sensor moved inside.
+Rating follows the circuit's breaker (15 A circuits get 15 A devices, e.g. `CKT-HA`,
+`CKT-BATH2-TUB`, `CKT-LT-*`); device GFCI stays only where the breaker is not GFCI.
+
+**Not yet modelled:** new guide-light receptacles on the stair landings (wall stations open);
+5980-UCL exterior covers (no exterior receptacle exists); the basement 4x4 steel boxes and raised
+covers; the `D215S-1BW` / companion pairing is by name only (`DD0SR-DLZ` model unconfirmed);
+the pantry lens mask; RC1/kettle 2-gang envelopes are still the schematic 4x4.
 
 ## Device schedule
 

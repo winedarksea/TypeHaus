@@ -223,11 +223,18 @@ def test_catlin_pantry_lighting_and_shelves_stay_outside_the_cassette(catlin_pla
     assert light.location.attachment.distance_from_start.inches == 6.375
     assert light.mount.elevation.inches == 18
     assert light.controlled_by == ("ED-M-PANTRY-SW",)
-    for tag, station in (("ED-M-PANTRY-SW", 8), ("ED-M-KITCH-SW-UC", 12)):
-        switch = catlin_plan.by_tag(tag)
-        assert switch.location.attachment.wall_ref == "W-M-PAN-E"
-        assert switch.location.attachment.distance_from_start.inches == pytest.approx(station)
-        assert switch.mount.elevation.inches == 46
+    # The kitchen-side box is a single gang; the pantry's PIR sensor is on the inside face.
+    kitchen = catlin_plan.by_tag("ED-M-KITCH-SW-UC")
+    assert kitchen.location.attachment.wall_ref == "W-M-PAN-E"
+    assert kitchen.location.attachment.face == "right"
+    assert kitchen.location.attachment.distance_from_start.inches == pytest.approx(12)
+    assert kitchen.mount.elevation.inches == 46
+    sensor = catlin_plan.by_tag("ED-M-PANTRY-SW")
+    assert sensor.type_ref == "ED-T-LEV-OCC-PANTRY"
+    assert sensor.location.attachment.wall_ref == "W-M-PAN-E"
+    assert sensor.location.attachment.face == "left"
+    assert sensor.location.attachment.distance_from_start.inches == pytest.approx(6.76)
+    assert sensor.mount.elevation.inches == 56
     shelves = catlin_plan.by_tag("FURN-M-PANTRY-SHELVES")
     assert shelves.position.x.inches == pytest.approx(256)
     assert shelves.position.y.inches == pytest.approx(416.375)

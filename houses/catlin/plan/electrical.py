@@ -1052,24 +1052,22 @@ SECOND_EQUIPMENT = [
 # it is a station on the SOUTH wall's interior face, still well inside its new x 6'..30'
 # run, and holding it still keeps `CD-B-GARAGE` and its three sleeves untouched.
 #
-# ** THE 14-50R IS A LEVITON 1450R, AND IT IS THE DEVICE THAT WAS CHOSEN, NOT THE CHARGER
-# (owner). ** A range receptacle is rated for a handful of insertions and an intermittent
-# load; this one sits under 40 A continuous for hours with the plug left in. The 1450R is
-# Leviton's heavy-duty EV-duty version of the same NEMA 14-50R, and its terminals take #4/#6/
-# #8 AWG COPPER ONLY - which is a live constraint on the feeder, not a footnote. The full
-# record is `PROD-LEVITON-1450R` in `plan/products.py`, which also explains why `type_ref`
-# cannot carry a `product_ref` to it: `ED-T-EV-1450` is a LIBRARY type and a library entry
-# may not name a house-owned Product. The EVSE that plugs in is still the Emporia unit; it
+# ** THE EV 14-50R IS A LEVITON 1450W (device schedule, 2026-10-27), THE DEVICE CHOSEN, NOT THE
+# CHARGER. ** A range receptacle is rated for a handful of insertions and an intermittent
+# load; this one sits under 40 A continuous for hours. The 1450W is the heavy-duty EV-duty
+# 14-50R, weather-resistant, and its terminals take #4/#6/#8 AWG COPPER ONLY - a live
+# constraint on the feeder. `ED-T-LEV-EV-1450` (plan/device_types.py) names it; the range
+# takes the plain 1450R (`PROD-LEVITON-1450R`). The EVSE that plugs in is still the Emporia unit; it
 # is cord-and-plug equipment and stays unmodeled.
 GARAGE_DEVICES = [
     ElectricalDevice(uid="CEE008AAAA", tag="ED-G-EV-620", kind=DeviceKind.RECEPTACLE_240,
-                     type_ref="ED-T-EV-620", circuit="CKT-EV-620",
+                     type_ref="ED-T-LEV-EV-620", circuit="CKT-EV-620",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE",
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-W", face="left", distance_from_start=inch(103.875),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.RECEPTACLE_240,
-                     type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
+                     type_ref="ED-T-LEV-EV-1450", circuit="CKT-EV-1450",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE",
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(167.375),

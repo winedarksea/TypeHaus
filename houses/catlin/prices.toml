@@ -2589,8 +2589,33 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # If the Emporia unit is meant to be in the estimate it is a separate ~$400-600 line. It stays
 # the charger either way: it is a listed EVSE (UL 2594 3rd ed.), and what the 2026-09-12
 # service decision retired is only the CREDIT its PowerSmart throttling used to take.
-"ED-T-EV-1450" = { material = { low = 25, high = 80 }, labour = { low = 160, high = 380 } }  # 1 ea
-"ED-T-EV-620" = { material = { low = 15, high = 45 }, labour = { low = 160, high = 380 } }  # 1 ea
+# Device schedule rows (owner decisions 2026-10-27, notes/workshop_receptacles.md): ranges carry over from
+# the commodity class each replaced; Matter/occupancy/USB-C/surge lines carry a retail uplift. Estimates.
+"ED-T-LEV-620-DUPLEX" = { material = { low = 14, high = 44 }, labour = { low = 45, high = 95 } }  # 2 ea
+"ED-T-LEV-DRYER-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
+"ED-T-LEV-DUPLEX-15" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 14 ea
+"ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 58 ea
+"ED-T-LEV-EV-1450" = { material = { low = 25, high = 80 }, labour = { low = 160, high = 380 } }  # 0 ea
+"ED-T-LEV-EV-620" = { material = { low = 15, high = 45 }, labour = { low = 160, high = 380 } }  # 0 ea
+"ED-T-LEV-GFCI-15" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 6 ea
+"ED-T-LEV-GFCI-20" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 20 ea
+"ED-T-LEV-GFCI-ALARM" = { material = { low = 30, high = 70 }, labour = { low = 48, high = 92 } }  # 1 ea
+"ED-T-LEV-GFCI-WR" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 5 ea
+"ED-T-LEV-GUIDE" = { material = { low = 12, high = 28 }, labour = { low = 38, high = 78 } }  # 1 ea
+"ED-T-LEV-MATTER" = { material = { low = 40, high = 70 }, labour = { low = 40, high = 80 } }  # 9 ea
+"ED-T-LEV-MATTER-COMPANION" = { material = { low = 25, high = 50 }, labour = { low = 40, high = 80 } }  # 2 ea
+"ED-T-LEV-MATTER-ELV" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 110 } }  # 1 ea
+"ED-T-LEV-OCC-PANTRY" = { material = { low = 40, high = 80 }, labour = { low = 40, high = 80 } }  # 1 ea
+"ED-T-LEV-OCC-PIR" = { material = { low = 40, high = 80 }, labour = { low = 40, high = 80 } }  # 1 ea
+"ED-T-LEV-QUAD-520" = { material = { low = 30, high = 85 }, labour = { low = 50, high = 105 } }  # 1 ea
+"ED-T-LEV-RANGE-1450" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
+"ED-T-LEV-SINGLE-520" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
+"ED-T-LEV-SURGE" = { material = { low = 25, high = 50 }, labour = { low = 40, high = 80 } }  # 2 ea
+"ED-T-LEV-SW1" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 35 ea
+"ED-T-LEV-SW3" = { material = { low = 4, high = 12 }, labour = { low = 32, high = 68 } }  # 5 ea
+"ED-T-LEV-USBC" = { material = { low = 30, high = 55 }, labour = { low = 40, high = 80 } }  # 2 ea
+"ED-T-LUT-COUNTDOWN" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 1 ea
+"ED-T-LUT-DIVA" = { material = { low = 25, high = 50 }, labour = { low = 52, high = 110 } }  # 2 ea
 "ED-T-FLOOR-STAT" = { material = { low = 130, high = 300 }, labour = { low = 150, high = 300 } }  # 3 ea
 "ED-T-JBOX" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LT-CAN3" = { material = { low = 25, high = 70 }, labour = { low = 52, high = 108 } }  # 16 ea
@@ -2725,23 +2750,12 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # run — the home runs land here instead of there.
 "ED-T-PANEL-2" = { material = { low = 150, high = 350 }, labour = { low = 500, high = 1000 } }  # 1 ea
 "ED-T-PV-JB" = { material = { low = 25, high = 80 }, labour = { low = 45, high = 95 } }  # 1 ea
-"ED-T-RECEPTACLE" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 68 ea
 "ED-T-RECEPTACLE-SINGLE-GANG" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # ordinary duplex; standard plate envelope beside EAST-MID
-"ED-T-RECEPTACLE-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
-"ED-T-RECEPTACLE-240" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
-"ED-T-RECEPTACLE-520S" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
-"ED-T-RECEPTACLE-620" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 2 ea
-"ED-T-RECEPTACLE-QUAD-520" = { material = { low = 30, high = 85 }, labour = { low = 50, high = 105 } }  # 1 ea; surface box and cover allowance
-"ED-T-RECEPTACLE-GFCI" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 19 ea
 # 2026-08-18, RM-S-PLANT. A GFCI device with a WR-listed body, plus the two things that
 # make it right for a room that condenses: an in-use ("bubble") cover ($12-25) and a
 # non-metallic gasketed box ($4-9). Priced as the assembly, because buying the GFCI
 # without the cover would be buying the wrong thing.
-"ED-T-RECEPTACLE-WR-GFCI" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 5 ea
 "ED-T-SAUNA-JB" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
-"ED-T-SWITCH" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 35 ea — was 36 until 2026-09-13, when ED-B-SAUNA-SW retyped to the dimmer row below with the sauna's under-bench tape
-"ED-T-SWITCH-DIM" = { material = { low = 20, high = 60 }, labour = { low = 52, high = 110 } }  # 14 ea (takeoff 2026-10-12) — ED-M-BATH2-SW-EVE joined 2026-10-12; ED-B-SAUNA-SW 2026-09-13; take it at the labour high end, it is a Lutron DVELV-300P reverse-phase paired to an ELV tape driver, not an LED+ control
-"ED-T-SWITCH-TIMER" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 3 ea — the plant room, the garage soffit run since 2026-09-11, and BATH2's stall fan (ED-M-BATH2-SW-DRY, a 30-60 min countdown) since 2026-10-12
 "EQ-T-EG4-12KPV" = { material = { low = 2600, high = 3500 }, labour = { low = 1400, high = 3000 } }  # 1 ea
 # 2026-08-20 — NEW, and it was unpriced in BOTH [placeables] and [furnishings]. A duct heater
 # is not furniture, so it belongs here and nowhere else.

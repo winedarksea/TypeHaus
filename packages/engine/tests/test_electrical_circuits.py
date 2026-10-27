@@ -435,7 +435,7 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
     assert bom["solar"]["panels"] == 12
     devices = {(row["kind"], row["type"]): row["count"] for row in bom["electrical_devices"]}
     assert devices[("meter", "ED-T-METER")] == 1
-    assert devices[("receptacle_240", "ED-T-EV-1450")] == 1
+    assert devices[("receptacle_240", "ED-T-LEV-EV-1450")] == 1
     assert sum(row["count"] for row in bom["electrical_devices"]) == sum(
         1 for storey in catlin_model.plan.storeys
         for element in catlin_model.plan.storey_elements(storey.tag)
@@ -572,13 +572,13 @@ def test_workshop_receptacles_and_their_supplies(catlin_model_ro):
     combo = elements["ED-B-WORKSHOP-RC1"]
     quad = elements["ED-B-WORKSHOP-RC2"]
     branch = circuits[combo.circuit]
-    assert combo.type_ref == "ED-T-RECEPTACLE-620"
+    assert combo.type_ref == "ED-T-LEV-620-DUPLEX"
     assert {port.service for port in types[combo.type_ref].ports} == {
         Service.POWER_120, Service.POWER_240}
     assert (branch.panel_ref, branch.slot, branch.poles, branch.breaker_amps, branch.gfci) == (
         "ED-B-PANEL-2", 17, 2, 20, True)
     assert branch.load_va == 4800
-    assert quad.type_ref == "ED-T-RECEPTACLE-QUAD-520"
+    assert quad.type_ref == "ED-T-LEV-QUAD-520"
     assert quad.circuit == "CKT-RC-BSMT"
     assert types[quad.type_ref].load_va is None
     device_rows = electrical_device_takeoff(catlin_model_ro)
@@ -948,7 +948,7 @@ def test_a_combination_receptacle_counts_by_its_125v_half():
     demoted = tuple(
         device_type.model_copy(update={
             "ports": tuple(p for p in device_type.ports if p.service is not Service.POWER_120)})
-        if device_type.tag == "ED-T-RECEPTACLE-620" else device_type
+        if device_type.tag == "ED-T-LEV-620-DUPLEX" else device_type
         for device_type in library.electrical_device_types)
     plan = plan.model_copy(update={"library": library.model_copy(
         update={"electrical_device_types": demoted})})

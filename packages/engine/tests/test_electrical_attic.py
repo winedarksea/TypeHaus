@@ -47,7 +47,7 @@ def test_attic_boxes_move_to_walls_without_changing_identity_or_protection(catli
         assert body.body_z1_m < min(roof_underside_at(model, roof, xy) - lining_vertical_m
                                    for xy in body.footprint)
     assert devices["ED-A-STUDIO-RC7"].kind.value == "gfci"
-    assert devices["ED-A-STUDIO-RC7"].type_ref == "ED-T-RECEPTACLE-GFCI"
+    assert devices["ED-A-STUDIO-RC7"].type_ref == "ED-T-LEV-GFCI-15"
     floor_boxes = [d.tag for d in devices.values() if d.mount and d.mount.kind.value == "floor"]
     assert floor_boxes == []
 

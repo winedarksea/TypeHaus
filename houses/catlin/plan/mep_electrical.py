@@ -31,6 +31,7 @@ ELECTRICAL_DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-RECEPTACLE-SINGLE-GANG",
                           name="Duplex receptacle, standard 2 3/4 x 4 1/2 in. plate",
                           footprint=(inch(2.75), inch(2)), height=inch(4.5),
+                          product_ref="PROD-LEVITON-E5825-W",
                           model_representation=ModelRepresentation(symbol="receptacle-duplex"),
                           source="Standard single-gang wallplate envelope: https://leviton.com/content/dam/leviton/commercial-industrial/product_documents/solution_sheets/Wallplate%20Size%20Guide%20-%20Q-1289.pdf . Ordinary duplex on CKT-RC-MAIN, no special counter hardware.",
                           ports=(ServicePort(tag="power", service=Service.POWER_120,

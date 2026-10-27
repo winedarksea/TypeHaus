@@ -176,7 +176,7 @@ def test_the_vanity_has_a_receptacle_within_reach_of_the_basin():
     # Above the 36" counter, not at the old baseboard height behind a cabinet.
     assert outlet.z_m / M_PER_IN > 36.0
     # And it is a bathroom receptacle, so E3902.1 makes GFCI mandatory either way.
-    assert outlet.type_ref == "ED-T-RECEPTACLE-GFCI"
+    assert outlet.type_ref == "ED-T-LEV-GFCI-20"
 
 
 def test_the_vanity_clears_the_window_over_it():

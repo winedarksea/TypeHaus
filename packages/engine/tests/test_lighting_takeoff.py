@@ -151,7 +151,7 @@ def test_multiway_and_control_kinds_survive_into_the_schedule(catlin_model):
     # The main hall is a 3-way pair.
     assert rows["ED-M-HALL-CAN1"]["ways"] == 2
     # The plant-room tubes are on a timer, and the theatre sconces on a dimmer.
-    assert rows["ED-S-PLANT-TUBE1"]["controls"] == ["timer"]
+    assert rows["ED-S-PLANT-TUBE1"]["controls"] == ["smart"]
     assert rows["ED-B-PLAY-N-SCONCE1"]["controls"] == ["dimmer"]
     # The west loft's sconce is switched at the fixture and names nothing.
     assert (rows["ED-A-STUDIO-SCONCE"]["integral_switch"]
