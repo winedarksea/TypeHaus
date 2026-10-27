@@ -13,6 +13,7 @@ from typehaus.resolve.railings.parts import (
     RAILING_CATEGORY,
     RAILING_FACETS,
     RailingParts,
+    railing_type,
 )
 from typehaus.resolve.railings.spans import RAIL_BAND_STEP_M, RailingSurface
 from typehaus.resolve.railings.wall_contact import mounting_wall_face
@@ -82,6 +83,8 @@ def emit_posts(model: ResolvedModel, el: Railing, storey: str, stations: list[Ve
     if el.mount in _WALL_MOUNTS:
         return emit_brackets(model, el, storey, stations, surface, parts, rail_h)
     half = parts.post_section_m / 2.0
+    if el.mount == "fascia":
+        _emit_fascia_brackets(model, el, storey, stations, surface, parts)
     for index, (px, py) in enumerate(stations):
         z0 = surface.height_at((px, py))
         model.solids.append(ResolvedSolid(
@@ -90,6 +93,44 @@ def emit_posts(model: ResolvedModel, el: Railing, storey: str, stations: list[Ve
             z0_m=z0, z1_m=z0 + rail_h, assembly=el.assembly, material=parts.post_material,
         ))
     return []
+
+
+def _emit_fascia_brackets(model: ResolvedModel, el: Railing, storey: str,
+                          stations: list[Vec], surface: RailingSurface,
+                          parts: RailingParts) -> None:
+    """A plate on the fascia's outer face at each post, so it shows what it displaces.
+
+    Drawn only where the product states its height and the guard states where its fascia
+    face and bracket top are; the right-hand normal of the path is outboard.
+    """
+    product = railing_type(model.plan.library, el)
+    if (product is None or product.fascia_bracket_height is None
+            or product.fascia_bracket_width is None
+            or product.fascia_bracket_projection is None
+            or el.fascia_face_offset is None or el.fascia_bracket_drop is None):
+        return
+    half_w = product.fascia_bracket_width.meters / 2.0
+    projection = product.fascia_bracket_projection.meters
+    for index, station in enumerate(stations):
+        dirs = _directions_at(stations, index)
+        # Corner stations take the segment that arrives; the first station the one leaving.
+        dx, dy = dirs[0]
+        n = math.hypot(dx, dy)
+        if n < 1e-9:
+            continue
+        ux, uy = dx / n, dy / n
+        out = (uy, -ux)
+        face = el.fascia_face_offset.meters
+        a = (station[0] + out[0] * face, station[1] + out[1] * face)
+        b = (a[0] + out[0] * projection, a[1] + out[1] * projection)
+        top = surface.height_at(station) - el.fascia_bracket_drop.meters
+        model.solids.append(ResolvedSolid(
+            uid=f"{el.uid}-f{index:02d}", tag=f"{el.tag}-FASCIA-BRACKET{index + 1}",
+            storey=storey, category=RAILING_CATEGORY,
+            outline=rect_between(a, b, -half_w, half_w),
+            z0_m=top - product.fascia_bracket_height.meters, z1_m=top,
+            assembly=el.assembly, material=parts.post_material,
+        ))
 
 
 def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list[Vec],

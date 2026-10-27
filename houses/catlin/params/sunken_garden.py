@@ -3005,6 +3005,9 @@ BALCONY_GUARD = Railing(
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
     base_elevation=_deck_walking_surface,
     post_spacing=inch(60), post_size="2x2", rail_count=2, mount="fascia",
+    # Drawn so the bracket/gutter clash shows: fascia outer face = half TR-SG-FASCIA's 1";
+    # bracket top = plank 1 1/2" + 1/2" below the rim top.
+    fascia_face_offset=inch(0.5), fascia_bracket_drop=inch(2.0),
     assembly="RAILING_DARK_METAL",
     # R312.1.3: vertical balusters between the 60" posts at a 4" clear gap — the largest
     # opening the 4"-sphere rule admits.
@@ -3037,8 +3040,12 @@ _SG_LEADER_OUTSET = 0.25   # ft outboard of the deck edge, which IS the east wal
 _SG_GUTTER_OVERSAIL = 0.5  # ft of trough past that edge, to carry the outlet
 _SG_LEADER_X = _deck_x_e + _SG_LEADER_OUTSET
 _SG_LEADER_DIA_IN = 3.0
-_GUTTER_PATH = (pt(ft(_deck_x_w), ft(_y_balcony_front)),
-                pt(ft(_deck_x_e + _SG_GUTTER_OVERSAIL), ft(_y_balcony_front)))
+# The trough is centred on its path and its back sheet is on the north side, so the path
+# sits half the trough's 5" plus the fascia's outer 1/2" south of the fascia line: the back
+# sheet lies flush on the fascia face and the AridDek board ends drain straight into it.
+_SG_GUTTER_Y = _y_balcony_front - (2.5 + 0.5) / 12.0
+_GUTTER_PATH = (pt(ft(_deck_x_w), ft(_SG_GUTTER_Y)),
+                pt(ft(_deck_x_e + _SG_GUTTER_OVERSAIL), ft(_SG_GUTTER_Y)))
 # Gutter rim meets the drip flashing's lower edge, so water shedding off the drip lands in
 # the trough.
 _drip_depth_in = 3.0
@@ -3069,7 +3076,7 @@ BALCONY_GUTTER = Gutter(
 _SG_LEADER_BOTTOM = _ret_top + inch(4)
 BALCONY_LEADER = Downspout(
     uid="SGDS01AAAA", tag="TR-SG-LEADER-SE",
-    position=pt(ft(_SG_LEADER_X), ft(_y_balcony_front)),
+    position=pt(ft(_SG_LEADER_X), ft(_SG_GUTTER_Y)),
     top_elevation=_deck_top - inch(_drip_depth_in) - inch(4),  # the trough floor
     bottom_elevation=_SG_LEADER_BOTTOM,
     diameter=inch(_SG_LEADER_DIA_IN), material="metal-dark-kstyle",
@@ -3086,7 +3093,7 @@ BALCONY_LEADER = Downspout(
 # No host_ref: integrity.edge_run_host wants a hosted run's top within 1" of the wall top,
 # and this rim is 3" over it. Nothing grades the runnel or the basin; tests pin both
 # (test_drainage_elements.py).
-_RUNNEL_Y = _y_balcony_front
+_RUNNEL_Y = _SG_GUTTER_Y
 _RUNNEL_PATH = (pt(ft(27, 7), ft(_RUNNEL_Y)), pt(ft(31), ft(_RUNNEL_Y)),
                 pt(ft(31), ft(-12)), pt(ft(32, 6), ft(-12)))
 BALCONY_RUNNEL = Gutter(

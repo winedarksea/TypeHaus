@@ -407,6 +407,11 @@ class RailingType(HausModel):
     stock_length: Length | None = None
     # The product's largest span between supports along the rail (R301.5's 200 lb load).
     bracket_spacing_max: Length | None = None
+    # Fascia-mount bracket plate, drawn at each post of a ``mount="fascia"`` guard. Height is
+    # the product's; width and projection are None until read off its drawing.
+    fascia_bracket_height: Length | None = None
+    fascia_bracket_width: Length | None = None
+    fascia_bracket_projection: Length | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None

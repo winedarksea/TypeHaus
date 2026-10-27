@@ -10,11 +10,17 @@ so nothing about them was ever catlin-specific.
 from __future__ import annotations
 
 from typehaus import RailingType
+from typehaus.quantities import inch
 
 RAILING_EXT_ALUMINUM_FASCIA = RailingType(
     tag="RAILING-EXT-ALUMINUM-FASCIA",
     name="Exterior aluminum fascia-mounted guard",
     source="Fascia-mounted aluminum guard, balcony/deck product class",
+    # Ultralox: 5" at the mounting face for flat-cut brackets (6" at the outside, high-cut).
+    # Width and projection are drawing placeholders until read off the bracket drawing.
+    fascia_bracket_height=inch(5),
+    fascia_bracket_width=inch(3),
+    fascia_bracket_projection=inch(0.25),
 )
 
 RAILING_INT_STAIR_GUARD = RailingType(

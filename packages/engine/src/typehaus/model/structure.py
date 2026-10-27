@@ -986,6 +986,10 @@ class Railing(Element):
     post_size: str = "2x2"  # nominal post cross-section
     rail_count: int = 2  # horizontal rails (top + bottom)
     mount: str = "fascia"  # "fascia" | "surface"
+    # Fascia brackets (``RailingType.fascia_bracket_*``): the fascia's outer face stands this
+    # far outboard of ``path``, and the bracket top this far below ``base_elevation``.
+    fascia_face_offset: Length | None = None
+    fascia_bracket_drop: Length | None = None
     assembly: str | None = None  # optional finish assembly for render/IFC material
     # --- guard vs handrail (R311.7.8, R312.1.3) ------------------------------------------
     # A Railing was only ever a *guard*: a plan path with a height, framed into posts and
