@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 6772f33500e1f9ea  
-**Lines:** 185
+**Model hash:** 2d2be64bda5ad52e  
+**Lines:** 183
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -50,15 +50,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,728 | LF ordered | 647 pcs, 4005.1 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,862 | LF ordered | 470 pcs, 2445.6 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 56.0 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,070 | LF ordered | 1177 pcs, 6121.5 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,070 | LF ordered | 1171 pcs, 6123.5 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | 90 | LF ordered | 9 pcs, 77.6 LF cut | building |
-| 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.5 LF cut | building |
+| 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.6 LF cut | building |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | 1,742 | LF ordered | 228 pcs, 1478.9 LF cut | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:oak-8q) | 32 | LF ordered | 21 pcs, 23.9 LF cut | building |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | 74 | LF ordered | 25 pcs, 65.2 LF cut | building |
 | 2x8 — header, joist, landing framing (2x8) | 240 | LF ordered | 63 pcs, 194.5 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 412 | LF ordered | 96 pcs, 344.4 LF cut | building |
-| 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 2.9 LF cut | building |
+| 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.1 LF cut | building |
 | 3-2x12 — joist (3-2x12:kdat) | 40 | LF ordered | 2 pcs, 33.5 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1136 pcs, 331.3 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
@@ -71,7 +71,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | Aspen shiplap sauna ceiling liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-ceiling-shiplap:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 65.1 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 27.0 SF net | building |
-| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 663.8 SF net | building |
+| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 662.4 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
 | 5/8" APA Exterior plywood, 4x9 stock, 5/8" exterior wall (entry-screen-exterior-plywood:exterior wall) | 1 | sheets 4x9 | 1 sheets 4x9 over 27.0 SF net | building |
 | 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" exterior wall (permabase-exterior:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 27.0 SF net | building |
@@ -98,8 +98,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle | 8 | ea |  | building |
 | A35Z framing angle | 4 | ea |  | main |
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
-| AC6Z adjustable post cap (6x beam on 6x6), MAX nailing | 3 | ea |  | building |
-| ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing | 1 | ea |  | building |
+| AC6Z adjustable post cap (6x beam on 6x6), MAX nailing | 4 | ea |  | building |
 | CBSQ66-SDS2 cast-in column base (6x6) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
 | DTT2Z screw hold-down / tension tie | 2 | ea |  | building |
@@ -148,16 +147,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 8 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | 2 | ea |  | building |
-| PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | 50 | ea |  | basement, main |
-| S-5-S snap-lock seam clamp | 12 | ea |  | building |
-| S-5-S snap-lock seam clamp | 48 | ea |  | building |
+| PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | 49 | ea |  | basement, main |
+| S-5-N Mini nail-strip seam clamp | 24 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | 4 | ea |  | basement |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 71 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 105 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 12 | ea |  | building |
 | slat brace plate screw (SDWS22400DB) | 16 | ea |  | main |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
-| SP6 stud plate tie (2x6) | 322 | ea |  | building |
+| SP6 stud plate tie (2x6) | 323 | ea |  | building |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | 4 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 13 | ea |  | building |
 | THA422 top-flange floor truss hanger | 2 | ea |  | building |
@@ -180,7 +178,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 147.6 | bf | 4 placed, 11.3 SF plan; 0.46 cy in the takeoff | main, second |
+| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 151.2 | bf | 4 placed, 11.6 SF plan; 0.47 cy in the takeoff | main, second |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | 58.8 | bf | 6 placed, 6.9 SF plan; 0.18 cy in the takeoff | main |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 86.4 | bf | 3 placed, 7.2 SF plan; 0.27 cy in the takeoff | main, second |
 | Column — POST_KDAT (column:POST_KDAT) | 38.4 | bf | 2 placed, 0.4 SF plan; 0.12 cy in the takeoff | main |
@@ -199,7 +197,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape-beam, 3" on beam (butyl-tape-beam) | 6.7 | LF |  | main |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 19.3 | LF |  | second |
 | butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | 6.4 | LF |  | main |
-| butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | 12.4 | LF |  | main |
+| butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | 12.9 | LF |  | main |
 | butyl-tape-beam, 5 1/2" on brace (butyl-tape-beam) | 8.5 | LF |  | main |
 
 ## Firestop sealant
@@ -212,20 +210,20 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Treated sill plate, Pressure-treated southern yellow pine (sill plate) (pt-sill-plate) | 358.7 | LF |  | building |
+| Treated sill plate, Pressure-treated southern yellow pine (sill plate) (pt-sill-plate) | 330.5 | LF |  | building |
 
 ## Sill gaskets
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Sill seal foam gasket, under the sill plate (sill-seal-foam) | 134.7 | LF |  | building |
-| Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | 224 | LF |  | building |
+| Sill seal foam gasket, under the sill plate (sill-seal-foam) | 111.7 | LF |  | building |
+| Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | 218.7 | LF |  | building |
 
 ## Assembly layers, by material
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | 690.8 | SF net |  | building |
+| 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | 689.3 | SF net |  | building |
 | 5/8" APA Exterior plywood, 4x9 stock sheathing, 5/8" — wall (entry-screen-exterior-plywood:0.625) | 27 | SF net |  | building |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | 84.4 | SF net |  | building |
 | 1/2" PermaBASE Cement Board, exterior CBMV, 1/2" — wall (permabase-exterior:0.5) | 25.1 | SF net |  | building |
@@ -254,7 +252,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 36" x 80" (no type) (None) | 1 | ea | 36" x 80" | basement |
 | rough opening, 63.31" x 1.75" (no type) (None) | 1 | ea | 63 5/16" x 1 3/4" | basement |
 | rough opening, 63.31" x 6.5" (no type) (None) | 1 | ea | 63 5/16" x 6 1/2" | basement |
-| rough opening, 63.31" x 86.25" arched (no type) (None) | 1 | ea | 63 5/16" x 86 1/4" | basement |
+| rough opening, 63.31" x 80" arched (no type) (None) | 1 | ea | 63 5/16" x 80" | basement |
 
 ## Steel members
 
@@ -339,7 +337,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle | SB-BW-BAND |
 | ABU44 standoff post base (4x4) | — |
 | AC6Z adjustable post cap (6x beam on 6x6), MAX nailing | — |
-| ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing | — |
 | CBSQ66-SDS2 cast-in column base (6x6) | — |
 | CS16 coiled strap, 16 ga | — |
 | DTT2Z screw hold-down / tension tie | — |
@@ -389,8 +386,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUSZ) | — |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | — |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | SL-B-FLOOR, SL-M-DECK |
-| S-5-S snap-lock seam clamp | — |
-| S-5-S snap-lock seam clamp | — |
+| S-5-N Mini nail-strip seam clamp | — |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | HA-SG-DAYBED-NE, HA-SG-DAYBED-NW, HA-SG-DAYBED-SE, HA-SG-DAYBED-SW |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
@@ -449,7 +445,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 36" x 80" (no type) (None) | D-B-GYM |
 | rough opening, 63.31" x 1.75" (no type) (None) | AO-B-PATIO-SEAT |
 | rough opening, 63.31" x 6.5" (no type) (None) | AO-B-PATIO-CURB-APPROACH |
-| rough opening, 63.31" x 86.25" arched (no type) (None) | AO-B-BRICK-DOOR |
+| rough opening, 63.31" x 80" arched (no type) (None) | AO-B-BRICK-DOOR |
 | L3 1/2" x 3 1/2" x 1/4" steel angle (L3.5x3.5x0.25) | BM-M-FIRE-LINTEL |
 
 ## Appendix B — drawings
