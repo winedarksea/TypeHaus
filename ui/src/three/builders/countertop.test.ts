@@ -55,5 +55,22 @@ export function runCountertopTests() {
   };
   assert(draw("CT-BAR") === 1, "A hosted cabinet skips its symbol counter");
   assert(draw(null) === 2, "An unhosted cabinet keeps its symbol counter");
+  const drawQuartz = (tag: string, mode: "nordic" | "schematic" = "nordic") => {
+    const parent = new THREE.Group();
+    buildCountertop(parent, { ...top, tag, material_ref: "quartz-counter" }, [0, 0],
+      mode, palette, materials, [], new Map());
+    return parent.children[0] as THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>;
+  };
+  const kitchen = drawQuartz("CT-M-KIT-N");
+  assert(kitchen.material instanceof THREE.MeshPhysicalMaterial && kitchen.material.map,
+    "Kitchen quartz gets polished aggregate");
+  assert(!drawQuartz("CT-M-BATH-VANITY").material.map, "Vanity quartz stays unchanged");
+  assert(!drawQuartz("CT-M-KIT-N", "schematic").material.map, "Schematic stays flat");
+  const uv = kitchen.geometry.getAttribute("uv");
+  let minU = Infinity, maxU = -Infinity;
+  for (let i = 0; i < uv.count; i++) {
+    minU = Math.min(minU, uv.getX(i)); maxU = Math.max(maxU, uv.getX(i));
+  }
+  assert(maxU - minU > 10, "Aggregate repeats at physical scale across the slab");
   console.log("Countertop tests passed.");
 }

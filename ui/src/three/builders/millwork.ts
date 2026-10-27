@@ -20,6 +20,8 @@ import { makeSurfaceMesh, standardMaterial } from "../surfaces";
 import { applyPieceGrainUv, boardBoxGeometry, pieceSeed, woodMaterialsForGeometry } from "../woodPiece";
 import type { Trade } from "../../state/vocabulary";
 import { registerSelectable } from "./registry";
+import { createFrostWhiteMaterial, FROST_WHITE_SURFACE, isKitchenFrostWhite } from "../quartzMaterial";
+import { applyWorldBoxUv } from "../worldBoxUv";
 
 /** The board recipe a material declares (or infers), for a solid-wood piece; else null. */
 export function boardStyleFor(ref: string | null | undefined,
@@ -38,13 +40,15 @@ export function buildWindowStool(parent: THREE.Group, stool: WindowStool, center
   const firstChildIndex = parent.children.length;
   const color = materialColor(stool.material_ref, palette, materials);
   const style = boardStyleFor(stool.material_ref, materials);
+  const quartz = mode === "nordic" && isKitchenFrostWhite(stool);
+  if (quartz) applyWorldBoxUv(geometry, center, FROST_WHITE_SURFACE.tileSizeM);
   if (style) {
     // The front edge (outline[0] → outline[1]) runs along the wall: that is the grain.
     const [[x0, y0], [x1, y1]] = stool.outline;
     applyPieceGrainUv(geometry, new THREE.Vector3(x1 - x0, 0, -(y1 - y0)),
       style, pieceSeed(stool.uid));
   }
-  const material = style ? createPlankMaterial(mode, style, color, undefined,
+  const material = quartz ? createFrostWhiteMaterial() : style ? createPlankMaterial(mode, style, color, undefined,
     authoredAppearance(stool.material_ref, materials)) : standardMaterial(color, mode);
   parent.add(makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry)));
   registerSelectable(parent, firstChildIndex, stool.opening_uid, "opening", picks, byUid);
@@ -127,11 +131,13 @@ export function buildCountertop(parent: THREE.Group, top: Countertop, center: Pl
   const firstChildIndex = parent.children.length;
   const color = materialColor(top.material_ref, palette, materials);
   const style = boardStyleFor(top.material_ref, materials);
-  const material = style ? createPlankMaterial(mode, style, color, undefined, authoredAppearance(top.material_ref, materials)) : standardMaterial(color, mode);
+  const quartz = mode === "nordic" && isKitchenFrostWhite(top);
+  const material = quartz ? createFrostWhiteMaterial() : style ? createPlankMaterial(mode, style, color, undefined, authoredAppearance(top.material_ref, materials)) : standardMaterial(color, mode);
   for (const [index, part] of top.parts.entries()) {
     const geometry = createPlanPrismGeometry(part.outline, top.z0_m, top.z1_m, part.holes,
       center);
     if (!geometry) continue;
+    if (quartz) applyWorldBoxUv(geometry, center, FROST_WHITE_SURFACE.tileSizeM);
     if (style) {
       const [gx, gy] = planLongAxis(part.outline);
       applyPieceGrainUv(geometry, new THREE.Vector3(gx, 0, -gy), style,
