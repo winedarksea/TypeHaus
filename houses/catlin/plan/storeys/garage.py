@@ -24,6 +24,7 @@ from typehaus import (
     PanelEdgeBlocking,
     Door,
     ExteriorDoorInstallation,
+    ExteriorDoorSwingAssembly,
     ExteriorDoorSillDesign,
     DischargeExtension,
     Downspout,
@@ -347,6 +348,16 @@ OPENINGS = [
          flip_hinge=True, flip_swing=True, maximum_opening_degrees=90,
          header_spec='3-ply 5.5" LVL',
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
+             swing_assembly=ExteriorDoorSwingAssembly(
+                 source_url="https://superarbor.io/products/masonite-32-in-x-80-in-premium-right-hand-outswing-flush-primed-steel-prehung-front-exterior-door-with-no-brickmold",
+                 source_drawing="Schematic project envelope; prehanger hinge and frame pending",
+                 hinge_inset=inch(0), hinge_normal_datum="exterior_placement",
+                 hinge_normal_offset=inch(0),
+                 leaf_start=inch(0), leaf_end=inch(32),
+                 leaf_face_min=inch(-0.875), leaf_face_max=inch(0.875),
+                 leaf_bottom=inch(1), leaf_top=inch(80),
+                 lever_backset=inch(2.375), lever_hingeward_extent=inch(4.125),
+                 lever_projection=inch(2.5), lever_bottom=inch(1), lever_top=inch(80)),
              exterior_wrap_material_ref="metal-dark-exterior",
              sill_design=ExteriorDoorSillDesign(
                  source_url="https://www.enduraproducts.com/wp-content/uploads/2021/03/ADAptive-Sill-Assembly-Instructions-2021.pdf",
@@ -869,7 +880,7 @@ SERVICE_DOOR_HARDWARE = [
     Annotation(uid="GTREXSPEC1", tag="AN-G-COMPOSITE-DECKING", position=pt(ft(8), ft(44)),
                text="FS-BW-FLOOR, FS-SG-PORCH and ST-G-SERVICE: TREX ENHANCE BASICS, actual 0.94 x 5.5in square-edge, color TBD. Service treads: four 36 x 11in assemblies, each front 5.5in + 1/4in gap + rear rip 5.25in; five KDAT stringers <=9in o.c., EACH on a 316 stainless stem seat. BUTYL TAPE all deck framing tops and stepped stringer cuts; field-treat wood cuts. Both decks and treads: 316 stainless Cap-Tor xd #10 x 2-3/4in, TWO per board at EVERY support, flush; support all board ends. Retain KDAT rough sill under sloped pan, 1/2in open drainage gap, no board through doorway. See notes/composite_decking.md"),
     Annotation(uid="VJDMQAGNCA", tag="AN-G-SERVICE-DOOR", position=pt(ft(8, 1), ft(42, 6)),
-               text="D-G-SERVICE: 32in Masonite insulated steel OUTSWING with full composite poly-fiber jambs and head; prehanger-approved hinge and overhead-stop reinforcement. Ordinary hinges on WEST jamb. Frame-mounted mechanical overhead stop, STOP-ONLY, set to 90deg; no hold-open or closer. Confirm stop template and door/head reinforcement against ordered prehung unit; no attachments to brick. Schlage F51A LAT 622 lever. See notes/garage_service_door_outswing.md for swing envelope and supplier dimensions. Leaf must not swing over ST-G-SERVICE; detached garage stair-head arrangement remains a plan-review question. Require leaf bottom >=1in above rough sill to clear deck-tie strap; confirm sill/undercut. Exterior rough sill at deck datum 0ft 0in"),
+               text="D-G-SERVICE: 32in insulated steel OUTSWING; durable composite, aluminum, or protected steel frame, subject to prehanger approval; confirm hinge and overhead-stop reinforcement. Ordinary hinges on WEST jamb. Frame-mounted mechanical overhead stop, STOP-ONLY, set to 90deg; no hold-open or closer. Confirm stop template and door/head reinforcement against ordered prehung unit; no attachments to brick. Schlage F51A LAT 622 lever. See notes/garage_service_door_outswing.md for swing envelope and supplier dimensions. Leaf must not swing over ST-G-SERVICE; detached garage stair-head arrangement remains a plan-review question. Require leaf bottom >=1in above rough sill to clear deck-tie strap; confirm sill/undercut. Exterior rough sill at deck datum 0ft 0in"),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS,

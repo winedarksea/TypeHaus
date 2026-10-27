@@ -306,7 +306,7 @@ kdat    v = 33.80 plf                     T = 281.7 lb
 ```
 
 * **Beside `D-G-SERVICE`** a new **STHD14, `CN-G-BWHD-S-DR`**, cast into `W-GF-S-DR`'s 6" core
-  (ESR-2920 6" stem row, 3,065 lb): 276.4 / 3,065 = **0.090** (kdat 0.092).
+  (ESR-2920 6" stem row, 3,065 lb): 276.4 / 3,065 = **0.090** (kdat 0.092). **Installation unresolved:** the current schematic anchor conflicts with the service-door sweep. An eastward 1.5-inch body shift is only a clearance study, not an approved chord/anchor detail; see `garage_service_door_outswing.md` §2. Confirm the actual jamb pack, fasteners, load transfer, embedment, core/reinforcement and anchor spacing before moving it.
 * **The SE corner needs no device.** R602.10.7 end condition 1: a 144" return on the same post.
 * `CN-G-BWHD-SW` is on `W-G-W`. The E-W case reaches `W-G-W` and `W-G-E` as the joint couple,
   ±M / 24' = ±86.7 lb (kdat) on the E-W case — graded, and small (`canopy_west_band.md` §6).

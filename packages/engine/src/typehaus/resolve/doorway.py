@@ -326,7 +326,8 @@ def resolve_doorways(model):
 
             assembly = place_exterior_door(model, walls[opening.host_wall], opening, assembly,
                                           treatment.exterior_installation)
-        if assembly.exterior_placement:
+        if assembly.exterior_placement and not (opening.swing_assembly
+                                                and opening.swing_assembly.supplier_confirmed):
             previous = opening.doorway.exterior_placement if opening.doorway else None
             offset = assembly.exterior_placement.leaf_normal_m
             delta = offset - (previous.leaf_normal_m if previous else 0.0)
@@ -334,6 +335,12 @@ def resolve_doorways(model):
             opening = replace(opening, swing_clearance=[
                 (x + normal[0] * delta, y + normal[1] * delta)
                 for x, y in opening.swing_clearance])
+        elif opening.swing_assembly and opening.swing_assembly.supplier_confirmed:
+            from typehaus.resolve.door_swing_envelope import installed_swing_sector
+
+            opening = replace(opening, doorway=assembly)
+            opening = replace(opening, swing_clearance=installed_swing_sector(
+                walls[opening.host_wall], opening, authored.maximum_opening_degrees))
         cased = opening.cased_product
         if cased and assembly.leaf_bottom_z_m is not None:
             cased = replace(cased, leaf_bottom_z_m=assembly.leaf_bottom_z_m,

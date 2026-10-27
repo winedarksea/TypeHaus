@@ -343,6 +343,8 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                     center_along_m=center, kind=kind, is_door=is_door,
                     framing_required=getattr(el, "framing_required", True),
                     swing_clearance=swing_clearance, framing_bumper=framing_bumper,
+                    swing_assembly=getattr(getattr(el, "exterior_installation", None),
+                                           "swing_assembly", None),
                     arch_rise_m=arch_rise,
                     penetration_for=tuple(getattr(el, "penetration_for", ()) or ()),
                     pocket_run_m=pocket_run, pocket_sign=pocket_sign,
@@ -395,6 +397,11 @@ def _opening_size(plan: PlanModel, el) -> tuple[float, float, bool, str | None]:
     t = next((x for x in types if x.tag == el.type_ref), None)
     if t is None:
         return 0.9, 2.0, is_door, el.type_ref
+    installation = getattr(el, "exterior_installation", None)
+    swing = getattr(installation, "swing_assembly", None)
+    if swing is not None and swing.rough_opening_width and swing.rough_opening_height:
+        return (swing.rough_opening_width.meters, swing.rough_opening_height.meters,
+                True, el.type_ref)
     return t.width.meters, t.height.meters, is_door, el.type_ref
 
 
