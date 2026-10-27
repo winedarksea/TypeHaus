@@ -36,11 +36,11 @@ _ROWS = {
     "W-BW-SCREEN chord hold-down, full height": (2227.6, 3060.0),
     "W-BW-SCREEN chord base shear, one base": (1038.35, 1270.0),
     "diaphragm unit shear at W-BW-SCREEN": (173.06, 190.0),
-    "LSTA24 end straps, chord force + across share": (260.84, 823.3333333333334),
-    "BM-BW-RW chord into CN-BW-JOINT-1's block": (216.95, 450.0),
-    "BM-BW-RE chord into CN-BW-JOINT-7's block": (87.78, 450.0),
-    "W-G-W joint couple, E-W case": (4.70, 182.5),
-    "W-G-E joint couple, E-W case": (4.18, 182.5),
+    "LSTA24 end straps, chord force + across share": (261.893, 823.3333333333334),
+    "BM-BW-RW chord into CN-BW-JOINT-1's block": (217.475, 450.0),
+    "BM-BW-RE chord into CN-BW-JOINT-7's block": (88.834, 450.0),
+    "W-G-W joint couple, E-W case": (4.757, 182.5),
+    "W-G-E joint couple, E-W case": (4.229, 182.5),
 }
 
 
@@ -64,8 +64,8 @@ def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
     values = {q.name: q.value for q in record.inputs}
     assert values["band_height_W-BW-SCREEN"] == pytest.approx(2.34375, abs=1e-4)
     assert values["overturning_height_W-BW-SCREEN"] == pytest.approx(8.62, abs=1e-3)
-    assert values["joint_couple_lb_ft"] == pytest.approx(2106.7, abs=1.0)
-    assert values["chord_force_open_front_lb"] == pytest.approx(87.8, abs=0.1)
+    assert values["joint_couple_lb_ft"] == pytest.approx(2132.0, abs=1.0)
+    assert values["chord_force_open_front_lb"] == pytest.approx(88.834, abs=0.1)
 
 
 def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
@@ -141,7 +141,7 @@ _POSTS = {
     "PT-BW-CNW": {"AC6Z head, uplift + lateral along the beam": 0.417,
                   "A35Z head, across the beam": 0.082,
                   "NDS combined axial and bending": 0.536},
-    "PT-BW-RE": {"ACE6Z head, uplift + lateral along the beam": 0.233,
+    "PT-BW-RE": {"AC6Z head, uplift + lateral along the beam": 0.164,
                  "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.189,
                  "NDS combined axial and bending": 0.225},
     "PT-BW-RNE": {"AC6Z head, uplift + lateral along the beam": 0.164,

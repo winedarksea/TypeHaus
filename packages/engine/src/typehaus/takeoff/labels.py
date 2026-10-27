@@ -93,6 +93,7 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("plumbing_specialties", "ro_stub"): "RO stub", ("plumbing_specialties", "penetration_seal"):
     "Penetration seal",
     ("edge_trim", "beam_cap"): "Beam cap", ("edge_trim", "bug_screen"): "Rainscreen bug screen",
+    ("edge_trim", "beam_tail_hood"): "Ventilated beam-tail hood and roof apron",
     ("edge_trim", "corner_trim"): "Corner trim", ("edge_trim", "drip_flashing"): "Drip flashing",
     ("edge_trim", "edge_cladding"): "Roof edge cladding", ("edge_trim", "fascia"): "Fascia",
     ("edge_trim", "ridge_cap"): "Ridge cap", ("edge_trim", "soffit"): "Eave soffit",

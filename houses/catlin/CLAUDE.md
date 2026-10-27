@@ -1,3 +1,10 @@
+> **Canopy beam tails, 2026-10-26:** both glulams now have equal 8⅞″ tails;
+> east south cap changed to paired AC6Z, roof/truss datums retained by bearing insets.
+> `params/canopy_beam_hoods.py` models ventilated crowned covers and separate roof aprons.
+> Nominal metal-to-house clearance 1¼″. Movement allowance, shop fastening, roof lap,
+> treatment compatibility and quote remain fabrication-release items:
+> `notes/canopy_beam_tail_hoods.md`. Earlier “east unchanged” statements are historical.
+
 > **Exterior door hardening, 2026-10-25:** `plan/door_types.py` owns hardware, doubled
 > jamb packs, local ccSPF and entry field finish. `notes/exterior_door_hardening.md`
 > records installation, the W-M-N3 fit and open dealer items. A-601 prints the HW sets.

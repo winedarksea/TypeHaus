@@ -127,11 +127,11 @@ def test_the_chord_plates_carry_the_chord_force_and_the_west_collector_share(cat
     record = next(r for r in compute(catlin_ctx.engineering.context)
                   if r.item_id == "lateral_system/RF-BW-CANOPY")
     states = {s.name: s for s in record.limit_states}
-    # canopy_west_band.md §6: 87.8 / 2 + 173.1 west, 87.8 east, both against 450.
+    # canopy_west_band.md §6: 88.834 / 2 + 173.058 west, 88.834 east, both against 450.
     west = states["BM-BW-RW chord into CN-BW-JOINT-1's block"]
     east = states["BM-BW-RE chord into CN-BW-JOINT-7's block"]
-    assert west.demand == pytest.approx(216.95, abs=0.1)
-    assert east.demand == pytest.approx(87.8, abs=0.1)
+    assert west.demand == pytest.approx(217.475, abs=0.1)
+    assert east.demand == pytest.approx(88.834, abs=0.1)
     assert east.capacity == pytest.approx(450)
 
 
@@ -148,13 +148,13 @@ def test_nailers_read_their_own_nails_at_their_own_species(catlin_ctx):
     record = next(r for r in compute(catlin_ctx.engineering.context)
                   if r.item_id == "lateral_system/RF-BW-CANOPY")
     states = {s.name: s for s in record.limit_states}
-    # §3b: 9 x 135.00 SPF nailer, 9 x 135.00 SPF end block, 8 x 135.00 SPF; 261.61 lb each after the 2026-10-14 west-tail extension.
+    # §3b: 9 x 135.00 SPF nailer, 9 x 135.00 SPF end block, 8 x 135.00 SPF; 262.67 lb each after the 2026-10-26 matching east-tail extension.
     for name, capacity in (("CN-BW-JOINT-2 RF-BW-CANOPY", 1215.0),
                            ("CN-BW-JOINT-1 RF-BW-CANOPY", 1215.0),
                            ("CN-BW-JOINT-2 RF-GARAGE", 1080.0)):
         state = states[f"{name} nailer into deck"]
         assert state.capacity == pytest.approx(capacity, abs=0.1)
-        assert state.demand == pytest.approx(261.61, abs=0.05)
+        assert state.demand == pytest.approx(262.67, abs=0.05)
 
 
 def test_added_framing_and_fasteners_are_billed(catlin_model_ro):

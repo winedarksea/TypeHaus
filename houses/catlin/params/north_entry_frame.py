@@ -315,22 +315,22 @@ beam(5, "BM-BW-FE", EDGE_BEAM_X_FT, FRAME_Y0_FT, EDGE_BEAM_X_FT, GARAGE_CLADDING
 # (24F-V4 DF, wet, snow C_D -- notes/canopy_west_band.md §7). The retired ply-seam argument
 # is moot: one member, no seam.
 #
-# The east header and canopy/truss datum stay at the south post face. Only the west
-# header extends south for equal tails about its posts; moving the shared datum would
-# also move the trusses and roof edge (plan/storeys/garage.py).
+# Both headers have equal tails; the canopy/truss datum stays at the south post face.
+# Moving that datum would also move the trusses and roof edge (plan/storeys/garage.py).
 HEADER_SOUTH_Y_FT = PIER_LINE_Y_FT - COLUMN_HALF_FT
-WEST_HEADER_TAIL_FT = GARAGE_Y_SOUTH.feet - GARAGE_SEAT_Y_FT
-WEST_HEADER_SOUTH_Y_FT = PIER_LINE_Y_FT - WEST_HEADER_TAIL_FT
-beam(6, "BM-BW-RW", LANDING_WEST_FT, WEST_HEADER_SOUTH_Y_FT,
+HEADER_TAIL_FT = GARAGE_Y_SOUTH.feet - GARAGE_SEAT_Y_FT
+HEADER_TAIL_SOUTH_Y_FT = PIER_LINE_Y_FT - HEADER_TAIL_FT
+beam(6, "BM-BW-RW", LANDING_WEST_FT, HEADER_TAIL_SOUTH_Y_FT,
      LANDING_WEST_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
      HEADER_SIZE, "BEAM_GLULAM_TREATED",
-     roof_bearing_insets=(ft(HEADER_SOUTH_Y_FT - WEST_HEADER_SOUTH_Y_FT), ft(0)))
+     roof_bearing_insets=(ft(HEADER_SOUTH_Y_FT - HEADER_TAIL_SOUTH_Y_FT), ft(0)))
 # ** WHAT THE EAST HEADER LANDS ON IS EAST_POST_SYSTEM (2026-09-29). ** Pinned 6x6 KDAT on
 # 3'-0" piers by default; steel HSS or the 2026-09-10 full-height cast columns are one word
 # away (params/east_posts.py). The tag and uid it names never change.
-beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOUTH_Y_FT,
+beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_TAIL_SOUTH_Y_FT,
      ROOF_COLUMN_EAST_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-RE", "PT-BW-RNE"), HEADER_TOP_FT,
-     HEADER_SIZE, "BEAM_GLULAM_TREATED")
+     HEADER_SIZE, "BEAM_GLULAM_TREATED",
+     roof_bearing_insets=(ft(HEADER_SOUTH_Y_FT - HEADER_TAIL_SOUTH_Y_FT), ft(0)))
 
 # ** THE SCREEN PANEL'S SILL, WHICH IT CANNOT DO WITHOUT AND NEARLY DID. **
 # W-BW-SCREEN stands on the column line at x=6'-0" and weighs 77 plf. Nothing was under it

@@ -1,3 +1,10 @@
+> **2026-10-26 east-tail amendment:** BM-BW-RE now matches the west's equal 8⅞″
+> tails, with paired AC6Z at RE and unchanged roof-bearing datum. Joint couple
+> 2,132.02 lb-ft, chord 88.834 lb, end straps 261.893 lb, west/east collector plates
+> 217.475/88.834 lb. East south cap combined ratio 0.164. The 2026-10-14 numbers
+> below are historical. Hood/apron geometry and open release items:
+> [canopy_beam_tail_hoods.md](canopy_beam_tail_hoods.md).
+
 # The canopy's west band, its heads and bases, and the open front — hand-worked basis
 
 **House:** catlin

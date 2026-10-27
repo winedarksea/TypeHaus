@@ -53,8 +53,8 @@ AC6Z_POST_CAP = StructuralHardware(
 )
 
 #: ACE6 MAX, the END-of-beam twin (§3.1.3: "ACE post caps are used to connect the end of a
-#: beam to a post"). Catlin's south header ends sit on their posts, so the AC's "continuous
-#: over the post" condition is met by this part and not by an AC.
+#: beam to a post"). Use only at a member end; a beam with a tail beyond the post
+#: requires the continuous-beam AC arrangement instead.
 ACE6Z_POST_CAP = StructuralHardware(
     tag="simpson-ace6z-end-post-cap",
     name="ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing",

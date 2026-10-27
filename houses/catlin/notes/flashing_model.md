@@ -1,5 +1,10 @@
 # Flashing in the model
 
+Canopy beam-tail hoods **implemented 2026-10-26**: `TR-BW-HOOD-W/E` and separate
+roof-supported `-APRON` sheets. [Dimensions and fabrication-release items](canopy_beam_tail_hoods.md)
+include the ½″ ventilated cavities, crowned tops and 1¼″ nominal house clearance.
+They bill as two `edge_trim/beam_tail_hood` assemblies, separately from the fitted sill cap.
+
 Implemented 2026-10-15. The Views panel's **Flashing · 3D** control hides or isolates metal
 flashing and opening membranes together. Construction trades remain separate: roof metal
 is roofing, wall/head metal is siding, and opening membranes/pans belong to openings.

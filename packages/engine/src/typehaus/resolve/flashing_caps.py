@@ -147,6 +147,11 @@ def resolve_brace_caps(model) -> None:
         for element in model.plan.storey_elements(storey.tag):
             if not isinstance(element, Flashing) or element.section is None:
                 continue
+            if element.section.profile == "ventilated_hood":
+                from typehaus.resolve.beam_hoods import resolve_beam_hood
+
+                resolve_beam_hood(model, element, storey.tag)
+                continue
             if not element.section.fit_to_brace_sill:
                 continue
             mesh = brace_cap_mesh(model, element, element.section)

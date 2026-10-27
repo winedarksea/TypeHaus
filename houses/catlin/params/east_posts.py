@@ -20,8 +20,8 @@ fabrication (ASTM A123) and powder-coated, pinned at both ends on a 12" pier who
 with HDG through-bolts and a butyl isolation layer at the head; a welded base plate on
 cast-in HDG anchors and levelling nuts over an open, drained gap at the foot — the house's
 standoff rule, no grout pad. Stainless and galvanized never share a joint.
-**kdat** (owner 2026-09-29): a 6x6 KDAT post as `PT-BW-CW`, on the same pier, an
-`ACE6Z`/`AC6Z` head on the glulam and a cast-in `CBSQ66-SDS2` base (2026-09-30), with a
+**kdat** (owner 2026-09-29): a 6x6 KDAT post as `PT-BW-CW`, on the same pier, a
+paired `AC6Z` head on the through glulam and a cast-in `CBSQ66-SDS2` base, with a
 removable, drained PVC column wrap. The wrap is
 nonstructural and is kept clear of both the cap and standoff base.
 **cast**: the 2026-09-20 design — 12" rounds poured full height from a common −10'-2" plane,
@@ -63,18 +63,19 @@ _EAST_VARIANTS = {
         pier_size="14 round",
         piers={"RE": ("34ET0SKQAZ", "PT-BW-PE"), "RNE": ("1NKNZQCQTQ", "PT-BW-PNE")},
         moment_piers=frozenset(),
-        # The header ENDS on PT-BW-RE (an ACE6 end cap) and runs on past PT-BW-RNE (an AC6):
-        # ESR-2604 §3.1.3. The uids are the CCQ caps' own: one part per head, re-typed.
-        head=("POST_CAP", {"RE": "ACE6Z", "RNE": "AC6Z"},
+        # Equal tails at both ends require paired through caps (ESR-2604 §3.1.3).
+        # Existing joint identities survive the south ACE6Z → AC6Z change.
+        head=("POST_CAP", {"RE": "AC6Z", "RNE": "AC6Z"},
               {"RE": ("X0QPPRBG1X", "CN-BW-CAP-E"), "RNE": ("11X4C8QHB6", "CN-BW-CAP-NE")}),
         base=("POST_BASE", "CBSQ66-SDS2",
               {"RE": ("5WR0KMFPJJ", "CN-BW-BASE-E"), "RNE": ("T1V9W4G4TW", "CN-BW-BASE-NE")}),
         pier_head=CBSQ66_HEAD,
-        prices=("AC6Z", "ACE6Z", "A35Z", "CBSQ66-SDS2"),
+        prices=("AC6Z", "A35Z", "CBSQ66-SDS2"),
         roof_note=("EAST header lands on PT-BW-RE and PT-BW-RNE, 6x6 KDAT posts PINNED both "
-                   "ends: an ACE6Z end cap (RE) and an AC6Z cap (RNE), MAX nailing, HDG 16d, "
+                   "ends: paired AC6Z through caps at RE and RNE, MAX nailing, 14 beam + "
+                   "14 post HDG 16d common nails per complete assembly, "
                    "with A35Z angles on the free post faces up to the glulam soffit for the "
-                   "across-beam direction; CBSQ66-SDS2 bases CAST INTO 12in piers PT-BW-PE / "
+                   "across-beam direction; CBSQ66-SDS2 bases CAST INTO 14in piers PT-BW-PE / "
                    "-PNE, tops 3ft 0in above grade, straps >= 3in from the pier edge. Each "
                    "east post has a NONSTRUCTURAL removable PVC column wrap: leave its bottom "
                    "OPEN above the pier wash so the 1in standoff and post end drain and can be "

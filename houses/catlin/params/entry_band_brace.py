@@ -10,6 +10,7 @@ Every uid here was minted once with `typehaus.model.ids.new_uid()` (fmt never vi
 `params/`) and must never be re-typed.
 """
 
+from params.canopy_beam_hoods import ELEMENTS as BEAM_HOOD_ELEMENTS
 from params.north_entry_frame import (
     COLUMN_HALF_FT,
     EAST_POST_SYSTEM,
@@ -133,4 +134,4 @@ SILL_CAP = Flashing(
     material="metal-dark-exterior", host_ref=BAND.tag,
     section=FormedFlashingSection(profile="cap", slope=0.25 / 12, fit_to_brace_sill=True))
 
-ELEMENTS = [BAND, SILL_CAP, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES]
+ELEMENTS = [BAND, SILL_CAP, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES, *BEAM_HOOD_ELEMENTS]
