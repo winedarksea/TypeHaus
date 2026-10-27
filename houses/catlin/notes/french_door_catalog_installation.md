@@ -50,10 +50,12 @@ Primary documents:
 lists AS03448096, a 3/4 × 48 × 96 smooth sheet. [Captivate](https://azekexteriors.com/products/prefinished/captivate)
 lists Graphite Gray, includes sheet trim and lists Minnesota among its distribution states.
 Use the factory prefinished product and its matching cut-edge touch-up instructions; this
-selection does not authorize ordinary dark field paint on white PVC. The two sheets can
-be ripped into lengthwise strips: patio returns on one, study returns plus both doors'
-six casing pieces on the other. The review script checks cut lengths and strip widths
-including 1/8 inch saw kerfs; there is no custom extrusion or shop-bent wrap.
+selection does not authorize ordinary dark field paint on white PVC. The takeoff's
+`door_trim_sheet_layouts` derives lengthwise rip layouts from resolved boards and the selected sheet dimensions, including 1/8 inch kerfs. It groups by material,
+packs decreasing strip widths deterministically, and adds sheets when cuts require them.
+The review script only supplies the selected stock and exports the resulting layout;
+there is no door-name partition. This is a feasible one-board-per-strip layout, not an
+optimal nesting claim. Oversize or thickness-mismatched pieces raise an error.
 
 ### Outline provenance
 
@@ -136,17 +138,16 @@ including concrete development and cross-bearer bearing, is still a design deliv
 
 ## 3. Height and geometry review
 
-The report measures both finished floors against the cap outline and separately
-checks its **+1/4 inch installation allowance**. Its nominal values are approximately:
-
-| Door | Crest above interior finish | Crest above exterior landing | Conservative exterior value |
-| --- | ---: | ---: | ---: |
-| D-B-PATIO | 7.085 in | 7.397 in | 7.647 in |
-| D-S-DECK-E | 0.397 in | 0.988 in | 1.238 in |
+The engine's `exterior_placement.installation_report` is the height source. Regenerate
+`out/exterior-door-review/catalog-height-review.csv` with the command below; the CSV
+contains each door's nominal crest above each finished floor, the installation allowance,
+and both conservative heights. Do not copy these changing values into notes or TODOs.
+The full JSON records `interior_surface_z_m`, `exterior_surface_z_m`,
+`nominal_crest_z_m` and `conservative_crest_z_m`; heights above floors are differences
+from those datums, converted to inches. A floor-to-landing drop omits the threshold.
 
 These are coordination calculations, not product certification or final site dimensions.
 The selected pan maximum-rise allowance and digitized cap setting are explicit assumptions.
-The prior study values 0.720/1.311 inches came from a different schematic seat/cap.
 
 [Minnesota R311.3.2](https://www.revisor.mn.gov/rules/1309.0311/) measures from the top
 of the threshold. The landing check now reads an installed/schematic crest when known;

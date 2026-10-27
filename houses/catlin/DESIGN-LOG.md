@@ -6282,3 +6282,38 @@ in place at two spots before choosing.
 - The pull-out/door allowance becomes `cabinet-hung-frame-underside-and-fixing`.
 
 No microwave is modelled. Supersedes the two 2026-10-23 garage entries.
+
+
+## Patio sill interference: retain XMN5 and formed approach recess (2026-10-26)
+
+Reviewer follow-up confirms the FAIL → PASS change is a deliberate design revision.
+The approach originally intersected the remaining W-B-S3 curb assembly. Retain both
+catalog Endura XMN5 and AO-B-PATIO-CURB-APPROACH: the extender moves the approach start
+beyond the concrete face; the blind recess clears insulation/membrane down to that face.
+This adds a purchased accessory and formed clearance; it does not remove a part to hide
+the clash. It does not further cut the structural concrete or lower the seat/flood edge.
+Regression checks remove each provision independently and require interference to return.
+
+Only geometric clearance passes. Reinforcement/development, support root connections,
+water-control bonds and supplier installed sections/assembly evidence remain open, so
+fit stays UNKNOWN. See [the current coordination note](notes/french_door_catalog_installation.md).
+Height values are regenerated from installation_report, not maintained in prose.
+
+
+## Main-floor sills: retain explicit schematic selections pending coordinated replacement (2026-10-26)
+
+Owner permits replacement if real-world quality is maintained, and retaining the current
+choices if that yields the better house. Retain D-M-ENTRY and D-M-BALC for this pass.
+The available digitized catalog installation is not a drop-in replacement: the entry
+specifies a 7-3/4-inch Therma-Tru sill, while the digitized Endura profile is 4-9/16 inches;
+the balcony's existing 60-inch modeled opening is narrower than the catalog pair's
+62-9/16-inch unit envelope, before RO clearances. These dimensions describe distinct
+contracts, not equivalent part numbers. Do not copy the study installation onto either.
+
+Retirement requires selecting the actual sill/frame/unit dimensions, coordinating the
+rough opening, header/jamb packs, floor/landing levels, continuous bearing, approach
+support and water-control transitions, and rerunning clearance/house checks. The entry's
+local deck cutback and the balcony's independently supported porch must remain coordinated.
+Neither a renamed schematic outline nor a copied support envelope establishes quality.
+Keep SCHEMATIC as an explicit early-coordination option until those selections can be
+replaced; a catalog error never falls back to it automatically. Both fits remain UNKNOWN.

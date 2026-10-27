@@ -234,3 +234,83 @@ def test_receiver_and_movement_conflicts_are_measured(catlin_model_ro):
     changed = add_catalog_installation(model, wall, opening, assembly, clad)
     assert any("receiver drilling" in message for message in changed.conflicts)
     assert any("movement closes" in message for message in changed.conflicts)
+
+
+@pytest.mark.parametrize("remove_extender,remove_recess", [(True, False), (False, True), (True, True)])
+def test_patio_clearance_requires_deliberate_extender_and_recess(
+    catlin_model_ro, remove_extender, remove_recess
+):
+    from typehaus.resolve.exterior_door_catalog_fit import catalog_seat_conflicts
+    from typehaus.resolve.exterior_door_catalog_layout import catalog_installation_layout
+    from typehaus.resolve.exterior_door_catalog_parts import catalog_sill_sections
+
+    model = catlin_model_ro
+    opening = next(o for o in model.openings if o.tag == "D-B-PATIO")
+    wall = model.wall(opening.host_wall)
+    placement = opening.doorway.exterior_placement
+    spec = placement.specification.catalog_installation
+    if remove_extender:
+        spec = spec.model_copy(update=dict(sill_extender_ref=None, sill_extender_source_url=None,
+                                          sill_extender_depth=inch(0), sill_extender_height=inch(0)))
+    installation = placement.specification.model_copy(update={"catalog_installation": spec})
+    placement = replace(placement, specification=installation)
+    if remove_recess:
+        model = replace(model, openings=[o for o in model.openings
+                                        if o.tag != "AO-B-PATIO-CURB-APPROACH"])
+    assembly = replace(opening.doorway, exterior_placement=placement)
+    clad, _ = exterior_door_boundary(model, wall, opening, installation)
+    layout = catalog_installation_layout(model, wall, opening, assembly, clad)
+    placement = replace(placement, sections=catalog_sill_sections(
+        spec, installation, placement, opening, layout))
+    assert catalog_seat_conflicts(model, wall, opening, placement)
+
+
+def test_flashing_selection_and_dimensions_are_independent_of_support(catlin_model_ro):
+    from typehaus.resolve.exterior_door_catalog_flashing import catalog_flashing_sections
+
+    model = catlin_model_ro
+    opening = next(o for o in model.openings if o.tag == "D-S-DECK-E")
+    original = opening.doorway.exterior_placement
+    clad, _ = exterior_door_boundary(model, model.wall(opening.host_wall), opening)
+
+    def sections(**changes):
+        catalog = original.specification.catalog_installation.model_copy(update=changes)
+        placement = replace(original, specification=original.specification.model_copy(
+            update={"catalog_installation": catalog}))
+        return catalog_flashing_sections(placement, opening, opening.doorway, clad)
+
+    assert any(s.name == "flashing-end-house-adapter--1"
+               for s in sections(support_kind="concrete_cantilever"))
+    assert len(sections(independent_landing_flashing=False)) == 4
+    modified = sections(head_cap_depth=inch(2), transition_strip_width=inch(8),
+                        head_source_url="https://example.test/head", transition_sheet_thickness=inch(.04))
+    cap = next(s for s in modified if s.name == "stock-headflash-cap-envelope")
+    assert Polygon(cap.polygon_m).bounds[2] - Polygon(cap.polygon_m).bounds[0] == pytest.approx(.0508)
+    assert cap.source_url == "https://example.test/head"
+    corner = next(s for s in modified if s.name == "flashing-end-silicone-corner-envelope--1")
+    assert corner.span_m == pytest.approx(.2032)
+    assert abs(corner.polygon_m[-1][1] - corner.polygon_m[0][1]) == pytest.approx(.001016)
+    # The module returns its own sections; the resolved session fixture stays untouched.
+    assert original.sections == opening.doorway.exterior_placement.sections
+
+
+def test_schematic_and_catalog_must_be_selected_exclusively():
+    from typehaus import ExteriorDoorInstallation, ExteriorDoorSillDesign
+
+    schematic = ExteriorDoorSillDesign(
+        source_url="https://example.test/envelope", source_drawing="test",
+        threshold_depth=inch(4.5625), threshold_height=inch(1.5), cap_depth=inch(2))
+    with pytest.raises(ValueError, match="catalog installation replaces"):
+        ExteriorDoorInstallation(interior_material_ref="wood", sill_design=schematic,
+                                 catalog_installation=_catalog())
+
+
+def test_catalog_trim_layout_is_derived_across_doors(catlin_model_ro):
+    from typehaus.takeoff.door_trim_layout import TrimSheetStock, door_trim_sheet_layouts
+
+    stock = TrimSheetStock("selected sheet", "finish", .75, 48, 96, .125)
+    layouts = door_trim_sheet_layouts(catlin_model_ro, {"captivate-graphite-sheet": stock})
+    assert len(layouts) == 2
+    assert {p["door"] for s in layouts for p in s["pieces"]} == {"D-B-PATIO", "D-S-DECK-E"}
+    assert sum(len(s["pieces"]) for s in layouts) == 12
+    assert all(s["used_width_in"] <= 48 and s["maximum_length_in"] <= 96 for s in layouts)

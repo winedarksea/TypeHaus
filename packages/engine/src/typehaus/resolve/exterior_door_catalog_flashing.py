@@ -3,19 +3,21 @@
 Membrane bonds and moving-joint application are evidence holds, not implied approvals.
 """
 
+from typehaus.resolve.exterior_door_sections import DoorSectionBuilder
 from typehaus.resolve.flashing_config import FLASHING
 
-_IN = 0.0254
 
-
-def catalog_flashing_sections(placement, opening, assembly, clad, section, rectangle):
+def catalog_flashing_sections(placement, opening, assembly, clad):
+    """Return head and optional independent-landing sections without mutating placement."""
+    builder = DoorSectionBuilder(placement.outward_sign, opening.width_m)
+    section, rectangle = builder.section, builder.rectangle
     installation = placement.specification
     spec = installation.catalog_installation
     sign = placement.outward_sign
     head = assembly.rough_opening_z_m + opening.height_m
     casing = installation.casing_width.meters
     face = sign * clad
-    sheet = installation.wrap_isolation_thickness.meters
+    sheet = spec.head_profile_thickness.meters
     top = head + casing
     span = opening.width_m + 2 * (casing + FLASHING.head_end_lap_m)
     # SureSill HeadFlash 1-3/8 x 84 complete pack; cross-section remains a coordination
@@ -23,11 +25,12 @@ def catalog_flashing_sections(placement, opening, assembly, clad, section, recta
     rectangle(
         "stock-headflash-cap-envelope",
         face,
-        face + 1.375 * _IN,
+        face + spec.head_cap_depth.meters,
         top,
         top + sheet,
         spec.head_material_ref,
         "membrane",
+        source_url=spec.head_source_url,
         span=span,
     )
     rectangle(
@@ -35,9 +38,10 @@ def catalog_flashing_sections(placement, opening, assembly, clad, section, recta
         face,
         face + sheet,
         top,
-        top + 1.5 * _IN,
+        top + spec.head_upstand_height.meters,
         spec.head_material_ref,
         "membrane",
+        source_url=spec.head_source_url,
         span=span,
     )
     for side in (-1, 1):
@@ -45,26 +49,29 @@ def catalog_flashing_sections(placement, opening, assembly, clad, section, recta
         rectangle(
             f"stock-headflash-end-dam-envelope-{side}",
             face,
-            face + 1.375 * _IN,
+            face + spec.head_cap_depth.meters,
             top,
-            top + 0.5 * _IN,
+            top + spec.head_end_dam_height.meters,
             spec.head_material_ref,
             "membrane",
+            source_url=spec.head_source_url,
             span=sheet,
             along=along,
         )
-    if spec.support_kind != "timber_outriggers":
-        return
+    if not spec.independent_landing_flashing:
+        return tuple(builder.sections)
     # These terminate the two existing rear flashing runs without fastening across the
     # independent house/deck joint. They are design envelopes for standard ETA parts.
     report = placement.installation_report
     deck_top = report["exterior_surface_z_m"]
     if deck_top is None:
-        return
+        return tuple(builder.sections)
     overlap = spec.flashing_overlap.meters
     deck_edge = report.get("landing_edge_depth_m")
     if deck_edge is None:
-        return
+        return tuple(builder.sections)
+    sheet = spec.transition_adapter_thickness.meters
+    silicone = spec.transition_sheet_thickness.meters
     gap = deck_edge - face
     for side in (-1, 1):
         along = side * (opening.width_m / 2 + casing + installation.drainage_gap.meters)
@@ -74,9 +81,10 @@ def catalog_flashing_sections(placement, opening, assembly, clad, section, recta
             face + sheet,
             deck_top,
             deck_top + overlap + spec.movement_vertical.meters,
-            "aluminum-extrusion",
+            spec.transition_adapter_material_ref,
             "door_hardware",
-            span=0.375 * _IN,
+            source_url=spec.transition_source_url,
+            span=spec.transition_adapter_width.meters,
             along=along,
         )
         rectangle(
@@ -85,9 +93,10 @@ def catalog_flashing_sections(placement, opening, assembly, clad, section, recta
             deck_edge + sheet,
             deck_top,
             deck_top + overlap,
-            "aluminum-extrusion",
+            spec.transition_adapter_material_ref,
             "door_hardware",
-            span=0.375 * _IN,
+            source_url=spec.transition_source_url,
+            span=spec.transition_adapter_width.meters,
             along=along,
         )
         # Unbonded slack between attachments, with lap continuing down toward the pan.
@@ -97,12 +106,14 @@ def catalog_flashing_sections(placement, opening, assembly, clad, section, recta
                 (face, deck_top + overlap),
                 (face + gap / 2, deck_top + overlap - gap / 2),
                 (face + gap, deck_top + overlap),
-                (face + gap, deck_top + overlap + sheet),
-                (face + gap / 2, deck_top + overlap - gap / 2 + sheet),
-                (face, deck_top + overlap + sheet),
+                (face + gap, deck_top + overlap + silicone),
+                (face + gap / 2, deck_top + overlap - gap / 2 + silicone),
+                (face, deck_top + overlap + silicone),
             ),
             spec.transition_material_ref,
             "membrane",
-            span=6 * _IN,
+            source_url=spec.transition_source_url,
+            span=spec.transition_strip_width.meters,
             along=along,
         )
+    return tuple(builder.sections)

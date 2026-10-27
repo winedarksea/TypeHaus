@@ -34,6 +34,23 @@ class ExteriorDoorCatalogInstallation(HausModel):
     sill_extender_height: Length = inch(0)
     sill_extender_slope_degrees: float = Field(default=5, gt=0, lt=45)
     pan_product: str = "SureSill 4-9/16 inch sloped sill pan, 80 inch complete pack"
+    pan_source_url: str = "https://www.suresill.com/faq"
+    approach_source_url: str = "https://wahoobuildingproducts.com/ariddek-installation-guide/"
+    head_source_url: str = "https://www.suresill.com/product/headflash"
+    transition_source_url: str = (
+        "https://www.tremcosealants.com/resource/download/Proglaze_ETA_System_1_AI.pdf"
+    )
+    # Design envelopes pending installed sections; these are not certified product dimensions.
+    head_cap_depth: Length = inch(1.375)
+    head_upstand_height: Length = inch(1.5)
+    head_end_dam_height: Length = inch(0.5)
+    head_profile_thickness: Length = inch(0.020)
+    independent_landing_flashing: bool = False
+    transition_adapter_width: Length = inch(0.375)
+    transition_adapter_thickness: Length = inch(0.020)
+    transition_adapter_material_ref: str = "aluminum-extrusion"
+    transition_strip_width: Length = inch(6)
+    transition_sheet_thickness: Length = inch(0.020)
     pan_height: Length = inch(0.375)
     height_tolerance: Length = inch(0.25)
     approach_thickness: Length = inch(1.5)
@@ -98,7 +115,11 @@ class ExteriorDoorCatalogInstallation(HausModel):
                       self.support_backspan, self.movement_horizontal, self.movement_vertical,
                       self.flashing_overlap, self.receiver_depth, self.receiver_diameter,
                       self.receiver_pan_clearance, self.cross_bearer_width, self.cross_bearer_depth,
-                      self.minimum_drainage_clearance)
+                      self.minimum_drainage_clearance, self.approach_board_width,
+                      self.head_cap_depth, self.head_upstand_height, self.head_end_dam_height,
+                      self.head_profile_thickness, self.transition_adapter_width,
+                      self.transition_adapter_thickness, self.transition_strip_width,
+                      self.transition_sheet_thickness)
         if any(v.meters <= 0 for v in dimensions):
             raise ValueError("catalog installation dimensions must be positive")
         if self.support_connection_capacity_lb is not None and not self.support_connection_source:
@@ -165,6 +186,7 @@ class ExteriorDoorInstallation(HausModel):
     exterior_wrap_thickness: Length = inch(0.024)
     wrap_isolation_material_ref: str = "fluid-applied-flashing"
     wrap_isolation_thickness: Length = inch(0.020)
+    # Explicit schematic selection for early coordination, never a catalog failure fallback.
     sill_design: ExteriorDoorSillDesign | None = None
     catalog_installation: ExteriorDoorCatalogInstallation | None = None
     exterior_opening_ref: str | None = None

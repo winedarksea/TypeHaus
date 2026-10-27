@@ -24,6 +24,7 @@ def catalog_installation(*, concrete=False):
             'Sill%20Extenders/XMN5.pdf' if concrete else None),
         sill_extender_depth=inch(1.1875) if concrete else inch(0),
         sill_extender_height=inch(0.6875) if concrete else inch(0),
+        independent_landing_flashing=not concrete,
         support_kind='concrete_cantilever' if concrete else 'timber_outriggers',
         support_ref='W-B-S3' if concrete else 'FS-S-EAST',
         support_width=inch(12) if concrete else inch(1.5),

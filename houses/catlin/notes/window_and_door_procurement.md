@@ -189,13 +189,14 @@ than ±20% without it.
 5. Therma-Tru pair NFRC/NAFS label under its product approval with the specified Endura
    components; laminated triple CPD row and SHGC (0.12 is only the provisional basis row);
    BE365 on PanoLock+'s compatibility list; stile width ≥ 4 inches; installed threshold
-   heights at D-B-PATIO's 7¼" step and D-S-DECK-E (the older 0.58" is floor-to-landing
-   drop, not threshold height). Request the composite frame/hinge section, ZAI sill and
+   heights at D-B-PATIO and D-S-DECK-E, measured from the installed crest rather than
+   floor-to-landing drop. Request the composite frame/hinge section, ZAI sill and
    compatible sweep, corner seals, FLA sill receiver and installation details, bearing
    contacts, and written assembled-system compatibility, approval and warranty. Price a
    complete Therma-Tru Tru-Defense-eligible fallback with any glazing or hardware changes.
-   The study's schematic crest is 0.720" above oak and 1.311" above the probed balcony;
-   confirm those dimensions against the actual installed section and landing.
+   Read current nominal and tolerance-adjusted crest heights from the engine-generated
+   [catalog height review](french_door_catalog_installation.md#3-height-and-geometry-review);
+   confirm them against the actual installed section and landing.
 6. Dark-colour warranty by orientation. Andersen 400 publishes 20 years glass / 10 years
    non-glass, transferable, not prorated (400 Series product guide), with no black-specific
    term. Get Drutex and Therma-Tru finish terms for the selected black exterior in writing.

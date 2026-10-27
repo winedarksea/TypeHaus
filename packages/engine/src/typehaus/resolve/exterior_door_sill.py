@@ -1,25 +1,15 @@
-"""Reviewable sill/approach design, separate from approved factory product sections.
+"""Explicit schematic sill option for doors without selected catalog geometry.
+
+Never invoked as an automatic fallback after catalog failure.
 
 The plate carries foot traffic; trim coil does not. Drainage strips run outward,
 and bracket sizing/anchorage stays UNKNOWN until structurally specified.
 """
-from dataclasses import dataclass, replace
+from dataclasses import replace
 from math import ceil
 
+from typehaus.resolve.exterior_door_sections import DoorInstallationSection
 from typehaus.resolve.flashing_config import FLASHING
-
-
-@dataclass(frozen=True)
-class DoorInstallationSection:
-    name: str
-    polygon_m: tuple[tuple[float, float], ...]  # signed wall normal, absolute elevation
-    span_m: float
-    along_m: float
-    material_ref: str
-    material_key: str
-    purchase: str = "site"
-    source_url: str | None = None
-    geometry_status: str = "PROJECT_DESIGN"
 
 
 def sill_outlet_depth(clad, installation):

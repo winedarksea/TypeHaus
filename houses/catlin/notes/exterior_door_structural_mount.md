@@ -82,12 +82,18 @@ purchase confirmation. Doorway JSON/IFC expose section, supplier and fit statuse
 Missing geometry or installation data remains UNKNOWN; measured conflicts remain FAIL.
 Existing `verified` section records retain their behavior for compatibility.
 
-The follow-up to c1b1b25f adds a **separately identified schematic sill design** to these
-doors, rather than leaving the exposed pan as the only bottom geometry. It does **not**
+The main entry D-M-ENTRY and main balcony D-M-BALC retain an explicitly selected
+**schematic sill design**, rather than leaving the exposed pan as the only bottom
+geometry. It does **not**
 set `section_documented`, `supplier_confirmed`, or a VERIFIED fit. The factory frame,
 threshold internals, cap, jamb/leaf terminations and seals still require supplier data.
-`exterior_placement.sill_design_status` is `SCHEMATIC`; approved product sections cannot
-be overlaid with this design envelope.
+`exterior_placement.sill_design_status` is `SCHEMATIC` for those two doors. This is an
+explicit early-coordination option, never an automatic fallback when catalog resolution
+fails. Catalog selection produces `CATALOG_DESIGN`; the two specifications are mutually
+exclusive. Neither status certifies installation fit. Retire a door's schematic selection
+when its documented section is selected; do not add a third generator. The owner-approved
+quality criterion and the entry/balcony migration requirements are recorded in
+[the design log](../DESIGN-LOG.md#main-floor-sills-retain-explicit-schematic-selections-pending-coordinated-replacement-2026-10-26).
 
 The entry envelope uses the published 7-3/4 × 1-1/2-inch Therma-Tru option. The balcony
 envelope uses the published 4-9/16 × 1-3/8-inch Endura ZAI4565FN dimensions.
@@ -124,15 +130,12 @@ The model explicitly reports this as UNKNOWN. Do not use these envelopes as fabr
 or installation drawings. The interior back-dam cover is also a project design envelope,
 not an assertion that either manufacturer's optional cap supplies it.
 
-**Study balcony, 2026-10-26.** D-S-DECK-E uses the same ZAI envelope as D-M-BALC,
-with its frame anchored schematically at the structural wall, wrapped exterior returns,
-and painted pine interior extensions. Its oak floor and the sloping FS-SG-DECK surface
-are independently resolved; the deck's existing edge clears the nosing without a cutback.
-The rear deck-side base flashing and house-side counterflashing now stop 1/8 inch outside
-the 3-1/2-inch casing on both sides. Their end transitions into the door pan and casing
-remain to be designed for drainage and independent movement. The factory composite frame,
-its actual section and hinge datum, sill and sweep, and structural approach bearing and
-anchorage remain unconfirmed. The model's simplified geometry is not an installed detail.
+**Study balcony, current coordination.** D-S-DECK-E uses the digitized catalog ZAI
+outline, composite exterior returns and short AridDek approach boards. It no longer uses
+the schematic plate or steel-wrapped returns described above for the main-floor doors.
+Independent house/deck flashing ends are modeled as coordination envelopes. Current
+geometry, support and installation evidence holds are maintained in
+[french_door_catalog_installation.md](french_door_catalog_installation.md).
 
 ### Study door: installation research and design criteria, 2026-10-26
 
@@ -157,16 +160,15 @@ the sweep's compression. Therma-Tru's [general installation guide](https://proje
 describes a sill receiver for a double-door slide bolt, but the selected Endura FLA's
 receiver and its location must be confirmed rather than assumed interchangeable.
 
-The modeled opening-relative elevations are: oak finished floor **+1.500 in**; balcony
-walking surface at the door probe **+0.910 in**; schematic cap crest **+2.220 in**.
-Thus the crest is approximately **0.720 in above the interior floor** and **1.311 in
-above the probed exterior landing**. The older 0.58-inch value describes floor-to-landing
-drop without the sill, not the installed threshold height. These are model estimates,
-not a product or code determination; recheck with the supplier's section and tolerances.
+The study now uses the catalog installation. Read its current floor datums, nominal
+crest and tolerance-adjusted crest from the engine-generated report described in
+[french_door_catalog_installation.md §3](french_door_catalog_installation.md#3-height-and-geometry-review).
+The earlier schematic seat/cap figures are superseded. Floor-to-landing drop alone is
+not an installed threshold height. Supplier sections and field measurements remain required.
 
-For the approach, develop a continuous, level structural seat under the factory sill,
-and independently support the sloped walking plate and bearing strips back to the house
-structure. The support design must preserve the pan's outlet and isolation, and identify
+For the study approach, develop a continuous, level structural seat under the factory
+sill, and support the AridDek boards and cross bearers back to the house structure. The
+support design must preserve the pan's outlet and isolation, and identify
 members, fasteners, load path, thermal/water-control transitions, deflection and bearing;
 neither the insulation nor the thin buck is a support. A useful precedent is the
 [Building Science Corporation exterior-door sill detail](https://buildingscience.com/sites/default/files/migrate/pdf/GM_DER_Guide_2013-01-18.pdf),
