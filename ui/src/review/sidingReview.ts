@@ -62,7 +62,7 @@ const profileCenterPlan: [number, number] = [
 const wallBase = Math.min(...walls.map(wall => wall.z0_m));
 const wallTop = Math.max(...walls.map(wall => wall.z1_m));
 const profileCenterElevation = (wallBase + wallTop) / 2;
-const chosenOpening = selectedOpenings.sort((a, b) =>
+const chosenOpening = selectedOpenings.filter(opening => opening.kind === "window").sort((a, b) =>
   b.width_m * b.height_m - a.width_m * a.height_m)[0];
 const openingWall = chosenOpening && walls.find(wall => wall.tag === chosenOpening.host);
 const detailPlan = openingWall && chosenOpening ? (() => {

@@ -5,6 +5,27 @@ from typehaus.emit.gltf import emit_gltf_dict
 from typehaus.emit.gltf.validate import validate_gltf
 
 
+def test_band_is_a_panel_cut_with_backed_girt_courses(catlin_model_ro):
+    joint = 208 * .0254
+    walls = [wall for wall in catlin_model_ro.walls
+             if wall.z0_m < joint < wall.z1_m
+             and any(layer.material_ref == 'board-batten-24' for layer in wall.layers)]
+    assert walls
+    for wall in walls:
+        mesh = next(layer.surface_mesh for layer in wall.layers
+                    if layer.material_ref == 'board-batten-24')
+        assert mesh and any(abs(position[2] - joint) < 1e-8 for position in mesh.positions)
+        assert not any(min(mesh.positions[i][2] for i in tri) < joint - 1e-8
+                       and max(mesh.positions[i][2] for i in tri) > joint + 1e-8
+                       for tri in mesh.triangles)
+        courses = [member for member in wall.members
+                   if member.child_key.startswith('strapping-outer-girt-')
+                   and abs(member.z0_m - joint) < 1e-8]
+        assert courses, wall.tag
+        assert any(member.category == 'truss_block' and abs(member.z0_m - joint) < 1e-8
+                   for member in wall.members), wall.tag
+
+
 def test_catlin_cladding_depths_supports_and_gable_meshes(catlin_model_ro):
     model = catlin_model_ro
     panel_walls = [wall for wall in model.walls

@@ -90,6 +90,8 @@ class FramingSpec(HausModel):
     #: of them. May be negative — the module is unbounded below and the band's own bottom
     #: is where the courses actually start.
     course_offset: Length | None = None
+    # Additional horizontal course bottoms at absolute building elevations, for panel joints.
+    additional_course_elevations: tuple[Length, ...] = ()
     direction: str | None = None  # FURRING only: "vertical" | "horizontal"
     # FURRING only: which way the stick is turned in the band. "flat" (the default, and
     # every furred wall before the truss wall existed) lays the wide face against the
@@ -381,6 +383,8 @@ class Layer(HausModel):
     material_ref: str
     thickness: Length
     function: LayerFunction
+    # Absolute elevations of intentional horizontal panel terminations in this layer.
+    panel_joint_elevations: tuple[Length, ...] = ()
     framing: FramingSpec | None = None
     masonry: MasonrySpec | None = None
     # The mix, exposure class, cover and bar coating of a concrete pour. Belongs on the

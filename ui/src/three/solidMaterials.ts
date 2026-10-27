@@ -54,7 +54,7 @@ const METALLIC_SOLID_CATEGORIES = new Set([
   "railing", "railing_infill", "gutter", "downspout", "flashing", "connector",
   "connector_embedded", "connector_hanger",
   "snow_guard", "seam_clamp", "panel_strap",
-  "beam_cap", "wall_corner", "opening_head_flashing",
+  "beam_cap", "wall_corner", "opening_head_flashing", "cladding_trim",
 ]);
 
 // Painted finishes name their colour in the material ref ("post-paint-white"). The served

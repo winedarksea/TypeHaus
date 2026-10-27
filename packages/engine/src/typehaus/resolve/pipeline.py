@@ -260,6 +260,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.board_batten import resolve_profiled_metal_surfaces
 
         resolve_profiled_metal_surfaces(model)
+        from typehaus.resolve.cladding_trim.edges import resolve_corrugated_corners
+        from typehaus.resolve.cladding_trim.mixed_corners import resolve_mixed_corners
+
+        resolve_corrugated_corners(model)
+        resolve_mixed_corners(model)
         from typehaus.resolve.roof_panel_skin import resolve_profiled_roof_surfaces
 
         resolve_profiled_roof_surfaces(model)

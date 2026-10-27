@@ -1,0 +1,1 @@
+"""Manufacturer trim profiles."""

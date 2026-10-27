@@ -156,6 +156,7 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
                # Counted, unpriced by design: every row lands in the estimate's `unpriced`.
                "planting": bom["planting"],
                "edge_trim": bom["edge_trim"],
+               "cladding_trim": bom["cladding_trim"],
                "member_protection": bom["member_protection"],
                "fireblock_sealant": bom["fireblock_sealant"],
                "window_return_beads": bom["window_return_beads"]}

@@ -117,6 +117,8 @@ def opening_flashing_frame(model: ResolvedModel, wall: ResolvedWall, opening=Non
 
 def resolve_window_seats(model: ResolvedModel, cfg: FlashingConfig = FLASHING) -> None:
     """Seat every flashed window before anything reads its product frame (returns, stool)."""
+    from typehaus.resolve.cladding_trim.openings import is_profiled_metal_wall
+
     walls = {wall.tag: wall for wall in model.walls}
     seated = []
     for opening in model.openings:
@@ -124,8 +126,14 @@ def resolve_window_seats(model: ResolvedModel, cfg: FlashingConfig = FLASHING) -
             if opening.kind == "window" else None
         product = next((t for t in model.plan.library.window_types
                         if t.tag == opening.type_ref), None) if frame is not None else None
-        seated.append(opening if frame is None else replace(
-            opening, window_seat=window_seat(opening, frame, cfg, product)))
+        metal_window = frame is not None and is_profiled_metal_wall(
+            model, walls[opening.host_wall])
+        seat = (window_seat(opening, frame, cfg, product, outlet_at_mount=metal_window)
+                if frame else None)
+        if seat is not None and metal_window:
+            sign = frame.outward[0] * -frame.along[1] + frame.outward[1] * frame.along[0]
+            seat = replace(seat, outer_m=sign * frame.mount)
+        seated.append(opening if frame is None else replace(opening, window_seat=seat))
     model.openings = seated
 
 
@@ -154,6 +162,11 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
         catalog = placement and placement.specification.catalog_installation
         meshes = opening_flashing_meshes(wall, opening, frame, cfg,
                                          pan=not is_overhead(model, opening), metal=metal)
+        if opening.window_seat and opening.window_seat.outer_m is not None:
+            from typehaus.resolve.cladding_trim.openings import window_trim_solids
+
+            model.solids.extend(window_trim_solids(model, wall, opening, frame, metal))
+            meshes = [mesh for mesh in meshes if mesh[0] != "head"]
         if catalog:
             # Stock head/pan envelopes are already opening IR parts; retain the
             # continuous jamb/head water-plane tie, not the legacy formed-metal hood.
@@ -253,12 +266,26 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
     if courses:
         membrane.append(frame.leg(start, span, (frame.water, head_seat),
                                   (frame.mount, head_seat), thickness))
-    # Strip-in over the upstand's top edge, or water on the water plane runs behind it.
-    strip, metal_face = cfg.head_strip_lap_m, frame.water + cfg.sheet_m
-    membrane += [frame.leg(start, span, a, b, thickness) for a, b in (
-        ((metal_face, top - strip), (metal_face, top)),
-        ((frame.water, top), (metal_face + thickness, top)),
-        ((frame.water, top), (frame.water, top + strip)))]
+    # The catalog head sits at the mount plane. Tie its upstand back to the water
+    # plane so the membrane remains continuous across the rainscreen cavity.
+    strip = cfg.head_strip_lap_m
+    trimmed_window = opening.window_seat and opening.window_seat.outer_m is not None
+    if trimmed_window:
+        from typehaus.resolve.metal_skin_profiles import INCH_M
+
+        top = head - opening.window_seat.head_drop_m + 2.5 * INCH_M
+        strip_start, strip_span = lo - INCH_M, hi - lo + 2 * INCH_M
+        metal_face = frame.mount + cfg.sheet_m
+        membrane += [frame.leg(strip_start, strip_span, a, b, thickness) for a, b in (
+            ((metal_face, top - strip), (metal_face, top)),
+            ((frame.water, top), (metal_face + thickness, top)),
+            ((frame.water, top), (frame.water, top + strip)))]
+    else:
+        metal_face = frame.water + cfg.sheet_m
+        membrane += [frame.leg(start, span, a, b, thickness) for a, b in (
+            ((metal_face, top - strip), (metal_face, top)),
+            ((frame.water, top), (metal_face + thickness, top)),
+            ((frame.water, top), (frame.water, top + strip)))]
     result.append(("perimeter", "opening_flashing_membrane", cfg.membrane_material,
                    combine_sheets(membrane)))
     if pan:
@@ -290,12 +317,14 @@ def _pan_outlet(opening: ResolvedOpening, frame: OpeningFlashingFrame,
         from typehaus.resolve.exterior_door_sill import sill_outlet_depth
 
         return sill_outlet_depth(frame.clad, placement.specification)
-    return frame.mount if frame.outie and not opening.is_door \
+    metal_window = opening.window_seat and opening.window_seat.outer_m is not None
+    return frame.mount if (frame.outie and not opening.is_door) or metal_window \
         else _drip_face(opening, frame, cfg)
 
 
 def window_seat(opening: ResolvedOpening, frame: OpeningFlashingFrame,
-                cfg: FlashingConfig = FLASHING, product: WindowType | None = None) -> WindowSeat:
+                cfg: FlashingConfig = FLASHING, product: WindowType | None = None, *,
+                outlet_at_mount: bool = False) -> WindowSeat:
     """The unit inside its flashed RO: shimmed off the jambs and head, on the pan's high
     point at the back dam (a level unit bears there on a sloped pan), outboard of the dam.
 
@@ -303,7 +332,8 @@ def window_seat(opening: ResolvedOpening, frame: OpeningFlashingFrame,
     the jambs; the head takes the rest of the vertical slack.
     """
     dam = frame.back + cfg.back_dam_strip_m
-    fall = (_pan_outlet(opening, frame, cfg) - dam) * cfg.drainage_slope
+    outlet = frame.mount if outlet_at_mount else _pan_outlet(opening, frame, cfg)
+    fall = (outlet - dam) * cfg.drainage_slope
     lining = frame.buck + cfg.perimeter_membrane_m
     sill_rise = frame.buck + fall + cfg.sill_membrane_m
     side = head = lining + cfg.install_gap_m

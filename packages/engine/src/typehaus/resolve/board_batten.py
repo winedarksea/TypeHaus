@@ -238,6 +238,14 @@ def resolve_profiled_metal_surfaces(model) -> None:
     def profile_for(ref):
         return PANEL_PROFILES.get(finishes.get(ref))
 
+    def joint_cuts(wall, layer_name, profile, z0, z1):
+        assembly = model.plan.library.resolve_assembly(wall.assembly) if wall.assembly else None
+        authored = next((layer for layer in assembly.layers if layer.name == layer_name), None) \
+            if assembly else None
+        joints = (authored.panel_joint_elevations if authored is not None
+                  and profile.key == "board-and-batten" else ())
+        return [z0, *sorted({j.meters for j in joints if z0 < j.meters < z1}), z1]
+
     for i, wall in enumerate(model.walls):
         layers = []
         for layer in wall.layers:
@@ -246,19 +254,16 @@ def resolve_profiled_metal_surfaces(model) -> None:
                 z0, z1 = layer.band(wall)
                 clearance = panel_support_clearance_m(model, wall, layer)
                 support_clearances[wall.uid, layer.material_ref] = clearance
-                mesh = profile_mesh(
-                    wall,
-                    layer.polygon,
-                    z0,
-                    z1,
-                    lines.get(wall.tag, wall.axis),
+                cuts = joint_cuts(wall, layer.name, profile, z0, z1)
+                meshes = [profile_mesh(
+                    wall, layer.polygon, bottom, top, lines.get(wall.tag, wall.axis),
                     openings=[op for op in model.openings if op.host_wall == wall.tag],
                     layer_name=layer.name,
                     upper_at=lambda x, y, w=wall: wall_top_at(w, x, y),
-                    height_breakpoints=wall.axis,
-                    profile=profile,
+                    height_breakpoints=wall.axis, profile=profile,
                     support_clearance_m=clearance,
-                )
+                ) for bottom, top in zip(cuts, cuts[1:], strict=False)]
+                mesh = _join_meshes(meshes)
                 layer = replace(layer, surface_mesh=mesh)
             layers.append(layer)
         model.walls[i] = replace(wall, layers=tuple(layers))
@@ -288,17 +293,17 @@ def resolve_profiled_metal_surfaces(model) -> None:
                 top_bound = max(p[2] for p in box.corners_top)
                 if member.section_ring:
                     top_bound = max(top_bound, member.z0_m + max(z for _, z in member.section_ring))
-                mesh = profile_mesh(
-                    wall,
-                    polygon,
-                    min(p[2] for p in box.corners_bottom),
-                    top_bound,
-                    lines.get(wall.tag, wall.axis),
+                layer_name = next(layer.name for layer in wall.layers
+                                  if layer.material_ref == member.material
+                                  and layer.function == "cladding")
+                cuts = joint_cuts(wall, layer_name, profile,
+                                  min(p[2] for p in box.corners_bottom), top_bound)
+                mesh = _join_meshes([profile_mesh(
+                    wall, polygon, bottom, top, lines.get(wall.tag, wall.axis),
                     lower_at=lambda x, y, h=height, m=member: h(x, y, m.z0_m, m.z0_end_m),
-                    upper_at=upper_height,
-                    profile=profile,
+                    upper_at=upper_height, profile=profile,
                     support_clearance_m=support_clearances[wall.uid, member.material],
-                )
+                ) for bottom, top in zip(cuts, cuts[1:], strict=False)])
                 member = replace(member, surface_mesh=mesh)
             members.append(member)
         model.roofs[i] = replace(roof, members=tuple(members))
@@ -306,3 +311,14 @@ def resolve_profiled_metal_surfaces(model) -> None:
 
 # Kept as an import alias for the focused BBD75 tests and downstream callers.
 resolve_board_batten_surfaces = resolve_profiled_metal_surfaces
+
+
+def _join_meshes(meshes: list[GMesh]) -> GMesh:
+    """Preserve independently capped panel runs in the layer's shared mesh."""
+    positions, triangles, normals = [], [], []
+    for mesh in meshes:
+        offset = len(positions)
+        positions.extend(mesh.positions)
+        triangles.extend(tuple(index + offset for index in triangle) for triangle in mesh.triangles)
+        normals.extend(mesh.normals or ())
+    return GMesh(tuple(positions), tuple(triangles), tuple(normals))

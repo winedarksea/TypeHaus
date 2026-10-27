@@ -1,0 +1,126 @@
+# Metal cladding and roof trim design basis
+
+2026-10-27. This is the selected design and procurement basis; consult the model and
+checks for implementation status. Confirm the printed part-number anomalies with the
+supplier before ordering. XX denotes the colour code. Sections are 24 ga PVDF unless
+otherwise stated; standard stock is 10 ft 2 in unless a different length is stated.
+
+## Sources
+
+- [PBR installation guide, April 2024](sources/metal-sales-pbr-install-2024.pdf),
+  trim tables pp. 10–21, wall details pp. 44–73.
+- [BBD75 installation guide, October 2025](sources/metal-sales-bbd75-install-2025.pdf),
+  trim pp. 14–18, details pp. 22–45.
+- [Residential design manual, May 2024](sources/metal-sales-residential-design-2024.pdf),
+  Image II 24 ga PVDF parts pp. 6–12, details pp. 30–41. This supersedes the
+  [2021 Image II PIM](sources/metal-sales-image-ii-pim-2021.pdf) for part numbers.
+- [7/8 in corrugated manual](sources/metal-sales-corrugated-2011.pdf), profile
+  dimensions; it does not publish part numbers.
+- [General information manual](sources/metal-sales-general-information.pdf), PGI-10:
+  custom flashings are available on request; brake limits are not published.
+
+## Wall edges
+
+| Condition | Selected termination | Basis |
+|---|---|---|
+| PBR base | 1.25 in Base 58138XX, tape and inside closure 6460800 | PBR p. 69 |
+| BBD75 base | Vertical Base Trim 55545XX and C-Closure 55548XX | BBD75 p. 22 |
+| Corrugated base | 1.25 in Base, profile-matched inside closure | Corrugated P7/8-3 |
+| House outside corner | Wide Outside Corner 58132XX (10 ft 2 in) or 58136XX (20 ft 3 in), 5.5 in legs; PBR-to-BBD75, one leg on each face; C-Closure on BBD75 side | PBR and BBD75 corner details, BBD75 pp. 30–31 |
+| Garage corner | Corrugated Outside Corner | Corrugated manual |
+| BBD75 horizontal joint | Transition Trim 55536XX, pop rivets at 12 in o.c. | BBD75 p. 40 |
+| PBR under eave | Inside closure flush with panel top under box gutter | PBR p. 46 |
+| BBD75 under rake | Universal Closure 6411499 taped to slope-cut panel, covered by rake face | PBR p. 61 method |
+| Corrugated under soffit | 1.5 in Sill to Soffit | Corrugated manual |
+| Screen open ends | Corrugated Jamb candidate; 2.5 in back leg, 1 in throat and 1 in return; check against the actual two-face screen thickness | Corrugated manual p. P7/8-4 |
+
+The north and south BBD75 band is at +17 ft 4 in, supported by a girt. Lower and
+upper panel runs are approximately 18 ft 5 in and 14 ft, within the 20 ft maximum.
+The band is also the head drip where it meets the two north window heads and the
+D-S-DECK-E casing. PBR east and west panel runs are approximately 22 ft 2 in,
+within the 45 ft maximum. Garage corners are approximately 8 ft 4 in high.
+
+## Openings
+
+The outie window frame face is on the panel back plane. Rib depths are 1.25 in PBR,
+0.75 in BBD75, and 0.875 in corrugated. Buck, membrane and shim between frame and
+rough opening occupy 0.645 in, or 0.6875 in at the Andersen sizes.
+
+- Head: 1.5 in Sill/Head 58114XX, with 2.5 in back leg and 1.5 in throat,
+  plus the matching closure. The membrane strip-in remains. PBR pp. 68–72 and
+  BBD75 pp. 24–29 show trim-first installations; this head accommodates the
+  window-first outie. BBD75 Head Trim 58720XX's 4 in return conflicts with the frame.
+- Jamb: custom J with back leg on girt or buck, return equal to rib depth and 1 in
+  leg onto frame face, sealed at the K7 joint. The frame lap covers the buck strip.
+- Sill: custom cap with upstand on buck behind the pan turn-down, height 1/8 in
+  below frame sill rise, top sloped 1/4 in per ft, matching closure, and 1/2 in
+  drip and hem beyond the rib tip. These custom sections have girth under 12 in
+  and at most three bends; the supplier must confirm its brake capability.
+- Doors: custom head drip crosses the 0.75 in casing projection plus 1/4 in;
+  panel J against casing at jambs (BBD75 58728XX or corrugated Jamb). The band
+  serves as the D-S-DECK-E head. Door sills retain the threshold/pan path.
+- Five small rough openings receive four-side trim or their hood's trim ring, as
+  appropriate to the product. Brick openings D-B-PATIO and WIN-B-SAUNA are excluded.
+
+## Roof edges
+
+| Condition | Selected termination | Basis |
+|---|---|---|
+| House eave / box gutter | Extended Eave 52124XX on Offset Cleat 5806499; evaluate Box Gutter 58077XX / 58079XX (20 ft 3 in), end caps 58081XX / 58082XX and straps 58092XX against drainage capacity before replacing the custom gutter | Residential manual pp. 30–41; PBR box gutter detail |
+| House rake | Residential Rake 52126XX and Rake Cleat 52132XX; panel edge turned up 1 in; verify coverage of the deck edge and 1.5 in drop over wall head | Residential manual pp. 30–41 |
+| House closed ridge | 7 in Ridge/Hip Cover 52131XX, specify 6:12; Z-Closure 58603XX both sides; double-bead tape 6403899 | Residential manual pp. 30–41 |
+| Garage and canopy eaves | Extended Eave 52124XX on Offset Cleat over metal fascia | Residential manual pp. 30–41 |
+| Garage and canopy rakes | Residential Rake and Rake Cleat over fascia/barge; Flat Cleats 5806199 at 18 in | Residential manual pp. 30–41 |
+| Garage vented ridge | Image II PIM's 13 in step ridge/hip cover with Cobra vented closure; confirm current availability and part numbers with Metal Sales | Image II PIM p. 20 |
+| Canopy closed ridge | 7 in Ridge/Hip Cover 52131XX, specify 4:12; Z-Closure 58603XX | Residential manual pp. 30–41 |
+
+The plan assumed a 4 in rake face, but the 2024 manual p. 9 depicts a 2 5/8 in main leg and a 4 3/4 in stretch-out for 52126XX. The existing house detail requires a 4 in face: verify the installed coverage before substituting the stock rake. The plan's garage ridge selection 52134XX is a one-sided residential peak flashing, which the manual p. 41 shows at a vertical end wall. For the gable, the older Image II PIM p. 20 shows a 13 in step ridge/hip cover and Cobra vented closure, double-bead tape and 1/8 × 3/16 in rivets at every rib, with a maximum 2 in deck slot; its alternate uses perforated vent drip and outside closures. It warns that snow loads can require additional screws. The 2024 residential manual shows its 7 in ridge/hip cover only in a non-vented detail; availability and current part numbers for the older vented assembly need confirmation. The existing vented ridge remains modeled until the vented assembly's fit is established.
+
+A custom-brake rake with a 4 in face is geometrically possible in principle: extend the 2 5/8 in main leg of the published rake by 1 3/8 in, preserving its 1 in upper return, lower kick and hem, for an approximate 6 1/8 in stretch-out. The general information manual states that custom flashings are available but publishes no brake limits. The proposed extended leg still needs to be located against the actual rake deck edge, wall head, cleat and panel turn-up before it can replace the existing modeled detail.
+
+The catalog box gutter is 5 in wide by 4 in deep (PBR guide p. 12), while the existing house gutter is 6 in wide by 5 in deep. The drainage checks resolve leaders and discharge paths but do not compute gutter flow capacity, so they cannot establish whether the smaller gutter handles the design storm. The existing gutter remains pending a hydraulic capacity calculation and outlet review.
+
+Specify pitch for eave, peak and ridge. Extended Eave and Residential Rake have
+lips intended to satisfy the drip condition; verify the installed detail against
+[the FORTIFIED roof note](fortified_roof_cert.md). Garage and canopy fascia, soffit
+and K-gutters remain. The house, garage and canopy ridges are closed, vented and
+closed respectively.
+
+## Laps and procurement arithmetic
+
+Use 1/4 in-14 × 7/8 in stitch screws or 1/8 in pop rivets for trim. PBR corner
+laps are at least 3 in, with rivets at 2 in o.c.; other PBR trim laps are 2 in
+with tube sealant. Notch BBD75 trim hems 2 in at laps and put no fastener through
+a BBD75 trim lap. Notch Image II eaves 3 in at laps. Rakes over 3:12 use Universal
+Closure 6411499. Confirm supplier readings of 58937XX, 59904XX versus 58904XX,
+58974XX versus 58794XX, and the duplicated 58206XX for C-Closure and Double Angle.
+
+For a uniform stock length, pieces = ceil((run − lap)/(stock − lap)); a run no
+longer than stock takes one piece. Compare available stock combinations on waste,
+including laps, rather than assuming uniform lengths.
+
+- One 22 ft 4.4 in house corner: one 20 ft 3 in plus one 10 ft 2 in, with 3 in
+  lap, covers 30 ft 2 in; 7 ft 9.6 in of purchased length remains after coverage
+  and lap. One piece cannot cover the run.
+- South band: the nominal 36 ft wall line needs four 10 ft 2 in lengths with three
+  2 in laps, covering 40 ft 2 in. Exact cut lengths depend on resolved face endpoints
+  and any head integration; verify the field run before ordering.
+- WIN-S-STUDY1 has a nominal 30 × 48 in unit. Each of its head, sill and two jamb
+  runs fits in one 10 ft 2 in length; four separately cut pieces are required in the
+  model. Procurement may combine short cuts from stock if the shop cutting plan and
+  allowances permit it; do not assume four full sticks per window in a pooled order.
+
+## Billing boundaries
+
+| Scope | Explicit purchase | Remove overlap when implemented |
+|---|---|---|
+| Wall panel | Profiled sheet only | Embedded trim load in panel $/SF |
+| Base, corners, bands, openings | Named trim or custom coil by cut/stock, with laps | Legacy wall-corner, edge-cladding and closure allowances |
+| Closure and seal | Profile closure, tape and tube sealant by installed length | Lump profile-closure allowances |
+| Fastening | Stitch screws and rivets by trim role and spacing | Any included trim-fastener allowance |
+| Roof perimeter and ridge | Image II pieces, cleats, closures, vent and fasteners | Replaced generic drip, ridge-cap and corner-trim allowances |
+| Gutters | Catalog gutter and components only after capacity check | Authored custom gutter only if catalog replacement is accepted |
+
+A change of wall profile also moves the cladding plane and affects the breezeway gap,
+garage lines, sleeves and devices. Corrugated substitution needs its own exposed-fastener
+rules; preserve the standing-seam skin family used for roof classification.

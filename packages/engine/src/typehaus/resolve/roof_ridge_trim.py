@@ -8,10 +8,15 @@ from typehaus.resolve.framing.profiles import panel_profile
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof
 from typehaus.resolve.roof_edge_geometry import roof_ridge_run, roof_slope
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
-from typehaus.resolve.roof_panel_trim import panel_profile_for_layer, ridge_panel_closures
+from typehaus.resolve.roof_panel_trim import (
+    CLOSURE_FLANGE_M,
+    panel_profile_for_layer,
+    ridge_panel_closures,
+)
 
 _RIDGE_CAP_HALF_WIDTH_IN = 6.0
 _RIDGE_CAP_STAND_IN = 2.0
+_IMAGE_II_RIDGE_SLOPE_LENGTH_IN = 7.0
 
 # --- vented ridge cap --------------------------------------------------------------------
 
@@ -74,17 +79,29 @@ def ridge_vent_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[Framed
     closures = ()
     cap_ring = None
     if profile and not (vented_attic or vented_over_deck):
+        roof_material = model.plan.library.material(cladding.material_ref)
+        image_ii_cover = (roof_material is not None and
+                          roof_material.roof_ridge_trim_profile == "IMAGE_II_RIDGE_COVER")
+        half = inch(_RIDGE_CAP_HALF_WIDTH_IN).meters
+        if image_ii_cover:
+            half = inch(_IMAGE_II_RIDGE_SLOPE_LENGTH_IN).meters / slope_factor
         closures = ridge_panel_closures(roof, profile,
                     sum(layer.thickness.meters for layer in layers)-cladding.thickness.meters,
-                    material)
-        half = inch(_RIDGE_CAP_HALF_WIDTH_IN).meters
-        rise = top-bottom
+                    material, offset_m=(half - CLOSURE_FLANGE_M
+                                        if image_ii_cover else half))
         sheet = profile.sheet_thickness_m
+        if image_ii_cover:
+            # The catalog's 7 inches measures along each pitched side, not in plan.
+            # Seat the cover on the profile-cut closure's crown at either side.
+            bottom = z0 - half * slope
+            top = z0 + sheet
+        rise = (z0 if image_ii_cover else top) - bottom
         cap_ring = ((-half, 0.), (0., rise), (half, 0.),
-                    (half, sheet), (0., rise+sheet), (-half, sheet))
+                    (half, sheet), (0., rise + sheet), (-half, sheet))
     return closures + (FramedMember(
         parent_uid=roof.uid, child_key="ridge-vent-cap", category="ridge_cap",
-        profile=panel_profile(2.0 * _RIDGE_CAP_HALF_WIDTH_IN, (top - bottom) / M_PER_IN),
+        profile=panel_profile((2.0 * half / M_PER_IN if cap_ring else
+                               2.0 * _RIDGE_CAP_HALF_WIDTH_IN), (top - bottom) / M_PER_IN),
         p0=ridge.p0, p1=ridge.p1, z0_m=bottom, z1_m=top, length_m=length,
         connection=("ridge:vented-cap" if vented_attic or vented_over_deck
                     else "ridge:closed-cap"),

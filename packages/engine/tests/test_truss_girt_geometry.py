@@ -353,8 +353,14 @@ def test_the_block_is_three_plies_on_every_other_stud(catlin_model):
         if len(module) < 4:
             continue
         phase = _modal_phase(module)
+        assembly = catlin_model.plan.library.resolve_assembly(wall.assembly)
+        extras = [level.meters for layer in assembly.layers if layer.framing
+                  for level in layer.framing.additional_course_elevations]
+        # Joint backing is frequently cut into short segments by opening heads, so its
+        # mandatory end blocks do not measure the regular field's module proportion.
         field = [m for m in wall.members
-                 if m.category == "truss_block" and _FIELD_BLOCK.match(m.child_key)]
+                 if m.category == "truss_block" and _FIELD_BLOCK.match(m.child_key)
+                 and not any(abs(m.z0_m - level) < 1e-8 for level in extras)]
         if len(field) < 3:
             continue
         # Three plies, 4-1/2" through the wall. The profile carries the ply count, so this

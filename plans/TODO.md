@@ -311,7 +311,6 @@ the future.
 - [ ] Before fabricating RM-M-STUDY: complete the 60-minute seating mock-up, verify occupied cushion height, lumbar fit and bracket/blocking connections, and record any dimensional changes in the bench spec.
 - Plant room needs review on bottom of wall detail (switch to a flash cove capable vinyl?) and also a review on if plumbing or drainage is present.
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
-- Bedroom carpet provisionally selected 2026-10-23: Sweet Spot I Romano (warm ivory/cream), Future Foam 8 lb/ft³ 7/16-in cushion; light warm greige alternative. [Specification and purchasing checks](../houses/catlin/notes/bedroom_carpet.md). Confirm sample, current local quote, cushion acceptance/warranty and roll/seam layout; measure the installed assembly and reconcile plywood, transitions, door clearances and affected elevations. The existing 3/4-in model depth remains provisional.
 - The bottoms of 3d modeled windows are a bit glitchy in 3d movement.
 - Do passes to confirm geometry and dimensions of select products all align together correctly for real world build dimensions. Major items to check: stairs, doors and windows (and their trim/flashing), framing, cabinets, trusses.
 - Kitchen sink fabrication hold: dry-fit KHU100-32 / Bolden KPF-1610SFS / Badger 5 / Dearborn P9703WBG in the 36-inch SEKTION. Verify delivered Badger revision, clip/washer and rail access, full hose stroke, cleanout clearance, vent fitting/bore envelopes and the inward tilt-turn window sweep (full turn likely obstructed). See houses/catlin/notes/kitchen_sink_installation.md; product/connection specification is complete, physical fit is not released.
@@ -320,12 +319,11 @@ the future.
 - A couple of options to reduce echo in the gym. One is swapping drywall for drop ceiling tile framing (perhaps with some fiberglass in the cavity above). Another was vulcanized recycled crumb-rubber rolls or 4'x6' stall mats for the floor. A third was W-B-CE losing its south side drywall and having fabric plus simple wood slats (ie 1x2 finger jointed pine) as an effectively slat wall arrangement.
 - Improve the wainscot of the mudrooms (the wainscot should be tall—typically 54" to 66" high (or roughly two-thirds of the wall height), mid-to-dark tone (e.g., muddy green, slate blue, warm mushroom, or charcoal), Satin or Semi-Gloss finish using a high-end urethane alkyd enamel (like Sherwin-Williams Emerald Urethane or Benjamin Moore Scuff-X), 1x6 or 1x8 Cellular PVC board for the bottom baseboard, smooth 1/4" MDF panel backers (if walls are textured) with 1x3 Primed Poplar (for impact resistance) or Primed MDF (for lowest cost) for the vertical battens (or shiplap))
 - Oksana wants an elm slab sofa table
-- Trial a countertop microwave https://www.amazon.com/dp/B01DEWZUG4 in the east-counter cave (KGF4) vs the pantry east bay (RC1); pick one and record it.
 - [x] Model a coffee machine and kettle — SEVERIN WK 3422 and Arctic White De’Longhi Rivelia EXAM44055W on the north kitchen counter (2026-10-25); see DESIGN-LOG for the accepted overhead-clearance shortfall.
 - Check the basement stair carpet, and swap the carpet from the theater with an partial coverage area rug in the theater (technically not installed with tack strips or glue)
 - [ ] Before ordering LVP/pouring the cap: confirm Quincy Oak sample and local delivered quote, measure the installed plank and coating stack, and set the flush movement/edge joint from those samples.
-- [x] Move D-M-MECH and D-M-MUDC 8" east within the existing walls (owner-approved instead of a full stud bay); relocate the three switches to W-M-MUDC-E.
 - Conduit for floor thermostats for heated floor
+- EMT conduit (or as appropriate) modeled in the basement
 - See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
 - Fix the missing horizontal trim of the board and batten (instructions says max panel length of around 20', no end lapping, so needs to have a mid point 'board' trim likely)
 - Workshop receptacles: RC1's 120/240 V circuit and RC2's 120 V quad are modeled. Resolve the required tamper-resistant listings, compatible surface boxes and covers, and field wiring before installation; see [workshop receptacles](../houses/catlin/notes/workshop_receptacles.md).
@@ -337,6 +335,8 @@ the future.
 - Add the eased edges and rounded corners to the shown tabletop model.
 - D-G-SERVICE still has exposed flashing (missing the sill and jamb like the other exterior doors). And D-B-PATIO has a MASA connector sprouting up in the middle, plus it's got some sort of awkward trim around the brick veneer (the brick IS the trim there, the door itself has a more utilitarian trim into the main house wall behind). Looks like previous door work accidentally bumped the brick arch up too high. It should partially obscure the door top.
 - Look up a guide to how plumbers and such route, then make sure the autorouter follows that, and also code for it
+- 3d model of receptacles appear to be oriented in a conflict way, the two outlets on the opposite direction (off rotation) for the extra width of the receptacle box.
+- ED-M-LIVING-RC10 seems to be on a door, which checks don't seem to catch
 
 # Project Management
 

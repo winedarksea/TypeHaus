@@ -78,6 +78,9 @@ ROWS: tuple[C, ...] = (
     # Roof edge trim and what fastens into the standing seam.
     _trim("flashing", "roofing"),
     _trim("opening_head_flashing", "siding"),
+    C("cladding_trim", trade="siding", ifc_class=_COVER, ifc_predefined="USERDEFINED",
+      ifc_object_type="FLASHING",
+      elevation_family="trim", finish_group="accessory", billed_elsewhere=True),
     _trim("opening_sill_pan", "openings", elevation=None),
     _trim("opening_flashing_membrane", "openings", elevation=None),
     C("ridge_cap", trade="roofing", ifc_class=_FOOTING, finish_group="accessory"),

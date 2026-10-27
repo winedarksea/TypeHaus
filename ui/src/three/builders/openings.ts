@@ -145,7 +145,7 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
   }
   let frameDepth = depth, frameOffset = 0;
   if (exterior) {
-    const outerEdge = exterior.plane + exterior.sign * WINDOW_TRIM_PROUD_DEPTH_M;
+    const outerEdge = seat?.outer_m ?? exterior.plane + exterior.sign * WINDOW_TRIM_PROUD_DEPTH_M;
     let innerEdge = -exterior.sign * (depth / 2);
     // Outboard of the back dam: the unit never stands in the pan's upturn.
     if (seat) innerEdge = exterior.sign * Math.max(exterior.sign * innerEdge, exterior.sign * seat.inner_m);
@@ -437,7 +437,7 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
       seat ? frameOffset : 0);
   }
   if (opening.kind === "window") {
-    if (exterior) {
+    if (exterior && seat?.outer_m == null) {
       // Picture-frame casing on the cladding plane: two jambs beside the RO, a head band
       // over it, an apron under the sill. Mirrors resolve/geometry_openings.py, including
       // the per-board rake clip — a head band reaches past the RO span the availableHeight

@@ -66,3 +66,15 @@ def test_seating_uses_the_configured_sheet_and_membrane_thickness(panel_model):
     cfg = replace(FLASHING, sheet_m=.001, perimeter_membrane_m=.0008)
     resolve_opening_flashing(panel_model, cfg)
     assert panel_support_clearance_m(panel_model, wall, wall.layers[-1], cfg) == pytest.approx(.0018)
+
+
+def test_catalog_window_head_clears_membrane_at_mount_plane(panel_model):
+    from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
+    from typehaus.resolve.model_window_seat import WindowSeat
+
+    wall = panel_model.walls[0]
+    resolve_opening_flashing(panel_model)
+    panel_model.openings[0] = replace(panel_model.openings[0],
+        window_seat=WindowSeat(.01, .01, .01, 0, outer_m=.1))
+    assert panel_support_clearance_m(panel_model, wall, wall.layers[-1]) == pytest.approx(
+        FLASHING.sheet_m + FLASHING.perimeter_membrane_m + SHEET_24_GA_M)

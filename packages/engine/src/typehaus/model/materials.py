@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Literal
 
 from typehaus.model.base import HausModel
+from typehaus.model.cladding_trim import TrimCondition
 from typehaus.model.published_cladding import PublishedCladdingLoad
 from typehaus.model.registry import register_constructor
 
@@ -95,6 +96,10 @@ class Material(HausModel):
     # changes no quantity, no price and no building-science number. Leave it None and the old
     # tag comparison is exactly what happens, so no existing house moves.
     skin_family: str | None = None
+    # Catalog profile keys, indexed by the edge condition they terminate.
+    trim_kit: dict[TrimCondition, str] = {}
+    # Specific ridge profile; the standing-seam finish alone is not a product identity.
+    roof_ridge_trim_profile: str | None = None
     # This cladding panel is fixed by screws driven through its FACE into the substrate,
     # rather than by concealed clips or a folded seam. It is what lets ``takeoff.fasteners``
     # bill the panel screws as a counted part: on a clipped or seamed panel the fixings ride

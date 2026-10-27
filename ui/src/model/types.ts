@@ -321,6 +321,7 @@ export interface WindowSeat {
   sill_rise_m: number;
   head_drop_m: number;
   inner_m: number;
+  outer_m?: number | null;
 }
 
 export interface AuthoredDoorPart {

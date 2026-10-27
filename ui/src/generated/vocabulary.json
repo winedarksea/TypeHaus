@@ -423,6 +423,9 @@
     "ceiling": [
       "drywall"
     ],
+    "cladding_trim": [
+      "siding"
+    ],
     "cleanout_cap": [
       "plumbing"
     ],
@@ -669,6 +672,7 @@
     "beam_cap": "siding",
     "bug_screen": "siding",
     "ceiling": "drywall",
+    "cladding_trim": "siding",
     "cleanout_cap": "plumbing",
     "cleanout_extension": "plumbing",
     "cleanout_fitting": "plumbing",

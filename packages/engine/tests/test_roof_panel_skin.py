@@ -1,5 +1,6 @@
 """Folded roof sheets retain their real envelope and closed section cuts."""
 
+import math
 from collections import Counter
 from types import SimpleNamespace
 
@@ -87,7 +88,9 @@ def test_catlin_skin_and_clamps_follow_shared_seams(catlin_model_ro):
     model = catlin_model_ro
     roof = next(roof for roof in model.roofs if roof.tag == "RF-HOUSE")
     assert dict(roof.layer_surface_meshes)["roofing"].triangles
-    assert not next(roof for roof in model.roofs if roof.tag == "RF-GARAGE").layer_surface_meshes
+    for tag in ("RF-GARAGE", "RF-BW-CANOPY"):
+        other_roof = next(item for item in model.roofs if item.tag == tag)
+        assert dict(other_roof.layer_surface_meshes)["roofing"].triangles
     assembly = model.plan.library.resolve_assembly(roof.assembly)
     part = next(part for part in roof_parts(roof, assembly) if part.key == "layer:roofing")
     assert part.solids == (dict(roof.layer_surface_meshes)["roofing"],)
@@ -149,6 +152,37 @@ def test_catlin_rake_and_profile_closures_are_formed_sheets(catlin_model_ro):
     assert any(member.connection == "roof:panel-rake" for member in roof.members)
     assert any(row['category'] == 'ridge_closure' and row['length_ft'] > 60
                for row in edge_trim_takeoff(catlin_model_ro))
+
+
+def test_closed_image_ii_ridge_cover_has_seven_inch_pitched_legs(catlin_model_ro):
+    for tag in ("RF-HOUSE", "RF-BW-CANOPY"):
+        roof = next(item for item in catlin_model_ro.roofs if item.tag == tag)
+        cap, = (member for member in roof.members if member.category == "ridge_cap")
+        assert cap.connection == "ridge:closed-cap"
+        left, peak, right = cap.section_ring[:3]
+        assert math.dist(left, peak) == pytest.approx(7 * 0.0254)
+        assert math.dist(peak, right) == pytest.approx(7 * 0.0254)
+        assert any(member.category == "ridge_closure" for member in roof.members)
+
+
+def test_generic_standing_seam_keeps_generic_ridge_cover(catlin_model_ro):
+    from typehaus.resolve.framing.profiles import cross_section
+    from typehaus.resolve.roof_ridge_trim import ridge_vent_members
+
+    roof = next(item for item in catlin_model_ro.roofs if item.tag == "RF-HOUSE")
+    library = catlin_model_ro.plan.library
+
+    def generic_material(tag):
+        material = library.material(tag)
+        return material.model_copy(update={"roof_ridge_trim_profile": None}) if material else None
+
+    model = SimpleNamespace(plan=SimpleNamespace(
+        by_tag=catlin_model_ro.plan.by_tag,
+        library=SimpleNamespace(resolve_assembly=library.resolve_assembly,
+                                material=generic_material)))
+    cap, = (member for member in ridge_vent_members(model, roof)
+            if member.category == "ridge_cap")
+    assert cross_section(cap.profile).width_m == pytest.approx(12 * 0.0254)
 
 
 def test_catlin_roof_payload_keeps_the_resolved_skin(catlin_model_ro):

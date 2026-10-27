@@ -6347,3 +6347,13 @@ now grades the 32 in catalog leaf rather than the 34 in RO width. The stock STHD
 stays at x=118 in on the east king pack; delivered tension is 290.372 lb against 3,065 lb.
 The stair-to-threshold code interpretation remains a separate plan-review item per the
 owner's direction.
+
+## Metal trim kit design basis (2026-10-27)
+
+The selected metal trim schedule is recorded in [notes/metal_trim_kit.md](notes/metal_trim_kit.md),
+with the manufacturer manuals and procurement boundaries. The BBD75 north and south
+faces need a horizontal transition at +17 ft 4 in to keep both panel runs within the
+20 ft limit. The stock wide outside corner accommodates the PBR/BBD75 junction;
+window-first outies need custom jamb and sill profiles. The schedule is a design basis,
+not a statement that every detail has already been modeled, checked or priced. Verify
+box-gutter capacity and supplier part numbers before procurement.

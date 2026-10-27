@@ -27,6 +27,8 @@ class WindowSeat:
     head_drop_m: float
     #: The unit's interior face as a signed wall-normal offset: the back dam's front face.
     inner_m: float
+    #: The signed mount plane when a profiled metal trim kit terminates the reveal.
+    outer_m: float | None = None
 
 
 def orderable_size(available_m: float, step: Length | None) -> float:

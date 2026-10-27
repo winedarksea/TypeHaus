@@ -14,6 +14,7 @@ from typehaus.hardware.config import (
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.anchors import sill_gasket_rows
 from typehaus.takeoff.backup_calc import backup_runtime_summary
+from typehaus.takeoff.cladding_trim import cladding_trim_takeoff
 from typehaus.takeoff.countertops import countertop_takeoff
 from typehaus.takeoff.data import data_device_schedule, data_raceway_takeoff, poe_budget
 from typehaus.takeoff.drainage import drainage_takeoff
@@ -182,6 +183,7 @@ def bill_of_materials(
         # roof's derived formed trim. Same gap as drainage — flashing billed as cubic feet
         # of aluminium is not an order.
         "edge_trim": edge_trim_takeoff(model),
+        "cladding_trim": cladding_trim_takeoff(model),
         # Joist/beam tape by the foot of member it covers. Neither `framing` (sticks by
         # profile, house-wide) nor `structural_solids` (beams by the yard) can address
         # "the two garden decks' joists", so nothing could bill the membrane that keeps

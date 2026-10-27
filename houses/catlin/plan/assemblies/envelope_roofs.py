@@ -182,7 +182,7 @@ GARAGE_ROOF = Assembly(
         Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.02),
               function=LayerFunction.MEMBRANE,
               control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="roofing", material_ref="standing-seam-nailstrip", thickness=inch(0.5),
+        Layer(name="roofing", material_ref="standing-seam-image-ii-garage", thickness=inch(1.0),
               function=LayerFunction.CLADDING),
     ),
     # Gypsum ceiling on the bottom chord — the air barrier the loose fill sits on. 5/8"
@@ -239,7 +239,7 @@ CANOPY_ROOF = Assembly(
         Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.02),
               function=LayerFunction.MEMBRANE,
               control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="roofing", material_ref="standing-seam-nailstrip", thickness=inch(0.5),
+        Layer(name="roofing", material_ref="standing-seam-image-ii-garage", thickness=inch(1.0),
               function=LayerFunction.CLADDING),
     ),
     source="north entry canopy over the open passage; GARAGE_ROOF's structure with no insulation and no ceiling (2026-09-10)",

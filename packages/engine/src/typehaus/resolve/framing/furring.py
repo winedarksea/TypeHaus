@@ -386,14 +386,20 @@ def course_elevations(rw: ResolvedWall, spec: Any, face: float, *,
             elevations.append(station)
             index += 1
             station = phase + index * spacing
-    if raked:
-        return elevations
-    top = top_low - face
-    while elevations and top - elevations[-1] < face - 1e-9:
-        elevations.pop()
-    if top >= base - 1e-9 and (not elevations or top - elevations[-1] > 1e-9):
-        elevations.append(top)
-    return elevations
+    if not raked:
+        top = top_low - face
+        while elevations and top - elevations[-1] < face - 1e-9:
+            elevations.pop()
+        if top >= base - 1e-9 and (not elevations or top - elevations[-1] > 1e-9):
+            elevations.append(top)
+    for extra in getattr(spec, "additional_course_elevations", ()):
+        station = extra.meters
+        if base - 1e-9 <= station and station + face <= top_high + 1e-9:
+            # A joint needs backing at its exact elevation; a nearby regular course is
+            # replaced rather than allowed to overlap the added board.
+            elevations = [z for z in elevations if abs(z - station) >= face - 1e-9]
+            elevations.append(station)
+    return sorted(elevations)
 
 
 def rake_nailer(rw: ResolvedWall, band: tuple[float, float] | None = None) -> bool:

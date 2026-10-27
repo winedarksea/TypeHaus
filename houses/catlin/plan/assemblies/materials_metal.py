@@ -6,6 +6,7 @@ from typehaus import (
     PublishedCladdingLoad,
     inch,
 )
+from typehaus.model.cladding_trim import WIDE_CORNER_KIT
 
 
 MATERIALS_METAL = [
@@ -18,7 +19,7 @@ MATERIALS_METAL = [
              source="PT-BW-RE/-RNE steel variant — ASTM A500 Gr C, ASTM A123 then powder coat (notes/canopy_garage_diaphragm.md §5)"),
     # --- the metal skins --------------------------------------------------------
     # House roof: Image II Striated direct-fastened snap-seam, 24 ga PVDF.
-    # Garage roof: nail strip. Wall panels retain their separate profile/gauge records.
+    # Garage and canopy roofs use the same Image II panel. Wall panels retain their separate profile/gauge records.
     # Seam-profile tags keep the substring "seam": `ui/src/three/materials.isStandingSeam`
     # keys the ribbed finish off it.
     # `standing-seam-nailstrip-26-green` — the same 26 ga. nail-strip panel as
@@ -95,9 +96,17 @@ MATERIALS_METAL = [
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#6b7076",
              skin_family="standing-seam",
-             finish="standing-seam",
+             finish="standing-seam", roof_ridge_trim_profile="IMAGE_II_RIDGE_COVER",
              solar_absorptance=0.27,
              source="Metal Sales Image II Striated, 16 inch coverage, 1 inch rib, 24 ga, 70% PVDF Kynar 500, direct-fastened snap-seam nail flange, ESR-2385; minimum 3:12 on solid substrate, maximum recommended length 30 ft, UL 580 Class 90 / UL 2218 Class 4 (MS/0426 brochure), in PVDF Linen White (81) — the same colour as `pbr-panel-24` on the walls and `corrugated-panel-24` on the garage, on a different profile. SR 0.73 / TE 0.86 / SRI 89 from the Metal Sales PVDF colour guide, so solar_absorptance = 1 - 0.73 = 0.27. Caveat carried from the wall panel's own record: SRI is NIR-weighted, no visible LRV is published, and it is NOT a low-gloss colour."),
+    # Separate roof tag keeps garage-specific allowance drivers distinct from the house.
+    Material(tag="standing-seam-image-ii-garage",
+             name="Metal Sales Image II Striated 16 in, 24 ga, PVDF Linen White (81)",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#6b7076", skin_family="standing-seam", finish="standing-seam",
+             roof_ridge_trim_profile="IMAGE_II_RIDGE_COVER",
+             solar_absorptance=0.27,
+             source="Metal Sales Image II Striated, 16 inch coverage, 1 inch rib, 24 ga PVDF, direct-fastened snap-seam; Residential Design Manual 5/2024"),
     # `corrugated-panel-24` (a library row since 2026-09-24, as are `pbr-panel-24/-26` and
     # the three seam profiles) — `corrugated-panel-26` one gauge heavier, ordered here in
     # Linen White, on GARAGE_WALL_2X6 and both ENTRY_SCREEN faces. Same gauge reasoning as
@@ -275,7 +284,7 @@ MATERIALS_METAL = [
     # Material overrides alone cannot change an assembly layer thickness.
     Material(tag="board-batten-24", name="Metal Sales BBD75-1212 board & batten panel, 12\" coverage, 24 ga., PVDF Linen White (81)",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
-             color="#6b7076", finish="board-and-batten",
+             color="#6b7076", finish="board-and-batten", trim_kit=WIDE_CORNER_KIT,
              skin_family="standing-seam",
              published_cladding=PublishedCladdingLoad(
                  source="Metal Sales BBD75 Install Guide 10/2025 p.13",

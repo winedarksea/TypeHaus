@@ -8,9 +8,15 @@ BOARD_BATTEN_DEPTH = inch(0.75)
 
 
 def _with_board_batten(assembly, tag):
-    layers = tuple(layer.model_copy(update={"material_ref": "board-batten-24",
-                                           "thickness": BOARD_BATTEN_DEPTH})
-                   if layer.name == "cladding" else layer for layer in assembly.layers)
+    layers = tuple(
+        layer.model_copy(update={"material_ref": "board-batten-24",
+                                 "thickness": BOARD_BATTEN_DEPTH,
+                                 "panel_joint_elevations": (inch(208),)})
+        if layer.name == "cladding" else
+        layer.model_copy(update={"framing": layer.framing.model_copy(
+            update={"additional_course_elevations": (inch(208),)})})
+        if layer.name == "outer-girt" and layer.framing is not None else layer
+        for layer in assembly.layers)
     return assembly.model_copy(update={"tag": tag, "layers": layers})
 
 

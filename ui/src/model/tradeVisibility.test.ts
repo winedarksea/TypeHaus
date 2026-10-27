@@ -156,7 +156,7 @@ function checkFlashing() {
   assert(visibilityState(FLASHING_FACETS, { ...off, "roofing:flashing": true }) === "mixed",
     "the combined flashing control reports a partially visible set");
   const isolated = onlyTrades(FLASHING_FACETS);
-  const categories = ["flashing", "beam_cap", "wall_corner", "opening_head_flashing",
+  const categories = ["flashing", "beam_cap", "wall_corner", "opening_head_flashing", "cladding_trim",
     "opening_sill_pan", "opening_flashing_membrane"];
   for (const category of categories) {
     const keys = solidVisibilityKeys({ category });

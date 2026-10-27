@@ -319,6 +319,7 @@ _VARIANTS: tuple[Material, ...] = (
                   "236 psf outward at 2'-0\" (wall table)"}),
     _SEAM.model_copy(update={
         "tag": "pbr-panel-24", "name": "PBR exposed-fastener steel panel, 24 ga.", **_PBR,
+        "trim_kit": {"outside_corner": "WIDE_OUTSIDE_CORNER"},
         "source": "Metal Sales PBR-Panel Condensed Technical Reference (1/2026): 24 ga. "
                   "PVDF-coated steel purlin-bearing-rib wall panel, 36\" net coverage, "
                   "1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; "
@@ -326,6 +327,7 @@ _VARIANTS: tuple[Material, ...] = (
     _CORRUGATED.model_copy(update={
         "tag": "corrugated-panel-24",
         "name": "7/8\" corrugated exposed-fastener steel panel, 24 ga.",
+        "trim_kit": {"outside_corner": "CORRUGATED_OUTSIDE_CORNER"},
         "areal_density_kg_m2": 5.2,
         "source": "Metal Sales 7/8\" Corrugated Wall CTR (1/2024): 24 ga. PVDF-coated steel, "
                   "7/8\" corrugation on a 2-2/3\" pitch, 34-2/3\" net wall coverage, "

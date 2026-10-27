@@ -4164,6 +4164,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # is not a cost. Keep the two in step by hand; if they ever diverge it should be because
 # somebody priced a colour, not because one was edited and the other forgotten.
 "standing-seam-linen-white" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
+# Garage and canopy use the same Image II panel and installed rate.
+"standing-seam-image-ii-garage" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
 # NOT TAKEN as of 2026-08-26 — kept as the revert rate. It clad the house walls
 # (EXT_2X6, PLANT_EXT_2X6_HUMID) until the exposed-fastener PBR row below replaced
 # it, and EXT_2X6_SWINBURNE still names it, so the row stays and the swap back is a
@@ -4417,7 +4419,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # as a made-to-order coil run until told otherwise. That number is what decides whether this
 # material band moves.
 "board-batten-24" = { material = { low = 2.3, high = 4.05 }, labour = { low = 4.15, high = 6.75 } }
-# 749.6 SF — RF-GARAGE. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
+# Retired RF-GARAGE nail-strip rate; Image II now uses standing-seam-image-ii-garage.
+# Formerly 749.6 SF. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
 # lifted for the Twin Cities and for a 749 SF roof being a minimum-mobilisation job for any
 # metal crew. Expect a floor of roughly $4,000-6,000 whatever the $/SF arithmetic says.
 "standing-seam-nailstrip" = { material = { low = 3, high = 5.5 }, labour = { low = 4, high = 7.5 } }
@@ -6945,7 +6948,7 @@ framing-subfloor-adhesive = { low = 1.34, high = 2.38, unit = "ea", driver = "sh
 # from, so the line total barely moves. What moved is that it now FOLLOWS THE ROOF: shrink the
 # main roof and this shrinks with it, which the lump never did.
 # `standing-seam-linen-white` matches only the house roof — the garage is
-# `standing-seam-nailstrip` and the walls are `standing-seam-nailstrip-26` — and that is
+# `standing-seam-image-ii-garage` and the walls are `standing-seam-nailstrip-26` — and that is
 # correct: ROOF carried the vent mat, RF-GARAGE does not. (The filter read `standing-seam`
 # until 2026-09-18, when the roof took its own tag to carry the panel's published solar
 # reflectance; an allowance driver filter matches a material EXACTLY, so it had to move
@@ -7087,7 +7090,7 @@ cabinet-study-booth-cushions = { low = 250, high = 800 }
 # What still stands unchanged is the primary defence: a highly insulated assembly under a
 # low-friction standing seam is what stops an ice dam FORMING, and it is what is being paid
 # for on both planes.
-roof-ice-and-water-barrier-code-minimum = { low = 1.20, high = 2.60, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=roof,function=cladding,material=standing-seam-nailstrip]" }
+roof-ice-and-water-barrier-code-minimum = { low = 1.20, high = 2.60, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=roof,function=cladding,material=standing-seam-image-ii-garage]" }
 # ** REDUCED 2026-08-30. "Partly overlaps [edge_trim]" was the row's own words and nobody had
 # ever quantified the overlap; the number stood at a figure that assumed almost none. **
 # [edge_trim] is a real, modelled section — drip edge, rake and eave trim, valley and ridge
@@ -8035,5 +8038,5 @@ drainage        = "material plus installed labour, BLENDED over two products tha
 floor_heat      = "material plus installed labour, backed out of published $/SF-of-floor prices. The 3 floor sensors are not in it"
 floor_finishes  = "material plus installed labour on the ORDER quantity. carpet-pad and catlin-bedroom-carpet-pad carry labour = 0 on purpose: laying the pad is inside the carpet rate"
 placeables      = "unit price plus INSTALL labour. Rough-in is billed by the foot in [pipe_runs], [ducts] and [conduit]; branch-circuit conductors are in neither and are the largest single omission in the file"
-envelope_layers = "material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is NINE rows keyed on fixing method, seam profile and gauge, not one: mechanical seam, snap lock, nail strip, 26 ga nail strip, exposed-fastener PBR in BOTH gauges, 7/8 in corrugated in BOTH gauges, and 24 ga concealed-fastener board & batten differ by up to $4.50/SF of LABOUR and must never be re-merged. Since 2026-09-14 the live wall rows are all 24 ga (PVDF is a 24 ga product at Metal Sales) and the two 26 ga rows sit at 0 SF as the documented reverts, alongside snap-lock and 26 ga nail strip. The two EXPOSED-fastener rows are the odd ones out and the split matters beyond labour: PBR and corrugated are the wall panels whose FIXINGS are billed as a separate counted part ([hardware] T09150HWAM, 1,804 screws), because a face-fastened panel opts in via Material.exposed_fastener. Every other row, board & batten included, has its clips and fixings inside its $/SF rate. Folding those screws back into this section, or adding a screw count against any of the concealed rows, double-bills them"
+envelope_layers = "Garage and canopy Image II roof uses the house Image II panel rate; a separate material tag retains the garage ice barrier allowance without extending the house-only vent mat driver. Material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is NINE rows keyed on fixing method, seam profile and gauge, not one: mechanical seam, snap lock, nail strip, 26 ga nail strip, exposed-fastener PBR in BOTH gauges, 7/8 in corrugated in BOTH gauges, and 24 ga concealed-fastener board & batten differ by up to $4.50/SF of LABOUR and must never be re-merged. Since 2026-09-14 the live wall rows are all 24 ga (PVDF is a 24 ga product at Metal Sales) and the two 26 ga rows sit at 0 SF as the documented reverts, alongside snap-lock and 26 ga nail strip. The two EXPOSED-fastener rows are the odd ones out and the split matters beyond labour: PBR and corrugated are the wall panels whose FIXINGS are billed as a separate counted part ([hardware] T09150HWAM, 1,804 screws), because a face-fastened panel opts in via Material.exposed_fastener. Every other row, board & batten included, has its clips and fixings inside its $/SF rate. Folding those screws back into this section, or adding a screw count against any of the concealed rows, double-bills them"
 framing         = "material plus installed labour, $/LF of ordered stock. Add 10-15% for framing general conditions (mobilisation, bracing, layout, hardware, punch-out), which no per-unit rate captures"

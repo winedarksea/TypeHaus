@@ -603,6 +603,10 @@ class ResolvedSolid:
     derived: bool = False
     # Flashing keeps its source opening/brace addressable without borrowing its identity.
     host_ref: str | None = None
+    # Purchased formed trim uses its catalog key in product; length distinguishes
+    # the installed piece from the stock blank that must be ordered.
+    trim_length_m: float | None = None
+    trim_stock_length_in: float | None = None
 
 
 @dataclass(frozen=True)

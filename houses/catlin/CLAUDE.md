@@ -484,8 +484,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     leaves 35-1/2" against R311.7.1's 36".
 - Cladding split by orientation: `board-batten-24` (1,678.3 SF, Metal Sales **BBD75-1212**,
   24 ga concealed DIRECT-fastened PVDF, **12" net coverage**) on the 20 east-west-facing
-  walls; **`pbr-panel-24`** (1,416.6 SF) on the rest — a per-wall `Wall.layer_materials`
-  override, not a sibling assembly (→ DESIGN-LOG.md, "Shell: framing module and envelope").
+  walls; **`pbr-panel-24`** (1,416.6 SF) on the rest. The north and south walls select
+  BBD75 assembly variants in `plan/assemblies/board_batten.py` (→ DESIGN-LOG.md,
+  "Shell: framing module and envelope").
   - **Every metal face on the property is 24 ga PVDF Linen White (81) since 2026-09-14**, and
     the gauge is not a preference: at Metal Sales PVDF *is* a 24 ga product (the 24 ga colour
     guide is the PVDF palette; the 26 ga guides are MS Colorfast45, which is SMP), so the
@@ -575,7 +576,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     the order. Ranked after it: base-of-wall salt zone (ungraded here), treated-wood contact
     (KEEP THE GIRTS — `notes/board_batten_girt_span.md` §7.10; read the end tag before
     ordering and upgrade the BACKER coat), sealants, then paint.
-  - Revert = delete the twenty `layer_materials=` overrides; `pbr-panel-24` and its
+  - Revert = select the corresponding PBR assemblies on the twenty walls; `pbr-panel-24` and its
     `prices.toml` row stay live on the other elevations. The `pbr-panel-26` /
     `corrugated-panel-26` rows sit at 0 SF as the gauge revert.
 - Every exterior corner is construction-correct, 4-stud. Layout grid is struck from the

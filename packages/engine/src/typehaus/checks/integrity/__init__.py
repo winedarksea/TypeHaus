@@ -3,6 +3,7 @@ from __future__ import annotations
 from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     catalog_tags,
     checks,
+    cladding_trim,
     clear_zones,
     door_finishes,
     door_hardware,
