@@ -179,3 +179,6 @@ def test_eave_closures_are_scribed_below_the_roof_pan(catlin_model_ro):
             assert z <= roof_plane_z(roof,x) + base*roof_slope_factor(roof) + 1e-8
     hems = [member for member in roof.members if member.category == 'roof_panel_hem']
     assert hems and all(member.surface_mesh.triangles for member in hems)
+    # The viewer rejects a surface mesh without one normal per position.
+    assert all(len(member.surface_mesh.normals) == len(member.surface_mesh.positions)
+               for member in hems)

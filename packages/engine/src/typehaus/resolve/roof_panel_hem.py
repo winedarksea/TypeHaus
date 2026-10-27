@@ -10,12 +10,29 @@ from dataclasses import replace
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import panel_profile
 from typehaus.resolve.geometry_members import member_solid
+from typehaus.resolve.geometry_ir import GMesh
 from typehaus.resolve.geometry_slice import sweep_mesh
 from typehaus.resolve.model import FramedMember
 from typehaus.resolve.roof_geometry import roof_plane_z, roof_slope_factor
+from typehaus.resolve.surface_clipping import face_normal
 
 HEM_RETURN_M = inch(0.5).meters
 CLEAT_SHEET_M = inch(0.032).meters
+
+
+def _flat_shaded(mesh: GMesh) -> GMesh:
+    """Unshare each facet's corners so it carries its own normal, as the viewer requires."""
+    positions, triangles, normals = [], [], []
+    for triangle in mesh.triangles:
+        corners = [mesh.positions[index] for index in triangle]
+        normal = face_normal(corners)
+        if normal is None:
+            continue
+        start = len(positions)
+        positions.extend(corners)
+        normals.extend([normal] * 3)
+        triangles.append((start, start + 1, start + 2))
+    return GMesh(tuple(positions), tuple(triangles), tuple(normals))
 
 
 def roof_pan_hems(roof, rect, base, profile, material):
@@ -70,5 +87,5 @@ def roof_pan_hems(roof, rect, base, profile, material):
                 connection="roof:pan-hem",
                 section_ring=ring,
             )
-            members.append(replace(member, surface_mesh=sweep_mesh(member_solid(member))))
+            members.append(replace(member, surface_mesh=_flat_shaded(sweep_mesh(member_solid(member)))))
     return tuple(members)
