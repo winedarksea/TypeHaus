@@ -83,16 +83,15 @@ def test_derive_scaffolds_bound_conditions_only(catlin_model):
     assert keys == sorted(set(keys))
 
 
-def test_eave_has_per_layer_roof_bands_and_wedge(catlin_model):
+def test_eave_has_per_layer_roof_bands_and_no_wedge(catlin_model):
     scene, findings = build_detail(catlin_model, _eave(catlin_model))
     assert not findings
     # per-layer sloped roof bands: multiple A-ROOF polylines tagged per layer
     roof_bands = [n for n in scene.nodes
                   if isinstance(n, Polyline) and n.layer == "A-ROOF" and "/" in (n.tag or "")]
     assert len(roof_bands) >= 2, "roof should be drawn as per-layer bands in detail mode"
-    # spray-foam wedge treatment present
-    wedges = [n for n in scene.nodes if isinstance(n, Hatch) and n.pattern == "spray-foam"]
-    assert wedges, "spray-foam wedge hatch expected at the roof/wall foam interface"
+    # wall foam is scribed to the deck, so no void is left to hatch
+    assert not [n for n in scene.nodes if isinstance(n, Hatch) and n.pattern == "spray-foam"]
 
 
 def _leaders(scene):

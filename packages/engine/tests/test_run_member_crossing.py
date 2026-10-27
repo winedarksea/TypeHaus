@@ -59,7 +59,8 @@ def test_the_web_verdict_is_a_SECOND_finding_and_not_a_changed_one(
     # campaign's, not the air's. Four since PR-A-STUBATH-DRAIN and PR-A-HW-STUBATH left the
     # webs for truss bays (2026-10-08). Nine since the owner confirmed 2x4 webs and the
     # opening went 15" -> 13" (2026-10-26): three ERV radials and a data conduit are back.
-    assert len(web) == 9, [f.message for f in web]
+    # None the same day: the web-clearance reroute closed the campaign (preferences.toml).
+    assert not web, [f.message for f in web]
     for finding in web:
         assert finding.result is Result.FAIL
         tag = finding.element_tags[0]
@@ -80,28 +81,30 @@ def test_per_crossing_beats_the_envelope_on_the_bld05_run(
     If anyone ever "simplifies" this check to band a whole leg, this fails.
 
     +1.209" since 0db0c103 re-laned the suite stack out of the master closet; +1.477" since
-    its tie dropped to 9'-3" (2026-09-26), the leg's 0.268" fall at the 240" truss.
+    its tie dropped to 9'-3" (2026-09-26), the leg's 0.268" fall at the 240" truss; +1.585"
+    since the south leg moved to x=144 and starts at 116.3 (2026-10-26).
     """
     findings = _findings(catlin_plan, catlin_model_ro)
     finding = _for(findings, "PR-M-S-SUITE-WC-DRAIN", "FS-S-WEST")
     assert finding.result is Result.PASS
-    assert _crown_in(finding.message) == pytest.approx(1.477, abs=0.001)
+    assert _crown_in(finding.message) == pytest.approx(1.585, abs=0.001)
     assert "joist-0-015-0" in finding.message
 
 
 def test_the_envelope_would_have_failed_three_real_runs(
         catlin_plan, catlin_model_ro) -> None:
-    """Two more that flip FAIL -> PASS for the same reason, so the choice is not a one-off.
+    """More that flip FAIL -> PASS for the same reason, so the choice is not a one-off.
 
     ``PR-M-S-BATH1-TUB-DRAIN`` reads -0.200" on the envelope and +0.148" per-crossing;
     ``PR-M-S-SUITE-LAV-DRAIN`` -0.013" and +0.294". The tub drain reads +0.093" at
     FO-S-ERV-CHASE's trimmer, a truss line graded in the web since 2026-09-24 (it read
     +0.465" at the tightest joist before, and +0.048" until the pack stood outboard of the
-    chase, 2026-09-25).
+    chase, 2026-09-25). It left FS-S-WEST on 2026-10-26, dropping through the deck instead.
     """
     findings = _findings(catlin_plan, catlin_model_ro)
-    for tag, crown in (("PR-M-S-BATH1-TUB-DRAIN", 0.093),
-                       ("PR-M-S-SUITE-LAV-DRAIN", 0.294)):
+    assert not [f for f in findings if "PR-M-S-BATH1-TUB-DRAIN" in f.element_tags
+                and "FS-S-WEST" in f.element_tags]
+    for tag, crown in (("PR-M-S-SUITE-LAV-DRAIN", 0.294),):
         finding = _for(findings, tag, "FS-S-WEST")
         assert finding.result is Result.PASS, finding.message
         assert _crown_in(finding.message) == pytest.approx(crown, abs=0.001), tag
