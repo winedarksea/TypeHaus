@@ -102,7 +102,9 @@ DOOR_TYPES = (
     DoorType(
         tag="DT-EXT-SWING32-G", width=inch(34), height=inch(81.5), exterior=True,
         function="entry", product_ref=MMI_STEEL_SIX_PANEL.tag, doorway=MMI_OUTSWING_SILL,
-        jamb_framing=JambFraming(kings=2, jacks=1, blocking=True),
+        # The continuous jamb pack backs factory hinge/strike positions without
+        # horizontal bay blocking at assumed hardware heights.
+        jamb_framing=JambFraming(kings=2, jacks=1),
         catalog_dimensions=DoorCatalogDimensions(
             nominal_width=inch(32), nominal_height=inch(80),
             unit_width=inch(33.5), unit_height=inch(81),
