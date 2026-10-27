@@ -54,7 +54,7 @@ def door_hardware_rows(model: ResolvedModel) -> list[dict]:
 
 
 def door_installation_rows(model):
-    """Site-built boards are measured separately from factory-included door components."""
+    """Price site-built boards and explicitly separate catalog accessories."""
     rows = []
     for opening in model.openings:
         placement = opening.doorway.exterior_placement if opening.doorway else None
@@ -80,6 +80,33 @@ def door_installation_rows(model):
                        volume_m3=board.width_m * board.height_m * board.depth_m)
             rows.append(row)
         for section in placement.sections:
+            if section.purchase == "separate":
+                catalog_installation = placement.specification.catalog_installation
+                product = (catalog_installation.sill_extender_ref
+                           if catalog_installation else section.name)
+                extension_width = (catalog_installation.sill_extender_depth.meters
+                                   if catalog_installation else 0.0)
+                extension_height = (catalog_installation.sill_extender_height.meters
+                                    if catalog_installation else 0.0)
+                rows.append(dict(
+                    kind="exterior door sill accessory",
+                    room=None,
+                    material=section.material_ref,
+                    item=product,
+                    pieces=1,
+                    description=f"{opening.tag}: catalog {product}; "
+                    f"{section.span_m / 0.3048:.2f} ft cut length",
+                    length_ft=section.span_m / 0.3048,
+                    tags=[opening.tag],
+                    inside_corners=0,
+                    outside_corners=0,
+                    cut_pieces=[dict(length_in=section.span_m / 0.0254,
+                                     width_in=extension_width / 0.0254,
+                                     height_in=extension_height / 0.0254)],
+                    volume_m3=0,
+                    source=section.source_url,
+                ))
+                continue
             if section.purchase != "site":
                 continue
             from shapely.geometry import Polygon

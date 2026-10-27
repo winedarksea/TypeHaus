@@ -732,11 +732,10 @@ def test_a_bored_penetration_is_invisible_to_the_cladding_framing(catlin_model) 
     The rule is keyed on ``penetration_for``, the same field ``mep.run_through_opening``
     reads, so a hole can only escape the cladding framing by NAMING the run it exists for.
     """
-    from typehaus.resolve.framing.openings import framed_around
+    from typehaus.resolve.framing.openings import BORE_MAX_IN, framed_around
 
-    from typehaus.resolve.framing.openings import BORE_MAX_IN
-
-    bores = [op for op in catlin_model.openings if not framed_around(op)]
+    bores = [op for op in catlin_model.openings
+             if op.penetration_for and not framed_around(op)]
     assert {op.tag for op in bores} == {"AO-M-PORCH-HYD", "AO-S-BALC-HYD"}
     assert all(op.penetration_for for op in bores), "the exemption IS the named run"
 

@@ -16,15 +16,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   leaf width or clear passage. Define leaf/rough-opening sizing together with framing and
   clearance before changing these envelopes (`plans/default-door-appearance.md`).
 
-- **Finish the true corner-to-corner `SB-BW-BAND` connection basis.** The adopted
-  offset scheme uses eight KBS1Z. The 2026-10-26 candidate's simplified leaves fit,
-  but actual tabs and the 44°–46° inside fold remain unverified. The KBS1Z patent
-  describes a preferred 90°–180° included angle; ordinary brace-angle interpolation
-  does not close this gap. Conditional demand is 745.6 lb per brace with equal share;
-  corner contact also loads the sill/centre post. Obtain an applicable joint detail
-  and complete that load path before adoption. See [study](bw-corner-brace-feasibility.md)
-  and [draft technical inquiry](bw-corner-brace-simpson-inquiry.md).
-
 - **Order the canopy and garage trusses from a fabricator who seals them** — the last four
   canopy UNKNOWNs (`rafter/RF-BW-CANOPY`, `rafter/RF-GARAGE`, `structural.truss_reactions`,
   `structural.uplift_capacity`) close only on those drawings. The ask is `AN-G-TRUSS-ORDER` in
@@ -344,7 +335,7 @@ the future.
 - Fix the missing horizontal trim of the board and batten (instructions says max panel length of around 20', no end lapping, so needs to have a mid point 'board' trim likely)
 - Seam clamps as minor snow retainer?
 - Some 240V options to consider: 240V power supplies for electronics.
-- D-B-PATIO: catalog coordination now models the separate brick reveal, widened RO, local 5-1/2 inch concrete seat, composite returns and AridDek approach. Nominal crest is 7.397 inches above court (7.647 with allowance). Resolve the measured approach/pan collision with remaining curb layers, then complete concrete reinforcement/root development, cross-bearer bearing and actual pan/apron bonds; confirm Endura assembly dimensions, installed sections, label/warranty and public-price gaps. Standard rainproofing only; drainage/sump back up the revised concrete curb. See notes/french_door_catalog_installation.md; installation fit FAIL.
+- D-B-PATIO: separate brick reveal, widened RO, 5-1/2 inch concrete seat, composite returns, one blind curb-skin recess and XMN5 sill extension are modeled. Sill/approach/pan intersections pass; nominal crest is 7.397 inches above court (7.647 with allowance). Complete concrete reinforcement/development, support root and cross-bearer bearing, field membrane bonds, installed pan/sweep/hinge sections, and assembled-unit label/warranty evidence. Standard rainproofing only; drainage/sump back up the revised concrete curb. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
 - D-S-DECK-E: catalog coordination replaces the schematic plate/wrapped trim with a digitized ZAI outline, composite returns and short AridDek boards. BE365 adapter F is documented; nominal crest is 0.397 inches above oak and 0.988 above landing (+0.250 allowance). Complete house-root connections and cross-bearer bearing, installed pan/sweep/hinge sections and the flexible flashing-end application; confirm assembly dimensions/label/warranty. Complete preferred/Tru-Defense prices remain unavailable publicly. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
 - Research most commonly failed residential code items and make sure checks or tests exist for those here.
 

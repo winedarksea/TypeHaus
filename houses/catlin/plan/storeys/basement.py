@@ -1177,6 +1177,13 @@ OPENINGS = [
                  position=from_node("N-B-S2", inch(8.34375)),
                  width=inch(63.3125), height=inch(1.75), sill_height=inch(5.5),
                  depth=inch(6), depth_from="interior"),
+    # Blind recess through the curb's membrane/XPS tail, stopping at concrete. The approach
+    # remains below W-B-S3-FR's base; no opening is cut into the framed wall above it. The
+    # 6.06" depth is checked against GARDEN_CURB_6's resolved exterior layers.
+    RoughOpening(uid="CBPCURBAPP", tag="AO-B-PATIO-CURB-APPROACH", host="W-B-S3",
+                 position=from_node("N-B-S2", inch(8.34375)),
+                 width=inch(63.3125), height=inch(6.5), sill_height=inch(0.75),
+                 depth=inch(6.06), depth_from="exterior", framing_required=False),
     # WT-1424: a sauna wants a small window, less glass to lose heat through. The 14"
     # family's one appearance in a concrete wall, where the usual 16" stud-module reason for
     # that width doesn't apply — size is the point here. The retired WT-3660 type and

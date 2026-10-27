@@ -1,4 +1,4 @@
-"""Locate each KBS1Z on its open- or closed-bend heel, in either mirrored bay."""
+"""Locate each KBS1Z on its open-knee heel, in either mirrored bay."""
 
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ def resolve_slat_connectors(model, element, layout, storey: str) -> None:
         def vector(u, z, mirror=mirror):
             return (mirror * ux * u, mirror * uy * u, z)
 
-        for placement in slat_connector_ends(slat, face):
+        for placement in slat_connector_ends(slat, layout, face):
             end = placement.end
             station = layout.station(slat.bay, placement.u)
             for face_index in range(element.connectors_per_end):

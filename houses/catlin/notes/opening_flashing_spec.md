@@ -284,13 +284,17 @@ no sheet of its own.
   jamb end dams, a continuous lap to the waterproofing and an unobstructed outlet;
   confirm the sealant and bearing arrangement with the actual door and pan instructions.
   The separate veneer cavity and its base-course weeps must remain able to drain.
-  The concrete-supported sill seat, approach across the foam and cavity, and the junction
-  at the brick reveal still need a coordinated detail; the existing notes are not an
+  The 2026-10-26 model coordinates the concrete-supported sill seat, blind curb-skin
+  recess, XMN5 sill extension, drained approach and separate brick reveal. Its
+  geometric fit checks pass. The concrete support connection, reinforcement development,
+  membrane bonds and installed product sections remain design holds; the model is not an
   installed product section.
 - **Catalog coordination update, 2026-10-26:** D-B-PATIO now references its separate
   brick opening and draws the backup-wall flashing band, formed concrete seat recess,
   sill/pan/approach coordination envelopes and composite returns. The seat is 5-1/2 inches
-  above the court; adjacent curb tops remain 7-1/4 inches. The threshold calculation
+  above the court; adjacent curb tops remain 7-1/4 inches. A stock XMN5 extends the
+  sill 1-3/16 inches beyond the concrete face. A blind curb-skin recess clears insulation
+  while preserving the concrete seat. The threshold calculation
   includes the catalog cap outline and an installation allowance. Root connections,
   concrete reinforcement development and installed pan/apron bonds are still UNKNOWN.
   See [french_door_catalog_installation.md](french_door_catalog_installation.md) for the

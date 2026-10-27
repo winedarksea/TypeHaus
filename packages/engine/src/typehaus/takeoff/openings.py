@@ -103,7 +103,7 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     door_types = {item.tag: item for item in model.plan.library.door_types}
     window_types = {item.tag: item for item in model.plan.library.window_types}
 
-    groups: dict[tuple[str, str, float, float, str, str], dict[str, object]] = {}
+    groups: dict[tuple[str, str, float, float, str, str, bool], dict[str, object]] = {}
     for opening in model.openings:
         host_assembly = ""
         wall = model.wall(opening.host_wall) if opening.host_wall else None
@@ -111,7 +111,7 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             host_assembly = wall.assembly or ""
         key = (opening.kind, opening.type_ref or "", round(opening.width_m / M_PER_IN, 2),
                round(opening.height_m / M_PER_IN, 2), host_assembly,
-               _host_structure(model, opening.host_wall))
+               _host_structure(model, opening.host_wall), opening.framing_required)
         entry = groups.setdefault(key, {"count": 0, "tags": [], "arched": False})
         entry["count"] += 1
         entry["tags"].append(opening.tag)
@@ -120,7 +120,7 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         entry["arched"] = bool(entry["arched"]) or opening.arch_rise_m > 1e-9
 
     rows = []
-    for ((kind, type_ref, width_in, height_in, host_assembly, host_structure),
+    for ((kind, type_ref, width_in, height_in, host_assembly, host_structure, framing_required),
          entry) in sorted(groups.items()):
         product = door_types.get(type_ref) or window_types.get(type_ref)
         # The operation is what is actually ordered: a 36x60 casement and a 36x60 picture
@@ -139,6 +139,7 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             "takes_hardware": kind == "door" and raw_operation not in _NO_DOOR_HARDWARE,
             "host_assembly": host_assembly or None,
             "host_structure": host_structure or None,
+            "framing_required": framing_required,
             "product": _product_description(kind, type_ref, product, qualifier,
                                            width_in, height_in, bool(entry["arched"])),
             "known": product is not None,

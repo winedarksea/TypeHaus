@@ -17,13 +17,14 @@
 > Current layout and installation: `notes/main_bath1_basin_spec.md` and its SVG.
 > Earlier north-wall basin descriptions are superseded.
 
-> **Canopy band, 2026-10-25:** SB-BW-BAND is one 4x6 per bay, 3½″ face / 5½″ depth,
-> c = −6½″ chord → top plate, two KBS1Z each end on flush faces (8 total, type 1).
-> Connector 0.727; west column 0.488; AC6Z head 0.435. Chevron backup: note §8.
+> **Canopy band, 2026-10-26:** SB-BW-BAND is one 6x6 per bay, exactly corner to corner,
+> chord → top plate, two standard open-knee KBS1Z each end on flush faces (8 total, type 1,
+> interpolated to 45.868°). Connector 0.751; west column 0.536; AC6Z head 0.417. The
+> c = −6½″ 4x6 and the chevron are backups: note §8.
 
 > **West header, 2026-10-14:** BM-BW-RW now has equal 8⅞″ tails from both post centres
 > (6⅛″ south extension), paired AC6Z at both west heads, MAX nailing 14 beam + 14 post 16d
-> per assembly. Its roof-bearing inset keeps canopy/truss geometry fixed. East unchanged; the band now uses the 4x6 detail above.
+> per assembly. Its roof-bearing inset keeps canopy/truss geometry fixed. East unchanged; the band now uses the 6x6 corner detail above.
 > See `notes/canopy_west_band.md` §§5–7 amendment; earlier south-end statements below are historical.
 
 > **Current north entry, 2026-09-30:** `RF-BW-CANOPY` spans between two **5-1/2" x 11-7/8"
@@ -31,7 +32,7 @@
 > `"steel"`/`"cast"` remain graded alternatives). Every post has an `ACE6Z` (header end) or
 > `AC6Z` (header through) cap, `A35Z` angles across the beam, and a cast-in `CBSQ66-SDS2` base in
 > a **14"** pier (3" strap cover). The canopy braces through the tied roof diaphragm into the
-> garage and through `W-BW-SCREEN`, whose 2'-4 1/8" band up to the header is braced by one 4x6 knee per bay, two KBS1Z per end
+> garage and through `W-BW-SCREEN`, whose 2'-4 1/8" band up to the header is braced by one corner-to-corner 6x6 knee per bay, two KBS1Z per end
 > on both faces (`params/entry_band_brace.py`). Hand oracle: `notes/canopy_west_band.md`.
 >
 > **2026-09-11: `D-G-SERVICE` is hard in the garage's SW corner** (model opening now 6'-11"..9'-7", centre

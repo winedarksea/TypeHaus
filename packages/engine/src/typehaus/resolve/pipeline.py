@@ -341,6 +341,7 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                     uid=el.uid, tag=el.tag, host_wall=el.host, type_ref=type_ref,
                     width_m=width, height_m=height, sill_m=sill,
                     center_along_m=center, kind=kind, is_door=is_door,
+                    framing_required=getattr(el, "framing_required", True),
                     swing_clearance=swing_clearance, framing_bumper=framing_bumper,
                     arch_rise_m=arch_rise,
                     penetration_for=tuple(getattr(el, "penetration_for", ()) or ()),

@@ -70,7 +70,9 @@ BASIS = ("AWC SDPWS-2015 §4.2 (diaphragms, §4.2.5.2 open front) and §4.3 (she
 #: 5: joint nailers read nail by nail (NDS 12.3.1) at their own species; the chord's tie
 #: into its end strap's block is graded — 2026-10-06.
 #: 6: equal-width type-1 knee-brace joints and profile-specific buckling (2026-10-25).
-BASIS_VERSION = "6"
+#: 7: knee-brace F1 interpolated by brace angle; a corner diagonal's clipped-end bearing and
+#:    centre-post contact (2026-10-26).
+BASIS_VERSION = "7"
 
 oracled_by(
     KIND,

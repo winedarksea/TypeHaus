@@ -7,7 +7,9 @@ mid-band, so the braced slats crossing it carry their bay's whole half. Screwed 
 corner slat no KBS1Z fits) carries nothing here. Everything else follows from
 the force one slat carries, ``h`` each way at each end:
 
-* the slat's connector (a rated F1 along the brace) and its buckling;
+* the slat's connector (a rated F1 along the brace, interpolated by brace angle) and its
+  buckling;
+* a corner diagonal's clipped ends bearing on the post and plate it is cut against;
 * the centre post, pushed the SAME way by both bays, in bending, and its end ties;
 * the plate screws, lateral plus the tension bay's withdrawal (NDS §12.4.1);
 * the header couple and a chord's outward push, which ``wood_roof_post`` reads.
@@ -23,15 +25,20 @@ from dataclasses import dataclass
 from typing import Any
 
 from typehaus.engineering.item import LimitState, Quantity
+from typehaus.engineering.wood_roof_post import EMIN_WET_PSI, FC_WET_PSI
 
 _M_PER_FT = 0.3048
 _IN_PER_M = 1.0 / 0.0254
-#: AWC NDS 2018 Supplement Table 4B, Southern Pine No. 2, 2"-4" thick: Fc and
-#: E_min, with Table 4B's wet-service C_M (0.8 on Fc, 0.9 on E_min). The slats stand in the
-#: weather. Profiles select the 2"-4" wide or 5"-6" wide row respectively.
-SLAT_DESIGN_VALUES = {"2x4": (1450.0, 510_000.0), "4x6": (1400.0, 510_000.0)}
-SLAT_FC_CM = 0.8
-SLAT_EMIN_CM = 0.9
+_TABLE_4B = "Table 4B SP No. 2"
+#: AWC NDS 2018 Supplement, Southern Pine No. 2: ``profile -> (Fc, E_min, wet C_M on Fc,
+#: wet C_M on E_min, row)``. The slats stand in the weather. Table 4B's 2"-4" thick rows
+#: (2"-4" or 5"-6" wide) take its wet factors; Table 4D publishes the timbers' wet row
+#: outright, so a 6x6 takes none on top.
+SLAT_DESIGN_VALUES = {
+    "2x4": (1450.0, 510_000.0, 0.8, 0.9, _TABLE_4B),
+    "4x6": (1400.0, 510_000.0, 0.8, 0.9, _TABLE_4B),
+    "6x6": (FC_WET_PSI, EMIN_WET_PSI, 1.0, 1.0, "Table 4D SP No. 2 timbers, wet row"),
+}
 CD_WIND = 1.6
 
 
@@ -56,6 +63,11 @@ class SlatBand:
     @property
     def vertical_per_end_lb(self) -> float:
         return self.per_end_lb * self.layout.braces(0)[0].slope
+
+    @property
+    def angle_degrees(self) -> float:
+        """The braced slats' angle above the plates."""
+        return math.degrees(math.atan(self.layout.braces(0)[0].slope))
 
     def landings(self, which: str) -> int:
         """Braced slats of ONE bay landing on ``chord`` | ``sill`` | ``centre`` | ``top``."""
@@ -143,26 +155,9 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
                    Quantity(f"slats_crossing_mid_{el.tag}", sb.crossing, "", 1.0),
                    Quantity(f"slat_bay_width_{el.tag}", lay.width * _IN_PER_M, "in", 0.01),
                    Quantity(f"slat_bay_height_{el.tag}", lay.height * _IN_PER_M, "in", 0.01)))
-    if el.corner_to_corner:
-        from typehaus.resolve.framing.profiles import cross_section
-        from typehaus.resolve.slat_connector_landings import slat_connector_ends
-
-        ends = slat_connector_ends(lay.braces(0)[0], cross_section(el.slat).width_m)
-        angles = "/".join(f"{end.included_angle_degrees:.3f}°" for end in ends)
-        missing.append(
-            f"{el.tag}: an allowable load for the tightly bent {el.connector} corner joints "
-            f"({angles} included), actual tab/fastener placement, and the clipped-corner "
-            "bearing load path; ER-280 Table 7 brace-angle interpolation does not "
-            "establish this inside-corner installation")
-        notes.append(
-            f"BAND, {el.tag}: true corner geometry at "
-            f"{math.degrees(math.atan(lay.braces(0)[0].slope)):.3f}°, connectors on the "
-            "inside brace edges. Simplified leaves are modelled, without the product's "
-            "interlocking tabs. Joint, plate and post design rows await the corner "
-            "connection basis, including centre-post contact under compression.")
-        return
     notes.append(
-        f"BAND, {el.tag}: {len(lay.slats)} slats at 45°, {len(lay.bay(0))} a bay, mirrored to "
+        f"BAND, {el.tag}: {len(lay.slats)} slats at {sb.angle_degrees:.3f}°, "
+        f"{len(lay.bay(0))} a bay, mirrored to "
         f"rise toward the centre post; {len(lay.braces(0))} a bay are braced, the rest screwed "
         f"infill (a corner no {el.connector} leg fits). The bays share {sb.shear_lb:,.1f} lb "
         f"equally (mirror images, the same joints); the {sb.crossing} crossing mid-band, "
@@ -170,16 +165,19 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
         f"or compression.")
     role = ROLE_KNEE_BRACE_EQUAL_WIDTH if el.connectors_per_end == 2 else ROLE_KNEE_BRACE
     allow = allowable_for_model(el.connector, role=role)
-    if allow is None or not allow.lateral_f1_lb:
-        missing.append(f"a published F1 along the brace for {el.connector!r}, the connector "
-                       f"at each end of {el.tag}'s slats")
+    capacity, basis = _f1_at_angle(allow, sb.angle_degrees)
+    if capacity is None:
+        missing.append(f"a published F1 along the brace for {el.connector!r} at "
+                       f"{sb.angle_degrees:.3f}°, the connector at each end of {el.tag}'s slats")
     else:
         states.append(LimitState(
-            f"{el.tag} slat end, {el.connector}", p, allow.lateral_f1_lb, "lb",
+            f"{el.tag} slat end, {el.connector}", p, capacity, "lb",
             f"{'two' if el.connectors_per_end == 2 else 'one'} {el.connector} each end, "
-            f"{allow.citation.split(';')[0]}; {allow.species}; "
+            f"{allow.citation.split(';')[0]}; {basis}; {allow.species}; "
             f"in-service MC <= 19% (the canopy's dry-service condition)"))
     _slat_buckling(el, lay, p, states, missing)
+    if el.corner_to_corner:
+        _corner_bearing(el, lay, sb, states, missing)
     _centre_post(el, lay, sb, states, missing)
     _plate_screws(el, collector, wall, sb, states, missing)
     notes.append(
@@ -189,32 +187,78 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
         f"the centre post cancel; h = {h:,.2f} lb an end.")
 
 
+def _f1_at_angle(allow, angle: float) -> tuple[float | None, str]:
+    """F1 at the brace angle: the 45° row, or interpolated toward the 30°/60° row (fn. 3)."""
+    if allow is None or not allow.lateral_f1_lb:
+        return None, ""
+    off = abs(angle - 45.0)
+    if off < 1e-9:
+        return allow.lateral_f1_lb, "45°"
+    if allow.lateral_f1_30_60_lb is None or off > 15.0 + 1e-9:
+        return None, ""
+    value = allow.lateral_f1_lb - (allow.lateral_f1_lb - allow.lateral_f1_30_60_lb) * off / 15.0
+    return value, (f"{angle:.3f}° interpolated between {allow.lateral_f1_lb:,.0f} lb at 45° "
+                   f"and {allow.lateral_f1_30_60_lb:,.0f} lb at 30°/60°")
+
+
 def _slat_buckling(el, lay, p, states, missing) -> None:
     from typehaus.resolve.framing.profiles import cross_section
 
     if el.slat not in SLAT_DESIGN_VALUES:
-        missing.append(f"NDS Table 4B values for the {el.slat!r} slats of {el.tag}")
+        missing.append(f"NDS Table 4B/4D values for the {el.slat!r} slats of {el.tag}")
         return
-    fc_psi, emin_psi = SLAT_DESIGN_VALUES[el.slat]
+    fc_psi, emin_psi, fc_cm, emin_cm, row = SLAT_DESIGN_VALUES[el.slat]
     section = cross_section(el.slat)
     d_in, b_in = section.width_m * _IN_PER_M, section.depth_m * _IN_PER_M
     length_in = max(s.length for s in lay.slats if s.braced) * _IN_PER_M
-    fc_star = fc_psi * SLAT_FC_CM * CD_WIND
-    fce = 0.822 * emin_psi * SLAT_EMIN_CM / (length_in / d_in) ** 2
+    fc_star = fc_psi * fc_cm * CD_WIND
+    fce = 0.822 * emin_psi * emin_cm / (length_in / d_in) ** 2
     ratio = fce / fc_star
     term = (1.0 + ratio) / 1.6
     cp = term - math.sqrt(term ** 2 - ratio / 0.8)
     states.append(LimitState(
         f"{el.tag} slat buckling", p, fc_star * cp * d_in * b_in, "lb",
         f"NDS §3.7, the longest braced slat {length_in:.2f}\" about its {d_in:g}\" face, l/d "
-        f"{length_in / d_in:.2f}; Table 4B SP No. 2 Fc {fc_psi:g} x wet {SLAT_FC_CM} x "
-        f"C_D {CD_WIND}, E_min {emin_psi:,.0f} x {SLAT_EMIN_CM}: FcE {fce:.1f} psi, "
+        f"{length_in / d_in:.2f}; {row} Fc {fc_psi:g} x wet {fc_cm} x "
+        f"C_D {CD_WIND}, E_min {emin_psi:,.0f} x {emin_cm}: FcE {fce:.1f} psi, "
         f"C_P {cp:.4f}"))
+
+
+def _corner_bearing(el, lay, sb, states, missing) -> None:
+    """A compression diagonal bears on both members its clipped end is cut against. Each
+    face is graded on the whole component square to it (note §3, 2026-10-26)."""
+    from typehaus.engineering.lateral_band import POST_FC_PERP_CM, POST_FC_PERP_PSI
+    from typehaus.resolve.framing.profiles import cross_section
+
+    if el.slat not in SLAT_DESIGN_VALUES:
+        return  # _slat_buckling names the gap
+    fc_star = SLAT_DESIGN_VALUES[el.slat][0] * SLAT_DESIGN_VALUES[el.slat][2] * CD_WIND
+    fc_perp = POST_FC_PERP_PSI * POST_FC_PERP_CM
+    slope = lay.braces(0)[0].slope
+    theta = math.atan(slope)
+    face_in = cross_section(el.slat).width_m * _IN_PER_M
+    depth_in = cross_section(el.slat).depth_m * _IN_PER_M
+    for label, contact_in, force, grain in (
+            ("post", face_in / 2.0 / math.cos(theta), sb.per_end_lb, theta),
+            ("plate", face_in / 2.0 / math.sin(theta), sb.vertical_per_end_lb,
+             math.pi / 2.0 - theta)):
+        f_theta = fc_star * fc_perp / (fc_star * math.sin(grain) ** 2
+                                       + fc_perp * math.cos(grain) ** 2)
+        area = contact_in * depth_in
+        states.append(LimitState(
+            f"{el.tag} clipped end bearing on a {label}", force / area,
+            min(f_theta, fc_perp), "psi",
+            f"{force:,.2f} lb over {contact_in:.3f}\" x {depth_in:g}\" = {area:.2f} in2; "
+            f"NDS §3.10.3 Hankinson on the brace at {math.degrees(grain):.3f}° to its grain, "
+            f"Fc* {fc_star:g} and Fc-perp {fc_perp:g}: {f_theta:.1f} psi; the {label} across "
+            f"its grain, Table 4D SP No. 2 timbers Fc-perp {POST_FC_PERP_PSI:g} x wet "
+            f"{POST_FC_PERP_CM}"))
 
 
 def _centre_post(el, lay, sb, states, missing) -> None:
     from typehaus.engineering.wood_roof_post import FB_WET_PSI
     from typehaus.hardware.catalog import allowable_for_model
+    from typehaus.resolve.framing.profiles import cross_section
 
     if el.centre_post != "6x6":
         missing.append(f"NDS Table 4D values for {el.tag}'s {el.centre_post!r} centre post")
@@ -222,11 +266,25 @@ def _centre_post(el, lay, sb, states, missing) -> None:
     force = 2.0 * sb.landings("centre") * sb.per_end_lb
     span_ft = lay.height / _M_PER_FT
     moment = force * span_ft / 8.0
+    reaction = force / 2.0
+    basis = (f"both bays push it the same way: 2 x {sb.landings('centre')} x "
+             f"{sb.per_end_lb:.2f} = {force:,.1f} lb uniform over {span_ft:.4f}'")
+    if el.corner_to_corner:
+        # The compression diagonal's clipped end bears h on it just under the top plate,
+        # at its contact's centroid; the moments are summed, not located.
+        contact_ft = (cross_section(el.slat).width_m / _M_PER_FT / 2.0
+                      * math.hypot(1.0, lay.braces(0)[0].slope))
+        a_ft = contact_ft / 2.0
+        b_ft = span_ft - a_ft
+        point = sb.per_end_lb
+        moment += point * a_ft * b_ft / span_ft
+        reaction += point * b_ft / span_ft
+        basis += (f", plus the compression bay's clipped end {point:.2f} lb at {a_ft * 12:.3f}\" "
+                  f"below its top")
     fb = moment * 12.0 / (5.5 ** 3 / 6.0)
     states.append(LimitState(
         f"{el.tag} centre post bending", fb, FB_WET_PSI * CD_WIND, "psi",
-        f"both bays push it the same way: 2 x {sb.landings('centre')} x {sb.per_end_lb:.2f} = "
-        f"{force:,.1f} lb uniform over {span_ft:.4f}', M = {moment:,.1f} lb-ft on a 6x6; "
+        f"{basis}, M = {moment:,.1f} lb-ft on a 6x6; "
         f"Table 4D SP No. 2 timbers Fb {FB_WET_PSI:g} x wet C_M 1.0 x C_D {CD_WIND}"))
     allow = allowable_for_model(el.centre_post_tie)
     values = [v for v in (getattr(allow, "lateral_f1_lb", None),
@@ -236,10 +294,10 @@ def _centre_post(el, lay, sb, states, missing) -> None:
                        f"each end of {el.tag}'s centre post")
         return
     states.append(LimitState(
-        f"{el.tag} centre post end ties", force / 2.0,
+        f"{el.tag} centre post end ties", reaction,
         el.centre_post_ties_each_end * min(values), "lb",
-        f"half of {force:,.1f} lb at each plate on {el.centre_post_ties_each_end} "
-        f"{el.centre_post_tie}, the lower lateral row; {allow.citation.split(';')[0]}"))
+        f"the larger end reaction on {el.centre_post_ties_each_end} {el.centre_post_tie}, "
+        f"the lower lateral row; {allow.citation.split(';')[0]}"))
 
 
 def _plate_screws(el, collector, wall, sb, states, missing) -> None:
@@ -254,6 +312,8 @@ def _plate_screws(el, collector, wall, sb, states, missing) -> None:
     w_prime = min(w_per_in * thread, w_max) * CD_WIND
     half = el.plate_fasteners / 2.0
     lateral = sb.shear_lb / el.plate_fasteners
+    contact = (f" The compression bay's clipped end presses {sb.vertical_per_end_lb:.2f} lb "
+               "onto it: bearing, no withdrawal." if el.corner_to_corner else "")
     for label, which, into in (("top plate", "top", collector.tag),
                                ("sill", "sill", f"{wall.tag}'s top plate")):
         withdrawal = sb.landings(which) * sb.vertical_per_end_lb / half
@@ -266,4 +326,4 @@ def _plate_screws(el, collector, wall, sb, states, missing) -> None:
             f"{el.plate_fasteners} {el.plate_fastener}: {lateral:.2f} lb lateral each, and the "
             f"tension bay's {sb.landings(which)} landings pull {withdrawal:.2f} lb out of each "
             f"of its {half:g}; NDS §12.4.1 at {math.degrees(alpha):.2f}° with Z' {z_prime:g}, "
-            f"W'p {w_prime:g} (C_D {CD_WIND}, dry service). {SDWS22_WOOD_CITATION}"))
+            f"W'p {w_prime:g} (C_D {CD_WIND}, dry service).{contact} {SDWS22_WOOD_CITATION}"))

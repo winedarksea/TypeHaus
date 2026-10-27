@@ -427,6 +427,7 @@ class ResolvedOpening:
     # bare rough void from a window for IFC and visualization consumers.
     kind: str  # "door" | "window" | "rough_opening"
     is_door: bool
+    framing_required: bool = True
     swing_clearance: Ring = ()
     framing_bumper: Ring = ()
     # Arched head: semicircular/segmental rise above the rectangular jamb height. 0 = square

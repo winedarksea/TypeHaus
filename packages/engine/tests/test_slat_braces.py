@@ -380,20 +380,25 @@ def test_chord_push_uses_its_landing_and_empty_centre_has_zero_demand() -> None:
     assert not missing and all(state.demand == 0 for state in states)
 
 
+def _corner_band(**overrides):
+    return _single_band(slat="6x6", corner_to_corner=True, brace_offset=None, **overrides)
+
+
 def test_true_corner_braces_resolve_both_corners_and_eight_flush_connectors() -> None:
     from typehaus.resolve.slat_braces import slat_layout
     from typehaus.resolve.slat_cuts import clipped_slat_profile
     from typehaus.takeoff.hardware import hardware_takeoff
 
-    element = _single_band(corner_to_corner=True, brace_offset=None)
+    element = _corner_band()
     layout = slat_layout(element)
     model, findings = _frame(element)
     assert not findings
     assert len(model.solids) == 8
+    assert len(layout.slats) == 2 and all(s.braced for s in layout.slats)
     for slat in layout.slats:
         assert slat.slope == pytest.approx(layout.height / layout.width)
         assert slat.length == pytest.approx(math.hypot(layout.width, layout.height))
-        profile = clipped_slat_profile(slat, layout, 3.5 * IN)
+        profile = clipped_slat_profile(slat, layout, 5.5 * IN)
         assert any(u == pytest.approx(0) and z == pytest.approx(0) for u, z in profile)
         assert any(u == pytest.approx(layout.width) and z == pytest.approx(layout.height)
                    for u, z in profile)
@@ -405,9 +410,30 @@ def test_true_corner_braces_resolve_both_corners_and_eight_flush_connectors() ->
     assert layout.crossing_mid(0) == layout.crossing_mid(1) == 1
 
 
+def test_corner_heels_are_open_knees_a_leg_from_each_corner() -> None:
+    """Note §3a: 3.949" up the post, 3.831" along the plate, 135.868°/134.132° included."""
+    from typehaus.resolve.kbs_geometry import KBS_GEOMETRY
+    from typehaus.resolve.slat_braces import slat_layout
+    from typehaus.resolve.slat_connector_landings import slat_connector_ends
+
+    layout = slat_layout(_corner_band())
+    assert layout.width / IN == pytest.approx(24.375)
+    assert layout.height / IN == pytest.approx(25.125)
+    low, high = slat_connector_ends(layout.bay(0)[0], layout, 5.5 * IN)
+    assert (low.landing, low.u, low.support) == ("chord", 0.0, (0.0, -1.0))
+    assert low.z / IN == pytest.approx(3.94937, abs=1e-5)
+    assert (high.landing, high.support) == ("top", (1.0, 0.0))
+    assert high.z == pytest.approx(layout.height)
+    assert (layout.width - high.u) / IN == pytest.approx(3.83148, abs=1e-5)
+    assert low.included_angle_degrees == pytest.approx(135.868, abs=1e-3)
+    assert high.included_angle_degrees == pytest.approx(134.132, abs=1e-3)
+    leg = KBS_GEOMETRY.leg_length_m
+    assert low.z - leg > 0 and layout.width - high.u - leg > 0
+
+
 @pytest.mark.parametrize("low", ["chord", "sill"])
 @pytest.mark.parametrize("high", ["top", "centre"])
-def test_tighter_corner_bends_bear_on_real_wood_for_either_support_face(low, high) -> None:
+def test_open_corner_knees_bear_on_real_wood_for_either_support_face(low, high) -> None:
     from dataclasses import replace
 
     from shapely.geometry import LineString, Polygon, box
@@ -417,16 +443,16 @@ def test_tighter_corner_bends_bear_on_real_wood_for_either_support_face(low, hig
     from typehaus.resolve.slat_connector_landings import slat_connector_ends
     from typehaus.resolve.slat_cuts import clipped_slat_profile
 
-    layout = slat_layout(_single_band(corner_to_corner=True, brace_offset=None))
+    layout = slat_layout(_corner_band())
     slat = replace(layout.bay(0)[0], low=low, high=high)
-    brace = Polygon(clipped_slat_profile(slat, layout, 3.5 * IN)).buffer(1e-10)
+    brace = Polygon(clipped_slat_profile(slat, layout, 5.5 * IN)).buffer(1e-10)
     w, h, p = layout.width, layout.height, layout.plate
     supports = {"chord": box(-2 * layout.chord_face, 0, 0, h),
                 "centre": box(w, 0, w + 2 * layout.centre_half, h),
                 "sill": box(0, -p, w, 0), "top": box(0, h, w, h + p)}
     leg, flange = KBS_GEOMETRY.leg_length_m, KBS_GEOMETRY.flange_width_m
-    for placement in slat_connector_ends(slat, 3.5 * IN):
-        assert 0 < placement.included_angle_degrees < 90
+    for placement in slat_connector_ends(slat, layout, 5.5 * IN):
+        assert 90 < placement.included_angle_degrees < 180
         for wood, along, across in (
                 (brace, placement.brace_axis, placement.brace_face),
                 (supports[placement.landing].buffer(1e-10),
@@ -440,32 +466,42 @@ def test_tighter_corner_bends_bear_on_real_wood_for_either_support_face(low, hig
                 (placement.u + leg * along[0], placement.z + leg * along[1])]))
 
 
-def test_corner_geometry_does_not_inherit_the_open_knee_connection_rating() -> None:
+def test_corner_band_grades_as_an_interpolated_open_knee() -> None:
+    """Note §3b-§3g: 993.2 lb type-1 pair, the 6x6's Table 4D buckling, both clipped-end
+    bearings, and the compression brace's contact on the centre post."""
     from types import SimpleNamespace
 
     from typehaus.engineering.lateral_band_slats import SlatBand, slat_rows
     from typehaus.resolve.slat_braces import slat_layout
 
-    element = _single_band(corner_to_corner=True, brace_offset=None)
+    element = _corner_band()
     layout = slat_layout(element)
-    band = SlatBand(element, layout, 1038.35, 1)
-    assert band.slat_lb == pytest.approx(519.175 * math.hypot(1, layout.height / layout.width))
-    assert band.vertical_per_end_lb > band.per_end_lb
+    band = SlatBand(element, layout, 1038.3506, 1)
+    assert band.slat_lb == pytest.approx(745.6061, abs=1e-3)
+    assert band.vertical_per_end_lb == pytest.approx(535.1499, abs=1e-3)
     states, notes, missing, inputs = [], [], [], []
     slat_rows(None, SimpleNamespace(tag="W"), SimpleNamespace(tag="HEADER"),
               band, states, notes, missing, inputs)
-    assert not states
-    assert "tightly bent KBS1Z" in missing[0]
-    assert "included" in missing[0]
-    assert "tab/fastener placement" in missing[0]
-    assert "centre-post contact under compression" in notes[0]
+    assert not missing
+    rows = {s.name.removeprefix(f"{element.tag} "): s for s in states}
+    expected = {"slat end, KBS1Z": (745.6061, 993.2177),
+                "slat buckling": (745.6061, 24904.1),
+                "clipped end bearing on a post": (23.901, 251.25),
+                "clipped end bearing on a plate": (25.395, 251.25),
+                "centre post bending": (34.07, 1360.0),
+                "centre post end ties": (478.37, 1390.0),
+                "top plate screws into HEADER": (186.4015, 664.099),
+                "sill screws into W's top plate": (129.7938, 648.0)}
+    for name, (demand, capacity) in expected.items():
+        assert rows[name].demand == pytest.approx(demand, rel=1e-3), name
+        assert rows[name].capacity == pytest.approx(capacity, rel=1e-3), name
 
 
 def test_corner_layout_refuses_conflicting_offset_and_insufficient_connector_room() -> None:
     _, findings = _frame(_single_band(corner_to_corner=True))
     assert "alternative layouts" in findings[0].message
-    model, findings = _frame(_single_band(corner_to_corner=True, brace_offset=None,
-                                        end=pt(inch(14), inch(0))))
+    # A 3½" face puts the heels 2.513"/2.438" from the corners, inside the 3" leg.
+    model, findings = _frame(_single_band(corner_to_corner=True, brace_offset=None))
     assert not model.braces
     assert "leg runs off" in findings[0].message
 
@@ -475,7 +511,7 @@ def test_corner_draft_exports_cut_profiles_and_eight_connectors(tmp_path) -> Non
     from typehaus.emit.gltf.emitter import emit_gltf_dict
     from typehaus.emit.ifc.emitter import emit_ifc
 
-    model, _ = _frame(_single_band(corner_to_corner=True, brace_offset=None))
+    model, _ = _frame(_corner_band())
     exported = ifcopenshell.open(str(emit_ifc(model, tmp_path / "corners.ifc")))
     assert len(exported.by_type("IfcMechanicalFastener")) == 8
     braces = [m for m in exported.by_type("IfcMember") if m.PredefinedType == "BRACE"]

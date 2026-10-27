@@ -1,7 +1,7 @@
 """Catalog-profile door coordination, separate from ordered-assembly certification."""
 
 from dataclasses import replace
-from math import ceil
+from math import ceil, radians, tan
 
 from typehaus.engineering.exterior_door_support import cantilever_support_report
 from typehaus.resolve.exterior_door_sill import DoorInstallationSection
@@ -19,7 +19,8 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
     start = inner + installation.wrap_isolation_thickness.meters
     base = assembly.rough_opening_z_m
     seat = base + spec.pan_height.meters
-    end = start + max(x for x, _ in spec.sill_outline_m)
+    sill_end = start + max(x for x, _ in spec.sill_outline_m)
+    end = sill_end + spec.sill_extender_depth.meters
     outlet = sign * clad + installation.casing_thickness.meters
     outlet += installation.drainage_gap.meters / 4
     exterior = assembly.adjacent_floors[0 if sign < 0 else 1]
@@ -82,11 +83,27 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
         purchase="factory_included",
     )
     # AridDek runs in the drainage direction. Its standard profile trim covers the front ends.
-    nose = (
-        max(z for x, z in spec.sill_outline_m if x > 0.95 * max(x for x, _ in spec.sill_outline_m))
-        + seat
-    )
-    slope = 1 / 48
+    nose = max(
+        z for x, z in spec.sill_outline_m
+        if x > 0.95 * max(x for x, _ in spec.sill_outline_m)
+    ) + seat
+    if spec.sill_extender_ref:
+        extension_drop = spec.sill_extender_depth.meters * tan(
+            radians(spec.sill_extender_slope_degrees)
+        )
+        extension_top = spec.sill_extender_height.meters - extension_drop
+        section(
+            f"catalog-sill-extender-{spec.sill_extender_ref}",
+            ((sill_end, seat), (sill_end + spec.sill_extender_depth.meters, seat),
+             (sill_end + spec.sill_extender_depth.meters, seat + extension_top),
+             (sill_end, seat + spec.sill_extender_height.meters)),
+            spec.sill_material_ref,
+            "door_hardware",
+            span=unit_width,
+            purchase="separate",
+        )
+        nose = seat + extension_top
+    slope = spec.approach_slope_ratio
     approach_back = max(seat + 0.5 * _IN, nose)
     approach_front = approach_back - (outlet - end) * slope
     thickness = spec.approach_thickness.meters
@@ -119,7 +136,7 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
         "floor",
     )
     membrane = installation.wrap_isolation_thickness.meters
-    slope = 1 / 48
+    slope = spec.approach_slope_ratio
     # The stock pan drains down the curb face into a lower apron beneath the approach.
     # This drop avoids burying a thick deck profile in the factory sill's level bearing.
     apron_back = (
@@ -253,6 +270,9 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
         **floor_report,
         source_url=spec.source_url,
         source_drawing=spec.source_drawing,
+        sill_extender_ref=spec.sill_extender_ref,
+        sill_extender_source_url=spec.sill_extender_source_url,
+        sill_extender_depth_in=spec.sill_extender_depth.meters / _IN,
         profile_status="DIGITIZED_OUTLINE",
         approach_outlet_depth_m=outlet,
         landing_edge_depth_m=landing_edge,
@@ -341,6 +361,7 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
 
     catalog_flashing_sections(placement, opening, assembly, clad, section, rectangle)
     sources = {
+        "catalog-sill-extender": spec.sill_extender_source_url,
         "catalog-sill": spec.source_url,
         "ariddek": "https://wahoobuildingproducts.com/ariddek-installation-guide/",
         "stock-pan": "https://www.suresill.com/faq",

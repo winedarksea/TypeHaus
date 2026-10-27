@@ -8,7 +8,8 @@ from pathlib import Path
 
 from typehaus import ExteriorDoorCatalogInstallation, ExteriorDoorInstallation, inch
 
-_OUTLINE = json.loads((Path(__file__).resolve().parents[1] / 'notes/assets/endura-zai4565fn-outline.json').read_text())
+_OUTLINE_PATH = Path(__file__).resolve().parents[1] / 'notes/assets/endura-zai4565fn-outline.json'
+_OUTLINE = json.loads(_OUTLINE_PATH.read_text())
 
 
 def catalog_installation(*, concrete=False):
@@ -17,6 +18,12 @@ def catalog_installation(*, concrete=False):
         frame_material_ref='composite-door-frame', head_material_ref='pvc-opening-flashing',
         pan_material_ref='impermeable-door-flashing', transition_material_ref='silicone-transition',
         sill_outline_m=tuple(tuple(point) for point in _OUTLINE['polygon_m']),
+        sill_extender_ref='XMN5' if concrete else None,
+        sill_extender_source_url=(
+            'https://resources.enduraproducts.com/hubfs/OMRSv3%20-%20Line%20Drawings/'
+            'Sill%20Extenders/XMN5.pdf' if concrete else None),
+        sill_extender_depth=inch(1.1875) if concrete else inch(0),
+        sill_extender_height=inch(0.6875) if concrete else inch(0),
         support_kind='concrete_cantilever' if concrete else 'timber_outriggers',
         support_ref='W-B-S3' if concrete else 'FS-S-EAST',
         support_width=inch(12) if concrete else inch(1.5),
@@ -27,7 +34,9 @@ def catalog_installation(*, concrete=False):
 PATIO_INSTALLATION = ExteriorDoorInstallation(
     factory_frame_depth=inch(4.5625), interior_material_ref='pine-fj-base',
     exterior_material_ref='captivate-graphite-sheet', exterior_opening_ref='AO-B-BRICK-DOOR',
-    seat_opening_ref='AO-B-PATIO-SEAT', landing_search=inch(12),
+    seat_opening_ref='AO-B-PATIO-SEAT',
+    approach_opening_refs=('AO-B-PATIO-CURB-APPROACH',),
+    landing_search=inch(12),
     catalog_installation=catalog_installation(concrete=True))
 STUDY_INSTALLATION = ExteriorDoorInstallation(
     factory_frame_depth=inch(4.5625), interior_material_ref='pine-fj-base',

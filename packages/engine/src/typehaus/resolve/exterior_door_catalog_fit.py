@@ -12,13 +12,13 @@ def catalog_seat_conflicts(model, wall, opening, placement):
     from typehaus.resolve.geometry_slice import CutPlane, slice_solid
     from typehaus.resolve.geometry_walls import layer_solids
 
-    reference = placement.specification.seat_opening_ref
-    notch = next((o for o in model.openings if o.tag == reference), None)
-    if notch is None:
-        return ()
-    targets = {notch.host_wall}
+    specification = placement.specification
+    references = (*specification.approach_opening_refs, specification.seat_opening_ref)
+    notches = [next((o for o in model.openings if o.tag == reference), None)
+               for reference in references if reference]
+    targets = {wall.tag, *(notch.host_wall for notch in notches if notch is not None)}
     reveal = next((o for o in model.openings
-                   if o.tag == placement.specification.exterior_opening_ref), None)
+                   if o.tag == specification.exterior_opening_ref), None)
     if reveal is not None:
         targets.add(reveal.host_wall)
     center = opening_center(wall, opening)

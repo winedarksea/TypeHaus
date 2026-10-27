@@ -23,35 +23,40 @@ class SlatConnectorEnd:
         return math.degrees(math.acos(max(-1.0, min(1.0, cosine))))
 
 
-def slat_connector_ends(slat, face_m: float) -> tuple[SlatConnectorEnd, ...]:
-    """Closed bends use the opposite brace edge and reverse the support leg.
+def slat_connector_ends(slat, layout, face_m: float) -> tuple[SlatConnectorEnd, ...]:
+    """Open-knee heels: the support leg runs along the bearing face away from the brace.
 
-    The heel must move with that edge: keeping an open-bend heel while rotating its
-    leaves falsely puts the connector outside the board at a clipped frame corner.
+    The heel sits on the long edge that lands on that face. That is the outside edge, unless
+    the end lies in a frame corner (``corner_to_corner``): there the outside edge lands on
+    the other member, so the heel and brace leaf move to the inside edge, the support leg
+    still running back toward the corner.
     """
     cosine = 1.0 / math.hypot(1.0, slat.slope)
     sine = slat.slope * cosine
     half_vertical, half_horizontal = face_m / (2 * cosine), face_m / (2 * sine)
-    closed = -1.0 if slat.closed_connectors else 1.0
     ends = []
     for end, landing, u in (("low", slat.low, slat.u0), ("high", slat.high, slat.u1)):
         z = slat.elevation(u)
         if landing == "chord":
-            z -= closed * half_vertical
-            support, support_face = (0.0, -closed), (-1.0, 0.0)
-            brace_face = (-closed * sine, closed * cosine)
+            edge = 1.0 if z - half_vertical < -1e-9 else -1.0
+            z += edge * half_vertical
+            support, support_face = (0.0, -1.0), (-1.0, 0.0)
+            brace_face = (edge * sine, -edge * cosine)
         elif landing == "centre":
-            z += closed * half_vertical
-            support, support_face = (0.0, closed), (1.0, 0.0)
-            brace_face = (closed * sine, -closed * cosine)
+            edge = -1.0 if z + half_vertical > layout.height + 1e-9 else 1.0
+            z += edge * half_vertical
+            support, support_face = (0.0, 1.0), (1.0, 0.0)
+            brace_face = (edge * sine, -edge * cosine)
         elif landing == "sill":
-            u -= closed * half_horizontal
-            support, support_face = (-closed, 0.0), (0.0, -1.0)
-            brace_face = (closed * sine, -closed * cosine)
+            edge = 1.0 if u - half_horizontal < -1e-9 else -1.0
+            u += edge * half_horizontal
+            support, support_face = (-1.0, 0.0), (0.0, -1.0)
+            brace_face = (-edge * sine, edge * cosine)
         else:
-            u += closed * half_horizontal
-            support, support_face = (closed, 0.0), (0.0, 1.0)
-            brace_face = (-closed * sine, closed * cosine)
+            edge = -1.0 if u + half_horizontal > layout.width + 1e-9 else 1.0
+            u += edge * half_horizontal
+            support, support_face = (1.0, 0.0), (0.0, 1.0)
+            brace_face = (-edge * sine, edge * cosine)
         direction = 1.0 if end == "low" else -1.0
         ends.append(SlatConnectorEnd(end, landing, u, z, support, support_face,
                                      (direction * cosine, direction * sine), brace_face))

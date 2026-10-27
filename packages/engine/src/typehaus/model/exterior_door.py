@@ -28,11 +28,17 @@ class ExteriorDoorCatalogInstallation(HausModel):
     source_url: str = Field(min_length=1)
     source_drawing: str = Field(min_length=1)
     sill_outline_m: tuple[tuple[float, float], ...]
+    sill_extender_ref: str | None = None
+    sill_extender_source_url: str | None = None
+    sill_extender_depth: Length = inch(0)
+    sill_extender_height: Length = inch(0)
+    sill_extender_slope_degrees: float = Field(default=5, gt=0, lt=45)
     pan_product: str = "SureSill 4-9/16 inch sloped sill pan, 80 inch complete pack"
     pan_height: Length = inch(0.375)
     height_tolerance: Length = inch(0.25)
     approach_thickness: Length = inch(1.5)
     approach_board_width: Length = inch(6)
+    approach_slope_ratio: float = Field(default=1 / 48, gt=0)
     approach_material_ref: str = "aluminum-deck"
     pan_material_ref: str = "fluid-applied-flashing"
     sill_material_ref: str = "aluminum-extrusion"
@@ -79,6 +85,14 @@ class ExteriorDoorCatalogInstallation(HausModel):
                 or not Polygon(self.sill_outline_m).is_valid
                 or Polygon(self.sill_outline_m).area <= 0):
             raise ValueError("catalog sill requires a finite simple coordination outline")
+        extender_values = (self.sill_extender_ref, self.sill_extender_source_url)
+        if self.sill_extender_depth.meters > 0:
+            if not all(extender_values) or self.sill_extender_height.meters <= 0:
+                raise ValueError(
+                    "a sill extender needs its catalog reference, source and profile height"
+                )
+        elif any(extender_values) or self.sill_extender_height.meters:
+            raise ValueError("sill extender profile dimensions require a positive extension depth")
         dimensions = (self.pan_height, self.height_tolerance, self.approach_thickness,
                       self.support_spacing, self.support_width, self.support_depth,
                       self.support_backspan, self.movement_horizontal, self.movement_vertical,
@@ -155,6 +169,7 @@ class ExteriorDoorInstallation(HausModel):
     catalog_installation: ExteriorDoorCatalogInstallation | None = None
     exterior_opening_ref: str | None = None
     seat_opening_ref: str | None = None
+    approach_opening_refs: tuple[str, ...] = ()
     interior_material_ref: str = Field(min_length=1)
     drainage_gap: Length = inch(0.5)
     # Limit the search across an intentional drainage gap, never across a missing landing.

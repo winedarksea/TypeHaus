@@ -72,11 +72,11 @@
         ],
         [
           0.0,
-          -102.1875
+          -108.6875
         ],
         [
           -0.06,
-          -102.1875
+          -108.6875
         ]
       ],
       "layer": "A-WALL-PATT",
@@ -100,11 +100,11 @@
         ],
         [
           0.0,
-          -102.1875
+          -108.6875
         ],
         [
           -0.06,
-          -102.1875
+          -108.6875
         ]
       ],
       "pattern": "membrane",
@@ -128,11 +128,11 @@
         ],
         [
           -0.06,
-          -102.1875
+          -108.6875
         ],
         [
           -2.06,
-          -102.1875
+          -108.6875
         ]
       ],
       "layer": "A-WALL-INSU",
@@ -156,11 +156,11 @@
         ],
         [
           -0.06,
-          -102.1875
+          -108.6875
         ],
         [
           -2.06,
-          -102.1875
+          -108.6875
         ]
       ],
       "pattern": "none",
@@ -184,11 +184,11 @@
         ],
         [
           -2.06,
-          -102.1875
+          -108.6875
         ],
         [
           -4.06,
-          -102.1875
+          -108.6875
         ]
       ],
       "layer": "A-WALL-INSU",
@@ -212,11 +212,11 @@
         ],
         [
           -2.06,
-          -102.1875
+          -108.6875
         ],
         [
           -4.06,
-          -102.1875
+          -108.6875
         ]
       ],
       "pattern": "none",
@@ -240,11 +240,11 @@
         ],
         [
           -4.06,
-          -102.1875
+          -108.6875
         ],
         [
           -6.0600000000000005,
-          -102.1875
+          -108.6875
         ]
       ],
       "layer": "A-WALL-INSU",
@@ -268,11 +268,11 @@
         ],
         [
           -4.06,
-          -102.1875
+          -108.6875
         ],
         [
           -6.0600000000000005,
-          -102.1875
+          -108.6875
         ]
       ],
       "pattern": "none",
@@ -4086,7 +4086,7 @@
   ],
   "notes": [
     "NOTES:",
-    "• D-B-PATIO: flashing modeled, support/interfaces UNKNOWN. WIN-B-SAUNA: no flashing modeled.",
+    "• D-B-PATIO geometry coordinated; support/bonds UNKNOWN. WIN-B-SAUNA: no flashing.",
     "• Water plane: the 60 mil waterproofing. Opening membranes lap onto it, shingle-fashion.",
     "• Veneer arches are self-supporting, under the porch: no lintel, no head flashing (IRC R703.8.5).",
     "• WIN-B-SAUNA is 3'-8\" above the court, clear of the flood line. Liner vapour return seals inside.",
@@ -4097,7 +4097,7 @@
     "K3  Sill pan sloped 1/4\"/ft, with back dam and end dams 6\" up the jambs, lapped over the waterproofing below.",
     "K4  D-B-PATIO: concrete curb with overflow drainage and sump pump; door is specified for standard rain exposure, not as a flood barrier.",
     "K5  D-B-PATIO: keep pan outlet open; confirm seat, sealant and drainage with the installed door and pan instructions.",
-    "K6  D-B-PATIO: form a local 5-1/2 inch concrete seat; adjacent curb stays 7-1/4 inches. Support and pan bonds remain design holds.",
+    "K6  D-B-PATIO: XMN5 and the blind curb-skin recess clear the approach; verify field membrane bonds.",
     "K7  Veneer cavity: 4\" clear air. Keep the base-course weeps open; they drain it after the court drains."
   ],
   "frame": {

@@ -92,6 +92,8 @@ def test_the_criterion_is_studs_cut_not_distance_from_ideal(catlin_model, findin
     named = {tag for f in findings for tag in f.element_tags}
     assert "D-B-BATH" not in named
     for opening in catlin_model.openings:
+        if not opening.framing_required:
+            continue
         if not (opening.is_door or opening.type_ref is None):
             continue
         wall = catlin_model.wall(opening.host_wall)

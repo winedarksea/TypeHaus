@@ -106,6 +106,7 @@ KBS1Z_KNEE_BRACE = StructuralHardware(
            "one-time field bend for other angles",
     allowable=AllowableLoads(
         lateral_f1_lb=540.0,     # connection type 2, single connector, 45 deg, SPF/HF
+        lateral_f1_30_60_lb=440.0,
         load_duration_factor=1.6,
         species="SPF/HF — the column recorded; DF/SP is 630 lbf for the same row",
         fasteners="12 - 8d x 1-1/2 in per connector, one connector at each end of the "
@@ -130,6 +131,7 @@ KBS1Z_KNEE_BRACE_EQUAL_WIDTH = StructuralHardware(
     source="Simpson Strong-Tie KBS1Z, equal-width members, connection type 1",
     allowable=AllowableLoads(
         lateral_f1_lb=1010.0,
+        lateral_f1_30_60_lb=720.0,
         load_duration_factor=1.6,
         species="SPF/HF — the column recorded; DF/SP is 1,175 lbf for the same row",
         fasteners="12 - 8d x 2-1/2 in per connector, two connectors at each end of brace "

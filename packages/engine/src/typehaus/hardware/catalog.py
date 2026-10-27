@@ -249,6 +249,9 @@ class AllowableLoads:
     #: Lateral, F1 direction (as defined by the part's own report figure — for most of these
     #: parallel to the supporting plate or along the brace).
     lateral_f1_lb: float | None = None
+    #: F1 at a 30° or 60° brace, where the report tabulates by brace angle and permits
+    #: interpolation to the 45° ``lateral_f1_lb`` (KBS1Z: ER-280 Table 7 fn. 3).
+    lateral_f1_30_60_lb: float | None = None
     #: Lateral, F2 direction (perpendicular to F1 in the same figure).
     lateral_f2_lb: float | None = None
     #: Bearing/compression, lbf. Published at a *lower* duration factor than uplift, and

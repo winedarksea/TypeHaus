@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.2  
 **Model hash:** da570c4e5ee9e8e4  
-**Lines:** 184
+**Lines:** 183
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -62,8 +62,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3-2x12 — joist (3-2x12:kdat) | 40 | LF ordered | 2 pcs, 33.5 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1137 pcs, 331.6 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
-| 4x6 KDAT southern yellow pine (treated exterior framing) — brace (4x6:kdat) | 8 | LF ordered | 2 pcs, 5.0 LF cut | building |
-| 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | 8 | LF ordered | 1 pcs, 2.1 LF cut | building |
+| 6x6 KDAT southern yellow pine (treated exterior framing) — brace, stud (6x6:kdat) | 16 | LF ordered | 3 pcs, 7.9 LF cut | building |
 | hanger — hanger board (hanger) | 24 | LF ordered | 4 pcs, 17.9 LF cut | building |
 
 ## Sheet goods, by the sheet
@@ -201,7 +200,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 19.3 | LF |  | second |
 | butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | 6.4 | LF |  | main |
 | butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | 12.4 | LF |  | main |
-| butyl-tape-beam, 5 1/2" on brace (butyl-tape-beam) | 6.4 | LF |  | main |
+| butyl-tape-beam, 5 1/2" on brace (butyl-tape-beam) | 8.5 | LF |  | main |
 
 ## Firestop sealant
 
@@ -311,8 +310,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3-2x12 — joist (3-2x12:kdat) | — |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | — |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | — |
-| 4x6 KDAT southern yellow pine (treated exterior framing) — brace (4x6:kdat) | — |
-| 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | — |
+| 6x6 KDAT southern yellow pine (treated exterior framing) — brace, stud (6x6:kdat) | — |
 | hanger — hanger board (hanger) | — |
 | Aspen shiplap sauna ceiling liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-ceiling-shiplap:ceiling) | — |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |

@@ -11,8 +11,9 @@ centre, and ``c_j = (W - H)/2 + j * pitch`` centres the set on the bay.
 A slat is ``braced`` when a KBS1Z's support leg stays on its bearing face at both ends. One
 ending in a frame corner (catlin's j = 0) would run its leg into the plate, so it is screwed
 infill: drawn and billed as lumber, but no connector, and no share of the brace force.
-The explicit corner layout instead puts tighter-bend connectors on the inside edges;
-physical fit is distinct from its as-yet-unverified connection design basis.
+The corner layout's exact diagonal keeps the standard open knee: each heel sits where the
+clipped end leaves its bearing face, the support leg running back toward the corner, so the
+brace face must put both heels at least a leg from their corners (a 6x6 does; a 4x6 not).
 """
 
 from __future__ import annotations
@@ -45,7 +46,6 @@ class Slat:
     high: str
     braced: bool = True  # False: screwed infill, no connector (module docstring)
     slope: float = 1.0
-    closed_connectors: bool = False
 
     def elevation(self, u: float) -> float:
         return self.slope * u - self.c
@@ -100,14 +100,14 @@ def slat_layout(el: SlatBrace) -> SlatLayout | None:
     if width <= 0.0 or height <= 0.0 or face <= 0.0:
         return None
     if el.corner_to_corner:
-        # Inside-edge heels lie on the actual clipped ends. The support legs point
-        # away from the corners along the post/top plate instead of off their ends.
+        # Open-knee heels at face/(2 cos θ) up the post and face/(2 sin θ) along the plate;
+        # each support leg runs from its heel back toward the corner.
         half_vertical = face * math.hypot(1.0, height / width) / 2.0
         half_horizontal = half_vertical * width / height
-        fits = (height >= half_vertical + KBS_GEOMETRY.leg_length_m
-                and width >= half_horizontal + KBS_GEOMETRY.leg_length_m)
+        leg = KBS_GEOMETRY.leg_length_m - 1e-9
+        fits = half_vertical >= leg and half_horizontal >= leg
         slats = tuple(Slat(bay, 0, 0.0, 0.0, width, "chord", "top",
-                           el.connector != "KBS1Z" or fits, height / width, True)
+                           el.connector != "KBS1Z" or fits, height / width)
                       for bay in (0, 1)
                       if math.hypot(width, height) >= el.min_slat_length.meters - 1e-9)
         return SlatLayout(length, chord_face, centre_half, plate, width, height, 0.0, slats)

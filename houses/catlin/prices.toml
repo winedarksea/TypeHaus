@@ -6824,7 +6824,9 @@ site-excavation-sunken-garden-drained-backfill = { low = 1100, high = 2050 }
 # formed, braced and stripped box as one in an exterior wall, $250-600 apiece. Every other
 # penetration of a concrete wall in this house is a SLEEVE, and sleeves are the modelled
 # [sleeves] section — pipe, duct and conduit blockouts bill there by the each, not here.
-concrete-window-bucks-and-blockouts = { low = 250, high = 600, unit = "ea", driver = "openings.count[host_structure=concrete]" }
+# Blind exterior-layer clearance pockets can be hosted on concrete without cutting it; the
+# framing_required filter counts the formed seat, not those recesses.
+concrete-window-bucks-and-blockouts = { low = 250, high = 600, unit = "ea", driver = "openings.count[host_structure=concrete,framing_required=true]" }
 # ** SPLIT AND RE-SCOPED 2026-08-30, renamed from `radon-roughin-and-egress-window-wells`.
 # Two defects, one row. ** Minnesota has required radon-resistant new construction since
 # June 2009 and this house needs the system; what it did not need was to buy it twice.

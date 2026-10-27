@@ -398,5 +398,7 @@ def test_the_screen_cap_bears_on_tape(catlin_model_ro):
     rows = [r for r in member_protection_takeoff(catlin_model_ro) if r["scope"] == "brace"]
     assert [(r["material"], r["width_in"], r["tags"]) for r in rows] == [
         ("butyl-tape-beam", 5.5, ["SB-BW-BAND"])]
-    # The clear sill plus one 22-inch collar around the centre post; neither brace lands.
-    assert rows[0]["length_ft"] == pytest.approx((54.25 + 22) / 12, abs=0.05)
+    # The clear sill, a 22-inch collar around the centre post, and each corner brace's foot:
+    # its 3.831" clipped face both sides plus its free 5.5" edge (the chord takes the other).
+    assert rows[0]["length_ft"] == pytest.approx((54.25 + 22 + 2 * (2 * 3.83148 + 5.5)) / 12,
+                                                 abs=0.05)

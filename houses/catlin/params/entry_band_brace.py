@@ -1,10 +1,10 @@
 """The west band brace and the canopy's rated head/base extras (owner, 2026-09-30).
 
 `W-BW-SCREEN` tops out at +4'-0" and the `BM-BW-RW` glulam's soffit is at +6'-4 1/8". The band
-between them carries the canopy's whole N-S shear. Since 2026-10-25, SB-BW-BAND has one
-4x6 knee brace per bay, 3½" in elevation and 5½" through the frame, with two KBS1Z per end.
-The chord-to-top-plate centreline offset is -6½"; both faces are flush. Hand oracle:
-`notes/canopy_west_band.md` §3. The former chevron is a backup in §8.
+between them carries the canopy's whole N-S shear. Since 2026-10-26, SB-BW-BAND has one
+6x6 knee brace per bay running exactly corner to corner, chord to top plate, with two
+standard open-knee KBS1Z per end; both faces are flush. Hand oracle:
+`notes/canopy_west_band.md` §3. The c = -6½" 4x6 and the former chevron are backups in §8.
 
 Every uid here was minted once with `typehaus.model.ids.new_uid()` (fmt never visits
 `params/`) and must never be re-typed.
@@ -39,14 +39,15 @@ BAND = SlatBrace(
     start=pt(ft(LANDING_WEST_FT), ft(PIER_LINE_Y_FT)),
     end=pt(ft(LANDING_WEST_FT), ft(GARAGE_SEAT_Y_FT)),
     base_elevation=ft(SCREEN_PANEL_TOP_FT), top_elevation=ft(HEADER_SOFFIT_FT),
-    slat="4x6", brace_offset=inch(-6.5), connectors_per_end=2,
+    slat="6x6", corner_to_corner=True, connectors_per_end=2,
     plane_offset=inch(0), assembly="POST_KDAT", supported_by="W-BW-SCREEN",
     # Under TR-BW-SCREEN-CAP: the dielectric between its steel and the KDAT, and the seal at
     # every cut-out, turned up each slat and post 1" (the porch beams' wide roll).
     top_protection="butyl-tape-beam",
     connects=("PT-BW-CW", "PT-BW-CNW", "BM-BW-RW", "W-BW-SCREEN"),
-    source="notes/canopy_west_band.md §3, 2026-10-25 — one 4x6 chord-to-top knee brace "
-           "per bay at c=-6.5in, two KBS1Z each end (ER-280 Table 7 type 1, equal width)")
+    source="notes/canopy_west_band.md §3, 2026-10-26 — one 6x6 corner-to-corner knee brace "
+           "per bay, chord to top plate, two open-knee KBS1Z each end (ER-280 Table 7 "
+           "type 1, equal width, interpolated to 45.868 deg)")
 
 # ** THE EAVE COLLECTOR: THE DECK'S N-S SHEAR INTO THE WEST HEADER. ** The deck's boundary
 # nailing lands on the truss heels and the eave blocking; H2.5ASS heel ties carry 110 lb of

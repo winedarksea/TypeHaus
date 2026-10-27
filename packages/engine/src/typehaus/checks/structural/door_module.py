@@ -66,6 +66,8 @@ def door_framing_module(ctx: CheckContext) -> list[Finding]:
     rules = ctx.preferences.framing
     out: list[Finding] = []
     for opening in ctx.model.openings:
+        if not opening.framing_required:
+            continue
         # ``type_ref is None`` catches a bare RoughOpening — a cased opening with no leaf,
         # which frames exactly like a door and which the window check also skips.
         if not (opening.is_door or opening.type_ref is None):

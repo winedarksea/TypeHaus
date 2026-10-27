@@ -56,6 +56,24 @@ def _collar_m(member) -> float:
     return 2.0 * (section.width_m + section.depth_m / sine)
 
 
+def _landing_collar_m(member, seat_z: float) -> float:
+    """A cut member's collar off its actual footprint on the seat, else ``_collar_m``.
+
+    A corner-clipped foot touches the seat only along its clipped face, and its end against
+    the chord post takes no turn-up.
+    """
+    profile, through = member.elevation_profile, member.plan_width_m
+    if not profile or not through:
+        return _collar_m(member)
+    seated = [u for u, z in profile if abs(z - seat_z) < _SEATED_M]
+    if not seated:
+        return 0.0
+    ends = (min(seated), max(seated))
+    abutted = sum(1 for end in ends
+                  if any(abs(u - end) < 1e-6 and z > seat_z + _SEATED_M for u, z in profile))
+    return 2.0 * (ends[1] - ends[0]) + through * (2 - abutted)
+
+
 def _rounded_width_in(profile: str) -> float:
     """The member's actual cross-section width, in inches — the tape has to cover it."""
     try:
@@ -141,7 +159,7 @@ def member_protection_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         sill = next((m for m in brace.members if m.child_key == "plate-sill"), None)
         if sill is None:
             continue
-        collars = sum(_collar_m(m) for m in brace.members
+        collars = sum(_landing_collar_m(m, sill.z1_m) for m in brace.members
                       if m is not sill and abs(m.z0_m - sill.z1_m) < _SEATED_M)
         # The sill is a plate laid FLAT, so the tape covers its wide face.
         width_in = round(cross_section(sill.profile).depth_m / M_PER_IN, 3)

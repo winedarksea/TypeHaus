@@ -79,6 +79,8 @@ def framed_around(opening: Any, wall: Any = None, layer_name: str | None = None)
     (`furring`/`truss_wall`) and `structural.truss_wall_opening_support`. What it governs is
     LUMBER, not geometry: which layers the hole is cut out of is ``geometry_walls.cuts_layer``.
     """
+    if not getattr(opening, "framing_required", True):
+        return False
     if wall is not None and layer_name is not None and not cuts_layer(wall, layer_name,
                                                                        opening):
         return False

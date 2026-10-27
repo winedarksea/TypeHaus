@@ -31,6 +31,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import wall_frame
+from typehaus.resolve.geometry_walls import cuts_layer
 
 _CHECK_ID = "building_science.flood_step_threshold"
 # How far out from the wall face a surface is still "the ground outside this wall". Three
@@ -121,9 +122,13 @@ def flood_step_threshold(ctx: CheckContext) -> list[Finding]:
             continue
         name, top = max(below, key=lambda item: item[1])
         # A formed door-seat recess lowers the concrete containment edge locally.
+        structural_layers = [layer for layer in wall.body_layers()
+                             if layer.function == "structure"]
         notches = [wall.base_ref_z_m + opening.sill_m for opening in ctx.model.openings
                    if opening.host_wall == wall.tag
-                   and wall.base_ref_z_m + opening.sill_m + opening.height_m >= wall.z1_m - 1e-6]
+                   and wall.base_ref_z_m + opening.sill_m + opening.height_m >= wall.z1_m - 1e-6
+                   and any(cuts_layer(wall, layer.name, opening)
+                           for layer in structural_layers)]
         edge = min(wall.z1_m, *notches) if notches else wall.z1_m
         step = edge - top
         want = required[tag].meters

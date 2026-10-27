@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from typehaus.model.base import Element
 from typehaus.model.doorway import DoorwayTreatment
@@ -220,10 +220,19 @@ class RoughOpening(Element):
     #: at its seat inside the cavity without ever piercing the board. Ignored while
     #: ``depth`` is ``None``.
     depth_from: Literal["interior", "exterior"] = "interior"
+    #: A blind nonstructural recess can clear membrane/insulation below a sill without
+    #: creating a second header and jamb pack in the wall.
+    framing_required: bool = True
     #: The maker's ALLOWABLE HOLES chart for this opening's header, where one is published
     #: — the ``Door.published_hole`` field, on the opening kind that carries neither a
     #: ``header_spec`` nor a ``published_span``. ``mep.run_through_header`` reads it.
     published_hole: PublishedHole | None = None
+
+    @model_validator(mode="after")
+    def unframed_opening_must_be_blind(self):
+        if not self.framing_required and self.depth is None:
+            raise ValueError("an unframed rough opening must be blind")
+        return self
 
 
 for _name, _obj in (

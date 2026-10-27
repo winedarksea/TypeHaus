@@ -1,7 +1,8 @@
 """The canopy's west band, heads, bases and open front, against ``notes/canopy_west_band.md``.
 
 The note is hand-worked with plain arithmetic and no engine import; this module reproduces its
-rows on the landed house (``kdat``), the band being ``SB-BW-BAND``'s 45° slats, and pins the two
+rows on the landed house (``kdat``), the band being ``SB-BW-BAND``'s corner-to-corner 6x6
+knee braces, and pins the two
 refusals: a band nothing bridges makes the record INCOMPLETE by name, and the drift limit's N/A
 is earned only from SDC A.
 """
@@ -16,15 +17,18 @@ from typehaus.engineering.item import Status
 
 _ITEM = "lateral_system/RF-BW-CANOPY"
 
-#: §3, §4 and §6: ``row name -> (demand, capacity)``. §3 re-worked 2026-10-25 for one 4x6 per bay.
+#: §3, §4 and §6: ``row name -> (demand, capacity)``. §3 re-worked 2026-10-26 for one
+#: corner-to-corner 6x6 per bay.
 _ROWS = {
     "W-BW-SCREEN unit shear": (190.96, 265.0),
     "W-BW-SCREEN aspect ratio": (0.751, 3.5),
-    "SB-BW-BAND slat end, KBS1Z": (734.225, 1010.0),
-    "SB-BW-BAND slat buckling": (734.225, 32318.3),
-    "SB-BW-BAND centre post bending": (0.0, 1360.0),
-    "SB-BW-BAND centre post end ties": (0.0, 1390.0),
-    "SB-BW-BAND top plate screws into BM-BW-RW": (183.556, 663.614),
+    "SB-BW-BAND slat end, KBS1Z": (745.606, 993.218),
+    "SB-BW-BAND slat buckling": (745.606, 24904.1),
+    "SB-BW-BAND clipped end bearing on a post": (23.90, 251.25),
+    "SB-BW-BAND clipped end bearing on a plate": (25.39, 251.25),
+    "SB-BW-BAND centre post bending": (34.07, 1360.0),
+    "SB-BW-BAND centre post end ties": (478.37, 1390.0),
+    "SB-BW-BAND top plate screws into BM-BW-RW": (186.402, 664.099),
     "SB-BW-BAND sill screws into W-BW-SCREEN's top plate": (129.794, 648.0),
     "W-BW-SCREEN top plate end bearing on a chord": (98.89, 251.25),
     "W-BW-SCREEN base plate and sill end bearing on a chord": (64.39, 251.25),
@@ -65,12 +69,12 @@ def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
 
 
 def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
-    """§3a-b: 24.375" x 25.125" bays, one brace across mid-band, 734.225 lb a brace."""
+    """§3a-b: 24.375" x 25.125" bays, one brace across mid-band, 745.606 lb a brace."""
     values = {q.name: q.value for q in record.inputs}
     assert values["slat_bay_width_SB-BW-BAND"] == pytest.approx(24.375, abs=1e-3)
     assert values["slat_bay_height_SB-BW-BAND"] == pytest.approx(25.125, abs=1e-3)
     assert values["slats_crossing_mid_SB-BW-BAND"] == 1
-    assert values["slat_force_SB-BW-BAND"] == pytest.approx(734.225, abs=0.01)
+    assert values["slat_force_SB-BW-BAND"] == pytest.approx(745.606, abs=0.01)
     assert not any("band strap tension" in s.name for s in record.limit_states)
 
 
@@ -119,37 +123,24 @@ def test_an_unbridged_band_is_incomplete_by_name(catlin_ctx) -> None:
     assert any("band between W-BW-SCREEN's top" in text for text in found.missing)
 
 
-def test_corner_draft_keeps_connection_and_chord_design_incomplete(catlin_ctx) -> None:
-    from typehaus.engineering.lateral_system import compute as lateral_records
-    from typehaus.engineering.wood_roof_post import compute as post_records
-
-    plan = catlin_ctx.plan
-    band = plan.by_tag("SB-BW-BAND")
-    draft = band.model_copy(update={"corner_to_corner": True, "brace_offset": None})
-    elements = {storey: tuple(draft if el.uid == band.uid else el for el in members)
-                for storey, members in plan.elements.items()}
-    ctx = replace(catlin_ctx.engineering.context,
-                  plan=plan.model_copy(update={"elements": elements}))
-    lateral = next(r for r in lateral_records(ctx) if r.item_id == _ITEM)
-    assert lateral.status is Status.INCOMPLETE
-    assert any("tightly bent KBS1Z" in reason for reason in lateral.missing)
-    assert not any(state.name == "SB-BW-BAND slat end, KBS1Z" for state in lateral.limit_states)
-    chord = next(r for r in post_records(ctx) if r.item_id == "wood_roof_post/PT-BW-CW")
-    assert chord.status is Status.INCOMPLETE
-    assert any("clipped-corner connection" in reason for reason in chord.missing)
+def test_the_corner_band_is_graded_on_the_interpolated_open_knee(record) -> None:
+    """§3b: 993.2 lb at 45.868°, 0.751; nothing about the corner left INCOMPLETE."""
+    state = next(s for s in record.limit_states if s.name == "SB-BW-BAND slat end, KBS1Z")
+    assert state.demand / state.capacity == pytest.approx(0.751, abs=5e-4)
+    assert "45.868° interpolated" in state.citation
 
 
 #: §5c, ``post -> {row: ratio}``; a chord's along rows and its column carry the band push.
 _POSTS = {
-    "PT-BW-CW": {"AC6Z head, uplift + lateral along the beam": 0.435,
+    "PT-BW-CW": {"AC6Z head, uplift + lateral along the beam": 0.417,
                  "A35Z head, across the beam": 0.163,
                  "A35Z panel top plate into the post": 0.175,
                  "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.277,
-                 "CBSQ66-SDS2 base, uplift + lateral along the beam": 0.253,
-                 "NDS combined axial and bending": 0.488},
-    "PT-BW-CNW": {"AC6Z head, uplift + lateral along the beam": 0.435,
+                 "CBSQ66-SDS2 base, uplift + lateral along the beam": 0.282,
+                 "NDS combined axial and bending": 0.536},
+    "PT-BW-CNW": {"AC6Z head, uplift + lateral along the beam": 0.417,
                   "A35Z head, across the beam": 0.082,
-                  "NDS combined axial and bending": 0.488},
+                  "NDS combined axial and bending": 0.536},
     "PT-BW-RE": {"ACE6Z head, uplift + lateral along the beam": 0.233,
                  "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.189,
                  "NDS combined axial and bending": 0.225},
@@ -168,14 +159,14 @@ def test_every_post_has_a_rated_head_and_base(catlin_ctx, post) -> None:
 
 
 def test_the_chord_heads_carry_the_band_couple(catlin_ctx) -> None:
-    """§5b: 428.9 + max(206.4 header depth, 147.7 brace couple) = 635.3 lb at a chord's head,
-    and the compression bay's 519.175 lb push across the band."""
+    """§5b: 428.9 + max(206.4 header depth, 49.3 brace couple) = 635.3 lb at a chord's head,
+    and the compression bay's 519.175 lb push across the band at the sill top."""
     found = catlin_ctx.engineering["wood_roof_post/PT-BW-CW"]
     values = {q.name: q.value for q in found.inputs}
     assert values["head_uplift_lb"] == pytest.approx(635.3, abs=0.2)
     assert values["plate_load_lb"] == pytest.approx(121.38, abs=0.05)
     assert values["band_push_lb"] == pytest.approx(519.175, abs=0.05)
-    assert values["band_push_height_ft"] == pytest.approx(4 + 8 / 12, abs=1e-5)
+    assert values["band_push_height_ft"] == pytest.approx(4 + 1.5 / 12, abs=1e-5)
 
 
 def test_the_glulam_header_reproduces_section_7(catlin_ctx) -> None:

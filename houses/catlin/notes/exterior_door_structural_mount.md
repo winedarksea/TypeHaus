@@ -4,7 +4,9 @@
 [french_door_catalog_installation.md](french_door_catalog_installation.md) supersedes
 D-S-DECK-E's schematic steel-wrapped/aluminum-plate installation below. Those two doors
 now have independent catalog ROs, composite exterior trim, a digitized ZAI outline and
-stock AridDek approach envelopes. Study nominal crest differences are about 0.397 inch
+stock AridDek approach envelopes. The patio includes an XMN5 sill extension and blind
+recesses through the exterior layers, stopping at structural framing and concrete. Both
+approach sections pass the geometric interference check. Study nominal crest differences are about 0.397 inch
 above oak and 0.988 inch above the landing, with a separate +0.250 inch allowance.
 The support member checks pass; root connections, concrete development, installed
 pan/apron interfaces and flashing-end application evidence remain open. The main-floor

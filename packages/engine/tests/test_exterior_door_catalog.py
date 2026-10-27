@@ -36,6 +36,8 @@ def test_capacities_need_evidence_and_schematic_cannot_overlay_catalog():
         _catalog(pan_height=inch(0))
     with pytest.raises(ValueError, match="outline"):
         _catalog(sill_outline_m=())
+    with pytest.raises(ValueError, match="reference, source"):
+        _catalog(sill_extender_depth=inch(1.1875))
 
 
 def test_member_pass_does_not_verify_missing_connection():
@@ -67,10 +69,10 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     assert placement.sill_design_status == "CATALOG_DESIGN"
     assert placement.factory_depth_documented
     assert assembly.supplier_status == "PENDING"
+    assert assembly.fit_status == "UNKNOWN"
     if tag == "D-B-PATIO":
-        assert assembly.fit_status == "FAIL"
-        assert any("intersects remaining W-B-S3" in c for c in assembly.conflicts)
-        assert placement.installation_report["seat_interference_status"] == "FAIL"
+        assert placement.installation_report["seat_interference_status"] == "PASS"
+        assert placement.specification.catalog_installation.sill_extender_ref == "XMN5"
     else:
         assert assembly.fit_status == "UNKNOWN"
         assert not assembly.conflicts
@@ -82,11 +84,34 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     )
     names = {s.name for s in placement.sections}
     assert "catalog-sill-outline" in names
+    if tag == "D-B-PATIO":
+        assert "catalog-sill-extender-XMN5" in names
+        extender = next(s for s in placement.sections
+                        if s.name == "catalog-sill-extender-XMN5")
+        assert extender.purchase == "separate"
+        assert extender.source_url.endswith("/XMN5.pdf")
+        from typehaus.takeoff.doors import door_installation_rows
+
+        takeoff = [row for row in door_installation_rows(model)
+                   if row["item"] == "XMN5"]
+        assert len(takeoff) == 1
+        assert takeoff[0]["tags"] == ["D-B-PATIO"]
+        assert takeoff[0]["source"].endswith("/XMN5.pdf")
+        from typehaus.takeoff.openings import opening_takeoff
+
+        schedule_rows = opening_takeoff(model)
+        clearance_rows = [row for row in schedule_rows if any(
+            tag == "AO-B-PATIO-CURB-APPROACH" for tag in row["tags"]
+        )]
+        assert len(clearance_rows) == 1
+        assert all(not row["framing_required"] for row in clearance_rows)
     assert "approach-walking-plate" not in names
     assert all(Polygon(s.polygon_m).is_valid for s in placement.sections)
     report = placement.installation_report
     assert report["support"]["connection_status"] == "UNKNOWN"
     assert report["support"]["member_status"] == "PASS"
+    assert report["approach_slope"] == pytest.approx(1 / 48)
+    assert report["drainage_clearance_in"] > 0
     assert report["receiver_pan_clearance_in"] >= 0.0625
     if tag == "D-S-DECK-E":
         assert report["minimum_movement_gap_in"] > 0
@@ -129,6 +154,18 @@ def test_patio_reveal_reference_and_concrete_seat_are_real(catlin_model_ro):
     assert not any(
         s.z1_m > notch_z + 1e-6 and Polygon(s.ring).contains(Point(center)) for s in pieces
     )
+    approach_recess = next(
+        o for o in model.openings if o.tag == "AO-B-PATIO-CURB-APPROACH"
+    )
+    host = model.wall(approach_recess.host_wall)
+    assert approach_recess.depth_from == "exterior"
+    assert not approach_recess.framing_required
+    assert not any(m.opening_tag == approach_recess.tag for m in host.members)
+    assert approach_recess.depth_m == pytest.approx(
+        host.layer_depth_m("concrete", "exterior")
+    )
+    assert approach_recess.width_m == door.width_m
+    assert approach_recess.center_along_m == pytest.approx(door.center_along_m)
 
 
 def test_invalid_explicit_reveal_does_not_fall_back_to_host(catlin_model_ro):

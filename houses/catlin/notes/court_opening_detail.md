@@ -14,7 +14,7 @@ source:
 ## Sheet notes
 
 ### General
-- D-B-PATIO fit FAIL: curb collision. WIN-B-SAUNA: flashing not modeled.
+- D-B-PATIO geometry coordinated; support/bonds UNKNOWN. WIN-B-SAUNA: no flashing.
 - Water plane: the 60 mil waterproofing. Opening membranes lap onto it, shingle-fashion.
 - Veneer arches are self-supporting, under the porch: no lintel, no head flashing (IRC R703.8.5).
 - WIN-B-SAUNA is 3'-8" above the court, clear of the flood line. Liner vapour return seals inside.
@@ -25,7 +25,7 @@ source:
 - [K3] Sill pan sloped 1/4"/ft, with back dam and end dams 6" up the jambs, lapped over the waterproofing below.
 - [K4] D-B-PATIO: concrete curb with overflow drainage and sump pump; door is specified for standard rain exposure, not as a flood barrier.
 - [K5] D-B-PATIO: keep pan outlet open; confirm seat, sealant and drainage with the installed door and pan instructions.
-- [K6] D-B-PATIO: 5-1/2 inch seat, 7-1/4 inch adjacent curb. Resolve approach/curb collision.
+- [K6] D-B-PATIO: XMN5 and the blind curb-skin recess clear the approach; verify field membrane bonds.
 - [K7 @ host#layer:eps-ci:out] Veneer cavity: 4" clear air. Keep the base-course weeps open; they drain it after the court drains.
 
 # Notes

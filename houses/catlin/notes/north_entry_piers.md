@@ -392,6 +392,13 @@ The same 2.052083′ of panel past the beam adds 153.581 lb: total **549.788 lb*
 **274.894 lb at each column and its cast pier**. Those replace 563.0/281.5 lb in the
 former chevron rows; the panel's own weight and the load path stay as worked below.
 
+**2026-10-26 corner 6x6 amendment.** The two knees became 6x6 corner-to-corner diagonals,
+cut 35.00580″ (`canopy_west_band.md` §3a): 2 × 54.25 × 1.5 × 5.5 + 25.125 × 5.5² +
+2 × 35.00580 × 5.5 × 5.5 = 3,773.007 in³ = **2.18345 ft³**, 81.785 lb, **18.091 plf**
+over 4.520833′. The line becomes **92.932 plf**; on the beam 420.132 lb, past it the
+panel's 153.581 + 3.118 lb (§10's 1/2″): total **576.831 lb**, **288.416 lb at each column
+and its cast pier**. These replace the 87.640 plf and 276.45 lb below.
+
 **The panel's ends are weighed too (2026-10-25).** The wall runs 36'-7 3/4" to 43'-2 5/8"
 and the sill only 37'-8 3/4" to 42'-3", between the chord posts. The 2.05' past the sill —
 the two post tops and the ends cantilevered past them — is sheathed panel carried to its
