@@ -1,4 +1,4 @@
-"""Regenerate the service-door swing plan and authored x=99in longitudinal section."""
+"""Regenerate the MMI service-door swing plan and authored longitudinal section."""
 
 from pathlib import Path
 
@@ -46,8 +46,10 @@ def main():
         if result.clearance_m < spec.minimum_clearance.meters:
             print(f"CONFLICT {result.component} / {result.obstacle} / {result.part}: "
                   f"{result.clearance_m / INCH:.3f}in at {result.angle_interval_degrees}deg")
-    if results:
-        nearest = results[0]
+    nearest_by_obstacle = {}
+    for result in results:
+        nearest_by_obstacle.setdefault((result.component, result.obstacle), result)
+    for nearest in nearest_by_obstacle.values():
         print(f"MINIMUM {nearest.component} / {nearest.obstacle} / {nearest.part}: "
               f"{nearest.clearance_m / INCH:.3f}in at {nearest.angle_interval_degrees}deg")
     fig, ax = plt.subplots(figsize=(10, 9))
@@ -84,10 +86,10 @@ def main():
                 coords = [(x / INCH, y / INCH) for x, y in polygon.exterior.coords]
                 ax.add_patch(PlotPolygon(coords, facecolor=color, edgecolor=color, alpha=alpha))
     ax.plot(*hinge_inches, "ko")
-    ax.text(84, 522, f"SCHEMATIC hinge x={hinge_inches[0]:.2f}in; supplier section pending",
+    ax.text(84, 522, f"Modelled pivot x={hinge_inches[0]:.2f}in; minimum inset 1/2in",
             fontsize=9)
     ax.text(85, 482, "90° stop-only (blue), 91° tolerance (orange)\n"
-            "Leaf bottom ≥1in above rough sill required; factory dimensions pending", fontsize=10)
+            "MMI 32in leaf; 1/8in install allowance; 1/4in min clearance", fontsize=10)
     ax.annotate(
         "Guard head x=116.5in",
         xy=(116.5, 514.75),
@@ -101,7 +103,7 @@ def main():
         aspect="equal",
         xlabel="Project x (in)",
         ylabel="Project y (in)",
-        title="D-G-SERVICE — 32in Masonite outswing / retained brick screen",
+        title="D-G-SERVICE — MMI 32in outswing / retained brick screen",
     )
     ax.grid(alpha=0.2)
     fig.tight_layout()

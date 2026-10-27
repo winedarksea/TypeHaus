@@ -186,8 +186,11 @@ def test_a_wall_mounted_rail_bills_brackets_rather_than_posts(catlin_model, bom)
     """The five handrails have no posts at all — they are screwed to a wall — and the box of
     brackets that carries them is what an order for one contains."""
     billed = sum(int(row["bracket_count"]) for row in bom["railings"])
+    # Fascia attachment plates also contain "BRACKET" in their tags, but they belong
+    # to the fascia mounted railing takeoff rather than these wall mounted handrails.
     drawn = len([s for s in catlin_model.solids
-                 if s.category == "railing" and "BRACKET" in s.tag])
+                 if s.category == "railing" and "-BRACKET" in s.tag
+                 and "-FASCIA-BRACKET" not in s.tag])
     assert billed == drawn > 0
 
 

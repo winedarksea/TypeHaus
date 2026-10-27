@@ -951,8 +951,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   tilt-only units; Andersen 400 casements for the 9 R310 escape windows (`WIN-M-BED-S1`/`S2`,
   `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`); Therma-Tru Smooth-Star full-lite / Endura
   for the French pairs (2026-10-25; laminated triple and pair label pending); an OPAQUE Therma-Tru Smooth-Star for
-  `D-M-ENTRY` (owner: a solid, insulated front door, at most a tiny lite); commodity Masonite
-  insulated steel for `D-G-SERVICE` (`DT-EXT-SWING32-G`); Clopay for the overhead. Black outside, white inside.
+  `D-M-ENTRY` (owner: a solid, insulated front door, at most a tiny lite); MMI Z0364688R
+  six-panel insulated steel for `D-G-SERVICE` (`DT-EXT-SWING32-G`); Clopay for the overhead. Black outside, white inside.
   `plan/window_types.py`/`plan/door_types.py` redefine every tag the house hangs, each with
   its NFRC CPD row, and `plan/manifest.py` drops the library preset of that tag; catalog-only
   sizes stay presets. **Edit the house file, never `library/windows.py`.** The escape types
@@ -1969,12 +1969,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   2026-09-07.** `GARAGE_X_WEST`/`GARAGE_X_EAST` are published beside the two y lines; stem,
   slab, and landing derive from them. Footprint did not rotate — windows stay on `W-G-W`,
   `D-G-SERVICE` on `W-G-S`. (→ DESIGN-LOG.md, "Decks and the garage")
-  - `D-G-SERVICE`'s centre is **x=8'-3"** since 2026-10-25 (`SERVICE_DOOR_OFFSET` 0'-11", 32in model opening
-    6'-11"..9'-7"), three inches off `D-M-ENTRY`'s 8'-0"; it was 10'-0" from 2026-09-07. **The
+  - `D-G-SERVICE` keeps its east jamb at **x=9'-7"** since 2026-10-25 (`SERVICE_DOOR_OFFSET`
+    0'-11"): the stock 32in leaf is in a 34in RO at 6'-9"..9'-7". **The
     "24-inch steps" rule that held it there was the house's own invention** — the engine
     grades how many studs an opening interrupts, and the only hard bound is the corner pack
-    (x 6'-0"..6'-3 5/8"). The narrower leaf preserves the east jamb/deck datum; actual
-    prehung frame and hinge dimensions require supplier confirmation (see outswing note).
+    (x 6'-0"..6'-3 5/8"). The selected MMI unit uses its published 34 x 81.5in RO; frame it
+    to that size and set the unit by normal prehung practice. The sweep allows a 1/2in minimum
+    hinge-pivot inset (see outswing note).
     `D-M-ENTRY` still cannot move (its east jamb is 6" west of `N-M-N2`, the
     bearing tee). `code.R311_3_exterior_landing` passes both on a 3'-7" deck (x 6'-0"..9'-7").
     **Do not answer anything here by moving the garage back.**

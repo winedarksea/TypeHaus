@@ -6318,7 +6318,7 @@ Neither a renamed schematic outline nor a copied support envelope establishes qu
 Keep SCHEMATIC as an explicit early-coordination option until those selections can be
 replaced; a catalog error never falls back to it automatically. Both fits remain UNKNOWN.
 
-## Exterior door sill follow-up
+## Exterior door sill follow-up (2026-10-25 status, superseded)
 
 The patio brick arch crown is 80 inches above the veneer base, below the door head; the
 78-inch project headroom criterion is measured at its centreline. Brick provides the trim,
@@ -6328,3 +6328,20 @@ its supplier section and support remain to be confirmed.
 The schematic garage leaf and the existing `CN-G-BWHD-S-DR` hold-down overlap in the
 continuous swing-clearance test. The factory hinge datum and the hold-down/jamb detail need
 coordination before the service door installation can be released.
+
+## Garage service door coordination resolved (2026-10-27)
+
+Select the off-the-shelf MMI Z0364688R six-panel insulated steel outswing unit. Its published
+34 × 81.5 in rough opening is framed at x=81..115 in; the modeled purchase leaf remains
+32 × 80 in. The normal prehung installation sets the unit plumb and square, supports the
+included fixed sill continuously on KDAT under the specified pan, and establishes the stair
+risers from the installed threshold. No custom prehanger section is required.
+
+The door type uses two full-height kings and one jack with no horizontal bay blocking, so
+integrity no longer reports `DT-EXT-SWING32-G: blocking requires hardware anchor heights`.
+The separate leaf sweep tests the 32 in leaf at a minimum 1/2 in pivot inset through 91°;
+minimum clearance is 0.440 in at the brick base flashing and 2.873 in at `CN-G-BWHD-S-DR`,
+including the 1/8 in installation allowance and 1/4 in required clearance. The stock STHD14
+stays at x=118 in on the east king pack; delivered tension is 290.372 lb against 3,065 lb.
+The stair-to-threshold code interpretation remains a separate plan-review item per the
+owner's direction.

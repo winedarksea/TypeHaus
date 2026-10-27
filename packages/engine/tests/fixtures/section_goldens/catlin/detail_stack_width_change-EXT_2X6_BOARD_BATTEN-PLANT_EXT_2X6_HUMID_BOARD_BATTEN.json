@@ -2019,7 +2019,7 @@
       "layer": "A-WALL-PATT",
       "uid": "SGFS02AAAA",
       "material": "aluminum-deck",
-      "fill": "#b9bcc0"
+      "fill": "#7b7e81"
     },
     {
       "space": "model",
@@ -2076,7 +2076,7 @@
       "layer": "A-WALL-PATT",
       "uid": "SGFS02AAAA",
       "material": "aluminum-deck",
-      "fill": "#b9bcc0"
+      "fill": "#7b7e81"
     },
     {
       "space": "model",

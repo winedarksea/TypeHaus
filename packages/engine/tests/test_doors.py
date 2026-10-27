@@ -80,8 +80,8 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
     expected = {
         # D-M-ENTRY: an opaque Therma-Tru Smooth-Star (2026-10-21).
         "DT-EXT-SWING36": (36.0, DoorOperation.SWING, True, False),
-        # D-G-SERVICE's own product since 2026-10-21: a flush Masonite steel outswing.
-        "DT-EXT-SWING32-G": (32.0, DoorOperation.SWING, True, False),
+        # D-G-SERVICE: MMI nominal 32x80 leaf in its 34x81.5 framed opening.
+        "DT-EXT-SWING32-G": (34.0, DoorOperation.SWING, True, False),
         "DT-EXT-FRENCH60": (60.0, DoorOperation.DOUBLE_SWING, True, True),
         "DT-EXT-FRENCH60-CATALOG": (63.3125, DoorOperation.DOUBLE_SWING, True, True),
         "DT-INT-SWING32": (32.0, DoorOperation.SWING, False, False),
@@ -139,6 +139,8 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
         assert door_type.operation is operation
         assert door_type.exterior is exterior
         assert door_type.glazed is glazed
+    service = types["DT-EXT-SWING32-G"]
+    assert service.jamb_framing is not None and not service.jamb_framing.blocking
 
 
 # --- plan symbols -----------------------------------------------------------------

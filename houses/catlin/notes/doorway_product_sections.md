@@ -1,11 +1,11 @@
-# Doorway product sections — research and supplier register
+# Doorway product sections — selected units and section register
 
 Reviewed 2026-10-23; main-floor structural mounting updated 2026-10-24 in
 [exterior_door_structural_mount.md](exterior_door_structural_mount.md).
-Authored opening/landing elevations remain fixed. An ordered door
-line is not approval of a particular sill. The `doorway` records in `plan/door_types.py`
-are deliberately **unverified** and contain no polygons. UNKNOWN is the correct result
-until the supplier identifies the installed variant, dimensioned section and revision.
+Authored opening/landing elevations remain fixed. A product-specific entry below records
+whether ordinary installation resolves the doorway or a special section is still needed.
+The `doorway` records in `plan/door_types.py` do not invent polygons for the unresolved
+units. UNKNOWN remains correct until the supplier identifies those installed variants.
 Factory sills and kit components are included in the door/kit price, not separate BOM items.
 The two main-floor doors now also have explicitly **schematic project sill/approach
 envelopes** in their `exterior_installation.sill_design`. These do not change the
@@ -13,11 +13,11 @@ unverified factory records below; see the structural-mount note for their assump
 and unresolved structural support. They must be removed when actual factory sections
 are installed in the model.
 
-| Opening/product | Verified source information | Supplier question / unresolved dimensions |
+| Opening/product | Verified source information | Installation requirement or remaining supplier item |
 |---|---|---|
 | D-M-ENTRY, opaque Therma-Tru Smooth-Star, inswing | [Manufacturer sill catalog](https://store.thermatru.com/collections/sills) lists adjustable composite, basic fixed, public access, outswing and other distinct systems. The [composite adjustable product](https://store.thermatru.com/products/composite-adjustable-sill) describes composite substrate/cap, aluminum approach and vertical adjustment. | Which exact sill, cap, depth, extension and sweep is in the quote? Supply section showing seat, walking crest, leaf clearance, adjustment range and exterior direction. Catalog size choices are not approval of an installed section. No height or sloped outline is inferred. |
 | Therma-Tru Smooth-Star full-lite French pairs / Endura ZAI | [Endura ZAI](https://www.enduraproducts.com/adjustable-door-sills-2/) and [Z-Series Sill Options](https://marketing.poweredbyendura.com/hubfs/Sills_TechnicalDocuments/Z-Series%20Sills%20-%20Line%20Drawings.pdf), p.5: ZAI4565FN, 4-9/16 × 1-3/8 in, 5° deck. Published dimensions support a schematic envelope only. | Prehanger must confirm Therma-Tru pair approval/label, exact sill variant, composite jamb depth, sweep, installed cap/seat and floor-stop datums, support and drainage coordinated with the pan. |
-| D-G-SERVICE, Masonite flush steel, outswing | [Masonite terminology](https://www.masonite.com/discover-and-learn/door-buying-key-terms/) distinguishes a particular Performance Door System with a self-adjusting sill. That does not establish the commodity prehung unit's outswing sill. | Identify the prehanger, SKU, outswing sill manufacturer/variant, depth and extension. Supply dimensioned section, seal, supported floor-height range and orientation. Retain the raised rough sill and its support. Do not reverse an inswing sill to approximate this product. |
+| D-G-SERVICE, MMI Z0364688R, six-panel steel outswing | [Stock prehung listing](https://hdsupplysolutions.com/p/doors-00-145-10/mmi-door-6-panel-32-x-80-rh-out-on-6-9-16-primed-composite-frame-p219385): 32 × 80 in leaf, 33.5 × 81 in unit, suggested 34 × 81.5 in RO, 6-9/16 in composite frame, fixed sill and seals. | Selected off-the-shelf unit. Frame to the published RO; plumb and square the prehung unit, support its factory sill continuously on KDAT under the specified pan, and keep the leaf/sweep at least 1 in above the deck. Set stair risers from the installed threshold. Hinge locations and sill fit are checked during normal installation; no custom section or supplier drawing is required. |
 | Clopay Modern Steel Intellicore | [Manufacturer construction description](https://www.clopaydoor.com/residential-garage-doors/modern-steel-collection) identifies a replaceable vinyl bottom seal in an aluminum retainer. It is carried by the door, not a floor threshold. | Supply the selected bottom section/retainer and seal part numbers, installed/compressed section, slab contact datum and clearances. No pan or spanning floor track is inferred from overhead operation. |
 
 The UW6 sheet has been inspected directly, including its dimension callouts. Its sill

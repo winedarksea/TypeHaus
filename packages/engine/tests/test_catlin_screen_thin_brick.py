@@ -88,11 +88,12 @@ def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
     hinge = door.swing_clearance[0]
     tip = door.swing_clearance[-1]
     assert door.type_ref == "DT-EXT-SWING32-G"
-    assert door.width_m / INCH == pytest.approx(32)
-    assert hinge[0] / INCH == pytest.approx(83)
+    # Opening geometry is the 34-inch RO; takeoff still uses the 32-inch stock leaf.
+    assert door.width_m / INCH == pytest.approx(34)
+    assert hinge[0] / INCH == pytest.approx(81)
     assert (hinge[0] + door.width_m) / INCH == pytest.approx(115)
     assert (tip[0] - hinge[0]) / INCH == pytest.approx(0)
-    assert (tip[1] - hinge[1]) / INCH == pytest.approx(-32)
+    assert (tip[1] - hinge[1]) / INCH == pytest.approx(-34)
     exported = next(o for o in model_to_dict(catlin_model_ro)["openings"] if o["tag"] == door.tag)
     assert exported["maximum_opening_degrees"] == 90
     assert catlin_model_ro.plan.by_tag(
@@ -100,21 +101,34 @@ def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
     ).cut_origin.x.meters / INCH == pytest.approx(99)
 
 
-def test_schematic_sweep_reports_hold_down_conflict_without_claiming_release(catlin_model_ro):
+def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catlin_model_ro):
+    from dataclasses import replace
+
     from scripts.garage_service_door_clearance import clearance_results, service_door_envelope
+    from typehaus.quantities import inch
 
     door = next(o for o in catlin_model_ro.openings if o.tag == "D-G-SERVICE")
-    results = clearance_results(catlin_model_ro, door, 90, service_door_envelope())
-    conflicts = [result for result in results
-                 if result.obstacle == "CN-G-BWHD-S-DR" and result.component == "leaf"]
-    assert conflicts
-    assert min(result.clearance_m for result in conflicts) / INCH == pytest.approx(-0.125)
+    envelope = service_door_envelope()
+    results = clearance_results(catlin_model_ro, door, 90, envelope)
+    anchor = [result for result in results if result.obstacle == "CN-G-BWHD-S-DR"]
+    assert anchor
+    assert min(result.clearance_m for result in anchor) / INCH >= 0.25
+    assert min(result.clearance_m for result in results) / INCH >= 0.25
+    # The sweep uses a conservative 1/2-inch hinge-pivot inset inside the stock RO jamb.
     assert any(result.obstacle == "W-BW-SCREEN" for result in results)
     assert any(result.obstacle == "PT-BW-CNW" for result in results)
     assert any(result.obstacle.startswith("TR-BW-BRICK-HEAD") for result in results)
 
+    # Reproduce the old schematic leaf: 34 inches wide at the x=83-inch hinge. It still
+    # overlaps the hold-down, so the positive result depends on the purchased 32-inch leaf.
+    old_schematic = replace(envelope, hinge_inset=inch(2), leaf_end=inch(34))
+    old_results = clearance_results(catlin_model_ro, door, 90, old_schematic)
+    old_anchor = [result for result in old_results if result.obstacle == "CN-G-BWHD-S-DR"]
+    assert old_anchor
+    assert min(result.clearance_m for result in old_anchor) < 0
 
-def test_service_door_takeoff_uses_masonite_32in_price(catlin_model_ro):
+
+def test_service_door_takeoff_uses_mmi_32in_price(catlin_model_ro):
     from _helpers import CATLIN
 
     from typehaus.cli.prices import estimate_costs, load_prices
@@ -124,12 +138,12 @@ def test_service_door_takeoff_uses_masonite_32in_price(catlin_model_ro):
     assert len(rows) == 1
     assert (rows[0]["type"], rows[0]["width_in"], rows[0]["count"]) == ("DT-EXT-SWING32-G", 32, 1)
     door_type = next(t for t in catlin_model_ro.plan.library.door_types if t.tag == rows[0]["type"])
-    assert door_type.product_ref == "PROD-MASONITE-STEEL-FLUSH"
+    assert door_type.product_ref == "PROD-MMI-STEEL-SIX-PANEL"
     prices = load_prices(CATLIN)
     assert "finish-door-closer-hold-open" not in prices.allowances
     from dataclasses import replace
 
     estimate = estimate_costs({"openings": rows}, replace(prices, allowances={}))
-    assert estimate["sections"]["openings"]["subtotal"]["low"] >= 620
-    assert estimate["sections"]["openings"]["subtotal"]["high"] >= 1320
+    assert estimate["sections"]["openings"]["subtotal"]["low"] >= 1023
+    assert estimate["sections"]["openings"]["subtotal"]["high"] >= 1323
     assert not estimate["unpriced"]

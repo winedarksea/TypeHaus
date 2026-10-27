@@ -179,10 +179,12 @@ def clearance_results(model, opening, stop_degrees, spec):
 
 
 def service_door_envelope():
-    """Conservative full-RO sweep, with required installed moving-part bottom."""
+    """Installed 32-inch leaf envelope inside the independent 34-inch rough opening."""
     return SwingEnvelope(
-        hinge_inset=inch(0), hinge_normal_datum="exterior_placement",
-        hinge_normal_offset=inch(0), leaf_start=inch(0), leaf_end=inch(34),
+        # The stock prehung unit carries its hinge line inside the RO jamb; the final
+        # pivot is field verified from the supplied frame before setting the stop.
+        hinge_inset=inch(0.5), hinge_normal_datum="exterior_placement",
+        hinge_normal_offset=inch(0), leaf_start=inch(0), leaf_end=inch(32),
         leaf_face_min=inch(-0.875), leaf_face_max=inch(0.875),
         leaf_bottom=inch(1), leaf_top=inch(80), lever_backset=inch(2.375),
         lever_hingeward_extent=inch(4.125), lever_projection=inch(2.5),

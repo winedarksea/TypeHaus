@@ -5,6 +5,13 @@
 > gable clips 99.80 lb; W-G-S shear increment 40.09 plf / overturning increment 285.15 lb.
 > Existing capacities still pass. See [west-band amendment](canopy_west_band.md#2026-10-14-west-tail-amendment-to-67).
 
+> **Current active KDAT calculation (2026-10-26):** the canopy tail extension raises E-W
+> delivery to 707.056 lb. On the 17.299 ft W-G-S surplus this is 40.872 plf, 0.224 of
+> 182.5 plf. Over the full 20.2917 ft provided wall, it is 34.846 plf; at the 8.333 ft
+> wall height the STHD14 demand is 290.372 lb, 0.095 of the 3,065 lb allowable. These are
+> the current KDAT values checked by `test_diaphragm_delivery_calcs.py` and used for
+> `CN-G-BWHD-S-DR` in `garage_service_door_outswing.md`.
+
 # The canopy braces off the garage — hand-worked basis
 
 **House:** catlin
@@ -292,7 +299,7 @@ x 0.95 story height; it was 4.275' under the 9.25" heel, when the garage roof st
 
 | line | provided | surplus | steel | kdat |
 |---|---:|---:|---|---|
-| `W-G-S` (E-W) | 20.292' | 17.299' | 677.3/17.299 = 39.15 plf, 0.215 | 39.90 plf, **0.219** |
+| `W-G-S` (E-W) | 20.292' | 17.299' | 677.3/17.299 = 39.15 plf, 0.215 | 707.056/17.299 = **40.872 plf, 0.224** |
 | `W-G-E` (N-S) | 24.000' | 21.008' | 529.9/21.008 = 25.23 plf, 0.138 | 25.84 plf, 0.142 |
 | `W-G-W` (N-S) | 21.667' | 18.675' | 495.5/18.675 = 26.53 plf, 0.145 | 26.53 plf, 0.145 |
 
@@ -301,8 +308,7 @@ x 0.95 story height; it was 4.275' under the 9.25" heel, when the garage roof st
 The delivered shear over the whole provided length, times the wall height, NO dead load:
 
 ```
-steel   v = 677.3 / 20.2917 = 33.38 plf   T = 33.38 x 8.333 = 278.2 lb
-kdat    v = 34.01 plf                     T = 283.5 lb
+current KDAT   v = 707.056 / 20.2917 = 34.846 plf   T = 34.846 x 8.333 = 290.372 lb
 ```
 
 * **Beside `D-G-SERVICE`**, retain stock **STHD14, `CN-G-BWHD-S-DR`**,
@@ -319,7 +325,7 @@ kdat    v = 34.01 plf                     T = 283.5 lb
   the pour with an SM1 holder; exclude EPS from the anchorage and nail only into wood.
   The adjacent SW anchor is 42.75 in away in x, exceeding 3 × 14 = 42 in. The fossil stem
   splits are continuous concrete, not free ends. Use the conservative 6-in end-wall
-  allowable **3,065 lb**: steel **278.2/3,065=0.091**, kdat **283.5/3,065=0.093**.
+  allowable **3,065 lb**: current KDAT **290.372/3,065=0.095**.
   Simpson C-C-2026 pp.66–68 provides the double-stud nail pattern, embedment, bar and
   spacing requirements. See `garage_service_door_outswing.md` for the plan/anchor drawing.
 

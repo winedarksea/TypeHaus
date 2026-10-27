@@ -30,10 +30,10 @@ _ROWS = {
     "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (262.670, 1080.0174),
     "LTP4 plate clips, frame into wall": (101.008, 450.0),
     "RF-GARAGE unit-shear increment": (22.62, 167.5),
-    "W-G-S delivered shear on the surplus": (40.579, 182.5),
+    "W-G-S delivered shear on the surplus": (40.872, 182.5),
     "W-G-E delivered shear on the surplus": (25.84, 182.5),
     "W-G-W delivered shear on the surplus": (26.53, 182.5),
-    "W-G-S overturning, delivered increment": (288.594, 3065.0),
+    "W-G-S overturning, delivered increment": (290.372, 3065.0),
     "diaphragm unit shear at W-BW-SCREEN": (173.06, 190.0),
 }
 

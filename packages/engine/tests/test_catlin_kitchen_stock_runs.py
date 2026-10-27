@@ -198,6 +198,14 @@ def test_hung_upper_faces_west_over_an_open_appliance_cave(
     for tag, obj in kitchen_objects.items():
         if not tag.startswith(("FURN-", "APPL-")) or tag.startswith("FURN-M-KIT-E-HUNG"):
             continue
+        if tag == "APPL-M-MICROWAVE":
+            # This is the appliance the open cave is sized for; it fills that recess
+            # below the wall unit instead of colliding with the cabinet above.
+            ox0, oy0, ox1, oy1 = _bounds(obj)
+            assert cave.covers(box(ox0 * INCH, oy0 * INCH, ox1 * INCH, oy1 * INCH))
+            assert obj.body_z0_m / INCH >= 36 + 0.9375
+            assert obj.body_z1_m / INCH <= 56 + 0.9375
+            continue
         z0, z1 = obj.body_z0_m / INCH - 0.9375, obj.body_z1_m / INCH - 0.9375
         if z1 <= 36 + 1e-6 or z0 >= 56 - 1e-6:
             continue

@@ -68,7 +68,8 @@ MMI_STEEL_SIX_PANEL = Product(
            "compression seals, composite fixed sill and three non-removable-pin hinges. "
            "West hinges viewed from deck; black exterior, white interior. Nominal 32x80, "
            "unit 33.5x81, catalog RO 34x81.5 inches. Deliver unit before cutting opening; "
-           "measure sill and set support to keep moving leaf/sweep >=1 inch above deck. "
+           "frame to the published RO, then set sill support and stair cuts from the delivered "
+           "unit; keep moving leaf/sweep >=1 inch above deck. "
            "No separate replacement sill or custom prehanger assembly. $1,023 listed 2026-10-27.")
 
 CLOPAY_MODERN_STEEL = Product(
