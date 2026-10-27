@@ -56,7 +56,7 @@ class ExteriorDoorPlacement:
     installation_report: dict | None = None
 
 
-def exterior_landing(model, wall, point, outward, installation):
+def exterior_landing(model, wall, point, outward, installation, rough_opening_z):
     """Find actual surfaces across a bounded drainage gap, including dropped landings."""
     from typehaus.resolve.doorway import DOORWAY
 
@@ -64,10 +64,10 @@ def exterior_landing(model, wall, point, outward, installation):
     while distance <= installation.landing_search.meters + DOORWAY.height_tolerance_m:
         probe = tuple(point[i] + outward[i] * distance for i in (0, 1))
         candidates = [s for s in surfaces_at(model, probe)
-                      if s.room_tag is None and abs(s.deck_top_m - wall.base_ref_z_m)
+                      if s.room_tag is None and abs(s.deck_top_m - rough_opening_z)
                       <= installation.maximum_landing_drop.meters]
         if candidates:
-            return min(candidates, key=lambda s: abs(s.deck_top_m - wall.base_ref_z_m))
+            return min(candidates, key=lambda s: abs(s.deck_top_m - rough_opening_z))
         distance += installation.drainage_gap.meters
     return None
 
@@ -119,20 +119,36 @@ def place_exterior_door(model, wall, opening, assembly, specification):
                 (base + head - thickness) / 2, mid, material, key))
         boards.append(DoorInstallationBoard(f"{prefix}-head", opening.width_m, thickness,
             length, 0, head - thickness / 2, mid, material, key))
-    reveal("exterior-return", frame_outer, clad, specification.exterior_material_ref, "window_trim")
+    masonry_reveal = False
+    if specification.exterior_opening_ref:
+        from typehaus.resolve.construction_assemblies import _is_masonry
+
+        reveal_opening = next(o for o in model.openings
+                              if o.tag == specification.exterior_opening_ref)
+        reveal_wall = model.wall(reveal_opening.host_wall)
+        reveal_assembly = model.plan.library.resolve_assembly(reveal_wall.assembly)
+        masonry_reveal = (reveal_assembly is not None and _is_masonry(reveal_assembly)) or any(
+            layer.function == "structure" and any(
+                word in layer.material_ref for word in ("brick", "block", "cmu", "stone")
+            ) for layer in reveal_wall.depth_layers()
+        )
+    trim_face = (faces[1] if sign > 0 else faces[0]) if masonry_reveal else clad
+    reveal("exterior-return", frame_outer, trim_face,
+           specification.exterior_material_ref, "window_trim")
     interior_face = faces[0] if sign > 0 else faces[1]
     reveal("interior-extension", interior_face, frame_inner,
            specification.interior_material_ref, "door_frame")
-    casing = specification.casing_width.meters
-    casing_depth = specification.casing_thickness.meters
-    for side in (-1, 1):
-        boards.append(DoorInstallationBoard(f"exterior-casing-jamb-{side}", casing,
-            head - base, casing_depth, side * (half + casing / 2),
-            (base + head) / 2, clad + sign * casing_depth / 2,
+    if not masonry_reveal:
+        casing = specification.casing_width.meters
+        casing_depth = specification.casing_thickness.meters
+        for side in (-1, 1):
+            boards.append(DoorInstallationBoard(f"exterior-casing-jamb-{side}", casing,
+                head - base, casing_depth, side * (half + casing / 2),
+                (base + head) / 2, clad + sign * casing_depth / 2,
+                specification.exterior_material_ref))
+        boards.append(DoorInstallationBoard("exterior-casing-head", opening.width_m + 2 * casing,
+            casing, casing_depth, 0, head + casing / 2, clad + sign * casing_depth / 2,
             specification.exterior_material_ref))
-    boards.append(DoorInstallationBoard("exterior-casing-head", opening.width_m + 2 * casing,
-        casing, casing_depth, 0, head + casing / 2, clad + sign * casing_depth / 2,
-        specification.exterior_material_ref))
     placement = ExteriorDoorPlacement(specification, sign, frame_inner, frame_outer, leaf,
         frame_inner, frame_outer, tuple(boards), factory is not None)
     unknown = list(assembly.unknown)

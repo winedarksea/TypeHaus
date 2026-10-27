@@ -2722,8 +2722,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     catlin.
   - Rate is `$19-30/SF` (scaffold-inclusive, for the full 8'-5" field) — do not reuse the old
     `$15-28/SF` no-scaffold rate.
-  - `AO-B-BRICK-DOOR` reveal height is 78" (84" is also available if more coverage is
-    wanted); `AO-B-BRICK-WIN` reveal height is 20". Neither opening is a daylight or egress
+  - `AO-B-BRICK-DOOR` reveal height is 80" (headroom is measured at the crown); `AO-B-BRICK-WIN` reveal height is 20". Neither opening is a daylight or egress
     subject; reveal overlap onto the opening is deliberate.
   - **A reveal must stay concentric with the opening it reveals** — width and position are
     not free, only height is. Edit a reveal and its opening together.

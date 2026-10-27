@@ -27,7 +27,7 @@ from typehaus.source import load_plan
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "out/exterior-door-review"
-TAGS = ("D-M-ENTRY", "D-M-BALC", "D-S-DECK-E", "D-B-PATIO")
+TAGS = ("D-M-ENTRY", "D-M-BALC", "D-S-DECK-E", "D-B-PATIO", "D-G-SERVICE")
 
 
 def color(part):

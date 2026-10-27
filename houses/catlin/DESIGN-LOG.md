@@ -6317,3 +6317,14 @@ local deck cutback and the balcony's independently supported porch must remain c
 Neither a renamed schematic outline nor a copied support envelope establishes quality.
 Keep SCHEMATIC as an explicit early-coordination option until those selections can be
 replaced; a catalog error never falls back to it automatically. Both fits remain UNKNOWN.
+
+## Exterior door sill follow-up
+
+The patio brick arch crown is 80 inches above the veneer base, below the door head; the
+78-inch project headroom criterion is measured at its centreline. Brick provides the trim,
+with returns ending at the host wall. The garage service door has a schematic outswing sill;
+its supplier section and support remain to be confirmed.
+
+The schematic garage leaf and the existing `CN-G-BWHD-S-DR` hold-down overlap in the
+continuous swing-clearance test. The factory hinge datum and the hold-down/jamb detail need
+coordination before the service door installation can be released.

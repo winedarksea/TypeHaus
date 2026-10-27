@@ -110,10 +110,10 @@ def doorway_json(value):
     return value
 
 
-def adjacent_floor(model, wall, point):
+def adjacent_floor(model, wall, point, rough_opening_z):
     candidates = [s for s in surfaces_at(model, point)
-                  if abs(s.deck_top_m - wall.base_ref_z_m) < SLAB_MATCH_TOLERANCE_M]
-    return min(candidates, key=lambda s: abs(s.deck_top_m - wall.base_ref_z_m), default=None)
+                  if abs(s.deck_top_m - rough_opening_z) < SLAB_MATCH_TOLERANCE_M]
+    return min(candidates, key=lambda s: abs(s.deck_top_m - rough_opening_z), default=None)
 
 
 def _floor_sample_stations(model, wall, opening, center, tangent, normal, offset):
@@ -159,6 +159,7 @@ def resolve_doorway(model, wall, opening, door_type, treatment=None):
     except ExteriorDoorBoundaryError as error:
         exterior = None
         unknown.append(str(error))
+    rough_z = wall.base_ref_z_m + opening.sill_m
     for side, face in zip((-1, 1), faces or (0, 0), strict=True):
         samples = []
         boundary_face = exterior[0] if exterior and side == exterior[1] else face
@@ -168,9 +169,9 @@ def resolve_doorway(model, wall, opening, door_type, treatment=None):
                 from typehaus.resolve.exterior_door import exterior_landing
 
                 samples.append(exterior_landing(model, wall, point,
-                    tuple(side * n for n in normal), installation))
+                    tuple(side * n for n in normal), installation, rough_z))
             else:
-                samples.append(adjacent_floor(model, wall, point))
+                samples.append(adjacent_floor(model, wall, point, rough_z))
         signatures = {(s.finish_ref, s.room_tag, s.surface_m is None) if s else None
                       for s in samples}
         elevations = [s.surface_m for s in samples if s is not None and s.surface_m is not None]

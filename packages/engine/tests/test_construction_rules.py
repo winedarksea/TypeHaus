@@ -353,3 +353,29 @@ def test_the_gasket_rows_reconcile_against_the_sill_returns(catlin_model) -> Non
     assert sum(float(row["length_ft"]) for row in rows) == pytest.approx(total_ft, abs=0.2)
     # Every gasketed return is a sill plate; nothing else in the model grows one.
     assert {r.takeoff_category for r in gasketed} == {"pt-sill-plate"}
+
+
+def test_patio_sill_and_anchors_stop_at_door(catlin_model_ro):
+    from typehaus.hardware.config import SillPlateAnchorRules
+    from typehaus.joints.sills import mudsill_anchor_stations
+    from typehaus.resolve.geometry import unit, sub
+
+    model = catlin_model_ro
+    door = next(o for o in model.openings if o.tag == "D-B-PATIO")
+    wall = model.wall(door.host_wall)
+    direction = unit(sub(wall.axis[1], wall.axis[0]))
+    def along(point):
+        return sum((point[i] - wall.axis[0][i]) * direction[i] for i in (0, 1))
+    low, high = door.center_along_m - door.width_m / 2, door.center_along_m + door.width_m / 2
+    plates = [r for r in model.construction_returns if wall.tag in r.element_tags
+              and r.tag == "CR-CONC-TO-FRAMED-SILL"]
+    assert len(plates) >= 2
+    for plate in plates:
+        positions = [along(p) for p in plate.outline]
+        assert max(positions) <= low + 1e-6 or min(positions) >= high - 1e-6
+    stations = mudsill_anchor_stations(model, SillPlateAnchorRules(), plates[0].takeoff_category)
+    matching = [s for s in stations if s.run_tag == plates[0].tag
+                and abs(s.z_m - plates[0].z0_m) < 1e-6
+                and abs(s.point_m[1] - wall.axis[0][1]) < wall.thickness_m]
+    assert matching
+    assert all(not low < along(s.point_m) < high for s in matching)

@@ -40,8 +40,10 @@ def add_sill_design(assembly, opening, clad):
     base = assembly.rough_opening_z_m
     exterior_floor = assembly.adjacent_floors[0 if sign < 0 else 1]
     interior_floor = assembly.adjacent_floors[1 if sign < 0 else 0]
+    raised_open_interior = (interior_floor is None and opening.sill_m > 0)
+    missing_interior = interior_floor is None or interior_floor.surface_m is None
     if (exterior_floor is None or exterior_floor.surface_m is None
-            or interior_floor is None or interior_floor.surface_m is None):
+            or (not raised_open_interior and missing_interior)):
         return replace(assembly, unknown=(*assembly.unknown,
             "sill design needs known interior and exterior surfaces; no approach generated"))
     if end >= outlet - installation.drainage_gap.meters:
@@ -54,7 +56,7 @@ def add_sill_design(assembly, opening, clad):
     seat = max(base + design.seat_height.meters,
                back_top - design.threshold_nose_height.meters)
     crest = seat + design.threshold_height.meters
-    if interior_floor.surface_m >= crest - thickness:
+    if interior_floor is not None and interior_floor.surface_m >= crest - thickness:
         return replace(assembly, conflicts=(*assembly.conflicts,
             "interior finish rises into the sill design back-dam cover"))
     cap_end = start + design.cap_depth.meters
@@ -83,11 +85,12 @@ def add_sill_design(assembly, opening, clad):
         (cap_end, crest - design.cap_height.meters), (cap_end, crest),
         (start, crest)), "composite-deck", "window_trim", purchase="factory_included")
     cap_back = inner - FLASHING.back_dam_strip_m - thickness - design.drainage_clearance.meters
-    section("interior-back-dam-cover", ((cap_back, interior_floor.surface_m),
-        (cap_back + thickness, interior_floor.surface_m),
-        (cap_back + thickness, crest - thickness), (start, crest - thickness),
-        (start, crest), (cap_back, crest)),
-        design.approach_material_ref, "door_hardware")
+    if interior_floor is not None:
+        section("interior-back-dam-cover", ((cap_back, interior_floor.surface_m),
+            (cap_back + thickness, interior_floor.surface_m),
+            (cap_back + thickness, crest - thickness), (start, crest - thickness),
+            (start, crest), (cap_back, crest)),
+            design.approach_material_ref, "door_hardware")
 
     section("approach-walking-plate", ((end, back_top - thickness),
         (outlet, front_top - thickness), (outlet, front_top), (end, back_top)),
@@ -142,6 +145,8 @@ def add_sill_design(assembly, opening, clad):
         "factory profiles and seals await supplier section",
         "approach plate and draining bearing strips need structural support/anchorage design; "
         "exterior insulation and plywood buck provide no bearing")
+    if raised_open_interior:
+        unknown = (*unknown, "interior is open below the raised rough sill")
     # The generic door has no weather sweep contract. Its clearance is a visible design gap.
     leaf_bottom = crest + design.leaf_clearance.meters
     return replace(assembly, leaf_bottom_z_m=leaf_bottom, jamb_bottom_z_m=seat,

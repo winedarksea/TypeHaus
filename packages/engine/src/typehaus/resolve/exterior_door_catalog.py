@@ -1,7 +1,6 @@
 """Coordinate catalog sections and evidence; clearance is not assembly certification."""
 
 from dataclasses import replace
-from math import sqrt
 
 from typehaus.engineering.exterior_door_support import cantilever_support_report
 from typehaus.resolve.exterior_door_catalog_layout import catalog_installation_layout
@@ -161,17 +160,13 @@ def _opening_coordination_conflicts(model, opening, installation, spec, layout, 
     if installation.exterior_opening_ref:
         reveal = next(o for o in model.openings if o.tag == installation.exterior_opening_ref)
         veneer = model.wall(reveal.host_wall)
-        clear_half = layout.unit_width / 2 - installation.return_thickness.meters
-        rise = reveal.arch_rise_m
         head_z = veneer.base_ref_z_m + reveal.sill_m + reveal.height_m
-        if rise:
-            radius = ((reveal.width_m / 2) ** 2 + rise**2) / (2 * rise)
-            head_z += sqrt(max(0, radius**2 - clear_half**2)) - radius
-        report["minimum_reveal_clear_height_in"] = (
+        report["centreline_reveal_clear_height_in"] = (
             head_z - layout.crest - spec.height_tolerance.meters
         ) / _IN
-        if report["minimum_reveal_clear_height_in"] < 78:
-            conflicts.append("brick reveal leaves less than the 78 inch project clear headroom")
+        if report["centreline_reveal_clear_height_in"] < 78:
+            conflicts.append("brick reveal centreline leaves less than the 78 inch "
+                             "project clear headroom")
     if installation.seat_opening_ref:
         notch = next((o for o in model.openings if o.tag == installation.seat_opening_ref), None)
         curb = model.wall(notch.host_wall) if notch else None

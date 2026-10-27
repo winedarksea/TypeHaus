@@ -153,7 +153,7 @@ def test_surfaces_are_found_across_storey_filing(catlin_model):
     on is FS-BW-FLOOR outside the door (the interior landing FS-BW-GARAGE retired).
     """
     outside = {surface.deck_tag: surface.deck_top_m
-               for surface in surfaces_at(catlin_model, (8.25 * _FT, 43.0 * _FT))}
+               for surface in surfaces_at(catlin_model, (8.25 * _FT, 42.95 * _FT))}
     assert outside.get("FS-BW-FLOOR") == pytest.approx(0.0, abs=1e-9), outside
     inside = {surface.deck_tag: surface.deck_top_m
               for surface in surfaces_at(catlin_model, (8.25 * _FT, 46.0 * _FT))}

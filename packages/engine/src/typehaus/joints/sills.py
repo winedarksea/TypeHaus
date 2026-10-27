@@ -226,6 +226,20 @@ def tie_plate_walls(model: ResolvedModel) -> list:
             and any(member.category == "stud" for member in wall.members)]
 
 
+def split_segments(segments, excluded_start, excluded_end):
+    """Subtract one opening interval from a set of along-wall segments."""
+    remaining = []
+    for start, end in segments:
+        if excluded_end <= start or excluded_start >= end:
+            remaining.append((start, end))
+        else:
+            if start < excluded_start:
+                remaining.append((start, excluded_start))
+            if excluded_end < end:
+                remaining.append((excluded_end, end))
+    return remaining
+
+
 def tie_plate_stations(model: ResolvedModel, rules: UpliftTieRules) -> list:
     """LTP4s along the bottom plate, excluding bodies that cross an opening.
 
@@ -256,16 +270,7 @@ def tie_plate_stations(model: ResolvedModel, rules: UpliftTieRules) -> list:
                 continue
             excluded_start = opening.center_along_m - opening.width_m / 2 - half_width_m
             excluded_end = opening.center_along_m + opening.width_m / 2 + half_width_m
-            remaining_segments = []
-            for segment_start, segment_end in usable_segments:
-                if excluded_end <= segment_start or excluded_start >= segment_end:
-                    remaining_segments.append((segment_start, segment_end))
-                    continue
-                if segment_start < excluded_start:
-                    remaining_segments.append((segment_start, excluded_start))
-                if excluded_end < segment_end:
-                    remaining_segments.append((excluded_end, segment_end))
-            usable_segments = remaining_segments
+            usable_segments = split_segments(usable_segments, excluded_start, excluded_end)
         axis = axis_of(wall.axis[0], wall.axis[1])
         for segment_start, segment_end in usable_segments:
             segment_length = segment_end - segment_start

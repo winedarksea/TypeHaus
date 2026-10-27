@@ -121,8 +121,9 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # 131 -> 91 on 2026-10-09: the brick veneer's grade beam W-SG-BRKBM carries no framed
     # wall and lost its phantom 18 LF run (-5); the curbs now pair with W-B-S2-FR/S3-FR;
     # and fifteen non-bearing slab partitions are pinned, not anchored (slab_plate_pin).
-    assert joints["mudsill_anchor"] == 91
-    assert joints["slab_plate_pin"] == 50
+    # Split door-interrupted plates independently; short pieces each need two anchors.
+    assert joints["mudsill_anchor"] == 95
+    assert joints["slab_plate_pin"] == 49  # Door-cut slab plates shorten one pinned run.
     # 38 rafters on the ridge. ST-G-SERVICE's two stringer heads were two more until
     # 2026-09-24, then hung on BM-BW-LAND-HDR on LSCZ, their own role, until 2026-10-13: they
     # seat on the stem now, on authored standoffs, and hang on nothing.

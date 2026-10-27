@@ -108,8 +108,8 @@ Keep the cavity, weeps and the isolation from the separately supported brick ope
 
 ### Study
 
-The composite factory jamb anchors at the structural wall. The outer return/casing is
-composite; no steel-wrap fabrication is included. The supported factory sill is level.
+The composite factory jamb anchors at the structural wall. At the patio the composite
+returns stop at the host wall face; the brick reveal is the trim and has no casing. The supported factory sill is level.
 The short AridDek boards run outward and are supported by two cross bearers over the
 concealed 2×6 outrigger envelopes. Their root connection to FS-S-EAST must be designed
 against actual joist/rim geometry; a 24 inch drawn backspan is not proof of anchorage.
@@ -152,7 +152,7 @@ The selected pan maximum-rise allowance and digitized cap setting are explicit a
 [Minnesota R311.3.2](https://www.revisor.mn.gov/rules/1309.0311/) measures from the top
 of the threshold. The landing check now reads an installed/schematic crest when known;
 a selected product without a section gets UNKNOWN rather than a rough-sill PASS.
-The patio arch is checked at the clear jamb width against a 78 inch project headroom
+The patio arch is checked at the crown centreline against a 78 inch project headroom
 criterion. Source/fit/supplier statuses stay independent in JSON and IFC.
 
 Reproduce the actual resolved sections, height table, takeoff, flashing-end plots,

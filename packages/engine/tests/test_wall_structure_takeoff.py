@@ -231,8 +231,8 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
     # side walls (N-B-BRICK-W 9'-10", -E 26'-5 5/8" = 199.625" long) and the head dropped
     # to -13.333" under the porch's 2x12 ledger field, so 89.104" tall.
     # 199.625 x 89.104 / 144 = 123.5 SF gross, less the reveals (32.5 + 1.9) = 89.1.
-    # The wider/taller patio arch is coordinated to the catalog pair and clear headroom.
-    assert 82 < float(row["net_area_sqft"]) < 85
+    # The 80-inch patio arch raises the net face to 86.4 square feet.
+    assert 86 < float(row["net_area_sqft"]) < 87
 
 
 def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) -> None:

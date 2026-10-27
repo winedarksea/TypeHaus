@@ -23,6 +23,8 @@ from typehaus import (
     JointNailing,
     PanelEdgeBlocking,
     Door,
+    ExteriorDoorInstallation,
+    ExteriorDoorSillDesign,
     DischargeExtension,
     Downspout,
     EaveDripEdge,
@@ -343,7 +345,14 @@ OPENINGS = [
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING32-G",
          position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(1),
          flip_hinge=True, flip_swing=True, maximum_opening_degrees=90,
-         header_spec='3-ply 5.5" LVL'),
+         header_spec='3-ply 5.5" LVL',
+         exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
+             exterior_wrap_material_ref="metal-dark-exterior",
+             sill_design=ExteriorDoorSillDesign(
+                 source_url="https://www.enduraproducts.com/wp-content/uploads/2021/03/ADAptive-Sill-Assembly-Instructions-2021.pdf",
+                 source_drawing="Endura ADAptive dedicated outswing, page 4, 5-5/8 x 1/2 inches; schematic envelope, supplier section pending",
+                 threshold_depth=inch(5.625), threshold_height=inch(0.5), cap_depth=inch(1.5),
+                 cap_height=inch(0.125), threshold_nose_height=inch(0.125)))),
     # This 8' wall (vs. the house's 10') is why the 27" family is 36" tall: a 60" height at
     # this 42" sill would push the header above the top plate.
     #

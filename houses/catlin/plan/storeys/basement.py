@@ -1157,12 +1157,8 @@ OPENINGS = [
     # to keep clear of D-B-GYM. Swings out into the gym on the default.
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-CS", type_ref="DT-INT-SWING24",
          position=from_node("N-B-SA-NE", ft(4, 10.3125)), flip_hinge=True),
-    # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
-    # Hosted on the framed wall, and `sill_height` is inch(0) — NOT because the threshold
-    # dropped, but because the datum did. A sill is measured from the host wall's own base,
-    # and W-B-S3-FR's base is the top of the 7 1/4" curb. The threshold is at the same
-    # absolute elevation it always was, a quarter inch higher: the door now sits ON the curb
-    # rather than 7" up a pour with a quarter inch of concrete still above it.
+    # The framed-wall datum is the curb top; the rough sill is recessed 1.75 inches
+    # into the curb seat while the installed threshold remains above the court.
     #
     # **It swings IN, and that is a code requirement, not a preference.** The curb makes
     # this door a 7 1/4" step down to the court, which is R311.3.2's one-riser allowance
@@ -1209,7 +1205,7 @@ OPENINGS = [
            type_ref="WT-1424-FIX-T", position=from_node("N-B-S1F", ft(3, 7)),
            sill_height=inch(36.75)),
     # --- reveals through the brick veneer -------------------------------------------
-    # WIN-B-SAUNA and D-B-PATIO stay on the concrete walls; these are RoughOpenings for the
+    # WIN-B-SAUNA and D-B-PATIO sit in the framed walls; these are RoughOpenings for the
     # holes the wythe in front of them needs, each with its own segmental brick arch — not a
     # duplicate Window/Door, which would double the schedule and takeoff.
     # Positioned off N-B-BRICK-W (shares N-B-S1's x). Segmental, not semicircular: the
@@ -1224,20 +1220,9 @@ OPENINGS = [
                  position=from_node("N-B-BRICK-W", ft(3, 7)),
                  width=inch(14), height=inch(20), sill_height=inch(37),
                  arch=Arch(rise=inch(2))),
-    # 78" is a HEIGHT WITH NO CONSTRAINT LEFT ON IT, and that is worth saying plainly. It
-    # was struck to leave 10" of lapis between the arch crown and the gold register at 88";
-    # the registers went away on 2026-09-04 and the field is now one flat unglazed brick, so
-    # nothing above the crown is fixed any more. 78" is kept because it still looks right and
-    # still springs the arch at 70" — not because anything requires it. If more of the door
-    # head should be covered, 84" is now available; the register was the only thing that was
-    # ever stopping it.
-    #
-    # Both reveals are SHORTER than the openings they front, and that is the point, not a
-    # defect: a masonry reveal in front of a rectangular hole is meant to overlap it. The
-    # door's head is covered across its full width and the sauna window loses its top 6".
-    # Neither is a daylight or egress subject — WIN-B-SAUNA is not an emergency escape
-    # opening and `egress.py` already excludes these arches by name — but if the sauna ever
-    # wants that glass back, this height is the line to move, not the window.
+    # The 80-inch crown is below the door head, overlapping its rectangular opening.
+    # The 78-inch project headroom criterion is measured at the crown.
+    # The sauna reveal also overlaps its window; neither is an egress opening.
     #
     # WIDTH AND POSITION ARE NOT FREE THE WAY HEIGHT IS. This reveal drifted 6" east of
     # D-B-PATIO between 2026-08-30 and 2026-09-04, because the door moved off its own node
@@ -1245,7 +1230,7 @@ OPENINGS = [
     # grades that now, and test_catlin_contract_m3 pins both pairs. Edit the two together.
     RoughOpening(uid="CBO602AAAA", tag="AO-B-BRICK-DOOR", host="W-B-BRICK",
                  position=from_node("N-B-BRICK-W", inch(106.34375)),
-                 width=inch(63.3125), height=inch(86.25), sill_height=ft(0),
+                 width=inch(63.3125), height=inch(80), sill_height=ft(0),
                  arch=Arch(rise=inch(8))),
 ]
 

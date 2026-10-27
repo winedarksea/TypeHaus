@@ -170,7 +170,8 @@ def test_a_sheet_overlapping_a_wall_edge_is_not_a_contained_penetration(catlin_m
                for x, y in deck.deck_outline]
     sheet = Polygon(outline)
     face = _wall_face(wall).buffer(_SHEET_CLEARANCE_M, join_style=2)
-    assert sheet.intersection(face).area / _IN**2 > 30
+    # The service-door drainage cutback shortens the overlapping witness.
+    assert sheet.intersection(face).area / _IN**2 > 10
     assert not sheet.covers(face)
     assert through_deck_walls(catlin_model_ro, catlin_model_ro.plan.by_tag(deck.tag),
                               min(m.z0_m for m in deck.members), deck.deck_z1_m,

@@ -312,5 +312,27 @@ def test_catalog_trim_layout_is_derived_across_doors(catlin_model_ro):
     layouts = door_trim_sheet_layouts(catlin_model_ro, {"captivate-graphite-sheet": stock})
     assert len(layouts) == 2
     assert {p["door"] for s in layouts for p in s["pieces"]} == {"D-B-PATIO", "D-S-DECK-E"}
-    assert sum(len(s["pieces"]) for s in layouts) == 12
+    assert sum(len(s["pieces"]) for s in layouts) == 9
     assert all(s["used_width_in"] <= 48 and s["maximum_length_in"] <= 96 for s in layouts)
+
+
+def test_patio_brick_trim_and_crown_clearance(catlin_model_ro):
+    from typehaus.resolve.geometry_door_products import finish_faces
+
+    model = catlin_model_ro
+    door = next(o for o in model.openings if o.tag == "D-B-PATIO")
+    reveal = next(o for o in model.openings if o.tag == "AO-B-BRICK-DOOR")
+    wall = model.wall(door.host_wall)
+    placement = door.doorway.exterior_placement
+    assert not any("exterior-casing" in b.name for b in placement.boards)
+    face = finish_faces(wall)[1 if placement.outward_sign > 0 else 0]
+    returns = [b for b in placement.boards if b.name.startswith("exterior-return")]
+    assert len(returns) == 3
+    for board in returns:
+        assert board.normal_m + placement.outward_sign * board.depth_m / 2 == pytest.approx(face)
+    crown = model.wall(reveal.host_wall).base_ref_z_m + reveal.sill_m + reveal.height_m
+    head = wall.base_ref_z_m + door.sill_m + door.height_m
+    assert crown < head
+    assert placement.installation_report["centreline_reveal_clear_height_in"] >= 78
+    assert all(b.z_m - b.height_m / 2 == pytest.approx(door.doorway.jamb_bottom_z_m)
+               for b in returns if "jamb" in b.name)

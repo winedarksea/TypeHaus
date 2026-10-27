@@ -121,9 +121,9 @@ def test_exterior_landing_search_crosses_gap_without_matching_elevation():
     model = ResolvedModel(plan, solids=[slab])
     wall = ResolvedWall("wall", "W", "main", "A", ((0,0),(4,0)), (), 0, 3)
     installation = ExteriorDoorInstallation(interior_material_ref="wood")
-    floor = exterior_landing(model, wall, (2,.01), (0,1), installation)
+    floor = exterior_landing(model, wall, (2,.01), (0,1), installation, 0)
     assert floor.deck_tag == "landing" and floor.surface_m == -.1
-    assert exterior_landing(model, wall, (2,-1), (0,1), installation) is None
+    assert exterior_landing(model, wall, (2,-1), (0,1), installation, 0) is None
 
 
 def structural_door_model(reverse=False, exterior_side=1):
@@ -217,7 +217,9 @@ def test_finish_extension_uses_known_room_without_other_surface(known_side):
 def test_catlin_garage_keeps_raised_service_support_and_overhead_operation(catlin_model_ro):
     service = next(o for o in catlin_model_ro.openings if o.tag == "D-G-SERVICE")
     overhead = next(o for o in catlin_model_ro.openings if o.tag == "D-G-OVERHEAD")
-    assert service.doorway.exterior_placement is None
+    assert service.doorway.exterior_placement is not None
+    assert any(s.name == "threshold-design-envelope"
+               for s in service.doorway.exterior_placement.sections)
     assert overhead.doorway.exterior_placement is None
     sill = next(m for m in catlin_model_ro.wall(service.host_wall).members
                 if m.child_key == "sill-0")

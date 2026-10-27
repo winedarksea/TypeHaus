@@ -12,6 +12,7 @@ not the run.
 from __future__ import annotations
 
 from collections.abc import Iterator
+from dataclasses import replace
 
 from typehaus.model.assembly import ConstructionRule
 from typehaus.model.floors import FloorSystem
@@ -95,7 +96,7 @@ def _sill_gasket(asm, fallback_asm=None) -> tuple[str, float]:
 # --- finders (one per applies_to predicate) -----------------------------------
 # Each yields a fully-formed ResolvedConstructionReturn for the given rule. The finders own
 # geometry/placement; ``apply_construction_rules`` owns the solid + book-keeping.
-def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
+def _unsplit_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
         -> Iterator[ResolvedConstructionReturn]:
     """PT sill on top of a concrete wall — for the framed wall AND for the joists.
 
@@ -258,6 +259,42 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
                 condition_key=condition,
             )
     yield from _framed_on_slab(model, rule, lap)
+
+
+def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule):
+    """Cut plates at doors reaching their top; anchors consume these same pieces."""
+    from typehaus.joints.sills import split_segments
+
+    for plate in _unsplit_framed_on_concrete(model, rule):
+        wall = next((model.wall(tag) for tag in plate.element_tags[1:]
+                     if model.wall(tag) is not None), None)
+        if wall is None:
+            yield plate
+            continue
+        direction = unit(sub(wall.axis[1], wall.axis[0]))
+        points = plate.outline
+        projections = [sum((p[i] - wall.axis[0][i]) * direction[i] for i in (0, 1))
+                       for p in points]
+        lo, hi = min(projections), max(projections)
+        segments = [(lo, hi)]
+        for opening in model.openings:
+            if (opening.host_wall == wall.tag and opening.is_door
+                    and opening.depth_m is None
+                    and wall.base_ref_z_m + opening.sill_m <= plate.z1_m + _EPS
+                    and wall.base_ref_z_m + opening.sill_m + opening.height_m > plate.z0_m):
+                segments = split_segments(segments, opening.center_along_m - opening.width_m / 2,
+                                          opening.center_along_m + opening.width_m / 2)
+        if segments == [(lo, hi)]:
+            yield plate
+            continue
+        for index, (start, end) in enumerate(segments):
+            # Translate the two ends of the existing rectangular strip along its axis.
+            outline = []
+            for point, projection in zip(points, projections, strict=True):
+                shift = start - lo if abs(projection - lo) < abs(projection - hi) else end - hi
+                outline.append(tuple(point[i] + direction[i] * shift for i in (0, 1)))
+            outline = tuple(outline)
+            yield replace(plate, uid=f"{plate.uid}-{index}", outline=outline, length_m=end-start)
 
 
 def _framed_on_slab(model: ResolvedModel, rule: ConstructionRule,
