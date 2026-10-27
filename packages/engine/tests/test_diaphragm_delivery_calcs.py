@@ -16,24 +16,24 @@ _ITEM = "lateral_system/RF-BW-CANOPY"
 
 #: §2 — the ASD pressure on any band, and the deck-level shears with pinned 6x6 posts.
 _PRESSURE_PSF = 16.7232
-_DELIVERED = {"x": 698.6, "y": 1038.4}
+_DELIVERED = {"x": 707.056, "y": 1038.4}
 
 #: §3-§4, the kdat column of every table: ``row name -> (demand, capacity)``. The panel and
 #: everything under it moved to ``canopy_west_band.md`` (``test_canopy_west_band_calcs``).
 _ROWS = {
     "open front, L'": (6.000, 25.0),
     "open front, L'/W'": (0.2250, 1.0),
-    "joint boundary nailing, along": (29.36, 190.0),
+    "joint boundary nailing, along": (29.719, 190.0),
     "LSTA24 joint straps, across": (173.06, 823.3333333333334),
-    "LSTA24 joint straps, rotation couple": (56.57, 823.3333333333334),
-    "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (261.61, 1215.0196),
-    "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (261.61, 1080.0174),
-    "LTP4 plate clips, frame into wall": (99.80, 450.0),
+    "LSTA24 joint straps, rotation couple": (57.248, 823.3333333333334),
+    "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (262.670, 1215.0196),
+    "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (262.670, 1080.0174),
+    "LTP4 plate clips, frame into wall": (101.008, 450.0),
     "RF-GARAGE unit-shear increment": (22.62, 167.5),
-    "W-G-S delivered shear on the surplus": (40.09, 182.5),
+    "W-G-S delivered shear on the surplus": (40.579, 182.5),
     "W-G-E delivered shear on the surplus": (25.84, 182.5),
     "W-G-W delivered shear on the surplus": (26.53, 182.5),
-    "W-G-S overturning, delivered increment": (285.15, 3065.0),
+    "W-G-S overturning, delivered increment": (288.594, 3065.0),
     "diaphragm unit shear at W-BW-SCREEN": (173.06, 190.0),
 }
 

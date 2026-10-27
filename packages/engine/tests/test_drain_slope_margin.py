@@ -46,7 +46,8 @@ def test_the_engine_default_is_a_sixteenth(catlin_plan, catlin_model_ro) -> None
     # PR-B-ERV-COND left the list on 2026-10-17: it falls ~1.8"/ft to the bath lav.
     # Kitchen trap arm is intentionally at the 1/4-inch/ft code minimum.
     # New drawn wall arms use the house's explicit zero reserve preference too.
-    assert len(fails) == 17
+    # The 2026-10-26 web-clearance reroute added the suite WC's 9.19" first leg and its lav arm.
+    assert len(fails) == 19
     assert all(f.severity is Severity.WARN for f in fails), "ADVISORY, not a permit blocker"
 
 
@@ -68,19 +69,19 @@ def test_the_margin_prints_on_pass_too(catlin_plan, catlin_model_ro) -> None:
     findings = _run(catlin_plan, catlin_model_ro)
     suite = next(f for f in findings if "PR-M-S-SUITE-WC-DRAIN" in f.element_tags)
     assert suite.result is Result.PASS
-    # 1.5" over the 15.19" east leg since the tie dropped to 9'-3" (2026-09-26); it was
-    # 1.083"/ft on the south leg before that, and 0.779"/ft before the stack moved.
-    assert '1.185"/ft' in suite.message
-    assert '+0.935"/ft over' in suite.message
+    # 0.2" over the 9.19" first east leg since the south leg moved to x=144 (2026-10-26);
+    # 1.185"/ft before that, 1.083"/ft before the tie dropped, 0.779"/ft before the stack moved.
+    assert '0.261"/ft' in suite.message
+    assert '+0.011"/ft over' in suite.message
 
 
 def test_pr_b_bath_drain_is_the_run_bld05_was_reaching_for(
         catlin_plan, catlin_model_ro) -> None:
-    """Exactly the code minimum, zero in hand, buried under a slab — and the loosest of the
-    thin set is the run BLD-05 actually named."""
+    """Exactly the code minimum, zero in hand, buried under a slab — the run BLD-05 actually
+    named. The suite WC it was contrasted with is thin too since 2026-10-26, but not zero."""
     findings = _run(catlin_plan, catlin_model_ro)
     assert _margin_of(findings, "PR-B-BATH-DRAIN") == pytest.approx(0.0, abs=1e-9)
-    assert _margin_of(findings, "PR-M-S-SUITE-WC-DRAIN") > 0.5
+    assert _margin_of(findings, "PR-M-S-SUITE-WC-DRAIN") == pytest.approx(0.011, abs=1e-9)
 
 
 def test_it_never_restates_the_code_minimum(catlin_plan, catlin_model_ro) -> None:

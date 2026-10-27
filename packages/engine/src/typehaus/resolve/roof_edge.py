@@ -357,10 +357,9 @@ def _closure_segment(
         dx, dy = p1[0]-p0[0], p1[1]-p0[1]
         run = math.hypot(dx, dy)
         along_ridge = abs(dy if roof.ridge_direction == "y" else dx)
-        if (mating is not None and layer.function in ("furring", "cladding")
+        if (mating is not None
                 and run > 0 and abs(run-along_ridge) < CLOSURE_TOLERANCE_M):
-            # A flat closure top projected through the newly thin roof pan at its outer
-            # face. Scribe across the layer width while retaining its centre datum.
+            # Scribe across the layer width so no corner crosses its face.
             nx, ny = -dy/run, dx/run
             half = layer.thickness_m/2
             def top_at(across, p0=p0, nx=nx, ny=ny, perpendicular=perpendicular, tops=tops):

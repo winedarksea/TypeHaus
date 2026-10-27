@@ -83,14 +83,12 @@ def test_the_collector_profile_is_the_note_s_arithmetic(catlin_model_ro) -> None
     assert z[1] == pytest.approx(116.5, abs=0.001)    # the drop bottom, under the chord
     assert z[-1] == pytest.approx(111.0, abs=0.001)   # on the stack barrel
 
-    south = math.dist(path[1], path[2])
-    east = math.dist(path[2], path[3])
-    assert south == pytest.approx(34.625, abs=0.001)
-    assert east == pytest.approx(15.19, abs=0.001)
-    assert (z[1] - z[2]) / (south / 12.0) == pytest.approx(1.386, abs=0.001)
-    assert (z[2] - z[3]) / (east / 12.0) == pytest.approx(1.185, abs=0.001)
+    legs = [math.dist(path[i], path[i + 1]) for i in (1, 2, 3)]
+    assert legs == pytest.approx([9.19, 34.625, 6.0], abs=0.001)   # east, south, east
+    slopes = [(z[i] - z[i + 1]) / (leg / 12.0) for i, leg in zip((1, 2, 3), legs, strict=True)]
+    assert slopes == pytest.approx([0.261, 1.282, 3.2], abs=0.001)
 
-    developed_ft = (south + east) / 12.0
+    developed_ft = sum(legs) / 12.0
     assert developed_ft == pytest.approx(4.1513, abs=0.001)
     assert 0.25 * developed_ft == pytest.approx(1.0378, abs=0.001)
 
@@ -101,10 +99,10 @@ def test_the_two_arms_arrive_above_the_collector_they_tie_into(catlin_model_ro) 
     `_TIE_IN_INVERT_TOL_M` so `drain_tie_ins` still links the load."""
     runs = {r.tag: r for r in catlin_model_ro.pipe_runs}
     collector = runs["PR-M-S-SUITE-WC-DRAIN"]
-    start, south_fall, south = 116.5, 3.125, 34.625
+    start, south_fall, south = 116.3, 3.7, 34.625
 
-    for tag, station, expected in (("PR-M-S-SUITE-LAV-DRAIN", 246.0, 116.083),
-                                   ("PR-M-S-SUITE-TUB-DRAIN", 228.0, 114.458)):
+    for tag, station, expected in (("PR-M-S-SUITE-LAV-DRAIN", 246.0, 115.806),
+                                   ("PR-M-S-SUITE-TUB-DRAIN", 228.0, 113.882)):
         travelled = 250.625 - station
         invert = start - south_fall * (travelled / south)
         assert invert == pytest.approx(expected, abs=0.001)

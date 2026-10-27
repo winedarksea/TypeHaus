@@ -336,7 +336,6 @@ the future.
 - Research most commonly failed residential code items and make sure checks or tests exist for those here.
 - Research and pull in the exact metal sales manufacturing trim pieces needed for the metal siding and roof from their install guides
 - The window buck is clearly visible from the exterior, that does rather show the flashing/trim isn't correct.
-- The insulation closure band such as W-S-E3-CLOSURE-0-SPRAY-FOAM at the roof:wall-top-closure extends above the roof a bit (and is likely wrong the matching detail as well)
 - For the current roofing, the 1-inch rib height nail-strip geometry of Image II, it looks like the appropriate S-5! clamp for both the solar panels and snow retainers is the S-5-N and for use as as wind clamp, the S-5-N Mini
 
 # Project Management

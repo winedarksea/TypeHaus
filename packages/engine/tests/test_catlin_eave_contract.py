@@ -24,6 +24,7 @@ from typehaus.emit.draw.scene import Polyline
 from typehaus.emit.gltf.emitter import _members_by_owner
 from typehaus.emit.gltf.members import owned_elsewhere
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.geometry_ir import GBox, GSweep
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.roof_edge_geometry import (
     continuous_skin_cladding,
@@ -224,3 +225,31 @@ def test_a_closure_band_belongs_to_its_wall_not_to_the_roof(eave):
     assert sum(len(members) for members in by_owner.values()) == len(closures)
     assert {walls[uid] for uid in by_owner} >= {"W-S-N1B", "W-S-N3B"}, (
         "the two raking gable ends are the case this exists for")
+
+
+def _solid_vertices(solid):
+    if isinstance(solid, GBox):
+        return [*solid.corners_bottom, *solid.corners_top]
+    assert isinstance(solid, GSweep), type(solid)
+    ex, ey, ez = solid.extrude
+    return [*solid.profile, *((x + ex, y + ey, z + ez) for (x, y, z) in solid.profile)]
+
+
+def test_no_closure_band_rises_above_its_own_roof_face(eave):
+    """Foam, vent gap and girt are scribed to their face; none pokes through the deck."""
+    assembly = eave.model.plan.library.resolve_assembly(eave.roof.assembly)
+    mating = mating_faces(above_structure_layers(assembly))
+    factor = math.hypot(1.0, roof_slope(eave.roof))
+    checked = 0
+    for member in eave.roof.members:
+        if member.connection != "roof:wall-top-closure":
+            continue
+        limit = max(mating.for_layer(member.category),
+                    mating.for_layer(member.category, True)) * factor
+        top = max(z - roof_height_at(eave.roof, (x, y))
+                  for (x, y, z) in _solid_vertices(member_solid(member)))
+        assert top <= limit + 1e-4, f"{member.child_key} rises {top - limit:.4f} m over its face"
+        if mating.deck_spans and member.category in ("insulation", "airgap", "furring"):
+            assert top == pytest.approx(0.0, abs=1e-4), member.child_key
+        checked += 1
+    assert checked

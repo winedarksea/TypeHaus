@@ -32,7 +32,9 @@ The east extension adds `6.125/12 × 11.875/12 × 16.7232 = 8.447 lb` of exposed
 header wind force. The recalculated canopy joint couple is **2,132.02 lb-ft**,
 delivered E-W shear **707.06 lb**, chord force **88.834 lb**, combined end-strap
 demand **261.893 lb**. West collector plate **217.475 lb**, east **88.834 lb**,
-each against 450 lb. Roof-header uniform loading stays 1,125.77 plf and the
+each against 450 lb. Joint boundary nailing is 29.719 plf against 190; the
+garage south wall receives 40.579 plf against 182.5 and a 288.594 lb hold-down
+increment against 3,065 lb. Roof-header uniform loading stays 1,125.77 plf and the
 existing roof-load bending/bearing ratios remain 0.146/0.355. This is the
 engine's distributed roof-load calculation, not a discrete truss-reaction or
 hood-fastener design. Roof dead load remains the authored 10 psf allowance;

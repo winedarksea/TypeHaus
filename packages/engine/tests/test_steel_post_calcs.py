@@ -80,7 +80,7 @@ def test_both_east_posts_are_graded_and_nothing_else_is_steel(catlin_steel_ctx) 
 
 def test_active_kdat_east_posts_are_wood_not_steel(catlin_ctx) -> None:
     assert not {key for key in catlin_ctx.engineering if key.startswith("steel_post/")}
-    for tag, head in (("PT-BW-RE", "ACE6Z"), ("PT-BW-RNE", "AC6Z")):
+    for tag, head in (("PT-BW-RE", "AC6Z"), ("PT-BW-RNE", "AC6Z")):
         record = catlin_ctx.engineering[f"wood_roof_post/{tag}"]
         assert record.status is Status.OK, record.summary
         assert {state.name for state in record.limit_states} >= {

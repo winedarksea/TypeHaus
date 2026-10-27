@@ -145,7 +145,10 @@ def _product_solids_of_node(gltf: dict, blob: bytes, model, opening) -> list[_So
                 -sum(y for _, y in solid.ring) / len(solid.ring))
                for part in opening_parts(wall, opening, door_type.operation,
                                          is_glazed=door_type.glazed,
-                                         leaf_set=door_type.leaf_set)
+                                         is_trimless=door_type.trimless,
+                                         bookcase_door=door_type.bookcase_door,
+                                         leaf_set=door_type.leaf_set,
+                                         hardware=door_type.hardware)
                if not part.key.startswith("installation:")
                for solid in part.solids if hasattr(solid, "ring")]
     solids: list[_Solid] = []
@@ -430,7 +433,7 @@ def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_m
     wall = _host_wall(catlin_model, opening)
     gltf, blob = emit_gltf_dict(catlin_model)
     solids, hardware = _split_hardware(
-        gltf, _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid)))
+        gltf, _product_solids_of_node(gltf, blob, catlin_model, opening))
     spec = next(spec for spec in catlin_model.plan.library.door_types
                 if spec.tag == opening.type_ref)
     if spec.hardware:
@@ -467,11 +470,15 @@ def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_m
 
     # The mullion is the full-height piece standing on the opening's center station — the jambs
     # are the same height and can be the same face width, so position is what tells them apart.
+    # Along the wall only: a catalog unit sets its frame toward a face, off the wall axis.
     center_x, center_z = _opening_center_plan_point(wall, opening)
+    (x0, y0), (x1, y1) = wall.axis
+    length = math.hypot(x1 - x0, y1 - y0)
+    along = ((x1 - x0) / length, -(y1 - y0) / length)
     mullions = [s for s in full_height
                 if s.has_thickness(_OPENING_FRAME_DEPTH_M)
                 and s.has_thickness(mullion_width)
-                and math.dist((s.center[0], s.center[2]), (center_x, center_z))
+                and abs((s.center[0] - center_x) * along[0] + (s.center[2] - center_z) * along[1])
                 < _DIMENSION_TOLERANCE_M]
     assert len(mullions) == 1, "exactly one center mullion, on the opening's center station"
     mullion_center = mullions[0].center

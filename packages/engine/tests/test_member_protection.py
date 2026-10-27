@@ -94,8 +94,8 @@ def test_beam_length_is_the_axis_length(rows):
     assert wide[0]["count"] == 1
     canopy = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 5.5]
     assert len(canopy) == 1
-    # East header 71 3/8 in plus the west header 77 1/2 in after its south-tail extension.
-    assert canopy[0]["length_ft"] == pytest.approx(12.4, abs=0.1)
+    # Both headers are 77 1/2 in after the matching east-tail extension (2026-10-26).
+    assert canopy[0]["length_ft"] == pytest.approx(12.9, abs=0.1)
     assert canopy[0]["count"] == 2
 
     glulam = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 3.5]

@@ -279,36 +279,12 @@ def test_the_default_joint_plan_is_empty(catlin_model):
     assert plan.terminations == {}
 
 
-def test_the_spray_foam_wedge_sits_in_the_foam_mismatch(catlin_model):
-    """Catlin's eave note: "leave the angled mismatch between roof foam and wall foam".
-
-    Not a 2" gap under a plane derived by summing the whole roof assembly, which is what put
-    the wedge inside the wall, below the top plate.
-    """
+def test_the_spray_foam_is_scribed_to_the_deck_so_the_eave_has_no_wedge(catlin_model):
+    """Catlin's roof foam is interior; wall ccSPF is sprayed tight to the oversailing deck."""
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
                    if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _findings = build_detail(catlin_model, derived)
-    wedges = [node for node in scene.nodes
-              if isinstance(node, Polyline) and node.tag == "spray-foam-wedge"]
-    assert wedges, "no wedge at the eave"
-
-    # ``condition_walls`` rather than element_tags: the attic eave's condition NAMES the
-    # rafter plate (the element that terminates at the roof) but is KEYED on
-    # EXT_2X6 (the stack that meets it, one storey down). A plate has no insulation
-    # layer at all, so reading element_tags here found a wall with no CI.
-    from typehaus.emit.draw.detail_components.geometry import condition_walls
-
-    wall = condition_walls(catlin_model, derived.condition)[0]
-    roof = next(r for r in catlin_model.roofs
-                if r.tag in derived.condition.element_tags)
-    plate_top = (wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m) / 0.0254
-    ci = next(layer for layer in reversed(wall.layers)
-              if layer.function == "insulation" and not layer.is_cavity)
-    for wedge in wedges:
-        zs = [z for (_u, z) in wedge.points]
-        assert min(zs) > plate_top, "the wedge is inside the wall, under the plate"
-        # And it is bounded above by the roof's own foam underside, not by a constant.
-        assert max(zs) <= roof.ridge_z_m / 0.0254
-    assert ci is not None
+    assert not [node for node in scene.nodes
+                if isinstance(node, Polyline) and node.tag == "spray-foam-wedge"]

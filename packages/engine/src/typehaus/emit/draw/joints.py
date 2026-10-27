@@ -163,9 +163,7 @@ def _roof_foam_underside(model, roof: ResolvedRoof, direction: str, station: flo
     if not layers:
         return None
     faces = mating_faces(layers)
-    if faces.foam_under is None:
-        return None
-    perpendicular = faces.foam_under * math.hypot(1.0, roof_slope(roof))
+    perpendicular = faces.for_layer("insulation") * math.hypot(1.0, roof_slope(roof))
 
     def at(u: float) -> float:
         point = (u, station) if direction == "x" else (station, u)

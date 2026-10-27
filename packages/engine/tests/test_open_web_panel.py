@@ -91,11 +91,8 @@ def test_an_unauthored_pitch_is_UNKNOWN_naming_the_floor(catlin_ctx) -> None:
 
 def test_catlin_over_subscribed_openings_are_pinned(catlin_ctx) -> None:
     """D1 cleared the level-2 neck on 2026-09-19 and the last conduit/vent pair on 2026-09-24,
-    both against a 15" opening. On 2026-10-26 the owner confirmed the layout with 2x4 webs,
-    whose own 2 1/8" along the chord takes the opening to 13", and ONE opening is
-    over-subscribed again: the 8" exhaust trunk, the STUDY radial and the BATH1 tub drain
-    want 13.90" of it. An open campaign (preferences.toml); pinned so it can only shrink."""
+    both against a 15" opening. 2x4 webs (owner, 2026-10-26) take the opening to 13"; the
+    trunk and radials took 13" lanes and the drains moved, closing the campaign the same day
+    (preferences.toml). Pinned at zero so it cannot reopen."""
     fails = [f for f in open_web_panel(catlin_ctx) if f.result is Result.FAIL]
-    assert len(fails) == 1, [f.message for f in fails]
-    assert {"DU-M-ERV-EXH-TRUNK", "DU-M-ERV-R-STUDY",
-            "PR-M-S-BATH1-TUB-DRAIN"} <= set(fails[0].element_tags)
+    assert not fails, [f.message for f in fails]

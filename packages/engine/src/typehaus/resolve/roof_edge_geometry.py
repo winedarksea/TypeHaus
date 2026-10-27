@@ -135,15 +135,22 @@ class MatingFaces(NamedTuple):
     * wall furring → the underside of the roof furring, which is what makes the vent channel
       continuous wall → eave → ridge;
     * wall cladding → the roof foam underside, with the gutter and drip edge closing the band
-      above it.
+      above it;
+    * no roof foam or vent cavity (``deck_spans``): the deck oversails the wall, so foam, vent
+      gap and furring run to the deck underside, the roof plane.
     """
 
     foam_under: float
     furring_under: float
     cladding_under: float
+    deck_spans: bool = False
 
     def for_layer(self, function: str, continuous_cladding: bool = False) -> float:
         if function in (LayerFunction.SHEATHING.value, LayerFunction.MEMBRANE.value):
+            return 0.0
+        if self.deck_spans and function in (LayerFunction.INSULATION.value,
+                                            LayerFunction.AIRGAP.value,
+                                            LayerFunction.FURRING.value):
             return 0.0
         if function == LayerFunction.FURRING.value:
             return self.furring_under
@@ -159,6 +166,7 @@ def mating_faces(layers) -> MatingFaces:
     total = 0.0
     foam_under = furring_under = None
     cladding_under = 0.0
+    layers = tuple(layers)
     for layer in layers:
         if layer.function is LayerFunction.INSULATION and foam_under is None:
             foam_under = total
@@ -172,7 +180,8 @@ def mating_faces(layers) -> MatingFaces:
     # cladding underside, so everything below dies there.
     return MatingFaces(foam_under if foam_under is not None else cladding_under,
                        furring_under if furring_under is not None else cladding_under,
-                       cladding_under)
+                       cladding_under,
+                       deck_spans=foam_under is None and furring_under is None)
 
 
 class EdgeRun(NamedTuple):

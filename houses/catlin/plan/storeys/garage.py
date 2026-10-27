@@ -698,15 +698,11 @@ ROOFS = [
          # carrying half a garage bay -- trivial, but real. Sec 1a's "never gravity" is about
          # the STRAP line, not the deck edge; the drawings say so.
          gable_ends=(),
-         # North butts the garage gable; south stops flush at the house, which is the whole
-         # point of the scheme -- the landing, the four tiers and the paver landing all end up
-         # under roof, so none of them carries snow.
-         # South oversails the headers' south ends by 5/8" -- the pier line by 3 3/8", as
-         # before the headers grew 2 3/4" south onto their ACE6 end caps -- leaving a 7 3/8" gap to the house
-         # cladding at y=36'-7 1/4" -- the joint plans/north-gable-extension.md specifies: a
-         # formed, positively sloped closure fixed to the CANOPY only, dying at the house in a
-         # replaceable compressible or brush seal, inspectable from below, never filled with
-         # rigid foam or sealant. The two buildings move independently and the joint has to.
+         # North meets the garage; the south close rake stays at the original bearing
+         # datum, 7 3/8" off house cladding. Both equal beam tails now project 5 1/2"
+         # beyond that deck edge. Ventilated hoods and separate canopy roof aprons protect
+         # them (params/canopy_beam_hoods.py). Keep the house slot OPEN: the former
+         # contacting brush-seal closure proposal is retired, preserving independent movement.
          edge_overhangs=(("north", ft(0)), ("south", ft(0, 0.625))),
          edge_trim_material="metal-dark-exterior",
          eave_trim=_CANOPY_EAVE_TRIM),

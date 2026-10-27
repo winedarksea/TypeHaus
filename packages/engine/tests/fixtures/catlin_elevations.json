@@ -4628,6 +4628,18 @@
     48,
     "f7f11d1ecd76"
   ],
+  "geometry/5P8RW4EB4M-apron/body": [
+    2.251075,
+    2.4613682,
+    32,
+    "b00718e559c0"
+  ],
+  "geometry/5P8RW4EB4M-hood/body": [
+    2.21615,
+    2.2750198,
+    96,
+    "a4bba40d3579"
+  ],
   "geometry/5PEMG38MHJ-run/body": [
     -1.235075,
     1.778,
@@ -8030,67 +8042,13 @@
     8,
     "49da52a3b697"
   ],
-  "geometry/CARF01AAAA::framing/member:W-A-N1-closure-0-outer-girt": [
-    6.4008,
-    9.2390847,
-    8,
-    "49da52a3b697"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-N1-closure-0-spray-foam": [
-    6.4262,
-    9.2390847,
-    8,
-    "7e2e349e1f51"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-N1-closure-0-vent-gap": [
-    6.41985,
-    9.2390847,
-    8,
-    "009655480ff0"
-  ],
   "geometry/CARF01AAAA::framing/member:W-A-N2-closure-0-cladding": [
     6.4008,
     8.0198847,
     8,
     "d7afa311f471"
   ],
-  "geometry/CARF01AAAA::framing/member:W-A-N2-closure-0-outer-girt": [
-    6.4008,
-    8.0198847,
-    8,
-    "d7afa311f471"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-N2-closure-0-spray-foam": [
-    6.4262,
-    8.0198847,
-    8,
-    "ed5a6ddf998d"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-N2-closure-0-vent-gap": [
-    6.41985,
-    8.0198847,
-    8,
-    "8efee90f8f7d"
-  ],
   "geometry/CARF01AAAA::framing/member:W-A-N2B-closure-0-cladding": [
-    8.001,
-    9.2390847,
-    8,
-    "70fbce74d0f5"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-N2B-closure-0-outer-girt": [
-    8.001,
-    9.2390847,
-    8,
-    "70fbce74d0f5"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-N2B-closure-0-spray-foam": [
-    8.001,
-    9.2390847,
-    8,
-    "70fbce74d0f5"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-N2B-closure-0-vent-gap": [
     8.001,
     9.2390847,
     8,
@@ -8102,43 +8060,7 @@
     8,
     "c121a5e85d29"
   ],
-  "geometry/CARF01AAAA::framing/member:W-A-S1-closure-0-outer-girt": [
-    6.4008,
-    7.8166847,
-    8,
-    "c121a5e85d29"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-S1-closure-0-spray-foam": [
-    6.4262,
-    7.8166847,
-    8,
-    "01cfa215aaf5"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-S1-closure-0-vent-gap": [
-    6.41985,
-    7.8166847,
-    8,
-    "116147d76846"
-  ],
   "geometry/CARF01AAAA::framing/member:W-A-S2-closure-0-cladding": [
-    7.7978,
-    9.2390847,
-    8,
-    "455bd5d71dad"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-S2-closure-0-outer-girt": [
-    7.7978,
-    9.2390847,
-    8,
-    "455bd5d71dad"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-S2-closure-0-spray-foam": [
-    7.7978,
-    9.2390847,
-    8,
-    "455bd5d71dad"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-S2-closure-0-vent-gap": [
     7.7978,
     9.2390847,
     8,
@@ -8150,24 +8072,6 @@
     8,
     "457f72b8f244"
   ],
-  "geometry/CARF01AAAA::framing/member:W-A-S3-closure-0-outer-girt": [
-    6.4008,
-    9.2390847,
-    8,
-    "457f72b8f244"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-S3-closure-0-spray-foam": [
-    6.4262,
-    9.2390847,
-    8,
-    "f0a83afd616a"
-  ],
-  "geometry/CARF01AAAA::framing/member:W-A-S3-closure-0-vent-gap": [
-    6.41985,
-    9.2390847,
-    8,
-    "eb3e5a705044"
-  ],
   "geometry/CARF01AAAA::framing/member:W-S-E1-closure-0-cladding": [
     6.11505,
     6.4196847,
@@ -8176,27 +8080,27 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E1-closure-0-outer-girt": [
     6.29285,
-    6.4387347,
+    6.41985,
     8,
-    "54b4d2151c23"
+    "2f701619bc55"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E1-closure-0-sheathing": [
     6.11505,
-    6.480175,
+    6.48335,
     8,
-    "95372fbe381f"
+    "110e2ed9390c"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E1-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.477,
     8,
-    "d006df8a1f90"
+    "0e93f3dc82b5"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E1-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.4262,
     8,
-    "2738308dbb6c"
+    "49692257f658"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E1-eave-girt": [
     6.15315,
@@ -8236,27 +8140,27 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E2-closure-0-outer-girt": [
     6.29285,
-    6.4387347,
+    6.41985,
     8,
-    "54b4d2151c23"
+    "2f701619bc55"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E2-closure-0-sheathing": [
     6.11505,
-    6.480175,
+    6.48335,
     8,
-    "95372fbe381f"
+    "110e2ed9390c"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E2-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.477,
     8,
-    "d006df8a1f90"
+    "0e93f3dc82b5"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E2-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.4262,
     8,
-    "2738308dbb6c"
+    "49692257f658"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E2-eave-girt": [
     6.15315,
@@ -8302,27 +8206,27 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E3-closure-0-outer-girt": [
     6.29285,
-    6.4387347,
+    6.41985,
     8,
-    "54b4d2151c23"
+    "2f701619bc55"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E3-closure-0-sheathing": [
     6.11505,
-    6.480175,
+    6.48335,
     8,
-    "95372fbe381f"
+    "110e2ed9390c"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E3-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.477,
     8,
-    "d006df8a1f90"
+    "0e93f3dc82b5"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E3-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.4262,
     8,
-    "2738308dbb6c"
+    "49692257f658"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E3-eave-girt": [
     6.15315,
@@ -8362,27 +8266,27 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E4-closure-0-outer-girt": [
     6.29285,
-    6.4387347,
+    6.41985,
     8,
-    "54b4d2151c23"
+    "2f701619bc55"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E4-closure-0-sheathing": [
     6.11505,
-    6.480175,
+    6.48335,
     8,
-    "95372fbe381f"
+    "110e2ed9390c"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E4-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.477,
     8,
-    "d006df8a1f90"
+    "0e93f3dc82b5"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E4-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.4262,
     8,
-    "2738308dbb6c"
+    "49692257f658"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E4-eave-girt": [
     6.15315,
@@ -8428,9 +8332,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-outer-girt": [
     6.096,
-    9.2390847,
+    9.2202,
     8,
-    "a8d93348779b"
+    "f178015a7a44"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-sheathing": [
     6.096,
@@ -8440,15 +8344,15 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-spray-foam": [
     6.096,
-    9.2390847,
+    9.2202,
     8,
-    "a8d93348779b"
+    "f178015a7a44"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-vent-gap": [
     6.096,
-    9.2390847,
+    9.2202,
     8,
-    "a8d93348779b"
+    "f178015a7a44"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-cladding": [
     6.096,
@@ -8458,9 +8362,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-outer-girt": [
     6.096,
-    6.9149847,
+    6.8961,
     8,
-    "6241284f72c3"
+    "53a073e7ae88"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-sheathing": [
     6.096,
@@ -8470,15 +8374,15 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-spray-foam": [
     6.096,
-    6.9149847,
+    6.8961,
     8,
-    "afb17d065418"
+    "3a05ddefe575"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-vent-gap": [
     6.096,
-    6.9149847,
+    6.8961,
     8,
-    "449529589e08"
+    "9b5373725137"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1-closure-0-cladding": [
     6.11505,
@@ -8488,27 +8392,27 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1-closure-0-outer-girt": [
     6.29285,
-    6.4387347,
+    6.41985,
     8,
-    "54b4d2151c23"
+    "2f701619bc55"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1-closure-0-sheathing": [
     6.11505,
-    6.480175,
+    6.48335,
     8,
-    "95372fbe381f"
+    "110e2ed9390c"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.477,
     8,
-    "d006df8a1f90"
+    "0e93f3dc82b5"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.4262,
     8,
-    "2738308dbb6c"
+    "49692257f658"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1-eave-girt": [
     6.15315,
@@ -8548,27 +8452,27 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1B-closure-0-outer-girt": [
     6.29285,
-    6.4387347,
+    6.41985,
     8,
-    "54b4d2151c23"
+    "2f701619bc55"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1B-closure-0-sheathing": [
     6.11505,
-    6.480175,
+    6.48335,
     8,
-    "95372fbe381f"
+    "110e2ed9390c"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1B-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.477,
     8,
-    "d006df8a1f90"
+    "0e93f3dc82b5"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1B-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.4262,
     8,
-    "2738308dbb6c"
+    "49692257f658"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1B-eave-girt": [
     6.15315,
@@ -8590,27 +8494,27 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W2-closure-0-outer-girt": [
     6.29285,
-    6.4387347,
+    6.41985,
     8,
-    "54b4d2151c23"
+    "2f701619bc55"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W2-closure-0-sheathing": [
     6.11505,
-    6.480175,
+    6.48335,
     8,
-    "95372fbe381f"
+    "110e2ed9390c"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W2-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.477,
     8,
-    "d006df8a1f90"
+    "0e93f3dc82b5"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W2-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.4262,
     8,
-    "2738308dbb6c"
+    "49692257f658"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W2-eave-girt": [
     6.15315,
@@ -8638,27 +8542,27 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W3-closure-0-outer-girt": [
     6.29285,
-    6.4387347,
+    6.41985,
     8,
-    "54b4d2151c23"
+    "2f701619bc55"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W3-closure-0-sheathing": [
     6.11505,
-    6.480175,
+    6.48335,
     8,
-    "95372fbe381f"
+    "110e2ed9390c"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W3-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.477,
     8,
-    "d006df8a1f90"
+    "0e93f3dc82b5"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W3-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.4262,
     8,
-    "2738308dbb6c"
+    "49692257f658"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W3-eave-girt": [
     6.15315,
@@ -8716,27 +8620,27 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W4-closure-0-outer-girt": [
     6.29285,
-    6.4387347,
+    6.41985,
     8,
-    "54b4d2151c23"
+    "2f701619bc55"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W4-closure-0-sheathing": [
     6.11505,
-    6.480175,
+    6.48335,
     8,
-    "95372fbe381f"
+    "110e2ed9390c"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W4-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.477,
     8,
-    "d006df8a1f90"
+    "0e93f3dc82b5"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W4-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.4262,
     8,
-    "2738308dbb6c"
+    "49692257f658"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W4-eave-girt": [
     6.15315,
@@ -53522,6 +53426,18 @@
     288,
     "8fc3971762de"
   ],
+  "geometry/DA1JYY56XG-apron/body": [
+    2.251075,
+    2.4613682,
+    32,
+    "47654e0f4026"
+  ],
+  "geometry/DA1JYY56XG-hood/body": [
+    2.21615,
+    2.2750198,
+    96,
+    "a4bba40d3579"
+  ],
   "geometry/DHPT0K1FB2-00/body": [
     -0.3429,
     -0.254,
@@ -64772,24 +64688,6 @@
     4,
     "23d1a1874efb"
   ],
-  "member/03GPR9ZAA5/W-A-N2B-closure-0-outer-girt": [
-    8.001,
-    9.2390847,
-    4,
-    "23d1a1874efb"
-  ],
-  "member/03GPR9ZAA5/W-A-N2B-closure-0-spray-foam": [
-    8.001,
-    9.2390847,
-    4,
-    "23d1a1874efb"
-  ],
-  "member/03GPR9ZAA5/W-A-N2B-closure-0-vent-gap": [
-    8.001,
-    9.2390847,
-    4,
-    "23d1a1874efb"
-  ],
   "member/03GPR9ZAA5/block-2-000-00": [
     6.096,
     6.1849,
@@ -70160,24 +70058,6 @@
     4,
     "7cd8c681aff3"
   ],
-  "member/CAW101AAAA/W-A-S1-closure-0-outer-girt": [
-    6.4008,
-    7.8166847,
-    4,
-    "7cd8c681aff3"
-  ],
-  "member/CAW101AAAA/W-A-S1-closure-0-spray-foam": [
-    6.4262,
-    7.8166847,
-    4,
-    "c2ff52de0ea2"
-  ],
-  "member/CAW101AAAA/W-A-S1-closure-0-vent-gap": [
-    6.41985,
-    7.8166847,
-    4,
-    "8192ea433cb9"
-  ],
   "member/CAW101AAAA/block-2-000-00": [
     6.096,
     6.1849,
@@ -70353,24 +70233,6 @@
     "11b187342ac5"
   ],
   "member/CAW102AAAA/W-A-S2-closure-0-cladding": [
-    7.7978,
-    9.2390847,
-    4,
-    "8504866e89f2"
-  ],
-  "member/CAW102AAAA/W-A-S2-closure-0-outer-girt": [
-    7.7978,
-    9.2390847,
-    4,
-    "8504866e89f2"
-  ],
-  "member/CAW102AAAA/W-A-S2-closure-0-spray-foam": [
-    7.7978,
-    9.2390847,
-    4,
-    "8504866e89f2"
-  ],
-  "member/CAW102AAAA/W-A-S2-closure-0-vent-gap": [
     7.7978,
     9.2390847,
     4,
@@ -70837,24 +70699,6 @@
     9.2390847,
     4,
     "73ca25e96632"
-  ],
-  "member/CAW103AAAA/W-A-S3-closure-0-outer-girt": [
-    6.4008,
-    9.2390847,
-    4,
-    "73ca25e96632"
-  ],
-  "member/CAW103AAAA/W-A-S3-closure-0-spray-foam": [
-    6.4262,
-    9.2390847,
-    4,
-    "dfd4c1787e94"
-  ],
-  "member/CAW103AAAA/W-A-S3-closure-0-vent-gap": [
-    6.41985,
-    9.2390847,
-    4,
-    "5afee2a8b835"
   ],
   "member/CAW103AAAA/block-2-000-00": [
     6.096,
@@ -71414,24 +71258,6 @@
     4,
     "9b409fe03916"
   ],
-  "member/CAW104AAAA/W-A-N1-closure-0-outer-girt": [
-    6.4008,
-    9.2390847,
-    4,
-    "9b409fe03916"
-  ],
-  "member/CAW104AAAA/W-A-N1-closure-0-spray-foam": [
-    6.4262,
-    9.2390847,
-    4,
-    "1b8d616c129e"
-  ],
-  "member/CAW104AAAA/W-A-N1-closure-0-vent-gap": [
-    6.41985,
-    9.2390847,
-    4,
-    "209e6ade52b1"
-  ],
   "member/CAW104AAAA/block-2-000-00": [
     6.096,
     6.1849,
@@ -71953,24 +71779,6 @@
     8.0198847,
     4,
     "767898338074"
-  ],
-  "member/CAW105AAAA/W-A-N2-closure-0-outer-girt": [
-    6.4008,
-    8.0198847,
-    4,
-    "767898338074"
-  ],
-  "member/CAW105AAAA/W-A-N2-closure-0-spray-foam": [
-    6.4262,
-    8.0198847,
-    4,
-    "0cfa98f1a2be"
-  ],
-  "member/CAW105AAAA/W-A-N2-closure-0-vent-gap": [
-    6.41985,
-    8.0198847,
-    4,
-    "4eeff6ce2161"
   ],
   "member/CAW105AAAA/block-2-000-00": [
     6.096,
@@ -87724,9 +87532,9 @@
   ],
   "member/CSW102BAAA/W-S-E2-closure-0-outer-girt": [
     6.29285,
-    6.4292097,
+    6.410325,
     4,
-    "209cae6b3f7e"
+    "7031ae1a4cae"
   ],
   "member/CSW102BAAA/W-S-E2-closure-0-sheathing": [
     6.11505,
@@ -87736,15 +87544,15 @@
   ],
   "member/CSW102BAAA/W-S-E2-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.4516,
     4,
-    "6ab16579eeef"
+    "7105ff69f972"
   ],
   "member/CSW102BAAA/W-S-E2-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.423025,
     4,
-    "3c1b0ca80ffb"
+    "c44afcad5ecd"
   ],
   "member/CSW102BAAA/block-2-000-00": [
     3.048,
@@ -88120,9 +87928,9 @@
   ],
   "member/CSW103AAAA/W-S-E1-closure-0-outer-girt": [
     6.29285,
-    6.4292097,
+    6.410325,
     4,
-    "209cae6b3f7e"
+    "7031ae1a4cae"
   ],
   "member/CSW103AAAA/W-S-E1-closure-0-sheathing": [
     6.11505,
@@ -88132,15 +87940,15 @@
   ],
   "member/CSW103AAAA/W-S-E1-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.4516,
     4,
-    "6ab16579eeef"
+    "7105ff69f972"
   ],
   "member/CSW103AAAA/W-S-E1-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.423025,
     4,
-    "3c1b0ca80ffb"
+    "c44afcad5ecd"
   ],
   "member/CSW103AAAA/backing-0-000": [
     4.098925,
@@ -88576,9 +88384,9 @@
   ],
   "member/CSW104AAAA/W-S-E3-closure-0-outer-girt": [
     6.29285,
-    6.4292097,
+    6.410325,
     4,
-    "209cae6b3f7e"
+    "7031ae1a4cae"
   ],
   "member/CSW104AAAA/W-S-E3-closure-0-sheathing": [
     6.11505,
@@ -88588,15 +88396,15 @@
   ],
   "member/CSW104AAAA/W-S-E3-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.4516,
     4,
-    "6ab16579eeef"
+    "7105ff69f972"
   ],
   "member/CSW104AAAA/W-S-E3-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.423025,
     4,
-    "3c1b0ca80ffb"
+    "c44afcad5ecd"
   ],
   "member/CSW104AAAA/block-2-000-00": [
     3.048,
@@ -88984,9 +88792,9 @@
   ],
   "member/CSW105AAAA/W-S-E4-closure-0-outer-girt": [
     6.29285,
-    6.4292097,
+    6.410325,
     4,
-    "209cae6b3f7e"
+    "7031ae1a4cae"
   ],
   "member/CSW105AAAA/W-S-E4-closure-0-sheathing": [
     6.11505,
@@ -88996,15 +88804,15 @@
   ],
   "member/CSW105AAAA/W-S-E4-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.4516,
     4,
-    "6ab16579eeef"
+    "7105ff69f972"
   ],
   "member/CSW105AAAA/W-S-E4-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.423025,
     4,
-    "3c1b0ca80ffb"
+    "c44afcad5ecd"
   ],
   "member/CSW105AAAA/block-2-000-00": [
     3.048,
@@ -90472,9 +90280,9 @@
   ],
   "member/CSW110AAAA/W-S-W1-closure-0-outer-girt": [
     6.29285,
-    6.4292097,
+    6.410325,
     4,
-    "209cae6b3f7e"
+    "7031ae1a4cae"
   ],
   "member/CSW110AAAA/W-S-W1-closure-0-sheathing": [
     6.11505,
@@ -90484,15 +90292,15 @@
   ],
   "member/CSW110AAAA/W-S-W1-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.4516,
     4,
-    "6ab16579eeef"
+    "7105ff69f972"
   ],
   "member/CSW110AAAA/W-S-W1-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.423025,
     4,
-    "3c1b0ca80ffb"
+    "c44afcad5ecd"
   ],
   "member/CSW110AAAA/backing-0-000": [
     4.64185,
@@ -90844,9 +90652,9 @@
   ],
   "member/CSW111AAAA/W-S-W2-closure-0-outer-girt": [
     6.29285,
-    6.4292097,
+    6.410325,
     4,
-    "209cae6b3f7e"
+    "7031ae1a4cae"
   ],
   "member/CSW111AAAA/W-S-W2-closure-0-sheathing": [
     6.11505,
@@ -90856,15 +90664,15 @@
   ],
   "member/CSW111AAAA/W-S-W2-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.4516,
     4,
-    "6ab16579eeef"
+    "7105ff69f972"
   ],
   "member/CSW111AAAA/W-S-W2-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.423025,
     4,
-    "3c1b0ca80ffb"
+    "c44afcad5ecd"
   ],
   "member/CSW111AAAA/block-2-000-00": [
     3.048,
@@ -91102,9 +90910,9 @@
   ],
   "member/CSW112AAAA/W-S-W3-closure-0-outer-girt": [
     6.29285,
-    6.4292097,
+    6.410325,
     4,
-    "209cae6b3f7e"
+    "7031ae1a4cae"
   ],
   "member/CSW112AAAA/W-S-W3-closure-0-sheathing": [
     6.11505,
@@ -91114,15 +90922,15 @@
   ],
   "member/CSW112AAAA/W-S-W3-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.4516,
     4,
-    "6ab16579eeef"
+    "7105ff69f972"
   ],
   "member/CSW112AAAA/W-S-W3-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.423025,
     4,
-    "3c1b0ca80ffb"
+    "c44afcad5ecd"
   ],
   "member/CSW112AAAA/block-2-000-00": [
     3.048,
@@ -91678,9 +91486,9 @@
   ],
   "member/CSW113AAAA/W-S-W4-closure-0-outer-girt": [
     6.29285,
-    6.4292097,
+    6.410325,
     4,
-    "209cae6b3f7e"
+    "7031ae1a4cae"
   ],
   "member/CSW113AAAA/W-S-W4-closure-0-sheathing": [
     6.11505,
@@ -91690,15 +91498,15 @@
   ],
   "member/CSW113AAAA/W-S-W4-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.4516,
     4,
-    "6ab16579eeef"
+    "7105ff69f972"
   ],
   "member/CSW113AAAA/W-S-W4-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.423025,
     4,
-    "3c1b0ca80ffb"
+    "c44afcad5ecd"
   ],
   "member/CSW113AAAA/block-2-000-00": [
     3.048,
@@ -93736,9 +93544,9 @@
   ],
   "member/CSW135AAAA/W-S-N1B-closure-0-outer-girt": [
     6.096,
-    9.2390847,
+    9.2202,
     4,
-    "6d078412a761"
+    "1b6e0773c85c"
   ],
   "member/CSW135AAAA/W-S-N1B-closure-0-sheathing": [
     6.096,
@@ -93748,15 +93556,15 @@
   ],
   "member/CSW135AAAA/W-S-N1B-closure-0-spray-foam": [
     6.096,
-    9.2390847,
+    9.2202,
     4,
-    "6d078412a761"
+    "1b6e0773c85c"
   ],
   "member/CSW135AAAA/W-S-N1B-closure-0-vent-gap": [
     6.096,
-    9.2390847,
+    9.2202,
     4,
-    "6d078412a761"
+    "1b6e0773c85c"
   ],
   "member/CSW135AAAA/backing-0-000": [
     4.6736,
@@ -95152,9 +94960,9 @@
   ],
   "member/CSW153AAAA/W-S-N3B-closure-0-outer-girt": [
     6.096,
-    6.9149847,
+    6.8961,
     4,
-    "3d2fc94bebfc"
+    "fbb0de297ee3"
   ],
   "member/CSW153AAAA/W-S-N3B-closure-0-sheathing": [
     6.096,
@@ -95164,15 +94972,15 @@
   ],
   "member/CSW153AAAA/W-S-N3B-closure-0-spray-foam": [
     6.096,
-    6.9149847,
+    6.8961,
     4,
-    "02d9d29d208d"
+    "8b46209a33a3"
   ],
   "member/CSW153AAAA/W-S-N3B-closure-0-vent-gap": [
     6.096,
-    6.9149847,
+    6.8961,
     4,
-    "46acb029b498"
+    "750b13daf2e7"
   ],
   "member/CSW153AAAA/block-2-000-00": [
     3.048,
@@ -95410,9 +95218,9 @@
   ],
   "member/CSW154AAAA/W-S-W1B-closure-0-outer-girt": [
     6.29285,
-    6.4292097,
+    6.410325,
     4,
-    "209cae6b3f7e"
+    "7031ae1a4cae"
   ],
   "member/CSW154AAAA/W-S-W1B-closure-0-sheathing": [
     6.11505,
@@ -95422,15 +95230,15 @@
   ],
   "member/CSW154AAAA/W-S-W1B-closure-0-spray-foam": [
     6.11505,
-    6.4704847,
+    6.4516,
     4,
-    "6ab16579eeef"
+    "7105ff69f972"
   ],
   "member/CSW154AAAA/W-S-W1B-closure-0-vent-gap": [
     6.11505,
-    6.4419097,
+    6.423025,
     4,
-    "3c1b0ca80ffb"
+    "c44afcad5ecd"
   ],
   "member/CSW154AAAA/block-2-000-00": [
     3.048,
@@ -104148,6 +103956,14 @@
   "solids/TR-BW-BRICK-BASE-1/z1_m": 0.136525,
   "solids/TR-BW-BRICK-HEAD-1/z0_m": 1.196176,
   "solids/TR-BW-BRICK-HEAD-1/z1_m": 1.216025,
+  "solids/TR-BW-HOOD-E-APRON/z0_m": 2.251075,
+  "solids/TR-BW-HOOD-E-APRON/z1_m": 2.4613682,
+  "solids/TR-BW-HOOD-E/z0_m": 2.21615,
+  "solids/TR-BW-HOOD-E/z1_m": 2.2750198,
+  "solids/TR-BW-HOOD-W-APRON/z0_m": 2.251075,
+  "solids/TR-BW-HOOD-W-APRON/z1_m": 2.4613682,
+  "solids/TR-BW-HOOD-W/z0_m": 2.21615,
+  "solids/TR-BW-HOOD-W/z1_m": 2.2750198,
   "solids/TR-BW-SCREEN-CAP/z0_m": 1.23825,
   "solids/TR-BW-SCREEN-CAP/z1_m": 1.2614199,
   "solids/TR-G-LEADER-E-EXT-RISER/z0_m": -1.2192,

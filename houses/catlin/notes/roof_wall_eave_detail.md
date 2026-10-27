@@ -27,7 +27,7 @@ source:
 - [K1] Birdsmouth seat: beveled web stiffeners per APA D710 10h; H2.5A each rafter.
 - [K2] Foam first lift 1-1/2" min. Lap onto ridge beam and hanger flanges in one pass.
 - [K3] 2x6 eave block on edge on the plate, every bay. ccSPF over it.
-- [K4] Roof-to-wall foam angle: closed-cell fill. No high-expansion foam.
+- [K4] Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.
 - [K5] Formed drip edge, one piece: flange 2" on the deck at 6:12, nose over the deck edge.
 - [K6] Lap the membrane over the drip. Nothing else reaches that plane.
 - [K7] 6" box gutter, rim 2.76" below the deck datum, back sheet behind the drip face.
@@ -109,7 +109,7 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
 
 - Gutter support (`notes/eave_gutter_girt.md`): a flat 2x6 KDAT girt in the girt layer at the eave, on a 3-2x6 standoff at every rafter bay centre, two TLOK08 per standoff through girt, standoff and sheathing into the 2x6 eave block. The gutter hangs on a hidden hanger at each standoff (24" o.c., inside the usual 36" max), screwed through the panel into the girt. **The hanger is drawn, not modelled or billed.**
 
-- Foam interface: leave the angled mismatch between roof foam and wall foam; fill with closed-cell spray polyurethane foam. Avoid high-expansion foams — they lift the roof foam off the deck barrier.
+- Foam interface: wall ccSPF sprayed tight to the oversailing deck underside. No high-expansion foams.
 
 - Drip edge (since 2026-09-26 ONE formed piece per edge, derived by `resolve/roof_drip_edge.py` from `RF-HOUSE.eave_trim.drip_edge`; it replaced both the level authored drip and the corner trim): a flange lying ON the structural deck at the 6:12 pitch (underside 0.70" vertical above the deck datum at the edge), bearing 2" on the plywood inboard of the deck edge (the deck stops at the girt face, 1-1/4" inside the cladding face), with the adhered membrane lapped OVER it; a nose bent over the deck edge, clearing the wall panel heads; a face 1-1/4" outside the panel face with a 4" leg down over the panel heads; and a 1/2" kick out and down into the trough. The same piece runs up both rakes, where it is the barge board.
 

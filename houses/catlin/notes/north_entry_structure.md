@@ -330,10 +330,13 @@ the band's brace now, not in-fill: `canopy_west_band.md` §3.
 
 ## 5. The joint at the house, drainage, and snow
 
-The canopy's south edge leaves a **7 3/8" gap** to the house cladding. A positively sloped
-closure attaches to the **canopy only**, dying at the house in a replaceable compressible or
-brush seal, inspectable from below, never filled with rigid foam or sealant. The two
-buildings move independently and the joint has to. Maintain the house rainscreen.
+The canopy's south roof edge leaves a **7 3/8" gap** to the house cladding. Keep this
+slot open; the 2026-10-26 beam-tail hoods replace the earlier contacting brush-seal
+closure proposal. Both beams now stop 1⅞″ from modeled house cladding; the hoods'
+outermost hems leave 1¼″. Hood and apron attachments stay exclusively on the canopy,
+without house contact, sealant bridges or house attachments. Establish the required
+movement/tolerance allowance before fabrication; these are nominal geometric gaps.
+See [canopy_beam_tail_hoods.md](canopy_beam_tail_hoods.md). Maintain the house rainscreen.
 
 > ⚠ **This is the ONLY movement joint, and §1a is why.** The same sentence used to be written
 > about the garage joint as well, at the same time as §1 called that plane the canopy's entire

@@ -55,17 +55,20 @@ This is the arithmetic `GravityProfile.invert_at` has to reproduce: an invert is
 monotone potential, `invert = start − slope × developed plan length`, and nothing else.
 
 **The 3" collector, `PR-M-S-SUITE-WC-DRAIN`, as authored.** Flange at the finished floor,
-drop, south across the trusses, east onto the stack.
+drop, east in its bay to the x=144 lane, south across the trusses, east onto the stack
+(2026-10-26: the south leg moved 134.81 → 144 to clear the truss webs).
 
 | leg | from → to | plan length | fall | slope |
 |---|---|---|---|---|
 | flange drop | (134.81, 250.625) 120.75 → 116.5 | 0 | 4.25" | vertical |
-| south | → (134.81, 216) 112.5 | 250.625 − 216 = 34.625" = 2.8854 ft | 4.0" | 1.386"/ft |
-| east | → (150, 216) 111.0 | 150 − 134.81 = 15.19" = 1.2658 ft | 1.5" | 1.185"/ft |
+| east | → (144, 250.625) 116.3 | 144 − 134.81 = 9.19" = 0.7658 ft | 0.2" | 0.261"/ft |
+| south | → (144, 216) 112.6 | 250.625 − 216 = 34.625" = 2.8854 ft | 3.7" | 1.282"/ft |
+| east | → (150, 216) 111.0 | 150 − 144 = 6" = 0.5 ft | 1.6" | 3.2"/ft |
 
 Developed plan length 49.815" = 4.1513 ft; total fall 5.5"; **mean 1.325"/ft**, and the
-flattest segment is 1.185"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum, which asks
-1.0378" of it. (2026-09-26: the tie dropped 112.0 → 111.0 so the attic branch's street
+flattest segment is 0.261"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum, which asks
+1.0378" of it. The surplus is in the total (5.5 − 1.0378 = 4.462"), not in the first leg:
+that 9.19" holds +0.011"/ft, which is what `mep.drain_slope_margin` reports. (2026-09-26: the tie dropped 112.0 → 111.0 so the attic branch's street
 sanitary tee can spigot into this branch's combo, 3 1/2" apart — Charlotte Pipe
 SUB-PAC-PVC-DWV, parts 501 and 403.) `mep.drain_slope` grades the flattest and reports it.
 
@@ -91,9 +94,9 @@ and it is the whole argument of §5.
 **What that 0.0622" is NOT is this run's build margin**, and the distinction matters because
 the number has been read the other way. It is measured to the stack **head** at 115.5,
 because that is the arrival a *search* must assume before it knows where on the barrel the
-tie will land. The authored run tied at **112.0** (111.0 since 2026-09-26), 3.5" lower, so what the pipe as drawn
-actually holds is **3.062" of surplus fall** — 0.779"/ft flattest against 0.25"/ft, a 3.1×
-margin. `mep.drain_slope_margin` is the check that reports the build number; `slack_in` is
+tie will land. The authored run tied at **112.0** (111.0 since 2026-09-26), 3.5" lower, so what the pipe as
+drawn holds is **3.062" of surplus fall** in that world (0.779"/ft flattest then; the
+current run's surplus is §2's 4.462", spent mostly past its first leg). `mep.drain_slope_margin` is the check that reports the build number; `slack_in` is
 an ordering key and reports the search number. Had the stack head stayed at 115.5 with the
 collector tying there, rather than at 112 on the barrel below it, there would have been 1/16"
 in hand — which is exactly what makes 0.0622" the right *ordering* number and the wrong
@@ -104,17 +107,17 @@ in hand — which is exactly what makes 0.0622" the right *ordering* number and 
 
 | arm | route | plan length | start → end | flattest |
 |---|---|---|---|---|
-| LAV | (165.5, 268) ↓ → (165.5, 246) → (134.81, 246) | 22" + 30.69" = 4.3908 ft | 117.5625 → 116.25 | 0.293"/ft |
-| TUB | (197.615, 261.125) ↓ → (197.615, 228) → (134.81, 228) | 33.125" + 62.805" = 7.9942 ft | 117.4375 → 115.0625 | 0.294"/ft |
+| LAV | (165.5, 268) ↓ → (165.5, 246) → (144, 246) | 22" + 21.5" = 3.625 ft | 117.5625 → 116.2 | 0.307"/ft |
+| TUB | (197.615, 261.125) ↓ → (195, 261.125) → (195, 228) → (144, 228) | 2.615" + 33.125" + 51" = 7.2283 ft | 117.4375 → 114.3 | 0.308"/ft |
 
 Each end elevation is checked against the collector's own **centreline** at that station
 (`pipe_invert_at` interpolates the authored elevations, and an authored elevation is a
 centreline — see `model/mep.py`). An arm entering in the collector's upper half is an
 ordinary side entry; `mep.drain_tie_in` grades it. That station is
 the interpolation along the south leg as authored: at y=246 the collector reads
-116.5 − 3.125 × (4.625/34.625) = 116.083, and the arm arrives at 116.25 — **0.167" above
+116.3 − 3.7 × (4.625/34.625) = 115.806, and the arm arrives at 116.2 — **0.394" above
 it**, a side entry into the upper half of the 3". At y=228 it reads
-116.5 − 3.125 × (22.625/34.625) = 114.458 against the arm's 115.0625, **0.604" above**. Both are inside `_TIE_IN_INVERT_TOL_M` (1"), which is what keeps
+116.3 − 3.7 × (22.625/34.625) = 113.882 against the arm's 114.3, **0.418" above**. Both are inside `_TIE_IN_INVERT_TOL_M` (1"), which is what keeps
 `drain_tie_ins` linking them and `accumulated_serves` rolling the load up: 13 DFU on the
 stack, 48 still on `PR-B-MAIN-DRAIN`'s 4".
 
