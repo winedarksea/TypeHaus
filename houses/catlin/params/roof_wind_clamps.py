@@ -1,6 +1,6 @@
 """House-roof wind clamps — parametric module (plan/wind_clamps.py has the layout rationale).
 
-Twelve S-5-S clamps, three per eave corner, on the first three seams in from each rake. Each
+Twelve S-5-N Mini clamps, three per eave corner, on the first three seams in from each rake. Each
 clamp's elevation is the top of the standing-seam metal at its x, from the same
 ``seam_top_inches`` the PV clamps in ``params/solar.py`` use — never a typed literal.
 
@@ -25,7 +25,7 @@ def _clamp(uid: str, tag: str, x_in: float, y_in: float) -> Connector:
     return Connector(
         uid=uid, tag=tag, kind=ConnectorKind.STANDING_SEAM_CLAMP,
         position=pt(inch(x_in), inch(y_in)), elevation=inch(seam_top_inches(x_in)),
-        connects=(ROOF_TAG,), size="S-5-S")
+        connects=(ROOF_TAG,), size="S-5-N Mini")
 
 
 HOUSE_ROOF_WIND_CLAMPS = [

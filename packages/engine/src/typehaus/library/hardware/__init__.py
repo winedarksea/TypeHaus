@@ -65,6 +65,7 @@ from typehaus.library.hardware.roof_ties import (
 from typehaus.library.hardware.s5 import (
     S5_CANDUIT_PIPE_CLAMP,
     S5_COLORGARD_SNOW_RETENTION,
+    S5_N_MINI_NAIL_STRIP_CLAMP,
     S5_N_NAIL_STRIP_CLAMP,
     S5_S_SNAP_LOCK_CLAMP,
     S5_SEAM_CLAMP,
@@ -182,6 +183,7 @@ STRUCTURAL_HARDWARE: tuple = (
     S5_SEAM_CLAMP,
     S5_S_SNAP_LOCK_CLAMP,
     S5_N_NAIL_STRIP_CLAMP,
+    S5_N_MINI_NAIL_STRIP_CLAMP,
     S5_CANDUIT_PIPE_CLAMP,
     S5_PV_KIT,
     S5_COLORGARD_SNOW_RETENTION,

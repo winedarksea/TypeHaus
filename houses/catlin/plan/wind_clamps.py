@@ -25,12 +25,12 @@
 #   garage walls   NONE — see the paragraph above the list below. It was 4 corners x 2
 #                  faces x 2 levels = 16 `S-5-N`, back when the wall was 26 ga nail strip;
 #                  a corrugated panel has no seam to clamp.
-#   garage roof    4 eave corners x 3 seams = 12 clamps, `S-5-N`, on the first three seams in
+#   garage roof    4 eave corners x 3 seams = 12 clamps, `S-5-N Mini`, on the first three seams in
 #                  from each rake, at the eave. The garage roof is nail strip, which has no
 #                  concealed clips at all — uplift is resisted by the face-fastened flange
 #                  alone — so the corner zone is exactly where a clamp earns its keep.
 #
-#   house roof      4 eave corners x 3 seams = 12 S-5-S clamps. Image II is a
+#   house roof      4 eave corners x 3 seams = 12 S-5-N Mini clamps. Image II is a
 #                   direct-fastened nail-flange snap-seam with no floating clips.
 #
 # ** THIS IS AN AUTHORED LAYOUT, NOT AN ENGINEERED ONE. ** `plan/site.py` carries a design
@@ -81,40 +81,40 @@ GARAGE_ROOF_WIND_CLAMPS = [
     # so the eave line is at the same height it always was.
     Connector(uid="M2BE9KCQQ7", tag="CN-G-WIND-RFSW-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(4, 6.25), ft(37, 10.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
     Connector(uid="PPM5H4K6EK", tag="CN-G-WIND-RFSW-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(4, 6.25), ft(39, 2.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
     Connector(uid="QAZ18JEVTF", tag="CN-G-WIND-RFSW-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(4, 6.25), ft(40, 6.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
     Connector(uid="X9PQ5K1CYX", tag="CN-G-WIND-RFSE-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(31, 5.75), ft(37, 10.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
     Connector(uid="6Y59G1FQDX", tag="CN-G-WIND-RFSE-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(31, 5.75), ft(39, 2.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
     Connector(uid="H8GJE348NE", tag="CN-G-WIND-RFSE-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(31, 5.75), ft(40, 6.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
     Connector(uid="QNY7KXYE7F", tag="CN-G-WIND-RFNE-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(31, 5.75), ft(67, 10.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
     Connector(uid="S67JTBKR21", tag="CN-G-WIND-RFNE-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(31, 5.75), ft(66, 6.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
     Connector(uid="5WVHPSXHFD", tag="CN-G-WIND-RFNE-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(31, 5.75), ft(65, 2.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
     Connector(uid="8REEX7CC35", tag="CN-G-WIND-RFNW-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(4, 6.25), ft(67, 10.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
     Connector(uid="4YB7X5WM5X", tag="CN-G-WIND-RFNW-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(4, 6.25), ft(66, 6.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
     Connector(uid="CM84J5D2KA", tag="CN-G-WIND-RFNW-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(4, 6.25), ft(65, 2.625)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N"),
+              connects=("RF-GARAGE",), size="S-5-N Mini"),
 ]
 # The twelve house-roof clamps are in params/roof_wind_clamps.py: their elevation is the
 # standing-seam top, derived, and a typed number here would drift from the roof.

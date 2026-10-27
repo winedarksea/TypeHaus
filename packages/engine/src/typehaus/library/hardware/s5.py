@@ -6,6 +6,7 @@ Split out of the former ``library/hardware.py``; see the package docstring.
 from __future__ import annotations
 
 from typehaus.hardware.catalog import (
+    ROLE_NAIL_STRIP_MINI_SEAM_CLAMP,
     ROLE_NAIL_STRIP_SEAM_CLAMP,
     ROLE_PIPE_CLAMP,
     ROLE_SNAP_LOCK_SEAM_CLAMP,
@@ -59,7 +60,21 @@ S5_N_NAIL_STRIP_CLAMP = StructuralHardware(
     manufacturer="S-5!",
     model="S-5-N",
     source="S-5! S-5-N clamp (s-5.com/s-5-n-clamps) — two-setscrew non-penetrating clamp "
-           "for nail-strip / bulb-and-lip seam profiles",
+           "for 1\" nail-strip / bulb-and-lip seam profiles (Metal Sales Image II); "
+           "carries the PV kit and the snow rail; 2.00\" L x 1.57\" W x 1.77\" H",
+)
+
+# Uplift-only wind clamp on the same 1" nail-strip seam: one setscrew, 1.18" long, the
+# economical S-5! answer where nothing hangs off the clamp. Never a carrier.
+S5_N_MINI_NAIL_STRIP_CLAMP = StructuralHardware(
+    tag="s5-n-mini-nail-strip-clamp",
+    role=ROLE_NAIL_STRIP_MINI_SEAM_CLAMP,
+    name="S-5-N Mini nail-strip seam clamp",
+    manufacturer="S-5!",
+    model="S-5-N Mini",
+    source="S-5! S-5-N Mini clamp (s-5.com/s-5-n-clamps) — one-setscrew non-penetrating clamp "
+           "for 1\" nail-flange profiles (<=1\" high, rib base <0.82\"); 1.18\" L; wind "
+           "clamp only, pull-up tested",
 )
 
 # The ring that actually holds a round pipe — a downspout leader, a vent riser, conduit —
@@ -97,5 +112,5 @@ S5_COLORGARD_SNOW_RETENTION = StructuralHardware(
     source="S-5! ColorGard snow retention system (s-5.com) — 1\" x 1\" aluminum crossbar "
            "with a colour-matched panel strip, carried on S-5! seam clamps; spacing and row "
            "count are the manufacturer's calculation at the site ground snow load",
-    requires_role=ROLE_STANDING_SEAM_CLAMP,
+    requires_role=ROLE_NAIL_STRIP_SEAM_CLAMP,
 )

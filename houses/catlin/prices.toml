@@ -1177,7 +1177,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # PVKIT 2.0 module grabs exclude the profile-matched seam clamp, ordered below.
 # S-5-S: published MSRP $7.34 (s-5.com/products/s-5-s-clamps/); carton/street range.
 "S-5-PVKIT" = { low = 14, high = 35 }  # 48 ea, clamp ordered separately
-"S-5-S" = { low = 6, high = 10 }  # 48 PVKIT carriers + 12 house roof wind clamps
+"S-5-S" = { low = 6, high = 10 }  # 0 ea — retired: Image II is 1" nail strip, not snap-lock
 # Eclisse steel cassettes since 2026-10-09 (notes/pocket_frame_eclisse.md). EKC3680 listed
 # $341.94 (Home Depot) to $465 (Ferguson). The 2x6 (EKQ series) has no 80" retail listing:
 # 30x84 is $695 at Ferguson, special order, 4-9 weeks, so order D-B-BATH's early.
@@ -1212,7 +1212,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # GARAGE_WALL_2X6 is a 7/8" corrugated exposed-fastener panel now, with no seam of any kind
 # for an N clamp to close on — the same swap, and the same argument, as the 48 S-5-S house-
 # wall clamps that went on 2026-08-26. The garage roof remains nail strip.
-"S-5-N" = { low = 6, high = 10 }  # 12 ea — garage roof only, nail strip (was 28 with the walls)
+"S-5-N" = { low = 6, high = 10 }  # 50 ea — 48 PVKIT carriers + 2 ColorGard carriers (S-5-N MSRP $7.11)
+# S-5-N Mini: one setscrew, wind (uplift-only) clamps on both nail-strip roofs. Price is a
+# placeholder range pending a quote; MSRP is below the full S-5-N's.
+"S-5-N Mini" = { low = 4, high = 8 }  # 24 ea — 12 house roof + 12 garage roof wind clamps
 # 2026-08-26 — the exposed-fastener wall panel's own screws (takeoff/fasteners.py
 # `exposed_fastener_cladding_screw_rows`). 1,804 ea over two BOM rows: 1,430 field (one per
 # rib flat at every 24" support crossing) + 374 sidelap stitch (one line per panel-to-panel

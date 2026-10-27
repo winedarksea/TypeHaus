@@ -238,6 +238,14 @@ _CONNECTOR_MARKER_IN = {
 }
 _CONNECTOR_MARKER_DEFAULT = (2.5, 2.5, 3.0)
 
+#: Nail-strip clamps by product, as (half-L along the seam, half-W, half-H, centre z offset),
+#: inches. The connector sits at the seam top; the body spans ~1" below it to the clamp top.
+#: S-5-N 2.00 L x 1.57 W x 1.77 H; S-5-N Mini is 1.18 L on the same section.
+_SEAM_CLAMP_PRODUCT_IN = {
+    "S-5-N": (1.00, 0.785, 0.885, -0.115),
+    "S-5-N Mini": (0.59, 0.785, 0.885, -0.115),
+}
+
 
 def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None:
     if el.hanger_spec_pair(model.plan) is not None:
@@ -249,6 +257,10 @@ def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None
     # measured off this solid, so the marker only has to read at the right place — and at
     # roughly the right size, which is what ``_CONNECTOR_MARKER_IN`` is for.
     half_x, half_y, half_z = _CONNECTOR_MARKER_IN.get(el.kind, _CONNECTOR_MARKER_DEFAULT)
+    z_shift = 0.0
+    if el.kind is ConnectorKind.STANDING_SEAM_CLAMP and el.size in _SEAM_CLAMP_PRODUCT_IN:
+        half_x, half_y, half_z, z_in = _SEAM_CLAMP_PRODUCT_IN[el.size]
+        z_shift = inch(z_in).meters
     # ``axis`` is the part's own in-plane run direction, and the table's two plan
     # half-dimensions are (along, across) that run — the same convention
     # ``connector_markers._marker_outline`` applies to every DERIVED marker, where
@@ -262,7 +274,7 @@ def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None
         uid=el.uid or f"{el.tag}-conn", tag=el.tag, storey=storey,
         category=_CONNECTOR_CATEGORY.get(el.kind, "connector"),
         outline=square(cx, cy, inch(half_x).meters, inch(half_y).meters),
-        z0_m=z - inch(half_z).meters, z1_m=z + inch(half_z).meters,
+        z0_m=z + z_shift - inch(half_z).meters, z1_m=z + z_shift + inch(half_z).meters,
         # The part number the take-off bills, so a click on the marker names the hardware.
         product=el.size or None,
     ))

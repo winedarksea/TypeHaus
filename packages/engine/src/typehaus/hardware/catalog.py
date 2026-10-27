@@ -165,6 +165,9 @@ ROLE_STANDING_SEAM_CLAMP = "standing_seam_clamp"
 # ROLE_PV_SEAM_CLAMP exists below.
 ROLE_SNAP_LOCK_SEAM_CLAMP = "snap_lock_seam_clamp"
 ROLE_NAIL_STRIP_SEAM_CLAMP = "nail_strip_seam_clamp"
+# The one-setscrew Mini of the same clamp: a lighter-duty part, so it takes uplift-only wind
+# clamps and never carries an accessory (PV kit, snow rail), which stay on the full S-5-N.
+ROLE_NAIL_STRIP_MINI_SEAM_CLAMP = "nail_strip_mini_seam_clamp"
 # The PV mounting kit is its own role: hardware_for_role demands one product per role,
 # and the plain S-5! clamp (vent riser, exterior boxes) must keep serving its own.
 ROLE_PV_SEAM_CLAMP = "pv_seam_clamp"

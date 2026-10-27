@@ -334,7 +334,6 @@ the future.
 - Research most commonly failed residential code items and make sure checks or tests exist for those here.
 - Research and pull in the exact metal sales manufacturing trim pieces needed for the metal siding and roof from their install guides such as blob:https://www.metalsales.us.com/bd279a19-1e88-4806-81e6-ce041ae54a3e
 - The window buck is clearly visible from the exterior, that does rather show the flashing/trim isn't correct.
-- For the current roofing, the 1-inch rib height nail-strip geometry of Image II, it looks like the appropriate S-5! clamp for both the solar panels and snow retainers is the S-5-N and for use as as wind clamp, the S-5-N Mini
 - Add the eased edges and rounded corners to the shown tabletop model.
 - D-G-SERVICE still has exposed flashing (missing the sill and jamb like the other exterior doors). And D-B-PATIO has a MASA connector sprouting up in the middle, plus it's got some sort of awkward trim around the brick veneer (the brick IS the trim there, the door itself has a more utilitarian trim into the main house wall behind). Looks like previous door work accidentally bumped the brick arch up too high. It should partially obscure the door top.
 - Look up a guide to how plumbers and such route, then make sure the autorouter follows that, and also code for it
@@ -360,5 +359,4 @@ Firstly design a house (with permit checks, building science review, floorplan e
 Secondly gather bids, organize the timeline (inspection gates, etc), then track completed progress.
 Thirdly use the house design as a reference (ie for agents understanding live data on home assistant in context), potentially with feedback loop of updating the design or later running a remodel
 
-- [ ] Confirm S-5-S compatibility and loads for Metal Sales Image II 1" snap-seam with the S-5! configurator / Metal Sales; verify Aptos 440 W clamp zones for the seam-snapped PVKIT columns.
 - [ ] Confirm Image II eave rib-end treatment: installation guide pp. 20–22 calls for sealant or field-closed rib ends; current hot-roof design keeps rib ends open without a vent closure.
