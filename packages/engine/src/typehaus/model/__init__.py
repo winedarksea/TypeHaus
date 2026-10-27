@@ -70,7 +70,6 @@ from typehaus.model.enums import (
 from typehaus.model.exterior_door import (
     ExteriorDoorCatalogInstallation,
     ExteriorDoorInstallation,
-    ExteriorDoorSwingAssembly,
     ExteriorDoorSillDesign,
 )
 from typehaus.model.flashing import FormedFlashingSection
@@ -342,7 +341,7 @@ for _name, _obj in (
 __all__ = [
     "DoorHardwareItem", "JambFraming",
     "DoorwayProductSpec", "DoorwaySectionPart", "DoorwayTreatment", "ExteriorDoorInstallation",
-    "ExteriorDoorSillDesign", "ExteriorDoorCatalogInstallation", "ExteriorDoorSwingAssembly", "DoorCatalogDimensions",
+    "ExteriorDoorSillDesign", "ExteriorDoorCatalogInstallation", "DoorCatalogDimensions",
     "WinderTurnSpec", "WinderFramingSpec",
     "ReinforcementSpec",
     "BarSpec",

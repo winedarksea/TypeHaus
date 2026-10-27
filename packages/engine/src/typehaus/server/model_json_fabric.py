@@ -175,7 +175,6 @@ def wall_graph_json(
              "effective_frame_material_ref": o.effective_frame_material_ref,
              "effective_leaf_material_ref": o.effective_leaf_material_ref,
              "swing_clearance": [list(point) for point in o.swing_clearance],
-             "swing_assembly": doorway_json(o.swing_assembly),
              "maximum_opening_degrees": getattr(
                  model.plan.by_tag(o.tag), "maximum_opening_degrees", 90.0),
              "framing_bumper": [list(point) for point in o.framing_bumper],

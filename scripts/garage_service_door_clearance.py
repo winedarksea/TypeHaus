@@ -13,7 +13,30 @@ from shapely.geometry import MultiPoint, box
 from shapely.ops import unary_union
 
 from typehaus.emit.draw.elevation_project import solid_faces
+from typehaus.quantities import Length, inch
 from typehaus.resolve.geometry import opening_center, wall_frame
+
+
+@dataclass(frozen=True)
+class SwingEnvelope:
+    """Dimensions for one clearance check; independent of model and purchase sizes."""
+    hinge_inset: Length
+    hinge_normal_offset: Length
+    leaf_start: Length
+    leaf_end: Length
+    leaf_face_min: Length
+    leaf_face_max: Length
+    leaf_bottom: Length
+    leaf_top: Length
+    lever_backset: Length
+    lever_hingeward_extent: Length
+    lever_projection: Length
+    lever_bottom: Length
+    lever_top: Length
+    hinge_normal_datum: str = "wall_axis"
+    stop_tolerance_degrees: float = 1
+    installation_allowance: Length = inch(0.125)
+    minimum_clearance: Length = inch(0.25)
 
 
 @dataclass(frozen=True)
@@ -33,11 +56,8 @@ class ClearanceResult:
     angle_interval_degrees: tuple[float, float]
 
 
-def assembly_components(wall, opening):
+def assembly_components(wall, opening, spec):
     """Resolve the independent hinge, leaf faces and hardware from the authored section."""
-    spec = opening.swing_assembly
-    if spec is None:
-        raise ValueError(f"{opening.tag} has no authored swing assembly")
     center = opening_center(wall, opening)
     if center is None:
         raise ValueError("a swing assembly requires a nondegenerate wall")
@@ -74,9 +94,9 @@ def assembly_components(wall, opening):
     )
 
 
-def swept_intervals(component, hinge, opening, stop_degrees, step_degrees=1.0):
+def swept_intervals(component, hinge, opening, stop_degrees, spec, step_degrees=1.0):
     """Enclose the full rotation with chord hulls plus a vertex-arc sagitta."""
-    limit = stop_degrees + opening.swing_assembly.stop_tolerance_degrees
+    limit = stop_degrees + spec.stop_tolerance_degrees
     count = max(1, math.ceil(limit / step_degrees))
     step = limit / count
     hinge_sign = -1 if opening.flip_hinge else 1
@@ -91,21 +111,6 @@ def swept_intervals(component, hinge, opening, stop_degrees, step_degrees=1.0):
     return tuple((i * step, (i + 1) * step,
                   poses[i].union(poses[i + 1]).convex_hull.buffer(sagitta))
                  for i in range(count))
-
-
-def installed_swing_sector(wall, opening, stop_degrees):
-    """A conservative symbolic sector using the sourced installation's hinge and leaf."""
-    from shapely.geometry import Point
-
-    hinge, _ = assembly_components(wall, opening)
-    _, tangent, _, _ = wall_frame(wall)
-    toward_latch = 1 if opening.flip_hinge else -1
-    direction = -(-1 if opening.flip_hinge else 1) * (-1 if opening.flip_swing else 1)
-    radius = opening.swing_assembly.leaf_end.meters
-    closed_tip = Point(hinge[0] + tangent[0] * toward_latch * radius,
-                       hinge[1] + tangent[1] * toward_latch * radius)
-    return [hinge, *(tuple(rotate(closed_tip, direction * stop_degrees * i / 8,
-                                  origin=hinge).coords[0]) for i in range(9))]
 
 
 def _clip_face(face, lower, upper):
@@ -126,13 +131,12 @@ def _clip_face(face, lower, upper):
     return clipped
 
 
-def clearance_results(model, opening, stop_degrees):
+def clearance_results(model, opening, stop_degrees, spec):
     """Return every nearby component/obstacle clearance, including below-leaf obstacles."""
     wall = model.wall(opening.host_wall)
-    hinge, components = assembly_components(wall, opening)
-    spec = opening.swing_assembly
+    hinge, components = assembly_components(wall, opening, spec)
     margin = spec.minimum_clearance.meters + spec.installation_allowance.meters
-    sweeps = {c.name: swept_intervals(c, hinge, opening, stop_degrees) for c in components}
+    sweeps = {c.name: swept_intervals(c, hinge, opening, stop_degrees, spec) for c in components}
     envelopes = {name: unary_union([interval[2] for interval in intervals])
                  for name, intervals in sweeps.items()}
     tags = {element.uid: element.tag for element in model.plan.all_elements()}
@@ -172,3 +176,14 @@ def clearance_results(model, opening, stop_degrees):
                                                    distance - spec.installation_allowance.meters,
                                                    (start, end)))
     return tuple(sorted(results, key=lambda result: result.clearance_m))
+
+
+def service_door_envelope():
+    """Current coordination limits; these do not supply factory installation dimensions."""
+    return SwingEnvelope(
+        hinge_inset=inch(0), hinge_normal_datum="exterior_placement",
+        hinge_normal_offset=inch(0), leaf_start=inch(0), leaf_end=inch(32),
+        leaf_face_min=inch(-0.875), leaf_face_max=inch(0.875),
+        leaf_bottom=inch(1), leaf_top=inch(80), lever_backset=inch(2.375),
+        lever_hingeward_extent=inch(4.125), lever_projection=inch(2.5),
+        lever_bottom=inch(1), lever_top=inch(80))

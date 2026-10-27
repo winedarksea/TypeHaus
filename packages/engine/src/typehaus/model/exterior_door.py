@@ -1,5 +1,4 @@
 """Installation choices independent of the factory door and sill cross-sections."""
-import math
 from typing import Literal
 
 from pydantic import Field, model_validator
@@ -176,67 +175,6 @@ class ExteriorDoorSillDesign(HausModel):
         return self
 
 
-class ExteriorDoorSwingAssembly(HausModel):
-    """Installed leaf envelope, with hinge offsets from the hinge-side opening corner.
-
-    The hinge inset is measured from the hinge-side opening edge toward the latch;
-    the hinge normal offset uses the wall's left normal. Leaf stations are measured
-    from the hinge toward the latch and face offsets use that direction's left normal.
-    Elevations are measured from the rough sill. A design envelope must not be
-    represented as a confirmed supplier assembly.
-    """
-    source_url: str = Field(min_length=1)
-    source_drawing: str = Field(min_length=1)
-    supplier_confirmed: bool = False
-    rough_opening_width: Length | None = None
-    rough_opening_height: Length | None = None
-    hinge_inset: Length
-    hinge_normal_datum: Literal["wall_axis", "exterior_placement"] = "wall_axis"
-    hinge_normal_offset: Length
-    leaf_start: Length
-    leaf_end: Length
-    leaf_face_min: Length
-    leaf_face_max: Length
-    leaf_bottom: Length
-    leaf_top: Length
-    lever_backset: Length
-    lever_hingeward_extent: Length
-    lever_projection: Length
-    lever_bottom: Length
-    lever_top: Length
-    stop_tolerance_degrees: float = Field(default=1, ge=0, le=10, allow_inf_nan=False)
-    installation_allowance: Length = inch(0.125)
-    minimum_clearance: Length = inch(0.25)
-
-    @model_validator(mode="after")
-    def valid_envelope(self):
-        dimensions = (self.hinge_inset, self.hinge_normal_offset, self.leaf_start,
-                      self.leaf_end, self.leaf_face_min, self.leaf_face_max,
-                      self.leaf_bottom, self.leaf_top, self.lever_backset,
-                      self.lever_hingeward_extent, self.lever_projection,
-                      self.lever_bottom, self.lever_top, self.installation_allowance,
-                      self.minimum_clearance)
-        if not all(math.isfinite(value.meters) for value in dimensions):
-            raise ValueError("swing assembly dimensions must be finite")
-        if (self.leaf_start.meters >= self.leaf_end.meters
-                or self.leaf_face_min.meters >= self.leaf_face_max.meters
-                or self.leaf_bottom.meters >= self.leaf_top.meters
-                or self.lever_bottom.meters >= self.lever_top.meters):
-            raise ValueError("swing assembly extents must be ordered")
-        if min(self.lever_backset.meters, self.lever_hingeward_extent.meters,
-               self.lever_projection.meters, self.installation_allowance.meters,
-               self.minimum_clearance.meters) < 0:
-            raise ValueError("swing allowances and lever dimensions must be nonnegative")
-        if ((self.rough_opening_width is None) != (self.rough_opening_height is None)):
-            raise ValueError("rough-opening width and height must be provided together")
-        if self.supplier_confirmed and self.rough_opening_width is None:
-            raise ValueError("confirmed assembly requires rough-opening dimensions")
-        if any(value is not None and (not math.isfinite(value.meters) or value.meters <= 0)
-               for value in (self.rough_opening_width, self.rough_opening_height)):
-            raise ValueError("rough-opening dimensions must be positive")
-        return self
-
-
 class ExteriorDoorInstallation(HausModel):
     mounting: Literal["structural_wall"] = "structural_wall"
     factory_frame_depth: Length | None = None
@@ -251,7 +189,6 @@ class ExteriorDoorInstallation(HausModel):
     # Explicit schematic selection for early coordination, never a catalog failure fallback.
     sill_design: ExteriorDoorSillDesign | None = None
     catalog_installation: ExteriorDoorCatalogInstallation | None = None
-    swing_assembly: ExteriorDoorSwingAssembly | None = None
     exterior_opening_ref: str | None = None
     seat_opening_ref: str | None = None
     approach_opening_refs: tuple[str, ...] = ()
@@ -276,7 +213,6 @@ class ExteriorDoorInstallation(HausModel):
 
 
 register_constructor("ExteriorDoorInstallation", ExteriorDoorInstallation)
-register_constructor("ExteriorDoorSwingAssembly", ExteriorDoorSwingAssembly)
 register_constructor("ExteriorDoorSillDesign", ExteriorDoorSillDesign)
 register_constructor("ExteriorDoorCatalogInstallation", ExteriorDoorCatalogInstallation)
 

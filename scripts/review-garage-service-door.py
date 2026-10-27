@@ -6,15 +6,19 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from garage_service_door_clearance import (
+    assembly_components,
+    clearance_results,
+    service_door_envelope,
+)
 from matplotlib.patches import Polygon as PlotPolygon
-from shapely.affinity import rotate, translate
+from shapely.affinity import rotate
 from shapely.geometry import MultiPoint, box
 
 from typehaus.emit.draw.details import build_authored_detail_scene
 from typehaus.emit.draw.elevation_project import solid_faces
 from typehaus.emit.draw.render import write_scene
 from typehaus.resolve import resolve
-from typehaus.resolve.door_swing_envelope import assembly_components, clearance_results
 from typehaus.source import load_plan
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,23 +36,22 @@ def main():
     OUTPUT.mkdir(parents=True, exist_ok=True)
     door = next(o for o in model.openings if o.tag == "D-G-SERVICE")
     wall = model.wall(door.host_wall)
-    hinge, components = assembly_components(wall, door)
+    spec = service_door_envelope()
+    hinge, components = assembly_components(wall, door, spec)
     hinge_inches = tuple(value / INCH for value in hinge)
     stop = model.plan.by_tag(door.tag).maximum_opening_degrees
-    limit = stop + door.swing_assembly.stop_tolerance_degrees
-    results = clearance_results(model, door, stop)
+    limit = stop + spec.stop_tolerance_degrees
+    results = clearance_results(model, door, stop, spec)
     for result in results:
-        if result.clearance_m < door.swing_assembly.minimum_clearance.meters:
+        if result.clearance_m < spec.minimum_clearance.meters:
             print(f"CONFLICT {result.component} / {result.obstacle} / {result.part}: "
                   f"{result.clearance_m / INCH:.3f}in at {result.angle_interval_degrees}deg")
     if results:
         nearest = results[0]
         print(f"MINIMUM {nearest.component} / {nearest.obstacle} / {nearest.part}: "
               f"{nearest.clearance_m / INCH:.3f}in at {nearest.angle_interval_degrees}deg")
-    print("SUPPLIER CONFIRMED:", door.swing_assembly.supplier_confirmed)
     fig, ax = plt.subplots(figsize=(10, 9))
     crop = box(65, 480, 126, 529)
-    hold_down = model.plan.by_tag("CN-G-BWHD-S-DR")
     for element in model.geometry.elements:
         if element.uid.startswith(door.uid):
             continue
@@ -71,11 +74,6 @@ def main():
                             linewidth=0.5,
                         )
                     )
-                    if element.uid == hold_down.uid:
-                        study = translate(shape, xoff=1.5)
-                        ax.add_patch(PlotPolygon(study.exterior.coords, fill=False,
-                                                 edgecolor="#c13030", linestyle="--",
-                                                 linewidth=2))
     for angle, color, alpha in [(a, "#d1e4ed", 0.08) for a in range(int(limit) + 1)] + [
         (0, "#147b92", 0.6), (stop, "#147b92", 0.8), (limit, "#c46934", 0.6),
     ]:
@@ -90,9 +88,6 @@ def main():
             fontsize=9)
     ax.text(85, 482, "90° stop-only (blue), 91° tolerance (orange)\n"
             "Leaf bottom ≥1in above rough sill required; factory dimensions pending", fontsize=10)
-    ax.annotate("Dashed: +1.5in strap study only\nFraming and anchorage unapproved",
-                xy=(117.25, 521.5), xytext=(94, 526), fontsize=8,
-                arrowprops={"arrowstyle": "->", "color": "#c13030"})
     ax.annotate(
         "Guard head x=116.5in",
         xy=(116.5, 514.75),

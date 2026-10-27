@@ -292,20 +292,6 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
             box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), leaf_height,
                 _DOOR_LEAF_THICKNESS_M, 0.0,
                 z0 + sill + frame_width + leaf_height / 2.0),)))
-    elif (opening.kind == "door" and not is_glazed and opening.swing_assembly
-          and opening.swing_assembly.supplier_confirmed):
-        from typehaus.resolve.door_swing_envelope import assembly_components
-
-        _, components = assembly_components(wall, opening)
-        for component in components:
-            polygons = (component.closed.geoms if component.closed.geom_type == "MultiPolygon"
-                        else (component.closed,))
-            solids = tuple(GPrism(ring=tuple(polygon.exterior.coords[:-1]),
-                                  z0_m=component.bottom_z_m, z1_m=component.top_z_m)
-                           for polygon in polygons)
-            parts.append(GPart(key=component.name,
-                               material_key=solid_leaf_key if component.name == "leaf"
-                               else "door_hardware", solids=solids))
     elif opening.kind == "door" and not is_glazed:
         # A sectional overhead door is a factory-finished panel, not a wood leaf and not the
         # exterior trim coil its frame is drawn in — see _OVERHEAD_KEY.

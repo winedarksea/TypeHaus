@@ -95,18 +95,16 @@ def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
     assert (tip[1] - hinge[1]) / INCH == pytest.approx(-32)
     exported = next(o for o in model_to_dict(catlin_model_ro)["openings"] if o["tag"] == door.tag)
     assert exported["maximum_opening_degrees"] == 90
-    assert exported["swing_assembly"]["supplier_confirmed"] is False
     assert catlin_model_ro.plan.by_tag(
         "SL-D-NORTH-BRIDGE"
     ).cut_origin.x.meters / INCH == pytest.approx(99)
 
 
 def test_schematic_sweep_reports_hold_down_conflict_without_claiming_release(catlin_model_ro):
-    from typehaus.resolve.door_swing_envelope import clearance_results
+    from scripts.garage_service_door_clearance import clearance_results, service_door_envelope
 
     door = next(o for o in catlin_model_ro.openings if o.tag == "D-G-SERVICE")
-    assert not door.swing_assembly.supplier_confirmed
-    results = clearance_results(catlin_model_ro, door, 90)
+    results = clearance_results(catlin_model_ro, door, 90, service_door_envelope())
     conflicts = [result for result in results
                  if result.obstacle == "CN-G-BWHD-S-DR" and result.component == "leaf"]
     assert conflicts
@@ -114,34 +112,6 @@ def test_schematic_sweep_reports_hold_down_conflict_without_claiming_release(cat
     assert any(result.obstacle == "W-BW-SCREEN" for result in results)
     assert any(result.obstacle == "PT-BW-CNW" for result in results)
     assert any(result.obstacle.startswith("TR-BW-BRICK-HEAD") for result in results)
-
-
-def test_schematic_eastward_hold_down_study_clears_without_moving_authored_connector(
-        catlin_model_ro):
-    from dataclasses import replace
-
-    from typehaus.resolve.door_swing_envelope import clearance_results
-
-    model = catlin_model_ro
-    door = next(o for o in model.openings if o.tag == "D-G-SERVICE")
-    connector = model.plan.by_tag("CN-G-BWHD-S-DR")
-    elements = []
-    for element in model.geometry.elements:
-        if element.uid == connector.uid:
-            parts = []
-            for part in element.parts:
-                solids = tuple(replace(solid, positions=tuple(
-                    (x + 1.5 * INCH, y, z) for x, y, z in solid.positions))
-                    for solid in part.solids)
-                parts.append(replace(part, solids=solids))
-            element = replace(element, parts=tuple(parts))
-        elements.append(element)
-    study = replace(model, geometry=replace(model.geometry, elements=tuple(elements)))
-    results = clearance_results(study, door, 90)
-    assert any(result.obstacle == connector.tag for result in results)
-    assert all(result.clearance_m >= door.swing_assembly.minimum_clearance.meters
-               for result in results)
-    assert connector.position.x.meters / INCH == pytest.approx(115.75)
 
 
 def test_service_door_takeoff_uses_masonite_32in_price(catlin_model_ro):

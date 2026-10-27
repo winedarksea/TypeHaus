@@ -22,7 +22,6 @@ from typehaus.resolve.model_window_seat import WindowSeat
 from typehaus.resolve.rebar.records import ResolvedRebarSet
 
 if TYPE_CHECKING:
-    from typehaus.model.exterior_door import ExteriorDoorSwingAssembly
     from typehaus.model.placeables import Mount
     from typehaus.resolve.clear_zones import ResolvedClearZone
     from typehaus.resolve.doorway import (
@@ -430,7 +429,6 @@ class ResolvedOpening:
     is_door: bool
     framing_required: bool = True
     swing_clearance: Ring = ()
-    swing_assembly: ExteriorDoorSwingAssembly | None = None
     framing_bumper: Ring = ()
     # Arched head: semicircular/segmental rise above the rectangular jamb height. 0 = square
     # head. The opening's total height_m already includes this rise (straight run = height -
