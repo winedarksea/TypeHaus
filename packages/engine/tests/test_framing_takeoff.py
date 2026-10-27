@@ -232,6 +232,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # Work surfaces by the square foot a slab yard quotes —
                         # the cabinets under them bill as carcasses in `placeables`.
                         "countertops",
+                        "cladding_trim",
                         # The milling schedule: the same wood as a cut list in
                         # rough stock, plus the derived stools and shelf boards.
                         "hardwood",

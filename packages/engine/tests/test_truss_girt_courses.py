@@ -26,8 +26,7 @@ from typehaus.resolve.framing.furring import (
     course_phase,
 )
 from typehaus.resolve.framing.openings import framed_around
-from typehaus.resolve.framing.truss_wall import truss_layer_name
-from typehaus.resolve.framing.truss_wall import truss_girt_bands, truss_kind
+from typehaus.resolve.framing.truss_wall import truss_girt_bands, truss_kind, truss_layer_name
 from typehaus.resolve.geometry import length, sub, unit
 
 IN = 0.0254
@@ -78,6 +77,11 @@ def _band_members(wall, model, rake: bool):
     return out
 
 
+def _joint_levels(spec) -> set[float]:
+    """Authored joint-backing courses (the BBD75 band): deliberate off-module exceptions."""
+    return {round(level.meters, 9) for level in spec.additional_course_elevations}
+
+
 def test_the_courses_are_one_module_from_the_base_through_the_rake(catlin_model):
     """`phase + k*spacing`, and the three edges are the only exceptions.
 
@@ -96,7 +100,7 @@ def test_the_courses_are_one_module_from_the_base_through_the_rake(catlin_model)
         phase = course_phase(wall, spec)
         elevations = course_elevations(wall, spec, _STOCK_FACE)
         top_low = min(band_tops(wall))
-        edges = {round(wall.z0_m, 9)}
+        edges = {round(wall.z0_m, 9)} | _joint_levels(spec)
         if not _raked(wall):
             edges.add(round(top_low - _STOCK_FACE, 9))
         for z in elevations:
@@ -289,7 +293,11 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
     conflicts: list[tuple[str, str, float]] = []
     exact = 0
     for wall in _girt_walls(catlin_model):
-        elevations = course_elevations(wall, _spec(catlin_model, wall), _STOCK_FACE)
+        spec = _spec(catlin_model, wall)
+        joints = _joint_levels(spec)
+        # The joint-backing course is a panel-joint exception, not a field course.
+        elevations = [z for z in course_elevations(wall, spec, _STOCK_FACE)
+                      if round(z, 9) not in joints]
         if not elevations:
             continue
         # Cladding openings only. A bored penetration grows no head or sill course, so it
