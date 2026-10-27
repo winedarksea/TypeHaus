@@ -8,6 +8,7 @@ from typehaus import (
     ft,
     inch,
 )
+from typehaus.model import ModelRepresentation
 
 FLOOR_BOX_PRODUCT = Product(
     tag="PROD-ARLINGTON-FLBR5420", brand="Arlington", model="FLBR5420AB",
@@ -23,6 +24,7 @@ DEVICE_TYPES = (
         # Overall envelope: A is the flange diameter, B the below-floor depth;
         # C (3.775") is the body width, not its depth, on Arlington's side view.
         footprint=(inch(6.625), inch(6.625)), height=inch(6.55),
+        model_representation=ModelRepresentation(symbol="receptacle-floor"),
         nema="5-20R", product_ref=FLOOR_BOX_PRODUCT.tag,
         floor_box_listing="cULus E170558, listed floor-box kit",
         ports=(ServicePort(tag="power", service=Service.POWER_120,

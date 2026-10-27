@@ -73,6 +73,9 @@ class Part(TypedDict):
 # numbers feed a glTF baseColorFactor and (via ``part_hex``) a three.js material, so viewer
 # and export cannot disagree about what a cushion looks like.
 PART_COLORS: dict[str, tuple[float, float, float, float]] = {
+    "electrical-orange": (214 / 255, 158 / 255, 46 / 255, 1.0),
+    "electrical-plate": (0.94, 0.71, 0.25, 1.0),
+    "electrical-recess": (0.22, 0.12, 0.03, 1.0),
     "carrara": (0.925, 0.922, 0.910, 1.0),
     "clear-glass": (0.78, 0.89, 0.92, 0.24),
     "chrome": (0.78, 0.80, 0.82, 1.0),

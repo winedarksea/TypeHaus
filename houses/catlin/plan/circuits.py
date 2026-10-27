@@ -26,8 +26,9 @@ Conventions:
   The ESS grid port backfeeds at the bottom of the bus (40/42), opposite the main (120%
   rule); ``code.NEC_705_12_interconnection`` grades that arithmetic.
   ED-B-PANEL is feeder 1 of the Class 320 service and ED-B-PANEL-2 is feeder 2
-  (plan/mep_electrical.py). Slots 1/5/9/13 of ED-B-PANEL-2 carry CKT-SPA, CKT-SAUNA,
-  CKT-EV-1450 and CKT-EV-620, which moved off ED-B-PANEL on 2026-09-12 — their old slots
+  (plan/mep_electrical.py). Slots 1/5/9/13/17 of ED-B-PANEL-2 carry CKT-SPA, CKT-SAUNA,
+  CKT-EV-1450, CKT-EV-620 and CKT-WORKSHOP-240, respectively. The first four moved off
+  ED-B-PANEL on 2026-09-12 — their old slots
   9, 13, 17 and 21 there are spares now. ED-B-BACKUP-PANEL carries 2 two-pole + 4 one-pole
   = 8 of its 12. Counts per panel come from `electrical.panel_spaces`, not from here.
   ``electrical.panel_spaces`` reconciles both against
@@ -71,6 +72,13 @@ CIRCUITS = (
     Circuit(uid="CKT004AAAA", tag="CKT-EV-620", slot=13, panel_ref=_PANEL_2, breaker_amps=20, poles=2,
             nema="6-20R", load_va=3840,
             description="EV charging, NEMA 6-20 (garage)"),
+    # Budget the full 20 A at 240 V until the electronics load is known; this is an
+    # allowance, not a nameplate or a claim that continuous loads can draw 20 A.
+    # Common-trip 2-pole GFCI protects both voltages; supply two hots, neutral and ground.
+    Circuit(uid="CKT039AAAA", tag="CKT-WORKSHOP-240", slot=17, panel_ref=_PANEL_2,
+            breaker_amps=20, poles=2, gfci=True, load_va=4800,
+            nema="5-20R/6-20R",
+            description="Workshop electronics, 120/240 V receptacle (capacity allowance)"),
     Circuit(uid="CKT005AAAA", tag="CKT-SPA", slot=1, panel_ref=_PANEL_2, breaker_amps=50, poles=2,
             gfci=True, load_va=11500, description="Hot tub (sunken garden)"),
     # 50A/2p GFCI per notes/sauna_shower_basement_detail.md (max 10.5 kW). EQ-B-SAUNA-HTR

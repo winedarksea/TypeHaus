@@ -62,6 +62,18 @@ def test_unknown_and_missing_symbols_yield_no_geometry() -> None:
     assert model_parts("sofa", 1.0, 1.0, 0.0) == ()
 
 
+def test_receptacles_show_distinct_faces_and_remain_orange() -> None:
+    combo = model_parts("receptacle-combined", .1, .05, .1)
+    quad = model_parts("receptacle-quad", .1, .05, .1)
+    assert combo[0]["color"] == quad[0]["color"] == "electrical-orange"
+    combo_marks = [part for part in combo if part["color"] == "electrical-recess"]
+    quad_marks = [part for part in quad if part["color"] == "electrical-recess"]
+    assert len(combo_marks) == 8
+    assert len(quad_marks) == 16
+    assert len({round(part["center"][2], 4) for part in quad_marks}) >= 4
+    assert len({round(part["center"][0], 4) for part in quad_marks}) >= 4
+
+
 @pytest.mark.parametrize("symbol", sorted(_REGISTRY))
 @pytest.mark.parametrize("size", SIZES)
 def test_strokes_stay_inside_the_declared_footprint(symbol: str, size: tuple) -> None:

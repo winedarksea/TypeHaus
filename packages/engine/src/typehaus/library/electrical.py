@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typehaus import ElectricalDeviceType, Service, ServicePort
+from typehaus.model import ModelRepresentation
 from typehaus.quantities import ft, inch
 
 _P120 = (ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),)
@@ -20,7 +21,8 @@ def _device(tag: str, name: str, footprint, height, ports, **facts) -> Electrica
 
 ALL_ELECTRICAL_DEVICE_TYPES = (
     _device("ED-T-SWITCH", "Wall switch", (inch(4), inch(2)), inch(2), _P120),
-    _device("ED-T-RECEPTACLE", "Receptacle", (inch(4), inch(2)), inch(2), _P120),
+    _device("ED-T-RECEPTACLE", "Receptacle", (inch(4), inch(2)), inch(2), _P120,
+            model_representation=ModelRepresentation(symbol="receptacle-duplex")),
     _device(
         "ED-T-JBOX",
         "NEMA 3R weatherproof junction box",
@@ -29,7 +31,8 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         _P120,
         plan_symbol="junction-box",
     ),
-    _device("ED-T-RECEPTACLE-GFCI", "GFCI receptacle", (inch(4), inch(2)), inch(2), _P120),
+    _device("ED-T-RECEPTACLE-GFCI", "GFCI receptacle", (inch(4), inch(2)), inch(2), _P120,
+            model_representation=ModelRepresentation(symbol="receptacle-duplex")),
     _device(
         "ED-T-RECEPTACLE-WR-GFCI",
         "WR GFCI receptacle, in-use cover, non-metallic gasketed box",
@@ -37,6 +40,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         inch(3),
         _P120,
         nema="5-20R",
+        model_representation=ModelRepresentation(symbol="receptacle-duplex"),
     ),
     _device(
         "ED-T-RECEPTACLE-240",
@@ -44,6 +48,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         (inch(4), inch(4)),
         inch(4),
         _P240,
+        model_representation=ModelRepresentation(symbol="receptacle-240-four-wire"),
     ),
     _device(
         "ED-T-RECEPTACLE-520S",
@@ -51,16 +56,26 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         (inch(4), inch(2)),
         inch(2),
         _P120,
+        model_representation=ModelRepresentation(symbol="receptacle-single-120"),
     ),
     _device(
         "ED-T-RECEPTACLE-620",
-        "NEMA 5-20R/6-20R duplex kettle outlet",
+        "NEMA 5-20R/6-20R dual-voltage receptacle",
         (inch(4), inch(4)),
         inch(4),
         (
             ServicePort(tag="power-120", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
             ServicePort(tag="power-240", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))),
         ),
+        nema="5-20R/6-20R",
+        model_representation=ModelRepresentation(symbol="receptacle-combined"),
+    ),
+    _device(
+        "ED-T-RECEPTACLE-QUAD-520",
+        "20A NEMA 5-20R quadruplex receptacle, surface box",
+        (inch(4), inch(2.125)), inch(4), _P120,
+        nema="5-20R",
+        model_representation=ModelRepresentation(symbol="receptacle-quad"),
     ),
     _device(
         "ED-T-METER",
@@ -87,6 +102,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         _P240,
         nema="6-20R",
         load_va=3840,
+        model_representation=ModelRepresentation(symbol="receptacle-240"),
     ),
     _device(
         "ED-T-EV-1450",
@@ -96,6 +112,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         _P240,
         nema="14-50R",
         load_va=9600,
+        model_representation=ModelRepresentation(symbol="receptacle-240-four-wire"),
     ),
     _device(
         "ED-T-RECEPTACLE-1430",
@@ -105,6 +122,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         _P240,
         nema="14-30R",
         load_va=5000,
+        model_representation=ModelRepresentation(symbol="receptacle-240-four-wire"),
     ),
     _device(
         "ED-T-PV-JB",

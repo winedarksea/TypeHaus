@@ -127,6 +127,9 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     directly — the viewer reads the hex the serializer derives from those same numbers, so
     the two cannot disagree.
     """
+    mount = item.mount
+    z_base = (item.body_z0_m if mount is not None and mount.kind.value == "floor"
+              and mount.recessed_into_host_surface and item.body_z0_m is not None else item.z_m)
     # A type naming its wood takes that material's authored colour on its ``wood`` parts,
     # exactly as model/canvas._wood_part hands the viewer.
     bench = getattr(product_type, "built_in_bench", None)
@@ -187,7 +190,7 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
             rotated_normals = place_local([(x, y) for x, y, _ in mesh["normals"]],
                                          (0.0, 0.0), item.rotation_degrees)
             mb.add_mesh(GMesh(
-                positions=tuple((x, y, item.z_m + point[2])
+                positions=tuple((x, y, z_base + point[2])
                                 for (x, y), point in zip(placed, mesh["positions"], strict=True)),
                 triangles=mesh["triangles"],
                 normals=tuple((x, y, normal[2]) for (x, y), normal in
@@ -199,7 +202,7 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
             world_center = place_local([(cx, cy)], item.position, item.rotation_degrees)[0]
             angle = math.radians(item.rotation_degrees)
             mb.add_plan_depth_cylinder(
-                (world_center[0], world_center[1], item.z_m + cz), sx / 2.0, sy,
+                (world_center[0], world_center[1], z_base + cz), sx / 2.0, sy,
                 (-math.sin(angle), math.cos(angle)), color,
             )
             continue
@@ -209,7 +212,7 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
             (cx - sx / 2, cy - sy / 2), (cx + sx / 2, cy - sy / 2),
             (cx + sx / 2, cy + sy / 2), (cx - sx / 2, cy + sy / 2)]
         mb.add_prism(place_local(ring, item.position, item.rotation_degrees),
-                     item.z_m + cz - sz / 2, item.z_m + cz + sz / 2,
+                     z_base + cz - sz / 2, z_base + cz + sz / 2,
                      color)
     return bool(parts)
 

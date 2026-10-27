@@ -56,6 +56,18 @@ export function runCountertopTests() {
   };
   assert(draw("CT-BAR") === 1, "A hosted cabinet skips its symbol counter");
   assert(draw(null) === 2, "An unhosted cabinet keeps its symbol counter");
+  const floorBox = {
+    uid: "FLOOR-BOX", position_m: [0, 0], rotation: 0,
+    mount: { kind: "floor", recessed_into_host_surface: true },
+  } as unknown as CanvasObject;
+  const floorGroup = new THREE.Group();
+  buildCanvasObject(floorGroup, floorBox,
+    { tag: "FLOOR-BOX", footprint_m: [0.2, 0.2], height_m: 0.2,
+      model_parts: [{ center: [0, 0, 0.1], size: [0.2, 0.2, 0.2], color: "#d69e2e" }] } as never,
+    [0, 0], "nordic", palette, 1, [], new Map());
+  const floorBounds = new THREE.Box3().setFromObject(floorGroup);
+  assert(Math.abs(floorBounds.min.y - 0.8) < 1e-6 && Math.abs(floorBounds.max.y - 1) < 1e-6,
+    "A recessed floor box's generated parts end at the floor");
   const drawQuartz = (tag: string, mode: "nordic" | "schematic" = "nordic") => {
     const parent = new THREE.Group();
     buildCountertop(parent, { ...top, tag, material_ref: "quartz-counter" }, [0, 0],

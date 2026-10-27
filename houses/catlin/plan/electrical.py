@@ -1823,22 +1823,23 @@ NEC_FILL_BASEMENT = [
     # nothing ever asked. These are the two over the new benches
     # (FURN-B-WORKSHOP-BENCH-N/S, plan/placeables.py), one apiece, at their centres.
     #
-    # x = 9": the face convention at the top of this file — half the 2" body off the west
-    # wall's 0'-8" finish plane — with `rotation=deg(90)` turning the plate along the wall.
-    # Elevation 42" is the house's counter idiom, 8" above a 34" bench top.
+    # The attachment puts each surface box against the west wall's finish face and turns
+    # its front toward the room. Elevation 42" is the house's counter idiom, 8" above a
+    # 34" bench top.
     #
-    # CKT-RC-BSMT, which is already `gfci=True, afci=True` (plan/circuits.py), so E3902.11's
-    # unfinished-basement GFCI requirement is satisfied with no new circuit. That matters:
-    # ED-B-PANEL has no spare 2-pole left, and a bench outlet is not worth a service change.
-    ElectricalDevice(uid="17M93C11P3", tag="ED-B-WORKSHOP-RC1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-BSMT", room="RM-B-WORKSHOP",
+    # RC1: 5842 basis, two hot legs + neutral + equipment ground from the 2-pole
+    # GFCI workshop branch on panel 2; both halves share its 20 A capacity. RC2: a
+    # 21254-W-style quadruplex on the existing protected basement branch. The selected
+    # devices' tamper-resistant listing is unresolved: see notes/workshop_receptacles.md.
+    ElectricalDevice(uid="17M93C11P3", tag="ED-B-WORKSHOP-RC1", kind=DeviceKind.RECEPTACLE_240,
+                     type_ref="ED-T-RECEPTACLE-620",
+                     circuit="CKT-WORKSHOP-240", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-W2", face="left", distance_from_start=inch(144),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="Z8RBX115XH", tag="ED-B-WORKSHOP-RC2", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-RECEPTACLE-QUAD-520",
                      circuit="CKT-RC-BSMT", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(

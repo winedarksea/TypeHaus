@@ -133,7 +133,10 @@ export function buildCanvasObject(
   const parts = (type?.model_parts ?? []).filter(
     (part) => !(item.countertop_ref && part.role === "counter"));
   if (parts.length) {
-    return buildCanvasObjectParts(parent, item, parts, center, mode, elevation, picks, byUid,
+    const mount = item.mount ?? type?.mount;
+    const base = mount?.kind === "floor" && mount.recessed_into_host_surface
+      ? elevation - height : elevation;
+    return buildCanvasObjectParts(parent, item, parts, center, mode, base, picks, byUid,
       materials);
   }
   const color = item.domain === "electrical" ? 0xd69e2e

@@ -23,7 +23,7 @@ from typehaus import (
     inch,
     pt,
 )
-from typehaus.model import Location, WallAttachment, m
+from typehaus.model import Location, ModelRepresentation, WallAttachment, m
 
 ELECTRICAL_DEVICE_TYPES = (
     # RC16's narrow pier (beside EAST-MID until 2026-10-16) takes a standard single-gang plate; the shared
@@ -31,6 +31,7 @@ ELECTRICAL_DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-RECEPTACLE-SINGLE-GANG",
                           name="Duplex receptacle, standard 2 3/4 x 4 1/2 in. plate",
                           footprint=(inch(2.75), inch(2)), height=inch(4.5),
+                          model_representation=ModelRepresentation(symbol="receptacle-duplex"),
                           source="Standard single-gang wallplate envelope: https://leviton.com/content/dam/leviton/commercial-industrial/product_documents/solution_sheets/Wallplate%20Size%20Guide%20-%20Q-1289.pdf . Ordinary duplex on CKT-RC-MAIN, no special counter hardware.",
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
@@ -58,8 +59,9 @@ ELECTRICAL_DEVICE_TYPES = (
     # heat mats and humidifiers stay plugged in permanently and a flip lid is only weather-
     # tight with nothing in it. Non-metallic gasketed box: bare steel and standard EMT rust
     # at 70% RH.
-    # Kettle outlet: a 5-20R and a 6-20R in one two-gang box, so a 120V and a 240V
-    # appliance can share the spot. The disposer outlet is a *single* 5-20R, not a duplex —
+    # Kettle outlet: a 5-20R and a 6-20R in one combination device, so a 120V and a 240V
+    # appliance can share the spot. Its neutral and product listing remain to be verified
+    # (notes/workshop_receptacles.md). The disposer outlet is a *single* 5-20R, not a duplex —
     # it's the disconnect for one cord-and-plug appliance on its own 20A branch
     # (CKT-DISPOSAL); a duplex would invite a second load onto a motor-inrush-sized circuit.
 )

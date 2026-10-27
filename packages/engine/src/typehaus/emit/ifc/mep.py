@@ -514,6 +514,14 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
     ll.assign_container(f, element, storeys[storey.tag])
 
 
+def _uses_device_parts(product_type: Any | None) -> bool:
+    from typehaus.model.placeable_symbols.receptacles import RECEPTACLE_SYMBOLS
+
+    model = getattr(product_type, "model_representation", None)
+    return (getattr(product_type, "plan_symbol", None) == "flood-light"
+            or getattr(model, "symbol", None) in RECEPTACLE_SYMBOLS)
+
+
 def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str, Any],
                  project_uuid: Any, product_type: Any | None, resolved: Any | None,
                  type_object: Any | None) -> Any:
@@ -535,11 +543,13 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
 
         representation = track_representation(f, body, track, (x, y),
                                                float(_rotation_metadata(device, resolved)), z0)
-    elif getattr(product_type, "plan_symbol", None) == "flood-light":
+    elif _uses_device_parts(product_type):
         from typehaus.emit.ifc.placeable_parts import parts_representation
         from typehaus.model.placeable_symbols import model_parts
 
-        parts = model_parts(product_type.plan_symbol, product_type.footprint[0].meters,
+        symbol = (getattr(getattr(product_type, "model_representation", None), "symbol", None)
+                  or product_type.plan_symbol)
+        parts = model_parts(symbol, product_type.footprint[0].meters,
                             product_type.footprint[1].meters, product_type.height.meters)
         representation = parts_representation(
             f, body, parts, (x, y), float(_rotation_metadata(device, resolved)), z0)

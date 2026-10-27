@@ -203,7 +203,7 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # Then PLUS CKT-SPD, the Type 2 surge protective device NEC 2023 230.67 requires on the
     # service of a dwelling. It is a 2-pole breaker in ED-B-PANEL carrying no load; it is a
     # schedule row because it occupies two spaces, not because anything draws through it.
-    assert len(rows) == 40
+    assert len(rows) == 41  # plus the workshop's two-pole receptacle branch
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor; the
     # dining zone takes the same protection because every mat maker asks for it).
@@ -552,7 +552,7 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     # eight spaces) moved to ED-B-PANEL-2, feeder 2 of the Class 320 service. Fifteen spare
     # here, twelve there.
     assert main == (39, 54)
-    assert spaces("ED-B-PANEL-2", "ED-T-PANEL-2") == (8, 20)
+    assert spaces("ED-B-PANEL-2", "ED-T-PANEL-2") == (10, 20)
     assert backup == (8, 12)
     required = sum(circuit.poles for circuit in circuits)
     declared = main[1]
@@ -560,6 +560,74 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     # passing for the wrong reason.
     retagged = tuple(c.model_copy(update={"panel_ref": "ED-M-PANEL"}) for c in circuits)
     assert any(f.result.value == "fail" for f in _spaces_findings(42, retagged))
+
+
+def test_workshop_receptacles_and_their_supplies(catlin_model_ro):
+    from typehaus.takeoff import electrical_device_takeoff, panel_schedule
+
+    plan = catlin_model_ro.plan
+    elements = {item.tag: item for item in plan.all_elements()}
+    types = {item.tag: item for item in plan.library.electrical_device_types}
+    circuits = {item.tag: item for item in plan.library.circuits}
+    combo = elements["ED-B-WORKSHOP-RC1"]
+    quad = elements["ED-B-WORKSHOP-RC2"]
+    branch = circuits[combo.circuit]
+    assert combo.type_ref == "ED-T-RECEPTACLE-620"
+    assert {port.service for port in types[combo.type_ref].ports} == {
+        Service.POWER_120, Service.POWER_240}
+    assert (branch.panel_ref, branch.slot, branch.poles, branch.breaker_amps, branch.gfci) == (
+        "ED-B-PANEL-2", 17, 2, 20, True)
+    assert branch.load_va == 4800
+    assert quad.type_ref == "ED-T-RECEPTACLE-QUAD-520"
+    assert quad.circuit == "CKT-RC-BSMT"
+    assert types[quad.type_ref].load_va is None
+    device_rows = electrical_device_takeoff(catlin_model_ro)
+    quad_row = next(row for row in device_rows if row["type"] == quad.type_ref)
+    assert quad_row["count"] == 1 and quad_row["nema"] == "5-20R"
+    branch_row = next(row for row in panel_schedule(catlin_model_ro)
+                      if row["circuit"] == branch.tag)
+    assert branch_row["connected_va"] == 4800
+    assert branch_row["devices"] == [combo.tag]
+    for device, station in ((combo, 144), (quad, 84)):
+        assert device.mount.elevation.inches == pytest.approx(42)
+        assert device.location.attachment.wall_ref == "W-B-W2"
+        assert device.location.attachment.distance_from_start.inches == pytest.approx(station)
+    for check in ("electrical.circuit_refs", "electrical.panel_spaces",
+                  "electrical.panel_feeder_load"):
+        report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY, only=check)
+        assert not [f.message for f in report.findings if f.result.value == "fail"]
+
+
+def test_workshop_receptacles_keep_shared_geometry_in_gltf_and_ifc(
+        catlin_model_ro, catlin_ifc_path):
+    import ifcopenshell
+
+    from typehaus.emit.gltf.canvas_objects import _add_canvas_parts
+    from typehaus.emit.gltf.mesh import _MeshBuilder
+    from typehaus.model.placeable_symbols import PART_COLORS
+
+    model = catlin_model_ro
+    objects = {item.tag: item for item in model.canvas_objects}
+    types = {item.tag: item for item in model.plan.library.electrical_device_types}
+    document = ifcopenshell.open(str(catlin_ifc_path))
+    outlets = {item.Name: item for item in document.by_type("IfcOutlet")}
+    for tag, minimum_parts in (("ED-B-WORKSHOP-RC1", 10),
+                               ("ED-B-WORKSHOP-RC2", 18),
+                               ("ED-M-LIVING-FLOOR-RC1", 8)):
+        obj = objects[tag]
+        mesh = _MeshBuilder()
+        assert _add_canvas_parts(mesh, obj, types[obj.type_ref], {})
+        assert PART_COLORS["electrical-orange"] in mesh._buckets
+        assert PART_COLORS["electrical-recess"] in mesh._buckets
+        outlet = outlets[tag]
+        parts = outlet.Representation.Representations[0].Items
+        assert len(parts) >= minimum_parts
+        assert all(part.is_a("IfcTriangulatedFaceSet") for part in parts)
+        assert parts[0].StyledByItem[0].Styles[0].Name == "electrical-orange"
+        if tag == "ED-M-LIVING-FLOOR-RC1":
+            heights = [point[1] for positions, _ in mesh._buckets.values() for point in positions]
+            assert min(heights) == pytest.approx(obj.body_z0_m)
+            assert max(heights) == pytest.approx(obj.body_z1_m)
 
 
 # --- service load + load management ---------------------------------------------------
@@ -787,7 +855,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     # 40: the 36 that survived the microgrid refactor plus CKT-DISPOSAL, minus CKT-WH-HP
     # folded into CKT-WH-240, plus CKT-BATH2-TUB for the drop-in bath's Bask heated surface,
     # plus the two washlet circuits, plus CKT-SPD (the NEC 230.67 service surge device).
-    assert len(payload["panel_schedule"]) == 40
+    assert len(payload["panel_schedule"]) == 41  # includes the workshop branch
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

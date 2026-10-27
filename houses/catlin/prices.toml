@@ -2730,7 +2730,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-RECEPTACLE-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-RECEPTACLE-240" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-RECEPTACLE-520S" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
-"ED-T-RECEPTACLE-620" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
+"ED-T-RECEPTACLE-620" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 2 ea
+"ED-T-RECEPTACLE-QUAD-520" = { material = { low = 30, high = 85 }, labour = { low = 50, high = 105 } }  # 1 ea; surface box and cover allowance
 "ED-T-RECEPTACLE-GFCI" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 19 ea
 # 2026-08-18, RM-S-PLANT. A GFCI device with a WR-listed body, plus the two things that
 # make it right for a room that condenses: an in-use ("bubble") cover ($12-25) and a
