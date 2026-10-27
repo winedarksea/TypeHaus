@@ -336,6 +336,7 @@ the future.
 - D-S-DECK-E: catalog coordination replaces the schematic plate/wrapped trim with a digitized ZAI outline, composite returns and short AridDek boards. BE365 adapter F is documented; crest heights come from the [engine-generated review](../houses/catlin/notes/french_door_catalog_installation.md#3-height-and-geometry-review). Complete house-root connections and cross-bearer bearing, installed pan/sweep/hinge sections and the flexible flashing-end application; confirm assembly dimensions/label/warranty. Complete preferred/Tru-Defense prices remain unavailable publicly. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
 - Research most commonly failed residential code items and make sure checks or tests exist for those here.
 - Research and pull in the exact metal sales manufacturing trim pieces needed for the metal siding and roof from their install guides
+- The insulation closure band such as W-S-E3-CLOSURE-0-SPRAY-FOAM at the roof:wall-top-closure extends above the roof a bit (and is likely wrong the matching detail as well)
 
 # Project Management
 

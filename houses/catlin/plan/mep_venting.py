@@ -52,7 +52,7 @@ VENT_BRANCHES_MAIN = [
     # tier east on y=25'-0" to W-M-BA2E's line, south to 22'-4 7/8", up W-S-SN2's cavity, then
     # north in FS-ATTIC's band onto PR-S-BATH1-VENT's first leg, rising all the way.
     PipeRun(uid="CMP906AAAA", tag="PR-M-WC-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(74.5), inch(300)), pt(inch(98.5), inch(300)),
+            path=(pt(inch(75), inch(300)), pt(inch(98.5), inch(300)),
                   pt(inch(98.5), inch(268.9)), pt(inch(98.5), inch(268.9)),
                   pt(inch(98.5), inch(354.9))),
             diameter=inch(2),

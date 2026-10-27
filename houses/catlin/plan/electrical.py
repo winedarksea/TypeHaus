@@ -1402,7 +1402,7 @@ MAIN_DATA_TRUNKS = [
                # west of it and this AP east, so no raceway crosses it inside the field. Off the
                # data riser at +8'-10 1/2" in RM-M-MECH's ceiling (exposed by design), north
                # between the extract riser and DU-ERV-EA, east over the supply plenum, up inside
-               # W-M-MECH-E, south in the 5'-4 1/2" truss opening on the lower tier (under the
+               # W-M-MECH-E, south in the 5'-5 1/2"..6'-6 1/2" opening at x=6'-6" on the lower tier (under the
                # BATH1 lav drain and the WC vent), east in the 23'-4" bay south of the stair
                # well, up over the extract legs at x=14'-6 1/2" to the 21'-1.3" bay (BM-M-HALL
                # fills x=18' from 22'-4" to 25'-10"), east over the suite's pipes and north at
@@ -1410,9 +1410,9 @@ MAIN_DATA_TRUNKS = [
                path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(410.6)),
                      pt(inch(32), inch(410.6)), pt(inch(32), inch(411.5)),
                      pt(ft(6), inch(411.5)), pt(ft(6), inch(411.5)),
-                     pt(inch(78.9), inch(411.5)), pt(inch(78.9), inch(280)),
-                     pt(inch(174.5), inch(280)), pt(inch(174.5), inch(280)),
-                     pt(inch(174.5), inch(253.3)), pt(ft(19), inch(253.3)),
+                     pt(inch(78), inch(411.5)), pt(inch(78), inch(280)),
+                     pt(inch(189), inch(280)), pt(inch(189), inch(280)),
+                     pt(inch(189), inch(253.3)), pt(ft(19), inch(253.3)),
                      pt(ft(19), ft(29)), pt(ft(19), ft(29))),
                start_elevation=inch(106.5), end_elevation=ft(9, 2.25),
                elevations=(inch(106.5), inch(106.5), inch(106.5), inch(106.5), inch(106.5),

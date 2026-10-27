@@ -942,10 +942,13 @@ STUDIO_SUPPLY = [
             # FS-S-WEST's web window AND through two of D1's radials at the low tier. The
             # window is 109 5/8"..118 1/2" and the clear band over the drain is
             # 117.19"..118.06"; this sits in it.
-            path=(pt(ft(13, 7.2), ft(22, 4)), pt(ft(9, 5.5), ft(20, 6)),
-                  pt(ft(9, 5.5), ft(20, 6))),
+            # Squared off (2026-10-26): the diagonal crossed the 256" truss on a web. West in
+            # its own 256..272 bay, south on x=10'-0" (the 113 1/2"..126 1/2" opening, west of
+            # PR-M-S-SUITE-WC-DRAIN's east leg), then west in the 240..256 bay to the riser.
+            path=(pt(ft(13, 7.2), ft(22, 4)), pt(ft(10), ft(22, 4)), pt(ft(10), ft(20, 6)),
+                  pt(ft(9, 5.5), ft(20, 6)), pt(ft(9, 5.5), ft(20, 6))),
             diameter=inch(0.75), material="pex",
-            elevations=(ft(9, 6.0625), ft(9, 6.0625), ft(22, 6)),
+            elevations=(ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625), ft(22, 6)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
     PipeRun(uid="TCWF4YDZTW", tag="PR-A-HW-STUBATH", system=PipeSystem.WATER_HOT,

@@ -374,30 +374,9 @@ suppress = [
   # risers stood clear of every member and only exceeded the 2" undrawn-hole allowance;
   # the owner raised it to 4" ([mep] above). A riser landing ON a member still reports.
 
-  # ** mep.open_web_panel + mep.run_member_crossing's WEB verdict on FS-S-WEST: OPEN
-  # ROUTING CAMPAIGN. ** Owner confirmed the web layout on 2026-10-26 (params/second_deck.py:
-  # 24" pitch, 12" offset, 2x4 webs), and counting the web's own 2 1/8" along the chord took
-  # the clear opening 15" -> 13". Nine runs now land on a web. No offset clears them all
-  # (best phase leaves six); they need moving into openings or along a bay:
-  #   * nudges under 1": DU-M-ERV-R-STUDY / -LIVING / -LAUNDRY (0.50"), CD-M-DATA-KITCH
-  #     (0.86"), PR-M-S-SUITE-TUB-DRAIN (0.07") — but the radial lanes are 1/2" apart, so a
-  #     lane moves with its neighbours.
-  #   * real moves: PR-M-S-BATH1-TUB-DRAIN 3.2", -LAV-DRAIN 6.45", PR-M-S-SUITE-WC-DRAIN
-  #     4.44", PR-A-CW-STUBATH 1.85".
-  #   * the 3'-5 1/2"..4'-6 1/2" opening is over-subscribed: the 8" exhaust trunk, the STUDY
-  #     radial and the BATH1 tub drain want 13.90" of 13".
-  # ERROR severity. A suppressed finding never reaches the permit gate, so `haus print` is
-  # open over these; that is the cost of carrying them here. Itemised per run.
-  "mep.open_web_panel:FS-S-WEST",
-  "mep.run_member_crossing:PR-A-CW-STUBATH",
-  "mep.run_member_crossing:PR-M-S-BATH1-LAV-DRAIN",
-  "mep.run_member_crossing:PR-M-S-BATH1-TUB-DRAIN",
-  "mep.run_member_crossing:PR-M-S-SUITE-WC-DRAIN",
-  "mep.run_member_crossing:PR-M-S-SUITE-TUB-DRAIN",
-  "mep.run_member_crossing:DU-M-ERV-R-STUDY",
-  "mep.run_member_crossing:DU-M-ERV-R-LIVING",
-  "mep.run_member_crossing:DU-M-ERV-R-LAUNDRY",
-  "mep.run_member_crossing:CD-M-DATA-KITCH",
+  # mep.open_web_panel + mep.run_member_crossing (FS-S-WEST webs): CLOSED 2026-10-26,
+  # nothing suppressed. The trunk and radials took 13" lanes; the drains and the stubath cold
+  # moved into openings or along bays (BATH1 tub now drops through the deck).
 
   # This fixture's wall_ref is its vent-reachability target, not a physical drain chase.
   # FX-M-BATH1-WC's carrier and waste drop are in W-M-HS1; FX-M-BATH1-LAV drains through

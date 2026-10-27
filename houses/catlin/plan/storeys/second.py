@@ -1298,8 +1298,8 @@ FLOOR_OPENINGS = [
     # DU-M-ERV-R-LAUNDRY's drop to its standpipe boot, 5" square in the 18'-0" truss bay.
     # Inside one bay it cuts no truss and takes no framing (2026-09-24).
     FloorOpening(uid="D4G7BA75A5", tag="FO-S-ERV-LAUNDRY", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(inch(170.5), inch(213.5)), pt(inch(175.5), inch(213.5)),
-                          pt(inch(175.5), inch(218.5)), pt(inch(170.5), inch(218.5))),
+                 outline=(pt(inch(170), inch(213.5)), pt(inch(175), inch(213.5)),
+                          pt(inch(175), inch(218.5)), pt(inch(170), inch(218.5))),
                  penetration_for=("DU-M-ERV-R-LAUNDRY",)),
     # PR-M-S-BATH1-WC-DRAIN's drop into the mudroom closet's ceiling, in the 28'-8" bay.
     FloorOpening(uid="Y65XXEBD0G", tag="FO-S-BATH1-WC-DRAIN", purpose=FloorOpeningPurpose.CHASE,
