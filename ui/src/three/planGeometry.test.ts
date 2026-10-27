@@ -426,7 +426,7 @@ function checkWallUvUsesProjectCoordinates() {
   geometry.dispose();
 }
 
-// The deck-board normal map's x-axis runs across the 5½" planks, so tying u to project X is
+// The deck-board normal map's x-axis runs across the 6" planks, so tying u to project X is
 // what makes the boards run north–south (perpendicular to the house and to the balcony's
 // east–west joists). A u that varied with project Y would lay them the wrong way.
 function checkDeckBoardUvRunsNorthSouth() {
@@ -444,8 +444,15 @@ function checkDeckBoardUvRunsNorthSouth() {
     const [projectX, projectY] = projectScenePointToPlan(
       positions.getX(index), positions.getZ(index), center,
     );
-    closeTo(uv.getX(index), projectX / tile, "Deck board U counts planks across project X");
-    closeTo(uv.getY(index), projectY / tile, "Deck board V runs along the plank in project Y");
+    // UVs are Float32, so compare to a relative 1e-6 rather than closeTo's absolute one.
+    for (const [got, want, why] of [
+      [uv.getX(index), projectX / tile, "Deck board U counts planks across project X"],
+      [uv.getY(index), projectY / tile, "Deck board V runs along the plank in project Y"],
+    ] as const) {
+      if (Math.abs(got - want) > 1e-6 * Math.max(1, Math.abs(want))) {
+        throw new Error(`${why}: expected ${want}, received ${got}`);
+      }
+    }
     const key = Math.round(projectX * 1e6);
     const seen = uByProjectX.get(key);
     if (seen !== undefined) {

@@ -185,13 +185,13 @@ _BASE_ROWS: tuple[Material, ...] = (
     ),
     Material(
         tag="aluminum-deck",
-        name="Aluminum deck board (Wahoo AridDeck-style)",
+        name="Aluminum deck board (Wahoo AridDek, Granite)",
         r_per_inch=0.0,
         density=2700.0,
         perm_rating=0.05,
         hatch="metal",
-        color="#b9bcc0",
-        source="waterproof aluminum plank decking; metal is effectively vapor-impermeable",
+        color="#7b7e81",
+        source="AridDek Granite powder-coated waterproof aluminum plank decking; metal is effectively vapor-impermeable",
     ),
     # 16mm five-wall polycarbonate. `color` is authored, not inferred: the palette's
     # substring-ordered family inference matches ("poly","rigid") first and would render this

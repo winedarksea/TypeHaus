@@ -315,7 +315,7 @@ _ROMAN_MAXIMUS_BRICK_BASE = "#e4ddc9"
 # Roofing "Classic Green", materials.ts CLASSIC_GREEN_SEAM_BASE. A second colourway of the
 # same 26 ga. nail-strip panel, so it keeps the seam profile and only the paint differs.
 _CLASSIC_GREEN_SEAM_BASE = "#2f5233"
-_DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
+_DECK_BOARD_BASE = "#7b7e81"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0x7b7e81)
 
 
 _FINISH_BASE: dict[str, str] = {
@@ -369,9 +369,9 @@ def _is_white_brick(material_ref: str | None) -> bool:
 
 
 def _is_aluminum_deck_board(material_ref: str | None) -> bool:
-    """Aluminum plank decking — the viewer's grooved 5.5" board finish (materials.ts
+    """Aluminum plank decking — the viewer's grooved 6" board finish (materials.ts
     isAluminumDeckBoard). The metal family colour would read as dark flashing, so the
-    export pins the plank's own mill-finish base instead."""
+    export pins the plank's own granite base instead."""
     if not material_ref:
         return False
     s = material_ref.lower()

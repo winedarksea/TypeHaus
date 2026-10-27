@@ -831,23 +831,24 @@ export function disposeMasonryTextures(): void {
 
 // ── Aluminum deck boards (Wahoo AridDeck-style) ───────────────────────────────────────
 // Same trick as the standing seam above — one shared procedural normal map, world-scaled
-// UVs, no external texture — but the module is a 5½" plank and the modulation is a
+// UVs, no external texture — but the module is a 6" plank and the modulation is a
 // *recessed* drainage gap between planks rather than a raised seam. An extruded aluminum
 // plank is far stiffer than roll-formed sheet, so there is deliberately no oil canning
 // here; only a faint lengthwise mill/brush grain.
 
 /** Nominal face width of one aluminum deck plank. */
-export const DECK_BOARD_WIDTH_M = 0.1397; // 5½"
+export const DECK_BOARD_WIDTH_M = 0.1524; // AridDek 6" main board
 /** Drainage gap between adjacent planks — the visible groove. */
 const DECK_BOARD_GAP_M = 0.00635; // ¼"
 /** How many planks the shared normal map covers, so `repeat` stays in whole boards. */
 const BOARDS_PER_TILE = 4;
 const DECK_TILE_SIZE_M = DECK_BOARD_WIDTH_M * BOARDS_PER_TILE;
 const DECK_NORMAL_MAP_PX = 256;
-/** Mill-finish aluminum plank; mirrors the `aluminum-deck` material colour. */
-export const ALUMINUM_DECK_BASE_COLOR = 0xb9bcc0;
+/** AridDek "Granite" powder coat; mirrors the `aluminum-deck` material colour. */
+export const ALUMINUM_DECK_BASE_COLOR = 0x7b7e81;
 
 let sharedDeckBoardNormalMap: THREE.Texture | null = null;
+let sharedDeckBoardToneMap: THREE.Texture | null = null;
 
 /** True when a surface's material should be finished as aluminum plank decking. */
 export function isAluminumDeckBoard(materialRef: string | null | undefined): boolean {
@@ -899,6 +900,34 @@ function deckBoardNormalMap(): THREE.Texture {
 }
 
 /**
+ * Per-board tone (a few percent either way) and a dark tongue-and-groove joint, multiplied
+ * over the base colour so the planks read as separate boards, not just a grooved sheet.
+ * The tone is a fixed sequence, so it repeats every tile and stays deterministic.
+ */
+function deckBoardToneMap(): THREE.Texture {
+  if (sharedDeckBoardToneMap) return sharedDeckBoardToneMap;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = DECK_NORMAL_MAP_PX;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("2D canvas unavailable for the deck-board tone map");
+  const boardPx = DECK_NORMAL_MAP_PX / BOARDS_PER_TILE;
+  const jointPx = Math.max(2, boardPx * (DECK_BOARD_GAP_M / DECK_BOARD_WIDTH_M));
+  const tones = [0.97, 1.03, 0.99, 1.01];
+  for (let b = 0; b < BOARDS_PER_TILE; b++) {
+    const v = Math.round(Math.min(1, tones[b % tones.length]) * 255);
+    ctx.fillStyle = `rgb(${v},${v},${v})`;
+    ctx.fillRect(b * boardPx, 0, boardPx, DECK_NORMAL_MAP_PX);
+    ctx.fillStyle = "rgb(95,95,95)";
+    ctx.fillRect(b * boardPx, 0, jointPx, DECK_NORMAL_MAP_PX);
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  sharedDeckBoardToneMap = texture;
+  return texture;
+}
+
+/**
  * Plank decking finish. Always paired with applyDeckBoardUv, which supplies the world-scaled
  * UVs this material's `repeat` of 1 assumes.
  */
@@ -918,6 +947,8 @@ export function createDeckBoardMaterial(
   map.needsUpdate = true;
   material.normalMap = map;
   material.normalScale = new THREE.Vector2(0.8, 0.8);
+  material.map = deckBoardToneMap().clone();
+  material.map.needsUpdate = true;
   return material;
 }
 
@@ -945,4 +976,6 @@ export function applyDeckBoardUv(geometry: THREE.BufferGeometry, center: PlanCen
 export function disposeDeckBoardTextures(): void {
   sharedDeckBoardNormalMap?.dispose();
   sharedDeckBoardNormalMap = null;
+  sharedDeckBoardToneMap?.dispose();
+  sharedDeckBoardToneMap = null;
 }
