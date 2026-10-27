@@ -58,12 +58,26 @@ IN_USE = _prod("5980-UCL", "Extra-duty clear in-use cover")
 # The in-use cover rides with the WR GFCI: its own product so the schedule prints both.
 _DEEP = dict(footprint=(inch(4), inch(2)), height=inch(3))
 
+# Basement concrete walls: EMT to a 4x4 steel box (4 3/16" square) with a raised Decora
+# industrial cover, ~2 1/4" proud of the wall; the 2-gang cover is 4 1/2" wide.
+_SURF = dict(footprint=(inch(4.1875), inch(2.25)), height=inch(4.1875))
+_SURF2 = dict(footprint=(inch(4.5), inch(2.25)), height=inch(4.1875))
+
 RECEPTACLE_TYPES = (
     _dev("ED-T-LEV-DUPLEX-20", "Lever Edge duplex 20 A TR (E5825-W)", E5825, nema="5-20R"),
     _dev("ED-T-LEV-DUPLEX-15", "Lever Edge duplex 15 A TR (E5325-W)", E5325, nema="5-15R"),
     _dev("ED-T-LEV-GFCI-20", "GFCI 20 A TR at the device (GFTR2-W)", GFTR2, nema="5-20R"),
     _dev("ED-T-LEV-GFCI-15", "GFCI 15 A TR at the device (GFTR1-W)", GFTR1, nema="5-15R"),
     _dev("ED-T-LEV-GFCI-ALARM", "GFCI 20 A TR, audible alarm (GFTA2-W)", GFTA2, nema="5-20R"),
+    _dev("ED-T-LEV-DUPLEX-20-SURF", "Lever Edge duplex 20 A TR (E5825-W), 4x4 box, raised cover",
+         E5825, nema="5-20R", **_SURF),
+    _dev("ED-T-LEV-DUPLEX-15-SURF", "Lever Edge duplex 15 A TR (E5325-W), 4x4 box, raised cover",
+         E5325, nema="5-15R", **_SURF),
+    _dev("ED-T-LEV-GFCI-ALARM-SURF",
+         "GFCI 20 A TR, audible alarm (GFTA2-W), 4x4 steel box, raised cover", GFTA2,
+         nema="5-20R", **_SURF),
+    _dev("ED-T-LEV-SURGE-SURF", "Surge duplex 20 A TR (T5380-W), 4x4 steel box, raised cover",
+         T5380, nema="5-20R", **_SURF),
     _dev("ED-T-LEV-GFCI-WR",
          "WR GFCI 20 A TR (GFWT2-W), 5980-UCL in-use cover, non-metallic gasketed box",
          GFWT2, footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-20R"),
@@ -74,12 +88,14 @@ RECEPTACLE_TYPES = (
     _dev("ED-T-LEV-SINGLE-520", "Single 5-20R TR (T5020-W)", T5020, nema="5-20R",
          symbol="receptacle-single-120"),
     _dev("ED-T-LEV-620-DUPLEX",
-         "2-gang: 6-20R (T5461-W) beside a 5-20R duplex (E5825-W)", T5461, ports=_PBOTH,
-         footprint=(inch(4), inch(4)), height=inch(4), nema="5-20R/6-20R",
-         symbol="receptacle-combined"),
-    _dev("ED-T-LEV-QUAD-520", "2-gang: two TR 5-20R duplexes (E5825-W), surface box", E5825,
-         footprint=(inch(4), inch(2.125)), height=inch(4), nema="5-20R",
-         symbol="receptacle-quad"),
+         "2-gang: 6-20R (T5461-W) beside a 5-20R duplex (E5825-W), 4x4 box, raised cover",
+         T5461, ports=_PBOTH, nema="5-20R/6-20R", symbol="receptacle-combined", **_SURF2),
+    _dev("ED-T-LEV-620-FLUSH",
+         "2-gang: 6-20R (T5461-W) beside a 5-20R duplex (E5825-W), flush in drywall",
+         T5461, ports=_PBOTH, footprint=(inch(4.5), inch(1)), height=inch(4.5),
+         nema="5-20R/6-20R", symbol="receptacle-combined"),
+    _dev("ED-T-LEV-QUAD-520", "2-gang: two TR 5-20R duplexes (E5825-W), 4x4 box, raised cover",
+         E5825, nema="5-20R", symbol="receptacle-quad", **_SURF2),
     _dev("ED-T-LEV-EV-620", "EV receptacle 6-20R (T5461-W)", T5461, ports=_P240,
          footprint=(inch(4), inch(4)), height=inch(4), nema="6-20R", load_va=3840,
          symbol="receptacle-240"),
@@ -124,7 +140,9 @@ SWITCH_TYPES = (
          symbol=None, control="dimmer"),
     _dev("ED-T-LEV-OCC-PIR", "PIR occupancy sensor, same gang as a switch (DOS02-LW)", DOS02,
          symbol=None, control="occupancy"),
-    _dev("ED-T-LEV-OCC-PANTRY", "PIR-only occupancy sensor, no neutral (ODS10-IDW)", ODS10,
+    _dev("ED-T-LEV-OCC-PANTRY",
+         "PIR-only occupancy sensor, no neutral (ODS10-IDW); lens masked on its south half",
+         ODS10,
          symbol=None, control="occupancy"),
     _dev("ED-T-LUT-COUNTDOWN", "Lutron Maestro countdown timer (MA-T51)", MAT51, symbol=None,
          control="timer"),

@@ -179,7 +179,7 @@ MAIN_DEVICES = [
     # isn't modeled. KGF1 and KGF2 both fall over FURN-M-KIT-E2 (a B15
     # since 2026-10-02) and its filler, 30'-10".."32'-3 3/8".
     ElectricalDevice(uid="VDGMBY3YW7", tag="ED-M-LIVING-KET1", kind=DeviceKind.RECEPTACLE_240,
-                     type_ref="ED-T-LEV-620-DUPLEX", circuit="CKT-KETTLE",
+                     type_ref="ED-T-LEV-620-FLUSH", circuit="CKT-KETTLE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N1", face="left", distance_from_start=inch(126),

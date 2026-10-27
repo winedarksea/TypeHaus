@@ -253,7 +253,7 @@ ESS_EQUIPMENT = [
 BASEMENT_DEVICES = [
     # HA server + router (backup). Beside the panel in the furnace room.
     ElectricalDevice(uid="CEE003AAAA", tag="ED-B-UTIL-RC1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-15", circuit="CKT-HA",
+                     type_ref="ED-T-LEV-DUPLEX-15-SURF", circuit="CKT-HA",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-W1", face="left", distance_from_start=inch(96),
@@ -261,7 +261,7 @@ BASEMENT_DEVICES = [
     # Sump pump (backup; ~1000W start). Alarmed GFCI at the device (NEC 2023 210.8(A)(5)):
     # a trip must be heard. The breaker is not GFCI (2026-10-27).
     ElectricalDevice(uid="CEE004AAAA", tag="ED-B-SUMP-RC", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-ALARM", circuit="CKT-SUMP",
+                     type_ref="ED-T-LEV-GFCI-ALARM-SURF", circuit="CKT-SUMP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-N4", face="left", distance_from_start=inch(18),
@@ -1796,21 +1796,21 @@ NEC_FILL_BASEMENT = [
                          wall_ref="W-B-CE", face="right", distance_from_start=inch(183.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC005AAAA", tag="ED-B-GYM-RC5", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20",
+                     type_ref="ED-T-LEV-DUPLEX-20-SURF",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-E1", face="left", distance_from_start=inch(137.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC006AAAA", tag="ED-B-GYM-RC6", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20",
+                     type_ref="ED-T-LEV-DUPLEX-20-SURF",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-E1", face="left", distance_from_start=inch(26.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC007AAAA", tag="ED-B-GYM-RC7", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20",
+                     type_ref="ED-T-LEV-DUPLEX-20-SURF",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
@@ -1854,7 +1854,7 @@ NEC_FILL_BASEMENT = [
     # receptacle was never a duplicate of them — it is on the north wall behind the
     # television, 17' away.
     ElectricalDevice(uid="GQCPVT59F6", tag="ED-B-PLAY-N-RC1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-SURGE",
+                     type_ref="ED-T-LEV-SURGE-SURF",
                      circuit="CKT-RC-BSMT", room="RM-B-PLAY-N",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(30)),
                      location=Location(attachment=WallAttachment(

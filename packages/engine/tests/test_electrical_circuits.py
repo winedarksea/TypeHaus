@@ -948,7 +948,7 @@ def test_a_combination_receptacle_counts_by_its_125v_half():
     demoted = tuple(
         device_type.model_copy(update={
             "ports": tuple(p for p in device_type.ports if p.service is not Service.POWER_120)})
-        if device_type.tag == "ED-T-LEV-620-DUPLEX" else device_type
+        if device_type.tag in ("ED-T-LEV-620-DUPLEX", "ED-T-LEV-620-FLUSH") else device_type
         for device_type in library.electrical_device_types)
     plan = plan.model_copy(update={"library": library.model_copy(
         update={"electrical_device_types": demoted})})

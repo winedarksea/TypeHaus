@@ -2595,14 +2595,18 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Device schedule rows (owner decisions 2026-10-27, notes/workshop_receptacles.md): ranges carry over from
 # the commodity class each replaced; Matter/occupancy/USB-C/surge lines carry a retail uplift. Estimates.
 "ED-T-LEV-620-DUPLEX" = { material = { low = 14, high = 44 }, labour = { low = 45, high = 95 } }  # 2 ea
+"ED-T-LEV-620-FLUSH" = { material = { low = 14, high = 44 }, labour = { low = 45, high = 95 } }  # 1 ea; kettle, flush 2-gang (the old 620-DUPLEX rate)
 "ED-T-LEV-DRYER-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-DUPLEX-15" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 14 ea
+"ED-T-LEV-DUPLEX-15-SURF" = { material = { low = 15, high = 40 }, labour = { low = 60, high = 120 } }  # 1 ea; duplex + 4x4 steel box and raised cover on concrete, EMT whip. Box/cover/labour uplift is an ESTIMATE, not a quote
 "ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 58 ea
+"ED-T-LEV-DUPLEX-20-SURF" = { material = { low = 15, high = 40 }, labour = { low = 60, high = 120 } }  # 3 ea; as DUPLEX-15-SURF (ESTIMATE)
 "ED-T-LEV-EV-1450" = { material = { low = 25, high = 80 }, labour = { low = 160, high = 380 } }  # 0 ea
 "ED-T-LEV-EV-620" = { material = { low = 15, high = 45 }, labour = { low = 160, high = 380 } }  # 0 ea
 "ED-T-LEV-GFCI-15" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 6 ea
 "ED-T-LEV-GFCI-20" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 20 ea
 "ED-T-LEV-GFCI-ALARM" = { material = { low = 30, high = 70 }, labour = { low = 48, high = 92 } }  # 1 ea
+"ED-T-LEV-GFCI-ALARM-SURF" = { material = { low = 42, high = 100 }, labour = { low = 60, high = 120 } }  # 1 ea; GFTA2 + steel box (ESTIMATE)
 "ED-T-LEV-GFCI-WR" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 5 ea
 "ED-T-LEV-GUIDE" = { material = { low = 12, high = 28 }, labour = { low = 38, high = 78 } }  # 1 ea
 "ED-T-LEV-MATTER" = { material = { low = 40, high = 70 }, labour = { low = 40, high = 80 } }  # 9 ea
@@ -2614,6 +2618,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LEV-RANGE-1450" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-SINGLE-520" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
 "ED-T-LEV-SURGE" = { material = { low = 25, high = 50 }, labour = { low = 40, high = 80 } }  # 2 ea
+"ED-T-LEV-SURGE-SURF" = { material = { low = 37, high = 80 }, labour = { low = 60, high = 120 } }  # 1 ea; T5380 + steel box (ESTIMATE)
 "ED-T-LEV-SW1" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 35 ea
 "ED-T-LEV-SW3" = { material = { low = 4, high = 12 }, labour = { low = 32, high = 68 } }  # 5 ea
 "ED-T-LEV-USBC" = { material = { low = 30, high = 55 }, labour = { low = 40, high = 80 } }  # 2 ea

@@ -6,17 +6,17 @@ Leviton Decora, white (`-W`), tamper-resistant (NEC 2023 406.12) house-wide. Own
 Rating follows the circuit's breaker (15 A circuits get 15 A devices, e.g. `CKT-HA`,
 `CKT-BATH2-TUB`, `CKT-LT-*`); device GFCI stays only where the breaker is not GFCI.
 
-**Not yet modelled:** new guide-light receptacles on the stair landings (wall stations open);
-5980-UCL exterior covers (no exterior receptacle exists); the basement 4x4 steel boxes and raised
-covers; the `D215S-1BW` / companion pairing is by name only (`DD0SR-DLZ` model unconfirmed);
-the pantry lens mask; RC1/kettle 2-gang envelopes are still the schematic 4x4.
+**Still open:** the `D215S-1BW` / companion pairing is by name only (`DD0SR-DLZ` model
+unconfirmed). Box sizes below are standard catalogue envelopes, not a chosen product; the
+steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
 
 ## Device schedule
 
-- **Rating matches the circuit.** `CKT-RC-ATTIC` is the only 15 A general circuit;
+- **Rating matches the circuit.** 15 A breakers: `CKT-RC-ATTIC`, `CKT-HA` (basement utility
+  outlet), `CKT-BATH2-TUB` and `CKT-LT-*` (e.g. the closet strip outlet on `CKT-LT-MAIN`).
   `CKT-RC-MAIN`/`-SECOND` stay 20 A because they carry bath lav receptacles (NEC 210.11(C)(3)).
-  Kitchen, basement, laundry, bath and garage are 20 A.
-- **Ordinary duplex:** Lever Edge `E5825-W` (20 A); `E5325-W` on `CKT-RC-ATTIC`.
+  Kitchen, other basement, laundry, bath and garage circuits are 20 A.
+- **Ordinary duplex:** Lever Edge `E5825-W` (20 A); `E5325-W` (15 A) on the 15 A circuits above.
 - **GFCI at the breaker by default**, with plain Lever Edge devices. Device GFCI `GFTR2-W`
   (`GFTR1-W` at 15 A) only where more practical: sink-reach outlets on a non-GFCI circuit
   (e.g. `ED-M-BED-RC9`) and the two washlet outlets (`plan/circuits.py` convention).
@@ -27,14 +27,19 @@ the pantry lens mask; RC1/kettle 2-gang envelopes are still the schematic 4x4.
   `FURN-B-PLAY-TV`, and `ED-M-BED-RC4` at the desk.
 - **Guide-light duplex** `T6525-W`, 12" AFF: new receptacles on the `ST-B2M` half-landings
   (`CKT-RC-BSMT`), `ST-M2S` (`CKT-RC-MAIN`) and the `ST-S2A` head (`CKT-RC-ATTIC`), plus
-  `ED-B-HALL-RC1`. 15 A on a 20 A circuit is allowed (NEC 210.21(B)(3)). Wall stations open.
+  `ED-B-HALL-RC1`. 15 A on a 20 A circuit is allowed (NEC 210.21(B)(3)). Modelled in
+  `plan/electrical_stair_ext.py`, all on the landing's north wall: `ED-B-STAIR-RC1` (lower/east
+  landing, x 15'-8") and `-RC2` (upper/west, x 12'-1", 7 5/16" higher), `ED-M-STAIR-RC1` (x 14'-6",
+  east of the heat-pump head) and `ED-A-STAIR-RC1` (south face of `W-A-SN`, x 19'-6"). Move them
+  in the editor if the owner prefers other stations.
 - **Mudroom:** `ED-M-MUDROOM-SW` becomes a Leviton `DOS02-LW` PIR occupancy sensor (auto
   on/off), same gang. 150 W LED, neutral optional; three cans and a sconce are well under it.
 - **Pantry:** PIR-only Leviton `ODS10-IDW` (10 A, LED-rated, no neutral needed) replaces `ED-M-PANTRY-SW` for `ED-M-PANTRY-LT`, shortest timeout. Inside face of
   `W-M-PAN-E`, in the 8" strip ahead of the shelves: plate centre ~4 1/2" north of the south
   wall finish, >= 2" off the door jamb, box centre ~56" AFF (clears the kitchen-side box at
   46" in the same bay). No ultrasonic, which sees through the open door; mask the lens's
-  south half so it sees along the shelves, not the kitchen. The kitchen-side 2-gang becomes
+  south half so it sees along the shelves, not the kitchen (the mask is in the type's name,
+  `ED-T-LEV-OCC-PANTRY`; no geometry). The kitchen-side 2-gang becomes
   1-gang (`ED-M-KITCH-SW-UC` only).
 - **Heavy outlets** (confirm each against the appliance plug): EV 14-50R `1450W`, range
   14-50R `1450R`, dryer 14-30R `278`, EV 6-20 `T5461-W`, disposer TR single 5-20R `T5020-W`.
@@ -89,10 +94,17 @@ neutral.
 
 ## Boxes and covers
 
+Types carry the envelope (`plan/device_types.py`): `*-SURF` = 4x4 steel box (4 3/16") with a
+raised cover, 2 1/4" proud; the 2-gang cover is 4 1/2" wide (RC1, RC2); the kettle's
+`ED-T-LEV-620-FLUSH` is flush in drywall. Retyped to `-SURF`: `ED-B-UTIL-RC1`, `ED-B-SUMP-RC`,
+`ED-B-GYM-RC5`..`RC7`, `ED-B-PLAY-N-RC1`.
+
 - **Basement concrete walls:** EMT surface conduit to 4x4 steel boxes with raised Decora
   industrial covers (2-gang at RC1/RC2). Size for fill and device depth; bond box and raceway.
 - **Exterior:** clear `5980-UCL` extra-duty in-use cover, which closes over a plugged-in cord
-  through its cord ports.
+  through its cord ports. `ED-M-FRONT-RC1` (north face of `W-M-N2`, x 16'-6", on the entry
+  bridge) and `ED-M-REAR-RC1` (south face of `W-M-S2`, x 24'-7"), 18" AFF, WR GFCI `GFWT2-W` on
+  `CKT-RC-MAIN` (NEC 210.8(A)(3), 210.52(E)).
 
 ## Product links
 
