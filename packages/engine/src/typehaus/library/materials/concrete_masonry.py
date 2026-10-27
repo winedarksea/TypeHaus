@@ -14,6 +14,7 @@ MATERIALS: tuple[Material, ...] = (
         perm_rating=3.2,
         hatch="concrete",
         color="#a9a9a9",
+        finish="cast-concrete",
         source=f"{_UAF}: 'Concrete, 1:2:4 mix' 3.2 perm-in (1.25 perm at 4\")",
     ),
     Material(

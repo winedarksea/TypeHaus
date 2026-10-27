@@ -7,6 +7,7 @@
 import * as THREE from "three";
 import { createSurfaceMeshGeometry } from "../surfaceMesh";
 import { createProfiledMetalSkinMaterial } from "../boardBattenMaterial";
+import { applyConcreteUv, createConcreteMaterial, isCastConcreteFinish } from "../concreteMaterial";
 import { applySprayFoamUv, createSprayFoamMaterial, isSprayFoamFinish } from "../sprayFoamMaterial";
 import { soffitPanelGeometry } from "./soffitPanels";
 import type {
@@ -91,6 +92,9 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
   }
   const foam = !deckBoards && !plankStyle && isSprayFoamFinish(authoredAppearance(woodRef, appearances)?.finish);
   if (foam) applySprayFoamUv(geo, center);
+  const cast = !deckBoards && !plankStyle && !foam && !solid.sweep
+    && isCastConcreteFinish(authoredAppearance(woodRef, appearances)?.finish);
+  if (cast) applyConcreteUv(geo, center);
   const firstChildIndex = parent.children.length;
   const material =
     deckBoards ? createDeckBoardMaterial(mode)
@@ -99,6 +103,7 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
           materialColor(woodRef, palette, appearances), undefined,
           authoredAppearance(woodRef, appearances))
         : foam ? createSprayFoamMaterial(mode, materialColor(woodRef!, palette, appearances))
+        : cast ? createConcreteMaterial(mode, materialColor(woodRef!, palette, appearances))
         : createSolidMaterial(solid, catalog, mode, palette);
   const mesh = makeSurfaceMesh(geo, woodMaterialsForGeometry(material, geo));
   parent.add(mesh);
