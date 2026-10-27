@@ -256,8 +256,8 @@ def test_no_suppress_lifts_the_house_suppressions_and_writes_nothing() -> None:
     assert quiet["fail"] == 0, "the moved drain clears the floor truss"
     assert "mep.run_through_floor_member" not in quiet["failing_check_ids"]
     assert loud["fail"] > quiet["fail"], "the suppressed debt is real and is now visible"
-    assert "mep.riser_through_deck" in loud["failing_check_ids"]
-    assert "mep.riser_through_deck" not in quiet["failing_check_ids"]
+    assert "mep.wet_wall_occupancy" in loud["failing_check_ids"]
+    assert "mep.wet_wall_occupancy" not in quiet["failing_check_ids"]
     assert hashlib.sha256(prefs.read_bytes()).hexdigest() == before, "it writes nothing"
 
 pytestmark = pytest.mark.slow

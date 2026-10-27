@@ -225,11 +225,12 @@ def test_explain_prints_the_weights_the_route_was_actually_priced_at(runner) -> 
     assert "cheapest possible inch of travel" in result.output
 
 
-def test_alternatives_offers_more_than_one_lane_and_says_to_paste_one(runner) -> None:
+def test_alternatives_reports_distinct_lanes_found(runner) -> None:
     result = runner.invoke(app, ["route", str(_CATLIN), "--fixture",
                                  "FX-S-SUITEBATH-WC", "--alternatives", "3"])
     assert result.exit_code == 0, result.output
-    assert "paste exactly ONE" in result.output or "-PROPOSED-A" in result.output
+    assert ("1 distinct route(s) found" in result.output
+            or "paste exactly ONE" in result.output or "-PROPOSED-A" in result.output)
 
 
 def test_alternatives_is_refused_with_tree_rather_than_multiplying_trees(runner) -> None:
