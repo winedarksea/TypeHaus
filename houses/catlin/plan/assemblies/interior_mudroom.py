@@ -2,7 +2,7 @@
 # The mudroom's coat-nook wall: open bays with oak shelves below seven feet, painted gypsum
 # above. The bays are backed by the stair leaf, 1/2" MDO painted white on both faces.
 # Heights are off the storey datum, which this file treats as the floor; the LVP stands
-# +0.9862", so each is about 1" less above the finished floor.
+# +0.94685", so each is about 1" less above the finished floor.
 
 from typehaus import (
     Assembly,

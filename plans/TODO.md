@@ -327,7 +327,8 @@ the future.
 - Trial a countertop microwave in the east-counter cave (KGF4) vs the pantry east bay (RC1); pick one and record it.
 - [x] Model a coffee machine and kettle — SEVERIN WK 3422 and Arctic White De’Longhi Rivelia EXAM44055W on the north kitchen counter (2026-10-25); see DESIGN-LOG for the accepted overhead-clearance shortfall.
 - Check the basement stair carpet, and swap the carpet from the theater with an partial coverage area rug in the theater (technically not installed with tack strips or glue)
-- Update the LVP to https://coretecfloors.com/en-us/products/coretec-pro-classics/quincy-oak-vv017-01018
+- [x] Model Quincy Oak 5 mm LVP with attached cork, pale oak appearance and the existing 4⅜-inch cap. [Specification and pour comparison](../houses/catlin/notes/lvp_flooring.md).
+- [ ] Before ordering LVP/pouring the cap: confirm Quincy Oak sample and local delivered quote, measure the installed plank and coating stack, and set the flush movement/edge joint from those samples.
 - [x] Move D-M-MECH and D-M-MUDC 8" east within the existing walls (owner-approved instead of a full stud bay); relocate the three switches to W-M-MUDC-E.
 - [x] Add factory-laminated glass with an internal security interlayer for all main-floor windows to the supplier quote request (2026-10-26): [window sourcing notes §2.6, item 10](../houses/catlin/notes/window_and_door_procurement.md#26-claimed-not-yet-in-hand). Availability, cost, lead time and performance remain pending with the window/door quotes.
 - Conduit for floor thermostats for heated floor

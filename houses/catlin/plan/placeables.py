@@ -263,10 +263,10 @@ MAIN_PLACEABLES = [
     # The notched oak bench in W-M-STRW's bays, from stud-006's centre (y=27'-4") to
     # stud-000's south face (y=35'-3 7/8"), short of D-M-MUD's and D-M-ENTRY's casings; the
     # short south bay keeps only its support block. It sits on the oak support course: 16 1/2"
-    # off the storey datum less the 0.9862" LVP, since Mount.elevation is off the finished
+    # off the storey datum less the 0.94685" LVP, since Mount.elevation is off the finished
     # floor. normal_gap puts its back 5 1/2" into the bays, so 3 3/4" stands proud.
     Furniture(uid="C9BJD9MJH2", tag="FURN-M-STRW-BENCH", type_ref="FT-MUD-STRW-BENCH", room="RM-M-MUDROOM",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(15.5138),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(15.55315),
                           recessed_into_host_surface=True),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-STRW", face="right", distance_from_start=inch(56.0625),

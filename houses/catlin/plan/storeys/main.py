@@ -613,13 +613,13 @@ WALLS = [
     # the 4 1/2" slot at the head of the stairs is wall rather than a guard
     # (RL-M-STAIRHEAD, retired 2026-09-23). Same device as W-B-WELL: the stair generates
     # the studs (its stud-head stands at this south end, under the trimmer), this wall adds
-    # the faces and carries no FramingSpec — see STAIRWELL_PARTITION_4H. Base at the stairs' 0.9862" walking surface,
+    # the faces and carries no FramingSpec — see STAIRWELL_PARTITION_4H. Base at the stairs' 0.94685" walking surface,
     # where ST-M2S's generated bottom plate sits and ST-B2M's partition top plate stops; top
     # at 9'-0" like every main wall — higher runs into FO-S-STAIR's south trimmer
     # (structural.through_deck_clearance).
     Wall(uid="SNNBY9M3CE", tag="W-M-WELL", start_node="N-M-WELL-S", end_node="N-M-WELL-N",
          assembly="STAIRWELL_PARTITION_4H",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), base_elevation=inch(0.9862), top=inch(107.0138),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), base_elevation=inch(0.94685), top=inch(107.05315),
          interior_room="RM-M-LIVING"),
     Wall(uid="CMW119AAAA", tag="W-M-STOS", start_node="N-M-W1",
          end_node="N-M-BA1", assembly="INT_2X4_PARTITION_HALF",
@@ -1481,13 +1481,13 @@ ROOMS = [
     # a 9/16" REDUCER, on the one leg of this room that also has to break for differential
     # deflection. The concrete cannot be raised to meet it —
     # ``structural.mixed_deck_bearing_seat`` holds DECK_TOP within 1/4" of the subfloor —
-    # so the step was not designable-out, only acceptable or not. It is not. LVP at +0.986"
-    # meets the same cap 1/64" proud, which is flush, and the room reads as one floor.
+    # so the step was not designable-out, only acceptable or not. It is not. LVP at +0.94685"
+    # meets the same cap nominally 0.0094" proud, which is flush, and the room reads as one floor.
     # Oak is still the two studies' floor (RM-A-STUDY, RM-S-STUDY2); it is this room that
     # does not want it.
     #
-    # The LVP/coated-cap boundary remains a flush movement joint on both legs;
-    # the y=13' leg still separates structures that deflect differently.
+    # The LVP/coated-cap boundary remains flush on both legs; only the y=13' leg
+    # needs the movement break between structures that deflect differently.
     # Doorway heights and profiles are scheduled in notes/floor_heights.md.
     #
     # ** NO FinishZone IS AUTHORED HERE, and prefer to keep it that way. ** The polished band
@@ -1506,7 +1506,7 @@ ROOMS = [
     # RM-M-BATH1 and RM-M-LAUNDRY were sheet vinyl and are LVP since 2026-09-05: both open
     # off the hall, which no longer carries a FinishZone of its own, so the plank simply
     # runs through — one floor, one product, no zone, no threshold and no grout to keep.
-    # Neither is a wet room: a powder bath and a laundry are splash duty, and 6 mm SPC is a
+    # Neither is a wet room: a powder bath and a laundry are splash duty, and 5 mm Quincy Oak SPC is a
     # waterproof core. RM-M-BATH2 upstairs of the plumbing wall keeps its tile — it is a
     # full bath on its own radiant zone (FH-M-BATH2), which is where tile earns the mass.
     Room(uid="CMR403AAAA", tag="RM-M-BATH1", seed=pt(ft(2), ft(24, 6)),
@@ -1971,8 +1971,8 @@ SLABS = [
 # ST-M2S's first tread is at floor level on the east, so both are a flight to step onto, not
 # a drop. The 4 1/2" of well partition between them is W-M-WELL, down to the floor.
 # ** THE TWO ENDS ARE WALKING SURFACES, NOT STOREY DATA. ** A storey elevation on a wood
-# bay is the TOP OF JOISTS (params/main_deck.py) and the floor underfoot is 15/16" above it
-# — 3/4" subfloor plus the 6 mm plank. Left to derive its rise from the storey table this
+# bay is the TOP OF JOISTS (params/main_deck.py) and the floor underfoot is 0.94685" above it
+# — 3/4" subfloor plus the 5 mm Quincy Oak plank. Left to derive its rise from the storey table this
 # flight climbed 9'-1 7/16" from the basement slab to the top of the main joists and stopped
 # there, so the last step up onto the living-room floor was 8 1/4" against 7 5/16" for the
 # other fourteen: over R311.7.5.1's 7 3/4" maximum AND its 3/8" uniformity tolerance, and
@@ -1984,7 +1984,7 @@ SLABS = [
 # Both literals below are project-frame absolute, and `base_elevation`/`top_elevation` must
 # be authored together (resolve/stairs/dispatch.py). -109.4375" is params/main_deck's
 # BASEMENT_DATUM, which is also the slab top and the sealed-concrete surface RM-B-STAIR
-# walks on; 0.9862" is MAIN_FINISHED_FLOOR_LVP, the plank top in RM-M-LIVING where the
+# walks on; 0.94685" is MAIN_FINISHED_FLOOR_LVP, the plank top in RM-M-LIVING where the
 # flight heads out. This file is editable-dialect and cannot import them, so if either
 # number moves in params, move it here. Rise is 110.4237" over the same 15 risers — 7.3616"
 # each, still clear of 7 3/4" — so the riser count, the run length and the well are
@@ -2014,7 +2014,7 @@ SLABS = [
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
           from_storey="basement", to_storey="main", width=ft(3, 5.0625),
-          base_elevation=inch(-109.4375), top_elevation=inch(0.9862),
+          base_elevation=inch(-109.4375), top_elevation=inch(0.94685),
           tread_thickness=inch(1),
           finish_material="carpet",
           # A flush LVP stair nose at the main-floor stairhead (R311.7.5.3 counts it).

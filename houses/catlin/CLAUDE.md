@@ -627,7 +627,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     an authored zone's drawn ring must be clipped to the room, same as its area (fixed
     2026-09-05).
   - `RM-M-MUDROOM` + its closets (`RM-M-MECH`, `RM-M-MUD-CLOSET`) share the hall LVP
-    plane at +0.9862". Their doors open into the mudroom, and the bypass guide at
+    plane at +0.94685". Their doors open into the mudroom, and the bypass guide at
     `D-M-MUDC` needs one level field. The exterior `D-M-ENTRY` has a separate flashed
     weather sill; see `notes/floor_heights.md`.
   - **`W-M-STRW`'s mudroom face is open bays to 7'-0"** (2026-10-14): three flat
@@ -645,7 +645,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     is x=10'-3 1/8", and `FO-S-STAIR`'s west edge and `ST-M2S.start` are struck off it**:
     change the leaf thickness and move both, or the opening edge reads as unsupported
     (`notes/stair_wall_finish.md`).
-  - LVP +0.9862" and the coated cap +15/16" meet flush on both legs of the living-room
+  - LVP +0.94685" and the coated cap +15/16" meet flush on both legs of the living-room
     L. The main bedroom entry and second-storey plant room retain reducers. Oak +1 1/2"
     now runs through the second hall and linen closet as well as the suite and studies;
     never extend it to a cap edge. Junction detail is in

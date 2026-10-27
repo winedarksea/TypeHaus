@@ -16,8 +16,8 @@ and the basement wall comes out at exactly 8'-0".
 ::
 
                     WOOD BAY                          EPS DECK BAY
-      +0.9862" 6 mm SPC LVP (RM-M-MUDROOM and both closets)
-      +0.9862" 6 mm SPC LVP (5 mm + 1 mm IXPE)   -- wood bays
+      +0.94685" 5 mm Quincy Oak LVP (RM-M-MUDROOM and both closets)
+      +0.94685" 5 mm Quincy Oak (including cork)   -- wood bays
       +15/16" ------------------------------------  cap top, coated   <- finished floor
       +3/4"   3/4" plywood subfloor
       0'-0"   ------------------------------------  STOREY DATUM (top of joists)
@@ -30,8 +30,8 @@ and the basement wall comes out at exactly 8'-0".
 
 The wood bay's stack to the seat is 1/16 + 1 1/2 + 11 7/8 + 3/4 = 14 3/16"; the deck's is
 10" + 4 3/8" = 14 3/8". The 3/16" difference is the deck's, and it is spent upward: the cap
-tops at +15/16" where the subfloor tops at +3/4", so the 6 mm plank laid on the plywood
-finishes 1/64"-1/20" proud of the polished concrete — flush within any floor-covering
+tops at +15/16" where the subfloor tops at +3/4", so the 5 mm plank laid on the plywood
+finishes nominally 0.0094" proud of the coated concrete — flush within any floor-covering
 tolerance, and the joint detail is a movement joint anyway. ``structural.mixed_deck_bearing_seat``
 is what holds all of that: nudge the joist depth, the subfloor, the mudsill, the gasket, the
 form or the cover and the build FAILs instead of quietly stepping.
@@ -149,6 +149,7 @@ from typehaus import (
     pt,
 )
 
+from params.flooring import LVP_THICKNESS_IN
 from params.second_deck import _DEPTH as _JOIST_DEPTH
 from params.second_deck import _SUBFLOOR
 
@@ -174,16 +175,12 @@ _CEILING_GWB = (Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625)
 MAIN_DATUM = ft(0)
 MAIN_FINISHED_FLOOR = inch(MAIN_DATUM.inches + _SUBFLOOR.inches)
 
-# The 6 mm SPC plank that goes down on that subfloor — 5 mm of rigid core plus a 1 mm IXPE
-# pad that compresses under load, so the walking surface lands somewhere in 0.95"..0.99"
-# above the datum. It has no home in the model: ``FloorSystem``/``Room`` ``floor_finish``
-# is a bare material tag with no thickness (``model/floors.py``), so the only way to state
-# the number the flush-joint argument rests on is here and in the ``lvp`` material's spec.
-# Giving finishes a real thickness is its own change (plans/TODO.md).
-_LVP = inch(0.2362)  # 6 mm nominal
+# Quincy Oak's total installed depth includes its attached cork. Use the same selection
+# as the house material so stair arrivals and the rendered walking plane stay coordinated.
+_LVP = inch(LVP_THICKNESS_IN)
 MAIN_FINISHED_FLOOR_LVP = inch(MAIN_FINISHED_FLOOR.inches + _LVP.inches)
 
-# ** AND 3/4" SOLID OAK IS WHY THAT 1/64" MATTERS. ** The south bay (x 18'-36', y 0'-13')
+# **3/4" solid oak cannot share this flush cap height.** The south bay (x 18'-36', y 0'-13')
 # was oak for part of 2026-09-05 and was reverted the same day. Oak tops at +1 1/2" against
 # the cap's +15/16" — a 9/16" REDUCER at the y=13' line, on the one leg that also has to
 # break for differential deflection. It could not be designed out from this side:
@@ -231,7 +228,7 @@ EPS_CAP = inch(4.375)         # cast cover over the form
 DECK_DEPTH = inch(EPS_FORM_DEPTH.inches + EPS_CAP.inches)
 
 # Where that puts the cap's own top: the seat plus the whole section. +15/16", 3/16" above
-# the plywood beside it, which is what leaves the 6 mm plank 1/64"-1/20" proud of the polish
+# the plywood beside it, which is what leaves the 5 mm plank 0.0094" proud of the coated cap
 # rather than standing below it. Derived, never a literal — a thicker cover lifts it.
 DECK_TOP = inch(BEARING_SEAT.inches + DECK_DEPTH.inches)
 

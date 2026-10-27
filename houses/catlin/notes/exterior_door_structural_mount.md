@@ -232,8 +232,8 @@ is schematic; it is not a documented factory jamb depth.
 
 | Door | Interior finished floor | Exterior landing | Exterior return depth |
 | --- | ---: | ---: | ---: |
-| D-M-ENTRY | +0.9862 in | 0 in | 7.75 in |
-| D-M-BALC | +0.9862 in | +0.9400 in | 7.75 in |
+| D-M-ENTRY | +0.94685 in | 0 in | 7.75 in |
+| D-M-BALC | +0.94685 in | +0.9400 in | 7.75 in |
 
 Each doorway has nine measured trim pieces: three exterior returns, three exterior
 casing boards and three interior extensions. Cut schedules retain the 3/4-inch stock

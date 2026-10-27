@@ -22,7 +22,7 @@ See [bedroom carpet specification and purchasing checks](bedroom_carpet.md).
 | `catlin-tile-oak-height`, suite bath/vanity | 5/16-in nominal DITRA-XL + 5/16-in Marazzi Modern Formation MF01 24x24 matte porcelain + nominal 1/8-in combined mortar beds | +1.5000 |
 | `catlin-tile-heated`, both heated baths | 1/4-in nominal DITRA-HEAT + same 5/16-in MF01 porcelain + nominal 3/16-in combined mortar beds, cable in studs | +1.5000 |
 | `catlin-plant-vinyl-raised`, second plant | Nominal 1/4-in SurePly underlayment + 0.120-in fully adhered sheet; no floor drain or slope | +1.1200 at doorway |
-| `lvp`, main circulation/mudroom/closets | 0.2362-in SPC plank including attached pad; separately billed acoustic underlayment needs product approval and an installed height check | +0.9862 |
+| `lvp`, main circulation/mudroom/closets | COREtec Quincy Oak, 5 mm (0.19685 in) total including attached cork; no separate mat | +0.94685 |
 | `coated-concrete`, main living zone | cast cap top, coating adds no appreciable height | +0.9375 |
 
 The Marazzi [product page](https://www.marazziusa.com/products/stone-look/modern-formation/peak-white)
@@ -43,10 +43,14 @@ doorway edges; reconcile plywood, transitions, door clearances and affected elev
 together before construction. The existing 1/4-in plywood takeoff remains an allowance,
 not an approved buildup. The flush oak/tile target remains within 1/16 in, pending that
 reconciliation; the model tests establish numerical consistency, not physical fit.
-Confirm the LVP maker permits a separate mat below its attached pad. If it does not,
-remove that takeoff companion before ordering. Measure the installed LVP/mat stack and
+Quincy Oak replaces the generic 6 mm plank as of 2026-10-26; its attached cork is
+included in the 5 mm total, and no separate mat is specified or billed. Measure the
+installed plank and concrete coating samples and
 keep the mudroom and hall on the same stack; any height change at the concrete joint
 must stay within this schedule's 1/16-in flush target.
+
+See [Quincy Oak specification and cap-thickness comparison](lvp_flooring.md) for
+product alternatives and the nominal flush-setting calculation.
 
 ## Opening schedule
 
@@ -65,13 +69,13 @@ modeled height difference is zero.
 | `D-S-NCLOSET` | hall oak +1.5000 | oak +1.5000 | 0 | Continuous oak field |
 | `D-S-STUDY2` | hall oak +1.5000 | oak +1.5000 | 0 | Continuous oak field |
 | `D-S-PLANT` | study oak +1.5000 | raised sheet vinyl +1.1200 | 0.3800 | Solid-surface reducer over a sealed water stop; no drain |
-| `D-M-MUD`, `D-M-MECH`, `D-M-MUDC` | LVP +0.9862 | LVP +0.9862 | 0 | One level field; keep expansion gaps; bottom guide at `D-M-MUDC` on flat substrate |
-| `D-M-BED2` | hall LVP +0.9862 | bedroom carpet +1.5000 | 0.5138 | Hardwood saddle at +1.5000 under the leaf, bevelled down to the LVP; the automatic door bottom seals on it |
+| `D-M-MUD`, `D-M-MECH`, `D-M-MUDC` | LVP +0.94685 | LVP +0.94685 | 0 | One level field; keep expansion gaps; bottom guide at `D-M-MUDC` on flat substrate |
+| `D-M-BED2` | hall LVP +0.94685 | bedroom carpet +1.5000 | 0.55315 | Hardwood saddle at +1.5000 under the leaf, bevelled down to the LVP; the automatic door bottom seals on it |
 | `D-M-BED` | bedroom carpet +1.5000 | closet carpet +1.5000 | 0 | Continuous carpet stack |
 | `D-M-BATH2` | bedroom carpet +1.5000 | heated porcelain +1.5000 | 0 | Flush carpet/tile edge with suitable profile |
-| `ST-M2S` lower and upper head | main LVP +0.9862 | second oak +1.5000 (+121.5000 absolute) | stair rise | 16 equal risers at 7.5321 in; level turn +61.2431 absolute |
+| `ST-M2S` lower and upper head | main LVP +0.94685 | second oak +1.5000 (+121.5000 absolute) | stair rise | 16 equal risers at 7.5346 in; level turn +61.22343 absolute |
 | `ST-S2A` lower head | second oak +1.5000 (+121.5000 absolute) | oak stair | 0 at head | Retain existing authored 121.5-in start |
-| `D-M-ENTRY` exterior | mudroom LVP +0.9862 | breezeway deck +1.0000 | 0.0138 | Weather sill, **not** an interior reducer |
+| `D-M-ENTRY` exterior | mudroom LVP +0.94685 | breezeway deck +1.0000 | 0.05315 | Weather sill, **not** an interior reducer |
 
 Use a restrained, shallow solid-surface reducer at the 0.3800-in plant change, sloping
 down toward the vinyl over roughly 4 1/2 in of run. The wet-side sheet must turn up
@@ -79,7 +83,7 @@ and seal to a continuous water-stop riser beneath the reducer; seal its ends int
 jamb returns. A reducer without this sealed upturn provides no dependable spill
 containment. Set the final profile from measured installed heights and check the
 delivered glass door's swing and clearance. Use a securely retained tapered profile
-at the 0.5138-in bedroom change, with no exposed sharp lip. Material-change edges
+at the 0.55315-in bedroom change, with no exposed sharp lip. Material-change edges
 at the level bath doors still need the selected tile/carpet/oak manufacturer's
 termination and movement detail.
 
@@ -96,8 +100,8 @@ door, subfloor and installed finish depths have been measured.
 The resolved rooms on either side of `D-M-BED2` are `RM-M-LIVING` and `RM-M-BED`;
 the earlier implementation plan described it as a closet-to-hall opening.
 
-The coated-concrete/LVP living-room boundary is +0.9375 / +0.9862 in, a
-0.0487-in difference within the same 1/16-in flush target. Keep the L-shaped edge and
+The coated-concrete/LVP living-room boundary is +0.9375 / +0.94685 in, a
+0.00935-in difference within the same 1/16-in flush target. Keep the L-shaped edge and
 the y=13-ft movement break described in `mixed_deck_movement_joint.md`.
 
 The scheduled interior openings contain **nine material changes** (three east carpet
@@ -110,7 +114,7 @@ it is a flush field joint rather than a doorway reducer.
 
 ```
        interior                          exterior / breezeway
-  LVP top +0.9862  ───┐  raised weather sill  ┌── composite deck +1.0000
+  LVP top +0.94685  ───┐  raised weather sill  ┌── composite deck +1.0000
   floating edge gap  →│  gasket / door sweep   │  open deck drainage ↓
   3/4-in plywood  ────┴─ sloped sill pan ──────┴── flashing drains outward
                       pan laps WRB at jambs and discharges past rim
@@ -121,7 +125,7 @@ pan with end dams, and flashing that drains outward over the breezeway edge. Ter
 the floating plank with its required perimeter gap under a removable sill trim; do not
 seal a drainage path shut. Set the sill height from the selected door system's instructions
 and verify door sweep clearance after the plank is installed. The nearby exterior deck
-being nominally 0.0138 in higher than the LVP is precisely why the water path must rely
+being nominally 0.05315 in higher than the LVP is precisely why the water path must rely
 on the sill and pan, not floor-level fall alone. Use a removable boot mat or tray inside
 the mudroom so standing snowmelt does not sit at floating plank seams.
 
@@ -168,7 +172,7 @@ remain in the house estimate.
 
 The second-storey and main-storey plan renders show all scheduled rooms and openings.
 The emitted glTF floor mesh bounds place the second hall, east bedrooms and heated hall
-bath at +121.500 in absolute, and the main mudroom at +0.9862 in. The main living-room
-LVP mesh also tops at +0.9862 in on its wood deck despite the room centroid lying over
-the coated cap. The Catlin check report has zero FAIL findings after the stair arrival
-change; riser uniformity, stair headroom and open-side guard checks remain in that gate.
+bath at +121.500 in absolute, and the main mudroom at +0.94685 in. The main living-room
+LVP mesh also tops at +0.94685 in on its wood deck despite the room centroid lying over
+the coated cap. Both boundary legs are covered by floor-height regression probes;
+stair arrival, riser uniformity, stair headroom and open-side guard checks remain in the gate.

@@ -78,37 +78,25 @@ _ZERO = ft(0)
 _rect = rect
 
 
-# ** THE WEB PANEL LAYOUT IS PROVISIONAL AND SAYS SO. **
+# ** THE WEB PANEL LAYOUT IS THE DESIGN BASIS (owner, 2026-10-26). **
 #
-# Until 2026-09-19 nothing in the engine narrowed an open-web member along its span, so
-# `profiles.open_web_opening_m`'s 8 7/8" chord-to-chord window read as a CONTINUOUS SLOT:
-# thirteen 4" ducts crossing every truss inside a 41" band all passed
-# `mep.run_member_crossing` without a word. A real truss has webs at panel points and a
-# duct lands in an opening or it lands on a web.
+# A truss has webs at panel points, so a run lands in an opening or on a web; the chord-to-
+# chord window alone reads as a continuous slot. Owner confirmed this Warren layout with 2x4
+# webs (laid flat, 1 1/2" in elevation) — the fabricator builds to it:
 #
-# These three numbers are a PLACEHOLDER for a fabricator's drawing nobody has yet asked
-# for. They are not read off a submittal, and the way they are derived is the whole of
-# their authority:
+#   * 24" PANEL PITCH — an ordinary Warren layout for a parallel-chord floor truss.
+#   * 13" CLEAR OPENING — a 45-degree diagonal advances 8 7/8" across the clear depth, plus
+#     its own 1 1/2" x sqrt(2) = 2 1/8" along the chord: 24 - 8 7/8 - 2 1/8 = 13.0". This
+#     was 15" while the web was read as zero thickness.
+#   * 12" OFFSET — half a panel, so the first opening straddles the bearing.
 #
-#   * 24" PANEL PITCH — an ordinary Warren layout for a parallel-chord wood floor truss at
-#     16" o.c. Panel points every 24" is the commonest spacing in the 11 7/8"–16" depth
-#     range, and it is a round number on purpose so nobody mistakes it for a reading.
-#   * 15" CLEAR OPENING — derived, not asserted. A diagonal crossing an 8 7/8" clear depth
-#     at 45 degrees advances 8 7/8" along the chord, so between two consecutive diagonals
-#     of a 24" panel there is 24 − 8 7/8 ≈ 15 1/8" of clear run. Rounded DOWN to 15".
-#   * 12" OFFSET — half a panel, so the first opening straddles the bearing rather than
-#     starting on it. A fabricator sets this off the actual span and nobody else can.
-#
-# ** THE OWNER REPLACES ALL THREE WHEN THE TRUSS SUBMITTAL ARRIVES, ** and plans/TODO.md
-# carries it. A marked placeholder beats an UNKNOWN here for one reason: without a datum
-# the level-2 duct design cannot be graded at all, and an ungraded design is how thirteen
-# ducts came to be drawn through one another in the first place. Delete these three fields
-# and `mep.open_web_panel` goes straight back to saying so, by name.
+# A submittal that differs replaces all three. Delete them and `mep.open_web_panel` says
+# the layout is missing, by name.
 _WEB_PANEL_PITCH = inch(24)
-_WEB_OPENING = inch(15)
+_WEB_OPENING = inch(13)
 _WEB_PANEL_OFFSET = inch(12)
 
-# ** TWO TRUSS LINES MOVED OFF THE 16" MODULE, AND THEY ARE AS PROVISIONAL AS THE WEBS. **
+# ** TWO TRUSS LINES MOVED OFF THE 16" MODULE. **
 # (laid station, new station) in y (owner, 2026-09-23). The fabricator's layout replaces
 # the whole field; these say only where a line must NOT stand.
 #   * 26'-8" -> 27'-0": clears the shifted hot riser, stack and basin vent (2026-10-21).

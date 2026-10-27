@@ -71,7 +71,7 @@ from those meshes.
 
 The standard installation stations are **20 in. waste and 24 in. supply AFF**. Resolved
 storey-relative elevations also include each room's finished-floor thickness; the powder
-bowl's 20 in. AFF drain is authored at 20.9862 in. above the main-floor storey datum.
+bowl's 20 in. AFF drain is authored at 20.94685 in. above the main-floor storey datum.
 `mep.fixture_port_connection` checks
 serving run endpoints in plan and elevation (1 in. exact tolerance; 3 in. reporting band for
 approximate ports). An approximate station always returns UNKNOWN. Authored drain overrides

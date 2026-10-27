@@ -14,7 +14,7 @@ BASEMENT_TP_BACKING = [
 ]
 
 MAIN_TP_BACKING = [
-    # BATH1 floor build-up is 0.9862 in.; the north post lands on the y=304 stud.
+    # BATH1 floor build-up is 0.94685 in.; the north post lands on the y=304 stud.
     WallBacking(uid="TPMBLOCK01", tag="BK-M-BATH1-TP", wall_ref="W-M-W2", face="left",
                 start=inch(16.25), length=inch(14.5), elevation=inch(24.2362),
                 height=inch(5.5), profile="2x6", material_ref="spf",

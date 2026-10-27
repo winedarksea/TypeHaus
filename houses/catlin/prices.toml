@@ -3485,13 +3485,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "coated-concrete" = { material = { low = 1.25, high = 3 }, labour = { low = 2.75, high = 7 } }  # 414 SF — grind to CSP 2-3 + moisture-mitigating primer + matte 2K PU; the cap is in [concrete]
 # 417 SF ordered: main circulation, mudroom and both mud closets. The second
 # hall/linen moved to oak. Keep one floating field with manufacturer edge gaps.
-"lvp" = { material = { low = 2, high = 5.5 }, labour = { low = 1.5, high = 3.25 } }  # 417 SF — click-lock floating; glue-down or herringbone would be +$1.00-2.50
-# ** POSSIBLE DOUBLE-COUNT, flagged not resolved. ** Most 5-8mm SPC/rigid-core plank ships with
-# an attached IXPE pad, in which case this layer should not exist at all and the row is buying
-# a product the floor does not need. The plan carries it as an explicit layer, so it is priced
-# — but the labour floor is 0 because when a separate pad IS used it rolls out ahead of the
-# plank at almost no marginal time. Resolve the spec before ordering.
-"lvp-underlayment" = { material = { low = 0.25, high = 0.75 }, labour = { low = 0, high = 0.25 } }  # 417 SF
+"lvp" = { material = { low = 5.69, high = 5.69 }, labour = { low = 1.5, high = 3.25 } }  # Quincy Oak VV017-01018, COREtec listed $/SF 2026-10-26; attached cork included; local delivery/tax quote pending
+# Quincy Oak includes its factory cork. No separate acoustic mat is specified or billed.
 # 596 SF ordered: second hall/linen join the suite, walk-in and study; the
 # attic study remains a separate trip. Labour includes sanding and site finish.
 "oak-floor-custom" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 596 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00)

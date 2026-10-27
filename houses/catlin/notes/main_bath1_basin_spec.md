@@ -50,7 +50,7 @@ The basin center is **x=54⅝″**. Manufacturer drawing `1266560` gives fixing 
 **240 mm apart and 55 mm below the rim**. Set mounting axes approximately at:
 
 - **x=49.901″ and 59.349″**, both within solid timber.
-- **31.835″ AFF**, or **32.821″ above main storey datum** with the current 0.9862″
+- **31.835″ AFF**, or **32.782″ above main storey datum** with the current 0.94685″
   finished-floor build-up. Recalculate from actual finished floor if that changes.
 
 Use two **M10 through-bolts**, zinc plated, with **2″ square × ⅛″ steel rear

@@ -58,14 +58,14 @@ def test_a_flight_stopping_at_the_joist_tops_fails(catlin_plan):
 
     ``top_elevation`` back at 0'-0" is precisely what omitting both fields used to compute,
     so this is the real historical geometry and not a synthetic one. The FAIL has to name
-    the 8.28" riser: a spread-only message would not tell the reader the step is also over
+    the 8.24" riser: a spread-only message would not tell the reader the step is also over
     the absolute cap.
     """
     rewound = _with_element_replaced(catlin_plan, "ST-B2M", top_elevation=inch(0.0))
     ctx = check_context(plan=rewound)
     finding = _by_tag(stair_end_risers(ctx), "ST-B2M")
     assert finding.result is Result.FAIL
-    assert "8.28" in finding.message and "7.75" in finding.message
+    assert "8.24" in finding.message and "7.75" in finding.message
 
     # And the two rules that already existed still pass it — which is the whole point.
     assert _by_tag(stair_geometry(ctx), "ST-B2M").result is Result.PASS
@@ -110,7 +110,7 @@ def test_a_storey_datum_is_not_a_walking_surface(catlin_model):
     # ...and RM-M-LIVING's plank is the rest.
     room, finish, depth = room_finish_at(catlin_model, "main", (12.0 * _FT, 26.4 * _FT))
     assert (room, finish) == ("RM-M-LIVING", "lvp")
-    assert deck_top + depth * _IN == pytest.approx(inch(0.9862).meters, abs=1e-6)
+    assert deck_top + depth * _IN == pytest.approx(inch(0.9468503937007874).meters, abs=1e-6)
 
 
 def test_a_coating_is_a_sourced_zero_not_a_missing_number(catlin_model):

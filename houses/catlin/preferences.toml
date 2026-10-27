@@ -170,6 +170,11 @@ drain_stack_required_structure_in = 5.5
 # the useful rule, and so houses/starter carries it unsuppressed.
 min_drain_slope_margin_in_per_ft = 0.0
 
+# A hole clear of every member is a hole saw through the subfloor sheet; a plumber cuts
+# one for 3" pipe (3 1/2" OD) without a drawing. Owner, 2026-10-26: 4" covers every
+# drain and insulated hot riser in the house. A riser ON a member still FAILs at any size.
+max_undrawn_deck_hole_in = 4.0
+
 [mep.routing]
 # **The router's weights, and they are preferences rather than code.** Everything here is
 # stated in INCHES OF EQUIVALENT TRAVEL, the one unit `typehaus/routing/cost.py` prices in,
@@ -312,7 +317,6 @@ suppress = [
   # The two sauna radials moved into clear wall bays on 2026-10-01 and now produce no
   # run_through_plate finding, so their old tag suppressions are removed.
   "mep.run_through_plate:DU-S-HP-SUP",
-  "mep.run_through_plate:DU-S-HP-RET",
   "mep.run_through_plate:DU-S-HP-SUITE",
   "mep.run_through_plate:DU-S-HP-SOUTH",
 
@@ -366,123 +370,44 @@ suppress = [
   # dimensioned ports and PR-B-HW-BATH1 now travels north of the cold inlet before heading
   # to its wall bay. With suppression lifted, the cold/hot pair no longer meets.
 
-  # ** mep.riser_through_deck: 17 RISERS THROUGH A DECK WITH NO HOLE DRAWN (2026-10-08; 20 on
-  # 2026-09-24 until two hot runs went to a 1/2" sleeve and three holes fell under the 2" a
-  # trade drills; 47, then 35 on 2026-09-23). NEW CHECK, 2026-09-19. AN OPEN CAMPAIGN, AND THE ONE plans/TODO.md
-  # HAS NAMED SINCE 2026-09-15. **
-  #
-  # ** ALL 20 ARE UNDRAWN, NONE ON A MEMBER, AND NONE IS AN ERV DUCT OR A VENT (2026-09-24). **
-  # Every ERV riser and the stack now stands in a drawn hole (FO-*-ERV-*, FO-A-VENT-STACK,
-  # FO-A-RADON-STACK); a hole inside one bay takes no framing. What is left is drains and
-  # insulated hot risers, the second class below. The paragraph below is the 2026-09-19
-  # reading.
-  #
-  # TODO's words: "`FS-M-MECH` still carries the vents, the radon riser and nine conduits
-  # through its joist field undrawn ... nothing grades a duct or a pipe against a floor
-  # member." It does now, and the answer is 47 — which is not a house that got worse, it is
-  # a question nobody could ask before. A horizontal run has had `mep.run_member_crossing`
-  # to answer to all along; a riser had nothing at all.
-  #
-  # BLANKET, deliberately, and this is the second and last blanket entry in this file. 47
-  # itemised lines would be a page of tags nobody reads, and the two classes want two
-  # different campaigns rather than 47 decisions:
-  #
-  #   * 29 land ON a member — a joist, a trimmer or a truss chord. These are unambiguous:
-  #     the member is cut and nothing headed it, and each wants either a `FloorOpening`
-  #     (whose trimmers and header then resolve with it) or the riser moved into a clear
-  #     bay. VR-M-STACK's two risers stand on the trimmers of FO-M-ERV-OA itself, an
-  #     inch outside the hole that was cut for the ERV; DU-ERV-EA's 8" leg lands on an
-  #     FS-S-WEST chord. The chase cluster is drawn through FS-M-MECH and UNDRAWN above it.
-  #   * 18 are clear of every member but wider than `max_undrawn_deck_hole_in` (2"), the
-  #     new [mep] key. These are the DOCUMENTATION half and the weaker of the two: a 2 7/8"
-  #     insulated hot riser standing in a clear I-joist bay is drilled through the subfloor
-  #     sheet every day of the week, and nothing structural is cut. What the check is
-  #     saying is that a hole that size belongs on a drawing rather than in an installer's
-  #     head. ** IF THE OWNER DISAGREES, THE HONEST FIX IS TO RAISE max_undrawn_deck_hole_in
-  #     WITH THE TRADE ARGUMENT BESIDE IT — not to suppress the class. ** At 3" this row is
-  #     6 instead of 18; at 4" it is 2.
-  #
-  # Severity is WARN on every one of them, so `haus print` is NOT shut by this: the permit
-  # gate keys off ERROR alone. They are still FAILs, still red, and still in the score.
-  #
-  # ** A DEBT WITH A NUMBER ON IT. ** Delete this entry, run `haus check houses/catlin
-  # --only fail`, and the count is the score. Do not let a cleanup silently keep it.
-  "mep.riser_through_deck",
+  # mep.riser_through_deck: CLOSED 2026-10-26, nothing suppressed. All 17 remaining
+  # risers stood clear of every member and only exceeded the 2" undrawn-hole allowance;
+  # the owner raised it to 4" ([mep] above). A riser landing ON a member still reports.
 
-  # ** mep.open_web_panel + mep.run_member_crossing's WEB verdict: THE LEVEL-2 NECK, SEEN
-  # FOR THE FIRST TIME. NEW, 2026-09-19. AN OPEN CAMPAIGN — THIS IS D1's WHOLE SUBJECT. **
-  #
-  # `profiles.open_web_opening_m` gives FS-S-WEST an 8 7/8" chord-to-chord window and
-  # nothing narrowed it ALONG the span, so the engine read an open-web floor truss as a
-  # CONTINUOUS SLOT: thirteen 4" ducts crossing every truss inside a 41" band passed
-  # `mep.run_member_crossing` without a word. A real truss has webs at panel points.
-  # `JoistSpec` can now state the fabricator's layout and `params/second_deck.py` authors a
-  # marked PROVISIONAL one (24" pitch, 15" clear, 12" offset — derived in its own `#:` and
-  # in notes/mep_duct_routing_basis.md §3a, NOT read off a submittal).
-  #
-  # ** BOTH VERDICTS BELOW REST ON THAT PLACEHOLDER, AND THAT IS THE HONEST WAY ROUND. **
-  # Without a datum the level-2 duct design cannot be graded at all, and an ungraded design
-  # is how nine radials came to be drawn through one another in the first place. Delete the
-  # three fields and `mep.open_web_panel` goes straight back to saying the layout is
-  # missing, by name. The owner replaces all three when the truss submittal arrives
-  # (plans/TODO.md carries it), and these two entries are re-measured that day.
-  #
-  #   * mep.open_web_panel, 2 findings. The neck: nine 4" radials leave the two RM-M-MECH
-  #     plenums in one x-lane, cross square, and all nine sit on `_BAY_Z` — 36.00" of runs
-  #     at ONE elevation through a 15.00" opening, on 12 of the deck's members.
-  #     §3a prices the honest ceiling at SIX (three per tier, two tiers), so three
-  #     of them have to take another opening, another tier or another lane. The second
-  #     finding is the same shape at opening 0: PR-M-WC-VENT, DU-M-ERV-R-PLANT and
-  #     CD-M-DATA-PORCH want 24.97" of 15.00".
-  #   * mep.run_member_crossing, 16 NEW findings, all of the form "that is ON A WEB, not in
-  #     an opening". With a 24" pitch and a 9" web band, a station chosen against a
-  #     continuous slot lands on a web better than a third of the time — so this number is
-  #     a measure of how little the old reading constrained anything, not of sixteen new
-  #     mistakes. Eight ERV radials, four second-storey drains, two studio supply risers,
-  #     the kitchen vent and the WC vent.
-  #
-  # Itemised throughout: on the HOST DECK for open_web_panel (both findings are FS-S-WEST's
-  # and a second open-web deck anywhere in the house would still report), and on the RUN for
-  # run_member_crossing so a new crossing elsewhere still reports.
+  # ** mep.open_web_panel + mep.run_member_crossing's WEB verdict on FS-S-WEST: OPEN
+  # ROUTING CAMPAIGN. ** Owner confirmed the web layout on 2026-10-26 (params/second_deck.py:
+  # 24" pitch, 12" offset, 2x4 webs), and counting the web's own 2 1/8" along the chord took
+  # the clear opening 15" -> 13". Nine runs now land on a web. No offset clears them all
+  # (best phase leaves six); they need moving into openings or along a bay:
+  #   * nudges under 1": DU-M-ERV-R-STUDY / -LIVING / -LAUNDRY (0.50"), CD-M-DATA-KITCH
+  #     (0.86"), PR-M-S-SUITE-TUB-DRAIN (0.07") — but the radial lanes are 1/2" apart, so a
+  #     lane moves with its neighbours.
+  #   * real moves: PR-M-S-BATH1-TUB-DRAIN 3.2", -LAV-DRAIN 6.45", PR-M-S-SUITE-WC-DRAIN
+  #     4.44", PR-A-CW-STUBATH 1.85".
+  #   * the 3'-5 1/2"..4'-6 1/2" opening is over-subscribed: the 8" exhaust trunk, the STUDY
+  #     radial and the BATH1 tub drain want 13.90" of 13".
+  # ERROR severity. A suppressed finding never reaches the permit gate, so `haus print` is
+  # open over these; that is the cost of carrying them here. Itemised per run.
   "mep.open_web_panel:FS-S-WEST",
   "mep.run_member_crossing:PR-A-CW-STUBATH",
-  "mep.run_member_crossing:PR-M-KITCH-VENT",
   "mep.run_member_crossing:PR-M-S-BATH1-LAV-DRAIN",
   "mep.run_member_crossing:PR-M-S-BATH1-TUB-DRAIN",
   "mep.run_member_crossing:PR-M-S-SUITE-WC-DRAIN",
-  "mep.run_member_crossing:PR-M-WC-VENT",
+  "mep.run_member_crossing:PR-M-S-SUITE-TUB-DRAIN",
+  "mep.run_member_crossing:DU-M-ERV-R-STUDY",
+  "mep.run_member_crossing:DU-M-ERV-R-LIVING",
+  "mep.run_member_crossing:DU-M-ERV-R-LAUNDRY",
+  "mep.run_member_crossing:CD-M-DATA-KITCH",
 
-  # These fixtures' wall_ref is their vent-reachability target, not a physical drain chase.
+  # This fixture's wall_ref is its vent-reachability target, not a physical drain chase.
   # FX-M-BATH1-WC's carrier and waste drop are in W-M-HS1; FX-M-BATH1-LAV drains through
   # the deck, and their vent takeoff is above W-M-BAE. Keep W-M-BAE a dry 2x4 partition.
   "advisory.wet_wall_depth:FX-M-BATH1-WC",
-  "advisory.wet_wall_depth:FX-M-BATH1-LAV",
 
-  # D-G-OVERHEAD's centre is at 12'-0", 12" off the 24" module, and it cuts 9 stud lines
-  # where 8 would do. The decision is unchanged from the 16"-module reading it was first
-  # taken against (2026-08-26) and the arithmetic under it got WORSE, which is the reason to
-  # re-state it rather than carry it: at 16" o.c. the miss was 8" and every legal station
-  # was 8" away (104"/120"/136"/152"/168"/184"); at 24" o.c. — GARAGE_WALL_2X6, 2026-08-31 —
-  # the miss is 12" and the nearest legal centres are 11'-0" and 13'-0".
-  #
-  # ** THE FACADE ARGUMENT THAT CARRIED THIS DIED ON 2026-09-03, AND THE SUPPRESSION IS
-  # THEREFORE WEAKER THAN IT LOOKS. ** It used to read: moving the door 12" makes the two
-  # wainscot piers flanking it 5'-0" and 3'-0" where they are 4'-0" and 4'-0", and a visibly
-  # asymmetric wainscot on the garage's main facade is a worse building than one extra cut
-  # stud. There is no wainscot any more — the base skin is a 24" band on the stem, uniform
-  # on all four walls, and it does not care where the door sits.
-  #
-  # What is left is a COST OF MOVING, not a reason not to move: OVERHEAD_DOOR_OFFSET is not
-  # just the door's offset. params/foundations.py gaps the ICF stem on it,
-  # so the gap nodes, two stem segments, their footings and the two STEM_TOP_Z_FLASHING
-  # break stations all travel with the door, and plan/mep_sleeves.py's water-service sleeve
-  # is pinned to the stem footing that happens to sit over it (integrity.sleeve_in_opening
-  # caught exactly that the last time this constant moved).
-  #
-  # ** THIS IS AN OPEN OWNER QUESTION, NOT A SETTLED DECISION. ** One extra cut stud against
-  # a vehicle door centred on the framing module, with a day of foundation re-derivation
-  # between them. Left suppressed so the report stays clean while it is decided; re-open it
-  # deliberately, do not let a cleanup silently keep it.
+  # Owner accepts (2026-10-26): D-G-OVERHEAD stays centred at 12'-0", 12" off the 24"
+  # module, cutting 9 studs where 8 would do. The opening is already a special framing
+  # case (extra studs, braced sheathing around it), and moving it re-derives the stem gap,
+  # its footings, flashing stations and the water-service sleeve.
   "structural.door_framing_module:D-G-OVERHEAD",
 
   # Owner confirmed 2026-10-01 that D-M-LAUN stays at its authored position. That station
@@ -494,14 +419,6 @@ suppress = [
   "structural.door_framing_module:D-B-PATIO",
   "structural.door_framing_module:D-S-DECK-E",
 
-  # D-M-BATH1 went 2'-0" -> 2'-6" on 2026-09-15 (the aging-in-place pass): a 24" leaf was
-  # the narrowest thing in the house and this is the powder room every guest uses. The
-  # opening keeps its established station, 2 3/8" below ED-M-BATH1-SW with 8" to spare at
-  # the far end. W-M-BAE is now a standard non-bearing 2x4 partition; re-evaluate this
-  # suppression against its regular stud layout before treating the extra cut stud as settled.
-  # Same shape of trade as D-M-BATH2 used to be — that entry was retired on 2026-09-20
-  # after the door stopped tripping the check at all.
-  "structural.door_framing_module:D-M-BATH1",
 
   # Owner accepts (2026-09-26): each of these cuts one stud more than a module-true station
   # would, and on each the wall is too short for ANY station to fix it — only re-phasing the

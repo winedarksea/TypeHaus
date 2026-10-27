@@ -65,10 +65,10 @@ def test_each_finish_material_declares_what_it_looks_like(catlin_model):
 
 
 def test_the_companion_layers_a_finish_implies_are_in_the_library(catlin_model):
-    """Carpet needs pad under it and LVP needs underlayment; a takeoff that bills the
-    covering alone hands over an unorderable schedule."""
-    for tag in ("carpet-pad", "lvp-underlayment"):
-        assert _material(catlin_model, tag) is not None
+    """Carpet bills its pad; Quincy Oak includes its cork in the plank itself."""
+    for material in _library(catlin_model).materials:
+        for companion in material.floor_companion_refs:
+            assert _material(catlin_model, companion) is not None
 
 
 # --- 2. the colour the export resolves ----------------------------------------------------
@@ -339,7 +339,7 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     assert "RM-M-MUDROOM" in rows["lvp"]["rooms"]
     assert {"RM-M-MECH", "RM-M-MUD-CLOSET"} <= set(rows["lvp"]["rooms"])
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
-    assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
+    assert "lvp-underlayment" not in rows
     assert {"RM-S-HALL", "RM-S-NCLOSET"} <= set(rows["oak-floor-custom"]["rooms"])
     assert set(rows["vinyl-sheet"]["rooms"]) == {
         "RM-A-STUBATH", "RM-A-STUDIO", "RM-B-BATH"}

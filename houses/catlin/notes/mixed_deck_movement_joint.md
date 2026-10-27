@@ -19,8 +19,8 @@ The main floor over the basement is two structures that meet on one line:
 on one flat seat at **-13 7/16"**, the whole way round the basement, with no step in the
 forms. The cost of that is at the top and it is
 3/16": the cap tops at +15/16" where the plywood tops at +3/4", which is inside the thickness
-of the 6 mm plank laid on the plywood — the two walking surfaces still meet flush, with the
-LVP 1/64"-1/20" proud. `structural.mixed_deck_bearing_seat` holds all of it.
+of the 5 mm Quincy Oak plank laid on the plywood — the two walking surfaces still meet flush, with the
+LVP nominally 0.0094" proud. `structural.mixed_deck_bearing_seat` holds all of it.
 
 What is *not* continuous is stiffness.
 
@@ -97,8 +97,8 @@ a soft joint.
 2026-08-25 to 2026-09-05 — the hall band was an authored `vinyl-sheet` `FinishZone`, ~2 mm
 of goods with no rigid core, so the cap met a floor that sat **low** and this note carried a
 warning that those 3.9 lf had to be trimmed for a real step. **That zone is deleted.** The
-hall takes the room's own field `lvp`, so the whole 13.6 lf is 6 mm SPC against the cap:
-+0.986" to +0.9375", **1/64" proud**. A plain flush T, specified for movement it does not
+hall takes the room's own field `lvp`, so the whole 13.6 lf is 5 mm Quincy Oak SPC against the cap:
++0.94685" to +0.9375", **0.0094" proud**. A plain flush T, specified for movement it does not
 have. This leg got better, and there is nothing here to trim for height.
 
 **The y = 13' leg is flush too, and that took a decision rather than a detail.** The south
@@ -116,8 +116,8 @@ same day. Oak finishes at **+1.500"** against the polished cap's **+0.9375"**, a
 
 So oak here was a **reducer** or nothing, and the reducer was not wanted: 17.9 lf of ramped
 moulding across the middle of the main living space, on the one line that also has to break
-for movement. **The finish gave way instead of the detail.** The bay is 6 mm SPC like the
-rest of the room, +0.986" against the cap — the same 1/64" as the x = 18' leg, the same
+for movement. **The finish gave way instead of the detail.** The bay is 5 mm Quincy Oak SPC like the
+rest of the room, +0.94685" against the cap — the same 0.0094" as the x = 18' leg, the same
 flush T, and the room reads as one floor across all 31.5 lf. It still needs the T: the
 differential is in the structure and does not care what is laid over it. Oak stays the two
 studies' floor, where nothing meets a concrete cap. Cost of the reversion, measured
@@ -133,7 +133,7 @@ which is roughly a floor finish, and FAILs past it. Check the resolved elevation
 ordering the moulding, not this paragraph.
 
 **The mudroom interior junction is now flush.** `RM-M-MUDROOM`, `RM-M-MECH` and
-`RM-M-MUD-CLOSET` use the hall's LVP at +0.9862". The bypass guide at `D-M-MUDC`
+`RM-M-MUD-CLOSET` use the hall's LVP at +0.94685". The bypass guide at `D-M-MUDC`
 sits on one plane. `D-M-ENTRY` needs a separate flashed weather sill because the
 breezeway decking is about +1.000"; see [the floor height schedule](floor_heights.md).
 The LVP/coated cap joint remains a flush T with a movement break on its y=13' leg.

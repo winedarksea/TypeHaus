@@ -41,7 +41,7 @@ VENT_BRANCHES_MAIN = [
                   pt(inch(58), inch(268)), pt(inch(58), inch(268)),
                   pt(inch(98.5), inch(268.9))),
             diameter=inch(1.5),
-            # Match the 20 in. AFF drain arm across the main floor's 0.9862 in. datum.
+            # Match the 20 in. AFF drain arm across the main floor's 0.94685 in. datum.
             elevations=(inch(21), inch(45), inch(45.05), inch(120), inch(120.2)),
             serves=("FX-M-BATH1-LAV",)),
     # BATH1's fixtures are served from the overhead run at x=6' and W-M-BA2E (x=8'-2")
