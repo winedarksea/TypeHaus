@@ -1986,7 +1986,7 @@ SLABS = [
 # BASEMENT_DATUM, which is also the slab top and the sealed-concrete surface RM-B-STAIR
 # walks on; 0.94685" is MAIN_FINISHED_FLOOR_LVP, the plank top in RM-M-LIVING where the
 # flight heads out. This file is editable-dialect and cannot import them, so if either
-# number moves in params, move it here. Rise is 110.4237" over the same 15 risers — 7.3616"
+# number moves in params, move it here. Rise is 110.38435" over the same 15 risers — 7.3590"
 # each, still clear of 7 3/4" — so the riser count, the run length and the well are
 # unchanged; only the flight's elevation is.
 #

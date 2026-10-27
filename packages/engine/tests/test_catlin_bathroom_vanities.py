@@ -318,6 +318,10 @@ def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_mo
     assert all(0 < stop.z_m < basin.body_z0_m for stop in stops)
     finished_floor_m = basin.z_m - 0.7186
     assert all((stop.z_m - finished_floor_m) / IN == pytest.approx(24) for stop in stops)
+    drain = next(run for run in model.pipe_runs if run.tag == "PR-B-LAV1-DRAIN")
+    vent = next(run for run in model.pipe_runs if run.tag == "PR-M-BATH1-LAV-VENT")
+    assert (drain.z_start_m - finished_floor_m) / IN == pytest.approx(20)
+    assert vent.z_start_m == pytest.approx(drain.z_start_m)
     waste = next(r for r in model.pipe_runs if r.tag == "PR-B-LAV1-DRAIN")
     vent = next(r for r in model.pipe_runs if r.tag == "PR-M-BATH1-LAV-VENT")
     assert waste.path[0] == pytest.approx(vent.path[0])

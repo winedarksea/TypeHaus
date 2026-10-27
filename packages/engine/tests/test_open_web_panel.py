@@ -89,19 +89,13 @@ def test_an_unauthored_pitch_is_UNKNOWN_naming_the_floor(catlin_ctx) -> None:
     assert web_panels(floor) is None
 
 
-def test_the_level_two_NECK_IS_GONE(catlin_ctx) -> None:
-    """§3a's arithmetic was a verdict on 2026-09-19 — nine 4" radials crossing square on one
-    elevation wanting 36.00" of a 15.00" opening, on twelve of the deck's members — and D1
-    answered it the same day by taking the extract side to a trunk. **No ERV duct is in an
-    over-subscribed opening on this deck any more**, which is the thing the check was
-    written to be able to say either way."""
+def test_catlin_over_subscribed_openings_are_pinned(catlin_ctx) -> None:
+    """D1 cleared the level-2 neck on 2026-09-19 and the last conduit/vent pair on 2026-09-24,
+    both against a 15" opening. On 2026-10-26 the owner confirmed the layout with 2x4 webs,
+    whose own 2 1/8" along the chord takes the opening to 13", and ONE opening is
+    over-subscribed again: the 8" exhaust trunk, the STUDY radial and the BATH1 tub drain
+    want 13.90" of it. An open campaign (preferences.toml); pinned so it can only shrink."""
     fails = [f for f in open_web_panel(catlin_ctx) if f.result is Result.FAIL]
-    assert not [f for f in fails
-                if any(tag.startswith("DU-M-ERV") for tag in f.element_tags)]
-
-
-def test_catlin_has_no_over_subscribed_opening(catlin_ctx) -> None:
-    """The last one was a conduit and a vent, 20.97" of a 15.00" opening. On 2026-09-24
-    PR-M-WC-VENT rose through W-S-SN2 instead and CD-M-DATA-PORCH took the top chord."""
-    fails = [f for f in open_web_panel(catlin_ctx) if f.result is Result.FAIL]
-    assert not fails, [f.message for f in fails]
+    assert len(fails) == 1, [f.message for f in fails]
+    assert {"DU-M-ERV-EXH-TRUNK", "DU-M-ERV-R-STUDY",
+            "PR-M-S-BATH1-TUB-DRAIN"} <= set(fails[0].element_tags)

@@ -124,17 +124,17 @@ SUPPLY_DEVICES_BASEMENT = [
 # already arrives at (2'-6" to 3'-6" above the room's own floor). Authoring a number here
 # would only be a second, drift-prone copy of one the run already carries.
 SUPPLY_STOPS = [
-    # Basin stops are 24" above main datum (133.4375" above this basement list's datum).
+    # Basin stops are 24" above Quincy Oak (134.38435" above this basement datum).
     # Explicit elevations select the basin taps, not the shared riser's ceiling vertex.
     PipeAccessory(uid="0RA7PE7K5N", tag="PA-M-BATH1-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-M-CW-BATH1-LAV", position=pt(inch(60), inch(271.385)),
-                  elevation=inch(134.42370000),
+                  elevation=inch(134.38435),
                   accessible=True, room="RM-M-BATH1",
                   model='1/2" quarter-turn basin stop, exposed below wall-mounted basin',
                   serves=("FX-M-BATH1-LAV",)),
     PipeAccessory(uid="1YCTZR50YR", tag="PA-M-BATH1-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-B-HW-BATH1", position=pt(inch(50.5), inch(271.385)),
-                  elevation=inch(134.42370000),
+                  elevation=inch(134.38435),
                   accessible=True, room="RM-M-BATH1",
                   model='1/2" quarter-turn basin stop, exposed below wall-mounted basin',
                   serves=("FX-M-BATH1-LAV",)),

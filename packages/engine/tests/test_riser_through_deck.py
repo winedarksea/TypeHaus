@@ -133,10 +133,13 @@ def test_catlin_is_pinned_so_a_campaign_can_see_itself(catlin_ctx) -> None:
     (``test_catlin_erv_clearance.py``); what is left is supply and drain, all undrawn.
 
     0/17 on 2026-10-08: PR-A-HW-STUBATH and PR-B-HW-SUITE went to a 1/2" sleeve, 1.88"
-    across, under the 2" a trade drills, so their three holes left this column for UNKNOWNs."""
+    across, under the 2" a trade drills, so their three holes left this column for UNKNOWNs.
+
+    0/0 on 2026-10-26: all 17 stood clear of every member, and the owner raised
+    ``max_undrawn_deck_hole_in`` to 4" — a hole saw through the sheet, not a framed hole."""
     fails = _by_result(catlin_ctx, Result.FAIL)
     on_member = [f for f in fails if "lands on the member" in f.message]
     undrawn = [f for f in fails if "FRAMED, NOT DRILLED" in f.message]
     assert len(on_member) == 0
-    assert len(undrawn) == 17
+    assert len(undrawn) == 0
     assert len(fails) == len(on_member) + len(undrawn)

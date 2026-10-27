@@ -92,7 +92,7 @@ def test_the_takeoff_bills_the_field_not_the_gross_room(catlin_model_ro):
                    for room in catlin_model_ro.rooms if room.floor_finish == "lvp"
                    for zone in room.finish_zones for outline, holes in zone.parts) * _M2_TO_FT2
     assert gross + reveals - float(rows["lvp"]["net_area_sqft"]) == pytest.approx(75.8, abs=1.0)
-    assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
+    assert "lvp-underlayment" not in rows
 
 
 def test_the_model_json_carries_the_field(catlin_model_ro):

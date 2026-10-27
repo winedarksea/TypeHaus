@@ -319,7 +319,6 @@ def test_a_finish_brings_the_layer_it_implies(bom):
         ("catlin-carpet-raised", "catlin-bedroom-carpet-pad"),
         ("catlin-carpet-raised", "catlin-carpet-underlayment"),
         ("catlin-plant-vinyl-raised", "catlin-plant-sureply"),
-        ("lvp", "lvp-underlayment"),
         ("catlin-tile-calacatta-gold", "catlin-ditra-heat"),
         ("catlin-tile-carrara", "catlin-ditra-heat"),
         ("catlin-tile-kaleo-brick", "catlin-ditra-xl"),

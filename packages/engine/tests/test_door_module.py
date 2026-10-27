@@ -210,20 +210,15 @@ def test_suppression_by_tag_drops_one_element_and_no_other():
 #:   it hides a FAIL is not a judgement a reader can check. Nine of the ten are also a
 #:   different condition from the one that entry described: ducts 4"-18" wide INTERRUPTING
 #:   plates 3.50"-5.50" wide, which R602.6.1's strap does not cover at all;
-#: * `mep.riser_through_deck` — 47 risers through a deck with no hole drawn, added
-#:   2026-09-19 with the check itself. **The argument for a blanket rather than 47 itemised
-#:   lines**: the finding is whole-house and splits into exactly two campaigns, not 47
-#:   decisions — 29 risers landing ON a member (unambiguous: the member is cut and nothing
-#:   headed it) and 18 clear of every member but wider than the house's own
-#:   `max_undrawn_deck_hole_in`, which is a DRAWING-SET argument and is tunable by the very
-#:   number it is graded against. A page of tags would bury both. Every one is WARN
-#:   severity, so this silence is not what keeps `haus print` open.
+#: * `mep.riser_through_deck` — blanket from 2026-09-19 until 2026-10-26, when the owner
+#:   raised `max_undrawn_deck_hole_in` to 4" and the last 17 (all clear of every member)
+#:   closed. No blanket entry remains.
 #:
 #: None is acceptable-forever. Deleting an entry and running `haus check houses/catlin` is
 #: how the debt is measured. **`mep.open_web_panel` is deliberately NOT here**: it is two
 #: findings, both on FS-S-WEST, and it is itemised on that deck so a second open-web floor
 #: anywhere in the house still reports.
-BLANKET_SUPPRESSIONS = frozenset({"mep.riser_through_deck"})
+BLANKET_SUPPRESSIONS: frozenset[str] = frozenset()
 
 
 def test_the_house_file_parses_the_tag_form():
@@ -233,7 +228,7 @@ def test_the_house_file_parses_the_tag_form():
 
     prefs = load_preferences(Path("houses/catlin"))
     assert any(":" in entry for entry in prefs.suppressed)
-    # This house silences exactly one whole check and no others — see the note above.
+    # This house silences no whole check — see the note above.
     # The per-element form stays the rule, and a new blanket entry is argued for there.
     blanket = {entry for entry in prefs.suppressed if ":" not in entry}
     assert blanket == BLANKET_SUPPRESSIONS, sorted(blanket)

@@ -187,7 +187,7 @@ DRAINS = [
             path=(pt(inch(53.5), inch(268)), pt(inch(53.5), inch(268)),
                   pt(inch(53.5), inch(271)), pt(inch(72), inch(271))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(130.4237), inch(94.6), inch(94.5), inch(94.0),),
+            elevations=(inch(130.38435), inch(94.6), inch(94.5), inch(94.0),),
             serves=("FX-M-BATH1-LAV",)),
     # 1 1/2": FX-M-BATH2-TUB is the Kohler K-1130-W1 (plan/fixtures.py), whose spec
     # drawing labels a 1 1/2" bath drain and whose required waste-and-overflow — K-7272

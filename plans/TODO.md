@@ -120,15 +120,11 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
 - **ERV condensate shares `FX-B-SAUNA-FD`** rather than `PR-B-COND` — no gravity connection
   exists (main is at 85"+ where it crosses x=13'-6", best a 21.6" unit can manage under the
   basement ceiling is ~75"). The mechanical-room-sink alternative still has no drain.
-- **The FS-S-WEST truss panel layout is a PROVISIONAL placeholder and the owner replaces it.**
-  Owner confirmed on 2026-09-29 that no fabricator panel drawing is available yet. The six
-  remaining `mep.run_member_crossing` errors stay open until the actual panel geometry arrives.
-  `params/second_deck.py` authors `web_panel_pitch=24"`, `web_opening_width=15"`,
-  `web_panel_offset=12"` on FS-S-WEST, derived in its own `#:` from an ordinary Warren
-  layout rather than read off a submittal. Ask the truss fabricator for the panel drawing,
-  replace all three numbers and the two moved lines (`_LINE_MOVES`: 26'-8" -> 26'-10",
-  34'-8" -> 34'-5 3/4", clearing risers), and re-measure `mep.open_web_panel` and
-  `mep.run_member_crossing` that day — both entries in `preferences.toml` say so.
+- **Re-route the nine FS-S-WEST runs that land on a truss web.** Owner confirmed the panel
+  layout on 2026-10-26 (24" pitch, 12" offset, 2x4 webs; the fabricator builds to it), which
+  took the clear opening to 13". `preferences.toml`'s open-web campaign entry lists each run
+  and the move it wants, plus the one over-subscribed opening at 3'-5 1/2"..4'-6 1/2". These
+  are ERROR findings hidden from `haus print` while suppressed.
 - **`REG-S-HP-PLANT` sits 9'-2" from the room's extract** (`REG-S-ERV-PLANT-EXH`, see
   `plan/mep_registers.py`) in an 18'x9' room, leaving the west end unswept by the room's only
   moisture-removal extract. A middle station (~x 12'-6") would shorten the duct run if the

@@ -57,10 +57,9 @@ def test_the_web_verdict_is_a_SECOND_finding_and_not_a_changed_one(
     # Seventeen when the panel datum landed; nine since D1 took level 2's ducts off the
     # webs; six since the 2026-09-24 vent re-lane. Every one left is a PIPE — the plumbing
     # campaign's, not the air's. Four since PR-A-STUBATH-DRAIN and PR-A-HW-STUBATH left the
-    # webs for truss bays (2026-10-08).
-    assert len(web) == 4, [f.message for f in web]
-    assert all(tag.startswith("PR-") for f in web for tag in f.element_tags
-               if not tag.startswith("FS-"))
+    # webs for truss bays (2026-10-08). Nine since the owner confirmed 2x4 webs and the
+    # opening went 15" -> 13" (2026-10-26): three ERV radials and a data conduit are back.
+    assert len(web) == 9, [f.message for f in web]
     for finding in web:
         assert finding.result is Result.FAIL
         tag = finding.element_tags[0]
@@ -157,7 +156,7 @@ def test_every_level_two_duct_rests_on_a_chord_and_none_is_inside_one(
     findings = _findings(catlin_plan, catlin_model_ro)
     ducts = [f for f in findings
              if any(t.startswith("DU-M-ERV") for t in f.element_tags)
-             and "FS-S-WEST" in f.element_tags]
+             and "FS-S-WEST" in f.element_tags and "ON A WEB" not in f.message]
     # **SEVEN of the fourteen, and the other seven are the design.** Because the trunk runs
     # south, most extract takeoffs are pure BAY legs and cross no truss; what is left to
     # grade is the trunk itself, the three supply radials, LAUNDRY's turn south to the

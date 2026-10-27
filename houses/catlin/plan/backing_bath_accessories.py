@@ -16,7 +16,7 @@ BASEMENT_TP_BACKING = [
 MAIN_TP_BACKING = [
     # BATH1 floor build-up is 0.94685 in.; the north post lands on the y=304 stud.
     WallBacking(uid="TPMBLOCK01", tag="BK-M-BATH1-TP", wall_ref="W-M-W2", face="left",
-                start=inch(16.25), length=inch(14.5), elevation=inch(24.2362),
+                start=inch(16.25), length=inch(14.5), elevation=inch(24.19685),
                 height=inch(5.5), profile="2x6", material_ref="spf",
                 purpose="FURN-M-BATH1-TP south mounting post; north post fixes to stud"),
     # BATH2 floor is 1.5 in.; window king/jack divide the two fixing bays, below the sill.

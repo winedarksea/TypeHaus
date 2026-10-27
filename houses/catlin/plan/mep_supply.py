@@ -47,7 +47,7 @@ WATER_SUPPLY = [
     PipeRun(uid="KV1KTD2P01", tag="PR-M-CW-BATH1-LAV", system=PipeSystem.WATER_COLD,
             path=(pt(inch(60), inch(268)), pt(inch(60), inch(271.385))),
             diameter=inch(0.5), material="pex",
-            elevations=(inch(24.0), inch(24.9862),),
+            elevations=(inch(24.0), inch(24.94685),),
             serves=("FX-M-BATH1-LAV",)),
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
             # ** THIS RUN DID NOT MOVE FOR THE 2026-09-10 NORTH ENTRY PIERS; THEY MOVED
@@ -310,7 +310,7 @@ SUPPLY = [
                   pt(inch(50.5), inch(266.75)), pt(inch(50.5), inch(266.75)),
                   pt(inch(50.5), inch(266.75)), pt(inch(50.5), inch(271.385))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(inch(88.0), inch(91.5), inch(91.5), inch(109.4375), inch(133.4375), inch(134.4237),),
+            elevations=(inch(88.0), inch(91.5), inch(91.5), inch(109.4375), inch(133.4375), inch(134.38435),),
             wall_refs=(None, None, None, "W-M-HS1", None),
             serves=("FX-M-BATH1-LAV",)),
     # ** THE COLD RISER IS IN W-M-HS1 SINCE 2026-09-09, NOT STANDING IN THE ROOM. ** It came

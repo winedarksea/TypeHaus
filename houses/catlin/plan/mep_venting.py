@@ -42,7 +42,7 @@ VENT_BRANCHES_MAIN = [
                   pt(inch(98.5), inch(268.9))),
             diameter=inch(1.5),
             # Match the 20 in. AFF drain arm across the main floor's 0.94685 in. datum.
-            elevations=(inch(21), inch(45), inch(45.05), inch(120), inch(120.2)),
+            elevations=(inch(20.94685), inch(45), inch(45.05), inch(120), inch(120.2)),
             serves=("FX-M-BATH1-LAV",)),
     # BATH1's fixtures are served from the overhead run at x=6' and W-M-BA2E (x=8'-2")
     # rises through W-S-SN2 to the hall-bath vent. 2" for the two water closets' worth of
