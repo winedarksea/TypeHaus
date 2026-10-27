@@ -5501,11 +5501,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "DT-EXT-FRENCH60-CATALOG" = { material = { low = 1300, high = 2900 }, labour = { low = 450, high = 1050 } }  # Existing French-pair allowance carried to the two revised ROs; NOT a catalog quote.
 
 "DT-EXT-SWING36" = { material = { low = 500, high = 1600 }, labour = { low = 320, high = 720 } }  # 1 ea — D-M-ENTRY, Smooth-Star flush, single-point bored prep; field paint billed separately
-# D-G-SERVICE's own type since 2026-10-21: a commodity Masonite Premium Flush steel prehung
-# 32in outswing, field-painted; retained $300-600 material budget pending prehanger quote. Same
-# labour. Quote must include full composite poly-fiber jambs/head and stop reinforcement;
-# the retained stock-unit budget does not establish the composite-frame upgrade price.
-"DT-EXT-SWING32-G" = { material = { low = 300, high = 600 }, labour = { low = 320, high = 720 } }  # 1 ea
+# Stock MMI Z0364688R, 32x80 RH outswing, 6-9/16 composite frame; HD Supply
+# part 219385 listed $1,023 delivered, 2026-10-27. Hardware/paint billed separately.
+"DT-EXT-SWING32-G" = { material = { low = 1023, high = 1100 }, labour = { low = 320, high = 720 } }  # 1 ea
 # ** LOW END RAISED, not lowered. ** An UNINSULATED 16x7 steel door is $888 at Home Depot and
 # should not be the base case in Climate Zone 6 on a heated-adjacent garage. This now starts at
 # an insulated R-6.5 door ($2,230 with windows) and tops out at a carriage style (Coachman

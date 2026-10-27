@@ -24,7 +24,6 @@ from typehaus import (
     PanelEdgeBlocking,
     Door,
     ExteriorDoorInstallation,
-    ExteriorDoorSillDesign,
     DischargeExtension,
     Downspout,
     EaveDripEdge,
@@ -275,7 +274,7 @@ OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 # stays x=115in, preserving the deck edge, edge beam and piers. Ordinary hinges and a 90deg
 # overhead stop-only clear the full-thickness screen. The 36in stair, seats, rail, backing
 # and lighting retain their stations; the longitudinal section alone moves to x=99in.
-# Nominal width is not a prehung RO: supplier confirmation lives in the outswing note.
+# The stock 32-inch MMI leaf needs a 34-inch framed opening; east edge stays x=115in.
 #
 # ** MOVING THIS CONSTANT MOVES MORE THAN A DOOR. ** params/north_entry_frame.py derives the
 # east edge beam BM-BW-FE and the exterior landing's east edge from it
@@ -286,8 +285,8 @@ OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 # gap left them (2'-3" and 5'-9" off `N-GF-SW`) as a fossil split, so the water service's
 # sleeve `SP-GF-S-HYD` keeps its host `FT-GF-S-DR` — `integrity.sleeve_in_opening` is what
 # catches a sleeve whose host moved out from under it.
-SERVICE_DOOR_OFFSET = ft(0, 11)
-SERVICE_DOOR_WIDTH = ft(2, 8)  # DT-EXT-SWING32-G
+SERVICE_DOOR_OFFSET = ft(0, 9)
+SERVICE_DOOR_WIDTH = inch(34)  # stock MMI 32-inch leaf; framed opening 34 inches
 
 OPENINGS = [
     # 16' opening is past the prescriptive header table, hence the named engineered beam:
@@ -347,12 +346,7 @@ OPENINGS = [
          flip_hinge=True, flip_swing=True, maximum_opening_degrees=90,
          header_spec='3-ply 5.5" LVL',
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
-             exterior_wrap_material_ref="metal-dark-exterior",
-             sill_design=ExteriorDoorSillDesign(
-                 source_url="https://www.enduraproducts.com/wp-content/uploads/2021/03/ADAptive-Sill-Assembly-Instructions-2021.pdf",
-                 source_drawing="Endura ADAptive dedicated outswing, page 4, 5-5/8 x 1/2 inches; schematic envelope, supplier section pending",
-                 threshold_depth=inch(5.625), threshold_height=inch(0.5), cap_depth=inch(1.5),
-                 cap_height=inch(0.125), threshold_nose_height=inch(0.125)))),
+             exterior_wrap_material_ref="metal-dark-exterior")),
     # This 8' wall (vs. the house's 10') is why the 27" family is 36" tall: a 60" height at
     # this 42" sill would push the header above the top plate.
     #
@@ -869,7 +863,7 @@ SERVICE_DOOR_HARDWARE = [
     Annotation(uid="GTREXSPEC1", tag="AN-G-COMPOSITE-DECKING", position=pt(ft(8), ft(44)),
                text="FS-BW-FLOOR, FS-SG-PORCH and ST-G-SERVICE: TREX ENHANCE BASICS, actual 0.94 x 5.5in square-edge, color TBD. Service treads: four 36 x 11in assemblies, each front 5.5in + 1/4in gap + rear rip 5.25in; five KDAT stringers <=9in o.c., EACH on a 316 stainless stem seat. BUTYL TAPE all deck framing tops and stepped stringer cuts; field-treat wood cuts. Both decks and treads: 316 stainless Cap-Tor xd #10 x 2-3/4in, TWO per board at EVERY support, flush; support all board ends. Retain KDAT rough sill under sloped pan, 1/2in open drainage gap, no board through doorway. See notes/composite_decking.md"),
     Annotation(uid="VJDMQAGNCA", tag="AN-G-SERVICE-DOOR", position=pt(ft(8, 1), ft(42, 6)),
-               text="D-G-SERVICE: 32in insulated steel OUTSWING; durable composite, aluminum, or protected steel frame, subject to prehanger approval; confirm hinge and overhead-stop reinforcement. Ordinary hinges on WEST jamb. Frame-mounted mechanical overhead stop, STOP-ONLY, set to 90deg; no hold-open or closer. Confirm stop template and door/head reinforcement against ordered prehung unit; no attachments to brick. Schlage F51A LAT 622 lever. See notes/garage_service_door_outswing.md for swing envelope and supplier dimensions. Leaf must not swing over ST-G-SERVICE; detached garage stair-head arrangement remains a plan-review question. Require leaf bottom >=1in above rough sill to clear deck-tie strap; confirm sill/undercut. Exterior rough sill at deck datum 0ft 0in"),
+               text="D-G-SERVICE: MMI Z0364688R stock 32x80 six-panel insulated steel RH OUTSWING, 6-9/16 composite frame, factory fixed sill/seals/NRP hinges. West hinges; black exterior/white interior. Frame RO 34x81.5, x=81..115in; deliver and measure unit before framing. Schlage F51A LAT 622 plus B60N 622 deadbolt. Mechanical overhead stop-only at 90deg; no attachment to brick. STHD14 on GARAGE face of double full-height east kings, center x=118in, face y=524.75in, embedment line z=-12in; 30 specified 0.148x3.25in nails, 14in embedment, one #4x40in bar 4in below pour top. Moving leaf/sweep >=1in above deck; set support and all five equal stair risers from delivered threshold. Keep stair-to-threshold arrangement; AHJ approval remains required. See notes/garage_service_door_outswing.md"),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS,

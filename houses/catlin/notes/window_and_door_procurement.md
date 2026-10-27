@@ -98,7 +98,7 @@ and fixed; LC-PG45/CW-PG80 tilt-turn. Every value is over §1's DP 20.
 |---|---|---|---|---|---|---|
 | `D-M-ENTRY` | Therma-Tru Smooth-Star flush, inswing | THC-M-5-03881 | 0.15 | — | — | opaque; polyurethane core; single-point Encode Plus; DS2000; black / white field paint |
 | `D-B-PATIO`, `D-M-BALC`, `D-S-DECK-E` | Therma-Tru Smooth-Star full-lite, composite frame / Endura | THC-M-5-04493-00001 | 0.21 | 0.12 | 0.27 | provisional CPD basis; laminated triple and assembled pair NFRC/NAFS label are dealer items |
-| `D-G-SERVICE` | Masonite Premium Flush steel, 32in outswing, durable composite or protected metal jambs/head (reference 26849 family only; assembly selection, frame/RO and reinforcement pending) | none | — | — | — | own type `DT-EXT-SWING32-G`; insulated core, detached unconditioned garage; see garage_service_door_outswing.md for prehung/stop confirmation |
+| `D-G-SERVICE` | MMI Z0364688R stock six-panel insulated steel, 32x80 RH outswing, 6-9/16 composite frame; included fixed composite sill, weatherstrip and NRP hinges; HD Supply 219385, $1,023 listed 2026-10-27 | none | — | — | — | `DT-EXT-SWING32-G`: framed RO 34x81.5; west hinges; black outside/white inside; retain factory sill; see service-door installation note |
 | `D-G-OVERHEAD` | Clopay Modern Steel, Intellicore R-18.4, Black, 16x7 | none | — | — | — | unconditioned; wind rating for q_h 19.3 psf to confirm |
 
 **French pairs (owner, 2026-10-25).** All three use one glass specification: laminated

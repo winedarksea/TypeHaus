@@ -48,7 +48,6 @@ from plan.storeys.garage import (
     GARAGE_Y_SOUTH,
     OVERHEAD_DOOR_OFFSET,
     OVERHEAD_DOOR_WIDTH,
-    SERVICE_DOOR_WIDTH,
 )
 
 # --- the site datum ---------------------------------------------------------------
@@ -349,6 +348,7 @@ _STEM_TOP = ft(_GRADE_FT + GARAGE_STEM_REVEAL.feet)
 # are the arithmetic that produced its fossil split stations, 2'-3" and 5'-9" off N-GF-SW —
 # the 2026-09-07..11 door offset less/plus the 3" margin the hydrant crossing asked for.
 _FOSSIL_SERVICE_OFFSET = ft(2, 6)
+_FOSSIL_SERVICE_WIDTH = ft(2, 8)
 _SERVICE_GAP_MARGIN = ft(0, 3)
 
 GARAGE_STEM_NODES = [
@@ -379,7 +379,7 @@ GARAGE_STEM_NODES = [
          position=pt(GARAGE_X_WEST + _FOSSIL_SERVICE_OFFSET - _SERVICE_GAP_MARGIN,
                      GARAGE_Y_SOUTH)),
     Node(uid="CGF008AAAA", tag="N-GF-S-DRE",
-         position=pt(GARAGE_X_WEST + _FOSSIL_SERVICE_OFFSET + SERVICE_DOOR_WIDTH
+         position=pt(GARAGE_X_WEST + _FOSSIL_SERVICE_OFFSET + _FOSSIL_SERVICE_WIDTH
                      + _SERVICE_GAP_MARGIN, GARAGE_Y_SOUTH)),
     # ** THE SOUTH SPLIT IS A LEGACY FOSSIL AND IS KEPT DELIBERATELY. ** It exists only
     # because the SE brick-ledge wainscot return once needed 4'-0" of widened, ledged stem

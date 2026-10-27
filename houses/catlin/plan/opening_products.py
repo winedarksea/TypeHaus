@@ -59,16 +59,17 @@ THERMATRU_SMOOTHSTAR = Product(
            "primed for site paint: black exterior, white interior; quote factory black alternate. "
            "Therma-Tru Security Strike Plate requested, dealer cost/compatibility pending. NFRC line "
            "THC-M-5 (flush, no lite, THC-M-5-03881-00001). A small lite is a catalog option.")
-MASONITE_STEEL_FLUSH = Product(
-    tag="PROD-MASONITE-STEEL-FLUSH", brand="Masonite", model="Premium Flush steel",
-    name="Premium Flush primed steel prehung, outswing, no brickmold, 32in", sku="26849",
-    url="https://superarbor.io/products/masonite-32-in-x-80-in-premium-right-hand-outswing-"
-        "flush-primed-steel-prehung-front-exterior-door-with-no-brickmold",
-    source="Same Premium Flush insulated steel family, nominal 32x80, field-painted black. "
-           "Durable composite or metal frame, supplied and approved by prehanger. "
-           "26849 is a slab/family reference; its stock frame is not the specified frame. Confirm "
-           "west hinge handing, actual frame/RO, hinge axis, sill and stop reinforcement "
-           "with prehanger. No NFRC rating needed or claimed for this unconditioned garage.")
+MMI_STEEL_SIX_PANEL = Product(
+    tag="PROD-MMI-STEEL-SIX-PANEL", brand="MMI DOOR", model="Z0364688R",
+    name="32x80 six-panel insulated steel RH outswing, 6-9/16 composite frame",
+    sku="Z0364688R",
+    url="https://hdsupplysolutions.com/p/doors-00-145-10/mmi-door-6-panel-32-x-80-rh-out-on-6-9-16-primed-composite-frame-p219385",
+    source="Complete stock prehung unit: 24-ga galvanized insulated steel; composite frame, "
+           "compression seals, composite fixed sill and three non-removable-pin hinges. "
+           "West hinges viewed from deck; black exterior, white interior. Nominal 32x80, "
+           "unit 33.5x81, catalog RO 34x81.5 inches. Deliver unit before cutting opening; "
+           "measure sill and set support to keep moving leaf/sweep >=1 inch above deck. "
+           "No separate replacement sill or custom prehanger assembly. $1,023 listed 2026-10-27.")
 
 CLOPAY_MODERN_STEEL = Product(
     tag="PROD-CLOPAY-MODERN-STEEL", brand="Clopay", model="Modern Steel, Intellicore",
@@ -104,5 +105,5 @@ SECURITY_STRIKE = Product(tag='PROD-THERMATRU-SECURITY-STRIKE', brand='Therma-Tr
 OPENING_PRODUCTS = (
     ENCODE_PLUS, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS, DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
     DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, DRUTEX_ALUCOVER_TILT, ANDERSEN_400_CASEMENT,
-    THERMATRU_SMOOTHSTAR_FULLLITE, THERMATRU_SMOOTHSTAR, MASONITE_STEEL_FLUSH, CLOPAY_MODERN_STEEL,
+    THERMATRU_SMOOTHSTAR_FULLLITE, THERMATRU_SMOOTHSTAR, MMI_STEEL_SIX_PANEL, CLOPAY_MODERN_STEEL,
 )

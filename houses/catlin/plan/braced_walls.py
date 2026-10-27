@@ -252,8 +252,8 @@ GARAGE_BRACED_WALLS = [
                     note="west pier of D-G-OVERHEAD: 48\" against Table R602.10.5's 35\""),
     BracedWallPanel(uid="0ETF57CKSX", tag="BWP-G-N-0000", wall_ref="W-G-N", start=inch(0.0),
                     width=inch(48.0), note="east pier of D-G-OVERHEAD"),
-    BracedWallPanel(uid="22CSZHTSKN", tag="BWP-G-S-0043", wall_ref="W-G-S", start=inch(43.0),
-                    width=inch(121.0), note="split for R602.10.2.3"),
+    BracedWallPanel(uid="22CSZHTSKN", tag="BWP-G-S-0043", wall_ref="W-G-S", start=inch(44.5),
+                    width=inch(119.5), note="split for R602.10.2.3"),
     BracedWallPanel(uid="XWQW640JC9", tag="BWP-G-S-0164", wall_ref="W-G-S", start=inch(164.0),
                     width=inch(124.0), note="SE corner return for BWL-W-G-E"),
 ]
@@ -265,11 +265,12 @@ GARAGE_BRACED_CONNECTORS = [
     Connector(uid="EXWYG5FPB1", tag="CN-G-BWHD-SW", kind=ConnectorKind.HOLD_DOWN,
               position=pt(ft(6, 3.25), ft(43, 5.5)), elevation=inch(-11.25),
               size="STHD14", connects=("W-G-W", "W-GF-W")),
-    # The canopy's E-W shear lands on W-G-S (notes/canopy_garage_diaphragm.md §3f): 271 lb of
-    # end tension at BWP-G-S-0043's west end, beside D-G-SERVICE's east jamb, outside what a
-    # CS-WSP line asks there. Cast into W-GF-S-DR's 6" core like the SW device. The SE end is
-    # R602.10.7 end condition 1 (BWP-G-E-0000, a 144" return) and takes no device.
+    # Canopy shear chord: nail directly to the GARAGE face of the two full-height kings.
+    # The strap face is y=524.75in; its embedment line is the actual stem top, z=-12in.
+    # x=118in centers its 3in width on the kings and leaves >42in to the SW anchor.
+    # The jack is inboard of these kings; do not install this strap in the door reveal.
     Connector(uid="NEVC5ZWBXS", tag="CN-G-BWHD-S-DR", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(ft(9, 7.75), ft(43, 5.5)), elevation=inch(-11.25),
-              size="STHD14", connects=("W-G-S", "W-GF-S-DR")),
+              position=pt(ft(9, 10), ft(43, 8.75)), elevation=inch(-12),
+              size="STHD14", axis="-x", connects=("W-G-S", "W-GF-S-DR"),
+              source="Garage/interior face of two full-height east king studs, x=116.5..119.5in; strap center x=118in. One jack x=115..116.5in. Direct wood fastening, 14in cast-in embedment; Simpson C-C-2026 pp.66-68. See service-door note."),
 ]

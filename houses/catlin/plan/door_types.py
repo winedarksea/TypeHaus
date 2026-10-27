@@ -14,7 +14,7 @@ from typehaus.quantities import ft
 from plan.opening_products import (
     ENCODE_PLUS, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS,
     DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
-    THERMATRU_SMOOTHSTAR_FULLLITE, CLOPAY_MODERN_STEEL, MASONITE_STEEL_FLUSH, THERMATRU_SMOOTHSTAR,
+    THERMATRU_SMOOTHSTAR_FULLLITE, CLOPAY_MODERN_STEEL, MMI_STEEL_SIX_PANEL, THERMATRU_SMOOTHSTAR,
 )
 
 _FULLLITE = ("NFRC THC-M-5-04493-00001: full-lite E366/Argon/i89, U 0.21, SHGC 0.12, VT 0.27. "
@@ -39,11 +39,12 @@ ENDURA_ZAI_SECTION = DoorwayProductSpec(
     installation="Inswing French pair; supplier to confirm sill variant, sweep, support and drainage")
 THERMATRU_SILL = DoorwayTreatment(threshold=THERMATRU_SECTION)
 ENDURA_ZAI_SILL = DoorwayTreatment(threshold=ENDURA_ZAI_SECTION)
-MASONITE_SILL = DoorwayTreatment(threshold=DoorwayProductSpec(
-    product_ref=MASONITE_STEEL_FLUSH.tag, variant="UNKNOWN — prehanger's outswing sill",
-    role="sill", source_url="https://www.masonite.com/discover-and-learn/door-buying-key-terms/",
-    source_drawing="Supplier must identify outswing sill section; generic steel slab is insufficient",
-    installation="Outswing garage service door; preserve authored raised rough sill"))
+MMI_OUTSWING_SILL = DoorwayTreatment(threshold=DoorwayProductSpec(
+    product_ref=MMI_STEEL_SIX_PANEL.tag, variant="Included composite fixed outswing sill",
+    role="sill", source_url=MMI_STEEL_SIX_PANEL.url,
+    source_drawing="MMI Z0364688R complete prehung unit; retain factory sill and seals",
+    installation="Full-width supported pan; moving leaf/sweep >=1 inch above deck"))
+
 CLOPAY_BOTTOM = DoorwayTreatment(threshold=DoorwayProductSpec(
     product_ref=CLOPAY_MODERN_STEEL.tag, variant="UNKNOWN — bottom seal and aluminum retainer section",
     role="bottom_seal", source_url="https://www.clopaydoor.com/residential-garage-doors/modern-steel-collection",
@@ -99,12 +100,19 @@ DOOR_TYPES = (
         source="D-M-ENTRY, inswing single, opaque. NFRC THC-M-5-03881-00001: flush, no lite, "
                "U 0.15. Single-point Encode Plus; field-painted black outside / white inside."),
     DoorType(
-        tag="DT-EXT-SWING32-G", width=ft(2, 8), height=ft(6, 8), exterior=True, function="entry",
-        product_ref=MASONITE_STEEL_FLUSH.tag, doorway=MASONITE_SILL,
-        source="D-G-SERVICE, outswing onto the deck from the rarely heated garage. Insulated steel, flush; "
-               "unconditioned, so no NFRC rating is needed or claimed. Durable composite or metal frame, "
-               "prehanger to approve steel-leaf compatibility and hinge/overhead-stop "
-               "reinforcement. Confirm actual frame, RO, hinge axis and sill dimensions before ordering."),
+        tag="DT-EXT-SWING32-G", width=inch(34), height=inch(81.5), exterior=True,
+        function="entry", product_ref=MMI_STEEL_SIX_PANEL.tag, doorway=MMI_OUTSWING_SILL,
+        jamb_framing=JambFraming(kings=2, jacks=1, blocking=True),
+        catalog_dimensions=DoorCatalogDimensions(
+            nominal_width=inch(32), nominal_height=inch(80),
+            unit_width=inch(33.5), unit_height=inch(81),
+            source_url=MMI_STEEL_SIX_PANEL.url,
+            source_drawing="MMI Z0364688R product details: unit and suggested rough opening"),
+        source="D-G-SERVICE: stock MMI Z0364688R six-panel insulated steel prehung, "
+               "6-9/16 composite frame. West hinges, outswing, black outside/white inside. "
+               "34x81.5 framed opening, nominal 32x80 purchased unit. "
+               "STHD14 on garage face of two full-height east king studs; one jack inboard. "
+               "Retain factory sill; set support from delivered unit; see service-door note."),
     DoorType(
         tag="DT-EXT-FRENCH60", width=ft(5), height=ft(6, 8), exterior=True, function="entry",
         operation="double_swing", glazed=True, tempered=True,

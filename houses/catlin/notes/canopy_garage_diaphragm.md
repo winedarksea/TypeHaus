@@ -292,7 +292,7 @@ x 0.95 story height; it was 4.275' under the 9.25" heel, when the garage roof st
 
 | line | provided | surplus | steel | kdat |
 |---|---:|---:|---|---|
-| `W-G-S` (E-W) | 20.417' | 17.425' | 677.3/17.425 = 38.87 plf, 0.213 | 39.61 plf, **0.217** |
+| `W-G-S` (E-W) | 20.292' | 17.299' | 677.3/17.299 = 39.15 plf, 0.215 | 39.90 plf, **0.219** |
 | `W-G-E` (N-S) | 24.000' | 21.008' | 529.9/21.008 = 25.23 plf, 0.138 | 25.84 plf, 0.142 |
 | `W-G-W` (N-S) | 21.667' | 18.675' | 495.5/18.675 = 26.53 plf, 0.145 | 26.53 plf, 0.145 |
 
@@ -301,12 +301,28 @@ x 0.95 story height; it was 4.275' under the 9.25" heel, when the garage roof st
 The delivered shear over the whole provided length, times the wall height, NO dead load:
 
 ```
-steel   v = 677.3 / 20.417 = 33.17 plf    T = 33.17 x 8.333 = 276.4 lb
-kdat    v = 33.80 plf                     T = 281.7 lb
+steel   v = 677.3 / 20.2917 = 33.38 plf   T = 33.38 x 8.333 = 278.2 lb
+kdat    v = 34.01 plf                     T = 283.5 lb
 ```
 
-* **Beside `D-G-SERVICE`** a new **STHD14, `CN-G-BWHD-S-DR`**, cast into `W-GF-S-DR`'s 6" core
-  (ESR-2920 6" stem row, 3,065 lb): 276.4 / 3,065 = **0.090** (kdat 0.092). **Installation unresolved:** the current schematic anchor conflicts with the service-door sweep. An eastward 1.5-inch body shift is only a clearance study, not an approved chord/anchor detail; see `garage_service_door_outswing.md` §2. Confirm the actual jamb pack, fasteners, load transfer, embedment, core/reinforcement and anchor spacing before moving it.
+* **Beside `D-G-SERVICE`**, retain stock **STHD14, `CN-G-BWHD-S-DR`**,
+  on the garage face of the two full-height east kings, center **x=118 in, y=524.75 in**.
+  The jack occupies x=115..116.5 in; kings occupy x=116.5..119.5 in. Nail directly to
+  the kings with **30 × 0.148 × 3-1/4 in** specified nails, bottom up. The 119.5-in west
+  panel starts at the king pack, rather than crediting the jack width; the two south
+  panels total 243.5 in. Continue the scheduled panel-edge nailing onto the full-height
+  kings on the opposite face; retain the wall's existing sheathing and plate collectors.
+  Set the embedment line at the stem top **z=-12 in**, with **14 in embedment** in the
+  continuous 6-in core, no cold joint through that depth. Add one **#4 × 40-in horizontal
+  bar**, centered on the strap at **z=-16 in**, within its shear cone; maintain the
+  foundation's 1.5-in cover and existing reinforcement. Install the strap and bar before
+  the pour with an SM1 holder; exclude EPS from the anchorage and nail only into wood.
+  The adjacent SW anchor is 42.75 in away in x, exceeding 3 × 14 = 42 in. The fossil stem
+  splits are continuous concrete, not free ends. Use the conservative 6-in end-wall
+  allowable **3,065 lb**: steel **278.2/3,065=0.091**, kdat **283.5/3,065=0.093**.
+  Simpson C-C-2026 pp.66–68 provides the double-stud nail pattern, embedment, bar and
+  spacing requirements. See `garage_service_door_outswing.md` for the plan/anchor drawing.
+
 * **The SE corner needs no device.** R602.10.7 end condition 1: a 144" return on the same post.
 * `CN-G-BWHD-SW` is on `W-G-W`. The E-W case reaches `W-G-W` and `W-G-E` as the joint couple,
   ±M / 24' = ±86.7 lb (kdat) on the E-W case — graded, and small (`canopy_west_band.md` §6).
@@ -535,7 +551,7 @@ column sat 3'-2" below the garage strip it lapped.
 | trigger | where | today |
 |---|---|---|
 | landing tie or screen OVER at the envelope | §4, §4e | 0.911 / 0.966, both under |
-| `W-G-S` surplus or overturning needs more than a hold-down | §3e, §3f | 0.217 and one STHD14 |
+| `W-G-S` surplus or overturning needs more than a hold-down | §3e, §3f | 0.219 and one STHD14 |
 | garage-roof blocking unbuildable round the drift trusses | §3d | none required |
 
 ## 10. What is NOT graded here

@@ -109,8 +109,12 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         wall = model.wall(opening.host_wall) if opening.host_wall else None
         if wall is not None:
             host_assembly = wall.assembly or ""
-        key = (opening.kind, opening.type_ref or "", round(opening.width_m / M_PER_IN, 2),
-               round(opening.height_m / M_PER_IN, 2), host_assembly,
+        product = door_types.get(opening.type_ref)
+        catalog = product.catalog_dimensions if product else None
+        width = catalog.nominal_width.meters if catalog else opening.width_m
+        height = catalog.nominal_height.meters if catalog else opening.height_m
+        key = (opening.kind, opening.type_ref or "", round(width / M_PER_IN, 2),
+               round(height / M_PER_IN, 2), host_assembly,
                _host_structure(model, opening.host_wall), opening.framing_required)
         entry = groups.setdefault(key, {"count": 0, "tags": [], "arched": False})
         entry["count"] += 1

@@ -10,11 +10,11 @@ from dataclasses import dataclass
 
 from shapely.affinity import affine_transform, rotate
 from shapely.geometry import MultiPoint, box
-from shapely.ops import unary_union
 
 from typehaus.emit.draw.elevation_project import solid_faces
 from typehaus.quantities import Length, inch
 from typehaus.resolve.geometry import opening_center, wall_frame
+from typehaus.resolve.overlay import union_all
 
 
 @dataclass(frozen=True)
@@ -79,7 +79,7 @@ def assembly_components(wall, opening, spec):
                spec.leaf_end.meters, spec.leaf_face_max.meters)
     spindle = spec.leaf_end.meters - spec.lever_backset.meters
     lever_start = spindle - spec.lever_hingeward_extent.meters
-    lever = unary_union([
+    lever = union_all([
         box(lever_start, spec.leaf_face_min.meters - spec.lever_projection.meters,
             spindle, spec.leaf_face_min.meters),
         box(lever_start, spec.leaf_face_max.meters,
@@ -137,7 +137,7 @@ def clearance_results(model, opening, stop_degrees, spec):
     hinge, components = assembly_components(wall, opening, spec)
     margin = spec.minimum_clearance.meters + spec.installation_allowance.meters
     sweeps = {c.name: swept_intervals(c, hinge, opening, stop_degrees, spec) for c in components}
-    envelopes = {name: unary_union([interval[2] for interval in intervals])
+    envelopes = {name: union_all([interval[2] for interval in intervals])
                  for name, intervals in sweeps.items()}
     tags = {element.uid: element.tag for element in model.plan.all_elements()}
     tags.update({solid.uid: solid.tag for solid in model.solids})
@@ -179,10 +179,10 @@ def clearance_results(model, opening, stop_degrees, spec):
 
 
 def service_door_envelope():
-    """Current coordination limits; these do not supply factory installation dimensions."""
+    """Conservative full-RO sweep, with required installed moving-part bottom."""
     return SwingEnvelope(
         hinge_inset=inch(0), hinge_normal_datum="exterior_placement",
-        hinge_normal_offset=inch(0), leaf_start=inch(0), leaf_end=inch(32),
+        hinge_normal_offset=inch(0), leaf_start=inch(0), leaf_end=inch(34),
         leaf_face_min=inch(-0.875), leaf_face_max=inch(0.875),
         leaf_bottom=inch(1), leaf_top=inch(80), lever_backset=inch(2.375),
         lever_hingeward_extent=inch(4.125), lever_projection=inch(2.5),
