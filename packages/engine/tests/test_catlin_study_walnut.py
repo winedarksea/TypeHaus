@@ -34,7 +34,7 @@ def test_study_boards_share_the_wainscot_walnut_in_viewer_and_glb(catlin_plan):
                                   and part["material_ref"] == stock_ref for part in wood_parts)
 
         mesh = _MeshBuilder()
-        placement = SimpleNamespace(position=(0.0, 0.0), rotation_degrees=0.0, z_m=0.0)
+        placement = SimpleNamespace(position=(0.0, 0.0), rotation_degrees=0.0, z_m=0.0, mount=None)
         assert _add_canvas_parts(mesh, placement, furniture, materials)
         assert _authored_material_color(stock) in mesh._buckets
         for generic_role in ("wood", "sauna-wood", "sauna-wood-dark"):

@@ -175,7 +175,7 @@ def test_gltf_uses_the_same_wood_interior_and_glass_or_metal(symbol: str) -> Non
     furniture = FurnitureType(tag="PAX", name="Open wardrobe",
                               footprint=(inch(39.375), inch(22.875)), height=inch(92.875),
                               plan_symbol=symbol)
-    item = SimpleNamespace(position=(0.0, 0.0), rotation_degrees=180.0, z_m=0.25)
+    item = SimpleNamespace(position=(0.0, 0.0), rotation_degrees=180.0, z_m=0.25, mount=None)
     mesh = _MeshBuilder()
     assert _add_canvas_parts(mesh, item, furniture, {})
     assert PART_COLORS["wood"] in mesh._buckets

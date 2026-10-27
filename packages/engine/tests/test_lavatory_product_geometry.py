@@ -90,8 +90,8 @@ def test_faucet_material_color_reaches_viewer_glb_and_ifc(finish, color):
     recorder = SimpleNamespace(
         add_mesh=lambda mesh, rgba: exported_colors.append(rgba),
         add_prism=lambda ring, z0, z1, rgba: exported_colors.append(rgba))
-    _add_canvas_parts(recorder, SimpleNamespace(position=(0, 0), rotation_degrees=0, z_m=0),
-                      product, materials)
+    item = SimpleNamespace(position=(0, 0), rotation_degrees=0, z_m=0, mount=None)
+    _add_canvas_parts(recorder, item, product, materials)
     assert expected_rgb + (1.0,) in exported_colors
     f = ifcopenshell.file(schema="IFC4")
     parts = model_parts("sektion-vanity", 30*IN, 18*IN, 44.4375*IN,

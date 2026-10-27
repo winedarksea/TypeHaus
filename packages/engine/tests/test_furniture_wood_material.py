@@ -76,7 +76,7 @@ def test_no_ref_keeps_the_generic_furniture_wood(symbol, wood_role) -> None:
 
 
 def test_the_glb_colours_the_same_wood_the_viewer_does() -> None:
-    item = SimpleNamespace(position=(0.0, 0.0), rotation_degrees=0.0, z_m=0.0)
+    item = SimpleNamespace(position=(0.0, 0.0), rotation_degrees=0.0, z_m=0.0, mount=None)
     materials = {OAK.tag: OAK}
     for kind in (BOOKCASE, BUILT_IN):
         mb = _MeshBuilder()
@@ -100,7 +100,7 @@ def test_mixed_bookcase_materials_agree_in_viewer_and_glb() -> None:
     assert all(part["color"] == (OAK.color if part["material_ref"] == OAK.tag else plywood.color)
                for part in parts)
     mb = _MeshBuilder()
-    item = SimpleNamespace(position=(0.0, 0.0), rotation_degrees=0.0, z_m=0.0)
+    item = SimpleNamespace(position=(0.0, 0.0), rotation_degrees=0.0, z_m=0.0, mount=None)
     assert _add_canvas_parts(mb, item, furniture, {OAK.tag: OAK, plywood.tag: plywood})
     assert set(mb._buckets) == {_authored_material_color(OAK), _authored_material_color(plywood)}
 
