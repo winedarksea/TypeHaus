@@ -1,6 +1,6 @@
 # Doorway product sections — selected units and section register
 
-Reviewed 2026-10-23; main-floor structural mounting updated 2026-10-24 in
+Reviewed through 2026-10-27; main-floor structural mounting updated 2026-10-24 in
 [exterior_door_structural_mount.md](exterior_door_structural_mount.md).
 Authored opening/landing elevations remain fixed. A product-specific entry below records
 whether ordinary installation resolves the doorway or a special section is still needed.

@@ -24,6 +24,7 @@ check, takeoff or emitter.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 
 from shapely.geometry import Point, Polygon
 
@@ -36,6 +37,27 @@ from typehaus.resolve.solid_categories import in_slab_family
 # otherwise flips between in-void and on-deck on float summation error. 5 mm decides no
 # real floor — the same epsilon ``code.R311_7_2_stair_headroom`` samples cover with.
 _PLAN_EPS_M = 0.005
+
+
+@lru_cache(maxsize=4096)
+def _ring_bounds(ring: tuple[tuple[float, float], ...]):
+    xs, ys = zip(*ring, strict=True)
+    return min(xs), max(xs), min(ys), max(ys)
+
+
+def _ring_key(ring):
+    if isinstance(ring, tuple) and (not ring or isinstance(ring[0], tuple)):
+        return ring
+    return tuple(tuple(vertex) for vertex in ring)
+
+
+@lru_cache(maxsize=2048)
+def _shrunk_polygon(
+    outline: tuple[tuple[float, float], ...],
+    holes: tuple[tuple[tuple[float, float], ...], ...],
+) -> Polygon:
+    """Reuse the costly inward buffer for the many probes against each floor outline."""
+    return Polygon(outline, holes=[list(void) for void in holes]).buffer(-_PLAN_EPS_M)
 
 
 @dataclass(frozen=True)
@@ -86,18 +108,8 @@ def _bbox_misses(point: tuple[float, float], ring) -> bool:
     contain the probe.
     """
     x, y = point
-    min_x = min_y = float("inf")
-    max_x = max_y = float("-inf")
-    for vertex in ring:
-        vx, vy = vertex[0], vertex[1]
-        if vx < min_x:
-            min_x = vx
-        if vx > max_x:
-            max_x = vx
-        if vy < min_y:
-            min_y = vy
-        if vy > max_y:
-            max_y = vy
+    ring = _ring_key(ring)
+    min_x, max_x, min_y, max_y = _ring_bounds(ring)
     return not (min_x <= x <= max_x and min_y <= y <= max_y)
 
 
@@ -117,25 +129,27 @@ def _covers(model: ResolvedModel, point: tuple[float, float]):
     """
     probe = Point(*point)
     for floor in model.floors:
-        if len(floor.deck_outline) < 3 or _bbox_misses(point, floor.deck_outline):
+        outline = _ring_key(floor.deck_outline)
+        if len(outline) < 3 or _bbox_misses(point, outline):
             continue
-        cover = Polygon(floor.deck_outline,
-                        holes=[list(void) for void in floor.deck_voids]
-                        ).buffer(-_PLAN_EPS_M)
+        holes = tuple(_ring_key(void) for void in floor.deck_voids)
+        cover = _shrunk_polygon(outline, holes)
         if not cover.is_empty and cover.contains(probe):
             yield floor.tag, floor.storey, floor.deck_top_at(*point)
     for solid in model.solids:
-        if (not in_slab_family(solid.category) or len(solid.outline) < 3
-                or _bbox_misses(point, solid.outline)):
+        if not in_slab_family(solid.category):
             continue
-        cover = Polygon(solid.outline,
-                        holes=[list(void) for void in solid.voids]).buffer(-_PLAN_EPS_M)
+        outline = _ring_key(solid.outline)
+        if len(outline) < 3 or _bbox_misses(point, outline):
+            continue
+        holes = tuple(_ring_key(void) for void in solid.voids)
+        cover = _shrunk_polygon(outline, holes)
         if not cover.is_empty and cover.contains(probe):
             yield solid.tag, solid.storey, solid.z1_m
     for surface in getattr(model.plan.project.site, "impervious_surfaces", ()):
-        verts = [vertex.xy_m for vertex in surface.outline]
+        verts = tuple(vertex.xy_m for vertex in surface.outline)
         if (len(verts) >= 3 and not _bbox_misses(point, verts)
-                and Polygon(verts).buffer(-_PLAN_EPS_M).contains(probe)):
+                and _shrunk_polygon(verts, ()).contains(probe)):
             yield f"'{surface.label}'", None, surface.near_elevation.meters
 
 

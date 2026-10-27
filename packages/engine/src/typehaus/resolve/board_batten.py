@@ -68,7 +68,7 @@ def _convex_footprints(ring):
     ]
 
 
-def _opening_planes(wall, opening, project):
+def _opening_cut(wall, opening, project):
     (ax, ay), (bx, by) = wall.axis
     length = math.hypot(bx - ax, by - ay)
     center = project(
@@ -95,7 +95,8 @@ def _opening_planes(wall, opening, project):
     else:
         ring.extend(((center + half, top), (center - half, top)))
     # The polygon lives in along/elevation, with no restriction across the skin.
-    return [(a, 0.0, b, d) for a, b, _, d in _polygon_planes(ring)]
+    planes = [(a, 0.0, b, d) for a, b, _, d in _polygon_planes(ring)]
+    return planes, (center - half, center + half, bottom, top)
 
 
 
@@ -151,7 +152,9 @@ def profile_mesh(
         )
     footprints = _convex_footprints(ring)
     holes = [
-        _opening_planes(wall, op, project) for op in openings if cuts_layer(wall, layer_name, op)
+        _opening_cut(wall, op, project)
+        for op in openings
+        if cuts_layer(wall, layer_name, op)
     ]
     stations = sorted(
         {low, high, *(project(p)[0] for p in height_breakpoints if low < project(p)[0] < high)}
@@ -206,7 +209,9 @@ def profile_mesh(
                         if not faces:
                             break
                     fragments = [faces] if faces else []
-                    for hole in holes:
+                    for hole, (hole_low, hole_high, hole_bottom, hole_top) in holes:
+                        if s1 <= hole_low or s0 >= hole_high or z1 <= hole_bottom or z0 >= hole_top:
+                            continue
                         fragments = [
                             part
                             for fragment in fragments

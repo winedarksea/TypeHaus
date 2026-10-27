@@ -18,7 +18,7 @@ Faces = list[list[Vec3]]
 
 
 def dot(a, b):
-    return sum(x * y for x, y in zip(a, b, strict=True))
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 
 
 def cross(a, b):
@@ -26,17 +26,21 @@ def cross(a, b):
 
 
 def subtract(a, b):
-    return tuple(x - y for x, y in zip(a, b, strict=True))
+    return a[0] - b[0], a[1] - b[1], a[2] - b[2]
 
 
 def face_normal(face):
     origin = face[0]
-    normal = [0.0, 0.0, 0.0]
+    nx = ny = nz = 0.0
     for a, b in zip(face[1:-1], face[2:], strict=True):
-        value = cross(subtract(a, origin), subtract(b, origin))
-        normal = [x + y for x, y in zip(normal, value, strict=True)]
-    magnitude = math.sqrt(dot(normal, normal))
-    return tuple(x / magnitude for x in normal) if magnitude > MINIMUM_FACE_AREA_M2 else None
+        ax, ay, az = a[0] - origin[0], a[1] - origin[1], a[2] - origin[2]
+        bx, by, bz = b[0] - origin[0], b[1] - origin[1], b[2] - origin[2]
+        nx += ay * bz - az * by
+        ny += az * bx - ax * bz
+        nz += ax * by - ay * bx
+    magnitude = math.sqrt(nx * nx + ny * ny + nz * nz)
+    return (nx / magnitude, ny / magnitude, nz / magnitude) \
+        if magnitude > MINIMUM_FACE_AREA_M2 else None
 
 
 def box_faces(x0, x1, y0, y1, z0, z1) -> Faces:
@@ -66,16 +70,17 @@ def box_faces(x0, x1, y0, y1, z0, z1) -> Faces:
 def clip_faces(faces: Faces, plane: Plane) -> Faces:
     """Intersect a convex polyhedron with a half space; retain outward winding."""
     normal, limit = plane[:3], plane[3]
-    distances = [dot(normal, p) - limit for face in faces for p in face]
+    signed_faces = [[dot(normal, point) - limit for point in face] for face in faces]
+    distances = [distance for signed in signed_faces for distance in signed]
     if not distances or min(distances) > CLIP_TOLERANCE_M:
         return []
     if max(distances) <= CLIP_TOLERANCE_M:
         return faces
     result, crossings = [], []
-    for face in faces:
+    for face, signed in zip(faces, signed_faces, strict=True):
         clipped = []
-        for a, b in zip(face, face[1:] + face[:1], strict=True):
-            da, db = dot(normal, a) - limit, dot(normal, b) - limit
+        for i, (a, b) in enumerate(zip(face, face[1:] + face[:1], strict=True)):
+            da, db = signed[i], signed[(i + 1) % len(signed)]
             if da <= CLIP_TOLERANCE_M:
                 clipped.append(a)
             if (da < -CLIP_TOLERANCE_M and db > CLIP_TOLERANCE_M) or (

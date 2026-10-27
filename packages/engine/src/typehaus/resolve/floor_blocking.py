@@ -575,13 +575,31 @@ def _crossing_runs(
     from shapely.geometry import LineString, Point, box
 
     out: list[_Crossing] = []
+    base_a0, base_a1 = centre - width / 2.0, centre + width / 2.0
+    blocks_by_radius = {}
     for tag, path, z, radius in runs:
-        a0, a1 = centre - width / 2.0 - radius, centre + width / 2.0 + radius
-        block = box(a0, gap[0], a1, gap[1]) if along_x else box(gap[0], a0, gap[1], a1)
+        a0_run, a1_run = base_a0 - radius, base_a1 + radius
+        if along_x:
+            run_bounds = a0_run, a1_run, gap[0], gap[1]
+            block = blocks_by_radius.get(radius)
+            if block is None:
+                block = box(a0_run, gap[0], a1_run, gap[1])
+                blocks_by_radius[radius] = block
+        else:
+            run_bounds = gap[0], gap[1], a0_run, a1_run
+            block = blocks_by_radius.get(radius)
+            if block is None:
+                block = box(gap[0], a0_run, gap[1], a1_run)
+                blocks_by_radius[radius] = block
         for i in range(len(path) - 1):
             pa, pb = path[i], path[i + 1]
             if abs(pa[0] - pb[0]) < 1e-9 and abs(pa[1] - pb[1]) < 1e-9:
                 continue  # a riser passes through the plate, not between joists
+            segment_bounds = (min(pa[0], pb[0]), max(pa[0], pb[0]),
+                              min(pa[1], pb[1]), max(pa[1], pb[1]))
+            if (segment_bounds[1] < run_bounds[0] or segment_bounds[0] > run_bounds[1]
+                    or segment_bounds[3] < run_bounds[2] or segment_bounds[2] > run_bounds[3]):
+                continue
             leg = LineString([pa, pb])
             piece = leg.intersection(block)
             if piece.is_empty or piece.length <= 0:
