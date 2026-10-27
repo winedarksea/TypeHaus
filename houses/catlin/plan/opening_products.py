@@ -70,7 +70,7 @@ MMI_STEEL_SIX_PANEL = Product(
            "unit 33.5x81, catalog RO 34x81.5 inches. Deliver unit before cutting opening; "
            "frame to the published RO, then set sill support and stair cuts from the delivered "
            "unit; keep moving leaf/sweep >=1 inch above deck. "
-           "No separate replacement sill or custom prehanger assembly. $1,023 listed 2026-10-27.")
+           "No separate replacement sill or custom prehanger assembly.")
 
 CLOPAY_MODERN_STEEL = Product(
     tag="PROD-CLOPAY-MODERN-STEEL", brand="Clopay", model="Modern Steel, Intellicore",

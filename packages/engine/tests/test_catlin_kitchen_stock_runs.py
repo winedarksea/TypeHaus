@@ -196,15 +196,9 @@ def test_hung_upper_faces_west_over_an_open_appliance_cave(
     x0, y0, x1, y1 = _bounds(hung)
     cave = box(x0 * INCH, y0 * INCH, x1 * INCH, y1 * INCH).buffer(-FINISH_TOLERANCE)
     for tag, obj in kitchen_objects.items():
-        if not tag.startswith(("FURN-", "APPL-")) or tag.startswith("FURN-M-KIT-E-HUNG"):
-            continue
-        if tag == "APPL-M-MICROWAVE":
-            # This is the appliance the open cave is sized for; it fills that recess
-            # below the wall unit instead of colliding with the cabinet above.
-            ox0, oy0, ox1, oy1 = _bounds(obj)
-            assert cave.covers(box(ox0 * INCH, oy0 * INCH, ox1 * INCH, oy1 * INCH))
-            assert obj.body_z0_m / INCH >= 36 + 0.9375
-            assert obj.body_z1_m / INCH <= 56 + 0.9375
+        # The microwave is what the cave is for: test_microwave_sits_inside_the_cave.
+        if (not tag.startswith(("FURN-", "APPL-")) or tag.startswith("FURN-M-KIT-E-HUNG")
+                or tag == "APPL-M-MICROWAVE"):
             continue
         z0, z1 = obj.body_z0_m / INCH - 0.9375, obj.body_z1_m / INCH - 0.9375
         if z1 <= 36 + 1e-6 or z0 >= 56 - 1e-6:
@@ -217,6 +211,18 @@ def test_hung_upper_faces_west_over_an_open_appliance_cave(
     assert typ.plan_symbol == "sektion-axstad-kitchen-wall"
     assert kitchen_objects["FURN-M-KIT-E-HUNG-ST"].type_ref == "SEKT-TS24-15"
     assert _bounds(kitchen_objects["APPL-M-RANGE"])[1] - y1 == pytest.approx(14.0625)
+
+
+def test_microwave_sits_inside_the_cave(kitchen_objects):
+    """The open cave under the hung upper is sized for the microwave: it fills the recess
+    between counter and wall unit rather than colliding with either."""
+    x0, y0, x1, y1 = _bounds(kitchen_objects["FURN-M-KIT-E-HUNG"])
+    cave = box(x0 * INCH, y0 * INCH, x1 * INCH, y1 * INCH).buffer(-FINISH_TOLERANCE)
+    micro = kitchen_objects["APPL-M-MICROWAVE"]
+    ox0, oy0, ox1, oy1 = _bounds(micro)
+    assert cave.covers(box(ox0 * INCH, oy0 * INCH, ox1 * INCH, oy1 * INCH))
+    assert micro.body_z0_m / INCH >= 36 + 0.9375
+    assert micro.body_z1_m / INCH <= 56 + 0.9375
 
 
 def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro, kitchen_objects):

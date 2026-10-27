@@ -835,7 +835,7 @@ def test_window_well_is_registered_as_a_constructible_element():
 
 def _door_height_ctx(height_in: float, *, exterior: bool = True, type_known: bool = True):
     door_type = SimpleNamespace(tag="DT-TEST", exterior=exterior, width=inch(36),
-                                height=inch(height_in))
+                                height=inch(height_in), catalog_dimensions=None)
     door = SimpleNamespace(element_kind="Door", tag="D-TEST",
                            type_ref="DT-TEST" if type_known else "DT-MISSING")
     plan = SimpleNamespace(all_elements=lambda: [door],

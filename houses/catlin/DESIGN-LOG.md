@@ -6341,7 +6341,9 @@ The door type uses two full-height kings and one jack with no horizontal bay blo
 integrity no longer reports `DT-EXT-SWING32-G: blocking requires hardware anchor heights`.
 The separate leaf sweep tests the 32 in leaf at a minimum 1/2 in pivot inset through 91°;
 minimum clearance is 0.440 in at the brick base flashing and 2.873 in at `CN-G-BWHD-S-DR`,
-including the 1/8 in installation allowance and 1/4 in required clearance. The stock STHD14
+including the 1/8 in installation allowance and 1/4 in required clearance. 1/2 in is the
+lower bound, not a margin: a flush pivot fails at the brick base, and 1/2..2 in passes. R311.2
+now grades the 32 in catalog leaf rather than the 34 in RO width. The stock STHD14
 stays at x=118 in on the east king pack; delivered tension is 290.372 lb against 3,065 lb.
 The stair-to-threshold code interpretation remains a separate plan-review item per the
 owner's direction.

@@ -494,6 +494,14 @@ def _landing_patch(ctx: CheckContext, wall, opening, rooms_by_storey):
     return patch if patch.is_valid and patch.area > 1e-9 else None
 
 
+def _door_leaf(dt) -> tuple[Any, Any]:
+    """The purchased leaf (width, height). ``DoorType.width``/``height`` are the framed RO
+    when ``catalog_dimensions`` is authored, and an RO overstates the clear passage."""
+    catalog = dt.catalog_dimensions
+    return ((catalog.nominal_width, catalog.nominal_height) if catalog
+            else (dt.width, dt.height))
+
+
 @check(Tier.CODE, "code.R311_door_width")
 def egress_door_width(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
@@ -503,9 +511,10 @@ def egress_door_width(ctx: CheckContext) -> list[Finding]:
             out.append(_unknown("code.R311_door_width", "unknown door type",
                                 (door.tag,), "R311.2"))
             continue
-        if dt.exterior and dt.width < _MIN_DOOR_CLEAR:
+        width = _door_leaf(dt)[0]
+        if dt.exterior and width < _MIN_DOOR_CLEAR:
             out.append(_fail("code.R311_door_width",
-                             f"egress door {door.tag} width {dt.width.fmt()} < 32\" clear",
+                             f"egress door {door.tag} width {width.fmt()} < 32\" clear",
                              (door.tag,), "R311.2"))
         else:
             out.append(_pass("code.R311_door_width", f"door {door.tag} width ok", "R311.2"))
@@ -529,10 +538,11 @@ def egress_door_height(ctx: CheckContext) -> list[Finding]:
             out.append(_unknown("code.R311_2_door_height", "unknown door type",
                                 (door.tag,), "R311.2"))
             continue
-        if dt.exterior and dt.height < _MIN_DOOR_CLEAR_HEIGHT:
+        height = _door_leaf(dt)[1]
+        if dt.exterior and height < _MIN_DOOR_CLEAR_HEIGHT:
             out.append(_fail(
                 "code.R311_2_door_height",
-                f"egress door {door.tag} height {dt.height.fmt()} < 78\" clear",
+                f"egress door {door.tag} height {height.fmt()} < 78\" clear",
                 (door.tag,), "R311.2"))
         else:
             out.append(_pass("code.R311_2_door_height", f"door {door.tag} height ok",

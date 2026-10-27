@@ -1,4 +1,4 @@
-"""Conservative continuous leaf and hardware sweeps for a documented installation.
+"""Continuous leaf and hardware sweeps for a documented installation.
 
 This is coordination geometry, not certification of a prehung assembly or its fit.
 All elevations and distances are in project-frame metres.
@@ -181,8 +181,8 @@ def clearance_results(model, opening, stop_degrees, spec):
 def service_door_envelope():
     """Installed 32-inch leaf envelope inside the independent 34-inch rough opening."""
     return SwingEnvelope(
-        # The stock prehung unit carries its hinge line inside the RO jamb; the final
-        # pivot is field verified from the supplied frame before setting the stop.
+        # Pivot inset from the west RO edge. 1/2in is the LOWER bound the brick base allows
+        # (flush fails); 1/2..2in all pass. Field-verify the delivered frame's pivot.
         hinge_inset=inch(0.5), hinge_normal_datum="exterior_placement",
         hinge_normal_offset=inch(0), leaf_start=inch(0), leaf_end=inch(32),
         leaf_face_min=inch(-0.875), leaf_face_max=inch(0.875),

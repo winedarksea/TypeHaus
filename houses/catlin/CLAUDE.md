@@ -1974,8 +1974,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     "24-inch steps" rule that held it there was the house's own invention** — the engine
     grades how many studs an opening interrupts, and the only hard bound is the corner pack
     (x 6'-0"..6'-3 5/8"). The selected MMI unit uses its published 34 x 81.5in RO; frame it
-    to that size and set the unit by normal prehung practice. The sweep allows a 1/2in minimum
-    hinge-pivot inset (see outswing note).
+    to that size and set the unit by normal prehung practice. The leaf sweep passes for a
+    hinge-pivot inset of 1/2..2in off the west RO edge; flush fails. `DoorType.width` is the
+    34in RO, `catalog_dimensions` the 32in leaf that takeoff and R311.2 read (outswing note §2).
     `D-M-ENTRY` still cannot move (its east jamb is 6" west of `N-M-N2`, the
     bearing tee). `code.R311_3_exterior_landing` passes both on a 3'-7" deck (x 6'-0"..9'-7").
     **Do not answer anything here by moving the garage back.**
