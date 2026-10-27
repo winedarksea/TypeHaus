@@ -677,10 +677,10 @@ def test_a_part_that_mounts_on_another_also_bills_that_carrier(catlin_model) -> 
     """
     rows = hardware_takeoff(catlin_model)
     rails = sum(row["count"] for row in rows if row["role"] == "snow_retention")
-    seam = [row for row in rows if row["role"] == "standing_seam_clamp"]
+    seam = [row for row in rows if row["role"] == "nail_strip_seam_clamp"]
     assert rails == 2, "the east pair of CN-BW-SNOW rails over the entrance"
     assert not [row for row in seam if row["scope"] == "modeled connector"], \
-        "no bare seam clamp is authored any more; every S-5! is implied by the rail"
+        "no bare S-5-N is authored; the rails and PV kits imply theirs"
     carried = [row for row in seam
                if row["scope"] == "carried-mount" and "ColorGard" in row["basis"]]
     assert sum(row["count"] for row in carried) == rails, \

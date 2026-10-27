@@ -174,24 +174,15 @@ def test_pv_mounting_kits_are_billed(catlin_model):
     pv = [row for row in rows if row["part_number"] == "S-5-PVKIT"]
     assert len(pv) == 1
     assert pv[0]["count"] == 48  # 4 kits x 12 modules
-    # ** NO PLAIN S-5! IS AUTHORED IN THIS HOUSE, AND THE ONLY ONES BILLED ARE CARRIED. **
-    # The MODELED half went to zero on 2026-09-07: an S-5! closes on a seam, and the
-    # exposed-fastener cladding swap moved the wall clamps onto through-panel straps.
-    #
-    # The CARRIED half came back on 2026-09-10 with the extruded garage. It is NOT the old
-    # rail returning: those guards stood on RF-GARAGE's south slope over the polycarbonate
-    # canopy, and that slope is a rake now. These two are on the EAST EAVE over the entrance
-    # and tier approach, which `notes/north_entry_structure.md` §5 requires snow retention
-    # along — a walking surface, not a roof, so `sliding_snow` never sees it and the note is
-    # the only authority. The west side has no entrance or walking route beneath it.
-    #
-    # `S-5-PVKIT` above is a different part and is unaffected: it clamps the PV array to
-    # RF-HOUSE's standing seam, which is untouched.
-    s5_rows = [row for row in rows if row["part_number"] == "S-5!"]
-    modeled = sum(row["count"] for row in s5_rows if row["scope"] == "modeled connector")
-    carried = sum(row["count"] for row in s5_rows if row["scope"] == "carried-mount")
-    assert modeled == 0, "an S-5! needs a seam; the walls are exposed-fastener panel now"
-    assert carried == 2, "the east pair of CN-BW-SNOW rails, each carried on its own clamp"
+    # No plain S-5! is billed: every carrier on a nail-strip roof is an S-5-N (2026-10-27,
+    # Image II). 48 carry the PV kits and 2 the east-eave ColorGard rails; the wind clamps
+    # are S-5-N Mini.
+    assert not [row for row in rows if row["part_number"] == "S-5!"]
+    carriers = [row for row in rows if row["part_number"] == "S-5-N"
+                and row["scope"] == "carried-mount"]
+    assert sorted(row["count"] for row in carriers) == [2, 48]
+    mini = [row for row in rows if row["part_number"] == "S-5-N Mini"]
+    assert sum(row["count"] for row in mini) == 24, "12 house roof + 12 garage roof"
 
 
 def test_model_json_serializes_solar(catlin_model):
