@@ -9,8 +9,8 @@ from dataclasses import replace
 
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import panel_profile
-from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.geometry_ir import GMesh
+from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.geometry_slice import sweep_mesh
 from typehaus.resolve.model import FramedMember
 from typehaus.resolve.roof_geometry import roof_plane_z, roof_slope_factor
@@ -87,5 +87,6 @@ def roof_pan_hems(roof, rect, base, profile, material):
                 connection="roof:pan-hem",
                 section_ring=ring,
             )
-            members.append(replace(member, surface_mesh=_flat_shaded(sweep_mesh(member_solid(member)))))
+            mesh = _flat_shaded(sweep_mesh(member_solid(member)))
+            members.append(replace(member, surface_mesh=mesh))
     return tuple(members)
