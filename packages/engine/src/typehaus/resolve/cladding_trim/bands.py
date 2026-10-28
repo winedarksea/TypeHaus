@@ -63,7 +63,9 @@ def resolve_band_trim(model) -> None:
                         storey=wall.storey, category="cladding_trim",
                         outline=((min(xs), min(ys)), (max(xs), min(ys)),
                                  (max(xs), max(ys)), (min(xs), max(ys))),
-                        z0_m=min(zs), z1_m=max(zs), material=layer.material_ref,
+                        # The trim's own finish: the panel's ref would paint it charcoal.
+                        z0_m=min(zs), z1_m=max(zs),
+                        material=spec.joint_trim_material_ref or layer.material_ref,
                         product=_PRODUCT, body_mesh=mesh, host_ref=wall.tag,
                         trim_length_m=end - start,
                         trim_stock_length_in=round(stock / M_PER_IN, 6)))

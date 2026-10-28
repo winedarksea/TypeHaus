@@ -386,6 +386,8 @@ class Layer(HausModel):
     function: LayerFunction
     # Absolute elevations of intentional horizontal panel terminations in this layer.
     panel_joint_elevations: tuple[Length, ...] = ()
+    # Material of the horizontal trim at those joints; None means this layer's own material.
+    joint_trim_material_ref: str | None = None
     framing: FramingSpec | None = None
     masonry: MasonrySpec | None = None
     # The mix, exposure class, cover and bar coating of a concrete pour. Belongs on the
