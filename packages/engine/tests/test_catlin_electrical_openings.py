@@ -47,9 +47,12 @@ def test_original_rc10_position_is_reported(catlin_ctx):
 
 def test_corrected_rooms_keep_coverage_and_study_lighting(catlin_ctx):
     assert not [f for f in receptacle_spacing(catlin_ctx) if f.result == Result.FAIL]
-    for check in (room_lighting, habitable_light_and_ventilation):
-        findings = [f for f in check(catlin_ctx) if "RM-M-STUDY" in f.element_tags]
-        assert findings and all(f.result == Result.PASS for f in findings)
+    lighting = [f for f in room_lighting(catlin_ctx) if "RM-M-STUDY" in f.element_tags]
+    assert lighting and all(f.result == Result.PASS for f in lighting)
+    # R303's successful findings identify rooms in their message, without element tags.
+    ventilation = [f for f in habitable_light_and_ventilation(catlin_ctx)
+                   if f.message.startswith("RM-M-STUDY ")]
+    assert ventilation and all(f.result == Result.PASS for f in ventilation)
 
 
 def test_attic_study_outlet_is_standard_15a_duplex(catlin_plan):

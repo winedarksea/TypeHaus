@@ -2526,14 +2526,13 @@ NEC_FILL_SECOND = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RC8: W-S-SN3 is INT_2X6_STAGGERED_PLUMBING (plan/storeys/second.py — the suite bath's
     # lav and WC actually back onto it), and this room's boundary opens a >6' gap on the
-    # L-arm's south wall, W-S-SBS. None of RC1-RC7 reaches it — RC1 is 4'-3" east on the same
-    # wall but stops short of the corner. Set this box 9 1/2" from the wall start, before
+    # L-arm's south wall, W-S-SBS. RC1 farther east stops short of the corner.
+    # Set this box 9 1/2" from the wall start, before
     # D-S-SUITEBATH's opening begins 17" from that end; the switch stays beyond the door on
     # the other side.
     #
-    # y is 15'-7 5/8": W-S-SBS is INT_2X4_PARTITION, its wet-wall duty having moved to SN3,
-    # so its south face sits 1.000" back from the axis, and this box — and RC1 beside it —
-    # follows that face.
+    # Retain GFCI protection near the suite-bath vanity. This box and RC1 follow the
+    # suite-facing finish of W-S-SBS; the wet-wall duty belongs to SN3.
     ElectricalDevice(uid="N0F72WZE2H", tag="ED-S-SUITE-RC8",
                      kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-20",
