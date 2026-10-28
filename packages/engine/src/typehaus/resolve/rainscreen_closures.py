@@ -29,6 +29,7 @@ from typehaus.resolve.model import (
 # the wall's furring layer, so a change to the batten size moves the order with it.
 BUG_SCREEN_MATERIAL = "perforated-aluminum-insect-closure"
 BUG_SCREEN_HEIGHT_IN = 1.5
+BUG_SCREEN_HOLE_IN = 3.0 / 25.4   # 3 mm perforation, see the material; insects need > 1/8"
 _STACK_TOLERANCE_M = 0.05   # a storey's walls land exactly on the one below; this is slop
 _STACK_PLAN_TOL_M = 0.5     # two stacked walls share a plan line within a wall's thickness
 

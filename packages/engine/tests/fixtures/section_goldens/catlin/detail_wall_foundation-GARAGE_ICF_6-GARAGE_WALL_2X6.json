@@ -1147,6 +1147,82 @@
       "node": "polyline",
       "points": [
         [
+          518.625,
+          -12.000000000000005
+        ],
+        [
+          518.625,
+          -9.68429815573771
+        ],
+        [
+          518.625,
+          -9.375000000000005
+        ],
+        [
+          518.6460839139345,
+          -9.375000000000005
+        ],
+        [
+          518.6489,
+          -9.375000000000005
+        ],
+        [
+          518.6489,
+          -11.711785758196726
+        ],
+        [
+          518.6489,
+          -12.023900000000005
+        ],
+        [
+          517.5338341652307,
+          -12.023900000000005
+        ],
+        [
+          517.3848997041408,
+          -12.023900000000005
+        ],
+        [
+          517.0012431748041,
+          -12.407556529336663
+        ],
+        [
+          516.9499998520704,
+          -12.458799852070364
+        ],
+        [
+          516.9350912735534,
+          -12.443891273553378
+        ],
+        [
+          516.9331000000001,
+          -12.441900000000006
+        ],
+        [
+          517.3229318647541,
+          -12.052068135245907
+        ],
+        [
+          517.375,
+          -12.000000000000005
+        ],
+        [
+          518.4777151639345,
+          -12.000000000000005
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CGW101AAAA-trim-w-g-s-base-s1-0",
+      "tag": "TRIM-W-G-S-BASE-S1-1"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           516.375,
           -8.19
         ],
@@ -1655,11 +1731,11 @@
           -0.94
         ],
         [
-          517.25,
+          516.1435,
           -0.94
         ],
         [
-          517.25,
+          516.1435,
           0.0
         ],
         [
@@ -1683,11 +1759,11 @@
           -0.94
         ],
         [
-          517.25,
+          516.1435,
           -0.94
         ],
         [
-          517.25,
+          516.1435,
           0.0
         ],
         [
@@ -3474,8 +3550,8 @@
     "",
     "KEYED NOTES:",
     "K1  Bituthene 3000 or equal on concrete and sheathing. 2\" laps; 2-ply corners; insulation over it; backfill in 30 days.",
-    "K2  Z-flashing with drip at the girt band base, set to the 2\" cavity.",
-    "K3  Perforated aluminium insect closure above it, 1/8\" holes max.",
+    "K2  Z-flashing with drip at the girt band base, set to the 2\" cavity. It owns the drip. The metal base trim sits above it, on the girt face.",
+    "K3  Perforated aluminium insect closure above it, 1/8\" holes max. Stack, bottom up: Z, screen, base trim leg on the girt face, rib closure.",
     "K4  L-flashing from sheathing base onto the foam; seal its outer end.",
     "K5  Mudsill anchors per IRC R403.1.6. Plate joint peel-and-stick on the envelope.",
     "K6  Slab perimeter: 1\" XPS thermal break with 1/2\" polyurethane sealant.",

@@ -142,7 +142,7 @@ def test_catlin_param_stations_match_the_resolver(catlin_model_ro):
 def test_catlin_rake_and_profile_closures_are_formed_sheets(catlin_model_ro):
     from typehaus.resolve.geometry_ir import GSweep
     from typehaus.resolve.geometry_members import member_solid
-    from typehaus.takeoff.edge_trim import edge_trim_takeoff
+    from typehaus.takeoff.cladding_trim import cladding_trim_takeoff
 
     roof = next(roof for roof in catlin_model_ro.roofs if roof.tag == "RF-HOUSE")
     closures = [member for member in roof.members if member.category == "ridge_closure"]
@@ -150,8 +150,9 @@ def test_catlin_rake_and_profile_closures_are_formed_sheets(catlin_model_ro):
     assert all(isinstance(member_solid(member), GSweep)
                for member in closures if not member.child_key.endswith("-top"))
     assert any(member.connection == "roof:panel-rake" for member in roof.members)
-    assert any(row['category'] == 'ridge_closure' and row['length_ft'] > 60
-               for row in edge_trim_takeoff(catlin_model_ro))
+    # The Z-closures bill as Image II 58603XX, both sides of both closed ridges.
+    assert any(row['part'] == '58603XX' and row['length_ft'] > 60
+               for row in cladding_trim_takeoff(catlin_model_ro))
 
 
 def test_closed_image_ii_ridge_cover_has_seven_inch_pitched_legs(catlin_model_ro):

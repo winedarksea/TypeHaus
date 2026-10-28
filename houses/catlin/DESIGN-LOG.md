@@ -6380,3 +6380,18 @@ crest fastening on the corrugated. Owner's decisions, and why:
 - **Corrugated is valley-fastened.** Crest fastening is a roof practice; on a wall it hangs the
   washer over a 7/8" void and needs a ~2-1/2" screw. The material record said "through the
   crowns" and was corrected.
+
+## Metal trim kit: walls, doors, roof edges, bill and checks (2026-10-27)
+
+The derived kit now covers the wall base, door jambs and heads, three small rough openings,
+the screen ends and the Image II eave, rake and closed ridge (`notes/metal_trim_kit.md`,
+"Implementation status"). Choices worth keeping: the base breaks only for an opening that
+reaches its upstand, so a door sill above the panel bottom leaves it unbroken; `TR-G-STEMZ-*`
+stays because the stem band is aluminium; the 2.5 in hydrant bores are closed by their
+fixture and take no trim; the house keeps its 4 in rake face as a custom extension of the
+stock rake because the stock leg covers 2-5/8 in; the box gutter stays custom until a capacity
+review. Billing moved to `[cladding_trim]` (estimates) and ~12% came out of the three wall
+panels' material rates, replacing two closure allowances and the derived drip, ridge and rake
+LF in `[edge_trim]`: the estimate moved $880k-1,738k to $895k-1,762k. D-G-SERVICE gained a
+`sill_design` at a 1 in threshold, because 1-1/2 in put its landing drop at 2.0 in against
+R311.3.2's 1-1/2 in outswing limit.

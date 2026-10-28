@@ -6,15 +6,18 @@ from typehaus.checks.integrity.cladding_trim_runs import along_extent, metal_wal
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import failed, not_applicable, passed, unknown
 from typehaus.library.trim.metal_sales import PROFILES, RESIDENTIAL_RAKE_FACE_IN
+from typehaus.model.cladding_trim import TrimCondition
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.cladding_trim.runs import metal_faces
+from typehaus.resolve.cladding_trim.runs import kit_faces, metal_faces
 from typehaus.resolve.opening_flashing import head_flashing_section, opening_flashing_frame
+from typehaus.resolve.rainscreen_closures import BUG_SCREEN_HOLE_IN, screens_rainscreen_base
 
 FIT = "integrity.cladding_trim_fit"
 _TOL = 1e-6
 _MIN_FRAME_LAP_M = 0.75 * M_PER_IN
 _UPSTAND_MARGIN_M = 0.0625 * M_PER_IN
 _BBD_RUN_LIMIT_M = 240 * M_PER_IN
+_MAX_HOLE_IN = 0.125
 _PBR_CITE = "PBR Install Guide 4/2024 pp. 19, 68-72"
 
 
@@ -152,6 +155,46 @@ def _door_heads(ctx, pieces):
     return findings
 
 
+def _base_cavity(ctx, pieces):
+    """Where a rainscreen cavity opens at the base trim, it is screened and the trim stays out.
+
+    The cavity bottom must be covered by perforation of 1/8 in or less; the base trim's back
+    leg must sit on the cladding back plane, never inboard across the cavity mouth.
+    """
+    model, findings, checked = ctx.model, [], 0
+    screens = {s.tag: s for s in model.solids if s.tag.endswith("-BUGSCREEN")}
+    for face, _key in kit_faces(model, TrimCondition.BASE):
+        wall = face.wall
+        mine = [p for p in pieces if p.host_ref == wall.tag and p.tag.startswith("TRIM-")
+                and "-BASE-" in p.tag and p.body_mesh]
+        if not mine or not screens_rainscreen_base(model, wall):
+            continue
+        screen = screens.get(f"{wall.tag}-BUGSCREEN")
+        if screen is None:
+            findings.append(failed(FIT, f"{wall.tag} base trim closes a rainscreen cavity with "
+                                        "no insect screen", (wall.tag,),
+                                   code="metal_trim_kit.md, Wall base stack"))
+            continue
+        if BUG_SCREEN_HOLE_IN > _MAX_HOLE_IN:
+            findings.append(failed(FIT, f"{wall.tag} cavity screen holes exceed 1/8 in",
+                                   (wall.tag,), code="metal_trim_kit.md, Wall base stack"))
+            continue
+        mouth = max(x * face.n[0] + y * face.n[1] for x, y in screen.outline)
+        leg = min(p[0] * face.n[0] + p[1] * face.n[1]
+                  for piece in mine for p in piece.body_mesh.positions)
+        if leg + _TOL < mouth:
+            findings.append(failed(
+                FIT, f"{wall.tag} base trim crosses the cavity mouth "
+                     f"{(mouth - leg) / M_PER_IN:.2f} in", (wall.tag,),
+                code="metal_trim_kit.md, Wall base stack"))
+        else:
+            checked += 1
+    if checked and not findings:
+        findings.append(passed(FIT, f"{checked} base trims leave a screened cavity mouth clear",
+                               code="metal_trim_kit.md, Wall base stack"))
+    return findings
+
+
 def _rake_faces(ctx):
     """Where the stock 2-5/8 in rake leg covers the face; where not, the custom 4 in is UNKNOWN."""
     findings, custom = [], []
@@ -181,4 +224,4 @@ def cladding_trim_fit(ctx: CheckContext) -> list:
     if not pieces:
         return [not_applicable(FIT, "no catalog cladding trim resolved")]
     return [*_opening_runs(ctx, pieces), *_run_limits(ctx, pieces), *_door_heads(ctx, pieces),
-            *_rake_faces(ctx)]
+            *_base_cavity(ctx, pieces), *_rake_faces(ctx)]

@@ -409,11 +409,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **The 2" cavity is closed against insects in four places** (2026-10-10; the ccSPF in it has
   no other protection, `notes/outie_window_truss_detail.md` "Insect closure"): the base screen
   and a head screen over every window/door, both DERIVED (`resolve/rainscreen_closures.py`) in
-  perforated aluminium, holes <= 1/8"; the jamb buck returns (a hold point); and the PBR rib
-  closures (`[allowances] envelope-pbr-profile-closures`). **The top stays closed: the roof deck
-  oversails to the girt face**, pinned by `test_rainscreen_closures.py` — clip it back to the
-  sheathing and the whole cavity opens into the eave. B&B's rat guard / C-closure is a
-  **confirm in the BBD75 install guide**.
+  perforated aluminium, holes <= 1/8"; the jamb buck returns (a hold point); and the rib
+  closures (PBR 6460800, BBD75 C-Closure, counted under `[cladding_trim]`). **The top stays
+  closed: the roof deck oversails to the girt face**, pinned by `test_rainscreen_closures.py`.
+  Clip it back to the sheathing and the whole cavity opens into the eave. The BBD75 guide has
+  **no rat guard** (p. 22). The screen closes the cavity and the C-Closure the panel. Base stack:
+  K2 Z (drip) → screen → trim leg on the girt plane → rib closure
+  (`notes/metal_trim_kit.md` "Wall base stack").
 - Girt course module counts from the SILLS' datum, phase ZERO
   (`course_datum="framing-base"` + `course_offset=inch(0)`), not the wall base. One module
   runs unbroken from wall base through the gable rake, breaking only at a starter (band
@@ -517,9 +519,18 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     is the ROOF coverage where the wall is 34-2/3". Both drew a line where no joint is. The
     ui's `ribHalfWidth` is a FRACTION of the module, so it had to be re-struck with the pitch
     (0.05 -> 0.0833) to keep the drawn cap at 2".
-  - Four wall corners now bill: `TrimKind.WALL_CORNER` + `Flashing.vertical`, 89.5 LF,
-    derived off `_WALL_OUTBOARD_IN`. Without `vertical`, a 22'-4" corner bills as 1-1/4" of
-    metal (`_EdgeRun.path` is a plan polyline).
+  - **Metal trim is a derived kit, not authored runs** (2026-10-27; basis and counts in
+    `notes/metal_trim_kit.md`). A material's `trim_kit` (`model/cladding_trim.py`: `PBR_KIT`,
+    `BBD_KIT`, `CORRUGATED_KIT`) names a `TrimProfile` per condition, and `resolve/cladding_trim/`
+    sweeps it from the published section: base, wide/corrugated outside corners, the BBD75 band
+    (one run per N/S wall segment, at +17'-4"), window/door/small-RO opening trim, and the
+    W-BW-SCREEN ends. The `TR-H-CORNER-*` runs are gone; `TR-G-STEMZ-*` stays (aluminium on the
+    stem band). `takeoff/cladding_trim.py` bills it by part and stock length with closures,
+    sealant and fasteners, and the roof's eave/rake/closed ridge as Image II pieces; prices are
+    `prices.toml [cladding_trim]` (estimates) and the panel $/SF rates were cut 12% to pay for it.
+    A window frame box stops at the mount plane (`test_cladding_trim_frame_box.py`); a hydrant
+    bore under 6 in takes no trim. Open with Metal Sales: the vented Image II ridge, the 4 in
+    custom rake (stock 52126XX covers 2-5/8 in) and the custom jamb/sill/head brake limits.
   - The panel is **Metal Sales BBD75-1212**, 12" coverage, 24 ga (re-named 2026-09-14; the
     tag `board-batten-24` reads as the GAUGE and does not change). **BB75-1111, named
     2026-09-11, is the CLIP-fastened sibling** — its wall-base detail wants a clip and two

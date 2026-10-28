@@ -23,9 +23,9 @@ otherwise stated; standard stock is 10 ft 2 in unless a different length is stat
 
 | Condition | Selected termination | Basis |
 |---|---|---|
-| PBR base | 1.25 in Base 58138XX, tape and inside closure 6460800 | PBR p. 69 |
-| BBD75 base | Vertical Base Trim 55545XX and C-Closure 55548XX | BBD75 p. 22 |
-| Corrugated base | 1.25 in Base, profile-matched inside closure | Corrugated P7/8-3 |
+| PBR base | 1.25 in Base 58138XX over the K2 Z-flashing, tape and inside closure 6460800 | PBR p. 69 |
+| BBD75 base | Vertical Base Trim 55545XX and C-Closure 55548XX, over the K2 Z-flashing | BBD75 p. 22 |
+| Corrugated base | 1.25 in Base over the aluminium stem Z (`TR-G-STEMZ-*`), profile-matched vented closure | Corrugated P7/8-3 |
 | House outside corner | Wide Outside Corner 58132XX (10 ft 2 in) or 58136XX (20 ft 3 in), 5.5 in legs; PBR-to-BBD75, one leg on each face; C-Closure on BBD75 side | PBR and BBD75 corner details, BBD75 pp. 30–31 |
 | Garage corner | Corrugated Outside Corner | Corrugated manual |
 | BBD75 horizontal joint | Transition Trim 55536XX, pop rivets at 12 in o.c. | BBD75 p. 40 |
@@ -39,6 +39,37 @@ upper panel runs are approximately 18 ft 5 in and 14 ft, within the 20 ft maximu
 The band is also the head drip where it meets the two north window heads and the
 D-S-DECK-E casing. PBR east and west panel runs are approximately 22 ft 2 in,
 within the 45 ft maximum. Garage corners are approximately 8 ft 4 in high.
+
+### Wall base stack
+
+The Metal Sales closures and the insect screen close different voids, so neither replaces
+the other. The closures fill the panel's rib voids. The screen closes the 2 in cavity
+behind the panel (1/2 in vent gap plus 1-1/2 in girt band). On a house wall, bottom to top,
+at the bearing seat (−1'-1 7/16"):
+
+1. **K2 Z-flashing, the drip owner** ([basement detail](basement_to_framed_wall_detail.md)).
+   Its upper leg runs up the foam face, its horizontal leg floors the full 2 in cavity, and
+   its drip leg laps over the coated XPS band's head. The base trim can't take this job: its
+   back leg is on the girt face, outboard of the cavity, so without the Z the cavity would
+   drain onto the bearing seat.
+2. **Perforated aluminium insect screen** (holes 1/8 in or less), sitting on the Z's
+   horizontal leg. It runs foam face to girt face, 1-1/2 in tall.
+3. **Base trim**, with its vertical leg on the girt plane (the panel back plane) up to
+   2-5/8 in above the seat. Its foot and hem kick 1.69 in outboard, so panel water drips
+   clear of the Z. It never crosses the cavity mouth. Keep the steel trim off an aluminium
+   Z with tape or EPDM, per the corrosion rule in `garage_wall_detail_side.md`.
+4. **Profile closure** in the ribs, on the trim foot: PBR 6460800 on butyl tape, or the
+   BBD75 C-Closure 55548XX.
+
+The BBD75 guide (p. 22 base detail) shows no rat guard or perforated piece, so the screen is
+the only cavity closure on the N/S walls. The garage has no separate cavity, because the
+corrugation is the rainscreen. There the vented corrugated closure on the aluminium stem Z
+closes both.
+
+Hand count, W-M-W4: the screen runs 162 in (mitred at the corners) at −13 7/16" to
+−11 15/16". The base trim runs 164.8 in as two sticks (122 + 42.75 in) from −13.90" (hem) to
+−10 13/16". The Z runs under both for the same length. The house Z is not modeled yet (see
+"Still open").
 
 ## Openings
 
@@ -124,3 +155,58 @@ including laps, rather than assuming uniform lengths.
 A change of wall profile also moves the cladding plane and affects the breezeway gap,
 garage lines, sleeves and devices. Corrugated substitution needs its own exposed-fastener
 rules; preserve the standing-seam skin family used for roof classification.
+
+## Implementation status (2026-10-27)
+
+What the model derives and bills, with the counts the tests pin
+(`test_cladding_trim_walls.py`, `test_cladding_trim_takeoff.py`):
+
+| Condition | Resolved as | Count |
+|---|---|---|
+| Wall base | kit base (`PBR_BASE` / `BBD_BASE` / `CORRUGATED_BASE`) under every wall stack whose panel bottom is free, one run per wall segment and per span between floor-level openings | 11 / 10 / 12 sticks |
+| Outside corners | Wide corner (PBR↔BBD75), corrugated corner | 8 / 4 |
+| BBD75 band | Transition Trim at +17'-4", one run per N/S wall segment | 10 |
+| Window head, jamb, sill | stock 1.5 in Sill/Head; custom jamb and sill | 43 / 86 / 43 |
+| Door jambs | Panel Starter (BBD75), Corrugated Jamb (garage) at the casing edge | 6 + 4 |
+| Door heads | custom drip cap, the legacy head section swept at stock; none on catalog unit D-S-DECK-E, whose head is the band | 5 |
+| Small rough openings | 4-side window kit on the niche and both ERV hoods; the two 2.5 in hydrant bores are closed by the fixture's flange and sealant | 3 |
+| Screen ends | Corrugated Jamb on both open ends of W-BW-SCREEN and its skirt | 4 |
+| Roof eaves | Extended Eave 52124XX on Offset Cleat 5806499 | 16 sticks |
+| Roof rakes | house: custom 4 in face; garage and canopy: Residential Rake 52126XX; Rake Cleat 52132XX; Flat Cleat 5806199 at 18 in | 4 runs / 16 sticks |
+| Closed ridges | 7 in cover 52131XX, Z-Closure 58603XX each side, double-bead tape 6403899 | 5 sticks |
+
+Hand counts: a 164.8 in PBR base run (W-M-W4) takes two 10'-2" sticks with a 2 in lap, because
+ceil((164.8 − 2)/(122 − 2)) = 2. The same wall's screen is 162 in on the Z's leg, inboard of
+the trim (see "Wall base stack"); there are 14 base screens house-wide. The garage ridge is
+25.4 ft of cap, unchanged.
+
+Decisions this pass:
+
+- **Base is panel-bottom, not floor-level.** A door sill above the panel bottom leaves the base
+  unbroken beneath it; only an opening reaching the base's 2-5/8 in upstand cuts it
+  (D-G-OVERHEAD, whose two 48.9 in piers match the old stem Z).
+- **`TR-G-STEMZ-*` stays.** The stem-top Z is aluminium by the corrosion rule in
+  `garage_wall_detail_side.md`; the base trim above it is the panel's steel coil.
+- **Hydrant bores take no trim.** An opening under 6 in is a penetration through the fixture's
+  own flange (`SMALL_PENETRATION_M`); the check records it N/A.
+- **The house rake keeps its modeled drip edge under the 4 in rake.** The billed piece is the
+  rake; the drip edge beneath it is geometry only until `fortified_roof.py` is re-pointed at
+  the catalog rake's lip.
+- **Box gutters stay custom.** The catalog gutter (5 × 4 in) is smaller than the authored
+  6 × 5; the hydraulic capacity and outlet review in the paragraph above is still open.
+- **D-G-SERVICE has a `sill_design`**: a coordination envelope (frame depth 6-9/16 in, 1 in
+  composite sill); MMI publishes no sill section. 1 in rather than 1-1/2 in because the outswing
+  allowance in R311.3.2 is 1-1/2 in above the landing.
+
+Still open (the checks print these as UNKNOWN): the vented Image II ridge and its part numbers,
+the 4 in custom rake and the custom jamb/sill/head brake limits, and the five printed
+part-number anomalies, all for Metal Sales. Prices in `prices.toml [cladding_trim]` are estimates.
+
+Also open, in the model (no finding yet):
+
+- **The house K2 Z-flashing is neither modeled nor billed.** Only the garage stem Z exists as
+  runs.
+- **Wall-top closures are unbilled.** Base, window head and sill closures are counted. Nothing
+  resolves `EAVE_TOP` / `RAKE_TOP`, so these are missing: the PBR inside closure under the box
+  gutter (about 72 LF in the deleted `envelope-pbr-profile-closures`), the BBD75 Universal
+  Closure under the rakes, and the corrugated Sill to Soffit.

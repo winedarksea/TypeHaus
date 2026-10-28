@@ -129,3 +129,60 @@ def test_every_base_screen_stands_at_least_six_inches_above_grade(catlin_model_r
     for screen in bases:
         grade, _why = local_grade_elevation_m(model, list(screen.outline))
         assert screen.z0_m - grade >= inch(6).meters, (screen.tag, screen.z0_m - grade)
+
+
+def _base_trim(model, wall_tag):
+    return [s for s in model.solids if s.category == "cladding_trim" and s.host_ref == wall_tag
+            and s.tag.startswith(f"TRIM-{wall_tag}-BASE-")]
+
+
+def test_base_stack_screen_and_trim_on_a_house_wall(catlin_model_ro):
+    """W-M-W4 by hand: screen 162 in along the wall; trim two sticks, 122 + 42.75 in; the
+    trim's back leg lies on the girt plane (the screen's outer face), never across the mouth."""
+    from typehaus.model.cladding_trim import TrimCondition
+    from typehaus.resolve.cladding_trim.runs import kit_faces
+
+    model = catlin_model_ro
+    screen = next(s for s in model.solids if s.tag == "W-M-W4-BUGSCREEN")
+    face = next(f for f, _ in kit_faces(model, TrimCondition.BASE) if f.wall.tag == "W-M-W4")
+    along = [x * face.d[0] + y * face.d[1] for x, y in screen.outline]
+    assert (max(along) - min(along)) / inch(1).meters == pytest.approx(162, abs=0.5)
+    trim = _base_trim(model, "W-M-W4")
+    assert sorted(round(p.trim_length_m / inch(1).meters, 2) for p in trim) == [42.75, 122.0]
+    mouth = max(x * face.n[0] + y * face.n[1] for x, y in screen.outline)
+    leg = min(p[0] * face.n[0] + p[1] * face.n[1] for t in trim for p in t.body_mesh.positions)
+    assert leg >= mouth - 1e-6
+    foot = max(p[0] * face.n[0] + p[1] * face.n[1] for t in trim for p in t.body_mesh.positions)
+    assert foot - mouth == pytest.approx(inch(1.69).meters, abs=inch(0.05).meters)
+
+
+def _base_findings(model):
+    from typehaus.checks.integrity.cladding_trim_fit import _base_cavity
+    from typehaus.checks.registry import CheckContext
+
+    ctx = CheckContext(plan=model.plan, model=model, preferences=None, profile=None)
+    pieces = [s for s in model.solids if s.category == "cladding_trim"]
+    return _base_cavity(ctx, pieces)
+
+
+def test_base_cavity_grade_passes_catlin(catlin_model_ro):
+    findings = _base_findings(catlin_model_ro)
+    assert [f.result.name for f in findings] == ["PASS"]
+
+
+def test_base_cavity_grade_fails_a_coarse_screen_or_a_missing_one(catlin_model_ro, monkeypatch):
+    from typehaus.checks.integrity import cladding_trim_fit
+
+    monkeypatch.setattr(cladding_trim_fit, "BUG_SCREEN_HOLE_IN", 0.2)
+    coarse = _base_findings(catlin_model_ro)
+    assert coarse and all(f.result.name == "FAIL" for f in coarse)
+    monkeypatch.undo()
+
+    model = catlin_model_ro
+    kept = list(model.solids)
+    try:
+        model.solids[:] = [s for s in kept if s.tag != "W-M-W4-BUGSCREEN"]
+        bare = _base_findings(model)
+    finally:
+        model.solids[:] = kept
+    assert any("W-M-W4" in f.message and "no insect screen" in f.message for f in bare)

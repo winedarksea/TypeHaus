@@ -365,10 +365,12 @@ means four places:
 - **Penetrations.** Hose bibs, exterior lights and the ERV hoods sleeve through the cavity; seal
   each sleeve to the foam and to the panel (`[allowances] envelope-exterior-hoods-and-flashing`).
 
-On the PBR walls the panel ribs are a second opening in front of the cavity: solid profile
-closures at every horizontal termination (`[allowances] envelope-pbr-profile-closures`). Board &
-batten relies on the Metal Sales rat guard and C-closure, **to be confirmed in the BBD75
-install guide**.
+On the PBR walls the panel ribs are a second opening in front of the cavity, closed by profile
+closures at every horizontal termination (PBR Inside Closure 6460800, counted under
+`[cladding_trim]`; the wall tops are not yet counted, see `metal_trim_kit.md`). **The BBD75
+guide has no rat guard** (p. 22 base detail: Base Trim 55545XX and C-Closure only), so the base
+screen is the only cavity closure on board and batten, and the C-Closure closes the panel. The
+order at the base is in `metal_trim_kit.md`, "Wall base stack".
 
 ## Why the change, honestly
 

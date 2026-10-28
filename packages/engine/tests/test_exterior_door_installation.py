@@ -218,8 +218,10 @@ def test_catlin_garage_keeps_raised_service_support_and_overhead_operation(catli
     service = next(o for o in catlin_model_ro.openings if o.tag == "D-G-SERVICE")
     overhead = next(o for o in catlin_model_ro.openings if o.tag == "D-G-OVERHEAD")
     assert service.doorway.exterior_placement is not None
-    assert not any(s.name == "threshold-design-envelope"
-                   for s in service.doorway.exterior_placement.sections)
+    # MMI publishes no sill section, so the stock unit carries a schematic envelope that
+    # closes the pan's ends behind the returns (R311.3.2 keeps it at 1 in).
+    assert any(s.name == "threshold-design-envelope"
+               for s in service.doorway.exterior_placement.sections)
     assert any(spec.role == "sill" and spec.product_ref == "PROD-MMI-STEEL-SIX-PANEL"
                for spec in service.doorway.selected_products)
     assert overhead.doorway.exterior_placement is None
