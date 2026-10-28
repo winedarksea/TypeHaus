@@ -1,6 +1,8 @@
 # TODO
 Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" library configs. Revit/SketchUp import-readiness research, fixes, and open items: `plans/revit-sketchup-readiness.md`.
 
+Sourcing quotes, construction todo doesn't belong in this document, this is just softwared and house design todo.
+
 ## Needs your decision
 
 - **2D-edit sync** — a PatchOp rewrites one constructor; derived data recomputes but authored
@@ -294,7 +296,8 @@ the future.
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door. A simpler option is probably to just make sure the hinge can open to close to 180 degrees so the door can be flat against the wall, out of the way of the walking space.
 - Gold foil trim or panel accent somewhere
 - Make sure all handrail brackets are stock, avoid custom needs. Remaining: titanium railing brackets (aim to use standard as much as possible). Also attic rail, bracket 7 needs a rethink, ideally to an off the shelf part.
-- Spec sand or gravel backfill around house
+- Spec sand or gravel backfill around house.
+- Check the gravel spec under the house. We are a strong believer in compact gravel as the key to an excellent foundation and fewer problems for the house, but we also want to be cost effective.
 - The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
 - Make W-BW-SCREEN's east passage face prettier (currently 5/8" MDO, not the west structural CDX). [Finish comparison, elevations, quantities, and sample instructions](bw-screen-finish-comparison.md) completed 2026-10-14: natural black locust slats over matte black lead; visible stainless screws preferred. Shiplap and ornamental panels compared. West header symmetry implemented 2026-10-14 (6⅛″ south extension, paired AC6Z); comparison now shows the stairs and landing. Physical samples, actual door/closer clearance, and decorative finish construction/model implementation remain pending. Another option to consider is a thin brick over foam or cement backer board or lath (ASTM C1088 Exterior Grade brick, Polyurethane Construction Adhesive, Polymer-Modified Mortar), possibly thin brick ordered, or saw cut from extra brick from the other brick work.
 - ED-M-PORCH-FLOOD: shielded adjustable 60° flood beneath the balcony front, aimed into the sunken garden; shared 3D geometry in viewer/GLB/IFC. However it seems to be a recessed light, not one that is angled at the sunken garden.
@@ -342,6 +345,8 @@ the future.
 - Consider making W-M-BATH1-W operable. Switch that small operable window type we have to the Aluprof MB-Slimline / MB-79N CSF or Aliplast Max Light Modern ultra slim aluminum for maximum light area (looks like around 2.75" frame is possible there) triple glazed.
 - Possibly poplar 1x12 as stair skirt boards, if not already specified, painted white. Likely installed tight to wall framing/drywall prior to installation of finish treads and risers.
 - Check roof sheathing (garage and house both). Likely 5/8" (19/32") CDX Plywood is fine versus the current 3/4" struct 1.
+- Model the roofing membrane at it's installed thickness (under the flashing view toggle, but black not red)
+- Consider 1/2" advantech for walls and 5/8" advanctech for roof sheathing (perhaps better rot resistance?)
 - Probably around the windows, the flashing should come out and over the girts (covering the buck and girt then) that box in the window. ccspf should come out and around the outie buck as well up to the girt there. That would bury the KDAT girt completely in foam and flashing. Perhaps instead the gap should remain on the back of the girt, but the full outer face and top and bottom is flashed (just back clear to dry backwards into cavity?)
 - Make door and window pieces (trim, jamb, etc) selectable in the UI as separate pieces (but all still hidden by the same view toggle). Such pieces should have their product name shown in the UI when selected. Generally something like the drip edge should be one piece (even if multiple faces) so the garage drip edge at the eaves is something that has gone too far in being split out, and gutters are another thing where the back, bottom and front should all be shown as one piece.
 - Some of the trim added to the siding might need a depth bias to reduce 'glitching' with the siding itself
@@ -351,6 +356,19 @@ the future.
 - D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
 - [x] Remove exterior flashing trim from AO-M-FIRE-NICHE: the blind niche leaves the exterior sheathing and cladding continuous, so it needs no exterior trim.
 - Undo the work of 529a0ca6 'canopy beam caps' and see if it can be symmetrical by both sides of the beam terminating at the post.
+- Might be worth writing up ICF in cost options as an alternative exterior wall setup (for the house) something like the Quadlock 'plus' form which with 4.25" of EPS on each side delivers R-38.
+- Check the modeling of the baseboard/tile surround in tile rooms. Is it fully and correctly detailed?
+- Properly model the drywall channels used (ie corners, and especially for the LED light strips)
+- Make sure the plumbing matches fixtures to their right locations on their connections
+- Make sure wall boxes are modeled clearly (so receptacle + box, and in the case of the basement EMT conduit too as it runs on surface) with the right depth of box for the material. We like deeper boxes where practical, easier to work with.
+- Make sure sizing and dimensions and placement are correct for junction boxes (ie for LED power supplies), with specified product.
+- Double check the calculations for accuracy of BTU heating and cooling load.
+- Make sure the house rainscreen is both ventilated and tight against bugs.
+- Make sure sealed cut ends are specified in instructions for KDAT usage
+- Review the pantry shelving, we want something easy to construct (alongside our custom glue up panels), strong, and with good lighting
+- Make sure the railing and guard rail products are named when clicked on in the UI, and that the assembly of them is correctly modeled (especially how they are mounted)
+- Let's try to get modeled numbers in the BOM for fasteners, where not already. Our primary concern are on the 'special' or 'upgrade' types of fasteners (ie stainless steel, ringshank, galvanized, etc) so contractors are told exactly what to quote (we don't want to get accidentally cheaped out on these), but we don't need to truly model every screw and nail.
+- Generally our goal is to have every piece of the house linked to a named product (or a standard or commodity size, like a 2x4) so we can confirm every piece fits together correctly.
 
 # Project Management
 
