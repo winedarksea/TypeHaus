@@ -338,7 +338,6 @@ the future.
 - D-B-PATIO has a MASA connector sprouting up in the middle, plus it's got some sort of awkward trim around the brick veneer (the brick IS the trim there, the door itself has a more utilitarian trim into the main house wall behind). Looks like previous door work accidentally bumped the brick arch up too high. It should partially obscure the door top.
 - Look up a guide to how plumbers and such route, then make sure the autorouter follows that, and also code for it
 - 3d model of receptacles appear to be oriented in a conflict way, the two outlets on the opposite direction (off rotation) for the extra width of the receptacle box.
-- ED-M-LIVING-RC10 seems to be on a door, which checks don't seem to catch
 - Specify the products for the ducts and duct vents
 - Rework the lighting with specified products. Most should have specified products, but they aren't listed in the light details as products directly yet
 - Consider have the oven/range in the kitchen island across from the sink

@@ -26,12 +26,13 @@ steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
 - **Surge duplex** `T5380-W` (20 A TR; replaces the discontinued `T7380-W`): `ED-B-PLAY-N-RC1` behind
   `FURN-B-PLAY-TV`, and `ED-M-BED-RC4` at the desk.
 - **Guide-light duplex** `T6525-W`, 12" AFF: new receptacles on the `ST-B2M` half-landings
-  (`CKT-RC-BSMT`), `ST-M2S` (`CKT-RC-MAIN`) and the `ST-S2A` head (`CKT-RC-ATTIC`), plus
+  (`CKT-RC-BSMT`) and `ST-M2S` (`CKT-RC-MAIN`), plus
   `ED-B-HALL-RC1`. 15 A on a 20 A circuit is allowed (NEC 210.21(B)(3)). Modelled in
   `plan/electrical_stair_ext.py`, all on the landing's north wall: `ED-B-STAIR-RC1` (lower/east
-  landing, x 15'-8") and `-RC2` (upper/west, x 12'-1", 7 5/16" higher), `ED-M-STAIR-RC1` (x 14'-6",
-  east of the heat-pump head) and `ED-A-STAIR-RC1` (south face of `W-A-SN`, x 19'-6"). Move them
-  in the editor if the owner prefers other stations.
+  landing, x 15'-8") and `-RC2` (upper/west, x 12'-1", 7 5/16" higher), and `ED-M-STAIR-RC1`
+  (x 14'-6", east of the heat-pump head). `ED-A-STAIR-RC1` is now a standard 15 A duplex
+  on the study's east face of `W-A-C1`, 60" from the wall start,
+  12" AFF (`CKT-RC-ATTIC`).
 - **Mudroom:** `ED-M-MUDROOM-SW` becomes a Leviton `DOS02-LW` PIR occupancy sensor (auto
   on/off), same gang. 150 W LED, neutral optional; three cans and a sconce are well under it.
 - **Pantry:** PIR-only Leviton `ODS10-IDW` (10 A, LED-rated, no neutral needed) replaces `ED-M-PANTRY-SW` for `ED-M-PANTRY-LT`, shortest timeout. Inside face of

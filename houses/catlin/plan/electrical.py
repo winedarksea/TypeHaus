@@ -1981,7 +1981,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C3", face="right", distance_from_start=inch(37.25),
+                         wall_ref="W-M-C3", face="right", distance_from_start=inch(45),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # The hall band: merging RM-M-HALL into this room via BM-M-HALL lost its 210.52(A)
     # hallway exemption, and the band had zero receptacles. Positions are the four gaps
@@ -2118,21 +2118,14 @@ NEC_FILL_MAIN = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-STOS", face="left", distance_from_start=inch(54.625),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # GFCI, for the same reason RC9 above is: RM-M-BATH1's lavatory is a 24" vanity whose
-    # cabinet reaches 4'-9" further east than an 18" bowl would, so this receptacle falls
-    # inside E3902.10's 6'-0" sink reach — 4'-7" to the cabinet's nearest corner, measured
-    # through D-M-BATH1's open doorway rather than through a wall.
-    #
-    # A note for whoever reads that finding next: the check measures from the fixture's
-    # CENTROID (it reported 5.8'), but NEC 210.8 and E3902.10 both measure from the sink's
-    # OUTSIDE EDGE, which here is 4.6'. The check understates every distance by half a
-    # fixture, so it under-reports rather than over-reports — this one is real either way.
+    # The pier south of D-M-BATH1 clears its casing and framing; the former 6 13/32"
+    # station was inside the doorway. Retain GFCI protection near the bath lavatory.
     ElectricalDevice(uid="NEC068AAAA", tag="ED-M-LIVING-RC10", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-20",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), room="RM-M-LIVING",
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BAE", face="left", distance_from_start=inch(6.40625),
+                         wall_ref="W-M-BAE", face="left", distance_from_start=inch(43),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ED-M-LIVING-RC11 stood on the 10 3/16" pier at W-M-STRS's east end. That wall was
     # removed with D-M-STAIR (main.py WALLS) and the receptacle went with its host — there
@@ -2534,12 +2527,9 @@ NEC_FILL_SECOND = [
     # RC8: W-S-SN3 is INT_2X6_STAGGERED_PLUMBING (plan/storeys/second.py — the suite bath's
     # lav and WC actually back onto it), and this room's boundary opens a >6' gap on the
     # L-arm's south wall, W-S-SBS. None of RC1-RC7 reaches it — RC1 is 4'-3" east on the same
-    # wall but stops short of the corner.
-    #
-    # GFCI: `code.E3902_gfci_locations` measures to a fixture's insertion CENTROID, and by
-    # that reading this stretch is not within 6' of a sink — but measured to the suite bath
-    # vanity's actual edge, as E3902.10 asks, the box is 4'-4" from it, not clear of the
-    # circle at all.
+    # wall but stops short of the corner. Set this box 9 1/2" from the wall start, before
+    # D-S-SUITEBATH's opening begins 17" from that end; the switch stays beyond the door on
+    # the other side.
     #
     # y is 15'-7 5/8": W-S-SBS is INT_2X4_PARTITION, its wet-wall duty having moved to SN3,
     # so its south face sits 1.000" back from the axis, and this box — and RC1 beside it —
@@ -2550,7 +2540,7 @@ NEC_FILL_SECOND = [
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SBS", face="right", distance_from_start=inch(16.5),
+                         wall_ref="W-S-SBS", face="right", distance_from_start=inch(9.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 # Storage lofts are outside habitable-room receptacle spacing. The studio and study

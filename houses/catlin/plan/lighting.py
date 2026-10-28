@@ -679,10 +679,8 @@ MAIN_LIGHTING = [
     # of its own. ED-M-KITCH-SW-UC stays at the pantry corner: that one dims the counter
     # tape you stand at, this one is the room's general lighting you reach for on the way in.
     #
-    # ** ED-M-LIVING-RC7 IS THE SAME DEFECT ON THIS WALL AND IS NOT FIXED HERE. ** It sits
-    # at y=21'-1 1/4", inside D-M-STUDY's jamb pack (y 223.03"..256.97"), at 16" AFF. Found
-    # while measuring this move; a receptacle is a spacing decision (electrical.py's
-    # NEC 210.52 run) and not this switch's to make. See plans/TODO.md.
+    # ED-M-LIVING-RC7 was moved north on this wall to clear D-M-STUDY's jamb pack; its
+    # spacing position remains governed by the NEC 210.52 run in electrical.py.
     ElectricalDevice(uid="QTM000DAAA", tag="ED-M-KITCH-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
@@ -884,13 +882,13 @@ MAIN_LIGHTING = [
     # The booth is a facing pair — FURN-M-STUDY-BENCH along the north wall,
     # FURN-M-STUDY-DESK in the SW corner — so the occupant sits with their back to the
     # north wall and faces south, and the camera on the desk looks north at them. From
-    # (17'-6 5/8", 21'-5") at 6'-0" this is a SIDE key about 3'-0" off their left cheek,
+    # (17'-6 5/8", 21'-8 1/2") at 6'-0" this is a SIDE key about 3'-0" off their left cheek,
     # aimed across the bench: off the backdrop, not behind the subject, not competing with a
     # monitor. It is above the bench's east end (seat 18") with 4'-6" of clear, so nothing
     # standing on the bench reaches it.
     #
     # REG-M-SUP4 is in the CEILING three feet over it at (17'-2", 20'-8") — 4 5/8" west and
-    # 9" south of directly above, the 9" being a joist line — rather than in this sliver,
+    # 12 1/2" south of directly above; its ceiling grille stays on a joist-bay line,
     # which already holds this fitting and a switch. The room's stale-air pickup is LOW, on
     # the south wall's east end: the east wall below this sconce is D-M-STUDY's rough
     # opening down to 21'-0 11/16" and FURN-M-STUDY-BENCH from there to the corner. See
@@ -906,7 +904,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-STUDY", controlled_by=("ED-M-STUDY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C3", face="left", distance_from_start=inch(41),
+                         wall_ref="W-M-C3", face="left", distance_from_start=inch(44.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-BATH1: wet-rated can plus a mirror light over the lavatory, which backs onto

@@ -170,7 +170,7 @@ MAIN_DEVICES = [
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C3", face="left", distance_from_start=inch(41),
+                         wall_ref="W-M-C3", face="left", distance_from_start=inch(44.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # --- kitchen outlets (RM-M-LIVING is open plan, so these keep the LIVING suffix) ---
     # Circuits still deferred (decision 1): symbols and mounting heights, not a panel
@@ -206,13 +206,13 @@ MAIN_DEVICES = [
     # KGF3 at 29'-1 1/4" serves the 14" landing between the hung upper and the range,
     # its box on the south side of the 29'-4" stud. Nothing in the
     # engine checks 210.52(C) — the counter rule reports UNKNOWN by design.
-    # y=34'-8" clears WIN-M-KIT-E's north jamb at 34'-7".
+    # y=35'-0" clears WIN-M-KIT-E's north jamb at 34'-7".
     ElectricalDevice(uid="DCP5ZCJVTK", tag="ED-M-LIVING-KGF7", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-KITCH-SA2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(416),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(420),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # --- Under FURN-M-KIT-E-HUNG: the 20" countertop-appliance cave (36-56") -------------
     # Ordinary countertop receptacles since the mixer box was retired (2026-10-25). KGF4 (SA2)
@@ -395,15 +395,12 @@ SECOND_DEVICES = [
                      position=pt(ft(12, 6.75), ft(19, 4)), type_ref="ED-T-LT-CAN4-WET", circuit="CKT-LT-UPPER",
                      room="RM-S-SUITEBATH", controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # y moved 1/2" north on 2026-09-15, following its wall: W-S-SBS went INT_2X4_PARTITION
-    # -> INT_2X4_RC and the resilient channel lands on this, the bath face, taking it from
-    # 16'-1 3/8" to 16'-1 7/8". The box has to follow or it resolves inside the channel —
-    # test_wall_mounted_devices_resolve_against_a_wall_face caught it at 0.71" buried.
+    # On the bath face east of D-S-SUITEBATH, 55 1/2" from the wall start; clear of its casing.
     ElectricalDevice(uid="CED013K2AA", tag="ED-S-SUITEBATH-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SBS", face="left", distance_from_start=inch(37.5),
+                         wall_ref="W-S-SBS", face="left", distance_from_start=inch(55.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED014K1AA", tag="ED-S-VANITY-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(3), ft(23, 6)), type_ref="ED-T-LT-CAN4-WET", circuit="CKT-LT-UPPER",
@@ -477,19 +474,19 @@ ATTIC_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C2B", face="right", distance_from_start=inch(121.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # RM-A-STUDY (x 18'-36', y 0-8'-8"): switch inside D-A-STUDY, the door at (19', 8'-8").
+    # RM-A-STUDY (x 18'-36', y 0-8'-8"): wall light and switch on W-A-C1's east face.
     ElectricalDevice(uid="CED012K1AA", tag="ED-A-STUDY-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-UD",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDY", controlled_by=("ED-A-STUDY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-C1B", face="right", distance_from_start=inch(29),
+                         wall_ref="W-A-C1", face="right", distance_from_start=inch(40),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED012K2AA", tag="ED-A-STUDY-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-SN", face="right", distance_from_start=inch(44.375),
+                         wall_ref="W-A-C1", face="right", distance_from_start=inch(60),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 

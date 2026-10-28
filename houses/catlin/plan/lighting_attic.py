@@ -220,7 +220,7 @@ ATTIC_LIGHTING = [
     # 1 1/2" plate, so the only full-height wall in a 356 sf room is the centre wall,
     # x=18'-0", west face at x=17'-8 5/8" and the device line 2" off it at 17'-6 5/8" (a
     # 4"-deep body's own half — the offset ED-A-STUDY-SPOT uses on the far side of the same
-    # wall). All three clear ED-A-STUDIO-SW's plate at y=6'-0"/46" by height.
+    # wall). All three clear ED-A-STUDIO-SW's plate on W-A-C2 at 46" by height.
     #
     # ** THE WALL'S NORTH END IS BARE AND NO FITTING IS WANTED THERE (2026-09-09). ** The bar
     # used to take y 12'-6"..17'-1" and that is what stopped the run at 12'-0"; the whole
@@ -239,7 +239,7 @@ ATTIC_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO", controlled_by=("ED-A-STUDIO-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-C1B", face="left", distance_from_start=inch(17),
+                         wall_ref="W-A-C2", face="left", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="6M2C9K60B8", tag="ED-A-STUDIO-WALL5", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-UD",
@@ -309,15 +309,13 @@ ATTIC_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-BATH-S", face="right", distance_from_start=inch(37),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # On W-A-C1B's west face at 6'-0", position unchanged: the two centre-wall segments are
-    # collinear, but the wall south of y=5'-7" faces RM-A-STUDY and the studio does not start
-    # until that line. A station 5" further south is a switch in the wrong room.
+    # On W-A-C2's west face, 12" from its south end, inside RM-A-STUDIO.
     ElectricalDevice(uid="QTA000CAAA", tag="ED-A-STUDIO-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-C1B", face="left", distance_from_start=inch(5),
+                         wall_ref="W-A-C2", face="left", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** THE ONE RECESSED CAN THIS STOREY KEEPS, AND THE REASON IS THE SHOWER. ** Everything
     # else here went to a wall fitting on 2026-09-06; a sconce over a 36" pan is the wrong

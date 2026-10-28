@@ -37,13 +37,13 @@ STAIR_MAIN = [
 ]
 
 STAIR_ATTIC = [
-    # The head of ST-S2A, on the south face of W-A-SN: 18" is x=19'-6", west of the flight.
+    # Standard duplex on the study wall beside the attic stair; retained at 12" AFF.
     ElectricalDevice(uid="PNBZMKXZCC", tag="ED-A-STAIR-RC1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-GUIDE", circuit="CKT-RC-ATTIC",
+                     type_ref="ED-T-LEV-DUPLEX-15", circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(12)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-SN", face="right", distance_from_start=inch(18),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         wall_ref="W-A-C1", face="right", distance_from_start=inch(60),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
 # No room=: an exterior placeable names none (the wet-location checks rely on it).

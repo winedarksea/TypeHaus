@@ -16,6 +16,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     electrical,
     electrical_code,
     electrical_floor,
+    electrical_openings,
     electrical_receptacles,
     electrical_service,
     erv_interlock,
