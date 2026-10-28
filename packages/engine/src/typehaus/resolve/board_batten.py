@@ -99,6 +99,23 @@ def _opening_cut(wall, opening, project):
     return planes, (center - half, center + half, bottom, top)
 
 
+def _straddled(planes, corners):
+    """The planes that cut a ribbon, or None when one misses it entirely.
+
+    A ribbon's faces have only its eight corners for vertices, so a plane every corner is
+    inside leaves ``clip_faces`` returning the faces unchanged, and one every corner is
+    outside empties them: only the straddlers need clipping.
+    """
+    cuts = []
+    for plane in planes:
+        a, b, c, d = plane
+        signed = [a * x + b * y + c * z - d for x, y, z in corners]
+        if min(signed) > CLIP_TOLERANCE_M:
+            return None
+        if max(signed) > CLIP_TOLERANCE_M:
+            cuts.append(plane)
+    return cuts
+
 
 def profile_mesh(
     wall,
@@ -194,8 +211,17 @@ def profile_mesh(
             outer_a, outer_b = (s0, support + a[1]), (s1, support + b[1])
             inner_a = (center + inset[index][0], support + inset[index][1])
             inner_b = (center + inset[index + 1][0], support + inset[index + 1][1])
-            for footprint in footprints:
-                for height_planes in height_regions:
+            base = [(*p, z0) for p in (outer_a, outer_b, inner_a, inner_b)]
+            corners = base + [(x, y, z1) for x, y, _ in base]
+            # Footprint planes have no z term: the four corners at z0 decide them.
+            footprint_cuts = [_straddled(footprint, base) for footprint in footprints]
+            height_cuts = [_straddled(planes, corners) for planes in height_regions]
+            for cuts in footprint_cuts:
+                if cuts is None:
+                    continue
+                for more in height_cuts:
+                    if more is None:
+                        continue
                     faces = _section_ribbon_faces(
                         outer_a,
                         outer_b,
@@ -204,7 +230,7 @@ def profile_mesh(
                         z0,
                         z1,
                     )
-                    for plane in footprint + height_planes:
+                    for plane in cuts + more:
                         faces = clip_faces(faces, plane)
                         if not faces:
                             break

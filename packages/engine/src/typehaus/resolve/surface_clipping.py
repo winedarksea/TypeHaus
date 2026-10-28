@@ -7,6 +7,7 @@ fold meets an opening, a mitre, or a roof rake. No optional geometry kernel is n
 from __future__ import annotations
 
 import math
+from itertools import chain
 
 from typehaus.resolve.geometry_ir import GMesh, Vec3
 
@@ -123,10 +124,25 @@ def subtract_convex(faces: Faces, planes: list[Plane]) -> list[Faces]:
         return [faces]
     result = []
     for plane in planes:
-        outside = clip_faces(faces, tuple(-v for v in plane))
+        # Distances to -plane are exactly the negated distances to plane, so one pass decides
+        # both of clip_faces' early outs; only a straddler pays for the two real clips.
+        a, b, c, d = plane
+        signed = [a * x + b * y + c * z - d for face in faces for x, y, z in face]
+        low, high = min(signed), max(signed)
+        if low >= -CLIP_TOLERANCE_M:
+            outside = faces
+        elif high < -CLIP_TOLERANCE_M:
+            outside = []
+        else:
+            outside = clip_faces(faces, tuple(-v for v in plane))
         if outside:
             result.append(outside)
-        faces = clip_faces(faces, plane)
+        if high <= CLIP_TOLERANCE_M:
+            pass
+        elif low > CLIP_TOLERANCE_M:
+            faces = []
+        else:
+            faces = clip_faces(faces, plane)
         if not faces:
             break
     return result
@@ -145,9 +161,14 @@ def mesh_from_faces(pieces: list[Faces], transform, mirrored: bool) -> GMesh:
             start = len(positions)
             positions.extend(world)
             normals.extend([normal] * len(world))
+            ox, oy, oz = world[0]
             for i in range(1, len(world) - 1):
-                if face_normal([world[0], world[i], world[i + 1]]):
+                # face_normal(triangle) is not None, inlined: this is the stage's hot loop.
+                (ax, ay, az), (bx, by, bz) = world[i], world[i + 1]
+                ax, ay, az, bx, by, bz = ax - ox, ay - oy, az - oz, bx - ox, by - oy, bz - oz
+                nx, ny, nz = ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx
+                if math.sqrt(nx * nx + ny * ny + nz * nz) > MINIMUM_FACE_AREA_M2:
                     triangles.append((start, start + i, start + i + 1))
-    if not all(math.isfinite(v) for p in positions for v in p):
+    if not all(map(math.isfinite, chain.from_iterable(positions))):
         raise ValueError("Non-finite siding mesh coordinate")
     return GMesh(tuple(positions), tuple(triangles), tuple(normals))

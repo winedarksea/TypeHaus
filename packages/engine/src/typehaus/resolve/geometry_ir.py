@@ -103,9 +103,9 @@ class GMesh:
             raise ValueError("GMesh.normals must be per-position")
         if self.uvs is not None and len(self.uvs) != count:
             raise ValueError("GMesh.uvs must be per-position")
-        for tri in self.triangles:
-            if any(index >= count for index in tri):
-                raise ValueError(f"GMesh triangle {tri} indexes past {count} positions")
+        if self.triangles and max(map(max, self.triangles)) >= count:
+            tri = next(tri for tri in self.triangles if max(tri) >= count)
+            raise ValueError(f"GMesh triangle {tri} indexes past {count} positions")
 
 
 @dataclass(frozen=True)
