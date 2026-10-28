@@ -343,8 +343,14 @@ the future.
 - Possibly poplar 1x12 as stair skirt boards, if not already specified, painted white. Likely installed tight to wall framing/drywall prior to installation of finish treads and risers.
 - Check roof sheathing (garage and house both). Likely 5/8" (19/32") CDX Plywood is fine versus the current 3/4" struct 1.
 - Probably around the windows, the flashing should come out and over the girts (covering the buck and girt then) that box in the window. ccspf should come out and around the outie buck as well up to the girt there. That would bury the KDAT girt completely in foam and flashing. Perhaps instead the gap should remain on the back of the girt, but the full outer face and top and bottom is flashed (just back clear to dry backwards into cavity?)
+- Make door and window pieces (trim, jamb, etc) selectable in the UI as separate pieces (but all still hidden by the same view toggle). Such pieces should have their product name shown in the UI when selected. Generally something like the drip edge should be one piece (even if multiple faces) so the garage drip edge at the eaves is something that has gone too far in being split out, and gutters are another thing where the back, bottom and front should all be shown as one piece.
+- Some of the trim added to the siding might need a depth bias to reduce 'glitching' with the siding itself
 - Pg 288 of the book has a roof eave detail where the roof and drip flashing alone extend out about an inch (no metal or sheathing).
-- Pick a soffit product and close the garage attic ventilation grading, and the corrugated soffit to sill junction detailed.
+- Pick a soffit product and close the garage attic ventilation grading, and the corrugated soffit to sill junction detailed. Also fix the garage soffit end detail (north and south gable ends) where the sofit is too flat and isn't inline with the roof slope there
+- SL-SG-STAIRPAD is a slightly different finished height than SL-WK-D. They should have the same finished height.
+- D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
+- The fireplace opening, AO-M-FIRE-NICHE got exterior flashing trim, which is ridiculous, because that niche is entirely inside the house (the sheathing is continuous over it)
+
 
 # Project Management
 
