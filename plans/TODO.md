@@ -336,6 +336,7 @@ the future.
 - 3d model of receptacles appear to be oriented in a conflict way, the two outlets on the opposite direction (off rotation) for the extra width of the receptacle box.
 - ED-M-LIVING-RC10 seems to be on a door, which checks don't seem to catch
 - Specify the products for the ducts and duct vents
+- Rework the lighting with specified products. Most should have specified products, but they aren't listed in the light details as products directly yet
 
 # Project Management
 
