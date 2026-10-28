@@ -28,7 +28,7 @@ import { WHOLE_HOUSE_GLB_PRIMARY } from "../three/wholeHouseGlb";
 import { applyWholeHouseGlb, loadWholeHouseGlb } from "../three/wholeHouseGlbScene";
 import { applyVisibility, isRenderedInScene, objectVisible } from "../three/builders/registry";
 import { planCenterOf, populateScene, type SceneRegistry } from "../three/builders/scene";
-import { applyEarthOpacity, applyEarthTone } from "../three/builders/site";
+import { applyEarthOpacity, applyEarthTone, PartGeometries } from "../three/builders/site";
 import {
   geographicBearingToSceneDirection,
   geographicSoutheastSceneAzimuthRadians,
@@ -344,7 +344,7 @@ function createScene(
 
   // The raycast set and the uid -> materials index, together: the async furniture loader
   // in populateScene *replaces* the pick list, so it has to be reachable by reference.
-  const registry: SceneRegistry = { picks: [], byUid: new Map() };
+  const registry: SceneRegistry = { picks: [], byUid: new Map(), partGeometries: new PartGeometries() };
   // The lazily fetched bars, remembered with the model they were fetched for so a rebuild of
   // the SAME model (a theme flip) redraws them and a new revision drops them until refetched.
   const rebarLayer = createRebarLayer(content, registry);
@@ -673,6 +673,7 @@ function createScene(
     rebarLayer.clear();
     registry.picks = [];
     registry.byUid.clear();
+    registry.partGeometries?.dispose();
     highlighted = null;
   };
 
@@ -933,6 +934,7 @@ function createScene(
       stopTween();
       ro.disconnect();
       for (const trade of ALL_TRADES) disposeGroup(tradeGroups[trade]);
+      registry.partGeometries?.dispose();
       backgroundTexture?.dispose();
       environment.dispose();
       pmrem.dispose();

@@ -490,7 +490,9 @@ export function buildMembers(group: THREE.Group, members: Member[], center: Plan
 export function disposeGroup(root: THREE.Object3D) {
   root.traverse((obj) => {
     const mesh = obj as THREE.Mesh;
-    if (mesh.geometry && mesh.geometry !== UNIT_BOX) mesh.geometry.dispose();
+    if (mesh.geometry && mesh.geometry !== UNIT_BOX && !mesh.geometry.userData.shared) {
+      mesh.geometry.dispose();
+    }
     const material = mesh.material;
     if (Array.isArray(material)) material.forEach((mat) => mat.dispose());
     else material?.dispose();

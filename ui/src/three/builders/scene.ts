@@ -26,7 +26,7 @@ import { baseRunTrade, buildBaseRun, buildCountertop, buildDoorCasing, buildWind
 import { buildPlants, instancedPlantUids } from "./plants";
 import type { RebarLayer } from "./rebar";
 import { tagStorey as tagStoreyChildren, tagTrades } from "./registry";
-import { buildCanvasObject, buildEarth, buildSuspension } from "./site";
+import { buildCanvasObject, buildEarth, buildSuspension, type PartGeometries } from "./site";
 import { buildOpening } from "./openings";
 import { buildWall } from "./walls";
 import {
@@ -39,6 +39,8 @@ import {
 export interface SceneRegistry {
   picks: THREE.Mesh[];
   byUid: Map<string, THREE.Material[]>;
+  /** Product part geometry the scene's instances share; disposed by whoever clears the scene. */
+  partGeometries?: PartGeometries;
 }
 
 export interface PopulateSceneOptions {
@@ -325,7 +327,8 @@ export function populateScene(options: PopulateSceneOptions) {
     const elevation = item.z_m ?? placeableElevationM(model, item.storey);
     const before = snapshot(tradeGroups);
     const fallback = buildCanvasObject(group, item, type, center, mode, palette, elevation,
-      registry.picks, registry.byUid, model.catalog?.materials, model.catalog?.meshes);
+      registry.picks, registry.byUid, model.catalog?.materials, model.catalog?.meshes,
+      registry.partGeometries);
     buildSuspension(group, item, center, mode, registry.picks, registry.byUid);
     tagNew(tradeGroups, before, trades);
     tagStorey(tradeGroups, before, item.storey ?? null);

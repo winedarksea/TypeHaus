@@ -126,6 +126,7 @@ export function buildCanvasObject(
   byUid: Map<string, THREE.Material[]>,
   materials?: readonly MaterialAppearance[],
   meshes: readonly PackedMesh[] = [],
+  shared?: PartGeometries,
 ): THREE.Object3D | null {
   if (!item.position_m) return null;
   const [width, depth] = type?.footprint_m ?? [0.45, 0.45];
@@ -138,7 +139,7 @@ export function buildCanvasObject(
     const base = mount?.kind === "floor" && mount.recessed_into_host_surface
       ? elevation - height : elevation;
     return buildCanvasObjectParts(parent, item, parts, center, mode, base, picks, byUid,
-      materials, meshes);
+      materials, meshes, shared);
   }
   const color = item.domain === "electrical" ? 0xd69e2e
     : item.domain === "plumbing" ? 0x4299e1 : item.domain === "mechanical" ? 0x718096 : palette.member.wood;
@@ -202,6 +203,30 @@ export function buildSuspension(
 }
 
 /**
+ * Product part geometry built once per scene and drawn by every instance of its type: catlin
+ * places hundreds of the same few products. Keyed by the catalog's own part object, so it lives
+ * exactly as long as the model; flagged `shared` so `disposeGroup` leaves it to `dispose`.
+ */
+export class PartGeometries {
+  private readonly byPart = new Map<ModelPart, THREE.BufferGeometry>();
+
+  get(part: ModelPart, make: () => THREE.BufferGeometry): THREE.BufferGeometry {
+    let geometry = this.byPart.get(part);
+    if (!geometry) {
+      geometry = make();
+      geometry.userData.shared = true;
+      this.byPart.set(part, geometry);
+    }
+    return geometry;
+  }
+
+  dispose(): void {
+    for (const geometry of this.byPart.values()) geometry.dispose();
+    this.byPart.clear();
+  }
+}
+
+/**
  * A generated multi-part massing: one mesh per part, one material per distinct
  * colour (a part made of a board material — oak shelving — is textured as that board), all
  * under a single group. Every mesh carries the object's uid and lands in `picks`
@@ -222,6 +247,7 @@ export function buildCanvasObjectParts(
   byUid: Map<string, THREE.Material[]>,
   catalog?: readonly MaterialAppearance[],
   meshes: readonly PackedMesh[] = [],
+  shared?: PartGeometries,
 ): THREE.Object3D {
   const group = new THREE.Group();
   const materials = new Map<string, THREE.Material>();
@@ -252,35 +278,52 @@ export function buildCanvasObjectParts(
     // object's origin, so a part only needs its own local offset expressed the same way.
     const [cx, cy, cz] = part.center;
     const packed = part.mesh_index === undefined ? undefined : meshes[part.mesh_index];
-    const curvedMesh = packed ? createModelPartMeshGeometry(packed) : null;
     // A ringed part sweeps its own plan outline — a neo-angle shower pan is a pentagon, and a
-    // box would draw a square where the room's diagonal is. `createPlanPrismGeometry` already
-    // lands in the scene frame at the local origin; boxes and cylinders use their center.
-    const ring = part.points && part.points.length >= 3
-      ? createPlanPrismGeometry(part.points, cz - sz / 2, cz + sz / 2) : null;
-    const depthCylinder = part.shape === "cylinder-depth"
-      ? new THREE.CylinderGeometry(sx / 2, sx / 2, sy, part.radial_segments ?? 16)
-        .rotateX(Math.PI / 2) : null;
-    const seed = pieceSeed(`${item.uid}|${index}`);
-    if (curvedMesh && board && part.grain_axis) {
-      const [gx, gy, gz] = part.grain_axis;
-      applyPieceGrainUv(curvedMesh, new THREE.Vector3(gx, gz, -gy), board, seed);
-    }
-    if (ring && board) {
-      const [gx, gy] = planLongAxis(part.points!);
-      applyPieceGrainUv(ring, new THREE.Vector3(gx, 0, -gy), board, seed);
-    }
-    // A board part bakes its placement into the geometry, so its grain can follow its
-    // longest side; a plain box keeps the shared unit geometry and a mesh offset.
-    const box = board && !ring && !depthCylinder && !curvedMesh
-      ? boardBoxGeometry(new THREE.Matrix4().makeTranslation(cx, cz, -cy)
-        .scale(new THREE.Vector3(sx, sz, sy)), board, seed) : null;
-    const geometry = curvedMesh ?? ring ?? depthCylinder ?? box ?? new THREE.BoxGeometry(sx, sz, sy);
-    if (marble) {
-      applyPlankPlaneUv(geometry, [0, 0], [1, 0], [MARBLE_TILE_M, MARBLE_TILE_M]);
-    }
+    // box would draw a square where the room's diagonal is. Meshes and rings land in the local
+    // frame already; boxes and cylinders are centred and take the part's offset on their mesh
+    // (`userData.centred`, which survives the PartGeometries cache).
+    const build = (): THREE.BufferGeometry => {
+      const seed = pieceSeed(`${item.uid}|${index}`);
+      if (packed) {
+        const curved = createModelPartMeshGeometry(packed);
+        if (board && part.grain_axis) {
+          const [gx, gy, gz] = part.grain_axis;
+          applyPieceGrainUv(curved, new THREE.Vector3(gx, gz, -gy), board, seed);
+        }
+        return curved;
+      }
+      const ring = part.points && part.points.length >= 3
+        ? createPlanPrismGeometry(part.points, cz - sz / 2, cz + sz / 2) : null;
+      if (ring) {
+        if (board) {
+          const [gx, gy] = planLongAxis(part.points!);
+          applyPieceGrainUv(ring, new THREE.Vector3(gx, 0, -gy), board, seed);
+        }
+        return ring;
+      }
+      const centred = part.shape === "cylinder-depth"
+        ? new THREE.CylinderGeometry(sx / 2, sx / 2, sy, part.radial_segments ?? 16)
+          .rotateX(Math.PI / 2)
+        // A board part bakes its placement into the geometry, so its grain can follow its
+        // longest side; a plain box keeps a mesh offset.
+        : board ? null : new THREE.BoxGeometry(sx, sz, sy);
+      if (!centred) {
+        return boardBoxGeometry(new THREE.Matrix4().makeTranslation(cx, cz, -cy)
+          .scale(new THREE.Vector3(sx, sz, sy)), board!, seed);
+      }
+      centred.userData.centred = true;
+      return centred;
+    };
+    const makeGeometry = (): THREE.BufferGeometry => {
+      const geometry = build();
+      if (marble) applyPlankPlaneUv(geometry, [0, 0], [1, 0], [MARBLE_TILE_M, MARBLE_TILE_M]);
+      return geometry;
+    };
+    // A board's grain is seeded per instance, so it owns its geometry; everything else is the
+    // type's and is built once per scene for every instance (→ PartGeometries).
+    const geometry = shared && !board ? shared.get(part, makeGeometry) : makeGeometry();
     const mesh = makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry));
-    if (!ring && !box && !curvedMesh) mesh.position.set(cx, cz, -cy);
+    if (geometry.userData.centred) mesh.position.set(cx, cz, -cy);
     mesh.userData.uid = item.uid;
     mesh.userData.selectionKind = "canvas_object";
     group.add(mesh);
