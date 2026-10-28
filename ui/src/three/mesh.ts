@@ -12,8 +12,9 @@ export interface DecodedMesh {
 }
 
 /**
- * The wire mesh (flat integers of `quantum`) as scene-frame buffers: plan (x, y, z) lands at
- * (x - cx, z, cy - y), the mapping projectPointToScene owns. One tight loop, no nesting.
+ * The wire mesh (flat integers of `quantum`, each stream delta-coded per axis) as scene-frame
+ * buffers: plan (x, y, z) lands at (x - cx, z, cy - y), the mapping projectPointToScene owns.
+ * One tight loop per stream, keeping the running sums.
  */
 export function decodeMesh(mesh: PackedMesh, center: PlanCenter = [0, 0]): DecodedMesh {
   // Dividing by the integer scale lands a round value exactly; times 1e-5 would not.
@@ -21,32 +22,41 @@ export function decodeMesh(mesh: PackedMesh, center: PlanCenter = [0, 0]): Decod
   const [cx, cy] = center;
   const src = mesh.positions;
   const positions = new Float32Array(src.length);
+  let x = 0, y = 0, z = 0;
   for (let i = 0; i < src.length; i += 3) {
-    positions[i] = src[i] / scale - cx;
-    positions[i + 1] = src[i + 2] / scale;
-    positions[i + 2] = cy - src[i + 1] / scale;
+    x += src[i]; y += src[i + 1]; z += src[i + 2];
+    positions[i] = x / scale - cx;
+    positions[i + 1] = z / scale;
+    positions[i + 2] = cy - y / scale;
   }
   let normals: Float32Array | null = null;
   if (mesh.normals?.length) {
     const n = mesh.normals;
     normals = new Float32Array(n.length);
+    let nx = 0, ny = 0, nz = 0;
     for (let i = 0; i < n.length; i += 3) {
-      normals[i] = n[i] / NORMAL_SCALE;
-      normals[i + 1] = n[i + 2] / NORMAL_SCALE;
-      normals[i + 2] = -n[i + 1] / NORMAL_SCALE;
+      nx += n[i]; ny += n[i + 1]; nz += n[i + 2];
+      normals[i] = nx / NORMAL_SCALE;
+      normals[i + 1] = nz / NORMAL_SCALE;
+      normals[i + 2] = -ny / NORMAL_SCALE;
     }
   }
-  return { positions, normals, index: Uint32Array.from(mesh.triangles) };
+  const index = new Uint32Array(mesh.triangles.length);
+  let at = 0;
+  for (let i = 0; i < index.length; i++) index[i] = at += mesh.triangles[i];
+  return { positions, normals, index };
 }
 
 /** The engine's encoding, for fixtures: nested plan-frame vectors in, a wire mesh out. */
 export function packMesh(positions: Vec3[], triangles: [number, number, number][],
   normals?: Vec3[]): PackedMesh {
+  const delta = (values: number[], stride: number) =>
+    values.map((v, i) => (i < stride ? v : v - values[i - stride]));
   return {
     quantum: 1e-5,
-    positions: positions.flat().map((c) => Math.round(c * 1e5)),
-    triangles: triangles.flat(),
-    ...(normals ? { normals: normals.flat().map((c) => Math.round(c * NORMAL_SCALE)) } : {}),
+    positions: delta(positions.flat().map((c) => Math.round(c * 1e5)), 3),
+    triangles: delta(triangles.flat(), 1),
+    ...(normals ? { normals: delta(normals.flat().map((c) => Math.round(c * NORMAL_SCALE)), 3) } : {}),
   };
 }
 

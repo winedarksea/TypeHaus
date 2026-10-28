@@ -38,8 +38,9 @@ export interface Provenance {
 
 /** Engine-generated finish geometry in project metres, with crisp per-face normals. */
 // A mesh on the wire (→ server/model_json_mesh.py): flat integer positions of `quantum`
-// metres, flat triangle indices, and unit normals scaled by 1e4 where the engine has them.
-// Decode with three/mesh.ts.
+// metres, flat triangle indices, and unit normals scaled by 1e4 where the engine has them,
+// each stream delta-coded per axis. Decode with three/mesh.ts; `triangles.length / 3` is
+// still the triangle count.
 export interface PackedMesh {
   quantum: number;
   positions: number[];

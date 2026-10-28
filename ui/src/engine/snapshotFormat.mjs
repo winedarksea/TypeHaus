@@ -2,7 +2,8 @@
 export const SNAPSHOT_FORMAT = "typehaus-model-snapshot";
 // 2: product meshes arrive deduplicated in `catalog.meshes` from the engine itself, so the
 // envelope no longer carries a mesh table of its own.
-export const SNAPSHOT_VERSION = 2;
+// 3: mesh streams are delta-coded (server/model_json_mesh.py).
+export const SNAPSHOT_VERSION = 3;
 export const SNAPSHOT_CHUNK_BYTES = 8 * 1024 * 1024;
 
 export function packSnapshot(model) {
