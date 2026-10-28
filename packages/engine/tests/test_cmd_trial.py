@@ -102,5 +102,7 @@ def test_the_suppressed_baseline_hides_the_campaign_which_is_the_bug(runner) -> 
     assert runner.invoke(app, ["trial", str(_CATLIN), "--record"]).exit_code == 0
     payload = json.loads((_CATLIN / BASELINE_PATH).read_text())
     assert payload["suppress"] is True
+    # riser_through_deck was un-suppressed 2026-10-26; pin a still-suppressed item instead.
     assert not [row for row in payload["findings"]
-                if row["check_id"] == "mep.riser_through_deck"]
+                if row["check_id"] == "mep.wet_wall_occupancy"
+                and "PR-M-KITCH-LOCAL-VENT" in row["element_tags"]]
