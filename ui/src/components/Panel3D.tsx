@@ -298,6 +298,9 @@ function createScene(
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // The sun is fitted to the building in setModel and never follows the camera, so the shadow
+  // map only changes when the scene does (→ invalidateShadows). Orbit frames skip that pass.
+  renderer.shadowMap.autoUpdate = false;
   // Without tone mapping three hard-clips anything over 1.0, and a Regal White (#E8E8E2,
   // albedo 0.91) wall under this light rig lands well past it: the whole envelope rendered at
   // a flat 255 and swallowed the standing-seam shading, leaving only the few seams that
@@ -455,6 +458,12 @@ function createScene(
     });
   };
 
+  // Re-render the shadow map with the next frame: anything that adds, removes or hides geometry.
+  const invalidateShadows = () => {
+    renderer.shadowMap.needsUpdate = true;
+    requestRender();
+  };
+
   // Eased camera move (reset view): interpolate orbit angles / dolly / target over a short
   // ease-in-out so the reset glides instead of snapping. Any user interaction cancels it.
   let tween = 0;
@@ -477,6 +486,16 @@ function createScene(
       tween = raw < 1 ? requestAnimationFrame(tick) : 0;
     };
     tween = requestAnimationFrame(tick);
+  };
+
+  // A drag renders at pixel ratio 1: fill rate, not geometry, is what a retina orbit pays for.
+  // Full quality returns, re-rendered, the moment the last pointer lifts.
+  const restingPixelRatio = Math.min(2, window.devicePixelRatio);
+  const setDragQuality = (active: boolean) => {
+    const ratio = active ? 1 : restingPixelRatio;
+    if (renderer.getPixelRatio() === ratio) return;
+    renderer.setPixelRatio(ratio);
+    resize();
   };
 
   const el = renderer.domElement;
@@ -525,6 +544,7 @@ function createScene(
   el.addEventListener("pointermove", (e) => {
     if (!pointers.has(e.pointerId)) return;
     pointers.set(e.pointerId, [e.clientX, e.clientY]);
+    if (pinch || dragging) setDragQuality(true);
     if (pinch && pointers.size === 2) {
       radius = pinchDollyRadius(pinch.radius, pinch.span, pinchSpan());
       viewAdjustedByUser = true;
@@ -561,7 +581,10 @@ function createScene(
     // survivors at the current distance, or the span would appear to jump and take the zoom
     // with it the moment a third finger leaves.
     else if (pinch) pinch = { span: pinchSpan(), radius };
-    if (pointers.size === 0) dragging = false;
+    if (pointers.size === 0) {
+      dragging = false;
+      setDragQuality(false);
+    }
     if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
   };
   el.addEventListener("pointercancel", (e) => {
@@ -771,7 +794,8 @@ function createScene(
     const buildStart = performance.now();
     populateScene({
       tradeGroups, model: m, center, mode, palette, earthOpacity, earthTone, registry,
-      generation: sceneGeneration, currentGeneration: () => sceneGeneration, requestRender,
+      generation: sceneGeneration, currentGeneration: () => sceneGeneration,
+      requestRender: invalidateShadows,
       tradeVisible: (trades, storey) => objectVisible({ trades, storey }, visibleTrades, hiddenStoreys),
       rebar: { layer: rebarLayer, sets: rebar?.sets ?? null },
     });
@@ -797,7 +821,7 @@ function createScene(
     }
     if (!preserveView) applyFraming(false);
     applyVisibility(content, visibleTrades, hiddenStoreys); // the rebuild dropped the tagged meshes
-    requestRender();
+    invalidateShadows();
   };
 
   const setWholeHouseGlb = (blob: Blob) => {
@@ -812,6 +836,7 @@ function createScene(
       highlighted = null;
       applyVisibility(content, visibleTrades, hiddenStoreys);
       highlight(selectedUid);
+      invalidateShadows();
     });
   };
 
@@ -822,6 +847,7 @@ function createScene(
     rebarLayer.show(sets, highlightPlanCenter, sceneMode);
     applyVisibility(content, visibleTrades, hiddenStoreys);
     highlight(highlighted);
+    invalidateShadows();
   };
 
   const setPalette = (palette: ResolvedNordicPalette) => {
@@ -864,7 +890,7 @@ function createScene(
     visibleTrades = visible;
     hiddenStoreys = hidden;
     applyVisibility(content, visibleTrades, hiddenStoreys);
-    requestRender();
+    invalidateShadows();
   };
 
   // Retarget the live material rather than rebuilding: a drag is many events a second, and the
@@ -877,7 +903,7 @@ function createScene(
         visit(material);
       }
     });
-    requestRender();
+    invalidateShadows();
   };
 
   const setEarthOpacity = (opacity: number) => {
