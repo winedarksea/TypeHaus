@@ -259,6 +259,24 @@ export function compassBearingScreenDirection(
   return length < 1e-9 ? [0, -1] : [dx / length, dy / length];
 }
 
+// Scene cost of the last rebuild, on `window.__haus.perf` for `npm run perf-check`. Draw calls
+// and the build time are what lag tracks; a headless frame time is not (swiftshader).
+function publishPerf(renderer: THREE.WebGLRenderer, buildMs: number, renderMs: number) {
+  const haus = (window as unknown as { __haus?: Record<string, unknown> }).__haus;
+  if (!haus) return;
+  const { render, memory } = renderer.info;
+  haus.perf = {
+    buildMs, renderMs, calls: render.calls, triangles: render.triangles,
+    geometries: memory.geometries, textures: memory.textures,
+  };
+}
+
+// A later frame (orbit, dolly) without a rebuild: what the camera alone costs to redraw.
+function publishFrame(renderer: THREE.WebGLRenderer) {
+  const perf = (window as unknown as { __haus?: { perf?: Record<string, unknown> } }).__haus?.perf;
+  if (perf) perf.frameCalls = renderer.info.render.calls;
+}
+
 function createScene(
   mount: HTMLElement,
   compass: SVGSVGElement | null,
@@ -288,6 +306,9 @@ function createScene(
   // darkens near-white architectural surfaces, which is the one thing this palette can't take.
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 1;
+  // Reset by hand before each frame (→ requestRender): three resets after the shadow pass, so
+  // its own counter would hide what a shadow redraw costs.
+  renderer.info.autoReset = false;
   // Repeated world-scaled maps (seam, masonry, deck boards) are viewed at grazing angles on
   // every wall; at the default anisotropy of 1 their mips smear unevenly and the module reads
   // as moiré. Set before any texture is constructed — the maps are built lazily in setModel.
@@ -415,13 +436,22 @@ function createScene(
   // orbit/dolly, resize, setModel, or a highlight toggle.
   let raf = 0;
   let renderPending = false;
+  // Set by setModel: the next frame is the first of a rebuilt scene, and is timed (→ publishPerf).
+  let buildMs: number | null = null;
   const requestRender = () => {
     if (renderPending) return;
     renderPending = true;
     raf = requestAnimationFrame(() => {
       renderPending = false;
       place();
+      const shadowPass = renderer.shadowMap.needsUpdate;
+      const t0 = performance.now();
+      renderer.info.reset();
       renderer.render(scene, camera);
+      if (buildMs !== null) {
+        publishPerf(renderer, buildMs, performance.now() - t0);
+        buildMs = null;
+      } else if (!shadowPass) publishFrame(renderer);
     });
   };
 
@@ -738,12 +768,14 @@ function createScene(
     sceneMode = mode;
     highlightSourceModel = m;
     highlightPlanCenter = center;
+    const buildStart = performance.now();
     populateScene({
       tradeGroups, model: m, center, mode, palette, earthOpacity, earthTone, registry,
       generation: sceneGeneration, currentGeneration: () => sceneGeneration, requestRender,
       tradeVisible: (trades, storey) => objectVisible({ trades, storey }, visibleTrades, hiddenStoreys),
       rebar: { layer: rebarLayer, sets: rebar?.sets ?? null },
     });
+    buildMs = performance.now() - buildStart;
 
     // Frame the building bounds (earth excluded, or the site sheet dominates), including its
     // vertical origin, so a model whose base sits above zero is not left low in the canvas.

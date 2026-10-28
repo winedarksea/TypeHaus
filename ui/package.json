@@ -20,7 +20,8 @@
     "pick-check": "node scripts/pick-check.mjs",
     "trade-check": "node scripts/trade-check.mjs",
     "edit-check": "node scripts/edit-check.mjs",
-    "rooms-check": "node scripts/rooms-check.mjs"
+    "rooms-check": "node scripts/rooms-check.mjs",
+    "perf-check": "node scripts/perf-check.mjs"
   },
   "dependencies": {
     "marked": "^12.0.2",
