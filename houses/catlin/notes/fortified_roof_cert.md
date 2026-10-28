@@ -1,3 +1,5 @@
+> Roof dimensions and open approvals: [2026-10-28 assessment](roof_sheathing_and_membranes.md). Historical calculations below are not a new moisture or product approval.
+
 # FORTIFIED Home™ — High Wind & Hail, Roof level (2026-08-30)
 
 Minnesota is not a hurricane state, so the applicable IBHS program track is **FORTIFIED
@@ -24,7 +26,7 @@ not modeled ones), and every other edit made for this certification cites it.
 
 - Rafters are 11⅞" I-joists at 16" o.c. — under §2.5's 24" o.c. cap, above its 2" nominal
   minimum.
-- Roof deck is 5/8" OSB — above §4.1's 7/16" performance-category minimum.
+- Roof deck is 19/32" CDX plywood — above §4.1's 7/16" performance-category minimum.
 - Roof is unvented/hot-roof cathedral construction, so §4.9 (ridge/gable vent TAS 100(A))
   is moot — there is no attic to ventilate.
 - PV is S-5! clamped to standing seam with zero penetrations (not ballasted, which would
@@ -58,7 +60,7 @@ branch rather than a deviation from it, and it wants a PE letter to say so.
 
 **It closes by ceasing to exist.** The roof deletes the nailbase and the foam it would be
 screwed through (`plan/assemblies.py::ROOF`, `notes/roof_flash_and_batt.md`).
-There is ONE deck — 5/8" CDX plywood nailed straight to the TJI rafters — which is the
+There is ONE deck — 19/32" CDX plywood nailed straight to the TJI rafters — which is the
 ordinary condition §4.2.2 is written for, and RSRS-01 ring-shank nailing at 4" o.c. applies
 to it directly with nothing to explain. **No PE letter is needed for this item.** Item 1
 (§2.5, the structural ridge beam) is untouched and still open.

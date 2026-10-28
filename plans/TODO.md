@@ -344,9 +344,10 @@ the future.
 - Consider have the oven/range in the kitchen island across from the sink
 - Consider making W-M-BATH1-W operable. Switch that small operable window type we have to the Aluprof MB-Slimline / MB-79N CSF or Aliplast Max Light Modern ultra slim aluminum for maximum light area (looks like around 2.75" frame is possible there) triple glazed.
 - Possibly poplar 1x12 as stair skirt boards, if not already specified, painted white. Likely installed tight to wall framing/drywall prior to installation of finish treads and risers.
-- Check roof sheathing (garage and house both). Likely 5/8" (19/32") CDX Plywood is fine versus the current 3/4" struct 1.
-- Model the roofing membrane at it's installed thickness (under the flashing view toggle, but black not red)
-- Consider 1/2" advantech for walls and 5/8" advanctech for roof sheathing (perhaps better rot resistance?)
+- [x] Roof sheathing: 19/32" 40/20 plywood, CDX house and Structural I garage/canopy. [Assessment](../houses/catlin/notes/roof_sheathing_and_membranes.md): Image II acceptance, eave cantilevers, narrow/single-span panels and 24-1/8" transition engineering remain open.
+- [x] Roof membranes at installed thickness, near-black under Flashing: house butyl 30 mil, garage/canopy HT rubberized asphalt 40 mil. House unvented/full-coverage product confirmation remains open; see the roof assessment.
+- [x] Compared 5/8" AdvanTech roof sheathing; retain plywood. Reconsider as a construction-moisture upgrade after local quotes and product/connection review; see the roof assessment.
+- Consider 1/2" advantech for walls sheathing
 - Probably around the windows, the flashing should come out and over the girts (covering the buck and girt then) that box in the window. ccspf should come out and around the outie buck as well up to the girt there. That would bury the KDAT girt completely in foam and flashing. Perhaps instead the gap should remain on the back of the girt, but the full outer face and top and bottom is flashed (just back clear to dry backwards into cavity?)
 - Make door and window pieces (trim, jamb, etc) selectable in the UI as separate pieces (but all still hidden by the same view toggle). Such pieces should have their product name shown in the UI when selected. Generally something like the drip edge should be one piece (even if multiple faces) so the garage drip edge at the eaves is something that has gone too far in being split out, and gutters are another thing where the back, bottom and front should all be shown as one piece.
 - Some of the trim added to the siding might need a depth bias to reduce 'glitching' with the siding itself
@@ -354,7 +355,6 @@ the future.
 - Pick a soffit product and close the garage attic ventilation grading, and the corrugated soffit to sill junction detailed. Also fix the garage soffit end detail (north and south gable ends) where the sofit is too flat and isn't inline with the roof slope there
 - SL-SG-STAIRPAD is a slightly different finished height than SL-WK-D. They should have the same finished height.
 - D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
-- [x] Remove exterior flashing trim from AO-M-FIRE-NICHE: the blind niche leaves the exterior sheathing and cladding continuous, so it needs no exterior trim.
 - Undo the work of 529a0ca6 'canopy beam caps' and see if it can be symmetrical by both sides of the beam terminating at the post.
 - Might be worth writing up ICF in cost options as an alternative exterior wall setup (for the house) something like the Quadlock 'plus' form which with 4.25" of EPS on each side delivers R-38.
 - Check the modeling of the baseboard/tile surround in tile rooms. Is it fully and correctly detailed?

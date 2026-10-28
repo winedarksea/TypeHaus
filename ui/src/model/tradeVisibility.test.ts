@@ -4,7 +4,7 @@
 import * as THREE from "three";
 import {
   ALL_VISIBILITY_KEYS, allVisibleTrades, anyTradeVisible, baseTrade, DEFAULT_OFF_KEYS, defaultVisibleTrades,
-  expandRolePreset, groupState, memberTrades, migrateSavedVisibility, onlyTrades, primaryTrade,
+  expandRolePreset, groupState, layerTrades, memberTrades, migrateSavedVisibility, onlyTrades, primaryTrade,
   primaryTradeVisible, ROLE_PRESETS, visibilityKeyLabel, visibilityKeysOf,
   solidVisibilityKeys, visibilityState,
 } from "./tradeVisibility";
@@ -156,6 +156,9 @@ function checkFlashing() {
   assert(visibilityState(FLASHING_FACETS, { ...off, "roofing:flashing": true }) === "mixed",
     "the combined flashing control reports a partially visible set");
   const isolated = onlyTrades(FLASHING_FACETS);
+  const membraneKeys = layerTrades({ function: "membrane", trades: ["roofing"] });
+  assert(anyTradeVisible(membraneKeys, isolated), "roof membranes draw in flashing-only");
+  assert(!anyTradeVisible(membraneKeys, off), "roof membranes hide with Flashing off");
   const categories = ["flashing", "beam_cap", "wall_corner", "opening_head_flashing", "cladding_trim",
     "opening_sill_pan", "opening_flashing_membrane"];
   for (const category of categories) {

@@ -15,6 +15,12 @@ from library import (
 )
 
 
+# Physical panel and membrane dimensions; see notes/roof_sheathing_and_membranes.md.
+ROOF_DECK_THICKNESS = inch(0.59375)
+HOUSE_ROOF_MEMBRANE_THICKNESS = inch(0.030)
+GARAGE_ROOF_MEMBRANE_THICKNESS = inch(0.040)
+
+
 # --- hot roof (unvented; flash-and-batt in the bay — → 30 §WP3.11) ------------
 #
 # Four layers: the bay, one deck, one membrane, the panel. It replaced a nine-layer roof
@@ -57,10 +63,11 @@ from library import (
 # those screws — which is the actual water risk on a roof with no field penetrations
 # (the 48 PV mounts are non-penetrating S-5! seam clamps).
 #
-# **5/8" CDX plywood, not 1/2" ZIP and not a grooved panel.** Smooth (the best bed an
+# **19/32" CDX plywood, not 1/2" ZIP and not a grooved panel.** Smooth (the best bed an
 # adhered membrane and an oil-canning-prone pan can have), span-rated 40/20 so 24" o.c. is
-# well inside it, holds nail-flange screws uniformly, and dries several times faster than OSB while
-# recovering strength after wetting. **It oversails the last joist at each eave, spanning the
+# inside the ordinary multi-span table (see the roof deck note for exceptions). The
+# grade stamp, panel layout and dry substrate matter to the metal and membrane installation.
+# **It oversails the last joist at each eave, spanning the
 # wall girts** — which is why the deck, the membrane and the panel bill on the roof's sloped
 # `surface_area_m2` (1,547.9 SF) while the bay fills bill on `roof_ceiling_area_m2`
 # (1,449.0 SF); those are two different planes and `takeoff/envelope.py` keeps them apart.
@@ -78,7 +85,7 @@ from library import (
 # `structural.rafter_span` now grades this roof PRESCRIPTIVELY against that published row,
 # authored as `Roof.published_span` on RF-HOUSE (2026-09-11; it was UNKNOWN/engineered at
 # both spacings before). What the engine still will NOT tell you: no sheathing-span or
-# gypsum-ceiling rule reads the spacing at all — fine here, 5/8" board is rated for a 24"
+# gypsum-ceiling rule reads the spacing at all — fine here, 5/8" gypsum board is rated for a 24"
 # o.c. ceiling where 1/2" is not, and neither is verified. And the printed table assumes
 # BEARING at the high end where these joists HANG off the ridge on LSSR hangers: confirm in
 # ForteWEB, and see notes/roof_rafter_span_read.md §3, which is the open item.
@@ -109,15 +116,16 @@ ROOF = Assembly(
                              control={ControlLayer.AIR, ControlLayer.VAPOR,
                                       ControlLayer.THERMAL}),
               )),
-        # 5/8" CDX. The structural deck, the clip substrate and the oil-canning bed, in one
-        # panel — and no longer any part of the air barrier: that moved to the foam under it.
-        Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.625),
+        # 19/32" CDX, APA Rated Sheathing 40/20: deck, screw substrate and metal-pan bed
+        # in one panel — and no longer any part of the air barrier: that moved to the foam under it.
+        Layer(name="sheathing", material_ref="cdx-plywood", thickness=ROOF_DECK_THICKNESS,
               function=LayerFunction.SHEATHING),
         # High-temp self-adhered butyl over the WHOLE deck, not an eave band. This is also
         # the strongest form of the FORTIFIED sealed-roof-deck requirement, and it retires
         # the open "screwed nailbase vs RSRS-01" item in notes/fortified_roof_cert.md §4.2.2
         # by deleting the nailbase that raised it.
-        Layer(name="membrane", material_ref="roof-adhered-butyl-ht", thickness=inch(0.04),
+        Layer(name="membrane", material_ref="roof-adhered-butyl-ht",
+              thickness=HOUSE_ROOF_MEMBRANE_THICKNESS,
               function=LayerFunction.MEMBRANE,
               control={ControlLayer.AIR, ControlLayer.WATER}),
         # `standing-seam-linen-white`, not the library's generic `standing-seam`: identical
@@ -177,9 +185,10 @@ GARAGE_ROOF = Assembly(
                                   chord_member="2x4", web_member="2x4"),
               cavity=CavityFill(material_ref="blown-fiberglass", thickness=inch(14.5),
                                 framing_factor=0.0625)),
-        Layer(name="deck", material_ref="struct-1-plywood", thickness=inch(0.75),
+        Layer(name="deck", material_ref="struct-1-plywood", thickness=ROOF_DECK_THICKNESS,
               function=LayerFunction.SHEATHING),
-        Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.02),
+        Layer(name="membrane", material_ref="roof-adhered-asphalt-ht",
+              thickness=GARAGE_ROOF_MEMBRANE_THICKNESS,
               function=LayerFunction.MEMBRANE,
               control={ControlLayer.AIR, ControlLayer.WATER}),
         Layer(name="roofing", material_ref="standing-seam-image-ii-garage-vented",
@@ -234,9 +243,10 @@ CANOPY_ROOF = Assembly(
                                   spacing=inch(24),
                                   heel_height=inch(3.5),
                                   chord_member="2x4", web_member="2x4")),
-        Layer(name="deck", material_ref="struct-1-plywood", thickness=inch(0.75),
+        Layer(name="deck", material_ref="struct-1-plywood", thickness=ROOF_DECK_THICKNESS,
               function=LayerFunction.SHEATHING),
-        Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.02),
+        Layer(name="membrane", material_ref="roof-adhered-asphalt-ht",
+              thickness=GARAGE_ROOF_MEMBRANE_THICKNESS,
               function=LayerFunction.MEMBRANE,
               control={ControlLayer.AIR, ControlLayer.WATER}),
         Layer(name="roofing", material_ref="standing-seam-image-ii-garage", thickness=inch(1.0),

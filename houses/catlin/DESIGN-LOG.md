@@ -1,3 +1,19 @@
+## 2026-10-28 — roof deck and underlayment
+
+House deck is 19/32 inch 40/20 CDX; garage and continuous canopy are 19/32 inch
+40/20 Structural I. House butyl is 30 mil installed; garage/canopy now carry 40 mil
+HT rubberized asphalt instead of generic air-barrier sheet. Roof membranes use Flashing
+visibility and near-black material colour at physical thickness. The garage ice-barrier
+allowance is retired to avoid billing full-field coverage twice. Thinner-panel NDS nailer
+capacities are recalculated; conservative diaphragm rows remain. AdvanTech is a possible
+construction-moisture upgrade. [Research, cost basis and remaining approvals](notes/roof_sheathing_and_membranes.md)
+distinguish the selected model from unresolved eave/transition engineering and manufacturer acceptance.
+
+Physical-thickness regression testing also found signed-zero plane-normal keys skewing the
+exported ridge miter. Numeric normal deduplication now preserves film thickness and matches
+the viewer. Targeted validation: 125 engine tests and four focused UI test groups passed;
+17 affected section/detail goldens refreshed. Full verification was intentionally not run.
+
 ## Exterior swing hardening and single-point entry (2026-10-25)
 
 Owner confirmed all four house exterior swings receive doubled kings/jacks, full-depth

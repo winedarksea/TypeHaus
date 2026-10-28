@@ -1,3 +1,9 @@
+> **2026-10-28 roof-deck revision:** garage and canopy are now 19/32in Structural I
+> 40/20 plywood. Nailer yield calculations below use the thinner side member; diaphragm
+> capacities and G_a retain the conservative 15/32in table rows, not a new capacity claim.
+> Current assembled-model joint-2 demand is 262.670 lb: canopy 1,079.395 lb, garage
+> 959.462 lb. See [roof deck assessment](roof_sheathing_and_membranes.md) for limits.
+
 > **2026-10-14 west-tail amendment:** BM-BW-RW extends 6⅛″ south with an AC6Z at CW;
 > canopy footprint and roof gravity loads stay fixed through its roof-bearing inset.
 > E-W delivered shear is now 698.61 lb, joint couple 2,106.7 lb-ft, chord force 87.78 lb.
@@ -183,7 +189,7 @@ in SPF. The product's published rating is **axial tension**; no transverse strap
 capacity is credited.
 See also [Simpson's installation guide](https://www.strongtie.com/resources/product-installers-guide/lsta-installation).
 
-**Fastening into the decks.** Nail each nailer to the 3/4in Structural I deck with two
+**Fastening into the decks.** Nail each nailer to the 19/32in Structural I deck with two
 staggered rows of 8d common HDG 0.131in x 2.5in nails at **3in o.c.**, one row per ply, 1/2in
 from its outer face and clear of the strap, starting 3/8in from the nailer ends. One
 **LS30Z** at each nailer end, six 0.148in x 1.5in HDG nails per angle (three per leg), joins
@@ -202,24 +208,23 @@ no sheet bends across the ridge. Edge stations are x=6ft 9in, 10ft 6in, 14ft 3in
 
 The nailer-to-deck transfer is read **nail by nail**, NDS 2018 §12.3.1, single shear, and
 only ONE of the two 3in rows is credited. 8d common: D = 0.131in, L = 2.5in,
-F_yb = 100,000psi (NDS Table I1). Side member: the 3/4in Structural I deck, G = 0.50 (NDS
-Table 12.3.3B), l_s = 0.75in. Main member: SPF G = 0.42 for every nailer and both end blocks,
-l_m = 2.5 - 0.75 = 1.75in. R_d = K_D = 2.2. F_e = 16,600 G^1.84:
+F_yb = 100,000psi (NDS Table I1). Side member: the 19/32in Structural I deck, G = 0.50 (NDS
+Table 12.3.3B), l_s = 0.59375in. Main member: SPF G = 0.42 for every nailer and both end blocks,
+l_m = 2.5 - 0.59375 = 1.90625in. R_d = K_D = 2.2. F_e = 16,600 G^1.84:
 
 ```
 F_es = 16,600 x 0.50^1.84 = 4,636.7 psi
-SPF  F_em = 16,600 x 0.42^1.84 = 3,364.2 psi; R_e = 0.7256, R_t = 2.3333
-     k1 0.6099  k2 0.9296  k3 1.5307
-     Im 350.57  Is 207.07  II 126.29  IIIm 132.95  IIIs 84.38  IV 88.93  -> Z = 84.38 lb (IIIs)
-Z' = Z x C_D 1.6 (wind): SPF 135.00 lb
+SPF  F_em = 16,600 x 0.42^1.84 = 3,364.2 psi
+     At l_s = 0.59375in and l_m = 1.90625in, the governing NDS mode remains IIIs.
+     Z = 74.957994 lb; Z' = Z x C_D 1.6 (wind) = 119.932791 lb
 ```
 
 Nails in one row start 3/8in from each nailer end, at 3in: ceil(usable / 3) + 1.
 
 ```
-canopy nailer, SPF    22.625 - 0.75 = 21.875in -> 9 nails x 135.00 = 1,215.0 lb
-canopy end, SPF block                             9 nails x 135.00 = 1,215.0 lb
-garage nailer, SPF    21.750 - 0.75 = 21.000in -> 8 nails x 135.00 = 1,080.0 lb
+canopy nailer, SPF    22.625 - 0.75 = 21.875in -> 9 nails x 119.932791 = 1,079.395 lb
+canopy end, SPF block                             9 nails x 119.932791 = 1,079.395 lb
+garage nailer, SPF    21.750 - 0.75 = 21.000in -> 8 nails x 119.932791 = 959.462 lb
 ```
 
 The E-W resultant stands south of the joint. The same bands as §2 give:
@@ -239,9 +244,9 @@ transfer, take the larger, then conservatively add the separate N-S case:
 
 ```
 local attachment demand = 1,038.35/6 + max(55.89, 87.48) = 173.06 + 87.48 = 260.54 lb
-canopy nailer      260.54 / 1,215.0 = 0.214
-canopy SPF block   260.54 / 1,215.0 = 0.214   (the same nails into the same species)
-garage nailer      260.54 / 1,080.0 = 0.241   (steel 256.64, 0.238; cast 303.37, 0.281)
+canopy nailer      260.54 / 1,079.395 = 0.241
+canopy SPF block   260.54 / 1,079.395 = 0.241   (the same nails into the same species)
+garage nailer      260.54 / 959.462 = 0.272   (steel 256.64, 0.267; cast 303.37, 0.316)
 ```
 
 An earlier draft credited one diaphragm boundary row instead (the deck's unit shear times
@@ -278,7 +283,7 @@ does not apply — and the drawings say so.
 
 ### 3d. The receiving roof, `RF-GARAGE`
 
-3/4" Structural I, 8d at 6", **unblocked**, SDPWS Table 4.2A Case 1 at the 15/32" row, ASD
+19/32" Structural I, 8d at 6", **unblocked**, SDPWS Table 4.2A Case 1 at the 15/32" row, ASD
 167.5 plf. 24' between `W-G-W` and `W-G-E` on a 24' depth: 1.0 against 3:1. Lever rule on the
 N-S resultant's x:
 
@@ -527,7 +532,7 @@ alone at h = 14.69 − 7.333 = 7.36' above grade: d = **6.56'** against the 8.33
 bottom gives — **0.79** (basis 4's pad credit reads lower). −10'-2" is kept: it is the plane
 this variant was designed and drawn on, and a shallower one is a separate decision this note
 does not make. The garage rows are graded at 831.8 lb E-W (100%) and 1,180.0 lb N-S (100%);
-the largest is the garage nailer at 303.37 / 1,080 = 0.281.
+the largest is the garage nailer at 303.37 / 959.462 = 0.316.
 
 The engine's shaft is 16.5104' (198.125", pad top to soffit) where this note keeps 16.5625',
 so its heads read 94.28 lb and its N-S column force 335.74 lb, within 0.1% of the above;

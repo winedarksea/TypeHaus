@@ -99,11 +99,13 @@ def _offsetter(triangles: list[list[Vec3]]):
     """Offset the surface perpendicular to its slope with a mitered ridge: average over the
     distinct *planes* (not triangles) meeting at each shared vertex."""
     normals = [_face_normal(t) for t in triangles]
-    planes: dict[str, dict[str, Vec3]] = {}
+    planes: dict[str, dict[Vec3, Vec3]] = {}
     for i, tri in enumerate(triangles):
         for v in tri:
             per = planes.setdefault(_vertex_key(v), {})
-            per[",".join(f"{c:.5f}" for c in normals[i])] = normals[i]
+            # Numeric keys identify +0 and -0 as the same plane. String keys counted
+            # one slope twice at the ridge and skewed the miter and film thickness.
+            per[tuple(round(c, 5) for c in normals[i])] = normals[i]
     miters: dict[str, Vec3] = {}
     for key, per in planes.items():
         faces = list(per.values())

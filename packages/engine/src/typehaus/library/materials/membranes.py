@@ -161,9 +161,21 @@ MATERIALS: tuple[Material, ...] = (
         hatch="membrane",
         color="#2f3134",
         source=(
-            "High-temperature self-adhered butyl underlayment technical data, ASTM E96 "
+            "GRACE ULTRA dimensional basis: 30 mil installed, 300 F; ASTM E96 "
             "and ASTM D1970."
         ),
+    ),
+    Material(
+        tag="roof-adhered-asphalt-ht",
+        name="High-temp self-adhered rubberized-asphalt roof underlayment",
+        r_per_inch=0.0,
+        vapor_permeance_perms=0.05,
+        hatch="membrane",
+        color="#2f3134",
+        source=("GRACE Ice & Water Shield HT: 40 mil installed, rubberized asphalt, "
+                "260 F service temperature, ASTM D1970; maximum ASTM E96 permeance 0.05 perm. "
+                "https://ca.gcpat.com/en/solutions/products/"
+                "grace-ice-water-shield-roofing-underlayment/grace-ice-water-shield-ht"),
     ),
     Material(
         tag="roof-underlayment-synthetic",

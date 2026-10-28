@@ -124,7 +124,8 @@ export function roofOffsetter(triangles: RoofVertex[][]) {
     for (const v of tri) {
       const key = vertexKey(v);
       const perVertex = planes.get(key) ?? new Map<string, THREE.Vector3>();
-      perVertex.set(normals[i].toArray().map((n) => n.toFixed(5)).join(","), normals[i]);
+      // Canonicalize signed zero, matching the engine's numeric normal keys.
+      perVertex.set(normals[i].toArray().map((n) => Number(n.toFixed(5))).join(","), normals[i]);
       planes.set(key, perVertex);
     }
   });

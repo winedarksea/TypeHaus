@@ -68,6 +68,13 @@ export function runVisibilityTests() {
   assert(memberTrades({ category: "stud" }).join() === "framing",
     "…and a stick nobody named is still the framer's");
 
+  assert(layerTrades({ function: "membrane", trades: ["roofing"] }).join() === "roofing:flashing",
+    "A roof membrane takes the composite Flashing control");
+  assert(layerTrades({ function: "membrane", trades: ["siding"] }).join() === "siding",
+    "A wall membrane keeps its existing visibility");
+  assert(layerTrades({ function: "membrane", trades: ["concrete"] }).join() === "concrete",
+    "Foundation membranes retain their construction trade");
+
   // Cavity fill is judged by its own trade, so hiding Framing keeps the batts drawn —
   // that separation is the whole point of per-band visibility.
   const visible = allVisibleTrades();

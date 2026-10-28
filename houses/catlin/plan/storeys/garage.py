@@ -564,7 +564,7 @@ ROOFS = [
          diaphragm=DiaphragmSpec(
              sheathing_layer="deck",
              fastening='8d common (0.131" x 2 1/2") at 6" o.c. at the boundary and panel edges, 12" o.c. in the field; UNBLOCKED, Case 1',
-             source="AWC SDPWS-2015 Table 4.2A, UNBLOCKED wood structural panel diaphragm, Case 1, 15/32in Structural I with 8d at 6in boundary and edges — quoted conservatively for this 3/4in deck, v_w 335 plf nominal / 2.0",
+             source="AWC SDPWS-2015 Table 4.2A, UNBLOCKED wood structural panel diaphragm, Case 1, 15/32in Structural I with 8d at 6in boundary and edges — quoted conservatively for this 19/32in Structural I deck, v_w 335 plf nominal / 2.0",
              unit_shear_asd_plf=167.5,
              apparent_stiffness_kips_per_in=7.0,
              blocked=False,
@@ -620,12 +620,12 @@ ROOFS = [
          diaphragm=DiaphragmSpec(
              sheathing_layer="deck",
              fastening='8d common (0.131" x 2 1/2") at 6" o.c. at the boundary and at every panel edge, 12" o.c. in the field; panel edges BLOCKED with bevelled 2x4 on-edge blocking between the trusses',
-             # The row is quoted for 15/32" and this deck is 3/4": thicker sheathing at the
+             # The row is quoted for 15/32" and this deck is 19/32": thicker sheathing at the
              # same schedule is not weaker. G_a is taken at the SOFT end of the band on
              # purpose — a softer deck is the one more likely to read FLEXIBLE, which hands
              # the cast columns the larger share and is the direction that does not flatter
              # the member this whole calculation exists to grade.
-             source='AWC SDPWS-2015 Table 4.2A, blocked wood structural panel diaphragm, 15/32in sheathing with 8d at 6in boundary and edge spacing on 2in nominal framing, Case 1 — quoted conservatively for this 3/4in deck and at the soft end of the G_a band',
+             source='AWC SDPWS-2015 Table 4.2A, blocked wood structural panel diaphragm, 15/32in sheathing with 8d at 6in boundary and edge spacing on 2in nominal framing, Case 1 — quoted conservatively for this 19/32in Structural I deck and at the soft end of the G_a band',
              unit_shear_asd_plf=190.0,
              apparent_stiffness_kips_per_in=12.0,
              blocked=True,
@@ -684,7 +684,7 @@ ROOFS = [
                      rated_strap_nails_each_end=9,
                      nail_group_inset=inch(4.5),
                      fastening="2-ply SPF 2x6 longitudinal nailers, laminated with 8d common 0.131x2.5in HDG nails two near each end and 12in o.c. between, staggered; bevelled to the deck, between existing truss faces on each side of the garage gable. The two end stations use the canopy collector blocks on the south side. One LS30Z at each nailer end, six 0.148x1.5in HDG nails, three per leg, side grain, never through a truss plate; fully nailed deck restrains rotation. LSTA24 direct to wood BEFORE deck: six outermost 0.148x2.5in HDG nails per leg, 12 total, one hole line in each ply; omit the middle six holes; >=2-3/8in wood end distance and >=3/4in edge distance. Field-verify that the six outermost holes start >=4-1/2in from the strap centre. Deck to each nailer: two rows 8d common HDG at 3in o.c., one row per ply 1/2in from its outer face and clear of the strap, staggered, 3/8in from the nailer ends. Keep deck panels continuous across the garage gable; no sheathing break at this line, 8d at 6in into gable top chord.",
-                     source="canopy_garage_diaphragm.md §3b: Simpson C-C-2021 p.269 LSTA table (LSTA24 1235lb in both DF/SP and SPF/HF, 18 nails; LSTA15 955lb SPF/HF, 12 nails); LSTA24 1235lb x 12/18 = 823.3lb installed; C-C-2026 p.313 (LS30 six 0.148x1.5in nails); AWC NDS 2018 12.3.1 nail yield for the deck-to-nailer transfer, one 3in row credited, 8d common through 3/4in Structural I (G 0.50) into SPF (G 0.42)",
+                     source="canopy_garage_diaphragm.md §3b: Simpson C-C-2021 p.269 LSTA table (LSTA24 1235lb in both DF/SP and SPF/HF, 18 nails; LSTA15 955lb SPF/HF, 12 nails); LSTA24 1235lb x 12/18 = 823.3lb installed; C-C-2026 p.313 (LS30 six 0.148x1.5in nails); AWC NDS 2018 12.3.1 nail yield for the deck-to-nailer transfer, one 3in row credited, 8d common through 19/32in Structural I (G 0.50) into SPF (G 0.42)",
                  ),
                  plate_clip_refs=("CN-BW-GCLIP-1", "CN-BW-GCLIP-2", "CN-BW-GCLIP-3", "CN-BW-GCLIP-4", "CN-BW-GCLIP-5", "CN-BW-GCLIP-6", "CN-BW-GCLIP-7"),
                  open_front=True,

@@ -316,6 +316,14 @@ function assertCoursingStartsAtTheWallBase() {
 
 export function runMemberColorTests() {
   const palette = RESOLVED_NORDIC_PALETTE.light;
+  const roofFilms = ["roof-adhered-butyl-ht", "roof-adhered-asphalt-ht"]
+    .map(tag => ({ tag, color: "#2f3134" }));
+  for (const theme of [RESOLVED_NORDIC_PALETTE.light, RESOLVED_NORDIC_PALETTE.dark]) {
+    for (const film of roofFilms) {
+      assert(materialColor(film.tag, theme, roofFilms) === "#2f3134",
+        "Roof membranes keep their authored near-black colour in both themes");
+    }
+  }
   // Roof sticks + truss vocabulary: lumber, not the neutral fallback.
   for (const category of [
     "rafter", "blocking", "outlooker", "barge_rafter",

@@ -3616,7 +3616,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # permit dampproofing at all (Minn. R. 1309.0406 subp. 1 deletes IRC R406.1 outright), let
 # alone housewrap, so that face moved to `waterproofing` below and this key stopped being
 # three products under one price.
-"air-barrier" = { material = { low = 0.25, high = 0.6 }, labour = { low = 0.35, high = 0.75 } }  # 882.8 SF, the roof deck
+"air-barrier" = { material = { low = 0.25, high = 0.6 }, labour = { low = 0.35, high = 0.75 } }  # 0 SF of roof underlayment after 2026-10-28; garage/canopy use roof-adhered-asphalt-ht
 # ** BELOW-GRADE WATERPROOFING — THE ONE LAYER THIS STATE DOES NOT LET YOU OMIT. **
 # Minn. R. 1309.0406 subp. 2: every exterior foundation wall that retains earth and encloses
 # below-grade space "shall be waterproofed ... from the top of the footing to the finished
@@ -4528,20 +4528,27 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "roof-deck-vapor-barrier" = { material = { low = 1.1, high = 2.2 }, labour = { low = 0.8, high = 1.6 } }  # 0 SF (was 1547.9) — self-adhered, under the polyiso
 "roof-underlayment-synthetic" = { material = { low = 0.4, high = 0.95 }, labour = { low = 0.45, high = 0.95 } }  # 0 SF (was 1547.9) — vapour-permeable synthetic, field only
 # ** THE ROOF'S ONE MEMBRANE SINCE 2026-08-31 **, over the whole deck. High-temp self-adhered
-# BUTYL (Grace Ultra / Henry Blueskin PE200HT class), >= 240 F.
+# BUTYL (GRACE ULTRA, 30 mil; Henry PE200HT is SBS, not butyl), >= 240 F.
 #
 # ** THIS IS ALSO WHY `roof-ice-and-water-barrier-code-minimum` NO LONGER DRIVES OFF THIS
 # ROOF. ** That allowance is a code-minimum eave-and-valley BAND; a fully-adhered deck is a
 # superset of it, and leaving both against RF-HOUSE would bill the eaves twice. The allowance
-# is retargeted to the garage plane only — see [allowances].
+# was retired for the garage/canopy too on 2026-10-28: their full-field HT sheet replaces it.
 # Sources: published high-temp self-adhered underlayment $/SF (roofing-supply retail 2026) —
-# $1.30-2.30/SF material for a 40 mil butyl at roll pricing, against $0.55-1.10 for the
+# $1.30-2.30/SF material for a 30 mil butyl at roll pricing, against $0.55-1.10 for the
 # ordinary SBS ice-barrier the allowance carries. Labour is a full-deck roll-and-roller pass
 # on a smooth plywood substrate, cheaper per SF than the band's because there is no cutting
 # to a line and no lap into a field sheet: $1.00-1.80/SF.
 # CONFIDENCE: MEDIUM-HIGH on material, MEDIUM on labour (6:12 is a walkable pitch but the
 # rate assumes no staging).
-"roof-adhered-butyl-ht" = { material = { low = 1.3, high = 2.3 }, labour = { low = 1.0, high = 1.8 } }  # 1547.9 SF — the sloped deck plane, out to the fascia; it laps the girt oversail
+# Roof-specific 19/32 inch rates; do not reprice thicker wall/floor panels.
+# Comparison retail CDX $33-41/sheet; Structural I premium is a budget range, not a local quote.
+"cdx-plywood:0.594" = { material = { low = 1.03, high = 1.28 }, labour = { low = 1.0, high = 1.9 } }
+"struct-1-plywood:0.594" = { material = { low = 1.2, high = 1.7 }, labour = { low = 1.0, high = 1.9 } }
+# Full-field HT rubberized asphalt replaces generic air-barrier and the garage ice-barrier allowance.
+# Provisional material budget pending local quotes; same full-deck rolling labour as butyl.
+"roof-adhered-asphalt-ht" = { material = { low = 0.65, high = 1.25 }, labour = { low = 1.0, high = 1.8 } }
+"roof-adhered-butyl-ht" = { material = { low = 1.3, high = 2.3 }, labour = { low = 1.0, high = 1.8 } }  # 1544.4 SF — house sloped deck plane, including the girt oversail
 "struct-1-plywood" = { material = { low = 0.9, high = 1.7 }, labour = { low = 1, high = 1.9 } }  # 5554.7 SF — +1547.9 on 2026-08-31 as the roof deck came here from the ZIP row below
 # RM-M-BATH2's Corian Glacier White deck top: SL-M-TUBDK's `deck-top` FINISH layer (2026-10-22),
 # the 12 mm U over the cap ply. Its waterfall faces and splash are the same bonded piece and
@@ -7162,6 +7169,8 @@ cabinet-study-booth-cushions = { low = 250, high = 800 }
 # $12,400-27,300 upgrade DELTA over this row,
 # and the note below still explains why this roof does not take it.
 #
+# ** HISTORICAL BASIS — allowance RETIRED 2026-10-28 for every roof. **
+# Garage/canopy now bill full-field roof-adhered-asphalt-ht; no eave-band driver remains.
 # ** RE-TARGETED TO THE GARAGE PLANE ONLY, 2026-08-31 — 749.6 SF, not 2,297.5. ** RF-HOUSE
 # now carries a fully-adhered high-temp butyl membrane over its whole deck
 # (`envelope_layers."roof-adhered-butyl-ht"`), which is a SUPERSET of the eave-and-valley
@@ -7179,9 +7188,7 @@ cabinet-study-booth-cushions = { low = 250, high = 800 }
 # What still stands unchanged is the primary defence: a highly insulated assembly under a
 # low-friction standing seam is what stops an ice dam FORMING, and it is what is being paid
 # for on both planes.
-# The driver excludes the house's linen-white roof, so the garage's vented roof and the canopy
-# both count. The driver grammar has no OR, so a list of materials cannot be named.
-roof-ice-and-water-barrier-code-minimum = { low = 1.20, high = 2.60, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=roof,function=cladding,material!=standing-seam-linen-white]" }
+# The retired driver excluded the house linen-white roof; garage and canopy were its scope.
 # ** REDUCED 2026-08-30. "Partly overlaps [edge_trim]" was the row's own words and nobody had
 # ever quantified the overlap; the number stood at a figure that assumed almost none. **
 # [edge_trim] is a real, modelled section — drip edge, rake and eave trim, valley and ridge

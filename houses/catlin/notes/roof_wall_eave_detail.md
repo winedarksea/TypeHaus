@@ -1,3 +1,5 @@
+> Roof dimensions and open approvals: [2026-10-28 assessment](roof_sheathing_and_membranes.md). Historical calculations below are not a new moisture or product approval.
+
 ---
 title: "Roof-to-Wall Eave Detail Notes"
 applied_to:
@@ -19,7 +21,7 @@ source:
 ### General
 - Roof: 11-7/8" TJI 230 at 24" o.c., LSSR hangers to a structural ridge beam.
 - Bay: 5" ccSPF on the deck, R-30C batt below. The foam is the air and vapour barrier; paint-only ceiling.
-- Deck: 5/8" CDX, 40/20, oversailing the rafter ends to the girt face.
+- Deck: 19/32" CDX, 40/20, oversailing the rafter ends to the girt face.
 - Butyl membrane, 240 F min, full field. 24 ga Image II Striated, direct-fastened through its nail flange.
 - Wall: 2x6, 1/2" sheathing, 4" ccSPF around 3-ply blocks, 1/2" vent gap, 1-1/2" KDAT girts at 24", 1-1/4" PBR. No WRB.
 
@@ -78,15 +80,16 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
   vapour-retarder primer. That is not a preference here, it is R806.5 item 2 — a Class I
   retarder on the ceiling side of an unvented assembly is prohibited.
 
-- Deck: **5/8" CDX plywood**, smooth (the best bed an adhered membrane and an oil-canning-
+- Deck: **19/32" CDX plywood**, smooth (the best bed an adhered membrane and an oil-canning-
   prone pan can have), span-rated 40/20, dries several times faster than OSB and recovers
   strength after wetting. **It oversails the last rafter at each eave and spans the wall
   girts** — the panel clips land on it out to the roof edge. That cantilever is not graded by
   anything in the engine and belongs in the PE scope.
 
-- Membrane: **high-temp self-adhered BUTYL over the whole deck** (>= 240 F; Grace Ultra /
-  Henry Blueskin PE200HT class). Full field, not an eave band. Butyl rather than SBS because
-  it self-seals around a fastener, and ~1,160 standing-seam clip screws through the field are
+- Membrane: **high-temp self-adhered BUTYL over the whole deck**, 30 mil installed
+  (GRACE ULTRA dimensional basis; unvented/full-coverage manufacturer approval remains open).
+  Henry PE200HT is SBS, not butyl; both chemistries have products that seal fasteners.
+  The selected butyl seals around fasteners, and ~1,160 standing-seam clip screws through the field are
   this roof's actual water risk — not pipes, not curbs, and not the 48 non-penetrating S-5!
   PV clamps. **Do NOT substitute a permeable synthetic to save the difference**: there is no
   drying path to protect and no foam sealed on two faces, and the cheap sheet is a mechanically-fastened,
@@ -117,7 +120,7 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
 
 - No fascia and no soffit: roof and wall are one continuous standing-seam skin over a flush zero-overhang edge. Every eave offset is measured off the drip edge's face.
 
-- Build order (water laps downhill, so the eave chain is the part that gets built backwards): frame and block the eave bays -> 5/8" CDX deck, oversailing the girts -> **moisture-meter hold point, < 16% MC** -> gutter, back sheet up behind where the drip face will hang -> DRIP EDGE -> adhered butyl membrane lapped OVER the drip, full field -> standing seam; then, from inside, 5" ccSPF against the deck underside -> **void inspection, every bay** -> R-30C batt -> 5/8" gypsum -> paint. The drip edge goes on before the membrane, not after. **The insulation is an INTERIOR operation and follows the roof being closed in**: the deck can be dried in on day one and the foam sprayed against a dry deck weeks later.
+- Build order (water laps downhill, so the eave chain is the part that gets built backwards): frame and block the eave bays -> 19/32" CDX deck, oversailing the girts -> **moisture-meter hold point, < 16% MC** -> gutter, back sheet up behind where the drip face will hang -> DRIP EDGE -> adhered butyl membrane lapped OVER the drip, full field -> standing seam; then, from inside, 5" ccSPF against the deck underside -> **void inspection, every bay** -> R-30C batt -> 5/8" gypsum -> paint. The drip edge goes on before the membrane, not after. **The insulation is an INTERIOR operation and follows the roof being closed in**: the deck can be dried in on day one and the foam sprayed against a dry deck weeks later.
 
 - Eave references (2026-09-16), what set the drip and gutter:
   - Best Buy Metals, *Standing Seam Architectural Install Guide* p.26, "Eave Detail (with gutter)": extended eave drip edge on the deck, panel hemmed around its kick, gutter back flange up behind the drip face, hidden hanger fixed at the fascia line.

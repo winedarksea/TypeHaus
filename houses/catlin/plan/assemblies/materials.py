@@ -155,8 +155,10 @@ MATERIALS = [
     # here so the nine-layer stack is a revert and not a re-derivation (see ROOF).
     #
     # High-temp self-adhered BUTYL, rated >= 240 F, over the whole deck rather than as an
-    # eave band (Grace Ultra / Henry Blueskin PE200HT class). Butyl rather than SBS for one
-    # reason that outranks every other property here: it self-seals around a fastener, and
+    # eave band (GRACE ULTRA basis; Henry PE200HT is SBS, not butyl). Both chemistries
+    # have fastener-sealing products; the house retains butyl. Product confirmation for
+    # the unvented full-coverage application remains open (roof_sheathing_and_membranes.md).
+    # Sealing around fasteners matters because
     # ~1,160 standing-seam nail-flange screws through the field are this roof's actual water risk —
     # not pipes, not curbs, and not the 48 non-penetrating S-5! PV clamps.
     #

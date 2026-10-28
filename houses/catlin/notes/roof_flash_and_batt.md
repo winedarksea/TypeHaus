@@ -1,9 +1,11 @@
+> Roof dimensions and open approvals: [2026-10-28 assessment](roof_sheathing_and_membranes.md). Historical calculations below are not a new moisture or product approval.
+
 # ROOF — flash-and-batt, worked by hand (2026-08-31)
 
 ## Why this note exists
 
 `AGENTS.md` and the repo guide both say it: *a calc that only
-agrees with itself is not verified.* The engine now reports R-53.2 for this assembly and
+agrees with itself is not verified.* The engine now reports R-53.1 for this assembly and
 NOT_APPLICABLE on its condensation gate, deferring to `code.R806_5_unvented_roof`. Both of
 those are new code paths written in the same commit as the assembly they grade, which is
 exactly the situation that rule is about. Everything below is arithmetic done independently
@@ -22,11 +24,11 @@ Interior → exterior, as authored in `plan/assemblies.py::ROOF`:
 | 1 | latex paint | 0" | 0.0 | 0.000 |
 | 2 | gypsum board | 0.625" | 0.90 | 0.563 |
 | 3 | **rafter bay** — 11 7/8" TJI 230 @ 24" o.c. | 11.875" | *parallel path, §2* | **50.99** |
-| 4 | CDX plywood deck | 0.625" | 1.25 | 0.781 |
-| 5 | high-temp adhered butyl membrane | 0.04" | 0.0 | 0.000 |
-| 6 | 24 ga standing seam | 0.5" | 0.0 | 0.000 |
+| 4 | CDX plywood deck | 0.59375" | 1.25 | 0.742 |
+| 5 | high-temp adhered butyl membrane | 0.030" | 0.0 | 0.000 |
+| 6 | 24 ga standing seam profile envelope | 1.0" | 0.0 | 0.000 |
 | — | exterior air film (RSI 0.03) | — | — | 0.170 |
-| | | **13.09"** | | **53.19** |
+| | | **14.124"** | | **53.15** |
 
 R/inch values are the catalog's (`library/materials/`, `plan/assemblies.py`): spf 1.25,
 gypsum 0.90, Structural-1 plywood 1.25, ccSPF 6.5, and `fiberglass-r30c` 3.78 (derived in
@@ -52,10 +54,10 @@ U = 0.05/14.844 + 0.95/58.488
 ## 3. Whole assembly
 
 ```
-0.682 + 0.000 + 0.563 + 50.991 + 0.781 + 0.000 + 0.000 + 0.170  =  R 53.19
+0.682 + 0.000 + 0.563 + 50.991 + 0.742 + 0.000 + 0.000 + 0.170  =  R 53.15
 ```
 
-> **ORACLE — `haus explain ROOF houses/catlin` reports `R-value: R-53.2`.** Agreement
+> **ORACLE — `haus explain ROOF houses/catlin` reports `R-value: R-53.1`.** Agreement
 > to the printed precision. Code minimum is R-49 (MN 2024 / IRC Table N1102.1.2, CZ6), so
 > the margin is **R-4.2**, and the assembly is 6.81" (perpendicular) shallower than the
 > nine-layer stack it replaced, which read R-55.1.
@@ -110,9 +112,9 @@ air-permeable batt, and cannot pass the air-impermeable foam. Table R806.5's R-v
 sized to hold that plane above the interior dew point through the heating season.
 
 ```
-R outboard of the interface = foam 32.500 + plywood 0.781 + membrane 0 + panel 0 + film 0.170
-                            = R 33.451
-fraction of the total       = 33.451 / 53.187 = 0.6289
+R outboard of the interface = foam 32.500 + plywood 0.742 + membrane 0 + panel 0 + film 0.170
+                            = R 33.412
+fraction of the total       = 33.412 / 53.148 = 0.6287
 ```
 
 **Indoor dew point**, Magnus/Tetens over water at 70 F / 35% RH (`Preferences`):
@@ -127,14 +129,14 @@ Td          = 243.04 x 0.35871 / (17.625 - 0.35871) = 5.05 C  =  41.1 F
 16.2 F:
 
 ```
-T_interface = 16.2 + (70 - 16.2) x 0.6289 = 16.2 + 33.84 = 50.0 F
+T_interface = 16.2 + (70 - 16.2) x 0.6287 = 16.2 + 33.82 = 50.0 F
 margin against the 41.1 F dew point                      = +8.9 F      PASS
 ```
 
 **99% design hour (the screen's condition), -15 F:**
 
 ```
-T_interface = -15 + (70 + 15) x 0.6289 = -15 + 53.46 = 38.5 F
+T_interface = -15 + (70 + 15) x 0.6287 = -15 + 53.44 = 38.5 F
 margin                                                 = -2.6 F      CONDENSING
 ```
 
@@ -157,7 +159,7 @@ nearly linear over this range:
 | ccSPF | R (foam) | R (whole) | interface, Jan mean | interface, -15 F |
 |---|---|---|---|---|
 | 4" | 26.0 | 49.3 | 47.7 F (+6.6) | 33.9 F (-7.2) |
-| **5"** | **32.5** | **53.2** | **50.0 F (+8.9)** | **38.5 F (-2.6)** |
+| **5"** | **32.5** | **53.1** | **50.0 F (+8.9)** | **38.5 F (-2.6)** |
 | 6" | 39.0 | 56.9 | 51.8 F (+10.7) | 42.2 F (+1.1) |
 
 4" is the row that shows why the design chose 5": it lands at R-49.3 whole-assembly, which
@@ -238,10 +240,10 @@ Recorded plainly because the engine will neither stop you nor help you on any of
   p. 15) puts at **1,090 lb** sloped-only. The demand at 24" o.c. is `roof_rafter_span_read.md`
   §4's **~980 lb**, not 600 — d/c **0.90**, or 0.78 taking p. 16 footnote 1's +15% snow-roof
   increase. That is cover, not comfort, and the lighter stack is what keeps it there.
-- **The deck cantilever.** The 5/8" plywood oversails the last joist at each eave and spans
+- **The deck cantilever.** The 19/32" plywood oversails the last joist at each eave and spans
   the wall girts. Nothing in the engine grades that overhang.
 - **Sheathing span and the gypsum ceiling at 24" o.c.** No rule in the engine reads the
-  spacing at all. Both are fine — 5/8" CDX is span-rated 40/20 and 5/8" board is rated for a
+  spacing at all. Both are fine — 19/32" CDX is span-rated 40/20 and 5/8" board is rated for a
   24" o.c. ceiling where 1/2" is not, and catlin already specifies 5/8" — but nothing here
   verifies either.
 

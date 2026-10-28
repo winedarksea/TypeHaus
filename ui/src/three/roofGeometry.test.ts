@@ -27,16 +27,18 @@ export function runRoofGeometryTests() {
   // slope, or the stack reads thin at the eave and thick at the rake.
   const offsetAt = roofOffsetter(triangles);
   const thickness = 0.1;
-  for (const tri of triangles) {
-    const a = new THREE.Vector3(...tri[0]);
-    const plane = new THREE.Plane().setFromCoplanarPoints(
-      a, new THREE.Vector3(...tri[1]), new THREE.Vector3(...tri[2]),
-    );
-    for (const vertex of tri) {
-      const [[x, y], z] = offsetAt(vertex, thickness);
-      const distance = Math.abs(plane.distanceToPoint(new THREE.Vector3(x, y, z)));
-      if (Math.abs(distance - thickness) > 1e-6) {
-        throw new Error(`Offset vertex is ${distance} from the deck, expected ${thickness}`);
+  for (const filmThickness of [thickness, 0.030 * 0.0254, 0.040 * 0.0254]) {
+    for (const tri of triangles) {
+      const a = new THREE.Vector3(...tri[0]);
+      const plane = new THREE.Plane().setFromCoplanarPoints(
+        a, new THREE.Vector3(...tri[1]), new THREE.Vector3(...tri[2]),
+      );
+      for (const vertex of tri) {
+        const [[x, y], z] = offsetAt(vertex, filmThickness);
+        const distance = Math.abs(plane.distanceToPoint(new THREE.Vector3(x, y, z)));
+        if (Math.abs(distance - filmThickness) > 1e-6) {
+          throw new Error(`Offset vertex is ${distance} from the deck, expected ${filmThickness}`);
+        }
       }
     }
   }
