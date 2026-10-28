@@ -349,7 +349,7 @@ the future.
 - Pick a soffit product and close the garage attic ventilation grading, and the corrugated soffit to sill junction detailed. Also fix the garage soffit end detail (north and south gable ends) where the sofit is too flat and isn't inline with the roof slope there
 - SL-SG-STAIRPAD is a slightly different finished height than SL-WK-D. They should have the same finished height.
 - D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
-- The fireplace opening, AO-M-FIRE-NICHE got exterior flashing trim, which is ridiculous, because that niche is entirely inside the house (the sheathing is continuous over it)
+- [x] Remove exterior flashing trim from AO-M-FIRE-NICHE: the blind niche leaves the exterior sheathing and cladding continuous, so it needs no exterior trim.
 - Undo the work of 529a0ca6 'canopy beam caps' and see if it can be symmetrical by both sides of the beam terminating at the post.
 
 # Project Management

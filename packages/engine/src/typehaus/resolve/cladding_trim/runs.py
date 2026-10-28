@@ -9,6 +9,7 @@ from typehaus.library.trim.metal_sales import TrimProfile
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.members import split_stock_run
 from typehaus.resolve.cladding_trim.section import folded_section_mesh
+from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
 from typehaus.resolve.model import ResolvedSolid
 
@@ -33,10 +34,11 @@ class CladdingFace:
         return (station * self.d[0] + off * self.n[0], station * self.d[1] + off * self.n[1])
 
     def openings(self, model):
-        """Openings on this wall as (opening, lo, hi) along-stations."""
+        """Openings cutting this face's layer as (opening, lo, hi) along-stations."""
         origin = self.wall.axis[0][0] * self.d[0] + self.wall.axis[0][1] * self.d[1]
         for opening in model.openings:
-            if opening.host_wall == self.wall.tag:
+            if (opening.host_wall == self.wall.tag
+                    and cuts_layer(self.wall, self.layer.name, opening)):
                 mid = origin + opening.center_along_m
                 yield opening, mid - opening.width_m / 2, mid + opening.width_m / 2
 

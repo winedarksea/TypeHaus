@@ -59099,30 +59099,6 @@
     32,
     "b14a7da1c2c1"
   ],
-  "geometry/MGNV9YBS74-trim-head-0/body": [
-    1.246303,
-    1.3192125,
-    16,
-    "3cb26d1c8ea8"
-  ],
-  "geometry/MGNV9YBS74-trim-jamb-left-0/body": [
-    0.6370955,
-    1.2557125,
-    16,
-    "0fb81d3e6d67"
-  ],
-  "geometry/MGNV9YBS74-trim-jamb-right-0/body": [
-    0.6370955,
-    1.2557125,
-    16,
-    "0fb81d3e6d67"
-  ],
-  "geometry/MGNV9YBS74-trim-sill-0/body": [
-    0.607351,
-    0.6370955,
-    20,
-    "873d60deff1e"
-  ],
   "geometry/MHP1C1AAAA/body": [
     -0.8636,
     -0.762,
@@ -101919,14 +101895,6 @@
   "solids/AO-M-ERV-OA-TRIM-JAMB-RIGHT-1/z1_m": 1.6383,
   "solids/AO-M-ERV-OA-TRIM-SILL-1/z0_m": 1.3966031,
   "solids/AO-M-ERV-OA-TRIM-SILL-1/z1_m": 1.426083,
-  "solids/AO-M-FIRE-NICHE-TRIM-HEAD-1/z0_m": 1.246303,
-  "solids/AO-M-FIRE-NICHE-TRIM-HEAD-1/z1_m": 1.3192125,
-  "solids/AO-M-FIRE-NICHE-TRIM-JAMB-LEFT-1/z0_m": 0.6370955,
-  "solids/AO-M-FIRE-NICHE-TRIM-JAMB-LEFT-1/z1_m": 1.2557125,
-  "solids/AO-M-FIRE-NICHE-TRIM-JAMB-RIGHT-1/z0_m": 0.6370955,
-  "solids/AO-M-FIRE-NICHE-TRIM-JAMB-RIGHT-1/z1_m": 1.2557125,
-  "solids/AO-M-FIRE-NICHE-TRIM-SILL-1/z0_m": 0.607351,
-  "solids/AO-M-FIRE-NICHE-TRIM-SILL-1/z1_m": 0.6370955,
   "solids/AO-S-ERV-EA-TRIM-HEAD-1/z0_m": 5.2864905,
   "solids/AO-S-ERV-EA-TRIM-HEAD-1/z1_m": 5.3594,
   "solids/AO-S-ERV-EA-TRIM-JAMB-LEFT-1/z0_m": 5.083683,

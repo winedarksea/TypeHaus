@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from typehaus.model.cladding_trim import TrimCondition
-from typehaus.resolve.cladding_trim.openings import is_profiled_metal_wall
+from typehaus.resolve.cladding_trim.openings import opening_cuts_profiled_metal_cladding
 from typehaus.resolve.cladding_trim.runs import kit_faces
 
 _TOLERANCE_M = 1e-6
@@ -15,7 +15,7 @@ def metal_wall_openings(model, kinds):
         if opening.kind not in kinds:
             continue
         wall = model.wall(opening.host_wall)
-        if wall is not None and is_profiled_metal_wall(model, wall):
+        if wall is not None and opening_cuts_profiled_metal_cladding(model, wall, opening):
             yield opening, wall
 
 

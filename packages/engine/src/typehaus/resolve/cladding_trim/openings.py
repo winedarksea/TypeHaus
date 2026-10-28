@@ -75,6 +75,16 @@ def cladding_finish(model, wall) -> str | None:
                  if layer.function == "cladding"), None)
 
 
+def opening_cuts_profiled_metal_cladding(model, wall, opening) -> bool:
+    """Interior blind recesses leave the exterior panel whole and need no edge trim."""
+    from typehaus.resolve.geometry_walls import cuts_layer
+
+    finishes = {material.tag: material.finish for material in model.plan.library.materials}
+    return any(layer.function == "cladding" and finishes.get(layer.material_ref) in {
+        "ribbed-panel", "board-and-batten", "corrugated",
+    } and cuts_layer(wall, layer.name, opening) for layer in wall.layers)
+
+
 def window_profile_sections(frame, seat):
     """Parametric (jamb, sill) sections in inches for a window's reveal and seat."""
     from typehaus.resolve.metal_skin_profiles import INCH_M
@@ -180,7 +190,7 @@ def resolve_small_opening_trim(model) -> None:
     for opening in model.openings:
         wall = model.wall(opening.host_wall)
         if (opening.kind != "rough_opening" or wall is None
-                or not is_profiled_metal_wall(model, wall)
+                or not opening_cuts_profiled_metal_cladding(model, wall, opening)
                 or max(opening.width_m, opening.height_m) < SMALL_PENETRATION_M):
             continue
         frame = opening_flashing_frame(model, wall)

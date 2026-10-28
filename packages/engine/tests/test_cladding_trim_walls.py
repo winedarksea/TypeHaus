@@ -18,8 +18,8 @@ def _pieces(model):
 def test_trim_inventory_by_profile(catlin_model_ro):
     counts = Counter(s.product for s in _pieces(catlin_model_ro))
     assert counts == {
-        "PBR_WINDOW_JAMB": 38, "WINDOW_JAMB_CUSTOM": 48, "WINDOW_SILL_CUSTOM": 43,
-        "OPENING_HEAD": 43,
+        "PBR_WINDOW_JAMB": 36, "WINDOW_JAMB_CUSTOM": 48, "WINDOW_SILL_CUSTOM": 42,
+        "OPENING_HEAD": 42,
         "PBR_BASE": 11, "BBD_BASE": 10, "CORRUGATED_BASE": 12, "BBD_TRANSITION": 10,
         "BBD_PANEL_STARTER": 6, "CORRUGATED_JAMB": 8, "DOOR_HEAD_CUSTOM": 5,
         "WIDE_OUTSIDE_CORNER": 8, "CORRUGATED_OUTSIDE_CORNER": 4,
@@ -53,8 +53,28 @@ def test_catalog_door_takes_jambs_but_its_head_is_the_band(catlin_model_ro):
 
 def test_penetrations_under_six_inches_take_no_trim(catlin_model_ro):
     hosts = {s.host_ref for s in _pieces(catlin_model_ro)}
-    assert {"AO-M-FIRE-NICHE", "AO-M-ERV-OA", "AO-S-ERV-EA"} <= hosts
-    assert not hosts & {"AO-M-PORCH-HYD", "AO-S-BALC-HYD"}
+    assert {"AO-M-ERV-OA", "AO-S-ERV-EA"} <= hosts
+    assert not hosts & {"AO-M-FIRE-NICHE", "AO-M-PORCH-HYD", "AO-S-BALC-HYD"}
+
+
+def test_interior_fireplace_niche_has_no_exterior_trim_or_trim_findings(catlin_model_ro):
+    from typehaus.checks.integrity.cladding_trim_coverage import _window_like
+    from typehaus.checks.integrity.cladding_trim_fit import _opening_runs, _site_brake
+    from typehaus.checks.registry import CheckContext
+
+    model = catlin_model_ro
+    niche = "AO-M-FIRE-NICHE"
+    assert not any(s.host_ref == niche and s.category in {"cladding_trim", "opening_flashing"}
+                   for s in model.solids)
+    assert not any(niche in tag for row in cladding_trim_takeoff(model) for tag in row["tags"])
+    ctx = CheckContext(plan=model.plan, model=model, preferences=None, profile=None)
+    pieces = _pieces(model)
+    findings = [*_window_like(ctx, pieces), *_opening_runs(ctx, pieces), *_site_brake(ctx, pieces)]
+    assert not any(niche in f.element_tags for f in findings)
+
+    missing_erv_trim = [piece for piece in pieces if piece.host_ref != "AO-M-ERV-OA"]
+    assert any(f.result.name == "FAIL" and "AO-M-ERV-OA" in f.element_tags
+               for f in _window_like(ctx, missing_erv_trim))
 
 
 def test_roof_edges_bill_as_image_ii_pieces(catlin_model_ro):
