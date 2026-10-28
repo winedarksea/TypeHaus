@@ -138,6 +138,8 @@ def test_a_facade_draws_as_one_run_not_one_rectangle_per_segment(catlin_model):
 
     They are one plane of cladding, so the drawing must carry one outline for the lot —
     a seam at every partition tee and a rule at every storey is the model showing through.
+    The roof-edge trim band is a real joint (BBD75 runs at most 20' a panel), so the run
+    stops at its underside, below the gable.
     """
     scene = build_elevation(catlin_model, "south")
     walls = [node for node in _polylines(scene, "A-WALL") if node.tag
@@ -145,8 +147,11 @@ def test_a_facade_draws_as_one_run_not_one_rectangle_per_segment(catlin_model):
     assert walls
     tallest = max(walls, key=lambda node: max(p[1] for p in node.points)
                   - min(p[1] for p in node.points))
-    height = max(p[1] for p in tallest.points) - min(p[1] for p in tallest.points)
-    assert height > 25 * FT, "the merged run should span grade to the gable, not one storey"
+    low, top = min(p[1] for p in tallest.points), max(p[1] for p in tallest.points)
+    assert top - low > 15 * FT, "the merged run should span more than one storey"
+    undersides = [min(p[1] for p in node.points) for node in _polylines(scene, "A-ROOF-TRIM")]
+    assert any(abs(under - top) < 0.01 for under in undersides), \
+        "the merged run should stop where the roof-edge trim band begins"
 
 
 # --- openings ----------------------------------------------------------------------------
