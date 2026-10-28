@@ -26,8 +26,8 @@ from typehaus import (
 from typehaus.model import Location, ModelRepresentation, WallAttachment, m
 
 ELECTRICAL_DEVICE_TYPES = (
-    # RC16's narrow pier (beside EAST-MID until 2026-10-16) takes a standard single-gang plate; the shared
-    # catalog's 4" schematic envelope would overlap its king or the pantry.
+    # RC16's narrow pier takes a standard single-gang plate. Keep its selected product
+    # reference here; the shared catalog now uses the same vertical plate envelope.
     ElectricalDeviceType(tag="ED-T-RECEPTACLE-SINGLE-GANG",
                           name="Duplex receptacle, standard 2 3/4 x 4 1/2 in. plate",
                           footprint=(inch(2.75), inch(2)), height=inch(4.5),
@@ -161,7 +161,7 @@ MAIN_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-S1", face="left", distance_from_start=inch(120),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         normal_gap=inch(0), rotation_offset=deg(180)))),
     ElectricalDevice(uid="CED003K1AA", tag="ED-M-STUDY-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(15, 8), ft(19, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-MAIN",
                      room="RM-M-STUDY", controlled_by=("ED-M-STUDY-SW",),

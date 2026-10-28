@@ -21,7 +21,7 @@ def _device(tag: str, name: str, footprint, height, ports, **facts) -> Electrica
 
 ALL_ELECTRICAL_DEVICE_TYPES = (
     _device("ED-T-SWITCH", "Wall switch", (inch(4), inch(2)), inch(2), _P120),
-    _device("ED-T-RECEPTACLE", "Receptacle", (inch(4), inch(2)), inch(2), _P120,
+    _device("ED-T-RECEPTACLE", "Receptacle", (inch(2.75), inch(2)), inch(4.5), _P120,
             model_representation=ModelRepresentation(symbol="receptacle-duplex")),
     _device(
         "ED-T-JBOX",
@@ -31,7 +31,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         _P120,
         plan_symbol="junction-box",
     ),
-    _device("ED-T-RECEPTACLE-GFCI", "GFCI receptacle", (inch(4), inch(2)), inch(2), _P120,
+    _device("ED-T-RECEPTACLE-GFCI", "GFCI receptacle", (inch(2.75), inch(2)), inch(4.5), _P120,
             model_representation=ModelRepresentation(symbol="receptacle-duplex")),
     _device(
         "ED-T-RECEPTACLE-WR-GFCI",
@@ -53,8 +53,8 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
     _device(
         "ED-T-RECEPTACLE-520S",
         "NEMA 5-20R single receptacle, 20A",
-        (inch(4), inch(2)),
-        inch(2),
+        (inch(2.75), inch(2)),
+        inch(4.5),
         _P120,
         model_representation=ModelRepresentation(symbol="receptacle-single-120"),
     ),
