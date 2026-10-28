@@ -25,6 +25,7 @@ from typehaus.takeoff.cladding_trim import cladding_trim_takeoff
 COVERAGE = "integrity.cladding_trim_coverage"
 _SIDES = ("HEAD", "SILL", "JAMB-LEFT", "JAMB-RIGHT")
 _CORNER_RADIUS_M = 8 * M_PER_IN
+_CATALOG_RIDGES = {"ridge:closed-cap", "ridge:image-ii-vented"}
 
 
 def _pieces(model):
@@ -56,8 +57,12 @@ def _window_like(ctx, pieces):
                                        (opening.tag,)))
                 continue
             if side.startswith("JAMB"):
+                # A jamb stands on its sill's envelope, upstand included, not the sill datum.
+                sill_top = max((z for p in pieces if p.host_ref == opening.tag
+                                and "-TRIM-SILL-" in p.tag and p.body_mesh
+                                for _, _, z in p.body_mesh.positions), default=bottom)
                 top = bottom + opening.height_m - (seat.head_drop_m if seat else 0.0)
-                ok = spans_cover(z_extent(selected), bottom, top)
+                ok = spans_cover(z_extent(selected), sill_top, top)
             else:
                 ok = spans_cover(along_extent(selected, frame), low, low + opening.width_m)
             if not ok:
@@ -168,11 +173,9 @@ def _roof_edges(ctx):
             key = member.child_key
             if member.category == "drip_edge" and key.endswith("-drip-edge-face"):
                 tag = f"{roof.tag}:{key[:-len('-drip-edge-face')]}"
-                if roof.tag == "RF-HOUSE" and key.startswith("rake"):
-                    continue    # billed as the panel rake below
             elif member.category == "corner_trim" and key.endswith("-panel-rake-face"):
                 tag = f"{roof.tag}:{key.removesuffix('-panel-rake-face')}"
-            elif member.category == "ridge_cap" and member.connection == "ridge:closed-cap":
+            elif member.category == "ridge_cap" and member.connection in _CATALOG_RIDGES:
                 tag = f"{roof.tag}:{key}"
             else:
                 continue
@@ -181,7 +184,7 @@ def _roof_edges(ctx):
                 findings.append(failed(COVERAGE, f"{tag} has no catalog roof-edge piece",
                                        (roof.tag,)))
     if runs and not findings:
-        findings.append(passed(COVERAGE, f"{runs} Image II eave, rake and closed-ridge runs "
+        findings.append(passed(COVERAGE, f"{runs} Image II eave, rake and ridge runs "
                                          "map to catalog pieces"))
     return findings
 
@@ -231,8 +234,8 @@ def cladding_trim_coverage(ctx: CheckContext) -> list:
                 *_corners_and_ends(ctx, pieces), *_roof_edges(ctx), *_wall_tops(ctx, pieces)]
     findings.append(unknown(
         COVERAGE,
-        "the garage's vented ridge keeps its modeled cap until Metal Sales confirms the Image II "
-        "vented assembly's part numbers; the stock part-number anomalies (58937XX, "
-        "59904XX/58904XX, 58974XX/58794XX, the duplicated 58206XX) are unconfirmed too",
-        fix="send the questions in notes/metal_trim_kit.md to Metal Sales"))
+        "the garage's vented ridge: Metal Sales publishes no part number for the 13 in step "
+        "ridge cover, and the Cobra vented closure's net free area is unprinted",
+        fix="ask Metal Sales for the 13 in step cover and Cobra closure part numbers and NFA "
+            "(notes/metal_trim_kit.md)"))
     return findings

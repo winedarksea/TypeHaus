@@ -18,7 +18,8 @@ def _pieces(model):
 def test_trim_inventory_by_profile(catlin_model_ro):
     counts = Counter(s.product for s in _pieces(catlin_model_ro))
     assert counts == {
-        "WINDOW_JAMB_CUSTOM": 86, "WINDOW_SILL_CUSTOM": 43, "OPENING_HEAD": 43,
+        "PBR_WINDOW_JAMB": 38, "WINDOW_JAMB_CUSTOM": 48, "WINDOW_SILL_CUSTOM": 43,
+        "OPENING_HEAD": 43,
         "PBR_BASE": 11, "BBD_BASE": 10, "CORRUGATED_BASE": 12, "BBD_TRANSITION": 10,
         "BBD_PANEL_STARTER": 6, "CORRUGATED_JAMB": 8, "DOOR_HEAD_CUSTOM": 5,
         "WIDE_OUTSIDE_CORNER": 8, "CORRUGATED_OUTSIDE_CORNER": 4,
@@ -58,10 +59,28 @@ def test_penetrations_under_six_inches_take_no_trim(catlin_model_ro):
 
 def test_roof_edges_bill_as_image_ii_pieces(catlin_model_ro):
     rows = {r["part"]: r for r in cladding_trim_takeoff(catlin_model_ro) if r["kind"] == "roof"}
-    assert rows["52124XX"]["count"] == 16        # extended eave, three roofs' eaves
+    assert rows["52124XX"]["count"] == 16        # extended eave: six eave runs, three roofs
     assert rows["52131XX"]["count"] == 5         # closed ridge cover: house and canopy
-    assert rows["IMAGE_II_RAKE_4IN_CUSTOM"]["unit"] == "LF"   # house rakes: 4 in face
-    assert "52126XX" in rows                     # garage and canopy rakes fit the stock leg
+    # Every exposed rake: the house's four runs, the garage's north gable and the canopy's
+    # south gable. The garage south and canopy north are one plane (abutted_run_keys), no piece.
+    assert rows["52126XX"]["count"] == 16
+    assert rows["52132XX"]["count"] == 16        # one rake cleat per rake stick
+    assert rows["5806199"]["count"] == 40        # flat cleats on barge boards only (the fascias)
+    assert "IMAGE_II_RAKE_4IN_CUSTOM" not in rows  # the house rake is the stock 2-5/8 in leg
+
+
+def test_garage_vented_ridge_bills_by_part_and_its_closure(catlin_model_ro):
+    garage = [r for r in cladding_trim_takeoff(catlin_model_ro)
+              if "RF-GARAGE:ridge-vent-cap" in r["tags"]]
+    by_part = {r["part"]: r for r in garage}
+    vented = by_part["IMAGE_II_VENTED_STEP_RIDGE"]
+    assert vented["count"] == 3                  # 25.7 LF in 10'-2" sticks, 2 in laps
+    # The closure runs the ridge once; the cover's laps are its own extra cut.
+    assert by_part["cobra-vented-closure"]["length_ft"] == pytest.approx(25.41, abs=0.01)
+    assert vented["cut_length_ft"] > by_part["cobra-vented-closure"]["length_ft"]
+    # Rivets are one row for the whole house; the garage's share is its tag on that row.
+    assert "RF-GARAGE:ridge-vent-cap" in by_part["trim-pop-rivet"]["tags"]
+    assert "58603XX" not in by_part, "the vented ridge takes no Z-closure"
 
 
 def test_wall_top_edges_use_developed_length_without_stacked_duplicates(catlin_model_ro):
@@ -131,3 +150,13 @@ def test_wall_top_check_does_not_hide_a_missing_kit_mapping(catlin_model_ro):
     ctx = CheckContext(plan=model.plan, model=model, preferences=None, profile=None)
     assert any(f.result.name == "FAIL" and "W-S-E" in f.message
                for f in _wall_tops(ctx, model.solids))
+
+
+def test_the_vented_ridge_is_the_coverage_checks_one_supplier_question(catlin_check_report):
+    from typehaus.findings import Result
+
+    report = catlin_check_report()
+    open_items = [f for f in report.findings if f.check_id == "integrity.cladding_trim_coverage"
+                  and f.result is Result.UNKNOWN]
+    assert len(open_items) == 1
+    assert "step ridge" in open_items[0].message and "Cobra" in open_items[0].message

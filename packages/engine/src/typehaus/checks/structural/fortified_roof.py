@@ -39,12 +39,15 @@ from typehaus.checks.building_science.condensation import conditioned_envelope_a
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.structural.uplift_path import uplift_path_coverage
 from typehaus.findings import Finding, Result, Severity
+from typehaus.library.trim._image_ii import eave_deck_flange_in, rake_deck_flange_in
 from typehaus.model.enums import ControlLayer, LayerFunction, RoofForm, TrimKind
 from typehaus.model.spatial import Roof
 from typehaus.model.trim import Flashing
 from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.roof_drip_edge import CATEGORY as _DRIP_CATEGORY
 from typehaus.resolve.roof_drip_edge import flange_on_deck_m
+from typehaus.resolve.roof_edge_geometry import abutted_run_keys, roof_edge_runs
+from typehaus.resolve.roof_image_ii import CONNECTION_EAVE, CONNECTION_RAKE
 
 _ADVISORY = "[advisory, not engineering] "
 
@@ -158,11 +161,23 @@ _MIN_FLANGE_M = inch(2).meters
 _FLANGE_TOL_M = 1e-6
 
 
-def _derived_flanges(roof, centroid: tuple[float, float]) -> dict[str, float]:
-    """Side -> the shortest derived drip-edge flange on the deck along that side."""
-    out: dict[str, float] = {}
+def _catalog_flange_m(member) -> float | None:
+    """The deck flange of an Image II catalog piece, read off its section (roof_image_ii)."""
+    if member.connection == CONNECTION_EAVE:
+        return eave_deck_flange_in() * M_PER_IN
+    if member.connection == CONNECTION_RAKE:
+        return rake_deck_flange_in() * M_PER_IN
+    return None
+
+
+def _derived_flanges(roof, centroid: tuple[float, float]) -> dict[str, tuple[float, str]]:
+    """Side -> (shortest deck flange along that side, "catalog" or "derived")."""
+    out: dict[str, tuple[float, str]] = {}
     for member in roof.members:
-        if member.category != _DRIP_CATEGORY or not member.child_key.endswith("-flange"):
+        if member.category != _DRIP_CATEGORY:
+            continue
+        catalog = _catalog_flange_m(member)
+        if catalog is None and not member.child_key.endswith("-flange"):
             continue
         (ax, ay), (bx, by) = member.p0, member.p1
         mid_x, mid_y = (ax + bx) / 2.0, (ay + by) / 2.0
@@ -170,27 +185,39 @@ def _derived_flanges(roof, centroid: tuple[float, float]) -> dict[str, float]:
             side = "W" if mid_x < centroid[0] else "E"
         else:
             side = "S" if mid_y < centroid[1] else "N"
-        length = flange_on_deck_m(member)
-        out[side] = min(out.get(side, length), length)
+        length, kind = (catalog, "catalog") if catalog is not None else (
+            flange_on_deck_m(member), "derived")
+        if side not in out or length < out[side][0]:
+            out[side] = (length, kind)
     return out
 
 
-def _derived_finding(roof, side: str, label: str, flange_m: float) -> Finding:
+def _derived_finding(roof, side: str, label: str, flange_m: float, kind: str) -> Finding:
     inches = f'{flange_m / M_PER_IN:.2f}"'
+    drip = f"formed drip edge ({kind})"
     if flange_m >= _MIN_FLANGE_M - _FLANGE_TOL_M:
         return Finding(
             severity=Severity.WARN, check_id=_CHECK_DRIP_EDGE, result=Result.PASS,
-            message=(f"{_ADVISORY}{roof.tag}'s {side} {label} edge carries a formed drip "
-                     f"edge (derived), {inches} on the deck — flange length graded; gauge "
+            message=(f"{_ADVISORY}{roof.tag}'s {side} {label} edge carries a {drip}, "
+                     f"{inches} on the deck — flange length graded; gauge "
                      "and fastener spacing are documentation facts this model does not "
                      "carry"),
             element_tags=(roof.tag,))
     return Finding(
         severity=Severity.WARN, check_id=_CHECK_DRIP_EDGE, result=Result.FAIL,
-        message=(f"{_ADVISORY}{roof.tag}'s {side} {label} edge carries a formed drip edge "
-                 f"(derived) with only {inches} on the deck — FORTIFIED §4.5 wants 2\""),
+        message=(f"{_ADVISORY}{roof.tag}'s {side} {label} edge carries a {drip} with only "
+                 f"{inches} on the deck — FORTIFIED §4.5 wants 2\""),
         element_tags=(roof.tag,),
         fix_hint="lengthen EaveDripEdge.flange to at least 2\"")
+
+
+def _interior_sides(model, roof) -> frozenset[str]:
+    """Sides whose every run another roof continues across: a seam, not an edge, so no drip."""
+    runs = roof_edge_runs(roof)
+    abutted = abutted_run_keys(model, roof)
+    return frozenset(
+        name[0].upper() for name in {run.edge_name for run in runs}
+        if all(run.key in abutted for run in runs if run.edge_name == name))
 
 
 def _eave_rake_sides(ridge_direction: str) -> tuple[frozenset[str], frozenset[str]]:
@@ -210,7 +237,8 @@ def fortified_roof_drip_edge(ctx: CheckContext) -> list[Finding]:
         centroid = _centroid(roof.footprint)
         derived = _derived_flanges(roof, centroid)
         if roof.form != RoofForm.GABLE.value and derived and not hosted:
-            out.append(_derived_finding(roof, "every", "roof", min(derived.values())))
+            flange, kind = min(derived.values())
+            out.append(_derived_finding(roof, "every", "roof", flange, kind))
             continue
         if roof.form != RoofForm.GABLE.value:
             # A shed/other form has no rake-vs-eave pair to name individually; grade only
@@ -233,10 +261,13 @@ def fortified_roof_drip_edge(ctx: CheckContext) -> list[Finding]:
             continue
         covered = {_flashing_side(f, centroid) for f in hosted}
         eave_sides, rake_sides = _eave_rake_sides(roof.ridge_direction)
+        interior = _interior_sides(ctx.model, roof)
         for side in ("N", "S", "E", "W"):
+            if side in interior:
+                continue
             label = "eave" if side in eave_sides else "rake"
             if side not in covered and side in derived:
-                out.append(_derived_finding(roof, side, label, derived[side]))
+                out.append(_derived_finding(roof, side, label, *derived[side]))
             elif side in covered:
                 out.append(Finding(
                     severity=Severity.WARN, check_id=_CHECK_DRIP_EDGE, result=Result.PASS,

@@ -41,6 +41,7 @@ from typehaus.resolve.roof_drip_edge import (
 from typehaus.resolve.roof_edge_geometry import (
     CLOSURE_TOLERANCE_M,
     EdgeRun,
+    abutted_run_keys,
     continuous_skin_cladding,
     mating_faces,
     mitred_span,
@@ -49,6 +50,7 @@ from typehaus.resolve.roof_edge_geometry import (
     skin_layers,
     wall_face_inset,
 )
+from typehaus.resolve.roof_image_ii import image_ii_members, wrapped_image_ii_edges
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 from typehaus.resolve.roof_panel_trim import (
     panel_profile_for_layer,
@@ -76,12 +78,21 @@ _CORNER_TRIM_THICKNESS_M = inch(1.25).meters
 _CORNER_TRIM_LEG_M = inch(4).meters
 
 
+def _closed_run_keys(model: ResolvedModel, roof: ResolvedRoof) -> frozenset[str]:
+    """The runs with no edge band: an Image II piece closes them, or a roof continues across."""
+    catalog = wrapped_image_ii_edges(model, roof)
+    abutted = abutted_run_keys(model, roof)
+    return frozenset(run.key for run in roof_edge_runs(roof)
+                     if run.edge_name in catalog or run.key in abutted)
+
+
 def roof_trim_members(
     model: ResolvedModel, roof: ResolvedRoof, walls: tuple[ResolvedWall, ...]
 ) -> tuple[FramedMember, ...]:
     """The derived fascia/soffit/gutter, edge closure and ridge cap for one roof."""
     return (_eave_trim_members(model, roof, walls)
             + _edge_cladding_members(model, roof, walls)
+            + image_ii_members(model, roof)
             + _ridge_vent_members(model, roof))
 
 
@@ -108,11 +119,17 @@ def _eave_trim_members(
     if trim.drip_edge is not None and not continuous_skin_cladding(model, roof, walls):
         drip = (layers, slope_factor, _edge_trim_material(element, _roofing_material(layers)))
     members: list[FramedMember] = []
+    catalog = wrapped_image_ii_edges(model, roof)
+    abutted = abutted_run_keys(model, roof)
     for run in roof_edge_runs(roof):
+        if run.key in abutted:
+            continue  # another roof's plane runs on across this run: no edge to trim
         edge_trim = (trim.model_copy(update={"fascia": ()})
                      if trim.fascia_edges and run.edge_name not in trim.fascia_edges
                      else trim)
-        members.extend(_edge_trim(roof, edge_trim, run, walls, fascia_rise, drip))
+        # An Image II catalog piece replaces the derived drip on its wrapped edge.
+        run_drip = None if run.edge_name in catalog else drip
+        members.extend(_edge_trim(roof, edge_trim, run, walls, fascia_rise, run_drip))
     return tuple(members)
 
 
@@ -280,6 +297,8 @@ def _edge_cladding_members(
                      if layer.function is LayerFunction.CLADDING), None)
     if cladding is None:
         return ()
+    # Runs the Image II catalog closes, or a neighbouring roof continues across, take no band.
+    closed = _closed_run_keys(model, roof)
     # Layer offsets are perpendicular to the slope but the band is measured vertically, so a
     # perpendicular `d` needs `d / cosθ` of vertical band to reach the same face.
     mating = mating_faces(layers)
@@ -289,11 +308,13 @@ def _edge_cladding_members(
     # roofing underside, and the joint gets a corner trim piece instead of a drip-edge band.
     if continuous_skin_cladding(model, roof, walls):
         element = model.plan.by_tag(roof.tag)
-        members = _corner_trim_members(roof, cladding, mating, slope_factor, element, layers, walls)
+        members = _corner_trim_members(roof, cladding, mating, slope_factor, element, layers, walls,
+                                       closed)
         profile = panel_profile_for_layer(model, cladding)
         if profile:
             members += rake_panel_trim(roof, profile, mating.cladding_under,
-                                       _edge_trim_material(element, cladding.material_ref))
+                                       _edge_trim_material(element, cladding.material_ref),
+                                       skip=closed)
         return members
     base = mating.foam_under * slope_factor          # where the wall cladding stops
     height = mating.cladding_under * slope_factor - base
@@ -303,6 +324,8 @@ def _edge_cladding_members(
     thickness = cladding.thickness.meters
     members: list[FramedMember] = []
     for run in roof_edge_runs(roof):
+        if run.key in closed:
+            continue
         # Positive setbacks are inward, so the cladding's outer edge sits `-setback` outward
         # of the footprint edge; hang the band's outer face there.
         entry = setbacks.get(cladding.name)
@@ -341,6 +364,7 @@ def _edge_trim_material(element, default: str | None) -> str | None:
 def _corner_trim_members(
     roof: ResolvedRoof, cladding, mating, slope_factor: float,
     element=None, layers=(), walls: tuple[ResolvedWall, ...] = (),
+    closed: frozenset[str] = frozenset(),
 ) -> tuple[FramedMember, ...]:
     """The formed cleat-and-hemmed-drip capping a wrapped roof edge, per eave/rake run.
 
@@ -372,6 +396,8 @@ def _corner_trim_members(
     shell = min(FLASHING.sheet_m, _CORNER_TRIM_THICKNESS_M / 3.0)
     members: list[FramedMember] = []
     for run in roof_edge_runs(roof):
+        if run.key in closed:
+            continue
         spec = drip_spec(trim, run)
         if spec is not None:
             # The nose clears the wall cladding's closure head, which is level at its own

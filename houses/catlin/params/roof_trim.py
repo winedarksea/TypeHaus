@@ -17,9 +17,10 @@ get behind the siding:
 
     roofing → formed drip edge (derived) → box gutter → downspout
 
-- a 6" BOX GUTTER hung **tight to the wall plane** — its back sheet tucked *behind* the drip
-  edge's face rather than standing off in mid-air, which is what closes the open slot that
-  used to run the length of the eave; the drip's kick lands inside the trough;
+- a 5" BOX GUTTER (PBR 58077XX/58079XX) hung **tight to the wall plane** — its back sheet
+  tucked *behind* the drip edge's face rather than standing off in mid-air, which is what
+  closes the open slot that used to run the length of the eave; the drip's kick lands inside
+  the trough;
 - a DOWNSPOUT per eave, because the gutters slope to one, plus the S-5! securement clamps
   (plan/mep.py) that steady it.
 
@@ -72,8 +73,8 @@ import math
 
 from params.cladding import HOUSE_EW_OUTBOARD_IN, HOUSE_NS_OUTBOARD_IN
 from params.roof_panel import ROOFING_BASE_IN
-
 from typehaus import DischargeExtension, Downspout, Flashing, Gutter, TrimKind, ft, inch, pt
+from typehaus.library.trim.metal_sales import BOX_GUTTER_BACK_IN, BOX_GUTTER_BOTTOM_IN
 
 _HOUSE_FT = 36.0
 # Wall layers outboard of the sheathing-ext datum -> the cladding outer face, which is
@@ -136,12 +137,13 @@ _CHAIN_MATERIAL = "metal-dark-exterior"
 _LAP_IN = 0.5
 
 # --- Box gutter ---------------------------------------------------------------------------
-# 6" of trough, hung with its back sheet tucked a lap *behind* the drip edge's face, so the
-# face and its kick shed into the trough rather than past it into the gap. The rim rides a
-# lap above the face's foot — high enough to make that lap, low enough to stay clear of the
-# deck top (or the gutter lifts the underlayment off the deck it has to bond to).
-_GUTTER_THICK_IN = 6.0                       # channel width, out from the back sheet's face
-_GUTTER_DEPTH = inch(5)                      # channel height
+# The PBR 5x4 catalog box (library/trim/metal_sales.py): 5" bottom, 5" back, 4" front waterway.
+# Hung with its back sheet tucked a lap *behind* the drip edge's face, so the face and its
+# kick shed into the trough rather than past it into the gap. The rim rides a lap above the
+# face's foot — high enough to make that lap, low enough to stay clear of the deck top (or
+# the gutter lifts the underlayment off the deck it has to bond to).
+_GUTTER_THICK_IN = BOX_GUTTER_BOTTOM_IN      # channel width, out from the back sheet's face
+_GUTTER_DEPTH = inch(BOX_GUTTER_BACK_IN)     # channel height at the back; the front is 4"
 #: Inner face of the back sheet. A lap *behind* the face means behind the face's own sheet,
 #: not behind the plan depth that sheet hangs at the end of.
 _GUTTER_BACK_IN = _TRIM_FACE_IN - _TRIM_SHEET_IN - _LAP_IN   # 0.33"
@@ -150,6 +152,11 @@ _GUTTER_RIM_IN = _TRIM_BOTTOM_IN + _LAP_IN                   # -2.76"
 #: Mid-width of the trough, where the leader takes its outlet. The shell closes a half-shell
 #: at each side.
 _TROUGH_MID_IN = _GUTTER_BACK_IN + _LAP_IN + (_GUTTER_THICK_IN - 2.0 * _LAP_IN) / 2.0
+
+#: The gutter design basis (SMACNA): St Paul 10-yr 5-min depth, NOAA Atlas 14 point table
+#: (HDSC PDS, 2026-10-27). Intensity is depth over 5 min, x 12. notes/box_gutter_sizing.md §1.
+_DESIGN_DEPTH_10YR_5MIN_IN = 0.628
+_DESIGN_INTENSITY_IN_HR = _DESIGN_DEPTH_10YR_5MIN_IN * 12.0   # 7.54
 
 
 def _above_deck(vertical_in: float):
@@ -189,14 +196,14 @@ def _eave_water(side: str, index: int, eave_x, outward: float):
         thickness=inch(_GUTTER_THICK_IN), material=_CHAIN_MATERIAL, host_ref="RF-HOUSE",
         slope=f'1/16 in/ft to the north-end {side} downspout',
         downspout_ref=f"TR-RF-LEADER-{side}",
-        back_side=back_side)
+        back_side=back_side, product="PBR_BOX_GUTTER_5X4")
 
 
 # --- Downspouts ---------------------------------------------------------------------------
-# One 4" round leader per eave. Each eave sheds half the roof: 18' of run x 36' = 648 sq ft.
-# Minneapolis' short-duration design intensity is around 8 in/hr, and at that rate a 3"
-# leader is good for roughly 425 sq ft — not enough — while a 4" round still clears 648. So
-# 4", not the more usual 3".
+# One 4" round leader per eave, each draining half the roof (18' x 37.1' plan = 690.7 sf).
+# At the St Paul 10-yr 5-min intensity a 4" round serves 2,001 sf and a 3" round 1,126 sf
+# (PGI-18; notes/box_gutter_sizing.md §4). Both clear the design basis. The 4" stays because
+# the 3" fails the 100-yr 5-min sloped cross-check.
 #
 # Both go to the NORTH end, discharging into the 4' gap toward the garage rather than onto
 # the freestanding sunken-garden structure 5" off the south face. Each hangs on the trough's

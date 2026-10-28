@@ -38,7 +38,8 @@ def test_rain_garden_and_extension_quantities(catlin_model_ro) -> None:
             if r["category"] in ("leader_extension", "rain_garden_media", "rain_garden_stone")}
     assert rows["rain_garden_media"]["aggregate_cubic_yards"] == pytest.approx(12.96, abs=0.01)
     assert rows["rain_garden_stone"]["aggregate_cubic_yards"] == pytest.approx(6.48, abs=0.01)
-    assert rows["leader_extension"]["length_ft"] == pytest.approx(59.8, abs=0.1)
+    # 59.8 -> 59.9: the 5" box moved the trough centre line, and the leaders with it, 1/2" in.
+    assert rows["leader_extension"]["length_ft"] == pytest.approx(59.9, abs=0.1)
 
 
 def test_garden_checks_read_as_the_note_says(catlin_model_ro) -> None:

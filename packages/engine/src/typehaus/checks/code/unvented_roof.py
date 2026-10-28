@@ -246,18 +246,25 @@ def r806_5_compliance(assembly: Assembly, library: Library,
 
 
 def _vented_eave_authored(ctx: CheckContext) -> bool:
-    """Does the plan author a vented eave? Then R806.2, not R806.5, is the governing path.
+    """Does the plan vent an eave for every roof? Then R806.2, not R806.5, governs them all.
 
-    The same signal ``code.R806_2_attic_ventilation`` splits on, read the same way, so the
-    two rules partition the roofs between them instead of both claiming one or neither.
+    A free-standing vented ``EaveSoffit`` names no roof and so ventilates them all; a roof's
+    own vented ``EaveTrim`` (nested on the ``Roof``) governs that roof alone, see
+    :func:`_vented_roof_tags`.
     """
-    from typehaus.model.trim import EaveSoffit, EaveTrim
+    from typehaus.model.trim import EaveSoffit
 
-    return any(
-        (isinstance(element, EaveSoffit) and element.vented)
-        or (isinstance(element, EaveTrim) and element.soffit_vented)
-        for element in ctx.plan.all_elements()
-    )
+    return any(isinstance(element, EaveSoffit) and element.vented
+               for element in ctx.plan.all_elements())
+
+
+def _vented_roof_tags(ctx: CheckContext) -> set[str]:
+    """The roofs whose nested eave trim is vented: R806.2's, the walk attic_ventilation uses."""
+    from typehaus.model.spatial import Roof
+
+    return {element.tag for element in ctx.plan.all_elements()
+            if isinstance(element, Roof) and element.eave_trim is not None
+            and element.eave_trim.soffit_vented}
 
 
 @check(Tier.CODE, CHECK_ID)
@@ -269,13 +276,17 @@ def unvented_roof_insulation(ctx: CheckContext) -> list[Finding]:
 
     conditioned = {storey.tag for storey in ctx.plan.storeys
                    if _storey_is_conditioned(ctx.plan, storey.tag)}
+    vented = _vented_roof_tags(ctx)
     graded: dict[str, list[str]] = {}
     for roof in ctx.model.roofs:
-        if getattr(roof, "storey", None) not in conditioned:
+        if getattr(roof, "storey", None) not in conditioned or roof.tag in vented:
             continue
         graded.setdefault(roof.assembly, []).append(roof.tag)
     if not graded:
-        return [_na(CHECK_ID, "no roof bounds conditioned space, so no assembly has an "
+        return [_na(CHECK_ID, "no unvented roof bounds conditioned space: the roofs that do are "
+                    "vented, so R806.2 governs them", (), CODE)
+                if vented else
+                _na(CHECK_ID, "no roof bounds conditioned space, so no assembly has an "
                     "interior side for R806.5 to govern", (), CODE)]
 
     out: list[Finding] = []

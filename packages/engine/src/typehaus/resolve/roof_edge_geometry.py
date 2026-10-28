@@ -12,6 +12,8 @@ from __future__ import annotations
 import math
 from typing import NamedTuple
 
+from shapely.geometry import Point, Polygon
+
 from typehaus.model.enums import LayerFunction
 from typehaus.quantities import inch
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
@@ -237,6 +239,37 @@ def roof_edge_runs(roof: ResolvedRoof) -> tuple[EdgeRun, ...]:
                                 is_eave=False, corner_at_p0=(half == 0),
                                 corner_at_p1=(half == 1)))
     return tuple(runs)
+
+
+#: The stations along a run at which abutment is tested: interior points, clear of the corners.
+_ABUTMENT_STATIONS = (0.25, 0.5, 0.75)
+
+
+def abutted_run_keys(model: ResolvedModel, roof: ResolvedRoof) -> frozenset[str]:
+    """Runs another roof continues across in its own plane: interior seams, not edges.
+
+    At every station a neighbour must reach within ``CLOSURE_TOLERANCE_M`` of the run and stand
+    level with this roof there. A neighbour at another height is a step, and the higher roof's
+    edge is exposed to the air above the lower one, so that run stays an edge.
+    """
+    neighbours = [other for other in model.roofs if other.tag != roof.tag]
+    if not neighbours:
+        return frozenset()
+    keys = set()
+    for run in roof_edge_runs(roof):
+        stations = [(run.p0[0] + (run.p1[0] - run.p0[0]) * t,
+                     run.p0[1] + (run.p1[1] - run.p0[1]) * t) for t in _ABUTMENT_STATIONS]
+        if all(any(_roof_continues_at(roof, other, point) for other in neighbours)
+               for point in stations):
+            keys.add(run.key)
+    return frozenset(keys)
+
+
+def _roof_continues_at(roof: ResolvedRoof, other: ResolvedRoof,
+                       point: tuple[float, float]) -> bool:
+    if Point(point).distance(Polygon(other.footprint)) > CLOSURE_TOLERANCE_M:
+        return False
+    return abs(roof_height_at(other, point) - roof_height_at(roof, point)) <= CLOSURE_TOLERANCE_M
 
 
 class RidgeRun(NamedTuple):

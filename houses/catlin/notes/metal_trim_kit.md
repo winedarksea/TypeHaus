@@ -78,19 +78,20 @@ The outie window frame face is on the panel back plane. Rib depths are 1.25 in P
 0.75 in BBD75, and 0.875 in corrugated. Buck, membrane and shim between frame and
 rough opening occupy 0.645 in, or 0.6875 in at the Andersen sizes.
 
-- Head: 1.5 in Sill/Head 58114XX, with 2.5 in back leg and 1.5 in throat,
-  plus the matching closure. The membrane strip-in remains. PBR pp. 68–72 and
-  BBD75 pp. 24–29 show trim-first installations; this head accommodates the
-  window-first outie. BBD75 Head Trim 58720XX's 4 in return conflicts with the frame.
-- Jamb: custom J with back leg on girt or buck, return equal to rib depth and 1 in
-  leg onto frame face, sealed at the K7 joint. The frame lap covers the buck strip.
-- Sill: custom cap with upstand on buck behind the pan turn-down, height 1/8 in
-  below frame sill rise, top sloped 1/4 in per ft, matching closure, and 1/2 in
-  drip and hem beyond the rib tip. These custom sections have girth under 12 in
-  and at most three bends; the supplier must confirm its brake capability.
-- Doors: custom head drip crosses the 0.75 in casing projection plus 1/4 in;
-  panel J against casing at jambs (BBD75 58728XX or corrugated Jamb). The band
-  serves as the D-S-DECK-E head. Door sills retain the threshold/pan path.
+- Head: 1.5 in Sill/Head 58114XX at every window head, with 2.5 in back leg, 1.5 in throat and
+  the matching closure. The membrane strip-in remains. PBR pp. 68–72 and BBD75 pp. 24–29 show
+  trim-first installations; this head accommodates the window-first outie. BBD75 windows take the
+  same head. The BBD75 Head Trim 58720XX (4 in return, BBD75 p. 28) is the open alternative, not billed.
+- Jamb, PBR: stock Jamb 58208XX, a 1 in C-hem over the rib and a 1-3/8 in leg, with the 3-1/8 in
+  flange lapping the frame face (PBR pp. 21, 68). The Head/Jamb Cover 58124XX is not billed.
+- Jamb and sill, BBD75 and corrugated; sill, PBR: site-brake from 24 ga PVDF flat
+  (`WINDOW_JAMB_CUSTOM`, `WINDOW_SILL_CUSTOM`). Each piece is graded against a 10'-6" hand brake:
+  24 in girth, four bends or fewer. The reveal, the rib closure and the frame set the legs.
+- Frame lap: none required by the fit check. The frame is set last, with tube sealant at the frame
+  face (BBD75 pp. 24–26). The 3/4 in lap the check used to hold was Catlin's own rule.
+- Doors: BBD75 Panel Starter 58728XX at the jambs. Corrugated Jamb (`CORRUGATED_JAMB`, no part
+  number) at the garage door jambs and screen ends. Door heads are a site-brake drip cap (legacy
+  drip geometry, about 6 to 6.5 in girth, three bends), over the 0.75 in casing projection plus 1/4 in.
 - Five small rough openings receive four-side trim or their hood's trim ring, as
   appropriate to the product. Brick openings D-B-PATIO and WIN-B-SAUNA are excluded.
 
@@ -98,19 +99,27 @@ rough opening occupy 0.645 in, or 0.6875 in at the Andersen sizes.
 
 | Condition | Selected termination | Basis |
 |---|---|---|
-| House eave / box gutter | Extended Eave 52124XX on Offset Cleat 5806499; evaluate Box Gutter 58077XX / 58079XX (20 ft 3 in), end caps 58081XX / 58082XX and straps 58092XX against drainage capacity before replacing the custom gutter | Residential manual pp. 30–41; PBR box gutter detail |
-| House rake | Residential Rake 52126XX and Rake Cleat 52132XX; panel edge turned up 1 in; verify coverage of the deck edge and 1.5 in drop over wall head | Residential manual pp. 30–41 |
+| House eave / box gutter | Extended Eave 52124XX on Offset Cleat 5806499; PBR 5 x 4 box gutter 58079XX (20 ft 3 in), end caps 58081XX / 58082XX, straps 58092XX | Residential manual pp. 30–41; PBR install pp. 12, 46, 63 |
+| House rake | Residential Rake 52126XX and Rake Cleat 52132XX, stock 2-5/8 in leg; bottom 1.0 in under the BBD75 wall head | Residential manual pp. 9, 33 |
 | House closed ridge | 7 in Ridge/Hip Cover 52131XX, specify 6:12; Z-Closure 58603XX both sides; double-bead tape 6403899 | Residential manual pp. 30–41 |
 | Garage and canopy eaves | Extended Eave 52124XX on Offset Cleat over metal fascia | Residential manual pp. 30–41 |
 | Garage and canopy rakes | Residential Rake and Rake Cleat over fascia/barge; Flat Cleats 5806199 at 18 in | Residential manual pp. 30–41 |
-| Garage vented ridge | Image II PIM's 13 in step ridge/hip cover with Cobra vented closure; confirm current availability and part numbers with Metal Sales | Image II PIM p. 20 |
+| Garage vented ridge | 13 in Step Ridge/Hip Cover over the Cobra vented closure, material `standing-seam-image-ii-garage-vented`; part numbers and net free area unconfirmed | Image II PIM p. 20 |
 | Canopy closed ridge | 7 in Ridge/Hip Cover 52131XX, specify 4:12; Z-Closure 58603XX | Residential manual pp. 30–41 |
 
-The plan assumed a 4 in rake face, but the 2024 manual p. 9 depicts a 2 5/8 in main leg and a 4 3/4 in stretch-out for 52126XX. The existing house detail requires a 4 in face: verify the installed coverage before substituting the stock rake. The plan's garage ridge selection 52134XX is a one-sided residential peak flashing, which the manual p. 41 shows at a vertical end wall. For the gable, the older Image II PIM p. 20 shows a 13 in step ridge/hip cover and Cobra vented closure, double-bead tape and 1/8 × 3/16 in rivets at every rib, with a maximum 2 in deck slot; its alternate uses perforated vent drip and outside closures. It warns that snow loads can require additional screws. The 2024 residential manual shows its 7 in ridge/hip cover only in a non-vented detail; availability and current part numbers for the older vented assembly need confirmation. The existing vented ridge remains modeled until the vented assembly's fit is established.
+The house rake is the stock piece. Its 2-5/8 in leg is fitted with the bottom 1.0 in under the BBD75
+wall head, so 2.12 in of face runs down from the roof top. That clears the roofing and hides the
+0.75 in Universal Closure with 1/4 in to spare. No manual publishes a lap over the wall head; the
+1.0 in is a Catlin rule. The custom 4 in rake is deleted: the general information manual publishes no
+brake limits for it, and the stock leg fits.
 
-A custom-brake rake with a 4 in face is geometrically possible in principle: extend the 2 5/8 in main leg of the published rake by 1 3/8 in, preserving its 1 in upper return, lower kick and hem, for an approximate 6 1/8 in stretch-out. The general information manual states that custom flashings are available but publishes no brake limits. The proposed extended leg still needs to be located against the actual rake deck edge, wall head, cleat and panel turn-up before it can replace the existing modeled detail.
+The garage's vented ridge is the Image II PIM p. 20 step cover (13 in, 6-1/2 in legs at pitch, 1 in
+hems) over the Cobra vented closure, with double-bead tape and rivets at every rib, 3:12 minimum and a
+2 in maximum deck slot. The PIM prints no part number and no net free area for either piece. The 2024
+manual shows its 7 in cover only in a non-vented detail.
 
-The catalog box gutter is 5 in wide by 4 in deep (PBR guide p. 12), while the existing house gutter is 6 in wide by 5 in deep. The drainage checks resolve leaders and discharge paths but do not compute gutter flow capacity, so they cannot establish whether the smaller gutter handles the design storm. The existing gutter remains pending a hydraulic capacity calculation and outlet review.
+The house box gutter is the PBR 5 x 4 catalog box. Its capacity passes the SMACNA 10-yr 5-min design
+intensity (7.54 in/hr) in `notes/box_gutter_sizing.md`; the custom 6 x 5 is retired.
 
 Specify pitch for eave, peak and ridge. Extended Eave and Residential Rake have
 lips intended to satisfy the drip condition; verify the installed detail against
@@ -124,8 +133,7 @@ Use 1/4 in-14 × 7/8 in stitch screws or 1/8 in pop rivets for trim. PBR corner
 laps are at least 3 in, with rivets at 2 in o.c.; other PBR trim laps are 2 in
 with tube sealant. Notch BBD75 trim hems 2 in at laps and put no fastener through
 a BBD75 trim lap. Notch Image II eaves 3 in at laps. Rakes over 3:12 use Universal
-Closure 6411499. Confirm supplier readings of 58937XX, 59904XX versus 58904XX,
-58974XX versus 58794XX, and the duplicated 58206XX for C-Closure and Double Angle.
+Closure 6411499. The printed anomalies (58937XX, 59904XX, 58974XX, duplicate 58206XX) DROP: none is on an ordered piece (Stage 1 outcomes, below).
 
 For a uniform stock length, pieces = ceil((run − lap)/(stock − lap)); a run no
 longer than stock takes one piece. Compare available stock combinations on waste,
@@ -151,7 +159,7 @@ including laps, rather than assuming uniform lengths.
 | Closure and seal | Profile closure, tape and tube sealant by installed length | Lump profile-closure allowances |
 | Fastening | Stitch screws and rivets by trim role and spacing | Any included trim-fastener allowance |
 | Roof perimeter and ridge | Image II pieces, cleats, closures, vent and fasteners | Replaced generic drip, ridge-cap and corner-trim allowances |
-| Gutters | Catalog gutter and components only after capacity check | Authored custom gutter only if catalog replacement is accepted |
+| Gutters | PBR 5 x 4 box, end caps and straps, by part, after the SMACNA capacity check | The custom 6 x 5 box and the fabricated box band in `[drainage]` |
 
 A change of wall profile also moves the cladding plane and affects the breezeway gap,
 garage lines, sleeves and devices. Corrugated substitution needs its own exposed-fastener
@@ -169,13 +177,16 @@ What the model derives and bills, with the counts the tests pin
 | Wall tops | PBR inside closure 6460800; BBD75 Universal Closure 6411499; corrugated Sill to Soffit at garage eaves; corrugated outside closure at garage panel tops | 74.25 / 83.01 / 48.29 / 99.04 LF |
 | Outside corners | Wide corner (PBR↔BBD75), corrugated corner | 8 / 4 |
 | BBD75 band | Transition Trim at +17'-4", one run per N/S wall segment | 10 |
-| Window head, jamb, sill | stock 1.5 in Sill/Head; custom jamb and sill | 43 / 86 / 43 |
-| Door jambs | Panel Starter (BBD75), Corrugated Jamb (garage) at the casing edge | 6 + 4 |
-| Door heads | custom drip cap, the legacy head section swept at stock; none on catalog unit D-S-DECK-E, whose head is the band | 5 |
+| Window head, jamb, sill | 1.5 in Sill/Head 58114XX at every head; PBR jamb 58208XX (unpriced); BBD75 and corrugated jambs and every sill: site-brake (`WINDOW_JAMB_CUSTOM` 146.9 LF, `WINDOW_SILL_CUSTOM` 87.3 LF) | 43 heads / 86 jambs / 43 sills |
+| Door jambs | Panel Starter 58728XX (BBD75); Corrugated Jamb at the garage door jambs (stock, no part number) | 6 + 4 |
+| Door heads | site-brake drip cap, legacy head section swept at stock; none on catalog unit D-S-DECK-E, whose head is the band | 5 |
 | Small rough openings | 4-side window kit on the niche and both ERV hoods; the two 2.5 in hydrant bores are closed by the fixture's flange and sealant | 3 |
 | Screen ends | Corrugated Jamb on both open ends of W-BW-SCREEN and its skirt | 4 |
 | Roof eaves | Extended Eave 52124XX on Offset Cleat 5806499 | 16 sticks |
-| Roof rakes | house: custom 4 in face; garage and canopy: Residential Rake 52126XX; Rake Cleat 52132XX; Flat Cleat 5806199 at 18 in | 4 runs / 16 sticks |
+| Roof rakes | House: stock Residential Rake 52126XX with its bottom 1.0 in under the wall head; Rake Cleat 52132XX. Garage and canopy: Flat Cleat 5806199 at 18 in | House 4 runs / 16 ea 52126XX; 5806199 40 ea |
+| Closed ridges | 7 in cover 52131XX, Z-Closure 58603XX each side, double-bead tape 6403899 | 5 sticks |
+| Garage vented ridge | 13 in step cover and Cobra closure (`IMAGE_II_VENTED_STEP_RIDGE`, `cobra-vented-closure`), unpriced until the part numbers are in | 25.4 ft |
+| Box gutter | PBR 5 x 4 `58079XX`, 20 ft 3 in sticks; end caps `58081XX` / `58082XX` and straps `58092XX` unpriced | 4 sticks |
 | Closed ridges | 7 in cover 52131XX, Z-Closure 58603XX each side, double-bead tape 6403899 | 5 sticks |
 
 Hand counts: a 164.8 in PBR base run (W-M-W4) takes two 10'-2" sticks with a 2 in lap, because
@@ -188,22 +199,21 @@ Decisions this pass:
 - **Base is panel-bottom, not floor-level.** A door sill above the panel bottom leaves the base
   unbroken beneath it; only an opening reaching the base's 2-5/8 in upstand cuts it
   (D-G-OVERHEAD, whose two 48.9 in piers match the old stem Z).
-- **`TR-G-STEMZ-*` stays.** The stem-top Z is aluminium by the corrosion rule in
-  `garage_wall_detail_side.md`; the base trim above it is the panel's steel coil.
-- **Hydrant bores take no trim.** An opening under 6 in is a penetration through the fixture's
-  own flange (`SMALL_PENETRATION_M`); the check records it N/A.
-- **The house rake keeps its modeled drip edge under the 4 in rake.** The billed piece is the
-  rake; the drip edge beneath it is geometry only until `fortified_roof.py` is re-pointed at
-  the catalog rake's lip.
-- **Box gutters stay custom.** The catalog gutter (5 × 4 in) is smaller than the authored
-  6 × 5; the hydraulic capacity and outlet review in the paragraph above is still open.
-- **D-G-SERVICE has a `sill_design`**: a coordination envelope (frame depth 6-9/16 in, 1 in
-  composite sill); MMI publishes no sill section. 1 in rather than 1-1/2 in because the outswing
-  allowance in R311.3.2 is 1-1/2 in above the landing.
+- **`TR-G-STEMZ-*` stays aluminium** (owner, 2026-10-27). The stem-top Z is aluminium by the
+  corrosion rule in `garage_wall_detail_side.md`; the base trim above it is the panel's steel coil.
+- **Hydrant bores stay untrimmed** (owner, 2026-10-27). An opening under 6 in is a penetration through
+  the fixture's own flange (`SMALL_PENETRATION_M`); the check records it N/A.
+- **The house rake is the stock 52126XX**, with its bottom 1.0 in under the wall head. The custom
+  4 in rake is deleted (see Roof edges).
+- **The box gutter is the PBR 5 x 4 catalog piece.** SMACNA capacity passes; the custom 6 x 5 is retired.
+- **D-G-SERVICE sill threshold is 1 in** (owner, 2026-10-27): a coordination envelope (frame depth
+  6-9/16 in, 1 in composite sill); MMI publishes no sill section. 1 in rather than 1-1/2 in because the
+  outswing allowance in R311.3.2 is 1-1/2 in above the landing.
 
-Still open (the checks print these as UNKNOWN): the vented Image II ridge and its part numbers,
-the 4 in custom rake and the custom jamb/sill/head brake limits, and the five printed
-part-number anomalies, all for Metal Sales. Prices in `prices.toml [cladding_trim]` are estimates.
+Still open, all printed as UNKNOWN by the checks: the garage's vented ridge (part numbers and the
+Cobra net free area), `code.R806_2_attic_ventilation` for the garage (its soffit and Cobra net free
+area), and the corrugated Sill to Soffit break. Prices in `prices.toml [cladding_trim]` are estimates.
+
 
 The K2 section has a 2 in upstand, a pan spanning the resolved cavity at a 1/4 in per foot
 outward fall, a 3/4 in drip and a 1/4 in hem. The pan underside starts at the bearing seat;
@@ -222,3 +232,33 @@ overlapping stacked extensions are counted once.
 through the soffit height. The Sill to Soffit crosses that skin in the model, so the panel
 break and installation order still need a coordinated detail before the junction is graded
 as fitting. Its bill is an estimate of the selected trim, not evidence of a resolved joint.
+
+## Stage 1 outcomes (2026-10-27)
+
+**Part-number anomalies: all four DROP.** None is on a part Catlin orders.
+
+- **58937XX** (PBR 24 ga inside corner): the Catlin BOM has no inside corner. The 24 ga pattern
+  predicts 58917XX for the printed 10'-2" row.
+- **59904XX / 58904XX** (PBR step rake): the house roofs take Image II rakes. The pattern gives 58904XX.
+- **58974XX / 58794XX** (PBR 13 in step ridge): 58974XX matches its own 10'-2" row. The 20'-3" row
+  should read 58975XX. No PBR step ridge is on the building.
+- **58206XX** (printed for both the PBR C-Closure and the Double Angle): neither is on the building.
+  The PBR closure is 6460800.
+
+**Openings survey.** A published section is used where it clears the reveal and the frame: the PBR
+jamb 58208XX, and the 1.5 in Sill/Head 58114XX at heads. Every other jamb, sill and door head is a
+site brake from 24 ga flat, graded against the 10'-6" hand brake (24 in girth, four bends or fewer;
+71 sections pass the fit check). Stock BBD75 jambs and sills (58718XX) and the BBD75 Head Trim
+(58720XX) were surveyed and are not billed. The Corrugated Jamb is billed only at the garage door
+jambs and screen ends.
+
+## Supplier confirmation
+
+Two items, plus one optional:
+
+1. The part number for the 13 in Step Ridge/Hip Cover (garage vented ridge). Image II PIM p. 20 and
+   the 2024 manual print none.
+2. The Cobra vented closure's net free area. R806.2 needs it before the garage attic can pass. The
+   garage soffit's net free area is a vent product's figure and is not on this list.
+3. Optional: stock part numbers for the Corrugated Jamb and the 1.5 in Sill/Head, if stock is preferred
+   over the site bends.

@@ -199,13 +199,13 @@ not instruction: when it disagrees with this file or the model, it is the one th
   them. Also holds the two 24V supply types and the dimmer/timer switch types.
 - `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
 - `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves: roofing →
-  formed drip edge (DERIVED, `RF-HOUSE.eave_trim.drip_edge` → `resolve/roof_drip_edge.py`) →
-  box gutter → downspout, each piece's position derived from the one above it so the laps
-  hold. One formed piece per edge — pitched flange on the deck, nose, face, kick — replaced
-  both the level authored `TR-RF-DRIP-*` runs and the corner trim (2026-09-26); it is also
-  FORTIFIED §4.5's drip at every eave and rake, graded on its 2" flange. RF-HOUSE has **no
-  fascia**, so every offset is measured off the drip edge's face (the old corner trim's
-  plane, 1.25" out), never a fascia's. "Continuous" is
+  Image II Extended Eave 52124XX (catalog section, `resolve/roof_image_ii.py`, gated by
+  `Material.roof_edge_trim_kit`) → PBR 5 x 4 box gutter (catalog, 2026-10-27) → downspout,
+  each piece's position derived from the one above it so the laps hold. Rakes are stock
+  Residential Rake 52126XX, bottom 1" below the wall head. These catalog lips are FORTIFIED
+  §4.5's drip, graded on the section's deck flange; a fascia edge (canopy, garage eaves)
+  keeps the derived formed drip (`resolve/roof_drip_edge.py`). RF-HOUSE has **no fascia**,
+  so every offset is measured off the trim face, never a fascia's. "Continuous" is
   `Material.skin_family`, not tag equality — the walls are exposed-fastener PBR and the roof
   is mechanically seamed, and they read as one skin because both declare
   `skin_family="standing-seam"`. Drop that on either and the flush edge silently reverts to
@@ -527,10 +527,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     W-BW-SCREEN ends. The `TR-H-CORNER-*` runs are gone; `TR-G-STEMZ-*` stays (aluminium on the
     stem band). `takeoff/cladding_trim.py` bills it by part and stock length with closures,
     sealant and fasteners, and the roof's eave/rake/closed ridge as Image II pieces; prices are
-    `prices.toml [cladding_trim]` (estimates) and the panel $/SF rates were cut 12% to pay for it.
+    `prices.toml [cladding_trim]` (estimates) and the panel $/SF rates were cut 12% (an assumption, no source).
     A window frame box stops at the mount plane (`test_cladding_trim_frame_box.py`); a hydrant
-    bore under 6 in takes no trim. Open with Metal Sales: the vented Image II ridge, the 4 in
-    custom rake (stock 52126XX covers 2-5/8 in) and the custom jamb/sill/head brake limits.
+    bore under 6 in takes no trim. Open with Metal Sales: the 13 in step cover part number and the Cobra
+    closure's net free area (the garage vented ridge). The house rake is stock 52126XX; the jamb, sill and head
+    brakes are site bends from 24 ga flat (`notes/metal_trim_kit.md`).
   - The panel is **Metal Sales BBD75-1212**, 12" coverage, 24 ga (re-named 2026-09-14; the
     tag `board-batten-24` reads as the GAUGE and does not change). **BB75-1111, named
     2026-09-11, is the CLIP-fastened sibling** — its wall-base detail wants a clip and two

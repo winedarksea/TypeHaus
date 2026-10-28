@@ -182,8 +182,8 @@ GARAGE_ROOF = Assembly(
         Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.02),
               function=LayerFunction.MEMBRANE,
               control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="roofing", material_ref="standing-seam-image-ii-garage", thickness=inch(1.0),
-              function=LayerFunction.CLADDING),
+        Layer(name="roofing", material_ref="standing-seam-image-ii-garage-vented",
+              thickness=inch(1.0), function=LayerFunction.CLADDING),
     ),
     # Gypsum ceiling on the bottom chord — the air barrier the loose fill sits on. 5/8"
     # and not 1/2" for two reasons: nothing in the code forces a thickness here (RM-GARAGE

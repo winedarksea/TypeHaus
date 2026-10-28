@@ -149,7 +149,7 @@ def test_catlin_rake_and_profile_closures_are_formed_sheets(catlin_model_ro):
     assert closures
     assert all(isinstance(member_solid(member), GSweep)
                for member in closures if not member.child_key.endswith("-top"))
-    assert any(member.connection == "roof:panel-rake" for member in roof.members)
+    assert any(member.connection == "roof:image-ii-rake" for member in roof.members)
     # The Z-closures bill as Image II 58603XX, both sides of both closed ridges.
     assert any(row['part'] == '58603XX' and row['length_ft'] > 60
                for row in cladding_trim_takeoff(catlin_model_ro))
@@ -160,7 +160,8 @@ def test_closed_image_ii_ridge_cover_has_seven_inch_pitched_legs(catlin_model_ro
         roof = next(item for item in catlin_model_ro.roofs if item.tag == tag)
         cap, = (member for member in roof.members if member.category == "ridge_cap")
         assert cap.connection == "ridge:closed-cap"
-        left, peak, right = cap.section_ring[:3]
+        # The ring leads with the 1 in hem at each free end; the legs' ends are points 1 and 3.
+        _hem, left, peak, right, _hem = cap.section_ring[:5]
         assert math.dist(left, peak) == pytest.approx(7 * 0.0254)
         assert math.dist(peak, right) == pytest.approx(7 * 0.0254)
         assert any(member.category == "ridge_closure" for member in roof.members)

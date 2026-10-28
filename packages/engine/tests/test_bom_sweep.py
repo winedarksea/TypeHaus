@@ -417,10 +417,16 @@ def test_drainage_bills_the_whole_storm_run_by_the_foot(catlin_model, bom):
 
     rows = bom["drainage"]
     billed = {tag for row in rows for tag in row["tags"]}
+    # A catalog gutter (`Gutter.product`) bills by part under [cladding_trim] instead.
     authored = {element.tag for storey in catlin_model.plan.storeys
                 for element in catlin_model.plan.storey_elements(storey.tag)
-                if isinstance(element, (Gutter, Downspout))}
+                if isinstance(element, Downspout)
+                or (isinstance(element, Gutter) and element.product is None)}
     assert authored <= billed, sorted(authored - billed)
+    catalog = {element.tag for storey in catlin_model.plan.storeys
+               for element in catlin_model.plan.storey_elements(storey.tag)
+               if isinstance(element, Gutter) and element.product is not None}
+    assert catalog and not catalog & billed, sorted(catalog & billed)
     assert any(tag.startswith("RF-GARAGE:") for tag in billed), \
         "the garage's derived eave gutter is aluminium somebody has to buy"
 

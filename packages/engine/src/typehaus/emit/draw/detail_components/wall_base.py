@@ -33,6 +33,7 @@ from typehaus.emit.draw.detail_components.geometry import (
 )
 from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import IRNode
+from typehaus.model.cladding_trim import BBD_KIT, CORRUGATED_KIT, PBR_KIT, TrimCondition
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import CutPlane, slice_solid
 from typehaus.resolve.model import ResolvedLayer, ResolvedWall
@@ -42,6 +43,10 @@ from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 # How near a banded layer's top must land on the wall top to read as "runs to the top" —
 # a protection panel is ordered flush with the wall it faces, not to a course line.
 _PANEL_TOP_TOL_M = 0.5 * M_PER_IN
+
+# The kit base-trim product keys, one per kit (``model/cladding_trim.py``).
+_KIT_BASE_TRIM_PRODUCTS = frozenset(kit[TrimCondition.BASE]
+                                    for kit in (PBR_KIT, BBD_KIT, CORRUGATED_KIT))
 
 
 def basement_framed_wall(model, framed, concrete, crop, direction,
@@ -66,6 +71,7 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
     else:
         nodes += _z_flashing_and_screen(framed, intervals, is_outboard_high, out_sign,
                                         junction_z)
+    nodes += _resolved_base_trim(model, framed, direction, station)
 
     # Sill gasket under the treated mudsill, sealing the stud line to the concrete — the
     # authored ``FramingSpec.sill_gasket`` thickness when the assembly carries one, else
@@ -104,6 +110,21 @@ def _resolved_base_flashing(model, wall, direction, station):
             tag = "bug-screen" if solid.tag.endswith("-BUGSCREEN") else "z-flashing"
             material = BUG_SCREEN_MATERIAL if tag == "bug-screen" else solid.material
             nodes += closed_region(points, tag, material, "metal", lineweight=PROFILE)
+    return nodes
+
+
+def _resolved_base_trim(model, wall, direction, station) -> list[IRNode]:
+    """Cut the kit base trim the panel bottoms seat in, where the wall carries one."""
+    plane = CutPlane(axis=direction, station_m=station)
+    nodes = []
+    for solid in model.solids:
+        if (solid.body_mesh is None or solid.category != "cladding_trim"
+                or solid.host_ref != wall.tag or solid.product not in _KIT_BASE_TRIM_PRODUCTS):
+            continue
+        for profile in slice_solid(solid.body_mesh, plane):
+            points = [(u / M_PER_IN, z / M_PER_IN) for u, z in profile.outline]
+            nodes += closed_region(points, "base-trim", solid.material, "metal",
+                                   lineweight=PROFILE)
     return nodes
 
 

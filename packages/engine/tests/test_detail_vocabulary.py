@@ -607,10 +607,13 @@ def test_opening_cut_station_crosses_the_opening(catlin_model):
     assert along == pytest.approx(expected, abs=1e-6)
 
 
-def test_framed_weather_opening_draws_head_flashing_and_sill_pan(catlin_model):
+def test_framed_weather_opening_draws_resolved_head_trim_and_sill_pan(catlin_model):
+    """An opening that owns resolved trim draws that trim for its head, not the FLASHING drip;
+    the sill pan and the sealant stay."""
     _derived, scene = _exact_detail_scene(catlin_model, "opening_perimeter:EXT_2X6")
     tags = _component_tags(scene)
-    assert {"opening-head-flashing", "opening-sill-pan", "opening-sealant"} <= tags
+    assert {"opening-trim", "opening-sill-pan", "opening-sealant"} <= tags
+    assert "opening-head-flashing" not in tags
 
 
 def test_interior_opening_gets_no_applied_vocabulary(catlin_model):

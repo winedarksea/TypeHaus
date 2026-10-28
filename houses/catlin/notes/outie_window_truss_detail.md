@@ -41,7 +41,7 @@ source:
 - [K3] Block each course the post crosses, at 24" max, and across the RO.
 - [K4] Field courses stop 3-1/2" clear of each RO.
 - [K5] Fluid-applied pan on the buck: dam on a strip, 1/4"/ft, down the buck edge.
-- [K6 @ host#layer:spray-foam:out] Steel head flashing on the foam face, over the course, past the casing, drip. Strip in.
+- [K6 @ host#layer:spray-foam:out] Head trim (58114XX) or steel head flashing, on the foam face over the course, past the casing, drip. Strip in.
 - [K7 @ host#layer:cladding:out] Sealant at the cladding-to-frame joint, at the mount plane, under the drip.
 
 ### Spec 06 10 00

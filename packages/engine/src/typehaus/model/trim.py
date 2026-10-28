@@ -85,6 +85,9 @@ class Gutter(_EdgeRun):
     # check — two Catlin gutters sloped to downspouts that had never been authored. This is
     # the same statement in a form ``checks/mep/drainage.py`` can hold to a real element.
     downspout_ref: str | None = None
+    # A catalog profile (``library/trim/metal_sales.PROFILES``) the run is cut from. Set, the
+    # run is billed by part number under [cladding_trim], not by the foot under [drainage].
+    product: str | None = None
 
 
 class DischargeExtension(HausModel):

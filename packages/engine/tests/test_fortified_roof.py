@@ -120,10 +120,15 @@ def _with_house_drip(ctx, keep):
             if f.element_tags[:1] == ("RF-HOUSE",)]
 
 
-def test_the_house_drip_edge_is_the_derived_formed_piece(drip_edge) -> None:
-    """All four RF-HOUSE edges are credited to the one formed piece, graded on its flange."""
-    house = [f for f in drip_edge if f.element_tags[:1] == ("RF-HOUSE",)]
-    assert all('formed drip edge (derived), 2.00" on the deck' in f.message for f in house)
+def test_the_house_drip_edge_is_the_image_ii_catalog_piece(drip_edge) -> None:
+    """The eaves carry the Extended Eave's 5 in flange and the rakes the Rake Cleat's 2-7/8 in
+    leg, both read off the catalog sections; every edge clears FORTIFIED's 2 in."""
+    house = {f.message.split("'s ")[1].split(" edge")[0]: f.message
+             for f in drip_edge if f.element_tags[:1] == ("RF-HOUSE",)}
+    assert len(house) == 4
+    assert all("formed drip edge (catalog)" in m for m in house.values())
+    assert all('5.00" on the deck' in house[side] for side in ("E eave", "W eave"))
+    assert all('2.88" on the deck' in house[side] for side in ("N rake", "S rake"))
 
 
 def test_removing_a_rake_drip_edge_fails_that_edge_only(ctx) -> None:
@@ -137,20 +142,20 @@ def test_removing_a_rake_drip_edge_fails_that_edge_only(ctx) -> None:
     assert len([f for f in house if f.result is Result.PASS]) == 3
 
 
-def test_a_short_flange_fails_on_geometry_not_presence(ctx) -> None:
-    """A piece that is present but laps only 1" onto the deck is not §4.5's drip edge."""
-    import dataclasses
+def test_a_short_flange_fails_on_geometry_not_presence(ctx, monkeypatch) -> None:
+    """A catalog eave whose deck flange is under 2 in is not §4.5's drip edge.
 
-    def shorten(m):
-        if not (m.child_key.startswith("eave-hi-") and m.child_key.endswith("-flange")):
-            return m
-        ring = tuple((s * 0.5, t) for s, t in m.section_ring)
-        return dataclasses.replace(m, section_ring=ring)
+    The flange is read off the catalog section, so the test shortens the section's answer.
+    """
+    from typehaus.checks.structural import fortified_roof
 
-    house = _with_house_drip(ctx, shorten)
+    monkeypatch.setattr(fortified_roof, "eave_deck_flange_in", lambda: 1.0)
+    house = _with_house_drip(ctx, lambda m: m)
     broken = [f for f in house if f.result is Result.FAIL]
-    assert len(broken) == 1
-    assert "E eave edge" in broken[0].message and '1.00" on the deck' in broken[0].message
+    assert len(broken) == 2
+    assert all('1.00" on the deck' in f.message for f in broken)
+    assert {"E eave edge", "W eave edge"} == {f.message.split("'s ")[1].split(" edge")[0] + " edge"
+                                               for f in broken}
 
 
 def test_the_load_path_check_re_presents_uplift_paths_roof_findings(load_path) -> None:

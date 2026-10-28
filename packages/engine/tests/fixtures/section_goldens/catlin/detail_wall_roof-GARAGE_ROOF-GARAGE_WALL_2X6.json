@@ -596,7 +596,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CGRF01AAAA",
-      "material": "standing-seam-image-ii-garage",
+      "material": "standing-seam-image-ii-garage-vented",
       "fill": "#2f2f2f"
     },
     {
@@ -1659,7 +1659,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CGRF01AAAA",
-      "material": "standing-seam-image-ii-garage",
+      "material": "standing-seam-image-ii-garage-vented",
       "fill": "#2f2f2f"
     },
     {
@@ -1931,7 +1931,7 @@
         354.87500000000006,
         96.04703087613797
       ],
-      "text": "Metal Sales Image II Striated 16 in, 24\nga, PVDF Linen White (81)",
+      "text": "Metal Sales Image II Striated 16 in, 24\nga PVDF Linen White (81), vented ridge",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2825,7 +2825,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "standing-seam-image-ii-garage",
+      "material": "standing-seam-image-ii-garage-vented",
       "fill": "#2f2f2f"
     },
     {
@@ -2863,7 +2863,7 @@
         2.85,
         0.8880000000000001
       ],
-      "content": "standing-seam-image-ii-garage  1\"",
+      "content": "standing-seam-image-ii-garage-vented  1\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

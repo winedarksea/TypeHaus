@@ -177,9 +177,20 @@ _TRIM_MARGIN_M = 0.08
 
 def _trim_reach(model, cond, direction: str, station: float, u_lo: float,
                 u_hi: float) -> tuple[float, float]:
-    """The u extent of the condition's roof trim cut at ``station`` within 1 m of the wall."""
+    """The u extent of the condition's roof trim cut at ``station`` within 1 m of the wall.
+
+    Roof members in ``_TRIM_CATEGORIES`` and the resolved cladding trim the condition's
+    elements own (host_ref) both count: a wall-top closure or eave piece reaches out past
+    the cladding just as a fascia does.
+    """
     plane = CutPlane(axis=direction, station_m=station)
     us = [u_lo, u_hi]
+
+    def _take(solid_like) -> None:
+        for profile in slice_solid(solid_like, plane):
+            us.extend(u for u, _z in profile.outline
+                      if u_lo - _TRIM_NEAR_M <= u <= u_hi + _TRIM_NEAR_M)
+
     for roof in model.roofs:
         if roof.tag not in cond.element_tags:
             continue
@@ -187,9 +198,12 @@ def _trim_reach(model, cond, direction: str, station: float, u_lo: float,
             if member.category not in _TRIM_CATEGORIES:
                 continue
             solid = member_solid(member)
-            for profile in slice_solid(solid, plane) if solid is not None else ():
-                us += [u for u, _z in profile.outline
-                       if u_lo - _TRIM_NEAR_M <= u <= u_hi + _TRIM_NEAR_M]
+            if solid is not None:
+                _take(solid)
+    for solid in model.solids:
+        if (solid.category == "cladding_trim" and solid.body_mesh is not None
+                and solid.host_ref in cond.element_tags):
+            _take(solid.body_mesh)
     return min(us), max(us)
 
 

@@ -36,6 +36,7 @@ from typehaus.emit.draw.detail_components.config import (
     SAUNA_MEMBRANE_IN,
 )
 from typehaus.emit.draw.detail_components.geometry import (
+    closed_region,
     face_of,
     flashing_nodes,
     is_weather_exposed,
@@ -55,6 +56,7 @@ from typehaus.resolve.geometry_openings import (
     _WINDOW_TRIM_FACE_WIDTH_M,
     _WINDOW_TRIM_PROUD_DEPTH_M,
 )
+from typehaus.resolve.geometry_slice import CutPlane, slice_solid
 from typehaus.resolve.opening_flashing import is_overhead
 
 
@@ -96,6 +98,37 @@ def _in_crop_z(z_in: float, crop) -> bool:
     return min(cz0, cz1) / M_PER_IN <= z_in <= max(cz0, cz1) / M_PER_IN
 
 
+def _opening_trim(model, opening) -> list:
+    """The resolved trim pieces an opening owns. Matched by ``host_ref``: a door's jamb pieces
+    carry the wall's uid, so uid ownership misses them."""
+    return [s for s in model.solids if s.category == "cladding_trim"
+            and s.host_ref == opening.tag and s.body_mesh is not None]
+
+
+def _opening_trim_profiles(model, opening, direction, station) -> list[tuple[str, list]]:
+    """``(material, outline in inches)`` for each owned trim piece cut at the detail's plane.
+
+    A jamb lies in the plan cut, so it only appears here if a cut actually crosses it."""
+    plane = CutPlane(axis=direction, station_m=station)
+    return [(solid.material, [(u / M_PER_IN, z / M_PER_IN) for u, z in profile.outline])
+            for solid in _opening_trim(model, opening)
+            for profile in slice_solid(solid.body_mesh, plane)]
+
+
+def _trim_nodes(profiles) -> list[IRNode]:
+    return [node for material, points in profiles
+            for node in closed_region(points, "opening-trim", material, "metal",
+                                      lineweight=PROFILE)]
+
+
+def _head_is_trimmed(profiles, sill_z: float, head_z: float) -> bool:
+    """Whether trim reaches the head half of this cut. The head drip is drawn wherever it does
+    not, so a cut never shows an opening with no head at all."""
+    midline = (sill_z + head_z) / 2
+    return any(sum(z for _u, z in points) / len(points) >= midline
+               for _material, points in profiles)
+
+
 def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> list[IRNode]:
     """Head flashing + sill pan at a framed weather-wall opening.
 
@@ -123,13 +156,15 @@ def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> lis
     cfg = OPENING_DETAIL
     throw = out_sign * _drip_throw_in(opening)
 
-    nodes: list[IRNode] = []
+    profiles = _opening_trim_profiles(model, opening, direction, station)
+    nodes: list[IRNode] = _trim_nodes(profiles)
     if _in_crop_z(head_z, crop):
         casing = _in(_WINDOW_TRIM_FACE_WIDTH_M) if opening.kind == "window" else 0.0
-        nodes += flashing_nodes(_head_path(sheath_out, head_z + casing,
-                                           (clad_out - sheath_out) + throw,
-                                           _in(FLASHING.head_rise_m)),
-                                tag="opening-head-flashing")
+        if not _head_is_trimmed(profiles, sill_z, head_z):
+            nodes += flashing_nodes(_head_path(sheath_out, head_z + casing,
+                                               (clad_out - sheath_out) + throw,
+                                               _in(FLASHING.head_rise_m)),
+                                    tag="opening-head-flashing")
         # Sealant at the cladding-to-frame joint, tucked under the flashing's drip.
         nodes += rect_region(clad_out - out_sign * cfg.sealant_bead_in,
                              head_z - cfg.sealant_bead_in, clad_out, head_z,
@@ -205,17 +240,19 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
     sill_z, head_z = opening_z_in(wall, opening)
     cfg = OPENING_DETAIL
 
-    nodes: list[IRNode] = []
+    profiles = _opening_trim_profiles(model, opening, direction, station)
+    nodes: list[IRNode] = _trim_nodes(profiles)
     if _in_crop_z(head_z, crop):
         blocking_in = (cfg.girt_blocking_in
                        if truss_kind(model.plan, wall.assembly) == "girt"
                        else cfg.truss_blocking_in)
         casing = _in(_WINDOW_TRIM_FACE_WIDTH_M) if opening.kind == "window" else 0.0
         seat = head_z + max(blocking_in, casing)
-        nodes += flashing_nodes(_head_path(foam_face, seat, (clad_out - foam_face)
-                                           + out_sign * _drip_throw_in(opening),
-                                           _in(FLASHING.outie_head_rise_m)),
-                                tag="opening-head-flashing")
+        if not _head_is_trimmed(profiles, sill_z, head_z):
+            nodes += flashing_nodes(_head_path(foam_face, seat, (clad_out - foam_face)
+                                               + out_sign * _drip_throw_in(opening),
+                                               _in(FLASHING.outie_head_rise_m)),
+                                    tag="opening-head-flashing")
         # Sealant at the cladding-to-frame joint, tucked under the flashing's drip. The
         # joint is at the mount plane now, which is the cladding's own inner face.
         nodes += rect_region(clad_in - out_sign * cfg.sealant_bead_in,

@@ -175,6 +175,8 @@ def test_orderable_size_fields_reject_nonsense(update):
 
 
 def test_profiled_metal_windows_have_four_terminated_sides(catlin_model_ro):
+    from typehaus.resolve.cladding_trim.openings import cladding_finish
+
     windows = [opening for opening in catlin_model_ro.openings
                if opening.kind == "window" and opening.window_seat
                and opening.window_seat.outer_m is not None]
@@ -182,6 +184,10 @@ def test_profiled_metal_windows_have_four_terminated_sides(catlin_model_ro):
     for opening in windows:
         pieces = [solid for solid in catlin_model_ro.solids
                   if solid.category == "cladding_trim" and solid.host_ref == opening.tag]
+        # PBR ribs take the catalog jamb; BBD75 and corrugated keep the site-brake one.
+        wall = catlin_model_ro.wall(opening.host_wall)
+        jamb = ("PBR_WINDOW_JAMB" if cladding_finish(catlin_model_ro, wall) == "ribbed-panel"
+                else "WINDOW_JAMB_CUSTOM")
         assert sorted(solid.product for solid in pieces) == [
-            "OPENING_HEAD", "WINDOW_JAMB_CUSTOM", "WINDOW_JAMB_CUSTOM", "WINDOW_SILL_CUSTOM"]
+            "OPENING_HEAD", jamb, jamb, "WINDOW_SILL_CUSTOM"]
         assert all(solid.body_mesh and solid.body_mesh.positions for solid in pieces)

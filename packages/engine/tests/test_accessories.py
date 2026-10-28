@@ -676,18 +676,16 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     eave = roof.eave_z_m
     # The house eave has no fascia: siding and roofing are one continuous standing-seam
-    # skin over the flush edge, and the drip edge replaces the corner trim at the joint.
+    # skin over the flush edge, and the catalog trim replaces the corner trim at the joint.
     assert not [m for m in roof.members if m.category == "fascia"
                 or m.connection == "roof:corner-trim"]
-    assert any(m.connection == "roof:panel-rake" for m in roof.members)
+    # Every edge is a catalog Image II piece swept from its published section: an Extended
+    # Eave on each eave, a Residential Rake on each rake half; no derived drip is left under it.
     drip = [m for m in roof.members if m.category == "drip_edge"]
-    # Six runs (two eaves + four rake halves), each one formed piece of four legs.
-    assert len(drip) == 24
-    assert {m.child_key.rsplit("-", 1)[1] for m in drip} == {"flange", "nose", "face", "kick"}
+    assert {m.connection for m in drip} == {"roof:image-ii-eave", "roof:image-ii-rake"}
+    assert len(drip) == 6
     assert all(m.section_ring for m in drip)
-    # ** THE FACE REACHES BELOW THE DECK PLANE, AND THAT IS THE DETAIL. ** Its 4" leg — the
-    # barge board at the rake — hangs 3.26" below a roofing underside only 0.74" up, lapping
-    # down over the wall panel heads, while the flange lies on the deck above the plane.
+    # The face reaches below the deck plane and laps down over the wall panel heads.
     assert max(m.z1_m for m in drip) > eave
     assert min(m.z0_m for m in drip) < eave
     # No hand-authored fascia or drip solids — that would double the derived piece.
@@ -705,10 +703,8 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
         assert gutter_top - gutter_bottom == pytest.approx(inch(5.0).meters)
         vent_slot = eave + inch(7.25 * math.hypot(1.0, 4.0 / 12.0)).meters
         assert gutter_top < vent_slot, "the rim would dam the eave vent slot"
-        # The drip's face ends inside the trough, below the rim it empties over.
-        key = "eave-lo" if side == "W" else "eave-hi"
-        face = next(m for m in drip if m.child_key == f"{key}-drip-edge-face")
-        assert face.z0_m < gutter_top
+        # The eave's kick sheds over the gutter's back sheet; that lap is pinned in
+        # test_catlin_eave_water.py::test_the_gutter_is_closed_under_the_kick.
     # Each eave drains to a leader, so the gutters' slope notes point somewhere real.
     leaders = [s for s in catlin_model.solids if s.tag.startswith("TR-RF-LEADER-")
                and s.category == "downspout"]

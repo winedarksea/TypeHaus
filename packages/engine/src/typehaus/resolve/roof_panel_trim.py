@@ -29,15 +29,18 @@ def panel_profile_for_layer(model, cladding):
     return PANEL_PROFILES.get(material.finish) if material else None
 
 
-def rake_panel_trim(roof, profile, base, material):
-    """The drip stays underneath; a separate crown-height rake covers the turned-up pan."""
+def rake_panel_trim(roof, profile, base, material, *, skip=frozenset()):
+    """The drip stays underneath; a separate crown-height rake covers the turned-up pan.
+
+    ``skip`` holds the run keys a catalog piece or a neighbouring roof already closes.
+    """
     members = []
     factor = roof_slope_factor(roof)
     top = (base + profile.depth_m) * factor
     sheet = profile.sheet_thickness_m
     entry = next((e for e in roof.layer_edge_setbacks if e["layer"] == "roofing"), {})
     for run in roof_edge_runs(roof):
-        if run.is_eave:
+        if run.is_eave or run.key in skip:
             continue
         outer = -float(entry.get(run.edge_name, 0.0))
         span = mitred_span(run, -outer - RAKE_LAP_M, -outer + RAKE_LAP_M)

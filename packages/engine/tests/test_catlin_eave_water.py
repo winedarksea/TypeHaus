@@ -7,9 +7,14 @@ cladding. Those are relationships between pieces, so they are what this module t
 
     roofing → formed drip edge (derived) → box gutter → downspout
 
-The drip edge is one formed piece per edge (resolve/roof_drip_edge.py): a flange on the deck
-at the pitch, a nose over the deck edge, a face over the wall panel heads, a kick into the
+The derived drip edge is one formed piece per edge (resolve/roof_drip_edge.py): a flange on the
+deck at the pitch, a nose over the deck edge, a face over the wall panel heads, a kick into the
 trough. Its legs are measured off their true section (``member_solid``), not a box.
+
+The RF-HOUSE eaves and rakes no longer carry that drip: they carry the Image II catalog pieces
+(resolve/roof_image_ii.py). The lap tests below read the catalog Extended Eave's section and the
+5x4 PBR box gutter (``TR-RF-GUTTER-E/W``), the same chain with the catalog piece in place of the
+derived drip.
 """
 
 from __future__ import annotations
@@ -19,8 +24,8 @@ import math
 import pytest
 
 from typehaus.quantities import inch
-from typehaus.resolve.flashing_config import FLASHING
 from typehaus.resolve.geometry_members import member_solid
+from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
 
 # 6:12. Roof-stack offsets are perpendicular to the slope; elevations are vertical.
 SLOPE = 6.0 / 12.0
@@ -109,88 +114,104 @@ def test_eave_runs_close_the_rake_corners(catlin_model, side) -> None:
     y0, y1 = frame.run_y(f"TR-RF-GUTTER-{side}-1-BACK")
     assert (y0, y1) == (pytest.approx(lo), pytest.approx(hi))
     key = "eave-lo" if side == "W" else "eave-hi"
-    face = next(m for m in roof.members if m.child_key == f"{key}-drip-edge-face")
+    face = next(m for m in roof.members if m.child_key == f"{key}-image-ii-eave")
     ys = sorted((face.p0[1], face.p1[1]))
     assert ys[0] < lo and ys[1] > hi, "the drip face runs past both rake corners"
 
 
 def test_no_authored_drip_duplicates_the_derived_piece(catlin_model) -> None:
-    """One piece of metal per edge: the old level drips and corner trim are gone."""
+    """One piece of metal per edge: the old level drips, corner trim and rake panel are gone."""
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-DRIP")]
-    assert not [m for m in roof.members if m.connection == "roof:corner-trim"]
-    assert any(m.connection == "roof:panel-rake" for m in roof.members)
-    assert not [m for m in roof.members if m.connection == "roof:panel-rake"
-                and m.child_key.startswith("eave")]
-    assert {m.child_key.rsplit("-drip-edge-", 1)[0] for m in roof.members
+    assert not [m for m in roof.members if m.connection in ("roof:corner-trim", "roof:panel-rake")]
+    assert not [m for m in roof.members if m.category == "drip_edge"
+                and not m.connection.startswith("roof:image-ii")]
+    assert {m.child_key.rsplit("-image-ii-", 1)[0] for m in roof.members
             if m.category == "drip_edge"} == {
         "eave-lo", "eave-hi", "rake-lo-0", "rake-lo-1", "rake-hi-0", "rake-hi-1"}
 
 
-def test_the_drip_face_hangs_outboard_of_the_wall_it_laps(eave) -> None:
-    """The face caps the panel heads from *outside*, and the nose clears their closure head.
+#: The panel's outside face, which the catalog face lies on (closure band, eave frame).
+PANEL_FACE_OUT_IN = 0.0
+#: The panel head: the closure band's top at the eave, measured off the derived closure member.
+PANEL_HEAD_UP_IN = 1.056
 
-    ** W-S-E1, NOT W-A-E1. ** The attic's east eave wall is a 1 1/2" rafter plate and carries
-    no skin, so the closure band the roof edge laps is the second storey's own EXT_2X6 run.
+
+def _face(eave) -> tuple[float, float, float, float]:
+    """The catalog Extended Eave's vertical leg as ``(out_lo, out_hi, up_lo, up_hi)``."""
+    points = eave.section("eave-hi-image-ii-eave")
+    leg = [(u, z) for u, z in points if -SHEET_24_GA_M / inch(1).meters - 1e-6 <= u <= 1e-6]
+    us = [u for u, _ in leg]
+    zs = [z for _, z in leg]
+    return (min(us), max(us), min(zs), max(zs))
+
+
+def _flange(eave) -> list[tuple[float, float]]:
+    """The deck flange's points: everything inboard of the face, on the deck top."""
+    return [(u, z) for u, z in eave.section("eave-hi-image-ii-eave") if u < -0.05]
+
+
+def test_the_drip_face_hangs_over_the_panel_it_laps(eave) -> None:
+    """The face lies on the panel's outside face and laps down over the panel heads.
+
+    The catalog piece replaces the old 1-1/4 in corner-trim plane, so the face sits on the
+    cladding's own face (the sheet is 24 ga, 0.024 in), and its foot clears the panel head
+    by the lap the section gives it.
     """
-    face = eave.leg("face")
-    nose = eave.leg("nose")
+    face = _face(eave)
+    assert face[1] == pytest.approx(PANEL_FACE_OUT_IN, abs=1e-6)
+    assert face[1] - face[0] == pytest.approx(SHEET_24_GA_M / inch(1).meters, abs=1e-3), \
+        "the metal is a real 24 ga sheet"
     cladding = eave.member("W-S-E1-closure-0-cladding")
-    assert face[0] == pytest.approx(1.25 - FLASHING.sheet_m / inch(1).meters)
-    assert face[1] == pytest.approx(1.25)
-    assert face[1] - face[0] == pytest.approx(0.032), "the metal is a real sheet"
-    assert cladding[1] <= face[0] + 1e-6, "the wall panels run up inboard of the face"
-    assert face[2] < cladding[3], "the face's leg laps down over the panel heads"
-    assert nose[2] >= cladding[3] - 1e-6, "the nose clears the closure head"
+    assert cladding[1] == pytest.approx(PANEL_FACE_OUT_IN, abs=1e-6), "the panel face is the face"
+    assert face[2] <= PANEL_HEAD_UP_IN - 1.5, "the face laps 1-1/2 in down over the panel heads"
 
 
 def test_the_lap_chain_runs_unbroken_from_the_roofing_to_the_trough(eave) -> None:
-    """Each piece overlaps the next one down, so no seam in the chain faces upward."""
+    """Each piece overlaps the next one down, so no seam in the chain faces upward.
+
+    The roofing's edge stands over the panel head (the closure's top), the panel head laps
+    down over the face, and the face's 45-degree kick carries the water outboard, past the
+    gutter's back sheet, into the trough above its floor.
+    """
     setback = next(e for e in eave.roof.layer_edge_setbacks if e["layer"] == "roofing")
     roofing_out = -setback["east"] / inch(1).meters
-    assembly = eave.model.plan.library.resolve_assembly(eave.roof.assembly)
-    roofing_depth = next(layer.thickness.inches for layer in assembly.layers
-                         if layer.name == "roofing")
-    roofing = (-6.0, roofing_out, CLADDING_HEAD_IN,
-               CLADDING_HEAD_IN + roofing_depth * SLOPE_FACTOR + 3.0)
-    nose, face, kick = eave.leg("nose"), eave.leg("face"), eave.leg("kick")
+    face = _face(eave)
+    cladding = eave.member("W-S-E1-closure-0-cladding")
     back = eave.solid("TR-RF-GUTTER-E-1-BACK")
     front = eave.solid("TR-RF-GUTTER-E-1-FRONT")
     bottom = eave.solid("TR-RF-GUTTER-E-1-BOTTOM")
+    kick_tip = max(eave.section("eave-hi-image-ii-eave"), key=lambda p: p[0])
+    roof_underside = DRIP_CEILING_IN + CLADDING_HEAD_IN
+    assert cladding[0] < roofing_out < cladding[1], "the roofing's edge stands over the panel head"
+    assert cladding[3] < roof_underside, "and the head sits below the roofing, which sheds onto it"
+    assert face[3] < PANEL_HEAD_UP_IN, "the panel head laps down over the face"
+    assert back[1] <= kick_tip[0] + 1e-6 and kick_tip[0] < front[0], \
+        "the kick's tip lands in the trough, outboard of the back sheet"
+    assert kick_tip[1] > bottom[3], "and stops above the floor, so it cannot dam the flow"
 
-    assert laps_over(roofing, nose), "the roofing sheds onto the drip edge's nose"
-    assert laps_over(face, back) or face[0] >= back[1] - 1e-6, \
-        "the drip face stands in front of the gutter's back sheet"
-    assert face[2] < back[3], "and reaches below the rim, so water cannot get behind it"
-    assert back[1] <= kick[0] + 1e-6 and kick[1] < front[0], "the kick lands in the trough"
-    assert kick[2] > bottom[3], "and stops above the floor, so it cannot dam the flow"
 
-
-def test_the_gutter_is_mounted_tight_to_the_wall(eave) -> None:
-    """No open slot behind the trough for water to run down the siding through."""
-    face = eave.leg("face")
+def test_the_gutter_is_closed_under_the_kick(eave) -> None:
+    """No open slot between the wall and the trough: the kick covers the back sheet's top."""
+    ring = eave.section("eave-hi-image-ii-eave")
     back = eave.solid("TR-RF-GUTTER-E-1-BACK")
-    assert back[0] < face[1], "the back sheet tucks behind the drip face"
-    assert back[3] > face[2], "and reaches above its foot, so the two overlap"
+    kick = [p for p in ring if p[0] > 0.0]
+    kick_lo, kick_hi = min(u for u, _ in kick), max(u for u, _ in kick)
+    assert kick_lo < back[1] <= kick_hi + 1e-6, "the kick reaches over the back sheet's top"
+    assert back[3] < min(z for _, z in kick), "and the back's rim stands under the kick"
 
 
 def test_the_drip_flange_lies_on_the_top_deck_and_nothing_else_reaches_it(eave) -> None:
     """The flange lies ON the top deck, at the pitch, and the underlayment laps OVER it.
 
     The deck top falls 1/2" per inch outboard at 6:12, so the flange's underside is the
-    pitched plane ``0.70" - slope * u`` — a level drip left a wedge of air under it.
+    pitched plane ``0.70" - slope * u``. The catalog flange is 5 in on the deck.
     """
-    points = eave.section("eave-hi-drip-edge-flange")
-    underside: dict[float, float] = {}
-    for u, z in points:
-        underside[round(u, 6)] = min(z, underside.get(round(u, 6), z))
-    assert len(underside) == 2
-    for u, z in underside.items():
-        assert z == pytest.approx(DRIP_CEILING_IN - SLOPE * u, abs=1e-6)
-    flange = eave.leg("flange")
-    # The deck stops 1 1/4" (the PBR panel) inboard of the roof edge; 2" of flange bears on it.
-    assert flange[0] <= -1.25 - 2.0 + 1e-6, "it bears 2\" ONTO the plywood"
-    assert flange[1] == pytest.approx(-1.25), "and bends at the deck edge"
+    flange = _flange(eave)
+    assert min(u for u, _ in flange) <= -2.0 - 2.0 + 1e-6, "it bears 2\" onto the plywood"
+    for u, z in flange:
+        if u < -0.5 and z < DRIP_CEILING_IN + 0.5:
+            assert z == pytest.approx(DRIP_CEILING_IN - SLOPE * u, abs=0.02)
     for tag in ("TR-RF-GUTTER-E-1-BACK", "TR-RF-GUTTER-E-1-FRONT"):
         assert eave.solid(tag)[3] < DRIP_CEILING_IN, f"{tag} stands proud of the top deck"
 

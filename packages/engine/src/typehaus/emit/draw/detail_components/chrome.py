@@ -81,17 +81,31 @@ def _participating_layers(model, derived):
 _COMPONENT_MATERIALS = ("flashing", "gutter")
 
 
-def _with_component_materials(seen: dict[str, float | None],
-                              drawn: set[str] | None) -> None:
+def _cut_trim_materials(model, derived) -> tuple[str, ...]:
+    """Materials of the resolved trim this condition's elements own (opening or wall base).
+
+    Candidates only: ``_with_component_materials`` keeps the ones the scene actually draws.
+    """
+    tags = set(derived.condition.element_tags)
+    return tuple(dict.fromkeys(
+        s.material for s in model.solids
+        if s.category == "cladding_trim" and s.host_ref in tags and s.material
+        and s.body_mesh is not None))
+
+
+def _with_component_materials(seen: dict[str, float | None], drawn: set[str] | None,
+                              extra: tuple[str, ...] = ()) -> None:
     """Append the component materials this drawing actually reached, in a fixed order.
 
-    Only when ``drawn`` is known: a legend may name nothing the cut did not reach
+    ``extra`` carries the cut's resolved trim materials, so a catalog head that replaces the
+    flashing still gets a swatch. Only when ``drawn`` is known: a legend may name nothing the
+    cut did not reach
     (``test_detail_legibility.test_the_legend_only_names_materials_the_cut_actually_reached``),
     and without the scene there is no way to tell.
     """
     if drawn is None:
         return
-    for material in _COMPONENT_MATERIALS:
+    for material in (*_COMPONENT_MATERIALS, *extra):
         if material in drawn and material not in seen:
             seen[material] = None
 
@@ -131,7 +145,7 @@ def material_legend(model, derived, u_left: float, z_top: float,
         if material and material not in seen:
             seen[material] = thickness
             order.append(material)
-    _with_component_materials(seen, drawn)
+    _with_component_materials(seen, drawn, _cut_trim_materials(model, derived))
     order.extend(m for m in seen if m not in order)
     if not order:
         return []
@@ -174,7 +188,7 @@ def _paper_legend(model, derived, band, drawn=None) -> list[IRNode]:
     for material, thickness, _function in _participating_layers(model, derived):
         if material and material not in seen and (drawn is None or material in drawn):
             seen[material] = thickness
-    _with_component_materials(seen, drawn)
+    _with_component_materials(seen, drawn, _cut_trim_materials(model, derived))
     if not seen:
         return []
     x, y, w, h = band

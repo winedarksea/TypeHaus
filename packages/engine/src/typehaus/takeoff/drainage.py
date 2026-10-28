@@ -75,6 +75,9 @@ def drainage_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
             if isinstance(element, Gutter):
+                # A catalog run is billed by part number under [cladding_trim].
+                if element.product is not None:
+                    continue
                 rows.add("gutter", element.material or "",
                          element.depth.meters / M_PER_IN, tag=element.tag,
                          length_m=_path_length_m([p.xy_m for p in element.path]))

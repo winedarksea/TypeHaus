@@ -34,9 +34,11 @@ the plain shank is 6.0". It is the same screw and the same geometry as the wall 
 
 ## 2. Load
 
-A 6" x 5" box full of ice: 30 in² / 144 x 57 pcf = 11.9 plf. Water would be 13.0 plf.
-Coil and hangers add about 1.5 plf. Design with **w = 25 plf**, about 1.8x that, to cover
-ice built up on the rim.
+The gutter is the 5" x 4" PBR box (`notes/box_gutter_sizing.md`). Full to its 4" front lip, the
+waterway is 5 x 4 = 20 in² / 144 x 57 pcf = 7.9 plf of ice. Water would be 8.7 plf. Coil and hangers
+add about 1.5 plf. Design with **w = 25 plf**, about 2.7x that, to cover ice built up on the rim.
+The §1 stack is the old 6" x 5" box. The 5" box's mid-width is x 442.1, so e = 10.1" and the
+530 in-lb below stays conservative (504 in-lb for the 5" box).
 Per 24" bay: **P = 50 lb**, one standoff per bay.
 
 The centroid is at the trough's mid-width, x = 442.6. Its lever about the sheathing face

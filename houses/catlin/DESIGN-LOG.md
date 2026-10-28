@@ -6403,3 +6403,30 @@ Select 0.040 in aluminium for the house K2 Z: a 2 in upstand, cavity-width pan f
 and 1/16 in EPDM between aluminium and steel. The model derives the 14 runs from the
 base-screen cavities and measures the wall-top closures from the resolved roof and walls.
 Counts, measurements and estimated prices are in [the trim basis](notes/metal_trim_kit.md).
+
+## Trim is catalog or site-brake bend; supplier list minimal (2026-10-27)
+
+A trim piece is the published catalog section where one clears the reveal and the frame. Otherwise
+it is a site brake from 24 ga PVDF flat, graded against a 10'-6" hand brake (24 in girth, four bends).
+The catalog pieces are the PBR jamb 58208XX, the Image II eave, rake and ridge, and the PBR 5 x 4 box
+gutter. The site brakes are the BBD75 and corrugated jambs, every sill and the door heads. The
+general information manual publishes no brake limits, so the gate is ours.
+
+- **Stock where a section fits.** A catalog piece carries the maker's section; a site bend carries a
+  gate and a fit we must prove, so the stock piece wins where it clears.
+- **Frame lap is a sealant joint.** The 3/4 in lap was Catlin's own rule and the manuals detail a
+  sealant joint with the frame set last (BBD75 pp. 24–26). The fit check now requires no lap.
+- **House rake is the stock 52126XX**, bottom 1.0 in under the wall head. The custom 4 in rake is
+  deleted. The 1.0 in lap is a Catlin rule, since no manual publishes one.
+- **Garage ridge is the vented step cover**, Image II PIM p. 20 with the Cobra closure. The 2024
+  manual shows only a non-vented detail. Its R806.2 check stays UNKNOWN until the net free area is known.
+- **Box gutter is the PBR 5 x 4.** SMACNA 10-yr 5-min capacity passes (`notes/box_gutter_sizing.md`).
+- **Printed anomalies all drop.** None is on an ordered part.
+- **Supplier list is two items and one option**: the 13 in step cover part number, the Cobra
+  closure's net free area, and optionally the corrugated stock numbers. Nothing else waits on Metal Sales.
+- **The garage roof was unpriced.** Its vented covering tag had no `[roofing]` rate, so 714 SF sat
+  outside the estimate. The rate copies the canopy's, and the ice-barrier driver counts both roofs
+  by excluding the house's linen-white. The estimate moves by $8.4k-15.1k.
+- **The 12% panel-rate cut has no source.** The three rows cut 11.6-13.0%, about $1.0-1.7k of
+  pre-tax material, kept as an assumption and re-struck at quote.
+

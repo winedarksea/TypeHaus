@@ -31,15 +31,15 @@ def _tags(scene):
 
 
 def test_eave_overlay_draws_only_the_cut_metal(catlin_model):
-    """The house eave's metal is real geometry: the authored box gutter and the derived
-    formed drip edge are cut into the drawing, and the overlay draws no metal of its own —
+    """The house eave's metal is real geometry: the authored box gutter and the catalog
+    Extended Eave are cut into the drawing, and the overlay draws no metal of its own —
     no schematic drip, gutter or apron. The gutter's support is drawn off the resolved girt."""
     scene, findings = build_detail(catlin_model, _eave(catlin_model))
     assert not findings
     tags = _tags(scene)
     assert any(t.startswith("TR-RF-GUTTER") for t in tags), \
         "the authored box gutter should be cut into the eave detail"
-    assert {f"eave-hi-drip-edge-{leg}" for leg in ("flange", "nose", "face", "kick")} <= tags
+    assert "eave-hi-image-ii-eave" in tags
     assert not any(t.startswith("TR-RF-DRIP") for t in tags), "no level authored drip"
     for schematic in ("box-gutter", "drip-edge", "apron-flashing"):
         assert f"detail-component:{schematic}" not in tags

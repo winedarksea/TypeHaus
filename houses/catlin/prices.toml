@@ -135,8 +135,8 @@
 #   Left blank ON PURPOSE, because [edge_trim] already bills the same members by the foot
 #   and pricing both would double-count: the fourteen `drip_edge` leg profiles (flange /
 #   nose / face / kick on three roofs, billed once per run as `drip_flashing`), both
-#   `fascia` profiles, the `ridge_cap` and the `soffit` profile. Their edge_trim rows carry
-#   `also_in_framing: true`, which is the flag that says so.
+#   `fascia` profiles and the `soffit` profile (the ridge caps bill in [cladding_trim] since
+#   2026-10-27). Their edge_trim rows carry `also_in_framing: true`, which is the flag that says so.
 #
 #   `0.5x0.5 panel` was left blank last pass as unresolvable; 2026-08-08b resolves it.
 #   The row is 498 LF ordered / 462.9 LF cut and mixes three types. 243.9 LF of that cut is
@@ -352,7 +352,7 @@
 # billed. One member per truss bills the span, so the per-LF rate is 3.46x the old one for
 # exactly the same $/SF. Change one of these rows and check the other still agrees with it.
 "36 roof truss" = { material = { low = 7.60, high = 13.60 }, labour = { low = 1.90, high = 3.40 } }  # 0 LF — dormant, nothing here spans 36'
-# "12x4 panel" =    # 66 LF — ridge_cap, billed in [edge_trim]
+# "12x4 panel" =    # 66 LF — ridge_cap, billed in [cladding_trim] since 2026-10-27 (not [edge_trim])
 # "13.625x0.5 panel" =    # 112 LF — PVC soffit, billed in [edge_trim]
 # 1x4 furring/strapping is not in the 2026-08-07 sweep above — it had no members to
 # price then. $0.45-0.85/LF is 8' furring strips at $3.50-6.75 a piece, 2026 Midwest
@@ -4182,8 +4182,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # is not a cost. Keep the two in step by hand; if they ever diverge it should be because
 # somebody priced a colour, not because one was edited and the other forgotten.
 "standing-seam-linen-white" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
-# Garage and canopy use the same Image II panel and installed rate.
+# Canopy roof. Same Image II panel and installed rate as the garage's vented roof below.
 "standing-seam-image-ii-garage" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
+# Garage roof since 2026-10-27: its Cobra vented ridge makes it a separate covering tag
+# (materials_metal.py). Same panel and rate as the canopy row above; keep the two in step by hand.
+"standing-seam-image-ii-garage-vented" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
 # NOT TAKEN as of 2026-08-26 — kept as the revert rate. It clad the house walls
 # (EXT_2X6, PLANT_EXT_2X6_HUMID) until the exposed-fastener PBR row below replaced
 # it, and EXT_2X6_SWINBURNE still names it, so the row stays and the swap back is a
@@ -6093,10 +6096,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 #                 metal now (see houses/catlin/CLAUDE.md for why the substrate changed with
 #                 the colour); the blend moved up slightly inside the same range rather than
 #                 out of it, so the numbers below did not move.
-#   ridge_cap     63.5 LF dark formed metal, all one coil since 2026-09-08 — 36.8 LF house
-#                 plus the garage's 26.7 LF (2026-08-26 — was the roof's own standing-seam
-#                 stock).
-#   THE METALLIC UPCHARGE IS GONE FROM BOTH ROWS. From 2026-08-26 the garage's ~134 LF of cap
+#   ridge_cap     0 LF since 2026-10-27: the house and canopy closed ridges bill as 52131XX and
+#                 the garage's vented ridge as IMAGE_II_VENTED_STEP_RIDGE, both in [cladding_trim].
+#   THE METALLIC UPCHARGE IS GONE FROM THE FASCIA AND, UNTIL 2026-10-27, THE RIDGE. From 2026-08-26 the garage's ~134 LF of cap
 #   and fascia was "Copper Penny", a PVDF METALLIC (mica) at typically a 10-20% upcharge over
 #   solid colour; on 2026-09-08 it went to the house's near-black solid PVDF. That is the
 #   only trim colour on the building now, so both blends are single-coil and sit a little
@@ -6153,16 +6155,34 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # lump, not a per-foot rate. notes/sunken_garden_veneer_beam.md §6g.
 "movement_joint" = { material = { low = 70, high = 125 }, labour = { low = 6, high = 15 } }  # 15.7 LF — MJ-B-BRICK-E/-W
 "drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 421.1 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
-"edge_cladding" = { material = { low = 3, high = 8 }, labour = { low = 3.5, high = 7 } }  # 243.9 LF — add $2-4/LF if it is site-brake-formed rather than shop stock
+# 251.8 LF in three runs (81.2 / 96.4 / 74.2): the wall-top closure band, wall-panel metal that
+# the roof edge closes between the wall cladding and the roofing (resolve/roof_edge._closure_segment).
+# It is NOT rake trim; the rake is 52126XX.
+"edge_cladding" = { material = { low = 3, high = 8 }, labour = { low = 3.5, high = 7 } }  # 251.8 LF — add $2-4/LF if it is site-brake-formed rather than shop stock
 # ** TR-SG-FASCIA IS 13" SINCE 2026-09-22 ** — the balcony rim is a 2x12, so the board is ripped
 # from cellular PVC SHEET (trim board stops at 11 1/4"), ~$9-15/LF material for that 38.8 LF, over
 # this row's band. Edge trim is keyed by category alone, so it cannot take its own row.
 "fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC (sunken garden) and formed solid-colour PVDF (garage near-black since 2026-09-08, metal since 2026-08-26) over SPF
-"ridge_cap" = { material = { low = 4, high = 10 }, labour = { low = 4, high = 8 } }  # 63.5 LF — metal cap (a shingle ridge would be $1.50-3.50 to lay). Also commonly in the roofer's scope
 "soffit" = { material = { low = 3.5, high = 9 }, labour = { low = 3, high = 5.5 } }  # 101.1 LF — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x
 "wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # ~29 LF since 2026-10-16: the balcony's rear edge is TWO pieces either side of D-S-DECK-E, a deck-side base flashing and a house-side counterflashing (params/sunken_garden.py) — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate
 
 [cladding_trim]
+# TR-RF-GUTTER-E/W (2026-10-27): the PBR 5x4 box, 24 ga PVDF 20'-3" sticks (58079XX, PBR p. 12),
+# two per eave. No Metal Sales price exists, so the house's own fabricated box-gutter band
+# (was [drainage] gutter:metal-dark-exterior, $10-25 material + $12-22 labour per LF) carries over
+# per stick at 20.25 LF. Re-strike at quote; the catalog piece may price below the fabricated one.
+"58079XX" = { material = { low = 202.5, high = 506.25 }, labour = { low = 243, high = 445.5 } }  # 20'-3" stick, 4 ea
+# UNPRICED (commented on purpose, so they sit on `haus takeoff`'s unpriced list until quoted):
+# end caps, straps. Strap spacing is 3'-0" o.c., borrowed from the sculptured hanger (PBR p. 63).
+# "58081XX" = { material = { low = 0, high = 0 } }  # PBR box gutter end cap, left, 1 per eave
+# "58082XX" = { material = { low = 0, high = 0 } }  # PBR box gutter end cap, right, 1 per eave
+# "58092XX" = { material = { low = 0, high = 0 } }  # PBR box gutter strap 1'-4", 14 per eave
+# UNPRICED, no quote yet (commented, so each sits on the unpriced list): the PBR window jamb,
+# the garage's 13 in step cover (25.4 LF of vented ridge, no published part number) and its Cobra closure.
+# "58208XX" =    # PBR Jamb, 10'-2" stick, window jambs
+# "IMAGE_II_VENTED_STEP_RIDGE" =    # 13 in Step Ridge/Hip Cover, Cobra vent, garage ridge
+# "cobra-vented-closure" =    # Cobra vented closure, LF under the step cover; net free area unprinted
+
 # NEW 2026-10-27 — Metal Sales trim by PART NUMBER and stock length, with the closures,
 # tape, sealant and fasteners that go with it. Bought, not allowanced: the pieces come off
 # `notes/metal_trim_kit.md` and the model's resolved runs (takeoff/cladding_trim.py). Unit
@@ -6200,8 +6220,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "epdm-isolation" = { material = { low = 0.30, high = 0.70 }, labour = { low = 0.2, high = 0.4 }, unit = "LF" }
 "52124XX" = { material = { low = 72, high = 110 }, labour = { low = 30, high = 52 } }   # Image II Extended Eave, specify pitch
 "5806499" = { material = { low = 24, high = 38 }, labour = { low = 8, high = 16 } }      # Offset Cleat, 10'-2"
-"52126XX" = { material = { low = 56, high = 86 }, labour = { low = 26, high = 44 } }     # Residential Rake (garage and canopy, over the fascia)
-"IMAGE_II_RAKE_4IN_CUSTOM" = { material = { low = 9, high = 14 }, labour = { low = 3.5, high = 6 }, unit = "LF" }  # house rakes: 4" face where the stock 2-5/8" leg does not cover
+"52126XX" = { material = { low = 56, high = 86 }, labour = { low = 26, high = 44 } }     # Residential Rake: house, garage and canopy. The house bottom sits 1.0 in under the wall head
 "52132XX" = { material = { low = 24, high = 38 }, labour = { low = 8, high = 16 } }     # Residential Rake Cleat, 10'-2"
 "5806199" = { material = { low = 1.5, high = 3 }, labour = { low = 0.5, high = 1 } }  # 5806199 at 18" o.c. along the garage/canopy rakes
 "52131XX" = { material = { low = 62, high = 96 }, labour = { low = 26, high = 44 } }     # 7" Ridge/Hip Cover, specify pitch
@@ -6330,9 +6349,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Basis: aluminium gutter material $1-6/LF and downspout material $5-10/LF; the ranges here
 # sit above those because half the run is not K-style stock but formed dark box gutter and
 # 4" leaders (`metal-dark-exterior`), which is fabricated, not off the shelf.
-#   gutter    123.2 LF, ALL dark now (2026-09-05: the garage and balcony runs took the same
-#             colour as the house eaves; nothing mill-finished is left on the building) —
-#             74.4 LF shop-formed box + 48.8 LF prefinished K-style.
+#   gutter    48.8 LF prefinished K-style (2026-09-05: the garage and balcony runs took the same
+#             colour as the house eaves; nothing mill-finished is left on the building). The
+#             74.4 LF PBR box at the house eaves bills under [cladding_trim] since 2026-10-27.
 #   downspout  56.0 LF over FOUR drops, likewise all dark — 38.6 LF formed + 17.4 LF K-style.
 # Both are priced per PRODUCT rather than by colour; see the block below.
 # `french_drain` is a ZERO ROW, not an absent one, and that is the difference from `drywell`
@@ -6395,11 +6414,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # closed end, two corners and the scupper in the rate.
 "gutter:metal-dark-kstyle" = { low = 9, high = 17, basis = "installed" }  # 89.9 LF
 
-# Fabricated dark box gutter — 74.4 LF, the house's east and west eaves. Genuinely split,
-# because this one IS two purchases: heavier prefinished gauge brake-formed and mitred in a
-# shop, then delivered and set. It must be hung to a true line in a way K-style need not be,
-# because a box profile shows every wave along its face.
-"gutter:metal-dark-exterior" = { material = { low = 10, high = 25 }, labour = { low = 12, high = 22 } }  # 74.4 LF
+# The PBR 5x4 box gutter on the east and west eaves (74.4 LF) is NOT billed here. It is a
+# catalog piece, billed by part number under [cladding_trim] (takeoff/drainage.py skips a Gutter
+# that names a catalog product). Its rate is carried there per 20'-3" stick.
 
 # 3" stock leaders in the same prefinished coil — 3 drops, 28.6 LF (TR-G-LEADER-E/-W,
 # TR-SG-LEADER-SE), including TR-G-LEADER-E's 2' gooseneck back to the garage wall
@@ -6418,7 +6435,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # The two west leader extensions (params/roof_trim.py, plan/storeys/garage.py): 4" solid PVC
 # buried at 6-10", hand-trenched, with the pop-up emitter at the basin and the boot at the
 # leader. The LF includes each riser from the leader foot down to the inlet. 2026-09-21.
-"leader_extension:pvc-sdr35" = { material = { low = 4, high = 8 }, labour = { low = 8, high = 16 } }  # 59.8 LF / 4 runs
+"leader_extension:pvc-sdr35" = { material = { low = 4, high = 8 }, labour = { low = 8, high = 16 } }  # 59.9 LF / 4 runs
 
 [construction_returns]
 # NEW SECTION 2026-08-18 — [low, high] $/LF of return, material only, keyed on the rule's
@@ -7162,7 +7179,9 @@ cabinet-study-booth-cushions = { low = 250, high = 800 }
 # What still stands unchanged is the primary defence: a highly insulated assembly under a
 # low-friction standing seam is what stops an ice dam FORMING, and it is what is being paid
 # for on both planes.
-roof-ice-and-water-barrier-code-minimum = { low = 1.20, high = 2.60, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=roof,function=cladding,material=standing-seam-image-ii-garage]" }
+# The driver excludes the house's linen-white roof, so the garage's vented roof and the canopy
+# both count. The driver grammar has no OR, so a list of materials cannot be named.
+roof-ice-and-water-barrier-code-minimum = { low = 1.20, high = 2.60, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=roof,function=cladding,material!=standing-seam-linen-white]" }
 # ** REDUCED 2026-08-30. "Partly overlaps [edge_trim]" was the row's own words and nobody had
 # ever quantified the overlap; the number stood at a figure that assumed almost none. **
 # [edge_trim] is a real, modelled section — drip edge, rake and eave trim, valley and ridge
@@ -8109,11 +8128,11 @@ conductors      = "material plus installed labour, per CONDUCTOR-foot — NOT pe
 solar_modules   = "$/W DC installed, split 65/35 on the industry norm. Modules, racking and rapid shutdown ONLY — the inverter, battery and PV junction box are placed elements and bill in [placeables]. The high end is a small-array premium: permitting, interconnection and design are near-fixed and this array is 5.28 kW"
 data_raceways   = "material plus installed labour, $/LF of EMPTY PIPE. It is not the drops: cable, boxes, jacks and termination are the driven electrical-structured-low-voltage-drops allowance. Disjoint from [conduit] by construction — conduit_takeoff and data_raceway_takeoff partition model.conduits on service"
 ducts           = "material plus installed labour, UN-BLENDED 2026-08-27 by qualifying on `material` and 2026-08-30 by qualifying on `diameter_in` as well: `supply:semi_rigid:3.0` is the 75 mm radial, `supply:semi_rigid:6.0` the 6-inch riser, and a bare `supply` the 14x8 galvanized trunk, which the model leaves unnamed. Lookups fall back through the shorter keys, so the `material`-only and bare rows still price anything the finer rows do not name. The 08-27 blend it replaces was a sheet-metal rate carried over the radial pass, so the section fell rather than rose; the 08-30 diameter split is rate-neutral on today's mix and exists so it stays right when the mix moves"
-edge_trim       = "material plus installed labour. Two rows, drip_flashing and ridge_cap, are commonly inside a roofer's price — check for a double count against any roofing bid"
-cladding_trim   = "ESTIMATES, NOT QUOTES: material plus installed labour per Metal Sales stock stick (ea) or per foot of custom cut, closure, tape and sealant bead (LF); fasteners each. RECONCILIATION 2026-10-27: this section ADDS the wall base, corners, band, window and door trim, screen ends, Image II eave/rake/ridge and their closures, sealant and fasteners; it REPLACES [allowances] envelope-pbr-profile-closures and envelope-garage-corrugated-closure-strips (both deleted), the derived drip/ridge-closed/panel-rake LF formerly in [edge_trim] (drip_flashing, corner_trim, ridge_cap now cover only the authored runs and the garage's vented ridge), and ~12% of the three wall panels' MATERIAL $/SF (pbr-panel-24 2.15-3.30 to 1.90-2.90, board-batten-24 2.30-4.05 to 2.00-3.55, corrugated-panel-24 2.00-3.15 to 1.75-2.75), the trim share TRIM IS PARITY left inside them. The 12% is an assumption with no source: re-strike it when a supplier quote lands. Estimate moved $880k-1,738k to $895k-1,762k. The vented garage ridge stays in [edge_trim] ridge_cap until Metal Sales confirms the Image II vented assembly's part numbers; the box gutters stay custom pending a hydraulic capacity review. The 0.040 in aluminium K2, EPDM isolation and wall-top closures are added as measured runs, with lap sealant separately; prices are estimates pending supplier quotes"
+edge_trim       = "material plus installed labour. One row, drip_flashing, is commonly inside a roofer's price — check for a double count against any roofing bid"
+cladding_trim   = "ESTIMATES, NOT QUOTES: material plus installed labour per Metal Sales stock stick (ea) or per foot of custom cut, closure, tape and sealant bead (LF); fasteners each. RECONCILIATION 2026-10-27: this section ADDS the wall base, corners, band, window and door trim, screen ends, Image II eave/rake/ridge and their closures, sealant and fasteners; it REPLACES [allowances] envelope-pbr-profile-closures and envelope-garage-corrugated-closure-strips (both deleted), the derived drip/ridge-closed/panel-rake LF formerly in [edge_trim] (drip_flashing and corner_trim now cover only the authored runs; ridge_cap has no rows), and ~12% of the three wall panels' MATERIAL $/SF (pbr-panel-24 2.15-3.30 to 1.90-2.90, board-batten-24 2.30-4.05 to 2.00-3.55, corrugated-panel-24 2.00-3.15 to 1.75-2.75), the trim share TRIM IS PARITY left inside them. The 12% is an assumption with no source (the three rows cut 11.6-13.0%, about $1.0-1.7k of pre-tax material at the current SF): re-strike it when a supplier quote lands. Estimate moved $880k-1,738k to $895k-1,762k. The garage's vented ridge (IMAGE_II_VENTED_STEP_RIDGE and the Cobra closure) bills here, unpriced until Metal Sales confirms the part numbers and the Cobra net free area; the PBR 5x4 box gutter is the catalog piece, sized in notes/box_gutter_sizing.md, and bills here by part. The 0.040 in aluminium K2, EPDM isolation and wall-top closures are added as measured runs, with lap sealant separately; prices are estimates pending supplier quotes"
 member_protection = "material plus installed labour. Applied by the framer WITH the framing, not by a trade on a return visit — five of the seven capped beams carry joists on top, so the tape and the cap over it go on before the deck frames or not at all"
 railings        = "material plus installed labour. RAILING-INT-STAIR-GUARD is priced as a COMPONENT system; a shop-welded guard moves cost from labour into material and the two models must not be stacked"
-drainage        = "material plus installed labour, BLENDED over two products that differ 3x (seamless K-style vs fabricated box gutter). Seamless is roll-formed on site, so its own split is inseparable and every quote will come back merged"
+drainage        = "material plus installed labour for the prefinished K-style gutter and dark downspouts (the PBR box gutter bills by part under cladding_trim). Seamless is roll-formed on site, so its own split is inseparable and every quote will come back merged"
 floor_heat      = "material plus installed labour, backed out of published $/SF-of-floor prices. The 3 floor sensors are not in it"
 floor_finishes  = "material plus installed labour on the ORDER quantity. carpet-pad and catlin-bedroom-carpet-pad carry labour = 0 on purpose: laying the pad is inside the carpet rate"
 placeables      = "unit price plus INSTALL labour. Rough-in is billed by the foot in [pipe_runs], [ducts] and [conduit]; branch-circuit conductors are in neither and are the largest single omission in the file"

@@ -4126,6 +4126,22 @@
       "layer": "A-ANNO-TEXT",
       "align": "left",
       "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        6.95,
+        1.532
+      ],
+      "content": "+1 more (see notes)",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "right",
+      "uid": null
     }
   ],
   "notes": [],

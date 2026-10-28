@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import math
+import re
+
 from typehaus.checks.integrity.cladding_trim_runs import (
     along_extent,
     metal_wall_openings,
@@ -9,9 +12,15 @@ from typehaus.checks.integrity.cladding_trim_runs import (
 )
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import failed, not_applicable, passed, unknown
-from typehaus.library.trim.metal_sales import PROFILES, RESIDENTIAL_RAKE_FACE_IN
+from typehaus.library.trim._image_ii import IMAGE_II_RESIDENTIAL_RAKE
+from typehaus.library.trim.metal_sales import PROFILES
 from typehaus.model.cladding_trim import TrimCondition
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.cladding_trim.openings import (
+    brake_girth_and_bends,
+    small_opening_seat,
+    window_profile_sections,
+)
 from typehaus.resolve.cladding_trim.runs import kit_faces, metal_faces
 from typehaus.resolve.opening_flashing import head_flashing_section, opening_flashing_frame
 from typehaus.resolve.rainscreen_closures import (
@@ -20,10 +29,22 @@ from typehaus.resolve.rainscreen_closures import (
     cavity_base_run,
     screens_rainscreen_base,
 )
+from typehaus.resolve.roof_edge_geometry import roof_slope
+from typehaus.resolve.roof_image_ii import CONNECTION_RAKE, RAKE_BELOW_HEAD_M
+from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 FIT = "integrity.cladding_trim_fit"
 _TOL = 1e-6
-_MIN_FRAME_LAP_M = 0.75 * M_PER_IN
+# The jamb's inboard flange reaches the frame face; the frame joint is a sealant line laid
+# with the frame last (BBD75 pp. 24-26, "sealant (by others)"), so no lap width is required.
+_MIN_FRAME_LAP_M = 0.0
+_FRAME_JOINT_CITE = "BBD75 Install Guide 10/2025 pp. 24-26; PBR Install Guide 4/2024 p. 68"
+# Site-brake gate: a 10'-6" hand brake bends flat 24 ga PVDF to 24 in girth and 4 bends.
+_BRAKE_GIRTH_IN = 24.0
+_BRAKE_BENDS = 4
+# BBD75 p. 40: the Transition Trim's 2-1/2 in lower leg lies on the lower panel.
+_BAND_LAP_M = 2.5 * M_PER_IN
+_BAND_CITE = "BBD75 Install Guide 10/2025 p. 40"
 _UPSTAND_MARGIN_M = 0.0625 * M_PER_IN
 _BBD_RUN_LIMIT_M = 240 * M_PER_IN
 _MAX_HOLE_IN = 0.125
@@ -34,7 +55,8 @@ _PBR_CITE = "PBR Install Guide 4/2024 pp. 19, 68-72"
 
 
 def _opening_runs(ctx, pieces):
-    model, findings, checked = ctx.model, [], {"throat": 0, "lap": 0, "upstand": 0, "order": 0}
+    model, findings = ctx.model, []
+    checked = {"throat": 0, "lap": 0, "upstand": 0, "order": 0, "sill": 0}
     for opening, wall in metal_wall_openings(model, kinds=("window", "rough_opening")):
         seat, frame = opening.window_seat, opening_flashing_frame(model, wall)
         mine = [p for p in pieces if p.host_ref == opening.tag]
@@ -49,26 +71,32 @@ def _opening_runs(ctx, pieces):
             return [p for p in mine if f"-TRIM-{name}" in p.tag and p.body_mesh]
 
         heads, sills = part("HEAD-"), part("SILL-")
-        for head in heads:
-            profile = PROFILES.get(head.product or "")
-            if cladding is None or profile is None or profile.receiver_throat_in is None:
+        jambs = part("JAMB-LEFT-") + part("JAMB-RIGHT-")
+        # Every receiver leg must clear the panel depth. Site-brake jambs carry no throat.
+        for kind, piece in [("head", p) for p in heads] + [("jamb", p) for p in jambs]:
+            profile = PROFILES.get(piece.product or "")
+            if profile is None or profile.receiver_throat_in is None:
+                if kind == "head":
+                    findings.append(unknown(FIT, "head throat or panel depth unavailable",
+                                            (opening.tag,)))
+            elif cladding is None:
                 findings.append(unknown(FIT, "head throat or panel depth unavailable",
                                         (opening.tag,)))
             elif profile.receiver_throat_in * M_PER_IN + _TOL < cladding.thickness_m:
-                findings.append(failed(FIT, f"{opening.tag} head throat is smaller than the "
+                findings.append(failed(FIT, f"{opening.tag} {kind} throat is smaller than the "
                                             "panel depth", (opening.tag,), code=profile.source))
             else:
                 checked["throat"] += 1
-        # The jamb's inboard leg must lap the unit's frame face.
+        # The jamb's inboard flange must reach the unit's frame face; the frame joint is sealed.
         for side, edge, inward in (("JAMB-LEFT-", lo, 1.0), ("JAMB-RIGHT-", hi, -1.0)):
             for jamb in part(side):
                 stations = along_extent([jamb], frame)[0]
                 reach = (stations[1] - edge) if inward > 0 else (edge - stations[0])
                 lap = reach - (seat.jamb_inset_m if seat else 0.0)
                 if lap + _TOL < _MIN_FRAME_LAP_M:
-                    findings.append(failed(FIT, f"{opening.tag} jamb laps the frame "
-                                                f"{lap / M_PER_IN:.2f} in, under 3/4 in",
-                                           (opening.tag,), code="metal_trim_kit.md, Openings"))
+                    findings.append(failed(FIT, f"{opening.tag} jamb does not reach the frame "
+                                                f"face ({lap / M_PER_IN:.2f} in)",
+                                           (opening.tag,), code=_FRAME_JOINT_CITE))
                 else:
                     checked["lap"] += 1
         bottom = wall.base_ref_z_m + opening.sill_m
@@ -79,6 +107,15 @@ def _opening_runs(ctx, pieces):
                                        (opening.tag,), code="metal_trim_kit.md, Openings"))
             else:
                 checked["upstand"] += 1
+        # Jamb over sill: each jamb stands on the sill's envelope, upstand included.
+        if sills and jambs:
+            cap_top = max(p[2] for sill in sills for p in sill.body_mesh.positions)
+            for jamb in jambs:
+                if min(p[2] for p in jamb.body_mesh.positions) + _UPSTAND_MARGIN_M < cap_top:
+                    findings.append(failed(FIT, f"{opening.tag} jamb ends below its sill cap",
+                                           (opening.tag,), code=_FRAME_JOINT_CITE))
+                else:
+                    checked["sill"] += 1
         # Shingle order: the head's throat reaches further out than the jamb return it
         # laps, and the head runs past both jambs.
         if heads and part("JAMB-LEFT-") and reveal > 0:
@@ -92,8 +129,10 @@ def _opening_runs(ctx, pieces):
                                        (opening.tag,), code="metal_trim_kit.md, Openings"))
             else:
                 checked["order"] += 1
-    notes = {"throat": "head throats clear the panel depth", "lap": "jamb frame laps reach 3/4 in",
-             "upstand": "sill upstands stay under the unit", "order": "heads lap over their jambs"}
+    notes = {"throat": "reveal legs and head throats clear the panel depth",
+             "lap": "jamb flanges reach the frame face",
+             "upstand": "sill upstands stay under the unit", "order": "heads lap over their jambs",
+             "sill": "jambs land on their sill caps"}
     findings += [passed(FIT, f"{n} {notes[k]}", code=_PBR_CITE if k == "throat" else None)
                  for k, n in checked.items() if n and not any(
                      notes[k] in f.message for f in findings)]
@@ -307,24 +346,85 @@ def _base_cavity(ctx, pieces):
 
 
 def _rake_faces(ctx):
-    """Where the stock 2-5/8 in rake leg covers the face; where not, the custom 4 in is UNKNOWN."""
-    findings, custom = [], []
-    for roof in ctx.model.roofs:
-        for member in roof.members:
-            key = member.child_key
-            if (member.category == "drip_edge" and key.startswith("rake")
-                    and key.endswith("-drip-edge-face") and roof.tag != "RF-HOUSE") or (
-                    member.category == "corner_trim" and key.endswith("-panel-rake-face")):
-                face = (member.z1_m - member.z0_m) / M_PER_IN
-                if face > RESIDENTIAL_RAKE_FACE_IN + 1e-6:
-                    custom.append(f"{roof.tag}:{key}")
-    if custom:
-        findings.append(unknown(
-            FIT, f"{len(custom)} rake runs need a 4 in face; the stock Residential Rake 52126XX "
-                 f"covers {RESIDENTIAL_RAKE_FACE_IN} in, so they are billed as a custom-brake "
-                 "extension of its main leg, whose fabrication Metal Sales has not confirmed",
-            tuple(sorted(custom)[:4]), code="Residential Design Manual 5/2024 p. 9",
-            fix="get the 4 in rake and the custom jamb/sill/head brake limits in writing"))
+    """The stock rake's leg covers the roofing above the wall head plus the 1 in below it."""
+    model, findings, rakes = ctx.model, [], []
+    stock_in = max(z for _, z in IMAGE_II_RESIDENTIAL_RAKE.section_in)
+    for roof in model.roofs:
+        members = [m for m in roof.members if m.connection == CONNECTION_RAKE]
+        if not members:
+            continue
+        layers = above_structure_layers(model.plan.library.resolve_assembly(roof.assembly))
+        roofing = next(layer for layer in layers if layer.name == "roofing")
+        stack_in = roofing.thickness.meters * math.hypot(1.0, roof_slope(roof)) / M_PER_IN
+        required_in = stack_in + RAKE_BELOW_HEAD_M / M_PER_IN
+        rakes.append((roof.tag, len(members), required_in))
+        if required_in > stock_in + 1e-6:
+            findings.append(failed(
+                FIT, f"{roof.tag} rake needs {required_in:.2f} in of leg over the roofing and "
+                     f"hem, past the stock 52126XX's {stock_in:.3f} in",
+                (roof.tag,), code="Residential Design Manual 5/2024 p. 9"))
+    if rakes and not findings:
+        tags = ", ".join(f"{tag} ({count} runs)" for tag, count, _ in rakes)
+        findings.append(passed(
+            FIT, f"stock rake 52126XX leg {stock_in:.3f} in covers the roofing and 1 in below "
+                 f"the head ({max(r for *_, r in rakes):.2f} in needed) on {tags}",
+            code="Residential Design Manual 5/2024 p. 9"))
+    return findings
+
+
+def _band_laps(pieces):
+    """Each BBD75 band's lower leg lies on the lower panel by the manual's 2-1/2 in."""
+    lower = {}
+    for piece in pieces:
+        match = re.search(r"-BAND-(\d+)-", piece.tag)
+        if piece.product != "BBD_TRANSITION" or match is None or not piece.body_mesh:
+            continue
+        joint = int(match.group(1)) * M_PER_IN
+        depth = joint - min(p[2] for p in piece.body_mesh.positions)
+        key = (piece.host_ref, match.group(1))
+        lower[key] = min(lower.get(key, depth), depth)
+    short = [key for key, depth in lower.items() if depth + _TOL < _BAND_LAP_M]
+    if short:
+        return [failed(FIT, f"{len(short)} band joints lap the lower panel under 2-1/2 in",
+                       tuple(sorted({wall for wall, _ in short})), code=_BAND_CITE)]
+    if lower:
+        return [passed(FIT, f"{len(lower)} band joints lap the lower panel 2-1/2 in",
+                       code=_BAND_CITE)]
+    return []
+
+
+def _site_brake(ctx, pieces):
+    """Every site-brake section fits the 10'-6 in hand brake: 24 in girth, four bends."""
+    model, sections = ctx.model, []
+    for opening, wall in metal_wall_openings(model, kinds=("window", "rough_opening")):
+        frame = opening_flashing_frame(model, wall)
+        products = {p.product for p in pieces if p.host_ref == opening.tag}
+        if frame is None or not products & {"WINDOW_JAMB_CUSTOM", "WINDOW_SILL_CUSTOM"}:
+            continue
+        jamb, sill = window_profile_sections(frame, opening.window_seat or small_opening_seat())
+        if "WINDOW_JAMB_CUSTOM" in products:
+            sections.append((opening.tag, "jamb", jamb))
+        if "WINDOW_SILL_CUSTOM" in products:
+            sections.append((opening.tag, "sill", sill))
+    for opening, wall in metal_wall_openings(model, kinds=("door",)):
+        frame = opening_flashing_frame(model, wall, opening)
+        if frame is None or not any(p.host_ref == opening.tag and p.product == "DOOR_HEAD_CUSTOM"
+                                    for p in pieces):
+            continue
+        head = head_flashing_section(wall, opening, frame)
+        sections.append((opening.tag, "door head", [(x / M_PER_IN, z / M_PER_IN)
+                                                    for x, z in head.points]))
+    findings = []
+    for tag, name, points in sections:
+        girth, bends = brake_girth_and_bends(points)
+        if girth > _BRAKE_GIRTH_IN or bends > _BRAKE_BENDS:
+            findings.append(failed(FIT, f"{tag} {name} is {girth:.1f} in girth with {bends} "
+                                        "bends, over the 10'-6 in hand brake",
+                                   (tag,), code="metal_trim_kit.md, Openings"))
+    if sections and not findings:
+        findings.append(passed(FIT, f"{len(sections)} site-brake sections fit a 10'-6 in hand "
+                                    "brake: 24 in girth, four bends or fewer",
+                               code="metal_trim_kit.md, Openings"))
     return findings
 
 
@@ -357,4 +457,5 @@ def cladding_trim_fit(ctx: CheckContext) -> list:
     if not pieces and not any(screens_rainscreen_base(model, wall) for wall in model.walls):
         return [not_applicable(FIT, "no catalog cladding trim resolved")]
     return [*_opening_runs(ctx, pieces), *_run_limits(ctx, pieces), *_door_heads(ctx, pieces),
-            *_base_cavity(ctx, pieces), *_rake_faces(ctx), *_soffit_panel_joint(ctx)]
+            *_base_cavity(ctx, pieces), *_rake_faces(ctx), *_band_laps(pieces),
+            *_site_brake(ctx, pieces), *_soffit_panel_joint(ctx)]
