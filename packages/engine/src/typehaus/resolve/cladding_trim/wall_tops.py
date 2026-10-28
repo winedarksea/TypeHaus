@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from functools import lru_cache
 
 from typehaus.library.trim.metal_sales import PROFILES
 from typehaus.model.cladding_trim import TrimCondition
@@ -205,23 +206,33 @@ def _profile_closure_mesh(model, edge, profile):
                  if any(member.wall_tag == edge.wall.tag for member in line.members)), None)
     origin = line.origin if line else edge.wall.axis[0]
     phase = origin[0]*edge.face.d[0] + origin[1]*edge.face.d[1]
-    first = math.floor((edge.start-phase-profile.pitch_m/2)/profile.pitch_m)
-    last = math.ceil((edge.end-phase+profile.pitch_m/2)/profile.pitch_m)
+    return _closure_mesh(phase, edge.start, edge.end, edge.z_start, edge.z_end,
+                         edge.face.d, edge.face.n, edge.face.back,
+                         profile.section_points_m, profile.pitch_m)
+
+
+@lru_cache(maxsize=128)
+def _closure_mesh(phase, start, end, z_start, z_end, d, n, back, section, pitch_m) -> GMesh:
+    """The rib fill, a pure function of numbers (→ board_batten._fold)."""
+
+    def xy(station):  # CladdingFace.xy at depth 0
+        return (station * d[0] + back * n[0], station * d[1] + back * n[1])
+
+    first = math.floor((start-phase-pitch_m/2)/pitch_m)
+    last = math.ceil((end-phase+pitch_m/2)/pitch_m)
     positions, triangles = [], []
     for number in range(first, last+1):
-        center = phase + number*profile.pitch_m
-        for (a, da), (b, db) in zip(profile.section_points_m, profile.section_points_m[1:],
-                                     strict=False):
-            lo, hi = max(edge.start, center+a), min(edge.end, center+b)
+        center = phase + number*pitch_m
+        for (a, da), (b, db) in zip(section, section[1:], strict=False):
+            lo, hi = max(start, center+a), min(end, center+b)
             if hi-lo < 1e-9:
                 continue
             d0 = da + (db-da)*(lo-center-a)/(b-a)
             d1 = da + (db-da)*(hi-center-a)/(b-a)
-            x0, y0 = edge.face.xy(lo)
-            x1, y1 = edge.face.xy(hi)
-            n = edge.face.n
-            z0 = edge.z_start + (edge.z_end-edge.z_start)*(lo-edge.start)/(edge.end-edge.start)
-            z1 = edge.z_start + (edge.z_end-edge.z_start)*(hi-edge.start)/(edge.end-edge.start)
+            x0, y0 = xy(lo)
+            x1, y1 = xy(hi)
+            z0 = z_start + (z_end-z_start)*(lo-start)/(end-start)
+            z1 = z_start + (z_end-z_start)*(hi-start)/(end-start)
             bottom = ((x0,y0,z0-_CLOSURE_HEIGHT_M), (x1,y1,z1-_CLOSURE_HEIGHT_M),
                       (x1+n[0]*d1,y1+n[1]*d1,z1-_CLOSURE_HEIGHT_M),
                       (x0+n[0]*d0,y0+n[1]*d0,z0-_CLOSURE_HEIGHT_M))

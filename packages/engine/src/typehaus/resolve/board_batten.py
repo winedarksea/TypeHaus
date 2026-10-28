@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import replace
+from functools import lru_cache
 
 from typehaus.resolve.geometry_ir import GMesh
 from typehaus.resolve.geometry_members import member_box
@@ -188,7 +189,6 @@ def profile_mesh(
             plane = (-slope, 0.0, 1.0, za - slope * start)
             planes.append(tuple(-v for v in plane) if lower else plane)
         height_regions.append(planes)
-    pieces = []
     relief_depth = profile.depth_m - profile.sheet_thickness_m
     if not 0 <= support_clearance_m < relief_depth:
         raise ValueError(f"{wall.tag}: concealed flashing exceeds the {profile.key} skin envelope")
@@ -198,12 +198,32 @@ def profile_mesh(
         (s, depth + support_clearance_m * (profile.depth_m - depth) / relief_depth)
         for s, depth in profile.section_points_m
     )
-    inset = _inset_section(section, profile.sheet_thickness_m)
-    half = profile.pitch_m / 2
+    return _fold(
+        tuple(tuple(planes) for planes in footprints),
+        tuple(tuple(planes) for planes in height_regions),
+        tuple((tuple(planes), box) for planes, box in holes),
+        section, profile.sheet_thickness_m, profile.pitch_m,
+        low, high, support, z0, z1, (ox, oy, ux, uy, nx, ny),
+    )
+
+
+@lru_cache(maxsize=256)
+def _fold(footprints, height_regions, holes, section, sheet_thickness_m, pitch_m,
+          low, high, support, z0, z1, frame) -> GMesh:
+    """The folded, clipped skin: a pure function of numbers, so a resolve that leaves a
+    facade alone (most edits, most test splices) reuses its mesh rather than refolding it."""
+    ox, oy, ux, uy, nx, ny = frame
+
+    def world(p):
+        return (ox + ux * p[0] + nx * p[1], oy + uy * p[0] + ny * p[1], p[2])
+
+    pieces = []
+    inset = _inset_section(section, sheet_thickness_m)
+    half = pitch_m / 2
     for station in range(
-        math.floor((low - half) / profile.pitch_m), math.ceil((high + half) / profile.pitch_m) + 1
+        math.floor((low - half) / pitch_m), math.ceil((high + half) / pitch_m) + 1
     ):
-        center = station * profile.pitch_m
+        center = station * pitch_m
         for index, (a, b) in enumerate(zip(section, section[1:], strict=False)):
             s0, s1 = center + a[0], center + b[0]
             if s1 <= low or s0 >= high:

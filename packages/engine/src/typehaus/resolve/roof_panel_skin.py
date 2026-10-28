@@ -2,6 +2,7 @@
 
 import math
 from dataclasses import replace
+from functools import lru_cache
 
 from typehaus.resolve.geometry_ir import GMesh
 from typehaus.resolve.geometry_roofs import _face_normal, layer_inset_rect, plane_triangles
@@ -50,81 +51,92 @@ def seam_stations(roof, model) -> tuple[float, ...]:
 def roof_profile_mesh(roof, rect, base, profile):
     """Local coordinates are (along ridge, normal depth, fall-line distance)."""
     along_x = roof.ridge_direction == "x"
-    along = (1.0, 0.0, 0.0) if along_x else (0.0, 1.0, 0.0)
     low, high = rect[:2] if along_x else rect[2:]
-    anchor = (low + high) / 2
-    triangles = plane_triangles(roof, rect)
+    triangles = tuple(tuple(tuple(p) for p in tri) for tri in plane_triangles(roof, rect))
+    ridge = None
+    if roof.form != "shed":
+        across = 1 if along_x else 0
+        ridge = (
+            min(p[across] for p in roof.footprint) + max(p[across] for p in roof.footprint)
+        ) / 2
     positions, faces, normals = [], [], []
     # Two triangles describe each rectangular plane; never split a seam on their diagonal.
     for triangle_index in range(0, len(triangles), 2):
-        triangle = triangles[triangle_index]
-        normal = _face_normal(triangle)
-        fall = cross(along, normal)
-        if fall[2] > 0:
-            fall = tuple(-v for v in fall)
-        origin = triangle[0]
-
-        def world(point, origin=origin, normal=normal, fall=fall):
-            u, depth, v = point
-            return tuple(
-                origin[i]
-                + along[i] * (u - dot(origin, along))
-                + normal[i] * (base + depth)
-                + fall[i] * v
-                for i in range(3)
-            )
-
-        # Vertical rake/ridge planes and deck-normal eave planes match the band perimeter.
-        corners = {p for tri in triangles[triangle_index : triangle_index + 2] for p in tri}
-        fall_values = [dot(tuple(p[i] - origin[i] for i in range(3)), fall) for p in corners]
-        v_low, v_high = min(fall_values), max(fall_values)
-        planes = [
-            (1.0, 0.0, 0.0, high),
-            (-1.0, 0.0, 0.0, -low),
-            (0.0, 0.0, 1.0, v_high),
-            (0.0, 0.0, -1.0, -v_low),
-        ]
-        if roof.form != "shed":
-            across = 1 if along_x else 0
-            ridge = (
-                min(p[across] for p in roof.footprint) + max(p[across] for p in roof.footprint)
-            ) / 2
-            sign = 1.0 if normal[across] < 0 else -1.0
-            # Replace the high-end plane with a vertical ridge cut through the miter.
-            ridge_plane = (
-                0.0,
-                sign * normal[across],
-                sign * fall[across],
-                sign * (ridge - origin[across] - normal[across] * base),
-            )
-            planes = [*planes[:3], ridge_plane]
-        section = profile.section_points_m
-        inset = _inset_section(section, profile.sheet_thickness_m)
-        pieces = []
-        for station in range(
-            math.floor((low - anchor) / profile.pitch_m) - 1,
-            math.ceil((high - anchor) / profile.pitch_m) + 1,
-        ):
-            center = anchor + station * profile.pitch_m
-            for index, (a, b) in enumerate(zip(section, section[1:], strict=False)):
-                if center + b[0] < low or center + a[0] > high:
-                    continue
-                ao, bo = (center + a[0], a[1]), (center + b[0], b[1])
-                ai, bi = (
-                    (center + inset[index][0], inset[index][1]),
-                    (center + inset[index + 1][0], inset[index + 1][1]),
-                )
-                ribbon = _section_ribbon_faces(ao, bo, ai, bi, v_low - 1, v_high + 1)
-                for plane in planes:
-                    ribbon = clip_faces(ribbon, plane)
-                if ribbon:
-                    pieces.append(ribbon)
-        mesh = mesh_from_faces(pieces, world, dot(cross(along, normal), fall) < 0)
+        mesh = _roof_plane_mesh(triangles[triangle_index : triangle_index + 2], along_x,
+                                low, high, base, ridge, profile.section_points_m,
+                                profile.sheet_thickness_m, profile.pitch_m)
         offset = len(positions)
         positions.extend(mesh.positions)
         normals.extend(mesh.normals)
         faces.extend(tuple(offset + i for i in tri) for tri in mesh.triangles)
     return GMesh(tuple(positions), tuple(faces), tuple(normals))
+
+
+@lru_cache(maxsize=64)
+def _roof_plane_mesh(pair, along_x, low, high, base, ridge, section, sheet_thickness_m,
+                     pitch_m) -> GMesh:
+    """One roof plane's folded sheet, a pure function of numbers (→ board_batten._fold)."""
+    along = (1.0, 0.0, 0.0) if along_x else (0.0, 1.0, 0.0)
+    anchor = (low + high) / 2
+    triangle = pair[0]
+    normal = _face_normal(triangle)
+    fall = cross(along, normal)
+    if fall[2] > 0:
+        fall = tuple(-v for v in fall)
+    origin = triangle[0]
+
+    def world(point):
+        u, depth, v = point
+        return tuple(
+            origin[i]
+            + along[i] * (u - dot(origin, along))
+            + normal[i] * (base + depth)
+            + fall[i] * v
+            for i in range(3)
+        )
+
+    # Vertical rake/ridge planes and deck-normal eave planes match the band perimeter.
+    corners = {p for tri in pair for p in tri}
+    fall_values = [dot(tuple(p[i] - origin[i] for i in range(3)), fall) for p in corners]
+    v_low, v_high = min(fall_values), max(fall_values)
+    planes = [
+        (1.0, 0.0, 0.0, high),
+        (-1.0, 0.0, 0.0, -low),
+        (0.0, 0.0, 1.0, v_high),
+        (0.0, 0.0, -1.0, -v_low),
+    ]
+    if ridge is not None:
+        across = 1 if along_x else 0
+        sign = 1.0 if normal[across] < 0 else -1.0
+        # Replace the high-end plane with a vertical ridge cut through the miter.
+        ridge_plane = (
+            0.0,
+            sign * normal[across],
+            sign * fall[across],
+            sign * (ridge - origin[across] - normal[across] * base),
+        )
+        planes = [*planes[:3], ridge_plane]
+    inset = _inset_section(section, sheet_thickness_m)
+    pieces = []
+    for station in range(
+        math.floor((low - anchor) / pitch_m) - 1,
+        math.ceil((high - anchor) / pitch_m) + 1,
+    ):
+        center = anchor + station * pitch_m
+        for index, (a, b) in enumerate(zip(section, section[1:], strict=False)):
+            if center + b[0] < low or center + a[0] > high:
+                continue
+            ao, bo = (center + a[0], a[1]), (center + b[0], b[1])
+            ai, bi = (
+                (center + inset[index][0], inset[index][1]),
+                (center + inset[index + 1][0], inset[index + 1][1]),
+            )
+            ribbon = _section_ribbon_faces(ao, bo, ai, bi, v_low - 1, v_high + 1)
+            for plane in planes:
+                ribbon = clip_faces(ribbon, plane)
+            if ribbon:
+                pieces.append(ribbon)
+    return mesh_from_faces(pieces, world, dot(cross(along, normal), fall) < 0)
 
 
 def resolve_profiled_roof_surfaces(model):
