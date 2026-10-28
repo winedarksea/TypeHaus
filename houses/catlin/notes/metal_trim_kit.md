@@ -54,8 +54,9 @@ at the bearing seat (−1'-1 7/16"):
    drain onto the bearing seat.
 2. **Perforated aluminium insect screen** (holes 1/8 in or less), sitting on the Z's
    horizontal leg. It runs foam face to girt face, 1-1/2 in tall.
-3. **Base trim**, with its vertical leg on the girt plane (the panel back plane) up to
-   2-5/8 in above the seat. Its foot and hem kick 1.69 in outboard, so panel water drips
+3. **Base trim**, with its vertical leg 1/16 in outboard of the girt plane on the isolation
+   strip, up to 2-5/8 in above the seat. Its foot and hem kick about 1.75 in outboard of
+   the girt plane, so panel water drips
    clear of the Z. It never crosses the cavity mouth. Keep the steel trim off an aluminium
    Z with tape or EPDM, per the corrosion rule in `garage_wall_detail_side.md`.
 4. **Profile closure** in the ribs, on the trim foot: PBR 6460800 on butyl tape, or the
@@ -66,10 +67,10 @@ the only cavity closure on the N/S walls. The garage has no separate cavity, bec
 corrugation is the rainscreen. There the vented corrugated closure on the aluminium stem Z
 closes both.
 
-Hand count, W-M-W4: the screen runs 162 in (mitred at the corners) at −13 7/16" to
-−11 15/16". The base trim runs 164.8 in as two sticks (122 + 42.75 in) from −13.90" (hem) to
-−10 13/16". The Z runs under both for the same length. The house Z is not modeled yet (see
-"Still open").
+Hand count, W-M-W4: the screen runs 162 in (mitred at the corners) on the sloping Z pan,
+about 1-1/2 in tall from the bearing seat. The base trim runs 164.8 in as two sticks (122 + 42.75 in) from −13.90" (hem) to
+−10 13/16". The Z follows the 162 in mitred screen, continuous beneath openings; the steel
+base follows the longer panel edge.
 
 ## Openings
 
@@ -164,6 +165,8 @@ What the model derives and bills, with the counts the tests pin
 | Condition | Resolved as | Count |
 |---|---|---|
 | Wall base | kit base (`PBR_BASE` / `BBD_BASE` / `CORRUGATED_BASE`) under every wall stack whose panel bottom is free, one run per wall segment and per span between floor-level openings | 11 / 10 / 12 sticks |
+| House K2 base | 0.040 in aluminium Z, 120 in stock with 2 in laps, continuous under each base screen; EPDM at the steel trim | 14 runs / 21 sticks; 148 LF isolation |
+| Wall tops | PBR inside closure 6460800; BBD75 Universal Closure 6411499; corrugated Sill to Soffit at garage eaves; corrugated outside closure at garage panel tops | 74.25 / 83.01 / 48.29 / 99.04 LF |
 | Outside corners | Wide corner (PBR↔BBD75), corrugated corner | 8 / 4 |
 | BBD75 band | Transition Trim at +17'-4", one run per N/S wall segment | 10 |
 | Window head, jamb, sill | stock 1.5 in Sill/Head; custom jamb and sill | 43 / 86 / 43 |
@@ -202,11 +205,20 @@ Still open (the checks print these as UNKNOWN): the vented Image II ridge and it
 the 4 in custom rake and the custom jamb/sill/head brake limits, and the five printed
 part-number anomalies, all for Metal Sales. Prices in `prices.toml [cladding_trim]` are estimates.
 
-Also open, in the model (no finding yet):
+The K2 section has a 2 in upstand, a pan spanning the resolved cavity at a 1/4 in per foot
+outward fall, a 3/4 in drip and a 1/4 in hem. The pan underside starts at the bearing seat;
+the screen sits on its upper face. The steel base is held off the aluminium by 1/16 in EPDM.
+At W-M-W4 the cavity runs from 4 to 6 in outboard of sheathing; the coated foundation face
+is 4.185 in outboard, leaving about 1.815 in from the drip to that face. The 162 in Z run
+uses 120 and 44 in cuts with a 2 in lap. The screen order now includes its corner mitres.
 
-- **The house K2 Z-flashing is neither modeled nor billed.** Only the garage stem Z exists as
-  runs.
-- **Wall-top closures are unbilled.** Base, window head and sill closures are counted. Nothing
-  resolves `EAVE_TOP` / `RAKE_TOP`, so these are missing: the PBR inside closure under the box
-  gutter (about 72 LF in the deleted `envelope-pbr-profile-closures`), the BBD75 Universal
-  Closure under the rakes, and the corrugated Sill to Soffit.
+The corrugated garage panel tops use a solid outside closure, separate from the vented base
+closure. The eave soffit's underside is at +84.17 in, below the panel extension's +91.5 in
+top; Sill to Soffit sits at that soffit, and the outside closure seals the higher panel edge.
+Top closure lengths follow the resolved panel edge and include roof-generated extensions;
+overlapping stacked extensions are counted once.
+
+**Soffit attachment remains UNKNOWN:** the corrugated wall skin is modeled continuously
+through the soffit height. The Sill to Soffit crosses that skin in the model, so the panel
+break and installation order still need a coordinated detail before the junction is graded
+as fitting. Its bill is an estimate of the selected trim, not evidence of a resolved joint.

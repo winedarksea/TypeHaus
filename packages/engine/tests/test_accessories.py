@@ -818,8 +818,12 @@ def test_a_screen_sits_in_the_cavity_it_closes_at_the_cladding_start(catlin_mode
     wall = next(w for w in catlin_model.walls if w.tag == "W-M-S1")
     screen = next(s for s in catlin_model.solids
                   if s.tag == "W-M-S1-BUGSCREEN")
-    assert screen.z0_m == pytest.approx(wall.z0_m)
-    assert screen.z1_m - screen.z0_m == pytest.approx(inch(BUG_SCREEN_HEIGHT_IN).meters)
+    points = screen.body_mesh.positions
+    assert screen.z0_m == pytest.approx(min(point[2] for point in points))
+    assert screen.z0_m == pytest.approx(wall.z0_m, abs=inch(0.01).meters)
+    half = len(points) // 2
+    assert all(top[2] - bottom[2] == pytest.approx(inch(BUG_SCREEN_HEIGHT_IN).meters)
+               for bottom, top in zip(points[:half], points[half:], strict=True))
     furring = [ly for ly in wall.depth_layers() if ly.function == "furring"][-1]
     airgap = next(ly for ly in wall.depth_layers() if ly.function == "airgap")
     vent_m = furring.thickness_m + airgap.thickness_m

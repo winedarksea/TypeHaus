@@ -119,6 +119,9 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                                  MovementJoint)):
                 resolve_edge_run(model, el, storey.tag)
     resolve_bug_screens(model)
+    from typehaus.resolve.rainscreen_base_flashing import resolve_rainscreen_base_flashing
+
+    resolve_rainscreen_base_flashing(model)
     return findings
 
 

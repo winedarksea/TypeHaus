@@ -272,6 +272,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.cladding_trim.ends import resolve_screen_ends
 
         resolve_base_trim(model)
+        from typehaus.resolve.cladding_trim.wall_tops import resolve_wall_top_closures
+
+        resolve_wall_top_closures(model)
         from typehaus.resolve.cladding_trim.openings import resolve_small_opening_trim
 
         resolve_small_opening_trim(model)

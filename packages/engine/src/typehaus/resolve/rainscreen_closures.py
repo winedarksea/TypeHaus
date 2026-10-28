@@ -11,6 +11,7 @@ oversailing the girt face (``roof_layer_setbacks``), so nothing is derived there
 from __future__ import annotations
 
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 from typehaus.model.enums import LayerFunction, TrimKind
 from typehaus.quantities import inch
@@ -32,6 +33,47 @@ BUG_SCREEN_HEIGHT_IN = 1.5
 BUG_SCREEN_HOLE_IN = 3.0 / 25.4   # 3 mm perforation, see the material; insects need > 1/8"
 _STACK_TOLERANCE_M = 0.05   # a storey's walls land exactly on the one below; this is slop
 _STACK_PLAN_TOL_M = 0.5     # two stacked walls share a plan line within a wall's thickness
+
+
+@dataclass(frozen=True)
+class CavityBaseRun:
+    wall: object
+    outline: tuple[tuple[float, float], ...]
+    depth_m: float
+    direction: tuple[float, float]
+    outward: tuple[float, float]
+    inner_offset: float
+    outer_offset: float
+    start: float
+    end: float
+
+
+def cavity_base_run(model, wall) -> CavityBaseRun | None:
+    """The mitred cavity at a true base, shared by flashing, screen and purchasing."""
+    if not screens_rainscreen_base(model, wall):
+        return None
+    from typehaus.resolve.cladding_trim.runs import cladding_face
+
+    band = rainscreen_band(wall.layers)
+    if band is None:
+        return None
+    furring, depth = band
+    outline = _vented_band(wall, furring, depth, _cavity_airgap(wall.layers, furring))
+    cladding = next((layer for layer in reversed(wall.layers)
+                     if layer.function == LayerFunction.CLADDING.value), None)
+    face = cladding_face(wall, cladding) if cladding and cladding.polygon else None
+    if len(outline) < 3 or face is None:
+        return None
+    d, n = face.d, face.n
+    offsets = [x*n[0] + y*n[1] for x, y in outline]
+    outer = max(offsets)
+    # The outside edge sets the finished length, including its corner mitres.
+    outside = [x*d[0] + y*d[1] for (x, y), off in zip(outline, offsets, strict=True)
+               if abs(off - outer) < 1e-7]
+    if len(outside) < 2:
+        return None
+    return CavityBaseRun(wall, tuple(outline), depth, d, n, min(offsets), outer,
+                         min(outside), max(outside))
 
 
 def rainscreen_band(
@@ -172,11 +214,29 @@ def resolve_bug_screens(model: ResolvedModel) -> None:
         outline = _vented_band(wall, furring, vent, _cavity_airgap(wall.layers, furring))
         if len(outline) < 3:
             continue
-        if screens_rainscreen_base(model, wall):
+        base = cavity_base_run(model, wall)
+        if base is not None:
+            assembly = model.plan.library.resolve_assembly(wall.assembly)
+            spec = assembly.rainscreen_base_flashing if assembly else None
+            mesh = None
+            if spec is not None:
+                from typehaus.resolve.geometry_ir import GBox
+                from typehaus.resolve.geometry_slice_box import _box_mesh
+
+                def bottom(point, base=base, wall=wall, spec=spec):
+                    offset = point[0] * base.outward[0] + point[1] * base.outward[1]
+                    return (wall.z0_m + spec.sheet_thickness.meters * (1 + spec.slope**2)**0.5
+                            - spec.slope * (offset - base.inner_offset))
+
+                lower = tuple((x, y, bottom((x, y))) for x, y in outline)
+                upper = tuple((x, y, bottom((x, y)) + height) for x, y in outline)
+                mesh = _box_mesh(GBox(lower, upper))
             model.solids.append(ResolvedSolid(
                 uid=f"{wall.uid}-bugscreen", tag=f"{wall.tag}-BUGSCREEN", storey=wall.storey,
                 category=TrimKind.BUG_SCREEN.value, outline=outline,
-                z0_m=wall.z0_m, z1_m=wall.z0_m + height, assembly=wall.assembly,
+                z0_m=min(p[2] for p in mesh.positions) if mesh else wall.z0_m,
+                z1_m=max(p[2] for p in mesh.positions) if mesh else wall.z0_m + height,
+                assembly=wall.assembly, body_mesh=mesh,
             ))
         origin, tangent, _across, _axis_length = wall_frame(wall)
         for opening, s0, s1, z0 in head_screen_spans(model, wall):

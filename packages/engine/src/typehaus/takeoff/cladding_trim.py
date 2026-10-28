@@ -91,15 +91,37 @@ def _wall_trim_rows(model: ResolvedModel, rows: _Rows) -> None:
     for solid in model.solids:
         if solid.category != "cladding_trim":
             continue
+        if solid.product == "EPDM_BASE_ISOLATION":
+            if solid.trim_length_m is None or solid.trim_length_m <= 0:
+                raise ValueError(f"{solid.tag}: isolation lacks installed length")
+            _supply(rows, "epdm-isolation", solid.trim_length_m, solid.tag)
+            continue
+        if solid.product in {"6460800", "6411499", "corrugated-outside-closure"}:
+            if solid.trim_length_m is None or solid.trim_length_m <= 0:
+                raise ValueError(f"{solid.tag}: wall-top closure lacks installed length")
+            _supply(rows, solid.product, solid.trim_length_m, solid.tag)
+            if solid.product == "6411499":
+                _supply(rows, "butyl-tape", solid.trim_length_m, solid.tag)
+            continue
         profile = PROFILES.get(solid.product or "")
         if profile is None or solid.trim_length_m is None or solid.trim_stock_length_in is None:
             raise ValueError(f"{solid.tag}: cladding trim lacks profile or stock metadata")
         stock, length = solid.trim_stock_length_in, solid.trim_length_m
-        if stock not in profile.stock_lengths_in or length <= 0 or length > stock * M_PER_IN + 1e-9:
+        stock_lengths = profile.stock_lengths_in
+        if solid.product == "RAINSCREEN_BASE_Z":
+            wall = model.wall(solid.host_ref)
+            assembly = model.plan.library.resolve_assembly(wall.assembly) if wall else None
+            spec = assembly.rainscreen_base_flashing if assembly else None
+            stock_lengths = (round(spec.stock_length.meters / M_PER_IN, 6),) if spec else ()
+        if stock not in stock_lengths or length <= 0 or length > stock * M_PER_IN + 1e-9:
             raise ValueError(f"{solid.tag}: invalid cut or stock length")
         part = _part(profile, stock, solid.product)
         rows.add("trim", part, profile.name, stock, count=1, length_m=length, tag=solid.tag,
                  unit="LF" if profile.custom else "ea")
+        if solid.product == "RAINSCREEN_BASE_Z":
+            if solid.tag.rsplit("-", 1)[-1] != "1":
+                _supply(rows, "tube-sealant", _LAP_SEALANT_FT * _FT, solid.tag)
+            continue
         host = getattr(solid, "host_ref", None)
         panel = panel_finish.get(host_wall.get(host, host))
         closure = profile.closure

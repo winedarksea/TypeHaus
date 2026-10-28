@@ -8,6 +8,7 @@ from typehaus import (
     FramingSpec,
     Layer,
     LayerFunction,
+    RainscreenBaseFlashing,
     inch,
 )
 from library import (
@@ -52,6 +53,7 @@ from library import (
 # origin puts a jog in a line that is otherwise continuous. See CLAUDE.md, Facade rules.
 EXT_2X6 = Assembly(
     tag="EXT_2X6",
+    rainscreen_base_flashing=RainscreenBaseFlashing(material="aluminum-flat-pvdf"),
     layers=(
         # Four-stud outside corners: the thermal objection APA/BASC raise against a solid
         # corner post does not apply here — the primary insulation is the continuous

@@ -31,7 +31,10 @@ def resolve_base_trim(model) -> None:
             continue
         cuts = [(a, b) for opening, a, b in face.openings(model)
                 if face.wall.base_ref_z_m + opening.sill_m < face.z0 + _DOOR_REACH_M]
+        assembly = model.plan.library.resolve_assembly(face.wall.assembly)
+        spec = assembly.rainscreen_base_flashing if assembly else None
+        isolation = spec.isolation_thickness.meters if spec else 0.0
         for span, (lo, hi) in enumerate(subtract_spans(face.lo, face.hi, cuts), 1):
             add_horizontal_run(model, face, PROFILES[key], key,
                                f"TRIM-{face.wall.tag}-BASE-S{span}", lo, hi, face.z0,
-                               depth=SHEET_24_GA_M)
+                               depth=SHEET_24_GA_M + isolation)

@@ -13,6 +13,7 @@ from typehaus.checks.integrity.cladding_trim_runs import (
 )
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import failed, not_applicable, passed, unknown
+from typehaus.library.trim.metal_sales import PROFILES
 from typehaus.model.cladding_trim import TrimCondition
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.base import _DOOR_REACH_M
@@ -185,6 +186,41 @@ def _roof_edges(ctx):
     return findings
 
 
+def _wall_tops(ctx, pieces):
+    """Check each exposed roof-terminated wall edge against the actual closure meshes."""
+    from typehaus.resolve.cladding_trim.wall_tops import exposed_wall_top_edges
+
+    findings, edges = [], exposed_wall_top_edges(ctx.model)
+    tolerance = 0.125 * M_PER_IN
+    for edge in edges:
+        spans = []
+        for piece in pieces:
+            if (piece.host_ref != edge.wall.tag or piece.product != edge.product
+                    or not piece.body_mesh):
+                continue
+            points = piece.body_mesh.positions
+            stations = [p[0]*edge.face.d[0] + p[1]*edge.face.d[1] for p in points]
+            def error(p, station, edge=edge):
+                expected = (edge.z_start + (edge.z_end-edge.z_start)
+                            * (station-edge.start)/(edge.end-edge.start))
+                return abs(p[2] - expected)
+            throat = PROFILES[edge.product].receiver_throat_in if (
+                edge.product == "CORRUGATED_SILL_TO_SOFFIT") else 0
+            expected_depth = edge.face.back + throat * M_PER_IN
+            depth = min(abs(p[0]*edge.face.n[0] + p[1]*edge.face.n[1] - expected_depth)
+                        for p in points)
+            elevation_error = min(error(p, s) for p, s in zip(points, stations, strict=True))
+            if depth <= tolerance and elevation_error <= tolerance:
+                spans.append((min(stations), max(stations)))
+        if not spans_cover(spans, edge.start, edge.end):
+            findings.append(failed(
+                COVERAGE, f"{edge.wall.tag} has an uncovered or displaced "
+                f"{edge.condition.value} termination", (edge.wall.tag,)))
+    if edges and not findings:
+        findings.append(passed(COVERAGE, f"{len(edges)} exposed wall tops carry their closures"))
+    return findings
+
+
 @check(Tier.INTEGRITY, COVERAGE)
 def cladding_trim_coverage(ctx: CheckContext) -> list:
     model = ctx.model
@@ -192,7 +228,7 @@ def cladding_trim_coverage(ctx: CheckContext) -> list:
         return [not_applicable(COVERAGE, "no profiled metal walls")]
     pieces = _pieces(model)
     findings = [*_window_like(ctx, pieces), *_doors(ctx, pieces), *_bases(ctx, pieces),
-                *_corners_and_ends(ctx, pieces), *_roof_edges(ctx)]
+                *_corners_and_ends(ctx, pieces), *_roof_edges(ctx), *_wall_tops(ctx, pieces)]
     findings.append(unknown(
         COVERAGE,
         "the garage's vented ridge keeps its modeled cap until Metal Sales confirms the Image II "

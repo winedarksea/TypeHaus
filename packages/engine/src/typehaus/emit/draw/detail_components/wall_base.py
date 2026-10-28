@@ -19,6 +19,7 @@ from typehaus.emit.draw.detail_components.config import (
     SLAB_EDGE,
 )
 from typehaus.emit.draw.detail_components.geometry import (
+    closed_region,
     face_of,
     flashing_nodes,
     layer_intervals,
@@ -33,6 +34,7 @@ from typehaus.emit.draw.detail_components.geometry import (
 from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import IRNode
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.geometry_slice import CutPlane, slice_solid
 from typehaus.resolve.model import ResolvedLayer, ResolvedWall
 from typehaus.resolve.rainscreen_closures import BUG_SCREEN_HEIGHT_IN, BUG_SCREEN_MATERIAL
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
@@ -58,8 +60,12 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
 
     nodes: list[IRNode] = []
     nodes += _l_flashing_and_bead(intervals, is_outboard_high, out_sign, junction_z)
-    nodes += _z_flashing_and_screen(framed, intervals, is_outboard_high, out_sign,
-                                    junction_z)
+    assembly = model.plan.library.resolve_assembly(framed.assembly)
+    if assembly and assembly.rainscreen_base_flashing:
+        nodes += _resolved_base_flashing(model, framed, direction, station)
+    else:
+        nodes += _z_flashing_and_screen(framed, intervals, is_outboard_high, out_sign,
+                                        junction_z)
 
     # Sill gasket under the treated mudsill, sealing the stud line to the concrete — the
     # authored ``FramingSpec.sill_gasket`` thickness when the assembly carries one, else
@@ -81,6 +87,23 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
         nodes += slab_thermal_break(model, concrete, crop, direction, station)
         nodes += interior_slab_drip_flashing(model, concrete, crop, direction, station)
         nodes += foam_protection_board(model, concrete, crop, direction, station)
+    return nodes
+
+
+def _resolved_base_flashing(model, wall, direction, station):
+    """Cut the installed sheet and screen, rather than drawing a second section."""
+    plane = CutPlane(axis=direction, station_m=station)
+    nodes = []
+    for solid in model.solids:
+        if solid.body_mesh is None or not (
+                solid.host_ref == wall.tag and solid.product == "RAINSCREEN_BASE_Z"
+                or solid.tag == f"{wall.tag}-BUGSCREEN"):
+            continue
+        for profile in slice_solid(solid.body_mesh, plane):
+            points = [(u / M_PER_IN, z / M_PER_IN) for u, z in profile.outline]
+            tag = "bug-screen" if solid.tag.endswith("-BUGSCREEN") else "z-flashing"
+            material = BUG_SCREEN_MATERIAL if tag == "bug-screen" else solid.material
+            nodes += closed_region(points, tag, material, "metal", lineweight=PROFILE)
     return nodes
 
 

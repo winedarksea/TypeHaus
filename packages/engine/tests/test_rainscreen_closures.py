@@ -10,12 +10,11 @@ import pytest
 
 from typehaus.model.enums import TrimKind
 from typehaus.quantities import inch
-from typehaus.resolve.geometry import length, sub, wall_frame
+from typehaus.resolve.geometry import wall_frame
 from typehaus.resolve.rainscreen_closures import (
     BUG_SCREEN_HEIGHT_IN,
     head_screen_spans,
     rainscreen_cavity_m,
-    screens_rainscreen_base,
 )
 from typehaus.takeoff.envelope import bug_screen_takeoff
 
@@ -76,8 +75,9 @@ def test_the_take_off_bills_base_plus_heads_and_agrees_with_the_solids(catlin_mo
     rows = bug_screen_takeoff(model)
     assert rows
     billed_ft = sum(float(row["length_ft"]) for row in rows)
-    base_m = sum(length(sub(w.axis[1], w.axis[0]))
-                 for w in model.walls if screens_rainscreen_base(model, w))
+    from typehaus.resolve.rainscreen_closures import cavity_base_run
+    base_m = sum(run.end-run.start for wall in model.walls
+                 if (run := cavity_base_run(model, wall)) is not None)
     # The heads measured off the drawn solids, not the spans the take-off read: the two
     # can only agree if the geometry and the order are one derivation.
     walls = {w.tag: w for w in model.walls}
@@ -153,7 +153,7 @@ def test_base_stack_screen_and_trim_on_a_house_wall(catlin_model_ro):
     leg = min(p[0] * face.n[0] + p[1] * face.n[1] for t in trim for p in t.body_mesh.positions)
     assert leg >= mouth - 1e-6
     foot = max(p[0] * face.n[0] + p[1] * face.n[1] for t in trim for p in t.body_mesh.positions)
-    assert foot - mouth == pytest.approx(inch(1.69).meters, abs=inch(0.05).meters)
+    assert foot - mouth == pytest.approx(inch(1.69 + 0.0625).meters, abs=inch(0.05).meters)
 
 
 def _base_findings(model):
@@ -178,11 +178,56 @@ def test_base_cavity_grade_fails_a_coarse_screen_or_a_missing_one(catlin_model_r
     assert coarse and all(f.result.name == "FAIL" for f in coarse)
     monkeypatch.undo()
 
-    model = catlin_model_ro
-    kept = list(model.solids)
-    try:
-        model.solids[:] = [s for s in kept if s.tag != "W-M-W4-BUGSCREEN"]
-        bare = _base_findings(model)
-    finally:
-        model.solids[:] = kept
+    from copy import copy
+
+    model = copy(catlin_model_ro)
+    model.solids = [s for s in model.solids if s.tag != "W-M-W4-BUGSCREEN"]
+    bare = _base_findings(model)
     assert any("W-M-W4" in f.message and "no insect screen" in f.message for f in bare)
+
+
+def test_base_z_matches_screen_and_follows_stock_laps(catlin_model_ro):
+    from typehaus.resolve.rainscreen_closures import cavity_base_run
+
+    model = catlin_model_ro
+    runs = [run for wall in model.walls if (run := cavity_base_run(model, wall)) is not None]
+    assert len(runs) == 14
+    run = next(run for run in runs if run.wall.tag == "W-M-W4")
+    assert (run.end-run.start)/inch(1).meters == pytest.approx(162)
+    pieces = [s for s in model.solids if s.host_ref == run.wall.tag
+              and s.product == "RAINSCREEN_BASE_Z"]
+    assert sorted(s.trim_length_m/inch(1).meters for s in pieces) == pytest.approx([44, 120])
+    assert all(s.material == "aluminum-flat-pvdf" for s in pieces)
+    assert len([s for s in model.solids if s.product == "EPDM_BASE_ISOLATION"]) == 14
+
+
+def test_base_run_is_independent_of_wall_axis_direction(catlin_model_ro):
+    from dataclasses import replace
+
+    from typehaus.resolve.rainscreen_closures import cavity_base_run
+
+    model = catlin_model_ro
+    wall = model.wall("W-M-W4")
+    forward = cavity_base_run(model, wall)
+    reverse = cavity_base_run(model, replace(wall, axis=tuple(reversed(wall.axis))))
+    assert reverse.end-reverse.start == pytest.approx(forward.end-forward.start)
+    assert reverse.depth_m == pytest.approx(forward.depth_m)
+    assert reverse.outward == pytest.approx(forward.outward)
+
+
+@pytest.mark.parametrize("product", ["RAINSCREEN_BASE_Z", "EPDM_BASE_ISOLATION"])
+def test_base_cavity_grade_detects_missing_and_displaced_parts(catlin_model_ro, product):
+    from copy import copy
+    from dataclasses import replace
+
+    model = copy(catlin_model_ro)
+    target = next(s for s in model.solids if s.host_ref == "W-M-W4" and s.product == product)
+    model.solids = [s for s in model.solids if not (s.host_ref == "W-M-W4"
+                                                     and s.product == product)]
+    assert any(f.result.name == "FAIL" and "W-M-W4" in f.message for f in _base_findings(model))
+    mesh = replace(target.body_mesh, positions=tuple((x, y, z + inch(2).meters)
+                                                    for x, y, z in target.body_mesh.positions))
+    model.solids = [s for s in catlin_model_ro.solids if s is not target]
+    model.solids.append(replace(target, body_mesh=mesh))
+    assert any(f.result.name == "FAIL" and "W-M-W4" in f.message
+               for f in _base_findings(model))

@@ -125,8 +125,15 @@ CORRUGATED_JAMB = TrimProfile(
 )
 CORRUGATED_SILL_TO_SOFFIT = TrimProfile(
     "Corrugated Sill to Soffit 1.5 inch",
+    section_in=((0, 2.5), (0, 0.08), (1.5, 0.08), (1.8536, -0.2736),
+                (1.5, 0), (-3.25, 0), (-3.25, 0.08), (-2.875, 0.08)),
     receiver_throat_in=1.5,
     source="7/8 inch Corrugated product manual 9/2011 p. P7/8-4",
+)
+
+RAINSCREEN_BASE_Z = TrimProfile(
+    "Rainscreen base Z, 0.040 inch aluminium", stock_lengths_in=(120.0,),
+    custom=True, maker="custom brake", source="Catlin wall base stack",
 )
 
 IMAGE_II_EXTENDED_EAVE = TrimProfile(
@@ -176,10 +183,13 @@ SUPPLIES = {
     "6460800": ("PBR Inside Closure", "LF", "PBR Install Guide 4/2024 p. 69"),
     "55548XX": ("BBD75 C-Closure", "LF", "BBD75 Install Guide 10/2025 p. 22"),
     "corrugated-closure": ("Corrugated profile closure", "LF", "Corrugated manual p. P7/8-4"),
+    "corrugated-outside-closure": ("Corrugated outside closure", "LF",
+                                   "Corrugated manual p. P7/8-5"),
     "6411499": ("Universal Closure", "LF", "Residential Design Manual 5/2024"),
     "58603XX": ("Image II Z-Closure", "LF", "Residential Design Manual 5/2024"),
     "6403899": ("Double-bead tape", "LF", "Residential Design Manual 5/2024"),
     "butyl-tape": ("Butyl tape", "LF", "PBR Install Guide 4/2024 p. 69"),
+    "epdm-isolation": ("EPDM dissimilar-metal isolation", "LF", "Catlin wall base stack"),
     "tube-sealant": ("Tube sealant", "LF", "PBR Install Guide 4/2024 pp. 16-21"),
     "trim-stitch-screw": ("1/4-14 x 7/8 in stitch screw", "ea", "Metal Sales trim guides"),
     "trim-pop-rivet": ("1/8 in pop rivet", "ea", "Metal Sales trim guides"),

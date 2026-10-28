@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import Literal
 
 from pydantic import field_validator, model_validator
@@ -498,6 +499,30 @@ class Substitution(HausModel):
     replacement: tuple[Layer, ...]
 
 
+class RainscreenBaseFlashing(HausModel):
+    """House-selected formed sheet under the beginning of a rainscreen cavity."""
+
+    material: str
+    sheet_thickness: Length = inch(0.040)
+    upstand: Length = inch(2)
+    slope: float = 0.25 / 12
+    drip: Length = inch(0.75)
+    hem: Length = inch(0.25)
+    isolation_thickness: Length = inch(0.0625)
+    stock_length: Length = inch(120)
+    lap: Length = inch(2)
+
+    @model_validator(mode="after")
+    def valid_dimensions(self):
+        if (self.sheet_thickness.meters <= 0 or self.upstand.meters <= 0
+                or self.drip.meters <= 0 or self.hem.meters < 0
+                or self.isolation_thickness.meters <= 0
+                or not math.isfinite(self.slope) or self.slope <= 0 or self.lap.meters < 0
+                or self.stock_length.meters <= self.lap.meters):
+            raise ValueError("invalid rainscreen base flashing dimensions")
+        return self
+
+
 class Assembly(HausModel):
     """A layered wall/roof/floor assembly — one definition drives 3D solids, slice
     stacks, R-value, BOM, transition anchors, and the section card (→ 10 §Element model).
@@ -521,6 +546,7 @@ class Assembly(HausModel):
     # Variants (#35): resolve live against the base; unchanged layers track it forever.
     variant_of: str | None = None
     substitute: tuple[Substitution, ...] = ()
+    rainscreen_base_flashing: RainscreenBaseFlashing | None = None
     # Acoustics (#50): empirical lab-test lookup, never computed.
     stc: int | None = None
     # What this assembly IS, which every rule about it has had to guess from its layers.
@@ -607,6 +633,7 @@ for _name, _obj in (
     ("ConcreteSpec", ConcreteSpec),
     ("FiberSpec", FiberSpec),
     ("Assembly", Assembly),
+    ("RainscreenBaseFlashing", RainscreenBaseFlashing),
     ("AssemblyInterface", AssemblyInterface),
     ("ConstructionRule", ConstructionRule),
     ("Substitution", Substitution),

@@ -1,10 +1,12 @@
 """Wall base, door, screen-end and small-opening trim: the inventory the note works by hand."""
 
 from collections import Counter
+from copy import copy
+from dataclasses import replace
 
 import pytest
 
-from typehaus.quantities import M_PER_IN
+from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.cladding_trim.members import split_stock_run
 from typehaus.takeoff.cladding_trim import cladding_trim_takeoff
 
@@ -20,6 +22,9 @@ def test_trim_inventory_by_profile(catlin_model_ro):
         "PBR_BASE": 11, "BBD_BASE": 10, "CORRUGATED_BASE": 12, "BBD_TRANSITION": 10,
         "BBD_PANEL_STARTER": 6, "CORRUGATED_JAMB": 8, "DOOR_HEAD_CUSTOM": 5,
         "WIDE_OUTSIDE_CORNER": 8, "CORRUGATED_OUTSIDE_CORNER": 4,
+        "RAINSCREEN_BASE_Z": 21, "EPDM_BASE_ISOLATION": 14,
+        "6460800": 9, "6411499": 10, "CORRUGATED_SILL_TO_SOFFIT": 6,
+        "corrugated-outside-closure": 6,
     }
 
 
@@ -57,3 +62,72 @@ def test_roof_edges_bill_as_image_ii_pieces(catlin_model_ro):
     assert rows["52131XX"]["count"] == 5         # closed ridge cover: house and canopy
     assert rows["IMAGE_II_RAKE_4IN_CUSTOM"]["unit"] == "LF"   # house rakes: 4 in face
     assert "52126XX" in rows                     # garage and canopy rakes fit the stock leg
+
+
+def test_wall_top_edges_use_developed_length_without_stacked_duplicates(catlin_model_ro):
+    from typehaus.resolve.cladding_trim.wall_tops import exposed_wall_top_edges
+
+    totals = Counter()
+    for edge in exposed_wall_top_edges(catlin_model_ro):
+        totals[edge.product] += edge.length_m / 0.3048
+    assert totals["6460800"] == pytest.approx(74.25, abs=0.02)
+    assert totals["6411499"] == pytest.approx(83.0116, abs=0.02)
+    assert totals["CORRUGATED_SILL_TO_SOFFIT"] == pytest.approx(48.2917, abs=0.02)
+    assert totals["corrugated-outside-closure"] == pytest.approx(99.0418, abs=0.02)
+
+
+def test_garage_soffit_trim_meets_the_soffit_not_the_higher_panel_top(catlin_model_ro):
+    from typehaus.checks.integrity.cladding_trim_fit import _soffit_panel_joint
+    from typehaus.checks.registry import CheckContext
+    from typehaus.resolve.cladding_trim.wall_tops import exposed_wall_top_edges
+
+    edges = exposed_wall_top_edges(catlin_model_ro)
+    sill = next(e for e in edges if e.wall.tag == "W-G-W"
+                and e.product == "CORRUGATED_SILL_TO_SOFFIT")
+    top = next(e for e in edges if e.wall.tag == "W-G-W"
+               and e.product == "corrugated-outside-closure")
+    assert sill.z_start / M_PER_IN == pytest.approx(84.1667, abs=0.01)
+    assert top.z_start / M_PER_IN == pytest.approx(91.5, abs=0.01)
+    ctx = CheckContext(plan=catlin_model_ro.plan, model=catlin_model_ro,
+                       preferences=None, profile=None)
+    assert any(f.result.name == "UNKNOWN" for f in _soffit_panel_joint(ctx))
+
+
+@pytest.mark.parametrize("product", ["6460800", "6411499", "CORRUGATED_SILL_TO_SOFFIT"])
+def test_wall_top_check_detects_missing_or_displaced_termination(catlin_model_ro, product):
+    from typehaus.checks.integrity.cladding_trim_coverage import _wall_tops
+    from typehaus.checks.registry import CheckContext
+
+    model = copy(catlin_model_ro)
+    piece = next(s for s in model.solids if s.product == product)
+    # Remove a whole run, including every stock piece at that wall.
+    model.solids = [s for s in model.solids if not (s.host_ref == piece.host_ref
+                                                     and s.product == product)]
+    ctx = CheckContext(plan=model.plan, model=model, preferences=None, profile=None)
+    assert any(f.result.name == "FAIL" for f in _wall_tops(ctx, model.solids))
+
+    shifted = replace(piece, body_mesh=replace(
+        piece.body_mesh, positions=tuple((x, y, z + inch(6).meters)
+                                         for x, y, z in piece.body_mesh.positions)))
+    model.solids = [s for s in catlin_model_ro.solids if s is not piece] + [shifted]
+    assert any(f.result.name == "FAIL" and piece.host_ref in f.message
+               for f in _wall_tops(ctx, model.solids))
+
+
+def test_wall_top_check_does_not_hide_a_missing_kit_mapping(catlin_model_ro):
+    from typehaus.checks.integrity.cladding_trim_coverage import _wall_tops
+    from typehaus.checks.registry import CheckContext
+    from typehaus.model.cladding_trim import TrimCondition
+
+    model = copy(catlin_model_ro)
+    materials = tuple(
+        material.model_copy(update={"trim_kit": {
+            key: value for key, value in material.trim_kit.items()
+            if key != TrimCondition.EAVE_TOP}})
+        if material.tag == "pbr-panel-24" else material
+        for material in model.plan.library.materials)
+    library = model.plan.library.model_copy(update={"materials": materials})
+    model.plan = model.plan.model_copy(update={"library": library})
+    ctx = CheckContext(plan=model.plan, model=model, preferences=None, profile=None)
+    assert any(f.result.name == "FAIL" and "W-S-E" in f.message
+               for f in _wall_tops(ctx, model.solids))

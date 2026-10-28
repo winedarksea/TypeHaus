@@ -94,6 +94,8 @@ class Library(HausModel):
             value = getattr(asm, field)
             if value is not None:
                 update[field] = value
+        if asm.rainscreen_base_flashing is not None:
+            update["rainscreen_base_flashing"] = asm.rainscreen_base_flashing
         if asm.default_lining:
             update["default_lining"] = asm.default_lining
         defaults = type(asm).model_fields

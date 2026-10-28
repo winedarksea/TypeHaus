@@ -2729,6 +2729,12 @@
     72,
     "6ffaf5f1aee1"
   ],
+  "geometry/03GPR9ZAA5-trim-w-a-n2b-rake_top-5/body": [
+    8.0008347,
+    9.2390847,
+    8,
+    "b7019602b889"
+  ],
   "geometry/03GPR9ZAA5/layer:cladding": [
     6.096,
     9.2202,
@@ -11417,6 +11423,18 @@
     16,
     "e78f9b270244"
   ],
+  "geometry/CAW101AAAA-trim-w-a-s1-rake_top-6/body": [
+    6.45795,
+    6.4859445,
+    8,
+    "0c44869076c2"
+  ],
+  "geometry/CAW101AAAA-trim-w-a-s1-rake_top-7/body": [
+    6.4006347,
+    7.8166847,
+    8,
+    "982a9836e64c"
+  ],
   "geometry/CAW101AAAA/layer:cladding": [
     6.096,
     7.7978,
@@ -11638,6 +11656,12 @@
     7.62,
     8,
     "ea680e8741cf"
+  ],
+  "geometry/CAW102AAAA-trim-w-a-s2-rake_top-8/body": [
+    7.7976347,
+    9.2390847,
+    8,
+    "33edfe987198"
   ],
   "geometry/CAW102AAAA/layer:cladding": [
     6.096,
@@ -12142,6 +12166,18 @@
     8.6106,
     8,
     "165ade7f8323"
+  ],
+  "geometry/CAW103AAAA-trim-w-a-s3-rake_top-10/body": [
+    6.45795,
+    6.4862364,
+    8,
+    "01be8e153859"
+  ],
+  "geometry/CAW103AAAA-trim-w-a-s3-rake_top-9/body": [
+    6.4006347,
+    9.2390847,
+    8,
+    "4b0b111cb77a"
   ],
   "geometry/CAW103AAAA/layer:cladding": [
     6.096,
@@ -12743,6 +12779,18 @@
     8,
     "2fb33c72ae6f"
   ],
+  "geometry/CAW104AAAA-trim-w-a-n1-rake_top-1/body": [
+    6.45795,
+    6.4862364,
+    8,
+    "c1ef3443bd54"
+  ],
+  "geometry/CAW104AAAA-trim-w-a-n1-rake_top-2/body": [
+    6.4006347,
+    9.2390847,
+    8,
+    "6e471bb1f7af"
+  ],
   "geometry/CAW104AAAA/layer:cladding": [
     6.096,
     9.2202,
@@ -13306,6 +13354,18 @@
     8.6106,
     8,
     "165ade7f8323"
+  ],
+  "geometry/CAW105AAAA-trim-w-a-n2-rake_top-3/body": [
+    6.4006347,
+    8.0198847,
+    8,
+    "da8343d9f958"
+  ],
+  "geometry/CAW105AAAA-trim-w-a-n2-rake_top-4/body": [
+    6.45795,
+    6.4860178,
+    8,
+    "13785cfcdc13"
   ],
   "geometry/CAW105AAAA/layer:cladding": [
     6.096,
@@ -19889,6 +19949,18 @@
     16,
     "366c989f8c93"
   ],
+  "geometry/CGW101AAAA-trim-w-g-s-rake_top-24/body": [
+    2.2976417,
+    3.5433,
+    10432,
+    "58b30f52c289"
+  ],
+  "geometry/CGW101AAAA-trim-w-g-s-rake_top-25/body": [
+    2.2976417,
+    3.5433,
+    10432,
+    "1ee3a80f012d"
+  ],
   "geometry/CGW101AAAA/layer:cdx": [
     -0.3048,
     2.2352,
@@ -20081,6 +20153,30 @@
     16,
     "366c989f8c93"
   ],
+  "geometry/CGW102AAAA-trim-w-g-e-eave_top-20/body": [
+    2.30505,
+    2.3241,
+    20864,
+    "c4910bd55322"
+  ],
+  "geometry/CGW102AAAA-trim-w-g-e-eave_top-21-1/body": [
+    2.1292792,
+    2.2013333,
+    32,
+    "fb571bb64cb3"
+  ],
+  "geometry/CGW102AAAA-trim-w-g-e-eave_top-21-2/body": [
+    2.1292792,
+    2.2013333,
+    32,
+    "fb571bb64cb3"
+  ],
+  "geometry/CGW102AAAA-trim-w-g-e-eave_top-21-3/body": [
+    2.1292792,
+    2.2013333,
+    32,
+    "fb571bb64cb3"
+  ],
   "geometry/CGW102AAAA/layer:cdx": [
     -0.3048,
     2.2352,
@@ -20236,6 +20332,18 @@
     -0.238125,
     16,
     "366c989f8c93"
+  ],
+  "geometry/CGW103AAAA-trim-w-g-n-rake_top-22/body": [
+    2.30505,
+    3.5433,
+    10368,
+    "2267c3f02242"
+  ],
+  "geometry/CGW103AAAA-trim-w-g-n-rake_top-23/body": [
+    2.30505,
+    3.5433,
+    10368,
+    "7f4b19d3d1cc"
   ],
   "geometry/CGW103AAAA/layer:cdx": [
     -0.3048,
@@ -20476,6 +20584,30 @@
     -0.238125,
     16,
     "366c989f8c93"
+  ],
+  "geometry/CGW104AAAA-trim-w-g-w-eave_top-26/body": [
+    2.30505,
+    2.3241,
+    20864,
+    "c4910bd55322"
+  ],
+  "geometry/CGW104AAAA-trim-w-g-w-eave_top-27-1/body": [
+    2.1292792,
+    2.2013333,
+    32,
+    "fb571bb64cb3"
+  ],
+  "geometry/CGW104AAAA-trim-w-g-w-eave_top-27-2/body": [
+    2.1292792,
+    2.2013333,
+    32,
+    "fb571bb64cb3"
+  ],
+  "geometry/CGW104AAAA-trim-w-g-w-eave_top-27-3/body": [
+    2.1292792,
+    2.2013333,
+    32,
+    "fb571bb64cb3"
   ],
   "geometry/CGW104AAAA/layer:cdx": [
     -0.3048,
@@ -26741,11 +26873,29 @@
     2,
     "35f009ff71a0"
   ],
+  "geometry/CMW101AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW101AAAA-basez-1/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW101AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW101AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "ae3e819e01a6"
   ],
   "geometry/CMW101AAAA-trim-w-m-s1-base-s1-0/body": [
     -0.3557321,
@@ -27539,11 +27689,29 @@
     8,
     "698effbf7582"
   ],
+  "geometry/CMW102AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW102AAAA-basez-1/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW102AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW102AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "ae3e819e01a6"
   ],
   "geometry/CMW102AAAA-d-m-balc-trim-jamb-left-0/body": [
     0.0,
@@ -28595,11 +28763,41 @@
     8,
     "1ce2bb9fca09"
   ],
+  "geometry/CMW103AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW103AAAA-basez-1/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW103AAAA-basez-2/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW103AAAA-basez-3/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW103AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW103AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "5e53d98f884d"
   ],
   "geometry/CMW103AAAA-trim-w-m-e1-base-s1-0/body": [
     -0.352966,
@@ -30185,11 +30383,29 @@
     8,
     "1ce2bb9fca09"
   ],
+  "geometry/CMW105AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW105AAAA-basez-1/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW105AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW105AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "c3391fd08663"
   ],
   "geometry/CMW105AAAA-trim-w-m-n1-base-s1-0/body": [
     -0.3557321,
@@ -30893,11 +31109,23 @@
     8,
     "698effbf7582"
   ],
+  "geometry/CMW106AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW106AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW106AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "5e53d98f884d"
   ],
   "geometry/CMW106AAAA-trim-w-m-n2-base-s1-0/body": [
     -0.3557321,
@@ -31205,11 +31433,23 @@
     8,
     "1ce2bb9fca09"
   ],
+  "geometry/CMW107AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW107AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW107AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "5e53d98f884d"
   ],
   "geometry/CMW107AAAA-d-m-entry-trim-jamb-left-0/body": [
     0.0,
@@ -31535,11 +31775,23 @@
     8,
     "46f082b1277d"
   ],
+  "geometry/CMW108AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW108AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW108AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "79f5944b82ed"
   ],
   "geometry/CMW108AAAA-trim-w-m-w1-base-s1-0/body": [
     -0.352966,
@@ -31859,11 +32111,23 @@
     8,
     "698effbf7582"
   ],
+  "geometry/CMW109AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW109AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW109AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "79f5944b82ed"
   ],
   "geometry/CMW109AAAA-trim-w-m-w2-base-s1-0/body": [
     -0.352966,
@@ -32165,11 +32429,23 @@
     8,
     "698effbf7582"
   ],
+  "geometry/CMW110AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW110AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW110AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "79f5944b82ed"
   ],
   "geometry/CMW110AAAA-trim-w-m-w3-base-s1-0/body": [
     -0.352966,
@@ -32663,11 +32939,29 @@
     8,
     "698effbf7582"
   ],
+  "geometry/CMW111AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW111AAAA-basez-1/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW111AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW111AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "028e37fcf4e1"
   ],
   "geometry/CMW111AAAA-trim-w-m-w4-base-s1-0/body": [
     -0.352966,
@@ -35765,11 +36059,23 @@
     8,
     "5b1c8c335af3"
   ],
+  "geometry/CMW135AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW135AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW135AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "e803aec9df60"
   ],
   "geometry/CMW135AAAA-trim-w-m-n3b-base-s1-0/body": [
     -0.3557321,
@@ -36155,11 +36461,23 @@
     8,
     "1ce2bb9fca09"
   ],
+  "geometry/CMW136AAAA-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/CMW136AAAA-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/CMW136AAAA-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "e803aec9df60"
   ],
   "geometry/CMW136AAAA-trim-w-m-w1b-base-s1-0/body": [
     -0.352966,
@@ -44129,6 +44447,12 @@
     8,
     "50ef2552dcd5"
   ],
+  "geometry/CSW102BAAA-trim-w-s-e2-eave_top-12/body": [
+    6.3926972,
+    6.4117472,
+    912,
+    "94044ae2053a"
+  ],
   "geometry/CSW102BAAA/layer:cladding": [
     3.048,
     6.11505,
@@ -44542,6 +44866,12 @@
     5.5626,
     8,
     "2a1bbd60c968"
+  ],
+  "geometry/CSW103AAAA-trim-w-s-e1-eave_top-11/body": [
+    6.3926972,
+    6.4117472,
+    1000,
+    "956529a0ebe1"
   ],
   "geometry/CSW103AAAA/layer:cladding": [
     3.048,
@@ -45017,6 +45347,12 @@
     8,
     "2a1bbd60c968"
   ],
+  "geometry/CSW104AAAA-trim-w-s-e3-eave_top-13/body": [
+    6.3926972,
+    6.4117472,
+    944,
+    "c1a655252f3c"
+  ],
   "geometry/CSW104AAAA/layer:cladding": [
     3.048,
     6.11505,
@@ -45442,6 +45778,12 @@
     5.5626,
     8,
     "2a1bbd60c968"
+  ],
+  "geometry/CSW105AAAA-trim-w-s-e4-eave_top-14/body": [
+    6.3926972,
+    6.4117472,
+    1032,
+    "ccaab96a24be"
   ],
   "geometry/CSW105AAAA/layer:cladding": [
     3.048,
@@ -47195,6 +47537,12 @@
     8,
     "2a1bbd60c968"
   ],
+  "geometry/CSW110AAAA-trim-w-s-w1-eave_top-15/body": [
+    6.3926972,
+    6.4117472,
+    680,
+    "da8c58fc7554"
+  ],
   "geometry/CSW110AAAA/layer:cladding": [
     3.048,
     6.11505,
@@ -47585,6 +47933,12 @@
     8,
     "2a1bbd60c968"
   ],
+  "geometry/CSW111AAAA-trim-w-s-w2-eave_top-17/body": [
+    6.3926972,
+    6.4117472,
+    448,
+    "a7cb1c39d8c7"
+  ],
   "geometry/CSW111AAAA/layer:cladding": [
     3.048,
     6.11505,
@@ -47860,6 +48214,12 @@
     5.5626,
     8,
     "2a1bbd60c968"
+  ],
+  "geometry/CSW112AAAA-trim-w-s-w3-eave_top-18/body": [
+    6.3926972,
+    6.4117472,
+    1392,
+    "0c5ff481a549"
   ],
   "geometry/CSW112AAAA/layer:cladding": [
     3.048,
@@ -48454,6 +48814,12 @@
     5.5626,
     8,
     "2a1bbd60c968"
+  ],
+  "geometry/CSW113AAAA-trim-w-s-w4-eave_top-19/body": [
+    6.3926972,
+    6.4117472,
+    1000,
+    "956529a0ebe1"
   ],
   "geometry/CSW113AAAA/layer:cladding": [
     3.048,
@@ -53212,6 +53578,12 @@
     5.715,
     8,
     "50ef2552dcd5"
+  ],
+  "geometry/CSW154AAAA-trim-w-s-w1b-eave_top-16/body": [
+    6.3926972,
+    6.4117472,
+    368,
+    "b36825dea2cf"
   ],
   "geometry/CSW154AAAA/layer:cladding": [
     3.048,
@@ -60179,11 +60551,23 @@
     8,
     "11c862259f0f"
   ],
+  "geometry/R0STSQM95Y-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/R0STSQM95Y-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/R0STSQM95Y-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "5e53d98f884d"
   ],
   "geometry/R0STSQM95Y-trim-w-m-n1b-base-s1-0/body": [
     -0.3557321,
@@ -64817,11 +65201,23 @@
     2,
     "7c90174f96b7"
   ],
+  "geometry/WM8EB2TX38-basez-0/body": [
+    -0.3614206,
+    -0.2894963,
+    20,
+    "fac523ff876c"
+  ],
+  "geometry/WM8EB2TX38-basez-isolation/body": [
+    -0.3604046,
+    -0.3413546,
+    8,
+    "45dae39d9664"
+  ],
   "geometry/WM8EB2TX38-bugscreen/body": [
-    -0.3413125,
-    -0.3032125,
-    2,
-    "df996d3b92bf"
+    -0.3413546,
+    -0.3021963,
+    12,
+    "79f5944b82ed"
   ],
   "geometry/WM8EB2TX38-trim-w-m-w1c-base-s1-0/body": [
     -0.352966,
@@ -106881,6 +107277,26 @@
   "solids/TRIM-N-M-SW-WIDE-CORNER-1/z1_m": 5.8308875,
   "solids/TRIM-N-M-SW-WIDE-CORNER-2/z0_m": 5.7546875,
   "solids/TRIM-N-M-SW-WIDE-CORNER-2/z1_m": 6.477,
+  "solids/TRIM-W-A-N1-RAKE_TOP-1/z0_m": 6.45795,
+  "solids/TRIM-W-A-N1-RAKE_TOP-1/z1_m": 6.4862364,
+  "solids/TRIM-W-A-N1-RAKE_TOP-2/z0_m": 6.4006347,
+  "solids/TRIM-W-A-N1-RAKE_TOP-2/z1_m": 9.2390847,
+  "solids/TRIM-W-A-N2-RAKE_TOP-3/z0_m": 6.4006347,
+  "solids/TRIM-W-A-N2-RAKE_TOP-3/z1_m": 8.0198847,
+  "solids/TRIM-W-A-N2-RAKE_TOP-4/z0_m": 6.45795,
+  "solids/TRIM-W-A-N2-RAKE_TOP-4/z1_m": 6.4860178,
+  "solids/TRIM-W-A-N2B-RAKE_TOP-5/z0_m": 8.0008347,
+  "solids/TRIM-W-A-N2B-RAKE_TOP-5/z1_m": 9.2390847,
+  "solids/TRIM-W-A-S1-RAKE_TOP-6/z0_m": 6.45795,
+  "solids/TRIM-W-A-S1-RAKE_TOP-6/z1_m": 6.4859445,
+  "solids/TRIM-W-A-S1-RAKE_TOP-7/z0_m": 6.4006347,
+  "solids/TRIM-W-A-S1-RAKE_TOP-7/z1_m": 7.8166847,
+  "solids/TRIM-W-A-S2-RAKE_TOP-8/z0_m": 7.7976347,
+  "solids/TRIM-W-A-S2-RAKE_TOP-8/z1_m": 9.2390847,
+  "solids/TRIM-W-A-S3-RAKE_TOP-10/z0_m": 6.45795,
+  "solids/TRIM-W-A-S3-RAKE_TOP-10/z1_m": 6.4862364,
+  "solids/TRIM-W-A-S3-RAKE_TOP-9/z0_m": 6.4006347,
+  "solids/TRIM-W-A-S3-RAKE_TOP-9/z1_m": 9.2390847,
   "solids/TRIM-W-BW-SCREEN-END-HI-1/z0_m": -0.023876,
   "solids/TRIM-W-BW-SCREEN-END-HI-1/z1_m": 1.2192,
   "solids/TRIM-W-BW-SCREEN-END-LO-1/z0_m": -0.023876,
@@ -106897,22 +107313,46 @@
   "solids/TRIM-W-G-E-BASE-S1-2/z1_m": -0.238125,
   "solids/TRIM-W-G-E-BASE-S1-3/z0_m": -0.3164535,
   "solids/TRIM-W-G-E-BASE-S1-3/z1_m": -0.238125,
+  "solids/TRIM-W-G-E-EAVE_TOP-20/z0_m": 2.30505,
+  "solids/TRIM-W-G-E-EAVE_TOP-20/z1_m": 2.3241,
+  "solids/TRIM-W-G-E-EAVE_TOP-21-1/z0_m": 2.1292792,
+  "solids/TRIM-W-G-E-EAVE_TOP-21-1/z1_m": 2.2013333,
+  "solids/TRIM-W-G-E-EAVE_TOP-21-2/z0_m": 2.1292792,
+  "solids/TRIM-W-G-E-EAVE_TOP-21-2/z1_m": 2.2013333,
+  "solids/TRIM-W-G-E-EAVE_TOP-21-3/z0_m": 2.1292792,
+  "solids/TRIM-W-G-E-EAVE_TOP-21-3/z1_m": 2.2013333,
   "solids/TRIM-W-G-N-BASE-S1-1/z0_m": -0.3164535,
   "solids/TRIM-W-G-N-BASE-S1-1/z1_m": -0.238125,
   "solids/TRIM-W-G-N-BASE-S2-1/z0_m": -0.3164535,
   "solids/TRIM-W-G-N-BASE-S2-1/z1_m": -0.238125,
+  "solids/TRIM-W-G-N-RAKE_TOP-22/z0_m": 2.30505,
+  "solids/TRIM-W-G-N-RAKE_TOP-22/z1_m": 3.5433,
+  "solids/TRIM-W-G-N-RAKE_TOP-23/z0_m": 2.30505,
+  "solids/TRIM-W-G-N-RAKE_TOP-23/z1_m": 3.5433,
   "solids/TRIM-W-G-S-BASE-S1-1/z0_m": -0.3164535,
   "solids/TRIM-W-G-S-BASE-S1-1/z1_m": -0.238125,
   "solids/TRIM-W-G-S-BASE-S1-2/z0_m": -0.3164535,
   "solids/TRIM-W-G-S-BASE-S1-2/z1_m": -0.238125,
   "solids/TRIM-W-G-S-BASE-S1-3/z0_m": -0.3164535,
   "solids/TRIM-W-G-S-BASE-S1-3/z1_m": -0.238125,
+  "solids/TRIM-W-G-S-RAKE_TOP-24/z0_m": 2.2976417,
+  "solids/TRIM-W-G-S-RAKE_TOP-24/z1_m": 3.5433,
+  "solids/TRIM-W-G-S-RAKE_TOP-25/z0_m": 2.2976417,
+  "solids/TRIM-W-G-S-RAKE_TOP-25/z1_m": 3.5433,
   "solids/TRIM-W-G-W-BASE-S1-1/z0_m": -0.3164535,
   "solids/TRIM-W-G-W-BASE-S1-1/z1_m": -0.238125,
   "solids/TRIM-W-G-W-BASE-S1-2/z0_m": -0.3164535,
   "solids/TRIM-W-G-W-BASE-S1-2/z1_m": -0.238125,
   "solids/TRIM-W-G-W-BASE-S1-3/z0_m": -0.3164535,
   "solids/TRIM-W-G-W-BASE-S1-3/z1_m": -0.238125,
+  "solids/TRIM-W-G-W-EAVE_TOP-26/z0_m": 2.30505,
+  "solids/TRIM-W-G-W-EAVE_TOP-26/z1_m": 2.3241,
+  "solids/TRIM-W-G-W-EAVE_TOP-27-1/z0_m": 2.1292792,
+  "solids/TRIM-W-G-W-EAVE_TOP-27-1/z1_m": 2.2013333,
+  "solids/TRIM-W-G-W-EAVE_TOP-27-2/z0_m": 2.1292792,
+  "solids/TRIM-W-G-W-EAVE_TOP-27-2/z1_m": 2.2013333,
+  "solids/TRIM-W-G-W-EAVE_TOP-27-3/z0_m": 2.1292792,
+  "solids/TRIM-W-G-W-EAVE_TOP-27-3/z1_m": 2.2013333,
   "solids/TRIM-W-M-E1-BASE-S1-1/z0_m": -0.352966,
   "solids/TRIM-W-M-E1-BASE-S1-1/z1_m": -0.2746375,
   "solids/TRIM-W-M-E1-BASE-S1-2/z0_m": -0.352966,
@@ -106955,6 +107395,14 @@
   "solids/TRIM-W-M-W4-BASE-S1-1/z1_m": -0.2746375,
   "solids/TRIM-W-M-W4-BASE-S1-2/z0_m": -0.352966,
   "solids/TRIM-W-M-W4-BASE-S1-2/z1_m": -0.2746375,
+  "solids/TRIM-W-S-E1-EAVE_TOP-11/z0_m": 6.3926972,
+  "solids/TRIM-W-S-E1-EAVE_TOP-11/z1_m": 6.4117472,
+  "solids/TRIM-W-S-E2-EAVE_TOP-12/z0_m": 6.3926972,
+  "solids/TRIM-W-S-E2-EAVE_TOP-12/z1_m": 6.4117472,
+  "solids/TRIM-W-S-E3-EAVE_TOP-13/z0_m": 6.3926972,
+  "solids/TRIM-W-S-E3-EAVE_TOP-13/z1_m": 6.4117472,
+  "solids/TRIM-W-S-E4-EAVE_TOP-14/z0_m": 6.3926972,
+  "solids/TRIM-W-S-E4-EAVE_TOP-14/z1_m": 6.4117472,
   "solids/TRIM-W-S-N1-BAND-208-1/z0_m": 5.2174851,
   "solids/TRIM-W-S-N1-BAND-208-1/z1_m": 5.334,
   "solids/TRIM-W-S-N1-BAND-208-2/z0_m": 5.2174851,
@@ -106975,6 +107423,16 @@
   "solids/TRIM-W-S-S2-BAND-208-1/z1_m": 5.334,
   "solids/TRIM-W-S-S2-BAND-208-2/z0_m": 5.2174851,
   "solids/TRIM-W-S-S2-BAND-208-2/z1_m": 5.334,
+  "solids/TRIM-W-S-W1-EAVE_TOP-15/z0_m": 6.3926972,
+  "solids/TRIM-W-S-W1-EAVE_TOP-15/z1_m": 6.4117472,
+  "solids/TRIM-W-S-W1B-EAVE_TOP-16/z0_m": 6.3926972,
+  "solids/TRIM-W-S-W1B-EAVE_TOP-16/z1_m": 6.4117472,
+  "solids/TRIM-W-S-W2-EAVE_TOP-17/z0_m": 6.3926972,
+  "solids/TRIM-W-S-W2-EAVE_TOP-17/z1_m": 6.4117472,
+  "solids/TRIM-W-S-W3-EAVE_TOP-18/z0_m": 6.3926972,
+  "solids/TRIM-W-S-W3-EAVE_TOP-18/z1_m": 6.4117472,
+  "solids/TRIM-W-S-W4-EAVE_TOP-19/z0_m": 6.3926972,
+  "solids/TRIM-W-S-W4-EAVE_TOP-19/z1_m": 6.4117472,
   "solids/TRL-W-N-P1/z0_m": -1.778,
   "solids/TRL-W-N-P1/z1_m": 1.27,
   "solids/TRL-W-N-P2/z0_m": -1.778,
@@ -107063,34 +107521,104 @@
   "solids/VR-M-STACK-vent-OUT6/z1_m": 7.3025,
   "solids/VR-M-STACK-vent-TERM/z0_m": 7.2644,
   "solids/VR-M-STACK-vent-TERM/z1_m": 8.2959328,
-  "solids/W-M-E1-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-E1-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-N1-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-N1-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-N1B-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-N1B-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-N2-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-N2-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-N3-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-N3-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-N3B-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-N3B-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-S1-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-S1-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-S2-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-S2-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-W1-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-W1-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-W1B-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-W1B-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-W1C-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-W1C-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-W2-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-W2-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-W3-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-W3-BUGSCREEN/z1_m": -0.3032125,
-  "solids/W-M-W4-BUGSCREEN/z0_m": -0.3413125,
-  "solids/W-M-W4-BUGSCREEN/z1_m": -0.3032125,
+  "solids/W-M-E1-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-E1-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-E1-BASEZ-2/z0_m": -0.3614206,
+  "solids/W-M-E1-BASEZ-2/z1_m": -0.2894963,
+  "solids/W-M-E1-BASEZ-3/z0_m": -0.3614206,
+  "solids/W-M-E1-BASEZ-3/z1_m": -0.2894963,
+  "solids/W-M-E1-BASEZ-4/z0_m": -0.3614206,
+  "solids/W-M-E1-BASEZ-4/z1_m": -0.2894963,
+  "solids/W-M-E1-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-E1-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-E1-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-E1-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-N1-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-N1-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-N1-BASEZ-2/z0_m": -0.3614206,
+  "solids/W-M-N1-BASEZ-2/z1_m": -0.2894963,
+  "solids/W-M-N1-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-N1-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-N1-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-N1-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-N1B-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-N1B-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-N1B-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-N1B-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-N1B-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-N1B-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-N2-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-N2-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-N2-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-N2-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-N2-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-N2-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-N3-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-N3-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-N3-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-N3-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-N3-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-N3-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-N3B-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-N3B-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-N3B-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-N3B-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-N3B-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-N3B-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-S1-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-S1-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-S1-BASEZ-2/z0_m": -0.3614206,
+  "solids/W-M-S1-BASEZ-2/z1_m": -0.2894963,
+  "solids/W-M-S1-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-S1-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-S1-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-S1-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-S2-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-S2-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-S2-BASEZ-2/z0_m": -0.3614206,
+  "solids/W-M-S2-BASEZ-2/z1_m": -0.2894963,
+  "solids/W-M-S2-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-S2-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-S2-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-S2-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-W1-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-W1-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-W1-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-W1-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-W1-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-W1-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-W1B-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-W1B-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-W1B-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-W1B-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-W1B-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-W1B-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-W1C-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-W1C-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-W1C-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-W1C-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-W1C-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-W1C-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-W2-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-W2-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-W2-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-W2-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-W2-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-W2-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-W3-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-W3-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-W3-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-W3-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-W3-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-W3-BUGSCREEN/z1_m": -0.3021963,
+  "solids/W-M-W4-BASEZ-1/z0_m": -0.3614206,
+  "solids/W-M-W4-BASEZ-1/z1_m": -0.2894963,
+  "solids/W-M-W4-BASEZ-2/z0_m": -0.3614206,
+  "solids/W-M-W4-BASEZ-2/z1_m": -0.2894963,
+  "solids/W-M-W4-BASEZ-ISOLATION/z0_m": -0.3604046,
+  "solids/W-M-W4-BASEZ-ISOLATION/z1_m": -0.3413546,
+  "solids/W-M-W4-BUGSCREEN/z0_m": -0.3413546,
+  "solids/W-M-W4-BUGSCREEN/z1_m": -0.3021963,
   "solids/W-SG-ARCH/z0_m": -3.0845125,
   "solids/W-SG-ARCH/z1_m": -2.7797125,
   "solids/WIN-A-N1-FLASH-PERIMETER/z0_m": 6.7056,

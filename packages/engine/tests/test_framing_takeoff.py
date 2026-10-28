@@ -177,10 +177,11 @@ def test_structural_solids_account_for_every_resolved_solid(catlin_model) -> Non
     steel_tags = {tag for row in steel for tag in row["tags"]}
     assert steel_tags, "no steel member in the fixture — the rule cannot prove anything"
     assert steel_tags.isdisjoint({tag for row in rows for tag in row["tags"]})
-    # Fireblocks, window returns and tub insulation returns bill by installed area.
+    # These parts have dedicated area or lineal-foot takeoffs.
     measured = [solid for solid in catlin_model.solids
                 if not solid.derived and solid.tag not in steel_tags
-                and solid.category not in {"fireblock", "window_return", "tub_insulation_return"}]
+                and solid.category not in {"fireblock", "window_return", "tub_insulation_return",
+                                           "bug_screen"}]
     assert measured, "every solid is derived — the fixture is wrong, not the rule"
     assert sum(int(row["count"]) for row in rows) == len(measured)
     assert {tag for row in rows for tag in row["tags"]} == {

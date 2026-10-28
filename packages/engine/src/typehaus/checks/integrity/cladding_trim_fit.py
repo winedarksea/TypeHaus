@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
-from typehaus.checks.integrity.cladding_trim_runs import along_extent, metal_wall_openings
+from typehaus.checks.integrity.cladding_trim_runs import (
+    along_extent,
+    metal_wall_openings,
+    spans_cover,
+)
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import failed, not_applicable, passed, unknown
 from typehaus.library.trim.metal_sales import PROFILES, RESIDENTIAL_RAKE_FACE_IN
@@ -10,7 +14,12 @@ from typehaus.model.cladding_trim import TrimCondition
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.runs import kit_faces, metal_faces
 from typehaus.resolve.opening_flashing import head_flashing_section, opening_flashing_frame
-from typehaus.resolve.rainscreen_closures import BUG_SCREEN_HOLE_IN, screens_rainscreen_base
+from typehaus.resolve.rainscreen_closures import (
+    BUG_SCREEN_HEIGHT_IN,
+    BUG_SCREEN_HOLE_IN,
+    cavity_base_run,
+    screens_rainscreen_base,
+)
 
 FIT = "integrity.cladding_trim_fit"
 _TOL = 1e-6
@@ -18,6 +27,9 @@ _MIN_FRAME_LAP_M = 0.75 * M_PER_IN
 _UPSTAND_MARGIN_M = 0.0625 * M_PER_IN
 _BBD_RUN_LIMIT_M = 240 * M_PER_IN
 _MAX_HOLE_IN = 0.125
+_FOUNDATION_MATCH_HEIGHT_M = 0.01
+_FOUNDATION_MATCH_PLAN_M = 0.05
+_FOUNDATION_MIN_OVERLAP_M = 0.01
 _PBR_CITE = "PBR Install Guide 4/2024 pp. 19, 68-72"
 
 
@@ -162,6 +174,105 @@ def _base_cavity(ctx, pieces):
     leg must sit on the cladding back plane, never inboard across the cavity mouth.
     """
     model, findings, checked = ctx.model, [], 0
+    for wall in model.walls:
+        run = cavity_base_run(model, wall)
+        assembly = model.plan.library.resolve_assembly(wall.assembly)
+        spec = assembly.rainscreen_base_flashing if assembly else None
+        if run is None:
+            continue
+        if spec is None:
+            from typehaus.resolve.cladding_trim.openings import is_profiled_metal_wall
+
+            if is_profiled_metal_wall(model, wall):
+                findings.append(failed(FIT, f"{wall.tag} screened cavity has no base flashing "
+                                            "specification", (wall.tag,)))
+            continue
+        z_pieces = [p for p in pieces if p.host_ref == wall.tag
+                    and p.product == "RAINSCREEN_BASE_Z" and p.body_mesh]
+        isolation = [p for p in pieces if p.host_ref == wall.tag
+                     and p.product == "EPDM_BASE_ISOLATION" and p.body_mesh]
+        def spans(items, direction=run.direction):
+            result = []
+            for piece in items:
+                stations = [x*direction[0] + y*direction[1]
+                            for x, y, _ in piece.body_mesh.positions]
+                result.append((min(stations), max(stations)))
+            return result
+        if not spans_cover(spans(z_pieces), run.start, run.end):
+            findings.append(failed(FIT, f"{wall.tag} rainscreen base lacks continuous Z flashing",
+                                   (wall.tag,)))
+        if not spans_cover(spans(isolation), run.start, run.end):
+            findings.append(failed(FIT, f"{wall.tag} lacks continuous aluminium/steel isolation",
+                                   (wall.tag,)))
+        elif any(abs(min(x*run.outward[0] + y*run.outward[1]
+                         for x, y, _ in p.body_mesh.positions) - run.outer_offset) > _TOL
+                 or abs(max(x*run.outward[0] + y*run.outward[1]
+                            for x, y, _ in p.body_mesh.positions)
+                        - run.outer_offset - spec.isolation_thickness.meters) > _TOL
+                 for p in isolation):
+            findings.append(failed(FIT, f"{wall.tag} isolation is displaced from the Z face",
+                                   (wall.tag,)))
+        elif any(abs(max(z for _, _, z in p.body_mesh.positions) - (
+                wall.z0_m + spec.sheet_thickness.meters * (1 + spec.slope**2)**0.5
+                - spec.slope * (run.outer_offset-run.inner_offset))) > _TOL
+                 for p in isolation):
+            findings.append(failed(FIT, f"{wall.tag} isolation is displaced above the Z face",
+                                   (wall.tag,)))
+        screen = next((s for s in model.solids if s.tag == f"{wall.tag}-BUGSCREEN"), None)
+        if screen is None or screen.body_mesh is None:
+            findings.append(failed(FIT, f"{wall.tag} Z flashing has no seated screen", (wall.tag,)))
+        elif spec.upstand.meters + _TOL < BUG_SCREEN_HEIGHT_IN * M_PER_IN:
+            findings.append(failed(FIT, f"{wall.tag} Z upstand is shorter than its screen",
+                                   (wall.tag,)))
+        elif z_pieces:
+            # Compare the actual screen bottom to the specified pan surface, then check that
+            # every piece still occupies that seat after model mutations.
+            count = len(screen.body_mesh.positions) // 2
+            for x, y, z in screen.body_mesh.positions[:count]:
+                offset = x*run.outward[0] + y*run.outward[1]
+                expected = (wall.z0_m + spec.sheet_thickness.meters * (1 + spec.slope**2)**0.5
+                            - spec.slope * (offset - run.inner_offset))
+                if abs(z - expected) > _TOL:
+                    findings.append(failed(FIT, f"{wall.tag} screen is not seated on its Z",
+                                           (wall.tag,)))
+                    break
+            pan_top = wall.z0_m + spec.sheet_thickness.meters * (1 + spec.slope**2)**0.5
+            depth = run.outer_offset - run.inner_offset
+            def point_near(piece, offset, z, run=run):
+                return any(abs(x*run.outward[0] + y*run.outward[1] - offset) < _TOL
+                           and abs(pz-z) < _TOL for x, y, pz in piece.body_mesh.positions)
+            if any(not point_near(p, run.inner_offset, pan_top)
+                   or not point_near(p, run.outer_offset, pan_top - depth*spec.slope)
+                   or not point_near(p, run.inner_offset, pan_top + spec.upstand.meters)
+                   for p in z_pieces):
+                findings.append(failed(FIT, f"{wall.tag} Z is displaced from its bearing seat",
+                                       (wall.tag,)))
+        trim = [p for p in pieces if p.host_ref == wall.tag and p.body_mesh
+                and p.tag.startswith(f"TRIM-{wall.tag}-BASE-")]
+        if trim and min(x*run.outward[0] + y*run.outward[1]
+                        for p in trim for x, y, _ in p.body_mesh.positions) < (
+                            run.outer_offset + spec.isolation_thickness.meters - _TOL):
+            findings.append(failed(FIT, f"{wall.tag} steel trim reaches the aluminium Z",
+                                   (wall.tag,)))
+        for foundation in model.walls:
+            if (not foundation.is_foundation
+                    or abs(foundation.z1_m-wall.z0_m) > _FOUNDATION_MATCH_HEIGHT_M):
+                continue
+            n, d = run.outward, run.direction
+            gap = abs(sum((a-b)*c for a, b, c in zip(
+                foundation.axis[0], wall.axis[0], n, strict=True)))
+            stations = sorted(sum(a*b for a, b in zip(point, d, strict=True))
+                              for point in foundation.axis)
+            if (gap > _FOUNDATION_MATCH_PLAN_M
+                    or min(stations[1], run.end)-max(stations[0], run.start)
+                    <= _FOUNDATION_MIN_OVERLAP_M):
+                continue
+            offsets = [max(x*n[0]+y*n[1] for x, y in layer.polygon)
+                       for layer in foundation.layers if layer.polygon
+                       and layer.band(foundation)[1] >= wall.z0_m-_FOUNDATION_MATCH_HEIGHT_M]
+            if offsets and max(offsets) >= run.outer_offset - _TOL:
+                findings.append(failed(FIT, f"{wall.tag} Z drip does not clear the foundation face",
+                                       (wall.tag, foundation.tag)))
     screens = {s.tag: s for s in model.solids if s.tag.endswith("-BUGSCREEN")}
     for face, _key in kit_faces(model, TrimCondition.BASE):
         wall = face.wall
@@ -217,11 +328,33 @@ def _rake_faces(ctx):
     return findings
 
 
+def _soffit_panel_joint(ctx):
+    """A soffit attachment crosses the modeled continuous wall panel at its head joint."""
+    runs = []
+    for solid in ctx.model.solids:
+        if solid.product != "CORRUGATED_SILL_TO_SOFFIT":
+            continue
+        wall = ctx.model.wall(solid.host_ref)
+        if wall is None:
+            continue
+        if any(layer.function == "cladding" and layer.band(wall)[0] < solid.z0_m
+               and layer.band(wall)[1] > solid.z0_m for layer in wall.layers):
+            runs.append(solid)
+    if not runs:
+        return []
+    return [unknown(
+        FIT, "corrugated Sill to Soffit meets a wall panel modeled continuously through "
+        "the soffit height; its physical panel break and installation order are not resolved",
+        tuple(sorted({s.host_ref for s in runs if s.host_ref})),
+        code="Corrugated manual p. P7/8-4",
+        fix="coordinate the panel break and soffit attachment before grading this junction")]
+
+
 @check(Tier.INTEGRITY, FIT)
 def cladding_trim_fit(ctx: CheckContext) -> list:
     model = ctx.model
     pieces = [solid for solid in model.solids if solid.category == "cladding_trim"]
-    if not pieces:
+    if not pieces and not any(screens_rainscreen_base(model, wall) for wall in model.walls):
         return [not_applicable(FIT, "no catalog cladding trim resolved")]
     return [*_opening_runs(ctx, pieces), *_run_limits(ctx, pieces), *_door_heads(ctx, pieces),
-            *_base_cavity(ctx, pieces), *_rake_faces(ctx)]
+            *_base_cavity(ctx, pieces), *_rake_faces(ctx), *_soffit_panel_joint(ctx)]

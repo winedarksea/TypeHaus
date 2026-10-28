@@ -6395,3 +6395,11 @@ panels' material rates, replacing two closure allowances and the derived drip, r
 LF in `[edge_trim]`: the estimate moved $880k-1,738k to $895k-1,762k. D-G-SERVICE gained a
 `sill_design` at a 1 in threshold, because 1-1/2 in put its landing drop at 2.0 in against
 R311.3.2's 1-1/2 in outswing limit.
+
+## Rainscreen base and wall-top closures (2026-10-27)
+
+Select 0.040 in aluminium for the house K2 Z: a 2 in upstand, cavity-width pan falling
+1/4 in per foot, 3/4 in drip and 1/4 in hem. Use 120 in stock with 2 in sealed laps,
+and 1/16 in EPDM between aluminium and steel. The model derives the 14 runs from the
+base-screen cavities and measures the wall-top closures from the resolved roof and walls.
+Counts, measurements and estimated prices are in [the trim basis](notes/metal_trim_kit.md).

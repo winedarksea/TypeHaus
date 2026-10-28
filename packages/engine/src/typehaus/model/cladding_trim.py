@@ -26,10 +26,12 @@ CORNER_PROFILE_BY_KIT_PAIR = {
 PBR_KIT = {
     TrimCondition.OUTSIDE_CORNER: "WIDE_OUTSIDE_CORNER",
     TrimCondition.BASE: "PBR_BASE",
+    TrimCondition.EAVE_TOP: "6460800",
 }
 BBD_KIT = {
     TrimCondition.OUTSIDE_CORNER: "WIDE_OUTSIDE_CORNER",
     TrimCondition.BASE: "BBD_BASE",
+    TrimCondition.RAKE_TOP: "6411499",
     TrimCondition.HORIZONTAL_JOINT: "BBD_TRANSITION",
     TrimCondition.DOOR_HEAD: "DOOR_HEAD_CUSTOM",
     TrimCondition.DOOR_JAMB: "BBD_PANEL_STARTER",
@@ -37,6 +39,8 @@ BBD_KIT = {
 CORRUGATED_KIT = {
     TrimCondition.OUTSIDE_CORNER: "CORRUGATED_OUTSIDE_CORNER",
     TrimCondition.BASE: "CORRUGATED_BASE",
+    TrimCondition.EAVE_TOP: "CORRUGATED_SILL_TO_SOFFIT",
+    TrimCondition.RAKE_TOP: "corrugated-outside-closure",
     TrimCondition.SCREEN_END: "CORRUGATED_JAMB",
     TrimCondition.DOOR_HEAD: "DOOR_HEAD_CUSTOM",
     TrimCondition.DOOR_JAMB: "CORRUGATED_JAMB",

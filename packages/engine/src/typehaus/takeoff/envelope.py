@@ -380,7 +380,10 @@ def bug_screen_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         assert isinstance(tags, list)
         if base:
             row["count"] = int(row["count"]) + 1
-            row["length_m"] = float(row["length_m"]) + length(sub(wall.axis[1], wall.axis[0]))
+            from typehaus.resolve.rainscreen_closures import cavity_base_run
+            run = cavity_base_run(model, wall)
+            if run is not None:
+                row["length_m"] = float(row["length_m"]) + run.end - run.start
             tags.append(wall.tag)
         for opening, s0, s1, _z0 in heads:
             row["heads"] = int(row["heads"]) + 1
