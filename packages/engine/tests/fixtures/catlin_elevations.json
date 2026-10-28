@@ -2730,10 +2730,10 @@
     "6ffaf5f1aee1"
   ],
   "geometry/03GPR9ZAA5-trim-w-a-n2b-rake_top-5/body": [
-    8.0008347,
-    9.2390847,
+    7.9996633,
+    9.2379133,
     8,
-    "b7019602b889"
+    "d8a8c2fb56af"
   ],
   "geometry/03GPR9ZAA5/layer:cladding": [
     6.096,
@@ -3108,10 +3108,10 @@
     "0abc3efc5ec6"
   ],
   "geometry/0E7Y1BH1RN/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/0NF97ZR9Z3/body": [
     1.3716,
@@ -3168,10 +3168,10 @@
     "5818111edb92"
   ],
   "geometry/1975K7T22B/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/1BMFGSMKJY-run/body": [
     -0.5699125,
@@ -4536,16 +4536,16 @@
     "156bac9d6aaf"
   ],
   "geometry/4S2GHP86NJ/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/4WN1JM8CEM/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/4YB7X5WM5X/body": [
     2.398776,
@@ -4615,9 +4615,9 @@
   ],
   "geometry/5P8RW4EB4M-apron/body": [
     2.251075,
-    2.4613682,
+    2.4571848,
     32,
-    "b00718e559c0"
+    "0d1a2f79b7e7"
   ],
   "geometry/5P8RW4EB4M-hood/body": [
     2.21615,
@@ -4680,10 +4680,10 @@
     "1559c023b212"
   ],
   "geometry/69ERPP5H3P/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/6BTCWW2S1V-run/body": [
     -0.9356725,
@@ -5202,10 +5202,10 @@
     "0c8f3b1defc8"
   ],
   "geometry/6VZ2BHET24/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/6Y59G1FQDX/body": [
     2.398776,
@@ -5934,10 +5934,10 @@
     "27451ade3bd7"
   ],
   "geometry/9HRSYREBH3/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/9HX5HSKNWD/layer:ply-bay": [
     0.01905,
@@ -6426,10 +6426,10 @@
     "384e3d35a93d"
   ],
   "geometry/BDR46H1QRE/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/BFQH6F04VQ-sleeve/body": [
     -0.3413125,
@@ -8070,64 +8070,64 @@
     "ff271848e48f"
   ],
   "geometry/CARF01AAAA/layer:membrane": [
-    6.4185488,
-    9.2408015,
+    6.4176614,
+    9.2379133,
     60,
-    "70334b4797d6"
+    "b9493f19a90f"
   ],
   "geometry/CARF01AAAA/layer:roofing": [
-    6.4120647,
-    9.2674828,
+    6.4108933,
+    9.2663114,
     15120,
-    "52364176fe2a"
+    "69cc745df0c9"
   ],
   "geometry/CARF01AAAA/layer:sheathing": [
     6.4008,
-    9.2395623,
+    9.2370614,
     60,
-    "126e1920b3c5"
+    "d2087bcf2e3f"
   ],
   "geometry/CARF01AAAA::framing/member:W-A-N1-closure-0-cladding": [
     6.4008,
-    9.2390847,
+    9.2379133,
     8,
-    "49da52a3b697"
+    "c5b52dd153c8"
   ],
   "geometry/CARF01AAAA::framing/member:W-A-N2-closure-0-cladding": [
     6.4008,
-    8.0198847,
+    8.0187133,
     8,
-    "d7afa311f471"
+    "f51148d90661"
   ],
   "geometry/CARF01AAAA::framing/member:W-A-N2B-closure-0-cladding": [
     8.001,
-    9.2390847,
+    9.2379133,
     8,
-    "70fbce74d0f5"
+    "54adae815ae5"
   ],
   "geometry/CARF01AAAA::framing/member:W-A-S1-closure-0-cladding": [
     6.4008,
-    7.8166847,
+    7.8155133,
     8,
-    "c121a5e85d29"
+    "94e6fab2c6d1"
   ],
   "geometry/CARF01AAAA::framing/member:W-A-S2-closure-0-cladding": [
     7.7978,
-    9.2390847,
+    9.2379133,
     8,
-    "455bd5d71dad"
+    "f1261e64c758"
   ],
   "geometry/CARF01AAAA::framing/member:W-A-S3-closure-0-cladding": [
     6.4008,
-    9.2390847,
+    9.2379133,
     8,
-    "457f72b8f244"
+    "359346fb99bf"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E1-closure-0-cladding": [
     6.11505,
-    6.4196847,
+    6.4185133,
     8,
-    "bdb08bda77b1"
+    "3125bcc066dc"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E1-closure-0-outer-girt": [
     6.29285,
@@ -8185,9 +8185,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E2-closure-0-cladding": [
     6.11505,
-    6.4196847,
+    6.4185133,
     8,
-    "bdb08bda77b1"
+    "3125bcc066dc"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E2-closure-0-outer-girt": [
     6.29285,
@@ -8251,9 +8251,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E3-closure-0-cladding": [
     6.11505,
-    6.4196847,
+    6.4185133,
     8,
-    "bdb08bda77b1"
+    "3125bcc066dc"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E3-closure-0-outer-girt": [
     6.29285,
@@ -8311,9 +8311,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E4-closure-0-cladding": [
     6.11505,
-    6.4196847,
+    6.4185133,
     8,
-    "bdb08bda77b1"
+    "3125bcc066dc"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-E4-closure-0-outer-girt": [
     6.29285,
@@ -8377,9 +8377,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-cladding": [
     6.096,
-    9.2390847,
+    9.2379133,
     8,
-    "a8d93348779b"
+    "2a3991af95e8"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-outer-girt": [
     6.096,
@@ -8407,9 +8407,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-cladding": [
     6.096,
-    6.9149847,
+    6.9138133,
     8,
-    "6241284f72c3"
+    "1ac4891cf9fe"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-outer-girt": [
     6.096,
@@ -8437,9 +8437,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1-closure-0-cladding": [
     6.11505,
-    6.4196847,
+    6.4185133,
     8,
-    "bdb08bda77b1"
+    "3125bcc066dc"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1-closure-0-outer-girt": [
     6.29285,
@@ -8497,9 +8497,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1B-closure-0-cladding": [
     6.11505,
-    6.4196847,
+    6.4185133,
     8,
-    "bdb08bda77b1"
+    "3125bcc066dc"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W1B-closure-0-outer-girt": [
     6.29285,
@@ -8539,9 +8539,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W2-closure-0-cladding": [
     6.11505,
-    6.4196847,
+    6.4185133,
     8,
-    "bdb08bda77b1"
+    "3125bcc066dc"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W2-closure-0-outer-girt": [
     6.29285,
@@ -8587,9 +8587,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W3-closure-0-cladding": [
     6.11505,
-    6.4196847,
+    6.4185133,
     8,
-    "bdb08bda77b1"
+    "3125bcc066dc"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W3-closure-0-outer-girt": [
     6.29285,
@@ -8665,9 +8665,9 @@
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W4-closure-0-cladding": [
     6.11505,
-    6.4196847,
+    6.4185133,
     8,
-    "bdb08bda77b1"
+    "3125bcc066dc"
   ],
   "geometry/CARF01AAAA::framing/member:W-S-W4-closure-0-outer-girt": [
     6.29285,
@@ -8940,352 +8940,352 @@
     "76c691f8a58a"
   ],
   "geometry/CARF01AAAA::framing/member:eave-hi-image-ii-eave": [
-    6.3527414,
-    6.47962,
+    6.351854,
+    6.4787326,
     24,
-    "3596c40a3269"
+    "744a64681b9b"
   ],
   "geometry/CARF01AAAA::framing/member:eave-lo-image-ii-eave": [
-    6.3527414,
-    6.47962,
+    6.351854,
+    6.4787326,
     24,
-    "a3a26774d377"
+    "90e5f64aac9c"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--1": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--10": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--11": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--12": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--13": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--14": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--2": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--3": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--4": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--5": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--6": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--7": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--8": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1--9": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-0": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-1": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-10": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-11": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-12": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-13": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-2": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-3": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-4": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-5": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-6": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-7": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-8": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem--1-9": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "2648061876f8"
+    "7f4903aa3ab3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--1": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--10": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--11": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--12": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--13": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--14": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--2": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--3": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--4": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--5": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--6": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--7": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--8": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1--9": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-0": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-1": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-10": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-11": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-12": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-13": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-2": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-3": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-4": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-5": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-6": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-7": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-8": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:pan-hem-1-9": [
-    6.4100378,
-    6.4169949,
+    6.4088664,
+    6.4158234,
     12,
-    "cf315918cb1c"
+    "fedec5bd7ee3"
   ],
   "geometry/CARF01AAAA::framing/member:rafter-000": [
     6.15315,
@@ -9972,28 +9972,28 @@
     "e3c4b2abb1d4"
   ],
   "geometry/CARF01AAAA::framing/member:rake-hi-0-image-ii-rake": [
-    6.3798844,
-    9.2803597,
+    6.378713,
+    9.2791883,
     20,
-    "25341c28c4fe"
+    "729d545da489"
   ],
   "geometry/CARF01AAAA::framing/member:rake-hi-1-image-ii-rake": [
-    6.3798844,
-    9.2803597,
+    6.378713,
+    9.2791883,
     20,
-    "2ac709bda6cb"
+    "69a352a8ad29"
   ],
   "geometry/CARF01AAAA::framing/member:rake-lo-0-image-ii-rake": [
-    6.3798844,
-    9.2803597,
+    6.378713,
+    9.2791883,
     20,
-    "425ff3293bb9"
+    "776d721c0d3a"
   ],
   "geometry/CARF01AAAA::framing/member:rake-lo-1-image-ii-rake": [
-    6.3798844,
-    9.2803597,
+    6.378713,
+    9.2791883,
     20,
-    "54c487ea80fc"
+    "5884a25b181b"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-beam": [
     8.791575,
@@ -10002,1018 +10002,1018 @@
     "7f6c2ea3debe"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--1-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--1-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--1-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--10-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--10-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--10-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--11-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--11-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--11-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--12-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--12-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--12-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--13-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--13-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--13-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--14-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     64,
-    "b45340178386"
+    "7fbd85f37826"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--14-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     36,
-    "cf8891263fcc"
+    "499aab45e593"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--14-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--2-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--2-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--2-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--3-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--3-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--3-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--4-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--4-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--4-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--5-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--5-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--5-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--6-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--6-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--6-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--7-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--7-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--7-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--8-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--8-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--8-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--9-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--9-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1--9-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-0-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-0-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-0-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-1-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-1-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-1-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-10-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-10-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-10-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-11-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-11-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-11-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-12-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-12-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-12-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-13-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     64,
-    "16cc926cf4a3"
+    "be543e1b2f3d"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-13-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     36,
-    "374a206cddba"
+    "3ee5292ee7d2"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-13-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-2-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-2-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-2-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-3-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-3-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-3-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-4-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-4-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-4-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-5-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-5-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-5-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-6-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-6-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-6-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-7-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-7-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-7-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-8-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-8-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-8-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-9-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-9-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure--1-9-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--1-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--1-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--1-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--10-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--10-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--10-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--11-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--11-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--11-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--12-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--12-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--12-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--13-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--13-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--13-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--14-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     64,
-    "b45340178386"
+    "7fbd85f37826"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--14-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     36,
-    "cf8891263fcc"
+    "499aab45e593"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--14-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--2-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--2-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--2-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--3-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--3-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--3-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--4-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--4-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--4-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--5-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--5-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--5-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--6-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--6-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--6-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--7-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--7-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--7-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--8-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--8-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--8-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--9-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--9-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1--9-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-0-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-0-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-0-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-1-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-1-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-1-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-10-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-10-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-10-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-11-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-11-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-11-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-12-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-12-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-12-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-13-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     64,
-    "16cc926cf4a3"
+    "be543e1b2f3d"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-13-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     36,
-    "374a206cddba"
+    "3ee5292ee7d2"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-13-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-2-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-2-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-2-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-3-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-3-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-3-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-4-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-4-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-4-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-5-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-5-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-5-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-6-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-6-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-6-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-7-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-7-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-7-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-8-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-8-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-8-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-9-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     72,
-    "cf9466dc37da"
+    "1e1dcd0dc32f"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-9-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     40,
-    "59066c744afd"
+    "7eb6f4e78b37"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-closure-1-9-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     8,
-    "683d15c2f2b7"
+    "687e0471b698"
   ],
   "geometry/CARF01AAAA::framing/member:ridge-vent-cap": [
-    9.1658568,
-    9.2680898,
+    9.1646854,
+    9.2669184,
     20,
-    "05b72349fae1"
+    "dbaaea533eef"
   ],
   "geometry/CARL01AAAA-i000/body": [
     6.11505,
@@ -11226,10 +11226,10 @@
     "0c44869076c2"
   ],
   "geometry/CAW101AAAA-trim-w-a-s1-rake_top-7/body": [
-    6.4006347,
-    7.8166847,
+    6.3994633,
+    7.8155133,
     8,
-    "982a9836e64c"
+    "a3f1751ce7d7"
   ],
   "geometry/CAW101AAAA/layer:cladding": [
     6.096,
@@ -11454,10 +11454,10 @@
     "ea680e8741cf"
   ],
   "geometry/CAW102AAAA-trim-w-a-s2-rake_top-8/body": [
-    7.7976347,
-    9.2390847,
+    7.7964633,
+    9.2379133,
     8,
-    "33edfe987198"
+    "9c7b38422726"
   ],
   "geometry/CAW102AAAA/layer:cladding": [
     6.096,
@@ -11970,10 +11970,10 @@
     "01be8e153859"
   ],
   "geometry/CAW103AAAA-trim-w-a-s3-rake_top-9/body": [
-    6.4006347,
-    9.2390847,
+    6.3994633,
+    9.2379133,
     8,
-    "4b0b111cb77a"
+    "39b67f9e50a3"
   ],
   "geometry/CAW103AAAA/layer:cladding": [
     6.096,
@@ -12582,10 +12582,10 @@
     "c1ef3443bd54"
   ],
   "geometry/CAW104AAAA-trim-w-a-n1-rake_top-2/body": [
-    6.4006347,
-    9.2390847,
+    6.3994633,
+    9.2379133,
     8,
-    "6e471bb1f7af"
+    "a59b91d4799a"
   ],
   "geometry/CAW104AAAA/layer:cladding": [
     6.096,
@@ -13152,10 +13152,10 @@
     "165ade7f8323"
   ],
   "geometry/CAW105AAAA-trim-w-a-n2-rake_top-3/body": [
-    6.4006347,
-    8.0198847,
+    6.3994633,
+    8.0187133,
     8,
-    "da8343d9f958"
+    "720201db35a6"
   ],
   "geometry/CAW105AAAA-trim-w-a-n2-rake_top-4/body": [
     6.45795,
@@ -18877,21 +18877,21 @@
   ],
   "geometry/CGRF01AAAA/layer:deck": [
     2.2775333,
-    3.6530528,
+    3.648097,
     60,
-    "ff4d8690c252"
+    "219ed5a82c9e"
   ],
   "geometry/CGRF01AAAA/layer:membrane": [
-    2.2956058,
-    3.6536089,
+    2.2918407,
+    3.649168,
     60,
-    "3edba98d200a"
+    "fdd8cca7ccea"
   ],
   "geometry/CGRF01AAAA/layer:roofing": [
-    2.2981493,
-    3.6795899,
+    2.2945013,
+    3.6759419,
     10512,
-    "6bf8a03dd368"
+    "4d7457944004"
   ],
   "geometry/CGRF01AAAA::framing/member:W-G-E-closure-0-cdx": [
     2.2352,
@@ -18943,15 +18943,15 @@
   ],
   "geometry/CGRF01AAAA::framing/member:eave-hi-drip-edge-face": [
     2.2648333,
-    2.2981493,
+    2.2945013,
     8,
-    "617e50eca90c"
+    "de7da0a602d5"
   ],
   "geometry/CGRF01AAAA::framing/member:eave-hi-drip-edge-flange": [
-    2.2976138,
-    2.3154039,
+    2.2934304,
+    2.3112205,
     8,
-    "5002e27b311c"
+    "9f3c644a83f4"
   ],
   "geometry/CGRF01AAAA::framing/member:eave-hi-drip-edge-kick": [
     2.2457833,
@@ -18960,10 +18960,10 @@
     "15258014cbb5"
   ],
   "geometry/CGRF01AAAA::framing/member:eave-hi-drip-edge-nose": [
-    2.2981493,
-    2.299006,
+    2.2945013,
+    2.2953581,
     8,
-    "ff56b0c497eb"
+    "a452efcc5335"
   ],
   "geometry/CGRF01AAAA::framing/member:eave-hi-fascia-0": [
     2.1378333,
@@ -18973,9 +18973,9 @@
   ],
   "geometry/CGRF01AAAA::framing/member:eave-hi-fascia-1": [
     2.1251333,
-    2.2981493,
+    2.2945013,
     8,
-    "63fcf8581b97"
+    "561d4d9570c6"
   ],
   "geometry/CGRF01AAAA::framing/member:eave-hi-gutter-back": [
     2.1378333,
@@ -19003,15 +19003,15 @@
   ],
   "geometry/CGRF01AAAA::framing/member:eave-lo-drip-edge-face": [
     2.2648333,
-    2.2981493,
+    2.2945013,
     8,
-    "483ebd32c0d7"
+    "6f0a915fc3f4"
   ],
   "geometry/CGRF01AAAA::framing/member:eave-lo-drip-edge-flange": [
-    2.2976138,
-    2.3154039,
+    2.2934304,
+    2.3112205,
     8,
-    "536cb7115e5a"
+    "6eb017e25e27"
   ],
   "geometry/CGRF01AAAA::framing/member:eave-lo-drip-edge-kick": [
     2.2457833,
@@ -19020,10 +19020,10 @@
     "15258014cbb5"
   ],
   "geometry/CGRF01AAAA::framing/member:eave-lo-drip-edge-nose": [
-    2.2981493,
-    2.299006,
+    2.2945013,
+    2.2953581,
     8,
-    "fd5c7926e351"
+    "0e020d4bef05"
   ],
   "geometry/CGRF01AAAA::framing/member:eave-lo-fascia-0": [
     2.1378333,
@@ -19033,9 +19033,9 @@
   ],
   "geometry/CGRF01AAAA::framing/member:eave-lo-fascia-1": [
     2.1251333,
-    2.2981493,
+    2.2945013,
     8,
-    "63fcf8581b97"
+    "561d4d9570c6"
   ],
   "geometry/CGRF01AAAA::framing/member:eave-lo-gutter-back": [
     2.1378333,
@@ -19098,244 +19098,244 @@
     "5d3aaef36fe0"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1--1": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1--10": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1--2": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1--3": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1--4": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1--5": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1--6": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1--7": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1--8": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1--9": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1-0": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1-1": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1-2": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1-3": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1-4": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1-5": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1-6": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1-7": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1-8": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem--1-9": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1--1": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1--10": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1--2": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1--3": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1--4": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1--5": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1--6": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1--7": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1--8": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1--9": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1-0": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1-1": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1-2": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1-3": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1-4": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1-5": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1-6": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1-7": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1-8": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:pan-hem-1-9": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/CGRF01AAAA::framing/member:panel-block-RF-BW-CANOPY-2.057400-003": [
     2.40665,
@@ -19380,28 +19380,28 @@
     "3002c2afded3"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-0-drip-edge-face": [
-    2.2515826,
-    3.6528159,
+    2.2479347,
+    3.649168,
     8,
-    "53190d5a1ddd"
+    "decdce576d9b"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-0-drip-edge-flange": [
-    2.2976138,
-    3.6530933,
+    2.2934304,
+    3.6489098,
     8,
-    "ca98eebe5663"
+    "62f07ea5f69f"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-0-drip-edge-kick": [
-    2.2325326,
-    3.6147159,
+    2.2288847,
+    3.611068,
     8,
-    "96bf23128112"
+    "928f9173d008"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-0-drip-edge-nose": [
-    2.2981493,
-    3.6536287,
+    2.2945013,
+    3.6499808,
     8,
-    "2d35148ca927"
+    "9a27867a3db8"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-0-fascia-0": [
     2.1505333,
@@ -19411,9 +19411,9 @@
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-0-fascia-1": [
     2.1251333,
-    3.6528159,
+    3.649168,
     8,
-    "4660f64a64dd"
+    "0d7f79718837"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-0-soffit": [
     2.2658917,
@@ -19422,28 +19422,28 @@
     "e47c78ffe6d6"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-1-drip-edge-face": [
-    2.2515826,
-    3.6528159,
+    2.2479347,
+    3.649168,
     8,
-    "dba19938d5e1"
+    "17345f9074e4"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-1-drip-edge-flange": [
-    2.2976138,
-    3.6530933,
+    2.2934304,
+    3.6489098,
     8,
-    "84d8fcfb3aa2"
+    "c07be9fd8b0c"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-1-drip-edge-kick": [
-    2.2325326,
-    3.6147159,
+    2.2288847,
+    3.611068,
     8,
-    "3474fd65e5a7"
+    "9289a752dc1c"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-1-drip-edge-nose": [
-    2.2981493,
-    3.6536287,
+    2.2945013,
+    3.6499808,
     8,
-    "cbded2220187"
+    "3d6bba385170"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-1-fascia-0": [
     2.1505333,
@@ -19453,9 +19453,9 @@
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-1-fascia-1": [
     2.1251333,
-    3.6528159,
+    3.649168,
     8,
-    "1ec756ba088d"
+    "d5a537e925e6"
   ],
   "geometry/CGRF01AAAA::framing/member:rake-hi-1-soffit": [
     2.2658917,
@@ -19464,10 +19464,10 @@
     "a08ba0b0de3c"
   ],
   "geometry/CGRF01AAAA::framing/member:ridge-vent-cap": [
-    3.6413841,
-    3.7176899,
+    3.6377362,
+    3.7140419,
     20,
-    "91a3dcf8e43a"
+    "d3f983176587"
   ],
   "geometry/CGRF01AAAA::framing/member:truss-000": [
     2.2352,
@@ -26527,9 +26527,9 @@
   ],
   "geometry/CMVR01AAAA-radon-term/body": [
     7.2644,
-    8.2171928,
+    8.2160214,
     2,
-    "67a50beea0b8"
+    "5e5831ae2ee3"
   ],
   "geometry/CMVR01AAAA-vent-jog00/body": [
     5.9055,
@@ -26617,9 +26617,9 @@
   ],
   "geometry/CMVR01AAAA-vent-term/body": [
     7.2644,
-    8.2959328,
+    8.2947614,
     2,
-    "35f009ff71a0"
+    "e5189318c800"
   ],
   "geometry/CMW101AAAA-basez-0/body": [
     -0.3614206,
@@ -44196,10 +44196,10 @@
     "50ef2552dcd5"
   ],
   "geometry/CSW102BAAA-trim-w-s-e2-eave_top-12/body": [
-    6.3926972,
-    6.4117472,
+    6.3915258,
+    6.4105758,
     912,
-    "94044ae2053a"
+    "10abb6074958"
   ],
   "geometry/CSW102BAAA/layer:cladding": [
     3.048,
@@ -44616,10 +44616,10 @@
     "2a1bbd60c968"
   ],
   "geometry/CSW103AAAA-trim-w-s-e1-eave_top-11/body": [
-    6.3926972,
-    6.4117472,
+    6.3915258,
+    6.4105758,
     1000,
-    "956529a0ebe1"
+    "79ffb495cbea"
   ],
   "geometry/CSW103AAAA/layer:cladding": [
     3.048,
@@ -45096,10 +45096,10 @@
     "2a1bbd60c968"
   ],
   "geometry/CSW104AAAA-trim-w-s-e3-eave_top-13/body": [
-    6.3926972,
-    6.4117472,
+    6.3915258,
+    6.4105758,
     944,
-    "c1a655252f3c"
+    "6ef0ce393354"
   ],
   "geometry/CSW104AAAA/layer:cladding": [
     3.048,
@@ -45528,10 +45528,10 @@
     "2a1bbd60c968"
   ],
   "geometry/CSW105AAAA-trim-w-s-e4-eave_top-14/body": [
-    6.3926972,
-    6.4117472,
+    6.3915258,
+    6.4105758,
     1032,
-    "ccaab96a24be"
+    "b44139c6240f"
   ],
   "geometry/CSW105AAAA/layer:cladding": [
     3.048,
@@ -47286,10 +47286,10 @@
     "2a1bbd60c968"
   ],
   "geometry/CSW110AAAA-trim-w-s-w1-eave_top-15/body": [
-    6.3926972,
-    6.4117472,
+    6.3915258,
+    6.4105758,
     680,
-    "da8c58fc7554"
+    "47831844931f"
   ],
   "geometry/CSW110AAAA/layer:cladding": [
     3.048,
@@ -47682,10 +47682,10 @@
     "2a1bbd60c968"
   ],
   "geometry/CSW111AAAA-trim-w-s-w2-eave_top-17/body": [
-    6.3926972,
-    6.4117472,
+    6.3915258,
+    6.4105758,
     448,
-    "a7cb1c39d8c7"
+    "f5c420794a7a"
   ],
   "geometry/CSW111AAAA/layer:cladding": [
     3.048,
@@ -47964,10 +47964,10 @@
     "2a1bbd60c968"
   ],
   "geometry/CSW112AAAA-trim-w-s-w3-eave_top-18/body": [
-    6.3926972,
-    6.4117472,
+    6.3915258,
+    6.4105758,
     1392,
-    "0c5ff481a549"
+    "e1d5706fe8e3"
   ],
   "geometry/CSW112AAAA/layer:cladding": [
     3.048,
@@ -48564,10 +48564,10 @@
     "2a1bbd60c968"
   ],
   "geometry/CSW113AAAA-trim-w-s-w4-eave_top-19/body": [
-    6.3926972,
-    6.4117472,
+    6.3915258,
+    6.4105758,
     1000,
-    "956529a0ebe1"
+    "79ffb495cbea"
   ],
   "geometry/CSW113AAAA/layer:cladding": [
     3.048,
@@ -53328,10 +53328,10 @@
     "50ef2552dcd5"
   ],
   "geometry/CSW154AAAA-trim-w-s-w1b-eave_top-16/body": [
-    6.3926972,
-    6.4117472,
+    6.3915258,
+    6.4105758,
     368,
-    "b36825dea2cf"
+    "efef15635888"
   ],
   "geometry/CSW154AAAA/layer:cladding": [
     3.048,
@@ -55063,9 +55063,9 @@
   ],
   "geometry/DA1JYY56XG-apron/body": [
     2.251075,
-    2.4613682,
+    2.4571848,
     32,
-    "47654e0f4026"
+    "b4d281c2ef50"
   ],
   "geometry/DA1JYY56XG-hood/body": [
     2.21615,
@@ -59508,10 +59508,10 @@
     "ee0eeebd4433"
   ],
   "geometry/P82E2WK4H5/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/P8A4BWAL02/layer:gwb-a": [
     6.096,
@@ -59916,10 +59916,10 @@
     "2c041ffb8528"
   ],
   "geometry/QBF8MEM0Y2/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/QBTZNWG6AG-casing-l/body": [
     0.02405,
@@ -60937,9 +60937,9 @@
   ],
   "geometry/RTDS01AAAA-00/body": [
     0.3048,
-    6.1879097,
+    6.1867383,
     2,
-    "055431c0843b"
+    "06df7dabc02f"
   ],
   "geometry/RTDS01AAAA-EXT/body": [
     -1.1937588,
@@ -60955,9 +60955,9 @@
   ],
   "geometry/RTDS02AAAA-00/body": [
     0.3048,
-    6.1879097,
+    6.1867383,
     2,
-    "055431c0843b"
+    "06df7dabc02f"
   ],
   "geometry/RTDS02AAAA-EXT/body": [
     -1.2699966,
@@ -60972,40 +60972,40 @@
     "0979ed1abf1f"
   ],
   "geometry/RTGT01AAAA-00-back/body": [
-    6.1879097,
-    6.3149097,
+    6.1867383,
+    6.3137383,
     2,
-    "105598567222"
+    "e4dfb200bc5e"
   ],
   "geometry/RTGT01AAAA-00-bottom/body": [
-    6.1879097,
-    6.2006097,
+    6.1867383,
+    6.1994383,
     2,
-    "7124e33359df"
+    "325e40375a32"
   ],
   "geometry/RTGT01AAAA-00-front/body": [
-    6.1879097,
-    6.3149097,
+    6.1867383,
+    6.3137383,
     2,
-    "105598567222"
+    "e4dfb200bc5e"
   ],
   "geometry/RTGT02AAAA-00-back/body": [
-    6.1879097,
-    6.3149097,
+    6.1867383,
+    6.3137383,
     2,
-    "105598567222"
+    "e4dfb200bc5e"
   ],
   "geometry/RTGT02AAAA-00-bottom/body": [
-    6.1879097,
-    6.2006097,
+    6.1867383,
+    6.1994383,
     2,
-    "7124e33359df"
+    "325e40375a32"
   ],
   "geometry/RTGT02AAAA-00-front/body": [
-    6.1879097,
-    6.3149097,
+    6.1867383,
+    6.3137383,
     2,
-    "105598567222"
+    "e4dfb200bc5e"
   ],
   "geometry/RV6PJZ6WWM/layer:gwb-a": [
     6.096,
@@ -63960,364 +63960,364 @@
     "3e57729e682a"
   ],
   "geometry/SPCE1AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE1BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE1CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCE1DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCE2AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE2BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE2CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCE2DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCE3AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE3BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE3CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCE3DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCE4AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE4BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE4CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCE4DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCE5AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE5BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE5CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCE5DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCE6AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE6BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCE6CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCE6DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW1AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW1BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW1CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW1DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW2AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW2BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW2CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW2DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW3AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW3BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW3CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW3DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW4AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW4BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW4CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW4DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW5AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW5BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW5CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW5DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW6AAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW6BAAA/body": [
-    9.0338028,
-    9.0439628,
+    9.0326314,
+    9.0427914,
     2,
-    "d765134277e6"
+    "f51e7fd52bc7"
   ],
   "geometry/SPCW6CAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPCW6DAAA/body": [
-    8.6795813,
-    8.6897413,
+    8.6784099,
+    8.6885699,
     2,
-    "26515aeed443"
+    "59f2f768dd9d"
   ],
   "geometry/SPVE1AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "0687e4faa5ca"
+    "700409fde7c8"
   ],
   "geometry/SPVE2AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "0687e4faa5ca"
+    "700409fde7c8"
   ],
   "geometry/SPVE3AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "0687e4faa5ca"
+    "700409fde7c8"
   ],
   "geometry/SPVE4AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "0687e4faa5ca"
+    "700409fde7c8"
   ],
   "geometry/SPVE5AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "0687e4faa5ca"
+    "700409fde7c8"
   ],
   "geometry/SPVE6AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "0687e4faa5ca"
+    "700409fde7c8"
   ],
   "geometry/SPVW1AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "a0fb2df68e52"
+    "03736caee7e2"
   ],
   "geometry/SPVW2AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "a0fb2df68e52"
+    "03736caee7e2"
   ],
   "geometry/SPVW3AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "a0fb2df68e52"
+    "03736caee7e2"
   ],
   "geometry/SPVW4AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "a0fb2df68e52"
+    "03736caee7e2"
   ],
   "geometry/SPVW5AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "a0fb2df68e52"
+    "03736caee7e2"
   ],
   "geometry/SPVW6AAAA/module": [
-    8.6671601,
-    9.2010437,
+    8.666223,
+    9.2001066,
     8,
-    "a0fb2df68e52"
+    "03736caee7e2"
   ],
   "geometry/SQVBR8AEND/body": [
     2.181225,
@@ -64416,10 +64416,10 @@
     "10bc457597c1"
   ],
   "geometry/TA82SFQ7ET/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/TCHNPGC1RT/body": [
     3.9377706,
@@ -65472,10 +65472,10 @@
     "c68cbeb43f99"
   ],
   "geometry/YK8A1SM9QY/body": [
-    6.4150628,
-    6.4600208,
+    6.4138914,
+    6.4588494,
     2,
-    "212f3776167e"
+    "05d2971e70a4"
   ],
   "geometry/YMJS812EK0/body": [
     0.9913706,
@@ -65503,21 +65503,21 @@
   ],
   "geometry/YX2GDZJMBV/layer:deck": [
     2.2775333,
-    3.6530528,
+    3.648097,
     60,
-    "ff4d8690c252"
+    "219ed5a82c9e"
   ],
   "geometry/YX2GDZJMBV/layer:membrane": [
-    2.2956058,
-    3.6536089,
+    2.2918407,
+    3.649168,
     60,
-    "3edba98d200a"
+    "fdd8cca7ccea"
   ],
   "geometry/YX2GDZJMBV/layer:roofing": [
-    2.2981493,
-    3.6795899,
+    2.2945013,
+    3.6759419,
     2512,
-    "52ef8dcd11f1"
+    "0a7776bcba99"
   ],
   "geometry/YX2GDZJMBV::framing/member:W-G-S-closure-0-cdx": [
     2.2352,
@@ -65581,15 +65581,15 @@
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-hi-drip-edge-face": [
     2.2648333,
-    2.2981493,
+    2.2945013,
     8,
-    "617e50eca90c"
+    "de7da0a602d5"
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-hi-drip-edge-flange": [
-    2.2976138,
-    2.3154039,
+    2.2934304,
+    2.3112205,
     8,
-    "5002e27b311c"
+    "9f3c644a83f4"
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-hi-drip-edge-kick": [
     2.2457833,
@@ -65598,10 +65598,10 @@
     "15258014cbb5"
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-hi-drip-edge-nose": [
-    2.2981493,
-    2.299006,
+    2.2945013,
+    2.2953581,
     8,
-    "ff56b0c497eb"
+    "a452efcc5335"
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-hi-fascia-0": [
     2.1378333,
@@ -65611,9 +65611,9 @@
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-hi-fascia-1": [
     2.1251333,
-    2.2981493,
+    2.2945013,
     8,
-    "63fcf8581b97"
+    "561d4d9570c6"
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-hi-gutter-back": [
     2.1378333,
@@ -65635,15 +65635,15 @@
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-lo-drip-edge-face": [
     2.2648333,
-    2.2981493,
+    2.2945013,
     8,
-    "483ebd32c0d7"
+    "6f0a915fc3f4"
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-lo-drip-edge-flange": [
-    2.2976138,
-    2.3154039,
+    2.2934304,
+    2.3112205,
     8,
-    "536cb7115e5a"
+    "6eb017e25e27"
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-lo-drip-edge-kick": [
     2.2457833,
@@ -65652,10 +65652,10 @@
     "15258014cbb5"
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-lo-drip-edge-nose": [
-    2.2981493,
-    2.299006,
+    2.2945013,
+    2.2953581,
     8,
-    "fd5c7926e351"
+    "0e020d4bef05"
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-lo-fascia-0": [
     2.1378333,
@@ -65665,9 +65665,9 @@
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-lo-fascia-1": [
     2.1251333,
-    2.2981493,
+    2.2945013,
     8,
-    "63fcf8581b97"
+    "561d4d9570c6"
   ],
   "geometry/YX2GDZJMBV::framing/member:eave-lo-gutter-back": [
     2.1378333,
@@ -65712,76 +65712,76 @@
     "123cf49e3bbc"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem--1--1": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem--1--2": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem--1--3": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem--1-0": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem--1-1": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem--1-2": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "1a8104f6cbf7"
+    "fb599c59fcf3"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem-1--1": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem-1--2": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem-1--3": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem-1-0": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem-1-1": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/YX2GDZJMBV::framing/member:pan-hem-1-2": [
-    2.2961224,
-    2.3009627,
+    2.2924744,
+    2.2973148,
     12,
-    "982bbc4d296c"
+    "dfbb24255c22"
   ],
   "geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-2.057400-000": [
     2.40665,
@@ -65910,28 +65910,28 @@
     "3002c2afded3"
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-0-drip-edge-face": [
-    2.2515826,
-    3.6528159,
+    2.2479347,
+    3.649168,
     8,
-    "9ab6680019f1"
+    "38c5f8b1a55d"
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-0-drip-edge-flange": [
-    2.2976138,
-    3.6530933,
+    2.2934304,
+    3.6489098,
     8,
-    "e7a5f6f035b6"
+    "a4baff9bccaa"
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-0-drip-edge-kick": [
-    2.2325326,
-    3.6147159,
+    2.2288847,
+    3.611068,
     8,
-    "96bf23128112"
+    "928f9173d008"
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-0-drip-edge-nose": [
-    2.2981493,
-    3.6536287,
+    2.2945013,
+    3.6499808,
     8,
-    "0bf580a6681c"
+    "b1f6f6ed9df6"
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-0-fascia-0": [
     2.1505333,
@@ -65941,33 +65941,33 @@
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-0-fascia-1": [
     2.1251333,
-    3.6528159,
+    3.649168,
     8,
-    "4660f64a64dd"
+    "0d7f79718837"
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-1-drip-edge-face": [
-    2.2515826,
-    3.6528159,
+    2.2479347,
+    3.649168,
     8,
-    "8ddd5943c361"
+    "8c0d1c1baf59"
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-1-drip-edge-flange": [
-    2.2976138,
-    3.6530933,
+    2.2934304,
+    3.6489098,
     8,
-    "f3a7f4aff1e3"
+    "d6a23ec2c60b"
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-1-drip-edge-kick": [
-    2.2325326,
-    3.6147159,
+    2.2288847,
+    3.611068,
     8,
-    "3474fd65e5a7"
+    "9289a752dc1c"
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-1-drip-edge-nose": [
-    2.2981493,
-    3.6536287,
+    2.2945013,
+    3.6499808,
     8,
-    "82f0f68bded7"
+    "ea7adc3f43e7"
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-1-fascia-0": [
     2.1505333,
@@ -65977,231 +65977,231 @@
   ],
   "geometry/YX2GDZJMBV::framing/member:rake-lo-1-fascia-1": [
     2.1251333,
-    3.6528159,
+    3.649168,
     8,
-    "1ec756ba088d"
+    "d5a537e925e6"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1--1-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     72,
-    "d369b3387043"
+    "95c16fdc5658"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1--1-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     40,
-    "fc6d67341152"
+    "a71753158106"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1--1-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1--2-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     72,
-    "d369b3387043"
+    "95c16fdc5658"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1--2-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     40,
-    "fc6d67341152"
+    "a71753158106"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1--2-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1--3-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     24,
-    "7f0a2cb41483"
+    "e0dcf51818dc"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1--3-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     16,
-    "ccc3f5fa76d7"
+    "983042cb7e38"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1--3-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1-0-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     72,
-    "d369b3387043"
+    "95c16fdc5658"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1-0-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     40,
-    "fc6d67341152"
+    "a71753158106"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1-0-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1-1-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     72,
-    "d369b3387043"
+    "95c16fdc5658"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1-1-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     40,
-    "fc6d67341152"
+    "a71753158106"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1-1-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1-2-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     24,
-    "2bb62c262b74"
+    "65d289dd7348"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1-2-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     16,
-    "8c622f4ca1f8"
+    "c3a3f8dadf50"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure--1-2-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1--1-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     72,
-    "d369b3387043"
+    "95c16fdc5658"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1--1-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     40,
-    "fc6d67341152"
+    "a71753158106"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1--1-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1--2-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     72,
-    "d369b3387043"
+    "95c16fdc5658"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1--2-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     40,
-    "fc6d67341152"
+    "a71753158106"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1--2-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1--3-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     24,
-    "7f0a2cb41483"
+    "e0dcf51818dc"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1--3-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     16,
-    "ccc3f5fa76d7"
+    "983042cb7e38"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1--3-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1-0-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     72,
-    "d369b3387043"
+    "95c16fdc5658"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1-0-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     40,
-    "fc6d67341152"
+    "a71753158106"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1-0-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1-1-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     72,
-    "d369b3387043"
+    "95c16fdc5658"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1-1-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     40,
-    "fc6d67341152"
+    "a71753158106"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1-1-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1-2-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     24,
-    "2bb62c262b74"
+    "65d289dd7348"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1-2-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     16,
-    "8c622f4ca1f8"
+    "c3a3f8dadf50"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-closure-1-2-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     8,
-    "ccd86f0fc6a9"
+    "dec82e865425"
   ],
   "geometry/YX2GDZJMBV::framing/member:ridge-vent-cap": [
-    3.5998751,
-    3.680197,
+    3.5962271,
+    3.676549,
     20,
-    "64da4708550c"
+    "cfadad67d186"
   ],
   "geometry/YX2GDZJMBV::framing/member:truss-000": [
     2.2352,
@@ -66769,9 +66769,9 @@
   "light_runs/LR-S-HALL-GAP/z_m": 5.4483,
   "member/03GPR9ZAA5/W-A-N2B-closure-0-cladding": [
     8.001,
-    9.2390847,
+    9.2379133,
     4,
-    "23d1a1874efb"
+    "b4bda52ae93e"
   ],
   "member/03GPR9ZAA5/block-2-000-00": [
     6.096,
@@ -69822,352 +69822,352 @@
     "0d268d0815ef"
   ],
   "member/CARF01AAAA/eave-hi-image-ii-eave": [
-    6.3527414,
-    6.47962,
+    6.351854,
+    6.4787326,
     4,
-    "6735640c692f"
+    "6602e1ac42d5"
   ],
   "member/CARF01AAAA/eave-lo-image-ii-eave": [
-    6.3527414,
-    6.47962,
+    6.351854,
+    6.4787326,
     4,
-    "6735640c692f"
+    "6602e1ac42d5"
   ],
   "member/CARF01AAAA/pan-hem--1--1": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--10": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--11": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--12": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--13": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--14": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--2": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--3": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--4": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--5": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--6": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--7": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--8": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1--9": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-0": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-1": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-10": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-11": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-12": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-13": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-2": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-3": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-4": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-5": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-6": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-7": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-8": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem--1-9": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--1": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--10": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--11": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--12": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--13": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--14": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--2": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--3": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--4": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--5": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--6": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--7": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--8": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1--9": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-0": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-1": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-10": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-11": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-12": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-13": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-2": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-3": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-4": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-5": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-6": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-7": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-8": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/pan-hem-1-9": [
-    6.4120647,
-    6.4126718,
+    6.4108933,
+    6.4115004,
     2,
-    "b6fc361ea67b"
+    "536d279ca71a"
   ],
   "member/CARF01AAAA/rafter-000": [
     6.181725,
@@ -70854,1048 +70854,1048 @@
     "a6a8df2ac901"
   ],
   "member/CARF01AAAA/rake-hi-0-image-ii-rake": [
-    6.3798844,
-    9.2803597,
+    6.378713,
+    9.2791883,
     4,
-    "dc0b5319fa8f"
+    "3b036450dd01"
   ],
   "member/CARF01AAAA/rake-hi-1-image-ii-rake": [
-    6.3798844,
-    9.2803597,
+    6.378713,
+    9.2791883,
     4,
-    "0f793015ee92"
+    "88f38bc3cb27"
   ],
   "member/CARF01AAAA/rake-lo-0-image-ii-rake": [
-    6.3798844,
-    9.2803597,
+    6.378713,
+    9.2791883,
     4,
-    "dc0b5319fa8f"
+    "3b036450dd01"
   ],
   "member/CARF01AAAA/rake-lo-1-image-ii-rake": [
-    6.3798844,
-    9.2803597,
+    6.378713,
+    9.2791883,
     4,
-    "0f793015ee92"
+    "88f38bc3cb27"
   ],
   "member/CARF01AAAA/ridge-closure--1--1-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--1-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--1-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--10-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--10-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--10-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--11-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--11-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--11-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--12-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--12-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--12-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--13-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--13-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--13-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--14-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--14-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--14-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--2-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--2-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--2-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--3-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--3-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--3-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--4-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--4-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--4-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--5-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--5-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--5-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--6-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--6-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--6-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--7-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--7-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--7-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--8-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--8-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--8-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1--9-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--9-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1--9-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-0-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-0-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-0-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-1-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-1-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-1-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-10-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-10-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-10-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-11-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-11-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-11-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-12-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-12-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-12-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-13-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-13-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-13-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-2-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-2-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-2-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-3-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-3-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-3-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-4-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-4-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-4-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-5-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-5-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-5-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-6-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-6-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-6-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-7-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-7-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-7-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-8-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-8-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-8-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure--1-9-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-9-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure--1-9-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--1-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--1-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--1-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--10-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--10-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--10-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--11-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--11-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--11-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--12-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--12-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--12-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--13-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--13-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--13-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--14-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--14-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--14-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--2-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--2-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--2-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--3-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--3-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--3-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--4-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--4-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--4-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--5-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--5-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--5-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--6-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--6-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--6-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--7-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--7-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--7-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--8-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--8-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--8-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1--9-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--9-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1--9-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-0-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-0-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-0-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-1-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-1-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-1-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-10-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-10-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-10-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-11-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-11-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-11-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-12-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-12-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-12-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-13-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-13-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-13-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-2-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-2-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-2-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-3-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-3-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-3-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-4-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-4-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-4-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-5-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-5-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-5-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-6-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-6-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-6-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-7-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-7-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-7-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-8-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-8-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-8-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-closure-1-9-bottom": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-9-face": [
-    9.1665988,
-    9.1949253,
+    9.1654274,
+    9.1937538,
     2,
-    "9128b712fefe"
+    "0eaa10930e90"
   ],
   "member/CARF01AAAA/ridge-closure-1-9-top": [
-    9.1943182,
-    9.1949253,
+    9.1931468,
+    9.1937538,
     2,
-    "4118533d7321"
+    "6d0e91eae223"
   ],
   "member/CARF01AAAA/ridge-vent-cap": [
-    9.1658568,
-    9.2680898,
+    9.1646854,
+    9.2669184,
     2,
-    "0f6330e7837c"
+    "8af0a5955b2c"
   ],
   "member/CAW101AAAA/W-A-S1-closure-0-cladding": [
     6.4008,
-    7.8166847,
+    7.8155133,
     4,
-    "7cd8c681aff3"
+    "dc76c1519bcf"
   ],
   "member/CAW101AAAA/block-2-000-00": [
     6.096,
@@ -72073,9 +72073,9 @@
   ],
   "member/CAW102AAAA/W-A-S2-closure-0-cladding": [
     7.7978,
-    9.2390847,
+    9.2379133,
     4,
-    "8504866e89f2"
+    "68017148a7cb"
   ],
   "member/CAW102AAAA/block-2-000-00": [
     6.096,
@@ -72535,9 +72535,9 @@
   ],
   "member/CAW103AAAA/W-A-S3-closure-0-cladding": [
     6.4008,
-    9.2390847,
+    9.2379133,
     4,
-    "73ca25e96632"
+    "abdc6e823956"
   ],
   "member/CAW103AAAA/block-2-000-00": [
     6.096,
@@ -73093,9 +73093,9 @@
   ],
   "member/CAW104AAAA/W-A-N1-closure-0-cladding": [
     6.4008,
-    9.2390847,
+    9.2379133,
     4,
-    "9b409fe03916"
+    "ca3217c8cdf6"
   ],
   "member/CAW104AAAA/block-2-000-00": [
     6.096,
@@ -73615,9 +73615,9 @@
   ],
   "member/CAW105AAAA/W-A-N2-closure-0-cladding": [
     6.4008,
-    8.0198847,
+    8.0187133,
     4,
-    "767898338074"
+    "4be86cbf678b"
   ],
   "member/CAW105AAAA/block-2-000-00": [
     6.096,
@@ -75289,15 +75289,15 @@
   ],
   "member/CGRF01AAAA/eave-hi-drip-edge-face": [
     2.2648333,
-    2.2981493,
+    2.2945013,
     4,
-    "1ae833132e80"
+    "7962cb02314a"
   ],
   "member/CGRF01AAAA/eave-hi-drip-edge-flange": [
-    2.2976138,
-    2.3154039,
+    2.2934304,
+    2.3112205,
     4,
-    "5d245b248ccf"
+    "6a97ccf280f1"
   ],
   "member/CGRF01AAAA/eave-hi-drip-edge-kick": [
     2.2457833,
@@ -75306,10 +75306,10 @@
     "02f3904b2424"
   ],
   "member/CGRF01AAAA/eave-hi-drip-edge-nose": [
-    2.2981493,
-    2.299006,
+    2.2945013,
+    2.2953581,
     4,
-    "687c0ba27806"
+    "3e0737d02061"
   ],
   "member/CGRF01AAAA/eave-hi-fascia-0": [
     2.1378333,
@@ -75319,9 +75319,9 @@
   ],
   "member/CGRF01AAAA/eave-hi-fascia-1": [
     2.1251333,
-    2.2981493,
+    2.2945013,
     4,
-    "c49bba5fb592"
+    "5c4cb5ea4f91"
   ],
   "member/CGRF01AAAA/eave-hi-gutter-back": [
     2.1378333,
@@ -75349,15 +75349,15 @@
   ],
   "member/CGRF01AAAA/eave-lo-drip-edge-face": [
     2.2648333,
-    2.2981493,
+    2.2945013,
     4,
-    "1ae833132e80"
+    "7962cb02314a"
   ],
   "member/CGRF01AAAA/eave-lo-drip-edge-flange": [
-    2.2976138,
-    2.3154039,
+    2.2934304,
+    2.3112205,
     4,
-    "5d245b248ccf"
+    "6a97ccf280f1"
   ],
   "member/CGRF01AAAA/eave-lo-drip-edge-kick": [
     2.2457833,
@@ -75366,10 +75366,10 @@
     "02f3904b2424"
   ],
   "member/CGRF01AAAA/eave-lo-drip-edge-nose": [
-    2.2981493,
-    2.299006,
+    2.2945013,
+    2.2953581,
     4,
-    "687c0ba27806"
+    "3e0737d02061"
   ],
   "member/CGRF01AAAA/eave-lo-fascia-0": [
     2.1378333,
@@ -75379,9 +75379,9 @@
   ],
   "member/CGRF01AAAA/eave-lo-fascia-1": [
     2.1251333,
-    2.2981493,
+    2.2945013,
     4,
-    "c49bba5fb592"
+    "5c4cb5ea4f91"
   ],
   "member/CGRF01AAAA/eave-lo-gutter-back": [
     2.1378333,
@@ -75444,244 +75444,244 @@
     "80fff2ef7025"
   ],
   "member/CGRF01AAAA/pan-hem--1--1": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1--10": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1--2": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1--3": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1--4": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1--5": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1--6": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1--7": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1--8": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1--9": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1-0": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1-1": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1-2": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1-3": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1-4": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1-5": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1-6": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1-7": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1-8": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem--1-9": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1--1": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1--10": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1--2": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1--3": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1--4": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1--5": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1--6": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1--7": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1--8": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1--9": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1-0": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1-1": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1-2": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1-3": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1-4": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1-5": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1-6": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1-7": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1-8": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/pan-hem-1-9": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/CGRF01AAAA/panel-block-RF-BW-CANOPY-2.057400-003": [
     2.40665,
@@ -75726,28 +75726,28 @@
     "c4ea8b65f2a4"
   ],
   "member/CGRF01AAAA/rake-hi-0-drip-edge-face": [
-    2.2515826,
-    3.6528159,
+    2.2479347,
+    3.649168,
     4,
-    "3f830a575ea4"
+    "12e1941bb107"
   ],
   "member/CGRF01AAAA/rake-hi-0-drip-edge-flange": [
-    2.2976138,
-    3.6530933,
+    2.2934304,
+    3.6489098,
     4,
-    "71a5fc1c4388"
+    "a2d3b6794eba"
   ],
   "member/CGRF01AAAA/rake-hi-0-drip-edge-kick": [
-    2.2325326,
-    3.6147159,
+    2.2288847,
+    3.611068,
     4,
-    "f098acf42600"
+    "1f69ce65492d"
   ],
   "member/CGRF01AAAA/rake-hi-0-drip-edge-nose": [
-    2.2981493,
-    3.6536287,
+    2.2945013,
+    3.6499808,
     4,
-    "848faffe7f67"
+    "dcdf6f99ddd5"
   ],
   "member/CGRF01AAAA/rake-hi-0-fascia-0": [
     2.1505333,
@@ -75757,9 +75757,9 @@
   ],
   "member/CGRF01AAAA/rake-hi-0-fascia-1": [
     2.1251333,
-    3.6528159,
+    3.649168,
     4,
-    "c49a6e8f479d"
+    "8be27d25322c"
   ],
   "member/CGRF01AAAA/rake-hi-0-soffit": [
     2.2658917,
@@ -75768,28 +75768,28 @@
     "daaed95a36a8"
   ],
   "member/CGRF01AAAA/rake-hi-1-drip-edge-face": [
-    2.2515826,
-    3.6528159,
+    2.2479347,
+    3.649168,
     4,
-    "8b66e13912e4"
+    "6f282aaf9f01"
   ],
   "member/CGRF01AAAA/rake-hi-1-drip-edge-flange": [
-    2.2976138,
-    3.6530933,
+    2.2934304,
+    3.6489098,
     4,
-    "f46f6a889d7c"
+    "7c90244cb454"
   ],
   "member/CGRF01AAAA/rake-hi-1-drip-edge-kick": [
-    2.2325326,
-    3.6147159,
+    2.2288847,
+    3.611068,
     4,
-    "aa356fd43433"
+    "9fcbb24e3c57"
   ],
   "member/CGRF01AAAA/rake-hi-1-drip-edge-nose": [
-    2.2981493,
-    3.6536287,
+    2.2945013,
+    3.6499808,
     4,
-    "092a83f33fce"
+    "1a6758b9856b"
   ],
   "member/CGRF01AAAA/rake-hi-1-fascia-0": [
     2.1505333,
@@ -75799,9 +75799,9 @@
   ],
   "member/CGRF01AAAA/rake-hi-1-fascia-1": [
     2.1251333,
-    3.6528159,
+    3.649168,
     4,
-    "46f428aab140"
+    "cd5a10075506"
   ],
   "member/CGRF01AAAA/rake-hi-1-soffit": [
     2.2658917,
@@ -75810,10 +75810,10 @@
     "603d17fe41ee"
   ],
   "member/CGRF01AAAA/ridge-vent-cap": [
-    3.6413841,
-    3.7176899,
+    3.6377362,
+    3.7140419,
     2,
-    "cddef3629f91"
+    "0335302a2e68"
   ],
   "member/CGRF01AAAA/truss-000": [
     2.2352,
@@ -89665,9 +89665,9 @@
   ],
   "member/CSW102BAAA/W-S-E2-closure-0-cladding": [
     6.11505,
-    6.4117472,
+    6.4105758,
     4,
-    "d41c0200d25e"
+    "6686560b591a"
   ],
   "member/CSW102BAAA/W-S-E2-closure-0-outer-girt": [
     6.29285,
@@ -90061,9 +90061,9 @@
   ],
   "member/CSW103AAAA/W-S-E1-closure-0-cladding": [
     6.11505,
-    6.4117472,
+    6.4105758,
     4,
-    "d41c0200d25e"
+    "6686560b591a"
   ],
   "member/CSW103AAAA/W-S-E1-closure-0-outer-girt": [
     6.29285,
@@ -90517,9 +90517,9 @@
   ],
   "member/CSW104AAAA/W-S-E3-closure-0-cladding": [
     6.11505,
-    6.4117472,
+    6.4105758,
     4,
-    "d41c0200d25e"
+    "6686560b591a"
   ],
   "member/CSW104AAAA/W-S-E3-closure-0-outer-girt": [
     6.29285,
@@ -90925,9 +90925,9 @@
   ],
   "member/CSW105AAAA/W-S-E4-closure-0-cladding": [
     6.11505,
-    6.4117472,
+    6.4105758,
     4,
-    "d41c0200d25e"
+    "6686560b591a"
   ],
   "member/CSW105AAAA/W-S-E4-closure-0-outer-girt": [
     6.29285,
@@ -92491,9 +92491,9 @@
   ],
   "member/CSW110AAAA/W-S-W1-closure-0-cladding": [
     6.11505,
-    6.4117472,
+    6.4105758,
     4,
-    "d41c0200d25e"
+    "6686560b591a"
   ],
   "member/CSW110AAAA/W-S-W1-closure-0-outer-girt": [
     6.29285,
@@ -92863,9 +92863,9 @@
   ],
   "member/CSW111AAAA/W-S-W2-closure-0-cladding": [
     6.11505,
-    6.4117472,
+    6.4105758,
     4,
-    "d41c0200d25e"
+    "6686560b591a"
   ],
   "member/CSW111AAAA/W-S-W2-closure-0-outer-girt": [
     6.29285,
@@ -93121,9 +93121,9 @@
   ],
   "member/CSW112AAAA/W-S-W3-closure-0-cladding": [
     6.11505,
-    6.4117472,
+    6.4105758,
     4,
-    "d41c0200d25e"
+    "6686560b591a"
   ],
   "member/CSW112AAAA/W-S-W3-closure-0-outer-girt": [
     6.29285,
@@ -93697,9 +93697,9 @@
   ],
   "member/CSW113AAAA/W-S-W4-closure-0-cladding": [
     6.11505,
-    6.4117472,
+    6.4105758,
     4,
-    "d41c0200d25e"
+    "6686560b591a"
   ],
   "member/CSW113AAAA/W-S-W4-closure-0-outer-girt": [
     6.29285,
@@ -95755,9 +95755,9 @@
   ],
   "member/CSW135AAAA/W-S-N1B-closure-0-cladding": [
     6.096,
-    9.2390847,
+    9.2379133,
     4,
-    "6d078412a761"
+    "cc9eb1a71a14"
   ],
   "member/CSW135AAAA/W-S-N1B-closure-0-outer-girt": [
     6.096,
@@ -97189,9 +97189,9 @@
   ],
   "member/CSW153AAAA/W-S-N3B-closure-0-cladding": [
     6.096,
-    6.9149847,
+    6.9138133,
     4,
-    "3d2fc94bebfc"
+    "427a2fb5c1f7"
   ],
   "member/CSW153AAAA/W-S-N3B-closure-0-outer-girt": [
     6.096,
@@ -97471,9 +97471,9 @@
   ],
   "member/CSW154AAAA/W-S-W1B-closure-0-cladding": [
     6.11505,
-    6.4117472,
+    6.4105758,
     4,
-    "d41c0200d25e"
+    "6686560b591a"
   ],
   "member/CSW154AAAA/W-S-W1B-closure-0-outer-girt": [
     6.29285,
@@ -99481,15 +99481,15 @@
   ],
   "member/YX2GDZJMBV/eave-hi-drip-edge-face": [
     2.2648333,
-    2.2981493,
+    2.2945013,
     4,
-    "1ae833132e80"
+    "7962cb02314a"
   ],
   "member/YX2GDZJMBV/eave-hi-drip-edge-flange": [
-    2.2976138,
-    2.3154039,
+    2.2934304,
+    2.3112205,
     4,
-    "5d245b248ccf"
+    "6a97ccf280f1"
   ],
   "member/YX2GDZJMBV/eave-hi-drip-edge-kick": [
     2.2457833,
@@ -99498,10 +99498,10 @@
     "02f3904b2424"
   ],
   "member/YX2GDZJMBV/eave-hi-drip-edge-nose": [
-    2.2981493,
-    2.299006,
+    2.2945013,
+    2.2953581,
     4,
-    "687c0ba27806"
+    "3e0737d02061"
   ],
   "member/YX2GDZJMBV/eave-hi-fascia-0": [
     2.1378333,
@@ -99511,9 +99511,9 @@
   ],
   "member/YX2GDZJMBV/eave-hi-fascia-1": [
     2.1251333,
-    2.2981493,
+    2.2945013,
     4,
-    "c49bba5fb592"
+    "5c4cb5ea4f91"
   ],
   "member/YX2GDZJMBV/eave-hi-gutter-back": [
     2.1378333,
@@ -99535,15 +99535,15 @@
   ],
   "member/YX2GDZJMBV/eave-lo-drip-edge-face": [
     2.2648333,
-    2.2981493,
+    2.2945013,
     4,
-    "1ae833132e80"
+    "7962cb02314a"
   ],
   "member/YX2GDZJMBV/eave-lo-drip-edge-flange": [
-    2.2976138,
-    2.3154039,
+    2.2934304,
+    2.3112205,
     4,
-    "5d245b248ccf"
+    "6a97ccf280f1"
   ],
   "member/YX2GDZJMBV/eave-lo-drip-edge-kick": [
     2.2457833,
@@ -99552,10 +99552,10 @@
     "02f3904b2424"
   ],
   "member/YX2GDZJMBV/eave-lo-drip-edge-nose": [
-    2.2981493,
-    2.299006,
+    2.2945013,
+    2.2953581,
     4,
-    "687c0ba27806"
+    "3e0737d02061"
   ],
   "member/YX2GDZJMBV/eave-lo-fascia-0": [
     2.1378333,
@@ -99565,9 +99565,9 @@
   ],
   "member/YX2GDZJMBV/eave-lo-fascia-1": [
     2.1251333,
-    2.2981493,
+    2.2945013,
     4,
-    "c49bba5fb592"
+    "5c4cb5ea4f91"
   ],
   "member/YX2GDZJMBV/eave-lo-gutter-back": [
     2.1378333,
@@ -99612,76 +99612,76 @@
     "2de4539bbca8"
   ],
   "member/YX2GDZJMBV/pan-hem--1--1": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/pan-hem--1--2": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/pan-hem--1--3": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/pan-hem--1-0": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/pan-hem--1-1": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/pan-hem--1-2": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/pan-hem-1--1": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/pan-hem-1--2": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/pan-hem-1--3": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/pan-hem-1-0": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/pan-hem-1-1": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/pan-hem-1-2": [
-    2.2981493,
-    2.2987563,
+    2.2945013,
+    2.2951084,
     2,
-    "8c94b9fd6a01"
+    "e838a319272f"
   ],
   "member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-2.057400-000": [
     2.40665,
@@ -99810,28 +99810,28 @@
     "c4ea8b65f2a4"
   ],
   "member/YX2GDZJMBV/rake-lo-0-drip-edge-face": [
-    2.2515826,
-    3.6528159,
+    2.2479347,
+    3.649168,
     4,
-    "3f830a575ea4"
+    "12e1941bb107"
   ],
   "member/YX2GDZJMBV/rake-lo-0-drip-edge-flange": [
-    2.2976138,
-    3.6530933,
+    2.2934304,
+    3.6489098,
     4,
-    "71a5fc1c4388"
+    "a2d3b6794eba"
   ],
   "member/YX2GDZJMBV/rake-lo-0-drip-edge-kick": [
-    2.2325326,
-    3.6147159,
+    2.2288847,
+    3.611068,
     4,
-    "f098acf42600"
+    "1f69ce65492d"
   ],
   "member/YX2GDZJMBV/rake-lo-0-drip-edge-nose": [
-    2.2981493,
-    3.6536287,
+    2.2945013,
+    3.6499808,
     4,
-    "848faffe7f67"
+    "dcdf6f99ddd5"
   ],
   "member/YX2GDZJMBV/rake-lo-0-fascia-0": [
     2.1505333,
@@ -99841,33 +99841,33 @@
   ],
   "member/YX2GDZJMBV/rake-lo-0-fascia-1": [
     2.1251333,
-    3.6528159,
+    3.649168,
     4,
-    "c49a6e8f479d"
+    "8be27d25322c"
   ],
   "member/YX2GDZJMBV/rake-lo-1-drip-edge-face": [
-    2.2515826,
-    3.6528159,
+    2.2479347,
+    3.649168,
     4,
-    "8b66e13912e4"
+    "6f282aaf9f01"
   ],
   "member/YX2GDZJMBV/rake-lo-1-drip-edge-flange": [
-    2.2976138,
-    3.6530933,
+    2.2934304,
+    3.6489098,
     4,
-    "f46f6a889d7c"
+    "7c90244cb454"
   ],
   "member/YX2GDZJMBV/rake-lo-1-drip-edge-kick": [
-    2.2325326,
-    3.6147159,
+    2.2288847,
+    3.611068,
     4,
-    "aa356fd43433"
+    "9fcbb24e3c57"
   ],
   "member/YX2GDZJMBV/rake-lo-1-drip-edge-nose": [
-    2.2981493,
-    3.6536287,
+    2.2945013,
+    3.6499808,
     4,
-    "092a83f33fce"
+    "1a6758b9856b"
   ],
   "member/YX2GDZJMBV/rake-lo-1-fascia-0": [
     2.1505333,
@@ -99877,231 +99877,231 @@
   ],
   "member/YX2GDZJMBV/rake-lo-1-fascia-1": [
     2.1251333,
-    3.6528159,
+    3.649168,
     4,
-    "46f428aab140"
+    "cd5a10075506"
   ],
   "member/YX2GDZJMBV/ridge-closure--1--1-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1--1-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1--1-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-closure--1--2-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1--2-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1--2-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-closure--1--3-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1--3-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1--3-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-closure--1-0-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1-0-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1-0-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-closure--1-1-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1-1-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1-1-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-closure--1-2-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1-2-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure--1-2-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-closure-1--1-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1--1-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1--1-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-closure-1--2-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1--2-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1--2-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-closure-1--3-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1--3-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1--3-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-closure-1-0-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1-0-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1-0-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-closure-1-1-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1-1-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1-1-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-closure-1-2-bottom": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1-2-face": [
-    3.6014639,
-    3.628205,
+    3.5978159,
+    3.624557,
     2,
-    "374e2dd48510"
+    "4e75eccf2070"
   ],
   "member/YX2GDZJMBV/ridge-closure-1-2-top": [
-    3.6275979,
-    3.628205,
+    3.62395,
+    3.624557,
     2,
-    "c5cce6e59e6e"
+    "8cc8eb09ea82"
   ],
   "member/YX2GDZJMBV/ridge-vent-cap": [
-    3.5998751,
-    3.680197,
+    3.5962271,
+    3.676549,
     2,
-    "b7ba10c97361"
+    "151e5ad0f4cc"
   ],
   "member/YX2GDZJMBV/truss-000": [
     2.2352,
@@ -102095,126 +102095,126 @@
   "solids/CN-A-LEADER-W2/z1_m": 3.3655,
   "solids/CN-A-LEADER-W3/z0_m": 5.1689,
   "solids/CN-A-LEADER-W3/z1_m": 5.1943,
-  "solids/CN-A-PV-E1A/z0_m": 9.0338028,
-  "solids/CN-A-PV-E1A/z1_m": 9.0439628,
-  "solids/CN-A-PV-E1B/z0_m": 9.0338028,
-  "solids/CN-A-PV-E1B/z1_m": 9.0439628,
-  "solids/CN-A-PV-E1C/z0_m": 8.6795813,
-  "solids/CN-A-PV-E1C/z1_m": 8.6897413,
-  "solids/CN-A-PV-E1D/z0_m": 8.6795813,
-  "solids/CN-A-PV-E1D/z1_m": 8.6897413,
-  "solids/CN-A-PV-E2A/z0_m": 9.0338028,
-  "solids/CN-A-PV-E2A/z1_m": 9.0439628,
-  "solids/CN-A-PV-E2B/z0_m": 9.0338028,
-  "solids/CN-A-PV-E2B/z1_m": 9.0439628,
-  "solids/CN-A-PV-E2C/z0_m": 8.6795813,
-  "solids/CN-A-PV-E2C/z1_m": 8.6897413,
-  "solids/CN-A-PV-E2D/z0_m": 8.6795813,
-  "solids/CN-A-PV-E2D/z1_m": 8.6897413,
-  "solids/CN-A-PV-E3A/z0_m": 9.0338028,
-  "solids/CN-A-PV-E3A/z1_m": 9.0439628,
-  "solids/CN-A-PV-E3B/z0_m": 9.0338028,
-  "solids/CN-A-PV-E3B/z1_m": 9.0439628,
-  "solids/CN-A-PV-E3C/z0_m": 8.6795813,
-  "solids/CN-A-PV-E3C/z1_m": 8.6897413,
-  "solids/CN-A-PV-E3D/z0_m": 8.6795813,
-  "solids/CN-A-PV-E3D/z1_m": 8.6897413,
-  "solids/CN-A-PV-E4A/z0_m": 9.0338028,
-  "solids/CN-A-PV-E4A/z1_m": 9.0439628,
-  "solids/CN-A-PV-E4B/z0_m": 9.0338028,
-  "solids/CN-A-PV-E4B/z1_m": 9.0439628,
-  "solids/CN-A-PV-E4C/z0_m": 8.6795813,
-  "solids/CN-A-PV-E4C/z1_m": 8.6897413,
-  "solids/CN-A-PV-E4D/z0_m": 8.6795813,
-  "solids/CN-A-PV-E4D/z1_m": 8.6897413,
-  "solids/CN-A-PV-E5A/z0_m": 9.0338028,
-  "solids/CN-A-PV-E5A/z1_m": 9.0439628,
-  "solids/CN-A-PV-E5B/z0_m": 9.0338028,
-  "solids/CN-A-PV-E5B/z1_m": 9.0439628,
-  "solids/CN-A-PV-E5C/z0_m": 8.6795813,
-  "solids/CN-A-PV-E5C/z1_m": 8.6897413,
-  "solids/CN-A-PV-E5D/z0_m": 8.6795813,
-  "solids/CN-A-PV-E5D/z1_m": 8.6897413,
-  "solids/CN-A-PV-E6A/z0_m": 9.0338028,
-  "solids/CN-A-PV-E6A/z1_m": 9.0439628,
-  "solids/CN-A-PV-E6B/z0_m": 9.0338028,
-  "solids/CN-A-PV-E6B/z1_m": 9.0439628,
-  "solids/CN-A-PV-E6C/z0_m": 8.6795813,
-  "solids/CN-A-PV-E6C/z1_m": 8.6897413,
-  "solids/CN-A-PV-E6D/z0_m": 8.6795813,
-  "solids/CN-A-PV-E6D/z1_m": 8.6897413,
-  "solids/CN-A-PV-W1A/z0_m": 9.0338028,
-  "solids/CN-A-PV-W1A/z1_m": 9.0439628,
-  "solids/CN-A-PV-W1B/z0_m": 9.0338028,
-  "solids/CN-A-PV-W1B/z1_m": 9.0439628,
-  "solids/CN-A-PV-W1C/z0_m": 8.6795813,
-  "solids/CN-A-PV-W1C/z1_m": 8.6897413,
-  "solids/CN-A-PV-W1D/z0_m": 8.6795813,
-  "solids/CN-A-PV-W1D/z1_m": 8.6897413,
-  "solids/CN-A-PV-W2A/z0_m": 9.0338028,
-  "solids/CN-A-PV-W2A/z1_m": 9.0439628,
-  "solids/CN-A-PV-W2B/z0_m": 9.0338028,
-  "solids/CN-A-PV-W2B/z1_m": 9.0439628,
-  "solids/CN-A-PV-W2C/z0_m": 8.6795813,
-  "solids/CN-A-PV-W2C/z1_m": 8.6897413,
-  "solids/CN-A-PV-W2D/z0_m": 8.6795813,
-  "solids/CN-A-PV-W2D/z1_m": 8.6897413,
-  "solids/CN-A-PV-W3A/z0_m": 9.0338028,
-  "solids/CN-A-PV-W3A/z1_m": 9.0439628,
-  "solids/CN-A-PV-W3B/z0_m": 9.0338028,
-  "solids/CN-A-PV-W3B/z1_m": 9.0439628,
-  "solids/CN-A-PV-W3C/z0_m": 8.6795813,
-  "solids/CN-A-PV-W3C/z1_m": 8.6897413,
-  "solids/CN-A-PV-W3D/z0_m": 8.6795813,
-  "solids/CN-A-PV-W3D/z1_m": 8.6897413,
-  "solids/CN-A-PV-W4A/z0_m": 9.0338028,
-  "solids/CN-A-PV-W4A/z1_m": 9.0439628,
-  "solids/CN-A-PV-W4B/z0_m": 9.0338028,
-  "solids/CN-A-PV-W4B/z1_m": 9.0439628,
-  "solids/CN-A-PV-W4C/z0_m": 8.6795813,
-  "solids/CN-A-PV-W4C/z1_m": 8.6897413,
-  "solids/CN-A-PV-W4D/z0_m": 8.6795813,
-  "solids/CN-A-PV-W4D/z1_m": 8.6897413,
-  "solids/CN-A-PV-W5A/z0_m": 9.0338028,
-  "solids/CN-A-PV-W5A/z1_m": 9.0439628,
-  "solids/CN-A-PV-W5B/z0_m": 9.0338028,
-  "solids/CN-A-PV-W5B/z1_m": 9.0439628,
-  "solids/CN-A-PV-W5C/z0_m": 8.6795813,
-  "solids/CN-A-PV-W5C/z1_m": 8.6897413,
-  "solids/CN-A-PV-W5D/z0_m": 8.6795813,
-  "solids/CN-A-PV-W5D/z1_m": 8.6897413,
-  "solids/CN-A-PV-W6A/z0_m": 9.0338028,
-  "solids/CN-A-PV-W6A/z1_m": 9.0439628,
-  "solids/CN-A-PV-W6B/z0_m": 9.0338028,
-  "solids/CN-A-PV-W6B/z1_m": 9.0439628,
-  "solids/CN-A-PV-W6C/z0_m": 8.6795813,
-  "solids/CN-A-PV-W6C/z1_m": 8.6897413,
-  "solids/CN-A-PV-W6D/z0_m": 8.6795813,
-  "solids/CN-A-PV-W6D/z1_m": 8.6897413,
-  "solids/CN-A-WIND-RFNE-1/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFNE-1/z1_m": 6.4600208,
-  "solids/CN-A-WIND-RFNE-2/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFNE-2/z1_m": 6.4600208,
-  "solids/CN-A-WIND-RFNE-3/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFNE-3/z1_m": 6.4600208,
-  "solids/CN-A-WIND-RFNW-1/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFNW-1/z1_m": 6.4600208,
-  "solids/CN-A-WIND-RFNW-2/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFNW-2/z1_m": 6.4600208,
-  "solids/CN-A-WIND-RFNW-3/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFNW-3/z1_m": 6.4600208,
-  "solids/CN-A-WIND-RFSE-1/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFSE-1/z1_m": 6.4600208,
-  "solids/CN-A-WIND-RFSE-2/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFSE-2/z1_m": 6.4600208,
-  "solids/CN-A-WIND-RFSE-3/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFSE-3/z1_m": 6.4600208,
-  "solids/CN-A-WIND-RFSW-1/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFSW-1/z1_m": 6.4600208,
-  "solids/CN-A-WIND-RFSW-2/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFSW-2/z1_m": 6.4600208,
-  "solids/CN-A-WIND-RFSW-3/z0_m": 6.4150628,
-  "solids/CN-A-WIND-RFSW-3/z1_m": 6.4600208,
+  "solids/CN-A-PV-E1A/z0_m": 9.0326314,
+  "solids/CN-A-PV-E1A/z1_m": 9.0427914,
+  "solids/CN-A-PV-E1B/z0_m": 9.0326314,
+  "solids/CN-A-PV-E1B/z1_m": 9.0427914,
+  "solids/CN-A-PV-E1C/z0_m": 8.6784099,
+  "solids/CN-A-PV-E1C/z1_m": 8.6885699,
+  "solids/CN-A-PV-E1D/z0_m": 8.6784099,
+  "solids/CN-A-PV-E1D/z1_m": 8.6885699,
+  "solids/CN-A-PV-E2A/z0_m": 9.0326314,
+  "solids/CN-A-PV-E2A/z1_m": 9.0427914,
+  "solids/CN-A-PV-E2B/z0_m": 9.0326314,
+  "solids/CN-A-PV-E2B/z1_m": 9.0427914,
+  "solids/CN-A-PV-E2C/z0_m": 8.6784099,
+  "solids/CN-A-PV-E2C/z1_m": 8.6885699,
+  "solids/CN-A-PV-E2D/z0_m": 8.6784099,
+  "solids/CN-A-PV-E2D/z1_m": 8.6885699,
+  "solids/CN-A-PV-E3A/z0_m": 9.0326314,
+  "solids/CN-A-PV-E3A/z1_m": 9.0427914,
+  "solids/CN-A-PV-E3B/z0_m": 9.0326314,
+  "solids/CN-A-PV-E3B/z1_m": 9.0427914,
+  "solids/CN-A-PV-E3C/z0_m": 8.6784099,
+  "solids/CN-A-PV-E3C/z1_m": 8.6885699,
+  "solids/CN-A-PV-E3D/z0_m": 8.6784099,
+  "solids/CN-A-PV-E3D/z1_m": 8.6885699,
+  "solids/CN-A-PV-E4A/z0_m": 9.0326314,
+  "solids/CN-A-PV-E4A/z1_m": 9.0427914,
+  "solids/CN-A-PV-E4B/z0_m": 9.0326314,
+  "solids/CN-A-PV-E4B/z1_m": 9.0427914,
+  "solids/CN-A-PV-E4C/z0_m": 8.6784099,
+  "solids/CN-A-PV-E4C/z1_m": 8.6885699,
+  "solids/CN-A-PV-E4D/z0_m": 8.6784099,
+  "solids/CN-A-PV-E4D/z1_m": 8.6885699,
+  "solids/CN-A-PV-E5A/z0_m": 9.0326314,
+  "solids/CN-A-PV-E5A/z1_m": 9.0427914,
+  "solids/CN-A-PV-E5B/z0_m": 9.0326314,
+  "solids/CN-A-PV-E5B/z1_m": 9.0427914,
+  "solids/CN-A-PV-E5C/z0_m": 8.6784099,
+  "solids/CN-A-PV-E5C/z1_m": 8.6885699,
+  "solids/CN-A-PV-E5D/z0_m": 8.6784099,
+  "solids/CN-A-PV-E5D/z1_m": 8.6885699,
+  "solids/CN-A-PV-E6A/z0_m": 9.0326314,
+  "solids/CN-A-PV-E6A/z1_m": 9.0427914,
+  "solids/CN-A-PV-E6B/z0_m": 9.0326314,
+  "solids/CN-A-PV-E6B/z1_m": 9.0427914,
+  "solids/CN-A-PV-E6C/z0_m": 8.6784099,
+  "solids/CN-A-PV-E6C/z1_m": 8.6885699,
+  "solids/CN-A-PV-E6D/z0_m": 8.6784099,
+  "solids/CN-A-PV-E6D/z1_m": 8.6885699,
+  "solids/CN-A-PV-W1A/z0_m": 9.0326314,
+  "solids/CN-A-PV-W1A/z1_m": 9.0427914,
+  "solids/CN-A-PV-W1B/z0_m": 9.0326314,
+  "solids/CN-A-PV-W1B/z1_m": 9.0427914,
+  "solids/CN-A-PV-W1C/z0_m": 8.6784099,
+  "solids/CN-A-PV-W1C/z1_m": 8.6885699,
+  "solids/CN-A-PV-W1D/z0_m": 8.6784099,
+  "solids/CN-A-PV-W1D/z1_m": 8.6885699,
+  "solids/CN-A-PV-W2A/z0_m": 9.0326314,
+  "solids/CN-A-PV-W2A/z1_m": 9.0427914,
+  "solids/CN-A-PV-W2B/z0_m": 9.0326314,
+  "solids/CN-A-PV-W2B/z1_m": 9.0427914,
+  "solids/CN-A-PV-W2C/z0_m": 8.6784099,
+  "solids/CN-A-PV-W2C/z1_m": 8.6885699,
+  "solids/CN-A-PV-W2D/z0_m": 8.6784099,
+  "solids/CN-A-PV-W2D/z1_m": 8.6885699,
+  "solids/CN-A-PV-W3A/z0_m": 9.0326314,
+  "solids/CN-A-PV-W3A/z1_m": 9.0427914,
+  "solids/CN-A-PV-W3B/z0_m": 9.0326314,
+  "solids/CN-A-PV-W3B/z1_m": 9.0427914,
+  "solids/CN-A-PV-W3C/z0_m": 8.6784099,
+  "solids/CN-A-PV-W3C/z1_m": 8.6885699,
+  "solids/CN-A-PV-W3D/z0_m": 8.6784099,
+  "solids/CN-A-PV-W3D/z1_m": 8.6885699,
+  "solids/CN-A-PV-W4A/z0_m": 9.0326314,
+  "solids/CN-A-PV-W4A/z1_m": 9.0427914,
+  "solids/CN-A-PV-W4B/z0_m": 9.0326314,
+  "solids/CN-A-PV-W4B/z1_m": 9.0427914,
+  "solids/CN-A-PV-W4C/z0_m": 8.6784099,
+  "solids/CN-A-PV-W4C/z1_m": 8.6885699,
+  "solids/CN-A-PV-W4D/z0_m": 8.6784099,
+  "solids/CN-A-PV-W4D/z1_m": 8.6885699,
+  "solids/CN-A-PV-W5A/z0_m": 9.0326314,
+  "solids/CN-A-PV-W5A/z1_m": 9.0427914,
+  "solids/CN-A-PV-W5B/z0_m": 9.0326314,
+  "solids/CN-A-PV-W5B/z1_m": 9.0427914,
+  "solids/CN-A-PV-W5C/z0_m": 8.6784099,
+  "solids/CN-A-PV-W5C/z1_m": 8.6885699,
+  "solids/CN-A-PV-W5D/z0_m": 8.6784099,
+  "solids/CN-A-PV-W5D/z1_m": 8.6885699,
+  "solids/CN-A-PV-W6A/z0_m": 9.0326314,
+  "solids/CN-A-PV-W6A/z1_m": 9.0427914,
+  "solids/CN-A-PV-W6B/z0_m": 9.0326314,
+  "solids/CN-A-PV-W6B/z1_m": 9.0427914,
+  "solids/CN-A-PV-W6C/z0_m": 8.6784099,
+  "solids/CN-A-PV-W6C/z1_m": 8.6885699,
+  "solids/CN-A-PV-W6D/z0_m": 8.6784099,
+  "solids/CN-A-PV-W6D/z1_m": 8.6885699,
+  "solids/CN-A-WIND-RFNE-1/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFNE-1/z1_m": 6.4588494,
+  "solids/CN-A-WIND-RFNE-2/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFNE-2/z1_m": 6.4588494,
+  "solids/CN-A-WIND-RFNE-3/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFNE-3/z1_m": 6.4588494,
+  "solids/CN-A-WIND-RFNW-1/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFNW-1/z1_m": 6.4588494,
+  "solids/CN-A-WIND-RFNW-2/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFNW-2/z1_m": 6.4588494,
+  "solids/CN-A-WIND-RFNW-3/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFNW-3/z1_m": 6.4588494,
+  "solids/CN-A-WIND-RFSE-1/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFSE-1/z1_m": 6.4588494,
+  "solids/CN-A-WIND-RFSE-2/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFSE-2/z1_m": 6.4588494,
+  "solids/CN-A-WIND-RFSE-3/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFSE-3/z1_m": 6.4588494,
+  "solids/CN-A-WIND-RFSW-1/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFSW-1/z1_m": 6.4588494,
+  "solids/CN-A-WIND-RFSW-2/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFSW-2/z1_m": 6.4588494,
+  "solids/CN-A-WIND-RFSW-3/z0_m": 6.4138914,
+  "solids/CN-A-WIND-RFSW-3/z1_m": 6.4588494,
   "solids/CN-B-HD-BALC-E/z0_m": -2.9321125,
   "solids/CN-B-HD-BALC-E/z1_m": -1.9129375,
   "solids/CN-B-HD-BALC-W/z0_m": -2.9321125,
@@ -106520,11 +106520,11 @@
   "solids/TR-BW-BRICK-HEAD-1/z0_m": 1.196176,
   "solids/TR-BW-BRICK-HEAD-1/z1_m": 1.216025,
   "solids/TR-BW-HOOD-E-APRON/z0_m": 2.251075,
-  "solids/TR-BW-HOOD-E-APRON/z1_m": 2.4613682,
+  "solids/TR-BW-HOOD-E-APRON/z1_m": 2.4571848,
   "solids/TR-BW-HOOD-E/z0_m": 2.21615,
   "solids/TR-BW-HOOD-E/z1_m": 2.2750198,
   "solids/TR-BW-HOOD-W-APRON/z0_m": 2.251075,
-  "solids/TR-BW-HOOD-W-APRON/z1_m": 2.4613682,
+  "solids/TR-BW-HOOD-W-APRON/z1_m": 2.4571848,
   "solids/TR-BW-HOOD-W/z0_m": 2.21615,
   "solids/TR-BW-HOOD-W/z1_m": 2.2750198,
   "solids/TR-BW-SCREEN-CAP/z0_m": 1.23825,
@@ -106553,30 +106553,30 @@
   "solids/TR-G-STEMZ-S1-1/z1_m": -0.254,
   "solids/TR-G-STEMZ-W-1/z0_m": -0.3429,
   "solids/TR-G-STEMZ-W-1/z1_m": -0.254,
-  "solids/TR-RF-GUTTER-E-1-BACK/z0_m": 6.1879097,
-  "solids/TR-RF-GUTTER-E-1-BACK/z1_m": 6.3149097,
-  "solids/TR-RF-GUTTER-E-1-BOTTOM/z0_m": 6.1879097,
-  "solids/TR-RF-GUTTER-E-1-BOTTOM/z1_m": 6.2006097,
-  "solids/TR-RF-GUTTER-E-1-FRONT/z0_m": 6.1879097,
-  "solids/TR-RF-GUTTER-E-1-FRONT/z1_m": 6.3149097,
-  "solids/TR-RF-GUTTER-W-1-BACK/z0_m": 6.1879097,
-  "solids/TR-RF-GUTTER-W-1-BACK/z1_m": 6.3149097,
-  "solids/TR-RF-GUTTER-W-1-BOTTOM/z0_m": 6.1879097,
-  "solids/TR-RF-GUTTER-W-1-BOTTOM/z1_m": 6.2006097,
-  "solids/TR-RF-GUTTER-W-1-FRONT/z0_m": 6.1879097,
-  "solids/TR-RF-GUTTER-W-1-FRONT/z1_m": 6.3149097,
+  "solids/TR-RF-GUTTER-E-1-BACK/z0_m": 6.1867383,
+  "solids/TR-RF-GUTTER-E-1-BACK/z1_m": 6.3137383,
+  "solids/TR-RF-GUTTER-E-1-BOTTOM/z0_m": 6.1867383,
+  "solids/TR-RF-GUTTER-E-1-BOTTOM/z1_m": 6.1994383,
+  "solids/TR-RF-GUTTER-E-1-FRONT/z0_m": 6.1867383,
+  "solids/TR-RF-GUTTER-E-1-FRONT/z1_m": 6.3137383,
+  "solids/TR-RF-GUTTER-W-1-BACK/z0_m": 6.1867383,
+  "solids/TR-RF-GUTTER-W-1-BACK/z1_m": 6.3137383,
+  "solids/TR-RF-GUTTER-W-1-BOTTOM/z0_m": 6.1867383,
+  "solids/TR-RF-GUTTER-W-1-BOTTOM/z1_m": 6.1994383,
+  "solids/TR-RF-GUTTER-W-1-FRONT/z0_m": 6.1867383,
+  "solids/TR-RF-GUTTER-W-1-FRONT/z1_m": 6.3137383,
   "solids/TR-RF-LEADER-E-EXT-RISER/z0_m": -1.2192,
   "solids/TR-RF-LEADER-E-EXT-RISER/z1_m": 0.3048,
   "solids/TR-RF-LEADER-E-EXT/z0_m": -1.2699966,
   "solids/TR-RF-LEADER-E-EXT/z1_m": -1.1176034,
   "solids/TR-RF-LEADER-E/z0_m": 0.3048,
-  "solids/TR-RF-LEADER-E/z1_m": 6.1879097,
+  "solids/TR-RF-LEADER-E/z1_m": 6.1867383,
   "solids/TR-RF-LEADER-W-EXT-RISER/z0_m": -1.016,
   "solids/TR-RF-LEADER-W-EXT-RISER/z1_m": 0.3048,
   "solids/TR-RF-LEADER-W-EXT/z0_m": -1.1937588,
   "solids/TR-RF-LEADER-W-EXT/z1_m": -0.9144412,
   "solids/TR-RF-LEADER-W/z0_m": 0.3048,
-  "solids/TR-RF-LEADER-W/z1_m": 6.1879097,
+  "solids/TR-RF-LEADER-W/z1_m": 6.1867383,
   "solids/TR-SG-BASE-FLASH-E-1/z0_m": 3.0691667,
   "solids/TR-SG-BASE-FLASH-E-1/z1_m": 3.1601833,
   "solids/TR-SG-BASE-FLASH-W-1/z0_m": 3.0691667,
@@ -106647,24 +106647,24 @@
   "solids/TRIM-N-M-SW-WIDE-CORNER-2/z1_m": 6.477,
   "solids/TRIM-W-A-N1-RAKE_TOP-1/z0_m": 6.45795,
   "solids/TRIM-W-A-N1-RAKE_TOP-1/z1_m": 6.4862364,
-  "solids/TRIM-W-A-N1-RAKE_TOP-2/z0_m": 6.4006347,
-  "solids/TRIM-W-A-N1-RAKE_TOP-2/z1_m": 9.2390847,
-  "solids/TRIM-W-A-N2-RAKE_TOP-3/z0_m": 6.4006347,
-  "solids/TRIM-W-A-N2-RAKE_TOP-3/z1_m": 8.0198847,
+  "solids/TRIM-W-A-N1-RAKE_TOP-2/z0_m": 6.3994633,
+  "solids/TRIM-W-A-N1-RAKE_TOP-2/z1_m": 9.2379133,
+  "solids/TRIM-W-A-N2-RAKE_TOP-3/z0_m": 6.3994633,
+  "solids/TRIM-W-A-N2-RAKE_TOP-3/z1_m": 8.0187133,
   "solids/TRIM-W-A-N2-RAKE_TOP-4/z0_m": 6.45795,
   "solids/TRIM-W-A-N2-RAKE_TOP-4/z1_m": 6.4860178,
-  "solids/TRIM-W-A-N2B-RAKE_TOP-5/z0_m": 8.0008347,
-  "solids/TRIM-W-A-N2B-RAKE_TOP-5/z1_m": 9.2390847,
+  "solids/TRIM-W-A-N2B-RAKE_TOP-5/z0_m": 7.9996633,
+  "solids/TRIM-W-A-N2B-RAKE_TOP-5/z1_m": 9.2379133,
   "solids/TRIM-W-A-S1-RAKE_TOP-6/z0_m": 6.45795,
   "solids/TRIM-W-A-S1-RAKE_TOP-6/z1_m": 6.4859445,
-  "solids/TRIM-W-A-S1-RAKE_TOP-7/z0_m": 6.4006347,
-  "solids/TRIM-W-A-S1-RAKE_TOP-7/z1_m": 7.8166847,
-  "solids/TRIM-W-A-S2-RAKE_TOP-8/z0_m": 7.7976347,
-  "solids/TRIM-W-A-S2-RAKE_TOP-8/z1_m": 9.2390847,
+  "solids/TRIM-W-A-S1-RAKE_TOP-7/z0_m": 6.3994633,
+  "solids/TRIM-W-A-S1-RAKE_TOP-7/z1_m": 7.8155133,
+  "solids/TRIM-W-A-S2-RAKE_TOP-8/z0_m": 7.7964633,
+  "solids/TRIM-W-A-S2-RAKE_TOP-8/z1_m": 9.2379133,
   "solids/TRIM-W-A-S3-RAKE_TOP-10/z0_m": 6.45795,
   "solids/TRIM-W-A-S3-RAKE_TOP-10/z1_m": 6.4862364,
-  "solids/TRIM-W-A-S3-RAKE_TOP-9/z0_m": 6.4006347,
-  "solids/TRIM-W-A-S3-RAKE_TOP-9/z1_m": 9.2390847,
+  "solids/TRIM-W-A-S3-RAKE_TOP-9/z0_m": 6.3994633,
+  "solids/TRIM-W-A-S3-RAKE_TOP-9/z1_m": 9.2379133,
   "solids/TRIM-W-BW-SCREEN-END-HI-1/z0_m": -0.023876,
   "solids/TRIM-W-BW-SCREEN-END-HI-1/z1_m": 1.2192,
   "solids/TRIM-W-BW-SCREEN-END-LO-1/z0_m": -0.023876,
@@ -106763,14 +106763,14 @@
   "solids/TRIM-W-M-W4-BASE-S1-1/z1_m": -0.2746375,
   "solids/TRIM-W-M-W4-BASE-S1-2/z0_m": -0.352966,
   "solids/TRIM-W-M-W4-BASE-S1-2/z1_m": -0.2746375,
-  "solids/TRIM-W-S-E1-EAVE_TOP-11/z0_m": 6.3926972,
-  "solids/TRIM-W-S-E1-EAVE_TOP-11/z1_m": 6.4117472,
-  "solids/TRIM-W-S-E2-EAVE_TOP-12/z0_m": 6.3926972,
-  "solids/TRIM-W-S-E2-EAVE_TOP-12/z1_m": 6.4117472,
-  "solids/TRIM-W-S-E3-EAVE_TOP-13/z0_m": 6.3926972,
-  "solids/TRIM-W-S-E3-EAVE_TOP-13/z1_m": 6.4117472,
-  "solids/TRIM-W-S-E4-EAVE_TOP-14/z0_m": 6.3926972,
-  "solids/TRIM-W-S-E4-EAVE_TOP-14/z1_m": 6.4117472,
+  "solids/TRIM-W-S-E1-EAVE_TOP-11/z0_m": 6.3915258,
+  "solids/TRIM-W-S-E1-EAVE_TOP-11/z1_m": 6.4105758,
+  "solids/TRIM-W-S-E2-EAVE_TOP-12/z0_m": 6.3915258,
+  "solids/TRIM-W-S-E2-EAVE_TOP-12/z1_m": 6.4105758,
+  "solids/TRIM-W-S-E3-EAVE_TOP-13/z0_m": 6.3915258,
+  "solids/TRIM-W-S-E3-EAVE_TOP-13/z1_m": 6.4105758,
+  "solids/TRIM-W-S-E4-EAVE_TOP-14/z0_m": 6.3915258,
+  "solids/TRIM-W-S-E4-EAVE_TOP-14/z1_m": 6.4105758,
   "solids/TRIM-W-S-N1-BAND-208-1/z0_m": 5.2174851,
   "solids/TRIM-W-S-N1-BAND-208-1/z1_m": 5.334,
   "solids/TRIM-W-S-N1-BAND-208-2/z0_m": 5.2174851,
@@ -106791,16 +106791,16 @@
   "solids/TRIM-W-S-S2-BAND-208-1/z1_m": 5.334,
   "solids/TRIM-W-S-S2-BAND-208-2/z0_m": 5.2174851,
   "solids/TRIM-W-S-S2-BAND-208-2/z1_m": 5.334,
-  "solids/TRIM-W-S-W1-EAVE_TOP-15/z0_m": 6.3926972,
-  "solids/TRIM-W-S-W1-EAVE_TOP-15/z1_m": 6.4117472,
-  "solids/TRIM-W-S-W1B-EAVE_TOP-16/z0_m": 6.3926972,
-  "solids/TRIM-W-S-W1B-EAVE_TOP-16/z1_m": 6.4117472,
-  "solids/TRIM-W-S-W2-EAVE_TOP-17/z0_m": 6.3926972,
-  "solids/TRIM-W-S-W2-EAVE_TOP-17/z1_m": 6.4117472,
-  "solids/TRIM-W-S-W3-EAVE_TOP-18/z0_m": 6.3926972,
-  "solids/TRIM-W-S-W3-EAVE_TOP-18/z1_m": 6.4117472,
-  "solids/TRIM-W-S-W4-EAVE_TOP-19/z0_m": 6.3926972,
-  "solids/TRIM-W-S-W4-EAVE_TOP-19/z1_m": 6.4117472,
+  "solids/TRIM-W-S-W1-EAVE_TOP-15/z0_m": 6.3915258,
+  "solids/TRIM-W-S-W1-EAVE_TOP-15/z1_m": 6.4105758,
+  "solids/TRIM-W-S-W1B-EAVE_TOP-16/z0_m": 6.3915258,
+  "solids/TRIM-W-S-W1B-EAVE_TOP-16/z1_m": 6.4105758,
+  "solids/TRIM-W-S-W2-EAVE_TOP-17/z0_m": 6.3915258,
+  "solids/TRIM-W-S-W2-EAVE_TOP-17/z1_m": 6.4105758,
+  "solids/TRIM-W-S-W3-EAVE_TOP-18/z0_m": 6.3915258,
+  "solids/TRIM-W-S-W3-EAVE_TOP-18/z1_m": 6.4105758,
+  "solids/TRIM-W-S-W4-EAVE_TOP-19/z0_m": 6.3915258,
+  "solids/TRIM-W-S-W4-EAVE_TOP-19/z1_m": 6.4105758,
   "solids/TRL-W-N-P1/z0_m": -1.778,
   "solids/TRL-W-N-P1/z1_m": 1.27,
   "solids/TRL-W-N-P2/z0_m": -1.778,
@@ -106858,7 +106858,7 @@
   "solids/VR-M-STACK-radon-OUT6/z0_m": 7.2973956,
   "solids/VR-M-STACK-radon-OUT6/z1_m": 7.3025,
   "solids/VR-M-STACK-radon-TERM/z0_m": 7.2644,
-  "solids/VR-M-STACK-radon-TERM/z1_m": 8.2171928,
+  "solids/VR-M-STACK-radon-TERM/z1_m": 8.2160214,
   "solids/VR-M-STACK-vent-CHASE/z0_m": -2.6924,
   "solids/VR-M-STACK-vent-CHASE/z1_m": 5.9436,
   "solids/VR-M-STACK-vent-CHASE2/z0_m": 5.9436,
@@ -106888,7 +106888,7 @@
   "solids/VR-M-STACK-vent-OUT6/z0_m": 7.2973956,
   "solids/VR-M-STACK-vent-OUT6/z1_m": 7.3025,
   "solids/VR-M-STACK-vent-TERM/z0_m": 7.2644,
-  "solids/VR-M-STACK-vent-TERM/z1_m": 8.2959328,
+  "solids/VR-M-STACK-vent-TERM/z1_m": 8.2947614,
   "solids/W-M-E1-BASEZ-1/z0_m": -0.3614206,
   "solids/W-M-E1-BASEZ-1/z1_m": -0.2894963,
   "solids/W-M-E1-BASEZ-2/z0_m": -0.3614206,

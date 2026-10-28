@@ -148,10 +148,10 @@ def test_nailers_read_their_own_nails_at_their_own_species(catlin_ctx):
     record = next(r for r in compute(catlin_ctx.engineering.context)
                   if r.item_id == "lateral_system/RF-BW-CANOPY")
     states = {s.name: s for s in record.limit_states}
-    # §3b: 9 x 135.00 SPF nailer, 9 x 135.00 SPF end block, 8 x 135.00 SPF; 262.67 lb each after the 2026-10-26 matching east-tail extension.
-    for name, capacity in (("CN-BW-JOINT-2 RF-BW-CANOPY", 1215.0),
-                           ("CN-BW-JOINT-1 RF-BW-CANOPY", 1215.0),
-                           ("CN-BW-JOINT-2 RF-GARAGE", 1080.0)):
+    # §3b: the 19/32-inch deck gives 119.933 lb per nail at wind duration.
+    for name, capacity in (("CN-BW-JOINT-2 RF-BW-CANOPY", 1079.395),
+                           ("CN-BW-JOINT-1 RF-BW-CANOPY", 1079.395),
+                           ("CN-BW-JOINT-2 RF-GARAGE", 959.462)):
         state = states[f"{name} nailer into deck"]
         assert state.capacity == pytest.approx(capacity, abs=0.1)
         assert state.demand == pytest.approx(262.67, abs=0.05)
