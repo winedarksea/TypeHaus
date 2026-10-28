@@ -15,7 +15,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from typehaus.emit.draw import build_floorplan, write_dxf, write_raster
+from typehaus.emit.draw import write_dxf, write_raster
 from typehaus.emit.draw.door_symbols import (
     BYPASS_OVERLAP_IN,
     BYPASS_TRACK_SPACING_IN,
@@ -357,9 +357,9 @@ def _mirror_across_the_opening_centre(point, rotation_deg: float):
 # --- the floorplan builder --------------------------------------------------------
 
 
-def test_catlin_garage_door_emits_the_overhead_symbol(catlin_model):
+def test_catlin_garage_door_emits_the_overhead_symbol(catlin_floorplan, catlin_model):
     garage_door = next(op for op in catlin_model.openings if op.tag == "D-G-OVERHEAD")
-    symbols = {node.uid: node for node in build_floorplan(catlin_model, "garage").nodes
+    symbols = {node.uid: node for node in catlin_floorplan("garage").nodes
                if isinstance(node, Symbol)}
     overhead = symbols[garage_door.uid]
     assert overhead.name == DOOR_OVERHEAD, "the 16 ft sectional must not draw a swing arc"
@@ -368,17 +368,17 @@ def test_catlin_garage_door_emits_the_overhead_symbol(catlin_model):
     assert not door_symbol_geometry(overhead).arcs
 
 
-def test_catlin_interior_bifolds_emit_the_bifold_symbol(catlin_model):
+def test_catlin_interior_bifolds_emit_the_bifold_symbol(catlin_floorplan):
     """O-S-CLOSET is the house's only bifold, and it lives on ``second``."""
-    names = {node.name for node in build_floorplan(catlin_model, "second").nodes
+    names = {node.name for node in catlin_floorplan("second").nodes
              if isinstance(node, Symbol)}
     assert DOOR_BIFOLD in names
 
 
-def test_catlin_laundry_door_emits_the_pocket_symbol(catlin_model):
+def test_catlin_laundry_door_emits_the_pocket_symbol(catlin_floorplan, catlin_model):
     """D-M-LAUN is the house's (and the repo's) first authored pocket door."""
     laundry = next(op for op in catlin_model.openings if op.tag == "D-M-LAUN")
-    symbols = {node.uid: node for node in build_floorplan(catlin_model, "main").nodes
+    symbols = {node.uid: node for node in catlin_floorplan("main").nodes
                if isinstance(node, Symbol)}
     assert symbols[laundry.uid].name == DOOR_POCKET
     # A pocket sweeps nothing: no arc, and no swing clearance ring to conflict with the
@@ -404,9 +404,9 @@ def test_synthetic_slide_door_emits_the_sliding_symbol():
 
 
 @pytest.mark.parametrize("storey", ["garage", "main"])
-def test_new_symbols_survive_both_writers(catlin_model, tmp_path, storey):
+def test_new_symbols_survive_both_writers(catlin_floorplan, tmp_path, storey):
     """Garage carries the sectional; main carries the bifolds and the alarms."""
-    scene = build_floorplan(catlin_model, storey)
+    scene = catlin_floorplan(storey)
     assert write_dxf(scene, tmp_path / f"{storey}.dxf").exists()
     assert write_raster(scene, tmp_path / f"{storey}.png").exists()
 
@@ -419,25 +419,25 @@ def test_new_symbols_survive_both_writers(catlin_model, tmp_path, storey):
 WINDOW_MARK_SYMBOL = "window-mark"
 
 
-def test_every_floorplan_symbol_is_drawn_by_both_writers(catlin_model):
+def test_every_floorplan_symbol_is_drawn_by_both_writers(catlin_floorplan, catlin_model):
     from typehaus.emit.draw.dxf_writer import SYMBOL_NAMES_WITH_DEDICATED_GLYPH as DXF_GLYPHS
     from typehaus.emit.draw.pdf_writer import SYMBOL_NAMES_WITH_DEDICATED_GLYPH as PDF_GLYPHS
 
     emitted = {node.name
                for storey in catlin_model.plan.storeys
-               for node in build_floorplan(catlin_model, storey.tag).nodes
+               for node in catlin_floorplan(storey.tag).nodes
                if isinstance(node, Symbol)}
     assert emitted, "the catlin plans draw symbols"
     assert emitted - PDF_GLYPHS == {WINDOW_MARK_SYMBOL}, "unstyled names draw as glazing (PDF)"
     assert emitted - DXF_GLYPHS == {WINDOW_MARK_SYMBOL}, "unstyled names draw as glazing (DXF)"
 
 
-def test_the_alarm_marker_is_styled_rather_than_drawn_as_a_window(catlin_model):
+def test_the_alarm_marker_is_styled_rather_than_drawn_as_a_window(catlin_floorplan, catlin_model):
     from typehaus.emit.draw.dxf_writer import _DEVICE_SYMBOLS
     from typehaus.emit.draw.pdf_writer import _MARKER_STYLE
 
     alarms = [node for storey in catlin_model.plan.storeys
-              for node in build_floorplan(catlin_model, storey.tag).nodes
+              for node in catlin_floorplan(storey.tag).nodes
               if isinstance(node, Symbol) and node.name == "alarm"]
     assert alarms, "the catlin plan places smoke/CO alarms"
     assert "alarm" in _MARKER_STYLE and "alarm" in _DEVICE_SYMBOLS

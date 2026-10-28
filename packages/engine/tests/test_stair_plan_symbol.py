@@ -19,7 +19,6 @@ import math
 import pytest
 from shapely.geometry import LineString, Polygon
 
-from typehaus.emit.draw import build_floorplan
 from typehaus.emit.draw.scene import Polyline, Text
 from typehaus.emit.draw.stair_symbol import PLAN_CUT_HEIGHT_M
 from typehaus.quantities import M_PER_IN
@@ -30,20 +29,20 @@ def _stair(model, tag):
     return next(stair for stair in model.stairs if stair.tag == tag)
 
 
-def _nodes(model, storey, uid=None, layer="A-STAIR"):
-    return [node for node in build_floorplan(model, storey).nodes
+def _nodes(plans, storey, uid=None, layer="A-STAIR"):
+    return [node for node in plans(storey).nodes
             if getattr(node, "layer", None) == layer
             and (uid is None or getattr(node, "uid", None) == uid)]
 
 
-def _polys(model, storey, uid=None, layer="A-STAIR"):
-    return [node for node in _nodes(model, storey, uid, layer)
+def _polys(plans, storey, uid=None, layer="A-STAIR"):
+    return [node for node in _nodes(plans, storey, uid, layer)
             if isinstance(node, Polyline)]
 
 
-def _member_tags(model, storey, stair):
+def _member_tags(plans, storey, stair):
     keys = {member.child_key for member in stair.members}
-    return {node.tag for node in _polys(model, storey, stair.uid) if node.tag in keys}
+    return {node.tag for node in _polys(plans, storey, stair.uid) if node.tag in keys}
 
 
 def _cut_z(model, storey):
@@ -53,7 +52,8 @@ def _cut_z(model, storey):
 # ----------------------------------------------------------------- 1. the cut plane
 @pytest.mark.parametrize("tag,storey", [("ST-B2M", "basement"), ("ST-M2S", "main"),
                                         ("ST-S2A", "second")])
-def test_a_departing_flight_is_cut_at_the_plan_cut_plane(catlin_model, tag, storey):
+def test_a_departing_flight_is_cut_at_the_plan_cut_plane(catlin_floorplan, catlin_model,
+                                                         tag, storey):
     """A plan is a horizontal cut 4'-0" up: everything above it is not in this drawing.
 
     One predicate, no storey branch — a walking surface draws iff its top is at or below
@@ -66,31 +66,32 @@ def test_a_departing_flight_is_cut_at_the_plan_cut_plane(catlin_model, tag, stor
     cut = _cut_z(catlin_model, storey)
     surfaces = {m.child_key: m.z1_m for m in stair.members
                 if m.category in ("tread", "winder", "landing") and m.p0 != m.p1}
-    drawn = _member_tags(catlin_model, storey, stair)
+    drawn = _member_tags(catlin_floorplan, storey, stair)
     assert drawn, (tag, storey)
     assert any(z > cut for z in surfaces.values()), "nothing to cut — pick another case"
     for key in drawn:
         assert surfaces[key] <= cut + 1e-9, (tag, storey, key)
 
 
-def test_a_within_storey_step_is_never_cut(catlin_model):
+def test_a_within_storey_step_is_never_cut(catlin_floorplan, catlin_model):
     """A 5-riser step-down never reaches the cut, so all of it draws — no special case."""
     stair = _stair(catlin_model, "ST-SG-PORCH")
     surfaces = {m.child_key for m in stair.members
                 if m.category in ("tread", "winder", "landing") and m.p0 != m.p1}
-    drawn = _member_tags(catlin_model, "main", stair)
+    drawn = _member_tags(catlin_floorplan, "main", stair)
     # Every surface either drew, or was suppressed by the ledger as a duplicate of the
     # flight's own footprint ring — never by the cut.
     assert drawn <= surfaces
     assert len(drawn) >= len(surfaces) - 1
-    assert not [node for node in _polys(catlin_model, "main", stair.uid)
+    assert not [node for node in _polys(catlin_floorplan, "main", stair.uid)
                 if node.tag.startswith(f"{stair.tag}-break")]
 
 
 # ----------------------------------------------------------------- 2. the break line
 @pytest.mark.parametrize("tag,storey", [("ST-B2M", "basement"), ("ST-M2S", "main"),
                                         ("ST-S2A", "second")])
-def test_a_departing_flight_gets_exactly_one_break_line(catlin_model, tag, storey):
+def test_a_departing_flight_gets_exactly_one_break_line(catlin_floorplan, catlin_model,
+                                                        tag, storey):
     """Two parallel diagonals, at the walk line's own crossing of the cut elevation.
 
     It cannot be pinned to a riser line: ST-B2M's break on the basement plan lands on a
@@ -98,7 +99,7 @@ def test_a_departing_flight_gets_exactly_one_break_line(catlin_model, tag, store
     tread, a landing edge and a winder fan alike.
     """
     stair = _stair(catlin_model, tag)
-    breaks = sorted((node for node in _polys(catlin_model, storey, stair.uid)
+    breaks = sorted((node for node in _polys(catlin_floorplan, storey, stair.uid)
                      if node.tag.startswith(f"{tag}-break")), key=lambda n: n.tag)
     assert [node.tag for node in breaks] == [f"{tag}-break-0", f"{tag}-break-1"]
     first, second = (LineString(node.points) for node in breaks)
@@ -121,24 +122,24 @@ def test_a_departing_flight_gets_exactly_one_break_line(catlin_model, tag, store
     assert first.distance(centre) < 8.0   # within a going of the crossing, both sides
 
 
-def test_an_arriving_only_plan_has_no_break_line(catlin_model):
+def test_an_arriving_only_plan_has_no_break_line(catlin_floorplan, catlin_model):
     """Nothing was excluded, so nothing is broken — and no special case says so."""
     for tag, storey in (("ST-B2M", "main"), ("ST-M2S", "second"), ("ST-S2A", "attic")):
         stair = _stair(catlin_model, tag)
-        assert not [node for node in _polys(catlin_model, storey, stair.uid)
+        assert not [node for node in _polys(catlin_floorplan, storey, stair.uid)
                     if node.tag.startswith(f"{tag}-break")], (tag, storey)
 
 
-def test_level_turn_draws_one_landing_outline(catlin_model):
+def test_level_turn_draws_one_landing_outline(catlin_floorplan, catlin_model):
     stair = _stair(catlin_model, "ST-M2S")
-    tags = [node.tag for node in _polys(catlin_model, "second", stair.uid)]
+    tags = [node.tag for node in _polys(catlin_floorplan, "second", stair.uid)]
     assert tags.count("landing-level") == 1
     assert "landing-lower" not in tags and "landing-upper" not in tags
     assert tags.count("ST-M2S-travel") == 1
 
 
 # ----------------------------------------------------------------- 3. occlusion
-def test_an_arriving_flight_is_hidden_under_the_departing_one(catlin_model):
+def test_an_arriving_flight_is_hidden_under_the_departing_one(catlin_floorplan, catlin_model):
     """From above, the flight coming up hides the one going down where they overlap.
 
     Occluded on THE POINT the line marks, not on a fraction of the tread board's area: an
@@ -146,8 +147,8 @@ def test_an_arriving_flight_is_hidden_under_the_departing_one(catlin_model):
     board pokes 2.7" of 11" past ST-M2S's break, so any fraction below 25% leaves one
     orphan riser line stranded behind the break line.
     """
-    departing = _member_tags(catlin_model, "main", _stair(catlin_model, "ST-M2S"))
-    arriving = _member_tags(catlin_model, "main", _stair(catlin_model, "ST-B2M"))
+    departing = _member_tags(catlin_floorplan, "main", _stair(catlin_model, "ST-M2S"))
+    arriving = _member_tags(catlin_floorplan, "main", _stair(catlin_model, "ST-B2M"))
     # ST-M2S climbs the east lane and is cut: six risers from the deck edge to the break.
     assert {t for t in departing if t.startswith("tread-lower-")} == {
         f"tread-lower-{i:03d}" for i in range(6)}
@@ -160,12 +161,12 @@ def test_an_arriving_flight_is_hidden_under_the_departing_one(catlin_model):
     assert {"landing-lower", "landing-upper"} <= arriving
 
 
-def test_a_well_with_one_flight_draws_it_whole(catlin_model):
+def test_a_well_with_one_flight_draws_it_whole(catlin_floorplan, catlin_model):
     """No neighbour, so the band union is empty and nothing is hidden. No special case."""
     stair = _stair(catlin_model, "ST-S2A")
     surfaces = {m.child_key for m in stair.members
                 if m.category in ("tread", "winder") and m.p0 != m.p1}
-    drawn = _member_tags(catlin_model, "attic", stair)
+    drawn = _member_tags(catlin_floorplan, "attic", stair)
     # One face per riser: every tread draws except the one the opening ring itself covers.
     assert len(drawn) >= len(surfaces) - 1
     assert drawn <= surfaces
@@ -173,7 +174,7 @@ def test_a_well_with_one_flight_draws_it_whole(catlin_model):
 
 # ----------------------------------------------------------------- 4. the travel line
 @pytest.mark.parametrize("tag,storey", [("ST-M2S", "second"), ("ST-S2A", "attic")])
-def test_the_travel_line_follows_the_walk_line(catlin_model, tag, storey):
+def test_the_travel_line_follows_the_walk_line(catlin_floorplan, catlin_model, tag, storey):
     """Every vertex is a walking station's midpoint — never a bounding-box centreline.
 
     The old symbol drew one straight segment between the two ends of ``stair.outline``,
@@ -182,7 +183,7 @@ def test_the_travel_line_follows_the_walk_line(catlin_model, tag, storey):
     zone; on a winder it runs one straight segment across the fan.
     """
     stair = _stair(catlin_model, tag)
-    travel = next(node for node in _polys(catlin_model, storey, stair.uid)
+    travel = next(node for node in _polys(catlin_floorplan, storey, stair.uid)
                   if node.tag == f"{tag}-travel")
     mids = {(round(((a[0] + b[0]) / 2.0) / M_PER_IN, 6),
              round(((a[1] + b[1]) / 2.0) / M_PER_IN, 6))
@@ -196,25 +197,26 @@ def test_the_travel_line_follows_the_walk_line(catlin_model, tag, storey):
     assert order  # the route exists; the per-vertex membership above is the real assertion
 
 
-def test_the_travel_line_is_clipped_at_the_break(catlin_model):
+def test_the_travel_line_is_clipped_at_the_break(catlin_floorplan, catlin_model):
     """A departing flight's travel line ends at the break, arrow pointing into it."""
     stair = _stair(catlin_model, "ST-M2S")
-    travel = next(node for node in _polys(catlin_model, "main", stair.uid)
+    travel = next(node for node in _polys(catlin_floorplan, "main", stair.uid)
                   if node.tag == "ST-M2S-travel")
-    breaks = [node for node in _polys(catlin_model, "main", stair.uid)
+    breaks = [node for node in _polys(catlin_floorplan, "main", stair.uid)
               if node.tag.startswith("ST-M2S-break")]
     end = travel.points[-1]
     assert min(LineString(node.points).distance(
         LineString([end, end]).centroid) for node in breaks) < 6.0
     # ...and the arriving flight below it starts where the departing one's band ends,
     # rather than running out from under it.
-    below = next(node for node in _polys(catlin_model, "main",
+    below = next(node for node in _polys(catlin_floorplan, "main",
                                          _stair(catlin_model, "ST-B2M").uid)
                  if node.tag == "ST-B2M-travel")
     assert below.points[0][1] > _stair(catlin_model, "ST-B2M").outline[0][1] / M_PER_IN
 
 
-def test_the_travel_line_has_an_arrow_at_the_top_and_a_tick_at_the_start(catlin_model):
+def test_the_travel_line_has_an_arrow_at_the_top_and_a_tick_at_the_start(catlin_floorplan,
+                                                                         catlin_model):
     """Both as plain IR geometry — a three-point V and a perpendicular tick.
 
     ``span-arrow``, the only arrow in the symbol vocabulary, renders as a bare LINE with no
@@ -223,7 +225,7 @@ def test_the_travel_line_has_an_arrow_at_the_top_and_a_tick_at_the_start(catlin_
     tests. ``Leader`` is not an option either — it requires ``text``.
     """
     stair = _stair(catlin_model, "ST-S2A")
-    drawn = {node.tag: node for node in _polys(catlin_model, "attic", stair.uid)}
+    drawn = {node.tag: node for node in _polys(catlin_floorplan, "attic", stair.uid)}
     travel, arrow, tick = (drawn["ST-S2A-travel"], drawn["ST-S2A-arrow"],
                            drawn["ST-S2A-start"])
     assert len(arrow.points) == 3 and not arrow.closed
@@ -239,7 +241,7 @@ def test_the_travel_line_has_an_arrow_at_the_top_and_a_tick_at_the_start(catlin_
 
 
 # ----------------------------------------------------------------- 5. the ledger
-def test_no_stair_line_is_doubled_on_a_landing_edge(catlin_model):
+def test_no_stair_line_is_doubled_on_a_landing_edge(catlin_floorplan, catlin_model):
     """One line per riser face, and each face drawn by exactly ONE owner.
 
     On the second-floor plan the upper flight's springing riser lies on ``landing-upper``'s
@@ -253,8 +255,8 @@ def test_no_stair_line_is_doubled_on_a_landing_edge(catlin_model):
         keys = {member.child_key for stair in catlin_model.stairs
                 for member in stair.members if member.category in ("tread", "winder")}
         risers, owners = [], []
-        for node in [*_polys(catlin_model, storey),
-                     *_polys(catlin_model, storey, layer="A-FLOR-OPEN")]:
+        for node in [*_polys(catlin_floorplan, storey),
+                     *_polys(catlin_floorplan, storey, layer="A-FLOR-OPEN")]:
             points = list(node.points)
             ends = [*points[1:], points[0]] if node.closed else points[1:]
             edges = list(zip(points, ends))
@@ -285,7 +287,7 @@ def _covers(p, q, a, b) -> bool:
     return min(ts) >= -1e-6 and max(ts) <= run + 1e-6
 
 
-def test_the_floor_opening_ring_closes_the_treads(catlin_model):
+def test_the_floor_opening_ring_closes_the_treads(catlin_floorplan, catlin_model):
     """A flight in a well is bounded by the well's ring; one with no well draws its own.
 
     Every ``FloorOpening`` is drawn once, on the plan of the deck it perforates — which for
@@ -293,18 +295,18 @@ def test_the_floor_opening_ring_closes_the_treads(catlin_model):
     nosing for free and nothing is drawn twice. A within-storey step-down cuts no deck and
     has no ring, so ``dispatch._flight_footprint``'s own outline is what closes its treads.
     """
-    rings = {node.tag for node in _polys(catlin_model, "second", layer="A-FLOR-OPEN")}
+    rings = {node.tag for node in _polys(catlin_floorplan, "second", layer="A-FLOR-OPEN")}
     assert "FO-S-STAIR" in rings
     # Two side edges per drawn tread flight, derived from the DRAWN marks so an occluded
     # flight leaves no stray line behind the break.
-    edges = {node.tag for node in _polys(catlin_model, "second",
+    edges = {node.tag for node in _polys(catlin_floorplan, "second",
                                          _stair(catlin_model, "ST-M2S").uid)
              if "-edge-" in node.tag}
     assert edges == {"tread-lower-edge-0", "tread-lower-edge-1",
                      "tread-upper-edge-0", "tread-upper-edge-1"}
     # The step-down with no opening draws its own footprint ring instead.
     porch = _stair(catlin_model, "ST-SG-PORCH")
-    well = next(node for node in _polys(catlin_model, "main", porch.uid)
+    well = next(node for node in _polys(catlin_floorplan, "main", porch.uid)
                 if node.tag == "ST-SG-PORCH-well")
     assert well.closed
     assert Polygon([(x * M_PER_IN, y * M_PER_IN) for x, y in well.points]).equals(
@@ -312,24 +314,24 @@ def test_the_floor_opening_ring_closes_the_treads(catlin_model):
 
 
 # ----------------------------------------------------------------- 6. the labels
-def test_the_up_and_down_labels_sit_on_their_own_lanes(catlin_model):
+def test_the_up_and_down_labels_sit_on_their_own_lanes(catlin_floorplan, catlin_model):
     """Two flights in one well no longer share a bbox centre, so nothing is nudged apart.
 
     "UP 16 R" and "UP 15 R" were printed on top of each other in the middle of one well —
     both reading UP, because which way a flight goes is a fact about the READER's storey.
     Each label now sits beside its own travel line, on the side away from the other one.
     """
-    texts = [node for node in _nodes(catlin_model, "main") if isinstance(node, Text)]
+    texts = [node for node in _nodes(catlin_floorplan, "main") if isinstance(node, Text)]
     up = next(node for node in texts if node.content == "UP 16 R")
     down = next(node for node in texts if node.content == "DN 15 R")
     lane = max(math.dist(node.points[0], node.points[-1])
-               for node in _polys(catlin_model, "main",
+               for node in _polys(catlin_floorplan, "main",
                                   _stair(catlin_model, "ST-M2S").uid)
                if node.tag.startswith("tread-lower-"))
     assert abs(up.anchor[0] - down.anchor[0]) >= lane
     # Each is nearer its OWN flight's travel line than the other's.
     for label, tag in ((up, "ST-M2S"), (down, "ST-B2M")):
-        own, other = (next(node for node in _polys(catlin_model, "main",
+        own, other = (next(node for node in _polys(catlin_floorplan, "main",
                                                    _stair(catlin_model, t).uid)
                            if node.tag == f"{t}-travel")
                       for t in ((tag, "ST-B2M") if tag == "ST-M2S" else (tag, "ST-M2S")))
@@ -338,7 +340,7 @@ def test_the_up_and_down_labels_sit_on_their_own_lanes(catlin_model):
             LineString(other.points).distance(point), label.content
 
 
-def test_a_floor_opening_says_what_is_over_it(catlin_model):
+def test_a_floor_opening_says_what_is_over_it(catlin_floorplan, catlin_model):
     """A-104 names the hole the attic's stair hall is, which is the whole of TODO 370.
 
     A hole in a deck and a deck look identical from above, and the architectural plan never
@@ -346,19 +348,19 @@ def test_a_floor_opening_says_what_is_over_it(catlin_model):
     question with a SECTION (``SL-D-STAIRVOID``) because the plan could not. There was no
     ``OPEN TO BELOW`` string anywhere in the repo.
     """
-    notes = [node for node in build_floorplan(catlin_model, "attic").nodes
+    notes = [node for node in catlin_floorplan("attic").nodes
              if isinstance(node, Text) and node.layer == "A-ANNO-TEXT"]
     captions = [node.content for node in notes]
     assert captions.count("OPEN TO STAIR BELOW") == 2   # FO-A-STAIR and FO-A-HALL
     # The ring is drawn too, and on its own layer.
-    rings = {node.tag for node in _polys(catlin_model, "attic", layer="A-FLOR-OPEN")}
+    rings = {node.tag for node in _polys(catlin_floorplan, "attic", layer="A-FLOR-OPEN")}
     holes = {tag for tag in catlin_model.plan.by_tag("FS-ATTIC").openings
              if tag not in ("FO-A-STAIR", "FO-A-HALL")}
     assert holes, "the attic deck's chase and riser holes"
     # The chase and riser holes (2026-09-24) draw their rings too; only the wells say BELOW.
     assert rings == {"FO-A-STAIR", "FO-A-HALL"} | holes
     # A chase says so, and nothing says "OPEN TO ABOVE" on the storey below.
-    main = [node.content for node in build_floorplan(catlin_model, "main").nodes
+    main = [node.content for node in catlin_floorplan("main").nodes
             if isinstance(node, Text) and node.layer == "A-ANNO-TEXT"]
     # Too narrow for the full caption, a chase shortens to CHASE rather than spill next door.
     assert "CHASE" in main

@@ -23,9 +23,9 @@ def _texts(scene, layer=None):
     return [n for n in scene.nodes if isinstance(n, Text) and (layer is None or n.layer == layer)]
 
 
-def test_tags_bubbles_and_room_blocks_are_at_least_3_32(catlin_model):
+def test_tags_bubbles_and_room_blocks_are_at_least_3_32(catlin_floorplan):
     assert TAG_PT >= DIM_STRING_PT and ROOM_NAME_PT > TAG_PT
-    scene = build_floorplan(catlin_model, "main")
+    scene = catlin_floorplan("main")
     rooms = _texts(scene, ROOM_LAYER)
     marks = _texts(scene, MARK_LAYER)
     assert rooms and marks

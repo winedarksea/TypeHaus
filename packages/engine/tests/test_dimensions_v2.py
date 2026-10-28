@@ -27,7 +27,6 @@ from typehaus.emit.draw._shared import (
     wall_face_bounds,
 )
 from typehaus.emit.draw.dimension_rows import STAGGER_ROWS, row_pitch_in, tier_offsets
-from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.roofplan import build_roof_plan
 from typehaus.emit.draw.scene import ArchDimension, Polyline, Symbol, Text
 from typehaus.quantities import M_PER_IN
@@ -39,8 +38,8 @@ TIER_BAND = ((STAGGER_ROWS - 1) * row_pitch_in() * 12.0 / PLAN_RESERVATION_SCALE
 
 
 @pytest.fixture(scope="module")
-def main_scene(catlin_model):
-    return build_floorplan(catlin_model, "main")
+def main_scene(catlin_floorplan):
+    return catlin_floorplan("main")
 
 
 @pytest.fixture(scope="module")
@@ -111,7 +110,8 @@ def test_the_overall_chain_measures_the_sheathing_face(catlin_model, main_scene)
         (face_maxx - face_minx) / M_PER_IN, abs=1e-6)
 
 
-def test_interior_chains_measure_partition_faces_and_close_on_the_envelope(catlin_model):
+def test_interior_chains_measure_partition_faces_and_close_on_the_envelope(catlin_floorplan,
+                                                                          catlin_model):
     """Both bearing directions, face to face, and each chain still sums to the overall.
 
     The sum is the property that makes a chain a chain: ``plan_dimensions`` merges crowded
@@ -119,7 +119,7 @@ def test_interior_chains_measure_partition_faces_and_close_on_the_envelope(catli
     """
     walls = [w for w in catlin_model.walls if w.storey == "main"]
     minx, maxx, miny, maxy = (v / M_PER_IN for v in wall_face_bounds(walls))
-    scene = build_floorplan(catlin_model, "main")
+    scene = catlin_floorplan("main")
     chains = [d for d in _dims(scene)
               if INTERIOR_OFFSET - 1e-6 <= abs(d.offset) <= INTERIOR_OFFSET + TIER_BAND]
     for horizontal, lo, hi in ((True, minx, maxx), (False, miny, maxy)):
@@ -201,8 +201,8 @@ def test_facade_opening_centerlines_appear_as_stations(catlin_model, main_scene)
     assert checked > 0  # catlin has openings hosted on facade walls
 
 
-def test_second_storey_also_gets_strings(catlin_model):
-    scene = build_floorplan(catlin_model, "second")
+def test_second_storey_also_gets_strings(catlin_floorplan, catlin_model):
+    scene = catlin_floorplan("second")
     bbox = _axis_bbox_in(catlin_model, "second")
     assert any(_facade_chain(scene, bbox, f)[0] for f in ("S", "N", "W", "E"))
 

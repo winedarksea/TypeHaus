@@ -141,12 +141,10 @@ def test_a_heat_detector_does_not_satisfy_the_bedroom_smoke_rule(catlin_model):
 
 # --- 4. the drawing -----------------------------------------------------------------------
 
-def test_the_detector_draws_as_HD_at_the_room_seed(catlin_model):
-    from typehaus.emit.draw.floorplan import build_floorplan
-
+def test_the_detector_draws_as_HD_at_the_room_seed(catlin_floorplan, catlin_model):
     from typehaus.emit.draw.floorplan import _in
 
-    scene = build_floorplan(catlin_model, "garage")
+    scene = catlin_floorplan("garage")
     labels = [node for node in scene.nodes if getattr(node, "content", None) == "HD"]
     assert len(labels) == 1
     garage = catlin_model.plan.by_tag("RM-GARAGE")

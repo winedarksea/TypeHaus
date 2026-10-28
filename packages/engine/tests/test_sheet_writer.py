@@ -8,7 +8,6 @@ import pytest
 
 from _helpers import CATLIN
 
-from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.paper import ARCH_SCALES
 from typehaus.emit.draw.pdf_writer import _scene_bounds
 from typehaus.emit.draw.scene import Polyline, Scene
@@ -111,9 +110,9 @@ def test_compose_sheet_title_block_contents(catlin_model):
     assert "N" in [t.get_text() for ax in fig.axes for t in ax.texts]  # north arrow
 
 
-def test_compose_sheet_scale_is_exact_data_per_inch(catlin_model):
+def test_compose_sheet_scale_is_exact_data_per_inch(catlin_floorplan, catlin_model):
     """The printed scale is the truth: model inches per figure inch == 12 / scale_in."""
-    scene = build_floorplan(catlin_model, "basement")
+    scene = catlin_floorplan("basement")
     spec = SheetSpec("A-101", "Basement floor plan")
     fig = compose_sheet(scene, spec, catlin_model)
     ax = fig.axes[0]
@@ -237,9 +236,9 @@ def test_paper_for_turns_any_paper_either_way():
         resolve_paper("a4")
 
 
-def test_arch_d_buys_a_bigger_scale_for_the_same_plan(catlin_model):
+def test_arch_d_buys_a_bigger_scale_for_the_same_plan(catlin_floorplan):
     """The point of the paper argument: a bigger viewport, so a bigger standard scale."""
-    scene = build_floorplan(catlin_model, "main")
+    scene = catlin_floorplan("main")
     on_ledger = frame_for_scene(scene, LEDGER)
     on_arch_d = frame_for_scene(scene, ARCH_D)
     assert on_arch_d.scale > on_ledger.scale

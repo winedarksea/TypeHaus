@@ -1138,19 +1138,18 @@ def test_catlin_has_required_smoke_co_alarm_coverage_and_json_symbols(
     assert garage["kind"] == "heat"
 
 
-def test_catlin_fixtures_render_as_footprints_and_serialize_services(catlin_model):
-    from typehaus.emit.draw.floorplan import build_floorplan
+def test_catlin_fixtures_render_as_footprints_and_serialize_services(catlin_floorplan,
+                                                                     catlin_model):
     from typehaus.server.model_json import model_to_dict
 
-    fixture_tags = {getattr(node, "tag", None) for node in build_floorplan(catlin_model, "main").nodes}
+    fixture_tags = {getattr(node, "tag", None) for node in catlin_floorplan("main").nodes}
     assert "FX-M-BATH1-WC" in fixture_tags
     fixtures = model_to_dict(catlin_model)["fixtures"]
     washer = next(item for item in fixtures if item["tag"] == "FX-M-LAUNDRY")
     assert {"water_hot", "water_cold", "drain", "power_240"} <= set(washer["needs"])
 
 
-def test_stairs_render_on_both_connected_storey_plans(catlin_model):
-    from typehaus.emit.draw.floorplan import build_floorplan
+def test_stairs_render_on_both_connected_storey_plans(catlin_floorplan, catlin_model):
 
     expected_uids = {
         "basement": {"CST701AAAA"},
@@ -1172,7 +1171,7 @@ def test_stairs_render_on_both_connected_storey_plans(catlin_model):
         # assertion unable to fail on a stair that should not be here.
         stair_uids = {stair.uid for stair in catlin_model.stairs}
         seen = {getattr(node, "uid", None)
-                for node in build_floorplan(catlin_model, storey).nodes
+                for node in catlin_floorplan(storey).nodes
                 if getattr(node, "uid", None) in stair_uids}
         assert seen == expected, storey
 

@@ -23,7 +23,6 @@ from types import SimpleNamespace
 import pytest
 
 from typehaus.checks.structural.stairs import stair_riser_uniformity
-from typehaus.emit.draw import build_floorplan
 from typehaus.emit.draw.scene import Polyline
 from typehaus.findings import Result
 from typehaus.model import (
@@ -498,11 +497,11 @@ def test_no_stair_member_is_degenerate(catlin_model):
             assert member.z1_m - member.z0_m > 1e-6, f"{stair.tag}:{member.child_key}"
 
 
-def test_plan_symbols_skip_zero_length_stair_members(catlin_model):
+def test_plan_symbols_skip_zero_length_stair_members(catlin_floorplan, catlin_model):
     """A vertical post/newel is a point in plan; drawing it as a polyline emits a
     zero-length A-STAIR entity that reads as a stray tick."""
     for storey in catlin_model.plan.storeys:
-        for node in build_floorplan(catlin_model, storey.tag).nodes:
+        for node in catlin_floorplan(storey.tag).nodes:
             if not isinstance(node, Polyline) or node.layer != "A-STAIR":
                 continue
             (x0, y0), (x1, y1) = node.points[0], node.points[-1]
@@ -517,7 +516,7 @@ def test_plan_symbols_skip_zero_length_stair_members(catlin_model):
 # stray A-STAIR polylines per U-stair landing zone, reading as uneven tread marks and a
 # split down the middle of each landing.
 
-def _stair_polylines(catlin_model, storey: str, stair_uid: str) -> list:
+def _stair_polylines(catlin_model, catlin_floorplan, storey: str, stair_uid: str) -> list:
     """The MEMBER polylines of one stair on one plan — its walking surfaces, nothing else.
 
     A denylist on ``-direction`` is not enough any more: the symbol also draws its break
@@ -527,13 +526,14 @@ def _stair_polylines(catlin_model, storey: str, stair_uid: str) -> list:
     """
     keys = {member.child_key for stair in catlin_model.stairs if stair.uid == stair_uid
             for member in stair.members}
-    return [node for node in build_floorplan(catlin_model, storey).nodes
+    return [node for node in catlin_floorplan(storey).nodes
             if isinstance(node, Polyline) and node.layer == "A-STAIR"
             and node.uid == stair_uid and node.tag in keys]
 
 
 @pytest.mark.parametrize("storey", ["basement", "main"])
-def test_a_u_stair_plan_draws_its_surfaces_and_none_of_its_framing(catlin_model, storey):
+def test_a_u_stair_plan_draws_its_surfaces_and_none_of_its_framing(catlin_floorplan, catlin_model,
+                                                                    storey):
     """Only walking surfaces reach A-STAIR — never the framing under a landing.
 
     This was ``len(drawn) == len(surfaces)``, and it cannot be that any more: on the
@@ -550,7 +550,8 @@ def test_a_u_stair_plan_draws_its_surfaces_and_none_of_its_framing(catlin_model,
                if m.category == "landing_framing" and m.p0 != m.p1]
     assert framing, "the landing is still framed — the fix is in how it is drawn"
 
-    drawn = {node.tag for node in _stair_polylines(catlin_model, storey, stair.uid)}
+    drawn = {node.tag for node in
+             _stair_polylines(catlin_model, catlin_floorplan, storey, stair.uid)}
     assert drawn, storey
     assert drawn <= {m.child_key for m in surfaces}
     # The framing is what used to leak through; name it explicitly so a future filter
@@ -558,7 +559,7 @@ def test_a_u_stair_plan_draws_its_surfaces_and_none_of_its_framing(catlin_model,
     assert not drawn & {m.child_key for m in framing}
 
 
-def test_a_landing_draws_as_its_outline_not_its_axis(catlin_model):
+def test_a_landing_draws_as_its_outline_not_its_axis(catlin_floorplan, catlin_model):
     """A landing's plan symbol is the platform, not a centreline down the middle of it.
 
     The deck is a ``deck WxT`` board with an axis and a real width, so a single polyline
@@ -572,7 +573,8 @@ def test_a_landing_draws_as_its_outline_not_its_axis(catlin_model):
     # ON MAIN, not basement. ST-B2M's two landing decks sit at -57.9" and -50.5", both
     # ABOVE the basement plan's cut plane at -61.4" — so neither is drawn there any more.
     # Main is the plan ST-B2M arrives at, where both draw whole and unoccluded.
-    drawn = {node.tag: node for node in _stair_polylines(catlin_model, "main", stair.uid)}
+    drawn = {node.tag: node for node in
+             _stair_polylines(catlin_model, catlin_floorplan, "main", stair.uid)}
     # ST-B2M runs in y, so the deck's axis is its depth and its board width is across x.
     # (They are close but not equal — 39¾" deep by 42" wide — so an axis-agnostic check
     # would pass on a rectangle drawn the wrong way round.)
@@ -587,7 +589,7 @@ def test_a_landing_draws_as_its_outline_not_its_axis(catlin_model):
         assert along == pytest.approx(deck.length_m / M_PER_IN, rel=1e-6), key
 
 
-def test_tread_marks_along_a_flight_are_evenly_spaced(catlin_model):
+def test_tread_marks_along_a_flight_are_evenly_spaced(catlin_floorplan, catlin_model):
     """The complaint was "uneven stair marks". The tread math was never wrong — the
     landing joists sat on a 16" grid that terminated on the flight width (0, 16", 32",
     39¾" for ST-B2M), so a 16/16/7¾ pattern butted against ~11" tread marks. With the
@@ -600,7 +602,7 @@ def test_tread_marks_along_a_flight_are_evenly_spaced(catlin_model):
     seen = 0
     for storey in (s.tag for s in catlin_model.plan.storeys):
         for stair in catlin_model.stairs:
-            drawn = _stair_polylines(catlin_model, storey, stair.uid)
+            drawn = _stair_polylines(catlin_model, catlin_floorplan, storey, stair.uid)
             cross = 0 if stair.run_direction == "y" else 1   # the axis a mark spans
             along = 1 - cross
             flights: dict[str, list[float]] = {}
@@ -622,7 +624,7 @@ def test_tread_marks_along_a_flight_are_evenly_spaced(catlin_model):
 
 
 @pytest.mark.parametrize("flight,storey", [("lower", "basement"), ("upper", "main")])
-def test_tread_marks_are_flush_with_the_flight_ends(catlin_model, flight, storey):
+def test_tread_marks_are_flush_with_the_flight_ends(catlin_floorplan, catlin_model, flight, storey):
     """The drawn grid follows physical noses, with their projection at flight boundaries.
 
     The old symbols drew each board's *centreline*, half a going past its riser — so
@@ -638,7 +640,8 @@ def test_tread_marks_are_flush_with_the_flight_ends(catlin_model, flight, storey
     whose upper flight and both landings main draws whole.
     """
     stair = next(s for s in catlin_model.stairs if s.tag == "ST-B2M")
-    drawn = {node.tag: node for node in _stair_polylines(catlin_model, storey, stair.uid)}
+    drawn = {node.tag: node for node in
+             _stair_polylines(catlin_model, catlin_floorplan, storey, stair.uid)}
     along = 1 if stair.run_direction == "y" else 0
     going = stair.going_depth_m / M_PER_IN
     marks = sorted(node.points[0][along] for tag_, node in drawn.items()

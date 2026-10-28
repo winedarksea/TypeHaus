@@ -11,7 +11,6 @@ from pathlib import Path
 
 import pytest
 
-from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.foundation_schedule import (
     anchorage_schedule,
     build_foundation_schedules,
@@ -289,9 +288,9 @@ def test_s100_radon_block_is_derived_item_by_item(catlin_model):
     assert "BASEMENT_8 (8)" in notes and "60 MIL WATERPROOFING ('WATERPROOFING')" in notes
 
 
-def test_s100_is_not_a_floor_plan(catlin_model):
+def test_s100_is_not_a_floor_plan(catlin_floorplan, catlin_model):
     foundation = build_foundation_plan(catlin_model)
-    assert foundation.to_json() != build_floorplan(catlin_model, "basement").to_json()
+    assert foundation.to_json() != catlin_floorplan("basement").to_json()
     assert "A-DOOR" not in foundation.by_layer()
 
 
@@ -367,9 +366,9 @@ def test_s101_names_braced_wall_lines_as_a_missing_input(catlin_model):
         build_framing_plan(catlin_model, "second"))
 
 
-def test_s101_is_not_a_floor_plan_or_an_energy_view(catlin_model):
+def test_s101_is_not_a_floor_plan_or_an_energy_view(catlin_floorplan, catlin_model):
     framing = build_framing_plan(catlin_model, "second")
-    assert framing.to_json() != build_floorplan(catlin_model, "second").to_json()
+    assert framing.to_json() != catlin_floorplan("second").to_json()
     layers = framing.by_layer()
     assert "S-FRAM" in layers and "A-FURN" not in layers
 

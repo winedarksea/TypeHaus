@@ -82,10 +82,8 @@ def test_the_order_is_the_index() -> None:
 # --- the exports ------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
-def plan_scene(catlin_model):
-    from typehaus.emit.draw.floorplan import build_floorplan
-
-    return build_floorplan(catlin_model, "main")
+def plan_scene(catlin_floorplan):
+    return catlin_floorplan("main")
 
 
 def _groups(root: ET.Element) -> list[ET.Element]:

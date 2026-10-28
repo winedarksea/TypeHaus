@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 from _helpers import CATLIN, HOUSE_IGNORE, HOUSES, REPO_ROOT, STARTER, copy_house
+from _resolved_copy import ResolvedCopies
 
 __all__ = ["CATLIN", "HOUSE_IGNORE", "HOUSES", "REPO_ROOT", "STARTER", "copy_house"]
 
@@ -55,26 +56,26 @@ def catlin_plan():
 
 
 @pytest.fixture(scope="session")
-def catlin_model_ro(catlin_plan):
-    """The resolved catlin model, once for the whole suite — for **read-only** use.
-
-    ``catlin_model`` below is module-scoped because ``ResolvedModel`` is mutable and one
-    module's edits must not leak into another's. That is the right default, but it made the
-    house resolve 112 times for a suite in which the large majority of consumers only read.
-    Take this one when the test does not mutate the model (emitting, taking off, asserting
-    on geometry); take ``catlin_model`` the moment it might.
-
-    Handing this to a mutating test is the failure mode, and it is a quiet one — the damage
-    lands in whatever module runs next. When in doubt use ``catlin_model``: a resolve is
-    ~1.2 s idle (2026-09-24). A ``copy.deepcopy`` of the result is now about half that, but
-    a copy only protects a test that remembers to take one.
-    """
+def _catlin_resolved(catlin_plan) -> ResolvedCopies:
     from typehaus.resolve import resolve
 
     model, findings = resolve(catlin_plan)
     errors = [f for f in findings if f.severity.value == "error"]
     assert not errors, errors
-    return model
+    return ResolvedCopies(catlin_plan, model)
+
+
+@pytest.fixture(scope="session")
+def catlin_model_ro(_catlin_resolved):
+    """The resolved catlin model, once for the whole suite — for **read-only** use.
+
+    ``catlin_model`` below is module-scoped because ``ResolvedModel`` is mutable and one
+    module's edits must not leak into another's. Take this one when the test does not mutate
+    the model (emitting, taking off, asserting on geometry); take ``catlin_model`` the moment
+    it might. Handing this to a mutating test is the failure mode, and it is a quiet one —
+    the damage lands in whatever module runs next.
+    """
+    return _catlin_resolved.copy()
 
 
 class _PlanWithTheBells:
@@ -184,19 +185,28 @@ def catlin_ifc_path(catlin_model_ro, tmp_path_factory) -> Path:
 
 
 @pytest.fixture(scope="module")
-def catlin_model(catlin_plan):
-    """The resolved catlin model, per test module.
+def catlin_model(_catlin_resolved):
+    """The resolved catlin model, per test module: an independent, mutable copy.
 
     Module-scoped rather than session-scoped on purpose: ``ResolvedModel`` is a *mutable*
     dataclass with list fields, so a session-wide instance would let one module's test
-    leak into another's. Re-resolving is the cheap half; the plan above is the shared one.
+    leak into another's. Each module unpickles its own from the one session resolve.
     """
-    from typehaus.resolve import resolve
+    return _catlin_resolved.copy()
 
-    model, findings = resolve(catlin_plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model
+
+@pytest.fixture(scope="session")
+def catlin_floorplan(catlin_model_ro):
+    """``build_floorplan(catlin, storey)``, built once per storey for the session.
+
+    ``Scene`` is frozen, so sharing it is safe; a module that mutates its model must build
+    its own plan from that model instead.
+    """
+    from functools import cache
+
+    from typehaus.emit.draw import build_floorplan
+
+    return cache(lambda storey: build_floorplan(catlin_model_ro, storey))
 
 
 @pytest.fixture(scope="session")
