@@ -3,6 +3,7 @@ from dataclasses import replace
 import math
 
 import pytest
+from _helpers import assert_wire_mesh
 
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.walls import _add_wall_body
@@ -110,9 +111,7 @@ def test_mitred_polygon_and_raked_band_clip_every_fold(siding_wall):
 def test_serialization_and_gltf_use_the_same_surface(siding_wall):
     mesh = mesh_for(siding_wall)
     layer = replace(siding_wall.layers[-1],surface_mesh=mesh)
-    payload = _layer_json(layer)['surface_mesh']
-    assert payload['positions'] == mesh.positions
-    assert payload['triangles'] == mesh.triangles
+    assert_wire_mesh(_layer_json(layer)['surface_mesh'], mesh.positions, mesh.triangles)
     builder = _MeshBuilder()
     _add_wall_body(builder,replace(siding_wall,layers=(layer,)),'core')
     buckets = list(builder.buckets())
