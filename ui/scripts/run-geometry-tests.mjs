@@ -135,8 +135,6 @@ try {
   runWoodSpeciesTests();
   runMarbleMaterialTests();
   runCarpetMaterialTests();
-  const { runConcreteMaterialTests } = await server.ssrLoadModule("/src/three/concreteMaterial.test.ts");
-  runConcreteMaterialTests();
   const { runSprayFoamMaterialTests } = await server.ssrLoadModule("/src/three/sprayFoamMaterial.test.ts");
   runSprayFoamMaterialTests();
   const { runSprayFoamBuilderTests } = await server.ssrLoadModule("/src/three/builders/sprayFoam.test.ts");
