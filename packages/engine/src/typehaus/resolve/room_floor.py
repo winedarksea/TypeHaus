@@ -24,7 +24,7 @@ from __future__ import annotations
 from shapely.geometry import Polygon
 
 from typehaus.resolve.model import ResolvedModel, ResolvedRoom
-from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.resolve.solid_categories import SLAB_FAMILY
 from typehaus.resolve.walking_surface import surfaces_at
 
 # A slab filed on a different storey than the room it floors is still a low step-up, not a
@@ -64,7 +64,7 @@ def room_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> float:
     centroid = Polygon(room.clear_face).centroid
     best = None
     for solid in model.solids:
-        if not in_slab_family(solid.category):
+        if solid.category not in SLAB_FAMILY:
             continue
         if abs(solid.z1_m - wall_z) >= SLAB_MATCH_TOLERANCE_M:
             continue

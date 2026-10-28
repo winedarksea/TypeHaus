@@ -75,10 +75,14 @@ def categories_where(**match: object) -> frozenset[str]:
                      if all(getattr(row, key) == value for key, value in match.items()))
 
 
+# Every category a ``Slab`` resolves to; a set because the floor lookups ask per solid.
+SLAB_FAMILY: frozenset[str] = frozenset(
+    name for name, row in SOLID_CATEGORIES.items() if row.slab_family == "slab")
+
+
 def in_slab_family(category: str) -> bool:
     """Any category a ``Slab`` resolves to — pour, deck, platform or band. Unregistered: no."""
-    row = SOLID_CATEGORIES.get(category)
-    return row is not None and row.slab_family == "slab"
+    return category in SLAB_FAMILY
 
 
 def is_pour_category(category: str) -> bool:
