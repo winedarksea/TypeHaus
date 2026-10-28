@@ -62,7 +62,7 @@ def _catlin_resolved(catlin_plan) -> ResolvedCopies:
     model, findings = resolve(catlin_plan)
     errors = [f for f in findings if f.severity.value == "error"]
     assert not errors, errors
-    return ResolvedCopies(catlin_plan, model)
+    return ResolvedCopies(catlin_plan, model, findings)
 
 
 @pytest.fixture(scope="session")
@@ -350,10 +350,10 @@ def wall_assembly():
 
 
 @pytest.fixture(scope="session")
-def catlin_ctx(catlin_plan):
+def catlin_ctx(_catlin_resolved):
     """``build_context(catlin_plan, CATLIN)[0]`` — once per worker, **read-only**.
 
-    Holds the same mutable ``ResolvedModel`` that ``catlin_model_ro`` does, and carries the
+    Holds its own copy of the session resolve (→ ``_catlin_resolved``), and carries the
     same rule in the same words: take this when the test does not mutate the model, and
     build your own context the moment it might. ``run_checks`` does not mutate it.
 
@@ -371,10 +371,9 @@ def catlin_ctx(catlin_plan):
       this context: the first resolves a different jurisdiction, the second an empty
       ``Preferences`` and so a different suppression set.
     """
-    from typehaus.checks.run import build_context
+    from typehaus.checks.run import build_context_from_model
 
-    ctx, _ = build_context(catlin_plan, CATLIN)
-    return ctx
+    return build_context_from_model(_catlin_resolved.copy(), _catlin_resolved.findings, CATLIN)
 
 
 @pytest.fixture(scope="session")

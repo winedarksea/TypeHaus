@@ -36,7 +36,8 @@ class ResolvedCopies:
     fresh ``resolve(catlin_plan)`` hands them out; only the resolved side is new.
     """
 
-    def __init__(self, plan, model):
+    def __init__(self, plan, model, findings=()):
+        self.findings = list(findings)  # the resolve's own, for a context built from a copy
         shared = {}
 
         class _Walk(pickle.Pickler):
