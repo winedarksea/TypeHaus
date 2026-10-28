@@ -118,7 +118,7 @@ def test_the_install_kit_rides_the_accessory_not_the_catalog(catlin_plan):
         "a seal is not a valve and must not be labelled as one"
 
 
-def test_an_appliances_install_kit_bills_in_the_same_section(catlin_plan):
+def test_an_appliances_install_kit_bills_in_the_same_section(catlin_model_ro):
     """``install_parts`` is a shape of order, not a property of pipework.
 
     The disposer's 24V control loop — transformer, contactor, enclosure, buttons, cable —
@@ -128,7 +128,7 @@ def test_an_appliances_install_kit_bills_in_the_same_section(catlin_plan):
     """
     from typehaus.takeoff.plumbing_specialties import install_parts_takeoff
 
-    model, _ = resolve(catlin_plan)
+    model = catlin_model_ro
     rows = {row["part"]: row for row in install_parts_takeoff(model)}
 
     disposer = next(element for element in model.plan.storey_elements("main")
@@ -161,11 +161,10 @@ def test_pipe_runs_carry_a_finish_and_an_insulation_spec(catlin_plan):
     assert resolved.insulation == '1" fiberglass, ASJ'
 
 
-def test_a_bare_run_still_resolves_with_both_fields_unset(catlin_plan):
+def test_a_bare_run_still_resolves_with_both_fields_unset(catlin_model_ro):
     """Both fields are optional: the drain and vent runs authored before they existed
     resolve unchanged, carrying None for each rather than a default that would put every
     waste line into the insulation take-off."""
-    model, _ = resolve(catlin_plan)
-    drains = [r for r in model.pipe_runs if r.system == "drain"]
+    drains = [r for r in catlin_model_ro.pipe_runs if r.system == "drain"]
     assert drains, "fixture regression: the Catlin house lost its drains"
     assert all(r.finish is None and r.insulation is None for r in drains)

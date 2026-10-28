@@ -661,7 +661,7 @@ def test_both_piers_are_columns_and_not_pedestals(catlin_retired_columns) -> Non
         assert ratio > PEDESTAL_HEIGHT_RATIO
 
 
-def test_the_deck_tributary_rule_is_single_sourced(catlin_plan) -> None:
+def test_the_deck_tributary_rule_is_single_sourced(catlin_model, catlin_plan) -> None:
     """Every reader of the deck rule gets ``engineering/deck_tributary``'s half-bay strip.
 
     Since 2026-09-23 ``pier_basis``, ``post_bearing``, ``analytical/loads`` and the check
@@ -673,12 +673,10 @@ def test_the_deck_tributary_rule_is_single_sourced(catlin_plan) -> None:
     from typehaus.checks.structural.deck import _decks, _tributaries_ft2
     from typehaus.engineering.pier_basis import _deck_tributaries
     from typehaus.engineering.registry import EngineeringContext
-    from typehaus.resolve import resolve
 
-    model, _ = resolve(catlin_plan)
-    mine = _deck_tributaries(EngineeringContext(plan=catlin_plan, model=model))
+    mine = _deck_tributaries(EngineeringContext(plan=catlin_plan, model=catlin_model))
 
-    ctx = check_context(plan=catlin_plan)
+    ctx = check_context(catlin_plan, catlin_model)
     theirs: dict[str, float] = {}
     for deck in _decks(ctx):
         for tag, share in (_tributaries_ft2(ctx, deck) or {}).items():
@@ -698,7 +696,7 @@ def test_the_deck_tributary_rule_is_single_sourced(catlin_plan) -> None:
     from typehaus.engineering.glulam_beam import DECK_TOTAL_LOAD_PSF
     from typehaus.engineering.post_bearing import _reaction_lb
 
-    ectx = EngineeringContext(plan=catlin_plan, model=model)
+    ectx = EngineeringContext(plan=catlin_plan, model=catlin_model)
     reaction, beams = _reaction_lb(ectx, catlin_plan.by_tag("PT-SG-BR1"))
     assert beams == ("BM-SG-BLW",)
     assert reaction is not None
@@ -1357,7 +1355,8 @@ class _PlanWith:
 # --- the wall line load, and the branch it emptied -----------------------------------------
 
 
-def test_a_wall_on_a_beam_is_a_line_load_and_reaches_the_piers_under_it(catlin_plan) -> None:
+def test_a_wall_on_a_beam_is_a_line_load_and_reaches_the_piers_under_it(catlin_model,
+                                                                        catlin_plan) -> None:
     """``BM-BW-SCSILL``, which carried a wall and no plan area — `north_entry_piers.md` §2.
 
     ** THE NUMBER IS PINNED IN THREE PIECES, NOT ONE. ** The plf, the run and the split each
@@ -1370,10 +1369,9 @@ def test_a_wall_on_a_beam_is_a_line_load_and_reaches_the_piers_under_it(catlin_p
     """
     from typehaus.engineering.pier_basis import cast_piers, wall_line_loads
     from typehaus.engineering.registry import EngineeringContext
-    from typehaus.resolve import resolve
     from typehaus.resolve.assembly_weight import wall_line_plf
 
-    model, _ = resolve(catlin_plan)
+    model = catlin_model
     ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
 
     screen = next(w for w in model.walls if w.tag == "W-BW-SCREEN")
@@ -1403,7 +1401,8 @@ def test_a_wall_on_a_beam_is_a_line_load_and_reaches_the_piers_under_it(catlin_p
     assert "delivered through PT-BW-CW" in piers["PT-BW-W"].wall_load_basis
 
 
-def test_a_wall_that_states_no_weight_accounts_nothing(catlin_plan, monkeypatch) -> None:
+def test_a_wall_that_states_no_weight_accounts_nothing(catlin_model,
+                                                       catlin_plan, monkeypatch) -> None:
     """Publishing an understated demand is worse than publishing none — ``_unmodelled_beams``'
     whole doctrine, and the line load is held to it.
 
@@ -1413,10 +1412,8 @@ def test_a_wall_that_states_no_weight_accounts_nothing(catlin_plan, monkeypatch)
     """
     from typehaus.engineering import pier_basis
     from typehaus.engineering.registry import EngineeringContext
-    from typehaus.resolve import resolve
 
-    model, _ = resolve(catlin_plan)
-    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
+    ctx = EngineeringContext(plan=catlin_plan, model=catlin_model, soil_class="GM")
     monkeypatch.setattr(pier_basis, "wall_line_loads", lambda _c: ({}, set()))
     piers = {p.tag: p for p in pier_basis.cast_piers(ctx)}
     assert piers["PT-BW-W"].wall_dead_lb == 0.0

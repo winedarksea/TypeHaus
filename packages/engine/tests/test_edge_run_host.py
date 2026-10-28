@@ -66,24 +66,31 @@ def test_a_tilted_beam_is_graded_over_its_range_not_its_box(catlin_model_ro) -> 
     assert (high - low) / M_PER_IN == pytest.approx(2.42, abs=0.05)
 
 
-def _catlin_with_a_cap_on(catlin_plan, host: str, top_in: float):
-    """Catlin plus one cap flashing laid along ``host``'s axis at ``top_in`` inches.
+def _cap_verdicts(catlin_plan, host: str, tops_in: list[float]) -> list[list[Result]]:
+    """The check's verdicts on cap flashings laid along ``host``'s axis at ``tops_in``.
 
     Built rather than read: the porch beams whose caps this test used to grade were
     retired with the centre support line (2026-09), and no level beam in the house carries
-    a hosted run any more. The ledger BM-SG-LDGW is level and still there.
+    a hosted run any more. The ledger BM-SG-LDGW is level and still there. Each run is
+    graded against its host alone, so every height rides one resolve under its own tag.
     """
     from typehaus.model import inch
     from typehaus.model.trim import Flashing
+    from typehaus.resolve import resolve
 
     beam = catlin_plan.by_tag(host)
     storey = next(tag for tag, items in catlin_plan.elements.items()
                   if any(getattr(e, "tag", None) == host for e in items))
     start, end = (catlin_plan.by_tag(beam.start_node), catlin_plan.by_tag(beam.end_node))
-    cap = Flashing(uid="TRCAPTEST1", tag="TR-TEST-CAP", host_ref=host,
-                   path=(start.position, end.position),
-                   top_elevation=inch(top_in), depth=inch(4), thickness=inch(1))
-    return catlin_plan.with_elements(storey, (*catlin_plan.elements[storey], cap))
+    caps = [Flashing(uid=f"TRCAPTEST{i}", tag=f"TR-TEST-CAP-{i}", host_ref=host,
+                     path=(start.position, end.position),
+                     top_elevation=inch(top_in), depth=inch(4), thickness=inch(1))
+            for i, top_in in enumerate(tops_in)]
+    model, resolve_findings = resolve(
+        catlin_plan.with_elements(storey, (*catlin_plan.elements[storey], *caps)))
+    findings = run_from_model(model, resolve_findings, only=_CHECK_ID).findings
+    return [[f.result for f in findings
+             if f.check_id == _CHECK_ID and cap.tag in f.element_tags] for cap in caps]
 
 
 def test_a_level_beam_still_gets_a_tight_test(catlin_plan, catlin_model_ro) -> None:
@@ -93,21 +100,14 @@ def test_a_level_beam_still_gets_a_tight_test(catlin_plan, catlin_model_ro) -> N
     match exactly — the tilt allowance is not a blanket loosening. A cap at the ledger top
     passes; the same cap 2" up (past the 1" drafting slop) FAILs.
     """
-    from typehaus.resolve import resolve
-
     beam = next(s for s in catlin_model_ro.solids if s.tag == "BM-SG-LDGW")
     low, high = _top_range(beam)
     assert low == pytest.approx(high)
 
-    def verdicts(top_in: float):
-        model, resolve_findings = resolve(_catlin_with_a_cap_on(
-            catlin_plan, "BM-SG-LDGW", top_in))
-        return [f.result for f in run_from_model(model, resolve_findings, only=_CHECK_ID).findings
-                if f.check_id == _CHECK_ID and "TR-TEST-CAP" in f.element_tags]
-
     on_top = high / M_PER_IN
-    assert Result.FAIL not in verdicts(on_top)
-    assert verdicts(on_top + 2.0) == [Result.FAIL]
+    flush, raised = _cap_verdicts(catlin_plan, "BM-SG-LDGW", [on_top, on_top + 2.0])
+    assert Result.FAIL not in flush
+    assert raised == [Result.FAIL]
 
 
 def test_a_wall_host_is_graded_base_to_top(catlin_plan, catlin_model_ro) -> None:
@@ -116,21 +116,14 @@ def test_a_wall_host_is_graded_base_to_top(catlin_plan, catlin_model_ro) -> None
     The range is the wall's own height, not a blanket loosening — a run 2" over the top
     still FAILs, and so does one 2" under the base.
     """
-    from typehaus.resolve import resolve
-
     wall = next(w for w in catlin_model_ro.walls if w.tag == "W-BW-SCREEN")
-
-    def verdicts(top_in: float):
-        model, resolve_findings = resolve(_catlin_with_a_cap_on(
-            catlin_plan, "W-BW-SCREEN", top_in))
-        return [f.result for f in run_from_model(model, resolve_findings, only=_CHECK_ID).findings
-                if f.check_id == _CHECK_ID and "TR-TEST-CAP" in f.element_tags]
-
     base, top = wall.z0_m / M_PER_IN, wall.z1_m / M_PER_IN
-    assert Result.FAIL not in verdicts(base + 2.0)
-    assert Result.FAIL not in verdicts(top)
-    assert verdicts(top + 2.0) == [Result.FAIL]
-    assert verdicts(base - 2.0) == [Result.FAIL]
+    above_base, at_top, over_top, under_base = _cap_verdicts(
+        catlin_plan, "W-BW-SCREEN", [base + 2.0, top, top + 2.0, base - 2.0])
+    assert Result.FAIL not in above_base
+    assert Result.FAIL not in at_top
+    assert over_top == [Result.FAIL]
+    assert under_base == [Result.FAIL]
 
 
 def test_the_gutter_hangs_below_its_fascia_and_that_is_not_a_defect(findings) -> None:

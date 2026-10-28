@@ -54,10 +54,10 @@ def _face_distance(model, device_tag: str, wall_tag: str) -> tuple[float, float]
     return face, edge
 
 
-def test_a_wall_retype_carries_its_hosted_device(catlin_plan) -> None:
+def test_a_wall_retype_carries_its_hosted_device(catlin_model_ro, catlin_plan) -> None:
     """The regression Phase 8 exists for: a thinner wall must not leave a switch floating."""
     tag, wall_tag = "ED-B-WORKSHOP-SW", "W-B-HALL-W"
-    before, _ = resolve(catlin_plan)
+    before = catlin_model_ro
     storey = next(s for s in catlin_plan.elements
                   if any(e.tag == wall_tag for e in catlin_plan.storey_elements(s)))
     elements = tuple(e.model_copy(update={"assembly": "INT_2X4_PARTITION"})
@@ -94,8 +94,8 @@ def test_on_face_fails_a_buried_body(catlin_plan) -> None:
     assert any("ED-B-WORKSHOP-SW is buried" in f.message for f in findings)
 
 
-def test_placed_xy_reads_the_resolved_centre(catlin_plan) -> None:
-    model, _ = resolve(catlin_plan)
+def test_placed_xy_reads_the_resolved_centre(catlin_plan, catlin_model_ro) -> None:
+    model = catlin_model_ro
     element = catlin_plan.by_tag("ED-B-WORKSHOP-SW")
     assert element.position is None
     obj = next(o for o in model.canvas_objects if o.tag == element.tag)
