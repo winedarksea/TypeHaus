@@ -48,8 +48,10 @@ pytestmark = pytest.mark.slow
 
 BENCH = REPO_ROOT / "packages" / "engine" / "scripts" / "bench_rebuild.py"
 
-# A serial Catlin measurement on 2026-09-25: full rebuild min 2215 ms / median 2320 ms,
-# resolve median 2090 ms, junctions 131 ms, and draw.details 1138 ms. The wider budgets below
+# A serial Catlin measurement on 2026-10-28 (after the metal-panel ribbon fix took resolve
+# back from 4363 ms): full rebuild min 4099 ms / median 4133 ms, resolve median 3797 ms, and
+# draw.details 4862 ms. On 2026-09-25 it was rebuild 2320 / resolve 2090 / details 1138 ms:
+# the house grew, and resolve sits close to its budget now. The wider budgets below
 # allow ordinary variation while still catching a large regression. ``draw.details`` covers
 # the whole derived-detail set (~80 full cuts); it is budgeted because a change that makes each
 # detail walk the full geometry could otherwise slow every drawing without a tripwire.
