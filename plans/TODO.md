@@ -350,7 +350,7 @@ the future.
 - SL-SG-STAIRPAD is a slightly different finished height than SL-WK-D. They should have the same finished height.
 - D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
 - The fireplace opening, AO-M-FIRE-NICHE got exterior flashing trim, which is ridiculous, because that niche is entirely inside the house (the sheathing is continuous over it)
-
+- Undo the work of 529a0ca6 'canopy beam caps' and see if it can be symmetrical by both sides of the beam terminating at the post.
 
 # Project Management
 
