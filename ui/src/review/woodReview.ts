@@ -106,8 +106,10 @@ if (house || room) {
   (window as unknown as { woodReviewChecks: unknown }).woodReviewChecks = houseChecks;
 } else if (!legacy) {
   const { runWoodBrowserChecks } = await import("../three/woodBrowserChecks");
-  (window as unknown as { woodReviewChecks: unknown }).woodReviewChecks = runWoodBrowserChecks(samples);
+  (window as unknown as { woodReviewChecks: unknown }).woodReviewChecks = await runWoodBrowserChecks(samples);
 }
+// Every view waits for the worker's figure, or the shot is flat species colour.
+await (await import("../three/woodMaps")).woodMapsSettled();
 renderer.render(scene, camera);
 window.requestAnimationFrame(() => {
   renderer.render(scene, camera);

@@ -28,6 +28,7 @@ import { WHOLE_HOUSE_GLB_PRIMARY } from "../three/wholeHouseGlb";
 import { applyWholeHouseGlb, loadWholeHouseGlb } from "../three/wholeHouseGlbScene";
 import { applyVisibility, isRenderedInScene, objectVisible } from "../three/builders/registry";
 import { planCenterOf, populateScene, type SceneRegistry } from "../three/builders/scene";
+import { onWoodMapsReady } from "../three/woodMaps";
 import { applyEarthOpacity, applyEarthTone, PartGeometries } from "../three/builders/site";
 import {
   geographicBearingToSceneDirection,
@@ -463,6 +464,8 @@ function createScene(
     renderer.shadowMap.needsUpdate = true;
     requestRender();
   };
+  // Wood figure lands after the first frame (→ woodMaps.ts). Albedo only: shadows stand.
+  const stopWoodMaps = onWoodMapsReady(requestRender);
 
   // Eased camera move (reset view): interpolate orbit angles / dolly / target over a short
   // ease-in-out so the reset glides instead of snapping. Any user interaction cancels it.
@@ -931,6 +934,7 @@ function createScene(
     setEarthTone,
     dispose: () => {
       cancelAnimationFrame(raf);
+      stopWoodMaps();
       stopTween();
       ro.disconnect();
       for (const trade of ALL_TRADES) disposeGroup(tradeGroups[trade]);

@@ -5,6 +5,7 @@ import { boardBoxGeometry, woodMaterialsForGeometry } from "./woodPiece";
 import { buildBaseRun } from "./builders/millwork";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import type { BaseRun } from "../model/types";
+import { woodMapsSettled } from "./woodMaps";
 
 function pixels(map: THREE.Texture) {
   const canvas = map.image as HTMLCanvasElement;
@@ -17,12 +18,21 @@ function digest(map: THREE.Texture) {
   return hash >>> 0;
 }
 
-export function runWoodBrowserChecks(samples: readonly { species: string; color: string }[]) {
+export async function runWoodBrowserChecks(samples: readonly { species: string; color: string }[]) {
   const failures: string[] = [];
   const check = (condition: unknown, message: string) => { if (!condition) failures.push(message); };
   const style = WOOD_PLANK_STYLES["solid-board"];
-  const reports = samples.map(sample => {
-    const material = createPlankMaterial("nordic", style, sample.color, undefined, sample);
+  const materials = samples.map(sample => createPlankMaterial("nordic", style, sample.color, undefined, sample));
+  const ash = createPlankMaterial("nordic", style, "#c4b18c", undefined, { species: "ash" });
+  const oak = createPlankMaterial("nordic", style, "#c4b18c", undefined, { species: "oak" });
+  const raw = createPlankMaterial("nordic", style, "#c4b18c", undefined,
+    { species: "oak", wood_surface: "unfinished" });
+  const painted = createPlankMaterial("nordic", style, "#f4f2ee", undefined,
+    { species: "oak", wood_surface: "painted" });
+  // Maps are flat placeholders until the worker returns (→ woodMaps.ts); digest the real figure.
+  await woodMapsSettled();
+  const reports = samples.map((sample, index) => {
+    const material = materials[index];
     check(material.map && material.normalMap && material.roughnessMap, `${sample.species}: three maps`);
     check(material.color.getHex() === 0xffffff, `${sample.species}: full-colour map uses neutral tint`);
     check(material.map?.colorSpace === THREE.SRGBColorSpace, `${sample.species}: sRGB albedo`);
@@ -41,14 +51,8 @@ export function runWoodBrowserChecks(samples: readonly { species: string; color:
   });
   check(new Set(reports.map(r => r.albedo)).size === samples.length, "Species maps must differ");
   // Equal base colours must not accidentally share another species' grain.
-  const ash = createPlankMaterial("nordic", style, "#c4b18c", undefined, { species: "ash" });
-  const oak = createPlankMaterial("nordic", style, "#c4b18c", undefined, { species: "oak" });
   check(ash.map !== oak.map && digest(ash.map!) !== digest(oak.map!), "Cache isolates species, not just colour");
-  const raw = createPlankMaterial("nordic", style, "#c4b18c", undefined,
-    { species: "oak", wood_surface: "unfinished" });
   check(raw.map !== oak.map && raw.roughness > oak.roughness, "Unfinished wood keeps its own matte treatment");
-  const painted = createPlankMaterial("nordic", style, "#f4f2ee", undefined,
-    { species: "oak", wood_surface: "painted" });
   const data = pixels(painted.map!);
   let paintedMinimum = 255, paintedMaximum = 0;
   for (let i = 0; i < data.length; i += 4) {
