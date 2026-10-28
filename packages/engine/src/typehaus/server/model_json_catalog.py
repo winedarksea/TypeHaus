@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any
 
 from typehaus.model.canvas import canvas_object_types
 from typehaus.resolve.model import ResolvedModel
+from typehaus.server.model_json_mesh import mesh_json
 from typehaus.server.model_json_shared import _enum_value, _provenance
 from typehaus.source.provenance import Provenance
 
@@ -171,6 +172,34 @@ def catalog_json(
         # alternatives this house can build, so the UI's variant picker never shells out.
         # Always present — an empty list *is* the absent-catalog story.
         "variants": [spec.as_dict() for spec in (variants or ())],
-        "catalog": {**_catalog(model, provenance),
-                    "canvas_object_types": canvas_object_types(model.plan)},
+        "catalog": {**_catalog(model, provenance), **_placed_types(model)},
     }
+
+
+def _placed_types(model: ResolvedModel) -> dict[str, Any]:
+    """Every product type, with 3D parts only where something places it.
+
+    A part's mesh moves to the shared ``meshes`` table and the part keeps its
+    ``mesh_index``: the same bowl or rod recurs across types, and an unplaced type's massing
+    was megabytes nothing drew. Plan strokes and metadata stay on every type.
+    """
+    placed = {item.type_ref for item in model.canvas_objects}
+    meshes: list[dict[str, Any]] = []
+    indices: dict[tuple, int] = {}
+    types = canvas_object_types(model.plan)
+    for item in types:
+        if item["tag"] not in placed:
+            item.pop("model_parts", None)
+            continue
+        for part in item.get("model_parts", ()):
+            mesh = part.pop("mesh", None)
+            if mesh is None:
+                continue
+            encoded = mesh_json(mesh["positions"], mesh["triangles"], mesh.get("normals"))
+            key = (tuple(encoded["positions"]), tuple(encoded["triangles"]),
+                   tuple(encoded.get("normals", ())))
+            if key not in indices:
+                indices[key] = len(meshes)
+                meshes.append(encoded)
+            part["mesh_index"] = indices[key]
+    return {"canvas_object_types": types, "meshes": meshes}

@@ -16,6 +16,7 @@ from typehaus.emit.trade_rules import layer_trade
 from typehaus.findings import Finding
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
+from typehaus.server.model_json_mesh import mesh_json
 from typehaus.source.provenance import Provenance
 
 
@@ -31,7 +32,7 @@ def _provenance(prov: Provenance | None, tag: str) -> dict[str, Any] | None:
 
 
 def _surface_mesh_json(mesh) -> dict[str, Any]:
-    return {"positions": mesh.positions, "triangles": mesh.triangles, "normals": mesh.normals}
+    return mesh_json(mesh.positions, mesh.triangles, mesh.normals)
 
 
 def _member_json(m: FramedMember) -> dict[str, Any]:

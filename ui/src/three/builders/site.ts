@@ -5,7 +5,7 @@
 // the registry contract — the earth is context with no uid at all, and a canvas object is a
 // glb (or a parametric massing) placed by position + rotation rather than resolved geometry.
 import * as THREE from "three";
-import type { CanvasObject, CanvasObjectType, Model, ModelPart } from "../../model/types";
+import type { CanvasObject, CanvasObjectType, Model, ModelPart, PackedMesh } from "../../model/types";
 import { authoredAppearance, type MaterialAppearance, type ResolvedNordicPalette } from "../../nordic/palette";
 import {
   createPlanPrismGeometry, projectPlanRotationToSceneRadians, projectPointToScene,
@@ -125,6 +125,7 @@ export function buildCanvasObject(
   picks: THREE.Mesh[],
   byUid: Map<string, THREE.Material[]>,
   materials?: readonly MaterialAppearance[],
+  meshes: readonly PackedMesh[] = [],
 ): THREE.Object3D | null {
   if (!item.position_m) return null;
   const [width, depth] = type?.footprint_m ?? [0.45, 0.45];
@@ -137,7 +138,7 @@ export function buildCanvasObject(
     const base = mount?.kind === "floor" && mount.recessed_into_host_surface
       ? elevation - height : elevation;
     return buildCanvasObjectParts(parent, item, parts, center, mode, base, picks, byUid,
-      materials);
+      materials, meshes);
   }
   const color = item.domain === "electrical" ? 0xd69e2e
     : item.domain === "plumbing" ? 0x4299e1 : item.domain === "mechanical" ? 0x718096 : palette.member.wood;
@@ -220,6 +221,7 @@ export function buildCanvasObjectParts(
   picks: THREE.Mesh[],
   byUid: Map<string, THREE.Material[]>,
   catalog?: readonly MaterialAppearance[],
+  meshes: readonly PackedMesh[] = [],
 ): THREE.Object3D {
   const group = new THREE.Group();
   const materials = new Map<string, THREE.Material>();
@@ -249,7 +251,8 @@ export function buildCanvasObjectParts(
     // Scene axes are (plan x, height, -plan y); projectPointToScene owns that mapping for the
     // object's origin, so a part only needs its own local offset expressed the same way.
     const [cx, cy, cz] = part.center;
-    const curvedMesh = part.mesh ? createModelPartMeshGeometry(part.mesh) : null;
+    const packed = part.mesh_index === undefined ? undefined : meshes[part.mesh_index];
+    const curvedMesh = packed ? createModelPartMeshGeometry(packed) : null;
     // A ringed part sweeps its own plan outline — a neo-angle shower pan is a pentagon, and a
     // box would draw a square where the room's diagonal is. `createPlanPrismGeometry` already
     // lands in the scene frame at the local origin; boxes and cylinders use their center.

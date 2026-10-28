@@ -37,11 +37,17 @@ export interface Provenance {
 }
 
 /** Engine-generated finish geometry in project metres, with crisp per-face normals. */
-export interface SurfaceMesh {
-  positions: Vec3[];
-  triangles: [number, number, number][];
-  normals: Vec3[];
+// A mesh on the wire (→ server/model_json_mesh.py): flat integer positions of `quantum`
+// metres, flat triangle indices, and unit normals scaled by 1e4 where the engine has them.
+// Decode with three/mesh.ts.
+export interface PackedMesh {
+  quantum: number;
+  positions: number[];
+  triangles: number[];
+  normals?: number[];
 }
+
+export type SurfaceMesh = PackedMesh;
 
 export interface Layer {
   surface_mesh?: SurfaceMesh | null;
@@ -668,12 +674,8 @@ export interface ModelPart {
   roughness?: number;
   /** Oriented primitives and continuous surfaces supplied by the engine. */
   shape?: "cylinder-depth" | "mesh";
-  /** Indexed triangles in the local plan frame; split vertices retain sharp edges. */
-  mesh?: {
-    positions: [number, number, number][];
-    triangles: [number, number, number][];
-    normals: [number, number, number][];
-  };
+  /** Index into `catalog.meshes`: indexed triangles in the local plan frame. */
+  mesh_index?: number;
   radial_segments?: number;
   /** Catalog material for a generated part, including wood and solid-surface finishes. */
   material_ref?: string;
@@ -1552,6 +1554,8 @@ export interface Catalog {
   products?: ProductSpec[];
   assemblies: AssemblySpec[];
   canvas_object_types?: CanvasObjectType[];
+  // Product part meshes, shared across types (→ ModelPart.mesh_index).
+  meshes?: PackedMesh[];
 }
 
 // Per-layer plan setback (m, positive inward) from the roof footprint edge — the golden
@@ -1685,7 +1689,7 @@ export interface Solid {
   product?: string | null;
   host_ref?: string | null;
   // Folded purchased-part geometry in project coordinates, with open fastener holes.
-  body_mesh?: { positions: Vec3[]; triangles: [number, number, number][] } | null;
+  body_mesh?: PackedMesh | null;
   // A RUN — a handrail, a drain, a raceway — carried as one section swept along a 3D
   // polyline (→ resolve/model.py SolidSweep, resolve/sweep.py). Null on every prism, which
   // is every solid that is not one of those; `three/tubeGeometry.ts` mitres it, and

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import json
 from pathlib import Path
 from typing import Any
 
@@ -36,7 +37,7 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
     from contextlib import asynccontextmanager
 
     from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-    from fastapi.responses import FileResponse, JSONResponse
+    from fastapi.responses import FileResponse, JSONResponse, Response
 
     state = ProjectState.open(house_dir)
     bus = EventBus()
@@ -101,7 +102,10 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
         # The engine stamp rides on /model rather than living at its own endpoint so the
         # browser learns the server is running stale engine code on the same poll that
         # brings it the geometry that code produced — see server/engine_stamp.py.
-        return JSONResponse(state.model_json() | {"engine": engine_stamp()})
+        # The cached body with the stamp spliced in before its closing brace.
+        stamp = json.dumps({"engine": engine_stamp()}, separators=(",", ":")).encode("utf-8")
+        return Response(state.model_json_bytes()[:-1] + b"," + stamp[1:],
+                        media_type="application/json")
 
     @app.get("/model/rebar")
     def get_model_rebar() -> Any:

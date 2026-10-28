@@ -5,13 +5,12 @@ import { ALL_TRADES, type Trade } from "../state/vocabulary";
 import { buildRoof } from "./builders/structure";
 import { buildWall } from "./builders/walls";
 import { buildMembers } from "./members";
+import { packMesh } from "./mesh";
 
 /** Physical gable closures must use the same finish as the wall sheet they continue. */
 export function runProfiledMetalSkinTests(): void {
-  const surface: SurfaceMesh = {
-    positions: [[0, -.1, 0], [1, -.1, 0], [0, -.1, 1]],
-    normals: [[0, -1, 0], [0, -1, 0], [0, -1, 0]], triangles: [[0, 1, 2]],
-  };
+  const surface: SurfaceMesh = packMesh([[0, -.1, 0], [1, -.1, 0], [0, -.1, 1]],
+    [[0, 1, 2]], [[0, -1, 0], [0, -1, 0], [0, -1, 0]]);
   for (const finish of ["board-and-batten", "ribbed-panel", "corrugated", "standing-seam"]) {
     const materials = [{ tag: "panel", name: "Painted panel", color: "#6b7076", finish,
       r_per_inch: null, perm_rating: null, density: null }];

@@ -8,6 +8,7 @@ import {
   elevationProfileVertices, rakedBoxGeometry, sectionRingVertices, seatedProfileVertices,
   TRIANGLES_PER_MEMBER_BOX,
 } from "./memberBox";
+import { packMesh } from "./mesh";
 import { createSolidBodyMesh } from "./solidBodyMesh";
 import {
   buildMemberHighlight, carriesMemberIdentity, memberIndexForTriangle, resolveMemberPickUid,
@@ -389,7 +390,7 @@ function checkCutProfileAndConnectorMesh() {
   const highlight = buildMemberHighlight(slat, CENTER, "#ffcc00");
   assert(highlight, "Picking outlines the cut board");
   const connector = {
-    body_mesh: { positions: [[2, 3, 1], [2, 4, 1], [2, 3, 2]], triangles: [[0, 1, 2]] },
+    body_mesh: packMesh([[2, 3, 1], [2, 4, 1], [2, 3, 2]], [[0, 1, 2]]),
   } as Solid;
   const geometry = createSolidBodyMesh(connector, CENTER);
   assert(geometry?.getAttribute("position").count === 3,

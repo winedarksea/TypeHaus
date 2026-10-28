@@ -6,6 +6,7 @@ import math
 from dataclasses import replace
 
 import pytest
+from _helpers import assert_wire_mesh
 
 from typehaus.model import (
     Building,
@@ -288,7 +289,8 @@ def test_shared_mesh_reaches_ir_json_glb_and_ifc(tmp_path):
     for solid in model.solids:
         assert model.geometry.by_uid(solid.uid).parts[0].solids == (solid.body_mesh,)
         record = next(s for s in payload["solids"] if s["uid"] == solid.uid)
-        assert record["body_mesh"]["positions"] == [list(p) for p in solid.body_mesh.positions]
+        assert_wire_mesh(record["body_mesh"], solid.body_mesh.positions,
+                         solid.body_mesh.triangles)
         assert record["host_ref"] == "O"
     gltf, _ = emit_gltf_dict(model)
     nodes = [n for n in gltf["nodes"] if n.get("extras", {}).get("uid") in

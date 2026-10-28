@@ -44,10 +44,21 @@ try {
     while (Date.now() < d) { if (window.__haus.perf.frameCalls !== undefined) return window.__haus.perf.frameCalls;
       await new Promise(r => setTimeout(r, 200)); }
     throw new Error("no frame after a dolly");`);
+  // An edit: same building, new revision, so Panel3D rebuilds with every cache already warm.
+  const rebuild = await evaluate(session, `
+    window.__haus.perf = null;
+    const st = window.__haus.store;
+    st.setState({ model: { ...st.getState().model, revision: "perf-check-" + Date.now() } });
+    const d = Date.now() + 90000;
+    while (Date.now() < d) { if (window.__haus.perf) return window.__haus.perf;
+      await new Promise(r => setTimeout(r, 100)); }
+    throw new Error("no rebuild after a revision bump");`);
   const mb = (wire.bytes / 1e6).toFixed(1);
   console.log(`/model        ${mb} MB  fetch ${wire.fetchMs.toFixed(0)} ms  parse ${wire.parseMs.toFixed(0)} ms`);
   console.log(`scene build   ${perf.buildMs.toFixed(0)} ms  (first frame ${perf.renderMs.toFixed(0)} ms, swiftshader)`);
   console.log(`first frame   ${perf.calls} draw calls  ${perf.triangles} triangles  `
     + `${perf.geometries} geometries  ${perf.textures} textures`);
   console.log(`dolly frame   ${frameCalls} draw calls`);
+  console.log(`rebuild       ${rebuild.buildMs.toFixed(0)} ms  (an edit: caches warm)  `
+    + `${rebuild.geometries} geometries`);
 } finally { session.close(); await browser.close(); }

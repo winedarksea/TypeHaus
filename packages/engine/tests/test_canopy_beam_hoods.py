@@ -3,6 +3,7 @@
 from dataclasses import replace
 
 import pytest
+from _helpers import assert_wire_mesh
 
 from typehaus import FormedFlashingSection, inch
 from typehaus.resolve.beam_hoods import resolve_beam_hood
@@ -124,7 +125,8 @@ def test_hood_sheets_reach_json_glb_and_ifc(catlin_model_ro, tmp_path):
     payload = shell_json(model, None)
     for solid in sheets:
         record = next(s for s in payload["solids"] if s["uid"] == solid.uid)
-        assert record["body_mesh"]["positions"] == [list(p) for p in solid.body_mesh.positions]
+        assert_wire_mesh(record["body_mesh"], solid.body_mesh.positions,
+                         solid.body_mesh.triangles)
     gltf, _ = emit_gltf_dict(model)
     assert {node.get("extras", {}).get("uid") for node in gltf["nodes"]} >= {
         solid.uid for solid in sheets

@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { packMesh } from "./mesh";
 import { createSurfaceMeshGeometry } from "./surfaceMesh";
 import { metalPanelProfileFor } from "./builders/walls";
 import {
@@ -235,8 +236,8 @@ export function runMaterialGeometryTests() {
     `${profile.key} folded geometry receives painted-metal shading without fake relief`);
     material.dispose();
   }
-  const surface = createSurfaceMeshGeometry({ positions: [[10, 20, 3], [11, 20, 3], [10, 20, 4]],
-    normals: [[0, -1, 0], [0, -1, 0], [0, -1, 0]], triangles: [[0, 1, 2]] }, [9, 19]);
+  const surface = createSurfaceMeshGeometry(packMesh([[10, 20, 3], [11, 20, 3], [10, 20, 4]],
+    [[0, 1, 2]], [[0, -1, 0], [0, -1, 0], [0, -1, 0]]), [9, 19]);
   const position = surface.getAttribute("position"), normal = surface.getAttribute("normal");
   assert(position.getX(0) === 1 && position.getY(0) === 3 && position.getZ(0) === -1,
     "Engine surface coordinates receive only project centring and the scene swizzle");

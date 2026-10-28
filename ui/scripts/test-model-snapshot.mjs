@@ -7,21 +7,17 @@ import { encodeSnapshot, writeSnapshotAssets, clearSnapshotAssets } from "../../
 import { packSnapshot, unpackSnapshot, validateSnapshotManifest, SNAPSHOT_CHUNK_BYTES } from "../src/engine/snapshotFormat.mjs";
 import { MAX_ASSET_BYTES, validateSiteAssets } from "../../landing/validate-site-assets.mjs";
 
-const mesh = { vertices: [[0, 0, 0], [0.1234567890123, 1, 0]], triangles: [[0, 1, 0]] };
+const mesh = { quantum: 1e-5, positions: [0, 0, 0, 12346, 100000, 0], triangles: [0, 1, 0] };
 const model = { revision: "test", project: { name: "Catlin 家 🏠" },
   storeys: [{ tag: "main" }], walls: [{ uid: "wall", axis: [[0, 0], [1, 0]], layers: [] }],
-  catalog: { canvas_object_types: [{ tag: "fixture", model_parts: [
-    { mesh, color: "red" }, { mesh: structuredClone(mesh), color: "blue" },
-    { mesh: { ...mesh, vertices: [[0, 0, 0], [0.1234567890124, 1, 0]] }, color: "red" },
-    { color: "green", size: [1, 2, 3] },
+  catalog: { meshes: [mesh], canvas_object_types: [{ tag: "fixture", model_parts: [
+    { mesh_index: 0, color: "red" }, { color: "green", size: [1, 2, 3] },
   ] }] } };
 const original = structuredClone(model);
 const packed = packSnapshot(model);
-assert.equal(packed.meshes.length, 2);
-assert.deepEqual(unpackSnapshot(packed), model);
+assert.deepEqual(unpackSnapshot(JSON.parse(JSON.stringify(packed))), model);
 assert.deepEqual(model, original, "packing must not mutate the source");
-assert.throws(() => unpackSnapshot({ model: { catalog: { canvas_object_types: [
-  { model_parts: [{ snapshot_mesh_index: 99 }] }] } }, meshes: [] }), /mesh reference/);
+assert.throws(() => unpackSnapshot({ meshes: [] }), /invalid/);
 assert.throws(() => unpackSnapshot(null), /invalid/);
 
 const encoded = encodeSnapshot(model, 1); // Every multibyte character crosses a boundary.

@@ -3,6 +3,7 @@
 import math
 
 import pytest
+from _helpers import assert_wire_mesh
 
 from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 from typehaus.joints import derived_joints
@@ -225,8 +226,7 @@ def test_json_and_geometry_ir_share_connector_triangles(catlin_model_ro):
     serialized = {solid["uid"]: solid for solid in payload["solids"]}
     for solid in _simpson_solids(catlin_model_ro):
         body = serialized[solid.uid]["body_mesh"]
-        assert tuple(tuple(p) for p in body["positions"]) == solid.body_mesh.positions
-        assert tuple(tuple(t) for t in body["triangles"]) == solid.body_mesh.triangles
+        assert_wire_mesh(body, solid.body_mesh.positions, solid.body_mesh.triangles)
         element = catlin_model_ro.geometry.by_uid(solid.uid)
         assert any(solid.body_mesh == body for part in element.parts for body in part.solids)
 

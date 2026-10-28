@@ -32,6 +32,7 @@ from typehaus.resolve.geometry_millwork import (
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json_door_hardware import authored_product_parts
+from typehaus.server.model_json_mesh import mesh_json
 from typehaus.server.model_json_plants import plants_json
 from typehaus.server.model_json_shared import (
     _enum_value,
@@ -239,9 +240,8 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              # Manufacturer part number where the solid IS a purchased part (connectors);
              # null on everything cut from stock.
              "product": solid.product,
-             "body_mesh": (None if solid.body_mesh is None else {
-                 "positions": [list(point) for point in solid.body_mesh.positions],
-                 "triangles": [list(triangle) for triangle in solid.body_mesh.triangles]}),
+             "body_mesh": (None if solid.body_mesh is None else mesh_json(
+                 solid.body_mesh.positions, solid.body_mesh.triangles)),
              # A run carried as one swept solid (→ resolve/sweep.py). Null on every prism,
              # which is every solid that is not a rail, a pipe or a raceway; the viewer
              # forks on it in ``buildSolid`` and mitres the tube itself.

@@ -1,44 +1,17 @@
 // Snapshot transport only: the engine and renderer continue to exchange ordinary Models.
 export const SNAPSHOT_FORMAT = "typehaus-model-snapshot";
-export const SNAPSHOT_VERSION = 1;
+// 2: product meshes arrive deduplicated in `catalog.meshes` from the engine itself, so the
+// envelope no longer carries a mesh table of its own.
+export const SNAPSHOT_VERSION = 2;
 export const SNAPSHOT_CHUNK_BYTES = 8 * 1024 * 1024;
 
 export function packSnapshot(model) {
-  const meshes = [];
-  const meshIndices = new Map();
-  const packedModel = structuredClone(model);
-  for (const type of packedModel.catalog?.canvas_object_types ?? []) {
-    for (const part of type.model_parts ?? []) {
-      if (!Object.hasOwn(part, "mesh")) continue;
-      if (Object.hasOwn(part, "snapshot_mesh_index")) throw new Error("reserved snapshot mesh field");
-      const serializedMesh = JSON.stringify(part.mesh);
-      let index = meshIndices.get(serializedMesh);
-      if (index === undefined) {
-        index = meshes.length;
-        meshIndices.set(serializedMesh, index);
-        meshes.push(part.mesh);
-      }
-      delete part.mesh;
-      part.snapshot_mesh_index = index;
-    }
-  }
-  return { model: packedModel, meshes };
+  return { model };
 }
 
 export function unpackSnapshot(packed) {
-  if (!packed || typeof packed !== "object" || !packed.model ||
-      typeof packed.model !== "object" || !Array.isArray(packed.meshes)) {
+  if (!packed || typeof packed !== "object" || !packed.model || typeof packed.model !== "object") {
     throw new Error("invalid packed snapshot");
-  }
-  for (const type of packed.model.catalog?.canvas_object_types ?? []) {
-    for (const part of type.model_parts ?? []) {
-      if (!Object.hasOwn(part, "snapshot_mesh_index")) continue;
-      const index = part.snapshot_mesh_index;
-      if (!Number.isInteger(index) || index < 0 || index >= packed.meshes.length ||
-          Object.hasOwn(part, "mesh")) throw new Error("invalid snapshot mesh reference");
-      part.mesh = packed.meshes[index];
-      delete part.snapshot_mesh_index;
-    }
   }
   return packed.model;
 }

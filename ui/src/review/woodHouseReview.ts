@@ -45,7 +45,8 @@ export async function houseWoodSamples() {
   const tableType = model.catalog!.canvas_object_types!.find(t => t.model_parts?.some(p => isSpecies(p.material_ref, "ash")))!;
   const table = model.canvas_objects!.find(o => o.type === tableType.tag)!;
   add("Ash · dining table", "ash", "natural-clear", (g, p, s) =>
-    buildCanvasObjectParts(g, table, tableType.model_parts!, [0, 0], "nordic", table.z_m ?? 0, p, s, materials));
+    buildCanvasObjectParts(g, table, tableType.model_parts!, [0, 0], "nordic", table.z_m ?? 0, p, s, materials,
+      model.catalog?.meshes));
   const elm = model.solids!.find(s => isSpecies(s.material ?? assemblyFaceMaterial(model.catalog, s.assembly), "elm"))!;
   add("Elm · suite post", "elm", "natural-clear", (g, p, s) =>
     buildSolid(g, elm, [0, 0], "nordic", palette, model.catalog, p, s, materials));

@@ -39,6 +39,7 @@ import {
   memberUidsFor, tagInstancedMemberIdentity, tagMergedMemberIdentity,
 } from "./memberPicking";
 import { projectPlanDirectionToScene, projectPointToScene, type PlanCenter } from "./planGeometry";
+import { meshTriangleCount } from "./mesh";
 import { makeSurfaceMesh, markShadowCaster, standardMaterial } from "./surfaces";
 import { buildSprayFoamMembers } from "./sprayFoamMembers";
 import vocabulary from "../generated/vocabulary.json";
@@ -472,7 +473,7 @@ export function buildMembers(group: THREE.Group, members: Member[], center: Plan
     const material = createProfiledMetalSkinMaterial(mode, color);
     const mesh = makeSurfaceMesh(geometry, material);
     tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, [member]),
-      [0, member.surface_mesh!.triangles.length]);
+      [0, meshTriangleCount(member.surface_mesh!)]);
     group.add(mesh);
   }
   const boxMembers = members.filter((member) => !member.surface_mesh && !member.plan_outline?.length);

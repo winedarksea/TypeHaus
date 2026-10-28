@@ -21,6 +21,7 @@ edits in the watcher.
 from __future__ import annotations
 
 import dataclasses
+import json
 import logging
 import os
 import queue
@@ -90,6 +91,7 @@ class ProjectState:
     _undo_depth: int = 0
     _redo_depth: int = 0
     _model_cache: tuple[str, dict[str, Any]] | None = None
+    _model_bytes: tuple[dict[str, Any], bytes] | None = None  # keyed on the payload object
     _lock: threading.RLock = field(default_factory=threading.RLock)
     # Background source-writeback worker (lazily started): a single thread applies queued
     # writebacks in order, so disk source is a faithful, serialized replay of the fast edits.
@@ -470,6 +472,14 @@ class ProjectState:
             payload["checksPending"] = self.checks_pending
             self._model_cache = (revision, payload)
             return payload
+
+    def model_json_bytes(self) -> bytes:
+        """``model_json()`` encoded once per payload. Unlocked: a race only encodes it twice."""
+        payload, cached = self.model_json(), self._model_bytes
+        if cached is None or cached[0] is not payload:
+            body = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+            self._model_bytes = cached = (payload, body.encode("utf-8"))
+        return cached[1]
 
     def findings_json(self) -> list[dict[str, Any]]:
         with self._lock:

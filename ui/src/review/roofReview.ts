@@ -45,6 +45,6 @@ const sheet = roof.layer_surface_meshes?.find(item => item.layer === "roofing")?
 const errors = [];
 if (!sheet?.triangles.length) errors.push("Missing resolved roofing sheet");
 if (!roof.members.some(member => member.category === "ridge_closure")) errors.push("Missing ridge closures");
-const checks = { view, triangles: sheet?.triangles.length, errors };
+const checks = { view, triangles: sheet ? sheet.triangles.length / 3 : undefined, errors };
 document.querySelector("#status")!.textContent = JSON.stringify(checks);
 Object.assign(window, { sidingReviewChecks: checks, sidingReviewReady: true });

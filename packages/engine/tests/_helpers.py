@@ -145,3 +145,16 @@ def east_variant_house(dst: Path, variant: str) -> Path:
     assert line is not None, "params/north_entry_frame.py lost its EAST_POST_SYSTEM line"
     path.write_text(text.replace(line, f'EAST_POST_SYSTEM = "{variant}"', 1), encoding="utf-8")
     return house
+
+
+def assert_wire_mesh(wire, positions, triangles) -> None:
+    """A model.json mesh (→ server/model_json_mesh.py) is the engine mesh, to its quantum."""
+    from typehaus.server.model_json_mesh import decode_mesh
+
+    decoded = decode_mesh(wire)
+    assert decoded["triangles"] == [tuple(t) for t in triangles]
+    assert len(decoded["positions"]) == len(positions)
+    half = wire["quantum"] / 2 + 1e-12
+    for got, want in zip(decoded["positions"], positions, strict=True):
+        assert all(abs(g - w) <= half for g, w in zip(got, want, strict=True)), (got, want)
+
