@@ -16,8 +16,10 @@ class ResolvedWallColumn:
     wall_tag: str
     aggregate: str
     width_m: float
-    z0_m: float  # the excavation floor beside the bed
+    z0_m: float  # the lowest stone: the excavation floor beside the bed, or a footing top
     top_m: float
+    #: The strip grade the wall is backfilled against; the cap closes the column under it.
+    grade_m: float
     volume_m3: float
     #: Soil-side face plus the top, where the fabric is authored; 0 otherwise.
     geotextile_m2: float

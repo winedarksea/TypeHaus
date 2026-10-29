@@ -14,10 +14,12 @@ from shapely.geometry import Point, Polygon, box
 from typehaus.resolve.excavation_slices import Hole, levels, slice_hole
 from typehaus.takeoff.excavation import excavation_takeoff
 
-#: The hand note's totals (§6), and how close a modelled number must land.
-HAND = {"drain-column-stone": (51.9, 0.02), "drain-column-geotextile": (1455.0, 0.03),
-        "cut": (1230.4, 0.05), "backfill": (528.0, 0.10), "cap": (100.7, 0.15),
-        "haul-off": (717.2, 0.10)}
+#: The hand note's totals (§6-7), and how close a modelled number must land. Cut, cap and
+#: the rows built on them differ for the reason §7 states (per-bed cones topped at their own
+#: grade); each tolerance sits just over that stated gap.
+HAND = {"drain-column-stone": (49.9, 0.01), "drain-column-geotextile": (1396.0, 0.01),
+        "cut": (1230.4, 0.02), "backfill": (528.1, 0.04), "cap": (100.7, 0.15),
+        "haul-off": (714.1, 0.04)}
 
 
 def _columns(model):

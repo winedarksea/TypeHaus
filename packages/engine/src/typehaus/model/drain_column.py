@@ -24,6 +24,8 @@ class DrainColumn(HausModel):
 
     width: Length
     aggregate: str = "ASTM C33 #57 washed crushed stone"
+    #: The library ``Material`` it draws and colours as (decision #57); ``aggregate`` bills.
+    material_ref: str = "capillary-break-stone"
     cap_below_grade: Length | None = None
     height: Length | None = None
     #: Filter fabric on the soil side, folded over the top.

@@ -145,12 +145,10 @@ def _emit(model, bed, spec, plan, outline, face, claimed) -> list[Finding]:
     pieces = [(bed.stone_z0_m, p) for p in parts(main)]
     for other, footprint in beds:
         pieces += [(footing_top(model, other), p) for p in parts(intersection(plan, footprint))]
-    if spec.height is not None:
-        top = bed.z1_m + spec.height.meters
-    else:
-        _wall, _body, line, outward = face
-        grade, _ = strip_grade_elevation_m(model, grade_strip(line, outward))
-        top = grade - spec.cap_below_grade.meters
+    _wall, _body, line, outward = face
+    grade, _ = strip_grade_elevation_m(model, grade_strip(line, outward))
+    top = (bed.z1_m + spec.height.meters if spec.height is not None
+           else grade - spec.cap_below_grade.meters)
     solids = []
     for z0, part in pieces:
         if top - z0 <= 1e-6:
@@ -159,7 +157,7 @@ def _emit(model, bed, spec, plan, outline, face, claimed) -> list[Finding]:
         solids.append(ResolvedSolid(
             uid=f"{bed.uid}-DC-{index:02d}", tag=f"{bed.tag}-DC-{index + 1}", storey=bed.storey,
             category=CATEGORY, outline=list(part.exterior.coords)[:-1], z0_m=z0, z1_m=top,
-            voids=tuple(list(r.coords)[:-1] for r in part.interiors)))
+            voids=tuple(list(r.coords)[:-1] for r in part.interiors), material=spec.material_ref))
     if not solids:
         return [Finding(severity=Severity.WARN, check_id="integrity.drain_column",
                         message=f"{bed.tag}'s drain column resolves to nothing",
@@ -171,7 +169,8 @@ def _emit(model, bed, spec, plan, outline, face, claimed) -> list[Finding]:
     neighbours = [g for tag, g in claimed.items() if tag != bed.tag and not g.is_empty]
     keep_off = union_all([outline, *neighbours]).buffer(_EPS_M)
     boundary = whole.boundary.difference(keep_off)
-    soil_height = top - min(z0 for z0, _p in pieces)
+    floor = min(s.z0_m for s in solids)
+    soil_height = top - floor
     fabric = (boundary.length * soil_height + whole.area) if spec.geotextile else 0.0
     origin, outward = face[2].coords[0], face[3]
 
@@ -183,7 +182,7 @@ def _emit(model, bed, spec, plan, outline, face, claimed) -> list[Finding]:
               - (reach(own.exterior.coords) if own is not None else 0.0))
     model.wall_columns.append(ResolvedWallColumn(
         bed_tag=bed.tag, wall_tag=face[0].tag, aggregate=spec.aggregate,
-        width_m=spec.width.meters, z0_m=bed.stone_z0_m, top_m=top, volume_m3=volume,
+        width_m=spec.width.meters, z0_m=floor, top_m=top, grade_m=grade, volume_m3=volume,
         geotextile_m2=fabric, plan_area_m2=whole.area, beyond_footing_m=beyond,
         footing_top_m=footing_top(model, bed)))
     return []

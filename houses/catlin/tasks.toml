@@ -87,7 +87,7 @@ depends_on = ["task/concrete/basement/walls"]
 checkpoints = [
   { id = "membrane", label = "Cold joint treated, primer flashed off, sheet rolled and corners reinforced" },
   { id = "foam", label = "XPS bonded to the cured membrane with foam-compatible mastic" },
-  { id = "stone", label = "[excavation] drain-column-stone/-geotextile, backfill, cap: 12\" #57 drain column from the excavation floor to 12\" under grade, geotextile on the soil side and folded over the top; native in <=8\" lifts beyond it; 12\" clay cap falling 6\" in 10'", after = ["insp/foundation_backfill"] },
+  { id = "stone", label = "[excavation] drain-column-stone/-geotextile, backfill, cap: 16\" #57 drain column (12\" on the court heels) from the excavation floor to 12\" under grade, geotextile on the soil side and folded over the top; native in <=8\" lifts beyond it; 12\" clay cap falling 6\" in 10'", after = ["insp/foundation_backfill"] },
 ]
 constraints = [
   { label = "forms stripped and the wall face clean and dry — the sheet is adhered, not hung" },

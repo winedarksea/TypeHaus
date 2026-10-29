@@ -1764,7 +1764,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     4" of mastic-bonded XPS can take a mechanical fastener. Free-draining stone against the
     wall does the drainage: since 2026-10-28 it is MODELLED, `FootingBedding.wall_column`
     (`DrainColumn`, 16" of #57 on the house from the excavation floor to 12" under the strip
-    grade; 12" x 7'-0" on the court's W2/E2/S heels), and the over-dig around it is
+    grade; 12" on the court's W2/E2/S heels, to the same line), and the over-dig around it is
     `plan/earthwork.py` `EX-HOUSE`. Both bill in `prices.toml [excavation]` (cut, haul-off,
     backfill, cap, drain-column stone and fabric); the two old allowances are retired.
     **16", not 12"**: the width is off the foam face and R405.1 wants 12" past the FOOTING

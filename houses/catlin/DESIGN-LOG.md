@@ -10,12 +10,13 @@ closed by modelling, not by allowance.
   wall from the excavation floor (it drops beside the 7" bed, so the exterior tile lies in
   stone) to 12" under the strip grade, geotextile on the soil side and over the top. The plan
   said 12"; R405.1 wants 12" past the FOOTING edge and the 20" footing projects 2-4" past the
-  foam, so 12" read 8.1" and FAILed. 16" reads 12.09". The court's W2/E2/S keep 12" x 7'-0"
-  on their heels (structural relief, outside R405.1's scope). 51.9 cy against the 32.2 cy the
-  two retired allowances priced.
+  foam, so 12" read 8.1" and FAILed. 16" reads 12.09". The court's W2/E2/S carry 12" on their
+  heels to the same 12" under grade (structural relief, outside R405.1's scope); the 7'-0"
+  first authored stood in the cap, and 2 1/2" over grade on S. 49.9 cy against the 32.2 cy
+  the two retired allowances priced.
 - **Over-dig (`plan/earthwork.py` EX-HOUSE).** One hole for house and court: 2'-0" working
   space, OSHA Type B 1:1 (presumed), swell 30% / shrink 15% (presumed till), native in ≤8"
-  lifts, 12" clay cap. ~1,246 cy cut, ~515 cy placed backfill, ~113 cy cap, ~740 loose cy
+  lifts, 12" clay cap. ~1,246 cy cut, ~513 cy placed backfill, ~114 cy cap, ~738 loose cy
   haul-off. Billed in `prices.toml [excavation]` off MnDOT 2025 average bid floors; the old
   $24-55k lump is now a $5.5-14k residual (garage trench, pier holes, finish grade).
   **The 1:1 cut runs past the 50' lot's side lines** — a soils report (BLD-12) and likely a

@@ -1407,10 +1407,11 @@ FOOTING_BEDDING = [
         **({"inlet_refs": (_STONE_FROM[f.tag],)} if f.tag in _STONE_FROM else {}),
         **({"inlet_refs": ("SM-B-RADON",)} if f.tag in _RELIEF else {}),
         **_RELIEF.get(f.tag, {}),
-        # The retained walls' structural drainage: 12" of #57 up 7'-0" off the bed top,
-        # on the heel, relieving the hydrostatic thrust (→ notes/foundation_aggregate_
-        # and_backfill.md). W1/E1 retain nothing against the house and carry none.
-        **({"wall_column": DrainColumn(width=inch(12), height=ft(7))}
+        # The retained walls' structural drainage: 12" of #57 on the heel, up to 12" under
+        # the strip grade where EX-HOUSE's clay cap closes it, as the house's columns do.
+        # 7'-0" off the bed top stood in the cap and 2 1/2" over grade on the S wall
+        # (→ notes/foundation_aggregate_and_backfill.md). W1/E1 retain nothing; none there.
+        **({"wall_column": DrainColumn(width=inch(12), cap_below_grade=inch(12))}
            if f.tag in _DRAINED_WALLS else {}),
     )
     for f in FOOTINGS

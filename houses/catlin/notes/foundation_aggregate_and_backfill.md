@@ -108,12 +108,15 @@ to the first bed by uid; over the 1.9"/3.9" footing ledge the stone starts on th
 | S1 | 86.19 x 16 + 35.69 x 2.5 = 1468.3 | over FT-SG-W1's heel: 35.69 x 13.5 + 16 x 1.96 = 513.2 | 10.20 x 6.370 + 3.564 x 5.120 | 83.2 |
 | S4 | 70.19 x 16 + 89.2 = 1212.3 (SE corner is E1's) | 513.2 | 8.42 x 6.287 + 3.564 x 5.037 | 70.9 |
 
-b. **Court, 12" wide on the heels**, -109 7/16" to -37 7/16" (z1 + 7'-0"): 6.0'.
-W2: 12 x 208.31 = 2499.7 in² = 17.36 SF x 6 = 104.2 cf; E2 the same; S: 228.62 x 12 = 19.05 SF
-x 6 = 114.3 cf.
+b. **Court, 12" wide on the heels**, from the heel top -109 7/16" to 12" under each wall's
+strip grade, like the house: W -48" (5.120'), E -49" (5.037'), S -52" (4.787').
+W2: 12 x 208.31 = 2499.7 in² = 17.36 SF x 5.120 = 88.9 cf; E2 17.36 x 5.037 = 87.4 cf;
+S: 228.62 x 12 = 19.05 SF x 4.787 = 91.2 cf. (Authored first as 7'-0" off the bed top, the
+top sat at -37 7/16": inside the cap on W and E, and 2 1/2" ABOVE the S wall's -40" grade.
+`integrity.excavation` now refuses a column that rises into the cap.)
 
-**Total: 1,401 cf = 51.9 cy of #57** (house 1,079 cf, court 323 cf). The two retired
-allowances priced 18.6 + 13.6 = 32.2 cy; the modelled column is ~20 cy more, from the 16"
+**Total: 1,346 cf = 49.9 cy of #57** (house 1,079 cf, court 268 cf). The two retired
+allowances priced 18.6 + 13.6 = 32.2 cy; the modelled column is ~18 cy more, from the 16"
 width, the drop to the excavation floor and the column up to 12" under grade.
 
 c. **Court rim base course:** 94 SF net x 4/12 = 31 cf = **1.2 cy**, billed with the other
@@ -128,10 +131,10 @@ d. **Geotextile**, soil-side face x the column's full height, plus the top:
 | N2 / N3 / N4 | 96 / 48 / 76.19 | x 6.037 + top 10.67 / 5.33 / 8.47 | 59.0 / 29.5 / 46.8 |
 | S1 | 105.88 + 16 + 1.96 + 16 = 139.84 | 11.65 x 6.370 + 13.78 | 88.0 |
 | S4 | 89.88 + 1.96 + 16 = 107.84 | 8.99 x 6.287 + 12.0 | 68.5 |
-| W2, E2 (court) | 208.31 + 12 + 12 = 232.31 | 19.36 x 6 + 17.36 | 133.5 each |
-| S (court) | 228.62 | 19.05 x 6 + 19.05 | 133.4 |
+| W2 / E2 (court) | 208.31 + 12 + 12 = 232.31 | 19.36 x 5.120 / 5.037 + 17.36 | 116.5 / 114.9 |
+| S (court) | 228.62 | 19.05 x 4.787 + 19.05 | 110.2 |
 
-**Total: 1,455 SF.**
+**Total: 1,396 SF.**
 
 ## 7. The over-dig, by hand
 
@@ -148,21 +151,34 @@ stops at its own strip grade (§6; court W -36", E -37", S -40"). Integrated in 
 | beds below the interiors | house 291.8 SF x 5.5/12 + 49.8 SF x 9.5/12; court inner parts 42.04 x 2 x 46.5/12 + (46.3 x 2 + 102.1 + 33) x 58.5/12 - 11 x 10.5/12 | 1,599 |
 | **cut (bank)** | | **33,220 = 1,230 cy** |
 
-Fill = ring less what stands in it: columns 1,401; court beds and footings outside the outline
+Fill = ring less what stands in it: columns 1,346; court beds and footings outside the outline
 (W1/E1 31.06 SF x 4.5' x 2 = 279.5, W2/E2 34.2 SF x 5.5' x 2 = 376.2, S 106.2 SF x 5.5' =
 584.3) 1,240; house bed/footing overhang 29.1 SF x 1.25' = 36; RG walls and beds, terrace
-fill, piers and walk bases ~195. **Fill 18,447 - 2,872 = 15,575 cf = 577 cy.**
+fill, piers and walk bases ~195. **Fill 18,447 - 2,817 = 15,630 cf = 579 cy.**
 
 Cap = the ring's top 12" under each side's grade, 3,083 cf, less walks, RG walls, terrace
-fill and pads in that band (~364): **2,719 cf = 100.7 cy**. Native = 15,575 - 2,719 =
-12,856 cf = 476 cy; **backfill placed = native + column = 476 + 51.9 = 528 cy**.
+fill and pads in that band (~364; every column stops under it): **2,719 cf = 100.7 cy**.
+Native = 15,630 - 2,719 = 12,911 cf = 478 cy; **backfill placed = native + column = 478 +
+49.9 = 528 cy**.
 
-Haul-off: spoil for the fill 15,575 / (1 - 0.15) = 18,324 cf bank; (33,220 - 18,324) x 1.30
-= **19,365 cf = 717 cy loose**, ~50 tandem loads.
+Haul-off: spoil for the fill 15,630 / (1 - 0.15) = 18,388 cf bank; (33,220 - 18,388) x 1.30
+= **19,282 cf = 714 cy loose**, ~50 tandem loads.
 
-The model reads cut 1,246, backfill 515, cap 112.5, haul 740 cy: within 1.3%, 2.5%, 12% and
-3%. The cap differs most because each bed's mitred dig wraps its corners in the model, where
-the hand ring gives a side's corner to one side only.
+**Against the model** (cut 1,246, fill 577, backfill 513, cap 114.2, haul 738 cy). The FILL
+agrees to 0.3% (15,581 cf against 15,630); what differs is how much is dug and how the fill
+splits between cap and native, and both have one cause. The model digs each bed's slope as
+its own mitred cone, topped at THAT bed's strip grade, and unions them; this hand ring gives
+each side its own strip. Where a -36" side meets a -40" one (N1/W1 against N2-N4; the court
+W/E against S), the higher side's cone wraps the corner and is dug up to -36" over ground at
+-40" — 114 cf of it lies over the lower side's own strip — and the lower side's cap, which
+starts 4" deeper, wraps back over the higher side's native. So:
+- **cut +1.3%** (gross ring 18,818 cf against 18,447), and **haul +3.3%**, which is that
+  difference x 1.30 swell with the fill unchanged;
+- **cap +13%** (gross cap band 3,611 cf against 3,083, less 529 cf of obstacles in the band
+  against ~364), native and so **backfill -2.9%** by the same yards.
+It is a known approximation of a flat per-side grade, not a billing error: ~13 cy moves
+between two placement rows priced alike. A cap that followed a graded surface would close
+it, and would need the site's grade as a surface rather than as stations.
 
 ## 8. What is NOT graded here
 

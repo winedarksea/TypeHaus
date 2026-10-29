@@ -1952,12 +1952,13 @@
           -48.00000000000001
         ]
       ],
-      "pattern": "concrete",
+      "pattern": "capillary-break-stone",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "concrete"
+      "material": "capillary-break-stone",
+      "fill": "#8f8d88"
     },
     {
       "space": "model",
@@ -2008,12 +2009,13 @@
           -48.00000000000001
         ]
       ],
-      "pattern": "concrete",
+      "pattern": "capillary-break-stone",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "concrete"
+      "material": "capillary-break-stone",
+      "fill": "#8f8d88"
     },
     {
       "space": "model",
