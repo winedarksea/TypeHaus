@@ -2805,10 +2805,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   the 96 15/16" ceiling with its 6" top clearance. **Rotation -90 at (8'-9", 29'-5")** (owner,
   2026-10-29): air exhaust SOUTH into the room with Rheem's 6", back on `W-B-STR3`, T&P north
   at 42 3/8" with 4 1/2" to `W-B-ESS-S`, front (display, condensate 59") west beside the ERV
-  case; `PR-B-WH-COND` drops under the case into `PR-B-ERV-COND`. Ports are EXACT (heights
+  case; `PR-B-WH-COND` drops beside the case into `PR-B-ERV-COND`, which runs behind the tank
+  (T&P gap, 52") and through the under-stair storage. Ports are EXACT (heights
   published, x/y scaled). The round 16-gon footprint is load-bearing: `PR-B-HW-TRUNK` drops in
-  its empty corner. On the slab, no plinth or pan. Do not move it south: `PR-B-ERV-COND`'s
-  y=340" leg is 0.35" off the body.
+  its empty corner. On the slab, no plinth or pan. South, `D-B-CLOSET`'s swing allows 1 7/8".
 - **`PR-G-SERVICE-CW` is the service lateral** (1 1/4" PEX, 6' bury, x=11'-4"), drawn street
   to house so `PR-B-CW-TRUNK` derives it as parent at the entry (11'-4", 35'-6"). **The hydrant
   is a branch of the trunk** (owner, 2026-10-29): `PR-G-HYDRANT-CW` (3/4") tees off the riser

@@ -43,7 +43,7 @@ def test_the_engine_default_is_a_sixteenth(catlin_plan, catlin_model_ro) -> None
              if f.result is Result.FAIL]
     # The current WC2 and second-storey WC routes add two more close-to-minimum slopes; the
     # 2026-10-01 north sewer exit put the main and both slab branches at exactly 1/4"/ft.
-    # PR-B-ERV-COND left the list on 2026-10-17: it falls ~1.8"/ft to the bath lav.
+    # PR-B-ERV-COND left the list on 2026-10-17 and stays off it: >= 0.33"/ft to the bath lav.
     # Kitchen trap arm is intentionally at the 1/4-inch/ft code minimum.
     # New drawn wall arms use the house's explicit zero reserve preference too.
     # The 2026-10-26 web-clearance reroute added the suite WC's 9.19" first leg and its lav arm.

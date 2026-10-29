@@ -1038,7 +1038,8 @@ WALLS = [
 OPENINGS = [
     # Interior circulation
     # (2026-10-29: PR-B-ERV-COND left this wall for the bath lavatory on 10-17 and now runs
-    # x=80.6" / y=302" / x=115.5" at 38"-52". The pin below is history; D-B-FURN has not moved.)
+    # behind EQ-B-WH and through the under-stair storage. The pin below is history;
+    # D-B-FURN has not moved.)
     # ** 3'-3", AND IT IS THE CONDENSATE LINE THAT SAYS SO (2026-09-05). ** A UI drag had
     # put this at 1'-6 1/16", and `from_node` offsets the NEAR JAMB, not the centre
     # (resolve/pipeline.py), so the 32" opening ran x 1'-6 1/16"..4'-2 1/16" — straight

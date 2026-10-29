@@ -485,12 +485,13 @@ DUCTS_HVAC_ATTIC = []
 #
 # ** ROTATED -90 SO THE AIR EXHAUST FACES THE ROOM (owner, 2026-10-29). ** Product right
 # (exhaust) is SOUTH: its 6" zone (x 99..117", y 334 7/8..340 7/8") is open floor, with only
-# D-B-CLOSET's leaf in it while it stands open (PR-B-ERV-COND left it for x=80.6", 2026-10-29).
+# D-B-CLOSET's leaf in it while it stands open (PR-B-ERV-COND left it on 2026-10-29).
 # Back is EAST on the wall (0" allowed). Left (T&P, 42 3/8") is NORTH, 4 1/2" body-to-wall: 1"
-# south from 29'-6" buys that; the leaf's swing (y <= 339") would allow 1 7/8" more. Front (display,
-# condensate) is WEST, beside the ERV case: the display is read through EcoNet, the lower
-# panels from under the case (it hangs at 54"; it moved 3/16" west to open the slot to
-# 24.28"). mep_supply.py, mep_supply_devices.py and mep_drainage.py quote the rotated ports.
+# south from 29'-6" buys that; the leaf's swing (y <= 339") would allow 1 7/8" more.
+# PR-B-ERV-COND runs through that gap at 52", 9" over the valve (plan/mep_drainage.py).
+# Front (display, condensate) is WEST, beside the ERV case: the display is read through
+# EcoNet, the lower panels from under the case (it hangs at 54"; it moved 3/16" west to open
+# the slot to 24.28"). mep_supply.py, mep_supply_devices.py and mep_drainage.py quote the rotated ports.
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
              position=pt(ft(8, 9), ft(29, 5)), rotation=deg(-90),
