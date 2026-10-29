@@ -29638,6 +29638,30 @@
 8,
 "1ce2bb9fca09"
 ],
+"geometry/CMW101AAAA::framing/member:tee-N-M-S1-block-00": [
+0.6477,
+0.6858,
+8,
+"69b7f8df4491"
+],
+"geometry/CMW101AAAA::framing/member:tee-N-M-S1-block-01": [
+1.2573,
+1.2954,
+8,
+"ec7680733b08"
+],
+"geometry/CMW101AAAA::framing/member:tee-N-M-S1-block-02": [
+1.8669,
+1.905,
+8,
+"45a1f31fced1"
+],
+"geometry/CMW101AAAA::framing/member:tee-N-M-S1-block-03": [
+2.4765,
+2.5146,
+8,
+"698effbf7582"
+],
 "geometry/CMW102AAAA-basestrip-1-0/body": [
 -0.3186063,
 -0.3151689,
@@ -45609,6 +45633,30 @@
 5.715,
 8,
 "50ef2552dcd5"
+],
+"geometry/CSW101AAAA::framing/member:tee-N-S-S1-block-00": [
+3.6957,
+3.7338,
+8,
+"2238f99c3098"
+],
+"geometry/CSW101AAAA::framing/member:tee-N-S-S1-block-01": [
+4.3053,
+4.3434,
+8,
+"cff3b937b101"
+],
+"geometry/CSW101AAAA::framing/member:tee-N-S-S1-block-02": [
+4.9149,
+4.953,
+8,
+"ff636c28a43f"
+],
+"geometry/CSW101AAAA::framing/member:tee-N-S-S1-block-03": [
+5.5245,
+5.5626,
+8,
+"2a1bbd60c968"
 ],
 "geometry/CSW102AAAA-band-208-0/body": [
 5.2174851,
@@ -82528,6 +82576,30 @@
 2,
 "eebc11b3c6f0"
 ],
+"member/CMW101AAAA/tee-N-M-S1-block-00": [
+0.6477,
+0.6858,
+2,
+"cb6519f7d6e7"
+],
+"member/CMW101AAAA/tee-N-M-S1-block-01": [
+1.2573,
+1.2954,
+2,
+"c56e722a7265"
+],
+"member/CMW101AAAA/tee-N-M-S1-block-02": [
+1.8669,
+1.905,
+2,
+"ac38d210570e"
+],
+"member/CMW101AAAA/tee-N-M-S1-block-03": [
+2.4765,
+2.5146,
+2,
+"f16deafda480"
+],
 "member/CMW102AAAA/backing-0-000": [
 2.0828,
 2.26695,
@@ -93099,6 +93171,30 @@
 5.715,
 2,
 "015f08fd3431"
+],
+"member/CSW101AAAA/tee-N-S-S1-block-00": [
+3.6957,
+3.7338,
+2,
+"8e91f0f0ce38"
+],
+"member/CSW101AAAA/tee-N-S-S1-block-01": [
+4.3053,
+4.3434,
+2,
+"07929df44eb9"
+],
+"member/CSW101AAAA/tee-N-S-S1-block-02": [
+4.9149,
+4.953,
+2,
+"5e2e1f8d6f39"
+],
+"member/CSW101AAAA/tee-N-S-S1-block-03": [
+5.5245,
+5.5626,
+2,
+"b8f30a7575c5"
 ],
 "member/CSW102AAAA/block-2-000-00": [
 3.048,

@@ -42,8 +42,44 @@ def _member_band(member, origin, tangent):
     return box(min(stations), bottom, max(stations), top)
 
 
+def _hits(member, kings) -> list:
+    ring, low, high = member_footprint(member)
+    return [polygon for polygon, bottom, top in kings
+            if min(high, top) > max(low, bottom) + _EPS
+            and Polygon(ring).intersection(polygon).area > _EPS]
+
+
+def _slid_off(member, hit, wall, others):
+    """The rung slid along ``wall`` to butt the king(s) it clips, or None.
+
+    A king standing under the branch replaces the rung; one that only clips its edge (D-M-BALC
+    beside W-M-C1's tee) leaves the branch's far face and its end stud with nothing else to
+    nail to, so the rung keeps its station less the overlap.
+    """
+    _origin, tangent, _normal, _run = wall_frame(wall)
+    ring = member_footprint(member)[0]
+    along = [p[0] * tangent[0] + p[1] * tangent[1] for p in ring]
+    lo, hi = min(along), max(along)
+    king = [p[0] * tangent[0] + p[1] * tangent[1] for polygon in hit
+            for p in polygon.exterior.coords]
+    k_lo, k_hi = min(king), max(king)
+    if k_lo <= (lo + hi) / 2.0 <= k_hi:
+        return None  # the king stands under the branch: it is the backing
+    shift = k_lo - hi if k_lo > (lo + hi) / 2.0 else k_hi - lo
+    slid = replace(member, p0=add(member.p0, scale(tangent, shift)),
+                   p1=add(member.p1, scale(tangent, shift)))
+    s_ring, s_low, s_high = member_footprint(slid)
+    body = Polygon(s_ring).buffer(-_SEAM_PROBE_M)
+    for other in others:
+        o_ring, o_low, o_high = member_footprint(other)
+        if (min(s_high, o_high) > max(s_low, o_low) + _EPS
+                and body.intersection(Polygon(o_ring)).area > _EPS):
+            return None
+    return slid
+
+
 def _remove_replaced_tee_backing(model):
-    """Full-height doubled kings replace intersecting finish-only ladder rungs."""
+    """Full-height doubled kings replace the finish-only ladder rungs they stand in."""
     types = {item.tag: item for item in model.plan.library.door_types}
     hardened_tags = {opening.tag for opening in model.openings
                       if opening.is_door and opening.type_ref in types
@@ -58,10 +94,12 @@ def _remove_replaced_tee_backing(model):
             if member.category == "door_blocking" and member.opening_tag in hardened_tags:
                 continue
             if member.category == "blocking" and member.child_key.startswith("tee-"):
-                ring, low, high = member_footprint(member)
-                if any(min(high, top) > max(low, bottom) + _EPS
-                       and Polygon(ring).intersection(polygon).area > _EPS
-                       for polygon, bottom, top in kings):
+                hit = _hits(member, kings)
+                if hit:
+                    others = [m for m in wall.members if not m.child_key.startswith("tee-")]
+                    slid = _slid_off(member, hit, wall, others)
+                    if slid is not None and not _hits(slid, kings):
+                        retained.append(slid)
                     continue
             retained.append(member)
         model.walls[index] = replace(wall, members=tuple(retained))
