@@ -423,7 +423,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   KDAT touches aluminium. Net free area 83 cm2/m (DIN 18516-1: 50). Heads: a steel K6 cap
   floors the cavity over every metal-wall window and laps the 58114XX by 1"; the panel end sits
   on a strip; heads are NOT outlets. Band: a 1" outlet strip under the Transition Trim at
-  +17'-4" (82.5 cm2/m). All DERIVED (`resolve/rainscreen_closures.py`, `rainscreen_strips.py`,
+  +17'-4" (77 cm2/m). All DERIVED (`resolve/rainscreen_closures.py`, `rainscreen_strips.py`,
   `opening_head_cap.py`), graded by `integrity.rainscreen_cavity`, billed in `[bug_screens]`.
   Sills, eaves, rakes and corners stay closed; jamb buck returns are a hold point. **The top
   stays closed: the roof deck oversails to the girt face**, pinned by

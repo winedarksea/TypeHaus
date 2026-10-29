@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+
 from typehaus.library.materials._common import _UAF
 from typehaus.model import Material
 from typehaus.model.cladding_trim import CORRUGATED_KIT, PBR_KIT
@@ -151,6 +153,8 @@ _BASE_ROWS: tuple[Material, ...] = (
         hatch="metal",
         color="#b6bac0",
         finish="perforated",
+        perforation_hole_in=3.0 / 25.4,
+        open_area_fraction=math.pi / (2.0 * math.sqrt(3.0)) * (3.0 / 5.0) ** 2,
         source=f"{_UAF}: 'Air, still' 120 perm-in — the vapour path is the open "
         "perforation, as for `corrugated-vent-strip`. Density is aluminium's 2700 kg/m3 "
         "times the metal fraction of the sheet: 3 mm holes on a 5 mm 60-degree stagger "

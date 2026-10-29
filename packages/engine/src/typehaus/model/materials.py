@@ -62,6 +62,11 @@ class Material(HausModel):
     # from substrings in the tag, which cannot tell white brick from red. Recipes are defined
     # once per surface (ui/src/three/materials.ts MASONRY_STYLES, emit/gltf/emitter.py).
     finish: str | None = None
+    # A perforated sheet's published holes: their diameter and the open fraction of the face
+    # (0..1). Insect-tightness and a vent's net free area read these, never a constant, so a
+    # supplier's different sheet regrades without an engine change. None = unstated.
+    perforation_hole_in: float | None = None
+    open_area_fraction: float | None = None
     # Purchasing metadata for decorative sheet goods; veneer species is not sawn stock.
     panel_face_grade: str | None = None
     panel_core: str | None = None

@@ -27,12 +27,9 @@ from typehaus.resolve.model import (
     ResolvedSolid,
 )
 
-# Perforated 0.032" aluminium, 3 mm holes on a 5 mm 60-degree stagger: holes under 1/8" keep
-# insects out, and the stagger leaves pi/(2*sqrt(3)) * (3/5)^2 = 32.6% open. The base screen
-# is an inverted U across the 2" cavity, 2" tall, braked from the sheet.
+# Perforated 0.032" aluminium; its holes and open fraction are authored on the Material. The
+# base screen is an inverted U across the 2" cavity, 2" tall, braked from the sheet.
 BUG_SCREEN_MATERIAL = "perforated-aluminum-insect-closure"
-BUG_SCREEN_HOLE_IN = 3.0 / 25.4
-BUG_SCREEN_OPEN_FRACTION = math.pi / (2.0 * math.sqrt(3.0)) * (3.0 / 5.0) ** 2
 BUG_SCREEN_SHEET_IN = 0.032
 BUG_SCREEN_HEIGHT_IN = 2.0
 BUG_SCREEN_STOCK_IN = 120.0
@@ -44,9 +41,9 @@ _STACK_TOLERANCE_M = 0.05   # a storey's walls land exactly on the one below; th
 _STACK_PLAN_TOL_M = 0.5     # two stacked walls share a plan line within a wall's thickness
 
 
-def net_free_area_cm2_per_m(open_height_m: float) -> float:
+def net_free_area_cm2_per_m(open_height_m: float, open_fraction: float) -> float:
     """Net free area of a perforated face ``open_height_m`` tall, per metre of run."""
-    return max(0.0, open_height_m) * 100.0 * BUG_SCREEN_OPEN_FRACTION * 100.0
+    return max(0.0, open_height_m) * 100.0 * open_fraction * 100.0
 
 
 @dataclass(frozen=True)
@@ -297,8 +294,9 @@ def opening_head_spans(model: ResolvedModel, wall
                        ) -> list[tuple[ResolvedOpening, float, float, float]]:
     """``(opening, s0, s1, z)`` for the cavity over each window/door head on a rainscreen wall.
 
-    The span the head cap and the head strip share: the RO plus one stock face past each jamb,
-    over the jamb posts, at the top of the head course (the RO head where there is none).
+    The head cap's span: the RO plus one stock face past each jamb, over the jamb posts, at
+    the top of the head course (the RO head where there is none). The head strip under the
+    panel end runs only the 58114XX channel, RO + 2".
     Stations are along the wall axis from its start. A rough opening is a penetration and
     takes a seal, not a cap.
     """

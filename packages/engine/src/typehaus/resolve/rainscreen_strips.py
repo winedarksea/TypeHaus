@@ -36,6 +36,9 @@ PAD_LENGTH_IN = 2.0
 PAD_SPACING_IN = 12.0
 #: The lower panel stops this far under the Transition Trim's seat: the band's outlet slot.
 BAND_PANEL_GAP_IN = 1.0
+#: A strip is cut this short of each edge of its seat, so its aluminium edge stands off the
+#: steel legs (and the band girt's KDAT) it lies between; the gap is under the 1/8" hole.
+STRIP_EDGE_CLEAR_IN = 1.0 / 32.0
 
 
 def _sheet(seat, origin, outward, along, length, lift, thickness):
@@ -59,9 +62,18 @@ def _solid(model, uid, tag, storey, host, product, category, material, mesh, len
 
 def add_strip_run(model, *, uid, tag, storey, host, product, origin, outward, along, seat,
                   length) -> None:
-    """A strip on pads along ``length``, cut from stock and butted, each piece with its pads."""
+    """A strip on pads along ``length``, cut from stock and butted, each piece with its pads.
+
+    ``seat`` is the full (outward, up) run between the legs; the strip and its pads are held
+    ``STRIP_EDGE_CLEAR_IN`` off each end of it."""
     pad = PAD_THICKNESS_IN * M_PER_IN
     sheet = BUG_SCREEN_SHEET_IN * M_PER_IN
+    run = math.hypot(*seat)
+    clear = STRIP_EDGE_CLEAR_IN * M_PER_IN
+    unit = (seat[0] / run, seat[1] / run)
+    origin = (origin[0] + outward[0] * unit[0] * clear, origin[1] + outward[1] * unit[0] * clear,
+              origin[2] + unit[1] * clear)
+    seat = (unit[0] * (run - 2 * clear), unit[1] * (run - 2 * clear))
     for index, (start, end, stock) in enumerate(split_stock_run(
             length, (BUG_SCREEN_STOCK_IN * M_PER_IN,), 0.0)):
         point = (origin[0] + along[0] * start, origin[1] + along[1] * start, origin[2])

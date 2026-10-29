@@ -4,19 +4,20 @@ Base: an open air and water path under the raised steel trim, through a screen o
 at the net free area DIN 18516-1 asks of an inlet; no KDAT on the aluminium; the Z, screen
 and EPDM where the detail puts them. Heads: a cap floors the cavity and drains over the head
 trim. Band: the BBD75 outlet strip's net free area. Everywhere a panel end opens its voids
-into the cavity, it sits on a perforated strip (``notes/metal_trim_kit.md``).
+into the cavity, it sits on a perforated strip (``notes/metal_trim_kit.md``). Hole size and
+open fraction are read off the screen's Material. The slot is graded off the trim and EPDM;
+the panel surface is not a resolved piece, so a panel drawn through the trim foot is unseen.
 """
 
 from __future__ import annotations
 
 from typehaus.checks.integrity.cladding_trim_runs import spans_cover
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import failed, not_applicable, passed
+from typehaus.findings import failed, not_applicable, passed, unknown
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.rainscreen_closures import (
     BASE_SCREEN_PRODUCT,
     BUG_SCREEN_HEIGHT_IN,
-    BUG_SCREEN_HOLE_IN,
     MIN_NET_FREE_AREA_CM2_PER_M,
     base_flashing_spec,
     cavity_base_run,
@@ -55,8 +56,26 @@ def _mine(model, host, products):
             and s.body_mesh is not None]
 
 
+def perforation(model, pieces):
+    """``(hole in, open fraction)`` authored on the pieces' Material, or None if unstated."""
+    tags = {p.material for p in pieces}
+    if len(tags) != 1:
+        return None
+    material = model.plan.library.material(next(iter(tags)) or "")
+    if material is None or material.perforation_hole_in is None \
+            or material.open_area_fraction is None:
+        return None
+    return material.perforation_hole_in, material.open_area_fraction
+
+
+def _unstated(tag, what):
+    return unknown(CAVITY, f"{tag}: the {what} Material states no perforation_hole_in and "
+                   "open_area_fraction, so its insect-tightness and net free area are unread",
+                   (tag,), code=_CITE)
+
+
 def _base(model):
-    findings, graded, areas = [], 0, []
+    findings, graded, areas, boxed = [], 0, [], []
     for wall in model.walls:
         run = cavity_base_run(model, wall)
         if run is None:
@@ -68,15 +87,20 @@ def _base(model):
             if is_profiled_metal_wall(model, wall):
                 findings.append(failed(CAVITY, f"{wall.tag} screened cavity has no base "
                                        "flashing specification", (wall.tag,), code=_CITE))
+            else:
+                boxed.append(wall.tag)
             continue
         before = len(findings)
         findings += _base_wall(model, wall, run, spec, areas)
         graded += len(findings) == before
+    if boxed:
+        findings.append(unknown(CAVITY, f"{len(boxed)} screened cavity bases have no "
+                                "RainscreenBaseFlashing, so their drainage and vent path are "
+                                "not graded", tuple(boxed), code=_CITE))
     if graded and not any(f.result.name == "FAIL" for f in findings):
         findings.append(passed(CAVITY, f"{graded} cavity bases drain and breathe through a "
                                "screened slot under the raised base trim (net free area "
-                               f"{min(areas):.0f} cm2/m or more), no KDAT on the Z",
-                               code=_CITE))
+                               f"{min(areas):.0f} cm2/m or more)", code=_CITE))
     return findings
 
 
@@ -96,8 +120,12 @@ def _base_wall(model, wall, run, spec, areas):
     if not spans_cover([_along(p, d) for p in screens], run.start, run.end):
         fail("the cavity base is open to insects: no continuous insect screen")
         return out
-    if BUG_SCREEN_HOLE_IN > _MAX_HOLE_IN:
-        fail(f"insects pass the screen's {BUG_SCREEN_HOLE_IN:.3f} in holes (over 1/8 in)")
+    holes = perforation(model, screens)
+    if holes is None:
+        out.append(_unstated(tag, "base screen"))
+        return out
+    if holes[0] > _MAX_HOLE_IN:
+        fail(f"insects pass the screen's {holes[0]:.3f} in holes (over 1/8 in)")
     if spec.upstand.meters + _TOL < BUG_SCREEN_HEIGHT_IN * M_PER_IN:
         fail("the Z upstand is shorter than the screen it holds")
     outer_pan = pan_top_z(wall, spec, run, run.outer_offset)
@@ -133,7 +161,7 @@ def _base_wall(model, wall, run, spec, areas):
             fail("the EPDM is displaced from the trim's lap on the screen")
         exposed = min(e_z)
     open_height = exposed - outer_pan
-    area = net_free_area_cm2_per_m(open_height)
+    area = net_free_area_cm2_per_m(open_height, holes[1])
     areas.append(area)
     if foot - outer_pan <= _TOL or open_height <= _TOL:
         fail("the base trim dams the pan edge: no open slot for air or water under it",
@@ -141,30 +169,51 @@ def _base_wall(model, wall, run, spec, areas):
     elif area + 1e-9 < MIN_NET_FREE_AREA_CM2_PER_M:
         fail(f"the cavity cannot breathe: {open_height / M_PER_IN:.2f} in of open screen is "
              f"{area:.0f} cm2/m net free area, under {MIN_NET_FREE_AREA_CM2_PER_M:.0f}")
-    out += _kdat_on_aluminium(model, wall, run)
     out += _foundation_clear(model, wall, run)
     return out
 
 
-def _kdat_on_aluminium(model, wall, run):
-    """Treated wood on aluminium corrodes it (AWC DCA6): no girt-band wood may touch it."""
-    metal = [s for s in model.solids if s.host_ref == wall.tag and s.product in _ALUMINIUM
+def _kdat(model):
+    findings, graded = [], 0
+    for wall in model.walls:
+        found = _kdat_on_aluminium(model, wall)
+        graded += found is not None
+        findings += found or []
+    if graded and not findings:
+        findings.append(passed(CAVITY, f"no girt-band KDAT touches the aluminium on {graded} "
+                               "walls", code="AWC DCA6"))
+    return findings
+
+
+def _kdat_on_aluminium(model, wall):
+    """Treated wood on aluminium corrodes it (AWC DCA6): no girt-band wood may touch any
+    aluminium piece on the wall or its openings (the base Z and U, every strip)."""
+    from shapely.geometry import MultiPoint, Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+
+    hosts = {wall.tag} | {o.tag for o in model.openings if o.host_wall == wall.tag}
+    metal = [s for s in model.solids if s.host_ref in hosts and s.product in _ALUMINIUM
              and s.body_mesh is not None]
-    if not metal:
-        return []
-    top = max(z for p in metal for *_, z in p.body_mesh.positions)
-    bottom = min(z for p in metal for *_, z in p.body_mesh.positions)
-    d = run.direction
-    for member in wall.members:
-        if member.category not in _GIRT_WOOD or member.material != "kdat":
-            continue
-        if member.z0_m >= top - _TOL or member.z1_m <= bottom + _TOL:
-            continue
-        stations = sorted(p[0] * d[0] + p[1] * d[1] for p in (member.p0, member.p1))
-        if stations[1] + 0.05 > run.start and stations[0] - 0.05 < run.end:
-            return [failed(CAVITY, f"{wall.tag}: KDAT {member.child_key} bears on the "
-                           "aluminium base Z and screen", (wall.tag,), code="AWC DCA6",
-                           fix="raise the starter girt (RainscreenBaseFlashing.starter_rise)")]
+    wood = [m for m in wall.members if m.category in _GIRT_WOOD and m.material == "kdat"]
+    if not metal or not wood:
+        return None
+    shapes = []
+    for piece in metal:
+        zs = [z for *_, z in piece.body_mesh.positions]
+        hull = MultiPoint([(x, y) for x, y, _ in piece.body_mesh.positions]).convex_hull
+        shapes.append((piece, hull, min(zs), max(zs)))
+    for member in wood:
+        ring, z_lo, z_hi = member_footprint(member)
+        plan = Polygon(ring)
+        for piece, hull, bottom, top in shapes:
+            # Touching counts: wood resting on the metal is the contact this forbids.
+            if z_lo > top + _TOL or z_hi < bottom - _TOL or plan.distance(hull) > _TOL:
+                continue
+            return [failed(CAVITY, f"{wall.tag}: KDAT {member.child_key} bears on aluminium "
+                           f"{piece.tag}", (wall.tag,), code="AWC DCA6",
+                           fix="raise the starter girt (RainscreenBaseFlashing.starter_rise) "
+                               "or hold the strip off the wood")]
     return []
 
 
@@ -192,13 +241,14 @@ def _heads(model):
     from typehaus.resolve.opening_flashing import opening_flashing_frame
     from typehaus.resolve.opening_head_cap import CAP_HEAD_LAP_IN, CAP_PRODUCT, head_cap
 
-    findings, graded = [], 0
+    findings, graded, bare = [], 0, []
     for wall in model.walls:
         for opening, s0, s1, _z in opening_head_spans(model, wall):
             head = {s.product for s in model.solids if s.host_ref == opening.tag
                     and s.product in ("OPENING_HEAD", "DOOR_HEAD_CUSTOM")}
             if not head:
-                continue  # a catalog door's head is its product's (a hold point)
+                bare.append(opening.tag)  # a catalog unit's head (a hold point), or no kit
+                continue
             frame = opening_flashing_frame(model, wall, opening)
             tag, d = opening.tag, frame.along
             before = len(findings)
@@ -219,7 +269,11 @@ def _heads(model):
                                        "voids to insects (no perforated strip)", (tag,),
                                        code=_HEAD_CITE))
             graded += len(findings) == before
-    if graded and not findings:
+    if bare:
+        findings.append(unknown(CAVITY, f"no kit head trim over {len(bare)} cavity head(s), "
+                                "so no cap or strip is derived there (a catalog unit's head "
+                                "is a hold point)", tuple(bare), code=_HEAD_CITE))
+    if graded and not any(f.result.name == "FAIL" for f in findings):
         findings.append(passed(CAVITY, f"{graded} window and door heads are capped, drain "
                                "over their trim, and seat their panel end on a strip",
                                code=_HEAD_CITE))
@@ -230,17 +284,21 @@ def _panel_end_strips(model):
     """Every free panel end over a screened base sits on a strip."""
     from typehaus.resolve.cladding_trim.base import base_trim_spans
 
-    findings = []
+    findings, graded = [], 0
     for face, _key, span, lo, hi, _z, _depth in base_trim_spans(model):
         wall = face.wall
         if not screens_rainscreen_base(model, wall):
             continue
+        graded += 1
         strips = [s for s in _mine(model, wall.tag, {STRIP_PRODUCT})
                   if s.tag.startswith(f"{wall.tag}-BASESTRIP-S{span}-")]
         if not spans_cover([_along(p, face.d) for p in strips], lo, hi):
             findings.append(failed(CAVITY, f"{wall.tag}: the panel end at the base opens its "
                                    "voids to insects (no perforated strip)", (wall.tag,),
                                    code=_CITE))
+    if graded and not findings:
+        findings.append(passed(CAVITY, f"{graded} base panel-end runs seat on a perforated "
+                               "strip", code=_CITE))
     return findings
 
 
@@ -267,9 +325,13 @@ def _band(model):
                                        "open to insects at the band (no strip)", (wall.tag,),
                                        code=_CITE))
                 break
+        holes = perforation(model, lower)
+        if lower and holes is None:
+            findings.append(_unstated(wall.tag, "band outlet strip"))
+            continue
         for piece in lower:
             offsets = _offsets(piece, face.n)
-            area = net_free_area_cm2_per_m(max(offsets) - min(offsets))
+            area = net_free_area_cm2_per_m(max(offsets) - min(offsets), holes[1])
             areas.append(area)
             if area + 1e-9 < MIN_NET_FREE_AREA_CM2_PER_M:
                 findings.append(failed(CAVITY, f"{wall.tag}: the band outlet is too small to "
@@ -290,4 +352,5 @@ def rainscreen_cavity(ctx: CheckContext) -> list:
     if not any(screens_rainscreen_base(model, wall) or opening_head_spans(model, wall)
                for wall in model.walls):
         return [not_applicable(CAVITY, "no wall carries a drained and vented rainscreen")]
-    return [*_base(model), *_panel_end_strips(model), *_heads(model), *_band(model)]
+    return [*_base(model), *_kdat(model), *_panel_end_strips(model), *_heads(model),
+            *_band(model)]

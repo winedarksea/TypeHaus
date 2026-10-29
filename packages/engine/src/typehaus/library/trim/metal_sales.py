@@ -102,7 +102,7 @@ BBD_PANEL_STARTER = TrimProfile(
     source="BBD75 Install Guide 10/2025 p. 14 (2-5/8 in and 1-1/8 in legs; hems not drawn)",
 )
 #: K6 over a metal-wall window head: 2" upstand on the foam, a top across the cavity and the
-#: head course, a 2-1/2" (or longer, to lap 58114XX by 1") face leg, 3/4" end dams; ~8" girth.
+#: head course, a 2-1/2" (or longer, to lap 58114XX by 1") face leg, 3/4" end dams; 6.6-7" girth.
 OPENING_HEAD_CAP = TrimProfile(
     "Window head cap (K6), custom brake",
     custom=True,

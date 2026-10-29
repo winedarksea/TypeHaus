@@ -6245,7 +6245,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "WINDOW_JAMB_CUSTOM" = { material = { low = 6, high = 10 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "WINDOW_SILL_CUSTOM" = { material = { low = 6.5, high = 11 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "DOOR_HEAD_CUSTOM" = { material = { low = 7, high = 12 }, labour = { low = 3, high = 5.5 }, unit = "LF" }
-"OPENING_HEAD_CAP" = { material = { low = 6, high = 10 }, labour = { low = 3, high = 5 }, unit = "LF" }  # K6 window head cap, ~8" girth, 3 bends and end dams; the door head's shop rate less a hem (2026-10-29)
+"OPENING_HEAD_CAP" = { material = { low = 6, high = 10 }, labour = { low = 3, high = 5 }, unit = "LF" }  # K6 window head cap, 6.6-7" girth, 2 bends and end dams; the door head's shop rate less a hem (2026-10-29)
 "RAINSCREEN_BASE_Z" = { material = { low = 5, high = 9 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "CORRUGATED_SILL_TO_SOFFIT" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }
 "6411499" = { material = { low = 0.45, high = 0.90 }, labour = { low = 0.4, high = 0.9 }, unit = "LF" }
@@ -6270,7 +6270,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 [bug_screens]
 # NEW 2026-10-29 — the rainscreen's insect closures by the LINEAL FOOT of each kind
 # (takeoff/envelope.bug_screen_takeoff, measured off the resolved pieces). ESTIMATES, NOT
-# QUOTES: perforated 0.032-0.040 aluminium, holes <= 1/8", >= 20% open (3 mm on 5 mm stagger,
+# QUOTES: perforated 0.032-0.040 aluminium, holes <= 1/8", >= 22% open (3 mm on 5 mm stagger,
 # 33%), 4x10 sheet at roughly $5-9/SF from a metals supplier, sheared and braked by the
 # siding sub or a sheet-metal shop. No firm quote: the screen supplier is an open RFQ.
 "BASE_SCREEN" = { material = { low = 2.5, high = 5 }, labour = { low = 1.5, high = 3 } }  # 2x2 inverted U, 6" girth, on the base Z; 149 LF

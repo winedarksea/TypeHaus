@@ -67,15 +67,17 @@ On a house wall, bottom to top, S = the bearing seat at −1'-1 7/16":
 4. **Starter girt and blocks raised to S+2-1/4 in ... S+5-3/4 in**, clear of the Z upstand and
    the U top (S+2.04 in). No KDAT touches aluminium.
 5. **Panel end on a flat perforated aluminium strip** on the trim foot, set on 1/16 in EPDM
-   pads (2 in long at 12 in o.c. or closer). It replaces 6460800 on PBR (polyethylene, chewable,
+   pads (2 in long at 12 in o.c. or closer), cut 1/32 in short of each leg so its edges touch
+   no steel (at a head or the band, no KDAT girt either). It replaces 6460800 on PBR (polyethylene, chewable,
    and it holds water against the panel end); BBD75 publishes none. The fallback is 6460800
    taped on both faces.
 
 Net free area, by hand: the U's outer leg is open from the pan (S−0.002 in at the girt plane)
 to the EPDM at S+1 in, 1.002 in. 1.002 in x 2.54 cm x 0.326 x 100 cm/m = **83 cm2/m**, against
-DIN 18516-1's 50 cm2/m. The engine reads 83 (`integrity.rainscreen_cavity`); the plan's
-"about 84" counted a full 1 in at 33%. At the supplier's 20% floor it would be 51 cm2/m: pass,
-barely, so order the 33% sheet.
+DIN 18516-1's 50 cm2/m. The engine reads 83 (`integrity.rainscreen_cavity`, off the
+Material's `perforation_hole_in` and `open_area_fraction`); the plan's "about 84" counted a
+full 1 in at 33%. At the supplier's 20% floor the base would read 51 cm2/m and the band outlet
+47, which fails: the floor is 21.1% for the band, so order the 33% sheet and never under 22%.
 
 Hand count, W-M-W4: the U runs 162 in (mitred at the corners), cut 120 + 44 in with a 2 in
 lap; the Z the same. The base trim runs 164.75 in as two sticks (122 + 42.75 in), foot at
@@ -94,8 +96,9 @@ sills and heads are not outlets (owner, 2026-10-28).
 - The lower panel stops at least 1 in below the trim seat (implicit, hidden behind the trim's
   2-1/2 in face leg).
 - A 1 in perforated strip spans from the girt plane to the trim's face leg under the seat, on
-  pads on the lower panel's top end (`BAND_OUTLET_STRIP`): 0.996 in x 2.54 x 0.326 x 100 =
-  **82.5 cm2/m**.
+  pads on the lower panel's top end (`BAND_OUTLET_STRIP`), cut 1/32 in short of the steel
+  each side: 0.934 in x 2.54 x 0.326 x 100 = **77.4 cm2/m** (the edge gaps, open but under
+  1/8 in, are not counted).
 - The 1/2 in gap behind the band girt stays open, so the upper cavity is fed from below.
 - The upper panel's batten ends open into the upper cavity at the seat, so they get the same
   strip, on the seat (`PANEL_END_STRIP`).
@@ -126,7 +129,7 @@ sills and heads are not outlets (owner, 2026-10-28).
 | Metal Sales | K6 braked from their coil |
 | Owner | EPDM pads (modelled), or accept painted aluminium against Galvalume (Metal Sales does this at its PBR vented ridge) |
 | Membrane maker | The substrate letter covers the Z and K6 strip-ins |
-| Screen supplier | Holes ≤ 1/8 in, at least 20% open (33% specified), 0.032–0.040 aluminium |
+| Screen supplier | Holes ≤ 1/8 in, at least 22% open (33% specified; the band outlet fails under 21.1%), 0.032–0.040 aluminium |
 
 ## Openings
 

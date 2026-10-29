@@ -142,9 +142,11 @@ def test_base_stack_on_a_house_wall(catlin_model_ro):
                   key=lambda m: m.z0_m)
     assert ((starter.z0_m - seat) / _IN, (starter.z1_m - seat) / _IN) \
         == pytest.approx((2.25, 5.75))
-    # The hand count: 1" of open screen at 32.6% open is about 84 cm2/m (DIN 18516-1: 50).
-    assert net_free_area_cm2_per_m(epdm.z0_m - (seat - 0.0017 * _IN)) \
-        == pytest.approx(84.0, abs=1.5)
+    # The hand count: 1.002" of open screen at 32.6% open is 83 cm2/m (DIN 18516-1: 50).
+    fraction = model.plan.library.material(screen[0].material).open_area_fraction
+    assert fraction == pytest.approx(0.326, abs=5e-4)
+    assert net_free_area_cm2_per_m(epdm.z0_m - (seat - 0.0017 * _IN), fraction) \
+        == pytest.approx(83.0, abs=0.5)
 
 
 def _grade(model, part):
@@ -154,23 +156,26 @@ def _grade(model, part):
 
 
 def test_cavity_grades_pass_catlin(catlin_model_ro):
-    for part in ("_base", "_heads", "_band", "_panel_end_strips"):
+    for part in ("_base", "_kdat", "_heads", "_band", "_panel_end_strips"):
         findings = _grade(catlin_model_ro, part)
-        assert all(f.result.name == "PASS" for f in findings), (part, findings)
-    assert all(_grade(catlin_model_ro, p) for p in ("_base", "_heads", "_band"))
+        assert any(f.result.name == "PASS" for f in findings), part
+        # The one ungraded head is the catalog door's, a recorded hold point.
+        assert [f.element_tags for f in findings if f.result.name != "PASS"] \
+            == ([("D-S-DECK-E",)] if part == "_heads" else []), (part, findings)
 
 
 def _failing(model, part, needle):
     return [f for f in _grade(model, part) if f.result.name == "FAIL" and needle in f.message]
 
 
-@pytest.mark.parametrize("case", ["coarse", "no screen", "dammed", "kdat", "no band strip"])
+@pytest.mark.parametrize("case", ["coarse", "no screen", "dammed", "kdat", "no band strip",
+                                  "no head cap"])
 def test_cavity_grade_fails(catlin_model_ro, monkeypatch, case):
     model = copy(catlin_model_ro)
     if case == "coarse":
         from typehaus.checks.integrity import rainscreen_cavity
 
-        monkeypatch.setattr(rainscreen_cavity, "BUG_SCREEN_HOLE_IN", 0.2)
+        monkeypatch.setattr(rainscreen_cavity, "perforation", lambda *_: (0.2, 0.326))
         assert _failing(model, "_base", "insects pass")
     elif case == "no screen":
         model.solids = [s for s in model.solids
@@ -195,7 +200,11 @@ def test_cavity_grade_fails(catlin_model_ro, monkeypatch, case):
         model.walls = [replace(w, members=members) if w.tag == "W-M-W4" else w
                        for w in model.walls]
         model.index_by_tag()
-        assert _failing(model, "_base", "W-M-W4: KDAT")
+        assert _failing(model, "_kdat", "W-M-W4: KDAT")
+    elif case == "no head cap":
+        model.solids = [s for s in model.solids
+                        if not (s.host_ref == "WIN-M-BED-S1" and s.product == "OPENING_HEAD_CAP")]
+        assert _failing(model, "_heads", "WIN-M-BED-S1: the cavity over the head has no cap")
     else:
         model.solids = [s for s in model.solids
                         if not (s.host_ref == "W-S-S1" and s.product == BAND_OUTLET_PRODUCT)]

@@ -1092,7 +1092,7 @@ aluminium. Approved 2026-10-29; the supplier questions stay open in `metal_trim_
 
 What changed: base screen, raised trim, EPDM lap and raised starter
 (`metal_trim_kit.md` "Wall base stack", 83 cm2/m); a K6 cap over every metal-wall window head
-(`opening_flashing_spec.md` §3 step 4a); the band outlet (82.5 cm2/m); one grade,
+(`opening_flashing_spec.md` §3 step 4a); the band outlet (77 cm2/m, every strip 1/32" off the steel and the girt); one grade,
 `integrity.rainscreen_cavity`; `[bug_screens]` priced by the foot. The take-off: 149.2 LF of
 base U, 306.8 LF of panel-end strip, 61.4 LF of band outlet, 84.3 LF of EPDM pad, 102.8 LF of
 K6 cap; 6460800 fell 227.1 to 111.7 LF and 55548XX 168.0 to 46.5 LF (sills, rough openings and
