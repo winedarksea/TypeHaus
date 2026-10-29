@@ -85,10 +85,14 @@ def flat_2x4_nonbearing_header(ctx: CheckContext) -> list[Finding]:
             violations.append(f"RO is {opening.width_m / 0.0254:.1f}\" wide (> 96\")")
         if wall is not None:
             plate_top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
-            # A resolved partition's body ends at the top plate. Two 1-1/2 in courses
-            # are the standard stack, so this is the plate *underside* the header can
-            # nail against rather than a roof/load-path inference.
-            plate_underside = plate_top - 3.0 * 0.0254
+            # The plate *underside* the header nails against: the framed top plates where
+            # they resolve (a nonbearing wall may take one, R602.5), else the standard two
+            # 1-1/2 in courses under the wall's top.
+            top_plates = [member.z0_m for member in wall.members
+                          if member.category == "plate"
+                          and member.child_key.startswith("plate-top")]
+            plate_underside = (min(top_plates) if top_plates
+                               else plate_top - 3.0 * 0.0254)
             # The resolved nailer's own top: it is laid flat, 1 1/2" and not its depth.
             header_top = next(
                 (member.z1_m for member in wall.members

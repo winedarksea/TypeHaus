@@ -46,7 +46,7 @@ def resolve_door_casings(plan, model: ResolvedModel, scope: TrimScope) -> None:
         if not opening.is_door or opening.kind != "door":
             continue
         door_type = scope.door_types.get(opening.type_ref or "")
-        if not cased(door_type):
+        if not cased(door_type) or opening.tag in scope.standard.uncased_doors:
             continue
         wall = walls.get(opening.host_wall)
         if wall is None:
@@ -76,12 +76,12 @@ def _casing(plan, model, scope: TrimScope, wall: ResolvedWall, opening, side: in
         return (cx + tangent[0] * d + normal[0] * offset, cy + tangent[1] * d + normal[1] * offset)
 
     s = scope.standard
-    t, width = s.thickness.meters, s.casing_width.meters
     inner, head_rise = casing_edges(opening, scope.door_types.get(opening.type_ref or ""), s)
-    outer = inner + width
     room = room_owning(model, wall.storey, at(0.0, face + side * _ROOM_PROBE_M))
     if room is None or room.tag not in scope.rooms:
         return None
+    t, width = s.thickness.meters, s.casing_width_for(room.tag, opening.tag).meters
+    outer = inner + width
     floor_z, _structural = scope.floors(model, room)
     into_wall = (-normal[0] * side, -normal[1] * side)
     function = face_function(wall, at(outer, face), into_wall, floor_z, floor_z + 0.1)

@@ -79,3 +79,21 @@ INT_2X6_BRG_MUDROOM_UPPER_GWB = Assembly(
     ),
     source="W-M-STRW mudroom coat nooks: exposed Douglas-fir Select Structural studs, open bays to 7 ft; 1/2 in. painted gypsum from 7 ft to the 9 ft ceiling. The stair-face leaf, which backs each nook, is 1/2 in. two-sided MDO painted white on both faces; painted poplar 1x4 hook rails sit between the studs on its back at 42 and 60 in. AFF. Three flat red-oak 8/4 courses dressed to 1 1/2 in. span each bay: the bench support course (top at 16 1/2 in.), the 6 ft shelf (top at 72 in.) and the 7 ft cap (underside at 84 in., closing the stud depth behind the gypsum's lower edge). The sole plate is KDAT southern pine, fastened with HDG or stainless (IRC R317.3), because boots drip snowmelt onto it; LVP butts the plate rather than running flush, since a bearing wall keeps a nominal 2x bottom plate (IRC R602.3.4).",
 )
+
+# W-S-CLN-S stops at SF-S-HP1's underside, 7'-3 1/4" up, too low for a double plate over
+# D-S-NCLOSET's flat head. Nonbearing, so R602.5's single top plate is enough (2026-10-29).
+INT_2X4_PARTITION_HALF_SINGLE_PLATE = Assembly(
+    tag="INT_2X4_PARTITION_HALF_SINGLE_PLATE",
+    variant_of="INT_2X4_PARTITION_HALF",
+    substitute=(
+        Substitution(
+            span=layers("stud", "stud"),
+            replacement=(
+                Layer(name="stud", material_ref="spf", thickness=inch(3.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x4", double_top_plate=False)),
+            ),
+        ),
+    ),
+    source="INT_2X4_PARTITION_HALF with a single top plate: IRC R602.5 caps an interior nonbearing wall with not less than a single top plate.",
+)

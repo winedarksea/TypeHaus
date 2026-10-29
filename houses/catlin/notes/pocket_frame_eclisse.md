@@ -36,8 +36,23 @@ guards the longer bands. The 1" fastener limit is unchanged (`POCKET_MAX_FASTENE
 The RO height is modelled too (2026-10-29, `plans/door-sizing.md`): the kit record carries
 `rough_opening_head_over_leaf_in = 3.25`, and `resolve/door_sizing` heads a derived pocket
 at 83 1/4" over the finished floor, plus that floor's build-up over the subfloor.
-`D-M-PANTRY` and `D-M-LAUN` frame to it; `D-B-BATH` still holds its 80" framing
-(`Door.held_rough_opening`) pending the question on its ERV duct.
+`D-M-PANTRY`, `D-M-LAUN` and (since 2026-10-29) `D-B-BATH` frame to it.
+
+## What the head needs (2026-10-29)
+
+Read from the 2x6 assembly instructions (11/2021) and the 11/2022 tech sheet: the kit carries
+its own steel **pocket header (d)**, and the **top beam with track (e)** clicks into it and is
+screwed to it (#8 x 3/8"). The assembled cassette is then fixed into the surrounding framing,
+square and plumb, at the RO (step 9; screws not supplied). So the track hangs from the kit's
+own header and bears on no wood. The wood head only has to give a straight, flat underside at
+the RO height and sound wood for the fixings. Neither document asks for a bearing header or
+says anything against a notch in the wood above. A notch off the top of a nonbearing head is
+therefore harmless to the kit, provided its underside stays whole.
+
+`D-B-BATH` therefore takes R602.7.4's flat 2x6 in `W-B-BA-E` (nonbearing, owner), and
+`DU-B-ERV-R-GYM` rose 1/2" to clear it rather than notch it. `DU-B-ERV-R-PLAY` clears too. The
+engine still lays its generic flat track nailer on top of a pocket header. That suits a
+Johnson-style kit, but an Eclisse does not use it.
 
 ## Pantry — 2026-10-20
 
@@ -74,6 +89,7 @@ western storage is reached sideways from the east opening.
 
 ## Sources
 
-- ECLISSE Single 2x4-2x6 technical sheet, 11/2022; Assembly 2x4 instructions, 11/2021
+- ECLISSE Single 2x4-2x6 technical sheet, 11/2022; Assembly 2x4 instructions, 11/2021;
+  Assembly 2x6 instructions, 11/2021, steps 5 and 9
   (https://www.eclisse.us/en-us/support/product/single/).
 - Home Depot listing EKC3680, $341.94, 2026-10-09; Ferguson EKQ3084 (2x6), $695, special order.

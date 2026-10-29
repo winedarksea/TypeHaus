@@ -93,7 +93,7 @@ MAIN_BRACED_WALLS = [
     BracedWallPanel(uid="2ENAKWR6JH", tag="BWP-M-S1-0191", wall_ref="W-M-S1", start=inch(191.0),
                     width=inch(25.0)),
     BracedWallPanel(uid="ZH2V7AW8PA", tag="BWP-M-S2-0000", wall_ref="W-M-S2", start=inch(0.0),
-                    width=inch(10.0)),
+                    width=inch(8.34375)),
     BracedWallPanel(uid="YSEYF7GF0J", tag="BWP-M-S2-0119", wall_ref="W-M-S2", start=inch(119.0),
                     width=inch(34.0)),
     BracedWallPanel(uid="VX1VGVJS1D", tag="BWP-M-S2-0183", wall_ref="W-M-S2", start=inch(183.0),

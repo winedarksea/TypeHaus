@@ -9,8 +9,9 @@
 
 > **Door sizing, 2026-10-29 (`plans/door-sizing.md`, decisions #96-#98):** `DoorType.width`
 > is the nominal leaf; the RO is published (`rough_opening`) or derived from `TRIM-STANDARD`.
-> Doors whose derived RO conflicts keep `Door.held_rough_opening` (listed by
-> `advisory.held_rough_opening`) pending the owner's call. `D-M-ENTRY` is the designated
+> No door holds its framing since the owner's answers (2026-10-29; per-door resolutions in
+> the plan): `DoorTrim.casing_width` gives one-off casing widths (D-M-BATH1, D-S-BED1) and
+> `TrimStandard.uncased_doors` drops casing (D-B-CLOSET). `D-M-ENTRY` is the designated
 > egress door (`egress=True`): R311.2 grades only it, on Therma-Tru's published 33-5/16" x
 > 79-1/4" clear (`notes/egress_door_clear_width.md`).
 
@@ -1464,12 +1465,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **`D-B-FURN` HAS A FLAT NAILER AND NO CRIPPLES (B1, 2026-09-22).** `W-B-CW` is
     authored `NONBEARING` — `FS-M-WEST`'s joists run parallel to it on the 208"/224" lines
     and nothing bears on it — so the opening takes IRC R602.7.4's flat nailer, 1 1/2" tall,
-    and no cripples above it. The spec still reads `flat 2x8 nonbearing` from when the wall
-    was 2x8; `W-B-CW` is `INT_2X4_PLUMBING` (4.52") now, so that board overhangs both faces
-    (an open question in `plans/door-sizing.md`). At the held 6'-8" RO nothing cuts it:
-    `PR-M-S-BATH1-DRAIN` (x 5'-0") and `PR-B-MAIN-DRAIN` (x 6'-0") pass over it, and the
-    sauna exhaust and kitchen drain no longer cross this head. The derived 81 1/2" RO would
-    let BATH1-DRAIN notch it 0.09", undoing the 2026-10-13 lift, so the door is held. **Do not put a
+    and no cripples above it: a `flat 2x4 nonbearing` since 2026-10-29, the 2x4 wall's own
+    width. The derived 81 1/2" RO lets `PR-M-S-BATH1-DRAIN` (x 5'-0") notch it 0.09" (owner
+    accepts; 1.41" left); `PR-B-MAIN-DRAIN` (x 6'-0") passes over it. **Do not put a
     bearing header back here without re-reading `notes/framing_bore_limits.md` §8-§9**, and
     do not land anything on `W-B-CW` — it stops being nonbearing, and the flat header with it.
     `DU-B-ERV-R-SAUNA-SUP` is at **x=1'-0 1/2"** in `W-B-CW`'s west clear bay and

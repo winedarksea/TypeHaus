@@ -1088,13 +1088,11 @@ OPENINGS = [
                  source_url="https://outdoorsandsecurity.widen.net/content/6ybzlyty7g/original/2026-Arch-Comp-BOOK---COMP-7-Sills.pdf",
                  source_drawing="2026 Comp 7.3: 7-3/4 inch inswing; schematic design envelope",
                  threshold_depth=inch(7.75), threshold_height=inch(1.5), cap_depth=inch(1.5)))),
-    # Centre 21'-4" (2026-08-24, was 21'-10"): D-S-DECK-E moved to 21'-4" when the two
-    # balcony doors slid 1'-0" inward, and this door stands directly under it, so the south
-    # face reads as one column of French pairs rather than a 6" jog. 10" of wall to the
-    # inside corner at N-M-S1, the same remnant D-S-DECK-E leaves above it.
+    # Stands directly under D-S-DECK-E, so the south face reads as one column of French
+    # pairs. Its published 63 5/16" RO is re-centred at 8 11/32" off N-M-S1, like the pair
+    # above (owner, 2026-10-29: the mirrored facade beats the stud module, suppressed).
     Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-EXT-FRENCH60",
-         held_rough_opening=OpeningSize(width=ft(5), height=ft(6, 8)),
-         position=from_node("N-M-S1", ft(0, 10)), flip_swing=True,
+         position=from_node("N-M-S1", inch(8.34375)), flip_swing=True,
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
              exterior_wrap_material_ref="metal-dark-exterior",
              sill_design=ExteriorDoorSillDesign(
@@ -1106,14 +1104,13 @@ OPENINGS = [
     # Retired 2026-08-24 with its host wall W-M-STRS; see WALLS. The stair head is open.
     # Pushed east to N-M-STRJ (2026-07-28, mudroom conversion): same 6" tee clearance as
     # D-M-ENTRY above it, off the bearing stair wall's jack studs. Renamed with the room.
+    # Derived RO since 2026-10-29: PR-B-HW-SBATH's riser moved west into W-M-STOS for it.
     Door(uid="CMD204AAAA", tag="D-M-MUD", host="W-M-STOS2", type_ref="DT-INT-SWING32",
-         held_rough_opening=OpeningSize(width=ft(2, 8), height=ft(6, 8)),
          position=from_node("N-M-STRJ", inch(8)), flip_hinge=True),
-    # South-wall basin: INT32 outswing moved north to y=283.5..315.5.
-    # North jamb leaves 1.625 in. to the finish corner; rip its casing to fit.
-    # Basin front y=284.760 stays south of the open leaf's usable passage.
+    # South-wall basin: INT32 outswing moved north for sink clearance; its derived RO
+    # (2026-10-29) leaves no room for full casing, so the powder-room face takes a 1 1/2"
+    # casing (plan/millwork.py) and the living-room north leg scribes to 2.55".
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING32",
-         held_rough_opening=OpeningSize(width=ft(2, 8), height=ft(6, 8)),
          position=from_node("N-M-BA1", inch(4))),
     # RM-M-MECH's hinged utility door, not the mudroom closets' bypass style.
     # Shift 8" east to 2'-9", keeping both jamb packs inside the existing walls.
@@ -1173,10 +1170,9 @@ OPENINGS = [
     # EAST jamb and the vanity detail survives untouched. Widening west would have put the
     # opening into the vanity.
     #
-    # The centred king leaves 16.6825" from this RO's east jamb to its west edge.
-    # The 16" west nightstand leaves 0.6825" to the jamb, outside the leaf's swing sector.
+    # Derived 34 1/4" RO since 2026-10-29 (owner: keep 32"): the east jamb grew 2 1/4", so
+    # the bed and nightstands moved 0.6" east and ED-M-BED-RC9 went behind the nightstand.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING32",
-         held_rough_opening=OpeningSize(width=ft(2, 8), height=ft(6, 8)),
          position=from_node("N-M-W3", inch(24.635)), flip_swing=True, flip_hinge=True),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
@@ -1222,8 +1218,8 @@ OPENINGS = [
     #
     # `office` is not a sleeping occupancy, so there is no R310 exposure — and since the
     # 2026-08-29 `exterior_only` fix there could not be one anyway.
+    # Derived RO since 2026-10-29; ED-M-STUDY-SPOT moved 1" north to clear it.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED-TRIMLESS",
-         held_rough_opening=OpeningSize(width=ft(2, 6), height=ft(6, 8)),
          position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True),
     # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15. ** `from_node` resolves to the NEAR JAMB, so
     # the RO is x=170"..202". The king is centred between this opening and D-M-BATH2:
@@ -1333,7 +1329,7 @@ OPENINGS = [
            sill_height=ft(3, 6)),
     # South living pair: centres x=26'-8"/32'-0" stack under WIN-S-STUDY1/2 on the shared
     # 16" stud grid. S2 restores the west column retired in 2026; its RO x=25'-5"..27'-11"
-    # is 19" from D-M-BALC's east jamb, so it takes the tempered twin WT-3048-T.
+    # is 17 11/32" from D-M-BALC's east jamb, so it takes the tempered twin WT-3048-T.
     Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
            type_ref="WT-3048-TT-T", position=from_node("N-M-S1", ft(7, 5)),
            sill_height=ft(2, 8)),

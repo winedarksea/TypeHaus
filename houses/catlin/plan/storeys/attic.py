@@ -23,7 +23,6 @@ from typehaus import (
     LayerMaterial,
     Node,
     Occupancy,
-    OpeningSize,
     Pitch,
     PublishedCapacity,
     PublishedSpan,
@@ -329,9 +328,9 @@ WALLS = [
 ]
 
 OPENINGS = [
+    # Derived RO since 2026-10-29: 1 5/16" south of where it stood, so it clears the wall end.
     Door(uid="CAD201AAAA", tag="D-A-HALVES", host="W-A-C1B", type_ref="DT-INT-SWING32",
-         held_rough_opening=OpeningSize(width=ft(2, 8), height=ft(6, 8)),
-         position=from_node("N-A-C1", ft(0, 5.0625))),
+         position=from_node("N-A-C1", inch(3.75))),
     # The band wall's opening onto the stair head — the source's 2'-7 1/2" gap at
     # x 18'-6"..21'-1 3/4", the only way between the east loft and the stair vestibule.
     # Purchased 36x80 Murphy bookcase door, west hinged and swinging into the study. Its

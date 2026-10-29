@@ -519,4 +519,9 @@ overhangs both faces (an owner question in `plans/door-sizing.md`). The crossing
 x 100", so over the head (RO x 39"-75", nailer top -27.94" while held at 6'-8") only
 `PR-M-S-BATH1-DRAIN` (x 60") and `PR-B-MAIN-DRAIN` (x 72") remain, both over it. The derived
 81.51" RO (`plans/door-sizing.md`) raises the nailer 1.51" and BATH1-DRAIN would notch it
-0.09", undoing the lift above, so D-B-FURN holds its 6'-8" RO pending the owner.
+0.09", undoing the lift above.
+
+**Owner, 2026-10-29: released.** The header is a flat 2x4 (`flat 2x4 nonbearing`, flush with
+both faces), its top at -26.43". The nailer cannot be nudged without holding the RO (its
+underside is the derived head), so the 0.09" notch by `PR-M-S-BATH1-DRAIN` at x 60" is
+accepted: `flat_header_cut` PASSes it with 1.41" of the 1.50" nailer left.

@@ -401,7 +401,12 @@ def test_catlin_base_scope_follows_the_standard_and_the_floor(catlin_model_ro) -
 def test_catlin_expected_clips(catlin_model_ro) -> None:
     clips = {(c.opening_ref, c.room): {(k.obstruction, k.dropped) for k in c.clips}
              for c in catlin_model_ro.door_casings if c.clips}
-    assert clips[("D-S-BED1", "RM-S-BED1")] == {("FURN-S-BED1-PAX-SHELF", False)}
+    # D-S-BED1's one-off 2 1/4" casing (DoorTrim.casing_width) clears the PAX unscribed.
+    assert ("D-S-BED1", "RM-S-BED1") not in clips
+    assert {round(c.casing_width_m / 0.0254, 3) for c in catlin_model_ro.door_casings
+            if c.opening_ref == "D-S-BED1"} == {2.25}
+    # TrimStandard.uncased_doors: the under-stair utility door takes none.
+    assert not [c for c in catlin_model_ro.door_casings if c.opening_ref == "D-B-CLOSET"]
     assert clips[("D-S-BED2", "RM-S-BED2")] == {("FURN-S-BED2-PAX-SHELF", False)}
     assert ("FX-M-BATH2-SINK", True) in clips[("D-M-BATH2", "RM-M-BATH2")]
 

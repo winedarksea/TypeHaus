@@ -227,8 +227,8 @@ DUCTS_ERV_BASEMENT = [
     # y=18'-8" to 17'-4 3/4". Through W-B-CW3 in its 8'-1"..9'-5" stud bay, over the 2x8
     # backing (top 6'-7 1/4"); east on y=17'-4 3/4", 2 1/4" clear of PR-M-S-SUITE-DRAIN's
     # riser, through W-B-HALL-W's 16'-8"..18'-0" bay; then the hall's x=17'-0" lane south
-    # of the stair to y=13'-0" as before. The 88 1/2" section keeps its lower face clear of
-    # D-B-BATH's pocket header at 85 1/2".
+    # of the stair to y=13'-0" as before. The east leg falls 89" -> 88 1/2" (2026-10-29, was level
+    # at 88 1/2"), so its lower face clears D-B-BATH's flat head and track nailer (86 3/8").
     #
     # ** x=17'-0" AND NOT 17'-9", BECAUSE THE STRIP BESIDE THE STAIR IS THE POUR. **
     # W-B-CN / -CN2 / W-B-CS2 are one 12" cast wall on the x=18'-0" axis, so x 17'-6"..18'-6"
@@ -246,7 +246,7 @@ DUCTS_ERV_BASEMENT = [
                   pt(ft(9), ft(18, 8)), pt(ft(9), ft(17, 4.75)),
                   pt(ft(17), ft(17, 4.75)),
                   pt(ft(17), ft(13)), pt(ft(17), ft(13)), pt(ft(19), ft(13))),
-            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(88.5),
+            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(89),
                         inch(88.5), inch(84), inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=18),
     # THE PLAY RADIAL GOES THROUGH SF-B-BATH. From the plenum's east end it drops to -25 7/16"

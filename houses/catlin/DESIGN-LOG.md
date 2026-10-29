@@ -6602,3 +6602,23 @@ general information manual publishes no brake limits, so the gate is ours.
 - **The 12% panel-rate cut has no source.** The three rows cut 11.6-13.0%, about $1.0-1.7k of
   pre-tax material, kept as an assumption and re-struck at quote.
 
+
+## Door holds released: the owner's answers (2026-10-29)
+
+Every held door now frames its derived or published RO. The per-door resolutions are in
+`plans/door-sizing.md`. Three of the owner's directions needed a choice:
+
+- **D-M-BATH2's receptacle went east, not west.** The nightstand the owner named stands east
+  of the door, and the measured option put RC9 at 64". The GFCI the owner asked for landed on
+  RC7, the box the wider opening brings within 6' of the sink. RC9 was already one.
+- **D-M-MUD's riser takes W-M-STOS's narrow last bay**, not "a foot west": the bays west of it
+  hold the BATH1 stack and the cold riser, and a jog in FS-S-WEST past the stack has no room.
+  The 2 3/4" bay fits only the 1/2" (R-3.1) sleeve already used on two other runs. The cold
+  feed to the heater moved 2 1/2" east to let it rise.
+- **D-M-BATH1 has a 1 1/2" bath-face casing and its switch moved 5/8".** A trimless leg was the
+  alternative; one narrow casing all round reads as deliberate. Leaving the switch where it
+  was would have meant a 1" casing, under the house's 1 1/2" minimum leg.
+
+D-S-NCLOSET's flat head would not fit under SF-S-HP1 with a double plate, so W-S-CLN-S takes
+a single top plate (R602.5, nonbearing). D-B-CLOSET's derived leaf clipped EQ-B-WH at 90
+degrees. The equipment outranks the door, so the door takes a 75-degree stop.

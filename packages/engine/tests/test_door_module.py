@@ -66,10 +66,9 @@ def test_the_ro_ladder_is_not_applied_to_doors(findings):
         assert "exceeds" not in finding.message
         assert "limit" not in finding.message
     named = {tag for f in findings for tag in f.element_tags}
-    # D-G-OVERHEAD is graded — on POSITION, and it is the only one of the three wide doors
-    # that is off its module at all.
-    assert "D-G-OVERHEAD" in named
-    assert "D-B-PLAY" not in named
+    # All three are graded on POSITION. D-B-PLAY's derived RO is off W-B-CE's module, kept
+    # visually centred by the owner (2026-10-29; suppressed in the house).
+    assert {"D-G-OVERHEAD", "D-B-PLAY"} <= named
     # The catalog pair's wider RO now interrupts an extra stud at its held centerline.
     patio = next(f for f in findings if "D-B-PATIO" in f.element_tags)
     assert "stud(s)" in patio.message
@@ -137,7 +136,7 @@ def test_a_wall_no_move_can_fix_is_unknown_not_fail(findings):
     looking for a position that does not exist."""
     unknowns = {tag for f in findings if f.result is Result.UNKNOWN
                 for tag in f.element_tags}
-    assert {"D-M-ENTRY", "D-S-NCLOSET", "D-S-STUDY2"} <= unknowns
+    assert {"D-M-ENTRY", "D-S-STUDY2"} <= unknowns
     assert "D-M-PANTRY" not in unknowns  # Its cassette anchors to perpendicular walls.
     for finding in findings:
         if finding.result is not Result.UNKNOWN:

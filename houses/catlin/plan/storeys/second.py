@@ -39,7 +39,6 @@ from typehaus import (
     LayerMaterial,
     Node,
     Occupancy,
-    OpeningSize,
     RadiantSystem,
     Railing,
     RailingKind,
@@ -361,9 +360,12 @@ WALLS = [
     # North-centre closet (source 30.853 / 21.898), off the hall's north end.
     # Stops at SF-S-HP1's underside (7'-3 1/4"): the box runs across it wall to wall, and
     # EQ-S-HP1-AH's 43 1/2" case straddles this line inside the box.
+    # Nonbearing (owner, 2026-10-29): D-S-NCLOSET heads with R602.7.4's flat 2x4 under a
+    # single top plate (R602.5), which is what fits under the soffit.
     Wall(uid="CSW141AAAA", tag="W-S-CLN-S", start_node="N-S-C3D", end_node="N-S-B4",
-         assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=inch(87.25)),
+         assembly="INT_2X4_PARTITION_HALF_SINGLE_PLATE",
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=inch(87.25),
+         structural_role=StructuralRole.NONBEARING),
     # --- west block: walk-in, suite, suite bath, vanity alcove ------------------
     Wall(uid="CSW129AAAA", tag="W-S-DC1", start_node="N-S-D1", end_node="N-S-D2",
          assembly="INT_2X4_PARTITION_HALF", top=ft(9)),
@@ -528,8 +530,8 @@ OPENINGS = [
     # door needs it (plan/bedroom_wardrobes.py). The south casing is omitted and the PAX side
     # panel scribed to the jamb; the station is off the stud module, and the extra stud cut
     # (`structural.door_framing_module`, suppressed in preferences.toml) is accepted.
+    # Derived RO since 2026-10-29, cased 2 1/4" both faces (plan/millwork.py).
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT-SWING30",
-         held_rough_opening=OpeningSize(width=ft(2, 6), height=ft(6, 8)),
          position=from_node("N-S-B1", ft(5, 7.5)), flip_swing=True),       # y 15'-10 1/2"
     # BED2's wardrobe is on the west wall, freeing the source gap. The door centre was 24'-4",
     # 3" from the surveyed 24'-1"; the PAX shift above takes it to 24'-6 1/2". Both hinges
@@ -552,9 +554,10 @@ OPENINGS = [
     # RO y=17"..47" leaves the south junction and king/jack pack clear; centre 16" would not.
     Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT-SWING30-GLAZED",
          position=from_node("N-S-S1", ft(1, 5))),                      # y 2'-8"
+    # Derived RO since 2026-10-29, centred between W-S-CLN and W-S-SBS on the suite's little
+    # hall (owner), which leaves both cherry casing legs ~2 7/16".
     Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT-SWING32",
-         held_rough_opening=OpeningSize(width=ft(2, 8), height=ft(6, 8)),
-         position=from_node("N-S-C2", ft(0, 4.875))),                    # y 14'-1 7/8"
+         position=from_node("N-S-C2", inch(3.875))),                    # y 14'-2"
     # O-S-HALLW (a 3'-0" cased opening at y 28'-7") is gone: the whole 8'-6" between
     # N-S-C2C and N-S-C3D is open under BM-S-HALL now, so there is no wall left to host it.
     # West block
@@ -588,9 +591,11 @@ OPENINGS = [
     # the 90-degree leaf tip. Keep a stop to protect the adjacent switch and cabinet.
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30",
          position=from_node("N-S-V2", ft(1, 1.5)), flip_hinge=False),     # x 8'-3"
+    # Derived RO since 2026-10-29 (owner): a flat 2x4 head keeps it under the wall top and
+    # SF-S-HP1, and the door slid 2 1/4" west, clear of ED-S-NCLOSET-SW.
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
-         held_rough_opening=OpeningSize(width=ft(2, 6), height=ft(6, 8)),
-         position=from_node("N-S-C3D", ft(0, 8.5)), flip_swing=True, flip_hinge=True),                     # x 19'-11 1/2"
+         position=from_node("N-S-C3D", inch(6.25)), flip_swing=True, flip_hinge=True,
+         header_spec="flat 2x4 nonbearing"),                     # x 19'-10 3/8"
     # O-S-STAIRTOP, the 6'-0" cased stair head, went with its host wall W-S-BD-N2.
     # Balcony door. The source draws ONE opening (x 18'-8"..23'-11", 5'-3", with two
     # leaves), east of the centre line; that is D-S-DECK-E, standardized to the catalog's

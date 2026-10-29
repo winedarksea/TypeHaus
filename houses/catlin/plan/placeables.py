@@ -230,13 +230,13 @@ MAIN_PLACEABLES = [
     # between the bed edges and the two RO jambs; north-south placement and head-north orientation
     # are unchanged.
     Furniture(uid="CMB701AAAA", tag="FURN-M-BED", type_ref="FURN-BED-JAPANESE-KING", room="RM-M-BED",
-              position=pt(inch(113.3175), m(2.80531))),
-    # Matching 16" tables are the largest whole-inch width that fits: flush with the bed,
-    # with 0.6825" to each RO. Their 16" depth backs onto the bedroom face at y=153.625".
+              position=pt(inch(113.9175), m(2.80531))),
+    # Matching 16" tables are the largest whole-inch width that fits: flush with the bed.
+    # All three sit 0.6" east of centre since D-M-BATH2's RO grew (2026-10-29). Their 16" depth backs onto the bedroom face at y=153.625".
     Furniture(uid="SM4T9MMNVP", tag="FURN-M-BED-NIGHTSTAND-W", type_ref="FURN-NIGHTSTAND-16", room="RM-M-BED",
-              position=pt(inch(65.3175), inch(145.625))),
+              position=pt(inch(65.9175), inch(145.625))),
     Furniture(uid="CMN702AAAA", tag="FURN-M-BED-NIGHTSTAND-E", type_ref="FURN-NIGHTSTAND-16", room="RM-M-BED",
-              position=pt(inch(161.3175), inch(145.625))),
+              position=pt(inch(161.9175), inch(145.625))),
 
     # The desk and its chair are in plan/bed_desk.py.
 

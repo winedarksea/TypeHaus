@@ -121,7 +121,7 @@ def _room_runs(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
 
 def _one_door(model, ring, room, scope: TrimScope, opening) -> list[tuple[float, float]]:
     return rp.door_intervals(model, ring, room.storey,
-                             lambda o: scope.base_break_half_width(o)
+                             lambda o: scope.base_break_half_width(o, room.tag)
                              if o.tag == opening.tag else None, {opening.host_wall})
 
 

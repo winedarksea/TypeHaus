@@ -106,8 +106,8 @@ BASEMENT_LIGHTING = [
     # west jamb on W-B-CW2's workshop face, 8 5/16" from what is now a wall tee at
     # N-B-BA-SE, and it was justified by a cased opening that no longer exists. The way in
     # is D-B-SHOP, so the switch goes on W-B-HALL-W's workshop face (x=163.3025", the
-    # device 0.135" into it, the same seat ED-B-STAIR-SW takes on W-B-BA-E) at y=14'-2 7/16",
-    # 5" north of the door's north jamb at 13'-9 7/16".
+    # device 0.135" into it, the same seat ED-B-STAIR-SW takes on W-B-BA-E), 41" along it
+    # since D-B-SHOP's derived RO (2026-10-29): 4 9/16" further north than it was.
     #
     # ** THAT IS THE HINGE SIDE, AND IT IS THE ONLY SIDE. ** This house's habit is the latch
     # jamb (see ED-B-BATH-SW) so the switch is not behind the leaf. D-B-SHOP's latch jamb is
@@ -128,7 +128,7 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-HALL-W", face="right", distance_from_start=inch(45.5625),
+                         wall_ref="W-B-HALL-W", face="right", distance_from_start=inch(41),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # The under-stair storage (new 2026-09-05). ED-T-LT-SPOT-SW is the
@@ -139,15 +139,15 @@ BASEMENT_LIGHTING = [
     # type). `room` is RM-B-STAIR since the closet stopped being a `Room` of its own the
     # same day (storeys/basement.py ROOMS) — the fixture did not move an inch.
     #
-    # On W-B-STR3's Type X face (x=10'-3 1/4") 2" proud of it, 2'-3" clear of D-B-CLOSET's
-    # far jamb (the 8" Stretch body clears it), at 4'-6" AFF. The elevation is set by the RAKE, not by habit: the flight
+    # On W-B-STR3's Type X face (x=10'-3 1/4") 2" proud of it, 22" along, 3" north of where
+    # it was so it clears D-B-CLOSET's derived RO (2026-10-29), at 4'-6" AFF. The elevation is set by the RAKE, not by habit: the flight
     # overhead is 6'-1 5/8" up at this y, and a 9" fixture at 54" tops out 10 5/8" under it.
     ElectricalDevice(uid="JYMY6WGGP3", tag="ED-B-CLOSET-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SPOT-SW",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-STR3", face="left", distance_from_start=inch(25),
+                         wall_ref="W-B-STR3", face="left", distance_from_start=inch(22),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
 
@@ -874,8 +874,8 @@ MAIN_LIGHTING = [
     # silhouette on camera — bright against WP-M-STUDY-FELT, the backdrop the camera sees.
     # The south wall is out too: a 20"-deep desk puts a monitor in front of it.
     #
-    # So: the EAST wall's north sliver, the 12 15/16" of W-M-C3 north of D-M-STUDY's RO
-    # (y 21'-0 11/16"..22'-1 5/8"). x is 2" — half this type's 4" depth — off that wall's
+    # So: the EAST wall's north sliver, the 11 13/16" of W-M-C3 north of D-M-STUDY's derived RO
+    # (y 21'-1 13/16"..22'-1 5/8"). x is 2" — half this type's 4" depth — off that wall's
     # resolved study face at 17'-8 5/8", per the face-position convention in
     # plan/electrical.py. `rotation=deg(-90)` backs it onto the east wall and aims it west.
     # ED-M-STUDY-SW is on the same sliver at 48", so the two are vertically clear.
@@ -905,7 +905,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-STUDY", controlled_by=("ED-M-STUDY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C3", face="left", distance_from_start=inch(44.5),
+                         wall_ref="W-M-C3", face="left", distance_from_start=inch(45.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-BATH1: wet-rated can plus a mirror light over the lavatory, which backs onto
@@ -916,12 +916,13 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000MAAA", tag="ED-M-BATH1-SW", kind=DeviceKind.SWITCH,
-                     # East wall, south of the north-shifted doorway.
+                     # East wall, south of the north-shifted doorway, 3/16" clear of the
+                     # door's 1 1/2" bath-face casing (2026-10-29).
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(40.5),
+                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(41.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-M-BATH2: two layers, two controls (2026-10-12, notes/bath2_lighting.md).

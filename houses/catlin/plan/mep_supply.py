@@ -290,7 +290,8 @@ SUPPLY = [
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
             # The drop sits south of EQ-B-WH (y 27'-6") and east of the ERV case, at
             # 7'-9 1/2" (2026-10-17); the tank end is still reached over the heater top.
-            path=(pt(ft(4, 9), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(27, 6)),
+            # x=5'-8 1/2" (2026-10-29, was 5'-6"): PR-B-HW-SBATH's riser stands at 5'-6 1/2".
+            path=(pt(ft(4, 9), ft(16)), pt(inch(68.5), inch(203.5)), pt(inch(68.5), ft(27, 6)),
                   pt(inch(93.5), inch(330)), pt(inch(93.5), inch(330)),
                   pt(inch(103.5), inch(348.875))),
             diameter=inch(1), material="copper",
@@ -531,17 +532,22 @@ SUPPLY = [
             wall_refs=(None, None, None, None, None, "W-M-STOS", "W-S-BD-N", "W-S-BD-N",),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
-    # x=6'-4" is the first clean bay past N-M-BA1's tee (6 1/2" west of D-M-MUD's jamb pack,
-    # 8" west of D-S-BATH1's above); x=6'-2.4" would leave half the pipe in W-M-STOS2's
-    # corner pack after W-M-MUDC-E tees in. SP-M-HW-SBATH follows the same station.
+    # The main-storey leg rises at x=5'-6 1/2" in W-M-STOS's last bay, west of D-M-MUD's
+    # derived RO (owner, 2026-10-29), and jogs east over the plates in FS-S-WEST's
+    # y 311 3/4"..322 1/4" bay to x=6'-4", where the second-storey branches tee off. The
+    # bay is 2 3/4" wide, so this run takes the 1/2" (R-3.1) sleeve the house uses elsewhere.
     PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(7, 6), ft(25, 6)), pt(ft(6, 4), ft(26, 7.5)),
+            path=(pt(ft(7, 6), ft(25, 6)), pt(inch(66.5), ft(25, 6)),
+                  pt(inch(66.5), ft(26, 7.5)), pt(inch(66.5), ft(26, 7.5)),
+                  pt(inch(66.5), ft(26, 7.5)), pt(inch(66.5), ft(26, 7.5)),
                   pt(ft(6, 4), ft(26, 7.5)), pt(ft(6, 4), ft(26, 7.5)),
                   pt(ft(6, 4), ft(26, 7.5)), pt(inch(76), inch(319.5)),),
-            diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 4), ft(8, 1.4375), ft(9, 1.4375),
-                        ft(19, 1.4375), ft(21, 7.4375), inch(321.4375),),
-            wall_refs=(None, None, "W-M-STOS2", "W-S-BD-N1B", "W-S-BD-N1B",),
+            diameter=inch(0.75), material="copper", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
+            elevations=(ft(7, 4), ft(7, 4), ft(7, 4), ft(8, 1.4375), ft(9, 1.4375),
+                        ft(18, 3.4375), ft(18, 3.4375), ft(19, 1.4375), ft(21, 7.4375),
+                        inch(321.4375),),
+            wall_refs=(None, None, None, None, "W-M-STOS", None, None, "W-S-BD-N1B",
+                       "W-S-BD-N1B",),
             serves=("FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
                     "FX-S-VANITY-LAV2")),
     # ** BOTH RISERS FINISH IN W-S-SN3 SINCE 2026-09-09. ** They used to surface at

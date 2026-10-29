@@ -74,12 +74,13 @@ def test_an_engineered_header_is_the_fabricator_s_chart(profile: str) -> None:
 
 
 def test_catlin_s_remaining_header_crossings_are_all_reported(catlin_model_ro) -> None:
-    """The dry-fire collector lift clears the last two flat-nailer notches."""
+    """One flat-nailer notch remains, accepted by the owner (2026-10-29): D-B-FURN's derived
+    RO raised its nailer into PR-M-S-BATH1-DRAIN by 0.09", which R602.7.4 does not limit."""
     from typehaus.checks.mep.routing_bores import run_through_header
 
     findings = run_through_header(_ctx(catlin_model_ro))
-    assert len(findings) == 1
-    assert {f.result.value for f in findings} == {"not_applicable"}
+    assert [(f.result.value, f.element_tags[0]) for f in findings] == [
+        ("pass", "PR-M-S-BATH1-DRAIN")]
 
 
 # --- §6 where along the header, and how much of it ------------------------------------
@@ -168,8 +169,12 @@ def test_the_catlin_header_crossings_are_at_their_true_stations(
     stations = {tag: (cut.station[0] / M_PER_IN, cut.station[1] / M_PER_IN, cut.through_in)
                 for tag, _wall, cuts in _crossings(_ctx(catlin_model_ro))
                 for cut in cuts if cut.category == "header"}
-    # The 2026-10-13 lift takes both former kitchen/BATH1 notches above the nailer.
-    assert not stations
+    # The 2026-10-13 lift took both notches above the nailer; the derived RO (2026-10-29)
+    # brought BATH1's back at 0.09".
+    assert stations.keys() == {"PR-M-S-BATH1-DRAIN"}
+    x, y, through = stations["PR-M-S-BATH1-DRAIN"]
+    assert (x, y) == pytest.approx((60.0, 216.0), abs=0.01)
+    assert through == pytest.approx(0.09, abs=0.01)
 
 
 def test_the_two_rerouted_runs_cut_nothing_at_all(catlin_model_ro) -> None:
@@ -347,17 +352,17 @@ def test_a_notch_in_a_flat_nonbearing_header_passes_while_wood_is_left() -> None
 
 
 def test_the_flat_header_opens_d_b_furn_s_head(catlin_model_ro) -> None:
-    """B1's contract: no cripple over the flat 2x8, and the extract duct and the 4.50"
-    main drain cross `W-B-CW` through the open head without cutting anything."""
+    """B1's contract: no cripple over the flat 2x4 (the wall's own width since W-B-CW went
+    2x4), and the extract duct and the main drain cross `W-B-CW` through the open head
+    without cutting anything."""
     from typehaus.checks.mep.routing_bores import _crossings
 
     wall = catlin_model_ro.wall("W-B-CW")
     header = next(m for m in wall.members if m.opening_tag == "D-B-FURN")
-    assert header.profile == "2x8"
+    assert header.profile == "2x4"
     assert (header.z1_m - header.z0_m) / M_PER_IN == pytest.approx(1.5)
     assert not [m for m in wall.members if m.category == "cripple"]
-    open_head = {"PR-B-MAIN-DRAIN", "DU-B-ERV-R-SAUNA-EXH",
-                 "PR-B-KITCH-DRAIN", "PR-M-S-BATH1-DRAIN"}
+    open_head = {"PR-B-MAIN-DRAIN", "DU-B-ERV-R-SAUNA-EXH", "PR-B-KITCH-DRAIN"}
     for tag, found, cuts in _crossings(_ctx(catlin_model_ro)):
         if tag in open_head and found.tag == "W-B-CW":
             assert not cuts, (tag, [c.member_key for c in cuts])

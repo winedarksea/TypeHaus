@@ -93,7 +93,7 @@ class TrimScope:
         self._cache[key] = out
         return out
 
-    def casing_half_width(self, opening) -> float | None:
+    def casing_half_width(self, opening, room: str | None = None) -> float | None:
         """Half the width a door takes out of a wall face on a side it is cased.
 
         ``None`` for a door that takes no applied casing, whose base break is then the
@@ -101,16 +101,16 @@ class TrimScope:
         :func:`base_break_half_width`.
         """
         door_type = self.door_types.get(opening.type_ref or "")
-        if not cased(door_type):
+        if not cased(door_type) or opening.tag in self.standard.uncased_doors:
             return None
         inner, _head = casing_edges(opening, door_type, self.standard)
-        return inner + self.standard.casing_width.meters
+        return inner + self.standard.casing_width_for(room, opening.tag).meters
 
-    def base_break_half_width(self, opening) -> float | None:
+    def base_break_half_width(self, opening, room: str | None = None) -> float | None:
         """Half the base break at a door; ``None`` where the base runs under it (a hatch)."""
         if opening.sill_m >= self.standard.base_height.meters:
             return None
-        half = self.casing_half_width(opening)
+        half = self.casing_half_width(opening, room)
         return opening.width_m / 2.0 if half is None else half
 
 
@@ -176,7 +176,8 @@ def trim_scope(plan: PlanModel, model: ResolvedModel) -> tuple[TrimScope | None,
         "integrity.trim_standard",
         f"trim standard {standard.tag} cases door {door!r}, which is not an opening",
         standard.tag)
-        for accent in standard.door_trims for door in accent.doors
+        for door in (*(d for accent in standard.door_trims for d in accent.doors),
+                     *standard.uncased_doors)
         if door not in opening_tags]
     findings += [element_error(
         "integrity.trim_standard",

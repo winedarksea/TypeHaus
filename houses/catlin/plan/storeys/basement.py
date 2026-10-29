@@ -21,7 +21,6 @@ from typehaus import (
     LayerMaterial,
     Node,
     Occupancy,
-    OpeningSize,
     PanelingSpan,
     ReinforcementSpec,
     Room,
@@ -932,10 +931,11 @@ WALLS = [
     # This 2x6 staggered partition now holds D-B-BATH and its split pocket frame. The
     # services moved into W-B-STR2 so the leaf can pass south into W-B-HALL-W. Its north
     # segment keeps the WC grab-bar backing; the cavity has no wall-mounted fixtures.
+    # Nonbearing (owner, 2026-10-29), so D-B-BATH heads with R602.7.4's flat 2x.
     Wall(uid="8BRZAXSW73", tag="W-B-BA-E", start_node="N-B-BA-NE",
          end_node="N-B-BA-SE", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
-         interior_room="RM-B-BATH"),
+         interior_room="RM-B-BATH", structural_role=StructuralRole.NONBEARING),
     # ESS closet's two framed walls (moved to the NE corner, same uids, so the enclosure is
     # the same two walls relocated rather than a new pair).
     # INT_ESS_CLOSET_STEEL (steel studs, 5/8" Type X both faces) is an owner standard, not a
@@ -1064,15 +1064,16 @@ OPENINGS = [
     # jamb is pinned west by PR-B-ERV-COND exactly as the paragraph above derives it, and
     # the far jamb only walks 5'-11" -> 6'-3", still 6" clear of N-B-CW-E.
     #
-    # ** A FLAT 2x8 HEADER, NO CRIPPLES (IRC R602.7.4, 2026-09-22). ** The 2-2x8 it replaces
-    # carried nothing and had four runs through it; notes/framing_bore_limits.md §9.
+    # ** A FLAT NONBEARING HEADER, NO CRIPPLES (IRC R602.7.4, 2026-09-22). ** The 2-2x8 it
+    # replaces carried nothing and had four runs through it; notes/framing_bore_limits.md §9.
+    # A flat 2x4 since 2026-10-29, the 2x4 wall's own width (a flat 2x8 overhung both faces).
+    # The derived RO raises it into PR-M-S-BATH1-DRAIN by 0.09": accepted (owner), 1.41" left.
     Door(uid="CBD201AAAA", tag="D-B-FURN", host="W-B-CW", type_ref="DT-INT-SWING36",
-         held_rough_opening=OpeningSize(width=ft(3), height=ft(6, 8)),
-         position=from_node("N-B-W1", ft(3, 3)), header_spec="flat 2x8 nonbearing"),
+         position=from_node("N-B-W1", ft(3, 3)), header_spec="flat 2x4 nonbearing"),
     # Solid-core pair: the play room keeps the 5'-0" double opening, with flush solid
     # leaves instead of full glazing.
+    # Derived RO since 2026-10-29, kept visually centred on W-B-CE (module suppressed).
     Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-DOUBLE60",
-         held_rough_opening=OpeningSize(width=ft(5), height=ft(6, 8)),
          position=from_node("N-B-C", ft(6, 2))),
     # **The two doors formed through 12" interior pours are gone (2026-09-05.)** This one
     # was a blockout in W-B-CS2 and D-B-NE was one in W-B-CN; between them they were the
@@ -1114,9 +1115,11 @@ OPENINGS = [
     # 37" cavity runs south through N-B-BA-SE into W-B-HALL-W; both walls have the same
     # 2x6 section even though their stud layouts differ. The bathroom services moved to
     # W-B-STR2 and the east-wall backing stops at the north jamb. Keep the original uid.
+    # Derived 83 1/4" Eclisse RO since 2026-10-29 under a flat 2x6 (the kit hangs its track
+    # from its own steel pocket header, screwed up into this one; nothing bears on it).
+    # DU-B-ERV-R-GYM rose 1/2" to pass over it.
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-POCKET-INT-36",
-         held_rough_opening=OpeningSize(width=ft(3), height=ft(6, 8)),
-         position=from_node("N-B-BA-NE", ft(2, 9.9375))),
+         position=from_node("N-B-BA-NE", ft(2, 9.9375)), header_spec="flat 2x6 nonbearing"),
     # ESS closet door, opening west into the furnace room. DT-INT-SWING24: a 2'-0" leaf is
     # what a closet this size takes with jamb both sides. 10" offset from the corner, not
     # the original 4": at 4" the opening's king stud clashed with the wall's corner post
@@ -1137,9 +1140,12 @@ OPENINGS = [
     # stud clashes with the corner post. That puts the leaf at y 26'-4"..28'-4", and the far
     # jamb is what sizes the door — see DT-INT-CLOSET24 in storeys/main.py. A 6'-8" head
     # would be six inches inside the stringer.
+    # Derived RO since 2026-10-29. The door stays put (the ERV, the heater and the dry-fire
+    # lane outrank it): it takes no casing, ED-B-CLOSET-LT moved 3" north, and a 75-degree
+    # hinge-pin stop keeps the leaf tip 1/2" off EQ-B-WH (at 90 it clips the tank's corner).
     Door(uid="B43P8B5Y0T", tag="D-B-CLOSET", host="W-B-STR3", type_ref="DT-INT-CLOSET24",
-         held_rough_opening=OpeningSize(width=ft(2), height=ft(6)),
-         position=from_node("N-B-BA-NW", inch(10)), flip_swing=True, flip_hinge=True),
+         position=from_node("N-B-BA-NW", inch(10)), flip_swing=True, flip_hinge=True,
+         maximum_opening_degrees=75),
     # ** O-B-HALL IS GONE AND D-B-SHOP REPLACES IT (2026-09-07). ** The cased opening was
     # 2'-10" through W-B-CW2B and was justified by the workshop being the through-route
     # from the stair to the gym — "a door across a circulation spine buys nothing". The
@@ -1155,8 +1161,9 @@ OPENINGS = [
     # The 9 7/16" offset puts the RO's centre on D-B-GYM's (y=12'-3 7/16"), so the
     # equipment route is straight through, and leaves ~7" of jamb room to W-B-SA-N2's hall
     # face at the south end.
+    # Derived RO since 2026-10-29: stays on D-B-GYM's centre (module suppressed) and
+    # ED-B-WORKSHOP-SW moved north to clear it.
     Door(uid="GEVMH8HHZ9", tag="D-B-SHOP", host="W-B-HALL-W", type_ref="DT-INT-SWING36",
-         held_rough_opening=OpeningSize(width=ft(3), height=ft(6, 8)),
          position=from_node("N-B-HALL-S", inch(9.4375)), flip_swing=True),
     # The sauna is entered FROM THE GYM since the rotation — the short route to D-B-PATIO
     # and the sunken garden, which is what the brief asks the room for. Same uid, same 24"

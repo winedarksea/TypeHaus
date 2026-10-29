@@ -44,8 +44,8 @@ def test_study_matches_the_neighbor_jamb_and_keeps_its_glazed_outswing(
     assert door_type.leaf_set == "pull" and bedroom_type.leaf_set == "push"
     assert door_type.glazed and door_type.tempered
     assert opening.uid == "CMD208AAAA" and opening.host_wall == "W-M-C3"
-    assert opening.width_m == pytest.approx(30 * 0.0254)
-    assert opening.height_m == pytest.approx(80 * 0.0254)
+    assert opening.sizing.leaf_w_m == pytest.approx(30 * 0.0254)
+    assert opening.sizing.leaf_h_m == pytest.approx(80 * 0.0254)
     assert opening.flip_hinge and opening.flip_swing
     ring = opening.swing_clearance
     swing_center = tuple(sum(point[axis] for point in ring) / len(ring) for axis in (0, 1))

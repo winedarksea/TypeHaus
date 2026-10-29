@@ -366,6 +366,12 @@ suppress = [
   # pairs. Their wider ROs interrupt one additional stud; headers/jamb packs still grade.
   "structural.door_framing_module:D-B-PATIO",
   "structural.door_framing_module:D-S-DECK-E",
+  # Owner 2026-10-29: D-M-BALC re-centred under D-S-DECK-E; the mirror beats the module.
+  "structural.door_framing_module:D-M-BALC",
+  # Owner 2026-10-29: D-B-PLAY stays visually centred on W-B-CE and D-B-SHOP on D-B-GYM's
+  # line; one extra stud each beats moving them.
+  "structural.door_framing_module:D-B-PLAY",
+  "structural.door_framing_module:D-B-SHOP",
 
 
   # Owner accepts (2026-09-26): each of these cuts one stud more than a module-true station
@@ -375,12 +381,10 @@ suppress = [
   "structural.door_framing_module:D-B-GYM",
   "structural.door_framing_module:D-M-ENTRY",
   "structural.door_framing_module:D-S-STUDY2",
-  "structural.door_framing_module:D-S-NCLOSET",
+  # D-S-NCLOSET left this list on 2026-10-29: slid 2 1/4" west, it cuts no extra stud.
 
-  # Owner accepts (2026-10-02): D-S-BED1/2 moved 2 1/2" north, off the module, so a real
-  # 19 5/8" PAX fits south of each (plan/bedroom_wardrobes.py). One extra stud cut each.
-  # D-S-BED2 left this list on 2026-10-29: its derived RO cuts no extra stud.
-  "structural.door_framing_module:D-S-BED1",
+  # D-S-BED1/2 (moved 2 1/2" north for the PAX, 2026-10-02) left this list on 2026-10-29:
+  # their derived ROs cut no extra stud.
 
   # Owner accepts (2026-10-16): WIN-M-DINING-E is a 63" picture window centred on the
   # dining table in BEARING W-M-E1, past the 27" `max_window_ro_bearing_in` cap that stays

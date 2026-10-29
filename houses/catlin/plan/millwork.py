@@ -112,6 +112,15 @@ MILLWORK = [
         door_trims=(
             DoorTrim(doors=("D-S-SUITE",), room="RM-S-SUITE", material_ref="cherry-trim"),
             DoorTrim(doors=("D-A-STUDY",), material_ref="oak-trim"),
+            # One-off widths where 3 1/2" will not fit (owner, 2026-10-29). D-M-BATH1's
+            # powder-room face is the minimum leg, 1 1/2", so ED-M-BATH1-SW (5/8" south) clears.
+            DoorTrim(doors=("D-M-BATH1",), room="RM-M-BATH1", material_ref="pvc-trim",
+                     casing_width=inch(1.5)),
+            # D-S-BED1 is 2 1/4" both faces, so neither scribes against W-S-BD1 or the PAX.
+            DoorTrim(doors=("D-S-BED1",), material_ref="mdf-casing", casing_width=inch(2.25)),
+            # D-S-NCLOSET slid west toward W-S-C4B's corner: 1 1/2" both faces clears that
+            # corner's base and ED-S-NCLOSET-SW.
+            DoorTrim(doors=("D-S-NCLOSET",), material_ref="mdf-casing", casing_width=inch(1.5)),
         ),
         thickness=inch(0.75),
         base_height=inch(3.5),
@@ -123,6 +132,9 @@ MILLWORK = [
         # Boards come in 8' lengths: `haus millwork` packs the hardwood cuts into them.
         stock_length=ft(8),
         excluded_rooms=("RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM"),
+        # The under-stair storage door: a utility door, jamb and drywall only (owner,
+        # 2026-10-29), which also drops the head that ran into ST-B2M's stringer.
+        uncased_doors=("D-B-CLOSET",),
     ),
 ]
 

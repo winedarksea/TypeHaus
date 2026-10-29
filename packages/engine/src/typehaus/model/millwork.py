@@ -284,11 +284,13 @@ class RoomTrim(HausModel):
 
 class DoorTrim(HausModel):
     """A casing stock for named doors, beating any ``RoomTrim``: an accent on one face.
-    ``room`` picks the face by the room it looks into; None cases both faces."""
+    ``room`` picks the face by the room it looks into; None cases both faces.
+    ``casing_width`` is a one-off face width where the house's will not fit."""
 
     doors: tuple[str, ...]
     room: str | None = None
     material_ref: str
+    casing_width: Length | None = None
 
 
 @register_element
@@ -320,6 +322,8 @@ class TrimStandard(Element):
     # Conditioned, floor-finished rooms that still take no base or casing (a mechanical
     # room, a workshop). Unconditioned and unfinished rooms are out already.
     excluded_rooms: tuple[str, ...] = ()
+    # Doors that take no applied casing on either face (a utility door: jamb and drywall).
+    uncased_doors: tuple[str, ...] = ()
     base_material_ref: str | None = None
     room_trims: tuple[RoomTrim, ...] = ()
     door_trims: tuple[DoorTrim, ...] = ()
@@ -338,13 +342,24 @@ class TrimStandard(Element):
             return override.material_ref
         return self.base_material_ref or self.material_ref
 
+    def _door_trim(self, room: str | None, door: str | None) -> DoorTrim | None:
+        if door is None:
+            return None
+        return next((d for d in self.door_trims if door in d.doors
+                     and d.room in (None, room)), None)
+
+    def casing_width_for(self, room: str | None, door: str | None) -> Length:
+        """The casing face width on ``door``'s face in ``room``."""
+        accent = self._door_trim(room, door)
+        if accent is not None and accent.casing_width is not None:
+            return accent.casing_width
+        return self.casing_width
+
     def casing_material_for(self, room: str, door: str | None = None) -> str:
         """The casing stock on ``door``'s face in ``room``: DoorTrim, RoomTrim, house."""
-        if door is not None:
-            accent = next((d for d in self.door_trims if door in d.doors
-                           and d.room in (None, room)), None)
-            if accent is not None:
-                return accent.material_ref
+        accent = self._door_trim(room, door)
+        if accent is not None:
+            return accent.material_ref
         override = self._room_trim(room)
         if override is not None:
             return override.casing_material_ref or override.material_ref
@@ -365,6 +380,9 @@ class TrimStandard(Element):
             raise ValueError(f"{self.tag}: trim thickness, height and width must be positive")
         if self.stock_length is not None and self.stock_length.meters <= 0:
             raise ValueError(f"{self.tag}: stock_length must be positive")
+        if any(d.casing_width is not None and d.casing_width.meters <= 0
+               for d in self.door_trims):
+            raise ValueError(f"{self.tag}: a door's casing_width must be positive")
         return self
 
 

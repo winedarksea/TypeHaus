@@ -1,8 +1,9 @@
 # Door sizing: leaf, unit, rough opening, clear passage
 
-Status: decisions agreed 2026-10-28, revised after review and a second round of questions
-the same day. All four phases implemented 2026-10-29 (decisions #96-#98 in `01-decisions.md`);
-seventeen openings still hold their framing pending the owner's answers below.
+Status: **done, 2026-10-29.** Decisions agreed 2026-10-28; all four phases implemented
+2026-10-29 (decisions #96-#98 and #100 in `01-decisions.md`). The owner answered every hold the
+same day and no door holds its framing any more (`advisory.held_rough_opening` is N/A on
+catlin). The resolutions are recorded below.
 Replaces the missing `plans/default-door-appearance.md` that the TODO item cited.
 
 ## The problem
@@ -341,31 +342,33 @@ module suppression was deleted. **`haus check` alone misses some conflicts**:
 running into the N-S-BA1 corner pack showed only in the suite (the corner-pack and
 unjunctioned member-overlap tests). It was re-held.
 
-## Open questions for the owner (the seventeen holds)
+## Resolutions (owner, 2026-10-29)
 
-Each was measured in its own worktree; every option listed cleared its findings with no new
-ones unless it says otherwise.
+Owner priorities: doors stay at least 32"; facade symmetry and visual centring beat the stud
+module (suppress `structural.door_framing_module` instead); small notches in nonbearing
+blocking are fine; mech-room equipment placement beats door moves; a utility door may take
+minimal or no casing. Every opening now frames its derived or published RO.
 
-| Opening | What the derived RO hits | Options (measured) |
-|---|---|---|
-| D-M-BALC | grown in place: 1.66" off the pair above | (1) move all three French pairs 8" east to 22'-0", the only station on the stud module for all three walls: no suppression needed (D-B-PATIO/D-S-DECK-E's are deleted), braced length grows; costs the 21'-4"/14'-8" mirror and re-homing ED-M-PORCH-SW, ED-M-PORCH-FLOOD-SW, ED-M-REAR-RC1, ED-M-STAIR-LT and ED-S-STUDY2-SPOT1, plus CN-*-HD-BALC, BK-M-S2-ROD and goldens; (2) the plain re-centre at 8 11/32": a third `door_framing_module` suppression, BWP-M-S2-0000 to 8 11/32", the pack tight on the W-M-C1 tee. |
-| D-M-ENTRY | — | released (decision 9). |
-| D-M-BATH1 | ED-M-BATH1-SW under the south casing (worse than today's 0.19") | release and move the switch 3" south (40.5" -> 43.5"), which also clears today's overlap. |
-| D-M-BATH2 | ED-M-BED-RC9 in the RO; RC7 within 6' of the shower through the wider opening; the nightstand at the leaf tip | (A) a 30" leaf (27.3" clear; reverses 2026-09-15); (B) keep 32": RC9 to 64", RC7 GFCI, bed and nightstands 0.6" east. |
-| D-M-MUD | PR-B-HW-SBATH's riser stands in the new west king and clips the header | keep the hold, or a 30" leaf (clean). No way found to keep 32" without moving the riser. |
-| D-M-STUDY | ED-M-STUDY-SPOT 0.74" into the RO | release and move the spot 1" north (0.26" a side left). |
-| D-B-BATH | Eclisse head 3.4" higher: its 2-2x6 header is notched 2.37" by DU-B-ERV-R-GYM and 0.12" by -PLAY (two header UNKNOWNs; re-measured 2026-10-29 once the pocket band stopped double-counting the track, so GYM no longer enters the pocket) | (B) W-B-BA-E nonbearing (engineer to confirm) with a flat 2x6 head, GYM up 0.5"; (A) raise both ducts (0.1" under the plate); (C) move GYM's crossing south. |
-| D-B-FURN | the raised flat nailer is notched 0.09" by PR-M-S-BATH1-DRAIN: a PASS (nonbearing nailer), but it undoes the 2026-10-13 lift that `test_e2_header_and_plate_tie` pins at "no header cut" | (B) lift the drain's tail 0.15" and release; (A) hold only the height at 81 3/8"; (C) accept the 0.09" (the house took 0.70" there in 2026-09) and re-pin the test. Separately: the nailer is authored `flat 2x8 nonbearing`, but W-B-CW is 2x4 now, so the 7 1/4" board overhangs both faces; R602.7.4's "wall's own 2x" is a flat 2x4. |
-| D-B-PLAY | 1.2" off W-B-CE's module (one extra stud) | move 1.2" west (casing ~1" from the playroom bookcase), or suppress like the other 60" pairs. |
-| D-B-SHOP | 11.4" off W-B-HALL-W's module; the switch 2.8" from the jamb | move to centre y=160" with the switch to 31" (loses the D-B-GYM alignment), or suppress and nudge the switch to 41". |
-| D-B-CLOSET | ED-B-CLOSET-LT under the casing; the casing head ~1.7" into ST-B2M's stringer (unchecked) | move the light 3" north (stringer scribe remains), or slide the door 2" toward the corner (clears both; undoes the 10" corner setback). |
-| D-S-BED1 | the casing scribes to 2.20" against W-S-BD1 | accept the scribe (2.44" on the PAX side already). |
-| D-S-SUITE | the cherry casing leg against W-S-SBS is left off | move the door 1" south (both legs ~2.4"), or a 30" leaf. |
-| D-S-BATH1 | released 2026-10-29 (owner: share the packs) | the jamb pack takes the corner: `resolve/framing/corner_jamb_packs.py` gives N-S-BA1 to W-S-BD-N1B, so jack, king, corner stud and end stud stand on its line and W-S-BA-E1B's end stud butts them (five); `structural.jamb_corner_pack` grades jack bearing, king continuity and the neighbour's backing. `member_interference` unchanged. |
-| D-S-BED3 | released 2026-10-29 | `mep_bore_geometry` reads a rectangular duct at its own width and depth: DU-S-HP-RET (10x18) clears the header. The same fix retired the three DU-S-HP-* `run_through_plate` suppressions. |
-| D-S-NCLOSET | the header rises 2.26" (now ~3", see Review) over the wall top into SF-S-HP1; ED-S-NCLOSET-SW in the RO | W-S-CLN-S nonbearing with a flat 2x4 head, and slide the door 2.25" west. |
-| D-A-HALVES | 1.70" to the wall end against 1.97" (`opening_fits`); the study casing leg left off | move 1 5/16" south (leg 1.57"), or a 30" leaf. |
-| D-A-POCKET | released 2026-10-29 | `member_interference` now grades a wall header in its own raked plate; the head is a flat 2x4 (R602.7.4, nonbearing), the near jamb 1/2" west to 6'-11 1/2" so the east king touches W-A-STU-W's free-end stud instead of overlapping it, and PR-A-STUBATH-LAV-HW turns at x=110 3/4". |
+| Opening | Resolution |
+|---|---|
+| D-M-BALC | Plain re-centre under D-S-DECK-E at 8 11/32" off N-M-S1 (the mirrored facade wins), the third French-pair module suppression; BWP-M-S2-0000 trimmed to 8 11/32" like BWP-S-S2-0000. BK-M-S2-ROD needed no edit: the solver already stops it at the new header, which carries the rod brackets over the door. |
+| D-M-ENTRY | Released 2026-10-29 (decision 9). |
+| D-M-BATH1 | Door unmoved. The powder-room face takes a minimal 1 1/2" PVC casing (`DoorTrim.casing_width`, new), and ED-M-BATH1-SW slid 5/8" south to stand 3/16" clear of it. The switch body spans 4", so a casing that cleared the switch where it stood would have been 1", under the 1 1/2" minimum leg. |
+| D-M-BATH2 | Keeps 32". ED-M-BED-RC9 went behind the west nightstand (58 7/8" -> 64"); it was already a GFCI. The bed and both nightstands moved 0.6" east. The answer said "west", but the nightstand is east of the door, and the measured option put the box there. RC7, which the wider opening brings within 6' of the sink, became the GFCI the answer asked for. |
+| D-M-MUD | Keeps 32". PR-B-HW-SBATH's riser moved into W-M-STOS's last bay at x=5'-6 1/2" (the west bays hold the BATH1 stack and the cold riser) and jogs east to x=6'-4" in FS-S-WEST's bay over the plates, so the second-storey branches are unchanged. The 2 3/4" bay takes the house's 1/2" (R-3.1) sleeve. PR-B-CW-WH moved to x=5'-8 1/2" to clear the riser; its turn is now 45 degrees, which also cleared an old fitting UNKNOWN. |
+| D-M-STUDY | ED-M-STUDY-SPOT moved 1" north. |
+| D-B-BATH | W-B-BA-E is NONBEARING, with a flat 2x6 head (R602.7.4). Eclisse's 2x6 instructions (steps 5 and 9) hang the track from the kit's own steel pocket header, screwed up into the RO framing, so a notch off the top of a nonbearing head does not reach the kit (`notes/pocket_frame_eclisse.md`). DU-B-ERV-R-GYM's east leg rose to 89" -> 88 1/2" and clears the head; -PLAY clears too. |
+| D-B-FURN | Flat 2x4 head (the 2x4 wall's own width, so it no longer overhangs). The nailer can't be nudged without holding the RO, so the 0.09" notch by PR-M-S-BATH1-DRAIN is accepted (1.41" of nailer left) and `test_e2_header_and_plate_tie` is re-pinned. |
+| D-B-PLAY | Stays visually centred on W-B-CE; module suppressed. |
+| D-B-SHOP | Module suppressed. ED-B-WORKSHOP-SW is at 41" along W-B-HALL-W. |
+| D-B-CLOSET | Door unmoved. It takes no casing (`TrimStandard.uncased_doors`, new), which also drops the stringer scribe, and ED-B-CLOSET-LT moved 3" north. A 75-degree hinge-pin stop keeps the leaf 1/2" off EQ-B-WH; at 90 degrees the derived leaf clipped the tank's corner. PR-B-ERV-COND was re-routed off the doorway (item 36). |
+| D-S-BED1 | 2 1/4" casing on both faces (`DoorTrim.casing_width`); neither leg scribes. |
+| D-S-SUITE | Centred between W-S-CLN and W-S-SBS at y=14'-2": both cherry legs ~2 7/16". |
+| D-S-BATH1 | Released 2026-10-29: the jamb pack shares N-S-BA1's corner pack (decision #100). |
+| D-S-BED3 | Released 2026-10-29: `mep_bore_geometry` reads a rectangular duct at its own size. |
+| D-S-NCLOSET | W-S-CLN-S is NONBEARING with a flat 2x4 head, under a single top plate (R602.5, `INT_2X4_PARTITION_HALF_SINGLE_PLATE`). Under the double plate the flat head ran 0.3" into it below SF-S-HP1. The door slid 2 1/4" west, clear of ED-S-NCLOSET-SW. `structural.flat_2x4_nonbearing_header` now reads the framed plates rather than assuming two. |
+| D-A-HALVES | Moved 1 5/16" south; the study leg scribes to 1.57". |
+| D-A-POCKET | Released 2026-10-29: header graded against its raked plate; flat 2x4 head. |
 
 Engine follow-ups the investigations found: the pocket band's double head allowance
 (`checks/mep/pockets.py`, fixed in review), `mep_bore_geometry`'s round envelope for a

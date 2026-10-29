@@ -404,10 +404,10 @@ REGISTERS_MAIN = [
     #
     # -- the supply, back in the ceiling ---------------------------------------------
     #
-    # (17'-2", 20'-8") at 9'-0". ED-M-STUDY-SPOT is at (17'-6 5/8", 21'-8 1/2"), so this is
-    # 4 5/8" west and 12 1/2" south of directly above the sconce, three feet over it.
-    # FS-S-WEST's bays centre on 8" + n*16", so 20'-8" is a bay; the sconce's 21'-8 1/2"
-    # is 4 1/2" past the joist at 21'-4". Reaching its line would jog across that joist
+    # (17'-2", 20'-8") at 9'-0". ED-M-STUDY-SPOT is at (17'-6 5/8", 21'-9 1/2"), so this is
+    # 4 5/8" west and 13 1/2" south of directly above the sconce, three feet over it.
+    # FS-S-WEST's bays centre on 8" + n*16", so 20'-8" is a bay; the sconce's 21'-9 1/2"
+    # is 5 1/2" past the joist at 21'-4". Reaching its line would jog across that joist
     # directly over W-M-C3, which
     # is the bearing end of the truss — the one place the hole chart forbids outright, and
     # the same objection that kept the terminal off the east WALL yesterday. The x is as far
