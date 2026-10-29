@@ -34,9 +34,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | 36 | LF ordered | 1 pcs, 36.0 LF cut | building |
 | 2-1.75x9.5 LVL — header (2-1.75x9.5 LVL) | 8 | LF ordered | 1 pcs, 5.5 LF cut | building |
 | 2-2x10 — header (2-2x10) | 32 | LF ordered | 4 pcs, 22.3 LF cut | building |
-| 2-2x10 SPF framing lumber — blocking (2-2x10:spf) | 16 | LF ordered | 6 pcs, 11.3 LF cut | building |
+| 2-2x10 SPF framing lumber — blocking (2-2x10:spf) | 16 | LF ordered | 6 pcs, 11.1 LF cut | building |
 | 2-2x6 — header (2-2x6) | 32 | LF ordered | 4 pcs, 24.0 LF cut | building |
-| 2-2x6 SPF framing lumber — blocking (2-2x6:spf) | 24 | LF ordered | 10 pcs, 18.4 LF cut | building |
+| 2-2x6 SPF framing lumber — blocking (2-2x6:spf) | 24 | LF ordered | 10 pcs, 18.2 LF cut | building |
 | 2-2x8 — header (2-2x8) | 184 | LF ordered | 55 pcs, 149.9 LF cut | building |
 | 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 48.0 LF cut; 48.0 LF in the takeoff | building |
 | 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 336.0 LF cut; 336.0 LF in the takeoff | building |
@@ -49,7 +49,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x3 — corner stud, plate, stud (2x3) | 48 | LF ordered | 12 pcs, 28.0 LF cut | building |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,728 | LF ordered | 647 pcs, 4005.1 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,938 | LF ordered | 479 pcs, 2510.2 LF cut | building |
-| 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 56.0 LF cut | building |
+| 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 55.6 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,070 | LF ordered | 1171 pcs, 6123.5 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | 90 | LF ordered | 9 pcs, 77.6 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.6 LF cut | building |
@@ -95,10 +95,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 192 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | 72 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 452 | ea |  | building |
-| A35Z framing angle | 8 | ea |  | building |
+| A35Z framing angle | 6 | ea |  | building |
 | A35Z framing angle | 4 | ea |  | main |
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
-| AC6Z adjustable post cap (6x beam on 6x6), MAX nailing | 4 | ea |  | building |
+| ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing | 4 | ea |  | building |
 | CBSQ66-SDS2 cast-in column base (6x6) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
 | DTT2Z screw hold-down / tension tie | 2 | ea |  | building |
@@ -178,7 +178,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 151.2 | bf | 4 placed, 11.6 SF plan; 0.47 cy in the takeoff | main, second |
+| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 139.2 | bf | 4 placed, 10.6 SF plan; 0.43 cy in the takeoff | main, second |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | 58.8 | bf | 6 placed, 6.9 SF plan; 0.18 cy in the takeoff | main |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 86.4 | bf | 3 placed, 7.2 SF plan; 0.27 cy in the takeoff | main, second |
 | Column — POST_KDAT (column:POST_KDAT) | 38.4 | bf | 2 placed, 0.4 SF plan; 0.12 cy in the takeoff | main |
@@ -197,7 +197,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape-beam, 3" on beam (butyl-tape-beam) | 6.7 | LF |  | main |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 19.3 | LF |  | second |
 | butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | 6.4 | LF |  | main |
-| butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | 12.9 | LF |  | main |
+| butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | 10.9 | LF |  | main |
 | butyl-tape-beam, 5 1/2" on brace (butyl-tape-beam) | 8.5 | LF |  | main |
 
 ## Firestop sealant
@@ -336,7 +336,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle | — |
 | A35Z framing angle | SB-BW-BAND |
 | ABU44 standoff post base (4x4) | — |
-| AC6Z adjustable post cap (6x beam on 6x6), MAX nailing | — |
+| ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing | — |
 | CBSQ66-SDS2 cast-in column base (6x6) | — |
 | CS16 coiled strap, 16 ga | — |
 | DTT2Z screw hold-down / tension tie | — |

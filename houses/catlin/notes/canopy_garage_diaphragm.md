@@ -1,22 +1,27 @@
 > **2026-10-28 roof-deck revision:** garage and canopy are now 19/32in Structural I
 > 40/20 plywood. Nailer yield calculations below use the thinner side member; diaphragm
 > capacities and G_a retain the conservative 15/32in table rows, not a new capacity claim.
-> Current assembled-model joint-2 demand is 262.670 lb: canopy 1,079.395 lb, garage
-> 959.462 lb. See [roof deck assessment](roof_sheathing_and_membranes.md) for limits.
+> Current assembled-model joint-2 demand is 258.409 lb (2026-10-28): canopy 1,079.395 lb,
+> garage 959.462 lb. See [roof deck assessment](roof_sheathing_and_membranes.md) for limits.
 
-> **2026-10-14 west-tail amendment:** BM-BW-RW extends 6⅛″ south with an AC6Z at CW;
-> canopy footprint and roof gravity loads stay fixed through its roof-bearing inset.
-> E-W delivered shear is now 698.61 lb, joint couple 2,106.7 lb-ft, chord force 87.78 lb.
-> Joint nailing demand 29.36 plf; strap rotation demand 56.57 lb; nailer transfer 261.61 lb;
-> gable clips 99.80 lb; W-G-S shear increment 40.09 plf / overturning increment 285.15 lb.
-> Existing capacities still pass. See [west-band amendment](canopy_west_band.md#2026-10-14-west-tail-amendment-to-67).
-
-> **Current active KDAT calculation (2026-10-26):** the canopy tail extension raises E-W
-> delivery to 707.056 lb. On the 17.299 ft W-G-S surplus this is 40.872 plf, 0.224 of
-> 182.5 plf. Over the full 20.2917 ft provided wall, it is 34.846 plf; at the 8.333 ft
-> wall height the STHD14 demand is 290.372 lb, 0.095 of the 3,065 lb allowable. These are
-> the current KDAT values checked by `test_diaphragm_delivery_calcs.py` and used for
-> `CN-G-BWHD-S-DR` in `garage_service_door_outswing.md`.
+> **Current active KDAT calculation (2026-10-28, flush headers; supersedes the 2026-10-14
+> and 2026-10-26 tail blocks).** Both glulams run post face to post face, y 37.271 → 42.708
+> (5.4375′), on ACE6Z end caps. Header band 2 × 0.98958 × 5.4375 = 10.762 sf; E-W delivery
+> (26.667 + 10.762) × 16.7232 + 2 × 23.673 = **673.269 lb**, at y 40.203: joint couple
+> **2,030.7 lb-ft**, chord 84.61 lb ([west band amendment](canopy_west_band.md#2026-10-28-flush-header-amendment-to-57)).
+> Joint boundary 673.27/23.792 = 28.30 plf (0.149); strap couple 54.53 lb; nailers
+> 173.06 + 85.35 = 258.41 lb; gable clips 673.27/7 = 96.18 lb (0.214). On the 17.299 ft
+> W-G-S surplus 38.920 plf, 0.213 of 182.5. Over the full 20.2917 ft, 33.180 plf; at the
+> 8.333 ft wall height the STHD14 demand is **276.50 lb**, 0.090 of 3,065. These are the
+> values `test_diaphragm_delivery_calcs.py` checks and `garage_service_door_outswing.md` uses.
+>
+> **The joint bay is 1′-11⅜″** (truss 3 at y 41.333 to RF-GARAGE's gable truss at 43.281),
+> ¾″ shorter than before because truss 1 moved onto the beam end. Its deck still lands on
+> the gable frame: half the bay over 24′, 1.948/2 × 24 × 83.7 ≈ **1,960 lb**, ~82 plf on
+> W-G-S. The headers no longer reach the garage: the deck oversails 6⅛″ past them, and the
+> joint-bay collector blocks span truss face to gable face, oversailing the beam end by the
+> same 6⅛″ (LS30Z both ends, deck nailed). The canopy nailer is 496.75 → 518.625 in,
+> 21.875 in; 9 nails in one row, so its capacity is unchanged.
 
 # The canopy braces off the garage — hand-worked basis
 
@@ -69,7 +74,7 @@ its band and every head and base: `canopy_west_band.md`.
 |---|---|---|
 | canopy footprint | x 4.667 → 31.333, y 37.219 → 43.219 | 26.667' x 6.000' |
 | the joint | `CN-BW-JOINT-1..3, -5..7`, x 6.083 → 29.917 at y 43.219 | 23.833', 6 `LSTA24`, none at the ridge |
-| headers | 5-1/2" x 11-7/8" glulam, y 37.271 → 43.219 (from the south post's face) | 5.948' long |
+| headers | 5-1/2" x 11-7/8" glulam, y 37.271 → 42.708 (post face to post face, 2026-10-28) | 5.4375' long |
 | header soffit | +7'-4" − 11.875" | +6.3438' |
 | pier top (steel, kdat) | `Site.grade` −2'-10" + 3'-0" | +0.1667' (+0'-2") |
 | post height | 6.3438 − 0.1667 | **6.1771'** (74.125") |
@@ -81,7 +86,7 @@ its band and every head and base: `canopy_west_band.md`.
 | variant | above the pier | pier | pad plane | end fixity |
 |---|---|---|---|---|
 | `steel` | HSS 4x4x1/4 A500 Gr C, 74.125" | 12" round to +0'-2" | house −9'-9 7/16" / garage −7'-0" | pinned-pinned |
-| `kdat` (current) | 6x6 KDAT, ACE6Z/AC6Z head, cast-in CBSQ66-SDS2, PVC wrap | **14"** round (the CBSQ's cover) | the same pads | pinned-pinned |
+| `kdat` (current) | 6x6 KDAT, ACE6Z head, cast-in CBSQ66-SDS2, PVC wrap | **14"** round (the CBSQ's cover) | the same pads | pinned-pinned |
 | `cast` | 12" round, full height, one pour | none | −10'-2" (both, as 2026-09-20) | fixed base |
 
 ## 2. The demand the canopy delivers (oracles `roof_lateral.py`)
@@ -159,8 +164,8 @@ The actual cuts, in inches on the project's north-south datum, are:
 
 | member | south face | north face | clear length |
 |---|---:|---:|---:|
-| last canopy truss | 494.500 | 496.000 | 1.500 |
-| canopy nailer | 496.000 | 518.625 | **22.625** |
+| last canopy truss | 495.250 | 496.750 | 1.500 |
+| canopy nailer | 496.750 | 518.625 | **21.875** |
 | garage gable truss | 518.625 | 520.125 | 1.500 |
 | garage nailer | 520.125 | 541.875 | **21.750** |
 | next garage truss | 541.875 | 543.375 | 1.500 |
@@ -197,8 +202,8 @@ side-grain faces to the adjacent truss, on clear chord wood. The fully nailed de
 rotation, as required for a single LS per connection (Simpson C-C-2026 p.313). Do not load
 the joint before the deck is fully nailed.
 Keep the deck continuous across the gable, with 8d at 6in into its top chord. The first
-8ft course can run from the first canopy truss (y=447.250in) to the next garage field
-truss (y=542.625in): 95.375in, within an 8ft sheet, with its end on that truss. Bevelled
+8ft course can run from the first canopy truss (y=448.000in) to the next garage field
+truss (y=542.625in): 94.625in, within an 8ft sheet, with its end on that truss. Bevelled
 SPF 2x4 **on-edge** blocks, three 8d HDG toenails each end, back every panel edge in every
 canopy bay **and in RF-GARAGE's first bay**, where that course ends.
 Set the panel grid out from the ridge at **3ft 9in horizontal**: 45in projects to 47.434in
@@ -222,7 +227,7 @@ SPF  F_em = 16,600 x 0.42^1.84 = 3,364.2 psi
 Nails in one row start 3/8in from each nailer end, at 3in: ceil(usable / 3) + 1.
 
 ```
-canopy nailer, SPF    22.625 - 0.75 = 21.875in -> 9 nails x 119.932791 = 1,079.395 lb
+canopy nailer, SPF    21.875 - 0.75 = 21.125in -> 9 nails x 119.932791 = 1,079.395 lb
 canopy end, SPF block                             9 nails x 119.932791 = 1,079.395 lb
 garage nailer, SPF    21.750 - 0.75 = 21.000in -> 8 nails x 119.932791 = 959.462 lb
 ```
@@ -304,7 +309,7 @@ x 0.95 story height; it was 4.275' under the 9.25" heel, when the garage roof st
 
 | line | provided | surplus | steel | kdat |
 |---|---:|---:|---|---|
-| `W-G-S` (E-W) | 20.292' | 17.299' | 677.3/17.299 = 39.15 plf, 0.215 | 707.056/17.299 = **40.872 plf, 0.224** |
+| `W-G-S` (E-W) | 20.292' | 17.299' | 677.3/17.299 = 39.15 plf, 0.215 | 673.269/17.299 = **38.920 plf, 0.213** |
 | `W-G-E` (N-S) | 24.000' | 21.008' | 529.9/21.008 = 25.23 plf, 0.138 | 25.84 plf, 0.142 |
 | `W-G-W` (N-S) | 21.667' | 18.675' | 495.5/18.675 = 26.53 plf, 0.145 | 26.53 plf, 0.145 |
 
@@ -313,7 +318,7 @@ x 0.95 story height; it was 4.275' under the 9.25" heel, when the garage roof st
 The delivered shear over the whole provided length, times the wall height, NO dead load:
 
 ```
-current KDAT   v = 707.056 / 20.2917 = 34.846 plf   T = 34.846 x 8.333 = 290.372 lb
+current KDAT   v = 673.269 / 20.2917 = 33.180 plf   T = 33.180 x 8.333 = 276.50 lb
 ```
 
 * **Beside `D-G-SERVICE`**, retain stock **STHD14, `CN-G-BWHD-S-DR`**,
@@ -330,13 +335,13 @@ current KDAT   v = 707.056 / 20.2917 = 34.846 plf   T = 34.846 x 8.333 = 290.372
   the pour with an SM1 holder; exclude EPS from the anchorage and nail only into wood.
   The adjacent SW anchor is 42.75 in away in x, exceeding 3 × 14 = 42 in. The fossil stem
   splits are continuous concrete, not free ends. Use the conservative 6-in end-wall
-  allowable **3,065 lb**: current KDAT **290.372/3,065=0.095**.
+  allowable **3,065 lb**: current KDAT **276.50/3,065=0.090**.
   Simpson C-C-2026 pp.66–68 provides the double-stud nail pattern, embedment, bar and
   spacing requirements. See `garage_service_door_outswing.md` for the plan/anchor drawing.
 
 * **The SE corner needs no device.** R602.10.7 end condition 1: a 144" return on the same post.
 * `CN-G-BWHD-SW` is on `W-G-W`. The E-W case reaches `W-G-W` and `W-G-E` as the joint couple,
-  ±M / 24' = ±86.7 lb (kdat) on the E-W case — graded, and small (`canopy_west_band.md` §6).
+  ±M / 24' = ±84.6 lb (kdat) on the E-W case — graded, and small (`canopy_west_band.md` §6).
   This line used to say the joint "closes" the couple before the garage sees it; the joint
   hands it on.
 
@@ -446,7 +451,7 @@ at 29 lb it is not a row, and it is named so the gap is never grouted to "fix" i
 ### 5a. The 6x6 KDAT east posts (oracle `wood_roof_post.py`)
 
 The east pair are 6x6 Southern Pine No. 2 KDAT under the glulam header: an `ACE6Z` end cap on
-`PT-BW-RE`, an `AC6Z` on `PT-BW-RNE`, `A35Z` angles for the across-beam direction, and cast-in
+`PT-BW-RE` and on `PT-BW-RNE`, `A35Z` angles for the across-beam direction, and cast-in
 `CBSQ66-SDS2` bases in 14" piers (2026-09-30; the heads, bases and their lateral rows are
 `canopy_west_band.md` §5). The PVC column wrap is a finish, never a brace. The 2018 NDS
 Supplement Table 4D's **wet-service Southern Pine timber row** gives F_c 525 psi, F_b 850 psi

@@ -10,7 +10,6 @@ Every uid here was minted once with `typehaus.model.ids.new_uid()` (fmt never vi
 `params/`) and must never be re-typed.
 """
 
-from params.canopy_beam_hoods import ELEMENTS as BEAM_HOOD_ELEMENTS
 from params.north_entry_frame import (
     COLUMN_HALF_FT,
     EAST_POST_SYSTEM,
@@ -56,7 +55,9 @@ BAND = SlatBrace(
 # The diaphragm recipe derives solid, bevelled 2-2x10 SPF heel blocks in every bay, flush
 # with the header's inboard face; the plates join them to the glulam directly. ZMAX with HDG
 # nails: Simpson publishes no stainless LTP4, and the glulam is treated (IRC R317.3.1).
-_CLIP_Y_FT = (38.0, 39.0, 40.0, 41.0, 42.0, 42.75)
+# The joint-bay pair stays on the glulam, which ends at 42.708' (2026-10-28): 42.375 leaves
+# 2 1/2" of beam past the plate's edge, clear of CN-BW-CAP-NW.
+_CLIP_Y_FT = (38.0, 39.0, 40.0, 41.0, 41.75, 42.375)
 _CLIP_UIDS = ("2BGWCYHP73", "SDMYFZXN5Z", "812X7GD63H", "TGHVBBPNB4", "P6GS6PHFXD",
               "3XNNDTGRTE")
 EAVE_CLIPS = [
@@ -79,32 +80,26 @@ EAVE_CLIPS.append(
                       "force into CN-BW-JOINT-7; 12 0.131x1.5in HDG nails, six per member")))
 
 
-def _head_angles(x_ft, south_tag, north_tag, south_uid, north_uids, beam):
-    """The across-beam path an AC cap does not rate (ESR-2604 Table 3 fn. 6).
+def _head_angles(x_ft, south_tag, north_tag, south_uid, north_uid, beam):
+    """The across-beam path an ACE cap does not rate (ESR-2604 Table 3 fn. 6).
 
-    Retain one south / two north angles: the west tail extension does not increase
-    their graded transverse demand or require another angle at the south post.
+    One A35Z on each post's inboard face, the only face with soffit over it now that the
+    header ends flush on both posts (2026-10-28). The north posts' N-face angles retired.
     """
-    out = [Connector(uid=south_uid, tag=f"CN-BW-A35-{south_tag[6:]}N",
-                     kind=ConnectorKind.TENSION_TIE,
-                     position=pt(ft(x_ft), ft(PIER_LINE_Y_FT + COLUMN_HALF_FT)),
-                     elevation=ft(HEADER_SOFFIT_FT), size="A35Z", axis="x",
-                     connects=(beam, south_tag))]
-    for (face, dy), uid in zip((("S", -COLUMN_HALF_FT), ("N", COLUMN_HALF_FT)), north_uids,
-                               strict=True):
-        out.append(Connector(uid=uid, tag=f"CN-BW-A35-{north_tag[6:]}{face}",
-                             kind=ConnectorKind.TENSION_TIE,
-                             position=pt(ft(x_ft), ft(GARAGE_SEAT_Y_FT + dy)),
-                             elevation=ft(HEADER_SOFFIT_FT), size="A35Z", axis="x",
-                             connects=(beam, north_tag)))
-    return out
+    return [Connector(uid=uid, tag=f"CN-BW-A35-{post[6:]}{face}",
+                      kind=ConnectorKind.TENSION_TIE, position=pt(ft(x_ft), ft(y_ft)),
+                      elevation=ft(HEADER_SOFFIT_FT), size="A35Z", axis="x",
+                      connects=(beam, post))
+            for post, face, y_ft, uid in (
+                (south_tag, "N", PIER_LINE_Y_FT + COLUMN_HALF_FT, south_uid),
+                (north_tag, "S", GARAGE_SEAT_Y_FT - COLUMN_HALF_FT, north_uid))]
 
 
 HEAD_ANGLES = _head_angles(LANDING_WEST_FT, "PT-BW-CW", "PT-BW-CNW", "5A8157DVCY",
-                           ("B0NRHTX5KQ", "Q770QM4P0J"), "BM-BW-RW")
+                           "B0NRHTX5KQ", "BM-BW-RW")
 if EAST_POST_SYSTEM == "kdat":
     HEAD_ANGLES += _head_angles(ROOF_COLUMN_EAST_X_FT, "PT-BW-RE", "PT-BW-RNE", "KBKGY27VPW",
-                                ("RZM25K9XJ5", "MCMP8D4H02"), "BM-BW-RE")
+                                "RZM25K9XJ5", "BM-BW-RE")
 
 # ** THE PANEL'S TOP PLATE INTO EACH POST, E-W. ** The panel spans vertically to its top plate,
 # which dies into the two posts' side faces; its out-of-plane reaction (and the slat band's
@@ -134,4 +129,4 @@ SILL_CAP = Flashing(
     material="metal-dark-exterior", host_ref=BAND.tag,
     section=FormedFlashingSection(profile="cap", slope=0.25 / 12, fit_to_brace_sill=True))
 
-ELEMENTS = [BAND, SILL_CAP, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES, *BEAM_HOOD_ELEMENTS]
+ELEMENTS = [BAND, SILL_CAP, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES]

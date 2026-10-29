@@ -209,12 +209,13 @@ def test_the_module_agrees_with_this_note(catlin_engineering):
                if item.startswith("roof_beam/")}
     assert set(records) == {"BM-BW-RW", "BM-BW-RE"}
     # §5 worked the 3-ply 2x12; since 2026-09-30 the headers are 5-1/2" x 11-7/8" glulam and
-    # canopy_west_band.md §7 is the hand pass (bearing on the post governs, 0.355).
+    # canopy_west_band.md §7 is the hand pass (bearing on the post governs, 0.326 since the
+    # 2026-10-28 flush headers).
     for record in records.values():
         states = {state.name: state for state in record.limit_states}
         assert set(states) == {"bending", "shear", "bearing on the post", "deflection"}
-        assert states["bending"].ratio == pytest.approx(0.146, abs=0.002)
-        assert states["bearing on the post"].ratio == pytest.approx(0.355, abs=0.002)
+        assert states["bending"].ratio == pytest.approx(0.162, abs=0.002)
+        assert states["bearing on the post"].ratio == pytest.approx(0.326, abs=0.002)
         assert max(s.ratio for s in states.values()) == states["bearing on the post"].ratio
 
 

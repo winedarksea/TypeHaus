@@ -18,7 +18,7 @@ from typehaus.engineering.item import Status
 _ITEM = "lateral_system/RF-BW-CANOPY"
 
 #: §3, §4 and §6: ``row name -> (demand, capacity)``. §3 re-worked 2026-10-26 for one
-#: corner-to-corner 6x6 per bay.
+#: corner-to-corner 6x6 per bay; §6 re-worked 2026-10-28 for the flush headers.
 _ROWS = {
     "W-BW-SCREEN unit shear": (190.96, 265.0),
     "W-BW-SCREEN aspect ratio": (0.751, 3.5),
@@ -36,11 +36,11 @@ _ROWS = {
     "W-BW-SCREEN chord hold-down, full height": (2227.6, 3060.0),
     "W-BW-SCREEN chord base shear, one base": (1038.35, 1270.0),
     "diaphragm unit shear at W-BW-SCREEN": (173.06, 190.0),
-    "LSTA24 end straps, chord force + across share": (261.893, 823.3333333333334),
-    "BM-BW-RW chord into CN-BW-JOINT-1's block": (217.475, 450.0),
-    "BM-BW-RE chord into CN-BW-JOINT-7's block": (88.834, 450.0),
-    "W-G-W joint couple, E-W case": (4.757, 182.5),
-    "W-G-E joint couple, E-W case": (4.229, 182.5),
+    "LSTA24 end straps, chord force + across share": (257.669, 823.3333333333334),
+    "BM-BW-RW chord into CN-BW-JOINT-1's block": (215.364, 450.0),
+    "BM-BW-RE chord into CN-BW-JOINT-7's block": (84.611, 450.0),
+    "W-G-W joint couple, E-W case": (4.531, 182.5),
+    "W-G-E joint couple, E-W case": (4.028, 182.5),
 }
 
 
@@ -64,8 +64,8 @@ def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
     values = {q.name: q.value for q in record.inputs}
     assert values["band_height_W-BW-SCREEN"] == pytest.approx(2.34375, abs=1e-4)
     assert values["overturning_height_W-BW-SCREEN"] == pytest.approx(8.62, abs=1e-3)
-    assert values["joint_couple_lb_ft"] == pytest.approx(2132.0, abs=1.0)
-    assert values["chord_force_open_front_lb"] == pytest.approx(88.834, abs=0.1)
+    assert values["joint_couple_lb_ft"] == pytest.approx(2030.66, abs=1.0)
+    assert values["chord_force_open_front_lb"] == pytest.approx(84.611, abs=0.1)
 
 
 def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
@@ -131,20 +131,21 @@ def test_the_corner_band_is_graded_on_the_interpolated_open_knee(record) -> None
 
 
 #: §5c, ``post -> {row: ratio}``; a chord's along rows and its column carry the band push.
+#: ACE6Z end caps at all four heads since 2026-10-28.
 _POSTS = {
-    "PT-BW-CW": {"AC6Z head, uplift + lateral along the beam": 0.417,
+    "PT-BW-CW": {"ACE6Z head, uplift + lateral along the beam": 0.552,
                  "A35Z head, across the beam": 0.163,
                  "A35Z panel top plate into the post": 0.175,
                  "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.277,
                  "CBSQ66-SDS2 base, uplift + lateral along the beam": 0.282,
                  "NDS combined axial and bending": 0.536},
-    "PT-BW-CNW": {"AC6Z head, uplift + lateral along the beam": 0.417,
-                  "A35Z head, across the beam": 0.082,
+    "PT-BW-CNW": {"ACE6Z head, uplift + lateral along the beam": 0.552,
+                  "A35Z head, across the beam": 0.163,
                   "NDS combined axial and bending": 0.536},
-    "PT-BW-RE": {"AC6Z head, uplift + lateral along the beam": 0.164,
+    "PT-BW-RE": {"ACE6Z head, uplift + lateral along the beam": 0.233,
                  "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.189,
                  "NDS combined axial and bending": 0.225},
-    "PT-BW-RNE": {"AC6Z head, uplift + lateral along the beam": 0.164,
+    "PT-BW-RNE": {"ACE6Z head, uplift + lateral along the beam": 0.233,
                   "CBSQ66-SDS2 base, uplift + lateral along the beam": 0.159},
 }
 
@@ -174,12 +175,14 @@ def test_the_glulam_header_reproduces_section_7(catlin_ctx) -> None:
     assert found.status is Status.OK
     inputs = {q.name: q.value for q in found.inputs}
     assert inputs["tributary_area"] == pytest.approx(80.0)
-    assert inputs["uniform_load"] == pytest.approx(1125.77, abs=0.1)
-    assert inputs["overhang_a"] == pytest.approx(2.75 / 12)
+    # §7, 2026-10-28: 80 sf over the 5.375' bearing run, 2" / 2 3/4" past the posts.
+    assert inputs["uniform_load"] == pytest.approx(1245.77, abs=0.1)
+    assert inputs["overhang_a"] == pytest.approx(2 / 12)
+    assert inputs["overhang_b"] == pytest.approx(2.75 / 12)
     states = {s.name: s for s in found.limit_states}
-    assert states["bearing on the post"].demand == pytest.approx(122.2, abs=0.3)
+    assert states["bearing on the post"].demand == pytest.approx(112.2, abs=0.3)
     assert states["bearing on the post"].capacity == pytest.approx(344.5, abs=0.1)
-    assert states["bending"].demand / states["bending"].capacity == pytest.approx(0.146,
+    assert states["bending"].demand / states["bending"].capacity == pytest.approx(0.162,
                                                                                 abs=0.002)
 
 

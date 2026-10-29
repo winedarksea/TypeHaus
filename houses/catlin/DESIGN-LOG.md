@@ -893,6 +893,43 @@ the 2x4 Johnson 1500PF frame for laundry.
 
 ## Site and the four structures
 
+### Canopy headers end flush on their posts; tails and hoods reverted (2026-10-28)
+
+The 10-14 west and 10-26 east tails (8⅞″ past both post centres, 77½″ headers on paired
+AC6Z) put the south end grain 5½″ past the deck edge in open air, 1⅞″ from the house
+cladding. That forced ventilated metal hoods, separate roof aprons, a break in the rake trim
+and five open fabrication-release items. The north tails butted the garage sheathing
+through a notch in its cladding.
+
+Three options were weighed: (A) shorten both ends, (B) shorten the south and run the beams
+into the garage, (C) keep the tails and hoods. **A was chosen.** Both headers now run post
+face to post face, 65¼″, on ACE6Z end caps at all four heads. The roof plane does not move;
+the bearing run is inset ¾″ at the south so truss 1 bears its full 1½″. From 09-30 to
+10-26 the east header ended at the post face with truss 1 centred on that face, so it had
+only ¾″ of bearing, and nothing flagged it. A test pins the fix now.
+
+- **Why A.** Every beam end sits under roof cover with open air at both ends: 8″ to the
+  house, 5¼″ to the garage cladding. That air drains and ventilates, the ends can be
+  inspected, and the end grain can be re-sealed with a brush. No metal sits on horizontal
+  timber. The house/canopy joint becomes a real 8″ gap instead of a 1¼″ slot that collected
+  leaves and ice. The garage corners clad without a break.
+- **Why not B.** The garage path already carries 100% of the canopy's lateral load both
+  ways, and `W-BW-SCREEN` is graded at 100% too. Running the beams into the garage adds no
+  load path the canopy lacks. It would cost a timber penetration of the garage envelope,
+  continuity across the garage corner framing, and engineered status for `W-G-W`/`W-G-E`.
+  Relaxing the screen's shear role is a reviewer question (`plans/TODO.md`).
+- **Why not C.** The hoods managed a risk that A removes, and put a dark metal box on the
+  beam end at the entry.
+- **Cost.** The west heads govern at the ACE6Z, 0.552 (was 0.417 on the AC6Z). Header
+  bearing 0.326 (was 0.355), bending 0.162. E-W delivery falls to 673.3 lb with the shorter
+  header band. The engine's hood feature (`ventilated_hood`, `resolve/beam_hoods.py`,
+  `edge_trim/beam_tail_hood`) had no other user and was removed.
+- **Two engine follow-ons.** Collector blocks now span truss face to truss face even where
+  the collector ends mid-bay: the joint-bay block oversails the beam end by 6⅛″ to carry
+  the end strap. The analytical model holds a beam end laterally when it stops short of a
+  delivery joint the deck runs on to. Without that hold the post caps reverted to rigid
+  knees.
+
 ### The canopy's west band was a moment nobody graded, and now it is a braced frame (2026-09-30)
 
 `W-BW-SCREEN` tops out at +4'-0" and the header's soffit was +6'-4 3/4". The lateral note §8c

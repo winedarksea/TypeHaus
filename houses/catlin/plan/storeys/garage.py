@@ -701,20 +701,19 @@ ROOFS = [
          # its own gravity to its own piers (notes/north_entry_structure.md Sec 1a), and it
          # is also what drops the truss that used to stand 1 1/2" off the garage wall --
          # right where the fire/draft closure and the south cladding want a clear plane.
-         # The current deck bridges 2'-0 1/8" from the last canopy truss to RF-GARAGE's
-         # gable (resolved geometry, 2026-10-05). That last bay's sheathing lands on the
+         # The current deck bridges 1'-11 3/8" from the last canopy truss to RF-GARAGE's
+         # gable (resolved geometry, 2026-10-28). That last bay's sheathing lands on the
          # garage's gable truss, so canopy deck load does cross: half that bay over 24 feet,
-         # ~2,020 lb under 73.7 psf drift snow plus 10 psf dead load. It lands on a
-         # frame bearing continuously on W-G-S, so it spreads to ~84 plf on a 2x6 wall already
+         # ~1,960 lb under 73.7 psf drift snow plus 10 psf dead load. It lands on a
+         # frame bearing continuously on W-G-S, so it spreads to ~82 plf on a 2x6 wall already
          # carrying half a garage bay -- trivial, but real. Sec 1a's "never gravity" is about
          # the STRAP line, not the deck edge; the drawings say so.
          gable_ends=(),
-         # North meets the garage; the south close rake stays at the original bearing
-         # datum, 7 3/8" off house cladding. Both equal beam tails now project 5 1/2"
-         # beyond that deck edge. Ventilated hoods and separate canopy roof aprons protect
-         # them (params/canopy_beam_hoods.py). Keep the house slot OPEN: the former
-         # contacting brush-seal closure proposal is retired, preserving independent movement.
-         edge_overhangs=(("north", ft(0)), ("south", ft(0, 0.625))),
+         # The bearing run is post face to post face less 3/4" at the south (2026-10-28).
+         # The deck edges do not move: north oversails 6 1/8" to meet the garage, south
+         # stays 7 3/8" off the house cladding, 5/8" past the flush beam ends. Keep the
+         # house gap OPEN: independent movement, no closure.
+         edge_overhangs=(("north", ft(0, 6.125)), ("south", ft(0, 1.375))),
          edge_trim_material="metal-dark-exterior",
          eave_trim=_CANOPY_EAVE_TRIM),
 ]

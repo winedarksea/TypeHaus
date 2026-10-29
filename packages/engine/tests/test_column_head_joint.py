@@ -54,7 +54,7 @@ def test_active_kdat_heads_are_wood_connectors_not_cast_joints(catlin_ctx):
 
     keys = set(keys_of("column_head_joint", catlin_ctx.engineering.context))
     assert keys == {"PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3"}
-    for tag, head in (("PT-BW-RE", "AC6Z"), ("PT-BW-RNE", "AC6Z")):
+    for tag, head in (("PT-BW-RE", "ACE6Z"), ("PT-BW-RNE", "ACE6Z")):
         wood = catlin_ctx.engineering[f"wood_roof_post/{tag}"]
         assert wood.status is Status.OK
         assert any(state.name == f"{head} head uplift" for state in wood.limit_states)

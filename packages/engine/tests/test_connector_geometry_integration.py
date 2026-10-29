@@ -109,8 +109,9 @@ def test_canopy_joint_nailers_fill_the_resolved_truss_gap(catlin_model_ro):
     garage_gable_y = min(m.p0[1] for m in roofs["RF-GARAGE"].members
                          if m.category == "roof_truss")
     strap_y = catlin_model_ro.plan.by_tag("CN-BW-JOINT-6").position.xy_m[1]
-    assert strap_y - last_canopy_y == pytest.approx(23.375 * M_PER_IN)
-    assert garage_gable_y - last_canopy_y == pytest.approx(24.125 * M_PER_IN)
+    # The joint bay is 1'-11 3/8" since truss 1 moved 3/4" onto the flush header ends.
+    assert strap_y - last_canopy_y == pytest.approx(22.625 * M_PER_IN)
+    assert garage_gable_y - last_canopy_y == pytest.approx(23.375 * M_PER_IN)
     assert strap_y - 12 * M_PER_IN > last_canopy_y
     nailers = [m for m in roofs["RF-BW-CANOPY"].members
                if m.child_key == "joint-nailer-CN-BW-JOINT-6-south"]

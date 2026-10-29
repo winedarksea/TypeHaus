@@ -1,9 +1,9 @@
-> **2026-10-26 east-tail amendment:** BM-BW-RE now matches the west's equal 8⅞″
-> tails, with paired AC6Z at RE and unchanged roof-bearing datum. Joint couple
-> 2,132.02 lb-ft, chord 88.834 lb, end straps 261.893 lb, west/east collector plates
-> 217.475/88.834 lb. East south cap combined ratio 0.164. The 2026-10-14 numbers
-> below are historical. Hood/apron geometry and open release items:
-> [canopy_beam_tail_hoods.md](canopy_beam_tail_hoods.md).
+> **2026-10-28 flush-header amendment — supersedes the 2026-10-14 and 2026-10-26 ones.**
+> Both glulams end flush on the outer faces of their end posts, 65¼″ long (y 37.2708 →
+> 42.7083), with ACE6Z end caps at all four heads. The roof-bearing run starts ¾″ in, so
+> truss 1 bears its full 1½″. Current §5–§7 values are in
+> [the amendment below](#2026-10-28-flush-header-amendment-to-57); everything from the 10-14
+> and 10-26 tails (AC6Z heads, 77½″ headers, hoods) is history.
 
 # The canopy's west band, its heads and bases, and the open front — hand-worked basis
 
@@ -417,7 +417,7 @@ governs at 0.355; the 3-ply 2x12 read 0.71 in bending.
 
 ### 2026-10-14 west-tail amendment to §§6–7
 
-The east-header arithmetic above remains current; the west header is now 77½″ long with
+*Superseded by the 2026-10-28 amendment below.* The east-header arithmetic above remains current; the west header is now 77½″ long with
 8⅞″ tails from both post centres, a 6⅛″ south extension. The roof-bearing run excludes that
 extension, so the canopy deck, all three trusses and the roof's 80 sf per header stay fixed.
 The tail projects 5½″ beyond the deck edge and stops 1⅞″ short of the modeled house cladding.
@@ -437,6 +437,64 @@ shear **698.61 lb**, and chord force **87.78 lb**. The end-strap combined demand
 `87.78 + 1038.35/6 = 260.84 lb`; west collector plates each take `87.78/2 + 173.06 = 216.95 lb`,
 the east plate 87.78 lb; all remain below their existing capacities. The west head ratio
 then improved to **0.399** (before the 2026-10-25 brace re-work); all four post records and the canopy lateral record remain OK.
+
+### 2026-10-28 flush-header amendment to §§5–7
+
+Both headers run post face to post face: y 37.2708 → 42.7083, **5.4375′** (65¼″), the
+outer faces of `PT-BW-CW`/`-RE` and `PT-BW-CNW`/`-RNE`. The roof-bearing run is inset ¾″
+at the south only, y 37.3333 → 42.7083 (5.375′), so truss 1 (centred on its start) sits
+with its south face on the beam end. The deck edges do not move: south 37.2188 (1⅜″
+overhang), north 43.2188 (6⅛″). This supersedes the 10-14 and 10-26 tails above.
+
+**§5 heads — ACE6Z at all four (ESR-2604 Table 3, MAX: 1,950 uplift / 1,760 along).** The
+§5b demands do not change; only the capacities do. Across the beam each post has one A35Z,
+on its inboard face: the north posts' N-face angles retired with the soffit over them.
+
+| row | working | ratio |
+|---|---|---|
+| CW / CNW ACE6Z uplift + along | 635.295/1950 + 397.454/1760 = 0.3258 + 0.2258 | **0.552** |
+| CW / CNW ACE6Z uplift alone | 635.295/1950 | 0.326 |
+| CNW A35Z head across (one angle) | 113.341/695 | 0.163 |
+| RE / RNE ACE6Z uplift + along | 428.928/1950 + 23.673/1760 = 0.2200 + 0.0135 | **0.233** |
+| RNE A35Z head across (one angle) | 23.673/695 | 0.034 |
+
+The west posts now govern at the cap, 0.552, ahead of the column's 0.536. Bases and columns
+are unchanged.
+
+**§6 E-W case.** Header side band `2 × 0.98958 × 5.4375 = 10.762 sf`:
+
+```
+(26.667 + 10.762) x 16.7232 = 625.92 lb, + 2 x 23.673 = 673.27 lb
+y_V = (625.92 x 40.219 + 23.673 x 37.500 + 23.673 x 42.479) / 673.27 = 40.203
+e = 43.219 - 40.203 = 3.016'      M = 673.27 x 3.016 = 2,030.7 lb-ft
+chord  M / 24.000 = 84.61 lb;  glulam 84.61 / 65.31 in2 = 1.30 psi vs 1,408          0.001
+end strap (LSTA24)    84.61 + 1,038.35/6 = 257.67 lb vs 823.33                         0.313
+west plates CN-BW-EAVE-5/-6   84.61/2 + 173.06 = 215.36 lb vs 450                      0.479
+east plate CN-BW-EAVE-E       84.61 lb vs 450                                          0.188
+couple into RF-GARAGE  W-G-W 84.61/18.675 = 4.531 plf   W-G-E 84.61/21.008 = 4.028 plf (vs 182.5)
+```
+
+The bands sit at the footprint centroid (40.219), §3b's convention and the engine's. The
+headers' own centroid is 39.990, which gives e 3.077′, M 2,071.9 lb-ft and a chord of
+86.33 lb: 2% higher, and every row above still passes with room. Both plates
+`CN-BW-EAVE-5`/`-6` moved to y 41.75 / 42.375, on the glulam and clear of `CN-BW-CAP-NW`.
+The joint-bay collector block still spans truss face to garage gable, so 6⅛″ of it
+oversails the beam end, tied by its LS30Z and the deck.
+
+**§7 header.** Half the roof, 80 ft2, now over the 5.375′ bearing run, with 0.1667′ / 0.2292′
+past the posts:
+
+```
+w = 80 / 5.375 x (73.7 + 10) = 1,245.77 plf          (snow 1,096.93, dead 148.84)
+R (north, all loaded) = 6,696 x 2.5208 / 4.9792 = 3,390.0 lb
+  + snow off the south overhang  1,096.93 x 0.1667 x 0.0833 / 4.9792 = 3.1  -> 3,393.1 lb
+bearing  3,393.1 / 30.25 = 112.2 psi vs 344.5                                       0.326
+M = 1,245.77 x 4.9792^2 / 8 - 148.84 x (0.1667^2 + 0.2292^2) / 4 = 3,857.6 lb-ft
+fb = 3,857.6 x 12 / 129.26 = 358.1 psi vs 2,208                                      0.162
+```
+
+The same 80 sf over a shorter run raises w and bending a little; the shorter north overhang
+lowers the bearing reaction. Bearing still governs at 0.326.
 
 ## 8. Alternatives, and why each is not the choice
 

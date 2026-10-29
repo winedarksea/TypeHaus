@@ -119,13 +119,11 @@ def edge_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             material = element.material or ""
             if isinstance(element, MovementJoint) and element.backer:
                 material = f"{material} over {element.backer}"  # one installed joint per LF
-            hood = getattr(getattr(element, "section", None), "profile", None) == "ventilated_hood"
-            rows.add("beam_tail_hood" if hood else element.kind.value,
-                     ("ventilated hood + roof apron, " if hood else "")
-                     + _section_profile(face_m, element.thickness.meters),
+            rows.add(element.kind.value,
+                     _section_profile(face_m, element.thickness.meters),
                      material, tag=element.tag,
                      length_m=length_m,
-                     mirror=("" if hood or getattr(getattr(element, "section", None),
+                     mirror=("" if getattr(getattr(element, "section", None),
                                            "fit_to_brace_sill", False)
                              else "structural_solids"))
     _add_derived_roof_trim(model, rows)

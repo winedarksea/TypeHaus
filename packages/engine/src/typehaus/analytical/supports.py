@@ -22,6 +22,8 @@ carries the prose a reviewer disagrees with. There are exactly three claims here
   vertical free, because no gravity crosses the joint — whose basis names the receiving
   roof and walls. The neighbour's diaphragm and walls are not members here; the support is
   where the canopy's shear leaves this graph, graded at 100% on ``lateral_system/<roof>``.
+  A beam ending short of the joint, under a deck that runs on to it, is held at the end
+  nearest the joint: the deck and its collector block carry it the rest of the way.
 
 **Rotations are part of the claim, not a consequence of the fixity.** A pin that freed all
 three rotations would let a beam roll about its own axis and spin about Z, and a solver
@@ -99,6 +101,8 @@ def derive_supports(ctx: Any, scope: Any, graph: Any) -> tuple[Support, ...]:
 
 #: How far a beam's end node may stand off the joint line and still be ON it, metres.
 _JOINT_TOLERANCE_M = 0.05
+#: How far short of the joint a beam may end and still be carried to it by the deck, metres.
+_DECK_CARRY_M = 0.3048
 
 
 def _delivery_supports(ctx: Any, graph: Any, seen: set[str]) -> list[Support]:
@@ -120,27 +124,39 @@ def _delivery_supports(ctx: Any, graph: Any, seen: set[str]) -> list[Support]:
         along_x = (max(xs) - min(xs)) >= (max(ys) - min(ys))
         line = sum(ys) / len(ys) if along_x else sum(xs) / len(xs)
         walls = ", ".join(row.wall for row in delivery.lines) or "no wall"
+        deck_reaches = _deck_reaches(ctx, roof.tag, along_x, line)
         for beam in roof.bearing_refs:
             pieces = graph.beam_spans.get(beam, ())
             ends = {n for member in graph.members if member.id in pieces
                     for n in (member.n0, member.n1)}
-            for node_id in sorted(ends):
-                node = positions.get(node_id)
-                if node is None or node_id in seen:
-                    continue
-                across = node.y_m if along_x else node.x_m
-                if abs(across - line) > _JOINT_TOLERANCE_M:
+            gaps = {n: abs((positions[n].y_m if along_x else positions[n].x_m) - line)
+                    for n in ends if n in positions}
+            nearest = min(gaps, key=gaps.get, default=None)
+            for node_id in sorted(gaps):
+                if node_id in seen or not (gaps[node_id] <= _JOINT_TOLERANCE_M
+                                           or (node_id == nearest and deck_reaches
+                                               and gaps[node_id] <= _DECK_CARRY_M)):
                     continue
                 seen.add(node_id)
                 out.append(Support(
                     node=node_id, fixity=Fixity.LATERAL, element_tag=beam,
                     item_id=f"lateral_system/{roof.tag}",
                     basis=(f"{roof.tag} delivers its shear across the joint to "
-                           f"{delivery.roof} ({walls}): {beam}'s end on the joint line is "
-                           f"held in both horizontal directions and free vertically — no "
+                           f"{delivery.roof} ({walls}): {beam}'s end "
+                           + ("on the joint line" if gaps[node_id] <= _JOINT_TOLERANCE_M else
+                              f"{gaps[node_id] / 0.3048:.3f}' short of the joint line, under "
+                              "the deck that runs on to it,")
+                           + f" is held in both horizontal directions and free vertically — no "
                            f"gravity crosses the joint. The receiving roof and walls are not "
                            f"members here; lateral_system/{roof.tag} grades them at 100%")))
     return out
+
+
+def _deck_reaches(ctx: Any, roof_tag: str, along_x: bool, line: float) -> bool:
+    """Whether the resolved deck runs out to the joint line, so it can carry a beam to it."""
+    roof = next((r for r in ctx.model.roofs if r.tag == roof_tag), None)
+    across = [p[1] if along_x else p[0] for p in (roof.footprint if roof else ())]
+    return any(abs(value - line) <= _JOINT_TOLERANCE_M for value in across)
 
 
 def _base_rotations(carried: list[tuple[float, float]]

@@ -51,8 +51,8 @@ def test_standard_sheet_edges_have_backing_in_every_bay_the_sheets_reach(catlin_
     assert spec.panel_edge_blocking.module.inches * roof_slope_factor(canopy) <= 48
     stations_in = (81, 126, 171, 216, 261, 306, 351)
     # Three canopy bays, and RF-GARAGE's first bay, where the continuous first course ends.
-    bays_in = (("RF-BW-CANOPY", 448, 470.5), ("RF-BW-CANOPY", 472, 494.5),
-               ("RF-BW-CANOPY", 496, 518.625), ("RF-GARAGE", 520.125, 541.875))
+    bays_in = (("RF-BW-CANOPY", 448.75, 471.25), ("RF-BW-CANOPY", 472.75, 495.25),
+               ("RF-BW-CANOPY", 496.75, 518.625), ("RF-GARAGE", 520.125, 541.875))
     for station in stations_in:
         for tag, lo, hi in bays_in:
             assert any(
@@ -63,6 +63,21 @@ def test_standard_sheet_edges_have_backing_in_every_bay_the_sheets_reach(catlin_
                 and block.p1[1] == pytest.approx(hi * M_PER_IN)
                 for block in roofs[tag].members
             ), (station, tag, lo, hi)
+
+
+def test_headers_end_on_their_posts_and_truss_one_bears_fully(catlin_model_ro):
+    # 2026-10-28: flush on the posts' outer faces; truss 1 not south of the beam end.
+    plan = catlin_model_ro.plan
+    canopy = next(r for r in catlin_model_ro.roofs if r.tag == "RF-BW-CANOPY")
+    truss_south_in = min(m.p0[1] for m in canopy.members
+                         if m.category == "roof_truss") / M_PER_IN - 0.75
+    for tag in ("BM-BW-RW", "BM-BW-RE"):
+        beam = plan.by_tag(tag)
+        ends = sorted(plan.by_tag(n).position.xy_m[1] / M_PER_IN
+                      for n in (beam.start_node, beam.end_node))
+        posts = sorted(plan.by_tag(p).position.xy_m[1] / M_PER_IN for p in beam.bearing_refs)
+        assert ends[0] >= posts[0] - 2.75 - 1e-6 and ends[1] <= posts[1] + 2.75 + 1e-6, tag
+        assert truss_south_in >= ends[0] - 1e-6, tag
 
 
 def test_no_strap_at_the_ridge_and_the_end_straps_centre_on_the_collector_blocks(catlin_model_ro):
@@ -127,11 +142,11 @@ def test_the_chord_plates_carry_the_chord_force_and_the_west_collector_share(cat
     record = next(r for r in compute(catlin_ctx.engineering.context)
                   if r.item_id == "lateral_system/RF-BW-CANOPY")
     states = {s.name: s for s in record.limit_states}
-    # canopy_west_band.md §6: 88.834 / 2 + 173.058 west, 88.834 east, both against 450.
+    # canopy_west_band.md §6 (2026-10-28): 84.611 / 2 + 173.058 west, 84.611 east, vs 450.
     west = states["BM-BW-RW chord into CN-BW-JOINT-1's block"]
     east = states["BM-BW-RE chord into CN-BW-JOINT-7's block"]
-    assert west.demand == pytest.approx(217.475, abs=0.1)
-    assert east.demand == pytest.approx(88.834, abs=0.1)
+    assert west.demand == pytest.approx(215.364, abs=0.1)
+    assert east.demand == pytest.approx(84.611, abs=0.1)
     assert east.capacity == pytest.approx(450)
 
 
@@ -154,7 +169,7 @@ def test_nailers_read_their_own_nails_at_their_own_species(catlin_ctx):
                            ("CN-BW-JOINT-2 RF-GARAGE", 959.462)):
         state = states[f"{name} nailer into deck"]
         assert state.capacity == pytest.approx(capacity, abs=0.1)
-        assert state.demand == pytest.approx(262.67, abs=0.05)
+        assert state.demand == pytest.approx(258.41, abs=0.05)
 
 
 def test_added_framing_and_fasteners_are_billed(catlin_model_ro):

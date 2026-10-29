@@ -1,7 +1,7 @@
-> **2026-10-14 west-header revision:** BM-BW-RW extends 6⅛″ south for equal 8⅞″ tails from
-> both post centres; paired AC6Z now at CW and CNW (MAX 14 beam + 14 post 16d per assembly).
-> The roof-bearing inset preserves canopy/truss geometry. East header unchanged. Updated
-> calculations: [west band §§5–7 amendment](canopy_west_band.md#2026-10-14-west-tail-amendment-to-67).
+> **2026-10-28 header revision:** both glulams end flush on the outer faces of their end
+> posts (65¼″, no tails), ACE6Z end caps at all four heads; the 10-14/10-26 tails and their
+> hoods are retired. The roof-bearing run starts ¾″ in so truss 1 bears fully; the deck
+> edges do not move. Calculations: [west band §§5–7 amendment](canopy_west_band.md#2026-10-28-flush-header-amendment-to-57).
 
 # North entry — the bearing map, 2026-09-10
 
@@ -66,7 +66,7 @@ it would order 144 sf of R-38 blown fiberglass and 5/8" gypsum nobody installs.
 |---|---|---|
 | `RF-BW-CANOPY` | `BM-BW-RW`, `BM-BW-RE` | Sheathing runs **continuous** across the garage south wall line. Two `Roof` elements, one diaphragm — and that diaphragm is the canopy's only connection to the garage. |
 | truss-to-header | `CN-BW-TRTIE-W1..3`, `-E1..3` | One **stainless `H2.5ASS`** each end of every truss. Six, not eight, since the fourth truss went. Not the galvanized H2.5A the rest of the house buys: these land on treated southern pine at an entry that is salted every winter. |
-| `BM-BW-RW` / `-RE` | `PT-BW-CW`/`-CNW` and `PT-BW-RE`/`-RNE` | 3-ply 2x12 KDAT, top at +7'-4" = the garage plate. 4'-11 3/4" between columns, running 8 7/8" past the north column so the roof plane reaches the garage wall. That tail carries **no truss** — it backs the deck edge and the fascia return and nothing else. **The two headers do not land on the same thing.** |
+| `BM-BW-RW` / `-RE` | `PT-BW-CW`/`-CNW` and `PT-BW-RE`/`-RNE` | 3-ply 2x12 KDAT, top at +7'-4" = the garage plate. 4'-11 3/4" between columns. Since 2026-10-28 a 5-1/2" x 11-7/8" glulam ending flush on both posts' outer faces; the deck, not the header, oversails 6 1/8" to reach the garage wall. **The two headers do not land on the same thing.** |
 | `PT-BW-CW` / `-CNW` | `PT-BW-W` / `PT-BW-GW` | 6x6 KDAT, 7'-8 1/4", the WEST pair. `ABU66SS` standoff base on a cast-in `AB-058-10-SS`; `CCQ46SDS2.5` cap at the header. `PT-BW-CNW` shares its pier with the garage-side seat beam exactly as `PT-BW-CW` shares one with the house-side seat. |
 | `PT-BW-RE` / `-RNE` | `PT-BW-PE` / `-PNE` on `PD-BW-RE` / `-RNE` (steel, kdat) or `PD-BW-RE` / `-RNE` direct (cast) | The EAST pair, selected by `EAST_POST_SYSTEM` (2026-09-29): **6x6 KDAT by default**, pinned on `CCQ46SDS2.5` caps and `ABU66SS` stainless standoff bases atop 3'-0" piers, with drained, accessible PVC column wraps. Alternatives are pinned HSS 4x4x1/4 steel on the same piers or the former full-height fixed cast columns. `notes/canopy_garage_diaphragm.md` §5a grades the wood. |
 
@@ -331,12 +331,10 @@ the band's brace now, not in-fill: `canopy_west_band.md` §3.
 ## 5. The joint at the house, drainage, and snow
 
 The canopy's south roof edge leaves a **7 3/8" gap** to the house cladding. Keep this
-slot open; the 2026-10-26 beam-tail hoods replace the earlier contacting brush-seal
-closure proposal. Both beams now stop 1⅞″ from modeled house cladding; the hoods'
-outermost hems leave 1¼″. Hood and apron attachments stay exclusively on the canopy,
-without house contact, sealant bridges or house attachments. Establish the required
-movement/tolerance allowance before fabrication; these are nominal geometric gaps.
-See [canopy_beam_tail_hoods.md](canopy_beam_tail_hoods.md). Maintain the house rainscreen.
+slot open: no closure, no hood, no house attachment. Since 2026-10-28 both beams end flush
+on their south posts, ⅝″ behind the deck edge and 8″ from the modeled house cladding, so
+the end grain sits under roof cover in open, inspectable air and is re-sealed by brush.
+The 2026-10-26 beam-tail hoods are retired with the tails. Maintain the house rainscreen.
 
 > ⚠ **This is the ONLY movement joint, and §1a is why.** The same sentence used to be written
 > about the garage joint as well, at the same time as §1 called that plane the canopy's entire

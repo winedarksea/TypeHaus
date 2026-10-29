@@ -25,6 +25,8 @@ from typehaus.engineering.roof_moment import FrameCase
 from typehaus.engineering.torsion import Torsion, line_force_lb
 
 _M_PER_FT = 0.3048
+#: A plan length short of the deck by less than this is the deck: float residue, not a gap.
+_PLAN_TOLERANCE_FT = 1e-6
 
 
 def torsion_rows(torsions: dict[str, Torsion]) -> tuple[list[LimitState], list[Quantity],
@@ -87,6 +89,8 @@ def _panel_collector(ctx: Any, roof: Any, case: FrameCase, wall_tag: str,
     lo, hi = sorted((ends[0][index], ends[1][index]))
     roof_values = [p[index] / _M_PER_FT for p in roof.footprint]
     overlap = max(0.0, min(hi, max(roof_values)) - max(lo, min(roof_values)))
+    if case.depth_ft - overlap < _PLAN_TOLERANCE_FT:
+        overlap = case.depth_ft
     drag_length = max(0.0, case.depth_ft - overlap)
     unit_shear = share * case.diaphragm_shear_lb / case.depth_ft
     states.append(LimitState(

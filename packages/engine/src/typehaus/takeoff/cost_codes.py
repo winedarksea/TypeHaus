@@ -318,7 +318,7 @@ _LOOSE_FURNITURE_WORDS = ("sofa", "sectional", "chair", "stool", "bed", "table",
                           "media unit", "wardrobe", "kitchenette", "ikea")
 _SIDING_EDGE_TRIM = frozenset({"fascia", "soffit", "eave_soffit", "corner_trim",
                                "wall_corner", "wrb_counterflashing", "bug_screen",
-                               "beam_cap", "beam_tail_hood"})
+                               "beam_cap"})
 _ROOFING_HARDWARE_ROLES = frozenset({"snow_retention", "standing_seam_clamp",
                                      "nail_strip_seam_clamp", "through_panel_pipe_strap"})
 #: Fasteners the SIDING crew brings. ``girt_standoff_screw`` is deliberately NOT here and

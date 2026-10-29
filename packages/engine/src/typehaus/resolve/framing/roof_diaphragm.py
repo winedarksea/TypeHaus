@@ -83,8 +83,9 @@ def _collector_blocks(model, roof, spec, axis, bays, additions):
             station = face_hi - half if station < middle else face_lo + half
         extents.append((station, half))
         for i, (lo, hi) in enumerate(bays):
-            lo, hi = max(lo, limits[0]), min(hi, limits[1])
-            if hi - lo <= GEOMETRY_TOLERANCE_M:
+            # Blocking spans truss face to truss face, tied to both trusses; a collector
+            # ending mid-bay still gets the whole block (catlin's flush canopy headers).
+            if min(hi, limits[1]) - max(lo, limits[0]) <= GEOMETRY_TOLERANCE_M:
                 continue
             member = deck_block(
                 roof, f"collector-block-{recipe.collector}-{i:03d}", recipe.stock,

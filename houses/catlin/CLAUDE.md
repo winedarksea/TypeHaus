@@ -1,9 +1,11 @@
-> **Canopy beam tails, 2026-10-26:** both glulams now have equal 8⅞″ tails;
-> east south cap changed to paired AC6Z, roof/truss datums retained by bearing insets.
-> `params/canopy_beam_hoods.py` models ventilated crowned covers and separate roof aprons.
-> Nominal metal-to-house clearance 1¼″. Movement allowance, shop fastening, roof lap,
-> treatment compatibility and quote remain fabrication-release items:
-> `notes/canopy_beam_tail_hoods.md`. Earlier “east unchanged” statements are historical.
+> **Canopy headers, 2026-10-28:** `BM-BW-RW`/`-RE` end flush on the outer faces of their
+> end posts (65¼″, no tails) on ACE6Z end caps at all four heads; one A35Z per post, on its
+> inboard face. The bearing run starts ¾″ in (`TRUSS_DATUM_Y_FT`) so truss 1 bears fully;
+> the deck edges did not move (north oversails 6⅛″, south 1⅜″). Open air at both beam ends:
+> 8″ to the house, 5¼″ to the garage cladding. The 10-14/10-26 tails, paired AC6Z and the
+> beam-tail hoods are retired. West heads govern at 0.552; header bearing 0.326. Running the
+> beams into the garage was rejected (DESIGN-LOG). Calcs: `notes/canopy_west_band.md`
+> 2026-10-28 amendment.
 
 > **Exterior door hardening, 2026-10-25:** `plan/door_types.py` owns hardware, doubled
 > jamb packs, local ccSPF and entry field finish. `notes/exterior_door_hardening.md`
@@ -26,18 +28,13 @@
 
 > **Canopy band, 2026-10-26:** SB-BW-BAND is one 6x6 per bay, exactly corner to corner,
 > chord → top plate, two standard open-knee KBS1Z each end on flush faces (8 total, type 1,
-> interpolated to 45.868°). Connector 0.751; west column 0.536; AC6Z head 0.417. The
+> interpolated to 45.868°). Connector 0.751; west column 0.536; ACE6Z head 0.552 (2026-10-28). The
 > c = −6½″ 4x6 and the chevron are backups: note §8.
-
-> **West header, 2026-10-14:** BM-BW-RW now has equal 8⅞″ tails from both post centres
-> (6⅛″ south extension), paired AC6Z at both west heads, MAX nailing 14 beam + 14 post 16d
-> per assembly. Its roof-bearing inset keeps canopy/truss geometry fixed. East unchanged; the band now uses the 6x6 corner detail above.
-> See `notes/canopy_west_band.md` §§5–7 amendment; earlier south-end statements below are historical.
 
 > **Current north entry, 2026-09-30:** `RF-BW-CANOPY` spans between two **5-1/2" x 11-7/8"
 > glulam** headers on four independent 6x6 KDAT gravity posts (`EAST_POST_SYSTEM = "kdat"`;
-> `"steel"`/`"cast"` remain graded alternatives). Every post has an `ACE6Z` (header end) or
-> `AC6Z` (header through) cap, `A35Z` angles across the beam, and a cast-in `CBSQ66-SDS2` base in
+> `"steel"`/`"cast"` remain graded alternatives). Every post has an `ACE6Z` end cap (both
+> headers end flush on their posts since 2026-10-28), one `A35Z` across the beam, and a cast-in `CBSQ66-SDS2` base in
 > a **14"** pier (3" strap cover). The canopy braces through the tied roof diaphragm into the
 > garage and through `W-BW-SCREEN`, whose 2'-4 1/8" band up to the header is braced by one corner-to-corner 6x6 knee per bay, two KBS1Z per end
 > on both faces (`params/entry_band_brace.py`). Hand oracle: `notes/canopy_west_band.md`.
@@ -270,7 +267,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 - **Current canopy, 2026-09-30:** `EAST_POST_SYSTEM = "kdat"` selects two 6x6 KDAT east
   posts; the west pair `PT-BW-CW`/`-CNW` are 6x6 KDAT in every variant and are the chords of
-  `W-BW-SCREEN` (`ShearPanelSpec.chord_refs`). All four: `ACE6Z`/`AC6Z` caps on the glulam,
+  `W-BW-SCREEN` (`ShearPanelSpec.chord_refs`). All four: `ACE6Z` end caps on the glulam,
   `A35Z` across the beam, cast-in `CBSQ66-SDS2` bases (no `AB-058-10-SS`, no ACI Ch. 17 row) in
   14" piers. `wood_roof_post` grades all four both ways; `lateral_system/RF-BW-CANOPY` grades the
   band braces, the plates' end bearing, the eave collector (6 `LTP4`), the chord hold-down over
@@ -294,11 +291,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   refusal is reversed). The reason is the joints, not bending: an AC/ACE cap is published for a
   5-1/2" beam on a 6x6 with a lateral row along the beam (ESR-2604 Table 3), and the flush faces
   carry the band's paired KBS1Z. `roof_beam` grades a decimal glulam size at 24F-V4 DF wet
-  (`engineering/roof_beam_glulam.py`), bearing on the post governing at 0.355. Each header now
-  STARTS at its south post's south face (the ACE6 end cap wants the whole post), so the canopy's
-  south `edge_overhangs` is 5/8" and the truss layout and its `CN-BW-TRTIE-*` moved 2 3/4" south
-  with it; the rake did not move. (→ DESIGN-LOG.md, "Site and the four structures")
-- **Every wood-on-concrete beam seat is a drained STANDOFF, never a sill gasket** (owner, 2026-09-12) — ten of them, six at the north entry (`CN-BW-STDF-*`) and four in the garden (`CN-SG-STDF-*`, the balcony corners), all `SS316-SHIM-35` packs holding a 1/2"-1" gap, and **not one grout island** (`PIER_CONCRETE_12` carried one until 2026-09-12; retyping `PT-SG-COL` on 2026-09-10 rode it over to `PT-BW-RE`/`-RNE` rather than closing it). The cast-in `HETA20Z` pair beside the pack is the **TIE**, never the bearing — two parts, two jobs. **Every column-head tie is a cast-in `HETA20Z` pair since 2026-09-21, never an `HGAM10`**: Simpson requires the HGAM's Titen Turbo screws kept out of the exterior environment, and all eight joints are exterior. Backups, ranked, with the open pour-day items: `notes/column_head_connector_options.md`. `BM-BW-RW` never touches concrete at all: 6x6 KDAT posts through `ACE6Z`/`AC6Z` caps on cast-in `CBSQ66-SDS2` bases. **No IRC provision requires a barrier or a standoff at this joint** — R317.1 item (2) needs a foundation wall AND under 8" to grade, R317.1.2 is embedment, and R317.1.4 governs wood COLUMNS with 1"/6"/8" projections that *relieve* the treatment requirement rather than impose a clearance; a treated beam on a concrete column top satisfies R317 with nothing added. A closed-cell gasket would be the wrong part: it is a capillary break for a plate bolted tight to a slab, and at an exposed joint it becomes the water-holding layer. Wicking is not the mechanism that governs either — capillary rise is bounded by evaporation at 100-480 mm, and nothing here is within reach of it: the north entry's pier tops stand 18 1/2" above grade, its canopy columns 9'-2 3/4", and the garden's four corner columns stand on the court walls' tops, a storey above the court floor. What wets a seat is rain standing on the pour and end-grain uptake where a beam END lands there, which is `BM-BW-RE`'s south end; the wash, the drip lip and the gap are aimed at that. (→ DESIGN-LOG.md, "Site and the four structures")
+  (`engineering/roof_beam_glulam.py`), bearing on the post governing at 0.326. Since 2026-10-28
+  each header runs post face to post face (the ACE6 end cap wants the whole post at both ends);
+  the bearing run is inset 3/4" at the south so truss 1 sits wholly on the beam, and the
+  canopy's `edge_overhangs` are 1 3/8" south and 6 1/8" north. The rake did not move. (→ DESIGN-LOG.md, "Site and the four structures")
+- **Every wood-on-concrete beam seat is a drained STANDOFF, never a sill gasket** (owner, 2026-09-12) — ten of them, six at the north entry (`CN-BW-STDF-*`) and four in the garden (`CN-SG-STDF-*`, the balcony corners), all `SS316-SHIM-35` packs holding a 1/2"-1" gap, and **not one grout island** (`PIER_CONCRETE_12` carried one until 2026-09-12; retyping `PT-SG-COL` on 2026-09-10 rode it over to `PT-BW-RE`/`-RNE` rather than closing it). The cast-in `HETA20Z` pair beside the pack is the **TIE**, never the bearing — two parts, two jobs. **Every column-head tie is a cast-in `HETA20Z` pair since 2026-09-21, never an `HGAM10`**: Simpson requires the HGAM's Titen Turbo screws kept out of the exterior environment, and all eight joints are exterior. Backups, ranked, with the open pour-day items: `notes/column_head_connector_options.md`. `BM-BW-RW` never touches concrete at all: 6x6 KDAT posts through `ACE6Z` caps on cast-in `CBSQ66-SDS2` bases. **No IRC provision requires a barrier or a standoff at this joint** — R317.1 item (2) needs a foundation wall AND under 8" to grade, R317.1.2 is embedment, and R317.1.4 governs wood COLUMNS with 1"/6"/8" projections that *relieve* the treatment requirement rather than impose a clearance; a treated beam on a concrete column top satisfies R317 with nothing added. A closed-cell gasket would be the wrong part: it is a capillary break for a plate bolted tight to a slab, and at an exposed joint it becomes the water-holding layer. Wicking is not the mechanism that governs either — capillary rise is bounded by evaporation at 100-480 mm, and nothing here is within reach of it: the north entry's pier tops stand 18 1/2" above grade, its canopy columns 9'-2 3/4", and the garden's four corner columns stand on the court walls' tops, a storey above the court floor. What wets a seat is rain standing on the pour and end-grain uptake where a beam END lands there, which is `BM-BW-RE`'s south end; the wash, the drip lip and the gap are aimed at that. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Grade is 2'-10" below the main floor.** **Datum is the TOP OF JOISTS, not the finished floor** — main-floor FFE is +3/4", so a slab landing there needs an explicit `top_elevation` (`params/main_deck.py`).
 - Basement storey is at -9'-1 7/16", independent of grade. Pour is exactly 8'-0"; clear height 8'-0 15/16" under joists / 7'-10 7/8" under the EPS band. `code.R305_ceiling_height` DERIVES this, not `Storey.default_ceiling_height` (still a fictional 9'-0") (→ DESIGN-LOG.md, "Site and the four structures").
 - Grade-dependent: garage + foundation, bridge's frost pads/piers, hydrant bury, sunken garden floor, nine perimeter spot elevations, both impervious surfaces. `SITE_GRADE` lives in `params/foundations.py`, repeated as a literal in `plan/site.py`; `plan/manifest.py` asserts the two agree.

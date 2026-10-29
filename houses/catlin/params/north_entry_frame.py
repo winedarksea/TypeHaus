@@ -302,10 +302,9 @@ beam(5, "BM-BW-FE", EDGE_BEAM_X_FT, FRAME_Y0_FT, EDGE_BEAM_X_FT, GARAGE_CLADDING
 # THAT continuity is the only thing the two structures share. It is the canopy's lateral
 # system (AN-BW-ROOF says so) and it carries no gravity load in either direction.
 #
-# The headers run 8 7/8" past the north columns to y=GARAGE_Y_SOUTH so the roof plane reaches
-# the garage wall. R507.5.1's quarter-of-the-back-span is a DECK table and does not reach a
-# roof header; what bounds this tail is the header's own bending and shear, which
-# `engineering/roof_beam.py` grades.
+# Both headers end flush on the outer faces of their end posts (owner, 2026-10-28): an ACE6Z
+# end cap at all four heads, open air at both ends, no tails. The deck still reaches the
+# garage on its own north overhang (plan/storeys/garage.py); the header does not.
 #
 # ** 5-1/2" x 11-7/8" GLULAM, FLUSH WITH THE 6x6 FACES (owner, 2026-09-30). ** It replaced a
 # 3-ply 2x12 for the joints, not for bending: an AC6/ACE6 cap is published for a 5-1/2" beam
@@ -315,22 +314,23 @@ beam(5, "BM-BW-FE", EDGE_BEAM_X_FT, FRAME_Y0_FT, EDGE_BEAM_X_FT, GARAGE_CLADDING
 # (24F-V4 DF, wet, snow C_D -- notes/canopy_west_band.md §7). The retired ply-seam argument
 # is moot: one member, no seam.
 #
-# Both headers have equal tails; the canopy/truss datum stays at the south post face.
-# Moving that datum would also move the trusses and roof edge (plan/storeys/garage.py).
+# Post face to post face, 65 1/4". The roof-bearing run starts 3/4" in, so truss 1 (centred
+# on that start by `build_truss_layout`) bears its full 1 1/2" on the beam end, not 3/4".
 HEADER_SOUTH_Y_FT = PIER_LINE_Y_FT - COLUMN_HALF_FT
-HEADER_TAIL_FT = GARAGE_Y_SOUTH.feet - GARAGE_SEAT_Y_FT
-HEADER_TAIL_SOUTH_Y_FT = PIER_LINE_Y_FT - HEADER_TAIL_FT
-beam(6, "BM-BW-RW", LANDING_WEST_FT, HEADER_TAIL_SOUTH_Y_FT,
-     LANDING_WEST_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
+HEADER_NORTH_Y_FT = GARAGE_SEAT_Y_FT + COLUMN_HALF_FT
+TRUSS_DATUM_INSET_FT = 0.75 / 12
+TRUSS_DATUM_Y_FT = HEADER_SOUTH_Y_FT + TRUSS_DATUM_INSET_FT
+beam(6, "BM-BW-RW", LANDING_WEST_FT, HEADER_SOUTH_Y_FT,
+     LANDING_WEST_FT, HEADER_NORTH_Y_FT, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
      HEADER_SIZE, "BEAM_GLULAM_TREATED",
-     roof_bearing_insets=(ft(HEADER_SOUTH_Y_FT - HEADER_TAIL_SOUTH_Y_FT), ft(0)))
+     roof_bearing_insets=(ft(TRUSS_DATUM_INSET_FT), ft(0)))
 # ** WHAT THE EAST HEADER LANDS ON IS EAST_POST_SYSTEM (2026-09-29). ** Pinned 6x6 KDAT on
 # 3'-0" piers by default; steel HSS or the 2026-09-10 full-height cast columns are one word
 # away (params/east_posts.py). The tag and uid it names never change.
-beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_TAIL_SOUTH_Y_FT,
-     ROOF_COLUMN_EAST_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-RE", "PT-BW-RNE"), HEADER_TOP_FT,
+beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOUTH_Y_FT,
+     ROOF_COLUMN_EAST_X_FT, HEADER_NORTH_Y_FT, ("PT-BW-RE", "PT-BW-RNE"), HEADER_TOP_FT,
      HEADER_SIZE, "BEAM_GLULAM_TREATED",
-     roof_bearing_insets=(ft(HEADER_SOUTH_Y_FT - HEADER_TAIL_SOUTH_Y_FT), ft(0)))
+     roof_bearing_insets=(ft(TRUSS_DATUM_INSET_FT), ft(0)))
 
 # ** THE SCREEN PANEL'S SILL, WHICH IT CANNOT DO WITHOUT AND NEARLY DID. **
 # W-BW-SCREEN stands on the column line at x=6'-0" and weighs 77 plf. Nothing was under it
@@ -707,7 +707,7 @@ for _uid, _tag, _x, _pad_in, _top in (
 
 # The two west roof columns. Pier top -15.44" to header soffit +6'-4 1/8" = 7'-7.565".
 # k*lu/d under 17, nowhere near NDS Sec 3.7.1.4's limit of 50. A cast-in CBSQ66-SDS2 base
-# (no separate bolt) and an ACE6Z/AC6Z cap at the header, all live rows in prices.toml;
+# (no separate bolt) and an ACE6Z end cap at the header, all live rows in prices.toml;
 # `engineering/wood_roof_post` grades both posts, `lateral_system` their chord role.
 #
 # ** UPLIFT IS NOT A GOVERNING CASE, AND THIS IS THE NUMBER THAT SAYS SO. ** At 115 mph

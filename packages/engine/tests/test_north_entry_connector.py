@@ -162,23 +162,25 @@ def test_all_connector_floor_bearings_resolve(catlin_model_ro):
         assert any(f.tag == tag and f.members for f in catlin_model_ro.floors)
 
 
-def test_west_header_equal_tails_preserve_the_canopy_bearing_run(catlin_plan, catlin_model_ro):
+def test_both_headers_end_flush_on_their_posts(catlin_plan, catlin_model_ro):
+    """2026-10-28: post face to post face, ACE6Z at all four heads, 8" clear of the house."""
     from typehaus.resolve.roof_bearing import roof_bearing
 
-    beam = catlin_plan.by_tag("BM-BW-RW")
-    south = catlin_plan.by_tag(beam.start_node).position.y.meters
-    north = catlin_plan.by_tag(beam.end_node).position.y.meters
-    south_post = catlin_plan.by_tag("PT-BW-CW").position.y.meters
-    north_post = catlin_plan.by_tag("PT-BW-CNW").position.y.meters
-    assert south_post - south == pytest.approx(north - north_post)
-    assert south_post - south == pytest.approx(inch(8.875).meters)
-    assert south - inch(439.25).meters == pytest.approx(inch(1.875).meters)
-    assert catlin_plan.by_tag("CN-BW-CAP-W").size == "AC6Z"
-    assert catlin_plan.by_tag("CN-BW-CAP-NW").size == "AC6Z"
-    bearing = roof_bearing(catlin_model_ro, beam.tag)
-    assert bearing.axis[0][1] == pytest.approx(inch(447.25).meters)
-    assert bearing.axis[1][1] == pytest.approx(inch(518.625).meters)
-    assert north - south == pytest.approx(inch(77.5).meters)
+    for beam_tag, posts in (("BM-BW-RW", ("PT-BW-CW", "PT-BW-CNW")),
+                            ("BM-BW-RE", ("PT-BW-RE", "PT-BW-RNE"))):
+        beam = catlin_plan.by_tag(beam_tag)
+        south = catlin_plan.by_tag(beam.start_node).position.y.meters
+        north = catlin_plan.by_tag(beam.end_node).position.y.meters
+        south_post, north_post = (catlin_plan.by_tag(p).position.y.meters for p in posts)
+        assert south_post - south == pytest.approx(inch(2.75).meters)
+        assert north - north_post == pytest.approx(inch(2.75).meters)
+        assert north - south == pytest.approx(inch(65.25).meters)
+        assert south - inch(439.25).meters == pytest.approx(inch(8.0).meters)
+        bearing = roof_bearing(catlin_model_ro, beam_tag)
+        assert bearing.axis[0][1] == pytest.approx(inch(448.0).meters)
+        assert bearing.axis[1][1] == pytest.approx(inch(512.5).meters)
+    for cap in ("CN-BW-CAP-W", "CN-BW-CAP-NW", "CN-BW-CAP-E", "CN-BW-CAP-NE"):
+        assert catlin_plan.by_tag(cap).size == "ACE6Z"
 
 
 def test_shared_trex_surfaces_supports_and_stem_seats(catlin_model_ro):

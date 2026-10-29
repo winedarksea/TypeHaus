@@ -94,7 +94,7 @@ nailed directly to the two full-height 2×6 east king studs spanning x=116.5..11
 the single jack is inboard at x=115..116.5 inches. Install 30 specified 0.148 × 3-1/4 inch
 nails. Set the strap at the stem top, z=−12 inches, with 14 inches of embedment into the
 continuous 6-inch concrete core and one centered No. 4 × 40 inch bar 4 inches below the
-pour top. The calculated delivered tension is 290.372 lb against the documented 3,065 lb
+pour top. The calculated delivered tension is 276.50 lb (2026-10-28) against the documented 3,065 lb
 end-wall allowable. See [canopy_garage_diaphragm.md](canopy_garage_diaphragm.md) §3f for
 the load path and reinforcement basis. The existing 90° stop-only operation remains.
 

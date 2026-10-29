@@ -5730,18 +5730,6 @@
 48,
 "f7f11d1ecd76"
 ],
-"geometry/5P8RW4EB4M-apron/body": [
-2.251075,
-2.4571848,
-32,
-"0d1a2f79b7e7"
-],
-"geometry/5P8RW4EB4M-hood/body": [
-2.21615,
-2.2750198,
-96,
-"a4bba40d3579"
-],
 "geometry/5PEMG38MHJ-run/body": [
 -1.235075,
 1.778,
@@ -57324,18 +57312,6 @@
 2,
 "5fca8ecf1b3d"
 ],
-"geometry/DA1JYY56XG-apron/body": [
-2.251075,
-2.4571848,
-32,
-"b4d281c2ef50"
-],
-"geometry/DA1JYY56XG-hood/body": [
-2.21615,
-2.2750198,
-96,
-"a4bba40d3579"
-],
 "geometry/DCP5ZCJVTK-box/body": [
 1.0683875,
 1.1636375,
@@ -61518,12 +61494,6 @@
 2,
 "191c8f839253"
 ],
-"geometry/MCMP8D4H02/body": [
-1.933575,
-2.047875,
-32,
-"b14a7da1c2c1"
-],
 "geometry/MDVC5HGQZ8-box/body": [
 -1.6256,
 -1.53035,
@@ -62723,12 +62693,6 @@
 -0.125476,
 16,
 "e055c3e669fa"
-],
-"geometry/Q770QM4P0J/body": [
-1.933575,
-2.047875,
-32,
-"b14a7da1c2c1"
 ],
 "geometry/Q8RJ1ZFN6V/body": [
 -0.29972,
@@ -68806,7 +68770,7 @@
 2.2945013,
 3.6759419,
 2512,
-"0a7776bcba99"
+"57134564428c"
 ],
 "geometry/YX2GDZJMBV::framing/member:W-G-S-closure-0-cdx": [
 2.2352,
@@ -106223,16 +106187,12 @@
 "solids/CN-B-HD-BALC-E/z1_m": -1.9129375,
 "solids/CN-B-HD-BALC-W/z0_m": -2.9321125,
 "solids/CN-B-HD-BALC-W/z1_m": -1.9129375,
-"solids/CN-BW-A35-CNWN/z0_m": 1.933575,
-"solids/CN-BW-A35-CNWN/z1_m": 2.047875,
 "solids/CN-BW-A35-CNWS/z0_m": 1.933575,
 "solids/CN-BW-A35-CNWS/z1_m": 2.047875,
 "solids/CN-BW-A35-CWN/z0_m": 1.933575,
 "solids/CN-BW-A35-CWN/z1_m": 2.047875,
 "solids/CN-BW-A35-REN/z0_m": 1.933575,
 "solids/CN-BW-A35-REN/z1_m": 2.047875,
-"solids/CN-BW-A35-RNEN/z0_m": 1.933575,
-"solids/CN-BW-A35-RNEN/z1_m": 2.047875,
 "solids/CN-BW-A35-RNES/z0_m": 1.933575,
 "solids/CN-BW-A35-RNES/z1_m": 2.047875,
 "solids/CN-BW-BASE-E/z0_m": -0.123825,
@@ -111177,14 +111137,6 @@
 "solids/TR-BW-BRICK-BASE-1/z1_m": 0.136525,
 "solids/TR-BW-BRICK-HEAD-1/z0_m": 1.196176,
 "solids/TR-BW-BRICK-HEAD-1/z1_m": 1.216025,
-"solids/TR-BW-HOOD-E-APRON/z0_m": 2.251075,
-"solids/TR-BW-HOOD-E-APRON/z1_m": 2.4571848,
-"solids/TR-BW-HOOD-E/z0_m": 2.21615,
-"solids/TR-BW-HOOD-E/z1_m": 2.2750198,
-"solids/TR-BW-HOOD-W-APRON/z0_m": 2.251075,
-"solids/TR-BW-HOOD-W-APRON/z1_m": 2.4571848,
-"solids/TR-BW-HOOD-W/z0_m": 2.21615,
-"solids/TR-BW-HOOD-W/z1_m": 2.2750198,
 "solids/TR-BW-SCREEN-CAP/z0_m": 1.23825,
 "solids/TR-BW-SCREEN-CAP/z1_m": 1.2614199,
 "solids/TR-G-LEADER-E-EXT-RISER/z0_m": -1.2192,

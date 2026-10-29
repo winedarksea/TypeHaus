@@ -50,7 +50,7 @@ def resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
     category = _TRIM_CATEGORY.get(el.kind.value, "flashing")
     section = getattr(el, "section", None)
     if section is not None:
-        if section.fit_to_brace_sill or section.profile == "ventilated_hood":
+        if section.fit_to_brace_sill:
             return  # fitted after the brace and all connector geometry exist
         if el.vertical:
             raise ValueError(f"{el.tag}: formed sections require a horizontal plan run")

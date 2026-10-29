@@ -220,10 +220,16 @@ The §3c "Finding" of a gravity base moment on the fixed columns was the rigid k
 withdrawn. The pair still sums to the records' 6,960 / 1,740; each column is now 14 % off
 the record's equal split, inside the test's 15 %.
 
-**Breezeway canopy.** BM-BW-RE runs from a 0.740' cantilever over RNE to its end on RE
-(4.979' span); its snow load is ~1,031 plf. By statics R_RE = w × 5.719 × 2.120 / 4.979 =
-w × 2.435 = **2,510 lb**, R_RNE = w × 3.284 = **3,386 lb**, and both base moments **0**
-(solve identical). Before the cap RNE was a knee: it swayed, pushed RE through the beam,
+**Breezeway canopy (re-worked 2026-10-28).** BM-BW-RE now ends flush on both posts' outer
+faces: 0.229' past each post on a 4.979' span, 5.4375' long, symmetric. It carries the
+record's line load, 80 sf over the 5.375' bearing run (snow 1,096.9 plf, dead 148.8 plf),
+along its whole length, so R_RE = R_RNE = w × 5.4375 / 2: snow **2,982 lb**, dead
+**405 lb**, both base moments **0** (solve identical). The 1.2% over the record's 80 sf is
+the 0.0625' of beam outside the bearing run; it was 8.6% over with the 10-26 tails. Both caps
+stay hinged because the header's north end is still held LATERALLY: it stops 0.511' short
+of the joint line, and the deck that runs on to the joint carries it there
+(`analytical/supports.py`, `_DECK_CARRY_M`). Without that hold both tops are rigid knees.
+Before the cap RNE was a knee: it swayed, pushed RE through the beam,
 and gave RE 58 lb of shear and **995 lb-ft** of base moment under snow.
 
 **Wind is unchanged, and was already the record's cantilever.** Both lines of wind are
