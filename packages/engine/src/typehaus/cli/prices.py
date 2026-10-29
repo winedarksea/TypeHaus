@@ -127,6 +127,8 @@ ESTIMATE_PLANS = (
     ("freeze_protection", "freeze_protection", "spec", "length_ft", "LF"),
     ("edge_trim", "edge_trim", "category", "length_ft", "LF"),
     ("cladding_trim", "cladding_trim", "part", "count", "ea"),
+    # Rainscreen insect screens and panel-end strips by the foot, keyed on the kind.
+    ("bug_screens", "bug_screens", "kind", "length_ft", "LF"),
     # Framing-top membrane by the foot, keyed on the material tag. Mirrors nothing: `framing`
     # bills the stick the tape covers, not the tape.
     ("member_protection", "member_protection", "material", "length_ft", "LF"),
@@ -351,11 +353,10 @@ _PLAN_TABLE = {name: name for name, *_ in ESTIMATE_PLANS}
 UNPRICED_VIEWS: dict[str, str] = {
     # Same sticks, aggregated differently — `framing_by_size` is the priced view.
     "framing": "priced as framing_by_size",
-    # Solid categories, so they reach [solids] by qualified key (`glazing:<assembly>`,
-    # `bug_screen:<assembly>`) rather than through a table of their own.
+    # Solid categories, so they reach [solids] by qualified key (`glazing:<assembly>`)
+    # rather than through a table of their own.
     "glazing_panels": "priced in [solids] as glazing:<assembly> (structural_solids)",
     "glazing_trim": "priced in [solids] as glazing_trim (structural_solids)",
-    "bug_screens": "priced in [solids] as bug_screen:<assembly> (structural_solids)",
     # Treads bill in [stair_treads] (finish) or [framing] (lumber); the nosings and
     # transitions are an allowance DRIVEN off this table's ``tread_lf``, so the quantity is
     # not unread, only unpriced by a section of its own.

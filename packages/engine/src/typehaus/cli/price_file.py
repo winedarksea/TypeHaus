@@ -69,6 +69,8 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids",
              "edge_trim",
              # Metal Sales trim by part and stock length, with closures, sealant, fasteners.
              "cladding_trim",
+             # Rainscreen insect screens, panel-end strips and their pads, by the foot.
+             "bug_screens",
              # Joist/beam tape by the foot. See ``Prices.member_protection``.
              "member_protection",
              # Firestop sealant by the foot of penetration. See ``Prices.fireblock_sealant``.
@@ -338,6 +340,7 @@ class Prices:
     # name): `ea` prices a stock piece, supply fastener or cleat; `LF` a custom cut,
     # closure, tape or sealant bead.
     cladding_trim: Mapping[str, PriceRange] = field(default_factory=dict)
+    bug_screens: Mapping[str, PriceRange] = field(default_factory=dict)
     # Self-adhered framing-top membrane by the lineal foot, keyed on the catalog material tag
     # the deck or beam names in ``top_protection``. Priced per foot of MEMBER, not per foot of
     # roll: the tape width comes off the member's own cross-section and rides on the BOM row,

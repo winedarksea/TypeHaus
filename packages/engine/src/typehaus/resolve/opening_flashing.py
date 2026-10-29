@@ -161,11 +161,15 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
         placement = opening.doorway.exterior_placement if opening.doorway else None
         catalog = placement and placement.specification.catalog_installation
         meshes = opening_flashing_meshes(wall, opening, frame, cfg,
-                                         pan=not is_overhead(model, opening), metal=metal)
+                                         pan=not is_overhead(model, opening), metal=metal,
+                                         model=model)
         if opening.window_seat and opening.window_seat.outer_m is not None:
             from typehaus.resolve.cladding_trim.openings import window_trim_solids
+            from typehaus.resolve.opening_head_cap import head_cap_solids
 
             model.solids.extend(window_trim_solids(model, wall, opening, frame, metal))
+            # K6 is the cap over the head course, billed as trim; not the drip head.
+            model.solids.extend(head_cap_solids(model, wall, opening, frame, metal, cfg))
             meshes = [mesh for mesh in meshes if mesh[0] != "head"]
         elif opening.kind == "door":
             from typehaus.resolve.cladding_trim.doors import add_door_trim
@@ -226,7 +230,8 @@ def head_flashing_section(wall: ResolvedWall, opening: ResolvedOpening,
 
 def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
                             frame: OpeningFlashingFrame, cfg: FlashingConfig = FLASHING,
-                            *, pan: bool = True, metal: str = _DEFAULT_METAL) \
+                            *, pan: bool = True, metal: str = _DEFAULT_METAL,
+                            model: ResolvedModel | None = None) \
         -> list[tuple[str, str, str, GMesh]]:
     lo = opening.center_along_m - opening.width_m / 2
     hi = lo + opening.width_m
@@ -294,26 +299,29 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
     if courses:
         membrane.append(frame.leg(start, span, (frame.water, head_seat),
                                   (frame.mount, head_seat), thickness))
-    # The catalog head sits at the mount plane. Tie its upstand back to the water
-    # plane so the membrane remains continuous across the rainscreen cavity.
+    # Strip the metal's upstand in to the water plane: the drip head's, or on a metal-wall
+    # window the K6 cap's, whose bedding also covers the head course's face.
     strip = cfg.head_strip_lap_m
-    trimmed_window = opening.window_seat and opening.window_seat.outer_m is not None
-    if trimmed_window:
+    from typehaus.resolve.opening_head_cap import head_cap
+
+    cap = head_cap(model, wall, opening, frame, cfg) if model is not None else None
+    metal_face = frame.water + cfg.sheet_m
+    if cap is not None:
+        start, span, top = cap.start, cap.span, cap.points[-1][1]
+        if courses:
+            membrane.append(frame.leg(start, span, (frame.mount, head),
+                                      (frame.mount, head_seat), thickness))
+    elif opening.window_seat and opening.window_seat.outer_m is not None:
+        # No cavity (the garage): the catalog head's back leg is tied to the water plane.
         from typehaus.resolve.metal_skin_profiles import INCH_M
 
         top = head - opening.window_seat.head_drop_m + 2.5 * INCH_M
-        strip_start, strip_span = lo - INCH_M, hi - lo + 2 * INCH_M
+        start, span = lo - INCH_M, hi - lo + 2 * INCH_M
         metal_face = frame.mount + cfg.sheet_m
-        membrane += [frame.leg(strip_start, strip_span, a, b, thickness) for a, b in (
-            ((metal_face, top - strip), (metal_face, top)),
-            ((frame.water, top), (metal_face + thickness, top)),
-            ((frame.water, top), (frame.water, top + strip)))]
-    else:
-        metal_face = frame.water + cfg.sheet_m
-        membrane += [frame.leg(start, span, a, b, thickness) for a, b in (
-            ((metal_face, top - strip), (metal_face, top)),
-            ((frame.water, top), (metal_face + thickness, top)),
-            ((frame.water, top), (frame.water, top + strip)))]
+    membrane += [frame.leg(start, span, a, b, thickness) for a, b in (
+        ((metal_face, top - strip), (metal_face, top)),
+        ((frame.water, top), (metal_face + thickness, top)),
+        ((frame.water, top), (frame.water, top + strip)))]
     result.append(("perimeter", "opening_flashing_membrane", cfg.membrane_material,
                    combine_sheets(membrane)))
     if pan:

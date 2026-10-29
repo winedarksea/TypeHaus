@@ -265,6 +265,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "drip_edge": (0.75, 0.77, 0.80, 1.0),  # formed drip edge (pitched section)
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing
     "cladding_trim": (0.75, 0.77, 0.80, 1.0),   # formed wall/roof trim
+    "bug_screen": (0.71, 0.73, 0.75, 1.0),   # perforated mill aluminium, flat in the GLB
     "opening_head_flashing": (0.08, 0.09, 0.10, 1.0),
     "opening_sill_pan": (0.30, 0.13, 0.12, 1.0),
     "opening_flashing_membrane": (0.30, 0.13, 0.12, 1.0),

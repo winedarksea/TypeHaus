@@ -33,7 +33,7 @@ VOCABULARY_JSON = REPO_ROOT / "ui" / "src" / "generated" / "vocabulary.json"
 # reason: they are named in the geometry IR so it is honest about what they are, and picking
 # their tones was deliberately left to a later, reviewable change rather than guessed at
 # here. REMOVE an entry the moment its colour is authored, in ``_PALETTE``.
-DELIBERATELY_UNPAINTED = {"bug_screen", "glazing", "glazing_trim"}
+DELIBERATELY_UNPAINTED = {"glazing", "glazing_trim"}
 
 
 @pytest.fixture(scope="module")

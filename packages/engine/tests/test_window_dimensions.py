@@ -183,11 +183,16 @@ def test_profiled_metal_windows_have_four_terminated_sides(catlin_model_ro):
     assert len(windows) == 40
     for opening in windows:
         pieces = [solid for solid in catlin_model_ro.solids
-                  if solid.category == "cladding_trim" and solid.host_ref == opening.tag]
+                  if solid.category == "cladding_trim" and solid.host_ref == opening.tag
+                  and solid.product != "EPDM_PAD"]
         # PBR ribs take the catalog jamb; BBD75 and corrugated keep the site-brake one.
         wall = catlin_model_ro.wall(opening.host_wall)
         jamb = ("PBR_WINDOW_JAMB" if cladding_finish(catlin_model_ro, wall) == "ribbed-panel"
                 else "WINDOW_JAMB_CUSTOM")
-        assert sorted(solid.product for solid in pieces) == [
-            "OPENING_HEAD", jamb, jamb, "WINDOW_SILL_CUSTOM"]
+        # A rainscreen cavity over the head takes the K6 cap (the garage has none).
+        from typehaus.resolve.rainscreen_closures import rainscreen_band
+
+        cap = ["OPENING_HEAD_CAP"] if rainscreen_band(wall.layers) is not None else []
+        assert sorted(solid.product for solid in pieces) == sorted([
+            "OPENING_HEAD", *cap, jamb, jamb, "WINDOW_SILL_CUSTOM"])
         assert all(solid.body_mesh and solid.body_mesh.positions for solid in pieces)

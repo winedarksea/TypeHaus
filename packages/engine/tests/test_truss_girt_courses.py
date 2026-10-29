@@ -100,7 +100,8 @@ def test_the_courses_are_one_module_from_the_base_through_the_rake(catlin_model)
         phase = course_phase(wall, spec)
         elevations = course_elevations(wall, spec, _STOCK_FACE)
         top_low = min(band_tops(wall))
-        edges = {round(wall.z0_m, 9)} | _joint_levels(spec)
+        # The starter: at the wall base, or lifted clear of a base Z where a cavity begins.
+        edges = {round(wall.z0_m + wall.girt_starter_rise_m, 9)} | _joint_levels(spec)
         if not _raked(wall):
             edges.add(round(top_low - _STOCK_FACE, 9))
         for z in elevations:

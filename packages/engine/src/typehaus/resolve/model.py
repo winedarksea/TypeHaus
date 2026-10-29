@@ -323,6 +323,9 @@ class ResolvedWall:
     # Gable walls under a wrapped Image II eave: ``roof_image_ii_eave.HeadCap`` lines the
     # body's top stays under where its layers run out past the axis into the eave stack.
     head_caps: tuple = ()
+    # Where a rainscreen cavity BEGINS at this wall's base, its starter girt stands this far
+    # above the base so no KDAT sits on the aluminium Z (``rainscreen_closures``).
+    girt_starter_rise_m: float = 0.0
 
     @property
     def base_ref_z_m(self) -> float:

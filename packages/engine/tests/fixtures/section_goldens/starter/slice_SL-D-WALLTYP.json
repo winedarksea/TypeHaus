@@ -1144,11 +1144,11 @@
         ],
         [
           -3.41125,
-          1.4999999999999998
+          2.0
         ],
         [
           -3.91125,
-          1.4999999999999998
+          2.0
         ]
       ],
       "layer": "S-FNDN",
@@ -1172,75 +1172,20 @@
         ],
         [
           -3.41125,
-          1.4999999999999998
+          2.0
         ],
         [
           -3.91125,
-          1.4999999999999998
+          2.0
         ]
       ],
-      "pattern": "spf",
+      "pattern": "perforated-aluminum-insect-closure",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "spf"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -3.91125,
-          198.00000000000003
-        ],
-        [
-          -3.41125,
-          198.00000000000003
-        ],
-        [
-          -3.41125,
-          199.50000000000003
-        ],
-        [
-          -3.91125,
-          199.50000000000003
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "WN20AAAAAA-headscreen",
-      "tag": "WIN-201-HEADSCREEN"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -3.91125,
-          198.00000000000003
-        ],
-        [
-          -3.41125,
-          198.00000000000003
-        ],
-        [
-          -3.41125,
-          199.50000000000003
-        ],
-        [
-          -3.91125,
-          199.50000000000003
-        ]
-      ],
-      "pattern": "spf",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "spf"
+      "material": "perforated-aluminum-insect-closure",
+      "fill": "#b6bac0"
     },
     {
       "space": "model",

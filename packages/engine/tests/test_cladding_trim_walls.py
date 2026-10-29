@@ -24,6 +24,7 @@ def test_trim_inventory_by_profile(catlin_model_ro):
         "BBD_PANEL_STARTER": 6, "CORRUGATED_JAMB": 8, "DOOR_HEAD_CUSTOM": 5,
         "WIDE_OUTSIDE_CORNER": 8, "CORRUGATED_OUTSIDE_CORNER": 4,
         "RAINSCREEN_BASE_Z": 21, "EPDM_BASE_ISOLATION": 14,
+        "OPENING_HEAD_CAP": 38, "EPDM_PAD": 87,
         "6460800": 9, "6411499": 10, "CORRUGATED_SILL_TO_SOFFIT": 6,
         "corrugated-outside-closure": 6,
     }

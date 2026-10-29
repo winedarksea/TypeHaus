@@ -101,6 +101,13 @@ BBD_PANEL_STARTER = TrimProfile(
     hem_notch_in=2,
     source="BBD75 Install Guide 10/2025 p. 14 (2-5/8 in and 1-1/8 in legs; hems not drawn)",
 )
+#: K6 over a metal-wall window head: 2" upstand on the foam, a top across the cavity and the
+#: head course, a 2-1/2" (or longer, to lap 58114XX by 1") face leg, 3/4" end dams; ~8" girth.
+OPENING_HEAD_CAP = TrimProfile(
+    "Window head cap (K6), custom brake",
+    custom=True,
+    source="Drained head over the outie window, houses/catlin/notes/opening_flashing_spec.md §4",
+)
 DOOR_HEAD_CUSTOM = TrimProfile(
     "Door head drip cap, custom brake",
     custom=True,
@@ -224,7 +231,9 @@ SUPPLIES = {
     "58092XX": ("PBR box gutter strap", "ea", "PBR Install Guide 4/2024 p. 12"),
 }
 
-#: The profile-matched closure behind a head or sill trim, by the panel's finish.
+#: The profile-matched closure behind a head or sill trim, by the panel's finish. Over a
+#: rainscreen, a panel end at a base or head sits on a perforated strip instead
+#: (``resolve/rainscreen_strips.py``), billed with the insect screens; sills stay closed.
 PANEL_CLOSURE = {"ribbed-panel": "6460800", "board-and-batten": "55548XX",
                  "corrugated": "corrugated-closure"}
 

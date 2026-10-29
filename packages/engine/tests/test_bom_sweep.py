@@ -686,50 +686,41 @@ def test_conductors_bill_beside_the_raceway_they_pull_through(bom):
 # --- rainscreen base closure ---------------------------------------------------------------
 
 def test_bug_screens_bill_the_exterior_perimeter_once_not_once_per_storey(catlin_model, bom):
-    """The screen closes the *bottom* of a rainscreen cavity. The cladding runs past every
-    floor line uninterrupted, so a house with three storeys of the same wall still has one
-    screened base — billing per wall would order three times the strip that is installed.
+    """The base screen closes the *bottom* of a rainscreen cavity. The cladding runs past
+    every floor line uninterrupted, so a house with three storeys of the same wall still has
+    one screened base — billing per wall would order three times what is installed.
 
-    Reconciled against the walls themselves: the total is the run of exactly the walls whose
-    cavity starts at their own base, which on catlin is the main-storey perimeter. The garage
-    has no rainscreen furring on GARAGE_WALL_2X6 — nail strip face-fastens straight to the
-    Zip-R, so there is no cavity there to close. The opening head screens add on top, on
-    every storey, each one off the same ``head_screen_spans`` the resolver draws.
+    Reconciled against the walls themselves: exactly the walls whose cavity starts at their
+    own base, which on catlin is the main-storey perimeter (the garage has no rainscreen
+    cavity), with the stock laps the U is cut with.
     """
     from typehaus.resolve.rainscreen_closures import (
+        BUG_SCREEN_LAP_IN,
         cavity_base_run,
-        head_screen_spans,
         screens_rainscreen_base,
     )
 
-    rows = bom["bug_screens"]
-    assert rows, "a rainscreen house must order its base closure"
-    billed = sum(float(row["length_ft"]) for row in rows)
+    rows = {row["kind"]: row for row in bom["bug_screens"]}
+    base = rows["BASE_SCREEN"]
     screened = [wall for wall in catlin_model.walls
                 if screens_rainscreen_base(catlin_model, wall)]
-    heads = sum(s1 - s0 for wall in catlin_model.walls
-                for _opening, s0, s1, _z0 in head_screen_spans(catlin_model, wall))
-    expected = (sum(run.end-run.start for wall in screened
-                    if (run := cavity_base_run(catlin_model, wall)) is not None)
-                + heads) * 3.280839895
-    assert billed == pytest.approx(expected, abs=0.2)
+    runs = [run for wall in screened if (run := cavity_base_run(catlin_model, wall))]
+    laps = (int(base["count"]) - len(runs)) * BUG_SCREEN_LAP_IN * 0.0254
+    expected = (sum(run.end - run.start for run in runs) + laps) * 3.280839895
+    assert float(base["length_ft"]) == pytest.approx(expected, abs=0.2)
+    assert base["tags"] == sorted(wall.tag for wall in screened)
     # Every screened wall is a ground-tier one; nothing stacked on a rainscreen qualifies.
     assert {wall.storey for wall in screened} == {"main"}
-    assert all(row["material"] == "perforated-aluminum-insect-closure" for row in rows)
 
 
-def test_bug_screen_rows_are_grouped_by_the_cavity_they_are_cut_to(bom):
-    """The strip is bought in the section that fills the cavity, so a house with two
-    different batten depths is two different orders.
-
-    Catlin is down to ONE depth — the garage has no rainscreen battens, leaving only the
-    house's 1/2" — so what this can still prove is the grouping itself: one row per distinct
-    depth, never one row per wall.
-    """
+def test_bug_screen_rows_are_one_per_kind(bom):
+    """One order line per kind of closure — never one per wall or per storey."""
     rows = bom["bug_screens"]
-    depths = {float(row["cavity_depth_in"]) for row in rows}
-    assert rows and len(depths) == len(rows)
-    assert all(depth > 0 for depth in depths)
+    kinds = [row["kind"] for row in rows]
+    assert sorted(kinds) == ["BAND_OUTLET_STRIP", "BASE_SCREEN", "EPDM_PAD", "PANEL_END_STRIP"]
+    assert all(float(row["length_ft"]) > 0 for row in rows)
+    assert all(row["material"] == "perforated-aluminum-insect-closure"
+               for row in rows if row["kind"] != "EPDM_PAD")
 
 
 def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):

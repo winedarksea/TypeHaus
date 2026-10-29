@@ -513,12 +513,17 @@ class RainscreenBaseFlashing(HausModel):
     isolation_thickness: Length = inch(0.0625)
     stock_length: Length = inch(120)
     lap: Length = inch(2)
+    # The steel base trim's foot stands this far above the seat so the pan's edge drains and
+    # the screen breathes under it; the starter girt and its blocks stand clear of the Z.
+    trim_rise: Length = inch(1)
+    starter_rise: Length = inch(2.25)
 
     @model_validator(mode="after")
     def valid_dimensions(self):
         if (self.sheet_thickness.meters <= 0 or self.upstand.meters <= 0
                 or self.drip.meters <= 0 or self.hem.meters < 0
                 or self.isolation_thickness.meters <= 0
+                or self.trim_rise.meters < 0 or self.starter_rise.meters < 0
                 or not math.isfinite(self.slope) or self.slope <= 0 or self.lap.meters < 0
                 or self.stock_length.meters <= self.lap.meters):
             raise ValueError("invalid rainscreen base flashing dimensions")

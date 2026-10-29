@@ -138,22 +138,23 @@ _BASE_ROWS: tuple[Material, ...] = (
         "density is the published bulk density of polypropylene. No ASTM E96 "
         "test is published for the strip itself",
     ),
-    # The metal replacement for the strip above (kept as the revert): a perforated aluminium
-    # U folded across the cavity, holes 1/8" or less. Polypropylene is chewable; this is not.
-    # Modelled as a solid box filling the cavity, so ``density`` is the box's EFFECTIVE one.
+    # The metal replacement for the strip above (kept as the revert): 0.032" aluminium
+    # perforated with 3 mm holes on a 5 mm stagger, braked to the base U or ripped to a
+    # panel-end strip. Polypropylene is chewable; this is not. The solids are the sheet
+    # itself, so ``density`` is the perforated sheet's.
     Material(
         tag="perforated-aluminum-insect-closure",
-        name='Perforated aluminium rainscreen insect closure (holes <= 1/8")',
+        name='Perforated aluminium rainscreen insect screen (holes <= 1/8")',
         r_per_inch=0.0,
-        density=97.0,
+        density=1820.0,
         perm_rating=120.0,
         hatch="metal",
         color="#b6bac0",
+        finish="perforated",
         source=f"{_UAF}: 'Air, still' 120 perm-in — the vapour path is the open "
         "perforation, as for `corrugated-vent-strip`. Density is aluminium's 2700 kg/m3 "
-        'times the metal fraction of the 2" x 1-1/2" box it is drawn as: a 0.032" sheet '
-        'with 5" of girth (web + two legs) at 33% open area (3 mm holes, 5 mm stagger) is '
-        '0.107 sq in in 3.0 sq in, 3.6%',
+        "times the metal fraction of the sheet: 3 mm holes on a 5 mm 60-degree stagger "
+        "leave pi/(2 sqrt 3) x (3/5)^2 = 32.6% open, so 67.4% metal",
     ),
     Material(
         tag="cedar-tg",

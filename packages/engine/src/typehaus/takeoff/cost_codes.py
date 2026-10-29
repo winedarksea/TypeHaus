@@ -239,6 +239,7 @@ SECTION_CODES: dict[str, CostCode] = {
     "freeze_protection": CostCode("3200", "26 05 33", "electrical"),
     "edge_trim": CostCode("2500", "07 62 00", "roofing"),
     "cladding_trim": CostCode("2100", "07 62 00", "siding"),
+    "bug_screens": CostCode("2100", "07 62 00", "siding"),
     # Self-adhered membrane on framing tops: applied by the framer, with the framing.
     "member_protection": CostCode("2000", "07 26 00", "framing"),
     # Fireblock penetration seal: the framer's, at the framing inspection.

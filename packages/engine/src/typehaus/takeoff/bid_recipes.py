@@ -134,6 +134,7 @@ SHAPES: dict[str, Shape] = {
     "envelope_layers": Shape("Assembly layers, by material", None, "SF net"),
     "edge_trim": Shape("Trim and flashing, by profile", None, "LF"),
     "cladding_trim": Shape("Cladding and roof-edge trim, by part", None, "ea"),
+    "bug_screens": Shape("Rainscreen insect screens and strips", None, "LF"),
     "member_protection": Shape("Member protection tape", None, "LF"),
     "fireblock_sealant": Shape("Firestop sealant", None, "LF"),
     "window_return_beads": Shape("Window return beads", None, "LF"),
@@ -213,8 +214,8 @@ RECIPES: dict[str, Recipe] = {
                       ("A-201", "A-401")),
     "siding": Recipe("Siding and trim", "Cladding, the WRB and furring behind it, corners, "
                      "fascia, the eave soffit and the closures.",
-                     ("envelope_layers", "edge_trim", "cladding_trim", "framing", "hardware",
-                      "sheet_goods",
+                     ("envelope_layers", "edge_trim", "cladding_trim", "bug_screens", "framing",
+                      "hardware", "sheet_goods",
                       "wall_structure", "solids", "allowances"),
                      ("A-201", "A-401")),
     "insulation": Recipe("Insulation and air sealing", "Spray foam, batts, blown fill, rigid "

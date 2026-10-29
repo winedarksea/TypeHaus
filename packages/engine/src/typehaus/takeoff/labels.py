@@ -39,6 +39,7 @@ SECTION_LABELS: dict[str, str] = {
     "pipe_insulation": "Pipe insulation", "freeze_protection": "Freeze protection",
     "edge_trim": "Edge trim and flashing", "member_protection": "Member protection tape",
     "cladding_trim": "Cladding and roof-edge trim",
+    "bug_screens": "Rainscreen insect screens",
     "fireblock_sealant": "Firestop sealant",
     "window_return_beads": "Window return beads",
     "wall_structure": "Wall structure by the yard", "reinforcement": "Reinforcing steel",
@@ -95,7 +96,7 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("plumbing_specialties", "water_hammer_arrestor"): "Water hammer arrestor",
     ("plumbing_specialties", "ro_stub"): "RO stub", ("plumbing_specialties", "penetration_seal"):
     "Penetration seal",
-    ("edge_trim", "beam_cap"): "Beam cap", ("edge_trim", "bug_screen"): "Rainscreen bug screen",
+    ("edge_trim", "beam_cap"): "Beam cap", ("edge_trim", "bug_screen"): "Insect closure strip",
     ("edge_trim", "corner_trim"): "Corner trim", ("edge_trim", "drip_flashing"): "Drip flashing",
     ("edge_trim", "edge_cladding"): "Roof edge cladding", ("edge_trim", "fascia"): "Fascia",
     ("edge_trim", "ridge_cap"): "Ridge cap", ("edge_trim", "soffit"): "Eave soffit",
@@ -127,7 +128,11 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("concrete", "footing"): "Footing", ("concrete", "pad"): "Pad",
     ("concrete", "thermal_break"): "Thermal break", ("concrete", "soffit"): "Dropped soffit",
     ("concrete", "ceiling"): "Ceiling", ("concrete", "glazing"): "Glazing",
-    ("concrete", "bug_screen"): "Rainscreen bug screen", ("concrete", "screen_slat"): "Screen slat",
+    ("concrete", "screen_slat"): "Screen slat",
+    ("bug_screens", "BASE_SCREEN"): "Perforated aluminium base screen, inverted U",
+    ("bug_screens", "PANEL_END_STRIP"): "Perforated aluminium panel-end strip",
+    ("bug_screens", "BAND_OUTLET_STRIP"): "Perforated aluminium band outlet strip",
+    ("bug_screens", "EPDM_PAD"): "1/16 in EPDM pads under the strips",
     ("concrete", "dowel"): "Dowel", ("concrete", "connector"): "Connector",
     # The two families carved off ``connector``. Derived markers never reach a take-off
     # (they are ``derived`` and skipped), but an AUTHORED cast-in or hanger connector does,
@@ -358,6 +363,8 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         return f"{KEY_GLOSSARY.get((section, bare), bare)}{size}"
     if section == "freeze_protection":
         return str(g("spec") or "") or None
+    if section == "bug_screens":
+        return KEY_GLOSSARY.get((section, bare))
     return None
 
 

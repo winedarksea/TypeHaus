@@ -600,7 +600,7 @@ class TrimKind(Enum):
     # which makes it an insect route straight up behind the cladding unless the opening is
     # screened. The closure is a lineal run, not a piece of hardware, so it lives here with
     # the other edge runs rather than in ``ConnectorKind``.
-    BUG_SCREEN = "bug_screen"            # vented insect closure at a rainscreen cavity base
+    BUG_SCREEN = "bug_screen"            # perforated rainscreen screen or panel-end strip
     # The vertical closure where two wall cladding runs meet at a building corner. The
     # engine models no wall-to-wall corner trim of its own: ``corner_trim`` in
     # ``takeoff/edge_trim.py`` is exclusively the ROOF-edge piece derived by

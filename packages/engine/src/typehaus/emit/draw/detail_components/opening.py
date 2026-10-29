@@ -99,26 +99,31 @@ def _in_crop_z(z_in: float, crop) -> bool:
 
 
 def _opening_trim(model, opening) -> list:
-    """The resolved trim pieces an opening owns. Matched by ``host_ref``: a door's jamb pieces
-    carry the wall's uid, so uid ownership misses them."""
-    return [s for s in model.solids if s.category == "cladding_trim"
+    """The resolved trim pieces an opening owns, with the head cap, strip and pads. Matched by
+    ``host_ref``: a door's jamb pieces carry the wall's uid, so uid ownership misses them."""
+    return [s for s in model.solids if s.category in ("cladding_trim", "bug_screen")
             and s.host_ref == opening.tag and s.body_mesh is not None]
 
 
-def _opening_trim_profiles(model, opening, direction, station) -> list[tuple[str, list]]:
-    """``(material, outline in inches)`` for each owned trim piece cut at the detail's plane.
+#: The drawing tag of each resolved piece over an opening, by product.
+_PIECE_TAGS = {"OPENING_HEAD_CAP": "opening-head-cap", "PANEL_END_STRIP": "panel-end-strip",
+               "EPDM_PAD": "epdm-pad"}
+
+
+def _opening_trim_profiles(model, opening, direction, station) -> list[tuple[str, str, list]]:
+    """``(tag, material, outline in inches)`` for each owned piece cut at the detail's plane.
 
     A jamb lies in the plan cut, so it only appears here if a cut actually crosses it."""
     plane = CutPlane(axis=direction, station_m=station)
-    return [(solid.material, [(u / M_PER_IN, z / M_PER_IN) for u, z in profile.outline])
+    return [(_PIECE_TAGS.get(solid.product, "opening-trim"), solid.material,
+             [(u / M_PER_IN, z / M_PER_IN) for u, z in profile.outline])
             for solid in _opening_trim(model, opening)
             for profile in slice_solid(solid.body_mesh, plane)]
 
 
 def _trim_nodes(profiles) -> list[IRNode]:
-    return [node for material, points in profiles
-            for node in closed_region(points, "opening-trim", material, "metal",
-                                      lineweight=PROFILE)]
+    return [node for tag, material, points in profiles
+            for node in closed_region(points, tag, material, "metal", lineweight=PROFILE)]
 
 
 def _head_is_trimmed(profiles, sill_z: float, head_z: float) -> bool:
@@ -126,7 +131,7 @@ def _head_is_trimmed(profiles, sill_z: float, head_z: float) -> bool:
     not, so a cut never shows an opening with no head at all."""
     midline = (sill_z + head_z) / 2
     return any(sum(z for _u, z in points) / len(points) >= midline
-               for _material, points in profiles)
+               for _tag, _material, points in profiles)
 
 
 def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> list[IRNode]:
@@ -180,6 +185,11 @@ def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> lis
 
 def outie_window_truss(model, wall, opening, crop, direction, station) -> list[IRNode]:
     """Head flashing + sill pan at an OUTIE window or door in a truss wall.
+
+    On a metal wall the head is cut from the resolved pieces: the 58114XX head trim, the K6
+    cap over the head course, and the perforated strip on its pads that the panel end sits
+    on (``resolve/opening_head_cap.py``, ``resolve/rainscreen_strips.py``). The drawn drip
+    path below is only for an opening no trim reaches.
 
     The innie recipe above measures both pieces from ``sheath_out``, because that is where an
     innie unit sits: in the stud plane, behind the insulation, with the flashing lapped onto

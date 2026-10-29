@@ -1479,9 +1479,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 #   railing            [railings], $/LF of guard line (the takeoff gained `length_ft`).
 #   gutter, downspout  [drainage], $/LF of run.
 #   flashing           already [edge_trim] `drip_flashing` + `wrb_counterflashing`.
-# `bug_screen` (0.04 cy, 240 LF of corrugated vent strip in the `bug_screens` table) is
-# the one left with no plan of its own. A vent strip is a few dollars a foot, so this is a
-# ~$250-700 hole — small, but it is a hole, not a zero.
+# `bug_screen` bills by the foot in [bug_screens] (2026-10-29), not here.
 # $/cy placed, by solid category
 # 2026-08-20 RESEARCH PASS 4 raised every rate below. The old numbers were ready-mix plus a
 # thin placement allowance; a formed pour is bought by the FOOT OF FORM, not the yard of mud.
@@ -2152,64 +2150,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # remains a separate PVC article under [edge_trim].
 "soffit" = { material = { low = 607, high = 1213 }, labour = { low = 1519, high = 3038 } }
 #
-# BUG SCREEN / RAINSCREEN VENT STRIP — 240 LF of Cor-A-Vent SV-3 class corrugated strip closing
-# the top and bottom of the rainscreen cavity, split 144 LF house / 96 LF garage. $2.00-4.50/LF
-# installed: material $0.80-2.00 (SV-3 is $73.95 a 96-LF carton at the low retail tier and
-# $162.94 on a marketplace, so the real dealer number is near the bottom) plus $1.20-2.50 labour
-# at 40-60 LF/hr. ** THE $/cy IS NUMERICALLY FRAGILE AND THE LINE TOTAL IS THE ONLY HONEST
-# NUMBER: ** 240 LF against 0.04 cy makes the multiplier 6000, so a 25-cent/LF error moves the
-# $/cy by $1,500 and a rounding change in the modelled volume moves it 13%. Priced anyway,
-# because the 2026-08-08 note called this "a ~$250-700 hole" and a hole is worse than a fragile
-# rate. It is really $288-648 (house) and $192-432 (garage).
-# 2026-08-20: RE-UNITED. These were the worst rates in the file — 18 screens against 0.04 cy
-# meant a multiplier of ~6,000, so a 25-cent/LF error moved the printed $/cy by $1,500 and no
-# reader could tell a right rate from a wrong one. `unit = "SF"` reads `plan_area_sqft`, the
-# footprint of the screen band: the band is the rainscreen cavity's own depth.
-#
-# ** THAT MAKES THE $/SF A PROXY, AND A PROXY HAS TO BE RE-STRUCK WHEN THE DEPTH MOVES. **
-# The truss wall took the cavity from 1/2" to 1" on 2026-08-23, so the same 144 LF of strip
-# now reports 12.2 SF instead of 6.1 — and at the old rate the line silently doubled to
-# $573-1,293 for a product nobody buys by the square foot. Halved here, which is what keeps
-# the LF rate the thing that is actually priced.
-#
-# Underlying: **$2.00-4.50/LF installed** — material $0.80-2.00, labour $1.20-2.50 at
-# 40-60 LF/hr — for a corrugated vent strip set as the cladding goes on. A 1" section is a
-# Cor-A-Vent SV-5 rather than the 3/4" SV-3, a few cents a foot dearer, and that is inside
-# this band. 144 LF x $2.00-4.50 = **$288-648**, which is what the line prints again.
-# ** UNCHANGED BY THE 2026-08-31 BOARD & BATTEN SWITCH, and worth saying so. ** The screen is
-# keyed on the ASSEMBLY's rainscreen cavity, and `layer_materials=` swapped a material and
-# nothing else — same 1/2" vent gap, same 1" section, same 144 LF, same 12.2 SF on the same
-# fourteen walls. The panel above it is board & batten on ten of them and PBR on four.
-# ** RE-STRUCK 2026-10-10: 2" CAVITY, METAL SECTION, AND OPENING HEADS. ** Three changes at once.
-# (1) The truss wall's cavity is 2" (1/2" vent gap + 1-1/2" girt band), so 1 LF is now 1/6 SF
-# and the old $/SF had silently doubled again (12.2 -> 24.6 SF for the same 144 LF). (2) The
-# polypropylene strip is chewable; the closure is now `perforated-aluminum-insect-closure`, a
-# 0.032" perforated sheet (holes <= 1/8") braked to a U across the cavity. (3) The engine now
-# derives a head screen over every window and door on a rainscreen wall
-# (`resolve/rainscreen_closures.head_screen_spans`): 144 LF of base + 104.6 LF over 38 heads
-# here = 248.6 LF, reading 42.0 SF (the base bands keep their mitred corners), and 4 heads
-# (12.1 LF, 2.0 SF) on the plant wall's own row below.
-# Underlying: **$3.50-7.50/LF installed** — material $2.00-4.50 (shop-braked from 4x8 perforated
-# 0.032" aluminium, 5" girth = 0.42 SF of sheet per LF plus waste; a bought formed profile is
-# ~$10/LF, GBA "material for rainscreen bug screen", which caps the band), labour $1.50-3.00 —
-# dearer than the strip because a head piece is cut and fitted one opening at a time. x 6 for
-# $/SF. No firm quote is on file: ask the siding sub or a sheet-metal shop.
-"bug_screen:EXT_2X6" = { unit = "SF", material = { low = 12, high = 27 }, labour = { low = 9, high = 18 } }  # 42.0 SF = 248.6 LF (144 base + 104.6 heads)
-"bug_screen:EXT_2X6_BOARD_BATTEN" = { unit = "SF", material = { low = 12, high = 27 }, labour = { low = 9, high = 18 } }  # Same vent screen, 3/4-inch panel variant.
-"bug_screen:PLANT_EXT_2X6_HUMID" = { unit = "SF", material = { low = 12, high = 27 }, labour = { low = 9, high = 18 } }  # 2.0 SF = 12.1 LF, 4 plant-room heads
-"bug_screen:PLANT_EXT_2X6_HUMID_BOARD_BATTEN" = { unit = "SF", material = { low = 12, high = 27 }, labour = { low = 9, high = 18 } }  # Same vent screen, 3/4-inch panel variant.
-# RETIRED 2026-08-20, kept for the rate. The garage lost its 3/8" rainscreen furring that
-# day, so GARAGE_WALL_2X6 has no vented cavity and bills no screen; the row is left because
-# the number was researched and the wall could get its cavity back. It reads 0 SF today.
-#
-# ** IT STILL READS 0 SF AFTER 2026-08-31, AND THAT IS NOT THE SAME AS "NO CLOSURES". **
-# The wall took a 7/8" corrugated panel that day, and the corrugation itself is the drainage
-# and vent cavity — but it is not a modelled LAYER, so `rainscreen_cavity_m` finds nothing
-# and this row's driver stays at zero. The real inside/outside closure strips the profile
-# needs are priced as `[allowances] envelope-garage-corrugated-closure-strips` instead. Do not
-# "activate" this row by authoring a 7/8" airgap layer: that would add 7/8" to the stack on
-# top of the 7/8" cladding and move both wall faces.
-"bug_screen:GARAGE_WALL_2X6" = { unit = "SF", material = { low = 26, high = 64 }, labour = { low = 38, high = 80 } }  # 0 SF (was 3.0 SF = 96 LF)
+# BUG SCREEN — moved 2026-10-29 to its own [bug_screens] section, priced by the lineal foot
+# of each kind (base U, panel-end strip, band outlet strip, EPDM pads). The old
+# `bug_screen:<assembly>` $/SF rows were dead: structural_solids skips the category.
 
 # PORCH DECK, COMPOSITE — the breezeway deck. PRICED 2026-08-20, after the "10x discrepancy"
 # that held this row open through two passes turned out not to exist.
@@ -6213,9 +6156,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # a formed 2 1/2" aluminium band screwed to the deck's north rim, sloped south to drain, with a
 # compressible foam or brush lip that BEARS on the cladding without penetrating it. It is
 # the vertical bug path the curtain itself cannot close.
-# ** NOT THE SAME `bug_screen` AS [openings]'s. ** Those rows (`bug_screen:EXT_2X6`)
-# are the rainscreen cavity's base vent, derived off wall layers and billed by the SF. This
-# is an authored `_EdgeRun` billed by the foot, in a different table, with no overlap.
+# ** NOT THE RAINSCREEN'S SCREENS. ** Those are derived off the walls and bill in
+# [bug_screens]. This is an authored `_EdgeRun` billed by the foot, with no overlap.
 # Material is above `drip_flashing`'s because the girth is wider and the brush/foam lip is a
 # purchased strip in its own right; the LABOUR is the wrb_counterflashing story again —
 # 17 feet is below any sub's minimum, so this is a $200-350 half-day LUMP spread over the
@@ -6303,6 +6245,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "WINDOW_JAMB_CUSTOM" = { material = { low = 6, high = 10 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "WINDOW_SILL_CUSTOM" = { material = { low = 6.5, high = 11 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "DOOR_HEAD_CUSTOM" = { material = { low = 7, high = 12 }, labour = { low = 3, high = 5.5 }, unit = "LF" }
+"OPENING_HEAD_CAP" = { material = { low = 6, high = 10 }, labour = { low = 3, high = 5 }, unit = "LF" }  # K6 window head cap, ~8" girth, 3 bends and end dams; the door head's shop rate less a hem (2026-10-29)
 "RAINSCREEN_BASE_Z" = { material = { low = 5, high = 9 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "CORRUGATED_SILL_TO_SOFFIT" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }
 "6411499" = { material = { low = 0.45, high = 0.90 }, labour = { low = 0.4, high = 0.9 }, unit = "LF" }
@@ -6323,6 +6266,17 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "tube-sealant" = { material = { low = 0.15, high = 0.35 }, labour = { low = 0.3, high = 0.7 }, unit = "LF" }
 "trim-stitch-screw" = { material = { low = 0.06, high = 0.12 }, labour = { low = 0, high = 0 } }
 "trim-pop-rivet" = { material = { low = 0.08, high = 0.16 }, labour = { low = 0, high = 0 } }
+
+[bug_screens]
+# NEW 2026-10-29 — the rainscreen's insect closures by the LINEAL FOOT of each kind
+# (takeoff/envelope.bug_screen_takeoff, measured off the resolved pieces). ESTIMATES, NOT
+# QUOTES: perforated 0.032-0.040 aluminium, holes <= 1/8", >= 20% open (3 mm on 5 mm stagger,
+# 33%), 4x10 sheet at roughly $5-9/SF from a metals supplier, sheared and braked by the
+# siding sub or a sheet-metal shop. No firm quote: the screen supplier is an open RFQ.
+"BASE_SCREEN" = { material = { low = 2.5, high = 5 }, labour = { low = 1.5, high = 3 } }  # 2x2 inverted U, 6" girth, on the base Z; 149 LF
+"PANEL_END_STRIP" = { material = { low = 0.8, high = 1.6 }, labour = { low = 0.5, high = 1.2 } }  # 1-1/4" to 1-1/2" flat strip under each panel end: base, heads, band
+"BAND_OUTLET_STRIP" = { material = { low = 0.8, high = 1.6 }, labour = { low = 0.5, high = 1.2 } }  # 1" strip over the lower panel's top at the BBD75 band
+"EPDM_PAD" = { material = { low = 0.3, high = 0.7 }, labour = { low = 0, high = 0 } }  # 1/16" EPDM cut to 2" pads at 12" o.c., LF of pad; set with the strip
 
 [member_protection]
 # RESEARCHED 2026-08-27 — [low, high] $/LF of MEMBER covered, by material tag. New section,
@@ -7349,11 +7303,10 @@ envelope-exterior-hoods-and-flashing = { low = 200, high = 500 }
 #
 # 192 LF, undriven: 96 LF of base (the garage's four 24'-0" walls) plus 96 LF of head, and
 # openings are not deducted — a door or window head takes its own closure back. There is no
-# BOM field to drive this off. `bug_screen:GARAGE_WALL_2X6` in [openings] looks like the
-# right home and is not: it reads a rainscreen cavity DEPTH out of the layer stack, and the
-# corrugation is not a modelled layer, so that row is 0 SF and stays 0 SF (see its note).
+# BOM field to drive this off: the rainscreen screens read a cavity DEPTH out of the layer
+# stack, and the corrugation is not a modelled layer (the retired `bug_screen:GARAGE_WALL_2X6`).
 #
-# $2.00-4.50/LF installed is the same band [openings] `bug_screen:EXT_2X6` derives —
+# $2.00-4.50/LF installed was the rainscreen vent strip's band then —
 # material $0.80-2.00, labour $1.20-2.50 at 40-60 LF/hr, set as the cladding goes on. A
 # profile-matched closure (foam or EPDM, cut to the 2-2/3" pitch) sits at the top of that
 # band where a straight Cor-A-Vent section sits at the bottom, which is why this row does
@@ -7363,8 +7316,9 @@ envelope-exterior-hoods-and-flashing = { low = 200, high = 500 }
 # NEW 2026-10-10 — the house's PBR profile closures, the same job as the garage row above.
 # PBR (`pbr-panel-24`, the E/W walls) is ribbed, so every horizontal termination leaves the rib
 # voids open into the rainscreen cavity (see [cladding]'s note: "every horizontal termination
-# needs a die-cut foam closure matched to the rib"). The derived `bug_screen` closes the CAVITY;
-# it does not close the RIBS in front of it. Counted off the model, not modelled:
+# needs a die-cut foam closure matched to the rib"). SUPERSEDED 2026-10-29 at the base and the
+# window heads: the panel end sits on a perforated strip ([bug_screens]); sills, eave heads and
+# rakes stay closed. The 2026-10-10 count, for the record:
 #   72.0 LF  base, VENTED closure (main-storey E/W walls; the cavity drains and vents here)
 #   72.0 LF  eave head, SOLID closure (second-storey E/W walls; the E/W walls ARE the eaves)
 #   47.3 LF  opening heads, SOLID, under the head flashing (19 windows, RO + a jamb post each side)
@@ -8084,7 +8038,6 @@ wall_structure = false
 "openings:WT-2464" = "catalog-only window size, kept per the retired-sizes-stay-priced convention"
 "openings:WT-2764" = "catalog-only: the Juliet pair grew to WT-2754 on 2026-09-10"
 "solids:glazing:GLAZED_WALL_MULTIWALL_16MM" = "the breezeway canopy's 16mm multiwall stack, retired 2026-09-10 for RF-BW-CANOPY"
-"solids:bug_screen:GARAGE_WALL_2X6" = "reads 0 SF for a corrugated wall by design — the closures bill as an allowance"
 "floor_finishes:polished-concrete" = "the costed fallback to the 2K PU coating on SL-M-DECK (2026-09-12)"
 "placeables:FT-CLOSET-SHELFROD-96" = "RM-M-CLOSET's shelf-and-rod until the 2026-10-01 PAX fit-out; a library size, kept priced"
 "placeables:FURN-M-SEKTION-24-DRAWER" = "RM-M-CLOSET's west drawers until the 2026-10-03 PAX-WEST and wire corner; kept priced"
@@ -8137,6 +8090,7 @@ install_parts        = "material"
 pipe_insulation      = "material"
 edge_trim            = "material"
 cladding_trim        = "material"
+bug_screens          = "material"
 member_protection    = "material"
 wall_structure       = "installed"
 reinforcement        = "material"
@@ -8171,6 +8125,7 @@ data_raceways   = "material plus installed labour, $/LF of EMPTY PIPE. It is not
 ducts           = "material plus installed labour, UN-BLENDED 2026-08-27 by qualifying on `material` and 2026-08-30 by qualifying on `diameter_in` as well: `supply:semi_rigid:3.0` is the 75 mm radial, `supply:semi_rigid:6.0` the 6-inch riser, and a bare `supply` the 14x8 galvanized trunk, which the model leaves unnamed. Lookups fall back through the shorter keys, so the `material`-only and bare rows still price anything the finer rows do not name. The 08-27 blend it replaces was a sheet-metal rate carried over the radial pass, so the section fell rather than rose; the 08-30 diameter split is rate-neutral on today's mix and exists so it stays right when the mix moves"
 edge_trim       = "material plus installed labour. One row, drip_flashing, is commonly inside a roofer's price — check for a double count against any roofing bid"
 cladding_trim   = "ESTIMATES, NOT QUOTES: material plus installed labour per Metal Sales stock stick (ea) or per foot of custom cut, closure, tape and sealant bead (LF); fasteners each. RECONCILIATION 2026-10-27: this section ADDS the wall base, corners, band, window and door trim, screen ends, Image II eave/rake/ridge and their closures, sealant and fasteners; it REPLACES [allowances] envelope-pbr-profile-closures and envelope-garage-corrugated-closure-strips (both deleted), the derived drip/ridge-closed/panel-rake LF formerly in [edge_trim] (drip_flashing and corner_trim now cover only the authored runs; ridge_cap has no rows), and ~12% of the three wall panels' MATERIAL $/SF (pbr-panel-24 2.15-3.30 to 1.90-2.90, board-batten-24 2.30-4.05 to 2.00-3.55, corrugated-panel-24 2.00-3.15 to 1.75-2.75), the trim share TRIM IS PARITY left inside them. The 12% is an assumption with no source (the three rows cut 11.6-13.0%, about $1.0-1.7k of pre-tax material at the current SF): re-strike it when a supplier quote lands. Estimate moved $880k-1,738k to $895k-1,762k. The garage's vented ridge (IMAGE_II_VENTED_STEP_RIDGE and the Cobra closure) bills here, unpriced until Metal Sales confirms the part numbers and the Cobra net free area; the PBR 5x4 box gutter is the catalog piece, sized in notes/box_gutter_sizing.md, and bills here by part. The 0.040 in aluminium K2, EPDM isolation and wall-top closures are added as measured runs, with lap sealant separately; prices are estimates pending supplier quotes"
+bug_screens     = "ESTIMATES, NOT QUOTES: material plus installed labour per lineal foot of perforated aluminium base screen, panel-end strip and band outlet strip, and of EPDM pad; no supplier quote. NEW 2026-10-29: replaces the dead [solids] bug_screen:<assembly> rows (structural_solids never billed the category) and, at the bases and window heads, the 6460800 / 55548XX closures under [cladding_trim]"
 member_protection = "material plus installed labour. Applied by the framer WITH the framing, not by a trade on a return visit — five of the seven capped beams carry joists on top, so the tape and the cap over it go on before the deck frames or not at all"
 railings        = "material plus installed labour. RAILING-INT-STAIR-GUARD is priced as a COMPONENT system; a shop-welded guard moves cost from labour into material and the two models must not be stacked"
 drainage        = "material plus installed labour for the prefinished K-style gutter and dark downspouts (the PBR box gutter bills by part under cladding_trim). Seamless is roll-formed on site, so its own split is inseparable and every quote will come back merged"

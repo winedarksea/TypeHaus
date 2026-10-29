@@ -96,7 +96,10 @@ ROWS: tuple[C, ...] = (
     _trim("eave_soffit", "siding"),
     _trim("wall_corner", "siding"),
     _trim("beam_cap", "siding"),
-    _trim("bug_screen", "siding", ifc=_FOOTING, elevation=None),
+    # Perforated aluminium behind the trim: a covering like the trim it sits in, hidden in
+    # elevation.
+    C("bug_screen", trade="siding", ifc_class=_COVER, ifc_predefined="USERDEFINED",
+      ifc_object_type="INSECTSCREEN", finish_group="accessory", billed_elsewhere=True),
     _trim("screen_slat", "siding", ifc=_FOOTING, elevation=None, finish=None),
     _trim("movement_joint", "masonry"),  # a brick wythe's sealant end joint
     # Stormwater, gutter to daylight.

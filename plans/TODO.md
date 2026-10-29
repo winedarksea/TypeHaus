@@ -303,7 +303,7 @@ the future.
 - Make sure the plumbing matches fixtures to their right locations on their connections
 - Make sure sizing and dimensions and placement are correct for junction boxes (ie for LED power supplies), with specified product.
 - Double check the calculations for accuracy of BTU heating and cooling load.
-- Make sure the house rainscreen is both ventilated and tight against bugs.
+- Rainscreen closures (2026-10-29): close the supplier questions in `houses/catlin/notes/metal_trim_kit.md` "Open with suppliers" (Metal Sales x4, the membrane maker, the screen supplier) and the owner's EPDM-pads-vs-painted call. The panel bottoms are still drawn to the seat, not on the raised strip.
 - Make sure sealed cut ends are specified in instructions for KDAT usage
 - Review the pantry shelving, we want something easy to construct (alongside our custom glue up panels), strong, and with good lighting
 - Make sure the railing and guard rail products are named when clicked on in the UI, and that the assembly of them is correctly modeled (especially how they are mounted)

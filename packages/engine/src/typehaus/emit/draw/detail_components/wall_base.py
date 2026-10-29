@@ -37,7 +37,11 @@ from typehaus.model.cladding_trim import BBD_KIT, CORRUGATED_KIT, PBR_KIT, TrimC
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import CutPlane, slice_solid
 from typehaus.resolve.model import ResolvedLayer, ResolvedWall
-from typehaus.resolve.rainscreen_closures import BUG_SCREEN_HEIGHT_IN, BUG_SCREEN_MATERIAL
+from typehaus.resolve.rainscreen_closures import (
+    BASE_SCREEN_PRODUCT,
+    BUG_SCREEN_HEIGHT_IN,
+    BUG_SCREEN_MATERIAL,
+)
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 # How near a banded layer's top must land on the wall top to read as "runs to the top" —
@@ -96,20 +100,23 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
     return nodes
 
 
+#: The resolved base pieces cut into the detail, by product: tag and fill.
+_BASE_PIECES = {"RAINSCREEN_BASE_Z": "z-flashing", BASE_SCREEN_PRODUCT: "bug-screen",
+                "EPDM_BASE_ISOLATION": "epdm-isolation", "PANEL_END_STRIP": "panel-end-strip",
+                "EPDM_PAD": "epdm-pad"}
+
+
 def _resolved_base_flashing(model, wall, direction, station):
-    """Cut the installed sheet and screen, rather than drawing a second section."""
+    """Cut the installed Z, screen, EPDM and panel-end strip, never a second section of them."""
     plane = CutPlane(axis=direction, station_m=station)
     nodes = []
     for solid in model.solids:
-        if solid.body_mesh is None or not (
-                solid.host_ref == wall.tag and solid.product == "RAINSCREEN_BASE_Z"
-                or solid.tag == f"{wall.tag}-BUGSCREEN"):
+        tag = _BASE_PIECES.get(solid.product or "")
+        if solid.body_mesh is None or solid.host_ref != wall.tag or tag is None:
             continue
         for profile in slice_solid(solid.body_mesh, plane):
             points = [(u / M_PER_IN, z / M_PER_IN) for u, z in profile.outline]
-            tag = "bug-screen" if solid.tag.endswith("-BUGSCREEN") else "z-flashing"
-            material = BUG_SCREEN_MATERIAL if tag == "bug-screen" else solid.material
-            nodes += closed_region(points, tag, material, "metal", lineweight=PROFILE)
+            nodes += closed_region(points, tag, solid.material, "metal", lineweight=PROFILE)
     return nodes
 
 

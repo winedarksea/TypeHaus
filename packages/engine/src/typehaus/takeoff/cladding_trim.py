@@ -97,8 +97,12 @@ def _wall_trim_rows(model: ResolvedModel, rows: _Rows) -> None:
         for layer in wall.layers:
             if layer.function == "cladding" and finish.get(layer.material_ref):
                 panel_finish[wall.tag] = finish[layer.material_ref]
+    # A panel end on a perforated strip takes no closure; the strip bills with the screens.
+    on_strip = {(s.host_ref, "head" if "-HEADSTRIP-" in s.tag else "base")
+                for s in model.solids
+                if s.category == "bug_screen" and s.product == "PANEL_END_STRIP"}
     for solid in model.solids:
-        if solid.category != "cladding_trim":
+        if solid.category != "cladding_trim" or solid.product == "EPDM_PAD":
             continue
         if solid.product == "EPDM_BASE_ISOLATION":
             if solid.trim_length_m is None or solid.trim_length_m <= 0:
@@ -136,7 +140,11 @@ def _wall_trim_rows(model: ResolvedModel, rows: _Rows) -> None:
         closure = profile.closure
         if closure is None and solid.product in _CLOSED_BY_PANEL:
             closure = PANEL_CLOSURE.get(panel or "")
-        if closure and solid.product not in {"BBD_C_CLOSURE"}:
+        end = ("head" if solid.product == "OPENING_HEAD"
+               else "base" if solid.tag.startswith(f"TRIM-{host}-BASE-") else None)
+        closed = closure and solid.product not in {"BBD_C_CLOSURE"} \
+            and (host, end) not in on_strip
+        if closed:
             _supply(rows, closure, length, solid.tag)
         suffix = solid.tag.rsplit("-", 1)[-1]
         lap_index = suffix.isdigit() and int(suffix) > 1
@@ -144,8 +152,8 @@ def _wall_trim_rows(model: ResolvedModel, rows: _Rows) -> None:
             _supply(rows, "tube-sealant", length, solid.tag)
         if lap_index:
             _supply(rows, "tube-sealant", _LAP_SEALANT_FT * _FT, solid.tag)
-        if profile.name == "1.25 inch Base":
-            _supply(rows, "butyl-tape", length, solid.tag)
+        if profile.name == "1.25 inch Base" and closed:
+            _supply(rows, "butyl-tape", length, solid.tag)  # beds the closure
         role = profile.fastener_role.replace("_", "-")
         fasteners = ceil(length / M_PER_IN / profile.fastener_spacing_in) * profile.fastener_rows
         fasteners += profile.lap_fasteners if lap_index else 0

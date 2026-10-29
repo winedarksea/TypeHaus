@@ -775,8 +775,7 @@ def test_every_rainscreen_wall_base_is_screened(catlin_model) -> None:
     """
     from typehaus.resolve.rainscreen_closures import screens_rainscreen_base
 
-    screens = {s.tag.replace("-BUGSCREEN", ""): s
-               for s in catlin_model.solids if s.tag.endswith("-BUGSCREEN")}
+    screens = {s.host_ref: s for s in catlin_model.solids if s.product == "BASE_SCREEN"}
     assert screens, "a standing-seam rainscreen house resolves bug screens"
     expected = {wall.tag for wall in catlin_model.walls
                 if screens_rainscreen_base(catlin_model, wall)}
@@ -807,32 +806,31 @@ def test_a_screen_sits_in_the_cavity_it_closes_at_the_cladding_start(catlin_mode
     Both are one function (``rainscreen_band``), and the strip the model draws spans exactly
     what it reports — the two polygons unioned — or the order and the drawing disagree.
     """
-    from typehaus.resolve.geometry import polygon_area
     from typehaus.resolve.rainscreen_closures import (
         BUG_SCREEN_HEIGHT_IN,
+        cavity_base_run,
         rainscreen_cavity_m,
     )
 
     wall = next(w for w in catlin_model.walls if w.tag == "W-M-S1")
-    screen = next(s for s in catlin_model.solids
-                  if s.tag == "W-M-S1-BUGSCREEN")
-    points = screen.body_mesh.positions
-    assert screen.z0_m == pytest.approx(min(point[2] for point in points))
-    assert screen.z0_m == pytest.approx(wall.z0_m, abs=inch(0.01).meters)
-    half = len(points) // 2
-    assert all(top[2] - bottom[2] == pytest.approx(inch(BUG_SCREEN_HEIGHT_IN).meters)
-               for bottom, top in zip(points[:half], points[half:], strict=True))
+    pieces = [s for s in catlin_model.solids
+              if s.host_ref == "W-M-S1" and s.product == "BASE_SCREEN"]
+    assert pieces
+    points = [p for s in pieces for p in s.body_mesh.positions]
+    bottom, top = min(p[2] for p in points), max(p[2] for p in points)
+    assert bottom == pytest.approx(wall.z0_m, abs=inch(0.01).meters)
+    # The inverted U stands its own height on the Z pan (0.040" sheet, falling 1/4"/ft).
+    assert top - wall.z0_m == pytest.approx(inch(BUG_SCREEN_HEIGHT_IN + 0.04).meters,
+                                            abs=inch(0.005).meters)
     furring = [ly for ly in wall.depth_layers() if ly.function == "furring"][-1]
     airgap = next(ly for ly in wall.depth_layers() if ly.function == "airgap")
     vent_m = furring.thickness_m + airgap.thickness_m
     assert vent_m == pytest.approx(inch(2.0).meters)
     assert rainscreen_cavity_m(wall.layers) == pytest.approx(vent_m)
-    # The strip spans both bands, in their own footprint: same run, the cavity's depth.
-    # Compared by area rather than by vertex list, because the bands are mitred at their
-    # corners and the union inherits that shape.
-    band_area = abs(polygon_area(list(furring.polygon)))
-    assert abs(polygon_area(list(screen.outline))) == pytest.approx(
-        band_area * vent_m / furring.thickness_m, rel=0.02)
+    # The U spans both bands, foam face to girt plane: the cavity's depth.
+    run = cavity_base_run(catlin_model, wall)
+    offsets = [x * run.outward[0] + y * run.outward[1] for x, y, _ in points]
+    assert max(offsets) - min(offsets) == pytest.approx(vent_m, abs=1e-6)
 
 
 def test_a_stacked_storey_does_not_get_a_second_screen(catlin_model) -> None:
@@ -840,9 +838,9 @@ def test_a_stacked_storey_does_not_get_a_second_screen(catlin_model) -> None:
     at the second storey to screen. Screening every wall would triple the order."""
     stacked = [w for w in catlin_model.walls if w.storey in ("second", "attic")]
     assert stacked, "the fixture must actually have stacked storeys for this to mean anything"
-    screened = {s.tag for s in catlin_model.solids
-                if s.category == TrimKind.BUG_SCREEN.value}
-    assert not [w for w in stacked if f"{w.tag}-BUGSCREEN" in screened]
+    screened = {s.host_ref for s in catlin_model.solids
+                if s.category == TrimKind.BUG_SCREEN.value and s.product == "BASE_SCREEN"}
+    assert screened and not [w for w in stacked if w.tag in screened]
 
 
 def test_an_interior_partition_is_never_screened(catlin_model) -> None:

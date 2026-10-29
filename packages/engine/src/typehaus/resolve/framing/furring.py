@@ -374,6 +374,9 @@ def course_elevations(rw: ResolvedWall, spec: Any, face: float, *,
     # ``band`` shortens the run the courses exist over — bottom and top alike — but never
     # moves ``phase``, so a banded liner's courses stay on the wall's own module.
     base = rw.z0_m if band is None else max(rw.z0_m, band[0])
+    if base <= rw.z0_m + 1e-9 and getattr(spec, "standoff", None) == "block":
+        # A girt cavity that begins here: the starter clears the base Z (no KDAT on it).
+        base += getattr(rw, "girt_starter_rise_m", 0.0)
 
     elevations = [base] if base + face <= top_high + 1e-9 else []
     if spacing > 0.0:

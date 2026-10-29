@@ -19,6 +19,7 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     member_profile,
     opening_flashing,
     plant_refs,
+    rainscreen_cavity,
     reinforcement_layout,
     reveal_alignment,
     roof_clearance,

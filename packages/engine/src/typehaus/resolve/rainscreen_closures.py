@@ -1,20 +1,23 @@
-"""Rainscreen insect closures: the screen at a cavity's base and over every opening head.
+"""Rainscreen insect closures: the screen where a cavity begins, and the head spans.
 
 The vented cavity behind the cladding is a sheltered void that ants, wasps and mice will use
-if they can reach it, and the only protection a ccSPF face in it has is physical: every
-opening into the cavity closed with corrosion-proof perforation. Two openings are derived
-here off the wall stack — the cladding start at the base of a cavity, and the drained slot
-under each window and door head flashing. The cavity TOP stays closed by the roof deck
-oversailing the girt face (``roof_layer_setbacks``), so nothing is derived there.
+if they can reach it, and the only protection a ccSPF face in it has is physical. The base of
+a cavity is its inlet: a perforated aluminium inverted U on the base Z, captive under the
+raised steel base trim, so air and water pass and insects do not
+(``notes/metal_trim_kit.md`` "Wall base stack"). Window and door heads are drained, not
+vented: a head cap floors the cavity above each one (``opening_flashing``), and the panel end
+sits on a perforated strip (``rainscreen_strips``). The cavity TOP stays closed by the roof
+deck oversailing the girt face (``roof_layer_setbacks``), so nothing is derived there.
 """
 
 from __future__ import annotations
 
+import math
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from typehaus.model.enums import LayerFunction, TrimKind
-from typehaus.quantities import inch
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import clip_half_plane, length, sub, wall_frame
 from typehaus.resolve.model import (
@@ -24,15 +27,26 @@ from typehaus.resolve.model import (
     ResolvedSolid,
 )
 
-# The closure is a perforated aluminium U, 1-1/2" tall, sold by the lineal foot and folded to
-# the cavity's own depth — metal because mice chew the old polypropylene strip, which stays
-# in the catalog as the revert. Only the height is a constant here — the depth is read off
-# the wall's furring layer, so a change to the batten size moves the order with it.
+# Perforated 0.032" aluminium, 3 mm holes on a 5 mm 60-degree stagger: holes under 1/8" keep
+# insects out, and the stagger leaves pi/(2*sqrt(3)) * (3/5)^2 = 32.6% open. The base screen
+# is an inverted U across the 2" cavity, 2" tall, braked from the sheet.
 BUG_SCREEN_MATERIAL = "perforated-aluminum-insect-closure"
-BUG_SCREEN_HEIGHT_IN = 1.5
-BUG_SCREEN_HOLE_IN = 3.0 / 25.4   # 3 mm perforation, see the material; insects need > 1/8"
+BUG_SCREEN_HOLE_IN = 3.0 / 25.4
+BUG_SCREEN_OPEN_FRACTION = math.pi / (2.0 * math.sqrt(3.0)) * (3.0 / 5.0) ** 2
+BUG_SCREEN_SHEET_IN = 0.032
+BUG_SCREEN_HEIGHT_IN = 2.0
+BUG_SCREEN_STOCK_IN = 120.0
+BUG_SCREEN_LAP_IN = 2.0
+#: DIN 18516-1's minimum net free area for a rainscreen cavity's inlet and outlet.
+MIN_NET_FREE_AREA_CM2_PER_M = 50.0
+BASE_SCREEN_PRODUCT = "BASE_SCREEN"
 _STACK_TOLERANCE_M = 0.05   # a storey's walls land exactly on the one below; this is slop
 _STACK_PLAN_TOL_M = 0.5     # two stacked walls share a plan line within a wall's thickness
+
+
+def net_free_area_cm2_per_m(open_height_m: float) -> float:
+    """Net free area of a perforated face ``open_height_m`` tall, per metre of run."""
+    return max(0.0, open_height_m) * 100.0 * BUG_SCREEN_OPEN_FRACTION * 100.0
 
 
 @dataclass(frozen=True)
@@ -187,82 +201,106 @@ def _continues_cavity_below(model: ResolvedModel, wall) -> bool:
     return False
 
 
-def resolve_bug_screens(model: ResolvedModel) -> None:
-    """A vented insect closure where a rainscreen cavity opens at the base of the cladding,
-    and one over every window and door head on a rainscreen wall.
+def pan_top_z(wall, spec, run: CavityBaseRun, offset: float) -> float:
+    """The base Z's upper face at an outward ``offset``: it falls ``spec.slope`` outward."""
+    return (wall.z0_m + spec.sheet_thickness.meters * math.sqrt(1.0 + spec.slope ** 2)
+            - spec.slope * (offset - run.inner_offset))
 
-    Derived rather than authored: the screen exists because of how the wall is built, not
-    because of anything about a particular wall, so hand-authoring one run per wall would
-    mean the next exterior wall someone draws silently ships an open cavity for wasps. The
-    strip fills the furring layer's own plan band — its depth *is* the cavity depth, by
-    construction.
 
-    Only the *bottom* of a cavity is screened at the base: see
-    :func:`_continues_cavity_below`. A head screen is per opening, on every storey: see
-    :func:`head_screen_spans`.
+def base_flashing_spec(model, wall):
+    assembly = model.plan.library.resolve_assembly(wall.assembly)
+    return assembly.rainscreen_base_flashing if assembly else None
 
-    Geometry only: the solid renders and exports, and
-    :func:`typehaus.takeoff.envelope.bug_screen_takeoff` bills the same runs by the lineal
-    foot off the same predicates.
-    """
-    height = inch(BUG_SCREEN_HEIGHT_IN).meters
+
+def apply_girt_starter_rise(model: ResolvedModel) -> None:
+    """Lift the starter girt clear of the base Z wherever a cavity begins (before framing).
+
+    The girts go on the flat wall before tilt-up and the Z after the foam, so a starter on
+    the seat could not be built, and it would put KDAT on aluminium (AWC DCA6)."""
+    walls = []
     for wall in model.walls:
-        found = rainscreen_band(wall.layers)
-        if found is None:
+        spec = base_flashing_spec(model, wall)
+        if spec is not None and screens_rainscreen_base(model, wall):
+            wall = replace(wall, girt_starter_rise_m=spec.starter_rise.meters)
+        walls.append(wall)
+    model.walls = walls
+
+
+def resolve_bug_screens(model: ResolvedModel) -> None:
+    """A perforated inverted U on the base Z wherever a rainscreen cavity begins.
+
+    Derived rather than authored: the screen exists because of how the wall is built, so the
+    next exterior wall someone draws cannot ship an open cavity for wasps. It spans the vented
+    band (:func:`_vented_band`) from the Z upstand to the girt plane, its legs seated on the
+    sloped pan, and it is cut from stock and mitred at corners like the Z under it. Only the
+    *bottom* of a cavity is screened (:func:`_continues_cavity_below`).
+    """
+    from typehaus.resolve.cladding_trim.members import split_stock_run
+    from typehaus.resolve.cladding_trim.section import folded_section_mesh
+    from typehaus.resolve.rainscreen_base_flashing import _mitre_mesh
+
+    sheet = BUG_SCREEN_SHEET_IN * M_PER_IN
+    height = BUG_SCREEN_HEIGHT_IN * M_PER_IN
+    for wall in model.walls:
+        run = cavity_base_run(model, wall)
+        spec = base_flashing_spec(model, wall)
+        if spec is None:
+            _boxed_screen(model, wall, run, height)
             continue
-        furring, vent = found
-        outline = _vented_band(wall, furring, vent, _cavity_airgap(wall.layers, furring))
-        if len(outline) < 3:
+        if run is None:
             continue
-        base = cavity_base_run(model, wall)
-        if base is not None:
-            assembly = model.plan.library.resolve_assembly(wall.assembly)
-            spec = assembly.rainscreen_base_flashing if assembly else None
-            mesh = None
-            if spec is not None:
-                from typehaus.resolve.geometry_ir import GBox
-                from typehaus.resolve.geometry_slice_box import _box_mesh
-
-                def bottom(point, base=base, wall=wall, spec=spec):
-                    offset = point[0] * base.outward[0] + point[1] * base.outward[1]
-                    return (wall.z0_m + spec.sheet_thickness.meters * (1 + spec.slope**2)**0.5
-                            - spec.slope * (offset - base.inner_offset))
-
-                lower = tuple((x, y, bottom((x, y))) for x, y in outline)
-                upper = tuple((x, y, bottom((x, y)) + height) for x, y in outline)
-                mesh = _box_mesh(GBox(lower, upper))
+        depth = run.outer_offset - run.inner_offset
+        inner_z = pan_top_z(wall, spec, run, run.inner_offset)
+        section = ((0.0, 0.0), (0.0, height), (depth, height), (depth, -depth * spec.slope))
+        total = run.end - run.start
+        for index, (start, end, stock) in enumerate(split_stock_run(
+                total, (BUG_SCREEN_STOCK_IN * M_PER_IN,), BUG_SCREEN_LAP_IN * M_PER_IN)):
+            station = run.start + start
+            origin = (station * run.direction[0] + run.inner_offset * run.outward[0],
+                      station * run.direction[1] + run.inner_offset * run.outward[1], inner_z)
+            mesh = folded_section_mesh(section, origin, (*run.outward, 0.0), (0.0, 0.0, 1.0),
+                                       (run.direction[0] * (end - start),
+                                        run.direction[1] * (end - start), 0.0), sheet)
+            mesh = _mitre_mesh(mesh, run, start, end, total)
+            xs, ys, zs = zip(*mesh.positions, strict=True)
             model.solids.append(ResolvedSolid(
-                uid=f"{wall.uid}-bugscreen", tag=f"{wall.tag}-BUGSCREEN", storey=wall.storey,
-                category=TrimKind.BUG_SCREEN.value, outline=outline,
-                z0_m=min(p[2] for p in mesh.positions) if mesh else wall.z0_m,
-                z1_m=max(p[2] for p in mesh.positions) if mesh else wall.z0_m + height,
-                assembly=wall.assembly, body_mesh=mesh,
-            ))
-        origin, tangent, _across, _axis_length = wall_frame(wall)
-        for opening, s0, s1, z0 in head_screen_spans(model, wall):
-            ring = clip_half_plane(
-                outline, (origin[0] + tangent[0] * s0, origin[1] + tangent[1] * s0), tangent)
-            ring = clip_half_plane(
-                ring, (origin[0] + tangent[0] * s1, origin[1] + tangent[1] * s1),
-                (-tangent[0], -tangent[1]))
-            if len(ring) < 3:
-                continue
-            model.solids.append(ResolvedSolid(
-                uid=f"{opening.uid}-headscreen", tag=f"{opening.tag}-HEADSCREEN",
-                storey=wall.storey, category=TrimKind.BUG_SCREEN.value, outline=ring,
-                z0_m=z0, z1_m=z0 + height, assembly=wall.assembly,
-            ))
+                uid=f"{wall.uid}-bugscreen-{index}", tag=f"{wall.tag}-BUGSCREEN-{index + 1}",
+                storey=wall.storey, category=TrimKind.BUG_SCREEN.value,
+                material=BUG_SCREEN_MATERIAL, product=BASE_SCREEN_PRODUCT, host_ref=wall.tag,
+                outline=((min(xs), min(ys)), (max(xs), min(ys)),
+                         (max(xs), max(ys)), (min(xs), max(ys))),
+                z0_m=min(zs), z1_m=max(zs), assembly=wall.assembly, body_mesh=mesh,
+                trim_length_m=end - start,
+                trim_stock_length_in=round(stock / M_PER_IN, 6)))
 
 
-def head_screen_spans(model: ResolvedModel, wall
-                      ) -> list[tuple[ResolvedOpening, float, float, float]]:
-    """``(opening, s0, s1, z0)`` for the insect screen over each window/door head.
+def _boxed_screen(model, wall, run, height) -> None:
+    """With no formed Z to seat a U on, the screen is drawn as a box filling the vented band."""
+    found = rainscreen_band(wall.layers)
+    if found is None or not screens_rainscreen_base(model, wall):
+        return
+    furring, vent = found
+    outline = _vented_band(wall, furring, vent, _cavity_airgap(wall.layers, furring))
+    if len(outline) < 3:
+        return
+    _origin, tangent, _across, _length = wall_frame(wall)
+    along = [x * tangent[0] + y * tangent[1] for x, y in outline]
+    model.solids.append(ResolvedSolid(
+        uid=f"{wall.uid}-bugscreen", tag=f"{wall.tag}-BUGSCREEN", storey=wall.storey,
+        category=TrimKind.BUG_SCREEN.value, material=BUG_SCREEN_MATERIAL,
+        product=BASE_SCREEN_PRODUCT, host_ref=wall.tag, outline=tuple(outline),
+        z0_m=wall.z0_m, z1_m=wall.z0_m + height, assembly=wall.assembly,
+        trim_length_m=run.end - run.start if run else max(along) - min(along)))
 
-    The head flashing drains the cavity above an opening to the outside, and that slot is a
-    way in. The screen sits on the head course (on a girt wall; the RO head otherwise) and
-    runs one stock face past each jamb so it covers the posts and stays under the flashing.
+
+def opening_head_spans(model: ResolvedModel, wall
+                       ) -> list[tuple[ResolvedOpening, float, float, float]]:
+    """``(opening, s0, s1, z)`` for the cavity over each window/door head on a rainscreen wall.
+
+    The span the head cap and the head strip share: the RO plus one stock face past each jamb,
+    over the jamb posts, at the top of the head course (the RO head where there is none).
     Stations are along the wall axis from its start. A rough opening is a penetration and
-    takes a seal, not a screen. Shared by the resolver and the take-off.
+    takes a seal, not a cap.
     """
     if rainscreen_band(wall.layers) is None:
         return []
@@ -278,9 +316,9 @@ def head_screen_spans(model: ResolvedModel, wall
         if opening.host_wall != wall.tag or opening.kind not in ("window", "door"):
             continue
         half = opening.width_m / 2.0 + face
-        z0 = wall.base_ref_z_m + opening.sill_m + opening.height_m + face
+        z = wall.base_ref_z_m + opening.sill_m + opening.height_m + face
         spans.append((opening, opening.center_along_m - half,
-                      opening.center_along_m + half, z0))
+                      opening.center_along_m + half, z))
     return spans
 
 

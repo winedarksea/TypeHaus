@@ -1,4 +1,5 @@
-"""Formed flashing under the same mitred cavity outline as the base screen."""
+"""Formed flashing under the same mitred cavity outline as the base screen, and the EPDM
+isolation where the steel base trim laps the aluminium screen."""
 
 from __future__ import annotations
 
@@ -9,7 +10,7 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.members import split_stock_run
 from typehaus.resolve.cladding_trim.section import folded_section_mesh
 from typehaus.resolve.model import ResolvedSolid
-from typehaus.resolve.rainscreen_closures import cavity_base_run
+from typehaus.resolve.rainscreen_closures import BUG_SCREEN_HEIGHT_IN, cavity_base_run
 
 
 def _end_stations(run, offset):
@@ -80,16 +81,18 @@ def resolve_rainscreen_base_flashing(model) -> None:
                          (max(xs), max(ys)), (min(xs), max(ys))),
                 z0_m=min(zs), z1_m=max(zs), trim_length_m=end-start,
                 trim_stock_length_in=round(stock / M_PER_IN, 6)))
-        # The strip covers the outside face of the aluminium where the steel base can
-        # reach it. It is continuous, so its order does not include flashing stock laps.
+        # The strip isolates the steel trim's back leg from the screen's outer leg where the
+        # one laps the other; the drip below it stays bare so the pan edge drains.
         station = run.start
         isolation_thickness = spec.isolation_thickness.meters
-        offset = run.outer_offset + isolation_thickness
+        offset = run.outer_offset
+        bottom = wall.z0_m + spec.trim_rise.meters
+        lap_top = top + BUG_SCREEN_HEIGHT_IN * M_PER_IN
         x = station * run.direction[0] + offset * run.outward[0]
         y = station * run.direction[1] + offset * run.outward[1]
         strip_mesh = folded_section_mesh(
-            ((0.0, 0.0), (0.0, -spec.drip.meters)),
-            (x, y, top - depth * spec.slope), (*run.outward, 0.0), (0.0, 0.0, 1.0),
+            ((0.0, 0.0), (0.0, lap_top - bottom)),
+            (x, y, bottom), (*run.outward, 0.0), (0.0, 0.0, 1.0),
             (run.direction[0] * total, run.direction[1] * total, 0.0),
             isolation_thickness)
         strip_mesh = _mitre_mesh(strip_mesh, run, 0, total, total)

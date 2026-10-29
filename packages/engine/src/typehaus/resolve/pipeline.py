@@ -117,6 +117,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         # laps) as construction geometry + take-off + overlay data, before members are framed.
         findings.extend(apply_construction_rules(model))
     with _stage("framing"):
+        from typehaus.resolve.rainscreen_closures import apply_girt_starter_rise
+
+        apply_girt_starter_rise(model)
         findings.extend(frame_model(plan, model))
         from typehaus.resolve.jamb_fill import resolve_jamb_fills
 
@@ -300,6 +303,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
 
         resolve_small_opening_trim(model)
         resolve_screen_ends(model)
+        from typehaus.resolve.rainscreen_strips import resolve_panel_end_strips
+
+        # After every trim a panel end lands on: the base, the window heads, the band.
+        resolve_panel_end_strips(model)
         from typehaus.resolve.roof_panel_skin import resolve_profiled_roof_surfaces
 
         resolve_profiled_roof_surfaces(model)
