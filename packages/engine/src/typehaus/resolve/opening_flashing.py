@@ -150,6 +150,7 @@ def is_overhead(model: ResolvedModel, opening: ResolvedOpening) -> bool:
 
 def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHING) -> None:
     walls = {wall.tag: wall for wall in model.walls}
+    cleared = {}
     metal = model.plan.project.opening_flashing_material
     for opening in model.openings:
         if opening.kind not in ("window", "door"):
@@ -173,7 +174,11 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
             meshes = [mesh for mesh in meshes if mesh[0] != "head"]
         else:
             from typehaus.resolve.cladding_trim.doors import add_door_trim
-            from typehaus.resolve.opening_head_drip import drip_head_key, drip_head_solids
+            from typehaus.resolve.opening_head_drip import (
+                clear_battens_at_drip_head,
+                drip_head_key,
+                drip_head_solids,
+            )
 
             trimmed = opening.kind == "door" and add_door_trim(
                 model, wall, opening, frame, cfg, metal, catalog=bool(catalog))
@@ -181,6 +186,8 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
             key = None if trimmed or catalog else drip_head_key(model, wall, opening)
             if key:
                 model.solids.extend(drip_head_solids(model, wall, opening, frame, metal, key, cfg))
+                wall = walls[wall.tag] = cleared[wall.uid] = clear_battens_at_drip_head(
+                    wall, opening, frame, cfg)
             if trimmed or key:
                 meshes = [mesh for mesh in meshes if mesh[0] != "head"]
         if catalog:
@@ -192,6 +199,8 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
                 uid=f"{opening.uid}-flashing-{key}", tag=f"{opening.tag}-FLASH-{key.upper()}",
                 storey=wall.storey, category=category, mesh=mesh, material=material,
                 host_ref=opening.tag))
+    # The battens a drip head cleared (walls are frozen; swap the rebuilt ones in).
+    model.walls[:] = [cleared.get(wall.uid, wall) for wall in model.walls]
 
 
 @dataclass(frozen=True)

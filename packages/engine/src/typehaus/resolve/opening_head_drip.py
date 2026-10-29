@@ -24,7 +24,7 @@ DRIP_HEAD_PRODUCT = "OPENING_HEAD_DRIP_FLASHING"
 
 def drip_head_key(model, wall, opening) -> str | None:
     """The kit's generic head flashing for this opening, or None (metal wall, no cavity)."""
-    from typehaus.library.trim.metal_sales import PROFILES
+    from typehaus.library.trim.catalog import PROFILES
     from typehaus.resolve.cladding_trim.openings import is_profiled_metal_wall
     from typehaus.resolve.cladding_trim.runs import kit_faces
     from typehaus.resolve.rainscreen_closures import rainscreen_band
@@ -72,7 +72,7 @@ def swept_head_trim(wall, opening, frame, profile, *, points, dam, start, span, 
 def drip_head_solids(model, wall, opening, frame, material, key,
                      cfg: FlashingConfig = FLASHING) -> list:
     """The Z swept over the head: RO plus casing and a 1" lap past each end."""
-    from typehaus.library.trim.metal_sales import PROFILES
+    from typehaus.library.trim.catalog import PROFILES
     from typehaus.resolve.opening_flashing import head_flashing_section
 
     head = head_flashing_section(wall, opening, frame, cfg)
@@ -82,3 +82,42 @@ def drip_head_solids(model, wall, opening, frame, material, key,
     return swept_head_trim(wall, opening, frame, PROFILES[key], points=head.points, dam=dam,
                            start=head.start, span=head.span, product=key, material=material,
                            uid=f"{opening.uid}-trim-head", tag=f"{opening.tag}-TRIM-HEAD")
+
+
+def clear_battens_at_drip_head(wall, opening, frame, cfg: FlashingConfig = FLASHING):
+    """``wall`` with its vertical furring stopped under the Z and resumed on the strip over it.
+
+    The Z crosses the cavity on the casing top and the strip closes it 1/4" higher
+    (``rainscreen_strips``), so a batten there ends under the Z's seat (the piece behind a
+    casing stays as its nailer) and the one above bears on the strip."""
+    from typehaus.library.trim.generic import HEAD_FLASHING_CLADDING_CLEARANCE_IN
+    from typehaus.resolve.framing.furring import STRAPPING_CATEGORY
+    from typehaus.resolve.framing.profiles import cross_section
+    from typehaus.resolve.opening_flashing import head_flashing_section
+    from typehaus.resolve.rainscreen_closures import BUG_SCREEN_SHEET_IN
+
+    head = head_flashing_section(wall, opening, frame, cfg)
+    (water, bend), (front, seat) = head.points[1], head.points[2]
+    below = seat - cfg.sheet_m
+    strip = bend + (seat - bend) * (frame.mount - water) / (front - water)
+    above = strip + (HEAD_FLASHING_CLADDING_CLEARANCE_IN + 2 * BUG_SCREEN_SHEET_IN) * M_PER_IN
+    d = frame.along
+    members = []
+    for m in wall.members:
+        if m.category != STRAPPING_CATEGORY or m.p0 != m.p1 or not (m.z0_m < above
+                                                                    and m.z1_m > below):
+            members.append(m)
+            continue
+        section = cross_section(m.profile)
+        on_edge = m.orient is not None and abs(m.orient[0] * d[0] + m.orient[1] * d[1]) > 0.5
+        half = (section.width_m if on_edge else section.depth_m) / 2
+        station = (m.p0[0] - frame.origin[0]) * d[0] + (m.p0[1] - frame.origin[1]) * d[1]
+        if station + half <= head.start or station - half >= head.start + head.span:
+            members.append(m)
+            continue
+        pieces = [(z0, z1) for z0, z1 in ((m.z0_m, min(m.z1_m, below)),
+                                          (max(m.z0_m, above), m.z1_m)) if z1 - z0 > 2 * half]
+        for index, (z0, z1) in enumerate(pieces):
+            key = m.child_key if index == 0 else f"{m.child_key}-over"
+            members.append(replace(m, child_key=key, z0_m=z0, z1_m=z1, length_m=z1 - z0))
+    return replace(wall, members=tuple(members))

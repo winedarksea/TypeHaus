@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from math import ceil, dist
 
+from typehaus.library.trim.catalog import PROFILES
 from typehaus.library.trim.metal_sales import (
     BOX_GUTTER_STRAP_SPACING_FT,
     IMAGE_II_EXTENDED_EAVE,
@@ -21,7 +22,6 @@ from typehaus.library.trim.metal_sales import (
     IMAGE_II_RIDGE_COVER,
     IMAGE_II_VENTED_STEP_RIDGE,
     PANEL_CLOSURE,
-    PROFILES,
     RESIDENTIAL_RAKE_FACE_IN,
     SUPPLIES,
     TrimProfile,

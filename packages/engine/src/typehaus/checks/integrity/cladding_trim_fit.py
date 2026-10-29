@@ -12,7 +12,7 @@ from typehaus.checks.integrity.cladding_trim_runs import (
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import failed, not_applicable, passed, unknown
 from typehaus.library.trim._image_ii import IMAGE_II_RESIDENTIAL_RAKE
-from typehaus.library.trim.metal_sales import PROFILES
+from typehaus.library.trim.catalog import PROFILES
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.openings import (
     brake_girth_and_bends,

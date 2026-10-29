@@ -19,9 +19,6 @@ from typehaus.library.trim._image_ii import (  # noqa: F401 -- re-exported
     IMAGE_II_Z_CLOSURE,
     OPEN_HEM_GAP_IN,
 )
-from typehaus.library.trim.generic import (  # noqa: F401 -- re-exported into PROFILES
-    OPENING_HEAD_DRIP_FLASHING,
-)
 from typehaus.library.trim.profile import TrimProfile
 from typehaus.library.trim.profile import pvdf as _pvdf
 

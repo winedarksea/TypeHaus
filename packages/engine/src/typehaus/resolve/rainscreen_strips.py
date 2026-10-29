@@ -86,7 +86,7 @@ def resolve_panel_end_strips(model) -> None:
 
 
 def _base_strips(model) -> None:
-    from typehaus.library.trim.metal_sales import PROFILES
+    from typehaus.library.trim.catalog import PROFILES
     from typehaus.resolve.cladding_trim.base import base_trim_spans
 
     for face, key, span, lo, hi, z, depth in base_trim_spans(model):

@@ -1,7 +1,6 @@
 """Formed trim no one manufacturer's kit supplies: a sheet-metal shop's custom brake.
 
-These sit in ``metal_sales.PROFILES`` beside the catalog parts, because that dict is the one
-trim catalog every resolver, check and take-off looks a ``product`` up in.
+Joined to the catalog parts in ``catalog.PROFILES``, the dict a ``product`` key is read from.
 """
 
 from typehaus.library.trim.profile import TrimProfile
@@ -26,3 +25,5 @@ OPENING_HEAD_DRIP_FLASHING = TrimProfile(
 #: horizontal flashing. Do not caulk gap." (HS0920-P1/4, Fig. 7). The cladding's bottom edge,
 #: and the perforated strip under it that closes the cavity's foot, stand this far up.
 HEAD_FLASHING_CLADDING_CLEARANCE_IN = 0.25
+
+PROFILES = {key: value for key, value in globals().copy().items() if isinstance(value, TrimProfile)}

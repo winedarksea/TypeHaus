@@ -2,7 +2,7 @@
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import failed, not_applicable, passed
-from typehaus.library.trim.metal_sales import PROFILES, SUPPLIES
+from typehaus.library.trim.catalog import PROFILES, SUPPLIES
 
 _CHECK = "integrity.cladding_trim_stock"
 _INCH_M = 0.0254

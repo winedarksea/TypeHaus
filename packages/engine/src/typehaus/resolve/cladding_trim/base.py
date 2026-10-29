@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typehaus.library.trim.metal_sales import PROFILES
+from typehaus.library.trim.catalog import PROFILES
 from typehaus.model.cladding_trim import TrimCondition
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.runs import (

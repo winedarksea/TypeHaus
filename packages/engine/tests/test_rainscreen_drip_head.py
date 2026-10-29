@@ -60,6 +60,7 @@ def _lowered(solid, dz):
     ("strip on the flashing", "under the 0.25 in its maker asks"),
     ("no strip-in", "not lapped under the WRB"),
     ("short", "does not run past the casing"),
+    ("batten through", "furring batten runs through"),
 ])
 def test_drip_head_grade_fails(starter_model, case, needle):
     model = copy(starter_model)
@@ -74,6 +75,14 @@ def test_drip_head_grade_fails(starter_model, case, needle):
     elif case == "no strip-in":
         model.solids = [s for s in model.solids if not (
             s.host_ref == host and s.category == "opening_flashing_membrane")]
+    elif case == "batten through":  # the furring over the head run down to the RO head again
+        wall = model.wall(next(o.host_wall for o in model.openings if o.tag == host))
+        head = max(s.z1_m for s in model.solids if s.host_ref == host
+                   and s.product == STRIP_PRODUCT)
+        members = tuple(replace(m, z0_m=m.z0_m - inch(2).meters)
+                        if m.category == "strapping" and abs(m.z0_m - head) < inch(0.1).meters
+                        else m for m in wall.members)
+        model.walls = [replace(w, members=members) if w is wall else w for w in model.walls]
     else:  # slid 2" along the wall: one end no longer passes the casing
         (x0, y0), (x1, y1) = model.wall(next(o.host_wall for o in model.openings
                                              if o.tag == host)).axis

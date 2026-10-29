@@ -3,8 +3,8 @@
 R703.4.1 asks the head flashing to reach the surface of the wall finish and shed water there;
 James Hardie asks the siding to stand 1/4" clear of it, uncaulked. Read here: the Z runs past
 the casing at both ends, each end is dammed, the drip clears the face it protects, the WRB
-strip-in laps over its upstand, and the strip closing the cavity's foot stands the clearance
-off the flashing (``resolve/opening_head_drip.py``).
+strip-in laps over its upstand, the strip closing the cavity's foot stands the clearance
+off the flashing, and no furring batten runs through either (``resolve/opening_head_drip.py``).
 """
 
 from __future__ import annotations
@@ -74,4 +74,27 @@ def grade_drip_head(model, wall, opening, frame, cavity_id) -> list:
         if gap + _TOL < HEAD_FLASHING_CLADDING_CLEARANCE_IN * M_PER_IN:
             fail(f"the cladding over the head stands {gap / M_PER_IN:.2f} in off the flashing, "
                  f"under the {HEAD_FLASHING_CLADDING_CLEARANCE_IN} in its maker asks")
+    if _batten_through(wall, d, spans, points, strips, depth0 + frame.mount,
+                       depth0 + frame.clad):
+        fail("a furring batten runs through the head flashing or the strip over it")
     return out
+
+
+def _batten_through(wall, d, spans, points, strips, back, face) -> bool:
+    """A vertical furring batten over the Z's run whose length crosses the leg or strip."""
+    from typehaus.resolve.framing.furring import STRAPPING_CATEGORY
+    from typehaus.resolve.framing.profiles import cross_section
+
+    lo = min(z for _s, o, z in points if back - _TOL <= o <= face + _TOL)
+    hi = max([z for strip in strips for *_xy, z in strip.body_mesh.positions] or [lo])
+    s0, s1 = min(a for a, _b in spans), max(b for _a, b in spans)
+    for m in wall.members:
+        if m.category != STRAPPING_CATEGORY or m.p0 != m.p1:
+            continue
+        section = cross_section(m.profile)
+        on_edge = m.orient is not None and abs(m.orient[0] * d[0] + m.orient[1] * d[1]) > 0.5
+        half = (section.width_m if on_edge else section.depth_m) / 2
+        station = m.p0[0] * d[0] + m.p0[1] * d[1]
+        if station + half > s0 and station - half < s1 and m.z0_m < hi and m.z1_m > lo:
+            return True
+    return False
