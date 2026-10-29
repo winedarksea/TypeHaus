@@ -232,8 +232,8 @@ surface rather than as stations.
 
 The slope's stability and the soil's OSHA class (no soils report; Type A is presumed, §7a);
 shoring; depth is read off the design strip grade, and the existing grade is unsurveyed;
-the silt fence drawn 1' inside the W lot line and 2' inside the E (`plan/site.py`) falls
-inside the lip along the house's sides, so it runs on the lot line there or after backfill;
+the silt fence, whose side legs run on the W and E lot lines (`plan/site.py`, 2026-10-29)
+because 1'/2' inside them they stood inside the lip;
 the garage trench and the north-entry pier holes (in the residual allowance); the 4" PVC
 tile's own bedding beyond the 2" seat; dewatering.
 

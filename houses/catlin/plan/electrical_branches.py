@@ -19,8 +19,9 @@ from typehaus import (
 BRANCH_PULL_BOXES = [
     # Over the bench, between RC1 and RC2: a surface box on the gypsum, blank cover, so the
     # exposed trunk and drops reach its side knockouts (drop = 5/8" board + the 4" box).
+    # 8 x 8 since 2026-10-29: a straight pull of the 1" trunk (NEC 314.28(A)(1)).
     ElectricalDevice(uid="38ARN77QK2", tag="ED-B-WORKSHOP-JB", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-JBOX", room="RM-B-WORKSHOP", position=pt(inch(20), inch(102)),
+                     type_ref="ED-T-JBOX-8X8", room="RM-B-WORKSHOP", position=pt(inch(20), inch(102)),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(4.625))),
     # Above FURN-B-PLAY-TV. Surface on the ceiling, blank cover: the gypsum here is hung on
     # SL-M-DECK's concrete band, so there is no cavity to recess into. The storey's ceiling

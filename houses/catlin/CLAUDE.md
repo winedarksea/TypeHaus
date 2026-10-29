@@ -3020,8 +3020,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   surface, so the no-guard argument stands.
 - **Espaliers**: four dwarf apples in `plan/landscape.py` (editable), two on each of
   `TRL-W-S`/`-N` (13' runs) at x=-5', mirrored round the power service at y=18'. `site.utility_clearance` grades every post,
-  tree hole and basin against the 24" locate tolerance. The silt fence's west leg moved to
-  x=-6' to clear the trellis line. `notes/espalier_trellis.md`.
+  tree hole and basin against the 24" locate tolerance. The silt fence's side legs run on
+  the lot lines (x=-7'/43'), clear of the trellis and the Type A cut's lip. `notes/espalier_trellis.md`.
 
 ## The engineering workflow
 

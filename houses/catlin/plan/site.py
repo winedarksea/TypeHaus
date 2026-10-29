@@ -272,13 +272,15 @@ SITE = Site(
         # east lines, from y=20' (level with the house's midpoint, above which the ground
         # drains back to the street) around the bottom of the lot and up the east side to
         # match. The lines moved with the 50' x 133' parcel; the 2' offset did not.
-        # The WEST leg is 1' inside the line since 2026-09-21: 2' in, it ran down the
-        # espalier trellis line (params/landscape_gardens.py, x=-5').
+        # The side legs run ON the W and E lot lines since 2026-10-29 (owner): the Type A
+        # cut's lip is 5" inside the W line, so a fence inside the line stood in the dig.
+        # The owner doubts a flat, small residential lot needs one at all; St Paul DSI
+        # decides at permit (plans/TODO.md).
         ErosionControl(
             kind="silt_fence",
-            path=(pt(ft(-6), ft(20)), pt(ft(-6), ft(-46.5)),
-                  pt(ft(41), ft(-46.5)), pt(ft(41), ft(20))),
-            description="silt fence, trenched 6 in, 1 ft inside the W line and 2 ft inside the S/E lines",
+            path=(pt(ft(-7), ft(20)), pt(ft(-7), ft(-46.5)),
+                  pt(ft(43), ft(-46.5)), pt(ft(43), ft(20))),
+            description="silt fence, trenched 6 in, on the W and E lot lines and 2 ft inside the S line",
         ),
         # Rock construction entrance where vehicles leave the site, which is the only place
         # they can: the driveway's crossing of the north right-of-way. On the 133'-deep lot

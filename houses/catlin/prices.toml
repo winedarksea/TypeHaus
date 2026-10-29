@@ -2586,6 +2586,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LUT-DIVA" = { material = { low = 25, high = 50 }, labour = { low = 52, high = 110 } }  # 2 ea
 "ED-T-FLOOR-STAT" = { material = { low = 130, high = 300 }, labour = { low = 150, high = 300 } }  # 3 ea
 "ED-T-JBOX" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
+"ED-T-JBOX-8X8" = { material = { low = 18, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea, 8x8x4 steel screw-cover pull box
 # ** REPRICED 2026-09-06 TO A NAMED PRODUCT. ** Lotus LL4SR-30K-WH at $64.40 (the LL4SRG
 # that replaced it 2026-10-28 is not yet re-quoted) -- a 4" deeply regressed WHITE trim, IC,
 # airtight, wet, 14.5 W / 860 lm / 3000 K / 90+ CRI. The old $25-75 was a class band for a black-baffle can. The same SKU serves the

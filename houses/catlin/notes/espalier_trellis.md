@@ -45,5 +45,5 @@ east. RG-W-BASIN starts at y=47.
 
 ## 5. What is NOT graded here
 
-Post embedment against wind on the fruit load, and the silt fence, which moved 1' west to
-x=−6' so it no longer runs down the trellis line during construction.
+Post embedment against wind on the fruit load, and the silt fence, whose west leg runs on
+the lot line at x=−7' (2026-10-29), clear of the trellis line during construction.

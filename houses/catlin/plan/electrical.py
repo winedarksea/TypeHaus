@@ -122,6 +122,13 @@ DEVICE_TYPES = (
                           plan_symbol="panel",
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
+    # The workshop pull box: NEC 314.28(A)(1) wants 8x the 1" trunk for a straight pull, so
+    # a future subpanel feeder can be pulled through it (owner, 2026-10-29).
+    ElectricalDeviceType(tag="ED-T-JBOX-8X8", name="Steel pull box, 8 x 8 x 4 in, blank cover",
+                          footprint=(inch(8), inch(8)), height=inch(4),
+                          plan_symbol="junction-box",
+                          ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),)),
     # The PV array's wall box: same NEMA 3R shell as ED-T-JBOX but on the 2-pole backfeed
     # circuit, so its port is 240V (circuit_refs reconciles poles against ports).
     # Sauna heaters are hard-wired: a 240V junction box at the heater corner, not a
