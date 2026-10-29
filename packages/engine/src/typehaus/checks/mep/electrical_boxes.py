@@ -10,6 +10,8 @@ volume is Table 314.16(B)'s, at the gauge the breaker implies — 15 A 14 AWG, 2
 30 A 10 AWG. Box volume is the standard's row: Table 314.16(A) or the marked volume, plus a
 marked raised cover or ring. A FAIL names the next box up. Hand-worked oracle:
 ``houses/catlin/notes/basement_surface_wiring.md`` §Box fill.
+
+``electrical.nm_sleeve_reach`` reports a derived NM sleeve that stops short of the ceiling.
 """
 
 from __future__ import annotations
@@ -17,7 +19,15 @@ from __future__ import annotations
 from typing import Any
 
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, failed, not_applicable, passed, unknown
+from typehaus.findings import (
+    Finding,
+    Result,
+    advisory,
+    failed,
+    not_applicable,
+    passed,
+    unknown,
+)
 from typehaus.model.electrical import METAL_BOX_VOLUME_IN3
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.device_boxes import takes_box
@@ -115,3 +125,35 @@ def box_fill(ctx: CheckContext) -> list[Finding]:
             loads[circuit] = loads.get(circuit, 0) + 1
     return [_grade(box, circuits, types, type_refs.get(box.device_tag), loads)
             for box in boxes]
+
+
+_REACH = "electrical.nm_sleeve_reach"
+_REACH_CODE = "NEC 334.15(B)/(C)"
+
+
+@check(Tier.ADVISORY, _REACH)
+def nm_sleeve_reach(ctx: CheckContext) -> list[Finding]:
+    """Each derived NM sleeve against the ceiling it was meant to reach.
+
+    A sleeve that stops under a run leaves the NM above it off the sleeve, on the wall. How
+    far is reported, never graded: whether the run shields it or the sleeve offsets around
+    the run is the electrician's call and the inspector's.
+    """
+    sleeves = [run for run in ctx.model.conduits if run.derived == "nm_sleeve"]
+    if not sleeves:
+        return [not_applicable(_REACH, "no surface box takes a derived NM sleeve",
+                               code=_REACH_CODE)]
+    out = []
+    for run in sleeves:
+        tags = (run.tag, run.to_ref) if run.to_ref else (run.tag,)
+        if run.stops_under is None:
+            out.append(passed(_REACH, f"{run.tag} sleeves the NM from the box to the ceiling",
+                              tags, code=_REACH_CODE))
+            continue
+        out.append(advisory(
+            _REACH, f"{run.tag} stops under {run.stops_under}, "
+                    f"{run.unsleeved_m / M_PER_IN:.1f}\" short of the ceiling: the NM above is "
+                    "off the sleeve", (*tags, run.stops_under), Result.ADVISORY,
+            code=_REACH_CODE, fix=f"offset the sleeve around {run.stops_under}, or confirm on "
+                                  "site that the run shields the NM"))
+    return out

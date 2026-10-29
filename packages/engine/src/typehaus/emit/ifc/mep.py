@@ -527,14 +527,17 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
                  project_uuid: Any, product_type: Any | None, resolved: Any | None,
                  type_object: Any | None, box: Any | None = None) -> Any:
     x, y = resolved.position if resolved is not None else device.position.xy_m
-    # The box is its own IfcJunctionBox solid; the device is only the device.
-    half = box.width_m / 2 if box is not None else 0.05
+    # The box is its own IfcJunctionBox (the ``electrical_box`` solid); the device is only
+    # the device: its own footprint from its mount z, not the canvas union with the box.
+    half = 0.05  # 4"x4" nominal, for a device that never resolved
     outline = (list(box.device_footprint) if box is not None and box.device_footprint
                else resolved.footprint if resolved is not None
                else _rectangle(x, y, half * 2, half * 2))
     # The placeable resolver owns the Mount contract, so IFC reads the same elevation as
     # glTF and the UI instead of carrying its own per-kind defaults (which would diverge).
-    z0 = resolved.body_z0_m if resolved is not None else resolved_mount_elevation(storey, device)
+    z0 = (resolved.z_m if box is not None and resolved is not None
+          else resolved.body_z0_m if resolved is not None
+          else resolved_mount_elevation(storey, device))
     ifc_class, _ = _device_ifc_classes(device.kind.value, product_type)
     element = ll.create_entity(f, ifc_class, name=device.tag)
     element.GlobalId = derive_guid(project_uuid, device.uid)

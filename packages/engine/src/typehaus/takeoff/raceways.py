@@ -82,29 +82,43 @@ _CONDUCTORS_PER_CIRCUIT = {1: 3, 2: 4}
 _MAKEUP_ALLOWANCE_FT = 10.0
 
 
+def _terminations(runs: list[ResolvedConduitRun]) -> int:
+    """Conductor ends among one circuit's runs: a run's end is continued, not a termination,
+    where another of them starts in the box it ends in (``to_ref`` == ``from_ref``)."""
+    starts = [run.from_ref for run in runs]
+    ends = [run.to_ref for run in runs]
+    return (sum(1 for ref in ends if ref is None or ref not in starts)
+            + sum(1 for ref in starts if ref is None or ref not in ends))
+
+
 def _named_rows(model: ResolvedModel, runs: list[ResolvedConduitRun]) -> list[dict]:
-    """Exact rows: each named circuit's conductors over its own run, plus make-up."""
+    """Exact rows: each named circuit over its runs, plus make-up at each termination."""
     circuits = {circuit.tag: circuit for circuit in model.plan.library.circuits}
-    groups: dict[int, dict[str, object]] = {}
+    by_circuit: dict[str, list[ResolvedConduitRun]] = {}
     for run in runs:
         for tag in run.circuits:
-            circuit = circuits.get(tag)
-            per = _CONDUCTORS_PER_CIRCUIT.get(circuit.poles) if circuit else None
-            if per is None:
-                continue
-            pull_ft = run.length_m * _FT_PER_M + _MAKEUP_ALLOWANCE_FT
-            row = groups.setdefault(circuit.poles, {
-                "poles": circuit.poles, "circuits": 0, "conductors_per_circuit": per,
-                "length_ft": 0.0, "tags": []})
-            row["circuits"] = int(row["circuits"]) + 1
-            row["length_ft"] = float(row["length_ft"]) + pull_ft * per
-            tags = row["tags"]
-            assert isinstance(tags, list)
-            tags.append(f"{run.tag}:{tag}")
+            by_circuit.setdefault(tag, []).append(run)
+    groups: dict[int, dict[str, object]] = {}
+    for tag, carrying in by_circuit.items():
+        circuit = circuits.get(tag)
+        per = _CONDUCTORS_PER_CIRCUIT.get(circuit.poles) if circuit else None
+        if per is None:
+            continue
+        # A circuit pulled panel -> box -> device is one pull: 10 ft of make-up, not 20.
+        pull_ft = (sum(run.length_m for run in carrying) * _FT_PER_M
+                   + _MAKEUP_ALLOWANCE_FT / 2 * _terminations(carrying))
+        row = groups.setdefault(circuit.poles, {
+            "poles": circuit.poles, "circuits": 0, "conductors_per_circuit": per,
+            "length_ft": 0.0, "tags": []})
+        row["circuits"] = int(row["circuits"]) + 1
+        row["length_ft"] = float(row["length_ft"]) + pull_ft * per
+        tags = row["tags"]
+        assert isinstance(tags, list)
+        tags.extend(f"{run.tag}:{tag}" for run in carrying)
     return [{"poles": row["poles"], "circuits": row["circuits"],
              "conductors_per_circuit": row["conductors_per_circuit"],
              "length_ft": round(float(row["length_ft"]), 1),
-             "basis": "named: run length + 10 ft make-up, per conductor",
+             "basis": "named: run length + 5 ft make-up per termination, per conductor",
              "tags": sorted(row["tags"])}
             for row in (groups[key] for key in sorted(groups))]
 
@@ -112,9 +126,10 @@ def _named_rows(model: ResolvedModel, runs: list[ResolvedConduitRun]) -> list[di
 def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Conductor lineal feet — what ``conduit_takeoff`` deliberately does not bill.
 
-    A run that names ``circuits`` bills exactly: (length + 10 ft) × conductors, per
-    circuit. A power trunk that names none keeps the estimate — mean raceway run + make-up
-    × every circuit on the schedule. Data, spare and derived sleeves pull no THHN.
+    A run that names ``circuits`` bills exactly: each circuit's runs plus 5 ft of make-up
+    per termination, × conductors. A power trunk that names none keeps the estimate — mean
+    raceway run + make-up × every circuit no run names. Data, spare and derived sleeves pull
+    no THHN.
     """
     trunks = [run for run in model.conduits if run.derived is None
               and run.service in ("power_120", "power_240")]
@@ -124,9 +139,12 @@ def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     total_ft = sum(run.length_m * _FT_PER_M for run in estimated)
     if total_ft <= 0.0:
         return rows
+    # A named circuit is billed exactly above, so the estimate leaves it out.
+    named_tags = {tag for run in named for tag in run.circuits}
     by_poles: dict[int, int] = {}
     for circuit in model.plan.library.circuits:
-        by_poles[circuit.poles] = by_poles.get(circuit.poles, 0) + 1
+        if circuit.tag not in named_tags:
+            by_poles[circuit.poles] = by_poles.get(circuit.poles, 0) + 1
     for poles in sorted(by_poles):
         per = _CONDUCTORS_PER_CIRCUIT.get(poles)
         if per is None:
@@ -144,8 +162,8 @@ def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             continue
         # One row per poles value, so the price join and a paid check-off stay unique.
         exact["length_ft"] = round(float(exact["length_ft"]) + float(estimate["length_ft"]), 1)
-        exact["named_pulls"] = exact["circuits"]
-        exact["circuits"] = estimate["circuits"]
+        exact["named_circuits"] = exact["circuits"]
+        exact["circuits"] = int(exact["circuits"]) + int(estimate["circuits"])
         exact["mean_pull_ft"] = estimate["mean_pull_ft"]
         exact["basis"] = f"{exact['basis']}; plus {estimate['basis']}"
     return sorted(rows, key=lambda row: row["poles"])

@@ -110,12 +110,19 @@ orphaned. No MC is modelled.
 
 ## Drops that stop under a run
 
-Where a trunk or duct hugs the wall across the drop's line, the sleeve stops 1/2" under it.
-The NM continues over that run to the joists. This applies to SUMP-RC, STAIR-RC1/RC2 and
-PLAY-N-SW.
+Where a trunk or duct hugs the wall across the drop's line, the sleeve stops 1/2" under it,
+and the NM above is off the sleeve. `electrical.nm_sleeve_reach` reports how far (an
+ADVISORY, not a grade):
 
-Open item for the electrician: confirm on site that the NM above the sleeve is shielded by
-the run. Otherwise, offset the sleeve around the run with a bend.
+| Drop | Stops under | NM off the sleeve |
+|---|---|---|
+| ED-B-SUMP-RC | DU-ERV-EA (12" duct, ~5'-9" AFF) | ~2'-4" |
+| ED-B-STAIR-RC1 / RC2 | CD-B-GARAGE | ~6" |
+| ED-B-PLAY-N-SW | DU-B-ERV-R-PLAY | ~7" |
+
+The three short ones are at the joists. SUMP-RC is not: about 28" of NM would run behind
+and over the ERV exhaust on a bare basement wall. Owner decision: offset the sleeve around
+DU-ERV-EA, move the receptacle along W-B-N4 clear of the duct, or accept the NM there.
 
 ## Open items
 
@@ -129,6 +136,7 @@ the run. Otherwise, offset the sleeve around the run with a bend.
   which is the same reasoning as the `ED-T-LEV-GFCI-WR` type. This is a type change for the
   owner to make.
 - **Pull boxes.**
-  - CD-B-PLAY-SPARE: in the hall ceiling at x 16'-2 3/4", y 19'-2 3/4", and in RM-B-PLAY-N.
+  - CD-B-PLAY-SPARE: vertex 7 in RM-B-BATH's ceiling at x 13'-6 1/4", y 20'-3 1/2", and
+    vertex 12 in RM-B-PLAY-N at x 19'-4 1/2", y 26'-0".
   - The workshop and theater: their ceiling boxes.
   - All of these are accessible through blank covers.

@@ -1318,6 +1318,10 @@ class ResolvedConduitRun:
     derived: str | None = None
     #: Cast into concrete by design (a slab sensor tube): no sleeve, no straps.
     cast_in: bool = False
+    #: A derived NM sleeve stopped under this run short of the ceiling, by ``unsleeved_m``
+    #: (→ resolve/device_drops.py; graded by ``electrical.nm_sleeve_reach``).
+    stops_under: str | None = None
+    unsleeved_m: float = 0.0
 
 
 @dataclass(frozen=True)

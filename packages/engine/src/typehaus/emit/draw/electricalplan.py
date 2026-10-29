@@ -65,6 +65,8 @@ def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
         layer = "E-COMM-CNDT" if run.service == "data" else "E-POWR-CNDT"
         b.add(Polyline(points=tuple(_in(p) for p in run.path), layer=layer,
                        linetype="DASHED", uid=run.uid, tag=run.tag))
+        if run.derived is not None:
+            continue  # a box's sleeve or a floor-heat lead: its device's symbol labels it
         mid = run.path[len(run.path) // 2]
         size = f"{run.trade_size_m / M_PER_IN:.3g}\""
         label = f"{run.tag.removeprefix('CD-')} {size}"

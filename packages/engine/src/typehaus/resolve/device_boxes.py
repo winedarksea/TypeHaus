@@ -75,7 +75,8 @@ class ResolvedDeviceBox:
     #: Finish-face point at the device's station and the unit normal into the room.
     face_point: tuple[float, float]
     normal: tuple[float, float]
-    #: The device's own plan footprint; its canvas footprint also holds a surface box.
+    #: The device's own plan footprint; its canvas footprint and body band also hold a
+    #: surface box (collision), so IFC and the diff read this and the mount ``z_m``.
     device_footprint: tuple[tuple[float, float], ...] = ()
     #: ``<device uid>-box``: a stable key for the record (its solid carries the same uid).
     uid: str = ""
@@ -240,7 +241,7 @@ def place_box(model: ResolvedModel, item: Any, plan: BoxPlan, storey: str, room:
     model.solids.append(ResolvedSolid(
         uid=f"{item.uid}-box", tag=f"{item.tag}-BOX", storey=storey, category="electrical_box",
         outline=list(ring), z0_m=z0, z1_m=z1, product=plan.row.box_product_ref,
-        derived=True))  # billed in [electrical_boxes]; drawn in 3D, not cut or measured
+        derived=True))  # billed in [electrical_boxes]; drawn and exported, not cut or measured
     if plan.mounting != "surface":
         return device_footprint
     hull = orient(MultiPoint([*device_footprint, *ring]).convex_hull, 1.0)

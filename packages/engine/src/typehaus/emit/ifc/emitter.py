@@ -202,7 +202,9 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
         enclosure_part = solid.category in {"tub_batt", "tub_insulation_return", "tub_mortar_bed"}
         if enclosure_part and lod != "framed":
             continue
-        if solid.derived and solid.body_mesh is None and not enclosure_part:
+        # A derived device box is a dimensioned purchased part, not a marker: it exports.
+        if (solid.derived and solid.body_mesh is None and not enclosure_part
+                and solid.category != "electrical_box"):
             continue
         element = _emit_solid(f, body, solid, storeys, project_uuid, model)
         element_entities.setdefault(solid.tag, element)

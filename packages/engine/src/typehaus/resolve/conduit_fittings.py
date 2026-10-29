@@ -12,8 +12,8 @@ Counts follow the installation articles, not a catalog:
   its box and a nonmetallic *bushing* at its open top (NEC 334.15(B)); a floor-heat sensor
   tube is *capped* at the floor so the sensor can be replaced.
 * **Strap** — within 3 ft of each termination, then every 10 ft (EMT, 358.30), 3 ft (ENT,
-  362.30; PVC ≤1", 352.30 Table). None on a cast-in run; a floor-heat lead is strapped only
-  over its vertical (stud-bay) length.
+  362.30), 3-8 ft by size (PVC, Table 352.30). One strap serves a run of up to 6 ft. None
+  on a cast-in run; a floor-heat lead is strapped only over its vertical (stud-bay) length.
 * **Pull box** — one per ``pull_points`` index.
 """
 
@@ -33,6 +33,8 @@ _M_PER_FT = 0.3048
 STICK_FT = {"emt": 10.0, "pvc": 10.0, "ent": None}
 #: (within ft of a termination, then every ft) by material.
 STRAP_SPACING_FT = {"emt": (3.0, 10.0), "ent": (3.0, 3.0), "pvc": (3.0, 3.0)}
+#: PVC's spacing grows with size (NEC Table 352.30): (largest trade size in, every ft).
+PVC_SPACING_FT = ((1.0, 3.0), (2.0, 5.0), (3.0, 6.0), (5.0, 7.0), (6.0, 8.0))
 #: A segment steeper than this is vertical (a stud-bay drop, not a floor pass).
 _VERTICAL_RATIO = 10.0
 
@@ -57,13 +59,16 @@ class ConduitPart:
     count: int
 
 
-def straps_for(length_ft: float, material: str) -> int:
+def straps_for(length_ft: float, material: str, trade_size_in: float = 0.0) -> int:
     """Straps over one run between two terminations (358.30 and its siblings)."""
     if length_ft <= 1e-6:
         return 0
     end_ft, every_ft = STRAP_SPACING_FT.get(material, STRAP_SPACING_FT["emt"])
-    if length_ft <= end_ft:
-        return 1
+    if material == "pvc":
+        every_ft = next((ft for size, ft in PVC_SPACING_FT if trade_size_in <= size + 1e-6),
+                        PVC_SPACING_FT[-1][1])
+    if length_ft <= 2 * end_ft:
+        return 1  # one strap can be within reach of both ends
     middle = max(0.0, length_ft - 2 * end_ft)
     return 2 + max(0, math.ceil(middle / every_ft - 1e-9) - 1)
 
@@ -131,7 +136,8 @@ def _run_parts(run: ResolvedConduitRun, joints: int) -> dict[str, int]:
         strapped = _section_lengths_ft(points, run.pull_points,
                                        vertical_only=run.derived in ("fh_sensor",
                                                                      "fh_cold_lead"))
-        parts[STRAP] = sum(straps_for(length, material) for length in strapped)
+        size_in = run.trade_size_m / M_PER_IN
+        parts[STRAP] = sum(straps_for(length, material, size_in) for length in strapped)
     parts[PULL_BOX] = len(run.pull_points)
     return {kind: count for kind, count in parts.items() if count > 0}
 

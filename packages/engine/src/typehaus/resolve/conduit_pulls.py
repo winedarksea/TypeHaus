@@ -8,8 +8,9 @@ conduit_bends.py`` grades it, and it lives in ``resolve`` so a router may read i
 ``ConduitRun.pull_points``. One exception: when exactly one run ends at a 3D point and
 exactly one other run starts there, the two are one raceway drawn as two polylines (a
 ``ConduitRun`` could once rise only at its last point), so they CHAIN and the joint's angle
-counts. Several runs leaving one point (the panel) or a run starting mid-way along another
-(a tee) is a box. A tee does not split its host: nothing authored a box on the host there,
+counts — unless the first's ``to_ref`` is the second's ``from_ref``: they meet in that box.
+Several runs leaving one point (the panel) or a run starting mid-way along another (a tee)
+is a box. A tee does not split its host: nothing authored a box on the host there,
 and assuming one would hide the very overage this measures — author the pull point.
 
 **Angles are 3D** (``sweep.path_turns``): a riser off a horizontal leg is the 90° a
@@ -96,13 +97,18 @@ def _chains(runs: list[ResolvedConduitRun],
             profiles: dict[str, tuple[list[Vec3], list[int], bool]]) -> list[list[str]]:
     """Runs grouped into raceways: one-in/one-out end->start joints chain, nothing else."""
     tags = [run.tag for run in runs if run.tag in profiles]
+    by_tag = {run.tag: run for run in runs}
     starts = {tag: profiles[tag][0][0] for tag in tags}
     ends = {tag: profiles[tag][0][-1] for tag in tags}
     following: dict[str, str] = {}
     for tag in tags:
         leaving = [other for other in tags if other != tag and _near(starts[other], ends[tag])]
         arriving = [other for other in tags if _near(ends[other], ends[tag])]
-        if len(leaving) == 1 and arriving == [tag]:
+        # Two runs that both name the element at their joint meet in it: a box, not a
+        # coupling, so the joint is a pull point.
+        boxed = (len(leaving) == 1 and by_tag[tag].to_ref is not None
+                 and by_tag[tag].to_ref == by_tag[leaving[0]].from_ref)
+        if len(leaving) == 1 and arriving == [tag] and not boxed:
             following[tag] = leaving[0]
     fed = set(following.values())
     chains: list[list[str]] = []
