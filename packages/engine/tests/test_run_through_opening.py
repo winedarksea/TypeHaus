@@ -211,3 +211,16 @@ def test_a_run_through_a_door_swing_is_caught(catlin_model) -> None:
     hits = [f for f in report.findings if f.result is Result.FAIL]
     assert [f.element_tags for f in hits] == [("PR-B-ERV-COND", "D-B-CLOSET")]
     assert "leaf swing" in hits[0].message
+
+
+def test_a_french_pair_sweeps_both_quadrants(catlin_model) -> None:
+    """``swing_clearance`` is a pair's hinge leaf only; the other leaf sweeps the mirror
+    quadrant, so a run there must be graded too (``D-B-PLAY``, two 30" leaves)."""
+    import math
+
+    from typehaus.resolve.mep_door_swing import door_swing_prisms
+
+    sector = next(s for tag, _h, s, *_ in door_swing_prisms(catlin_model) if tag == "D-B-PLAY")
+    leaf = 30 * 0.0254
+    assert sector.area == pytest.approx(2 * math.pi * leaf ** 2 / 4, rel=0.02)
+    assert sector.bounds[2] - sector.bounds[0] == pytest.approx(2 * leaf, abs=0.06)
