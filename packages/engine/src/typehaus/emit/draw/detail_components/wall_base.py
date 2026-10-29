@@ -102,8 +102,7 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
 
 #: The resolved base pieces cut into the detail, by product: tag and fill.
 _BASE_PIECES = {"RAINSCREEN_BASE_Z": "z-flashing", BASE_SCREEN_PRODUCT: "bug-screen",
-                "EPDM_BASE_ISOLATION": "epdm-isolation", "PANEL_END_STRIP": "panel-end-strip",
-                "EPDM_PAD": "epdm-pad"}
+                "EPDM_BASE_ISOLATION": "epdm-isolation", "PANEL_END_STRIP": "panel-end-strip"}
 
 
 def _resolved_base_flashing(model, wall, direction, station):

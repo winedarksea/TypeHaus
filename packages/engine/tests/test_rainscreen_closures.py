@@ -66,7 +66,7 @@ def test_every_metal_window_head_is_capped_and_every_head_seats_on_a_strip(catli
 def test_the_take_off_is_the_resolved_pieces(catlin_model_ro):
     model = catlin_model_ro
     rows = {row["kind"]: row for row in bug_screen_takeoff(model)}
-    assert set(rows) == {BASE_SCREEN_PRODUCT, STRIP_PRODUCT, BAND_OUTLET_PRODUCT, "EPDM_PAD"}
+    assert set(rows) == {BASE_SCREEN_PRODUCT, STRIP_PRODUCT, BAND_OUTLET_PRODUCT}
     for kind, row in rows.items():
         pieces = [s for s in model.solids if s.product == kind]
         assert row["length_ft"] == pytest.approx(
@@ -137,7 +137,7 @@ def test_base_stack_on_a_house_wall(catlin_model_ro):
     assert (epdm.z0_m - seat) / _IN == pytest.approx(1.0, abs=1e-6)
     assert epdm.z1_m == pytest.approx(max(s.z1_m for s in screen))
     strips = [s for s in _of(model, "W-M-W4", STRIP_PRODUCT) if "-BASESTRIP-" in s.tag]
-    assert strips and min(s.z0_m for s in strips) == pytest.approx(foot + inch(1 / 16).meters)
+    assert strips and min(s.z0_m for s in strips) == pytest.approx(foot)
     starter = min((m for m in wall.members if m.child_key.startswith("strapping-outer-girt")),
                   key=lambda m: m.z0_m)
     assert ((starter.z0_m - seat) / _IN, (starter.z1_m - seat) / _IN) \

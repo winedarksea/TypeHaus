@@ -717,10 +717,9 @@ def test_bug_screen_rows_are_one_per_kind(bom):
     """One order line per kind of closure — never one per wall or per storey."""
     rows = bom["bug_screens"]
     kinds = [row["kind"] for row in rows]
-    assert sorted(kinds) == ["BAND_OUTLET_STRIP", "BASE_SCREEN", "EPDM_PAD", "PANEL_END_STRIP"]
+    assert sorted(kinds) == ["BAND_OUTLET_STRIP", "BASE_SCREEN", "PANEL_END_STRIP"]
     assert all(float(row["length_ft"]) > 0 for row in rows)
-    assert all(row["material"] == "perforated-aluminum-insect-closure"
-               for row in rows if row["kind"] != "EPDM_PAD")
+    assert all(row["material"] == "perforated-aluminum-insect-closure" for row in rows)
 
 
 def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):

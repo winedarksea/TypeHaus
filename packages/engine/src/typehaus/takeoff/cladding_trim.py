@@ -102,7 +102,7 @@ def _wall_trim_rows(model: ResolvedModel, rows: _Rows) -> None:
                 for s in model.solids
                 if s.category == "bug_screen" and s.product == "PANEL_END_STRIP"}
     for solid in model.solids:
-        if solid.category != "cladding_trim" or solid.product == "EPDM_PAD":
+        if solid.category != "cladding_trim":
             continue
         if solid.product == "EPDM_BASE_ISOLATION":
             if solid.trim_length_m is None or solid.trim_length_m <= 0:

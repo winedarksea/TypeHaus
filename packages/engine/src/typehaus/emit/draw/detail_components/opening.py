@@ -99,15 +99,14 @@ def _in_crop_z(z_in: float, crop) -> bool:
 
 
 def _opening_trim(model, opening) -> list:
-    """The resolved trim pieces an opening owns, with the head cap, strip and pads. Matched by
+    """The resolved trim pieces an opening owns, with the head cap and strip. Matched by
     ``host_ref``: a door's jamb pieces carry the wall's uid, so uid ownership misses them."""
     return [s for s in model.solids if s.category in ("cladding_trim", "bug_screen")
             and s.host_ref == opening.tag and s.body_mesh is not None]
 
 
 #: The drawing tag of each resolved piece over an opening, by product.
-_PIECE_TAGS = {"OPENING_HEAD_CAP": "opening-head-cap", "PANEL_END_STRIP": "panel-end-strip",
-               "EPDM_PAD": "epdm-pad"}
+_PIECE_TAGS = {"OPENING_HEAD_CAP": "opening-head-cap", "PANEL_END_STRIP": "panel-end-strip"}
 
 
 def _opening_trim_profiles(model, opening, direction, station) -> list[tuple[str, str, list]]:

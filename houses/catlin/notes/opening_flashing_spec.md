@@ -204,8 +204,8 @@ the foam was sprayed in (60-80 F, `ccspf_spec.md` §3) and set the windows behin
   - **End dams**: each end folded up 3/4". The cap runs over both jamb posts; a door's drip
     cap runs 1" past each casing end.
   - The upstand's top edge is stripped in (§3 step 4a).
-  - The panel above it ends in the 58114XX channel on a perforated aluminium strip on EPDM
-    pads (`metal_trim_kit.md`), not on a foam closure.
+  - The panel above it ends in the 58114XX channel on a bare perforated aluminium strip
+    (`metal_trim_kit.md`, no pads), not on a foam closure.
 - **The two exterior swing doors.** Their pans are §6, billed on their own row.
 - **The garage openings and the court openings.** §7 and §8.
 - **Anything the engine grades.** No check in `haus check` reads a flashing membrane, its

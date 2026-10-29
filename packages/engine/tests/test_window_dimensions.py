@@ -183,8 +183,7 @@ def test_profiled_metal_windows_have_four_terminated_sides(catlin_model_ro):
     assert len(windows) == 40
     for opening in windows:
         pieces = [solid for solid in catlin_model_ro.solids
-                  if solid.category == "cladding_trim" and solid.host_ref == opening.tag
-                  and solid.product != "EPDM_PAD"]
+                  if solid.category == "cladding_trim" and solid.host_ref == opening.tag]
         # PBR ribs take the catalog jamb; BBD75 and corrugated keep the site-brake one.
         wall = catlin_model_ro.wall(opening.host_wall)
         jamb = ("PBR_WINDOW_JAMB" if cladding_finish(catlin_model_ro, wall) == "ribbed-panel"

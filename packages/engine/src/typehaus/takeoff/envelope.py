@@ -357,27 +357,23 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
 
 def bug_screen_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """Lineal feet of rainscreen insect closure by kind, and the EPDM pads under the strips.
+    """Lineal feet of rainscreen insect closure by kind.
 
     One row per product: the base screen (the perforated U), the panel-end strip (base,
-    heads, the band's upper panel), the band outlet strip, and the pads. Measured off the
-    resolved pieces themselves, so the order is the geometry by construction. ``count`` is
-    pieces cut from stock (pads: pads), ``tags`` the walls and openings they serve.
+    heads, the band's upper panel) and the band outlet strip. Measured off the resolved
+    pieces themselves, so the order is the geometry by construction. ``count`` is pieces cut
+    from stock, ``tags`` the walls and openings they serve.
     """
-    from typehaus.resolve.rainscreen_strips import PAD_LENGTH_IN
-
-    pad_m = PAD_LENGTH_IN * 0.0254
     rows: dict[str, dict[str, object]] = {}
     for solid in model.solids:
         screen = solid.category == TrimKind.BUG_SCREEN.value and solid.product
-        if not (screen or solid.product == "EPDM_PAD") or solid.trim_length_m is None:
+        if not screen or solid.trim_length_m is None:
             continue
         row = rows.setdefault(solid.product, {
             "kind": solid.product, "category": TrimKind.BUG_SCREEN.value,
             "material": solid.material or BUG_SCREEN_MATERIAL, "count": 0, "length_m": 0.0,
             "tags": set()})
-        pads = solid.product == "EPDM_PAD"
-        row["count"] = int(row["count"]) + (round(solid.trim_length_m / pad_m) if pads else 1)
+        row["count"] = int(row["count"]) + 1
         row["length_m"] = float(row["length_m"]) + solid.trim_length_m
         row["tags"].add(solid.host_ref or solid.tag)
     return [{"kind": row["kind"], "category": row["category"], "material": row["material"],

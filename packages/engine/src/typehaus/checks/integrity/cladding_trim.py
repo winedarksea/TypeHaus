@@ -15,7 +15,7 @@ def cladding_trim_stock(ctx: CheckContext) -> list:
         return [not_applicable(_CHECK, "no catalog cladding trim pieces resolved")]
     findings = []
     for piece in pieces:
-        if piece.product in SUPPLIES or piece.product in {"EPDM_BASE_ISOLATION", "EPDM_PAD"}:
+        if piece.product in SUPPLIES or piece.product == "EPDM_BASE_ISOLATION":
             if piece.trim_length_m is None or piece.trim_length_m <= 0:
                 findings.append(failed(_CHECK, f"{piece.tag} has no installed supply length",
                                        (piece.tag,)))

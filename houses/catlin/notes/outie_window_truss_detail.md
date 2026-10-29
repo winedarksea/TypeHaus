@@ -166,7 +166,7 @@ applicator reaches the whole plane from outside through the 20-1/2" between cour
    invites two trades onto one opening. One arrival, one opening finished. Spec, qualifying
    products and the open substrate item: `notes/opening_flashing_spec.md`.
    Then, in order: jamb trim, window, 58114XX head trim, K6 head cap (face leg over the
-   58114XX back leg) and its strip-in, the perforated strip on its pads, cladding.
+   58114XX back leg) and its strip-in, the perforated strip, cladding.
 
 **Inspect the screw pattern from the ground before the sprayer arrives.** It is a single load
 path and this is the last moment it can be seen.
@@ -316,7 +316,7 @@ from the sheathing face, and on this wall neither piece is anywhere near it.
   leg down the girt plane lapping the 58114XX back leg by 1" (`opening_flashing_spec.md`
   §3 step 4a, the hand count there). It floors the cavity above the window, so what runs
   down the cavity leaves over the 58114XX and the 1/2" pocket behind the course stays dry.
-  The panel ends in the 58114XX channel on a perforated strip on 1/16" EPDM pads. Brake-formed
+  The panel ends in the 58114XX channel on a bare perforated strip. Brake-formed
   steel in the house dark, bedded on the membrane over the course top and face, 3/4" end dams,
   RO + 7" long, its upstand stripped in. Sealant at the cladding-to-frame joint sits at the
   mount plane, under the 58114XX. Before this, the cavity above every head exited only down

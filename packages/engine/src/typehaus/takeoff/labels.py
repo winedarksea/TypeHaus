@@ -132,7 +132,6 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("bug_screens", "BASE_SCREEN"): "Perforated aluminium base screen, inverted U",
     ("bug_screens", "PANEL_END_STRIP"): "Perforated aluminium panel-end strip",
     ("bug_screens", "BAND_OUTLET_STRIP"): "Perforated aluminium band outlet strip",
-    ("bug_screens", "EPDM_PAD"): "1/16 in EPDM pads under the strips",
     ("concrete", "dowel"): "Dowel", ("concrete", "connector"): "Connector",
     # The two families carved off ``connector``. Derived markers never reach a take-off
     # (they are ``derived`` and skipped), but an AUTHORED cast-in or hanger connector does,

@@ -419,7 +419,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   (2026-10-29, decision #99; `notes/metal_trim_kit.md` "Wall base stack", "Band outlet",
   "Closure inventory"). Base: K2 Z → a 2"x2" perforated aluminium inverted U on the pan →
   steel base trim with its foot raised 1" (S+1", EPDM where its leg laps the U) → the panel
-  end on a perforated strip on EPDM pads; the starter girt and blocks start at S+2-1/4", so no
+  end on a perforated strip (no pads); the starter girt and blocks start at S+2-1/4", so no
   KDAT touches aluminium. Net free area 83 cm2/m (DIN 18516-1: 50). Heads: a steel K6 cap
   floors the cavity over every metal-wall window and laps the 58114XX by 1"; the panel end sits
   on a strip; heads are NOT outlets. Band: a 1" outlet strip under the Transition Trim at

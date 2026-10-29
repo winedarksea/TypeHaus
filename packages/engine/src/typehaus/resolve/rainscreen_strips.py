@@ -2,10 +2,11 @@
 
 A panel end over a rainscreen opens its rib (PBR) or batten (BBD75) voids into the cavity.
 Instead of a foam or polyethylene closure (chewable, and it holds water against the panel
-end) the end sits on a flat perforated aluminium strip, itself set on 1/16" EPDM pads so no
-steel bears on aluminium and water runs off between them. At the BBD75 band the lower
-panel stops 1" under the Transition Trim's seat and a strip across that slot is the cavity's
-vented outlet (``notes/metal_trim_kit.md``). Derived from the trim each one lands on.
+end) the end sits on a flat perforated aluminium strip, seated directly on the trim leg:
+painted aluminium against Galvalume, as Metal Sales' PBR vented ridge bears (owner,
+2026-10-29; no EPDM pads). At the BBD75 band the lower panel stops 1" under the Transition
+Trim's seat and a strip across that slot is the cavity's vented outlet
+(``notes/metal_trim_kit.md``). Derived from the trim each one lands on.
 """
 
 from __future__ import annotations
@@ -25,15 +26,9 @@ from typehaus.resolve.rainscreen_closures import (
     rainscreen_band,
     screens_rainscreen_base,
 )
-from typehaus.resolve.sheet_geometry import combine_sheets
 
 STRIP_PRODUCT = "PANEL_END_STRIP"
 BAND_OUTLET_PRODUCT = "BAND_OUTLET_STRIP"
-PAD_PRODUCT = "EPDM_PAD"
-PAD_MATERIAL = "rubber"
-PAD_THICKNESS_IN = 0.0625
-PAD_LENGTH_IN = 2.0
-PAD_SPACING_IN = 12.0
 #: The lower panel stops this far under the Transition Trim's seat: the band's outlet slot.
 BAND_PANEL_GAP_IN = 1.0
 #: A strip is cut this short of each edge of its seat, so its aluminium edge stands off the
@@ -41,11 +36,10 @@ BAND_PANEL_GAP_IN = 1.0
 STRIP_EDGE_CLEAR_IN = 1.0 / 32.0
 
 
-def _sheet(seat, origin, outward, along, length, lift, thickness):
-    """``seat`` = (dx, dz) from ``origin`` in (outward, up); the sheet's underside ``lift``
-    above it. ``folded_section_mesh`` thickens below a line run outward."""
-    top = lift + thickness
-    return folded_section_mesh(((0.0, top), (seat[0], seat[1] + top)), origin,
+def _sheet(seat, origin, outward, along, length, thickness):
+    """``seat`` = (dx, dz) from ``origin`` in (outward, up); the sheet's underside rests on it.
+    ``folded_section_mesh`` thickens below a line run outward."""
+    return folded_section_mesh(((0.0, thickness), (seat[0], seat[1] + thickness)), origin,
                                (*outward, 0.0), (0.0, 0.0, 1.0),
                                (along[0] * length, along[1] * length, 0.0), thickness)
 
@@ -62,11 +56,10 @@ def _solid(model, uid, tag, storey, host, product, category, material, mesh, len
 
 def add_strip_run(model, *, uid, tag, storey, host, product, origin, outward, along, seat,
                   length) -> None:
-    """A strip on pads along ``length``, cut from stock and butted, each piece with its pads.
+    """A strip lying on its seat along ``length``, cut from stock and butted.
 
-    ``seat`` is the full (outward, up) run between the legs; the strip and its pads are held
+    ``seat`` is the full (outward, up) run between the legs; the strip is held
     ``STRIP_EDGE_CLEAR_IN`` off each end of it."""
-    pad = PAD_THICKNESS_IN * M_PER_IN
     sheet = BUG_SCREEN_SHEET_IN * M_PER_IN
     run = math.hypot(*seat)
     clear = STRIP_EDGE_CLEAR_IN * M_PER_IN
@@ -80,16 +73,7 @@ def add_strip_run(model, *, uid, tag, storey, host, product, origin, outward, al
         piece = end - start
         _solid(model, f"{uid}-{index}", f"{tag}-{index + 1}", storey, host, product,
                TrimKind.BUG_SCREEN.value, BUG_SCREEN_MATERIAL,
-               _sheet(seat, point, outward, along, piece, pad, sheet), piece, stock)
-        pad_length = min(PAD_LENGTH_IN * M_PER_IN, piece)
-        count = max(2, math.ceil(piece / (PAD_SPACING_IN * M_PER_IN)) + 1)
-        step = (piece - pad_length) / (count - 1)
-        pads = [_sheet(seat, (point[0] + along[0] * step * k, point[1] + along[1] * step * k,
-                              point[2]), outward, along, pad_length, 0.0, pad)
-                for k in range(count)]
-        _solid(model, f"{uid}-{index}-pads", f"{tag}-{index + 1}-PADS", storey, host,
-               PAD_PRODUCT, "cladding_trim", PAD_MATERIAL, combine_sheets(pads),
-               pad_length * count, 0.0)
+               _sheet(seat, point, outward, along, piece, sheet), piece, stock)
 
 
 def resolve_panel_end_strips(model) -> None:

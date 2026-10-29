@@ -1152,6 +1152,10 @@ K6 cap; 6460800 fell 227.1 to 111.7 LF and 55548XX 168.0 to 46.5 LF (sills, roug
 the eave wall tops keep theirs). The panel bottoms are still drawn to the seat, and the band's
 1" panel gap is implicit behind the trim.
 
+2026-10-29 (owner, item 34): the EPDM pads are gone. Strips bear bare, painted aluminium on
+Galvalume as Metal Sales' PBR vented ridge does; the model draws no pads and the strip sits
+on its seat (no 1/16" lift). `EPDM_BASE_ISOLATION` at the steel-trim lap stays.
+
 ### Every interior partition top got a 3/4" deflection gap and an SDPW (2026-09-19)
 
 The attic's seven partitions resolved **11-7/8" too tall** — `apply_to_roof_wall_tops` rakes a

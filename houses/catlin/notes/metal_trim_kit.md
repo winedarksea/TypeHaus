@@ -66,9 +66,10 @@ On a house wall, bottom to top, S = the bearing seat at −1'-1 7/16":
    aluminium. There is no EPDM on the drip leg.
 4. **Starter girt and blocks raised to S+2-1/4 in ... S+5-3/4 in**, clear of the Z upstand and
    the U top (S+2.04 in). No KDAT touches aluminium.
-5. **Panel end on a flat perforated aluminium strip** on the trim foot, set on 1/16 in EPDM
-   pads (2 in long at 12 in o.c. or closer), cut 1/32 in short of each leg so its edges touch
-   no steel (at a head or the band, no KDAT girt either). It replaces 6460800 on PBR (polyethylene, chewable,
+5. **Panel end on a flat perforated aluminium strip** on the trim foot, cut 1/32 in short of
+   each leg so its edges touch no steel (at a head or the band, no KDAT girt either). The panel
+   end bears on the strip directly, painted aluminium against Galvalume, with **no EPDM pads**
+   (owner, 2026-10-29; see "Strip bearing" below). It replaces 6460800 on PBR (polyethylene, chewable,
    and it holds water against the panel end); BBD75 publishes none. The fallback is 6460800
    taped on both faces.
 
@@ -76,12 +77,12 @@ Net free area, by hand: the U's outer leg is open from the pan (S−0.002 in at 
 to the EPDM at S+1 in, 1.002 in. 1.002 in x 2.54 cm x 0.326 x 100 cm/m = **83 cm2/m**, against
 DIN 18516-1's 50 cm2/m. The engine reads 83 (`integrity.rainscreen_cavity`, off the
 Material's `perforation_hole_in` and `open_area_fraction`); the plan's "about 84" counted a
-full 1 in at 33%. At the supplier's 20% floor the base would read 51 cm2/m and the band outlet
-47, which fails: the floor is 21.1% for the band, so order the 33% sheet and never under 22%.
+full 1 in at 33%. At 20% open the base would read 51 cm2/m and the band outlet 47, which
+fails: the band needs 21.1%, so order the 33% sheet and ask the supplier for at least 22%.
 
 Hand count, W-M-W4: the U runs 162 in (mitred at the corners), cut 120 + 44 in with a 2 in
 lap; the Z the same. The base trim runs 164.75 in as two sticks (122 + 42.75 in), foot at
-−12 7/16" (S+1), hem kick to −12.90". The strip runs 164.75 in (120 + 44.75), on 16 pads. The
+−12 7/16" (S+1), hem kick to −12.90". The strip runs 164.75 in (120 + 44.75), seated on the foot. The
 starter girt is −11 3/16" to −7 11/16".
 
 The garage has no separate cavity, because the corrugation is the rainscreen. There the
@@ -95,8 +96,8 @@ sills and heads are not outlets (owner, 2026-10-28).
 
 - The lower panel stops at least 1 in below the trim seat (implicit, hidden behind the trim's
   2-1/2 in face leg).
-- A 1 in perforated strip spans from the girt plane to the trim's face leg under the seat, on
-  pads on the lower panel's top end (`BAND_OUTLET_STRIP`), cut 1/32 in short of the steel
+- A 1 in perforated strip spans from the girt plane to the trim's face leg under the seat,
+  over the lower panel's top end (`BAND_OUTLET_STRIP`), cut 1/32 in short of the steel
   each side: 0.934 in x 2.54 x 0.326 x 100 = **77.4 cm2/m** (the edge gaps, open but under
   1/8 in, are not counted).
 - The 1/2 in gap behind the band girt stays open, so the upper cavity is fed from below.
@@ -104,6 +105,14 @@ sills and heads are not outlets (owner, 2026-10-28).
   strip, on the seat (`PANEL_END_STRIP`).
 - Left out where an opening is framed through the trim's height (`WIN-S-HALL-N`,
   `WIN-S-STAIR-N`, `AO-S-ERV-EA`): their heads govern there. Seven walls, 61.4 LF of outlet.
+
+### Strip bearing (owner, 2026-10-29)
+
+Panel ends bear on the perforated aluminium strip with no EPDM pads, and the strip lies
+directly on the trim leg. Basis: Metal Sales puts painted aluminium against Galvalume at its
+PBR vented ridge, so the pairing is the manufacturer's own. EPDM stays where the steel base
+trim's leg laps the U (item 3). The model draws and bills no pads
+(`resolve/rainscreen_strips.py`).
 
 ### Closure inventory
 
@@ -127,9 +136,8 @@ sills and heads are not outlets (owner, 2026-10-28).
 | Metal Sales | Panel end on a perforated strip, instead of the 1/4 in gap and closure |
 | Metal Sales | Raising the base trim 1 in off the Z |
 | Metal Sales | K6 braked from their coil |
-| Owner | EPDM pads (modelled), or accept painted aluminium against Galvalume (Metal Sales does this at its PBR vented ridge) |
 | Membrane maker | The substrate letter covers the Z and K6 strip-ins |
-| Screen supplier | Holes ≤ 1/8 in, at least 22% open (33% specified; the band outlet fails under 21.1%), 0.032–0.040 aluminium |
+| Screen supplier | Holes ≤ 1/8 in, **at least 22% open** (33% specified; the band outlet needs 21.1%), 0.032–0.040 aluminium |
 
 ## Openings
 
