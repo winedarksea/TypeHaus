@@ -800,62 +800,6 @@
       "node": "polyline",
       "points": [
         [
-          317.75,
-          98.34645669291339
-        ],
-        [
-          321.25000000000006,
-          98.34645669291339
-        ],
-        [
-          321.25000000000006,
-          104.375
-        ],
-        [
-          317.75,
-          104.375
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW120AAAA",
-      "tag": "cripple-head-0-01"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          317.75,
-          98.34645669291339
-        ],
-        [
-          321.25000000000006,
-          98.34645669291339
-        ],
-        [
-          321.25000000000006,
-          104.375
-        ],
-        [
-          317.75,
-          104.375
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           316.75000000000006,
           120.0
         ],
@@ -1172,7 +1116,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-570",
+      "content": "SHEET A-571",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

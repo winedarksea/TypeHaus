@@ -458,182 +458,6 @@
       "node": "polyline",
       "points": [
         [
-          227.625,
-          115.5
-        ],
-        [
-          227.67524047358086,
-          115.3125
-        ],
-        [
-          227.8125,
-          115.17524047358084
-        ],
-        [
-          228.0,
-          115.125
-        ],
-        [
-          228.1875,
-          115.17524047358084
-        ],
-        [
-          228.32475952641914,
-          115.3125
-        ],
-        [
-          228.375,
-          115.5
-        ],
-        [
-          228.32475952641914,
-          115.6875
-        ],
-        [
-          228.1875,
-          115.82475952641917
-        ],
-        [
-          228.0,
-          115.875
-        ],
-        [
-          227.8125,
-          115.82475952641917
-        ],
-        [
-          227.67524047358086,
-          115.6875
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CDT010AAAA-run",
-      "tag": "CD-M-DATA-KITCH-RUN"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          227.625,
-          115.5
-        ],
-        [
-          227.67524047358086,
-          115.3125
-        ],
-        [
-          227.8125,
-          115.17524047358084
-        ],
-        [
-          228.0,
-          115.125
-        ],
-        [
-          228.1875,
-          115.17524047358084
-        ],
-        [
-          228.32475952641914,
-          115.3125
-        ],
-        [
-          228.375,
-          115.5
-        ],
-        [
-          228.32475952641914,
-          115.6875
-        ],
-        [
-          228.1875,
-          115.82475952641917
-        ],
-        [
-          228.0,
-          115.875
-        ],
-        [
-          227.8125,
-          115.82475952641917
-        ],
-        [
-          227.67524047358086,
-          115.6875
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          202.89748031496066,
-          109.85127992825385
-        ],
-        [
-          229.10251968503943,
-          109.85127992825385
-        ],
-        [
-          229.10251968503943,
-          113.39872007174618
-        ],
-        [
-          202.89748031496066,
-          113.39872007174618
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "YEXGZK2KW2-run",
-      "tag": "DU-M-ERV-R-KITCH-RUN"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          202.89748031496066,
-          109.85127992825385
-        ],
-        [
-          229.10251968503943,
-          109.85127992825385
-        ],
-        [
-          229.10251968503943,
-          113.39872007174618
-        ],
-        [
-          202.89748031496066,
-          113.39872007174618
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           219.26000000000002,
           107.50000000000001
         ],
@@ -746,19 +570,19 @@
       "node": "polyline",
       "points": [
         [
-          211.25000000000003,
-          118.5
+          213.25,
+          108.125
         ],
         [
           216.75,
-          118.5
+          108.125
         ],
         [
           216.75,
           120.0
         ],
         [
-          211.25000000000003,
+          213.25,
           120.0
         ]
       ],
@@ -767,26 +591,26 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "1JXQ975X9E",
-      "tag": "bearing-block-1-016-rail-top"
+      "tag": "bearing-block-1-015"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          211.25000000000003,
-          118.5
+          213.25,
+          108.125
         ],
         [
           216.75,
-          118.5
+          108.125
         ],
         [
           216.75,
           120.0
         ],
         [
-          211.25000000000003,
+          213.25,
           120.0
         ]
       ],
@@ -802,168 +626,40 @@
       "node": "polyline",
       "points": [
         [
-          211.25000000000003,
-          108.125
-        ],
-        [
-          216.75,
-          108.125
-        ],
-        [
-          216.75,
+          213.25,
           109.625
         ],
         [
-          211.25000000000003,
+          216.75,
           109.625
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.18,
+      "lineweight": 0.13,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "1JXQ975X9E",
-      "tag": "bearing-block-1-016-rail-bottom"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          211.25000000000003,
-          108.125
-        ],
-        [
-          216.75,
-          108.125
-        ],
-        [
-          216.75,
-          109.625
-        ],
-        [
-          211.25000000000003,
-          109.625
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
+      "tag": "bearing-block-1-015/flange"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          206.25,
+          213.25,
           118.5
         ],
         [
-          211.75,
+          216.75,
           118.5
-        ],
-        [
-          211.75,
-          120.0
-        ],
-        [
-          206.25,
-          120.0
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.18,
+      "lineweight": 0.13,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "1JXQ975X9E",
-      "tag": "partition-block-W-M-HS4-003-rail-top"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          206.25,
-          118.5
-        ],
-        [
-          211.75,
-          118.5
-        ],
-        [
-          211.75,
-          120.0
-        ],
-        [
-          206.25,
-          120.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          206.25,
-          108.125
-        ],
-        [
-          211.75,
-          108.125
-        ],
-        [
-          211.75,
-          109.625
-        ],
-        [
-          206.25,
-          109.625
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "1JXQ975X9E",
-      "tag": "partition-block-W-M-HS4-003-rail-bottom"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          206.25,
-          108.125
-        ],
-        [
-          211.75,
-          108.125
-        ],
-        [
-          211.75,
-          109.625
-        ],
-        [
-          206.25,
-          109.625
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
+      "tag": "bearing-block-1-015/flange"
     },
     {
       "space": "model",
@@ -971,14 +667,14 @@
       "points": [
         [
           216.75,
-          118.5
+          108.125
         ],
         [
-          222.25,
-          118.5
+          219.25,
+          108.125
         ],
         [
-          222.25,
+          219.25,
           120.0
         ],
         [
@@ -991,7 +687,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSF603AAAA",
-      "tag": "bearing-block-0-018-rail-top"
+      "tag": "bearing-block-0-017"
     },
     {
       "space": "model",
@@ -999,14 +695,14 @@
       "boundary": [
         [
           216.75,
-          118.5
+          108.125
         ],
         [
-          222.25,
-          118.5
+          219.25,
+          108.125
         ],
         [
-          222.25,
+          219.25,
           120.0
         ],
         [
@@ -1027,55 +723,39 @@
       "points": [
         [
           216.75,
-          108.125
+          109.5
         ],
         [
-          222.25,
-          108.125
-        ],
-        [
-          222.25,
-          109.625
-        ],
-        [
-          216.75,
-          109.625
+          219.25,
+          109.5
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.18,
+      "lineweight": 0.13,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "CSF603AAAA",
-      "tag": "bearing-block-0-018-rail-bottom"
+      "tag": "bearing-block-0-017/flange"
     },
     {
       "space": "model",
-      "node": "hatch",
-      "boundary": [
+      "node": "polyline",
+      "points": [
         [
           216.75,
-          108.125
+          118.62500000000001
         ],
         [
-          222.25,
-          108.125
-        ],
-        [
-          222.25,
-          109.625
-        ],
-        [
-          216.75,
-          109.625
+          219.25,
+          118.62500000000001
         ]
       ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CSF603AAAA",
+      "tag": "bearing-block-0-017/flange"
     },
     {
       "space": "model",
@@ -1920,6 +1600,62 @@
       "node": "hatch",
       "boundary": [
         [
+          170.5,
+          207.5
+        ],
+        [
+          174.5,
+          207.5
+        ],
+        [
+          174.5,
+          211.5
+        ],
+        [
+          170.5,
+          211.5
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          170.5,
+          207.5
+        ],
+        [
+          174.5,
+          207.5
+        ],
+        [
+          174.5,
+          211.5
+        ],
+        [
+          170.5,
+          211.5
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:shower-hrv-duct"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
           225.0,
           207.5
         ],
@@ -2111,7 +1847,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-574",
+      "content": "SHEET A-575",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
