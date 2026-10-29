@@ -30,3 +30,16 @@ def test_pitch_to_angle() -> None:
 def test_r_value_canonical() -> None:
     assert round(r_us(40).r_us, 1) == 40.0
     assert deg(90).radians > 1.5
+
+
+def test_arithmetic_result_source_holds_its_value() -> None:
+    """A result used to keep its left operand's args: ``(ft(1) + ft(1)).to_source()`` was
+    ``ft(1)``. Write-back would have pasted that wrong number into plan source."""
+    from typehaus.quantities.length import _from_source
+
+    results = (ft(1) + ft(1), ft(10) + mm(7), ft(0) - inch(6), -ft(2, 6), inch(1) / 3,
+               mm(5) * 3, abs(m(-1.25)), inch(166.6875))
+    for q in results:
+        assert _from_source(q.to_source()) == q, (q.to_source(), q.meters)
+    assert (ft(1) + ft(1)).to_source() == "ft(2)"
+    assert (-ft(2, 6)).to_source() == "ft(-2, -6)"

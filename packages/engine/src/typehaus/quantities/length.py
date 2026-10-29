@@ -65,19 +65,24 @@ class Length:
         return self._m * 1000.0
 
     # --- arithmetic (closed & type-checked) ----------------------------------
+    # A result keeps the left operand's unit but not its args: ``_derived`` spells it from
+    # the metres it holds, lazily in ``to_source``, so ``ft(1) + ft(1)`` writes ``ft(2)``.
+    def _derived(self, meters: float) -> Length:
+        return Length(meters, self._unit, ())
+
     def __add__(self, other: Length) -> Length:
-        return Length(self._m + other._m, self._unit, self._args)
+        return self._derived(self._m + other._m)
 
     def __sub__(self, other: Length) -> Length:
-        return Length(self._m - other._m, self._unit, self._args)
+        return self._derived(self._m - other._m)
 
     def __mul__(self, k: float) -> Length:
-        return Length(self._m * k, self._unit, self._args)
+        return self._derived(self._m * k)
 
     __rmul__ = __mul__
 
     def __truediv__(self, k: float) -> Length:
-        return Length(self._m / k, self._unit, self._args)
+        return self._derived(self._m / k)
 
     def times_length(self, other: Length) -> Area:
         """Length * Length -> Area (explicit; kept off ``__mul__`` for mypy clarity)."""
@@ -86,10 +91,10 @@ class Length:
         return Area(self._m * other._m)
 
     def __neg__(self) -> Length:
-        return Length(-self._m, self._unit, self._args)
+        return self._derived(-self._m)
 
     def __abs__(self) -> Length:
-        return Length(abs(self._m), self._unit, self._args)
+        return self._derived(abs(self._m))
 
     # --- comparison ----------------------------------------------------------
     def __eq__(self, other: object) -> bool:
@@ -125,14 +130,11 @@ class Length:
         return f'{feet}\'-{parts}"'
 
     def to_source(self) -> str:
+        args = self._args or _spell(self._m, self._unit)
         if self._unit is AuthoredUnit.FT_IN:
-            feet, inches = self._args
-            return f"ft({feet:g}, {inches:g})" if inches else f"ft({feet:g})"
-        if self._unit is AuthoredUnit.INCH:
-            return f"inch({self._args[0]:g})"
-        if self._unit is AuthoredUnit.MM:
-            return f"mm({self._args[0]:g})"
-        return f"m({self._args[0]:g})"
+            feet, inches = args
+            return f"ft({_num(feet)}, {_num(inches)})" if inches else f"ft({_num(feet)})"
+        return f"{_CTOR[self._unit]}({_num(args[0])})"
 
     def __repr__(self) -> str:
         return f"Length({self.to_source()})"
@@ -197,6 +199,36 @@ def mm(x: float) -> Length:
 
 def m(x: float) -> Length:
     return Length(x, AuthoredUnit.M, (x,))
+
+
+_CTOR = {AuthoredUnit.INCH: "inch", AuthoredUnit.MM: "mm", AuthoredUnit.M: "m"}
+
+
+def _num(x: float) -> str:
+    """``:g`` when it is exact (every authored literal up to six digits), else the shortest
+    repr that round-trips — ``:g`` alone wrote ``inch(166.6875)`` as ``inch(166.688)``."""
+    short = f"{x:g}"
+    if float(short) == x:
+        return short
+    return str(int(x)) if float(x).is_integer() else repr(float(x))
+
+
+def _spell(meters: float, unit: AuthoredUnit) -> tuple[float, ...]:
+    """``meters`` as ``unit``'s args, float noise rounded off well under ``__eq__``'s 1e-9 m.
+
+    ft-in splits the magnitude and signs both parts, as ``macros_common._round_len`` does:
+    ``ft(f, i)`` is ``f*12 + i``, so a negative length carries the sign on each argument.
+    """
+    if unit is AuthoredUnit.FT_IN:
+        total = round(meters / M_PER_IN, 9)
+        feet, inches = divmod(abs(total), 12.0)
+        sign = -1.0 if total < 0 else 1.0
+        return (sign * feet + 0.0, sign * round(inches, 9) + 0.0)  # + 0.0 drops a -0
+    if unit is AuthoredUnit.INCH:
+        return (round(meters / M_PER_IN, 9) + 0.0,)
+    if unit is AuthoredUnit.MM:
+        return (round(meters * 1000.0, 9) + 0.0,)
+    return (round(meters, 12) + 0.0,)
 
 
 def _from_source(text: str) -> Length:
