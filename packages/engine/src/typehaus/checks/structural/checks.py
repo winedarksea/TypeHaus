@@ -47,6 +47,15 @@ _IJOIST_TABLE_SPACING_IN = 16.0
 _PRESCRIPTIVE_HEADER_SPAN_FT = 8.0
 
 
+def _spans_station(axis, member, station_m: float) -> bool:
+    """Whether a horizontal ``member`` runs over ``station_m`` along ``axis``."""
+    (ax, ay), (bx, by) = axis
+    run = ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5 or 1.0
+    ends = [((p[0] - ax) * (bx - ax) + (p[1] - ay) * (by - ay)) / run
+            for p in (member.p0, member.p1)]
+    return min(ends) <= station_m <= max(ends)
+
+
 @check(Tier.STRUCTURAL, "structural.flat_2x4_nonbearing_header")
 def flat_2x4_nonbearing_header(ctx: CheckContext) -> list[Finding]:
     """Validate the deliberately narrow R602.7.4 flat-nailer exception.
@@ -89,18 +98,11 @@ def flat_2x4_nonbearing_header(ctx: CheckContext) -> list[Finding]:
             # they resolve (a nonbearing wall may take one, R602.5), else the standard two
             # 1-1/2 in courses under the wall's top. Only the plates over this opening: a
             # stepped wall's lowest plate elsewhere is not what this header nails to.
-            (ax, ay), (bx, by) = wall.axis
-            run = ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5 or 1.0
-
-            def station(point) -> float:
-                return ((point[0] - ax) * (bx - ax) + (point[1] - ay) * (by - ay)) / run
-
             centre = opening.center_along_m
             top_plates = [member.z0_m for member in wall.members
                           if member.category == "plate"
                           and member.child_key.startswith("plate-top")
-                          and min(station(member.p0), station(member.p1)) <= centre
-                          <= max(station(member.p0), station(member.p1))]
+                          and _spans_station(wall.axis, member, centre)]
             plate_underside = (min(top_plates) if top_plates
                                else plate_top - 3.0 * 0.0254)
             # The resolved nailer's own top: it is laid flat, 1 1/2" and not its depth.
