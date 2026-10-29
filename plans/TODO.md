@@ -76,8 +76,6 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
   raises before deciding.
 - **Router port stub is unpriced** (decision #95): its length and bend are not in a proposal's
   cost terms, and the 2" fitting allowance is a stated value, not a datasheet one.
-- **`test_routing_perf_guard` (slow) is red at HEAD**: `DU-B-ERV-R-SAUNA-SUP` nominates 376,101
-  lattice nodes against the 350,000 cap (measured 2026-10-29 on the committed tree).
 
 ### Performance / energy follow-ups
 

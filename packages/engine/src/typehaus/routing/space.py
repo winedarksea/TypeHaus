@@ -80,7 +80,11 @@ MAX_CANDIDATE_LINES = 400
 #: same duct measured 279,016 before the ERV/vent clearance campaign and 308,441 after it —
 #: new runs and humps are new prisms, and each prism's edges are lines on every level it
 #: cuts. It builds in 15.1 s, searches in 1.8 s and peaks at 680 MB (`--timing`, measured).
-MAX_LATTICE_NODES = 350_000
+#:
+#: **450,000 on 2026-10-29, same reason.** 335,036 nodes on 2026-10-25, 392,334 after the
+#: owner-answer MEP waves (984 -> 1,072 hard prisms: condensate runs, the service lateral).
+#: Builds in 19.6 s, searches in 2.6 s, peaks at 886 MB (`--timing`, measured).
+MAX_LATTICE_NODES = 450_000
 
 #: Default margin round the terminals' bounding box, in feet. Eight is about the width of
 #: a room: enough for a route to step out of the direct line and back, and small enough
