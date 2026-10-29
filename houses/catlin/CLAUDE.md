@@ -415,16 +415,20 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   run their own 24" module) — 32"x24"=5.33 ft2 is the crossing tributary in
   `notes/catlin_truss_engineering.md`. Block phase is solved for 32", not 16" — reusing the
   stud phase puts half a facade's segments on the wrong parity.
-- **The 2" cavity is closed against insects in four places** (2026-10-10; the ccSPF in it has
-  no other protection, `notes/outie_window_truss_detail.md` "Insect closure"): the base screen
-  and a head screen over every window/door, both DERIVED (`resolve/rainscreen_closures.py`) in
-  perforated aluminium, holes <= 1/8"; the jamb buck returns (a hold point); and the rib
-  closures (PBR 6460800, BBD75 C-Closure, counted under `[cladding_trim]`). **The top stays
-  closed: the roof deck oversails to the girt face**, pinned by `test_rainscreen_closures.py`.
-  Clip it back to the sheathing and the whole cavity opens into the eave. The BBD75 guide has
-  **no rat guard** (p. 22). The screen closes the cavity and the C-Closure the panel. Base stack:
-  K2 Z (drip) → screen → trim leg on the girt plane → rib closure
-  (`notes/metal_trim_kit.md` "Wall base stack").
+- **The 2" cavity breathes in at the base, out at the N/S band, and drains at every head**
+  (2026-10-29, decision #99; `notes/metal_trim_kit.md` "Wall base stack", "Band outlet",
+  "Closure inventory"). Base: K2 Z → a 2"x2" perforated aluminium inverted U on the pan →
+  steel base trim with its foot raised 1" (S+1", EPDM where its leg laps the U) → the panel
+  end on a perforated strip on EPDM pads; the starter girt and blocks start at S+2-1/4", so no
+  KDAT touches aluminium. Net free area 83 cm2/m (DIN 18516-1: 50). Heads: a steel K6 cap
+  floors the cavity over every metal-wall window and laps the 58114XX by 1"; the panel end sits
+  on a strip; heads are NOT outlets. Band: a 1" outlet strip under the Transition Trim at
+  +17'-4" (82.5 cm2/m). All DERIVED (`resolve/rainscreen_closures.py`, `rainscreen_strips.py`,
+  `opening_head_cap.py`), graded by `integrity.rainscreen_cavity`, billed in `[bug_screens]`.
+  Sills, eaves, rakes and corners stay closed; jamb buck returns are a hold point. **The top
+  stays closed: the roof deck oversails to the girt face**, pinned by
+  `test_rainscreen_closures.py`. Clip it back to the sheathing and the whole cavity opens into
+  the eave.
 - Girt course module counts from the SILLS' datum, phase ZERO
   (`course_datum="framing-base"` + `course_offset=inch(0)`), not the wall base. One module
   runs unbroken from wall base through the gable rake, breaking only at a starter (band

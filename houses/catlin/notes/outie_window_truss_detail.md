@@ -41,7 +41,7 @@ source:
 - [K3] Block each course the post crosses, at 24" max, and across the RO.
 - [K4] Field courses stop 3-1/2" clear of each RO.
 - [K5] Fluid-applied pan on the buck: dam on a strip, 1/4"/ft, down the buck edge.
-- [K6 @ host#layer:spray-foam:out] Head trim (58114XX) or steel head flashing, on the foam face over the course, past the casing, drip. Strip in.
+- [K6 @ host#layer:spray-foam:out] Steel head cap from the foam face over the course, face leg over 58114XX; panel end on a perforated strip. Strip in.
 - [K7 @ host#layer:cladding:out] Sealant at the cladding-to-frame joint, at the mount plane, under the drip.
 
 ### Spec 06 10 00
@@ -165,7 +165,8 @@ applicator reaches the whole plane from outside through the 20-1/2" between cour
    flashing" operation re-introduces the lapped corner the liquid exists to remove, and
    invites two trades onto one opening. One arrival, one opening finished. Spec, qualifying
    products and the open substrate item: `notes/opening_flashing_spec.md`.
-   Then, in order: jamb trim, window, head flashing, head trim, cladding.
+   Then, in order: jamb trim, window, 58114XX head trim, K6 head cap (face leg over the
+   58114XX back leg) and its strip-in, the perforated strip on its pads, cladding.
 
 **Inspect the screw pattern from the ground before the sprayer arrives.** It is a single load
 path and this is the last moment it can be seen.
@@ -309,12 +310,18 @@ from the sheathing face, and on this wall neither piece is anywhere near it.
   elsewhere). The full argument, the permitted impermeable-self-adhered hybrid and the one
   open item — a written substrate approval for the lap onto shaved ccSPF, which ESR-4363's
   whitelist does not cover — are in `notes/opening_flashing_spec.md`.
-- **Head flashing.** Starts on the **foam face** above the head course — the foam is the water
-  plane, so lapping onto it is what makes the head continuous — turns out over the head
-  course, laps past the casing and drips. Brake-formed steel in the house dark, bedded on the
-  membrane over the KDAT course, end dams folded up 3/4", 1" past each casing end, and its
-  upstand's top edge stripped in to the foam (spec §3-§4). Sealant at the cladding-to-frame joint sits at the
-  mount plane, tucked under the drip.
+- **Head cap (2026-10-29).** On a metal wall the head is a steel **cap**, not a drip head:
+  a 2" upstand on the **foam face** (the water plane, so lapping onto it is what makes the
+  head continuous), a top across the cavity and the head course falling outward, and a face
+  leg down the girt plane lapping the 58114XX back leg by 1" (`opening_flashing_spec.md`
+  §3 step 4a, the hand count there). It floors the cavity above the window, so what runs
+  down the cavity leaves over the 58114XX and the 1/2" pocket behind the course stays dry.
+  The panel ends in the 58114XX channel on a perforated strip on 1/16" EPDM pads. Brake-formed
+  steel in the house dark, bedded on the membrane over the course top and face, 3/4" end dams,
+  RO + 7" long, its upstand stripped in. Sealant at the cladding-to-frame joint sits at the
+  mount plane, under the 58114XX. Before this, the cavity above every head exited only down
+  the rib voids into a closure taped into the 58114XX throat, and the pocket behind the
+  course was sealed in on the membrane: no drain, no exit.
 
 One number told the recipe which wall it is on: the head course is **3-1/2"** tall here (a 2x4
 laid flat) against the Swinburne wall's **1-1/2"** (the same board on edge), so the flashing's
@@ -324,13 +331,13 @@ depth — the recipe already read off the resolved stack and needed no telling.
 - **Jamb and head trim (2026-09-12; the panel is BBD75-1212 from 2026-09-14, and the trim
   kit is the same brake-formed set).** The Metal Sales kit's **Sill/Jamb Trim** is
   a J-shaped receiver: it runs up each jamb to the head and takes the panel's cut end at the
-  reveal. Without it, the cut edge IS the finish. **Head Trim** goes over it, under the head
-  flashing's drip. Both are brake-formed flat stock from the same kit as the corners and the
+  reveal. Without it, the cut edge IS the finish. **Head Trim** 58114XX goes over it, under
+  the head cap's face leg. Both are brake-formed flat stock from the same kit as the corners and the
   starter, which is why nothing new bills for them — `prices.toml` puts the whole trim kit
   inside the panel's $/SF rate (TRIM IS PARITY), and `[basis_notes] envelope_layers` forbids
   counting a piece against a concealed row. The build order is in "Sequence" step 9: the
-  opening is flashed in one continuous pass, then jamb trim, window, head flashing, head
-  trim, cladding.
+  opening is flashed in one continuous pass, then jamb trim, window, head trim, head cap,
+  strip, cladding. (The trim now bills by part under `[cladding_trim]`, 2026-10-27.)
 
   **Not yet a keyed callout.** A `[K8]` row would put the detail's notes onto a second sheet
   (`integrity.sheet_note_legibility`, 36 rows to a page, and this sheet sits on 36). Drawing
@@ -341,36 +348,38 @@ The buck, the head/sill courses and the girts themselves are **not** drawn as co
 linework. They are resolved members, so the cut carries them as the solids they are; drawing
 them again would be a second, disagreeing picture of the same wood.
 
-## Insect closure (2026-10-10)
+## Insect closure (2026-10-10, re-struck 2026-10-29)
 
 The 2" cavity (1/2" vent gap + 1-1/2" girt band) is a sheltered void with the ccSPF face
 exposed in it. Carpenter ants excavate the foam, wasps and mud daubers nest in voids, and
 mice chew it. Minnesota is a slight termite zone, so IRC R318.4 does not apply; this is
 durability, not code. The only protection is physical: every way into the cavity is closed
-with corrosion-proof perforation, holes 1/8" or less, or with solid metal. At an opening that
-means four places:
+with corrosion-proof perforation (3 mm holes, under 1/8"; 33% open) or with solid metal.
+The cavity breathes in at the base and, on the N/S walls, out at the band; heads drain and
+are not outlets (owner, 2026-10-28). At an opening that means:
 
-- **Head screen (derived, billed).** The head flashing drains the cavity above the head course
-  to the outside, and that slot is open. A perforated aluminium closure
-  (`perforated-aluminum-insect-closure`) sits on the head course across the whole 2" cavity,
-  RO plus a jamb post each side, under the flashing. The engine derives one over every window
-  and door on a rainscreen wall (`resolve/rainscreen_closures.head_screen_spans`) and bills it
-  with the base screen in `bug_screen:<assembly>`.
+- **Head (derived, billed).** The K6 cap floors the cavity above the head; the panel end
+  sits on a perforated strip in the 58114XX channel (`resolve/rainscreen_strips.py`), billed
+  in `[bug_screens] PANEL_END_STRIP`. There is no head screen any more: the head drains
+  through the strip, and its vent area is negligible, as intended.
 - **Jamb (HOLD POINT).** The 1/2" gap behind each jamb post is closed by the buck return. Walk
   every jamb before the cladding goes on: the return must meet the foam with no daylight, and
   any gap gets low-expansion foam.
-- **Sill.** The pan discharges over the buck's front edge onto the sill course face and the
-  cladding's back, behind the sill trim; whatever reaches the cavity drains to the base screen.
-  Only the J-receiver joint needs sealing; seal it at the mount plane.
-- **Penetrations.** Hose bibs, exterior lights and the ERV hoods sleeve through the cavity; seal
-  each sleeve to the foam and to the panel (`[allowances] envelope-exterior-hoods-and-flashing`).
+- **Sill (closed).** The pan discharges over the buck's front edge onto the sill course face
+  and the cladding's back, behind the sill trim; whatever reaches the cavity drains to the
+  base. Only the J-receiver joint needs sealing; seal it at the mount plane. Sills keep
+  their profile closure.
+- **Penetrations (sealed).** Hose bibs, exterior lights, the ERV hoods, the hydrants and
+  `VR-M-STACK` sleeve through the cavity; seal each sleeve to the foam and to the panel
+  (`[allowances] envelope-exterior-hoods-and-flashing`).
 
-On the PBR walls the panel ribs are a second opening in front of the cavity, closed by profile
-closures at every horizontal termination (PBR Inside Closure 6460800, counted under
-`[cladding_trim]`; the wall tops are not yet counted, see `metal_trim_kit.md`). **The BBD75
-guide has no rat guard** (p. 22 base detail: Base Trim 55545XX and C-Closure only), so the base
-screen is the only cavity closure on board and batten, and the C-Closure closes the panel. The
-order at the base is in `metal_trim_kit.md`, "Wall base stack".
+**Closure inventory** (recorded, no geometry change): jamb buck returns, hold point; sills,
+closed; eaves and rakes, closed by the roof deck oversailing the girt face; outside corners,
+closed by the Wide Outside Corner; ERV, hydrant and `VR-M-STACK` sleeves, sealed;
+`D-S-DECK-E`'s head is its catalog unit's (no kit head trim, so no strip): a hold point.
+
+The base (inlet), the band (outlet) and the panel-end strips are in `metal_trim_kit.md`,
+"Wall base stack" and "Band outlet".
 
 ## Why the change, honestly
 

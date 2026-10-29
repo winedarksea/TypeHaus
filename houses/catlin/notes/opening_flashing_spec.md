@@ -144,11 +144,24 @@ Sequence at an opening:
    so that is the outlet: water runs down past the sill course face and the cladding's back,
    hidden behind the sill trim (owner, 2026-10-16). No visible drip.
 4. **Jambs and head, continuous into the sill's corners**, without stopping.
-4a. **Head: bed the course, then strip in after the metal.** Membrane on the KDAT head
-   course's top before `[K6]` goes on (§4). After it, a 4" strip of the same membrane over
-   the upstand's top edge, 2" down the metal and 2" up the foam. Without it, water on the
-   foam face runs **behind** the upstand: the head band stops at head + 2", and the upstand
-   starts at head + 3 1/2".
+4a. **Head on a metal wall: bed the course, cap it, strip in (2026-10-29).** Every window on
+   the rainscreen walls (38). The cavity above a head drains; it is not a vent outlet.
+   - **Bedding.** The perimeter band runs over the buck head, then over the KDAT head
+     course's **top and face** (the girt plane, RO head to course top).
+   - **`[K6]` is a steel cap over the head course**, set on that bedding (§4): a 2" upstand on
+     the foam face; a top across the 2" cavity and the course, falling outward 1/4"/ft
+     (0.04" over 2"); a face leg down the girt plane, 2-1/2" or long enough to lap the
+     58114XX back leg by 1"; 3/4" end dams. It runs RO + 7", over both 3-1/2" jamb posts.
+   - **Strip in after the cap:** a 4" strip over the upstand's top edge, 2" down the metal and
+     2" up the foam. Without it, water on the foam face runs behind the upstand.
+   - **Nothing runs level through the course.** The strip the model used to draw at the
+     58114XX's top edge passed through the KDAT head course and could not be built.
+   - Hand count, `WIN-M-BED-W1` (27-1/2" RO, head 72"): course 72"-75-1/2"; 58114XX channel
+     at 71.355" (head drop 0.645"), back leg to 73.855"; cap face leg down to 72.855"
+     (2.645" long, lapping 1"), top 75.5"-75.542", upstand to 77.542"; cap 34-1/2" long;
+     girth 6.65" plus two 3/4" end dams.
+   On a wall with no rainscreen cavity the drip head below stays as it was: bed the course,
+   then strip the upstand in after the metal.
 4b. **Set the window on the pan, and leave its SILL FLANGE UNSEALED.** Seal the head and
    jamb flanges to the membrane; the sill flange stays open so the pan drains. Sealing all
    four, as many install sheets show, turns a draining pan into a ponding one. The interior
@@ -176,19 +189,23 @@ the foam was sprayed in (60-80 F, `ccspf_spec.md` §3) and set the windows behin
 
 ## 4. What is NOT covered here
 
-- **The metal head flashing (`[K6]`)** and the **sealant at the cladding-to-frame joint
-  (`[K7]`)**. Different parts, different trades, bought elsewhere: the brake-formed pieces
-  ride inside the panel's $/SF rate under TRIM IS PARITY, and the sealant is
-  `[allowances] envelope-exterior-sealants-and-caulking`. What `[K6]` must be (owner,
+- **The sealant at the cladding-to-frame joint (`[K7]`)**: a different trade, billed as
+  `[allowances] envelope-exterior-sealants-and-caulking`.
+- **The metal head (`[K6]`)** is billed apart: on a metal-wall window it is the head cap of
+  §3 step 4a, a custom brake billed by the foot (`[cladding_trim] OPENING_HEAD_CAP`); a door
+  head is the site-brake drip cap (`DOOR_HEAD_CUSTOM`). What `[K6]` must be (owner,
   2026-10-16; `Project.opening_flashing_material`):
-  - **Steel from the cladding maker's trim kit**, 24 ga PVDF in the house dark
-    (`metal-dark-exterior`), never aluminium: it bears on the KDAT head course, and
-    `notes/beam_water_protection.md` (AWC DCA6) forbids aluminium on treated wood.
-  - **Separated from the KDAT** even so: it is bedded on this note's membrane or a butyl tape
-    over the course top (§3 step 4a).
-  - **End dams**: each end of the shedding leg folded up 3/4", and the piece runs 1" past
-    each casing end, so water leaves at the drip, not off the ends behind the cladding.
+  - **Steel**, 24 ga PVDF in the house dark (`metal-dark-exterior`), never aluminium: it
+    bears on the KDAT head course, and `notes/beam_water_protection.md` (AWC DCA6) forbids
+    aluminium on treated wood. Braked from the cladding maker's coil (an open question to
+    Metal Sales, §5).
+  - **Separated from the KDAT** even so: bedded on this note's membrane over the course top
+    and face (§3 step 4a).
+  - **End dams**: each end folded up 3/4". The cap runs over both jamb posts; a door's drip
+    cap runs 1" past each casing end.
   - The upstand's top edge is stripped in (§3 step 4a).
+  - The panel above it ends in the 58114XX channel on a perforated aluminium strip on EPDM
+    pads (`metal_trim_kit.md`), not on a foam closure.
 - **The two exterior swing doors.** Their pans are §6, billed on their own row.
 - **The garage openings and the court openings.** §7 and §8.
 - **Anything the engine grades.** No check in `haus check` reads a flashing membrane, its
@@ -204,6 +221,8 @@ the foam was sprayed in (60-80 F, `ccspf_spec.md` §3) and set the windows behin
 | **Written substrate approval for the lap onto shaved ccSPF** | A letter from the membrane maker naming shaved 2 lb ccSPF, plus a jobsite adhesion mock-up on the real foam. Phone call, not an estimate. ESR-4363 does not cover it and AC148 does not evaluate it. |
 | Which product is bought | §2 is a qualifying list, not a selection. Price and lead time decide it; §1 is the gate. |
 | Full system vs. the §1.1 hybrid | Both qualify. ~$112/opening against ~$30/opening in material. |
+| **The substrate letter also covers the K2 Z and K6 cap strip-ins** (2026-10-29) | The same letter: the strip over a PVDF steel and a painted aluminium upstand, lapping onto shaved ccSPF. |
+| K6 braked from Metal Sales coil | Metal Sales: a custom 24 ga PVDF brake, ~6.7" girth plus end dams, matching 58114XX. |
 
 ## 6. The two exterior swing doors (2026-10-13)
 

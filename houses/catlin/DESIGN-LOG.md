@@ -1066,6 +1066,39 @@ because these are sized and their excavation is open for the basement anyway.
 
 ## Shell: framing module and envelope
 
+### The rainscreen drains and breathes at its base, heads and band (2026-10-29)
+
+A review of the built model against the Metal Sales guides found that **neither the cavity
+base nor the window heads drained or vented**, a detail flaw rather than a simplification.
+At the base the steel trim's foot sat flush on the Z pan, damming its edge, with its leg
+1/16" off the screen; the starter girt and five blocks per wall sat on the seat, KDAT on
+aluminium (AWC DCA6), through the Z and inside the screen, and unbuildable besides (girts go
+on before tilt-up, the Z after the foam). Above every window the cavity exited only down the
+panel's rib voids into a closure taped into the 58114XX throat, the 1/2" pocket behind the head
+course was sealed in on the membrane, the spec's K6 was not modelled on metal walls, and the
+model's membrane strip ran level through the KDAT head course. Metal Sales draws PBR's base
+and head as closed terminations for open framing (pp. 69-70) and BBD75's as open and drained
+with no closure (pp. 22, 28); `metal_trim_kit.md` had read the latter as "C-Closure".
+Bookkeeping, too: the screens carried no material and rendered as wood, and they were never
+priced (`structural_solids` skips the category, so the `[solids] bug_screen:*` rows were dead).
+
+Owner's decisions, 2026-10-28: a 100-year, low-maintenance target; catalog parts where
+possible; gutters unchanged; rakes, eave heads and sills stay closed; heads drain and are not
+outlets; the only outlet is a vented band at the existing BBD75 Transition Trim (+17'-4") on
+the N/S walls, E/W stay bottom-vented; 3D review of the closures only. The base U is custom
+because the catalog 6013981 L gives only 44 cm2/m. The perforated strip replaces 6460800
+(polyethylene: chewable, and it holds water against the panel end); EPDM pads keep steel off
+aluminium. Approved 2026-10-29; the supplier questions stay open in `metal_trim_kit.md`.
+
+What changed: base screen, raised trim, EPDM lap and raised starter
+(`metal_trim_kit.md` "Wall base stack", 83 cm2/m); a K6 cap over every metal-wall window head
+(`opening_flashing_spec.md` §3 step 4a); the band outlet (82.5 cm2/m); one grade,
+`integrity.rainscreen_cavity`; `[bug_screens]` priced by the foot. The take-off: 149.2 LF of
+base U, 306.8 LF of panel-end strip, 61.4 LF of band outlet, 84.3 LF of EPDM pad, 102.8 LF of
+K6 cap; 6460800 fell 227.1 to 111.7 LF and 55548XX 168.0 to 46.5 LF (sills, rough openings and
+the eave wall tops keep theirs). The panel bottoms are still drawn to the seat, and the band's
+1" panel gap is implicit behind the trim.
+
 ### Every interior partition top got a 3/4" deflection gap and an SDPW (2026-09-19)
 
 The attic's seven partitions resolved **11-7/8" too tall** — `apply_to_roof_wall_tops` rakes a

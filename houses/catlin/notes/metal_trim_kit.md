@@ -23,12 +23,12 @@ otherwise stated; standard stock is 10 ft 2 in unless a different length is stat
 
 | Condition | Selected termination | Basis |
 |---|---|---|
-| PBR base | 1.25 in Base 58138XX over the K2 Z-flashing, tape and inside closure 6460800 | PBR p. 69 |
-| BBD75 base | Vertical Base Trim 55545XX and C-Closure 55548XX, over the K2 Z-flashing | BBD75 p. 22 |
+| PBR base | 1.25 in Base 58138XX raised 1 in over the K2 Z-flashing; panel end on a perforated strip (6460800 is the fallback, taped both faces) | PBR p. 69, adapted (wall base stack) |
+| BBD75 base | Vertical Base Trim 55545XX raised 1 in over the K2 Z-flashing; panel end on a perforated strip, no C-Closure | BBD75 p. 22, open and drained |
 | Corrugated base | 1.25 in Base over the aluminium stem Z (`TR-G-STEMZ-*`), profile-matched vented closure | Corrugated P7/8-3 |
 | House outside corner | Wide Outside Corner 58132XX (10 ft 2 in) or 58136XX (20 ft 3 in), 5.5 in legs; PBR-to-BBD75, one leg on each face; C-Closure on BBD75 side | PBR and BBD75 corner details, BBD75 pp. 30–31 |
 | Garage corner | Corrugated Outside Corner | Corrugated manual |
-| BBD75 horizontal joint | Transition Trim 55536XX, pop rivets at 12 in o.c. | BBD75 p. 40 |
+| BBD75 horizontal joint | Transition Trim 55536XX, pop rivets at 12 in o.c.; the cavity's vented outlet (below) | BBD75 p. 40 |
 | PBR under eave | Inside closure flush with panel top under box gutter | PBR p. 46 |
 | BBD75 under rake | Universal Closure 6411499 taped to slope-cut panel, covered by rake face | PBR p. 61 method |
 | Corrugated under soffit | 1.5 in Sill to Soffit | Corrugated manual |
@@ -42,35 +42,91 @@ within the 45 ft maximum. Garage corners are approximately 8 ft 4 in high.
 
 ### Wall base stack
 
-The Metal Sales closures and the insect screen close different voids, so neither replaces
-the other. The closures fill the panel's rib voids. The screen closes the 2 in cavity
-behind the panel (1/2 in vent gap plus 1-1/2 in girt band). On a house wall, bottom to top,
-at the bearing seat (−1'-1 7/16"):
+Re-struck 2026-10-29 (owner-approved). The base of the cavity was neither drained nor vented:
+the trim's back leg stood 1/16 in off the screen with its foot flush on the Z pan, so it
+dammed the pan edge; the starter girt and its blocks started on the seat, KDAT on the
+aluminium Z (AWC DCA6), the blocks through the Z and the girt inside the screen, and it could
+not be built (girts go on before tilt-up, the Z after the foam). Metal Sales draws PBR's base
+as a closed termination for open framing (pp. 69-70) and BBD75's as open and drained with
+**no closure** (pp. 22, 28); this note used to read the latter as "C-Closure".
 
-1. **K2 Z-flashing, the drip owner** ([basement detail](basement_to_framed_wall_detail.md)).
-   Its upper leg runs up the foam face, its horizontal leg floors the full 2 in cavity, and
-   its drip leg laps over the coated XPS band's head. The base trim can't take this job: its
-   back leg is on the girt face, outboard of the cavity, so without the Z the cavity would
-   drain onto the bearing seat.
-2. **Perforated aluminium insect screen** (holes 1/8 in or less), sitting on the Z's
-   horizontal leg. It runs foam face to girt face, 1-1/2 in tall.
-3. **Base trim**, with its vertical leg 1/16 in outboard of the girt plane on the isolation
-   strip, up to 2-5/8 in above the seat. Its foot and hem kick about 1.75 in outboard of
-   the girt plane, so panel water drips
-   clear of the Z. It never crosses the cavity mouth. Keep the steel trim off an aluminium
-   Z with tape or EPDM, per the corrosion rule in `garage_wall_detail_side.md`.
-4. **Profile closure** in the ribs, on the trim foot: PBR 6460800 on butyl tape, or the
-   BBD75 C-Closure 55548XX.
+On a house wall, bottom to top, S = the bearing seat at −1'-1 7/16":
 
-The BBD75 guide (p. 22 base detail) shows no rat guard or perforated piece, so the screen is
-the only cavity closure on the N/S walls. The garage has no separate cavity, because the
-corrugation is the rainscreen. There the vented corrugated closure on the aluminium stem Z
-closes both.
+1. **K2 Z-flashing (`RAINSCREEN_BASE_Z`), the drip owner** ([basement
+   detail](basement_to_framed_wall_detail.md)). 0.040 in aluminium: a 2 in upstand on the foam
+   face, stripped in to the foam 2 in each way; a pan across the full 2 in cavity falling 1/4
+   in/ft; a 3/4 in drip over the coated XPS band's head, hemmed. Unchanged.
+2. **Base screen**, a perforated aluminium **inverted U, 2 x 2 in**, on the pan, captive between
+   the Z upstand and the trim's leg. 0.032 in sheet, 3 mm holes on a 5 mm stagger (under 1/8
+   in, 32.6% open). Custom: the 6013981 L gives only 44 cm2/m, which fails.
+3. **Steel base trim** (58138XX PBR, 55545XX BBD75), **foot raised to S+1 in**. Air comes up
+   between the Z's drip and the trim kick, passes under the foot (0.98 in clear over the pan
+   edge) and through the U's outer leg; water runs out over the drip. The trim leg laps the U
+   1 in on a **1/16 in EPDM strip** (S+1 in to the U top at S+2.04 in), so no steel touches
+   aluminium. There is no EPDM on the drip leg.
+4. **Starter girt and blocks raised to S+2-1/4 in ... S+5-3/4 in**, clear of the Z upstand and
+   the U top (S+2.04 in). No KDAT touches aluminium.
+5. **Panel end on a flat perforated aluminium strip** on the trim foot, set on 1/16 in EPDM
+   pads (2 in long at 12 in o.c. or closer). It replaces 6460800 on PBR (polyethylene, chewable,
+   and it holds water against the panel end); BBD75 publishes none. The fallback is 6460800
+   taped on both faces.
 
-Hand count, W-M-W4: the screen runs 162 in (mitred at the corners) on the sloping Z pan,
-about 1-1/2 in tall from the bearing seat. The base trim runs 164.8 in as two sticks (122 + 42.75 in) from −13.90" (hem) to
-−10 13/16". The Z follows the 162 in mitred screen, continuous beneath openings; the steel
-base follows the longer panel edge.
+Net free area, by hand: the U's outer leg is open from the pan (S−0.002 in at the girt plane)
+to the EPDM at S+1 in, 1.002 in. 1.002 in x 2.54 cm x 0.326 x 100 cm/m = **83 cm2/m**, against
+DIN 18516-1's 50 cm2/m. The engine reads 83 (`integrity.rainscreen_cavity`); the plan's
+"about 84" counted a full 1 in at 33%. At the supplier's 20% floor it would be 51 cm2/m: pass,
+barely, so order the 33% sheet.
+
+Hand count, W-M-W4: the U runs 162 in (mitred at the corners), cut 120 + 44 in with a 2 in
+lap; the Z the same. The base trim runs 164.75 in as two sticks (122 + 42.75 in), foot at
+−12 7/16" (S+1), hem kick to −12.90". The strip runs 164.75 in (120 + 44.75), on 16 pads. The
+starter girt is −11 3/16" to −7 11/16".
+
+The garage has no separate cavity, because the corrugation is the rainscreen. There the
+vented corrugated closure on the aluminium stem Z closes both.
+
+### Band outlet (N/S walls, +17 ft 4 in)
+
+The cavity breathes in at the base and out at the BBD75 band, the existing Transition Trim
+55536XX at +17'-4" (208 in) on the N/S walls. E/W walls stay bottom-vented only; eaves, rakes,
+sills and heads are not outlets (owner, 2026-10-28).
+
+- The lower panel stops at least 1 in below the trim seat (implicit, hidden behind the trim's
+  2-1/2 in face leg).
+- A 1 in perforated strip spans from the girt plane to the trim's face leg under the seat, on
+  pads on the lower panel's top end (`BAND_OUTLET_STRIP`): 0.996 in x 2.54 x 0.326 x 100 =
+  **82.5 cm2/m**.
+- The 1/2 in gap behind the band girt stays open, so the upper cavity is fed from below.
+- The upper panel's batten ends open into the upper cavity at the seat, so they get the same
+  strip, on the seat (`PANEL_END_STRIP`).
+- Left out where an opening is framed through the trim's height (`WIN-S-HALL-N`,
+  `WIN-S-STAIR-N`, `AO-S-ERV-EA`): their heads govern there. Seven walls, 61.4 LF of outlet.
+
+### Closure inventory
+
+| Condition | State |
+|---|---|
+| Base | Screened inlet (above) |
+| Window and door heads | Capped and drained; panel end on a strip (`opening_flashing_spec.md` §3 step 4a) |
+| BBD75 band | Vented outlet (above) |
+| Jamb buck returns | Hold point |
+| Sills | Closed (6460800 / 55548XX) |
+| Eaves and rakes | Closed by the deck oversail |
+| Outside corners | Closed |
+| ERV, hydrant and VR-M-STACK sleeves | Sealed |
+| `D-S-DECK-E` head | Its catalog unit's; hold point |
+
+### Open with suppliers (not blocking)
+
+| Who | Question |
+|---|---|
+| Metal Sales | Hole size on 6013981 |
+| Metal Sales | Panel end on a perforated strip, instead of the 1/4 in gap and closure |
+| Metal Sales | Raising the base trim 1 in off the Z |
+| Metal Sales | K6 braked from their coil |
+| Owner | EPDM pads (modelled), or accept painted aluminium against Galvalume (Metal Sales does this at its PBR vented ridge) |
+| Membrane maker | The substrate letter covers the Z and K6 strip-ins |
+| Screen supplier | Holes ≤ 1/8 in, at least 20% open (33% specified), 0.032–0.040 aluminium |
 
 ## Openings
 
@@ -78,8 +134,10 @@ The outie window frame face is on the panel back plane. Rib depths are 1.25 in P
 0.75 in BBD75, and 0.875 in corrugated. Buck, membrane and shim between frame and
 rough opening occupy 0.645 in, or 0.6875 in at the Andersen sizes.
 
-- Head: 1.5 in Sill/Head 58114XX at every window head, with 2.5 in back leg, 1.5 in throat and
-  the matching closure. The membrane strip-in remains. PBR pp. 68–72 and BBD75 pp. 24–29 show
+- Head: 1.5 in Sill/Head 58114XX at every window head, with 2.5 in back leg and 1.5 in throat.
+  On a rainscreen wall the panel end sits in it on a perforated strip, not a closure, under the
+  K6 head cap's face leg (`opening_flashing_spec.md` §3 step 4a). Rough-opening heads keep the
+  closure. PBR pp. 68–72 and BBD75 pp. 24–29 show
   trim-first installations; this head accommodates the window-first outie. BBD75 windows take the
   same head. The BBD75 Head Trim 58720XX (4 in return, BBD75 p. 28) is the open alternative, not billed.
 - Jamb, PBR: stock Jamb 58208XX, a 1 in C-hem over the rib and a 1-3/8 in leg, with the 3-1/8 in
