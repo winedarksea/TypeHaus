@@ -9557,66 +9557,6 @@
 8,
 "76c691f8a58a"
 ],
-"geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-cladding": [
-6.096,
-9.2379133,
-8,
-"2a3991af95e8"
-],
-"geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-outer-girt": [
-6.096,
-9.2202,
-8,
-"f178015a7a44"
-],
-"geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-sheathing": [
-6.096,
-9.2202,
-8,
-"f178015a7a44"
-],
-"geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-spray-foam": [
-6.096,
-9.2202,
-8,
-"f178015a7a44"
-],
-"geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-vent-gap": [
-6.096,
-9.2202,
-8,
-"f178015a7a44"
-],
-"geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-cladding": [
-6.096,
-6.9138133,
-8,
-"1ac4891cf9fe"
-],
-"geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-outer-girt": [
-6.096,
-6.8961,
-8,
-"53a073e7ae88"
-],
-"geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-sheathing": [
-6.096,
-6.8961,
-8,
-"6d7ab080a4cb"
-],
-"geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-spray-foam": [
-6.096,
-6.8961,
-8,
-"3a05ddefe575"
-],
-"geometry/CARF01AAAA::framing/member:W-S-N3B-closure-0-vent-gap": [
-6.096,
-6.8961,
-8,
-"9b5373725137"
-],
 "geometry/CARF01AAAA::framing/member:W-S-W1-closure-0-cladding": [
 6.11505,
 6.4167739,
@@ -13095,7 +13035,7 @@
 6.096,
 7.7978,
 6,
-"a60ae3ff69de"
+"1f4dd0edc90d"
 ],
 "geometry/CAW101AAAA/layer:gwb-int": [
 6.096,
@@ -13107,7 +13047,7 @@
 6.096,
 7.7978,
 6,
-"903f57d6836b"
+"bc224b74122a"
 ],
 "geometry/CAW101AAAA/layer:paint": [
 6.096,
@@ -13125,7 +13065,7 @@
 6.096,
 7.7978,
 6,
-"90372982cb63"
+"21181b591302"
 ],
 "geometry/CAW101AAAA/layer:stud": [
 6.096,
@@ -13137,7 +13077,7 @@
 6.096,
 7.7978,
 6,
-"96519fdd7fdb"
+"a492454924b9"
 ],
 "geometry/CAW101AAAA::framing/member:block-2-000-00": [
 6.096,
@@ -13845,7 +13785,7 @@
 6.096,
 9.2202,
 34,
-"6964f9c11804"
+"229047733bb5"
 ],
 "geometry/CAW103AAAA/layer:paint": [
 6.096,
@@ -13863,7 +13803,7 @@
 6.096,
 9.2202,
 34,
-"b09de7281e18"
+"427ee6e40f4a"
 ],
 "geometry/CAW103AAAA/layer:stud": [
 6.096,
@@ -13875,7 +13815,7 @@
 6.096,
 9.2202,
 34,
-"3077fd9bad7e"
+"84954635d63f"
 ],
 "geometry/CAW103AAAA::framing/member:block-2-000-00": [
 6.096,
@@ -14451,7 +14391,7 @@
 6.096,
 9.2202,
 20,
-"4d2b48ae5d70"
+"70fbde8ecc2e"
 ],
 "geometry/CAW104AAAA/layer:paint": [
 6.096,
@@ -14469,7 +14409,7 @@
 6.096,
 9.2202,
 20,
-"457581727153"
+"3340f75f3183"
 ],
 "geometry/CAW104AAAA/layer:stud": [
 6.096,
@@ -14481,7 +14421,7 @@
 6.096,
 9.2202,
 20,
-"cf76dca4e9fe"
+"0214176e0d75"
 ],
 "geometry/CAW104AAAA::framing/member:block-2-000-00": [
 6.096,
@@ -15009,7 +14949,7 @@
 6.096,
 8.001,
 6,
-"fe9adc46308f"
+"6c7e657cf9f7"
 ],
 "geometry/CAW105AAAA/layer:gwb-int": [
 6.096,
@@ -15021,7 +14961,7 @@
 6.096,
 8.001,
 6,
-"9e2daa340899"
+"df16a9309f66"
 ],
 "geometry/CAW105AAAA/layer:paint": [
 6.096,
@@ -15039,7 +14979,7 @@
 6.096,
 8.001,
 6,
-"1be4fe3dd049"
+"4dc88f27bee6"
 ],
 "geometry/CAW105AAAA/layer:stud": [
 6.096,
@@ -15051,7 +14991,7 @@
 6.096,
 8.001,
 6,
-"b998b5c88de9"
+"e6b2b061de18"
 ],
 "geometry/CAW105AAAA::framing/member:block-2-000-00": [
 6.096,
@@ -49863,7 +49803,7 @@
 6.3897864,
 6.4088364,
 680,
-"0f5de58ff1e5"
+"940a3e6b193e"
 ],
 "geometry/CSW110AAAA/layer:cladding": [
 3.048,
@@ -50259,7 +50199,7 @@
 6.3897864,
 6.4088364,
 448,
-"7bac1acfa74b"
+"39f3dbc9e8f7"
 ],
 "geometry/CSW111AAAA/layer:cladding": [
 3.048,
@@ -50541,7 +50481,7 @@
 6.3897864,
 6.4088364,
 1392,
-"54ca4a8491ca"
+"feff245f1706"
 ],
 "geometry/CSW112AAAA/layer:cladding": [
 3.048,
@@ -51141,7 +51081,7 @@
 6.3897864,
 6.4088364,
 1000,
-"842afdfafcca"
+"33265c98717a"
 ],
 "geometry/CSW113AAAA/layer:cladding": [
 3.048,
@@ -55965,7 +55905,7 @@
 6.3897864,
 6.4088364,
 368,
-"fad38f3368ee"
+"8575d8025112"
 ],
 "geometry/CSW154AAAA/layer:cladding": [
 3.048,
@@ -100223,36 +100163,6 @@
 2,
 "015f08fd3431"
 ],
-"member/CSW135AAAA/W-S-N1B-closure-0-cladding": [
-6.096,
-9.2379133,
-4,
-"cc9eb1a71a14"
-],
-"member/CSW135AAAA/W-S-N1B-closure-0-outer-girt": [
-6.096,
-9.2202,
-4,
-"1b6e0773c85c"
-],
-"member/CSW135AAAA/W-S-N1B-closure-0-sheathing": [
-6.096,
-9.2202,
-4,
-"1b6e0773c85c"
-],
-"member/CSW135AAAA/W-S-N1B-closure-0-spray-foam": [
-6.096,
-9.2202,
-4,
-"1b6e0773c85c"
-],
-"member/CSW135AAAA/W-S-N1B-closure-0-vent-gap": [
-6.096,
-9.2202,
-4,
-"1b6e0773c85c"
-],
 "member/CSW135AAAA/backing-0-000": [
 4.6736,
 4.85775,
@@ -101662,36 +101572,6 @@
 5.699125,
 2,
 "1c0200ec3328"
-],
-"member/CSW153AAAA/W-S-N3B-closure-0-cladding": [
-6.096,
-6.9138133,
-4,
-"427a2fb5c1f7"
-],
-"member/CSW153AAAA/W-S-N3B-closure-0-outer-girt": [
-6.096,
-6.8961,
-4,
-"fbb0de297ee3"
-],
-"member/CSW153AAAA/W-S-N3B-closure-0-sheathing": [
-6.096,
-6.8961,
-4,
-"4e2ebeddb339"
-],
-"member/CSW153AAAA/W-S-N3B-closure-0-spray-foam": [
-6.096,
-6.8961,
-4,
-"8b46209a33a3"
-],
-"member/CSW153AAAA/W-S-N3B-closure-0-vent-gap": [
-6.096,
-6.8961,
-4,
-"750b13daf2e7"
 ],
 "member/CSW153AAAA/block-2-000-00": [
 3.048,

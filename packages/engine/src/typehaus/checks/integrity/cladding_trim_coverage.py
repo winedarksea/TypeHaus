@@ -19,6 +19,7 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.base import _DOOR_REACH_M
 from typehaus.resolve.cladding_trim.openings import SMALL_PENETRATION_M, is_profiled_metal_wall
 from typehaus.resolve.cladding_trim.runs import covered_below, kit_faces, subtract_spans
+from typehaus.resolve.metal_skin_profiles import PANEL_PROFILES
 from typehaus.resolve.opening_flashing import opening_flashing_frame
 from typehaus.takeoff.cladding_trim import cladding_trim_takeoff
 
@@ -194,6 +195,7 @@ def _wall_tops(ctx, pieces):
     from typehaus.resolve.cladding_trim.wall_tops import exposed_wall_top_edges
 
     findings, edges = [], exposed_wall_top_edges(ctx.model)
+    finishes = {material.tag: material.finish for material in ctx.model.plan.library.materials}
     tolerance = 0.125 * M_PER_IN
     for edge in edges:
         spans = []
@@ -215,7 +217,13 @@ def _wall_tops(ctx, pieces):
             elevation_error = min(error(p, s) for p, s in zip(points, stations, strict=True))
             if depth <= tolerance and elevation_error <= tolerance:
                 spans.append((min(stations), max(stations)))
-        if not spans_cover(spans, edge.start, edge.end):
+        # A rib fill stops at the end of its own (mitred) skin and finds no void under a
+        # rib crown, so it may fall that much short of an end without leaving it open.
+        skin = PANEL_PROFILES.get(finishes.get(edge.face.layer.material_ref))
+        slack = max(edge.face.layer.thickness_m,
+                    (skin.crown_width_m or 0.0) if skin is not None else 0.0)
+        spans = [(lo - slack, hi + slack) for lo, hi in spans]
+        if edge.end - edge.start > slack and not spans_cover(spans, edge.start, edge.end):
             findings.append(failed(
                 COVERAGE, f"{edge.wall.tag} has an uncovered or displaced "
                 f"{edge.condition.value} termination", (edge.wall.tag,)))

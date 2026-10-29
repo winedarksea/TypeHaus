@@ -335,15 +335,36 @@ def wrapped_eave_deck_cut(model, roof, point: tuple[float, float], *,
     underside's lowest over anything standing there), or with ``level_inboard`` False the cut
     face's plane carried on (one clip plane, conservative there).
     """
-    from typehaus.resolve.roof_drip_edge import deck_edge_m
     from typehaus.resolve.roof_edge_geometry import roof_edge_runs
-    from typehaus.resolve.roof_geometry import roof_plane_z, roof_slope_coordinate
     from typehaus.resolve.roof_image_ii import wrapped_image_ii_edges
 
     edges = wrapped_image_ii_edges(model, roof)
     stack = eave_stack(model, roof) if edges else None
     if stack is None or stack.slope <= 0.0:
         return None
+    for run in roof_edge_runs(roof):
+        if not run.is_eave or run.edge_name not in edges:
+            continue
+        nx, ny = run.normal
+        offset = (point[0] - run.p0[0]) * nx + (point[1] - run.p0[1]) * ny
+        if not -_HEAD_REACH_M <= offset <= LAP_GAP_M:
+            continue
+        corner = _deck_corner(model, roof, run, stack)
+        if corner is None:
+            return None
+        corner_u, corner_z = corner
+        if level_inboard and offset < corner_u - 1e-9:
+            return corner_z, 0.0
+        return corner_z + (offset - corner_u) / stack.slope, 1.0 / stack.slope
+    return None
+
+
+def _deck_corner(model, roof, run: EdgeRun, stack: EaveStack) -> tuple[float, float] | None:
+    """(u, z) of the deck's bottom outer corner on ``run``: its square-cut end meets the
+    underside there. ``None`` for a stack with no deck."""
+    from typehaus.resolve.roof_drip_edge import deck_edge_m
+    from typehaus.resolve.roof_geometry import roof_plane_z, roof_slope_coordinate
+
     assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
     layers = above_structure_layers(assembly)
     under_w = 0.0
@@ -353,27 +374,21 @@ def wrapped_eave_deck_cut(model, roof, point: tuple[float, float], *,
         under_w += layer.thickness.meters
     else:
         return None
-    for run in roof_edge_runs(roof):
-        if not run.is_eave or run.edge_name not in edges:
-            continue
-        nx, ny = run.normal
-        offset = (point[0] - run.p0[0]) * nx + (point[1] - run.p0[1]) * ny
-        if not -_HEAD_REACH_M <= offset <= LAP_GAP_M:
-            continue
-        corner_u = deck_edge_m(roof, layers, run)
-        at = (point[0] + nx * (corner_u - offset), point[1] + ny * (corner_u - offset))
-        corner_z = roof_plane_z(roof, roof_slope_coordinate(roof, at)) + under_w * stack.factor
-        if level_inboard and offset < corner_u - 1e-9:
-            return corner_z, 0.0
-        return corner_z + (offset - corner_u) / stack.slope, 1.0 / stack.slope
-    return None
+    corner_u = deck_edge_m(roof, layers, run)
+    at = (run.p0[0] + run.normal[0] * corner_u, run.p0[1] + run.normal[1] * corner_u)
+    return corner_u, roof_plane_z(roof, roof_slope_coordinate(roof, at)) + under_w * stack.factor
 
 
 @dataclass(frozen=True)
 class HeadCap:
     """The ``head_cap_w`` line of one wrapped eave as a plan plane: nothing standing under
     the eave stack rises above it. Applies from ``_HEAD_REACH_M`` inboard of the eave line
-    out to the roofing's lip (meters; ``normal`` outboard; ``fall`` per meter outboard)."""
+    out to the roofing's lip (meters; ``normal`` outboard; ``fall`` per meter outboard).
+
+    ``deck_u``/``deck_z`` is the deck's bottom outer corner: the line sits above the deck's
+    underside, so a gable layer under the deck is also held below the underside, or
+    ``deck_clear`` under the square-cut end that rises from that corner (the eave
+    wall's closure rule, ``board_batten._deck_cut_at``)."""
 
     p0: tuple[float, float]
     normal: tuple[float, float]
@@ -381,12 +396,30 @@ class HeadCap:
     fall: float
     reach_out: float
     reach_in: float = _HEAD_REACH_M
+    deck_u: float | None = None
+    deck_z: float | None = None
+    deck_clear: float = HEAD_CLEARANCE_M
 
     def z_at(self, x: float, y: float) -> float | None:
         offset = (x - self.p0[0]) * self.normal[0] + (y - self.p0[1]) * self.normal[1]
-        if -self.reach_in <= offset <= self.reach_out:
-            return self.z_line - self.fall * offset
-        return None
+        if not -self.reach_in <= offset <= self.reach_out:
+            return None
+        z = self.z_line - self.fall * offset
+        if self.deck_u is not None and self.fall > 0.0:
+            du = offset - self.deck_u
+            z = min(z, self.deck_z + max(-self.fall * du, du / self.fall - self.deck_clear))
+        return z
+
+    def kinks(self) -> tuple[float, ...]:
+        """Offsets where ``z_at`` bends: a top sampled only at ring vertices needs them."""
+        if self.deck_u is None or self.fall <= 0.0:
+            return ()
+        rise = 1.0 / self.fall
+        cut = self.deck_u + self.deck_clear / (self.fall + rise)
+        # The raised cut meets the line: deck_z + (u - deck_u) rise - c = z_line - fall u.
+        meet = ((self.z_line - self.deck_z + self.deck_clear + self.deck_u * rise)
+                / (self.fall + rise))
+        return tuple(u for u in (cut, meet) if -self.reach_in < u < self.reach_out)
 
 
 def roof_head_caps(model, roof) -> tuple[HeadCap, ...]:
@@ -399,11 +432,16 @@ def roof_head_caps(model, roof) -> tuple[HeadCap, ...]:
     stack = eave_stack(model, roof) if edges else None
     if stack is None:
         return ()
-    return tuple(
-        HeadCap(run.p0, run.normal,
-                roof_plane_z(roof, roof_slope_coordinate(roof, run.p0))
-                + stack.head_cap_w * stack.factor, stack.slope, stack.lip_reach_u())
-        for run in roof_edge_runs(roof) if run.is_eave and run.edge_name in edges)
+    caps = []
+    for run in roof_edge_runs(roof):
+        if not run.is_eave or run.edge_name not in edges:
+            continue
+        deck_u, deck_z = _deck_corner(model, roof, run, stack) or (None, None)
+        caps.append(HeadCap(run.p0, run.normal,
+                            roof_plane_z(roof, roof_slope_coordinate(roof, run.p0))
+                            + stack.head_cap_w * stack.factor, stack.slope,
+                            stack.lip_reach_u(), deck_u=deck_u, deck_z=deck_z))
+    return tuple(caps)
 
 
 def capped_z(caps, x: float, y: float, z: float) -> float:

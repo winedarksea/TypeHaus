@@ -261,6 +261,11 @@ export interface WallHeadCap {
   fall: number;
   reach_in_m: number;
   reach_out_m: number;
+  // The deck's bottom outer corner (offset along normal, z): under the deck the cap also
+  // holds below its underside, or deck_clear_m under its square-cut end. null = no deck.
+  deck_u_m?: number | null;
+  deck_z_m?: number | null;
+  deck_clear_m?: number;
 }
 
 export interface Wall {

@@ -76,8 +76,11 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     # And members a kit ships: a pocket frame's split studs, billed with the kit.
     kit = [m for m in members if m.supplied_by]
     assert kit, "catlin has two pocket doors; this should not be empty"
+    # And the eave strip-in, a membrane billed by area in `takeoff/envelope`.
+    membrane = [m for m in members if m.category == "membrane"]
     assert sum(int(row["pieces"]) for row in rows) == (
-        len(members) - len(ripped) - len(not_lumber) - len(straps) - len(hardware) - len(kit))
+        len(members) - len(ripped) - len(not_lumber) - len(straps) - len(hardware) - len(kit)
+        - len(membrane))
     assert not any(rip_stock(str(row["profile"]), row["material"]) for row in rows)
 
     for row in rows:
@@ -300,8 +303,9 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     straps = sum(1 for m in members if m.category == STRAP_CATEGORY)
     hardware = sum(1 for m in members if m.category == "hanger" and m.material == "steel")
     kit = sum(1 for m in members if m.supplied_by)
+    membrane = sum(1 for m in members if m.category == "membrane")
     assert sum(int(row["pieces"]) for row in bom["framing"]) == (
-        len(members) - ripped - not_lumber - straps - hardware - kit)
+        len(members) - ripped - not_lumber - straps - hardware - kit - membrane)
 
 
 # Every collection on ``ResolvedModel`` is either billed by a BOM section or waived here with

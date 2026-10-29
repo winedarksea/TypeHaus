@@ -25,7 +25,8 @@ def test_trim_inventory_by_profile(catlin_model_ro):
         "WIDE_OUTSIDE_CORNER": 8, "CORRUGATED_OUTSIDE_CORNER": 4,
         "RAINSCREEN_BASE_Z": 21, "EPDM_BASE_ISOLATION": 14,
         "OPENING_HEAD_CAP": 38,
-        "6460800": 9, "6411499": 10, "CORRUGATED_SILL_TO_SOFFIT": 6,
+        # 6411499: the four gable corner stubs inside the eave skins are gone.
+        "6460800": 9, "6411499": 6, "CORRUGATED_SILL_TO_SOFFIT": 6,
         "corrugated-outside-closure": 6,
     }
 
@@ -111,7 +112,7 @@ def test_wall_top_edges_use_developed_length_without_stacked_duplicates(catlin_m
     for edge in exposed_wall_top_edges(catlin_model_ro):
         totals[edge.product] += edge.length_m / 0.3048
     assert totals["6460800"] == pytest.approx(74.25, abs=0.02)
-    assert totals["6411499"] == pytest.approx(83.0116, abs=0.02)
+    assert totals["6411499"] == pytest.approx(82.7345, abs=0.02)
     assert totals["CORRUGATED_SILL_TO_SOFFIT"] == pytest.approx(48.2917, abs=0.02)
     assert totals["corrugated-outside-closure"] == pytest.approx(99.0418, abs=0.02)
 

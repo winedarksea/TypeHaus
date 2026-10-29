@@ -64,23 +64,45 @@ def skin_stand_ins(model: ResolvedModel, wall: ResolvedWall,
     is superseded by the wall standing on them, which is in the list in its own right. That
     is what keeps a gable's wall below out: the attic gable stands on the second-storey
     gable wall and carries the skin up itself, so only the eave lines, where nothing but a
-    bare plate stands above, come back.
+    bare plate stands above, come back. ``stacks_on`` names one wall, so a segment of the
+    line below that the stacked wall also spans (catlin's W-S-N3B under W-A-N2) is
+    superseded by that span (a wall standing on its storey), not only by the link.
     """
     authored = model.plan.by_tag(wall.tag)
     below_tag = getattr(authored, "stacks_on", None) if authored is not None else None
     below = model.wall(below_tag) if below_tag else None
     if below is None:
         return ()
-    superseded = {
-        stacked for other in model.walls if skin_layers(other)
-        if (element := model.plan.by_tag(other.tag)) is not None
-        and (stacked := getattr(element, "stacks_on", None)) is not None
-    }
+    stacked_walls = [
+        other for other in model.walls if skin_layers(other)
+        and (element := model.plan.by_tag(other.tag)) is not None
+        and getattr(element, "stacks_on", None) is not None
+    ]
+    superseded = {model.plan.by_tag(other.tag).stacks_on for other in stacked_walls}
     return tuple(candidate for candidate in model.walls
                  if candidate.storey == below.storey
                  and skin_layers(candidate)
                  and candidate.tag not in superseded
+                 and not any(_spans(other, candidate) for other in stacked_walls
+                             if (on := model.wall(model.plan.by_tag(other.tag).stacks_on))
+                             is not None and on.storey == candidate.storey)
                  and inside_footprint(candidate))
+
+
+def _spans(upper: ResolvedWall, lower: ResolvedWall) -> bool:
+    """Does ``upper``'s axis run along ``lower``'s whole axis, in plan?"""
+    (ax, ay), (bx, by) = upper.axis
+    dx, dy = bx - ax, by - ay
+    length = math.hypot(dx, dy)
+    if length < 1e-9:
+        return False
+    tol = CLOSURE_TOLERANCE_M
+    for px, py in lower.axis:
+        along = ((px - ax) * dx + (py - ay) * dy) / length
+        across = ((px - ax) * dy - (py - ay) * dx) / length
+        if abs(across) > tol or not -tol <= along <= length + tol:
+            return False
+    return True
 
 
 def footprint_test(roof: ResolvedRoof):

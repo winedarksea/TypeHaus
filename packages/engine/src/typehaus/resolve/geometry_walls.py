@@ -65,6 +65,22 @@ def body_top_at(wall: ResolvedWall, x: float, y: float) -> float:
     return z
 
 
+def head_cap_breakpoints(wall: ResolvedWall) -> tuple[tuple[float, float], ...]:
+    """Points on the wall's axis line where a ``head_caps`` limit bends."""
+    (ax, ay), (bx, by) = wall.axis
+    out = []
+    for cap in wall.head_caps:
+        nx, ny = cap.normal
+        rate = (bx - ax) * nx + (by - ay) * ny
+        if abs(rate) < 1e-9:
+            continue
+        start = (ax - cap.p0[0]) * nx + (ay - cap.p0[1]) * ny
+        for offset in cap.kinks():
+            t = (offset - start) / rate
+            out.append((ax + (bx - ax) * t, ay + (by - ay) * t))
+    return tuple(out)
+
+
 def _prism(ring, z0: float, z1: float, top_at) -> GPrism:
     """A wall slice: raked to ``top_at`` when the wall is raked, else flat to ``z1``."""
     ring_t = tuple((float(x), float(y)) for x, y in ring)

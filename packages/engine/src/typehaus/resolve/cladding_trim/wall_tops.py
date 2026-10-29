@@ -401,13 +401,15 @@ def resolve_wall_top_closures(model):
             if edge.product in {"6460800", "corrugated-outside-closure"}:
                 profile = PBR_PROFILE if edge.product == "6460800" else CORRUGATED_PROFILE
                 mesh = _profile_closure_mesh(model, edge, profile)
-                _append(model, edge, tag, edge.product, mesh, edge.length_m)
+                if mesh.positions:  # else the head leaves no room under the eave
+                    _append(model, edge, tag, edge.product, mesh, edge.length_m)
                 continue
             # Universal foam compresses against the cut BBD75 ribs, outside the sheet.
             skin = PANEL_PROFILES.get(_finish(model, edge.face.layer.material_ref))
             if skin is not None:
                 mesh = _profile_closure_mesh(model, edge, skin, outside=True)
-                _append(model, edge, tag, edge.product, mesh, edge.length_m)
+                if mesh.positions:  # else the run lies under one rib crown: no void
+                    _append(model, edge, tag, edge.product, mesh, edge.length_m)
                 continue
             x0, y0 = edge.face.xy(edge.start)
             x1, y1 = edge.face.xy(edge.end)

@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.2  
 **Model hash:** 6fe46dc7ea45d163  
-**Lines:** 184
+**Lines:** 183
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -63,7 +63,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 360 | LF ordered | 1163 pcs, 339.2 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — brace, stud (6x6:kdat) | 16 | LF ordered | 3 pcs, 7.9 LF cut | building |
-| 8 5/32" x 3 7/8" formed panel High-temp self-adhered butyl roof membrane — membrane (8.15123x3.87582 panel:roof-adhered-butyl-ht) | 76 | LF ordered | 2 pcs, 74.0 LF cut | building |
 | hanger — hanger board (hanger) | 24 | LF ordered | 4 pcs, 17.9 LF cut | building |
 
 ## Sheet goods, by the sheet
@@ -87,7 +86,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 1/2" ceiling (struct-1-plywood:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 65.1 SF net | building |
 | Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3068.4 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
-| Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.3 SF net | building |
+| Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.0 SF net | building |
 
 ## Connectors and fasteners, by part
 
@@ -312,7 +311,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | — |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | — |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — brace, stud (6x6:kdat) | — |
-| 8 5/32" x 3 7/8" formed panel High-temp self-adhered butyl roof membrane — membrane (8.15123x3.87582 panel:roof-adhered-butyl-ht) | — |
 | hanger — hanger board (hanger) | — |
 | Aspen shiplap sauna ceiling liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-ceiling-shiplap:ceiling) | — |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |

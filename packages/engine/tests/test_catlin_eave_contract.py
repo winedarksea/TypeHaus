@@ -207,10 +207,13 @@ def test_a_closure_band_belongs_to_its_wall_not_to_the_roof(eave):
     The roof *resolves* the closure bands — only the roof planes say how high each layer
     climbs — but every one of them is a wall's own layer stack carried past the top plate, and
     ``parent_uid`` has always said so. Both exporters used to file a roof member by its
-    container instead, which put W-S-N1B's and W-S-N3B's whole raking gable faces (five layers,
-    over ten feet of wall each, not a 12" eave strip) behind the roof toggle and made them
-    select as the roof. So: no closure band claims the roof, and the .glb hands every one of
-    them to the wall's own node (``test_emitter_band_parity`` counts the colours that adds).
+    container instead, which put the attic gables' raking cladding bands (W-A-N1, W-A-N2, the
+    full rake, not a 12" eave strip) behind the roof toggle and made them select as the roof.
+    So: no closure band claims the roof, and the .glb hands every one of them to the wall's
+    own node (``test_emitter_band_parity`` counts the colours that adds).
+
+    W-S-N1B and W-S-N3B are gable segments the attic gable stands over (``skin_stand_ins``):
+    a band of their own would duplicate that gable's skin, face for face.
     """
     walls = {wall.uid: wall.tag for wall in eave.model.walls}
     closures = [(roof, m) for roof in eave.model.roofs for m in roof.members
@@ -223,8 +226,9 @@ def test_a_closure_band_belongs_to_its_wall_not_to_the_roof(eave):
 
     by_owner = _members_by_owner(eave.model, set(walls))
     assert sum(len(members) for members in by_owner.values()) == len(closures)
-    assert {walls[uid] for uid in by_owner} >= {"W-S-N1B", "W-S-N3B"}, (
-        "the two raking gable ends are the case this exists for")
+    owners = {walls[uid] for uid in by_owner}
+    assert owners >= {"W-A-N1", "W-A-N2"}, "the raking gable bands are the case this exists for"
+    assert not owners & {"W-S-N1B", "W-S-N3B"}, "the gable above already carries that skin"
 
 
 def _solid_vertices(solid):

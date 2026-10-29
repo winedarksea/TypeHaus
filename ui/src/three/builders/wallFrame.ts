@@ -24,8 +24,14 @@ export function bodyTopAt(w: Wall, x: number, y: number): number {
   let z = rakedTopAt(w, x, y);
   for (const cap of w.head_caps ?? []) {
     const offset = (x - cap.p0[0]) * cap.normal[0] + (y - cap.p0[1]) * cap.normal[1];
-    if (offset >= -cap.reach_in_m && offset <= cap.reach_out_m)
-      z = Math.min(z, cap.z_line_m - cap.fall * offset);
+    if (offset < -cap.reach_in_m || offset > cap.reach_out_m) continue;
+    let limit = cap.z_line_m - cap.fall * offset;
+    if (cap.deck_u_m != null && cap.deck_z_m != null && cap.fall > 0) {
+      const du = offset - cap.deck_u_m;
+      const cut = du / cap.fall - (cap.deck_clear_m ?? 0);
+      limit = Math.min(limit, cap.deck_z_m + Math.max(-cap.fall * du, cut));
+    }
+    z = Math.min(z, limit);
   }
   return z;
 }
