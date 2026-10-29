@@ -9,11 +9,10 @@ cavity leaves over the head trim and the 1/2" pocket behind the course stays dry
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.flashing_config import FLASHING, FlashingConfig
-from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
 
 CAP_PRODUCT = "OPENING_HEAD_CAP"
 CAP_UPSTAND_IN = 2.0
@@ -57,33 +56,15 @@ def head_cap(model, wall, opening, frame, cfg: FlashingConfig = FLASHING) -> Hea
 def head_cap_solids(model, wall, opening, frame, material, cfg: FlashingConfig = FLASHING):
     """The cap swept from stock, with its 3/4" end dams, as billable trim."""
     from typehaus.library.trim.metal_sales import OPENING_HEAD_CAP
-    from typehaus.resolve.cladding_trim.members import split_stock_run
-    from typehaus.resolve.cladding_trim.section import folded_section_mesh
-    from typehaus.resolve.flashing_solids import flashing_solid
-    from typehaus.resolve.sheet_geometry import combine_sheets
+    from typehaus.resolve.opening_head_drip import swept_head_trim
 
     cap = head_cap(model, wall, opening, frame, cfg)
     if cap is None:
         return []
     _, (mount, top), (water, high), _ = cap.points
-    stocks = tuple(v * M_PER_IN for v in OPENING_HEAD_CAP.stock_lengths_in)
-    pieces = split_stock_run(cap.span, stocks, OPENING_HEAD_CAP.min_lap_in * M_PER_IN)
-    solids = []
-    for index, (start, end, stock) in enumerate(pieces):
-        sheets = [folded_section_mesh(cap.points, frame.point(cap.start + start, 0.0, 0.0),
-                                      (*frame.outward, 0.0), (0.0, 0.0, 1.0),
-                                      (*(v * (end - start) for v in frame.along), 0.0),
-                                      SHEET_24_GA_M)]
-        dam = cfg.head_end_dam_m
-        for station, sign, first in ((cap.start, 1.0, 0), (cap.start + cap.span, -1.0, -1)):
-            if (first == 0 and index == 0) or (first == -1 and index == len(pieces) - 1):
-                sheets.append(frame.section(station, ((water, high), (mount, top),
-                                                      (mount, top + dam), (water, high + dam)),
-                                            SHEET_24_GA_M, sign))
-        solid = flashing_solid(uid=f"{opening.uid}-headcap-{index}",
-                               tag=f"{opening.tag}-HEADCAP-{index + 1}", storey=wall.storey,
-                               category="cladding_trim", mesh=combine_sheets(sheets),
-                               material=material, host_ref=opening.tag)
-        solids.append(replace(solid, product=CAP_PRODUCT, trim_length_m=end - start,
-                              trim_stock_length_in=stock / M_PER_IN))
-    return solids
+    rise = cfg.head_end_dam_m
+    dam = ((water, high), (mount, top), (mount, top + rise), (water, high + rise))
+    return swept_head_trim(wall, opening, frame, OPENING_HEAD_CAP, points=cap.points, dam=dam,
+                           start=cap.start, span=cap.span, product=CAP_PRODUCT,
+                           material=material, uid=f"{opening.uid}-headcap",
+                           tag=f"{opening.tag}-HEADCAP")

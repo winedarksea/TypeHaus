@@ -106,7 +106,8 @@ def _opening_trim(model, opening) -> list:
 
 
 #: The drawing tag of each resolved piece over an opening, by product.
-_PIECE_TAGS = {"OPENING_HEAD_CAP": "opening-head-cap", "PANEL_END_STRIP": "panel-end-strip"}
+_PIECE_TAGS = {"OPENING_HEAD_CAP": "opening-head-cap", "PANEL_END_STRIP": "panel-end-strip",
+              "OPENING_HEAD_DRIP_FLASHING": "opening-head-flashing"}
 
 
 def _opening_trim_profiles(model, opening, direction, station) -> list[tuple[str, str, list]]:

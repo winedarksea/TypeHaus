@@ -3,8 +3,9 @@
 Base: an open air and water path under the raised steel trim, through a screen of 1/8" holes,
 at the net free area DIN 18516-1 asks of an inlet; no KDAT on the aluminium; the Z, screen
 and EPDM where the detail puts them. Heads: a cap floors the cavity and drains over the head
-trim. Band: the BBD75 outlet strip's net free area. Everywhere a panel end opens its voids
-into the cavity, it sits on a perforated strip (``notes/metal_trim_kit.md``). Hole size and
+trim; a non-metal rainscreen's head takes a Z drip flashing instead (``rainscreen_drip_head``).
+Band: the BBD75 outlet strip's net free area. Everywhere a panel end opens its voids into the
+cavity, it sits on a perforated strip (``notes/metal_trim_kit.md``). Hole size and
 open fraction are read off the screen's Material. The slot is graded off the trim and EPDM;
 the panel surface is not a resolved piece, so a panel drawn through the trim foot is unseen.
 """
@@ -12,9 +13,12 @@ the panel surface is not a resolved piece, so a panel drawn through the trim foo
 from __future__ import annotations
 
 from typehaus.checks.integrity.cladding_trim_runs import spans_cover
+from typehaus.checks.integrity.rainscreen_drip_head import CITE as DRIP_CITE
+from typehaus.checks.integrity.rainscreen_drip_head import grade_drip_head
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import failed, not_applicable, passed, unknown
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.opening_head_drip import DRIP_HEAD_PRODUCT
 from typehaus.resolve.rainscreen_closures import (
     BASE_SCREEN_PRODUCT,
     BUG_SCREEN_HEIGHT_IN,
@@ -241,11 +245,11 @@ def _heads(model):
     from typehaus.resolve.opening_flashing import opening_flashing_frame
     from typehaus.resolve.opening_head_cap import CAP_HEAD_LAP_IN, CAP_PRODUCT, head_cap
 
-    findings, graded, bare = [], 0, []
+    findings, graded, dripped, bare = [], 0, 0, []
     for wall in model.walls:
         for opening, s0, s1, _z in opening_head_spans(model, wall):
             head = {s.product for s in model.solids if s.host_ref == opening.tag
-                    and s.product in ("OPENING_HEAD", "DOOR_HEAD_CUSTOM")}
+                    and s.product in ("OPENING_HEAD", "DOOR_HEAD_CUSTOM", DRIP_HEAD_PRODUCT)}
             if not head:
                 bare.append(opening.tag)  # a catalog unit's head (a hold point), or no kit
                 continue
@@ -264,11 +268,16 @@ def _heads(model):
                         > cap.head_trim_top - CAP_HEAD_LAP_IN * M_PER_IN + 0.05 * M_PER_IN:
                     findings.append(failed(CAVITY, f"{tag}: the head cap's face leg does not "
                                            "lap the head trim by 1 in", (tag,), code=_HEAD_CITE))
+            if DRIP_HEAD_PRODUCT in head:
+                findings += grade_drip_head(model, wall, opening, frame, CAVITY)
             if not _mine(model, tag, {STRIP_PRODUCT}):
                 findings.append(failed(CAVITY, f"{tag}: the panel end over the head opens its "
                                        "voids to insects (no perforated strip)", (tag,),
                                        code=_HEAD_CITE))
-            graded += len(findings) == before
+            if DRIP_HEAD_PRODUCT in head:
+                dripped += len(findings) == before
+            else:
+                graded += len(findings) == before
     if bare:
         findings.append(unknown(CAVITY, f"no kit head trim over {len(bare)} cavity head(s), "
                                 "so no cap or strip is derived there (a catalog unit's head "
@@ -277,6 +286,11 @@ def _heads(model):
         findings.append(passed(CAVITY, f"{graded} window and door heads are capped, drain "
                                "over their trim, and seat their panel end on a strip",
                                code=_HEAD_CITE))
+    if dripped and not any(f.result.name == "FAIL" for f in findings):
+        findings.append(passed(CAVITY, f"{dripped} window and door heads on a non-metal "
+                               "rainscreen take a dammed Z drip flashing taped under the WRB, "
+                               "draining past the casing, with the cavity's foot closed by a "
+                               "perforated strip 1/4 in clear of it", code=DRIP_CITE))
     return findings
 
 

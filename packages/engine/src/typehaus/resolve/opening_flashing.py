@@ -171,10 +171,17 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
             # K6 is the cap over the head course, billed as trim; not the drip head.
             model.solids.extend(head_cap_solids(model, wall, opening, frame, metal, cfg))
             meshes = [mesh for mesh in meshes if mesh[0] != "head"]
-        elif opening.kind == "door":
+        else:
             from typehaus.resolve.cladding_trim.doors import add_door_trim
+            from typehaus.resolve.opening_head_drip import drip_head_key, drip_head_solids
 
-            if add_door_trim(model, wall, opening, frame, cfg, metal, catalog=bool(catalog)):
+            trimmed = opening.kind == "door" and add_door_trim(
+                model, wall, opening, frame, cfg, metal, catalog=bool(catalog))
+            # A non-metal rainscreen's kit Z drip head, billed as trim (not a catalog unit's).
+            key = None if trimmed or catalog else drip_head_key(model, wall, opening)
+            if key:
+                model.solids.extend(drip_head_solids(model, wall, opening, frame, metal, key, cfg))
+            if trimmed or key:
                 meshes = [mesh for mesh in meshes if mesh[0] != "head"]
         if catalog:
             # Stock head/pan envelopes are already opening IR parts; retain the

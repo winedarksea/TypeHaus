@@ -6,7 +6,7 @@ import math
 
 from typehaus.library.materials._common import _UAF
 from typehaus.model import Material
-from typehaus.model.cladding_trim import CORRUGATED_KIT, PBR_KIT
+from typehaus.model.cladding_trim import CORRUGATED_KIT, FIBER_CEMENT_KIT, PBR_KIT
 
 _BASE_ROWS: tuple[Material, ...] = (
     # Solid PVC tongue-and-groove wall/ceiling panel (Trusscore-class): concealed screw
@@ -43,6 +43,7 @@ _BASE_ROWS: tuple[Material, ...] = (
         density=1700.0,
         hatch="siding",
         color="#b8bcc0",
+        trim_kit=FIBER_CEMENT_KIT,
         source="no published ASTM E96 rating located for fibre-cement lap siding; "
         "vapour fields unset so the Glaser walk reports UNKNOWN",
     ),

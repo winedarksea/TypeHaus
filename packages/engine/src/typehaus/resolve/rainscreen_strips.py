@@ -7,6 +7,9 @@ painted aluminium against Galvalume, as Metal Sales' PBR vented ridge bears (own
 2026-10-29; no EPDM pads). At the BBD75 band the lower panel stops 1" under the Transition
 Trim's seat and a strip across that slot is the cavity's vented outlet
 (``notes/metal_trim_kit.md``). Derived from the trim each one lands on.
+
+Over a non-metal rainscreen's generic Z head flashing the strip closes the cavity's foot
+under the cladding's bottom edge, 1/4" up off the flashing (``opening_head_drip``).
 """
 
 from __future__ import annotations
@@ -99,11 +102,13 @@ def _base_strips(model) -> None:
 
 
 def _head_strips(model) -> None:
+    from typehaus.library.trim.generic import HEAD_FLASHING_CLADDING_CLEARANCE_IN
     from typehaus.resolve.flashing_config import FLASHING
     from typehaus.resolve.opening_flashing import head_flashing_section, opening_flashing_frame
+    from typehaus.resolve.opening_head_drip import DRIP_HEAD_PRODUCT
 
     heads = {s.host_ref: s.product for s in model.solids if s.category == "cladding_trim"
-             and s.product in ("OPENING_HEAD", "DOOR_HEAD_CUSTOM")}
+             and s.product in ("OPENING_HEAD", "DOOR_HEAD_CUSTOM", DRIP_HEAD_PRODUCT)}
     for wall in model.walls:
         for opening, _s0, _s1, _z in opening_head_spans(model, wall):
             product = heads.get(opening.tag)
@@ -123,8 +128,12 @@ def _head_strips(model) -> None:
                 def line(depth, water=water, bend=bend, front=front, seat_z=seat_z):
                     return bend + (seat_z - bend) * (depth - water) / (front - water)
 
+                # Over a generic Z the cladding stands clear of the flashing (James Hardie:
+                # 1/4", uncaulked), and the strip under its bottom edge with it.
+                lift = (HEAD_FLASHING_CLADDING_CLEARANCE_IN * M_PER_IN
+                        if product == DRIP_HEAD_PRODUCT else 0.0)
                 start, length = head.start, head.span
-                origin = frame.point(start, frame.mount, line(frame.mount))
+                origin = frame.point(start, frame.mount, line(frame.mount) + lift)
                 seat = (frame.clad - frame.mount, line(frame.clad) - line(frame.mount))
             add_strip_run(model, uid=f"{opening.uid}-headstrip", tag=f"{opening.tag}-HEADSTRIP",
                           storey=wall.storey, host=opening.tag, product=STRIP_PRODUCT,

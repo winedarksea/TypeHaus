@@ -64,6 +64,13 @@ four and be tempted to make them go away.
   switch in each habitable room, and NEC 210.52 receptacles on their wall lines. Unlike a
   rim-band flashing detail, none of that is an opinion about a specific building.
 
+## Rainscreen heads come from the siding's kit
+
+The library `fiber-cement` Material carries `FIBER_CEMENT_KIT`, so every window and door head
+on this furred wall gets the generic Z drip flashing and a perforated strip closing the cavity
+1/4" above it (decision #101), graded PASS by `integrity.rainscreen_cavity`. Nothing in
+`plan/` names it: change the siding and the head detail follows the new Material's kit.
+
 ## Command crib
 `haus new <dir>` · `haus serve` (UI + PATCH/undo) · `haus build` · `haus check` ·
 `haus render` · `haus print` (DXF/PDF) · `haus diff <ext.ifc>` · `haus fmt` · `haus ls`.

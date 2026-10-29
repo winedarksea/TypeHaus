@@ -36,6 +36,11 @@ BBD_KIT = {
     TrimCondition.DOOR_HEAD: "DOOR_HEAD_CUSTOM",
     TrimCondition.DOOR_JAMB: "BBD_PANEL_STARTER",
 }
+#: Fiber cement has no maker's metal kit: its heads take the generic Z drip flashing.
+FIBER_CEMENT_KIT = {
+    TrimCondition.OPENING_HEAD: "OPENING_HEAD_DRIP_FLASHING",
+    TrimCondition.DOOR_HEAD: "OPENING_HEAD_DRIP_FLASHING",
+}
 CORRUGATED_KIT = {
     TrimCondition.OUTSIDE_CORNER: "CORRUGATED_OUTSIDE_CORNER",
     TrimCondition.BASE: "CORRUGATED_BASE",

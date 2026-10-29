@@ -157,7 +157,8 @@ def _wall_trim_rows(model: ResolvedModel, rows: _Rows) -> None:
         role = profile.fastener_role.replace("_", "-")
         fasteners = ceil(length / M_PER_IN / profile.fastener_spacing_in) * profile.fastener_rows
         fasteners += profile.lap_fasteners if lap_index else 0
-        _supply(rows, role, 0.0, solid.tag, count=fasteners)
+        if fasteners:  # a taped-in Z drip head takes none
+            _supply(rows, role, 0.0, solid.tag, count=fasteners)
 
 
 def _runs(roof, suffix: str):
