@@ -561,18 +561,21 @@ LAUNDRY_MAIN = [
 # against -15 F outdoor air. `pan_drain_ref` on EQ-B-ERV names this run.
 #
 # ** GRAVITY TO THE BATH LAVATORY, NOT THE SUMP (owner, 2026-10-17). ** The run leaves the
-# pan (where PR-B-WH-COND tees in), south out of the case to y 28'-4", east along EQ-B-WH's
-# south face to x 9'-7 1/2",
-# then south there, west of W-B-STR3, to y 18'-8 3/8", and east through W-B-STR2's cavity to
-# the lavatory drain at 12'-0". It falls about 1.8"/ft (no pump; 1/8"/ft is the floor) and
-# ends 38 in. above datum, visibly over the basin flood rim; no receptor behind drawers.
+# pan (where PR-B-WH-COND tees in) and goes south out of the case at x 6'-8 19/32", then
+# on south to y 25'-2" (owner, 2026-10-29: go along the mechanical-room wall and "dive in" by
+# the sink). It turns east, west of the leaf D-B-CLOSET sweeps (x 98"..120", y 315"..339",
+# `mep.run_through_opening`), to x 9'-7 1/2", south along W-B-STR3B/STR2's mech face, and
+# east through W-B-STR2's cavity to the lavatory drain at 12'-0". It falls 0.85"/ft over
+# 15'-11" (no pump; 1/8"/ft is the floor), 14 1/2" in all, ending 38 in. above datum, visibly
+# over the basin flood rim; no receptor behind drawers. The old path crossed the doorway at 44".
 ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(inch(80.6), inch(352)), pt(inch(80.6), inch(340)),
-                  pt(inch(115.5), inch(340)), pt(inch(115.5), inch(224.375)),
-                  pt(inch(144), inch(224.375))),
+                  pt(inch(80.6), inch(302)), pt(inch(115.5), inch(302)),
+                  pt(inch(115.5), inch(224.375)), pt(inch(144), inch(224.375))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(52.5), inch(50.71), inch(45.5), inch(39), inch(38),)),
+            elevations=(inch(52.5), inch(50.71), inch(48), inch(45.5), inch(40),
+                        inch(38),)),
     # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem RH400-30 sheet C). The tank's
     # front faces the ERV case (2026-10-29), so the port is 1.2" off the case's east face: a
     # street elbow turns it straight down to 53", under the case bottom (54"), then west and

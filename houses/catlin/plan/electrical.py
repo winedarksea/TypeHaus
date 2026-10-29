@@ -351,7 +351,7 @@ BASEMENT_EQUIPMENT = [
               # crossing band: 1 5/8" under the 7'-6" radial layer, 6 13/16" over this case,
               # and 6'-7 3/8" of headroom beneath — over R305.1.1's 6'-4" basement
               # projection floor. PR-B-ERV-COND (plan/mep_drainage.py) falls by gravity from
-              # the pan to FX-B-BATH-LAV.
+              # the pan to FX-B-BATH-LAV: south past D-B-CLOSET's swing, then along W-B-STR2.
               #
               # SERVICE ACCESS (notes/erv_service_access.md): keep this exposed in
               # RM-B-FURNACE, with 13" clear in front of the hinged maintenance door and

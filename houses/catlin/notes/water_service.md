@@ -54,9 +54,9 @@ link in the old TODO is dead (404); the same lettered dimensions are on both she
   exhaust: west is the ERV case (54"-75 5/8", the heat-pump section's height), north is
   `W-B-ESS-S`, and -67.5 or less swings the exhaust zone into `W-B-STR3`.
 - **The tank moved 1" south** to (8'-9", 29'-5"), giving the T&P side 4 1/2" to the wall:
-  Rheem's 2" release, with 2 1/2" left between the valve outlet and the wall. The limit is
-  `PR-B-ERV-COND`'s y=340" leg (0.35" clear of the body); `D-B-CLOSET`'s swing (y <= 339")
-  would allow 1 7/8" more. If the delivered valve stands proud of 4 1/2", that leg is what moves.
+  Rheem's 2" release, with 2 1/2" left between the valve outlet and the wall. `PR-B-ERV-COND`
+  left y=340" for y=302" (2026-10-29), so the limit is now `D-B-CLOSET`'s swing (y <= 339"),
+  1 7/8" more. If the delivered valve stands proud of 4 1/2", the tank moves south.
 - **The ERV case moved 3/16" west** (centre x 6'-8 7/16"), making the slot 24.28" against the
   24 1/4" tank. A full 1/4" would put its west face 0.025" into `CZ-B-DRYFIRE` (x <= 68");
   3/16" leaves 0.04" there and 0.04" at the tank. The four 6" collars and the pan drain
@@ -79,8 +79,8 @@ under `DU-B-ERV-RET-TRUNK`'s rising leg; going over that duct hits the extract p
 
 `PR-B-WH-COND`: 3/4" PVC from the port (59", facing the ERV case since the -90 turn) straight
 down to 53", under the case bottom (54"), 8" west and 14 1/2" south beneath the case onto
-`PR-B-ERV-COND`'s x=80.6" leg (51.6" there, 0.6"/ft), which already falls to the
-`FX-B-BATH-LAV` air gap. Rheem: pitch
+`PR-B-ERV-COND`'s x=80.6" leg (51.6" there, 0.6"/ft), which falls to the `FX-B-BATH-LAV`
+air gap by way of y=302", x=115.5" and `W-B-STR2` (0.85"/ft, clear of `D-B-CLOSET`'s swing). Rheem: pitch
 >= 1/8"/ft, 3/4" minimum, never into the heater's own pan, trap only if it meets a sewer
 (it does not: it ends at an air gap). `mep.drain_slope` and `mep.drain_tie_in` pass. The ERV
 line now carries both appliances; a heat-pump water heater makes roughly 1/2-1 gal a day in

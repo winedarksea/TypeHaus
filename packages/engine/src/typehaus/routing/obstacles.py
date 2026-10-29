@@ -101,6 +101,13 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
         out.append(HardPrism(tag=tag, kind="opening", footprint=grown,
                              z0_m=low - inflate, z1_m=high + inflate))
 
+    # A swinging leaf's quadrant, below the head (``mep.run_through_opening`` grades it too).
+    from typehaus.resolve.mep_door_swing import door_swing_prisms
+
+    for tag, _host, sector, low, high, _for in door_swing_prisms(model):
+        out.append(HardPrism(tag=tag, kind="opening", footprint=sector.buffer(inflate),
+                             z0_m=low - inflate, z1_m=high + inflate))
+
     # Deck voids, less the walls that cross them: a run over a void has nothing to strap
     # to unless a wall carries it, which is exactly ``mep.run_over_void``'s reading.
     cover = _wall_union(model)

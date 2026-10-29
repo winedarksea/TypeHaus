@@ -183,3 +183,31 @@ def test_the_opening_band_is_measured_from_the_framing_base(catlin_model) -> Non
     # It was 44.5"/+4'-0" on W-M-W1B until 2026-09-15; the hood moved to the north wall and
     # rose a foot to clear ED-M-HP3-DISC's NEC 110.26 working space.
     assert low == pytest.approx(55.5 * 0.0254, abs=1e-6)
+
+
+def test_a_run_through_a_door_swing_is_caught(catlin_model) -> None:
+    """A door counts twice: its rough opening, and the quadrant its leaf sweeps below the head.
+
+    ``PR-B-ERV-COND`` once ran x=115.5" past ``D-B-CLOSET`` (leaf hinged at y=339", sweeping
+    west over x 98"..120", y 315"..339") at 39"-45" above the floor: 1 1/2" off the jamb, so
+    the opening's own prism never saw it. The old path is put back here; the live one is
+    covered by ``test_catlin_has_no_run_through_an_opening``."""
+    from dataclasses import replace
+
+    from typehaus.quantities import M_PER_IN as m
+
+    runs = catlin_model.pipe_runs
+    at = next(i for i, r in enumerate(runs) if r.tag == "PR-B-ERV-COND")
+    live = runs[at]
+    floor = live.z_m[0] - 52.5 * m
+    old = ((80.6, 352), (80.6, 340), (115.5, 340), (115.5, 224.375), (144, 224.375))
+    runs[at] = replace(live, path=[(x * m, y * m) for x, y in old],
+                       z_m=tuple(floor + z * m for z in (52.5, 50.71, 45.5, 39, 38)))
+    try:
+        report = run_from_model(catlin_model, [], tier=Tier.ADVISORY,
+                                only="mep.run_through_opening")
+    finally:
+        runs[at] = live
+    hits = [f for f in report.findings if f.result is Result.FAIL]
+    assert [f.element_tags for f in hits] == [("PR-B-ERV-COND", "D-B-CLOSET")]
+    assert "leaf swing" in hits[0].message

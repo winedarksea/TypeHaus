@@ -1,5 +1,7 @@
 """``mep.run_through_opening`` — what a run goes THROUGH on its way.
 
+A door counts twice: its rough opening, and the quadrant its leaf sweeps (below the head).
+
 Split out of ``checks/mep/routing.py``, unchanged. The shared vocabulary it is built on —
 ``run_polylines``, ``run_radii``, ``crossing_band`` — lives in ``routing_geometry.py``.
 """
@@ -95,7 +97,12 @@ def run_through_opening(ctx: CheckContext) -> list[Finding]:
     if not runs:
         return [unknown(cid, "no pipe, duct or conduit run is modeled, so there is no route "
                              "to grade", ())]
-    prisms = opening_prisms(ctx)
+    from typehaus.resolve.mep_door_swing import door_swing_prisms
+
+    # (tag, is_door, host, plan shape, low, high, penetration_for, is_swing)
+    prisms = [(*p, False) for p in opening_prisms(ctx)]
+    prisms += [(tag, True, host, sector, low, high, pen, True)
+               for tag, host, sector, low, high, pen in door_swing_prisms(ctx.model)]
     if not prisms:
         return [passed(cid, f"{len(runs)} runs: this model resolves no rough opening, so no "
                             "run can pass through one", ())]
@@ -103,6 +110,7 @@ def run_through_opening(ctx: CheckContext) -> list[Finding]:
     radii = run_radii(ctx)
     out: list[Finding] = []
     ungraded: list[str] = []
+    swept: dict[tuple[str, float], Any] = {}
 
     for kind, tag, path, z in sorted(runs, key=lambda item: item[1]):
         if len(path) < 2:
@@ -116,7 +124,15 @@ def run_through_opening(ctx: CheckContext) -> list[Finding]:
             za, zb = z[index], z[index + 1]
             segment = LineString([a, b])
             standing = segment.length <= OPENING_EDGE_M
-            for otag, is_door, host, prism, low, high, penetration_for in prisms:
+            for otag, is_door, host, prism, low, high, penetration_for, swing in prisms:
+                if swing:
+                    # The leaf is hit by the run's SURFACE, not its centreline; the same
+                    # half inch of forgiveness as an opening's jamb.
+                    grown = (otag, radius)
+                    if grown not in swept:
+                        swept[grown] = prism.buffer(max(0.0, radius - OPENING_EDGE_M))
+                    prism = swept[grown]
+                what = "leaf swing" if swing else "rough opening"
                 if tag in penetration_for:
                     # This hole exists FOR this run: it is the penetration, not an opening
                     # the run was drawn across. Only the named pairings are exempt — a run
@@ -139,12 +155,14 @@ def run_through_opening(ctx: CheckContext) -> list[Finding]:
                     out.append(advisory(
                         cid,
                         f"{kind} run {tag} stands {overlap * 12 * M_TO_FT:.0f}\" inside "
-                        f"{otag}'s rough opening in {host} — a riser in a "
-                        f"{'doorway' if is_door else 'window'} has nothing to strap to, and "
-                        "the header above it is not borable",
+                        f"{otag}'s {what} in {host} — "
+                        + ("a riser in the quadrant the door sweeps stops the leaf"
+                           if swing else
+                           f"a riser in a {'doorway' if is_door else 'window'} has nothing "
+                           "to strap to, and the header above it is not borable"),
                         (tag, otag), Result.FAIL,
-                        fix="move the riser to a clear stud bay beside the opening; the "
-                            "terminal it feeds usually has to move with it"))
+                        fix="move the riser out of the swing, to a clear stud bay beside "
+                            "the opening; the terminal it feeds usually has to move with it"))
                     continue
                 piece = prism.intersection(segment)
                 if piece.is_empty or piece.length <= 0:
@@ -159,18 +177,23 @@ def run_through_opening(ctx: CheckContext) -> list[Finding]:
                         continue
                     out.append(advisory(
                         cid,
-                        f"{kind} run {tag} crosses {crossed_ft:.2f} ft of {otag}'s rough "
-                        f"opening in {host}, at {(lo - low) * 12 * M_TO_FT:.0f}\" above its "
-                        f"sill — the opening is {(high - low) * 12 * M_TO_FT:.0f}\" tall",
+                        f"{kind} run {tag} crosses {crossed_ft:.2f} ft of {otag}'s {what} "
+                        f"in {host}, at {(lo - low) * 12 * M_TO_FT:.0f}\" above its "
+                        + ("floor — the leaf sweeps up to its head at "
+                           if swing else "sill — the opening is ")
+                        + f"{(high - low) * 12 * M_TO_FT:.0f}\""
+                        + ("" if swing else " tall"),
                         (tag, otag), Result.FAIL,
-                        fix="carry the run over the header or under the sill, or take it to "
-                            "the next stud bay; in a window there is no 'over' — the head is "
-                            "usually the plate"))
+                        fix=("route outside the quadrant the leaf sweeps, or over its head"
+                             if swing else
+                             "carry the run over the header or under the sill, or take it to "
+                             "the next stud bay; in a window there is no 'over' — the head is "
+                             "usually the plate")))
                     break
 
     if not any(finding.result is Result.FAIL for finding in out):
-        out.append(passed(cid, f"{len(runs)} runs against {len(prisms)} rough openings: no "
-                               "run passes through one or stands in one", ()))
+        out.append(passed(cid, f"{len(runs)} runs against {len(prisms)} openings and door swings: "
+                               "no run passes through one or stands in one", ()))
     if ungraded:
         out.append(unknown(cid, f"{len(ungraded)} run(s) carry no resolved elevations and are "
                                 f"not graded: {', '.join(sorted(ungraded)[:6])}",

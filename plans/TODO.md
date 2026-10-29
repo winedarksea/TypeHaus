@@ -50,10 +50,6 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
   carries a check valve and what the static pressure at the main is. Then model a listed expansion
   tank on the heater inlet (and a PRV over 80 psi). `PA-G-HYD-BFP` is on the hydrant branch only
   since 2026-10-29, so the meter set is the only possible check. `notes/water_service.md` §4.
-- **`PR-B-ERV-COND` crosses `D-B-CLOSET`'s swing** (found 2026-10-29, not graded by anything):
-  its x=115.5" leg runs south at 45"-39" AFF across the closet doorway, 1 5/8" off `W-B-STR3`,
-  inside the leaf's quadrant (x 98-120", y 317-339"). Gravity rules out going over the head and the
-  dry-fire lane rules out the west side; a condensate pump or another receptor is the likely fix.
 - **Confirm the delivered parts:** the RH400-30's T&P projection (4 1/2" to `W-B-ESS-S` on that
   side) and the ProSaunas vent hatch's cutout and free area (unpublished; (844) 565-1113).
 
