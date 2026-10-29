@@ -2174,22 +2174,16 @@ NEC_FILL_MAIN = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # The nightstand's own outlet, moved with FURN-M-BED-NIGHTSTAND-W on 2026-10-03. It sits
     # behind the 16"-deep, 26"-tall carcass with a cord gap, not behind the 80" headboard that
-    # makes RC2 above unusable. Centered at x=5'-9 7/8" on W-M-BDN1, 5 7/8" east of RC9.
-    ElectricalDevice(uid="M6KEXK18GY", tag="ED-M-BED-RC8", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20",
+    # makes RC2 above unusable. Centered at x=5'-9 7/8" on W-M-BDN1.
+    # ** THE ONLY BOX BEHIND THE NIGHTSTAND (owner, 2026-10-29). ** RC9, 5 7/8" west of it,
+    # was deleted and this one took its device GFCI: the bedroom side of D-M-BATH2 is
+    # reachable from the bath sink, on the storey's non-GFCI general receptacle circuit.
+    ElectricalDevice(uid="M6KEXK18GY", tag="ED-M-BED-RC8", kind=DeviceKind.RECEPTACLE_GFCI,
+                     type_ref="ED-T-LEV-GFCI-20",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BDN1", face="right", distance_from_start=inch(69.875),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Behind the west nightstand, clear of D-M-BATH2's derived RO (64", 2026-10-29). The
-    # bedroom side is reachable from the bath sink through the doorway, so this one keeps
-    # GFCI protection at the device on the storey's non-GFCI general receptacle circuit.
-    ElectricalDevice(uid="M62BV9TQ4Y", tag="ED-M-BED-RC9", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-20", circuit="CKT-RC-MAIN", room="RM-M-BED",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BDN1", face="right", distance_from_start=inch(64),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC014AAAA", tag="ED-M-BED-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",

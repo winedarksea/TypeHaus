@@ -19,7 +19,7 @@ steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
 - **Ordinary duplex:** Lever Edge `E5825-W` (20 A); `E5325-W` (15 A) on the 15 A circuits above.
 - **GFCI at the breaker by default**, with plain Lever Edge devices. Device GFCI `GFTR2-W`
   (`GFTR1-W` at 15 A) only where more practical: sink-reach outlets on a non-GFCI circuit
-  (e.g. `ED-M-BED-RC9`) and the two washlet outlets (`plan/circuits.py` convention).
+  (e.g. `ED-M-BED-RC8`) and the two washlet outlets (`plan/circuits.py` convention).
   - `ED-B-SUMP-RC`: audible-alarm GFCI `GFTA2-W` (NEC 2023 210.8(A)(5)); breaker not GFCI.
   - `ED-S-PLANT-RC1`..`RC5`: weather-resistant GFCI `GFWT2-W` under in-use covers.
 - **60 W USB-C PD** `T5836-W`: `ED-M-LIVING-RC13` and `-RC3` only. Deep boxes.

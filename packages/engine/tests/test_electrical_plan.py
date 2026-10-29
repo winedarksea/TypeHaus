@@ -73,23 +73,22 @@ def test_main_bedroom_door_side_receptacle_is_in_electrical_plan(catlin_model):
     devices = {element.tag: element
                for element in catlin_model.plan.storey_elements("main")
                if element.element_kind == "ElectricalDevice"}
-    outlet = devices["ED-M-BED-RC9"]
-    remote_bedroom_outlet = devices["ED-M-BED-RC8"]
+    # RC9 sat 5 7/8" west of RC8 behind one nightstand; deleted, RC8 took its GFCI
+    # (owner, 2026-10-29).
+    assert "ED-M-BED-RC9" not in devices
+    outlet = devices["ED-M-BED-RC8"]
 
-    assert remote_bedroom_outlet.kind.value == "receptacle"
-    assert remote_bedroom_outlet.type_ref == "ED-T-LEV-DUPLEX-20"
     assert outlet.kind.value == "gfci"
     assert outlet.type_ref == "ED-T-LEV-GFCI-20"
     assert outlet.circuit == "CKT-RC-MAIN"
     assert outlet.circuit in {circuit.tag for circuit in catlin_model.plan.library.circuits}
-    assert outlet.room == "RM-M-BED"
     assert outlet.location.attachment.wall_ref == "W-M-BDN1"
     # Behind the west nightstand, clear of D-M-BATH2's derived RO (2026-10-29).
-    assert outlet.location.attachment.distance_from_start.inches == pytest.approx(64)
-    assert placed_xy(catlin_model, outlet)[0] / 0.0254 == pytest.approx(64)
+    assert outlet.location.attachment.distance_from_start.inches == pytest.approx(69.875)
+    assert placed_xy(catlin_model, outlet)[0] / 0.0254 == pytest.approx(69.875)
 
     scene = build_electrical_plan(catlin_model, "main")
-    assert any(isinstance(node, Text) and node.content == "M-BED-RC9"
+    assert any(isinstance(node, Text) and node.content == "M-BED-RC8"
                for node in scene.nodes)
 
 

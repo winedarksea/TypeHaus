@@ -1171,7 +1171,8 @@ OPENINGS = [
     # opening into the vanity.
     #
     # Derived 34 1/4" RO since 2026-10-29 (owner: keep 32"): the east jamb grew 2 1/4", so
-    # the bed and nightstands moved 0.6" east and ED-M-BED-RC9 went behind the nightstand.
+    # the bed and nightstands moved 0.6" east and ED-M-BED-RC9 went behind the nightstand
+    # (deleted the same day; ED-M-BED-RC8 there is the GFCI now).
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING32",
          position=from_node("N-M-W3", inch(24.635)), flip_swing=True, flip_hinge=True),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
