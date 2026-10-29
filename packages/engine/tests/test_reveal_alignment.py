@@ -19,6 +19,7 @@ from typehaus.model import (
     Assembly, Building, Door, DoorType, Layer, LayerFunction, Library, Material, Node,
     PlanModel, Project, RoughOpening, Site, Storey, Wall, degF, ft, inch, pt,
 )
+from typehaus.model.opening_size import OpeningSize
 from typehaus.model.refs import from_node
 from typehaus.resolve import resolve
 
@@ -62,7 +63,9 @@ def _plan(*, reveal_at=_DOOR_AT, backer_door: bool = True, veneer: bool = True,
                              end_node="N-VE", assembly="WYTHE", top=ft(9)))
     if backer_door:
         elements.append(Door(uid="D000000001", tag="D-BACK", host="W-BACK",
-                             type_ref="DT-60", position=from_node("N-W", _DOOR_AT)))
+                             type_ref="DT-60", position=from_node("N-W", _DOOR_AT),
+                             # A 5'-0" RO, as the reveal is (resolve/door_sizing).
+                             held_rough_opening=OpeningSize(width=ft(5), height=inch(80))))
     if reveal:
         elements.append(RoughOpening(
             uid="O000000001", tag="AO-REVEAL", host="W-VEN" if veneer else "W-BACK",

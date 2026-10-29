@@ -2,7 +2,7 @@
 
 Status: decisions agreed 2026-10-28, revised after review and a second round of questions
 the same day. All four phases implemented 2026-10-29 (decisions #96-#98 in `01-decisions.md`);
-sixteen openings still hold their framing pending the owner's answers below.
+seventeen openings still hold their framing pending the owner's answers below.
 Replaces the missing `plans/default-door-appearance.md` that the TODO item cited.
 
 ## The problem
@@ -320,13 +320,16 @@ dropped, clear added, new on SWING36/FRENCH60), bookcase nominal dropped, `sizin
 
 **Phase 2**: released, with no new FAIL/UNKNOWN/advisory: D-B-ESS, D-B-SAUNA, D-M-MECH,
 D-M-MUDC, D-M-PANTRY, D-M-LAUN, D-M-BED, D-M-BED2, D-S-BED2, D-S-PLANT, O-S-CLOSET,
-D-S-SUITEBATH, D-S-BATH1, D-A-STUBATH, both starter doors (D-101's switch moved 2" clear of
+D-S-SUITEBATH, D-A-STUBATH, both starter doors (D-101's switch moved 2" clear of
 its casing) and D-M-ENTRY (decision 9, as agreed: BWP-M-N3-0042 trimmed to 3 5/8", the doubled
 hinge pack backs W-M-MECH-E's end, the casing scribes to 2.18", and the exterior head casing
-tops out 1 5/8" under the canopy truss chords). D-S-BED2 and D-S-BATH1 no longer cut an
-extra stud, so their module suppressions were deleted.
+tops out 1 5/8" under the canopy truss chords). D-S-BED2 no longer cuts an extra stud, so its
+module suppression was deleted. **`haus check` alone misses some conflicts**:
+`structural.member_interference` clears overlaps at a junction, so D-S-BATH1's jamb pack
+running into the N-S-BA1 corner pack showed only in the suite (the corner-pack and
+unjunctioned member-overlap tests). It was re-held.
 
-## Open questions for the owner (the sixteen holds)
+## Open questions for the owner (the seventeen holds)
 
 Each was measured in its own worktree; every option listed cleared its findings with no new
 ones unless it says otherwise.
@@ -346,6 +349,7 @@ ones unless it says otherwise.
 | D-B-CLOSET | ED-B-CLOSET-LT under the casing; the casing head ~1.7" into ST-B2M's stringer (unchecked) | move the light 3" north (stringer scribe remains), or slide the door 2" toward the corner (clears both; undoes the 10" corner setback). |
 | D-S-BED1 | the casing scribes to 2.20" against W-S-BD1 | accept the scribe (2.44" on the PAX side already). |
 | D-S-SUITE | the cherry casing leg against W-S-SBS is left off | move the door 1" south (both legs ~2.4"), or a 30" leaf. |
+| D-S-BATH1 | its derived jamb pack runs into W-S-BA-E1B's corner pack at N-S-BA1 | not investigated beyond that; keep the hold, or step down / move off the corner. |
 | D-S-BED3 | the 2-2x8 header reaches the HP return's envelope (not physical: the check's 9" envelope) | W-S-BW3 nonbearing with a flat 2x4 head, or fix `mep_bore_geometry`'s envelope. |
 | D-S-NCLOSET | the header rises 2.26" over the wall top into SF-S-HP1; ED-S-NCLOSET-SW in the RO | W-S-CLN-S nonbearing with a flat 2x4 head, and slide the door 2.25" west. |
 | D-A-HALVES | 1.70" to the wall end against 1.97" (`opening_fits`); the study casing leg left off | move 1 5/16" south (leg 1.57"), or a 30" leaf. |

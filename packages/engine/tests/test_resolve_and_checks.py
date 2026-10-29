@@ -123,7 +123,10 @@ def test_tri_state_counts(project) -> None:
     # soil-gas system in every new residential structure, unconditionally, so the rule has
     # no scope-pass to give a plan with no radon riser in it — and a bare rectangle of
     # walls is not a dwelling.
+    # So is `code.R311_1_egress_door`: a dwelling needs a designated egress door, and a
+    # rectangle of walls has no door at all.
     fixture_gaps = {"code.energy_prescriptive", "code.R314_alarm_every_storey",
-                    "code.R303_1_light_and_ventilation", "code.MN_1303_2402_radon"}
+                    "code.R303_1_light_and_ventilation", "code.MN_1303_2402_radon",
+                    "code.R311_1_egress_door"}
     non_energy_errors = [e for e in report.errors if e.check_id not in fixture_gaps]
     assert not non_energy_errors

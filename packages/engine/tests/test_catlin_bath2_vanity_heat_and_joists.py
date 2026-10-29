@@ -222,9 +222,10 @@ def test_the_bathroom_door_swings_out_and_clears_the_vanity():
     wall_y = 156.0 * M_PER_IN                      # W-M-BDN1's axis; the bath is y > this
     assert swing.bounds[3] <= wall_y + 1e-6, "the door swings back into the bathroom"
     # `swing_clearance`'s first vertex IS the hinge — the sector is built out from it.
+    # The leaf hinges at the jamb face, 1" inside the RO's west edge at 24.635in.
     hinge_x = door.swing_clearance[0][0] / M_PER_IN
-    assert round(hinge_x, 4) == 24.635, (
-        f"hinged at x={hinge_x:.4f}in, not the WEST jamb at 24.635in the owner chose")
+    assert round(hinge_x, 4) == 25.635, (
+        f"hinged at x={hinge_x:.4f}in, not the WEST jamb face at 25.635in the owner chose")
 
     for tag in ("FX-M-BATH2-SINK", "FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB"):
         assert not swing.intersects(Polygon(_canvas(model, tag).footprint)), tag

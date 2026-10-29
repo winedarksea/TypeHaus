@@ -588,6 +588,7 @@ OPENINGS = [
     # the east wall instead of dividing the entry. The 36" vanity begins 8.5" beyond
     # the 90-degree leaf tip. Keep a stop to protect the adjacent switch and cabinet.
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30",
+         held_rough_opening=OpeningSize(width=ft(2, 6), height=ft(6, 8)),
          position=from_node("N-S-V2", ft(1, 1.5)), flip_hinge=False),     # x 8'-3"
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
          held_rough_opening=OpeningSize(width=ft(2, 6), height=ft(6, 8)),

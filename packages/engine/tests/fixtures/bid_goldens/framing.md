@@ -37,7 +37,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-2x10 SPF framing lumber — blocking (2-2x10:spf) | 16 | LF ordered | 6 pcs, 11.1 LF cut | building |
 | 2-2x6 — header (2-2x6) | 32 | LF ordered | 4 pcs, 24.2 LF cut | building |
 | 2-2x6 SPF framing lumber — blocking (2-2x6:spf) | 24 | LF ordered | 10 pcs, 18.2 LF cut | building |
-| 2-2x8 — header (2-2x8) | 176 | LF ordered | 54 pcs, 147.7 LF cut | building |
+| 2-2x8 — header (2-2x8) | 176 | LF ordered | 54 pcs, 147.5 LF cut | building |
 | 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 48.0 LF cut; 48.0 LF in the takeoff | building |
 | 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 336.0 LF cut; 336.0 LF in the takeoff | building |
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 344 | LF ordered | 38 pcs, 313.9 LF cut | building |
@@ -50,7 +50,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,716 | LF ordered | 650 pcs, 3993.4 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,938 | LF ordered | 479 pcs, 2511.1 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 55.6 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,046 | LF ordered | 1169 pcs, 6102.4 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,046 | LF ordered | 1168 pcs, 6100.9 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | 90 | LF ordered | 9 pcs, 77.6 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.6 LF cut | building |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | 1,742 | LF ordered | 229 pcs, 1479.8 LF cut | building |

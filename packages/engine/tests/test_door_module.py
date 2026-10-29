@@ -137,8 +137,8 @@ def test_a_wall_no_move_can_fix_is_unknown_not_fail(findings):
     looking for a position that does not exist."""
     unknowns = {tag for f in findings if f.result is Result.UNKNOWN
                 for tag in f.element_tags}
-    # D-S-BATH1's derived RO (2026-10-29) cuts no extra stud, so it left this list.
-    assert {"D-M-ENTRY", "D-S-NCLOSET", "D-S-STUDY2", "D-S-BED3"} <= unknowns
+    assert {"D-M-ENTRY", "D-S-NCLOSET", "D-S-STUDY2", "D-S-BED3",
+            "D-S-BATH1"} <= unknowns
     assert "D-M-PANTRY" not in unknowns  # Its cassette anchors to perpendicular walls.
     for finding in findings:
         if finding.result is not Result.UNKNOWN:

@@ -63,7 +63,8 @@ _CATLIN = {
     # Two French pairs: +4 UA x85 F = +340 Btu/h.
     # BBD75 layer depth correction (2026-10-25): -1 Btu/h, the same envelope-area shift as HP1.
     "EQ-M-HP2-OD": (14_255, 8_800, 5.0, 0.62, 25.5, not _ADVISED),
-    "EQ-M-HP3-OD": (905, 2_800, 17.0, 3.09, None, _ADVISED),
+    # D-M-ENTRY's Therma-Tru unit replaces its 36x80 void (2026-10-29): 905 -> 921.
+    "EQ-M-HP3-OD": (921, 2_800, 17.0, 3.04, None, _ADVISED),
 }
 
 

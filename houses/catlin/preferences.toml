@@ -407,11 +407,12 @@ suppress = [
   "structural.door_framing_module:D-M-ENTRY",
   "structural.door_framing_module:D-S-BED3",
   "structural.door_framing_module:D-S-STUDY2",
+  "structural.door_framing_module:D-S-BATH1",
   "structural.door_framing_module:D-S-NCLOSET",
 
   # Owner accepts (2026-10-02): D-S-BED1/2 moved 2 1/2" north, off the module, so a real
   # 19 5/8" PAX fits south of each (plan/bedroom_wardrobes.py). One extra stud cut each.
-  # D-S-BED2 and D-S-BATH1 left this list on 2026-10-29: their derived ROs cut no extra stud.
+  # D-S-BED2 left this list on 2026-10-29: its derived RO cuts no extra stud.
   "structural.door_framing_module:D-S-BED1",
 
   # Owner accepts (2026-10-16): WIN-M-DINING-E is a 63" picture window centred on the

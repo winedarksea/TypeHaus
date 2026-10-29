@@ -213,7 +213,8 @@ def test_a_nine_inch_service_penetration_does_not_split_a_panel(catlin_model_ro)
     panels, _ = resolved_braced_wall_panels(catlin_model_ro, "main")
     panel = next(p for p in panels if "BWP-M-N3B-0000" in p.tags)
     assert panel.contains_opening == ()
-    assert panel.length_in == pytest.approx(78.0, abs=0.1)
+    # 75 5/8" since D-M-ENTRY's derived RO took 2 3/8" of BWP-M-N3-0042 (2026-10-29).
+    assert panel.length_in == pytest.approx(75.625, abs=0.1)
 
 
 def test_a_panel_across_a_window_is_reported(catlin_model):
