@@ -2,18 +2,19 @@
 
 Split from ``lighting_types.py`` for the 500-line rule in ``AGENTS.md``. The split is by
 what a fixture IS rather than by where it goes: part 1 is the anonymous ambient and task
-layer (cans, the panel, the tapes, the grow tubes, the vertical slots) and this file is the
+layer (cans, the panel, the tapes, the grow bars, the vertical slots) and this file is the
 fixtures somebody actually looks at, plus the fans and the exterior. ``LUMINAIRE_TYPES``
 concatenates the two, so the E-602 schedule and its mark-uniqueness test see one catalog.
 
 Marks continue the same sequence and must stay unique across BOTH files —
 ``tests/test_lighting_takeoff.py`` pins that, and it is the reason a variant takes a
-numbered suffix (J1, J2, N1, N2, P1) rather than the next free letter.
+numbered suffix (J1, N1, N3, P1) rather than the next free letter.
 """
 
 from __future__ import annotations
 
 from library.lighting import luminaire_class
+
 from typehaus import LuminaireForm, Service, ServicePort, ft, inch
 from typehaus.model import LuminaireType
 
@@ -87,12 +88,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
                          "different product, and J's head stands 9\" tall — which is the "
                          "hazard this row exists to avoid."),
 
-    # Z: the gothic iron sconce. Forged black iron, pointed-arch plate, scrolled arm, drip cup
-    # and an E12 flame-tip LED. Chosen from the owner's listings (Amazon B0CBS5MPLF, two
-    # AliExpress items, an Etsy hand-forged iron sconce), none of which could be read here, so
-    # the numbers are typical for the class, not a listing's. Bulb dimmability and the
-    # 250 lm are NOT verified against a bulb and must be confirmed before ordering. Storage
-    # room only (RM-A-EAST-UNFIN): no R303.1 floor applies.
+    # Z: a plain black candle sconce (Livex 4451-04, 2026-10-28), replacing the gothic iron
+    # one the owner found too ornate. Storage room only (RM-A-EAST-UNFIN): no R303.1 floor.
     LuminaireType(tag="ED-T-LT-SCONCE-CANDLE", name="Plain black candle wall sconce, E12 LED",
                   form=LuminaireForm.SCONCE, type_mark="Z",
                   footprint=(inch(4.25), inch(7.75)), height=inch(8.5),
@@ -128,13 +125,14 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # cans are seen at once across an open plan, and a CCT mismatch in one sightline reads as
     # a construction error.
     #
-    # ** PRODUCT PICKED (owner, 2026-10-22): Flyachilles 2-light, 47.2", `FLYACHILLES_DJ3616_2L`.**
-    # It is dimmable, so its 5,400 lm is a ceiling and it runs in the 2000-3500 band; the
-    # listing's 3000-6000 K range is set to 3000 K on the remote. No UL mark is published, so
-    # confirm it ON THE FIXTURE before ordering. A sealed extrusion has almost nothing to dust, which matters more here than anywhere
-    # else because a dining fixture in an open plan collects airborne COOKING GREASE and
-    # grease-plus-dust does not dry-dust off. That rules out multi-sleeve fixtures (twelve
-    # sleeves to dust individually), crackle glass (the texture IS the dust feature) and
+    # ** PRODUCT PICKED (owner, 2026-10-22): Flyachilles 2-light, 47.2",
+    # `FLYACHILLES_DJ3616_2L`.** It is dimmable, so its 5,400 lm is a ceiling and it runs in
+    # the 2000-3500 band; the listing's 3000-6000 K range is set to 3000 K on the remote. No
+    # UL mark is published, so confirm it ON THE FIXTURE before ordering. A sealed extrusion
+    # has almost nothing to dust, which matters more here than anywhere else because a
+    # dining fixture in an open plan collects airborne COOKING GREASE and grease-plus-dust
+    # does not dry-dust off. That rules out multi-sleeve fixtures (twelve sleeves to dust
+    # individually), crackle glass (the texture IS the dust feature) and
     # unlacquered brass over a table (it patinas unevenly wherever grease lands, and the fix
     # is polishing rather than wiping).
     #
@@ -150,8 +148,9 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # its own remote; the wall control is a plain switch (ED-M-DINING-SW), not a dimmer.
     #
     # The look (2026-09-26): a WAVE chandelier — five flat LED strips side by side, each
-    # rising and falling out of phase with its neighbours, off one canopy, brushed gold. The gold must be PVD or
-    # lacquered, never raw brass, for the grease reason above. 16" is the strips' spread.
+    # rising and falling out of phase with its neighbours, off one canopy, brushed gold. The
+    # gold must be PVD or lacquered, never raw brass, for the grease reason above. 16" is
+    # the strips' spread.
     luminaire_class("ED-T-LT-PENDANT").model_copy(update={
         "type_mark": "M", "name": '48" LED wave chandelier', "plan_symbol": "wave-chandelier",
         "footprint": (ft(4), inch(16)),
@@ -222,11 +221,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   "against the 7'-0\" blade-to-floor minimum. ** A DC FAN CANNOT BE "
                   "SPEED-CONTROLLED BY ANY CONVENTIONAL WALL DIMMER: ** constant hot plus "
                   "its included wall control."}),
-    # The plant room's fan. Same 52" fan as N, in a wet-location listed housing with a
-    # corrosion-resistant (sealed, non-ferrous) motor and gasketed light kit. N2 rather than
-    # a retype of N: this is a different product on the quote, and the reason it is here —
-    # a room that runs at 70% RH and condenses on its own glass — is not a reason the
-    # bedrooms' fans should cost more.
+    # N1: the 60" wet-listed porch fan.
     LuminaireType(tag="ED-T-LT-FAN60", name='60" porch ceiling fan with LED light kit, wet',
                   form=LuminaireForm.CEILING_FAN_LIGHT, type_mark="N1",
                   footprint=(inch(60), inch(60)), height=ft(1, 6),

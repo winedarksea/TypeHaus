@@ -22,9 +22,9 @@ the illuminated-mirror exception and its controls are documented in plan/mirror_
 
 from __future__ import annotations
 
-from typehaus.model import Product
 from plan.products_lighting_selected import SELECTED_LIGHTING_PRODUCTS
 from typehaus.library.track_lighting import MAGNETIC_TRACK_PRODUCTS
+from typehaus.model import Product
 
 # --- Lighting -----------------------------------------------------------------------------
 #

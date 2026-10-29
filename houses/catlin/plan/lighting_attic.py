@@ -96,7 +96,7 @@ ATTIC_LIGHTING = [
 
     # RM-A-EAST-UNFIN, 475 sf of unfinished storage under the east rake. The three cans that
     # were one line at x=22'-0" became three sconces on the centre wall's EAST face (now the
-    # gothic iron type, ED-T-LT-SCONCE-GOTHIC, 2026-10-14),
+    # plain candle type, ED-T-LT-SCONCE-CANDLE, since 2026-10-28),
     # x=18'-5 3/8" — that face's finish plane (x=18'-3 3/8") plus a 4"-deep body's own half,
     # which is the offset ED-A-STUDY-SPOT already uses on the same wall. Spacing goes
     # 15'/22'/28' -> 15'/20'-6"/26' so the fourth station (ED-A-EAST-LT, in
@@ -264,11 +264,10 @@ ATTIC_LIGHTING = [
     # 2026-09-09 note claimed the fitting became "a near-flush 4" drop"; only the PLACEMENT
     # changed, and `ED-T-LT-PENDANT-BAR` stayed the 2'-6" hung assembly it always was.
     #
-    # ** ED-T-LT-MIRROR, MARK P — A SECOND INSTANCE OF A ROW ALREADY IN THE SCHEDULE, ** the
-    # same move ED-A-STUBATH-MIRROR below makes and for the same reason: a 24" damp-rated LED
-    # task bar is the honest article over a wet-bar bowl, where a decorative pendant was
-    # ambient light in the one place this room wanted task light. Damp rating is not
-    # incidental — this is directly over a sink.
+    # ** ED-T-LT-KARLIE-2-BN, MARK P1 — A SECOND INSTANCE OF A ROW ALREADY IN THE SCHEDULE **
+    # (the 24" mark-P bar until 2026-10-28): a damp-rated 2-light vanity fixture is the task
+    # light over a wet-bar bowl, where a decorative pendant was ambient light in the one
+    # place this room wanted task light. Damp rating matters — this is directly over a sink.
     #
     # ** THE STATION IS THE BATH WALL, NOT THE CEILING, ** which is the rule the whole storey
     # went to on 2026-09-06: a flat trim in a 6:12 plane throws its cone 26.6 deg off plumb.

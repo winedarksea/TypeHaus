@@ -2644,21 +2644,21 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LUT-DIVA" = { material = { low = 25, high = 50 }, labour = { low = 52, high = 110 } }  # 2 ea
 "ED-T-FLOOR-STAT" = { material = { low = 130, high = 300 }, labour = { low = 150, high = 300 } }  # 3 ea
 "ED-T-JBOX" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
-# ** REPRICED 2026-09-06 TO A NAMED PRODUCT. ** Lotus LL4SR-30K-WH at $64.40 -- a 4"
-# deeply regressed WHITE trim, IC, airtight, wet + IP54, 14.5 W / 900 lm / 3000 K / 90+
-# CRI. The old $25-75 was a class band for a black-baffle can. The same SKU serves the
+# ** REPRICED 2026-09-06 TO A NAMED PRODUCT. ** Lotus LL4SR-30K-WH at $64.40 (the LL4SRG
+# that replaced it 2026-10-28 is not yet re-quoted) -- a 4" deeply regressed WHITE trim, IC,
+# airtight, wet, 14.5 W / 860 lm / 3000 K / 90+ CRI. The old $25-75 was a class band for a black-baffle can. The same SKU serves the
 # wet locations (ED-T-LT-CAN4-WET), so mark B is a schedule row rather than a second
 # product and there is NO separate wet trim to colour-match or to price.
 # ** BUY FIXED 3000 K, NEVER A 5CCT SELECTABLE MODULE ** at any price: the DIP switch gets
 # set wrong constantly and one can at the wrong temperature in a run of eight is a visible
 # defect. A dedicated phosphor also gives better R9 than a warm/cool blend.
 "ED-T-LT-CAN4" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 108 } }  # 60 ea (2026-10-28: the 21 mark-C 3" cans retyped to A)
-"ED-T-LT-CAN4-4000" = { material = { low = 25, high = 75 }, labour = { low = 52, high = 108 } }  # 4 ea
-"ED-T-LT-CAN4-WET" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 8 ea — BATH2's two went to B1 2026-10-12
+"ED-T-LT-CAN4-4000" = { material = { low = 60, high = 80 }, labour = { low = 52, high = 108 } }  # 4 ea — LL4SRG-41K: no dealer price found, LL4SR sibling $72 (researched 2026-10-28)
+"ED-T-LT-CAN4-WET" = { material = { low = 60, high = 95 }, labour = { low = 68, high = 130 } }  # 8 ea — same LL4SRG-30K as mark A (researched 2026-10-28)
 # B1/B2, BATH2's day (5000 K) and evening (2700 K) cans: the same wet LL4SR in a fixed
 # phosphor, so the same band as B. Confirm both SKUs (plan/products_lighting.py).
-"ED-T-LT-CAN4-WET-5000" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 3 ea
-"ED-T-LT-CAN4-WET-2700" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 1 ea
+"ED-T-LT-CAN4-WET-5000" = { material = { low = 100, high = 135 }, labour = { low = 68, high = 130 } }  # 3 ea — Lotus LD4S-50K-4S-WR-WT $101.64, one seller (researched 2026-10-28)
+"ED-T-LT-CAN4-WET-2700" = { material = { low = 60, high = 95 }, labour = { low = 68, high = 130 } }  # 1 ea — LL4SRG-27K, LL4SR sibling proxy (researched 2026-10-28)
 # dolria PC0008-20T-G (Amazon B0B5G5PJDF); the same-looking Latitude Run is $500 at Wayfair.
 # ** THE LABOUR HIGH END IS A LIFT, NOT A LADDER: ** the canopy is on the rafters 27' up.
 "ED-T-LT-CHANDELIER" = { material = { low = 400, high = 550 }, labour = { low = 150, high = 450 } }  # 1 ea
@@ -2667,7 +2667,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # convention — a downrod fan is the revert if no flush SKU can be sourced, and
 # `luminaire_schedule` derives its rows from placements, so an unplaced type prints on
 # no sheet and bills nothing. Do not delete it, and do not read this as a live line.
-"ED-T-LT-FAN52" = { material = { low = 200, high = 700 }, labour = { low = 155, high = 320 } }  # 1 ea (2026-10-28: the wet N2 retyped to N, the Mykonos being ETL wet; N2's range kept)
+"ED-T-LT-FAN52" = { material = { low = 320, high = 350 }, labour = { low = 155, high = 320 } }  # 1 ea — Modern Forms FR-W1819-52L-MB $320-350 (researched 2026-10-28)
 # 2026-09-06: the gym's hugger. Same 52" DC fan and light kit, flush-mount rather than
 # downrod, because RM-B-GYM's 95 3/8" clear cannot take an 18" assembly. Same band as the
 # downrod fan: a low-profile mount is a different housing, not a dearer one, and the SKU is
@@ -2702,7 +2702,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # https://fleurco.com/media/website_catalog.usa/5_Fleurco25_LUNA_US.pdf
 "ED-T-LT-MIRROR-HALO-2700" = { material = { low = 1337, high = 1484 }, labour = { low = 90, high = 200 } }  # 1 ea, 116 W including factory defogger
 
-"ED-T-LT-PANEL" = { material = { low = 45, high = 130 }, labour = { low = 48, high = 115 } }  # 4 ea
+"ED-T-LT-PANEL" = { material = { low = 115, high = 135 }, labour = { low = 48, high = 115 } }  # 4 ea — Westgate LP-2X4-60W-40K-D $79.85 + LP-SRFC-2X4 kit $36-52 (researched 2026-10-28)
 # ** THE DINING FIXTURE IS THE OWNER'S OWN IMPORT AND HAS NOT BEEN SELECTED ** (48" linear,
 # 2000-3500 lm, 3000 K, CRI 90+). The band brackets an import against the domestic fixture
 # to price it by: Visual Comfort Dessau 48 at $1,449 for 2,261 lm / 36 W. ** BUDGET A SPARE
@@ -2716,10 +2716,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # the room's R303.1 compliance depends on rather than against a look.
 "ED-T-LT-PENDANT-BAR" = { material = { low = 180, high = 700 }, labour = { low = 70, high = 200 } }  # 0 ea — CATALOG-ONLY since 2026-09-10, the mark N convention: its one placement retyped to ED-T-LT-MIRROR when the attic rake left no room for a hung fixture. Kept priced so the revert costs nothing
 "ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 3 ea
-"ED-T-LT-PSU-96-WE" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 3 ea — mark W's drivers (2026-10-28); PLACEHOLDER: the PSU-200 range
+"ED-T-LT-PSU-96-WE" = { material = { low = 51, high = 63 }, labour = { low = 45, high = 95 } }  # 3 ea — Mean Well HLG-100H-24A, distributor list $51-63 (researched 2026-10-28)
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea since 2026-10-12 — both niche supplies went, ED-M-BATH2-PSU came; ED-B-SAUNA-LT-PSU is surface-mounted on the workshop face of W-B-SA-N rather than in a ceiling box
-"ED-T-LT-SCONCE-EXT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 3 ea — garage door pair and ED-M-STAIR-LT on the porch house wall; porch switch independent of garden flood
-"ED-T-LT-SCONCE-SPOT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 5 ea (2026-10-28: the plant room's J2 retyped to J) — PLACEHOLDER range, the WAC Stretch price was not read
+"ED-T-LT-SCONCE-EXT" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 3 ea — WAC WS-W2605-BK $186-232 (researched 2026-10-28)
+"ED-T-LT-SCONCE-SPOT" = { material = { low = 190, high = 290 }, labour = { low = 48, high = 115 } }  # 5 ea — WAC Stretch: BL-1660-BK not listed anywhere, BL-1630-BK sibling $190-290; VERIFY SKU (researched 2026-10-28)
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
 # corrosion-resistant housing. Same ~30-40% adder as the fan above.
 # ** CUT 2026-09-13. THE ROW STAYS, THE COUNT IS ZERO — the mark N / glazed-green-brick
@@ -2738,7 +2738,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LT-SAUNA-VT" = { material = { low = 1300, high = 1800 }, labour = { low = 200, high = 450 } }  # 0 ea — CATALOG-ONLY since 2026-09-13; kept priced so the revert costs nothing to evaluate
 "ED-T-LT-SCONCE-STAIR" = { material = { low = 60, high = 220 }, labour = { low = 48, high = 115 } }  # 3 ea
 "ED-T-LT-SCONCE-CANDLE" = { material = { low = 95, high = 115 }, labour = { low = 48, high = 115 } }  # 4 ea — Livex 4451-04 at ~$95-102 (retailer, 2026-10-28) plus the Feit E12 bulb
-"ED-T-LT-SCONCE-UD" = { material = { low = 70, high = 240 }, labour = { low = 48, high = 115 } }  # 12 ea (2026-10-14: the four RM-A-EAST-UNFIN fittings went to ED-T-LT-SCONCE-GOTHIC) — was 17 until 2026-09-10, when ED-A-STUDIO-WALL2/WALL4 were deleted: the studio's five-at-30" run went to three at 60" once R303.1 stopped binding it (plan/lighting_attic.py)
+"ED-T-LT-SCONCE-UD" = { material = { low = 157, high = 196 }, labour = { low = 48, high = 115 } }  # 12 ea — WAC Roland WS-83212-BK $157 street / $196 list (researched 2026-10-28)
 # ** THE COLD RATING IS WHAT COSTS THE MONEY. ** Almost every consumer LED shop light is
 # rated to -4 F and some to +14 F; it is the DRIVER, not the LEDs. The category that
 # reliably publishes a cold rating is vaportight/cold-storage, because it sells into freezer
@@ -2746,9 +2746,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # linkable cords crack in cold and that is where the failures start, which also means this
 # row's labour is an electrician rather than a hook and a plug.
 "ED-T-LT-SHOP4" = { material = { low = 93, high = 140 }, labour = { low = 60, high = 130 } }  # 4 ea
-"ED-T-LT-SPOT-SW" = { material = { low = 60, high = 200 }, labour = { low = 60, high = 140 } }  # 2 ea
-"ED-T-LT-GROW-BAR" = { material = { low = 120, high = 350 }, labour = { low = 45, high = 100 } }  # 2 ea — PLACEHOLDER: the old 6' tube range; the Barron AG90 price was not read
-"ED-T-LT-WALL-LINEAR" = { material = { low = 100, high = 350 }, labour = { low = 45, high = 100 } }  # 1 ea
+"ED-T-LT-SPOT-SW" = { material = { low = 190, high = 290 }, labour = { low = 60, high = 140 } }  # 2 ea — same WAC Stretch as mark J (researched 2026-10-28)
+"ED-T-LT-GROW-BAR" = { material = { low = 230, high = 290 }, labour = { low = 45, high = 100 } }  # 2 ea — Barron AG90-W-001 $220-261 + cable hangers (researched 2026-10-28)
+"ED-T-LT-WALL-LINEAR" = { material = { low = 480, high = 552 }, labour = { low = 45, high = 100 } }  # 1 ea — WAC WS-6724-30-BK $480-552 (researched 2026-10-28)
 # RM-M-PANTRY's vertical slot (2026-08-24). Same article as WALL-LINEAR — an integral-driver
 # 120V linear LED — twice as long, hung vertically. Note the tape rows are NOT here:
 # ED-T-LT-STRIP24 and its task sibling ED-T-LT-STRIP24-TASK bill per lineal foot in
@@ -6599,14 +6599,16 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "end_cap:ED-T-LT-PAX-STRIP" = { unit = "EA", material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 "corner_connector:ED-T-LT-PAX-STRIP" = { unit = "EA", material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 # Mark W, the garage's three exterior linear runs (two eave soffits + the north gable's
-# rakes), 73.5 LF over 3 runs. Dearer than the bare rows on both halves: a damp-location
-# extrusion and gasketed lens, and hanging it at the eaves and up a rake off a ladder with
-# three damp-location terminations. The retired allowance's $32-85/LF is these four rows
-# summed over the same footage.
-"channel:ED-T-LT-LINEAR-EXT" = { material = { low = 8, high = 20 }, labour = { low = 10, high = 28 } }
-"tape:ED-T-LT-LINEAR-EXT" = { material = { low = 7, high = 18 }, labour = { low = 5, high = 15 } }
-"end_cap:ED-T-LT-LINEAR-EXT" = { unit = "EA", material = { low = 4, high = 9 }, labour = { low = 10, high = 21 } }
-"corner_connector:ED-T-LT-LINEAR-EXT" = { unit = "EA", material = { low = 6, high = 14 }, labour = { low = 12, high = 26 } }
+# rakes), 73.5 LF over 3 runs. Labour is dearer than the bare rows: hanging it at the eaves
+# and up a rake off a ladder, with three outdoor terminations.
+# Commodity parts since 2026-10-28 (the WAC InvisiLED kit was ~$2,900 of tape alone).
+# Tape: an IP67 COB 5 m reel at ~$38, two per 24-25.5 ft run, offcut included, so
+# ~$3/LF of run. Channel: generic 1/2" aluminium U-channel, clear cover, ~$1-1.90/LF in
+# 10-packs of 6.6 ft. Caps and clips ship with the channel; the gable vertex is a mitre.
+"channel:ED-T-LT-LINEAR-EXT" = { material = { low = 1, high = 2 }, labour = { low = 10, high = 28 } }
+"tape:ED-T-LT-LINEAR-EXT" = { material = { low = 3, high = 4.5 }, labour = { low = 5, high = 15 } }
+"end_cap:ED-T-LT-LINEAR-EXT" = { unit = "EA", material = { low = 0, high = 1 }, labour = { low = 10, high = 21 } }
+"corner_connector:ED-T-LT-LINEAR-EXT" = { unit = "EA", material = { low = 0, high = 2 }, labour = { low = 12, high = 26 } }
 # Mark X, the sauna's two under-bench runs, 12 LF. A sauna-rated silicone IP68 tape is a
 # real purchase and is why this type prices apart from the three 24V families above — the
 # point the retired `electrical-sauna-under-bench-strip` allowance existed to make, kept

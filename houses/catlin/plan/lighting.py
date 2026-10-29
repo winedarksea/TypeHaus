@@ -1108,7 +1108,7 @@ MAIN_LIGHTING = [
     # 5/8" gypsum under them. The room is an L. Its WEST BAND (x 6 5/8"..72", between the
     # two closets, where the window and FURN-M-MUD-BENCH are) is where all THIRTEEN
     # DU-M-ERV-R-* radials fan out of the manifolds in RM-M-MECH — every JOIST_BAY duct on
-    # FS-S-WEST is in this band. ED-T-LT-CAN3 is 5" tall and does not go there. The EAST
+    # FS-S-WEST is in this band. The old 5"-tall 3" can (mark C, retired) did not go there. The EAST
     # STRIP (x 74"..116 1/8", the walk from D-M-ENTRY to D-M-MUD) carries no ERV radial at
     # all: only CD-M-DATA-KITCH at 9'-2 1/4" and PR-M-S-BATH1-LAV-DRAIN's leg at
     # 9'-6 11/16"..9'-9 3/4", both above a 5" housing hung off a 106 1/4" ceiling.
@@ -1729,7 +1729,7 @@ GARAGE_LIGHTING = [
     # already use (10'-2", 10'-8", 11'-2"), same 76" over the slab, 48.8" over the top tread.
     # Same circuit as the loads it switches, so no NEC 210.7 two-circuit box.
     # Mark W is 24V since 2026-10-28: one 96 W driver per run, INDOORS high on the wall
-    # nearest it, its 6 ft lead through to the soffit. ~59 W per run is ~63% of nameplate.
+    # nearest it, fed to the run's middle. ~72-77 W per run is 75-80% of nameplate.
     ElectricalDevice(uid="7RB4FGXA5Q", tag="ED-G-EAVE-W-PSU", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",

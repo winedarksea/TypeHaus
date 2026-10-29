@@ -37,6 +37,7 @@ from typehaus.model.placeable_symbols._frame import (
     depth_cylinder,
     line,
     polygon,
+    prism,
     rect,
 )
 from typehaus.model.placeable_symbols._mirrors import halo_mirror_light, mirror_light
@@ -308,7 +309,6 @@ def ceiling_fan_light(*, blades: int = 4) -> Builder:
 
         sweep_r = _plan_size(width, depth) / 2
         hub_r = sweep_r * 0.26
-        blade_len = sweep_r - hub_r
         blade_half = sweep_r * 0.13
         strokes: list[Stroke] = [circle(0, 0, sweep_r, weight=DETAIL_WEIGHT),
                                  circle(0, 0, hub_r, fill="lamp")]
@@ -330,19 +330,17 @@ def ceiling_fan_light(*, blades: int = 4) -> Builder:
         blade_z = (kit_h + motor_top) / 2
         blade_t = min(height * 0.05, motor_top - kit_h) if motor_top > kit_h else height * 0.02
         canopy_h = min(height * 0.06, max(0.0, height - motor_top))
+        # Light kit and motor are round; ten sides reads as round at fan scale.
         parts: list[Part] = [
-            box(0, 0, 0.0, kit_h, hub_r * 2, hub_r * 2, "lamp"),
-            box(0, 0, kit_h, motor_top, hub_r * 1.7, hub_r * 1.7, "luminaire-housing"),
+            prism(circle(0, 0, hub_r, segments=10)["points"], 0.0, kit_h, "lamp"),
+            prism(circle(0, 0, hub_r * 0.85, segments=10)["points"], kit_h, motor_top,
+                  "luminaire-housing"),
         ]
-        for index in range(count):
-            angle = 2 * math.pi * index / count
-            cos, sin = math.cos(angle), math.sin(angle)
-            reach = hub_r + blade_len / 2
-            parts.append(box(reach * cos, reach * sin, blade_z - blade_t / 2,
-                             blade_z + blade_t / 2,
-                             abs(blade_len * cos) + abs(blade_half * 2 * sin),
-                             abs(blade_len * sin) + abs(blade_half * 2 * cos),
-                             "wood-dark"))
+        # Each blade is its plan paddle swept thin: an axis-aligned box only fits a blade at
+        # 0/90 degrees, and a 3-blade fan's 120-degree blades would read as slabs.
+        for stroke in strokes[2:]:
+            parts.append(prism(stroke["points"], blade_z - blade_t / 2, blade_z + blade_t / 2,
+                               "wood-dark"))
         if canopy_h > 0:
             parts.append(box(0, 0, height - canopy_h, height, hub_r, hub_r, "metal"))
             parts.append(box(0, 0, motor_top, height - canopy_h, hub_r * 0.4, hub_r * 0.4,
@@ -396,7 +394,7 @@ def mirror_light_bar() -> Builder:
     return build
 
 
-def suspended_linear_light() -> Builder:
+def suspended_linear_light(*, flat: bool = False) -> Builder:
     """A cable-hung linear tube: shallow body below, two supports above.
 
     The declared height is the complete ceiling-to-fixture assembly, not the depth of
@@ -409,6 +407,8 @@ def suspended_linear_light() -> Builder:
     def build(width: float, depth: float, height: float) -> Geometry:
         strokes, _ = linear_strokes(width, depth, height)
         body_h = min(height * 0.12, 0.0762)  # 3 in. maximum shallow tube housing
+        if flat:  # a flat bar (a 2.5" grow bar is ~1" thick), not a round tube
+            body_h = min(body_h, depth * 0.4)
         lens_h = body_h * 0.45
         end_cap = clamp(width * 0.06, 0.0, width * 0.12)
         lit_w = width - 2 * end_cap
@@ -455,5 +455,6 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "round-mirror-light": mirror_light(round_face=True),
     "mirror-light-bar": mirror_light_bar(),
     "suspended-linear-light": suspended_linear_light(),
+    "suspended-flat-bar": suspended_linear_light(flat=True),
     "wave-chandelier": wave_chandelier(strips=5),
 }

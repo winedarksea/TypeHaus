@@ -334,16 +334,19 @@ def test_outdoor_heat_pumps_have_distinct_3d_symbol_geometry(catlin_model):
         assert len(model_parts(product.plan_symbol, width, depth, product.height.meters)) >= 3
 
 
-def test_plant_tubes_use_the_cable_suspension_symbol(catlin_model):
-    """Only the plant-room grow tubes need a visible ceiling suspension in 3D."""
+def test_plant_grow_bars_use_the_cable_suspension_symbol(catlin_model):
+    """The plant-room grow bars hang on cables, as a flat ~1" bar rather than a tube."""
     from typehaus.model.placeable_symbols import model_parts
 
     types = {product.tag: product for product in catlin_model.plan.library.electrical_device_types}
     tube = types["ED-T-LT-GROW-BAR"]
-    assert tube.plan_symbol == "suspended-linear-light"
+    assert tube.plan_symbol == "suspended-flat-bar"
     width, depth = (dimension.meters for dimension in tube.footprint)
     parts = model_parts(tube.plan_symbol, width, depth, tube.height.meters)
     assert [part["color"] for part in parts].count("luminaire-housing") == 3
+    # The Barron AG90 is 0.98" thick: the body is held to 40% of the 2.5" depth.
+    body_h = parts[0]["size"][2] + parts[1]["size"][2]
+    assert body_h == pytest.approx(depth * 0.4)
 
 
 def test_electrical_plan_dxf_round_trips(catlin_model, tmp_path: Path):

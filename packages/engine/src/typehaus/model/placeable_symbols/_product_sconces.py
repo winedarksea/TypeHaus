@@ -46,13 +46,15 @@ def tube_sconce() -> Builder:
                                  circle(0, cy, r, segments=SIDES, fill="luminaire-housing"),
                                  circle(0, cy, r * 0.7, segments=SIDES, fill="lamp",
                                         weight=DETAIL_WEIGHT)]
-        # Wall to room: plate, arm, tube, lens.
+        # Wall to room: plate, arm (only where the tube stands off the plate), tube, lens.
         parts = [box(0, plate_cy, height * 0.15, height * 0.85, width * 0.6, plate_d,
                      "luminaire-housing"),
-                 depth_cylinder(0, (plate_cy + cy) / 2, height * 0.6, r * 0.3,
-                                abs(plate_cy - cy), "luminaire-housing"),
                  _disc(0, cy, r, lens, height, "luminaire-housing"),
                  _disc(0, cy, r * 0.8, 0.0, lens, "lamp")]
+        gap = (plate_cy - plate_d / 2) - (cy + r)
+        if gap > 1e-4:
+            parts.insert(1, depth_cylinder(0, cy + r + gap / 2, height * 0.6, r * 0.3,
+                                           gap, "luminaire-housing"))
         return tuple(strokes), tuple(parts)
 
     return build
@@ -86,7 +88,8 @@ def swing_arm_sconce() -> Builder:
         arm_t = depth * 0.08
         arm_h = min(arm_t, height * 0.1)
         head_r = min(width * 0.12, (depth - plate_d) * 0.4)
-        y1 = plate_cy - plate_d / 2 - arm_t
+        # Arm centrelines: the first touches the plate face, the head sits at the front.
+        y1 = plate_cy - plate_d / 2 - arm_t / 2
         y2 = -depth / 2 + head_r
         arm_z = height * 0.55
         head_x = -width / 2 + head_r

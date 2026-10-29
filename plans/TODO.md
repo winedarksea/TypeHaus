@@ -9,16 +9,8 @@ Our general goals are decent longevity and quality at a reasonable price, avoidi
 
 ## Remaining Work
 
-- **Two drain turns are boxed in:** `PR-B-SINK2-DRAIN`'s 70.8-degree turn (a 60 needs the turn
-  in FS-M-WEST's joist band, where the leg cuts I-joist flanges; a 90 drops it into the x=2'-0"
-  ERV corridor), and `PR-M-DRYER-COND`'s 58 degrees in 3/4" PVC (every squared-off version
-  reads as a run hanging in RM-M-LAUNDRY). Both stay `mep.fitting_pattern` UNKNOWNs.
-
-- **~220 sf of gypsum is still billed through the joist band** on every storey-line partition.
-  `resolve/partition_top.py` deliberately moves only the FRAMING top: cutting the body at the
-  joist soffit as well costs four FAILs (`code.R312_1_1_stair_open_side` on `ST-S2A`,
-  `mep.wet_wall_occupancy` x3 on the basement and suite risers). Answering it means moving
-  `W-S-SS2`'s guard coverage and re-authoring three riser extents — a design pass.
+- **`PR-M-DRYER-COND` is boxed in:** its 61.9-degree turn in 3/4" PVC (every squared-off
+  version reads as a run hanging in RM-M-LAUNDRY) stays a `mep.fitting_pattern` UNKNOWN.
 
 - **Router proposals drop `pull_points`**, so re-routing a boxed raceway loses its authored
   boxes; and conduit elbows and pull boxes are unbilled.

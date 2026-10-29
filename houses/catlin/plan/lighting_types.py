@@ -25,12 +25,13 @@ plan/products_lighting_selected.py), and E-602 prints its brand and model.
 
 from __future__ import annotations
 
-from plan.closet_types import CLOSET_LUMINAIRE_TYPES, CLOSET_SUPPLY_TYPES
-from plan.lighting_types_decor import DECORATIVE_LUMINAIRE_TYPES
-from plan.laundry_lighting_types import LAUNDRY_TRACK
-from typehaus.library.track_lighting import PUREEDGE_SUPPLY
 from library.lighting import luminaire_class
+
+from plan.closet_types import CLOSET_LUMINAIRE_TYPES, CLOSET_SUPPLY_TYPES
+from plan.laundry_lighting_types import LAUNDRY_TRACK
+from plan.lighting_types_decor import DECORATIVE_LUMINAIRE_TYPES
 from typehaus import ElectricalDeviceType, LuminaireForm, Service, ServicePort, ft, inch
+from typehaus.library.track_lighting import PUREEDGE_SUPPLY
 from typehaus.model import LuminaireType
 
 # Every line-voltage luminaire lands on a 120V branch; one port tuple serves them all
@@ -118,11 +119,11 @@ AMBIENT_LUMINAIRE_TYPES = (
     _CAN4_WET.model_copy(update={
         "tag": "ED-T-LT-CAN4-WET-5000", "type_mark": "B1",
         "name": '4" square slim downlight, wet location, white reflector, 5000K',
-        "lamp": "LED integrated, canless", "watts": 12.0, "load_va": 12.0,
+        "lamp": "LED integrated, canless", "watts": 15.0, "load_va": 15.0,
         "lumens": 1420.0, "cct_k": 5000, "dimmable": False,
         "product_ref": "PROD-LOTUS-LD4S-50K-4S-WR-WT",
         "source": "Lotus LD4S-50K-4S-WR-WT (spec sheet), fixed 5000 K, 1,420 lm, CRI 90+, on a "
-                  "plain toggle: BATH2's day layer. Wattage CONFIRM (12 W carried)."}),
+                  "plain toggle: BATH2's day layer. 15 W (sheet and retailers, 2026-10-28)."}),
     _CAN4_WET.model_copy(update={
         "tag": "ED-T-LT-CAN4-WET-2700", "type_mark": "B2",
         "name": '4" recessed can, wet location, white regressed trim, 2700K',
@@ -234,29 +235,28 @@ AMBIENT_LUMINAIRE_TYPES = (
                          "rail/valance at the cabinet nose."),
 
     # --- W: the garage's exterior linear (eave soffits + the north gable) --------------
-    # ** A NAMED PRODUCT IN A STANDARD SIZE, AT 24V (2026-10-28). ** WAC InvisiLED Outdoor:
-    # one 40 ft reel cut per run, in 5' clear channels aperture DOWN, each run on its own
-    # 96 W driver INDOORS on a 6 ft lead (ED-T-LT-PSU-96-WE below). It replaces a 120V
-    # integral-driver extrusion nobody had named. "Standard size" is the point: plain 2-wire
-    # 24V tape in a ~1/2" channel, so a same-size tape can replace it later with no new
-    # channel or wiring.
+    # ** COMMODITY PARTS, STANDARD SIZE, 24V (2026-10-28). ** The WAC InvisiLED kit was
+    # ~$2,900 of tape for 73.5 LF; this is an off-the-shelf IP67 COB tape in a generic
+    # 1/2" aluminium U-channel with a clear cover, two 5 m reels per run, each run on its
+    # own Mean Well driver INDOORS (ED-T-LT-PSU-96-WE below). No fixture listing is claimed:
+    # the tape is cheap to swap, and the listed part is the driver.
     #
-    # ** damp_rated AND wet_rated, and both are earned. ** The gable run is on the open north
-    # face over the overhead door, which is a wet location under NEC 410.10.
+    # ** damp_rated AND wet_rated ARE IP67, NOT A UL WET LISTING. ** Every run is under a
+    # soffit, aperture down, in a closed channel; the gable run is the wet one (NEC 410.10).
     #
     # ** full_cutoff IS A MOUNTING INSTRUCTION AS MUCH AS A PRODUCT ATTRIBUTE. ** Aperture
     # DOWN: `advisory.dark_sky_lighting` exempts the soffit runs and grades the gable run on
     # this flag, so the flag and the detail must stay in step.
-    LuminaireType(tag="ED-T-LT-LINEAR-EXT", name="Exterior 24V LED tape in clear channel, wet",
+    LuminaireType(tag="ED-T-LT-LINEAR-EXT", name="Exterior 24V COB tape in clear channel, IP67",
                   form=LuminaireForm.STRIP, type_mark="W",
-                  footprint=(inch(0.51), inch(0.51)), height=inch(0.23),
-                  lamp="LED tape, 24V DC, IP65, in T24-WE-CH5 channel", watts_per_ft=2.4,
-                  lumens=200.0, cct_k=3000, cri=90, voltage=24, dimmable=True,
-                  damp_rated=True, wet_rated=True, full_cutoff=True,
-                  product_ref="PROD-WAC-T24-OD2-40-30",
-                  source="WAC InvisiLED Outdoor T24-OD2-40-30 (spec sheet): 2.4 W/ft, 200+ "
-                         "lm/ft, 3000 K, CRI 90, IP65, UL wet, -4 F rating accepted; clear "
-                         "channel T24-WE-CH5 with T24-WE-EC end caps, aperture down."),
+                  footprint=(inch(0.5), inch(0.5)), height=inch(0.25),
+                  lamp="COB LED tape, 24V DC, IP67 silicone tube, in a 1/2 in. U-channel",
+                  watts_per_ft=3.0, lumens=350.0, cct_k=3000, cri=90, voltage=24,
+                  dimmable=False, damp_rated=True, wet_rated=True, full_cutoff=True,
+                  product_ref="PROD-SLL-SK512BB10-IP67-30",
+                  source="SuperLightingLED SK-512BB10DDWWZZ, IP67 tube option (retailer "
+                         "page): 10 W/m, 1,150 lm/m at 3000 K, CRI 90+, -20 to +50 C; "
+                         "generic aluminium U-channel, clear cover, aperture down."),
 
     # --- X: the sauna's under-bench tape (2026-09-13) ---------------------------------
     # ** THIS REPLACES THE FIBRE-OPTIC KIT, AND THE REASON IS MONEY, NOT PHYSICS. **
@@ -308,7 +308,7 @@ AMBIENT_LUMINAIRE_TYPES = (
     LuminaireType(tag="ED-T-LT-GROW-BAR", name='45" horticultural LED grow bar, UL 8800, damp',
                   form=LuminaireForm.LINEAR_TUBE, type_mark="F",
                   footprint=(inch(44.78), inch(2.5)), height=ft(2, 3),
-                  plan_symbol="suspended-linear-light",
+                  plan_symbol="suspended-flat-bar",
                   lamp="LED integrated, on-board driver, 1-10V", watts=90.0, lumens=11280.0,
                   cri=92, dimmable=True, damp_rated=True, load_va=90.0, ports=_POWER_120,
                   product_ref="PROD-BARRON-AG90-W-001",
@@ -380,21 +380,24 @@ LIGHTING_DEVICE_TYPES = (
                          footprint=(inch(8), inch(6)), height=inch(3),
                          load_va=60.0, ports=_POWER_120,
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
-                         source="Diode LED OMNIDRIVE X, 60 W — ELV + TRIAC + 0-10V in one part and, the spec that matters, NO MINIMUM LOAD: a cheap ELV driver with a 10-15 W minimum makes a short cove run shimmer or fail to strike. Load to <=80% of nameplate and keep it accessible and ventilated."),
+                         source="Diode LED OMNIDRIVE X, 60 W — ELV + TRIAC + 0-10V in one part "
+                                "and, the spec that matters, NO MINIMUM LOAD: a cheap ELV "
+                                "driver with a 10-15 W minimum makes a short cove run shimmer "
+                                "or fail to strike. Load to <=80% of nameplate and keep it "
+                                "accessible and ventilated."),
     ElectricalDeviceType(tag="ED-T-LT-PSU-200", name="24V LED driver, 200 W, in-ceiling box",
                          footprint=(inch(12), inch(8)), height=inch(4),
                          load_va=200.0, ports=_POWER_120,
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
-                         source="Diode LED OMNIDRIVE X, 200 W. Same family as the 60 W; see that entry for the no-minimum-load argument."),
-    # Mark W's driver: one per garage exterior run, indoors, on a 6 ft lead.
-    ElectricalDeviceType(tag="ED-T-LT-PSU-96-WE", name="24V LED driver, 96 W, IP67, remote",
-                         footprint=(inch(8.375), inch(2.8125)), height=inch(1.6875),
+                         source="Diode LED OMNIDRIVE X, 200 W. Same family as the 60 W; see "
+                                "that entry for the no-minimum-load argument."),
+    # Mark W's driver: one per garage exterior run, indoors. On/off only (relay switch).
+    ElectricalDeviceType(tag="ED-T-LT-PSU-96-WE", name="24V LED driver, 96 W, IP65",
+                         footprint=(inch(9), inch(2.7)), height=inch(1.5),
                          load_va=96.0, ports=_POWER_120,
-                         product_ref="PROD-WAC-PS-24DC-U96R-WE",
-                         source="WAC PS-24DC-U96R-WE: 96 W, ELV/TRIAC, on a T24-WE-B072-BK lead."),
-    # The plant room's grow bars run on a schedule, not on somebody remembering — the notes
-    # ask for it to be "smart" so it can be on a timer. A smart switch on a timer is the
-    # same box; ``control`` records which behaviour was bought.
+                         product_ref="PROD-MEANWELL-HLG-100H-24A",
+                         source="Mean Well HLG-100H-24A: 96 W, 24 V / 4 A, IP65, UL 8750, "
+                                "228 x 68 x 38.8 mm, not dimmable."),
 )
 
 

@@ -36,8 +36,8 @@ LOTUS_LD4S_50K = Product(
     tag="PROD-LOTUS-LD4S-50K-4S-WR-WT", brand="Lotus LED Lights", model="LD4S-50K-4S-WR-WT",
     name='4" square slim LED downlight, white reflector, 5000K',
     source=_READ + "Lotus spec sheet: fixed 5000 K, 1,420 lm, CRI 90+, IC, airtight, WET, "
-           "square, white reflector, no housing needed. CONFIRM: wattage (not on the "
-           "sheet read; 12 W carried), the distributor price, the 3\" vs 3.5\" ceiling "
+           "square, white reflector, no housing needed, 15 W (sheet and retailers agree). "
+           "~$102 at one seller (2026-10-28). CONFIRM: the 3\" vs 3.5\" ceiling "
            "clearance, and R9 (the day layer is the >=5000 K, high-CRI hard requirement).",
 )
 # --- D: the flat panels ------------------------------------------------------------------
@@ -77,7 +77,7 @@ WAC_LINE_24 = Product(
     source=_READ + "WAC spec sheet: 24 in., 22 W, 1,140 delivered lm, 3000 K, CRI 90, ELV "
            "dimming, damp. Projection was not on the pages read (modelled at 2 in.).",
 )
-# --- H: up/down sconces ------------------------------------------------------------------------
+# --- H: up/down sconces ----------------------------------------------------------------------
 WAC_ROLAND = Product(
     tag="PROD-WAC-WS-83212-BK", brand="WAC Lighting", model="WS-83212-BK",
     name="dweLED Roland LED up/down wall sconce, black",
@@ -85,7 +85,7 @@ WAC_ROLAND = Product(
            "damp; 12 H x 4.5 W x 2.5 in. projection (retailer). CONFIRM the theatre units' "
            "DVCL-153P against the published TRIAC dimmer range.",
 )
-# --- J, J1: reading lights ------------------------------------------------------------------------
+# --- J, J1: reading lights -------------------------------------------------------------------
 WAC_STRETCH = Product(
     tag="PROD-WAC-BL-1660-BK", brand="WAC Lighting", model="BL-1660-BK",
     name="dweLED Stretch LED double swing-arm wall light, black",
@@ -95,7 +95,7 @@ WAC_STRETCH = Product(
            "on/off (mark J1 relies on it), and does the lamp come back ON after a wall switch "
            "cuts power (mark J relies on that)?",
 )
-# --- M1: the studio bar pendant (catalog-only) --------------------------------------------------
+# --- M1: the studio bar pendant (catalog-only) -----------------------------------------------
 NUVO_BOWMAN_36 = Product(
     tag="PROD-NUVO-62-2271", brand="Nuvo Lighting", model="62-2271",
     name='Bowman 36" LED linear pendant, matte black',
@@ -103,7 +103,7 @@ NUVO_BOWMAN_36 = Product(
            "bar, 39 W, 3,315 lm, fixed 3000 K, CRI 90+, cETLus DRY; stems to 38 in. overall. "
            "Unplaced.",
 )
-# --- N: the 52" fans -------------------------------------------------------------------------------
+# --- N: the 52" fans -------------------------------------------------------------------------
 MODERN_FORMS_MYKONOS = Product(
     tag="PROD-MODERNFORMS-FR-W1819-52L", brand="Modern Forms", model="FR-W1819-52L-MB",
     name='Mykonos 52" DC ceiling fan with LED light, 3000K',
@@ -113,7 +113,7 @@ MODERN_FORMS_MYKONOS = Product(
            "retires mark N2. The 3000 K SKU carries no CCT infix (-52L27 is 2700 K). CONFIRM "
            "the finish suffix (-MB matte black, -MW matte white).",
 )
-# --- R: exterior wall lights -----------------------------------------------------------------------
+# --- R: exterior wall lights -----------------------------------------------------------------
 WAC_TUBE_EXT = Product(
     tag="PROD-WAC-WS-W2605-BK", brand="WAC Lighting", model="WS-W2605-BK",
     name="Tube LED outdoor wall light, down light, 3000K, black",
@@ -122,26 +122,25 @@ WAC_TUBE_EXT = Product(
            "differ between sources (16 W / 800 lm on the FM-W26 sheet is carried), "
            "dark-sky status, and the cold rating.",
 )
-# --- W: the garage's exterior tape, its channel and its drivers ------------------------------------
-WAC_INVISILED_OD = Product(
-    tag="PROD-WAC-T24-OD2-40-30", brand="WAC Lighting", model="T24-OD2-40-30",
-    name="InvisiLED Outdoor 24V LED tape, 3000K, 40 ft reel",
-    source=_READ + "WAC sheet: 24 V, 2.4 W/ft, 200+ lm/ft, 3000 K, CRI 90, IP65, UL wet, "
-           "4 in. cut pitch, 40 ft maximum run; one reel cut per run. In clear channel "
-           "T24-WE-CH5 (5 ft, 0.51 W x 0.23 in. H, aperture DOWN), 5 per run, with "
-           "T24-WE-EC end caps and under-side clips. A plain 2-wire 24 V tape in a ~1/2 in. "
-           "channel, so a same-size tape can replace it later with no new channel or "
-           "wiring. Owner accepts the sheet's -4 F rating for now.",
+# --- W: the garage's exterior tape, its channel and its drivers ------------------------------
+SLL_COB_IP67 = Product(
+    tag="PROD-SLL-SK512BB10-IP67-30", brand="SuperLightingLED", model="SK-512BB10DDWWZZ",
+    name="24V COB LED tape, 3000K, CRI 90, IP67 silicone tube, 5 m reel",
+    source=_READ + "Retailer page: 10 W/m, 1,150 lm/m at 3000 K, CRI 90+, 10 mm PCB, cut "
+           "every 31.2 mm, -20 to +50 C, 'UL listed' (no file number). About $26 a reel "
+           "plus $12 for the IP67 tube. Two reels per run, soldered; feed each run at its "
+           "middle so neither half passes 4 m. Any same-size IP65/IP67 24V tape will do. "
+           "Channel: any 1/2 in. aluminium U-channel with a clear cover (Muzata U1SW "
+           "class, 0.5 x 0.25 in. inside, caps and clips in the box). CONFIRM the tube "
+           "fits the channel's 0.5 in. inside width.",
 )
-WAC_INVISILED_DRIVER = Product(
-    tag="PROD-WAC-PS-24DC-U96R-WE", brand="WAC Lighting", model="PS-24DC-U96R-WE",
-    name="InvisiLED 24V remote driver, 96 W, ELV/TRIAC, IP67",
-    sku="T24-WE-B072-BK",
-    source=_READ + "WAC: 96 W, 24 V DC, 120-277 V AC in, ELV/TRIAC dimming, 8.375 x 2.8125 "
-           "x 1.6875 in., IP67. One per run, INDOORS on a T24-WE-B072-BK 6 ft lead; a "
-           "73.5 LF run at 2.4 W/ft is 58-61 W, ~63% of the driver.",
+MEANWELL_HLG_100H_24A = Product(
+    tag="PROD-MEANWELL-HLG-100H-24A", brand="Mean Well", model="HLG-100H-24A",
+    name="24V LED driver, 96 W, IP65",
+    source=_READ + "Distributor pages: 96 W, 24 V / 4 A, IP65, UL 8750, $51-63. One per "
+           "run, indoors; a 25.5 ft run at 3 W/ft is ~77 W, 80% of the driver.",
 )
-# --- Z: the attic's candle sconces ---------------------------------------------------------------
+# --- Z: the attic's candle sconces -----------------------------------------------------------
 LIVEX_4451 = Product(
     tag="PROD-LIVEX-4451-04", brand="Livex Lighting", model="4451-04",
     name="1-light candle wall sconce, black",
@@ -154,5 +153,5 @@ LIVEX_4451 = Product(
 SELECTED_LIGHTING_PRODUCTS = (
     LOTUS_LL4SRG_30K, LOTUS_LL4SRG_41K, LOTUS_LL4SRG_27K, LOTUS_LD4S_50K, WESTGATE_LP_2X4,
     SCHLUTER_SNLT, BARRON_VARIUS_AG90, WAC_LINE_24, WAC_ROLAND, WAC_STRETCH, NUVO_BOWMAN_36,
-    MODERN_FORMS_MYKONOS, WAC_TUBE_EXT, WAC_INVISILED_OD, WAC_INVISILED_DRIVER, LIVEX_4451,
+    MODERN_FORMS_MYKONOS, WAC_TUBE_EXT, SLL_COB_IP67, MEANWELL_HLG_100H_24A, LIVEX_4451,
 )
