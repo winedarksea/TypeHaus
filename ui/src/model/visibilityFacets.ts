@@ -51,6 +51,8 @@ export const FACETS = [
   { key: "siding:flashing", label: "Wall flashing", defaultOff: false,
     solidCategories: ["beam_cap", "wall_corner", "opening_head_flashing", "cladding_trim"],
     memberCategories: ["corner_trim", "cladding_trim"] },
+  { key: "siding:screen", label: "Insect screens", defaultOff: false,
+    solidCategories: ["bug_screen"] },
   { key: "openings:flashing", label: "Opening flashing", defaultOff: false,
     solidCategories: ["opening_sill_pan", "opening_flashing_membrane"] },
 ] as const satisfies readonly FacetSpec[];

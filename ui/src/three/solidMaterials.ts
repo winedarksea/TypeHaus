@@ -60,6 +60,7 @@ const METALLIC_SOLID_CATEGORIES = new Set([
   "connector_embedded", "connector_hanger",
   "snow_guard", "seam_clamp", "panel_strap",
   "beam_cap", "wall_corner", "opening_head_flashing", "cladding_trim",
+  "bug_screen",
 ]);
 
 // Painted finishes name their colour in the material ref ("post-paint-white"). The served

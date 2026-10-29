@@ -83,6 +83,9 @@ function checkPresetsAndLinks() {
   assert(expandRolePreset(ROLE_PRESETS.Structure).includes(REBAR), "Structure turns rebar on");
   assert(!expandRolePreset(ROLE_PRESETS.Site).includes(REBAR),
     "Site keeps the concrete but not the cage");
+  const rainscreen = expandRolePreset(ROLE_PRESETS.Rainscreen);
+  assert(rainscreen.includes("siding:screen") && rainscreen.includes("insulation")
+    && !rainscreen.includes("siding"), "Rainscreen shows screens and insulation, not the cladding");
   assert(!parseViewParams("?preset=framer").visible?.includes(REBAR),
     "the framer link stays on the sticks");
 

@@ -20,8 +20,9 @@ import {
   type ResolvedNordicPalette,
 } from "../../nordic/palette";
 import {
-  applyDeckBoardUv, createDeckBoardMaterial, createStandingSeamMaterial,
-  isAluminumDeckBoard, isStandingSeam, metalPanelProfileForFinish, SEAM_PROFILE,
+  applyDeckBoardUv, applyPerforatedMap, applyPerforatedUv, createDeckBoardMaterial,
+  createStandingSeamMaterial, isAluminumDeckBoard, isPerforatedFinish, isStandingSeam,
+  metalPanelProfileForFinish, SEAM_PROFILE,
 } from "../materials";
 import { applyTileUv, createTileMaterial, tileStyleOrNull } from "../tileMaterial";
 import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
@@ -93,7 +94,10 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
   }
   const foam = !deckBoards && !plankStyle && isSprayFoamFinish(authoredAppearance(woodRef, appearances)?.finish);
   if (foam) applySprayFoamUv(geo, center);
-  const stoneKind = deckBoards || plankStyle || foam ? null : aggregateKindOfSolid(solid, woodRef);
+  const perforated = !deckBoards && !plankStyle && !foam
+    && isPerforatedFinish(authoredAppearance(woodRef, appearances)?.finish);
+  if (perforated) applyPerforatedUv(geo, center);
+  const stoneKind = deckBoards || plankStyle || foam || perforated ? null : aggregateKindOfSolid(solid, woodRef);
   if (stoneKind) uvForAggregate(geo, center, stoneKind);
   const firstChildIndex = parent.children.length;
   const material =
@@ -105,6 +109,8 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
         : foam ? createSprayFoamMaterial(mode, materialColor(woodRef!, palette, appearances))
         : stoneKind ? stoneMaterial(mode, solidColor(solid, catalog, palette), stoneKind)
         : createSolidMaterial(solid, catalog, mode, palette);
+  // Holes are a nordic look only; with no canvas the flat metal stays.
+  if (perforated && mode === "nordic") applyPerforatedMap(material as THREE.MeshStandardMaterial);
   const mesh = makeSurfaceMesh(geo, woodMaterialsForGeometry(material, geo));
   // Backfill rides the site sheet's opacity slider (→ Panel3D setEarthOpacity).
   if (BACKFILL_CATEGORIES.has(solid.category)) {

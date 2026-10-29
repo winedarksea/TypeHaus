@@ -118,8 +118,8 @@ export function onlyTrades(keys: readonly VisibilityKey[]): VisibleTrades {
 export interface RolePreset {
   groups?: string[];
   trades?: Trade[];
-  /** Facets the named trades would bring along that this role does not want. */
-  exclude?: FacetKey[];
+  /** Keys (facets, or a bare trade) the named trades would bring along that this role does not want. */
+  exclude?: VisibilityKey[];
 }
 
 export function expandRolePreset(preset: RolePreset): VisibilityKey[] {
@@ -144,6 +144,9 @@ export const ROLE_PRESETS: Record<string, RolePreset> = {
   MEP: { groups: ["plumbing", "electrical", "mechanical"], trades: ["drainage"] },
   // Site reads the pour, not the cage inside it (and never pays for the lazy bar fetch).
   Site: { groups: ["site", "concrete_masonry"], exclude: ["concrete:rebar"] },
+  // The rainscreen cavity: insulation, framing and siding's facets (flashing, insect screens)
+  // without the cladding panels or the vent-gap prism, both of which are bare `siding`.
+  Rainscreen: { trades: ["insulation", "framing", "siding"], exclude: ["siding"] },
 };
 
 // The 13-name vocabulary a saved view may have been captured with, and the assembly-layer

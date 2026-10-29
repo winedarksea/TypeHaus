@@ -109,7 +109,7 @@ export function runVisibilityTests() {
 
   assert(expandRolePreset({ groups: ["walls"], trades: ["framing"] }).join() ===
     "framing,framing:structure,framing:furring,framing:sheathing,framing:connector," +
-    "framing:connector-embedded,siding,siding:flashing,insulation,drywall,paint",
+    "framing:connector-embedded,siding,siding:flashing,siding:screen,insulation,drywall,paint",
     "A preset expands its groups and trades, in order, framing to its facets");
 
   // Saved recipes from the 13-name vocabulary still apply.

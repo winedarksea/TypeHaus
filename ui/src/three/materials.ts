@@ -4,6 +4,7 @@ export { createProfiledMetalSkinMaterial } from "./boardBattenMaterial";
 import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
 import { familyOf } from "../nordic/palette";
 import { tiledFbm } from "./valueNoise";
+import { applyWorldBoxUv } from "./worldBoxUv";
 
 /**
  * Standing-seam metal — the finish that actually reads as a building, not a massing study.
@@ -333,6 +334,7 @@ export const PAN_END_POLYGON_OFFSET = tier(-6);
 const METAL_DEPTH_TIERS: Record<string, PolygonOffset> = {
   gutter: TRIM_POLYGON_OFFSET, flashing: TRIM_POLYGON_OFFSET, cladding_trim: TRIM_POLYGON_OFFSET,
   wall_corner: TRIM_POLYGON_OFFSET, beam_cap: TRIM_POLYGON_OFFSET, corner_trim: TRIM_POLYGON_OFFSET,
+  bug_screen: TRIM_POLYGON_OFFSET,
   drip_edge: EAVE_RAKE_POLYGON_OFFSET, roof_panel_hem: PAN_END_POLYGON_OFFSET,
 };
 
@@ -1001,4 +1003,66 @@ export function disposeDeckBoardTextures(): void {
   sharedDeckBoardNormalMap = null;
   sharedDeckBoardToneMap?.dispose();
   sharedDeckBoardToneMap = null;
+}
+
+// ── Perforated metal (insect screens) ─────────────────────────────────────────────────
+// One cached grayscale dot tile (dark holes on white) multiplied over the material colour, so
+// every screen shares a single texture. World-scaled UVs keep the pitch constant on every
+// piece; it is a legible 1" rather than the real 5 mm, which would only alias at review range.
+
+/** One tile spans 2 x 2 holes: a 1" staggered pitch. */
+export const PERFORATED_TILE_M = 0.0508;
+const PERFORATED_TILE_PX = 128;
+let sharedPerforatedMap: THREE.Texture | null = null;
+
+/** True when a material's declared finish is perforated sheet. */
+export function isPerforatedFinish(finish: string | null | undefined): boolean {
+  return finish === "perforated";
+}
+
+/** The shared hole tile, or null where there is no canvas (tests, SSR): callers keep the flat material. */
+export function perforatedMap(): THREE.Texture | null {
+  if (sharedPerforatedMap) return sharedPerforatedMap;
+  if (typeof document === "undefined") return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = PERFORATED_TILE_PX;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, PERFORATED_TILE_PX, PERFORATED_TILE_PX);
+  ctx.fillStyle = "#282828";
+  const radius = PERFORATED_TILE_PX * 0.12;
+  // Row A holes at x = ¼, ¾; row B at x = 0, ½ (and 1, so the wrap stays whole), half a pitch down.
+  const holes: [number, number][] = [[0.25, 0.25], [0.75, 0.25], [0, 0.75], [0.5, 0.75], [1, 0.75]];
+  for (const [x, y] of holes) {
+    ctx.beginPath();
+    ctx.arc(x * PERFORATED_TILE_PX, y * PERFORATED_TILE_PX, radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  sharedPerforatedMap = texture;
+  return texture;
+}
+
+/** World-scaled UVs for a perforated surface. */
+export function applyPerforatedUv(geometry: THREE.BufferGeometry, center: PlanCenter): void {
+  applyWorldBoxUv(geometry, center, PERFORATED_TILE_M);
+}
+
+/** Lay the hole tile over `material`'s colour. False (material untouched) with no canvas. */
+export function applyPerforatedMap(material: THREE.MeshStandardMaterial): boolean {
+  const map = perforatedMap();
+  if (!map) return false;
+  material.map = map;
+  material.needsUpdate = true;
+  return true;
+}
+
+/** Drop the shared hole tile — only for teardown in tests/hot reload. */
+export function disposePerforatedTexture(): void {
+  sharedPerforatedMap?.dispose();
+  sharedPerforatedMap = null;
 }

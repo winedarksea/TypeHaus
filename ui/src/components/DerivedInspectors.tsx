@@ -12,7 +12,7 @@ import { formatFtIn } from "../model/geometry";
 import { locateMember, type LocatedMember, type MemberOwnerKind } from "../model/memberIdentity";
 import { RebarInspector, rebarHostSelectionKind } from "./RebarInspector";
 import type { SelectionKind } from "../state/vocabulary";
-import { solidCategoryLabel, solidMaterialRef } from "../model/solidLabels";
+import { solidLabel, solidMaterialRef } from "../model/solidLabels";
 import { useStore } from "../state/store";
 import { Provenance } from "./Provenance";
 import { ProductRows } from "./ProductRows";
@@ -54,7 +54,7 @@ export function SolidInspector({ solid }: { solid: Solid }) {
   // layer and nothing else), and that is what the row and the product join want.
   const material = solidMaterialRef(solid, model?.catalog);
   return <div>
-    <h3>{solidCategoryLabel(solid.category)} · {solid.tag}</h3>
+    <h3>{solidLabel(solid)} · {solid.tag}</h3>
     <div className="kv">
       {/* Heading is the human name; the raw category stays on the row beneath it, because
           it is the key every palette, trade table and take-off is written against and a

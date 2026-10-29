@@ -64,7 +64,7 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   downspout: "Downspout",
   sump: "Sump pit",
   thermal_break: "Thermal break",
-  bug_screen: "Rainscreen base closure",
+  bug_screen: "Insect screen",
   glazing_trim: "Glazing trim",
   window_trim: "Window casing",
   opening_frame: "Opening frame",
@@ -72,6 +72,20 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   corner_trim: "Corner trim",
   drip_edge: "Drip edge",
 };
+
+// A bug_screen solid is one of three closures, told apart by its `product`.
+const BUG_SCREEN_KIND_LABEL: Record<string, string> = {
+  BASE_SCREEN: "Rainscreen base screen",
+  PANEL_END_STRIP: "Panel-end strip",
+  BAND_OUTLET_STRIP: "Band outlet strip",
+};
+
+/** The heading for one whole solid: its kind where `product` names one, else its category. */
+export function solidLabel(solid: { category?: string | null; product?: string | null }): string {
+  const kind = solid.category?.trim().toLowerCase() === "bug_screen" && solid.product
+    ? BUG_SCREEN_KIND_LABEL[solid.product] : undefined;
+  return kind ?? solidCategoryLabel(solid.category);
+}
 
 export function solidCategoryLabel(category: string | null | undefined): string {
   if (!category) return "Solid";
