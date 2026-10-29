@@ -375,8 +375,10 @@ def describe(section: str, key: str, row: Mapping[str, Any] | None = None,
     ``name``) keep it, with the id appended when the field does not already say it."""
     row = row or {}
     bare = str(key).split(":", 1)[0]
-    # ``drainage`` rows carry the material ref in ``product``; that is a tag, not a name.
-    readable = () if section == "drainage" else ("description", "product", "name", "label")
+    # ``drainage`` rows carry the material ref in ``product``; that is a tag, not a name. A
+    # box row's ``product`` is its tag too, and its label must name the mounting it prices by.
+    readable = (() if section in ("drainage", "electrical_boxes")
+                else ("description", "product", "name", "label"))
     for field_name in readable:
         value = row.get(field_name)
         # A field that merely repeats the key (an allowance's synthetic row) says nothing.
