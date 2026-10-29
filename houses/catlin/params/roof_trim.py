@@ -35,9 +35,9 @@ _EAVE_X_E = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)
 _EAVE_DECK = inch(EAVE_DECK_IN)  # structure plane at the eave edge (ResolvedRoof.eave_z_m)
 
 #: The eave stack only needs the pitch and the roofing's base; the strip-in does not move it.
-_STACK = EaveStack(slope=PITCH, membrane_top_w=ROOFING_BASE_IN * M_PER_IN,
-                   strip_thickness_m=0.0, strip_material=None)
-_ORIGIN_U_M, _ORIGIN_Z_M = _STACK.gutter_origin()
+EAVE_STACK = EaveStack(slope=PITCH, membrane_top_w=ROOFING_BASE_IN * M_PER_IN,
+                       strip_thickness_m=0.0, strip_material=None)
+_ORIGIN_U_M, _ORIGIN_Z_M = EAVE_STACK.gutter_origin()
 _GUTTER_BACK_IN = _ORIGIN_U_M / M_PER_IN   # back water face, out from the cladding face
 _GUTTER_TOP_IN = _ORIGIN_Z_M / M_PER_IN    # back top == front crest, above the deck plane
 #: Underside of the trough floor: the leader's top.

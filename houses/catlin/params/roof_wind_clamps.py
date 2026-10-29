@@ -5,17 +5,24 @@ clamp's elevation is the top of the standing-seam metal at its x, from the same
 ``seam_top_inches`` the PV clamps in ``params/solar.py`` use — never a typed literal.
 
 Not ``# haus: editable``: a Connector is not a UI-movable kind, so nothing is written back
-to these, and the eave x-stations are derived from the cladding face in ``params/roof_panel``.
+to these. The eave x-stations are derived from the cladding face and the eave stack.
 """
 
+from params.cladding import HOUSE_EW_OUTBOARD_IN
 from params.roof_panel import seam_top_inches
-
+from params.roof_trim import EAVE_STACK
 from typehaus import Connector, ConnectorKind, inch, pt
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.accessories import seam_clamp_half_length_m
+from typehaus.resolve.roof_image_ii_eave import LAP_GAP_M
 
 ROOF_TAG = "RF-HOUSE"
-# The eaves sit on the cladding face, 6.6" out from the 36'-0" footprint either side.
-WEST_EAVE_IN = -6.6
-EAST_EAVE_IN = 438.6
+_SIZE = "S-5-N Mini"
+# Each clamp sits on the field seam just upslope of the eave pieces: its downslope end one
+# lap gap inboard of the field skin's cut (``EaveStack.pan_cut_u``), off the cladding face.
+_SEAT_IN = (EAVE_STACK.pan_cut_u() - seam_clamp_half_length_m(_SIZE) - LAP_GAP_M) / M_PER_IN
+WEST_EAVE_IN = -HOUSE_EW_OUTBOARD_IN - _SEAT_IN
+EAST_EAVE_IN = 36 * 12 + HOUSE_EW_OUTBOARD_IN + _SEAT_IN
 # Plan y of the three seams in from each rake.
 SOUTH_STATIONS_IN = (8, 24, 40)
 NORTH_STATIONS_IN = (424, 408, 392)
@@ -25,7 +32,7 @@ def _clamp(uid: str, tag: str, x_in: float, y_in: float) -> Connector:
     return Connector(
         uid=uid, tag=tag, kind=ConnectorKind.STANDING_SEAM_CLAMP,
         position=pt(inch(x_in), inch(y_in)), elevation=inch(seam_top_inches(x_in)),
-        connects=(ROOF_TAG,), size="S-5-N Mini")
+        connects=(ROOF_TAG,), size=_SIZE)
 
 
 HOUSE_ROOF_WIND_CLAMPS = [

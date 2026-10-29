@@ -19,6 +19,7 @@ from typehaus.resolve.model import FramedMember
 # keep the two in step.
 ROOF_SKIN_CATEGORIES = values_where(roof_skin=True) | frozenset({
     "air_gap", "lining", "soffit", "gutter", "ridge_cap", "corner_trim", "drip_edge",
+    "roof_panel_hem", "ridge_closure",
 })
 
 

@@ -250,6 +250,34 @@ _SEAM_CLAMP_PRODUCT_IN = {
 }
 
 
+def _seam_clamp_on_roof(model: ResolvedModel, el: Connector, outline, z_mid: float,
+                        half_z: float):
+    """A roof seam clamp's marker raked to its roof's pitch, so it rides the seam rather
+    than a level box cutting into the pan upslope; ``None`` off a roof."""
+    if el.kind is not ConnectorKind.STANDING_SEAM_CLAMP:
+        return None
+    roof = next((r for r in model.roofs if r.tag in el.connects), None)
+    if roof is None:
+        return None
+    from typehaus.resolve.geometry_ir import GBox
+    from typehaus.resolve.geometry_slice_box import _box_mesh
+    from typehaus.resolve.roof_geometry import roof_plane_z, roof_slope_coordinate
+
+    def rise(x: float, y: float) -> float:
+        return (roof_plane_z(roof, roof_slope_coordinate(roof, (x, y)))
+                - roof_plane_z(roof, roof_slope_coordinate(roof, el.position.xy_m)))
+
+    bottom = tuple((x, y, z_mid - half_z + rise(x, y)) for x, y in outline)
+    top = tuple((x, y, z + 2 * half_z) for x, y, z in bottom)
+    return _box_mesh(GBox(bottom, top))
+
+
+def seam_clamp_half_length_m(size: str) -> float:
+    """Half a seam clamp's length along its seam, as the marker draws it."""
+    half = _SEAM_CLAMP_PRODUCT_IN.get(size, _CONNECTOR_MARKER_IN[ConnectorKind.STANDING_SEAM_CLAMP])
+    return inch(half[0]).meters
+
+
 def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None:
     if el.hanger_spec_pair(model.plan) is not None:
         return  # names a part for every hung end of a floor; the derived joints draw those
@@ -273,6 +301,15 @@ def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None
     # claim an orientation draws exactly as before.
     if el.axis in ("y", "-y"):
         half_x, half_y = half_y, half_x
+    outline = square(cx, cy, inch(half_x).meters, inch(half_y).meters)
+    body = _seam_clamp_on_roof(model, el, outline, z + z_shift, inch(half_z).meters)
+    if body is not None:
+        zs = [p[2] for p in body.positions]
+        model.solids.append(ResolvedSolid(
+            uid=el.uid or f"{el.tag}-conn", tag=el.tag, storey=storey, category="seam_clamp",
+            outline=outline, z0_m=min(zs), z1_m=max(zs), body_mesh=body,
+            product=el.size or None))
+        return
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-conn", tag=el.tag, storey=storey,
         category=_CONNECTOR_CATEGORY.get(el.kind, "connector"),

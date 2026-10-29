@@ -9,7 +9,8 @@ const fakeCanvas = () => ({ width: 1, height: 1, style: {}, getContext: () => no
 globalThis.document = { createElement: () => fakeCanvas(), createElementNS: () => fakeCanvas() };
 globalThis.OffscreenCanvas = class { constructor(w, h) { Object.assign(this, fakeCanvas(), { width: w, height: h }); } };
 
-const [modelPath, outPath] = process.argv.slice(2);
+const [modelPath, outPath, side] = process.argv.slice(2);
+const [XA, XB] = side === "W" ? [-1.8, 1.2] : [9.5, 12.5];
 const server = await createServer({ configFile: false, root: new URL("..", import.meta.url).pathname,
   server: { middlewareMode: true }, appType: "custom", logLevel: "error" });
 try {
@@ -19,8 +20,9 @@ try {
   const { ALL_TRADES } = await server.ssrLoadModule("/src/state/vocabulary.ts");
   const full = JSON.parse(readFileSync(modelPath, "utf8"));
   // Boxes in plan metres (x0,x1,y0,y1,z0,z1).
-  const boxes = { ne: [10.55, 11.75, 10.45, 11.75, 5.7, 7.0], east: [10.55, 11.75, 4.7, 5.9, 5.7, 7.0] };
-  const near = (pts) => pts?.some?.(([x, y]) => x > 9.5 && x < 12.5);
+  const bx = side === "W" ? [-0.8, 0.4] : [10.55, 11.75];
+  const boxes = { n: [...bx, 10.45, 11.75, 5.7, 7.0], mid: [...bx, 4.7, 5.9, 5.7, 7.0], s: [...bx, -0.8, 0.5, 5.7, 7.0] };
+  const near = (pts) => pts?.some?.(([x, y]) => x > XA && x < XB);
   const model = { ...full,
     walls: full.walls.filter((w) => near(w.axis) && ["second", "attic", "main"].includes(w.storey)),
     roofs: full.roofs.filter((r) => r.tag === "RF-HOUSE"),
@@ -28,7 +30,7 @@ try {
     plants: [], floors: [], stairs: [], canvas_objects: [], furniture: [], fixtures: [], footing_beddings: [],
     base_runs: [], door_casings: [], countertops: [], panelings: [], window_stools: [], solar_panels: [],
     soffits: full.soffits, light_runs: [], rebar: [] };
-  model.openings = full.openings.filter((o) => model.walls.some((w) => w.tag === o.host));
+  model.openings = process.env.NO_OPEN ? [] : full.openings.filter((o) => model.walls.some((w) => w.tag === o.host));
   const tradeGroups = Object.fromEntries(ALL_TRADES.map((t) => [t, new THREE.Group()]));
   const root = new THREE.Group();
   for (const t of ALL_TRADES) root.add(tradeGroups[t]);
@@ -67,9 +69,20 @@ try {
           const hi = [0, 1, 2].map((a) => Math.max(...tri.map((p) => p[a])));
           return lo[0] <= b[1] && hi[0] >= b[0] && lo[1] <= b[3] && hi[1] >= b[2] && lo[2] <= b[5] && hi[2] >= b[4];
         });
-        if (hit) tris.push(tri);
+        if (hit) tris.push({ idx: t, tri });
       }
-      if (tris.length) out.push({ ...meta, inst: k, tris });
+      const byBox = obj.userData?.memberUidByBox, starts = obj.userData?.triangleStarts;
+      const byInst = obj.userData?.memberUidByInstance;
+      if (tris.length && Array.isArray(byBox) && Array.isArray(starts)) {
+        // split a merged mesh per member; keep only triangles in the boxes
+        for (let b = 0; b < byBox.length; b++) {
+          const sub = tris.filter((t) => t.idx >= starts[b] && t.idx < starts[b + 1]).map((t) => t.tri);
+          if (sub.length) out.push({ ...meta, ud: JSON.stringify({ tag: byBox[b].split("::").pop(), trades: [] }), inst: 0, tris: sub });
+        }
+      } else if (tris.length) {
+        const ud = Array.isArray(byInst) ? JSON.stringify({ tag: String(byInst[k]).split("::").pop(), trades: [] }) : meta.ud;
+        out.push({ ...meta, ud, inst: k, tris: tris.map((t) => t.tri) });
+      }
     }
   });
   writeFileSync(outPath, JSON.stringify(out));

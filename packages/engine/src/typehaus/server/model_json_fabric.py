@@ -130,6 +130,10 @@ def wall_graph_json(
                 # (resolve/layout_lines.py). None for a wall on no line.
                 "layout_axis": _layout_axis(model, w.tag),
                 "top_z1_m": w.top_z1_m, "is_foundation": w.is_foundation,
+                # Eave caps on the body top (geometry_walls.body_top_at); the viewer mirrors it.
+                "head_caps": [{"p0": list(c.p0), "normal": list(c.normal), "z_line_m": c.z_line,
+                               "fall": c.fall, "reach_in_m": c.reach_in,
+                               "reach_out_m": c.reach_out} for c in w.head_caps],
                 "layers": [_layer_json(ly, _wall_scope(w)) for ly in w.layers],
                 "members": [_member_json(m) for m in w.members],
                 # Every trade the body layers belong to (→ resolve/geometry_build).

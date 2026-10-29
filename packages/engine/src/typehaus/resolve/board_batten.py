@@ -183,10 +183,13 @@ def profile_mesh(
         for at, lower in ((lower_at, True), (upper_at, False)):
             if at is None:
                 continue
-            a, b = world((start, 0.0, 0.0)), world((end, 0.0, 0.0))
+            a, b = world((start, support, 0.0)), world((end, support, 0.0))
             za, zb = at(a[0], a[1]), at(b[0], b[1])
             slope = (zb - za) / (end - start)
-            plane = (-slope, 0.0, 1.0, za - slope * start)
+            # The fall across the skin's depth too: an eave closure's top follows the pitch.
+            c = world((start, crown, 0.0))
+            fall = (at(c[0], c[1]) - za) / (crown - support)
+            plane = (-slope, -fall, 1.0, za - slope * start - fall * support)
             planes.append(tuple(-v for v in plane) if lower else plane)
         height_regions.append(planes)
     relief_depth = profile.depth_m - profile.sheet_thickness_m

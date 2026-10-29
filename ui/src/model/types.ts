@@ -253,6 +253,16 @@ export interface RebarPayload {
   rebar: RebarSet[];
 }
 
+/** One wrapped eave's cap line in plan (→ roof_image_ii_eave.HeadCap). */
+export interface WallHeadCap {
+  p0: Vec2;
+  normal: Vec2;
+  z_line_m: number;
+  fall: number;
+  reach_in_m: number;
+  reach_out_m: number;
+}
+
 export interface Wall {
   uid: string;
   tag: string;
@@ -269,6 +279,8 @@ export interface Wall {
   // cutter uses to interpolate a sloped top (→ emit/draw/section.py::_wall_top_at_cut).
   top_z0_m: number | null;
   top_z1_m: number | null;
+  // Eave lines the body top stays under past the axis end (→ geometry_walls.body_top_at).
+  head_caps?: WallHeadCap[];
   // Where this wall's framing actually starts, when the skin was dropped below it to lap
   // the foundation (→ resolve/platform.py::extend_walls_to_foundation). null = the wall
   // body and its framing share a base, so z0_m is the datum. Every sill is measured from

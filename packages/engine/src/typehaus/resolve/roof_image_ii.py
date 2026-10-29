@@ -221,8 +221,10 @@ def image_ii_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[FramedMe
                 members.append(_piece_member(roof, run, span, rake, RAKE_KEY, CONNECTION_RAKE,
                                              coil))
             continue
-        # Upslope of the eave's hem the full section; over the leg, only what clears it.
-        clear = -min(u for u, _ in eave) + LAP_GAP_M
+        # Upslope of the eave's hem and the gutter flange's tip the full section; over the
+        # stack, only what clears it.
+        inboard = min(min(u for u, _ in eave), stack.gutter_flange_tip_uz()[0])
+        clear = -inboard + LAP_GAP_M
         length = math.hypot(run.p1[0] - run.p0[0], run.p1[1] - run.p0[1])
         if clear >= length:
             continue

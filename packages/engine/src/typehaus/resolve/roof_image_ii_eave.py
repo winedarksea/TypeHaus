@@ -166,10 +166,14 @@ class EaveStack:
         return (self.gutter_back_outer_u,
                 self.z_at(self.gutter_flange_top_w, self.gutter_back_outer_u))
 
-    def gutter_flange_end_s(self) -> float:
+    def gutter_flange_tip_uz(self) -> tuple[float, float]:
+        """(u, z) of the box gutter flange's upslope tip, its water face."""
         u0, z0 = self.gutter_origin()
         x, y = pbr_box_gutter_section(self.slope)[0]
-        return self.sw(u0 + x * M_PER_IN, z0 + y * M_PER_IN)[0]
+        return u0 + x * M_PER_IN, z0 + y * M_PER_IN
+
+    def gutter_flange_end_s(self) -> float:
+        return self.sw(*self.gutter_flange_tip_uz())[0]
 
     # -- strip-in and pan --------------------------------------------------------------
     def _ramp(self) -> tuple[float, float]:
@@ -332,10 +336,11 @@ class HeadCap:
     z_line: float
     fall: float
     reach_out: float
+    reach_in: float = _HEAD_REACH_M
 
     def z_at(self, x: float, y: float) -> float | None:
         offset = (x - self.p0[0]) * self.normal[0] + (y - self.p0[1]) * self.normal[1]
-        if -_HEAD_REACH_M <= offset <= self.reach_out:
+        if -self.reach_in <= offset <= self.reach_out:
             return self.z_line - self.fall * offset
         return None
 

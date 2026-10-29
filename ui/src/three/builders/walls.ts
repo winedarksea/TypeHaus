@@ -34,13 +34,13 @@ import { wallBandShapes, type ArchSoffitCylinder } from "./wallBandShape";
 // The wall's local frame and the arch-head circle live in ./wallFrame, shared with the
 // voussoir rings. Re-exported here because callers and tests knew them at this path first.
 import {
-  archSoffitCircle, archSoffitSample, archSoffitSegmentCount, baseRefZ, wallLocalFrame,
+  archSoffitCircle, archSoffitSample, archSoffitSegmentCount, baseRefZ, bodyTopAt, wallLocalFrame,
   wallLocalToSceneMatrix,
 } from "./wallFrame";
 export {
   ARCH_SOFFIT_CHORD_TOLERANCE_M, ARCH_SOFFIT_MAX_SEGMENT_COUNT, ARCH_SOFFIT_MIN_SEGMENT_COUNT,
   COLLINEAR_VERTEX_TOLERANCE_M, archSoffitCircle, archSoffitSample, archSoffitSegmentCount,
-  baseRefZ,
+  baseRefZ, bodyTopAt, rakedTopAt,
   withoutCollinearVertices,
 } from "./wallFrame";
 
@@ -51,17 +51,6 @@ const ARCH_SOFFIT_RING_TOLERANCE_M = 1e-5;
 // ExtrudeGeometry gives its front/back caps normals along the sweep axis and its swept side
 // walls normals in the shape plane; only the latter can belong to an arch soffit.
 const ARCH_SOFFIT_SWEPT_FACE_MAX_AXIAL_NORMAL = 0.5;
-
-export function rakedTopAt(w: Wall, x: number, y: number): number {
-  if (w.top_z0_m == null && w.top_z1_m == null) return w.z1_m;
-  const start = w.top_z0_m ?? w.z1_m;
-  const end = w.top_z1_m ?? w.z1_m;
-  const [[x0, y0], [x1, y1]] = w.axis;
-  const dx = x1 - x0, dy = y1 - y0;
-  const len2 = dx * dx + dy * dy;
-  const t = len2 < 1e-9 ? 0 : Math.min(1, Math.max(0, ((x - x0) * dx + (y - y0) * dy) / len2));
-  return start + (end - start) * t;
-}
 
 /** Whether a resolved layer gets an extruded prism of its own in the 3-D viewer.
  *
@@ -192,7 +181,7 @@ export function buildWall(
       ? [smoothArchGeometry]
       : clampPiecesToBand(wallLayerPieces(w, ly.polygon, layerOpenings), ly).map((piece) => piece.topIsRaked
         ? createRakedPlanPrismGeometry(piece.polygon, piece.z0_m,
-          (point) => rakedTopAt(w, point[0], point[1]), center)
+          (point) => bodyTopAt(w, point[0], point[1]), center)
         : createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center));
     for (const geo of geometries) {
       if (!geo) continue;
@@ -483,7 +472,7 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
       }
       continue;
     }
-    const minTop = Math.min(...strip.map(([x, y]) => rakedTopAt(wall, x, y)));
+    const minTop = Math.min(...strip.map(([x, y]) => bodyTopAt(wall, x, y)));
     if (minTop > openingTop + 1e-9)
       pieces.push({ polygon: strip, z0_m: openingTop, z1_m: wall.z1_m, topIsRaked: raked });
   }

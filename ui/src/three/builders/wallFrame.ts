@@ -8,6 +8,28 @@ import * as THREE from "three";
 import type { Wall } from "../../model/types";
 import type { PlanCenter } from "../planGeometry";
 
+export function rakedTopAt(w: Wall, x: number, y: number): number {
+  if (w.top_z0_m == null && w.top_z1_m == null) return w.z1_m;
+  const start = w.top_z0_m ?? w.z1_m;
+  const end = w.top_z1_m ?? w.z1_m;
+  const [[x0, y0], [x1, y1]] = w.axis;
+  const dx = x1 - x0, dy = y1 - y0;
+  const len2 = dx * dx + dy * dy;
+  const t = len2 < 1e-9 ? 0 : Math.min(1, Math.max(0, ((x - x0) * dx + (y - y0) * dy) / len2));
+  return start + (end - start) * t;
+}
+
+/** `rakedTopAt` held under the wall's eave head caps (mirrors geometry_walls.body_top_at). */
+export function bodyTopAt(w: Wall, x: number, y: number): number {
+  let z = rakedTopAt(w, x, y);
+  for (const cap of w.head_caps ?? []) {
+    const offset = (x - cap.p0[0]) * cap.normal[0] + (y - cap.p0[1]) * cap.normal[1];
+    if (offset >= -cap.reach_in_m && offset <= cap.reach_out_m)
+      z = Math.min(z, cap.z_line_m - cap.fall * offset);
+  }
+  return z;
+}
+
 /** The datum every sill is measured up from.
  *
  * A framed wall whose skin was dropped to lap the foundation below it carries a `z0_m`

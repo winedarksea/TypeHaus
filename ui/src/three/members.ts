@@ -74,6 +74,7 @@ export function categoryColor(category: string): number {
 const ROOF_SKIN_CATEGORIES = new Set([
   "sheathing", "membrane", "insulation", "furring", "cladding", "airgap", "air_gap",
   "lining", "finish", "soffit", "gutter", "ridge_cap", "corner_trim", "drip_edge",
+  "roof_panel_hem", "ridge_closure",
 ]);
 
 /**
