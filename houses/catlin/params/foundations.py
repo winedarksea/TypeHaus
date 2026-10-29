@@ -289,7 +289,7 @@ HOUSE_FOOTINGS = [
 # literal "daylight" as always-valid — it names nothing, so there is nothing to resolve.
 #
 # SM-B-RADON is the only collector below this invert: a sealed pit whose bottom is
-# -136 15/16", 12 1/2" below the tile, on CKT-SUMP with a 1/3 hp submersible that lifts to
+# -136 15/16", 11 1/2" below the tile (12 1/2" until its 2" R405.1 seat), on CKT-SUMP with a 1/3 hp submersible that lifts to
 # daylight. Re-checked when this load was added: a 1/3 hp cast-iron submersible moves
 # ~40 gpm at the ~12' of head this lift needs, against a 36'x36' footprint's perimeter
 # infiltration, and it draws well under the 20 A CKT-SUMP already carries for it. The pump

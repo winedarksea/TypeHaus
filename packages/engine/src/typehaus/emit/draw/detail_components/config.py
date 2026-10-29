@@ -40,9 +40,9 @@ class PerimeterDrainConfig:
     #: 10" x 8" washed-rock surround (``foundation/river_rock_width_in`` / ``_depth_in``).
     rock_width_in: float = 10.0
     rock_depth_in: float = 8.0
-    #: Rock bedding under the pipe invert, so the pipe floats in stone rather than sitting
-    #: on the footing — a drawing convention, not a dimension the reference fixes.
-    pipe_bedding_in: float = 1.0
+    #: Rock bedding under the pipe invert: IRC R405.1's 2" of stone. Mirrors
+    #: ``resolve/drain_tile.PIPE_BEDDING_M``.
+    pipe_bedding_in: float = 2.0
     #: Clear gap between the wall face and the near edge of the rock trench.
     rock_offset_from_wall_in: float = 1.0
     #: tan(22.5°): the pipe bore is drawn as a square-cut octagon because the IR has no arc

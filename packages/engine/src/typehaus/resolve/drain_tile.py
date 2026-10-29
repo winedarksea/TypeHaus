@@ -20,9 +20,9 @@ from typehaus.resolve.model import ResolvedDrainTile, ResolvedSolid
 #: The same 4" the perimeter-drain detail falls back to (``detail_components/config.py``).
 DEFAULT_DIAMETER_M = 4.0 * 0.0254
 
-#: The pipe floats in stone rather than sitting on the excavation floor, so the invert lifts
-#: by one course of bedding. Mirrors ``PerimeterDrainConfig.pipe_bedding_in``.
-PIPE_BEDDING_M = 1.0 * 0.0254
+#: The pipe floats in stone rather than sitting on the excavation floor: IRC R405.1 wants
+#: 2" of washed stone under it. Mirrors ``PerimeterDrainConfig.pipe_bedding_in``.
+PIPE_BEDDING_M = 2.0 * 0.0254
 
 SOLID_CATEGORY = "drain_tile"
 
