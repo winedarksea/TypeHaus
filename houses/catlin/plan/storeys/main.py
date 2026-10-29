@@ -1080,6 +1080,7 @@ OPENINGS = [
     # 38 3/8" RO (2026-10-29) grew west: 3 5/8" short of the MECH3 tee, its doubled hinge
     # pack backing W-M-MECH-E's end and that casing leg scribed to ~2 1/4".
     Door(uid="CMD201AAAA", tag="D-M-ENTRY", host="W-M-N3", type_ref="DT-EXT-SWING36",
+         egress=True,
          position=from_node("N-M-N2", ft(0, 6)),
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
              exterior_wrap_material_ref="metal-dark-exterior",

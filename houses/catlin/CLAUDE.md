@@ -7,6 +7,13 @@
 > beams into the garage was rejected (DESIGN-LOG). Calcs: `notes/canopy_west_band.md`
 > 2026-10-28 amendment.
 
+> **Door sizing, 2026-10-29 (`plans/door-sizing.md`, decisions #96-#98):** `DoorType.width`
+> is the nominal leaf; the RO is published (`rough_opening`) or derived from `TRIM-STANDARD`.
+> Doors whose derived RO conflicts keep `Door.held_rough_opening` (listed by
+> `advisory.held_rough_opening`) pending the owner's call. `D-M-ENTRY` is the designated
+> egress door (`egress=True`): R311.2 grades only it, on Therma-Tru's published 33-5/16" x
+> 79-1/4" clear (`notes/egress_door_clear_width.md`).
+
 > **Exterior door hardening, 2026-10-25:** `plan/door_types.py` owns hardware, doubled
 > jamb packs, local ccSPF and entry field finish. `notes/exterior_door_hardening.md`
 > records installation, the W-M-N3 fit and open dealer items. A-601 prints the HW sets.

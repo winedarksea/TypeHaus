@@ -15,6 +15,7 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     circulation,
     crushed_stone_footings,
     egress,
+    egress_door,
     energy_storage,
     fall_protection,
     fire_separation,

@@ -156,6 +156,9 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Emergency escape and rescue openings",
                        ("code.R310_egress", "code.R310_1_storey_egress",
                         "code.R310_2_3_window_well"), ("IRC R310",), blocking=False),
+        # R311.1: which door is the egress door is a designation (``Door.egress``), and the
+        # R311.2 line below grades only that door.
+        PermitItemSpec("Egress door", ("code.R311_1_egress_door",), ("IRC R311.1",)),
         # R311.2 fixes both dimensions of the required egress door; one permit line, two
         # checks — a plan reviewer measures the door once.
         PermitItemSpec("Egress door clear width and height",

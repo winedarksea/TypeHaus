@@ -32,10 +32,15 @@ from typehaus.checks.code.mn_residential.alarms import (
 )
 from typehaus.checks.code.mn_residential.egress import (
     basement_storey_egress,
-    egress_door_height,
     egress_windows,
     exterior_door_landing,
+    landing_step_verdict,
     window_well,
+)
+from typehaus.checks.code.mn_residential.egress_door import (
+    egress_door_designated,
+    egress_door_height,
+    egress_door_width,
 )
 from typehaus.checks.code.mn_residential.fall_protection import (
     guard_opening_limit,
@@ -845,43 +850,52 @@ def test_window_well_is_registered_as_a_constructible_element():
     assert "WindowWell" in element_kinds()
 
 
-# --- R311.2 egress door clear height -----------------------------------------------------
+# --- R311.1/R311.2 the designated egress door, and R311.3 its landing ---------------------
 
-def _door_height_ctx(height_in: float, *, exterior: bool = True, type_known: bool = True):
-    door_type = SimpleNamespace(tag="DT-TEST", exterior=exterior, width=inch(36),
-                                height=inch(height_in), catalog_dimensions=None)
-    door = SimpleNamespace(element_kind="Door", tag="D-TEST",
-                           type_ref="DT-TEST" if type_known else "DT-MISSING")
+def _egress_door_ctx(clear_w_in: float, clear_h_in: float, *, egress: bool = True):
+    sizing = SimpleNamespace(clear_w_m=clear_w_in * 0.0254, clear_h_m=clear_h_in * 0.0254,
+                             basis_of=lambda name: "published")
+    door = SimpleNamespace(element_kind="Door", tag="D-TEST", type_ref="DT-TEST", egress=egress)
     plan = SimpleNamespace(all_elements=lambda: [door],
-                           library=SimpleNamespace(door_types=[door_type]))
-    return SimpleNamespace(plan=plan)
+                           library=SimpleNamespace(door_types=[]))
+    model = SimpleNamespace(openings=[SimpleNamespace(tag="D-TEST", sizing=sizing)])
+    return SimpleNamespace(plan=plan, model=model)
 
 
-def test_door_height_passes_a_standard_six_eight_leaf():
-    findings = egress_door_height(_door_height_ctx(80.0))
-    assert _results(findings) == [Result.PASS]
-
-
-def test_door_height_fails_below_78_inches():
-    findings = egress_door_height(_door_height_ctx(76.0))
-    assert _results(findings) == [Result.FAIL]
+@pytest.mark.parametrize(("check_fn", "width", "height", "expected"), [
+    (egress_door_width, 33.3125, 79.25, Result.PASS),
+    (egress_door_width, 31.97, 79.25, Result.FAIL),  # strictly: below 32" fails
+    (egress_door_height, 33.3125, 79.25, Result.PASS),
+    (egress_door_height, 33.3125, 77.9, Result.FAIL),
+])
+def test_r311_2_grades_the_designated_door_s_clear_opening(check_fn, width, height, expected):
+    findings = check_fn(_egress_door_ctx(width, height))
+    assert _results(findings) == [expected]
     assert findings[0].code_ref == "R311.2"
 
 
-def test_door_height_reports_unknown_for_an_unknown_door_type():
-    findings = egress_door_height(_door_height_ctx(80.0, type_known=False))
-    assert _results(findings) == [Result.UNKNOWN]
+def test_no_designated_egress_door_fails_r311_1_and_grades_no_r311_2():
+    ctx = _egress_door_ctx(36, 80, egress=False)
+    assert _results(egress_door_designated(ctx)) == [Result.FAIL]
+    assert _results(egress_door_width(ctx)) == [Result.UNKNOWN]
 
 
-def test_interior_doors_are_not_held_to_the_egress_height_bar():
-    findings = egress_door_height(_door_height_ctx(76.0, exterior=False))
-    assert _results(findings) == [Result.PASS]
+@pytest.mark.parametrize(("step_in", "egress", "swings", "ok"), [
+    (7.75, False, True, True),  # MN R311.3.2: a non-egress outswing door gets one riser
+    (7.75, True, False, True),  # R311.3.1: the egress door, clear of its landing
+    (7.75, True, True, False),  # ...but not swinging over it
+    (1.5, True, True, True),
+])
+def test_landing_step_reads_the_egress_designation(step_in, egress, swings, ok):
+    assert landing_step_verdict(step_in * 0.0254, egress, swings)[0] is ok
 
 
-def test_catlin_exterior_doors_clear_the_height_bar(catlin_ctx):
-    """Both breezeway-adjacent doors carry 6'-8" (80") leaves — everything passes."""
-    findings = egress_door_height(catlin_ctx)
-    assert findings and all(f.result is Result.PASS for f in findings)
+def test_catlin_designates_its_entry_and_it_clears_r311_2(catlin_ctx):
+    """D-M-ENTRY on Therma-Tru's published 33-5/16" x 79-1/4" (notes/egress_door_clear_width.md)."""
+    for check_fn in (egress_door_designated, egress_door_width, egress_door_height):
+        findings = check_fn(catlin_ctx)
+        assert [f.result for f in findings] == [Result.PASS]
+        assert "D-M-ENTRY" in findings[0].message
 
 
 # --- R305.1 sloped ceilings, graded against the REQUIRED floor area -----------------------

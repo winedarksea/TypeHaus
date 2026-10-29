@@ -1,4 +1,4 @@
-"""R310 emergency escape and R311.2 egress door width.
+"""R310 emergency escape and R311.3 landings (R311.1/R311.2: ``egress_door.py``).
 
 Split out of ``rules.py``. R310.1 is two rules, not one: every *sleeping room* needs an
 escape opening, and so does every *basement* whether or not anyone sleeps in it. Only the
@@ -21,6 +21,7 @@ from typehaus.checks.code.mn_residential._common import (
     _unknown,
     _wall_is_exterior,
 )
+from typehaus.checks.code.mn_residential.egress_door import designated_egress_doors
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import SLEEPING_OCCUPANCIES, Occupancy
@@ -33,8 +34,6 @@ _MIN_EGRESS_WIDTH = inch(20)
 _MIN_EGRESS_HEIGHT = inch(24)
 _MAX_EGRESS_SILL = inch(44)
 _MIN_EGRESS_AREA_SF = 5.7  # grade-floor 5.0; upper 5.7 (R310.2.1)
-_MIN_DOOR_CLEAR = inch(31.75)  # 32" nominal clear (R311.2)
-_MIN_DOOR_CLEAR_HEIGHT = inch(78)  # R311.2: 78" minimum clear height at the egress door
 
 # R310.1 applies to a basement holding habitable space. "Habitable" is R202's list — living,
 # sleeping, eating, cooking — and explicitly excludes bathrooms, closets, halls, storage and
@@ -196,8 +195,12 @@ def basement_storey_egress(ctx: CheckContext) -> list[Finding]:
 # R311.3: a landing or floor on each side of an exterior door, 36" in the direction of
 # travel and no narrower than the door.
 _MIN_LANDING_DEPTH = inch(36)
-# R311.3.1: the exterior landing may sit at most 1.5" below the threshold. A door that is not
-# the required egress door and does not swing over the landing gets 7.75" (one riser).
+# Minn. R. 1309.0311 subp. 1 (read 2026-10-28). R311.3.1, not amended: the required egress
+# door's landing is at most 1.5" below the threshold, or 7.75" on the exterior side where the
+# door does not swing over it. MN R311.3.2: any OTHER exterior door's landing is at most
+# 7.75" below the top of the threshold, with no swing condition. (Its exception — no landing
+# where a stairway under 30" high stands outside a door that does not swing over it — is
+# not graded: such a stair's landing is already a candidate surface.)
 _MAX_LANDING_STEP_DOWN = inch(1.5)
 _MAX_NONREQUIRED_STEP_DOWN = inch(7.75)
 
@@ -224,6 +227,7 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
     rooms_by_storey = _rooms_by_storey(ctx)
     surfaces = _landing_surfaces(ctx, union=True)
     tilted = tilted_decks(ctx)
+    egress_tags = {door.tag for door in designated_egress_doors(ctx)}
     storeys = {s.tag: s for s in ctx.plan.storeys}
     out: list[Finding] = []
     for opening in ctx.model.openings:
@@ -300,32 +304,27 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
                              (opening.tag,), code))
             continue
         name, top = max(covered, key=lambda item: item[1])
-        step = threshold - top
-        if step > _MAX_LANDING_STEP_DOWN.meters + 1e-6:
-            # Still a landing, and still legal for a door that is not the required egress
-            # door and does not swing out over it. R311.3.2 states BOTH conditions; only
-            # the second is knowable here. Which door is *the* required egress door is not
-            # modeled, so that half still reports the allowance rather than assuming the
-            # strict case and failing an ordinary back door — but the swing IS modeled, in
-            # ``ResolvedOpening.swing_clearance``, and a door sweeping over the landing it
-            # is measured against loses the relief outright. Asserting that condition in a
-            # PASS message without testing it is how catlin carried a 7 1/4" outswing step
-            # at 0 FAIL.
-            if _swings_over(opening, patch):
-                out.append(_fail(cid, f"{opening.tag} lands on {name}, {step / .0254:.1f}\" "
-                                 "below the threshold, and swings out over that landing; "
-                                 "R311.3.2's one-riser allowance is conditioned on the door "
-                                 "not swinging over it, so the limit here is 1.5\"",
-                                 (opening.tag,), code))
-            else:
-                out.append(_pass(cid, f"{opening.tag} lands on {name}, {step / .0254:.1f}\" "
-                                 "below the threshold — within R311.3.2's one-riser "
-                                 "allowance for a non-required door that swings inward, "
-                                 "clear of the landing", code))
-        else:
-            out.append(_pass(cid, f"{opening.tag} lands on {name}, {step / .0254:.1f}\" below "
-                             "the threshold (<= 1.5\")", code))
+        swings = _swings_over(opening, patch)
+        ok, why = landing_step_verdict(threshold - top, opening.tag in egress_tags, swings)
+        text = f"{opening.tag} lands on {name}, {why}"
+        out.append(_pass(cid, text, code) if ok else _fail(cid, text, (opening.tag,), code))
     return out
+
+
+def landing_step_verdict(step_m: float, egress: bool, swings_over: bool) -> tuple[bool, str]:
+    """``(ok, reason)`` for a landing ``step_m`` below the threshold (1309.0311 subp. 1)."""
+    step = f'{step_m / .0254:.1f}" below the threshold'
+    if step_m <= _MAX_LANDING_STEP_DOWN.meters + 1e-6:
+        return True, f'{step} (<= 1.5")'
+    if step_m > _MAX_NONREQUIRED_STEP_DOWN.meters + 1e-6:
+        return False, f'{step}; R311.3 allows at most 7.75"'
+    if not egress:
+        return True, (f'{step} (MN R311.3.2: <= 7.75" for an exterior door other than '
+                      "the egress door, swing or not)")
+    if swings_over:
+        return False, (f"{step}, and the egress door swings out over it; R311.3.1 allows "
+                       '7.75" only where it does not, so the limit here is 1.5"')
+    return True, f'{step}, the egress door clear of it (R311.3.1, <= 7.75" outside)'
 
 
 #: How far a landing may stand ABOVE the threshold and still be the one it serves: a board
@@ -492,59 +491,6 @@ def _landing_patch(ctx: CheckContext, wall, opening, rooms_by_storey):
     ]
     patch = Polygon(corners)
     return patch if patch.is_valid and patch.area > 1e-9 else None
-
-
-def _door_leaf(dt) -> tuple[Any, Any]:
-    """The purchased (nominal) leaf: ``DoorType.width``/``height`` (resolve/door_sizing)."""
-    return dt.width, dt.height
-
-
-@check(Tier.CODE, "code.R311_door_width")
-def egress_door_width(ctx: CheckContext) -> list[Finding]:
-    out: list[Finding] = []
-    for door in (e for e in ctx.plan.all_elements() if e.element_kind == "Door"):
-        dt = next((t for t in ctx.plan.library.door_types if t.tag == door.type_ref), None)
-        if dt is None:
-            out.append(_unknown("code.R311_door_width", "unknown door type",
-                                (door.tag,), "R311.2"))
-            continue
-        width = _door_leaf(dt)[0]
-        if dt.exterior and width < _MIN_DOOR_CLEAR:
-            out.append(_fail("code.R311_door_width",
-                             f"egress door {door.tag} width {width.fmt()} < 32\" clear",
-                             (door.tag,), "R311.2"))
-        else:
-            out.append(_pass("code.R311_door_width", f"door {door.tag} width ok", "R311.2"))
-    return out
-
-
-@check(Tier.CODE, "code.R311_2_door_height")
-def egress_door_height(ctx: CheckContext) -> list[Finding]:
-    """R311.2 — the egress door needs 78" of clear height, not just 32" of width.
-
-    Graded over every exterior door, the same stricter reading the width check applies:
-    R311.2 technically demands one complying egress door, but which exterior door is "the
-    required" one is a designation the plan does not carry, so every exterior door is held
-    to the bar. A standard 6'-8" (80") leaf clears it; a cut-down cellar or utility door
-    is exactly what this exists to catch.
-    """
-    out: list[Finding] = []
-    for door in (e for e in ctx.plan.all_elements() if e.element_kind == "Door"):
-        dt = next((t for t in ctx.plan.library.door_types if t.tag == door.type_ref), None)
-        if dt is None:
-            out.append(_unknown("code.R311_2_door_height", "unknown door type",
-                                (door.tag,), "R311.2"))
-            continue
-        height = _door_leaf(dt)[1]
-        if dt.exterior and height < _MIN_DOOR_CLEAR_HEIGHT:
-            out.append(_fail(
-                "code.R311_2_door_height",
-                f"egress door {door.tag} height {height.fmt()} < 78\" clear",
-                (door.tag,), "R311.2"))
-        else:
-            out.append(_pass("code.R311_2_door_height", f"door {door.tag} height ok",
-                             "R311.2"))
-    return out
 
 
 # R310.2.3: a well serving a below-grade escape opening is at least 9 sf, and at least 36"

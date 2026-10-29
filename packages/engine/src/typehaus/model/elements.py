@@ -138,6 +138,9 @@ class Door(Element):
     # This one opening's framing, kept while a derived RO waits on confirmation
     # (plans/door-sizing.md, decision 6). Not a product size: that is the type's.
     held_rough_opening: OpeningSize | None = None
+    # The designated R311.1 egress door: placement makes a door the egress door, not its
+    # type. ``code.R311_2_*`` grade only designated doors (decision #97).
+    egress: bool = False
     # Surface appearance only; None inherits the type/product default.
     frame_material_ref: str | None = None
     leaf_material_ref: str | None = None

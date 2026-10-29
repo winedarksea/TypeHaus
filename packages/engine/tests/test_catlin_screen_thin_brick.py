@@ -88,12 +88,13 @@ def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
     hinge = door.swing_clearance[0]
     tip = door.swing_clearance[-1]
     assert door.type_ref == "DT-EXT-SWING32-G"
-    # Opening geometry is the 34-inch RO; takeoff still uses the 32-inch stock leaf.
+    # Opening geometry is the 34-inch RO; the 32-inch leaf hinges 1" inside it, at the
+    # jamb face (resolve/door_sizing), and sweeps its own width.
     assert door.width_m / INCH == pytest.approx(34)
-    assert hinge[0] / INCH == pytest.approx(81)
-    assert (hinge[0] + door.width_m) / INCH == pytest.approx(115)
+    assert hinge[0] / INCH == pytest.approx(82)
+    assert hinge[0] / INCH - 1 + door.width_m / INCH == pytest.approx(115)
     assert (tip[0] - hinge[0]) / INCH == pytest.approx(0)
-    assert (tip[1] - hinge[1]) / INCH == pytest.approx(-34)
+    assert (tip[1] - hinge[1]) / INCH == pytest.approx(-32)
     exported = next(o for o in model_to_dict(catlin_model_ro)["openings"] if o["tag"] == door.tag)
     assert exported["maximum_opening_degrees"] == 90
     assert catlin_model_ro.plan.by_tag(
@@ -147,25 +148,22 @@ def test_the_old_schematic_leaf_overlaps_the_hold_down(catlin_model_ro):
 
 
 def test_r311_2_grades_the_purchased_leaf_not_the_rough_opening(catlin_ctx):
-    from typehaus.checks.code.mn_residential.egress import (
-        _door_leaf,
+    """D-G-SERVICE is sized off its 32in leaf, not its published 34in RO, and is not the
+    designated egress door, so R311.2 says nothing about it (decision #97)."""
+    from typehaus.checks.code.mn_residential.egress_door import (
         egress_door_height,
         egress_door_width,
     )
-    from typehaus.quantities import inch
 
     door_type = next(t for t in catlin_ctx.plan.library.door_types
                      if t.tag == "DT-EXT-SWING32-G")
-    width, height = _door_leaf(door_type)
     ro = door_type.rough_opening
     assert (ro.width.inches, ro.height.inches) == pytest.approx((34, 81.5))
-    assert (width.inches, height.inches) == pytest.approx((32, 80))
-    # A 30in leaf in the same 34in RO must not borrow the RO's width.
-    narrow = door_type.model_copy(update={"width": inch(30)})
-    assert _door_leaf(narrow)[0].inches == pytest.approx(30)
+    sizing = next(o.sizing for o in catlin_ctx.model.openings if o.tag == "D-G-SERVICE")
+    assert sizing.leaf_w_m / 0.0254 == pytest.approx(32)
+    assert sizing.clear_w_m / 0.0254 == pytest.approx(32 - 2 - 11 / 16)
     for check in (egress_door_width, egress_door_height):
-        finding = next(f for f in check(catlin_ctx) if "D-G-SERVICE" in f.message)
-        assert finding.result.name == "PASS"
+        assert not [f for f in check(catlin_ctx) if "D-G-SERVICE" in f.message]
 
 
 def test_service_door_takeoff_uses_mmi_32in_price(catlin_model_ro):
