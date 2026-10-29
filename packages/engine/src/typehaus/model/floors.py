@@ -412,6 +412,10 @@ class FloorHeat(Element):
     # calculation (``mep.room_heat_source``) that decides whether a radiant floor can be a
     # room's only heat.
     delivered_btuh_per_ft2: float | None = None
+    # The ElectricalDevice thermostat this zone answers to. Named, the zone derives its two
+    # raceways — sensor and cold lead (→ resolve/floor_heat_leads.py) — and the thermostat
+    # takes a ``flush_raceway`` box.
+    thermostat_ref: str | None = None
 
 
 class FinishZone(HausModel):

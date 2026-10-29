@@ -351,7 +351,8 @@ def test_conduit_run_developed_length(project):
     assert abs(run.length_m - 20 * 0.3048) < 1e-6
     from typehaus.takeoff import conduit_takeoff
     rows = conduit_takeoff(model)
-    assert rows == [{"trade_size_in": 1.0, "runs": 1, "length_ft": 20.0, "tags": ["CD-1"]}]
+    assert rows == [{"size": "1.0", "material": "emt", "trade_size_in": 1.0, "runs": 1,
+                     "length_ft": 20.0, "tags": ["CD-1"]}]
 
 
 def test_conduit_emits_cable_carrier_segments(project, tmp_path: Path):
@@ -388,26 +389,32 @@ def test_catlin_conduit_trunks(catlin_model):
     # the spa conduit": it runs 6" east of CD-B-SPA and parallel to it the whole way,
     # because NEC 800.133/725 forbids comms sharing a RACEWAY with power and
     # `ConduitRun.service` is one value, never a set.
-    assert len(catlin_model.conduits) == 18  # includes the laundry's Class 2 surface feed
+    # 2026-10-29: + the workshop trunk and its two drops, the theater spare and its drop.
+    authored = [run for run in catlin_model.conduits if run.derived is None]
+    assert len(authored) == 23  # includes the laundry's Class 2 surface feed
     # Not all from the panel: the three microgrid runs start at the PV junction box and at
     # the inverter, and every data run starts at the patch enclosure.
     # CD-A-PV-EAST's from_ref is the RUN it continues rather than a device, which is the
     # honest statement for a second leg of one raceway: there is no junction box at the
     # elbow, the conduit simply turns.
-    assert {run.from_ref for run in catlin_model.conduits} == {
+    assert {run.from_ref for run in authored} == {
         "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV", "ED-B-NET-PATCH", "CD-B-ATTIC-RISER",
-        "ED-M-LAUNDRY-PSU"}
+        "ED-M-LAUNDRY-PSU", "ED-B-PANEL-2", "ED-B-WORKSHOP-JB", "ED-B-PLAY-N-JB"}
     rows = conduit_takeoff(catlin_model)
     # Power only — data and the capped spare are billed by takeoff/data.py, because comms
     # and power are separate orders pulled by separate trades and may not share a raceway.
-    assert {row["trade_size_in"] for row in rows} == {0.5, 0.75, 1.0, 1.25, 1.5}
+    emt = [row for row in rows if row["material"] == "emt"]
+    assert {row["trade_size_in"] for row in emt} == {0.5, 0.75, 1.0, 1.25, 1.5}
+    # The floor-heat leads are ENT (resolve/floor_heat_leads.py).
+    assert {row["size"] for row in rows if row["material"] == "ent"} == {"ENT 0.5", "ENT 0.75"}
     # A loose sanity band, not a contract: no trunk group is a stub and none crosses the
-    # house twice. The 1" group sits at 60 ft because it is four runs, not one.
-    assert all(20 < row["length_ft"] < 70 for row in rows if row["trade_size_in"] > 0.5)
-    feed = next(row for row in rows if row["trade_size_in"] == 0.5)
+    # house twice. 3/4" also carries the derived NM sleeves.
+    assert all(20 < row["length_ft"] < 130 for row in emt if row["trade_size_in"] > 0.5)
+    feed = next(row for row in emt if row["trade_size_in"] == 0.5)
     assert feed["tags"] == ["CR-M-LAUNDRY-24V"] and feed["length_ft"] < 3
     assert not [run.tag for row in rows for run in catlin_model.conduits
-                if run.tag in row["tags"] and run.service in ("data", None)]
+                if run.tag in row["tags"] and run.derived is None
+                and run.service in ("data", None)]
     # The PV feed reaches the attic junction box in two legs. The riser
     # tops out on the attic DECK (20'-6"), because the 6:12 roof underside at its x=1'-6"
     # chase is 20'-8 1/4" and it cannot rise to the box's 25'-6" there; CD-A-PV-EAST carries
@@ -442,7 +449,8 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
         if element.element_kind == "ElectricalDevice")
     # Rows are trade-size groups, not runs: the three 1" microgrid runs join the group the
     # 1" trunk already made.
-    assert len(bom["conduit"]) == 5  # laundry adds its own 1/2" group
+    # Laundry adds its own 1/2" group; the floor-heat leads add 1/2" and 3/4" ENT.
+    assert len(bom["conduit"]) == 7
     # The microgrid section is derived twice over: the placed ESS hardware, then the
     # shed-tier switching gear. The first row is the inverter because equipment leads.
     components = bom["backup_power"]["components"]

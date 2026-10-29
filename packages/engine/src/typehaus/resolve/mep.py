@@ -224,7 +224,8 @@ def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str)
         trade_size_m=run.trade_size.meters, z_start_m=z0, z_end_m=z1,
         length_m=plan_len + rise, from_ref=run.from_ref, to_ref=run.to_ref,
         service=run.service.value if run.service is not None else None,
-        z_m=z_m, pull_points=pulls,
+        z_m=z_m, pull_points=pulls, material=run.material.value,
+        circuits=tuple(run.circuits),
     )
     model.conduits.append(resolved)
     # Geometry from the same profile ``concrete_crossings`` walks, so the raceway a reader
@@ -239,7 +240,7 @@ def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str)
         _emit_run_solids(model, run.uid or run.tag, run.tag, storey_tag,
                          solid_path, solid_z,
                          round_profile(run.trade_size.meters / 2.0, PIPE_FACETS),
-                         _conduit_category(resolved.service))
+                         conduit_category(resolved.service))
     return []
 
 
@@ -252,7 +253,7 @@ def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str)
 #: empty pipe nobody needs to distinguish on screen. (Categories are what the 3D inspector
 #: *prints*, so they are named for what a person calls the thing, never for its element
 #: family — "conduit run" would be as useless a heading as "pipe accessory" was.)
-def _conduit_category(service: str | None) -> str:
+def conduit_category(service: str | None) -> str:
     return "conduit_data" if service == Service.DATA.value else "conduit_power"
 
 

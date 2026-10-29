@@ -40,7 +40,7 @@ from plan import (appliance_types, assemblies, bath_finish, lav_types, products_
                   study_bookcase_types,
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, court_daybed, panel_types,
-                  dry_fire_lane, device_types, earthwork, electrical, electrical_attic, electrical_stair_ext, electrical_floor_types, equipment_types,
+                  dry_fire_lane, device_boxes, device_types, earthwork, electrical, electrical_attic, electrical_branches, electrical_stair_ext, electrical_floor_types, equipment_types,
                   dining_types, door_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets, kitchen_front_types,
                   landscape, lighting, living_east_run, living_east_run_types,
                   living_puzzle_table_types,
@@ -70,7 +70,7 @@ _library = Library(
     products=(*products.PRODUCTS, *mirror_types.MIRROR_PRODUCTS, *bed_frame_types.BED_FRAME_PRODUCTS,
               *opening_products.OPENING_PRODUCTS, *bath_accessory_types.BATH_ACCESSORY_PRODUCTS,
               *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS, *products_bath_lavs.BATH_LAV_PRODUCTS,
-              *device_types.DEVICE_PRODUCTS),
+              *device_types.DEVICE_PRODUCTS, *device_boxes.BOX_PRODUCTS),
     # The one library pocket size this house hangs, alongside the house's own catalog. Only
     # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
     # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
@@ -385,7 +385,10 @@ PLAN = (
          *foundations.HOUSE_FOOTINGS, *foundations.HOUSE_FOOTING_BEDDING, *earthwork.EXCAVATION,
          *foundations.VENEER_PLINTH, *foundations.VENEER_PLINTH_BEDDING,
          *masonry_joints.JOINTS,
-         *mep.BASEMENT_ELEMENTS, *mep_lavatories.BASEMENT_LAV_CONNECTIONS, *electrical.BASEMENT_ELEMENTS, *electrical_stair_ext.STAIR_BASEMENT,
+         *mep.BASEMENT_ELEMENTS, *mep_lavatories.BASEMENT_LAV_CONNECTIONS, *electrical.BASEMENT_ELEMENTS, *device_boxes.BOX_STANDARD,
+         *electrical_branches.BRANCH_PULL_BOXES, *electrical_branches.BRANCH_RACEWAYS,
+         *electrical_branches.BRANCH_SLEEVES,
+         *electrical_stair_ext.STAIR_BASEMENT,
          *lighting.BASEMENT_LIGHTING, *mirrors.BASEMENT_MIRRORS,
          *placeables.BASEMENT_PLACEABLES, *sauna.SAUNA_SEATING, *millwork.BASEMENT_SHELVES,
          *window_stools.BASEMENT_WINDOW_STOOLS,

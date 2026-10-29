@@ -173,6 +173,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         (inch(2.75), inch(2)),
         inch(4.5),
         (ServicePort(tag="data", service=Service.DATA, position=(ft(0), ft(0), ft(0))),),
+        device_box=True,
         ifc_entity="IfcCommunicationsAppliance",
         ifc_predefined_type="NETWORKAPPLIANCE",
     ),

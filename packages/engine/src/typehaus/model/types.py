@@ -931,6 +931,13 @@ class ElectricalDeviceType(FurnitureType):
     # circuit, not the device's own (a PoE access point names no ``circuit`` at all), so a
     # per-panel ``load_va`` sum must not pick it up. E-603 totals it against the switch.
     poe_watts: float | None = None
+    # Device yokes side by side, which picks the box row (→ BoxStandard). The combined and
+    # quad receptacle symbols are two whatever this says.
+    gangs: int = 1
+    # Whether a wall-hosted instance takes a box from the house's BoxStandard. None derives
+    # it from the kind: receptacles, switches and lights do, data outlets and enclosures do
+    # not. False for a type that carries its own (a gasketed in-use box).
+    device_box: bool | None = None
 
 
 class LuminaireType(ElectricalDeviceType):

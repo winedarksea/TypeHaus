@@ -75,6 +75,13 @@ Campaigns normally lay drains deepest first, then vents, ducts largest first, su
 conduit. Accepted proposals occupy space for later searches. Rip-up only lifts proposals
 accepted by that campaign; authored geometry remains an obstacle.
 
+A conduit proposal keeps its raceway's pull boxes (`ConduitRun.pull_points`). Authored boxes
+the new path still passes within 6" are kept (a vertex is inserted beside a straight stretch);
+the rest are dropped and counted. Then a pull point goes at any vertex that would take a
+section past 360 degrees of bends (the `conduit_pulls` measure). The proposal prints
+`pull_points=(...)`, notes `pull points: kept N authored, added N, N no longer on the path`,
+and carries `pull_point_assignment` in the JSON. `material` and `circuits` are echoed too.
+
 Paste into the correct storey's `# haus: editable` source and explain why it changed.
 Pipe/duct elevations are relative to that storey; conduit elevations are project-frame
 absolute. Let `haus fmt` mint uids. Record a `haus trial --record` baseline before editing,

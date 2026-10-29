@@ -128,7 +128,8 @@ def run_radii(model: ResolvedModel) -> dict[str, float]:
     for duct in model.ducts:
         radii[duct.tag] = (duct.diameter_m or max(duct.width_m, duct.depth_m)) / 2.0
     for raceway in model.conduits:
-        radii[raceway.tag] = raceway_outside_diameter_m(raceway.trade_size_m or 0.0) / 2.0
+        radii[raceway.tag] = raceway_outside_diameter_m(raceway.trade_size_m or 0.0,
+                                                        raceway.material) / 2.0
     for tag, _path, _z, diameter_m in vent_risers(model):
         radii[tag] = diameter_m / 2.0
     return radii

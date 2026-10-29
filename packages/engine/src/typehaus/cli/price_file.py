@@ -53,6 +53,9 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids",
              # pipe_fittings/pipe_insulation.
              "duct_fittings", "duct_insulation",
              "sleeves", "conduit",
+             # Raceway parts and device boxes by the piece (→ takeoff/raceways.py,
+             # takeoff/device_boxes.py).
+             "conduit_fittings", "electrical_boxes",
              # The three electrical tables the model resolves and nothing else prices:
              # branch-circuit wire by the foot, the PV array by the watt, and the low-voltage
              # raceways [conduit] deliberately excludes. Each replaces a lump sum — see
@@ -292,7 +295,14 @@ class Prices:
     duct_fittings: Mapping[str, PriceRange] = field(default_factory=dict)
     duct_insulation: Mapping[str, PriceRange] = field(default_factory=dict)
     sleeves: Mapping[str, PriceRange] = field(default_factory=dict)
+    # $/LF keyed on size: a bare size ("0.75") is EMT, anything else names its material
+    # ("ENT 0.5", "PVC 1").
     conduit: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Raceway parts each, keyed "<kind> <MATERIAL> <size>" ("strap EMT 0.75"). An elbow row
+    # priced at zero says the house's bends are field bends.
+    conduit_fittings: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Device boxes and their covers/rings each, keyed on the Product tag.
+    electrical_boxes: Mapping[str, PriceRange] = field(default_factory=dict)
     # Branch-circuit conductors by the lineal foot, keyed on ``poles`` — "1" for a 120 V
     # circuit (3 conductors: hot, neutral, ground), "2" for a 240 V one (4). The route is
     # [conduit] and this is the wire in it. Mind the mirror: the two are separate purchases

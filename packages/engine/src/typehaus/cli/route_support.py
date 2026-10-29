@@ -62,6 +62,8 @@ class Endpoints:
     #: What pasting obliges next — the children to re-route once this run moves.
     after_paste: tuple[str, ...] = ()
     held: tuple[tuple[float, float, float], ...] = ()  #: kept ahead of origin, --hold-upstream
+    #: A raceway's authored pull boxes, as 3D points: the re-route keeps those it still passes.
+    pull_boxes: tuple[tuple[float, float, float], ...] = ()
 
 
 from typehaus.cli.route_roots import (  # noqa: E402
@@ -304,6 +306,7 @@ def _conduit_endpoints(model: ResolvedModel, raceway: Any,
     reconstruct is refused rather than flattened: ``conduit_vertical_profile`` is the one
     reading of that, and a run it declines is a run whose z nobody authored.
     """
+    from typehaus.model.enums import RacewayMaterial
     from typehaus.resolve.mep_queries import conduit_vertical_profile
 
     profile = conduit_vertical_profile(raceway)
@@ -312,14 +315,29 @@ def _conduit_endpoints(model: ResolvedModel, raceway: Any,
                         "no elevation to route at. Author start/end elevations on it")
         return None
     path, z = profile
-    echo = {key: getattr(raceway, key) for key in ("from_ref", "to_ref")
+    echo = {key: getattr(raceway, key) for key in ("from_ref", "to_ref", "circuits")
             if getattr(raceway, key, None)}
+    if raceway.material != "emt":
+        echo["material"] = RacewayMaterial(raceway.material)
+    boxes = _pull_boxes(raceway)
     return Endpoints(
         origin=(path[0][0], path[0][1], z[0]), root=(path[-1][0], path[-1][1], z[-1]),
         kind="conduit", radius_m=(raceway.trade_size_m or 0.0) / 2.0,
         diameter_m=raceway.trade_size_m or 0.0, storey=raceway.storey,
-        system=raceway.service or "power_120", falls=False, echo=echo,
-        touch=frozenset({raceway.tag}))
+        system=raceway.service or "", falls=False, echo=echo,  # "" is a capped spare
+        touch=frozenset({raceway.tag}), pull_boxes=boxes)
+
+
+def _pull_boxes(raceway: Any) -> tuple[tuple[float, float, float], ...]:
+    """3D points of the run's authored pull vertices, at the z ``conduit_pulls`` grades."""
+    from typehaus.resolve.conduit_pulls import _profile
+
+    profile = _profile(raceway) if raceway.pull_points else None
+    if profile is None:
+        return ()
+    points, indices, _schematic = profile
+    return tuple(next(p for p, i in zip(points, indices, strict=True) if i == index)
+                 for index in raceway.pull_points if index in indices)
 
 
 def _fall(points: list[tuple[float, float, float]],

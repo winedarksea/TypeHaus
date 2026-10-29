@@ -41,6 +41,7 @@ from typehaus.hardware.fittings import (
     KIND_WYE,
     SERVICE_DRAIN,
     SERVICE_DUCT,
+    SERVICE_RACEWAY,
     SERVICE_SUPPLY,
     SERVICE_VENT,
     FittingSpec,
@@ -93,6 +94,13 @@ MIN_FITTING_TURN_DEG = 10.0
 #: the plumber's sheet carry the tinner's elbows.
 FAMILY_PIPE = "pipe"
 FAMILY_DUCT = "duct"
+#: Conduit. Its turns are field bends (EMT, PVC) or flexes (ENT), never a catalogued
+#: pattern; ``resolve/conduit_fittings.py`` bills them with the run's other parts.
+FAMILY_RACEWAY = "raceway"
+
+#: Why a raceway turn has no catalogued part.
+RACEWAY_BEND_GAP = ("a raceway turn is a field bend (or a factory elbow the house prices); "
+                    "no raceway pattern is catalogued")
 
 
 @dataclass(frozen=True)
@@ -276,8 +284,12 @@ def polyline_fittings(tag: str, family: str, system: str,
     """
     from typehaus.resolve.model import SolidSweep
 
-    service, bonus = ((SERVICE_DUCT, 0.0) if family == FAMILY_DUCT
-                      else _pipe_service(system, _nominal_in(size_m)))
+    if family == FAMILY_DUCT:
+        service, bonus = SERVICE_DUCT, 0.0
+    elif family == FAMILY_RACEWAY:
+        service, bonus = SERVICE_RACEWAY, 0.0
+    else:
+        service, bonus = _pipe_service(system, _nominal_in(size_m))
     bendable = service in BENDABLE_SERVICES
     nominal = _nominal_in(size_m)
     cleaned = clean_path(list(points))
@@ -288,6 +300,8 @@ def polyline_fittings(tag: str, family: str, system: str,
             continue  # a grade change, not a fitting
         if rectangular:
             spec, gap = None, RECTANGULAR_DUCT_GAP
+        elif family == FAMILY_RACEWAY:
+            spec, gap = None, RACEWAY_BEND_GAP
         else:
             spec, gap = _match(service, KIND_ELBOW, turn.angle_deg, nominal, None,
                                bendable, bonus)

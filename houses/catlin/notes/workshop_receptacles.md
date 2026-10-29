@@ -95,13 +95,13 @@ neutral.
 
 ## Boxes and covers
 
-Types carry the envelope (`plan/device_types.py`): `*-SURF` = 4x4 steel box (4 3/16") with a
-raised cover, 2 1/4" proud; the 2-gang cover is 4 1/2" wide (RC1, RC2); the kettle's
-`ED-T-LEV-620-FLUSH` is flush in drywall. Retyped to `-SURF`: `ED-B-UTIL-RC1`, `ED-B-SUMP-RC`,
-`ED-B-GYM-RC5`..`RC7`, `ED-B-PLAY-N-RC1`.
+Boxes are no longer on the types. The house's `BoxStandard` derives them from the face each
+device lands on (`plan/device_boxes.py`, decision #93; method, fill and costs in
+[basement surface wiring](basement_surface_wiring.md)). On basement concrete that is a RACO
+232 4" square box under a raised Decora cover (1- or 2-Decorator), fed by NM in a derived
+3/4" EMT sleeve. RC1 and RC2 are fed instead by 3/4" EMT + THHN drops from the bench pull
+box on the 1" CD-B-WORKSHOP trunk. The kettle's `ED-T-LEV-620-FLUSH` is flush in drywall.
 
-- **Basement concrete walls:** EMT surface conduit to 4x4 steel boxes with raised Decora
-  industrial covers (2-gang at RC1/RC2). Size for fill and device depth; bond box and raceway.
 - **Exterior:** clear `5980-UCL` extra-duty in-use cover, which closes over a plugged-in cord
   through its cord ports. `ED-M-FRONT-RC1` (north face of `W-M-N2`, x 16'-6", on the entry
   bridge) and `ED-M-REAR-RC1` (south face of `W-M-S2`, x 24'-7"), 18" AFF, WR GFCI `GFWT2-W` on

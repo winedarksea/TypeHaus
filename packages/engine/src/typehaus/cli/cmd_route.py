@@ -488,10 +488,12 @@ def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str
         if disclosed:
             notes.append(disclosed)
 
-    return RouteProposal(
+    proposal = RouteProposal(
         tag=f"{target}-PROPOSED{suffix}", kind=ends.kind, points=[*ends.held, *points],
         diameter_m=ends.diameter_m, width_m=ends.width_m, depth_m=ends.depth_m,
         serves=ends.serves, system=ends.system, cost=found.cost, bends=found.bends,
         terms=dict(found.terms) if explain else {}, notes=notes, routing=routing,
         floor_ref=floor_ref, soffit_ref=soffit_ref, echo=dict(ends.echo),
         after=ends.after_paste).snapped()
+    # After snapping: the indices must be the pasted run's own.
+    return proposal.with_pull_points(ends.pull_boxes) if ends.kind == "conduit" else proposal

@@ -94,6 +94,7 @@
     "duct_transfer": 11712690,
     "earth": 8413248,
     "eave_soffit": 14737625,
+    "electrical_box": 10396584,
     "fascia": 15461350,
     "finish": 15131611,
     "fireblock": 13412467,
@@ -298,6 +299,7 @@
     "duct_transfer": 11712690,
     "earth": 8413248,
     "eave_soffit": 14737625,
+    "electrical_box": 10396584,
     "fascia": 15461350,
     "finish": 15131611,
     "fireblock": 13412467,
@@ -503,6 +505,9 @@
     ],
     "eave_soffit": [
       "siding"
+    ],
+    "electrical_box": [
+      "electrical"
     ],
     "fascia": [
       "siding"
@@ -714,6 +719,7 @@
     "duct_supply": "mechanical",
     "duct_transfer": "mechanical",
     "eave_soffit": "siding",
+    "electrical_box": "electrical",
     "fascia": "siding",
     "fireblock": "framing",
     "flashing": "roofing",

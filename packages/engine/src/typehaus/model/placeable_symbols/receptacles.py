@@ -31,8 +31,8 @@ def _clipped_outline(center_x, center_z, width, height, corner_fraction):
 
 
 def _housing(width, depth, height, front):
-    # Depth remains the authored schematic envelope; later installation modeling can
-    # replace this body without changing how the plate and sockets are assembled.
+    # The device's own body behind its plate. The box is not drawn here: it is a derived
+    # ``electrical_box`` solid (resolve/device_boxes.py), behind the face or proud of it.
     return box(0, (front + depth / 2) / 2, 0, height,
                width, depth / 2 - front, "electrical-orange")
 

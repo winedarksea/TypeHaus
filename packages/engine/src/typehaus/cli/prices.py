@@ -107,7 +107,9 @@ ESTIMATE_PLANS = (
     ("duct_fittings", "duct_fittings", "fitting", "count", "ea"),
     ("duct_insulation", "duct_insulation", "spec", "length_ft", "LF"),
     ("sleeves", "sleeves", "sleeve_diameter_in", "count", "ea"),
-    ("conduit", "conduit", "trade_size_in", "length_ft", "LF"),
+    ("conduit", "conduit", "size", "length_ft", "LF"),
+    ("conduit_fittings", "conduit_fittings", "fitting", "count", "ea"),
+    ("electrical_boxes", "electrical_boxes", "product", "count", "ea"),
     # Three tables the model resolves and nothing else prices, each replacing a lump sum in
     # [allowances]. ``conductors`` keys on ``poles`` (1 = a 120 V circuit's three wires, 2 = a
     # 240 V circuit's four); ``solar_modules`` is billed by the WATT, which is how the PV

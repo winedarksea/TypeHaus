@@ -33,6 +33,7 @@ SECTION_LABELS: dict[str, str] = {
     "pipe_runs": "Pipe", "pipe_fittings": "Pipe fittings", "ducts": "Ducts",
     "duct_fittings": "Duct fittings", "duct_insulation": "Duct insulation",
     "sleeves": "Cast-in sleeves", "conduit": "Conduit", "conductors": "Conductors",
+    "conduit_fittings": "Conduit fittings", "electrical_boxes": "Device boxes",
     "solar_modules": "PV modules", "data_raceways": "Data raceways",
     "plumbing_specialties": "Plumbing specialties", "install_parts": "Installation kits",
     "pipe_insulation": "Pipe insulation", "freeze_protection": "Freeze protection",
@@ -277,7 +278,14 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
     if section == "sleeves":
         return f"Cast-in sleeve, {_fraction_in(g('sleeve_diameter_in'))}"
     if section == "conduit":
-        return f"Conduit, {_fraction_in(g('trade_size_in'))} trade size"
+        material = str(g("material") or "emt").upper()
+        return f"Conduit, {_fraction_in(g('trade_size_in'))} {material}"
+    if section == "conduit_fittings":
+        kind = str(g("kind") or bare).replace("_", " ")
+        return (f"{kind.capitalize()}, {_fraction_in(g('trade_size_in'))} "
+                f"{str(g('material') or '').upper()}")
+    if section == "electrical_boxes":
+        return str(g("name") or bare)
     if section == "conductors":
         return f"Branch-circuit conductors, {g('poles')}-pole circuits"
     if section == "light_run_materials":

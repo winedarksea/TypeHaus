@@ -22,9 +22,11 @@ Band = tuple[float, float]
 def resolve_location(
     item: object, model: ResolvedModel,
     findings: list[Finding], local_footprint: list[tuple[float, float]],
-    band: Band | None = None,
+    band: Band | None = None, extra_gap_m: float = 0.0,
 ) -> tuple[tuple[float, float] | None, float, str | None, str | None]:
-    """(centre, rotation, attachment wall, attachment face) for one placeable."""
+    """(centre, rotation, attachment wall, attachment face) for one placeable.
+
+    ``extra_gap_m`` stands the body further off the face: a surface box's projection."""
     location = getattr(item, "location", None)
     attachment = location.attachment if location is not None else None
     rotation = _degrees(getattr(location, "rotation", None) if location is not None else None)
@@ -55,7 +57,7 @@ def resolve_location(
     sign = 1 if attachment.face == "left" else -1
     distance = max(0.0, min(length, attachment.distance_from_start.meters))
     finish_offset = _finish_offset(wall, (x0, y0), left, sign, band)
-    gap = attachment.normal_gap.meters
+    gap = attachment.normal_gap.meters + extra_gap_m
     resolved_rotation = (math.degrees(math.atan2(tangent[1], tangent[0]))
                          + _degrees(attachment.rotation_offset))
     # Align the *nearest footprint edge*, not its center, to the resolved finish face.
@@ -92,6 +94,21 @@ def hosted_placement(item: object,
     center, rotation, _, _ = resolve_location(
         item, model, [], _local_footprint(product_type, item))
     return None if center is None else (center, rotation)
+
+
+def face_frame(wall: object, attachment: object, band: Band | None
+               ) -> tuple[tuple[float, float], tuple[float, float], tuple[float, float]]:
+    """(point on the finish face at the station, unit tangent, unit normal into the room)."""
+    (x0, y0), (x1, y1) = wall.axis
+    length = math.hypot(x1 - x0, y1 - y0) or 1.0
+    tangent = ((x1 - x0) / length, (y1 - y0) / length)
+    left = (-tangent[1], tangent[0])
+    sign = 1 if attachment.face == "left" else -1
+    distance = max(0.0, min(length, attachment.distance_from_start.meters))
+    offset = _finish_offset(wall, (x0, y0), left, sign, band)
+    point = (x0 + tangent[0] * distance + left[0] * offset,
+             y0 + tangent[1] * distance + left[1] * offset)
+    return point, tangent, (left[0] * sign, left[1] * sign)
 
 
 def _finish_offset(wall: object, origin: tuple[float, float], left: tuple[float, float],

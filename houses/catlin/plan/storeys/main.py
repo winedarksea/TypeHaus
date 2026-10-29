@@ -1767,7 +1767,7 @@ FLOOR_HEAT = [
               system=RadiantSystem.ELECTRIC, spacing=inch(3.625), embed=in_slab(inch(0.5)),
               # DHEHK12016 as purchased. NOT a computed number — see above.
               watts=203, delivered_btuh_per_ft2=22.8,
-              stat=pt(inch(40), inch(175))),
+              stat=pt(inch(40), inch(175)), thermostat_ref="ED-M-BATH2-FH-STAT"),
     # Under the dining table centred at y=18'. FURN-M-DINING covers x 22'-5 3/8"..30'-5 3/8",
     # y 16'-3"..19'-9"; the 8'-0" x 7'-3" zone runs y 14'-4 1/2"..21'-7 1/2" under both
     # chair rows (FURN-M-CHAIR-S* at y=15'-2", -N* at y=20'-10") — feet, not table legs,
@@ -1779,7 +1779,7 @@ FLOOR_HEAT = [
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
               # 58.0 ft2 at 12 W/ft2 -> 696 W, carried at 700.
               watts=700,
-              stat=pt(inch(317.375), ft(18))),
+              stat=pt(inch(317.375), ft(18)), thermostat_ref="ED-M-DINING-FH-STAT"),
 ]
 
 # The main floor's structure — two wood bays and one concrete band — lives in

@@ -79,8 +79,8 @@ def test_straight_is_three_dimensional_so_a_riser_is_not_an_offender(catlin_mode
     between its endpoints, which is what the run actually is, and it scores about 1.1.
 
     ``CD-B-ATTIC-RISER``, ``CD-B-DATA-CHASE`` and ``CD-B-SPARE-CHASE`` are the three."""
-    risers = [run for run in catlin_model.conduits
-              if run.z_start_m is not None and run.z_end_m is not None
+    risers = [run for run in catlin_model.conduits if run.derived is None
+              and run.z_start_m is not None and run.z_end_m is not None
               and abs(run.z_end_m - run.z_start_m) > 3 * math.dist(run.path[0], run.path[-1])]
     assert len(risers) >= 3, "no riser-dominant conduit left to pin this against"
     for run in risers:

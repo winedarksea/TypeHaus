@@ -158,7 +158,7 @@ def candidate_element(model: ResolvedModel, proposal: RouteProposal) -> tuple[st
             trade_size=_len(proposal.diameter_m),
             elevations=tuple(_len(z) for _x, _y, z in proposal.points),
             service=Service(proposal.system) if proposal.system else None,
-            **proposal.echo)
+            pull_points=proposal.pull_points, **proposal.echo)
 
     return storey, element
 

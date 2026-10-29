@@ -63,8 +63,8 @@ def data_raceway_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """
     groups: dict[tuple[float, str], dict[str, object]] = {}
     for run in model.conduits:
-        if run.service not in ("data", None):
-            continue
+        if run.service not in ("data", None) or run.derived is not None:
+            continue  # a derived sleeve is the electrician's (→ takeoff/raceways.py)
         key = (run.trade_size_m, run.service or "spare")
         row = groups.setdefault(key, {
             "trade_size_in": round(run.trade_size_m / M_PER_IN, 2),

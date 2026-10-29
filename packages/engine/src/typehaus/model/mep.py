@@ -26,6 +26,7 @@ from typehaus.model.enums import (
     EquipmentKind,
     PipeAccessoryKind,
     PipeSystem,
+    RacewayMaterial,
     Service,
 )
 from typehaus.model.placeables import Location, Mount, require_placed_or_hosted
@@ -479,7 +480,8 @@ class ConduitRun(Element):
     trunks are modeled — branch wiring stays undrawn."""
 
     path: tuple[Point2D, ...]  # plan-frame polyline, >= 2 points
-    trade_size: Length  # EMT trade size, e.g. inch(1)
+    trade_size: Length  # trade size, e.g. inch(1)
+    material: RacewayMaterial = RacewayMaterial.EMT
     start_elevation: Length | None = None  # project-frame absolute
     end_elevation: Length | None = None
     #: Project-frame absolute height at EVERY path vertex, mirroring ``PipeRun.elevations``
@@ -506,6 +508,9 @@ class ConduitRun(Element):
     # conductors — it joins no distribution system and bills no wire, which is the honest
     # reading of an empty pipe.
     service: Service | None = Service.POWER_120
+    #: Circuit tags pulled through this run. Named, ``conductor_takeoff`` bills each one's
+    #: conductors over this run's length; empty, the run keeps the per-raceway estimate.
+    circuits: tuple[str, ...] = ()
 
 
 @register_element

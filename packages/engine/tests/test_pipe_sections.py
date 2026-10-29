@@ -60,7 +60,9 @@ def test_raceway_trade_size_is_a_bore_not_an_outside() -> None:
     """3/4" EMT measures 0.922" — the error that put two catlin raceways inside a chord."""
     assert _in(raceway_outside_diameter_m(inch(0.75).meters)) == _approx(0.922)
     assert _in(raceway_outside_diameter_m(inch(0.5).meters)) == _approx(0.706)
-    assert RACEWAY_OD_IN[0.75] > 0.75
+    assert RACEWAY_OD_IN["emt"][0.75] > 0.75
+    # ENT and Schedule 40 PVC share the IPS outside diameter.
+    assert _in(raceway_outside_diameter_m(inch(0.5).meters, "ent")) == _approx(0.840)
 
 
 def test_unstated_material_takes_the_larger_series() -> None:
@@ -92,7 +94,7 @@ def test_run_radii_reads_the_tables(catlin_model_ro, catlin_plan) -> None:
     for tag in three_inch_pvc:
         assert abs(_in(radii[tag] * 2) - 3.500) < 1e-9, tag
     for raceway in catlin_model_ro.conduits:
-        if abs(_in(raceway.trade_size_m or 0) - 0.75) < 1e-6:
+        if abs(_in(raceway.trade_size_m or 0) - 0.75) < 1e-6 and raceway.material == "emt":
             assert abs(_in(radii[raceway.tag] * 2) - 0.922) < 1e-9, raceway.tag
     # A duct's authored diameter already IS its outside dimension.
     for duct in catlin_model_ro.ducts:

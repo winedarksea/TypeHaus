@@ -36,7 +36,7 @@ from typehaus.model.diaphragm_attachment import (
 from typehaus.model.door_hardware import DoorHardwareItem, JambFraming
 from typehaus.model.doorway import DoorwayProductSpec, DoorwaySectionPart, DoorwayTreatment
 from typehaus.model.drain_column import DrainColumn
-from typehaus.model.electrical import Circuit, LoadManagement
+from typehaus.model.electrical import BoxRow, BoxStandard, Circuit, LoadManagement
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
 from typehaus.model.enums import (
     AlarmKind,
@@ -58,6 +58,7 @@ from typehaus.model.enums import (
     PartitionLayout,
     PipeAccessoryKind,
     PipeSystem,
+    RacewayMaterial,
     RadiantSystem,
     RailingKind,
     RatingBasis,
@@ -408,7 +409,7 @@ __all__ = [
     "PipeRun", "PipeAccessory", "DrainCleanout", "SleevePenetration", "DuctRun",
     "Register", "Equipment",
     "ElectricalDevice",
-    "Circuit", "LoadManagement", "ConduitRun", "LightRun",
+    "Circuit", "LoadManagement", "BoxStandard", "BoxRow", "ConduitRun", "LightRun",
     "Sump", "SumpPump", "VentRun",
     "MonthlyNormal", "SubgradeModulus", "SoilBasis", "ConcreteServiceTemperature",
     "SetbackSpec",
@@ -421,7 +422,7 @@ __all__ = [
     "LayerFunction", "LayerDatum", "ControlLayer", "JunctionPolicy", "Occupancy",
     "HumidityClass",
     "Service", "AlarmKind",
-    "StructuralRole", "SliceKind", "FloorOpeningPurpose", "RadiantSystem",
+    "StructuralRole", "SliceKind", "FloorOpeningPurpose", "RadiantSystem", "RacewayMaterial",
     "PartitionLayout", "RoofForm", "ConditionKind",
     "PipeSystem", "PipeAccessoryKind", "DuctSystem", "DuctRouting", "EquipmentKind",
     "BackupTier", "DeviceKind", "LuminaireForm", "RatingBasis", "UtilityKind",

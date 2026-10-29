@@ -34,7 +34,9 @@ def decision_summary(report: dict, out_dir: Path) -> dict:
     summary[key] = [
         {**{name: row[name] for name in _DECISION_FIELDS},
          "fitting_gaps": [fitting for fitting in row["fittings"]
-                          if fitting["catalog"] is None or fitting["gap"]]}
+                          if fitting["catalog"] is None or fitting["gap"]],
+         **({"pull_point_assignment": row["pull_point_assignment"]}
+            if "pull_point_assignment" in row else {})}
         for row in rows
     ]
     summary["artifacts"] = {

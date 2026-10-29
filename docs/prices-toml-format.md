@@ -44,6 +44,15 @@ factory-oak-shelf = { material = 8.50 }
 [furnishings]    # $ each, keyed by catalog type tag — the same rows [placeables]
 ikea-sofa-84 = { low = 700, high = 2400 }   # reads, but reported beside the total
 
+[conduit]        # $ per lineal foot of raceway: a bare size is EMT, else "ENT 0.5" / "PVC 1"
+"0.75" = { material = { low = 0.9, high = 1.8 }, labour = { low = 4, high = 8.5 } }
+
+[conduit_fittings]  # $ each, keyed "<kind> <MATERIAL> <size>"; $0 elbows = field bends
+"strap EMT 0.75" = { low = 0.20, high = 0.50 }
+
+[electrical_boxes]  # $ each, keyed by the BoxStandard row's box or cover Product tag
+"PROD-RACO-232" = { material = { low = 3, high = 6 }, labour = { low = 15, high = 35 } }
+
 [conductors]     # $ per CONDUCTOR-foot of branch wire, keyed by circuit pole count
 "1" = { material = { low = 0.20, high = 0.35 }, labour = { low = 0.30, high = 0.75 } }
 

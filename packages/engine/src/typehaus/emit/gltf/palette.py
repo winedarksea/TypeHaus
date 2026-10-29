@@ -201,6 +201,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # convention leaves free, and they separate cleanly from each other, which is the
     # distinction that actually earns a colour here.
     "conduit_power": (0.545, 0.302, 0.702, 1.0),  # 0x8b4db3
+    "electrical_box": (0.62, 0.64, 0.66, 1.0),  # galvanized steel
     "conduit_data": (0.180, 0.659, 0.608, 1.0),   # 0x2ea89b
     # The cast-in block-out (→ resolve/mep.py _emit_sleeve_solid). Not concrete — it is the
     # hole, and reading as the pour it sits in would defeat the point of drawing it — and not

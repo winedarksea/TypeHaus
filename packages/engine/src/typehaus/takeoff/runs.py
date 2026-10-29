@@ -37,6 +37,7 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel, SolidSweep
 from typehaus.resolve.sweep import clean_path, sweep_turns
 from typehaus.takeoff.plumbing import _MIN_FITTING_TURN_DEG
+from typehaus.takeoff.raceways import bills_as_conduit, conduit_price_key
 
 _M_TO_FT = 3.280839895013123
 
@@ -178,14 +179,15 @@ def run_schedule(model: ResolvedModel, prices: Any = None) -> list[dict[str, Any
         # Power and comms are two different orders on two different days — the same split
         # ``conduit_takeoff`` and ``data_raceway_takeoff`` make, so the $ here lands in the
         # section the estimate would have put it in.
-        is_data = raceway.service in ("data", None)
+        is_data = not bills_as_conduit(raceway)
         row = _row(raceway.tag, raceway.uid, raceway.storey, raceway.service or "spare",
                    "conduit", raceway.trade_size_m / M_PER_IN, "—", tuple(raceway.path), z,
                    raceway.length_m, raceway.trade_size_m,
                    " → ".join(part for part in (raceway.from_ref, raceway.to_ref) if part))
         if prices is not None:
             section = "data_raceways" if is_data else "conduit"
-            key: object = (raceway.service or "spare") if is_data else row["size_in"]
+            key: object = ((raceway.service or "spare") if is_data
+                           else conduit_price_key(raceway.material, row["size_in"]))
             row.update(_price(prices, section, key, None, row["developed_ft"]))
         rows.append(row)
 

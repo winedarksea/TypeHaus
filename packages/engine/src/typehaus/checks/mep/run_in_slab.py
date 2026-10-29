@@ -104,9 +104,10 @@ def run_in_slab(ctx: CheckContext) -> list[Finding]:
     sections = run_sections(ctx.model)
 
     worst: dict[tuple[str, str], tuple[float, float, tuple[float, float], int]] = {}
+    cast_in = {run.tag for run in ctx.model.conduits if run.cast_in}
     for _kind, tag, path, z in run_polylines(ctx.model):
-        if len(path) < 2 or len(z) != len(path):
-            continue
+        if len(path) < 2 or len(z) != len(path) or tag in cast_in:
+            continue  # a cast-in tube is in the pour on purpose
         _half_w, half_d, insulation = sections.get(tag, (0.0, 0.0, None))
         grow = half_d + (insulation_thickness_m(insulation) or 0.0)
         for leg in range(len(path) - 1):

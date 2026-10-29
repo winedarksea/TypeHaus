@@ -193,3 +193,11 @@ def pull_sections(runs: list[ResolvedConduitRun]) -> list[PullSection]:
                                    ends_at=f"{run.tag} end", bends=(),
                                    schematic_tags=(run.tag,)))
     return out
+
+
+def raceway_chains(runs: list[ResolvedConduitRun]) -> list[list[str]]:
+    """Run tags grouped into raceways: one-in/one-out end->start joints chain."""
+    profiles = {run.tag: prof for run in runs if (prof := _profile(run)) is not None}
+    chains = _chains(list(runs), profiles)
+    chained = {tag for chain in chains for tag in chain}
+    return chains + [[run.tag] for run in runs if run.tag not in chained]

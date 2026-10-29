@@ -1307,6 +1307,17 @@ class ResolvedConduitRun:
     z_m: tuple[float, ...] | None = None
     #: Interior ``path`` indices authored as pull boxes (→ model/mep.py ConduitRun).
     pull_points: tuple[int, ...] = ()
+    #: ``RacewayMaterial`` value: ``emt`` | ``ent`` | ``pvc``.
+    material: str = "emt"
+    #: Circuit tags pulled through it (→ model/mep.py ConduitRun.circuits).
+    circuits: tuple[str, ...] = ()
+    #: None for an authored run. A derived one names its reason: ``nm_sleeve`` (a surface
+    #: box's drop, resolve/device_boxes.py), ``fh_sensor`` / ``fh_cold_lead`` (a floor-heat
+    #: thermostat's raceways, resolve/floor_heat_leads.py). Not a trunk: no conductors, no
+    #: data reach, no bend grading.
+    derived: str | None = None
+    #: Cast into concrete by design (a slab sensor tube): no sleeve, no straps.
+    cast_in: bool = False
 
 
 @dataclass(frozen=True)
@@ -1596,6 +1607,8 @@ class ResolvedModel:
     sleeves: list[ResolvedSleeve] = field(default_factory=list)
     ducts: list[ResolvedDuct] = field(default_factory=list)
     conduits: list[ResolvedConduitRun] = field(default_factory=list)
+    # Derived device boxes, one per boxed wall device (→ resolve/device_boxes.py, #93).
+    device_boxes: list[Any] = field(default_factory=list)
     light_runs: list[ResolvedLightRun] = field(default_factory=list)
     solar_panels: list[ResolvedSolarPanel] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)

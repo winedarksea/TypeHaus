@@ -20,9 +20,16 @@ from typehaus.findings import Finding
 from typehaus.resolve.conduit_pulls import MAX_BEND_DEG_BETWEEN_PULLS, PullSection, pull_sections
 
 _CID = "mep.conduit_bend_total"
-# Every raceway bills as EMT (resolve/pipe_sections.py); the siblings say the same thing.
-_CODE = "NEC 358.26 (EMT; also 342.26/344.26/352.26/362.26)"
+# Each material's own article; every one of them says 360°.
+_ARTICLE = {"emt": "NEC 358.26 (EMT)", "ent": "NEC 362.26 (ENT)", "pvc": "NEC 352.26 (PVC)"}
+_CODE = "NEC 358.26 / 362.26 / 352.26"
 _ADVISORY = "ADVISORY — "
+
+
+def _code(section: PullSection, materials: dict[str, str]) -> str:
+    cited = dict.fromkeys(_ARTICLE.get(materials.get(tag, "emt"), _CODE)
+                          for tag in section.run_tags)
+    return "; ".join(cited)
 
 
 def _describe(section: PullSection) -> str:
@@ -35,28 +42,31 @@ def _describe(section: PullSection) -> str:
 @check(Tier.ADVISORY, _CID)
 def conduit_bend_total(ctx: CheckContext) -> list[Finding]:
     """No more than 360° of bends between pull points, per pull-to-pull section."""
-    runs = list(ctx.model.conduits)
+    # A derived drop or floor-heat lead is a straight sleeve, not a trunk to pull through.
+    runs = [run for run in ctx.model.conduits if run.derived is None]
     if not runs:
         return [_na(_CID, "this model draws no conduit, so no raceway has bends to count",
                     code=_CODE)]
+    materials = {run.tag: run.material for run in runs}
     out: list[Finding] = []
     for section in pull_sections(runs):
+        code = _code(section, materials)
         if not section.gradable:
             out.append(_unknown(
                 _CID, f"raceway {' + '.join(section.run_tags)} has no authored per-vertex "
                       f"elevations on {', '.join(section.schematic_tags)} — its bends in z "
                       "are a drawing convention, not a measurement",
-                section.run_tags, code=_CODE,
+                section.run_tags, code=code,
                 fix="author ConduitRun.elevations, one per path vertex"))
             continue
         if section.total_deg <= MAX_BEND_DEG_BETWEEN_PULLS + 1e-6:
             out.append(_pass(_CID, _describe(section) + f", within the "
                                    f"{MAX_BEND_DEG_BETWEEN_PULLS:.0f}° between pull points",
-                             section.run_tags, code=_CODE))
+                             section.run_tags, code=code))
             continue
         out.append(_pass(
             _CID, _ADVISORY + _describe(section) + f" — over the "
             f"{MAX_BEND_DEG_BETWEEN_PULLS:.0f}° (four quarter bends) allowed between pull "
             "points; add a pull box/conduit body (ConduitRun.pull_points) or re-route",
-            section.run_tags, code=_CODE))
+            section.run_tags, code=code))
     return out

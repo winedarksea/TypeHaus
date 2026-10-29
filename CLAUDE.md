@@ -58,6 +58,11 @@ a release or for exhaustive local verification.
   `ResolvedModel.base_runs` / `door_casings`, drawn by `geometry_millwork`, billed by the LF in
   `interior_trim`. The base kind is the floor's `Material.base_detail`; the stock's
   `requires_custom_milling` decides whether it is milled or bought.
+- **Device boxes are derived from one `BoxStandard`** (decision #93): `resolve/device_boxes.py`
+  reads the host face (bare concrete/masonry → surface, framed cavity → flush, a box a raceway
+  reaches → `flush_raceway`) into `ResolvedModel.device_boxes`; a surface box gets a derived
+  3/4" EMT NM sleeve to the ceiling, and a `FloorHeat.thermostat_ref` its two ENT leads — both
+  `derived` `ResolvedConduitRun`s. Graded by `electrical.box_fill`, billed in `[electrical_boxes]`.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure

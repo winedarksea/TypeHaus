@@ -357,6 +357,7 @@ def _emit_registers_equipment_devices(f: Any, body: Any, model: ResolvedModel,
         "ElectricalDevice": {item.tag: item for item in model.plan.library.electrical_device_types},
     }
     resolved = {item.uid: item for item in model.canvas_objects}
+    boxes = {box.device_tag: box for box in model.device_boxes}
     type_cache: dict[tuple[str, str], Any] = {}
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
@@ -381,7 +382,7 @@ def _emit_registers_equipment_devices(f: Any, body: Any, model: ResolvedModel,
                     f, body, element, storey, storeys, project_uuid, product_type,
                     resolved_item,
                     _placeable_ifc_type(f, type_cache, product_type, ifc_class, type_class,
-                                        project_uuid))
+                                        project_uuid), boxes.get(element.tag))
                 if element.kind.value == "data_outlet":
                     data_devices.append(entity)
     return data_devices
@@ -524,10 +525,13 @@ def _uses_device_parts(product_type: Any | None) -> bool:
 
 def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str, Any],
                  project_uuid: Any, product_type: Any | None, resolved: Any | None,
-                 type_object: Any | None) -> Any:
+                 type_object: Any | None, box: Any | None = None) -> Any:
     x, y = resolved.position if resolved is not None else device.position.xy_m
-    half = 0.05  # 4"x4" nominal device box
-    outline = resolved.footprint if resolved is not None else _rectangle(x, y, half * 2, half * 2)
+    # The box is its own IfcJunctionBox solid; the device is only the device.
+    half = box.width_m / 2 if box is not None else 0.05
+    outline = (list(box.device_footprint) if box is not None and box.device_footprint
+               else resolved.footprint if resolved is not None
+               else _rectangle(x, y, half * 2, half * 2))
     # The placeable resolver owns the Mount contract, so IFC reads the same elevation as
     # glTF and the UI instead of carrying its own per-kind defaults (which would diverge).
     z0 = resolved.body_z0_m if resolved is not None else resolved_mount_elevation(storey, device)

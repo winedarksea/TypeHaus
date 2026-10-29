@@ -1116,7 +1116,7 @@ FLOOR_HEAT = [
                     pt(inch(92.99), inch(343.875)), pt(inch(114.5), inch(343.875))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3.625), embed=in_slab(inch(0.5)),
               watts=338, delivered_btuh_per_ft2=22.8,
-              stat=pt(ft(1, 6), ft(32))),
+              stat=pt(ft(1, 6), ft(32)), thermostat_ref="ED-S-BATH1-FH-STAT"),
 ]
 
 # SF-S-DUCT is one wall-width rectangle, including the study and open landing portions.

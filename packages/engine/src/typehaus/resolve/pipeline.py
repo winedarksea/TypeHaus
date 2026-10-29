@@ -234,6 +234,16 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_interior_trim(plan, model))
     with _stage("floor_heat"):
         findings.extend(resolve_floor_heat(model))
+    with _stage("device_raceways"):
+        # After placeables (the boxes) and the floors/ceilings overhead: the derived NM
+        # sleeves and floor-heat leads (→ resolve/device_drops.py, floor_heat_leads.py).
+        from typehaus.resolve.device_boxes import standard_findings
+        from typehaus.resolve.device_drops import derive_sleeve_drops
+        from typehaus.resolve.floor_heat_leads import derive_floor_heat_leads
+
+        findings.extend(standard_findings(plan))
+        derive_sleeve_drops(model)
+        derive_floor_heat_leads(model)
     with _stage("stacking"):
         findings.extend(resolve_stacking(model))
     with _stage("connector_markers"):

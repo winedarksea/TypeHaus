@@ -176,8 +176,8 @@ def concrete_crossings(model: ResolvedModel) -> list[dict]:
     ]
     for conduit in model.conduits:
         profile = conduit_vertical_profile(conduit)
-        if profile is None:
-            continue
+        if profile is None or conduit.cast_in:
+            continue  # a cast-in tube (a slab sensor's) is in the pour by design
         path, z = profile
         walkable.append((conduit.tag, conduit.service or "spare",
                          conduit.trade_size_m, path, z))

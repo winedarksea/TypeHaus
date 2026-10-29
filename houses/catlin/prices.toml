@@ -2616,19 +2616,16 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # service decision retired is only the CREDIT its PowerSmart throttling used to take.
 # Device schedule rows (owner decisions 2026-10-27, notes/workshop_receptacles.md): ranges carry over from
 # the commodity class each replaced; Matter/occupancy/USB-C/surge lines carry a retail uplift. Estimates.
-"ED-T-LEV-620-DUPLEX" = { material = { low = 14, high = 44 }, labour = { low = 45, high = 95 } }  # 2 ea
+"ED-T-LEV-620-DUPLEX" = { material = { low = 11, high = 24 }, labour = { low = 40, high = 85 } }  # 1 ea; T5461 + E5825, device only: box and cover in [electrical_boxes] (2026-10-29)
 "ED-T-LEV-620-FLUSH" = { material = { low = 14, high = 44 }, labour = { low = 45, high = 95 } }  # 1 ea; kettle, flush 2-gang (the old 620-DUPLEX rate)
 "ED-T-LEV-DRYER-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-DUPLEX-15" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 14 ea
-"ED-T-LEV-DUPLEX-15-SURF" = { material = { low = 15, high = 40 }, labour = { low = 60, high = 120 } }  # 1 ea; duplex + 4x4 steel box and raised cover on concrete, EMT whip. Box/cover/labour uplift is an ESTIMATE, not a quote
 "ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 58 ea
-"ED-T-LEV-DUPLEX-20-SURF" = { material = { low = 15, high = 40 }, labour = { low = 60, high = 120 } }  # 3 ea; as DUPLEX-15-SURF (ESTIMATE)
 "ED-T-LEV-EV-1450" = { material = { low = 25, high = 80 }, labour = { low = 160, high = 380 } }  # 0 ea
 "ED-T-LEV-EV-620" = { material = { low = 15, high = 45 }, labour = { low = 160, high = 380 } }  # 0 ea
 "ED-T-LEV-GFCI-15" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 6 ea
 "ED-T-LEV-GFCI-20" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 20 ea
 "ED-T-LEV-GFCI-ALARM" = { material = { low = 30, high = 70 }, labour = { low = 48, high = 92 } }  # 1 ea
-"ED-T-LEV-GFCI-ALARM-SURF" = { material = { low = 42, high = 100 }, labour = { low = 60, high = 120 } }  # 1 ea; GFTA2 + steel box (ESTIMATE)
 "ED-T-LEV-GFCI-WR" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 5 ea
 "ED-T-LEV-GUIDE" = { material = { low = 12, high = 28 }, labour = { low = 38, high = 78 } }  # 1 ea
 "ED-T-LEV-MATTER" = { material = { low = 40, high = 70 }, labour = { low = 40, high = 80 } }  # 9 ea
@@ -2636,11 +2633,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LEV-MATTER-ELV" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 110 } }  # 1 ea
 "ED-T-LEV-OCC-PANTRY" = { material = { low = 40, high = 80 }, labour = { low = 40, high = 80 } }  # 1 ea
 "ED-T-LEV-OCC-PIR" = { material = { low = 40, high = 80 }, labour = { low = 40, high = 80 } }  # 1 ea
-"ED-T-LEV-QUAD-520" = { material = { low = 30, high = 85 }, labour = { low = 50, high = 105 } }  # 1 ea
+"ED-T-LEV-QUAD-520" = { material = { low = 5, high = 18 }, labour = { low = 45, high = 95 } }  # 1 ea; two E5825, device only: box and cover in [electrical_boxes] (2026-10-29)
 "ED-T-LEV-RANGE-1450" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-SINGLE-520" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
 "ED-T-LEV-SURGE" = { material = { low = 25, high = 50 }, labour = { low = 40, high = 80 } }  # 2 ea
-"ED-T-LEV-SURGE-SURF" = { material = { low = 37, high = 80 }, labour = { low = 60, high = 120 } }  # 1 ea; T5380 + steel box (ESTIMATE)
 "ED-T-LEV-SW1" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 35 ea
 "ED-T-LEV-SW3" = { material = { low = 4, high = 12 }, labour = { low = 32, high = 68 } }  # 5 ea
 "ED-T-LEV-USBC" = { material = { low = 30, high = 55 }, labour = { low = 40, high = 80 } }  # 2 ea
@@ -5953,16 +5949,82 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "6.0" = { material = { low = 20, high = 45 }, labour = { low = 12, high = 30 } }  # 3 ea
 
 [conduit]
-# RESEARCHED 2026-08-08 — [low, high] $/LF of EMT, material only, including couplings and
-# straps. Basis: EMT $0.60-2.00/LF across 1/2"-1", with 1" quoted at $1.50 wholesale and
-# $1.80 retail; larger trade sizes scale with the steel. Sources: bhumicalculator.com 2026
-# electrical conduit cost per foot, designtransitionstudio.com conduit price per foot,
-# shieldenstrut.com EMT conduit cost.
-# $/LF, by trade size (in)
+# RESEARCHED 2026-08-08 — [low, high] $/LF of EMT, material plus install labour. Basis: EMT
+# $0.60-2.00/LF across 1/2"-1", with 1" quoted at $1.50 wholesale and $1.80 retail; larger
+# trade sizes scale with the steel. Sources: bhumicalculator.com 2026 electrical conduit
+# cost per foot, designtransitionstudio.com conduit price per foot, shieldenstrut.com EMT
+# conduit cost. ** Couplings, connectors, straps and pull boxes bill in [conduit_fittings]
+# since 2026-10-29; these rates were left as quoted (the parts are a few cents a foot). **
+# $/LF by size: a bare size is EMT; "ENT 0.5" is ENT (2026-10-29, ESTIMATE: ENT at
+# $0.35-0.70/LF for 1/2" and $0.55-1.00 for 3/4" big-box retail, Carlon/Cantex coils).
+"0.5" = { material = { low = 0.6, high = 1.2 }, labour = { low = 3.5, high = 7.5 } }
+"ENT 0.5" = { material = { low = 0.35, high = 0.7 }, labour = { low = 2, high = 5 } }
+"ENT 0.75" = { material = { low = 0.55, high = 1 }, labour = { low = 2.5, high = 6 } }
 "0.75" = { material = { low = 0.9, high = 1.8 }, labour = { low = 4, high = 8.5 } }  # 37.6 LF
 "1.0" = { material = { low = 1.3, high = 2.4 }, labour = { low = 5, high = 10 } }  # 60.3 LF
 "1.25" = { material = { low = 1.9, high = 3.4 }, labour = { low = 6, high = 12 } }  # 36.3 LF
 "1.5" = { material = { low = 2.3, high = 4.2 }, labour = { low = 7, high = 14.5 } }  # 35.0 LF
+
+[conduit_fittings]
+# NEW 2026-10-29 — [low, high] $ EACH, MATERIAL ONLY (the install sits in [conduit]'s
+# $/LF, as [pipe_fittings] does for pipe). Counted off the runs (resolve/conduit_fittings.py):
+# a connector per section end, a coupling per extra 10 ft stick, straps per NEC 358.30 /
+# 362.30 / 352.30, a pull box per authored pull point, and the derived NM sleeves' offset
+# connector and nonmetallic bushing. ESTIMATE, not quoted: steel set-screw EMT fittings and
+# 1-hole straps at big-box retail (Home Depot / Lowe's listings for Halex, Bridgeport,
+# Sigma, 2026-10), ENT fittings at Carlon retail. Elbows: 1/2"-1" EMT is FIELD BENT on this
+# job (a hand bender), so those rows are $0 — the bend is labour already in the $/LF; 1 1/4"
+# and up are factory 90s. A pull box is a 4-11/16" square box and blank cover or an LB body.
+"bushing EMT 0.75" = { low = 0.3, high = 0.8 }  # nonmetallic insulating bushing, NM entry
+"bushing ENT 0.5" = { low = 0.3, high = 0.8 }
+"connector EMT 0.5" = { low = 0.6, high = 1.2 }
+"connector EMT 0.75" = { low = 0.9, high = 1.6 }
+"connector EMT 1" = { low = 1.5, high = 2.8 }
+"connector EMT 1.25" = { low = 2.8, high = 4.5 }
+"connector EMT 1.5" = { low = 4, high = 6 }
+"connector EMT 2" = { low = 5, high = 9 }
+"connector ENT 0.5" = { low = 0.8, high = 1.5 }
+"connector ENT 0.75" = { low = 1, high = 2 }
+"coupling EMT 0.75" = { low = 0.8, high = 1.5 }
+"coupling EMT 1" = { low = 1.3, high = 2.5 }
+"coupling EMT 1.25" = { low = 2.5, high = 4 }
+"coupling EMT 1.5" = { low = 3.5, high = 5.5 }
+"coupling EMT 2" = { low = 5, high = 8 }
+"elbow EMT 0.5" = { low = 0, high = 0 }  # field bend
+"elbow EMT 0.75" = { low = 0, high = 0 }  # field bend
+"elbow EMT 1" = { low = 0, high = 0 }  # field bend
+"elbow EMT 1.25" = { low = 9, high = 15 }
+"elbow EMT 1.5" = { low = 12, high = 20 }
+"elbow EMT 2" = { low = 18, high = 30 }
+"end_cap ENT 0.5" = { low = 0.5, high = 1.5 }
+"end_cap ENT 0.75" = { low = 0.8, high = 2 }
+"offset_connector EMT 0.75" = { low = 2, high = 4 }
+"pull_box EMT 0.75" = { low = 8, high = 15 }
+"pull_box EMT 1" = { low = 10, high = 18 }
+"pull_box EMT 1.25" = { low = 14, high = 25 }
+"pull_box EMT 1.5" = { low = 18, high = 30 }
+"strap EMT 0.5" = { low = 0.15, high = 0.4 }
+"strap EMT 0.75" = { low = 0.2, high = 0.5 }
+"strap EMT 1" = { low = 0.3, high = 0.7 }
+"strap EMT 1.25" = { low = 0.45, high = 0.9 }
+"strap EMT 1.5" = { low = 0.6, high = 1.2 }
+"strap EMT 2" = { low = 0.8, high = 1.6 }
+"strap ENT 0.5" = { low = 0.1, high = 0.3 }
+"strap ENT 0.75" = { low = 0.15, high = 0.35 }
+
+[electrical_boxes]
+# NEW 2026-10-29 — [low, high] $ EACH, split material/labour: the box behind every wall
+# device and the cover or ring in front of it, derived from the BoxStandard
+# (plan/device_boxes.py, decision #93). The device itself prices in [placeables], re-based
+# to the device alone the same day, so no box bills twice. ESTIMATE, not quoted: RACO and
+# Carlon at big-box / supply-house retail (2026-10). Surface-box labour is a Tapcon-set
+# steel box on concrete; flush is a nail-on new-work box.
+"PROD-RACO-232" = { material = { low = 3, high = 6 }, labour = { low = 15, high = 35 } }
+"PROD-RACO-808C" = { material = { low = 3, high = 7 }, labour = { low = 3, high = 8 } }
+"PROD-RACO-809C" = { material = { low = 3, high = 7 }, labour = { low = 3, high = 8 } }
+"PROD-RACO-768" = { material = { low = 1.5, high = 3.5 }, labour = { low = 2, high = 5 } }
+"PROD-CARLON-B122A" = { material = { low = 1.2, high = 2.5 }, labour = { low = 8, high = 20 } }
+"PROD-CARLON-B235A" = { material = { low = 2.5, high = 5 }, labour = { low = 10, high = 24 } }
 
 [conductors]
 # NEW SECTION 2026-08-27 — [low, high] $/CONDUCTOR-FOOT, split material/labour.
@@ -8066,6 +8128,8 @@ duct_fittings        = "material"
 duct_insulation      = "material"
 sleeves              = "material"
 conduit              = "material"
+conduit_fittings     = "material"
+electrical_boxes     = "material"
 conductors           = "installed"
 solar_modules        = "installed"
 data_raceways        = "installed"

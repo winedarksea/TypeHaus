@@ -14,6 +14,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     drainage_network,
     duct_connectivity,
     electrical,
+    electrical_boxes,
     electrical_code,
     electrical_floor,
     electrical_openings,

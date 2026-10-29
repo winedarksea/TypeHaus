@@ -51,12 +51,16 @@ TUBE_OD_IN: dict[float, float] = {
     1.25: 1.375, 1.5: 1.625, 2.0: 2.125, 2.5: 2.625, 3.0: 3.125, 4.0: 4.125,
 }
 
-#: Electrical metallic tubing outside diameters, inches (NEC ch. 9 Table 4). A raceway's
-#: trade size is a nominal BORE, so the error here runs the other way from a pipe's and is
-#: larger in proportion: 3/4" EMT measures 0.922" across, a quarter more than its name.
-RACEWAY_OD_IN: dict[float, float] = {
-    0.5: 0.706, 0.75: 0.922, 1.0: 1.163, 1.25: 1.510, 1.5: 1.740,
-    2.0: 2.197, 2.5: 2.875, 3.0: 3.500, 3.5: 4.000, 4.0: 4.500,
+#: Raceway outside diameters, inches, by material then trade size. A trade size is a nominal
+#: BORE, so the error runs the other way from a pipe's: 3/4" EMT measures 0.922" across.
+#: EMT: NEC ch. 9 Table 4 / ANSI C80.3. ENT: NEC ch. 9 Table 4 (Article 362). PVC: Schedule
+#: 40, which is IPS (ASTM D1785 / NEMA TC-2).
+RACEWAY_OD_IN: dict[str, dict[float, float]] = {
+    "emt": {0.5: 0.706, 0.75: 0.922, 1.0: 1.163, 1.25: 1.510, 1.5: 1.740,
+            2.0: 2.197, 2.5: 2.875, 3.0: 3.500, 3.5: 4.000, 4.0: 4.500},
+    "ent": {0.5: 0.840, 0.75: 1.050, 1.0: 1.315, 1.25: 1.660, 1.5: 1.900, 2.0: 2.375},
+    "pvc": {0.5: 0.840, 0.75: 1.050, 1.0: 1.315, 1.25: 1.660, 1.5: 1.900, 2.0: 2.375,
+            2.5: 2.875, 3.0: 3.500, 4.0: 4.500},
 }
 
 #: Materials built to copper-tube size rather than iron-pipe size.
@@ -98,16 +102,12 @@ def pipe_outside_diameter_m(nominal_m: float, material: str | None) -> float:
     return _lookup(table, nominal_in) * M_PER_IN
 
 
-def raceway_outside_diameter_m(trade_size_m: float) -> float:
-    """The outside diameter of a raceway of this authored trade size.
+def raceway_outside_diameter_m(trade_size_m: float, material: str = "emt") -> float:
+    """The outside diameter of a raceway of this trade size and ``RacewayMaterial`` value.
 
-    **Every raceway is read as EMT**, because ``ConduitRun`` carries no material field to
-    read. That is the conservative choice rather than an arbitrary one: rigid PVC conduit is
-    *larger* than EMT at every trade size, so reading a PVC run as EMT under-reports it —
-    but EMT is what catlin's runs are, what the authoring comments say, and what a
-    residential branch circuit in a floor cavity is. Give ``ConduitRun`` a material and this
-    function should grow the same two-table shape :func:`pipe_outside_diameter_m` has.
+    An unknown material reads as EMT, the smallest OD at every size: never silently safe.
     """
     if trade_size_m <= 0:
         return 0.0
-    return _lookup(RACEWAY_OD_IN, trade_size_m / M_PER_IN) * M_PER_IN
+    table = RACEWAY_OD_IN.get(material, RACEWAY_OD_IN["emt"])
+    return _lookup(table, trade_size_m / M_PER_IN) * M_PER_IN

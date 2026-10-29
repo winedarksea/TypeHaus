@@ -9,7 +9,7 @@ Plan prose records design intent, so accepting a proposal requires an explicit e
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any
 
 from typehaus.quantities import M_PER_IN, Length, Point2D, ft, inch
@@ -83,6 +83,9 @@ class RouteProposal:
     notes: list[str] = field(default_factory=list)
     #: What pasting this obliges next, printed after the source whether or not ``--explain``.
     after: tuple[str, ...] = ()
+    #: A raceway's pull boxes (interior ``points`` indices) and how they were assigned.
+    pull_points: tuple[int, ...] = ()
+    pull_assignment: Any = None  # trades.conduit.PullPointAssignment
 
     def snapped(self) -> RouteProposal:
         """The same proposal on the 1/16" grid, with collinear vertices already collapsed.
@@ -102,7 +105,18 @@ class RouteProposal:
             serves=self.serves, system=self.system, cost=self.cost, bends=self.bends,
             terms=dict(self.terms), notes=list(self.notes), width_m=self.width_m,
             depth_m=self.depth_m, routing=self.routing, floor_ref=self.floor_ref,
-            soffit_ref=self.soffit_ref, echo=dict(self.echo), after=self.after)
+            soffit_ref=self.soffit_ref, echo=dict(self.echo), after=self.after,
+            pull_points=self.pull_points, pull_assignment=self.pull_assignment)
+
+    def with_pull_points(self, boxes: tuple[tuple[float, float, float], ...]) -> RouteProposal:
+        """A raceway keeping its authored boxes and gaining what 360 degrees needs.
+
+        Run AFTER :meth:`snapped`: the indices are into the final points."""
+        from typehaus.routing.trades.conduit import assign_pull_points
+
+        found = assign_pull_points(self.points, boxes)
+        return replace(self, points=list(found.points), pull_points=found.indices,
+                       pull_assignment=found, notes=[*self.notes, found.disclosure()])
 
     def developed_ft(self) -> float:
         total = 0.0
@@ -161,6 +175,8 @@ class RouteProposal:
                  f"        trade_size={value_source(length_source(self.diameter_m))},",
                  *_wrapped("elevations", elevations),
                  f"        service={_system_source('conduit', self.system)},"]
+        if self.pull_points:
+            lines.extend(_wrapped("pull_points", self.pull_points))
         for name, value in sorted(self.echo.items()):
             lines.append(f"        {name}={value_source(value)},")
         lines[-1] = lines[-1].rstrip(",") + "),"
@@ -182,6 +198,9 @@ class RouteProposal:
             "terms_in": {k: round(v, 4) for k, v in sorted(self.terms.items())},
             "notes": list(self.notes),
             "after_paste": list(self.after),
+            **({"pull_points": list(self.pull_points),
+                "pull_point_assignment": self.pull_assignment.as_dict()}
+               if self.pull_assignment is not None else {}),
             # Contract 2 names the parts as well as the line: an agent choosing between two
             # alternatives needs to know one of them needs a fitting nobody stocks.
             "fittings": [
@@ -202,11 +221,16 @@ class RouteProposal:
         answerable *before* the paste rather than at the next take-off. A route that costs
         two bends less and takes a fitting that does not exist is not the cheaper route.
         """
-        from typehaus.resolve.mep_fittings import FAMILY_DUCT, FAMILY_PIPE, polyline_fittings
+        from typehaus.resolve.mep_fittings import (
+            FAMILY_DUCT,
+            FAMILY_PIPE,
+            FAMILY_RACEWAY,
+            polyline_fittings,
+        )
 
         if len(self.points) < 3:
             return []
-        family = FAMILY_DUCT if self.kind == "duct" else FAMILY_PIPE
+        family = {"duct": FAMILY_DUCT, "conduit": FAMILY_RACEWAY}.get(self.kind, FAMILY_PIPE)
         rectangular = self.width_m > 0.0 or self.depth_m > 0.0
         size = max(self.width_m, self.depth_m) if rectangular else self.diameter_m
         if size <= 0.0:
@@ -256,7 +280,7 @@ def _wrapped(name: str, values: Iterable[object]) -> list[str]:
         items[0] += ","
     lines, current = [], f"        {name}=("
     for index, item in enumerate(items):
-        piece = item + ("," if index < len(items) - 1 or len(items) == 1 else "")
+        piece = item + ("," if index < len(items) - 1 else "")
         if len(current) + len(piece) + 1 > _WIDTH and current.strip() != f"{name}=(":
             lines.append(current.rstrip())
             current = " " * (9 + len(name))
@@ -266,6 +290,8 @@ def _wrapped(name: str, values: Iterable[object]) -> list[str]:
 
 
 def _system_source(kind: str, system: str) -> str:
+    if kind == "conduit" and not system:
+        return "None"  # a capped spare carries no service
     enum = {"pipe": "PipeSystem", "duct": "DuctSystem", "conduit": "Service"}[kind]
     return f"{enum}.{system.upper()}"
 

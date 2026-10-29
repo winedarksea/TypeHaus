@@ -17,12 +17,11 @@ from typehaus.takeoff.backup_calc import backup_runtime_summary
 from typehaus.takeoff.cladding_trim import cladding_trim_takeoff
 from typehaus.takeoff.countertops import countertop_takeoff
 from typehaus.takeoff.data import data_device_schedule, data_raceway_takeoff, poe_budget
+from typehaus.takeoff.device_boxes import device_box_takeoff
 from typehaus.takeoff.drainage import drainage_takeoff
 from typehaus.takeoff.edge_trim import edge_trim_takeoff
 from typehaus.takeoff.electrical import (
     backup_component_rows,
-    conductor_takeoff,
-    conduit_takeoff,
     electrical_device_takeoff,
     panel_schedule,
     service_load_summary,
@@ -68,6 +67,11 @@ from typehaus.takeoff.plumbing import fitting_takeoff
 from typehaus.takeoff.plumbing_specialties import (
     install_parts_takeoff,
     plumbing_specialties_takeoff,
+)
+from typehaus.takeoff.raceways import (
+    conductor_takeoff,
+    conduit_fitting_takeoff,
+    conduit_takeoff,
 )
 from typehaus.takeoff.railings import railing_takeoff
 from typehaus.takeoff.reinforcement import reinforcement_takeoff
@@ -227,6 +231,10 @@ def bill_of_materials(
         "panel_schedule": panel_schedule(model),
         "service_load": service_load_summary(model),
         "conduit": conduit_takeoff(model),
+        # Raceway parts and device boxes by the piece (→ resolve/conduit_fittings.py,
+        # resolve/device_boxes.py).
+        "conduit_fittings": conduit_fitting_takeoff(model),
+        "electrical_boxes": device_box_takeoff(model),
         "conductors": conductor_takeoff(model),
         "solar": solar,
         # The priced view of the dict above. Every ``ESTIMATE_PLANS`` entry

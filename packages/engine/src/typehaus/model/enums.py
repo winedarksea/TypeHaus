@@ -284,6 +284,14 @@ class RadiantSystem(Enum):
     HYDRONIC = "hydronic"
 
 
+class RacewayMaterial(Enum):
+    """What a ``ConduitRun`` is made of: it decides the OD, the bend article and the parts."""
+
+    EMT = "emt"  # NEC 358
+    ENT = "ent"  # NEC 362, flexible: bends without a part
+    PVC = "pvc"  # NEC 352, rigid Schedule 40
+
+
 class PartitionLayout(Enum):
     """Framing layout for a STRUCTURE layer (#50 acoustic partitions)."""
 

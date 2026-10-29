@@ -11,10 +11,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal, cast
 
-from typehaus.model.base import Element
+from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import BackupTier
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.types import LuminaireType
+from typehaus.quantities import Length, inch
 
 if TYPE_CHECKING:
     from typehaus.model.plan import Library
@@ -125,3 +126,74 @@ def luminaire_types(library: Library) -> dict[str, LuminaireType]:
     return {product.tag: cast(LuminaireType, product)
             for product in library.electrical_device_types
             if getattr(product, "form", None) is not None}
+
+
+#: NEC 2026 Table 314.16(A), metal boxes: trade designation -> cubic inches. Code data, not
+#: a catalog: a listed nonmetallic box is marked with its own volume instead.
+METAL_BOX_VOLUME_IN3: dict[str, float] = {
+    "4 x 1-1/4 square": 18.0, "4 x 1-1/2 square": 21.0, "4 x 2-1/8 square": 30.3,
+    "4-11/16 x 1-1/4 square": 25.5, "4-11/16 x 1-1/2 square": 29.5,
+    "4-11/16 x 2-1/8 square": 42.0,
+    "3 x 2 x 2-1/4 device": 10.5, "3 x 2 x 2-1/2 device": 12.5,
+    "3 x 2 x 2-3/4 device": 14.0, "3 x 2 x 3-1/2 device": 18.0,
+    "4 x 2-1/8 x 1-1/2 device": 10.3, "4 x 2-1/8 x 1-7/8 device": 13.0,
+    "4 x 2-1/8 x 2-1/8 device": 14.5,
+}
+
+BoxMounting = Literal["surface", "flush", "flush_raceway"]
+
+
+class BoxRow(HausModel):
+    """One box and its cover (surface) or device ring (flush), for a mounting × gangs.
+
+    ``box_size`` is (width, height, depth) of the box body. A metal box names its Table
+    314.16(A) ``designation``; a nonmetallic one authors its marked ``box_volume_in3``.
+    ``cover_volume_in3`` is the volume a raised cover or ring adds where it is marked with
+    one (314.16(A)(1)); ``cover_rise`` is how far a surface cover stands proud of the box.
+    """
+
+    mounting: BoxMounting
+    gangs: int = 1
+    box_product_ref: str
+    # None where the box takes no ring or cover: a flush nonmetallic box under a wall plate.
+    cover_product_ref: str | None = None
+    box_size: tuple[Length, Length, Length]
+    designation: str | None = None
+    box_volume_in3: float | None = None
+    cover_volume_in3: float = 0.0
+    cover_rise: Length = inch(0)
+
+    @property
+    def volume_in3(self) -> float | None:
+        """Box plus marked cover/ring volume, or None when neither source names one."""
+        box = (self.box_volume_in3 if self.box_volume_in3 is not None
+               else METAL_BOX_VOLUME_IN3.get(self.designation or ""))
+        return None if box is None else box + self.cover_volume_in3
+
+
+@register_element
+class BoxStandard(Element):
+    """The house's device boxes, declared once and derived per device (decision #93).
+
+    One per plan (a second is an ``integrity.box_standard`` error). The mounting is derived
+    from the host face (``resolve/device_boxes.py``): bare concrete or masonry takes
+    ``surface``, a framed cavity ``flush``, and a flush box an authored raceway reaches
+    ``flush_raceway``. ``surface_drop`` is the trade size of the derived EMT sleeve that
+    brings NM down to a surface box from overhead (NEC 334.15(B)/(C)).
+    """
+
+    rows: tuple[BoxRow, ...]
+    surface_drop: Length
+
+    def row_for(self, mounting: str, gangs: int) -> BoxRow | None:
+        return next((row for row in self.rows
+                     if row.mounting == mounting and row.gangs == gangs), None)
+
+    def product_refs(self) -> tuple[str, ...]:
+        refs = [ref for row in self.rows for ref in (row.box_product_ref, row.cover_product_ref)
+                if ref]
+        return tuple(dict.fromkeys(refs))
+
+
+register_constructor("BoxStandard", BoxStandard)
+register_constructor("BoxRow", BoxRow)

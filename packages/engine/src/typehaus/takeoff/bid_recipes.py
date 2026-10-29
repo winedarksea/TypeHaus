@@ -123,7 +123,9 @@ SHAPES: dict[str, Shape] = {
     "duct_insulation": Shape("Duct insulation", _runs, "LF"),
     "placeables": Shape("Fixtures, devices and equipment, by model"),
     "floor_heat": Shape("Radiant floor heat cable"),
-    "conduit": Shape("Conduit, by trade size", _runs, "LF"),
+    "conduit": Shape("Conduit, by material and trade size", _runs, "LF"),
+    "conduit_fittings": Shape("Conduit fittings, by the piece"),
+    "electrical_boxes": Shape("Device boxes and covers, by the piece"),
     "conductors": Shape("Conductors"),
     "data_raceways": Shape("Data raceways", _runs, "LF"),
     "solar_modules": Shape("PV modules, by the module", None),
@@ -248,9 +250,10 @@ RECIPES: dict[str, Recipe] = {
     "electrical": Recipe("Electrical", "Devices and luminaires by model, conduit and "
                          "conductors by the foot, the PV array with its inverter and battery, "
                          "and the appliance control kits.",
-                         ("placeables", "conduit", "conductors", "data_raceways",
-                          "solar_modules", "hardware", "install_parts", "freeze_protection",
-                          "solids", "allowances"), ("E-101", "E-601", "E-602")),
+                         ("placeables", "conduit", "conduit_fittings", "electrical_boxes",
+                          "conductors", "data_raceways", "solar_modules", "hardware",
+                          "install_parts", "freeze_protection", "solids", "allowances"),
+                         ("E-101", "E-601", "E-602")),
     "mechanical": Recipe("Mechanical", "Ducts by system and size in feet, fittings and "
                          "insulation, every register and the equipment by model, and the "
                          "radiant floor cable.",

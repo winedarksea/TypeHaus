@@ -13,9 +13,10 @@ from __future__ import annotations
 import math
 
 from typehaus.model.enums import BackupTier
-from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.lighting import line_voltage_run_va
+from typehaus.takeoff.raceways import conductor_takeoff as conductor_takeoff
+from typehaus.takeoff.raceways import conduit_takeoff as conduit_takeoff
 
 _M2_TO_FT2 = 10.7639104167
 
@@ -371,82 +372,6 @@ def service_load_summary(
         "panel_rating_amps": panel_rating,
         "within_service": amps <= service_amps,
     }
-
-
-def conduit_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """Lineal feet of *power* raceway by EMT trade size — developed length (plan + riser).
-
-    Data and spare raceways are billed by ``takeoff/data.py`` instead. Same pipe, different
-    order: comms may not share a raceway with power (NEC 800.133/725), so the two are pulled
-    by different trades on different days, and merging 40 ft of 3/4" power with 40 ft of 3/4"
-    data into one 80 ft row would produce a line nobody can buy against.
-    """
-    groups: dict[float, dict[str, object]] = {}
-    for run in model.conduits:
-        if run.service in ("data", None):
-            continue
-        row = groups.setdefault(run.trade_size_m, {
-            "trade_size_in": round(run.trade_size_m / M_PER_IN, 2),
-            "runs": 0, "length_m": 0.0, "tags": []})
-        row["runs"] = int(row["runs"]) + 1
-        row["length_m"] = float(row["length_m"]) + run.length_m
-        tags = row["tags"]
-        assert isinstance(tags, list)
-        tags.append(run.tag)
-    return [
-        {"trade_size_in": row["trade_size_in"], "runs": int(row["runs"]),
-         "length_ft": round(float(row["length_m"]) * 3.280839895013123, 1),
-         "tags": sorted(row["tags"])}
-        for row in (groups[key] for key in sorted(groups))
-    ]
-
-
-# Conductors per raceway, by circuit poles. A 1-pole branch pulls two current-carrying
-# conductors plus a ground; a 2-pole pulls three plus a ground. Both are counted as
-# individual conductors because that is how THHN is bought — by the foot, per colour.
-_CONDUCTORS_PER_CIRCUIT = {1: 3, 2: 4}
-# Pull length is the raceway's developed length plus an allowance at each end for making up
-# in the panel and at the device. 10 ft is the conventional residential allowance.
-_MAKEUP_ALLOWANCE_FT = 10.0
-
-
-def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """Conductor lineal feet — what ``conduit_takeoff`` deliberately does not bill.
-
-    Raceway and wire are two different orders and ``conduit_takeoff`` covers only the first,
-    so an estimate built on it buys the pipe and none of the wire. This is an *estimate* and
-    says so: a conduit run carries no circuit assignment in the model, so it is priced as the
-    total raceway length times the conductors a branch circuit of each pole count needs,
-    rather than pulled circuit by circuit. The panel schedule is what says which circuits
-    exist; the raceway is what says how far they run.
-
-    Only power raceways are counted. A data raceway carries no branch circuit, and a capped
-    spare carries nothing at all — billing THHN against either would buy wire for pipe that
-    will never hold it.
-    """
-    power_runs = [run for run in model.conduits if run.service in ("power_120", "power_240")]
-    total_ft = sum(run.length_m * 3.280839895013123 for run in power_runs)
-    if total_ft <= 0.0:
-        return []
-    by_poles: dict[int, int] = {}
-    for circuit in model.plan.library.circuits:
-        by_poles[circuit.poles] = by_poles.get(circuit.poles, 0) + 1
-    rows = []
-    for poles in sorted(by_poles):
-        circuits = by_poles[poles]
-        per = _CONDUCTORS_PER_CIRCUIT.get(poles)
-        if per is None:
-            continue
-        pull_ft = total_ft / max(len(power_runs), 1) + _MAKEUP_ALLOWANCE_FT
-        rows.append({
-            "poles": poles,
-            "circuits": circuits,
-            "conductors_per_circuit": per,
-            "mean_pull_ft": round(pull_ft, 1),
-            "length_ft": round(pull_ft * per * circuits, 1),
-            "basis": "estimate: mean raceway run + 10 ft make-up, per conductor",
-        })
-    return rows
 
 
 def electrical_device_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

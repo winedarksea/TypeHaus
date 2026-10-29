@@ -38,6 +38,7 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   pipe_sleeve: "Cast-in sleeve",
   conduit_power: "Power conduit",
   conduit_data: "Data conduit",
+  electrical_box: "Device box",
   duct_supply: "Supply duct",
   duct_return: "Return duct",
   duct_exhaust: "Exhaust duct",
