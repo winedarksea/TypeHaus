@@ -96,7 +96,10 @@ def test_a_riser_standing_in_an_opening_is_caught(catlin_model) -> None:
              for tag, _door, _host, _p, low, high, _pen in opening_prisms(_Ctx())}
     assert "D-S-PLANT" in prisms, "the opening the check was written for must resolve"
     low, high = bands["D-S-PLANT"]
-    assert high - low == pytest.approx(80 * 0.0254, abs=1e-6), "a 6'-8\" door"
+    # A 6'-8" leaf in its derived RO (resolve/door_sizing): finish + undercut + gap + jamb.
+    assert high - low == pytest.approx(bands_rough := next(
+        o.sizing.rough_h_m for o in catlin_model.openings if o.tag == "D-S-PLANT"), abs=1e-6)
+    assert bands_rough > 80 * 0.0254, "a 6'-8\" door"
     # Its centroid is inside its own footprint — the prism is a real quadrilateral, not a
     # degenerate one collapsed by the inward buffer.
     assert prisms["D-S-PLANT"].area > 0

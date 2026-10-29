@@ -174,7 +174,8 @@ def door_symbol_geometry(node: Symbol) -> DoorSymbolGeometry:
                            float(node.params["closed_leaf_sign"]),
                            float(node.params.get("maximum_opening_degrees", 90.0)))
     if node.name == DOOR_SWING_DOUBLE:
-        return _double_swing(frame, node.rotation, swing_sign, width_in)
+        return _double_swing(frame, node.rotation, swing_sign, width_in,
+                             float(node.params.get("hinge_half_in", width_in / 2.0)))
     if node.name == DOOR_OVERHEAD:
         return _overhead(frame, width_in, float(node.params.get("track_depth_in", width_in)))
     if node.name == DOOR_BIFOLD:
@@ -247,7 +248,7 @@ def _quarter_swing_arc(hinge: Pt, radius_in: float, closed_angle_deg: float,
 
 
 def _double_swing(frame: _SymbolFrame, rotation_deg: float, swing_sign: float,
-                  width_in: float) -> DoorSymbolGeometry:
+                  width_in: float, hinge_half_in: float | None = None) -> DoorSymbolGeometry:
     """A French pair: half-width leaves hinged at both jambs, opening to the same side.
 
     The second leaf reuses the single-leaf math with its rotation flipped 180° and its
@@ -256,9 +257,10 @@ def _double_swing(frame: _SymbolFrame, rotation_deg: float, swing_sign: float,
     pair is a mirror image of itself rather than one concave leaf beside one convex one.
     """
     half = width_in / 2.0
-    left = _swing_leaf(frame.at(-half, 0.0), rotation_deg, swing_sign, half,
+    hinge = half if hinge_half_in is None else hinge_half_in
+    left = _swing_leaf(frame.at(-hinge, 0.0), rotation_deg, swing_sign, half,
                        closed_leaf_sign=1.0)
-    right = _swing_leaf(frame.at(half, 0.0), rotation_deg + 180.0, -swing_sign, half,
+    right = _swing_leaf(frame.at(hinge, 0.0), rotation_deg + 180.0, -swing_sign, half,
                         closed_leaf_sign=1.0)
     return DoorSymbolGeometry(strokes=left.strokes + right.strokes,
                               arcs=left.arcs + right.arcs)

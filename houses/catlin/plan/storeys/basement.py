@@ -1123,7 +1123,6 @@ OPENINGS = [
     # leaf sits in the closet's south half and EQ-B-ESS-BATT, hung on the north concrete,
     # stands clear of the swing.
     Door(uid="CBD208AAAA", tag="D-B-ESS", host="W-B-ESS-W", type_ref="DT-INT-SWING24",
-         held_rough_opening=OpeningSize(width=ft(2), height=ft(6, 8)),
          position=from_node("N-B-ESS-SW", ft(1, 4))),
     # ** The under-stair storage's door, new 2026-09-05 — the thing that makes the floor
     # under the arriving flight reachable without walking the well. ** In W-B-STR3, opening
@@ -1163,7 +1162,6 @@ OPENINGS = [
     # D-B-PATIO's inswing arc and the shower pan in the sauna's NE corner, far enough south
     # to keep clear of D-B-GYM. Swings out into the gym on the default.
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-CS", type_ref="DT-INT-SWING24",
-         held_rough_opening=OpeningSize(width=ft(2), height=ft(6, 8)),
          position=from_node("N-B-SA-NE", ft(4, 10.3125)), flip_hinge=True),
     # The framed-wall datum is the curb top; the rough sill is recessed 1.75 inches
     # into the curb seat while the installed threshold remains above the court.

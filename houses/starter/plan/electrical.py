@@ -62,14 +62,14 @@ MAIN_LIGHTING = [
                      position=pt(ft(12), ft(10)), room="RM-Main",
                      circuit="CKT-LIGHTS", controlled_by=("ED-Main-SW1",),
                      mount=Mount(kind=MountKind.CEILING)),
-    # South wall, east of D-101's rough opening (x 3'..6') — inside the door, on the
-    # latch side.
+    # South wall, east of D-101's derived rough opening (x 3'..6'-2 1/4") and clear of its
+    # casing — inside the door, on the latch side.
     ElectricalDevice(uid="VWVMA7CSJH", tag="ED-Main-SW1", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",
                      room="RM-Main", circuit="CKT-LIGHTS",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-101", face="left", distance_from_start=inch(78),
+                         wall_ref="W-101", face="left", distance_from_start=inch(80),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 

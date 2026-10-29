@@ -2970,9 +2970,11 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     # **131/249 since 2026-10-21**: W-M-STOS went back from INT_2X4_BASIN_SUPPORT to a plain
     # 16" INT_2X4_PARTITION when bath 1's basin moved to the south wall, so `W-S-BD-N`
     # (a staggered 8"-rhythm wet wall on it) is 1 -> 4, as for W-S-SN3 above.
-    assert orphan_count <= 131, (
+    # **133/249 since 2026-10-29**: derived door ROs (plans/door-sizing.md) moved the jamb
+    # packs under two upper studs.
+    assert orphan_count <= 133, (
         f"{orphan_count}/{total} upper-storey studs stand over no stud below "
-        f"(expected at most 131/249); first offenders {orphans[:12]}")
+        f"(expected at most 133/249); first offenders {orphans[:12]}")
 
 
 def test_the_suite_tudor_posts_space_evenly_between_the_windows_over_studs(catlin_model):

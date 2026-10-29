@@ -65,10 +65,11 @@ MAIN_BRACED_WALLS = [
     BracedWallPanel(uid="KZ7TYRTJKY", tag="BWP-M-E1-0248", wall_ref="W-M-E1", start=inch(247.5),
                     width=inch(153.5), hold_down_ref="CN-M-BWHD-NE-E",
                     note="R602.10.7 end condition 5 at the NE corner"),
-    # BWL-W-A-N1 — 28'-2" provided. The 78" run crosses the W-M-N3/W-M-N3B butt. The
+    # BWL-W-A-N1 — 27.93 ft provided. The 75 5/8" run crosses the W-M-N3/W-M-N3B butt,
+    # starting at D-M-ENTRY's west RO edge (its derived 38 3/8" RO, 2026-10-29). The
     # W-M-N1/N1B split moved 5/8" east with the pantry partition (2026-10-03).
-    BracedWallPanel(uid="58ACV3YPDF", tag="BWP-M-N3-0042", wall_ref="W-M-N3", start=inch(42.0),
-                    width=inch(6.0)),
+    BracedWallPanel(uid="58ACV3YPDF", tag="BWP-M-N3-0042", wall_ref="W-M-N3", start=inch(44.375),
+                    width=inch(3.625)),
     BracedWallPanel(uid="65VXYA3ZEF", tag="BWP-M-N3B-0000", wall_ref="W-M-N3B", start=inch(0.0),
                     width=inch(72.0),
                     note="AO-M-ERV-OA's 9\" port is a service penetration, not an opening"),

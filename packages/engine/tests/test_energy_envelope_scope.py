@@ -50,7 +50,9 @@ from typehaus.resolve.solid_categories import in_slab_family
 # product; notes/solar_gain_basis.md); AED excursion 740 -> 684. D-M-ENTRY opaque again
 # (later that day): -301.0 of north glass, -13.9 of excursion -> 21,705.3.
 # 2026-10-25 French pairs: 100 sf x (0.21 - 0.15) = +6 UA, x85 F = +510 heating.
-_HEATING_BTUH = 29_981.9
+# 2026-10-29 D-M-ENTRY's derived RO: its 37-5/8 x 82 unit replaces the 36 x 80 void,
+# +1.43 sf of door from wall, +0.18 UA, +15.4 heating, +2.7 cooling.
+_HEATING_BTUH = 29_997.3
 # SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
 # (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
 # latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2
@@ -61,7 +63,7 @@ _HEATING_BTUH = 29_981.9
 # The same west glass lifts the day's average more than its 10:30 peak, so the AED
 # excursion falls 1,070 -> 740 and cooling 21,847 -> 21,707 while the glass peak rises 162.
 # French pairs: +90 conduction -1,452.2 peak glass -183.2 AED = -1,545.4 sensible.
-_COOLING_SENSIBLE_BTUH = 20_159.9
+_COOLING_SENSIBLE_BTUH = 20_162.6
 _LATENT_BTUH = 1_400.0
 _COOLING_TONS = 1.7967
 _SOLAR_PEAK_BTUH = 12_076.0
@@ -75,14 +77,14 @@ _INTERNAL_SENSIBLE_BTUH = 2_810.0
 _COMPONENTS = (
     # 27" -> 27 1/2" ROs (2026-10-23): 2.8 sf from walls (3186.9 / 72.587) to windows
     # (290.8 / 48.673).
-    ("walls", 3184.1, 72.521),
+    ("walls", 3182.7, 72.488),
     ("foundation_walls", 775.5, 28.604),
     ("foundation_walls_above_grade", 255.7, 11.677),
     ("roof", 1547.9, 29.103),
     ("slab", 1296.0, 25.468),
     ("windows", 293.6, 49.171),
     # Two revised catalog pairs use assembled unit area, not their wider framed ROs.
-    ("doors", 124.585, 24.963),
+    ("doors", 126.01, 25.177),
 )
 
 # The whole envelope, by tag. 50 walls.

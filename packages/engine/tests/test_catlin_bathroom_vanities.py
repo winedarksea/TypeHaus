@@ -304,10 +304,12 @@ def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_mo
     assert (bx0 + bx1 - tx0 - tx1) / 2 >= 30
     door = next(o for o in model.openings if o.tag == "D-M-BATH1")
     assert door.type_ref == "DT-INT-SWING32"
+    assert door.sizing.leaf_w_m / IN == pytest.approx(32 - 2.236, abs=0.01)  # held 32" RO
     assert door.width_m / IN == pytest.approx(32)
     door_south = min(y for _, y in door.swing_clearance) / IN
     door_north = max(y for _, y in door.swing_clearance) / IN
-    assert door_north - max(door_south, by1) >= 30.7
+    # The leaf hinges at the jamb face since 2026-10-29, 1" inside the RO edge.
+    assert door_north - max(door_south, by1) >= 29.6
     assert not Polygon(door.swing_clearance).intersects(Polygon(basin.footprint))
     assert (bx1 - bx0, by1 - by0) == pytest.approx((17.75, 13.375))
     assert basin.attachment_wall == "W-M-HS1"

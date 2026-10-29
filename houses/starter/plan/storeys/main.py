@@ -8,7 +8,6 @@ from typehaus import (
     JoistSpec,
     Node,
     Occupancy,
-    OpeningSize,
     Room,
     Wall,
     Window,
@@ -62,7 +61,6 @@ WALLS = [
 # 16'..19'.
 OPENINGS = [
     Door(uid="D101AAAAAA", tag="D-101", host="W-101", type_ref="DT-EXT-SWING36",
-         held_rough_opening=OpeningSize(width=ft(3), height=ft(6, 8)),
          position=from_node("N-1", ft(3))),
     # South (front) wall, east of the door: well clear of R308.4.2's 24" arc around the
     # leaf, which runs x 3'..6'.

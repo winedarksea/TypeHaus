@@ -1513,7 +1513,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       +4'-3 1/2" governs and a 12" box centred on +4'-0" sat inside it.
     - The north face is crowded and the intake's station is what is LEFT: `EQ-M-HP3-OD`'s
       cabinet holds x 0'-0"..2'-10 3/8" with a 12" rear coil clearance, and `D-M-ENTRY`'s RO
-      holds x 6'-6"..9'-6". x=3'-4" is also the only one of `W-M-N3B`'s four legal stud-module
+      holds x 6'-4 5/8"..9'-6" (its derived Therma-Tru RO since 2026-10-29). x=3'-4" is also the only one of `W-M-N3B`'s four legal stud-module
       stations the duct can stand on — the other three are each inside a pipe.
     - Exhaust must stay the UPPER hood: `mep.erv_outdoor_terminals` measures 3-D distance and
       13' of rise alone clears its 10' rule (→ DESIGN-LOG.md, "Ventilation, ducts and

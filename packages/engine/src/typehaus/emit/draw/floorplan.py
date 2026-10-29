@@ -23,6 +23,8 @@ from typehaus.emit.draw._shared import (
 )
 from typehaus.emit.draw.dimension_rows import tier_offsets
 from typehaus.emit.draw.door_symbols import (
+    DOOR_SWING,
+    DOOR_SWING_DOUBLE,
     door_symbol_params,
     symbol_is_centre_anchored,
     symbol_name_for_operation,
@@ -204,18 +206,25 @@ def _emit_door_symbol(b: SceneBuilder, model: ResolvedModel, op, center: tuple[f
     if placement:
         center = (center[0] - axis_delta[1] / length * placement.leaf_normal_m,
                   center[1] + axis_delta[0] / length * placement.leaf_normal_m)
+    # A hinged leaf hangs at the jamb face and is the leaf's width (resolve/door_sizing).
+    hinge_half_m, leaf_in = op.width_m / 2, width_in
+    if op.sizing is not None and name in (DOOR_SWING, DOOR_SWING_DOUBLE):
+        hinge_half_m = op.sizing.rough_w_m / 2 - op.sizing.jamb_allowance_m
+        leaf_in = op.sizing.leaf_w_m / M_PER_IN
     insert = center if symbol_is_centre_anchored(name) else (
-        center[0] + hinge_jamb_sign * axis_delta[0] / length * op.width_m / 2,
-        center[1] + hinge_jamb_sign * axis_delta[1] / length * op.width_m / 2)
-    b.add(Symbol(
-        name=name, insert=_in(insert), rotation=angle, scale=width_in, layer="A-DOOR",
-        uid=op.uid,
-        params=door_symbol_params(name, width_in, op.height_m / M_PER_IN,
+        center[0] + hinge_jamb_sign * axis_delta[0] / length * hinge_half_m,
+        center[1] + hinge_jamb_sign * axis_delta[1] / length * hinge_half_m)
+    params = door_symbol_params(name, leaf_in, op.height_m / M_PER_IN,
                                   -1.0 if getattr(authored, "flip_swing", False) else 1.0,
                                   hinge_jamb_sign=hinge_jamb_sign,
                                   host_wall_thickness_in=host_wall_thickness_in,
                                   maximum_opening_degrees=getattr(
-                                      authored, "maximum_opening_degrees", 90.0)),
+                                      authored, "maximum_opening_degrees", 90.0))
+    if name == DOOR_SWING_DOUBLE:
+        params["hinge_half_in"] = hinge_half_m / M_PER_IN
+    b.add(Symbol(
+        name=name, insert=_in(insert), rotation=angle, scale=leaf_in, layer="A-DOOR",
+        uid=op.uid, params=params,
     ))
 
 

@@ -58,7 +58,7 @@ from typehaus.model import Location, WallAttachment, deg
 # the open west yard. The north face is the slot between the house and the garage, and it is
 # already occupied: EQ-M-HP3-OD's cabinet holds x 0'-0"..2'-10 3/8" with a 12" rear coil
 # clearance to the cladding, ED-M-HP3-DISC holds x 3'-1"..5'-7" up to +4'-3 1/2", and
-# D-M-ENTRY's rough opening holds x 6'-6"..9'-6". The intake's station is what is LEFT: the
+# D-M-ENTRY's rough opening holds x 6'-4 5/8"..9'-6". The intake's station is what is LEFT: the
 # 32"..48" stud bay of W-M-N3B, above the disconnect. On the second storey W-S-N3B is only
 # 2'-9" long (N-S-CH2 to N-S-NW) and carries nothing, so the discharge has its pick of it.
 #

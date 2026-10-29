@@ -1086,7 +1086,7 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-N2", face="right", distance_from_start=inch(80),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Its switch, inside the dwelling (R303.8.1 — the garage's ED-G-EXT-SW is in the wrong
-    # building for this one). D-M-ENTRY fills W-M-N3 to within 6" of both ends, so there is
+    # building for this one). D-M-ENTRY fills W-M-N3 to within 6" and 3 5/8" of its ends, so there is
     # no north-wall station beside the door; use the north gang on W-M-MUDC-E
     # (see ED-M-STORAGE-SW), the one nearest the front door.
     ElectricalDevice(uid="1XT4G5S2XX", tag="ED-M-ENTRY-SW", kind=DeviceKind.SWITCH,
@@ -1153,7 +1153,7 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-W1", face="left", distance_from_start=inch(24),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** A DIMMER, AND IT IS NOT ON THE NORTH WALL. ** D-M-ENTRY fills W-M-N3 to within 6"
-    # of both ends, so this is the middle gang of the 3-gang plate on W-M-MUDC-E (see
+    # and 3 5/8" of its ends, so this is the middle gang of the 3-gang plate on W-M-MUDC-E (see
     # ED-M-STORAGE-SW): closet cans, house light, porch light.
     #
     # ED-T-SWITCH-DIM carries no load_va, so the dimmer is free electrically; what it buys

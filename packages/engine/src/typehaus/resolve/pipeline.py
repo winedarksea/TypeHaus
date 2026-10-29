@@ -376,7 +376,7 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                 width, height = sizing.passage_w_m, sizing.rough_h_m
             center = _opening_center(plan, el, rw, axis_len, width)
             operation = _door_operation(plan, el) if is_door else None
-            swing_clearance = (_door_swing_clearance(rw, center, width, el, operation)
+            swing_clearance = (_door_swing_clearance(rw, center, width, el, operation, sizing)
                                if is_door else ())
             pocket_run, pocket_sign = _door_pocket(el, operation, sizing)
             framing_bumper = _opening_framing_bumper(
@@ -526,12 +526,13 @@ _LEAF_SWEEP_FRACTION: dict[str, float] = {
 
 
 def _door_swing_clearance(wall, center_along_m: float, width_m: float, door,
-                          operation: str = "swing") -> list[tuple[float, float]]:
+                          operation: str = "swing", sizing=None) -> list[tuple[float, float]]:
     """Approximate the door leaf sweep as a true local-sector polygon in plan space.
 
     ``operation`` selects how much of the leaf sweeps (:data:`_LEAF_SWEEP_FRACTION`); a
     non-swinging door returns an empty ring, which every consumer already treats as "no
-    clearance to draw or defend".
+    clearance to draw or defend". With ``sizing`` the leaf hinges at the jamb face
+    (``rough_w/2 - a`` off centre) and sweeps the leaf; without, the void's edge and width.
     """
     sweep = _LEAF_SWEEP_FRACTION.get(str(operation or "swing"), 1.0)
     if sweep <= 0.0:
@@ -539,6 +540,10 @@ def _door_swing_clearance(wall, center_along_m: float, width_m: float, door,
     (sx, sy), (ex, ey) = wall.axis
     length = math.hypot(ex - sx, ey - sy) or 1.0
     tangent = ((ex - sx) / length, (ey - sy) / length)
+    leaf_m = width_m
+    if sizing is not None:
+        width_m = sizing.rough_w_m - 2 * sizing.jamb_allowance_m
+        leaf_m = sizing.leaf_w_m
     start = (sx + tangent[0] * (center_along_m - width_m / 2),
              sy + tangent[1] * (center_along_m - width_m / 2))
     # ** THE HINGE JAMB AND THE SWING SIDE ARE INDEPENDENT. ** `flip_hinge` picks the jamb
@@ -557,7 +562,7 @@ def _door_swing_clearance(wall, center_along_m: float, width_m: float, door,
     # regardless of which jamb it hangs on -- hence the product of the two signs.
     closed = (-hinge_sign * tangent[0], -hinge_sign * tangent[1])
     direction = -hinge_sign * swing_sign
-    radius = width_m * sweep
+    radius = leaf_m * sweep
     points = [hinge]
     for index in range(9):
         angle = (direction * math.radians(getattr(door, "maximum_opening_degrees", 90.0))

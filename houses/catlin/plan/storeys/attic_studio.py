@@ -390,7 +390,6 @@ OPENINGS = [
     # (x 13'-7 1/2") by 4". Going further east is not free: at 15'-11 1/2" the leaf
     # already lands opposite the shower pan, and one more 16" step opens the door onto it.
     Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING24",
-         held_rough_opening=OpeningSize(width=ft(2), height=ft(6, 8)),
          position=from_node("N-A-WW-S", ft(4, 4)), flip_hinge=False, flip_swing=True),
 ]
 

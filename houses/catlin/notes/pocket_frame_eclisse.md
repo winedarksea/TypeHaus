@@ -33,6 +33,12 @@ the opening, not 37". The engine reads the table off the kit record
 `D-B-BATH` at y=16'-5 9/16". Both still fit their collinear runs, and `mep.pocket_occupancy`
 guards the longer bands. The 1" fastener limit is unchanged (`POCKET_MAX_FASTENER`).
 
+The RO height is modelled too (2026-10-29, `plans/door-sizing.md`): the kit record carries
+`rough_opening_head_over_leaf_in = 3.25`, and `resolve/door_sizing` heads a derived pocket
+at 83 1/4" over the finished floor, plus that floor's build-up over the subfloor.
+`D-M-PANTRY` and `D-M-LAUN` frame to it; `D-B-BATH` still holds its 80" framing
+(`Door.held_rough_opening`) pending the question on its ERV duct.
+
 ## Pantry — 2026-10-20
 
 The refrigerator stands in front of about 23 inches of the old western 30-inch bypass
@@ -58,8 +64,6 @@ western storage is reached sideways from the east opening.
 
 ## Not modelled
 
-- **RO height.** The framing solver heads every door at the leaf height (80"). Eclisse wants
-  83 1/4" from **finished** floor; set the header to that, not to the drawing.
 - **The frame goes in at finished-floor level**, not on the subfloor, so the leaf needs no
   trimming. Over `D-B-BATH`'s tile, shim the frame to the tile height.
 - **The 2x6 part number.** EKQ is the 2x6 series and 36 x 80 is on the sheet, but no retail

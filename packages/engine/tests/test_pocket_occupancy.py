@@ -36,8 +36,9 @@ def test_catlin_has_nothing_in_a_pocket(findings) -> None:
 
 def test_the_band_stops_just_above_the_leaf(catlin_model_ro) -> None:
     """The z band is the leaf's own travel, not the wall. ``D-M-LAUN`` is an 80" door on a
-    wall based at the main floor, so the cavity ends a head track over 80" — not at
-    ``W-M-HS4``'s 120" top, which is where a wall-shaped band would put it."""
+    wall based at the main floor, so the cavity ends a head track over its RO head (the
+    Eclisse kit's, ``resolve/door_sizing``) — not at ``W-M-HS4``'s 120" top, which is where
+    a wall-shaped band would put it."""
     class _Ctx:
         model = catlin_model_ro
         plan = catlin_model_ro.plan
@@ -46,7 +47,8 @@ def test_the_band_stops_just_above_the_leaf(catlin_model_ro) -> None:
              for op, wall, _poly, (low, high) in _pocket_bands(_Ctx())}
     low, high = bands[("D-M-LAUN", "W-M-HS4")]
     assert low == pytest.approx(0.0, abs=1e-9)
-    assert high == pytest.approx(80 * 0.0254 + _POCKET_HEAD_TRACK_M, abs=1e-9)
+    door = next(op for op in catlin_model_ro.openings if op.tag == "D-M-LAUN")
+    assert high == pytest.approx(door.height_m + _POCKET_HEAD_TRACK_M, abs=1e-9)
 
 
 def test_laundry_pocket_follows_the_aligned_stud_cavity(catlin_model_ro) -> None:
