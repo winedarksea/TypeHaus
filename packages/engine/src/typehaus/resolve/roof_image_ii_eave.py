@@ -325,6 +325,50 @@ def wrapped_eave_head_cap_w(model, roof, point: tuple[float, float]) -> float | 
 
 
 
+def wrapped_eave_deck_cut(model, roof, point: tuple[float, float], *,
+                          level_inboard: bool = True) -> tuple[float, float] | None:
+    """(z, rise) of the deck's square-cut eave end over ``point`` under a wrapped Image II eave
+    (the reach of ``wrapped_eave_head_cap_w``), else None.
+
+    Outboard of the deck's bottom corner, ``z`` is the cut face's height at ``point`` and it
+    rises ``1/slope`` per meter further out; inboard, the corner's height, level (the
+    underside's lowest over anything standing there), or with ``level_inboard`` False the cut
+    face's plane carried on (one clip plane, conservative there).
+    """
+    from typehaus.resolve.roof_drip_edge import deck_edge_m
+    from typehaus.resolve.roof_edge_geometry import roof_edge_runs
+    from typehaus.resolve.roof_geometry import roof_plane_z, roof_slope_coordinate
+    from typehaus.resolve.roof_image_ii import wrapped_image_ii_edges
+
+    edges = wrapped_image_ii_edges(model, roof)
+    stack = eave_stack(model, roof) if edges else None
+    if stack is None or stack.slope <= 0.0:
+        return None
+    assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
+    layers = above_structure_layers(assembly)
+    under_w = 0.0
+    for layer in layers:
+        if layer.function is LayerFunction.SHEATHING:
+            break
+        under_w += layer.thickness.meters
+    else:
+        return None
+    for run in roof_edge_runs(roof):
+        if not run.is_eave or run.edge_name not in edges:
+            continue
+        nx, ny = run.normal
+        offset = (point[0] - run.p0[0]) * nx + (point[1] - run.p0[1]) * ny
+        if not -_HEAD_REACH_M <= offset <= LAP_GAP_M:
+            continue
+        corner_u = deck_edge_m(roof, layers, run)
+        at = (point[0] + nx * (corner_u - offset), point[1] + ny * (corner_u - offset))
+        corner_z = roof_plane_z(roof, roof_slope_coordinate(roof, at)) + under_w * stack.factor
+        if level_inboard and offset < corner_u - 1e-9:
+            return corner_z, 0.0
+        return corner_z + (offset - corner_u) / stack.slope, 1.0 / stack.slope
+    return None
+
+
 @dataclass(frozen=True)
 class HeadCap:
     """The ``head_cap_w`` line of one wrapped eave as a plan plane: nothing standing under

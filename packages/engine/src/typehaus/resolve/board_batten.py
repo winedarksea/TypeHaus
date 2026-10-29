@@ -180,7 +180,8 @@ def profile_mesh(
     height_regions = []
     for start, end in zip(stations[:-1], stations[1:], strict=True):
         planes = [(1.0, 0.0, 0.0, end), (-1.0, 0.0, 0.0, -start)]
-        for at, lower in ((lower_at, True), (upper_at, False)):
+        uppers = upper_at if isinstance(upper_at, tuple) else (upper_at,)
+        for at, lower in ((lower_at, True), *((at, False) for at in uppers)):
             if at is None:
                 continue
             a, b = world((start, support, 0.0)), world((end, support, 0.0))
@@ -350,12 +351,31 @@ def resolve_profiled_metal_surfaces(model) -> None:
                 mesh = _join_meshes([profile_mesh(
                     wall, polygon, bottom, top, lines.get(wall.tag, wall.axis),
                     lower_at=lambda x, y, h=height, m=member: h(x, y, m.z0_m, m.z0_end_m),
-                    upper_at=upper_height, profile=profile,
+                    upper_at=(upper_height, *_deck_cut_at(model, roof, member)),
+                    profile=profile,
                     support_clearance_m=support_clearances[wall.uid, member.material],
                 ) for bottom, top in zip(cuts, cuts[1:], strict=False)])
                 member = replace(member, surface_mesh=mesh)
             members.append(member)
         model.roofs[i] = replace(roof, members=tuple(members))
+
+
+def _deck_cut_at(model, roof, member) -> tuple:
+    """Under a wrapped Image II eave, the deck's square-cut end as a second head line for a
+    closure band's skin (it oversails the panel's back); else nothing."""
+    from typehaus.resolve.roof_image_ii_eave import HEAD_CLEARANCE_M, wrapped_eave_deck_cut
+
+    dx, dy = member.p1[0] - member.p0[0], member.p1[1] - member.p0[1]
+    along_ridge = abs(dy if roof.ridge_direction == "y" else dx)
+    if (abs(math.hypot(dx, dy) - along_ridge) > 1e-6
+            or wrapped_eave_deck_cut(model, roof, member.p0) is None):
+        return ()  # only an eave wall's band stands under the deck's cut end
+
+    def at(x, y):
+        cut = wrapped_eave_deck_cut(model, roof, (x, y), level_inboard=False)
+        return math.inf if cut is None else cut[0] - HEAD_CLEARANCE_M
+
+    return (at,)
 
 
 # Kept as an import alias for the focused BBD75 tests and downstream callers.
