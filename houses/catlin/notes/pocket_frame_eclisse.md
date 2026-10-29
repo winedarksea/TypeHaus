@@ -50,9 +50,14 @@ says anything against a notch in the wood above. A notch off the top of a nonbea
 therefore harmless to the kit, provided its underside stays whole.
 
 `D-B-BATH` therefore takes R602.7.4's flat 2x6 in `W-B-BA-E` (nonbearing, owner), and
-`DU-B-ERV-R-GYM` rose 1/2" to clear it rather than notch it. `DU-B-ERV-R-PLAY` clears too. The
-engine still lays its generic flat track nailer on top of a pocket header. That suits a
-Johnson-style kit, but an Eclisse does not use it.
+`DU-B-ERV-R-GYM` rose 1/2" to clear it rather than notch it. `DU-B-ERV-R-PLAY` clears too.
+
+The track nailer is a property of the kit (2026-10-29, owner: "per kit, drop for Eclisse"):
+`StructuralHardware.pocket_track_nailer`, `False` on both Eclisse records, so none of the
+three heads carries the generic flat 2x6 a Johnson-style kit screws its track into. That
+lowered each head by 1 1/2": `D-B-BATH`'s flat head now tops out at 84 7/8" (was 86 3/8"),
+which leaves `DU-B-ERV-R-GYM`'s envelope (86 1/2") 1 5/8" over it rather than 1/8". The
+duct was not lowered back.
 
 ## Pantry — 2026-10-20
 

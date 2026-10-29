@@ -228,7 +228,8 @@ DUCTS_ERV_BASEMENT = [
     # backing (top 6'-7 1/4"); east on y=17'-4 3/4", 2 1/4" clear of PR-M-S-SUITE-DRAIN's
     # riser, through W-B-HALL-W's 16'-8"..18'-0" bay; then the hall's x=17'-0" lane south
     # of the stair to y=13'-0" as before. The east leg falls 89" -> 88 1/2" (2026-10-29, was level
-    # at 88 1/2"), so its lower face clears D-B-BATH's flat head and track nailer (86 3/8").
+    # at 88 1/2"), so its lower face clears D-B-BATH's flat head (84 7/8"; 86 3/8" until the
+    # Eclisse kit dropped its track nailer, 2026-10-29).
     #
     # ** x=17'-0" AND NOT 17'-9", BECAUSE THE STRIP BESIDE THE STAIR IS THE POUR. **
     # W-B-CN / -CN2 / W-B-CS2 are one 12" cast wall on the x=18'-0" axis, so x 17'-6"..18'-6"

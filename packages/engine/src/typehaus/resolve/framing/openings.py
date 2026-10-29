@@ -131,6 +131,8 @@ class WallOpening:
     header_spec: str | None = None
     pocket_run_m: float = 0.0
     pocket_sign: int = 0
+    #: False when the pocket kit hangs its track from its own steel header (Eclisse).
+    track_nailer: bool = True
     frame_start_supported: bool = False
     frame_end_supported: bool = False
     #: ``DoorType.exterior`` — what ``stud_stock.stamp_exterior_door_sills`` restocks by.
@@ -442,7 +444,7 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     # Cripples above the header bear on whatever the header actually carries: the flat
     # track nailer where one is emitted, the header itself otherwise.
     cripple_bottom = header_bottom + depth
-    if pattern.needs_track_backing:
+    if pattern.needs_track_backing and opening.track_nailer:
         cripple_bottom = _append_track_backing(out, rw, header_left, header_right,
                                                opening_index, header_bottom + depth,
                                                header_span)

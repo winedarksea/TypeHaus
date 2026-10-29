@@ -14,6 +14,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.elements import Door, Wall, Window
 from typehaus.model.enums import LayerFunction, PartitionLayout
 from typehaus.model.plan import PlanModel
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.backing import append_blocking_rows, append_tee_backing
 from typehaus.resolve.framing.backing_panels import (
     BackingBand,
@@ -69,7 +70,11 @@ from typehaus.resolve.framing.short_members import (
     short_member_findings,
 )
 from typehaus.resolve.framing.stud_stock import stamp_exterior_door_sills, stamp_stud_stock
-from typehaus.resolve.framing.tables import DEFAULT_SPACING, member_actual
+from typehaus.resolve.framing.tables import (
+    DEFAULT_SPACING,
+    member_actual,
+    pocket_kit_takes_track_nailer,
+)
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.layout_lines import layout_phase, lines_by_wall
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedWall
@@ -748,6 +753,12 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                          or (type_header_specs.get(op.type_ref) if op.is_door else None)),
             pocket_run_m=op.pocket_run_m,
             pocket_sign=op.pocket_sign,
+            track_nailer=(not op.pocket_run_m or op.type_ref not in door_types
+                          or pocket_kit_takes_track_nailer(
+                              door_types[op.type_ref].pocket_frame,
+                              round((op.sizing.passage_w_m if op.sizing else op.width_m)
+                                    / M_PER_IN),
+                              getattr(model.wall(op.host_wall), "layers", ()))),
             frame_start_supported=bool(op.frame_start_support_wall),
             frame_end_supported=bool(op.frame_end_support_wall),
             exterior=op.is_door and op.type_ref in exterior_door_types,

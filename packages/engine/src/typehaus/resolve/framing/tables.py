@@ -208,6 +208,20 @@ def pocket_wall_is_deep(layers) -> bool:
     return bool(structure and structure.thickness_m >= POCKET_SPLIT_STUD_2X6_MIN_DEPTH.meters)
 
 
+def pocket_kit_takes_track_nailer(family: str | None, width_in: int, layers) -> bool:
+    """Whether the pocket kit this door is bought with screws its track into a wood nailer.
+
+    A width no catalogued kit serves raises in the takeoff; here it keeps the generic nailer.
+    """
+    from typehaus.hardware.catalog import pocket_frame_kit
+
+    try:
+        kit = pocket_frame_kit(family, width_in, pocket_wall_is_deep(layers))
+    except LookupError:
+        return True
+    return kit.pocket_track_nailer
+
+
 # A bifold hangs entirely from its own head track inside a non-bearing partition: it needs
 # a flat head nailer to screw the track to, not a bearing header and trimmer pack. A pocket
 # hangs from a head track the same way — the kit ships its own — so its head is a nailer

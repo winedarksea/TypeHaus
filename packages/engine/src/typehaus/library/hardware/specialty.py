@@ -394,6 +394,8 @@ POCKET_FRAME_KIT_HEAVY = StructuralHardware(
 # Eclisse ships a factory-assembled galvanized-steel cassette rather than loose split studs,
 # so the pocket's flatness does not depend on the framer. Selected by ``DoorType.pocket_frame
 # = "eclisse"``. Its RO is wider than 2W + 1" (FS + 1/2"), and the frame reads that table.
+# The track clicks into the cassette's own steel pocket header (2x6 assembly instructions
+# 11/2021, parts d/e), so no wood track nailer goes over the head.
 _ECLISSE_WIDTHS = (24, 26, 28, 30, 32, 34, 36, 42, 48)
 _ECLISSE_RO = {24: 50.5, 26: 54.5, 28: 58.5, 30: 62.5, 32: 66.5, 34: 70.5, 36: 74.5,
                42: 85.5, 48: 97.5}
@@ -416,6 +418,7 @@ POCKET_FRAME_KIT_ECLISSE_2X4 = StructuralHardware(
     part_number_by_length_in={36: "EKC3680", 42: "EKC4280"},
     rough_opening_in_by_length_in=_ECLISSE_RO,
     rough_opening_head_over_leaf_in=_ECLISSE_RO_HEAD,
+    pocket_track_nailer=False,
     source=_ECLISSE_SOURCE,
 )
 # The 2x6 series is EKQ. No 80"-tall listing was found at retail, so no part number is
@@ -429,6 +432,7 @@ POCKET_FRAME_KIT_ECLISSE_2X6 = StructuralHardware(
     fits_nominal=tuple(f"eclisse-{w}-2x6" for w in _ECLISSE_WIDTHS),
     rough_opening_in_by_length_in=_ECLISSE_RO,
     rough_opening_head_over_leaf_in=_ECLISSE_RO_HEAD,
+    pocket_track_nailer=False,
     source=_ECLISSE_SOURCE,
 )
 

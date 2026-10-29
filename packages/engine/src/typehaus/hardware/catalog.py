@@ -359,6 +359,9 @@ class StructuralHardware:
     #: A pocket frame's published RO height over the leaf, inches, from the FINISHED floor.
     #: ``None``: the kit publishes none and the generic door equation frames it.
     rough_opening_head_over_leaf_in: float | None = None
+    #: A pocket frame whose track screws up into wood gets a flat 2x6 nailer over the header
+    #: (the commodity kits). ``False``: the kit's own steel header carries the track (Eclisse).
+    pocket_track_nailer: bool = True
 
     @property
     def available_lengths_in(self) -> tuple:

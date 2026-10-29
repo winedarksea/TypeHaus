@@ -544,7 +544,7 @@ def test_bifold_gets_a_flat_head_instead_of_a_bearing_header():
     assert not [m for m in members if m.child_key.startswith("track")]
 
 
-def _pocket_members(width=ft(4), *, flip=False, wall_len=6.0):
+def _pocket_members(width=ft(4), *, flip=False, wall_len=6.0, track_nailer=True):
     """A 4'-0" pocket in a 20' wall, pocketing toward the end node unless ``flip``."""
     plan, wall = _wall_and_plan()
     wall = replace(wall, axis=((0.0, 0.0), (wall_len, 0.0)))
@@ -552,7 +552,8 @@ def _pocket_members(width=ft(4), *, flip=False, wall_len=6.0):
     center = 0.1016 + width.meters / 2 if not flip else wall_len - 0.1016 - width.meters / 2
     opening = WallOpening(center_m=center, width_m=width.meters, height_m=ft(6, 8).meters,
                           sill_m=0.0, is_door=True, operation=DoorOperation.POCKET,
-                          pocket_run_m=pocket_run(width).meters, pocket_sign=sign)
+                          pocket_run_m=pocket_run(width).meters, pocket_sign=sign,
+                          track_nailer=track_nailer)
     return frame_wall(plan, wall, openings=[opening]), opening
 
 
@@ -584,12 +585,26 @@ def test_pocket_header_spans_the_opening_and_the_cavity_together():
     # RO + pocket, plus the one jack each end the header bears on: 48 + 49 + 1.5 + 1.5.
     assert header.length_m == pytest.approx(inch(100.0).meters)
     # A pocket hangs from the kit's own head track inside a partition, so the head is a
-    # nailer and a track backing — never a bearing header, however wide the span gets.
+    # nailer — never a bearing header, however wide the span gets.
     assert header.profile == "2-2x6"
+    # A commodity kit screws its track into a flat 2x6 over the header...
     backing = [m for m in members if m.child_key.startswith("trackbacking-")]
     assert len(backing) == 1 and backing[0].z0_m == pytest.approx(header.z1_m)
     # ...and none of the overhead sectional's vertical track framing.
     assert not [m for m in members if m.child_key.startswith("trackjamb-")]
+    # An Eclisse cassette hangs it from its own steel header: no nailer, and the head
+    # cripples bear on the header itself.
+    steel, _ = _pocket_members(track_nailer=False)
+    assert not [m for m in steel if m.child_key.startswith("trackbacking-")]
+    lowest = min(m.z0_m for m in steel if m.category == "cripple" and m.z0_m > header.z0_m)
+    assert lowest == pytest.approx(header.z1_m)
+
+
+def test_the_track_nailer_is_a_property_of_the_pocket_kit():
+    from typehaus.resolve.framing.tables import pocket_kit_takes_track_nailer
+
+    assert pocket_kit_takes_track_nailer(None, 36, ())  # Johnson 1500PF
+    assert not pocket_kit_takes_track_nailer("eclisse", 36, ())
 
 
 def test_pocket_split_studs_stop_at_the_header_so_the_plates_stay_continuous():
