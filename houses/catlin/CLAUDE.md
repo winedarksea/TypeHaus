@@ -1784,8 +1784,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     edge, which projects 2-4" — `code.R405_1_foundation_drainage` grades it. **Backfill in
     ≤8" lifts, light plates within 3' of the foam, and only once the deck braces the wall
     tops (R404.1.7)** — an `insp/foundation_backfill` item. Do **not** author a perimeter
-    `FrenchDrain` for it: it would bill the stone twice. Hand oracle and the open soils
-    question (the 1:1 slope runs past the side lot lines): `notes/foundation_aggregate_and_backfill.md`.
+    `FrenchDrain` for it: it would bill the stone twice. **The cut is a presumed OSHA Type A**
+    (2026-10-29): a 3 1/2' plumb toe and 3/4:1 on the ≤8'-deep house sides, 3/4:1 on the
+    court, so the lip stays 5" inside the 50' lot; `integrity.excavation` fails a lip past the
+    parcel, and a B or C soils report means shoring, not a flatter slope. Hand oracle:
+    `notes/foundation_aggregate_and_backfill.md`.
   - **No Form-A-Drain (2026-09-23).** Its inlet sits at the footing base, which here is the
     TOP of the 7" stone bed; the bed-bottom tile is what keeps that bed dry, and a dry bed is
     the point of it. No XPS under a footing either (creep). (→ DESIGN-LOG.md, "Basement")

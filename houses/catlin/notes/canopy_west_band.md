@@ -464,19 +464,23 @@ are unchanged.
 **§6 E-W case.** Header side band `2 × 0.98958 × 5.4375 = 10.762 sf`:
 
 ```
-(26.667 + 10.762) x 16.7232 = 625.92 lb, + 2 x 23.673 = 673.27 lb
-y_V = (625.92 x 40.219 + 23.673 x 37.500 + 23.673 x 42.479) / 673.27 = 40.203
-e = 43.219 - 40.203 = 3.016'      M = 673.27 x 3.016 = 2,030.7 lb-ft
-chord  M / 24.000 = 84.61 lb;  glulam 84.61 / 65.31 in2 = 1.30 psi vs 1,408          0.001
-end strap (LSTA24)    84.61 + 1,038.35/6 = 257.67 lb vs 823.33                         0.313
-west plates CN-BW-EAVE-5/-6   84.61/2 + 173.06 = 215.36 lb vs 450                      0.479
-east plate CN-BW-EAVE-E       84.61 lb vs 450                                          0.188
-couple into RF-GARAGE  W-G-W 84.61/18.675 = 4.531 plf   W-G-E 84.61/21.008 = 4.028 plf (vs 182.5)
+slope band 26.667 x 16.7232 = 445.96 lb at the footprint centroid, y 40.219
+header bands 10.762 x 16.7232 = 179.98 lb at the headers' own centroid,
+  (37.2708 + 42.7083) / 2 = y 39.990
+posts 2 x 23.673 at 37.500 and 42.479                     total 673.27 lb
+y_V = (445.96 x 40.219 + 179.98 x 39.990 + 23.673 x 37.500 + 23.673 x 42.479) / 673.27 = 40.141
+e = 43.219 - 40.141 = 3.077'      M = 673.27 x 3.077 = 2,071.9 lb-ft
+chord  M / 24.000 = 86.33 lb;  glulam 86.33 / 65.31 in2 = 1.32 psi vs 1,408          0.001
+end strap (LSTA24)    86.33 + 1,038.35/6 = 259.39 lb vs 823.33                         0.315
+west plates CN-BW-EAVE-5/-6   86.33/2 + 173.06 = 216.22 lb vs 450                      0.480
+east plate CN-BW-EAVE-E       86.33 lb vs 450                                          0.192
+couple into RF-GARAGE  W-G-W 86.33/18.675 = 4.623 plf   W-G-E 86.33/21.008 = 4.109 plf (vs 182.5)
 ```
 
-The bands sit at the footprint centroid (40.219), §3b's convention and the engine's. The
-headers' own centroid is 39.990, which gives e 3.077′, M 2,071.9 lb-ft and a chord of
-86.33 lb: 2% higher, and every row above still passes with room. Both plates
+Each band resolves at its own centroid (owner, 2026-10-29): the slope band at the
+footprint's, each header at its own member's (`RoofWind.member_bands`). Until then the
+headers sat at the footprint centroid too, giving y 40.203, M 2,030.7 lb-ft and a chord of
+84.61 lb; the true station is 2% worse, and every row still passes with room. Both plates
 `CN-BW-EAVE-5`/`-6` moved to y 41.75 / 42.375, on the glulam and clear of `CN-BW-CAP-NW`.
 The joint-bay collector block still spans truss face to garage gable, so 6⅛″ of it
 oversails the beam end, tied by its LS30Z and the deck.

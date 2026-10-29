@@ -457,7 +457,7 @@ def _resultant(ctx: EngineeringContext, roof: object, wind: object,
         post = ctx.plan.by_tag(column)
         if post is not None:
             stations[column] = post.position.xy_m[index] / 0.3048
-    found = load_resultant_ft(case.top_shear_lb, wind.centre_ft[index],  # type: ignore[attr-defined]
+    found = load_resultant_ft(case.top_shear_lb, wind.top_station_ft(axis),  # type: ignore[attr-defined]
                               case.head_reactions, stations)
     return found if found is not None else wind.resultant_ft(axis)  # type: ignore[attr-defined]
 

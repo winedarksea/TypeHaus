@@ -14,7 +14,7 @@ MATERIALS: tuple[Material, ...] = (
         name="Consolidated open-graded stone (capillary break, #57)",
         r_per_inch=0.0,
         density=1600.0,
-        hatch="concrete",
+        hatch="gravel",
         color="#8f8d88",
         source='IRC R506.2.2: a 4" base course of clean graded sand, gravel or crushed '
         'stone passing a 2" sieve under a slab-on-ground. #57 is the open-graded '

@@ -18,8 +18,8 @@ from typehaus.takeoff.excavation import excavation_takeoff
 #: the rows built on them differ for the reason §7 states (per-bed cones topped at their own
 #: grade); each tolerance sits just over that stated gap.
 HAND = {"drain-column-stone": (49.9, 0.01), "drain-column-geotextile": (1396.0, 0.01),
-        "cut": (1230.4, 0.02), "backfill": (528.1, 0.04), "cap": (100.7, 0.15),
-        "haul-off": (714.1, 0.04)}
+        "cut": (1046.9, 0.015), "backfill": (369.8, 0.01), "cap": (65.9, 0.10),
+        "haul-off": (771.0, 0.01)}
 
 
 def _columns(model):
@@ -45,16 +45,19 @@ def test_columns_close_corners_never_double_and_stay_out_of_the_beds(catlin_mode
         assert any(Polygon(c.outline).contains(Point(corner)) for c in house), corner
 
 
-@pytest.mark.parametrize("h_per_v, expected_cut, expected_cap",
-                         [(0.0, 300.0 + 3 * 26.0, 0.5 * 26.0), (1.0, 300.0 + 204.0, 55.667)])
-def test_a_hand_rectangle_digs_what_the_formula_says(h_per_v, expected_cut, expected_cap):
+@pytest.mark.parametrize("h_per_v, toe, expected_cut, expected_cap",
+                         [(0.0, 0.0, 300.0 + 3 * 26.0, 0.5 * 26.0),
+                          (1.0, 0.0, 300.0 + 204.0, 55.667),
+                          (1.0, 1.0, 300.0 + 26.0 + 102.667, 36.667)])
+def test_a_hand_rectangle_digs_what_the_formula_says(h_per_v, toe, expected_cut, expected_cap):
     """A 10 m square house with a 1 m x 10 m bed off its east face, 3 m deep, 1 m working
     space. The dig outside the house at reach r is (1+2r)(10+2r) - 10r = 10 + 12r + 4r^2,
     which is 26 m2 at r = 1 and integrates to 204 m3 over r = 1..4 (55.667 over the top
-    0.5 m, r = 3.5..4, the cap)."""
+    0.5 m, r = 3.5..4, the cap). A 1 m plumb toe holds r = 1 for the first metre (26 m3),
+    then r = 1..3 gives 102.667 (36.667 over r = 2.5..3)."""
     outline = box(0, 0, 10, 10)
     hole = Hole(outline, [(box(10, 0, 11, 10), 0.0, 3.0, True)], [(outline, 0.0)], [],
-                grade=3.0, z_struct=0.0, working_space=1.0, h_per_v=h_per_v, cap=0.5)
+                grade=3.0, z_struct=0.0, working_space=1.0, h_per_v=h_per_v, cap=0.5, toe=toe)
     cut, fill, cap, prisms = slice_hole(hole, levels(0.0, 3.0, 0.05, []))
     assert cut == pytest.approx(expected_cut, rel=1e-3)
     assert fill == pytest.approx(expected_cut - 300.0, rel=1e-3)

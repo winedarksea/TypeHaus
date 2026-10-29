@@ -1,16 +1,18 @@
 > **2026-10-28 roof-deck revision:** garage and canopy are now 19/32in Structural I
 > 40/20 plywood. Nailer yield calculations below use the thinner side member; diaphragm
 > capacities and G_a retain the conservative 15/32in table rows, not a new capacity claim.
-> Current assembled-model joint-2 demand is 258.409 lb (2026-10-28): canopy 1,079.395 lb,
+> Current assembled-model joint-2 demand is 260.142 lb (2026-10-29): canopy 1,079.395 lb,
 > garage 959.462 lb. See [roof deck assessment](roof_sheathing_and_membranes.md) for limits.
 
 > **Current active KDAT calculation (2026-10-28, flush headers; supersedes the 2026-10-14
 > and 2026-10-26 tail blocks).** Both glulams run post face to post face, y 37.271 → 42.708
 > (5.4375′), on ACE6Z end caps. Header band 2 × 0.98958 × 5.4375 = 10.762 sf; E-W delivery
-> (26.667 + 10.762) × 16.7232 + 2 × 23.673 = **673.269 lb**, at y 40.203: joint couple
-> **2,030.7 lb-ft**, chord 84.61 lb ([west band amendment](canopy_west_band.md#2026-10-28-flush-header-amendment-to-57)).
-> Joint boundary 673.27/23.792 = 28.30 plf (0.149); strap couple 54.53 lb; nailers
-> 173.06 + 85.35 = 258.41 lb; gable clips 673.27/7 = 96.18 lb (0.214). On the 17.299 ft
+> (26.667 + 10.762) × 16.7232 + 2 × 23.673 = **673.269 lb**, at y 40.141 with each header
+> band at its own centroid (2026-10-29): joint couple **2,071.9 lb-ft**, chord 86.33 lb
+> ([west band amendment](canopy_west_band.md#2026-10-28-flush-header-amendment-to-57)).
+> Joint boundary 673.27/23.792 = 28.30 plf (0.149); strap couple 2,071.9 × 11.896 / 443.02
+> = 55.63 lb; nailers 173.06 + 2,071.9/23.792 = 173.06 + 87.08 = 260.14 lb (0.241 canopy,
+> 0.271 garage); gable clips 673.27/7 = 96.18 lb (0.214). On the 17.299 ft
 > W-G-S surplus 38.920 plf, 0.213 of 182.5. Over the full 20.2917 ft, 33.180 plf; at the
 > 8.333 ft wall height the STHD14 demand is **276.50 lb**, 0.090 of 3,065. These are the
 > values `test_diaphragm_delivery_calcs.py` checks and `garage_service_door_outswing.md` uses.

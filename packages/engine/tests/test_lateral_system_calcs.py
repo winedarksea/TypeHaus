@@ -324,7 +324,7 @@ def test_the_kdat_collectors_and_open_front_chord_are_drawn(catlin_ctx) -> None:
                for tag in roof.diaphragm.collector_refs)
     record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
     states = _states(record)
-    assert _inputs(record)["chord_force_open_front_lb"] == pytest.approx(84.611, abs=0.2)
+    assert _inputs(record)["chord_force_open_front_lb"] == pytest.approx(86.329, abs=0.2)
     assert states["BM-BW-RW chord tension, open front"].ok
     assert states["BM-BW-RE chord tension, open front"].ok
     assert states["LSTA24 end straps, chord force + across share"].ok

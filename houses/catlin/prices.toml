@@ -5643,7 +5643,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 [excavation]
 # 2026-10-28. The modelled over-dig (resolve/excavation.py) and wall drain columns. Banded
 # from MnDOT 2025 Average Bid Prices (eDOCS doc 39047465) as the FLOOR — bid volume, open
-# highway work — and widened up for a ~1,200 cy residential dig with tight access. No quotes.
+# highway work — and widened up for a ~1,050 cy residential dig with tight access. No quotes.
 #   Excavation - Common (2106507/00010)        $10.60/CY, 87 contracts, 2.44M CY
 #   Haul and stockpile excess material (LV)     $6.35/CY,   1 contract (on-project haul)
 #   Structure excavation Class E (2411)        $11.88/CY,   4 contracts (dig + backfill)
@@ -6833,9 +6833,9 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # column stone and fabric. What stays here is what the model does not dig: mobilisation,
 # finish grading and topsoil, the garage's frost trench and the north-entry pier holes.
 # CROSS-CHECK: the old lump was $24,000-55,000 with no quantity behind it. [excavation] at
-# today's ~1,230 cy bank prices $27-76k and this residual $5.5-14k, so the pair is
-# ~$33-90k: the 1:1 Type B laid-back slope (presumed soil, BLD-12) makes the hole bigger
-# than the lump assumed, and the ~730 loose cy of haul-off is ~50 tandem loads.
+# today's ~1,056 cy bank prices $24-67k and this residual $5.5-14k, so the pair is
+# ~$29-81k: even the presumed Type A cut (3 1/2' plumb toe, 3/4:1, kept inside the lot;
+# BLD-12) makes the hole bigger than the lump assumed, and ~770 loose cy is ~55 tandem loads.
 site-excavation-backfill-grading = { material = { low = 1500, high = 4000 }, labour = { low = 4000, high = 10000 } }
 # OFF-LOT ONLY since 2026-09-23: the right-of-way apron from the lot line to the curb, the
 # curb cut, and the public-walk panels it crosses, poured to the city's spec under the

@@ -13,9 +13,11 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.excavation import Excavation
 from typehaus.model.structure import FootingBedding
+from typehaus.resolve.excavation import top_of_cut
 
 _CHECK_ID = "integrity.excavation"
 _TOL_M = 1e-4
+_FT = 0.3048
 
 
 def _inch(length) -> str:
@@ -58,7 +60,25 @@ def excavation_is_well_formed(ctx: CheckContext) -> list[Finding]:
                     _CHECK_ID, f"{host}'s drain column rises {rise:.1f}\" into "
                     f"{dig.tag}'s {_inch(dig.cap_thickness)} cap", tags=(dig.tag, host),
                     fix="stop the column at the cap's underside (cap_below_grade)"))
+        out.extend(_past_the_lot(ctx, dig))
     if not out:
         return [passed(_CHECK_ID, f"{len(digs)} excavation(s) state their basis and dig "
                        "only beds")]
     return out
+
+
+def _past_the_lot(ctx: CheckContext, dig: Excavation) -> list[Finding]:
+    from shapely.geometry import Point, Polygon
+
+    ring = [p.xy_m for p in ctx.plan.project.site.parcel]
+    lip = top_of_cut(ctx.model, dig) if len(ring) >= 3 else None
+    if lip is None:
+        return []
+    parcel = Polygon(ring)
+    if lip.difference(parcel).area < 0.01:
+        return []
+    past = max(parcel.exterior.distance(Point(p)) for g in getattr(lip, "geoms", [lip])
+               for p in g.exterior.coords if not parcel.contains(Point(p)))
+    return [failed(_CHECK_ID, f"{dig.tag}'s cut reaches {past / _FT:.1f}' past the lot line",
+                   tags=(dig.tag,), fix="steepen the presumed cut, stand a vertical toe, "
+                   "shore the face, or secure a temporary construction easement")]

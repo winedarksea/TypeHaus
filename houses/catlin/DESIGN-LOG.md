@@ -15,13 +15,24 @@ closed by modelling, not by allowance.
   first authored stood in the cap, and 2 1/2" over grade on S. 49.9 cy against the 32.2 cy
   the two retired allowances priced.
 - **Over-dig (`plan/earthwork.py` EX-HOUSE).** One hole for house and court: 2'-0" working
-  space, OSHA Type B 1:1 (presumed), swell 30% / shrink 15% (presumed till), native in ≤8"
-  lifts, 12" clay cap. ~1,246 cy cut, ~513 cy placed backfill, ~114 cy cap, ~738 loose cy
-  haul-off. Billed in `prices.toml [excavation]` off MnDOT 2025 average bid floors; the old
-  $24-55k lump is now a $5.5-14k residual (garage trench, pier holes, finish grade).
-  **The 1:1 cut runs past the 50' lot's side lines** — a soils report (BLD-12) and likely a
-  steeper cut or shoring are the open items.
+  space, swell 30% / shrink 15% (presumed till), native in ≤8" lifts, 12" clay cap. Billed in
+  `prices.toml [excavation]` off MnDOT 2025 average bid floors; the old $24-55k lump is now
+  a $5.5-14k residual (garage trench, pier holes, finish grade).
+- **Cut face: OSHA Type A, presumed (owner, 2026-10-29).** The first cut, Type B 1:1, ran
+  4.05' past both side lot lines; Type A 3/4:1 alone still ran 2.21' past, and 1/2:1 is for
+  digs open under 24 hours. Every house side is ≤8' deep, so it stands a 3 1/2' unsupported
+  vertical lower portion and lays back 3/4:1 above it (OSHA App. B Fig. B-1.1): lip at
+  x = -6.584', **5" inside the lot**. The court (10.5' to 11.6' deep) lays back 3/4:1 from its
+  floor, 1.8' inside. `SideSlope.vertical_toe` / `vertical_toe_max_depth` model it, and
+  `integrity.excavation` now fails a lip past the parcel. ~1,056 cy cut, ~371 cy placed
+  backfill, ~72 cy cap, ~772 loose cy haul-off (was 1,246 / 513 / 114 / 738). If BLD-12 or
+  the competent person reads B or C, the answer is shoring or an easement; no flatter slope
+  fits. The W/E silt fence drawn 1'/2' inside the lot lines sits inside the lip along the
+  house.
 - **Court rim** takes 4" #57 (94 SF, 1.2 cy); the frost wings dropped 4" under it.
+- **Owner review, 2026-10-29:** the house column stays 16" off the foam; the court columns
+  stopping 12" under grade are accepted; `capillary-break-stone` draws in the library's
+  `gravel` hatch, so the beds, drain columns and slab base courses read as stone in section.
 - Wording unified to "seated, not Proctor-compacted"; proof-roll the subgrade, over-excavate
   soft spots to #57. The tile seats on 2" of stone (R405.1), was 1".
 
@@ -929,6 +940,10 @@ only ¾″ of bearing, and nothing flagged it. A test pins the fix now.
   the end strap. The analytical model holds a beam end laterally when it stops short of a
   delivery joint the deck runs on to. Without that hold the post caps reverted to rigid
   knees.
+- **Header bands at their own centroid (owner, 2026-10-29).** The E-W header band now
+  resolves at the headers' midpoint, y 39.990, and no longer at the footprint's 40.219
+  (`RoofWind.member_bands`). Joint couple 2,030.7 → 2,071.9 lb-ft, chord 84.61 → 86.33 lb,
+  nailers 258.41 → 260.14 lb; every row still passes with room (`notes/canopy_west_band.md`).
 
 ### The canopy's west band was a moment nobody graded, and now it is a braced frame (2026-09-30)
 

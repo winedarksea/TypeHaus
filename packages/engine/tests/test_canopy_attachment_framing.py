@@ -142,11 +142,11 @@ def test_the_chord_plates_carry_the_chord_force_and_the_west_collector_share(cat
     record = next(r for r in compute(catlin_ctx.engineering.context)
                   if r.item_id == "lateral_system/RF-BW-CANOPY")
     states = {s.name: s for s in record.limit_states}
-    # canopy_west_band.md §6 (2026-10-28): 84.611 / 2 + 173.058 west, 84.611 east, vs 450.
+    # canopy_west_band.md §6 (2026-10-29): 86.329 / 2 + 173.058 west, 86.329 east, vs 450.
     west = states["BM-BW-RW chord into CN-BW-JOINT-1's block"]
     east = states["BM-BW-RE chord into CN-BW-JOINT-7's block"]
-    assert west.demand == pytest.approx(215.364, abs=0.1)
-    assert east.demand == pytest.approx(84.611, abs=0.1)
+    assert west.demand == pytest.approx(216.223, abs=0.1)
+    assert east.demand == pytest.approx(86.329, abs=0.1)
     assert east.capacity == pytest.approx(450)
 
 
@@ -169,7 +169,7 @@ def test_nailers_read_their_own_nails_at_their_own_species(catlin_ctx):
                            ("CN-BW-JOINT-2 RF-GARAGE", 959.462)):
         state = states[f"{name} nailer into deck"]
         assert state.capacity == pytest.approx(capacity, abs=0.1)
-        assert state.demand == pytest.approx(258.41, abs=0.05)
+        assert state.demand == pytest.approx(260.14, abs=0.05)
 
 
 def test_added_framing_and_fasteners_are_billed(catlin_model_ro):

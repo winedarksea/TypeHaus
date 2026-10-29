@@ -25,7 +25,8 @@ _MIN_SLICE_M = 0.5 * 0.0254
 class Hole:
     """``digs``: ``(core, floor, top, sloped)`` per bed — a sloped bed's dig lays back from
     its core; an interior bed's is its core alone. ``interiors``: ``(plan, underside)`` of
-    each floor inside the outline. ``obstacles``: ``(plan, z0, z1)`` standing in the hole."""
+    each floor inside the outline. ``obstacles``: ``(plan, z0, z1)`` standing in the hole.
+    ``toe``: a plumb lower face, cut only where a dig is no deeper than ``toe_max_depth``."""
 
     outline: Any
     digs: list[tuple[Any, float, float, bool]]
@@ -36,6 +37,13 @@ class Hole:
     working_space: float
     h_per_v: float
     cap: float
+    toe: float = 0.0
+    toe_max_depth: float = float("inf")
+
+    def reach(self, floor: float, top: float, z: float) -> float:
+        """How far a bed's dig reaches past its core at ``z``."""
+        toe = self.toe if top - floor <= self.toe_max_depth + _EPS_Z else 0.0
+        return self.working_space + self.h_per_v * max(z - floor - toe, 0.0)
 
 
 def slice_hole(hole: Hole, marks: list[float]
@@ -55,7 +63,7 @@ def slice_hole(hole: Hole, marks: list[float]
         for core, bed_floor, top, sloped in hole.digs:
             if not bed_floor <= zm <= top:
                 continue
-            reach = hole.working_space + hole.h_per_v * (zm - bed_floor)
+            reach = hole.reach(bed_floor, top, zm)
             dig = core.buffer(reach, join_style=_MITRE) if sloped else core
             pieces.append(core)
             if sloped:

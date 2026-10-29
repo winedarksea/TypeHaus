@@ -6,7 +6,8 @@ At elevation z the hole is the union of
     from its own underside — the interiors;
   * every hosted bed's footprint from its stone floor;
   * the perimeter dig: each bed's column and bed, buffered out by ``working_space`` plus
-    ``h_per_v`` x (z - floor), less the outline so the slope never eats inward.
+    ``h_per_v`` x (z - floor), less the outline so the slope never eats inward; a plumb
+    ``vertical_toe`` first where that bed's dig is shallow enough to stand one.
 Each bed's dig stops at its own strip grade; the interiors at the site grade.
 
 Fill at z is the hole less everything standing in it (the outline, beds, columns, footings,
@@ -63,6 +64,50 @@ def _filled(solid: ResolvedSolid) -> Polygon | None:
     return polygon_of(solid.outline)
 
 
+def _digs(model: ResolvedModel, hosted: list, outline: Any, grade: float
+          ) -> list[tuple[Any, float, float, bool]]:
+    """``(core, floor, top, sloped)`` per bed: an interior bed is only its own trench."""
+    floors = open_excavation_floors(model)
+    columns: dict[str, list[Polygon]] = {}
+    for solid in model.solids:
+        if solid.category == COLUMN and (p := _filled(solid)) is not None:
+            columns.setdefault(solid.uid.rsplit("-DC-", 1)[0], []).append(p)
+    digs = []
+    for bed in sorted(hosted, key=lambda b: b.uid):
+        own = polygon_of(bed.outline)
+        if own is None:
+            continue
+        face = soil_face(model, bed, outline)
+        top = (strip_grade_elevation_m(model, grade_strip(face[2], face[3]), floors)[0]
+               if face is not None else grade)
+        digs.append((union_all([own, *columns.get(bed.uid, [])]), bed.stone_z0_m, top,
+                     face is not None))
+    return digs
+
+
+def _hole(exc: Excavation, outline: Any, digs: list, interiors: list, obstacles: list,
+          grade: float, z_struct: float) -> Hole:
+    slope = exc.side_slope
+    deep = slope.vertical_toe_max_depth
+    return Hole(outline, digs, interiors, obstacles, grade, z_struct,
+                exc.working_space.meters, slope.h_per_v, exc.cap_thickness.meters,
+                toe=slope.vertical_toe.meters,
+                toe_max_depth=deep.meters if deep is not None else float("inf"))
+
+
+def top_of_cut(model: ResolvedModel, exc: Excavation) -> Any | None:
+    """The plan of the hole at its lip: every sloped bed's dig at its own top."""
+    outline = dug_outline(model)
+    beds = {b.tag: b for b in model.footing_beddings}
+    hosted = [beds[t] for t in exc.hosts if t in beds]
+    if outline is None or not hosted:
+        return None
+    digs = _digs(model, hosted, outline, site_grade_elevation_m(model))
+    hole = _hole(exc, outline, digs, [], [], 0.0, 0.0)
+    return union_all([outline, *(core.buffer(hole.reach(floor, top, top), join_style=_MITRE)
+                                 if sloped else core for core, floor, top, sloped in digs)])
+
+
 def resolve_excavations(model: ResolvedModel) -> list[Finding]:
     authored = [(storey.tag, el) for storey in model.plan.storeys
                 for el in model.plan.storey_elements(storey.tag) if isinstance(el, Excavation)]
@@ -84,21 +129,7 @@ def _resolve(model: ResolvedModel, exc: Excavation, storey: str, outline: Any) -
     grade = site_grade_elevation_m(model)
     ws, slope = exc.working_space.meters, exc.side_slope.h_per_v
     cap_t = exc.cap_thickness.meters
-    floors = open_excavation_floors(model)
-    columns: dict[str, list[Polygon]] = {}
-    for solid in model.solids:
-        if solid.category == COLUMN and (p := _filled(solid)) is not None:
-            columns.setdefault(solid.uid.rsplit("-DC-", 1)[0], []).append(p)
-    digs = []  # (core, floor, top, sloped): an interior bed is only its own trench
-    for bed in sorted(hosted, key=lambda b: b.uid):
-        own = polygon_of(bed.outline)
-        if own is None:
-            continue
-        face = soil_face(model, bed, outline)
-        top = (strip_grade_elevation_m(model, grade_strip(face[2], face[3]), floors)[0]
-               if face is not None else grade)
-        digs.append((union_all([own, *columns.get(bed.uid, [])]), bed.stone_z0_m, top,
-                     face is not None))
+    digs = _digs(model, hosted, outline, grade)
     z_struct = max(footing_top(model, b) for b in hosted)
     floor = min(d[1] for d in digs)
     roof = max([d[2] for d in digs] + [grade])
@@ -138,12 +169,13 @@ def _resolve(model: ResolvedModel, exc: Excavation, storey: str, outline: Any) -
         if polygon.intersects(extent):
             grouped.setdefault((a, b), []).append(polygon)
     obstacles = [(union_all(ps), a, b) for (a, b), ps in grouped.items()]
+    hole = _hole(exc, outline, digs, interiors, obstacles, grade, z_struct)
     levels = _levels(floor, roof, exc.draw_step.meters,
                      [z for d in digs for z in (d[1], d[2], d[2] - cap_t)]
+                     + [d[1] + hole.toe for d in digs if d[2] - d[1] <= hole.toe_max_depth]
                      + [z for _p, z in interiors] + [z_struct]
                      + [z for _p, a, b in obstacles if floor < a < roof or floor < b < roof
                         for z in (a, b)])
-    hole = Hole(outline, digs, interiors, obstacles, grade, z_struct, ws, slope, cap_t)
     cut, fill, cap, prisms = slice_hole(hole, levels)
     solids = [ResolvedSolid(
         uid=f"{exc.uid}-BF-{n:03d}", tag=f"{exc.tag}-BF-{n + 1}", storey=storey,

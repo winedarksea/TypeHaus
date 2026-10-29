@@ -3,7 +3,7 @@
 **House:** catlin
 **Structure:** `FB-B-*` (house beds) and `FB-SG-*` (court beds), their `wall_column`s, the
 court rim base course under `SL-SG-FLOOR`, and `EX-HOUSE` (`plan/earthwork.py`).
-**Written:** 2026-10-28, by hand, before the takeoff test it oracles was pinned.
+**Written:** 2026-10-28, by hand, before the takeoff test it oracles was pinned; §7 re-worked 2026-10-29 for the Type A cut.
 **Oracle for:** `resolve/wall_column.py`, `resolve/excavation.py` and `takeoff/excavation.py`,
 reported by the takeoff's `[excavation]` rows and graded by `code.R405_1_foundation_drainage`;
 reproduced by `tests/test_earthwork.py`.
@@ -12,15 +12,15 @@ STRUCTURAL relief; `notes/basement_to_framed_wall_detail.md` — why there is no
 **What is asked of the reviewer:** whether §1's verdict on the footing bed holds, and the
 arithmetic of §6 (the column) and §7 (the dig).
 
-> ⚠ The side slope (1:1, OSHA Type B), the swell and the shrink are PRESUMED for a clay till.
-> The structure is graded on a presumed `GM` (Group I, well drained) soil; the infiltration
-> on HSG D till. Those disagree, and this backfill is designed for the till. BLD-12, the
-> soils report, settles all of it.
+> ⚠ The side slope (OSHA Type A, 3/4:1 with a 3 1/2' plumb toe where the dig is 8' or less),
+> the swell and the shrink are PRESUMED for a stiff clay till. The structure is graded on a
+> presumed `GM` (Group I, well drained) soil; the infiltration on HSG D till. Those disagree,
+> and this backfill is designed for the till. BLD-12, the soils report, settles all of it.
 >
-> ⚠ A 1:1 slope from the court's -14'-7 7/16" soakaway floor reaches ~16' past the court
-> wall at grade, and ~11' past the house. On a 50'-wide lot that is past the side lot lines.
-> Expect a steeper cut (Type A, 3/4:1), shoring, or a negotiated temporary easement; the
-> modelled quantities are the laid-back case.
+> ⚠ Type A is the steepest class OSHA allows, and it was chosen to keep the lip inside the
+> 50' lot (§7a): 1:1 (Type B) ran ~4' past both side lot lines. If BLD-12 or the competent
+> person on site reads B or C (fissured, previously disturbed, seeping, or shaken by traffic),
+> the fallback is shoring or a temporary easement: no flatter slope fits.
 
 ---
 
@@ -138,53 +138,104 @@ d. **Geotextile**, soil-side face x the column's full height, plus the top:
 
 ## 7. The over-dig, by hand
 
+### 7a. The cut face, and why Type A
+
+Re-worked 2026-10-29 (owner): model a steeper cut so the dig stays inside the 50' lot. The
+lot lines are x = -7' and 43' (`plan/basemap.geojson`); the house's foam faces are x = -0.349'
+and 36.349'; the column's outer face is 1.333' past them. That leaves **5.318'** to the lot
+line on each side, of which 2'-0" is working space: **3.318' of run for a 7.370' rise** (floor
+-124 7/16" to the -36" strip grade).
+
+| cut (OSHA 1926 Subpart P App. B) | run at the lip | lip x (west) | inside the lot? |
+|---|---|---|---|
+| Type B, 1:1 | 7.370' | -11.05' | no, 4.05' past |
+| Type A, 3/4:1 simple | 5.528' | -9.21' | no, 2.21' past |
+| Type A, 1/2:1 short-term (open <= 24 h, <= 12' deep) | 3.685' | -7.37' | no, and a foundation dig is open for weeks |
+| **Type A, 3 1/2' unsupported vertical lower portion, 3/4:1 above (dig <= 8' deep)** | 0.75 x (7.370 - 3.5) = **2.903'** | **-6.584'** | **yes, 0.416' = 5" inside** |
+
+Every house side is 8' deep or less (W, E, N1, S1 7.370'; S4 7.286'; N2-N4 7.036'), so each
+stands its 3 1/2' toe. The court is not: W1/E1 are 10.620'/10.536' deep and W2/E2/S
+11.620'/11.536'/11.286', and Type A's 8-12' row allows a toe only under a 1:1 face. So the
+court lays back 3/4:1 from its floor: W2's lip is 2 + 0.75 x 11.620 = 10.715' past its bed
+edge at x = 5.5', so x = -5.215', 1.785' inside the lot; S's lip is 2 + 8.465 = 10.465' past
+y = -30.833', so y = -41.30', 7.2' inside the rear line.
+
+Type A means cohesive soil of unconfined compressive strength >= 1.5 tsf — stiff clay till
+— and App. A excludes any soil that is fissured, previously disturbed, subject to traffic
+vibration, layered dipping into the cut, or seeping. It is presumed, like everything here,
+and `integrity.excavation` now fails any dig whose lip leaves the parcel.
+
+### 7b. The ring
+
 Working space 2'-0" off the column's outer face (off the bed edge in the court, whose beds
-reach 35.69" = 2.974' past the court wall), then 1:1. At height h over a bed's floor the
-dig reaches d = 1.333 + 2 + h (house) or 2.974 + 2 + h (court) past the outline. Each side
-stops at its own strip grade (§6; court W -36", E -37", S -40"). Integrated in 1" levels:
+reach 35.69" = 2.974' past the court wall). At height h over a bed's floor the dig reaches
+d = 1.333 + 2 + 0.75·max(h - 3.5, 0) past the outline (house) or 2.974 + 2 + 0.75·h (court).
+Each SIDE is one strip from its own floor to its own strip grade (court W -36", E -37",
+S -40"). ∫d dh = c·H + 0.75·(H - t)²/2, t the toe:
+
+| side | L along the outline (ft) | c | H | lip d | ∫d dh | L·∫d dh (cf) |
+|---|---|---|---|---|---|---|
+| house W, E | 36.698 each | 3.333 | 7.370 | 6.235 | 30.179 | 1,107.5 each |
+| house N1 / N2-N4 | 18.349 each | 3.333 | 7.370 / 7.036 | 6.235 / 5.985 | 30.179 / 28.142 | 553.8 / 516.4 |
+| house S1 / S4 | 8.823 each | 3.333 | 7.370 / 7.286 | 6.235 / 6.173 | 30.179 / 29.662 | 266.3 / 261.7 |
+| court W1 / E1 | 10.651 each | 4.974 | 10.620 / 10.536 | 12.939 / 12.876 | 95.115 / 94.040 | 1,013.1 / 1,001.6 |
+| court W2 / E2 | 16.859 each | 4.974 | 11.620 / 11.536 | 13.689 / 13.626 | 108.429 / 107.291 | 1,828.0 / 1,808.8 |
+| court S | 19.052 | 4.974 | 11.286 | 13.439 | 103.908 | 1,979.7 |
+| **sides** | | | | | | **11,444** |
+
+Corners, ∫d² dh = c²H + 0.75·c·(H - t)² + 0.5625·(H - t)³/3: the house's four at 130.2 each
+(520.8), the court's SW and SE at 1,085.3 and 1,069.8: **+2,676**. Less the overlaps, taken in
+1" levels: the house S strips against the court W/E strips at the two re-entrant corners,
+and the W1/W2 (E1/E2) step: **-626**. **Ring 13,494 cf.**
+
+### 7c. Cut, fill, cap, haul
 
 | piece | working | cf |
 |---|---|---|
-| perimeter ring | Σ sides L·d + corners d², less the house-S x court-W/E overlap, z from each floor to its top | 18,447 |
+| perimeter ring | 7b | 13,494 |
 | house interior | 1296 SF x 9.5/12 (stone to slab) + 1346.8 SF x 75.44/12 (outline to grade) + sump 2.25 x 1.5 | 9,496 |
 | court interior | 524.1 SF x 75.44/12 + 442 SF x 7.5/12 (rim + stone) + 121 SF x 10.5/12 (field) | 3,677 |
 | beds below the interiors | house 291.8 SF x 5.5/12 + 49.8 SF x 9.5/12; court inner parts 42.04 x 2 x 46.5/12 + (46.3 x 2 + 102.1 + 33) x 58.5/12 - 11 x 10.5/12 | 1,599 |
-| **cut (bank)** | | **33,220 = 1,230 cy** |
+| **cut (bank)** | | **28,266 = 1,046.9 cy** |
+
+The interiors and the beds under them do not move with the slope.
 
 Fill = ring less what stands in it: columns 1,346; court beds and footings outside the outline
 (W1/E1 31.06 SF x 4.5' x 2 = 279.5, W2/E2 34.2 SF x 5.5' x 2 = 376.2, S 106.2 SF x 5.5' =
-584.3) 1,240; house bed/footing overhang 29.1 SF x 1.25' = 36; RG walls and beds, terrace
-fill, piers and walk bases ~195. **Fill 18,447 - 2,817 = 15,630 cf = 579 cy.**
+584.3) 1,240; house bed/footing overhang 29.1 SF x 1.25' = 36; and, read off each element's
+own prism inside the 7b strips, the walk bases 183 and walk slabs 43, the raised-garden
+walls 70 and their beds 75, the terrace fill 44, the north-entry piers and pads 28, slab bases
+and a thermal break at the court rim 13 — 456. **Fill 13,494 - 3,078 = 10,416 cf = 385.8 cy.**
 
-Cap = the ring's top 12" under each side's grade, 3,083 cf, less walks, RG walls, terrace
-fill and pads in that band (~364; every column stops under it): **2,719 cf = 100.7 cy**.
-Native = 15,630 - 2,719 = 12,911 cf = 478 cy; **backfill placed = native + column = 478 +
-49.9 = 528 cy**.
+Cap = each strip's top 12" under its own grade, 2,157 cf, less what stands in that band
+(walk bases and slabs 226, raised-garden walls and beds 94, terrace fill 44, the rest 15;
+379; every column stops under it): **1,778 cf = 65.9 cy**. Native = 10,416 - 1,778 = 8,638
+cf = 319.9 cy; **backfill placed = native + column = 319.9 + 49.9 = 369.8 cy**.
 
-Haul-off: spoil for the fill 15,630 / (1 - 0.15) = 18,388 cf bank; (33,220 - 18,388) x 1.30
-= **19,282 cf = 714 cy loose**, ~50 tandem loads.
+Haul-off: spoil for the fill 10,416 / (1 - 0.15) = 12,254 cf bank; (28,266 - 12,254) x 1.30
+= **20,816 cf = 771.0 cy loose**, ~55 tandem loads. Against 1:1: cut -183 cy, fill -193 cy,
+haul +57 cy — the narrower hole leaves less room to put spoil back.
 
-**Against the model** (cut 1,246, fill 577, backfill 513, cap 114.2, haul 738 cy). The FILL
-agrees to 0.3% (15,581 cf against 15,630); what differs is how much is dug and how the fill
-splits between cap and native, and both have one cause. The model digs each bed's slope as
-its own mitred cone, topped at THAT bed's strip grade, and unions them; this hand ring gives
-each side its own strip. Where a -36" side meets a -40" one (N1/W1 against N2-N4; the court
-W/E against S), the higher side's cone wraps the corner and is dug up to -36" over ground at
--40" — 114 cf of it lies over the lower side's own strip — and the lower side's cap, which
-starts 4" deeper, wraps back over the higher side's native. So:
-- **cut +1.3%** (gross ring 18,818 cf against 18,447), and **haul +3.3%**, which is that
-  difference x 1.30 swell with the fill unchanged;
-- **cap +13%** (gross cap band 3,611 cf against 3,083, less 529 cf of obstacles in the band
-  against ~364), native and so **backfill -2.9%** by the same yards.
-It is a known approximation of a flat per-side grade, not a billing error: ~13 cy moves
-between two placement rows priced alike. A cap that followed a graded surface would close
-it, and would need the site's grade as a surface rather than as stations.
+**Against the model** (cut 1,055.9, backfill 370.8, cap 72.0, haul 771.7 cy): cut +0.9%,
+backfill +0.3%, haul +0.1%, cap +9.3%. One cause. The model digs each bed's slope as its own
+mitred cone, topped at THAT bed's strip grade, and unions them; this hand ring gives each
+side its own strip. Where a -36" side meets a -40" one (N1/W1 against N2-N4; the court W/E
+against S), the higher side's cone wraps the corner and is dug up to -36" over ground at
+-40", and the lower side's cap, which starts 4" deeper, wraps back over the higher side's
+native. The model's gross ring is 28,508 - 14,772 = 13,736 cf, +1.8% on 7b; its fill is
+10,608 cf, +1.8% likewise; haul nets the two. It is a known approximation of a flat
+per-side grade, not a billing error: ~6 cy moves between two placement rows priced alike. A
+cap that followed a graded surface would close it, and would need the site's grade as a
+surface rather than as stations.
 
 ## 8. What is NOT graded here
 
-The slope's stability (no soils report); shoring; the lot-line conflict above; the garage
-trench and the north-entry pier holes (in the residual allowance); the 4" PVC tile's own
-bedding beyond the 2" seat; dewatering.
+The slope's stability and the soil's OSHA class (no soils report; Type A is presumed, §7a);
+shoring; depth is read off the design strip grade, and the existing grade is unsurveyed;
+the silt fence drawn 1' inside the W lot line and 2' inside the E (`plan/site.py`) falls
+inside the lip along the house's sides, so it runs on the lot line there or after backfill;
+the garage trench and the north-entry pier holes (in the residual allowance); the 4" PVC
+tile's own bedding beyond the 2" seat; dewatering.
 
 ## Sources
 
@@ -193,7 +244,8 @@ bedding beyond the 2" seat; dewatering.
 - IRC 2018 R401.3 — grade falls 6" in the first 10'.
 - IRC 2018 R506.2.2 — the 4" base course under a slab-on-ground.
 - Minn. R. 1303.2402 subp. 1 — gas-permeable material under all floor systems (revisor.mn.gov, read 2026-10-28).
-- OSHA 29 CFR 1926 Subpart P, Appendix B — sloping, Type B soil 1:1.
+- OSHA 29 CFR 1926 Subpart P, Appendix A — soil classification: Type A cohesive, qu >= 1.5 tsf, and its exclusions.
+- OSHA 29 CFR 1926 Subpart P, Appendix B — sloping: Type A 3/4:1 (Table B-1); Fig. B-1.1, a 3 1/2' unsupported vertical lower portion where the dig is 8' or less, under 1:1 where 8-12'.
 - MnDOT 2025 Average Bid Prices (eDOCS 39047465) — the price floors in `prices.toml [excavation]`.
 - Caterpillar Performance Handbook — swell factors, clay natural bed; Peurifoy, *Construction
   Planning, Equipment and Methods* — bank-to-compacted shrinkage for clay.

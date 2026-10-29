@@ -12,10 +12,18 @@ from typehaus.quantities import Length, inch
 
 
 class SideSlope(HausModel):
-    """Horizontal run per unit of rise of the cut face, and what that rests on."""
+    """Horizontal run per unit of rise of the cut face, and what that rests on.
+
+    ``vertical_toe`` is an unsupported vertically sided lower portion: the face stands plumb
+    that high off the floor before laying back. A bed whose dig (floor to strip grade) is
+    deeper than ``vertical_toe_max_depth`` lays back from its floor instead (OSHA 1926
+    Subpart P App. B, Type A: 3 1/2' only where the dig is 8' or less).
+    """
 
     h_per_v: float
     basis: str
+    vertical_toe: Length = inch(0)
+    vertical_toe_max_depth: Length | None = None
 
 
 class SoilFactor(HausModel):

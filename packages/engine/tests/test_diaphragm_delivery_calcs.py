@@ -25,9 +25,9 @@ _ROWS = {
     "open front, L'/W'": (0.2250, 1.0),
     "joint boundary nailing, along": (28.298, 190.0),
     "LSTA24 joint straps, across": (173.06, 823.3333333333334),
-    "LSTA24 joint straps, rotation couple": (54.527, 823.3333333333334),
-    "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (258.409, 1079.3951163681184),
-    "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (258.409, 959.4623256605497),
+    "LSTA24 joint straps, rotation couple": (55.634, 823.3333333333334),
+    "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (260.142, 1079.3951163681184),
+    "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (260.142, 959.4623256605497),
     "LTP4 plate clips, frame into wall": (96.181, 450.0),
     "RF-GARAGE unit-shear increment": (22.62, 167.5),
     "W-G-S delivered shear on the surplus": (38.920, 182.5),
@@ -56,8 +56,8 @@ def test_the_pinned_posts_split_their_drag_half_to_each_end(catlin_ctx) -> None:
         assert post.head_lb == pytest.approx(post.base_lb) == pytest.approx(23.67, abs=0.01)
     for axis, lb in _DELIVERED.items():
         assert wind.delivered_lb(axis) == pytest.approx(lb, abs=0.1)
-    # §3b: the E-W resultant 3.016' off the joint.
-    assert wind.resultant_ft("x") == pytest.approx(40.203, abs=0.002)
+    # §3b: the E-W resultant 3.077' off the joint, headers at their own centroid.
+    assert wind.resultant_ft("x") == pytest.approx(40.141, abs=0.002)
 
 
 def test_the_record_reproduces_sections_3_and_4(record) -> None:

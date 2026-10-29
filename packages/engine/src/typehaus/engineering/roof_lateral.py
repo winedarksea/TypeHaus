@@ -22,7 +22,7 @@ is not counted: its face is the wall's.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from typehaus.engineering.registry import EngineeringContext
@@ -66,9 +66,21 @@ class RoofWind:
     basis_text: str
     #: ``axis -> ASD lb`` on the roof's own projection and its headers, at the roof plane.
     top_shear: dict[str, float]
-    #: The roof and header bands resolve at the footprint centre (§8g's convention).
+    #: The roof's own band resolves at the footprint centre (§8g's convention).
     centre_ft: tuple[float, float]
     pinned: tuple[PinnedPost, ...] = ()
+    #: ``axis -> (ASD lb, station across the wind)`` of the header bands inside
+    #: ``top_shear``: each resolves at its own member's centroid, not the footprint's.
+    member_bands: dict[str, tuple[float, float]] = field(default_factory=dict)
+
+    def top_station_ft(self, axis: str) -> float:
+        """Where ``top_shear`` alone resolves ACROSS the wind."""
+        index = 0 if axis == "y" else 1
+        top = self.top_shear.get(axis, 0.0)
+        lb, station = self.member_bands.get(axis, (0.0, 0.0))
+        if top <= 0.0:
+            return self.centre_ft[index]
+        return ((top - lb) * self.centre_ft[index] + lb * station) / top
 
     def delivered_lb(self, axis: str) -> float:
         """The deck-level shear with every pinned post's head half added."""
@@ -81,7 +93,7 @@ class RoofWind:
         total = self.delivered_lb(axis)
         if total <= 0.0:
             return self.centre_ft[index]
-        moment = top * self.centre_ft[index] + sum(
+        moment = top * self.top_station_ft(axis) + sum(
             p.head_lb * (p.x_ft if axis == "y" else p.y_ft) for p in self.pinned)
         return moment / total
 
@@ -139,16 +151,21 @@ def roof_wind(ctx: EngineeringContext, element: Any, roof: Any) -> RoofWind | No
     grade = getattr(ctx.plan.project.site, "grade", None)
     grade_ft = float(grade.inches) / 12.0 if grade is not None else ground_ft
     q_h = velocity_pressure_psf(basis, top_ft - ground_ft)
-    member_tags = {b.tag for b in beams}
-    top: dict[str, float] = {}
-    for axis in ("x", "y"):
-        bands = (*roof_projection_bands(roof, axis, rise_ft),
-                 *solid_bands(ctx.plan, axis, member_tags, None))
-        top[axis] = Demand(axis=axis, q_h_psf=q_h, height_ft=top_ft - ground_ft,
-                           bands=bands).storey_shear_lb(MAX_VERIFIED_CASE_AB)
     from typehaus.wind import ASD_WIND_FACTOR
 
     pressure = ASD_WIND_FACTOR * q_h * GUST_EFFECT_RIGID * MAX_VERIFIED_CASE_AB
+    member_tags = {b.tag for b in beams}
+    top: dict[str, float] = {}
+    members: dict[str, tuple[float, float]] = {}
+    for axis in ("x", "y"):
+        solid = solid_bands(ctx.plan, axis, member_tags, None)
+        bands = (*roof_projection_bands(roof, axis, rise_ft), *solid)
+        top[axis] = Demand(axis=axis, q_h_psf=q_h, height_ft=top_ft - ground_ft,
+                           bands=bands).storey_shear_lb(MAX_VERIFIED_CASE_AB)
+        placed = [(pressure * b.area_sf, at) for b in solid
+                  if (at := _member_station_ft(ctx.plan, b.source, axis)) is not None]
+        if (lb := sum(f for f, _ in placed)) > 0.0:
+            members[axis] = (lb, sum(f * at for f, at in placed) / lb)
     xs = [p[0] / _M_PER_FT for p in roof.footprint]
     ys = [p[1] / _M_PER_FT for p in roof.footprint]
     centre = ((min(xs) + max(xs)) / 2.0, (min(ys) + max(ys)) / 2.0) if xs else (0.0, 0.0)
@@ -156,7 +173,17 @@ def roof_wind(ctx: EngineeringContext, element: Any, roof: Any) -> RoofWind | No
         roof_tag=roof.tag, q_h_psf=q_h, height_ft=top_ft - ground_ft,
         pressure_psf=pressure, grade_ft=grade_ft, basis_text=basis.describe(),
         top_shear=top, centre_ft=centre,
-        pinned=tuple(pinned_posts(ctx, beams, pressure)))
+        pinned=tuple(pinned_posts(ctx, beams, pressure)), member_bands=members)
+
+
+def _member_station_ft(plan: Any, tag: str, axis: str) -> float | None:
+    """A member's midpoint ACROSS the wind, feet: y for wind along x, x for wind along y."""
+    element = plan.by_tag(tag)
+    nodes = [plan.by_tag(getattr(element, n, None) or "") for n in ("start_node", "end_node")]
+    if any(node is None for node in nodes):
+        return None
+    index = 1 if axis == "x" else 0
+    return sum(node.position.xy_m[index] for node in nodes) / 2.0 / _M_PER_FT
 
 
 def pinned_posts(ctx: EngineeringContext, beams: list[Any],

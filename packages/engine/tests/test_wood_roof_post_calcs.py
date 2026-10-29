@@ -38,5 +38,5 @@ def test_the_open_front_now_computes_its_chord_force(catlin_ctx) -> None:
     """canopy_west_band.md §6: the pinned canopy's chord force is M / W', graded."""
     record = catlin_ctx.engineering["lateral_system/RF-BW-CANOPY"]
     values = {value.name: value.value for value in record.inputs}
-    assert values["chord_force_open_front_lb"] == pytest.approx(84.611, abs=0.1)
+    assert values["chord_force_open_front_lb"] == pytest.approx(86.329, abs=0.1)
     assert not any("computes no chord force" in note for note in record.notes)

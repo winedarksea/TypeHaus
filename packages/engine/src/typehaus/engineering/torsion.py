@@ -218,7 +218,11 @@ def torsion_for(ctx: Any, roof: Any, case: FrameCase,
     along = _lines(ctx, case)
     across = [line for other in cases if other.axis != case.axis
               for line in _lines(ctx, other)]
-    centre = _footprint_centre_ft(roof, case.axis)
+    from typehaus.engineering.roof_lateral import wind_of
+
+    wind = wind_of(case.roof_tag)
+    centre = (wind.top_station_ft(case.axis) if wind is not None
+              else _footprint_centre_ft(roof, case.axis))
     if centre is None:
         return None
     stations = {line.tag: value for line in along

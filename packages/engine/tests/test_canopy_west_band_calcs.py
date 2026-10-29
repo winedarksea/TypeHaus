@@ -36,11 +36,11 @@ _ROWS = {
     "W-BW-SCREEN chord hold-down, full height": (2227.6, 3060.0),
     "W-BW-SCREEN chord base shear, one base": (1038.35, 1270.0),
     "diaphragm unit shear at W-BW-SCREEN": (173.06, 190.0),
-    "LSTA24 end straps, chord force + across share": (257.669, 823.3333333333334),
-    "BM-BW-RW chord into CN-BW-JOINT-1's block": (215.364, 450.0),
-    "BM-BW-RE chord into CN-BW-JOINT-7's block": (84.611, 450.0),
-    "W-G-W joint couple, E-W case": (4.531, 182.5),
-    "W-G-E joint couple, E-W case": (4.028, 182.5),
+    "LSTA24 end straps, chord force + across share": (259.388, 823.3333333333334),
+    "BM-BW-RW chord into CN-BW-JOINT-1's block": (216.223, 450.0),
+    "BM-BW-RE chord into CN-BW-JOINT-7's block": (86.329, 450.0),
+    "W-G-W joint couple, E-W case": (4.623, 182.5),
+    "W-G-E joint couple, E-W case": (4.109, 182.5),
 }
 
 
@@ -64,8 +64,8 @@ def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
     values = {q.name: q.value for q in record.inputs}
     assert values["band_height_W-BW-SCREEN"] == pytest.approx(2.34375, abs=1e-4)
     assert values["overturning_height_W-BW-SCREEN"] == pytest.approx(8.62, abs=1e-3)
-    assert values["joint_couple_lb_ft"] == pytest.approx(2030.66, abs=1.0)
-    assert values["chord_force_open_front_lb"] == pytest.approx(84.611, abs=0.1)
+    assert values["joint_couple_lb_ft"] == pytest.approx(2071.90, abs=1.0)
+    assert values["chord_force_open_front_lb"] == pytest.approx(86.329, abs=0.1)
 
 
 def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
