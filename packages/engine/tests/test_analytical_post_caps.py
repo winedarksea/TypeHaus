@@ -134,3 +134,21 @@ def test_the_ifc_states_the_hinge_in_the_members_local_frame():
     assert _end_rotations(column, "j") == (True, True, False)
     assert _end_rotations(column, "i") is None
     assert _release_text(column).startswith("j: hinge about global X (post cap under BM")
+
+
+def test_the_deck_carries_only_a_collector_running_toward_its_joint():
+    """supports._deck_carried: the canopy's 0.511' case holds; along the joint or past the
+    deck edge it does not (2026-10-28)."""
+    from typehaus.analytical.supports import _deck_carried
+
+    line, deck = 13.17, (11.34, 13.17)
+    def at(**ys):
+        return ({n: abs(y - line) for n, y in ys.items()},
+                {n: SimpleNamespace(x_m=0.0, y_m=y) for n, y in ys.items()})
+    toward = at(tip=13.01, cap=12.95, far=11.36)
+    assert _deck_carried(*toward, True, line, deck) == "tip"
+    along = at(a=13.0, b=13.0)
+    assert _deck_carried(*along, True, line, deck) is None
+    past = at(tip=13.33, far=11.5)
+    assert _deck_carried(*past, True, line, deck) is None
+    assert _deck_carried(*toward, True, line, (11.34, 12.5)) is None

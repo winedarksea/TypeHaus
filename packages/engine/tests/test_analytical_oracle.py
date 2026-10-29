@@ -144,8 +144,19 @@ def test_a_post_cap_carries_no_gravity_base_moment(solved, tag):
             assert _moment_lb_ft(reaction) < 1.0, (node_tag, case)
 
 
+def test_the_flush_canopy_header_splits_evenly_between_its_caps(solved):
+    """Breezeway canopy (2026-10-28): symmetric 0.229' overhangs, w x 5.4375 / 2 a cap."""
+    _, model, result, _ = solved
+    for tag in ("PT-BW-RE", "PT-BW-RNE"):
+        node = _support(model, tag).node
+        snow = result.reactions[(node, LoadCaseKind.SNOW.value)].fz_n * N_TO_LB
+        dead = result.reactions[(node, LoadCaseKind.DEAD.value)].fz_n * N_TO_LB
+        assert snow == pytest.approx(1096.93 * 5.4375 / 2, rel=0.005), tag
+        assert dead == pytest.approx(148.84 * 5.4375 / 2, rel=0.005), tag
+
+
 def test_roof_beam_line_loads_sum_to_the_records_uniform_load(solved):
-    """§3d: dead + snow on BM-BW-RE/RW equals `uniform_load` 1,170.9 plf, exactly."""
+    """§3d: dead + snow on BM-BW-RE/RW equals the record's `uniform_load`, exactly."""
     load, model, _, _ = solved
     roof_items = [i for i in load.item_ids if i.startswith("roof_beam/")]
     assert roof_items

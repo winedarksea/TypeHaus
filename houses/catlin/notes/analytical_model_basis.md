@@ -227,7 +227,8 @@ along its whole length, so R_RE = R_RNE = w × 5.4375 / 2: snow **2,982 lb**, de
 **405 lb**, both base moments **0** (solve identical). The 1.2% over the record's 80 sf is
 the 0.0625' of beam outside the bearing run; it was 8.6% over with the 10-26 tails. Both caps
 stay hinged because the header's north end is still held LATERALLY: it stops 0.511' short
-of the joint line, and the deck that runs on to the joint carries it there
+of the joint line, and its collector blocking and the deck that runs on to the joint carry
+it there (collectors only; never a beam running along the joint)
 (`analytical/supports.py`, `_DECK_CARRY_M`). Without that hold both tops are rigid knees.
 Before the cap RNE was a knee: it swayed, pushed RE through the beam,
 and gave RE 58 lb of shear and **995 lb-ft** of base moment under snow.

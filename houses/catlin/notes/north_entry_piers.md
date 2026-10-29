@@ -4,6 +4,10 @@
 > piers with stainless standoff bases and drained PVC wraps. Their current wood check and
 > the switchable steel/cast alternatives are in `canopy_garage_diaphragm.md` §5a. The
 > full-height east-column passages below record the earlier cast design.
+>
+> **Headers, 2026-10-28:** `BM-BW-RW`/`-RE` are 5-1/2" x 11-7/8" glulam ending flush on
+> their posts (no 8 7/8" tail); the header rows below are history. Current geometry and
+> calcs: `canopy_west_band.md` 2026-10-28 amendment.
 
 **House:** catlin
 **Structure:** `PT-BW-W`, `PT-BW-E`, `PT-BW-RE`, `PT-BW-GW`, `PT-BW-GE`, `PT-BW-RNE` (cast
