@@ -140,8 +140,9 @@ RHEEM_PROTERRA_80 = Product(
     tag="PROD-RHEEM-PROPH80", brand="Rheem", model="PROPH80 T2 RH400-30",
     name="ProTerra 80 gal hybrid heat-pump water heater (EcoNet)",
     sku="XE80T10HS45U0",
-    source="Rheem ProTerra datasheet — see EQ-T-WATER-HEATER for the 4.5 kW element and the "
-           "30A/240V circuit this identity was chosen against.",
+    source="Rheem RH400-30 spec sheet (Quick Start Connection Guide, rheem.com document "
+           "436312) and HP-400-SO 07/24: dimensions A-L, top nipples, 59in condensate, 6in top "
+           "clearance. See EQ-T-WATER-HEATER for the 4.5 kW element and 30A/240V circuit.",
 )
 # "12kPV" is the PV *input*, not the output — the naming trap EQ-T-EG4-12KPV's note exists to
 # defuse. Carried as the model because it is what EG4 prints on the box and what an order
@@ -213,6 +214,20 @@ ERV_TERMINAL_4 = Product(
            "argument in plan/mep_erv_l1.py's header — 3 in. pipe is stocked, 3 in. dampers and "
            "grilles are not. Loss curves on the types are DERIVED (notes/erv_static_budget.md "
            "§5), not published; a submitted product with a real curve replaces them.",
+)
+
+# The sauna's two closeable vents. Wood, not plastic: a sauna vent sits in 80-100 C air (the
+# supply is over the heater) and the Finnish trade makes them in aspen/alder/cedar for that.
+# One part for both ends: a twist-louvre cover that closes the 100 mm hole fully.
+FINNMARK_SAUNA_VENT_100 = Product(
+    tag="PROD-FINNMARK-SAUNA-VENT-100", brand="Finnmark Sauna", model="713H",
+    name="Sauna air ventilation cover, circular, small, aspen (twist louvre)",
+    url="https://finnmarksauna.com/products/sauna-air-ventilation-cover-circular",
+    source="Finnmark Sauna product page, read 2026-10-29: SKU 713H, 145 mm round face, fits a "
+           "100 mm hole (a 4 in. duct is 101.6 mm), louvre twists to close or open the gap; "
+           "aspen, GBP 25.99. No temperature rating published; wood is the trade's own sauna "
+           "vent material, so none is needed. UK retailer - confirm US shipping. Alternates: "
+           "the same cover in alder (713TL) or red cedar (631-D).",
 )
 
 # Purchased study door. Geometry and clearances are structured on DT-INT-BOOKCASE36;
@@ -318,7 +333,7 @@ PRODUCTS = (
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,
     BROAN_B210E75RT, MURPHY_BOOKCASE_36,
     ERV_PLENUM_FABRICATED, ERV_START_COLLAR_DAMPERED, ERV_VOLUME_DAMPER_4,
-    ERV_TERMINAL_4,
+    ERV_TERMINAL_4, FINNMARK_SAUNA_VENT_100,
     KOHLER_UNDERSCORE_1130_W1, KOHLER_CLEARFLO_7272,
     LEVITON_EV_RECEPTACLE_1450R,
     FLOOR_BOX_PRODUCT,

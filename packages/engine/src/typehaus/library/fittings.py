@@ -26,7 +26,10 @@ strength of a row nobody checked was orderable. They stay UNKNOWN, which is what
 **Sizes.** DWV starts at 1 1/4 inch, because that is the smallest size D3311 patterns are
 made in. A 3/4 inch condensate drain is plumbed in supply tube and its turns are *bends*,
 not fittings — so no 3/4 inch DWV row exists here and a 3/4 inch drain's vertices report a
-coverage gap rather than matching a part that is not made.
+coverage gap rather than matching a part that is not made. The 90 and 45 on that tube
+service are the only two patterns the catalog claims at 3/4 inch; Schedule 40 PVC sockets
+(ASTM D2466) are made in the same two, which is why a square 3/4 inch PVC condensate line
+grades PASS while a 62 degree one cannot. The match is by size and angle, not material.
 """
 
 from __future__ import annotations

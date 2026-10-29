@@ -487,7 +487,7 @@ ATTIC_FIXTURES = (
     # ** `drain_position` IS THE PAN'S GRATE, WHICH IS ALSO ITS CENTRE. ** `wall_ref` here
     # names the WET wall, not the wall the pan touches (see the note above this tuple), so
     # the derived convention put this shower's drain 6'-7" west, on W-A-STU-W's axis. A 36"
-    # pan drains at its centre, and PR-A-STUBATH-VENT already takes off there.
+    # pan drains at its centre; its vent is PR-A-STUBATH-SH-VENT, off the pan's north edge.
     Fixture(uid="P63E8HB7WZ", tag="FX-A-STUBATH-SH", type_ref="FX-SHOWER-36-NEO-COMBO", room="RM-A-STUBATH",
             position=pt(ft(16, 2.625), ft(20, 7.625)), wall_ref="W-A-STU-W",
             drain_position=pt(ft(16, 2.625), ft(20, 7.625))),

@@ -71,7 +71,7 @@ def test_catlin_passes_and_names_its_tap_runs(catlin_model_ro) -> None:
     assert [f.result for f in findings] == [Result.PASS]
     msg = findings[0].message
     assert "PR-B-HW-TRUNK" in msg and "PR-B-CW-WH" in msg
-    assert "tees on 127\" out" in msg  # hot branches tee at the trunk's south turn
+    assert "tees on 137\" out" in msg  # hot branches tee at the trunk's south turn
 
 
 def test_a_pex_trunk_on_the_tap_fails(model) -> None:

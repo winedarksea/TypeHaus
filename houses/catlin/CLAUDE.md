@@ -750,8 +750,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     must stay `RM-A-STUBATH`, never `RM-A-STUDIO-BATH` — `electrical.room_lighting`
     matches `ED-{room.tag[3:]}-*` and the longer tag would prefix-match the studio,
     merging luminaire sets. x=9'-7 1/2" is `W-S-DC2`'s axis (no stud to bore); y=17'-4" is
-    a joist line under `W-A-BATH-S`'s sole plate. Vent starts over the shower (6'-7" trap
-    arm vs Table 1002.2's 5'-0"). No `humidity_class` set (NORMAL like every other bath) —
+    a joist line under `W-A-BATH-S`'s sole plate. The shower's own vent is
+    `PR-A-STUBATH-SH-VENT`, 1 1/2" in the 2x4 `W-A-HALL-S` (a 2" bores 68%) into the lav
+    revent; `PR-A-STUBATH-VENT` is the 2" wet-wall riser from (9'-7 1/2", 20'-8"). The bar's
+    supplies run inside `W-A-BATH-S` and stub out: the SUNNERSTA is open-frame, and
+    `mep.run_in_finished_volume` grades the attic against its roof (#94). No `humidity_class` set (NORMAL like every other bath) —
     WET would pull ROOF into the humid-room condensation walk for nothing.
   - `RM-A-POCKET` (x 0..9'-7 1/2", y 22'-4"..36', STORAGE). Door `D-A-POCKET` is in the
     SOUTH wall of `W-A-STU-N`, not the x=10' wall (far side is the void/shaft). Wall raked
@@ -1484,7 +1487,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (8", 2" vapour-sealed wrap) at (2'-0.6", 34'-9.5"), `VR-M-STACK`'s pair at x=10"
     (vent 34'-4.9", radon 34'-11.1", 6.2" apart so they straddle the attic's 34'-8" joist;
     the bundle jogs east at +19'-6" and exits the gable side by side, vent on x=9'-7 1/2",
-    radon on 9'-1.3") and three conduits. **No branch vent
+    radon on 9'-1.3") and three conduits. The supply manifold's missing feed is blocked by
+    the 2.7" gap between the EXH riser crown and EA's wrap, not by the radon. **No branch vent
     enters the chase any more** (2026-09-24): the main-floor vents rise up `W-S-SN2` into
     `PR-S-BATH1-VENT`, and every other vent ties onto the stack's attic jog or its riser.
     Nothing else goes in that chase.
@@ -1827,6 +1831,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     condensate drops descend inside the north-wall cavity; outlets land over the grate at
     (162, 98 3/16) and (160, 98 3/16) inches, 9 inches AFF. Inset posts
     preserve the west exhaust; `CO-B-SAUNA-HEAD` has a flush aisle cap at **(181", 60")**.
+  - Vents: `REG-B-SUP3` (over the heater) and `REG-B-EXH2` keep their stations and cfm and are
+    house-local `REG-T-SAUNA-VENT-SUP`/`-EXH`: a Finnmark 713H closeable aspen twist-louvre
+    cover on the 4" radial (`PROD-FINNMARK-SAUNA-VENT-100`). Wood, not plastic, at both ends.
   - Lighting: `LR-B-SAUNA-WEST` and `LR-B-SAUNA-SOUTH` on framing rails at **16" AFF**.
     116 11/16" of 24 V heat-rated tape = **29.17 W**; ×1.25 = **36.46 W**, within the existing
     external 60 W driver's 80% limit. Switch remains outside; all six seating types are priced.
@@ -2772,6 +2779,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   only runs inside 18" (the five branches tee on 29" up), but all seven stay copper.
   A PEX turn off a stock elbow is a BEND graded against Uponor's 6 x OD
   (`library/fittings.TUBE_BEND_RULES`); a short jog wants a plumb step, not a diagonal.
+- **The heater is the Rheem PROPH80 T2 RH400-30, non-ducted: 24 1/4" round x 76 13/16"** (K,
+  the top nipples; `notes/water_service.md`). 91" is the ducted unit and does not fit under
+  the 96 15/16" ceiling with its 6" top clearance. Rotation 0: hot west, cold east, T&P west
+  at 42 3/8", condensate 59" (front-left), tee'd into `PR-B-ERV-COND` by `PR-B-WH-COND`. Ports
+  are EXACT (heights published, x/y scaled). The round 16-gon footprint is load-bearing:
+  `PR-B-HW-TRUNK` drops in its empty corner. On the slab, no plinth or pan. **Open:** the
+  exhaust faces the east wall at 0" (Rheem: 6"), and the tank laps the ERV case 0.155".
+- **`PR-G-HYDRANT-CW` is the service lateral** (1 1/4" PEX, 6' bury): it serves every cold
+  fixture plus the hydrant, and `PR-B-CW-TRUNK` derives it as parent at the entry
+  (11', 35'-6"). The street main, curb stop and meter are SPRWS's and are not runs. Thermal
+  expansion is unresolved and nothing is modelled for it (`notes/water_service.md` §4).
 
 ### Electrical service
 

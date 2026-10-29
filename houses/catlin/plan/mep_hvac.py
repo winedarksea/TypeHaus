@@ -176,47 +176,56 @@ EQUIPMENT_TYPES = (
     # circuit at ~450 VA. Nothing else needs to move.
     EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater, Rheem ProTerra 80gal hybrid heat pump (EcoNet)",
                   product_ref="PROD-RHEEM-PROPH80",
-                  footprint=(inch(24), inch(24)), height=ft(5, 8),
+                  # Body = 24 1/4" tank (B); height 76 13/16" = K, the top nipples. NOT 91": that
+                  # is H, the unit with an 8" duct elbow, and this house does not duct it.
+                  footprint=(inch(24.25), inch(24.25)), height=inch(76.8125),
+                  # Round tank: a 16-gon, flats on the axes, so a pipe may pass the corners.
+                  footprint_shape=Footprint2D(points=(
+                      pt(inch(12.125), inch(2.412)), pt(inch(10.279), inch(6.868)),
+                      pt(inch(6.868), inch(10.279)), pt(inch(2.412), inch(12.125)),
+                      pt(inch(-2.412), inch(12.125)), pt(inch(-6.868), inch(10.279)),
+                      pt(inch(-10.279), inch(6.868)), pt(inch(-12.125), inch(2.412)),
+                      pt(inch(-12.125), inch(-2.412)), pt(inch(-10.279), inch(-6.868)),
+                      pt(inch(-6.868), inch(-10.279)), pt(inch(-2.412), inch(-12.125)),
+                      pt(inch(2.412), inch(-12.125)), pt(inch(6.868), inch(-10.279)),
+                      pt(inch(10.279), inch(-6.868)), pt(inch(12.125), inch(-2.412)))),
                   plan_symbol="water-heater",
                   source="Rheem PROPH80 T2 RH400-30 / ProTerra XE80T10HS45U0 class: 80 gal, 4.5 kW resistance element, 30A/240V dedicated circuit, ~360-500W compressor draw in Heat Pump Only mode, EcoNet wifi module.",
-                  # ** THE WATER PORTS ARE ON TOP, AND THEY ARE NO LONGER COINCIDENT. **
-                  # HP-400-SO REV. 1 is explicit about the FACE and the SIZE — "New! Top
-                  # Connections", "Universal top and side water connections", 3/4" NPT
-                  # inlet and outlet — and silent about where on the 24 1/4" top each one
-                  # lands. So the FACE is published and the STATIONS BELOW ARE DERIVED: a
-                  # symmetric pair 8" on centre about the tank axis, cold WEST and hot
-                  # EAST in the unrotated product frame. EQ-B-WH is rotated 180° in the
-                  # room so hot lands west, clear of the east service lane; cold lands east
-                  # and its approach crosses the tank top at connection height. Re-derive
-                  # these stations if a submittal ever gives the real layout.
-                  #
-                  # `certainty=EXACT` is right ANYWAY, and the reason is what the field is
-                  # for: this is not a datasheet being transcribed loosely, it is the
-                  # house declaring where its own two taps will be cut and stubbed. A
-                  # router may terminate on them and `mep.equipment_port_service` may grade
-                  # a run end positionally against them, which it could not do while both
-                  # sat at local (0, 0) — four inches of slop at a 3/4" stub is the whole
-                  # difference between a connection and a coincidence.
-                  #
-                  # z is the tank top: `height` is 5'-8", the port plane is 5'-8", and the
-                  # supply runs that land here carry 5'-8" as their tank-end elevation.
-                  # The old ft(4) was mid-tank on a top-connect unit — the riser was drawn
-                  # THROUGH the tank body for 22 1/2".
-                  #
-                  # `power` stays at local (0, 0, 0) and stays APPROXIMATE: the sheet says
-                  # only "quick access to electrical junction box", which is a face and not
-                  # a station, and nothing routes to it.
+                  # Ports off Rheem's RH400-30 sheet and HP-400-SO (letters A-L). Product frame:
+                  # -y front, +x right. Nipples at K 76 13/16" (tank top A 74 3/16"); hot 4 1/8"
+                  # left/1 1/2" back, cold 4 1/8" right/1 1/2" front, x/y SCALED (+-0.3").
+                  # Published: condensate C 59", T&P E 42 3/8". `power` is a face only.
+                  # Clearances 0" rear/sides, 6" top; exhaust 6" off a wall when not ducted.
+                  # No T&P zone: 42" up under the hung ERV, a plan polygon misreads it.
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD,
-                                     position=(inch(-4), ft(0), ft(5, 8)),
+                                     position=(inch(4.125), inch(-1.5), inch(76.8125)),
                                      connection_size=inch(0.75), direction=(0.0, 0.0, 1.0),
                                      certainty=PortCertainty.EXACT,
-                                     notes="3/4in NPT cold inlet, top connection. Size and face published (HP-400-SO REV. 1); the 4in west offset is DERIVED, not read."),
+                                     notes="3/4in NPT cold inlet, top nipple (right of axis). Height K published; x/y scaled off the Rheem top-view drawing."),
                          ServicePort(tag="hot", service=Service.WATER_HOT,
-                                     position=(inch(4), ft(0), ft(5, 8)),
+                                     position=(inch(-4.125), inch(1.5), inch(76.8125)),
                                      connection_size=inch(0.75), direction=(0.0, 0.0, 1.0),
                                      certainty=PortCertainty.EXACT,
-                                     notes="3/4in NPT hot outlet, top connection. Size and face published (HP-400-SO REV. 1); the 4in east offset is DERIVED, not read."),
-                         ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))))),
+                                     notes="3/4in NPT hot outlet, top nipple (left of axis). Height K published; x/y scaled off the Rheem top-view drawing."),
+                         ServicePort(tag="condensate", service=Service.DRAIN,
+                                     position=(inch(-7.5), inch(-11), inch(59)),
+                                     connection_size=inch(0.75), direction=(0.0, -1.0, 0.0),
+                                     certainty=PortCertainty.EXACT,
+                                     notes="3/4in NPT female primary condensate, front-left shoulder. Height C = 59in published; x/y scaled off the drawing."),
+                         ServicePort(tag="relief", service=Service.DRAIN,
+                                     position=(inch(-14.125), ft(0), inch(42.375)),
+                                     connection_size=inch(0.75), direction=(-1.0, 0.0, 0.0),
+                                     certainty=PortCertainty.EXACT,
+                                     notes="Factory T&P valve, product-left side. Height E = 42 3/8in published; 2in off the 24 1/4in body is where the valve outlet is drawn."),
+                         ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0)))),
+                  clearances=(
+                      ClearanceZone(
+                          footprint=Footprint2D(points=(
+                              pt(inch(12.125), inch(-6)), pt(inch(18.125), inch(-6)),
+                              pt(inch(18.125), inch(12)), pt(inch(12.125), inch(12)))),
+                          purpose="air exhaust 6in off any wall or hard surface when not ducted",
+                          policy=ClearancePolicy.RECOMMENDED,
+                          source="Rheem RH400-30 spec sheet, non-ducted note"),)),
     # --- the backup microgrid (notes/backup_power.md) ----------------------------------
     #
     # EG4 12kPV: name is the PV input, not the output. 12,000 W array in, 8,000 W AC out
@@ -477,14 +486,14 @@ DUCTS_HVAC_ATTIC = []
 # lane, and the 36" NEC 110.26 working spaces along the west wall. Its footprint remains inside
 # the room face.
 #
-# **Eight connection datums move with the tank.** EQ-T-WATER-HEATER's exact top ports stay
-# 4" either side of its product axis; instance rotation places hot west and cold east. The
-# seven supply run endpoints in plan/mep_supply.py follow those resolved port stations, and
-# PR-B-WH-TPR in plan/mep_drainage.py follows the tank's west face. The connection test grades
-# every run against its service-specific resolved port and checks relief proximity.
+# **Connection datums move with the tank (2026-10-29).** Rotation 0: hot west, cold east, T&P
+# west, condensate south-west, air exhaust east (at the wall). Flush to the east wall; the
+# 24.025" gap to the ERV case is 0.225" under the tank, so the body laps it 0.155" (the case
+# hangs at 54", the T&P and fittings are below it). Supply ends in plan/mep_supply.py, the stop
+# in mep_supply_devices.py and PR-B-WH-TPR/-COND in mep_drainage.py quote these stations.
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(ft(8, 9.125), ft(29, 6)), rotation=deg(180),
-             footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",
+             position=pt(ft(8, 9), ft(29, 6)),
+             footprint=(inch(24.25), inch(24.25)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",
              relief_discharge_ref="PR-B-WH-TPR"),
 ]

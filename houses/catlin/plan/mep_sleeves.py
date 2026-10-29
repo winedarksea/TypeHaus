@@ -155,9 +155,10 @@ WALL_SLEEVES = [
     # house exactly once: this is the ENTRY, the only crossing, and the point
     # PR-B-CW-TRUNK tees off at.
     # x=11'-0" since 2026-09-16, under ST-B2M's upper landing, in W-B-N2; the tag is kept.
+    # 1 1/4" since 2026-10-29: the lateral carries the whole house, not just the hydrant.
     SleevePenetration(uid="CBPW20AAAA", tag="SP-B-N3-HYD", host_ref="W-B-N2",
-                      position=pt(ft(11), ft(35, 6)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      position=pt(ft(11), ft(35, 6)), pipe_diameter=inch(1.25),
+                      sleeve_diameter=inch(2.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
     # DU-B-ERV-R-PLAY's last leg into REG-B-SUP2, square through the 12" centre wall. Every
     # route to that register crosses this pour (preferences.toml, D3), so the hole is cast.
@@ -188,7 +189,7 @@ GARAGE_SLEEVES = [
     # precisely so this host stays over the crossing, 9" inside its east end.
     # `integrity.sleeve_in_opening` catches a sleeve naming a host it no longer sits in.
     SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",
-                      position=pt(ft(11), ft(43, 6.875)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(2), axis="horizontal",
+                      position=pt(ft(11), ft(43, 6.875)), pipe_diameter=inch(1.25),
+                      sleeve_diameter=inch(3), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
 ]

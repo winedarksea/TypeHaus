@@ -12,6 +12,7 @@ import typer
 
 from typehaus.cli._shared import app, console
 from typehaus.cli.cmd_route_tree import _line_nodes, _propose_tree
+from typehaus.cli.route_ports import attach_leads, terminal_refusal
 from typehaus.cli.route_roots import hold_upstream
 from typehaus.cli.route_roots import search_for as _search_for
 from typehaus.cli.route_support import (
@@ -326,11 +327,9 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
             except RoutingSpaceTooLarge as exc:
                 problems.append(f"{target}: {exc}")
                 continue
-            if band is not None and not any(band[0] - 1e-9 <= p[2] <= band[1] + 1e-9
-                                            for p in (ends.origin, ends.root)):
-                problems.append(f"{target}: neither of its ends stands inside the --level "
-                                "band, so restricting the search to that storey asks for a "
-                                "route that cannot reach where it is told")
+            unreachable = terminal_refusal(space, ends, band)
+            if unreachable is not None:
+                problems.append(f"{target}: {unreachable}")
                 continue
 
             # **A falling run searches in PLAN, in the plane it has to ARRIVE at.** Its z is a
@@ -444,7 +443,7 @@ def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str
     from typehaus.routing.proposal import RouteProposal, bay_note, concealment
     from typehaus.routing.trades import conduit as conduit_trade
 
-    points = found.polyline()
+    points, lead_notes, lead_bends = attach_leads(found.polyline(), ends)
     if ends.tie_is_the_goal:
         # The search ran riser -> trunk because the fixture end is the fixed one; the run is
         # authored trunk -> riser, and every reader downstream (the dialect, `serves`, the
@@ -464,7 +463,7 @@ def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str
             "this run's fixtures on the other, or move one of them) is a judgement, not a "
             "search")
         return None
-    notes: list[str] = []
+    notes: list[str] = lead_notes
     if ends.falls:
         developed_ft = sum(((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
                            for a, b in zip(points, points[1:], strict=False)) / 0.3048
@@ -491,7 +490,7 @@ def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str
     proposal = RouteProposal(
         tag=f"{target}-PROPOSED{suffix}", kind=ends.kind, points=[*ends.held, *points],
         diameter_m=ends.diameter_m, width_m=ends.width_m, depth_m=ends.depth_m,
-        serves=ends.serves, system=ends.system, cost=found.cost, bends=found.bends,
+        serves=ends.serves, system=ends.system, cost=found.cost, bends=found.bends + lead_bends,
         terms=dict(found.terms) if explain else {}, notes=notes, routing=routing,
         floor_ref=floor_ref, soffit_ref=soffit_ref, echo=dict(ends.echo),
         after=ends.after_paste).snapped()

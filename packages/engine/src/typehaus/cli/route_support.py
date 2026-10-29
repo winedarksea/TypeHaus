@@ -16,6 +16,7 @@ from typehaus.cli._shared import _print_findings, _resolve_house
 from typehaus.cli.route_metadata import run_metadata as _run_metadata
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
+    from typehaus.cli.route_ports import PortLead
     from typehaus.resolve.model import ResolvedModel
     from typehaus.routing.graph import Graph
 
@@ -64,6 +65,9 @@ class Endpoints:
     held: tuple[tuple[float, float, float], ...] = ()  #: kept ahead of origin, --hold-upstream
     #: A raceway's authored pull boxes, as 3D points: the re-route keeps those it still passes.
     pull_boxes: tuple[tuple[float, float, float], ...] = ()
+    #: An exact, directed equipment port at an end: that end is moved to the lead's stub tip.
+    origin_lead: PortLead | None = None
+    root_lead: PortLead | None = None
 
 
 from typehaus.cli.route_roots import (  # noqa: E402
@@ -144,6 +148,14 @@ def branch_diameter_m(model: ResolvedModel, fixtures: tuple[str, ...],
 
 def _endpoints(model: ResolvedModel, target: str, mode: str,
                problems: list[str]) -> Endpoints | None:
+    """:func:`_target_endpoints` with exact ports' direction leads applied."""
+    from typehaus.cli.route_ports import with_port_leads
+
+    return with_port_leads(model, _target_endpoints(model, target, mode, problems))
+
+
+def _target_endpoints(model: ResolvedModel, target: str, mode: str,
+                      problems: list[str]) -> Endpoints | None:
     """The terminals for one target, or None with the reason appended to ``problems``.
 
     ``touch`` is the set of existing runs this proposal may occupy — see

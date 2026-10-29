@@ -461,7 +461,8 @@ def test_a_trunk_leaving_an_equipment_port_roots_on_the_port() -> None:
     assert ends is not None, problems
     port = next(p for p in placed_ports(model)
                 if (p.equipment_tag, p.port_tag) == ("EQ-B-WH", "hot"))
-    assert ends.root == port.point
+    # An exact, directed port moves the search terminal to its stub tip (route_ports).
+    assert (ends.root_lead.port if ends.root_lead else ends.root) == port.point
     assert ends.root_paths == ()
     assert {"PR-B-HW-TRUNK", "PR-B-HW-BATH2", "PR-B-HW-KITCH"} <= ends.touch
     assert ends.after_paste and "PR-B-HW-KITCH" in ends.after_paste[0]

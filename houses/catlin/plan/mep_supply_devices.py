@@ -235,7 +235,7 @@ SUPPLY_STOPS = [
     # mechanical room, with nothing over it — the most accessible valve in the house after
     # the main itself.
     PipeAccessory(uid="XTPXNZ8PRZ", tag="PA-B-WH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-WH", position=pt(ft(9, 1.125), ft(29, 6)),
+                  pipe_ref="PR-B-CW-WH", position=pt(inch(109.125), inch(352.5)),
                   accessible=True, room="RM-B-FURNACE",
                   model='1" full-port bronze ball valve, lever handle, at the tank inlet',
                   serves=("EQ-B-WH",)),

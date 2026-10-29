@@ -9,8 +9,8 @@ Our general goals are decent longevity and quality at a reasonable price, avoidi
 
 ## Remaining Work
 
-- **`PR-M-DRYER-COND` is boxed in:** its 61.9-degree turn in 3/4" PVC (every squared-off
-  version reads as a run hanging in RM-M-LAUNDRY) stays a `mep.fitting_pattern` UNKNOWN.
+- **Owner call: `PR-M-DRYER-COND` could retire.** It is now one stock 90 in 3/4" PVC (graded).
+  LG's drain-hose connector into `PR-M-WASH-STANDPIPE` would replace the run outright.
 
 - **Concrete spec UNKNOWNs (8) wait on the mix submittal and a soil test:** chloride x4
   (ASTM C1218), ASR x2 (the aggregate's C1293/C1260 result plus a C1778 structure class), SCM
@@ -38,17 +38,6 @@ Our general goals are decent longevity and quality at a reasonable price, avoidi
   one device whose footprint collided with the studs it was supposed to sit between. Every
   one of these is a retrofit at full price once the board is up. -- DEFERRED
 
-- **`EQ-B-WH` on a plinth: left open (2026-09-23).** It is `MountKind.FLOOR` with
-  `elevation=None`, so it bases on the storey datum. Research so far: a heat-pump water heater
-  needs no stand (the 18" ignition-source rule is for fuel-fired units in garages), and a
-  drain pan is mandated only where a leak would do damage, i.e. occupied space below — this
-  tank stands on the basement slab. What is left is the flood question (the walk-out onto a drained court with a
-  7 1/4" threshold: burst pipe or tank failure, not groundwater) and whether a 4" housekeeping
-  pad is wanted anyway. **The trap if it is authored:** `EQ-B-WH.position` is quoted verbatim
-  as a path endpoint by `PR-B-HW-TRUNK`, `PR-B-CW-WH` and `PR-B-HW-BATH1` and is the datum for
-  `PR-B-WH-TPR` — four literals, one position, and `test_water_heater_connections.py` is what
-  catches a move.
-
 ### MEP / lighting residuals
 
 **The open MEP campaigns' live record is `houses/catlin/preferences.toml`**, not this file:
@@ -56,27 +45,19 @@ Our general goals are decent longevity and quality at a reasonable price, avoidi
 and a dated note. `haus check houses/catlin --no-suppress` is the score with every
 suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted at zero.)
 
-- **Correct the HPWH envelope and connections.** `EQ-T-WATER-HEATER` / `EQ-B-WH` model
-  24×24×68 in. Rheem's dimension sheet distinguishes the 74 3/16-in. tank from the full
-  91-in.-high, 29½×24⅝-in. unit. Use the ordered-unit drawing to set the complete envelope,
-  top-port datums, connected runs and service clearances. [Rheem dimension sheet](https://files.myrheem.com/webpartners/ProductDocuments/915C4E4F-0D9A-4591-AAED-454B9A202B66.pdf)
-- **Set the sauna's occupied ventilation basis.** The selected Harvia HPCS11U1H manual calls
-  for adjustable low inlet / opposite upper outlet vents and 5 air changes per hour; the
-  modeled 20-cfm exhaust is about 2.7 ACH in the ~450-ft³ room, with the vents reversed.
-  Confirm the accepted arrangement, makeup air and ERV balance before changing terminals.
-  [Harvia manual](https://www.kbauthority.com/files/PDF/Harvia/HPCS11U1H%20Manual%20Sheet.pdf)
+- **HPWH clearances (owner call).** `EQ-B-WH` is now the Rheem RH400-30 non-ducted unit, 24 1/4"
+  round x 76 13/16" (`notes/water_service.md`). Its air exhaust faces the east wall at 0" against
+  Rheem's 6" for a non-ducted unit (ducting is ruled out: 91" + 6" top clearance is 0.06" over the
+  ceiling), and the 24.25" tank laps the hung ERV case by 0.155" in a 24.095" slot.
 - **Determine basement backwater protection before under-slab rough-in.** Add the next
   upstream manhole-cover elevation on the survey datum, compare it with basement fixture
   floors under UPC 710.1, and protect only affected low branches if required. The existing
   sewer-permit task records invert, not cover elevation. [UPC 710.1 guidance](https://forms.iapmo.org/email_marketing/codespotlight/2019/Oct17.htm)
-- **Route `EQ-B-WH` condensate.** Rheem places its condensate outlet 59 in. above the floor;
-  no run serves it, and the existing collector is higher. Draw a falling route to an
-  approved receptor or a pump discharge; include it in the existing condensate/pump allowance.
-  [Rheem specification](https://files.myrheem.com/webpartners/ProductDocuments/D4653184-5800-421C-92EE-9517A74AE244.pdf)
-- **Resolve water-heater thermal expansion.** Confirm the service, meter, PRV and
-  `PA-G-HYD-BFP` topology. If they close the system at the heater, add and price a listed,
-  properly sized expansion-control device on the heater side; otherwise record the open-system
-  basis. [UPC 608.3 guidance](https://forms.iapmo.org/email_marketing/codespotlight/2018/aug16.htm)
+- **Water-heater thermal expansion: ask SPRWS** (Engineering 651-266-6270) whether the meter set
+  carries a check valve and what the static pressure at the main is. Then model a listed expansion
+  tank on the heater inlet (and a PRV over 80 psi). Also settle the hydrant branch order: if
+  `PA-G-HYD-BFP` stays in series on `PR-B-CW-TRUNK`, the house is closed regardless and the 3/4"
+  device throttles a 1 1/4" trunk. `notes/water_service.md` §4.
 
 - **Filter and service access is only partly resolved; no reachability rule grades it.**
   System 1's 28x12x1 MERV 13 return filter is typed and reachable from the hall floor;
@@ -90,35 +71,21 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
   General open item: grade filter-change/service envelopes and decide
   whether a reachability rule is worth a swing envelope; `Equipment.behind_access_panel` /
   `access_panel_ref` remain unused in catlin.
-- **ERV condensate shares `FX-B-SAUNA-FD`** rather than `PR-B-COND` — no gravity connection
-  exists (main is at 85"+ where it crosses x=13'-6", best a 21.6" unit can manage under the
-  basement ceiling is ~75"). The mechanical-room-sink alternative still has no drain.
-- **Re-route the nine FS-S-WEST runs that land on a truss web.** Owner confirmed the panel
-  layout on 2026-10-26 (24" pitch, 12" offset, 2x4 webs; the fabricator builds to it), which
-  took the clear opening to 13". `preferences.toml`'s open-web campaign entry lists each run
-  and the move it wants, plus the one over-subscribed opening at 3'-5 1/2"..4'-6 1/2". These
-  are ERROR findings hidden from `haus print` while suppressed.
-- **`REG-S-HP-PLANT` sits 9'-2" from the room's extract** (`REG-S-ERV-PLANT-EXH`, see
-  `plan/mep_registers.py`) in an 18'x9' room, leaving the west end unswept by the room's only
-  moisture-removal extract. A middle station (~x 12'-6") would shorten the duct run if the
-  saving is wanted.
-- **The ERV SUPPLY manifold has no drawn feed and cannot have one where it stands.** Its
-  extract twin got `DU-M-ERV-EXH-FEED` on 2026-09-20. RM-M-MECH's true inside faces are
-  **63"x23"**, the supply riser sits west of the exhaust riser, and every gate to it measures
-  4 3/4" or less against a 6" duct since the chase moved to 35'-1.3" — the conduit risers and
-  `DU-ERV-EA` bind now. A flat 3"x8" does not thread either (2.87" pinch with EA's wrap), and
-  shop-made duct is a last resort anyway: revisit after the reroute with stock sizes, or move
-  the manifold.
-
-- **Router follow-ups from rooting `PR-B-HW-TRUNK` on `EQ-B-WH.hot` (2026-09-23):**
-  - A pipe proposal leaves a port sideways at the port's height; `ServicePort.direction`
-    (straight up on the water heater) is read for ducts, not pipes.
-  - The proposal drops the authored trunk's insulation, so `--evaluate` reads a NEW
-    `mep.hot_water_insulation` FAIL; its riser end also lands inside `DU-M-ERV-R-BED`.
-  - `haus route --run PR-B-CW-TRUNK` refuses before searching: its first vertex is the
-    service entrance, and no run feeds it. The trunk was re-routed by hand under the
-    `FO-M-ERV-OA` trimmer packs (TJ-9015 refuses the bore: point load, below the middle third).
-  - `cli/cmd_route.py` is 571 lines, over the 500-line rule.
+- **The ERV SUPPLY manifold still has no drawn feed, and the radon pipe is not the blocker.**
+  Measured 2026-10-29: the radon is the NORTH pipe of `VR-M-STACK`'s pair and sits west of every
+  gate. The binding gate is 2.7" between the EXH riser crown (y 409.8") and `DU-ERV-EA`'s wrap
+  (y 412.5"), with the radon moved 2 1/2" or not; also 5.5" between the SUP and EXH risers (three
+  conduits in it), 1.4" south of EXH, 0.9" north of EA. A 6" stock duct needs 6". Levers:
+  relocate `EQ-M-ERV-MAN-SUP`, or re-pack the EA/EXH/conduit column.
+- **Sauna vents: confirm the Finnmark 713H ships to the US** (UK retailer, GBP 25.99) or name a
+  US-sold closeable wood vent with a 100 mm collar; `PROD-FINNMARK-SAUNA-VENT-100`.
+- **`mep.run_in_finished_volume`'s terminal grace is blind to leg length** (decision #94): a
+  fixture's whole first or last leg is excused however far it runs. Measure what tightening it
+  raises before deciding.
+- **Router port stub is unpriced** (decision #95): its length and bend are not in a proposal's
+  cost terms, and the 2" fitting allowance is a stated value, not a datasheet one.
+- **`test_routing_perf_guard` (slow) is red at HEAD**: `DU-B-ERV-R-SAUNA-SUP` nominates 376,101
+  lattice nodes against the 350,000 cap (measured 2026-10-29 on the committed tree).
 
 ### Performance / energy follow-ups
 

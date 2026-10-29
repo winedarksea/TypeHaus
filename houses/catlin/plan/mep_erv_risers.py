@@ -442,40 +442,26 @@ DUCTS_ERV_RISERS = [
             elevations=(inch(101.25), inch(93.5), inch(93.5), inch(93.5)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=114),
-    # ===================== AND THE SUPPLY FEED IS NOT DRAWN, ON PURPOSE =====================
+    # ===== THE SUPPLY FEED IS NOT DRAWN, AND MOVING THE RADON PIPE DOES NOT OPEN IT =====
     #
-    # ** THERE IS NO 6" LANE OUT OF DU-ERV-RISER-SUP, AT ANY ELEVATION, AND THAT IS A FACT
-    # ABOUT THE BUILDING RATHER THAN A SEARCH THAT GAVE UP. ** The supply riser sits WEST of
-    # the exhaust riser on the same y, so the south band is closed to it by 6" of galvanized
-    # standing floor-to-deck. Round it to the north and there are exactly two gates, both
-    # measured off the resolved envelopes:
+    # Re-measured 2026-10-29 off the resolved envelopes (the older 3 7/8" / 7/8" gates named a
+    # pack that has since been re-ordered: the VENT is now the south pipe, y 411 1/8"..414 5/8",
+    # and the RADON the north one, y 417 3/8"..420 7/8"). Every obstacle is full height, so no
+    # elevation opens anything. East of DU-ERV-RISER-SUP (x 12.4"..18.4") the closet is a wall
+    # of risers, and the gaps in it are:
     #
-    #     west wall inside face 6 5/8"   ->  radon stack west face 10 1/2"   =  3 7/8"
-    #     exhaust riser crown 409 1/4"   ->  radon stack south face 410 1/8" =    7/8"
+    #     EXH riser crown 409.8"  ->  DU-ERV-EA south wrap face 412.5"   =  2.7"  (BINDS)
+    #     SUP riser east face 18.4"  ->  EXH riser west face 23.9"       =  5.5", holding
+    #         CD-B-ATTIC-RISER, CD-B-DATA-CHASE and CD-B-SPARE-CHASE (the SPARE one alone
+    #         reaches y 410.5", so the north lane is under 1" there)
+    #     EXH riser south face 403.8"  ->  south wall inside face 402.4"  =  1.4"
     #
-    # Nothing at 4" or over passes either, and past the first gate the north band dead-ends
-    # on DU-ERV-EA (x 20"..28", full height) with 1 3/8" to the wall beside it. Every
-    # obstacle in both gates is full height — two risers, a sealed sub-slab radon stack and
-    # its companion vent — so no change of elevation opens anything: eroding the closet's
-    # free plan by a 3" radius leaves the supply riser in a pocket of its own at +101 1/4",
-    # +88", +60" and +30" alike. `haus route houses/catlin --run DU-M-ERV-SUP-FEED` says the
-    # same thing in its own words.
-    #
-    # ** SO THE THREE THINGS THAT COULD BE DRAWN WERE ALL WORSE THAN NOT DRAWING IT. **
-    #   * a 6" round through the window costs a 2 1/2" interpenetration with the radon
-    #     stack — a `mep.run_interference` FAIL, and a real one: that is shared solid, not a
-    #     clearance opinion;
-    #   * 3" x 8" rectangular DOES thread the window with 5/16" a side and no interference
-    #     at all — but `mep.erv_static_budget` sizes only round pipe (`_product_for` matches
-    #     on `nominal_diameter`), so a flat section anywhere in the system takes the whole
-    #     check from a reported 0.325 in. w.g. / 207 cfm to "no DuctProductType". Drawing a
-    #     feed that blinds the budget the feed exists to sharpen is not a trade;
-    #   * moving the radon stack ~2 1/2" north opens the window to 6 1/8" and its companion
-    #     vent still clears W-M-N3B. That is the real fix and it is not this file's: the
-    #     stack is authored in the drainage set and it is the owner's call.
-    #
-    # The consequence is recorded where it is owed — notes/erv_static_budget.md §9 now
-    # carries the EXTRACT riser's segmented figure, which is the governing column, and says
-    # in as many words that the SUPPLY riser's split is still unquantified because its tap
-    # cannot be drawn.
+    # The widest duct whose envelope threads from the SUP riser to x=33" is 2.75" across, with
+    # the radon pipe where it stands AND with it 2 1/2" further north: the radon pipe is west
+    # of every one of these gates, so moving it changes none. A 6" stock feed needs 6"; a flat
+    # 3" x 8" sections the static budget blind (`_product_for` sizes round pipe only) and is
+    # shop-made besides. The honest levers are DU-ERV-EA (8", 2" wrap, 0.9" from the north
+    # wall: it cannot move north) or relocating EQ-M-ERV-MAN-SUP so the feed does not cross
+    # the riser column. notes/erv_static_budget.md §9 still says the SUPPLY riser's split is
+    # unquantified for this reason.
 ]

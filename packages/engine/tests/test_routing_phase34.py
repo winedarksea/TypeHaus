@@ -173,8 +173,8 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
     taps are EXACT and are not collars, which widens the rule rather than breaking it: what
     makes a port exact is that somebody has dimensioned it for THIS house, and a tap this
     house cuts in the field qualifies the same way a fabricated plenum's collar does. The
-    PROPH80's sheet publishes the face ("top connections", 3/4" NPT) and no station, so the
-    8" spread is the house's own and the ports say so in their notes. The collar assertion
+    PROPH80's sheets publish the heights (K, C 59", E 42 3/8") and a drawing the stations
+    are scaled from (2026-10-29: four exact ports now, incl. condensate and T&P). The collar assertion
     is therefore now scoped to the ERV boxes, where it is still the thing worth pinning."""
     from typehaus.resolve.mep_ports import placed_ports
 
@@ -188,7 +188,9 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
                      "EQ-B-ERV-MAN-SUP.collar-play",
                      "EQ-B-ERV-MAN-SUP.collar-sauna",
                      "EQ-B-WH.cold",
+                     "EQ-B-WH.condensate",
                      "EQ-B-WH.hot",
+                     "EQ-B-WH.relief",
                      "EQ-M-ERV-MAN-EXH.collar-trunk",
                      "EQ-M-ERV-MAN-SUP.collar-bed",
                      "EQ-M-ERV-MAN-SUP.collar-living",

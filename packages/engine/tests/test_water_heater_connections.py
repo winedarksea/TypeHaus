@@ -182,3 +182,25 @@ def test_both_taps_stand_over_the_tank(water_heater, wh_ports) -> None:
         port = wh_ports[tag]
         assert top.covers(Point(port.x_m, port.y_m)), (
             f"EQ-B-WH.{tag} is placed outside the tank's own footprint")
+
+
+def test_the_condensate_run_leaves_the_published_port_and_ties_into_the_erv_line(
+        catlin_model, water_heater) -> None:
+    """Rheem puts the 3/4" condensate connection 59" up (sheet dimension C); PR-B-WH-COND
+    starts on it and ends on PR-B-ERV-COND, which carries it to the lavatory air gap."""
+    from typehaus.resolve.mep_ports import placed_ports
+
+    port = next(p for p in placed_ports(catlin_model)
+                if p.equipment_tag == "EQ-B-WH" and p.port_tag == "condensate")
+    runs = {r.tag: r for r in catlin_model.pipe_runs}
+    cond = runs["PR-B-WH-COND"]
+    hot = next(p for p in placed_ports(catlin_model)
+               if p.equipment_tag == "EQ-B-WH" and p.port_tag == "hot")
+    # Sheet: condensate C = 59", nipples K = 76 13/16", both off the floor.
+    assert abs((hot.z_m - port.z_m) - (76.8125 - 59) * 0.0254) <= _TOLERANCE_M
+    assert abs(cond.path[0][0] - port.x_m) <= _TOLERANCE_M
+    assert abs(cond.path[0][1] - port.y_m) <= _TOLERANCE_M
+    assert abs(cond.z_m[0] - port.z_m) <= _TOLERANCE_M
+    from typehaus.resolve.mep_tie_ins import drain_tie_ins
+
+    assert drain_tie_ins(catlin_model.pipe_runs)["PR-B-WH-COND"] == "PR-B-ERV-COND"

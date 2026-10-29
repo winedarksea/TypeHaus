@@ -155,9 +155,13 @@ MAIN_LAV_CONNECTIONS = [
                   pipe_ref="PR-A-STUBATH-LAV-CW", position=pt(inch(167.625), inch(265.625)), elevation=inch(264.87000000),
                   accessible=True, room="RM-A-STUBATH", model='1/2 in. quarter-turn fixture angle stop',
                   serves=("FX-A-STUBATH-LAV",)),
+    # The bar's supplies run east INSIDE W-A-BATH-S (2x6, axis y=208") and stub straight out to
+    # the stops: under the open-frame SUNNERSTA a leg across the studio floor is in plain view,
+    # and `mep.run_in_finished_volume` grades the attic against its roof since 2026-10-29. HW at
+    # the stop height, CW 2 7/8" under it so it passes beneath HW's drop at the wall corner.
     PipeRun(uid="2V0AG3H5A6", tag="PR-A-BAR-LAV-HW", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(115.5), inch(250)), pt(inch(115.5), inch(198)), pt(inch(149.5), inch(198)), pt(inch(149.5), inch(201.74)),),
-            elevations=(inch(270.0), inch(268.0), inch(266.0), inch(264.87),),
+            path=(pt(inch(115.5), inch(250)), pt(inch(115.5), inch(208)), pt(inch(149.5), inch(208)), pt(inch(149.5), inch(201.74)),),
+            elevations=(inch(270.0), inch(264.87), inch(264.87), inch(264.87),),
             diameter=inch(0.5), material="pex",
             serves=("FX-A-STUDIO-BAR-SINK",)),
     PipeAccessory(uid="KAYKFXE7DC", tag="PA-A-BAR-LAV-HW", kind=PipeAccessoryKind.SHUTOFF,
@@ -165,8 +169,8 @@ MAIN_LAV_CONNECTIONS = [
                   accessible=True, room="RM-A-STUDIO", model='1/2 in. quarter-turn fixture angle stop',
                   serves=("FX-A-STUDIO-BAR-SINK",)),
     PipeRun(uid="ZT98DS3W8G", tag="PR-A-BAR-LAV-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(113.5), inch(246)), pt(inch(113.5), inch(196.5)), pt(inch(155.5), inch(196.5)), pt(inch(155.5), inch(201.74)),),
-            elevations=(inch(270.0), inch(270.0), inch(268.0), inch(264.87),),
+            path=(pt(inch(113.5), inch(246)), pt(inch(113.5), inch(208)), pt(inch(113.5), inch(208)), pt(inch(155.5), inch(208)), pt(inch(155.5), inch(208)), pt(inch(155.5), inch(201.74)),),
+            elevations=(inch(270.0), inch(270.0), inch(262.0), inch(262.0), inch(264.87), inch(264.87),),
             diameter=inch(0.5), material="pex",
             serves=("FX-A-STUDIO-BAR-SINK",)),
     PipeAccessory(uid="GT39R82HB2", tag="PA-A-BAR-LAV-CW", kind=PipeAccessoryKind.SHUTOFF,

@@ -8,7 +8,7 @@ reroutes, walls and one soffit. Two of those soffits were retired again on 2026-
 
 What these tests pin is the machinery, because that is what had to survive the fix and is
 what would rot now that nothing exercises it in anger: the band's lower edge, the
-three-dimensional clip, the grace rule, and the honest UNKNOWN over the attic. Each of the
+three-dimensional clip, the grace rule, and the sloped attic ceilings. Each of the
 three defect tests below puts a real, fixed defect back on a mutable model rather than
 leaning on the reference house still being wrong.
 """
@@ -39,14 +39,37 @@ def test_the_check_is_actually_registered() -> None:
     assert "mep.run_in_finished_volume" in {cid for cid, _ in registered(Tier.ADVISORY)}
 
 
-def test_the_attic_is_reported_unknown_rather_than_passed(findings) -> None:
-    """Every ``RM-A-*`` room resolves ``ResolvedCeiling.z0_m = None`` (``FollowRoof``), so
-    there is no plane to compare a run against. A check that stayed silent about them would
-    be claiming coverage it does not have — the tri-state contract's whole point."""
-    unknowns = [f for f in findings if f.result is Result.UNKNOWN
-                and "FollowRoof" in f.message]
-    assert len(unknowns) == 1, [f.message for f in findings]
-    assert set(unknowns[0].element_tags) >= {"RM-A-STUBATH", "RM-A-STUDIO", "RM-A-STUDY"}
+def test_the_attic_is_graded_against_the_roof_underside(findings, catlin_model) -> None:
+    """``Room.ceiling=FollowRoof`` rooms are graded against the roof's underside less the
+    lining, not skipped: nothing is reported as ungraded for want of a flat plane.
+
+    Two regressions are put back on a mutable model. A vent crossing the bath at 3'-5" (the
+    run ``PR-A-STUBATH-VENT`` was until 2026-10-29) hangs in the room's air. The same pipe
+    lying on the floor of the west eave, under a rake lower than R304.3's 5'-0", is not in a
+    space anybody stands in and is not reported — the line ``room_head_limited_area_m2``
+    already draws for area."""
+    from typehaus.model import ft, inch
+
+    assert not [f for f in findings if f.result is Result.UNKNOWN
+                and "FollowRoof" in f.message], [f.message for f in findings]
+
+    original = next(r for r in catlin_model.pipe_runs if r.tag == "PR-A-STUBATH-VENT")
+
+    def _with(path, z):
+        moved = dataclasses.replace(original, path=path, z_m=z)
+        return dataclasses.replace(
+            catlin_model, pipe_runs=tuple(moved if r.tag == original.tag else r
+                                          for r in catlin_model.pipe_runs))
+
+    across = tuple((inch(x).meters, ft(19, 0).meters) for x in (180, 150, 120))
+    z = (ft(23, 5).meters,) * 3
+    fails = _fails_for(_with(across, z), "PR-A-STUBATH-VENT")
+    assert [f.element_tags[1] for f in fails] == ["RM-A-STUBATH"], [f.message for f in fails]
+    assert float(fails[0].message.split("hangs ")[1].split('"')[0]) > 40
+
+    eave = tuple((inch(x).meters, ft(19, 0).meters) for x in (30, 24, 18))
+    low = (ft(20, 1).meters,) * 3
+    assert not _fails_for(_with(eave, low), "PR-A-STUBATH-VENT")
 
 
 def test_the_work_list_is_clear(findings) -> None:
@@ -234,6 +257,25 @@ def test_a_drop_that_ends_at_a_thing_in_the_room_is_the_connection_to_it(
         pipe_runs=tuple(moved if r.tag == original.tag else r
                         for r in catlin_model.pipe_runs))
     assert _fails_for(model, "PR-M-DRYER-COND")
+
+
+def test_a_trap_under_its_own_basin_is_the_fixture_not_transit(catlin_model) -> None:
+    """``PR-A-BAR-DRAIN`` leaves the open-frame SUNNERSTA in three legs (stub, trap-arm,
+    drop through the floor), all inside the sink's footprint, so all are the fixture's own
+    connection. Move the drop 10" south of the basin and the same legs are transit."""
+    from typehaus.model import inch
+
+    assert not _fails_for(catlin_model, "PR-A-BAR-DRAIN")
+    original = next(r for r in catlin_model.pipe_runs if r.tag == "PR-A-BAR-DRAIN")
+    south = inch(177.74).meters  # 10" past the footprint's south edge at 187.74"
+    path = (original.path[0], (original.path[1][0], south), (original.path[2][0], south),
+            *original.path[3:])
+    moved = dataclasses.replace(original, path=path)
+    model = dataclasses.replace(
+        catlin_model,
+        pipe_runs=tuple(moved if r.tag == original.tag else r
+                        for r in catlin_model.pipe_runs))
+    assert _fails_for(model, "PR-A-BAR-DRAIN")
 
 
 def test_the_bands_lower_edge_is_the_storey_datum(catlin_model) -> None:

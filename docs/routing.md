@@ -65,6 +65,13 @@ remain disclosed; a route's centreline does not establish a fitting's physical c
 Authored duct sizes win over equal-friction advice. Approximate equipment ports remain
 preliminary; exact ports constrain the termination.
 
+An exact port with a `ServicePort.direction` is also left along that axis: the search starts
+(or ends) at the tip of a straight stub, one outside diameter plus a 2" fitting allowance
+(`cli/route_ports.py`), and the stub is put back on the found path, so a water heater's
+upward port yields a vertical first leg. A stub that runs into anything but its own machine
+is a refusal naming the obstruction. Oblique directions, approximate ports, tee lines and
+gravity runs are not constrained.
+
 Blocker mobility comes from geometry kind: fixed, movable service, priced volume, or
 unknown. A failed search is not proof of impossibility: inspect `established`, the searched
 margin, shortages, and reachable-node counts. A counterfactual prices a world with one

@@ -58,9 +58,23 @@ WATER_SUPPLY = [
             # bearing planes and no influence at all. Keep it that way if a pier ever moves.
             path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(48, 1.3125)),
                   pt(ft(11), ft(48, 1.3125))),
-            diameter=inch(0.75), material="pex",
+            # ** THIS RUN IS THE SERVICE LATERAL (2026-10-29). ** It is the buried line from the
+            # entry (11', 48'-6") to the house; the hydrant is only where it ends. It was
+            # authored 3/4" serving the hydrant alone, which left PR-B-CW-TRUNK (1 1/4", 39
+            # WSFU) with no feeder, so `haus route --run PR-B-CW-TRUNK` refused. It now carries
+            # the trunk's whole load plus the hydrant at the trunk's size, so the trunk's tee at
+            # (11', 35'-6") derives it as parent. The street main, curb stop and meter are
+            # SPRWS's and are not runs here (notes/water_service.md).
+            diameter=inch(1.25), material="pex",
             elevations=(ft(-8, -10), ft(-8, -10), ft(-2, -5.2)),
-            serves=("FX-G-HYDRANT",)),
+            serves=("FX-G-HYDRANT", "FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
+                    "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK",
+                    "FX-M-LAUNDRY", "FX-M-KITCH-SINK",
+                    "FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-SAUNA-SH",
+                    "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
+                    "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
+                    "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
+                    "FX-S-SUITEBATH-TUBSH", "FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
 ]
 
 # --- Domestic hot/cold distribution (2026-07-29 plumbing pass) -----------------------
@@ -220,9 +234,16 @@ SUPPLY = [
     # to the former south approach, crossing the lane above 81 7/8" clear.
     # Its first leg runs south of the ERV case (y 28'-10") at 5'-9 1/2", not west through
     # it at y 29'-6" (2026-10-17): the case stands 4'-6" to 6'-3 5/8" in that corridor.
+    # ** THE TANK GREW TO 76 13/16" (2026-10-29), SO THE LEG NOW CROSSES IT HIGH. ** From the
+    # hot nipple it rises 1 1/2" and runs south at 6'-6 5/16" (under DU-B-ERV-R-GYM's lane
+    # over the tank), drops at x=7'-9.7" in the round tank's empty corner, and only then
+    # reaches the 5'-9 1/2" level that passes UNDER DU-B-ERV-RET-TRUNK's rising leg at
+    # x=7'-4 1/2" (its 6" bottom is 6'-0 5/8"). It cannot stay at 69.5" over the tank, and
+    # crossing over that duct fails: it rises to the extract plenum right there.
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(8, 5.125), ft(29, 6)), pt(ft(8, 5.125), ft(29, 6)),
-                  pt(ft(8, 5.125), inch(346)), pt(inch(83), inch(346)),
+            path=(pt(inch(100.875), inch(355.5)), pt(inch(100.875), inch(355.5)),
+                  pt(inch(100.875), inch(346)), pt(inch(93.7), inch(346)),
+                  pt(inch(93.7), inch(346)), pt(inch(83), inch(346)),
                   pt(inch(83), inch(346)),
                   pt(inch(83), inch(310)), pt(ft(5, 4), inch(310)),
                   pt(ft(5, 4), ft(25, 6)), pt(ft(7, 6), ft(25, 6)),
@@ -230,7 +251,8 @@ SUPPLY = [
                   pt(ft(6, 6), ft(17)), pt(ft(6, 6), ft(17)),
                   pt(ft(6, 6), ft(15, 6))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(5, 8), ft(5, 9.5), ft(5, 9.5), ft(5, 9.5), inch(83.4375),
+            elevations=(inch(76.8125), inch(78.3125), inch(78.3125), inch(78.3125),
+                        ft(5, 9.5), ft(5, 9.5), inch(83.4375),
                         inch(83.4375), inch(83.4375), inch(83.4375), ft(7, 4),
                         ft(7, 0.4375), ft(7, 0.4375), ft(7, 0.4375),
                         ft(8, 1.4375), ft(8, 1.4375)),
@@ -252,21 +274,20 @@ SUPPLY = [
             # 7'-9 1/2" (2026-10-17); the tank end is still reached over the heater top.
             path=(pt(ft(4, 9), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(27, 6)),
                   pt(inch(93.5), inch(330)), pt(inch(93.5), inch(330)),
-                  pt(ft(9, 1.125), ft(29, 6))),
+                  pt(inch(109.125), inch(352.5))),
             diameter=inch(1), material="copper",
-            # ** THE TANK-END CONNECTION IS THE RESOLVED COLD PORT. ** The heater is rotated so
-            # that port sits east at (9'-1 1/8", 29'-6"); the hot port is 8" west. The ceiling
-            # run stays high to a drop west of the tank centre, then approaches the east-side
-            # tap over the tank top. It enters from north of the bath cold branch's departure.
-            # The final segment is over the tank top at 5'-8"; the tank-end vertex is at
-            # 5'-8", the top connection elevation specified by HP-400-SO REV. 1.
+            # ** THE TANK-END CONNECTION IS THE RESOLVED COLD PORT. ** It sits east at
+            # (109 1/8", 352 1/2"), top nipple K = 76 13/16" (Rheem RH400-30 sheet); the hot
+            # port is 8 1/4" west and 3" north. The ceiling run stays high to a drop south
+            # of the tank, then approaches the tap over the cabinet top (74 3/16"), 2 5/8"
+            # above it. The tank-end vertex is at the nipple top.
             # The cold band rides INSIDE FS-M-WEST's I-joist
             # web, whose window is -10 1/2" to -1 3/8"; two inches down puts a 1" PEX's
             # invert 7/8" into the bottom flange and `mep.run_member_crossing` says so. Two
             # inches up is the same 2" of separation in the half of the window that is
             # empty.
             elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375),
-                        ft(8, 6.6375), ft(5, 8), ft(5, 8))),
+                        ft(8, 6.6375), inch(76.8125), inch(76.8125))),
     # Main-storey groups.
     #
     # BATH1 cold stays in the shared south wet wall; the basin takes a separate
@@ -582,12 +603,12 @@ SUPPLY = [
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
             # It leaves the east-side cold tap southbound over the tank top, turns west to
             # its riser, and then enters the existing route to the bath group.
-            path=(pt(ft(9, 1.125), ft(29, 6)), pt(ft(9, 1.125), ft(26)), pt(ft(6, 6), ft(26)),
+            path=(pt(inch(109.125), inch(352.5)), pt(inch(109.125), ft(26)), pt(ft(6, 6), ft(26)),
                   pt(ft(6, 6), ft(26)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
                   pt(ft(7), ft(20, 3)), pt(ft(10), ft(20, 3)),
                   pt(ft(10), ft(19, 10)), pt(ft(10), ft(19, 10))),
             diameter=inch(0.5), material="copper",
-            elevations=(ft(5, 8), ft(5, 8), ft(5, 8), ft(8, 4.6375),
+            elevations=(inch(76.8125), inch(76.8125), inch(76.8125), ft(8, 4.6375),
                         ft(8, 4.6375), ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375),
                         ft(8, 6.6375), ft(2, 3.4375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),

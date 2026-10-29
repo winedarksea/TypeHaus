@@ -603,13 +603,13 @@ REGISTERS_BASEMENT = [
     # EQ-B-SAUNA-HTR took that wall: a sauna stratifies hard, so the low pickup pulls
     # the cold spent
     # layer off the floor rather than the löyly at bench height. Paired with REG-B-SUP3 over
-    # the heater, both ends dampered (REG-T-ERV-SAUNA-*), it drives the room's convection
+    # the heater, both ends closeable wood vents (REG-T-SAUNA-VENT-*), it drives the room's convection
     # loop — down the far wall, across the floor, out under the bench. EXHAUST at 20 cfm:
     # the room is Occupancy.BATHROOM and its window's openable area (1.2 sf) falls short of
     # R303.3's 1.5 sf, so mechanical exhaust governs.
     Register(uid="CBRV04AAAA", tag="REG-B-EXH2", kind=DuctSystem.EXHAUST, room="RM-B-SAUNA",
             duct_ref="DU-B-ERV-R-SAUNA-EXH",
-            type_ref="REG-T-ERV-SAUNA-EXH", design_cfm=20,
+            type_ref="REG-T-SAUNA-VENT-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=inch(4), recessed_into_host_surface=True),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-B-SA-W", face="right", distance_from_start=inch(38),
@@ -621,7 +621,7 @@ REGISTERS_BASEMENT = [
     # the register sits on the heater's own centre, which is what "over the stones" means.
     Register(uid="CBRV06AAAA", tag="REG-B-SUP3", kind=DuctSystem.SUPPLY, room="RM-B-SAUNA",
             position=pt(inch(199.75), inch(20.5)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
-            type_ref="REG-T-ERV-SAUNA-SUP", design_cfm=12,
+            type_ref="REG-T-SAUNA-VENT-SUP", design_cfm=12,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
     # RM-B-BATH. Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal and unlike
     # the basement's other two stale pickups: a bathroom's air is pulled and not

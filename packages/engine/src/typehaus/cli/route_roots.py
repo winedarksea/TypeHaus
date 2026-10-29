@@ -310,7 +310,7 @@ def hold_upstream(model: ResolvedModel, ends: Any, target: str, count: int,
                         f"has {len(run.path)} vertices")
         return None
     points = [(p[0], p[1], z) for p, z in zip(run.path, run.z_m, strict=False)]
-    return replace(ends, origin=points[count], held=tuple(points[:count]))
+    return replace(ends, origin=points[count], held=tuple(points[:count]), origin_lead=None)
 
 
 def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None):

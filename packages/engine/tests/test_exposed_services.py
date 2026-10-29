@@ -33,6 +33,10 @@ _ROOM = "RM-B-PLAY-N"
 _REASON = "owner accepts exposed services in the basement: this ceiling is left open"
 
 
+def _fails(findings):
+    return [f for f in findings if f.result is Result.FAIL]
+
+
 def _findings(model):
     return [f for f in run_from_model(model, [], tier=Tier.ADVISORY, only=CID).findings
             if f.check_id == CID]
@@ -96,7 +100,7 @@ def test_the_default_changes_nothing(catlin_model_ro) -> None:
     house that says nothing is graded against its finished ceiling as before."""
     undeclared = [r.tag for r in catlin_model_ro.rooms if r.exposed_services is None]
     assert len(undeclared) > 30
-    assert not [f for f in _findings(catlin_model_ro) if f.result is Result.FAIL]
+    assert not _fails(_findings(catlin_model_ro))
 
 
 # --- what it does to the finding ------------------------------------------------------------
@@ -115,8 +119,7 @@ def test_it_turns_a_fail_into_a_pass_that_quotes_the_reason(catlin_model) -> Non
     assert fails, "the regression did not reproduce — no run hangs in the room"
 
     declared = _findings(_declare(exposed_run, _ROOM))
-    assert not [f for f in declared if f.result is Result.FAIL], \
-        [f.message for f in declared]
+    assert not _fails(declared), [f.message for f in declared]
     passes = [f for f in declared if f.result is Result.PASS and _ROOM in f.element_tags]
     assert len(passes) == 1, [f.message for f in declared]
     assert _REASON in passes[0].message
@@ -135,7 +138,7 @@ def test_exposed_is_not_ungraded(catlin_model) -> None:
     hazard along with the cosmetic one.
     """
     low = _declare(_run_across(catlin_model, _ROOM, above_floor_in=60.0), _ROOM)
-    fails = [f for f in _findings(low) if f.result is Result.FAIL]
+    fails = _fails(_findings(low))
     assert len(fails) == 1, [f.message for f in _findings(low)]
     assert "headroom line" in fails[0].message
     assert "6'-8\"" in fails[0].message

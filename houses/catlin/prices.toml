@@ -3455,13 +3455,16 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # ceiling diffuser. A 30" x 12" fabricated capture face on a drop, not a stamped grille: the
 # material is shop sheet metal and the labour is hanging it plumb 24" over a bench top.
 "REG-T-ERV-BENCH-HOOD" = { material = { low = 140, high = 340 }, labour = { low = 90, high = 220 } }  # 1 ea
-"REG-T-ERV-SAUNA-EXH" = { material = { low = 15, high = 60 }, labour = { low = 18, high = 45 } }  # 1 ea
 # 2026-08-18, RM-S-PLANT. Both carry a MOTORISED damper rather than a manual face damper,
 # which is most of the price: a 6" motorised zone damper with an actuator is $90-220, and
 # the grille itself is the $15-50 the plain terminals cost. The RH controller that drives
 # the pair is not modelled and so is not in this file.
 "REG-T-ERV-PLANT-EXH" = { material = { low = 110, high = 280 }, labour = { low = 180, high = 420 } }  # 1 ea
-"REG-T-ERV-SAUNA-SUP" = { material = { low = 15, high = 60 }, labour = { low = 18, high = 45 } }  # 1 ea
+# The sauna's closeable wood vents (2026-10-29), replacing the generic REG-T-ERV-SAUNA-*: Finnmark
+# Sauna 713H, GBP 25.99 on their page (~US$35) plus import freight and duty - ESTIMATES. Labour is
+# the same boot and trim as the generic terminal.
+"REG-T-SAUNA-VENT-SUP" = { material = { low = 35, high = 80 }, labour = { low = 18, high = 45 } }  # 1 ea
+"REG-T-SAUNA-VENT-EXH" = { material = { low = 35, high = 80 }, labour = { low = 18, high = 45 } }  # 1 ea
 # 5 ea since 2026-08-30: REG-M-SUP4 came back out of W-M-LS into RM-M-STUDY's ceiling, and
 # the one-day-old sidewall variant REG-T-ERV-SUP-WALL was deleted with its row rather than
 # left priced with no user.

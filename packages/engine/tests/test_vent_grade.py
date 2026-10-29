@@ -49,7 +49,7 @@ def _with_run(model, index, run):
 def test_catlin_vents_all_pass_the_code_check(catlin_model_ro) -> None:
     """Note §3: nothing in this house drops or sags on its way to a terminal."""
     findings = _grade(catlin_model_ro)
-    assert len(findings) == 13  # includes powder basin and local kitchen protecting vents
+    assert len(findings) == 14  # includes powder basin and local kitchen protecting vents
     assert all(f.result is Result.PASS for f in findings)
     assert all(f.code_ref == "MN Plumbing Code (ch. 4714) 905.1" for f in findings)
 
@@ -108,9 +108,9 @@ def test_four_runs_clear_the_house_grade(catlin_model_ro) -> None:
     plain = [f for f in findings if not f.message.startswith("ADVISORY — ")]
     assert {t for f in plain for t in f.element_tags} == {
         "PR-A-STUBATH-VENT", "PR-A-BAR-VENT", "PR-B-BATH-VENT", "PR-M-KITCH-LOCAL-VENT",
-        "PR-A-STUBATH-LAV-REVENT", "PR-M-BATH2-LAV-VENT"}
+        "PR-A-STUBATH-LAV-REVENT", "PR-M-BATH2-LAV-VENT", "PR-A-STUBATH-SH-VENT"}
     assert '2.217"/ft' in _for(findings, "PR-B-BATH-VENT").message
-    assert '0.152"/ft' in _for(findings, "PR-A-STUBATH-VENT").message
+    assert '0.218"/ft' in _for(findings, "PR-A-STUBATH-VENT").message
     assert '0.300"/ft' in _for(findings, "PR-A-BAR-VENT").message
     assert all(f.result is Result.PASS for f in findings), "advisory never FAILs"
 

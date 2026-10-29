@@ -295,4 +295,26 @@ REGISTER_TYPES_ERV = (
                  source="Fabricated sheet capture hood over FURN-B-WORKSHOP-BENCH-N/S, hung at 5'-6\" — 24\" above the 34\" bench tops. Captures at the source instead of diluting into the room; 4 in. collar since 2026-09-12, with the radial it hangs off. One hood does not cover ten feet of bench; see the note in plan/mep_erv.py.",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
+    # The sauna's pair: a user-closeable wood vent, because the owner shuts them to heat the
+    # room up. House-local, since a library type cannot name a house Product. 145 mm face on
+    # a 100 mm hole, which the 4" radials meet. Loss curve is the library sauna type's,
+    # unchanged (derived, not published), so the static budget does not move.
+    RegisterType(tag="REG-T-SAUNA-VENT-SUP",
+                 name="Sauna fresh-air supply, 5.7in round wood twist-louvre cover, 4in duct",
+                 footprint=(inch(5.7), inch(5.7)), height=inch(1),
+                 plan_symbol="register", ventilation_terminal=True,
+                 product_ref="PROD-FINNMARK-SAUNA-VENT-100",
+                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
+                 source="Finnmark 713H on the 4 in. radial's end; closes fully. Wood, for the heater's air.",
+                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
+                                    position=(ft(0), ft(0), ft(0))),)),
+    RegisterType(tag="REG-T-SAUNA-VENT-EXH",
+                 name="Sauna stale-air extract, 5.7in round wood twist-louvre cover, 4in duct",
+                 footprint=(inch(5.7), inch(5.7)), height=inch(1),
+                 plan_symbol="register", ventilation_terminal=True,
+                 product_ref="PROD-FINNMARK-SAUNA-VENT-100",
+                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
+                 source="Finnmark 713H on the 4 in. radial's end; closes fully. Same part as the supply.",
+                 ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
+                                    position=(ft(0), ft(0), ft(0))),)),
 )

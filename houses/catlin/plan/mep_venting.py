@@ -217,11 +217,14 @@ VENT_BRANCHES_ATTIC = [
     # fixture outright when its `wall_ref` is in `stacked_lower` — and NO ATTIC WALL CAN EVER
     # BE, because nothing stacks on the top storey. Every fixture up here needs an authored run.
     #
-    # ** IT STARTS OVER THE SHOWER, AND THAT IS `mep.trap_arm_length`, NOT AESTHETICS. ** The
-    # check measures to the nearest point of the serving run. Starting it at the wet-wall axis
-    # x=9'-7 1/2" would give the shower a 6'-7 1/8" arm against Table 1002.2's 5'-0" for 2" — a
-    # FAIL. Starting at (16'-2 5/8", 20'-8"), directly over the pan, makes the shower's arm ~0
-    # and leaves the others clear: WC 1'-5 3/8" (limit 6'-0"), lav 10 3/8" (limit 3'-6"). The
+    # ** THE SHOWER'S OWN VENT IS PR-A-STUBATH-SH-VENT (2026-10-29). ** This run used to start
+    # over the pan and cross the bath at 3'-5" in open air for 6'-4", because starting at the
+    # wet wall gives the shower a 6'-7 1/8" arm against Table 1002.2's 5'-0" for 2", and
+    # `mep.run_in_finished_volume` now grades the attic against its roof (#94). No 2" pipe
+    # can take the bath's walls instead: W-A-HALL-S is a 2x4 (a 2 3/8" hole is 68% of the stud
+    # against R602.6's 60%) and D-A-STUBATH leaves W-A-BATH-S no passage at 3'-5". A 1 1/2"
+    # PVC (1.9" OD, 54%) in W-A-HALL-S does it; this run keeps the wet-wall vertex.
+    #
     # ** THE BAR SINK IS NAMED HERE AND ON PR-A-BAR-VENT, AND BOTH ARE TRUE. ** Its revent
     # tees into this run's vertical and this run carries it the rest of the way to the
     # chase, so both pipes carry its vent air. `mep.trap_arm_length` takes the NEAREST point
@@ -230,20 +233,20 @@ VENT_BRANCHES_ATTIC = [
     # `mep.vent_reachability`: `vent_path.py` wants a run landing on a VentRun, and
     # PR-A-BAR-VENT lands on a PipeRun.
     #
-    # From there it runs west to the W-A-STU-W axis, north through the pocket at ~7'-0", and
-    # west to VR-M-STACK at (1'-0", 35'-1.3"), which carries PipeSystem.VENT to the roof. It
-    # mirrors PR-S-SUITEBATH-VENT one storey down — same x=9'-7 1/2" leg, same chase.
+    # It climbs the W-A-STU-W axis north through the pocket at ~7'-0" to VR-M-STACK's
+    # riser, which carries PipeSystem.VENT to the roof. It mirrors PR-S-SUITEBATH-VENT one
+    # storey down — same x=9'-7 1/2" leg, same chase.
     #
     # ** DO NOT INSTEAD ADD THESE FIXTURES TO PR-S-SUITEBATH-VENT.serves. ** `vent_path.py` is
     # purely 2D and would PASS it — but that run sits at 9'-3", BELOW these fixtures' flood-level
-    # rims. That is gaming the check. This run is 32' of 2" PVC and it is real.
+    # rims. That is gaming the check. This run is 13'-9" of 2" PVC and it is real.
     # ELEVATIONS ARE STOREY-RELATIVE AND THE ATTIC DATUM IS ft(20): `_resolve_pipe_run` adds
-    # the datum silently and no check grades a pipe against the roof plane it sits under, so
-    # a project elevation authored here would resolve 20'-0" too high and hang over the roof.
+    # the datum silently, so a project elevation authored here would resolve 20'-0" too high
+    # and hang over the roof.
     #
     # The run ends on the riser rather than turning east to meet the stack, because the
     # riser stands on THIS RUN'S OWN WET-WALL LINE at x=9'-7 1/2" — the stack is already on
-    # the wall this vent climbs. The whole profile is a 4" rise over 28', which is what a
+    # the wall this vent climbs. The profile is a 3" rise over 13'-9", which is what a
     # dry vent wants. The underside here is `20'-0" + 1 1/2" + x/2`, 20'-8 1/4" at x=1'-0" —
     # too shallow for any duck, which is why the run stops well east of that station.
     #
@@ -252,7 +255,7 @@ VENT_BRANCHES_ATTIC = [
     #
     # Every vertex clears the flood-level rims by more than P3104.4's 6": the highest rim served
     # is the lavatory at ~2'-10" AFF (22'-10"), so 23'-4" is the floor for a dry horizontal vent
-    # and the lowest vertex here is 23'-5". It rises monotonically into the stack, so condensate
+    # and the lowest vertex here is 23'-6". It rises monotonically into the stack, so condensate
     # drains back to the fixtures and there is no pocket to hold water. The last vertex at
     # 23'-9" ties in 1" BELOW the riser's 23'-10" exit, on the vertical part of the stack.
     # It passes OVER DU-A-ERV-R-STUBATH's riser, which stops at REG-A-STUBATH-EXH's 3'-0"
@@ -260,12 +263,20 @@ VENT_BRANCHES_ATTIC = [
     PipeRun(uid="STFQKR8Q95", tag="PR-A-STUBATH-VENT", system=PipeSystem.VENT,
             # Ends ON the vent riser at the stack's upper station (2026-09-23), the south one
             # of the pair; the radon riser 6.2" north is no longer in its way.
-            path=(pt(ft(16, 2.625), ft(20, 8)), pt(ft(9, 7.5), ft(20, 8)),
-                  pt(ft(9, 7.5), inch(412.9))),
+            path=(pt(ft(9, 7.5), ft(20, 8)), pt(ft(9, 7.5), inch(412.9))),
             diameter=inch(2),
-            elevations=(ft(3, 5), ft(3, 6), ft(3, 9)),
+            elevations=(ft(3, 6), ft(3, 9)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
+    # ** THE SHOWER'S TRAP-ARM VENT, IN W-A-HALL-S. ** From the pan's north edge (a 1'-8" arm)
+    # 30" west to the top of PR-A-STUBATH-LAV-REVENT's rise (13'-8 5/8", 22'-4", 3'-7 1/2").
+    # P3105.1 asks 1 1/4" for a 2" drain. It rises 2 1/2" to drain back to the pan; its low
+    # point is 41", 7" over the lav's rim. Named on both runs: `vent_path.py` wants a VentRun.
+    PipeRun(uid="NNKECB8F9X", tag="PR-A-STUBATH-SH-VENT", system=PipeSystem.VENT,
+            path=(pt(ft(16, 2.625), ft(22, 4)), pt(inch(164.625), ft(22, 4))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(ft(3, 5), inch(43.5)),
+            serves=("FX-A-STUBATH-SH",)),
     # ** THE BAR'S OWN REVENT, AND IT IS WHAT MAKES THE KITCHENETTE ROBUST RATHER THAN
     # MARGINAL. ** FX-A-STUDIO-BAR-SINK used to ride PR-A-STUBATH-VENT above, whose nearest
     # point is over the shower; with the bowl at the SUNNERSTA's east end (plan/fixtures.py)
