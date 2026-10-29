@@ -526,48 +526,26 @@ CONDENSATE_MAIN = [
             elevations=(ft(2, 6), inch(-18.46), inch(-20.86))),
 ]
 
-# --- RM-M-LAUNDRY: the two air gaps -----------------------------------------------------
+# --- RM-M-LAUNDRY: one air gap ---------------------------------------------------------
 #
-# Both of this room's indirect wastes are air-gapped, with no named fitting in the model,
-# so they're drawn as the pipe they are.
+# A 2" standpipe in W-M-BA2E's stud bay, top at 36" (inside the 18"-42" band, above the
+# machine's tub so it can't back-siphon). The discharge hose drops into it rather than
+# sealing to it — that open annulus is the air gap. Below the deck the trap/branch are
+# already PR-B-WASH-DRAIN; this is the missing leg above it.
 #
-# The washer's is ordinary: a 2" standpipe in W-M-BA2E's stud bay, top at 36" (inside the
-# 18"-42" band, above the machine's tub so it can't back-siphon). The discharge hose drops
-# into it rather than sealing to it — that open annulus is the air gap. Below the deck the
-# trap/branch are already PR-B-WASH-DRAIN; this is the missing leg above it.
+# ** THE DRYER'S CONDENSATE SHARES IT (owner, 2026-10-29). ** The ventless heat-pump dryer's
+# drain hose joins the washer's discharge with LG's drain-hose connector (supplied with the
+# WashTower) and both drop into this standpipe, so the room needs no duct and no second line.
+# PR-M-DRYER-COND (rigid PVC over the laundry tub) is retired. LG's height rule for the hose
+# end, 24"-47" above the washer's base, is met by the standpipe's 36" top.
 #
-# The dryer's is why this room needs no duct: a ventless heat-pump dryer
-# condenses its moisture and the pump lifts it out, landing over the laundry tub (3'-0",
-# 2" clear of the 34" flood rim) — a tub being what an air gap wants (trapped, sees water in
-# normal use), the same reading that put PR-B-COND over FX-B-SAUNA-FD.
-#
-# The condensate line stays on this floor rather than dropping 9' to PR-B-COND, whose
-# receptor is 2' away. Neither run declares `serves`: a standpipe's fixture units count on
-# the branch below it, and condensate isn't a drainage fixture at all.
+# It declares no `serves`: a standpipe's fixture units count on the branch below it.
 LAUNDRY_MAIN = [
     PipeRun(uid="P8A9ADNE6N", tag="PR-M-WASH-STANDPIPE", system=PipeSystem.DRAIN,
             path=(pt(ft(8, 2), ft(19, 4)), pt(ft(8, 2), ft(19, 4))),
             diameter=inch(2), material="pvc",
             elevations=(ft(3), ft(0)),
             wall_refs=("W-M-BA2E",)),
-    # Both ends ride their fixtures — it leaves the dryer's east face and drops over the tub.
-    #
-    # ** ONE 90 DEGREE TURN, AND THE WHOLE POINT IS THAT IT IS A PART (2026-10-29). ** It was
-    # two pitched legs meeting at 61.9 degrees: a bent 3/4" tube with no radius on record, so
-    # `mep.fitting_pattern` could only say UNKNOWN. LG publishes no bend radius for the dryer's
-    # supplied hose either (WKHC252/WKHC152 installation guide, "Connecting the Drain Hose":
-    # only "not stretched, pinched, crushed, or kinked"), so a hose cannot be graded by radius
-    # and the hose-as-tube option was dropped. This is rigid 3/4" PVC on one stock 90 elbow: a
-    # leg east (1/2" fall in 16", 0.375"/ft, clear of the 1/16" margin) and a drop to the air
-    # gap. The hose from the dryer's outlet to this line is LG's own and rides the same height
-    # rule: its end 24"-47" above the washer's base (32" best, 38" if the reservoir backs up),
-    # and this line ends at 36". Dropping the hose into PR-M-WASH-STANDPIPE through LG's drain-hose
-    # connector would retire this run and is an owner call.
-    PipeRun(uid="5NYN0SKYSV", tag="PR-M-DRYER-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(ft(10, 8), ft(19, 8.635)), pt(ft(12, 0), ft(19, 8.635)),
-                  pt(ft(12, 0), ft(19, 8.635))),
-            diameter=inch(0.75), material="pvc",
-            elevations=(ft(5), inch(59.5), ft(3))),
 ]
 
 # Terminates over FX-B-SAUNA-FD, owner's call — a condensate air gap wants a trapped
@@ -583,7 +561,8 @@ LAUNDRY_MAIN = [
 # against -15 F outdoor air. `pan_drain_ref` on EQ-B-ERV names this run.
 #
 # ** GRAVITY TO THE BATH LAVATORY, NOT THE SUMP (owner, 2026-10-17). ** The run leaves the
-# pan, south out of the case to y 28'-4", east along EQ-B-WH's south face to x 9'-7 1/2",
+# pan (where PR-B-WH-COND tees in), south out of the case to y 28'-4", east along EQ-B-WH's
+# south face to x 9'-7 1/2",
 # then south there, west of W-B-STR3, to y 18'-8 3/8", and east through W-B-STR2's cavity to
 # the lavatory drain at 12'-0". It falls about 1.8"/ft (no pump; 1/8"/ft is the floor) and
 # ends 38 in. above datum, visibly over the basin flood rim; no receptor behind drawers.
@@ -594,16 +573,19 @@ ERV_CONDENSATE = [
                   pt(inch(144), inch(224.375))),
             diameter=inch(0.75), material="pvc",
             elevations=(inch(52.5), inch(50.71), inch(45.5), inch(39), inch(38),)),
-    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem RH400-30 sheet C): a 10 5/8" drop at
-    # the port, then 3" south onto PR-B-ERV-COND's y=340" leg, which carries it to the
-    # FX-B-BATH-LAV air gap (Rheem: no trap needed to a non-sewer receptor, pitch >= 1/8"/ft,
-    # never into the tank's own pan). The tee station is read off that leg's fall
-    # (50.71" -> 45.5" over x 80.6" -> 115.5"), so it moves if that leg does.
+    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem RH400-30 sheet C). The tank's
+    # front faces the ERV case (2026-10-29), so the port is 1.2" off the case's east face: a
+    # street elbow turns it straight down to 53", under the case bottom (54"), then west and
+    # south beneath the case onto PR-B-ERV-COND's x=80.6" leg, which carries it to the
+    # FX-B-BATH-LAV air gap (Rheem: no trap to a non-sewer receptor, pitch >= 1/8"/ft, never
+    # into the tank's own pan). The tee is read off that leg's fall (52.5" -> 50.71" over
+    # y 352" -> 340"), so it moves if that leg does.
     PipeRun(uid="V5TVMM2BN9", tag="PR-B-WH-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(97.5), inch(343)), pt(inch(97.5), inch(343)),
-                  pt(inch(97.5), inch(340))),
+            path=(pt(inch(94), inch(360.5)), pt(inch(94), inch(360.5)),
+                  pt(inch(86), inch(360.5)), pt(inch(86), inch(346)),
+                  pt(inch(80.6), inch(346))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(59), inch(48.4), inch(48.187))),
+            elevations=(inch(59), inch(53), inch(52.6), inch(51.875), inch(51.605))),
 ]
 
 # ** THE COLLECTOR MOVED ONTO THE SERVICE BAND, AND THE HEAD CAME UP 2 5/8" (2026-09-09). **
@@ -649,24 +631,26 @@ CONDENSATE = [
 # EQ-B-WH's `relief_discharge_ref`.
 #
 # 3/4" full-size copper (the valve's own outlet — UPC 608.5 forbids reducing it, or any
-# valve/trap/rise along the run). Drops from the valve at 3'-6 3/8" to 8" above the slab, then
-# 1'-0" horizontal at 2"/ft to an air gap 6" over the floor — inside Minn. R. 4714.0608's
-# "within 18 inches of the floor" (its rewrite of UPC 608.5(3)). Discharges onto the mechanical-room slab by design, with no fixture below to
-# damage — the same reason UPC 507.5 needs no pan under the tank. Hangs 2" off the tank's west
-# face and drops a foot toward the door, 11'-11" from SM-B-RADON — too far for "the floor
+# valve/trap/rise along the run). Drops from the valve at 3'-6 3/8", then runs at 2"/ft to an
+# air gap 6" over the floor — inside Minn. R. 4714.0608's "within 18 inches of the floor"
+# (its rewrite of UPC 608.5(3)). Discharges onto the mechanical-room slab by design, with no
+# fixture below to damage — the same reason UPC 507.5 needs no pan under the tank. It ends
+# ~11' from SM-B-RADON — too far for "the floor
 # falls to SM-B-RADON" to be an argument on its own. The air gap is what UPC 608.5 actually
 # requires; the slope is a slab-pour question the pour has to be told to fall this way
 # rather than assumed to. Flagged in plans/TODO.md.
 # ** THE RELIEF LINE FOLLOWS THE TANK'S T&P PORT (2026-10-29). ** The valve outlet is the
-# type's `relief` port: product-left side, 42 3/8" up (Rheem E), 2" off the body. The run
-# starts there (x=7'-6 7/8"), drops and discharges one foot south. `test_water_heater_
-# connections` grades it by proximity to the tank centre.
+# type's `relief` port: product-left side, 42 3/8" up (Rheem E), 2" off the body — NORTH
+# since the tank turned -90, in the 4 1/2" between the tank and W-B-ESS-S. The run drops
+# there to 8 1/2", then runs 15" west at 2"/ft to its air gap 6" over the slab under the
+# hung ERV, where it is seen from the room. `test_water_heater_connections` grades its
+# start against the `relief` port.
 TPR_DISCHARGE = [
     PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(90.875), ft(29, 6)), pt(inch(90.875), ft(29, 6)),
-                  pt(inch(90.875), ft(28, 6))),
+            path=(pt(inch(105), inch(367.125)), pt(inch(105), inch(367.125)),
+                  pt(inch(90), inch(367.125))),
             diameter=inch(0.75), material="copper",
-            elevations=(inch(42.375), ft(0, 8), ft(0, 6))),
+            elevations=(inch(42.375), inch(8.5), ft(0, 6))),
 ]
 
 # --- Radon sump + shared radon/plumbing vent riser ---------------------------------

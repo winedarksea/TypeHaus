@@ -36,7 +36,6 @@ def test_terminal_runs_are_not_graded_as_rejected_junctions(catlin_model_ro) -> 
     orphans = {tie.child for tie in records if tie.parent is None}
     assert orphans == {
         "PR-B-COND", "PR-B-MAIN-DRAIN", "PR-B-ERV-COND", "PR-B-WH-TPR",
-        "PR-M-DRYER-COND",
     }
     assert all(tie.drop_m is None for tie in records if tie.parent is None)
 

@@ -178,7 +178,13 @@ in wet stone at -6'-0". A breaker 2'-6" above the slab is nowhere near that path
 
 So the fixture is not the thing to change. What is worth having is cheap insurance against
 that three-way coincidence, and that is `PA-G-HYD-BFP`: a 3/4" dual check on
-`PR-G-HYDRANT-CW` at (5'-0", 3'-0"), in `RM-B-FURNACE` beside `PA-B-MAIN-SHUTOFF`.
+`PR-G-HYDRANT-CW` at (11'-0", 35'-6"), 3'-0" up, in `RM-B-STAIR` beside `PA-B-MAIN-SHUTOFF`.
+
+**Current layout (2026-10-29, owner; supersedes the next paragraph's geometry).** The hydrant
+line is a 3/4" branch teed off `PR-B-CW-TRUNK`'s riser inside the basement, downstream of the
+main shutoff; it leaves through `SP-B-N3-HYD` beside the 1 1/4" service lateral
+`PR-G-SERVICE-CW` (x=11'-4"). The dual check guards that branch only, so the house trunk is
+open (`notes/water_service.md` §3).
 
 It is on the branch rather than at the fixture because the branch is the only place a device
 can be reached. The hydrant's own seat is 6'-0" down in the yard; the tee that feeds the

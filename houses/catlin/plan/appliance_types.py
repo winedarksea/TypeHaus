@@ -85,9 +85,8 @@ LG_WASHTOWER = ApplianceType(
            ServicePort(tag="supply-cold", service=Service.WATER_COLD,
                        position=(ft(0), ft(0), inch(36))),
            # The washer's discharge and the dryer's condensate both leave at the standpipe
-           # band. The condensate outlet is behind the stacking bracket and is plumbed to
-           # the drain rather than emptied from the tank — PR-M-DRYER-COND, air-gapped over
-           # FX-M-LAUNDRY-SINK's rim (plan/fixtures.py).
+           # band: LG's drain-hose connector joins the dryer hose to the washer's and both
+           # drop into PR-M-WASH-STANDPIPE (plan/mep_drainage.py).
            ServicePort(tag="drain", service=Service.DRAIN,
                        position=(ft(0), ft(0), inch(36)))),
     # LG's door-open depth is 57 1/2" overall, so the leaf itself projects 24 3/4" past the

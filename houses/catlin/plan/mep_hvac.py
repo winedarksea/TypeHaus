@@ -195,8 +195,8 @@ EQUIPMENT_TYPES = (
                   # -y front, +x right. Nipples at K 76 13/16" (tank top A 74 3/16"); hot 4 1/8"
                   # left/1 1/2" back, cold 4 1/8" right/1 1/2" front, x/y SCALED (+-0.3").
                   # Published: condensate C 59", T&P E 42 3/8". `power` is a face only.
-                  # Clearances 0" rear/sides, 6" top; exhaust 6" off a wall when not ducted.
-                  # No T&P zone: 42" up under the hung ERV, a plan polygon misreads it.
+                  # Clearances 0" rear/sides, 6" top; exhaust 6" off a wall when not ducted;
+                  # 2" off the T&P side for its release.
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD,
                                      position=(inch(4.125), inch(-1.5), inch(76.8125)),
                                      connection_size=inch(0.75), direction=(0.0, 0.0, 1.0),
@@ -478,22 +478,22 @@ DUCTS_HVAC_SECOND = [
 # "this storey has no horizontal duct" is a fact worth stating where the list would be.
 DUCTS_HVAC_ATTIC = []
 
-# The tank sits against W-B-STR3 at (8'-9 1/8", 29'-6"), flush to the resolved east interior
-# face, and service access facing west into RM-B-FURNACE. This open wall bay is
-# below the ESS closet (the battery's 48" x 41" required separation zone begins at
-# y=31'-6") and southeast of the inverter; its north edge is 1'-0" south of that zone. The
-# tank clears D-B-FURN's leaf (which sweeps to y=20'-8"), D-B-CLOSET's swing, the vent/service
-# lane, and the 36" NEC 110.26 working spaces along the west wall. Its footprint remains inside
-# the room face.
+# The tank sits against W-B-STR3 at (8'-9", 29'-5"), flush to its resolved east interior face,
+# in the slot between the hung ERV case (west), W-B-ESS-S (north) and D-B-CLOSET's swing
+# (south, y <= 339"). Clear of EQ-B-ESS-BATT's 36" zone, the dry-fire lane and the 36"
+# NEC 110.26 working spaces along the west wall.
 #
-# **Connection datums move with the tank (2026-10-29).** Rotation 0: hot west, cold east, T&P
-# west, condensate south-west, air exhaust east (at the wall). Flush to the east wall; the
-# 24.095" gap to the ERV case is under the 24.25" tank, so the body laps it 0.155" (the case
-# hangs at 54", the T&P and fittings are below it). Supply ends in plan/mep_supply.py, the stop
-# in mep_supply_devices.py and PR-B-WH-TPR/-COND in mep_drainage.py quote these stations.
+# ** ROTATED -90 SO THE AIR EXHAUST FACES THE ROOM (owner, 2026-10-29). ** Product right
+# (exhaust) is SOUTH: its 6" zone (x 99..117", y 334 7/8..340 7/8") is open floor, with only
+# PR-B-ERV-COND's 3/4" line and, while it stands open, D-B-CLOSET's leaf in it. Back is EAST
+# on the wall (0" allowed). Left (T&P, 42 3/8") is NORTH, 4 1/2" body-to-wall: 1" south from
+# 29'-6" buys that, the most the condensate line at y=340" allows. Front (display,
+# condensate) is WEST, beside the ERV case: the display is read through EcoNet, the lower
+# panels from under the case (it hangs at 54"; it moved 3/16" west to open the slot to
+# 24.28"). mep_supply.py, mep_supply_devices.py and mep_drainage.py quote the rotated ports.
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(ft(8, 9), ft(29, 6)),
+             position=pt(ft(8, 9), ft(29, 5)), rotation=deg(-90),
              footprint=(inch(24.25), inch(24.25)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",
              relief_discharge_ref="PR-B-WH-TPR"),
 ]

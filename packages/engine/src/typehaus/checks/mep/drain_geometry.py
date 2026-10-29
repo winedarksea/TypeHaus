@@ -51,8 +51,8 @@ def drain_offset_geometry(ctx: CheckContext) -> list[Finding]:
     an ordinary route on its own:
 
     * *Slope alone* fails a legitimate 45-degree offset, which is exactly 12"/ft. Catlin's
-      steepest honest segment is ``PR-M-DRYER-COND`` at 15.2"/ft — a condensate line making
-      a short drop to a receptor, and a fitting that exists.
+      steepest honest segments are condensate lines making a short drop to a receptor,
+      steeper than that, on fittings that exist.
     * *Fall alone* fails a long branch at a steepish grade, where the total is large because
       the run is long and every foot of it is buildable.
 

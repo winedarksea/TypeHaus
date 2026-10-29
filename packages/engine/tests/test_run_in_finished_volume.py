@@ -254,13 +254,13 @@ def test_the_clip_is_three_dimensional_not_a_whole_segment_band(catlin_model) ->
 
 def test_a_drop_that_ends_at_a_thing_in_the_room_is_the_connection_to_it(
         catlin_model) -> None:
-    """The grace rule. ``PR-M-DRYER-COND`` ends over ``FX-M-LAUNDRY-SINK``: its last leg is
+    """The grace rule. ``PR-B-COND`` ends over ``FX-B-SAUNA-FD``: its last leg is
     the connection, not a transit. Move that terminal vertex out of reach of everything in
     the room and the same geometry becomes a finding — so it is the terminal test deciding
     it, not a threshold."""
-    assert not _fails_for(catlin_model, "PR-M-DRYER-COND")
+    assert not _fails_for(catlin_model, "PR-B-COND")
 
-    original = next(r for r in catlin_model.pipe_runs if r.tag == "PR-M-DRYER-COND")
+    original = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-COND")
     # Only index 0 or len(path)-2 can ever qualify, so re-labelling the run's own last leg
     # as an interior one is enough: repeat the final vertex and the connection becomes
     # transit through the room with no terminal at its end.
@@ -272,7 +272,7 @@ def test_a_drop_that_ends_at_a_thing_in_the_room_is_the_connection_to_it(
         catlin_model,
         pipe_runs=tuple(moved if r.tag == original.tag else r
                         for r in catlin_model.pipe_runs))
-    assert _fails_for(model, "PR-M-DRYER-COND")
+    assert _fails_for(model, "PR-B-COND")
 
 
 def test_a_trap_under_its_own_basin_is_the_fixture_not_transit(catlin_model) -> None:

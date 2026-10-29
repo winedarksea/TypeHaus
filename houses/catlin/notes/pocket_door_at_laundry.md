@@ -11,7 +11,7 @@ The opening is x=9'-2"..12'-2" on the y=22'-4" datum; the 2x4 wall and leaf sit
 keeps the sink centerline inside the opening after the tub moved against the east drywall.
 The tower's diagonal path past the sink is 34 3/8"; the tub's north face is 25.05" south of
 the doorway's inside face, giving standing room at its front. The washer is operated from the
-hall. The tub remains the air-gap receptor for `PR-M-DRYER-COND`.
+hall. (`PR-M-DRYER-COND` is retired: the dryer drains into the washer standpipe.)
 
 The cavity runs 38 1/2" east of the opening, to x=15'-4 1/2" (the Eclisse RO). Its end stays short of `N-M-C2`, where bearing
 `W-M-C3` and `BM-M-HALL` begin. `W-M-LS` meets the continuous top and bottom plates;

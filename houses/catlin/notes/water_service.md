@@ -4,6 +4,7 @@ applied_to:
   - equipment: EQ-B-WH
   - equipment_type: EQ-T-WATER-HEATER
   - pipe_run: PR-G-HYDRANT-CW
+  - pipe_run: PR-G-SERVICE-CW
   - pipe_run: PR-B-CW-TRUNK
 tags:
   - plumbing
@@ -45,46 +46,62 @@ link in the old TODO is dead (404); the same lettered dimensions are on both she
   side for its release. Room > 1200 ft3 needs no louvres (this room is ~1,250 ft3).
 - **Fit under the 96 15/16" ceiling:** 76 13/16" + 6" = 82 13/16" fits with 14 1/8" in hand. The
   91" ducted unit + 6" = 97" would **not** (0.06" short): ducting is closed by the ceiling.
-- **Rotation 0 now** (was 180). The published hot nipple is the product's left one, so rotation
-  0 puts hot west and cold east exactly as before, and puts the front (display, condensate)
-  south, onto `PR-B-ERV-COND`'s lane. T&P is west (the old `PR-B-WH-TPR` side) at 42 3/8".
-- **Open, binding numbers.** (a) The slot between the ERV case's east face (93.03") and the
-  east foundation wall (117.125") is 24.095"; the tank is 24.25". The body is flush to the wall
-  and laps the case by 0.155" (the case hangs at 54", so only the 16-gon's equator corner
-  meets it). (b) The sheet's 29 1/2" plan envelope does not fit that slot either way round: the
-  T&P valve and its 2" release land on the ERV case side. They are at 42", under the case
-  (54"), so it clears in section, but a plan clearance zone cannot say so (it read as a conflict
-  and was dropped). (c) **The air exhaust faces the east wall at 0"**, against Rheem's 6" for a
-  non-ducted unit. Closing it means ducting (the ceiling rules that out, above) or a louvre /
-  exhaust redirect; or turning the unit, which puts the front on the wall or the ERV. **Owner
-  decision needed**; modelled as a RECOMMENDED zone that the wall does not report.
+- **Rotation -90 (owner, 2026-10-29), so the air exhaust faces the room.** At rotation 0 it
+  faced the east wall at 0" against Rheem's 6". Turning the product's right side (exhaust)
+  south puts it over open floor: the 6" zone is x 99..117", y 334 7/8..340 7/8". Back is east
+  on `W-B-STR3` (0" allowed). Left (T&P, E 42 3/8") is north, toward `W-B-ESS-S`. Front
+  (display, condensate C 59") is west, beside the hung ERV case. No other orientation opens the
+  exhaust: west is the ERV case (54"-75 5/8", the heat-pump section's height), north is
+  `W-B-ESS-S`, and -67.5 or less swings the exhaust zone into `W-B-STR3`.
+- **The tank moved 1" south** to (8'-9", 29'-5"), giving the T&P side 4 1/2" to the wall:
+  Rheem's 2" release, with 2 1/2" left between the valve outlet and the wall. The limit is
+  `PR-B-ERV-COND`'s y=340" leg (0.35" clear of the body); `D-B-CLOSET`'s swing (y <= 339")
+  would allow 1 7/8" more. If the delivered valve stands proud of 4 1/2", that leg is what moves.
+- **The ERV case moved 3/16" west** (centre x 6'-8 7/16"), making the slot 24.28" against the
+  24 1/4" tank. A full 1/4" would put its west face 0.025" into `CZ-B-DRYFIRE` (x <= 68");
+  3/16" leaves 0.04" there and 0.04" at the tank. The four 6" collars and the pan drain
+  stay on the case top, so no ERV duct moved.
+- **What the turn costs.** The display faces the ERV case: read it through EcoNet, reach the
+  lower panels from under the case. The condensate port is 1.2" off the case's east face, so
+  a street elbow turns it down at once (below). While `D-B-CLOSET` stands open its leaf parks
+  in the exhaust zone; it is a storage door, open briefly. Ports re-quoted (x/y still scaled):
+  hot (106 1/2", 357 1/8"), cold (103 1/2", 348 7/8"), condensate (94", 360 1/2"), T&P outlet
+  (105", 367 1/8").
+- The sheet's 29 1/2" x 24 5/8" plan envelope (F x G) does not say how F splits between the
+  T&P and the other side; confirm the valve's projection on the delivered unit.
 
 Hot trunk: it crosses the tank at 6'-6 5/16" (the 69.5" level cannot pass a 76 13/16" tank),
-then drops in the round tank's empty corner (x 93.7") to 5'-9 1/2", where it must stay to pass
+west from the nipple and then south, so it never crosses `PR-B-CW-BATH`'s leg off the cold
+nipple, then drops in the round tank's empty corner (x 93.7") to 5'-9 1/2", where it must stay to pass
 under `DU-B-ERV-RET-TRUNK`'s rising leg; going over that duct hits the extract plenum.
 
 ## 2. Condensate
 
-`PR-B-WH-COND`: 3/4" PVC from the port (59") down 10 5/8" and 3" south onto `PR-B-ERV-COND`'s
-y=340" leg (48.19" up there), which already falls to the `FX-B-BATH-LAV` air gap. Rheem: pitch
+`PR-B-WH-COND`: 3/4" PVC from the port (59", facing the ERV case since the -90 turn) straight
+down to 53", under the case bottom (54"), 8" west and 14 1/2" south beneath the case onto
+`PR-B-ERV-COND`'s x=80.6" leg (51.6" there, 0.6"/ft), which already falls to the
+`FX-B-BATH-LAV` air gap. Rheem: pitch
 >= 1/8"/ft, 3/4" minimum, never into the heater's own pan, trap only if it meets a sewer
 (it does not: it ends at an air gap). `mep.drain_slope` and `mep.drain_tie_in` pass. The ERV
 line now carries both appliances; a heat-pump water heater makes roughly 1/2-1 gal a day in
 summer, so the allowance is a rounding error against the ERV core's.
 
-## 3. The service lateral
+## 3. The service lateral and the hydrant branch
 
-`PR-G-HYDRANT-CW` **is** the service lateral: the buried line from the entry (11', 48'-6") to
-the house at (11', 35'-6"), 6' under grade. It was authored 3/4" serving only the yard hydrant,
-so `PR-B-CW-TRUNK` (1 1/4", 39 WSFU) had no feeder and the router refused. It is now 1 1/4"
-and carries the trunk's whole load plus the hydrant, so the trunk's tee derives it as parent.
-The **street main, curb stop and meter are Saint Paul's and are not runs in this model.**
+**The hydrant tees off the trunk (owner, 2026-10-29).** `PR-G-SERVICE-CW` (1 1/4" PEX) is the
+lateral, street entry (11'-4", 48'-6") to the house at (11'-4", 35'-6"), 6' under grade, through
+`SP-GF-S-SVC` (3", under `FT-GF-S-DR`) and `SP-B-N2-SVC` (2 1/2", `W-B-N2`). It feeds
+`PR-B-CW-TRUNK` alone, which rises past `PA-B-MAIN-SHUTOFF` (3'-0"). `PR-G-HYDRANT-CW` (3/4")
+tees off that riser at 4'-0", carries `PA-G-HYD-BFP` (3/4" dual check, 3'-0", beside the main
+shutoff), leaves through `SP-B-N3-HYD` (back to 1 1/2") and runs 4" west of the lateral to the
+yard hydrant through `SP-GF-S-HYD` (back to 2"). The **house trunk is open**: the dual check
+guards the hydrant branch only, and the main shutoff isolates the hydrant too. The **street
+main, curb stop and meter are Saint Paul's and are not runs in this model.**
 
-Its two sleeves, `SP-B-N3-HYD` (wall) and `SP-GF-S-HYD` (garage footing), were resized with
-it to 2 1/2" and 3" for the 1 1/4" PEX (1.375" OD) in `plan/mep_sleeves.py`.
-`PA-G-HYD-BFP` (3/4" dual check) sits **on the trunk riser**: if it really is in series with the
-house, the house is a closed system and the 3/4" part throttles a 1 1/4" trunk. The device
-comment says the hydrant branch order is unresolved; resolve it with the question below.
+The lateral passes 4" east of the hydrant's buried valve, inside its weep stone
+(`DRW-G-HYDRANT`), and the street utility line moved to x=11'-4" with it (`plan/site.py`).
+`mep.hydrant_freeze_depth` now ignores a vertex inside a conditioned room (the branch's tee and
+drop, the trunk), since a warm high point is not a freeze point; the buried legs hold 72".
 
 ## 4. Thermal expansion (research; nothing modelled)
 
@@ -108,9 +125,10 @@ evidence for this parcel. (West St. Paul is a different utility.) **Ask SPRWS En
 check valve, and what is the static pressure at the (still unchosen) parcel's main.
 
 **Reading of the model.** Today it has no PRV, no meter check and no expansion device. The
-only checks drawn are dual checks on small branches (`PA-B-BFP-BATH`, `-SAUNA`, 1/2") and
-`PA-G-HYD-BFP` (above). If the meter has a check, or `PA-G-HYD-BFP` is in series, the heater is
-on a closed system.
+only checks drawn are dual checks on branches (`PA-B-BFP-BATH`, `-SAUNA`, 1/2";
+`PA-G-HYD-BFP`, 3/4", hydrant only since 2026-10-29), none in series with the heater. So the
+heater is on a closed system only if the meter set has a check: **still to confirm with
+SPRWS.**
 
 **Recommendation.** Do **not** rely on the T&P: it is for temperature/pressure runaway, and
 Rheem's own manual (p.10) says to fit an expansion tank where the system is closed. Assume

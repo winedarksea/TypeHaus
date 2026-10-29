@@ -1495,11 +1495,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     second-storey FLOOR boots because both open into the one FS-S-WEST/EAST cavity. Level 3 =
     FS-ATTIC deck at the chase head. Moving a terminal between storeys is free; moving it
     between cavities is a new radial off a different manifold.
-  - **Machine at (6'-8 5/8", 29'-10"), east of the dry-fire lane (2026-10-17).** The case
-    (x 68.2–93", y 347.5–368.5") sits between the lane (x <= 68") and `EQ-B-WH` (x 93.1"),
-    1 1/8" short of `W-B-ESS-S`; north of that is `EQ-B-ESS-BATT`'s 36" zone (y >= 378"),
-    graded as a rectangle by `advisory.ess_clearance`. Moving it west puts it back in the
-    lane. `DU-ERV-OA`/`-EA` cross the lane at 78 1/2" AFF, wrapped bottoms over 72".
+  - **Machine at (6'-8 7/16", 29'-10"), east of the dry-fire lane (2026-10-17; 3/16" west
+    2026-10-29).** The case (x 68.04–92.84", y 347.5–368.5") sits between the lane (x <= 68")
+    and `EQ-B-WH` (x 92.875"), 0.04" off each, 1 1/8" short of `W-B-ESS-S`; north of that is
+    `EQ-B-ESS-BATT`'s 36" zone (y >= 378"), graded as a rectangle by `advisory.ess_clearance`.
+    Moving it any further west puts it back in the lane. `DU-ERV-OA`/`-EA` cross the lane at
+    78 1/2" AFF, wrapped bottoms over 72".
   - **The NW chase is the only riser and is full** (re-packed 2026-09-23): `DU-ERV-RISER-SUP`
     and `DU-ERV-RISER-EXH` (6", bare — house air, IECC R403.3) at y=33'-10.8", `DU-ERV-EA`
     (8", 2" vapour-sealed wrap) at (2'-0.6", 34'-9.5"), `VR-M-STACK`'s pair at x=10"
@@ -1853,8 +1854,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (162, 98 3/16) and (160, 98 3/16) inches, 9 inches AFF. Inset posts
     preserve the west exhaust; `CO-B-SAUNA-HEAD` has a flush aisle cap at **(181", 60")**.
   - Vents: `REG-B-SUP3` (over the heater) and `REG-B-EXH2` keep their stations and cfm and are
-    house-local `REG-T-SAUNA-VENT-SUP`/`-EXH`: a Finnmark 713H closeable aspen twist-louvre
-    cover on the 4" radial (`PROD-FINNMARK-SAUNA-VENT-100`). Wood, not plastic, at both ends.
+    house-local `REG-T-SAUNA-VENT-SUP`/`-EXH`: a ProSaunas 11" x 5.2" aspen sliding vent hatch
+    on a 4" round-to-rectangular boot (`PROD-PROSAUNAS-VENT-HATCH-ASPEN`, owner 2026-10-29).
+    Wood, not plastic, at both ends; a shop-built sliding hatch is the DIY fallback.
   - Lighting: `LR-B-SAUNA-WEST` and `LR-B-SAUNA-SOUTH` on framing rails at **16" AFF**.
     116 11/16" of 24 V heat-rated tape = **29.17 W**; ×1.25 = **36.46 W**, within the existing
     external 60 W driver's 80% limit. Switch remains outside; all six seating types are priced.
@@ -2802,15 +2804,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   (`library/fittings.TUBE_BEND_RULES`); a short jog wants a plumb step, not a diagonal.
 - **The heater is the Rheem PROPH80 T2 RH400-30, non-ducted: 24 1/4" round x 76 13/16"** (K,
   the top nipples; `notes/water_service.md`). 91" is the ducted unit and does not fit under
-  the 96 15/16" ceiling with its 6" top clearance. Rotation 0: hot west, cold east, T&P west
-  at 42 3/8", condensate 59" (front-left), tee'd into `PR-B-ERV-COND` by `PR-B-WH-COND`. Ports
-  are EXACT (heights published, x/y scaled). The round 16-gon footprint is load-bearing:
-  `PR-B-HW-TRUNK` drops in its empty corner. On the slab, no plinth or pan. **Open:** the
-  exhaust faces the east wall at 0" (Rheem: 6"), and the tank laps the ERV case 0.155".
-- **`PR-G-HYDRANT-CW` is the service lateral** (1 1/4" PEX, 6' bury): it serves every cold
-  fixture plus the hydrant, and `PR-B-CW-TRUNK` derives it as parent at the entry
-  (11', 35'-6"). The street main, curb stop and meter are SPRWS's and are not runs. Thermal
-  expansion is unresolved and nothing is modelled for it (`notes/water_service.md` §4).
+  the 96 15/16" ceiling with its 6" top clearance. **Rotation -90 at (8'-9", 29'-5")** (owner,
+  2026-10-29): air exhaust SOUTH into the room with Rheem's 6", back on `W-B-STR3`, T&P north
+  at 42 3/8" with 4 1/2" to `W-B-ESS-S`, front (display, condensate 59") west beside the ERV
+  case; `PR-B-WH-COND` drops under the case into `PR-B-ERV-COND`. Ports are EXACT (heights
+  published, x/y scaled). The round 16-gon footprint is load-bearing: `PR-B-HW-TRUNK` drops in
+  its empty corner. On the slab, no plinth or pan. Do not move it south: `PR-B-ERV-COND`'s
+  y=340" leg is 0.35" off the body.
+- **`PR-G-SERVICE-CW` is the service lateral** (1 1/4" PEX, 6' bury, x=11'-4"), drawn street
+  to house so `PR-B-CW-TRUNK` derives it as parent at the entry (11'-4", 35'-6"). **The hydrant
+  is a branch of the trunk** (owner, 2026-10-29): `PR-G-HYDRANT-CW` (3/4") tees off the riser
+  at 4'-0", above `PA-B-MAIN-SHUTOFF`, carries `PA-G-HYD-BFP` and runs 4" west of the lateral
+  to the yard hydrant, so the house trunk stays open. `mep.hydrant_freeze_depth` grades only
+  vertices outside conditioned rooms. The street main, curb stop and meter are SPRWS's and are
+  not runs. Thermal expansion is unresolved and nothing is modelled for it
+  (`notes/water_service.md` §4).
 
 ### Electrical service
 

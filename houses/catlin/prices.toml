@@ -3403,11 +3403,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # the grille itself is the $15-50 the plain terminals cost. The RH controller that drives
 # the pair is not modelled and so is not in this file.
 "REG-T-ERV-PLANT-EXH" = { material = { low = 110, high = 280 }, labour = { low = 180, high = 420 } }  # 1 ea
-# The sauna's closeable wood vents (2026-10-29), replacing the generic REG-T-ERV-SAUNA-*: Finnmark
-# Sauna 713H, GBP 25.99 on their page (~US$35) plus import freight and duty - ESTIMATES. Labour is
-# the same boot and trim as the generic terminal.
-"REG-T-SAUNA-VENT-SUP" = { material = { low = 35, high = 80 }, labour = { low = 18, high = 45 } }  # 1 ea
-"REG-T-SAUNA-VENT-EXH" = { material = { low = 35, high = 80 }, labour = { low = 18, high = 45 } }  # 1 ea
+# The sauna's closeable wood vents (2026-10-29): ProSaunas aspen air hatch, US$73.10 (thermo-aspen
+# ~US$88) plus US$22.95 shipping and a 4" round-to-rectangular boot - ESTIMATES. Labour is the
+# boot, the cutout and the trim. A shop-built sliding hatch from aspen offcuts is the DIY fallback.
+"REG-T-SAUNA-VENT-SUP" = { material = { low = 85, high = 120 }, labour = { low = 20, high = 50 } }  # 1 ea
+"REG-T-SAUNA-VENT-EXH" = { material = { low = 85, high = 120 }, labour = { low = 20, high = 50 } }  # 1 ea
 # 5 ea since 2026-08-30: REG-M-SUP4 came back out of W-M-LS into RM-M-STUDY's ceiling, and
 # the one-day-old sidewall variant REG-T-ERV-SUP-WALL was deleted with its row rather than
 # left priced with no user.

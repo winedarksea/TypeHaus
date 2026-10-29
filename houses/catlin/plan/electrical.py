@@ -327,13 +327,15 @@ BASEMENT_EQUIPMENT = [
     # makes water into (plan/mep_drainage.py). The footprint on the element is
     # documentation; the TYPE's 24.8" x 21" is what resolves.
     #
-    # Position (6'-8 5/8", 29'-10"), east of the dry-fire lane (2026-10-17). Its north edge
+    # Position (6'-8 7/16", 29'-10"), east of the dry-fire lane (2026-10-17; 3/16" west on
+    # 2026-10-29 so the 24 1/4" tank clears its east face, and the west face stays 0.04"
+    # out of CZ-B-DRYFIRE: a full 1/4" lands 0.025" in it). Its north edge
     # stops 1 1/8" short of W-B-ESS-S (y 369 5/8"), which is why it moved south from 30'-6".
     # Clear of EQ-B-ESS-BATT's 36" REQUIRED separation zone (x 49 1/4"..145 1/4", y 378"..460")
     # and of EQ-B-WH's west face. Every ERV branch is authored off the two manifolds
     # (plan/mep_erv_l1.py), not off the machine.
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
-              position=pt(ft(6, 8.625), ft(29, 10)), footprint=(inch(24.8), inch(21)),
+              position=pt(ft(6, 8.4375), ft(29, 10)), footprint=(inch(24.8), inch(21)),
               room="RM-B-FURNACE", type_ref="EQ-T-BROAN-B210E75RT", circuit="CKT-ERV",
               # HUNG, not floor-standing. Two reasons and the second is the binding one: a
               # Broan ships with hanging straps and this is how the unit installs, and a

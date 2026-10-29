@@ -142,14 +142,17 @@ def test_the_supply_run_stays_six_feet_down_for_its_whole_length(catlin_model):
     run = _supply(catlin_model)
     assert run.storey == "main"
     grade = catlin_model.plan.project.site.grade.meters
-    # Every vertex holds the 6' bury except the terminal standpipe — the hydrant's own
-    # self-draining barrel, a repeated final plan point rising through the slab.
+    # Every buried vertex holds the 6' bury — not the terminal standpipe (the hydrant's own
+    # self-draining barrel) and not the warm legs inside the basement, north of which the
+    # branch leaves through SP-B-N3-HYD (y > 35'-6").
     assert run.z_m is not None
-    buried = run.z_m[:-1] if run.path[-1] == run.path[-2] else run.z_m
+    buried = [z for (_x, y), z in zip(run.path[:-1], run.z_m[:-1], strict=True)
+              if y > 35.5 / _M_TO_FT]
+    assert buried
     for z in buried:
         assert (grade - z) * _M_TO_FT == pytest.approx(6.0, abs=1e-6)
     # ...and 72" is well below the 42" footing frost depth, not in conflict with it.
-    assert (grade - run.z_start_m) > 42 / 12 / _M_TO_FT
+    assert (grade - buried[0]) > 42 / 12 / _M_TO_FT
 
 
 def test_the_supply_sleeve_is_a_water_penetration_on_the_slabs_own_storey(catlin_model):
@@ -313,10 +316,12 @@ def test_the_hydrant_assembly_clears_the_footings(catlin_model):
     assert riser.distance(pour.boundary) + 1e-9 >= bearing - min(run.z_m), \
         "the hydrant riser is inside the footings' 45° influence line"
 
-    # Entry, hydrant, rise: no buried turn, so nothing travels along a footing's cone.
-    assert len(run.path) == 3
-    xs = {round(p[0], 9) for p in run.path}
-    assert len(xs) == 1, "the buried service is one straight north-south leg"
+    # Wall, hydrant, rise: no buried turn, so nothing travels along a footing's cone. The
+    # lateral beside it is one straight leg too.
+    xs = {round(p[0], 9) for p in run.path[2:]}
+    assert len(xs) == 1, "the buried branch is one straight north-south leg"
+    lateral = next(r for r in catlin_model.pipe_runs if r.tag == "PR-G-SERVICE-CW")
+    assert len({round(p[0], 9) for p in lateral.path}) == 1
 
 
 # --- 4. the check -------------------------------------------------------------------------
@@ -336,6 +341,7 @@ def test_the_freeze_depth_rule_passes_on_the_house_as_built(catlin_model):
         [f.message for f in findings if f.result is not Result.PASS]
     messages = " | ".join(f.message for f in findings)
     assert "below grade over its whole length" in messages   # bury depth
+    assert "PR-B-CW-TRUNK stays inside the conditioned envelope" in messages  # warm tee
     assert "SP-G-HYDRANT" in messages                        # the sleeve
     assert "PA-G-HYD-SEAT" in messages and "PA-G-HYD-VB" in messages
 
@@ -380,7 +386,8 @@ def test_a_sleeve_the_run_misses_does_not_protect_it(catlin_model):
     assert [f.result for f in findings] == [Result.FAIL], \
         [f.message for f in findings]
     message = findings[0].message
-    assert "SP-GF-S-HYD" in message and "protects nothing" in message
+    # It names the nearest sleeve on the pour; since 2026-10-29 that is the lateral's own.
+    assert "SP-GF-S-" in message and "protects nothing" in message
 
     # And the unmoved house is the control: same crossing, same sleeve, PASS by name.
     passing = [f for f in footing_clearance(ctx) if "PR-G-HYDRANT-CW" in f.element_tags]
@@ -431,23 +438,21 @@ def test_a_shallow_supply_run_fails_the_freeze_depth_rule(catlin_model):
 
 def test_a_run_that_surfaces_mid_way_fails_even_with_deep_ends(catlin_model):
     """The failure people actually get: a supply routed up into the building and back down
-    freezes at the high point, not at its ends. Authoring one end shallow is the closest the
-    IR can express (a run carries only its two invert elevations), and the rule catches it."""
+    freezes at the high point, not at its ends."""
     from typehaus.checks.mep.plumbing import hydrant_freeze_depth
-    from typehaus.model import ft
+    from typehaus.model import ft, m, pt
     from typehaus.resolve import resolve
 
     ctx = _context(catlin_model)
     run = catlin_model.plan.by_tag("PR-G-HYDRANT-CW")
-    # Raise the last *buried* vertex to -1' while the entry stays deep: the run now surfaces
-    # before it reaches the hydrant, which is where a supply line freezes.
-    #
-    # This is the run's second-to-last vertex: the standpipe exemption must pop only the
-    # one terminal barrel, not every rising vertex off the tail, or a run climbing to
-    # -1'-0" here would grade PASS.
-    rising = run.model_copy(update={"elevations": tuple(
-        ft(-1) if i == len(run.elevations) - 2 else e
-        for i, e in enumerate(run.elevations))})
+    # Put a vertex at -1'-0" midway along the buried leg while both of its ends stay deep:
+    # the run now surfaces between the wall and the hydrant, which is where it freezes. The
+    # standpipe exemption pops only the one terminal barrel, so the tail stays graded.
+    wall, hydrant = run.path[-3], run.path[-2]
+    mid = pt(wall.x, m((wall.y.meters + hydrant.y.meters) / 2))
+    rising = run.model_copy(update={
+        "path": (*run.path[:-2], mid, *run.path[-2:]),
+        "elevations": (*run.elevations[:-2], ft(-1), *run.elevations[-2:])})
     patched = catlin_model.plan.with_elements(
         "main", [rising if e.tag == run.tag else e
                  for e in catlin_model.plan.storey_elements("main")])

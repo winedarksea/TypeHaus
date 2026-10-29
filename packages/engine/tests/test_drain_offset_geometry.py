@@ -79,8 +79,8 @@ def test_it_catches_the_dog_leg_it_was_written_for(catlin_model) -> None:
 
 
 def test_a_steep_but_short_offset_passes(catlin_model) -> None:
-    """A 45-degree fitting is exactly 12"/ft, and catlin's own steepest honest segment
-    (``PR-M-DRYER-COND``, 15.2"/ft) is steeper than that. Slope alone would fail both.
+    """A 45-degree fitting is exactly 12"/ft, and a condensate line's short drop to its
+    receptor is steeper than that. Slope alone would fail both.
 
     Here the same run drops 12" over 6" of plan — 24"/ft, twice the slope threshold — and
     passes, because 12" of fall is a fitting somebody stocks."""

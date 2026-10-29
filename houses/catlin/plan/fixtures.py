@@ -188,14 +188,13 @@ MAIN_FIXTURES = (
     # no wall stack in this room at all.
     #
     # Stacked pair (uid/tag kept so mep.py's `serves=("FX-M-LAUNDRY",)` refs still resolve).
-    # Heat-pump dryer is ventless; its condensate drains via PR-M-DRYER-COND to the tub
-    # beside it. It is the LG WashTower (plan/appliance_types.py), 27"x32 3/4"x74 3/8",
+    # Heat-pump dryer is ventless; its condensate hose joins the washer's (LG drain-hose
+    # connector) into PR-M-WASH-STANDPIPE. It is the LG WashTower (plan/appliance_types.py), 27"x32 3/4"x74 3/8",
     # leaving 12 5/8" of clear floor to the door plane.
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-LG-WASHTOWER",
               room="RM-M-LAUNDRY", position=pt(m(2.9421), m(6.01059)), rotation=deg(180),
               wall_ref="W-M-BA2E"),
-    # Utility tub, 4 1/4" east of the stack — also the *receptor*: PR-M-DRYER-COND air-gaps
-    # over its 34" rim, why the dryer needs no vent or condensate pump line.
+    # Utility tub, 4 1/4" east of the stack.
     #
     # `drain_position` at y=18'-9" — offset 3" to clear W-B-CW2 (12" concrete on the y=18'
     # axis) — is what SP-M-LSINK/PR-B-LSINK-DRAIN/the 45" trap arm below are all authored on.

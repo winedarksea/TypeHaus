@@ -9,9 +9,6 @@ Our general goals are decent longevity and quality at a reasonable price, avoidi
 
 ## Remaining Work
 
-- **Owner call: `PR-M-DRYER-COND` could retire.** It is now one stock 90 in 3/4" PVC (graded).
-  LG's drain-hose connector into `PR-M-WASH-STANDPIPE` would replace the run outright.
-
 - **Concrete spec UNKNOWNs (8) wait on the mix submittal and a soil test:** chloride x4
   (ASTM C1218), ASR x2 (the aggregate's C1293/C1260 result plus a C1778 structure class), SCM
   x1 (cement standard/type), sulfate x1 (soil test, ASTM C1580). They sit on the permit
@@ -45,19 +42,20 @@ Our general goals are decent longevity and quality at a reasonable price, avoidi
 and a dated note. `haus check houses/catlin --no-suppress` is the score with every
 suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted at zero.)
 
-- **HPWH clearances (owner call).** `EQ-B-WH` is now the Rheem RH400-30 non-ducted unit, 24 1/4"
-  round x 76 13/16" (`notes/water_service.md`). Its air exhaust faces the east wall at 0" against
-  Rheem's 6" for a non-ducted unit (ducting is ruled out: 91" + 6" top clearance is 0.06" over the
-  ceiling), and the 24.25" tank laps the hung ERV case by 0.155" in a 24.095" slot.
 - **Determine basement backwater protection before under-slab rough-in.** Add the next
   upstream manhole-cover elevation on the survey datum, compare it with basement fixture
   floors under UPC 710.1, and protect only affected low branches if required. The existing
   sewer-permit task records invert, not cover elevation. [UPC 710.1 guidance](https://forms.iapmo.org/email_marketing/codespotlight/2019/Oct17.htm)
 - **Water-heater thermal expansion: ask SPRWS** (Engineering 651-266-6270) whether the meter set
   carries a check valve and what the static pressure at the main is. Then model a listed expansion
-  tank on the heater inlet (and a PRV over 80 psi). Also settle the hydrant branch order: if
-  `PA-G-HYD-BFP` stays in series on `PR-B-CW-TRUNK`, the house is closed regardless and the 3/4"
-  device throttles a 1 1/4" trunk. `notes/water_service.md` §4.
+  tank on the heater inlet (and a PRV over 80 psi). `PA-G-HYD-BFP` is on the hydrant branch only
+  since 2026-10-29, so the meter set is the only possible check. `notes/water_service.md` §4.
+- **`PR-B-ERV-COND` crosses `D-B-CLOSET`'s swing** (found 2026-10-29, not graded by anything):
+  its x=115.5" leg runs south at 45"-39" AFF across the closet doorway, 1 5/8" off `W-B-STR3`,
+  inside the leaf's quadrant (x 98-120", y 317-339"). Gravity rules out going over the head and the
+  dry-fire lane rules out the west side; a condensate pump or another receptor is the likely fix.
+- **Confirm the delivered parts:** the RH400-30's T&P projection (4 1/2" to `W-B-ESS-S` on that
+  side) and the ProSaunas vent hatch's cutout and free area (unpublished; (844) 565-1113).
 
 - **Filter and service access is only partly resolved; no reachability rule grades it.**
   System 1's 28x12x1 MERV 13 return filter is typed and reachable from the hall floor;
@@ -77,8 +75,6 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
   (y 412.5"), with the radon moved 2 1/2" or not; also 5.5" between the SUP and EXH risers (three
   conduits in it), 1.4" south of EXH, 0.9" north of EA. A 6" stock duct needs 6". Levers:
   relocate `EQ-M-ERV-MAN-SUP`, or re-pack the EA/EXH/conduit column.
-- **Sauna vents: confirm the Finnmark 713H ships to the US** (UK retailer, GBP 25.99) or name a
-  US-sold closeable wood vent with a 100 mm collar; `PROD-FINNMARK-SAUNA-VENT-100`.
 - **`mep.run_in_finished_volume`'s terminal grace is blind to leg length** (decision #94): a
   fixture's whole first or last leg is excused however far it runs. Measure what tightening it
   raises before deciding.

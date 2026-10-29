@@ -43,7 +43,9 @@ def hydrant_freeze_depth(ctx: CheckContext) -> list[Finding]:
     2. **No high point along the run** — also geometric, also a FAIL. This is the failure
        people actually get: a supply routed up into the building and back down freezes at
        the high point even though both ends are deep. A run whose shallowest point is above
-       frost has a freeze there.
+       frost has a freeze there. A vertex inside a CONDITIONED room (its axis cell, at or
+       above that storey's floor) is warm, not buried, and is not graded: a hydrant teed
+       off an indoor trunk, its backflow preventer on the branch, is the ordinary install.
     3. **The interior shutoff and the outlet's vacuum breaker** — now real elements
        (``PipeAccessory``), so this reports what is authored rather than the UNKNOWN it used
        to emit because "the model has no valve or backflow-preventer element".
@@ -101,11 +103,18 @@ def hydrant_freeze_depth(ctx: CheckContext) -> list[Finding]:
                 # Exactly one vertex: this is an `if`, not a `while`. The condition tests
                 # fixed indices — `run.path[-1]` and `[-2]` — so it exempts only the single
                 # standpipe vertex, never a longer rising tail that rule 2 exists to catch.
-                elevations = list(run.z_m)
-                if (len(elevations) >= 2 and len(run.path) >= 2
-                        and run.path[-1] == run.path[-2]
-                        and elevations[-1] > elevations[-2] + 1e-9):
-                    elevations.pop()
+                stations = list(zip(run.path, run.z_m, strict=True))
+                if (len(stations) >= 2 and run.path[-1] == run.path[-2]
+                        and stations[-1][1] > stations[-2][1] + 1e-9):
+                    stations.pop()
+                indoors = [z for xy, z in stations if _indoors(ctx, xy, z)]
+                elevations = [z for xy, z in stations if not _indoors(ctx, xy, z)]
+                if indoors and not elevations:
+                    out.append(_pass(
+                        cid, f"supply run {run.tag} stays inside the conditioned envelope, "
+                             f"so it has no bury depth to hold for {hydrant.tag}",
+                        (hydrant.tag, run.tag)))
+                    continue
             else:
                 elevations = [z for z in (run.z_start_m, run.z_end_m) if z is not None]
             if not elevations:
@@ -166,6 +175,22 @@ def hydrant_freeze_depth(ctx: CheckContext) -> list[Finding]:
                      "neither be isolated nor scheduled",
                 (hydrant.tag,)))
     return out
+
+
+def _indoors(ctx: CheckContext, xy, z: float) -> bool:
+    """Whether ``(xy, z)`` is inside a conditioned room: the room owning ``xy`` on the
+    highest storey whose floor is at or below ``z``."""
+    from typehaus.resolve.room_lookup import owns
+
+    floors = {s.tag: s.elevation.meters for s in ctx.plan.storeys}
+    best = None
+    for room in ctx.model.rooms:
+        floor = floors.get(room.storey)
+        if floor is None or floor > z + 1e-6 or (best is not None and floor <= best[0]):
+            continue
+        if owns(room, (xy[0], xy[1])):
+            best = (floor, room)
+    return best is not None and best[1].conditioned
 
 
 def _hydrant_accessories(ctx: CheckContext, hydrant_tag: str) -> list:

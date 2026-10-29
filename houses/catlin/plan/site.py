@@ -573,10 +573,11 @@ SITE = Site(
                     entry=pt(ft(3), ft(36)), depth=ft(8)),
         # Enters at the FRONT, matching the street on the NORTH (SetbackSpec(edge=2,
         # label="FRONT")) and grade "at the street/north side") — a municipal water main
-        # does not run behind the house. Terminates at the hydrant, the first thing it
-        # reaches.
-        UtilityLine(kind=UtilityKind.WATER, path=(pt(ft(11), ft(72)), pt(ft(11), ft(48, 6))),
-                    entry=pt(ft(11), ft(48, 6)), depth=ft(6)),
+        # does not run behind the house. Meets PR-G-SERVICE-CW on its x=11'-4" lane, beside
+        # the yard hydrant (which is fed from the house, plan/mep_supply.py).
+        UtilityLine(kind=UtilityKind.WATER,
+                    path=(pt(ft(11, 4), ft(72)), pt(ft(11, 4), ft(48, 6))),
+                    entry=pt(ft(11, 4), ft(48, 6)), depth=ft(6)),
         # Runs in from the WEST lot line, which sits at x=-7' on the 50'-wide parcel (it
         # was x=-32' on the retired 100' ring).
         UtilityLine(kind=UtilityKind.POWER, path=(pt(ft(-7), ft(18)), pt(ft(0), ft(18))),

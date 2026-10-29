@@ -146,18 +146,17 @@ WALL_SLEEVES = [
                       position=pt(ft(3), ft(36)), pipe_diameter=inch(4),
                       sleeve_diameter=inch(6), axis="horizontal",
                       center_elevation=inch(-127.3125)),
-    # The water service's one wall crossing. It follows PR-G-HYDRANT-CW down to -8'-10": the
-    # run holds 6' under a grade of -2'-10", and a sleeve that stayed at -6'-0" would be a
-    # bore the pipe misses by 2'-10". It sits 6" above the basement walls' own bottom, which
-    # is as low as this crossing can go before it is in the footing instead.
-    #
-    # With the service entry at the front of the lot (plan/site.py) the lateral enters the
-    # house exactly once: this is the ENTRY, the only crossing, and the point
-    # PR-B-CW-TRUNK tees off at.
-    # x=11'-0" since 2026-09-16, under ST-B2M's upper landing, in W-B-N2; the tag is kept.
-    # 1 1/4" since 2026-10-29: the lateral carries the whole house, not just the hydrant.
+    # The water's two wall crossings, side by side under ST-B2M's upper landing in W-B-N2, at
+    # the 6' bury (-8'-10"): a sleeve at -6'-0" would be a bore the pipe misses by 2'-10".
+    # Both sit 6" above the wall's own bottom, as low as a crossing goes before the footing.
+    # SP-B-N3-HYD (x=11'-0", tag kept) carries the hydrant branch back out; SP-B-N2-SVC
+    # (x=11'-4") brings the service lateral in, where PR-B-CW-TRUNK rises (2026-10-29).
     SleevePenetration(uid="CBPW20AAAA", tag="SP-B-N3-HYD", host_ref="W-B-N2",
-                      position=pt(ft(11), ft(35, 6)), pipe_diameter=inch(1.25),
+                      position=pt(ft(11), ft(35, 6)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
+    SleevePenetration(uid="3N11XJK7M8", tag="SP-B-N2-SVC", host_ref="W-B-N2",
+                      position=pt(ft(11, 4), ft(35, 6)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
     # DU-B-ERV-R-PLAY's last leg into REG-B-SUP2, square through the 12" centre wall. Every
@@ -189,7 +188,13 @@ GARAGE_SLEEVES = [
     # precisely so this host stays over the crossing, 9" inside its east end.
     # `integrity.sleeve_in_opening` catches a sleeve naming a host it no longer sits in.
     SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",
-                      position=pt(ft(11), ft(43, 6.875)), pipe_diameter=inch(1.25),
+                      position=pt(ft(11), ft(43, 6.875)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(2), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
+    # The service lateral's own, 4" east (2026-10-29): 1 1/4" PEX in a 3" sleeve, 1" inside
+    # the pour's east end at FT-GF-S2, which `mep.footing_clearance` reads as one pour.
+    SleevePenetration(uid="C4VDRMBJ5W", tag="SP-GF-S-SVC", host_ref="FT-GF-S-DR",
+                      position=pt(ft(11, 4), ft(43, 6.875)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(3), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
 ]

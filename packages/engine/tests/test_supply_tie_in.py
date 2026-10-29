@@ -35,11 +35,10 @@ def test_the_basement_branches_derive_their_trunk(catlin_model_ro) -> None:
 
 def test_every_supply_run_gets_a_record_and_most_get_a_parent(catlin_model_ro) -> None:
     records = list(_records(catlin_model_ro).values())
-    assert len(records) == 47  # includes the powder basin tap from the south wet-wall riser
-    # 26 tee onto a run (the coldstore stub since it starts on the kitchen riser head, and
-    # PR-B-CW-TRUNK since the service lateral carries its load); the 27th is PR-B-HW-TRUNK,
-    # fed by the water heater's hot port.
-    assert sum(rec.accepted for rec in records) == 43
+    assert len(records) == 48  # includes the powder basin tap and the service lateral
+    # PR-B-CW-TRUNK tees onto the lateral and PR-G-HYDRANT-CW onto the trunk (2026-10-29);
+    # PR-B-HW-TRUNK is fed by the water heater's hot port.
+    assert sum(rec.accepted for rec in records) == 44
     # Every basement branch, which is what a campaign needs to re-lane supply at all.
     basement = [rec for rec in records if rec.child.startswith("PR-B-")
                 and rec.child != "PR-B-CW-TRUNK"]
@@ -104,14 +103,15 @@ def test_a_cross_system_source_is_still_named_as_one(catlin_model_ro) -> None:
 def test_a_run_with_no_candidate_at_all_says_so(catlin_model_ro) -> None:
     """The street main is not a run in this model, so the service lateral has no parent.
 
-    PR-G-HYDRANT-CW IS the lateral (it carries every fixture's load, 1 1/4"), and the trunk
-    leaving its first vertex is its child; `haus route --run PR-B-CW-TRUNK` no longer refuses.
+    PR-G-SERVICE-CW is the lateral (every fixture's load, 1 1/4"), drawn street to house so
+    the trunk tees onto its END; the hydrant is the trunk's own branch (owner, 2026-10-29).
     """
     records = _records(catlin_model_ro)
-    for tag in ("PR-G-HYDRANT-CW", "PR-M-CW-PORCH-HYD"):
+    for tag in ("PR-G-SERVICE-CW", "PR-M-CW-PORCH-HYD"):
         assert records[tag].reason == "no_candidate", tag
         assert records[tag].parent is None
-    assert records["PR-B-CW-TRUNK"].parent == "PR-G-HYDRANT-CW"
+    assert records["PR-B-CW-TRUNK"].parent == "PR-G-SERVICE-CW"
+    assert records["PR-G-HYDRANT-CW"].parent == "PR-B-CW-TRUNK"
 
 
 def test_a_candidate_at_the_wrong_elevation_is_refused_with_the_number(

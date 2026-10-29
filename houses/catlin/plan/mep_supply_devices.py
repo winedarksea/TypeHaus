@@ -22,18 +22,18 @@ from typehaus import (
 # valve sitting on its pipe). Only devices off that line — a stub, a breaker at handle
 # height — author one.
 SUPPLY_DEVICES_BASEMENT = [
-    # P2903.9.1. The service (buried -8'-10", PR-G-HYDRANT-CW) enters at (11', 35'-6") —
-    # SP-B-N3-HYD, under ST-B2M's upper landing — and rises to the basement ceiling; this
+    # P2903.9.1. The service (buried -8'-10", PR-G-SERVICE-CW) enters at (11'-4", 35'-6") —
+    # SP-B-N2-SVC, under ST-B2M's upper landing — and rises to the basement ceiling; this
     # valve sits on that riser at 3'-0", under the landing (4'-2" clear beneath it). Since
     # the landing reached the wall (2026-09-24) it is reached from the storage under it,
     # open to the stair foot and D-B-CLOSET, not from the landing above.
     #
-    # The garage hydrant is deliberately upstream, on the service itself: routing the yard
-    # line up to an indoor valve and back down would put a high point above frost mid-run —
-    # exactly the failure `mep.hydrant_freeze_depth` catches.
+    # The garage hydrant is DOWNSTREAM of it since 2026-10-29 (owner): PR-G-HYDRANT-CW tees
+    # off this riser 12" higher, so this valve shuts the hydrant too. The indoor legs are warm;
+    # `mep.hydrant_freeze_depth` grades only the buried ones.
     PipeAccessory(uid="N5PK9WQ2TB", tag="PA-B-MAIN-SHUTOFF",
                   kind=PipeAccessoryKind.MAIN_SHUTOFF, pipe_ref="PR-B-CW-TRUNK",
-                  position=pt(ft(11), ft(35, 6)), elevation=ft(3), accessible=True,
+                  position=pt(ft(11, 4), ft(35, 6)), elevation=ft(3), accessible=True,
                   room="RM-B-STAIR",
                   model='1 1/4" full-port bronze ball valve, lever handle',
                   serves=("PR-B-CW-TRUNK",)),
@@ -235,7 +235,7 @@ SUPPLY_STOPS = [
     # mechanical room, with nothing over it — the most accessible valve in the house after
     # the main itself.
     PipeAccessory(uid="XTPXNZ8PRZ", tag="PA-B-WH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-WH", position=pt(inch(109.125), inch(352.5)),
+                  pipe_ref="PR-B-CW-WH", position=pt(inch(103.5), inch(348.875)),
                   accessible=True, room="RM-B-FURNACE",
                   model='1" full-port bronze ball valve, lever handle, at the tank inlet',
                   serves=("EQ-B-WH",)),
@@ -265,16 +265,16 @@ SUPPLY_DEVICES_GARAGE = [
     # pressure simultaneously, which is why the code allows it and the house keeps it
     # (→ notes/garage_hydrant.md).
     #
-    # Owner-confirmed 2026-10-13: reachable beside the main shutoff on the basement
-    # entry riser. Filed on main, so -73 7/16" project is 36" above the finished slab.
-    # PR-G-HYDRANT-CW still branches upstream underground; this placement fixes geometry
-    # but does not prove hydrant protection. Resolve branch order before installation.
+    # Owner-confirmed 2026-10-13: reachable beside the main shutoff, 4" west of the entry
+    # riser. Filed on main, so -73 7/16" project is 36" above the finished slab. ON THE
+    # HYDRANT BRANCH ONLY since 2026-10-29 (owner): the house trunk stays open, so this
+    # device does not close the house's water system (notes/water_service.md §3-§4).
     #
     # Dual check, matching PA-B-BFP-BATH/SAUNA, since this is low-hazard (car-wash) use. An
     # AHJ treating the weep as a health hazard would want an RPZ instead — ask, don't build
     # ahead of the answer.
     PipeAccessory(uid="R7QB4XKD2M", tag="PA-G-HYD-BFP",
-                  kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-B-CW-TRUNK",
+                  kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-G-HYDRANT-CW",
                   position=pt(ft(11), ft(35, 6)), elevation=inch(-73.4375),
                   room="RM-B-STAIR", accessible=True,
                   model='3/4" dual-check backflow preventer, testable',

@@ -94,7 +94,8 @@ def test_erv_condensate_falls_to_the_bath_lavatory(catlin_model_ro):
             assert (za - zb) / M_PER_IN / run_ft >= 0.125
 
 
-def test_confirmed_hydrant_backflow_station_sits_on_the_entry_riser(catlin_model_ro):
+def test_hydrant_backflow_preventer_is_on_the_hydrant_branch_only(catlin_model_ro):
+    """Owner, 2026-10-29: the dual check guards the hydrant branch, not the house trunk."""
     from typehaus.quantities import M_PER_IN
     from typehaus.resolve.mep_queries import pipe_elevations_at
     from typehaus.resolve.room_floor import room_floor_elevation
@@ -102,7 +103,8 @@ def test_confirmed_hydrant_backflow_station_sits_on_the_entry_riser(catlin_model
     valve = next(item for item in catlin_model_ro.pipe_accessories if item.tag == "PA-G-HYD-BFP")
     riser = next(run for run in catlin_model_ro.pipe_runs if run.tag == valve.pipe_ref)
     floor = room_floor_elevation(catlin_model_ro, next(r for r in catlin_model_ro.rooms if r.tag == "RM-B-STAIR"))
-    assert valve.pipe_ref == "PR-B-CW-TRUNK"
+    assert valve.pipe_ref == "PR-G-HYDRANT-CW"
+    assert set(riser.serves) == {"FX-G-HYDRANT"}
     assert valve.position == pytest.approx((132 * M_PER_IN, 426 * M_PER_IN))
     assert (valve.z_m - floor) / M_PER_IN == pytest.approx(36)
     heights = pipe_elevations_at(riser, valve.position)
@@ -292,8 +294,7 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     # units moved to a ground pad on 2026-09-02 and drip onto it, so there is no pipe at all
     # any more — see houses/catlin/notes/heat_pump_ground_pad.md. The garden overflow's beam
     # pipe was the other sleeve termination until 2026-09-23; the leg is all FrenchDrain now.
-    assert terminals == {"PR-B-COND", "PR-B-MAIN-DRAIN", "PR-M-DRYER-COND", "PR-B-WH-TPR",
-                         "PR-B-ERV-COND"}
+    assert terminals == {"PR-B-COND", "PR-B-MAIN-DRAIN", "PR-B-WH-TPR", "PR-B-ERV-COND"}
 
 
 def test_rollup_is_a_union_never_a_sum_and_unknown_never_partial():

@@ -296,25 +296,28 @@ REGISTER_TYPES_ERV = (
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
     # The sauna's pair: a user-closeable wood vent, because the owner shuts them to heat the
-    # room up. House-local, since a library type cannot name a house Product. 145 mm face on
-    # a 100 mm hole, which the 4" radials meet. Loss curve is the library sauna type's,
-    # unchanged (derived, not published), so the static budget does not move.
+    # room up. House-local, since a library type cannot name a house Product. An 11" x 5.2"
+    # sliding-panel aspen hatch (owner, 2026-10-29) over a 4"-round-to-rectangular boot on
+    # the radial. Free area is unpublished (~9-14 in2 estimated, against a 4" duct's 12.6), so
+    # the loss curve stays the derived one (6.5 Pa at 20 cfm ~ K 4 on ~300 fpm face velocity)
+    # and the static budget does not move. Ceiling type: footprint is the plan face.
     RegisterType(tag="REG-T-SAUNA-VENT-SUP",
-                 name="Sauna fresh-air supply, 5.7in round wood twist-louvre cover, 4in duct",
-                 footprint=(inch(5.7), inch(5.7)), height=inch(1),
+                 name="Sauna fresh-air supply, 11x5.2in aspen sliding vent hatch, 4in duct",
+                 footprint=(inch(11), inch(5.2)), height=inch(0.5),
                  plan_symbol="register", ventilation_terminal=True,
-                 product_ref="PROD-FINNMARK-SAUNA-VENT-100",
+                 product_ref="PROD-PROSAUNAS-VENT-HATCH-ASPEN",
                  static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
-                 source="Finnmark 713H on the 4 in. radial's end; closes fully. Wood, for the heater's air.",
+                 source="ProSaunas aspen air hatch (SA-VNT-HTCH-ASP) on a 4 in. round-to-rectangular boot; the sliding panel closes it. Wood, for the heater's air.",
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
+    # Wall type: footprint is (face width, depth), height the face height.
     RegisterType(tag="REG-T-SAUNA-VENT-EXH",
-                 name="Sauna stale-air extract, 5.7in round wood twist-louvre cover, 4in duct",
-                 footprint=(inch(5.7), inch(5.7)), height=inch(1),
+                 name="Sauna stale-air extract, 11x5.2in aspen sliding vent hatch, 4in duct",
+                 footprint=(inch(11), inch(0.5)), height=inch(5.2),
                  plan_symbol="register", ventilation_terminal=True,
-                 product_ref="PROD-FINNMARK-SAUNA-VENT-100",
+                 product_ref="PROD-PROSAUNAS-VENT-HATCH-ASPEN",
                  static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
-                 source="Finnmark 713H on the 4 in. radial's end; closes fully. Same part as the supply.",
+                 source="ProSaunas aspen air hatch (SA-VNT-HTCH-ASP) on a 4 in. round-to-rectangular boot, long side level. Same part as the supply.",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
 )

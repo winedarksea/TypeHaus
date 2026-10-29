@@ -217,17 +217,19 @@ ERV_TERMINAL_4 = Product(
 )
 
 # The sauna's two closeable vents. Wood, not plastic: a sauna vent sits in 80-100 C air (the
-# supply is over the heater) and the Finnish trade makes them in aspen/alder/cedar for that.
-# One part for both ends: a twist-louvre cover that closes the 100 mm hole fully.
-FINNMARK_SAUNA_VENT_100 = Product(
-    tag="PROD-FINNMARK-SAUNA-VENT-100", brand="Finnmark Sauna", model="713H",
-    name="Sauna air ventilation cover, circular, small, aspen (twist louvre)",
-    url="https://finnmarksauna.com/products/sauna-air-ventilation-cover-circular",
-    source="Finnmark Sauna product page, read 2026-10-29: SKU 713H, 145 mm round face, fits a "
-           "100 mm hole (a 4 in. duct is 101.6 mm), louvre twists to close or open the gap; "
-           "aspen, GBP 25.99. No temperature rating published; wood is the trade's own sauna "
-           "vent material, so none is needed. UK retailer - confirm US shipping. Alternates: "
-           "the same cover in alder (713TL) or red cedar (631-D).",
+# supply is over the heater) and the trade makes them in aspen/alder/cedar for that. One
+# part for both ends, US-sold (owner, 2026-10-29; the UK Finnmark 713H was the stand-in).
+PROSAUNAS_VENT_HATCH_ASPEN = Product(
+    tag="PROD-PROSAUNAS-VENT-HATCH-ASPEN", brand="ProSaunas",
+    model="Aspen Air Hatch, SA-VNT-HTCH-ASP",
+    name="Adjustable sauna vent hatch, aspen, sliding panel, 11 x 5.2 x 0.5 in",
+    url="https://saunamarketplace.com/product/prosaunas-adjustable-sauna-vent-hatch-in-aspen/",
+    source="Sauna Marketplace product page, read 2026-10-29: natural aspen, 11 in. W x 5.2 in. "
+           "H x 0.5 in. D (282 x 133 x 12 mm), 'slide the wooden panel to adjust the "
+           "opening', vent cover only; US$73.10, US shipping US$22.95 (free over US$200). "
+           "Cutout and free area are not published: ask (844) 565-1113 before cutting. "
+           "Thermo-aspen version same size (~US$88). DIY: this is two slotted aspen boards with "
+           "one sliding in a rebate, an easy shop build from offcuts if the part is unavailable.",
 )
 
 # Purchased study door. Geometry and clearances are structured on DT-INT-BOOKCASE36;
@@ -333,7 +335,7 @@ PRODUCTS = (
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,
     BROAN_B210E75RT, MURPHY_BOOKCASE_36,
     ERV_PLENUM_FABRICATED, ERV_START_COLLAR_DAMPERED, ERV_VOLUME_DAMPER_4,
-    ERV_TERMINAL_4, FINNMARK_SAUNA_VENT_100,
+    ERV_TERMINAL_4, PROSAUNAS_VENT_HATCH_ASPEN,
     KOHLER_UNDERSCORE_1130_W1, KOHLER_CLEARFLO_7272,
     LEVITON_EV_RECEPTACLE_1450R,
     FLOOR_BOX_PRODUCT,
