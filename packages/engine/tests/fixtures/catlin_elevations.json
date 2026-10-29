@@ -27026,33 +27026,33 @@
 ],
 "geometry/CMD207AAAA-casing-l/body": [
 0.0238125,
-2.1878125,
+2.2068625,
 6,
-"58b2a8965a28"
+"9c3216be8856"
 ],
 "geometry/CMD207AAAA-casing-r/body": [
 0.02405,
-2.1878125,
+2.2068625,
 6,
-"f7f60f314282"
+"01bfcf1de42e"
 ],
 "geometry/CMD207AAAA/jamb_liner": [
 0.02405,
-2.1132,
+2.13225,
 10,
-"31344d0230ea"
+"359d319ef880"
 ],
 "geometry/CMD207AAAA/leaf": [
 0.03405,
-2.07115,
+2.06605,
 2,
-"558d9589ad8b"
+"9d01bd499967"
 ],
 "geometry/CMD207AAAA/pocket_track": [
-2.07415,
-2.09415,
+2.0932,
+2.1132,
 2,
-"53956ea81c89"
+"80e8f87feda6"
 ],
 "geometry/CMD208AAAA/glazing": [
 0.13565,
@@ -27092,15 +27092,15 @@
 ],
 "geometry/CMD210AAAA-casing-l/body": [
 0.0381,
-2.1577125,
+2.1767625,
 6,
-"334dfc4b1014"
+"65df26e9d2e4"
 ],
 "geometry/CMD210AAAA-casing-r/body": [
 0.0381,
-2.1577125,
+2.1767625,
 6,
-"334dfc4b1014"
+"65df26e9d2e4"
 ],
 "geometry/CMD210AAAA/hardware": [
 0.9201,
@@ -27110,33 +27110,33 @@
 ],
 "geometry/CMD210AAAA/jamb_liner": [
 0.0381,
-2.0831,
+2.10215,
 6,
-"4c7653f12d3c"
+"16bc865974dd"
 ],
 "geometry/CMD210AAAA/leaf": [
 0.0481,
-2.06105,
+2.0801,
 2,
-"34dc14d51e88"
+"df100d86b4f9"
 ],
 "geometry/CMD210AAAA/stop": [
 0.0381,
-2.06405,
+2.0831,
 6,
-"437ec2e975ad"
+"aff138d49956"
 ],
 "geometry/CMD211AAAA-casing-l/body": [
 0.02405,
-2.1436625,
+2.1627125,
 6,
-"ab2369955d3a"
+"633cecd2ff95"
 ],
 "geometry/CMD211AAAA-casing-r/body": [
 0.02405,
-2.1436625,
+2.1627125,
 6,
-"ab2369955d3a"
+"633cecd2ff95"
 ],
 "geometry/CMD211AAAA/hardware": [
 0.90605,
@@ -27146,21 +27146,21 @@
 ],
 "geometry/CMD211AAAA/jamb_liner": [
 0.02405,
-2.06905,
+2.0881,
 6,
-"9f441239ec06"
+"88d55594edd3"
 ],
 "geometry/CMD211AAAA/leaf": [
 0.03405,
-2.047,
+2.06605,
 2,
-"a4606f9832bd"
+"9d01bd499967"
 ],
 "geometry/CMD211AAAA/stop": [
 0.02405,
-2.05,
+2.06905,
 6,
-"9f52952d384c"
+"5aeb9451f5f9"
 ],
 "geometry/CMD212AAAA/hardware": [
 0.882,
@@ -27170,27 +27170,27 @@
 ],
 "geometry/CMD212AAAA/jamb_liner": [
 0.02405,
-2.08945,
+2.1085,
 6,
-"16b426f701fd"
+"7c663dead747"
 ],
 "geometry/CMD212AAAA/leaf": [
 0.0481,
-2.06105,
+2.0801,
 2,
-"34dc14d51e88"
+"df100d86b4f9"
 ],
 "geometry/CMD212AAAA/shadow_gap": [
 0.0481,
-2.06405,
+2.0831,
 6,
-"5088cf801eaa"
+"b1fc384bf64a"
 ],
 "geometry/CMD212AAAA/stop": [
 0.0481,
-2.06405,
+2.0831,
 6,
-"4ac31c8d2de8"
+"61047b718d9d"
 ],
 "geometry/CME902AAAA/body": [
 -2.7797125,
@@ -35554,37 +35554,37 @@
 0.0,
 2.7432,
 6,
-"1af1867eb471"
+"f12abc46aa1a"
 ],
 "geometry/CMW112AAAA/layer:gwb-b": [
 0.0,
 2.7432,
 6,
-"1af1867eb471"
+"f12abc46aa1a"
 ],
 "geometry/CMW112AAAA/layer:paint-a": [
 0.0,
 2.7432,
 6,
-"1af1867eb471"
+"f12abc46aa1a"
 ],
 "geometry/CMW112AAAA/layer:paint-b": [
 0.0,
 2.7432,
 6,
-"1af1867eb471"
+"f12abc46aa1a"
 ],
 "geometry/CMW112AAAA/layer:resilient-channel": [
 0.0,
 2.7432,
 6,
-"1af1867eb471"
+"f12abc46aa1a"
 ],
 "geometry/CMW112AAAA/layer:stud": [
 0.0,
 2.7432,
 6,
-"1af1867eb471"
+"f12abc46aa1a"
 ],
 "geometry/CMW112AAAA::framing/member:backing-0-000": [
 2.0828,
@@ -35593,34 +35593,34 @@
 "8458aa6a7b11"
 ],
 "geometry/CMW112AAAA::framing/member:cripple-head-0-01": [
-2.2736,
+2.29265,
 2.667,
 8,
-"a42f7cff7372"
+"a3eff54113c9"
 ],
 "geometry/CMW112AAAA::framing/member:cripple-head-0-02": [
-2.2736,
+2.29265,
 2.667,
 8,
-"a42f7cff7372"
+"a3eff54113c9"
 ],
 "geometry/CMW112AAAA::framing/member:header-0": [
-2.08945,
-2.2736,
+2.1085,
+2.29265,
 8,
-"36bb177408f3"
+"f7dd4b290bc5"
 ],
 "geometry/CMW112AAAA::framing/member:jack-0-l0": [
 0.0381,
-2.08945,
+2.1085,
 8,
-"18116fb82e23"
+"8a78f2b0d5a4"
 ],
 "geometry/CMW112AAAA::framing/member:jack-0-r0": [
 0.0381,
-2.08945,
+2.1085,
 8,
-"18116fb82e23"
+"8a78f2b0d5a4"
 ],
 "geometry/CMW112AAAA::framing/member:king-0-l0": [
 0.0381,
@@ -36946,61 +36946,61 @@
 0.0,
 2.727325,
 6,
-"7f540dc68ac2"
+"20bc5849055f"
 ],
 "geometry/CMW124AAAA/layer:gwb-b": [
 0.0,
 2.727325,
 6,
-"7f540dc68ac2"
+"20bc5849055f"
 ],
 "geometry/CMW124AAAA/layer:paint-a": [
 0.0,
 2.727325,
 6,
-"7f540dc68ac2"
+"20bc5849055f"
 ],
 "geometry/CMW124AAAA/layer:paint-b": [
 0.0,
 2.727325,
 6,
-"7f540dc68ac2"
+"20bc5849055f"
 ],
 "geometry/CMW124AAAA/layer:stud": [
 0.0,
 2.727325,
 6,
-"7f540dc68ac2"
+"20bc5849055f"
 ],
 "geometry/CMW124AAAA::framing/member:cripple-head-0-01": [
-2.29735,
+2.3164,
 2.651125,
 8,
-"8d015092161f"
+"3b0129a31f90"
 ],
 "geometry/CMW124AAAA::framing/member:cripple-head-0-02": [
-2.29735,
+2.3164,
 2.651125,
 8,
-"8d015092161f"
+"3b0129a31f90"
 ],
 "geometry/CMW124AAAA::framing/member:header-0": [
-2.11955,
-2.25925,
+2.1386,
+2.2783,
 8,
-"61e883dea41f"
+"077a8c21ba85"
 ],
 "geometry/CMW124AAAA::framing/member:jack-0-l0": [
 0.0381,
-2.11955,
+2.1386,
 8,
-"89d77135713e"
+"42298829ad5d"
 ],
 "geometry/CMW124AAAA::framing/member:jack-0-r0": [
 0.0381,
-2.11955,
+2.1386,
 8,
-"89d77135713e"
+"42298829ad5d"
 ],
 "geometry/CMW124AAAA::framing/member:king-0-l0": [
 0.0381,
@@ -37040,21 +37040,21 @@
 ],
 "geometry/CMW124AAAA::framing/member:pocketsplit-0-01": [
 0.0381,
-2.11955,
+2.1386,
 8,
-"89d77135713e"
+"42298829ad5d"
 ],
 "geometry/CMW124AAAA::framing/member:pocketsplit-0-02": [
 0.0381,
-2.11955,
+2.1386,
 8,
-"89d77135713e"
+"42298829ad5d"
 ],
 "geometry/CMW124AAAA::framing/member:pocketsplit-0-03": [
 0.0381,
-2.11955,
+2.1386,
 8,
-"89d77135713e"
+"42298829ad5d"
 ],
 "geometry/CMW124AAAA::framing/member:stud-000": [
 0.0381,
@@ -37087,10 +37087,10 @@
 "698effbf7582"
 ],
 "geometry/CMW124AAAA::framing/member:trackbacking-0": [
-2.25925,
-2.29735,
+2.2783,
+2.3164,
 8,
-"caa01ed84b03"
+"e2286817d617"
 ],
 "geometry/CMW125AAAA/layer:gwb-a": [
 0.0,
@@ -37906,31 +37906,31 @@
 0.0,
 2.727325,
 6,
-"7ae0a8793bb0"
+"02898e570349"
 ],
 "geometry/CMW132AAAA/layer:gwb-b": [
 0.0,
 2.727325,
 6,
-"7ae0a8793bb0"
+"02898e570349"
 ],
 "geometry/CMW132AAAA/layer:paint-a": [
 0.0,
 2.727325,
 6,
-"7ae0a8793bb0"
+"02898e570349"
 ],
 "geometry/CMW132AAAA/layer:paint-b": [
 0.0,
 2.727325,
 6,
-"7ae0a8793bb0"
+"02898e570349"
 ],
 "geometry/CMW132AAAA/layer:stud": [
 0.0,
 2.727325,
 6,
-"7ae0a8793bb0"
+"02898e570349"
 ],
 "geometry/CMW132AAAA::framing/member:backing-0-000": [
 1.5748,
@@ -37939,34 +37939,34 @@
 "a747e18e2b9d"
 ],
 "geometry/CMW132AAAA::framing/member:cripple-head-0-01": [
-2.2736,
+2.29265,
 2.651125,
 8,
-"b0eac74fe5af"
+"64d10d572116"
 ],
 "geometry/CMW132AAAA::framing/member:cripple-head-0-02": [
-2.2736,
+2.29265,
 2.651125,
 8,
-"b0eac74fe5af"
+"64d10d572116"
 ],
 "geometry/CMW132AAAA::framing/member:header-0": [
-2.08945,
-2.2736,
+2.1085,
+2.29265,
 8,
-"36bb177408f3"
+"f7dd4b290bc5"
 ],
 "geometry/CMW132AAAA::framing/member:jack-0-l0": [
 0.0381,
-2.08945,
+2.1085,
 8,
-"18116fb82e23"
+"8a78f2b0d5a4"
 ],
 "geometry/CMW132AAAA::framing/member:jack-0-r0": [
 0.0381,
-2.08945,
+2.1085,
 8,
-"18116fb82e23"
+"8a78f2b0d5a4"
 ],
 "geometry/CMW132AAAA::framing/member:king-0-l0": [
 0.0381,
@@ -38680,61 +38680,61 @@
 0.0,
 2.727325,
 6,
-"f8dc05dc04c7"
+"8b86e1230d85"
 ],
 "geometry/CMW137AAAA/layer:gwb-b": [
 0.0,
 2.727325,
 6,
-"f8dc05dc04c7"
+"8b86e1230d85"
 ],
 "geometry/CMW137AAAA/layer:paint-a": [
 0.0,
 2.727325,
 6,
-"f8dc05dc04c7"
+"8b86e1230d85"
 ],
 "geometry/CMW137AAAA/layer:paint-b": [
 0.0,
 2.727325,
 6,
-"f8dc05dc04c7"
+"8b86e1230d85"
 ],
 "geometry/CMW137AAAA/layer:stud": [
 0.0,
 2.727325,
 6,
-"f8dc05dc04c7"
+"8b86e1230d85"
 ],
 "geometry/CMW137AAAA::framing/member:cripple-head-0-01": [
-2.25955,
+2.2786,
 2.651125,
 8,
-"7f85e85278e1"
+"a67a03ee073e"
 ],
 "geometry/CMW137AAAA::framing/member:cripple-head-0-02": [
-2.25955,
+2.2786,
 2.651125,
 8,
-"7f85e85278e1"
+"a67a03ee073e"
 ],
 "geometry/CMW137AAAA::framing/member:header-0": [
-2.0754,
-2.25955,
+2.09445,
+2.2786,
 8,
-"2f5cb9bd6425"
+"32122525c062"
 ],
 "geometry/CMW137AAAA::framing/member:jack-0-l0": [
 0.0381,
-2.0754,
+2.09445,
 8,
-"305f53915870"
+"aff9f143647d"
 ],
 "geometry/CMW137AAAA::framing/member:jack-0-r0": [
 0.0381,
-2.0754,
+2.09445,
 8,
-"305f53915870"
+"aff9f143647d"
 ],
 "geometry/CMW137AAAA::framing/member:king-0-l0": [
 0.0381,
@@ -40556,15 +40556,15 @@
 ],
 "geometry/CSD202AAAA-casing-l/body": [
 3.0861,
-5.2057125,
+5.2247625,
 6,
-"c96f7203133f"
+"15a120bd741d"
 ],
 "geometry/CSD202AAAA-casing-r/body": [
 3.0861,
-5.2057125,
+5.2247625,
 6,
-"c96f7203133f"
+"15a120bd741d"
 ],
 "geometry/CSD202AAAA/hardware": [
 3.9681,
@@ -40574,21 +40574,21 @@
 ],
 "geometry/CSD202AAAA/jamb_liner": [
 3.0861,
-5.1311,
+5.15015,
 6,
-"25c29bbf11bc"
+"29a3127ad7a5"
 ],
 "geometry/CSD202AAAA/leaf": [
 3.0961,
-5.10905,
+5.1281,
 2,
-"5ca23349bda2"
+"fb1f4b0125e4"
 ],
 "geometry/CSD202AAAA/stop": [
 3.0861,
-5.11205,
+5.1311,
 6,
-"a582e0d51a4a"
+"076ad1a7ae0f"
 ],
 "geometry/CSD203AAAA-casing-l/body": [
 3.0861,
@@ -41066,27 +41066,27 @@
 ],
 "geometry/CSD212AAAA-casing-l/body": [
 3.076448,
-5.2057125,
+5.2247625,
 6,
-"85559e9cb4dd"
+"9c69d172070f"
 ],
 "geometry/CSD212AAAA-casing-r/body": [
 3.0861,
-5.2057125,
+5.2247625,
 6,
-"c96f7203133f"
+"15a120bd741d"
 ],
 "geometry/CSD212AAAA/frame": [
 3.076448,
-5.13745,
+5.1565,
 6,
-"548563fdcd96"
+"f892a045a246"
 ],
 "geometry/CSD212AAAA/glass": [
 3.0961,
-5.10905,
+5.1281,
 2,
-"5ca23349bda2"
+"fb1f4b0125e4"
 ],
 "geometry/CSD212AAAA/hardware": [
 3.93,
@@ -41096,39 +41096,39 @@
 ],
 "geometry/CSD213AAAA-casing-l/body": [
 3.0861,
-5.2057125,
+5.2247625,
 6,
-"c96f7203133f"
+"15a120bd741d"
 ],
 "geometry/CSD213AAAA-casing-r/body": [
 3.0861,
-5.2057125,
+5.2247625,
 6,
-"c96f7203133f"
+"15a120bd741d"
 ],
 "geometry/CSD213AAAA/bifold_leaf": [
 3.0961,
-5.10905,
+5.1281,
 8,
-"23e2cea36f23"
+"c9aeac31810a"
 ],
 "geometry/CSD213AAAA/frame": [
 3.0861,
-5.13745,
+5.1565,
 6,
-"8c7c743d2089"
+"6d2dc4c9d58f"
 ],
 "geometry/CSD214AAAA-casing-l/body": [
 3.0861,
-5.2057125,
+5.2247625,
 6,
-"c96f7203133f"
+"15a120bd741d"
 ],
 "geometry/CSD214AAAA-casing-r/body": [
 3.0861,
-5.2057125,
+5.2247625,
 6,
-"c96f7203133f"
+"15a120bd741d"
 ],
 "geometry/CSD214AAAA/hardware": [
 3.9681,
@@ -41138,21 +41138,21 @@
 ],
 "geometry/CSD214AAAA/jamb_liner": [
 3.0861,
-5.1311,
+5.15015,
 6,
-"25c29bbf11bc"
+"29a3127ad7a5"
 ],
 "geometry/CSD214AAAA/leaf": [
 3.0961,
-5.10905,
+5.1281,
 2,
-"5ca23349bda2"
+"fb1f4b0125e4"
 ],
 "geometry/CSD214AAAA/stop": [
 3.0861,
-5.11205,
+5.1311,
 6,
-"a582e0d51a4a"
+"076ad1a7ae0f"
 ],
 "geometry/CSD217AAAA-casing-l/body": [
 3.0861,
@@ -51292,67 +51292,67 @@
 3.048,
 5.7912,
 6,
-"b06d7520548d"
+"673908752f95"
 ],
 "geometry/CSW114AAAA/layer:humid-membrane": [
 3.048,
 5.7912,
 6,
-"b06d7520548d"
+"673908752f95"
 ],
 "geometry/CSW114AAAA/layer:liner-furring": [
 3.048,
 5.7912,
 6,
-"b06d7520548d"
+"673908752f95"
 ],
 "geometry/CSW114AAAA/layer:paint-b": [
 3.048,
 5.7912,
 6,
-"b06d7520548d"
+"673908752f95"
 ],
 "geometry/CSW114AAAA/layer:pvc-panel": [
 3.048,
 5.7912,
 6,
-"b06d7520548d"
+"673908752f95"
 ],
 "geometry/CSW114AAAA/layer:stud": [
 3.048,
 5.7912,
 6,
-"b06d7520548d"
+"673908752f95"
 ],
 "geometry/CSW114AAAA::framing/member:cripple-head-0-01": [
-5.3216,
+5.34065,
 5.715,
 8,
-"a59ab23ffdc7"
+"e3a326886204"
 ],
 "geometry/CSW114AAAA::framing/member:cripple-head-0-02": [
-5.3216,
+5.34065,
 5.715,
 8,
-"a59ab23ffdc7"
+"e3a326886204"
 ],
 "geometry/CSW114AAAA::framing/member:header-0": [
-5.13745,
-5.3216,
+5.1565,
+5.34065,
 8,
-"8fe5085ca91a"
+"dac32fcd1d0a"
 ],
 "geometry/CSW114AAAA::framing/member:jack-0-l0": [
 3.0861,
-5.13745,
+5.1565,
 8,
-"67648045b02f"
+"e90a1f509a68"
 ],
 "geometry/CSW114AAAA::framing/member:jack-0-r0": [
 3.0861,
-5.13745,
+5.1565,
 8,
-"67648045b02f"
+"e90a1f509a68"
 ],
 "geometry/CSW114AAAA::framing/member:king-0-l0": [
 3.0861,
@@ -52396,31 +52396,31 @@
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW123AAAA/layer:gwb-b": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW123AAAA/layer:paint-a": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW123AAAA/layer:paint-b": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW123AAAA/layer:stud": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW123AAAA::framing/member:backing-0-000": [
 5.2324,
@@ -52429,34 +52429,34 @@
 "fb8efedc3501"
 ],
 "geometry/CSW123AAAA::framing/member:cripple-head-0-01": [
-5.3216,
+5.34065,
 5.699125,
 8,
-"cb8a91f6c115"
+"e57c8e59156e"
 ],
 "geometry/CSW123AAAA::framing/member:cripple-head-0-02": [
-5.3216,
+5.34065,
 5.699125,
 8,
-"cb8a91f6c115"
+"e57c8e59156e"
 ],
 "geometry/CSW123AAAA::framing/member:header-0": [
-5.13745,
-5.3216,
+5.1565,
+5.34065,
 8,
-"8fe5085ca91a"
+"dac32fcd1d0a"
 ],
 "geometry/CSW123AAAA::framing/member:jack-0-l0": [
 3.0861,
-5.13745,
+5.1565,
 8,
-"67648045b02f"
+"e90a1f509a68"
 ],
 "geometry/CSW123AAAA::framing/member:jack-0-r0": [
 3.0861,
-5.13745,
+5.1565,
 8,
-"67648045b02f"
+"e90a1f509a68"
 ],
 "geometry/CSW123AAAA::framing/member:king-0-l0": [
 3.0861,
@@ -54178,31 +54178,31 @@
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW143AAAA/layer:gwb-b": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW143AAAA/layer:paint-a": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW143AAAA/layer:paint-b": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW143AAAA/layer:stud": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW143AAAA::framing/member:corner-start": [
 3.0861,
@@ -54211,40 +54211,40 @@
 "0dc10552628c"
 ],
 "geometry/CSW143AAAA::framing/member:cripple-head-0-01": [
-5.27715,
+5.2962,
 5.699125,
 8,
-"6a81a1448d5f"
+"588c00105444"
 ],
 "geometry/CSW143AAAA::framing/member:cripple-head-0-02": [
-5.27715,
+5.2962,
 5.699125,
 8,
-"6a81a1448d5f"
+"588c00105444"
 ],
 "geometry/CSW143AAAA::framing/member:cripple-head-0-03": [
-5.27715,
+5.2962,
 5.699125,
 8,
-"6a81a1448d5f"
+"588c00105444"
 ],
 "geometry/CSW143AAAA::framing/member:header-0": [
-5.13745,
-5.27715,
+5.1565,
+5.2962,
 8,
-"6969db1fed18"
+"50be3f66ac3a"
 ],
 "geometry/CSW143AAAA::framing/member:jack-0-l0": [
 3.0861,
-5.13745,
+5.1565,
 8,
-"67648045b02f"
+"e90a1f509a68"
 ],
 "geometry/CSW143AAAA::framing/member:jack-0-r0": [
 3.0861,
-5.13745,
+5.1565,
 8,
-"67648045b02f"
+"e90a1f509a68"
 ],
 "geometry/CSW143AAAA::framing/member:king-0-l0": [
 3.0861,
@@ -54298,61 +54298,61 @@
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW144AAAA/layer:gwb-b": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW144AAAA/layer:paint-a": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW144AAAA/layer:paint-b": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW144AAAA/layer:stud": [
 3.048,
 5.775325,
 6,
-"22af767804b4"
+"3fd733a5753d"
 ],
 "geometry/CSW144AAAA::framing/member:cripple-head-0-01": [
-5.3216,
+5.34065,
 5.699125,
 8,
-"cb8a91f6c115"
+"e57c8e59156e"
 ],
 "geometry/CSW144AAAA::framing/member:cripple-head-0-02": [
-5.3216,
+5.34065,
 5.699125,
 8,
-"cb8a91f6c115"
+"e57c8e59156e"
 ],
 "geometry/CSW144AAAA::framing/member:header-0": [
-5.13745,
-5.3216,
+5.1565,
+5.34065,
 8,
-"8fe5085ca91a"
+"dac32fcd1d0a"
 ],
 "geometry/CSW144AAAA::framing/member:jack-0-l0": [
 3.0861,
-5.13745,
+5.1565,
 8,
-"67648045b02f"
+"e90a1f509a68"
 ],
 "geometry/CSW144AAAA::framing/member:jack-0-r0": [
 3.0861,
-5.13745,
+5.1565,
 8,
-"67648045b02f"
+"e90a1f509a68"
 ],
 "geometry/CSW144AAAA::framing/member:king-0-l0": [
 3.0861,
@@ -57404,15 +57404,15 @@
 ],
 "geometry/ENHDGC87MN-casing-l/body": [
 6.118098,
-8.2377105,
+8.2567605,
 6,
-"8fd38418c6c9"
+"d22469b05700"
 ],
 "geometry/ENHDGC87MN-casing-r/body": [
 6.118098,
-8.2377105,
+8.2567605,
 6,
-"8fd38418c6c9"
+"d22469b05700"
 ],
 "geometry/ENHDGC87MN/hardware": [
 7.000098,
@@ -57422,21 +57422,21 @@
 ],
 "geometry/ENHDGC87MN/jamb_liner": [
 6.118098,
-8.163098,
+8.182148,
 6,
-"216db2a82e2b"
+"b8500e9893b4"
 ],
 "geometry/ENHDGC87MN/leaf": [
 6.128098,
-8.141048,
+8.160098,
 2,
-"09a1c58d74c5"
+"62cf572a38cf"
 ],
 "geometry/ENHDGC87MN/stop": [
 6.118098,
-8.144048,
+8.163098,
 6,
-"25e94f886c20"
+"862aa2e20be5"
 ],
 "geometry/EWK9TNBGRH-box/body": [
 -1.2049125,
@@ -61282,67 +61282,67 @@
 0.0,
 2.727325,
 6,
-"f8dc05dc04c7"
+"8b86e1230d85"
 ],
 "geometry/KKVYSAJKZF/layer:gwb-b": [
 0.0,
 2.727325,
 6,
-"f8dc05dc04c7"
+"8b86e1230d85"
 ],
 "geometry/KKVYSAJKZF/layer:paint-a": [
 0.0,
 2.727325,
 6,
-"f8dc05dc04c7"
+"8b86e1230d85"
 ],
 "geometry/KKVYSAJKZF/layer:paint-b": [
 0.0,
 2.727325,
 6,
-"f8dc05dc04c7"
+"8b86e1230d85"
 ],
 "geometry/KKVYSAJKZF/layer:stud": [
 0.0,
 2.727325,
 6,
-"f8dc05dc04c7"
+"8b86e1230d85"
 ],
 "geometry/KKVYSAJKZF::framing/member:cripple-head-0-01": [
-2.31035,
+2.3294,
 2.651125,
 8,
-"28fa6d859d0e"
+"4352938f36e5"
 ],
 "geometry/KKVYSAJKZF::framing/member:cripple-head-0-02": [
-2.31035,
+2.3294,
 2.651125,
 8,
-"28fa6d859d0e"
+"4352938f36e5"
 ],
 "geometry/KKVYSAJKZF::framing/member:cripple-head-0-03": [
-2.31035,
+2.3294,
 2.651125,
 8,
-"28fa6d859d0e"
+"4352938f36e5"
 ],
 "geometry/KKVYSAJKZF::framing/member:header-0": [
-2.0754,
-2.31035,
+2.09445,
+2.3294,
 8,
-"a029a7600a2a"
+"233fb750e421"
 ],
 "geometry/KKVYSAJKZF::framing/member:jack-0-l0": [
 0.0381,
-2.0754,
+2.09445,
 8,
-"305f53915870"
+"aff9f143647d"
 ],
 "geometry/KKVYSAJKZF::framing/member:jack-0-r0": [
 0.0381,
-2.0754,
+2.09445,
 8,
-"305f53915870"
+"aff9f143647d"
 ],
 "geometry/KKVYSAJKZF::framing/member:king-0-l0": [
 0.0381,
@@ -61646,27 +61646,27 @@
 ],
 "geometry/MSJJGJTJ42-casing-r/body": [
 0.0238125,
-2.1828125,
+2.206625,
 6,
-"74812a14d6a2"
+"bf3e565074ed"
 ],
 "geometry/MSJJGJTJ42/jamb_liner": [
 0.0238125,
-2.1082,
+2.1320125,
 10,
-"0a131289e856"
+"21e310b7dd5c"
 ],
 "geometry/MSJJGJTJ42/leaf": [
 0.0338125,
-2.06615,
+2.0658125,
 2,
-"111dfc249b71"
+"82599deef644"
 ],
 "geometry/MSJJGJTJ42/pocket_track": [
-2.06915,
-2.08915,
+2.0929625,
+2.1129625,
 2,
-"d942494ee7bc"
+"e96dbec7e04e"
 ],
 "geometry/MTVYDDP43W-run/body": [
 -0.9001125,
@@ -62756,33 +62756,33 @@
 ],
 "geometry/QBTZNWG6AG-casing-l/body": [
 0.02405,
-2.1436625,
+2.1627125,
 6,
-"ab2369955d3a"
+"633cecd2ff95"
 ],
 "geometry/QBTZNWG6AG-casing-r/body": [
 0.02405,
-2.1436625,
+2.1627125,
 6,
-"ab2369955d3a"
+"633cecd2ff95"
 ],
 "geometry/QBTZNWG6AG/frame": [
 0.02405,
-2.0754,
+2.09445,
 6,
-"433b7a9c0ff3"
+"d4486e3af550"
 ],
 "geometry/QBTZNWG6AG/sliding_panel": [
 0.03405,
-2.047,
+2.06605,
 4,
-"e52bf4557729"
+"34c97312d1d4"
 ],
 "geometry/QBTZNWG6AG/sliding_stile": [
 0.0284,
-2.047,
+2.06605,
 2,
-"9baf3e5fe42c"
+"f5854ef1dead"
 ],
 "geometry/QDPECS9JMZ-run/body": [
 6.7272351,
@@ -63352,49 +63352,49 @@
 0.0,
 2.727325,
 4,
-"e5b9a5983990"
+"48ea20961c93"
 ],
 "geometry/QY8YCE6XV3/layer:gwb-b": [
 0.0,
 2.727325,
 6,
-"53053f913bc6"
+"fe9936af0c8b"
 ],
 "geometry/QY8YCE6XV3/layer:paint-a": [
 0.0,
 2.727325,
 4,
-"e5b9a5983990"
+"48ea20961c93"
 ],
 "geometry/QY8YCE6XV3/layer:paint-b": [
 0.0,
 2.727325,
 6,
-"53053f913bc6"
+"fe9936af0c8b"
 ],
 "geometry/QY8YCE6XV3/layer:stud": [
 0.0,
 2.727325,
 6,
-"53053f913bc6"
+"fe9936af0c8b"
 ],
 "geometry/QY8YCE6XV3::framing/member:cripple-head-0-01": [
-2.29235,
+2.3161625,
 2.651125,
 8,
-"b3dc14a3cdff"
+"1bd548727dc7"
 ],
 "geometry/QY8YCE6XV3::framing/member:cripple-head-0-02": [
-2.29235,
+2.3161625,
 2.651125,
 8,
-"b3dc14a3cdff"
+"1bd548727dc7"
 ],
 "geometry/QY8YCE6XV3::framing/member:header-0": [
-2.11455,
-2.25425,
+2.1383625,
+2.2780625,
 8,
-"03d76f521dd7"
+"0dccbf3aaf85"
 ],
 "geometry/QY8YCE6XV3::framing/member:plate-bottom-passage-0": [
 0.0,
@@ -63416,27 +63416,27 @@
 ],
 "geometry/QY8YCE6XV3::framing/member:pocketsplit-0-01": [
 0.0381,
-2.11455,
+2.1383625,
 8,
-"956576a1ab67"
+"7772fba28b0e"
 ],
 "geometry/QY8YCE6XV3::framing/member:pocketsplit-0-02": [
 0.0381,
-2.11455,
+2.1383625,
 8,
-"956576a1ab67"
+"7772fba28b0e"
 ],
 "geometry/QY8YCE6XV3::framing/member:pocketsplit-0-03": [
 0.0381,
-2.11455,
+2.1383625,
 8,
-"956576a1ab67"
+"7772fba28b0e"
 ],
 "geometry/QY8YCE6XV3::framing/member:trackbacking-0": [
-2.25425,
-2.29235,
+2.2780625,
+2.3161625,
 8,
-"982bf534b764"
+"a0b13e7db722"
 ],
 "geometry/R0STSQM95Y-basez-0/body": [
 -0.3614206,
@@ -63796,31 +63796,31 @@
 6.096,
 8.858123,
 18,
-"85aed4eb74e4"
+"b8aeae5d01f1"
 ],
 "geometry/REREWJKFAZ/layer:gwb-b": [
 6.096,
 8.858123,
 18,
-"8029e1c280e9"
+"9bbcee2f91fb"
 ],
 "geometry/REREWJKFAZ/layer:paint-a": [
 6.096,
 8.858123,
 18,
-"0456e4d61a0f"
+"1f472b33a7d6"
 ],
 "geometry/REREWJKFAZ/layer:paint-b": [
 6.096,
 8.858123,
 18,
-"8029e1c280e9"
+"9bbcee2f91fb"
 ],
 "geometry/REREWJKFAZ/layer:stud": [
 6.096,
 8.858123,
 18,
-"8029e1c280e9"
+"9bbcee2f91fb"
 ],
 "geometry/REREWJKFAZ::framing/member:backing-0-000": [
 6.731,
@@ -63841,22 +63841,22 @@
 "4a447cf5c578"
 ],
 "geometry/REREWJKFAZ::framing/member:header-0": [
-8.169448,
-8.353598,
+8.188498,
+8.372648,
 8,
-"0b9d8f8ea8f7"
+"912a0e4a8f2c"
 ],
 "geometry/REREWJKFAZ::framing/member:jack-0-l0": [
 6.1341,
-8.169448,
+8.188498,
 8,
-"11b3bbd0ff77"
+"dc7bb36aa845"
 ],
 "geometry/REREWJKFAZ::framing/member:jack-0-r0": [
 6.1341,
-8.169448,
+8.188498,
 8,
-"11b3bbd0ff77"
+"dc7bb36aa845"
 ],
 "geometry/REREWJKFAZ::framing/member:king-0-l0": [
 6.1341,
@@ -87295,34 +87295,34 @@
 "a1a479d66f95"
 ],
 "member/CMW112AAAA/cripple-head-0-01": [
-2.2736,
+2.29265,
 2.667,
 2,
-"f5bc7108efc0"
+"f8ff750f9441"
 ],
 "member/CMW112AAAA/cripple-head-0-02": [
-2.2736,
+2.29265,
 2.667,
 2,
-"f5bc7108efc0"
+"f8ff750f9441"
 ],
 "member/CMW112AAAA/header-0": [
-2.08945,
-2.2736,
+2.1085,
+2.29265,
 2,
-"a09a3624f0cb"
+"344a0a183be1"
 ],
 "member/CMW112AAAA/jack-0-l0": [
 0.0381,
-2.08945,
+2.1085,
 2,
-"8499e3975e73"
+"6092bae41a05"
 ],
 "member/CMW112AAAA/jack-0-r0": [
 0.0381,
-2.08945,
+2.1085,
 2,
-"8499e3975e73"
+"6092bae41a05"
 ],
 "member/CMW112AAAA/king-0-l0": [
 0.0381,
@@ -88369,34 +88369,34 @@
 "f16deafda480"
 ],
 "member/CMW124AAAA/cripple-head-0-01": [
-2.29735,
+2.3164,
 2.651125,
 2,
-"fec2923dbc21"
+"04b203d812e2"
 ],
 "member/CMW124AAAA/cripple-head-0-02": [
-2.29735,
+2.3164,
 2.651125,
 2,
-"fec2923dbc21"
+"04b203d812e2"
 ],
 "member/CMW124AAAA/header-0": [
-2.11955,
-2.25925,
+2.1386,
+2.2783,
 2,
-"9e0fea2bbfd9"
+"3574b3876504"
 ],
 "member/CMW124AAAA/jack-0-l0": [
 0.0381,
-2.11955,
+2.1386,
 2,
-"090725024d99"
+"1c6e48b54d9a"
 ],
 "member/CMW124AAAA/jack-0-r0": [
 0.0381,
-2.11955,
+2.1386,
 2,
-"090725024d99"
+"1c6e48b54d9a"
 ],
 "member/CMW124AAAA/king-0-l0": [
 0.0381,
@@ -88436,21 +88436,21 @@
 ],
 "member/CMW124AAAA/pocketsplit-0-01": [
 0.0381,
-2.11955,
+2.1386,
 2,
-"090725024d99"
+"1c6e48b54d9a"
 ],
 "member/CMW124AAAA/pocketsplit-0-02": [
 0.0381,
-2.11955,
+2.1386,
 2,
-"090725024d99"
+"1c6e48b54d9a"
 ],
 "member/CMW124AAAA/pocketsplit-0-03": [
 0.0381,
-2.11955,
+2.1386,
 2,
-"090725024d99"
+"1c6e48b54d9a"
 ],
 "member/CMW124AAAA/stud-000": [
 0.0381,
@@ -88483,10 +88483,10 @@
 "f16deafda480"
 ],
 "member/CMW124AAAA/trackbacking-0": [
-2.25925,
-2.29735,
+2.2783,
+2.3164,
 2,
-"9fc2c67bfac7"
+"6769b99af231"
 ],
 "member/CMW125AAAA/plate-bottom": [
 0.0,
@@ -89095,34 +89095,34 @@
 "45cb4db07bd2"
 ],
 "member/CMW132AAAA/cripple-head-0-01": [
-2.2736,
+2.29265,
 2.651125,
 2,
-"b5fc9e1c3e15"
+"e8fae9cd8535"
 ],
 "member/CMW132AAAA/cripple-head-0-02": [
-2.2736,
+2.29265,
 2.651125,
 2,
-"b5fc9e1c3e15"
+"e8fae9cd8535"
 ],
 "member/CMW132AAAA/header-0": [
-2.08945,
-2.2736,
+2.1085,
+2.29265,
 2,
-"a09a3624f0cb"
+"344a0a183be1"
 ],
 "member/CMW132AAAA/jack-0-l0": [
 0.0381,
-2.08945,
+2.1085,
 2,
-"8499e3975e73"
+"6092bae41a05"
 ],
 "member/CMW132AAAA/jack-0-r0": [
 0.0381,
-2.08945,
+2.1085,
 2,
-"8499e3975e73"
+"6092bae41a05"
 ],
 "member/CMW132AAAA/king-0-l0": [
 0.0381,
@@ -89689,34 +89689,34 @@
 "eebc11b3c6f0"
 ],
 "member/CMW137AAAA/cripple-head-0-01": [
-2.25955,
+2.2786,
 2.651125,
 2,
-"99f9c58d0698"
+"5277cfe7e351"
 ],
 "member/CMW137AAAA/cripple-head-0-02": [
-2.25955,
+2.2786,
 2.651125,
 2,
-"99f9c58d0698"
+"5277cfe7e351"
 ],
 "member/CMW137AAAA/header-0": [
-2.0754,
-2.25955,
+2.09445,
+2.2786,
 2,
-"8da6ac8186c3"
+"3276160e3885"
 ],
 "member/CMW137AAAA/jack-0-l0": [
 0.0381,
-2.0754,
+2.09445,
 2,
-"ef72e31c4b37"
+"1e0000a3f615"
 ],
 "member/CMW137AAAA/jack-0-r0": [
 0.0381,
-2.0754,
+2.09445,
 2,
-"ef72e31c4b37"
+"1e0000a3f615"
 ],
 "member/CMW137AAAA/king-0-l0": [
 0.0381,
@@ -98125,34 +98125,34 @@
 "015f08fd3431"
 ],
 "member/CSW114AAAA/cripple-head-0-01": [
-5.3216,
+5.34065,
 5.715,
 2,
-"744fa47e6024"
+"062aa9d43b1d"
 ],
 "member/CSW114AAAA/cripple-head-0-02": [
-5.3216,
+5.34065,
 5.715,
 2,
-"744fa47e6024"
+"062aa9d43b1d"
 ],
 "member/CSW114AAAA/header-0": [
-5.13745,
-5.3216,
+5.1565,
+5.34065,
 2,
-"326865c2f136"
+"02a75a60a57e"
 ],
 "member/CSW114AAAA/jack-0-l0": [
 3.0861,
-5.13745,
+5.1565,
 2,
-"0c87a72a7c76"
+"d5b7807e0971"
 ],
 "member/CSW114AAAA/jack-0-r0": [
 3.0861,
-5.13745,
+5.1565,
 2,
-"0c87a72a7c76"
+"d5b7807e0971"
 ],
 "member/CSW114AAAA/king-0-l0": [
 3.0861,
@@ -99013,34 +99013,34 @@
 "1e7958625010"
 ],
 "member/CSW123AAAA/cripple-head-0-01": [
-5.3216,
+5.34065,
 5.699125,
 2,
-"220fa01d23d4"
+"7f7f7b427fcb"
 ],
 "member/CSW123AAAA/cripple-head-0-02": [
-5.3216,
+5.34065,
 5.699125,
 2,
-"220fa01d23d4"
+"7f7f7b427fcb"
 ],
 "member/CSW123AAAA/header-0": [
-5.13745,
-5.3216,
+5.1565,
+5.34065,
 2,
-"326865c2f136"
+"02a75a60a57e"
 ],
 "member/CSW123AAAA/jack-0-l0": [
 3.0861,
-5.13745,
+5.1565,
 2,
-"0c87a72a7c76"
+"d5b7807e0971"
 ],
 "member/CSW123AAAA/jack-0-r0": [
 3.0861,
-5.13745,
+5.1565,
 2,
-"0c87a72a7c76"
+"d5b7807e0971"
 ],
 "member/CSW123AAAA/king-0-l0": [
 3.0861,
@@ -100387,40 +100387,40 @@
 "1c0200ec3328"
 ],
 "member/CSW143AAAA/cripple-head-0-01": [
-5.27715,
+5.2962,
 5.699125,
 2,
-"56096dfc793e"
+"af873ad05eb3"
 ],
 "member/CSW143AAAA/cripple-head-0-02": [
-5.27715,
+5.2962,
 5.699125,
 2,
-"56096dfc793e"
+"af873ad05eb3"
 ],
 "member/CSW143AAAA/cripple-head-0-03": [
-5.27715,
+5.2962,
 5.699125,
 2,
-"56096dfc793e"
+"af873ad05eb3"
 ],
 "member/CSW143AAAA/header-0": [
-5.13745,
-5.27715,
+5.1565,
+5.2962,
 2,
-"331497596779"
+"e6698c9718c4"
 ],
 "member/CSW143AAAA/jack-0-l0": [
 3.0861,
-5.13745,
+5.1565,
 2,
-"0c87a72a7c76"
+"d5b7807e0971"
 ],
 "member/CSW143AAAA/jack-0-r0": [
 3.0861,
-5.13745,
+5.1565,
 2,
-"0c87a72a7c76"
+"d5b7807e0971"
 ],
 "member/CSW143AAAA/king-0-l0": [
 3.0861,
@@ -100471,34 +100471,34 @@
 "1c0200ec3328"
 ],
 "member/CSW144AAAA/cripple-head-0-01": [
-5.3216,
+5.34065,
 5.699125,
 2,
-"220fa01d23d4"
+"7f7f7b427fcb"
 ],
 "member/CSW144AAAA/cripple-head-0-02": [
-5.3216,
+5.34065,
 5.699125,
 2,
-"220fa01d23d4"
+"7f7f7b427fcb"
 ],
 "member/CSW144AAAA/header-0": [
-5.13745,
-5.3216,
+5.1565,
+5.34065,
 2,
-"326865c2f136"
+"02a75a60a57e"
 ],
 "member/CSW144AAAA/jack-0-l0": [
 3.0861,
-5.13745,
+5.1565,
 2,
-"0c87a72a7c76"
+"d5b7807e0971"
 ],
 "member/CSW144AAAA/jack-0-r0": [
 3.0861,
-5.13745,
+5.1565,
 2,
-"0c87a72a7c76"
+"d5b7807e0971"
 ],
 "member/CSW144AAAA/king-0-l0": [
 3.0861,
@@ -101743,40 +101743,40 @@
 "c41a1e63dd47"
 ],
 "member/KKVYSAJKZF/cripple-head-0-01": [
-2.31035,
+2.3294,
 2.651125,
 2,
-"8af704af5b5c"
+"3eace4f78760"
 ],
 "member/KKVYSAJKZF/cripple-head-0-02": [
-2.31035,
+2.3294,
 2.651125,
 2,
-"8af704af5b5c"
+"3eace4f78760"
 ],
 "member/KKVYSAJKZF/cripple-head-0-03": [
-2.31035,
+2.3294,
 2.651125,
 2,
-"8af704af5b5c"
+"3eace4f78760"
 ],
 "member/KKVYSAJKZF/header-0": [
-2.0754,
-2.31035,
+2.09445,
+2.3294,
 2,
-"5167d8e07950"
+"ec64bab70fe7"
 ],
 "member/KKVYSAJKZF/jack-0-l0": [
 0.0381,
-2.0754,
+2.09445,
 2,
-"ef72e31c4b37"
+"1e0000a3f615"
 ],
 "member/KKVYSAJKZF/jack-0-r0": [
 0.0381,
-2.0754,
+2.09445,
 2,
-"ef72e31c4b37"
+"1e0000a3f615"
 ],
 "member/KKVYSAJKZF/king-0-l0": [
 0.0381,
@@ -102073,22 +102073,22 @@
 "f794f274d388"
 ],
 "member/QY8YCE6XV3/cripple-head-0-01": [
-2.29235,
+2.3161625,
 2.651125,
 2,
-"006a8a2c5c39"
+"621139ca46f9"
 ],
 "member/QY8YCE6XV3/cripple-head-0-02": [
-2.29235,
+2.3161625,
 2.651125,
 2,
-"006a8a2c5c39"
+"621139ca46f9"
 ],
 "member/QY8YCE6XV3/header-0": [
-2.11455,
-2.25425,
+2.1383625,
+2.2780625,
 2,
-"3d1cb96b8295"
+"202f1bf4c022"
 ],
 "member/QY8YCE6XV3/plate-bottom-passage-0": [
 0.0,
@@ -102110,27 +102110,27 @@
 ],
 "member/QY8YCE6XV3/pocketsplit-0-01": [
 0.0381,
-2.11455,
+2.1383625,
 2,
-"13f3204d62dc"
+"dd93e6197bf8"
 ],
 "member/QY8YCE6XV3/pocketsplit-0-02": [
 0.0381,
-2.11455,
+2.1383625,
 2,
-"13f3204d62dc"
+"dd93e6197bf8"
 ],
 "member/QY8YCE6XV3/pocketsplit-0-03": [
 0.0381,
-2.11455,
+2.1383625,
 2,
-"13f3204d62dc"
+"dd93e6197bf8"
 ],
 "member/QY8YCE6XV3/trackbacking-0": [
-2.25425,
-2.29235,
+2.2780625,
+2.3161625,
 2,
-"cf74a6869af6"
+"0389b85c2a22"
 ],
 "member/R0STSQM95Y/block-2-000-00": [
 -0.3413125,
@@ -102391,22 +102391,22 @@
 "0b126f6bd5d2"
 ],
 "member/REREWJKFAZ/header-0": [
-8.169448,
-8.353598,
+8.188498,
+8.372648,
 2,
-"2bb3f0573120"
+"25aabeb27fa8"
 ],
 "member/REREWJKFAZ/jack-0-l0": [
 6.1341,
-8.169448,
+8.188498,
 2,
-"86730abb8589"
+"42e6bb6fc699"
 ],
 "member/REREWJKFAZ/jack-0-r0": [
 6.1341,
-8.169448,
+8.188498,
 2,
-"86730abb8589"
+"42e6bb6fc699"
 ],
 "member/REREWJKFAZ/king-0-l0": [
 6.1341,

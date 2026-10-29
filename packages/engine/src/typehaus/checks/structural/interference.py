@@ -45,16 +45,10 @@ _STAIR_HOUSED = frozenset({"tread", "winder", "riser"})
 # newel every winder's narrow end converges on) and ``hanger`` (the ledger let into a
 # concrete foundation wall that carries a basement stringer) are stair carriage members:
 # they share volume with the treads/stringers/landing by design.
-# Stud kinds and wall plates remain cleared for now, and annotating the framed-wall
-# bearing did NOT change that — an annotation does not move geometry. The ~80 contacts on
-# catlin are stair members physically inside stud cavities, because stair members are laid
-# out to the host wall's *axis* (its centreline) instead of its finished face. That inset
-# is defect D3 in plans/TODO.md and is the real prerequisite for narrowing this set.
-# ``sill`` belongs with the stud kinds it sits between for exactly that reason: a rough
-# opening's sill is wall framing on the same centreline, so a flight running past a window
-# in a stair-adjacent wall reads as a clash for the same D3 offset that clears every stud
-# and plate here. Catlin has no such wall today, so the gap was invisible — see
-# tests/test_member_interference.py::test_stair_past_a_rough_opening_sill_is_not_a_clash.
+# Stud kinds and wall plates stay cleared: stair members are laid out to the host wall's
+# axis, inside its stud cavity (defect D3 in plans/TODO.md), which must be fixed first.
+# ``sill`` joins them for the same D3 offset: a rough opening's sill is wall framing on the
+# same centreline (test_stair_past_a_rough_opening_sill_is_not_a_clash).
 # ``column`` is here for the same reason ``newel`` is: a post authored under a landing
 # corner carries it, and the landing rims/joists it carries are laid out to the corner
 # point, so the post's 3 1/2" section and the rim that lands on it necessarily share plan.
@@ -122,6 +116,8 @@ _ENVELOPE_SKIN_KINDS = values_where(interference_skin=True) | frozenset({
 _RAKE_KINDS = frozenset({"outlooker", "barge_rafter"})
 # The wall-top members a roof member or a truss bears on.
 _WALL_TOP_KINDS = _PLATE_KINDS | _STUD_KINDS
+# A rough opening's jamb pack and header: never part of a corner or tee pack.
+_OPENING_PACK = frozenset({"king", "jack", "header"})
 
 
 def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
@@ -474,9 +470,12 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
                 continue
             # Cross-wall framing butting together at an L corner or T junction: perpendicular
             # walls' studs/plates lap, and a gable's rake plate/rafters/ridge meet there. A
-            # same-wall overlap, or one far from any junction, is still reported.
+            # same-wall overlap, one far from any junction, or a rough opening's pack
+            # running into the other wall's studs (never part of a corner) is still reported.
             if (a.parent != b.parent
                     and a.kind in _JUNCTION_FRAMING and b.kind in _JUNCTION_FRAMING
+                    and not any(x.kind in _OPENING_PACK and y.kind in _STUD_KINDS
+                                for x, y in ((a, b), (b, a)))
                     and any(math.hypot(pt[0] - jx, pt[1] - jy) <= junction_tol
                             for jx, jy in junction_pts)):
                 continue

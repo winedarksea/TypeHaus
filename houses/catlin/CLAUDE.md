@@ -1451,14 +1451,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       elevation depends on where. That is why both sauna radials come east along y=1'-8 1/2"
       and y=3'-2", south of the vent's corner.
     - **The gym radial no longer crosses the gym** and `RM-B-GYM.exposed_services` says so.
-  - **`D-B-FURN` HAS A FLAT 2x8 HEADER AND NO CRIPPLES (B1, 2026-09-22).** `W-B-CW` is
+  - **`D-B-FURN` HAS A FLAT NAILER AND NO CRIPPLES (B1, 2026-09-22).** `W-B-CW` is
     authored `NONBEARING` — `FS-M-WEST`'s joists run parallel to it on the 208"/224" lines
-    and nothing bears on it — so the opening takes IRC R602.7.4's flat nailer
-    (`header_spec="flat 2x8 nonbearing"`, the wall's own 2x laid flat, 1 1/2" tall) and no
-    cripples above it. The 2-2x8 and its four ungraded holes are gone: `DU-B-ERV-R-SAUNA-EXH`
-    and `PR-B-MAIN-DRAIN` (4.50") pass through the open head and cut nothing, and
-    `PR-B-KITCH-DRAIN`/`PR-M-S-BATH1-DRAIN` take 0.46"/0.70" off the nailer's top, which
-    `mep.run_through_header` PASSes (a nonbearing nailer carries no load). **Do not put a
+    and nothing bears on it — so the opening takes IRC R602.7.4's flat nailer, 1 1/2" tall,
+    and no cripples above it. The spec still reads `flat 2x8 nonbearing` from when the wall
+    was 2x8; `W-B-CW` is `INT_2X4_PLUMBING` (4.52") now, so that board overhangs both faces
+    (an open question in `plans/door-sizing.md`). At the held 6'-8" RO nothing cuts it:
+    `PR-M-S-BATH1-DRAIN` (x 5'-0") and `PR-B-MAIN-DRAIN` (x 6'-0") pass over it, and the
+    sauna exhaust and kitchen drain no longer cross this head. The derived 81 1/2" RO would
+    let BATH1-DRAIN notch it 0.09", undoing the 2026-10-13 lift, so the door is held. **Do not put a
     bearing header back here without re-reading `notes/framing_bore_limits.md` §8-§9**, and
     do not land anything on `W-B-CW` — it stops being nonbearing, and the flat header with it.
     `DU-B-ERV-R-SAUNA-SUP` is at **x=1'-0 1/2"** in `W-B-CW`'s west clear bay and

@@ -47,10 +47,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 SPF framing lumber — blocking (2x12:spf) | 16 | LF ordered | 4 pcs, 10.8 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 260 | LF ordered | 77 pcs, 209.2 LF cut | building |
 | 2x3 — corner stud, plate, stud (2x3) | 48 | LF ordered | 12 pcs, 28.0 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,716 | LF ordered | 650 pcs, 3993.4 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,716 | LF ordered | 650 pcs, 3993.0 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,938 | LF ordered | 479 pcs, 2511.1 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 55.6 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,046 | LF ordered | 1168 pcs, 6100.9 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,046 | LF ordered | 1168 pcs, 6101.0 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | 90 | LF ordered | 9 pcs, 77.6 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.6 LF cut | building |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, door blocking, jack stud, king stud, stud (2x6:lsl) | 1,742 | LF ordered | 229 pcs, 1479.8 LF cut | building |

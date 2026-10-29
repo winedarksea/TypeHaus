@@ -58,6 +58,10 @@ def resolve_cased_door(wall, opening, door_type, *, standard=None,
     head = base + height
     bottom = max(base, *floors) + defaults.undercut_m
     top = head - allowance - defaults.leaf_gap_m - (defaults.track_height_m if pocket else 0)
+    sizing = opening.sizing
+    if sizing is not None and not sizing.held:
+        # A kit's head allowance can exceed jamb + track; the leaf is still its own height.
+        top = min(top, bottom + sizing.leaf_h_m)
     if top <= bottom or opening.width_m <= 2 * (allowance + defaults.leaf_gap_m):
         return None
     return CasedDoorSpec(

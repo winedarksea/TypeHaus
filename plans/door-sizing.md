@@ -111,9 +111,11 @@ says so.
 
 - **Width:** `rough_w = leaf_w + 2(a + g)`. A 32" leaf needs 34.24". A pair adds one more
   `g` at the meeting stiles.
-- **Height, from the subfloor:** `rough_h = finish + undercut + leaf_h + g + a`. `finish` is
-  the floor build-up at that opening (the higher of the two sides, as `door_product_spec`
-  takes `max(base, *floors)`), so height depends on the opening, not just the type.
+- **Height, from the opening's base:** `rough_h = finish + undercut + leaf_h + g + a`.
+  `finish` is the floor build-up at that opening (the higher of the two sides, as
+  `door_product_spec` takes `max(base, *floors)`), so height depends on the opening, not just
+  the type. On a joisted storey the base is the top of joists, so `finish` includes the
+  subfloor sheet.
 - **Fit:** an RO fits when it is at least the derived one in both directions.
 - **By operation** (the six real `DoorOperation` members; the table test needs a row each):
   - `SWING`, `DOUBLE_SWING`: the equations above.
@@ -295,9 +297,19 @@ What the build settled that the plan left open:
   schedule and IFC keep the void). `frame_w_m` is `rough_w_m`; a pocket's `rough_w_m` is the
   whole cassette and `passage_w_m` the leaf.
 - **The finish comes from the plan, not the model.** Openings resolve before rooms and
-  floors, so `resolve/door_floor_finish.py` finds the room each side by its seed in the
-  wall-axis face and reads an authored finish zone, a `Slab.floor_finish`, then the room's
-  field finish. A raised sill (> 50 mm) takes none.
+  floors, so `resolve/door_floor_finish.py` reads the decks at the opening's level (a
+  `FloorSystem`'s sheet, a `Slab`'s top), then the covering: the deck's own `floor_finish`,
+  else an authored finish zone, else the room's field finish (room found by its seed in the
+  wall-axis face). A raised sill (> 50 mm) takes none. `integrity.door_floor_finish` grades
+  that read against the resolved walking surface at every derived door.
+- **Review, 2026-10-29.** As first built the read omitted the subfloor sheet: walls stand on
+  the top of joists, so every derived RO on main, second and attic was 3/4" short (pockets
+  ~15/16") and their leaves drew 79 1/4". Fixed; those heads rose 3/4" with no new finding.
+  The held-opening measurements below that involve a head were taken 3/4" low. Also: clear
+  height is now read to the head stop (13 mm under the jamb, as Sizing rules says) from the
+  threshold on its seat; the pocket band ends at the RO head (its kit allowance already holds
+  the track); and `member_interference` no longer clears an opening's king, jack or header
+  against another wall's studs at a junction, which is what let D-S-BATH1 through.
 - **Fit**: a published RO must take the unit (or, with no unit, the leaf) plus 1/4" of shim a
   side and once at the head — a `DoorType` validator, so a misfit is a load error. Every
   shipped product passes (MMI fits exactly).
@@ -342,8 +354,8 @@ ones unless it says otherwise.
 | D-M-BATH2 | ED-M-BED-RC9 in the RO; RC7 within 6' of the shower through the wider opening; the nightstand at the leaf tip | (A) a 30" leaf (27.3" clear; reverses 2026-09-15); (B) keep 32": RC9 to 64", RC7 GFCI, bed and nightstands 0.6" east. |
 | D-M-MUD | PR-B-HW-SBATH's riser stands in the new west king and clips the header | keep the hold, or a 30" leaf (clean). No way found to keep 32" without moving the riser. |
 | D-M-STUDY | ED-M-STUDY-SPOT 0.74" into the RO | release and move the spot 1" north (0.26" a side left). |
-| D-B-BATH | Eclisse head 3.4" higher meets DU-B-ERV-R-GYM (pocket band) and -PLAY (header) | (B) W-B-BA-E nonbearing (engineer to confirm) with a flat 2x6 head, GYM up 0.5"; (A) raise both ducts (0.1" under the plate); (C) move GYM's crossing south. Also: the pocket band adds a head track over a kit RO that already includes one. |
-| D-B-FURN | the raised flat nailer is notched 0.09" by PR-M-S-BATH1-DRAIN | (B) lift the drain's tail 0.15" and release; (A) hold only the height at 81 3/8". |
+| D-B-BATH | Eclisse head 3.4" higher: its 2-2x6 header is notched 2.37" by DU-B-ERV-R-GYM and 0.12" by -PLAY (two header UNKNOWNs; re-measured 2026-10-29 once the pocket band stopped double-counting the track, so GYM no longer enters the pocket) | (B) W-B-BA-E nonbearing (engineer to confirm) with a flat 2x6 head, GYM up 0.5"; (A) raise both ducts (0.1" under the plate); (C) move GYM's crossing south. |
+| D-B-FURN | the raised flat nailer is notched 0.09" by PR-M-S-BATH1-DRAIN: a PASS (nonbearing nailer), but it undoes the 2026-10-13 lift that `test_e2_header_and_plate_tie` pins at "no header cut" | (B) lift the drain's tail 0.15" and release; (A) hold only the height at 81 3/8"; (C) accept the 0.09" (the house took 0.70" there in 2026-09) and re-pin the test. Separately: the nailer is authored `flat 2x8 nonbearing`, but W-B-CW is 2x4 now, so the 7 1/4" board overhangs both faces; R602.7.4's "wall's own 2x" is a flat 2x4. |
 | D-B-PLAY | 1.2" off W-B-CE's module (one extra stud) | move 1.2" west (casing ~1" from the playroom bookcase), or suppress like the other 60" pairs. |
 | D-B-SHOP | 11.4" off W-B-HALL-W's module; the switch 2.8" from the jamb | move to centre y=160" with the switch to 31" (loses the D-B-GYM alignment), or suppress and nudge the switch to 41". |
 | D-B-CLOSET | ED-B-CLOSET-LT under the casing; the casing head ~1.7" into ST-B2M's stringer (unchecked) | move the light 3" north (stringer scribe remains), or slide the door 2" toward the corner (clears both; undoes the 10" corner setback). |
@@ -351,10 +363,11 @@ ones unless it says otherwise.
 | D-S-SUITE | the cherry casing leg against W-S-SBS is left off | move the door 1" south (both legs ~2.4"), or a 30" leaf. |
 | D-S-BATH1 | its derived jamb pack runs into W-S-BA-E1B's corner pack at N-S-BA1 | not investigated beyond that; keep the hold, or step down / move off the corner. |
 | D-S-BED3 | the 2-2x8 header reaches the HP return's envelope (not physical: the check's 9" envelope) | W-S-BW3 nonbearing with a flat 2x4 head, or fix `mep_bore_geometry`'s envelope. |
-| D-S-NCLOSET | the header rises 2.26" over the wall top into SF-S-HP1; ED-S-NCLOSET-SW in the RO | W-S-CLN-S nonbearing with a flat 2x4 head, and slide the door 2.25" west. |
+| D-S-NCLOSET | the header rises 2.26" (now ~3", see Review) over the wall top into SF-S-HP1; ED-S-NCLOSET-SW in the RO | W-S-CLN-S nonbearing with a flat 2x4 head, and slide the door 2.25" west. |
 | D-A-HALVES | 1.70" to the wall end against 1.97" (`opening_fits`); the study casing leg left off | move 1 5/16" south (leg 1.57"), or a 30" leaf. |
-| D-A-POCKET | PR-A-STUBATH-LAV-HW crosses 1.24" of the RO | move the pipe's corner to x=110.75" and release. Separately: `member_interference` never grades a header against a raked plate, and this header already overlaps the rake plate (2.2" held, 3.9" derived). |
+| D-A-POCKET | PR-A-STUBATH-LAV-HW crosses 1.24" of the RO | move the pipe's corner to x=110.75" and release. Separately: `member_interference` never grades a header against a raked plate, and this header already overlaps the rake plate (2.2" held, 3.9" derived, now ~4.6"). |
 
 Engine follow-ups the investigations found: the pocket band's double head allowance
-(`checks/mep/pockets.py`), `mep_bore_geometry`'s round envelope for a rectangular duct, and
-header-versus-raked-plate interference.
+(`checks/mep/pockets.py`, fixed in review), `mep_bore_geometry`'s round envelope for a
+rectangular duct, and header-versus-raked-plate interference (open: the clause that clears a
+floor-opening header on a plate also clears a wall header in its own raked plate).

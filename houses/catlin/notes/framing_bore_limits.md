@@ -510,3 +510,13 @@ crossings. Both former flat-header notches now clear the nailer; the four crossi
 cut no header at all. The condensate no longer uses the door's west-jamb bay: it passes
 W-B-CW3 at x90", between the x81" and x97" studs. D-B-FURN remains at x39" without
 a condensate constraint.
+
+**2026-10-29: stale above, corrected.** `W-B-CW` is now `INT_2X4_PLUMBING` (4.52" thick, a
+3 1/2" stud plane), not the 8.52" wall this section measured, so "the wall's own 2x, laid
+flat" is a flat 2x4; the door still authors `flat 2x8 nonbearing`, a 7 1/4" board that
+overhangs both faces (an owner question in `plans/door-sizing.md`). The crossings moved too:
+`DU-B-ERV-R-SAUNA-EXH` runs at x 12.5" and `PR-B-KITCH-DRAIN` no longer crosses W-B-CW west of
+x 100", so over the head (RO x 39"-75", nailer top -27.94" while held at 6'-8") only
+`PR-M-S-BATH1-DRAIN` (x 60") and `PR-B-MAIN-DRAIN` (x 72") remain, both over it. The derived
+81.51" RO (`plans/door-sizing.md`) raises the nailer 1.51" and BATH1-DRAIN would notch it
+0.09", undoing the lift above, so D-B-FURN holds its 6'-8" RO pending the owner.

@@ -40,7 +40,10 @@ For a 3/0 leaf: 36" − 2-11/16" = 33-5/16" = 33.3125" — the published figure 
 estimate and the table agree at this size. A French pair loses it per leaf (5/0: 60 − 5-3/8 =
 54-5/8", against the published 56-3/8"; the published figure wins there).
 
-Clear height without a published figure is installed: RO head less the 1" jamb allowance, less
-the higher of the threshold (`ExteriorDoorSillDesign.threshold_height`, 1.5" here) and the floor
-build-up. At D-M-ENTRY's 82.875" RO: 82.875 − 1 − 1.5 = 80.375". The published 79.25" is lower
-and governs.
+Clear height without a published figure is installed: RO head less the 1" jamb allowance and
+the head stop's 13 mm (0.512") projection, less the higher of the threshold top and the floor
+build-up. The threshold sits on its seat (`ExteriorDoorSillDesign.seat_height`, 0.5" default)
+and stands `threshold_height` (1.5" here) over it, so 2.0" over the RO base; the floor is
+0.947" (3/4" subfloor plus 5 mm LVP over the joist-top base). At D-M-ENTRY's 82.875" RO:
+82.875 − 1 − 0.512 − 2.0 = 79.363". The published 79.25" is lower and governs; the estimate
+lands 0.11" above it.

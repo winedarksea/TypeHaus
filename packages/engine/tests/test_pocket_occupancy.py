@@ -13,7 +13,7 @@ import dataclasses
 import pytest
 
 from typehaus.checks import run_from_model
-from typehaus.checks.mep.pockets import _POCKET_HEAD_TRACK_M, _pocket_bands
+from typehaus.checks.mep.pockets import _pocket_bands
 from typehaus.checks.registry import Tier, registered
 from typehaus.findings import Result
 
@@ -34,11 +34,11 @@ def test_catlin_has_nothing_in_a_pocket(findings) -> None:
     assert not fails, [f.message for f in fails]
 
 
-def test_the_band_stops_just_above_the_leaf(catlin_model_ro) -> None:
+def test_the_band_stops_at_the_rough_opening_head(catlin_model_ro) -> None:
     """The z band is the leaf's own travel, not the wall. ``D-M-LAUN`` is an 80" door on a
-    wall based at the main floor, so the cavity ends a head track over its RO head (the
-    Eclisse kit's, ``resolve/door_sizing``) — not at ``W-M-HS4``'s 120" top, which is where
-    a wall-shaped band would put it."""
+    wall based at the main floor, so the cavity ends at its RO head, whose Eclisse allowance
+    already holds the track (``resolve/door_sizing``) — not at ``W-M-HS4``'s 120" top, which
+    is where a wall-shaped band would put it."""
     class _Ctx:
         model = catlin_model_ro
         plan = catlin_model_ro.plan
@@ -48,7 +48,7 @@ def test_the_band_stops_just_above_the_leaf(catlin_model_ro) -> None:
     low, high = bands[("D-M-LAUN", "W-M-HS4")]
     assert low == pytest.approx(0.0, abs=1e-9)
     door = next(op for op in catlin_model_ro.openings if op.tag == "D-M-LAUN")
-    assert high == pytest.approx(door.height_m + _POCKET_HEAD_TRACK_M, abs=1e-9)
+    assert high == pytest.approx(door.height_m, abs=1e-9)
 
 
 def test_laundry_pocket_follows_the_aligned_stud_cavity(catlin_model_ro) -> None:
@@ -104,11 +104,12 @@ def test_a_pipe_over_the_head_track_is_not_in_the_pocket(catlin_model) -> None:
 
 
 def test_the_gym_duct_must_clear_the_bath_pocket(catlin_model) -> None:
-    """The 4" radial crosses the hall pocket above its head track."""
+    """The 4" radial crosses the hall pocket 6 1/2" over its held 6'-8" RO head; 8" lower
+    it is in the leaf's travel."""
     original = next(duct for duct in catlin_model.ducts if duct.tag == "DU-B-ERV-R-GYM")
     assert not _fails(catlin_model)
     lowered = dataclasses.replace(
-        original, z_m=tuple(z - 4.5 * 0.0254 if index in (4, 5, 6) else z
+        original, z_m=tuple(z - 8 * 0.0254 if index in (4, 5, 6) else z
                                for index, z in enumerate(original.z_m)))
     model = dataclasses.replace(
         catlin_model,

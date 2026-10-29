@@ -256,6 +256,26 @@ def test_check_still_flags_a_genuine_overlap():
     assert member_interference(ctx)
 
 
+def test_a_jamb_pack_in_a_corner_pack_is_a_clash_even_at_the_junction():
+    """D-S-BATH1's derived king ran into W-S-BA-E1B's corner pack at N-S-BA1: two walls'
+    studs may lap at a junction, an opening's king may not."""
+    from types import SimpleNamespace
+
+    def ctx(kind):
+        king = FramedMember("W-A", f"{kind}-0", kind, "2x6", (0.0, 0.0), (0.0, 0.0),
+                            z0_m=0.0, z1_m=2.4, length_m=2.4, orient=(1.0, 0.0))
+        stud = FramedMember("W-B", "corner-end", "stud", "2x6", (0.02, 0.0), (0.02, 0.0),
+                            z0_m=0.0, z1_m=2.4, length_m=2.4, orient=(0.0, 1.0))
+        junction = SimpleNamespace(point=(0.0, 0.0))
+        model = SimpleNamespace(all_members=lambda: [king, stud], solids=(),
+                                junctions=(junction,))
+        prefs = SimpleNamespace(framing=SimpleNamespace(interference_tolerance_in=0.25))
+        return SimpleNamespace(model=model, preferences=prefs)
+
+    assert member_interference(ctx("king"))
+    assert not member_interference(ctx("stud"))
+
+
 def _flush_candidates(joist_kind: str):
     """A deck member of ``joist_kind`` hung flush in its own pinned beam."""
     from shapely.geometry import box

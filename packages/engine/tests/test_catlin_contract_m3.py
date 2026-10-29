@@ -2614,7 +2614,7 @@ def test_the_laundry_pocket_clears_the_bearing_corner_and_owns_its_wall(catlin_m
        in and ``BM-M-HALL`` starts, so the jamb pack that closes the cavity has to stop
        short of its corner square. The 36" leaf leaves generous clearance there.
     2. **The cavity crosses the W-M-LS tee.** This is legal because a pocket occupies only
-       floor to 6'-8": the band's double top plate runs unbroken above it and its bottom
+       floor to its RO head: the band's double top plate runs unbroken above it and its bottom
        plate below, so W-M-LS ties plate to plate and only its vertical edge floats. If a
        split stud ever reaches the plate, that tie is gone.
     3. **W-M-HS4 hosts nothing, and never may again.** No pipe, no register, no
@@ -2642,7 +2642,7 @@ def test_the_laundry_pocket_clears_the_bearing_corner_and_owns_its_wall(catlin_m
     splits = [m for m in catlin_model.wall("W-M-HS3").members
               if m.child_key.startswith("pocketsplit-")]
     assert splits, "the cavity must be framed"
-    assert all(m.z1_m <= ft(7).meters for m in splits)
+    assert all(m.z1_m <= door.height_m + 1e-6 for m in splits)  # the Eclisse RO head
     # ...and they really do stand inside W-M-HS4, past their own host's end node.
     assert max(m.p0[0] for m in splits) > hs4.axis[0][0]
 

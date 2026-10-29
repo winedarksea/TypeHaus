@@ -8,6 +8,7 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     cladding_trim_fit,
     clear_zones,
     door_finishes,
+    door_floor_finish,
     door_hardware,
     doorway,
     drip_flashing,

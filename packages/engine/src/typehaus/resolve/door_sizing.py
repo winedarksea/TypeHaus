@@ -6,7 +6,10 @@ unless the opening holds its current framing (decision 6). One equation both der
 and checks that a leaf fits one:
 
     rough_w = leaf_w + 2(a + g)            (+ g at a pair's meeting stiles)
-    rough_h = finish + undercut + leaf_h + g + a      (from the subfloor)
+    rough_h = finish + undercut + leaf_h + g + a      (from the opening's base)
+
+``finish`` is the build-up from the opening's base to the finished floor: the subfloor sheet
+and covering on a joisted storey (``resolve/door_floor_finish``).
 
 A pure function of its arguments: no model, no house load.
 """
@@ -68,7 +71,7 @@ class DoorSizing:
     required_basis: str
     jamb_allowance_m: float
     leaf_gap_m: float
-    floor_finish_m: float
+    floor_finish_m: float  # opening base to finished floor (subfloor + covering)
     held: bool
     fits: bool  # the unit (or leaf) fits a published RO; a held RO is exempt
     basis: tuple[tuple[str, str], ...]
@@ -133,17 +136,20 @@ def _clear_height(door, door_type, rough_h: float, a: float,
         return catalog.clear_height.meters, "published"
     installation = getattr(door, "exterior_installation", None)
     sill = getattr(installation, "sill_design", None) if installation else None
-    threshold = sill.threshold_height.meters if sill is not None else 0.0
+    # The threshold sits on its seat at least (``resolve/exterior_door_sill``).
+    threshold = (sill.seat_height.meters + sill.threshold_height.meters
+                 if sill is not None else 0.0)
     floor = max(threshold, floor_finish)
     what = "threshold" if threshold >= floor_finish and threshold > 0 else "finished floor"
-    return rough_h - a - floor, f"computed: {what} to head jamb"
+    head_stop = rough_h - a - CASED_DOOR_DEFAULTS.stop_projection_m
+    return head_stop - floor, f"computed: {what} to head stop"
 
 
 def door_sizing(door, door_type, trim_standard=None, kit=None,
                 floor_finish_m: float = 0.0) -> DoorSizing:
     """Size one door. ``door`` is the authored ``Door``; ``kit`` a pocket frame kit
-    (``StructuralHardware``) or None; ``floor_finish_m`` the floor build-up over the subfloor
-    at this opening, the higher side."""
+    (``StructuralHardware``) or None; ``floor_finish_m`` the build-up from the opening's base
+    to the finished floor, the higher side."""
     d = CASED_DOOR_DEFAULTS
     if trim_standard is not None:
         a = trim_standard.jamb_allowance.meters

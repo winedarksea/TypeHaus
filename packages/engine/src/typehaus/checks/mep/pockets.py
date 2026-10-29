@@ -25,11 +25,6 @@ _CID = "mep.pocket_occupancy"
 # A fastening or a box needs the wall's depth, so anything whose plan point lands within
 # the structure band is in the leaf's way. The tolerance only forgives authoring noise.
 _BAND_TOLERANCE_M = 0.01
-#: How far above the leaf the cavity still belongs to the door. The head track, its
-#: fasteners and the slack a kit wants for hanging and adjusting the leaf all live here;
-#: above it the wall is ordinary framing with a header in it. 3 1/2" is a nominal 2x4 laid
-#: flat, which is what every kit's rough-opening height allowance amounts to.
-_POCKET_HEAD_TRACK_M = 0.0889
 
 
 def _pocket_bands(ctx: CheckContext):
@@ -61,9 +56,10 @@ def _pocket_bands(ctx: CheckContext):
             half_depth = structure.thickness_m / 2.0 + _BAND_TOLERANCE_M
             # Flat caps: the band is the cavity's own length, not a rounded sweep past it.
             # The z band is the leaf's own travel: from the wall's base (the floor track)
-            # to the head track above the leaf. A pocket is a hole in a wall, not a hole in
-            # a *storey* — see :func:`pocket_occupancy`.
-            top = wall.z0_m + op.sill_m + op.height_m + _POCKET_HEAD_TRACK_M
+            # to the RO head, which already holds the head track (``resolve/door_sizing``:
+            # the kit's allowance). A pocket is a hole in a wall, not a hole in a *storey* —
+            # see :func:`pocket_occupancy`.
+            top = wall.z0_m + op.sill_m + op.height_m
             yield (op, segment.wall_tag,
                    LineString([low, high]).buffer(half_depth, cap_style=2),
                    (wall.z0_m, top))
@@ -77,7 +73,7 @@ def pocket_occupancy(ctx: CheckContext) -> list[Finding]:
     second-storey lavatory branch running in the floor trusses 32" above ``D-M-LAUN``'s
     leaf — a wall that happens to stand under a bathroom one floor up forbade draining it.
     So a run's segment is tested against the leaf's own travel as well: from the wall's base
-    up to :data:`_POCKET_HEAD_TRACK_M` over the head. A segment clear of that band in z is
+    up to its RO head. A segment clear of that band in z is
     not in the cavity however squarely it crosses in plan.
 
     A run with no resolved elevations keeps being tested in plan alone, which is the
