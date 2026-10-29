@@ -9,11 +9,14 @@ from typehaus.quantities import Length, inch
 
 
 class DoorCatalogDimensions(HausModel):
-    """Nominal leaves and catalog unit envelope, distinct from DoorType's framed void."""
-    nominal_width: Length
-    nominal_height: Length
+    """A published unit envelope and its clear opening. The nominal leaf is
+    ``DoorType.width``/``height``; the published RO is ``DoorType.rough_opening``."""
     unit_width: Length
     unit_height: Length
+    # The maker's clear opening, leaf at 90 degrees, and installed clear height. They win
+    # over the estimate in ``resolve/door_sizing``.
+    clear_width_90: Length | None = None
+    clear_height: Length | None = None
     source_url: str
     source_drawing: str
     assembly_confirmed: bool = False

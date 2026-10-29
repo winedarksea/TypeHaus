@@ -356,6 +356,9 @@ class StructuralHardware:
     #: A pocket frame's published rough-opening WIDTH per door width, inches. Empty means the
     #: kit follows the 2W + 1" every commodity series publishes (``tables.pocket_run``).
     rough_opening_in_by_length_in: dict = field(default_factory=dict)
+    #: A pocket frame's published RO height over the leaf, inches, from the FINISHED floor.
+    #: ``None``: the kit publishes none and the generic door equation frames it.
+    rough_opening_head_over_leaf_in: float | None = None
 
     @property
     def available_lengths_in(self) -> tuple:

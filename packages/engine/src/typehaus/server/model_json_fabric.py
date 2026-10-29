@@ -31,7 +31,7 @@ from typehaus.resolve.geometry_millwork import (
 )
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
-from typehaus.server.model_json_door_hardware import authored_product_parts
+from typehaus.server.model_json_door_hardware import authored_product_parts, sizing_json
 from typehaus.server.model_json_mesh import mesh_json
 from typehaus.server.model_json_plants import plants_json
 from typehaus.server.model_json_shared import (
@@ -175,6 +175,7 @@ def wall_graph_json(
              "cut_layers": _cut_layers(model, o),
              "authored_product_parts": authored_product_parts(model, o),
              "cased_product": asdict(o.cased_product) if o.cased_product else None,
+             "sizing": sizing_json(o.sizing),
              "doorway": doorway_json(o.doorway),
              "window_seat": asdict(o.window_seat) if o.window_seat else None,
              "frame_material_ref": o.frame_material_ref,

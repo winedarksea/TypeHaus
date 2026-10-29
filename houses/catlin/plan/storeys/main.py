@@ -31,6 +31,7 @@ from typehaus import (
     Node,
     Occupancy,
     OpeningFrameEndSupports,
+    OpeningSize,
     PanelingSpan,
     Post,
     PublishedSpan,
@@ -95,13 +96,12 @@ DOOR_TYPES = [
     DoorType(tag="DT-INT-SWING30-GLAZED-TRIMLESS", width=ft(2, 6), height=ft(6, 8),
              glazed=True, tempered=True, trimless=True, leaf_set="pull", core="solid",
              source="Site-built kerfed hardwood flat jamb to the wall's full depth, matching D-M-BED2 with tear-away L-bead both faces and no applied casing; 1 3/4in wood stile-and-rail slab with tempered glass, pull-set flush at the living-room face, 3 ball-bearing butts, kerf-in perimeter seal. Retain an open undercut above the finished floor for the study's 5 cfm relief; no sweep, automatic door bottom or saddle. Jamb before drywall, slab after paint; no STC claimed."),
-    # The type dimensions are the framed rough opening. Product/order dimensions stay in
-    # bookcase_door so framing, schedules and factory geometry cannot silently exchange them.
-    DoorType(tag="DT-INT-BOOKCASE36", width=inch(38), height=inch(82), core="solid",
+    # Nominal 36 x 80 leaf; the maker's 38 x 82 rough opening is published, not derived.
+    DoorType(tag="DT-INT-BOOKCASE36", width=inch(36), height=inch(80), core="solid",
+             rough_opening=OpeningSize(width=inch(38), height=inch(82)),
              function="passage",
              header_spec="flat 2x4 nonbearing", product_ref="PROD-MURPHY-BOOKCASE-36",
              bookcase_door=BookcaseDoorSpec(
-                 nominal_width=inch(36), nominal_height=inch(80),
                  body_width=inch(34.75), body_height=inch(78.5), body_depth=inch(8.25),
                  casing_overall_width=inch(42.5), clear_passage_width=inch(30.25),
                  hinge_side_clearance=inch(1.5), casing_lap=inch(0.5),
@@ -1078,6 +1078,7 @@ OPENINGS = [
     # studs and the stair wall's own king studs both want — so the closet run west of the
     # door reaches the west wall almost whole. See RM-M-MUDROOM below.
     Door(uid="CMD201AAAA", tag="D-M-ENTRY", host="W-M-N3", type_ref="DT-EXT-SWING36",
+         held_rough_opening=OpeningSize(width=ft(3), height=ft(6, 8)),
          position=from_node("N-M-N2", ft(0, 6)),
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
              exterior_wrap_material_ref="metal-dark-exterior",
@@ -1090,6 +1091,7 @@ OPENINGS = [
     # face reads as one column of French pairs rather than a 6" jog. 10" of wall to the
     # inside corner at N-M-S1, the same remnant D-S-DECK-E leaves above it.
     Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-EXT-FRENCH60",
+         held_rough_opening=OpeningSize(width=ft(5), height=ft(6, 8)),
          position=from_node("N-M-S1", ft(0, 10)), flip_swing=True,
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
              exterior_wrap_material_ref="metal-dark-exterior",
@@ -1103,19 +1105,23 @@ OPENINGS = [
     # Pushed east to N-M-STRJ (2026-07-28, mudroom conversion): same 6" tee clearance as
     # D-M-ENTRY above it, off the bearing stair wall's jack studs. Renamed with the room.
     Door(uid="CMD204AAAA", tag="D-M-MUD", host="W-M-STOS2", type_ref="DT-INT-SWING32",
+         held_rough_opening=OpeningSize(width=ft(2, 8), height=ft(6, 8)),
          position=from_node("N-M-STRJ", inch(8)), flip_hinge=True),
     # South-wall basin: INT32 outswing moved north to y=283.5..315.5.
     # North jamb leaves 1.625 in. to the finish corner; rip its casing to fit.
     # Basin front y=284.760 stays south of the open leaf's usable passage.
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING32",
+         held_rough_opening=OpeningSize(width=ft(2, 8), height=ft(6, 8)),
          position=from_node("N-M-BA1", inch(4))),
     # RM-M-MECH's hinged utility door, not the mudroom closets' bypass style.
     # Shift 8" east to 2'-9", keeping both jamb packs inside the existing walls.
     # Both flips preserve the west hinge and south swing after reversing the host axis.
     Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-S", type_ref="DT-INT-SWING30",
+         held_rough_opening=OpeningSize(width=ft(2, 6), height=ft(6, 8)),
          position=from_node("N-M-MECH1", ft(2, 9)), flip_hinge=True, flip_swing=True),
     # Shift the bypass opening 8" east; its 50" RO still clears the east corner pack.
     Door(uid="QBTZNWG6AG", tag="D-M-MUDC", host="W-M-MUDC-N", type_ref="DT-INT-BYPASS48",
+         held_rough_opening=OpeningSize(width=ft(4), height=ft(6, 8)),
          position=from_node("N-M-MUDC1", inch(16))),
     # The refrigerator obstructs ~23 inches of the old western bypass opening.
     # A 36-inch Eclisse cassette parks west, with the usable doorway at the east.
@@ -1123,6 +1129,7 @@ OPENINGS = [
     # ends without separate jamb packs. Install RO head 83 1/4 above FINISHED floor;
     # the generic framing head still draws at leaf height (notes/pocket_frame_eclisse.md).
     Door(uid="MSJJGJTJ42", tag="D-M-PANTRY", host="W-M-PAN-S", type_ref="DT-POCKET-INT-36",
+         held_rough_opening=OpeningSize(width=ft(3), height=ft(6, 8)),
          position=from_node("N-M-PAN1", inch(41.25)), flip_hinge=True,
          frame_end_supports=OpeningFrameEndSupports(
              start_wall_ref="W-M-C5B", end_wall_ref="W-M-PAN-E")),
@@ -1170,6 +1177,7 @@ OPENINGS = [
     # The centred king leaves 16.6825" from this RO's east jamb to its west edge.
     # The 16" west nightstand leaves 0.6825" to the jamb, outside the leaf's swing sector.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING32",
+         held_rough_opening=OpeningSize(width=ft(2, 8), height=ft(6, 8)),
          position=from_node("N-M-W3", inch(24.635)), flip_swing=True, flip_hinge=True),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
@@ -1190,6 +1198,7 @@ OPENINGS = [
     # against the east drywall. The tower still has a 34 3/8" diagonal path past the tub;
     # the tub has 25" of clear depth to the doorway and remains usable from the hall.
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-POCKET-INT-36",
+         held_rough_opening=OpeningSize(width=ft(3), height=ft(6, 8)),
          position=from_node("N-M-D1", inch(12))),
     # Offset 6 11/16" off N-M-E4, not the 1'-2 11/16" it was: N-M-E4 moved north 8" with the
     # closet line, and this offset moved the same 8" so the door itself did not
@@ -1216,6 +1225,7 @@ OPENINGS = [
     # `office` is not a sleeping occupancy, so there is no R310 exposure — and since the
     # 2026-08-29 `exterior_only` fix there could not be one anyway.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED-TRIMLESS",
+         held_rough_opening=OpeningSize(width=ft(2, 6), height=ft(6, 8)),
          position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True),
     # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15. ** `from_node` resolves to the NEAR JAMB, so
     # the RO is x=170"..202". The king is centred between this opening and D-M-BATH2:
@@ -1229,6 +1239,7 @@ OPENINGS = [
     # devices moved with the opening in 2026-09-15 — see ED-M-BED-SW (mep_electrical.py),
     # ED-M-BED-RC2 (electrical.py) and ED-M-BED-SW2 (lighting.py).
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT-SWING32",
+         held_rough_opening=OpeningSize(width=ft(2, 8), height=ft(6, 8)),
          position=from_node("N-M-D3", ft(6, 0)), flip_hinge=False, flip_swing=True),
     # Second bedroom <-> living connection, straight through the centre bearing wall.
     # Trimless (kerfed hardwood jamb, no casing) so it reads as a slot in the wall from
@@ -1240,6 +1251,7 @@ OPENINGS = [
     # 9'-5". The open leaf parks along the desk's north end (12 3/4" clear), and both switch
     # gangs moved to the north (latch) jamb.
     Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING32-TRIMLESS-PUSH",
+         held_rough_opening=OpeningSize(width=ft(2, 8), height=ft(6, 8)),
          position=from_node("N-M-S1", ft(6, 9)), flip_hinge=True),
     # O-M-HALL (the old cased pass-through) retired 2026-07-28 with its host wall W-M-C4:
     # the full 4'-2" is open now. Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass) so

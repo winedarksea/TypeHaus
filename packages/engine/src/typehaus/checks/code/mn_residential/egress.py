@@ -495,11 +495,8 @@ def _landing_patch(ctx: CheckContext, wall, opening, rooms_by_storey):
 
 
 def _door_leaf(dt) -> tuple[Any, Any]:
-    """The purchased leaf (width, height). ``DoorType.width``/``height`` are the framed RO
-    when ``catalog_dimensions`` is authored, and an RO overstates the clear passage."""
-    catalog = dt.catalog_dimensions
-    return ((catalog.nominal_width, catalog.nominal_height) if catalog
-            else (dt.width, dt.height))
+    """The purchased (nominal) leaf: ``DoorType.width``/``height`` (resolve/door_sizing)."""
+    return dt.width, dt.height
 
 
 @check(Tier.CODE, "code.R311_door_width")

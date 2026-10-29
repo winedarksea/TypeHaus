@@ -10,6 +10,7 @@ from typehaus.model.base import Element
 from typehaus.model.doorway import DoorwayTreatment
 from typehaus.model.enums import StructuralRole
 from typehaus.model.exterior_door import ExteriorDoorInstallation
+from typehaus.model.opening_size import OpeningSize
 from typehaus.model.opening_supports import OpeningFrameEndSupports
 from typehaus.model.refs import (
     Arch,
@@ -134,6 +135,9 @@ class Door(Element):
     flip_swing: bool = False
     # A positive stop limits a real leaf; default preserves the ordinary quarter sweep.
     maximum_opening_degrees: float = Field(default=90.0, gt=0, le=180, allow_inf_nan=False)
+    # This one opening's framing, kept while a derived RO waits on confirmation
+    # (plans/door-sizing.md, decision 6). Not a product size: that is the type's.
+    held_rough_opening: OpeningSize | None = None
     # Surface appearance only; None inherits the type/product default.
     frame_material_ref: str | None = None
     leaf_material_ref: str | None = None

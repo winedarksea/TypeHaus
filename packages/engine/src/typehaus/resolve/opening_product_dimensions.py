@@ -2,12 +2,9 @@
 
 
 def opening_product_dimensions(model, opening):
-    if opening.is_door:
-        product = next((t for t in model.plan.library.door_types
-                        if t.tag == opening.type_ref), None)
-        dimensions = product.catalog_dimensions if product else None
-        if dimensions:
-            return dimensions.unit_width.meters, dimensions.unit_height.meters
+    sizing = getattr(opening, "sizing", None)
+    if sizing is not None and sizing.installed_unit is not None:
+        return sizing.installed_unit
     return opening.width_m, opening.height_m
 
 

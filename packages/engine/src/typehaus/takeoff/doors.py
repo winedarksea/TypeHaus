@@ -7,7 +7,7 @@ width, the host wall's depth and the type's ``pocket_frame`` family.
 
 Authored type hardware replaces the generic allowance; doorway components and pocket kits
 retain their own procurement paths. ``ResolvedOpening.pocket_run_m`` is non-zero for
-exactly the pocket doors, and ``width_m`` is what selects the kit.
+exactly the pocket doors, and ``sizing.passage_w_m`` (the leaf) is what selects the kit.
 """
 
 from __future__ import annotations
@@ -33,7 +33,8 @@ def door_hardware_rows(model: ResolvedModel) -> list[dict]:
     for opening in model.openings:
         if not opening.pocket_run_m:
             continue
-        width = round(opening.width_m * _M_TO_IN)
+        width = round((opening.sizing.passage_w_m if opening.sizing else opening.width_m)
+                      * _M_TO_IN)
         wall = model.wall(opening.host_wall)
         item = pocket_frame_kit(families.get(opening.type_ref or ""), width,
                                 pocket_wall_is_deep(wall.layers if wall else ()))

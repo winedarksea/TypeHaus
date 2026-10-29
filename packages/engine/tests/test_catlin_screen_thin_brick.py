@@ -157,11 +157,11 @@ def test_r311_2_grades_the_purchased_leaf_not_the_rough_opening(catlin_ctx):
     door_type = next(t for t in catlin_ctx.plan.library.door_types
                      if t.tag == "DT-EXT-SWING32-G")
     width, height = _door_leaf(door_type)
-    assert (door_type.width.inches, door_type.height.inches) == pytest.approx((34, 81.5))
+    ro = door_type.rough_opening
+    assert (ro.width.inches, ro.height.inches) == pytest.approx((34, 81.5))
     assert (width.inches, height.inches) == pytest.approx((32, 80))
     # A 30in leaf in the same 34in RO must not borrow the RO's width.
-    narrow = door_type.model_copy(update={"catalog_dimensions":
-        door_type.catalog_dimensions.model_copy(update={"nominal_width": inch(30)})})
+    narrow = door_type.model_copy(update={"width": inch(30)})
     assert _door_leaf(narrow)[0].inches == pytest.approx(30)
     for check in (egress_door_width, egress_door_height):
         finding = next(f for f in check(catlin_ctx) if "D-G-SERVICE" in f.message)

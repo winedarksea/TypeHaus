@@ -90,9 +90,11 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
              "field_finish": dt.field_finish,
              "operation": dt.operation, "exterior": dt.exterior, "glazed": dt.glazed,
              "frame_material_ref": dt.frame_material_ref, "leaf_material_ref": dt.leaf_material_ref,
+             "rough_opening": ({"width_m": dt.rough_opening.width.meters,
+                                "height_m": dt.rough_opening.height.meters}
+                               if dt.rough_opening else None),
+             "center_post": dt.center_post,
              "catalog_dimensions": ({
-                 "nominal_width_m": dt.catalog_dimensions.nominal_width.meters,
-                 "nominal_height_m": dt.catalog_dimensions.nominal_height.meters,
                  "unit_width_m": dt.catalog_dimensions.unit_width.meters,
                  "unit_height_m": dt.catalog_dimensions.unit_height.meters,
                  "source_url": dt.catalog_dimensions.source_url,
@@ -101,8 +103,6 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
              } if dt.catalog_dimensions else None),
              "trimless": dt.trimless, "leaf_set": dt.leaf_set, "product_ref": dt.product_ref,
              "bookcase_door": (None if dt.bookcase_door is None else {
-                 "nominal_width_m": dt.bookcase_door.nominal_width.meters,
-                 "nominal_height_m": dt.bookcase_door.nominal_height.meters,
                  "body_width_m": dt.bookcase_door.body_width.meters,
                  "body_height_m": dt.bookcase_door.body_height.meters,
                  "body_depth_m": dt.bookcase_door.body_depth.meters,

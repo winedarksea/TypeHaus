@@ -79,10 +79,9 @@ def catalog_installation_layout(model, wall, opening, assembly, clad):
                 landing_gap = edge - outlet
     crest = seat + max(z for _, z in spec.sill_outline_m)
     width = opening.width_m - 2 * installation.return_thickness.meters
-    product = next(t for t in model.plan.library.door_types if t.tag == opening.type_ref)
-    unit_width = (
-        product.catalog_dimensions.unit_width.meters if product.catalog_dimensions else width
-    )
+    sizing = opening.sizing
+    unit = sizing.installed_unit if sizing is not None else None
+    unit_width = unit[0] if unit is not None else width
     membrane = installation.wrap_isolation_thickness.meters
     nose = (
         max(z for x, z in spec.sill_outline_m if x > 0.95 * max(x for x, _ in spec.sill_outline_m))

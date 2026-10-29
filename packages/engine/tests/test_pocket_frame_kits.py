@@ -43,6 +43,7 @@ def test_catlin_pockets_frame_at_the_eclisse_rough_opening(catlin_model_ro):
     assert set(pockets) == {"D-M-LAUN", "D-B-BATH", "D-M-PANTRY"}
     for op in pockets.values():
         assert (op.width_m + op.pocket_run_m) / inch(1).meters == pytest.approx(74.5)
+        assert op.sizing.rough_w_m == pytest.approx(op.width_m + op.pocket_run_m)
 
 
 def test_split_studs_are_drawn_but_not_billed_as_lumber(catlin_model_ro):

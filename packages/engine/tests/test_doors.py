@@ -80,10 +80,10 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
     expected = {
         # D-M-ENTRY: an opaque Therma-Tru Smooth-Star (2026-10-21).
         "DT-EXT-SWING36": (36.0, DoorOperation.SWING, True, False),
-        # D-G-SERVICE: MMI nominal 32x80 leaf in its 34x81.5 framed opening.
-        "DT-EXT-SWING32-G": (34.0, DoorOperation.SWING, True, False),
+        # D-G-SERVICE: MMI nominal 32x80 leaf; its 34x81.5 RO is published.
+        "DT-EXT-SWING32-G": (32.0, DoorOperation.SWING, True, False),
         "DT-EXT-FRENCH60": (60.0, DoorOperation.DOUBLE_SWING, True, True),
-        "DT-EXT-FRENCH60-CATALOG": (63.3125, DoorOperation.DOUBLE_SWING, True, True),
+        "DT-EXT-FRENCH60-CATALOG": (60.0, DoorOperation.DOUBLE_SWING, True, True),
         "DT-INT-SWING32": (32.0, DoorOperation.SWING, False, False),
         # The basement equipment route, 2026-09-07: D-B-FURN and D-B-SHOP are the two leaves
         # an air handler or a water heater actually passes through, so both went to a full
@@ -105,9 +105,8 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
         # Shared bypass catalog entry; the pantry now uses DT-POCKET-INT-36.
         "DT-INT-BYPASS60": (60.0, DoorOperation.SLIDE, False, False),
         "DT-INT-DOUBLE60": (60.0, DoorOperation.DOUBLE_SWING, False, False),
-        # The purchased Murphy unit is ordered as 36x80; DoorType dimensions stay the
-        # manufacturer's distinct 38x82 framed rough opening.
-        "DT-INT-BOOKCASE36": (38.0, DoorOperation.SWING, False, False),
+        # The purchased Murphy unit is ordered as 36x80; its 38x82 RO is published.
+        "DT-INT-BOOKCASE36": (36.0, DoorOperation.SWING, False, False),
         "DT-EXT-OVERHEAD192": (192.0, DoorOperation.OVERHEAD, True, False),
         # The house's one sub-6'-8" leaf: RM-A-POCKET's service access under the attic's
         # 6:12 west rake, where no full-height door fits anywhere on its host wall. 24 x 36
@@ -730,8 +729,9 @@ def test_catlin_murphy_door_keeps_published_dimensions_and_hinge_clearance(catli
                      if t.tag == "DT-INT-BOOKCASE36")
     spec = door_type.bookcase_door
     assert spec is not None
-    assert door_type.width.meters / inch(1).meters == pytest.approx(38)
-    assert door_type.height.meters / inch(1).meters == pytest.approx(82)
+    assert (door_type.width.inches, door_type.height.inches) == pytest.approx((36, 80))
+    ro = door_type.rough_opening
+    assert (ro.width.inches, ro.height.inches) == pytest.approx((38, 82))
     assert spec.clear_passage_width.meters / inch(1).meters == pytest.approx(30.25)
     assert spec.casing_overall_width.meters / inch(1).meters == pytest.approx(42.5)
 

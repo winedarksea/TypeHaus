@@ -128,9 +128,9 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
 
 def test_nominal_unit_and_rough_opening_are_independent(catlin_plan):
     product = next(t for t in catlin_plan.library.door_types if t.tag == "DT-EXT-FRENCH60-CATALOG")
-    dimensions = product.catalog_dimensions
-    assert dimensions.nominal_width.meters < dimensions.unit_width.meters < product.width.meters
-    assert dimensions.nominal_height.meters < dimensions.unit_height.meters < product.height.meters
+    dimensions, ro = product.catalog_dimensions, product.rough_opening
+    assert product.width.meters < dimensions.unit_width.meters < ro.width.meters
+    assert product.height.meters < dimensions.unit_height.meters < ro.height.meters
     main = catlin_plan.by_tag("D-M-BALC")
     assert main.type_ref == "DT-EXT-FRENCH60"
 

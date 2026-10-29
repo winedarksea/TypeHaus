@@ -15,3 +15,15 @@ def authored_product_parts(model, opening):
                          for solid in part.solids if isinstance(solid, GPrism)])
             for part in model.geometry.by_uid(opening.uid).parts
             if part.key.split(":")[0] in _PRODUCT_KEYS]
+
+
+def sizing_json(sizing):
+    """``resolve/door_sizing.DoorSizing`` for the viewer, which never re-derives it."""
+    if sizing is None:
+        return None
+    from dataclasses import asdict
+
+    out = asdict(sizing)
+    out["basis"] = dict(sizing.basis)
+    out["pocket_run_m"] = sizing.pocket_run_m
+    return out

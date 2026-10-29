@@ -5,6 +5,7 @@ from typehaus import (
     Door,
     Node,
     Occupancy,
+    OpeningSize,
     Room,
     Wall,
     Window,
@@ -72,6 +73,7 @@ OPENINGS = [
     Window(uid="WN23AAAAAA", tag="WIN-204", host="W-203B", type_ref="WT-3050",
            position=centered(), sill_height=ft(2, 6)),
     Door(uid="D201AAAAAA", tag="D-201", host="W-205", type_ref="DT-INT-SWING32",
+         held_rough_opening=OpeningSize(width=ft(2, 8), height=ft(6, 8)),
          position=centered()),
 ]
 

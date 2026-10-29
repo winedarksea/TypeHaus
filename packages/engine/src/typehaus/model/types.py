@@ -20,6 +20,7 @@ from typehaus.model.enums import (
 )
 from typehaus.model.exterior_door import DoorCatalogDimensions
 from typehaus.model.furniture_cut import FurnitureCut
+from typehaus.model.opening_size import OpeningSize
 from typehaus.model.placeables import (
     ClearanceZone,
     Footprint2D,
@@ -42,13 +43,10 @@ from typehaus.quantities import Length, UFactor, m
 class BookcaseDoorSpec(HausModel):
     """Published dimensions for a factory bookcase door.
 
-    ``DoorType.width`` and ``height`` remain the framed rough-opening dimensions.  This
-    record deliberately keeps the ordered product dimensions separate, so a 36 x 80
-    nominal door cannot silently become a 36 x 80 rough opening in framing or IFC.
+    ``DoorType.width``/``height`` are its nominal leaf and ``DoorType.rough_opening`` the
+    maker's RO, as for any door; this record holds the cabinet and its clearances.
     """
 
-    nominal_width: Length
-    nominal_height: Length
     body_width: Length
     body_height: Length
     body_depth: Length
@@ -72,11 +70,20 @@ class DoorType(HausModel):
     """A door product type. Drives schedules, energy checks, and opening appearance."""
 
     catalog_dimensions: DoorCatalogDimensions | None = None
+    # A product's PUBLISHED rough opening. None derives it from the leaf and the house's
+    # ``TrimStandard`` (``resolve/door_sizing``).
+    rough_opening: OpeningSize | None = None
+    # An authored clear passage width; overrides both the published and estimated figure.
+    clear_passage: Length | None = None
+    # A fixed centre post or mullion between a pair's leaves: only the active leaf is clear.
+    center_post: bool = False
     hardware: tuple[DoorHardwareItem, ...] = ()
     jamb_framing: JambFraming | None = None
     field_finish: tuple[str, str] | None = None
     doorway: DoorwayTreatment | None = None
     tag: str
+    # The NOMINAL leaf, as ordered (a pair counts as one width). An overhead door is
+    # ordered by its opening, so for it these are the RO.
     width: Length
     height: Length
     u_factor: UFactor | None = None

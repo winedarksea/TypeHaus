@@ -5,36 +5,17 @@ schematic defaults do not specify purchased jamb stock or change framing quantit
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import replace
 
 from typehaus.model.enums import DoorOperation
 from typehaus.model.millwork import TrimStandard
+from typehaus.resolve.door_sizing import CASED_DOOR_DEFAULTS
 from typehaus.resolve.geometry import opening_center, pocket_centerline_offset, wall_frame
 from typehaus.resolve.geometry_door_products import finish_faces, handing
 from typehaus.resolve.geometry_walls import is_raked, wall_top_at
 from typehaus.resolve.model_door_products import CasedDoorSpec
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.room_lookup import room_owning
-
-
-@dataclass(frozen=True)
-class CasedDoorDefaults:
-    jamb_allowance_m: float = 0.0254  # 3/4-inch board plus 1/4-inch shim
-    jamb_thickness_m: float = 0.01905
-    casing_reveal_m: float = 0.0047625
-    leaf_gap_m: float = 0.003
-    leaf_thickness_m: float = 0.045
-    stop_projection_m: float = 0.013
-    stop_depth_m: float = 0.0095
-    undercut_m: float = 0.010
-    pocket_slot_gap_m: float = 0.003
-    track_height_m: float = 0.020
-    track_depth_m: float = 0.025
-    room_probe_m: float = 0.15
-    raised_sill_m: float = 0.05
-
-
-CASED_DOOR_DEFAULTS = CasedDoorDefaults()
 
 
 def resolve_cased_door(wall, opening, door_type, *, standard=None,

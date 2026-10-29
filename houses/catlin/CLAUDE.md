@@ -2011,7 +2011,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (x 6'-0"..6'-3 5/8"). The selected MMI unit uses its published 34 x 81.5in RO; frame it
     to that size and set the unit by normal prehung practice. The leaf sweep passes for a
     hinge-pivot inset of 1/2..2in off the west RO edge; flush fails. `DoorType.width` is the
-    34in RO, `catalog_dimensions` the 32in leaf that takeoff and R311.2 read (outswing note §2).
+    32in nominal leaf and `rough_opening` the published 34in RO (decision #96; outswing note §2).
     `D-M-ENTRY` still cannot move (its east jamb is 6" west of `N-M-N2`, the
     bearing tee). `code.R311_3_exterior_landing` passes both on a 3'-7" deck (x 6'-0"..9'-7").
     **Do not answer anything here by moving the garage back.**

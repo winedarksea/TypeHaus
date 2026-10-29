@@ -8,7 +8,7 @@ The opaque front entry, steel garage service door and sectional retain separate 
 
 from __future__ import annotations
 
-from typehaus import DoorCatalogDimensions, DoorHardwareItem, JambFraming, inch, DoorType, DoorwayProductSpec, DoorwayTreatment, u_us
+from typehaus import DoorCatalogDimensions, DoorHardwareItem, JambFraming, inch, DoorType, DoorwayProductSpec, DoorwayTreatment, OpeningSize, u_us
 from typehaus.quantities import ft
 
 from plan.opening_products import (
@@ -51,6 +51,25 @@ CLOPAY_BOTTOM = DoorwayTreatment(threshold=DoorwayProductSpec(
     source_drawing="Modern Steel construction description; dimensioned installed seal section pending",
     installation="Leaf-mounted vinyl seal in aluminum retainer; no floor-spanning threshold"))
 
+
+# Therma-Tru 2026 Arch 1 dimensional data; the RO adds the 3/8" sill pan over the
+# published 82-1/2" height. Clear figures: Arch 1.29-1.30, "Hinged Clear Opening".
+_ARCH1 = ("https://outdoorsandsecurity.widen.net/content/lpxemo2dti/original/"
+          "2026-Arch-Comp-BOOK---ARCH-1-Dimensional-Data.pdf")
+_ENTRY_DIMENSIONS = DoorCatalogDimensions(
+    unit_width=inch(37.625), unit_height=inch(82),
+    clear_width_90=inch(33.3125), clear_height=inch(79.25),
+    source_url=_ARCH1,
+    source_drawing="2026 Arch 1, Single - Inswing, 3/0 x 6/8 composite frame; Arch 1.29-1.30 "
+                   "hinged clear opening (33-5/16) and inswing composite clear height (79-1/4)")
+_FRENCH_DIMENSIONS = DoorCatalogDimensions(
+    unit_width=inch(62.5625), unit_height=inch(82),
+    clear_width_90=inch(56.375), clear_height=inch(79.25),
+    source_url=_ARCH1,
+    source_drawing="2026 Arch 1.4 French inswing, 7/8 astragal, 5/0 x 6/8; Arch 1.29-1.30 "
+                   "clear opening with both leaves at 90 (56-3/8); Endura assembly "
+                   "dimension confirmation pending")
+_PAIR_RO = OpeningSize(width=inch(63.3125), height=inch(82.875))
 
 _JAMB = JambFraming(kings=2, jacks=2, blocking=True,
                     bay_fill_ref="closed-cell-spray-foam")
@@ -97,16 +116,19 @@ DOOR_TYPES = (
         hardware=_ENTRY_HARDWARE, jamb_framing=_JAMB,
         field_finish=("door-paint-black", "door-paint-white"),
         u_factor=u_us(0.15), product_ref=THERMATRU_SMOOTHSTAR.tag, doorway=THERMATRU_SILL,
-        source="D-M-ENTRY, inswing single, opaque. NFRC THC-M-5-03881-00001: flush, no lite, "
+        catalog_dimensions=_ENTRY_DIMENSIONS,
+        rough_opening=OpeningSize(width=inch(38.375), height=inch(82.875)),
+        source="D-M-ENTRY, inswing single, opaque. Nominal 3/0 x 6/8; 37-5/8 x 82 unit; "
+               "38-3/8 x 82-7/8 RO with the pan allowance. NFRC THC-M-5-03881-00001: flush, no lite, "
                "U 0.15. Single-point Encode Plus; field-painted black outside / white inside."),
     DoorType(
-        tag="DT-EXT-SWING32-G", width=inch(34), height=inch(81.5), exterior=True,
+        tag="DT-EXT-SWING32-G", width=inch(32), height=inch(80), exterior=True,
         function="entry", product_ref=MMI_STEEL_SIX_PANEL.tag, doorway=MMI_OUTSWING_SILL,
         # The continuous jamb pack backs factory hinge/strike positions without
         # horizontal bay blocking at assumed hardware heights.
         jamb_framing=JambFraming(kings=2, jacks=1),
+        rough_opening=OpeningSize(width=inch(34), height=inch(81.5)),
         catalog_dimensions=DoorCatalogDimensions(
-            nominal_width=inch(32), nominal_height=inch(80),
             unit_width=inch(33.5), unit_height=inch(81),
             source_url=MMI_STEEL_SIX_PANEL.url,
             source_drawing="MMI Z0364688R product details: unit and suggested rough opening"),
@@ -120,7 +142,11 @@ DOOR_TYPES = (
         operation="double_swing", glazed=True, tempered=True,
         u_factor=u_us(0.21), shgc=0.12, vt=0.27, product_ref=THERMATRU_SMOOTHSTAR_FULLLITE.tag,
         doorway=ENDURA_ZAI_SILL, hardware=_FRENCH_HARDWARE, jamb_framing=_JAMB,
-        source=f"Inswing French pair, composite frame and Endura hardware. {_FULLLITE} "
+        catalog_dimensions=_FRENCH_DIMENSIONS, rough_opening=_PAIR_RO,
+        source="Catalog nominal 60x80 pair; 62-9/16x82 unit; 63-5/16x82-7/8 RO includes the "
+               "3/8-inch pan allowance over the published 82-1/2-inch RO. These are Therma-Tru "
+               "7/8-astragal dimensions, not confirmation of the FLA assembly. "
+               f"Inswing French pair, composite frame and Endura hardware. {_FULLLITE} "
                "Pair NFRC/NAFS label under Therma-Tru system approval and laminated low-E triple "
                "CPD row are dealer items; impact full-lite fallback needs its own confirmed rating."),
     DoorType(
@@ -131,20 +157,9 @@ DOOR_TYPES = (
                "NFRC rating is needed or claimed."),
 )
 
-# This catalog RO applies only to the two installations in this pass. The main-floor
-# balcony retains its existing authored dimensions until its separate installation review.
+# D-B-PATIO and D-S-DECK-E; D-M-BALC keeps DT-EXT-FRENCH60 for its own hardware and
+# installation review (plans/door-sizing.md, decision 10). Same product, same sizes.
 DOOR_TYPES = (*DOOR_TYPES, DOOR_TYPES[2].model_copy(update={
-    "tag": "DT-EXT-FRENCH60-CATALOG", "width": inch(63.3125), "height": inch(82.875),
-    "catalog_dimensions": DoorCatalogDimensions(
-        nominal_width=inch(60), nominal_height=inch(80),
-        unit_width=inch(62.5625), unit_height=inch(82),
-        source_url="https://outdoorsandsecurity.widen.net/content/lpxemo2dti/original/"
-                   "2026-Arch-Comp-BOOK---ARCH-1-Dimensional-Data.pdf",
-        source_drawing="2026 Arch 1.4 French inswing, 7/8 astragal; Endura assembly dimension confirmation pending"),
-    "source": "Catalog nominal 60x80 pair; 62-9/16x82 unit; 63-5/16x82-7/8 RO "
-              "includes the 3/8-inch pan allowance over the published 82-1/2-inch RO. "
-              "These are Therma-Tru 7/8-astragal dimensions, not confirmation of the FLA assembly. "
-              + DOOR_TYPES[2].source,
-}))
+    "tag": "DT-EXT-FRENCH60-CATALOG"}))
 
 HOUSE_DOOR_TAGS = frozenset(t.tag for t in DOOR_TYPES)

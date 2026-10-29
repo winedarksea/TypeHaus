@@ -397,6 +397,8 @@ POCKET_FRAME_KIT_HEAVY = StructuralHardware(
 _ECLISSE_WIDTHS = (24, 26, 28, 30, 32, 34, 36, 42, 48)
 _ECLISSE_RO = {24: 50.5, 26: 54.5, 28: 58.5, 30: 62.5, 32: 66.5, 34: 70.5, 36: 74.5,
                42: 85.5, 48: 97.5}
+# RO height H1 + 1/4" from FINISHED floor: 83 1/4" for an 80" leaf.
+_ECLISSE_RO_HEAD = 3.25
 _ECLISSE_SOURCE = (
     "ECLISSE Single 2x4-2x6 technical sheet 11/2022 (eclisse.us/en-us/support/product/single/"
     ") — R.O. = F.S. + 1/2\" wide, H1 + 1/4\" high from FINISHED floor; door to 220 lb and "
@@ -413,6 +415,7 @@ POCKET_FRAME_KIT_ECLISSE_2X4 = StructuralHardware(
     # 80" leaves only; EKC = 2x4, then width and height (Home Depot listings, 2026-10-09).
     part_number_by_length_in={36: "EKC3680", 42: "EKC4280"},
     rough_opening_in_by_length_in=_ECLISSE_RO,
+    rough_opening_head_over_leaf_in=_ECLISSE_RO_HEAD,
     source=_ECLISSE_SOURCE,
 )
 # The 2x6 series is EKQ. No 80"-tall listing was found at retail, so no part number is
@@ -425,6 +428,7 @@ POCKET_FRAME_KIT_ECLISSE_2X6 = StructuralHardware(
     model="POCKET-FRAME-ECLISSE-2X6",
     fits_nominal=tuple(f"eclisse-{w}-2x6" for w in _ECLISSE_WIDTHS),
     rough_opening_in_by_length_in=_ECLISSE_RO,
+    rough_opening_head_over_leaf_in=_ECLISSE_RO_HEAD,
     source=_ECLISSE_SOURCE,
 )
 

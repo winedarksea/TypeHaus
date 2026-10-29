@@ -219,11 +219,10 @@ def _doorway_text(opening):
 
 
 def _door_dimensions_text(spec, opening):
-    dimensions = getattr(spec, "catalog_dimensions", None)
+    sizing = getattr(opening, "sizing", None)
     rough = f'{opening.width_m/M_PER_IN:g} × {opening.height_m/M_PER_IN:g} RO'
-    if dimensions is None:
+    unit = sizing.installed_unit if sizing is not None else None
+    if unit is None:
         return rough
-    return (f'{dimensions.nominal_width.meters/M_PER_IN:g} × '
-            f'{dimensions.nominal_height.meters/M_PER_IN:g} nominal; '
-            f'{dimensions.unit_width.meters/M_PER_IN:g} × '
-            f'{dimensions.unit_height.meters/M_PER_IN:g} unit; {rough}')
+    return (f'{sizing.nominal_w_m/M_PER_IN:g} × {sizing.nominal_h_m/M_PER_IN:g} nominal; '
+            f'{unit[0]/M_PER_IN:g} × {unit[1]/M_PER_IN:g} unit; {rough}')

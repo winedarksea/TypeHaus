@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Any
 from typehaus.model.assembly import Layer
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
+from typehaus.resolve.door_sizing import DoorSizing
 from typehaus.resolve.layout_lines import ResolvedLayoutLine
 from typehaus.resolve.model_door_products import CasedDoorSpec
 from typehaus.resolve.model_earthwork import ResolvedExcavation, ResolvedWallColumn
@@ -473,6 +474,8 @@ class ResolvedOpening:
     leaf_material_ref: str | None = None
     effective_frame_material_ref: str | None = None
     effective_leaf_material_ref: str | None = None
+    # A typed door's leaf, unit, RO and clear passage (``resolve/door_sizing``).
+    sizing: DoorSizing | None = None
 
     @property
     def is_blind(self) -> bool:

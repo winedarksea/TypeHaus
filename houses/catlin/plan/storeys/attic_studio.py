@@ -39,6 +39,7 @@ from typehaus import (
     LayerMaterial,
     Node,
     Occupancy,
+    OpeningSize,
     PanelingSpan,
     PublishedSpan,
     Room,
@@ -355,6 +356,7 @@ OPENINGS = [
     # — walling off the pocket CANNOT make that rule fail — so the leaf size is a buildability
     # call, not a code one.
     Door(uid="Y3R3YMXFVJ", tag="D-A-POCKET", host="W-A-STU-N", type_ref="DT-INT-ACCESS24",
+         held_rough_opening=OpeningSize(width=ft(2), height=ft(3)),
          position=from_node("N-A-PK-W", ft(7))),
     # Into the bath off the studio. The SUNNERSTA kitchenette moved onto W-A-BATH-S at its
     # west end (plan/placeables.py) and blocks the door's old outward arc, so the door slides
@@ -388,6 +390,7 @@ OPENINGS = [
     # (x 13'-7 1/2") by 4". Going further east is not free: at 15'-11 1/2" the leaf
     # already lands opposite the shower pan, and one more 16" step opens the door onto it.
     Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING24",
+         held_rough_opening=OpeningSize(width=ft(2), height=ft(6, 8)),
          position=from_node("N-A-WW-S", ft(4, 4)), flip_hinge=False, flip_swing=True),
 ]
 

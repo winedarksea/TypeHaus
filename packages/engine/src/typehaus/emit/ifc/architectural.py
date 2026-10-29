@@ -479,12 +479,14 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     door_type = next((item for item in model.plan.library.door_types
                       if item.tag == opening.type_ref), None) if opening.is_door else None
     dimensions = door_type.catalog_dimensions if door_type is not None else None
-    if dimensions:
+    sizing = opening.sizing
+    unit = sizing.installed_unit if sizing is not None else None
+    if dimensions and unit is not None:
         ll.ensure_pset(f, filling, "TypeHaus_DoorCatalogDimensions", {
-            "NominalWidth": dimensions.nominal_width.meters,
-            "NominalHeight": dimensions.nominal_height.meters,
-            "UnitWidth": dimensions.unit_width.meters,
-            "UnitHeight": dimensions.unit_height.meters,
+            "NominalWidth": sizing.nominal_w_m,
+            "NominalHeight": sizing.nominal_h_m,
+            "UnitWidth": unit[0],
+            "UnitHeight": unit[1],
             "RoughOpeningWidth": opening.width_m,
             "RoughOpeningHeight": opening.height_m,
             "AssemblyConfirmed": dimensions.assembly_confirmed,
@@ -523,8 +525,8 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
         # The clearance is manufacturer installation guidance, explicitly not a
         # calculated pivot/swing representation.
         ll.ensure_pset(f, filling, "TypeHaus_BookcaseDoor", {
-            "NominalWidth": product.nominal_width.meters,
-            "NominalHeight": product.nominal_height.meters,
+            "NominalWidth": opening.sizing.nominal_w_m,
+            "NominalHeight": opening.sizing.nominal_h_m,
             "CabinetBodyWidth": product.body_width.meters,
             "CabinetBodyHeight": product.body_height.meters,
             "CabinetBodyDepth": product.body_depth.meters,

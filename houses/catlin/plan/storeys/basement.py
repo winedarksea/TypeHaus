@@ -21,6 +21,7 @@ from typehaus import (
     LayerMaterial,
     Node,
     Occupancy,
+    OpeningSize,
     PanelingSpan,
     ReinforcementSpec,
     Room,
@@ -1064,10 +1065,12 @@ OPENINGS = [
     # ** A FLAT 2x8 HEADER, NO CRIPPLES (IRC R602.7.4, 2026-09-22). ** The 2-2x8 it replaces
     # carried nothing and had four runs through it; notes/framing_bore_limits.md §9.
     Door(uid="CBD201AAAA", tag="D-B-FURN", host="W-B-CW", type_ref="DT-INT-SWING36",
+         held_rough_opening=OpeningSize(width=ft(3), height=ft(6, 8)),
          position=from_node("N-B-W1", ft(3, 3)), header_spec="flat 2x8 nonbearing"),
     # Solid-core pair: the play room keeps the 5'-0" double opening, with flush solid
     # leaves instead of full glazing.
     Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-DOUBLE60",
+         held_rough_opening=OpeningSize(width=ft(5), height=ft(6, 8)),
          position=from_node("N-B-C", ft(6, 2))),
     # **The two doors formed through 12" interior pours are gone (2026-09-05.)** This one
     # was a blockout in W-B-CS2 and D-B-NE was one in W-B-CN; between them they were the
@@ -1110,6 +1113,7 @@ OPENINGS = [
     # 2x6 section even though their stud layouts differ. The bathroom services moved to
     # W-B-STR2 and the east-wall backing stops at the north jamb. Keep the original uid.
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-POCKET-INT-36",
+         held_rough_opening=OpeningSize(width=ft(3), height=ft(6, 8)),
          position=from_node("N-B-BA-NE", ft(2, 9.9375))),
     # ESS closet door, opening west into the furnace room. DT-INT-SWING24: a 2'-0" leaf is
     # what a closet this size takes with jamb both sides. 10" offset from the corner, not
@@ -1119,6 +1123,7 @@ OPENINGS = [
     # leaf sits in the closet's south half and EQ-B-ESS-BATT, hung on the north concrete,
     # stands clear of the swing.
     Door(uid="CBD208AAAA", tag="D-B-ESS", host="W-B-ESS-W", type_ref="DT-INT-SWING24",
+         held_rough_opening=OpeningSize(width=ft(2), height=ft(6, 8)),
          position=from_node("N-B-ESS-SW", ft(1, 4))),
     # ** The under-stair storage's door, new 2026-09-05 — the thing that makes the floor
     # under the arriving flight reachable without walking the well. ** In W-B-STR3, opening
@@ -1132,6 +1137,7 @@ OPENINGS = [
     # jamb is what sizes the door — see DT-INT-CLOSET24 in storeys/main.py. A 6'-8" head
     # would be six inches inside the stringer.
     Door(uid="B43P8B5Y0T", tag="D-B-CLOSET", host="W-B-STR3", type_ref="DT-INT-CLOSET24",
+         held_rough_opening=OpeningSize(width=ft(2), height=ft(6)),
          position=from_node("N-B-BA-NW", inch(10)), flip_swing=True, flip_hinge=True),
     # ** O-B-HALL IS GONE AND D-B-SHOP REPLACES IT (2026-09-07). ** The cased opening was
     # 2'-10" through W-B-CW2B and was justified by the workshop being the through-route
@@ -1149,6 +1155,7 @@ OPENINGS = [
     # equipment route is straight through, and leaves ~7" of jamb room to W-B-SA-N2's hall
     # face at the south end.
     Door(uid="GEVMH8HHZ9", tag="D-B-SHOP", host="W-B-HALL-W", type_ref="DT-INT-SWING36",
+         held_rough_opening=OpeningSize(width=ft(3), height=ft(6, 8)),
          position=from_node("N-B-HALL-S", inch(9.4375)), flip_swing=True),
     # The sauna is entered FROM THE GYM since the rotation — the short route to D-B-PATIO
     # and the sunken garden, which is what the brief asks the room for. Same uid, same 24"
@@ -1156,6 +1163,7 @@ OPENINGS = [
     # D-B-PATIO's inswing arc and the shower pan in the sauna's NE corner, far enough south
     # to keep clear of D-B-GYM. Swings out into the gym on the default.
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-CS", type_ref="DT-INT-SWING24",
+         held_rough_opening=OpeningSize(width=ft(2), height=ft(6, 8)),
          position=from_node("N-B-SA-NE", ft(4, 10.3125)), flip_hinge=True),
     # The framed-wall datum is the curb top; the rough sill is recessed 1.75 inches
     # into the curb seat while the installed threshold remains above the court.
