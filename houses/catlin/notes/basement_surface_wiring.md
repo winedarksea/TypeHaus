@@ -16,19 +16,26 @@ room lining). About twenty devices sit on that concrete.
   no THHN and no horizontal run on the wall. The engine derives the sleeve
   (`resolve/device_drops.py`); nobody authors it.
 - **Surface box:** RACO 232, 4" square × 2-1/8" (30.3 in³), under a 1/2"-raised RACO 808C
-  (1 Decorator) or 809C (2 Decorator) cover. The device sits on the cover, 2-5/8" off the wall.
-- **Flush box:** in a framed cavity, a deep nonmetallic new-work box. A 1-gang is 22.5 in³
-  (Carlon B122A) and a 2-gang is 35 in³ (B235A), both taken as 3-1/4" deep. The box goes
-  through furring and any membrane behind the finish to the studs, sealed at the membrane.
+  (1 Decorator) or 809C (2 GFCI/Decorator) cover. The device sits on the cover, 2-5/8" off
+  the wall.
+- **Flush box:** in a framed cavity, a deep nonmetallic nail-on new-work box: Carlon B122A-UPC
+  (1-gang, 22 in³) or BH235A (2-gang, 35 in³), both 3-1/2" deep. The box goes through furring
+  and any membrane behind the finish to the studs, sealed at the membrane.
 - **Flush box a raceway reaches:** RACO 232 with a RACO 768 1-device ring. This covers the
   three floor-heat thermostats, the study data jack, the kitchen GFCI the CD-B-KITCHEN trunk
   feeds, and the EV receptacle.
 - **Workshop: one large raceway, one small.**
-  - Large: CD-B-WORKSHOP is 1" EMT + THHN from ED-B-PANEL-2 to ED-B-WORKSHOP-JB, a box
-    recessed in the gypsum ceiling over the bench. It carries CKT-WORKSHOP-240. The 1" size
+  - Large: CD-B-WORKSHOP is 1" EMT + THHN from ED-B-PANEL-2 to ED-B-WORKSHOP-JB, a surface
+    box on the gypsum ceiling over the bench. It carries CKT-WORKSHOP-240. The 1" size
     leaves room for later circuits or a 60–100 A subpanel feeder (#3 + #8 THHN fits at 40%).
-  - Drops: 3/4" EMT + THHN runs from that box to RC1 (CKT-WORKSHOP-240) and RC2. CKT-RC-BSMT's
-    NM enters the box for RC2.
+  - It runs exposed below the joists, not through them (owner, 2026-10-29). It goes up out
+    of the panel top and over DU-B-ERV-R-SAUNA-SUP, then south along the west wall at 7'-7"
+    AFF. It crosses W-B-CW in a stud bay, then rises at y 12'-6" into the box's side. That
+    is 360° panel to box, so no pull point. The joisted route it replaces bored about 15
+    I-joist webs.
+  - Drops: 3/4" EMT + THHN runs from that box to RC1 (CKT-WORKSHOP-240) and RC2, along the
+    ceiling to the wall and down its face (180° each). CKT-RC-BSMT's NM enters the box for
+    RC2.
   - Small: the existing 3/4" CD-B-DATA-SHOP stays as the data raceway.
 - **Theater:** CD-B-PLAY-SPARE is a 3/4" EMT capped spare with a pull string. It runs from
   ED-B-PANEL to ED-B-PLAY-N-JB, a surface box on the ceiling over the TV. The ceiling there
@@ -82,7 +89,7 @@ conductor come from Table 314.16(B): 14 AWG 2.00 in³, 12 AWG 2.25 in³, 10 AWG 
    - Volume: 9 × 2.25 = **20.25 in³**, in a RACO 232 of 30.3 in³. PASS.
 2. **A 15 A switch** in a flush 1-gang box, 14 AWG.
    - Conductors: 2 × 2 + 1 × 2 + 1 = 7.
-   - Volume: 7 × 2.00 = **14.0 in³**, in a 22.5 in³ box. PASS.
+   - Volume: 7 × 2.00 = **14.0 in³**, in a 22 in³ box. PASS.
 3. **ED-B-WORKSHOP-RC1:** 6-20R + 5-20R, a 2-pole circuit with a neutral, alone on
    CKT-WORKSHOP-240, so end-fed.
    - Conductors: 1 × 3 + 2 × 2 + 1 = 8.
@@ -99,7 +106,7 @@ the nearest other run in its height band.
 | Drop | Length | Nearest |
 |---|---|---|
 | ED-B-UTIL-RC1 | 45.9" | 1.08" to CD-B-DATA-SHOP |
-| ED-B-SUMP-RC | 18.1" | stops under DU-ERV-EA at −3'-4 3/8" |
+| ED-B-SUMP-RC | 45.9" | 5.1" to PR-B-SUMP-DISCH's riser |
 | ED-B-GYM-RC5 / RC6 / RC7 | 77.6" each | > 6 ft |
 | ED-B-STAIR-RC1 / RC2 | 24.6" / 17.2" | stop under CD-B-GARAGE at −1'-6 7/8" |
 | ED-B-PLAY-N-SCONCE1..6 | 8.9" each | ≥ 9.6" |
@@ -116,25 +123,34 @@ ADVISORY, not a grade):
 
 | Drop | Stops under | NM off the sleeve |
 |---|---|---|
-| ED-B-SUMP-RC | DU-ERV-EA (12" duct, ~5'-9" AFF) | ~2'-4" |
 | ED-B-STAIR-RC1 / RC2 | CD-B-GARAGE | ~6" |
 | ED-B-PLAY-N-SW | DU-B-ERV-R-PLAY | ~7" |
 
-The three short ones are at the joists. SUMP-RC is not: about 28" of NM would run behind
-and over the ERV exhaust on a bare basement wall. Owner decision: offset the sleeve around
-DU-ERV-EA, move the receptacle along W-B-N4 clear of the duct, or accept the NM there.
+All three are at the joists. ED-B-SUMP-RC used to stop 2'-4" short under DU-ERV-EA. On
+2026-10-29 it moved along W-B-N4 to x=1'-2", west of the duct's wall leg, and its sleeve now
+runs to the ceiling.
+
+## Parts checked (2026-10-29)
+
+- **RACO 809C** exists. Hubbell's page lists it as "4 in. Square Cover, Exposed Work, Raised
+  1/2 in., 2-GFCI"; a GFCI and a Decorator device fit the same opening. Some distributors
+  list 6.5–7.3 in³ for it, but the cover is still credited 0 in³ until a marking is read off
+  the part.
+- **Carlon B122A-UPC** is in stock at distributors: 22 in³ and 3-1/2" deep (3.76" × 2.26").
+  One retailer lists 22.5 in³. The model grades at 22.
+- **Carlon B235A** has no listing. Carlon's 35 in³ 2-gang nail-on box is the SuperBlue
+  **BH235A**, 3-1/2" deep, and it replaces B235A here.
+- At 3-1/2" deep, `electrical.box_fill` still passes every flush box's cavity. ABB's own
+  e-catalog did not load, so these figures come from Hubbell, Elliott Electric, Platt and
+  Stoneway listings.
+- **ED-B-SPA-RC** is now `ED-T-LEV-GFCI-WR`: a WR GFCI in its own gasketed box under the
+  5980-UCL in-use cover. It takes no BoxStandard box. CKT-RC-BSMT is already a GFCI breaker,
+  so the device GFCI is redundant but harmless.
 
 ## Open items
 
 - The six PLAY-N sconce canopies must cover a 4" square surface box. See
   `plans/lighting-products.md`.
-- Confirm the RACO 809C catalog number for the 2-Decorator raised cover.
-- Confirm the depth of the flush nonmetallic boxes. 3-1/4" is assumed, and it fits every
-  cavity in the house.
-- ED-B-SPA-RC is outdoors on the sunken-garden concrete. It derives a surface box but no
-  sleeve, because it is outside a room. It wants a weatherproof box and an in-use cover,
-  which is the same reasoning as the `ED-T-LEV-GFCI-WR` type. This is a type change for the
-  owner to make.
 - **Pull boxes.**
   - CD-B-PLAY-SPARE: vertex 7 in RM-B-BATH's ceiling at x 13'-6 1/4", y 20'-3 1/2", and
     vertex 12 in RM-B-PLAY-N at x 19'-4 1/2", y 26'-0".

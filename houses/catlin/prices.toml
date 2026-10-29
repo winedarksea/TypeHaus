@@ -5963,13 +5963,15 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # (plan/device_boxes.py, decision #93). The device itself prices in [placeables], re-based
 # to the device alone the same day, so no box bills twice. ESTIMATE, not quoted: RACO and
 # Carlon at big-box / supply-house retail (2026-10). Surface-box labour is a Tapcon-set
-# steel box on concrete; flush is a nail-on new-work box.
+# steel box on concrete. A flush box and its ring bill labour 0: the device's own labour
+# already includes setting its box (owner, 2026-10-29). RACO 232 also serves the six
+# flush_raceway boxes, which still bill its surface labour: the row is keyed by product.
 "PROD-RACO-232" = { material = { low = 3, high = 6 }, labour = { low = 15, high = 35 } }
 "PROD-RACO-808C" = { material = { low = 3, high = 7 }, labour = { low = 3, high = 8 } }
 "PROD-RACO-809C" = { material = { low = 3, high = 7 }, labour = { low = 3, high = 8 } }
-"PROD-RACO-768" = { material = { low = 1.5, high = 3.5 }, labour = { low = 2, high = 5 } }
-"PROD-CARLON-B122A" = { material = { low = 1.2, high = 2.5 }, labour = { low = 8, high = 20 } }
-"PROD-CARLON-B235A" = { material = { low = 2.5, high = 5 }, labour = { low = 10, high = 24 } }
+"PROD-RACO-768" = { material = { low = 1.5, high = 3.5 }, labour = { low = 0, high = 0 } }
+"PROD-CARLON-B122A" = { material = { low = 1.2, high = 2.5 }, labour = { low = 0, high = 0 } }
+"PROD-CARLON-BH235A" = { material = { low = 7, high = 11 }, labour = { low = 0, high = 0 } }
 
 [conductors]
 # NEW SECTION 2026-08-27 — [low, high] $/CONDUCTOR-FOOT, split material/labour.

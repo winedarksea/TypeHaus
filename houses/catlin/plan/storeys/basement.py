@@ -241,8 +241,8 @@ NODES = [
     # x=9'-8 1/2", the framed wall's Type X leaf) — so it is two framed partitions, not
     # four. x=6'-0" and y=31'-0" leave 3'-6 1/8" x 4'-1 5/8" clear, more than the 2'-8 1/4"
     # cabinet it replaces, and clear of everything already on this side: the cold
-    # trunk's riser (x=5'-0") and ED-B-SUMP-RC (x=4'-6"). SP-B-STR-CD-DATA was the
-    # third of those; it went with the pour (electrical.py).
+    # trunk's riser (x=5'-0") and ED-B-SUMP-RC (x=1'-2" since 2026-10-29).
+    # SP-B-STR-CD-DATA was the third of those; it went with the pour (electrical.py).
     #
     # **x=6'-0" is not a round number chosen for tidiness.** Neither concrete side of this
     # corner was split before, so both had to be, and a basement split that does not line up

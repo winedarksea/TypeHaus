@@ -11,15 +11,17 @@ from typehaus import (
     MountKind,
     Service,
     SleevePenetration,
+    ft,
     inch,
     pt,
 )
 
 BRANCH_PULL_BOXES = [
-    # Over the bench, between RC1 and RC2, in the gypsum ceiling behind a blank cover.
+    # Over the bench, between RC1 and RC2: a surface box on the gypsum, blank cover, so the
+    # exposed trunk and drops reach its side knockouts (drop = 5/8" board + the 4" box).
     ElectricalDevice(uid="38ARN77QK2", tag="ED-B-WORKSHOP-JB", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-JBOX", room="RM-B-WORKSHOP", position=pt(inch(20), inch(102)),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(4.625))),
     # Above FURN-B-PLAY-TV. Surface on the ceiling, blank cover: the gypsum here is hung on
     # SL-M-DECK's concrete band, so there is no cavity to recess into. The storey's ceiling
     # plane is -1'-0 1/2"; this room's finished ceiling is -1'-2 1/16", and the 4" box hangs
@@ -30,36 +32,40 @@ BRANCH_PULL_BOXES = [
 ]
 
 BRANCH_RACEWAYS = [
-    # 1" EMT + THHN, panel 2 to the bench box (router proposal A, 2026-10-29): up out of the
-    # panel top beside DU-B-ERV-R-SAUNA-SUP (x 9 1/4", clear of its 4" body at x 12 1/2"),
-    # east in the joist bay, south through the I-joist webs at -3 1/2" (over the two drops'
-    # -5 15/16" bores), down into the box.
-    # Carries CKT-WORKSHOP-240 now; 1" leaves room for more circuits or a 60-100 A subpanel
-    # feeder (#3 + #8 THHN fits at 40%).
+    # 1" EMT + THHN, panel 2 to the bench box, exposed below the joists (owner, 2026-10-29:
+    # no bores through ~15 I-joist webs). Router proposal A, adjusted: its x 9 1/4" lane cut
+    # W-B-CW's end stud lengthwise. Out of the panel top at x 9 7/8" (beside
+    # DU-B-ERV-R-SAUNA-SUP), up 15/16" to ride over it, south on clamp-backs at 7'-7" AFF,
+    # angling 7/8" east so it crosses W-B-CW in the ducts' bay clear of the stud; up at
+    # y 12'-6" (clear of RC2's drop) to the box's side knockout, 2" under the gypsum.
+    # 360 degrees, panel to box. Carries CKT-WORKSHOP-240; 1" leaves room for more circuits
+    # or a 60-100 A subpanel feeder (#3 + #8 THHN fits at 40%).
     ConduitRun(uid="4AQ25GM4Y2", tag="CD-B-WORKSHOP", trade_size=inch(1),
                service=Service.POWER_240,
-               path=(pt(inch(9.25), inch(300)), pt(inch(9.25), inch(300)),
-                     pt(inch(20), inch(300)), pt(inch(20), inch(102)),
-                     pt(inch(20), inch(102))),
-               elevations=(inch(-19.44), inch(-3.5), inch(-3.5), inch(-3.5), inch(-8.5)),
+               path=(pt(inch(9.875), ft(25)), pt(inch(9.875), ft(25)),
+                     pt(inch(10.75), ft(12, 6)), pt(inch(10.75), ft(12, 6)),
+                     pt(ft(1, 7.375), ft(12, 6)), pt(ft(1, 7.375), ft(8, 6))),
+               elevations=(inch(-19.4375), inch(-18.5), inch(-18.5), inch(-15.125),
+                           inch(-15.125), inch(-15.125)),
                from_ref="ED-B-PANEL-2", to_ref="ED-B-WORKSHOP-JB",
                circuits=("CKT-WORKSHOP-240",)),
-    # 3/4" EMT + THHN drops: out of the bench box's top, south or north through the webs,
-    # west in the bay to the wall, down its face to the surface box's top knockout. Clear of
-    # the sauna supply duct (x 10 1/2"-14 1/2") and CD-B-DATA-SHOP (x 10" at -4'-0").
+    # 3/4" EMT + THHN drops, exposed like the trunk: out of the box's south (RC1, router
+    # proposal B) or west side (RC2), along the ceiling to the wall, down its face to the
+    # surface box's top knockout. The router's cheaper lanes dropped mid-room and crossed
+    # at receptacle height, with nothing to strap to.
     ConduitRun(uid="F0T4ZHEEG3", tag="CD-B-WORKSHOP-RC1", trade_size=inch(0.75),
                service=Service.POWER_240,
-               path=(pt(inch(20), inch(100)), pt(inch(20), inch(100)), pt(inch(20), inch(72)),
-                     pt(inch(8.46), inch(72)), pt(inch(8.46), inch(72))),
-               elevations=(inch(-8.5), inch(-5.94), inch(-5.94), inch(-5.94), inch(-63.19)),
+               path=(pt(ft(1, 8), ft(8, 4)), pt(ft(1, 8), ft(6)), pt(inch(8.4375), ft(6)),
+                     pt(inch(8.4375), ft(6))),
+               elevations=(inch(-15.125), inch(-15.125), inch(-15.125), inch(-63.1875)),
                from_ref="ED-B-WORKSHOP-JB", to_ref="ED-B-WORKSHOP-RC1",
                circuits=("CKT-WORKSHOP-240",)),
     # CKT-RC-BSMT arrives in the bench box as NM; THHN from there to the quad.
     ConduitRun(uid="H969HXHVQ6", tag="CD-B-WORKSHOP-RC2", trade_size=inch(0.75),
                service=Service.POWER_120,
-               path=(pt(inch(20), inch(104)), pt(inch(20), inch(104)), pt(inch(20), inch(132)),
-                     pt(inch(8.46), inch(132)), pt(inch(8.46), inch(132))),
-               elevations=(inch(-8.5), inch(-5.94), inch(-5.94), inch(-5.94), inch(-63.19)),
+               path=(pt(inch(17.5), ft(8, 8)), pt(inch(8.4375), ft(8, 8)),
+                     pt(inch(8.4375), ft(11)), pt(inch(8.4375), ft(11))),
+               elevations=(inch(-15.125), inch(-15.125), inch(-15.125), inch(-63.1875)),
                from_ref="ED-B-WORKSHOP-JB", to_ref="ED-B-WORKSHOP-RC2",
                circuits=("CKT-RC-BSMT",)),
     # 3/4" EMT capped spare, panel to the TV-wall box: a dedicated AV circuit pulls in later

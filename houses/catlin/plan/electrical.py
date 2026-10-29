@@ -260,11 +260,14 @@ BASEMENT_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Sump pump (backup; ~1000W start). Alarmed GFCI at the device (NEC 2023 210.8(A)(5)):
     # a trip must be heard. The breaker is not GFCI (2026-10-27).
+    # x=1'-2", west of DU-ERV-EA's wall leg (owner, 2026-10-29): at x=4'-6" its NM sleeve
+    # stopped 2'-4" short under the duct; here it runs to the ceiling, and the cord is a
+    # foot from SM-B-RADON.
     ElectricalDevice(uid="CEE004AAAA", tag="ED-B-SUMP-RC", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-ALARM", circuit="CKT-SUMP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-N4", face="left", distance_from_start=inch(18),
+                         wall_ref="W-B-N4", face="left", distance_from_start=inch(58),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # On the sauna's SOUTH liner immediately WEST of EQ-B-SAUNA-HTR, low like the heater
     # terminals. It followed the heater onto the garden wall when the room rotated on
@@ -292,8 +295,10 @@ BASEMENT_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-SG-W1", face="left", distance_from_start=inch(87.3125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    ElectricalDevice(uid="CEE011AAAA", tag="ED-B-SPA-RC", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-BSMT",
+    # Weather-resistant GFCI in its own gasketed box under an in-use cover (owner, 2026-10-29):
+    # it is outdoors on the sunken-garden concrete, so it takes no BoxStandard surface box.
+    ElectricalDevice(uid="CEE011AAAA", tag="ED-B-SPA-RC", kind=DeviceKind.RECEPTACLE_GFCI,
+                     type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(4)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-SG-W1", face="left", distance_from_start=inch(59.3125),

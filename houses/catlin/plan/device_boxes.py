@@ -20,21 +20,26 @@ RACO_232 = Product(tag="PROD-RACO-232", brand="RACO", model="232",
 RACO_808C = Product(tag="PROD-RACO-808C", brand="RACO", model="808C",
                     name="4 in. square exposed-work cover, 1 Decorator device, 1/2 in. raised",
                     url="https://www.hubbell.com/raco/en/Products/808C", source=_SOURCE)
-# The 2-Decorator raised cover; confirm the catalog number against RACO's 800-series sheet.
+# Catalog 809C confirmed 2026-10-29 (Hubbell RACO page): "Exposed Work, Raised 1/2 in., 2-GFCI";
+# the GFCI and Decorator openings are the same.
 RACO_809C = Product(tag="PROD-RACO-809C", brand="RACO", model="809C",
-                    name="4 in. square exposed-work cover, 2 Decorator devices, 1/2 in. raised",
-                    url="https://www.hubbell.com/raco/en/Products/809C", source=_SOURCE)
+                    name="4 in. square exposed-work cover, 2 GFCI/Decorator, 1/2 in. raised",
+                    url="https://www.hubbell.com/raco/en/Products/Electrical-Electronic/Boxes/4-in-Square-Boxes-Covers/809C/p/2141600",
+                    source=_SOURCE)
 RACO_768 = Product(tag="PROD-RACO-768", brand="RACO", model="768",
                    name="4 in. square device ring, 1 device, 5/8 in. raised",
                    url="https://www.hubbell.com/raco/en/Products/768", source=_SOURCE)
-CARLON_B122A = Product(tag="PROD-CARLON-B122A", brand="Carlon", model="B122A",
-                       name="1-gang nonmetallic new-work box, 22.5 cu. in.",
-                       url="https://www.carlon.com/", source=_SOURCE)
-CARLON_B235A = Product(tag="PROD-CARLON-B235A", brand="Carlon", model="B235A",
-                       name="2-gang nonmetallic new-work box, 35 cu. in.",
-                       url="https://www.carlon.com/", source=_SOURCE)
+# Checked 2026-10-29 against distributor catalogs (ABB's own e-catalog did not load): B122A-UPC
+# is 22 cu. in. and 3-1/2" deep. There is no B235A; Carlon's 35 cu. in. 2-gang nail-on is the
+# SuperBlue BH235A, also 3-1/2" deep.
+CARLON_B122A = Product(tag="PROD-CARLON-B122A", brand="Carlon", model="B122A-UPC",
+                       name="1-gang nonmetallic nail-on new-work box, 22 cu. in., 3-1/2 in. deep",
+                       url="https://www.elliottelectric.com/P/Item/TAB/B122A-UPC", source=_SOURCE)
+CARLON_BH235A = Product(tag="PROD-CARLON-BH235A", brand="Carlon", model="BH235A",
+                        name="2-gang SuperBlue nail-on new-work box, 35 cu. in., 3-1/2 in. deep",
+                        url="https://www.elliottelectric.com/P/Item/TAB/BH235A", source=_SOURCE)
 
-BOX_PRODUCTS = (RACO_232, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_B235A)
+BOX_PRODUCTS = (RACO_232, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A)
 
 BOX_STANDARD = [
     BoxStandard(
@@ -50,9 +55,9 @@ BOX_STANDARD = [
                    box_size=(inch(4), inch(4), inch(2.125)), designation="4 x 2-1/8 square",
                    cover_rise=inch(0.5)),
             BoxRow(mounting="flush", gangs=1, box_product_ref="PROD-CARLON-B122A",
-                   box_size=(inch(2.25), inch(3.75), inch(3.25)), box_volume_in3=22.5),
-            BoxRow(mounting="flush", gangs=2, box_product_ref="PROD-CARLON-B235A",
-                   box_size=(inch(4), inch(3.75), inch(3.25)), box_volume_in3=35.0),
+                   box_size=(inch(2.25), inch(3.75), inch(3.5)), box_volume_in3=22.0),
+            BoxRow(mounting="flush", gangs=2, box_product_ref="PROD-CARLON-BH235A",
+                   box_size=(inch(4), inch(3.75), inch(3.5)), box_volume_in3=35.0),
             BoxRow(mounting="flush_raceway", gangs=1, box_product_ref="PROD-RACO-232",
                    cover_product_ref="PROD-RACO-768",
                    box_size=(inch(4), inch(4), inch(2.125)), designation="4 x 2-1/8 square"),
