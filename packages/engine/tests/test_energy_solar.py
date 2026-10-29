@@ -214,7 +214,8 @@ def test_catlins_balcony_door_is_shaded_by_the_balcony_and_the_window_beside_it_
     assert balcony.near_ft == pytest.approx(0.23, abs=0.05)
     assert balcony.far_ft == pytest.approx(9.9, abs=0.2)
     # 1.05 m until the balcony came down 3" (2026-09-23); a lower plane only shades more.
-    assert balcony.z_m - head_m == pytest.approx(0.978, abs=0.02)
+    # 0.905 since the door's published 82 7/8" RO replaced the held 80" (2026-10-29).
+    assert balcony.z_m - head_m == pytest.approx(0.905, abs=0.02)
     # And the roof over it projects nothing, which is the point: the eave-only reading of
     # this door is "unshaded".
     roof = next(plane for plane in shaded if plane.tag == "RF-HOUSE")

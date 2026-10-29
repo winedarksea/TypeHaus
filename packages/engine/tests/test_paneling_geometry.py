@@ -32,6 +32,15 @@ def _edges(outline) -> list[float]:
             for i in range(len(outline))]
 
 
+def _face_length(ring, thickness: float) -> float:
+    """A piece's run along the wall: its plan area over the band's thickness. The longest
+    edge is the thickness on a sliver narrower than the board (BATH2's surround over the
+    door head, 1/4" wide since the derived RO)."""
+    area = abs(sum(x0 * y1 - x1 * y0 for (x0, y0), (x1, y1)
+                   in zip(ring, (*ring[1:], ring[0]), strict=True))) / 2.0
+    return area / thickness
+
+
 def test_every_room_scoped_band_resolves_geometry(bands):
     """No room-scoped band may bill without a rectangle to draw."""
     room_scoped = [b for b in bands if b.room is not None]
@@ -87,7 +96,8 @@ def test_the_drawn_band_agrees_with_the_billed_area(bands, catlin_model):
 def test_the_drawn_pieces_are_the_billed_area(bands):
     """Drawn material plus removable-leaf stock/kerf equals the ordered face area."""
     for band in (b for b in bands if b.outline):
-        drawn = sum(max(_edges(ring)) * (z1 - z0) for ring, z0, z1 in band.pieces)
+        drawn = sum(_face_length(ring, band.thickness_m) * (z1 - z0)
+                    for ring, z0, z1 in band.pieces)
         # The two Corian leaves come from this sheet; their cutouts are not stock savings.
         leaf_stock = ((20.25 * 15.25 + 14.25 * 14.25) * _IN**2
                       if (band.tag, band.wall_tag) ==
@@ -264,7 +274,9 @@ def test_the_bands_still_bill_what_they_billed(bands):
     """Removing the north walnut reduces both its drawn and ordered area."""
     walnut = sum(b.area_m2 for b in bands if b.tag == "WP-M-STUDY-WAINSCOT") * _M2_TO_FT2
     tile = sum(b.area_m2 for b in bands if b.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
-    assert walnut == pytest.approx(28.36, abs=0.005)  # runs end on painted faces
+    # Runs end on painted faces; 27.80 since D-M-STUDY's derived RO (2026-10-29) is 2 1/4"
+    # wider across the 36" band.
+    assert walnut == pytest.approx(27.80, abs=0.005)
     assert tile == pytest.approx(45.0, abs=0.5)
 
 

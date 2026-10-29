@@ -138,7 +138,9 @@ def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
     is not a board), and so is ``stock_bf_per_sqft`` — so no board-foot column, and the band
     draws at the 1/2" default, which is the panel's actual thickness.
     """
-    expected = {"marble-look-panel": (42.0, 47.0), "solid-surface-panel": (53.0, 59.0)}
+    # Solid surface 53.0 -> 52.8 sf net (2026-10-29): D-M-BATH2's derived RO takes the
+    # surround's west 1/4" up to its head.
+    expected = {"marble-look-panel": (42.0, 47.0), "solid-surface-panel": (52.8, 59.0)}
     for material, (net, ordered) in expected.items():
         row = next(r for r in bom["wood_surfaces"] if r["material"] == material)
         assert row["kind"] == "override"

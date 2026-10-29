@@ -212,12 +212,11 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     door_module = run_from_model(
         model, [], tier=Tier.STRUCTURAL, only="structural.door_framing_module")
     # Owner, 2026-10-02: BED1/2's doors sit 2 1/2" off the module so a 19 5/8" PAX fits south
-    # of each; the extra stud cut is accepted (suppressed in preferences.toml). BED2's derived
-    # RO (2026-10-29) cuts no extra stud; BED1 still holds its framing.
+    # of each. Their derived ROs (2026-10-29) cut no extra stud.
     module_fails = sorted(tag for finding in door_module.findings
                           if finding.result.value == "fail"
                           for tag in finding.element_tags if tag in {"D-S-BED1", "D-S-BED2"})
-    assert module_fails == ["D-S-BED1"], module_fails
+    assert module_fails == [], module_fails
     centres = {}
     for opening in model.openings:
         wall = model.wall(opening.host_wall)
@@ -235,9 +234,8 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     # on its module station (15'-8", 24'-4") until the PAX fit-out, and moved 2 1/2" north so
     # the 43 3/8" corner set plus a 19 5/8" frame fits between the south wall and the jamb
     # (plan/bedroom_wardrobes.py). They are now 2 1/2" off the module, accepted above.
-    # D-S-BED2's and D-S-BED3's derived ROs (2026-10-29) keep their near jambs and grow
-    # 2.24" north.
-    for tag, y_ft, tolerance in (("D-S-BED1", 15 + 10.5 / 12, TOL_M),
+    # Their derived ROs (2026-10-29) keep their near jambs and grow 2.24" north.
+    for tag, y_ft, tolerance in (("D-S-BED1", 15 + (10.5 + 1.118) / 12, TOL_M),
                                  ("D-S-BED2", 24 + (6.5 + 1.118) / 12, TOL_M),
                                  ("D-S-BED3", 28 + (7 + 1.118) / 12, TOL_M)):
         x, y = centres[tag]

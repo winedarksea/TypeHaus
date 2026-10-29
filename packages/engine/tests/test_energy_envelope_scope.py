@@ -52,7 +52,8 @@ from typehaus.resolve.solid_categories import in_slab_family
 # 2026-10-25 French pairs: 100 sf x (0.21 - 0.15) = +6 UA, x85 F = +510 heating.
 # 2026-10-29 D-M-ENTRY's derived RO: its 37-5/8 x 82 unit replaces the 36 x 80 void,
 # +1.43 sf of door from wall, +0.18 UA, +15.4 heating, +2.7 cooling.
-_HEATING_BTUH = 29_997.3
+# 29,997.3 before the door holds released (2026-10-29): D-M-BALC bills its published unit.
+_HEATING_BTUH = 30_170.7
 # SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
 # (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
 # latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2
@@ -63,9 +64,9 @@ _HEATING_BTUH = 29_997.3
 # The same west glass lifts the day's average more than its 10:30 peak, so the AED
 # excursion falls 1,070 -> 740 and cooling 21,847 -> 21,707 while the glass peak rises 162.
 # French pairs: +90 conduction -1,452.2 peak glass -183.2 AED = -1,545.4 sensible.
-_COOLING_SENSIBLE_BTUH = 20_162.6
+_COOLING_SENSIBLE_BTUH = 20_231.9
 _LATENT_BTUH = 1_400.0
-_COOLING_TONS = 1.7967
+_COOLING_TONS = 1.8027
 _SOLAR_PEAK_BTUH = 12_076.0
 _SOLAR_PEAK_HOUR = 10.0
 _AED_EXCURSION_BTUH = 487.3
@@ -83,8 +84,9 @@ _COMPONENTS = (
     ("roof", 1547.9, 29.103),
     ("slab", 1296.0, 25.468),
     ("windows", 293.6, 49.171),
-    # Two revised catalog pairs use assembled unit area, not their wider framed ROs.
-    ("doors", 126.01, 25.177),
+    # Two revised catalog pairs use assembled unit area, not their wider framed ROs. D-M-BALC
+    # left its held 60x80 void for its 62 9/16 x 82 unit (2026-10-29): +2.29 sf.
+    ("doors", 128.30, 25.66),
 )
 
 # The whole envelope, by tag. 50 walls.

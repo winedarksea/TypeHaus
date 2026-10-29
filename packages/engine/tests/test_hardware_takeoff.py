@@ -319,8 +319,9 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # Doubled exterior-door packs add one supported girt block on each south wall (2026-10-25).
     # The wider study RO removes one girt block; its centerline remains held.
     # 1136 -> 1164 on 2026-10-27: the BBD75 band's +17'-4" backing course packs 28 more
-    # girt stations across the N/S walls.
-    assert row["count"] == 1164 and furring[0]["count"] == 198
+    # girt stations across the N/S walls. 1163 since the door holds released (2026-10-29):
+    # D-M-BALC's re-centred 63 5/16" RO packs one girt station fewer.
+    assert row["count"] == 1163 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------
