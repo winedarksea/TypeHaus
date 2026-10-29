@@ -2,30 +2,12 @@
 Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" library configs. Revit/SketchUp import-readiness research, fixes, and open items: `plans/revit-sketchup-readiness.md`.
 
 Sourcing quotes, construction todo doesn't belong in this document, this is just softwared and house design todo.
+We generally want exact products specified (or standard/commodity sizes) so we can verify everything works together correctly.
+Our general goals are decent longevity and quality at a reasonable price, avoiding premium items unless clearly a major improvement for our needs.
 
 ## Needs your decision
 
-- **2D-edit sync** — a PatchOp rewrites one constructor; derived data recomputes but authored
-  cross-references don't. `retype_placeable` already re-anchors wall-fitted placeables and
-  scans tag references. Still open (~3-4 days if approved): authored refs + advisory checks
-  for geometry-coupled consumers, promote retype warnings to review findings, route opening
-  retypes through a centre-holding macro. Re-affirmed deferred 2026-08-07.
 ## Remaining Work
-
-- **Separate nominal door leaf sizes from modeled opening voids.** Ordinary door type
-  dimensions currently feed both `_opening_size` and swing clearance. The cased product
-  appearance fits inside that existing void; it does not guarantee the catalog's nominal
-  leaf width or clear passage. Define leaf/rough-opening sizing together with framing and
-  clearance before changing these envelopes (`plans/default-door-appearance.md`).
-
-- **Order the canopy and garage trusses from a fabricator who seals them** — the last four
-  canopy UNKNOWNs (`rafter/RF-BW-CANOPY`, `rafter/RF-GARAGE`, `structural.truss_reactions`,
-  `structural.uplift_capacity`) close only on those drawings. The ask is `AN-G-TRUSS-ORDER` in
-  `houses/catlin/plan/storeys/garage.py`: reactions per bearing with their snow/drift/wind
-  basis, the five drift trusses, the canopy's open south-end truss out of plane, and the N-S
-  chord with its 0.03" splice slip. On receipt, author `Roof.published_reactions` on both
-  roofs and record the component seal in `engineering.toml`. Also confirm the retail price
-  ranges for AC6Z / ACE6Z / A35Z / CBSQ66-SDS2 in `prices.toml` (marked UNCONFIRMED).
 
 - **Two drain turns are boxed in:** `PR-B-SINK2-DRAIN`'s 70.8-degree turn (a 60 needs the turn
   in FS-M-WEST's joist band, where the leg cuts I-joist flanges; a 90 drops it into the x=2'-0"
@@ -339,12 +321,12 @@ the future.
 - Look up a guide to how plumbers and such route, then make sure the autorouter follows that, and also code for it
 - [x] Receptacle 3D faces: corrected vertical single-gang proportions and wall-facing offsets; added lightweight orange plate/socket relief. Installation-specific boxes, covers, and conduit remain a second pass.
 - Specify the products for the ducts and duct vents
-- Rework the lighting with specified products. Most should have specified products, but they aren't listed in the light details as products directly yet
 - Consider have the oven/range in the kitchen island across from the sink
 - Consider making W-M-BATH1-W operable. Switch that small operable window type we have to the Aluprof MB-Slimline / MB-79N CSF or Aliplast Max Light Modern ultra slim aluminum for maximum light area (looks like around 2.75" frame is possible there) triple glazed.
 - Possibly poplar 1x12 as stair skirt boards, if not already specified, painted white. Likely installed tight to wall framing/drywall prior to installation of finish treads and risers.
 - [x] Roof sheathing: 19/32" 40/20 plywood, CDX house and Structural I garage/canopy. [Assessment](../houses/catlin/notes/roof_sheathing_and_membranes.md): Image II acceptance, eave cantilevers, narrow/single-span panels and 24-1/8" transition engineering remain open.
 - [x] Roof membranes at installed thickness, near-black under Flashing: house butyl 30 mil, garage/canopy HT rubberized asphalt 40 mil. House unvented/full-coverage product confirmation remains open; see the roof assessment.
+- [ ] Resolve the house eave/gutter assembly: correct Image II hook/hems, coordinate membrane and apron laps, model gutter fall and outward overflow, and verify supports/corners. [Measured review and implementation plan](roof-wall-eave-detail.md).
 - [x] Compared 5/8" AdvanTech roof sheathing; retain plywood. Reconsider as a construction-moisture upgrade after local quotes and product/connection review; see the roof assessment.
 - Consider 1/2" advantech for walls sheathing
 - Probably around the windows, the flashing should come out and over the girts (covering the buck and girt then) that box in the window. ccspf should come out and around the outie buck as well up to the girt there. That would bury the KDAT girt completely in foam and flashing. Perhaps instead the gap should remain on the back of the girt, but the full outer face and top and bottom is flashed (just back clear to dry backwards into cavity?)
