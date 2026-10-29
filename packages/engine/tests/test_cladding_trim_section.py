@@ -6,6 +6,7 @@ import pytest
 
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.section import folded_section_mesh
+from typehaus.resolve.roof_image_ii_eave import eave_stack
 
 
 @pytest.mark.parametrize(
@@ -60,11 +61,15 @@ def test_house_corner_stock_and_overlap(catlin_model_ro):
     corners = [solid for solid in catlin_model_ro.solids
                if solid.product == "WIDE_OUTSIDE_CORNER"]
     assert len(corners) == 8
+    roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-HOUSE")
+    stack = eave_stack(catlin_model_ro, roof)
+    head_cap = roof.eave_z_m + stack.z_at(stack.head_cap_w, 0.0)
     for node in ("N-M-NE", "N-M-NW", "N-M-SE", "N-M-SW"):
         lower, upper = sorted((piece for piece in corners if piece.host_ref == node),
                               key=lambda piece: piece.z0_m)
         assert (lower.trim_stock_length_in, upper.trim_stock_length_in) == (243, 122)
         assert lower.z0_m == pytest.approx(-13.4375 * M_PER_IN)
-        assert upper.z1_m == pytest.approx(255 * M_PER_IN)
+        # Level at the eave head cap, under the stack, not up at the rake (255").
+        assert upper.z1_m == pytest.approx(head_cap, abs=0.05 * M_PER_IN)
         assert lower.z1_m - upper.z0_m == pytest.approx(3 * M_PER_IN)
     assert not any(s.tag.startswith("TR-H-CORNER-") for s in catlin_model_ro.solids)

@@ -258,7 +258,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
 
         findings.extend(resolve_soffit_finishes(model))
         from typehaus.resolve.board_batten import resolve_profiled_metal_surfaces
+        from typehaus.resolve.roof_image_ii_eave import assign_wall_head_caps
 
+        assign_wall_head_caps(model)
         resolve_profiled_metal_surfaces(model)
         from typehaus.resolve.cladding_trim.edges import resolve_corrugated_corners
         from typehaus.resolve.cladding_trim.mixed_corners import resolve_mixed_corners

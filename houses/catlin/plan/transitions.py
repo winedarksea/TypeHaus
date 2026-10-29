@@ -51,9 +51,21 @@ TRANSITIONS = (
                continuity=(Continuity(control="water", from_face="cdx-ext",
                                       to_face="membrane-ext"),),
                star=True),
+    # Eave water is two claims, not the foam's: field membrane -> strip-in over the eave
+    # and gutter flanges -> eave leg under the Image II pan (GCP IWSDET-102 option 2, TL-15),
+    # and the wall head, covered by gutter flange + eave leg. Air and thermal stay the foam's.
     Transition(uid="CATR001AAAA", tag="TR-CATLIN-EAVE", condition_pattern="wall_roof:*",
                notes="notes/roof_wall_eave_detail.md", overlay="zero-overhang-eave",
-               continuity=AIR_WATER_THERMAL, star=False,
+               continuity=(
+                   Continuity(control="air", from_face="sheathing-ext",
+                              to_face="sheathing-ext"),
+                   Continuity(control="water", from_face="membrane-ext",
+                              to_face="eave-metal-ext"),
+                   Continuity(control="water", from_face="spray-foam-ext",
+                              to_face="gutter-flange-ext"),
+                   Continuity(control="thermal", from_face="spray-foam-ext",
+                              to_face="spray-foam-ext"),
+               ), star=False,
                starred_conditions=(
                    "wall_roof:EXT_2X6|ROOF",
                    "wall_roof:EXT_2X6_BOARD_BATTEN|ROOF",

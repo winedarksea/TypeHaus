@@ -318,6 +318,9 @@ class ResolvedWall:
     # on the storey datum, which is the elevation kept here. ``None`` means the wall was not
     # extended down and its base is ``z0_m`` as before.
     plate_base_z_m: float | None = None
+    # Gable walls under a wrapped Image II eave: ``roof_image_ii_eave.HeadCap`` lines the
+    # body's top stays under where its layers run out past the axis into the eave stack.
+    head_caps: tuple = ()
 
     @property
     def base_ref_z_m(self) -> float:

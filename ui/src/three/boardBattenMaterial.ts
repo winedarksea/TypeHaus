@@ -5,7 +5,7 @@ import * as THREE from "three";
 const SHEET_SHADOW_NORMAL_BIAS_M = 0.01;
 // The pans/valleys sit only one sheet thickness ahead of their backing. Fixed depth
 // steps keep it from bleeding through at house-view distances; slope bias can hide trim.
-const PROFILED_METAL_SKIN_POLYGON_OFFSET = {
+export const PROFILED_METAL_SKIN_POLYGON_OFFSET = {
   polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: -3,
 };
 const PAINTED_METAL_SURFACE = {
@@ -13,13 +13,12 @@ const PAINTED_METAL_SURFACE = {
 };
 
 export function createProfiledMetalSkinMaterial(
-  mode: "nordic" | "schematic", color: number,
+  mode: "nordic" | "schematic", color: number, offset = PROFILED_METAL_SKIN_POLYGON_OFFSET,
 ): THREE.MeshStandardMaterial {
   const material = mode === "schematic"
     ? new THREE.MeshStandardMaterial({ color, roughness: 1, metalness: 0, flatShading: true,
-      ...PROFILED_METAL_SKIN_POLYGON_OFFSET })
-    : new THREE.MeshPhysicalMaterial({ color, ...PAINTED_METAL_SURFACE,
-      ...PROFILED_METAL_SKIN_POLYGON_OFFSET });
+      ...offset })
+    : new THREE.MeshPhysicalMaterial({ color, ...PAINTED_METAL_SURFACE, ...offset });
   material.onBeforeCompile = shader => {
     const shadowChunk = THREE.ShaderChunk.shadowmap_vertex.replace(
       /shadowWorldNormal \* ((?:directional|point|spot)LightShadows\[ i \]\.shadowNormalBias)/g,

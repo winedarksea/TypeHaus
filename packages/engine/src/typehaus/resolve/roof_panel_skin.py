@@ -12,6 +12,10 @@ from typehaus.resolve.metal_skin_profiles import (
     _inset_section,
     _section_ribbon_faces,
 )
+from typehaus.resolve.roof_image_ii_pan_end import (
+    image_ii_pan_ends,
+    wrapped_eave_skin_setbacks,
+)
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 from typehaus.resolve.roof_panel_hem import roof_pan_hems
 from typehaus.resolve.surface_clipping import clip_faces, cross, dot, mesh_from_faces
@@ -25,7 +29,10 @@ def profiled_roof_layers(roof, model):
     for layer in above_structure_layers(assembly):
         profile = PANEL_PROFILES.get(finishes.get(layer.material_ref))
         if profile is not None:
-            rect = layer_inset_rect(roof, setbacks.get(layer.name, {}), base)
+            entry = setbacks.get(layer.name, {})
+            if profile.key == "standing-seam":
+                entry = wrapped_eave_skin_setbacks(model, roof, entry)
+            rect = layer_inset_rect(roof, entry, base)
             yield layer, base, rect, profile
         base += layer.thickness.meters
 
@@ -150,6 +157,8 @@ def resolve_profiled_roof_surfaces(model):
                 )
             meshes.append((layer.name, roof_profile_mesh(roof, rect, base, profile)))
             if profile.key == "standing-seam":
-                hems += roof_pan_hems(roof, rect, base, profile, layer.material_ref)
+                wrapped, ends = image_ii_pan_ends(model, roof, rect, profile, layer.material_ref)
+                hems += roof_pan_hems(roof, rect, base, profile, layer.material_ref,
+                                      skip=wrapped) + ends
         model.roofs[index] = replace(roof, layer_surface_meshes=tuple(meshes),
                                      members=roof.members + hems)

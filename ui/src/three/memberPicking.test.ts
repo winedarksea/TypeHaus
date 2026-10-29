@@ -10,6 +10,11 @@ import {
 } from "./memberBox";
 import { packMesh } from "./mesh";
 import { createSolidBodyMesh } from "./solidBodyMesh";
+import { PROFILED_METAL_SKIN_POLYGON_OFFSET } from "./boardBattenMaterial";
+import {
+  EAVE_RAKE_POLYGON_OFFSET, PAN_END_POLYGON_OFFSET, TRIM_POLYGON_OFFSET,
+} from "./materials";
+import { createSolidMaterial } from "./solidMaterials";
 import {
   buildMemberHighlight, carriesMemberIdentity, memberIndexForTriangle, resolveMemberPickUid,
 } from "./memberPicking";
@@ -157,6 +162,34 @@ function checkSectionRingIsSweptAndPickable() {
   assert(starts[1] === 12, "Two fan caps of two triangles plus four side quads");
   assert(resolveMemberPickUid(merged, null, 11) === "RF1::rake-hi-0-drip-edge-face",
     "Every triangle of the leg picks the leg");
+}
+
+// Each lap is one fixed depth step nearer than what it laps, and the trim meshes split out of
+// the raked merge still pick their own members.
+function checkTrimDrawsAtItsDepthTier() {
+  const tiers = [PROFILED_METAL_SKIN_POLYGON_OFFSET, TRIM_POLYGON_OFFSET, EAVE_RAKE_POLYGON_OFFSET,
+    PAN_END_POLYGON_OFFSET];
+  assert(tiers.every((t, i) => t.polygonOffsetFactor === 0
+    && (i === 0 || t.polygonOffsetUnits < tiers[i - 1].polygonOffsetUnits)),
+  "skin > trim > eave/rake > pan end, in units only");
+  const solid = createSolidMaterial({ category: "cladding_trim", assembly: null, material: null },
+    undefined, "schematic", RESOLVED_NORDIC_PALETTE.light);
+  assert(solid.polygonOffsetUnits === TRIM_POLYGON_OFFSET.polygonOffsetUnits, "Solid trim takes its tier");
+  const raked = { p0: [0, 0] as [number, number], p1: [4, 0] as [number, number], z0_m: 3,
+    z1_m: 3.05, z0_end_m: 5, z1_end_m: 5.05, orient: null };
+  const group = new THREE.Group();
+  buildMembers(group, [member({ key: "rafter-0", category: "rafter", ...raked }),
+    member({ key: "eave-0", category: "drip_edge", ...raked }),
+    member({ key: "gutter-0", category: "gutter", ...raked }),
+    member({ key: "eave-1", category: "drip_edge", ...raked })],
+  CENTER, "schematic", RESOLVED_NORDIC_PALETTE.light, "RF1");
+  const meshes = group.children.filter(carriesMemberIdentity) as THREE.Mesh[];
+  const unitsOf = (mesh: THREE.Mesh) => (mesh.material as THREE.Material).polygonOffsetUnits;
+  const eave = meshes.find((mesh) => unitsOf(mesh) === EAVE_RAKE_POLYGON_OFFSET.polygonOffsetUnits);
+  const gutter = meshes.find((mesh) => unitsOf(mesh) === TRIM_POLYGON_OFFSET.polygonOffsetUnits);
+  assert(meshes.length === 3 && eave && gutter, "Lumber, eave pieces and gutter draw as three meshes");
+  assert(resolveMemberPickUid(eave, null, 13) === "RF1::eave-1", "The second eave box picks eave-1");
+  assert(resolveMemberPickUid(gutter, null, 0) === "RF1::gutter-0", "The gutter picks itself");
 }
 
 // All three i-joist plies share one instance index per member, so clicking a flange and
@@ -318,6 +351,7 @@ export function runMemberPickingTests() {
   checkPrefixSumHandlesMixedShapes();
   checkSeatedRafterIsNotchedAndPickable();
   checkSectionRingIsSweptAndPickable();
+  checkTrimDrawsAtItsDepthTier();
   checkIJoistPliesShareOneIdentity();
   checkSkippedMemberDoesNotShiftIdentities();
   checkHighlightOutlineMatchesTheMember();

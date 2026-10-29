@@ -9,6 +9,7 @@ import math
 
 from typehaus.model.enums import TrimKind
 from typehaus.resolve.geometry import circle_outline, rect_between
+from typehaus.resolve.gutter_formed import resolve_formed_gutter
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.round_solids import PIPE_FACETS as _PIPE_FACETS
 from typehaus.resolve.trim_bands import drip_edge_bands, open_channel_bands
@@ -44,6 +45,8 @@ def resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
     path = [p.xy_m for p in el.path]
     if len(path) < 2:
         return
+    if el.kind is TrimKind.GUTTER and resolve_formed_gutter(model, el, storey):
+        return  # a catalog gutter whose whole formed piece is transcribed
     category = _TRIM_CATEGORY.get(el.kind.value, "flashing")
     section = getattr(el, "section", None)
     if section is not None:

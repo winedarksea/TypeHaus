@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import pytest
 
+from typehaus.resolve.roof_image_ii_pan_end import wrapped_eave_skin_setbacks
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 pytest.importorskip("ifcopenshell")
@@ -91,6 +92,9 @@ def test_each_layer_clips_at_its_own_serialized_plan_setback(catlin_model_ro, if
         entry = setbacks.get(layer.name)
         if entry is None:
             continue
+        if layer.name == "roofing":
+            # The skin stops short of a wrapped Image II eave; the pan ends carry the rest.
+            entry = wrapped_eave_skin_setbacks(catlin_model_ro, roof, entry)
         clip = west_edge + float(entry["west"])
         got = min(point[0] for point in _solid_points(solids[index]))
         # West is an eave edge on this ridge-along-y gable. The band's *bottom* lands on the

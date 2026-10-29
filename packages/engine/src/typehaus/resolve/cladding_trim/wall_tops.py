@@ -15,11 +15,17 @@ from typehaus.resolve.cladding_trim.section import folded_section_mesh
 from typehaus.resolve.geometry_ir import GBox, GMesh
 from typehaus.resolve.geometry_members import member_box
 from typehaus.resolve.geometry_slice_box import _box_mesh
-from typehaus.resolve.geometry_walls import wall_top_at
+from typehaus.resolve.geometry_walls import body_top_at
 from typehaus.resolve.metal_skin_profiles import CORRUGATED_PROFILE, PBR_PROFILE, SHEET_24_GA_M
 from typehaus.resolve.model import ResolvedSolid
 from typehaus.resolve.roof_edge_geometry import footprint_test
-from typehaus.resolve.roof_geometry import roof_height_at
+from typehaus.resolve.roof_geometry import (
+    roof_height_at,
+    roof_plane_z,
+    roof_slope_coordinate,
+    roof_slope_factor,
+)
+from typehaus.resolve.roof_image_ii_eave import wrapped_eave_head_cap_w
 
 _FACE_ALIGNMENT_TOLERANCE_M = 0.5 * M_PER_IN
 _TOP_ALIGNMENT_TOLERANCE_M = M_PER_IN
@@ -116,7 +122,7 @@ def exposed_wall_top_edges(model):
             if face is None:
                 continue
             points = (face.xy(face.lo), face.xy(face.hi))
-            tops = tuple(min(layer.band(wall)[1], wall_top_at(wall, *point)) for point in points)
+            tops = tuple(min(layer.band(wall)[1], body_top_at(wall, *point)) for point in points)
             condition = (TrimCondition.RAKE_TOP if abs(tops[1]-tops[0]) > 1e-6
                          else TrimCondition.EAVE_TOP)
             product = material.trim_kit.get(condition, "")
@@ -200,6 +206,20 @@ def _append(model, edge, tag, product, mesh, length, stock=None):
         trim_length_m=length, trim_stock_length_in=stock))
 
 
+def _head_cap(model, edge) -> tuple[float, float]:
+    """(cap at the back plane, fall per meter outboard): how high a level wall-top closure
+    may stand under a wrapped Image II eave, clear of its lowest sheet. Unbounded elsewhere."""
+    if edge.condition is not TrimCondition.EAVE_TOP:
+        return math.inf, 0.0
+    point = edge.face.xy((edge.start + edge.end) / 2)
+    cap_w = wrapped_eave_head_cap_w(model, edge.roof, point)
+    if cap_w is None:
+        return math.inf, 0.0
+    plane = roof_plane_z(edge.roof, roof_slope_coordinate(edge.roof, point))
+    factor = roof_slope_factor(edge.roof)
+    return plane + cap_w * factor, math.sqrt(factor * factor - 1.0)
+
+
 def _profile_closure_mesh(model, edge, profile):
     """Fill the panel rib voids using its actual repeating skin profile and layout line."""
     line = next((line for line in model.layout_lines
@@ -208,12 +228,15 @@ def _profile_closure_mesh(model, edge, profile):
     phase = origin[0]*edge.face.d[0] + origin[1]*edge.face.d[1]
     return _closure_mesh(phase, edge.start, edge.end, edge.z_start, edge.z_end,
                          edge.face.d, edge.face.n, edge.face.back,
-                         profile.section_points_m, profile.pitch_m)
+                         profile.section_points_m, profile.pitch_m,
+                         *_head_cap(model, edge))
 
 
 @lru_cache(maxsize=128)
-def _closure_mesh(phase, start, end, z_start, z_end, d, n, back, section, pitch_m) -> GMesh:
-    """The rib fill, a pure function of numbers (→ board_batten._fold)."""
+def _closure_mesh(phase, start, end, z_start, z_end, d, n, back, section, pitch_m,
+                  cap_z=math.inf, cap_fall=0.0) -> GMesh:
+    """The rib fill, a pure function of numbers (→ board_batten._fold); no higher than
+    ``cap_z`` at the back plane, falling ``cap_fall`` per meter outboard."""
 
     def xy(station):  # CladdingFace.xy at depth 0
         return (station * d[0] + back * n[0], station * d[1] + back * n[1])
@@ -236,7 +259,11 @@ def _closure_mesh(phase, start, end, z_start, z_end, d, n, back, section, pitch_
             bottom = ((x0,y0,z0-_CLOSURE_HEIGHT_M), (x1,y1,z1-_CLOSURE_HEIGHT_M),
                       (x1+n[0]*d1,y1+n[1]*d1,z1-_CLOSURE_HEIGHT_M),
                       (x0+n[0]*d0,y0+n[1]*d0,z0-_CLOSURE_HEIGHT_M))
-            top = tuple((x,y,z+_CLOSURE_HEIGHT_M) for x,y,z in bottom)
+            depths = (0.0, 0.0, d1, d0)
+            top = tuple((x, y, min(z+_CLOSURE_HEIGHT_M, cap_z - cap_fall*depth))
+                        for (x, y, z), depth in zip(bottom, depths, strict=True))
+            if any(t[2] - b[2] < 1e-6 for t, b in zip(top, bottom, strict=True)):
+                continue
             mesh = _box_mesh(GBox(bottom, top))
             offset = len(positions)
             positions.extend(mesh.positions)
@@ -281,8 +308,10 @@ def resolve_wall_top_closures(model):
             n = edge.face.n
             width = edge.face.layer.thickness_m
             height = _CLOSURE_HEIGHT_M
+            cap, fall = _head_cap(model, edge)
             bottom = ((x0,y0,edge.z_start-height), (x1,y1,edge.z_end-height),
                       (x1+n[0]*width,y1+n[1]*width,edge.z_end-height),
                       (x0+n[0]*width,y0+n[1]*width,edge.z_start-height))
-            top = tuple((x,y,z+height) for x,y,z in bottom)
+            top = tuple((x, y, min(z+height, cap - fall*depth)) for (x, y, z), depth
+                        in zip(bottom, (0.0, 0.0, width, width), strict=True))
             _append(model, edge, tag, edge.product, _box_mesh(GBox(bottom,top)), edge.length_m)

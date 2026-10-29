@@ -8,31 +8,6 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          432.75000000000006,
-          310.2563906948577
-        ],
-        "name": ""
-      },
-      "at": [
-        453.75000000000006,
-        307.98972402819106
-      ],
-      "to": [
-        432.75000000000006,
-        310.2563906948577
-      ],
-      "text": "Metal Sales Image II Striated 16 in, 24\nga, 70% PVDF Kynar 500 Linen White (81),\ndirect-fastened through nail flange",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
           431.7500000000001,
           363.0
         ],
@@ -54,6 +29,22 @@
     },
     {
       "space": "model",
+      "node": "text",
+      "anchor": [
+        443.75000000000006,
+        383.7025590551181
+      ],
+      "content": "water continuity — membrane-ext → eave-\nmetal-ext",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -65,13 +56,13 @@
       },
       "at": [
         443.75000000000006,
-        383.7025590551181
+        379.0553368328959
       ],
       "to": [
         434.0,
         363.0
       ],
-      "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
+      "text": "water continuity — spray-foam-ext →\ngutter-flange-ext",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -90,7 +81,7 @@
       },
       "at": [
         443.75000000000006,
-        379.0553368328959
+        374.40811461067364
       ],
       "to": [
         434.0,
@@ -231,7 +222,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-590",
+      "content": "SHEET A-591",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -260,21 +251,21 @@
   "notes": [
     "NOTES:",
     "• Roof: 11-7/8\" TJI 230 at 24\" o.c., LSSR hangers to a structural ridge beam.",
-    "• Bay: 5\" ccSPF on the deck, R-30C batt below. The foam is the air and vapour barrier; paint-only ceiling.",
+    "• Bay: 5\" ccSPF on deck, R-30C batt. Foam is the air and vapour barrier.",
     "• Deck: 19/32\" CDX, 40/20, oversailing the rafter ends to the girt face.",
-    "• Butyl membrane, 240 F min, full field. 24 ga Image II Striated, direct-fastened through its nail flange.",
-    "• Wall: 2x6, 1/2\" sheathing, 4\" ccSPF around 3-ply blocks, 1/2\" vent gap, 1-1/2\" KDAT girts at 24\", 1-1/4\" PBR. No WRB.",
+    "• Butyl membrane 240 F min, full field plus eave strip-in. 24 ga Image II, nail flange.",
+    "• Wall: 2x6, 1/2\" sheathing, 4\" ccSPF, 1/2\" vent gap, KDAT girts, 1-1/4\" PBR. No WRB.",
     "",
     "KEYED NOTES:",
     "K1  Birdsmouth seat: beveled web stiffeners per APA D710 10h; H2.5A each rafter.",
     "K2  Foam first lift 1-1/2\" min. Lap onto ridge beam and hanger flanges in one pass.",
     "K3  2x6 eave block on edge on the plate, every bay. ccSPF over it.",
     "K4  Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.",
-    "K5  Formed drip edge, one piece: flange 2\" on the deck at 6:12, nose over the deck edge.",
-    "K6  Lap the membrane over the drip. Nothing else reaches that plane.",
-    "K7  6\" box gutter, rim 2.76\" below the deck datum, back sheet behind the drip face.",
-    "K8  Drip face 4\" over the wall panel heads, kick into the gutter. No fascia, no soffit.",
-    "K9  2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Gutter hanger at each standoff."
+    "K5  Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04\".",
+    "K6  Strip-in membrane over both flanges, 4\" past the hem. Pan rides over it.",
+    "K7  PBR 5x4 gutter, level, back behind eave face, flange under eave leg.",
+    "K8  Eave face over the gutter back, kick and hem into the trough. Pan hemmed round the lip. No fascia, no soffit.",
+    "K9  2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Hanger below the eave face; bracket pending."
   ],
   "frame": {
     "paper": [

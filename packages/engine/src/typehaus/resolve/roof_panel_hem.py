@@ -17,10 +17,11 @@ from typehaus.resolve.roof_geometry import roof_plane_z, roof_slope_factor
 from typehaus.resolve.surface_clipping import face_normal
 
 HEM_RETURN_M = inch(0.5).meters
+_EDGE_NAMES = {(True, -1): "south", (True, 1): "north", (False, -1): "west", (False, 1): "east"}
 CLEAT_SHEET_M = inch(0.032).meters
 
 
-def _flat_shaded(mesh: GMesh) -> GMesh:
+def flat_shaded(mesh: GMesh) -> GMesh:
     """Unshare each facet's corners so it carries its own normal, as the viewer requires."""
     positions, triangles, normals = [], [], []
     for triangle in mesh.triangles:
@@ -35,8 +36,12 @@ def _flat_shaded(mesh: GMesh) -> GMesh:
     return GMesh(tuple(positions), tuple(triangles), tuple(normals))
 
 
-def roof_pan_hems(roof, rect, base, profile, material):
-    """Thin return under each pan, cut short of the seam legs at each module edge."""
+def roof_pan_hems(roof, rect, base, profile, material, skip=frozenset()):
+    """Thin return under each pan, cut short of the seam legs at each module edge.
+
+    ``skip`` names the eave edges whose pans wrap an Image II Extended Eave instead
+    (``roof_image_ii_pan_end``).
+    """
     along_x = roof.ridge_direction == "x"
     low, high = rect[:2] if along_x else rect[2:]
     across_low, across_high = rect[2:] if along_x else rect[:2]
@@ -47,6 +52,8 @@ def roof_pan_hems(roof, rect, base, profile, material):
     members = []
     for sign, edge in ((-1, across_low), (1, across_high)):
         if roof.form == "shed" and sign > 0:
+            continue
+        if _EDGE_NAMES[(along_x, sign)] in skip:
             continue
         # The inset rectangle precedes the layer-base normal translation.
         edge += sign * base * slope / factor
@@ -87,6 +94,6 @@ def roof_pan_hems(roof, rect, base, profile, material):
                 connection="roof:pan-hem",
                 section_ring=ring,
             )
-            mesh = _flat_shaded(sweep_mesh(member_solid(member)))
+            mesh = flat_shaded(sweep_mesh(member_solid(member)))
             members.append(replace(member, surface_mesh=mesh))
     return tuple(members)

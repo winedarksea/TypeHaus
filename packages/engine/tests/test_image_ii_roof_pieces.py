@@ -1,8 +1,8 @@
 """The Image II roof pieces are drawn from the Residential Design Manual's own dimensions.
 
 Each leg below is read off the manual's stretch-out labels (pp. 6-12, see
-``houses/catlin/notes/metal_trim_kit.md``). The Extended Eave's second 1-1/2 in lip is not
-drawn (its path is unconfirmed), so its section stretches 8.5 in of the manual's 10 in.
+``houses/catlin/notes/metal_trim_kit.md``). Open hems are drawn as two plies with a real gap,
+so a fold adds a short connector the stretch-out does not count.
 """
 
 import dataclasses
@@ -12,47 +12,84 @@ from types import SimpleNamespace
 import pytest
 
 from typehaus.library.trim._image_ii import (
-    IMAGE_II_EXTENDED_EAVE,
     IMAGE_II_OFFSET_CLEAT,
     IMAGE_II_RAKE_CLEAT,
     IMAGE_II_RESIDENTIAL_RAKE,
     IMAGE_II_RIDGE_COVER,
     IMAGE_II_VENTED_STEP_RIDGE,
     IMAGE_II_Z_CLOSURE,
-    eave_deck_flange_in,
+    SHEET_24_GA_IN,
+    eave_catalog_reach_in,
+    extended_eave_section,
+    hem_offset_in,
     rake_deck_flange_in,
 )
 from typehaus.library.trim.metal_sales import RESIDENTIAL_RAKE_FACE_IN
 from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
-from typehaus.resolve.roof_edge_geometry import abutted_run_keys, roof_ridge_run, roof_slope
+from typehaus.resolve.roof_edge_geometry import (
+    abutted_run_keys,
+    roof_edge_runs,
+    roof_ridge_run,
+    roof_slope,
+)
 from typehaus.resolve.roof_image_ii import (
     RAKE_BELOW_HEAD_M,
     VENTED_RIDGE_LIFT_M,
     image_ii_cover_ring,
     wrapped_image_ii_edges,
 )
+from typehaus.resolve.roof_image_ii_eave import LAP_GAP_M, eave_deck_bearing
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 from typehaus.takeoff.cladding_trim import cladding_trim_takeoff
 
 
 def _legs(section):
-    return [math.dist(a, b) for a, b in zip(section, section[1:], strict=False)]
+    """Leg lengths, the open hems' fold connectors left out."""
+    return [d for a, b in zip(section, section[1:], strict=False)
+            if (d := math.dist(a, b)) > hem_offset_in() + 1e-9]
 
 
 def test_extended_eave_legs_match_the_manual() -> None:
-    hem, flange, face, kick, drip_hem = _legs(IMAGE_II_EXTENDED_EAVE.section_in)
-    assert hem == pytest.approx(0.875)        # 7/8 in return at the flange's free end
-    assert flange == pytest.approx(5.0)       # 5 in flange on the deck
-    assert face == pytest.approx(1.5)         # 1-1/2 in vertical leg
-    assert kick == pytest.approx(0.625)       # 5/8 in leg, 45 deg out and down
-    assert drip_hem == pytest.approx(0.5)     # 1/2 in open-hem return at the drip tip
-    assert sum(_legs(IMAGE_II_EXTENDED_EAVE.section_in)) == pytest.approx(8.5)
-
-
-def test_eave_flange_is_the_deck_leg_and_the_rake_cleat_the_rake_one() -> None:
-    assert eave_deck_flange_in() == pytest.approx(5.0)
+    section = extended_eave_section(6.0 / 12.0)
+    hem, leg, ret, face, kick, drip = _legs(section)
+    assert (hem, leg, ret, face, kick, drip) == pytest.approx((0.875, 5.0, 1.5, 1.5, 0.625, 0.5))
+    assert sum(_legs(section)) == pytest.approx(10.0)       # RDM p. 11 stretch-out
+    assert eave_catalog_reach_in() == pytest.approx(3.5)    # 5 in leg less the 1-1/2 lip
     assert rake_deck_flange_in() == pytest.approx(2 + 7 / 8)
+    hem_tip, hem_fold, leg_top, lip_top, lip_under, corner, *_ = section
+    assert corner == (0.0, 0.0)
+    # Both hems lie flat under the leg (no fin), two plies a real gap apart, and the lip
+    # is a hook: the leg runs 1-1/2 in past the face and returns under itself to the corner.
+    slope = math.atan(0.5)
+    up = (math.sin(slope), math.cos(slope))
+    for under, over in ((hem_tip, leg_top), (lip_under, lip_top)):
+        gap = (over[0] - under[0]) * up[0] + (over[1] - under[1]) * up[1] - 2 * SHEET_24_GA_IN
+        assert gap > 0.0
+    assert hem_tip[1] - hem_fold[1] == pytest.approx(-0.875 * math.sin(slope))
+    assert lip_top[0] > corner[0] + 1.3 and lip_under[1] < lip_top[1]
+    # The drip hem folds back inside the kick, clear of it.
+    tip, turn, end = section[-3:]
+    assert math.dist(tip, turn) > 2 * SHEET_24_GA_IN and math.dist(turn, end) == pytest.approx(0.5)
+
+
+def test_house_eave_bears_on_the_deck_as_placed(catlin_model_ro) -> None:
+    """The bearing is the leg's plan overlap inboard of the deck's top edge.
+
+    Hand calc at 6:12 (cos 0.8944, sin 0.4472): the face's outer surface stands
+    1/32 + 0.0239 + 1/32 + 0.0239 = 0.1103 in out (gap, gutter back, gap, face sheet), so the
+    leg's inboard end is 0.1103 - 3.5 x 0.8944 = -3.0202 in. The 19/32 in deck is cut square
+    to the pitch through its 1-1/4 in setback, so its top corner is at
+    -1.25 + 0.59375 x 0.4472 = -0.9845 in. Bearing 3.0202 - 0.9845 = 2.036 in.
+    """
+    roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-HOUSE")
+    face_u = 2 * LAP_GAP_M / M_PER_IN + 2 * SHEET_24_GA_IN
+    sin = math.sin(math.atan(0.5))
+    hand = (-1.25 + 0.59375 * sin) - (face_u - 3.5 * math.cos(math.atan(0.5)))
+    assert hand == pytest.approx(2.036, abs=1e-3)
+    for run in (r for r in roof_edge_runs(roof) if r.is_eave):
+        bearing = eave_deck_bearing(catlin_model_ro, roof, run)
+        assert bearing.bearing_m / M_PER_IN == pytest.approx(hand, abs=1e-3)
 
 
 def test_residential_rake_legs_match_the_manual() -> None:
@@ -60,8 +97,8 @@ def test_residential_rake_legs_match_the_manual() -> None:
     assert top_return == pytest.approx(1.0)   # 1 in return over the panel turn-up
     assert main == pytest.approx(RESIDENTIAL_RAKE_FACE_IN) == pytest.approx(2.625)
     assert kick == pytest.approx(0.625)
-    assert hem == pytest.approx(0.5)          # 1/2 in return hem back toward the building
-    assert sum(_legs(IMAGE_II_RESIDENTIAL_RAKE.section_in)) == pytest.approx(4.75)
+    assert hem == pytest.approx(0.5)          # 1/2 in open hem folded back inside the kick
+    assert max(z for _, z in IMAGE_II_RESIDENTIAL_RAKE.section_in) == pytest.approx(2.625)
 
 
 def test_rake_cleat_offset_cleat_and_z_closure_match_the_manual() -> None:
@@ -85,6 +122,9 @@ def test_house_rake_is_the_stock_leg_and_covers_the_stack(catlin_model_ro) -> No
     roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-HOUSE")
     rakes = [m for m in roof.members if m.connection == "roof:image-ii-rake"]
     assert len(rakes) == 4                    # both rakes on each of the two gable ends
+    # Each stops on the eave's leg at its corner: a foot over the leg, clear of it.
+    feet = [m for m in roof.members if m.connection == "roof:image-ii-rake-foot"]
+    assert len(feet) == 4
     # The stock main leg, billed as the catalog piece with no custom 4 in row.
     rows = {r["part"]: r for r in cladding_trim_takeoff(catlin_model_ro) if r["kind"] == "roof"}
     assert "IMAGE_II_RAKE_4IN_CUSTOM" not in rows

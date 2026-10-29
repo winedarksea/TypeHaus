@@ -39,7 +39,7 @@ from typehaus.checks.building_science.condensation import conditioned_envelope_a
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.structural.uplift_path import uplift_path_coverage
 from typehaus.findings import Finding, Result, Severity
-from typehaus.library.trim._image_ii import eave_deck_flange_in, rake_deck_flange_in
+from typehaus.library.trim._image_ii import rake_deck_flange_in
 from typehaus.model.enums import ControlLayer, LayerFunction, RoofForm, TrimKind
 from typehaus.model.spatial import Roof
 from typehaus.model.trim import Flashing
@@ -48,6 +48,7 @@ from typehaus.resolve.roof_drip_edge import CATEGORY as _DRIP_CATEGORY
 from typehaus.resolve.roof_drip_edge import flange_on_deck_m
 from typehaus.resolve.roof_edge_geometry import abutted_run_keys, roof_edge_runs
 from typehaus.resolve.roof_image_ii import CONNECTION_EAVE, CONNECTION_RAKE
+from typehaus.resolve.roof_image_ii_eave import eave_deck_bearing
 
 _ADVISORY = "[advisory, not engineering] "
 
@@ -161,22 +162,31 @@ _MIN_FLANGE_M = inch(2).meters
 _FLANGE_TOL_M = 1e-6
 
 
-def _catalog_flange_m(member) -> float | None:
-    """The deck flange of an Image II catalog piece, read off its section (roof_image_ii)."""
+def eave_bearing_m(model, roof, member) -> float:
+    """The Extended Eave's resolved plan bearing on the deck (roof_image_ii_eave)."""
+    run = next(r for r in roof_edge_runs(roof) if member.child_key.startswith(f"{r.key}-"))
+    bearing = eave_deck_bearing(model, roof, run)
+    return bearing.bearing_m if bearing is not None else 0.0
+
+
+def _catalog_flange_m(model, roof, member) -> tuple[float, str] | None:
+    """The deck flange of an Image II catalog piece: the eave's resolved bearing, the rake
+    cleat's leg as published."""
     if member.connection == CONNECTION_EAVE:
-        return eave_deck_flange_in() * M_PER_IN
+        return eave_bearing_m(model, roof, member), "resolved bearing"
     if member.connection == CONNECTION_RAKE:
-        return rake_deck_flange_in() * M_PER_IN
+        return rake_deck_flange_in() * M_PER_IN, "catalog"
     return None
 
 
-def _derived_flanges(roof, centroid: tuple[float, float]) -> dict[str, tuple[float, str]]:
-    """Side -> (shortest deck flange along that side, "catalog" or "derived")."""
+def _derived_flanges(model, roof,
+                     centroid: tuple[float, float]) -> dict[str, tuple[float, str]]:
+    """Side -> (shortest deck flange along that side, and how it was read)."""
     out: dict[str, tuple[float, str]] = {}
     for member in roof.members:
         if member.category != _DRIP_CATEGORY:
             continue
-        catalog = _catalog_flange_m(member)
+        catalog = _catalog_flange_m(model, roof, member)
         if catalog is None and not member.child_key.endswith("-flange"):
             continue
         (ax, ay), (bx, by) = member.p0, member.p1
@@ -185,7 +195,7 @@ def _derived_flanges(roof, centroid: tuple[float, float]) -> dict[str, tuple[flo
             side = "W" if mid_x < centroid[0] else "E"
         else:
             side = "S" if mid_y < centroid[1] else "N"
-        length, kind = (catalog, "catalog") if catalog is not None else (
+        length, kind = catalog if catalog is not None else (
             flange_on_deck_m(member), "derived")
         if side not in out or length < out[side][0]:
             out[side] = (length, kind)
@@ -235,7 +245,7 @@ def fortified_roof_drip_edge(ctx: CheckContext) -> list[Finding]:
     for roof in _conditioned_roofs(ctx):
         hosted = [f for f in flashings if f.host_ref == roof.tag]
         centroid = _centroid(roof.footprint)
-        derived = _derived_flanges(roof, centroid)
+        derived = _derived_flanges(ctx.model, roof, centroid)
         if roof.form != RoofForm.GABLE.value and derived and not hosted:
             flange, kind = min(derived.values())
             out.append(_derived_finding(roof, "every", "roof", flange, kind))

@@ -87,6 +87,8 @@ class Gutter(_EdgeRun):
     downspout_ref: str | None = None
     # A catalog profile (``library/trim/metal_sales.PROFILES``) the run is cut from. Set, the
     # run is billed by part number under [cladding_trim], not by the foot under [drainage].
+    # One with a transcribed formed piece (``metal_sales.FORMED_GUTTERS``) sweeps it whole:
+    # ``path`` is then the section origin's line and ``top_elevation`` the origin's height.
     product: str | None = None
 
 

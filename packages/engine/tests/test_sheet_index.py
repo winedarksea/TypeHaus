@@ -110,9 +110,13 @@ def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_sheet_index):
     its plant-room twin), a second cladding with its own trim and flashing at every edge.
     Its opening perimeters (A-512, A-524), BASEMENT_8 foundation (A-585) and eave (A-590)
     are a different condition from the PBR ones beside them, not duplicates.
+
+    64 -> 65 on 2026-10-28: SL-D-EAVE, the house eave enlarged to 3" = 1'-0" (Image II eave,
+    pan hem, strip-in, box gutter). At 3/4" its 24 ga laps are one line; the enlargement is
+    where a reviewer reads the water paths.
     """
     permit = catlin_sheet_index(sets="permit")
-    assert len(permit) <= 64, [s.number for s in permit]
+    assert len(permit) <= 65, [s.number for s in permit]
     numbers = {s.number for s in permit}
     # What DSI's new-construction checklist asks for.
     assert {"G-001", "C-101", "S-001", "S-100", "S-101.1", "A-101", "A-201",

@@ -70,10 +70,28 @@ The model records a selected candidate, not manufacturer acceptance or a sealed 
 Install on clean, flat, dry plywood. Preserve the house eave detail's **<16% moisture-content
 hold point** before sealing, and verify moisture again before underside foam encapsulation.
 Follow manufacturer substrate, temperature, primer, lap and rolling instructions. Full-field
-coverage replaces the garage ice-barrier allowance; do not bill an additional eave membrane.
+coverage replaces the garage ice-barrier allowance; do not bill an additional eave membrane
+beyond the house strip-in below.
 The model uses one field thickness, without release liner or doubled lap solids. Its existing
 closed roof bands carry physical thickness into viewer, GLB and IFC. Near-black appearance
 and the Flashing control are presentation decisions, independent of construction trade ownership.
+
+## House eave: two-stage membrane
+
+Order, bottom to top at the east and west eaves: plywood; field membrane to the deck edge;
+box-gutter roof flange; Extended Eave pitched leg (7/8 in hem folded flat under); **strip-in**
+of the same membrane over both flanges, lapped onto the field membrane; Image II pan.
+This follows GCP [TL-15](https://ca.gcpat.com/sites/ca.gcpat.com/files/2018-02/RE0042_U-245-0316_Tech-Letter-15_1.pdf)
+("metal drip edge ... should be placed over the membrane") and
+[IWSDET-102](https://ca.gcpat.com/sites/ca.gcpat.com/files/2017-07/IWSDET-102.pdf) option 2
+(drip edge stripped in). It **replaces** the earlier "flange on bare deck, membrane over"
+rule: without the strip, water on the membrane runs under the flanges and off the deck edge
+onto the wall head.
+
+The strip is `roof-adhered-butyl-ht`, a **provisional 9 in width**, about 4 in past the flange
+hem, scope `roof eave strip-in`: **55.9 SF** added to the membrane takeoff. Open: GCP
+confirmation of strip width and of this unvented full-coverage assembly, and Metal Sales
+acceptance of Image II over this deck-and-membrane stack. Cover the strip from UV (the pan does).
 
 ## Cost and AdvanTech upgrade
 

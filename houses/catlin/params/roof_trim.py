@@ -1,157 +1,53 @@
-"""House-roof eave water management — the box gutter and its lap chain (Tier 2, WP roof-eave).
+"""RF-HOUSE eave water: the PBR 5 x 4 box gutter and its leaders (Tier 2, WP roof-eave).
 
-The RF-HOUSE eave edges (ridge runs N-S, so the eaves are the WEST and EAST footprint
-edges) get the water-management pieces the derived roof-edge trim does NOT provide.
+The eaves are the WEST and EAST footprint edges (ridge N-S). RF-HOUSE has no fascia: the roof
+footprint IS the wall cladding's outer face, and the eave is the Image II Extended Eave
+(``resolve/roof_image_ii.py``). The chain, each piece shedding onto the next:
 
-**RF-HOUSE has no fascia at all**, and that is the fact every offset here is measured from.
-Its standing-seam siding and standing-seam roofing are one continuous skin over a flush
-zero-overhang edge, so ``resolve/roof_trim.py`` takes the ``continuous_skin_cladding`` path:
-no fascia boards, no soffit, no edge band. ``RF-HOUSE.eave_trim.drip_edge`` then derives
-ONE formed drip edge per edge (``resolve/roof_drip_edge.py``): a flange on the deck at the
-6:12 pitch, a nose over the deck edge, a face on the old corner trim's plane (1.25" out,
-its sheet 0.42" thick) with a 4" leg down over the wall panel heads, and a kick into the
-trough. It is derived because it has to rake: an authored ``Flashing`` has one elevation.
+    Image II pan -> Extended Eave (face, kick) -> box gutter -> north-end leader
 
-The chain, in which **every higher piece sheds onto the next lower one** so water can never
-get behind the siding:
+The gutter is stock PBR 58079XX, **installed level**, its back tucked behind the eave face and
+its 3-1/2" roof flange run up the slope under the eave's pitched leg (PBR p. 46). Its place is
+the catalog section's origin (back water face at the back top), read off the same
+``EaveStack`` the engine stacks the eave with, built here from the roof's own layers
+(``params/roof_panel``). No number below is typed in by hand. The engine sweeps the whole
+formed piece and its end caps (``resolve/gutter_formed.py``); ``test_catlin_eave_water.py``
+holds the laps. notes/box_gutter_sizing.md sizes it.
 
-    roofing → formed drip edge (derived) → box gutter → downspout
-
-- a 5" BOX GUTTER (PBR 58077XX/58079XX) hung **tight to the wall plane** — its back sheet
-  tucked *behind* the drip edge's face rather than standing off in mid-air, which is what
-  closes the open slot that used to run the length of the eave; the drip's kick lands inside
-  the trough;
-- a DOWNSPOUT per eave, because the gutters slope to one, plus the S-5! securement clamps
-  (plan/mep.py) that steady it.
-
-Every joint takes the same nominal ``_LAP_IN`` of overlap, and each piece's elevation is
-derived from the one above it rather than authored, so the chain cannot be broken by
-changing one number in isolation.
-
-The reference mounts the gutter the same way: `gutter_back_x = x_fur1 + furring_wall - 0.2`
-puts the back sheet essentially *on* the cladding plane, with the roofing running out past
-it so the water has to fall inside.
-
-RF-HOUSE has zero authored overhang, so no soffit exists or is needed. The garage's drip
-edge and K-gutter derive from its own ``EaveTrim`` (plan/storeys/garage.py).
-
-Not `# haus: editable`: trim runs are not UI-movable elements (only params-generated
-geometry lives here), so the editable-writeback rule does not apply.
-
-Geometry facts this module derives from (see plan/storeys/attic.py + plan/assemblies.py):
-- sheathing-ext datum plane at x = 0 / 36'; wall stack outboard of it =
-  ccSPF 4" + vent gap 0.5" + outer girt 1.5" + PBR 1.25" = 7.25" (``_WALL_OUTBOARD_IN``;
-  cladding face == roof footprint edge, where eave_z_m is defined) — and the footprint runs
-  to that same face in **y** as well, which is how far the eave runs have to reach to close
-  the corner;
-- RAFTER-PLATE top at 20'-2 1/4" (attic datum 20'-0" + 3/4" subfloor + 1 1/2" of 2x6 laid
-  flat, no knee wall — see plan/assemblies.py's RAFTER_PLATE); deck plane (eave_z_m)
-  rides the I-joist rise above it: 11.875" - 5.5" x 6/12 seat drop = 9.125", so eave_z is
-  20'-11 3/8";
-- roof stack above the deck (perpendicular): 5/8" CDX plywood (deck surface at 0.625") ->
-  0.04" adhered butyl membrane -> metal 1" profile envelope. That is the whole of it. The 6:12 slope factor
-  turns those perpendicular offsets into the vertical ones an authored elevation is
-  measured in;
-- the wall cladding's head lands at the roofing's own underside (MatingFaces with a
-  continuous skin), 0.665" perpendicular above the deck plane.
-
-The roof is 5/8" plywood straight on the I-joists with a fully-adhered butyl membrane on it
-and the panel clipped to that (plan/assemblies.py ROOF, flash-and-batt in the bay
-under IRC R806.5 item 5.1.3).
-
-**The chain hangs from the deck top, 0.625" above the deck plane.** The drip edge's flange
-lies ON the structural deck and the membrane laps OVER it. One consequence worth stating,
-because it looks wrong at a glance and is not: the drip edge's foot and the gutter's rim are
-BELOW the deck plane (``_TRIM_BOTTOM_IN`` is negative). The face's 4" leg laps DOWN over
-the wall panel heads, and with only 0.67" of roof stack above the deck there is nowhere else
-for 4" of leg to go.
+Not `# haus: editable`: params-generated trim, not UI-movable.
 """
 
 from __future__ import annotations
 
-import math
-
 from params.cladding import HOUSE_EW_OUTBOARD_IN, HOUSE_NS_OUTBOARD_IN
-from params.roof_panel import ROOFING_BASE_IN
-from typehaus import DischargeExtension, Downspout, Flashing, Gutter, TrimKind, ft, inch, pt
+from params.roof_panel import EAVE_DECK_IN, PITCH, ROOFING_BASE_IN
+from typehaus import DischargeExtension, Downspout, Gutter, TrimKind, ft, inch, pt
 from typehaus.library.trim.metal_sales import BOX_GUTTER_BACK_IN, BOX_GUTTER_BOTTOM_IN
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
+from typehaus.resolve.roof_image_ii_eave import EaveStack
 
 _HOUSE_FT = 36.0
-# Wall layers outboard of the sheathing-ext datum -> the cladding outer face, which is
-# exactly the roof footprint edge (the zero-overhang roof laps the cladding).
-#
-# **The one constant the cladding face is measured by**, and deliberately spelled as the
-# stack it is: 4" ccSPF (around the three-ply standoff blocks) + 1/2" vent gap +
-# 1 1/2" outer girt + 1 1/4" PBR panel (plan/assemblies.py EXT_2X6; one girt tier since
-# 2026-09-01). A ribbed panel
-# stands off by its rib height, where a snap-lock pan stands off by its pan. Every param in
-# this house that measures off the cladding moves with it.
-#
-# The values it has had, kept beside it so the revert is a line and not a re-derivation:
-#   6.5"  — the girts under 1/2" snap-lock seam
-#   5.5"  — the Swinburne truss: 1.5 foam + 3.5 outrigger band + 0.5 seam
-#   5.02" — the CI boards before it: 0.02 WRB + 2" polyiso + 2" EPS + 0.5 furring + 0.5 seam
-_WALL_OUTBOARD_IN = HOUSE_EW_OUTBOARD_IN  # compatibility for E/W consumers
+#: The cladding face (== roof footprint edge); see params/cladding.py for the stack.
+_WALL_OUTBOARD_IN = HOUSE_EW_OUTBOARD_IN
 _EAVE_X_W = ft(0) - inch(_WALL_OUTBOARD_IN)
 _EAVE_X_E = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)
+_EAVE_DECK = inch(EAVE_DECK_IN)  # structure plane at the eave edge (ResolvedRoof.eave_z_m)
 
-# ** 20'-2 1/4", NOT 25'-0". ** The eave is a 2x6 laid FLAT on the attic deck
-# (RAFTER_PLATE, no knee wall), so the plate top is the attic datum plus 3/4" of
-# subfloor plus 1 1/2" of plate. Everything in this module hangs off it.
-_PLATE_TOP = ft(20, 2.25)
-_DECK_RISE_IN = 11.875 - 5.5 * (6.0 / 12.0)  # I-joist depth - 2x6 seat drop = 9.125"
-_EAVE_DECK = _PLATE_TOP + inch(_DECK_RISE_IN)  # deck plane at the eave edge (eave_z_m)
+#: The eave stack only needs the pitch and the roofing's base; the strip-in does not move it.
+_STACK = EaveStack(slope=PITCH, membrane_top_w=ROOFING_BASE_IN * M_PER_IN,
+                   strip_thickness_m=0.0, strip_material=None)
+_ORIGIN_U_M, _ORIGIN_Z_M = _STACK.gutter_origin()
+_GUTTER_BACK_IN = _ORIGIN_U_M / M_PER_IN   # back water face, out from the cladding face
+_GUTTER_TOP_IN = _ORIGIN_Z_M / M_PER_IN    # back top == front crest, above the deck plane
+#: Underside of the trough floor: the leader's top.
+_TROUGH_FLOOR_IN = _GUTTER_TOP_IN - BOX_GUTTER_BACK_IN - SHEET_24_GA_M / M_PER_IN
+#: Mid-width of the floor, where the leader takes its outlet.
+_TROUGH_MID_IN = _GUTTER_BACK_IN + BOX_GUTTER_BOTTOM_IN / 2.0
 
-# The roof stack is offset perpendicular to the slope; an authored elevation is vertical.
-_SLOPE_FACTOR = math.hypot(1.0, 6.0 / 12.0)  # 6:12 -> 1.1180
-#: The values this has had, kept beside it so the revert is a line and not a
-#: re-derivation: 7.475 under the screwed nailbase over 6" of polyiso, 4.25 under the vented
-#: batten roof before it.
-_CLADDING_HEAD_IN = ROOFING_BASE_IN * _SLOPE_FACTOR    # 0.74" — roofing underside == wall panel heads
-
-# The derived drip edge's FACE (resolve/roof_drip_edge.py, on the plane the corner trim it
-# replaced stood on): 1.25" out from the footprint edge, one sheet thick at the outboard side
-# of that, with a 4" leg down over the wall panel heads. Its sheet's *inner* face and its
-# foot are the two faces everything below registers against.
-#
-# **Both numbers are transcriptions of the resolver's.** Reading the leg as 2" once hung
-# every piece below it 2" high, and reading the face as a solid 1.25" billet drew the
-# gutter's back sheet inside it. Two pieces of metal, one place.
-_TRIM_FACE_IN = 1.25                         # resolve/roof_trim.py::_CORNER_TRIM_THICKNESS_M
-_TRIM_LEG_IN = 4.0                           # resolve/roof_trim.py::_CORNER_TRIM_LEG_M
-#: The formed face's own thickness — ``trim_bands``' shell rule, bounded by the plan depth.
-_TRIM_SHEET_IN = min(0.5, _TRIM_FACE_IN / 3.0)          # 0.42"
-#: NEGATIVE, and correctly so: a 4" leg hung from a roofing underside only 0.74" above the
-#: deck reaches 3.26" BELOW it, lapping down over the wall panel heads.
-_TRIM_BOTTOM_IN = _CLADDING_HEAD_IN - _TRIM_LEG_IN      # -3.26"
-
-#: The coil the whole chain is ordered in — `RF-HOUSE.edge_trim_material`, the house's one
-#: exterior dark, which the derived drip edge is already in. A mill-aluminium trough under it
-#: put a pale band along the eaves where the dark outline is supposed to be continuous. The
-#: leader takes the same coil, as a gutter's leader does.
+#: The coil the chain is ordered in — ``RF-HOUSE.edge_trim_material``, the house's one exterior
+#: dark, so the eave line reads as one dark outline. The leader takes the same coil.
 _CHAIN_MATERIAL = "metal-dark-exterior"
-
-#: The overlap every joint in the chain takes. Half an inch is also the thickness the IR
-#: draws sheet metal at (resolve/trim_bands.py::GUTTER_SHELL_M), so a lap of one nominal
-#: shell is the smallest one that still reads as a lap in the model.
-_LAP_IN = 0.5
-
-# --- Box gutter ---------------------------------------------------------------------------
-# The PBR 5x4 catalog box (library/trim/metal_sales.py): 5" bottom, 5" back, 4" front waterway.
-# Hung with its back sheet tucked a lap *behind* the drip edge's face, so the face and its
-# kick shed into the trough rather than past it into the gap. The rim rides a lap above the
-# face's foot — high enough to make that lap, low enough to stay clear of the deck top (or
-# the gutter lifts the underlayment off the deck it has to bond to).
-_GUTTER_THICK_IN = BOX_GUTTER_BOTTOM_IN      # channel width, out from the back sheet's face
-_GUTTER_DEPTH = inch(BOX_GUTTER_BACK_IN)     # channel height at the back; the front is 4"
-#: Inner face of the back sheet. A lap *behind* the face means behind the face's own sheet,
-#: not behind the plan depth that sheet hangs at the end of.
-_GUTTER_BACK_IN = _TRIM_FACE_IN - _TRIM_SHEET_IN - _LAP_IN   # 0.33"
-_GUTTER_RIM_IN = _TRIM_BOTTOM_IN + _LAP_IN                   # -2.76"
-
-#: Mid-width of the trough, where the leader takes its outlet. The shell closes a half-shell
-#: at each side.
-_TROUGH_MID_IN = _GUTTER_BACK_IN + _LAP_IN + (_GUTTER_THICK_IN - 2.0 * _LAP_IN) / 2.0
 
 #: The gutter design basis (SMACNA): St Paul 10-yr 5-min depth, NOAA Atlas 14 point table
 #: (HDSC PDS, 2026-10-27). Intensity is depth over 5 min, x 12. notes/box_gutter_sizing.md §1.
@@ -164,39 +60,32 @@ def _above_deck(vertical_in: float):
     return _EAVE_DECK + inch(vertical_in)
 
 
-# The eaves run the full roof footprint, which reaches the *cladding* face at both gable
-# ends — not the sheathing datum. North/south board-batten now stands 6.75 inches out
-# at each rake corner with no gutter under it, which is the hole the 3D view showed.
+# The eaves run the full footprint, to the gable cladding faces; the engine carries the
+# trough on to the eave piece's own end and caps it there.
 _EAVE_Y0 = ft(0) - inch(HOUSE_NS_OUTBOARD_IN)
 _EAVE_Y1 = ft(_HOUSE_FT) + inch(HOUSE_NS_OUTBOARD_IN)
 
 
-def _run(x):
-    return (pt(x, _EAVE_Y0), pt(x, _EAVE_Y1))
+def _out(eave_x, outward: float, inches_val: float):
+    offset = inch(inches_val)
+    return eave_x + offset if outward > 0 else eave_x - offset
 
 
 def _eave_water(side: str, index: int, eave_x, outward: float):
-    """One eave edge's box gutter; ``outward`` is -1 west / +1 east.
+    """One eave's box gutter; ``outward`` is -1 west / +1 east.
 
-    Both runs go south→north (+y), whose left-hand normal (resolve/geometry.py::normal,
-    90 deg CCW) points west (-x). The house is east of the west eave and west of the east
-    eave, so the building is on the *right* of the west run and on the *left* of the east
-    run — which is what tells the gutter which sheet is its back.
+    Both runs go south->north (+y), whose left-hand normal points west: the house is on the
+    right of the west run and on the left of the east one, which tells the section its back.
     """
-    back_side = "right" if outward < 0 else "left"
-
-    def out(inches_val: float):
-        offset = inch(inches_val)
-        return eave_x + offset if outward > 0 else eave_x - offset
-
+    x = _out(eave_x, outward, _GUTTER_BACK_IN)
     return Gutter(
         uid=f"RTGT0{index}AAAA", tag=f"TR-RF-GUTTER-{side}", kind=TrimKind.GUTTER,
-        path=_run(out(_GUTTER_BACK_IN + _GUTTER_THICK_IN / 2.0)),
-        top_elevation=_above_deck(_GUTTER_RIM_IN), depth=_GUTTER_DEPTH,
-        thickness=inch(_GUTTER_THICK_IN), material=_CHAIN_MATERIAL, host_ref="RF-HOUSE",
-        slope=f'1/16 in/ft to the north-end {side} downspout',
+        path=(pt(x, _EAVE_Y0), pt(x, _EAVE_Y1)),
+        top_elevation=_above_deck(_GUTTER_TOP_IN), depth=inch(BOX_GUTTER_BACK_IN),
+        thickness=inch(BOX_GUTTER_BOTTOM_IN), material=_CHAIN_MATERIAL, host_ref="RF-HOUSE",
+        slope=f"installed level; outlet at the north end ({side})",
         downspout_ref=f"TR-RF-LEADER-{side}",
-        back_side=back_side, product="PBR_BOX_GUTTER_5X4")
+        back_side="right" if outward < 0 else "left", product="PBR_BOX_GUTTER_5X4")
 
 
 # --- Downspouts ---------------------------------------------------------------------------
@@ -219,12 +108,11 @@ _LEADER_BOTTOM = ft(1)
 
 
 def _leader(side: str, index: int, eave_x, outward: float):
-    offset = inch(_TROUGH_MID_IN)
-    x = eave_x + offset if outward > 0 else eave_x - offset
+    x = _out(eave_x, outward, _TROUGH_MID_IN)
     return Downspout(
         uid=f"RTDS0{index}AAAA", tag=f"TR-RF-LEADER-{side}",
         position=pt(x, _LEADER_Y),
-        top_elevation=_above_deck(_GUTTER_RIM_IN) - _GUTTER_DEPTH,
+        top_elevation=_above_deck(_TROUGH_FLOOR_IN),
         bottom_elevation=_LEADER_BOTTOM,
         diameter=inch(_LEADER_DIA_IN),
         material=_CHAIN_MATERIAL, gutter_ref=f"TR-RF-GUTTER-{side}",
@@ -257,8 +145,7 @@ def _discharge(side: str, leader_x) -> dict:
             inlet_invert=inlet, outlet_invert=outlet))
 
 
-# FORTIFIED Roof §4.5's drip at every eave AND rake is the derived drip edge on all four
-# RF-HOUSE edges (checks/structural/fortified_roof.py grades its flange on the deck).
+# FORTIFIED Roof §4.5's drip is the Image II eave and rake pieces themselves.
 ATTIC_ELEMENTS = [
     _eave_water("W", 1, _EAVE_X_W, -1.0), _eave_water("E", 2, _EAVE_X_E, 1.0),
     _leader("W", 1, _EAVE_X_W, -1.0), _leader("E", 2, _EAVE_X_E, 1.0),

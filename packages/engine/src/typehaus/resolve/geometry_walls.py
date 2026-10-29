@@ -54,6 +54,17 @@ def is_raked(wall: ResolvedWall) -> bool:
     return wall.top_z0_m is not None or wall.top_z1_m is not None
 
 
+def body_top_at(wall: ResolvedWall, x: float, y: float) -> float:
+    """:func:`wall_top_at`, held under the wall's eave ``head_caps``: past its axis end a
+    gable's layers run flat into the eave stack, and the cap keeps them below it."""
+    z = wall_top_at(wall, x, y)
+    for cap in wall.head_caps:
+        limit = cap.z_at(x, y)
+        if limit is not None and limit < z:
+            z = limit
+    return z
+
+
 def _prism(ring, z0: float, z1: float, top_at) -> GPrism:
     """A wall slice: raked to ``top_at`` when the wall is raked, else flat to ``z1``."""
     ring_t = tuple((float(x), float(y)) for x, y in ring)
@@ -180,7 +191,8 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
     depth reaches and no others (:func:`cuts_layer`). Omitting it keeps every opening
     cutting every layer, which is the through-hole behaviour and the only one there was.
     """
-    top_at = (lambda x, y: wall_top_at(wall, x, y)) if is_raked(wall) else None
+    top_at = ((lambda x, y: body_top_at(wall, x, y))
+              if is_raked(wall) or wall.head_caps else None)
     z0, z1 = band if band is not None else (wall.z0_m, wall.z1_m)
     if z1 - z0 <= 1e-9:
         return ()

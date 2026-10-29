@@ -12,9 +12,6 @@ Our general goals are decent longevity and quality at a reasonable price, avoidi
 - **`PR-M-DRYER-COND` is boxed in:** its 61.9-degree turn in 3/4" PVC (every squared-off
   version reads as a run hanging in RM-M-LAUNDRY) stays a `mep.fitting_pattern` UNKNOWN.
 
-- **Router proposals drop `pull_points`**, so re-routing a boxed raceway loses its authored
-  boxes; and conduit elbows and pull boxes are unbilled.
-
 - **Concrete spec UNKNOWNs (8) wait on the mix submittal and a soil test:** chloride x4
   (ASTM C1218), ASR x2 (the aggregate's C1293/C1260 result plus a C1778 structure class), SCM
   x1 (cement standard/type), sulfate x1 (soil test, ASTM C1580). They sit on the permit
@@ -273,7 +270,6 @@ the future.
 - Spec sand or gravel backfill around house.
 - Check the gravel spec under the house. We are a strong believer in compact gravel as the key to an excellent foundation and fewer problems for the house, but we also want to be cost effective.
 - The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
-- Make W-BW-SCREEN's east passage face prettier (currently 5/8" MDO, not the west structural CDX). [Finish comparison, elevations, quantities, and sample instructions](bw-screen-finish-comparison.md) completed 2026-10-14: natural black locust slats over matte black lead; visible stainless screws preferred. Shiplap and ornamental panels compared. West header symmetry implemented 2026-10-14 (6⅛″ south extension, paired AC6Z); comparison now shows the stairs and landing. Physical samples, actual door/closer clearance, and decorative finish construction/model implementation remain pending. Another option to consider is a thin brick over foam or cement backer board or lath (ASTM C1088 Exterior Grade brick, Polyurethane Construction Adhesive, Polymer-Modified Mortar), possibly thin brick ordered, or saw cut from extra brick from the other brick work.
 - ED-M-PORCH-FLOOD: shielded adjustable 60° flood beneath the balcony front, aimed into the sunken garden; shared 3D geometry in viewer/GLB/IFC. However it seems to be a recessed light, not one that is angled at the sunken garden.
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
 - Sconce ED-S-STUDY2-STAIR-SC1 is a bit close to the floor, perhaps it should go at the top of the stairs on the wall, still on the same circuit but in the room above?
@@ -282,6 +278,7 @@ the future.
 - Possibly swap the concrete canopy stairway (SL-BW-TIER*) to pressure treated wood and composite treads or with brick stairs.
 - **Canopy beam-tail hoods implemented 2026-10-26:** matching 8⅞″ tails on BM-BW-RW/RE, east paired AC6Z through cap, ventilated crowned covers and separate canopy roof aprons, shared 3D/IFC geometry and two-assembly takeoff. [Dimensions and fabrication-release items](../houses/catlin/notes/canopy_beam_tail_hoods.md). Before fabrication: verify movement/tolerances within the 1¼″ modeled metal-to-house gap, release the roof-apron lap/rake-trim interface and side-tab/spacer wind securement, confirm treatment compatibility and obtain the shop quote. No house attachment or roof-footprint change.
 - Related to the above, beams of the canopy, BM-BW-RE and BM-BW-RW might be able to be extended into the garage framing to provide more structural strength to the canopy (possibly allowing us to drop the sheathing bracing need on the W-BW-SCREEN). Downsides are that it puts the garage itself more on engineered terms and is a weakness in the garage weather seal.
+- Undo the work of 529a0ca6 'canopy beam caps' and see if it can be symmetrical by both sides of the beam terminating at the post.
 - Make the countertop (and quartz window stools) a "ready to send to manufacturer" design and export. Include rounding corners
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps a vertical grab bar between the toilet and the tub, serving both.
 - Window/door quotes (products named 2026-10-21): get Drutex (DAKAM, Chicago), Andersen 400 and Cascadia quotes and close `notes/window_and_door_procurement.md` §2.6 — Alucover nail fin + NAFS DP, the 14" tilt-only minimum, Drutex sill rail height (re-strike the 2.953" stools), Andersen triple-pane in MN and frame depth, the Cascadia double-door NFRC label and thresholds, dark-colour warranties.
@@ -301,6 +298,9 @@ the future.
 - [ ] Before ordering LVP/pouring the cap: confirm Quincy Oak sample and local delivered quote, measure the installed plank and coating stack, and set the flush movement/edge joint from those samples.
 - Conduit for floor thermostats for heated floor
 - EMT conduit (or as appropriate) modeled in the basement
+- **Router proposals drop `pull_points`**, so re-routing a boxed raceway loses its authored
+  boxes; and conduit elbows and pull boxes are unbilled.
+- Make sure wall boxes are modeled clearly (so receptacle + box, and in the case of the basement EMT conduit too as it runs on surface) with the right depth of box for the material. We like deeper boxes where practical, easier to work with.
 - See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
 - Workshop receptacles: RC1's 120/240 V circuit and RC2's 120 V quad are modeled. Resolve the required tamper-resistant listings, compatible surface boxes and covers, and field wiring before installation; see [workshop receptacles](../houses/catlin/notes/workshop_receptacles.md).
 - D-B-PATIO: separate brick reveal, widened RO, 5-1/2 inch concrete seat, composite returns, one blind curb-skin recess and XMN5 sill extension are modeled. Sill/approach/pan intersections pass; crest heights come from the [engine-generated review](../houses/catlin/notes/french_door_catalog_installation.md#3-height-and-geometry-review). Complete concrete reinforcement/development, support root and cross-bearer bearing, field membrane bonds, installed pan/sweep/hinge sections, and assembled-unit label/warranty evidence. Standard rainproofing only; drainage/sump back up the revised concrete curb. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
@@ -318,22 +318,25 @@ the future.
 - Possibly poplar 1x12 as stair skirt boards, if not already specified, painted white. Likely installed tight to wall framing/drywall prior to installation of finish treads and risers.
 - [x] Roof sheathing: 19/32" 40/20 plywood, CDX house and Structural I garage/canopy. [Assessment](../houses/catlin/notes/roof_sheathing_and_membranes.md): Image II acceptance, eave cantilevers, narrow/single-span panels and 24-1/8" transition engineering remain open.
 - [x] Roof membranes at installed thickness, near-black under Flashing: house butyl 30 mil, garage/canopy HT rubberized asphalt 40 mil. House unvented/full-coverage product confirmation remains open; see the roof assessment.
-- [ ] Resolve the house eave/gutter assembly: correct Image II hook/hems, coordinate membrane and apron laps, model gutter fall and outward overflow, and verify supports/corners. [Measured review and implementation plan](roof-wall-eave-detail.md).
+- [ ] House eave/gutter, remaining after the geometry pass ([plan](roof-wall-eave-detail.md), [note](../houses/catlin/notes/roof_wall_eave_detail.md)):
+  - Supports: select the gutter bracket, draw a section through a support, seal or move the fixing above the crest (screw now 4.7" below it), rework the eave girt for edge distance.
+  - Joints: eave and gutter splices, thermal movement, sealant/fastener schedule.
+  - Real outlet fitting and the north tail.
+  - Snow protection: gutter front is about 2" above the snow-slide line.
+  - Confirm strip-in width (provisional 9") with GCP, and Image II + deck + membrane acceptance with Metal Sales; deck bearing is 2.036" vs 2" min, provisional.
+  - Build a physical mock-up (two panels, wall rib/closure, membrane, gutter, two supports, a corner).
 - [x] Compared 5/8" AdvanTech roof sheathing; retain plywood. Reconsider as a construction-moisture upgrade after local quotes and product/connection review; see the roof assessment.
 - Consider 1/2" advantech for walls sheathing
 - Probably around the windows, the flashing should come out and over the girts (covering the buck and girt then) that box in the window. ccspf should come out and around the outie buck as well up to the girt there. That would bury the KDAT girt completely in foam and flashing. Perhaps instead the gap should remain on the back of the girt, but the full outer face and top and bottom is flashed (just back clear to dry backwards into cavity?)
 - Make door and window pieces (trim, jamb, etc) selectable in the UI as separate pieces (but all still hidden by the same view toggle). Such pieces should have their product name shown in the UI when selected. Generally something like the drip edge should be one piece (even if multiple faces) so the garage drip edge at the eaves is something that has gone too far in being split out, and gutters are another thing where the back, bottom and front should all be shown as one piece.
-- Some of the trim added to the siding might need a depth bias to reduce 'glitching' with the siding itself
 - Pg 288 of the book has a roof eave detail where the roof and drip flashing alone extend out about an inch (no metal or sheathing).
 - Pick a soffit product and close the garage attic ventilation grading, and the corrugated soffit to sill junction detailed. Also fix the garage soffit end detail (north and south gable ends) where the sofit is too flat and isn't inline with the roof slope there
 - SL-SG-STAIRPAD is a slightly different finished height than SL-WK-D. They should have the same finished height.
 - D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
-- Undo the work of 529a0ca6 'canopy beam caps' and see if it can be symmetrical by both sides of the beam terminating at the post.
 - Might be worth writing up ICF in cost options as an alternative exterior wall setup (for the house) something like the Quadlock 'plus' form which with 4.25" of EPS on each side delivers R-38.
 - Check the modeling of the baseboard/tile surround in tile rooms. Is it fully and correctly detailed?
 - Properly model the drywall channels used (ie corners, and especially for the LED light strips)
 - Make sure the plumbing matches fixtures to their right locations on their connections
-- Make sure wall boxes are modeled clearly (so receptacle + box, and in the case of the basement EMT conduit too as it runs on surface) with the right depth of box for the material. We like deeper boxes where practical, easier to work with.
 - Make sure sizing and dimensions and placement are correct for junction boxes (ie for LED power supplies), with specified product.
 - Double check the calculations for accuracy of BTU heating and cooling load.
 - Make sure the house rainscreen is both ventilated and tight against bugs.
@@ -347,6 +350,8 @@ the future.
 - Make sure our entire smart home setup is Home Assistant friendly, with no corporate cloud required to run it (a brief cloud connection for setup is fine, just not deployed).
 - We likely won't be getting a home backup battery when we first power the house (too expensive alongside everything else) but we will have solar and we want it easy to add a battery (possibly using an EV as the backup battery, that is becoming more common, but ideally specified in a way that might work with various brands of car in the future, not just one short term supported product). Separately, home assistant (likely hardwired LAN into the main router) and the router are probably on a smaller more standard computer backup battery. With all of these things, our main goal is being able to make sure the batteries never start on fire, and if they do start on fire, that the fire is contained in a manageable area.
 - Possibly the ESS closet can just be wood studs (metal studs seeming silly as an extra spec for just a small amount) with a Fire-Retardant Spray over the studs.
+- Let's do a pass to remove any pricing allowances that might be removed by directly modeled parts.
+- Let's use haiku subagents to hunt for items that look to be overpriced, either due to bad estimates or bad product choices (some items were the "only one that fit all criteria" when in reality we could have loosened one criteria and got a much cheaper, almost as good solution)
 
 # Project Management
 

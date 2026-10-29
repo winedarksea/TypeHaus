@@ -319,9 +319,9 @@ def test_every_wall_becomes_one_element_with_a_part_per_body_layer(model, geomet
 
 def test_a_raked_wall_carries_per_vertex_tops(model, geometry) -> None:
     """A gable/ToRoof wall stops at its actual rake; a flat bounding-height box would engulf
-    and z-fight the roof it carries."""
+    and z-fight the roof it carries. Past the axis, under an eave stack, its head cap wins."""
     from typehaus.resolve.geometry_ir import GPrism
-    from typehaus.resolve.geometry_walls import is_raked, wall_top_at
+    from typehaus.resolve.geometry_walls import body_top_at, is_raked
 
     raked = [w for w in model.walls if is_raked(w)]
     if not raked:
@@ -335,7 +335,7 @@ def test_a_raked_wall_carries_per_vertex_tops(model, geometry) -> None:
             if solid.top is None:
                 continue
             for (x, y), top in zip(solid.ring, solid.top):
-                assert top == pytest.approx(wall_top_at(wall, x, y), abs=TOL)
+                assert top == pytest.approx(body_top_at(wall, x, y), abs=TOL)
 
 
 def test_openings_split_their_wall_layer(model, geometry) -> None:

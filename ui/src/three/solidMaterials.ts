@@ -24,6 +24,7 @@ import { assemblyFaceMaterial } from "../model/solidLabels";
 import type { Trade } from "../state/vocabulary";
 import { solidTrades } from "../model/tradeVisibility";
 import { NORDIC_ROUGHNESS, standardMaterial } from "./surfaces";
+import { metalDepthTier } from "./materials";
 import vocabulary from "../generated/vocabulary.json";
 
 // solid category → sRGB hex. Categories with no entry fall back to the theme's concrete
@@ -148,9 +149,11 @@ export function createSolidMaterial(
     depthWrite: !translucent,
     // Fixed steps expose the film on its substrate while letting the profiled siding
     // cover it. Slope bias can pull concealed flashing through the corrugation valleys.
+    // Formed metal takes its lap tier instead (→ materials.ts metalDepthTier).
     polygonOffset: flashingMembrane,
     polygonOffsetFactor: 0,
     polygonOffsetUnits: flashingMembrane ? -1 : 0,
+    ...metalDepthTier(solid.category),
   });
 }
 

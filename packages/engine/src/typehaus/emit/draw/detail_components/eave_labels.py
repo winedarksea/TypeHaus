@@ -93,7 +93,7 @@ def solid_anchor(model, direction: str, station: float, clad_out: float,
 
 
 def roof_labels(model, roof, clad_out: float, junction_z: float, out_sign: float,
-                slope: float) -> list[tuple[Anchor, str]]:
+                slope: float, roofing: bool = True) -> list[tuple[Anchor, str]]:
     """The roofing and vent-mat leaders, only for layers the roof actually has."""
     bands = {layer.function.value: (lo, hi)
              for (layer, lo, hi) in above_structure_bands(model, roof)}
@@ -103,7 +103,7 @@ def roof_labels(model, roof, clad_out: float, junction_z: float, out_sign: float
         return junction_z + (lo + hi) / 2.0 * slope
 
     entries: list[tuple[Anchor, str]] = []
-    if "cladding" in bands:
+    if roofing and "cladding" in bands:
         roofing = next(layer for layer, _, _ in above_structure_bands(model, roof)
                        if layer.function.value == "cladding")
         material = model.plan.library.material(roofing.material_ref)
@@ -116,7 +116,7 @@ def roof_labels(model, roof, clad_out: float, junction_z: float, out_sign: float
 
 
 def eave_labels(entries, clad_out: float, junction_z: float, out_sign: float,
-                scale=None) -> list[IRNode]:
+                scale=None, step_pt: float = 14.0) -> list[IRNode]:
     """Stack the leaders in one column outboard of the outermost piece they name.
 
     The chain is a *lap order* — deck, drip edge, underlayment over the drip, metal, gutter
@@ -130,7 +130,7 @@ def eave_labels(entries, clad_out: float, junction_z: float, out_sign: float,
     column = clad_out + out_sign * max(15.0, reach + 4.0)
     top = max(z for (_u, z), _text in live)
     specs = [LabelSpec(text=wrap_label(text), target=target) for target, text in live]
-    placed = place_column(specs, x=column, z_top=max(top, junction_z) + 1.0, step_pt=14.0,
+    placed = place_column(specs, x=column, z_top=max(top, junction_z) + 1.0, step_pt=step_pt,
                           height_pt=TEXT_PT, scale=scale,
                           align="left" if out_sign > 0 else "right")
     return [Leader(anchor=NamedPoint(xy=label.spec.target), at=label.at,

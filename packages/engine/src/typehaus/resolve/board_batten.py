@@ -23,7 +23,7 @@ from typehaus.resolve.geometry_prims import (
     _arch_soffit_segment_count,
     arch_soffit_circle,
 )
-from typehaus.resolve.geometry_walls import cuts_layer, wall_top_at
+from typehaus.resolve.geometry_walls import body_top_at, cuts_layer
 
 # Re-export existing names for downstream panel callers.
 from typehaus.resolve.metal_skin_profiles import (  # noqa: F401 — compatibility exports
@@ -305,7 +305,7 @@ def resolve_profiled_metal_surfaces(model) -> None:
                     wall, layer.polygon, bottom, top, lines.get(wall.tag, wall.axis),
                     openings=[op for op in model.openings if op.host_wall == wall.tag],
                     layer_name=layer.name,
-                    upper_at=lambda x, y, w=wall: wall_top_at(w, x, y),
+                    upper_at=lambda x, y, w=wall: body_top_at(w, x, y),
                     height_breakpoints=wall.axis, profile=profile,
                     support_clearance_m=clearance,
                 ) for bottom, top in zip(cuts, cuts[1:], strict=False)]

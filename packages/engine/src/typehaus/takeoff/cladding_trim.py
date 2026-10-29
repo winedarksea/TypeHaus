@@ -172,10 +172,11 @@ def roof_face_in(member) -> float:
     return (member.z1_m - member.z0_m) / M_PER_IN
 
 
-def _eave_pieces(rows, length_m, tag) -> None:
+def _eave_pieces(rows, length_m, tag, cleat: bool = True) -> None:
     _pieces(rows, IMAGE_II_EXTENDED_EAVE, "IMAGE_II_EXTENDED_EAVE", length_m, tag,
             note="specify pitch")
-    _pieces(rows, IMAGE_II_OFFSET_CLEAT, "IMAGE_II_OFFSET_CLEAT", length_m, tag, 0.0)
+    if cleat:
+        _pieces(rows, IMAGE_II_OFFSET_CLEAT, "IMAGE_II_OFFSET_CLEAT", length_m, tag, 0.0)
 
 
 def _roof_edge_rows(model: ResolvedModel, rows: _Rows) -> None:
@@ -188,11 +189,15 @@ def _roof_edge_rows(model: ResolvedModel, rows: _Rows) -> None:
             else:
                 _rake(rows, face.length_m, tag, roof_face_in(face), barge=True)
         # The Image II catalog pieces on the wrapped edges (roof_image_ii) are the stock by design.
+        # The pan hems onto the Extended Eave's own lip, no cleat (RDM 5/2024 p. 31).
         for run, member in _runs(roof, "-image-ii-eave"):
-            _eave_pieces(rows, member.length_m, f"{roof.tag}:{run}")
+            _eave_pieces(rows, member.length_m, f"{roof.tag}:{run}", cleat=False)
+        # A rake's foot over the eave leg is the same stock piece, notched at the corner.
+        feet = dict(_runs(roof, "-image-ii-rake-foot"))
         for run, member in _runs(roof, "-image-ii-rake"):
             barge = _has_barge(model, roof, run)
-            _rake(rows, member.length_m, f"{roof.tag}:{run}", barge=barge)
+            foot = feet[run].length_m if run in feet else 0.0
+            _rake(rows, member.length_m + foot, f"{roof.tag}:{run}", barge=barge)
         for member in roof.members:
             if member.category != "ridge_cap":
                 continue

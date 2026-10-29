@@ -17,6 +17,7 @@ from typehaus.checks.structural.fortified_roof import (
     fortified_roof_sealed_deck,
 )
 from typehaus.findings import Result
+from typehaus.quantities import inch
 
 
 @pytest.fixture(scope="module")
@@ -121,14 +122,16 @@ def _with_house_drip(ctx, keep):
 
 
 def test_the_house_drip_edge_is_the_image_ii_catalog_piece(drip_edge) -> None:
-    """The eaves carry the Extended Eave's 5 in flange and the rakes the Rake Cleat's 2-7/8 in
-    leg, both read off the catalog sections; every edge clears FORTIFIED's 2 in."""
+    """The eaves are graded on the Extended Eave's resolved bearing (its placed leg's plan
+    overlap of the deck, test_image_ii_roof_pieces), the rakes on the Rake Cleat's 2-7/8 in
+    catalog leg; every edge clears FORTIFIED's 2 in."""
     house = {f.message.split("'s ")[1].split(" edge")[0]: f.message
              for f in drip_edge if f.element_tags[:1] == ("RF-HOUSE",)}
     assert len(house) == 4
-    assert all("formed drip edge (catalog)" in m for m in house.values())
-    assert all('5.00" on the deck' in house[side] for side in ("E eave", "W eave"))
-    assert all('2.88" on the deck' in house[side] for side in ("N rake", "S rake"))
+    assert all("formed drip edge (resolved bearing)" in house[side] and '2.04" on the deck'
+               in house[side] for side in ("E eave", "W eave"))
+    assert all("formed drip edge (catalog)" in house[side] and '2.88" on the deck'
+               in house[side] for side in ("N rake", "S rake"))
 
 
 def test_removing_a_rake_drip_edge_fails_that_edge_only(ctx) -> None:
@@ -143,13 +146,13 @@ def test_removing_a_rake_drip_edge_fails_that_edge_only(ctx) -> None:
 
 
 def test_a_short_flange_fails_on_geometry_not_presence(ctx, monkeypatch) -> None:
-    """A catalog eave whose deck flange is under 2 in is not §4.5's drip edge.
+    """A catalog eave whose resolved bearing is under 2 in is not §4.5's drip edge.
 
-    The flange is read off the catalog section, so the test shortens the section's answer.
+    The bearing is read off the placed eave, so the test shortens that answer.
     """
     from typehaus.checks.structural import fortified_roof
 
-    monkeypatch.setattr(fortified_roof, "eave_deck_flange_in", lambda: 1.0)
+    monkeypatch.setattr(fortified_roof, "eave_bearing_m", lambda *_: inch(1).meters)
     house = _with_house_drip(ctx, lambda m: m)
     broken = [f for f in house if f.result is Result.FAIL]
     assert len(broken) == 2

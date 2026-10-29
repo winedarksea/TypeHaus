@@ -35,7 +35,8 @@ from typehaus.quantities import inch
 # site and must never be fused into this constant, or a roof at any other pitch whose
 # bearing wall does not resolve gets a silently wrong seat cut.
 _BIRDSMOUTH_FALLBACK_PLATE_M = inch(3.5).meters
-# The metal roofing runs 0.6" past the wall furring's outer face (reference drip lap).
+# The metal roofing runs 0.6" past the wall furring's outer face (reference drip lap), except
+# on a wrapped Image II eave, where it reaches the Extended Eave's lip.
 _METAL_PROUD_M = inch(0.6).meters
 
 
@@ -278,11 +279,16 @@ def layer_edge_setbacks(model, roof) -> tuple[dict, ...]:
     # says so.
     if not any(g in ("foam", "batten") for g in groups):
         groups = ["batten" if g == "deck" else g for g in groups]
+    # A pan wrapped round an Image II Extended Eave reaches the lip, not the drip lap.
+    from typehaus.resolve.roof_image_ii_pan_end import wrapped_eave_reach
+
+    reach = wrapped_eave_reach(model, roof)
     entries: list[dict] = []
     for layer, group in zip(layers, groups, strict=True):
         entries.append({
             "layer": layer.name,
             **{edge: (clips[edge][group] if group is not None else 0.0)
                for edge in ("west", "east", "south", "north")},
+            **({edge: -u for edge, u in reach.items()} if group == "metal" else {}),
         })
     return tuple(entries)

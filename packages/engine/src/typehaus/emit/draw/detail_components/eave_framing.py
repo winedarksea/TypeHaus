@@ -4,15 +4,16 @@ All read off resolved members (``Roof.eave_blocking`` and ``resolve/roof_eave_gi
 so a detail over a roof without them draws nothing here. The blocking and girt are cut
 by the section already; the standoff sits at a bay centre, usually off the cut plane, so it
 and its screws draw as HIDDEN lines beyond. The hanger is not a model element (not billed)
-and draws schematically off the resolved gutter.
+and draws schematically off the authored catalog gutter.
 """
 
 from __future__ import annotations
 
 from typehaus.emit.draw.detail_components.config import LAYER
 from typehaus.emit.draw.detail_components.geometry import flashing_nodes, rect_points
-from typehaus.emit.draw.lineweights import LIGHT
+from typehaus.emit.draw.lineweights import LIGHT, PROFILE
 from typehaus.emit.draw.scene import IRNode, Polyline
+from typehaus.emit.draw.section_clip import clip_rect, clip_segment
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
 
@@ -49,10 +50,22 @@ def _hidden(points, tag: str, closed: bool = False) -> Polyline:
                     linetype="HIDDEN", tag=f"detail-component:{tag}")
 
 
+def _hidden_clipped(points, tag: str, crop_in) -> list[Polyline]:
+    """A two-point hidden line trimmed to the crop (inches), or nothing if it lies outside."""
+    seg = clip_segment(points[0], points[1], crop_in)
+    return [] if seg is None else [_hidden(seg, tag)]
+
+
 def eave_gutter_support(model, clad_out: float, out_sign: float, direction: str,
-                        station: float) -> tuple[list[IRNode], list]:
-    """``(nodes, label entries)`` for the gutter's load path back to the eave blocking."""
+                        station: float, crop=None) -> tuple[list[IRNode], list]:
+    """``(nodes, label entries)`` for the gutter's load path back to the eave blocking.
+
+    ``crop`` (metres, the detail's window) clips the hidden lines, which otherwise run on
+    to the block wherever the window stops short of it.
+    """
     station_in = station / M_PER_IN
+    crop_in = None if crop is None else tuple(
+        (u / M_PER_IN, z / M_PER_IN) for (u, z) in crop)
 
     def near(m) -> bool:
         u0, u1, _a0, _a1 = _span(m, direction)
@@ -83,50 +96,106 @@ def eave_gutter_support(model, clad_out: float, out_sign: float, direction: str,
     if standoff is not None:
         s0, s1, *_ = _span(standoff, direction)
         sz0, sz1 = standoff.z0_m / M_PER_IN, standoff.z1_m / M_PER_IN
-        nodes.append(_hidden(rect_points(s0, sz0, s1, sz1), "girt-standoff", closed=True))
+        box = clip_rect(s0, s1, sz0, sz1, crop_in)
+        if box is not None:
+            nodes.append(_hidden(rect_points(box[0], box[2], box[1], box[3]), "girt-standoff",
+                                 closed=True))
         entries.append((((g0 + g1) / 2.0, (gz0 + gz1) / 2.0),
                         f"{girt.profile} gutter girt on a {standoff.profile} standoff "
                         f"each bay (beyond)"))
         for z in (sz1 - _SCREW_INSET_IN, sz0 + _SCREW_INSET_IN):
-            nodes.append(_hidden(((girt_outer, z), (block_inner, z)), "tlok08"))
+            nodes += _hidden_clipped(((girt_outer, z), (block_inner, z)), "tlok08", crop_in)
         entries.append((((s0 + s1) / 2.0, sz1 - _SCREW_INSET_IN),
                         "2 TLOK08 per standoff into the block"))
 
-    hanger = _hanger(model, clad_out, out_sign, direction, station, girt_outer,
-                     (gz0 + gz1) / 2.0)
+    hanger = _hanger(model, clad_out, out_sign, direction, station, girt, girt_outer, crop_in)
     if hanger is not None:
-        hanger_nodes, target = hanger
+        hanger_nodes, target, label = hanger
         nodes += hanger_nodes
-        entries.append((target, "hidden hanger at each standoff, screwed to the girt"))
+        entries.append((target, label))
     return nodes, entries
 
 
-def _hanger(model, clad_out, out_sign, direction, station, girt_outer, girt_mid):
-    """A hidden hanger across the trough's rim, fixed through the back sheet into the girt."""
+#: The back clip: drawn gauge, how far it rises above the screw, and its foot along the floor.
+_CLIP_T_IN = 0.06
+_CLIP_ABOVE_SCREW_IN = 0.75
+_CLIP_FOOT_IN = 1.0
+#: The gutter's own sheet, which the clip sits inside of.
+_GUTTER_SHEET_IN = 0.024
+#: Washer under the sealed screw head, drawn on the clip's face.
+_WASHER_IN = 0.5
+_SCREW_EDGE_IN = 0.25
+
+
+def gutter_under_eave(model, clad_out: float, direction: str, station: float):
+    """``(gutter, roof)`` for the authored catalog gutter at this eave cut, else ``None``."""
+    from typehaus.model.trim import Gutter
+
     u_ax, a_ax = (0, 1) if direction == "x" else (1, 0)
-    us: list[float] = []
-    rim = None
-    for solid in model.solids:
-        if solid.category != "gutter":
+    for el in model.plan.all_elements():
+        if not isinstance(el, Gutter) or not el.product:
             continue
-        along = [p[a_ax] for p in solid.outline]
-        if not min(along) <= station <= max(along):
+        a, b = el.path[0].xy_m, el.path[-1].xy_m
+        if abs(a[u_ax] - b[u_ax]) > 1e-6 or abs(a[u_ax] / M_PER_IN - clad_out) > _REACH_IN:
             continue
-        across = [p[u_ax] / M_PER_IN for p in solid.outline]
-        if min(abs(min(across) - clad_out), abs(max(across) - clad_out)) > _REACH_IN:
-            continue
-        us += across
-        rim = max(rim or -1e9, solid.z1_m / M_PER_IN)
-    if not us or rim is None:
+        if min(a[a_ax], b[a_ax]) <= station <= max(a[a_ax], b[a_ax]):
+            roof = next((r for r in model.roofs if r.tag == el.host_ref), None)
+            return (el, roof) if roof is not None else None
+    return None
+
+
+def hanger_screw(model, clad_out: float, out_sign: float, direction: str, station: float,
+                 girt) -> tuple[float, float, float, bool] | None:
+    """``(back_u, screw_z, crest_z, reaches_girt)`` in inches for the provisional hanger.
+
+    The face and its kick hang inside the trough, so a p. 46 strap from the front lip back
+    up the roof cannot pass; the hanger sits below the face, and its screw goes through the
+    back *below the crest* into the eave girt, mid-way through what the two share.
+    ``reaches_girt`` is False when the back does not overlap the girt at all.
+    """
+    found = gutter_under_eave(model, clad_out, direction, station)
+    if found is None:
         return None
-    back, front = (min(us), max(us)) if out_sign > 0 else (max(us), min(us))
-    z = rim - 0.4
-    # Fixed at the girt's mid-height, clear of the TLOK08s near its edges.
-    fix_z = min(z - 1.25, girt_mid)
-    strap = [(front - out_sign * 0.6, z), (back + out_sign * 0.6, z),
-             (back + out_sign * 0.6, fix_z)]
-    nodes = flashing_nodes(strap, thickness=0.12, material="metal", tag="gutter-hanger",
-                           lineweight=LIGHT)
-    nodes.append(_hidden(((back + out_sign * 0.6, fix_z),
-                          (girt_outer - out_sign * 1.25, fix_z)), "hanger-screw"))
-    return nodes, ((back + front) / 2.0, z)
+    el, _roof = found
+    u_ax = 0 if direction == "x" else 1
+    back = el.path[0].xy_m[u_ax] / M_PER_IN
+    crest = el.top_elevation.meters / M_PER_IN
+    floor = crest - el.depth.meters / M_PER_IN
+    lo, hi = max(floor, girt.z0_m / M_PER_IN), min(crest, girt.z1_m / M_PER_IN)
+    if hi - lo < 2.0 * _SCREW_EDGE_IN:
+        return back, floor + _SCREW_EDGE_IN, crest, False
+    return back, (lo + hi) / 2.0, crest, True
+
+
+def _hanger(model, clad_out, out_sign, direction, station, girt, girt_outer, crop_in=None):
+    """The provisional hanger, schematically: a clip on the back's inner face, low in the
+    trough, with one sealed screw through clip, back and cladding into the girt.
+
+    Nothing spans the trough: the eave face blocks a front-lip strap, and the bracket that
+    replaces this is still to be selected (``notes/roof_wall_eave_detail.md``).
+    """
+    screw = hanger_screw(model, clad_out, out_sign, direction, station, girt)
+    found = gutter_under_eave(model, clad_out, direction, station)
+    if screw is None or found is None:
+        return None
+    back, fix_z, crest, reaches = screw
+    el, _roof = found
+    floor = crest - el.depth.meters / M_PER_IN
+    half = _CLIP_T_IN / 2.0
+    leg = back + out_sign * (_GUTTER_SHEET_IN + half)
+    foot_z = floor + _GUTTER_SHEET_IN + half
+    top = min(fix_z + _CLIP_ABOVE_SCREW_IN, crest - 1.0)
+    clip = [(leg, top), (leg, foot_z), (leg + out_sign * _CLIP_FOOT_IN, foot_z)]
+    nodes = flashing_nodes(clip, thickness=_CLIP_T_IN, material="metal", tag="gutter-hanger",
+                           lineweight=PROFILE)
+    face = leg + out_sign * half
+    washer = ((face, fix_z - _WASHER_IN / 2.0), (face, fix_z + _WASHER_IN / 2.0))
+    nodes.append(Polyline(points=washer, layer=LAYER, lineweight=LIGHT,
+                          tag="detail-component:hanger-washer"))
+    nodes += _hidden_clipped(((face, fix_z), (girt_outer - out_sign * 1.25, fix_z)),
+                             "hanger-screw", crop_in)
+    where = (f"into the {girt.profile} eave girt" if reaches
+             else "short of the eave girt (no common depth)")
+    label = (f"gutter hanger, pending bracket selection; sealed fastener through the gutter "
+             f"back {crest - fix_z:.1f}\" below the crest, {where}")
+    return nodes, (leg, (fix_z + top) / 2.0), label

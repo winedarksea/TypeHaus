@@ -15,8 +15,8 @@ export function runWallCoatingChecks(model: Model, renderer: THREE.WebGLRenderer
   const previousTarget = renderer.getRenderTarget();
   const camera = new THREE.PerspectiveCamera(50, 1.4, 0.05, 500);
   const pixel = new Uint8Array(4);
-  const readPoint = (point: THREE.Vector3) => {
-    const projected = point.project(camera);
+  const readPoint = (point: THREE.Vector3, eye: THREE.Camera = camera) => {
+    const projected = point.project(eye);
     renderer.readRenderTargetPixels(target,
       Math.floor((projected.x + 1) * target.width / 2),
       Math.floor((projected.y + 1) * target.height / 2), 1, 1, pixel);
@@ -75,9 +75,64 @@ export function runWallCoatingChecks(model: Model, renderer: THREE.WebGLRenderer
         }
       });
     }
+    failures.push(...trimOverSidingFailures(model, renderer, target, readPoint));
   } finally {
     renderer.setRenderTarget(previousTarget);
     target.dispose();
   }
+  return failures;
+}
+
+/** Trim lapping a PBR crest by 1/2 mm must beat the skin's own −3 bias at house range. The
+ *  house's own trim is cut clear of its skin, so the lap is a stock trim run set on a crest. */
+function trimOverSidingFailures(model: Model, renderer: THREE.WebGLRenderer,
+  target: THREE.WebGLRenderTarget,
+  readPoint: (point: THREE.Vector3, eye: THREE.Camera) => number[]): string[] {
+  const wall = model.walls.find(w => w.tag === "W-M-E1");
+  const stock = model.solids!.find(s => s.category === "cladding_trim");
+  if (!wall || !stock) return ["Trim check requires W-M-E1 and a metal cladding trim"];
+  // W-M-E1 faces +x; one PBR rib crest stands at x 11.157 across y 0.292-0.318.
+  const [x0, x1, y0, y1] = [11.13, 11.1575, 0.25, 0.36];
+  const trim = { ...stock, uid: "TRIM-OVER-CREST", body_mesh: null, sweep: null,
+    finish_panels: null, voids: [], z0_m: 1, z1_m: 2,
+    outline: [[x0, y0], [x1, y0], [x1, y1], [x0, y1]] as [number, number][] };
+  const scene = new THREE.Scene(), trimGroup = new THREE.Group();
+  const groups = Object.fromEntries(ALL_TRADES.map(trade => [trade, new THREE.Group()])) as
+    Record<Trade, THREE.Group>;
+  [...Object.values(groups), trimGroup].forEach(group => scene.add(group));
+  const picks: THREE.Mesh[] = [], selected = new Map<string, THREE.Material[]>();
+  buildWall(groups, { ...wall, members: [], layers: wall.layers.filter(layer =>
+    layer.material === "pbr-panel-24") }, [], [0, 0], "nordic", RESOLVED_NORDIC_PALETTE.light,
+  picks, selected, model.catalog!.materials);
+  buildSolid(trimGroup, trim, [0, 0], "nordic", RESOLVED_NORDIC_PALETTE.light, model.catalog,
+    picks, selected, model.catalog!.materials);
+  scene.traverse(object => {
+    if (!(object instanceof THREE.Mesh)) return;
+    const originals = Array.isArray(object.material) ? object.material : [object.material];
+    object.material = new THREE.MeshBasicMaterial({
+      color: trimGroup.children.includes(object) ? 0xff0000 : 0x0000ff, toneMapped: false,
+      polygonOffset: originals[0].polygonOffset, polygonOffsetFactor: originals[0].polygonOffsetFactor,
+      polygonOffsetUnits: originals[0].polygonOffsetUnits,
+    });
+    for (const material of originals) material.dispose();
+  });
+  const face = new THREE.Vector3(x1, 1.5, -(y0 + y1) / 2);
+  // A narrow lens keeps the trim many pixels wide; depth precision is the viewer's own.
+  const camera = new THREE.PerspectiveCamera(3, 1.4, 0.05, 500);
+  const failures: string[] = [];
+  renderer.setRenderTarget(target);
+  for (const position of [[x1 + 20, 1.5, face.z], [x1 + 50, 1.5, face.z], [x1 + 35, 12, face.z - 30]]) {
+    camera.position.set(position[0], position[1], position[2]);
+    camera.lookAt(face);
+    camera.updateMatrixWorld();
+    renderer.render(scene, camera);
+    const [red, , blue] = readPoint(face.clone(), camera);
+    if (red < 250 || blue > 5) failures.push(`siding crest shows through trim from ${position}`);
+    const [, , siding] = readPoint(face.clone().setZ(face.z - 0.5), camera);
+    if (siding < 250) failures.push(`siding missing beside the trim from ${position}`);
+  }
+  scene.traverse(object => {
+    if (object instanceof THREE.Mesh) { object.geometry.dispose(); (object.material as THREE.Material).dispose(); }
+  });
   return failures;
 }

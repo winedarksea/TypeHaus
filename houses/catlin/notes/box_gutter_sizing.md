@@ -116,9 +116,9 @@ East and west halves are identical, so the verdict is the same on each side.
   1,060 sf at 8 in/hr (1200 * 7.07 / 8). The 425 figure is not reproduced by any source in hand,
   and the comment has been rewritten against section 4.
 - The brief's 648 sf per side omits the cladding stand-off. The model gives 690.68 sf per side.
-- The catalog box's back is 5 in and its front 4 in; the model's `Gutter` carries one height,
-  so the box is modelled at its back height and the 4 in waterway lives only in this note and the
-  `PBR_BOX_GUTTER_5X4` profile's section.
+- The catalog box's back is 5 in and its front 4 in. Since 2026-10-28 the model sweeps the whole
+  formed piece (`pbr_box_gutter_section`, `resolve/gutter_formed.py`), so the 4 in front, the 1 in
+  bead and the 3-1/2 in roof flange are all in the model; `Gutter.depth` is the back.
 
 ## 7. Unresolved
 
@@ -137,10 +137,53 @@ East and west halves are identical, so the verdict is the same on each side.
    The sources in hand do not settle which applies.
 6. **Intensity basis.** PGI-15 says Metal Sales intensities are recorded at 5-yr and 25-yr recurrence.
    Section 5 shows where the 5x4 sits against that record.
-7. Slope (1/16 in/ft) and outlet hydraulics are not checked here.
+7. The gutter is installed level (section 8). Outlet hydraulics are not checked here.
 8. **Straps and outlets.** PBR p. 46 gives no strap spacing. The model bills straps at 3'-0" o.c.,
    the maximum the same manual gives for its sculptured gutter hangers (p. 63). The outlet into the
    gutter floor is a shop cut; no catalog part is named for it.
+
+## 8. Level installation acceptance
+
+The gutter is installed **level** (2026-10-28): its back tucks behind the Image II Extended Eave
+face and its roof flange runs up under the eave's pitched leg, and the eave is level, so a fall
+would open the flange off the leg at one end. The PGI-16 relation in section 3 is the level-gutter
+(Beij/NIST) relation, so the SMACNA level basis **stands** and section 3 is unchanged.
+
+Resolved section, inches out from the cladding face (u) and above the deck plane at the edge (z),
+from `EaveStack` at y = 17'-4":
+
+| Point | u | z |
+|---|---|---|
+| Back top = front crest (section origin) | 0.06 | 0.73 |
+| Front wall top (the 4 in waterway) | 5.06 | -0.27 |
+| Trough floor, water face | 0.06 to 5.06 | -4.27 |
+| Flange upslope end (lowest inward route) | -3.07 | 2.30 |
+| Eave face bottom | 0.11 | -0.76 |
+| Eave kick tip | 0.47 | -1.28 |
+| Pan drip at the lip | 1.48 | -0.01 |
+
+Acceptance:
+
+- **Level within +/-1/8 in over the run, and never falling away from the outlet.** Any tolerance
+  goes toward the north outlet.
+- **Retained water** is limited to the film below a flush outlet: the outlet is cut flush in the
+  floor, so a level trough holds no standing depth above it.
+- **The north tail drains back with no fall.** The outlet centre is 12.75 in from the gable
+  face; the trough runs on 0.5 in more under the eave's run-out to its end cap. A level tail
+  that short empties through the outlet as the head on it drops.
+- **Outlet against the kick and the end cap.** The 4 in outlet centred on the 5 in floor
+  (u 0.56 to 4.56) leaves 0.5 in each side. The kick tip stands over its inboard edge but 3.0 in
+  above the floor, so it does not crowd the inlet. The north end cap is 11.25 in past the outlet's
+  edge.
+- **Clear section.** The eave face, kick and open hem now hang inside the mouth: the face's
+  lowest 0.49 in, the 5/8 kick and the 1/2 hem lie below the front top (-0.27), i.e. inside the
+  4 in design waterway. As 24 ga sheet that is under 0.05 sq in of the 20 sq in waterway (0.25%),
+  and it runs along the flow, not across it. The pan drip and the lip stand above the front top.
+  **No change to W_req or M.** The full gutter spills over the front: the crest is 1.57 in below
+  the flange's upslope end.
+- **Open:** the hanger screws pierce the back 4.7 in below the crest (pending bracket selection;
+  sealed fastener). They are the only route inward below the crest
+  (`test_catlin_eave_water.py::test_a_full_gutter_spills_outward`).
 
 ## Sources
 

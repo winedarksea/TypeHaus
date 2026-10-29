@@ -30,6 +30,7 @@ from typehaus.model import (
     pt,
 )
 from typehaus.model.enums import DeviceKind, PipeSystem
+from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
 
 FT = 0.3048
 
@@ -680,10 +681,12 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
     assert not [m for m in roof.members if m.category == "fascia"
                 or m.connection == "roof:corner-trim"]
     # Every edge is a catalog Image II piece swept from its published section: an Extended
-    # Eave on each eave, a Residential Rake on each rake half; no derived drip is left under it.
+    # Eave on each eave, a Residential Rake on each rake half (with its foot over the eave
+    # leg at the corner); no derived drip is left under it.
     drip = [m for m in roof.members if m.category == "drip_edge"]
-    assert {m.connection for m in drip} == {"roof:image-ii-eave", "roof:image-ii-rake"}
-    assert len(drip) == 6
+    assert {m.connection for m in drip} == {"roof:image-ii-eave", "roof:image-ii-rake",
+                                            "roof:image-ii-rake-foot"}
+    assert len(drip) == 10
     assert all(m.section_ring for m in drip)
     # The face reaches below the deck plane and laps down over the wall panel heads.
     assert max(m.z1_m for m in drip) > eave
@@ -692,19 +695,15 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
     assert not [s for s in catlin_model.solids
                 if s.tag.startswith(("TR-RF-FASCIA", "TR-RF-DRIP"))]
     for side in ("W", "E"):
-        # The gutter is formed metal, so it resolves into an open-top U rather than one
-        # solid bar. The lap chain is pinned in test_catlin_eave_water.py; this is the
-        # envelope.
-        bands = [s for s in catlin_model.solids
-                 if s.tag.startswith(f"TR-RF-GUTTER-{side}-1-")]
-        assert {s.tag.rsplit("-", 1)[1] for s in bands} == {"BACK", "BOTTOM", "FRONT"}
-        assert {s.category for s in bands} == {"gutter"}
-        gutter_top, gutter_bottom = max(s.z1_m for s in bands), min(s.z0_m for s in bands)
-        assert gutter_top - gutter_bottom == pytest.approx(inch(5.0).meters)
+        # The catalog box gutter is ONE formed sheet at true gauge (its own section, flange
+        # up the roof); the laps are pinned in test_catlin_eave_water.py. This is the envelope.
+        body = next(s for s in catlin_model.solids if s.tag == f"TR-RF-GUTTER-{side}-1")
+        assert body.category == "gutter" and body.body_mesh is not None
+        authored = catlin_model.plan.by_tag(f"TR-RF-GUTTER-{side}")
+        floor = authored.top_elevation.meters - authored.depth.meters
+        assert body.z0_m == pytest.approx(floor - SHEET_24_GA_M)
         vent_slot = eave + inch(7.25 * math.hypot(1.0, 4.0 / 12.0)).meters
-        assert gutter_top < vent_slot, "the rim would dam the eave vent slot"
-        # The eave's kick sheds over the gutter's back sheet; that lap is pinned in
-        # test_catlin_eave_water.py::test_the_gutter_is_closed_under_the_kick.
+        assert body.z1_m < vent_slot, "the flange would dam the eave vent slot"
     # Each eave drains to a leader, so the gutters' slope notes point somewhere real.
     leaders = [s for s in catlin_model.solids if s.tag.startswith("TR-RF-LEADER-")
                and s.category == "downspout"]
@@ -721,9 +720,12 @@ def test_authored_gutters_resolve_as_open_top_channels(catlin_model) -> None:
     makes it *open* is the negative: at the channel's own top elevation nothing spans the
     full width, so a section cut at the rim is two thin sheets with air between them.
     """
+    from typehaus.library.trim.metal_sales import FORMED_GUTTERS
     from typehaus.resolve.trim_bands import GUTTER_SHELL_M
 
-    runs = [el for el in catlin_model.plan.all_elements() if isinstance(el, Gutter)]
+    # A catalog gutter with a transcribed section sweeps its formed piece instead.
+    runs = [el for el in catlin_model.plan.all_elements() if isinstance(el, Gutter)
+            and el.product not in FORMED_GUTTERS]
     assert runs, "the catlin house authors gutter runs"
     for run in runs:
         segments = len(run.path) - 1

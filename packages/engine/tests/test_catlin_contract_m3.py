@@ -28,6 +28,7 @@ from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import RIDGE_BEAM_DEFAULT, cross_section
 from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.geometry_members import member_solid
+from typehaus.resolve.roof_image_ii_eave import eave_stack
 from typehaus.resolve.solid_categories import in_slab_family
 from typehaus.source import load_plan
 
@@ -428,7 +429,12 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
         # the wall panel is. The wall panel stands 0.65" (PBR) or 0.15" (BBD75) proud of the
         # roofing — a DETAILING note for the zero-overhang edge: the corner trim covers that
         # step rather than overhanging the wall, so its lower leg kicks out over the panel.
-        assert metal == pytest.approx(inch(cladding_in - 0.6).meters)
+        if edge in ("west", "east"):
+            # A pan wrapped round the Image II Extended Eave reaches the lip instead.
+            reach = eave_stack(catlin_model, roof).lip_reach_u()
+            assert metal == pytest.approx(-reach)
+        else:
+            assert metal == pytest.approx(inch(cladding_in - 0.6).meters)
         # The membrane is bonded to the deck, so it rides the deck and not the panel.
         assert setbacks["membrane"][edge] == setbacks["sheathing"][edge]
     # The garage/truss roof is deferred: no setbacks, geometry unchanged.

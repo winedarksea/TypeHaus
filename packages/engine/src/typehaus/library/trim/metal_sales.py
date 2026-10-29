@@ -4,6 +4,8 @@ Sections are centerline polylines in inches. An empty section means the section 
 been transcribed; consumers must not treat it as a drawable profile.
 """
 
+import math
+
 from typehaus.library.trim._image_ii import (  # noqa: F401 -- re-exported
     COBRA_VENT_IN,
     IMAGE_II_EXTENDED_EAVE,
@@ -15,6 +17,7 @@ from typehaus.library.trim._image_ii import (  # noqa: F401 -- re-exported
     IMAGE_II_RIDGE_COVER,
     IMAGE_II_VENTED_STEP_RIDGE,
     IMAGE_II_Z_CLOSURE,
+    OPEN_HEM_GAP_IN,
 )
 from typehaus.library.trim.profile import TrimProfile
 from typehaus.library.trim.profile import pvdf as _pvdf
@@ -145,6 +148,45 @@ BOX_GUTTER_FRONT_IN = 4.0
 #: Hangers at 3'-0" o.c.: p. 46 gives no strap spacing, so this is the sculptured gutter's
 #: maximum (p. 63), applied to the box. Confirm with Metal Sales.
 BOX_GUTTER_STRAP_SPACING_FT = 3.0
+#: The 3-1/2 in roof flange at the specified angle, and the front bead: 1 out, 1 up, 1 back.
+BOX_GUTTER_FLANGE_IN = 3.5
+BOX_GUTTER_BEAD_IN = 1.0
+#: The bead's hem is drawn but not dimensioned on p. 12; read off the drawing at scale.
+BOX_GUTTER_HEM_IN = 0.5
+
+
+def pbr_box_gutter_section(slope: float, gap_in: float = OPEN_HEM_GAP_IN,
+                           ) -> tuple[tuple[float, float], ...]:
+    """The full 5 x 4 box gutter (PBR p. 12) with its flange at roof ``slope`` (rise/run).
+
+    Inches, x outboard and y up, origin at the back top where the flange leaves it. The path
+    is the water face (the sheet lies to its right). The front crest equals the back top.
+    The bead's top leg ends in an open hem folded under it, ``gap_in`` clear.
+    """
+    angle = math.atan(abs(slope))
+    flange = (-BOX_GUTTER_FLANGE_IN * math.cos(angle), BOX_GUTTER_FLANGE_IN * math.sin(angle))
+    back, floor, front, bead = (BOX_GUTTER_BACK_IN, BOX_GUTTER_BOTTOM_IN, BOX_GUTTER_FRONT_IN,
+                                BOX_GUTTER_BEAD_IN)
+    crest = front - back + bead
+    return (flange, (0.0, 0.0), (0.0, -back), (floor, -back), (floor, front - back),
+            (floor + bead, front - back), (floor + bead, crest), (floor, crest),
+            (floor, crest - gap_in), (floor + BOX_GUTTER_HEM_IN, crest - gap_in))
+
+
+def pbr_box_gutter_end_cap(sheet_in: float) -> tuple[tuple[float, float], ...]:
+    """The 58081XX/58082XX end cap's plate: the trough's outer outline up to the crest.
+
+    Same frame as ``pbr_box_gutter_section``; ``sheet_in`` is the gutter's own thickness, so
+    the plate covers the sheet's edge as the cap's flange laps it.
+    """
+    t, back, floor = sheet_in, BOX_GUTTER_BACK_IN, BOX_GUTTER_BOTTOM_IN
+    bead_bottom = BOX_GUTTER_FRONT_IN - back - t
+    return ((-t, 0.0), (-t, -back - t), (floor + t, -back - t), (floor + t, bead_bottom),
+            (floor + BOX_GUTTER_BEAD_IN + t, bead_bottom), (floor + BOX_GUTTER_BEAD_IN + t, 0.0))
+
+
+#: ``section_in`` is the waterway alone (back, floor, front); ``pbr_box_gutter_section`` is
+#: the whole formed piece.
 PBR_BOX_GUTTER_5X4 = TrimProfile(
     "PBR Box Gutter 5 x 4",
     _pvdf("58077XX") + _pvdf("58079XX", 243.0),
@@ -153,6 +195,13 @@ PBR_BOX_GUTTER_5X4 = TrimProfile(
      (BOX_GUTTER_BOTTOM_IN, BOX_GUTTER_FRONT_IN)),
     source="PBR Install Guide 4/2024 pp. 12, 46",
 )
+
+#: Gutter products whose whole formed piece is transcribed: product -> (section(slope),
+#: end-cap plate(sheet_in), (left cap, right cap) part numbers as seen from the front).
+FORMED_GUTTERS = {
+    "PBR_BOX_GUTTER_5X4": (pbr_box_gutter_section, pbr_box_gutter_end_cap,
+                           ("58081XX", "58082XX")),
+}
 
 #: Loose closures, sealant and tape: part -> (name, unit, source). Priced by the house.
 SUPPLIES = {

@@ -1,250 +1,284 @@
-"""The RF-HOUSE eave has to shed water, and that is a property of how its pieces overlap.
+"""The RF-HOUSE eave sheds water because of how its pieces lap, so that is what this tests.
 
-Every individual piece of this eave can be in exactly the right place and the assembly still
-fail, because what keeps rain out of the wall is not where any one piece is — it is that each
-higher piece laps *over* the next one down, with the whole chain hanging outboard of the
-cladding. Those are relationships between pieces, so they are what this module tests:
+Cut at true scale through the resolved 3D geometry, per eave, in the eave frame: ``u`` inches
+out from the cladding face (the roof footprint edge), ``z`` inches above the deck plane at
+the edge (``eave_z_m``). The assembly (``resolve/roof_image_ii_eave.py``, the PBR 5 x 4 box
+gutter from ``params/roof_trim.py`` swept by ``resolve/gutter_formed.py``):
 
-    roofing → formed drip edge (derived) → box gutter → downspout
-
-The derived drip edge is one formed piece per edge (resolve/roof_drip_edge.py): a flange on the
-deck at the pitch, a nose over the deck edge, a face over the wall panel heads, a kick into the
-trough. Its legs are measured off their true section (``member_solid``), not a box.
-
-The RF-HOUSE eaves and rakes no longer carry that drip: they carry the Image II catalog pieces
-(resolve/roof_image_ii.py). The lap tests below read the catalog Extended Eave's section and the
-5x4 PBR box gutter (``TR-RF-GUTTER-E/W``), the same chain with the catalog piece in place of the
-derived drip.
+    field membrane -> gutter roof flange -> Extended Eave -> strip-in -> Image II pan
+    at the face line: cladding -> gutter back -> eave face, kick into the trough
 """
 
 from __future__ import annotations
 
-import math
+import itertools
 
 import pytest
+from shapely.geometry import LineString, Polygon, box
 
-from typehaus.quantities import inch
-from typehaus.resolve.geometry_members import member_solid
+from typehaus.emit.draw.detail_components.eave_framing import hanger_screw
+from typehaus.library.trim.metal_sales import FORMED_GUTTERS
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.geometry_build import build_geometry
+from typehaus.resolve.geometry_slice import CutPlane, slice_solid
 from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
+from typehaus.resolve.roof_image_ii_eave import eave_stack
 
-# 6:12. Roof-stack offsets are perpendicular to the slope; elevations are vertical.
-SLOPE = 6.0 / 12.0
-SLOPE_FACTOR = math.hypot(1.0, SLOPE)
-#: Structural deck surface at the edge — the plane the drip flange lies on and the membrane
-#: laps over. 0.625" of CDX plywood.
-DRIP_CEILING_IN = 0.625 * SLOPE_FACTOR
-#: Roofing underside == the head of the wall cladding on a continuous-skin edge.
-CLADDING_HEAD_IN = 0.665 * SLOPE_FACTOR
+FT = 12.0
+#: Three relationship stations per eave (ft along y), each mid-pan (the pan end stops at a
+#: seam); five for the clash sweep.
+STATIONS = (112 / FT, 208 / FT, 304 / FT)
+CLASH_STATIONS = (2.0, 9.3, 17.4, 26.0, 33.5)
+#: Overlap below this is a shared face, not a clash (sq in).
+CLASH_AREA_IN2 = 1e-4
+#: Foam closures fill the panel ribs; they live inside the panel's envelope by design.
+_FOAM = {"6460800", "6411499", "corrugated-closure", "corrugated-outside-closure",
+         "cobra-vented-closure"}
+#: The penetrations of the gutter that are open items, not modelled joints: the provisional
+#: hanger's sealed screw through the back (plans: work package 1, supports).
+KNOWN_OPEN_ROUTES = {"hanger screw"}
 
 
 @pytest.fixture(scope="module")
-def eave(catlin_model):
-    """The east eave in its own frame: inches outboard of the roof edge, above the deck."""
-    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
-    edge = max(p[0] for p in roof.footprint)
-    return _EaveFrame(catlin_model, roof, edge)
+def house(catlin_model_ro):
+    model = catlin_model_ro
+    roof = next(r for r in model.roofs if r.tag == "RF-HOUSE")
+    product = {s.uid: s.product for s in model.solids}
+    parts = []
+    for element in build_geometry(model).elements:
+        for part in element.parts:
+            role = _role(element, part, product.get(element.uid))
+            if role is not None:
+                parts.append((role, part))
+    return model, roof, parts
 
 
-class _EaveFrame:
-    def __init__(self, model, roof, edge_x: float) -> None:
-        self.model, self.roof, self.edge_x = model, roof, edge_x
-
-    def _out(self, metres: float) -> float:
-        return (metres - self.edge_x) / inch(1).meters
-
-    def _up(self, metres: float) -> float:
-        return (metres - self.roof.eave_z_m) / inch(1).meters
-
-    def solid(self, tag: str):
-        """One authored solid as ``(out_lo, out_hi, z_lo, z_hi)`` in the eave frame."""
-        found = next(s for s in self.model.solids if s.tag == tag)
-        xs = [p[0] for p in found.outline]
-        return (self._out(min(xs)), self._out(max(xs)),
-                self._up(found.z0_m), self._up(found.z1_m))
-
-    def section(self, key: str) -> list[tuple[float, float]]:
-        """A swept leg's true section as ``(out, up)`` points — the ring, not its box."""
-        member = next(m for m in self.roof.members if m.child_key == key)
-        solid = member_solid(member)
-        return [(self._out(x), self._up(z)) for x, _y, z in solid.profile]
-
-    def leg(self, name: str):
-        """The east eave drip leg's envelope, ``(out_lo, out_hi, z_lo, z_hi)``."""
-        points = self.section(f"eave-hi-drip-edge-{name}")
-        us = [u for u, _ in points]
-        zs = [z for _, z in points]
-        return (min(us), max(us), min(zs), max(zs))
-
-    def member(self, key: str):
-        """A box member's envelope, same frame (the wall's closure band)."""
-        from typehaus.resolve.framing.profiles import cross_section
-        found = next(m for m in self.roof.members if m.child_key == key)
-        half = cross_section(found.profile).width_m / 2.0
-        return (self._out(found.p0[0] - half), self._out(found.p0[0] + half),
-                self._up(found.z0_m), self._up(found.z1_m))
-
-    def run_y(self, tag: str) -> tuple[float, float]:
-        found = next(s for s in self.model.solids if s.tag == tag)
-        ys = [p[1] for p in found.outline]
-        return min(ys), max(ys)
+def _role(element, part, product) -> str | None:
+    """What a sheet is in the eave, or None when it is not sheet metal, membrane or cladding."""
+    key = part.key
+    if element.kind == "gutter":
+        return "gutter"
+    if element.kind in ("cladding_trim", "wall_corner", "flashing"):
+        return None if product in _FOAM else f"trim:{element.uid}"
+    for needle, role in (("image-ii-eave", "eave"), ("eave-strip-in", "strip"),
+                         ("pan-end", "pan"), ("image-ii-rake", "rake"),
+                         ("closure-0-cladding", "cladding"), ("layer:membrane", "field"),
+                         ("layer:roofing", "roofing")):
+        if needle in key and element.kind in ("roof", "framing"):
+            return role
+    if element.kind == "wall" and "cladding" in key:
+        return "cladding"
+    return None
 
 
-def laps_over(upper, lower) -> bool:
-    """Whether ``upper`` sheds onto ``lower``: they overlap in plan, and upper reaches higher.
+class Cut:
+    """One cut, its sheets as ``(role, polygon)`` in the eave frame (inches)."""
 
-    That is the whole definition of a lap in a rain screen. Two pieces that merely touch,
-    or that overlap in plan but where the lower one stands proud, leave a seam pointing up.
+    def __init__(self, house, side: str, axis: str, station_m: float) -> None:
+        model, roof, parts = house
+        xs = [p[0] for p in roof.footprint]
+        self.sign = 1.0 if side == "E" else -1.0
+        edge = max(xs) if side == "E" else min(xs)
+        z0 = roof.eave_z_m
+        plane = CutPlane(axis=axis, station_m=station_m)
+        window = box(-14.0, -10.0, 14.0, 8.0) if axis == "x" else box(-1e4, -10.0, 1e4, 8.0)
+        self.polys: list[tuple[str, Polygon]] = []
+        for role, part in parts:
+            for solid in part.solids:
+                for profile in slice_solid(solid, plane):
+                    if len(profile.outline) < 3:
+                        continue
+                    points = [(self._u(u, edge) if axis == "x" else u / M_PER_IN,
+                               (z - z0) / M_PER_IN) for u, z in profile.outline]
+                    poly = Polygon(points).buffer(0)
+                    if not poly.is_empty and poly.intersects(window):
+                        self.polys.append((role, poly))
+
+    def _u(self, x: float, edge: float) -> float:
+        return self.sign * (x - edge) / M_PER_IN
+
+    def of(self, role: str) -> list[Polygon]:
+        return [p for r, p in self.polys if r == role]
+
+    def one(self, role: str) -> Polygon:
+        found = self.of(role)
+        assert len(found) == 1, f"{role}: {len(found)} profiles in the cut"
+        return found[0]
+
+    def clashes(self) -> list[tuple[str, str, float]]:
+        out = []
+        for (ra, a), (rb, b) in itertools.combinations(self.polys, 2):
+            area = a.intersection(b).area if ra != rb else 0.0
+            if area > CLASH_AREA_IN2:
+                out.append((ra, rb, round(area, 4)))
+        return out
+
+
+def _span(poly: Polygon, line: LineString) -> list[tuple[float, float]]:
+    """The intervals of ``line`` inside ``poly``, as (lo, hi) of the varying coordinate."""
+    hit = poly.intersection(line)
+    pieces = getattr(hit, "geoms", [hit])
+    vertical = line.coords[0][0] == line.coords[-1][0]
+    out = []
+    for piece in pieces:
+        if piece.is_empty or piece.length == 0:
+            continue
+        values = [c[1] if vertical else c[0] for c in piece.coords]
+        out.append((min(values), max(values)))
+    return sorted(out)
+
+
+def _at_u(poly, u):
+    return _span(poly, LineString([(u, -20.0), (u, 20.0)]))
+
+
+def _at_z(poly, z):
+    return _span(poly, LineString([(-20.0, z), (20.0, z)]))
+
+
+@pytest.fixture(scope="module", params=[(s, y) for s in ("W", "E") for y in STATIONS],
+                ids=lambda p: f"{p[0]}-{p[1]:g}ft")
+def cut(request, house):
+    side, y_ft = request.param
+    return Cut(house, side, "x", y_ft * FT * M_PER_IN)
+
+
+def test_pan_end_wraps_the_lip_over_the_whole_stack(cut) -> None:
+    """The pan end rides over every sheet under it and folds round the eave's lip."""
+    pan, eave = cut.one("pan"), cut.one("eave")
+    under = [*cut.of("strip"), eave, cut.one("gutter"), *cut.of("field")]
+    lip = eave.bounds[2]
+    assert pan.bounds[2] > lip, "the pan's fold is outboard of the lip"
+    tip = _at_u(pan, lip - 0.1)
+    assert len(tip) == 2, "a vertical through the lip meets the pan above and below it"
+    lip_span = _at_u(eave, lip - 0.1)
+    assert tip[0][1] < lip_span[0][0] and tip[1][0] > lip_span[-1][1]
+    u = pan.bounds[0] + 0.5
+    while u < 0.0:
+        pan_bottom = _at_u(pan, u)[0][0]
+        for sheet in under:
+            for _lo, hi in _at_u(sheet, u):
+                assert hi < pan_bottom, f"a sheet stands into the pan at u={u:.2f}"
+        u += 0.25
+
+
+def test_strip_in_covers_both_flange_hems_and_laps_the_field(cut) -> None:
+    strip, eave, gutter = cut.one("strip"), cut.one("eave"), cut.one("gutter")
+    field = max(cut.of("field"), key=lambda p: p.bounds[2])
+    assert strip.bounds[0] < min(eave.bounds[0], gutter.bounds[0]) - 3.0, \
+        "the strip runs well upslope of the gutter flange's and the eave hem's ends"
+    assert strip.bounds[0] < field.bounds[2], "and laps onto the field membrane"
+    for u in (gutter.bounds[0] + 0.02, eave.bounds[0] + 0.02):
+        strip_bottom = _at_u(strip, u)[0][0]
+        assert all(hi < strip_bottom for sheet in (eave, gutter) for _lo, hi in _at_u(sheet, u))
+
+
+def test_face_line_order_and_the_trough_takes_every_drip(cut) -> None:
+    """cladding -> gutter back -> eave face; kick tip and pan drip land inside the mouth."""
+    eave, gutter, pan = cut.one("eave"), cut.one("gutter"), cut.one("pan")
+    face_bottom = min(lo for lo, _hi in _at_u(eave, 0.1))
+    back_top = max(hi for _lo, hi in _at_u(gutter, 0.04))
+    assert back_top - face_bottom >= 1.0, "the back stands 1\" up behind the face"
+    z = (face_bottom + back_top) / 2.0
+    cladding = max(hi for p in cut.of("cladding") for _lo, hi in _at_z(p, z))
+    back = _at_z(gutter, z)[0]
+    face = _at_z(eave, z)[0]
+    assert cladding <= back[0] and back[1] <= face[0], "cladding, gutter back, eave face"
+    front = gutter.bounds[2] - 1.0  # the front wall, inside the 1" bead
+    floor = min(hi for _lo, hi in _at_u(gutter, 2.5))
+    kick = min(eave.exterior.coords, key=lambda c: c[1])
+    drip = min((c for c in pan.exterior.coords if c[0] > 1.0), key=lambda c: c[1])
+    for name, (u, zz) in (("kick tip", kick), ("pan drip", drip)):
+        assert back[1] < u < front and floor < zz < back_top, f"the {name} misses the trough"
+
+
+def test_a_full_gutter_spills_outward(house, cut) -> None:
+    """The front crest is no higher than the lowest way back toward the wall.
+
+    The routes inward are the flange's upslope end and any joint through the back; the
+    provisional hanger's screw is one, below the crest, and stays listed until bracket
+    selection gives it a sealed or above-crest fixing.
     """
-    u_lo, u_hi, _uz0, uz1 = upper
-    l_lo, l_hi, _lz0, lz1 = lower
-    return min(u_hi, l_hi) - max(u_lo, l_lo) > 0.0 and uz1 > lz1
+    model, roof, _ = house
+    gutter = cut.one("gutter")
+    crest = max(hi for _lo, hi in _at_u(gutter, gutter.bounds[2] - 0.5))
+    routes = {"flange upslope end": gutter.bounds[3]}
+    girt = next(m for m in model.all_members() if m.connection == "eave:gutter-girt"
+                and m.category == "strapping")
+    xs = [p[0] for p in roof.footprint]
+    edge = (max(xs) if cut.sign > 0 else min(xs)) / M_PER_IN
+    screw = hanger_screw(model, edge, cut.sign, "x", 17.4 * FT * M_PER_IN, girt)
+    assert screw is not None
+    routes["hanger screw"] = screw[1] - roof.eave_z_m / M_PER_IN
+    below = {name for name, z in routes.items() if z < crest}
+    assert below == KNOWN_OPEN_ROUTES, f"routes below the crest {crest:.2f}: {routes}"
+    assert routes["flange upslope end"] - crest >= 1.0
 
 
 @pytest.mark.parametrize("side", ["W", "E"])
-def test_eave_runs_close_the_rake_corners(catlin_model, side) -> None:
-    """The gutter and the drip face run the full roof footprint, not the sheathing datum.
+def test_no_two_sheets_cross(house, side) -> None:
+    """True gaps: no sheet metal, membrane or cladding passes through another.
 
-    Authoring the eaves from ft(0) to ft(36) once left open roof edge over thin air at all
-    four corners — the hole the 3D view showed with the roof stack visible through it.
+    Five stations along each eave, and at both corners: across the eave's run-out past the
+    gable face (where the gutter ends under its caps), inside the gable cladding (its top
+    and the wide outside corner stop at the head cap), and four cuts square to it through
+    the trough, caps and all.
     """
-    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
-    lo = min(p[1] for p in roof.footprint)
-    hi = max(p[1] for p in roof.footprint)
-    frame = _EaveFrame(catlin_model, roof, 0.0)
-    y0, y1 = frame.run_y(f"TR-RF-GUTTER-{side}-1-BACK")
-    assert (y0, y1) == (pytest.approx(lo), pytest.approx(hi))
-    key = "eave-lo" if side == "W" else "eave-hi"
-    face = next(m for m in roof.members if m.child_key == f"{key}-image-ii-eave")
-    ys = sorted((face.p0[1], face.p1[1]))
-    assert ys[0] < lo and ys[1] > hi, "the drip face runs past both rake corners"
+    _model, roof, _ = house
+    ys = [p[1] for p in roof.footprint]
+    xs = [p[0] for p in roof.footprint]
+    edge = max(xs) if side == "E" else min(xs)
+    sign = 1.0 if side == "E" else -1.0
+    cuts = [("x", y * FT * M_PER_IN) for y in CLASH_STATIONS]
+    cuts += [("x", min(ys) - 0.25 * M_PER_IN), ("x", max(ys) + 0.25 * M_PER_IN)]
+    cuts += [("x", min(ys) + 0.3 * M_PER_IN), ("x", max(ys) - 0.3 * M_PER_IN)]
+    cuts += [("y", edge + sign * u * M_PER_IN) for u in (0.3, 1.0, 3.0, 5.5)]
+    found = {f"{axis}={station / M_PER_IN:.2f}": c
+             for axis, station in cuts if (c := Cut(house, side, axis, station).clashes())}
+    assert not found
 
 
-def test_no_authored_drip_duplicates_the_derived_piece(catlin_model) -> None:
-    """One piece of metal per edge: the old level drips, corner trim and rake panel are gone."""
-    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
-    assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-DRIP")]
-    assert not [m for m in roof.members if m.connection in ("roof:corner-trim", "roof:panel-rake")]
-    assert not [m for m in roof.members if m.category == "drip_edge"
-                and not m.connection.startswith("roof:image-ii")]
-    assert {m.child_key.rsplit("-image-ii-", 1)[0] for m in roof.members
-            if m.category == "drip_edge"} == {
-        "eave-lo", "eave-hi", "rake-lo-0", "rake-lo-1", "rake-hi-0", "rake-hi-1"}
+def test_gutter_runs_out_under_the_eave_and_is_capped(house) -> None:
+    """Placed off the same eave stack the engine builds; run to the eave's end; caps L/R."""
+    model, roof, _ = house
+    stack = eave_stack(model, roof)
+    u0, z0 = stack.gutter_origin()
+    xs = [p[0] for p in roof.footprint]
+    eaves = {m.child_key: m for m in roof.members if m.child_key.endswith("image-ii-eave")}
+    left, right = FORMED_GUTTERS["PBR_BOX_GUTTER_5X4"][2]
+    for side, edge, key in (("W", min(xs), "eave-lo"), ("E", max(xs), "eave-hi")):
+        gutter = model.plan.by_tag(f"TR-RF-GUTTER-{side}")
+        assert abs(gutter.path[0].xy_m[0] - edge) == pytest.approx(u0, abs=1e-9)
+        assert gutter.top_elevation.meters - roof.eave_z_m == pytest.approx(z0, abs=1e-9)
+        body = next(s for s in model.solids if s.tag == f"TR-RF-GUTTER-{side}-1")
+        eave = eaves[f"{key}-image-ii-eave"]
+        ends = sorted((eave.p0[1], eave.p1[1]))
+        assert body.outline[0][1] <= ends[0] + 1e-6 and body.outline[2][1] >= ends[1] - 1e-6
+        caps = {s.product for s in model.solids if s.tag.startswith(f"TR-RF-GUTTER-{side}-CAP")}
+        assert caps == {left, right}
+        leader = next(s for s in model.solids if s.tag == f"TR-RF-LEADER-{side}")
+        floor_underside = z0 - gutter.depth.meters - SHEET_24_GA_M
+        assert leader.z1_m - roof.eave_z_m == pytest.approx(floor_underside, abs=1e-6)
 
 
-#: The panel's outside face, which the catalog face lies on (closure band, eave frame).
-PANEL_FACE_OUT_IN = 0.0
-#: The panel head: the closure band's top at the eave, measured off the derived closure member.
-PANEL_HEAD_UP_IN = 1.056
-
-
-def _face(eave) -> tuple[float, float, float, float]:
-    """The catalog Extended Eave's vertical leg as ``(out_lo, out_hi, up_lo, up_hi)``."""
-    points = eave.section("eave-hi-image-ii-eave")
-    leg = [(u, z) for u, z in points if -SHEET_24_GA_M / inch(1).meters - 1e-6 <= u <= 1e-6]
-    us = [u for u, _ in leg]
-    zs = [z for _, z in leg]
-    return (min(us), max(us), min(zs), max(zs))
-
-
-def _flange(eave) -> list[tuple[float, float]]:
-    """The deck flange's points: everything inboard of the face, on the deck top."""
-    return [(u, z) for u, z in eave.section("eave-hi-image-ii-eave") if u < -0.05]
-
-
-def test_the_drip_face_hangs_over_the_panel_it_laps(eave) -> None:
-    """The face lies on the panel's outside face and laps down over the panel heads.
-
-    The catalog piece replaces the old 1-1/4 in corner-trim plane, so the face sits on the
-    cladding's own face (the sheet is 24 ga, 0.024 in), and its foot clears the panel head
-    by the lap the section gives it.
-    """
-    face = _face(eave)
-    assert face[1] == pytest.approx(PANEL_FACE_OUT_IN, abs=1e-6)
-    assert face[1] - face[0] == pytest.approx(SHEET_24_GA_M / inch(1).meters, abs=1e-3), \
-        "the metal is a real 24 ga sheet"
-    cladding = eave.member("W-S-E1-closure-0-cladding")
-    assert cladding[1] == pytest.approx(PANEL_FACE_OUT_IN, abs=1e-6), "the panel face is the face"
-    assert face[2] <= PANEL_HEAD_UP_IN - 1.5, "the face laps 1-1/2 in down over the panel heads"
-
-
-def test_the_lap_chain_runs_unbroken_from_the_roofing_to_the_trough(eave) -> None:
-    """Each piece overlaps the next one down, so no seam in the chain faces upward.
-
-    The roofing's edge stands over the panel head (the closure's top), the panel head laps
-    down over the face, and the face's 45-degree kick carries the water outboard, past the
-    gutter's back sheet, into the trough above its floor.
-    """
-    setback = next(e for e in eave.roof.layer_edge_setbacks if e["layer"] == "roofing")
-    roofing_out = -setback["east"] / inch(1).meters
-    face = _face(eave)
-    cladding = eave.member("W-S-E1-closure-0-cladding")
-    back = eave.solid("TR-RF-GUTTER-E-1-BACK")
-    front = eave.solid("TR-RF-GUTTER-E-1-FRONT")
-    bottom = eave.solid("TR-RF-GUTTER-E-1-BOTTOM")
-    kick_tip = max(eave.section("eave-hi-image-ii-eave"), key=lambda p: p[0])
-    roof_underside = DRIP_CEILING_IN + CLADDING_HEAD_IN
-    assert cladding[0] < roofing_out < cladding[1], "the roofing's edge stands over the panel head"
-    assert cladding[3] < roof_underside, "and the head sits below the roofing, which sheds onto it"
-    assert face[3] < PANEL_HEAD_UP_IN, "the panel head laps down over the face"
-    assert back[1] <= kick_tip[0] + 1e-6 and kick_tip[0] < front[0], \
-        "the kick's tip lands in the trough, outboard of the back sheet"
-    assert kick_tip[1] > bottom[3], "and stops above the floor, so it cannot dam the flow"
-
-
-def test_the_gutter_is_closed_under_the_kick(eave) -> None:
-    """No open slot between the wall and the trough: the kick covers the back sheet's top."""
-    ring = eave.section("eave-hi-image-ii-eave")
-    back = eave.solid("TR-RF-GUTTER-E-1-BACK")
-    kick = [p for p in ring if p[0] > 0.0]
-    kick_lo, kick_hi = min(u for u, _ in kick), max(u for u, _ in kick)
-    assert kick_lo < back[1] <= kick_hi + 1e-6, "the kick reaches over the back sheet's top"
-    assert back[3] < min(z for _, z in kick), "and the back's rim stands under the kick"
-
-
-def test_the_drip_flange_lies_on_the_top_deck_and_nothing_else_reaches_it(eave) -> None:
-    """The flange lies ON the top deck, at the pitch, and the underlayment laps OVER it.
-
-    The deck top falls 1/2" per inch outboard at 6:12, so the flange's underside is the
-    pitched plane ``0.70" - slope * u``. The catalog flange is 5 in on the deck.
-    """
-    flange = _flange(eave)
-    assert min(u for u, _ in flange) <= -2.0 - 2.0 + 1e-6, "it bears 2\" onto the plywood"
-    for u, z in flange:
-        if u < -0.5 and z < DRIP_CEILING_IN + 0.5:
-            assert z == pytest.approx(DRIP_CEILING_IN - SLOPE * u, abs=0.02)
-    for tag in ("TR-RF-GUTTER-E-1-BACK", "TR-RF-GUTTER-E-1-FRONT"):
-        assert eave.solid(tag)[3] < DRIP_CEILING_IN, f"{tag} stands proud of the top deck"
-
-
-def test_each_eave_drains_to_a_leader_that_reaches_grade(catlin_model, eave) -> None:
-    """A gutter sloping to a downspout that does not exist is not a drainage system."""
-    # Every gutter in the house, not just this roof's two: the guard was scoped to the
-    # TR-RF- prefix while the balcony's and the garage's ran to leaders nobody had authored.
-    # A slope note is prose, so what is asserted now is the ref an element can be held to.
+def test_every_gutter_drains_to_a_declared_leader(catlin_model_ro) -> None:
+    """A gutter falling to a downspout that does not exist is not a drainage system."""
     from typehaus.model.trim import Downspout, Gutter
 
-    leaders = {el.tag for el in catlin_model.plan.all_elements()
-               if isinstance(el, Downspout)}
-    # TR-SG-RUNNEL is an open channel a LEADER discharges into; it lets go through a scupper
-    # into FURN-SG-SPLASH-BASIN, and test_drainage_elements.py pins that end instead.
-    spouted = {"TR-SG-RUNNEL"}
-    gutters = [el for el in catlin_model.plan.all_elements()
-               if isinstance(el, Gutter) and el.tag not in spouted]
-    assert gutters
-    for gutter in gutters:
-        assert gutter.downspout_ref in leaders, \
-            f"{gutter.tag} falls to {gutter.downspout_ref!r}, which no element declares"
-    leader = next(s for s in catlin_model.solids if s.tag == "TR-RF-LEADER-E")
-    trough_floor = eave.solid("TR-RF-GUTTER-E-1-BOTTOM")
-    assert eave._up(leader.z1_m) == pytest.approx(trough_floor[2]), \
-        "the leader takes the outlet straight out of the trough floor"
-    # It stops at +1'-0" and goes on as a buried riser into RG-E-BASIN, the west's mirror;
-    # the riser bills with the extension. Stopping there with no extension was 3'-9" of free
-    # fall onto walk D.
-    assert leader.z0_m == pytest.approx(0.3048)
-    authored = catlin_model.plan.by_tag("TR-RF-LEADER-E")
+    elements = list(catlin_model_ro.plan.all_elements())
+    leaders = {el.tag for el in elements if isinstance(el, Downspout)}
+    # TR-SG-RUNNEL lets go through a scupper (test_drainage_elements.py pins that end).
+    for gutter in (el for el in elements if isinstance(el, Gutter) and el.tag != "TR-SG-RUNNEL"):
+        assert gutter.downspout_ref in leaders, gutter.tag
+    authored = catlin_model_ro.plan.by_tag("TR-RF-LEADER-E")
     assert authored.discharge_ref == "RG-E-BASIN" and authored.extension is not None
-    # It hangs on the trough's centre line, which is also about where a strapped 4" round
-    # leader's centre lands off this wall — so it clears the cladding without an offset.
-    xs = [p[0] for p in leader.outline]
-    assert eave._out(min(xs)) > 0.0, "the leader stands clear of the wall face"
+
+
+def test_membrane_takeoff_bills_the_strip_in(catlin_model_ro) -> None:
+    from typehaus.takeoff.envelope import envelope_layer_takeoff
+
+    rows = [r for r in envelope_layer_takeoff(catlin_model_ro)
+            if r["scope"] == "roof eave strip-in"]
+    # Two eaves x ~37' x the 9" strip, plus its climb over the stack.
+    assert [r["material"] for r in rows] == ["roof-adhered-butyl-ht"]
+    assert 2 * 37.1 * 0.75 < rows[0]["net_area_sqft"] < 2 * 37.6 * 0.8

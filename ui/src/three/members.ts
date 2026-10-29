@@ -12,6 +12,8 @@
 //      would render level rather than raked — square-cut, plumb ends not modeled.
 //   4. Open-web floor trusses -> chords + end blocks + diagonal webs (three/floorTruss.ts).
 //   5. Roof trusses -> a fink inside the member's envelope (three/roofTruss.ts).
+//   6. Formed trim (drip edge, corner trim, gutter) -> the raked merge again, one mesh per
+//      depth tier (three/materials.ts metalDepthTier), so a lap wins its tie with the skin.
 // The box math itself lives in three/memberBox.ts, shared with the pick highlight.
 //
 // Every bucket records the member uids it drew, in draw order, so a click resolves to one
@@ -27,7 +29,7 @@ import {
 } from "../nordic/palette";
 import {
   createProfiledMetalSkinMaterial, createStandingSeamMaterial, isStandingSeam, type MetalPanelProfile,
-  metalPanelProfileForFinish, panelTileSizeM, SEAM_PROFILE,
+  metalDepthTier, metalPanelProfileForFinish, panelTileSizeM, SEAM_PROFILE,
 } from "./materials";
 import {
   composeCenteredBoxMatrix, composeMemberBoxMatrix, elevationProfileVertices,
@@ -97,16 +99,10 @@ export function isRoofFramingMember(m: Member): boolean {
 // to CSS var() strings, which THREE.Color cannot parse (it logs "unknown color" for every
 // skin member on every rebuild).
 //
-// "Can resolve" is the whole rule, and it is why this is not a bare `m.material ? …`. A
-// member carries a material ref but no catalog, so `materialColor` here sees only a named
-// finish and the substring family guess — and a ref that hits neither returns the neutral
-// grey `material.fallback`, which is a worse answer than the category tone the member
-// already had. The truss wall's outrigger band is 590 members on "kdat": no needle in
-// familyOf matches it, so every strapping, ladder-blocking and jamb-filler stick in the
-// house rendered pale grey next to the lumber it is screwed to. Falling back to the
-// category also puts this back in step with the .glb, whose member path
-// (emit/gltf/members.py -> _material_finish_color with authored=None) has always ended at
-// `_color(category)` for exactly the same refs.
+// "Can resolve" is the whole rule, not a bare `m.material ? …`: with no catalog here, a ref
+// that hits neither a named finish nor a family (the truss wall's 590 "kdat" members) gets the
+// neutral grey fallback, worse than its category tone. The .glb's member path
+// (emit/gltf/members.py) ends at `_color(category)` for the same refs.
 export function memberColor(m: Member, palette: ResolvedNordicPalette,
   materials?: readonly MaterialAppearance[]): THREE.ColorRepresentation {
   return m.material && (statesOwnColor(m.material, materials) || familyOf(m.material) !== null)
@@ -168,15 +164,10 @@ const SKIN_LINE_TOLERANCE_M = 0.5;
 /**
  * Where a band's two ends sit along its facade, in metres from that facade's origin.
  *
- * This is the band's `u` datum, and it exists because the panel module has to be continuous
- * across the wall→roof joint: the closure band IS the wall's own sheet carried up past the top
- * plate, so its ribs have to land where the wall's ribs land. Measuring `u` from the band's own
- * `p0` (what this did) restarts the module at every band — a layer thickness off at the mitred
- * corner where the band overhangs the wall axis, and a fresh arbitrary phase for the second
- * half of a gable, which splits at the ridge. Both read as a jog in the ribs at the joint.
- *
- * Falls back to the band's own run for a trim piece that stands on no wall (an eave fascia or a
- * rake band hung off the roof edge), which has no wall panel under it to line up with.
+ * The band's `u` datum: a closure band IS the wall's sheet carried up past the top plate, so
+ * its ribs must land where the wall's do. Measuring from the band's own `p0` restarted the
+ * module at every band, a jog in the ribs at the joint. A trim piece on no wall (an eave
+ * fascia, a rake band) falls back to its own run.
  */
 export function skinUvSpanM(m: Member, lines?: readonly SkinLine[]): [number, number] {
   const dx = m.p1[0] - m.p0[0];
@@ -229,15 +220,18 @@ interface Buckets {
   truss: Member[];
   roofTruss: Member[];
   seam: Member[];
+  trim: Member[];
 }
 
 function bucket(members: Member[], materials?: readonly MaterialAppearance[]): Buckets {
-  const out: Buckets = { rect: [], raked: [], ijoist: [], truss: [], roofTruss: [], seam: [] };
+  const out: Buckets = { rect: [], raked: [], ijoist: [], truss: [], roofTruss: [], seam: [], trim: [] };
   for (const m of members) {
     // Seam first: a standing-seam or declared ribbed-panel band needs its own textured
     // material, so it can't share the vertex-coloured merge with the lumber around it.
-    // A formed section (the drip edge) sweeps its own ring, which only the raked merge draws.
-    if (m.section_ring || m.elevation_profile) out.raked.push(m);
+    // A formed section (the drip edge) sweeps its own ring, which only the raked merge draws;
+    // formed trim takes that merge at its own depth tier.
+    const merge = metalDepthTier(m.category) ? out.trim : out.raked;
+    if (m.section_ring || m.elevation_profile) merge.push(m);
     else if (isSeamMember(m, materials) && !isVerticalMember(m)) out.seam.push(m);
     else if (m.shape === "i_joist") out.ijoist.push(m);
     // An open-web floor truss is not a bar: it draws as chords + webs (three/floorTruss.ts),
@@ -246,7 +240,7 @@ function bucket(members: Member[], materials?: readonly MaterialAppearance[]): B
     // A roof truss is one member for a whole plated assembly: its box is the envelope, not
     // the wood, so drawing it as a bar would fill the attic with lumber that is not there.
     else if (m.shape === "roof_truss") out.roofTruss.push(m);
-    else if (isRakedMember(m)) out.raked.push(m);
+    else if (isRakedMember(m)) merge.push(m);
     else out.rect.push(m);
   }
   return out;
@@ -348,7 +342,7 @@ function buildRectInstances(group: THREE.Group, members: Member[], center: PlanC
 // emit/gltf/emitter.py's add_member_box. One merged geometry (vertex colors) per trade.
 function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string,
-  materials?: readonly MaterialAppearance[]) {
+  materials?: readonly MaterialAppearance[], offset?: ReturnType<typeof metalDepthTier>) {
   if (!members.length) return;
   const positions: number[] = [];
   const indices: number[] = [];
@@ -380,7 +374,7 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
   geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
   geo.setIndex(indices);
   geo.computeVertexNormals();
-  const material = standardMaterial(undefined, mode, { vertexColors: true });
+  const material = standardMaterial(undefined, mode, { vertexColors: true, ...offset });
   const mesh = makeSurfaceMesh(geo, material);
   tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, drawn), triangleStarts);
   group.add(mesh);
@@ -470,7 +464,8 @@ export function buildMembers(group: THREE.Group, members: Member[], center: Plan
     // The physical closure continues the painted sheet, just like the procedural bands.
     // Its catalog color is the drawing hatch tone, not the exposed coil finish.
     const color = metalPanelPaintColor(member, materials);
-    const material = createProfiledMetalSkinMaterial(mode, color);
+    const material = createProfiledMetalSkinMaterial(mode, color,
+      metalDepthTier(member.category) ?? undefined);
     const mesh = makeSurfaceMesh(geometry, material);
     tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, [member]),
       [0, meshTriangleCount(member.surface_mesh!)]);
@@ -481,6 +476,10 @@ export function buildMembers(group: THREE.Group, members: Member[], center: Plan
   const buckets = bucket(boxMembers, materials);
   buildRectInstances(group, buckets.rect, center, mode, palette, ownerUid, materials);
   buildRakedMesh(group, buckets.raked, center, mode, palette, ownerUid, materials);
+  for (const offset of new Set(buckets.trim.map((m) => metalDepthTier(m.category)))) {
+    buildRakedMesh(group, buckets.trim.filter((m) => metalDepthTier(m.category) === offset),
+      center, mode, palette, ownerUid, materials, offset);
+  }
   buildIJoists(group, buckets.ijoist, center, mode, palette, ownerUid, materials);
   buildFloorTrusses(group, buckets.truss, center, mode, palette, ownerUid, materials);
   buildRoofTrusses(group, buckets.roofTruss, center, mode, palette, ownerUid, materials);

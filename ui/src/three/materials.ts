@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { createBoardBattenMaterial } from "./boardBattenMaterial";
+import { createBoardBattenMaterial, PROFILED_METAL_SKIN_POLYGON_OFFSET } from "./boardBattenMaterial";
 export { createProfiledMetalSkinMaterial } from "./boardBattenMaterial";
 import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
 import { familyOf } from "../nordic/palette";
@@ -317,6 +317,29 @@ export const WALL_COATING_POLYGON_OFFSET = {
 export const WALL_FINISH_POLYGON_OFFSET = {
   polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: -1,
 };
+
+// Formed sheet metal over the profiled skin (−3): each lap is one fixed step nearer, so the
+// piece on top wins a near-coincident tie at any distance. Units only, for the reason above.
+// The .glb carries no depth bias at all; it relies on the true gaps the resolver leaves.
+type PolygonOffset = typeof PROFILED_METAL_SKIN_POLYGON_OFFSET;
+const tier = (units: number): PolygonOffset =>
+  ({ polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: units });
+/** Gutter, cladding trim and flashing. */
+export const TRIM_POLYGON_OFFSET = tier(-4);
+/** Eave and rake pieces (`drip_edge` members), which lap the trim and gutter flange. */
+export const EAVE_RAKE_POLYGON_OFFSET = tier(-5);
+/** The pan end, hemmed around the eave's lip. */
+export const PAN_END_POLYGON_OFFSET = tier(-6);
+const METAL_DEPTH_TIERS: Record<string, PolygonOffset> = {
+  gutter: TRIM_POLYGON_OFFSET, flashing: TRIM_POLYGON_OFFSET, cladding_trim: TRIM_POLYGON_OFFSET,
+  wall_corner: TRIM_POLYGON_OFFSET, beam_cap: TRIM_POLYGON_OFFSET, corner_trim: TRIM_POLYGON_OFFSET,
+  drip_edge: EAVE_RAKE_POLYGON_OFFSET, roof_panel_hem: PAN_END_POLYGON_OFFSET,
+};
+
+/** The depth tier a member or solid category draws at, or null for none. */
+export function metalDepthTier(category: string): PolygonOffset | null {
+  return METAL_DEPTH_TIERS[category] ?? null;
+}
 
 /** Nominal running-bond module including joints: modular brick is 8" × 2⅔" with ⅜" joints. */
 export const BRICK_UNIT_M: readonly [number, number] = [0.2032, 0.0679]; // [length, course]

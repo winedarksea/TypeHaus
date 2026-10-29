@@ -13,6 +13,7 @@ and opening voids. Thin layers honor ``ExaggerationSpec`` with true-dimension la
 
 from __future__ import annotations
 
+from typehaus.emit.draw import section_sheet_metal as sheet_metal
 from typehaus.emit.draw.lineweights import REFERENCE
 from typehaus.emit.draw.palette import aia_layer, library_hatch
 from typehaus.emit.draw.scene import Frame, Hatch, Polyline, Scene, SceneBuilder, Text
@@ -96,11 +97,16 @@ def build_section(model: ResolvedModel, view: Slice, joints=None,
         _emit_wall_cut(b, model, wall, plane, crop, is_detail, min_draw,
                        joints, ladder_labels, scale)
 
+    # Sheet metal is drawn last, in lap order; a cut with no Image II eave keeps its old order.
+    sheet_cuts: list | None = [] if sheet_metal.image_ii_eave_in_cut(model, plane, crop) else None
     for solid in model.solids:
         # A marker for a part billed elsewhere is not a thing the section cuts through: a
         # 1/4" tie in a wall cut is noise, and drawing it would move all 86 section goldens.
         # A slab's lifted FINISH run is derived too, but it is cut material (a Corian top).
         if solid.derived and solid.category != SLAB_FINISH_CATEGORY:
+            continue
+        if sheet_cuts is not None and solid.category in sheet_metal.SHEET_SOLID_CATEGORIES:
+            sheet_cuts += sheet_metal.solid_sheet_cuts(model, solid, plane)
             continue
         _emit_solid_cut(b, model, solid, plane, crop)
 
@@ -123,7 +129,8 @@ def build_section(model: ResolvedModel, view: Slice, joints=None,
     # structure is not drawn twice. Without the rafters a plain building section would show
     # a roof stack floating over nothing.
     _emit_member_cuts(b, model, plane, crop,
-                      walls_and_floors=joints is not None or is_detail)
+                      walls_and_floors=joints is not None or is_detail, sheet_cuts=sheet_cuts)
+    sheet_metal.emit_sheet_cuts(b, sheet_cuts or [], crop, scale)
     if joints is not None:
         b.extend(list(joints.treatments))
 
@@ -394,22 +401,12 @@ def _emit_solid_cut(b, model, solid, plane: CutPlane, crop) -> None:
     Two things come free with the IR that the hand-rolled cut never had: the solid's
     ``voids`` now *split* the cut span (a section across a stair well stops drawing a slab
     straight through it), and the material is the resolver's ``catalog.material_ref``
-    instead of a blanket "concrete".
+    instead of a blanket "concrete". Sheet metal in a cut through an Image II eave skips this
+    for ``section_sheet_metal``'s filled, lap-ordered pass.
 
-    ** THE PATTERN HERE IS THE RAW MATERIAL REF, AND MOST REFS ARE NOT PATTERNS — OPEN,
-    2026-09-15. ** Both branches below pass ``material`` straight through as the Hatch
-    pattern. ``ir._hatch_defs`` publishes seven names (batt, lumber, rigid, concrete, osb,
-    metal, airgap), so a cut whose material tag is not one of those asks the renderer for a
-    ``hatch-<tag>`` that does not exist and draws UNHATCHED. It happens to have been
-    invisible because the one solid anybody looks at in section is concrete, and "concrete"
-    is both a tag and a pattern.
-
-    ``palette.detail_hatch`` is the map that answers this and the other two call sites in
-    this module already use it. Folding these two through it as well is a two-line change
-    and it moves **212 golden fields** — spf -> lumber, metal-dark-exterior -> metal and so
-    on, all of them nodes that render unhatched today. Measured, then left: it is a drawing
-    change of its own and does not belong inside a footing retype. The crushed-stone footing
-    that surfaced it has its DETAIL_HATCH entry ready for the day this is done.
+    ** OPEN, 2026-09-15: THE PATTERN HERE IS THE RAW MATERIAL REF. ** ``ir._hatch_defs``
+    publishes seven names, so any other tag draws UNHATCHED. ``palette.detail_hatch`` fixes it
+    (two lines) but moves 212 golden fields (spf -> lumber, ...): a drawing change of its own.
     """
     element = model.geometry.by_uid(solid.uid)
     if element is None:

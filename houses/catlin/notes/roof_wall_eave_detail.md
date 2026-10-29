@@ -20,29 +20,29 @@ source:
 
 ### General
 - Roof: 11-7/8" TJI 230 at 24" o.c., LSSR hangers to a structural ridge beam.
-- Bay: 5" ccSPF on the deck, R-30C batt below. The foam is the air and vapour barrier; paint-only ceiling.
+- Bay: 5" ccSPF on deck, R-30C batt. Foam is the air and vapour barrier.
 - Deck: 19/32" CDX, 40/20, oversailing the rafter ends to the girt face.
-- Butyl membrane, 240 F min, full field. 24 ga Image II Striated, direct-fastened through its nail flange.
-- Wall: 2x6, 1/2" sheathing, 4" ccSPF around 3-ply blocks, 1/2" vent gap, 1-1/2" KDAT girts at 24", 1-1/4" PBR. No WRB.
+- Butyl membrane 240 F min, full field plus eave strip-in. 24 ga Image II, nail flange.
+- Wall: 2x6, 1/2" sheathing, 4" ccSPF, 1/2" vent gap, KDAT girts, 1-1/4" PBR. No WRB.
 
 ### Keyed
 - [K1] Birdsmouth seat: beveled web stiffeners per APA D710 10h; H2.5A each rafter.
 - [K2] Foam first lift 1-1/2" min. Lap onto ridge beam and hanger flanges in one pass.
 - [K3] 2x6 eave block on edge on the plate, every bay. ccSPF over it.
 - [K4] Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.
-- [K5] Formed drip edge, one piece: flange 2" on the deck at 6:12, nose over the deck edge.
-- [K6] Lap the membrane over the drip. Nothing else reaches that plane.
-- [K7] 6" box gutter, rim 2.76" below the deck datum, back sheet behind the drip face.
-- [K8] Drip face 4" over the wall panel heads, kick into the gutter. No fascia, no soffit.
-- [K9] 2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Gutter hanger at each standoff.
+- [K5] Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04".
+- [K6] Strip-in membrane over both flanges, 4" past the hem. Pan rides over it.
+- [K7] PBR 5x4 gutter, level, back behind eave face, flange under eave leg.
+- [K8] Eave face over the gutter back, kick and hem into the trough. Pan hemmed round the lip. No fascia, no soffit.
+- [K9] 2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Hanger below the eave face; bracket pending.
 
 ### Spec 07 21 00
 - Hold point: plywood under 16% MC, bay by bay, before foam.
 - Hold point: inspect every bay for voids before the batts go in.
 
 ### Spec 07 61 00
-- Measure every eave offset off the drip edge face, 1-1/4" outside the panel face.
-- Build order: block, girt, deck, gutter, drip edge, membrane, standing seam. Insulate from inside after.
+- Measure eave offsets off the Extended Eave face.
+- Build order: block, girt, deck, membrane, gutter, eave, strip-in, pan. Insulate after.
 
 # Notes
 
@@ -86,7 +86,7 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
   girts** — the panel clips land on it out to the roof edge. That cantilever is not graded by
   anything in the engine and belongs in the PE scope.
 
-- Membrane: **high-temp self-adhered BUTYL over the whole deck**, 30 mil installed
+- Membrane: **high-temp self-adhered BUTYL over the whole deck**, 30 mil installed, plus the eave strip-in below
   (GRACE ULTRA dimensional basis; unvented/full-coverage manufacturer approval remains open).
   Henry PE200HT is SBS, not butyl; both chemistries have products that seal fasteners.
   The selected butyl seals around fasteners, and ~1,160 standing-seam clip screws through the field are
@@ -110,17 +110,27 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
 
 - Wall: 2x6 studs (LSL on the main storey), 1/2" sheathing, then **4" of closed-cell spray foam around three-ply KDAT blocks**, a 1/2" vent gap, one tier of 1-1/2" KDAT girts at 24" courses, and 1-1/4" PBR panel screwed to the girts. Class III interior paint on drywall. **No WRB:** the foam is the water plane. The cladding face is 7-1/4" proud of the sheathing (`params/roof_trim.py::_WALL_OUTBOARD_IN`), and the eave water chain is set out from it.
 
-- Gutter support (`notes/eave_gutter_girt.md`): a flat 2x6 KDAT girt in the girt layer at the eave, on a 3-2x6 standoff at every rafter bay centre, two TLOK08 per standoff through girt, standoff and sheathing into the 2x6 eave block. The gutter hangs on a hidden hanger at each standoff (24" o.c., inside the usual 36" max), screwed through the panel into the girt. **The hanger is drawn, not modelled or billed.**
+- Gutter support (`notes/eave_gutter_girt.md`): a flat 2x6 KDAT girt in the girt layer at the eave, on a 3-2x6 standoff at every rafter bay centre, two TLOK08 per standoff through girt, standoff and sheathing into the 2x6 eave block. The hanger (24" o.c., inside the usual 36" max) sits below the eave face, which blocks a p.46-style strap; its screw goes through the gutter back 4.7" below the crest into the girt (tight edge distance). **Provisional: pending bracket selection, sealed fastener. Drawn, not modelled or billed.**
 
 - Foam interface: wall ccSPF sprayed tight to the oversailing deck underside. No high-expansion foams.
 
-- Drip edge (since 2026-09-26 ONE formed piece per edge, derived by `resolve/roof_drip_edge.py` from `RF-HOUSE.eave_trim.drip_edge`; it replaced both the level authored drip and the corner trim): a flange lying ON the structural deck at the 6:12 pitch (underside 0.70" vertical above the deck datum at the edge), bearing 2" on the plywood inboard of the deck edge (the deck stops at the girt face, 1-1/4" inside the cladding face), with the adhered membrane lapped OVER it; a nose bent over the deck edge, clearing the wall panel heads; a face 1-1/4" outside the panel face with a 4" leg down over the panel heads; and a 1/2" kick out and down into the trough. The same piece runs up both rakes, where it is the barge board.
+- Extended Eave 52124XX (catalog section built from legs and bends, `library/trim/_image_ii.py`; resolved by `resolve/roof_image_ii.py`; stretch-out 10.0"): 7/8" hem folded flat under, a 5" leg (3-1/2" inboard plus a 1-1/2" lip with a 180 deg open hem), 1-1/2" return, 1-1/2" face, 5/8" kick at 135 deg, 1/2" open hem. Resolved deck bearing 2.036" against FORTIFIED's 2" (graded on the resolved value; thin margin, provisional); fastener land 1.25", fastener 0.63" from the deck edge. The same piece family runs up the rakes: the rake foot sits on the eave leg and lip, so the rake sheds onto the eave, and the eave runs through to the rake's outer face.
 
-- Gutter: 6" box gutter, back sheet tucked a lap BEHIND the drip edge's face — behind the sheet itself, not merely inboard of the 1.25" of plan depth it hangs at the end of. Rim 2.76" BELOW the deck datum, because the 4" leg it laps under hangs 3.26" below a roofing underside only 0.74" up. Downspout steadied with conduit pipe clamps (not primary support).
+- Two-stage membrane (GCP IWSDET-102 option 2 and TL-15, "metal drip edge ... should be placed over the membrane"). This **reverses the old K5/K6 rule** ("flange on bare deck, membrane over"): the field membrane runs to the deck edge, metal goes over it, and a strip-in goes over the metal. Without the strip, water running down the membrane would pass under the flanges and drop onto the wall head. Strip width and the Image II / 19/32 deck / membrane combination await GCP and Metal Sales confirmation.
 
-- No fascia and no soffit: roof and wall are one continuous standing-seam skin over a flush zero-overhang edge. Every eave offset is measured off the drip edge's face.
+- Image II pan: rides up over the flange-and-strip stack and hems 180 deg round the eave lip (pan reach u 1.60"); seam legs stop short of the fold. `resolve/roof_panel_hem.py`.
 
-- Build order (water laps downhill, so the eave chain is the part that gets built backwards): frame and block the eave bays -> 19/32" CDX deck, oversailing the girts -> **moisture-meter hold point, < 16% MC** -> gutter, back sheet up behind where the drip face will hang -> DRIP EDGE -> adhered butyl membrane lapped OVER the drip, full field -> standing seam; then, from inside, 5" ccSPF against the deck underside -> **void inspection, every bay** -> R-30C batt -> 5/8" gypsum -> paint. The drip edge goes on before the membrane, not after. **The insulation is an INTERIOR operation and follows the roof being closed in**: the deck can be dried in on day one and the foam sprayed against a dry deck weeks later.
+- Gutter: stock PBR 5x4 box gutter 58079XX, installed **level**, back tucked behind the eave face, its 3-1/2" roof flange running up under the eave leg (the combination is this house's: PIM-11 shows the general overlap, PBR guide p.46 the flange; neither shows both). Back top u 0.055, z 0.731 (1.49" above the face bottom); floor 5" below the back top; front crest = back top. Lowest inward route is the flange's upslope end, 1.57" above the crest, so a full or blocked gutter spills outward (`test_a_full_gutter_spills_outward`). Level within 1/8" and never falling from the outlet: `notes/box_gutter_sizing.md` section 8.
+
+- Water paths: *primary* pan, pan hem at the lip, trough, north outlet. *Secondary* field membrane, strip-in, eave leg under the pan, out at the pan hem's return under the lip, trough. *Wall head* covered by the gutter flange and eave leg (two metal layers), then the eave face over the gutter back.
+
+- Corners: gutter ends under its end cap at the rake; no 45 deg mitre between unlike sections.
+
+- No fascia and no soffit: roof and wall are one continuous standing-seam skin over a flush zero-overhang edge. Every eave offset is measured off the eave face.
+
+- Build order (water laps downhill, so the eave chain is built backwards): frame and block the eave bays -> 19/32" CDX deck, oversailing the girts -> **moisture-meter hold point, < 16% MC** -> field membrane to the deck edge -> gutter, flange up the slope, back behind where the eave face will hang -> Extended Eave over the flange -> **strip-in membrane over both flanges, lapped onto the field membrane** -> Image II pan over the stack, hemmed round the lip; then, from inside, 5" ccSPF against the deck underside -> **void inspection, every bay** -> R-30C batt -> 5/8" gypsum -> paint. **The insulation is an INTERIOR operation and follows the roof being closed in**: the deck can be dried in on day one and the foam sprayed against a dry deck weeks later.
+
+- Open (tier 2): bracket selection and a section through a support; eave and gutter splices, thermal movement, sealant and fastener schedule; real outlet fitting and north tail; snow protection (gutter front about 2" above the snow-slide line); mock-up. See `plans/TODO.md`.
 
 - Eave references (2026-09-16), what set the drip and gutter:
   - Best Buy Metals, *Standing Seam Architectural Install Guide* p.26, "Eave Detail (with gutter)": extended eave drip edge on the deck, panel hemmed around its kick, gutter back flange up behind the drip face, hidden hanger fixed at the fascia line.

@@ -21,6 +21,7 @@ Billing the second off the first is a 30% overstatement on catlin's garage alone
 
 from __future__ import annotations
 
+import math
 from collections import defaultdict
 
 from shapely.geometry import Polygon
@@ -221,6 +222,17 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         # line, which ``resolve_roof`` already rejects as an integrity ERROR, so a roof
         # that reaches this loop has one.
         ceiling_m2 = roof_ceiling_area_m2(model, roof)
+        # The eave strip-in over the drip-edge flanges (GCP IWSDET-102 option 2) is a swept
+        # member, not a layer: its width is half its section ring's perimeter.
+        for member in roof.members:
+            if member.category == "membrane" and member.section_ring:
+                ring = member.section_ring
+                edges = zip(ring, (*ring[1:], ring[0]), strict=True)
+                width = sum(math.dist(a, b) for a, b in edges) / 2.0
+                thick = next((layer.thickness.meters for layer in assembly.layers
+                              if layer.material_ref == member.material), 0.0)
+                areas[("roof eave strip-in", LayerFunction.MEMBRANE.value, member.material,
+                       thick)] += width * member.length_m
         for roof_layer in assembly.layers:
             if roof_layer.function in _BILLABLE:
                 areas[("roof", roof_layer.function.value, roof_layer.material_ref,

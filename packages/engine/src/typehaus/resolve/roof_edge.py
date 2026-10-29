@@ -48,6 +48,7 @@ from typehaus.resolve.roof_geometry import (
     roof_slope_coordinate,
     roof_structure_depth_m,
 )
+from typehaus.resolve.roof_image_ii_eave import wrapped_eave_head_cap_w
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 from typehaus.resolve.roof_trim import roof_trim_members
 
@@ -299,6 +300,9 @@ def _closure_members(
     continuous = mating is not None and continuous_skin_cladding(model, roof, walls)
     slope_factor = math.hypot(1.0, roof_slope(roof))
 
+    def head_cap(point: tuple[float, float]) -> float | None:
+        return wrapped_eave_head_cap_w(model, roof, point)
+
     def pass_over(capped: frozenset[tuple[str, str]]) -> list[FramedMember]:
         out: list[FramedMember] = []
         for wall in walls:
@@ -306,7 +310,8 @@ def _closure_members(
             spans = ((0.0, 1.0),) if crossing is None else ((0.0, crossing), (crossing, 1.0))
             for index, (t0, t1) in enumerate(spans):
                 out.extend(_closure_segment(roof, wall, t0, t1, index, structure_depth,
-                                            mating, slope_factor, continuous, walls, capped))
+                                            mating, slope_factor, continuous, walls, capped,
+                                            head_cap))
         return out
 
     # Two passes, because whether a wall laps a corner depends on whether its neighbour caps
@@ -324,6 +329,7 @@ def _closure_segment(
     segment: int, structure_depth: float,
     mating: MatingFaces | None, slope_factor: float, continuous: bool = False,
     walls: tuple[ResolvedWall, ...] = (), capped: frozenset[tuple[str, str]] = frozenset(),
+    head_cap=None,
 ) -> tuple[FramedMember, ...]:
     members: list[FramedMember] = []
     for layer in skin_layers(wall):
@@ -348,6 +354,10 @@ def _closure_segment(
             # layer's own plan position — the layers are parallel to the slope, so a layer
             # further out mates a little lower.
             perpendicular = mating.for_layer(layer.function, continuous_cladding=continuous)
+            # Under a wrapped Image II eave every layer stays clear of its lowest sheet.
+            cap = head_cap(p0) if head_cap is not None else None
+            if cap is not None:
+                perpendicular = min(perpendicular, cap)
             targets = tuple(roof_height_at(roof, point) + perpendicular * slope_factor
                             for point in (p0, p1))
         if max(targets[0] - tops[0], targets[1] - tops[1]) < CLOSURE_TOLERANCE_M:

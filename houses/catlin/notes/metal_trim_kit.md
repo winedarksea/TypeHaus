@@ -99,7 +99,7 @@ rough opening occupy 0.645 in, or 0.6875 in at the Andersen sizes.
 
 | Condition | Selected termination | Basis |
 |---|---|---|
-| House eave / box gutter | Extended Eave 52124XX on Offset Cleat 5806499; PBR 5 x 4 box gutter 58079XX (20 ft 3 in), end caps 58081XX / 58082XX, straps 58092XX | Residential manual pp. 30–41; PBR install pp. 12, 46, 63 |
+| House eave / box gutter | Extended Eave 52124XX, pan hemmed round its lip; PBR 5 x 4 box gutter 58079XX (20 ft 3 in), installed level, back behind the eave face, 3-1/2 in roof flange under the eave's pitched leg; end caps 58081XX / 58082XX, straps 58092XX | Residential manual pp. 12, 30–41; PBR install pp. 12, 46, 63; Image II PIM-11 |
 | House rake | Residential Rake 52126XX and Rake Cleat 52132XX, stock 2-5/8 in leg; bottom 1.0 in under the BBD75 wall head | Residential manual pp. 9, 33 |
 | House closed ridge | 7 in Ridge/Hip Cover 52131XX, specify 6:12; Z-Closure 58603XX both sides; double-bead tape 6403899 | Residential manual pp. 30–41 |
 | Garage and canopy eaves | Extended Eave 52124XX on Offset Cleat over metal fascia | Residential manual pp. 30–41 |
@@ -117,6 +117,8 @@ The garage's vented ridge is the Image II PIM p. 20 step cover (13 in, 6-1/2 in 
 hems) over the Cobra vented closure, with double-bead tape and rivets at every rib, 3:12 minimum and a
 2 in maximum deck slot. The PIM prints no part number and no net free area for either piece. The 2024
 manual shows its 7 in cover only in a non-vented detail.
+
+Gutter and eave relationship: PIM-11 shows only a gutter by others behind the eave face, and PBR p. 46 shows the box gutter's roof flange under eave flashing on a PBR roof. Neither shows the combination; the house documents it (`roof_wall_eave_detail.md`). The flange lies on the field membrane under the eave leg, with the membrane strip-in over both; no field bend, stock part identity kept. The eave's Offset Cleat is not part of the house eave.
 
 The house box gutter is the PBR 5 x 4 catalog box. Its capacity passes the SMACNA 10-yr 5-min design
 intensity (7.54 in/hr) in `notes/box_gutter_sizing.md`; the custom 6 x 5 is retired.
@@ -182,7 +184,7 @@ What the model derives and bills, with the counts the tests pin
 | Door heads | site-brake drip cap, legacy head section swept at stock; none on catalog unit D-S-DECK-E, whose head is the band | 5 |
 | Small rough openings | 4-side window kit on the niche and both ERV hoods; the two 2.5 in hydrant bores are closed by the fixture's flange and sealant | 3 |
 | Screen ends | Corrugated Jamb on both open ends of W-BW-SCREEN and its skirt | 4 |
-| Roof eaves | Extended Eave 52124XX on Offset Cleat 5806499 | 16 sticks |
+| Roof eaves | Extended Eave 52124XX, pan hemmed to its lip (no cleat) | 16 sticks |
 | Roof rakes | House: stock Residential Rake 52126XX with its bottom 1.0 in under the wall head; Rake Cleat 52132XX. Garage and canopy: Flat Cleat 5806199 at 18 in | House 4 runs / 16 ea 52126XX; 5806199 40 ea |
 | Closed ridges | 7 in cover 52131XX, Z-Closure 58603XX each side, double-bead tape 6403899 | 5 sticks |
 | Garage vented ridge | 13 in step cover and Cobra closure (`IMAGE_II_VENTED_STEP_RIDGE`, `cobra-vented-closure`), unpriced until the part numbers are in | 25.4 ft |

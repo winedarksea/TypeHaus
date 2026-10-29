@@ -19,11 +19,19 @@ from typehaus.emit.draw.section_clip import (
     profile_band,
     rect_nodes,
 )
+from typehaus.emit.draw.section_sheet_metal import (
+    SheetCut,
+    emit_sheet_cuts,
+    is_membrane,
+    member_sheet_rank,
+    sheet_members_by_uid,
+)
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import CutPlane
 
 
-def emit_framing_cuts(b, model, hosts, plane, crop, representative_roles=()) -> None:
+def emit_framing_cuts(b, model, hosts, plane, crop, representative_roles=(),
+                      sheet_cuts: list | None = None) -> None:
     """Slice each host's ``<uid>::framing`` element — one loop for every family of stick.
 
     ``member_solid`` is the one member solid every emitter already shares, so the cut face
@@ -45,11 +53,22 @@ def emit_framing_cuts(b, model, hosts, plane, crop, representative_roles=()) -> 
         missed: dict[str, list] = {}
         cut: set[str] = set()
         trusses = _trusses_by_uid(host)
+        sheets = sheet_members_by_uid(host)
         for part in element.parts:
             catalog = part.catalog
             if catalog is None:
                 continue
             profiles = slice_part(part, plane)
+            sheet = sheets.get(part.member_uid)
+            if sheet is not None:
+                cuts = [SheetCut(member_sheet_rank(sheet), tuple(profile.outline), host.uid,
+                                 f"{catalog.name}", catalog.material_ref, is_membrane(sheet))
+                        for profile in profiles]
+                if sheet_cuts is None:
+                    emit_sheet_cuts(b, cuts, crop)
+                else:
+                    sheet_cuts.extend(cuts)
+                continue
             if part.member_uid in trusses and _emit_truss(
                     b, trusses[part.member_uid], part, plane, crop, host.uid,
                     model.plan.library, bool(profiles)):
@@ -251,7 +270,8 @@ def _emit_raked_flanges(b, profile, crop, uid, tag, member_profile) -> None:
                        layer="S-FRAM", lineweight=FAINT, uid=uid, tag=f"{tag}/flange"))
 
 
-def _emit_member_cuts(b, model, plane, crop, walls_and_floors=True) -> None:
+def _emit_member_cuts(b, model, plane, crop, walls_and_floors=True,
+                      sheet_cuts: list | None = None) -> None:
     """Draw the framing members crossing the cut (top plates, rafters, joists).
 
     ``walls_and_floors`` is the detail-mode gate. Roof members are outside it: the roof's
@@ -265,7 +285,7 @@ def _emit_member_cuts(b, model, plane, crop, walls_and_floors=True) -> None:
         # vocabulary because nothing modelled it — now it is modelled, so it is cut.
         emit_framing_cuts(b, model, model.braces, plane, crop)
     emit_framing_cuts(b, model, model.roofs, plane, crop,
-                      representative_roles=("rafter",))
+                      representative_roles=("rafter",), sheet_cuts=sheet_cuts)
 
 
 def _member_flange_nodes(u0, u1, z0, z1, profile, uid, tag) -> list:

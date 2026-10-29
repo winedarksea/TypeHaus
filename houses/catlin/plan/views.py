@@ -6,7 +6,12 @@ segment boundaries, ridge elevation).
 
 from typehaus import ExaggerationSpec, Slice, SliceKind, ft, inch, m, pt
 
+from params.cladding import HOUSE_EW_OUTBOARD_IN
 from params.north_entry_frame import DETAIL_CUT_Y_FT
+from params.roof_panel import EAVE_DECK_IN
+
+#: The east eave's cladding face (== RF-HOUSE's footprint edge) and its deck plane, inches.
+_EAVE_FACE_E_IN = 36 * 12 + HOUSE_EW_OUTBOARD_IN
 
 DETAIL_SLICES = [
     # West basement wall + footing + slab edge (cut at y=18', the mid-height bearing
@@ -177,4 +182,17 @@ DETAIL_SLICES = [
     # and this sheet starts lettering RM-M-LIVING and bubbling details from the far side of
     # the house; narrow it and the load path stops reading. -10'-6" reaches under the footing
     # and 10'-0" clears CEIL-RM-M-LIVING at 9'-0 1/8", which is the whole span worth showing.
+    # The RF-HOUSE east eave enlarged (3" = 1'-0"): Image II Extended Eave, pan hem, strip-in,
+    # box gutter. y=17'-4" is MID-PAN — the pans are 16" on seams at 16'-8" and 18'-0", so the
+    # cut shows the pan's hem around the eave's hook rather than a seam stub. The crop is
+    # 16 1/2" x 14": 7" inboard of the cladding face (the strip-in's lap onto the field
+    # membrane) to 9 1/2" out (past the gutter front), 9" below the deck plane at the eave
+    # (under the trough) to 5" above. Leaders come from the
+    # zero-overhang eave overlay, run for any authored detail whose crop holds an eave.
+    Slice(uid="PWAJW7KF6Y", tag="SL-D-EAVE", kind=SliceKind.DETAIL,
+         title="East eave: Image II eave, pan hem and box gutter",
+         cut_origin=pt(ft(0), ft(17, 4)), cut_direction="x",
+         crop=(pt(inch(_EAVE_FACE_E_IN - 7), inch(EAVE_DECK_IN - 9)),
+               pt(inch(_EAVE_FACE_E_IN + 9.5), inch(EAVE_DECK_IN + 5))),
+         scale="3\"=1'"),
 ]

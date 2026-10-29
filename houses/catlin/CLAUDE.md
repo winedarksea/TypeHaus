@@ -198,21 +198,26 @@ not instruction: when it disagrees with this file or the model, it is the one th
   family over minting a letter. Marks must stay unique; the E-602 schedule is keyed on
   them. Also holds the two 24V supply types and the dimmer/timer switch types.
 - `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
-- `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves: roofing →
-  Image II Extended Eave 52124XX (catalog section, `resolve/roof_image_ii.py`, gated by
-  `Material.roof_edge_trim_kit`) → PBR 5 x 4 box gutter (catalog, 2026-10-27) → downspout,
-  each piece's position derived from the one above it so the laps hold. Rakes are stock
-  Residential Rake 52126XX, bottom 1" below the wall head. These catalog lips are FORTIFIED
-  §4.5's drip, graded on the section's deck flange; a fascia edge (canopy, garage eaves)
-  keeps the derived formed drip (`resolve/roof_drip_edge.py`). RF-HOUSE has **no fascia**,
-  so every offset is measured off the trim face, never a fascia's. "Continuous" is
+- `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves, stacked bottom
+  to top on the deck: field membrane → PBR 5 x 4 box gutter 58079XX (level, back behind the
+  eave face, 3-1/2" flange up under the eave leg) → Image II Extended Eave 52124XX (catalog
+  legs-and-bends section, `resolve/roof_image_ii.py`, gated by `Material.roof_edge_trim_kit`)
+  → membrane strip-in (GCP IWSDET-102 opt. 2, TL-15; 9" is provisional) → Image II pan hemmed
+  round the eave lip → downspout. The gutter's place is derived, none typed: `EaveStack`
+  (`resolve/roof_image_ii_eave.py`) gives its origin from the roof layers, and the engine
+  sweeps it as one piece with end caps (`resolve/gutter_formed.py`). Rakes are stock
+  Residential Rake 52126XX, its foot on the eave leg. The catalog lips are FORTIFIED §4.5's
+  drip, graded on the **resolved** deck bearing (2.036" vs 2", thin and provisional); a fascia
+  edge (canopy, garage eaves) keeps the derived formed drip (`resolve/roof_drip_edge.py`).
+  RF-HOUSE has **no fascia**, so every offset is measured off the eave face. "Continuous" is
   `Material.skin_family`, not tag equality — the walls are exposed-fastener PBR and the roof
   is mechanically seamed, and they read as one skin because both declare
   `skin_family="standing-seam"`. Drop that on either and the flush edge silently reverts to
-  a fascia-and-drip-edge detail nobody has drawn. The lap
-  order is enforced by `packages/engine/tests/test_catlin_eave_water.py` — read it before
-  moving any of these numbers. All three pieces are ordered in `_CHAIN_MATERIAL`, the
-  house's one exterior dark, so the eave line matches the rake's drip edge.
+  a fascia-and-drip-edge detail nobody has drawn. The lap order is enforced by
+  `packages/engine/tests/test_catlin_eave_water.py` — read it before moving any of these
+  numbers. Hanger, splices, outlet fitting and snow protection are open (`plans/TODO.md`).
+  The chain is ordered in `_CHAIN_MATERIAL`, the house's one exterior dark. See
+  `notes/roof_wall_eave_detail.md`.
 - `typehaus/library/placeables/*.py` (inside the engine, not this directory) — the shared FixtureType/
   ApplianceType/FurnitureType *catalog*, wired in by `plan/manifest.py`. NOT editable: it
   uses `frozenset(...)`, which the dialect forbids. Type libraries stay non-editable;
@@ -872,9 +877,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     frames SPF at SG 0.42 against H2.5A's SG 0.50 rating, with 1.5x the tributary.
   - The roof deck oversails the last rafter and spans the wall girts, clipping at the
     cladding's back face — that cantilever is graded by nothing in the engine. Stack depth
-    is hand-transcribed into `params/roof_trim.py` (`_DRIP_CEILING_IN`,
-    `_CLADDING_HEAD_IN`) and into `test_catlin_eave_water.py` — moving a layer must move
-    both.
+    reaches the gutter through `params/roof_panel` (`EAVE_DECK_IN`, `ROOFING_BASE_IN`,
+    `PITCH`) and `EaveStack`, so moving a layer moves the gutter; nothing is transcribed.
 
 - **Structural ridge, not a rafter-tie roof**: `RB-HOUSE` bears continuously on the
   `W-A-C1/C1B/C2` bearing wall (unbroken to footings), keeping rafters simple spans and

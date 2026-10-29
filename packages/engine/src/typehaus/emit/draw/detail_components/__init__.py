@@ -61,6 +61,7 @@ from typehaus.emit.draw.detail_components.dispatch import (
     build_overlay_components,
 )
 from typehaus.emit.draw.detail_components.eave import (
+    eave_overlay_for_slice,
     eave_vent_intake,
     zero_overhang_eave,
 )
@@ -200,5 +201,6 @@ __all__ = [
     "thicken_polyline",
     "window_head_jamb_sill",
     "zero_overhang_eave",
+    "eave_overlay_for_slice",
     "overhang_eave",
 ]

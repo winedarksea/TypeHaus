@@ -207,6 +207,46 @@ def _trim_reach(model, cond, direction: str, station: float, u_lo: float,
     return min(us), max(us)
 
 
+# How far an eave cut may slide to reach a clear pan middle: a 16" pan module against 24"
+# rafters puts every third middle on a rafter, so the nearest clear one can be ~1'-4" away.
+_PAN_SLIDE_M = 0.45
+# Clearance a mid-pan station keeps from a rafter's face, so the cut shows the eave block.
+_RAFTER_CLEAR_M = 0.0254
+
+
+def _mid_pan_station(model, cond, direction: str, station: float, u_lo: float,
+                     u_hi: float) -> float:
+    """``station`` slid to the middle of the nearest standing-seam pan at this eave.
+
+    A cut on a seam draws the seam stub's fold and none of the pan hem; mid-pan is where the
+    hem, the eave lip and the lap order read. A middle that lands on a rafter is skipped: the
+    cut would run down the rafter and lose the eave block. A roof with no pan ends keeps its
+    station.
+    """
+    from typehaus.emit.draw.section_sheet_metal import PAN_END_CONNECTION
+    from typehaus.resolve.framing.profiles import cross_section
+
+    along, across = (1, 0) if direction == "x" else (0, 1)
+    roofs = [roof for roof in model.roofs if roof.tag in cond.element_tags]
+    middles = [(member.p0[along] + member.p1[along]) / 2.0
+               for roof in roofs for member in roof.members
+               if member.connection == PAN_END_CONNECTION
+               and u_lo - _TRIM_NEAR_M <= member.p0[across] <= u_hi + _TRIM_NEAR_M]
+    rafters = [(member.p0[along], cross_section(member.profile).width_m / 2.0)
+               for roof in roofs for member in roof.members
+               if member.category == "rafter" and abs(member.p0[along] - member.p1[along]) < 1e-6]
+
+    def clear(mid: float) -> bool:
+        return all(abs(mid - at) > half + _RAFTER_CLEAR_M for at, half in rafters)
+
+    for mid in sorted(middles, key=lambda mid: abs(mid - station)):
+        if abs(mid - station) > _PAN_SLIDE_M:
+            break
+        if clear(mid):
+            return mid
+    return station
+
+
 # Clearance kept between a wall-junction cut and any opening's framed extent.
 _OPENING_CLEAR_M = 0.15
 
@@ -302,6 +342,7 @@ def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
     # a wide empty band on one side and clips the drawing on the other.
     u_lo, u_hi = _wall_u_extent(wall, direction, station, center_u)
     if cond.kind.value == "wall_roof":
+        station = _mid_pan_station(model, cond, direction, station, u_lo, u_hi)
         # Hold the roof's eave trim (fascia, soffit, drip edge, gutter) whole: an overhung
         # eave reaches well past a fixed margin, and a crop through the fascia hides it.
         reach_lo, reach_hi = _trim_reach(model, cond, direction, station, u_lo, u_hi)

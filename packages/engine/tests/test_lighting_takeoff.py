@@ -231,9 +231,9 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
                        for r in connected_lighting_va(catlin_model)["per_circuit"]}
     finally:
         catlin_model.light_runs = original
-    # 24' of eave at 2.4 W/ft.
+    # 24' of eave at 3.0 W/ft.
     assert set(va) == {"LR-G-EAVE-W"}
-    assert va["LR-G-EAVE-W"] == pytest.approx(run.length_m * _M_TO_FT * 2.4)
+    assert va["LR-G-EAVE-W"] == pytest.approx(run.length_m * _M_TO_FT * 3.0)
     assert per_circuit["CKT-LT-MAIN"]["runs"] == 1
     # The run's tape joins the branch and its idle 96 W driver leaves the lighting sum.
     assert per_circuit["CKT-LT-MAIN"]["connected_va"] == pytest.approx(

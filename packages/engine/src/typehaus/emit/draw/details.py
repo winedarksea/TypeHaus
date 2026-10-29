@@ -11,6 +11,8 @@ anchor degrades to a ``detail.anchor_unresolved`` finding + error marker, never 
 
 from __future__ import annotations
 
+from functools import partial
+
 from typehaus.emit.draw.detail_anchors import _wall_anchor, resolve_anchor
 from typehaus.emit.draw.detail_derive import (
     DerivedDetail,
@@ -147,19 +149,41 @@ def build_authored_detail_scene(model: ResolvedModel, view: Slice) -> Scene:
     construction geometry.
     """
     from typehaus.emit.draw.detail_components import (
+        eave_overlay_for_slice,
         glazed_roof_overlay_for_slice,
         ridge_overlay_for_slice,
         sauna_overlay_for_slice,
         shower_overlay_for_slice,
     )
 
-    scene = build_section(model, view)
+    frame = _authored_frame(view)
+    scene = build_section(model, view, frame=frame)
+    if frame is not None:  # the card is the drawing's identity; the cut's oversized tag is not
+        scene = scene.model_copy(update={"nodes": tuple(
+            n for n in scene.nodes if not (isinstance(n, Text) and n.content == view.tag))})
+    eave = partial(eave_overlay_for_slice, scale=frame.scale if frame is not None else None)
     for recipe in (sauna_overlay_for_slice, glazed_roof_overlay_for_slice,
-                   shower_overlay_for_slice, ridge_overlay_for_slice):
+                   shower_overlay_for_slice, ridge_overlay_for_slice, eave):
         overlay = recipe(model, view)
         if overlay:
             scene = scene.model_copy(update={"nodes": scene.nodes + tuple(overlay)})
     return scene
+
+
+def _authored_frame(view: Slice):
+    """A true-scale card for an authored detail that states its scale, else ``None``.
+
+    Only a slice that sets ``scale`` gets one, so every older authored detail keeps its
+    frameless drawing; the card's ladder picks the scale the crop admits.
+    """
+    from typehaus.emit.draw.detail_card import card_for_crop
+
+    if "scale" not in view.model_fields_set or view.crop is None:
+        return None
+    (cu0, cz0), (cu1, cz1) = (view.crop[0].xy_m, view.crop[1].xy_m)
+    span_u, span_z = abs(cu1 - cu0) / M_PER_IN, abs(cz1 - cz0) / M_PER_IN
+    center = ((cu0 + cu1) / 2.0 / M_PER_IN, (cz0 + cz1) / 2.0 / M_PER_IN)
+    return card_for_crop(span_u, span_z, center, notes=False)
 
 
 def _detail_components(model: ResolvedModel, derived: DerivedDetail) -> list:
