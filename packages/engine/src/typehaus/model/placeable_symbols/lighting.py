@@ -40,6 +40,12 @@ from typehaus.model.placeable_symbols._frame import (
     rect,
 )
 from typehaus.model.placeable_symbols._mirrors import halo_mirror_light, mirror_light
+from typehaus.model.placeable_symbols._product_sconces import (
+    candle_sconce,
+    slim_updown_sconce,
+    swing_arm_sconce,
+    tube_sconce,
+)
 from typehaus.model.placeable_symbols._track_lighting import track_light
 from typehaus.model.placeable_symbols._vanity_lights import socketed_vanity_light
 from typehaus.model.placeable_symbols._wave_chandelier import wave_chandelier
@@ -429,10 +435,15 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "sconce-updown": sconce(throw="updown"),
     "sconce-spot": sconce(throw="spot"),
     "sconce-gothic": gothic_sconce(),
+    "sconce-tube": tube_sconce(),
+    "sconce-slim-updown": slim_updown_sconce(),
+    "sconce-swing-arm": swing_arm_sconce(),
+    "sconce-candle": candle_sconce(),
     "pendant": pendant(),
     "chandelier": chandelier(arms=6),
     "cluster-pendant": cluster_pendant(globes=20),
     "ceiling-fan-light": ceiling_fan_light(blades=4),
+    "ceiling-fan-light-3": ceiling_fan_light(blades=3),
     "linear-light": linear_light(),
     "mirror-light": mirror_light(),
     "halo-mirror-light": halo_mirror_light(),

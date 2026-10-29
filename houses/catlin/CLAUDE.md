@@ -1866,8 +1866,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     Do not re-box either run without re-reading the declaration. `PR-B-HW-SAUNA` and
     `PR-B-CW-SAUNA` run side by side, not stacked, at x=17'-4"/17'-3" — do not restack them;
     two 1/2" lines need 5/8" separation in a band only 3" deep.
-  - Lighting/outlets: three `ED-T-LT-CAN3` on `CKT-LT-BACKUP` at x=190",
-    y=19'-6"/15'-0"/11'-6" (27 VA; `cycle_48h.sustains_always_on` holds,
+  - Lighting/outlets: three `ED-T-LT-CAN4` (mark C retired 2026-10-28) on `CKT-LT-BACKUP` at x=190",
+    y=19'-6"/15'-0"/11'-6" (43.5 VA; `cycle_48h.sustains_always_on` holds,
     `test_backup_calc.py`). Keep the middle one at **15'-0"**, not 15'-6" — `PR-B-HW-SAUNA`
     crosses 2 9/16" below the ceiling there. `ED-B-WORKSHOP-SW` sits 5" north of
     `D-B-SHOP`'s hinge jamb — the only side with room for the box. `ED-B-HALL-RC1` is on

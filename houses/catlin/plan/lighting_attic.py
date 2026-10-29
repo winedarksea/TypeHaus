@@ -105,7 +105,7 @@ ATTIC_LIGHTING = [
     # ** NO LUMEN CONSEQUENCE: ** storage is not a habitable room, so R303.1 never applied
     # here — this room is the one place on the storey where the change is free.
     ElectricalDevice(uid="QTA0002AAA", tag="ED-A-EAST-SCONCE2", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-GOTHIC",
+                     type_ref="ED-T-LT-SCONCE-CANDLE",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
@@ -113,7 +113,7 @@ ATTIC_LIGHTING = [
                          wall_ref="W-A-C2B", face="right", distance_from_start=inch(44),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTA0003AAA", tag="ED-A-EAST-SCONCE3", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-GOTHIC",
+                     type_ref="ED-T-LT-SCONCE-CANDLE",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
@@ -121,7 +121,7 @@ ATTIC_LIGHTING = [
                          wall_ref="W-A-C2", face="right", distance_from_start=inch(72),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTA0004AAA", tag="ED-A-EAST-SCONCE4", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-GOTHIC",
+                     type_ref="ED-T-LT-SCONCE-CANDLE",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
@@ -303,7 +303,7 @@ ATTIC_LIGHTING = [
                      # its studs legally, and both faces moved 1" off the axis with it. This box is
                      # authored 1.000" off the GYPSUM face (the 0.01" paint film is not in the
                      # offset), so it moves the same 1".
-                     type_ref="ED-T-LT-MIRROR",
+                     type_ref="ED-T-LT-KARLIE-2-BN",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO", controlled_by=("ED-A-STUDIO-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(58)),
                      location=Location(attachment=WallAttachment(

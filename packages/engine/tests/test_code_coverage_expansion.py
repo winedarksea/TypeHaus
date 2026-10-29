@@ -357,6 +357,20 @@ def test_r303_exception_1_is_unknown_when_a_fixture_states_no_lumens():
     assert "no lumens" in findings[0].message
 
 
+def test_r303_exception_1_passes_on_rated_fixtures_alone_beside_an_unrated_one():
+    """An unrated fixture only adds light: rated lumens that clear 6 fc carry the room."""
+    from typehaus.model.enums import DeviceKind
+
+    ctx = _light_ctx(0.6, 0.6, lumens=3000.0, supply=True, erv_cfm=60.0)
+    ctx.plan.library.electrical_device_types.append(SimpleNamespace(tag="LT-U", lumens=None))
+    ctx.plan.all_elements().append(SimpleNamespace(
+        element_kind="ElectricalDevice", tag="ED-LT-U", kind=DeviceKind.LIGHT,
+        room="RM-BED", type_ref="LT-U"))
+    findings = habitable_light_and_ventilation(ctx)
+    assert _results(findings) == [Result.PASS]
+    assert "counting only rated fixtures; ED-LT-U" in findings[0].message
+
+
 def test_habitable_light_is_unknown_when_a_window_type_does_not_resolve():
     """A room whose glazing cannot be totalled is not a room with no glazing.
 

@@ -878,6 +878,10 @@ export interface LuminaireScheduleRow {
   length_ft: number | null; // linear types are billed by the foot, not counted
   rooms: string[];
   source: string | null;
+  // The chosen product (by the type's product_ref); null where the type names none.
+  product: string | null;
+  brand: string | null;
+  model: string | null;
 }
 
 export interface LightingControlRow {

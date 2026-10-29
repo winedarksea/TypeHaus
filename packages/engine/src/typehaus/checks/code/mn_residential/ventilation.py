@@ -199,9 +199,6 @@ def _exception_1(ctx: CheckContext, room, area_sf: float):
     lumens, unrated = _room_lumens(ctx, room)
     if lumens is None:
         return "fail", "no luminaire is assigned to it, so R303.1 Exception 1 is not available"
-    if unrated:
-        return "unknown", (f"R303.1 Exception 1 would apply, but {', '.join(unrated)} state "
-                           "no lumens on their type, so the 6 fc average cannot be totalled")
     if not _has_fresh_air_supply(ctx, room):
         return "fail", ("it has no mechanical fresh-air supply register, so R303.1 "
                         "Exception 1 is not available")
@@ -218,6 +215,15 @@ def _exception_1(ctx: CheckContext, room, area_sf: float):
     numbers = (f"{lumens:.0f} lm at CU {_COEFFICIENT_OF_UTILIZATION:.2f} x LLF "
                f"{_LIGHT_LOSS_FACTOR:.2f} over {area_sf:.0f} sf = {delivered:.1f} fc, "
                f"and {provided:.0f} cfm of whole-house outdoor air reaches it")
+    # An unrated fixture only adds light, so the rated total is a lower bound: it can
+    # carry the exception on its own, but cannot sink it.
+    if unrated:
+        numbers += f" (counting only rated fixtures; {', '.join(unrated)} state no lumens)"
+        if delivered + 1e-6 < _EXCEPTION_MIN_FOOTCANDLES:
+            return "unknown", (f"R303.1 Exception 1 would apply, but {', '.join(unrated)} "
+                               "state no lumens on their type, and the rated fixtures alone "
+                               f"give {delivered:.1f} fc, short of the "
+                               f"{_EXCEPTION_MIN_FOOTCANDLES:.0f} fc average")
     if delivered + 1e-6 < _EXCEPTION_MIN_FOOTCANDLES:
         return "fail", (f"R303.1 Exception 1 does not carry it either: {numbers}, short of "
                         f"the {_EXCEPTION_MIN_FOOTCANDLES:.0f} fc the exception requires")

@@ -74,7 +74,6 @@ def test_catlin_round_and_rectangular_mirrors_use_their_own_shapes(catlin_plan) 
     mirror = furniture["FT-MIRROR-KOHLER-26050-BNL"]
     assert mirror.plan_symbol == "plain-round-mirror-nickel"
     assert lights["ED-T-LT-MIRROR-HALO-2700"].plan_symbol == "halo-mirror-light"
-    assert lights["ED-T-LT-MIRROR"].plan_symbol == "mirror-light-bar"
     record = _symbol_geometry(mirror, mirror.footprint)
     assert all(part["shape"] == "cylinder-depth" for part in record["model_parts"])
     glass = [part for part in record["model_parts"] if part.get("metalness") == 1]

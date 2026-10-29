@@ -42,6 +42,8 @@ function ScheduleTable({ rows, onZoomRoom }: {
     <ReaderTable<LuminaireScheduleRow> rows={rows} rowKey={(row) => row.type} columns={[
       { key: "mark", header: "Mark", cellClass: "reader-mono", cell: (r) => r.mark },
       { key: "description", header: "Description", cell: (r) => r.description },
+      { key: "product", header: "Brand / Model", cell: (r) => r.brand
+        ? <>{r.brand} <span className="reader-mono">{r.model}</span></> : DASH },
       { key: "lamp", header: "Lamp", cellClass: "muted", cell: (r) => r.lamp || DASH },
       // A linear type has no per-fixture wattage — it has watts per foot. Showing one in the
       // other's column would misprice the order.
@@ -202,8 +204,8 @@ export function LightingView() {
   const schedule = useMemo(() => {
     const rows = lighting?.schedule ?? [];
     return needle
-      ? rows.filter((row) => `${row.mark} ${row.description} ${row.type} ${row.rooms.join(" ")}`
-        .toLowerCase().includes(needle))
+      ? rows.filter((row) => [row.mark, row.description, row.type, row.brand ?? "",
+        row.model ?? "", ...row.rooms].join(" ").toLowerCase().includes(needle))
       : rows;
   }, [lighting, needle]);
   const controls = useMemo(() => {
@@ -235,7 +237,7 @@ export function LightingView() {
       subtitle={`${lighting.schedule.length} marks · ${fixtures} fixtures · ${lighting.runs.total_length_ft} lf of tape`}
       onClose={close}
       toolbar={<ReaderFilter value={filter} onChange={setFilter}
-        placeholder="Filter marks, rooms, fixtures…" label="Filter lighting" />}
+        placeholder="Filter marks, brands, rooms, fixtures…" label="Filter lighting" />}
     >
       <ReaderSection
         title="Luminaire schedule"

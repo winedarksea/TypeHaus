@@ -101,12 +101,12 @@ MAIN_CLOSET = [
     # 1,300 lm over 41.9 sf at CU 0.60 x LLF 0.80 = 14.9 fc on the aisle, plus the PAX strips
     # inside the frames. x stays on 11'/15', one can per side of the central frame.
     ElectricalDevice(uid="QTM000VAAA", tag="ED-M-CLOSET-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(11), ft(15)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(11), ft(15)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
                      controlled_by=("ED-M-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="1N2XSTDANE", tag="ED-M-CLOSET-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(15), ft(15)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(15), ft(15)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
                      controlled_by=("ED-M-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),

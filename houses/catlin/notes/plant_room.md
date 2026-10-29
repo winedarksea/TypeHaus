@@ -482,12 +482,13 @@ moisture transfer 0.7 @ 20 CFM, ASRE 73 %) — accepting that it closes its supp
 Per NEC 2023, this is a **damp location** throughout and a **wet location** anywhere it is
 misted or hosed.
 
-- All luminaires **wet-location listed**, gasketed, corrosion-resistant housings. Standard
-  "damp-rated" bath fixtures are inadequate in a room that condenses. `ED-S-PLANT-LT` is
-  retyped to `ED-T-LT-FAN52-WET` (schedule mark N2).
+- **Damp is enough for the lights (owner, 2026-10-28)**: they are never misted. The
+  fan `ED-S-PLANT-LT` is the Mykonos (`ED-T-LT-FAN52`, mark N, itself ETL wet); mark N2 is
+  retired. The spot `ED-S-PLANT-SPOT` is mark J (damp); J2 is retired.
 - **Grow tubes must be UL 8800 listed** — NEC Article 410 Part XVI, added in the 2020 cycle,
   requires horticultural lighting equipment to be listed, and UL 8800 admits only damp- or
-  wet-rated horticultural luminaires. `ED-T-LT-TUBE6` (mark F) now states both.
+  wet-rated horticultural luminaires. `ED-T-LT-GROW-BAR` (mark F, two Barron Varius AG90
+  bars, damp, ETL to UL 8800) states it.
 - `ED-S-PLANT-RC1..RC5`: **WR-listed, GFCI, in-use ("bubble") covers**, non-metallic gasketed
   boxes — `ED-T-RECEPTACLE-WR-GFCI`. In-use covers everywhere, because pumps, heat mats and
   the humidifier stay plugged in permanently and a flip lid is only weather-tight with

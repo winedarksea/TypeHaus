@@ -63,7 +63,7 @@ def test_fixtures_are_labelled_with_their_mark_not_their_tag(catlin_model):
     contents = {node.content for node in scene.nodes if isinstance(node, Text)}
     marks = {product.type_mark for product in catlin_model.plan.library.electrical_device_types
              if getattr(product, "type_mark", None)}
-    assert {"A", "C", "L"} <= contents <= (contents | marks)
+    assert {"A", "L"} <= contents <= (contents | marks)
     assert not [text for text in contents if text.startswith("ED-S-BED1-")]
 
 

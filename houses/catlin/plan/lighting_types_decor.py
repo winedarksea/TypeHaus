@@ -22,65 +22,38 @@ from .porch_lighting_types import GARDEN_FLOOD_TYPE
 _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
                           position=(ft(0), ft(0), ft(0))),)
 
+_STRETCH_BODY = dict(
+    footprint=(inch(8), inch(4)), height=inch(8), plan_symbol="sconce-swing-arm",
+    lamp="LED integrated, touch dimmer on the backplate", watts=17.0, lumens=623.0,
+    cct_k=3000, cri=90, dimmable=True, damp_rated=True, load_va=17.0, ports=_POWER_120,
+    product_ref="PROD-WAC-BL-1660-BK")
+_STRETCH = LuminaireType(
+    tag="ED-T-LT-SCONCE-SPOT", name="Swing-arm LED reading light, black",
+    form=LuminaireForm.SCONCE, type_mark="J", **_STRETCH_BODY,
+    source="WAC dweLED Stretch BL-1660-BK (spec sheet), drawn folded (reach unpublished). "
+           "CONFIRM with WAC that it comes back ON after a wall switch cuts power.")
+
 DECORATIVE_LUMINAIRE_TYPES = (
     # --- H/J/K: sconces ---------------------------------------------------------------
     # Up-and-down for the basement theatre, on a dimmer: the traditional answer for a room
     # you want lit enough to walk through and dark enough to watch something in.
-    luminaire_class("ED-T-LT-SCONCE-UD").model_copy(update={"type_mark": "H", "source": "3000K with the house standard (was 2700K)."}),
-    # Down-spot for the studies. Set back from the window wall so it lights the desk
-    # without putting a lit head in the glass after dark (notes: "more privacy at night").
-    luminaire_class("ED-T-LT-SCONCE-SPOT").model_copy(update={"type_mark": "J"}),
-    # ``integral_switch`` is what exempts it from ``electrical.lighting_controls``.
-    # ED-A-STUDIO-SCONCE sits in RM-A-STUDIO, 30' from the loft's own switching, so the
-    # integral switch is a convenience there rather than a necessity.
-    # J2: the plant room's spot. Same adjustable down-spot as J, wet-location listed with a
-    # gasketed lens and a corrosion-resistant housing — RM-S-PLANT is a damp location
-    # throughout and a wet one where it is misted, and this one is 6'-0" up a wall the room
-    # condenses against.
-    luminaire_class("ED-T-LT-SCONCE-SPOT-WET").model_copy(update={"type_mark": "J2", "source": "ED-T-LT-SCONCE-SPOT in a wet-location housing (notes/plant_room.md). "
-                         "** NOT UNUSED: ** placed once, as ED-S-PLANT-SPOT in "
-                         "plan/placeables.py, not in a lighting*.py file. A review that "
-                         "greps only the lighting files reads this row as dead and it is "
-                         "not."}),
-    # ** J1 IS NOT A DUPLICATE OF J WITH A SWITCH ON IT. ** Both its uses are places that
-    # deliberately CANNOT take a wall switch: a 43 sf attic nook with no wall on the way in
-    # (plan/lighting_attic.py) and the under-stair closet (plan/lighting.py).
-    # ``integral_switch=True`` is exactly what exempts both from
-    # ``electrical.lighting_controls`` — deleting J1 means adding two switches with nowhere
-    # to put them.
-    luminaire_class("ED-T-LT-SPOT-SW").model_copy(update={"type_mark": "J1"}),
-    # ** V: THE SAUNA'S FIBRE-OPTIC KIT — CATALOG-ONLY SINCE 2026-09-13. NOT A LIVE
-    # SPECIFICATION. ** Nothing references this type. RM-B-SAUNA is lit by two 24V
-    # under-bench runs of ED-T-LT-STRIP24-SAUNA (mark X, plan/lighting_types.py) instead. It
-    # is kept here, unreferenced and still priced, the way `EXT_2X6_SWINBURNE`,
-    # `glazed-green-brick` and mark N are kept: a deleted row is a revert nobody can cost.
-    # ** ITS LETTER IS NOT FREED EITHER ** — the E-602 schedule is keyed on the mark, so V
-    # stays V and the replacement took X.
-    #
-    # ** WHY FIBRE WAS CHOSEN (2026-09-06). ** A hot room needs its own listing: an ordinary
-    # damp-rated sconce is rated to 40 C ambient and the ceiling of a 194 F löyly peak is
-    # roughly 90 C. Nothing sold in the US is both IP65 and 125 C — LED sconces top out at
-    # 60-93 C and lamp-and-shade fixtures are limited by their cable, not their shade. The
-    # only construction that clears it is ** fibre optic **, because there are no electronics
-    # in the hot zone at all: glass fibre is rated 180 C and carries no current, so the
-    # ferrules can go in the CEILING and even over the heater while the dimmable projector
-    # lives outside the room. That is also why it is dimmable — the dimming happens at the
-    # projector, in cool air.
-    #
-    # ** WHY IT WAS DROPPED (2026-09-13): COST, AND ONLY COST. ** $1,500-2,250 installed
-    # (prices.toml) — the most expensive luminaire in the house by a wide margin, for one
-    # 92 SF room. The owner cut it. The star-field effect is deliberately given up; mark X
-    # buys a functional under-bench wash for roughly a tenth of that, and it is what
-    # notes/sauna_basement_wall_detail.md specified all along.
-    #
-    # ** THE ONE LIVE RISK IF IT EVER COMES BACK, AND IT IS A PERMIT RISK: ** Cariitti and
-    # Harvia are CE-marked European products, not NRTL-listed. If the inspector wants an NRTL
-    # listing inside the hot room this is the most likely snag in the house — confirm in
-    # writing before ordering. Mark X has no such exposure: it is 24V Class 2 tape.
-    #
-    # ** NEVER RECESS A CAN IN A HOT ROOM ** — it penetrates the vapour barrier at the
-    # hottest point in the building and puts a driver in the hot cavity. And never cedar for
-    # a shade: it bleeds resin onto basswood. Both still hold, whatever is specified.
+    LuminaireType(tag="ED-T-LT-SCONCE-UD", name="Slim up/down LED wall sconce, black",
+                  form=LuminaireForm.SCONCE, type_mark="H",
+                  footprint=(inch(4.5), inch(2.5)), height=inch(12),
+                  plan_symbol="sconce-slim-updown", lamp="LED integrated, ELV + TRIAC",
+                  watts=15.0, lumens=680.0, cct_k=3000, cri=90, dimmable=True,
+                  damp_rated=True, load_va=15.0, ports=_POWER_120,
+                  product_ref="PROD-WAC-WS-83212-BK",
+                  source="WAC dweLED Roland WS-83212-BK (spec sheet). The theatre units sit "
+                         "on a DVCL-153P: CONFIRM it against the TRIAC range."),
+    # J and J1 are one product (2026-10-28): its touch dimmer is on the backplate, so no
+    # wall dimmer. J2 (the plant room's wet copy) retyped to J; damp is enough there.
+    _STRETCH,
+    LuminaireType(tag="ED-T-LT-SPOT-SW", name="Swing-arm LED reading light, switch on fixture",
+                  form=LuminaireForm.SCONCE, type_mark="J1", **_STRETCH_BODY,
+                  integral_switch=True,
+                  source="WAC dweLED Stretch BL-1660-BK, switched at its backplate touch "
+                         "plate. CONFIRM with WAC that the plate is a true on/off."),
     LuminaireType(tag="ED-T-LT-SAUNA-VT",
                   name="Sauna fibre-optic lighting, 8 ferrules on a remote projector",
                   form=LuminaireForm.SCONCE, type_mark="V",
@@ -120,30 +93,17 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # the numbers are typical for the class, not a listing's. Bulb dimmability and the
     # 250 lm are NOT verified against a bulb and must be confirmed before ordering. Storage
     # room only (RM-A-EAST-UNFIN): no R303.1 floor applies.
-    LuminaireType(tag="ED-T-LT-SCONCE-GOTHIC", name="Gothic forged-iron candle sconce, E12 flame LED",
+    LuminaireType(tag="ED-T-LT-SCONCE-CANDLE", name="Plain black candle wall sconce, E12 LED",
                   form=LuminaireForm.SCONCE, type_mark="Z",
-                  footprint=(inch(7), inch(5)), height=inch(12), plan_symbol="sconce-gothic",
-                  lamp="E12 flame-tip LED candle, 3000K", watts=4.0, lumens=250.0,
-                  cct_k=3000, cri=80, dimmable=True, load_va=4.0, ports=_POWER_120,
-                  source="Gothic-style forged-iron candle sconce, black, one arm, E12 "
-                         "flame-tip LED. Class figures (4 W, 250 lm, 80 CRI), not a listing; "
-                         "confirm a dimmable E12 candle bulb before ordering."),
+                  footprint=(inch(4.25), inch(7.75)), height=inch(8.5),
+                  plan_symbol="sconce-candle",
+                  lamp="E12 LED filament candle, Feit BPCFC40930CAFIL/4, 3000K", watts=3.3,
+                  lumens=300.0, cct_k=3000, cri=90, dimmable=True, damp_rated=True,
+                  load_va=3.3, ports=_POWER_120, product_ref="PROD-LIVEX-4451-04",
+                  source="Livex 4451-04 (retailer pages): plainer than the gothic iron it "
+                         "replaces (owner, 2026-10-28). CONFIRM the E12 socket and the UL/ETL "
+                         "mark."),
 
-    # --- L/M: hanging fixtures --------------------------------------------------------
-    # ``height`` on a hanging fixture is the *whole assembly* — canopy, drop, shade — which
-    # is what lets ``Mount(CEILING, drop=height)` land the canopy on the ceiling and read
-    # the bottom of the shade off the same number (→ placeable_symbols/lighting.pendant).
-    # A body hung lower than its ceiling draws the resolved cable above it instead (mark L).
-    # ** RE-SPECIFIED 2026-09-23: A 20-GLOBE CASCADE, AND THE WIRE IS WHY. ** The canopy is on
-    # the rafters 17'-2" over the landing floor; a 14" three-globe cluster on 120" of wire
-    # floated in that void and could not reach its own drawn hang. This one's globes each
-    # hang on their own 3.9"-156" wire, so the body here is the cascade BAND and the rest is
-    # the resolved cable (→ resolve/suspension.py), graded by `electrical.suspension_reach`.
-    # ** NO WALL DIMMER. ** It dims and tunes by its own remote; the listing forbids a phase
-    # dimmer upstream, so `dimmable=False` and its switches are plain. 3000 K is SET on the
-    # remote to hold the house standard. Lumens and CRI are unpublished and left unstated.
-    # ** THE FORM RULE BENDS: ** bubble crystal, not opal, is the owner's pick; a globe is
-    # still no horizontal ring, but it dusts on its top face from the landing.
     LuminaireType(tag="ED-T-LT-CHANDELIER", name="20-globe cascade over the stairwell",
                   form=LuminaireForm.CHANDELIER, type_mark="L",
                   footprint=(inch(23), inch(23)), height=ft(6), plan_symbol="cluster-pendant",
@@ -231,54 +191,32 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # 2'-6" assembly, not M's 3'-6": the ceiling over the bar's ORIGINAL centre-wall station
     # was 8'-6 3/4" (the 6:12 plane at x=16'-9"), and a 3'-6" drop would have left the shade
     # bottom at 5'-0 3/4" — head height at a counter you stand at.
-    luminaire_class("ED-T-LT-PENDANT-BAR").model_copy(update={"type_mark": "M1", "source": "Owner selection 2026-09-06 for the attic studio's bar, unit not "
-                         "yet chosen. TARGET THE SPECS, NOT THE LOOK — ~36\" long, "
-                         "1800 lm or better (a brightness choice since 2026-09-10, NOT "
-                         "the code number it was), 3000 K, CRI 90+, dimmable, 120 V, and a REAL "
-                         "UL/ETL/cETLus mark on the fixture itself."}),
+    LuminaireType(tag="ED-T-LT-PENDANT-BAR", name='36" LED linear bar pendant, matte black',
+                  form=LuminaireForm.CHANDELIER, type_mark="M1",
+                  footprint=(inch(35.875), inch(2)), height=ft(2, 6),
+                  plan_symbol="suspended-linear-light", lamp="LED integrated",
+                  watts=39.0, lumens=3315.0, cct_k=3000, cri=90, dimmable=True,
+                  load_va=39.0, ports=_POWER_120, product_ref="PROD-NUVO-62-2271",
+                  source="Nuvo Bowman 36\" 62-2271 (sheet read for the -2272), cETLus dry. "
+                         "Unplaced."),
 
-    # --- N: ceiling fans with a light kit ---------------------------------------------
-    # A fan-light is a luminaire here, not Equipment: there is no fan ``EquipmentKind``, no
-    # HVAC check reads one, and every form in this catalog exports as the same
-    # ``IfcLightFixture`` regardless. ``load_va`` carries motor *and* light; ``watts`` is
-    # the light kit alone, because that is what the photometric row means.
-    #
-    # ** dimmable=False ON EVERY FAN HERE, 2026-09-06. ** These read True while their own
-    # ``source`` said in capitals that a DC fan cannot be speed-controlled by a wall
-    # dimmer. The plan was already right (a plain ED-T-SWITCH); the flag was the lie, and
-    # it prints to the E-602 schedule an electrician orders from.
-    #
-    # ** MARK N IS CATALOG-ONLY SINCE 2026-09-06 AND IS DELIBERATELY KEPT. ** ED-B-GYM-LT
-    # was its one placement and retyped to N3 for blade headroom. `luminaire_schedule`
-    # builds its rows from placements, so an unplaced type prints on no sheet and bills
-    # nothing — the same convention `glazed-green-brick` and `EXT_2X6_SWINBURNE` are held
-    # under, and N is N3's stated revert if no flush-mount SKU can be sourced.
-    LuminaireType(tag="ED-T-LT-FAN52", name='52" ceiling fan with LED light kit',
+    # N2 (the plant room's wet copy) retyped to N: the Mykonos is itself ETL wet.
+    LuminaireType(tag="ED-T-LT-FAN52", name='52" 3-blade DC ceiling fan with LED light, wet',
                   form=LuminaireForm.CEILING_FAN_LIGHT, type_mark="N",
-                  footprint=(inch(52), inch(52)), height=ft(1, 6),
-                  plan_symbol="ceiling-fan-light",
-                  lamp="LED integrated light kit", watts=17.0, lumens=1400.0, cct_k=3000,
-                  cri=90, dimmable=False, load_va=60.0, ports=_POWER_120,
-                  product_ref="PROD-MODERNFORMS-FR-W1819",
-                  source="Modern Forms Mykonos FR-W1819-52L-30-MB. ** A DC FAN CANNOT BE "
+                  footprint=(inch(52), inch(52)), height=inch(14.75),
+                  plan_symbol="ceiling-fan-light-3",
+                  lamp="LED integrated light kit", watts=17.0, lumens=1110.0, cct_k=3000,
+                  cri=90, dimmable=False, damp_rated=True, wet_rated=True, load_va=60.0,
+                  ports=_POWER_120, product_ref="PROD-MODERNFORMS-FR-W1819-52L",
+                  source="Modern Forms Mykonos FR-W1819-52L (spec sheet), ETL wet. Watts and "
+                         "load are the class allowance, CONFIRM. ** A DC FAN CANNOT BE "
                          "SPEED-CONTROLLED BY ANY CONVENTIONAL WALL DIMMER: ** wire it to "
-                         "constant hot and buy the hardwired Bluetooth wall control with "
-                         "the remote. Do NOT put it on a Caseta dimmer — it will corrupt "
-                         "the receiver. This deliberately breaks the house dimming scheme, "
-                         "and that is correct."),
-    # The gym's fan. ** A HUGGER, AND THAT IS THE WHOLE POINT: ** RM-B-GYM's resolved
-    # clear_height_m is 2.42253 = 95 3/8", and mark N's 18" assembly leaves the blades at
-    # ~6'-5 3/8" in a room people swing their arms in. 11" of assembly puts them at
-    # 7'-0 3/8", clearing the 7'-0" blade-to-floor minimum every fan IFU states. N3 rather
-    # than a drop change on N: a flush-mount fan is a different product, not a shorter
-    # downrod — the Mykonos of mark N is a downrod fan and does not hug.
-    #
-    # 2026-10-22: the Hunter Gallegos 51583. No 52" DC hugger with a light kit fits 11", so
-    # the light went (owner); the gym's four cans light the room. Blade span is flexible.
+                         "constant hot with its wall control; never a Caseta dimmer."),
     luminaire_class("ED-T-LT-FAN52-FLUSH").model_copy(update={
         "type_mark": "N3", "name": 'Hunter Gallegos 52" low-profile fan, no light',
         "height": inch(10.5625), "lamp": None, "watts": None, "lumens": None, "cct_k": None,
         "cri": None, "load_va": 43.0, "product_ref": "PROD-HUNTER-51583",
+        "integral_switch": True,
         "source": "Hunter Gallegos 51583 (plan/products_lighting.py), flush-mounted at "
                   "10 9/16\" overall: the room's 95 3/8\" clear leaves nothing spare "
                   "against the 7'-0\" blade-to-floor minimum. ** A DC FAN CANNOT BE "
@@ -289,17 +227,6 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # a retype of N: this is a different product on the quote, and the reason it is here —
     # a room that runs at 70% RH and condenses on its own glass — is not a reason the
     # bedrooms' fans should cost more.
-    luminaire_class("ED-T-LT-FAN52-WET").model_copy(update={"type_mark": "N2", "source": "NEC 2023 damp/wet location; RM-S-PLANT is a damp location throughout and wet where it is misted (notes/plant_room.md)"}),
-    # The porch fan. Damp rated because it lives under the balcony deck, open on three
-    # sides — not wet rated: nothing lands on it, the deck above is the roof.
-    # ** UPGRADED FROM DAMP TO WET, 2026-09-06, AND IN MINNESOTA THAT IS NOT A
-    # TECHNICALITY. ** The comment this replaces reasoned that nothing lands on the fan
-    # because the balcony deck above is the roof. The failure mode is not rain: it is a
-    # 30 mph wind packing snow UP UNDER an open-sided porch roof into the motor housing,
-    # solar gain melting it onto the windings, then refreezing across 40-70 freeze-thaw
-    # cycles a season. Damp-rated fans also commonly use MDF-core blades that delaminate in
-    # one winter. Installing a damp-rated luminaire subject to direct weather is an NEC
-    # 410.10 violation, and a porch open on three sides is subject to weather.
     LuminaireType(tag="ED-T-LT-FAN60", name='60" porch ceiling fan with LED light kit, wet',
                   form=LuminaireForm.CEILING_FAN_LIGHT, type_mark="N1",
                   footprint=(inch(60), inch(60)), height=ft(1, 6),
@@ -345,10 +272,15 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # R is the garage-door light: a shielded down-only wall sconce beside D-G-OVERHEAD.
     # `form=SCONCE` rather than a new enum kind — the enum docstring discourages new
     # kinds, and a wall pack is a sconce that grew a cutoff hood.
-    luminaire_class("ED-T-LT-SCONCE-EXT").model_copy(update={"type_mark": "R", "source": "WAC WS-W2506 full-cutoff outdoor wall light, black, 3000K"}),
-    # S is the independently switched garden flood, under the balcony's front edge.
+    LuminaireType(tag="ED-T-LT-SCONCE-EXT", name="Exterior LED tube wall light, down, black",
+                  form=LuminaireForm.SCONCE, type_mark="R",
+                  footprint=(inch(4.5), inch(5)), height=inch(5), plan_symbol="sconce-tube",
+                  lamp="LED integrated, ELV/0-10V", watts=16.0, lumens=800.0, cct_k=3000,
+                  cri=90, dimmable=True, damp_rated=True, wet_rated=True, full_cutoff=True,
+                  load_va=16.0, ports=_POWER_120, product_ref="PROD-WAC-WS-W2605-BK",
+                  source="WAC Tube WS-W2605-BK, Down Light, ETL wet. Watts/lumens from the "
+                         "FM-W26 sheet; dark-sky status and cold rating CONFIRM."),
     GARDEN_FLOOD_TYPE,
-
-    # --- P: mirror lighting -----------------------------------------------------------
-    luminaire_class("ED-T-LT-MIRROR").model_copy(update={"type_mark": "P"}),
+    # Mark P (a 24" mirror bar) retired 2026-10-28: the studio's wet-bar light is P1, the
+    # Karlie 54622BN (plan/mirror_types.py).
 )

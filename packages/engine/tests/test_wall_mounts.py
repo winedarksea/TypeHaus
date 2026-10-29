@@ -176,4 +176,4 @@ def test_wall_lights_face_away_from_their_host_in_both_symbol_frames(catlin_mode
                                           item.rotation_degrees)
                 assert sum((f - r) * n for r, f, n in zip(rear, front, outward, strict=True)) > 0
         checked.add(item.tag)
-    assert {"ED-M-ENTRY-LT", "ED-A-STUDIO-BAR-TASK"} <= checked
+    assert {"ED-M-ENTRY-LT", "ED-M-BATH2-MIRROR-HALO"} <= checked

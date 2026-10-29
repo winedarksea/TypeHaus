@@ -131,7 +131,9 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
         schedule = luminaire_schedule(model)
         section(fig, 0.04, 0.945, "LUMINAIRE SCHEDULE")
         schedule_rows = [
-            (row["mark"], row["description"], row["lamp"] or "—",
+            (row["mark"], row["description"],
+             " ".join(str(part) for part in (row["brand"], row["model"]) if part) or "—",
+             row["lamp"] or "—",
              _number(row["watts"], "{:.0f} W") or _number(row["watts_per_ft"], "{:.1f} W/ft"),
              _number(row["lumens"], "{:,.0f}"), _number(row["cct_k"], "{:.0f}K"),
              f"{row['volts']}V", row["mount"], row["dimming"], row["rating"],
@@ -140,9 +142,9 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
             for row in schedule
         ]
         _add_table(fig, schedule_rows,
-                   ("Mark", "Description", "Lamp", "Watts", "Lumens", "CCT", "V", "Mount",
-                    "Dim", "Listing", "Qty", "Locations"),
-                   bbox=(0.03, 0.72, 0.94, 0.215), truncate=(11,))
+                   ("Mark", "Description", "Brand / Model", "Lamp", "Watts", "Lumens", "CCT",
+                    "V", "Mount", "Dim", "Listing", "Qty", "Locations"),
+                   bbox=(0.03, 0.72, 0.94, 0.215), truncate=(12,))
 
         controls = lighting_controls(model)
         section(fig, 0.04, 0.695, "LIGHTING CONTROL SCHEDULE")

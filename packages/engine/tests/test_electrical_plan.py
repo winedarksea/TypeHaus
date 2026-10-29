@@ -339,7 +339,7 @@ def test_plant_tubes_use_the_cable_suspension_symbol(catlin_model):
     from typehaus.model.placeable_symbols import model_parts
 
     types = {product.tag: product for product in catlin_model.plan.library.electrical_device_types}
-    tube = types["ED-T-LT-TUBE6"]
+    tube = types["ED-T-LT-GROW-BAR"]
     assert tube.plan_symbol == "suspended-linear-light"
     width, depth = (dimension.meters for dimension in tube.footprint)
     parts = model_parts(tube.plan_symbol, width, depth, tube.height.meters)

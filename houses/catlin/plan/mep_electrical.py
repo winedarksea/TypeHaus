@@ -115,9 +115,14 @@ BASEMENT_DEVICES = [
     # is 10 9/16", which puts them at ~7'-0 13/16".
     # ** NOTHING GRADES THIS: ** there is no blade-to-floor check in the engine, so this
     # comment and the height on ED-T-LT-FAN52-FLUSH are the only guard.
+    # ** OFF THE BACKUP TIER SINCE 2026-10-28: ** the product upgrade (14.5 W cans, 60 W panels)
+    # took CKT-LT-BACKUP 0.18 kWh short of `cycle_48h.sustains_always_on`. A lightless fan is
+    # the least essential load on the always-on lighting tier, so it moved to CKT-LT-MAIN
+    # (non-backup). It is a DC fan on constant hot with its included wall control, so
+    # ED-B-GYM-SW (still the cans', on CKT-LT-BACKUP) no longer switches it.
     ElectricalDevice(uid="CED010K1AA", tag="ED-B-GYM-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27), ft(9)), type_ref="ED-T-LT-FAN52-FLUSH", circuit="CKT-LT-BACKUP",
-                     room="RM-B-GYM", controlled_by=("ED-B-GYM-SW",),
+                     position=pt(ft(27), ft(9)), type_ref="ED-T-LT-FAN52-FLUSH", circuit="CKT-LT-MAIN",
+                     room="RM-B-GYM",
                      mount=Mount(kind=MountKind.CEILING, drop=inch(10.5625))),
     ElectricalDevice(uid="CED010K2AA", tag="ED-B-GYM-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-BACKUP",
@@ -288,7 +293,7 @@ SECOND_DEVICES = [
     # a room that condenses on purpose, and this one hangs at the ceiling where the wettest
     # air in the room collects.
     ElectricalDevice(uid="CED004K1AA", tag="ED-S-PLANT-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(9), ft(6)), type_ref="ED-T-LT-FAN52-WET", circuit="CKT-LT-UPPER",
+                     position=pt(ft(9), ft(6)), type_ref="ED-T-LT-FAN52", circuit="CKT-LT-UPPER",
                      room="RM-S-PLANT", controlled_by=("ED-S-PLANT-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(1, 6))),
     # North of D-S-PLANT's y=47" jamb pack, in the clear bay before the y=64" stud.
@@ -414,7 +419,7 @@ SECOND_DEVICES = [
                          wall_ref="W-S-BD-N", face="right", distance_from_start=inch(37.375),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED015K1AA", tag="ED-S-LANDING-LT", kind=DeviceKind.LIGHT,
-                     position=pt(m(2.44371), m(7.41198)), type_ref="ED-T-LT-CAN3", circuit="CKT-LT-UPPER",
+                     position=pt(m(2.44371), m(7.41198)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-HALL", controlled_by=("ED-S-LANDING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # On W-S-SN3's north face beside ED-S-STAIR-SW (plan/lighting.py).
@@ -433,7 +438,7 @@ SECOND_DEVICES = [
     # It is 12 3/8" east of FO-S-STAIR's east edge — CLOSER to the stair than the old
     # station, so `code.R303_7_stairway_illumination` still counts it for ST-M2S.
     ElectricalDevice(uid="CED016K1AA", tag="ED-S-NCLOSET-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 9), ft(33, 6)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(18, 9), ft(33, 6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER",
                      room="RM-S-NCLOSET", controlled_by=("ED-S-NCLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3),
@@ -461,7 +466,7 @@ ATTIC_DEVICES = [
     # loft has been lit by two coincident fixtures and billed for both. 31'-6" is the fourth
     # station in that room's run, 11 1/2" clear of ED-A-EAST-SW's plate below.
     ElectricalDevice(uid="CED011K1AA", tag="ED-A-EAST-LT", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-GOTHIC",
+                     type_ref="ED-T-LT-SCONCE-CANDLE",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),

@@ -111,8 +111,9 @@ def test_usable_storage_is_nameplate_times_the_declared_dod(summary):
 
 
 def test_the_always_on_tier_outlasts_the_shed_tier_by_a_wide_margin(summary):
-    """Battery-only autonomy, honestly counted: the always-on tier clears 40 h but no longer
-    a full two days.
+    """Battery-only autonomy, honestly counted: the always-on tier clears 39 h but no longer
+    a full two days (40-43 h until the 2026-10-28 luminaire products: 14.5 W cans, 60 W
+    workshop panels).
 
     Genuine always-on load includes the three PoE access points (~30 W on the switch's real
     circuit) and the kitchen's under-cabinet task light PSU (ED-M-KITCH-LT-PSU) on
@@ -130,7 +131,7 @@ def test_the_always_on_tier_outlasts_the_shed_tier_by_a_wide_margin(summary):
     that includes solar — but on battery alone the tier is now well short of two full days.
     """
     autonomy = summary["autonomy"]
-    assert 40.0 < autonomy["hours_always_on_only"] < 43.0
+    assert 39.0 < autonomy["hours_always_on_only"] < 43.0
 
     assert autonomy["hours_all_tiers"] < autonomy["hours_always_on_only"]
 

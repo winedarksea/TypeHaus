@@ -685,7 +685,7 @@ SECOND_PLACEABLES = [
     # condenses on purpose has to be wet-location listed rather than the ordinary interior
     # sconce this shares with the study.
     ElectricalDevice(uid="QTS0020AAA", tag="ED-S-PLANT-SPOT", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-SPOT-WET",
+                     type_ref="ED-T-LT-SCONCE-SPOT",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6)),

@@ -121,6 +121,8 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS
     # same plan glyph but its own 3D cable-suspension massing.
     "track-light", "flood-light", "recessed-can", "panel-light",
     "sconce", "sconce-updown", "sconce-spot", "sconce-gothic",
+    "sconce-tube", "sconce-slim-updown", "sconce-swing-arm", "sconce-candle",
+    "ceiling-fan-light-3",
     "mirror-light",
     "pendant", "chandelier", "cluster-pendant", "ceiling-fan-light", "linear-light",
     "suspended-linear-light", "wave-chandelier", "round-mirror-light", "mirror-light-bar",

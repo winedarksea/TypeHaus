@@ -31,6 +31,17 @@ def test_every_schedule_mark_is_unique_and_stated(catlin_model):
     assert "I" not in marks
 
 
+def test_every_installed_luminaire_names_a_product(catlin_model):
+    """An installed type prints its brand and model on E-602; catalog-only types are exempt
+    because they never reach the schedule."""
+    products = {product.tag for product in catlin_model.plan.library.products}
+    unnamed = [row["type"] for row in luminaire_schedule(catlin_model)
+               if row["product"] is None or row["product"] not in products]
+    assert not unnamed, f"installed luminaire types with no product_ref: {unnamed}"
+    for row in luminaire_schedule(catlin_model):
+        assert row["brand"], row["type"]
+
+
 def test_the_schedule_counts_reconcile_with_the_placed_fixtures(catlin_model):
     rows = {row["type"]: row for row in luminaire_schedule(catlin_model)}
     placed: dict[str, int] = {}
@@ -192,27 +203,38 @@ def test_no_lighting_circuit_exceeds_its_continuous_rating(catlin_model):
 
 def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     """A 120V run is a load on its circuit, and both the lighting summary and the panel
-    schedule say so — it has no ``load_va`` to bill, only watts per resolved foot."""
+    schedule say so — it has no ``load_va`` to bill, only watts per resolved foot. Catlin's
+    exterior runs went 24V (2026-10-28), so one is put back on line voltage here."""
+    import dataclasses
+
     from typehaus.takeoff.electrical import panel_schedule
     from typehaus.takeoff.lighting import line_voltage_run_va
 
-    va = line_voltage_run_va(catlin_model)
-    # The garage's three exterior linears: 2 x 24' eaves + the gable's raked 25.45', at 2.5 W/ft.
-    assert set(va) == {"LR-G-EAVE-W", "LR-G-EAVE-E", "LR-G-GABLE-N"}
-    assert sum(va.values()) == pytest.approx(183.6, abs=0.05)
-    # A 24V run is absent: its load is its supply's, and counting both doubles the tape.
-    assert "LR-S-HALL-GAP" not in va
-
-    per_circuit = {r["circuit"]: r for r in connected_lighting_va(catlin_model)["per_circuit"]}
-    row = per_circuit["CKT-LT-MAIN"]
-    # The closet's 40-VA LED mirror is gone and the old 60-VA halo moved to its protected
-    # plug branch as a 116-VA MHAP4236. Powder lighting gains 2 VA and day lighting 3 VA:
-    # 1374.6 - 40 - 60 + 2 + 3 = 1279.6 VA on CKT-LT-MAIN, with two fewer fixtures.
-    assert row["runs"] == 3 and row["fixtures"] == 48
-    assert row["connected_va"] == pytest.approx(1279.6, abs=0.5)
-    assert per_circuit["CKT-BATH-ATTIC"]["connected_va"] == 116
-
+    # As built, every run is on a driver and none is a branch load of its own.
+    assert line_voltage_run_va(catlin_model) == {}
+    lighting = {r["circuit"]: r for r in connected_lighting_va(catlin_model)["per_circuit"]}
     panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-MAIN"]
-    assert panel["connected_va"] == pytest.approx(1279.6, abs=0.5)
-    # The 15A branch remains below the 80% continuous-load allowance.
+    # The three 96 W drivers sum at their rating; the panel agrees with the lighting sum.
+    assert panel["connected_va"] == pytest.approx(lighting["CKT-LT-MAIN"]["connected_va"],
+                                                  abs=0.5)
+    # The 20A branch stays below the 80% continuous-load allowance.
     assert panel["connected_va"] <= panel["breaker_amps"] * 120 * 0.8
+
+    runs = list(catlin_model.light_runs)
+    index = next(i for i, run in enumerate(runs) if run.tag == "LR-G-EAVE-W")
+    run = runs[index]
+    runs[index] = dataclasses.replace(run, psu_ref=None, circuit="CKT-LT-MAIN")
+    original, catlin_model.light_runs = catlin_model.light_runs, runs
+    try:
+        va = line_voltage_run_va(catlin_model)
+        per_circuit = {r["circuit"]: r
+                       for r in connected_lighting_va(catlin_model)["per_circuit"]}
+    finally:
+        catlin_model.light_runs = original
+    # 24' of eave at 2.4 W/ft.
+    assert set(va) == {"LR-G-EAVE-W"}
+    assert va["LR-G-EAVE-W"] == pytest.approx(run.length_m * _M_TO_FT * 2.4)
+    assert per_circuit["CKT-LT-MAIN"]["runs"] == 1
+    # The run's tape joins the branch and its idle 96 W driver leaves the lighting sum.
+    assert per_circuit["CKT-LT-MAIN"]["connected_va"] == pytest.approx(
+        lighting["CKT-LT-MAIN"]["connected_va"] + va["LR-G-EAVE-W"] - 96.0, abs=0.5)

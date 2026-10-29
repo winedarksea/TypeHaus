@@ -154,9 +154,11 @@ def luminaire_schedule(model: ResolvedModel) -> list[dict[str, object]]:
         if element.type_ref in types:
             mount_by_type.setdefault(element.type_ref, set()).add(_mount_label(element))
 
+    products = {item.tag: item for item in model.plan.library.products}
     rows: list[dict[str, object]] = []
     for tag in set(counts) | set(run_feet):
         product = types[tag]
+        chosen = products.get(product.product_ref or "")
         rows.append({
             "mark": product.type_mark or "",
             "type": tag,
@@ -176,6 +178,10 @@ def luminaire_schedule(model: ResolvedModel) -> list[dict[str, object]]:
             "length_ft": round(run_feet[tag], 1) if tag in run_feet else None,
             "rooms": sorted(rooms.get(tag, set())),
             "source": product.source,
+            # The chosen product (by ``product_ref``); None where the type names none.
+            "product": chosen.tag if chosen else None,
+            "brand": chosen.brand if chosen else None,
+            "model": chosen.model if chosen else None,
         })
     return sorted(rows, key=lambda row: (str(row["mark"]), str(row["type"])))
 

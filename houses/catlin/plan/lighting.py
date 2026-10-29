@@ -139,15 +139,15 @@ BASEMENT_LIGHTING = [
     # type). `room` is RM-B-STAIR since the closet stopped being a `Room` of its own the
     # same day (storeys/basement.py ROOMS) — the fixture did not move an inch.
     #
-    # On W-B-STR3's Type X face (x=10'-3 1/4") 2" proud of it, 2'-0" north of D-B-CLOSET's
-    # far jamb, at 4'-6" AFF. The elevation is set by the RAKE, not by habit: the flight
+    # On W-B-STR3's Type X face (x=10'-3 1/4") 2" proud of it, 2'-3" clear of D-B-CLOSET's
+    # far jamb (the 8" Stretch body clears it), at 4'-6" AFF. The elevation is set by the RAKE, not by habit: the flight
     # overhead is 6'-1 5/8" up at this y, and a 9" fixture at 54" tops out 10 5/8" under it.
     ElectricalDevice(uid="JYMY6WGGP3", tag="ED-B-CLOSET-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SPOT-SW",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-STR3", face="left", distance_from_start=inch(28),
+                         wall_ref="W-B-STR3", face="left", distance_from_start=inch(25),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
 
@@ -397,7 +397,7 @@ BASEMENT_LIGHTING = [
     # put the can inside W-B-BA-E's studs. It no longer runs "south to O-B-HALL": since
     # 2026-09-07 the slot runs to the sauna wall and this is the first of four cans on it.
     ElectricalDevice(uid="QTB000JAAA", tag="ED-B-STAIR-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(inch(190), ft(23, 6)), type_ref="ED-T-LT-CAN3",
+                     position=pt(inch(190), ft(23, 6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -409,10 +409,11 @@ BASEMENT_LIGHTING = [
     # true centre is 191 5/16"; holding 190" keeps the ladder straight, which is worth more
     # than 1 5/16" on a 3" aperture.)
     #
-    # ** 27 VA, AND THAT IS THE WHOLE BUDGET QUESTION. ** CKT-LT-BACKUP is the ALWAYS_ON
-    # tier on a 14.3 kWh battery with about 52 VA of headroom — the number the withdrawn
-    # play-room cove was measured against forty lines up. Three 9 VA cans fit inside it with
-    # 25 VA to spare and `cycle_48h.sustains_always_on` holds; `test_backup_calc.py` is the
+    # ** 43.5 VA, AND THAT IS THE WHOLE BUDGET QUESTION. ** CKT-LT-BACKUP is the ALWAYS_ON
+    # tier on a 14.3 kWh battery. These were three 9 VA 3" cans until 2026-10-28; as 14.5 W
+    # mark A cans (with the other product upgrades) the tier went 0.18 kWh short, and moving
+    # the lightless gym fan off it (plan/mep_electrical.py) bought back ~0.3 kWh per 48 h.
+    # `cycle_48h.sustains_always_on` holds by ~0.13 kWh; `test_backup_calc.py` is the
     # assertion, and a fourth can is not free.
     #
     # ** THE MIDDLE ONE IS AT 15'-0", NOT THE 15'-6" A 4'-0" LADDER WANTS. ** PR-B-HW-SAUNA
@@ -423,17 +424,17 @@ BASEMENT_LIGHTING = [
     # Recessing is legitimate here: SL-M-DECK is the x 18'-36' half, so this hall's ceiling
     # is FS-M-WEST's joist bays and there is depth for a 5" housing.
     ElectricalDevice(uid="J2YZPDZ9MP", tag="ED-B-STAIR-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(inch(190), ft(19, 6)), type_ref="ED-T-LT-CAN3",
+                     position=pt(inch(190), ft(19, 6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="780QDKJASC", tag="ED-B-STAIR-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(inch(190), ft(15)), type_ref="ED-T-LT-CAN3",
+                     position=pt(inch(190), ft(15)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="K96T60Y9RX", tag="ED-B-STAIR-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(inch(190), ft(11, 6)), type_ref="ED-T-LT-CAN3",
+                     position=pt(inch(190), ft(11, 6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1037,14 +1038,14 @@ MAIN_LIGHTING = [
     # Centred in RM-M-MUD-CLOSET's 63" x 32 3/4" clear footprint, between the resolved
     # interior faces of W-M-W1C/W-M-MUDC-E and W-M-STOS/W-M-MUDC-N.
     ElectricalDevice(uid="QTM000XAAA", tag="ED-M-STORAGE-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(3, 2.125), ft(28, 0.75)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(3, 2.125), ft(28, 0.75)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MUD-CLOSET",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # room=RM-M-MECH: its ceiling position lands inside the framed shaft closet carved out
     # of the mudroom's north end, not the mudroom itself.
     ElectricalDevice(uid="QTM000YAAA", tag="ED-M-STORAGE-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(3), ft(34, 6)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(3), ft(34, 6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MECH",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1120,12 +1121,12 @@ MAIN_LIGHTING = [
     # (chords at 16" off y=0, so 8" + n x 16"), 6" of clear chord either side of a 3 3/4"
     # housing, and 24" / 17" off the two end walls.
     ElectricalDevice(uid="1QB0DSS28T", tag="ED-M-MUDROOM-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(8), ft(28, 8)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(8), ft(28, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      controlled_by=("ED-M-MUDROOM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CZBCJDJJ6G", tag="ED-M-MUDROOM-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(8), ft(34)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(8), ft(34)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      controlled_by=("ED-M-MUDROOM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1133,7 +1134,7 @@ MAIN_LIGHTING = [
     # existing mudroom dimmer. The west ceiling band carries ERV radials; confirm a clear
     # bay and the 3" fixture's actual housing depth during duct coordination before install.
     ElectricalDevice(uid="MUDCAN00001", tag="ED-M-MUDROOM-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(inch(15.125), ft(31, 4)), type_ref="ED-T-LT-CAN3",
+                     position=pt(inch(15.125), ft(31, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      controlled_by=("ED-M-MUDROOM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1169,17 +1170,17 @@ MAIN_LIGHTING = [
     # RM-M-HALL: three 3" cans down the run, on a 3-way pair — a 14' hall switched from
     # one end only is the classic thing to get wrong.
     ElectricalDevice(uid="QTM0010AAA", tag="ED-M-HALL-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(6, 6), ft(24)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(6, 6), ft(24)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-HALL-SW", "ED-M-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0011AAA", tag="ED-M-HALL-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(11), ft(24)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(11), ft(24)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-HALL-SW", "ED-M-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0012AAA", tag="ED-M-HALL-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(15, 6), ft(24)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(15, 6), ft(24)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-HALL-SW", "ED-M-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1210,7 +1211,7 @@ MAIN_LIGHTING = [
     # RM-M-LIVING (2026-07-30) — they still light the well, they are just no longer in a
     # room of their own. The switch is also one end of the basement railing run's 3-way.
     ElectricalDevice(uid="QTM0015AAA", tag="ED-M-STAIR-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(27)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(14), ft(27)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-STAIR-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1249,19 +1250,19 @@ SECOND_LIGHTING = [
     # CAN1-3 recess into the SF-S-DUCT dropped duct soffit face (drop 14" -> 7'-10"),
     # not the 9' structural ceiling above it.
     ElectricalDevice(uid="QTS0002AAA", tag="ED-S-HALL-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(20), ft(13)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(20), ft(13)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True,
                                  elevation=ft(7, 10))),
     ElectricalDevice(uid="QTS0003AAA", tag="ED-S-HALL-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(20), ft(20)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(20), ft(20)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True,
                                  elevation=ft(7, 10))),
     ElectricalDevice(uid="QTS0004AAA", tag="ED-S-HALL-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(20), ft(27)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(20), ft(27)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True,
@@ -1313,7 +1314,7 @@ SECOND_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
     ElectricalDevice(uid="QTS000BAAA", tag="ED-S-CLOSET-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13, 10), ft(10, 8)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(13, 10), ft(10, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-CLOSET",
                      controlled_by=("ED-S-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1379,12 +1380,12 @@ SECOND_LIGHTING = [
     # they run a photoperiod rather than whenever somebody remembers. The fan-light
     # (ED-S-PLANT-LT, re-typed) moves the humid air a plant room makes.
     ElectricalDevice(uid="QTS000PAAA", tag="ED-S-PLANT-TUBE1", kind=DeviceKind.LIGHT,
-                     position=pt(m(1.62004), m(0.594343)), type_ref="ED-T-LT-TUBE6",
+                     position=pt(m(1.62004), m(0.594343)), type_ref="ED-T-LT-GROW-BAR",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(2, 3))),
     ElectricalDevice(uid="QTS000QAAA", tag="ED-S-PLANT-TUBE2", kind=DeviceKind.LIGHT,
-                     position=pt(m(3.7205), m(0.609677)), type_ref="ED-T-LT-TUBE6",
+                     position=pt(m(3.7205), m(0.609677)), type_ref="ED-T-LT-GROW-BAR",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(2, 3))),
@@ -1686,11 +1687,11 @@ GARAGE_LIGHTING = [
     # depth moves, this follows by hand.
     LightRun(uid="N2XWJEVXGS", tag="LR-G-EAVE-W", type_ref="ED-T-LT-LINEAR-EXT",
              path=(pt(ft(5, 9.875), ft(43, 2.625)), pt(ft(5, 9.875), ft(67, 2.625))),
-             circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
+             psu_ref="ED-G-EAVE-W-PSU", controlled_by=("ED-G-SOFFIT-SW",),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
     LightRun(uid="QPT63YW4TW", tag="LR-G-EAVE-E", type_ref="ED-T-LT-LINEAR-EXT",
              path=(pt(ft(30, 2.125), ft(43, 2.625)), pt(ft(30, 2.125), ft(67, 2.625))),
-             circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
+             psu_ref="ED-G-EAVE-E-PSU", controlled_by=("ED-G-SOFFIT-SW",),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
     # The north gable: under RF-GARAGE's two RAKE soffits, corner -> ridge -> corner, tight
     # to W-G-N's cladding, aperture down — the eave runs' detail turned up the 4:12 rake.
@@ -1698,7 +1699,7 @@ GARAGE_LIGHTING = [
     #
     # x runs cladding face to cladding face (5'-11 1/8" .. 30'-0 7/8"), exactly the rake
     # soffit's extent, with the vertex at the 18'-0" ridge. y is W-G-N's cladding face
-    # 67'-3 1/2" plus half the 2 1/2" channel.
+    # 67'-3 1/2" plus half the 1/2" channel.
     #
     # Heights are stated, not derived, like the eave runs: 8'-5 5/24" storey-relative is
     # the rake soffit's underside at the corners (7'-5 5/24" absolute, the fascia bottom at
@@ -1708,10 +1709,10 @@ GARAGE_LIGHTING = [
     # `full_cutoff` is a DETAIL (aperture aimed down), and CEILING under the rake soffit
     # takes the same shelter reading as the two eave runs.
     LightRun(uid="12K1TBK2FC", tag="LR-G-GABLE-N", type_ref="ED-T-LT-LINEAR-EXT",
-             path=(pt(ft(5, 11.125), ft(67, 4.75)), pt(ft(18), ft(67, 4.75)),
-                   pt(ft(30, 0.875), ft(67, 4.75))),
+             path=(pt(ft(5, 11.125), ft(67, 3.75)), pt(ft(18), ft(67, 3.75)),
+                   pt(ft(30, 0.875), ft(67, 3.75))),
              rise=(ft(0), ft(4, 0.292), ft(0)),
-             circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
+             psu_ref="ED-G-GABLE-N-PSU", controlled_by=("ED-G-SOFFIT-SW",),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 5.208))),
     # ** ITS OWN CONTROL, NOT ED-G-EXT-SW, AND THE REASON IS DUTY CYCLE. ** Ganging ~73 LF of
     # perimeter linear onto the door pair's switch would force one of two bad habits: either
@@ -1727,6 +1728,29 @@ GARAGE_LIGHTING = [
     # Third in the gang at the service door, 6" east of ED-G-SW on the 6" spacing those two
     # already use (10'-2", 10'-8", 11'-2"), same 76" over the slab, 48.8" over the top tread.
     # Same circuit as the loads it switches, so no NEC 210.7 two-circuit box.
+    # Mark W is 24V since 2026-10-28: one 96 W driver per run, INDOORS high on the wall
+    # nearest it, its 6 ft lead through to the soffit. ~59 W per run is ~63% of nameplate.
+    ElectricalDevice(uid="7RB4FGXA5Q", tag="ED-G-EAVE-W-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-W", face="left", distance_from_start=inch(200),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="6EGKQSPTH2", tag="ED-G-EAVE-E-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-E", face="left", distance_from_start=inch(100),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="D8THMTHKHZ", tag="ED-G-GABLE-N-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-N", face="left", distance_from_start=inch(30),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="S7ANA4Q300", tag="ED-G-SOFFIT-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",

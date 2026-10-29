@@ -2644,7 +2644,6 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LUT-DIVA" = { material = { low = 25, high = 50 }, labour = { low = 52, high = 110 } }  # 2 ea
 "ED-T-FLOOR-STAT" = { material = { low = 130, high = 300 }, labour = { low = 150, high = 300 } }  # 3 ea
 "ED-T-JBOX" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
-"ED-T-LT-CAN3" = { material = { low = 25, high = 70 }, labour = { low = 52, high = 108 } }  # 16 ea
 # ** REPRICED 2026-09-06 TO A NAMED PRODUCT. ** Lotus LL4SR-30K-WH at $64.40 -- a 4"
 # deeply regressed WHITE trim, IC, airtight, wet + IP54, 14.5 W / 900 lm / 3000 K / 90+
 # CRI. The old $25-75 was a class band for a black-baffle can. The same SKU serves the
@@ -2653,7 +2652,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # ** BUY FIXED 3000 K, NEVER A 5CCT SELECTABLE MODULE ** at any price: the DIP switch gets
 # set wrong constantly and one can at the wrong temperature in a run of eight is a visible
 # defect. A dedicated phosphor also gives better R9 than a warm/cool blend.
-"ED-T-LT-CAN4" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 108 } }  # 39 ea
+"ED-T-LT-CAN4" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 108 } }  # 60 ea (2026-10-28: the 21 mark-C 3" cans retyped to A)
 "ED-T-LT-CAN4-4000" = { material = { low = 25, high = 75 }, labour = { low = 52, high = 108 } }  # 4 ea
 "ED-T-LT-CAN4-WET" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 8 ea — BATH2's two went to B1 2026-10-12
 # B1/B2, BATH2's day (5000 K) and evening (2700 K) cans: the same wet LL4SR in a fixed
@@ -2668,7 +2667,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # convention — a downrod fan is the revert if no flush SKU can be sourced, and
 # `luminaire_schedule` derives its rows from placements, so an unplaced type prints on
 # no sheet and bills nothing. Do not delete it, and do not read this as a live line.
-"ED-T-LT-FAN52" = { material = { low = 150, high = 500 }, labour = { low = 120, high = 260 } }  # 0 ea (catalog only)
+"ED-T-LT-FAN52" = { material = { low = 200, high = 700 }, labour = { low = 155, high = 320 } }  # 1 ea (2026-10-28: the wet N2 retyped to N, the Mykonos being ETL wet; N2's range kept)
 # 2026-09-06: the gym's hugger. Same 52" DC fan and light kit, flush-mount rather than
 # downrod, because RM-B-GYM's 95 3/8" clear cannot take an 18" assembly. Same band as the
 # downrod fan: a low-profile mount is a different housing, not a dearer one, and the SKU is
@@ -2677,7 +2676,6 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 2026-08-18: the same 52" fan in a wet-location listed housing — sealed non-ferrous
 # motor, gasketed light kit. A ~30-40% adder over the damp-rated version, which is the
 # spread the outdoor-rated fan listings carry over their indoor twins.
-"ED-T-LT-FAN52-WET" = { material = { low = 200, high = 700 }, labour = { low = 155, high = 320 } }  # 1 ea
 # Craftmade Force XL FXL60DGT3 at $270 -- the only current, in-stock, genuinely cETLus
 # WET-rated 60" fan with an integrated 3000 K light that could be found. ** WET, NOT DAMP,
 # AND THE PREMIUM IS NOT OPTIONAL IN MINNESOTA: ** the failure is a 30 mph wind packing snow
@@ -2694,8 +2692,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Carry $3-8 per exact bulb (80793-SU 3000 K / 80795-SU 5000 K); upper end and 3000 K
 # allowance are estimating judgement, not observed quotes. Verify availability; do not silently
 # substitute the V2 lamp without its own CRI/R9 sheet. Tax/freight and spare bulbs excluded.
-"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 1 ea, studio task light unchanged
-"ED-T-LT-KARLIE-2-BN" = { material = { low = 195, high = 205 }, labour = { low = 60, high = 135 } }  # 3 ea, 54622BN + two 80793-SU
+"ED-T-LT-KARLIE-2-BN" = { material = { low = 195, high = 205 }, labour = { low = 60, high = 135 } }  # 4 ea (2026-10-28: the studio wet bar's mark P retyped to P1), 54622BN + two 80793-SU
 "ED-T-LT-KARLIE-2-BN-ATTIC" = { material = { low = 200, high = 215 }, labour = { low = 60, high = 135 } }  # 1 ea, same fixture/bulbs plus offset box/crossbar allowance
 "ED-T-LT-KARLIE-2-CM" = { material = { low = 195, high = 205 }, labour = { low = 60, high = 135 } }  # 1 ea, 54622CM + two 80793-SU
 "ED-T-LT-KARLIE-3-BN" = { material = { low = 218, high = 233 }, labour = { low = 60, high = 135 } }  # 2 ea, 54623BN + three 80793-SU
@@ -2719,12 +2716,12 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # the room's R303.1 compliance depends on rather than against a look.
 "ED-T-LT-PENDANT-BAR" = { material = { low = 180, high = 700 }, labour = { low = 70, high = 200 } }  # 0 ea — CATALOG-ONLY since 2026-09-10, the mark N convention: its one placement retyped to ED-T-LT-MIRROR when the attic rake left no room for a hung fixture. Kept priced so the revert costs nothing
 "ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 3 ea
+"ED-T-LT-PSU-96-WE" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 3 ea — mark W's drivers (2026-10-28); PLACEHOLDER: the PSU-200 range
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea since 2026-10-12 — both niche supplies went, ED-M-BATH2-PSU came; ED-B-SAUNA-LT-PSU is surface-mounted on the workshop face of W-B-SA-N rather than in a ceiling box
 "ED-T-LT-SCONCE-EXT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 3 ea — garage door pair and ED-M-STAIR-LT on the porch house wall; porch switch independent of garden flood
-"ED-T-LT-SCONCE-SPOT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 4 ea
+"ED-T-LT-SCONCE-SPOT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 5 ea (2026-10-28: the plant room's J2 retyped to J) — PLACEHOLDER range, the WAC Stretch price was not read
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
 # corrosion-resistant housing. Same ~30-40% adder as the fan above.
-"ED-T-LT-SCONCE-SPOT-WET" = { material = { low = 95, high = 340 }, labour = { low = 60, high = 140 } }  # 1 ea
 # ** CUT 2026-09-13. THE ROW STAYS, THE COUNT IS ZERO — the mark N / glazed-green-brick
 # convention: a deleted row silently drops the type from any future takeoff, so the revert
 # could not be costed. ** This was the sauna's fibre-optic kit and it was $1,500-2,250
@@ -2740,7 +2737,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # room this was the most likely permit snag in the house. Confirm before ordering a revert.
 "ED-T-LT-SAUNA-VT" = { material = { low = 1300, high = 1800 }, labour = { low = 200, high = 450 } }  # 0 ea — CATALOG-ONLY since 2026-09-13; kept priced so the revert costs nothing to evaluate
 "ED-T-LT-SCONCE-STAIR" = { material = { low = 60, high = 220 }, labour = { low = 48, high = 115 } }  # 3 ea
-"ED-T-LT-SCONCE-GOTHIC" = { material = { low = 70, high = 240 }, labour = { low = 48, high = 115 } }  # 4 ea — PLACEHOLDER: the UD sconce's range, copied because the listings' prices could not be read. Replace with a quote.
+"ED-T-LT-SCONCE-CANDLE" = { material = { low = 95, high = 115 }, labour = { low = 48, high = 115 } }  # 4 ea — Livex 4451-04 at ~$95-102 (retailer, 2026-10-28) plus the Feit E12 bulb
 "ED-T-LT-SCONCE-UD" = { material = { low = 70, high = 240 }, labour = { low = 48, high = 115 } }  # 12 ea (2026-10-14: the four RM-A-EAST-UNFIN fittings went to ED-T-LT-SCONCE-GOTHIC) — was 17 until 2026-09-10, when ED-A-STUDIO-WALL2/WALL4 were deleted: the studio's five-at-30" run went to three at 60" once R303.1 stopped binding it (plan/lighting_attic.py)
 # ** THE COLD RATING IS WHAT COSTS THE MONEY. ** Almost every consumer LED shop light is
 # rated to -4 F and some to +14 F; it is the DRIVER, not the LEDs. The category that
@@ -2750,7 +2747,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # row's labour is an electrician rather than a hook and a plug.
 "ED-T-LT-SHOP4" = { material = { low = 93, high = 140 }, labour = { low = 60, high = 130 } }  # 4 ea
 "ED-T-LT-SPOT-SW" = { material = { low = 60, high = 200 }, labour = { low = 60, high = 140 } }  # 2 ea
-"ED-T-LT-TUBE6" = { material = { low = 120, high = 350 }, labour = { low = 45, high = 100 } }  # 2 ea
+"ED-T-LT-GROW-BAR" = { material = { low = 120, high = 350 }, labour = { low = 45, high = 100 } }  # 2 ea — PLACEHOLDER: the old 6' tube range; the Barron AG90 price was not read
 "ED-T-LT-WALL-LINEAR" = { material = { low = 100, high = 350 }, labour = { low = 45, high = 100 } }  # 1 ea
 # RM-M-PANTRY's vertical slot (2026-08-24). Same article as WALL-LINEAR — an integral-driver
 # 120V linear LED — twice as long, hung vertically. Note the tape rows are NOT here:

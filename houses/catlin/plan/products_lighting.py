@@ -1,5 +1,7 @@
 """Catlin lighting products — the 2026-09-06 interior pass (→ plan/products_interior.py).
 
+The 2026-10-28 product selections live in plan/products_lighting_selected.py.
+
 Split off its parent for the 500-line rule, and the subject splits cleanly: everything here
 is a luminaire, a tape or a driver, and every one of them answers to two house rules that no
 plumbing fixture does.
@@ -21,23 +23,13 @@ the illuminated-mirror exception and its controls are documented in plan/mirror_
 from __future__ import annotations
 
 from typehaus.model import Product
+from plan.products_lighting_selected import SELECTED_LIGHTING_PRODUCTS
 from typehaus.library.track_lighting import MAGNETIC_TRACK_PRODUCTS
 
 # --- Lighting -----------------------------------------------------------------------------
 #
 # The house standard is 3000 K everywhere it is not deliberately something else, and never
 # an install-time selectable (DIP) module: see the module docstring.
-LOTUS_LL4SR_CAN = Product(
-    tag="PROD-LOTUS-LL4SR-30K-WH", brand="Lotus LED Lights", model="LL4SR-30K-WH",
-    name='4" deeply regressed LED downlight, white trim, 3000K',
-    source="Lotus LED Lights specification sheet, read 2026-09-06. 14.5 W, 900 lm, 3000 K, "
-           "90+ CRI, wet + IP54, IC rated, airtight. ** THE BLACK BAFFLE THIS REPLACES WAS "
-           "SOLVING GLARE THE EXPENSIVE WAY. ** A black baffle in a white ceiling reads as a "
-           "row of dark holes and a ribbed baffle traps dust and shows a grey halo; a white "
-           "DEEPLY REGRESSED reflector hides the source by geometry instead, so the trim "
-           "disappears into the ceiling and wipes clean. Same SKU serves the wet locations, "
-           "so there is no separate shower trim to colour-match.",
-)
 WESTGATE_VAPORTIGHT = Product(
     tag="PROD-WESTGATE-LVTE-4FT", brand="Westgate", model="LVTE-4FT-30-46W-MCTP",
     name="4' vaportight linear LED, IP66, cold rated",
@@ -63,7 +55,9 @@ DOLRIA_PC0008 = Product(
            "NOT REPLACEABLE, AND ACCEPTED (2026-09-23): ** the driver sits in a canopy 27' "
            "up, so its failure is a scaffold in the well. The Kuzco Samar it replaces had "
            "3 x E26 for exactly that reason, but 14\" of fixture could not fill a 27' void "
-           "and 120\" of wire could not reach the hang.",
+           "and 120\" of wire could not reach the hang. "
+           "** INSTALL GATE (2026-10-28): ** the UL/ETL mark and 120 V must be on the "
+           "NAMEPLATE before install, else return it.",
 )
 FLYACHILLES_DJ3616_2L = Product(
     tag="PROD-FLYACHILLES-DJ3616-2L", brand="Flyachilles", model="DJ3616-16 (2-light)",
@@ -75,7 +69,9 @@ FLYACHILLES_DJ3616_2L = Product(
            "110 V on the spec sheet, gold finish. ** NOT PUBLISHED: ** any UL/ETL/cETL mark, "
            "driver type or replaceability, wattage, strip count, and whether the gold is PVD or "
            "lacquered. ** BEFORE ORDERING: ** confirm the variant link is the 2-light, read the "
-           "mark on the fixture, confirm 120 V, and budget a spare driver.",
+           "mark on the fixture, confirm 120 V, and budget a spare driver. "
+           "** INSTALL GATE (2026-10-28): ** the UL/ETL mark and 120 V must be on the "
+           "NAMEPLATE before install, else return it.",
 )
 MODERN_FORMS_BANTAM = Product(
     tag="PROD-MODERNFORMS-WS-38109", brand="Modern Forms", model="WS-38109-30-BK",
@@ -85,19 +81,6 @@ MODERN_FORMS_BANTAM = Product(
            "sconce there is both a shoulder hazard and a code problem. These three are not "
            "decoration: inverse-square means a 2,400 lm globe 12 ft up the stairwell "
            "delivers almost nothing to the treads, so the sconces are the stair's real light.",
-)
-MODERN_FORMS_MYKONOS = Product(
-    tag="PROD-MODERNFORMS-FR-W1819", brand="Modern Forms", model="FR-W1819-52L-30-MB",
-    name='Mykonos 52" DC ceiling fan with 3000K LED light kit',
-    source="Modern Forms specification, read 2026-09-06. 150 CFM/W against a typical AC "
-           "fan's 70-90; three flat blades and a smooth glass lens, so there is almost "
-           "nothing to dust. ** DC IS WORTH IT FOR NOISE, NOT ENERGY ** -- the saving is "
-           "$8-12/yr; the win is no line-frequency hum at 2 a.m. ** BUT A DC FAN CANNOT BE "
-           "SPEED-CONTROLLED BY ANY CONVENTIONAL WALL DIMMER. ** Wire it to constant hot and "
-           "buy the hardwired Bluetooth wall control alongside the remote; putting it on a "
-           "Caseta dimmer will corrupt the receiver. That deliberately breaks the house "
-           "dimming scheme and is correct. ** ORDER THE -30- SKU: ** CCT is baked into the "
-           "model number and the common listing is 2700 K.",
 )
 CRAFTMADE_FORCE_XL = Product(
     tag="PROD-CRAFTMADE-FXL60DGT3", brand="Craftmade", model="FXL60DGT3",
@@ -170,21 +153,6 @@ LEDSUPPLY_SAUNA_STRIP = Product(
            "OMNIDRIVE X 60 W above, OUTSIDE the hot room.",
 )
 
-# BATH2's two can layers (2026-10-12): the LL4SR in fixed 5000 K and 2700 K phosphors.
-# ** CONFIRM BOTH SKUs: ** Lotus publishes 5000 K and 2700 K in its 4" round LL4R line; the
-# square regressed LL4SR was only ever read at 3000 K. If either tap is not made, take the
-# LL4R round in that CCT and keep the trim white.
-LOTUS_LL4SR_CAN_50K = LOTUS_LL4SR_CAN.model_copy(update={
-    "tag": "PROD-LOTUS-LL4SR-50K-WH", "model": "LL4SR-50K-WH",
-    "name": '4" deeply regressed LED downlight, white trim, 5000K',
-    "source": "BATH2's day layer, 2026-10-12: the LL4SR in a FIXED 5000 K phosphor, wet + "
-              "IP54 as the 3000 K. CONFIRM THE SKU (LL4R-50K is published; LL4SR-50K was "
-              "not found)."})
-LOTUS_LL4SR_CAN_27K = LOTUS_LL4SR_CAN.model_copy(update={
-    "tag": "PROD-LOTUS-LL4SR-27K-WH", "model": "LL4SR-27K-WH",
-    "name": '4" deeply regressed LED downlight, white trim, 2700K',
-    "source": "BATH2's evening shower can, 2026-10-12: the LL4SR in a FIXED 2700 K "
-              "phosphor. CONFIRM THE SKU, as for the 5000 K."})
 HUNTER_GALLEGOS = Product(
     tag="PROD-HUNTER-51583", brand="Hunter", model="Gallegos 51583",
     name='Gallegos 52" low-profile ceiling fan, matte black, no light kit',
@@ -218,8 +186,8 @@ ALCON_14119_GARDEN_FLOOD = Product(
 LIGHTING_PRODUCTS = (
     HUNTER_GALLEGOS,
     *MAGNETIC_TRACK_PRODUCTS,
-    LOTUS_LL4SR_CAN, LOTUS_LL4SR_CAN_50K, LOTUS_LL4SR_CAN_27K, WESTGATE_VAPORTIGHT, DOLRIA_PC0008,
-    MODERN_FORMS_BANTAM, MODERN_FORMS_MYKONOS, CRAFTMADE_FORCE_XL,
+    *SELECTED_LIGHTING_PRODUCTS, WESTGATE_VAPORTIGHT, DOLRIA_PC0008,
+    MODERN_FORMS_BANTAM, CRAFTMADE_FORCE_XL,
     ARMACOST_RIBBONFLEX_COB, DIODE_VALENT_X, DIODE_OMNIDRIVE_X,
     LEDSUPPLY_SAUNA_STRIP, ALCON_14119_GARDEN_FLOOD, FLYACHILLES_DJ3616_2L,
 )
