@@ -157,6 +157,27 @@ class DoorType(HausModel):
     source: str | None = None
 
     @model_validator(mode="after")
+    def _unit_fits_its_published_rough_opening(self) -> DoorType:
+        """Decision #96: a published RO must take the unit (or leaf) plus its shims.
+        A derived RO fits by construction, and a held one lives on the Door, exempt."""
+        from typehaus.model.opening_size import FIT_TOLERANCE_M, PREHUNG_SHIM_M
+
+        ro = self.rough_opening
+        if ro is None or self.operation == DoorOperation.OVERHEAD:
+            return self
+        catalog = self.catalog_dimensions
+        unit_w = catalog.unit_width.meters if catalog else self.width.meters
+        unit_h = catalog.unit_height.meters if catalog else self.height.meters
+        if (unit_w + 2 * PREHUNG_SHIM_M > ro.width.meters + FIT_TOLERANCE_M
+                or unit_h + PREHUNG_SHIM_M > ro.height.meters + FIT_TOLERANCE_M):
+            what = "unit" if catalog else "leaf"
+            raise ValueError(
+                f"{self.tag}: the {unit_w / 0.0254:g} x {unit_h / 0.0254:g} in {what} does not "
+                f"fit its published {ro.width.inches:g} x {ro.height.inches:g} in rough "
+                "opening with 1/4 in of shim a side")
+        return self
+
+    @model_validator(mode="after")
     def _push_set_is_trimless(self) -> DoorType:
         if self.leaf_set == "push" and not self.trimless:
             raise ValueError(f"{self.tag}: leaf_set='push' describes a trimless jamb; "

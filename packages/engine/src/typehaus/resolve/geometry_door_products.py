@@ -65,8 +65,16 @@ def handing(opening) -> tuple[float, float]:
     return hinge, swing
 
 
+def concealed_jamb(width: float, leaf_width: float | None) -> float:
+    """The liner thickness: a ``DoorSizing`` leaf fills the RO less a shadow gap a side."""
+    if leaf_width is None:
+        return _CONCEALED_JAMB_M
+    return max(_CONCEALED_JAMB_M, (width - leaf_width) / 2.0 - _SHADOW_GAP_M)
+
+
 def concealed_leaf(faces: tuple[float, float], swing_sign: float, width: float,
                    base_z: float, height: float, leaf_set: str = "pull",
+                   leaf_width: float | None = None,
                    ) -> tuple[float, float, float, float, float]:
     """``(leaf_width, leaf_height, bottom_z, pull_face, push_face)`` of a concealed-frame leaf."""
     if leaf_set == "push":
@@ -75,15 +83,17 @@ def concealed_leaf(faces: tuple[float, float], swing_sign: float, width: float,
     else:
         flush = faces[1] if swing_sign > 0 else faces[0]
         back = flush - swing_sign * _CONCEALED_LEAF_THICKNESS_M
-    leaf_width = width - 2.0 * (_CONCEALED_JAMB_M + _SHADOW_GAP_M)
+    jamb = concealed_jamb(width, leaf_width)
+    leaf_width = width - 2.0 * (jamb + _SHADOW_GAP_M)
     bottom = base_z + _CONCEALED_UNDERCUT_M
-    top = base_z + height - _CONCEALED_JAMB_M - _SHADOW_GAP_M
+    top = base_z + height - jamb - _SHADOW_GAP_M
     return leaf_width, top - bottom, bottom, flush, back
 
 
 def concealed_frame_parts(box: BoxFn, faces: tuple[float, float], swing_sign: float,
                           width: float, base_z: float, height: float,
-                          leaf_set: str = "pull", is_glazed: bool = False) -> list[GPart]:
+                          leaf_set: str = "pull", is_glazed: bool = False,
+                          leaf_width: float | None = None) -> list[GPart]:
     """Liner, leaf, stop and shadow strips of a concealed-frame door.
 
     The liner lines the whole jamb depth and stops flush with both finish faces. The stop
@@ -92,9 +102,9 @@ def concealed_frame_parts(box: BoxFn, faces: tuple[float, float], swing_sign: fl
     """
     lo, hi = faces
     depth, mid = hi - lo, (hi + lo) / 2.0
-    j, g, p = _CONCEALED_JAMB_M, _SHADOW_GAP_M, _CONCEALED_STOP_M
+    j, g, p = concealed_jamb(width, leaf_width), _SHADOW_GAP_M, _CONCEALED_STOP_M
     leaf_w, leaf_h, leaf_z0, flush, back = concealed_leaf(faces, swing_sign, width, base_z,
-                                                          height, leaf_set)
+                                                          height, leaf_set, leaf_width)
     push = lo if swing_sign > 0 else hi
     head_z = base_z + height
     liner = (

@@ -119,7 +119,15 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
   const availableHeight = seat ? roHeight - seat.sill_rise_m - seat.head_drop_m : roHeight;
   if (availableHeight <= 1e-9) return;
   const rotation = Math.atan2(direction[1], direction[0]);
-  const frameWidth = Math.min(0.075, opening.width_m / 4, availableHeight / 4);
+  let frameWidth = Math.min(0.075, opening.width_m / 4, availableHeight / 4);
+  // A sized door's jamb fills the RO out to its leaf (resolve/door_sizing); an overhead
+  // door is its RO. Mirrors resolve/geometry_openings.py.
+  const sizing = opening.kind === "door" ? roughOpening.sizing ?? null : null;
+  if (sizing && !seat && operation !== "overhead" && operation !== "pocket"
+    && sizing.leaf_w_m < opening.width_m) {
+    frameWidth = (opening.width_m - sizing.leaf_w_m) / 2;
+  }
+  const sizedLeaf = sizing?.leaf_w_m ?? null;
   const depth = 0.08;
   // An opening in a clad wall is an exterior product: frame/mullion/stile boxes take the
   // charcoal exterior tone, doors and windows alike, and the frame extends from its
@@ -166,7 +174,7 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
       const oldBottom = elevation - height / 2;
       if (isTrimless && isGlazed && material === glassMaterial && faces) {
         const originalBottom = concealedLeaf(faces, swingSign, opening.width_m, floorZ,
-          availableHeight, leafSet)[2];
+          availableHeight, leafSet, sizedLeaf)[2];
         const bottom = oldBottom + leafBottom - originalBottom;
         const top = elevation + height / 2;
         height = top - bottom; elevation = (top + bottom) / 2;
@@ -307,9 +315,9 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
         addBox(w, h, t, a, e, shadowMaterial, n);
       },
       glazing: isGlazed ? withMaterial(glassMaterial) : undefined,
-    }, leafSet);
+    }, leafSet, sizedLeaf);
     const [leafW, , , flush, back] = concealedLeaf(faces, swingSign, opening.width_m, floorZ,
-      availableHeight, leafSet);
+      availableHeight, leafSet, sizedLeaf);
     buildLeverSet(addHardware, -hingeSign * leafW / 2, hingeSign, [flush, back], floorZ);
     registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
     return;

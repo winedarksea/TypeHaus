@@ -85,7 +85,7 @@ export function PlacementPopover({ placement, catalog, hintFile, storey, runMacr
           <button key={dt.tag} className="btn" disabled={busy} style={{ display: "block", width: "100%", marginBottom: 4 }}
             onClick={() => void place({
               macro: "place_opening", storey: storey!, host: placement.wall.tag,
-              type_ref: dt.tag, along: formatFtIn(openingStartFromCenter(placement.along_m, dt.width_m)), is_door: true,
+              type_ref: dt.tag, along: formatFtIn(openingStartFromCenter(placement.along_m, dt.rough_w_m ?? dt.width_m)), is_door: true,
               hint_file: hintFile,
             }, "opening")}>
             {busy ? "Adding…" : `Door · ${dt.tag} · ${doorTypeLabel(dt)} · ${formatFtIn(dt.width_m)} × ${formatFtIn(dt.height_m)}`}

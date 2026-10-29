@@ -71,6 +71,7 @@ def resolve_cased_door(wall, opening, door_type, *, standard=None,
         undercut_m=defaults.undercut_m, pocket_slot_gap_m=defaults.pocket_slot_gap_m,
         track_height_m=defaults.track_height_m, track_depth_m=defaults.track_depth_m,
         pocket_sign=opening.pocket_sign or 1,
+        leaf_width_m=opening.sizing.leaf_w_m if opening.sizing is not None else None,
         frame_material_ref=opening.effective_frame_material_ref,
         leaf_material_ref=opening.effective_leaf_material_ref)
 

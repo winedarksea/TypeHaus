@@ -332,6 +332,34 @@ export interface CasedDoorSpec {
   track_height_m: number;
   track_depth_m: number;
   pocket_sign: number;
+  // The sized leaf (resolve/door_sizing); null = the old void-less-jamb derivation.
+  leaf_width_m?: number | null;
+}
+
+// Mirrors resolve/door_sizing.DoorSizing (server/model_json_door_hardware.sizing_json).
+// The viewer reads it and never re-derives it.
+export interface DoorSizing {
+  nominal_w_m: number;
+  nominal_h_m: number;
+  leaf_w_m: number;
+  leaf_h_m: number;
+  unit_w_m: number | null;
+  unit_h_m: number | null;
+  rough_w_m: number;
+  rough_h_m: number;
+  passage_w_m: number;
+  clear_w_m: number | null;
+  clear_h_m: number | null;
+  required_w_m: number;
+  required_h_m: number;
+  required_basis: string;
+  jamb_allowance_m: number;
+  leaf_gap_m: number;
+  floor_finish_m: number;
+  held: boolean;
+  fits: boolean;
+  basis: Record<string, string>;
+  pocket_run_m: number;
 }
 
 // A flashed window unit's envelope inside its RO. Mirrors resolve/model_window_seat.py.
@@ -353,6 +381,7 @@ export interface AuthoredDoorPart {
 export interface Opening {
   authored_product_parts?: AuthoredDoorPart[] | null;
   cased_product?: CasedDoorSpec | null;
+  sizing?: DoorSizing | null;
   doorway?: DoorwayAssembly | null;
   window_seat?: WindowSeat | null;
   frame_material_ref?: string | null;
@@ -1481,6 +1510,11 @@ export interface DoorTypeSpec {
   // The chosen product (`Catalog.products`), or null where this is still a specification
   // rather than a picked item. Resolve it with `productFor` (components/ProductRows.tsx).
   product_ref?: string | null;
+  // The RO placement turns into an opening width (a pocket's passage); the type's published
+  // RO, when it has one, and whether a fixed centre post splits a pair.
+  rough_w_m?: number;
+  rough_opening?: { width_m: number; height_m: number } | null;
+  center_post?: boolean;
   bookcase_door?: {
     body_width_m: number;
     body_height_m: number;

@@ -25,6 +25,8 @@ class CasedDoorSpec:
     track_height_m: float
     track_depth_m: float
     pocket_sign: int
+    # The leaf, from ``ResolvedOpening.sizing``; a pocket's runs on into its slot.
+    leaf_width_m: float | None = None
 
     frame_material_ref: str | None = None
     leaf_material_ref: str | None = None

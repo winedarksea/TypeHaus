@@ -26,9 +26,11 @@ export function buildCasedDoor(s: CasedDoorSpec, hinge: number, swing: number,
     if (n1 > n0) add.liner(2 * inner, jamb + headCover, n1 - n0, 0,
       head + (jamb - headCover) / 2, (n0 + n1) / 2);
   }
-  const leafWidth = 2 * (inner - s.leaf_gap_m);
+  const leafWidth = s.leaf_width_m || 2 * (inner - s.leaf_gap_m);
+  // A pocket leaf closes on the latch jamb and runs on into its slot; a swing is centred.
+  const leafAlong = pocket ? s.pocket_sign * (leafWidth / 2 - (inner - s.leaf_gap_m)) : 0;
   add.leaf(leafWidth, s.leaf_top_z_m - s.leaf_bottom_z_m, s.leaf_thickness_m,
-    0, (s.leaf_top_z_m + s.leaf_bottom_z_m) / 2, s.leaf_normal_m);
+    leafAlong, (s.leaf_top_z_m + s.leaf_bottom_z_m) / 2, s.leaf_normal_m);
   if (pocket) {
     add.hardware(2 * inner, s.track_height_m, s.track_depth_m, 0, head - s.track_height_m / 2, 0);
   } else {

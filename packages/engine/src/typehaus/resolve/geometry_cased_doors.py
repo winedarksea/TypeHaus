@@ -36,10 +36,12 @@ def cased_door_parts(box, spec: CasedDoorSpec, hinge: float, swing: float):
             liners.append(box(2 * inner, jamb + head_cover, n1 - n0, 0,
                               head + (jamb - head_cover) / 2, (n0 + n1) / 2))
     parts = [GPart(key="jamb_liner", material_key="door_frame", solids=tuple(liners))]
-    leaf_width = 2 * (inner - s.leaf_gap_m)
+    leaf_width = s.leaf_width_m or 2 * (inner - s.leaf_gap_m)
+    # A pocket leaf closes on the latch jamb and runs on into its slot; a swing is centred.
+    leaf_along = (s.pocket_sign * (leaf_width / 2 - (inner - s.leaf_gap_m)) if pocket else 0)
     parts.append(GPart(key="leaf", material_key="door_leaf", solids=(
         box(leaf_width, s.leaf_top_z_m - s.leaf_bottom_z_m, s.leaf_thickness_m,
-            0, (s.leaf_top_z_m + s.leaf_bottom_z_m) / 2, s.leaf_normal_m),)))
+            leaf_along, (s.leaf_top_z_m + s.leaf_bottom_z_m) / 2, s.leaf_normal_m),)))
     if pocket:
         parts.append(GPart(key="pocket_track", material_key="door_hardware", solids=(
             box(2 * inner, s.track_height_m, s.track_depth_m, 0,

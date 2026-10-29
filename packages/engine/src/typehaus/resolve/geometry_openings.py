@@ -142,6 +142,13 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     frame_width = min(_OPENING_FRAME_FACE_WIDTH_M,
                       width / _OPENING_FRAME_SPAN_DIVISOR,
                       available_height / _OPENING_FRAME_SPAN_DIVISOR)
+    # A sized door's jamb fills the RO out to its leaf (resolve/door_sizing), so the leaves
+    # below are the leaf, not the void less a schematic frame. An overhead door is its RO.
+    sizing = getattr(opening, "sizing", None) if opening.kind == "door" else None
+    if (sizing is not None and seat is None
+            and operation not in (DoorOperation.OVERHEAD, DoorOperation.POCKET)
+            and sizing.leaf_w_m < width):
+        frame_width = (width - sizing.leaf_w_m) / 2.0
     depth = _OPENING_FRAME_DEPTH_M
     # An opening in a clad wall is an exterior product: its frame, mullion and stile boxes
     # take the charcoal exterior tone rather than interior wood, doors and windows alike.
@@ -192,10 +199,11 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         return cased_door_parts(box, opening.cased_product, hinge_sign, swing_sign)
     if (is_trimless and opening.kind == "door" and faces is not None
             and operation in (None, DoorOperation.SWING)):
+        leaf = sizing.leaf_w_m if sizing is not None else None
         parts.extend(concealed_frame_parts(box, faces, swing_sign, width, z0 + sill,
-                                           available_height, leaf_set, is_glazed))
+                                           available_height, leaf_set, is_glazed, leaf))
         leaf_w, _h, _z, flush, back = concealed_leaf(faces, swing_sign, width, z0 + sill,
-                                                     available_height, leaf_set)
+                                                     available_height, leaf_set, leaf)
         hardware = hardware_part(lever_solids(box, -hinge_sign * leaf_w / 2.0, hinge_sign,
                                               (flush, back), z0 + sill))
         return tuple(parts) + ((hardware,) if hardware is not None else ())

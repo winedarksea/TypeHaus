@@ -16,15 +16,14 @@ import math
 from dataclasses import dataclass
 
 from typehaus.model.enums import DoorOperation
+from typehaus.model.opening_size import FIT_TOLERANCE_M as _FIT_TOLERANCE_M
+from typehaus.model.opening_size import PREHUNG_SHIM_M
 
 _IN = 0.0254
 # Therma-Tru 2026 Arch 1.29-1.30 "Hinged Clear Opening": a flat 2-11/16" under the slab at
 # every single-leaf size (2/8 -> 29-5/16", 3/0 -> 33-5/16"); a pair loses it per leaf.
 CLEAR_DEDUCTION_M = (2 + 11 / 16) * _IN
 CLEAR_DEDUCTION_BASIS = "estimated: Therma-Tru deduction (2026 Arch 1.29-1.30)"
-# A prehung unit's shim space, per side, that a published RO must leave around it.
-PREHUNG_SHIM_M = 0.25 * _IN
-_FIT_TOLERANCE_M = 1e-5
 
 
 @dataclass(frozen=True)

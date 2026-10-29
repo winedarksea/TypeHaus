@@ -60,9 +60,10 @@ def test_published_rough_opening_wins_and_its_unit_must_fit():
     assert sizing.rough_w_m / _IN == pytest.approx(38.375)
     assert sizing.basis_of("rough") == "published RO" and sizing.fits
     assert sizing.clear_w_m / _IN == pytest.approx(33.3125)
-    tight = door_type.model_copy(update={"rough_opening": OpeningSize(width=ft(3),
-                                                                      height=ft(6, 8))})
-    assert not door_sizing(_Door(), tight, None, None, 0.0).fits
+    # A published RO the unit cannot fit is a load-time error (decision #96).
+    with pytest.raises(ValueError, match="does not fit"):
+        DoorType(tag="T", width=ft(3), height=ft(6, 8), catalog_dimensions=unit,
+                 rough_opening=OpeningSize(width=inch(37.75), height=inch(82.875)))
 
 
 def test_a_held_opening_keeps_its_void_and_infers_the_leaf():

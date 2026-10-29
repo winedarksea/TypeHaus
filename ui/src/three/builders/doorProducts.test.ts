@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { Opening, Wall } from "../../model/types";
 import { RESOLVED_NORDIC_PALETTE } from "../../nordic/palette";
+import { concealedLeaf } from "./doorProducts";
 import { buildOpening } from "./openings";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -58,6 +59,11 @@ export function runTrimlessGlazedDoorTests() {
       new Set(meshes.map((mesh) => mesh.material)).forEach((material) => material.dispose());
     }
   }
+  // A sized leaf fills the RO less a shadow gap a side; unsized keeps the fixed liner.
+  assert(Math.abs(concealedLeaf([-0.09, 0.09], 1, 0.762, 0, 2.032, "pull", 0.7)[0] - 0.7) < 1e-9,
+    "A sized concealed leaf is the sizing leaf");
+  assert(Math.abs(concealedLeaf([-0.09, 0.09], 1, 0.762, 0, 2.032)[0] - (0.762 - 0.038)) < 1e-9,
+    "An unsized concealed leaf keeps the fixed liner");
   const authored = new THREE.Group(), authoredPicks: THREE.Mesh[] = [];
   const authoredOpening: Opening = { ...opening, authored_product_parts: [
     { key: "leaf:exterior", material_key: "door_leaf", material_ref: "door-black",

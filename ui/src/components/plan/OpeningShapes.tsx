@@ -82,19 +82,28 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
   const dx = Math.cos(ang) * halfPx;
   const dy = Math.sin(ang) * halfPx;
   const hingeDirection = o.flip_hinge ? -1 : 1;
+  // A hinged leaf hangs at the jamb face (rough_w/2 - a) and is the sized leaf; without
+  // sizing it falls back to the void's edge and width (mirrors emit/draw/floorplan.py).
+  const sizing = o.is_door ? o.sizing ?? null : null;
+  const hingeHalfM = sizing ? sizing.rough_w_m / 2 - sizing.jamb_allowance_m : o.width_m / 2;
+  const leafM = sizing ? sizing.leaf_w_m : o.width_m;
+  const hx = Math.cos(ang) * hingeHalfM * scale, hy = Math.sin(ang) * hingeHalfM * scale;
+  const leafPx = leafM * scale;
   const leafOffsetPx = (o.doorway?.exterior_placement?.leaf_normal_m ?? 0) * scale;
-  const hingeX = cx + hingeDirection * dx + Math.sin(ang) * leafOffsetPx;
-  const hingeY = cy + hingeDirection * dy - Math.cos(ang) * leafOffsetPx;
+  const hingeX = cx + hingeDirection * hx + Math.sin(ang) * leafOffsetPx;
+  const hingeY = cy + hingeDirection * hy - Math.cos(ang) * leafOffsetPx;
   const swingSign = o.flip_swing ? -1 : 1;
   // SVG's y axis is inverted from plan coordinates, so the screen-space +90° normal is
   // [sin(angle), -cos(angle)].  It matches the shared drawing IR's handed plan symbol.
   const openingAngle = (o.maximum_opening_degrees ?? 90) * Math.PI / 180;
   const leafX = hingeX + (-hingeDirection * Math.cos(ang) * Math.cos(openingAngle)
-    + swingSign * Math.sin(ang) * Math.sin(openingAngle)) * o.width_m * scale;
+    + swingSign * Math.sin(ang) * Math.sin(openingAngle)) * leafPx;
   const leafY = hingeY + (-hingeDirection * Math.sin(ang) * Math.cos(openingAngle)
-    - swingSign * Math.cos(ang) * Math.sin(openingAngle)) * o.width_m * scale;
-  const wallArcX = hingeX - hingeDirection * 2 * dx;
-  const wallArcY = hingeY - hingeDirection * 2 * dy;
+    - swingSign * Math.cos(ang) * Math.sin(openingAngle)) * leafPx;
+  const wallArcX = hingeX - hingeDirection * Math.cos(ang) * leafPx;
+  const wallArcY = hingeY - hingeDirection * Math.sin(ang) * leafPx;
+  // A pair: two leaves of half the sized width, hinged at the two jamb faces.
+  const pairHalfPx = (sizing ? sizing.leaf_w_m / 2 : o.width_m / 2) * scale;
   const windowTick = Math.min(6, Math.max(3, scale * 0.08));
   // Null for the hinged operations, which draw a leaf plus a swing arc instead.
   const strokeGlyph = o.is_door ? doorStrokeGlyph({
@@ -172,17 +181,20 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
         {/* French/double door — two half-width leaves hinged at the jambs, meeting at
             a centre mullion. Both leaves swing to the same side. */}
         {([-1, 1] as const).map((side) => {
-          const jx = cx + side * dx;
-          const jy = cy + side * dy;
-          const lx = jx + swingSign * Math.sin(ang) * halfPx;
-          const ly = jy - swingSign * Math.cos(ang) * halfPx;
+          const jx = cx + side * hx;
+          const jy = cy + side * hy;
+          const lx = jx + swingSign * Math.sin(ang) * pairHalfPx;
+          const ly = jy - swingSign * Math.cos(ang) * pairHalfPx;
+          // The closed leaf lies along the wall from the jamb toward the centre.
+          const sx = jx - side * Math.cos(ang) * pairHalfPx;
+          const sy = jy - side * Math.sin(ang) * pairHalfPx;
           return (
             <g key={side}>
               <line x1={jx} y1={jy} x2={lx} y2={ly}
                 stroke="var(--canvas-wood)" strokeWidth={1.5} />
               {/* Arc pivots on the jamb (jx,jy); its two leaves mirror across the mullion,
                   so each resolves to the sweep flag that keeps that jamb as the centre. */}
-              <path d={`M ${cx} ${cy} A ${halfPx} ${halfPx} 0 0 ${swingArcSweepFlag([jx, jy], [cx, cy], [lx, ly])} ${lx} ${ly}`}
+              <path d={`M ${sx} ${sy} A ${pairHalfPx} ${pairHalfPx} 0 0 ${swingArcSweepFlag([jx, jy], [sx, sy], [lx, ly])} ${lx} ${ly}`}
                 fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
             </g>
           );
@@ -193,7 +205,7 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
         {/* Swing arc pivots on the hinge; the closed leaf lies along the wall at the far
             jamb (wallArc) and opens to leaf. The flag must keep the hinge as the arc
             centre so the arc bows concave toward the hinge, not convex away from it. */}
-        <path d={`M ${wallArcX} ${wallArcY} A ${o.width_m * scale} ${o.width_m * scale} 0 0 ${swingArcSweepFlag([hingeX, hingeY], [wallArcX, wallArcY], [leafX, leafY])} ${leafX} ${leafY}`}
+        <path d={`M ${wallArcX} ${wallArcY} A ${leafPx} ${leafPx} 0 0 ${swingArcSweepFlag([hingeX, hingeY], [wallArcX, wallArcY], [leafX, leafY])} ${leafX} ${leafY}`}
           fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
       </>) : <>
         <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}

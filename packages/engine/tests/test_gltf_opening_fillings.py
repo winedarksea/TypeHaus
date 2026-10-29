@@ -33,9 +33,7 @@ from typehaus.model.enums import DoorOperation
 from typehaus.resolve import resolve
 from typehaus.resolve.geometry import wall_frame
 from typehaus.resolve.geometry_door_products import (
-    _CONCEALED_JAMB_M,
     _PUSH_SET_REBATE_M,
-    _SHADOW_GAP_M,
     finish_faces,
 )
 from typehaus.resolve.geometry_openings import opening_parts
@@ -197,6 +195,10 @@ def _opening_center_plan_point(wall, opening) -> tuple[float, float]:
 
 
 def _frame_width_m(opening, available_height_m: float) -> float:
+    """A sized door's jamb fills the RO out to its leaf (resolve/door_sizing)."""
+    sizing = getattr(opening, "sizing", None)
+    if sizing is not None and sizing.leaf_w_m < opening.width_m:
+        return (opening.width_m - sizing.leaf_w_m) / 2
     return min(_OPENING_FRAME_FACE_WIDTH_M,
                opening.width_m / _OPENING_FRAME_SPAN_DIVISOR,
                available_height_m / _OPENING_FRAME_SPAN_DIVISOR)
@@ -369,7 +371,7 @@ def test_catlin_push_set_door_is_near_flush_on_its_push_side(catlin_model):
     assert leaf_push == pytest.approx(push + swing_side * _PUSH_SET_REBATE_M, abs=1e-6)
     along = [(x - x0) * -ny + (y - y0) * nx for x, y in leaf.ring]
     assert max(along) - min(along) == pytest.approx(
-        opening.width_m - 2 * (_CONCEALED_JAMB_M + _SHADOW_GAP_M), abs=_DIMENSION_TOLERANCE_M)
+        opening.sizing.leaf_w_m, abs=_DIMENSION_TOLERANCE_M)
     for key in ("jamb_liner", "leaf", "stop", "shadow_gap"):
         for solid in parts[key].solids:
             a, b = span(solid)

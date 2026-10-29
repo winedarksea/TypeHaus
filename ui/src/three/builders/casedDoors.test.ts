@@ -3,6 +3,8 @@ import fixtures from "./casedDoorFixtures.json";
 import type { DoorOperation, Opening, Wall } from "../../model/types";
 import { RESOLVED_NORDIC_PALETTE } from "../../nordic/palette";
 import { categoryColor } from "../members";
+import type { CasedDoorSpec } from "../../model/types";
+import { buildCasedDoor } from "./casedDoors";
 import { buildOpening } from "./openings";
 
 export function runCasedDoorTests() {
@@ -61,6 +63,19 @@ export function runCasedDoorTests() {
       near(n, [...expected.min.toArray(), ...expected.max.toArray()][i]))) {
       throw new Error("Wood appearance must preserve every product part's physical bounds");
     }
+  }
+  // A sized leaf: a swing leaf stays centred; a pocket leaf closes on the latch jamb and
+  // runs into its slot (mirrors geometry_cased_doors.py).
+  for (const [operation, sign] of [["swing", 1], ["pocket", 1], ["pocket", -1]] as const) {
+    const spec = { ...(fixtures[0].opening.cased_product as unknown as CasedDoorSpec),
+      operation, pocket_sign: sign, leaf_width_m: 0.9 };
+    let leaf: number[] = [];
+    const none = () => {};
+    buildCasedDoor(spec, 1, 1, { liner: none, stop: none, hardware: none,
+      leaf: (w, _h, _t, a) => { leaf = [w, a]; } });
+    const latch = spec.width_m / 2 - spec.jamb_allowance_m - spec.leaf_gap_m;
+    const along = operation === "pocket" ? sign * (0.45 - latch) : 0;
+    if (!near(leaf[0], 0.9) || !near(leaf[1], along)) throw new Error(`${operation} sized leaf`);
   }
   console.log("Cased door Python/viewer parity tests passed.");
 }

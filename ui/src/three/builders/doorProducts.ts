@@ -47,28 +47,36 @@ export function handing(opening: Opening): [number, number] {
   return [opening.flip_hinge ? -1 : 1, opening.flip_swing ? -1 : 1];
 }
 
+/** The liner thickness: a sized leaf fills the RO less a shadow gap a side. */
+export function concealedJamb(width: number, leafWidth?: number | null): number {
+  if (leafWidth == null) return CONCEALED_JAMB_M;
+  return Math.max(CONCEALED_JAMB_M, (width - leafWidth) / 2 - SHADOW_GAP_M);
+}
+
 /** `[leafWidth, leafHeight, bottomZ, pullFace, pushFace]` of a concealed-frame leaf. */
 export function concealedLeaf(faces: [number, number], swingSign: number, width: number,
-  baseZ: number, height: number, leafSet: LeafSet = "pull"): [number, number, number, number, number] {
+  baseZ: number, height: number, leafSet: LeafSet = "pull", sizedLeafWidth?: number | null,
+): [number, number, number, number, number] {
   const back = leafSet === "push"
     ? (swingSign > 0 ? faces[0] : faces[1]) + swingSign * PUSH_SET_REBATE_M
     : (swingSign > 0 ? faces[1] : faces[0]) - swingSign * CONCEALED_LEAF_THICKNESS_M;
   const flush = back + swingSign * CONCEALED_LEAF_THICKNESS_M;
   const bottom = baseZ + CONCEALED_UNDERCUT_M;
-  const top = baseZ + height - CONCEALED_JAMB_M - SHADOW_GAP_M;
-  return [width - 2 * (CONCEALED_JAMB_M + SHADOW_GAP_M), top - bottom, bottom, flush, back];
+  const jamb = concealedJamb(width, sizedLeafWidth);
+  const top = baseZ + height - jamb - SHADOW_GAP_M;
+  return [width - 2 * (jamb + SHADOW_GAP_M), top - bottom, bottom, flush, back];
 }
 
 /** Liner, leaf, stop and shadow strips; each group goes to its own `AddBox`. */
 export function buildConcealedFrame(faces: [number, number], swingSign: number, width: number,
   baseZ: number, height: number,
   add: { liner: AddBox; leaf: AddBox; stop: AddBox; shadow: AddBox; glazing?: AddBox },
-  leafSet: LeafSet = "pull") {
+  leafSet: LeafSet = "pull", sizedLeafWidth?: number | null) {
   const [lo, hi] = faces;
   const depth = hi - lo, mid = (hi + lo) / 2;
-  const j = CONCEALED_JAMB_M, g = SHADOW_GAP_M, p = CONCEALED_STOP_M;
+  const j = concealedJamb(width, sizedLeafWidth), g = SHADOW_GAP_M, p = CONCEALED_STOP_M;
   const [leafW, leafH, leafZ0, flush, back] = concealedLeaf(faces, swingSign, width, baseZ, height,
-    leafSet);
+    leafSet, sizedLeafWidth);
   const push = swingSign > 0 ? lo : hi;
   const headZ = baseZ + height;
   add.liner(j, height, depth, -width / 2 + j / 2, baseZ + height / 2, mid);

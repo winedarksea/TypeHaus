@@ -56,6 +56,9 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
     from typehaus.model.enums import Occupancy
 
     lib = model.plan.library
+    from typehaus.resolve.door_floor_finish import trim_standard_of
+
+    standard = trim_standard_of(model.plan)
     assemblies: list[dict[str, Any]] = []
     for asm in lib.assemblies:
         resolved = lib.resolve_assembly(asm.tag)
@@ -94,6 +97,9 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
                                 "height_m": dt.rough_opening.height.meters}
                                if dt.rough_opening else None),
              "center_post": dt.center_post,
+             # What placement turns into an opening start: the RO this type derives or
+             # publishes (a pocket's passage). The viewer never re-derives it.
+             "rough_w_m": _type_sizing(dt, standard).passage_w_m,
              "catalog_dimensions": ({
                  "unit_width_m": dt.catalog_dimensions.unit_width.meters,
                  "unit_height_m": dt.catalog_dimensions.unit_height.meters,
@@ -203,3 +209,12 @@ def _placed_types(model: ResolvedModel) -> dict[str, Any]:
                 meshes.append(encoded)
             part["mesh_index"] = indices[key]
     return {"canvas_object_types": types, "meshes": meshes}
+
+
+def _type_sizing(door_type, standard):
+    """A type's sizing at a bare opening: no hold, no floor build-up (width only)."""
+    from types import SimpleNamespace
+
+    from typehaus.resolve.door_sizing import door_sizing
+
+    return door_sizing(SimpleNamespace(), door_type, standard, None, 0.0)
