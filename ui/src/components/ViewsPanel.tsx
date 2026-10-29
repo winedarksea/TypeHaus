@@ -256,7 +256,7 @@ export function ViewsPanel() {
       </div>
       <div className="muted views-hint">
         {visibleTrades.earth
-          ? "Site sheet only, in 3D. At 100% the earth is solid and hides everything below grade."
+          ? "Site sheet and backfill, in 3D. At 100% the earth is solid and hides everything below grade."
           : "Site is hidden — turn it on under Disciplines to use this."}
       </div>
 

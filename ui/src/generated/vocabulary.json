@@ -50,6 +50,8 @@
     "airgap": 13425126,
     "area_drain": 3355446,
     "area_drain_riser": 15132384,
+    "backfill_cap": 5521454,
+    "backfill_native": 7559488,
     "backflow_preventer": 12096583,
     "barge_rafter": 9200184,
     "beam": 10384711,
@@ -80,6 +82,7 @@
     "door_leaf": 16316922,
     "dowel": 3378265,
     "downspout": 14277598,
+    "drain_column": 10393996,
     "drain_tile": 2696737,
     "drip_edge": 12567756,
     "drywell": 8749176,
@@ -251,6 +254,8 @@
     "airgap": 13425126,
     "area_drain": 3355446,
     "area_drain_riser": 15132384,
+    "backfill_cap": 5521454,
+    "backfill_native": 7559488,
     "backflow_preventer": 12096583,
     "barge_rafter": 9200184,
     "beam": 10384711,
@@ -281,6 +286,7 @@
     "door_leaf": 16316922,
     "dowel": 3378265,
     "downspout": 14277598,
+    "drain_column": 10393996,
     "drain_tile": 2696737,
     "drip_edge": 12567756,
     "drywell": 8749176,
@@ -410,6 +416,12 @@
     "area_drain_riser": [
       "drainage"
     ],
+    "backfill_cap": [
+      "earth"
+    ],
+    "backfill_native": [
+      "earth"
+    ],
     "backflow_preventer": [
       "plumbing"
     ],
@@ -460,6 +472,10 @@
     ],
     "downspout": [
       "drainage"
+    ],
+    "drain_column": [
+      "drainage",
+      "earth"
     ],
     "drain_tile": [
       "drainage"
@@ -669,6 +685,8 @@
   "solidTrades": {
     "area_drain": "drainage",
     "area_drain_riser": "drainage",
+    "backfill_cap": "earth",
+    "backfill_native": "earth",
     "backflow_preventer": "plumbing",
     "beam": "framing",
     "beam_cap": "siding",
@@ -686,6 +704,7 @@
     "connector_hanger": "framing",
     "dowel": "concrete",
     "downspout": "drainage",
+    "drain_column": "drainage",
     "drain_tile": "drainage",
     "drywell": "drainage",
     "duct_dryer": "mechanical",

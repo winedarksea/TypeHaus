@@ -99,6 +99,8 @@ ESTIMATE_PLANS = (
     ("stair_treads", "stair_treads", "material", "pieces", "ea"),
     ("openings", "openings", "type", "count", "ea"),
     ("footing_bedding", "footing_bedding", "aggregate", "volume_cubic_yards", "cy"),
+    # One section over two units, as light_run_materials: the fabric row is SF.
+    ("excavation", "excavation", "item", "quantity", "cy"),
     ("pipe_runs", "pipe_runs", "system", "length_ft", "LF"),
     ("pipe_fittings", "pipe_fittings", "fitting", "count", "ea"),
     ("ducts", "ducts", "system", "length_ft", "LF"),

@@ -322,13 +322,11 @@ SUNKEN_GARDEN_COLUMN_12 = Assembly(
 # -9'-1 7/16", open to the sky, and it collects and holds every thaw; the garage landing
 # takes salt off the drive directly.
 #
-# ** ONE LAYER EACH, AND DELIBERATELY NO BASE COURSE. ** Both of these certainly bear on
-# stone in reality, and the obvious thing is to draw the 4" open-graded base its siblings
-# carry. That would add 541 SF of `capillary-break-stone` and about $950 to the estimate —
-# a real quantity change riding in on what is meant to be a specification change, and one
-# nobody asked for. What these pours needed was somewhere to state their MIX. Whether their
-# base course should be modelled is a separate question with its own money attached, and it
-# should be answered on its own.
+# ** THE COURT RIM HAS ITS BASE COURSE NOW (2026-10-28, owner). ** 4" of #57 under the
+# 94 SF net rim (~1.2 cy): a capillary break and a drained bearing course, letting go
+# laterally into the field's rootzone and FD-SG-FIELD. The frost wings dropped 4" to lie
+# under it (params/sunken_garden._WING_TOP). The garage landing stays one layer: its base
+# course was never decided on its own and is not part of this change.
 # ** THE THREE INTERIOR 12" BEARING WALLS KEEP `library.FOUNDATION_WALL_12_INT`, WHICH
 # CARRIES NO MIX — a deliberate stopping point, not an oversight. ** Restating that assembly
 # house-locally so it could name a house mix was written and then dropped: the
@@ -348,8 +346,10 @@ GARDEN_COURT_SLAB = Assembly(
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
+        Layer(name="capillary-break", material_ref="capillary-break-stone", thickness=inch(4.0),
+              function=LayerFunction.SHEATHING),
     ),
-    source="sunken-garden court floor: 3 1/2\" unconditioned slab, sky-exposed and saw-cut, F3+C2 mix. Its base course is not modelled",
+    source="sunken-garden court floor: 3 1/2\" unconditioned slab, sky-exposed and saw-cut, F3+C2 mix, on 4\" of #57 that drains laterally into the field's rootzone and FD-SG-FIELD",
 )
 
 # The sunken-garden court's open centre: 160 sf of turf inside the SL-SG-FLOOR rim

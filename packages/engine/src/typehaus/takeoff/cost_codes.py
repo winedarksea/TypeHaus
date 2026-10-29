@@ -219,6 +219,7 @@ SECTION_CODES: dict[str, CostCode] = {
     # footing visit that waited on a drainage package would be a cycle). The viewer draws
     # it under drainage and earth both (→ trade_rules.RECORD_FAMILY_TRADES).
     "footing_bedding": CostCode("1000", "31 23 00", "earth"),
+    "excavation": CostCode("1000", "31 23 00", "earth"),
     "pipe_runs": CostCode("3100", "22 10 00", "plumbing"),
     "pipe_fittings": CostCode("3100", "22 13 00", "plumbing"),
     "ducts": CostCode("3200", "23 31 00", "mechanical"),

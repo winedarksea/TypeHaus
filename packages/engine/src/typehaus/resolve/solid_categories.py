@@ -44,6 +44,9 @@ class SolidCategory:
     collision: str | None = None
     #: A geometry-IR element kind that is not a ``ResolvedSolid`` category.
     non_solid: bool = False
+    #: Further trades the solid also files under (a bed's column shows under drainage and
+    #: earth alike); ``trade`` stays the primary.
+    also_trades: tuple[str, ...] = ()
 
 
 def _registry() -> dict[str, SolidCategory]:

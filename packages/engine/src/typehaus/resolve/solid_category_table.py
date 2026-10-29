@@ -115,6 +115,15 @@ ROWS: tuple[C, ...] = (
       ifc_object_type="PLANTING_SOIL", finish_group="accessory"),
     C("planting_fill", trade="earth", ifc_class=_GEO, ifc_predefined="USERDEFINED",
       ifc_object_type="TERRACE_FILL", finish_group="accessory"),
+    # Earthwork (resolve/wall_column.py, resolve/excavation.py): billed in the takeoff's
+    # ``excavation`` section off their records, drawn here. The column is the bed's own stone,
+    # so it files under drainage and earth alike, as the bed record family does.
+    C("drain_column", trade="drainage", also_trades=("earth",), ifc_class=_GEO,
+      ifc_predefined="USERDEFINED", ifc_object_type="DRAIN_COLUMN", billed_elsewhere=True),
+    C("backfill_native", trade="earth", ifc_class=_GEO, ifc_predefined="USERDEFINED",
+      ifc_object_type="BACKFILL", billed_elsewhere=True),
+    C("backfill_cap", trade="earth", ifc_class=_GEO, ifc_predefined="USERDEFINED",
+      ifc_object_type="BACKFILL_CAP", billed_elsewhere=True),
     # A slab's drawn base course: re-filed by its layer's material, as the takeoff bills it.
     C("sub_slab", trade="earth", ifc_class=_FOOTING, finish_group="element",
       material_refile="layer"),

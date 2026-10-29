@@ -35,6 +35,7 @@ from typehaus.model.diaphragm_attachment import (
 )
 from typehaus.model.door_hardware import DoorHardwareItem, JambFraming
 from typehaus.model.doorway import DoorwayProductSpec, DoorwaySectionPart, DoorwayTreatment
+from typehaus.model.drain_column import DrainColumn
 from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
 from typehaus.model.enums import (
@@ -68,6 +69,7 @@ from typehaus.model.enums import (
     TrimKind,
     UtilityKind,
 )
+from typehaus.model.excavation import Excavation, SideSlope, SoilFactor
 from typehaus.model.exterior_door import (
     ExteriorDoorCatalogInstallation,
     ExteriorDoorInstallation,
@@ -357,7 +359,7 @@ __all__ = [
     "FoundationWall", "Footing", "CrushedStoneSpec", "Pad", "FootingBedding", "DrainTile",
     "SegmentalWallSpec", "SrwDrainageZone", "EndRestraint",
     "Post", "Beam", "SlatScreen",
-    "FrenchDrain", "Drywell", "AreaDrain",
+    "FrenchDrain", "Drywell", "AreaDrain", "DrainColumn", "Excavation", "SideSlope", "SoilFactor",
     "Dowel", "IsolationBoard", "Connector", "PlateTie", "KneeBrace", "SlatBrace", "StrapBrace",
     "Wedge",
     "Railing",

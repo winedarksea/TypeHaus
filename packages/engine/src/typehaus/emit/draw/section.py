@@ -415,8 +415,11 @@ def _emit_solid_cut(b, model, solid, plane: CutPlane, crop) -> None:
     layer = ("A-WALL-INSU" if tub_insulation else
              "A-WALL-FINI" if solid.category == "window_return" else
              "A-SLAB" if in_slab_family(solid.category) else "S-FNDN")
+    # Backfill names no material and would default to concrete stipple: draw it as outline.
+    backfill = solid.category in ("backfill_native", "backfill_cap")
     for part in element.parts:
-        material = part.catalog.material_ref if part.catalog is not None else None
+        material = (part.catalog.material_ref if part.catalog is not None and not backfill
+                    else None)
         pattern = (library_hatch(model.plan.library, material, "insulation")
                    if tub_insulation else material)
         for profile in slice_part(part, plane):

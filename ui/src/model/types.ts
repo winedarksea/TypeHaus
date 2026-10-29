@@ -1797,6 +1797,41 @@ export interface FootingBedding {
   provenance: Provenance | null;
 }
 
+/** A bed's wall drain column (engine: resolve/model_earthwork.py). Its solids are in `solids`. */
+export interface WallColumn {
+  bed_tag: string;
+  wall_tag: string;
+  aggregate: string;
+  width_m: number;
+  z0_m: number;
+  top_m: number;
+  volume_m3: number;
+  geotextile_m2: number;
+  plan_area_m2: number;
+  beyond_footing_m: number;
+  footing_top_m: number;
+}
+
+/** The over-dig's volumes; its backfill prisms are `backfill_*` solids. */
+export interface Excavation {
+  uid: string;
+  tag: string;
+  hosts: string[];
+  floor_m: number;
+  top_m: number;
+  cut_bank_m3: number;
+  fill_m3: number;
+  cap_m3: number;
+  column_m3: number;
+  swell: number;
+  shrink: number;
+  cap_material: string;
+  lift_m: number;
+  native_m3: number;
+  bank_for_fill_m3: number;
+  haul_off_loose_m3: number;
+}
+
 export interface Floor {
   uid: string;
   tag: string;
@@ -1958,6 +1993,8 @@ export interface Model {
   panelings?: Paneling[];
   construction_returns?: ConstructionReturn[];
   footing_beddings?: FootingBedding[];
+  wall_columns?: WallColumn[];
+  excavations?: Excavation[];
   solar_panels?: SolarPanel[];
   light_runs?: LightRun[];
   floors?: Floor[];

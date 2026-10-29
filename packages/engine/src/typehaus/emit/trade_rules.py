@@ -19,7 +19,7 @@ from typehaus.model.assembly import Layer
 from typehaus.model.layer_functions import by_value
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedLayer
-from typehaus.resolve.solid_categories import categories_where
+from typehaus.resolve.solid_categories import SOLID_CATEGORIES, categories_where
 
 # --- materials --------------------------------------------------------------------------
 
@@ -213,7 +213,8 @@ def solid_trades(category: str | None, material: str | None = None) -> tuple[str
         # FPSF wing foam is laid on the bearing soil in the foundation sequence, by the
         # foundation contractor (adjudicated audit:2026-09-12#concrete:slab:SG_FROST_WING).
         return ("concrete",) if laid == "insulation" else (laid,)
-    return (trade,)
+    also = SOLID_CATEGORIES[key].also_trades if key in SOLID_CATEGORIES else ()
+    return (trade, *also)
 
 
 # --- placeables and members -----------------------------------------------------------

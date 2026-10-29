@@ -29,6 +29,7 @@ SECTION_LABELS: dict[str, str] = {
     "interior_trim": "Base and door casing",
     "shelving": "Purchased shelving", "stair_treads": "Stair treads and landings",
     "openings": "Windows and doors", "footing_bedding": "Footing bedding",
+    "excavation": "Excavation and backfill",
     "pipe_runs": "Pipe", "pipe_fittings": "Pipe fittings", "ducts": "Ducts",
     "duct_fittings": "Duct fittings", "duct_insulation": "Duct insulation",
     "sleeves": "Cast-in sleeves", "conduit": "Conduit", "conductors": "Conductors",
@@ -327,6 +328,9 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         return f"{kind}{size} — {labels.material(g('product'))}" if g("product") else kind
     if section == "footing_bedding":
         return f"Footing bedding — {g('aggregate')}" if g("aggregate") else None
+    if section == "excavation":
+        what = bare.replace("-", " ").capitalize()
+        return f"{what} — {g('aggregate') or g('basis')}"
     if section == "floor_finishes":
         return str(g("material") or "") or None
     if section == "floor_heat":

@@ -40,7 +40,7 @@ from plan import (appliance_types, assemblies, bath_finish, lav_types, products_
                   study_bookcase_types,
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, court_daybed, panel_types,
-                  dry_fire_lane, device_types, electrical, electrical_attic, electrical_stair_ext, electrical_floor_types, equipment_types,
+                  dry_fire_lane, device_types, earthwork, electrical, electrical_attic, electrical_stair_ext, electrical_floor_types, equipment_types,
                   dining_types, door_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets, kitchen_front_types,
                   landscape, lighting, living_east_run, living_east_run_types,
                   living_puzzle_table_types,
@@ -382,7 +382,7 @@ PLAN = (
         # `g-foundation` below instead. Spread by name rather than by editing params/, which
         # already named all four at module level.
         [*french_door_installations.with_catalog_installations(basement.ELEMENTS), *dry_fire_lane.DRY_FIRE_LANE, *fixtures.BASEMENT_FIXTURES,
-         *foundations.HOUSE_FOOTINGS, *foundations.HOUSE_FOOTING_BEDDING,
+         *foundations.HOUSE_FOOTINGS, *foundations.HOUSE_FOOTING_BEDDING, *earthwork.EXCAVATION,
          *foundations.VENEER_PLINTH, *foundations.VENEER_PLINTH_BEDDING,
          *masonry_joints.JOINTS,
          *mep.BASEMENT_ELEMENTS, *mep_lavatories.BASEMENT_LAV_CONNECTIONS, *electrical.BASEMENT_ELEMENTS, *electrical_stair_ext.STAIR_BASEMENT,

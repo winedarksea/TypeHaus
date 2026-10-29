@@ -29,6 +29,7 @@ from typehaus.takeoff.electrical import (
     solar_takeoff,
 )
 from typehaus.takeoff.envelope import bug_screen_takeoff, envelope_layer_takeoff
+from typehaus.takeoff.excavation import excavation_takeoff
 from typehaus.takeoff.fabrication import fabricated_member_schedule
 from typehaus.takeoff.finishes import floor_finish_rows
 from typehaus.takeoff.fireblocking import fireblock_sealant_takeoff
@@ -174,6 +175,8 @@ def bill_of_materials(
         # Finish treads, winder blanks and landings by the piece (→ takeoff/stairs.py).
         "stair_treads": stair_tread_takeoff(model),
         "footing_bedding": footing_bedding_takeoff(model),
+        # The over-dig and the wall drain columns: cut, haul, backfill, cap, stone, fabric.
+        "excavation": excavation_takeoff(model),
         # Stormwater by the foot and the piece — gutter and leader were billed only as
         # cubic feet of aluminium, which is not how either is bought.
         "drainage": drainage_takeoff(model),

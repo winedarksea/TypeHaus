@@ -16,6 +16,7 @@ from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.layout_lines import ResolvedLayoutLine
 from typehaus.resolve.model_door_products import CasedDoorSpec
+from typehaus.resolve.model_earthwork import ResolvedExcavation, ResolvedWallColumn
 from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing
 from typehaus.resolve.model_window_returns import ResolvedWindowReturn
 from typehaus.resolve.model_window_seat import WindowSeat
@@ -1598,6 +1599,9 @@ class ResolvedModel:
     light_runs: list[ResolvedLightRun] = field(default_factory=list)
     solar_panels: list[ResolvedSolarPanel] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
+    # Earthwork beside and around the beds (→ resolve/wall_column.py, resolve/excavation.py).
+    wall_columns: list[ResolvedWallColumn] = field(default_factory=list)
+    excavations: list[ResolvedExcavation] = field(default_factory=list)
     canvas_objects: list[ResolvedCanvasObject] = field(default_factory=list)
     # Hang points and the joist line each framed (→ resolve/suspension_anchors.py).
     suspension_anchors: list[Any] = field(default_factory=list)
@@ -1639,7 +1643,7 @@ class ResolvedModel:
             self.base_runs, self.door_casings,
             self.pipe_runs, self.drain_cleanouts, self.pipe_accessories, self.sleeves, self.ducts,
             self.conduits, self.light_runs, self.solar_panels, self.footing_beddings,
-            self.canvas_objects,
+            self.canvas_objects, self.excavations,
         ):
             for element in collection:
                 tag = getattr(element, "tag", None)

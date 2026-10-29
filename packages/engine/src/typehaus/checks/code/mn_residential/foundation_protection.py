@@ -222,6 +222,40 @@ def foundation_drainage(ctx: CheckContext) -> list[Finding]:
                                   "with no drain tile in the footing bedding under them: "
                                   + ", ".join(undrained),
                              tuple(undrained), code))
+    out.extend(_drain_column_geometry(ctx, walls, footings, beddings, cid, code))
+    return out
+
+
+#: R405.1: the stone reaches 12" past the footing's outside edge and 6" over its top.
+_R405_BEYOND_M = 12 * 0.0254
+_R405_ABOVE_M = 6 * 0.0254
+_R405_TOL_M = 1e-3
+
+
+def _drain_column_geometry(ctx, walls, footings, beddings, cid, code) -> list[Finding]:
+    """The stone envelope R405.1 describes, graded where a bed authors a wall column."""
+    columns = {c.bed_tag: c for c in ctx.model.wall_columns}
+    wall_of = {f.tag: f.under for f in footings}
+    retaining = {w.tag for w in walls}
+    graded = [(wall_of.get(b.host_ref, b.host_ref), b, columns[b.tag]) for b in beddings
+              if b.tag in columns and wall_of.get(b.host_ref, b.host_ref) in retaining]
+    out: list[Finding] = []
+    for wall, bed, column in sorted(graded, key=lambda item: item[0]):
+        short = []
+        if column.beyond_footing_m + _R405_TOL_M < _R405_BEYOND_M:
+            short.append(f"reaches {column.beyond_footing_m / 0.0254:.1f}\" past the footing "
+                         "edge (12\" required)")
+        above = column.top_m - column.footing_top_m
+        if above + _R405_TOL_M < _R405_ABOVE_M:
+            short.append(f"tops out {above / 0.0254:.1f}\" over the footing (6\" required)")
+        if column.geotextile_m2 <= 0.0:
+            short.append("has no filter membrane")
+        if short:
+            out.append(_fail(cid, f"{bed.tag}'s drain column at {wall} " + "; ".join(short),
+                             (bed.tag, wall), code))
+    if graded and not out:
+        out.append(_pass(cid, f"{len(graded)} retaining wall(s) stand in a filtered stone "
+                              "column reaching 12\" past the footing and 6\" over it", code))
     return out
 
 

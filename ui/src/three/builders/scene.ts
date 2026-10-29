@@ -233,7 +233,7 @@ export function populateScene(options: PopulateSceneOptions) {
     const trades = solidTrades(solid);
     build(solidVisibilityKeys(solid), solid.storey, () => buildSolid(container(trades), solid, center,
       mode, palette, model.catalog, registry.picks, registry.byUid,
-      model.catalog?.materials));
+      model.catalog?.materials, earthOpacity));
   }
   // Plants, instanced per storey; each takes its solid's trade set (landscaping).
   const solidsByUid = new Map((model.solids ?? []).map((solid) => [solid.uid, solid]));

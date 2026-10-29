@@ -252,6 +252,11 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "planting_fill": (0.40, 0.31, 0.22, 1.0),      # the fill under it, a lighter earth
     # A slab's base course/board; its material's own colour wins where it states one.
     "sub_slab": (0.56, 0.55, 0.53, 1.0),
+    # Earthwork. Washed stone reads a lighter warm grey than the concrete it lies beside;
+    # native backfill is a mid clay-brown and its cap a darker, wetter clay.
+    "drain_column": (0.62, 0.60, 0.55, 1.0),
+    "backfill_native": (0.45, 0.35, 0.25, 1.0),
+    "backfill_cap": (0.33, 0.25, 0.18, 1.0),
     "ridge_closure": (0.85, 0.86, 0.87, 1.0),
     "roof_panel_hem": (0.85, 0.86, 0.87, 1.0),
     "ridge_cap": (0.85, 0.86, 0.87, 1.0),  # vented standing-seam ridge cap

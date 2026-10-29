@@ -11,7 +11,7 @@ MATERIALS: tuple[Material, ...] = (
     # compacts better, is the wrong material for the job.
     Material(
         tag="capillary-break-stone",
-        name="Compacted open-graded stone (capillary break, #57)",
+        name="Consolidated open-graded stone (capillary break, #57)",
         r_per_inch=0.0,
         density=1600.0,
         hatch="concrete",
@@ -19,7 +19,9 @@ MATERIALS: tuple[Material, ...] = (
         source='IRC R506.2.2: a 4" base course of clean graded sand, gravel or crushed '
         'stone passing a 2" sieve under a slab-on-ground. #57 is the open-graded '
         "stone ACI 302.2R names for the capillary break; the point is the absence "
-        "of fines, not the compaction",
+        "of fines. It is also the gas-permeable material Minn. R. 1303.2402 subp. 1 "
+        "requires on the prepared subgrade under all floor systems. Seated with a "
+        "vibratory plate in <=8\" lifts, not compacted to a Proctor density",
     ),
     # The stone a crushed-stone FOOTING is built of, which is not the stone under a slab
     # above and not the stone in a footing bedding. 2024 IRC R403.4.1 specifies it directly —

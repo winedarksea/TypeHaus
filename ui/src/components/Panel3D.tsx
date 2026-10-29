@@ -900,9 +900,11 @@ function createScene(
   // Retarget the live material rather than rebuilding: a drag is many events a second, and the
   // remembered value above means a rebuild mid-drag (an edit, a theme flip) does not snap the
   // ground back to the default.
-  const eachEarthMaterial = (visit: (material: THREE.Material) => void) => {
+  // `withBackfill`: the backfill solids share the opacity slider but never the tone.
+  const eachEarthMaterial = (visit: (material: THREE.Material) => void, withBackfill = false) => {
     tradeGroups.earth.traverse((object) => {
-      if (!(object instanceof THREE.Mesh) || !object.userData.earthSheet) return;
+      if (!(object instanceof THREE.Mesh)) return;
+      if (!object.userData.earthSheet && !(withBackfill && object.userData.earthBackfill)) return;
       for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
         visit(material);
       }
@@ -912,7 +914,7 @@ function createScene(
 
   const setEarthOpacity = (opacity: number) => {
     earthOpacity = Math.min(1, Math.max(0, opacity));
-    eachEarthMaterial((material) => applyEarthOpacity(material, earthOpacity));
+    eachEarthMaterial((material) => applyEarthOpacity(material, earthOpacity), true);
   };
 
   const setEarthTone = (tone: EarthTone) => {

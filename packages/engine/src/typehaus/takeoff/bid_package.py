@@ -86,6 +86,8 @@ def _shaped_quantity(item: BomRow, trade: str, default_unit: str) -> tuple[float
         if not (mat.endswith("sod") or mat.startswith("geotextile")):
             depth_ft = float(row.get("thickness_in") or 0) / 12.0
             return round(float(row.get("net_area_sqft") or 0) * depth_ft * _CY_PER_CUFT, 2), "cy"
+    if item.section == "excavation":
+        return item.quantity, str(row.get("unit") or default_unit)
     if item.section == "drainage" and key in ("drywell", "french_drain"):
         return float(row.get("aggregate_cubic_yards") or 0), "cy"
     if item.section == "solar_modules":

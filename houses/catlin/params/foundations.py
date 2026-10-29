@@ -4,7 +4,7 @@
 - Garage: freestanding ICF stem (6" core) from frost depth to 22" above grade,
   wood walls bear on top (the ``garage`` storey elevation), footing under.
 - House footings additionally get a bedding-prep record (undercut, geotextile, drain
-  tile, compacted washed-stone bed, perimeter foam) — see ``HOUSE_FOOTING_BEDDING``.
+  tile, seated washed-stone bed, perimeter foam, wall drain column) — see ``HOUSE_FOOTING_BEDDING``.
 
 The breezeway's pads/piers/posts belong to the whole structure in ``params/breezeway.py``.
 """
@@ -14,6 +14,7 @@ from __future__ import annotations
 from typehaus import (
     BarSpec,
     CrushedStoneSpec,
+    DrainColumn,
     DrainTile,
     Drywell,
     Footing,
@@ -275,8 +276,8 @@ HOUSE_FOOTINGS = [
     for i, t in _HOUSE_WALL_TAGS
 ]
 
-# Bearing prep below every house footing: 7" undercut, geotextile, drain tile, compacted
-# washed stone — a drained bearing surface that also breaks footing-to-wet-clay thermal
+# Bearing prep below every house footing: 7" undercut, geotextile, drain tile, washed stone
+# seated (not Proctor-compacted) on a proof-rolled subgrade — a drained bearing surface that also breaks footing-to-wet-clay thermal
 # contact. 4" perimeter foam matches BASEMENT_12's exterior XPS.
 # One bedding per footing, sharing the footing's own permanent index for the same reason.
 #
@@ -296,11 +297,24 @@ HOUSE_FOOTINGS = [
 #
 # The sunken garden's own FT-SG-* beds are NOT changed: their tile lets go into the court's
 # own soakaway course below them, by gravity with no pump in the path.
+#
+# ** THE WALL COLUMN (2026-10-28). ** 16" of the same #57 against every soil-facing wall,
+# from the excavation floor beside the bed to 12" under the strip grade, where the clayey
+# cap closes it: the drained bed's R405.1 cover, and frost-susceptible clay kept off the
+# foam in the frost zone. Not on the court-facing S2/S3 or the interior lines; S1/S4 face
+# soil only west/east of the court, and the resolver clips them there.
+# (→ notes/foundation_aggregate_and_backfill.md)
+_COLUMN_WALLS = {"W-B-S1", "W-B-S4", "W-B-E1", "W-B-E2", "W-B-N1", "W-B-N2", "W-B-N3",
+                 "W-B-N4", "W-B-W1", "W-B-W2"}
+# 16", not 12": the width is off the foam face and the 20" footing projects 2-4" past it,
+# so 16" is what reaches R405.1's 12" past the footing edge (code.R405_1 grades it).
+WALL_COLUMN = DrainColumn(width=inch(16), cap_below_grade=inch(12))
 HOUSE_FOOTING_BEDDING = [
     FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{t[2:]}", host_ref=f"FT-{t[2:]}",
                    undercut=inch(7), perimeter_insulation=inch(4),
                    drain_tile_spec=DrainTile(diameter=inch(4), sock=True,
-                                             discharge="SM-B-RADON"))
+                                             discharge="SM-B-RADON"),
+                   wall_column=WALL_COLUMN if t in _COLUMN_WALLS else None)
     for i, t in _HOUSE_WALL_TAGS
 ]
 

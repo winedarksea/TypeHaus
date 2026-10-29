@@ -1762,10 +1762,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     membrane tightened (→ DESIGN-LOG.md, "Basement").
   - **No dimple mat and no below-grade protection course, by decision.** Nothing outboard of
     4" of mastic-bonded XPS can take a mechanical fastener. Free-draining stone against the
-    lower wall does the drainage — `[allowances] foundation-free-draining-backfill`, priced
-    off the waterproofed face — and **backfill in controlled lifts** is what protects the
-    foam, which is why it is an `insp/foundation_backfill` item. Do **not** author a
-    perimeter `FrenchDrain` for it: it would bill the footing bedding's stone twice.
+    wall does the drainage: since 2026-10-28 it is MODELLED, `FootingBedding.wall_column`
+    (`DrainColumn`, 16" of #57 on the house from the excavation floor to 12" under the strip
+    grade; 12" x 7'-0" on the court's W2/E2/S heels), and the over-dig around it is
+    `plan/earthwork.py` `EX-HOUSE`. Both bill in `prices.toml [excavation]` (cut, haul-off,
+    backfill, cap, drain-column stone and fabric); the two old allowances are retired.
+    **16", not 12"**: the width is off the foam face and R405.1 wants 12" past the FOOTING
+    edge, which projects 2-4" — `code.R405_1_foundation_drainage` grades it. **Backfill in
+    ≤8" lifts, light plates within 3' of the foam, and only once the deck braces the wall
+    tops (R404.1.7)** — an `insp/foundation_backfill` item. Do **not** author a perimeter
+    `FrenchDrain` for it: it would bill the stone twice. Hand oracle and the open soils
+    question (the 1:1 slope runs past the side lot lines): `notes/foundation_aggregate_and_backfill.md`.
   - **No Form-A-Drain (2026-09-23).** Its inlet sits at the footing base, which here is the
     TOP of the 7" stone bed; the bed-bottom tile is what keeps that bed dry, and a dry bed is
     the point of it. No XPS under a footing either (creep). (→ DESIGN-LOG.md, "Basement")

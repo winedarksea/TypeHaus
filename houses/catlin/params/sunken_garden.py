@@ -58,6 +58,7 @@ from typehaus import (
     FloorOpeningPurpose,
     FloorSystem,
     Footing,
+    DrainColumn,
     FootingBedding,
     FoundationWall,
     from_node,
@@ -1346,6 +1347,7 @@ FOOTINGS = [
 # resolved geometry / IFC (the dowels themselves are annotation-only — see plans/TODO.md).
 #
 _HOUSE_ADJACENT = {"FT-SG-W1", "FT-SG-E1"}
+_DRAINED_WALLS = {"FT-SG-W2", "FT-SG-E2", "FT-SG-S"}
 _BEDDING_UID = {"FT-SG-W1": "SGB002AAAA", "FT-SG-E1": "SGB003AAAA",
                 "FT-SG-W2": "SGB004AAAA", "FT-SG-E2": "SGB005AAAA",
                 "FT-SG-S": "SGB006AAAA"}
@@ -1405,6 +1407,11 @@ FOOTING_BEDDING = [
         **({"inlet_refs": (_STONE_FROM[f.tag],)} if f.tag in _STONE_FROM else {}),
         **({"inlet_refs": ("SM-B-RADON",)} if f.tag in _RELIEF else {}),
         **_RELIEF.get(f.tag, {}),
+        # The retained walls' structural drainage: 12" of #57 up 7'-0" off the bed top,
+        # on the heel, relieving the hydrostatic thrust (→ notes/foundation_aggregate_
+        # and_backfill.md). W1/E1 retain nothing against the house and carry none.
+        **({"wall_column": DrainColumn(width=inch(12), height=ft(7))}
+           if f.tag in _DRAINED_WALLS else {}),
     )
     for f in FOOTINGS
 ]
@@ -1687,9 +1694,12 @@ GARDEN_FIELD = Slab(
 # floors in their own right (they are buried, not stood on), and prices.toml carries a zero
 # qualified key so `structural_solids_takeoff` does not also bill them by the cubic yard.
 #
-# The wings sit directly under the SL-SG-FLOOR rim, so they followed the court down:
-# rim top -9'-8 11/16" less its own 3 1/2" is -10'-0 3/16", which is the wings' top.
-_WING_TOP = inch(_rim_underside_in)
+# The wings sit under the SL-SG-FLOOR rim AND its 4" #57 base course (2026-10-28, owner):
+# rim top -9'-8 11/16" less 3 1/2" of slab and 4" of stone is -10'-4 3/16", the wings' top.
+# The stone lies over the foam and the slab still covers it (R403.3); plan overlap is all
+# `_frost_protection_footprints` reads, so frost grading does not move.
+RIM_BASE_COURSE_IN = 4.0
+_WING_TOP = inch(_rim_underside_in - RIM_BASE_COURSE_IN)
 _WING_ALONG_FT = 24.0 / 12.0   # Table R403.3(1) dimension B
 _WING_CORNER_FT = 40.0 / 12.0  # Table R403.3(1) dimension C
 # ** THE WINGS RETRACT TO THE PORCH TOES, AND THIS IS NOT A DETAIL. ** They used to start at

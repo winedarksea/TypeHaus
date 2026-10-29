@@ -171,6 +171,14 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_rooms(plan, model))
         # After resolve_rooms: needs each room's clear face to hang a ceiling under.
         resolve_ceilings(plan, model)
+    with _stage("earthwork"):
+        # After every slab, base course and bed, and after rooms (a heated floor is
+        # told from an open one by them): the dig is derived from all of them.
+        from typehaus.resolve.excavation import resolve_excavations
+        from typehaus.resolve.wall_column import resolve_wall_columns
+
+        findings.extend(resolve_wall_columns(model))
+        findings.extend(resolve_excavations(model))
     with _stage("doorways"):
         from typehaus.resolve.door_product_spec import resolve_door_products
         from typehaus.resolve.doorway import resolve_doorways

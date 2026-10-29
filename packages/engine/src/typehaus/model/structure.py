@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Literal
 
 from typehaus.model.base import Element, HausModel
+from typehaus.model.drain_column import DrainColumn
 from typehaus.model.elements import Wall
 from typehaus.model.enums import ConnectorKind, RailingKind
 from typehaus.model.rebar import ReinforcementSpec
@@ -372,7 +373,7 @@ class DrainTile(HausModel):
 class FootingBedding(Element):
     """Excavation/bedding prep beneath a strip Footing — or beneath a wall that has none.
 
-    Digs an extra ``undercut`` below the host's underside for a compacted washed-stone
+    Digs an extra ``undercut`` below the host's underside for a seated washed-stone
     bed on non-woven geotextile (no-slip) with a drain tile — breaks direct footing-to-wet-
     clay contact (thermal loss) and drains the bearing surface. ``perimeter_insulation``
     continues the foundation wall's exterior rigid foam down over the footing sides;
@@ -441,6 +442,8 @@ class FootingBedding(Element):
     inlet_refs: tuple[str, ...] = ()
     overflow_ref: str | None = None
     overflow_invert: Length | None = None
+    #: Free-draining stone against the host wall's soil face (``resolve/wall_column.py``).
+    wall_column: DrainColumn | None = None
 
 
 @register_element

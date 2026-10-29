@@ -1959,6 +1959,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # ZERO on purpose: it is the excavator's, inside `site-excavation-backfill-grading`.
 "planting_soil" = { material = { low = 35, high = 65 }, labour = { low = 40, high = 110 } }  # 6.47 cy, PB-TER-*
 "planting_fill" = { low = 0, high = 0 }  # 15.09 cy, PB-TER-* — bills in the earthwork allowance
+# ZERO on purpose: the earthwork solids draw what [excavation] bills off their records.
+"drain_column" = { low = 0, high = 0 }  # bills in [excavation] drain-column-stone
+"backfill_native" = { low = 0, high = 0 }  # bills in [excavation] backfill
+"backfill_cap" = { low = 0, high = 0 }  # bills in [excavation] cap
 # ZERO on purpose: the pipe is billed by the foot in [drainage] `leader_extension:pvc-sdr35`.
 "leader_extension" = { low = 0, high = 0 }  # 0.12 cy — bills in [drainage]
 # ZERO on purpose, like `leader_extension`: AD-SG-COURT bills by the piece and its riser by
@@ -3759,8 +3763,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 4" of #57 washed stone: 0.0123 cy/SF, at $45-75/cy delivered in the Twin Cities, is
 # $0.55-0.92/SF of material. Labour is placing and screeding it to grade inside a finished
 # foundation — wheelbarrowed or conveyed, not tailgated, which is the whole spread between
-# the ends. Compaction is nominal by design: an open-graded stone is placed, not compacted
-# to a proctor, and the absence of fines IS the capillary break.
+# the ends. Seated with a vibratory plate in <=8" lifts, not compacted to a Proctor density:
+# the absence of fines IS the capillary break.
 "capillary-break-stone" = { material = { low = 0.55, high = 0.95 }, labour = { low = 0.35, high = 0.8 } }  # 1829.0 SF — 4" #57, screeded (-160.3 SF 2026-09-05: GARDEN_PUTTING_GREEN's drainage bed is now USGA bridging gravel, not #57 — #57 cannot meet USGA Table 1 or Table 2 at any gradation)
 # The sidewalk's base (SIDEWALK_FRC_CLASS5): 6" of MnDOT 3138 Class 5, placed and plate-
 # compacted in two lifts under all five legs. Dense-graded, not the #57 above. 2026-09-21.
@@ -5695,6 +5699,26 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # single merged number rather than taking a split.
 "MnDOT Class 5 aggregate base" = { low = 45, high = 95 }  # 3.03 cy = 4.24 tons — freight-dominated; $15-30/cy if it rides along
 
+[excavation]
+# 2026-10-28. The modelled over-dig (resolve/excavation.py) and wall drain columns. Banded
+# from MnDOT 2025 Average Bid Prices (eDOCS doc 39047465) as the FLOOR — bid volume, open
+# highway work — and widened up for a ~1,200 cy residential dig with tight access. No quotes.
+#   Excavation - Common (2106507/00010)        $10.60/CY, 87 contracts, 2.44M CY
+#   Haul and stockpile excess material (LV)     $6.35/CY,   1 contract (on-project haul)
+#   Structure excavation Class E (2411)        $11.88/CY,   4 contracts (dig + backfill)
+#   Structural backfill (2451607/00520)        $35.61/CY,  16 contracts (furnished)
+#   Coarse filter aggregate (CV) (2451)        $81.37/CY,  12 contracts (in place)
+#   Geotextile filter Type 4 (2511)             $3.13/SY,  31 contracts = $0.35/SF
+# `backfill` is PLACEMENT of native spoil plus the column stone, in <=8" lifts; the stone
+# itself is `drain-column-stone`, delivered only (the #57 rate in [footing_bedding]), so
+# nothing is bought twice. Off-site disposal of clean clay fill is the widest guess here.
+"cut" = { low = 11, high = 30 }  # bank cy, machine dig incl. the beds and the interiors
+"haul-off" = { low = 6.35, high = 25 }  # loose cy, trucked off as clean fill
+"backfill" = { low = 10, high = 25 }  # compacted cy, native lifts + column stone placed
+"cap" = { low = 10, high = 35 }  # cy, selected clayey spoil, shaped to fall 6" in 10'
+"drain-column-stone" = { material = { low = 50, high = 75 }, labour = { low = 0, high = 0 } }  # cy, #57 delivered; placed in `backfill`
+"drain-column-geotextile" = { low = 0.35, high = 0.70, unit = "SF" }  # soil face + top, lapped
+
 [pipe_runs]
 # RESEARCHED 2026-08-08 — [low, high] $/LF of run. Basis: 1/2" PEX $0.30-1.10/LF and 3/4"
 # $0.50-1.50/LF; PVC DWV at retail $1.29/LF for 1-1/2", $1.58/LF for 2", $2.60/LF for 4".
@@ -6789,7 +6813,15 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # reshaping the daylight side, which can collapse haul-off from $30k to $2-5k. Split because
 # it is overwhelmingly machine time and operator, not purchased material — imported granular
 # fill and rock is the taxable part and runs 10-20% of the number.
-site-excavation-backfill-grading = { material = { low = 3600, high = 11000 }, labour = { low = 20400, high = 44000 } }
+# ** RESIDUAL SINCE 2026-10-28. ** The hole around the house and the court is MODELLED
+# (plan/earthwork.py EX-HOUSE) and bills in [excavation]: cut, haul-off, backfill, cap,
+# column stone and fabric. What stays here is what the model does not dig: mobilisation,
+# finish grading and topsoil, the garage's frost trench and the north-entry pier holes.
+# CROSS-CHECK: the old lump was $24,000-55,000 with no quantity behind it. [excavation] at
+# today's ~1,230 cy bank prices $27-76k and this residual $5.5-14k, so the pair is
+# ~$33-90k: the 1:1 Type B laid-back slope (presumed soil, BLD-12) makes the hole bigger
+# than the lump assumed, and the ~730 loose cy of haul-off is ~50 tandem loads.
+site-excavation-backfill-grading = { material = { low = 1500, high = 4000 }, labour = { low = 4000, high = 10000 } }
 # OFF-LOT ONLY since 2026-09-23: the right-of-way apron from the lot line to the curb, the
 # curb cut, and the public-walk panels it crosses, poured to the city's spec under the
 # `site/row-permit`. The on-lot drive and walks are modelled and priced as slabs
@@ -6849,70 +6881,9 @@ plumbing-kohler-k7272-clearflo-overflow = { low = 100, high = 200 }
 # The decision this row held open is TAKEN, which is why the row is gone rather than zeroed:
 # a $0.00-12.50 band standing next to a modelled layer is an invitation to buy it twice.
 # See plans/cost-options.md, where the matching upgrade line was struck the same day.
-# ** FREE-DRAINING STONE AGAINST THE LOWER WALL — what replaces the dimple mat. **
-# The decision is no mat, and the reason is buildability rather than money: Delta-MS wants
-# its head mechanically fastened and sealed to the wall, and outboard of 4" of XPS bonded
-# with mastic there is nothing in reach to fasten into. That is the one genuinely unsolved
-# detail in this design, and skipping it also leaves the layer stack and the outboard face
-# untouched. Free-draining stone does the drainage instead, and it is already on the drawing
-# — notes/basement_to_framed_wall_detail.md calls for "additional compacted aggregate in
-# front of footing (equal to footing height, geotextile-lined)" and a geotextile-lined river
-# rock trench against the foundation — and was missing only from the model.
-#
-# ** NOT A `FrenchDrain`, AND DELIBERATELY NOT. ** The model has no element kind for a
-# VERTICAL drainage column: `FrenchDrain` is a trench (invert / trench_width / trench_depth)
-# and `FootingBedding.undercut` is depth BELOW the footing. Authoring a perimeter FrenchDrain
-# here would put a second trench over the one the footing bedding already derives and bill
-# the same washed stone twice — the exact hazard notes/basement_to_framed_wall_detail.md
-# names. So this is a backfill SPECIFICATION: a priced quantity, plus a drawn section.
-#
-# THE SECTION, which is what the drawing has to show: 12" of ASTM C33 #57 washed stone
-# against the XPS, from the top of the footing bedding up 4'-0", geotextile between the
-# stone and the retained soil, turned down over the bedding so the two courses are one
-# connected path to the tile already in it.
-#   125.7 LF of below-grade wall x 1.0 ft x 4.0 ft = 502.8 cf = 18.6 cy
-#   #57 washed stone $45-75/cy delivered + $25-50/cy placed by hand and skid in a lined
-#   trench = $70-125/cy -> $1,302-2,325
-#   geotextile 125.7 LF x ~6 ft = 754 SF at $0.30-0.70/SF installed -> $226-528
-#   = $1,528-2,853 over the 1,016.4 SF below-grade face = $1.50-2.81/SF
-# RECONCILE AGAINST [footing_bedding], which is a DIFFERENT order of the same stone: 78.14
-# cy of #57 under the footings, undercut BELOW them. This row is the 18.6 cy standing beside the
-# wall. If the two ever read as one line on a quote, one of them is being bought twice.
-# Driven off the waterproofed face so it follows the wall, exactly as the membrane does.
-foundation-free-draining-backfill = { low = 1.50, high = 2.80, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=foundation wall,material=waterproofing]" }
-# ** THE SUNKEN GARDEN'S DRAINED BACKFILL — and this one is STRUCTURAL, not just moisture. **
-# W-SG-W2 / W-SG-E2 / W-SG-S retain 9.12 ft of soil, 52.6 LF between them, and
-# notes/sunken_garden_court_free_body.md is blunt about what is missing: "No drainage or
-# hydrostatic case — and NOTHING IN THE MODEL MAKES THE DRAINAGE WORK. ... A saturated
-# backfill roughly doubles the thrust and would take the system well under 1.0. ... It is
-# the single largest unpriced assumption in section 9." engineering/retaining_wall.py says
-# the same in its own voice. So the money on these walls belongs in drained backfill, which
-# relieves the thrust, and NOT in a membrane, which relieves nothing.
-#
-# ** AND THERE IS NO MEMBRANE ON THESE WALLS ON PURPOSE. ** Minn. R. 1309.0406 subp. 2 scopes
-# to walls that retain earth AND enclose below-grade interior space; no W-SG-* wall has a
-# room behind it, and `_retaining_walls()` already implements exactly that test. SUNKEN_GARDEN
-# _WALL is EXPOSED_MIX — w/cm 0.40, f'c 5,000, 6% air, ACI F3/W1/C2 with HDG bar — which is a
-# better long-term moisture barrier than an asphalt coat would be. Do not "correct" this by
-# adding one; see houses/catlin/DESIGN-LOG.md for the full reasoning.
-#
-# THE SECTION: 12" of #57 washed stone against the stem, from the top of the footing bedding
-# up 7'-0", geotextile between the stone and the retained soil and turned down over the bed.
-#   52.6 LF x 1.0 ft x 7.0 ft = 368 cf = 13.6 cy at $70-125/cy -> $952-1,700
-#   geotextile 52.6 LF x ~9 ft = 473 SF at $0.30-0.70/SF installed -> $142-331
-# NO TILE IN THIS ROW: the court's footing beddings already carry 4" sock-wrapped tile into
-# their soakaway course (params/sunken_garden.py), and buying it again here is the double-count the
-# row above warns about. What is bought here is the column that gets water DOWN to it.
-# A LUMP and not driven, because the only driver the BOM offers for these walls is
-# wall_structure's cubic yards of concrete, and $/cy of stem is a meaningless unit for
-# backfill. The LF above is the derivation; re-strike it if the court's plan changes.
-# ** THIS DOES NOT FIX THE R404.4 FAILURE. ** The sliding factor of safety is ~0.57 against
-# 1.50 and still needs the consultant notes/sunken_garden_retaining_screening.md was written
-# for. Drained backfill relieves the hydrostatic case the engineering explicitly does not run.
-# KEYED `site-excavation-*` and not `foundation-*`: this is the excavator's work, placed as
-# the court is backfilled, and that family puts it on the earth trade (31 20 00) where the
-# house row's `foundation-*` puts the membrane-adjacent stone on concrete (07 10 00).
-site-excavation-sunken-garden-drained-backfill = { low = 1100, high = 2050 }
+# ** RETIRED 2026-10-28: `foundation-free-draining-backfill` and
+# `site-excavation-sunken-garden-drained-backfill`. ** Both stone columns are modelled now
+# (`FootingBedding.wall_column`) and bill by the yard and the SF in [excavation].
 # ** DRIVEN 2026-09-01, AND THE TWO OPENINGS ARE NOT THE ONES THIS ROW NAMED. **
 # `opening_takeoff` now carries `host_assembly` and a coarse `host_structure` off the host
 # wall's STRUCTURE layer — the same `material_ref` `wall_structure` groups its pours by — so
@@ -8087,6 +8058,7 @@ interior_trim        = "material"
 stair_treads         = "material"
 openings             = "material"
 footing_bedding      = "material"
+excavation           = "installed"
 pipe_runs            = "material"
 pipe_fittings        = "material"
 ducts                = "material"

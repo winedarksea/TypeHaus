@@ -63,7 +63,8 @@ def test_every_declared_variant_is_priced_from_its_own_model(catlin_costs) -> No
 
 def test_whole_site_allowances_stay_outside_the_deltas(catlin_costs) -> None:
     keys = [key for key, _ in catlin_costs.allowances]
-    assert "site-excavation-sunken-garden-drained-backfill" in keys
+    # The court's drained backfill is modelled since 2026-10-28 and bills in [excavation].
+    assert "site-excavation-sunken-garden-drained-backfill" not in keys
     assert all("court" in key or "sunken-garden" in key for key in keys)
 
 pytestmark = pytest.mark.slow

@@ -133,7 +133,9 @@ def wall_graph_json(
                 # Eave caps on the body top (geometry_walls.body_top_at); the viewer mirrors it.
                 "head_caps": [{"p0": list(c.p0), "normal": list(c.normal), "z_line_m": c.z_line,
                                "fall": c.fall, "reach_in_m": c.reach_in,
-                               "reach_out_m": c.reach_out} for c in w.head_caps],
+                               "reach_out_m": c.reach_out, "deck_u_m": c.deck_u,
+                               "deck_z_m": c.deck_z, "deck_clear_m": c.deck_clear}
+                              for c in w.head_caps],
                 "layers": [_layer_json(ly, _wall_scope(w)) for ly in w.layers],
                 "members": [_member_json(m) for m in w.members],
                 # Every trade the body layers belong to (→ resolve/geometry_build).
@@ -312,6 +314,15 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "geotextile": bedding.geotextile, "drain_tile": bedding.drain_tile,
              "provenance": _provenance(provenance, bedding.tag)}
             for bedding in sorted(model.footing_beddings, key=lambda item: item.uid)
+        ],
+        # Earthwork records (resolve/model_earthwork.py); their solids are in "solids".
+        "wall_columns": [asdict(column) for column in
+                         sorted(model.wall_columns, key=lambda item: item.bed_tag)],
+        "excavations": [
+            {**asdict(exc), "native_m3": exc.native_m3,
+             "bank_for_fill_m3": exc.bank_for_fill_m3,
+             "haul_off_loose_m3": exc.haul_off_loose_m3}
+            for exc in sorted(model.excavations, key=lambda item: item.uid)
         ],
         "roofs": [
             {"uid": roof.uid, "tag": roof.tag, "storey": roof.storey, "form": roof.form,

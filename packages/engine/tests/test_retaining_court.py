@@ -477,7 +477,7 @@ def test_nothing_bears_under_the_strut_between_its_ends(catlin_model) -> None:
     assert max(xs) - min(xs) == pytest.approx(18.0, abs=1e-6)
     under = [s.tag for s in catlin_model.solids
              if s.tag != beam.tag and s.outline and s.z1_m <= beam.z0_m + 1e-6
-             and s.category != "drain_tile"
+             and s.category not in ("drain_tile", "backfill_native", "backfill_cap")
              and Polygon(list(s.outline)).intersects(footprint)]
     assert under == [], under
 

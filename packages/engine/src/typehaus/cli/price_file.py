@@ -46,6 +46,8 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids",
              # Finish treads, winders and landings by the piece, keyed material:use.
              "stair_treads",
              "footing_bedding",
+             # The over-dig and wall drain columns by the yard; fabric by the SF.
+             "excavation",
              "pipe_runs", "pipe_fittings", "ducts",
              # Duct elbows by the piece and duct wrap by the foot — the air-side mirrors of
              # pipe_fittings/pipe_insulation.
@@ -181,6 +183,7 @@ ALTERNATE_UNITS: dict[str, dict[str, str]] = {
     # a printed LABEL, not a conversion. A piece row must say ``unit = "EA"`` or it prints
     # (and reads) as feet.
     "light_run_materials": {"EA": "quantity"},
+    "excavation": {"SF": "quantity"},
 }
 
 
@@ -275,6 +278,9 @@ class Prices:
     stair_treads: Mapping[str, PriceRange] = field(default_factory=dict)
     openings: Mapping[str, PriceRange] = field(default_factory=dict)
     footing_bedding: Mapping[str, PriceRange] = field(default_factory=dict)
+    #: ``[excavation]`` — the over-dig by ``item`` (cut, haul-off, backfill, cap,
+    #: drain-column-stone in cy; drain-column-geotextile with ``unit = "SF"``).
+    excavation: Mapping[str, PriceRange] = field(default_factory=dict)
     pipe_runs: Mapping[str, PriceRange] = field(default_factory=dict)
     # Fittings by the piece, keyed as they are ordered: "elbow-90-4in", "wye-4x2in". Material
     # only by design — a fitting is a part you buy, and the labour of making it up is inside

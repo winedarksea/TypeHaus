@@ -67,6 +67,10 @@ def _members(row: Row) -> str:
     return f"{beddings} bed(s)" if beddings is not None else ""
 
 
+def _basis(row: Row) -> str:
+    return str(row.get("basis") or "")
+
+
 def _opening(row: Row) -> str:
     width, height = row.get("width_in"), row.get("height_in")
     return (f"{_fraction_in(width)} x {_fraction_in(height)}"
@@ -106,6 +110,8 @@ SHAPES: dict[str, Shape] = {
     "reinforcement": Shape("Reinforcing steel, by bar", _bar, "lb"),
     "wall_structure": Shape("Wall structure", None),
     "footing_bedding": Shape("Footing bedding", _members, "cy"),
+    "excavation": Shape("Excavation, backfill and drain columns", _basis,
+                        unit_of=lambda row: str(row.get("unit") or "cy")),
     "pipe_runs": Shape("Pipe, by system and size", _runs, "LF"),
     "pipe_fittings": Shape("Pipe fittings, by the piece"),
     "sleeves": Shape("Cast-in sleeves, by the piece"),
@@ -173,7 +179,8 @@ RECIPES: dict[str, Recipe] = {
                       ("allowances",), ("G-001",), tags_appendix=False),
     "earth": Recipe("Earthwork", "Excavation, backfill, grading and the stone placed under the "
                     "footings, with the perimeter tile bedded in it.",
-                    ("footing_bedding", "envelope_layers", "allowances"), ("S-100", "C-100")),
+                    ("footing_bedding", "excavation", "envelope_layers", "allowances"),
+                    ("S-100", "C-100")),
     "drainage": Recipe("Drainage", "The stormwater run from the gutter to daylight: leaders, "
                        "tile, drywells and the sump.", ("drainage", "site", "allowances"),
                        ("S-100", "P-101")),

@@ -79,18 +79,22 @@ constraints = [
 # releases the earth and framing trades, and its on-site list is this visit's own checklist.
 [visits."task/concrete/building/waterproofing"]
 label = "Waterproofing, free-draining stone and backfill"
-rows = ["envelope_layers:waterproofing", "allowances:foundation-free-draining-backfill"]
+# Since 2026-10-28 the column, its fabric, the native lifts and the cap are modelled
+# (plan/earthwork.py EX-HOUSE) and bill as [excavation] rows, which file under the EARTH
+# package (task/earth/building); the "stone" checkpoint below is that crew's work here.
+rows = ["envelope_layers:waterproofing"]
 depends_on = ["task/concrete/basement/walls"]
 checkpoints = [
   { id = "membrane", label = "Cold joint treated, primer flashed off, sheet rolled and corners reinforced" },
   { id = "foam", label = "XPS bonded to the cured membrane with foam-compatible mastic" },
-  { id = "stone", label = "Free-draining stone and geotextile against the lower wall", after = ["insp/foundation_backfill"] },
+  { id = "stone", label = "[excavation] drain-column-stone/-geotextile, backfill, cap: 12\" #57 drain column from the excavation floor to 12\" under grade, geotextile on the soil side and folded over the top; native in <=8\" lifts beyond it; 12\" clay cap falling 6\" in 10'", after = ["insp/foundation_backfill"] },
 ]
 constraints = [
   { label = "forms stripped and the wall face clean and dry — the sheet is adhered, not hung" },
   { label = "membrane grade matched to the forecast: Low Temperature + Primer B2 LVC below 40 F" },
   { label = "backfill booked inside 30 days of the sheet going on — it is not UV-stable" },
   { label = "backfill placed in controlled lifts: there is no protection course over the foam" },
+  { label = "no backfill until the main deck braces the wall tops (IRC R404.1.7); light plates only within 3' of the XPS" },
   { label = "confirmed with the sub 48 hours ahead" },
 ]
 

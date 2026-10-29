@@ -31,6 +31,10 @@ import vocabulary from "../generated/vocabulary.json";
 // grey, matching the emitter's `_FALLBACK`.
 export const SOLID_CATEGORY_COLOR: Record<string, number> = vocabulary.solidColors;
 
+/** Native backfill and its clay cap: they share the site sheet's opacity slider and sit
+ *  behind it (the cap top is coplanar with grade). */
+export const BACKFILL_CATEGORIES: ReadonlySet<string> = new Set(["backfill_native", "backfill_cap"]);
+
 // solid category → visibility trade. Every solid used to be handed to the `concrete` group
 // regardless of what it was, which filed the standalone beams and posts away from the studs
 // and rafters they carry, and put all 791 routed pipe solids behind the Concrete toggle
@@ -137,6 +141,7 @@ export function createSolidMaterial(
   const metallic = METALLIC_SOLID_CATEGORIES.has(solid.category);
   const opacity = solidOpacity(solid, catalog);
   const translucent = opacity < 1;
+  const backfill = BACKFILL_CATEGORIES.has(solid.category);
   const flashingMembrane = solid.category === "opening_flashing_membrane"
     || solid.category === "opening_sill_pan";
   return standardMaterial(solidColor(solid, catalog, palette), mode, {
@@ -150,9 +155,10 @@ export function createSolidMaterial(
     // Fixed steps expose the film on its substrate while letting the profiled siding
     // cover it. Slope bias can pull concealed flashing through the corrugation valleys.
     // Formed metal takes its lap tier instead (→ materials.ts metalDepthTier).
-    polygonOffset: flashingMembrane,
-    polygonOffsetFactor: 0,
-    polygonOffsetUnits: flashingMembrane ? -1 : 0,
+    // Backfill is pushed BEHIND the coplanar site sheet at grade.
+    polygonOffset: flashingMembrane || backfill,
+    polygonOffsetFactor: backfill ? 1 : 0,
+    polygonOffsetUnits: flashingMembrane ? -1 : backfill ? 1 : 0,
     ...metalDepthTier(solid.category),
   });
 }

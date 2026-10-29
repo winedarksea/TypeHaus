@@ -12,6 +12,7 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     doorway,
     drip_flashing,
     edge_run_host,
+    excavation,
     furniture_host,
     head_connector,
     member_profile,

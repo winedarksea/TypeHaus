@@ -42,13 +42,15 @@ import {
   roofPlaneTriangles,
 } from "../roofGeometry";
 import { assemblyFaceMaterial } from "../../model/solidLabels";
-import { createSolidMaterial } from "../solidMaterials";
+import { BACKFILL_CATEGORIES, createSolidMaterial, solidColor } from "../solidMaterials";
 import { createSweepGeometry } from "../tubeGeometry";
 import { applyPieceGrainUv, pieceSeed, woodMaterialsForGeometry } from "../woodPiece";
 import { createSolidBodyMesh } from "../solidBodyMesh";
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import type { SelectionKind } from "../../state/vocabulary";
 import { registerSelectable, tagTrades } from "./registry";
+import { aggregateKindOfSolid, stoneMaterial, uvForAggregate } from "./aggregate";
+import { applyEarthOpacity } from "./site";
 
 // A resolved solid: a plan prism, or — when it carries a `sweep` — the mitred tube of a run.
 //
@@ -58,7 +60,7 @@ import { registerSelectable, tagTrades } from "./registry";
 export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
-  materials?: readonly MaterialAppearance[]) {
+  materials?: readonly MaterialAppearance[], earthOpacity?: number) {
   const geo = solid.finish_panels ? soffitPanelGeometry(solid.finish_panels, center)
     : solid.body_mesh ? createSolidBodyMesh(solid, center) : solid.sweep
     ? createSweepGeometry(solid, center)
@@ -91,6 +93,8 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
   }
   const foam = !deckBoards && !plankStyle && isSprayFoamFinish(authoredAppearance(woodRef, appearances)?.finish);
   if (foam) applySprayFoamUv(geo, center);
+  const stoneKind = deckBoards || plankStyle || foam ? null : aggregateKindOfSolid(solid, woodRef);
+  if (stoneKind) uvForAggregate(geo, center, stoneKind);
   const firstChildIndex = parent.children.length;
   const material =
     deckBoards ? createDeckBoardMaterial(mode)
@@ -99,8 +103,14 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
           materialColor(woodRef, palette, appearances), undefined,
           authoredAppearance(woodRef, appearances))
         : foam ? createSprayFoamMaterial(mode, materialColor(woodRef!, palette, appearances))
+        : stoneKind ? stoneMaterial(mode, solidColor(solid, catalog, palette), stoneKind)
         : createSolidMaterial(solid, catalog, mode, palette);
   const mesh = makeSurfaceMesh(geo, woodMaterialsForGeometry(material, geo));
+  // Backfill rides the site sheet's opacity slider (→ Panel3D setEarthOpacity).
+  if (BACKFILL_CATEGORIES.has(solid.category)) {
+    mesh.userData.earthBackfill = true;
+    if (earthOpacity !== undefined) applyEarthOpacity(material, earthOpacity);
+  }
   parent.add(mesh);
   registerSelectable(parent, firstChildIndex, solid.uid, "solid", picks, byUid);
 }
@@ -152,18 +162,14 @@ export function buildFootingBedding(parent: THREE.Group, bedding: FootingBedding
   const geo = createPlanPrismGeometry(bedding.outline, bedding.z0_m, bedding.z1_m, [], center);
   if (!geo) return;
   const firstChildIndex = parent.children.length;
-  const mat = standardMaterial(FOOTING_BEDDING_COLOR, mode, {
-    roughness: 1,
-    flatShading: true, // faceted normals read as loose aggregate in both shading modes
-  });
-  parent.add(makeSurfaceMesh(geo, mat));
+  uvForAggregate(geo, center);
+  parent.add(makeSurfaceMesh(geo, stoneMaterial(mode, FOOTING_BEDDING_COLOR)));
   const stoneZ0 = bedding.stone_z0_m ?? bedding.z0_m;
   if (stoneZ0 < bedding.z0_m) {
     const course = createPlanPrismGeometry(bedding.outline, stoneZ0, bedding.z0_m, [], center);
     if (course) {
-      parent.add(makeSurfaceMesh(course, standardMaterial(SOAKAWAY_COURSE_COLOR, mode, {
-        roughness: 1, flatShading: true,
-      })));
+      uvForAggregate(course, center);
+      parent.add(makeSurfaceMesh(course, stoneMaterial(mode, SOAKAWAY_COURSE_COLOR)));
     }
   }
   if (mode === "nordic") {

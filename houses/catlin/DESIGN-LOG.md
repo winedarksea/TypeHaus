@@ -1,3 +1,31 @@
+## Foundation gravel, the wall drain column and the over-dig (2026-10-28)
+
+The two TODO items "spec sand or gravel backfill" and "check the gravel under the house" are
+closed by modelling, not by allowance.
+
+- **Footing bed kept as designed.** 7" of drained #57 is R-1 to R-1.5 against R-0.4 for the
+  clay it replaces — slight — and only while drained; its real value is the capillary break,
+  frost-heave immunity and a stiff working surface. No `r_per_inch` on stone.
+- **Wall column (`FootingBedding.wall_column`).** 16" of #57 against every soil-facing house
+  wall from the excavation floor (it drops beside the 7" bed, so the exterior tile lies in
+  stone) to 12" under the strip grade, geotextile on the soil side and over the top. The plan
+  said 12"; R405.1 wants 12" past the FOOTING edge and the 20" footing projects 2-4" past the
+  foam, so 12" read 8.1" and FAILed. 16" reads 12.09". The court's W2/E2/S keep 12" x 7'-0"
+  on their heels (structural relief, outside R405.1's scope). 51.9 cy against the 32.2 cy the
+  two retired allowances priced.
+- **Over-dig (`plan/earthwork.py` EX-HOUSE).** One hole for house and court: 2'-0" working
+  space, OSHA Type B 1:1 (presumed), swell 30% / shrink 15% (presumed till), native in ≤8"
+  lifts, 12" clay cap. ~1,246 cy cut, ~515 cy placed backfill, ~113 cy cap, ~740 loose cy
+  haul-off. Billed in `prices.toml [excavation]` off MnDOT 2025 average bid floors; the old
+  $24-55k lump is now a $5.5-14k residual (garage trench, pier holes, finish grade).
+  **The 1:1 cut runs past the 50' lot's side lines** — a soils report (BLD-12) and likely a
+  steeper cut or shoring are the open items.
+- **Court rim** takes 4" #57 (94 SF, 1.2 cy); the frost wings dropped 4" under it.
+- Wording unified to "seated, not Proctor-compacted"; proof-roll the subgrade, over-excavate
+  soft spots to #57. The tile seats on 2" of stone (R405.1), was 1".
+
+Hand oracle: `notes/foundation_aggregate_and_backfill.md`.
+
 ## 2026-10-28 — roof deck and underlayment
 
 House deck is 19/32 inch 40/20 CDX; garage and continuous canopy are 19/32 inch
