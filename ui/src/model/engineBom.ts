@@ -53,7 +53,7 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
       "steel_members", "wall_structure", "reinforcement",
       "sheet_goods", "member_protection", "fireblock_sealant", "construction_returns",
       "sill_gaskets", "hardware",
-      "footing_bedding"],
+      "footing_bedding", "excavation"],
   },
   {
     id: "envelope",

@@ -36,6 +36,7 @@ _CATEGORY_STYLE = {
     "area_drain_riser": ("P-STRM-TILE", "DASHED"),
     "rain_garden_media": ("P-STRM-PIT", "CONTINUOUS"),
     "rain_garden_stone": ("P-STRM-PIT", "DASHED"),
+    "drain_column": ("P-STRM-TILE", "DASHED"),  # buried stone against the wall
 }
 
 

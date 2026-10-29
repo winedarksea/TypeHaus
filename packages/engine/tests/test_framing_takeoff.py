@@ -237,7 +237,8 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # The milling schedule: the same wood as a cut list in
                         # rough stock, plus the derived stools and shelf boards.
                         "hardwood",
-                        "footing_bedding", "pipe_runs", "pipe_fittings", "ducts", "sleeves",
+                        "footing_bedding", "excavation",
+                        "pipe_runs", "pipe_fittings", "ducts", "sleeves",
                         # Railings got their own takeoff category in 33bac47; this list and
                         # the `haus takeoff` payload both missed it, so guard rail and cable
                         # infill were billed nowhere the CLI could see.
@@ -372,6 +373,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "ducts": ("ducts", "duct_fittings", "duct_insulation"),
     "conduits": ("conduit", "conductors"),
     "footing_beddings": ("footing_bedding",),
+    "wall_columns": ("excavation",),
+    "excavations": ("excavation",),
     # The paneling records (sauna liner, wainscot, tile splash) roll up by species/material.
     "panelings": ("wood_surfaces",),
     # The resolved layer stack per room; billed off the deck/roof/room fields it was

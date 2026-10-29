@@ -761,6 +761,8 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "reinforcement",
         "sheet_goods",
         "construction_returns", "hardware", "footing_bedding",
+        # The over-dig and wall drain columns (takeoff/excavation.py).
+        "excavation",
         # The sill seal under the bearing plates: its own section because
         # `construction_returns` reconciles 1:1 with the resolved returns.
         "sill_gaskets",

@@ -1555,6 +1555,202 @@
       "node": "polyline",
       "points": [
         [
+          48.00000000000001,
+          -48.00000000000001
+        ],
+        [
+          384.00000000000006,
+          -48.00000000000001
+        ],
+        [
+          384.00000000000006,
+          -46.00000000000001
+        ],
+        [
+          48.00000000000001,
+          -46.00000000000001
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-048",
+      "tag": "EX-HOUSE-BF-49"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          48.00000000000001,
+          -46.00000000000001
+        ],
+        [
+          384.00000000000006,
+          -46.00000000000001
+        ],
+        [
+          384.00000000000006,
+          -43.00000000000001
+        ],
+        [
+          48.00000000000001,
+          -43.00000000000001
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-051",
+      "tag": "EX-HOUSE-BF-52"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          48.00000000000001,
+          -43.00000000000001
+        ],
+        [
+          187.50000000000003,
+          -43.00000000000001
+        ],
+        [
+          187.50000000000003,
+          -40.0
+        ],
+        [
+          48.00000000000001,
+          -40.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-054",
+      "tag": "EX-HOUSE-BF-55"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          48.00000000000001,
+          -40.0
+        ],
+        [
+          187.50000000000003,
+          -40.0
+        ],
+        [
+          187.50000000000003,
+          -38.51
+        ],
+        [
+          48.00000000000001,
+          -38.51
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-056",
+      "tag": "EX-HOUSE-BF-57"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          48.00000000000001,
+          -38.51
+        ],
+        [
+          187.50000000000003,
+          -38.51
+        ],
+        [
+          187.50000000000003,
+          -37.5
+        ],
+        [
+          48.00000000000001,
+          -37.5
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-057",
+      "tag": "EX-HOUSE-BF-58"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          48.00000000000001,
+          -37.5
+        ],
+        [
+          187.50000000000003,
+          -37.5
+        ],
+        [
+          187.50000000000003,
+          -37.0
+        ],
+        [
+          48.00000000000001,
+          -37.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-058",
+      "tag": "EX-HOUSE-BF-59"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          48.00000000000001,
+          -37.0
+        ],
+        [
+          187.50000000000003,
+          -37.0
+        ],
+        [
+          187.50000000000003,
+          -36.0
+        ],
+        [
+          48.00000000000001,
+          -36.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-059",
+      "tag": "EX-HOUSE-BF-60"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           69.62500000000001,
           -14.463900000000002
         ],
