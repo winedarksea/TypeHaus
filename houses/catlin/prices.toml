@@ -5966,8 +5966,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Carlon at big-box / supply-house retail (2026-10). Surface-box labour is a Tapcon-set
 # steel box on concrete. A flush box and its ring bill labour 0: the device's own labour
 # already includes setting its box (owner, 2026-10-29). RACO 232 also serves the six
-# flush_raceway boxes, which still bill its surface labour: the row is keyed by product.
+# flush_raceway boxes: the takeoff splits rows by mounting, and those bill labour 0 too.
 "PROD-RACO-232" = { material = { low = 3, high = 6 }, labour = { low = 15, high = 35 } }
+"PROD-RACO-232:flush_raceway" = { material = { low = 3, high = 6 }, labour = { low = 0, high = 0 } }
 "PROD-RACO-808C" = { material = { low = 3, high = 7 }, labour = { low = 3, high = 8 } }
 "PROD-RACO-809C" = { material = { low = 3, high = 7 }, labour = { low = 3, high = 8 } }
 "PROD-RACO-768" = { material = { low = 1.5, high = 3.5 }, labour = { low = 0, high = 0 } }

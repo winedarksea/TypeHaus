@@ -288,7 +288,8 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         return (f"{kind.capitalize()}, {_fraction_in(g('trade_size_in'))} "
                 f"{str(g('material') or '').upper()}")
     if section == "electrical_boxes":
-        return str(g("name") or bare)
+        mounting = str(g("mounting") or "").replace("_", " ")
+        return f"{g('name') or bare}, {mounting}" if mounting else str(g("name") or bare)
     if section == "conductors":
         return f"Branch-circuit conductors, {g('poles')}-pole circuits"
     if section == "light_run_materials":

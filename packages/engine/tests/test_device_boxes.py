@@ -83,3 +83,20 @@ def test_parts_and_conductors_on_known_runs(catlin_model_ro):
     assert named[0]["length_ft"] == pytest.approx((pull_ft + 10.0) * 4, abs=0.1)
     two_pole = next(row for row in conductor_takeoff(catlin_model_ro) if row["poles"] == 2)
     assert "CD-B-WORKSHOP:CKT-WORKSHOP-240" in two_pole["tags"]
+
+
+def test_a_raceway_fed_box_prices_apart_from_the_same_product_on_concrete(catlin_model_ro):
+    """RACO 232 is both; the flush_raceway one bills no labour (owner, 2026-10-29)."""
+    from pathlib import Path
+
+    from typehaus.cli.price_file import load_prices
+    from typehaus.cli.prices import rate_for
+    from typehaus.takeoff.device_boxes import device_box_takeoff
+
+    prices = load_prices(Path(__file__).parents[3] / "houses" / "catlin")
+    rows = {(r["product"], r["mounting"]): r for r in device_box_takeoff(catlin_model_ro)}
+    surface = rate_for(prices, "electrical_boxes", "PROD-RACO-232", "surface")
+    raceway = rate_for(prices, "electrical_boxes", "PROD-RACO-232", "flush_raceway")
+    assert rows["PROD-RACO-232", "flush_raceway"]["count"] == 6
+    assert surface[0] == "PROD-RACO-232" and surface[1].labour.high > 0
+    assert raceway[0] == "PROD-RACO-232:flush_raceway" and raceway[1].labour.high == 0

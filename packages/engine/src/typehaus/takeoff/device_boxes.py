@@ -10,24 +10,25 @@ from typehaus.resolve.model import ResolvedModel
 
 
 def device_box_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """One row per box or cover Product: count, role, mounting, and the devices it serves."""
-    rows: dict[str, dict[str, object]] = {}
+    """One row per (box or cover Product, mounting): count, role, and the devices it serves.
+
+    Split by mounting because one product can serve two mountings that install differently:
+    RACO 232 is a Tapcon-set surface box on concrete and a flush box a raceway reaches in a
+    framed cavity. ``[electrical_boxes]`` may key ``<product>:<mounting>`` (cli/prices.py).
+    """
+    rows: dict[tuple[str, str], dict[str, object]] = {}
     for box in model.device_boxes:
         for role, ref in (("box", box.box_product), ("cover", box.cover_product)):
             if ref is None:
                 continue
             product = model.plan.library.product(ref)
-            row = rows.setdefault(ref, {
-                "product": ref, "role": role,
+            row = rows.setdefault((ref, box.mounting), {
+                "product": ref, "role": role, "mounting": box.mounting,
                 "name": (product.name or product.model) if product is not None else ref,
-                "mountings": set(), "count": 0, "tags": []})
+                "count": 0, "tags": []})
             row["count"] = int(row["count"]) + 1
-            mountings = row["mountings"]
-            assert isinstance(mountings, set)
-            mountings.add(box.mounting)
             tags = row["tags"]
             assert isinstance(tags, list)
             tags.append(box.device_tag)
-    return [{**row, "mountings": sorted(row["mountings"]),  # type: ignore[arg-type]
-             "tags": sorted(row["tags"])}  # type: ignore[arg-type]
+    return [{**row, "tags": sorted(row["tags"])}  # type: ignore[arg-type]
             for row in (rows[key] for key in sorted(rows))]

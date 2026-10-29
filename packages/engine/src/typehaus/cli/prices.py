@@ -263,6 +263,9 @@ QUALIFIED_KEY_FIELD: dict[str, str | tuple[str, ...]] = {
     # A casing leg is cut, mitred to nothing and nailed twice; a base run is one long board.
     # ``oak-trim:door casing`` prices the casing apart; a bare stock key prices both.
     "interior_trim": "kind",
+    # One box product, two installs: RACO 232 is Tapcon-set on concrete (surface) and nailed
+    # in a cavity where a raceway reaches it (flush_raceway), whose labour is the device's.
+    "electrical_boxes": "mounting",
 }
 
 

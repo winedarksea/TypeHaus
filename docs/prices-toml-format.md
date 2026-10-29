@@ -50,7 +50,7 @@ ikea-sofa-84 = { low = 700, high = 2400 }   # reads, but reported beside the tot
 [conduit_fittings]  # $ each, keyed "<kind> <MATERIAL> <size>"; $0 elbows = field bends
 "strap EMT 0.75" = { low = 0.20, high = 0.50 }
 
-[electrical_boxes]  # $ each, keyed by the BoxStandard row's box or cover Product tag
+[electrical_boxes]  # $ each, keyed by the BoxStandard row's box or cover Product tag (or <tag>:<mounting>)
 "PROD-RACO-232" = { material = { low = 3, high = 6 }, labour = { low = 15, high = 35 } }
 
 [conductors]     # $ per CONDUCTOR-foot of branch wire, keyed by circuit pole count
