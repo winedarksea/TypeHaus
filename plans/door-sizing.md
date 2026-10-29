@@ -1,7 +1,8 @@
 # Door sizing: leaf, unit, rough opening, clear passage
 
 Status: decisions agreed 2026-10-28, revised after review and a second round of questions
-the same day. Phase 1 implemented 2026-10-29 (decisions #96-#98 in `01-decisions.md`).
+the same day. All four phases implemented 2026-10-29 (decisions #96-#98 in `01-decisions.md`);
+sixteen openings still hold their framing pending the owner's answers below.
 Replaces the missing `plans/default-door-appearance.md` that the TODO item cited.
 
 ## The problem
@@ -282,3 +283,74 @@ existing test to adding a module, and pure functions over catlin fixtures.
   catlin's own `haus check` covers the rest.
 - Phase 1's zero-diff gate is a one-off measurement in a detached worktree, not a
   committed test.
+
+## Implementation notes (2026-10-29)
+
+What the build settled that the plan left open:
+
+- `DoorSizing` fields carry `_m` like every resolved record, plus `nominal_w/h_m` (what is
+  ordered: for a held opening the leaf drawn is inferred, the nominal is still the type's),
+  `required_w/h_m` (the RO the nominal leaf needs, which the held advisory prints) and
+  `installed_unit` (None while held: a held RO is smaller than its unit, so energy area,
+  schedule and IFC keep the void). `frame_w_m` is `rough_w_m`; a pocket's `rough_w_m` is the
+  whole cassette and `passage_w_m` the leaf.
+- **The finish comes from the plan, not the model.** Openings resolve before rooms and
+  floors, so `resolve/door_floor_finish.py` finds the room each side by its seed in the
+  wall-axis face and reads an authored finish zone, a `Slab.floor_finish`, then the room's
+  field finish. A raised sill (> 50 mm) takes none.
+- **Fit**: a published RO must take the unit (or, with no unit, the leaf) plus 1/4" of shim a
+  side and once at the head — a `DoorType` validator, so a misfit is a load error. Every
+  shipped product passes (MMI fits exactly).
+- The Eclisse kit carries `rough_opening_head_over_leaf_in = 3.25` (from the finished floor).
+- A leaf limited below 90° loses `leaf x cos(angle)` of clear width.
+- MN R311.3.2's under-30" stair exception is not graded; such a stair's landing is already a
+  candidate surface.
+- **Order**: the swing hinge at the jamb face and the plan symbol moved into phase 2's commit,
+  because conflicts measured against the void's arc were artifacts. Phase 3 kept the 3D leaves,
+  the viewer and the load-time fit.
+
+**Phase 1 proof** (detached worktree at 11e15e2f plus the other session's in-flight files,
+against the phase 1 tree): every opening's void, centre, swing, pocket run and sizing-free
+fields, every member on a door-hosting wall, every casing and base run, and the resolve
+findings were identical; `haus check --only all` was identical apart from the 31 held
+advisories (starter: 2); `model.json` differed only in door-type width/height (and their echo
+in `canvas_object_types`), `rough_opening`, `center_post`, `catalog_dimensions` (nominal
+dropped, clear added, new on SWING36/FRENCH60), bookcase nominal dropped, `sizing`, and
+`contentHash`.
+
+**Phase 2**: released, with no new FAIL/UNKNOWN/advisory: D-B-ESS, D-B-SAUNA, D-M-MECH,
+D-M-MUDC, D-M-PANTRY, D-M-LAUN, D-M-BED, D-M-BED2, D-S-BED2, D-S-PLANT, O-S-CLOSET,
+D-S-SUITEBATH, D-S-BATH1, D-A-STUBATH, both starter doors (D-101's switch moved 2" clear of
+its casing) and D-M-ENTRY (decision 9, as agreed: BWP-M-N3-0042 trimmed to 3 5/8", the doubled
+hinge pack backs W-M-MECH-E's end, the casing scribes to 2.18", and the exterior head casing
+tops out 1 5/8" under the canopy truss chords). D-S-BED2 and D-S-BATH1 no longer cut an
+extra stud, so their module suppressions were deleted.
+
+## Open questions for the owner (the sixteen holds)
+
+Each was measured in its own worktree; every option listed cleared its findings with no new
+ones unless it says otherwise.
+
+| Opening | What the derived RO hits | Options (measured) |
+|---|---|---|
+| D-M-BALC | grown in place: 1.66" off the pair above | (1) move all three French pairs 8" east to 22'-0", the only station on the stud module for all three walls: no suppression needed (D-B-PATIO/D-S-DECK-E's are deleted), braced length grows; costs the 21'-4"/14'-8" mirror and re-homing ED-M-PORCH-SW, ED-M-PORCH-FLOOD-SW, ED-M-REAR-RC1, ED-M-STAIR-LT and ED-S-STUDY2-SPOT1, plus CN-*-HD-BALC, BK-M-S2-ROD and goldens; (2) the plain re-centre at 8 11/32": a third `door_framing_module` suppression, BWP-M-S2-0000 to 8 11/32", the pack tight on the W-M-C1 tee. |
+| D-M-ENTRY | — | released (decision 9). |
+| D-M-BATH1 | ED-M-BATH1-SW under the south casing (worse than today's 0.19") | release and move the switch 3" south (40.5" -> 43.5"), which also clears today's overlap. |
+| D-M-BATH2 | ED-M-BED-RC9 in the RO; RC7 within 6' of the shower through the wider opening; the nightstand at the leaf tip | (A) a 30" leaf (27.3" clear; reverses 2026-09-15); (B) keep 32": RC9 to 64", RC7 GFCI, bed and nightstands 0.6" east. |
+| D-M-MUD | PR-B-HW-SBATH's riser stands in the new west king and clips the header | keep the hold, or a 30" leaf (clean). No way found to keep 32" without moving the riser. |
+| D-M-STUDY | ED-M-STUDY-SPOT 0.74" into the RO | release and move the spot 1" north (0.26" a side left). |
+| D-B-BATH | Eclisse head 3.4" higher meets DU-B-ERV-R-GYM (pocket band) and -PLAY (header) | (B) W-B-BA-E nonbearing (engineer to confirm) with a flat 2x6 head, GYM up 0.5"; (A) raise both ducts (0.1" under the plate); (C) move GYM's crossing south. Also: the pocket band adds a head track over a kit RO that already includes one. |
+| D-B-FURN | the raised flat nailer is notched 0.09" by PR-M-S-BATH1-DRAIN | (B) lift the drain's tail 0.15" and release; (A) hold only the height at 81 3/8". |
+| D-B-PLAY | 1.2" off W-B-CE's module (one extra stud) | move 1.2" west (casing ~1" from the playroom bookcase), or suppress like the other 60" pairs. |
+| D-B-SHOP | 11.4" off W-B-HALL-W's module; the switch 2.8" from the jamb | move to centre y=160" with the switch to 31" (loses the D-B-GYM alignment), or suppress and nudge the switch to 41". |
+| D-B-CLOSET | ED-B-CLOSET-LT under the casing; the casing head ~1.7" into ST-B2M's stringer (unchecked) | move the light 3" north (stringer scribe remains), or slide the door 2" toward the corner (clears both; undoes the 10" corner setback). |
+| D-S-BED1 | the casing scribes to 2.20" against W-S-BD1 | accept the scribe (2.44" on the PAX side already). |
+| D-S-SUITE | the cherry casing leg against W-S-SBS is left off | move the door 1" south (both legs ~2.4"), or a 30" leaf. |
+| D-S-BED3 | the 2-2x8 header reaches the HP return's envelope (not physical: the check's 9" envelope) | W-S-BW3 nonbearing with a flat 2x4 head, or fix `mep_bore_geometry`'s envelope. |
+| D-S-NCLOSET | the header rises 2.26" over the wall top into SF-S-HP1; ED-S-NCLOSET-SW in the RO | W-S-CLN-S nonbearing with a flat 2x4 head, and slide the door 2.25" west. |
+| D-A-HALVES | 1.70" to the wall end against 1.97" (`opening_fits`); the study casing leg left off | move 1 5/16" south (leg 1.57"), or a 30" leaf. |
+| D-A-POCKET | PR-A-STUBATH-LAV-HW crosses 1.24" of the RO | move the pipe's corner to x=110.75" and release. Separately: `member_interference` never grades a header against a raked plate, and this header already overlaps the rake plate (2.2" held, 3.9" derived). |
+
+Engine follow-ups the investigations found: the pocket band's double head allowance
+(`checks/mep/pockets.py`), `mep_bore_geometry`'s round envelope for a rectangular duct, and
+header-versus-raked-plate interference.
