@@ -96,7 +96,7 @@ EQUIPMENT_ERV_SECOND = [
 # ============================== LEVEL 3 — ATTIC RADIALS ==============================
 #
 # Four runs off the deck manifold at (5'-0", 34'-6"): three extracts and, separately below,
-# the mixing-box feed. Each takes the boxed floor chase west to x=1'-0" and south along the
+# the mixing-box feed. Each takes the open deck chase west to x=1'-0" and south along the
 # west wall, then drops into its FS-ATTIC bay and rides it east to the terminal. `CHASE`,
 # for the reason in the header — one run, two cavities, and the declaration is the honest
 # one. FS-ATTIC is I-joist, so unlike level 2 there is no crossing the bays: all the
@@ -274,7 +274,7 @@ DUCTS_ERV_ATTIC = [
 # THE MIXING-BOX FEED — the one place fresh air enters the heat-pump loop.
 #
 # It keeps DU-S-ERV-HP-FEED's tag and uid. It comes off the supply riser's head on the attic
-# deck, takes the boxed floor chase south, rides the FS-ATTIC bay at y=22'-0" east, comes
+# deck, takes the open deck chase south, rides the FS-ATTIC bay at y=22'-0" east, comes
 # back up onto RM-A-EAST-UNFIN's deck and runs NORTH to the mixing box, dropping onto it
 # through SF-S-HP1's lid.
 #

@@ -138,7 +138,7 @@ MAIN_LAV_CONNECTIONS = [
             diameter=inch(1.5), material="pvc",
             serves=("FX-S-VANITY-LAV2",)),
     PipeRun(uid="HY88AM9MS4", tag="PR-A-STUBATH-LAV-HW", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(115.5), inch(250)), pt(inch(109), inch(250)), pt(inch(109), inch(267.5)), pt(inch(161.625), inch(267.5)), pt(inch(161.625), inch(265.625)),),
+            path=(pt(inch(115.5), inch(250)), pt(inch(110.75), inch(250)), pt(inch(110.75), inch(267.5)), pt(inch(161.625), inch(267.5)), pt(inch(161.625), inch(265.625)),),
             elevations=(inch(270.0), inch(272.0), inch(272.0), inch(272.0), inch(264.87),),
             diameter=inch(0.5), material="pex",
             serves=("FX-A-STUBATH-LAV",)),

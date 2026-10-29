@@ -757,6 +757,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       `plan/lighting_attic.py` claims of R303.1-required fittings are stale (room carries
       5,400 lm over 146 sf). `REG-A-HP-WEST` stays regardless (graded on BEDROOM
       occupancy, not Exception 1).
+  - **The studio eave's services are exposed by choice** (owner, 2026-10-29: "a little
+    rustic"): the three lav lines along `W-A-STU-W` and the four west-deck ducts, declared by
+    `RM-A-STUDIO.exposed_services`. UPC 312.4 / IMC 603.15 ask protection only where damage is
+    likely, never concealment (code basis at the Room). Boxing them into the pocket by moving
+    `W-A-STU-N` was rejected (DESIGN-LOG, "Studio eave services").
   - `RM-A-STUBATH` (x 9'-10 7/8"..17'-8 5/8", y 17'-6 3/8"..22'-1 5/8", vinyl-sheet). Tag
     must stay `RM-A-STUBATH`, never `RM-A-STUDIO-BATH` — `electrical.room_lighting`
     matches `ED-{room.tag[3:]}-*` and the longer tag would prefix-match the studio,
@@ -768,9 +773,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `mep.run_in_finished_volume` grades the attic against its roof (#94). No `humidity_class` set (NORMAL like every other bath) —
     WET would pull ROOF into the humid-room condensation walk for nothing.
   - `RM-A-POCKET` (x 0..9'-7 1/2", y 22'-4"..36', STORAGE). Door `D-A-POCKET` is in the
-    SOUTH wall of `W-A-STU-N`, not the x=10' wall (far side is the void/shaft). Wall raked
-    at 5'-0"+x/3; a 6'-8" head needs x ≥ 5'-9" (`structural.member_interference` catches a
-    shallower station). Door not scuttle: ERV manifold, OA hood, `VR-M-STACK` head
+    SOUTH wall of `W-A-STU-N`, not the x=10' wall (far side is the void/shaft). A 24x36
+    access leaf under the rake (H = 1 1/2" + x/2), flat 2x4 head (R602.7.4): a built-up
+    header runs into the raked plates, which `structural.member_interference` grades since
+    2026-10-29. Door not scuttle: ERV manifold, OA hood, `VR-M-STACK` head
     sit inside, so IRC M1305.1.3 wants the passageway plus its light and receptacle
     (`ED-A-POCKET-LT1`, `ED-A-POCKET-RC1`). `ResolvedRoom.head_limited_area_m2` is what the plan label
     and `haus build` report beside `area_m2` (whole attic: 496 of 1,171 sf built); every

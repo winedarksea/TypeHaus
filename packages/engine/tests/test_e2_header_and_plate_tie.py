@@ -141,6 +141,20 @@ def test_a_run_wholly_inside_the_member_loses_nothing_to_the_clip() -> None:
                        through_in=cut.through_in).kind == "bore"
 
 
+def test_a_rectangular_duct_is_its_width_across_and_its_depth_up() -> None:
+    """DU-S-HP-RET, 10" wide x 18" deep, 9" off a header's axis: read as 9" each way it
+    reached the header (D-S-BED3's hold); at its real 5" half-width it is clear. Square on,
+    the header gives up the 18" depth, not the width."""
+    wall, z = _header_wall(), (_H_Z0 + _H_Z1) / 2.0 * M_PER_IN
+    a, b = (_H_X0 * M_PER_IN, 9.0 * M_PER_IN), (_H_X1 * M_PER_IN, 9.0 * M_PER_IN)
+    assert leg_crossings(wall, a, b, z, z, 9.0 * M_PER_IN)
+    assert not leg_crossings(wall, a, b, z, z, 5.0 * M_PER_IN, 9.0 * M_PER_IN)
+    (cut,) = leg_crossings(wall, (54.0 * M_PER_IN, -12.0 * M_PER_IN),
+                           (54.0 * M_PER_IN, 12.0 * M_PER_IN), z, z,
+                           5.0 * M_PER_IN, 9.0 * M_PER_IN)
+    assert cut.diameter_in == pytest.approx(18.0)
+
+
 def test_the_catlin_header_crossings_are_at_their_true_stations(
         catlin_model_ro) -> None:
     """§6's table, from the model. Every one of these printed 57.00" before 2026-09-22.
@@ -430,11 +444,14 @@ def test_catlin_s_real_plate_cuts_fail_for_want_of_a_tie(catlin_model_ro) -> Non
     Four UNKNOWNs remain in the current plan: `PR-M-S-BATH1-DRAIN` and the three heat-pump
     supply ducts still interrupt full-width plate sections with no graded tie. Both sauna ERV
     branches now pass through stud bays clear of the graded bearing plates.
+
+    One since 2026-10-29: the three heat-pump ducts are rectangular, and read at their real
+    depth (8" and 6", not their 18" and 10" widths) they pass over the plates.
     """
     from typehaus.checks.mep.routing_bores import run_through_plate
 
     findings = run_through_plate(_ctx(catlin_model_ro))
     results = [f.result.value for f in findings]
     assert results.count("fail") == 0
-    assert results.count("unknown") == 4, [f.element_tags for f in findings
+    assert results.count("unknown") == 1, [f.element_tags for f in findings
                                             if f.result.value == "unknown"]

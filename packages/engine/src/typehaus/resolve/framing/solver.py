@@ -25,6 +25,11 @@ from typehaus.resolve.framing.carriers import (
     carrier_bands,
     carrier_keepouts,
 )
+from typehaus.resolve.framing.corner_jamb_packs import (
+    drop_corner_studs_in_packs,
+    jamb_pack_extent,
+    jamb_packs_take_corners,
+)
 from typehaus.resolve.framing.corners import (
     CORNER_ROLE_BUTTING,
     CORNER_ROLE_OPEN,
@@ -264,10 +269,13 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # A supplemental stud at each owned corner: with the neighbour's end stud butting the
     # far side of the corner square, this is the third stud of the 3-stud pack. Placed
     # before the module studs because the pack it forms is what they have to clear.
+    packs = [extent for opening in openings
+             if (extent := jamb_pack_extent(opening, thickness, module_spacing,
+                                            module_phase)) is not None]
     corner_studs = {
-        endpoint: (corner_stud_stations(end, at_start, thickness,
-                                        style or spec.corner_style, axis_len,
-                                        stud_depth_m=depth)
+        endpoint: (drop_corner_studs_in_packs(
+            corner_stud_stations(end, at_start, thickness, style or spec.corner_style,
+                                 axis_len, stud_depth_m=depth), packs)
                    if (corner_start if at_start else corner_end) else ())
         for endpoint, at_start, end, style in (
             ("start", True, start_end, corner_style_start),
@@ -746,6 +754,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             jamb_framing=(door_types[op.type_ref].jamb_framing
                           if op.is_door and op.type_ref in door_types else None),
         ))
+    # Before the corner topology is read: a jamb pack reaching into an L takes it.
+    jamb_packs_take_corners(plan, model, by_host)
     keepouts = pocket_keepouts(plan, model)
     # Two producers, one seam. A carrier bay and a pocket cavity are the same instruction to
     # the module — "no stud here" — so they merge before ``frame_wall`` sees either.

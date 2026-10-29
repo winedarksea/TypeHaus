@@ -95,10 +95,11 @@
 # `Soffit`:
 #   * basement: boxed under the mixed SL-M-DECK / FS-M-* ceiling, the same status as the
 #     rectangular trunks these replace;
-#   * attic: a boxed floor chase along the west wall at x=1'-0" carries the north-south leg
-#     on the FS-ATTIC deck, and the east-west leg rides an FS-ATTIC bay. One run cannot
-#     declare two cavities, and splitting a single length of pipe into two elements to
-#     satisfy an enum would be modelling the checker rather than the house.
+#   * attic: an open deck chase along the west wall at x=1'-0" carries the north-south leg
+#     on the FS-ATTIC deck (exposed in the studio eave, owner 2026-10-29), and the east-west
+#     leg rides an FS-ATTIC bay. One run cannot declare two cavities, and splitting a single
+#     length of pipe into two elements to satisfy an enum would be modelling the checker
+#     rather than the house.
 # The level-2 radials are `JOIST_BAY` with `floor_ref="FS-S-WEST"` and ARE graded.
 from typehaus import (
     DuctRouting,

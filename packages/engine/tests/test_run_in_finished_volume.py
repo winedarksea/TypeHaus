@@ -46,7 +46,9 @@ def test_the_attic_is_graded_against_the_roof_underside(findings, catlin_model) 
     Two regressions are put back on a mutable model. A vent crossing the bath at 3'-5" (the
     run ``PR-A-STUBATH-VENT`` was until 2026-10-29) hangs in the room's air. The same pipe
     on the floor of the west eave, under a rake lower than R304.3's 5'-0", is not graded but
-    is NAMED: with no knee wall that eave is still finished room."""
+    is NAMED: with no knee wall that eave is still finished room. The studio declares its
+    eave services exposed (owner, 2026-10-29), so its PASS names the run; without the
+    declaration it is an UNKNOWN."""
     from typehaus.model import ft, inch
 
     assert not [f for f in findings if f.result is Result.UNKNOWN
@@ -70,8 +72,18 @@ def test_the_attic_is_graded_against_the_roof_underside(findings, catlin_model) 
     low = (ft(20, 1).meters,) * 3
     in_eave = _with(eave, low)
     assert not _fails_for(in_eave, "PR-A-STUBATH-VENT")
-    named = [f for f in run_from_model(in_eave, [], tier=Tier.ADVISORY,
-                                       only="mep.run_in_finished_volume").findings
+
+    def _report(model):
+        return run_from_model(model, [], tier=Tier.ADVISORY,
+                              only="mep.run_in_finished_volume").findings
+
+    declared = [f for f in _report(in_eave) if f.result is Result.PASS
+                and f.message.startswith("RM-A-STUDIO: services are deliberately exposed")]
+    assert declared and "PR-A-STUBATH-VENT" in declared[0].message.split("in its eave")[1]
+    undeclared = dataclasses.replace(in_eave, rooms=[
+        dataclasses.replace(r, exposed_services=None) if r.tag == "RM-A-STUDIO" else r
+        for r in in_eave.rooms])
+    named = [f for f in _report(undeclared)
              if f.result is Result.UNKNOWN and "eave" in f.message]
     assert named and "PR-A-STUBATH-VENT in RM-A-STUDIO" in named[0].message
 

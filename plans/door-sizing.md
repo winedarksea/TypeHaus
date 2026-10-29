@@ -361,13 +361,12 @@ ones unless it says otherwise.
 | D-B-CLOSET | ED-B-CLOSET-LT under the casing; the casing head ~1.7" into ST-B2M's stringer (unchecked) | move the light 3" north (stringer scribe remains), or slide the door 2" toward the corner (clears both; undoes the 10" corner setback). |
 | D-S-BED1 | the casing scribes to 2.20" against W-S-BD1 | accept the scribe (2.44" on the PAX side already). |
 | D-S-SUITE | the cherry casing leg against W-S-SBS is left off | move the door 1" south (both legs ~2.4"), or a 30" leaf. |
-| D-S-BATH1 | its derived jamb pack runs into W-S-BA-E1B's corner pack at N-S-BA1 | not investigated beyond that; keep the hold, or step down / move off the corner. |
-| D-S-BED3 | the 2-2x8 header reaches the HP return's envelope (not physical: the check's 9" envelope) | W-S-BW3 nonbearing with a flat 2x4 head, or fix `mep_bore_geometry`'s envelope. |
+| D-S-BATH1 | released 2026-10-29 (owner: share the packs) | the jamb pack takes the corner: `resolve/framing/corner_jamb_packs.py` gives N-S-BA1 to W-S-BD-N1B, so jack, king, corner stud and end stud stand on its line and W-S-BA-E1B's end stud butts them (five); `structural.jamb_corner_pack` grades jack bearing, king continuity and the neighbour's backing. `member_interference` unchanged. |
+| D-S-BED3 | released 2026-10-29 | `mep_bore_geometry` reads a rectangular duct at its own width and depth: DU-S-HP-RET (10x18) clears the header. The same fix retired the three DU-S-HP-* `run_through_plate` suppressions. |
 | D-S-NCLOSET | the header rises 2.26" (now ~3", see Review) over the wall top into SF-S-HP1; ED-S-NCLOSET-SW in the RO | W-S-CLN-S nonbearing with a flat 2x4 head, and slide the door 2.25" west. |
 | D-A-HALVES | 1.70" to the wall end against 1.97" (`opening_fits`); the study casing leg left off | move 1 5/16" south (leg 1.57"), or a 30" leaf. |
-| D-A-POCKET | PR-A-STUBATH-LAV-HW crosses 1.24" of the RO | move the pipe's corner to x=110.75" and release. Separately: `member_interference` never grades a header against a raked plate, and this header already overlaps the rake plate (2.2" held, 3.9" derived, now ~4.6"). |
+| D-A-POCKET | released 2026-10-29 | `member_interference` now grades a wall header in its own raked plate; the head is a flat 2x4 (R602.7.4, nonbearing), the near jamb 1/2" west to 6'-11 1/2" so the east king touches W-A-STU-W's free-end stud instead of overlapping it, and PR-A-STUBATH-LAV-HW turns at x=110 3/4". |
 
 Engine follow-ups the investigations found: the pocket band's double head allowance
 (`checks/mep/pockets.py`, fixed in review), `mep_bore_geometry`'s round envelope for a
-rectangular duct, and header-versus-raked-plate interference (open: the clause that clears a
-floor-opening header on a plate also clears a wall header in its own raked plate).
+rectangular duct, and header-versus-raked-plate interference (both fixed 2026-10-29).

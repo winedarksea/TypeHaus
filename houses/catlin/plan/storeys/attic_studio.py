@@ -39,7 +39,6 @@ from typehaus import (
     LayerMaterial,
     Node,
     Occupancy,
-    OpeningSize,
     PanelingSpan,
     PublishedSpan,
     Room,
@@ -329,35 +328,23 @@ WALLS = [
 # Both leaves are DT-INT-SWING30, the house's standard 2'-6" interior door and what all three
 # second-storey baths already use. R311.2's 32"-clear rule governs the EGRESS door, not these.
 OPENINGS = [
-    # Into the storage pocket, and its station is set by HEADROOM. W-A-STU-N is raked: it runs in x
-    # under the west half of the gable, and the roof underside there is
+    # Into the storage pocket; HEADROOM sets it. W-A-STU-N is raked under the west half of the
+    # gable, the roof underside H(x) = 1 1/2" + x/2 over the deck, so no station takes a 6'-8"
+    # leaf (2 x (80 + 2) = 13'-8" of x on a 10'-0" wall). It is a low ACCESS door,
+    # DT-INT-ACCESS24 (24 x 36 leaf, derived RO 26.24 x 38.38 since 2026-10-29).
     #
-    #     H(x) = 1 1/2" + x/2
+    # The head is a FLAT 2x4 (R602.7.4: W-A-STU-N is nonbearing, the plate above is under 24"
+    # off): a 2-2x8 ran 4.6" up through the raked plates, which `member_interference` now
+    # grades. Near jamb 6'-11 1/2", not 7'-0": the east king then touches W-A-STU-W's free-end
+    # stud at x 9'-4 3/4" instead of overlapping it 1/2", and the west header end clears the
+    # rake by 1/2". PR-A-STUBATH-LAV-HW turns at x=110 3/4", in the jack, clear of the RO.
     #
-    # above the attic deck. ** THIS DOOR SHRANK RATHER THAN MOVED, AND IT HAD TO. ** It was a
-    # 6'-8" DT-INT-SWING30 at x 6'-6"..9'-0", derived when the rake was 5'-0" + x/3 and gave
-    # 7'-2"..8'-0" there. The same stations now give 4'-9" to 6'-0", and a 6'-8" head plus its
-    # header needs 2 x (80 + 2) = 13'-8" of x — which this 10'-0" wall does not have ANYWHERE.
-    # There is no station on W-A-STU-N that takes a full-height leaf.
-    #
-    # So it becomes a low ACCESS door: DT-INT-ACCESS24, 2'-0" x 3'-0", whose head needs
-    # 2 x (36 + 2) = 76" and sits at x 6'-4"..8'-4" — with 5'-1 1/2" of rake over its east
-    # jamb and 3'-11 1/2" over its west one, and 1'-3 1/2" clear of W-A-STU-W's tee studs at
-    # x 9'-4 3/4". Going taller is what forces it east into that tee. `structural.member_interference` is the rule that decides this
-    # — it named the old jacks and header coming out through the raked top plate the moment the
-    # pitch changed, exactly as it did on this door's first attempt in 2026-08.
-    #
-    # It is still a DOOR and not a scuttle because this pocket is the ERV's service access — the
-    # manifold EQ-A-ERV-MAN-EXH, the outdoor-air hood and VR-M-STACK's head all sit inside
-    # it, and IRC M1305.1.3 wants a passageway, a platform, a light and a receptacle at the
-    # appliance (hence ED-A-POCKET-LT1 and ED-A-POCKET-RC1). M1305.1.3's passageway minimum is
-    # 30" high x 22" wide, so 24 x 42 clears it with room; the door is SMALLER but not
-    # sub-code. `code.R807_1_attic_access` is storey-level and is satisfied by ST-S2A either way
-    # — walling off the pocket CANNOT make that rule fail — so the leaf size is a buildability
-    # call, not a code one.
+    # A DOOR, not a scuttle: the ERV manifold EQ-A-ERV-MAN-EXH, the outdoor-air hood and
+    # VR-M-STACK's head are inside, and the appliance-access passage (IMC 306.3 via MN 1346)
+    # wants 30" x 22", a light and a receptacle (ED-A-POCKET-LT1, -RC1). `code.R807_1_attic_access`
+    # is storey-level and met by ST-S2A, so the leaf size is buildability, not code.
     Door(uid="Y3R3YMXFVJ", tag="D-A-POCKET", host="W-A-STU-N", type_ref="DT-INT-ACCESS24",
-         held_rough_opening=OpeningSize(width=ft(2), height=ft(3)),
-         position=from_node("N-A-PK-W", ft(7))),
+         position=from_node("N-A-PK-W", ft(6, 11.5)), header_spec="flat 2x4 nonbearing"),
     # Into the bath off the studio. The SUNNERSTA kitchenette moved onto W-A-BATH-S at its
     # west end (plan/placeables.py) and blocks the door's old outward arc, so the door slides
     # east — the owner's own proposal — to make room. Hinge stays on the east jamb
@@ -436,9 +423,17 @@ ROOMS = [
     # already buy, at ~$4-8/SF material. It is also seamless and waterproof, which a room with a
     # wet bar in it wants. ~357 SF. The carpet alternative that used to be written here is still
     # one word and still ~$1,200; vinyl is the cheaper and harder-wearing of the two.
+    # Exposed eave services, owner 2026-10-29 ("it can be a little rustic"). Code: MN 4714 (UPC
+    # 2018) 312.4 asks protection only where piping is subject to mechanical damage, and 4714.0312
+    # amends 312.7/312.9 alone; MN 1346 (IMC 2018) 603.15 the same for ducts, and 1346.0603 amends
+    # 603.8.4/603.18.3 alone. Neither code requires concealment. Inside the insulated roof: no
+    # freeze (312.6) or duct-insulation duty (MN 1322 R403.3.1). Moving W-A-STU-N south to box
+    # them into RM-A-POCKET was rejected: it needs a 4 1/2" stub at the bath's NW corner and
+    # re-routes W-A-STU-N's conduits. DESIGN-LOG, "Studio eave services".
     Room(uid="CAR401AAAA", tag="RM-A-STUDIO", seed=pt(ft(7), ft(8)),
          occupancy=Occupancy.BEDROOM, floor_finish="vinyl-sheet",
-         ceiling=FollowRoof(roof_ref="RF-HOUSE")),
+         ceiling=FollowRoof(roof_ref="RF-HOUSE"),
+         exposed_services="owner accepts exposed services in the studio's eave, a rustic attic: the lavatory lines along W-A-STU-W and the ERV and heat-pump branches on the west deck run open under less than 5'-0\" of head, where nobody walks into them"),
     # ** THE TAG IS `RM-A-STUBATH`, NOT `RM-A-STUDIO-BATH`, AND THAT IS NOT COSMETIC. **
     # `electrical.room_lighting` matches devices to a room by NAME — `ED-{room.tag[3:]}-*` — so a
     # bath called RM-A-STUDIO-BATH would have its devices prefix-match RM-A-STUDIO as well, and the

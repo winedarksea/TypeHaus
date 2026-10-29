@@ -64,8 +64,15 @@ class MemberCut:
 
 
 def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, float],
-                  za: float, zb: float, radius_m: float) -> list[MemberCut]:
+                  za: float, zb: float, radius_m: float,
+                  half_height_m: float | None = None) -> list[MemberCut]:
     """Every stud and plate of ``wall`` this one leg of a run would have to cut.
+
+    ``radius_m`` is the run's half-width across it in plan and ``half_height_m`` its
+    vertical half-height, equal for a round run (the default). A rectangular duct is its
+    real pair (``mep_envelopes.run_sections``), never its larger side both ways: a 10x18
+    return read as 9" across reached a header 4" past its face. A riser has no run
+    direction, so its plan footprint takes the larger of the two.
 
     **The actual stud positions, never "the wall is empty".** A staggered wall is the case
     this exists for: its studs alternate between two rows, so a run down the middle of a
@@ -85,8 +92,10 @@ def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, fl
 
     from typehaus.resolve.framing.profiles import cross_section
 
+    half_z = radius_m if half_height_m is None else half_height_m
+    plan_half = max(radius_m, half_z) if a == b else radius_m
     axis = Point(a) if a == b else LineString([a, b])
-    swept = axis.buffer(radius_m)
+    swept = axis.buffer(plan_half)
     out: list[MemberCut] = []
     for member in wall.members:
         if member.category not in _CUTTABLE_CATEGORIES:
@@ -107,13 +116,21 @@ def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, fl
             # A riser occupies its whole z range at one plan point; its midpoint is not
             # where it meets anything (DU-ERV-RISER-EXH's fell 0.9" above W-M-MECH-S).
             low, high = min(za, zb), max(za, zb)
-            if high + radius_m < member.z0_m or low - radius_m > top:
+            if high + half_z < member.z0_m or low - half_z > top:
                 continue
             z = min(max((member.z0_m + top) / 2.0, low), high)
         else:
             z = _z_at(a, b, za, zb, (centre.x, centre.y))
-            if not (member.z0_m - radius_m <= z <= top + radius_m):
+            if not (member.z0_m - half_z <= z <= top + half_z):
                 continue
+        # The hole a stud gives up is the run's width across it; a plate or header gives
+        # up its height; a riser its whole plan section.
+        if a == b:
+            diameter_m = 2.0 * plan_half
+        elif member.p0 == member.p1:
+            diameter_m = 2.0 * radius_m
+        else:
+            diameter_m = 2.0 * half_z
         length_m = ((member.p1[0] - member.p0[0]) ** 2
                     + (member.p1[1] - member.p0[1]) ** 2) ** 0.5
         from_end_m = min(
@@ -121,13 +138,13 @@ def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, fl
             ((centre.x - member.p1[0]) ** 2 + (centre.y - member.p1[1]) ** 2) ** 0.5)
         out.append(MemberCut(member_key=member.child_key, category=member.category,
                              profile=member.profile, station=(centre.x, centre.y),
-                             z_m=z, diameter_in=2.0 * radius_m / M_PER_IN,
-                             through_in=_through_in(a, b, za, zb, z, radius_m,
+                             z_m=z, diameter_in=diameter_m / M_PER_IN,
+                             through_in=_through_in(a, b, za, zb, z, half_z, diameter_m,
                                                     member.z0_m, top),
                              opening_tag=member.opening_tag,
                              from_end_m=from_end_m, member_length_m=length_m,
-                             edge_clear_in=max(0.0, min(z - radius_m - member.z0_m,
-                                                        top - z - radius_m)) / M_PER_IN,
+                             edge_clear_in=max(0.0, min(z - half_z - member.z0_m,
+                                                        top - z - half_z)) / M_PER_IN,
                              member_height_m=top - member.z0_m,
                              spans_width=_spans_width(swept, member, section)))
     return out
@@ -149,19 +166,20 @@ def _spans_width(swept: Any, member: FramedMember, section: Any) -> bool:
 
 
 def _through_in(a: tuple[float, float], b: tuple[float, float], za: float, zb: float,
-                z: float, radius_m: float, z0_m: float, top_m: float) -> float:
+                z: float, half_z: float, diameter_m: float, z0_m: float,
+                top_m: float) -> float:
     """How deep into the member's z band the run's own envelope reaches (→ ``MemberCut``).
 
     A RISER — a leg whose rise beats its plan travel — crosses the member the long way and
     takes its whole diameter out of it. A level leg takes only the part of its OD band
     inside the member, which clipped at the top is a notch off the top face.
     """
-    diameter_in = 2.0 * radius_m / M_PER_IN
+    diameter_in = diameter_m / M_PER_IN
     plan_m = ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
     if abs(zb - za) > plan_m:
         return diameter_in
-    inside = min(z + radius_m, top_m) - max(z - radius_m, z0_m)
-    if inside >= 2.0 * radius_m - 1e-9:  # contained: snap, or ulps read as a notch
+    inside = min(z + half_z, top_m) - max(z - half_z, z0_m)
+    if inside >= 2.0 * half_z - 1e-9:  # contained: snap, or ulps read as a notch
         return diameter_in
     return max(0.0, inside) / M_PER_IN
 

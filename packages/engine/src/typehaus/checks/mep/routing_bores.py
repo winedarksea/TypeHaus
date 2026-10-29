@@ -91,26 +91,26 @@ def _iter_crossings(ctx: CheckContext):
     from shapely.geometry import LineString, Point
 
     from typehaus.resolve.mep_bore_geometry import leg_crossings
-    from typehaus.resolve.mep_envelopes import run_polylines, run_radii
+    from typehaus.resolve.mep_envelopes import run_polylines, run_sections
 
     walls = [wall for wall in ctx.model.walls if wall.members]
     if not walls:
         return
     hulls = [LineString(wall.axis).buffer(wall.thickness_m) for wall in walls]
     index = STRtree(hulls)
-    radii = run_radii(ctx.model)
+    sections = run_sections(ctx.model)
 
     for _kind, tag, path, z in run_polylines(ctx.model):
         if len(path) < 2 or len(z) != len(path):
             continue
-        radius = radii.get(tag, 0.0)
+        radius, half_z, _insulation = sections.get(tag, (0.0, 0.0, None))
         found: dict[str, list] = {}
         for i in range(len(path) - 1):
             a, b = path[i], path[i + 1]
-            probe = (Point(a) if a == b else LineString([a, b])).buffer(radius)
+            probe = (Point(a) if a == b else LineString([a, b])).buffer(max(radius, half_z))
             for position in index.query(probe):
                 wall = walls[int(position)]
-                cuts = leg_crossings(wall, a, b, z[i], z[i + 1], radius)
+                cuts = leg_crossings(wall, a, b, z[i], z[i + 1], radius, half_z)
                 if cuts:
                     found.setdefault(wall.tag, []).extend(cuts)
         for wall in walls:

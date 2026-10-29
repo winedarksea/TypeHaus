@@ -375,3 +375,46 @@ def test_a_beam_driven_into_a_column_is_not_a_butt_joint():
     plate_b = _Candidate("PL-B", box(0.455, 0.0, 0.545, 1.0), 0.0, 0.038,
                          seg=((0.5, 0.045), (0.5, 1.0)), kind="plate", parent="W-2")
     assert _butt_joint(plate_a, plate_b, tol)
+
+
+def test_a_wall_header_in_its_own_raked_plate_is_a_clash():
+    """D-A-POCKET's 2-2x8 ran 4.6" up through W-A-STU-N's raked plates and was cleared as a
+    floor-opening header bearing on a plate. Only another parent's plate still clears."""
+    from shapely.geometry import box
+
+    from typehaus.checks.structural.interference import _Candidate, _intended_framing_joint
+
+    header = _Candidate("W-A:header-0", box(0.0, 0.0, 1.0, 0.09), 2.0, 2.18,
+                        seg=((0.0, 0.045), (1.0, 0.045)), kind="header", parent="W-A")
+
+    def plate(parent):
+        return _Candidate(f"{parent}:plate-raked-0", box(0.0, 0.0, 1.0, 0.09), 2.1, 2.5,
+                          seg=((0.0, 0.045), (1.0, 0.045)), kind="raked_plate",
+                          parent=parent)
+
+    assert not _intended_framing_joint(header, plate("W-A"))
+    assert _intended_framing_joint(header, plate("FS-1"))
+
+
+def test_a_jamb_pack_at_a_corner_takes_it_and_shares_the_pack(catlin_ctx):
+    """D-S-BATH1's jack reached past W-S-BA-E1B's near face at N-S-BA1, so W-S-BD-N1B owns
+    the corner: jack, king, corner stud and end stud on its line, the neighbour's end stud
+    butting them (five), and ``structural.jamb_corner_pack`` passes it. A corner stud a pack
+    would overlap is not framed."""
+    from typehaus.checks.structural.jamb_corner_pack import jamb_corner_pack
+    from typehaus.resolve.framing.corner_jamb_packs import drop_corner_studs_in_packs
+    from typehaus.resolve.framing.corners import CornerStud
+
+    model = catlin_ctx.model
+    junction = next(j for j in model.junctions if j.node_tag == "N-S-BA1")
+    assert junction.framing_owner == "W-S-BD-N1B"
+    owner = model.wall("W-S-BD-N1B")
+    near = sorted(m.category for m in owner.members
+                  if m.p0 == m.p1 and m.p0[0] > inch(115).meters
+                  and m.category in ("jack", "king", "corner", "stud"))
+    assert near == ["corner", "jack", "king", "stud"]
+    verdicts = [f for f in jamb_corner_pack(catlin_ctx) if "D-S-BATH1" in f.element_tags]
+    assert [f.result.value for f in verdicts] == ["pass"], [f.message for f in verdicts]
+
+    studs = (CornerStud(1.0, 0.04), CornerStud(1.1, 0.04))
+    assert drop_corner_studs_in_packs(studs, [(0.9, 1.02)]) == (studs[1],)

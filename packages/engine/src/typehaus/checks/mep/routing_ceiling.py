@@ -38,8 +38,9 @@ whole length.
 ceiling is the roof structure's underside less the lining (:mod:`.routing_sloped`), cut at
 the ridge, and only where that finished ceiling clears R304.3's 5'-0" over the floor. A run
 under a lower rake is not graded but NAMED in an UNKNOWN: with no knee wall the eave is
-still finished room, and only an unmodeled box would hide it. A room whose roof cannot be
-resolved is named in an UNKNOWN too.
+still finished room, and only an unmodeled box would hide it — unless the room declares
+``exposed_services``, whose PASS then names it. A room whose roof cannot be resolved is
+named in an UNKNOWN too.
 
 **The terminal grace is blind to length**: ``PR-A-STUBATH-VENT`` crossed the bath for 6'-4"
 from the shower, excused whole. The fixture's trim is the bounded version: legs from a pipe
@@ -272,6 +273,7 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
     low: dict[tuple[str, str], tuple[float, float]] = {}
     #: What each declared room's PASS gets to say it actually saw.
     crossings: dict[str, set[str]] = {room: set() for room in declared}
+    eave_seen: dict[str, set[str]] = {room: set() for room in declared}
 
     for kind, tag, path, z in runs:
         if len(path) < 2:
@@ -303,6 +305,12 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
                     args = (start, pza, pzb, radius, piece, riser, outline,
                             covers[ceiling.storey], soffit_covers[ceiling.storey], floor)
                     rows = _segment_rows(*args, (pa, pb), tol)
+                    if eave and reason is not None:
+                        # A declared room's eave: the run is the design, and nobody stands
+                        # under 5'-0" for a headroom line to protect.
+                        if rows:
+                            eave_seen[ceiling.room_ref].add(tag)
+                        continue
                     if eave or reason is None:
                         for exposure_ft, intrusion_in in rows:
                             _record(eaves if eave else worst, tag, ceiling.room_ref,
@@ -362,8 +370,9 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
                 "nothing and no run was measured against it",
                 (room,)))
             continue
-        if any(key[1] == room for key in low):
-            continue
+        if any(key[1] == room and exposure_ft >= rules.min_ceiling_exposure_ft
+               for key, (exposure_ft, _depth) in low.items()):
+            continue  # reported above; a row under the threshold does not void the PASS
         seen = crossings[room]
         # An empty set is not a quiet pass: it says the declaration is not what is carrying
         # this room today — a Soffit or a wall still covers everything crossing it — and a
@@ -375,10 +384,13 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
                     if seen else
                     "though nothing currently hangs in its open air: a Soffit or a wall "
                     "still covers every run that crosses it")
+        if eave_seen[room]:
+            evidence += (f"; in its eave, under 5'-0\" of head, "
+                         f"{', '.join(sorted(eave_seen[room]))} lie open by the same choice")
         out.append(passed(
             cid, f"{room}: services are deliberately exposed — \"{declared[room]}\" — "
                  + evidence,
-            (room,) + tuple(sorted(seen))))
+            (room,) + tuple(sorted(seen | eave_seen[room]))))
 
     if not any(finding.result is Result.FAIL for finding in out):
         planes = len({id(entry[0]) for entry in graded})

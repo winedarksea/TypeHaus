@@ -235,10 +235,11 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     # on its module station (15'-8", 24'-4") until the PAX fit-out, and moved 2 1/2" north so
     # the 43 3/8" corner set plus a 19 5/8" frame fits between the south wall and the jamb
     # (plan/bedroom_wardrobes.py). They are now 2 1/2" off the module, accepted above.
-    # D-S-BED2's derived RO (2026-10-29) keeps its near jamb and grows 2.24" north.
+    # D-S-BED2's and D-S-BED3's derived ROs (2026-10-29) keep their near jambs and grow
+    # 2.24" north.
     for tag, y_ft, tolerance in (("D-S-BED1", 15 + 10.5 / 12, TOL_M),
                                  ("D-S-BED2", 24 + (6.5 + 1.118) / 12, TOL_M),
-                                 ("D-S-BED3", 28 + 7 / 12, TOL_M)):
+                                 ("D-S-BED3", 28 + (7 + 1.118) / 12, TOL_M)):
         x, y = centres[tag]
         assert x == pytest.approx(ft(21, 11).meters, abs=TOL_M), tag
         assert y == pytest.approx(ft(y_ft).meters, abs=tolerance), tag

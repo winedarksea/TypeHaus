@@ -285,40 +285,9 @@ suppress = [
   # test covers it, so it is UNKNOWN by construction. Accepted 2026-10-23 (DESIGN-LOG,
   # "Wall board policy"); a cited rating would need a tested liner wall.
   "advisory.acoustic_adjacency:W-S-PS1",
-  # ** mep.run_through_plate: 8 UNKNOWNs AND NO FAIL, BY NAME (2026-09-24; 9 and one
-  # ERROR-severity FAIL on 2026-09-20). IT WAS A BLANKET ENTRY CLAIMING "15 UNKNOWNs" BEFORE. **
-  #
-  # ** THE OLD ENTRY'S OWN ARGUMENT HAD STOPPED BEING TRUE, WHICH IS THE WHOLE REASON THIS
-  # IS NOW NINE LINES INSTEAD OF ONE. ** It read "the check reports them UNKNOWN rather than
-  # FAIL", and on that basis suppressed the check id outright. It no longer does: one of
-  # these is graded, over, and `severity=ERROR`. A blanket suppression whose stated reason is
-  # "nothing here is a FAIL" while it hides a FAIL is the worst kind of entry in this file —
-  # it is not a judgement a reader can check, it is a claim that is simply wrong. Every
-  # finding is now named, so the list cannot drift away from its argument again.
-  #
-  # ** THE ONE FAIL IS GONE (2026-09-24). ** `PR-B-SAUNA-VENT` cut W-B-ESS-S's 2x4 top plate
-  # 68% and severed W-B-ESS-W's; re-lined to turn north at x=4'-3 1/2", it crosses neither.
-  #
-  # ** THE NINE UNKNOWNs ARE A DIFFERENT CONDITION FROM THE ONE ABOVE, AND THE OLD ENTRY
-  # DESCRIBED NEITHER. ** It said "2" and 3" drains and vents through 2x4 and 2x6 plates".
-  # These are all DUCTS, and every one is as wide as or wider than the plate it crosses —
-  # 4", 6", 10" and 18" through 3.50" and 5.50" plates. The plate is INTERRUPTED, not
-  # notched, and R602.6.1's strap does not describe that at all: a fully broken top plate
-  # wants a header or a strap sized for the tension it was carrying, which is a design and
-  # not a detail. The check says "not graded" for exactly that reason, and it is right to.
-  #
-  # ** WHAT CLOSES BOTH IS A SCHEMA, NOT AN EDIT. ** `FramedMember.connection` is a free-form
-  # string and nothing reads it for this; the day it can say "plate-tie" (or a `Connector` in
-  # the catalog can be placed on a plate) the notch case becomes an honest PASS. The
-  # interrupted-plate case needs more than that — it needs the header over the break to be
-  # modelled — and until then it would sit as nine permanent UNKNOWNs in front of every
-  # reader of the report and in the way of `haus print`, which teaches people to skip the
-  # unknowns: the one habit a report cannot survive.
-  # The two sauna radials moved into clear wall bays on 2026-10-01 and now produce no
-  # run_through_plate finding, so their old tag suppressions are removed.
-  "mep.run_through_plate:DU-S-HP-SUP",
-  "mep.run_through_plate:DU-S-HP-SUITE",
-  "mep.run_through_plate:DU-S-HP-SOUTH",
+  # mep.run_through_plate: nothing suppressed since 2026-10-29. The last three entries
+  # (DU-S-HP-SUP/-SUITE/-SOUTH) were rectangular ducts read at their wider side both ways;
+  # at their real 8"/6" depth they pass over the plates (resolve/mep_bore_geometry).
 
   # ** mep.run_through_stud: CLOSED 2026-09-30 BY ROUTING AND RETYPING. NOTHING SUPPRESSED. **
   #
@@ -405,9 +374,7 @@ suppress = [
   # (or, for D-M-ENTRY and D-B-GYM, a layout line other walls share).
   "structural.door_framing_module:D-B-GYM",
   "structural.door_framing_module:D-M-ENTRY",
-  "structural.door_framing_module:D-S-BED3",
   "structural.door_framing_module:D-S-STUDY2",
-  "structural.door_framing_module:D-S-BATH1",
   "structural.door_framing_module:D-S-NCLOSET",
 
   # Owner accepts (2026-10-02): D-S-BED1/2 moved 2 1/2" north, off the module, so a real

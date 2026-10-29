@@ -1,3 +1,41 @@
+## Studio eave services, the pocket door and a shared corner pack (2026-10-29)
+
+Owner answers to the door-sizing and MEP-batch questions (`plans/door-sizing.md`).
+
+- **Studio eave services stay exposed.** The lav lines (`PR-A-STUBATH-LAV-ARM/-CW/-HW`) run
+  1"-3" proud of `W-A-STU-W` at 19"-32" AFF, and `DU-A-ERV-R-ATTIC/-BED3/-STUBATH` and
+  `DU-S-ERV-HP-FEED` lie on the west deck, all under 5'-0" of head. Code read 2026-10-29:
+  Minn. R. 1309.0010 subp. 3 sends plumbing to ch. 4714 (2018 UPC) and mechanical to ch. 1346
+  (2018 IMC). UPC 312.4: piping "subject to ... mechanical damage shall be protected in an
+  approved manner"; 4714.0312 amends only 312.7 (rated penetrations) and 312.9 (nail plates,
+  which still apply where these lines enter framing). IMC 603.15 guards ducts "exposed to
+  mechanical damage by vehicles or from other causes"; 1346.0603 amends only 603.8.4 and
+  603.18.3. Neither code asks for concealment. The attic is inside the insulated roof, so
+  UPC 312.6 (freezing) and MN 1322 R403.3.1 (ducts outside conditioned space) do not reach
+  them. Under 5'-0" nobody walks into them; the AHJ can still call 312.4 at the pocket door,
+  where a 1x cover board is the cheap answer. `RM-A-STUDIO.exposed_services` declares it, and
+  `mep.run_in_finished_volume` now names a declared room's eave runs in its PASS.
+- **Moving the pocket wall was rejected.** `W-A-STU-N` south to y=17'-4" (in line with
+  `W-A-BATH-S`) would box all seven in, but the bath's NW corner then needs a 4 1/2" stub
+  between `W-A-STU-W`'s end and `N-A-H1`, the wall's conduits and the pocket light re-route,
+  and the studio loses ~46 SF of (sub-5'-0") floor for no code gain.
+- **D-A-POCKET released.** Derived RO 26.24 x 38.38. A 2-2x8 head ran 4.6" up through the
+  raked plates; `member_interference` cleared it as a floor-opening header on a plate, and
+  now grades a wall header against its own raked plate. The head is a flat 2x4 (R602.7.4,
+  nonbearing, under 24" to the plate). The near jamb moved 1/2" west to 6'-11 1/2": the
+  derived east king overlapped `W-A-STU-W`'s free-end stud by 1/2" and now touches it; the
+  west header end clears the rake by 1/2". `PR-A-STUBATH-LAV-HW` turns at x=110 3/4".
+- **D-S-BATH1 released: the jamb pack takes the corner.** Its jack reached 1/2" past
+  `W-S-BA-E1B`'s near face at N-S-BA1, which topology had given to BA-E1B by tag.
+  `resolve/framing/corner_jamb_packs.py` hands such an L to the opening's wall: jack, king,
+  corner stud and end stud on `W-S-BD-N1B`, BA-E1B's end stud butting them, five together
+  as the owner predicted. A corner stud a pack would overlap is dropped (the king stands in).
+  `structural.jamb_corner_pack` grades jack bearing, king continuity and the neighbour's
+  backing; it passes D-S-BATH1 and the garage's D-G-SERVICE.
+- **D-S-BED3 released.** `mep_bore_geometry` read DU-S-HP-RET (10x18) as 9" each way; it now
+  takes a rectangular duct's width across and depth up. The three `DU-S-HP-*`
+  `run_through_plate` suppressions went with it: at their real depth they pass over the plates.
+
 ## Foundation gravel, the wall drain column and the over-dig (2026-10-28)
 
 The two TODO items "spec sand or gravel backfill" and "check the gravel under the house" are

@@ -539,7 +539,6 @@ OPENINGS = [
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B2", ft(5, 7.5)), flip_swing=True, flip_hinge=False),  # y 24'-6 1/2"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30",
-         held_rough_opening=OpeningSize(width=ft(2, 6), height=ft(6, 8)),
          position=from_node("N-S-B3", ft(0, 8)), flip_swing=True, flip_hinge=True),  # y 28'-11"
     # Just an opening, framed the same as a 30" door: no leaf needed for this passthrough.
     RoughOpening(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1",
@@ -588,7 +587,6 @@ OPENINGS = [
     # the east wall instead of dividing the entry. The 36" vanity begins 8.5" beyond
     # the 90-degree leaf tip. Keep a stop to protect the adjacent switch and cabinet.
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30",
-         held_rough_opening=OpeningSize(width=ft(2, 6), height=ft(6, 8)),
          position=from_node("N-S-V2", ft(1, 1.5)), flip_hinge=False),     # x 8'-3"
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
          held_rough_opening=OpeningSize(width=ft(2, 6), height=ft(6, 8)),

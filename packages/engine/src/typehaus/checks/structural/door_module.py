@@ -30,7 +30,7 @@ Tri-state, and the third state is what makes it usable:
 * none does                -> **UNKNOWN**, saying so and naming the three remedies.
 
 The second case is not a technicality. Several catlin openings are in it — ``D-M-ENTRY`` (36" in a
-48" wall), ``D-S-BATH1``, ``D-S-BED3``, ``D-S-NCLOSET``, ``D-S-STUDY2`` — and
+48" wall), ``D-S-NCLOSET``, ``D-S-STUDY2`` — and
 for every one of them the answer "shift the RO" is wrong. The wall is too short to hold that
 leaf on the module with a jamb pack at each end, and the fix is the start node, the layout
 origin, or a narrower leaf. A check that said FAIL there would be sending somebody to look for

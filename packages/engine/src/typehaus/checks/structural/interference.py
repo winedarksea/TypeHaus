@@ -111,10 +111,8 @@ _TRUSS_KINDS = frozenset({"roof_truss"})
 _ENVELOPE_SKIN_KINDS = values_where(interference_skin=True) | frozenset({
     "strapping", "fascia", "soffit", "gutter", "ridge_cap", "corner_trim", "drip_edge"}) \
     | TRUSS_CATEGORIES
-# Rake framing (resolve/framing/roof_gable.py): outlookers run *over* the dropped gable
-# truss and land on the barge rafter. Interpenetration there is the joint the drop creates.
+# Rake framing (roof_gable.py): outlookers run over the dropped gable truss to the barge.
 _RAKE_KINDS = frozenset({"outlooker", "barge_rafter"})
-# The wall-top members a roof member or a truss bears on.
 _WALL_TOP_KINDS = _PLATE_KINDS | _STUD_KINDS
 # A rough opening's jamb pack and header: never part of a corner or tee pack.
 _OPENING_PACK = frozenset({"king", "jack", "header"})
@@ -212,9 +210,11 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
         beam, rim = (a, b) if a.kind == "beam" else (b, a)
         if not any(rim.poly.covers(Point(pt)) for pt in beam.seg):
             return True
-    # Cut joists / trimmers bearing on a floor-opening header (the header carries them).
+    # Cut joists / trimmers bearing on a floor-opening header (the header carries them). A
+    # wall header in its OWN raked plate is a head through the rake, not that joint.
     return ("header" in kinds
-            and (kinds - {"header"}) <= {"joist", "trimmer", "plate", "raked_plate"})
+            and (kinds - {"header"}) <= {"joist", "trimmer", "plate", "raked_plate"}
+            and not ("raked_plate" in kinds and same_parent))
 
 
 def _within_wall_pairs(plan) -> set[tuple[str, str]]:
