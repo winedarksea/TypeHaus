@@ -17,8 +17,8 @@ it holds however the coordinate is spelled.
 HEATER`` used to state three ports at one local ``(0, 0)``, so the only thing a test could ask
 was "is there a vertex on the footprint's centroid" — which a COLD run landing on the HOT tap
 answers just as well as the right one, and which three pipes of two services drawn through a
-single point answer best of all. The type now carries a dimensioned top pair (cold 4" west of
-the axis, hot 4" east, both 3/4" NPT at the 5'-8" tank top), so the question this file asks is
+single point answer best of all. The type now carries Rheem's top pair (3/4" NPT nipples 4 1/8"
+either side of the axis at 76 13/16", ``notes/water_service.md``), so the question this file asks is
 the one that was always meant: **each run's tank end lands on the resolved port matching its
 own service**, read through :func:`typehaus.resolve.mep_ports.placed_ports` — the same reading
 ``mep.equipment_port_service`` and the router's terminal snapping use.
@@ -30,10 +30,6 @@ import pytest
 
 #: Half an inch. A run end is ON a 3/4" stub or it is not; this is not a routing tolerance.
 _TOLERANCE_M = 0.0127
-# The T&P tap is deliberately NOT on the tank: it hangs 2" off the west face and drops a foot
-# south. This is how far off-centre that puts it, and it is checked as a range rather than a
-# point so the detail can be re-drawn without editing a test.
-_TPR_MAX_OFFSET_M = 0.6096  # 2'-0" — anything further is not "beside the tank" any more
 
 #: Every run that touches the tank, and WHICH TAP it has to touch. The point of the mapping
 #: is the service column: a hot branch that drifts onto the cold stub is the failure this
@@ -51,12 +47,6 @@ _RUNS_BY_PORT = {
 #: The service each tap carries, so a port silently retyped fails here rather than passing
 #: a positional test that no longer means anything.
 _PORT_SERVICE = {"hot": "water_hot", "cold": "water_cold"}
-
-
-def _centre(canvas_object) -> tuple[float, float]:
-    xs = [p[0] for p in canvas_object.footprint]
-    ys = [p[1] for p in canvas_object.footprint]
-    return sum(xs) / len(xs), sum(ys) / len(ys)
 
 
 @pytest.fixture(scope="module")
@@ -145,23 +135,16 @@ def test_the_two_runs_that_really_connect_land_at_the_tap_elevation(catlin_model
             f"{port.z_m:.4f} m — the connection is drawn inside or above the tank")
 
 
-def test_the_relief_discharge_followed_the_tank(catlin_model, water_heater) -> None:
-    """The UPC 608.5 relief discharge is offset from the tank, so it is checked by proximity.
-
-    It is measured from the tank CENTRE and not from a port on purpose: the T&P valve is
-    factory-installed and the spec sheet (HP-400-SO REV. 1) gives no station for it, so
-    ``EQ-T-WATER-HEATER`` declares no relief port to land on. This run is dimensioned off
-    the tank's west FACE instead, which is the honest datum available.
-    """
+def test_the_relief_discharge_leaves_the_t_and_p_port(catlin_model, wh_ports) -> None:
+    """The UPC 608.5 relief discharge starts on the type's ``relief`` port (Rheem E, 42 3/8",
+    2" off the body), the factory T&P valve's outlet."""
     tpr = next((r for r in catlin_model.pipe_runs if r.tag == "PR-B-WH-TPR"), None)
     assert tpr is not None, "EQ-B-WH names relief_discharge_ref=PR-B-WH-TPR; it is missing"
-    tx, ty = _centre(water_heater)
-    start = tpr.path[0]
-    offset = ((start[0] - tx) ** 2 + (start[1] - ty) ** 2) ** 0.5
-    assert offset <= _TPR_MAX_OFFSET_M, (
-        f"PR-B-WH-TPR starts {offset:.3f} m from EQ-B-WH — the relief line did not follow "
-        "the tank"
-    )
+    port = wh_ports["relief"]
+    (x, y), z = tpr.path[0], tpr.z_m[0]
+    assert max(abs(x - port.x_m), abs(y - port.y_m), abs(z - port.z_m)) <= _TOLERANCE_M, (
+        "PR-B-WH-TPR does not start on EQ-B-WH.relief: the tank or its valve moved and the "
+        "relief line did not")
 
 
 def test_the_tank_stands_inside_the_room_it_claims(catlin_model, water_heater) -> None:

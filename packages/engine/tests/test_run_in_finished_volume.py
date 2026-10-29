@@ -45,9 +45,8 @@ def test_the_attic_is_graded_against_the_roof_underside(findings, catlin_model) 
 
     Two regressions are put back on a mutable model. A vent crossing the bath at 3'-5" (the
     run ``PR-A-STUBATH-VENT`` was until 2026-10-29) hangs in the room's air. The same pipe
-    lying on the floor of the west eave, under a rake lower than R304.3's 5'-0", is not in a
-    space anybody stands in and is not reported — the line ``room_head_limited_area_m2``
-    already draws for area."""
+    on the floor of the west eave, under a rake lower than R304.3's 5'-0", is not graded but
+    is NAMED: with no knee wall that eave is still finished room."""
     from typehaus.model import ft, inch
 
     assert not [f for f in findings if f.result is Result.UNKNOWN
@@ -69,7 +68,12 @@ def test_the_attic_is_graded_against_the_roof_underside(findings, catlin_model) 
 
     eave = tuple((inch(x).meters, ft(19, 0).meters) for x in (30, 24, 18))
     low = (ft(20, 1).meters,) * 3
-    assert not _fails_for(_with(eave, low), "PR-A-STUBATH-VENT")
+    in_eave = _with(eave, low)
+    assert not _fails_for(in_eave, "PR-A-STUBATH-VENT")
+    named = [f for f in run_from_model(in_eave, [], tier=Tier.ADVISORY,
+                                       only="mep.run_in_finished_volume").findings
+             if f.result is Result.UNKNOWN and "eave" in f.message]
+    assert named and "PR-A-STUBATH-VENT in RM-A-STUDIO" in named[0].message
 
 
 def test_the_work_list_is_clear(findings) -> None:
@@ -262,20 +266,25 @@ def test_a_drop_that_ends_at_a_thing_in_the_room_is_the_connection_to_it(
 def test_a_trap_under_its_own_basin_is_the_fixture_not_transit(catlin_model) -> None:
     """``PR-A-BAR-DRAIN`` leaves the open-frame SUNNERSTA in three legs (stub, trap-arm,
     drop through the floor), all inside the sink's footprint, so all are the fixture's own
-    connection. Move the drop 10" south of the basin and the same legs are transit."""
+    connection. Move the drop 10" south of the basin, or start it 17" over the basin's
+    283.1" top, and the same legs are transit."""
     from typehaus.model import inch
 
     assert not _fails_for(catlin_model, "PR-A-BAR-DRAIN")
     original = next(r for r in catlin_model.pipe_runs if r.tag == "PR-A-BAR-DRAIN")
+
+    def _with(**fields):
+        moved = dataclasses.replace(original, **fields)
+        return dataclasses.replace(
+            catlin_model, pipe_runs=tuple(moved if r.tag == original.tag else r
+                                          for r in catlin_model.pipe_runs))
+
     south = inch(177.74).meters  # 10" past the footprint's south edge at 187.74"
     path = (original.path[0], (original.path[1][0], south), (original.path[2][0], south),
             *original.path[3:])
-    moved = dataclasses.replace(original, path=path)
-    model = dataclasses.replace(
-        catlin_model,
-        pipe_runs=tuple(moved if r.tag == original.tag else r
-                        for r in catlin_model.pipe_runs))
-    assert _fails_for(model, "PR-A-BAR-DRAIN")
+    assert _fails_for(_with(path=path), "PR-A-BAR-DRAIN")
+    over = (inch(300.0).meters,) * 2 + tuple(original.z_m[2:])
+    assert _fails_for(_with(z_m=over), "PR-A-BAR-DRAIN")
 
 
 def test_the_bands_lower_edge_is_the_storey_datum(catlin_model) -> None:

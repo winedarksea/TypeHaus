@@ -41,8 +41,8 @@ class SlopedPlane:
     def standing_part(self, outline: Polygon, floor_m: float) -> Any:
         """``outline`` where the finished ceiling clears R304.3's 5'-0" over the floor.
 
-        Under that rake nobody stands, so a run lying on the floor there is in the eave and
-        not in the room — the same line ``room_head_limited_area_m2`` uses for area.
+        The line ``room_head_limited_area_m2`` uses for area; the check names, rather than
+        grades, a run under the rake beyond it.
         """
         region = roof_headroom_region(self.roof, floor_m, MIN_COUNTABLE_HEAD_M + self.drop_m)
         return outline.intersection(region)

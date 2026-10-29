@@ -99,7 +99,7 @@ class MepPreferences:
     min_ceiling_exposure_ft: float = 0.5
     #: How close a terminal leg's own end vertex must land to something in the room before it
     #: reads as the connection to that thing rather than transit through the room. See
-    #: ``routing_ceiling._terminates_in_room``.
+    #: ``routing_terminals.terminates_in_room``.
     terminal_grace_in: float = 24.0
     #: The head a run must keep in a room whose ``Room.exposed_services`` declares its
     #: ceiling deliberately open. Declaring a room exposed retires the ceiling-plane

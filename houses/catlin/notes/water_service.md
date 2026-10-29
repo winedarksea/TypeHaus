@@ -80,9 +80,8 @@ so `PR-B-CW-TRUNK` (1 1/4", 39 WSFU) had no feeder and the router refused. It is
 and carries the trunk's whole load plus the hydrant, so the trunk's tee derives it as parent.
 The **street main, curb stop and meter are Saint Paul's and are not runs in this model.**
 
-Not changed, and now visibly wrong: `SP-B-N3-HYD` (wall sleeve, 1.5" for a 3/4" pipe) and
-`SP-GF-S-HYD` (garage footing sleeve) were sized for the 3/4" pipe. A 1 1/4" PEX is 1.375" OD
-in a 1.5" sleeve. They live in `plan/mep_sleeves.py`; resize them before the pour.
+Its two sleeves, `SP-B-N3-HYD` (wall) and `SP-GF-S-HYD` (garage footing), were resized with
+it to 2 1/2" and 3" for the 1 1/4" PEX (1.375" OD) in `plan/mep_sleeves.py`.
 `PA-G-HYD-BFP` (3/4" dual check) sits **on the trunk riser**: if it really is in series with the
 house, the house is a closed system and the 3/4" part throttles a 1 1/4" trunk. The device
 comment says the hydrant branch order is unresolved; resolve it with the question below.

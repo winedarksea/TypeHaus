@@ -82,6 +82,12 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
 - **`mep.run_in_finished_volume`'s terminal grace is blind to leg length** (decision #94): a
   fixture's whole first or last leg is excused however far it runs. Measure what tightening it
   raises before deciding.
+- **Seven runs in `RM-A-STUDIO`'s west eave are ungraded, and named in an UNKNOWN** (#94: under
+  5'-0" of head is not graded, but there are no knee walls, so it is finished room).
+  `PR-A-STUBATH-LAV-ARM`/`-CW`/`-HW` jog 1"-3" proud of `W-A-STU-W`'s studio face at 19"-32" AFF
+  to pass `DU-A-ERV-R-STUBATH`'s riser in that cavity: exposed pipe, box it or reroute.
+  `DU-A-ERV-R-ATTIC`/`-BED3`/`-STUBATH` and `DU-S-ERV-HP-FEED` ride the "boxed floor chase"
+  `mep_erv_l1.py` declares and nothing models: author it (a Soffit) so the check can see it.
 - **Router port stub is unpriced** (decision #95): its length and bend are not in a proposal's
   cost terms, and the 2" fitting allowance is a stated value, not a datasheet one.
 - **`test_routing_perf_guard` (slow) is red at HEAD**: `DU-B-ERV-R-SAUNA-SUP` nominates 376,101

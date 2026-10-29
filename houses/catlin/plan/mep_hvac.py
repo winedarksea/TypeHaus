@@ -488,7 +488,7 @@ DUCTS_HVAC_ATTIC = []
 #
 # **Connection datums move with the tank (2026-10-29).** Rotation 0: hot west, cold east, T&P
 # west, condensate south-west, air exhaust east (at the wall). Flush to the east wall; the
-# 24.025" gap to the ERV case is 0.225" under the tank, so the body laps it 0.155" (the case
+# 24.095" gap to the ERV case is under the 24.25" tank, so the body laps it 0.155" (the case
 # hangs at 54", the T&P and fittings are below it). Supply ends in plan/mep_supply.py, the stop
 # in mep_supply_devices.py and PR-B-WH-TPR/-COND in mep_drainage.py quote these stations.
 EQUIPMENT = [

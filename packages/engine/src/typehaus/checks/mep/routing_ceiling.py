@@ -36,15 +36,15 @@ whole length.
 
 **The attic is graded against the roof.** A ``FollowRoof`` room has no flat plane, so its
 ceiling is the roof structure's underside less the lining (:mod:`.routing_sloped`), cut at
-the ridge, and only where that finished ceiling clears R304.3's 5'-0" over the floor: under
-a lower rake nobody stands, and a duct lying on the floor of the eave is not in the room.
-A room whose roof cannot be resolved is still named in an explicit UNKNOWN.
+the ridge, and only where that finished ceiling clears R304.3's 5'-0" over the floor. A run
+under a lower rake is not graded but NAMED in an UNKNOWN: with no knee wall the eave is
+still finished room, and only an unmodeled box would hide it. A room whose roof cannot be
+resolved is named in an UNKNOWN too.
 
-**The terminal grace is blind to length.** A first or last leg that starts within grace of
-a fixture is excused whole, however far it runs in the open: ``PR-A-STUBATH-VENT`` crossed
-the bath for 6'-4" from the shower and was never flagged for it. The fixture's own trim is
-the bounded version: legs from a pipe run's end that stay inside the footprint of a fixture
-it serves (a trap and floor drop under an open-frame sink) are its connection, not transit.
+**The terminal grace is blind to length**: ``PR-A-STUBATH-VENT`` crossed the bath for 6'-4"
+from the shower, excused whole. The fixture's trim is the bounded version: legs from a pipe
+run's end inside a served fixture's footprint and under its top (an open sink's trap and
+drop) are its connection, not transit.
 
 **A room may answer this in words.** Boxing a run out with a ``Soffit`` was the only
 authored answer until 2026-09-13, which made a soffit the engine's idea of a ceiling
@@ -76,26 +76,15 @@ from typehaus.checks._authoring import advisory, passed, unknown
 from typehaus.checks.mep.routing import VOID_BUFFER_M
 from typehaus.checks.mep.routing_geometry import M_TO_FT, run_polylines, run_radii, wall_cover
 from typehaus.checks.mep.routing_sloped import SlopedPlane, sloped_plane
+from typehaus.checks.mep.routing_terminals import (
+    fixture_trim,
+    terminals_in,
+    terminates_in_room,
+)
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import EXPOSED_SERVICE_OCCUPANCIES, Occupancy
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.placeables import placed_xy
-
-#: What each trade can actually terminate at, by run kind. **Per trade, not one list**, and
-#: that is what makes the grace rule mean something: a drain ending near a light switch has
-#: not connected to anything, and a one-list version excused ``PR-A-STUBATH-DRAIN``'s
-#: dog-leg because ``ED-S-SUITEBATH-SW`` happened to sit 8.9" from the stack head.
-#:
-#: ``Equipment`` is in all three because it genuinely is: an air handler takes duct, an ERV
-#: takes a condensate line, and both take power. ``Furniture`` is in none — a sofa is not a
-#: terminal, and 127 of them would excuse most of the house. ``Luminaire`` is not a kind at
-#: all; a light fixture is an ``ElectricalDevice``.
-_TERMINAL_KINDS = {
-    "pipe": frozenset({"Fixture", "Appliance", "Equipment"}),
-    "duct": frozenset({"Register", "Equipment"}),
-    "conduit": frozenset({"ElectricalDevice", "Alarm", "Equipment"}),
-}
 
 
 def _soffit_union(ctx: CheckContext, storey: str) -> Any:
@@ -116,77 +105,6 @@ def _soffit_union(ctx: CheckContext, storey: str) -> Any:
                 if soffit.storey == storey and len(soffit.outline) >= 3]
     valid = [poly for poly in polygons if poly.is_valid and not poly.is_empty]
     return union_all(valid) if valid else None
-
-
-def _terminals_in(ctx: CheckContext, storey: str,
-                  outline: Any) -> dict[str, list[tuple[float, float]]]:
-    """Terminal plan points inside this ceiling's polygon, per trade.
-
-    Membership in the room comes from the **polygon**, not from an authored ``room=``
-    field — the trick ``soffit_occupancy`` already uses, and for the same reason: a missing
-    or wrong room tag must not be able to turn a connection into a transit finding.
-
-    Membership on the STOREY does come from the filing, and it has to. A plan polygon is
-    two-dimensional: read across the whole model it collects the basement lavatory and the
-    attic water closet standing at the same x/y as this room, and a drain diving through
-    the suite bath gets excused by a fixture two floors below it.
-    """
-    out: dict[str, list[tuple[float, float]]] = {kind: [] for kind in _TERMINAL_KINDS}
-    for element in ctx.plan.storey_elements(storey):
-        kinds = [trade for trade, allowed in _TERMINAL_KINDS.items()
-                 if element.element_kind in allowed]
-        if not kinds:
-            continue
-        xy = placed_xy(ctx.model, element)
-        if xy is None or not outline.covers(Point(xy)):
-            continue
-        for trade in kinds:
-            out[trade].append(xy)
-    return out
-
-
-def _terminates_in_room(path: tuple[tuple[float, float], ...], index: int,
-                        terminals: Any, grace_m: float) -> bool:
-    """True when this segment is the run's own first or last leg AND that terminal vertex
-    lands within ``grace_m`` of a terminal element inside this room's outline.
-
-    A drop that ends at a thing in the room *is* the connection to it; a run passing through
-    is not. Only ``index == 0`` or ``len(path) - 2`` qualifies — an interior segment is
-    transit, and no amount of proximity makes it a connection.
-    """
-    if index == 0:
-        vertex = path[0]
-    elif index == len(path) - 2:
-        vertex = path[-1]
-    else:
-        return False
-    return any((vertex[0] - x) ** 2 + (vertex[1] - y) ** 2 <= grace_m * grace_m
-               for x, y in terminals)
-
-
-def _fixture_trim(ctx: CheckContext, tag: str,
-                  path: tuple[tuple[float, float], ...]) -> set[int]:
-    """Segments from a run's end that never leave a served fixture's footprint: its trap
-    and drop, however many legs. Bounded by the footprint, so no long leg is excused."""
-    run = next((r for r in ctx.model.pipe_runs if r.tag == tag), None)
-    if run is None or not run.serves:
-        return set()
-    shapes = [Polygon(c.footprint).buffer(1e-3) for c in ctx.model.canvas_objects
-              if c.tag in run.serves and len(c.footprint) >= 3]
-    if not shapes:
-        return set()
-
-    def inside(index: int) -> bool:
-        piece = LineString([path[index], path[index + 1]])
-        return any(shape.covers(piece) for shape in shapes)
-
-    out: set[int] = set()
-    for order in (range(len(path) - 1), reversed(range(len(path) - 1))):
-        for index in order:
-            if not inside(index):
-                break
-            out.add(index)
-    return out
 
 
 def _air_interval(za: float, zb: float, radius: float, floor: float, pa: float, pb: float,
@@ -316,7 +234,8 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
     grace_m = rules.terminal_grace_in * M_PER_IN
     headroom_m = rules.exposed_service_headroom_ft / M_TO_FT
 
-    graded: list[tuple[Any, float, float, list, Any, str | None]] = []
+    #: ``(ceiling, floor, plane, terminals, outline, declared reason, is the low eave)``
+    graded: list[tuple[Any, float, Any, dict, Any, str | None, bool]] = []
     follow_roof: set[str] = set()
     for ceiling in ctx.model.ceilings:
         plane: float | SlopedPlane | None = ceiling.z0_m
@@ -335,18 +254,20 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
         if not outline.is_valid or outline.is_empty:
             continue
         floor = storey_z.get(ceiling.storey, 0.0)
+        zones = [(outline, False)]
         if isinstance(plane, SlopedPlane):
-            outline = plane.standing_part(outline, floor)
-            if outline.is_empty:
-                continue
-        graded.append((ceiling, floor, plane,
-                       _terminals_in(ctx, ceiling.storey, outline), outline,
-                       declared.get(ceiling.room_ref)))
+            standing = plane.standing_part(outline, floor)
+            zones = [(standing, False), (outline.difference(standing), True)]
+        terminals = terminals_in(ctx, ceiling.storey, outline)
+        graded.extend((ceiling, floor, plane, terminals, zone, declared.get(ceiling.room_ref),
+                       eave) for zone, eave in zones if zone.area > 1e-6)
 
     out: list[Finding] = []
     covers: dict[str, Any] = {}
     ungraded: list[str] = []
     worst: dict[tuple[str, str], tuple[float, float]] = {}
+    #: (run, room) rows under a rake too low to stand under: named, not graded.
+    eaves: dict[tuple[str, str], tuple[float, float]] = {}
     #: (run, room) rows for a DECLARED room, measured against its headroom line instead.
     low: dict[tuple[str, str], tuple[float, float]] = {}
     #: What each declared room's PASS gets to say it actually saw.
@@ -359,14 +280,14 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
             ungraded.append(tag)
             continue
         radius = radii.get(tag, 0.0)
-        trim = _fixture_trim(ctx, tag, path) if kind == "pipe" else set()
+        trim = fixture_trim(ctx, tag, path, z, radius) if kind == "pipe" else set()
         for index in range(len(path) - 1):
             a, b = path[index], path[index + 1]
             za, zb = z[index], z[index + 1]
             segment = LineString([a, b])
             riser = segment.length <= VOID_BUFFER_M
-            for ceiling, floor, plane, terminals, outline, reason in graded:
-                if index in trim or _terminates_in_room(path, index, terminals.get(kind, ()),
+            for ceiling, floor, plane, terminals, outline, reason, eave in graded:
+                if index in trim or terminates_in_room(path, index, terminals.get(kind, ()),
                                                         grace_m):
                     continue
                 if ceiling.storey not in covers:
@@ -382,9 +303,10 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
                     args = (start, pza, pzb, radius, piece, riser, outline,
                             covers[ceiling.storey], soffit_covers[ceiling.storey], floor)
                     rows = _segment_rows(*args, (pa, pb), tol)
-                    if reason is None:
+                    if eave or reason is None:
                         for exposure_ft, intrusion_in in rows:
-                            _record(worst, tag, ceiling.room_ref, exposure_ft, intrusion_in)
+                            _record(eaves if eave else worst, tag, ceiling.room_ref,
+                                    exposure_ft, intrusion_in)
                         continue
                     # Declared open. The crossing is the DESIGN, so it is evidence for the
                     # pass rather than a finding — and the run is then measured again against
@@ -459,7 +381,8 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
             (room,) + tuple(sorted(seen))))
 
     if not any(finding.result is Result.FAIL for finding in out):
-        out.append(passed(cid, f"{len(runs)} runs against {len(graded)} finished ceiling "
+        planes = len({id(entry[0]) for entry in graded})
+        out.append(passed(cid, f"{len(runs)} runs against {planes} finished ceiling "
                                "plane(s): none hangs in a room's air", ()))
     if follow_roof:
         out.append(unknown(
@@ -468,6 +391,16 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
             "FollowRoof, so there is no plane to compare a run against) and are "
             f"NOT graded: {', '.join(sorted(follow_roof))}",
             tuple(sorted(follow_roof))))
+    in_eaves = sorted(key for key, (exposure_ft, intrusion_in) in eaves.items()
+                      if exposure_ft >= rules.min_ceiling_exposure_ft
+                      and intrusion_in >= rules.ceiling_intrusion_in)
+    if in_eaves:
+        out.append(unknown(
+            cid,
+            f"{len(in_eaves)} run(s) lie in a finished room's eave, under less than R304.3's "
+            "5'-0\" of head, which is not graded (a boxed eave chase is not modeled, and an "
+            f"open one is still in the room): {', '.join(f'{t} in {r}' for t, r in in_eaves)}",
+            tuple(sorted({part for key in in_eaves for part in key}))))
     if ungraded:
         out.append(unknown(cid, f"{len(ungraded)} run(s) carry no resolved elevations and "
                                 f"are not graded: {', '.join(sorted(ungraded)[:6])}",
