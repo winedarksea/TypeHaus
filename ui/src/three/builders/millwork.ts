@@ -43,9 +43,10 @@ export function buildWindowStool(parent: THREE.Group, stool: WindowStool, center
   const quartz = mode === "nordic" && isKitchenFrostWhite(stool, materials);
   if (quartz) applyWorldBoxUv(geometry, center, FROST_WHITE_SURFACE.tileSizeM);
   if (style) {
-    // The front edge (outline[0] → outline[1]) runs along the wall: that is the grain.
-    const [[x0, y0], [x1, y1]] = stool.outline;
-    applyPieceGrainUv(geometry, new THREE.Vector3(x1 - x0, 0, -(y1 - y0)),
+    // The front edge, the longest, runs along the wall: that is the grain. Not outline[0] →
+    // outline[1]: a rounded corner opens the ring with a chord of its arc.
+    const [gx, gy] = planLongAxis(stool.outline);
+    applyPieceGrainUv(geometry, new THREE.Vector3(gx, 0, -gy),
       style, pieceSeed(stool.uid));
   }
   const material = quartz ? createFrostWhiteMaterial() : style ? createPlankMaterial(mode, style, color, undefined,
