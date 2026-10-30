@@ -347,6 +347,8 @@ def _placeable_trade(row: Mapping[str, Any]) -> str | None:
     if domain == "furniture":
         if "access panel" in name:
             return "drywall"           # set and finished with the board (adjudicated)
+        if row.get("roles"):
+            return "millwork"          # a cabinet's bought part: hinge, front, rail, leg
         words = set(re.findall(r"[a-z]+(?: unit)?", name))
         loose = str(row.get("type") or "").startswith("FURN-") or any(
             word in words or (" " in word and word in name) for word in _LOOSE_FURNITURE_WORDS)

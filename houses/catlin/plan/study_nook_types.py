@@ -7,7 +7,9 @@ front, as IKEA configures it. Configured material prices live in prices.toml.
 
 from __future__ import annotations
 
+from plan.sektion_hardware import VOXTORP_HARDWARE
 from typehaus.library.placeables._zones import front_zone
+from typehaus.library.placeables.sektion_parts import FrontLayout, FrontRow, sektion_parts
 from typehaus.model import FurnitureType, Product, inch
 
 SEKTION_TOP_FRAME_24_15 = Product(
@@ -48,6 +50,8 @@ STUDY_NOOK_SEAT = FurnitureType(
     footprint=(inch(24), inch(24.875)), height=inch(19.5), carcass_depth=inch(24),
     storage=True, work_surface=False, plan_symbol="sektion-seat-base",
     product_ref=SEKTION_TOP_FRAME_24_15.tag,
+    parts=sektion_parts(24, 24, FrontLayout(15, (FrontRow("lift", 15),)), "none",
+                        VOXTORP_HARDWARE, rail=False),
     clearances=(front_zone(inch(24), inch(24.875), inch(15), "VOXTORP lift-up front swing"),),
     source=("SEKTION 904.997.35 frame; one VOXTORP 24x15 matte white 602.733.42 front on "
             "UTRUSTA 804.654.15 horizontal hinges. " + _BASE + " One continuous 1\" white "
@@ -60,6 +64,9 @@ STUDY_NOOK_SHELF = FurnitureType(
     footprint=(inch(18), inch(24)), height=inch(83.5), carcass_depth=inch(24),
     storage=True, work_surface=False, plan_symbol="sektion-open-high",
     product_ref=SEKTION_HIGH_FRAME_18_80.tag,
+    # Four adjustable shelves over the fixed one: no bay taller than ~16".
+    parts=sektion_parts(18, 24, FrontLayout(80, (FrontRow("open", 80),)), "none",
+                        VOXTORP_HARDWARE, shelves=4),
     source=("SEKTION 002.654.44, no fronts, adjustable shelves facing the room. " + _BASE
             + " Screens the seat from traffic through D-S-STUDY2; rail-anchored to W-S-SS2. "
             "Top clears the stringers by ~5\" at its east face."),

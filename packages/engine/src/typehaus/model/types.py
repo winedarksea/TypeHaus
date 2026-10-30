@@ -330,6 +330,25 @@ class BuiltInBookcaseSpec(HausModel):
         return self
 
 
+class ProductPart(HausModel):
+    """A separately procured component, counted for each placed fixture or furniture piece.
+
+    ``length`` is stock bought by the run (a suspension rail, a toe kick): each of the
+    ``quantity`` pieces is that long, and the takeoff rounds a touching run to whole sticks.
+    """
+
+    role: Literal["basin", "faucet", "trap", "top", "drain",
+                  "frame", "front", "drawer", "hinge", "damper", "leg", "toe_kick", "rail",
+                  "shelf", "knob", "pull", "cover_panel", "fitting"]
+    product_ref: str
+    quantity: int = Field(default=1, gt=0)
+    length: Length | None = None
+
+
+# The fixture-only name, kept so existing plan source loads unchanged.
+FixturePart = ProductPart
+
+
 class FurnitureType(HausModel):
     """An IKEA-scale design-reference type (#49). Footprint/height derived from mesh."""
 
@@ -390,6 +409,8 @@ class FurnitureType(HausModel):
     wood_material_ref: str | None = None
     # Owner-built: the parts a mill cuts per placed piece (model/furniture_cut.py).
     cut_list: tuple[FurnitureCut, ...] = ()
+    # Bought components counted per placed piece (fronts, hinges, legs, rail), as on a fixture.
+    parts: tuple[ProductPart, ...] = ()
 
     @model_validator(mode="after")
     def _curtain_track_fits(self) -> FurnitureType:
@@ -454,14 +475,6 @@ class RailingType(HausModel):
     source: str | None = None
 
 
-class FixturePart(HausModel):
-    """A separately procured component, counted for each placed fixture."""
-
-    role: Literal["basin", "faucet", "trap", "top", "drain"]
-    product_ref: str
-    quantity: int = Field(default=1, gt=0)
-
-
 class FixtureType(HausModel):
     """A plumbing/equipment fixture type — needs services, has clearances (M3)."""
 
@@ -475,7 +488,7 @@ class FixtureType(HausModel):
     needs: frozenset[Service] = frozenset()
     clearance: tuple[Length, Length, Length, Length] | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
-    parts: tuple[FixturePart, ...] = ()
+    parts: tuple[ProductPart, ...] = ()
     product_ref: str | None = None
     source: str | None = None
     import_provenance: dict[str, object] | None = None
@@ -1063,7 +1076,8 @@ for _name, _obj in (
     ("FurnitureType", FurnitureType),
     ("RailingType", RailingType),
     ("FixtureType", FixtureType),
-    ("FixturePart", FixturePart),
+    ("FixturePart", ProductPart),
+    ("ProductPart", ProductPart),
     ("ApplianceType", ApplianceType),
     ("EquipmentType", EquipmentType),
     ("HeatPumpRating", HeatPumpRating),

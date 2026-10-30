@@ -11,9 +11,15 @@ worse than omitting it.
 
 from __future__ import annotations
 
+import math
+
+from shapely.geometry import Polygon
+
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895013123
+# Frames closer than this share one run of rail or toe kick (a sealed 1/8" joint does).
+_RUN_TOUCH_TOLERANCE_M = 0.0127
 
 
 def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -27,6 +33,7 @@ def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """
     Row = dict[str, object]
     groups: dict[tuple[str, str, str], Row] = {}
+    linear: dict[tuple[str, str, str], list[tuple[object, float]]] = {}
     types = _placeable_types(model)
     for item in model.canvas_objects:
         if item.domain == "opening":
@@ -54,12 +61,49 @@ def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 "type": part.product_ref, "domain": item.domain, "storey": item.storey,
                 "count": 0, "tags": [], "name": getattr(part_product, "name", None),
                 "services": [], "equipment_kind": None, "roles": [],
+                "brand": getattr(part_product, "brand", None),
+                "sku": getattr(part_product, "sku", None) or None,
             })
-            part_row["count"] += part.quantity
+            if part.length is None:
+                part_row["count"] += part.quantity
+            else:
+                linear.setdefault(part_key, []).append(
+                    (item.footprint, part.length.meters * part.quantity))
             part_row["tags"].append(item.tag)
             if part.role not in part_row["roles"]:
                 part_row["roles"].append(part.role)
+    for key, pieces in linear.items():
+        product = model.plan.library.product(key[0])
+        stock = getattr(getattr(product, "stock_length", None), "meters", None)
+        groups[key]["count"] = _sticks(pieces, stock)
+        groups[key]["length_ft"] = round(sum(length for _, length in pieces) * _M_TO_FT, 2)
     return [{**groups[key], "tags": sorted(groups[key]["tags"])} for key in sorted(groups)]
+
+
+def _sticks(pieces: list[tuple[object, float]], stock_m: float | None) -> int:
+    """Whole sticks for linear stock: touching frames splice one run, rounded up per run.
+
+    Without a stock length every piece is its own purchase.
+    """
+    if stock_m is None:
+        return len(pieces)
+    shapes = [Polygon(ring) for ring, _ in pieces]
+    parent = list(range(len(pieces)))
+
+    def root(i: int) -> int:
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    for i in range(len(shapes)):
+        for j in range(i + 1, len(shapes)):
+            if shapes[i].distance(shapes[j]) <= _RUN_TOUCH_TOLERANCE_M:
+                parent[root(i)] = root(j)
+    runs: dict[int, float] = {}
+    for index, (_, length) in enumerate(pieces):
+        runs[root(index)] = runs.get(root(index), 0.0) + length
+    return sum(math.ceil(total / stock_m - 1e-9) for total in runs.values())
 
 
 def _placeable_types(model: ResolvedModel) -> dict[str, object]:

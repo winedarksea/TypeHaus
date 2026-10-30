@@ -4,8 +4,10 @@ with a hidden back ledger carrying the top across the 31" knee. Prices live in p
 
 from __future__ import annotations
 
+from plan.sektion_hardware import AXSTAD_HARDWARE
 from plan.study_nook_types import FORBATTRA_MATTE_WHITE_30
 from typehaus.library.placeables._zones import front_zone
+from typehaus.library.placeables.sektion_parts import FrontLayout, FrontRow, sektion_parts
 from typehaus.model import FurnitureType, Product, ft, inch
 
 SEKTION_BASE_FRAME_15_30 = Product(
@@ -36,6 +38,9 @@ BED_DESK_DRAWERS = FurnitureType(
     footprint=(inch(15), inch(24.75)), height=inch(31), carcass_depth=inch(24),
     storage=True, work_surface=False, plan_symbol="sektion-axstad-drawers",
     product_ref=SEKTION_BASE_FRAME_15_30.tag,
+    # BAGGANÄS pulls as in the kitchen (2026-10-30); on the floor, so no legs or rail.
+    parts=sektion_parts(15, 24, FrontLayout(30, (FrontRow("drawer", 10),) * 3), "none",
+                        AXSTAD_HARDWARE, rail=False),
     clearances=(front_zone(inch(15), inch(24.75), inch(21.375),
                            "MAXIMERA full-extension drawer"),),
     source=("SEKTION frame set on the floor, no legs or plinth, shimmed level; three medium "

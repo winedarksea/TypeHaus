@@ -6,7 +6,9 @@ envelope. Product records carry identity; configured material prices live in pri
 
 from __future__ import annotations
 
+from plan.sektion_hardware import VOXTORP_HARDWARE
 from typehaus.library.placeables._zones import front_zone
+from typehaus.library.placeables.sektion_parts import FrontLayout, FrontRow, sektion_parts
 from typehaus.model import FurnitureType, Product, inch
 
 SEKTION_HIGH_FRAME_24 = Product(
@@ -41,12 +43,21 @@ _SOURCE = ("4 1/2\" legs and white plinth. Upper VOXTORP doors hinged at east ed
            "at frame 40\", adjustable shelves at 55/70/80\". Rail offset is included "
            "in the 24\" mounting envelope, not an additional wall gap.")
 
+# Fronts bottom to top. Shelves: open lower at 15/30" plus 55/70/80" above the fixed one (5);
+# the drawer unit keeps only the upper three.
+_OPEN_LOWER_LAYOUT = FrontLayout(90, (FrontRow("open", 30), FrontRow("drawer", 10),
+                                      FrontRow("door", 30), FrontRow("door", 20)))
+_DRAWER_LOWER_LAYOUT = FrontLayout(90, (FrontRow("drawer", 15), FrontRow("drawer", 15),
+                                        FrontRow("drawer", 10), FrontRow("door", 30),
+                                        FrontRow("door", 20)))
+
 SEKTION_OPEN_LOWER = FurnitureType(
     tag="FURN-S-SEKTION-LINEN-OPEN-24",
     name='SEKTION 24x24x90: open lower 30", one drawer, upper doors',
     footprint=(_WIDTH, _DEPTH), height=_HEIGHT, carcass_depth=inch(24),
     storage=True, work_surface=False, plan_symbol="sektion-tall-open-lower",
     product_ref=SEKTION_HIGH_FRAME_24.tag,
+    parts=sektion_parts(24, 24, _OPEN_LOWER_LAYOUT, "legs", VOXTORP_HARDWARE, shelves=5),
     source=(_SOURCE + " SEKTION 702.654.45; upper doors 24x30 (102.733.30) + "
             "24x20 (302.733.29). Owner, 2026-10-02: bottom two drawer positions remain OPEN, "
             "with shelves at frame 15/30\", because the unchanged toilet blocks their "
@@ -60,6 +71,7 @@ SEKTION_DRAWER_LOWER_18 = FurnitureType(
     footprint=(inch(18), _DEPTH), height=_HEIGHT, carcass_depth=inch(24),
     storage=True, work_surface=False, plan_symbol="sektion-tall-drawers",
     product_ref=SEKTION_HIGH_FRAME_18.tag,
+    parts=sektion_parts(18, 24, _DRAWER_LOWER_LAYOUT, "legs", VOXTORP_HARDWARE, shelves=3),
     clearances=(front_zone(inch(18), _DEPTH, inch(21.375), "MAXIMERA full-extension drawer"),),
     source=(_SOURCE + " Owner, 2026-10-21: SEKTION 002.654.39; upper doors 18x30 "
             "(802.733.22) + 18x20 (002.733.21). Two high MAXIMERA 502.656.82 with "
@@ -76,7 +88,8 @@ SEKTION_END_PANEL = FurnitureType(
 SEKTION_WEST_SCRIBE = FurnitureType(
     tag="FT-S-SEKTION-SCRIBE-90", name='White west scribe, 3/8 x 24 7/8 x 90"',
     footprint=(inch(0.375), _DEPTH), height=inch(90), plan_symbol="sektion-cover-panel",
-    source="Site-cut white filler, caulked to the west wall; ends on the cabinet top and bottom.",
+    source=("Site-cut white filler, caulked to the west wall; ends on the cabinet top and bottom. "
+            "24 7/8 deep, past FÖRBÄTTRA's 24 5/8, so shop stock rather than an IKEA panel."),
 )
 BATH1_STORAGE_TYPES = (SEKTION_OPEN_LOWER, SEKTION_DRAWER_LOWER_18, SEKTION_END_PANEL,
                        SEKTION_WEST_SCRIBE)

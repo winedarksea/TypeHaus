@@ -14,8 +14,11 @@ stock clads a wall and a roof; the same fixture family hangs in four rooms).
 
 from __future__ import annotations
 
+from pydantic import Field
+
 from typehaus.model.base import HausModel
 from typehaus.model.registry import register_constructor
+from typehaus.quantities import Length
 
 
 class Product(HausModel):
@@ -35,6 +38,10 @@ class Product(HausModel):
     # rather than the manufacturer's model (an accessory kit, a coil stock colour).
     sku: str = ""
     url: str | None = None
+    # How the item ships, not what it costs (#28): units per retail pack (hinges come in
+    # pairs) and, for stock sold by the stick, the stick's length.
+    pack_quantity: int = Field(default=1, gt=0)
+    stock_length: Length | None = None
     # Where the choice and its numbers were read (#46) — the same freeform provenance
     # every other catalog record carries.
     source: str | None = None

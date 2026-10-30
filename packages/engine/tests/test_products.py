@@ -241,3 +241,75 @@ def test_fixture_parts_bill_per_instance_and_quantity(catlin_model_ro):
     assert faucets["PROD-KRAUS-KBF-1401-SFS"] == 3
     assert faucets["PROD-DURAVIT-B21010001U10"] == 1
     assert "Moen" in product_labels(catlin_model_ro.plan)[("placeables", "PROD-MOEN-6702")]
+
+
+def _hand_counted(plan, tag):
+    cabinet = next(t for t in plan.library.furniture_types if t.tag == tag)
+    counts = {}
+    for part in cabinet.parts:
+        key = (part.role, part.product_ref.removeprefix("PROD-IKEA-"))
+        counts[key] = counts.get(key, 0) + part.quantity
+    return cabinet.product_ref, counts
+
+
+def test_sektion_parts_match_the_hand_counts(catlin_plan):
+    """notes/ikea_sektion_order.md: the sink base, a peninsula drawer base, the aligned pantry."""
+    frame, sink = _hand_counted(catlin_plan, "SEKT-SINK-B36")
+    assert frame == "PROD-IKEA-SEKTION-BASE-36-24-30"
+    assert sink == {("front", "AXSTAD-DOOR-18-30"): 2, ("hinge", "UTRUSTA-HINGE-110"): 4,
+                    ("knob", "BAGGANAS-KNOB-BLACK"): 2, ("leg", "SEKTION-LEG"): 6,
+                    ("toe_kick", "FORBATTRA-TOEKICK-84"): 1, ("rail", "SEKTION-RAIL-84"): 1}
+    _, drawers = _hand_counted(catlin_plan, "SEKT-B24")
+    assert drawers == {("front", "AXSTAD-DRAWER-24-10"): 3, ("drawer", "MAXIMERA-MEDIUM-24-24"): 3,
+                       ("pull", "BAGGANAS-PULL-BLACK"): 3, ("leg", "SEKTION-LEG"): 4,
+                       ("toe_kick", "FORBATTRA-TOEKICK-84"): 1}
+    _, pantry = _hand_counted(catlin_plan, "SEKT-HIGH18-90")
+    assert pantry == {("front", "AXSTAD-DOOR-18-30"): 1, ("front", "AXSTAD-DOOR-18-40"): 1,
+                      ("front", "AXSTAD-DOOR-18-20"): 1, ("hinge", "UTRUSTA-HINGE-110"): 6,
+                      ("knob", "BAGGANAS-KNOB-BLACK"): 3, ("shelf", "UTRUSTA-SHELF-18-24"): 1,
+                      ("leg", "SEKTION-LEG"): 4, ("toe_kick", "FORBATTRA-TOEKICK-84"): 1,
+                      ("rail", "SEKTION-RAIL-84"): 1}
+
+
+def test_a_touching_run_buys_whole_sticks():
+    from typehaus.takeoff.placeables import _sticks
+
+    def frame(x0, width_in):
+        x1 = x0 + width_in * 0.0254
+        return [(x0, 0.0), (x1, 0.0), (x1, 0.4), (x0, 0.4)]
+
+    stick = 84 * 0.0254
+    touching = [(frame(0.0, 48), 48 * 0.0254), (frame(48 * 0.0254, 54), 54 * 0.0254)]
+    assert _sticks(touching, stick) == 2
+    short_run = [(frame(0.0, 30), 30 * 0.0254), (frame(30 * 0.0254, 36), 36 * 0.0254)]
+    assert _sticks(short_run, stick) == 1
+    apart = [(frame(0.0, 30), 30 * 0.0254), (frame(32 * 0.0254, 36), 36 * 0.0254)]
+    assert _sticks(apart, stick) == 2
+
+
+def test_ikea_order_list_covers_every_sektion_frame(catlin_model_ro):
+    from typehaus.library.placeables.sektion_parts import hinges_per_door, kitchen_layout
+    from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_CONFIGURATIONS
+    from typehaus.takeoff.order_list import order_list
+
+    library = catlin_model_ro.plan.library
+    types = {t.tag: t for t in library.furniture_types}
+    placed = [types[o.type_ref] for o in catlin_model_ro.canvas_objects if o.type_ref in types]
+    for entry in placed:
+        symbol = entry.plan_symbol or ""
+        if symbol.startswith("sektion") and symbol != "sektion-cover-panel":
+            assert library.product(entry.product_ref).brand == "IKEA", entry.tag
+    kitchen = [entry for entry in placed if entry.plan_symbol in KITCHEN_SEKTION_CONFIGURATIONS]
+    # Hinges on the kitchen-glyph frames equal the doors their glyphs draw.
+    expected = sum(
+        hinges_per_door(row.height_in) * row.count
+        for entry in kitchen
+        for row in kitchen_layout(entry.plan_symbol, round(entry.footprint[0].inches),
+                                  entry.height.inches).rows if row.kind == "door")
+    billed = sum(part.quantity for entry in kitchen for part in entry.parts
+                 if part.product_ref == "PROD-IKEA-UTRUSTA-HINGE-110")
+    assert billed == expected > 0
+    listing = order_list(catlin_model_ro, "IKEA")
+    hinges = next(i for i in listing["items"] if i["product"] == "PROD-IKEA-UTRUSTA-HINGE-110")
+    assert hinges["packs"] == -(-hinges["units"] // 2)
+    assert not any(row["reason"] == "no product_ref" for row in listing["unresolved"])

@@ -29,14 +29,14 @@ SEKTION_WALL_12_CAB = Product(
     tag="PROD-IKEA-SEKTION-WALL-12-AXSTAD", brand="IKEA",
     model="SEKTION 12x15x30 wall, AXSTAD matte white door",
     name='SEKTION white wall cabinet, 12 x 14 3/4 x 30", AXSTAD matte white door',
-    source="IKEA US listing family read 2026-10-22: 12x15x30 SEKTION wall cabinets with AXSTAD "
-           "fronts run $132 (matte blue, article 394.635.89) to $212 (high gloss). The matte "
-           "white article is NOT yet read; $132 is the matte blue price, confirm the white "
-           "article and price at order. Suspension rail sold separately.",
+    sku="194.551.80",
+    url="https://www.ikea.com/us/en/p/sektion-wall-cabinet-white-axstad-matte-white-s19455180/",
+    source="IKEA US s19455180, read 2026-10-30 from search-result data: $132; AXSTAD door "
+           "104.260.45 on frame 102.654.72, hinges included. Suspension rail separate.",
 )
 SEKTION_SUSPENSION_RAIL = Product(
     tag="PROD-IKEA-SEKTION-RAIL-84", brand="IKEA", model="SEKTION suspension rail 84",
-    sku="602.615.27", name='SEKTION suspension rail, galvanized, 84"',
+    sku="602.615.27", name='SEKTION suspension rail, galvanized, 84"', stock_length=inch(84),
     url="https://www.ikea.com/us/en/p/sektion-suspension-rail-galvanized-60261527/",
     source="IKEA US listing, read 2026-10-22: $20; cut to the 48\" run.",
 )
@@ -86,7 +86,9 @@ BATH2_VANITY_48 = FixtureType(
     ports=lav_ports(18),
     parts=(THEME_FAUCET_PART, FixturePart(role="trap", product_ref="PROD-DEARBORN-707BN-1"),
            FixturePart(role="basin", product_ref="PROD-SS-LAV-16X13"),
-           FixturePart(role="top", product_ref="PROD-CORIAN-GLACIER-WHITE")),
+           FixturePart(role="top", product_ref="PROD-CORIAN-GLACIER-WHITE"),
+           FixturePart(role="frame", product_ref=SEKTION_WALL_12_CAB.tag),
+           FixturePart(role="rail", product_ref=SEKTION_SUSPENSION_RAIL.tag, length=inch(48))),
     source="RM-M-BATH2 vanity, owner selection 2026-10-22, revised: SEKTION 36x15x30 sink cabinet "
            "with two AXSTAD matte white doors (894.549.45, to confirm) at the north end and a "
            "12x15x30 storage cabinet with an AXSTAD matte white door at the south end, both on a "

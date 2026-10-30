@@ -592,9 +592,9 @@ constraints = [
 label = "Casework, tops, stools, shelving and liners"
 rows = ["allowances:cabinet-closet-shelving-and-rod",
         "allowances:cabinet-hung-frame-underside-and-fixing",
-        "allowances:cabinet-pantry-swing-out-inserts", "allowances:cabinet-peninsula-bar-subtop",
+        "allowances:cabinet-peninsula-bar-subtop",
         "allowances:cabinet-peninsula-floor-anchor", "allowances:cabinet-peninsula-rear-finish",
-        "allowances:cabinet-study-booth-cushions", "allowances:finish-cabinet-pulls",
+        "allowances:cabinet-study-booth-cushions",
         "allowances:finish-canopy-east-pvc-column-wrap",
         "allowances:finish-window-stools-and-aprons",
         "countertops:ash-counter-6q", "countertops:quartz-counter",

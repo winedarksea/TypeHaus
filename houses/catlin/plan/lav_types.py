@@ -54,7 +54,9 @@ def sektion_vanity(width_in, product_ref, *, utility=False):
             material_refs=UTILITY_MATERIAL_REFS if utility else THEME_MATERIAL_REFS),
         product_ref=product_ref, basin=True, needs=NEEDS,
         parts=(UTILITY_FAUCET_PART if utility else THEME_FAUCET_PART,
-               TUBULAR_TRAP, BONDED_BOWL, CORIAN_TOP),
+               TUBULAR_TRAP, BONDED_BOWL, CORIAN_TOP,
+               FixturePart(role="rail", product_ref="PROD-IKEA-SEKTION-RAIL-84",
+                           length=inch(width_in))),
         ports=lav_ports(18),
         countertop_cutout=Footprint2D(points=(
             pt(inch(-8.1875), inch(-7.625)), pt(inch(8.1875), inch(-7.625)),

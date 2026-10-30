@@ -2271,11 +2271,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 #            yardandgardenguru.com), converted to a per-box price by the box's own width.
 #
 #            Kitchen selection revised 2026-10-22: SEKTION frames with AXSTAD matte-white
-#            recessed-panel fronts and BAGGANÄS black hardware. The existing installed
-#            cabinet bands remain budget allowances, not a current IKEA shopping-cart quote.
-#            Fronts, hinges and MAXIMERA mechanisms are in the cabinet bands; loose knobs
-#            and pulls are carried ONCE by finish-cabinet-pulls below. Other rooms retain
-#            their own front and hardware choices.
+#            recessed-panel fronts and BAGGANÄS black hardware. Since 2026-10-30 every
+#            SEKTION row is FRAME ONLY at the IKEA US list, and each front, drawer, hinge,
+#            leg, rail, shelf, knob and pull is its own PROD-* row below (one price, one
+#            count: `haus order houses/catlin --brand IKEA`). Labour stays on the frame.
 #
 #            ** THE OAK GOES ON THE PENINSULA, NOT ON OPEN SHELVING OVER THE RANGE. ** Open
 #            shelving there is a grease magnet and fails the owner's top criterion outright.
@@ -2396,40 +2395,31 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "CASE-PANTRY-CLOSET-48" = { material = { low = 350, high = 950 }, labour = { low = 120, high = 300 } }  # 1 ea
 "CASE-PANTRY-CLOSET-72" = { material = { low = 500, high = 1400 }, labour = { low = 120, high = 300 } }  # 0 ea — replaced by the three hall-bath SEKTION frames
 # Hall bath, 2026-10-02: configured SEKTION 702.654.45, matte white VOXTORP visible fronts.
-# IKEA US list core: frame $184, doors 24x30 $216 + 24x20 $185, medium drawer $50 +
-# 24x10 front $123 = $758. East adds two high drawers ($59 ea) + 24x15 fronts ($136 ea):
-# $1,148. Low includes UTRUSTA shelves ($26/2-pack: three packs per open unit, two east),
-# hinges ($32/unit), legs ($20/unit), rail share ($10/unit) and plinth allowance ($30/unit).
-# High covers fittings, trim/waste and price movement; no delivery, tax or optional organizers.
-# Frame https://www.ikea.com/us/en/p/sektion-high-cabinet-white-70265445/ ; stock fronts,
-# drawers and shelf links/quantities in plans/bath1-sektion-closet.md. Two lower 15" modules
-# are OPEN beside the unchanged toilet, so those four fronts/drawers are not billed.
-"FURN-S-SEKTION-LINEN-OPEN-24" = { material = { low = 928, high = 1100 }, labour = { low = 150, high = 350 } }  # 2 ea
-# East unit narrowed to 18" (2026-10-21). IKEA US list core: 002.654.39 frame $171,
-# VOXTORP upper 18x30 $187 + 18x20 $168; lower 2x18x15 $118 + 18x10 $96;
-# MAXIMERA medium $40 + 2 high $47 = $992. Retain $144 for shelves, hinges, legs,
-# rail share and plinth from the 24" allowance; high includes fittings and price movement.
-"FURN-S-SEKTION-LINEN-DRAWER-18" = { material = { low = 1136, high = 1350 }, labour = { low = 150, high = 350 } }  # 1 ea
+# Frame only since 2026-10-30 ($184 list); VOXTORP fronts, MAXIMERA, hinges, shelves, legs,
+# plinth and rail are itemized PROD-* rows. Two lower 15" modules are OPEN beside the
+# unchanged toilet, so those fronts/drawers are not billed.
+"FURN-S-SEKTION-LINEN-OPEN-24" = { material = { low = 184, high = 210 }, labour = { low = 150, high = 350 } }  # 2 ea, 702.654.45 frame
+# East unit narrowed to 18" (2026-10-21): 002.654.39 frame $171; its fronts and drawers
+# (VOXTORP 18x30/18x20/2x18x15/18x10, MAXIMERA medium + 2 high) are itemized rows.
+"FURN-S-SEKTION-LINEN-DRAWER-18" = { material = { low = 171, high = 197 }, labour = { low = 150, high = 350 } }  # 1 ea, 002.654.39 frame
 # Actual FÖRBÄTTRA 005.678.37 is 1/2 x 24 5/8 x 90", $154, matte white matching VOXTORP.
 # https://www.ikea.com/us/en/p/foerbaettra-cover-panel-matte-white-00567837/
 "FT-S-SEKTION-COVER-90" = { material = { low = 154, high = 175 }, labour = { low = 20, high = 60 } }  # 1 ea
 "FT-S-SEKTION-SCRIBE-90" = { material = { low = 10, high = 25 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut white filler
-# Study 2 nook, 2026-10-02 (plan/study_nook_types.py). IKEA US list: seat unit = SEKTION top
-# 904.997.35 $88 + VOXTORP 24x15 602.733.42 $136 + UTRUSTA horizontal hinges 804.654.15 $52
-# = $276; low adds a third of the 2x4 base and the 1" top. The 6" shelf is a custom
-# plywood allowance to clear the enlarged winder flight. Covers: FÖRBÄTTRA 205.678.36
-# $127, 405.678.35 $53 (cut).
-"FURN-S-STUDY-NOOK-SEAT-24" = { material = { low = 320, high = 400 }, labour = { low = 80, high = 200 } }  # 3 ea — Study 2
-"FURN-S-STUDY-NOOK-SHELF-18" = { material = { low = 230, high = 290 }, labour = { low = 80, high = 200 } }  # 1 ea; SEKTION 18x24x80 frame + shelves
+# Study 2 nook, 2026-10-02 (plan/study_nook_types.py): SEKTION top 904.997.35 $88 plus a
+# third of the 2x4 base and the 1" top; the VOXTORP 24x15 front and UTRUSTA horizontal
+# hinges are itemized. Covers: FÖRBÄTTRA 205.678.36 $127, 405.678.35 $53 (cut).
+"FURN-S-STUDY-NOOK-SEAT-24" = { material = { low = 132, high = 160 }, labour = { low = 80, high = 200 } }  # 3 ea — Study 2; frame + a third of the 2x4 base and top
+"FURN-S-STUDY-NOOK-SHELF-18" = { material = { low = 152, high = 175 }, labour = { low = 80, high = 200 } }  # 1 ea; SEKTION 18x24x80 frame
 "FT-S-STUDY-NOOK-COVER-80" = { material = { low = 127, high = 145 }, labour = { low = 20, high = 60 } }  # 1 ea
 "FT-S-STUDY-NOOK-SEAT-END" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut
 # Custom 72x24x3 HR-foam cushion, welted performance-fabric cover; a quote, not a listing.
 "FT-S-STUDY-NOOK-CUSHION" = { material = { low = 350, high = 750 }, labour = { low = 0, high = 0 } }  # 1 ea
 # RM-M-BED desk, 2026-10-21 (plan/bed_desk_types.py). IKEA US list, read 2026-10-21: SEKTION
 # 15x24x30 frame 002.653.97 $58, three MAXIMERA medium 15x24 002.656.70 at $38, three AXSTAD
-# 15x10 fronts 804.260.61 at $44 = $304, plus a $5-15/front pull allowance. The walnut top
-# bills in [countertops].
-"FURN-M-BED-DESK-DRAWERS-15" = { material = { low = 319, high = 349 }, labour = { low = 80, high = 190 } }  # 2 ea
+# 15x10 fronts 804.260.61 at $44 = $304. Frame only since 2026-10-30; drawers, fronts and
+# BAGGANÄS pulls are itemized rows. The walnut top bills in [countertops].
+"FURN-M-BED-DESK-DRAWERS-15" = { material = { low = 58, high = 66 }, labour = { low = 80, high = 190 } }  # 2 ea, 002.653.97 frame
 # North end cover: FÖRBÄTTRA 405.678.35, $53 on the IKEA US list read 2026-10-21.
 "FT-M-BED-DESK-COVER-30" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 60 } }  # 1 ea
 # 1x3 poplar knee ledger, painted, screwed to studs.
@@ -2479,11 +2469,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Priced off the CASE-* rows above rather than off IKEA's own sticker, deliberately: the
 # [placeables] basis note has always read these as INSTALLED casework at $75-200/LF, and a
 # SEKTION carcass arrives flat-packed with no doors, no drawers and no hardware in the
-# number. The material bands here are the same $/box the generic catalog carried at the same
-# size; the AXSTAD fronts, the MAXIMERA drawers (PROD-IKEA-MAXIMERA,
-# plan/products_interior.py) and hinges are inside the stock bands. Loose BAGGANÄS
-# hardware is separate in finish-cabinet-pulls. The custom
-# deep upper rows below include their own matching fronts and shop labour.
+# number. Material is now the FRAME ALONE at the IKEA US list (read 2026-10-30; low = list,
+# high = list + ~15%); fronts, drawers and hardware are itemized PROD-* rows further down,
+# counted by library/placeables/sektion_parts.py (notes/ikea_sektion_order.md).
 #
 # Labour does NOT come down with a flat pack. It goes the other way — a frameless box is
 # assembled on site before it is hung — so every row carries the full wall/base rate the
@@ -2497,32 +2485,32 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Kitchen/living configuration was selected 2026-10-22; K5 door storage dates to 2026-10-20.
 
 # Bases. Same box at the same size as the CASE-B* rows, so the same material.
-"SEKT-B12" = { material = { low = 200, high = 360 }, labour = { low = 120, high = 300 } }
+"SEKT-B12" = { material = { low = 53, high = 61 }, labour = { low = 120, high = 300 } }  # 1 ea, 102.653.92
 "SEKT-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 0 ea
-"SEKT-B18" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }   # 1 ea, kitchen drawers
-"SEKT-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }   # 2 ea, kitchen drawers
+"SEKT-B18" = { material = { low = 63, high = 72 }, labour = { low = 90, high = 220 } }  # 1 ea, 202.653.96, kitchen drawers
+"SEKT-B24" = { material = { low = 70, high = 85 }, labour = { low = 90, high = 220 } }  # 2 ea, 902.653.88 unread: between the 18 and 36 frames
 "SEKT-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 0 ea
-"SEKT-B36" = { material = { low = 220, high = 550 }, labour = { low = 90, high = 220 } }   # 1 ea, kitchen drawers
-# AXSTAD door/shelf configurations of the existing frame allowances; loose hardware is
-# priced once in finish-cabinet-pulls, not as separate furniture.
-"SEKT-B18-AXSTAD-DOOR" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }
-"SEKT-B24-AXSTAD-DOOR" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }
-"SEKT-B36-AXSTAD-DOOR" = { material = { low = 220, high = 550 }, labour = { low = 90, high = 220 } }
+"SEKT-B36" = { material = { low = 97, high = 112 }, labour = { low = 90, high = 220 } }  # 1 ea, 802.653.98, kitchen drawers
+# The living run's door/shelf configurations: the same frames, so the same frame price.
+"SEKT-B18-AXSTAD-DOOR" = { material = { low = 63, high = 72 }, labour = { low = 90, high = 220 } }
+"SEKT-B24-AXSTAD-DOOR" = { material = { low = 70, high = 85 }, labour = { low = 90, high = 220 } }
+"SEKT-B36-AXSTAD-DOOR" = { material = { low = 97, high = 112 }, labour = { low = 90, high = 220 } }
 
-# The carousel corner (IKEA s79582533, carousel and 13"+13" bifold in the number). Labour
-# is a base and a half: two legs to level and the bifold to hang off the range side.
-"SEKT-CORNER-B38" = { material = { low = 380, high = 750 }, labour = { low = 130, high = 320 } }  # 2 ea
+# The carousel corner: frame 705.967.56, UTRUSTA carousel and bifold hinges (s79582533 is
+# $292 with VALLSTENA fronts; the split is unread, so the band is that less ~$60-100 of
+# fronts). AXSTAD bifold pair, legs and knob are their own rows. Labour is a base and a half.
+"SEKT-CORNER-B38" = { material = { low = 190, high = 250 }, labour = { low = 130, high = 320 } }  # 2 ea
 # FÖRBÄTTRA-faced pieces (plan/living_east_run_types.py): site-cut 25x80 panels at $127.
 "FT-LIV-E-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 1 ea
 "FT-KIT-PEN-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 1 ea
-"FT-KIT-PEN-BACK-PANEL" = { material = { low = 260, high = 430 }, labour = { low = 120, high = 300 } }  # 1 ea, two panels and the connector rails
+"FT-KIT-PEN-BACK-PANEL" = { material = { low = 10, high = 60 }, labour = { low = 120, high = 300 } }  # 1 ea, edge band and fixings; panels and rails itemized
 "FT-KIT-CT-BRACKET-24" = { material = { low = 35, high = 70 }, labour = { low = 20, high = 45 } }  # 5 ea, powder-coated, #12 screws
 # The elm slat partition (5/4 rough since 2026-10-20): slats and plates finish
 # 1 x 2 1/2". The one-piece screen schedules 76.6 rough bf plus ~18.2 bf of slats
 # for straightness selection. Retain the ~$7-12/bf design allowance; labour covers
 # ripping, dressing, oiling, plates, scribing and ceiling blocking between FS-S-EAST joists.
 "FT-LIV-SLAT-ELM-FULL" = { material = { low = 665, high = 1140 }, labour = { low = 300, high = 650 } }
-"SEKT-SINK-B36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 1 ea
+"SEKT-SINK-B36" = { material = { low = 97, high = 112 }, labour = { low = 90, high = 220 } }  # 1 ea, the B36 frame
 # Wall frames on the published SEKTION ladder. The 30" material bands scale from the 40"
 # references; the shorter carcasses keep the same per-box installation labour.
 "SEKT-W15-40" = { material = { low = 115, high = 290 }, labour = { low = 90, high = 220 } }  # 0 ea
@@ -2530,8 +2518,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "SEKT-W30-40" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W15-30" = { material = { low = 90, high = 220 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W24-30" = { material = { low = 105, high = 265 }, labour = { low = 90, high = 220 } }  # 1 ea
-"SEKT-W30-30" = { material = { low = 120, high = 300 }, labour = { low = 90, high = 220 } }  # 1 ea
-"SEKT-W36-30" = { material = { low = 135, high = 335 }, labour = { low = 90, high = 220 } }  # 1 ea
+"SEKT-W30-30" = { material = { low = 78, high = 90 }, labour = { low = 90, high = 220 } }  # 1 ea, 702.654.69
+"SEKT-W36-30" = { material = { low = 85, high = 98 }, labour = { low = 90, high = 220 } }  # 1 ea, 902.654.49
 # The former 15" top course. The current 20" course scales material with its height;
 # labour does not scale at all, for the reason the CASE-WS* note above gives — every one of
 # these is hung off a ladder against a course that has to line up with the box under it.
@@ -2540,32 +2528,84 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "SEKT-W30-15" = { material = { low = 115, high = 280 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W36-15" = { material = { low = 140, high = 340 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W15-20" = { material = { low = 95, high = 235 }, labour = { low = 90, high = 220 } }  # 0 ea
-"SEKT-W30-20" = { material = { low = 155, high = 375 }, labour = { low = 90, high = 220 } }  # 1 ea
-"SEKT-W36-20" = { material = { low = 185, high = 455 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-W30-20" = { material = { low = 69, high = 80 }, labour = { low = 90, high = 220 } }  # 1 ea, 102.654.53
+"SEKT-W36-20" = { material = { low = 76, high = 88 }, labour = { low = 90, high = 220 } }  # 2 ea, 302.654.71
 # Stock installations include doors, shelves, anchoring and the detailed support fit-out.
 # FT-KIT-STOCK24-30-HUNG: wall-hung at 56" on the suspension rail, nothing under it; the
 # underside cover and back-rail fixing bill in [allowances].
-"SEKT-W12-30" = { material = { low = 200, high = 320 }, labour = { low = 90, high = 220 } }
-"SEKT-CORNER-W26-30" = { material = { low = 280, high = 460 }, labour = { low = 140, high = 300 } }
-"FT-KIT-STOCK24-30-HUNG" = { material = { low = 300, high = 520 }, labour = { low = 160, high = 360 } }
+"SEKT-W12-30" = { material = { low = 64, high = 74 }, labour = { low = 90, high = 220 } }  # 102.654.72: the $132 s19455180 less its $68 door
+"SEKT-CORNER-W26-30" = { material = { low = 150, high = 250 }, labour = { low = 140, high = 300 } }  # 102.655.04 unread; hinges come with it
+"FT-KIT-STOCK24-30-HUNG" = { material = { low = 70, high = 85 }, labour = { low = 160, high = 360 } }  # 902.653.88 frame; door, hinges, shelf and rail itemized
 
 #
 # High frames; setting either height remains a two-person lift.
 # West pantry: 90-inch frame, 30/40/20 AXSTAD fronts and hardware; budget, not a quote.
 "SEKT-HIGH24-90" = { material = { low = 190, high = 520 }, labour = { low = 120, high = 300 } }  # 0 ea
-# Stock 80-inch frames; 6-inch AXILO 637.76.355 legs with screw-mount plates and
-# cut-to-fit white cover-panel toe kicks. Budget includes four legs per cabinet; no frame cuts.
-"SEKT-HIGH24-80" = { material = { low = 250, high = 585 }, labour = { low = 140, high = 330 } }  # 2 ea
-"SEKT-HIGH18-90" = { material = { low = 360, high = 600 }, labour = { low = 120, high = 300 } }  # 1 ea
-# East pantry tops and garage stacker: stock 904.997.35, AXSTAD fronts, hinges and rail.
-"SEKT-TS24-15" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 3 ea
-# West cold-run: stock 402.655.12, two AXSTAD 15x20 fronts, UTRUSTA hinges and rail.
-# Prior VOXTORP configuration 494.549.71 was $384 (2026-10-05); retained as the
-# allowance basis, not represented as an AXSTAD SKU or current AXSTAD quote.
-# Scribes are separate geometry but their material and fitting are included below.
-"FT-KIT-COLD-SCRIBE-20" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
-# Includes one site-cut 2 7/8 x 20 end scribe per cabinet and fitting; no custom carcasses.
-"SEKT-TS30-20" = { material = { low = 350, high = 520 }, labour = { low = 90, high = 220 } }  # 2 ea
+# Stock 80-inch frames on four AXILO 637.76.355 levelers behind a FÖRBÄTTRA 25x30 toe; the
+# levelers, toe panel and Rev-A-Shelf swing-out are their own rows. No frame cuts.
+"SEKT-HIGH24-80" = { material = { low = 168, high = 193 }, labour = { low = 140, high = 330 } }  # 2 ea, 202.654.38
+"SEKT-HIGH18-90" = { material = { low = 171, high = 197 }, labour = { low = 120, high = 300 } }  # 1 ea, 002.654.39
+# East pantry tops and the hung stack's top: stock 904.997.35.
+"SEKT-TS24-15" = { material = { low = 88, high = 101 }, labour = { low = 90, high = 220 } }  # 3 ea, 904.997.35
+# West cold-run: stock 402.655.12 (prior VOXTORP configuration 494.549.71 was $384 with
+# two doors, hinges and rail, 2026-10-05). The scribes' fitting is in this labour.
+"FT-KIT-COLD-SCRIBE-20" = { material = { low = 10, high = 25 }, labour = { low = 0, high = 0 } }  # 2 ea, site-cut 3/4 white strip
+"SEKT-TS30-20" = { material = { low = 95, high = 125 }, labour = { low = 90, high = 220 } }  # 2 ea, 402.655.12 unread: above the 24x24x15's $88
+
+# --- SEKTION parts, itemized 2026-10-30 (IKEA US list read that day; per UNIT, so a 2-pack
+# hinge at $16 is $8). Labour is on the frame row. `haus order` rounds units to packs.
+"PROD-IKEA-AXSTAD-DOOR-12-30" = { material = 68, labour = 0 }
+"PROD-IKEA-AXSTAD-DOOR-15-20" = { material = 67, labour = 0 }
+"PROD-IKEA-AXSTAD-DOOR-15-30" = { material = 86, labour = 0 }
+"PROD-IKEA-AXSTAD-DOOR-18-20" = { material = 79, labour = 0 }
+"PROD-IKEA-AXSTAD-DOOR-18-30" = { material = 96, labour = 0 }
+"PROD-IKEA-AXSTAD-DOOR-18-40" = { material = 124, labour = 0 }
+"PROD-IKEA-AXSTAD-DOOR-24-30" = { material = 125, labour = 0 }
+"PROD-IKEA-AXSTAD-DOOR-24-50" = { material = { low = 150, high = 190 }, labour = 0 }  # unread, above the 24x30
+"PROD-IKEA-AXSTAD-CORNER-PAIR-13-30" = { material = { low = 80, high = 140 }, labour = 0 }  # unread
+"PROD-IKEA-AXSTAD-DRAWER-18-10" = { material = 50, labour = 0 }
+"PROD-IKEA-AXSTAD-DRAWER-24-10" = { material = 60, labour = 0 }
+"PROD-IKEA-AXSTAD-DRAWER-36-10" = { material = 71, labour = 0 }
+"PROD-IKEA-AXSTAD-DRAWER-24-15" = { material = { low = 60, high = 90 }, labour = 0 }  # unread
+"PROD-IKEA-AXSTAD-MATTE-15-10" = { material = 44, labour = 0 }
+"PROD-IKEA-MAXIMERA-MEDIUM-15-24" = { material = 38, labour = 0 }
+"PROD-IKEA-MAXIMERA-MEDIUM-18-24" = { material = 40, labour = 0 }
+"PROD-IKEA-MAXIMERA-MEDIUM-24-24" = { material = 50, labour = 0 }
+"PROD-IKEA-MAXIMERA-MEDIUM-36-24" = { material = 70, labour = 0 }
+"PROD-IKEA-MAXIMERA-HIGH-18-24" = { material = 47, labour = 0 }
+# Hall bath and study nook VOXTORP, list prices read 2026-10-02/21.
+"PROD-IKEA-VOXTORP-DOOR-24-30" = { material = 216, labour = 0 }
+"PROD-IKEA-VOXTORP-DOOR-24-20" = { material = 185, labour = 0 }
+"PROD-IKEA-VOXTORP-DOOR-24-15" = { material = 136, labour = 0 }
+"PROD-IKEA-VOXTORP-DOOR-18-30" = { material = 187, labour = 0 }
+"PROD-IKEA-VOXTORP-DOOR-18-20" = { material = 168, labour = 0 }
+"PROD-IKEA-VOXTORP-DRAWER-24-10" = { material = 123, labour = 0 }
+"PROD-IKEA-VOXTORP-DRAWER-18-15" = { material = 118, labour = 0 }
+"PROD-IKEA-VOXTORP-DRAWER-18-10" = { material = 96, labour = 0 }
+"PROD-IKEA-UTRUSTA-HINGE-110" = { material = 8, labour = 0 }  # $16 / 2-pack
+"PROD-IKEA-UTRUSTA-HINGE-HORIZONTAL" = { material = 26, labour = 0 }  # $52 / 2-pack
+"PROD-IKEA-UTRUSTA-HINGE-CORNER" = { material = 0, labour = 0 }  # in SEKT-CORNER-B38
+"PROD-IKEA-UTRUSTA-CAROUSEL" = { material = 0, labour = 0 }  # in SEKT-CORNER-B38
+"PROD-IKEA-SEKTION-LEG" = { material = 3, labour = 0 }  # $6 / 2-pack
+"PROD-IKEA-FORBATTRA-TOEKICK-84" = { material = 40, labour = 0 }  # per 84" stick
+"PROD-IKEA-SEKTION-RAIL-84" = { material = 20, labour = 0 }  # per 84" stick
+"PROD-IKEA-BAGGANAS-KNOB-BLACK" = { material = 3.5, labour = 0 }  # $7 / 2-pack
+"PROD-IKEA-BAGGANAS-PULL-BLACK" = { material = 4.5, labour = 0 }  # $9 / 2-pack
+"PROD-IKEA-UTRUSTA-SHELF-12-24" = { material = 6.5, labour = 0 }  # 2-pack prices halved
+"PROD-IKEA-UTRUSTA-SHELF-18-24" = { material = 11, labour = 0 }
+"PROD-IKEA-UTRUSTA-SHELF-24-24" = { material = 13, labour = 0 }
+"PROD-IKEA-UTRUSTA-SHELF-36-24" = { material = 17, labour = 0 }
+"PROD-IKEA-UTRUSTA-SHELF-12-15" = { material = 5, labour = 0 }
+"PROD-IKEA-UTRUSTA-SHELF-30-15" = { material = 11, labour = 0 }
+"PROD-IKEA-UTRUSTA-SHELF-36-15" = { material = 14.5, labour = 0 }
+"PROD-IKEA-FORBATTRA-MATTE-25-30" = { material = 53, labour = 0 }  # the pantry toe panels
+"PROD-IKEA-FORBATTRA-MATTE-25-80" = { material = 127, labour = 0 }  # the peninsula seating face
+"PROD-IKEA-SEKTION-CONNECTOR-RAIL" = { material = { low = 15, high = 30 }, labour = 0 }  # unread
+"PROD-IKEA-SEKTION-FLOOR-ANCHOR" = { material = 0, labour = 0 }  # in cabinet-peninsula-floor-anchor
+"PROD-IKEA-SEKTION-WALL-12-AXSTAD" = { material = 132, labour = 0 }  # bath2's 12" combination
+# Bought elsewhere. The swing-out moved here from [allowances] (2 x Rev-A-Shelf 5374-24FL).
+"PROD-REVASHELF-5374-24FL" = { material = { low = 450, high = 1100 }, labour = 0 }
+"PROD-HAFELE-AXILO-637-76-355" = { material = { low = 6, high = 15 }, labour = 0 }  # unread
 # The rest of the SEKTION ladder (SEKT-B12/B18, the 12"/18"/36" wall frames,
 # SEKT-HIGH30-90, SEKT-TS30-15) has no instance in this house and no row
 # here. Add one when a box is added; an unpriced type is silently DROPPED from the takeoff
@@ -3240,12 +3280,12 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # basins, traps and fabricated tops. Faucets bill once in the allowance below; their
 # role-tagged Product rows remain visible at zero so the BOM names each ordered fitting.
 # Included SEKTION shelves bill in the cabinet; there is no owner-hardwood shelf charge.
-"FX-VANITY-48-SEKTION" = { material = { low = 550, high = 650 }, labour = { low = 300, high = 720 } }
+"FX-VANITY-48-SEKTION" = { material = { low = 398, high = 478 }, labour = { low = 300, high = 720 } }  # 36" combination $338 + ledger; 12" cabinet and rail itemized
 "FX-ANGSJON-36" = { material = { low = 369, high = 369 }, labour = { low = 240, high = 560 } }
 "FX-ANGSJON-36-SS" = { material = { low = 369, high = 369 }, labour = { low = 240, high = 560 } }
 "FX-CHULTON-30" = { material = { low = 600, high = 1000 }, labour = { low = 220, high = 510 } } # allowance; top/bowl included
-"FX-VANITY-30-SEKTION" = { material = { low = 324, high = 380 }, labour = { low = 220, high = 510 } } # $304 cabinet + rail/ledger
-"FX-VANITY-24-SEKTION-SS" = { material = { low = 280, high = 340 }, labour = { low = 200, high = 470 } } # $260 cabinet + rail/ledger
+"FX-VANITY-30-SEKTION" = { material = { low = 304, high = 360 }, labour = { low = 220, high = 510 } }  # $304 cabinet + ledger; rail itemized
+"FX-VANITY-24-SEKTION-SS" = { material = { low = 260, high = 320 }, labour = { low = 200, high = 470 } }  # $260 cabinet + ledger; rail itemized
 "FX-SUNNERSTA-BAR-SINK" = { material = 0, labour = { low = 100, high = 200 } } # sink included in kitchenette
 "PROD-IKEA-ORRSJON-37" = { material = 210, labour = { low = 80, high = 140 } } # US combination includes separately packaged RANNILEN
 "PROD-IKEA-RANNILEN" = { material = 0, labour = { low = 40, high = 80 } } # included in ORRSJON combination price
@@ -7695,11 +7735,6 @@ finish-tile-backer-and-waterproofing = { low = 2000, high = 4500 }
 # the derived areas, so the countertop estimate moved by the 2.6% the hand figure was off.
 # Later quartz window stools add 11.30 SF to the quartz row, as noted above; the four
 # plant-room ones moved to Corian on 2026-10-22.
-# Kitchen/living hardware, 2026-10-22: BAGGANÄS black 903.384.17 knobs ($7/2-pack)
-# and 803.384.13 5 5/8-inch handles ($9/2-pack), with included washers. Budget for
-# pack rounding and installation consumables; these loose parts are excluded from the
-# cabinet bands above. Final ordering quantities require a cabinet/hinge shop review.
-finish-cabinet-pulls = { low = 200, high = 300 }
 # ** THE BIDET SEATS ARE A SEPARATE PURCHASE FROM THE BOWLS ** and were inside no row. Two
 # TOTO WASHLET S5 (SW3446#01) at ~$682, on the two main-floor showpieces only. The
 # instantaneous tankless heater replaces the old reservoir and PREMIST wets the bowl before
@@ -7845,7 +7880,7 @@ finish-garage-door-opener = { low = 500, high = 1400, unit = "ea", driver = "ope
 # to the door leaf — not door-mounted racks, which an earlier note here claimed). Requires a
 # 22 1/4" clear opening, so it fits the frameless 24" carcass by 1/4" and would NOT fit a
 # face-framed one; see kitchen_stock_cabinet_details.md for the installation clearances.
-cabinet-pantry-swing-out-inserts = { low = 900, high = 2200 }  # 2 x Rev-A-Shelf 5374-24
+# Billed since 2026-10-30 as [placeables] PROD-REVASHELF-5374-24FL, a part of SEKT-HIGH24-80.
 # FURN-M-KIT-E-HUNG's underside and fixing (2026-10-25, replacing the mixer-garage pull-out
 # and door): white cover panel over the exposed melamine underside, and the back-rail screws
 # into BK-M-E1-MIXER-CAP. Budget band, not a quote.

@@ -233,55 +233,7 @@ CARIITTI_FIBRE_KIT = Product(
            "snag in the house. Confirm in writing before ordering.",
 )
 
-# --- Kitchen and hardware -----------------------------------------------------------------
-#
-# ** POLAND IS A 'DON'T', AND THE OWNER'S OWN MILL IS WHY. ** Section 232 puts 25% on wooden
-# cabinets, vanities AND PARTS THEREOF from 2025-10-14 (the scheduled 50% was delayed to
-# 2027-01-01; the EU cap is 15%), EU carcasses are 600 mm deep and 870 mm high against a US
-# 24" and 34.5", there is no warranty recourse across an ocean, and the whole reason to
-# import is a wood front at a low price -- which $2/sf white oak off family land, in 4/4 and
-# 8/4 up to 18" wide, beats outright with no lead time. If you want European engineering, buy
-# the HARDWARE (Blum/Hettich) and put it in domestic boxes.
-#
-# SEKTION carcasses are manufactured in the US, so the box half of the kitchen is
-# structurally insulated from the 25% while nearly every RTA competitor eats it. Fronts are
-# imported. Time the order to the IKEA kitchen event, historically Feb-April.
-IKEA_SEKTION = Product(
-    tag="PROD-IKEA-SEKTION", brand="IKEA", model="SEKTION",
-    name="SEKTION frameless kitchen cabinet system, US-manufactured carcasses",
-    source="IKEA US product literature and 2025-26 tariff position, read 2026-09-06. The "
-           "carcass system only; kitchen fronts are PROD-IKEA-AXSTAD-WH. Frameless, which is what "
-           "makes a 24\" box give a 22 1/2\" clear opening and is why the Rev-A-Shelf "
-           "5374-24FL swing-out in plan/placeables.py fits at all.",
-)
-IKEA_VOXTORP_WHITE = Product(
-    tag="PROD-IKEA-VOXTORP-WH", brand="IKEA", model="VOXTORP matt white",
-    name="VOXTORP matt white slab door and drawer front",
-    source="IKEA US product listing, read 2026-09-06. Best cleanability of the slab lines: "
-           "matte foil, wipes with a damp cloth, no fingerprints. A SLAB, not a shaker -- "
-           "the inside corner of a shaker rail is where cooking grease lives, which is why "
-           "AXSTAD loses on the top criterion despite being durable. RINGHULT high gloss is "
-           "the worst possible surface beside an induction range and BODBYN's painted MDF "
-           "chips (IKEA sells touch-up paint for exactly that reason). ** WATCH THE ONE "
-           "WEAKNESS: ** the integrated edge pull collects grease on the underside where you "
-           "cannot see it, which is why real pulls (PROD-TOPKNOBS-BAR-SS) are still bought. "
-           "Do NOT pay IKEA $459 a door for VEDHAMN oak when you mill oak.",
-)
-# Frame, front and drawer mechanism remain separate purchases. The configured symbols
-# now record the kitchen's door/drawer divisions; prices.toml carries installed allowances.
-IKEA_MAXIMERA = Product(
-    tag="PROD-IKEA-MAXIMERA", brand="IKEA", model="MAXIMERA",
-    name="MAXIMERA soft-close full-extension drawer, high/medium/low",
-    source="IKEA US product literature, read 2026-09-11. ** MAXIMERA, NOT FORVARA: ** "
-           "FORVARA is the basic drawer and is what a SEKTION base ships with if nobody "
-           "chooses; MAXIMERA is full-extension with integrated soft-close, and full "
-           "extension is the whole argument for a drawer base over a door base — a drawer "
-           "you cannot pull all the way out is a cupboard with a lid. Fronts sit on the "
-           "5/10/15 in. ladder, so a 30 in. base is 5+10+15 or 10+10+10 and the fronts "
-           "line up across a run either way. Fits every base and pantry width in this "
-           "kitchen where specified. The B12 and carousel corners use doors, not drawer "
-           "boxes. Kitchen fronts and hardware are AXSTAD/BAGGANÄS (2026-10-22).",
-)
+# --- Kitchen hardware (IKEA records: plan/products_ikea.py) ------------------------------
 TOPKNOBS_BAR_PULL = Product(
     tag="PROD-TOPKNOBS-BAR-SS", brand="Top Knobs", model="Solid Bar Pull, SS304",
     name="Round solid bar cabinet pull, stainless steel 304 (prior kitchen selection)",
@@ -296,29 +248,6 @@ TOPKNOBS_BAR_PULL = Product(
            "ladder, pull ~1/3 of the front's width and one size UP on drawers: 96 mm small "
            "doors, 128 mm larger doors, 160 mm base drawers, 224 mm wide drawers and the "
            "sink-base false front, 12\"+ on the 24\" pantry doors.",
-)
-IKEA_AXSTAD_WHITE = Product(
-    tag="PROD-IKEA-AXSTAD-WH", brand="IKEA", model="AXSTAD matte white",
-    name="AXSTAD matte white recessed-panel kitchen doors and drawer fronts",
-    url="https://www.ikea.com/us/en/p/axstad-door-matte-white-50426048/",
-    source="Owner selection 2026-10-22 replaces VOXTORP in the kitchen and connected living "
-           "run. 3/4-inch fronts, 1/8-inch nominal reveals. Solid 15x20 doors above cold "
-           "storage; AXSTAD glass is only listed in 30/40-inch heights, so glass is deferred.",
-)
-IKEA_BAGGANAS_KNOB_BLACK = Product(
-    tag="PROD-IKEA-BAGGANAS-KNOB-BLACK", brand="IKEA", model="BAGGANÄS black knob",
-    sku="903.384.17", name="BAGGANÄS black knob, 13/16-inch diameter",
-    url="https://www.ikea.com/us/en/p/bagganaes-knob-black-90338417/",
-    source="IKEA US read 2026-10-22: diameter 13/16, projection 15/16 inch; $7/2-pack. "
-           "Selected for kitchen/living cabinet doors, at opening-edge rails.",
-)
-IKEA_BAGGANAS_PULL_BLACK = Product(
-    tag="PROD-IKEA-BAGGANAS-PULL-BLACK", brand="IKEA", model="BAGGANÄS black handle",
-    sku="803.384.13", name="BAGGANÄS black pull, 5 5/8 inches, with washers",
-    url="https://www.ikea.com/us/en/p/bagganaes-handle-black-80338413/",
-    source="IKEA US read 2026-10-22: length 5 5/8, hole spacing 5 1/16, projection 1 1/4, "
-           "width 3/8 inch; $9/2-pack. One horizontal pull per kitchen drawer front. "
-           "Use the included washers. The custom garage retains its lift/roll-up operation.",
 )
 SCHLAGE_LATITUDE = Product(
     tag="PROD-SCHLAGE-LATITUDE-619", brand="Schlage", model="Latitude, square rose, 619",
@@ -450,8 +379,7 @@ INTERIOR_PRODUCTS = (
     MOEN_ALIGN_FILLER, MOEN_4794_ROUGH, DELTA_ARVO_LAV_CHROME,
     KOHLER_CAXTON_BASIN, SWAN_CONTOUR_TOP, CORIAN_GLACIER_WHITE,
     HARVIA_CILINDRO_PC110E, HARVIA_XENIO_CX170, CARIITTI_FIBRE_KIT,
-    IKEA_SEKTION, IKEA_VOXTORP_WHITE, IKEA_MAXIMERA, TOPKNOBS_BAR_PULL,
-    IKEA_AXSTAD_WHITE, IKEA_BAGGANAS_KNOB_BLACK, IKEA_BAGGANAS_PULL_BLACK,
+    TOPKNOBS_BAR_PULL,
     SCHLAGE_LATITUDE, YALE_ASSURE_2,
     MSI_Q_QUARTZ_SPECKLED, MARAZZI_MODERN_FORMATION, TILEBAR_BRONX_WHITE,
     SCHLUTER_KERDI_LINE_VARIO, KATELAUREL_ESTERO, GE_SILICONE_2_KB_WHITE,

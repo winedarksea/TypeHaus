@@ -4,7 +4,6 @@ The existing catalog depth is a frame/rail datum. Doors project 3/4 inch beyond 
 BAGGANÄS projects beyond the doors. Neither changes a cabinet's installation footprint.
 """
 
-from dataclasses import dataclass
 from math import atan2, cos, degrees, radians, sin
 
 from typehaus.model.placeable_symbols._families import Builder, Geometry
@@ -25,33 +24,28 @@ from typehaus.model.placeable_symbols._sektion_fronts import (
     bagganas_knob,
     bagganas_pull,
 )
+from typehaus.model.placeable_symbols._sektion_layout import (
+    DRAWER_STACK_COUNT,
+    SektionCabinetConfiguration,
+    front_layout,
+    fronts_across,
+)
 from typehaus.quantities import inch
 
 BASE_SUPPORT_M = inch(3.5).meters
 BASE_FRAME_M = inch(30).meters
 COUNTER_M = inch(1.181).meters
 TOE_RECESS_M = inch(3).meters
-TALL_LOWER_FRONT_M = inch(50).meters
 CORNER_LEG_M = inch(24).meters
-SINGLE_DOOR_MAX_WIDTH_M = inch(24).meters
+INCH_M = inch(1).meters
 SINK_OPENING_WIDTH_RATIO = 0.83
 SINK_OPENING_DEPTH_RATIO = 0.78
-
-
-@dataclass(frozen=True)
-class SektionCabinetConfiguration:
-    installation: str = "wall"
-    fronts: str = "doors"
-    hinge_right: bool = False
-    tall_front_heights_in: tuple[float, ...] = ()
-    support_height_in: float = 3.5
-    leveling_legs: bool = False
 
 
 def _doors(
     width, front, thickness, bottom, top, *, hinge_right=False, lift=False, knob_at_bottom=True
 ):
-    count = 1 if width <= SINGLE_DOOR_MAX_WIDTH_M + 1e-8 else 2
+    count = fronts_across(width / INCH_M)
     parts = []
     for index in range(count):
         nominal_width = width / count
@@ -125,9 +119,9 @@ def sektion_axstad_cabinet(configuration: SektionCabinetConfiguration) -> Builde
             parts.extend({**part, "color": "appliance-white"} for part in substrate)
             parts.extend(_counter(width, depth, counter_bottom, height, sink))
         if configuration.fronts == "drawers":
-            for index in range(3):
-                bottom = base + (top - base) * index / 3 + reveal / 2
-                upper = base + (top - base) * (index + 1) / 3 - reveal / 2
+            for index in range(DRAWER_STACK_COUNT):
+                bottom = base + (top - base) * index / DRAWER_STACK_COUNT + reveal / 2
+                upper = base + (top - base) * (index + 1) / DRAWER_STACK_COUNT - reveal / 2
                 parts.extend(axstad_front(width - reveal, front, thickness, bottom, upper))
                 parts.extend(
                     bagganas_pull(
@@ -146,16 +140,18 @@ def sektion_axstad_cabinet(configuration: SektionCabinetConfiguration) -> Builde
                 )
             )
         else:
-            divisions = (
-                (base, base + TALL_LOWER_FRONT_M * scale, top) if installed_tall else (base, top)
-            )
-            if installed_tall and configuration.tall_front_heights_in:
-                # Fronts split the span in proportion, so a scaled cabinet still fills its box.
-                # At full scale the span is the stated 90" and each front keeps its own height.
-                total_in = sum(configuration.tall_front_heights_in)
-                divisions = (base,)
-                for front_height in configuration.tall_front_heights_in:
-                    divisions += (divisions[-1] + (top - base) * front_height / total_in,)
+            divisions = (base, top)
+            if installed_tall:
+                # The bill's rows (front_layout); a scaled-down glyph keeps the 50" lower door
+                # scaled, and authored fronts split the span in proportion.
+                rows = front_layout(configuration, width / INCH_M, height / INCH_M).rows
+                if configuration.tall_front_heights_in:
+                    total_in = sum(row.height_in for row in rows)
+                    divisions = (base,)
+                    for row in rows:
+                        divisions += (divisions[-1] + (top - base) * row.height_in / total_in,)
+                else:
+                    divisions = (base, base + inch(rows[0].height_in).meters * scale, top)
             for bottom, upper in zip(divisions, divisions[1:], strict=False):
                 parts.extend(
                     _doors(
@@ -253,34 +249,27 @@ def sektion_axstad_corner_wall(width: float, depth: float, height: float) -> Geo
     return (polygon(ring, fill="appliance-white"),), tuple(parts)
 
 
+# Symbol name -> configuration; the bill (library/placeables/sektion_parts) reads the same.
+KITCHEN_SEKTION_CONFIGURATIONS = {
+    "sektion-axstad-kitchen-base-door": SektionCabinetConfiguration("base"),
+    "sektion-axstad-kitchen-base-door-raised": SektionCabinetConfiguration(
+        "base", support_height_in=4.0625, leveling_legs=True),
+    "sektion-axstad-kitchen-base-door-right": SektionCabinetConfiguration("base", hinge_right=True),
+    "sektion-axstad-kitchen-drawers": SektionCabinetConfiguration("base", "drawers"),
+    "sektion-axstad-kitchen-sink": SektionCabinetConfiguration("base", "sink"),
+    "sektion-axstad-kitchen-wall": SektionCabinetConfiguration(),
+    "sektion-axstad-kitchen-lift": SektionCabinetConfiguration(fronts="lift"),
+    "sektion-axstad-kitchen-tall": SektionCabinetConfiguration("tall"),
+    "sektion-axstad-kitchen-tall-raised": SektionCabinetConfiguration(
+        "tall", support_height_in=6, leveling_legs=True),
+    "sektion-axstad-kitchen-tall-aligned": SektionCabinetConfiguration(
+        "tall", tall_front_heights_in=(30, 40, 20)),
+    "sektion-axstad-kitchen-garage": SektionCabinetConfiguration(fronts="garage"),
+}
+
 KITCHEN_SEKTION_SYMBOLS = {
-    "sektion-axstad-kitchen-base-door": sektion_axstad_cabinet(SektionCabinetConfiguration("base")),
-    "sektion-axstad-kitchen-base-door-raised": sektion_axstad_cabinet(
-        SektionCabinetConfiguration("base", support_height_in=4.0625, leveling_legs=True)
-    ),
-    "sektion-axstad-kitchen-base-door-right": sektion_axstad_cabinet(
-        SektionCabinetConfiguration("base", hinge_right=True)
-    ),
-    "sektion-axstad-kitchen-drawers": sektion_axstad_cabinet(
-        SektionCabinetConfiguration("base", "drawers")
-    ),
-    "sektion-axstad-kitchen-sink": sektion_axstad_cabinet(
-        SektionCabinetConfiguration("base", "sink")
-    ),
-    "sektion-axstad-kitchen-wall": sektion_axstad_cabinet(SektionCabinetConfiguration()),
-    "sektion-axstad-kitchen-lift": sektion_axstad_cabinet(
-        SektionCabinetConfiguration(fronts="lift")
-    ),
-    "sektion-axstad-kitchen-tall": sektion_axstad_cabinet(SektionCabinetConfiguration("tall")),
-    "sektion-axstad-kitchen-tall-raised": sektion_axstad_cabinet(
-        SektionCabinetConfiguration("tall", support_height_in=6, leveling_legs=True)
-    ),
-    "sektion-axstad-kitchen-tall-aligned": sektion_axstad_cabinet(
-        SektionCabinetConfiguration("tall", tall_front_heights_in=(30, 40, 20))
-    ),
-    "sektion-axstad-kitchen-garage": sektion_axstad_cabinet(
-        SektionCabinetConfiguration(fronts="garage")
-    ),
+    **{name: sektion_axstad_cabinet(config)
+       for name, config in KITCHEN_SEKTION_CONFIGURATIONS.items()},
     "sektion-axstad-kitchen-corner-base": sektion_axstad_corner_base,
     "sektion-axstad-kitchen-corner-wall": sektion_axstad_corner_wall,
 }

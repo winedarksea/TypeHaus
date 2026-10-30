@@ -43,6 +43,7 @@ from typehaus.cli.cmd_site import site_app  # noqa: E402,F401
 from typehaus.cli.cmd_handoff import handoff  # noqa: E402,F401
 from typehaus.cli.cmd_analysis import analysis  # noqa: E402,F401
 from typehaus.cli.cmd_retaining_court import retaining_court_study  # noqa: E402,F401
+from typehaus.cli.cmd_order import order  # noqa: E402,F401
 
 
 def main() -> None:

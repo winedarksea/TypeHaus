@@ -1,3 +1,28 @@
+## IKEA SEKTION order list (2026-10-30)
+
+`plans/TODO.md` asked for a BOM that shows every SEKTION part, soft close included. Each
+`SEKT-*` type used to bill as one `[placeables]` row. Its price band silently covered the
+fronts, the hinges and the drawers, and the part numbers lived in prose.
+
+- **Itemized, then re-priced.** Every SEKTION frame row is now frame-only at the IKEA US
+  list price (read 2026-10-30). Fronts, MAXIMERA drawers, UTRUSTA hinges and shelves, legs,
+  toe kick, rail, knobs and pulls are their own `PROD-*` rows. The count comes from
+  `sektion_parts` over the glyph's `front_layout`. `finish-cabinet-pulls` and the
+  swing-out allowance are deleted, and the Rev-A-Shelf and AXILO feet are parts of
+  `SEKT-HIGH24-80`. The low end of the estimate rose about $2.8k and the high end fell
+  about $4.2k. The old bands were per-box allowances carried over from the generic
+  `CASE-*` rows.
+- **IKEA is a retailer, not a trade.** Parts file to millwork (vanity parts to plumbing,
+  as their vanity does). `haus order --brand IKEA` is the shopping list.
+- **The carousel corner is its parts.** s79582533 is the VALLSTENA configuration, so the
+  corner orders frame 705.967.56, the UTRUSTA carousel, the bifold hinges and an AXSTAD
+  bifold pair. The pair's article has not been read.
+- **Scribes stay shop stock.** The 3/4" cold-upper strips and bath1's 24 7/8"-deep filler
+  match no FÖRBÄTTRA size, so they point at no IKEA product.
+- **Assumed, not read:** the leg count (4, or 6 from 30" wide) and the hinge ladder
+  (2/3/4 at 40"/60"). The installation guide prints neither, so confirm both with the
+  planner. Rules, hand counts and the soft-close table: `notes/ikea_sektion_order.md`.
+
 ## Studio eave services, the pocket door and a shared corner pack (2026-10-29)
 
 Owner answers to the door-sizing and MEP-batch questions (`plans/door-sizing.md`).

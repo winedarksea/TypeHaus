@@ -10,17 +10,8 @@ live in prices.toml.
 
 from __future__ import annotations
 
-from typehaus.model import FurnitureCut, FurnitureType, Product, inch
+from typehaus.model import FurnitureCut, FurnitureType, Product, ProductPart, inch
 
-SEKTION_CORNER_CAROUSEL = Product(
-    tag="PROD-IKEA-SEKTION-CORNER-CAROUSEL", brand="IKEA",
-    model="SEKTION corner base cabinet with carousel",
-    name='SEKTION white corner base cabinet with carousel, 38 x 38 x 30"',
-    sku="s79582533",
-    source=("IKEA US s79582533 / s89506379, read 2026-10-02: 38\" legs 24\" deep, 30\" frame, "
-            "13\" + 13\" bifold door, reversible. Hang each door on the end AWAY from the "
-            "range: the slide-in stands 3\" proud and a fold toward it strikes it."),
-)
 SEKTION_FLOOR_ANCHOR = Product(
     tag="PROD-IKEA-SEKTION-FLOOR-ANCHOR", brand="IKEA", model="SEKTION floor anchoring frame",
     name='SEKTION floor anchoring frame, 82 5/8"', sku="105.570.36",
@@ -48,15 +39,8 @@ SEKTION_CORNER_WALL_FRAME = Product(
     url="https://www.ikea.com/us/en/p/sektion-corner-wall-cabinet-white-10265504/",
     source='Stock diagonal front with a 15-inch AXSTAD matte-white door; hinges included, rail separate.',
 )
-SEKTION_DEEP24_TOP_FRAME = Product(
-    tag="PROD-IKEA-SEKTION-TOP24-15", brand="IKEA", model="SEKTION top frame 24x24x15",
-    name='SEKTION 24x24x15" top cabinet with ventilation', sku="904.997.35",
-    url="https://www.ikea.com/us/en/p/sektion-top-cabinet-with-ventilation-white-90499735/",
-    source='IKEA US, read 2026-10-03: 23 5/8-inch bare depth, 24 with rail; east pantry tops.',
-)
-LIVING_EAST_RUN_PRODUCTS = (SEKTION_CORNER_CAROUSEL, SEKTION_FLOOR_ANCHOR, SEKTION_CONNECTOR_RAIL,
-                          SEKTION_BASE24_FRAME, SEKTION_WALL12_FRAME,
-                          SEKTION_CORNER_WALL_FRAME, SEKTION_DEEP24_TOP_FRAME)
+LIVING_EAST_RUN_PRODUCTS = (SEKTION_FLOOR_ANCHOR, SEKTION_CONNECTOR_RAIL,
+                          SEKTION_BASE24_FRAME, SEKTION_WALL12_FRAME, SEKTION_CORNER_WALL_FRAME)
 
 # FÖRBÄTTRA matte white, site-cut from the 25x80 panel (study_nook_types.py's product).
 _PANEL = "PROD-IKEA-FORBATTRA-MATTE-25-80"
@@ -77,7 +61,11 @@ PENINSULA_END_PANEL = FurnitureType(
 PENINSULA_BACK_PANEL = FurnitureType(
     tag="FT-KIT-PEN-BACK-PANEL", name='FÖRBÄTTRA seating face, 73 1/2 x 1/2 x 34"',
     footprint=(inch(73.5), inch(0.5)), height=inch(34), plan_symbol="sektion-cover-panel",
-    product_ref=_PANEL,
+    # Two panels, not one, so parts rather than a product_ref; the peninsula's IKEA
+    # fittings ride here because no one base owns them.
+    parts=(ProductPart(role="cover_panel", product_ref=_PANEL, quantity=2),
+           ProductPart(role="fitting", product_ref=SEKTION_CONNECTOR_RAIL.tag),
+           ProductPart(role="fitting", product_ref=SEKTION_FLOOR_ANCHOR.tag)),
     source=("Three 24 1/2-inch strips stood vertically, cut from two 25x80 panels; "
             "actual cover thickness 1/2 inch. Connector rails keep the north face at the "
             "cabinet backs. The remaining 25 inches are painted and edge-banded without "
