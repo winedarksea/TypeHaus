@@ -5458,11 +5458,15 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Material: listed retail/distributor prices where read, else ESTIMATE; labour is setting
 # plus three coats per LF, ESTIMATE off Homewyse's $4.06-4.89/LF installed corner bead
 # (May 2026). Quantities from `haus takeoff` 2026-10-30.
-# Vinyl corner bead, outside corners + soffit edges + window-return corners. ~$5-8 per 10'.
-"dw-corner-bead-vinyl" = { material = { low = 0.5, high = 0.8 }, labour = { low = 2.5, high = 4.0 } }  # 475.4 LF
+# Vinyl corner bead, outside corners + soffit edges. ~$5-8 per 10'.
+"dw-corner-bead-vinyl" = { material = { low = 0.5, high = 0.8 }, labour = { low = 2.5, high = 4.0 } }  # 192.6 LF
+# 3/4" bullnose (Trim-Tex 7010) on the window-return corners since 2026-10-30, past a stone
+# stool to its underside. ESTIMATE: ~$8-15 per 10' vinyl bullnose; the round takes a little
+# more care to feather than a square nose.
+"dw-bullnose-bead-vinyl" = { material = { low = 0.8, high = 1.5 }, labour = { low = 3.0, high = 4.5 } }  # 274.7 LF
 # Tear-away L-bead: trimless door jambs (D-M-BED2, D-M-STUDY) and window-return frame edges.
 # Moved out of those two door-type rows below (was "L-bead 20-40" / "bead 60-150" a door).
-"dw-l-bead-tearaway" = { material = { low = 0.6, high = 1.2 }, labour = { low = 2.0, high = 4.5 } }  # 340.1 LF
+"dw-l-bead-tearaway" = { material = { low = 0.6, high = 1.2 }, labour = { low = 2.0, high = 4.5 } }  # 340.9 LF
 # J-bead where board ends on bare concrete or framing (basement utility rooms, mudroom nook).
 "dw-j-bead-metal" = { material = { low = 0.4, high = 0.9 }, labour = { low = 1.5, high = 3.0 } }  # 156.7 LF
 # F reveal, the tile stop: Trim-Tex AS8710 at FBM $140 / 25 x 10' = $0.56/LF. Fussier to set

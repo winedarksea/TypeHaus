@@ -27,7 +27,7 @@ from shapely.geometry import Polygon
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.fillet import vertex_is_convex
 from typehaus.resolve.geometry_countertops import countertop_top_z
-from typehaus.resolve.model import ResolvedCountertop, ResolvedModel
+from typehaus.resolve.model import ResolvedCountertop, ResolvedModel, ResolvedWindowStool
 from typehaus.resolve.overlay import union_all
 
 EDGE_WALL, EDGE_SEAM, EDGE_ABUTMENT, EDGE_FINISHED = "wall", "seam", "abutment", "finished"
@@ -50,6 +50,8 @@ _ABUTTING_KINDS = frozenset({"Furniture", "Fixture", "Appliance", "Equipment"})
 #: side, horn back, horn end.
 STOOL_EDGE_KINDS = (EDGE_FINISHED, EDGE_FINISHED, EDGE_WALL, EDGE_WALL, EDGE_WALL,
                     EDGE_WALL, EDGE_WALL, EDGE_FINISHED)
+#: ``window_stool_ring``'s two shoulder-notch vertices.
+_NOTCH_VERTICES = (3, 6)
 
 
 def inside_radius_m(plan: PlanModel, material_ref: str) -> float:
@@ -69,6 +71,16 @@ def stool_corner_radii(front_m: float, inside_m: float) -> tuple[float, ...]:
     if front_m <= 0.0:
         return ()
     return (front_m, front_m, 0.0, inside_m, 0.0, 0.0, inside_m, 0.0)
+
+
+def stool_wrapping_return(stool: ResolvedWindowStool, finish_m: float,
+                          bead_radius_m: float) -> ResolvedWindowStool:
+    """A fabricated stool is templated after the drywall returns: its shoulder notches wrap
+    the finished board corner, and round to the corner bead's radius where that is larger,
+    so the stone seats against a bullnose. Idempotent, so a re-resolve may repeat it."""
+    radii = tuple(max(radius, bead_radius_m) if index in _NOTCH_VERTICES else radius
+                  for index, radius in enumerate(stool.corner_radii_m))
+    return replace(stool, notch_inset_m=finish_m, corner_radii_m=radii)
 
 
 def classify_countertop_edges(model: ResolvedModel) -> None:

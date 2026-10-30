@@ -1059,6 +1059,9 @@ class ResolvedWindowStool:
     # One radius per ``window_stool_ring`` vertex (``countertop_edges.stool_corner_radii``):
     # the front corners and the shoulder notches. Empty = square.
     corner_radii_m: tuple[float, ...] = ()
+    # How far inside the rough opening the shoulder notches sit: a fabricated stool wraps
+    # the finished drywall return (→ countertop_edges.stool_wrapping_return). 0 = the RO.
+    notch_inset_m: float = 0.0
 
 
 @dataclass(frozen=True)

@@ -33,8 +33,10 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
         assert prism.z1_m == pytest.approx(frame.solids[-1].z1_m)
         ring = window_stool_ring(wall, opening, stool)
         assert len(ring) == 8, "the horns stop at the interior wall face"
+        # A stone stool's notches wrap the finished return, inset from the RO.
         assert Polygon(ring).area == pytest.approx(
-            opening.width_m * stool.depth_m + 2 * stool.horn_m * stool.overhang_m)
+            opening.width_m * stool.depth_m + 2 * stool.horn_m * stool.overhang_m
+            - 2 * stool.notch_inset_m * (stool.depth_m - stool.overhang_m))
         # A fabricated stool's corners are rounded; a milled one stays square.
         assert len(prism.ring) == (8 if not stool.corner_radii_m else 8 + 4 * 6)
 
@@ -126,3 +128,23 @@ def test_stools_export_as_ifc_moldings(catlin_model_ro, catlin_ifc_path):
                      for relation in file.by_type("IfcRelAssociatesMaterial")
                      if product in relation.RelatedObjects]
         assert materials == [stool.material_ref]
+
+
+def test_a_stone_stool_notch_seats_on_the_bullnose_return(catlin_model_ro):
+    # WIN-M-KITCH's quartz notches wrap the 1/2" return at the bead's 3/4" (not quartz's
+    # 3/8"), and the jamb board runs past the stool to its underside. The plant room's
+    # Corian stools have no gypsum return: RO notch, the material's 1/2".
+    inch = 0.0254
+    stools = {stool.tag: stool for stool in catlin_model_ro.window_stools}
+    kitchen = stools["STOOL-WIN-M-KITCH"]
+    assert kitchen.notch_inset_m == pytest.approx(0.5 * inch)
+    assert kitchen.corner_radii_m[3] == kitchen.corner_radii_m[6] == pytest.approx(0.75 * inch)
+    plant = stools["STOOL-WIN-S-PLANT1"]
+    assert plant.notch_inset_m == 0.0 and plant.corner_radii_m[3] == pytest.approx(0.5 * inch)
+    walls = {wall.tag: wall for wall in catlin_model_ro.walls}
+    opening = next(o for o in catlin_model_ro.openings if o.tag == "WIN-M-KITCH")
+    prism = window_stool_prism(walls[kitchen.wall_tag], opening, kitchen)
+    jambs = [solid for solid in catlin_model_ro.solids
+             if solid.host_ref == "WIN-M-KITCH" and solid.category == "window_return"
+             and solid.tag.endswith("jamb-left")]
+    assert jambs and all(solid.z0_m == pytest.approx(prism.z0_m) for solid in jambs)

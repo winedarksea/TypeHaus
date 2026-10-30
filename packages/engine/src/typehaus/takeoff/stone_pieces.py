@@ -205,8 +205,15 @@ def _stool_piece(model: ResolvedModel, stool: ResolvedWindowStool, materials
         outline=ring, edge_kinds=kinds, radii_in=radii, length_in=0.0, depth_in=0.0,
         area_sqft=round(stool.length_m * stool.depth_m * 10.7639104, 2),
         holds=[TEMPLATE_HOLD, "Horns stop at the finished wall face; set the back edge to "
-               "the delivered window's interior frame face."])
+               "the delivered window's interior frame face.", *_notch_holds(stool)])
     return _finish(piece)
+
+
+def _notch_holds(stool: ResolvedWindowStool) -> list[str]:
+    if stool.notch_inset_m <= 0.0:
+        return []
+    return ["Shoulder notches wrap the finished drywall return, their inside radius matching "
+            "its bullnose bead: template after the returns are beaded."]
 
 
 def _finish(piece: FabricatedPiece) -> FabricatedPiece:

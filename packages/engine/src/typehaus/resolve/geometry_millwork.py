@@ -45,6 +45,7 @@ def window_stool_ring(wall: ResolvedWall, opening,
     interior_face = (min(interior_offsets) if exterior_sign > 0
                      else max(interior_offsets))
     half_width = opening.width_m / 2.0
+    notch = half_width - stool.notch_inset_m
     front = interior_face - exterior_sign * stool.overhang_m
     shoulder = interior_face
     back = interior_face + exterior_sign * (stool.depth_m - stool.overhang_m)
@@ -56,9 +57,9 @@ def window_stool_ring(wall: ResolvedWall, opening,
     horn = stool.horn_m
     return (
         point(-half_width - horn, front), point(half_width + horn, front),
-        point(half_width + horn, shoulder), point(half_width, shoulder),
-        point(half_width, back), point(-half_width, back),
-        point(-half_width, shoulder), point(-half_width - horn, shoulder),
+        point(half_width + horn, shoulder), point(notch, shoulder),
+        point(notch, back), point(-notch, back),
+        point(-notch, shoulder), point(-half_width - horn, shoulder),
     )
 
 

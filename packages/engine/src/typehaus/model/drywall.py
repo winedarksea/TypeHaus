@@ -46,6 +46,9 @@ class DrywallStandard(Element):
     tile_reveal_ref: str
     window_corner_ref: str
     window_frame_ref: str
+    # The window-return corner bead's nose radius (a bullnose); None is a square bead. A
+    # fabricated stool's shoulder notch takes it, so the stone seats against the bead.
+    window_corner_radius: Length | None = None
     led_profile: PlasterInProfile | None = None
     stock_length: Length = ft(10)
 

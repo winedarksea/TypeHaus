@@ -39,6 +39,8 @@ def resolve_window_returns(model: ResolvedModel) -> list[Finding]:
     """Emit fitted solids and immutable quantity records; safe to rerun after an edit."""
     model.window_returns.clear()
     model.solids[:] = [solid for solid in model.solids if solid.category != "window_return"]
+    from typehaus.resolve.countertop_edges import stool_wrapping_return
+
     walls = {wall.tag: wall for wall in model.walls}
     stools = {stool.window_ref: stool for stool in model.window_stools}
     findings = []
@@ -54,8 +56,12 @@ def resolve_window_returns(model: ResolvedModel) -> list[Finding]:
         stack = _finish_stack(model, wall)
         if not stack:
             continue
+        stool = stools.get(opening.tag)
+        if stool is not None and stool.corner_radii_m:
+            stool = stool_wrapping_return(
+                stool, sum(layer.thickness_m for layer, _ in stack), _bead_radius_m(model))
         try:
-            record, solids = _fit_return(wall, opening, stools.get(opening.tag), stack)
+            record, solids = _fit_return(wall, opening, stool, stack)
         except ValueError as error:
             findings.append(Finding(
                 severity=Severity.WARN, result=Result.UNKNOWN,
@@ -66,7 +72,18 @@ def resolve_window_returns(model: ResolvedModel) -> list[Finding]:
             continue
         model.window_returns.append(record)
         model.solids.extend(solids)
+        if stool is not None and stool is not stools.get(opening.tag):
+            model.window_stools[model.window_stools.index(stools[opening.tag])] = stool
     return findings
+
+
+def _bead_radius_m(model: ResolvedModel) -> float:
+    """The house's window-return bullnose radius; 0 for a square bead or no standard."""
+    from typehaus.resolve.drywall_led import drywall_standard
+
+    standard, _findings = drywall_standard(model.plan)  # reported by drywall_trims
+    radius = standard.window_corner_radius if standard is not None else None
+    return radius.meters if radius is not None else 0.0
 
 
 def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
@@ -106,7 +123,8 @@ def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
         prism = window_stool_prism(wall, opening, stool)
         if prism is None:
             raise ValueError("the authored stool has no fitted geometry")
-        bottom = prism.z1_m
+        # A stool notched round the finished return leaves the board to run past it.
+        bottom = prism.z0_m if stool.notch_inset_m > 0 else prism.z1_m
     top = head.z1_m
     total = sum(layer.thickness_m for layer, _ in stack)
     # The return may cover the frame's perimeter face, but must never cover glazing.

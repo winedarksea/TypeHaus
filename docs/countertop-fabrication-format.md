@@ -40,7 +40,10 @@ mixed.
 
 **Radii** (opt-in: a piece with no `corner_radius` stays square). A convex corner between
 two finished edges takes `Countertop.corner_radius` / `WindowStool.corner_radius`; a concave
-corner takes `Material.inside_corner_radius_in` (default 3/8"); every other corner is square. Fillets that share an edge split it in
+corner takes `Material.inside_corner_radius_in` (default 3/8"); every other corner is square.
+A stool whose window takes a drywall return is templated after it: its shoulder notches wrap
+the finished return corner and take `DrywallStandard.window_corner_radius` (a bullnose) where
+that is larger, and the return board and bead run past the stool to its underside. Fillets that share an edge split it in
 proportion; one that cannot fit is clamped and graded. The viewer, GLB and IFC draw the same
 fillets (`resolve/fillet.py`).
 
