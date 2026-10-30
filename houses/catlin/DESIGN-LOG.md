@@ -54,6 +54,20 @@ and open checks are in `notes/smart_home.md`. Instances are in `plan/smart_home.
   rail 38.1"). The landing takes the ordinary base, four pieces with two inside corners: W-M-C5
   runs past the landing edge to y 397, so it is a fourth piece. The well edge backs the west
   board at the stairhead. ST-S2A's winders stay unskirted. Arithmetic: `notes/stair_skirt_basis.md`.
+- **Scribed to the wall, not shimmed (owner, same day).** Each board's back is on its wall's
+  finish face, not the authored lane edge, and the oak is cut to the board: 41 1/8" upper,
+  41" lower (38.30" clear past the rail). A finish carpenter nails a skirt tight to the
+  studs and scribes it to the wall (Striegler, Fine Homebuilding). A shimmed board would
+  show a caulked gap along its top and bow between shims. The scribe also closed two 3/16"
+  misfits against W-M-WELL, which stands 3/16" east of the stair's generated partition.
+- **The wall stringers stand on a 2x spacer, not a ledger.** W-M-C5's and W-M-STRW's
+  stringers are held a flat 2x4 off the studs along their bottom edge and screwed through
+  into each stud with a 6" SDWS22 (9 in all). The drywall and the skirt drop into the
+  1 1/2" pocket, with 1/4" to spare. That is the JLC method (Reis, "Building Squeak-Free
+  Stairs", 2002: "held off by 2-by blocking") and the FHB one (framers "leave a space ...
+  for the skirtboards to drop into"). The old ledger stood beside the stringer and lapped
+  the C5 skirt by 1/4". No source describes that, and the interference pardon written for
+  it is gone. Basis: `notes/stair_skirt_basis.md` §6.
 
 ## IKEA SEKTION order list (2026-10-30)
 

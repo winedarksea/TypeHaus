@@ -181,9 +181,8 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     if kinds & _STAIR_BORNE and (kinds - _STAIR_BORNE) <= _STAIR_SUPPORT:
         return True
     # Two ledger/hanger bands of the same stair lapping at a landing-platform corner
-    # (e.g. a rim ledger meeting an edge-joist ledger on perpendicular concrete walls), or a
-    # skirted stringer's ledger lapping its skirt by the lane's shim gap (W-M-C5's 1/4").
-    if "hanger" in kinds and kinds <= {"hanger", "stair_skirt"} and same_parent:
+    # (e.g. a rim ledger meeting an edge-joist ledger on perpendicular concrete walls).
+    if kinds == {"hanger"} and same_parent:
         return True
     # A stair's wall ledger meeting the floor-opening framing at the head of its flight.
     # The flight arrives *at* the opening edge, so the ledger let into the shaft wall and

@@ -1,13 +1,16 @@
 """Stair skirt boards: the raked board on each wall-backed side of a scoped flight (#85).
 
-The skirt goes up first, so the treads, risers and side stringers butt it: on a skirted side
-each moves inboard by the board's thickness (``plan_skirts``). The board is a
+The board is scribed to its backing's finish face, not the authored lane edge, and the treads
+and risers are cut to the board, so a lane sitting a fraction off its wall still meets it
+(``plan_skirts``). The side stringer butts the board here; ``bearing.py`` then stands a
+wall-carried one off the studs on a 2x spacer instead. The board is a
 ``FramedMember`` carrying the swept ``elevation_profile`` a cut stringer does, so every
 emitter draws it unchanged. Hand-worked basis: houses/catlin/notes/stair_skirt_basis.md.
 """
 
 from __future__ import annotations
 
+import functools
 import math
 from dataclasses import dataclass, replace
 
@@ -22,8 +25,8 @@ from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.resolve.overlay import difference, intersection
 from typehaus.resolve.stairs.common import _WELL_PARTITION_THICKNESS_M, _ascent
 
-# A wall finish face this close to a lane edge backs it: catlin's lanes sit 0.02"-0.24" off
-# their walls' paint, either side.
+# A wall finish face this close to a lane edge backs it (catlin's lower lane sits 1/4" off
+# W-M-C5's paint); the board's back then goes on that face.
 _FACE_ON_EDGE_M = 0.5 * 0.0254
 # The skirt's bottom edge runs this far below the throat line (tread top meets riser face),
 # so the board hides every tread and riser end.
@@ -36,9 +39,9 @@ _SKIRT_LAYOUTS = frozenset({"straight", "u_split_landing", "u_level_landing"})
 
 @dataclass(frozen=True)
 class SkirtedEdge:
-    """One flight side a skirt backs onto: ``edge`` is the lane's cross coordinate (the
-    board's back face), ``outward`` points from the lane toward the backing, and ``s`` is
-    distance up the flight (``along``)."""
+    """One flight side a skirt backs onto: ``edge`` is the lane's cross coordinate, ``face``
+    the backing's finish face (the board's back), ``outward`` points from the lane toward the
+    backing, and ``s`` is distance up the flight (``along``)."""
 
     treads: tuple[str, ...]
     cross_axis: int
@@ -52,6 +55,7 @@ class SkirtedEdge:
     # The arrival deck's well edge on this face, which backs the board where it rises
     # above the deck's underside (the stairhead, past the last wall).
     opening: tuple[float, float] | None = None
+    face: float = 0.0
 
     def along(self, point: tuple[float, float]) -> float:
         return point[1 - self.cross_axis] * self.sign
@@ -66,7 +70,7 @@ class SkirtPlan:
     # Underside of the arrival deck's framing, or None: where its well edge starts to back.
     deck_underside_m: float | None
     edges: tuple[SkirtedEdge, ...]
-    # Stringer child key -> how far it moved off the wall for its skirt (``bearing.py``).
+    # Stringer child key -> the thickness of the skirt it butts (``bearing.py``).
     offsets: dict[str, float]
 
 
@@ -126,17 +130,26 @@ def skirted_edges(model: ResolvedModel, stair: Stair,
         head = max(p[run_axis] * sign for m in lane_members for p in member_footprint(m)[0])
         for edge, outward in ((lo, -1), (hi, 1)):
             probe = SkirtedEdge((), cross_axis, (lo, hi), edge, outward, sign, (0, 0), ())
-            backing = _merge(_wall_intervals(model, stair.from_storey, probe)
-                             + _partition_intervals(members, probe))
-            best = max(backing, key=lambda iv: min(iv[1], head) - max(iv[0], first),
-                       default=None)
-            if best is None or (min(best[1], head) - max(best[0], first)
-                                < _MIN_BACKED_FRACTION * (head - first)):
+            walls = _wall_intervals(model, stair.from_storey, probe)
+            partition = _partition_intervals(members, probe)
+            run = functools.partial(_shared, (first, head))
+            best = max(_merge([iv[:2] for iv in walls + partition]), key=run, default=None)
+            if best is None or run(best) < _MIN_BACKED_FRACTION * (head - first):
                 continue
+            # The board is scribed to the finish face backing most of the flight: an
+            # authored wall's (W-M-WELL) over the generated partition standing in for it.
+            within = [iv for iv in walls or partition if best[0] <= iv[0] and iv[1] <= best[1]]
+            face = max(within or partition, key=run)[2]
             out.append(replace(probe, treads=tuple(t.child_key for t in treads),
-                               backing=best, above_arrival=tuple(_merge(
+                               backing=best, face=face, above_arrival=tuple(_merge(
+                                   iv[:2] for iv in
                                    _wall_intervals(model, stair.to_storey, probe)))))
     return out
+
+
+def _shared(span: tuple[float, float], interval) -> float:
+    """How much of ``span`` the ``(lo, hi, ...)`` ``interval`` covers."""
+    return min(interval[1], span[1]) - max(interval[0], span[0])
 
 
 def _in_lane(member: FramedMember, cross_axis: int, lo: float, hi: float) -> bool:
@@ -146,7 +159,8 @@ def _in_lane(member: FramedMember, cross_axis: int, lo: float, hi: float) -> boo
 
 
 def _wall_intervals(model: ResolvedModel, storey: str, edge: SkirtedEdge):
-    """Ascent-s extents of the walls on ``storey`` whose finish face lies on ``edge``."""
+    """``(lo, hi, face)``: ascent-s extent and finish face of each wall on ``storey`` whose
+    finish face lies on ``edge``."""
     cross = edge.cross_axis
     out = []
     for wall in model.walls:
@@ -164,20 +178,19 @@ def _wall_intervals(model: ResolvedModel, storey: str, edge: SkirtedEdge):
         if abs(face - edge.edge) > _FACE_ON_EDGE_M or (centre - edge.edge) * edge.outward <= 0:
             continue
         run = [edge.along(p) for p in face_polygon]
-        out.append((min(run), max(run)))
+        out.append((min(run), max(run), face))
     return out
 
 
 def _partition_intervals(members: tuple[FramedMember, ...], edge: SkirtedEdge):
     """The generated U-stair well partition, when its finished face is ``edge``."""
     parts = [m for m in members if m.child_key.startswith("well-partition-")]
-    face = [m for m in parts
-            if abs(m.p0[edge.cross_axis] - edge.outward * _WELL_PARTITION_THICKNESS_M / 2.0
-                   - edge.edge) <= _FACE_ON_EDGE_M]
+    half = edge.outward * _WELL_PARTITION_THICKNESS_M / 2.0
+    face = [m for m in parts if abs(m.p0[edge.cross_axis] - half - edge.edge) <= _FACE_ON_EDGE_M]
     if not face:
         return []
     run = [edge.along(p) for m in face for p in (m.p0, m.p1)]
-    return [(min(run), max(run))]
+    return [(min(run), max(run), face[0].p0[edge.cross_axis] - half)]
 
 
 def _opening_interval(outline, edge: SkirtedEdge) -> tuple[float, float] | None:
@@ -191,6 +204,7 @@ def _opening_interval(outline, edge: SkirtedEdge) -> tuple[float, float] | None:
 
 
 def _merge(intervals):
+    """Overlapping ``(lo, hi)`` intervals joined."""
     out: list[tuple[float, float]] = []
     for lo, hi in sorted(intervals):
         if out and lo <= out[-1][1] + _MERGE_GAP_M:
@@ -203,14 +217,13 @@ def _merge(intervals):
 def inset_for_skirts(members: tuple[FramedMember, ...], edges: tuple[SkirtedEdge, ...],
                      thickness: float
                      ) -> tuple[tuple[FramedMember, ...], dict[str, float]]:
-    """Trim tread and riser ends on each skirted edge and move its side stringer inboard.
-
-    Landings keep their full width: the landing takes base, not skirt."""
+    """Cut tread and riser ends to the board on each skirted edge, and butt the side stringer
+    to it. Landings keep their full width: the landing takes base, not skirt."""
     offsets: dict[str, float] = {}
     out = list(members)
     for edge in edges:
         cross = edge.cross_axis
-        inboard = edge.edge - edge.outward * thickness
+        inboard = edge.face - edge.outward * thickness
         for index, member in enumerate(out):
             if member.category in ("tread", "riser") and _in_lane(member, cross, *edge.lane):
                 if all(abs(p[cross] - edge.edge) > 1e-6 for p in (member.p0, member.p1)):
@@ -227,7 +240,7 @@ def inset_for_skirts(members: tuple[FramedMember, ...], edges: tuple[SkirtedEdge
                 face = edge.edge - edge.outward * cross_section(member.profile).width_m / 2.0
                 if abs(member.p0[cross] - face) > 1e-6:
                     continue
-                shifted = face - edge.outward * thickness
+                shifted = inboard - edge.outward * cross_section(member.profile).width_m / 2.0
                 out[index] = replace(member, p0=_moved(member.p0, cross, face, shifted),
                                      p1=_moved(member.p1, cross, face, shifted))
                 offsets[member.child_key] = thickness
@@ -314,7 +327,7 @@ def _board(stair: Stair, edge: SkirtedEdge, plan: SkirtPlan, board: Polygon, slo
            secant: float, flight: str) -> FramedMember:
     # The overlay snaps vertices, so the board's ends are read off the cut polygon itself.
     s0, _z0, s1, _z1 = board.bounds
-    centre = edge.edge - edge.outward * plan.thickness_m / 2.0
+    centre = edge.face - edge.outward * plan.thickness_m / 2.0
     run_axis = 1 - edge.cross_axis
 
     def at(s: float) -> tuple[float, float]:

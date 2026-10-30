@@ -42443,12 +42443,6 @@
 8,
 "fcb82345c977"
 ],
-"geometry/CST702AAAA::framing/member:ledger-W-M-C5-stringer-lower-2": [
-0.02405,
-1.529675,
-8,
-"7a861d870172"
-],
 "geometry/CST702AAAA::framing/member:ledger-W-M-C5B-landing-rim-lower-1": [
 1.282025,
 1.516975,
@@ -42472,12 +42466,6 @@
 1.516975,
 8,
 "3e7ddc95a455"
-],
-"geometry/CST702AAAA::framing/member:ledger-W-M-STRW-stringer-upper-0": [
-1.4861031,
-2.9386964,
-8,
-"7d17a014a236"
 ],
 "geometry/CST702AAAA::framing/member:riser-lower-000": [
 0.02405,
@@ -42598,6 +42586,18 @@
 3.179997,
 14,
 "3563ce487ad3"
+],
+"geometry/CST702AAAA::framing/member:spacer-W-M-C5-stringer-lower-2": [
+0.02405,
+1.332825,
+8,
+"d1a0a3fddfc5"
+],
+"geometry/CST702AAAA::framing/member:spacer-W-M-STRW-stringer-upper-0": [
+1.4353031,
+2.7418464,
+8,
+"687828bf95fe"
 ],
 "geometry/CST702AAAA::framing/member:stringer-lower-0": [
 0.02405,
@@ -88925,12 +88925,6 @@
 2,
 "5d344483d9a2"
 ],
-"member/CST702AAAA/ledger-W-M-C5-stringer-lower-2": [
-0.02405,
-1.529675,
-4,
-"83bf54eb310d"
-],
 "member/CST702AAAA/ledger-W-M-C5B-landing-rim-lower-1": [
 1.282025,
 1.516975,
@@ -88954,12 +88948,6 @@
 1.516975,
 4,
 "fbb3cad942fa"
-],
-"member/CST702AAAA/ledger-W-M-STRW-stringer-upper-0": [
-1.4861031,
-2.9386964,
-4,
-"8199d566309e"
 ],
 "member/CST702AAAA/riser-lower-000": [
 0.02405,
@@ -89080,6 +89068,18 @@
 3.179997,
 2,
 "00e91e5c0379"
+],
+"member/CST702AAAA/spacer-W-M-C5-stringer-lower-2": [
+0.02405,
+1.332825,
+4,
+"90026e4c89f4"
+],
+"member/CST702AAAA/spacer-W-M-STRW-stringer-upper-0": [
+1.4353031,
+2.7418464,
+4,
+"b9a16f170858"
 ],
 "member/CST702AAAA/stringer-lower-0": [
 0.02405,

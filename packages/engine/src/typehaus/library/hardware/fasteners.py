@@ -13,6 +13,7 @@ from typehaus.hardware.catalog import (
     ROLE_PARTITION_DEFLECTION_SCREW,
     ROLE_SIDELAP_STITCH_SCREW,
     ROLE_SLAB_PLATE_PIN,
+    ROLE_STAIR_SPACER_SCREW,
     AllowableLoads,
     StructuralHardware,
 )
@@ -42,6 +43,22 @@ SDWS_TIMBER_SCREW = StructuralHardware(
     source="Simpson Strong-Tie SDWS Timber Screw product family (strongtie.com/sdws) — "
            "0.220 in shank structural wood screw, Double-Barrier coated (DB); thread "
            "lengths per IAPMO UES ER-192 Table 1",
+)
+
+# A skirted stair stringer through its flat 2x4 spacer into a stud (``resolve/stairs/
+# bearing._spacer_carriage``): a 3 in stack, so the 6 in SDWS22's 3 in thread (ER-192 Table 1)
+# lands wholly in the stud. JLC (Reis, "Building Squeak-Free Stairs", 2002) ties the stringers
+# to the studs through 2-by blocking with 6 in structural screws.
+SDWS_STAIR_SPACER_SCREW = StructuralHardware(
+    tag="simpson-sdws-stair-spacer-screw",
+    name="SDWS Timber Screw (0.220 in shank), stringer through spacer to stud",
+    role=ROLE_STAIR_SPACER_SCREW,
+    manufacturer=_SIMPSON,
+    model="SDWS22___DB",
+    part_number_by_length_in={6.0: "SDWS22600DB"},
+    thread_length_in_by_length_in={6.0: 3.0},
+    source="Simpson Strong-Tie SDWS Timber Screw (strongtie.com/sdws), Double-Barrier coated; "
+           "thread length per IAPMO UES ER-192 Table 1",
 )
 
 #: An SDWS22 driven SQUARE into the side grain of a DF/SP main member (ER-192 Table 5 fn. 3),

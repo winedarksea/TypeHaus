@@ -1116,7 +1116,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Home Depot, 2026); the low end is the contractor carton this section discounts to
 # throughout, the high end carries the twelve 10d x 1-1/2" nails H5S specifies per strap.
 "LSTA24" = { low = 2.75, high = 5.5 }  # 25 ea — 19 derived over the house ridge, 6 authored as CN-BW-JOINT-1..3, -5..7, the diaphragm continuity ties across the garage south wall line
-"LUS" = { low = 2, high = 6 }  # 13 ea
+"LUS" = { low = 2, high = 6 }
 # Level I-joist hangers authored on the three flush LVLs (BM-M-HALL, BM-S-HALL, BM-S-BATH-E).
 # ESTIMATE, unconfirmed: single-piece retail band for an IUS2.56/11.88, carton at the low end.
 "IUS2.56/11.88" = { low = 4, high = 9 }  # 14 ea
@@ -1417,6 +1417,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # stiffener pair (3") and 2 per block down into the rafter plate (4").
 "SDWS22300DB" = { low = 0.55, high = 0.85 }  # 152 ea — 8 toe-screw SB-BW-BAND's two corner infill slats
 "SDWS22400DB" = { low = 0.6, high = 0.95 }  # 88 ea — 72 eave blocking, 16 through SB-BW-BAND's plates
+# ST-M2S's two skirted wall stringers, through the flat 2x4 spacer into each stud it crosses
+# (notes/stair_skirt_basis.md §6). ESTIMATE between the 4" row and the 8" carton rate above.
+"SDWS22600DB" = { low = 0.85, high = 1.35 }  # 9 ea
 # The interior partitions' deflection screw at every top plate — one per crossing of the
 # framing above, a 24" pitch where a wall runs under a parallel member, one per blocked bay
 # where it runs between them (takeoff/partition_fasteners.py). The SIX-inch 0.195" screw and

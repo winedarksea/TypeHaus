@@ -138,6 +138,14 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
   not the other (`W-B-S1`->`W-M-S1` + 8 garage walls). All under-framed-wall pours, so nothing
   reads the difference today. The two endpoint formulations differ too and are preserved
   behind `both_ends=`.
+- **ST-M2S's well wall is framed twice.** Two partitions frame the same wall:
+  - the authored `W-M-WELL` (x 168, faces 165 3/4 and 170 1/4);
+  - the stair's generated `well-partition-*` (`resolve/stairs/u_split.py`), centred 3/16"
+    west at 167 13/16.
+
+  Both bill studs and plates. The skirts now scribe to `W-M-WELL`'s faces. Drop the generated
+  partition wherever an authored wall stands on its line, or move the wall onto the
+  partition's line.
 - **A `Slab`/`FloorSystem` rim has no cladding concept.** `SL-M-DECK`'s exposed edge takes no
   fascia/trim/drip — the roof-edge machinery (`resolve/roof_edge.py`, `resolve/trim_bands.py`)
   has no horizontal-element analog.

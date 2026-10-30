@@ -39,7 +39,7 @@ _DEFLECTION = "L/360"
 # The clear span most tread makers publish for a 1 1/2" board; practice, not code.
 _TREAD_CLEAR_SPAN_IN = 36.0
 _SAWN = re.compile(r"^(?:\d+-)?2x\d+$")
-_CARRIED = ("framed-wall-ledger:", "concrete-wall-hanger:")
+_CARRIED = ("framed-wall-ledger:", "concrete-wall-hanger:", "framed-wall-spacer:")
 
 
 def _flights(stair: ResolvedStair) -> dict[str, list[FramedMember]]:
@@ -56,15 +56,27 @@ def _run_in(member: FramedMember) -> float:
 
 
 def _carried(stair: ResolvedStair, member: FramedMember) -> bool:
-    """True when a wall carries ``member`` over its whole run."""
+    """True when a wall carries ``member`` over its whole run. A skirted stringer's spacer
+    starts where its bottom edge leaves the floor, which carries the foot."""
     connection = member.connection or ""
     if connection.startswith(_CARRIED[1]):
         return True
-    if not connection.startswith(_CARRIED[0]):
+    kind = next((k for k in (_CARRIED[0], _CARRIED[2]) if connection.startswith(k)), None)
+    if kind is None:
         return False
-    key = f"ledger-{connection.split(':', 1)[1]}-{member.child_key}"
-    ledger = next((m for m in stair.members if m.child_key == key), None)
-    return ledger is not None and ledger.length_m / M_PER_IN >= _run_in(member) - 0.5
+    prefix = "ledger" if kind == _CARRIED[0] else "spacer"
+    key = f"{prefix}-{connection.split(':', 1)[1]}-{member.child_key}"
+    board = next((m for m in stair.members if m.child_key == key), None)
+    if board is None:
+        return False
+    if prefix == "ledger":
+        return board.length_m / M_PER_IN >= _run_in(member) - 0.5
+    axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
+    lo, hi = sorted((board.p0[axis], board.p1[axis]))
+    gaps = [max(lo - end[axis], end[axis] - hi, 0.0) / M_PER_IN
+            for end in (member.p0, member.p1)]
+    on_floor = abs(min(board.z0_m, board.z0_end_m or board.z0_m) - member.z0_m) < 1e-6
+    return sum(gap > 0.5 for gap in gaps) <= int(on_floor)
 
 
 def _throat_in(stair: ResolvedStair, profile: str) -> float:

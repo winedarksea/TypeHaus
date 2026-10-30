@@ -435,10 +435,11 @@ def test_framed_wall_bearing_picks_the_longest_host(main_stair):
     down to W-B-CN — see its note.
     """
     members = {m.child_key: m for m in main_stair.members}
-    assert members["stringer-lower-2"].connection == "framed-wall-ledger:W-M-C5"
+    # The two skirted wall stringers stand off their walls on a spacer, not a ledger.
+    assert members["stringer-lower-2"].connection == "framed-wall-spacer:W-M-C5"
     assert members["landing-rim-lower-1"].connection == "framed-wall-ledger:W-M-C5B"
-    for key in ("stringer-upper-0", "landing-rim-upper-0"):
-        assert members[key].connection == "framed-wall-ledger:W-M-STRW", key
+    assert members["stringer-upper-0"].connection == "framed-wall-spacer:W-M-STRW"
+    assert members["landing-rim-upper-0"].connection == "framed-wall-ledger:W-M-STRW"
 
 
 def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,
@@ -476,20 +477,46 @@ def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,
                          for point in layer.polygon]
                 near, far = min(depth), max(depth)
                 face = far if member.p0[cross] >= (near + far) / 2.0 else near
-                # A stringer a skirt board stands beside moved off the wall by the board.
-                carried = member.child_key.removeprefix(f"ledger-{host.tag}-")
-                skirted = carried.startswith("stringer-") and any(
-                    s.category == "stair_skirt"
-                    and min(face, member.p0[cross]) < s.p0[cross] < max(face, member.p0[cross])
-                    for s in stair.members)
                 assert abs(member.p0[cross] - face) == pytest.approx(
-                    inch(1.5 if skirted else 0.75).meters), member.child_key
+                    inch(0.75).meters), member.child_key
                 # And never inside the wall: the board hangs off the face, not in the bays.
                 assert not near < member.p0[cross] < far, member.child_key
     # ST-M2S's known framed hosts each carry at least one real ledger board.
     ledger_hosts = {m.connection.split(":", 1)[1] for m in main_stair.members
                     if m.child_key.startswith("ledger-")}
-    assert {"W-M-C5", "W-M-STRW"} <= ledger_hosts
+    assert {"W-M-C5B", "W-M-N2", "W-M-STRW"} <= ledger_hosts
+
+
+def test_skirted_wall_stringers_stand_on_a_spacer_below_the_skirt(catlin_model, main_stair):
+    """A skirted stringer is held a flat 2x4 off the studs (notes/stair_skirt_basis.md §6): the
+    spacer sits on the stud face, the stringer on the spacer, the skirt in the pocket between,
+    and the spacer's top runs a constant 0.715" under the skirt's bottom edge."""
+    walls = {wall.tag: wall for wall in catlin_model.walls}
+    members = {m.child_key: m for m in main_stair.members}
+    spacers = [m for m in main_stair.members if m.child_key.startswith("spacer-")]
+    assert {m.child_key for m in spacers} == {"spacer-W-M-C5-stringer-lower-2",
+                                             "spacer-W-M-STRW-stringer-upper-0"}
+    for spacer in spacers:
+        host = walls[spacer.connection.removeprefix("framed-wall-spacer:")]
+        stringer = members[spacer.child_key.removeprefix(f"spacer-{host.tag}-")]
+        studs = [p[0] for layer in host.depth_layers() if layer.function == "structure"
+                 for p in layer.polygon]
+        stud_face = max(studs) if spacer.p0[0] > max(studs) else min(studs)
+        assert abs(spacer.p0[0] - stud_face) == pytest.approx(inch(0.75).meters)
+        assert abs(stringer.p0[0] - stud_face) == pytest.approx(inch(2.25).meters)
+        assert spacer.category == "blocking" and spacer.profile == "2x4"
+    lower = members["spacer-W-M-C5-stringer-lower-2"]
+    # From where the stringer's bottom edge leaves the floor (s 6.258") to its head.
+    assert (lower.p0[1], lower.p1[1]) == pytest.approx((inch(318.633).meters,
+                                                         inch(382.375).meters), abs=1e-5)
+    assert lower.z0_m == pytest.approx(main_stair.base_elevation_m)
+    skirt = members["skirt-lower-right"]
+    s0 = skirt.p0[1]
+    bottom = [(s, z) for s, z in skirt.elevation_profile if s > 1e-9]
+    (sa, za), (sb, zb) = sorted(bottom, key=lambda p: p[1])[:2]
+    edge_at = lambda y: za + (zb - za) * (y - s0 - sa) / (sb - sa)  # noqa: E731
+    for y, top in ((lower.p0[1], lower.z1_m), (lower.p1[1], lower.z1_end_m)):
+        assert edge_at(y) - top == pytest.approx(inch(0.7154).meters, abs=1e-5)
 
 
 def test_no_stair_member_is_degenerate(catlin_model):

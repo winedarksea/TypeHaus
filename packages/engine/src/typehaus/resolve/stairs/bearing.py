@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import replace
 
 from typehaus.model.enums import StructuralRole
@@ -12,6 +13,9 @@ from typehaus.resolve.stairs.common import _MIN_SHARED_RUN_M, _TREAD_THICKNESS_M
 
 # The 2x board a framer lags to a framed host wall's face for a stringer/rim to bear on.
 _LEDGER_PROFILE = "2x10"
+# A skirted stringer instead stands off the studs on a flat 2x4 along its bottom edge, so the
+# drywall and the skirt drop into the pocket behind its tread cuts (JLC, Reis 2002).
+_SPACER_PROFILE = "2x4"
 
 
 def _clip_stair_to_subfloor(members: tuple[FramedMember, ...],
@@ -148,7 +152,7 @@ def _face_line(host, member: FramedMember, board_width: float, lo: float,
 
 def _framed_ledger(stair: Stair, host, member: FramedMember,
                    interval: tuple[float, float], subfloor: float,
-                   connection: str, skirt_m: float = 0.0) -> FramedMember:
+                   connection: str) -> FramedMember:
     """The ledger board a framed host wall carries ``member`` on.
 
     Two deliberate differences from the concrete hanger band (both share ``_face_line``'s
@@ -163,24 +167,77 @@ def _framed_ledger(stair: Stair, host, member: FramedMember,
     """
     section = cross_section(_LEDGER_PROFILE)
     lo, hi = interval
-    run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
-    a, b = _face_line(host, member, section.width_m, lo, hi, skirt_m)
-    # The member's top along its run: z1_m at p0, z1_end_m (raked) or z1_m at p1.
-    s0, s1 = member.p0[run_axis], member.p1[run_axis]
-    top0 = member.z1_m
-    top1 = member.z1_m if member.z1_end_m is None else member.z1_end_m
-
-    def top_at(s: float) -> float:
-        if abs(s1 - s0) < 1e-9:
-            return max(top0, top1)
-        return top0 + (top1 - top0) * (s - s0) / (s1 - s0)
-
-    top_lo, top_hi = top_at(lo), top_at(hi)
+    a, b = _face_line(host, member, section.width_m, lo, hi)
+    top_lo, top_hi = _top_at(member, lo), _top_at(member, hi)
     return FramedMember(
         stair.uid, f"ledger-{host.tag}-{member.child_key}", "hanger", _LEDGER_PROFILE,
         a, b, max(subfloor, top_lo - section.depth_m), top_lo, hi - lo,
         z0_end_m=max(subfloor, top_hi - section.depth_m), z1_end_m=top_hi,
         connection=connection)
+
+
+def _top_at(member: FramedMember, s: float) -> float:
+    """The member's top at run coordinate ``s``: z1_m at p0, z1_end_m (raked) at p1."""
+    run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
+    s0, s1 = member.p0[run_axis], member.p1[run_axis]
+    top0 = member.z1_m
+    top1 = member.z1_m if member.z1_end_m is None else member.z1_end_m
+    if abs(s1 - s0) < 1e-9:
+        return max(top0, top1)
+    return top0 + (top1 - top0) * (s - s0) / (s1 - s0)
+
+
+def _spacer_carriage(stair: Stair, host, member: FramedMember,
+                     interval: tuple[float, float], subfloor: float, skirt_m: float
+                     ) -> tuple[FramedMember, ...]:
+    """A skirted stringer held a 2x off the studs, and the flat 2x4 spacer it is screwed
+    through. The spacer runs the stringer's bottom edge over the run the wall shares with it,
+    from where that edge leaves the floor, so it stands below the skirt's bottom edge.
+    Hand check: houses/catlin/notes/stair_skirt_basis.md §6."""
+    run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
+    cross = 1 - run_axis
+    spacer = cross_section(_SPACER_PROFILE)
+    near, far = _depth_extent(host, cross)
+    studs = [p[cross] for layer in host.depth_layers() if layer.function == "structure"
+             for p in layer.polygon] or [near, far]
+    side = 1.0 if member.p0[cross] >= (near + far) / 2.0 else -1.0
+    stud_face = max(studs) if side > 0 else min(studs)
+    finish_face = far if side > 0 else near
+    if side * (stud_face + side * spacer.width_m - finish_face) < skirt_m - 1e-6:
+        raise ValueError(f"stair {stair.tag}: {host.tag}'s finish and a {skirt_m / 0.0254:.3f}"
+                         f"\" skirt do not fit the {spacer.width_m / 0.0254:.2f}\" spacer pocket "
+                         f"behind {member.child_key}")
+    centre = stud_face + side * (spacer.width_m + cross_section(member.profile).width_m / 2.0)
+    moved = []
+    for point in (member.p0, member.p1):
+        point = list(point)
+        point[cross] = centre
+        moved.append((point[0], point[1]))
+    depth = cross_section(member.profile).depth_m
+    lo, hi = interval
+
+    def underside(s: float) -> float:
+        return _top_at(member, s) - depth
+
+    # Where the bottom edge is on the floor the stringer bears there, not on the spacer.
+    for end in (lo, hi):
+        if underside(end) < subfloor - 1e-9:
+            other = hi if end == lo else lo
+            if underside(other) <= subfloor:
+                return (member,)
+            reach = end + (other - end) * (subfloor - underside(end)) / (
+                underside(other) - underside(end))
+            lo, hi = (reach, hi) if end == lo else (lo, reach)
+    tag = f"framed-wall-spacer:{host.tag}"
+    a, b = [0.0, 0.0], [0.0, 0.0]
+    a[cross] = b[cross] = stud_face + side * spacer.width_m / 2.0
+    a[run_axis], b[run_axis] = lo, hi
+    z_lo, z_hi = underside(lo), underside(hi)
+    return (replace(member, p0=moved[0], p1=moved[1], connection=tag),
+            FramedMember(stair.uid, f"spacer-{host.tag}-{member.child_key}", "blocking",
+                         _SPACER_PROFILE, (a[0], a[1]), (b[0], b[1]), z_lo,
+                         z_lo + spacer.depth_m, math.hypot(hi - lo, z_hi - z_lo),
+                         z0_end_m=z_hi, z1_end_m=z_hi + spacer.depth_m, connection=tag))
 
 
 def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
@@ -208,6 +265,9 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
       does. Category ``hanger`` on purpose: the interference rules and the hardware
       takeoff already treat that category as a stair-carriage connector, and the
       ``ledger-`` child-key prefix keeps the two kinds tellable apart.
+    - **Skirted stringer on a framed wall** — no ledger: the stringer stands a 2x off the
+      studs on a flat spacer it is screwed through (``_spacer_carriage``), annotated
+      ``framed-wall-spacer:{tag}``.
 
     Any landing corner no host wall reaches gets a vertical 4x4 post to the subfloor.
     ``skirts`` maps a stringer a skirt board stands beside to the board's thickness.
@@ -256,11 +316,13 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
         if bearable and member.p0 != member.p1:
             skirt_m = (skirts or {}).get(member.child_key, 0.0)
             host, interval = _best_host_wall(model, stair, member.p0, member.p1, skirt_m)
+            if host is not None and not host.is_foundation and skirt_m > 0:
+                out.extend(_spacer_carriage(stair, host, member, interval, subfloor, skirt_m))
+                continue
             if host is not None and not host.is_foundation:
                 tag = f"framed-wall-ledger:{host.tag}"
                 out.append(replace(member, connection=tag))
-                out.append(_framed_ledger(stair, host, member, interval, subfloor, tag,
-                                          skirt_m))
+                out.append(_framed_ledger(stair, host, member, interval, subfloor, tag))
                 if member.category == "landing_framing":
                     # Only the endpoints the wall actually runs past are carried; a host
                     # that overlaps half a rim leaves the far corner needing a post.
