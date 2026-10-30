@@ -262,7 +262,7 @@ the future.
 - Add the eased edges and rounded corners to the shown tabletop model.
 - D-B-PATIO has a MASA connector sprouting up in the middle, plus it's got some sort of awkward trim around the brick veneer (the brick IS the trim there, the door itself has a more utilitarian trim into the main house wall behind). Looks like previous door work accidentally bumped the brick arch up too high. It should partially obscure the door top.
 - Look up a guide to how plumbers and such route, then make sure the autorouter follows that, and also code for it
-- Specify the products for the ducts and duct vents
+- Specify the products for the ducts and duct vents. In particular the heat pump duct and ERV outlets and intakes
 - Consider have the oven/range in the kitchen island across from the sink
 - Consider making W-M-BATH1-W operable. Switch that small operable window type we have to the Aluprof MB-Slimline / MB-79N CSF or Aliplast Max Light Modern ultra slim aluminum for maximum light area (looks like around 2.75" frame is possible there) triple glazed.
 - [x] Roof sheathing: 19/32" 40/20 plywood, CDX house and Structural I garage/canopy. [Assessment](../houses/catlin/notes/roof_sheathing_and_membranes.md): Image II acceptance, eave cantilevers, narrow/single-span panels and 24-1/8" transition engineering remain open.
@@ -297,6 +297,7 @@ the future.
   - Sense Pro trim: Century is bundle-only. Match the 622 escutcheon to the Latitude lever.
 - We likely won't be getting a home backup battery when we first power the house (too expensive alongside everything else) but we will have solar and we want it easy to add a battery (possibly using an EV as the backup battery, that is becoming more common, but ideally specified in a way that might work with various brands of car in the future, not just one short term supported product). Separately, home assistant (likely hardwired LAN into the main router) and the router are probably on a smaller more standard computer backup battery. With all of these things, our main goal is being able to make sure the batteries never start on fire, and if they do start on fire, that the fire is contained in a manageable area.
 - Possibly the ESS closet can just be wood studs (metal studs seeming silly as an extra spec for just a small amount) with a Fire-Retardant Spray over the studs.
+- Let's make sure all the charcoal gray and black details of the house exterior (various metal trim, window frames, foundation insulation cover) show real manufacturer colors. We are using this to determine if we should switch all to more gray or more black.
 
 # Project Management
 
