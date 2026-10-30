@@ -61,8 +61,8 @@ labour ($10-18/SF). No separate epoxy grout charge is added.
 
 Sources:
 - [Original MSI, equivalent case](https://www.homedepot.com/p/326448203)
-- Current Ivy Hill Selene Opera Blue, Home Depot EXT3RD101601 (read 2026-10-29)
-- Current MSI Agua Linda, Home Depot NHDAGULIN2448PC (read 2026-10-29)
+- [Current Ivy Hill Selene Opera Blue, EXT3RD101601](https://www.homedepot.com/p/312191271) (read 2026-10-29)
+- [Current MSI Agua Linda, NHDAGULIN2448PC](https://www.homedepot.com/p/330291351) (read 2026-10-29)
 - [Original HDC Carrara](https://www.homedepot.com/p/305849487)
 - [Current economy matte Carrara](https://www.homedepot.com/p/308323204)
 - [Florida Tile brochure](https://images.thdstatic.com/catalog/pdfImages/9b/9b836d67-5679-42c6-a86c-da1be26efe2d.pdf)

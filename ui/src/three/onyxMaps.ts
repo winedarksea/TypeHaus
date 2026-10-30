@@ -111,16 +111,22 @@ function pump() {
 }
 
 function blit(entry: Entry, pick: (p: OnyxPixels) => [Uint8ClampedArray, number, number], map: THREE.Texture) {
-  const first = entry.faces.find(f => f)!;
-  const [, w, h] = pick(first);
+  const largest = entry.faces.filter(f => f).reduce((a, b) => (pick(b!)[1] > pick(a!)[1] ? b : a))!;
+  const [, w, h] = pick(largest);
   const rows = Math.ceil(entry.cells.length / entry.cols);
   const canvas = document.createElement("canvas");
   canvas.width = w * entry.cols; canvas.height = h * rows;
   const context = canvas.getContext("2d")!;
   entry.cells.forEach((face, cell) => {
-    const [data] = pick(entry.faces[face]!);
-    context.putImageData(new ImageData(data as Uint8ClampedArray<ArrayBuffer>, w, h),
-      (cell % entry.cols) * w, Math.floor(cell / entry.cols) * h);
+    const [data, fw, fh] = pick(entry.faces[face]!);
+    const image = new ImageData(data as Uint8ClampedArray<ArrayBuffer>, fw, fh);
+    const x = (cell % entry.cols) * w, y = Math.floor(cell / entry.cols) * h;
+    if (fw === w && fh === h) { context.putImageData(image, x, y); return; }
+    // A quarter-area fallback face beside worker faces: scale it into its cell.
+    const scratch = document.createElement("canvas");
+    scratch.width = fw; scratch.height = fh;
+    scratch.getContext("2d")!.putImageData(image, 0, 0);
+    context.drawImage(scratch, x, y, w, h);
   });
   map.dispose(); // the 4x4 placeholder's GPU storage is immutable
   map.image = canvas;
@@ -130,7 +136,8 @@ function blit(entry: Entry, pick: (p: OnyxPixels) => [Uint8ClampedArray, number,
 function finish(done: Pending, pixels: OnyxPixels | null) {
   inFlight--;
   const entry = cache.get(done.key);
-  if (entry && pixels) {
+  // A face already in (a reply queued before a dispose and rebuild) must not count twice.
+  if (entry && pixels && !entry.faces[done.face]) {
     entry.faces[done.face] = pixels;
     if (--entry.remaining === 0) {
       blit(entry, p => [p.color, p.width, p.height], entry.maps.color);

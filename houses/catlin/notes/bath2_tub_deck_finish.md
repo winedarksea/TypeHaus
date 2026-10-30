@@ -155,6 +155,6 @@ Read 2026-10-22:
 - JLC, "Working With Thin Solid Surfacing" (Swanstone sheet is not thermoformable) —
   https://www.jlconline.com/how-to/interiors/working-with-thin-solid-surfacing_o/
 - Swanstone Modern Subway MSMK-9636-1, White (.010), $987 list (read 2026-10-29) —
-  https://swanstone.com/product/msmk-9636-1-36-x-96-swanstone-modern-subway-tile-glue-up-bathtub-and-shower-single-wall-panel
+  https://swanstone.com/product/msmk-9636-1-36-x-96-swanstone-modern-subway-tile-glue-up-bathtub-and-shower-single-wall-panel/sw005003/sw005003-ms-010
 - Quartz waterfall breakage and cultured-marble gelcoat renewal: the house's own reasoning
   (`PROD-SWAN-CONTOUR`), with no new document read for them.

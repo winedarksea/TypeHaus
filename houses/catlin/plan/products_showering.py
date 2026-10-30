@@ -100,7 +100,7 @@ SOLID_SURFACE_SHOWER = Product(
     tag="PROD-SOLID-SURFACE-SHOWER", brand="Swan",
     model="Swanstone SS-3636 + MSMK-9636-1 Modern Subway panels",
     name="Swanstone 36x36 single-threshold solid-surface shower pan and Modern Subway wall panels, White (.010)",
-    url="https://swanstone.com/product/msmk-9636-1-36-x-96-swanstone-modern-subway-tile-glue-up-bathtub-and-shower-single-wall-panel",
+    url="https://swanstone.com/product/msmk-9636-1-36-x-96-swanstone-modern-subway-tile-glue-up-bathtub-and-shower-single-wall-panel/sw005003/sw005003-ms-010",
     source="Owner selection 2026-10-22 (family 2026-10-12); colour and panel style "
            "2026-10-29. SS-3636 product page, read 2026-10-22: 36 x 36 x 5 1/2 in., 4 1/2 "
            "in. threshold, ~32 x 33 1/2 in. interior, CENTRE molded-in Fit-Flo drain, 3 in. "

@@ -2220,7 +2220,7 @@ PANELING = [
     # membrane, or prime it first per Swanstone's surface-prep page.
     #
     # Floor to ceiling since 2026-10-12: `inch(106)` is RM-M-BATH2's clear height
-    # (clear_height_m 2.6924). 2 x 3'-0" x 8'-10" = 53.0 SF of Swanstone Carrara (221).
+    # (clear_height_m 2.6924). 2 x 3'-0" x 8'-10" = 53.0 SF of Swanstone Modern Subway, White (.010).
     #
     # Known limitation: `replaces_wall_finish` only nets out in `wood_surfaces`, so
     # `envelope_layers` still bills about 53 SF of latex paint behind the panel (~$80-155).

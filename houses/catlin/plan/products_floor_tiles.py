@@ -5,7 +5,7 @@ from typehaus.model import Product
 FLOOR_TILE_PRODUCTS = (
     Product(tag="PROD-IVY-SELENE-OPERA-BLUE", brand="Ivy Hill Tile", model="EXT3RD101601",
             name='Selene Opera Blue 24 x 48-inch polished onyx-look porcelain',
-            url="https://www.homedepot.com/s/EXT3RD101601",
+            url="https://www.homedepot.com/p/312191271",
             source='Owner selection 2026-10-29 for RM-M-BATH2. Rectified, polished, '
                    '15.49 SF/case; platinum epoxy grout at a 1/16-inch joint. Wet DCOF '
                    '>=0.42 per the Home Depot listing as read by the owner 2026-10-29. '
@@ -20,7 +20,7 @@ FLOOR_TILE_PRODUCTS = (
                    '5/16 inch is a design allowance, verify supplied tile before setting beds.'),
     Product(tag="PROD-MSI-AGUA-LINDA", brand="MSI", model="NHDAGULIN2448PC",
             name='Agua Linda 24 x 48-inch polished blue onyx-look porcelain',
-            url="https://www.homedepot.com/s/NHDAGULIN2448PC",
+            url="https://www.homedepot.com/p/330291351",
             source='Owner selection 2026-10-29 for RM-S-VANITY. Rectified, polished, '
                    '10.16 mm, 16 SF/case; platinum epoxy grout at a 1/16-inch joint. '
                    'Listing gives wet DCOF <0.42 and recommends dry areas; the owner '
