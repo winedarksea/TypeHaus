@@ -76,7 +76,8 @@ def _parts(cabinet, frame_symbol):
         return sektion_parts(width, 24, layout, "none", AXSTAD_HARDWARE, shelves=1, extra=(
             ProductPart(role="fitting", product_ref="PROD-REVASHELF-5374-24FL"),
             ProductPart(role="leg", product_ref="PROD-HAFELE-AXILO-637-76-355", quantity=4),
-            ProductPart(role="toe_kick", product_ref="PROD-IKEA-FORBATTRA-MATTE-25-30")))
+            ProductPart(role="toe_kick", product_ref="PROD-IKEA-FORBATTRA-MATTE-25-30",
+                        cut=(inch(width), inch(6)))))
     support = "legs" if frame_symbol in ("base-cabinet", "sink-base", "tall-cabinet") else "none"
     return sektion_parts(width, _depth_in(cabinet), layout, support, AXSTAD_HARDWARE,
                          rail=cabinet.tag not in _PENINSULA,

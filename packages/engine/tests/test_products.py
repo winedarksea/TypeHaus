@@ -313,3 +313,16 @@ def test_ikea_order_list_covers_every_sektion_frame(catlin_model_ro):
     hinges = next(i for i in listing["items"] if i["product"] == "PROD-IKEA-UTRUSTA-HINGE-110")
     assert hinges["packs"] == -(-hinges["units"] // 2)
     assert not any(row["reason"] == "no product_ref" for row in listing["unresolved"])
+
+
+def test_cover_panel_cuts_nest_onto_whole_sheets(catlin_model_ro):
+    """The hand nesting in ikea_sektion_order.md: 10 FÖRBÄTTRA panels drop to 7."""
+    from typehaus.takeoff.order_list import order_list
+
+    items = {i["product"]: i for i in order_list(catlin_model_ro, "IKEA")["items"]}
+    sheets = {size: (items[f"PROD-IKEA-FORBATTRA-MATTE-25-{size}"]["units"],
+                     items[f"PROD-IKEA-FORBATTRA-MATTE-25-{size}"]["packs"])
+              for size in (30, 80, 90)}
+    assert sheets == {30: (4, 2), 80: (5, 4), 90: (1, 1)}
+    assert ('2: FURN-M-LIV-E-END-N 24 x 34 9/16" + FURN-M-KIT-PEN-END 24 x 34"'
+            in items["PROD-IKEA-FORBATTRA-MATTE-25-80"]["cuts"])

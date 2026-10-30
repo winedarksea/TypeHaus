@@ -31,10 +31,10 @@ def above_structure_bands(model, roof) -> list:
     if roof is None:
         return []
     asm = model.plan.library.resolve_assembly(roof.assembly)
-    spans = assembly_layer_spans(asm)
+    spans = assembly_layer_spans(asm, model.plan.library)
     if not any(layer.function.value == "structure" for (layer, _lo, _hi) in spans):
         return []
-    base = structure_datum_m(asm)
+    base = structure_datum_m(asm, model.plan.library)
     return [(layer, (lo - base) / M_PER_IN, (hi - base) / M_PER_IN)
             for (layer, lo, hi) in spans if lo >= base - 1e-9]
 

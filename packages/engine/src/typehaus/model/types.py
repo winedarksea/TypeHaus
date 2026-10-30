@@ -336,6 +336,8 @@ class ProductPart(HausModel):
 
     ``length`` is stock bought by the run (a suspension rail, a toe kick): each of the
     ``quantity`` pieces is that long, and the takeoff rounds a touching run to whole sticks.
+    ``cut`` is a piece's face cut from a sheet product (``Product.stock_width``); without
+    one, each of a sheet product's ``quantity`` is a whole sheet.
     """
 
     role: Literal["basin", "faucet", "trap", "top", "drain",
@@ -344,6 +346,7 @@ class ProductPart(HausModel):
     product_ref: str
     quantity: int = Field(default=1, gt=0)
     length: Length | None = None
+    cut: tuple[Length, Length] | None = None
 
 
 class FurnitureType(HausModel):

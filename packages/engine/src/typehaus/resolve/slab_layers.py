@@ -23,6 +23,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from typehaus.model.enums import LayerFunction
+from typehaus.resolve.coatings import layer_depth_m
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.solid_categories import is_pour_slab
 
@@ -53,18 +54,20 @@ def top_finish_layers(assembly: Assembly | None) -> tuple[Layer, ...]:
     return tuple(top)
 
 
-def split_top_finish(assembly: Assembly | None, uid: str, tag: str, storey: str, outline,
-                     z1_m: float, voids) -> tuple[float, list[ResolvedSolid]]:
+def split_top_finish(assembly: Assembly | None, library, uid: str, tag: str, storey: str,
+                     outline, z1_m: float, voids) -> tuple[float, list[ResolvedSolid]]:
     """Lift a slab's top FINISH run off its structure.
 
     Returns where the structure now tops out, and one derived ``slab_finish`` solid per layer
     of the run, stacked down from the slab's authored top ``z1_m``. The structure keeps its
-    bottom; only the top moves.
+    bottom; only the top moves. A coating in the run takes no depth and draws no solid.
     """
     top = z1_m
     finish: list[ResolvedSolid] = []
     for layer in top_finish_layers(assembly):
-        base = top - layer.thickness.meters
+        base = top - layer_depth_m(library, layer)
+        if base >= top:
+            continue
         finish.append(ResolvedSolid(
             uid=f"{uid}-{layer.name}", tag=f"{tag}:{layer.name}", storey=storey,
             category=FINISH_CATEGORY, outline=list(outline), z0_m=base, z1_m=top,
@@ -83,10 +86,11 @@ def resolve_slab_layers(model: ResolvedModel) -> None:
         drawn_m = slab.z1_m - slab.z0_m
         depth_m = 0.0  # down from the slab's top, which already sits below its top finish
         for layer in assembly.layers[len(top_finish_layers(assembly)):]:
-            top_m, depth_m = depth_m, depth_m + layer.thickness.meters
+            layer_m = layer_depth_m(model.plan.library, layer)
+            top_m, depth_m = depth_m, depth_m + layer_m
             if top_m < drawn_m - _TOL_M:
                 continue  # inside the solid the slab already draws
-            if layer.function not in _DRAWN or layer.thickness.meters < _MIN_DRAWN_M:
+            if layer.function not in _DRAWN or layer_m < _MIN_DRAWN_M:
                 continue
             model.solids.append(ResolvedSolid(
                 uid=f"{slab.uid}-{layer.name}", tag=f"{slab.tag}:{layer.name}",

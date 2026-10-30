@@ -181,7 +181,7 @@ def _level_fill(a, b_, z0, z1, underside, ridge_u):
     return [(a, z0), (b_, z0)] + list(reversed(top))
 
 
-def roof_cavity_bands(asm):
+def roof_cavity_bands(asm, library):
     """``(layer, d0, d1)`` for each cavity fill, in the same datum frame.
 
     The batt between the rafters is not a layer of its own — it shares the bay's depth — so
@@ -197,9 +197,9 @@ def roof_cavity_bands(asm):
     section and leave the 5" of foam against the deck invisible, on the one drawing whose
     whole job is to show what is in the bay.
     """
-    datum = structure_datum_m(asm)
+    datum = structure_datum_m(asm, library)
     bands = []
-    for (layer, c0, c1) in assembly_layer_spans(asm):
+    for (layer, c0, c1) in assembly_layer_spans(asm, library):
         fills = getattr(layer, "cavity_fills", ())
         cursor = c0
         for fill in fills:
@@ -230,7 +230,7 @@ class _CavityBand:
         self.function = host.function
         self._cavity = cavity
 
-def roof_structure_band(asm):
+def roof_structure_band(asm, library):
     """``(layer, d0, d1)`` for the structure itself, in the same datum-down frame.
 
     Not drawn here — the rafters are drawn as *members*, which is the whole reason
@@ -238,14 +238,14 @@ def roof_structure_band(asm):
     still has to name the joist depth, and the bay outline this yields is the outline those
     members were cut to: the drawn rafter and this band coincide at every station.
     """
-    datum = structure_datum_m(asm)
+    datum = structure_datum_m(asm, library)
     return [(layer, datum - c1, datum - c0)
-            for (layer, c0, c1) in assembly_layer_spans(asm)
+            for (layer, c0, c1) in assembly_layer_spans(asm, library)
             if layer.function is LayerFunction.STRUCTURE]
 
 
 def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop,
-                     library=None) -> list[DrawnBand]:
+                     library) -> list[DrawnBand]:
     """The bay fill, as a sloped band under the structure datum, clipped to the rafters.
 
     A truss roof's fill is blown onto the ceiling instead: level, and held to the attic
@@ -256,8 +256,8 @@ def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop,
     """
     # ``False`` = measure the outline for the ladder but draw no fill: see
     # ``roof_structure_band``.
-    bands = ([(entry, True) for entry in roof_cavity_bands(asm)]
-             + [(entry, False) for entry in roof_structure_band(asm)])
+    bands = ([(entry, True) for entry in roof_cavity_bands(asm, library)]
+             + [(entry, False) for entry in roof_structure_band(asm, library)])
     if not bands:
         return []
     intervals = ring_intervals(tuple(roof.footprint), plane)

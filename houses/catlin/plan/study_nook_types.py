@@ -33,12 +33,14 @@ FORBATTRA_MATTE_WHITE_80 = Product(
     sku="205.678.36", name='FÖRBÄTTRA matte white cover panel, 25 x 80"',
     url="https://www.ikea.com/us/en/p/foerbaettra-cover-panel-matte-white-20567836/",
     source='IKEA US listing, read 2026-10-02: $127; 24 5/8" x 80", 1/2" thick.',
+    stock_width=inch(24.625), stock_length=inch(80),
 )
 FORBATTRA_MATTE_WHITE_30 = Product(
     tag="PROD-IKEA-FORBATTRA-MATTE-25-30", brand="IKEA", model="FÖRBÄTTRA matte white 25x30",
     sku="405.678.35", name='FÖRBÄTTRA matte white cover panel, 25 x 30"',
     url="https://www.ikea.com/us/en/p/foerbaettra-cover-panel-matte-white-40567835/",
     source='IKEA US listing, read 2026-10-02: $53; 24 5/8" x 30", 1/2" thick, site-cuttable.',
+    stock_width=inch(24.625), stock_length=inch(30),
 )
 STUDY_NOOK_PRODUCTS = (SEKTION_TOP_FRAME_24_15, SEKTION_HIGH_FRAME_18_80,
                        FORBATTRA_MATTE_WHITE_80, FORBATTRA_MATTE_WHITE_30)

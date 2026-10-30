@@ -75,8 +75,8 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                 # structure beneath it stops at its underside and keeps its own colour.
                 assembly = (model.plan.library.resolve_assembly(element.assembly)
                             if element.assembly else None)
-                top, finish = split_top_finish(assembly, element.uid, element.tag, storey.tag,
-                                               outline, z1, voids)
+                top, finish = split_top_finish(assembly, model.plan.library, element.uid,
+                                               element.tag, storey.tag, outline, z1, voids)
                 model.solids.append(ResolvedSolid(
                     element.uid, element.tag, storey.tag, CATEGORY_FOR_KIND[kind], outline,
                     z0, top,

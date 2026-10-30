@@ -61,3 +61,20 @@ def test_a_roof_ceiling_no_room_claims_keeps_its_authored_coat(catlin_model_ro) 
                 if c.layers and c.layers[0].material_ref == "latex-paint")
     unroomed = ceiling_coating_areas(catlin_model_ro)[("ceiling", "latex-paint")] - rooms
     assert 9.0 < unroomed < 11.0  # m², ~109 SF of sloped hall ceiling
+
+
+def test_a_coating_in_a_roof_stack_takes_no_depth(catlin_plan) -> None:
+    """``assembly_layer_spans`` is the roof walk; a coat there must not push the roofing out."""
+    from typehaus.model.assembly import Assembly
+    from typehaus.resolve.roof_layer_setbacks import assembly_layer_spans, structure_datum_m
+
+    stack = Assembly(tag="COATED_ROOF", layers=(
+        Layer(name="primer", material_ref="latex-paint", thickness=inch(0.01),
+              function=LayerFunction.FINISH),
+        Layer(name="deck", material_ref="spf", thickness=inch(0.75),
+              function=LayerFunction.STRUCTURE),
+        Layer(name="sealer", material_ref="latex-paint", thickness=inch(0.01),
+              function=LayerFunction.FINISH)))
+    spans = assembly_layer_spans(stack, catlin_plan.library)
+    assert [round((c1 - c0) / 0.0254, 3) for _layer, c0, c1 in spans] == [0.0, 0.75, 0.0]
+    assert structure_datum_m(stack, catlin_plan.library) == inch(0.75).meters

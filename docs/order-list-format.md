@@ -21,14 +21,27 @@ haus order houses/catlin --json
   - Each run is rounded up to whole `Product.stock_length` sticks, and the takeoff row's
     `count` is that number of sticks. `length_ft` keeps the net length.
 - **Packs.** `packs = ceil(units / Product.pack_quantity)`.
+- **Sheet goods** (a product with `stock_width` and `stock_length`, such as a FÖRBÄTTRA
+  cover panel) nest instead (`takeoff/sheet_nesting.py`). `units` counts pieces and
+  `packs` counts sheets:
+  - A piece is a placed type whose `product_ref` is the sheet (its face is the two larger
+    of footprint and height), or a `ProductPart.cut`. A sheet part without a `cut` is a
+    whole sheet.
+  - Each piece is a crosscut strip: one side across the sheet's width, the other spent
+    along its length, whichever spends less. First-fit decreasing by that length, ties by
+    tag, with a 1/8" kerf before every piece after a sheet's first. Pieces from anywhere in
+    the house share sheets.
+  - A piece that fits no sheet is reported under Unresolved and counted as a sheet.
 - **Unit price.** Shown only where `prices.toml` `[placeables]` prices the product tag, or
   failing that the type tag (#28). Part rows are priced per unit, not per pack.
 
 ## Columns
 
-`brand, article, name, roles, units, pack_quantity, packs, length_ft, unit_price, used_by`
+`brand, article, name, roles, units, pack_quantity, packs, length_ft, unit_price, used_by, cuts`
 
-`article` is `Product.sku`. `used_by` lists the instance tags that consume the item.
+`article` is `Product.sku`. `used_by` lists the instance tags that consume the item. `cuts`
+is a sheet good's cut list, `1: A 24 x 34" + B 24 x 34"; 2: C (whole)`: which pieces come
+off which sheet.
 
 ## Unresolved
 

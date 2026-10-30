@@ -37,6 +37,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     lighting_supplies,
     lighting_suspension,
     open_web_panel,
+    plaster_in_depth,
     plumbing,
     pockets,
     port_service,

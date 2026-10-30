@@ -29,6 +29,7 @@ from __future__ import annotations
 
 from typehaus.model.enums import LayerFunction
 from typehaus.quantities import inch
+from typehaus.resolve.coatings import layer_depth_m
 
 # Reference bearing-plate DEPTH for the birdsmouth when the bearing wall's own structure
 # layer cannot be read — a nominal 2x4 laid flat. Pitch is applied separately at the call
@@ -55,8 +56,10 @@ def above_structure_layers(assembly) -> list:
     return list(assembly.layers[last + 1:])
 
 
-def assembly_layer_spans(assembly) -> list[tuple[object, float, float]]:
+def assembly_layer_spans(assembly, library) -> list[tuple[object, float, float]]:
     """``(layer, c0_m, c1_m)`` for every layer, cumulative depth interior → exterior.
+
+    A coating takes no depth (``coatings.layer_depth_m``): its span is ``c0 == c1``.
 
     The companion to :func:`above_structure_layers`: where that answers *which* layers the
     sky sees, this answers *where each one is*. Single source of truth for the cumulative
@@ -69,20 +72,20 @@ def assembly_layer_spans(assembly) -> list[tuple[object, float, float]]:
     spans: list[tuple[object, float, float]] = []
     cumulative = 0.0
     for layer in assembly.layers:
-        thickness = layer.thickness.meters
+        thickness = layer_depth_m(library, layer)
         spans.append((layer, cumulative, cumulative + thickness))
         cumulative += thickness
     return spans
 
 
-def structure_datum_m(assembly) -> float:
+def structure_datum_m(assembly, library) -> float:
     """Depth from the assembly's interior face to the *outboard* face of its structure.
 
     This is the plane ``ResolvedRoof.eave_z_m`` and ``roof_geometry.roof_height_at`` sit on:
     the structure hangs below it, the above-structure stack rises above it. ``0.0`` for an
     assembly with no STRUCTURE layer, which is all such a roof ever had.
     """
-    return next((c1 for (layer, _c0, c1) in reversed(assembly_layer_spans(assembly))
+    return next((c1 for (layer, _c0, c1) in reversed(assembly_layer_spans(assembly, library))
                  if layer.function is LayerFunction.STRUCTURE), 0.0)
 
 

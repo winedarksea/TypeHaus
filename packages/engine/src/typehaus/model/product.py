@@ -42,6 +42,9 @@ class Product(HausModel):
     # pairs) and, for stock sold by the stick, the stick's length.
     pack_quantity: int = Field(default=1, gt=0)
     stock_length: Length | None = None
+    # A sheet good's width; with ``stock_length``, the sheet cut pieces nest on
+    # (``takeoff/sheet_nesting.py``).
+    stock_width: Length | None = None
     # Where the choice and its numbers were read (#46) — the same freeform provenance
     # every other catalog record carries.
     source: str | None = None

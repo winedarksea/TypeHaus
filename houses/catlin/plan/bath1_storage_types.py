@@ -25,6 +25,7 @@ FORBATTRA_MATTE_WHITE_90 = Product(
     sku="005.678.37", name='FÖRBÄTTRA matte white cover panel, 25 x 90"',
     url="https://www.ikea.com/us/en/p/foerbaettra-cover-panel-matte-white-00567837/",
     source='IKEA US listing, read 2026-10-02: actual depth 24 5/8", thickness 1/2", height 90".',
+    stock_width=inch(24.625), stock_length=inch(90),
 )
 SEKTION_HIGH_FRAME_18 = Product(
     tag="PROD-IKEA-SEKTION-HIGH-18-24-90", brand="IKEA", model="SEKTION 18x24x90",

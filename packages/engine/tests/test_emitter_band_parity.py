@@ -210,6 +210,27 @@ def test_every_wall_exports_one_ifc_part_per_banded_body_layer_region(catlin_mod
     assert not mismatches, mismatches
 
 
+def test_every_banded_coating_exports_as_a_covering_of_its_wall(catlin_model_ro, catlin_ifc):
+    """A coating with an authored extent is no layer-set row and no part: it is an
+    ``IfcCovering`` of its wall, one per opening-cut piece (``emit/ifc/wall_coatings``).
+    Catlin's foundation coats, garden washes and W-M-STRW's upper paint band are the 14."""
+    from typehaus.emit.ifc.wall_coatings import banded_coating_pieces
+
+    covered: dict[str, set[str]] = {}
+    for rel in catlin_ifc.by_type("IfcRelCoversBldgElements"):
+        covered.setdefault(rel.RelatingBuildingElement.Name, set()).update(
+            c.Name for c in rel.RelatedCoverings)
+    by_wall: dict[str, list] = {}
+    for opening in catlin_model_ro.openings:
+        by_wall.setdefault(opening.host_wall, []).append(opening)
+    expected = {w.tag: {name for name, *_ in banded_coating_pieces(w, by_wall.get(w.tag, ()))}
+                for w in catlin_model_ro.walls}
+    expected = {tag: names for tag, names in expected.items() if names}
+    assert covered == expected
+    assert "W-M-STRW:paint-mudroom-upper" in covered["W-M-STRW"]
+    assert sum(len(names) for names in covered.values()) >= 14
+
+
 def test_the_sauna_liner_no_longer_runs_across_its_own_door_and_window(catlin_model_ro,
                                                                       catlin_ifc):
     """The defect, named and counted.
@@ -240,7 +261,8 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     too. None of the 41 original keys moved — this count grew, it did not shift. 59 since
     2026-09-23: the ICF grade beam under D-G-OVERHEAD is retired, and W-GF-N-DR's two coil
     layers went with the wall. 61 with W-M-STRW's upper gypsum and paint closure. 38 since
-    2026-10-30: a coating takes no depth and exports no part, which drops 21 banded coats.
+    2026-10-30: a coating takes no depth and exports no part, which drops 21 banded coats
+    (an authored-band coat is an IfcCovering instead, ``emit/ifc/wall_coatings``).
 
     A GlobalId is an identity a federated model and its issue log hold onto. Re-keying a
     part that still means exactly what it meant before would break those references for

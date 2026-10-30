@@ -52,6 +52,21 @@ a run is allowed; carrying an offcut from one run to another is not.
 - **Legs:** 4.
 - **Toe kick and rail:** 18 in. each.
 
+**Cover panel nesting (`takeoff/sheet_nesting.py`).** Every FÖRBÄTTRA panel is 24 5/8 in.
+wide. Each piece stands one side across that width and spends the other along the panel's
+length; a 1/8 in. kerf goes before each piece after the first. Longest first, first panel
+it fits.
+- **25x30 (four pieces).** The bed desk cover is 24 5/8 x 30, which spends a whole panel.
+  The study seat end (16 x 24 5/8) spends 16; the two pantry toe panels (24 x 6, cut per
+  `kitchen_stock_cabinet_details.md`) spend 6 each. 16 + 1/8 + 6 + 1/8 + 6 = 28 1/4, under
+  30. **2 panels**, not 4.
+- **25x80 (five pieces).** The study nook cover (24 5/8 x 80) is a whole panel. The living
+  end panel (24 x 34 9/16) and the peninsula end panel (24 x 34) share one:
+  34 9/16 + 1/8 + 34 = 68 11/16, under 80. The peninsula seating face is authored as two
+  whole panels. **4 panels**, not 5.
+- **25x90.** The hall-bath closet cover, **1 panel**.
+- **Total: 7 panels, not 10.**
+
 **Rail run check (test).**
 - Two wall frames, 48 in. and 54 in., set touching, make a 102 in. run. That needs ceil(102/84) = **2** rails.
 - Set 2 in. apart they are two runs, which needs 1 + 1 = 2 rails. Set 30 in. and 36 in. touching, they make a 66 in. run, which needs 1 rail.
@@ -72,7 +87,6 @@ a run is allowed; carrying an offcut from one run to another is not.
 
 ## Known over-orders and open items
 
-- **Cut panels.** Each panel that is cut gets a whole panel ordered. Two 34 in. end panels fit on one FÖRBÄTTRA 25x80, and the order list orders two. The two pantry toe panels fit on one 25x30. Nest the cuts when reviewing the order.
 - **Scribes are shop stock.** The site-cut scribes (`FT-KIT-COLD-SCRIBE-20` at 3/4 in. thick, and `FT-S-SEKTION-SCRIBE-90` at 24 7/8 in. deep) do not fit any FÖRBÄTTRA size, so they carry no IKEA product.
 - **The carousel corner** is ordered as frame 705.967.56 plus the UTRUSTA carousel and the bifold hinges. The AXSTAD bifold pair stands in for s79582533's VALLSTENA fronts. Its article number has not been read.
 - **Articles not yet read** (they show as unresolved in `haus order`): the AXSTAD 24x50 door, the AXSTAD 24x15 lift front, the AXSTAD corner pair, and bath2's 36 in. combination (894.549.45 was read off a URL and not confirmed).

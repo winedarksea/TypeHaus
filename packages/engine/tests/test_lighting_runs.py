@@ -108,53 +108,32 @@ def test_a_round_trip_against_our_own_ifc_reports_no_run_changes(two_run_model,
     assert not [change for change in report.substantive() if change.tag in run_tags]
 
 
-def test_light_run_bands_are_a_channel_not_a_bar_and_nest_inside_the_envelope():
-    """The channel/tape cross-section (→ resolve/trim_bands.led_cove_bands) has to stay a
-    fitting a person would recognize, and every band has to stay inside the same envelope
-    :func:`light_run_segment_profiles` sweeps — the diff adapter's baseline projection uses
-    that envelope, and a band drifting outside it would make a round trip against our own
-    IFC report every run as resized by its own channel.
+def test_the_surface_channel_is_a_channel_not_a_bar_inside_its_half_inch_square():
+    """The channel/tape cross-section (→ resolve/trim_bands.surface_channel_parts) has to stay
+    a fitting a person would recognize, inside the half-inch square ``LIGHT_STRIP_*`` names:
+    soffit clearance and the cove-offset rule read that nominal, while every emitter and the
+    diff adapter sweep these parts (→ resolve/geometry.light_run_section_shells).
     """
-    from typehaus.resolve.geometry import (LIGHT_STRIP_HEIGHT_M, LIGHT_STRIP_WIDTH_M,
-                                           light_run_band_profiles)
+    from typehaus.resolve.geometry import LIGHT_STRIP_HEIGHT_M, LIGHT_STRIP_WIDTH_M
+    from typehaus.resolve.trim_bands import surface_channel_parts
 
-    path = [(0.0, 0.0), (4.0, 0.0), (4.0, 3.0)]
-    bands = light_run_band_profiles(path)
-    keys = {key for key, _profiles, _bottom, _top in bands}
-    assert keys == {"back", "base", "lip", "tape"}
-
+    parts = dict(surface_channel_parts(LIGHT_STRIP_WIDTH_M, LIGHT_STRIP_HEIGHT_M))
+    assert set(parts) == {"back", "base", "lip", "tape"}
     half = LIGHT_STRIP_WIDTH_M / 2.0
-
-    def perp_offset(corner, p0, p1) -> float:
-        """Signed distance of ``corner`` off the infinite line through the leg's axis."""
-        dx, dy = p1[0] - p0[0], p1[1] - p0[1]
-        length = (dx * dx + dy * dy) ** 0.5
-        return ((corner[0] - p0[0]) * dy - (corner[1] - p0[1]) * dx) / length
-
-    legs = list(zip(path[:-1], path[1:]))
-    by_key = {key: (profiles, bottom, top) for key, profiles, bottom, top in bands}
-    for key, (profiles, bottom_drop, top_drop) in by_key.items():
-        assert len(profiles) == 2, f"{key}: one profile per non-degenerate leg"
-        assert 0.0 <= top_drop < bottom_drop <= LIGHT_STRIP_HEIGHT_M, key
-        for profile, (p0, p1) in zip(profiles, legs):
-            offsets = [perp_offset(corner, p0, p1) for corner in profile]
-            # Every corner sits within the outer half-inch-square envelope — nested, not
-            # drifted past it — regardless of which axis the leg runs along.
-            assert min(offsets) >= -half - 1e-9 and max(offsets) <= half + 1e-9, (key, offsets)
+    drops = {}
+    for key, quad in parts.items():
+        assert all(-half - 1e-9 <= across <= half + 1e-9 for across, _drop in quad), key
+        top, bottom = min(d for _a, d in quad), max(d for _a, d in quad)
+        assert 0.0 <= top < bottom <= LIGHT_STRIP_HEIGHT_M, key
+        drops[key] = (bottom, top)
 
     # The lip only covers part of the opening — a shadow gap is read by what it hides, not
     # by a second full-height wall that would close the trough back up.
-    _back_profiles, back_bottom, back_top = by_key["back"]
-    _lip_profiles, lip_bottom, lip_top = by_key["lip"]
-    assert lip_bottom < back_bottom
-    assert lip_top == back_top == 0.0
-
-    # The tape sits directly on the base's own top face — not buried inside the base, not
-    # floating clear of it — and rises above that.
-    _base_profiles, base_bottom, base_top = by_key["base"]
-    _tape_profiles, tape_bottom, tape_top = by_key["tape"]
-    assert tape_bottom == pytest.approx(base_top)
-    assert tape_top < tape_bottom
+    assert drops["lip"][0] < drops["back"][0]
+    assert drops["lip"][1] == drops["back"][1] == 0.0
+    # The tape sits directly on the base's own top face, and rises above that.
+    assert drops["tape"][0] == pytest.approx(drops["base"][1])
+    assert drops["tape"][1] < drops["tape"][0]
 
 
 def test_the_glb_emitter_draws_a_channel_and_tape_for_every_run(two_run_model):
@@ -175,3 +154,17 @@ def test_the_glb_emitter_draws_a_channel_and_tape_for_every_run(two_run_model):
                        for material in gltf["materials"]}
     assert _color("cove_channel") in material_colors
     assert _color("led_tape") in material_colors
+
+
+def test_a_plaster_in_channel_is_graded_against_the_framing_above_its_board(catlin_ctx):
+    """1.44" of channel over a 5/8" board on I-joists runs 0.81" into every joist it crosses;
+    catlin suppresses the four as an open item (preferences.toml)."""
+    from typehaus.checks.mep.plaster_in_depth import plaster_in_depth
+    from typehaus.findings import Result
+
+    by_run = {f.element_tags[0]: f for f in plaster_in_depth(catlin_ctx)}
+    assert set(by_run) == {"LR-M-LIVING-W", "LR-M-LIVING-E", "LR-M-BATH2-TUB-CLG",
+                           "LR-S-HALL-GAP"}
+    assert all(f.result is Result.FAIL for f in by_run.values())
+    assert 'joist CSF603AAAA:joist-0-001-0 (0.81")' in by_run["LR-M-LIVING-E"].message
+    assert "soffit-rung" in by_run["LR-S-HALL-GAP"].message

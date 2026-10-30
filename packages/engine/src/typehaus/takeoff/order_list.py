@@ -4,7 +4,9 @@ A view of the ``placeables`` BOM rows, never an addition to the estimate: a fram
 joins its type's ``product_ref``, a part row (``FurnitureType``/``FixtureType.parts``)
 is already keyed by product. Units become packs by ``Product.pack_quantity``. What would
 leave the list silently short — a SEKTION-family type with no product, a product with no
-article number — is reported as ``unresolved`` rather than dropped.
+article number — is reported as ``unresolved`` rather than dropped. A sheet product's
+pieces nest onto whole sheets (``takeoff/sheet_nesting.py``): its packs are sheets, and
+``cuts`` says which piece comes off which.
 """
 
 from __future__ import annotations
@@ -14,9 +16,10 @@ from typing import Any
 
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.placeables import _placeable_types, placeables_takeoff
+from typehaus.takeoff.sheet_nesting import cut_list, nest, sheet_pieces
 
 ORDER_COLUMNS = ("brand", "article", "name", "roles", "units", "pack_quantity", "packs",
-                 "length_ft", "unit_price", "used_by")
+                 "length_ft", "unit_price", "used_by", "cuts")
 _FAMILY_WORDS = ("sektion", "förbättra")
 
 
@@ -75,6 +78,7 @@ def order_list(model: ResolvedModel,
         item["used_by"].update(row["tags"])
         if row.get("length_ft") is not None:
             item["length_ft"] = round((item["length_ft"] or 0) + float(row["length_ft"]), 2)
+    pieces = sheet_pieces(model)
     listed = []
     for tag in sorted(items, key=lambda t: (items[t]["brand"], items[t]["roles"][0],
                                             str(items[t]["name"]))):
@@ -82,7 +86,16 @@ def order_list(model: ResolvedModel,
         if not item["article"]:
             unresolved.append({"item": tag, "reason": "no article number (sku)",
                                "used_by": ", ".join(sorted(item["used_by"]))})
-        listed.append({**item, "roles": ", ".join(item["roles"]),
-                       "packs": math.ceil(item["units"] / item["pack_quantity"]),
-                       "unit_price": "", "used_by": ", ".join(sorted(item["used_by"]))})
+        packs, cuts = math.ceil(item["units"] / item["pack_quantity"]), ""
+        product = library.product(tag)
+        if tag in pieces:
+            sheets, oversize = nest(pieces[tag], product.stock_width.meters,
+                                    product.stock_length.meters)
+            packs = math.ceil((len(sheets) + len(oversize)) / item["pack_quantity"])
+            cuts = cut_list(sheets)
+            unresolved += [{"item": tag, "reason": f"{piece.label()} is larger than the sheet",
+                            "used_by": piece.tag} for piece in oversize]
+        listed.append({**item, "roles": ", ".join(item["roles"]), "packs": packs,
+                       "unit_price": "", "used_by": ", ".join(sorted(item["used_by"])),
+                       "cuts": cuts})
     return {"items": listed, "unresolved": unresolved}

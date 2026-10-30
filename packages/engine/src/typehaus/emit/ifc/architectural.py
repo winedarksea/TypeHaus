@@ -25,6 +25,7 @@ from shapely.geometry import Polygon
 from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.emit.ifc.structural import _emit_framed_member
+from typehaus.emit.ifc.wall_coatings import emit_banded_coatings
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.coatings import coating_tags
@@ -185,6 +186,7 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
         ll.ensure_pset(f, wall, "Pset_HF_FoundationWall", {"IsFoundation": True})
     ll.assign_container(f, wall, storeys[rw.storey])
 
+    emit_banded_coatings(f, body, wall, rw, storeys[rw.storey], project_uuid, openings)
     children = _emit_banded_layer_parts(f, body, rw, project_uuid, openings)
     if lod == "framed" and rw.members:
         for m in sorted(rw.members, key=lambda x: x.child_key):
@@ -233,7 +235,8 @@ def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
     for layer in rw.body_layers():
         # A layer standing at the wall's body band is already IN the body prism; a part for
         # it would double-describe the same solid. That is every layer of a lifted
-        # partition, which is why trimming one adds no parts at all.
+        # partition, which is why trimming one adds no parts at all. A banded coating is a
+        # covering (``wall_coatings``), not a part.
         if (not getattr(layer, "is_banded", False) or len(layer.polygon) < 3
                 or layer.coating or at_body_band(layer, rw)):
             continue

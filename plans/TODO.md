@@ -216,15 +216,10 @@ the future.
 - **Plan lettering residue after 96b845f4 (3/32" lettering):** at 1/4" a few small rooms still
   touch a tag (PANTRY/D8, STUDY/D13, MECH's "CHASE TYP. OF 2"), and on the 11x17 reduced check
   print the 12 pt room names spill past small rooms' walls.
-- **Author interior paint at library level, then retire `takeoff/derived_paint.py` to a check.**
-  Today bare gypsum facing a used room is *billed* paint by derivation (≈7,000 SF on catlin:
-  the STC presets and every deck `ceiling_below`). Authoring would let the house say colour,
-  sheen and vapour class, and the derived predicate would become "exposed gypsum in used
-  space has no finish authored". Blockers: (1) a coating layer still adds depth —
-  `resolve/topology._added_thicknesses` counts it though `Material.coating` says readers treat
-  it as 0.0, and the 1/8" silicate wash / foundation coating alignments depend on that depth;
-  (2) a wall coating draws a plane (polygonOffset, see the wash); (3) whether paint belongs in
-  an STC preset's tested core; (4) authored paint makes gypsum Class III, which moves Glaser.
+- **Plaster-in coves clash with their framing** (`mep.plaster_in_depth`, suppressed in
+  `houses/catlin/preferences.toml`): the 1.44" channel rises 0.81" into the I-joists
+  (LR-M-LIVING-W/-E, LR-M-BATH2-TUB-CLG) and SF-S-DUCT's rungs (LR-S-HALL-GAP). Owner
+  decision: fur those ceilings down (7/8" hat channel clears it) or pick a shallower profile.
 - The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
 - Extra light switches by beds
 - A reviewer suggested 1/2" drywall as the standard otherwise, with cheaper end 'abuse' resistant drywall 1/2" for major Hallways, Kids' Rooms, Stairwells. Some options: 1/2" Type C, Paper-Faced 1/2" AR (e.g., Gold Bond Hi-Abuse or USG Sheetrock AR), LP SmartSide 38 Series Panel 7/16" (Sidings Used Indoors), 1/2" MDF (4x8 Sheets with V-Groove or Batten Strips), 1/2" MDO (Medium Density Overlay) Plywood
