@@ -64,9 +64,9 @@ def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 "brand": getattr(part_product, "brand", None),
                 "sku": getattr(part_product, "sku", None) or None,
             })
-            if part.length is None:
-                part_row["count"] += part.quantity
-            else:
+            # Pieces; a stock-length product is re-counted as sticks per run below.
+            part_row["count"] += part.quantity
+            if part.length is not None:
                 linear.setdefault(part_key, []).append(
                     (item.footprint, part.length.meters * part.quantity))
             part_row["tags"].append(item.tag)
@@ -75,18 +75,14 @@ def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     for key, pieces in linear.items():
         product = model.plan.library.product(key[0])
         stock = getattr(getattr(product, "stock_length", None), "meters", None)
-        groups[key]["count"] = _sticks(pieces, stock)
+        if stock is not None:
+            groups[key]["count"] = _sticks(pieces, stock)
         groups[key]["length_ft"] = round(sum(length for _, length in pieces) * _M_TO_FT, 2)
     return [{**groups[key], "tags": sorted(groups[key]["tags"])} for key in sorted(groups)]
 
 
-def _sticks(pieces: list[tuple[object, float]], stock_m: float | None) -> int:
-    """Whole sticks for linear stock: touching frames splice one run, rounded up per run.
-
-    Without a stock length every piece is its own purchase.
-    """
-    if stock_m is None:
-        return len(pieces)
+def _sticks(pieces: list[tuple[object, float]], stock_m: float) -> int:
+    """Whole sticks for linear stock: touching frames splice one run, rounded up per run."""
     shapes = [Polygon(ring) for ring, _ in pieces]
     parent = list(range(len(pieces)))
 

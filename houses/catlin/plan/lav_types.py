@@ -7,14 +7,14 @@ from plan.bath_finish import (
 )
 from plan.lav_ports import lav_ports
 from typehaus.model import (
-    FixturePart, FixtureType, Footprint2D, ModelRepresentation, Mount,
-    PortCertainty, Service, inch, pt,
+    FixtureType, Footprint2D, ModelRepresentation, Mount,
+    PortCertainty, ProductPart, Service, inch, pt,
 )
 
 NEEDS = frozenset({Service.DRAIN, Service.WATER_HOT, Service.WATER_COLD, Service.VENT})
-TUBULAR_TRAP = FixturePart(role="trap", product_ref="PROD-DEARBORN-707BN-1")
-BONDED_BOWL = FixturePart(role="basin", product_ref="PROD-SS-LAV-16X13")
-CORIAN_TOP = FixturePart(role="top", product_ref="PROD-CORIAN-GLACIER-WHITE")
+TUBULAR_TRAP = ProductPart(role="trap", product_ref="PROD-DEARBORN-707BN-1")
+BONDED_BOWL = ProductPart(role="basin", product_ref="PROD-SS-LAV-16X13")
+CORIAN_TOP = ProductPart(role="top", product_ref="PROD-CORIAN-GLACIER-WHITE")
 
 ANGSJON_36 = FixtureType(
     tag="FX-ANGSJON-36", name='ÄNGSJÖN 36 with ORRSJÖN 37 single-bowl top',
@@ -22,8 +22,8 @@ ANGSJON_36 = FixtureType(
     mount=Mount(elevation=inch(8.375)),
     plan_symbol="drawer-vanity", basin=True, needs=NEEDS,
     product_ref="PROD-IKEA-ANGSJON-36",
-    parts=(FixturePart(role="basin", product_ref="PROD-IKEA-ORRSJON-37"),
-           THEME_FAUCET_PART, FixturePart(role="trap", product_ref="PROD-IKEA-RANNILEN")),
+    parts=(ProductPart(role="basin", product_ref="PROD-IKEA-ORRSJON-37"),
+           THEME_FAUCET_PART, ProductPart(role="trap", product_ref="PROD-IKEA-RANNILEN")),
     cabinet_body_footprint=Footprint2D(points=(
         pt(inch(-18), inch(-10.125)), pt(inch(18), inch(-10.125)),
         pt(inch(18), inch(10.875)), pt(inch(-18), inch(10.875)),
@@ -55,7 +55,7 @@ def sektion_vanity(width_in, product_ref, *, utility=False):
         product_ref=product_ref, basin=True, needs=NEEDS,
         parts=(UTILITY_FAUCET_PART if utility else THEME_FAUCET_PART,
                TUBULAR_TRAP, BONDED_BOWL, CORIAN_TOP,
-               FixturePart(role="rail", product_ref="PROD-IKEA-SEKTION-RAIL-84",
+               ProductPart(role="rail", product_ref="PROD-IKEA-SEKTION-RAIL-84",
                            length=inch(width_in))),
         ports=lav_ports(18),
         countertop_cutout=Footprint2D(points=(
@@ -107,7 +107,7 @@ LAUNDRY_TUB = FixtureType(
     footprint=(inch(24), inch(21)), height=inch(43), plan_symbol="laundry-sink",
     basin=False, needs=NEEDS,
     product_ref="PROD-GLACIER-BAY-QL033Y",
-    parts=(FixturePart(role="faucet", product_ref="PROD-GLACIER-BAY-QL033Y-FAUCET"),),
+    parts=(ProductPart(role="faucet", product_ref="PROD-GLACIER-BAY-QL033Y-FAUCET"),),
     source="Owner selection 2026-10-24: Glacier Bay QL033Y, Home Depot #206057007 (spec sheet "
            "not retrieved). Bundled flex-neck faucet; its hose adapter is not used, so no "
            "hose-bibb tee is carried on the cold. Ports are the library's allowance.",

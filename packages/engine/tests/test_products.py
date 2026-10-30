@@ -214,11 +214,11 @@ pytestmark = pytest.mark.slow
 
 
 def test_unknown_fixture_part_names_its_role(starter_dir):
-    from typehaus.model import FixturePart
+    from typehaus.model import ProductPart
 
     plan = load_plan(starter_dir).plan
     fixture_type = plan.library.fixture_types[0].model_copy(update={
-        "parts": (FixturePart(role="faucet", product_ref="MISSING-FAUCET"),),
+        "parts": (ProductPart(role="faucet", product_ref="MISSING-FAUCET"),),
     })
     plan = _library_with(plan, fixture_types=(fixture_type, *plan.library.fixture_types[1:]))
     ctx, _ = build_context(plan, starter_dir)
@@ -266,7 +266,7 @@ def test_sektion_parts_match_the_hand_counts(catlin_plan):
     _, pantry = _hand_counted(catlin_plan, "SEKT-HIGH18-90")
     assert pantry == {("front", "AXSTAD-DOOR-18-30"): 1, ("front", "AXSTAD-DOOR-18-40"): 1,
                       ("front", "AXSTAD-DOOR-18-20"): 1, ("hinge", "UTRUSTA-HINGE-110"): 6,
-                      ("knob", "BAGGANAS-KNOB-BLACK"): 3, ("shelf", "UTRUSTA-SHELF-18-24"): 1,
+                      ("knob", "BAGGANAS-KNOB-BLACK"): 3, ("shelf", "UTRUSTA-SHELF-18-24"): 3,
                       ("leg", "SEKTION-LEG"): 4, ("toe_kick", "FORBATTRA-TOEKICK-84"): 1,
                       ("rail", "SEKTION-RAIL-84"): 1}
 

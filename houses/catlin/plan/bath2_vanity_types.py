@@ -12,7 +12,7 @@ from library.placeables import front_zone
 from plan.bath_finish import THEME_FAUCET_PART, THEME_MATERIAL_REFS
 from plan.lav_ports import lav_ports
 
-from typehaus.model import FixturePart, FixtureType, Footprint2D, ModelRepresentation, Product, Service, inch, pt
+from typehaus.model import FixtureType, Footprint2D, ModelRepresentation, Product, ProductPart, Service, inch, pt
 
 # IKEA parts. The 36" listing (2 AXSTAD matte white doors) was read 2026-10-22; article numbers
 # are read off the listing URL and marked to confirm at order. The 12" storage cabinet's
@@ -84,11 +84,11 @@ BATH2_VANITY_48 = FixtureType(
     )),
     product_ref=SEKTION_WALL_36_CAB.tag,
     ports=lav_ports(18),
-    parts=(THEME_FAUCET_PART, FixturePart(role="trap", product_ref="PROD-DEARBORN-707BN-1"),
-           FixturePart(role="basin", product_ref="PROD-SS-LAV-16X13"),
-           FixturePart(role="top", product_ref="PROD-CORIAN-GLACIER-WHITE"),
-           FixturePart(role="frame", product_ref=SEKTION_WALL_12_CAB.tag),
-           FixturePart(role="rail", product_ref=SEKTION_SUSPENSION_RAIL.tag, length=inch(48))),
+    parts=(THEME_FAUCET_PART, ProductPart(role="trap", product_ref="PROD-DEARBORN-707BN-1"),
+           ProductPart(role="basin", product_ref="PROD-SS-LAV-16X13"),
+           ProductPart(role="top", product_ref="PROD-CORIAN-GLACIER-WHITE"),
+           ProductPart(role="frame", product_ref=SEKTION_WALL_12_CAB.tag),
+           ProductPart(role="rail", product_ref=SEKTION_SUSPENSION_RAIL.tag, length=inch(48))),
     source="RM-M-BATH2 vanity, owner selection 2026-10-22, revised: SEKTION 36x15x30 sink cabinet "
            "with two AXSTAD matte white doors (894.549.45, to confirm) at the north end and a "
            "12x15x30 storage cabinet with an AXSTAD matte white door at the south end, both on a "

@@ -19,7 +19,7 @@ from library.placeables import front_zone
 from plan.bath2_vanity_types import BATH2_VANITY_48
 from plan.fixture_types_wc import WC_AND_SHOWER_TYPES
 from plan.kitchen_sink_types import KITCHEN_SINK_32_SINGLE
-from typehaus.model import FixturePart, FixtureType, Mount, MountKind, Service, ServicePort, PortCertainty, inch, m
+from typehaus.model import FixtureType, Mount, MountKind, PortCertainty, ProductPart, Service, ServicePort, inch, m
 
 # The Kohler K-1130-W1-0 Underscore, RM-M-BATH2 (plan/products.py carries brand + model).
 # A DROP-IN, not FX-TUB-60's alcove box: it drops through a framed deck onto a 1"-2" mortar
@@ -73,8 +73,8 @@ DCODE_WALL_BASIN = FixtureType(
     plan_symbol="lavatory-wall-hung", basin=True,
     mount=Mount(kind=MountKind.WALL, elevation=m(0.7186)),
     product_ref="PROD-DURAVIT-07054500002",
-    parts=(FixturePart(role="faucet", product_ref="PROD-DURAVIT-B21010001U10"),
-           FixturePart(role="trap", product_ref="PROD-DEARBORN-707BN-1")),
+    parts=(ProductPart(role="faucet", product_ref="PROD-DURAVIT-B21010001U10"),
+           ProductPart(role="trap", product_ref="PROD-DEARBORN-707BN-1")),
     ports=(
         ServicePort(tag="DCODE-DRAIN", service=Service.DRAIN,
                     position=(inch(1.125), inch(9.9475), inch(20) - m(0.7186)),

@@ -13,8 +13,8 @@ Rules (oracle: houses/catlin/notes/ikea_sektion_order.md):
 * one knob per door or lift front, one pull per drawer front.
 * legs per floor-standing frame: 4, or 6 from 30" wide (assumed, as above).
 * toe kick and suspension rail run the frame's width, rounded to sticks per run in takeoff.
-* shelves: one per bay course so no compartment exceeds 20"; a high frame ships with one
-  fixed shelf, which counts toward that.
+* shelves: enough that no compartment exceeds 20", over each unbroken stack of door
+  courses; a high frame ships with one fixed shelf, which counts toward that.
 """
 
 from __future__ import annotations
@@ -73,10 +73,18 @@ def legs_per_frame(width_in: float) -> int:
 
 
 def shelves_for(layout: FrontLayout, *, fixed_frame_shelf: bool) -> int:
-    courses = sum(max(0, math.ceil(row.height_in / MAX_SHELF_COMPARTMENT_IN - 1e-6) - 1)
-                  for row in layout.rows if row.kind in ("door", "lift", "open")
-                  and row.shelf_bay)
-    return max(0, courses - (1 if fixed_frame_shelf else 0))
+    """Shelves so no bay tops 20". Stacked door courses are one bay stack (no shelf is
+    implied at a door split); a drawer or a shelfless bay breaks the stack."""
+    stacks, height = [], 0.0
+    for row in layout.rows:
+        if row.kind in ("door", "lift", "open") and row.shelf_bay:
+            height += row.height_in
+        else:
+            stacks.append(height)
+            height = 0.0
+    stacks.append(height)
+    needed = sum(max(0, math.ceil(h / MAX_SHELF_COMPARTMENT_IN - 1e-6) - 1) for h in stacks)
+    return max(0, needed - (1 if fixed_frame_shelf else 0))
 
 
 def kitchen_layout(symbol: str, width_in: float, height_in: float) -> FrontLayout:

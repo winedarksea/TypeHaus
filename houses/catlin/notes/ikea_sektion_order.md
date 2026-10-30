@@ -9,14 +9,14 @@ Revision 2026-10-30. Oracle for `library/placeables/sektion_parts.py` and for
 | Part | Rule | Source |
 |---|---|---|
 | Fronts across | One front up to 24 in. wide, a pair above that | IKEA sells no door wider than 24 in. |
-| Door hinges | 2 for a door up to 40 in., 3 up to 60 in., 4 above | IKEA planner output. The Mar 2026 installation guide prints no chart. **Confirm with the planner at order.** |
+| Door hinges | 2 for a door up to 40 in., 3 up to 60 in., 4 above | IKEA planner output. The Mar 2026 installation guide prints no chart; IKEA's VALLSTENA 50 in. door listing says "to be used with 3 hinges", which matches the 60 in. step. **Confirm the 4 above 60 in. with the planner at order.** |
 | Lift-up front | One UTRUSTA horizontal hinge pair (804.654.15) | IKEA's 24x24x15 top configuration |
 | Knobs | One per door or lift front | Owner, 2026-10-22 (BAGGANÄS 903.384.17) |
 | Pulls | One per drawer front | Owner, 2026-10-22 (BAGGANÄS 803.384.13) |
 | Legs | 4 per floor-standing frame; 6 from 30 in. wide | **Assumed.** IKEA publishes no count. Legs may be shared at a joint, so this rule over-orders. |
 | Toe kick | The frame's width, rounded to 84 in. sticks per touching run | FÖRBÄTTRA 602.668.17, 84 in. |
 | Suspension rail | The frame's width, rounded to 84 in. sticks per touching run | 602.615.27. Not used under the peninsula, which stands on the floor anchoring frame. |
-| Shelves | Enough that no bay is taller than 20 in.: ceil(h/20) − 1 per door course. A high frame's fixed shelf counts toward this. None behind a sink. | House rule. An authored count overrides it where an insert fills a bay. |
+| Shelves | Enough that no bay is taller than 20 in.: ceil(h/20) − 1 over each unbroken stack of door courses (a door split is not a shelf; a drawer breaks the stack). A high frame's fixed shelf counts toward this. None behind a sink. | House rule. An authored count overrides it where an insert fills a bay. |
 | Drawers | One MAXIMERA per drawer front: a 10 in. front takes a medium, a 15 in. front a high | MAXIMERA front ladder |
 
 **Runs.** Frames on one storey whose footprints are within 1/2 in. of each other form one
@@ -48,7 +48,7 @@ a run is allowed; carrying an offcut from one run to another is not.
 - **Doors:** 18x30 (004.260.55), 18x40 (804.260.56) and 18x20 (304.260.54).
 - **Hinges:** 2 + 2 + 2 = 6, which is 3 packs.
 - **Knobs:** 3.
-- **Shelves:** the courses give 1 + 1 + 0 = 2. Take away the frame's fixed shelf and 1 UTRUSTA 18x24 shelf (202.655.32) remains.
+- **Shelves:** the three doors are one 90 in. stack, so ceil(90/20) − 1 = 4 shelves (bays of 18 in.). Take away the frame's fixed shelf and 3 UTRUSTA 18x24 shelves (202.655.32) remain, which is 2 packs. (Counting per door course gave 1 + 1 + 0 = 2 and left 30 in. bays, because nothing stands at a door split.)
 - **Legs:** 4.
 - **Toe kick and rail:** 18 in. each.
 

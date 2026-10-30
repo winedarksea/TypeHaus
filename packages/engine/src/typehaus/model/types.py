@@ -345,10 +345,6 @@ class ProductPart(HausModel):
     length: Length | None = None
 
 
-# The fixture-only name, kept so existing plan source loads unchanged.
-FixturePart = ProductPart
-
-
 class FurnitureType(HausModel):
     """An IKEA-scale design-reference type (#49). Footprint/height derived from mesh."""
 
@@ -1076,7 +1072,6 @@ for _name, _obj in (
     ("FurnitureType", FurnitureType),
     ("RailingType", RailingType),
     ("FixtureType", FixtureType),
-    ("FixturePart", ProductPart),
     ("ProductPart", ProductPart),
     ("ApplianceType", ApplianceType),
     ("EquipmentType", EquipmentType),

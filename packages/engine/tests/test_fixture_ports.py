@@ -106,12 +106,12 @@ def test_resolved_finished_floor_is_included_in_storey_relative_port_z(connectio
 
 
 def test_part_quantity_counts_in_addition_to_primary_fixture():
-    from typehaus.model import FixturePart, Library, Product
+    from typehaus.model import Library, Product, ProductPart
     from typehaus.takeoff.placeables import placeables_takeoff
 
     fixture_type = FixtureType(
         tag="DOUBLE", name="Double bowl assembly", footprint=(inch(60), inch(18)),
-        height=inch(40), parts=(FixturePart(role="faucet", product_ref="MIXER", quantity=2),),
+        height=inch(40), parts=(ProductPart(role="faucet", product_ref="MIXER", quantity=2),),
     )
     objects = [SimpleNamespace(tag=f"FX-{i}", type_ref="DOUBLE", kind="Fixture",
                                domain="plumbing", storey="main") for i in range(3)]
