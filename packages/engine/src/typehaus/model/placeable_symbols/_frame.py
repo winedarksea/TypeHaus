@@ -17,7 +17,7 @@ toilet bowl or a round dining table.
 from __future__ import annotations
 
 import math
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import NotRequired
 
 try:  # TypedDict moved out of typing_extensions in 3.8, but total=False support varies.
@@ -85,6 +85,8 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "strandmon-leg": (0.025, 0.020, 0.018, 1.0),
     "upholstery": (0.55, 0.56, 0.58, 1.0),
     "cushion": (0.68, 0.69, 0.70, 1.0),
+    # Off-white linen drapery; a type may name its own cloth through ``material_refs``.
+    "fabric": (0.88, 0.85, 0.78, 1.0),
     "wood": (0.70, 0.52, 0.33, 1.0),
     "wood-dark": (0.45, 0.32, 0.20, 1.0),
     "potting-soil": (0.10, 0.08, 0.055, 1.0),
@@ -287,6 +289,15 @@ def prism(points: Sequence[Point], z0: float, z1: float, color: str) -> Part:
     return {"center": ((min(xs) + max(xs)) / 2.0, (min(ys) + max(ys)) / 2.0, (z0 + z1) / 2.0),
             "size": (max(xs) - min(xs), max(ys) - min(ys), abs(z1 - z0)),
             "color": color, "points": ring, "shape": "prism"}
+
+
+def with_material_refs(parts: tuple[Part, ...], material_refs: Mapping[str, str] | None
+                       ) -> tuple[Part, ...]:
+    """Tag each part whose colour role the type maps to a catalog material."""
+    if not material_refs:
+        return parts
+    return tuple({**part, "material_ref": material_refs[part["color"]]}
+                 if part["color"] in material_refs else part for part in parts)
 
 
 def part_hex(role: str) -> str:

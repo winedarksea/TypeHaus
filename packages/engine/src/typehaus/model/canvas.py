@@ -35,6 +35,8 @@ _TYPE_COLLECTIONS = (
 # Sauna symbols also serve non-sauna benches: their seat and supports are actual wood,
 # while generic furniture's ``wood-dark`` remains an intentional shadow approximation.
 MATERIAL_WOOD_ROLES = frozenset({"wood", "sauna-wood", "sauna-wood-dark"})
+# Roles whose ``material_refs`` material, when it states a colour, replaces the palette.
+MATERIAL_COLOR_ROLES = frozenset({"fabric"})
 
 
 def wood_material(item: Any, materials: dict[str, Any]) -> Any | None:
@@ -99,6 +101,8 @@ def _generated_part_appearance(part, wood, materials):
             appearance.update(color=material.color[:7], material_ref=material.tag)
         polished = material.finish == "polished"
         appearance.update(PART_SURFACE_PROPERTIES["chrome" if polished else "brushed-nickel"])
+    elif part["color"] in MATERIAL_COLOR_ROLES and material is not None and material.color:
+        appearance.update(color=material.color[:7], material_ref=material.tag)
     return appearance
 
 
@@ -161,6 +165,10 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
         from typehaus.model.placeable_symbols._track_lighting import track_geometry
 
         strokes, parts = track_geometry(track)
+    elif getattr(item, "curtain_track", None) is not None:
+        from typehaus.model.placeable_symbols._curtain_track import curtain_track_type_geometry
+
+        strokes, parts = curtain_track_type_geometry(item)
     else:
         strokes = plan_symbol_strokes(symbol, width_m, depth_m)
         parts = model_parts(model_symbol, width_m, depth_m, height_m,

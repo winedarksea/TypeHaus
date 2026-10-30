@@ -18,6 +18,7 @@ from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.model.built_in_bookcase import built_in_bookcase_parts
 from typehaus.model.canvas import (
+    MATERIAL_COLOR_ROLES,
     MATERIAL_WOOD_ROLES,
     canvas_object_types,
     model_symbol_for,
@@ -161,17 +162,22 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     symbol = model_symbol_for(product_type)
     footprint = getattr(product_type, "footprint", None)
     height = getattr(product_type, "height", None)
-    if symbol is None or footprint is None or height is None:
-        return False
-    width_m, depth_m = (part.meters for part in footprint)
-    parts = model_parts(symbol, width_m, depth_m, height.meters,
-                        material_refs=getattr(getattr(product_type, "model_representation", None),
-                                              "material_refs", None))
     track = getattr(product_type, "track_lighting", None)
-    if track is not None:
+    if getattr(product_type, "curtain_track", None) is not None:
+        from typehaus.model.placeable_symbols._curtain_track import curtain_track_type_geometry
+
+        _, parts = curtain_track_type_geometry(product_type)  # needs no plan/model symbol
+    elif symbol is None or footprint is None or height is None:
+        return False
+    elif track is not None:
         from typehaus.model.placeable_symbols._track_lighting import track_geometry
 
         _, parts = track_geometry(track)
+    else:
+        width_m, depth_m = (part.meters for part in footprint)
+        parts = model_parts(symbol, width_m, depth_m, height.meters,
+                            material_refs=getattr(getattr(product_type, "model_representation",
+                                                          None), "material_refs", None))
     # Mirrors model/canvas._lamp: the generic ``lamp`` role becomes the type's CCT bin, so
     # a 4000K can exports the same shade the viewer draws.
     lamp = lamp_role(getattr(product_type, "cct_k", None))
@@ -181,8 +187,10 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         color = (wood_color if wood_color and part["color"] in MATERIAL_WOOD_ROLES
                  else PART_COLORS[lamp if part["color"] == "lamp" else part["color"]])
-        if part["color"] == "faucet" and part.get("material_ref") in materials:
-            color = _authored_material_color(materials[part["material_ref"]])
+        material = materials.get(part.get("material_ref"))
+        if material is not None and (part["color"] == "faucet" or (
+                part["color"] in MATERIAL_COLOR_ROLES and material.color)):
+            color = _authored_material_color(material)
         if "mesh" in part:
             mesh = part["mesh"]
             placed = place_local([(x, y) for x, y, _ in mesh["positions"]],

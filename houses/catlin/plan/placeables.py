@@ -157,11 +157,11 @@ MAIN_PLACEABLES = [
               position=pt(inch(386), inch(128)), rotation=deg(-60)),
     Furniture(uid="G5QQNW9448", tag="FURN-M-ARMCHAIR-S", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
               position=pt(inch(386), inch(48)), rotation=deg(-120)),
-    # In the SE corner, behind the S armchair: 1" off the south wall, 3" off the east wall
-    # so RC13 stays reachable, ~1 3/8" to the chair.
+    # In the SE corner, behind the S armchair: 3" off the east wall so RC13 stays reachable,
+    # and north of FURN-M-LIV-TRACK-S's closed curtain (y 12 1/2") since 2026-10-29.
     Furniture(uid="FIGMLIV001", tag="FURN-M-LIVING-FIDDLE-LEAF-FIG",
               type_ref="FURN-FIDDLE-LEAF-FIG-24", room="RM-M-LIVING",
-              position=pt(inch(410.375), inch(19.625))),
+              position=pt(inch(410.375), inch(25.125))),
     # --- the mantel, which now has a body (2026-09-06) -----------------------------------
     #
     # SB-M-FIRE-MANTEL is a ShelfBank and a ResolvedShelfBank has NO POSITION — nothing
@@ -300,29 +300,10 @@ MAIN_PLACEABLES = [
     Furniture(uid="SBF00TREST", tag="FURN-M-STUDY-FOOTREST", type_ref="FT-STUDY-FOOTREST",
               room="RM-M-STUDY", position=pt(inch(180), inch(232.5)), rotation=deg(180)),
 
-    # --- curtain rods -------------------------------------------
-    # The remaining main-floor curtain rods share a 7'-0" head line, 4" above the tallest
-    # main-floor head (6'-8", WT-3048 + exterior doors). The east living row now has cellular
-    # blinds sized to those openings instead of rods.
-    # y=10" (or x, on side walls) centres the rod 10" off the wall line: 6 1/2" finish face
-    # + ~3 1/2" bracket projection. Each rod centres on its opening's RO centre.
-    # The south pair are 64" apart; S2 is the west opening, so its rod shares S1's 84" head
-    # line and sits 64" west along W-M-S2.
-    Furniture(uid="RDS2LIV001", tag="FURN-M-LIV-ROD-S2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-S2", face="left", distance_from_start=inch(105.28125),
-                  normal_gap=inch(1.625), rotation_offset=deg(-180)))),
-    Furniture(uid="EYJ3ZHXFSF", tag="FURN-M-LIV-ROD-S1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-S2", face="left", distance_from_start=inch(169.28125),
-                  normal_gap=inch(1.625), rotation_offset=deg(-180)))),
-    Furniture(uid="WJTG6V6T09", tag="FURN-M-LIV-ROD-BALC", type_ref="FT-CURTAIN-ROD-84", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-C1", face="right", distance_from_start=inch(10),
-                  normal_gap=inch(0.625), rotation_offset=deg(90)))),
+    # --- window coverings -------------------------------------------
+    # The seven curtain rods are retired (2026-10-29): plan/window_coverings.py holds the
+    # ceiling tracks and the shades. Spent rod uids: RDS2LIV001, EYJ3ZHXFSF, BYYY8GG7E6,
+    # R4A47142RN, 320A53KSR4, 9222FS9Q20 (WJTG6V6T09 is the balcony door's wall track).
     # Three cellular blinds cover WIN-M-LIV-E1/E2 (27x48) and WIN-M-DINING-E (63x48), the
     # east-facing living-room windows. Their 34" sill and 82" head match the rough openings.
     # Mount elevations are AFF; the 15/16" finished-floor build-up means 33 1/16" AFF puts
@@ -344,27 +325,6 @@ MAIN_PLACEABLES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(216),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # RM-M-BED is the main-storey bedroom; the second-storey suite has its own rods.
-    Furniture(uid="BYYY8GG7E6", tag="FURN-M-BED-ROD-W1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-W4", face="left", distance_from_start=inch(108),
-                  normal_gap=inch(1.375), rotation_offset=deg(-180)))),
-    Furniture(uid="R4A47142RN", tag="FURN-M-BED-ROD-W2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-W4", face="left", distance_from_start=inch(28),
-                  normal_gap=inch(1.375), rotation_offset=deg(-180)))),
-    Furniture(uid="320A53KSR4", tag="FURN-M-BED-ROD-S1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-S1", face="left", distance_from_start=inch(48),
-                  normal_gap=inch(1.375), rotation_offset=deg(-180)))),
-    Furniture(uid="9222FS9Q20", tag="FURN-M-BED-ROD-S2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-S1", face="left", distance_from_start=inch(179),
-                  normal_gap=inch(1.53125), rotation_offset=deg(-180)))),
 
     # --- plumbing access panels ---------------------------------
     # FX-M-BATH1-WC is the house's one wall-hung WC: the china bolts to an in-wall carrier

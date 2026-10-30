@@ -1,5 +1,6 @@
 """IFC tessellation of shared box/mesh parts, without re-measuring their geometry."""
 
+from typehaus.model.canvas import MATERIAL_COLOR_ROLES
 from typehaus.model.placeable_symbols import PART_COLORS, place_local
 from typehaus.triangulation import planar_ring_triangles
 
@@ -41,7 +42,7 @@ def parts_representation(f, body, parts, center, rotation, z_base, *, materials=
                                CoordIndex=tuple(tuple(i + 1 for i in t) for t in triangles))
         color = PART_COLORS[part["color"]]
         material = (materials or {}).get(part.get("material_ref"))
-        if part["color"] == "faucet" and material is not None and material.color:
+        if part["color"] in {"faucet", *MATERIAL_COLOR_ROLES} and material and material.color:
             color = tuple(int(material.color[i:i + 2], 16) / 255 for i in (1, 3, 5)) + (1.0,)
         rgb = f.createIfcColourRgb(None, *color[:3])
         shading = f.create_entity("IfcSurfaceStyleShading", SurfaceColour=rgb,

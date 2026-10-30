@@ -31,6 +31,7 @@ from typehaus.model.placeable_symbols._frame import (
     Stroke,
     lamp_role,
     part_hex,
+    with_material_refs,
 )
 from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_frame
@@ -156,11 +157,8 @@ def model_parts(symbol: str | None, width_m: float, depth_m: float,
                 height_m: float, *, material_refs: Mapping[str, str] | None = None
                 ) -> tuple[Part, ...]:
     """The generated 3D parts for ``symbol`` at a W×D×H size, in the local frame."""
-    parts = symbol_geometry(symbol, width_m, depth_m, height_m)[1]
-    if not material_refs:
-        return parts
-    return tuple({**part, "material_ref": material_refs[part["color"]]}
-                 if part["color"] in material_refs else part for part in parts)
+    return with_material_refs(symbol_geometry(symbol, width_m, depth_m, height_m)[1],
+                              material_refs)
 
 
 def place_local(points: Sequence[Point], position: tuple[float, float],

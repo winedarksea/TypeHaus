@@ -391,3 +391,24 @@ def test_countertop_microwave_door_window_and_control_column() -> None:
     window = [part for part in parts if part["color"] == "metal-black"
               and part["size"][0] > width * 0.5]
     assert window and window[0]["center"][0] < 0
+
+
+def test_curtain_track_draws_open_stacks_inside_the_closed_envelope() -> None:
+    from typehaus.model.curtain_track import CurtainStack, CurtainTrackSpec
+    from typehaus.model.placeable_symbols._curtain_track import curtain_track_geometry
+    from typehaus.quantities import inch
+
+    width, depth, height = 2.4, 0.1524, 2.74
+    spec = CurtainTrackSpec(stacks=(CurtainStack(start=inch(0), width=inch(14)),
+                                    CurtainStack(start=inch(79), width=inch(14.5))))
+    _, parts = curtain_track_geometry(spec, width, depth, height)
+    assert [part["color"] for part in parts] == ["appliance-white", "fabric", "fabric"]
+    for part in parts:
+        (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
+        assert abs(cx) + sx / 2 <= width / 2 + TOLERANCE
+        assert abs(cy) + sy / 2 <= depth / 2 + TOLERANCE
+        assert cz - sz / 2 >= -TOLERANCE and cz + sz / 2 <= height + TOLERANCE
+    assert parts[1]["center"][0] - parts[1]["size"][0] / 2 == pytest.approx(-width / 2)
+    _, rail_only = curtain_track_geometry(spec.model_copy(update={"show_curtains": False}),
+                                          width, depth, height)
+    assert rail_only == parts[:1]

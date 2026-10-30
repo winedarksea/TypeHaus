@@ -28,6 +28,7 @@ from typehaus.model.braces import SlatBrace, StrapBrace
 from typehaus.model.built_in_bench import BuiltInBenchSpec
 from typehaus.model.clear_zones import ClearZone
 from typehaus.model.concrete_materials import AsrSpec, CementSpec, ScmFractions
+from typehaus.model.curtain_track import CurtainStack, CurtainTrackSpec
 from typehaus.model.diaphragm_attachment import (
     CollectorBlocking,
     JointNailing,
@@ -378,7 +379,8 @@ __all__ = [
     "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material", "Product",
     "DoorType", "BookcaseDoorSpec", "WindowType", "FurnitureType", "FurnitureCut",
-    "BuiltInBenchSpec", "FixturePart", "FixtureType", "TubEnclosureSpec",
+    "BuiltInBenchSpec", "CurtainStack", "CurtainTrackSpec", "FixturePart", "FixtureType",
+    "TubEnclosureSpec",
     "ApplianceType", "EquipmentType",
     "BuiltInBookcaseBay", "BuiltInBookcaseSpec",
     "HeatPumpRating",

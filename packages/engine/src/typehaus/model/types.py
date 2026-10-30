@@ -9,6 +9,7 @@ from pydantic import Field, model_validator
 
 from typehaus.model.base import HausModel
 from typehaus.model.built_in_bench import BENCH_ENVELOPE_TOLERANCE_M, BuiltInBenchSpec
+from typehaus.model.curtain_track import CurtainTrackSpec
 from typehaus.model.door_hardware import DoorHardwareItem, JambFraming
 from typehaus.model.doorway import DoorwayTreatment
 from typehaus.model.enums import (
@@ -381,12 +382,20 @@ class FurnitureType(HausModel):
     # assembly: exact board geometry is shared by drawings, browser, GLB, and IFC.
     built_in_bookcase: BuiltInBookcaseSpec | None = None
     built_in_bench: BuiltInBenchSpec | None = None
+    # A curtain track: the envelope is the CLOSED curtain, the model draws it open.
+    curtain_track: CurtainTrackSpec | None = None
     # The catalog ``Material`` its generic ``wood`` parts are made of (a shelf, a side, every
     # board of a built-in, or a sauna symbol's seat/supports). Colour and 3D texture follow
     # that material; ``wood-dark`` backs keep their shadow tone. ``None`` draws generic wood.
     wood_material_ref: str | None = None
     # Owner-built: the parts a mill cuts per placed piece (model/furniture_cut.py).
     cut_list: tuple[FurnitureCut, ...] = ()
+
+    @model_validator(mode="after")
+    def _curtain_track_fits(self) -> FurnitureType:
+        if self.curtain_track is not None:
+            self.curtain_track.check_fits(self.footprint[0].meters, self.footprint[1].meters)
+        return self
 
     @model_validator(mode="after")
     def _bench_envelope_matches(self) -> FurnitureType:

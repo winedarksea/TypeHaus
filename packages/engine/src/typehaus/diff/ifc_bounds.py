@@ -27,6 +27,11 @@ def _emitted_parts_bounds(model: ResolvedModel, item, hosted_countertops, base_z
 
     furniture = next((t for t in model.plan.library.furniture_types if t.tag == item.type_ref),
                      None)
+    if furniture is not None and getattr(furniture, "curtain_track", None) is not None:
+        from typehaus.model.placeable_symbols._curtain_track import curtain_track_type_geometry
+
+        return _parts_bounds(curtain_track_type_geometry(furniture)[1], item.position,
+                             item.rotation_degrees, base_z_m)
     if (furniture is not None and getattr(furniture, "built_in_bench", None) is None
             and is_parts_furniture(furniture)):
         # Hosted countertops drop their counter-coloured parts (emit/ifc/architectural).

@@ -607,6 +607,17 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
                 representation = parts_representation(
                     f, body, [part.geometry for part in bench_parts(bench)],
                     resolved.position, resolved.rotation_degrees, resolved.z_m)
+            elif getattr(furniture_type, "curtain_track", None) is not None:
+                from typehaus.emit.ifc.placeable_parts import parts_representation
+                from typehaus.model.placeable_symbols._curtain_track import (
+                    curtain_track_type_geometry,
+                )
+
+                # The rail and open stacks, not the closed-curtain envelope's full-drop box.
+                representation = parts_representation(
+                    f, body, curtain_track_type_geometry(furniture_type)[1],
+                    resolved.position, resolved.rotation_degrees, resolved.z_m,
+                    materials={m.tag: m for m in model.plan.library.materials})
             elif is_parts_furniture(furniture_type):
                 from typehaus.emit.ifc.placeable_parts import parts_representation
                 from typehaus.model.placeable_symbols import model_parts

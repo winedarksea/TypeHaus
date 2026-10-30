@@ -76,7 +76,9 @@ class TrimScope:
             hung = item.attachment_wall is not None
             if item.kind == "Furniture":
                 ftype = furniture.get(item.type_ref or "")
-                if ftype is None or (ftype.work_surface is None and not hung):
+                # A curtain hangs in front of the trim; its envelope is cloth, not casework.
+                if ftype is None or ftype.curtain_track is not None or (
+                        ftype.work_surface is None and not hung):
                     continue
             elif item.kind == "Fixture":
                 ftype = fixtures.get(item.type_ref or "")
