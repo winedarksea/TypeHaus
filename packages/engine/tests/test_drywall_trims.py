@@ -64,3 +64,20 @@ def test_a_cove_off_its_wall_is_an_integrity_error(catlin_model_ro):
     assert [(f.check_id, f.element_tags) for f in found] == [
         ("integrity.light_run_host", ("LR-M-LIVING-W",))]
     assert "8.74\"" in found[0].message
+
+
+def test_jbead_stops_with_the_bare_face_and_slivers_are_not_corners(catlin_model_ro):
+    trims = catlin_model_ro.drywall_trims
+    # W-M-STRW's mudroom face is open bays to 7'-0" over a +0.94685" floor: the two vertical
+    # J-beads stop there; the board above is a horizontal one.
+    vertical = sorted(t.length_m / _IN for t in trims
+                      if t.kind == "termination" and t.room == "RM-M-MUDROOM")[:2]
+    assert vertical == pytest.approx([84 - 0.94685] * 2, abs=1e-3)
+    # A clear face's ~1" mitre sliver (the closet's SW corner, the attic's building corners)
+    # is an inside corner. SF-S-HP1 butts walls 0.1-0.6" off three sides and SF-S-DUCT's
+    # higher board on the fourth: free are its 40 3/4" south edge and its west edge's
+    # 35 3/4" over the hall, less the 1" a wall's gap reaches.
+    rooms = {t.room for t in trims if t.kind == "outside_corner" and len(t.tags) == 1}
+    assert not rooms & {"RM-S-NCLOSET", "RM-B-ESS", "RM-A-POCKET", "RM-S-SUITEBATH"}
+    hp1 = sum(t.length_m for t in trims if "SF-S-HP1" in t.tags) / _IN
+    assert hp1 == pytest.approx(40.75 + 35.74, abs=1.5)

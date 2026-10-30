@@ -1,7 +1,7 @@
 """The drywall accessories that follow one element rather than a room ring (→ drywall_trims).
 
 * ``led_profile`` — each plaster-in run, its length;
-* ``outside_corner`` on a soffit — its outline less the stretches a wall backs;
+* ``outside_corner`` on a soffit — its outline less what a wall or lower soffit backs;
 * ``tile_reveal`` — a non-wood band replacing the wall finish: its top where it stops below
   the ceiling, and each end not continued round a corner by another band at its height;
 * ``door_l_bead`` — a trimless door, ``2·h + w`` on each gypsum face;
@@ -13,9 +13,9 @@ from __future__ import annotations
 
 import math
 
-from shapely.geometry import Point, Polygon
+from shapely.geometry import LineString, Point, Polygon
 
-from typehaus.resolve.drywall_trims import TrimContext, ceiling_z, room_floor
+from typehaus.resolve.drywall_trims import TrimContext, room_floor, top_at
 from typehaus.resolve.geometry import wall_frame
 from typehaus.resolve.geometry_door_products import finish_faces
 from typehaus.resolve.interior_trim_scope import face_is_gypsum
@@ -27,6 +27,8 @@ _JAMB_PROBE_M = 0.05
 _CONTINUED_M = 0.03
 _SAME_HEIGHT_M = 0.0254
 _TOP_GAP_M = 0.025
+_SOFFIT_BACKED_M = 0.0254
+_SOFFIT_STEP_M = 0.003
 
 
 def led_profiles(ctx: TrimContext) -> None:
@@ -38,25 +40,49 @@ def led_profiles(ctx: TrimContext) -> None:
 
 
 def soffit_corners(ctx: TrimContext) -> None:
-    for soffit in ctx.model.soffits:
+    """A soffit's bottom edge takes corner bead where no wall or lower soffit stands under it.
+
+    Judged with a 1" gap, not ``wall_contacts``' fitting tolerance: an outline authored a
+    fraction off the board still butts it, and a lower neighbour makes the edge inside.
+    """
+    from typehaus.resolve.soffits import wall_footprint
+
+    model = ctx.model
+    for soffit in model.soffits:
         ring = list(soffit.outline)
         if len(ring) < 3:
             continue
+        backers = [wall_footprint(wall) for wall in model.walls
+                   if wall.storey == soffit.storey and wall.layers
+                   and wall.z0_m < soffit.z0_m < wall.z1_m]
+        backers += [Polygon(other.outline) for other in model.soffits
+                    if other.uid != soffit.uid and other.storey == soffit.storey
+                    and len(other.outline) >= 3 and other.z0_m < soffit.z0_m - _SOFFIT_STEP_M]
+        near = [shape.buffer(_SOFFIT_BACKED_M, join_style=2) for shape in backers
+                if not shape.is_empty and shape.distance(Polygon(ring)) < _SOFFIT_BACKED_M]
         centroid = Polygon(ring).centroid
-        room = room_owning(ctx.model, soffit.storey, (centroid.x, centroid.y))
+        room = room_owning(model, soffit.storey, (centroid.x, centroid.y))
         for index in range(len(ring)):
-            edge = math.dist(ring[index], ring[(index + 1) % len(ring)])
-            backed = sorted((c.start_m, c.end_m) for c in soffit.wall_contacts
-                            if c.edge_index == index)
+            edge = LineString((ring[index], ring[(index + 1) % len(ring)]))
+            spans = sorted(
+                (min(stations), max(stations))
+                for shape in near
+                for piece in _lines(edge.intersection(shape))
+                for stations in ([edge.project(Point(c)) for c in piece.coords],))
             covered, reach = 0.0, 0.0
-            for lo, hi in backed:
+            for lo, hi in spans:
                 lo = max(lo, reach)
                 if hi > lo:
-                    covered += min(hi, edge) - lo
+                    covered += hi - lo
                     reach = hi
             ctx.add("outside_corner", room.tag if room else None, soffit.storey,
-                    ctx.standard.outside_corner_ref, edge - covered,
+                    ctx.standard.outside_corner_ref, edge.length - covered,
                     (soffit.tag, room.tag if room else ""))
+
+
+def _lines(geometry):
+    return [part for part in getattr(geometry, "geoms", (geometry,))
+            if part.geom_type == "LineString" and part.length > 0.0]
 
 
 def tile_reveals(ctx: TrimContext) -> None:
@@ -73,7 +99,7 @@ def tile_reveals(ctx: TrimContext) -> None:
             continue
         outline = Polygon(band.outline)
         centroid = (outline.centroid.x, outline.centroid.y)
-        top = ceiling_z(model, room, centroid, None)
+        top = top_at(model, room, centroid, (wall,))
         tags = (band.room, band.tag)
         face = _GypsumBeside(ctx, wall, band, centroid)
         if band.z1_m < top - _TOP_GAP_M and face.at(centroid, band.z1_m + 0.02,

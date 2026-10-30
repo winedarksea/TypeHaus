@@ -45,6 +45,11 @@ _MEET_M = 0.05
 _BAND_GAP_M = 0.025
 _MIN_TRIM_M = 2 * 0.0254
 _DEFAULT_STOCK_M = ft(10).meters
+# A clear face carries ~1" mitre slivers where wall bodies meet; opened and closed by this
+# they stop reading as reflex corners. Real returns (a 2 1/4" step) survive.
+_SLIVER_M = 0.02
+# A face is probed this far inside each band between layer edges.
+_BAND_EPS_M = 1e-4
 
 
 class TrimContext:
@@ -119,9 +124,25 @@ def room_floor(model: ResolvedModel, room: ResolvedRoom) -> float:
     return room_finished_floor_elevation(model, room)
 
 
+def _clean_face(clear_face) -> Polygon:
+    raw = Polygon(clear_face)
+    joint = {"join_style": 2}
+    clean = raw.buffer(-_SLIVER_M, **joint).buffer(_SLIVER_M, **joint)
+    clean = clean.buffer(_SLIVER_M, **joint).buffer(-_SLIVER_M, **joint)
+    return clean if clean.geom_type == "Polygon" and not clean.is_empty else raw
+
+
+def top_at(model: ResolvedModel, room: ResolvedRoom, xy, walls) -> float:
+    """The ceiling face at ``xy``, else the walls' body top there (a raked attic wall)."""
+    from typehaus.resolve.geometry_walls import body_top_at
+
+    tops = [body_top_at(wall, xy[0], xy[1]) for wall in walls if wall is not None]
+    return ceiling_z(model, room, xy, min(tops) if tops else None)
+
+
 def _room_edges(ctx: TrimContext, room: ResolvedRoom) -> None:
     model, standard = ctx.model, ctx.standard
-    ring = corners_only(list(orient(Polygon(room.clear_face), 1.0).exterior.coords)[:-1])
+    ring = corners_only(list(orient(_clean_face(room.clear_face), 1.0).exterior.coords)[:-1])
     perimeter = sum(math.dist(ring[i], ring[(i + 1) % len(ring)]) for i in range(len(ring)))
     floor_z = room_floor(model, room)
     probe = (floor_z + _WALL_PROBE[0], floor_z + _WALL_PROBE[1])
@@ -148,7 +169,7 @@ def _room_edges(ctx: TrimContext, room: ResolvedRoom) -> None:
             continue
         vertex = ring[ring_vertices(ring).index(s)]
         walls = [w for w in (wall_at(before), wall_at(after)) if w is not None]
-        top = ceiling_z(model, room, vertex, min(w.z1_m for w in walls))
+        top = top_at(model, room, vertex, walls)
         height = top - floor_z - _tile_cover(model, room, vertex, floor_z, top)
         ctx.add("outside_corner", room.tag, room.storey, standard.outside_corner_ref, height,
                 (room.tag,))
@@ -157,7 +178,7 @@ def _room_edges(ctx: TrimContext, room: ResolvedRoom) -> None:
     kinds = []
     for wall, (a, b) in arcs:
         a2, b2 = a + _TOUCH_M, b - _TOUCH_M
-        if b2 <= a2:
+        if b2 - a2 < _MEET_M:  # nothing, or a ring-seam sliver of a wall reaching round
             continue
         point, outward = point_and_outward(ring, (a2 + b2) / 2.0)
         if _is_wall_end(wall, outward):
@@ -171,12 +192,38 @@ def _room_edges(ctx: TrimContext, room: ResolvedRoom) -> None:
         if kind != "gypsum":
             continue
         for end in (a, b):
-            if any(other == "bare" and _meets(end, c, d, perimeter)
-                   for c, d, other, _w in kinds):
-                xy = point_and_outward(ring, end % perimeter)[0]
-                top = ceiling_z(model, room, xy, wall.z1_m)
+            bare = next(((_inset(min((c, d), key=lambda e: _gap(end, e, perimeter)), c, d),
+                          other_wall)
+                         for c, d, other, other_wall in kinds
+                         if other == "bare" and _meets(end, c, d, perimeter)), None)
+            if bare is not None:
+                height = _jbead_height(ctx, room, ring, perimeter, (_inset(end, a, b), wall),
+                                       bare, floor_z)
                 ctx.add("termination", room.tag, room.storey, standard.termination_ref,
-                        top - floor_z, (room.tag,))
+                        height, (room.tag,))
+
+
+def _jbead_height(ctx: TrimContext, room: ResolvedRoom, ring, perimeter: float, gypsum,
+                  bare, floor_z: float) -> float:
+    """The height over which ``gypsum``'s board meets ``bare``'s face, each ``(s, wall)``:
+    open framing bays under a banded board end where the board begins."""
+    (g_s, g_wall), (b_s, b_wall) = gypsum, bare
+    g_xy, g_in = point_and_outward(ring, g_s % perimeter)
+    b_xy, b_in = point_and_outward(ring, b_s % perimeter)
+    top = top_at(ctx.model, room, g_xy, (g_wall,))
+    # Faces change only at a layer band's edge, so one probe per interval between them.
+    breaks = sorted({floor_z, top, *(z for wall in (g_wall, b_wall) for layer in wall.layers
+                                     for z in layer.band(wall) if floor_z < z < top)})
+    total = 0.0
+    for lo, hi in zip(breaks, breaks[1:], strict=False):
+        z0, z1 = lo + _BAND_EPS_M, hi - _BAND_EPS_M
+        if z1 <= z0:
+            continue
+        function = face_function(b_wall, b_xy, b_in, z0, z1)
+        if (function is not None and not is_finish(function)
+                and face_is_gypsum(g_wall, g_xy, g_in, z0, z1, ctx.materials)):
+            total += hi - lo
+    return total
 
 
 def _is_wall_end(wall, into_wall) -> bool:
@@ -187,15 +234,26 @@ def _is_wall_end(wall, into_wall) -> bool:
         0.9 * length)
 
 
+def _inset(end: float, a: float, b: float) -> float:
+    """A station just inside arc ``a..b`` from its ``end``: at the vertex itself the probe
+    would look into the neighbouring wall."""
+    step = min(_MEET_M, (b - a) / 2.0)
+    return end + step if end == a else end - step
+
+
+def _gap(s: float, e: float, perimeter: float) -> float:
+    return min(abs(s - e), perimeter - abs(s - e))
+
+
 def _meets(s: float, c: float, d: float, perimeter: float) -> bool:
-    return any(min(abs(s - e), perimeter - abs(s - e)) < _MEET_M for e in (c, d))
+    return any(_gap(s, e, perimeter) < _MEET_M for e in (c, d))
 
 
 def _banded_edges(ctx: TrimContext, room: ResolvedRoom, wall, ring, span, floor_z: float):
     """Horizontal J-bead along a banded gypsum board whose edge stops over a bare face."""
     a, b = span
     point, outward = point_and_outward(ring, (a + b) / 2.0)
-    top = ceiling_z(ctx.model, room, point, wall.z1_m)
+    top = top_at(ctx.model, room, point, (wall,))
     probe = Point(point[0] + outward[0] * 0.002, point[1] + outward[1] * 0.002)
     for layer in wall.layers:
         if (layer.is_cavity or layer.z0_m is None and layer.z1_m is None
@@ -226,4 +284,4 @@ def _tile_cover(model: ResolvedModel, room: ResolvedRoom, xy, floor_z: float,
     return covered
 
 
-__all__ = ["TrimContext", "ceiling_z", "resolve_drywall_trims", "room_floor"]
+__all__ = ["TrimContext", "ceiling_z", "resolve_drywall_trims", "room_floor", "top_at"]

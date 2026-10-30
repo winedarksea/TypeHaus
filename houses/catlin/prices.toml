@@ -5457,12 +5457,12 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # plus three coats per LF, ESTIMATE off Homewyse's $4.06-4.89/LF installed corner bead
 # (May 2026). Quantities from `haus takeoff` 2026-10-30.
 # Vinyl corner bead, outside corners + soffit edges + window-return corners. ~$5-8 per 10'.
-"dw-corner-bead-vinyl" = { material = { low = 0.5, high = 0.8 }, labour = { low = 2.5, high = 4.0 } }  # 571.4 LF
+"dw-corner-bead-vinyl" = { material = { low = 0.5, high = 0.8 }, labour = { low = 2.5, high = 4.0 } }  # 475.4 LF
 # Tear-away L-bead: trimless door jambs (D-M-BED2, D-M-STUDY) and window-return frame edges.
 # Moved out of those two door-type rows below (was "L-bead 20-40" / "bead 60-150" a door).
 "dw-l-bead-tearaway" = { material = { low = 0.6, high = 1.2 }, labour = { low = 2.0, high = 4.5 } }  # 340.1 LF
 # J-bead where board ends on bare concrete or framing (basement utility rooms, mudroom nook).
-"dw-j-bead-metal" = { material = { low = 0.4, high = 0.9 }, labour = { low = 1.5, high = 3.0 } }  # 162.7 LF
+"dw-j-bead-metal" = { material = { low = 0.4, high = 0.9 }, labour = { low = 1.5, high = 3.0 } }  # 156.7 LF
 # F reveal, the tile stop: Trim-Tex AS8710 at FBM $140 / 25 x 10' = $0.56/LF. Fussier to set
 # dead straight than a corner bead.
 "dw-reveal-bead-f" = { material = { low = 0.56, high = 1.0 }, labour = { low = 3.0, high = 5.5 } }  # 43.7 LF

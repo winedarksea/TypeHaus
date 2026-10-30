@@ -221,19 +221,19 @@ def face_function(wall: ResolvedWall, point: tuple[float, float],
 
 
 def face_layer(wall: ResolvedWall, point: tuple[float, float],
-               into_wall: tuple[float, float], z0: float, z1: float, depth: float = 0.0):
-    """The layer at ``wall``'s face at ``point`` over ``z0..z1``, probed ``depth`` further in.
+               into_wall: tuple[float, float], z0: float, z1: float, skip=None):
+    """The layer at ``wall``'s face at ``point`` over ``z0..z1``, ignoring ``skip(layer)``.
 
     The layer whose polygon holds a point just behind the face is the face; failing that (a
     face exactly on a polygon edge), the nearest.
     """
     from shapely.geometry import Point, Polygon
 
-    reach = _FACE_PROBE_M + depth
-    probe = Point(point[0] + into_wall[0] * reach, point[1] + into_wall[1] * reach)
+    probe = Point(point[0] + into_wall[0] * _FACE_PROBE_M,
+                  point[1] + into_wall[1] * _FACE_PROBE_M)
     best, best_d = None, float("inf")
     for layer in getattr(wall, "layers", ()):
-        if layer.is_cavity or len(layer.polygon) < 3:
+        if layer.is_cavity or len(layer.polygon) < 3 or (skip is not None and skip(layer)):
             continue
         b0, b1 = layer.band(wall)
         if b1 <= z0 or b0 >= z1:
@@ -249,17 +249,14 @@ def face_layer(wall: ResolvedWall, point: tuple[float, float],
 
 def face_is_gypsum(wall: ResolvedWall, point: tuple[float, float],
                    into_wall: tuple[float, float], z0: float, z1: float, materials: dict) -> bool:
-    """Whether the board behind any coating at ``point`` is gypsum (``Material.gypsum_type``)."""
-    depth = 0.0
-    for _ in range(3):
-        layer = face_layer(wall, point, into_wall, z0, z1, depth)
-        if layer is None:
-            return False
-        material = materials.get(layer.material_ref)
-        if not getattr(material, "coating", False):
-            return getattr(material, "gypsum_type", None) is not None
-        depth += layer.thickness_m
-    return False
+    """Whether the board behind any coating at ``point`` is gypsum (``Material.gypsum_type``).
+
+    Coatings are skipped rather than stepped through, so a zero-depth coat reads the same.
+    """
+    layer = face_layer(wall, point, into_wall, z0, z1, skip=lambda candidate: getattr(
+        materials.get(candidate.material_ref), "coating", False))
+    material = materials.get(layer.material_ref) if layer is not None else None
+    return getattr(material, "gypsum_type", None) is not None
 
 
 def is_finish(function: str | None) -> bool:
