@@ -23,15 +23,18 @@ mats, so V ~ 64 m3. RT60 = 0.161 V / A.
 |---|---|---|---|---|
 | floor | rubber on slab | 26.5 | 0.04 | 1.06 |
 | ceiling | painted 5/8" gwb | 26.5 | 0.05 | 1.33 |
-| walls, gypsum | W-B-CE, W-B-CS, W-B-S3-FR | ~24 | 0.05 | 1.20 |
-| walls, bare concrete | W-B-E1/E2, W-B-CS2, W-B-S4 | ~18 | 0.02 | 0.36 |
+| walls, gypsum | W-B-CE, W-B-CS, W-B-CS3, W-B-S3-FR above the curb | ~18 | 0.05 | 0.90 |
+| walls, bare concrete | W-B-E1, W-B-S4, W-B-CS2, W-B-S3 curb | ~23 | 0.02 | 0.46 |
 | glazing | D-B-PATIO | 3.4 | 0.15 | 0.51 |
 | door leaves | D-B-PLAY, D-B-SAUNA | 4.7 | 0.08 | 0.38 |
-| **empty room** | | | | **~4.8 -> RT60 ~2.1 s** |
-| + 14 panels, 2'x4'x2" mineral wool | 14 x 0.74 | 10.4 | ~0.95 | +9.9 -> **~0.7 s** |
+| open doorway | D-B-GYM, 36" x 80", no leaf | 1.9 | 0.5-1.0 | 0.9-1.9 |
+| **empty room** | | | | **~5.6-6.5 -> RT60 ~1.6-1.9 s** |
+| + 14 panels, 2'x4'x2" mineral wool | 14 x 0.74 | 10.4 | ~0.95, less ~0.04 covered | +9.5 -> **~0.65-0.7 s** |
 
-Equipment and people add 1-2 m2, so the furnished room sits around 1.5-1.8 s today.
-Twelve panels give ~0.8 s and sixteen ~0.6 s. A home gym is comfortable at 0.6-0.8 s.
+The doorway's alpha is 1.0 for sound that leaves and never returns; the hard hall sends
+some back, hence the range. Equipment and people add 1-2 m2, so the furnished room sits
+around 1.2-1.6 s today. Twelve panels give ~0.7-0.75 s and sixteen ~0.6 s. A home gym is
+comfortable at 0.6-0.8 s.
 The alpha values are typical published table values for these surface types, not
 measurements. A tape-and-clap or phone RT60 app reading after move-in replaces this table.
 
@@ -103,7 +106,8 @@ D-B-GYM is a doorless opening to the hall.
 - Cut with a straightedge and a fresh utility blade, scoring repeatedly. Bend the mat open
   as you go, and soapy water helps. Mats are not square to the inch, so dry-lay and trim
   to the walls last.
-- **Reducer** at the open edge to the sealed-concrete hall (D-B-GYM), a 3/4" rubber ramp.
+- **Reducers** where the mats stop 3/4" above sealed concrete: the open edge to the hall
+  (D-B-GYM) and the sauna doorway (D-B-SAUNA, stepped across barefoot). A 3/4" rubber ramp.
   At D-B-PLAY the carpet sits 1/4" lower, and a flat transition strip covers it.
 - The leaf bottoms re-derive from the higher floor. D-B-SAUNA and D-B-PLAY rose 7/16" and
   1/4"; nothing else moved.

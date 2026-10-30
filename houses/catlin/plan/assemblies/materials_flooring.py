@@ -116,6 +116,6 @@ MATERIALS_FLOORING = [
                     '(Tractor Supply / Rural King), loose-laid, no adhesive; 13 mats '
                     '(312 SF) over ~287 SF. Before laying: slab moisture test (taped poly '
                     'sheet; 6-mil poly under the mats if damp), and air the mats out 1-2 '
-                    'weeks. Reducer at the open edge to the sealed-concrete hall. '
+                    'weeks. Reducers to the sealed concrete at D-B-GYM and D-B-SAUNA. '
                     'Echo-neutral; see notes/gym_acoustics.md.'),
 ]
