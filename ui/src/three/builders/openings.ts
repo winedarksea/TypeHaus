@@ -12,6 +12,7 @@ import {
   GLAZED_LEAF_FRAME_WIDTH_M, type AddBox, type LeafSet, buildConcealedFrame, buildLeverSet, concealedLeaf, finishFaces, handing,
 } from "./doorProducts";
 import { buildDoorway } from "./doorway";
+import { authoredPiece } from "./openingPieces";
 import { buildCasedDoor } from "./casedDoors";
 import { registerSelectable } from "./registry";
 import { baseRefZ } from "./wallFrame";
@@ -166,7 +167,10 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     frameDepth = Math.abs(placement.frame_outer_m - placement.frame_inner_m);
     frameOffset = (placement.frame_outer_m + placement.frame_inner_m) / 2 - productOffset;
   }
-  const addBox = (width: number, height: number, thickness: number, along: number, elevation: number, material: THREE.Material, normalOffset = 0) => {
+  // Pick keys mirror resolve/geometry_openings.py GPart names; unnamed boards number per role.
+  const pieceCounts: Record<string, number> = {};
+  const nextPiece = (role: string) => `${role}:${pieceCounts[role] = (pieceCounts[role] ?? -1) + 1}`;
+  const addBox = (width: number, height: number, thickness: number, along: number, elevation: number, material: THREE.Material, normalOffset = 0, piece?: string) => {
     normalOffset += productOffset;
     const leafBottom = opening.doorway?.leaf_bottom_z_m;
     if (leafBottom != null && (material === solidLeafMaterial || material === glassMaterial)
@@ -210,6 +214,9 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
       mesh.position.set(0, 0, 0); mesh.rotation.set(0, 0, 0); mesh.updateMatrix();
       mesh.material = woodMaterialsForGeometry(material, mesh.geometry);
     }
+    mesh.userData.piece = piece ?? nextPiece(material === glassMaterial ? "glass"
+      : material === solidLeafMaterial ? "leaf" : material === hardwareMaterial ? "hardware"
+        : "frame");
     parent.add(mesh);
   };
   const midElevation = baseRefZ(wall) + opening.sill_m + availableHeight / 2;
@@ -218,7 +225,8 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
   const swingLeaf = operation === undefined || operation === "swing";
   const hardwareMaterial = standardMaterial(categoryColor("door_hardware"), mode,
     { metalness: 0.8, roughness: 0.35 });
-  const addHardware: AddBox = (w, h, t, a, e, n) => addBox(w, h, t, a, e, hardwareMaterial, n);
+  const addHardware: AddBox = (w, h, t, a, e, n) => addBox(w, h, t, a, e, hardwareMaterial, n,
+    nextPiece("hardware"));
   const glassMaterial = standardMaterial(0x8fb7c9, mode, { transparent: true, opacity: 0.48,
     roughness: 0.2, metalness: 0.05, depthWrite: false });
   // Section normal offsets are relative to the wall axis, independent of the pocket leaf.
@@ -243,6 +251,7 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     ], board.z_m, center));
     mesh.rotation.y = rotation;
     mesh.userData.doorInstallation = board.name;
+    mesh.userData.piece = `installation:${board.name}`;
     parent.add(mesh);
   }
   if (opening.authored_product_parts?.length) {
@@ -253,7 +262,7 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
         : part.material_key === "door_hardware" ? hardwareMaterial
         : part.material_key === "glass" ? glassMaterial
         : standardMaterial(categoryColor(part.material_key), mode, { roughness: 0.45 });
-      for (const solid of part.solids) {
+      for (const [solidIndex, solid] of part.solids.entries()) {
         const along = solid.ring.map(([x, y]) =>
           (x - position[0]) * direction[0] + (y - position[1]) * direction[1]);
         const across = solid.ring.map(([x, y]) =>
@@ -268,6 +277,8 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
         ], (solid.z0_m + solid.z1_m) / 2, center));
         mesh.rotation.y = rotation;
         mesh.userData.doorPart = part.key;
+        mesh.userData.piece = authoredPiece(part.key, solidIndex, a0, a1, solid.z0_m, solid.z1_m,
+          opening.width_m, baseRefZ(wall) + opening.sill_m + availableHeight / 2);
         parent.add(mesh);
       }
     }
@@ -278,11 +289,11 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
   if (opening.cased_product) {
     const paintedFrame = opening.effective_frame_material_ref ? frameMaterial
       : standardMaterial(categoryColor("door_frame"), mode, { roughness: 0.45 });
-    const withMaterial = (material: THREE.Material): AddBox =>
-      (w, h, t, a, e, n) => addBox(w, h, t, a, e, material, n);
+    const withMaterial = (material: THREE.Material, role: string): AddBox =>
+      (w, h, t, a, e, n) => addBox(w, h, t, a, e, material, n, nextPiece(role));
     buildCasedDoor(opening.cased_product, hingeSign, swingSign, {
-      liner: withMaterial(paintedFrame), stop: withMaterial(paintedFrame),
-      leaf: withMaterial(solidLeafMaterial), hardware: addHardware,
+      liner: withMaterial(paintedFrame, "frame"), stop: withMaterial(paintedFrame, "stop"),
+      leaf: withMaterial(solidLeafMaterial, "leaf"), hardware: addHardware,
     });
     registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
     return;
@@ -294,17 +305,17 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
       : standardMaterial(categoryColor("door_leaf"), mode);
     const shadowMaterial = standardMaterial(categoryColor("shadow_gap"), mode,
       { roughness: NORDIC_ROUGHNESS.matte });
-    const withMaterial = (material: THREE.Material): AddBox =>
-      (w, h, t, a, e, n) => addBox(w, h, t, a, e, material, n);
+    const withMaterial = (material: THREE.Material, role: string): AddBox =>
+      (w, h, t, a, e, n) => addBox(w, h, t, a, e, material, n, nextPiece(role));
     buildConcealedFrame(faces, swingSign, opening.width_m, floorZ, availableHeight, {
-      liner: withMaterial(linerMaterial), leaf: withMaterial(solidLeafMaterial),
+      liner: withMaterial(linerMaterial, "frame"), leaf: withMaterial(solidLeafMaterial, "leaf"),
       stop: (w, h, t, a, e, n) => {
         const bottom = opening.doorway?.leaf_bottom_z_m;
         const oldBottom = e - h / 2;
         if (bottom != null && oldBottom < bottom && e + h / 2 > bottom) {
           const top = e + h / 2; h = top - bottom; e = (top + bottom) / 2;
         }
-        addBox(w, h, t, a, e, linerMaterial, n);
+        addBox(w, h, t, a, e, linerMaterial, n, nextPiece("stop"));
       },
       shadow: (w, h, t, a, e, n) => {
         const bottom = opening.doorway?.leaf_bottom_z_m;
@@ -312,9 +323,9 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
         if (bottom != null && oldBottom < bottom && e + h / 2 > bottom) {
           const top = e + h / 2; h = top - bottom; e = (top + bottom) / 2;
         }
-        addBox(w, h, t, a, e, shadowMaterial, n);
+        addBox(w, h, t, a, e, shadowMaterial, n, nextPiece("shadow"));
       },
-      glazing: isGlazed ? withMaterial(glassMaterial) : undefined,
+      glazing: isGlazed ? withMaterial(glassMaterial, "glass") : undefined,
     }, leafSet, sizedLeaf);
     const [leafW, , , flush, back] = concealedLeaf(faces, swingSign, opening.width_m, floorZ,
       availableHeight, leafSet, sizedLeaf);
@@ -334,7 +345,8 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     const addOakBox = (boxWidth: number, boxHeight: number, thickness: number, along: number,
       elevation: number, material: THREE.Material, normalOffset: number) => {
       if (!boardStyle || material !== boardMaterial) {
-        addBox(boxWidth, boxHeight, thickness, along, elevation, material, normalOffset);
+        addBox(boxWidth, boxHeight, thickness, along, elevation, material, normalOffset,
+          nextPiece("leaf"));
         return;
       }
       const boardPosition = projectPointToScene([
@@ -346,7 +358,9 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
         new THREE.Vector3(boxWidth, boxHeight, thickness));
       const geometry = boardBoxGeometry(transform, boardStyle,
         pieceSeed(`${opening.uid}|bookcase-board-${boardIndex++}`));
-      parent.add(new THREE.Mesh(geometry, woodMaterialsForGeometry(material, geometry)));
+      const board = new THREE.Mesh(geometry, woodMaterialsForGeometry(material, geometry));
+      board.userData.piece = nextPiece("leaf");
+      parent.add(board);
     };
     const mountPlane = faces === null ? 0
       : bookcaseDoor.mounting_face === "negative_normal" ? faces[0] : faces[1];
@@ -356,11 +370,11 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     return;
   }
   if (!isTrimless) {
-    addBox(frameWidth, availableHeight, frameDepth, -opening.width_m / 2 + frameWidth / 2, midElevation, frameMaterial, frameOffset);
-    addBox(frameWidth, availableHeight, frameDepth, opening.width_m / 2 - frameWidth / 2, midElevation, frameMaterial, frameOffset);
-    addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial, frameOffset);
+    addBox(frameWidth, availableHeight, frameDepth, -opening.width_m / 2 + frameWidth / 2, midElevation, frameMaterial, frameOffset, "frame:jamb-left");
+    addBox(frameWidth, availableHeight, frameDepth, opening.width_m / 2 - frameWidth / 2, midElevation, frameMaterial, frameOffset, "frame:jamb-right");
+    addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial, frameOffset, "frame:head");
     if (opening.kind === "window") {
-      addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + frameWidth / 2, frameMaterial, frameOffset);
+      addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + frameWidth / 2, frameMaterial, frameOffset, "frame:sill");
     }
   }
   const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
@@ -374,7 +388,7 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     const astragalTop = baseRefZ(wall) + opening.sill_m + availableHeight;
     addBox(mullionWidth, astragalBottom == null ? availableHeight : astragalTop - astragalBottom,
       depth, 0, astragalBottom == null ? midElevation : (astragalTop + astragalBottom) / 2,
-      frameMaterial);
+      frameMaterial, 0, "frame:mullion");
     const leafMaterial = isGlazed ? glassMaterial : solidLeafMaterial;
     const leafThickness = isGlazed ? 0.015 : 0.045;
     addBox(leafWidth, panelHeight, leafThickness, -mullionWidth / 2 - leafWidth / 2, panelElevation, leafMaterial);
@@ -393,7 +407,7 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
     const panelMaterial = isGlazed ? glassMaterial : solidLeafMaterial;
     const panelThickness = isGlazed ? 0.015 : 0.045;
-    addBox(stileWidth, panelHeight, depth, 0, panelElevation, frameMaterial);
+    addBox(stileWidth, panelHeight, depth, 0, panelElevation, frameMaterial, 0, "frame:mullion");
 
     addBox(panelWidth, panelHeight, panelThickness, -panelOffset, panelElevation, panelMaterial);
     addBox(panelWidth, panelHeight, panelThickness, panelOffset, panelElevation, panelMaterial);
@@ -418,7 +432,7 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
     const trackHeight = Math.min(0.02, panelHeight);
     const leafHeight = Math.max(0.01, panelHeight - trackHeight);
     const base = baseRefZ(wall) + opening.sill_m + frameWidth;
-    addBox(clearWidth, trackHeight, depth, 0, base + panelHeight - trackHeight / 2, frameMaterial);
+    addBox(clearWidth, trackHeight, depth, 0, base + panelHeight - trackHeight / 2, frameMaterial, 0, "frame:track");
     addBox(clearWidth, leafHeight, 0.045, 0, base + leafHeight / 2, solidLeafMaterial);
   } else if (opening.kind === "door") {
     // A sectional overhead door's panel is a factory-finished product in its own charcoal,
@@ -456,13 +470,13 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
         { roughness: NORDIC_ROUGHNESS.matte });
       const rakedHost = wall.top_z0_m != null || wall.top_z1_m != null;
       const sillZ = baseRefZ(wall) + ro.sill_m;
-      const bands: [number, number, number, number][] = [
-        [trimW, roHeight, -ro.width_m / 2 - trimW / 2, sillZ],
-        [trimW, roHeight, ro.width_m / 2 + trimW / 2, sillZ],
-        [ro.width_m + 2 * trimW, trimW, 0, sillZ + roHeight],
-        [ro.width_m + 2 * trimW, trimW, 0, sillZ - trimW],
+      const bands: [number, number, number, number, string][] = [
+        [trimW, roHeight, -ro.width_m / 2 - trimW / 2, sillZ, "jamb-left"],
+        [trimW, roHeight, ro.width_m / 2 + trimW / 2, sillZ, "jamb-right"],
+        [ro.width_m + 2 * trimW, trimW, 0, sillZ + roHeight, "head"],
+        [ro.width_m + 2 * trimW, trimW, 0, sillZ - trimW, "sill"],
       ];
-      for (const [bandW, bandH, along, baseZ] of bands) {
+      for (const [bandW, bandH, along, baseZ, leg] of bands) {
         let zTop = baseZ + bandH;
         if (rakedHost) {
           for (const end of [-1, 1]) {
@@ -473,7 +487,7 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
         }
         if (zTop - baseZ <= 1e-9) continue;
         addBox(bandW, zTop - baseZ, WINDOW_TRIM_PROUD_DEPTH_M, along,
-          baseZ + (zTop - baseZ) / 2, trimMaterial, trimOffset);
+          baseZ + (zTop - baseZ) / 2, trimMaterial, trimOffset, `exterior_trim:${leg}`);
       }
     }
   }

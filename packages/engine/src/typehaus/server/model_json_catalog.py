@@ -135,6 +135,14 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
              "sku": pr.sku, "url": pr.url, "source": pr.source}
             for pr in lib.products
         ],
+        # Trim profiles a solid's ``product`` key names, so the inspector can say "PBR Jamb".
+        "trim_profiles": _used_trim_profiles(model),
+        # Which type each guard names, so a railing's solids (host_ref = tag) reach its product.
+        "railings": _railing_type_refs(model),
+        "railing_types": [
+            {"tag": rt.tag, "name": rt.name, "product_ref": rt.product_ref}
+            for rt in lib.railing_types
+        ],
         "occupancies": [o.value for o in Occupancy],
         # ``color``/``finish`` are the authored *appearance* of a material. Without them the
         # viewer can only guess a material's look from substrings in its tag (nordic/palette
@@ -165,6 +173,25 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
         ],
         "assemblies": assemblies,
     }
+
+
+def _used_trim_profiles(model: ResolvedModel) -> list[dict[str, Any]]:
+    """Identity of the manufacturer trim profiles the model's solids actually reference."""
+    from typehaus.library.trim.catalog import PROFILES
+
+    keys = sorted({solid.product for solid in model.solids if solid.product in PROFILES})
+    return [{"key": key, "name": PROFILES[key].name, "maker": PROFILES[key].maker,
+             "custom": PROFILES[key].custom,
+             "part_numbers": sorted({row[3] for row in PROFILES[key].part_numbers})}
+            for key in keys]
+
+
+def _railing_type_refs(model: ResolvedModel) -> list[dict[str, Any]]:
+    from typehaus.model.structure import Railing
+
+    return [{"tag": el.tag, "type_ref": el.type_ref}
+            for storey in model.plan.storeys
+            for el in model.plan.storey_elements(storey.tag) if isinstance(el, Railing)]
 
 
 def catalog_json(

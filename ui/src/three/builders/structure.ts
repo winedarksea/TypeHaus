@@ -61,7 +61,7 @@ import { applyEarthOpacity } from "./site";
 export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
-  materials?: readonly MaterialAppearance[], earthOpacity?: number) {
+  materials?: readonly MaterialAppearance[], earthOpacity?: number, pickUid?: string) {
   const geo = solid.finish_panels ? soffitPanelGeometry(solid.finish_panels, center)
     : solid.body_mesh ? createSolidBodyMesh(solid, center) : solid.sweep
     ? createSweepGeometry(solid, center)
@@ -118,7 +118,8 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
     if (earthOpacity !== undefined) applyEarthOpacity(material, earthOpacity);
   }
   parent.add(mesh);
-  registerSelectable(parent, firstChildIndex, solid.uid, "solid", picks, byUid);
+  // A grouped solid answers to its group's first solid, so the whole part picks and lights up.
+  registerSelectable(parent, firstChildIndex, pickUid ?? solid.uid, "solid", picks, byUid);
 }
 
 // PV module glass — mirrors "solar" in emit/gltf/palette.py `_PALETTE`.

@@ -1,4 +1,4 @@
-import { productFor, productForMaterial } from "./products";
+import { pieceProduct, productFor, productForMaterial } from "./products";
 import type { Catalog, MaterialSpec, Model, ProductSpec } from "./types";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -50,6 +50,25 @@ export function runProductTests() {
     "An unknown material tag resolves to null rather than throwing");
   assert(productForMaterial(model, null) === null, "A solid with no material has no product");
   assert(productForMaterial(null, "metal-dark-exterior") === null, "No model, no product");
+
+  // A piece of an opening: boards take the type's product, hardware its own, trim its material.
+  const withDoor = {
+    catalog: catalog({
+      products: [WASHTOWER],
+      door_types: [{ tag: "DT-1", product_ref: "PROD-LG-WKHC252HBA" }] as never,
+      materials: [material({ tag: "mdf-casing", product_ref: "PROD-LG-WKHC252HBA" })],
+    }),
+    door_casings: [{ uid: "CA1", material_ref: "mdf-casing" }],
+  } as unknown as Model;
+  const door = { is_door: true, type_ref: "DT-1", authored_product_parts: [
+    { key: "hardware:0", name: "PROD-LG-WKHC252HBA", role: "hinge" }] } as never;
+  assert(pieceProduct(withDoor, door, "frame:jamb-left").product === WASHTOWER,
+    "A frame board takes the opening type's product");
+  assert(pieceProduct(withDoor, door, "hardware:0").detail === "hinge",
+    "A hardware piece reports its catalog role");
+  assert(pieceProduct(withDoor, door, "casing:CA1:leg_left").product === WASHTOWER
+    && pieceProduct(withDoor, door, "casing:CA1:leg_left").label === "Casing, leg left",
+  "A casing leg takes its material's product and reads as the leg");
 
   console.log("Product reference tests passed.");
 }

@@ -117,6 +117,8 @@ export const DERIVED_SELECTION_KINDS: SelectionKind[] = [
 export interface Selection {
   kind: SelectionKind | null;
   uid: string | null;
+  /** One board of the selected opening (a casing leg, a jamb, a hinge); null = the whole. */
+  piece?: string | null;
 }
 
 export interface ViewTransform {

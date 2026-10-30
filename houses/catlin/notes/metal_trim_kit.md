@@ -137,6 +137,7 @@ trim's leg laps the U (item 3). The model draws and bills no pads
 | Metal Sales | Raising the base trim 1 in off the Z |
 | Metal Sales | K6 braked from their coil |
 | Membrane maker | The substrate letter covers the Z and K6 strip-ins |
+| Amrize (foam) | OnePass HFO sprayed over cured FastFlash (the window raccoon), plus a jobsite adhesion mock-up (`opening_flashing_spec.md` §5) |
 | Screen supplier | Holes ≤ 1/8 in, **at least 22% open** (33% specified; the band outlet needs 21.1%), 0.032–0.040 aluminium |
 
 ## Openings

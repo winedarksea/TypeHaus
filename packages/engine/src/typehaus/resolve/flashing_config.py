@@ -30,6 +30,12 @@ class FlashingConfig:
     back_dam_strip_m: float = inch(0.5).meters
     end_dam_m: float = inch(6).meters
     pan_drop_m: float = inch(0.75).meters
+    #: Outie walls: the pre-foam membrane ("raccoon", BSI-048) laid on the sheathing face
+    #: round the RO, under the foam, so the foam laps over it in shingle order.
+    raccoon_band_m: float = inch(4).meters
+    #: Outie walls: the band on each jamb post's outer face under the window flange's
+    #: landing (a 1-3/8" fin less the jamb inset) and the J-receiver's edge, with lap.
+    post_band_m: float = inch(2).meters
     perimeter_lap_m: float = inch(2).meters
     hem_m: float = inch(0.25).meters
     drainage_slope: float = 0.25 / 12

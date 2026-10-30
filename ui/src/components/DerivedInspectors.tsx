@@ -16,7 +16,7 @@ import { solidLabel, solidMaterialRef } from "../model/solidLabels";
 import { useStore } from "../state/store";
 import { Provenance } from "./Provenance";
 import { ProductRows } from "./ProductRows";
-import { productForMaterial } from "../model/products";
+import { productForMaterial, railingProduct, trimProfileFor } from "../model/products";
 
 // NB: construction returns (ConstructionRule laps) produce no solids — the resolver records
 // them on `Model.construction_returns`, and nothing in 3D draws them, so there is no selection
@@ -53,8 +53,12 @@ export function SolidInspector({ solid }: { solid: Solid }) {
   // layer is the sheet you are looking at (the breezeway glazing is one polycarbonate
   // layer and nothing else), and that is what the row and the product join want.
   const material = solidMaterialRef(solid, model?.catalog);
+  // A grouped solid is one part (a gutter, a guard): report its pieces, and a railing's type.
+  const siblings = solid.group ? (model?.solids ?? []).filter((one) => one.group === solid.group) : [];
+  const railing = siblings.length > 1 && solid.host_ref ? railingProduct(model, solid.host_ref) : null;
+  const profile = trimProfileFor(model?.catalog, solid.product);
   return <div>
-    <h3>{solidLabel(solid)} · {solid.tag}</h3>
+    <h3>{railing ? `Railing · ${solid.host_ref}` : `${solidLabel(solid)} · ${solid.tag}`}</h3>
     <div className="kv">
       {/* Heading is the human name; the raw category stays on the row beneath it, because
           it is the key every palette, trade table and take-off is written against and a
@@ -74,8 +78,15 @@ export function SolidInspector({ solid }: { solid: Solid }) {
       {/* Hardware IS its part number: a connector marker box is unreadable without it, and
           the number here is the one the take-off bills. Only the solids that are a purchased
           part carry one, so the row stays off everything cut from stock. */}
-      {solid.product && <><span className="k">Part</span><span>{solid.product}</span></>}
-      <ProductRows product={productForMaterial(model, material)} />
+      {profile ? <><span className="k">Profile</span>
+        <span>{profile.maker} {profile.name}{profile.custom ? " (shop-made)" : ""}</span>
+        {profile.part_numbers.length > 0 && <><span className="k">Part no.</span>
+          <span className="prov">{profile.part_numbers.join(", ")}</span></>}</>
+        : solid.product && <><span className="k">Part</span><span>{solid.product}</span></>}
+      {siblings.length > 1 && <><span className="k">Part of</span>
+        <span>{railing ? `${railing.type?.name ?? "railing"}` : "one part"} · {siblings.length} pieces
+          ({solidLabel(solid)})</span></>}
+      <ProductRows product={railing?.product ?? productForMaterial(model, material)} />
       <span className="k">Plan extent</span><PlanExtent points={solid.outline} />
       <span className="k">{solid.body_mesh ? "Height" : "Thickness"}</span>
       <span>{formatFtIn(solid.z1_m - solid.z0_m)}</span>
@@ -260,13 +271,16 @@ export function MemberInspector({ located }: { located: LocatedMember }) {
   const model = useStore((s) => s.model);
   const { member, ownerKind, ownerTag, ownerUid } = located;
   const raked = member.z0_end_m != null || member.z1_end_m != null;
+  const sticks = located.group ?? [member];
   return <div>
-    <h3>{member.category} · {member.key}</h3>
+    <h3>{member.category} · {member.group ?? member.key}</h3>
     <div className="kv">
       <span className="k">Category</span><span>{member.category}</span>
       <span className="k">Profile</span><span>{member.profile}</span>
       <span className="k">Section</span><span>{sectionSummary(located)}</span>
-      <span className="k">Length</span><span>{formatFtIn(member.length_m)}</span>
+      {sticks.length > 1 && <><span className="k">Pieces</span>
+        <span>{sticks.length} ({sticks.map((stick) => stick.key.slice(member.group!.length + 1)).join(", ")})</span></>}
+      <span className="k">Length</span><span>{formatFtIn(Math.max(...sticks.map((stick) => stick.length_m)))}</span>
       <span className="k">Elevation</span>
       <span>{formatFtIn(member.z0_m)} → {formatFtIn(member.z1_m)}{raked ? " (raked)" : ""}</span>
       <span className="k">Material</span><span>{member.material ?? "lumber"}</span>

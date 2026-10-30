@@ -7,7 +7,7 @@ import { DetailViewer } from "./DetailViewer";
 import { StairDesigner } from "./StairDesigner";
 import { Provenance } from "./Provenance";
 import { ProductRows } from "./ProductRows";
-import { productFor } from "../model/products";
+import { pieceProduct, productFor } from "../model/products";
 import { FloorInspector, FootingBeddingInspector, LightRunInspector, MemberUidInspector, PanelingInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
 import { locateUid } from "../state/locate";
 import { useIsCompact } from "../hooks/useBreakpoint";
@@ -271,6 +271,9 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
   const applyOps = useStore((state) => state.applyOps);
   const runMacro = useStore((state) => state.runMacro);
   const toast = useStore((state) => state.toast);
+  const piece = useStore((state) => state.selection.piece);
+  const select = useStore((state) => state.select);
+  const picked = piece ? pieceProduct(model, opening, piece) : null;
   const host = openingHostWall(model.walls, opening);
   const rough = opening.kind === "rough_opening";
   const types = rough ? [] : opening.is_door ? model.catalog?.door_types ?? [] : model.catalog?.window_types ?? [];
@@ -313,6 +316,15 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
       <span className="k">Height</span><span>{formatFtIn(opening.height_m)}</span>
       <ProductRows product={productFor(model.catalog, openingType?.product_ref)} />
     </div>
+    {picked && <div className="kv" data-testid="piece-block">
+      <span className="k">Piece</span><span>{picked.label}</span>
+      {picked.detail && <><span className="k">Made of</span><span>{picked.detail}</span></>}
+      <ProductRows product={picked.product} />
+      <span className="k" />
+      <span><button className="btn" onClick={() => select("opening", opening.uid)}>
+        Select whole {opening.is_door ? "door" : "window"}
+      </button></span>
+    </div>}
     <label className="field-label">Start-jamb station along wall
       <span><input value={along} onChange={(event) => setAlong(event.target.value)} />
         <button className="btn" onClick={() => void move()} disabled={!host}>Move</button></span>

@@ -71,13 +71,24 @@ def _head_path(back_u, seat_z, run_u, rise_in):
         (0.0, -rise_in), (run_u, -fall), (0.0, -_in(FLASHING.head_drop_m))])
 
 
-def _pan_path(back_u, seat_z, outlet_u, out_sign):
+def _pan_path(back_u, seat_z, outlet_u, out_sign, drop_in=None):
     """The sill pan: back dam on its strip, sloped across the seat, turned down at the outlet."""
     dam_u = back_u + out_sign * _in(FLASHING.back_dam_strip_m)
     fall = abs(outlet_u - dam_u) * FLASHING.drainage_slope
     back_dam = _in(FLASHING.back_dam_m)
+    drop = _in(FLASHING.pan_drop_m) if drop_in is None else drop_in
     return path_from_steps((dam_u, seat_z + back_dam), [
-        (0.0, fall - back_dam), (outlet_u - dam_u, -fall), (0.0, -_in(FLASHING.pan_drop_m))])
+        (0.0, fall - back_dam), (outlet_u - dam_u, -fall), (0.0, -drop)])
+
+
+def _raccoon_nodes(sheath_u, mount_u, edge_z, z_sign, wrap: bool) -> list[IRNode]:
+    """The pre-foam membrane on a head (``z_sign`` +1) or sill buck's wall side: a band up
+    or down the sheathing that the foam laps over, across the buck, round its front edge."""
+    band = z_sign * _in(FLASHING.raccoon_band_m)
+    path = [(sheath_u, edge_z + band), (sheath_u, edge_z), (mount_u, edge_z)]
+    if wrap:
+        path.append((mount_u, edge_z - z_sign * BUCK_THICKNESS_IN))
+    return flashing_nodes(path, tag="opening-perimeter-membrane")
 
 
 def _drip_throw_in(opening) -> float:
@@ -228,7 +239,6 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
     apart: how tall the head/sill blocking is, which is 1-1/2" for a 2x4 on edge and 3-1/2"
     for the same board laid flat. ``truss_kind`` picks it.
     """
-    from typehaus.resolve.framing.truss_wall import truss_kind
 
     if not is_weather_exposed(wall):
         return []
@@ -253,9 +263,7 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
     profiles = _opening_trim_profiles(model, opening, direction, station)
     nodes: list[IRNode] = _trim_nodes(profiles)
     if _in_crop_z(head_z, crop):
-        blocking_in = (cfg.girt_blocking_in
-                       if truss_kind(model.plan, wall.assembly) == "girt"
-                       else cfg.truss_blocking_in)
+        blocking_in = _blocking_in(model, wall, cfg)
         casing = _in(_WINDOW_TRIM_FACE_WIDTH_M) if opening.kind == "window" else 0.0
         seat = head_z + max(blocking_in, casing)
         if not _head_is_trimmed(profiles, sill_z, head_z):
@@ -268,14 +276,29 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
         nodes += rect_region(clad_in - out_sign * cfg.sealant_bead_in,
                              head_z - cfg.sealant_bead_in, clad_in, head_z,
                              "opening-sealant", "sealant", "metal", lineweight=PROFILE)
+        nodes += _raccoon_nodes(sheath_out, truss_plane, head_z, 1.0, wrap=True)
     if _in_crop_z(sill_z, crop):
         # The pan lies on the buck. A window's discharges at the mount plane, behind the
-        # cladding; a door's runs past the cladding to a drip.
-        outlet = (clad_out + out_sign * _drip_throw_in(opening) if opening.is_door
-                  else truss_plane)
-        nodes += flashing_nodes(_pan_path(sheath_out, sill_z + BUCK_THICKNESS_IN, outlet,
-                                          out_sign), tag="opening-sill-pan")
+        # cladding, and coats the sill course's face and underside as a drip; a door's runs
+        # past the cladding to a drip.
+        if opening.is_door:
+            outlet, drop = clad_out + out_sign * _drip_throw_in(opening), None
+        else:
+            outlet, drop = truss_plane, BUCK_THICKNESS_IN + _blocking_in(model, wall, cfg)
+            nodes += _raccoon_nodes(sheath_out, truss_plane, sill_z, -1.0, wrap=False)
+        pan = _pan_path(sheath_out, sill_z + BUCK_THICKNESS_IN, outlet, out_sign, drop)
+        if drop is not None:
+            pan.append((face_of(band, is_outboard_high, outer=False), pan[-1][1]))
+        nodes += flashing_nodes(pan, tag="opening-sill-pan")
     return nodes
+
+
+def _blocking_in(model, wall, cfg) -> float:
+    """The head/sill course height: a flat 2x4 on a girt wall, on edge on a Swinburne one."""
+    from typehaus.resolve.framing.truss_wall import truss_kind
+
+    return (cfg.girt_blocking_in if truss_kind(model.plan, wall.assembly) == "girt"
+            else cfg.truss_blocking_in)
 
 
 def concrete_opening_bucks(model, wall, opening, crop, direction, station) -> list[IRNode]:

@@ -16,7 +16,8 @@ import {
 } from "./materials";
 import { createSolidMaterial } from "./solidMaterials";
 import {
-  buildMemberHighlight, carriesMemberIdentity, memberIndexForTriangle, resolveMemberPickUid,
+  buildMemberHighlight, carriesMemberIdentity, memberIndexForTriangle, memberUidsFor,
+  resolveMemberPickUid,
 } from "./memberPicking";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -342,7 +343,25 @@ function checkRebarHoopPickResolvesToOneHoop() {
     "Before the lazy payload lands, a bar uid resolves to nothing");
 }
 
+// Sticks of one grouped part (a drip edge's legs) share one pick uid, and locating that uid
+// returns every leg so the highlight outlines the whole part.
+function checkGroupedMembers() {
+  const legs = ["flange", "nose", "face", "kick"].map((leg) =>
+    member({ key: `E1-drip-edge-${leg}`, group: "E1-drip-edge", category: "drip_edge" }));
+  const lone = member({ key: "E1-fascia", category: "fascia" });
+  const uids = memberUidsFor("RF-1", [...legs, lone]);
+  assert(new Set(uids.slice(0, 4)).size === 1 && uids[0] === "RF-1::E1-drip-edge",
+    "Every leg of a group resolves to one pick uid");
+  assert(uids[4] === "RF-1::E1-fascia", "An ungrouped member keeps its own key");
+  const model = { roofs: [{ uid: "RF-1", tag: "RF-HOUSE", storey: "L1", members: [...legs, lone] }] } as unknown as Model;
+  const located = locateMember(model, "RF-1::E1-drip-edge");
+  assert(located?.group?.length === 4, "locateMember returns every stick of the group");
+  assert(locateMember(model, "RF-1::E1-fascia")?.group === undefined,
+    "An ungrouped member locates alone");
+}
+
 export function runMemberPickingTests() {
+  checkGroupedMembers();
   checkSawtoothStringerCaps();
   checkCutProfileAndConnectorMesh();
   checkMemberUidScheme();

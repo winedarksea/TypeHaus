@@ -2461,6 +2461,166 @@
       "node": "hatch",
       "boundary": [
         [
+          0.25,
+          76.00000000000001
+        ],
+        [
+          0.25,
+          71.75000000000001
+        ],
+        [
+          -5.750000000000001,
+          71.75000000000001
+        ],
+        [
+          -5.750000000000001,
+          71.62500000000001
+        ],
+        [
+          -6.250000000000001,
+          71.62500000000001
+        ],
+        [
+          -6.250000000000001,
+          72.25000000000001
+        ],
+        [
+          -0.25,
+          72.25000000000001
+        ],
+        [
+          -0.25,
+          76.00000000000001
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "flashing"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          0.25,
+          76.00000000000001
+        ],
+        [
+          0.25,
+          71.75000000000001
+        ],
+        [
+          -5.750000000000001,
+          71.75000000000001
+        ],
+        [
+          -5.750000000000001,
+          71.62500000000001
+        ],
+        [
+          -6.250000000000001,
+          71.62500000000001
+        ],
+        [
+          -6.250000000000001,
+          72.25000000000001
+        ],
+        [
+          -0.25,
+          72.25000000000001
+        ],
+        [
+          -0.25,
+          76.00000000000001
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.7,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-perimeter-membrane"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -0.25,
+          32.00000000000001
+        ],
+        [
+          -0.25,
+          35.75000000000001
+        ],
+        [
+          -6.000000000000001,
+          35.75000000000001
+        ],
+        [
+          -6.000000000000001,
+          36.25000000000001
+        ],
+        [
+          0.25,
+          36.25000000000001
+        ],
+        [
+          0.25,
+          32.00000000000001
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "flashing"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -0.25,
+          32.00000000000001
+        ],
+        [
+          -0.25,
+          35.75000000000001
+        ],
+        [
+          -6.000000000000001,
+          35.75000000000001
+        ],
+        [
+          -6.000000000000001,
+          36.25000000000001
+        ],
+        [
+          0.25,
+          36.25000000000001
+        ],
+        [
+          0.25,
+          32.00000000000001
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.7,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-perimeter-membrane"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
           -0.25,
           37.87500000000001
         ],
@@ -2474,11 +2634,19 @@
         ],
         [
           -5.750000000000001,
-          35.62500000000001
+          32.75000000000001
+        ],
+        [
+          -4.5,
+          32.75000000000001
+        ],
+        [
+          -4.5,
+          32.25000000000001
         ],
         [
           -6.250000000000001,
-          35.62500000000001
+          32.25000000000001
         ],
         [
           -6.250000000000001,
@@ -2518,11 +2686,19 @@
         ],
         [
           -5.750000000000001,
-          35.62500000000001
+          32.75000000000001
+        ],
+        [
+          -4.5,
+          32.75000000000001
+        ],
+        [
+          -4.5,
+          32.25000000000001
         ],
         [
           -6.250000000000001,
-          35.62500000000001
+          32.25000000000001
         ],
         [
           -6.250000000000001,
@@ -3916,7 +4092,7 @@
     "K2  Head and sill courses: KDAT 2x4 flat, post inner face to post inner face.",
     "K3  Block each course the post crosses, at 24\" max, and across the RO.",
     "K4  Field courses stop 3-1/2\" clear of each RO.",
-    "K5  Fluid-applied pan on the buck: dam on a strip, 1/4\"/ft, down the buck edge.",
+    "K5  Fluid-applied pan on the buck: dam on a strip, 1/4\"/ft, over the sill course.",
     "K6  Steel head cap from the foam face over the course, face leg over 58114XX; panel end on a perforated strip. Strip in.",
     "K7  Sealant at the cladding-to-frame joint, at the mount plane, under the drip."
   ],

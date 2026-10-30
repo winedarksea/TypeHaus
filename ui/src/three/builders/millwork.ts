@@ -50,7 +50,9 @@ export function buildWindowStool(parent: THREE.Group, stool: WindowStool, center
   }
   const material = quartz ? createFrostWhiteMaterial() : style ? createPlankMaterial(mode, style, color, undefined,
     authoredAppearance(stool.material_ref, materials)) : standardMaterial(color, mode);
-  parent.add(makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry)));
+  const mesh = makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry));
+  mesh.userData.piece = `stool:${stool.uid}`;
+  parent.add(mesh);
   registerSelectable(parent, firstChildIndex, stool.opening_uid, "opening", picks, byUid);
 }
 
@@ -78,9 +80,9 @@ function trimBoardGeometry(outline: readonly Vec2[], z0: number, z1: number,
 }
 
 function buildTrimPieces(parent: THREE.Group, uid: string, materialRef: string,
-  pieces: readonly { outline: Vec2[]; z0_m: number; z1_m: number }[], center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
-  materials: readonly MaterialAppearance[] | undefined) {
+  pieces: readonly { name?: string; outline: Vec2[]; z0_m: number; z1_m: number }[],
+  center: PlanCenter, mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  materials: readonly MaterialAppearance[] | undefined, pieceKeyPrefix?: string) {
   const color = materialColor(materialRef, palette, materials);
   const style = boardStyleFor(materialRef, materials);
   const material = style ? createPlankMaterial(mode, style, color, undefined, authoredAppearance(materialRef, materials)) : standardMaterial(color, mode);
@@ -88,7 +90,10 @@ function buildTrimPieces(parent: THREE.Group, uid: string, materialRef: string,
     if (piece.outline.length < 3 || piece.z1_m <= piece.z0_m) continue;
     const geometry = trimBoardGeometry(piece.outline, piece.z0_m, piece.z1_m, center, style,
       pieceSeed(`${uid}|${index}`));
-    if (geometry) parent.add(makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry)));
+    if (!geometry) continue;
+    const mesh = makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry));
+    if (pieceKeyPrefix) mesh.userData.piece = `${pieceKeyPrefix}:${piece.name ?? index}`;
+    parent.add(mesh);
   }
 }
 
@@ -115,7 +120,7 @@ export function buildDoorCasing(parent: THREE.Group, casing: DoorCasing, center:
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   const firstChildIndex = parent.children.length;
   buildTrimPieces(parent, casing.uid, casing.material_ref, casing.pieces, center, mode, palette,
-    materials);
+    materials, `casing:${casing.uid}`);
   registerSelectable(parent, firstChildIndex, casing.opening_uid, "opening", picks, byUid);
 }
 

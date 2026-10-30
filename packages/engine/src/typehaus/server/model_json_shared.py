@@ -98,6 +98,8 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         # Explicit visibility trade override (fascia is trim *and* framing); ``None`` leaves
         # the consumer on its category-derived default.
         "trade": m.trade,
+        # Sticks of one physical part (a drip edge's legs) select and inspect as one.
+        "group": m.group,
     }
 
 

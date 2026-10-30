@@ -101,6 +101,21 @@ def test_member_key_is_unique_within_its_parent(catlin_payload):
     assert len(seen) == sum(len(members) for _, members in parents)
 
 
+def test_group_keys_collect_sticks_of_one_part(catlin_payload):
+    """A group is scoped to its parent (``<parent uid>/<group>``): one part, one category."""
+    groups: dict[tuple[str, str], list[dict]] = {}
+    for roof in catlin_payload["roofs"]:
+        for member in roof["members"]:
+            if member.get("group"):
+                groups.setdefault((roof["uid"], member["group"]), []).append(member)
+    assert any(g.endswith("-drip-edge") for _, g in groups)
+    assert any(g.endswith("-gutter") for _, g in groups)
+    assert all(len({m["category"] for m in ms}) == 1 for ms in groups.values())
+    assert all(len(ms) > 1 for ms in groups.values())
+    railed = [s for s in catlin_payload["solids"] if s.get("group") and s.get("host_ref")]
+    assert railed and all(s["group"] == s["host_ref"] for s in railed)
+
+
 def test_every_member_carries_its_resolved_length(catlin_payload):
     """The inspector reports a picked stud's length from ``length_m``, not from p0/p1: a
     raked rafter's plan run is shorter than the stick, and a vertical stud has no run at all.

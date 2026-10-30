@@ -6718,3 +6718,28 @@ floor); Agua Linda in BATH2 (fails wet DCOF).
 
 Viewer: `tile-swanstone-modern-subway` draws the panels as a running-bond relief, and the two
 onyx floors are a procedural print rendered in a Web Worker (`ui/src/three/onyx*.ts`).
+
+## Window perimeter: raccoon before the posts, not a lap onto the foam (2026-10-30)
+
+A review of the girt-wall window flashing found the jamb and head "lap onto shaved ccSPF"
+drawn inside the 1/2" slot behind each KDAT jamb post and head course and through the 3/8"
+buck. Posts go on at build step 6, foam at 8, flashing at 9, so that lap could not be made;
+the post faces and the buck's front edge carried nothing; and the sill pan's 3/4" drop covered
+only 3/8" of the sill course face it discharges onto. No test or drawing showed it.
+
+Three options were weighed. **A** (bury the girts: membrane over the posts and buck, foam out
+round them) was rejected: KDAT encased in polyurethane cannot dry (Huntsman's flood case), the
+membrane would stop 2" proud of the real water plane, and the slot cannot be filled reliably
+behind a set post. **B** keeps the slot and flashes the post's outer face only. **C**, taken
+by the owner, is B plus BSI-048's pre-foam "raccoon": FastFlash on the buck's wall side, its
+front edge and a 4" band of sheathing, laid after the bucks and before any block, which the
+foam then laps — the right shingle order, contrary to what spec §3 argued. The post takes a
+2" band where the flange and J-receiver bear; the pan's drip coat runs the sill course face
+and underside (the §7.10 splash-zone exception); the head course stays bedded under K6.
+
+The open supplier item moves from the membrane maker to the foam maker: Amrize's written
+approval for OnePass HFO over cured FastFlash, plus a mock-up. The K6/K2 strip-ins stay the
+only membrane laps onto foam. Koppers' "encased, sealed, or wrapped" line, quoted in
+`board_batten_girt_span.md` §7.10 as the general rule, is about aluminium contact; the general
+caution is "trapped moisture or water". Decision #102; `resolve/opening_raccoon.py`;
+`notes/opening_flashing_spec.md` §3.

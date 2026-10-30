@@ -95,9 +95,10 @@ export function memberIndexForTriangle(starts: number[], faceIndex: number): num
   return low;
 }
 
-/** The uids a bucket will draw, in draw order — what the two tag functions record. */
+/** The uids a bucket will draw, in draw order — what the two tag functions record. Sticks of
+ *  one grouped part (a drip edge's legs) share one uid, so a click on any leg picks the part. */
 export function memberUidsFor(ownerUid: string, members: Member[]): string[] {
-  return members.map((member) => memberUid(ownerUid, member.key));
+  return members.map((member) => memberUid(ownerUid, member.group ?? member.key));
 }
 
 // A picked member is one stick inside a shared draw call, so it cannot be highlighted the way

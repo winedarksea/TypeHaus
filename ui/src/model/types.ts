@@ -173,6 +173,8 @@ export interface Member {
   flange_thickness_m: number | null; // i_joist / floor_truss / roof_truss only
   web_thickness_m: number | null; // i_joist / floor_truss / roof_truss only
   plies: number;
+  // Sticks of one physical part (a drip edge's legs) select as one; scoped to the parent.
+  group?: string | null;
   // Plan-frame axis a vertical member (p0 == p1) is oriented along, e.g. a stud's wall
   // direction — null for horizontal/sloped members, which carry their own axis in p0->p1.
   orient: Vec2 | null;
@@ -380,6 +382,9 @@ export interface AuthoredDoorPart {
   key: string;
   material_key: string;
   material_ref: string | null;
+  // The catalog role (hardware: passage, hinge, ...) and its product_ref, when authored.
+  role?: string | null;
+  name?: string | null;
   solids: { ring: [number, number][]; z0_m: number; z1_m: number }[];
 }
 
@@ -462,7 +467,7 @@ export interface DoorCasing {
   room: string;
   material_ref: string;
   profile: string;
-  pieces: { outline: Vec2[]; z0_m: number; z1_m: number }[];
+  pieces: { name?: string; outline: Vec2[]; z0_m: number; z1_m: number }[];
 }
 
 /**
@@ -1610,6 +1615,10 @@ export interface Catalog {
   // What every `product_ref` above resolves against. Optional so a payload from an older
   // engine still parses — an absent catalog simply renders no product rows.
   products?: ProductSpec[];
+  // Manufacturer trim profiles the solids' `product` keys name (identity only).
+  trim_profiles?: { key: string; name: string; maker: string; custom: boolean; part_numbers: string[] }[];
+  railings?: { tag: string; type_ref: string | null }[];
+  railing_types?: { tag: string; name: string; product_ref: string | null }[];
   assemblies: AssemblySpec[];
   canvas_object_types?: CanvasObjectType[];
   // Product part meshes, shared across types (→ ModelPart.mesh_index).
@@ -1746,6 +1755,8 @@ export interface Solid {
   // everything else.
   product?: string | null;
   host_ref?: string | null;
+  // Solids of one physical part (a gutter's boards, a guard's posts) pick and inspect as one.
+  group?: string | null;
   // Folded purchased-part geometry in project coordinates, with open fastener holes.
   body_mesh?: PackedMesh | null;
   // A RUN — a handrail, a drain, a raceway — carried as one section swept along a 3D

@@ -9,7 +9,7 @@ import {
   VIEW_FIT_POLAR_ANGLE, WHEEL_MAX_STEP_PX,
 } from "../three/cameraFraming";
 import { wholeHouseGlbAssignment } from "../three/wholeHouseGlb";
-import { isRenderedInScene } from "../three/builders/registry";
+import { indexPieces, isRenderedInScene, pieceKey } from "../three/builders/registry";
 import {
   buildCanvasObjectParts, canvasObjectFallbackGeometry, earthElevation, earthOutline, earthVoids,
   EARTH_FALLBACK_HALF_SIZE_M,
@@ -670,6 +670,15 @@ export function runSelectionRegistrationTests() {
   buildOpening(openingGroup, opening(2), wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
     {}, openings.picks, openings.byUid);
   registered(openingGroup, "opening", "opening", openings.picks, openings.byUid, "buildOpening");
+  // Each board carries a piece key and still answers to the opening's uid: a click selects
+  // the opening with that piece, and `byPiece` finds the meshes to outline.
+  const byPiece = indexPieces(openings.picks);
+  for (const piece of ["frame:jamb-left", "frame:jamb-right", "frame:head"]) {
+    assert((byPiece.get(pieceKey("opening", piece)) ?? []).length === 1,
+      `buildOpening stamps ${piece} and indexes it under the opening uid`);
+  }
+  assert(openings.picks.every((mesh) => typeof mesh.userData.piece === "string"),
+    "Every opening board carries a piece key");
 
   // A rough opening has no filling to click on, so it must register nothing at all.
   const roughGroup = new THREE.Group();

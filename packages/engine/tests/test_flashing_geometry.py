@@ -134,13 +134,38 @@ def test_outie_membranes_lie_on_the_buck_face_not_inside_it():
         assert min(z for _, _, z in inside) >= seat - 1e-9
         assert min(s for s, _, _ in points) >= lo + _OUTIE.buck - 1e-9
         assert max(s for s, _, _ in points) <= hi - _OUTIE.buck + 1e-9
-    # The reveal membrane is nowhere inside the buck's 3/8" lining of the RO.
-    reveal = [p for p in _local(_OUTIE, _pan(meshes, "perimeter"))
-              if _OUTIE.back < p[1] < _OUTIE.mount - 1e-9]
+    # No membrane is inside the buck's 3/8" lining of the RO, nor in the 1/2" slot behind
+    # the posts and courses (foam face to post back): both are closed before it goes on.
+    post_back = _OUTIE.mount - 0.0381
     head = opening.sill_m + opening.height_m
-    for s, _, z in reveal:
-        assert not (lo < s < lo + _OUTIE.buck - 1e-9 or hi - _OUTIE.buck + 1e-9 < s < hi)
-        assert not (head - _OUTIE.buck + 1e-9 < z < head)
+    for key in ("perimeter", "sill"):
+        for s, d, z in _local(_OUTIE, _pan(meshes, key)):
+            if not opening.sill_m - 0.0889 < z < head:
+                continue
+            assert not _OUTIE.water + 1e-9 < d < post_back - 1e-9, (key, s, d, z)
+            if _OUTIE.back + 1e-9 < d < _OUTIE.mount - 1e-9:
+                assert not (lo + 1e-9 < s < lo + _OUTIE.buck - 1e-9
+                            or hi - _OUTIE.buck + 1e-9 < s < hi - 1e-9), (key, s, d, z)
+                assert not head - _OUTIE.buck + 1e-9 < z < head - 1e-9, (key, s, d, z)
+
+
+def test_outie_raccoon_reaches_the_sheathing_and_the_post_takes_only_a_face_band():
+    opening = _opening()
+    lo = opening.center_along_m - opening.width_m / 2
+    points = _local(_OUTIE, _pan(opening_flashing_meshes(_wall(), opening, _OUTIE),
+                                 "perimeter"))
+    sheet = FLASHING.perimeter_membrane_m
+    # The pre-foam band lies on the sheathing face, the raccoon's width clear of the RO.
+    assert any(abs(d - _OUTIE.back) < 1e-9 and abs(s - (lo - FLASHING.raccoon_band_m)) < 1e-9
+               for s, d, _ in points)
+    # Beside the RO, past the buck's wall-side face: only the sheathing band, or the post's
+    # outer face — never its sides or back.
+    beside = [(s, d) for s, d, z in points if s < lo - sheet - 1e-9
+              and opening.sill_m < z < opening.sill_m + opening.height_m]
+    assert all(d <= _OUTIE.back + sheet + 1e-9 or d >= _OUTIE.mount - 1e-9
+               for _, d in beside)
+    assert min(s for s, d, _ in points if s < lo and d >= _OUTIE.mount - 1e-9) \
+        == pytest.approx(lo - FLASHING.post_band_m)
 
 
 def test_a_door_pan_on_an_outie_wall_discharges_past_the_cladding():

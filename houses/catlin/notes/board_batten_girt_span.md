@@ -755,9 +755,15 @@ merely excludes:
    nothing and looks better.
 4. **Do NOT cap the girts with a self-adhered strip.** It converts a ledge that dries from
    two sides into one that dries from one, punctured at every screw; U.S. Steel warns felt
-   and paper barriers *"hold moisture and increase corrosion"*, and Koppers warns against
-   treated wood *"encased, sealed, or wrapped… where trapped moisture can occur"*. Possible
-   narrow exception: the bottom course and splash zone only, where wetting is real.
+   and paper barriers *"hold moisture and increase corrosion"*. Koppers' general caution is
+   against installations where *"trapped moisture or water"* can occur; its *"encased,
+   sealed, or wrapped"* line is about contact with **aluminium products**, not a ban on
+   coating treated wood (re-read 2026-10-30; it was quoted here as the general rule).
+   Possible narrow exception: the bottom course and splash zone only, where wetting is real.
+   **Taken at every window sill (2026-10-30):** the pan's drip coat runs the sill course's
+   face and underside and the posts' end grain, the one place the pan discharges onto
+   treated wood; the course's back stays open to the slot, so it still dries one way
+   (`opening_flashing_spec.md` §3 step 3).
 5. **Treat the vent path as structural**, because here it is: continuous top and bottom, and
    attention to drifted snow at the wall base. Every line of evidence turns on the wood
    staying under 20% MC.

@@ -7355,6 +7355,14 @@ roof-flashings-boots-and-custom-sheet-metal = { low = 2000, high = 4500 }
 # sealant is `envelope-exterior-sealants-and-caulking`. Three scopes, three rows, no overlap
 # — and the reason a fourth row for liquid flashing would be a double bill.
 #
+# ** 2026-10-30: THE RACCOON ADDS MATERIAL, ~13 SF/WINDOW. ** The membrane no longer laps
+# onto the foam; a pre-foam coat goes on each buck's wall side and front edge and a 4" band of
+# sheathing round the RO (~11 SF on a 27-1/2" x 48" RO), plus a 2" band on each jamb post face
+# and the sill drip coat down the sill course face and under it (~2.5 SF). That is a second
+# visit per opening (before the posts) on top of the post-foam perimeter. Not re-rated: the
+# high end carries it until the applicator quotes the two-visit scope
+# (`notes/opening_flashing_spec.md` §3).
+#
 # The two 36" exterior swing doors' pans are NOT in this row (driver is `[kind=window]`);
 # they are `envelope-door-sill-pans` below.
 envelope-opening-flashing-and-sill-pans = { low = 180, high = 262, unit = "ea", driver = "openings.count[kind=window]" }

@@ -40,8 +40,14 @@ Revised 2026-10-16, after a review measured the built model against the specs:
   membrane over the KDAT head course. A membrane strip-in seals its upstand's top edge to the
   water plane.
 - **On a truss wall every membrane lies on the 3/8″ plywood buck's face.** The buck lines the
-  RO, so the reveal membrane sits 3/8″ inside the RO and wraps the buck edge onto the foam. It
-  used to be drawn buried in the plywood.
+  RO, so the reveal membrane sits 3/8″ inside the RO. It used to be drawn buried in the plywood.
+- **On a truss wall nothing laps onto the foam face at an opening** (2026-10-30,
+  `resolve/opening_raccoon.py`). The old wrap onto the foam lay in the 1/2″ slot behind the
+  KDAT posts and head course, and through the buck. Instead a pre-foam "raccoon" covers the
+  buck's wall-side face and front edge and a 4″ band of sheathing round the RO (the foam laps
+  over it); a 2″ band covers each jamb post's outer face; and a window pan's drip coat runs
+  the sill course face and underside, across the posts' end grain. All are the same
+  `opening_flashing_membrane`/`opening_sill_pan` solids, hidden in elevation.
 - **The pan falls 1/4″/ft on a tapered KDAT shim**, its back dam up a 1/2″ KDAT strip
   (`sill-support`, filed with the pan). A window's outie pan turns down over the buck's
   front edge, at the outer girt face, behind the sill trim. **A door's pan runs past the

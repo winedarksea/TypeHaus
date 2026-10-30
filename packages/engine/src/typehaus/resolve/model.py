@@ -286,6 +286,9 @@ class FramedMember:
     supplied_by: str | None = None
     # Profiled closure skin shared by the interactive viewer and portable 3D export.
     surface_mesh: GMesh | None = None
+    # Pick/inspect key shared by the sticks of one physical part (a drip edge's four legs):
+    # records stay separate for billing; the viewer selects them as one.
+    group: str | None = None
 
 
 @dataclass(frozen=True)
@@ -617,6 +620,8 @@ class ResolvedSolid:
     # the installed piece from the stock blank that must be ordered.
     trim_length_m: float | None = None
     trim_stock_length_in: float | None = None
+    # Pick/inspect key shared by the solids of one physical part (a gutter's three boards).
+    group: str | None = None
 
 
 @dataclass(frozen=True)

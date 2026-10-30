@@ -236,6 +236,7 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "z0_m": solid.z0_m, "z1_m": solid.z1_m, "assembly": solid.assembly,
              "material": solid.material,
              "host_ref": solid.host_ref,
+             "group": solid.group,
              "finish_panels": ([
                  {"outline": [list(point) for point in panel.prism.ring],
                   "voids": [[list(point) for point in ring] for ring in panel.prism.voids],
@@ -482,7 +483,10 @@ def _interior_trim_json(model: ResolvedModel) -> dict[str, Any]:
             "opening_ref": casing.opening_ref, "opening_uid": casing.opening_uid,
             "room": casing.room, "material_ref": casing.material_ref,
             "profile": casing.profile,
-            "pieces": [{"outline": [list(point) for point in prism.ring],
-                        "z0_m": prism.z0_m, "z1_m": prism.z1_m} for prism in prisms],
+            # Same filter as ``door_casing_prisms`` so name and ring stay paired.
+            "pieces": [{"name": piece.name, "outline": [list(point) for point in piece.outline],
+                        "z0_m": piece.z0_m, "z1_m": piece.z1_m}
+                       for piece in casing.pieces
+                       if len(piece.outline) >= 3 and piece.z1_m > piece.z0_m],
         })
     return {"base_runs": base_runs, "door_casings": casings}

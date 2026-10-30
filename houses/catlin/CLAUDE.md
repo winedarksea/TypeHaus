@@ -443,6 +443,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   outer face (derived, never authored, so unaffected by cladding-depth changes).
   `structural.truss_wall_opening_support` keeps every RO jamb within a flange's bearing of
   wood.
+- **No membrane laps onto the foam at an opening** (2026-10-30, decision #102): the foam face
+  there is the back of the 1/2" slot behind the KDAT posts. A pre-foam "raccoon" on the buck's
+  wall side, front edge and a 4" sheathing band goes on before the posts, and the foam laps it;
+  posts take a 2" band on the outer face only; the pan's drip coat runs the sill course face and
+  underside (`resolve/opening_raccoon.py`, `notes/opening_flashing_spec.md` §3). Never wrap a girt.
 - Cladding face stands 7.25" proud of sheathing (`_WALL_OUTBOARD_IN` in
   `params/roof_trim.py`). Consumers that hand-transcribe this and must move together:
   `params/north_entry_frame.py::HOUSE_CLADDING_Y_FT`, `params/sunken_garden.py`'s `gap_to_house_in`,

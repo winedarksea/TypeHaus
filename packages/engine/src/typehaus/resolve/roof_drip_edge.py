@@ -142,6 +142,7 @@ def _leg_member(roof: ResolvedRoof, run: EdgeRun, leg: str, quad: Quad, span: Mi
         p0=a, p1=b, z0_m=span.z0_m + z_lo, z1_m=span.z0_m + z_hi, length_m=length,
         z0_end_m=span.z1_m + z_lo, z1_end_m=span.z1_m + z_hi,
         connection=CONNECTION, material=material, section_ring=ring,
+        group=f"{run.key}-drip-edge",
     )
 
 

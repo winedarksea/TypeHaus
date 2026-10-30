@@ -19,6 +19,8 @@ import { loadRebar, rebarKeyOf } from "../engine/rebarCache";
 import { createRebarLayer } from "../three/builders/rebar";
 import { buildRebarHighlight } from "../three/rebar";
 import { buildMemberHighlight, resolveMemberPickUid } from "../three/memberPicking";
+import { buildPieceHighlight } from "../three/pieceHighlight";
+import { installPickProbe } from "../three/pickProbe";
 import { buildPlantHighlight, resolvePlantPickUid } from "../three/builders/plants";
 import {
   clampDollyRadius, frameRadiusForBounds, normalizedWheelDeltaPx, pinchDollyRadius,
@@ -26,7 +28,9 @@ import {
 } from "../three/cameraFraming";
 import { WHOLE_HOUSE_GLB_PRIMARY } from "../three/wholeHouseGlb";
 import { applyWholeHouseGlb, loadWholeHouseGlb } from "../three/wholeHouseGlbScene";
-import { applyVisibility, isRenderedInScene, objectVisible } from "../three/builders/registry";
+import {
+  applyVisibility, indexPieces, isRenderedInScene, objectVisible, pieceKey,
+} from "../three/builders/registry";
 import { planCenterOf, populateScene, type SceneRegistry } from "../three/builders/scene";
 import { onWoodMapsReady } from "../three/woodMaps";
 import { onOnyxMapsReady } from "../three/onyxMaps";
@@ -92,7 +96,7 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
 
   useEffect(() => {
     if (!mountRef.current) return;
-    const a = createScene(mountRef.current, compassRef.current, (kind, uid) => select(kind, uid));
+    const a = createScene(mountRef.current, compassRef.current, (kind, uid, piece) => select(kind, uid, piece));
     api.current = a;
     return () => a.dispose();
   }, [select]);
@@ -120,7 +124,7 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
     api.current?.setModel(model, threeMode, RESOLVED_NORDIC_PALETTE[theme], preserveView);
     // The uid index only holds what the 3D builders registered, so a plan-only selection
     // (a room) simply clears the previous highlight rather than needing a kind test here.
-    api.current?.highlight(selection.uid);
+    api.current?.highlight(selection.uid, selection.piece);
     framedForClient.current = client;
     // Ask the engine for its whole-house glb and, when it carries per-object metadata, promote
     // it to the primary scene. Any failure (monolithic/older glb, or offline without a glb)
@@ -154,7 +158,7 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
   }, [model, rebarOn, client, setRebarSets]);
 
   useEffect(() => {
-    api.current?.highlight(selection.uid);
+    api.current?.highlight(selection.uid, selection.piece);
   }, [selection]);
 
   useEffect(() => {
@@ -237,7 +241,7 @@ interface SceneApi {
   pan: (direction: PanDirection) => void;
   zoomBy: (factor: number) => void;
   resetView: () => void;
-  highlight: (uid: string | null) => void;
+  highlight: (uid: string | null, piece?: string | null) => void;
   setVisibility: (visible: VisibleTrades, hiddenStoreys: ReadonlySet<string>) => void;
   setEarthOpacity: (opacity: number) => void;
   setEarthTone: (tone: EarthTone) => void;
@@ -282,7 +286,7 @@ function publishFrame(renderer: THREE.WebGLRenderer) {
 function createScene(
   mount: HTMLElement,
   compass: SVGSVGElement | null,
-  onPick: (kind: SelectionKind, uid: string) => void,
+  onPick: (kind: SelectionKind, uid: string, piece?: string | null) => void,
 ): SceneApi {
   const scene = new THREE.Scene();
   // The backdrop is a disposable texture rather than a Color, so it goes through one closure
@@ -353,6 +357,7 @@ function createScene(
   let rebar: { key: string; sets: RebarSet[] } | null = null;
   let sceneGeneration = 0;
   let highlighted: string | null = null;
+  let highlightedPiece: string | null = null;
   // What `highlight` needs to rebuild a member outline: the model the scene was built from and
   // the plan centre it was projected around.
   let highlightSourceModel: Model | null = null;
@@ -625,7 +630,7 @@ function createScene(
       }
       const uid = hit.object.userData.uid as string | undefined;
       const kind = hit.object.userData.selectionKind as SelectionKind | undefined;
-      if (uid && kind) onPick(kind, uid);
+      if (uid && kind) onPick(kind, uid, hit.object.userData.piece as string | undefined);
     }
   });
   el.addEventListener("wheel", (e) => {
@@ -678,8 +683,10 @@ function createScene(
     rebarLayer.clear();
     registry.picks = [];
     registry.byUid.clear();
+    registry.byPiece = undefined;
     registry.partGeometries?.dispose();
     highlighted = null;
+    highlightedPiece = null;
   };
 
   // The framing bounds must exclude the translucent site sheet: the earth spans the whole
@@ -805,6 +812,7 @@ function createScene(
       tradeVisible: (trades, storey) => objectVisible({ trades, storey }, visibleTrades, hiddenStoreys),
       rebar: { layer: rebarLayer, sets: rebar?.sets ?? null },
     });
+    registry.byPiece = indexPieces(registry.picks);
     buildMs = performance.now() - buildStart;
 
     // Frame the building bounds (earth excluded, or the site sheet dominates), including its
@@ -833,7 +841,7 @@ function createScene(
   const setWholeHouseGlb = (blob: Blob) => {
     const generation = sceneGeneration;
     loadWholeHouseGlb(blob, () => generation === sceneGeneration, (root) => {
-      const selectedUid = highlighted;
+      const selectedUid = highlighted, selectedPiece = highlightedPiece;
       if (!applyWholeHouseGlb(root, tradeGroups, registry)) return;
       // Structured glb took over: the per-item furniture loaders of the superseded scene are
       // dropped by the generation bump, and the filter and selection are re-applied against
@@ -841,7 +849,7 @@ function createScene(
       sceneGeneration++;
       highlighted = null;
       applyVisibility(content, visibleTrades, hiddenStoreys);
-      highlight(selectedUid);
+      highlight(selectedUid, selectedPiece);
       invalidateShadows();
     });
   };
@@ -852,7 +860,7 @@ function createScene(
     if (!highlightSourceModel || rebarKeyOf(highlightSourceModel) !== rebar.key) return;
     rebarLayer.show(sets, highlightPlanCenter, sceneMode);
     applyVisibility(content, visibleTrades, hiddenStoreys);
-    highlight(highlighted);
+    highlight(highlighted, highlightedPiece);
     invalidateShadows();
   };
 
@@ -862,13 +870,19 @@ function createScene(
     requestRender();
   };
 
-  const highlight = (uid: string | null) => {
+  const highlight = (uid: string | null, piece: string | null = null) => {
     if (highlighted && registry.byUid.has(highlighted))
       for (const mat of registry.byUid.get(highlighted)!)
         (mat as THREE.MeshStandardMaterial).emissive?.setHex(0x000000);
     clearMemberHighlight();
     highlighted = uid;
-    if (uid && registry.byUid.has(uid))
+    highlightedPiece = piece;
+    // A piece of an opening is outlined alone; its materials are shared by the whole opening.
+    const pieceMeshes = uid && piece ? registry.byPiece?.get(pieceKey(uid, piece)) : undefined;
+    if (pieceMeshes?.length) {
+      const outline = buildPieceHighlight(pieceMeshes, content, activePalette.highlight);
+      if (outline) memberHighlightGroup.add(outline);
+    } else if (uid && registry.byUid.has(uid))
       for (const mat of registry.byUid.get(uid)!)
         (mat as THREE.MeshStandardMaterial).emissive?.set(activePalette.highlight);
     // A member uid names one stick inside a shared bucket; outline it rather than tinting the
@@ -886,8 +900,10 @@ function createScene(
     if (located?.bar) {
       memberHighlightGroup.add(buildRebarHighlight(located.bar, highlightPlanCenter, activePalette.highlight));
     } else if (located) {
-      const outline = buildMemberHighlight(located.member, highlightPlanCenter, activePalette.highlight);
-      if (outline) memberHighlightGroup.add(outline);
+      for (const stick of located.group ?? [located.member]) {
+        const outline = buildMemberHighlight(stick, highlightPlanCenter, activePalette.highlight);
+        if (outline) memberHighlightGroup.add(outline);
+      }
     }
     requestRender();
   };
@@ -923,6 +939,14 @@ function createScene(
     earthTone = tone;
     eachEarthMaterial((material) => applyEarthTone(material, earthTone));
   };
+
+  installPickProbe({
+    camera, dom: el, picks: () => registry.picks, planCenter: () => highlightPlanCenter,
+    frame: (to, distance, angle, draw) => {
+      stopTween(); target = to.clone(); radius = distance; theta = angle; phi = Math.PI * 0.4;
+      place(); if (draw) renderer.render(scene, camera);
+    },
+  });
 
   return {
     setModel,

@@ -40,7 +40,7 @@ source:
 - [K2] Head and sill courses: KDAT 2x4 flat, post inner face to post inner face.
 - [K3] Block each course the post crosses, at 24" max, and across the RO.
 - [K4] Field courses stop 3-1/2" clear of each RO.
-- [K5] Fluid-applied pan on the buck: dam on a strip, 1/4"/ft, down the buck edge.
+- [K5] Fluid-applied pan on the buck: dam on a strip, 1/4"/ft, over the sill course.
 - [K6 @ host#layer:spray-foam:out] Steel head cap from the foam face over the course, face leg over 58114XX; panel end on a perforated strip. Strip in.
 - [K7 @ host#layer:cladding:out] Sealant at the cladding-to-frame joint, at the mount plane, under the drip.
 
@@ -142,6 +142,11 @@ applicator reaches the whole plane from outside through the 20-1/2" between cour
 2. **Set the bucks.** 3/8" plywood lining each RO on all four sides, from the sheathing face
    out to the mount plane — **6"**, unchanged — square and plumb. Non-structural: it closes
    the foam at the reveal, gives the reveal a face, and carries the pan and the head flashing.
+   **Then raccoon each opening (2026-10-30)**: FastFlash on the buck's wall-side face, over
+   its front edge, and a 4" band onto the sheathing round the RO, before any block or post
+   (BSI-048). Photograph it for the inspector before step 4 covers it. The foam laps over it
+   at step 8 — shingle order, and the only tie between the foam and the opening
+   (`opening_flashing_spec.md` §3 step 0).
 3. **Mark the 24" course lines off the sole plate** and snap the stud lines across them.
 4. **Drop three offcuts at each crossing**, on every other stud line. Loose — no tack. The
    girt screw clamps them; the block is the screw's spacer, not its anchor.
@@ -158,9 +163,13 @@ applicator reaches the whole plane from outside through the 20-1/2" between cour
    1/2" behind the block's outer face**; the blocks stand proud at every crossing and are the
    gauge.
 9. **Flash the opening — ONE CONTINUOUS PERIMETER APPLICATION, IN ONE VISIT.** Sill, both
-   jambs and head are one monolithic fluid-applied band over the buck, lapping onto the
-   shaved foam: joint filler into every inside corner first, then the sill **heavy**, then
-   jambs and head run into the sill's corners without stopping. That is the whole reason the
+   jambs and head are one monolithic fluid-applied band over the buck's RO face, meeting the
+   raccoon at the buck's front edge — **never lapped onto the foam**, which at a jamb is the
+   back of the 1/2" slot behind a post set at step 6. Joint filler into every inside corner
+   first, then the sill **heavy** with its drip coat down the sill course face and under it,
+   then jambs and head run into the sill's corners without stopping, then a 2" band on each
+   post's outer face where the flange and J-receiver bear. The posts' sides and backs stay
+   bare and dry to the cavity. That is the whole reason the
    membrane is fluid-applied here — splitting it into a "sill pan" operation and a "jamb
    flashing" operation re-introduces the lapped corner the liquid exists to remove, and
    invites two trades onto one opening. One arrival, one opening finished. Spec, qualifying
@@ -290,7 +299,10 @@ from the sheathing face, and on this wall neither piece is anywhere near it.
   that falls 1/4"/ft outward, its back dam turned up a rigid strip at the sheathing face. It
   runs out to the mount plane and turns **down over the buck's front edge**, at the outer girt
   face: the buck spans the 1/2" vent gap, so the water runs down past the sill course face and
-  the cladding's back, hidden behind the sill trim (owner, 2026-10-16). It discharges *behind*
+  the cladding's back, hidden behind the sill trim (owner, 2026-10-16). Since 2026-10-30 the
+  turn-down is a **drip coat over the whole sill course face and its underside** back to the
+  slot, across both posts' end grain (was a 3/4" drop covering 3/8" of the course), the
+  splash-zone exception of `board_batten_girt_span.md` §7.10. It discharges *behind*
   the cladding. An outie pan carried out to a visible drip would put a metal lip under every
   window on the facade, which is not what this house looks like. **Leave the window's sill
   flange unsealed** over the pan (spec §3).
@@ -307,9 +319,14 @@ from the sheathing face, and on this wall neither piece is anywhere near it.
   days. Where the finding still bites is DURING CONSTRUCTION, before the cladding and its
   vent gap exist — flash, then close in, and do not leave an opening standing full of
   meltwater. Build the sill heavy regardless (Tremco publishes 60 mils at sills against 20
-  elsewhere). The full argument, the permitted impermeable-self-adhered hybrid and the one
-  open item — a written substrate approval for the lap onto shaved ccSPF, which ESR-4363's
-  whitelist does not cover — are in `notes/opening_flashing_spec.md`.
+  elsewhere). The full argument, the permitted impermeable-self-adhered hybrid and the open
+  item — Amrize's written approval for OnePass sprayed over cured FastFlash, with a mock-up —
+  are in `notes/opening_flashing_spec.md`.
+- **Jambs: raccoon and post band (2026-10-30).** Nothing laps onto the foam face at a jamb;
+  that face is the back of the slot behind the post. The membrane is the pre-foam raccoon on
+  the buck's wall side and the sheathing (step 2), the reveal on its RO face (step 9), and a
+  2" band on the post's outer face under the flange and J-receiver
+  (`resolve/opening_raccoon.py`).
 - **Head cap (2026-10-29).** On a metal wall the head is a steel **cap**, not a drip head:
   a 2" upstand on the **foam face** (the water plane, so lapping onto it is what makes the
   head continuous), a top across the cavity and the head course falling outward, and a face
@@ -362,9 +379,10 @@ are not outlets (owner, 2026-10-28). At an opening that means:
   sits on a perforated strip in the 58114XX channel (`resolve/rainscreen_strips.py`), billed
   in `[bug_screens] PANEL_END_STRIP`. There is no head screen any more: the head drains
   through the strip, and its vent area is negligible, as intended.
-- **Jamb (HOLD POINT).** The 1/2" gap behind each jamb post is closed by the buck return. Walk
-  every jamb before the cladding goes on: the return must meet the foam with no daylight, and
-  any gap gets low-expansion foam.
+- **Jamb (HOLD POINT).** The 1/2" gap behind each jamb post is closed by the raccooned buck
+  return, which the foam laps. Walk every jamb before the cladding goes on: the foam must meet
+  the raccoon on the buck's wall side with no daylight, and any gap gets low-expansion foam —
+  never membrane run into the slot behind the post.
 - **Sill (closed).** The pan discharges over the buck's front edge onto the sill course face
   and the cladding's back, behind the sill trim; whatever reaches the cavity drains to the
   base. Only the J-receiver joint needs sealing; seal it at the mount plane. Sills keep

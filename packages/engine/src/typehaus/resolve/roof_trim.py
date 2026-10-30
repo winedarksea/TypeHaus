@@ -267,7 +267,7 @@ def _gutter_members(
             p0=a, p1=b, z0_m=top - bottom_drop, z1_m=top - top_drop,
             length_m=math.hypot(b[0] - a[0], b[1] - a[1]),
             z0_end_m=top_end - bottom_drop, z1_end_m=top_end - top_drop,
-            connection=connection, material=gutter.material,
+            connection=connection, material=gutter.material, group=f"{run.key}-gutter",
         ))
     return tuple(members)
 

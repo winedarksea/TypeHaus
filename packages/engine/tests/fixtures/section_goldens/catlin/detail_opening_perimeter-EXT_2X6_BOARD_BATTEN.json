@@ -3800,6 +3800,94 @@
       "node": "hatch",
       "boundary": [
         [
+          432.25000000000006,
+          86.875
+        ],
+        [
+          432.25000000000006,
+          83.125
+        ],
+        [
+          438.25000000000006,
+          83.125
+        ],
+        [
+          438.25000000000006,
+          82.5
+        ],
+        [
+          437.75000000000006,
+          82.5
+        ],
+        [
+          437.75000000000006,
+          82.625
+        ],
+        [
+          431.75000000000006,
+          82.625
+        ],
+        [
+          431.75000000000006,
+          86.875
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "flashing"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          432.25000000000006,
+          86.875
+        ],
+        [
+          432.25000000000006,
+          83.125
+        ],
+        [
+          438.25000000000006,
+          83.125
+        ],
+        [
+          438.25000000000006,
+          82.5
+        ],
+        [
+          437.75000000000006,
+          82.5
+        ],
+        [
+          437.75000000000006,
+          82.625
+        ],
+        [
+          431.75000000000006,
+          82.625
+        ],
+        [
+          431.75000000000006,
+          86.875
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.7,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-perimeter-membrane"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
           432.75000000000006,
           1.8749999999999998
         ],
@@ -5183,7 +5271,7 @@
     "K2  Head and sill courses: KDAT 2x4 flat, post inner face to post inner face.",
     "K3  Block each course the post crosses, at 24\" max, and across the RO.",
     "K4  Field courses stop 3-1/2\" clear of each RO.",
-    "K5  Fluid-applied pan on the buck: dam on a strip, 1/4\"/ft, down the buck edge.",
+    "K5  Fluid-applied pan on the buck: dam on a strip, 1/4\"/ft, over the sill course.",
     "K6  Steel head cap from the foam face over the course, face leg over 58114XX; panel end on a perforated strip. Strip in.",
     "K7  Sealant at the cladding-to-frame joint, at the mount plane, under the drip."
   ],

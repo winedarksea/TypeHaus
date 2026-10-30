@@ -3,8 +3,10 @@
 Researched 2026-09-19 from the evaluation reports, TDSs, application guides and the one
 published ponding study that argues against this class of product.
 
-Covers the membrane at every window rough opening: the sill pan, the jamb band and the head
-band on the plywood buck, and the lap onto the shaved ccSPF. It is the `[K5]` scope of
+Covers the membrane at every window rough opening: the pre-foam "raccoon" on the buck's wall
+side and the sheathing round the RO (§3, 2026-10-30), the sill pan and its drip coat, the
+jamb and head band on the plywood buck, and the band on each jamb post's outer face. It is
+the `[K5]` scope of
 `notes/outie_window_truss_detail.md` and nothing else — `[K6]`'s metal head flashing and
 `[K7]`'s sealant at the cladding-to-frame joint are separate parts bought elsewhere.
 
@@ -37,15 +39,16 @@ Required:
    and nothing about vapour, air, adhesion in service or durability.
 2. **The buck is the substrate, and it must be on the report's list.** These are 3/8"
    **plywood** bucks — fully in scope of every qualifying report below.
-3. **Written substrate approval for the lap onto shaved ccSPF.** ⚠ **OPEN — this needs a
-   phone call and a letter, not an estimate.** ESR-4363's substrate whitelist is OSB,
-   plywood, gypsum, MgO, wood, galvanized and stainless steel, vinyl/PVC, concrete, masonry
-   and anodized aluminium. **Spray polyurethane foam is not on it**, and AC148 does not
-   evaluate it. The ICC-ES number is therefore NOT the authority for the one lap that makes
-   the water plane continuous here. What closes it is (a) a written substrate approval from
-   the membrane maker naming shaved 2 lb ccSPF, and (b) a **jobsite adhesion mock-up** on
-   the actual foam, shaved to the actual gauge, pulled before the first opening is flashed.
-   Do not let the report number stand in for either.
+3. **The membrane never laps onto the foam at an opening; the foam laps onto the membrane**
+   (2026-10-30). ESR-4363's substrate whitelist is OSB, plywood, gypsum, MgO, wood,
+   galvanized and stainless steel, vinyl/PVC, concrete, masonry and anodized aluminium —
+   **spray polyurethane foam is not on it**, and AC148 does not evaluate it. The old "lap
+   onto shaved ccSPF" was also unbuildable: the foam face at a jamb is the back of the 1/2"
+   slot behind a KDAT post set before the foam exists. The tie is now the pre-foam raccoon
+   (§3 step 0), and the open item moves to the FOAM maker: ⚠ **a written approval from Amrize
+   for OnePass HFO sprayed over cured FastFlash, plus a jobsite adhesion mock-up** (§5). The
+   K6 and K2 upstand strip-ins remain the only membrane laps onto foam, and stay in that
+   letter's scope.
 4. **Build the sill heavy.** Tremco publishes **60 mils at sills** against 20 mils
    elsewhere; PROSOCO specifies 12-15 mils everywhere with no sill increase. Take the
    heavier reading regardless of which product is bought: the sill is the contested case
@@ -110,26 +113,40 @@ Not qualifying:
 
 ## 3. Application
 
-**Foam first, flash after, and the order is not negotiable.** `notes/ccspf_spec.md` §3's
-pass 1 picture-frames "every framing edge, block side, **buck** and hanger flange" — the foam
-is sprayed *onto* the buck. Two reasons, and the second is decisive:
+**Raccoon before the posts, foam over it, reveal after (2026-10-30, decision #102).** Until
+this date the order was "foam first, flash after", lapping the reveal band onto the shaved
+foam. The model drew that lap inside the 1/2" slot behind each KDAT jamb post and head course,
+and through the 3/8" buck: posts go on at step 6, foam at 8, flashing at 9, so nobody can
+reach it. Two reasons for the old order, re-read:
 
-1. The foam then bonds to **bare plywood**, which is exactly what its own evaluation report
-   assumes. A membrane under it is an unevaluated bond line.
-2. `[K6]`'s metal head flashing "starts on the foam face". A membrane applied before the
-   foam would have the foam land over its outboard edge at the head — a **reverse lap**,
-   driving water behind the membrane and into the reveal.
+1. "The foam bonds to bare plywood, which its report assumes." True, and the price of the
+   fix: the foam now bonds to cured FastFlash over most of the buck's wall side, which is
+   what the Amrize letter and the mock-up (§5) close.
+2. "A membrane applied before the foam would be a reverse lap at the head." **Wrong way
+   round.** The foam is the outer layer and laps OVER the membrane's band on the sheathing,
+   which is shingle order: BSI-048's exterior-SPF buck detail ("raccooning") wraps the buck
+   and a band of sheathing before the spray for exactly this reason. Water on the foam face
+   at a head meets `[K6]`'s upstand and its strip-in, which is unchanged.
 
-So the build order in `outie_window_truss_detail.md` stands: step 2 sets the bucks, step 8
-sprays and shaves the foam, step 9 flashes.
+**What was rejected, and why.** Wrapping the KDAT posts and courses in membrane and foam
+(the TODO's option A) leaves treated wood that cannot dry: Huntsman's flood case found wood
+embedded in polyurethane still wet long after; the membrane would end 2" proud of the real
+water plane; and the slot cannot be reliably filled behind a set post. The posts keep their
+back slot and dry to the cavity. **Girts are never wrapped.**
 
-**One continuous perimeter application, in one visit.** Sill, both jambs and the head are one
-monolithic band — that is the entire reason the membrane is fluid-applied here, and splitting
-it into a "sill pan" operation and a "jamb flashing" operation re-introduces the lapped
-corner the liquid exists to remove. One trade, one arrival, one opening finished before the
-next is started.
+**One continuous perimeter application per visit.** The raccoon is the pre-foam visit; after
+the foam, sill, both jambs and the head are one monolithic band — that is the entire reason
+the membrane is fluid-applied here, and splitting it into a "sill pan" operation and a "jamb
+flashing" operation re-introduces the lapped corner the liquid exists to remove. One trade,
+one arrival, one opening finished before the next is started.
 
-Sequence at an opening:
+Sequence at an opening, step 0 on the flat deck, the rest after the foam:
+
+0. **Raccoon, after the bucks, before any block or post** (inspection photo before the posts
+   go on). One FastFlash application on each buck's **wall-side face**, sheathing to mount
+   plane; over the buck's **front edge**; and a **4" band on the sheathing** round the RO,
+   corners lapped (`FLASHING.raccoon_band_m`). The foam later laps over the band. The sill
+   buck's front edge is left to the pan's drip coat (step 3).
 
 1. **Gauge the foam** at the reveal. It is shaved 1/2" behind the block's outer face; a
    ragged or under-shaved face is a substrate problem, not a coverage problem.
@@ -142,7 +159,14 @@ Sequence at an opening:
    stands on something. Back dam up the strip, across the sloped sill, out to the mount
    plane, and turn it **down over the buck's front edge**. The buck spans the 1/2" vent gap,
    so that is the outlet: water runs down past the sill course face and the cladding's back,
-   hidden behind the sill trim (owner, 2026-10-16). No visible drip.
+   hidden behind the sill trim (owner, 2026-10-16). No visible drip. **Carry the coat down
+   the whole sill course face and across its underside to the slot**, including both jamb
+   posts' bottom end grain (2026-10-30): the splash-zone exception of
+   `board_batten_girt_span.md` §7.10. The underside stays open to the cavity; the course's
+   back is never coated.
+3a. **Jamb post faces**: a 2" band on each post's outer face where the window flange and the
+   J-receiver bear (`FLASHING.post_band_m`), sill course bottom to 2" over the head. Never
+   on the post's sides or back.
 4. **Jambs and head, continuous into the sill's corners**, without stopping.
 4a. **Head on a metal wall: bed the course, cap it, strip in (2026-10-29).** Every window on
    the rainscreen walls (38). The cavity above a head drains; it is not a vent outlet.
@@ -167,8 +191,8 @@ Sequence at an opening:
    four, as many install sheets show, turns a draining pan into a ponding one. The interior
    air seal is low-expansion foam or backer rod and sealant between the frame and the buck,
    **inboard** of the back dam, all four sides.
-5. **Lap onto the shaved ccSPF**, the extent the maker's written substrate approval names
-   (§1 item 3). Until that letter exists, this step is unevaluated.
+5. **No lap onto the foam.** The reveal meets the raccoon at the buck's front edge (§1
+   item 3).
 6. **Gauge the wet film** while it is wet. There is no second chance to measure it.
 
 **Weather is a hold, not a preference** — the same register `ccspf_spec.md` §3 sets.
@@ -209,7 +233,8 @@ the foam was sprayed in (60-80 F, `ccspf_spec.md` §3) and set the windows behin
 - **The two exterior swing doors.** Their pans are §6, billed on their own row.
 - **The garage openings and the court openings.** §7 and §8.
 - **Anything the engine grades.** No check in `haus check` reads a flashing membrane, its
-  thickness, its substrate or its lap. The 3D and the 2D detail draw it from one set of
+  thickness, its substrate, its lap or its order — the raccoon included; only
+  `test_flashing_geometry.py` keeps every membrane out of the slot and the buck. The 3D and the 2D detail draw it from one set of
   numbers (`resolve/flashing_config.FLASHING`), and `integrity.opening_flashing_coverage`
   names an exterior opening that draws none (§8's two). A 0-FAIL report says nothing about
   this note.
@@ -218,10 +243,10 @@ the foam was sprayed in (60-80 F, `ccspf_spec.md` §3) and set the windows behin
 
 | Item | What closes it |
 |---|---|
-| **Written substrate approval for the lap onto shaved ccSPF** | A letter from the membrane maker naming shaved 2 lb ccSPF, plus a jobsite adhesion mock-up on the real foam. Phone call, not an estimate. ESR-4363 does not cover it and AC148 does not evaluate it. |
+| **Amrize letter: OnePass HFO over cured FastFlash** (2026-10-30) | A written approval from the foam maker for spraying over the cured raccoon, plus a jobsite adhesion mock-up (spray, cure, pull). Replaces the old letter for a membrane lap onto shaved ccSPF, which no longer exists. Phone call, not an estimate. |
 | Which product is bought | §2 is a qualifying list, not a selection. Price and lead time decide it; §1 is the gate. |
 | Full system vs. the §1.1 hybrid | Both qualify. ~$112/opening against ~$30/opening in material. |
-| **The substrate letter also covers the K2 Z and K6 cap strip-ins** (2026-10-29) | The same letter: the strip over a PVDF steel and a painted aluminium upstand, lapping onto shaved ccSPF. |
+| **Strip-in letter: the K2 Z and K6 cap strip-ins** (2026-10-29) | Now the only membrane-on-foam laps: the strip over a PVDF steel and a painted aluminium upstand, lapping onto shaved ccSPF. A letter from the membrane maker naming shaved 2 lb ccSPF, plus a mock-up; ESR-4363 does not cover it. |
 | K6 braked from Metal Sales coil | Metal Sales: a custom 24 ga PVDF brake, ~6.7" girth plus end dams, matching 58114XX. |
 
 ## 6. The two exterior swing doors (2026-10-13)
@@ -338,3 +363,15 @@ no sheet of its own.
 - `notes/ccspf_spec.md` — the foam this membrane laps onto, and the §1 item 7 alternate-
   approval item it strengthens.
 - `notes/outie_window_truss_detail.md` — the detail itself; `[K5]` is this note's scope.
+- Lstiburek, BSI-048 — exterior SPF with a pre-foam membrane wrapping the buck and a band
+  of sheathing ("raccooning"); photos 10-11 also show treated furring embedded in the SPF,
+  which this house deliberately does not do (`plans/buildability.md`).
+- ICC-ES ESR-4363 §4.3 (installation over the listed substrates) and §5.2 (conditions of
+  use) — why the membrane goes on plywood, never on foam.
+- PROSOCO FastFlash PDS — ~21 perms: the raccoon on the buck does not seal the plywood in.
+- Koppers MicroPro treated-lumber sheet — "trapped moisture or water" is the general
+  caution; "encased, sealed, or wrapped" is about aluminium products
+  (`board_batten_girt_span.md` §7.10).
+- Huntsman flood case — treated wood embedded in polyurethane stayed wet: why the posts are
+  never foamed in or wrapped.
+- Minnesota IRC R703.4 — flashing at openings, shingle order.

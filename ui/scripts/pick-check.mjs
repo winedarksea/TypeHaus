@@ -89,4 +89,85 @@ try {
   console.log("\nPICKED RAFTER:\n" + JSON.stringify(rafter, null, 1));
   console.log("\nINSPECTOR:\n" + (inspector ?? "(none found)"));
   console.log("\nOK: a real click on the live 3D canvas selected a notched rafter.");
-} finally { session.close(); await browser.close(); }
+
+  // --- Pieces and groups: a real click on one board, one drip-edge leg, one baluster. ---
+  await navigate(session, process.env.HAUS_URL ?? "http://127.0.0.1:8791/");
+  await evaluate(session, `
+    const d = Date.now() + 60000;
+    while (Date.now() < d) { if (window.__haus?.store?.getState?.()?.model?.roofs?.length) return 1;
+      await new Promise(r => setTimeout(r, 200)); }
+    throw new Error("model never arrived");`);
+  await evaluate(session, `
+    const st = window.__haus.store.getState();
+    st.setViewMode("3d");
+    const d = Date.now() + 40000;
+    while (Date.now() < d) { const c = document.querySelector("canvas");
+      if (c && c.getBoundingClientRect().width > 100 && window.__haus.probe) break;
+      await new Promise(r => setTimeout(r, 200)); }
+    await new Promise(r => setTimeout(r, 3000));
+    return 1;`);
+
+  // Each target is found from the model, aimed at by the probe, then clicked for real.
+  const targets = JSON.parse(await evaluate(session, `
+    const m = window.__haus.store.getState().model;
+    const out = [];
+    const win = (m.openings ?? []).filter(o => o.kind === "window");
+    // Seated windows draw their casing as cladding trim, so the board a click reaches is the frame.
+    for (const piece of ["frame:jamb-left", "exterior_trim:jamb-left"])
+      for (const o of win) out.push({ label: "window board", want: { kind: "opening", uid: o.uid, piece },
+        query: { uid: o.uid, piece } });
+    for (const c of m.door_casings ?? []) if (c.pieces?.[0]?.name) {
+      const piece = "casing:" + c.uid + ":" + c.pieces[0].name;
+      out.push({ label: "door casing leg", want: { kind: "opening", uid: c.opening_uid, piece },
+        query: { uid: c.opening_uid, piece } });
+    }
+    for (const o of (m.openings ?? []).filter(o => o.is_door))
+      for (const p of o.authored_product_parts ?? [])
+        if (p.role === "hinge") out.push({ label: "door hinge", want: { kind: "opening", uid: o.uid, piece: p.key },
+          query: { uid: o.uid, piece: p.key } });
+    for (const roof of m.roofs ?? []) {
+      const seen = new Set();
+      for (const mem of roof.members ?? []) {
+        if (!mem.group || seen.has(mem.group)) continue;
+        const kind = mem.group.endsWith("-drip-edge") ? "drip edge" : mem.group.endsWith("-gutter") ? "gutter" : null;
+        // Aim at the outward leg: the flange is under the roofing.
+        if (!kind || !(mem.key.endsWith("-face") || mem.key.endsWith("-front"))) continue;
+        seen.add(mem.group);
+        const uid = roof.uid + "::" + mem.group;
+        out.push({ label: kind, want: { kind: "member", uid },
+          query: { uid, at: [(mem.p0[0] + mem.p1[0]) / 2, (mem.p0[1] + mem.p1[1]) / 2, (mem.z0_m + mem.z1_m) / 2] } });
+      }
+    }
+    const lead = new Map();
+    for (const s of m.solids ?? []) if (s.group && s.host_ref && !lead.has(s.group)) lead.set(s.group, s.uid);
+    for (const s of m.solids ?? []) {
+      if (!s.group || !s.host_ref || !/-i\\d+$/.test(s.uid)) continue;
+      const xs = s.outline.map(p => p[0]), ys = s.outline.map(p => p[1]);
+      const uid = lead.get(s.group);
+      out.push({ label: "baluster", want: { kind: "solid", uid },
+        query: { uid, at: [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2, (s.z0_m + s.z1_m) / 2] } });
+    }
+    return JSON.stringify(out);`));
+  const wanted = ["window board", "door casing leg", "door hinge", "drip edge", "gutter", "baluster"];
+  for (const label of wanted) {
+    const candidates = targets.filter((t) => t.label === label);
+    let done = null;
+    console.log("target:", label);
+    for (const t of candidates.slice(0, 24)) {
+      const at = await evaluate(session, `return window.__haus.probe(${JSON.stringify(t.query)});`);
+      if (!at) continue;
+      for (const type of ["mousePressed", "mouseReleased"])
+        await session.send("Input.dispatchMouseEvent", { type, x: Math.round(at.x), y: Math.round(at.y),
+          button: "left", buttons: type === "mousePressed" ? 1 : 0, clickCount: 1, pointerType: "mouse" });
+      const sel = await evaluate(session, `
+        await new Promise(r => setTimeout(r, 60));
+        const s = window.__haus.store.getState().selection; return { kind: s.kind, uid: s.uid, piece: s.piece ?? null };`);
+      const ok = sel.kind === t.want.kind && sel.uid === t.want.uid && (t.want.piece ? sel.piece === t.want.piece : true);
+      console.log(`${ok ? "ok  " : "FAIL"} ${label}: ${JSON.stringify(sel)}`);
+      if (!ok) throw new Error(`${label}: wanted ${JSON.stringify(t.want)}`);
+      done = sel; break;
+    }
+    if (!done) console.log(`SKIP ${label}: no ${candidates.length ? "reachable" : "such"} target (${candidates.length} candidates)`);
+  }
+} catch (e) { console.log("PICK-CHECK FAILED:", e.message); process.exitCode = 1; }
+finally { session.close(); await browser.close(); }

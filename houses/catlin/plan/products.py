@@ -24,6 +24,7 @@ saying a model number twice would churn every schedule and its tests for no gain
 from __future__ import annotations
 
 from plan.bath1_storage_types import BATH1_STORAGE_PRODUCTS
+from plan.products_trim_stock import TRIM_STOCK_PRODUCTS
 from plan.bath2_vanity_types import BATH2_VANITY_PRODUCTS
 from plan.bed_desk_types import BED_DESK_PRODUCTS
 from plan.bed_reading_corner_types import BED_READING_CORNER_PRODUCTS
@@ -347,4 +348,5 @@ PRODUCTS = (
     *BED_READING_CORNER_PRODUCTS, *BED_DESK_PRODUCTS,
     *BATH2_VANITY_PRODUCTS, *LIVING_EAST_RUN_PRODUCTS,
     *PLANT_ROOM_PRODUCTS, *STARTER_FURNITURE_PRODUCTS, *TITANIUM_PRODUCTS,
+    *TRIM_STOCK_PRODUCTS,
 )

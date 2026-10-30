@@ -18,7 +18,8 @@ from .materials_study_booth import MATERIALS_STUDY_BOOTH
 
 MATERIALS = [
     Material(tag="captivate-graphite-sheet", name="AZEK Captivate Graphite Gray 3/4 inch sheet trim",
-             color="#41464a", source="AZEK 2026 product guide AS03448096, 3/4 x 48 x 96 smooth sheet; Captivate Graphite Gray factory finish. Field-rip returns/casing; two sheets for both doors."),
+             color="#41464a", product_ref="PROD-AZEK-CAPTIVATE-GRAPHITE-SHEET",
+             source="AZEK 2026 product guide AS03448096, 3/4 x 48 x 96 smooth sheet; Captivate Graphite Gray factory finish. Field-rip returns/casing; two sheets for both doors."),
     Material(tag="pvc-opening-flashing", name="SureSill PVC opening flashing",
              color="#eeeeee", source="SureSill stock HeadFlash/sloped sill pan; catalog coordination envelopes."),
     Material(tag="silicone-transition", name="Proglaze ETA standard silicone transition",
@@ -321,6 +322,7 @@ MATERIALS = [
     # white. No species: none of it reaches `haus millwork`; prices.toml bills it by the LF.
     Material(tag="pine-fj-base", name='Finger-jointed pine base, 3/4" x 3 1/2" S4S',
              hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
+             product_ref="PROD-STOCK-PINE-FJ-1X4",
              source="Primed finger-jointed pine 1x4 from the yard, painted in the wall colour."),
     Material(tag="poplar-skirt-paint", name='Poplar skirt board, 1x12 S4S, paint grade',
              hatch="lumber", color="#f0ede6", finish="satin-enamel", species="poplar",
@@ -328,9 +330,11 @@ MATERIALS = [
              source='Stock 3/4" x 11 1/4" poplar 1x12 from the yard, primed and painted the wall white. The stair skirts, set before the treads and risers.'),
     Material(tag="mdf-casing", name='MDF door casing, 3/4" x 3 1/2" S4S',
              hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
+             product_ref="PROD-STOCK-MDF-1X4",
              source="Primed MDF 1x4, painted in the wall colour. Kept out of the wet rooms: MDF swells at a cut edge."),
     Material(tag="pvc-trim", name='Cellular PVC trim, 3/4" x 3 1/2" S4S',
              hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
+             product_ref="PROD-STOCK-PVC-1X4",
              source="White cellular PVC 1x4 (Azek/Versatex class), painted with the walls. The bathrooms and the 70% RH plant room. In the tile baths it goes in after tile: stainless trim nails + PVC adhesive, sitting on the tile."),
     Material(tag="mdf-panel-painted", name='Paint-grade MDF backing, 1/4", white enamel',
              color="#f0ede6", finish="satin-enamel",

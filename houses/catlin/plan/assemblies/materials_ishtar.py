@@ -70,7 +70,7 @@ MATERIALS_ISHTAR = [
     # that substring and this is flat brake-formed stock.
     Material(tag="metal-dark-exterior", name="Near-black painted metal (exterior)",
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
-             color="#1c1f24",
+             color="#1c1f24", product_ref="PROD-STOCK-DARK-TRIM-COIL",
              source="RF-HOUSE rake/eave/ridge trim coil, opening casings, exterior guards"),
     # The SAME dark, on seamless K-style stock. It exists only because it is a different
     # PRODUCT, and prices.toml qualifies [drainage] on the material tag: the garage low eave
@@ -81,7 +81,7 @@ MATERIALS_ISHTAR = [
     # read continuous — so every palette entry for it points at the same ink.
     Material(tag="metal-dark-kstyle", name="Near-black prefinished K-style gutter coil",
              r_per_inch=0.0, density=2700.0, perm_rating=0.0, hatch="metal",
-             color="#1c1f24",
+             color="#1c1f24", product_ref="PROD-STOCK-DARK-KSTYLE-COIL",
              source="garage south eave + balcony gutter/leaders, prefinished aluminium coil"),
     # The garage's base skin, and since 2026-09-03 it is the ONLY thing on it: the 24" band
     # on the ICF stem, all four walls, plus the stem-top Z at the corrugated panel base.

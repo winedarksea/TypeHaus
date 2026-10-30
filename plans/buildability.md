@@ -490,6 +490,14 @@ every opening perimeter — and says explicitly not to spray foam to the windows
 barrier puts the entire water-management burden on the foam and the liquid flashing
 at 31 exterior windows.
 
+**2026-10-30: the openings follow that detail now, with one deliberate departure** (decision
+#102). The bucks are "raccooned" before the posts — liquid flashing on the buck's wall side,
+its front edge and a band of sheathing, which the foam then laps — instead of lapping a reveal
+band onto the shaved foam behind the posts. BSI-048's photos 10-11 also show treated furring
+**embedded** in the SPF; this house keeps a clear 1/2" slot behind every KDAT post and course
+instead, because treated wood buried in polyurethane stays wet (Huntsman's flood case). See
+`houses/catlin/notes/opening_flashing_spec.md` §3.
+
 **The alternative, with numbers.** Zip-R is out on design intent rather than cost —
 it tops out at R-12, so R-20 continuous is not reachable with it at all. The
 realistic build-up here is about 3 inches of foil-faced polyiso, roughly R-19.5, or

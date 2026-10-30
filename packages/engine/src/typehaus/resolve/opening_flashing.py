@@ -43,6 +43,12 @@ class OpeningFlashingFrame:
     outie: bool
     #: The plywood buck lining the RO; every reveal membrane lies on its exposed face.
     buck: float = 0.0
+    #: The sheathing face, where it differs from ``back`` (a door's pan starts at its jamb).
+    sheath: float | None = None
+
+    @property
+    def sheath_face(self) -> float:
+        return self.back if self.sheath is None else self.sheath
 
     def point(self, station: float, depth: float, z: float) -> tuple[float, float, float]:
         return (self.origin[0] + self.along[0] * station + self.outward[0] * depth,
@@ -112,7 +118,7 @@ def opening_flashing_frame(model: ResolvedModel, wall: ResolvedWall, opening=Non
         back = placement.outward_sign * placement.frame_inner_m - FLASHING.back_dam_strip_m
         buck = 0.0
     return OpeningFlashingFrame((x0, y0), along, outward, back, water, mount, clad, outie,
-                                buck)
+                                buck, sheath_out)
 
 
 def resolve_window_seats(model: ResolvedModel, cfg: FlashingConfig = FLASHING) -> None:
@@ -277,13 +283,15 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
     lap = cfg.perimeter_lap_m
     jamb_top = head - opening.arch_rise_m
     for station, sign in ((lo, 1.0), (hi, -1.0)):
-        # Reveal and outward return form one continuous liquid application at each jamb,
-        # on the buck's face and wrapped round its edge onto the water plane.
+        # The reveal on the buck's face; off an outie wall it wraps the buck's edge onto
+        # the water plane. An outie wall's foam face is behind the posts: see the raccoon.
         membrane.append(frame.section(station + sign * buck, (
             (frame.back, max(base, sill + buck)), (frame.mount, max(base, sill + buck)),
             (frame.mount, jamb_top - buck), (frame.back, jamb_top - buck)), thickness, sign))
-        membrane.append(frame.leg(station - lap if sign > 0 else station - buck, lap + buck,
-                                  (frame.water, base), (frame.water, jamb_top), thickness))
+        if not frame.outie:
+            membrane.append(frame.leg(station - lap if sign > 0 else station - buck,
+                                      lap + buck, (frame.water, base), (frame.water, jamb_top),
+                                      thickness))
     if opening.arch_rise_m > 0:
         from typehaus.resolve.geometry_prims import (
             _arch_soffit_sample,
@@ -305,12 +313,20 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
                 for s, depth, z in ((r0, frame.back, z0), (r1, frame.back, z1),
                                     (r1, frame.mount, z1), (r0, frame.mount, z0))),
                 (0, 0, -thickness)))
-        membrane.append(extruded_quad(tuple(frame.point(s, frame.water, z) for s, z in
-            ((s0, z0 - buck), (s1, z1 - buck), (s1, z1 + lap), (s0, z0 + lap))),
-            (*[v * thickness for v in frame.outward], 0)))
-    for station in (lo - lap, hi):
-        membrane.append(frame.leg(station, lap, (frame.water, jamb_top),
-                                  (frame.water, jamb_top + lap), thickness))
+        if not frame.outie:
+            membrane.append(extruded_quad(tuple(frame.point(s, frame.water, z) for s, z in
+                ((s0, z0 - buck), (s1, z1 - buck), (s1, z1 + lap), (s0, z0 + lap))),
+                (*[v * thickness for v in frame.outward], 0)))
+    if frame.outie:
+        from typehaus.resolve.opening_raccoon import raccoon_meshes
+
+        membrane += raccoon_meshes(frame, opening, contour, cfg, base=base,
+                                   wall_base=wall.z0_m, jamb_top=jamb_top,
+                                   sill_side=opening.kind == "window")
+    else:
+        for station in (lo - lap, hi):
+            membrane.append(frame.leg(station, lap, (frame.water, jamb_top),
+                                      (frame.water, jamb_top + lap), thickness))
     # The head course's top under the metal: steel never bears on treated wood bare.
     if courses:
         membrane.append(frame.leg(start, span, (frame.water, head_seat),
@@ -338,6 +354,14 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
         ((metal_face, top - strip), (metal_face, top)),
         ((frame.water, top), (metal_face + thickness, top)),
         ((frame.water, top), (frame.water, top + strip)))]
+    drip = None
+    if frame.outie and opening.kind == "window":
+        from typehaus.resolve.opening_raccoon import post_band_meshes, sill_drip
+
+        # A window pan's drip coat runs the sill course's face and underside.
+        drip = sill_drip(frame, wall, opening, cfg) if pan else None
+        z0 = drip[0] if drip else max(wall.z0_m, base - cfg.post_band_m)
+        membrane += post_band_meshes(frame, opening, cfg, z0=z0, z1=jamb_top + cfg.post_band_m)
     result.append(("perimeter", "opening_flashing_membrane", cfg.membrane_material,
                    combine_sheets(membrane)))
     if pan:
@@ -346,7 +370,8 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
         result += _sill_pan(frame, _pan_outlet(opening, frame, cfg), lo + buck,
                             hi - lo - 2 * buck, sill + buck, cfg,
                             end_dam_stop=frame.clad if design else None,
-                            outlet_lip=design.drainage_clearance.meters if design else 0.0)
+                            outlet_lip=design.drainage_clearance.meters if design else 0.0,
+                            drip=drip)
     return result
 
 
@@ -407,11 +432,12 @@ def window_seat(opening: ResolvedOpening, frame: OpeningFlashingFrame,
 
 def _sill_pan(frame: OpeningFlashingFrame, outlet: float, lo: float, width: float,
               seat: float, cfg: FlashingConfig, *, end_dam_stop: float | None = None,
-              outlet_lip: float = 0.0) -> list[tuple[str, str, str, GMesh]]:
+              outlet_lip: float = 0.0, drip=None) -> list[tuple[str, str, str, GMesh]]:
     """A sloped pan on a tapered shim, its back dam turned up a rigid strip.
 
     A window's outie pan discharges at the mount plane, behind the cladding; a door's, and
-    every pan on a conventional wall, runs past the cladding to a drip.
+    every pan on a conventional wall, runs past the cladding to a drip. ``drip`` is an
+    outie window's ``(bottom z, extra legs)``: the down leg coats the sill course to its bottom.
     """
     dam = frame.back + cfg.back_dam_strip_m
     fall = (outlet - dam) * cfg.drainage_slope
@@ -429,7 +455,8 @@ def _sill_pan(frame: OpeningFlashingFrame, outlet: float, lo: float, width: floa
                   for a, b in (
                       ((dam, seat + cfg.back_dam_m), (dam, seat + fall)),
                       ((dam, seat + fall), (outlet, seat)),
-                      ((outlet, seat), (outlet, seat - cfg.pan_drop_m)))]
+                      ((outlet, seat), (outlet, drip[0] if drip else seat - cfg.pan_drop_m)))]
+    pan_meshes += drip[1] if drip else []
     for station, sign in ((lo, 1.0), (lo + width, -1.0)):
         if end_dam_stop is None:
             profile = ((dam, seat + fall), (outlet, seat),

@@ -50,6 +50,8 @@ export interface LocatedMember {
   storey: string | null;
   /** Set when the member is a reinforcing bar: the record behind `member`. */
   bar?: RebarBar;
+  /** Every stick of the member's group (`Member.group`), `member` first; absent when ungrouped. */
+  group?: Member[];
 }
 
 function ownerPools(model: Model): [MemberOwnerKind, (Wall | Roof | Floor | Stair | SoffitFraming | Brace)[]][] {
@@ -122,6 +124,11 @@ export function locateMember(
   for (const [ownerKind, pool] of ownerPools(model)) {
     const owner = pool.find((candidate) => candidate.uid === parsed.ownerUid);
     if (!owner) continue;
+    const grouped = owner.members.filter((candidate) => candidate.group === parsed.memberKey);
+    if (grouped.length) {
+      return { member: grouped[0], group: grouped, ownerKind: ownerKind as MemberOwnerKind,
+               ownerUid: owner.uid, ownerTag: owner.tag, storey: owner.storey };
+    }
     const member = owner.members.find((candidate) => candidate.key === parsed.memberKey)
       ?? adoptedMember(model, parsed.ownerUid, parsed.memberKey);
     if (!member) return null;

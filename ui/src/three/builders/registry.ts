@@ -114,3 +114,21 @@ export function registerMemberPicks(parent: THREE.Object3D, firstChildIndex: num
   }
 }
 
+
+/** `byPiece` key: the opening uid and the engine-stable piece name. */
+export function pieceKey(uid: string, piece: string): string {
+  return `${uid}|${piece}`;
+}
+
+/** Group the pick meshes that carry a `userData.piece` by `uid|piece`, for outlining one board. */
+export function indexPieces(picks: readonly THREE.Mesh[]): Map<string, THREE.Mesh[]> {
+  const byPiece = new Map<string, THREE.Mesh[]>();
+  for (const mesh of picks) {
+    const { uid, piece } = mesh.userData as { uid?: string; piece?: string };
+    if (!uid || !piece) continue;
+    const key = pieceKey(uid, piece);
+    const meshes = byPiece.get(key);
+    if (meshes) meshes.push(mesh); else byPiece.set(key, [mesh]);
+  }
+  return byPiece;
+}

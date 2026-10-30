@@ -108,7 +108,7 @@ def _resolve_banded_run(model: ResolvedModel, el, storey: str, path, category: s
                 storey=storey, category=category,
                 outline=rect_between(a, b, left, right),
                 z0_m=top - bottom_drop, z1_m=top - top_drop,
-                material=el.material,
+                material=el.material, group=f"{el.uid}-{i:02d}",
             ))
 
 

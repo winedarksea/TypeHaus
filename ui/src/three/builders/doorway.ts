@@ -11,7 +11,7 @@ export function buildDoorway(
 ) {
   const designSections = (opening.doorway?.exterior_placement?.sections ?? []).map(section => ({
     ...section, normal_m: 0, base_z_m: 0,
-    specification: { product_ref: "Project sill design (schematic)", positive_normal_sign: 1,
+    specification: { role: undefined, product_ref: "Project sill design (schematic)", positive_normal_sign: 1,
       parts: [{ ...section }] },
   }));
   for (const component of [...(opening.doorway?.components ?? []), ...designSections]) {
@@ -52,6 +52,9 @@ export function buildDoorway(
       const mesh = new THREE.Mesh(geometry, materialFor(part.material_ref, part.material_key ?? "door_hardware"));
       mesh.userData.doorwayProduct = spec.product_ref;
       mesh.userData.doorwayPart = part.name;
+      // Design sections carry no role; the engine keys those as installation boards.
+      mesh.userData.piece = spec.role ? `doorway:${spec.role}:${part.name}`
+        : `installation:${part.name}`;
       parent.add(mesh);
     }
   }

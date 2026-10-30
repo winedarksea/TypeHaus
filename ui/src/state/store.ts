@@ -157,7 +157,7 @@ export interface StoreState extends MutationActions, SiteSlice, PendingSlice, Pl
   // canvas otherwise. Living here rather than in ReaderShell keeps the two readers that
   // close through their own paths (BOM, Estimate) from having to re-derive it.
   closeReader: () => void;
-  select: (kind: Selection["kind"], uid: string | null) => void;
+  select: (kind: Selection["kind"], uid: string | null, piece?: string | null) => void;
   selectByTag: (kind: Selection["kind"], tag: string) => void;
   setHover: (uid: string | null) => void;
   setActiveStorey: (tag: string | null) => void;
@@ -406,7 +406,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
     ? { detailView: "documents" as DetailView, readerOrigin: "canvas" as const }
     : { detailView: "none" as DetailView, readerOrigin: "canvas" as const })),
 
-  select: (kind, uid) => set({ selection: { kind, uid } }),
+  select: (kind, uid, piece = null) => set({ selection: { kind, uid, piece } }),
   // Select an element by its authored tag (uids are minted server-side, so a freshly drawn
   // wall / placed opening is only addressable by tag until the next reload lands).
   selectByTag: (kind, tag) => {

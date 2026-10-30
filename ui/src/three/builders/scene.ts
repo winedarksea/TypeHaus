@@ -39,6 +39,8 @@ import {
 export interface SceneRegistry {
   picks: THREE.Mesh[];
   byUid: Map<string, THREE.Material[]>;
+  /** Meshes of each opening piece, keyed `uid|piece` (→ registry.indexPieces). */
+  byPiece?: Map<string, THREE.Mesh[]>;
   /** Product part geometry the scene's instances share; disposed by whoever clears the scene. */
   partGeometries?: PartGeometries;
 }
@@ -225,6 +227,11 @@ export function populateScene(options: PopulateSceneOptions) {
   // (model.json `trades`) and falls back to the generated category map.
   // A plant with a procedural model draws as an instance below, not as its bounding prism.
   const instancedPlants = instancedPlantUids(model.plants, model.plant_models);
+  // Solids of one part (a gutter's boards, a guard) pick as the first of the group.
+  const groupLeader = new Map<string, string>();
+  for (const solid of model.solids ?? []) {
+    if (solid.group && !groupLeader.has(solid.group)) groupLeader.set(solid.group, solid.uid);
+  }
   for (const solid of model.solids ?? []) {
     if (solid.category === "plant" && instancedPlants.has(solid.uid)) continue;
     // Two answers, deliberately. `solidTrades` decides the CONTAINER (a connector's is
@@ -233,7 +240,8 @@ export function populateScene(options: PopulateSceneOptions) {
     const trades = solidTrades(solid);
     build(solidVisibilityKeys(solid), solid.storey, () => buildSolid(container(trades), solid, center,
       mode, palette, model.catalog, registry.picks, registry.byUid,
-      model.catalog?.materials, earthOpacity));
+      model.catalog?.materials, earthOpacity,
+      solid.group ? groupLeader.get(solid.group) : undefined));
   }
   // Plants, instanced per storey; each takes its solid's trade set (landscaping).
   const solidsByUid = new Map((model.solids ?? []).map((solid) => [solid.uid, solid]));
