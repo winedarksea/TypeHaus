@@ -16,7 +16,19 @@ from typehaus.resolve.model import (
     ResolvedWindowStool,
 )
 from typehaus.resolve.window_returns import resolve_window_returns
-from typehaus.takeoff.window_returns import window_return_bead_rows, window_return_finish_rows
+from typehaus.takeoff.drywall_trims import drywall_trim_rows
+from typehaus.takeoff.window_returns import window_return_finish_rows
+
+
+def window_return_bead_rows(model):
+    """The returns' bead rows with no DrywallStandard: the library's generic pair."""
+    from typehaus.resolve import drywall_trim_edges
+    from typehaus.resolve.drywall_trims import TrimContext
+
+    ctx = TrimContext(model, None)
+    drywall_trim_edges.window_returns(ctx)
+    model.drywall_trims = ctx.records
+    return drywall_trim_rows(model)
 
 
 @pytest.fixture
@@ -88,7 +100,7 @@ def test_pieces_fit_frame_and_never_overlap_glazing_or_each_other(return_model):
     beads = window_return_bead_rows(model)
     assert len(beads) == 2
     assert all(row['length_ft'] == round(reveal.bead_length_m / 0.3048, 1) for row in beads)
-    assert all(row['tags'] == ['WIN'] for row in beads)
+    assert all('WIN' in row['tags'] for row in beads)
     old_solids = list(model.solids)
     assert not resolve_window_returns(model)
     assert model.solids == old_solids, 'rerunning must replace, not duplicate, returns'
@@ -199,12 +211,12 @@ def test_beads_load_and_price_by_length_and_reach_estimate_csv(return_model, tmp
     assert not resolve_window_returns(model)
     beads = window_return_bead_rows(model)
     (tmp_path / 'prices.toml').write_text(
-        '[window_return_beads]\n'
+        '[drywall_trims]\n'
         'drywall-corner-bead = 2.0\n'
         'drywall-frame-termination-bead = 3.0\n')
     prices = load_prices(tmp_path)
     assert prices is not None
-    estimate = estimate_costs({'window_return_beads': beads}, prices)
+    estimate = estimate_costs({'drywall_trims': beads}, prices)
     assert not estimate['unpriced']
     rows = estimate_rows(estimate)
     assert len(rows) == 2

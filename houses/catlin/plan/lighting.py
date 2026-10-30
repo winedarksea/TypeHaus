@@ -465,7 +465,8 @@ BASEMENT_LIGHTING = [
 # --- Main storey ----------------------------------------------------------------------
 MAIN_LIGHTING = [
     # RM-M-LIVING, the lounge end: the shadow-gap coves the notes lead with. Two runs, one
-    # down each side, mounted at the 9' ceiling plane — installed with the drywall and
+    # down each side, 2.74" off the wall each washes (plaster-in, DRYWALL-STANDARD, #103),
+    # mounted at the 9' ceiling plane — installed with the drywall and
     # fixed to the board rather than to the framing, so the reveal stays a sound break
     # rather than becoming a rigid path between the room and the joists.
     LightRun(uid="QRM0001AAA", tag="LR-M-LIVING-W", type_ref="ED-T-LT-STRIP24",
@@ -474,9 +475,9 @@ MAIN_LIGHTING = [
              controlled_by=("ED-M-LIVING-SW",),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     LightRun(uid="QRM0002AAA", tag="LR-M-LIVING-E", type_ref="ED-T-LT-STRIP24",
-             path=(pt(ft(35, 6), ft(1)), pt(ft(35, 6), ft(21, 6))),
+             path=(pt(ft(35, 2.75), ft(1)), pt(ft(35, 2.75), ft(21, 6))),
              room="RM-M-LIVING", psu_ref="ED-M-LIVING-LT-PSU",
-             controlled_by=("ED-M-LIVING-SW",),
+             controlled_by=("ED-M-LIVING-SW",), emission_side="right",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # 41' of tape at 3 W/ft = 123 W; x1.25 = 154 W, so the 200 W supply. It sits in the
     # ceiling just north of both runs, where the kitchen soffit gives it a service hatch.
@@ -974,7 +975,7 @@ MAIN_LIGHTING = [
     LightRun(uid="WEQM9XB2MM", tag="LR-M-BATH2-TUB-CLG", type_ref="ED-T-LT-STRIP24-2700",
              path=(pt(inch(92.625), inch(196)), pt(inch(92.625), inch(262))),
              room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
-             controlled_by=("ED-M-BATH2-SW-EVE",),
+             controlled_by=("ED-M-BATH2-SW-EVE",), emission_side="right",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # In the ceiling's y 192"-208" bay, outside the shower zone and off the extract trunk.
     ElectricalDevice(uid="ESWYM2QANP", tag="ED-M-BATH2-PSU", kind=DeviceKind.JUNCTION_BOX,
@@ -1229,15 +1230,16 @@ MAIN_LIGHTING = [
 
 # --- Second storey --------------------------------------------------------------------
 SECOND_LIGHTING = [
-    # Three-sided channel recessed into SF-S-DUCT's underside edge. Host-relative width
-    # and north return follow the resolved wall finishes; the south ends remain at 9'-7".
+    # Three-sided plaster-in wall-washer in SF-S-DUCT's underside, slot centre 2 1/2" in
+    # from each edge (DRYWALL-STANDARD, decision #103). Host-relative width and north return
+    # follow the resolved wall finishes; the south ends remain at 9'-7".
     # Clockwise path, opening left: west/east wall wash and the north bulkhead transition.
     LightRun(uid="QRS0001AAA", tag="LR-S-HALL-GAP", type_ref="ED-T-LT-STRIP24",
              path=(pt(ft(18, 6), ft(9, 7)), pt(ft(18, 6), ft(27, 6)),
                    pt(ft(21, 6), ft(27, 6)), pt(ft(21, 6), ft(9, 7))),
              room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU",
              controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
-             soffit_ref="SF-S-DUCT", soffit_edge_offset=inch(0.25),
+             soffit_ref="SF-S-DUCT", soffit_edge_offset=inch(2.5),
              emission_side="left",
              mount=Mount(kind=MountKind.CEILING, elevation=inch(94.5))),
     # The driver moved with the cove: (20'-0", 30'-6") is inside EQ-S-HP1-AH's footprint

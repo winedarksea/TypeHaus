@@ -23,7 +23,8 @@ from typehaus.diff.model import DiffElem
 from typehaus.model.ids import derive_child_guid
 from typehaus.resolve.geometry import (
     LIGHT_STRIP_HEIGHT_M,
-    light_run_segment_profiles,
+    light_run_parts,
+    light_run_section_shells,
     opening_center,
     wall_frame,
 )
@@ -213,14 +214,19 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
     # which ``external_elems`` reads back, so a run missing here would surface as a
     # phantom addition on every round trip against our own IFC.
     for run in model.light_runs:
-        # Project the *swept* profile, not the bare polyline: the emitted solid is the
-        # channel's width around each leg, so a straight run's plan bbox is 1/2" deep and
-        # not zero. Reading the bare path would report every run as resized.
-        swept = [point for profile in light_run_segment_profiles(list(run.path))
-                 for point in profile]
-        heights = run.vertex_z()
-        centroid, bbox = _bounds(swept or [tuple(point) for point in run.path],
-                                 min(heights) - LIGHT_STRIP_HEIGHT_M, max(heights))
+        # Project the *swept* section, not the bare polyline: the emitted solid is the
+        # channel (or plaster-in profile) around each leg, so a straight run's bbox is not
+        # zero-deep. Reading the bare path would report every run as resized.
+        points = [point for _key, faces in light_run_section_shells(
+            list(run.path), run.vertex_z(), light_run_parts(run), run.emission_side)
+            for face in faces for point in face]
+        if points:
+            centroid, bbox = _bounds([(x, y) for x, y, _z in points],
+                                     min(z for *_xy, z in points), max(z for *_xy, z in points))
+        else:
+            heights = run.vertex_z()
+            centroid, bbox = _bounds([tuple(point) for point in run.path],
+                                     min(heights) - LIGHT_STRIP_HEIGHT_M, max(heights))
         elems.append(DiffElem(
             global_id=_guid(puid, run.uid), tag=run.tag, ifc_class="IfcLightFixture",
             storey=run.storey, centroid=centroid, bbox=bbox, axis_dir=(0.0, 0.0),

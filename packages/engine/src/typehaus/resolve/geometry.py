@@ -256,34 +256,56 @@ def light_run_band_profiles(
 
 
 Vec3 = tuple[float, float, float]
+SectionPart = tuple[str, tuple[tuple[float, float], ...]]
 
 
-def light_run_band_shells(path: list[Vec],
-                          z_path: list[float],
-                          emission_side: str = "left") -> list[tuple[str, list[list[Vec3]]]]:
-    """:func:`light_run_band_profiles` as closed 3-D box shells that follow ``z_path``.
+def light_run_parts(run) -> tuple[SectionPart, ...]:
+    """The run's swept cross-section: its plaster-in profile's parts, else the surface
+    half-inch channel (→ resolve/trim_bands.py)."""
+    from typehaus.resolve.trim_bands import surface_channel_parts
 
-    One ``(key, faces)`` per band per leg; faces wind outward (bottom reversed, top, sides).
-    Each corner takes the height of its station along the leg, so a raked leg is a sheared
-    box and a level one is the plain prism."""
+    section = getattr(run, "section", ())
+    return tuple(section) if section else surface_channel_parts(
+        LIGHT_STRIP_WIDTH_M, LIGHT_STRIP_HEIGHT_M)
+
+
+def light_run_section_shells(path: list[Vec], z_path: list[float],
+                             parts: tuple[SectionPart, ...],
+                             emission_side: str = "left") -> list[tuple[str, list[list[Vec3]]]]:
+    """Each convex ``(key, quad)`` of ``parts`` swept along every leg as a closed shell.
+
+    A quad corner is ``(across toward the emission side, drop below the run's height)``.
+    One ``(key, faces)`` per part per leg; faces wind outward (start cap, end cap, sides).
+    The run's height follows ``z_path`` along each leg, so a raked leg is a sheared prism.
+    """
+    sign = 1.0 if emission_side == "left" else -1.0
     shells: list[tuple[str, list[list[Vec3]]]] = []
     legs = [(path[i], path[i + 1], z_path[i], z_path[i + 1]) for i in range(len(path) - 1)
             if length(sub(path[i + 1], path[i])) >= 1e-6]
-    for key, profiles, bottom_drop, top_drop in light_run_band_profiles(
-            path, emission_side=emission_side):
-        for (p0, p1, za, zb), profile in zip(legs, profiles, strict=True):
-            d = sub(p1, p0)
-            run2 = d[0] * d[0] + d[1] * d[1]
-
-            def z_at(c: Vec, p0=p0, d=d, run2=run2, za=za, zb=zb) -> float:
-                t = ((c[0] - p0[0]) * d[0] + (c[1] - p0[1]) * d[1]) / run2
-                return za + min(max(t, 0.0), 1.0) * (zb - za)
-
-            bottom = [(x, y, z_at((x, y)) - bottom_drop) for x, y in profile]
-            top = [(x, y, z_at((x, y)) - top_drop) for x, y in profile]
-            faces: list[list[Vec3]] = [list(reversed(bottom)), list(top)]
-            for corner in range(len(bottom)):
-                following = (corner + 1) % len(bottom)
-                faces.append([bottom[corner], bottom[following], top[following], top[corner]])
+    for key, quad in parts:
+        section = [(sign * a, -d) for a, d in quad]  # (left-normal offset, rise)
+        area = sum(section[i][0] * section[(i + 1) % len(section)][1]
+                   - section[(i + 1) % len(section)][0] * section[i][1]
+                   for i in range(len(section)))
+        if area < 0:
+            section.reverse()  # CCW seen from the leg's end, so the end cap faces +leg
+        for p0, p1, za, zb in legs:
+            n = normal(unit(sub(p1, p0)))
+            start = [(p0[0] + n[0] * a, p0[1] + n[1] * a, za + r) for a, r in section]
+            end = [(p1[0] + n[0] * a, p1[1] + n[1] * a, zb + r) for a, r in section]
+            faces: list[list[Vec3]] = [list(reversed(start)), list(end)]
+            for i in range(len(section)):
+                j = (i + 1) % len(section)
+                faces.append([start[i], start[j], end[j], end[i]])
             shells.append((key, faces))
     return shells
+
+
+def light_run_band_shells(path: list[Vec], z_path: list[float],
+                          emission_side: str = "left") -> list[tuple[str, list[list[Vec3]]]]:
+    """The surface channel's shells (:func:`light_run_section_shells`, default parts)."""
+    from typehaus.resolve.trim_bands import surface_channel_parts
+
+    return light_run_section_shells(
+        path, z_path, surface_channel_parts(LIGHT_STRIP_WIDTH_M, LIGHT_STRIP_HEIGHT_M),
+        emission_side)

@@ -37,6 +37,7 @@ from typehaus.model.diaphragm_attachment import (
 from typehaus.model.door_hardware import DoorHardwareItem, JambFraming
 from typehaus.model.doorway import DoorwayProductSpec, DoorwaySectionPart, DoorwayTreatment
 from typehaus.model.drain_column import DrainColumn
+from typehaus.model.drywall import DrywallStandard, PlasterInProfile
 from typehaus.model.electrical import BoxRow, BoxStandard, Circuit, LoadManagement
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
 from typehaus.model.enums import (
@@ -399,6 +400,7 @@ __all__ = [
     "SuspensionAnchor", "HangingSeatType",
     "Countertop", "MillworkStandard", "RoomTrim", "StairLandingMillwork", "ShelfBank", "ShelfBay",
     "DoorTrim", "StairSkirt", "TrimStandard", "WindowStool",
+    "DrywallStandard", "PlasterInProfile",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",

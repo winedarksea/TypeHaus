@@ -162,7 +162,7 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
                "cladding_trim": bom["cladding_trim"],
                "member_protection": bom["member_protection"],
                "fireblock_sealant": bom["fireblock_sealant"],
-               "window_return_beads": bom["window_return_beads"]}
+               "drywall_trims": bom["drywall_trims"]}
     # Opt-in because it is a per-RUN view, not a bill: 111 rows that group into the dozen
     # `pipe_runs`/`ducts`/`conduit` lines already in the payload. Carried in `--json` too
     # when asked for, so the before/after diff a reroute is judged on is machine-readable.

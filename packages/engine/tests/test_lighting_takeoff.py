@@ -106,23 +106,25 @@ def test_light_run_materials_splits_the_blended_length_into_order_lines(catlin_m
         "channel", "tape", "end_cap", "corner_connector"}
 
     strip24 = {run.tag: run for run in catlin_model.light_runs if run.type_ref == "ED-T-LT-STRIP24"}
-    total_length_ft = sum(run.length_m * _M_TO_FT for run in strip24.values())
+    surface = {tag: run for tag, run in strip24.items() if run.profile != "plaster_in"}
+    # The plaster-in coves' channel is the drywall trade's profile (#103), so only the
+    # surface runs bill channel here; the tape rides every run.
+    assert set(strip24) - set(surface) == {"LR-M-LIVING-W", "LR-M-LIVING-E", "LR-S-HALL-GAP"}
     channel = by_key[("ED-T-LT-STRIP24", "channel")]
     tape = by_key[("ED-T-LT-STRIP24", "tape")]
-    assert channel["quantity"] == pytest.approx(round(total_length_ft, 1))
-    # Channel and tape are the same length — the tape rides the channel end to end.
-    assert tape["quantity"] == channel["quantity"]
+    assert channel["quantity"] == pytest.approx(
+        round(sum(run.length_m * _M_TO_FT for run in surface.values()), 1))
+    assert tape["quantity"] == pytest.approx(
+        round(sum(run.length_m * _M_TO_FT for run in strip24.values()), 1))
     assert channel["unit"] == tape["unit"] == "LF"
     # Every run takes exactly two end caps, one per open end.
     end_cap = by_key[("ED-T-LT-STRIP24", "end_cap")]
     assert end_cap["quantity"] == 2 * len(strip24)
     assert end_cap["unit"] == "EA"
-    # A corner connector for every interior vertex — the hall's shadow-gap run turns
-    # corners, the two living-room runs are straight.
+    # A corner connector for every interior vertex of a surface run; a plaster-in corner
+    # (the hall cove's two) is mitred.
     corner = by_key[("ED-T-LT-STRIP24", "corner_connector")]
-    expected_corners = sum(max(len(run.path) - 2, 0) for run in strip24.values())
-    assert corner["quantity"] == expected_corners
-    assert corner["quantity"] > 0, "the hall shadow-gap run should turn at least one corner"
+    assert corner["quantity"] == sum(max(len(run.path) - 2, 0) for run in surface.values())
 
 
 def test_every_supply_is_sized_at_125_percent_of_what_it_drives(catlin_model):

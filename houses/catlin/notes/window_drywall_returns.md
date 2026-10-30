@@ -37,12 +37,11 @@ allowance only where it faces an occupied room. Geometry adds no second structur
 charge. Board is measured by area, consistent with the existing wall finish takeoff; this is
 not a sheet cutting optimization.
 
-Beads appear in `window_return_beads`, the estimate/CSV, and the drywall bid package. They are
-generic references until a product and price are selected. For example, a future price entry
-belongs under `[window_return_beads]` with keys `drywall-corner-bead` and
-`drywall-frame-termination-bead`, each priced per installed linear foot. Missing rates remain
-explicitly unpriced. No stock-length or additional waste allowance is inferred, and bead
-profiles are not separate 3D meshes.
+Beads appear in `drywall_trims` (kinds `window_corner` / `window_frame`), the estimate/CSV,
+and the drywall bid package, since 2026-10-30 (decision #103) on `DRYWALL-STANDARD`'s parts
+(`plan/drywall.py`): vinyl corner bead on the return edge, tear-away L-bead at the frame,
+priced per installed linear foot under `[drywall_trims]`, with the stock pieces each
+return takes. Bead profiles are not separate 3D meshes.
 
 A browser review of the production 3D builders covers an ordinary oak-stool window, the accent
 window, a quartz-stool window, and a garage window; its local artifact is

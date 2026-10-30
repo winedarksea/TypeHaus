@@ -5449,6 +5449,28 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # ESTIMATE: ~$8-11 per 10.1 oz tube over ~30-45 LF of 1/4" bead; tooled at base install.
 "catlin-base-toe-silicone" = { material = { low = 0.2, high = 0.4 }, labour = { low = 0.4, high = 0.9 } }
 
+[drywall_trims]
+# NEW 2026-10-30 (decision #103): every drywall accessory the model derives, by the LF of
+# installed bead, keyed on the material (plan/drywall.py names the parts). Replaces
+# [window_return_beads], which had no rows. Inside corners stay paper tape in the gwb labour.
+# Material: listed retail/distributor prices where read, else ESTIMATE; labour is setting
+# plus three coats per LF, ESTIMATE off Homewyse's $4.06-4.89/LF installed corner bead
+# (May 2026). Quantities from `haus takeoff` 2026-10-30.
+# Vinyl corner bead, outside corners + soffit edges + window-return corners. ~$5-8 per 10'.
+"dw-corner-bead-vinyl" = { material = { low = 0.5, high = 0.8 }, labour = { low = 2.5, high = 4.0 } }  # 571.4 LF
+# Tear-away L-bead: trimless door jambs (D-M-BED2, D-M-STUDY) and window-return frame edges.
+# Moved out of those two door-type rows below (was "L-bead 20-40" / "bead 60-150" a door).
+"dw-l-bead-tearaway" = { material = { low = 0.6, high = 1.2 }, labour = { low = 2.0, high = 4.5 } }  # 340.1 LF
+# J-bead where board ends on bare concrete or framing (basement utility rooms, mudroom nook).
+"dw-j-bead-metal" = { material = { low = 0.4, high = 0.9 }, labour = { low = 1.5, high = 3.0 } }  # 162.7 LF
+# F reveal, the tile stop: Trim-Tex AS8710 at FBM $140 / 25 x 10' = $0.56/LF. Fussier to set
+# dead straight than a corner bead.
+"dw-reveal-bead-f" = { material = { low = 0.56, high = 1.0 }, labour = { low = 3.0, high = 5.5 } }  # 43.7 LF
+# Plaster-in wall-washer channel (the four coves): the drywall sub cuts the slot, sets the
+# profile and mudds its wings in three coats. ESTIMATE: $26.98 listed for an unconfirmed
+# length; plaster-in profiles run ~$6-15/LF. Tape, caps and lens fitting stay electrical.
+"led-plaster-in-wallwash" = { material = { low = 6, high = 15 }, labour = { low = 8, high = 16 } }  # 85.3 LF
+
 [stair_treads]
 # Eight complete 36 x 11 in tread assemblies across ST-G-SERVICE and ST-SG-PORCH,
 # two square-edge boards each, 0.94 in stock.
@@ -5679,20 +5701,20 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # the type in plan/storeys/main.py). ESTIMATE, built up from parts and not quoted:
 #   material: 32" solid-core slab 180-450, kerfed jamb + stop stock 90-220, 3 ball-bearing
 #   butts 30-90, kerf-in seal set 30-70, mortised auto door bottom 180-400, hardwood
-#   saddle 40-120, tear-away L-bead 20-40.
-#   labour: carpenter sets the jamb before drywall 200-400; bead line on the drywall sub
-#   60-150; hang the slab, mortise hinges and door bottom, fit seals and saddle 250-500.
+#   saddle 40-120. The tear-away L-bead bills in [drywall_trims] since 2026-10-30.
+#   labour: carpenter sets the jamb before drywall 200-400; hang the slab, mortise hinges
+#   and door bottom, fit seals and saddle 250-500 (the bead line is in [drywall_trims]).
 # Lower labour than the EzyJamb-type row it replaced ($640-1,440): no Level-5 reveal, no
 # mud-set aluminium, and a wood jamb can be planed and re-stopped after it is set.
 # The seals and door bottom live here, not in [hardware], so they bill once with the door.
-"DT-INT-SWING32-TRIMLESS-PUSH" = { material = { low = 570, high = 1390 }, labour = { low = 510, high = 1050 } }  # 1 ea
+"DT-INT-SWING32-TRIMLESS-PUSH" = { material = { low = 550, high = 1350 }, labour = { low = 450, high = 900 } }  # 1 ea
 
 # D-M-STUDY: the same kerfed-jamb finish, with a tempered-glass wood leaf and no door
 # bottom or saddle (the ERV's 5 cfm relief must escape under the leaf). Parts estimate,
 # not a supplier quote: glazed slab 350-900, jamb/stop 90-220, butts 30-90, perimeter
-# seals 30-70, L-bead 20-40; labour: jamb 200-400, bead 60-150, hang/mortise/seal 200-400.
+# seals 30-70; labour: jamb 200-400, hang/mortise/seal 200-400. L-bead in [drywall_trims].
 # Lockset remains in the existing door-hardware allowance.
-"DT-INT-SWING30-GLAZED-TRIMLESS" = { material = { low = 520, high = 1320 }, labour = { low = 460, high = 950 } }  # 1 ea
+"DT-INT-SWING30-GLAZED-TRIMLESS" = { material = { low = 500, high = 1280 }, labour = { low = 400, high = 800 } }  # 1 ea
 
 # D-A-STUDY's selected 36 x 80 nominal Murphy Door unit. One purchased assembly includes
 # its factory cabinet shelves, jamb/face-frame/casing hardware and concealed pivot system;
@@ -6762,7 +6784,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # The 24V families (E `ED-T-LT-STRIP24`, U `ED-T-LT-STRIP24-TASK`, and E1 `ED-T-LT-NICHE-SNLT` at zero runs since 2026-10-12, a
 # named revert) price on the BARE keys below: interior dry-location cove, an
 # anodized extrusion with a frosted lens, tape cut to length off a 16.4' reel.
-# 89.0 LF of channel and tape, 8 end caps, 2 corner connectors (takeoff, 2026-10-12).
+# 88.9 LF of tape, 8 end caps (takeoff, 2026-10-30). Since 2026-10-30 (decision #103) the
+# three plaster-in coves (LR-M-LIVING-W/-E, LR-S-HALL-GAP) bill their profile in
+# [drywall_trims] and no channel or corner connector here: 9.2 LF of channel remains, the
+# stair-rail run. Same for E3's LR-M-BATH2-TUB-CLG.
 channel = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
 tape = { material = { low = 5, high = 13 }, labour = { low = 3, high = 7 } }
 end_cap = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
@@ -8256,6 +8281,7 @@ shelving             = "material"   # its one row spells its own split
 # it is stated because every priced section needs one.
 countertops          = "material"
 interior_trim        = "material"
+drywall_trims        = "material"
 stair_treads         = "material"
 openings             = "material"
 footing_bedding      = "material"

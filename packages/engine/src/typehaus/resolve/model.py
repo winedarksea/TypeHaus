@@ -18,7 +18,7 @@ from typehaus.resolve.door_sizing import DoorSizing
 from typehaus.resolve.layout_lines import ResolvedLayoutLine
 from typehaus.resolve.model_door_products import CasedDoorSpec
 from typehaus.resolve.model_earthwork import ResolvedExcavation, ResolvedWallColumn
-from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing
+from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing, ResolvedDrywallTrim
 from typehaus.resolve.model_window_returns import ResolvedWindowReturn
 from typehaus.resolve.model_window_seat import WindowSeat
 from typehaus.resolve.rebar.records import ResolvedRebarSet
@@ -1385,6 +1385,17 @@ class ResolvedLightRun:
 
     soffit_ref: str | None = None
     emission_side: str = "left"
+    #: ``plaster_in`` where the run is set into a gypsum ceiling or soffit board and the
+    #: house has a plaster-in profile (→ resolve/drywall_led.py); ``z_m`` is then the
+    #: board's room face. ``section`` is that profile's swept parts, ``(key, quad)`` with
+    #: quad corners ``(across toward the emission side, drop below z)``; empty is the
+    #: surface channel (→ resolve/geometry.light_run_parts).
+    profile: str = "surface"
+    section: tuple[tuple[str, tuple[tuple[float, float], ...]], ...] = ()
+    #: The ceiling solid or soffit the plaster-in slot is cut through.
+    host_ref: str | None = None
+    #: The slot cut through the host board (plaster-in only).
+    aperture_m: float | None = None
 
     def vertex_z(self) -> list[float]:
         return list(self.z_path_m) if self.z_path_m else [self.z_m] * len(self.path)
@@ -1635,6 +1646,8 @@ class ResolvedModel:
     # Derived base and door casing off the house's ``TrimStandard`` (→ resolve/interior_trim.py).
     base_runs: list[ResolvedBaseRun] = field(default_factory=list)
     door_casings: list[ResolvedDoorCasing] = field(default_factory=list)
+    # Drywall beads and plaster-in profiles off the house's DrywallStandard (#103).
+    drywall_trims: list[ResolvedDrywallTrim] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
     # Derived wall-line chains (#43): collinear within a storey, stacked across them,

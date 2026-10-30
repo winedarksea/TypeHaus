@@ -28289,6 +28289,42 @@
 2,
 "e9f6a787462f"
 ],
+"geometry/CMR401AAAA-ceiling-slot1/body": [
+2.7305,
+2.746375,
+2,
+"dbe020883c57"
+],
+"geometry/CMR401AAAA-ceiling-slot2/body": [
+2.7305,
+2.746375,
+2,
+"dbe020883c57"
+],
+"geometry/CMR401AAAA-ceiling-slot3/body": [
+2.7305,
+2.746375,
+2,
+"dbe020883c57"
+],
+"geometry/CMR401AAAA-ceiling-slot4/body": [
+2.7305,
+2.746375,
+2,
+"dbe020883c57"
+],
+"geometry/CMR401AAAA-ceiling-slot5/body": [
+2.7305,
+2.746375,
+2,
+"dbe020883c57"
+],
+"geometry/CMR401AAAA-ceiling-slot6/body": [
+2.7305,
+2.746375,
+2,
+"dbe020883c57"
+],
 "geometry/CMR401AAAA-ceiling/body": [
 2.7305,
 2.746375,
@@ -28408,6 +28444,24 @@
 0.127,
 2,
 "6d6aff8bad6f"
+],
+"geometry/CMR404AAAA-ceiling-slot1/body": [
+2.7305,
+2.746375,
+2,
+"dbe020883c57"
+],
+"geometry/CMR404AAAA-ceiling-slot2/body": [
+2.7305,
+2.746375,
+2,
+"dbe020883c57"
+],
+"geometry/CMR404AAAA-ceiling-slot3/body": [
+2.7305,
+2.746375,
+2,
+"dbe020883c57"
 ],
 "geometry/CMR404AAAA-ceiling/body": [
 2.7305,
@@ -70603,16 +70657,16 @@
 ],
 "light_runs/LR-M-BATH2-CAB/z_m": 1.2192,
 "light_runs/LR-M-BATH2-TOEKICK/z_m": 0.0762,
-"light_runs/LR-M-BATH2-TUB-CLG/z_m": 2.7432,
+"light_runs/LR-M-BATH2-TUB-CLG/z_m": 2.7305,
 "light_runs/LR-M-CLOSET-PAX-HANG/z_m": 2.3114,
 "light_runs/LR-M-CLOSET-PAX-SHOW/z_m": 2.3114,
 "light_runs/LR-M-KIT-E-WN1/z_m": 1.8542,
 "light_runs/LR-M-KIT-N-WE1/z_m": 1.3462,
 "light_runs/LR-M-KIT-N-WE2/z_m": 1.3462,
 "light_runs/LR-M-KIT-N-WE3/z_m": 1.8542,
-"light_runs/LR-M-LIVING-E/z_m": 2.7432,
-"light_runs/LR-M-LIVING-W/z_m": 2.7432,
-"light_runs/LR-S-HALL-GAP/z_m": 5.4483,
+"light_runs/LR-M-LIVING-E/z_m": 2.7305,
+"light_runs/LR-M-LIVING-W/z_m": 2.7305,
+"light_runs/LR-S-HALL-GAP/z_m": 5.4356,
 "member/03GPR9ZAA5/W-A-N2B-closure-0-cladding": [
 8.001,
 9.2379133,
@@ -106518,6 +106572,12 @@
 "solids/CEIL-RM-GARAGE/z1_m": 2.2352,
 "solids/CEIL-RM-M-BATH1/z0_m": 2.7305,
 "solids/CEIL-RM-M-BATH1/z1_m": 2.746375,
+"solids/CEIL-RM-M-BATH2-SLOT1/z0_m": 2.7305,
+"solids/CEIL-RM-M-BATH2-SLOT1/z1_m": 2.746375,
+"solids/CEIL-RM-M-BATH2-SLOT2/z0_m": 2.7305,
+"solids/CEIL-RM-M-BATH2-SLOT2/z1_m": 2.746375,
+"solids/CEIL-RM-M-BATH2-SLOT3/z0_m": 2.7305,
+"solids/CEIL-RM-M-BATH2-SLOT3/z1_m": 2.746375,
 "solids/CEIL-RM-M-BATH2/z0_m": 2.7305,
 "solids/CEIL-RM-M-BATH2/z1_m": 2.746375,
 "solids/CEIL-RM-M-BED/z0_m": 2.7305,
@@ -106526,6 +106586,18 @@
 "solids/CEIL-RM-M-CLOSET/z1_m": 2.746375,
 "solids/CEIL-RM-M-LAUNDRY/z0_m": 2.7305,
 "solids/CEIL-RM-M-LAUNDRY/z1_m": 2.746375,
+"solids/CEIL-RM-M-LIVING-SLOT1/z0_m": 2.7305,
+"solids/CEIL-RM-M-LIVING-SLOT1/z1_m": 2.746375,
+"solids/CEIL-RM-M-LIVING-SLOT2/z0_m": 2.7305,
+"solids/CEIL-RM-M-LIVING-SLOT2/z1_m": 2.746375,
+"solids/CEIL-RM-M-LIVING-SLOT3/z0_m": 2.7305,
+"solids/CEIL-RM-M-LIVING-SLOT3/z1_m": 2.746375,
+"solids/CEIL-RM-M-LIVING-SLOT4/z0_m": 2.7305,
+"solids/CEIL-RM-M-LIVING-SLOT4/z1_m": 2.746375,
+"solids/CEIL-RM-M-LIVING-SLOT5/z0_m": 2.7305,
+"solids/CEIL-RM-M-LIVING-SLOT5/z1_m": 2.746375,
+"solids/CEIL-RM-M-LIVING-SLOT6/z0_m": 2.7305,
+"solids/CEIL-RM-M-LIVING-SLOT6/z1_m": 2.746375,
 "solids/CEIL-RM-M-LIVING/z0_m": 2.7305,
 "solids/CEIL-RM-M-LIVING/z1_m": 2.746375,
 "solids/CEIL-RM-M-MECH/z0_m": 2.7305,

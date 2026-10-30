@@ -275,7 +275,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # `structural_solids` (beams by the yard) both cannot address.
                         "member_protection",
                         # Firestop sealant by the foot of fireblock penetration.
-                        "fireblock_sealant", "window_return_beads",
+                        "fireblock_sealant", "drywall_trims",
                         # Heater cable by the foot, the electrical twin of
                         # `pipe_insulation` — a traced AND lagged run is the outdoor norm.
                         "freeze_protection",
@@ -394,7 +394,9 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # the section that says how much oak the mill has to saw.
     # A stone stool is the slab yard's, so the stools reach both (→ takeoff/countertops.py).
     "window_stools": ("hardwood", "countertops"),
-    "window_returns": ("envelope_layers", "window_return_beads"),
+    "window_returns": ("envelope_layers", "drywall_trims"),
+    # Beads and plaster-in profiles by the LF, off the DrywallStandard (#103).
+    "drywall_trims": ("drywall_trims",),
     "shelf_banks": ("hardwood",),
     # The work surfaces, by the square foot a slab yard quotes. Not "hardwood": a
     # countertop is a purchased fabricated top, not stock the owner's mill saws.

@@ -123,14 +123,17 @@ def resolve_soffit_finishes(model: ResolvedModel) -> list[Finding]:
         for run in model.light_runs:
             if run.soffit_ref != soffit.tag:
                 continue
-            if not (soffit.z0_m <= run.z_m - LIGHT_STRIP_WIDTH_M
+            # A plaster-in profile was seated on this face (→ resolve/drywall_led.py).
+            width = run.aperture_m or LIGHT_STRIP_WIDTH_M
+            if run.profile != "plaster_in" and not (
+                    soffit.z0_m <= run.z_m - LIGHT_STRIP_WIDTH_M
                     and run.z_m <= soffit.z0_m + thickness):
                 findings.append(element_error("integrity.soffit_channel",
                     f"channel {run.tag} must fit within {soffit.tag}'s underside board",
                     run.tag))
                 continue
             # The recess is cut before framing; its inner edge lands on the bottom rail.
-            slot = LineString(run.path).buffer(LIGHT_STRIP_WIDTH_M / 2,
+            slot = LineString(run.path).buffer(width / 2,
                                                cap_style=2, join_style=2)
             bottom_shape = bottom_shape.difference(slot)
         panels = list(_panels(bottom_shape, "underside", soffit.z0_m,

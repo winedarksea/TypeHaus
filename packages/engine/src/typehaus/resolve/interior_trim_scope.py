@@ -213,14 +213,24 @@ def face_function(wall: ResolvedWall, point: tuple[float, float],
                   into_wall: tuple[float, float], z0: float, z1: float) -> str | None:
     """The layer function at ``wall``'s face at ``point``, over the band ``z0..z1``.
 
-    ``into_wall`` is a unit vector pointing from the room into the wall. The layer whose
-    polygon holds a point just behind the face is the face; failing that (a face exactly on
-    a polygon edge), the nearest. ``None`` for a layerless wall.
+    ``into_wall`` is a unit vector pointing from the room into the wall. ``None`` for a
+    layerless wall (→ :func:`face_layer`).
+    """
+    layer = face_layer(wall, point, into_wall, z0, z1)
+    return None if layer is None else layer.function
+
+
+def face_layer(wall: ResolvedWall, point: tuple[float, float],
+               into_wall: tuple[float, float], z0: float, z1: float, depth: float = 0.0):
+    """The layer at ``wall``'s face at ``point`` over ``z0..z1``, probed ``depth`` further in.
+
+    The layer whose polygon holds a point just behind the face is the face; failing that (a
+    face exactly on a polygon edge), the nearest.
     """
     from shapely.geometry import Point, Polygon
 
-    probe = Point(point[0] + into_wall[0] * _FACE_PROBE_M,
-                  point[1] + into_wall[1] * _FACE_PROBE_M)
+    reach = _FACE_PROBE_M + depth
+    probe = Point(point[0] + into_wall[0] * reach, point[1] + into_wall[1] * reach)
     best, best_d = None, float("inf")
     for layer in getattr(wall, "layers", ()):
         if layer.is_cavity or len(layer.polygon) < 3:
@@ -230,11 +240,26 @@ def face_function(wall: ResolvedWall, point: tuple[float, float],
             continue
         polygon = Polygon(layer.polygon)
         if polygon.covers(probe):
-            return layer.function
+            return layer
         distance = polygon.distance(probe)
         if distance < best_d:
-            best, best_d = layer.function, distance
+            best, best_d = layer, distance
     return best
+
+
+def face_is_gypsum(wall: ResolvedWall, point: tuple[float, float],
+                   into_wall: tuple[float, float], z0: float, z1: float, materials: dict) -> bool:
+    """Whether the board behind any coating at ``point`` is gypsum (``Material.gypsum_type``)."""
+    depth = 0.0
+    for _ in range(3):
+        layer = face_layer(wall, point, into_wall, z0, z1, depth)
+        if layer is None:
+            return False
+        material = materials.get(layer.material_ref)
+        if not getattr(material, "coating", False):
+            return getattr(material, "gypsum_type", None) is not None
+        depth += layer.thickness_m
+    return False
 
 
 def is_finish(function: str | None) -> bool:

@@ -358,9 +358,11 @@ def test_catlin_width_channel_and_wall_support_share_the_boundaries(catlin_model
     assert abs(host.z0_m / inch(1).meters - 214) < 1e-9
     run = next(run for run in model.light_runs if run.tag == "LR-S-HALL-GAP")
     assert run.soffit_ref == host.tag and run.emission_side == "left"
-    assert abs(min(x for x, _ in run.path) - xmin - inch(0.25).meters) < 1e-9
-    assert abs(max(x for x, _ in run.path) - xmax + inch(0.25).meters) < 1e-9
-    slot = LineString(run.path).buffer(inch(0.25).meters, cap_style=2, join_style=2)
+    # The plaster-in profile's slot centre stands 2 1/2" in from each wall (#103).
+    assert run.profile == "plaster_in" and run.host_ref == host.tag
+    assert abs(min(x for x, _ in run.path) - xmin - inch(2.5).meters) < 1e-9
+    assert abs(max(x for x, _ in run.path) - xmax + inch(2.5).meters) < 1e-9
+    slot = LineString(run.path).buffer(run.aperture_m / 2, cap_style=2, join_style=2)
     for panel in host.finish_panels:
         if panel.key.startswith("underside"):
             assert Polygon(panel.prism.ring, panel.prism.voids).intersection(slot).area < 1e-9

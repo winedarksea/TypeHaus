@@ -137,7 +137,7 @@ SHAPES: dict[str, Shape] = {
     "bug_screens": Shape("Rainscreen insect screens and strips", None, "LF"),
     "member_protection": Shape("Member protection tape", None, "LF"),
     "fireblock_sealant": Shape("Firestop sealant", None, "LF"),
-    "window_return_beads": Shape("Window return beads", None, "LF"),
+    "drywall_trims": Shape("Drywall beads and plaster-in profiles", None, "LF"),
     "construction_returns": Shape("Construction returns", None, "LF"),
     "sill_gaskets": Shape("Sill gaskets", None, "LF"),
     "drainage": Shape("Stormwater runs", None, "LF"),
@@ -223,9 +223,9 @@ RECIPES: dict[str, Recipe] = {
                          ("envelope_layers", "construction_returns", "sheet_goods", "solids",
                           "allowances"), ("A-301", "A-401")),
     "drywall": Recipe("Drywall", "Board by the sheet and the area behind it, resilient "
-                      "channel, and the dropped soffit boxes.",
+                      "channel, the dropped soffit boxes, and the beads by the foot.",
                       ("sheet_goods", "envelope_layers", "construction_returns", "solids",
-                       "window_return_beads"),
+                       "drywall_trims"),
                       ("A-101",)),
     "paint": Recipe("Paint", "Wall and ceiling coats by area, the foundation coating, and the "
                     "trim allowance.", ("envelope_layers", "allowances"), ("A-101",)),

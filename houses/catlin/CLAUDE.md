@@ -151,6 +151,10 @@ not instruction: when it disagrees with this file or the model, it is the one th
 - `plan/smart_home.py` — `# haus: editable` doorbell, cameras, opener, EVSE, HP1 stat, alarm
   relays and leak valve; types in `plan/smart_home_types.py`. Local-only HA register:
   `notes/smart_home.md`.
+- `plan/drywall.py` — `# haus: editable` `DRYWALL-STANDARD` (decision #103) with its bead and
+  plaster-in LED profile products. The four gypsum-hosted coves are plaster-in: slot centre
+  2-4" off the washed wall, which `integrity.light_run_host` grades. Move a cove and its
+  `emission_side` must still face that wall. Beads bill in `prices.toml [drywall_trims]`.
 - `plan/fixtures.py` — `# haus: editable` plumbing-fixture *instances* (so UI drags
   round-trip). Only explicit constructors in any of these — no functions/generators.
 - `plan/electrical.py` — `# haus: editable` electrical service upgrade: meter, backup

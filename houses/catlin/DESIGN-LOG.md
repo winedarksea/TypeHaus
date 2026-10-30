@@ -1,3 +1,22 @@
+## Plaster-in coves and derived drywall beads (2026-10-30)
+
+Decision #103: `plan/drywall.py` declares `DRYWALL-STANDARD`; the engine derives the beads
+and makes the four gypsum-hosted coves plaster-in wall-washers (a 2" slot, 45-degree channel,
+mudded wings; slot centre 2-4" off the washed wall, i.e. slot edge 1-3"). The new host check
+found three runs that could not be built as drawn:
+
+- `LR-M-LIVING-E` sat at x=35'-6", 1/2" INSIDE the east wall's finish face (425.49"), washing
+  west. It moves to x=35'-2 3/4" and washes the east wall (`emission_side="right"`): 2.74" off
+  its face, the mirror of `LR-M-LIVING-W` (2.74" off the west wall).
+- `LR-M-BATH2-TUB-CLG` was 2 1/8" off W-M-BA2E's face as its comment says, but its path runs
+  north with the light to the west: it now washes east (`emission_side="right"`).
+- `LR-S-HALL-GAP`'s `soffit_edge_offset` goes 1/4" -> 2 1/2": a 2" slot cannot sit 1/4" off a
+  wall, and 2 1/2" lands the slot just inside the soffit's edge rail. The run loses 0.7 LF of
+  tape; the PSU line stands.
+
+The tear-away L-bead left the two trimless door-type prices (material -$20/40, labour
+-$60/150 each) for `[drywall_trims]`, so it is not billed twice.
+
 ## Smart home: local-only, Home Assistant first (2026-10-30)
 
 `plans/TODO.md` asked for every connected device to run in Home Assistant with no vendor cloud

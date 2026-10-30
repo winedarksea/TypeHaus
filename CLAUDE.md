@@ -63,6 +63,13 @@ a release or for exhaustive local verification.
   reaches → `flush_raceway`) into `ResolvedModel.device_boxes`; a surface box gets a derived
   3/4" EMT NM sleeve to the ceiling, and a `FloorHeat.thermostat_ref` its two ENT leads — both
   `derived` `ResolvedConduitRun`s. Graded by `electrical.box_fill`, billed in `[electrical_boxes]`.
+- **Drywall accessories are derived from one `DrywallStandard`** (decision #103):
+  `resolve/drywall_trims.py` finds outside corners, J-bead terminations, tile-stop reveals,
+  trimless-door L-bead and window-return beads off the host faces into
+  `ResolvedModel.drywall_trims`, billed by the LF in `[drywall_trims]`. Its `led_profile`
+  makes a light run set into a gypsum ceiling or soffit `plaster_in` (`resolve/drywall_led.py`):
+  slot cut, `z_m` on the board face, the washed wall graded by `integrity.light_run_host`. The
+  run's swept section is served to the viewer, never copied there.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure

@@ -240,6 +240,12 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.interior_trim import resolve_interior_trim
 
         findings.extend(resolve_interior_trim(plan, model))
+    with _stage("drywall_trims"):
+        # After rooms, ceilings, paneling, window returns and trim scope; before geometry,
+        # whose soffit boards take a plaster-in run's slot (decision #103).
+        from typehaus.resolve.drywall_trims import resolve_drywall_trims
+
+        findings.extend(resolve_drywall_trims(plan, model))
     with _stage("floor_heat"):
         findings.extend(resolve_floor_heat(model))
     with _stage("device_raceways"):

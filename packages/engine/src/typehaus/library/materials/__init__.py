@@ -15,6 +15,7 @@ from __future__ import annotations
 from typehaus.library.decking import TREX_ENHANCE_BASICS
 from typehaus.library.materials import cladding as _cladding
 from typehaus.library.materials import concrete_masonry as _concrete_masonry
+from typehaus.library.materials import drywall_accessories as _drywall_accessories
 from typehaus.library.materials import finishes as _finishes
 from typehaus.library.materials import framing as _framing
 from typehaus.library.materials import hardwoods as _hardwoods
@@ -34,6 +35,7 @@ _ALL = (
     + _membranes.MATERIALS
     + _cladding.MATERIALS
     + _finishes.MATERIALS
+    + _drywall_accessories.MATERIALS
     + _concrete_masonry.MATERIALS
     + _site.MATERIALS
     + _hardwoods.MATERIALS

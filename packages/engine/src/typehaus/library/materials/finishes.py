@@ -521,8 +521,4 @@ MATERIALS: tuple[Material, ...] = (
         source="factory-primed MDF board stock, painted on site; cheaper than poplar and "
         "dent-prone at the floor, so a base in a mudroom or hall is better in poplar",
     ),
-    Material(tag="drywall-corner-bead", name="Drywall outside corner bead",
-             source="Generic window-return edge accessory; product selection pending."),
-    Material(tag="drywall-frame-termination-bead", name="Drywall window-frame termination bead",
-             source="Generic window-return frame accessory; product selection pending."),
 )

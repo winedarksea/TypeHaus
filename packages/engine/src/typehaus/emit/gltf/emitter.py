@@ -82,7 +82,7 @@ from typehaus.emit.trade_rules import (
     solid_trades,
 )
 from typehaus.resolve.assembly_material import solid_material_ref
-from typehaus.resolve.geometry import light_run_band_shells
+from typehaus.resolve.geometry import light_run_parts, light_run_section_shells
 from typehaus.resolve.geometry_build import wall_trades
 from typehaus.resolve.geometry_ir import GBox
 from typehaus.resolve.geometry_millwork import window_stool_prism
@@ -469,13 +469,15 @@ def _add_earth(mb: _MeshBuilder, model: ResolvedModel) -> None:
 
 
 _LIGHT_RUN_BAND_ROLE = {"back": "cove_channel", "base": "cove_channel", "lip": "cove_channel",
-                        "tape": "led_tape"}
+                        "body": "cove_channel", "tape": "led_tape", "lens": "cove_lens",
+                        "flange": "cove_flange"}
 
 
 def _add_light_run(mb: _MeshBuilder, run) -> None:
-    """The cove channel + tape, one prism per band per leg (→ resolve/geometry.py
-    ``light_run_band_profiles``, mirrored in ui/src/three/builders/structure.ts)."""
-    for key, faces in light_run_band_shells(list(run.path), run.vertex_z(), run.emission_side):
+    """The run's swept section, one prism per part per leg (→ resolve/geometry.py
+    ``light_run_section_shells``; the viewer sweeps the same parts from model.json)."""
+    for key, faces in light_run_section_shells(list(run.path), run.vertex_z(),
+                                               light_run_parts(run), run.emission_side):
         triangles = []
         for face in faces:
             quad = [_to_gltf(*point) for point in face]

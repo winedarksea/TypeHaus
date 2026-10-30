@@ -75,7 +75,7 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids",
              "member_protection",
              # Firestop sealant by the foot of penetration. See ``Prices.fireblock_sealant``.
              "fireblock_sealant",
-             "window_return_beads",
+             "drywall_trims",
              # Monolithic wall structure: concrete/masonry walls by the yard.
              "wall_structure",
              # Reinforcing steel by the POUND, which is how it is bought and billed. Keyed
@@ -350,7 +350,8 @@ class Prices:
     member_protection: Mapping[str, PriceRange] = field(default_factory=dict)
     # Firestop sealant by the lineal foot of fireblock penetration, keyed on material tag.
     fireblock_sealant: Mapping[str, PriceRange] = field(default_factory=dict)
-    window_return_beads: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Drywall beads and plaster-in LED profiles by the LF, keyed on material (#103).
+    drywall_trims: Mapping[str, PriceRange] = field(default_factory=dict)
     # Monolithic wall structure, keyed on the *assembly* tag rather than the material: a
     # placed yard of SUNKEN_GARDEN_WALL and a yard of BASEMENT_12 are both "concrete"
     # and are not the same price. Priced by the cubic yard; the rows also carry

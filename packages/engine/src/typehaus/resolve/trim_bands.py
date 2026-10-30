@@ -173,3 +173,75 @@ def led_cove_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band, Band
         ("lip", thickness_m - wall, wall, lip_depth, 0.0),
         ("tape", wall, thickness_m - 2.0 * wall, depth_m - wall, depth_m - wall - tape_h),
     )
+
+
+# A plaster-in profile's mudded wing: drawn this far below the board face so it reads as
+# flush finish over the ceiling rather than vanishing into it.
+FLANGE_SKIN_M = inch(1 / 32).meters
+LENS_M = inch(1 / 16).meters
+
+Quad = tuple[tuple[float, float], ...]
+
+
+def surface_channel_parts(width_m: float, depth_m: float) -> tuple[tuple[str, Quad], ...]:
+    """:func:`led_cove_bands` as ``(key, quad)`` in the (across, drop) frame: across runs
+    toward the emission side from the run's centreline, drop down from the run's height."""
+    half = width_m / 2.0
+    out = []
+    for key, offset, band_t, bottom, top in led_cove_bands(width_m, depth_m):
+        left, right = -half + offset, -half + offset + band_t
+        out.append((key, ((left, top), (right, top), (right, bottom), (left, bottom))))
+    return tuple(out)
+
+
+def plaster_in_washer_parts(aperture_m: float, depth_m: float, flange_m: float,
+                            tilt_rad: float) -> tuple[tuple[str, Quad], ...]:
+    """A plaster-in wall-washer in the (across, drop) frame, drop 0 at the board's face.
+
+    The U is tilted ``tilt_rad`` so its tape faces down and toward the washed wall (+across):
+    ``body`` (back wall, front wall, base, and the two webs joining it to the wings at the
+    face), ``tape`` on the base, ``lens`` across the mouth, and the two mudded ``flange``
+    wings on the face. Each quad is convex, so it sweeps as a box. The channel takes half the
+    slot; its walls start where they meet the face, so nothing hangs below the slot.
+    """
+    sin_t, cos_t = math.sin(tilt_rad), math.cos(tilt_rad)
+    half_a = aperture_m / 2.0
+    wall = min(CHANNEL_WALL_M, aperture_m / 8.0)
+    half_w = aperture_m * cos_t / 4.0  # half the channel's inner width, across its axis
+    lift = half_w * sin_t / cos_t  # the back wall's start up the axis, at the face
+    length = (depth_m - (half_w + wall) * sin_t) / cos_t - wall
+    length = max(length, lift + 3.0 * wall)
+    tape = min(TAPE_HEIGHT_M, (length - lift) / 3.0)
+
+    def at(p: float, w: float) -> tuple[float, float]:
+        # p across the channel (toward the wall), w up its axis; back to (across, drop).
+        return (p * cos_t - w * sin_t, -(p * sin_t + w * cos_t))
+
+    def face_w(p: float) -> float:
+        return -p * sin_t / cos_t
+
+    def wall_quad(p_in: float, p_out: float) -> Quad:
+        return (at(p_in, face_w(p_in)), at(p_out, face_w(p_out)),
+                at(p_out, length), at(p_in, length))
+
+    def web(a0: float, a1: float) -> Quad:
+        return ((a0, -FLANGE_SKIN_M), (a1, -FLANGE_SKIN_M), (a1, 0.0), (a0, 0.0))
+
+    back_edge = at(-half_w - wall, face_w(-half_w - wall))[0]
+    front_edge = at(half_w + wall, face_w(half_w + wall))[0]
+    return (
+        ("body", wall_quad(-half_w, -half_w - wall)),
+        ("body", wall_quad(half_w, half_w + wall)),
+        ("body", (at(-half_w - wall, length), at(half_w + wall, length),
+                  at(half_w + wall, length + wall), at(-half_w - wall, length + wall))),
+        ("body", web(-half_a, back_edge)),
+        ("body", web(front_edge, half_a)),
+        ("tape", (at(-half_w, length - tape), at(half_w, length - tape),
+                  at(half_w, length), at(-half_w, length))),
+        ("lens", (at(-half_w, lift), at(half_w, lift),
+                  at(half_w, lift + LENS_M), at(-half_w, lift + LENS_M))),
+        ("flange", ((-half_a - flange_m, 0.0), (-half_a, 0.0),
+                    (-half_a, FLANGE_SKIN_M), (-half_a - flange_m, FLANGE_SKIN_M))),
+        ("flange", ((half_a, 0.0), (half_a + flange_m, 0.0),
+                    (half_a + flange_m, FLANGE_SKIN_M), (half_a, FLANGE_SKIN_M))),
+    )

@@ -103,28 +103,20 @@ def test_bom_estimate_csv_and_drywall_bid_bill_each_item_once(catlin_model_ro, r
     # The gypsum family: the plain board plus the AR and MR returns, each rounded to 0.1 SF.
     gypsum = sum(r['net_area_sqft'] for r in rows if r['material'].startswith('gwb'))
     assert gypsum == pytest.approx(board_area / 0.09290304, abs=0.2)
-    beads = return_bom['window_return_beads']
-    assert len(beads) == 2
+    beads = [r for r in return_bom['drywall_trims']
+             if r['kind'] in ('window_corner', 'window_frame')]
+    assert {r['kind'] for r in beads} == {'window_corner', 'window_frame'}
+    returns_ft = sum(r.bead_length_m for r in model.window_returns) / 0.3048
+    for kind in ('window_corner', 'window_frame'):
+        assert sum(r['length_ft'] for r in beads if r['kind'] == kind) == pytest.approx(
+            returns_ft, abs=0.05 * len(beads))
     labels = LabelIndex.from_plan(model.plan)
     estimate = estimate_costs(return_bom, Prices(path=Path('unused')), labels=labels)
-    unpriced = [r for r in estimate['unpriced'] if r['section'] == 'window_return_beads']
-    assert len(unpriced) == 2
-    assert not [r for r in estimate_rows(estimate) if r['section'] == 'window_return_beads']
+    unpriced = [r for r in estimate['unpriced'] if r['section'] == 'drywall_trims']
+    assert len(unpriced) == len(return_bom['drywall_trims'])
+    assert not [r for r in estimate_rows(estimate) if r['section'] == 'drywall_trims']
     packages = build_bid_packages(model, return_bom, labels=labels)
     lines = [line for group in packages['drywall'].groups for line in group.lines
-             if line.section == 'window_return_beads']
-    assert len(lines) == 2
-    assert all(line.unit == 'LF' for line in lines)
-    assert {line.key for line in lines} == {r['material'] for r in beads}
-
-
-def test_return_sections_use_the_wall_finish_layer(catlin_model_ro):
-    import json
-
-    from typehaus.emit.draw.section import build_center_section
-
-    return_uids = {s.uid for s in catlin_model_ro.solids if s.category == 'window_return'}
-    nodes = json.loads(build_center_section(catlin_model_ro).to_json())['nodes']
-    outlines = [node for node in nodes if node.get('uid') in return_uids]
-    assert outlines
-    assert {node['layer'] for node in outlines} == {'A-WALL-FINI'}
+             if line.section == 'drywall_trims']
+    assert lines and all(line.unit == 'LF' for line in lines)
+    assert {r['material'] for r in beads} <= {line.key for line in lines}

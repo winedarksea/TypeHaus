@@ -64,7 +64,7 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // and reading the two side by side is what makes a mill order legible. It is a view —
     // its rows carry `also_in_*` where they mirror another section — so it adds nothing to
     // the estimate.
-    sections: ["envelope_layers", "window_return_beads", "wood_surfaces", "hardwood", "glazing_panels", "glazing_trim",
+    sections: ["envelope_layers", "drywall_trims", "wood_surfaces", "hardwood", "glazing_panels", "glazing_trim",
       "edge_trim", "cladding_trim", "bug_screens", "openings", "floor_finishes", "stair_finish", "stair_treads",
       "railings"],
   },

@@ -41,7 +41,7 @@ SECTION_LABELS: dict[str, str] = {
     "cladding_trim": "Cladding and roof-edge trim",
     "bug_screens": "Rainscreen insect screens",
     "fireblock_sealant": "Firestop sealant",
-    "window_return_beads": "Window return beads",
+    "drywall_trims": "Drywall beads and LED profiles",
     "wall_structure": "Wall structure by the yard", "reinforcement": "Reinforcing steel",
     "timber": "Timber", "steel_members": "Rolled steel members",
     "railings": "Guards and handrails",
@@ -330,8 +330,11 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
     if section == "construction_returns":
         kind = KEY_GLOSSARY.get((section, bare), bare.replace("-", " ").capitalize())
         return f"{kind}, {labels.material(g('material'))}"
-    if section == "window_return_beads":
-        return labels.material(bare)
+    if section == "drywall_trims":
+        from typehaus.takeoff.drywall_trims import KIND_LABELS
+
+        kind = KIND_LABELS.get(str(g("kind")), str(g("kind") or ""))
+        return f"{kind}, {labels.material(bare)}" if kind else labels.material(bare)
     if section == "sill_gaskets":
         return KEY_GLOSSARY.get((section, bare)) or labels.material(bare)
     if section == "drainage":

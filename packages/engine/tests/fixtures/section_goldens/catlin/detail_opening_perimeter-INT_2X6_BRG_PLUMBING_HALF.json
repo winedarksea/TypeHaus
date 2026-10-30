@@ -846,8 +846,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMR401AAAA-ceiling",
-      "tag": "CEIL-RM-M-LIVING"
+      "uid": "CMR401AAAA-ceiling-slot1",
+      "tag": "CEIL-RM-M-LIVING-SLOT1"
     },
     {
       "space": "model",

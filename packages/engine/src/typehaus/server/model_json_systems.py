@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from typehaus.checks.registry import Preferences
+from typehaus.resolve.geometry import light_run_parts
 from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json_shared import _provenance
 from typehaus.source.provenance import Provenance
@@ -71,6 +72,11 @@ def systems_json(
              "circuit": run.circuit, "psu_ref": run.psu_ref,
              "controlled_by": list(run.controlled_by),
              "soffit_ref": run.soffit_ref, "emission_side": run.emission_side,
+             # The swept section (→ resolve/geometry.light_run_parts): the viewer sweeps
+             # these, so it never keeps a second copy of a profile.
+             "profile": run.profile,
+             "section": [{"key": key, "quad": [list(corner) for corner in quad]}
+                         for key, quad in light_run_parts(run)],
              "provenance": _provenance(provenance, run.tag)}
             for run in sorted(model.light_runs, key=lambda item: item.uid)
         ],
