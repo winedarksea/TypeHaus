@@ -9,6 +9,8 @@ from typehaus import Material
 # The tile baths' base is the painted PVC board (owner 2026-10-29), not a cut-tile base.
 _TOE = ("Floor tile stops 1/4 inch off the wall; the PVC base sits on the tile over the gap, "
         "silicone at its toe, never grout.")
+_LARGE_FORMAT = ("Large format: substrate flat to 1/8 inch in 10 ft (ANSI A108.02), "
+                 "large-and-heavy-tile mortar, lippage control. ")
 
 MATERIALS_FLOORING = [
     Material(tag="catlin-plant-vinyl-raised", name="Plant-room sheet vinyl over SurePly",
@@ -47,19 +49,16 @@ MATERIALS_FLOORING = [
                     'once in carpet labor. Confirm manufacturer acceptance and warranty '
                     'requirements. Manufacturer-approved 3/8-inch, 8 lb/ft3 cushion is '
                     'the height-coordination alternative; notes/bedroom_carpet.md.'),
-    Material(tag="catlin-tile-calacatta-gold", name="Calacatta Gold hex mosaic, white epoxy grout",
-             hatch="masonry", color="#f2efe8", finish="tile-calacatta-gold-hex",
-             finish_thickness_in=0.75, floor_waste_fraction=0.15,
+    Material(tag="catlin-tile-opera-blue",
+             name="Selene Opera Blue 24x48 polished, platinum epoxy grout",
+             hatch="masonry", color="#c5c6cc", finish="tile-onyx-opera-blue-grid",
+             finish_thickness_in=0.75, floor_waste_fraction=0.20,
              base_joint_ref="catlin-base-toe-silicone",
              floor_companion_refs=("catlin-ditra-heat",),
-             product_ref="PROD-QUBE-BODE-CALACATTA-HEX",
-             source='RM-M-BATH2: nominal 3-inch matte hex (actual 2.86-inch chips), '
-                    'white epoxy grout. '
-                    '1/4-inch DITRA-HEAT + 0.26-inch tile + '
-                    '0.24-inch combined bedding/approved leveling '
-                    '= 3/4 inch. Beds provisional; verify installed stack. '
-                    'Larger chips replace nominal MSI 2-inch hex to clear the membrane '
-                    'minimum. ' + _TOE),
+             product_ref="PROD-IVY-SELENE-OPERA-BLUE",
+             source='RM-M-BATH2: 24 x 48-inch polished onyx-look porcelain, 1/16-inch '
+                    'rectified joints, platinum epoxy grout. 1/4-inch DITRA-HEAT + '
+                    '~0.40-inch tile + ~0.10-inch mortar = 3/4 inch. ' + _LARGE_FORMAT + _TOE),
     Material(tag="catlin-tile-kaleo-brick", name="Kaleo Brick terracotta, cream epoxy grout",
              hatch="masonry", color="#bc7658", finish="tile-kaleo-running-bond",
              finish_thickness_in=0.75, floor_waste_fraction=0.15,
@@ -69,17 +68,18 @@ MATERIALS_FLOORING = [
                     'running bond, warm cream slightly yellow epoxy grout. 5/16-inch '
                     'DITRA-XL + provisional 5/16-inch tile + 1/8-inch combined mortar '
                     '= 3/4 inch. Confirm tile thickness and beds before installation. ' + _TOE),
-    Material(tag="catlin-tile-flower-blue", name="Flower Blue mosaic, light gray epoxy grout",
-             hatch="masonry", color="#c7d9e2", finish="tile-flower-blue",
-             finish_thickness_in=0.75, floor_waste_fraction=0.15,
+    Material(tag="catlin-tile-agua-linda",
+             name="Agua Linda 24x48 polished, platinum epoxy grout",
+             hatch="masonry", color="#c7d5e2", finish="tile-onyx-agua-linda-grid",
+             finish_thickness_in=0.75, floor_waste_fraction=0.20,
              base_joint_ref="catlin-base-toe-silicone",
-             floor_companion_refs=("catlin-mosaic-backer",),
-             product_ref="PROD-SUNWINGS-FLOWER-BLUE",
-             source='RM-S-VANITY: glossy glass petal mosaic, white base/white mortar, '
-                    'light gray epoxy grout. 1/4-inch cement backer + 6 mm tile + '
-                    '0.264-inch combined bedding/approved leveling allowance = 3/4 inch. '
-                    'Provisional: select backer-compatible leveling system, not thick thinset. '
-                    'Small chips are not placed directly over DITRA-XL. ' + _TOE),
+             floor_companion_refs=("tile-uncoupling-membrane",),
+             product_ref="PROD-MSI-AGUA-LINDA",
+             source='RM-S-VANITY: 24 x 48-inch polished blue onyx-look porcelain, 1/16-inch '
+                    'rectified joints, platinum epoxy grout. 1/8-inch uncoupling membrane + '
+                    '0.40-inch tile + ~0.225-inch combined mortar = 3/4 inch (DITRA-XL '
+                    'would leave under 1/16 inch of mortar). Listing DCOF <0.42, dry '
+                    'areas; accepted for a sinks-only room. ' + _LARGE_FORMAT + _TOE),
     Material(tag="catlin-tile-carrara", name="Budget Carrara matte 12x24, white epoxy grout",
              hatch="masonry", color="#e9edf0", finish="tile-carrara-grid",
              finish_thickness_in=0.75, floor_waste_fraction=0.15,
@@ -91,12 +91,6 @@ MATERIALS_FLOORING = [
                     '0.146-inch combined mortar = 3/4 inch. Verify thickness and beds; '
                     'matte selected '
                     'instead of requested polished HDC for published wet DCOF >=0.42. ' + _TOE),
-    Material(tag="catlin-mosaic-backer", name="Continuous cement backer for glass mosaic, 1/4 inch",
-             hatch="cement", color="#aaa69c",
-             source='Nonheated RM-S-VANITY; fastened cement backer bedded in mortar. '
-                    'Include approved height leveling in this assembly allowance. '
-                    'Use white glass-compatible setting mortar above; '
-                    'no DITRA minimum chip restriction.'),
     Material(tag="catlin-carpet-underlayment",
              name='Provisional rigid plywood carpet underlayment allowance, 1/4"',
              hatch="lumber", color="#bfae91",

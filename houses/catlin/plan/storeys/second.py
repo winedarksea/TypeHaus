@@ -1013,7 +1013,7 @@ ROOMS = [
                    function=LayerFunction.FINISH),
          )),
     Room(uid="CSR413AAAA", tag="RM-S-VANITY", seed=pt(ft(3), ft(24, 4)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-flower-blue",
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-agua-linda",
          wall_lining_exceptions=(
              WallLiningException(
                  uid="S8D686HMRF", tag="LX-S-VANITY-W2", wall_ref="W-S-W2",

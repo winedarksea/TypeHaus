@@ -19,7 +19,7 @@ try {
   browser = await launchChromium({ port: 9333 });
   session = await attachToPage(browser.port);
   await session.send("Emulation.setDeviceMetricsOverride", {
-    width: 1600, height: 1220, deviceScaleFactor: 1, mobile: false,
+    width: 1600, height: 2320, deviceScaleFactor: 1, mobile: false,
   });
   await mkdir(output, { recursive: true });
   for (const view of ["rooms", "detail"]) {

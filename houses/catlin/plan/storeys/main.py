@@ -1532,7 +1532,7 @@ ROOMS = [
                    function=LayerFunction.FINISH),
          )),
     Room(uid="CMR404AAAA", tag="RM-M-BATH2", seed=pt(ft(4), ft(18)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-calacatta-gold",
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-opera-blue",
          wall_lining_exceptions=(
              WallLiningException(
                  uid="0DBYNX5F4F", tag="LX-M-BATH2-W3", wall_ref="W-M-W3",

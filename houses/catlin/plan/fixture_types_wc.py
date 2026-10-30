@@ -181,7 +181,7 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
     "tag": "FX-SHOWER-36-THERMO-COMBO",
     "height": inch(BATH2_SHOWER.model_height),
     "model_representation": ModelRepresentation(
-        symbol="swanstone-flex-3636", material_refs={"carrara": "solid-surface-panel"}),
+        symbol="swanstone-flex-3636", material_refs={"solid-surface": "solid-surface-base"}),
     "name": 'Shower, 36", thermostatic valve with a two-in-one rainshower combo',
     "product_ref": "PROD-DELTA-T17T",
     "source": 'RM-M-BATH2, owner selection 2026-10-12, replacing FX-SHOWER-36-DIVERTED. '
@@ -189,8 +189,8 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
               'thermostatic trim (PROD-DELTA-T17T): separate temperature and volume, no '
               'diverter. Head: Moen Attract Magnetix 26008 rainshower combo, 1.75 gpm, ONE '
               'outlet. Base: a Swanstone SS-3636 36x36 centre-drain solid-surface base '
-              '(PROD-SOLID-SURFACE-SHOWER) under floor-to-ceiling panels (WP-M-BATH2-SURR), '
-              'Carrara (221). '
+              '(PROD-SOLID-SURFACE-SHOWER) under floor-to-ceiling Modern Subway panels '
+              '(WP-M-BATH2-SURR), White (.010), owner 2026-10-29. '
               'GLASS: on the tub (north) side, floor to ceiling on the Corian deck\'s S leg over '
               'W-M-TUBDK-S, in a routed channel or clamps, the top sloped >= 1/4 in. into the '
               'stall, no joint under the glass (notes/bath2_tub_deck_finish.md); on '

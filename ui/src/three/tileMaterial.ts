@@ -2,39 +2,58 @@
 import * as THREE from "three";
 import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
 import { latticeHash, tiledFbm } from "./valueNoise";
+import { ONYX_PRINTS, onyxFace, type OnyxPrintKey } from "./onyxPixels";
+import { buildOnyxMaps, disposeOnyxTextures } from "./onyxMaps";
 
 const INCH = 0.0254;
-const SQRT3 = Math.sqrt(3);
 export const TILE_RENDER_SETTINGS = {
   pixels: 1024, groutDepthM: 0.0006, bevelM: 0.0007, groutRoughness: 0.85,
   anisotropy: 4,
 } as const;
 
 export interface TileStyle {
-  readonly pattern: "hex" | "running-bond" | "flower" | "grid";
+  readonly pattern: "running-bond" | "grid";
   readonly sizeM: readonly [number, number];
   readonly jointM: number;
   readonly color: readonly [number, number, number];
   readonly grout: readonly [number, number, number];
   readonly roughness: number;
+  /** Per-tile shade: fired-clay batches, faint porcelain lots (default), or none. */
+  readonly variation?: "terracotta" | "subtle" | "none";
+  /** Strength of the printed vein; 0 (default) is an unveined face. */
+  readonly veinWeight?: number;
+  /** Joint roughness when the "joint" is the panel's own relief, not grout. */
+  readonly jointRoughness?: number;
+  /** Tiles per repeat, [cols, rows]; default [2, 2]. */
+  readonly repeat?: readonly [number, number];
+  /** A fixed full-colour print (onyx kernel) instead of the tinted procedural face. */
+  readonly print?: OnyxPrintKey;
 }
 
 export const TILE_STYLES: Readonly<Record<string, TileStyle>> = {
-  "tile-calacatta-gold-hex": {
-    pattern: "hex", sizeM: [2.86 * INCH, 2.86 * INCH], jointM: INCH / 8,
-    color: [247, 245, 239], grout: [249, 248, 244], roughness: 0.72,
-  },
   "tile-kaleo-running-bond": {
     pattern: "running-bond", sizeM: [14.17 * INCH, 7.08 * INCH], jointM: INCH / 8,
-    color: [187, 115, 83], grout: [232, 218, 180], roughness: 0.82,
-  },
-  "tile-flower-blue": {
-    pattern: "flower", sizeM: [11.12 * INCH, 11.44 * INCH], jointM: INCH / 16,
-    color: [244, 245, 242], grout: [211, 215, 215], roughness: 0.22,
+    color: [187, 115, 83], grout: [232, 218, 180], roughness: 0.82, variation: "terracotta",
   },
   "tile-carrara-grid": {
     pattern: "grid", sizeM: [24 * INCH, 12 * INCH], jointM: INCH / 8,
-    color: [244, 246, 246], grout: [250, 249, 245], roughness: 0.58,
+    color: [244, 246, 246], grout: [250, 249, 245], roughness: 0.58, veinWeight: 0.42,
+  },
+  // Swanstone Modern Subway: a 6x24 relief moulded into one gloss panel, so the "grout" is
+  // the body colour and only the recess reads.
+  "tile-swanstone-modern-subway": {
+    pattern: "running-bond", sizeM: [24 * INCH, 6 * INCH], jointM: INCH / 8,
+    color: [244, 244, 242], grout: [244, 244, 242], roughness: 0.35, variation: "none",
+    jointRoughness: 0.45,
+  },
+  // Onyx-look polished porcelain, 24x48 with 8 faces per repeat; grout is platinum.
+  "tile-onyx-opera-blue-grid": {
+    pattern: "grid", sizeM: [24 * INCH, 48 * INCH], jointM: INCH / 16, repeat: [4, 2],
+    color: [197, 198, 204], grout: [200, 201, 200], roughness: 0.08, print: "opera-blue",
+  },
+  "tile-onyx-agua-linda-grid": {
+    pattern: "grid", sizeM: [24 * INCH, 48 * INCH], jointM: INCH / 16, repeat: [4, 2],
+    color: [199, 213, 226], grout: [200, 201, 200], roughness: 0.08, print: "agua-linda",
   },
 };
 
@@ -42,22 +61,17 @@ export function tileStyleOrNull(finish: string | null | undefined): TileStyle | 
   return finish ? TILE_STYLES[finish] ?? null : null;
 }
 
-/** Rectangular repeat contains whole staggered rows / hex columns, including joints. */
+/** Rectangular repeat contains whole staggered rows, including joints. */
 export function tileRepeatSizeM(style: TileStyle): readonly [number, number] {
   const [w, h] = style.sizeM;
-  if (style.pattern === "hex") {
-    const pitch = w + style.jointM;
-    return [2 * SQRT3 * pitch, 2 * pitch];
-  }
-  if (style.pattern === "flower") return [w, h];
-  return [(w + style.jointM) * 2, (h + style.jointM) * 2];
+  const [cols, rows] = style.repeat ?? [2, 2];
+  return [(w + style.jointM) * cols, (h + style.jointM) * rows];
 }
 
 const wrap = (x: number, period: number) => ((x % period) + period) % period;
 const clamp = (x: number) => Math.max(0, Math.min(1, x));
+const VEIN_COLOR = [139, 151, 160] as const;
 const noiseOctaves: ReadonlyArray<readonly [number, number]> = [[4, 0.8], [13, 0.3], [37, 0.12]];
-const BLUE_COLORS = [[235, 240, 240], [181, 207, 218], [119, 159, 180], [82, 113, 139],
-  [240, 241, 237], [213, 221, 224]] as const;
 
 interface TileSample {
   readonly color: readonly number[];
@@ -70,79 +84,44 @@ export function sampleTile(style: TileStyle, u: number, v: number): TileSample {
   u = wrap(u, 1); v = wrap(v, 1);
   const [repeatX, repeatY] = tileRepeatSizeM(style);
   const x = u * repeatX, y = v * repeatY;
-  let distance = 0, id = 0, localX = x, localY = y;
-  let base: readonly number[] = style.color;
-  if (style.pattern === "hex") {
-    const pitch = style.sizeM[0] + style.jointM;
-    const columnPitch = SQRT3 * pitch / 2;
-    let best = -Infinity;
-    const column = Math.round(x / columnPitch);
-    for (let c = column - 1; c <= column + 1; c++) {
-      const row = Math.round(y / pitch - c / 2);
-      const dx = x - c * columnPitch, dy = y - (row + c / 2) * pitch;
-      const edge = Math.max(Math.abs(dy), SQRT3 / 2 * Math.abs(dx) + Math.abs(dy) / 2);
-      const inside = style.sizeM[0] / 2 - edge;
-      if (inside > best) {
-        best = inside; localX = dx; localY = dy;
-        id = latticeHash(wrap(c, 4), wrap(row + Math.floor(c / 2), 2));
-      }
-    }
-    distance = best;
-  } else if (style.pattern === "flower") {
-    // Marquise glass pieces follow a periodic swirl, with white glass infill. The
-    // mesh-sheet dimensions set the repeat; these are shaped chips, not a floral print.
-    const cells = 8;
-    const cellX = repeatX / cells, cellY = repeatY / cells;
-    const column = Math.floor(x / cellX), row = Math.floor(y / cellY);
-    let closestEdge = -Infinity, selectedColor: readonly number[] = style.color;
-    for (let c = column - 1; c <= column + 1; c++) {
-      for (let r = row - 1; r <= row + 1; r++) {
-        const phaseX = (wrap(c, cells) + 0.5) / cells * Math.PI * 2;
-        const phaseY = (wrap(r, cells) + 0.5) / cells * Math.PI * 2;
-        const centerX = (c + 0.5 + 0.12 * Math.sin(phaseY)) * cellX;
-        const centerY = (r + 0.5 + 0.12 * Math.sin(phaseX)) * cellY;
-        const angle = Math.atan2(Math.sin(phaseY), Math.sin(phaseX)) + 0.65;
-        const dx = x - centerX, dy = y - centerY;
-        const along = dx * Math.cos(angle) + dy * Math.sin(angle);
-        const across = -dx * Math.sin(angle) + dy * Math.cos(angle);
-        const halfLength = cellX * 0.65, halfWidth = cellY * 0.28;
-        const edge = Math.min(halfLength - Math.abs(along),
-          halfWidth * (1 - (along / halfLength) ** 2) - Math.abs(across));
-        if (edge > closestEdge) {
-          closestEdge = edge; localX = along; localY = across;
-          id = latticeHash(wrap(c, cells), wrap(r, cells));
-          selectedColor = BLUE_COLORS[Math.floor(id * BLUE_COLORS.length)];
-        }
-      }
-    }
-    base = closestEdge > 0 ? selectedColor : style.color;
-    distance = Math.abs(closestEdge) - style.jointM / 2;
-  } else {
-    const px = style.sizeM[0] + style.jointM, py = style.sizeM[1] + style.jointM;
-    const row = Math.floor(y / py);
-    const shiftedX = x + (style.pattern === "running-bond" ? (row % 2) * px / 2 : 0);
-    const col = Math.floor(shiftedX / px);
-    localX = wrap(shiftedX, px); localY = wrap(y, py);
-    distance = Math.min(localX, px - localX, localY, py - localY) - style.jointM / 2;
-    id = latticeHash(wrap(col, 2), wrap(row, 2));
-  }
+  const px = style.sizeM[0] + style.jointM, py = style.sizeM[1] + style.jointM;
+  const row = Math.floor(y / py);
+  const shiftedX = x + (style.pattern === "running-bond" ? (row % 2) * px / 2 : 0);
+  const col = Math.floor(shiftedX / px);
+  const localX = wrap(shiftedX, px), localY = wrap(y, py);
+  const distance = Math.min(localX, px - localX, localY, py - localY) - style.jointM / 2;
+  const [cols, rows] = style.repeat ?? [2, 2];
+  const id = latticeHash(wrap(col, cols), wrap(row, rows));
   const tileFraction = clamp(distance / TILE_RENDER_SETTINGS.bevelM);
+  if (style.print) {
+    // Face by cell; coarse (60 px/m) so headless sampling stays cheap.
+    const face = (wrap(row, rows) * cols + wrap(col, cols)) % ONYX_PRINTS[style.print].faces;
+    const half = style.jointM / 2;
+    const s = onyxFace(style.print, face, Math.min(style.sizeM[0], Math.max(0, localX - half)),
+      Math.min(style.sizeM[1], Math.max(0, localY - half)), 60);
+    const face3 = [s.r, s.g, s.b];
+    return {
+      color: style.grout.map((g, i) => g * (1 - tileFraction) + face3[i] * tileFraction),
+      heightM: tileFraction * TILE_RENDER_SETTINGS.groutDepthM,
+      roughness: TILE_RENDER_SETTINGS.groutRoughness * (1 - tileFraction) + style.roughness * tileFraction,
+    };
+  }
   const cloud = tiledFbm(u, v, noiseOctaves);
   const primary = Math.pow(1 - Math.abs(Math.sin(26 * localX + 17 * localY + 4 * cloud + id * 8)), 38);
   const secondary = Math.pow(1 - Math.abs(Math.sin(43 * localX - 31 * localY + 5 * cloud + id * 13)), 65);
   const vein = Math.max(primary, secondary * 0.45);
-  const terracotta = style.pattern === "running-bond";
-  const variation = terracotta ? 0.90 + id * 0.18 + cloud * 0.10 : 0.98 + id * 0.025;
-  const veinColor = style.pattern === "hex" ? [178, 146, 93] : [139, 151, 160];
-  const veinAmount = terracotta ? 0 : vein * (style.pattern === "flower" ? 0.18 : 0.42);
-  const color = base.map((channel, i) => {
-    const tile = channel * variation * (1 - veinAmount) + veinColor[i] * veinAmount;
+  const shade = style.variation ?? "subtle";
+  const variation = shade === "terracotta" ? 0.90 + id * 0.18 + cloud * 0.10
+    : shade === "subtle" ? 0.98 + id * 0.025 : 1;
+  const veinAmount = vein * (style.veinWeight ?? 0);
+  const color = style.color.map((channel, i) => {
+    const tile = channel * variation * (1 - veinAmount) + VEIN_COLOR[i] * veinAmount;
     // Baked contact shading makes white recessed joints readable without changing grout hue.
     return style.grout[i] * 0.90 * (1 - tileFraction) + tile * tileFraction;
   });
   return {
     color, heightM: tileFraction * TILE_RENDER_SETTINGS.groutDepthM,
-    roughness: TILE_RENDER_SETTINGS.groutRoughness * (1 - tileFraction)
+    roughness: (style.jointRoughness ?? TILE_RENDER_SETTINGS.groutRoughness) * (1 - tileFraction)
       + style.roughness * tileFraction,
   };
 }
@@ -151,6 +130,7 @@ interface TileMaps { color: THREE.Texture; normal: THREE.Texture; roughness: THR
 const tileMaps = new Map<TileStyle, TileMaps>();
 
 export function buildTileMaps(style: TileStyle): TileMaps | null {
+  if (style.print) return null; // printed styles use buildOnyxMaps
   if (tileMaps.has(style)) return tileMaps.get(style)!;
   if (typeof document === "undefined") return null;
   const size = TILE_RENDER_SETTINGS.pixels;
@@ -197,6 +177,13 @@ export function buildTileMaps(style: TileStyle): TileMaps | null {
 
 export function createTileMaterial(mode: "nordic" | "schematic", style: TileStyle,
   schematicColor: THREE.ColorRepresentation): THREE.MeshStandardMaterial {
+  if (style.print && mode === "nordic") {
+    const onyx = buildOnyxMaps(style);
+    if (onyx) return new THREE.MeshPhysicalMaterial({
+      color: 0xffffff, metalness: 0, roughness: 1, map: onyx.color, normalMap: onyx.normal,
+      roughnessMap: onyx.orm, clearcoatMap: onyx.orm, clearcoat: 0.5, clearcoatRoughness: 0.03, ior: 1.5,
+    });
+  }
   const maps = mode === "nordic" ? buildTileMaps(style) : null;
   return new THREE.MeshStandardMaterial({
     color: maps ? 0xffffff : schematicColor, metalness: 0,
@@ -221,4 +208,5 @@ export function applyTileUv(geometry: THREE.BufferGeometry, center: PlanCenter, 
 export function disposeTileTextures(): void {
   for (const maps of tileMaps.values()) Object.values(maps).forEach(map => map.dispose());
   tileMaps.clear();
+  disposeOnyxTextures();
 }

@@ -65,7 +65,7 @@ def test_actual_finished_opening_and_outward_swing(catlin_model_ro):
     assert dimensions.threshold_depth >= dimensions.minimum_flat_threshold
 
 
-def test_pan_glass_datums_and_carrara_wire_material(catlin_model_ro):
+def test_pan_glass_datums_and_solid_surface_wire_material(catlin_model_ro):
     model = catlin_model_ro
     fixture = _fixture(model)
     product = next(t for t in model.plan.library.fixture_types if t.tag == fixture.type_ref)
@@ -99,7 +99,7 @@ def test_pan_glass_datums_and_carrara_wire_material(catlin_model_ro):
     authored = next(e for e in model.plan.storey_elements("main") if e.tag == fixture.tag)
     assert authored.drain_position.xy_m != pytest.approx(fixture.position)
     wire = next(t for t in canvas_object_types(model.plan) if t["tag"] == product.tag)
-    assert any(p.get("material_ref") == "solid-surface-panel" for p in wire["model_parts"])
+    assert any(p.get("material_ref") == "solid-surface-base" for p in wire["model_parts"])
     assert any(p.get("opacity", 1) < 1 for p in wire["model_parts"])
     assert any(p.get("metalness") == 1 for p in wire["model_parts"])
 
@@ -108,9 +108,9 @@ def test_molded_pan_has_a_recessed_basin_and_published_threshold():
     dimensions = BATH2_SHOWER
     parts = model_parts("swanstone-flex-3636", dimensions.pan_width * INCH,
                         dimensions.pan_depth * INCH, dimensions.model_height * INCH)
-    basin = next(p for p in parts if p["color"] == "carrara" and "mesh" in p)
+    basin = next(p for p in parts if p["color"] == "solid-surface" and "mesh" in p)
     assert max(point[2] for point in basin["mesh"]["positions"]) / INCH == pytest.approx(2.25)
-    threshold = next(p for p in parts if p["color"] == "carrara"
+    threshold = next(p for p in parts if p["color"] == "solid-surface"
                      and p["size"][1] / INCH == pytest.approx(2.75))
     assert threshold["size"][0] / INCH == pytest.approx(36)
     assert (threshold["center"][2] + threshold["size"][2] / 2) / INCH == pytest.approx(4.5)
@@ -128,7 +128,7 @@ def test_glb_and_ifc_keep_parts_and_transparency(catlin_model_ro, catlin_ifc_pat
     scene = _SceneBuilder()
     scene.add_object(mesh, ("plumbing",), kind="canvas_object", uid=fixture.uid)
     document, _ = scene.build()
-    assert "Swanstone Carrara (221)" in {m["name"] for m in document["materials"]}
+    assert "Swanstone solid surface" in {m["name"] for m in document["materials"]}
     positions = [document["accessors"][primitive["attributes"]["POSITION"]]
                  for mesh in document["meshes"] for primitive in mesh["primitives"]]
     assert min(accessor["min"][1] for accessor in positions) == pytest.approx(0.75 * INCH)
@@ -138,7 +138,7 @@ def test_glb_and_ifc_keep_parts_and_transparency(catlin_model_ro, catlin_ifc_pat
     items = element.Representation.Representations[0].Items
     assert len(items) > 15
     styles = [item.StyledByItem[0].Styles[0] for item in items]
-    assert any(style.Name == "solid-surface-panel" for style in styles)
+    assert any(style.Name == "solid-surface-base" for style in styles)
     assert any(style.Styles[0].Transparency > 0 for style in styles)
     # IFC uses the same absolute support planes for both generated parts and generic units.
     fixtures = {item.tag: item for item in model.canvas_objects if item.kind == "Fixture"}

@@ -48,7 +48,7 @@ def swanstone_flex(width: float, depth: float, height: float):
     rear = dimensions.pan_depth - dimensions.interior_depth - dimensions.threshold_depth
     basin_offset = (dimensions.threshold_depth - rear) / 2
     solid(0, 0, 0, dimensions.floor_thickness,
-          dimensions.pan_width, dimensions.pan_depth, "carrara")
+          dimensions.pan_width, dimensions.pan_depth, "solid-surface")
     # These four closed wedges give the basin a visible depression without pretending
     # the plumbing's authored 2 5/8-inch offset is a different molded drain position.
     vertices = []
@@ -72,17 +72,17 @@ def swanstone_flex(width: float, depth: float, height: float):
                           (a + 2, a + 3, b + 3), (a + 2, b + 3, b + 2),
                           (a, a + 2, b + 2), (a, b + 2, b),
                           (a + 1, b + 1, b + 3), (a + 1, b + 3, a + 3)))
-    basin = mesh_part(vertices, triangles, "carrara")
+    basin = mesh_part(vertices, triangles, "solid-surface")
     parts.append(basin)
     solid(0, -half_depth + dimensions.threshold_depth / 2, dimensions.floor_thickness,
           dimensions.threshold_height, dimensions.pan_width, dimensions.threshold_depth,
-          "carrara")
+          "solid-surface")
     side = (dimensions.pan_width - dimensions.interior_width) / 2
     for x in (-half_width + side / 2, half_width - side / 2):
         solid(x, 0, dimensions.floor_thickness, dimensions.pan_height,
-              side, dimensions.pan_depth, "carrara")
+              side, dimensions.pan_depth, "solid-surface")
     solid(0, half_depth - rear / 2, dimensions.floor_thickness, dimensions.pan_height,
-          dimensions.interior_width, rear, "carrara")
+          dimensions.interior_width, rear, "solid-surface")
     parts.append(prism(circle(0, 0, dimensions.drain_diameter * sx / 2)["points"],
                        dimensions.floor_thickness * sz,
                        dimensions.drain_floor_height * sz, "chrome"))
@@ -145,6 +145,6 @@ def swanstone_flex(width: float, depth: float, height: float):
           dimensions.valve_height - dimensions.base_datum,
           dimensions.valve_height - dimensions.base_datum + dimensions.head_thickness,
           dimensions.head_thickness, dimensions.valve_projection, "chrome")
-    strokes = (rect(0, 0, width, depth, fill="carrara"),
+    strokes = (rect(0, 0, width, depth, fill="solid-surface"),
                circle(0, 0, dimensions.drain_diameter * sx / 2))
     return strokes, tuple(parts)

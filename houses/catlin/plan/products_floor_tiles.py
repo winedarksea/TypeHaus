@@ -3,31 +3,29 @@
 from typehaus.model import Product
 
 FLOOR_TILE_PRODUCTS = (
-    Product(tag="PROD-QUBE-BODE-CALACATTA-HEX", brand="Qube Tiles / Bode",
-            model="BODE_CALACATTA_3X3_HEX_MOSAIC_SHEET_SPM",
-            name='Calacatta Gold nominal 3-inch matte porcelain hexagon mosaic',
-            url="https://qubetiles.com/products/calacatta-gold-marble-look-mosaic-porcelain-hexagon",
-            source='Budget correction 2026-10-22: actual chips 2.86 x 2.86 inches, '
-                   '0.26-inch thickness, 10.25 x 11.75-inch sheet, 0.84 SF/sheet. '
-                   'Matte porcelain floor/wall mosaic, white epoxy grout. Larger chips '
-                   'avoid the nominal MSI CALGLD-2HEXM 2-inch ambiguity over DITRA-HEAT. '
-                   'Replaces the costly Jeffrey Court 13343 substitute. Listing describes '
-                   'pool/shower use but publishes no numeric DCOF; no rating is inferred. '
-                   'Confirm delivered stock, shipping and floor application before purchase.'),
+    Product(tag="PROD-IVY-SELENE-OPERA-BLUE", brand="Ivy Hill Tile", model="EXT3RD101601",
+            name='Selene Opera Blue 24 x 48-inch polished onyx-look porcelain',
+            url="https://www.homedepot.com/s/EXT3RD101601",
+            source='Owner selection 2026-10-29 for RM-M-BATH2. Rectified, polished, '
+                   '15.49 SF/case; platinum epoxy grout at a 1/16-inch joint. Wet DCOF '
+                   '>=0.42 per the Home Depot listing as read by the owner 2026-10-29. '
+                   'TileBar sells the same print as "Lumina Onyx Opera Blue" and lists '
+                   'it at "<.42": verify DCOF on the delivered box or spec sheet. '
+                   'Thickness not published; ~0.40 inch is a design allowance, verify.'),
     Product(tag="PROD-IVY-KALEO-BRICK", brand="Ivy Hill Tile", model="EXT3RD107134",
             name='Kaleo Brick 7.08 x 14.17-inch matte terracotta-look porcelain',
             url="https://www.homedepot.com/p/318462525",
             source='Owner selection 2026-10-22. 10.76 SF/case; half-offset running bond; '
                    'warm cream, slightly yellow epoxy grout. Listing did not expose thickness; '
                    '5/16 inch is a design allowance, verify supplied tile before setting beds.'),
-    Product(tag="PROD-SUNWINGS-FLOWER-BLUE", brand="sunwings", model="PLT-BLU-10",
-            name='Flower Blue glossy recycled-glass marble-look mosaic on white',
-            url="https://www.homedepot.com/p/341936080",
-            source='Owner selection 2026-10-22. 11.12 x 11.44-inch mesh sheet, 6 mm thick, '
-                   '8.8 SF/case. Light gray epoxy grout; white setting mortar/backing. '
-                   'Listing permits light-traffic floors. Small petal chips require a '
-                   'continuous cementitious backer, not DITRA-XL. Confirm glass-compatible '
-                   'mortar and grout with installer; test epoxy cleanup on a sample.'),
+    Product(tag="PROD-MSI-AGUA-LINDA", brand="MSI", model="NHDAGULIN2448PC",
+            name='Agua Linda 24 x 48-inch polished blue onyx-look porcelain',
+            url="https://www.homedepot.com/s/NHDAGULIN2448PC",
+            source='Owner selection 2026-10-29 for RM-S-VANITY. Rectified, polished, '
+                   '10.16 mm, 16 SF/case; platinum epoxy grout at a 1/16-inch joint. '
+                   'Listing gives wet DCOF <0.42 and recommends dry areas; the owner '
+                   'accepts it 2026-10-29 because the room has sinks only, no bathing, '
+                   'and rarely gets wet.'),
     Product(tag="PROD-FLORIDA-CARRARA-MATTE", brand="Florida Tile",
             model="CHDEAJ0212X24",
             name='Carrara matte rectified 12 x 24-inch porcelain',

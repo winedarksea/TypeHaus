@@ -97,16 +97,20 @@ DELTA_UNIVERSAL_HEAD = Product(
            "trim and spout; street ~$64-73. ABS body, not metal.",
 )
 SOLID_SURFACE_SHOWER = Product(
-    tag="PROD-SOLID-SURFACE-SHOWER", brand="Swan", model="Swanstone SS-3636 + wall panels",
-    name="Swanstone 36x36 single-threshold solid-surface shower pan and matching wall panels",
-    url="https://swanstone.com/en/product/ss-3636-36%22-x-36%22-single-threshold-shower-pan_sw000123",
-    source="Owner selection 2026-10-22 (family 2026-10-12). Swan product page, read "
-           "2026-10-22: 36 x 36 x 5 1/2 in., 4 1/2 in. threshold, ~32 x 33 1/2 in. interior, "
-           "CENTRE molded-in Fit-Flo drain, 3 in. drain hole, 36 in. max door. Base and "
-           "panels in Carrara (221), owner 2026-10-22; confirm against a physical chip under "
-           "5000 K and 2700 K. Confirm before ordering: the flange and threshold sides "
-           "against the W threshold, and a panel height that reaches the 106 in. ceiling "
-           "above the base (or a top cap).",
+    tag="PROD-SOLID-SURFACE-SHOWER", brand="Swan",
+    model="Swanstone SS-3636 + MSMK-9636-1 Modern Subway panels",
+    name="Swanstone 36x36 single-threshold solid-surface shower pan and Modern Subway wall panels, White (.010)",
+    url="https://swanstone.com/product/msmk-9636-1-36-x-96-swanstone-modern-subway-tile-glue-up-bathtub-and-shower-single-wall-panel",
+    source="Owner selection 2026-10-22 (family 2026-10-12); colour and panel style "
+           "2026-10-29. SS-3636 product page, read 2026-10-22: 36 x 36 x 5 1/2 in., 4 1/2 "
+           "in. threshold, ~32 x 33 1/2 in. interior, CENTRE molded-in Fit-Flo drain, 3 in. "
+           "drain hole, 36 in. max door. Base and panels in White (.010), the closest match "
+           "to the Corian Glacier White deck (Tahiti White .011 is the warmer alternative); "
+           "panels are MSMK-9636-1 Modern Subway glue-up, 36 x 96 in., 6 x 24 in. simulated "
+           "tile relief, 1/4 in., two for the two 3 ft walls. Confirm the chip under 5000 K "
+           "and 2700 K. Confirm before ordering: the flange and threshold sides against the "
+           "W threshold, and the 96 in. panel on the 5 1/2 in. base stops short of the 106 "
+           "in. ceiling: a top cap or trim closes it.",
 )
 
 BATH2_FLEX_FRONT = Product(

@@ -79,7 +79,7 @@ until the outlet itself is at about 105. That tail is the whole reason for the s
 |---|---|---|---|
 | north (tub) | custom fixed pane on Corian, independently supported at the east wall, ceiling and west post | deck 22¾" to ceiling 106" (83¼" high) | none |
 | west (front) | DreamLine Flex SHDR-22327200-01, chrome, stock pivot front | 72" above threshold; top at datum 77¼" | 28¾" |
-| east, south | Swanstone Carrara panels (`WP-M-BATH2-SURR`) | 106" | none |
+| east, south | Swanstone Modern Subway panels, White (`WP-M-BATH2-SURR`) | 106" | none |
 
 **Selected 2026-10-22:** a stock framed pivot front and a custom north pane replace the
 90" custom front. The supplied top/bottom rails supersede the earlier trackless preference.
@@ -105,17 +105,17 @@ Post and channel dimensions are preliminary visualization allowances, not a shop
 
 **Procurement confirms:** DreamLine requires finished solid jambs and at least **1⅜" of
 flat threshold**. The pan's modeled 2¾" threshold footprint is not certification of its flat
-bearing width: verify the top land and corner radii on the Carrara dealer's submittal.
+bearing width: verify the top land and corner radii on the Swanstone dealer's submittal.
 Have DreamLine/glazier approve the supported-post jamb connection; size the post, its
 connections into deck/ceiling backing, channels and tempered north pane. Do not transfer
 the door's load to the unsupported edge of the return. No glass drilling after tempering.
 The front pivots at the south wall and swings out toward the vanity; the integration test
 checks its conservative sweep, including the handle, against the vanity and bathroom door.
 
-**Appearance:** the live viewer applies the existing illustrative veined-marble texture
-to the Carrara panels and base; it is not a photograph of Swan's colour chip. GLB/IFC retain
-shared geometry and glass transparency but export flat Carrara colour rather than the
-procedural texture. IFC surface styles identify the solid-surface material. Physical chip
+**Appearance:** the live viewer draws the panels as a white 6x24 running-bond relief
+(`tile-swanstone-modern-subway`) and the base as smooth white (`solid-surface-base`); neither
+is a photograph of Swan's chip. GLB/IFC retain shared geometry and glass transparency but
+export flat white rather than the relief. IFC surface styles identify the solid-surface material. Physical chip
 and supplier shop drawings govern fabrication.
 
 Sources, read 2026-10-22:
@@ -163,11 +163,12 @@ BATH2's 20 cfm, so the grille's position is the only lever.
    Ashlyn 17T exists (T17264 is Monitor 17 pressure-balance), and Trinsic remains the
    selected thermostatic shower trim alongside the Align tub filler.
    T17T259 is the shower-only version with its own head; this shower uses the 26008.
-3. **Base and panels: Swanstone, in Carrara (221)** (colour closed by the owner 2026-10-22;
-   confirm against a physical chip, `notes/bath2_tub_deck_finish.md` §4). SS-3636:
+3. **Base and panels: Swanstone, in White (.010)**, the panels **Modern Subway** glue-up
+   (owner 2026-10-29, replacing Carrara (221) smooth; confirm against a physical chip,
+   `notes/bath2_tub_deck_finish.md` §4). Two MSMK-9636-1 (36x96) for the two 3' walls. SS-3636:
    36x36x5 1/2", 4 1/2" threshold, centre Fit-Flo drain, 3" drain hole. Still to confirm on
    the dealer's submittal: that the flanges suit a W threshold with E/S/N walls, and a panel
-   height that reaches the 106" ceiling above the base (or a top cap). A Corian
+   height: the 96" panel on the 5 1/2" base stops short of the 106" ceiling, so a top cap or trim. A Corian
    floor-to-ceiling stall (about $1.5-3k more, one piece) was considered and declined.
 
 **Drain coordination, updated 2026-10-23.** The SS-3636's centre drain, (6'-4 5/8",

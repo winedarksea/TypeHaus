@@ -6662,3 +6662,26 @@ Engine: `FurnitureType.curtain_track` (`model/curtain_track.py`) draws the track
 curtains open in folded stacks, in the viewer, GLB and IFC; the type's envelope is the closed
 curtain. `advisory.wall_backing_present` reads a body wholly inside a rough opening as fixed
 into the opening, and `advisory.trim_device_clash` and the trim scope ignore curtains.
+
+## RM-M-BATH2 white subway stall; onyx-look floors in BATH2 and VANITY (2026-10-29)
+
+The Swanstone SS-3636 base and `WP-M-BATH2-SURR` go from Carrara (221) to White (.010), the
+closest Swanstone match to the Corian Glacier White deck (Tahiti White .011 is the warmer
+alternative), and the panels from smooth to Modern Subway relief: 2 x MSMK-9636-1. The pan is
+its own smooth `solid-surface-base`, so the relief stays on the walls. The engine's symbol
+colour key is now `solid-surface`, not a house colour name.
+
+RM-M-BATH2's floor goes from the Qube Calacatta Gold hex to Ivy Hill Selene Opera Blue 24x48
+polished (`catlin-tile-opera-blue`, DCOF >=0.42 per the owner's reading of the listing;
+TileBar lists the same print at <.42, so verify the box). RM-S-VANITY goes from the Sunwings
+glass mosaic to MSI Agua Linda 24x48 polished (`catlin-tile-agua-linda`). Its listing says
+DCOF <0.42, dry areas; accepted because the room has sinks only. The mosaic's cement backer
+gives way to the library 1/8" uncoupling membrane, since DITRA-XL would leave under 1/16" of
+mortar in the 3/4" tray. Both floors use platinum epoxy grout and 20% large-format waste.
+The floor is now the room's one pattern; every solid surface is plain white.
+
+Alternatives not taken: Carrara kept on the stall (two veined imitations beside an onyx
+floor); Agua Linda in BATH2 (fails wet DCOF).
+
+Viewer: `tile-swanstone-modern-subway` draws the panels as a running-bond relief, and the two
+onyx floors are a procedural print rendered in a Web Worker (`ui/src/three/onyx*.ts`).

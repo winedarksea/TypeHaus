@@ -3370,7 +3370,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # RM-M-BATH2, 2026-10-12. ESTIMATE, not quoted. Built on FX-SHOWER-36's basis (pan + KIT
 # surround + their labour), so `solid-surface-panel` in [wood_surfaces] stays a delta:
 #   material  FX-SHOWER-36 band                                  300-1000
-#             solid-surface base over an acrylic pan             +150-500
+#             solid-surface base (SS-3636, White .010) over an acrylic pan  +150-500
 #             R10000 rough $55-65 + 17T trim $250-450 + 26008 $130-180   +435-695
 #             stock chrome Flex SHDR-22327200-01 front (allowance)       +550-800
 #             custom north pane + post/channels/backing (allowance)     +650-1600
@@ -3551,16 +3551,18 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Generic tile remains available for rooms not assigned one of Catlin's coordinated stacks.
 "tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }
 "tile-uncoupling-membrane" = { material = { low = 1.5, high = 2.5 }, labour = { low = 0, high = 0.5 } }
-# Product-specific estimates, 2026-10-22, $/SF: tile + setting supplies + epoxy grout.
-# Tile-only anchors: Qube $9.49/0.84-SF sheet (~$11.30/SF), Kaleo $7.99,
-# Sunwings $7.69-9.09, Florida Tile Carrara $2.38. Freight/tax not included.
+# Product-specific estimates, 2026-10-22 (onyx rows 2026-10-29), $/SF: tile + setting
+# supplies + epoxy grout. Tile-only anchors: Ivy Hill Selene Opera Blue $123/15.49-SF case
+# (~$7.94/SF), MSI Agua Linda ~$46.22/16-SF case (~$2.89/SF), Kaleo $7.99, Florida Tile
+# Carrara $2.38. Freight/tax not included.
 # Installed labour includes epoxy application/cleanup. No separate grout row is billed.
-# Membrane/backer companions below are additional; heat cable stays in its existing scope.
-"catlin-tile-calacatta-gold" = { material = { low = 12.9, high = 16.4 }, labour = { low = 12, high = 20 } }
+# 24x48 labour is large-format setting (flatness prep, LHT mortar, lippage clips), against
+# the retired glass mosaic's $14-24. Membrane companions below are additional; heat cable
+# stays in its existing scope.
+"catlin-tile-opera-blue" = { material = { low = 9.5, high = 12 }, labour = { low = 10, high = 18 } }
 "catlin-tile-kaleo-brick" = { material = { low = 9, high = 12 }, labour = { low = 9, high = 16 } }
-"catlin-tile-flower-blue" = { material = { low = 10, high = 14 }, labour = { low = 14, high = 24 } }
+"catlin-tile-agua-linda" = { material = { low = 4, high = 6.5 }, labour = { low = 10, high = 18 } }  # membrane bills on tile-uncoupling-membrane
 "catlin-tile-carrara" = { material = { low = 3.5, high = 6 }, labour = { low = 8, high = 15 } }
-"catlin-mosaic-backer" = { material = { low = 1.5, high = 3 }, labour = { low = 2, high = 4 } } # provisional, includes leveling
 "catlin-ditra-xl" = { material = { low = 2.5, high = 4.5 }, labour = { low = 0, high = 0.75 } }
 "catlin-ditra-heat" = { material = { low = 5, high = 7 }, labour = { low = 0, high = 0.75 } }
 # The shared sheet serves RM-A-STUBATH, RM-A-STUDIO and RM-B-BATH. RM-S-PLANT has a
@@ -5258,13 +5260,14 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "marble-look-panel" = { low = 4, high = 11 }  # 47 SF ordered: WP-A-STUBATH-SURR only since 2026-10-12
 # ** OPEN: FX-SHOWER-36-NEO-COMBO (STUBATH) buys the pan and glass, not the walls, so its
 # 42 SF bills as a delta over a kit it never had. **
-# 2026-10-12, WP-M-BATH2-SURR, floor to ceiling, Swanstone Carrara (221): 53.0 SF net since
-# 2026-10-22, when the W-M-TUBDK-S span went to the Corian stall face. Same UPGRADE-DELTA
-# basis as marble-look-panel above: FX-SHOWER-36-THERMO-COMBO's material half carries the kit
-# surround and its labour. Compression-moulded solid surface runs ~$12-25/SF; less the kit's
-# own value that leaves $8-20. The ~11 SF above the kit's 7'-0" head has no kit under it,
-# so the high end carries it. ESTIMATE; the owner's brand pick collapses it.
-"solid-surface-panel" = { low = 8, high = 20 }  # WP-M-BATH2-SURR, 53.0 SF net (2026-10-22)
+# WP-M-BATH2-SURR, floor to ceiling, 53.0 SF net since 2026-10-22 (the W-M-TUBDK-S span went
+# to the Corian stall face). 2026-10-29: Swanstone Modern Subway in White (.010), 2 x
+# MSMK-9636-1 (36x96) at $987 list each (swanstone.com) = $1,974, ~$37/SF list; White lists a
+# little under Carrara. Same UPGRADE-DELTA basis as marble-look-panel above:
+# FX-SHOWER-36-THERMO-COMBO's material half carries the kit surround and its labour. Street
+# ~$28-37/SF less the kit's own ~$5-8/SF leaves $20-32. The top cap or trim to the 106"
+# ceiling rides in the high end. ESTIMATE; a dealer quote collapses it.
+"solid-surface-panel" = { low = 20, high = 32 }  # WP-M-BATH2-SURR, 53.0 SF net (2026-10-29)
 # RM-M-BATH2's Corian Glacier White (2026-10-22, notes/bath2_tub_deck_finish.md): the two
 # waterfall faces (WP-M-BATH2-TUBDK-APRON) and the 6" splash (WP-M-BATH2-TUB-SPLASH). One
 # bonded shop piece with the deck top, which bills in [envelope_layers] under the same tag;

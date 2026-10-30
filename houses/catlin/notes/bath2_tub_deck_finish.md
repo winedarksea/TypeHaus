@@ -105,16 +105,17 @@ top out at 96" against the 106" ceiling, so `bath2_shower.md` §5 confirm 3 stay
   edges rounded over ≥ 1/16". The rim cutout's corners are the U's inside corners and take
   the ½".
 
-## 4. Colour (owner, 2026-10-22; confirm with physical chips)
+## 4. Colour (owner, 2026-10-22, revised 2026-10-29; confirm with physical chips)
 
-- **Swanstone Carrara (221)**, veined, for the SS-3636 base and the shower walls. This
-  closes the colour item of `bath2_shower.md` §5 confirm 3.
+- **Swanstone White (.010)**, solid, for the SS-3636 base and the shower walls, the walls in
+  the **Modern Subway** relief (6x24 simulated tile). White is the closest Swanstone match to
+  the Corian; Tahiti White (.011) is the warmer alternative. Replaces Carrara (221).
 - **Corian Glacier White or HI-MACS/Staron equal**, solid, for the deck, faces, splash, vanity top and stool.
-- The solid white frames the veined stall. The Calacatta vanity this replaced was the
-  room's other pattern; the vanity is now Corian too, so Carrara is the only veining.
-- Rules: never put two different veined imitations side by side. Judge the chips under both
-  5000 K and 2700 K (`bath2_lighting.md`), next to a quartz offcut and a floor tile.
-- **Open:** Carrara's grey veins against any gold-veined piece that remains in view.
+- The room's one pattern is now the floor: Selene Opera Blue 24x48 onyx-look porcelain.
+  Every solid surface is plain white, the stall reading only by its subway relief, so no
+  two veined imitations sit side by side.
+- Judge the White chip against the Corian under both 5000 K and 2700 K (`bath2_lighting.md`),
+  next to a floor tile: two whites a shade apart read worse than a deliberate contrast.
 
 ## 5. In the model
 
@@ -153,6 +154,7 @@ Read 2026-10-22:
   was found) — https://www.manualsdir.com/manuals/288537/swanstone-bd-4896-specification.html
 - JLC, "Working With Thin Solid Surfacing" (Swanstone sheet is not thermoformable) —
   https://www.jlconline.com/how-to/interiors/working-with-thin-solid-surfacing_o/
-- Swanstone Carrara (221) colour, e.g. SS0369601.221 — https://firstsupply.com/Product/SWASS0369601CAR
+- Swanstone Modern Subway MSMK-9636-1, White (.010), $987 list (read 2026-10-29) —
+  https://swanstone.com/product/msmk-9636-1-36-x-96-swanstone-modern-subway-tile-glue-up-bathtub-and-shower-single-wall-panel
 - Quartz waterfall breakage and cultured-marble gelcoat renewal: the house's own reasoning
   (`PROD-SWAN-CONTOUR`), with no new document read for them.

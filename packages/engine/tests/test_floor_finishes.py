@@ -25,8 +25,8 @@ from typehaus.resolve.solid_categories import in_slab_family
 _CATLIN_FINISHES = {"oak-floor-custom", "lvp", "carpet", "sealed-concrete", "rubber",
                     "vinyl-sheet", "catlin-plant-vinyl-raised", "coated-concrete",
                     "catlin-carpet-raised",
-                    "catlin-tile-calacatta-gold", "catlin-tile-kaleo-brick",
-                    "catlin-tile-flower-blue", "catlin-tile-carrara"}
+                    "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
+                    "catlin-tile-agua-linda", "catlin-tile-carrara"}
 
 
 def _library(catlin_model):
@@ -104,7 +104,7 @@ def test_second_storey_finishes_match_the_doorway_assemblies(catlin_model):
             if finish == "catlin-carpet-raised"} == {
         "RM-S-BED1", "RM-S-BED2", "RM-S-BED3"}
     assert finishes["RM-S-SUITEBATH"] == "catlin-tile-kaleo-brick"
-    assert finishes["RM-S-VANITY"] == "catlin-tile-flower-blue"
+    assert finishes["RM-S-VANITY"] == "catlin-tile-agua-linda"
     assert finishes["RM-S-BATH1"] == "catlin-tile-carrara"
     assert finishes["RM-S-PLANT"] == "catlin-plant-vinyl-raised"
     assert "RM-S-LANDING" not in finishes
@@ -355,10 +355,10 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
             + float(rows["catlin-plant-vinyl-raised"]["net_area_sqft"])) == pytest.approx(
                 521.5, abs=0.5)
     assignments = {
-        "catlin-tile-calacatta-gold": ("RM-M-BATH2", "catlin-ditra-heat"),
+        "catlin-tile-opera-blue": ("RM-M-BATH2", "catlin-ditra-heat"),
         "catlin-tile-carrara": ("RM-S-BATH1", "catlin-ditra-heat"),
         "catlin-tile-kaleo-brick": ("RM-S-SUITEBATH", "catlin-ditra-xl"),
-        "catlin-tile-flower-blue": ("RM-S-VANITY", "catlin-mosaic-backer"),
+        "catlin-tile-agua-linda": ("RM-S-VANITY", "tile-uncoupling-membrane"),
     }
     # Two heated finishes share a membrane tag: key companion rows by parent as well.
     companion_rows = {(row["under"], row["finish"]): row
@@ -444,12 +444,12 @@ def test_bathroom_tile_product_contracts(catlin_plan):
     materials = {material.tag: material for material in catlin_plan.library.materials}
     products = {product.tag: product for product in catlin_plan.library.products}
     for tag, product, recipe, companion in (
-        ("catlin-tile-calacatta-gold", "PROD-QUBE-BODE-CALACATTA-HEX", "tile-calacatta-gold-hex",
+        ("catlin-tile-opera-blue", "PROD-IVY-SELENE-OPERA-BLUE", "tile-onyx-opera-blue-grid",
          "catlin-ditra-heat"),
         ("catlin-tile-kaleo-brick", "PROD-IVY-KALEO-BRICK", "tile-kaleo-running-bond",
          "catlin-ditra-xl"),
-        ("catlin-tile-flower-blue", "PROD-SUNWINGS-FLOWER-BLUE", "tile-flower-blue",
-         "catlin-mosaic-backer"),
+        ("catlin-tile-agua-linda", "PROD-MSI-AGUA-LINDA", "tile-onyx-agua-linda-grid",
+         "tile-uncoupling-membrane"),
         ("catlin-tile-carrara", "PROD-FLORIDA-CARRARA-MATTE", "tile-carrara-grid",
          "catlin-ditra-heat"),
     ):

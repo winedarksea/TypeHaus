@@ -24,7 +24,7 @@ import {
   createStandingSeamMaterial, isAluminumDeckBoard, isPerforatedFinish, isStandingSeam,
   metalPanelProfileForFinish, SEAM_PROFILE,
 } from "../materials";
-import { applyTileUv, createTileMaterial, tileStyleOrNull } from "../tileMaterial";
+import { applyTileUv, createTileMaterial, tileRepeatSizeM, tileStyleOrNull } from "../tileMaterial";
 import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
 import { applyCarpetUv, createCarpetMaterial, isCarpetPile } from "../carpetMaterial";
 import { buildMembers, isRoofFramingMember, memberColor, type SkinLine } from "../members";
@@ -392,11 +392,14 @@ export function buildPaneling(parent: THREE.Group, band: Paneling, center: PlanC
   const plankStyle = plankStyleOrNull(band.material_ref,
     authoredAppearance(band.material_ref, materials)?.finish,
     authoredAppearance(band.material_ref, materials)?.species);
-  const marble = !plankStyle && isVeinedMarble(authoredAppearance(band.material_ref, materials)?.finish);
+  const declaredFinish = authoredAppearance(band.material_ref, materials)?.finish;
+  const marble = !plankStyle && isVeinedMarble(declaredFinish);
+  const tileStyle = plankStyle || marble ? null : tileStyleOrNull(declaredFinish);
   const material = plankStyle
     ? createPlankMaterial(mode, plankStyle, materialColor(band.material_ref, palette, materials),
       undefined, authoredAppearance(band.material_ref, materials))
     : marble ? createMarbleMaterial(mode, materialColor(band.material_ref, palette, materials), 0.3)
+    : tileStyle ? createTileMaterial(mode, tileStyle, materialColor(band.material_ref, palette, materials))
     : standardMaterial(
       new THREE.Color(materialColor(band.material_ref, palette, materials)), mode);
   // UVs off the GROSS band's axis and base, so the boards stay in phase across a door.
@@ -412,6 +415,10 @@ export function buildPaneling(parent: THREE.Group, band: Paneling, center: PlanC
       applyPlankWallUv(geometry, axis, center, plankTileSizeM(plankStyle), bandZ0, "vertical");
     } else if (marble) {
       applyPlankWallUv(geometry, axis, center, [MARBLE_TILE_M, MARBLE_TILE_M], bandZ0, "vertical");
+    } else if (tileStyle) {
+      // "vertical" maps u along the wall and v up it, so the tile's long side runs along and
+      // its courses stack from the band base.
+      applyPlankWallUv(geometry, axis, center, tileRepeatSizeM(tileStyle), bandZ0, "vertical");
     }
     parent.add(makeSurfaceMesh(geometry, material));
   }

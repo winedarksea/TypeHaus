@@ -213,13 +213,19 @@ MATERIALS_ISHTAR = [
              r_per_inch=0.0, density=1600.0, hatch="stone", color="#efece6",
              source="RM-M-BATH2 shower surround, 2026-09-02; \"marble-look\" spans cultured marble, cast solid surface and acrylic and the product family is an OPEN OWNER SELECTION — see prices.toml [wood_surfaces] for the price spread that collapses when it is made"),
     # RM-M-BATH2's shower walls since 2026-10-12, WP-M-BATH2-SURR, floor to ceiling. Swanstone
-    # Carrara (221) to match the SS-3636 base (owner, 2026-10-22). Same reasoning as
+    # Modern Subway relief in White (.010), owner 2026-10-29. Same reasoning as
     # marble-look-panel above: no species, 1/2" default, no vapour field.
     Material(tag="solid-surface-panel",
-             name="Solid-surface shower wall panel (1/2\"), Swanstone Carrara",
-             r_per_inch=0.0, density=1700.0, hatch="stone", color="#ecebe8",
-             finish="veined-marble", product_ref="PROD-SOLID-SURFACE-SHOWER",
-             source="RM-M-BATH2 shower surround, owner selection 2026-10-12, colour 2026-10-22: Swanstone Carrara (221) matching the SS-3636 base (plan/products_showering.py); confirm against a physical chip"),
+             name="Solid-surface shower wall panel, Swanstone Modern Subway, White",
+             r_per_inch=0.0, density=1700.0, hatch="stone", color="#f4f4f2",
+             finish="tile-swanstone-modern-subway", product_ref="PROD-SOLID-SURFACE-SHOWER",
+             source="RM-M-BATH2 shower surround, owner selection 2026-10-12, style and colour 2026-10-29: Swanstone MSMK-9636-1 Modern Subway (6x24 simulated tile relief) in White (.010), matching the SS-3636 base (plan/products_showering.py); confirm against a physical chip"),
+    # The SS-3636 pan in the same White, smooth: the subway relief is the panels' alone.
+    Material(tag="solid-surface-base",
+             name="Solid-surface shower base, Swanstone White",
+             r_per_inch=0.0, density=1700.0, hatch="stone", color="#f4f4f2",
+             product_ref="PROD-SOLID-SURFACE-SHOWER",
+             source="RM-M-BATH2 SS-3636 shower pan, White (.010), owner 2026-10-29 (plan/products_showering.py)"),
     # RM-M-BATH2's tub deck, its waterfall faces, splash, vanity top and window stool: one
     # shop-built, bonded 12 mm acrylic piece per element, one fabricator and one lot
     # (notes/bath2_tub_deck_finish.md). Same no-species / no-vapour reading as the panel above.

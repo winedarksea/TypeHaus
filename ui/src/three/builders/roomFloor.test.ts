@@ -31,7 +31,7 @@ const MATERIALS: MaterialAppearance[] = [
   { tag: "carpet", color: "#9c8f80" },
   { tag: "catlin-carpet-raised", color: "#e5dccb", finish: "carpet-pile", finish_thickness_in: 0.75 },
   { tag: "tile", color: "#dfe3e5" },
-  { tag: "house-tile", color: "#f2efe8", finish: "tile-calacatta-gold-hex", finish_thickness_in: 0.75 },
+  { tag: "house-tile", color: "#f2efe8", finish: "tile-carrara-grid", finish_thickness_in: 0.75 },
   // Sealed concrete is a *coating*: a sealer on the slab, no thickness of its own.
   { tag: "sealed-concrete", color: "#b3b1ad", coating: true },
   { tag: "rubber", color: "#54585c" },

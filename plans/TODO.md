@@ -299,7 +299,6 @@ the future.
 - Make sure our entire smart home setup is Home Assistant friendly, with no corporate cloud required to run it (a brief cloud connection for setup is fine, just not deployed).
 - We likely won't be getting a home backup battery when we first power the house (too expensive alongside everything else) but we will have solar and we want it easy to add a battery (possibly using an EV as the backup battery, that is becoming more common, but ideally specified in a way that might work with various brands of car in the future, not just one short term supported product). Separately, home assistant (likely hardwired LAN into the main router) and the router are probably on a smaller more standard computer backup battery. With all of these things, our main goal is being able to make sure the batteries never start on fire, and if they do start on fire, that the fire is contained in a manageable area.
 - Possibly the ESS closet can just be wood studs (metal studs seeming silly as an extra spec for just a small amount) with a Fire-Retardant Spray over the studs.
-- Swap the swanstone carrara 'smooth' panels for the same but in the 'modern subway' panel style like this https://swanstone.com/product/msmk-9650-1-50-x-96-swanstone-modern-subway-tile-glue-up-bathtub-and-shower-single-wall-panel/sw005090/sw005090-ms-010 in white
 
 # Project Management
 
