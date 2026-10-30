@@ -75,25 +75,36 @@ This was the TODO's actual question, and `takeoff/backup_calc.py` answers it rat
 comment asserting it.
 
 **2026-10-30, the PoE doorbell and two cameras** ([smart_home.md](smart_home.md)) put ~42 W
-more on `CKT-HA` (duty 0.30 -> 0.44). The always-on tier had cleared the 48-hour cycle by
-+0.22 kWh; it now falls short. As authored today:
+more on `CKT-HA` (duty 0.30 -> 0.44), and the always-on tier fell 1.89 kWh short of the
+48-hour cycle (34.8 h unaided). The owner's answer, the same day: **on battery, Home
+Assistant turns off the doorbell's and cameras' PoE ports.** That is authored on the circuit,
+`CKT-HA.backup_shed_poe`, naming the three devices; the calc reads their E-603 draw, so a
+camera swap moves the number on its own. Worked by hand:
 
-- **Storage** 12.87 kWh usable of 14.3 nameplate (90% DoD).
-- **Autonomy, no sun** 34.8 h on the always-on tier alone (369 W average); 11.8 h with both
-  tiers running.
-- **48-hour cycle** one strong solar day puts in 15.84 kWh (5.28 kW array × 3.0 kWh/kW,
-  haircut for the E/W split off a N-S ridge) against 17.73 kWh of always-on load over two
-  days (net **−1.89 kWh**), so the always-on tier is a slow countdown, not indefinite. At
-  3.5 kWh/kW it rides again. Both tiers together take 52.53 kWh over the same 48 h and do
-  **not** ride (net −36.69 kWh), which is what the shed tier exists to answer.
-- **Peak** 4,989 VA of backup load against 8 kW continuous, and the largest shed-tier motor
-  start (1,500 VA × 3 for a soft-started VFD = 4,500 VA) against 16 kW surge — comfortable
-  on both.
+- **Shed** 12.95 + 12.0 + 12.0 = 36.95 W at the ports. Through the switch's supply at 88%
+  (DOE Level VI floor for an external supply over 49 W, 10 CFR 430.32(w)) that is 36.95 / 0.88
+  = **42.0 W** at the outlet. Cable loss on those ports is saved too and not credited.
+- **CKT-HA on battery** 300 VA × 0.44 = 132 W, less 42.0 = **90.0 W**: the camera-free figure.
+- **Always-on tier** fridge 104.0 + HA 90.0 + backup lighting 133.4 = **327.4 W** average,
+  7.86 kWh/day.
+- **Storage** 14.3 kWh × 0.90 DoD = 12.87 kWh usable.
+- **Autonomy, no sun** 12.87 / 0.3274 = **39.3 h** on the always-on tier alone; with the
+  shed tier's 725 W too, 12.87 / 1.0524 = **12.2 h**.
+- **48-hour cycle** one strong solar day puts in 5.28 kW × 3.0 kWh/kW = 15.84 kWh against
+  0.3274 × 48 = 15.72 kWh of always-on load: net **+0.12 kWh**, so the always-on tier rides
+  indefinitely on sun every other day. Both tiers take 1.0524 × 48 = 50.52 kWh and do not
+  ride (net −34.68 kWh), which is what the shed tier exists to answer.
+- **Peak** unchanged: 4,989 VA of connected backup load against 8 kW continuous (the shed is
+  an average, not a breaker), and the largest shed-tier motor start (1,500 VA × 3 for a
+  soft-started VFD = 4,500 VA) against 16 kW surge.
 
-Verdict (`backup_calc`): **add array, not battery**. One battery and the 12kPV cover the peak
-and give the always-on tier a day and a half unaided; riding indefinitely on sun every other
-day needs ~0.6 kW more array or a lighter `CKT-HA`. Note the 12kPV puts out **8 kW AC
-continuous**; the "12k" in the name is its 12 kW *PV input*.
+Verdict (`backup_calc`): **one strong solar day covers the always-on tier over 48 h but not
+both tiers together — which is what the shed tier is for.** The margin is thin: +0.12 kWh is
++2.5 W of average draw, or a strong day of 2.98 kWh/kW. It was +0.22 kWh before the cameras;
+the 0.10 kWh between is the two Kidde relays (13.2 VA × 0.15) now on `CKT-LT-BACKUP`. One
+more always-on watt-hungry device, or a weaker strong day, puts it back to "add array, not
+battery". Note the 12kPV puts out **8 kW AC continuous**; the "12k" in the name is its 12 kW
+*PV input*.
 
 Every one of those numbers rests on an authored `duty_cycle` per circuit, and those are the
 softest estimates in the model — 800 VA on the fridge circuit is a breaker allowance, not a

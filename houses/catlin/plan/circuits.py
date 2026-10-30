@@ -27,7 +27,7 @@ Conventions:
   rule); ``code.NEC_705_12_interconnection`` grades that arithmetic.
   ED-B-PANEL is feeder 1 of the Class 320 service and ED-B-PANEL-2 is feeder 2
   (plan/mep_electrical.py). Slots 1/5/9/13/17 of ED-B-PANEL-2 carry CKT-SPA, CKT-SAUNA,
-  CKT-EV-1450, CKT-EV-620 and CKT-WORKSHOP-240, respectively. The first four moved off
+  CKT-EV-1450, CKT-GAR-240 and CKT-WORKSHOP-240, respectively. The first four moved off
   ED-B-PANEL on 2026-09-12 — their old slots
   9, 13, 17 and 21 there are spares now. ED-B-BACKUP-PANEL carries 2 two-pole + 4 one-pole
   = 8 of its 12. Counts per panel come from `electrical.panel_spaces`, not from here.
@@ -69,9 +69,13 @@ CIRCUITS = (
     Circuit(uid="CKT003AAAA", tag="CKT-EV-1450", slot=9, panel_ref=_PANEL_2, breaker_amps=50, poles=2,
             nema="14-50R", load_va=9600,
             description="EV charging, NEMA 14-50 (garage)"),
-    Circuit(uid="CKT004AAAA", tag="CKT-EV-620", slot=13, panel_ref=_PANEL_2, breaker_amps=20, poles=2,
-            nema="6-20R", load_va=3840,
-            description="EV charging, NEMA 6-20 (garage)"),
+    # The garage's general-use 120/240 V point, and the backup EV charger (owner, 2026-10-30):
+    # a 6-20R beside a 5-20R duplex on a common-trip 2-pole GFCI (NEC 210.8(A)(2) reaches
+    # 125-250 V garage receptacles), two hots, neutral, ground — CKT-WORKSHOP-240's pattern.
+    # No AFCI: garages are not on 210.12(A)'s list. load_va keeps the 6-20's 16 A charging draw.
+    Circuit(uid="CKT004AAAA", tag="CKT-GAR-240", slot=13, panel_ref=_PANEL_2, breaker_amps=20,
+            poles=2, nema="5-20R/6-20R", gfci=True, load_va=3840,
+            description="Garage general use, 120/240 V receptacle (backup EV charging)"),
     # Budget the full 20 A at 240 V until the electronics load is known; this is an
     # allowance, not a nameplate or a claim that continuous loads can draw 20 A.
     # Common-trip 2-pole GFCI protects both voltages; supply two hots, neutral and ground.
@@ -325,12 +329,17 @@ CIRCUITS = (
             description="Kitchen outlet 1: fridge + freezer"),
     # 300 VA is again an outlet allowance; the real load is a router (~12W), an always-on
     # HA server (~28W), and a PoE switch feeding 3 APs, the doorbell and 2 cameras (82 W on
-    # E-603, ~91 W at the switch) — ~131W of 300VA = 0.44 (0.30 before the cameras, 2026-10-30). Not a duty cycle in the compressor sense (this load never cycles off,
+    # E-603, ~93 W at the outlet through an 88% supply) — ~133W of 300VA = 0.44 (0.30 before
+    # the cameras). Not a duty cycle in the compressor sense (this load never cycles off,
     # the allowance is just generous). Per-device PoE draw is scheduled on E-603
     # (→ takeoff/data.py) since a PoE device names no circuit of its own.
+    # On battery HA turns off the doorbell's and cameras' ports (owner, 2026-10-30;
+    # notes/smart_home.md): backup_shed_poe takes their 36.95 W / 0.88 = 42 W off the backup
+    # average, which is the camera-free 90 W the 48 h cycle was sized against.
     Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=4, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, gfci=True,
             load_va=300, duty_cycle=0.44,
+            backup_shed_poe=("ED-M-DOORBELL", "ED-M-CAM-PORCH", "ED-BW-CAM-CANOPY"),
             description="Basement outlet 1: HA server + router + PoE switch"),
     # load_va is None: the luminaires carry real typed loads and the panel-schedule takeoff
     # sums the fixtures actually on the circuit (782 VA today, 558 before 2026-08-24). 0.15
@@ -449,6 +458,8 @@ CIRCUITS = (
             afci=True, load_va=1000, description="General receptacles — attic rooms"),
     Circuit(uid="CKT030AAAA", tag="CKT-RC-GARAGE", slot=48, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, load_va=1500, description="Garage general receptacles"),
+    # ^ The 210.11(C)(4) garage circuit: 120 V, 20 A, garage outlets only (the east-bay
+    # receptacle and the opener's ceiling outlet).
     # ADDED 2026-08-29 with the attic guest bath. NEC 210.11(C)(3) / IRC E3901.6 wants a
     # dedicated 20A circuit for bathroom receptacles, and ** THE ENGINE HAS NO E3901
     # BRANCH-CIRCUIT RULE ** (it does now grade E3901.6's other half, the receptacle a basin

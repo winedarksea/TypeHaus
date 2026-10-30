@@ -38,7 +38,7 @@ BED_DESK_DRAWERS = FurnitureType(
     footprint=(inch(15), inch(24.75)), height=inch(31), carcass_depth=inch(24),
     storage=True, work_surface=False, plan_symbol="sektion-axstad-drawers",
     product_ref=SEKTION_BASE_FRAME_15_30.tag,
-    # BAGGANÄS pulls as in the kitchen (2026-10-30); on the floor, so no legs or rail.
+    # BAGGANÄS pulls as in the kitchen (owner confirmed 2026-10-30); on the floor, so no legs or rail.
     parts=sektion_parts(15, 24, FrontLayout(30, (FrontRow("drawer", 10),) * 3), "none",
                         AXSTAD_HARDWARE, rail=False),
     clearances=(front_zone(inch(15), inch(24.75), inch(21.375),

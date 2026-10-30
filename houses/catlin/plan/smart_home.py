@@ -52,7 +52,7 @@ MAIN_ELEMENTS = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # The doorbell's raceway. W-M-N2 has no way in from below (it stands on the basement
     # wall's concrete, its band is FO-M-STAIR's trimmer) or from above (FO-S-STAIR's trimmer
-    # truss), so: a second Cat 6A in CD-M-DATA-KITCH to its pull box in RM-M-MECH's ceiling,
+    # truss), so: a second Cat 6A in CD-M-DATA-KITCH-TRUNK to its pull box in RM-M-MECH's ceiling,
     # then north and east in FS-S-WEST's last truss bay, down W-M-STRW's cavity, and north
     # through the corner into W-M-N2's first bay at the doorbell.
     ConduitRun(uid="REEA36N7AS", tag="CD-M-DATA-DOORBELL", trade_size=inch(0.75), service=Service.DATA,

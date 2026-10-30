@@ -2637,13 +2637,12 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Emporia: local OCPP to Home Assistant (notes/smart_home.md).
 # Device schedule rows (owner decisions 2026-10-27, notes/workshop_receptacles.md): ranges carry over from
 # the commodity class each replaced; Matter/occupancy/USB-C/surge lines carry a retail uplift. Estimates.
-"ED-T-LEV-620-DUPLEX" = { material = { low = 11, high = 24 }, labour = { low = 40, high = 85 } }  # 1 ea; T5461 + E5825, device only: box and cover in [electrical_boxes] (2026-10-29)
+"ED-T-LEV-620-DUPLEX" = { material = { low = 11, high = 24 }, labour = { low = 40, high = 85 } }  # 2 ea (workshop RC1, garage ED-G-RC-240); T5461 + E5825, device only: box and cover in [electrical_boxes] (2026-10-29)
 "ED-T-LEV-620-FLUSH" = { material = { low = 14, high = 44 }, labour = { low = 45, high = 95 } }  # 1 ea; kettle, flush 2-gang (the old 620-DUPLEX rate)
 "ED-T-LEV-DRYER-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-DUPLEX-15" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 14 ea
-"ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 59 ea (ED-G-GDO-RC since 2026-10-30)
+"ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 57 ea (incl. ED-G-GDO-RC, ED-G-RC-E, 2026-10-30)
 "ED-T-LEV-EV-1450" = { material = { low = 25, high = 80 }, labour = { low = 160, high = 380 } }  # 0 ea
-"ED-T-LEV-EV-620" = { material = { low = 15, high = 45 }, labour = { low = 160, high = 380 } }  # 0 ea
 "ED-T-LEV-GFCI-15" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 6 ea
 "ED-T-LEV-GFCI-20" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 20 ea
 "ED-T-LEV-GFCI-ALARM" = { material = { low = 30, high = 70 }, labour = { low = 48, high = 92 } }  # 1 ea
@@ -7745,10 +7744,7 @@ paint-court-mineral-wash-columns = { material = { low = 91, high = 133 }, labour
 # and the garage, plus the standards, brackets and end caps the placeable prices treat as part
 # of a unit rather than as stock.
 cabinet-closet-shelving-and-rod = { low = 600, high = 1500 }
-# 2026-10-30: RM-B-GYM echo treatment (notes/gym_acoustics.md), not authored: 12-16 DIY
-# 2x4 ft x 2" mineral-wool panels in FR701 fabric, hung only if a clap test after move-in
-# calls for them. Batts, fabric, frames and cleats; owner labour.
-finish-gym-acoustic-panels = { low = 300, high = 700 }
+# RM-B-GYM echo panels (notes/gym_acoustics.md) carry no allowance: owner, 2026-10-30.
 # RETIRED 2026-09-06 — `finish-fireplace-mantel-walnut = { low = 500, high = 1150 }`.
 # It was here for one reason: SB-M-FIRE-MANTEL was hosted on a WALL, and a ShelfBank on a wall
 # has no priced host row anywhere, so the most expensive board in RM-M-LIVING would have billed

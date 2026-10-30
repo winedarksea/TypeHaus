@@ -61,6 +61,11 @@ class Circuit(Element):
     # ``backup_tier``; it earns nothing in a 220.82 service calculation, which is why it is
     # not a ``LoadManagement`` (an unlisted software governor is not a PCS, 2026 NEC 130.2).
     backup_va: float | None = None
+    # PoE data devices (tags) whose switch ports are turned off while the house is on battery.
+    # Only meaningful on the backup circuit feeding the PoE switch: ``duty_cycle`` stays the
+    # unshed average, and the backup calc subtracts these devices' scheduled ``poe_watts``
+    # (grossed up for the switch supply's loss). Authored, never inferred, like the tier.
+    backup_shed_poe: tuple[str, ...] = ()
     load_va: float | None = None
     description: str = ""
     # Physical breaker position in the enclosure. Real panel numbering: odd slots run down

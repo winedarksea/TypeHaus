@@ -1,3 +1,32 @@
+## Owner decisions: camera shed, garage receptacles, 1" data trunk (2026-10-30)
+
+- **Cameras shed on battery.** HA turns off the doorbell's and both cameras' PoE ports when the
+  house is on battery (`notes/smart_home.md` rule 6). It is structure, not a lower duty:
+  `Circuit.backup_shed_poe` names the three devices, and `backup_calc` takes their E-603 draw
+  over the switch supply's 88% (36.95 / 0.88 = 42.0 W) off `CKT-HA`'s 132 W. The always-on
+  tier goes 369.4 -> 327.4 W, autonomy 34.8 -> 39.3 h, and the 48 h cycle goes -1.89 ->
+  **+0.12 kWh**: it rides again, thinly (a 2.98 kWh/kW strong day is break-even).
+  Hand-worked in `notes/backup_power.md`.
+- **Garage receptacles (NEC 210.52(G)(1)).** The 6-20 "smaller EV charger" is the west bay's
+  general-use point, `ED-G-RC-240`: a 5-20R + 6-20R on `CKT-GAR-240` (was `CKT-EV-620`),
+  2-pole common-trip GFCI with a neutral, no AFCI. The east bay had no counting outlet, so
+  `ED-G-RC-E` (20 A duplex, 48", `CKT-RC-GARAGE`) is added. New
+  `code.NEC_210_52_G_garage_receptacles` derives bays from overhead-door width (16' -> 2).
+  The 14-50R's GFCI stays open (`plans/TODO.md`). Reasons: `notes/workshop_receptacles.md`.
+- **1" data trunk.** `CD-M-DATA-KITCH` is split at its RM-M-MECH pull box. The new 1" EMT
+  `CD-M-DATA-KITCH-TRUNK` (riser to box) carries the three standard Cat 6A: 25% fill at 0.30"
+  OD, 33% at 0.35". The 3/4" `CD-M-DATA-KITCH` continues with two (27% / 36%). The
+  slim-cable requirement is dropped. The 1.16" body needed `DU-M-ERV-R-BED` 1/4" further
+  south; a 110.5" dodge hit the exhaust trunk. Bends 270 / 0 / 180 / 360. KITCH now leads
+  run efficiency at 2.49 against the 2.50 line.
+- **Engine fix it exposed.** `resolve/floor_blocking` placed conduits on the schematic
+  end-pair profile and ignored authored `elevations`. KITCH was read flat at 106.5" and
+  missed two bearing blocks it crosses at 115.5". It now reads the authored z: those blocks
+  (FS-S-WEST 1-015, FS-S-EAST 0-018) become 2x6 boxes. The framing bid shows one truss and
+  one I-joist block fewer and six 2x6 more. No other run moved.
+- **Also:** the gym acoustic-panel allowance is dropped (research kept), the keyless Sense
+  Pro is accepted, and the bed desk's BAGGANÄS pulls are confirmed.
+
 ## Plaster-in coves and derived drywall beads (2026-10-30)
 
 Decision #103: `plan/drywall.py` declares `DRYWALL-STANDARD`; the engine derives the beads

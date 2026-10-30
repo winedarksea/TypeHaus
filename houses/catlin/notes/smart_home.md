@@ -28,13 +28,21 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
    - An IoT VLAN whose WAN is blocked after setup.
    - HA has a leg on that VLAN for mDNS and IPv6 (Matter needs both).
    - Local NTP is allowed.
-   - The PoE switch in `ED-B-NET-PATCH` budgets at least 150 W (E-603 totals the draw).
+   - The PoE switch in `ED-B-NET-PATCH` budgets at least 150 W (E-603 totals the draw), and
+     HA must be able to turn a port's PoE off locally (rule 6). Named by capability only.
    - The router is named by capability only (VLANs, per-VLAN firewall, mDNS reflector),
      never by brand.
 5. **These never join Wi-Fi.**
    - LG ThinQ appliances: LG's HA integration is cloud-only.
    - The Broan hood.
    - The Harvia sauna: remote start of a 9 kW heater is a safety question, not a feature.
+6. **On battery, HA sheds the cameras** (owner, 2026-10-30). When the EG4 reports the grid
+   gone, HA turns off the PoE ports of `ED-M-DOORBELL`, `ED-M-CAM-PORCH` and
+   `ED-BW-CAM-CANOPY`, and turns them back on when the grid returns. The APs stay up. During
+   an outage there is no doorbell and no recording. Modelled as `CKT-HA.backup_shed_poe`; it
+   is what lets one strong solar day per 48 h carry the always-on tier
+   ([backup_power.md](backup_power.md)). The water heater's Heat-Pump-Only switch is the same
+   kind of automation.
 
 ## Register
 
@@ -68,16 +76,16 @@ Lighting, the fan and the RF-remote fixtures: `notes/workshop_receptacles.md`. S
 
 ## Device notes
 
-**Entry lock.** The Encode Plus has no Matter and no local HA path, and the Yale Assure 2
-Wi-Fi (`PROD-YALE-ASSURE-2-WIFI`, defined and never placed) is deleted. The Sense Pro is
-**keyless**. With its batteries dead you get in through the USB-C jumpstart, or through a French
-door (a BE365 with a key). Run lithium AA cells: alkalines fall off below 0 F, and lithium is
-rated to -40 F. Outside body -31..151 F; the inside body is in a heated house. Keep the plain
-exterior deadbolts keyed alike at purchase.
+**Entry lock.** The keyless Sense Pro is accepted (owner, 2026-10-30). The Encode Plus has
+no Matter and no local HA path, and the Yale Assure 2 Wi-Fi (`PROD-YALE-ASSURE-2-WIFI`,
+defined and never placed) is deleted. With the Sense Pro's batteries dead you get in through
+the USB-C jumpstart, or through a French door (a BE365 with a key). Run lithium AA cells:
+alkalines fall off below 0 F, and lithium is rated to -40 F. Outside body -31..151 F; the
+inside body is in a heated house. Keep the plain exterior deadbolts keyed alike at purchase.
 
 **Doorbell.** It sits on the latch side, in the first stud bay of `W-M-N2` between the strike
-blocks. Its raceway `CD-M-DATA-DOORBELL` leaves `CD-M-DATA-KITCH`'s pull box in RM-M-MECH's
-ceiling:
+blocks. Its raceway `CD-M-DATA-DOORBELL` leaves the pull box that ends `CD-M-DATA-KITCH-TRUNK`
+in RM-M-MECH's ceiling:
 1. east in FS-S-WEST's last truss bay;
 2. down `W-M-STRW`'s cavity;
 3. north through the corner into `W-M-N2`.
@@ -96,9 +104,12 @@ integration. There is no NVR; Frigate is optional later.
   east of WIN-M-KITCH at 5'-9", between girts, by a sealed LB, and runs on EMT to
   `BM-BW-RE`'s soffit. It needed no mounting block. The model has no cable count: a drop
   bills per `data_outlet`, so nine drops now (three APs, three jacks, three cameras).
-- **Fill.** `CD-M-DATA-KITCH`'s first legs, up to its pull box, carry three Cat 6A: the AP,
-  the doorbell and the canopy camera. In 3/4" EMT that is right at 40% fill with 0.30" cable.
-  Pull a slim Cat 6A (≤0.27" OD, ~32%). The model has no cable count to grade it.
+- **Fill.** Standard Cat 6A (0.30-0.35" OD) fits. From the data riser to the pull box the
+  raceway is `CD-M-DATA-KITCH-TRUNK`, 1" EMT (0.864 in^2, 40% for 3 cables): the AP, the
+  doorbell and the canopy camera fill 25% at 0.30" and 33% at 0.35". Past the box,
+  `CD-M-DATA-KITCH` is 3/4" EMT (0.533 in^2) with two cables: 27% and 36% (the 31% two-cable
+  figure of Table 1 is not binding on communications cable). The model has no cable count to
+  grade it.
 
 **Garage opener.** It must be a yellow-button Security+ 2.0 unit. Not Security+ 3.0 (white
 button: ratgdo cannot speak it), and not the 8500/RJ020 jackshaft. The head is 11' back on the
@@ -121,7 +132,8 @@ alarm price row.
 **EVSE.** The Emporia has no local API and no OCPP, and OpenEVSE appears not to be UL-listed.
 The Grizzl-E Smart is listed and speaks OCPP. Keep it off the internet, and point its OCPP
 server at HA. It is an `Appliance`, cord-and-plug on `ED-G-EV-1450`, with backing
-`BK-G-S-EVSE`.
+`BK-G-S-EVSE`. The 14-50R's missing GFCI is an open owner choice
+([workshop_receptacles.md](workshop_receptacles.md), Garage).
 
 **HP1 thermostat.** 24 VAC with a C-wire from `EQ-S-HP1-AH`'s board. Wire `L` (leak) and
 `H1/H2` per the Gree quick-start, and keep aux staging in the thermostat. HA likely sees only
@@ -136,4 +148,5 @@ the cable warranty survives a non-Schluter thermostat.
 **Leak shutoff.** It replaces YoLink. See [plant_room.md](plant_room.md).
 
 **Recording, alarms, UPS.** No cloud recording plans. The HA host, router and PoE switch share
-`CKT-HA` (ALWAYS_ON); a small UPS for them is the separate backup-battery TODO.
+`CKT-HA` (ALWAYS_ON); a small UPS for them is the separate backup-battery TODO. On battery the
+doorbell and cameras are shed (rule 6).

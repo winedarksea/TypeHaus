@@ -17,6 +17,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     electrical_boxes,
     electrical_code,
     electrical_floor,
+    electrical_garage,
     electrical_openings,
     electrical_receptacles,
     electrical_service,

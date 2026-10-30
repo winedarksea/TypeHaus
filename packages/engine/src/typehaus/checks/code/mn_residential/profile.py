@@ -289,8 +289,10 @@ MN_2020 = JurisdictionProfile(
                        ("code.R806_5_unvented_roof",),
                        ("IRC R806.5", "IRC Table R806.5")),
         PermitItemSpec("Receptacle locations and listed floor boxes",
-                       ("code.E3902_gfci_locations", "code.E3905_7_floor_boxes"),
-                       ("IRC E3902", "IRC E3905.7", "NEC 314.27(B)"), blocking=False),
+                       ("code.E3902_gfci_locations", "code.E3905_7_floor_boxes",
+                        "code.NEC_210_52_G_garage_receptacles"),
+                       ("IRC E3902", "IRC E3905.7", "NEC 314.27(B)", "NEC 210.52(G)(1)"),
+                       blocking=False),
         # Blocking, unlike the two beside it: the staging lane exists for a rule the
         # reference house cannot answer yet, and this one it can — every basin in the plan
         # resolves, and the receptacle serving it either exists or does not.

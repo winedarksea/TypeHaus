@@ -5,9 +5,9 @@
 **Written:** 2026-10-30, from three independent web-research passes. The owner decided
 from it.
 **Decision:** the floor is now 3/4" stall mats (`catlin-rubber-stall-mat`). The absorber
-panels are **research only**: nothing is authored, and `prices.toml` carries a
-`finish-gym-acoustic-panels` allowance. Hang them only if a clap test after move-in calls
-for it (`plans/TODO.md`).
+panels are **research only**: nothing is authored and nothing is priced (the allowance was
+dropped, owner 2026-10-30). Hang them only if a clap test after move-in calls for it
+(`plans/TODO.md`).
 
 > ⚠ Rubber does not reduce echo. The room rings because every surface is hard. Only
 > porous absorber (mineral wool or fibreglass behind fabric) changes that.

@@ -390,9 +390,10 @@ def test_catlin_conduit_trunks(catlin_model):
     # because NEC 800.133/725 forbids comms sharing a RACEWAY with power and
     # `ConduitRun.service` is one value, never a set.
     # 2026-10-29: + the workshop trunk and its two drops, the theater spare and its drop.
-    # 2026-10-30: + the doorbell run and the two camera extensions (plan/smart_home.py).
+    # 2026-10-30: + the doorbell run and the two camera extensions (plan/smart_home.py),
+    # and CD-M-DATA-KITCH-TRUNK, the 1" first legs split off CD-M-DATA-KITCH.
     authored = [run for run in catlin_model.conduits if run.derived is None]
-    assert len(authored) == 26  # includes the laundry's Class 2 surface feed
+    assert len(authored) == 27  # includes the laundry's Class 2 surface feed
     # Not all from the panel: the three microgrid runs start at the PV junction box and at
     # the inverter, and every data run starts at the patch enclosure — except the two camera
     # extensions, which continue from the AP whose raceway carries their Cat 6A.
@@ -559,7 +560,7 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     main = spaces("ED-B-PANEL", "ED-T-PANEL")
     backup = spaces("ED-B-BACKUP-PANEL", "ED-T-BACKUP-PANEL")
     assert main[0] <= main[1] and backup[0] <= backup[1]
-    # 47 -> 39 on 2026-09-12: CKT-SPA, CKT-SAUNA, CKT-EV-1450 and CKT-EV-620 (four 2-pole,
+    # 47 -> 39 on 2026-09-12: CKT-SPA, CKT-SAUNA, CKT-EV-1450 and CKT-GAR-240 (then CKT-EV-620; four 2-pole,
     # eight spaces) moved to ED-B-PANEL-2, feeder 2 of the Class 320 service. Fifteen spare
     # here, twelve there.
     assert main == (39, 54)

@@ -2833,7 +2833,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   at y=25'-0" — **south** of `ED-B-BACKUP-PANEL`, because the bays north of `ED-B-PANEL` are
   full (`ED-B-NET-PATCH`, the ERV duct crossing at 31'-4", `ED-B-BACKUP-ENCL`) and the one
   gap between them is 6 1/2" wide. **Nothing grades a device-on-device overlap or NEC 110.26
-  working space**; both are held by the measurements in `plan/mep_electrical.py`. Feeder 2 carries `CKT-SPA`, `CKT-SAUNA`, `CKT-EV-1450`, `CKT-EV-620` and nothing
+  working space**; both are held by the measurements in `plan/mep_electrical.py`. Feeder 2 carries `CKT-SPA`, `CKT-SAUNA`, `CKT-EV-1450`, `CKT-GAR-240` and nothing
   else. `electrical.panel_feeder_load` grades each panel's own 220.82 demand against its own
   main (155.9 A and 117.7 A of 200 A); `electrical.service_load` grades the house against the
   meter (265.8 A of 320 A, **54.2 A of margin**). `CKT-RANGE` is 40 A / 11,900 VA (the LG

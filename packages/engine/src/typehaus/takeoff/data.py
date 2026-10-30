@@ -84,6 +84,13 @@ def data_raceway_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     ]
 
 
+def poe_watts_by_tag(model: ResolvedModel) -> dict[str, float | None]:
+    """Each data device's scheduled PoE draw (E-603), None where its type states none."""
+    types = _device_types(model)
+    return {device.tag: getattr(types.get(device.type_ref or ""), "poe_watts", None)
+            for device in _data_devices(model)}
+
+
 def poe_budget(model: ResolvedModel) -> dict[str, object]:
     """Connected PoE watts against the switch — the number that decides the next switch.
 

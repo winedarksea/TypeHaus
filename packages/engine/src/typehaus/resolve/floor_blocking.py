@@ -554,9 +554,12 @@ def _run_bands(model: ResolvedModel) -> list[_RunBand]:
             out.append((duct.tag, tuple(duct.path), tuple(duct.z_m),
                         (duct.diameter_m or 0.0) / 2.0))
     for raceway in model.conduits:
-        start = raceway.z_start_m or 0.0
-        end = raceway.z_end_m if raceway.z_end_m is not None else start
-        z = (*([start] * (len(raceway.path) - 1)), end)
+        if raceway.z_m and len(raceway.z_m) == len(raceway.path):
+            z = tuple(raceway.z_m)  # placed in z: never the schematic end-pair profile
+        else:
+            start = raceway.z_start_m or 0.0
+            end = raceway.z_end_m if raceway.z_end_m is not None else start
+            z = (*([start] * (len(raceway.path) - 1)), end)
         out.append((raceway.tag, tuple(raceway.path), z,
                     raceway_outside_diameter_m(raceway.trade_size_m or 0.0,
                                                raceway.material) / 2.0))

@@ -222,9 +222,11 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=20),
+    # 1/4" south of 34'-1" (2026-10-30): CD-M-DATA-KITCH-TRUNK's 1" EMT needs the 1" between
+    # this duct's face and the truss at y=34'-4".
     DuctRun(uid="83MA15Q308", tag="DU-M-ERV-R-BED", system=DuctSystem.SUPPLY,
-            path=(pt(ft(5, 1), ft(34, 1)), pt(ft(5, 1), ft(34, 1)),
-                  pt(ft(5, 11.5), ft(34, 1)), pt(ft(5, 11.5), ft(28, 8)),
+            path=(pt(ft(5, 1), ft(34, 0.75)), pt(ft(5, 1), ft(34, 0.75)),
+                  pt(ft(5, 11.5), ft(34, 0.75)), pt(ft(5, 11.5), ft(28, 8)),
                   pt(ft(5, 11.5), ft(28, 8)),
                   pt(ft(5, 11.5), ft(6)), pt(ft(5, 11.5), ft(6)),
                   pt(ft(7), ft(6))),

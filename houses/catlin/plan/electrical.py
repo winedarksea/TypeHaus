@@ -1,7 +1,7 @@
 # haus: editable
 # Catlin electrical service (plans/electrical_notes.md): a Class 320 HDLB meter-main with
 # two 200A mains, two basement panels (plan/mep_electrical.py), 240V appliance circuits,
-# two garage EV receptacles, the
+# the garage's 14-50 EVSE outlet and general receptacles, the
 # backup subsystem's DIN enclosure, hot tub + heat-pump disconnects, PV junction box.
 #
 # All-electric: no gas, no furnace. Three Gree heat-pump systems plus electric radiant
@@ -107,7 +107,8 @@ DEVICE_TYPES = (
     # handle and the steel grey. Sized off the product (6-1/2" x 3-1/4" x 9-1/2"), about a
     # fifth under the placeholder it replaced.
     # EV receptacles (plans/electrical_notes.md lines 5-7). load_va is the continuous EV
-    # load at 80% of the breaker: 6-20 -> 240x16, 14-50 -> 240x40.
+    # load at 80% of the breaker: 6-20 -> 240x16, 14-50 -> 240x40. The 6-20 is now half of
+    # the garage's general-use point, ED-G-RC-240 (2026-10-30).
     # The 14-50 EVSE outlet. The EVSE is the Grizzl-E Smart (plan/smart_home.py, 2026-10-30):
     # local OCPP to HA, superseding the Emporia, which had no local API. No charger here is a
     # power control system, so nothing earns a 220.82 credit (2026 NEC 625.42(A) -> Article
@@ -1061,7 +1062,7 @@ SECOND_EQUIPMENT = [
 # cladding is 7/8" corrugated, and the wall also carries a 3/8" node-line offset
 # (`GARAGE_Y_SOUTH`, plan/storeys/garage.py) that keeps the breezeway slot — net, W-G-S's
 # interior face sits +3/8" (node) - 7/8" (wall depth) = -1/2" off the sheathing plane.
-# `ED-G-EV-620` is on W-G-W, which has no node-line move, so its interior face is 7/8" off
+# `ED-G-RC-240` is on W-G-W, which has no node-line move, so its interior face is 7/8" off
 # the sheathing plane. Both west-wall devices here and `EQ-G-HEATER` below travelled the
 # garage's 6'-0" east move on 2026-09-07 — they sit ON that wall. `ED-G-EV-1450` did not:
 # it is a station on the SOUTH wall's interior face, still well inside its new x 6'..30'
@@ -1074,9 +1075,14 @@ SECOND_EQUIPMENT = [
 # constraint on the feeder. `ED-T-LEV-EV-1450` (plan/device_types.py) names it; the range
 # takes the plain 1450R (`PROD-LEVITON-1450R`). The EVSE that plugs in is the Grizzl-E Smart,
 # `APPL-G-EVSE` beside it (plan/smart_home.py): cord-and-plug, so an appliance, not a device.
+#
+# ** NEC 210.52(G)(1): a receptacle in each vehicle bay, <= 5'-6" (owner, 2026-10-30). ** The
+# 16' door makes two bays. West: ED-G-RC-240, the 6-20 EV outlet made a general-use point
+# (5-20R + 6-20R, CKT-GAR-240), backup charging when the 14-50 is busy. East: ED-G-RC-E on
+# CKT-RC-GARAGE, the 120 V/20 A circuit 210.11(C)(4) wants for these outlets.
 GARAGE_DEVICES = [
-    ElectricalDevice(uid="CEE008AAAA", tag="ED-G-EV-620", kind=DeviceKind.RECEPTACLE_240,
-                     type_ref="ED-T-LEV-EV-620", circuit="CKT-EV-620",
+    ElectricalDevice(uid="CEE008AAAA", tag="ED-G-RC-240", kind=DeviceKind.RECEPTACLE_240,
+                     type_ref="ED-T-LEV-620-DUPLEX", circuit="CKT-GAR-240",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE",
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-W", face="left", distance_from_start=inch(103.875),
@@ -1086,6 +1092,13 @@ GARAGE_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE",
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(167.375),
+                         normal_gap=inch(0), rotation_offset=deg(180)))),
+    # Mid-bay on the east wall, between studs at 128" and 144".
+    ElectricalDevice(uid="D8QHKRB3HB", tag="ED-G-RC-E", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE",
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-E", face="left", distance_from_start=inch(136),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
 ]
 
@@ -1409,32 +1422,43 @@ MAIN_DATA_TRUNKS = [
     # the bay at y=22'-0", between trusses 018 and 019, then north to the AP. ~+11.6 LF.
     # y=24'-8" was tried and runs through BM-M-HALL's flush LVL. (19', 29') is unchanged:
     # east of the FO-M-STAIR well, one radio for the kitchen, the stair and RM-M-STUDY.
+    # 1" EMT from the data riser to the pull box, where `CD-M-DATA-DOORBELL` leaves: three
+    # Cat 6A (AP, doorbell, canopy camera) are 25% full at 0.30" OD, 33% at 0.35" (Table 4:
+    # 0.864 in^2, 40%). Two go on in the 3/4" `CD-M-DATA-KITCH`.
+    ConduitRun(uid="0KME23GB35", tag="CD-M-DATA-KITCH-TRUNK", trade_size=inch(1),
+               service=Service.DATA,
+               path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(410.6)),
+                     pt(inch(32), inch(410.6)), pt(inch(32), inch(411.5)),
+                     pt(ft(6), inch(411.5)), pt(ft(6), inch(411.5))),
+               start_elevation=inch(106.5), end_elevation=inch(110.5),
+               elevations=(inch(106.5), inch(106.5), inch(106.5), inch(106.5), inch(106.5),
+                           inch(110.5)),
+               # Pull box at 4 (6'-0", 34'-3 1/2", in RM-M-MECH's open ceiling): 270 deg. The
+               # run ends where the doorbell and the 3/4" continuation start, 4" above it.
+               pull_points=(4,),
+               from_ref="ED-B-NET-PATCH"),
     ConduitRun(uid="CDT010AAAA", tag="CD-M-DATA-KITCH", trade_size=inch(0.75),
                service=Service.DATA,
                # ** IT CROSSES DU-M-ERV-EXH-TRUNK'S LINE UNDER THE BAND SINCE 2026-09-24. ** The
                # 8" trunk fills FS-S-WEST's web window from y=7'-4" to 35'-0", with the chase
-               # west of it and this AP east, so no raceway crosses it inside the field. Off the
-               # data riser at +8'-10 1/2" in RM-M-MECH's ceiling (exposed by design), north
-               # between the extract riser and DU-ERV-EA, east over the supply plenum, up inside
+               # west of it and this AP east, so no raceway crosses it inside the field. The 1"
+               # TRUNK leaves the data riser at +8'-10 1/2" in RM-M-MECH's ceiling (exposed by
+               # design), north between the extract riser and DU-ERV-EA, east over the supply
+               # plenum to its pull box; from there this run goes up inside
                # W-M-MECH-E, south in the 5'-5 1/2"..6'-6 1/2" opening at x=6'-6" on the lower tier (under the
                # BATH1 lav drain and the WC vent), east in the 23'-4" bay south of the stair
                # well, up over the extract legs at x=14'-6 1/2" to the 21'-1.3" bay (BM-M-HALL
                # fills x=18' from 22'-4" to 25'-10"), east over the suite's pipes and north at
                # x=19'-0" in FS-S-EAST's I-joist webs. Every tier step is under half the deck.
-               path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(410.6)),
-                     pt(inch(32), inch(410.6)), pt(inch(32), inch(411.5)),
-                     pt(ft(6), inch(411.5)), pt(ft(6), inch(411.5)),
-                     pt(inch(78), inch(411.5)), pt(inch(78), inch(280)),
+               path=(pt(ft(6), inch(411.5)), pt(inch(78), inch(411.5)), pt(inch(78), inch(280)),
                      pt(inch(189), inch(280)), pt(inch(189), inch(280)),
                      pt(inch(189), inch(253.3)), pt(ft(19), inch(253.3)),
                      pt(ft(19), ft(29)), pt(ft(19), ft(29))),
-               start_elevation=inch(106.5), end_elevation=ft(9, 2.25),
-               elevations=(inch(106.5), inch(106.5), inch(106.5), inch(106.5), inch(106.5),
-                           inch(110.5), inch(110.5), inch(110.5), inch(110.5), inch(115.5),
-                           inch(115.5), inch(115.5), inch(115.5), ft(9, 2.25)),
-               # Pull boxes at 4 (6'-0", 34'-3 1/2", in RM-M-MECH's open ceiling) and 8
-               # (14'-6 1/2", 23'-4", behind a ceiling access cover): 270/270/360 deg.
-               pull_points=(4, 8),
+               start_elevation=inch(110.5), end_elevation=ft(9, 2.25),
+               elevations=(inch(110.5), inch(110.5), inch(110.5), inch(110.5),
+                           inch(115.5), inch(115.5), inch(115.5), inch(115.5), ft(9, 2.25)),
+               # Pull box at 3 (14'-6 1/2", 23'-4", behind a ceiling access cover).
+               pull_points=(3,),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-KITCH-AP"),
     # PORCH goes SOUTH first and turns east at y=1'-0", well below the void, then out under
     # the balcony deck to the porch soffit — still sharing SP-SG-PORCH-ELEC with the ceiling

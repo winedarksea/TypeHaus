@@ -141,7 +141,7 @@ def test_service_upgrade_devices_are_present(catlin_model):
                if element.element_kind == "ElectricalDevice"}
     assert devices["ED-M-METER"].kind.value == "meter"
     assert devices["ED-B-BACKUP-ENCL"].kind.value == "panel"
-    assert devices["ED-G-EV-620"].type_ref == "ED-T-LEV-EV-620"
+    assert devices["ED-G-RC-240"].type_ref == "ED-T-LEV-620-DUPLEX"  # general use, 2026-10-30
     assert devices["ED-G-EV-1450"].type_ref == "ED-T-LEV-EV-1450"
     assert devices["ED-B-SPA-DISC"].kind.value == "disconnect"
     # One 440.14 disconnect per outdoor unit — three systems now, not two minisplits.

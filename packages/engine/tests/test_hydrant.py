@@ -208,7 +208,7 @@ def test_the_whole_garage_stands_on_its_floor_not_on_the_stem_top(catlin_model):
     # 2026-09-11 to 2026-10-13). 76" over the floor is 48.8" over the tread. The contract
     # under test is unchanged: whatever is authored resolves that far above the FLOOR, never
     # the stem top.
-    for tag, above_floor_ft in (("ED-G-EV-620", 4.0), ("ED-G-EV-1450", 4.0),
+    for tag, above_floor_ft in (("ED-G-RC-240", 4.0), ("ED-G-EV-1450", 4.0),
                                 ("EQ-G-HEATER", 6.0), ("ED-G-SW", 76 / 12),
                                 ("ED-G-LT1", 8.0)):
         assert (by_tag[tag].z_m - grade) * _M_TO_FT == pytest.approx(

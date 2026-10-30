@@ -13,7 +13,6 @@ solar day against 48h of the always-on tier — because those are the sizing dec
 
 from __future__ import annotations
 
-
 import pytest
 
 from typehaus.takeoff.backup_calc import DEPTH_OF_DISCHARGE, backup_runtime_summary
@@ -111,37 +110,51 @@ def test_usable_storage_is_nameplate_times_the_declared_dod(summary):
 
 
 def test_the_always_on_tier_outlasts_the_shed_tier_by_a_wide_margin(summary):
-    """Battery-only autonomy, honestly counted: the always-on tier clears 33 h (39-43 h until
-    the 2026-10-30 PoE doorbell and two cameras put ~41 W more on CKT-HA; 40-43 h before the
-    2026-10-28 luminaire products).
+    """Battery-only autonomy, honestly counted: the always-on tier clears 37 h (34.8 h while
+    the 2026-10-30 PoE doorbell and cameras rode it; HA now sheds their ports on battery).
 
-    Genuine always-on load includes the PoE switch's six powered devices (82 W of class
-    ceilings on E-603, CKT-HA's duty 0.44) and the kitchen's under-cabinet task light PSU (ED-M-KITCH-LT-PSU) on
+    Genuine always-on load includes the PoE switch's three APs (CKT-HA, duty 0.44 less the
+    shed ports) and the kitchen's under-cabinet task light PSU (ED-M-KITCH-LT-PSU) on
     CKT-LT-BACKUP, per electrical_notes.md line 24, which puts kitchen lighting behind the
     backup relay.
 
     ** MOST OF THE PSU'S RATED VA IS NOT A LOAD, AND THE OVERSTATEMENT IS DELIBERATE. ** Per
     plan/lighting_types.py's own rule, a PSU's ``load_va`` is the supply's rating (200 VA),
-    not the tape's draw (44.6 W, 55.7 W at the 125% sizing factor) — so the 34.8 h figure is
+    not the tape's draw (44.6 W, 55.7 W at the 125% sizing factor) — so the 39.3 h figure is
     a floor rather than an estimate. A backup calculation that errs is supposed to err this
     way.
     """
     autonomy = summary["autonomy"]
-    assert 33.0 < autonomy["hours_always_on_only"] < 37.0
+    assert 37.0 < autonomy["hours_always_on_only"] < 41.0
 
     assert autonomy["hours_all_tiers"] < autonomy["hours_always_on_only"]
 
 
-def test_the_48_hour_cycle_falls_just_short_of_the_always_on_tier(summary):
-    """The TODO's actual question. The always-on tier rode one strong solar day per 48 h by
-    0.22 kWh until the 2026-10-30 cameras and doorbell (~41 W on CKT-HA); it now falls about
-    2 kWh short, and both tiers together never did. The answer is array, not battery."""
+def test_shed_poe_ports_come_off_the_backup_average(catlin_model, summary):
+    """CKT-HA's shed is structure, not a lowered duty: the three named ports' E-603 watts
+    over the 88% supply (36.95 / 0.88 = 42 W). An unrated tag is listed and saves nothing."""
+    row = next(r for r in summary["tiers"]["always_on"]["circuits"] if r["circuit"] == "CKT-HA")
+    assert row["shed_w"] == pytest.approx(42.0, abs=0.1) and row["shed_unrated"] == []
+    assert row["average_w"] == pytest.approx(300 * 0.44 - 42.0, abs=0.1)
+
+    circuits = tuple(
+        c.model_copy(update={"backup_shed_poe": ("ED-M-STUDY-DATA1",)}) if c.tag == "CKT-HA"
+        else c for c in catlin_model.plan.library.circuits)
+    unshed = backup_runtime_summary(_with_circuits(catlin_model, circuits))
+    row = next(r for r in unshed["tiers"]["always_on"]["circuits"] if r["circuit"] == "CKT-HA")
+    assert row["shed_unrated"] == ["ED-M-STUDY-DATA1"] and row["average_w"] == 132.0
+
+
+def test_the_48_hour_cycle_just_carries_the_always_on_tier(summary):
+    """The TODO's actual question. With the camera and doorbell ports shed on battery, one
+    strong solar day per 48 h carries the always-on tier again, by about 0.1 kWh (it fell
+    1.89 kWh short with them on). Both tiers together never ride: the shed tier's job."""
     cycle = summary["cycle_48h"]
     assert cycle["array_kw"] == pytest.approx(5.28)
-    assert cycle["sustains_always_on"] is False
-    assert -3.0 < cycle["net_kwh_always_on"] < 0
+    assert cycle["sustains_always_on"] is True
+    assert 0 < cycle["net_kwh_always_on"] < 0.5
     assert cycle["sustains_all_tiers"] is False
-    assert "add array, not battery" in summary["verdict"]
+    assert "which is what the shed tier is for" in summary["verdict"]
 
 
 def test_the_backup_load_fits_the_inverter(summary):
@@ -153,10 +166,10 @@ def test_the_backup_load_fits_the_inverter(summary):
 
 
 def test_solar_input_scales_the_verdict(catlin_model, summary):
-    """Solar yield is a parameter, not a rewrite: a strong day of 3.5 kWh/kW instead of the
-    authored 3.0 and the always-on tier rides again, the recommendation flipping on its own
-    evidence."""
-    good = backup_runtime_summary(catlin_model, strong_day_kwh_per_kw=3.5)
-    assert good["cycle_48h"]["sustains_always_on"] is True
-    assert "which is what the shed tier is for" in good["verdict"]
-    assert summary["cycle_48h"]["sustains_always_on"] is False
+    """Solar yield is a parameter, not a rewrite: a strong day of 2.9 kWh/kW instead of the
+    authored 3.0 and the always-on tier no longer rides, the recommendation flipping on its
+    own evidence. The margin is that thin."""
+    poor = backup_runtime_summary(catlin_model, strong_day_kwh_per_kw=2.9)
+    assert poor["cycle_48h"]["sustains_always_on"] is False
+    assert "add array, not battery" in poor["verdict"]
+    assert summary["cycle_48h"]["sustains_always_on"] is True

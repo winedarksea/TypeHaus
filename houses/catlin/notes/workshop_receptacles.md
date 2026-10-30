@@ -93,6 +93,29 @@ RC1 and RC2 stay at their stations, 42" AFF over the 34" benches, surface-mounte
 The kitchen kettle outlet (`CKT-KETTLE`) uses the same arrangement; its 120 V half also needs a
 neutral.
 
+## Garage (NEC 210.52(G)(1))
+
+The 16' door makes two vehicle bays, and each needs a receptacle no higher than 5'-6"
+(`code.NEC_210_52_G_garage_receptacles` grades it; owner, 2026-10-30).
+
+- **West bay: `ED-G-RC-240`**, 48" AFF on `W-G-W`. It was the 6-20 "smaller EV charger"
+  (`ED-G-EV-620` on `CKT-EV-620`). Most charging uses the 14-50, so this is a general-use
+  point that doubles as a backup charger. It is RC1's device (a 6-20R beside a 5-20R duplex)
+  on `CKT-GAR-240`, a 2-pole 20 A common-trip GFCI. NEC 210.8(A)(2) covers 125-250 V garage
+  receptacles. Pull two hots, a **neutral** (the 6-20 alone had none) and a ground. No AFCI:
+  garages are not on 210.12(A) or E3902.16.
+- **East bay: `ED-G-RC-E`**, a 20 A duplex, 48" AFF on `W-G-E`, 11'-4" from the SE corner,
+  on `CKT-RC-GARAGE`. Without it the east bay had nothing that counts: the 14-50R serves only
+  the EVSE, and the opener's outlet is 9'-11" up. It also puts a required outlet on the
+  120 V/20 A garage circuit that 210.11(C)(4) asks for. The AHJ should confirm the west-bay
+  5-20R on a 2-pole circuit. If they want every bay outlet on that circuit, feed a west-bay
+  5-20R from `CKT-RC-GARAGE`.
+- **Open: the 14-50R has no GFCI.** `CKT-EV-1450` is a plain 50 A 2-pole. 2023 NEC
+  210.8(A)(2) and 625.54 want GFCI on a plug-in EVSE's garage receptacle. The owner chooses
+  between a 50 A 2-pole GFCI breaker and a hardwired EVSE, which 210.8 does not reach. Read
+  the Grizzl-E manual first: an upstream GFCI can trip alongside the charger's own
+  ground-fault protection.
+
 ## Boxes and covers
 
 Boxes are no longer on the types. The house's `BoxStandard` derives them from the face each

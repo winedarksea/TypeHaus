@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from typehaus.model.enums import BackupTier
 from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff.data import poe_watts_by_tag
 from typehaus.takeoff.electrical import (
     _circuit_consumers,
     backup_equipment,
@@ -51,6 +52,12 @@ STRONG_DAY_KWH_PER_KW = 3.0
 # demand; 3x is the conservative allowance for a soft-started inverter-driven motor.
 MOTOR_START_MULTIPLE = 3.0
 
+# Efficiency of the PoE switch's supply, for what a shed port saves at the outlet. 88% is the
+# DOE Level VI floor for a basic-voltage external supply over 49 W (10 CFR 430.32(w)), the
+# same basis CKT-HA's duty cycle grosses its PoE load up by. Cable loss on the shed ports is
+# saved too and is not credited, so the shed errs light.
+POE_SUPPLY_EFFICIENCY = 0.88
+
 _HOURS_PER_DAY = 24.0
 
 
@@ -69,8 +76,22 @@ def _governed_va(model: ResolvedModel, circuit, va: float) -> float:
     return va
 
 
+def _poe_shed(circuit, poe_watts: dict[str, float | None]) -> tuple[float, list[str]]:
+    """Outlet watts saved by ``Circuit.backup_shed_poe``, and the tags it could not credit.
+
+    A tag that is not a data device, or states no ``poe_watts``, is listed and saves nothing:
+    an unrated shed must not flatter the calc.
+    """
+    rated = [poe_watts.get(tag) for tag in circuit.backup_shed_poe]
+    unrated = [tag for tag, watts in zip(circuit.backup_shed_poe, rated, strict=True)
+               if not watts]
+    saved = sum(float(watts) for watts in rated if watts) / POE_SUPPLY_EFFICIENCY
+    return saved, unrated
+
+
 def _tier_rows(model: ResolvedModel, tier: BackupTier) -> list[dict[str, object]]:
     consumers = _circuit_consumers(model)
+    poe_watts = poe_watts_by_tag(model)
     rows: list[dict[str, object]] = []
     for circuit in model.plan.library.circuits:
         if circuit.backup_tier is not tier:
@@ -78,14 +99,19 @@ def _tier_rows(model: ResolvedModel, tier: BackupTier) -> list[dict[str, object]
         va = _governed_va(model, circuit,
                           _va(model, circuit, consumers.get(circuit.tag, [])))
         duty = circuit.duty_cycle
+        shed_w, unrated = _poe_shed(circuit, poe_watts)
         rows.append({
             "circuit": circuit.tag,
             "description": circuit.description,
             "connected_va": round(va, 0),
             "duty_cycle": duty,
-            # Average draw over the event. None — never 0.0 — when the duty cycle is not
-            # authored, so a consumer cannot add it up without noticing.
-            "average_w": round(va * duty, 1) if duty is not None else None,
+            "shed_poe": list(circuit.backup_shed_poe),
+            "shed_w": round(shed_w, 1),
+            "shed_unrated": unrated,
+            # Average draw over the event, after the shed. None — never 0.0 — when the duty
+            # cycle is not authored, so a consumer cannot add it up without noticing.
+            "average_w": (round(max(0.0, va * duty - shed_w), 1)
+                          if duty is not None else None),
         })
     return rows
 
@@ -200,7 +226,7 @@ def backup_runtime_summary(
         "hours_all_tiers": _hours(both_w),
         "hours_always_on_only": _hours(always_w),
         "basis": ("battery only, no solar; tier average draw = connected VA x authored "
-                  "duty cycle"),
+                  "duty cycle, less PoE ports shed on battery"),
     }
 
     # --- The 48-hour cycle: strong sun every other day ---------------------------------
