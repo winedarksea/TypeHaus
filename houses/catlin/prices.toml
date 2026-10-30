@@ -3091,8 +3091,23 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # rough-in the whole detail reverts to lags through 2" of gypsum and 3/4" of walnut, which is
 # how a fold-down desk gets loose. See plan/furniture_types.py.
 "FT-STUDY-DESK-LEAF" = { material = { low = 260, high = 560 }, labour = { low = 250, high = 620 } }  # 1 ea
-"FT-CURTAIN-ROD-48" = { material = { low = 25, high = 90 }, labour = { low = 35, high = 90 } }  # 6 ea
-"FT-CURTAIN-ROD-84" = { material = { low = 40, high = 140 }, labour = { low = 35, high = 90 } }  # 1 ea
+# --- window coverings (2026-10-29, plan/window_covering_types.py) ------------------------
+# Estimates. One row per track RUN carries the IKEA VIDGA rail (204.929.16, 55" @ $8.99,
+# cut to length), its ceiling or wall fittings, gliders and hooks, any end-closing set, and
+# the IKEA block-out curtain pairs at ~1.8-2x fullness, hemmed to kiss the floor. Labour is
+# locating the joist line, the rail, and hanging and hemming. The rows the rods held
+# (FT-CURTAIN-ROD-48/-84) are deleted with them.
+"FT-CURTAIN-TRACK-LIV-S" = { material = { low = 130, high = 300 }, labour = { low = 80, high = 200 } }  # 1 ea — 124" ceiling run, 1 end-closing set, ~5 panels
+"FT-CURTAIN-TRACK-LIV-BALC" = { material = { low = 110, high = 220 }, labour = { low = 60, high = 150 } }  # 1 ea — 72" wall run, 2 end-closing sets, ~3 panels
+"FT-CURTAIN-TRACK-BED-W" = { material = { low = 150, high = 320 }, labour = { low = 80, high = 200 } }  # 1 ea — 147" corner-to-corner ceiling run, ~6 panels
+"FT-CURTAIN-TRACK-STUDY-DECK" = { material = { low = 90, high = 200 }, labour = { low = 60, high = 150 } }  # 1 ea — 72" ceiling run, 1 end-closing set, ~3 panels
+# SmartWings made-to-measure cellular, light filtering, inside mount. Motorized carries the
+# Matter-over-Thread motor, battery and solar panel; labour includes pairing to HA.
+"FT-CELLULAR-SHADE-3048-MOTOR" = { material = { low = 250, high = 420 }, labour = { low = 40, high = 100 } }  # 2 ea — WIN-S-STUDY1/-2
+"FT-CELLULAR-SHADE-2748-MOTOR" = { material = { low = 230, high = 400 }, labour = { low = 40, high = 100 } }  # 1 ea — WIN-S-STUDY3
+"FT-CELLULAR-SHADE-2754-MOTOR" = { material = { low = 240, high = 420 }, labour = { low = 40, high = 100 } }  # 1 ea — WIN-A-S-JUL-E
+"FT-CELLULAR-SHADE-3048-CORDLESS" = { material = { low = 70, high = 160 }, labour = { low = 30, high = 80 } }  # 2 ea — WIN-M-BED-S1/-S2
+"FT-CELLULAR-SHADE-1424-CORDLESS" = { material = { low = 50, high = 120 }, labour = { low = 30, high = 80 } }  # 1 ea — WIN-A-S3
 # --- the porch enclosure track (2026-09-03) ---------------------------------------------
 # ** THESE TWO ROWS REPLACE `FT-CURTAIN-ROD-OUTDOOR-114`/`-98`, WHICH ARE DELETED, NOT
 # ZEROED. ** The zero-row convention here is for a product still specified somewhere; these
@@ -7650,7 +7665,7 @@ finish-floor-prep-and-self-levelling = { low = 0.80, high = 2.09, unit = "SF", d
 #   * RM-M-BATH2's and RM-A-STUBATH's shower panels DO get backer and a membrane since
 #     2026-10-12, but both bill on their own fixture rows (FX-SHOWER-36-THERMO-COMBO,
 #     -NEO-COMBO), not here. Both lit niches are gone.
-# What is left, and why this cannot go to zero: RM-M-BATH2's 84 SF of tiled floor over
+# What is left, and why this cannot go to zero: RM-M-BATH2's 39.5 SF of tiled floor over
 # FH-M-BATH2 and RM-B-SAUNA's 45 SF of splash tile. Halving the
 # lump is a defensible reading of that residue; it is not an arithmetic result, and the next
 # person to touch it should re-argue it rather than trust it.

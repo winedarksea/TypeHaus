@@ -131,6 +131,9 @@ EAST_FLOOR = FloorSystem(
     uid="CSF603AAAA", tag="FS-S-EAST",
     joists=JoistSpec(member=_JOIST, spacing=_OC, direction="x",
                      bearing_refs=("W-M-C2", "W-M-E1", "BM-M-HALL"),
+                     # FURN-M-LIV-TRACK-S's ceiling track screws up into this line; it runs
+                     # parallel to the joists, 6 1/2" off the y=16" line.
+                     extra_lines=(inch(9.5),),
                      end_bearing=(("W-M-C2", _JOIST_BEARING),)),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     # The main floor's ceiling: this deck's underside *is* that ceiling (unchanged from

@@ -59,10 +59,13 @@ _WALL = Mount(kind=MountKind.WALL)
 
 
 def _track(tag: str, name: str, run: float, height: float, mount: Mount,
-           stacks: tuple[tuple[float, float], ...]) -> FurnitureType:
+           stacks: tuple[tuple[float, float], ...],
+           fixings: tuple[float, ...] = ()) -> FurnitureType:
+    # A wall run's fittings sit at the rail's centre, 3/8" under the envelope top.
     return FurnitureType(
         tag=tag, name=name, footprint=(inch(run), inch(6)), height=inch(height),
         plan_symbol=None, mount=mount, product_ref=VIDGA_RAIL.tag, source=_TRACK_SOURCE,
+        wall_fixing_points=tuple((inch(x), inch(height - 0.375)) for x in fixings),
         curtain_track=CurtainTrackSpec(stacks=tuple(
             CurtainStack(start=inch(start), width=inch(width)) for start, width in stacks)),
     )
@@ -75,8 +78,12 @@ TRACK_LIV_S = _track("FT-CURTAIN-TRACK-LIV-S", 'Ceiling curtain track, living so
                      124.25, 106.0625, _CEILING, ((58.25, 15), (73.25, 15)))
 # D-M-BALC: wall run under EQ-M-HP2-LIVING (its bottom 90" AFF), rail top 88" AFF.
 # x 219 1/2" (C1 corner) to 291" (end-closing, 1" short of ED-M-PORCH-SW). A split pair.
+# Three wall fittings (<= 140 cm apart): the ends on BK-M-S2-ROD and the king packs at x 220"
+# and 290 3/4"; the middle over D-M-BALC's header, which stands 1 1/4" behind the stud face,
+# so it takes a ripped 2x nailer on the header face (preferences.toml suppress).
 TRACK_LIV_BALC = _track("FT-CURTAIN-TRACK-LIV-BALC", 'Wall curtain track, balcony door, 71 1/2"',
-                        71.5, 87.5, _WALL, ((0, 7), (64.5, 7)))
+                        71.5, 87.5, _WALL, ((0, 7), (64.5, 7)),
+                        fixings=(-35.5, 0, 35.25))
 # Bedroom west: SW corner to NW corner (y 6 3/4"-153 1/2"); panels anchored mid-pier at
 # y 88", stacked in the W1/W2 pier.
 TRACK_BED_W = _track("FT-CURTAIN-TRACK-BED-W", 'Ceiling curtain track, main bedroom west, 146 3/4"',

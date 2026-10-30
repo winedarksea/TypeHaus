@@ -148,6 +148,13 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
                 f"{body.tag} hangs on an in-wall carrier frame in {wall.tag}, which is what "
                 f"carries it — a backing band is not the load path here", tags))
             continue
+        opening = _opening_holding(ctx, wall, station, body, body_type)
+        if opening is not None:
+            out.append(not_applicable(
+                "advisory.wall_backing_present",
+                f"{body.tag} stands within {opening}'s rough opening on {wall.tag}, so it "
+                f"fixes into the opening's head and jambs, not the wall face", tags))
+            continue
         if not _is_framed(wall):
             out.append(not_applicable(
                 "advisory.wall_backing_present",
@@ -194,6 +201,25 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
                 fix=f"author a WallBacking on {wall.tag} spanning "
                     f"{low / M_PER_IN:.0f}\" above the floor"))
     return out
+
+
+def _opening_holding(ctx: CheckContext, wall: ResolvedWall, station: float,
+                     body: WallMountedBody, body_type: object) -> str | None:
+    """The opening whose rough opening wholly holds this body (an inside-mount shade)."""
+    placed = next((obj for obj in ctx.model.canvas_objects if obj.uid == body.uid), None)
+    storey = ctx.plan.storey(wall.storey)
+    if placed is None or placed.body_z0_m is None or placed.body_z1_m is None or storey is None:
+        return None
+    half = body_type.footprint[0].meters / 2
+    for opening in ctx.model.openings:
+        if opening.host_wall != wall.tag or opening.height_m is None:
+            continue
+        sill = storey.elevation.meters + opening.sill_m
+        if (abs(station - opening.center_along_m) + half <= opening.width_m / 2 + _REACH_M
+                and sill - _REACH_M <= placed.body_z0_m
+                and placed.body_z1_m <= sill + opening.height_m + _REACH_M):
+            return opening.tag
+    return None
 
 
 def _blocking_course_behind(wall: ResolvedWall, low: float, station: float) -> bool:

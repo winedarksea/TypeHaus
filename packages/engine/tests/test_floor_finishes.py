@@ -350,11 +350,10 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
         "catlin-plant-vinyl-raised"]["net_area_sqft"]
     assert rows["catlin-plant-sureply"]["order_area_sqft"] == rows[
         "catlin-plant-vinyl-raised"]["order_area_sqft"]
-    # The sheet vinyl is split by assembly, not changed in area: 525.5 SF before the 1/2" walls
-    # (2026-10-23), 529.6 after (each wall face moved 1/8").
+    # 529.6 SF after the 1/2" walls, less the attic's 8.1 SF neo-angle receptor.
     assert (float(rows["vinyl-sheet"]["net_area_sqft"])
             + float(rows["catlin-plant-vinyl-raised"]["net_area_sqft"])) == pytest.approx(
-                529.6, abs=0.5)
+                521.5, abs=0.5)
     assignments = {
         "catlin-tile-calacatta-gold": ("RM-M-BATH2", "catlin-ditra-heat"),
         "catlin-tile-carrara": ("RM-S-BATH1", "catlin-ditra-heat"),

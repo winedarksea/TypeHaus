@@ -273,7 +273,7 @@ export function storeyFloorTopM(floors: readonly Floor[], storeyTag: string,
  * similar value are hard to tell apart under one light and the sheen is what separates them.
  *
  * The engine derives what the finish covers (`room.field_finish`, resolve/room_finish.py): the
- * clear face less the zones and the deck voids at the room's level, every hole strictly inside
+ * clear face less zones, fixture installations and deck voids, every hole strictly inside
  * its part. Cutting every storey opening out of every room here instead capped a well flush
  * with a room edge (Earcut can't cut it) and bridged one outside the room into its neighbour.
  *

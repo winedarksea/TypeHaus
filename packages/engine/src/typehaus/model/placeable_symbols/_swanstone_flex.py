@@ -89,7 +89,7 @@ def swanstone_flex(width: float, depth: float, height: float):
 
     front = -half_depth + dimensions.threshold_depth / 2
     post = -half_width - dimensions.post_width / 2
-    deck = dimensions.deck_datum - dimensions.finished_floor_datum
+    deck = dimensions.deck_datum - dimensions.base_datum
     solid(post, front, deck, dimensions.model_height,
           dimensions.post_width, dimensions.post_width, "chrome")
     north, south = (value / sx for value in front_opening_limits(width))
@@ -129,21 +129,21 @@ def swanstone_flex(width: float, depth: float, height: float):
           channel, channel, "chrome")
     # Retain visible showering trim as the generic symbol did. These are product-family
     # massing at illustrative mounting heights, not rough-in coordinates or service ports.
-    head_z = (dimensions.head_height - dimensions.finished_floor_datum) * sz
+    head_z = (dimensions.head_height - dimensions.base_datum) * sz
     head_y = (half_depth - dimensions.head_projection) * sy
     parts.append(round_cylinder((0, head_y, head_z), dimensions.head_diameter * min(sx, sy) / 2,
                                 dimensions.head_thickness * sz, axis=2, color="chrome"))
     solid(0, half_depth - dimensions.head_projection / 2,
-          dimensions.head_height - dimensions.finished_floor_datum,
-          dimensions.head_height - dimensions.finished_floor_datum + dimensions.head_thickness,
+          dimensions.head_height - dimensions.base_datum,
+          dimensions.head_height - dimensions.base_datum + dimensions.head_thickness,
           dimensions.head_thickness, dimensions.head_projection, "chrome")
-    valve_z = (dimensions.valve_height - dimensions.finished_floor_datum) * sz
+    valve_z = (dimensions.valve_height - dimensions.base_datum) * sz
     parts.append(round_cylinder((0, (half_depth - dimensions.head_thickness / 2) * sy, valve_z),
                                 dimensions.valve_plate_diameter * min(sx, sz) / 2,
                                 dimensions.head_thickness * sy, axis=1, color="chrome"))
     solid(0, half_depth - dimensions.valve_projection / 2,
-          dimensions.valve_height - dimensions.finished_floor_datum,
-          dimensions.valve_height - dimensions.finished_floor_datum + dimensions.head_thickness,
+          dimensions.valve_height - dimensions.base_datum,
+          dimensions.valve_height - dimensions.base_datum + dimensions.head_thickness,
           dimensions.head_thickness, dimensions.valve_projection, "chrome")
     strokes = (rect(0, 0, width, depth, fill="carrara"),
                circle(0, 0, dimensions.drain_diameter * sx / 2))

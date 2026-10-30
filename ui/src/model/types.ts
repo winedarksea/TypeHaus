@@ -545,6 +545,8 @@ export interface Room {
    * part. Absent on an older model.json.
    */
   field_finish?: FinishPart[];
+  /** Fixture installation footprints; concrete coatings may continue below them. */
+  floor_finish_exclusions?: FinishPart[];
   /** Area of `field_finish` — what the takeoff bills. */
   field_area_m2?: number;
 }

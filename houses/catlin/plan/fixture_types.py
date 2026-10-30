@@ -33,6 +33,7 @@ KOHLER_UNDERSCORE_6032 = FixtureType(
     name="Underscore drop-in bath with Bask heated surface",
     footprint=(inch(60), inch(32)),
     height=inch(21),
+    excludes_floor_finish=True,
     plan_symbol="kohler-underscore-6032",
     basin=False,
     product_ref="PROD-KOHLER-1130-W1-0",

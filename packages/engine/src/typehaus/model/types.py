@@ -469,6 +469,9 @@ class FixtureType(HausModel):
     name: str
     footprint: tuple[Length, Length]
     height: Length
+    # Prefabricated receptors bear on the slab/subfloor, without the room's covering.
+    # Enclosed drop-in baths exclude their enclosure rather than just the rim footprint.
+    excludes_floor_finish: bool = False
     needs: frozenset[Service] = frozenset()
     clearance: tuple[Length, Length, Length, Length] | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.

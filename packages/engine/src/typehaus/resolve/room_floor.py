@@ -106,6 +106,20 @@ def room_finished_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> f
     # job ``SLAB_MATCH_TOLERANCE_M`` already did, and the reason a main-storey room does not
     # fall through to the basement slab.
     centroid = Polygon(room.clear_face).centroid
+    if any(Polygon(outline, holes=list(holes)).covers(centroid)
+           for outline, holes in room.floor_finish_exclusions):
+        from typehaus.resolve.overlay import difference, union_all
+
+        # AFF remains the room's exposed finished floor, even when its centroid happens
+        # to fall inside a receptor. Point queries inside that receptor still see bare deck.
+        finishes = [*room.field_finish,
+                    *(part for zone in room.finish_zones for part in zone.parts)]
+        remaining = difference(
+            union_all([Polygon(outline, holes=list(holes)) for outline, holes in finishes]),
+            union_all([Polygon(outline, holes=list(holes))
+                       for outline, holes in room.floor_finish_exclusions]))
+        if not remaining.is_empty:
+            centroid = remaining.representative_point()
     best = _underfoot(model, (centroid.x, centroid.y), structural)
     if best is None:
         # The centroid can stand over a hole the room wraps — a stair well, a closet's chase

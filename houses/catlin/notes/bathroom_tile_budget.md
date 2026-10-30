@@ -22,21 +22,26 @@ pool/shower use but supplies no numeric DCOF. Confirm application and stock.
 
 ## Current takeoff and purchasing arithmetic
 
-`floor_finish_rows` gives 64.9 SF net / **75 SF order** for RM-M-BATH2 and
-71.8 SF net / **83 SF order** for RM-S-BATH1, including the existing 15% waste
-allowance and takeoff order-area rounding.
+As of 2026-10-29, `floor_finish_rows` gives **39.5 SF net / 46 SF order** for
+RM-M-BATH2 and **59.9 SF net / 69 SF order** for RM-S-BATH1, including the
+existing 15% waste allowance and takeoff order-area rounding. These quantities
+exclude the full master tub enclosure and prefabricated shower/tub bases;
+tile remains beneath the vanity and toilet. Companion membranes use the same
+net and order areas. RM-S-SUITEBATH is 34.2 SF net / 40 SF order; the attic
+neo-angle shower leaves 28.4 SF of sheet vinyl. The sauna's concrete sealer
+continues beneath its base.
 
-At those order quantities, comparing tile-only rates gives about **$147 more**
-than the original selections: $113 for hex plus $34 for Carrara. This replaces
-about $751 of premium from the first substitutes, a reduction of about $604.
+At those order quantities, comparing the unchanged tile-only rates gives about
+**$98 more** than the original selections: $69 for hex plus $28 for Carrara.
+The earlier 75/83 SF order quantities included flooring beneath bathing fixtures.
 
 Purchasing whole listed packages gives a different comparison:
 
 | Room | Original packages | Current packages | Difference |
 |---|---:|---:|---:|
-| RM-M-BATH2 | 6 x 14.85-SF MSI cases at $145.35 = $872.10 | 90 x 0.84-SF Qube sheets at $9.49 = $854.10 | -$18.00 |
-| RM-S-BATH1 | 6 x 16-SF HDC cases at $31.52 = $189.12 | 7 x 13.3-SF Florida Tile cases at $31.69 = $221.83 | +$32.71 |
-| Combined | $1,061.22 | $1,075.93 | **+$14.71** |
+| RM-M-BATH2 | 4 x 14.85-SF MSI cases at $145.35 = $581.40 | 55 x 0.84-SF Qube sheets at $9.49 = $521.95 | -$59.45 |
+| RM-S-BATH1 | 5 x 16-SF HDC cases at $31.52 = $157.60 | 6 x 13.3-SF Florida Tile cases at $31.69 = $190.14 | +$32.54 |
+| Combined | $739.00 | $712.09 | **-$26.91** |
 
 The hex baseline uses the original MSI's equivalent case SKU CALGLD-2HEXMC;
 original single-sheet pricing was not displayed, and buying sheets instead may

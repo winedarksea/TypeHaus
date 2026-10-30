@@ -78,13 +78,15 @@ until the outlet itself is at about 105. That tail is the whole reason for the s
 | side | what | height | open above |
 |---|---|---|---|
 | north (tub) | custom fixed pane on Corian, independently supported at the east wall, ceiling and west post | deck 22¾" to ceiling 106" (83¼" high) | none |
-| west (front) | DreamLine Flex SHDR-22327200-01, chrome, stock pivot front | 72" above threshold; top at datum 78" | 28" |
+| west (front) | DreamLine Flex SHDR-22327200-01, chrome, stock pivot front | 72" above threshold; top at datum 77¼" | 28¾" |
 | east, south | Swanstone Carrara panels (`WP-M-BATH2-SURR`) | 106" | none |
 
 **Selected 2026-10-22:** a stock framed pivot front and a custom north pane replace the
 90" custom front. The supplied top/bottom rails supersede the earlier trackless preference.
-The pan stands on the 1½" finished floor; its 4½" threshold puts the front's head at 78"
-above storey datum. There is no transom, and the gap to the ceiling remains the steam path.
+Corrected 2026-10-29: the pan bears on the ¾" subfloor, without tile or DITRA beneath
+it. Its 4½" threshold puts the front's head at 77¼" above storey datum. The custom
+north glass remains anchored at deck datum 22¾" and modeled ceiling datum 106".
+There is no transom, and the gap to the ceiling remains the steam path.
 
 `ModelRepresentation.symbol="swanstone-flex-3636"` generates the pan, door, post and return
 for the viewer, GLB and IFC. `WP-M-BATH2-SURR` supplies the two wall panels separately.

@@ -96,6 +96,16 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 storey, item, floor_m=floor, structural_floor_m=structural_floor,
                 soffit_underside_m=_soffit_underside(model, item))
             enclosure = getattr(item, "tub_enclosure", None)
+            if (getattr(product_type, "excludes_floor_finish", False)
+                    and enclosure is None and item.mount.elevation is None):
+                from typehaus.resolve.fixture_floor_finish import fixture_support_elevation
+
+                try:
+                    mount_elevation = fixture_support_elevation(model, center, structural_floor)
+                except ValueError as exc:
+                    findings.append(_finding("integrity.fixture_floor_finish", item.tag,
+                                             str(exc)))
+                    continue
             if enclosure is not None and item.mount.elevation is None:
                 knee_walls = [model.wall(ref) for ref in enclosure.knee_wall_refs]
                 if any(wall is None for wall in knee_walls):

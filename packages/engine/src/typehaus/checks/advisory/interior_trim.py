@@ -63,9 +63,12 @@ def trim_device_clash(ctx: CheckContext) -> list[Finding]:
                       for prism in door_casing_prisms(casing))
     if not boards:
         return [not_applicable(_CLASH, "this plan derives no base or casing")]
+    # A curtain hangs in front of the trim; its envelope is the closed cloth, not a body.
+    curtains = {t.tag for t in ctx.plan.library.furniture_types if t.curtain_track is not None}
     hosted = [item for item in ctx.model.canvas_objects
               if item.attachment_wall and len(item.footprint) >= 3
-              and item.body_z0_m is not None and item.body_z1_m is not None]
+              and item.body_z0_m is not None and item.body_z1_m is not None
+              and item.type_ref not in curtains]
     if not hosted:
         return [not_applicable(_CLASH, "no placeable in this plan is hosted on a wall")]
     out: list[Finding] = []

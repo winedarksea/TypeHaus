@@ -17,7 +17,7 @@ from typehaus.model import deg, inch, pt
 
 MAIN_WINDOW_COVERINGS = [
     # Living south, WIN-M-LIV-S2/-S1: x 301" (end-closing curve) to 425 1/4" (SE corner).
-    Furniture(tag="FURN-M-LIV-TRACK-S", type_ref="FT-CURTAIN-TRACK-LIV-S", room="RM-M-LIVING",
+    Furniture(uid="BZJF36KH8Q", tag="FURN-M-LIV-TRACK-S", type_ref="FT-CURTAIN-TRACK-LIV-S", room="RM-M-LIVING",
               position=pt(inch(363.125), inch(9.5625)), rotation=deg(180),
               mount=Mount(kind=MountKind.CEILING, elevation=inch(0.5))),
     # D-M-BALC: wall run, rail top 88" AFF under EQ-M-HP2-LIVING, x 219 1/2"..291".
@@ -29,17 +29,17 @@ MAIN_WINDOW_COVERINGS = [
                   wall_ref="W-M-S2", face="left", distance_from_start=inch(39.25),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Bedroom west, WIN-M-BED-W1/-W2: SW corner to NW corner.
-    Furniture(tag="FURN-M-BED-TRACK-W", type_ref="FT-CURTAIN-TRACK-BED-W", room="RM-M-BED",
+    Furniture(uid="SR87WAPT5T", tag="FURN-M-BED-TRACK-W", type_ref="FT-CURTAIN-TRACK-BED-W", room="RM-M-BED",
               position=pt(inch(9.5625), inch(80.125)), rotation=deg(90),
               mount=Mount(kind=MountKind.CEILING, elevation=inch(0.5))),
     # WIN-M-BED-S1/-S2: cordless. S2 has EQ-M-HP2-BED over it; S1 would need an extra truss.
-    Furniture(tag="FURN-M-BED-BLIND-S1", type_ref="FT-CELLULAR-SHADE-3048-CORDLESS",
+    Furniture(uid="X3SXCVEE19", tag="FURN-M-BED-BLIND-S1", type_ref="FT-CELLULAR-SHADE-3048-CORDLESS",
               room="RM-M-BED",
               mount=Mount(kind=MountKind.WALL, elevation=inch(30.5)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-S1", face="left", distance_from_start=inch(48),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(tag="FURN-M-BED-BLIND-S2", type_ref="FT-CELLULAR-SHADE-3048-CORDLESS",
+    Furniture(uid="976HP4VWK0", tag="FURN-M-BED-BLIND-S2", type_ref="FT-CELLULAR-SHADE-3048-CORDLESS",
               room="RM-M-BED",
               mount=Mount(kind=MountKind.WALL, elevation=inch(30.5)),
               location=Location(attachment=WallAttachment(
@@ -49,24 +49,24 @@ MAIN_WINDOW_COVERINGS = [
 
 SECOND_WINDOW_COVERINGS = [
     # D-S-DECK-E: x 219 1/2" (corner) to 291" (end-closing), one panel stacking west.
-    Furniture(tag="FURN-S-STUDY-TRACK-DECK", type_ref="FT-CURTAIN-TRACK-STUDY-DECK",
+    Furniture(uid="H99NTV3GRV", tag="FURN-S-STUDY-TRACK-DECK", type_ref="FT-CURTAIN-TRACK-STUDY-DECK",
               room="RM-S-STUDY2",
               position=pt(inch(255.25), inch(9.5625)), rotation=deg(180),
               mount=Mount(kind=MountKind.CEILING, elevation=inch(0.5))),
     # Motorized: WIN-S-STUDY1/-2 (south), WIN-S-STUDY3 (east, 36" sill).
-    Furniture(tag="FURN-S-STUDY2-SHADE-S1", type_ref="FT-CELLULAR-SHADE-3048-MOTOR",
+    Furniture(uid="NM0D2S1S3R", tag="FURN-S-STUDY2-SHADE-S1", type_ref="FT-CELLULAR-SHADE-3048-MOTOR",
               room="RM-S-STUDY2",
               mount=Mount(kind=MountKind.WALL, elevation=inch(30.5)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-S2", face="left", distance_from_start=inch(104),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(tag="FURN-S-STUDY2-SHADE-S2", type_ref="FT-CELLULAR-SHADE-3048-MOTOR",
+    Furniture(uid="QJ8G5PG4YK", tag="FURN-S-STUDY2-SHADE-S2", type_ref="FT-CELLULAR-SHADE-3048-MOTOR",
               room="RM-S-STUDY2",
               mount=Mount(kind=MountKind.WALL, elevation=inch(30.5)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-S2", face="left", distance_from_start=inch(168),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(tag="FURN-S-STUDY2-SHADE-E", type_ref="FT-CELLULAR-SHADE-2748-MOTOR",
+    Furniture(uid="BZK9V8GDDD", tag="FURN-S-STUDY2-SHADE-E", type_ref="FT-CELLULAR-SHADE-2748-MOTOR",
               room="RM-S-STUDY2",
               mount=Mount(kind=MountKind.WALL, elevation=inch(34.5)),
               location=Location(attachment=WallAttachment(
@@ -76,13 +76,13 @@ SECOND_WINDOW_COVERINGS = [
 
 ATTIC_WINDOW_COVERINGS = [
     # WIN-A-S-JUL-E motorized; WIN-A-S3 cordless (14" is under the motor's minimum).
-    Furniture(tag="FURN-A-STUDY-SHADE-JUL-E", type_ref="FT-CELLULAR-SHADE-2754-MOTOR",
+    Furniture(uid="CRS8FD8CFD", tag="FURN-A-STUDY-SHADE-JUL-E", type_ref="FT-CELLULAR-SHADE-2754-MOTOR",
               room="RM-A-STUDY",
               mount=Mount(kind=MountKind.WALL, elevation=inch(30.5)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-A-S3", face="left", distance_from_start=inch(24),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(tag="FURN-A-STUDY-SHADE-S3", type_ref="FT-CELLULAR-SHADE-1424-CORDLESS",
+    Furniture(uid="N4CVFTG3G2", tag="FURN-A-STUDY-SHADE-S3", type_ref="FT-CELLULAR-SHADE-1424-CORDLESS",
               room="RM-A-STUDY",
               mount=Mount(kind=MountKind.WALL, elevation=inch(30.5)),
               location=Location(attachment=WallAttachment(

@@ -177,6 +177,7 @@ TOTO_DRAKE = FixtureType(
 # stops short of the ceiling on purpose. The generated model carries the stock Flex
 # front and the independently supported custom return; shop connections remain open.
 SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
+    "excludes_floor_finish": True,
     "tag": "FX-SHOWER-36-THERMO-COMBO",
     "height": inch(BATH2_SHOWER.model_height),
     "model_representation": ModelRepresentation(
@@ -199,8 +200,9 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
               'the Corian deck with ceiling backing; its inside face forms the north jamb. '
               'Custom north glass in channels to the 106 in. ceiling. Manufacturer/glazier '
               'confirmation required for the post, channels, glass thickness and hybrid '
-              'connection before ordering. Front rail top 78 in. above storey datum, '
-              'leaving 28 in. open to the ceiling. No transom: the gap leads to REG-M-EXH2, '
+              'connection before ordering. Base bears on the 3/4 in. subfloor without '
+              'room tile beneath it. Front rail top 77 1/4 in. above storey datum, '
+              'leaving 28 3/4 in. open to the ceiling. No transom: the gap leads to REG-M-EXH2, '
               'which sits just outside it (notes/bath2_shower.md). WET WALLS: behind every '
               'panel, floor to ceiling, glass-mat gypsum or cement backer, then a bonded '
               'liquid membrane (RedGard / Hydro Ban class) lapped OVER the base flange, then '
@@ -218,6 +220,7 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
 # separate handshower in a basement sauna rinse is bad value, and RM-A-STUBATH has a second
 # reason to stay simple — see the freeze note below.
 SHOWER_36_COMBO = SHOWER.model_copy(update={
+    "excludes_floor_finish": True,
     "tag": "FX-SHOWER-36-COMBO",
     "name": 'Shower, 36", pressure-balance valve with a two-in-one combo head',
     "product_ref": "PROD-MOEN-26010SRN",
@@ -298,6 +301,7 @@ SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
 # Of the five showers: BATH2 and STUBATH carry a modelled panel (WP-M-BATH2-SURR,
 # WP-A-STUBATH-SURR), the sauna a tile splash (WP-B-SAUNA-SPLASH), these two are integral.
 TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
+    "excludes_floor_finish": True,
     "tag": "FX-TUBSHOWER-60-DIVERTED",
     "name": 'Alcove tub-shower, 60", complete trim with diverter and handshower',
     "product_ref": "PROD-DELTA-T14459-SS",

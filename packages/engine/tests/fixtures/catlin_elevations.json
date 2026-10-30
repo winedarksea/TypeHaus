@@ -1199,6 +1199,12 @@
 "canvas_objects/FURN-A-STUDY-DESK/body_z0_m": 6.1341,
 "canvas_objects/FURN-A-STUDY-DESK/body_z1_m": 6.8961,
 "canvas_objects/FURN-A-STUDY-DESK/z_m": 6.1341,
+"canvas_objects/FURN-A-STUDY-SHADE-JUL-E/body_z0_m": 6.9088,
+"canvas_objects/FURN-A-STUDY-SHADE-JUL-E/body_z1_m": 8.2804,
+"canvas_objects/FURN-A-STUDY-SHADE-JUL-E/z_m": 6.9088,
+"canvas_objects/FURN-A-STUDY-SHADE-S3/body_z0_m": 6.9088,
+"canvas_objects/FURN-A-STUDY-SHADE-S3/body_z1_m": 7.5184,
+"canvas_objects/FURN-A-STUDY-SHADE-S3/z_m": 6.9088,
 "canvas_objects/FURN-A-STUDY-TABLE/body_z0_m": 6.1341,
 "canvas_objects/FURN-A-STUDY-TABLE/body_z1_m": 6.8961,
 "canvas_objects/FURN-A-STUDY-TABLE/z_m": 6.1341,
@@ -1310,6 +1316,12 @@
 "canvas_objects/FURN-M-BED-ARMCHAIR/body_z0_m": 0.0381,
 "canvas_objects/FURN-M-BED-ARMCHAIR/body_z1_m": 1.04775,
 "canvas_objects/FURN-M-BED-ARMCHAIR/z_m": 0.0381,
+"canvas_objects/FURN-M-BED-BLIND-S1/body_z0_m": 0.8128,
+"canvas_objects/FURN-M-BED-BLIND-S1/body_z1_m": 2.032,
+"canvas_objects/FURN-M-BED-BLIND-S1/z_m": 0.8128,
+"canvas_objects/FURN-M-BED-BLIND-S2/body_z0_m": 0.8128,
+"canvas_objects/FURN-M-BED-BLIND-S2/body_z1_m": 2.032,
+"canvas_objects/FURN-M-BED-BLIND-S2/z_m": 0.8128,
 "canvas_objects/FURN-M-BED-BOOKCASE-E/body_z0_m": 0.0381,
 "canvas_objects/FURN-M-BED-BOOKCASE-E/body_z1_m": 2.0066,
 "canvas_objects/FURN-M-BED-BOOKCASE-E/z_m": 0.0381,
@@ -1337,18 +1349,9 @@
 "canvas_objects/FURN-M-BED-NIGHTSTAND-W/body_z0_m": 0.0381,
 "canvas_objects/FURN-M-BED-NIGHTSTAND-W/body_z1_m": 0.6985,
 "canvas_objects/FURN-M-BED-NIGHTSTAND-W/z_m": 0.0381,
-"canvas_objects/FURN-M-BED-ROD-S1/body_z0_m": 2.1717,
-"canvas_objects/FURN-M-BED-ROD-S1/body_z1_m": 2.2225,
-"canvas_objects/FURN-M-BED-ROD-S1/z_m": 2.1717,
-"canvas_objects/FURN-M-BED-ROD-S2/body_z0_m": 2.1717,
-"canvas_objects/FURN-M-BED-ROD-S2/body_z1_m": 2.2225,
-"canvas_objects/FURN-M-BED-ROD-S2/z_m": 2.1717,
-"canvas_objects/FURN-M-BED-ROD-W1/body_z0_m": 2.1717,
-"canvas_objects/FURN-M-BED-ROD-W1/body_z1_m": 2.2225,
-"canvas_objects/FURN-M-BED-ROD-W1/z_m": 2.1717,
-"canvas_objects/FURN-M-BED-ROD-W2/body_z0_m": 2.1717,
-"canvas_objects/FURN-M-BED-ROD-W2/body_z1_m": 2.2225,
-"canvas_objects/FURN-M-BED-ROD-W2/z_m": 2.1717,
+"canvas_objects/FURN-M-BED-TRACK-W/body_z0_m": 0.0508,
+"canvas_objects/FURN-M-BED-TRACK-W/body_z1_m": 2.7305,
+"canvas_objects/FURN-M-BED-TRACK-W/z_m": 0.0508,
 "canvas_objects/FURN-M-BED/body_z0_m": 0.0381,
 "canvas_objects/FURN-M-BED/body_z1_m": 1.03632,
 "canvas_objects/FURN-M-BED/z_m": 0.0381,
@@ -1535,18 +1538,15 @@
 "canvas_objects/FURN-M-LIV-E-END-N/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-LIV-E-END-N/body_z1_m": 0.9017,
 "canvas_objects/FURN-M-LIV-E-END-N/z_m": 0.0238125,
-"canvas_objects/FURN-M-LIV-ROD-BALC/body_z0_m": 2.1574125,
-"canvas_objects/FURN-M-LIV-ROD-BALC/body_z1_m": 2.2082125,
-"canvas_objects/FURN-M-LIV-ROD-BALC/z_m": 2.1574125,
-"canvas_objects/FURN-M-LIV-ROD-S1/body_z0_m": 2.1574125,
-"canvas_objects/FURN-M-LIV-ROD-S1/body_z1_m": 2.2082125,
-"canvas_objects/FURN-M-LIV-ROD-S1/z_m": 2.1574125,
-"canvas_objects/FURN-M-LIV-ROD-S2/body_z0_m": 2.1574125,
-"canvas_objects/FURN-M-LIV-ROD-S2/body_z1_m": 2.2082125,
-"canvas_objects/FURN-M-LIV-ROD-S2/z_m": 2.1574125,
 "canvas_objects/FURN-M-LIV-SLAT-FULL/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-LIV-SLAT-FULL/body_z1_m": 2.72415,
 "canvas_objects/FURN-M-LIV-SLAT-FULL/z_m": 0.0238125,
+"canvas_objects/FURN-M-LIV-TRACK-BALC/body_z0_m": 0.0365125,
+"canvas_objects/FURN-M-LIV-TRACK-BALC/body_z1_m": 2.2590125,
+"canvas_objects/FURN-M-LIV-TRACK-BALC/z_m": 0.0365125,
+"canvas_objects/FURN-M-LIV-TRACK-S/body_z0_m": 0.0365125,
+"canvas_objects/FURN-M-LIV-TRACK-S/body_z1_m": 2.7305,
+"canvas_objects/FURN-M-LIV-TRACK-S/z_m": 0.0365125,
 "canvas_objects/FURN-M-LIVING-FIDDLE-LEAF-FIG/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-LIVING-FIDDLE-LEAF-FIG/body_z1_m": 1.5478125,
 "canvas_objects/FURN-M-LIVING-FIDDLE-LEAF-FIG/z_m": 0.0238125,
@@ -1805,6 +1805,18 @@
 "canvas_objects/FURN-S-STUDY-TABLE/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-STUDY-TABLE/body_z1_m": 3.7846,
 "canvas_objects/FURN-S-STUDY-TABLE/z_m": 3.0861,
+"canvas_objects/FURN-S-STUDY-TRACK-DECK/body_z0_m": 3.0988,
+"canvas_objects/FURN-S-STUDY-TRACK-DECK/body_z1_m": 5.7785,
+"canvas_objects/FURN-S-STUDY-TRACK-DECK/z_m": 3.0988,
+"canvas_objects/FURN-S-STUDY2-SHADE-E/body_z0_m": 3.9624,
+"canvas_objects/FURN-S-STUDY2-SHADE-E/body_z1_m": 5.1816,
+"canvas_objects/FURN-S-STUDY2-SHADE-E/z_m": 3.9624,
+"canvas_objects/FURN-S-STUDY2-SHADE-S1/body_z0_m": 3.8608,
+"canvas_objects/FURN-S-STUDY2-SHADE-S1/body_z1_m": 5.08,
+"canvas_objects/FURN-S-STUDY2-SHADE-S1/z_m": 3.8608,
+"canvas_objects/FURN-S-STUDY2-SHADE-S2/body_z0_m": 3.8608,
+"canvas_objects/FURN-S-STUDY2-SHADE-S2/body_z1_m": 5.08,
+"canvas_objects/FURN-S-STUDY2-SHADE-S2/z_m": 3.8608,
 "canvas_objects/FURN-S-SUITE-BED/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-SUITE-BED/body_z1_m": 4.1021,
 "canvas_objects/FURN-S-SUITE-BED/z_m": 3.0861,
@@ -1871,9 +1883,9 @@
 "canvas_objects/FX-A-STUBATH-LAV/body_z0_m": 6.118098,
 "canvas_objects/FX-A-STUBATH-LAV/body_z1_m": 7.191248,
 "canvas_objects/FX-A-STUBATH-LAV/z_m": 6.118098,
-"canvas_objects/FX-A-STUBATH-SH/body_z0_m": 6.118098,
-"canvas_objects/FX-A-STUBATH-SH/body_z1_m": 8.251698,
-"canvas_objects/FX-A-STUBATH-SH/z_m": 6.118098,
+"canvas_objects/FX-A-STUBATH-SH/body_z0_m": 6.11505,
+"canvas_objects/FX-A-STUBATH-SH/body_z1_m": 8.24865,
+"canvas_objects/FX-A-STUBATH-SH/z_m": 6.11505,
 "canvas_objects/FX-A-STUBATH-WC/body_z0_m": 6.118098,
 "canvas_objects/FX-A-STUBATH-WC/body_z1_m": 6.883273,
 "canvas_objects/FX-A-STUBATH-WC/z_m": 6.118098,
@@ -1904,9 +1916,9 @@
 "canvas_objects/FX-M-BATH2-FILLER/body_z0_m": 0.57785,
 "canvas_objects/FX-M-BATH2-FILLER/body_z1_m": 0.7405687,
 "canvas_objects/FX-M-BATH2-FILLER/z_m": 0.57785,
-"canvas_objects/FX-M-BATH2-SH/body_z0_m": 0.0381,
+"canvas_objects/FX-M-BATH2-SH/body_z0_m": 0.01905,
 "canvas_objects/FX-M-BATH2-SH/body_z1_m": 2.6924,
-"canvas_objects/FX-M-BATH2-SH/z_m": 0.0381,
+"canvas_objects/FX-M-BATH2-SH/z_m": 0.01905,
 "canvas_objects/FX-M-BATH2-SINK/body_z0_m": 0.0381,
 "canvas_objects/FX-M-BATH2-SINK/body_z1_m": 1.1668125,
 "canvas_objects/FX-M-BATH2-SINK/z_m": 0.0381,
@@ -1934,18 +1946,18 @@
 "canvas_objects/FX-S-BATH1-LAV/body_z0_m": 3.298825,
 "canvas_objects/FX-S-BATH1-LAV/body_z1_m": 4.2148125,
 "canvas_objects/FX-S-BATH1-LAV/z_m": 3.298825,
-"canvas_objects/FX-S-BATH1-SH/body_z0_m": 3.0861,
-"canvas_objects/FX-S-BATH1-SH/body_z1_m": 5.2197,
-"canvas_objects/FX-S-BATH1-SH/z_m": 3.0861,
+"canvas_objects/FX-S-BATH1-SH/body_z0_m": 3.06705,
+"canvas_objects/FX-S-BATH1-SH/body_z1_m": 5.20065,
+"canvas_objects/FX-S-BATH1-SH/z_m": 3.06705,
 "canvas_objects/FX-S-BATH1-WC/body_z0_m": 3.0861,
 "canvas_objects/FX-S-BATH1-WC/body_z1_m": 3.825875,
 "canvas_objects/FX-S-BATH1-WC/z_m": 3.0861,
 "canvas_objects/FX-S-SUITEBATH-LAV/body_z0_m": 3.0861,
 "canvas_objects/FX-S-SUITEBATH-LAV/body_z1_m": 4.2148125,
 "canvas_objects/FX-S-SUITEBATH-LAV/z_m": 3.0861,
-"canvas_objects/FX-S-SUITEBATH-TUBSH/body_z0_m": 3.0861,
-"canvas_objects/FX-S-SUITEBATH-TUBSH/body_z1_m": 5.2197,
-"canvas_objects/FX-S-SUITEBATH-TUBSH/z_m": 3.0861,
+"canvas_objects/FX-S-SUITEBATH-TUBSH/body_z0_m": 3.06705,
+"canvas_objects/FX-S-SUITEBATH-TUBSH/body_z1_m": 5.20065,
+"canvas_objects/FX-S-SUITEBATH-TUBSH/z_m": 3.06705,
 "canvas_objects/FX-S-SUITEBATH-WC/body_z0_m": 3.0861,
 "canvas_objects/FX-S-SUITEBATH-WC/body_z1_m": 3.825875,
 "canvas_objects/FX-S-SUITEBATH-WC/z_m": 3.0861,
@@ -8639,35 +8651,35 @@
 8,
 "be15a1710151"
 ],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-002-cheek-hi": [
+"geometry/CAF602AAAA::framing/member:bearing-block-1-002": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-003-cheek-hi": [
 5.832475,
 6.0579,
 8,
 "d89b30a50f4b"
 ],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-002-cheek-lo": [
+"geometry/CAF602AAAA::framing/member:bearing-block-1-003-cheek-lo": [
 5.832475,
 6.0579,
 8,
 "d89b30a50f4b"
 ],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-002-rail-bottom": [
+"geometry/CAF602AAAA::framing/member:bearing-block-1-003-rail-bottom": [
 5.794375,
 5.832475,
 8,
 "28aa1cfa4289"
 ],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-002-rail-top": [
+"geometry/CAF602AAAA::framing/member:bearing-block-1-003-rail-top": [
 6.0579,
 6.096,
 8,
 "68c3cbb6391b"
-],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-006": [
-5.794375,
-6.096,
-8,
-"be15a1710151"
 ],
 "geometry/CAF602AAAA::framing/member:bearing-block-1-007": [
 5.794375,
@@ -8681,7 +8693,7 @@
 8,
 "be15a1710151"
 ],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-011": [
+"geometry/CAF602AAAA::framing/member:bearing-block-1-009": [
 5.794375,
 6.096,
 8,
@@ -8717,29 +8729,29 @@
 8,
 "be15a1710151"
 ],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-017-cheek-hi": [
-5.794375,
-6.0579,
-8,
-"2b1516083fda"
-],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-017-cheek-lo": [
-5.794375,
-6.0579,
-8,
-"2b1516083fda"
-],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-017-rail-top": [
-6.0579,
-6.096,
-8,
-"68c3cbb6391b"
-],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-018": [
+"geometry/CAF602AAAA::framing/member:bearing-block-1-017": [
 5.794375,
 6.096,
 8,
 "be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-018-cheek-hi": [
+5.794375,
+6.0579,
+8,
+"2b1516083fda"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-018-cheek-lo": [
+5.794375,
+6.0579,
+8,
+"2b1516083fda"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-018-rail-top": [
+6.0579,
+6.096,
+8,
+"68c3cbb6391b"
 ],
 "geometry/CAF602AAAA::framing/member:bearing-block-1-019": [
 5.794375,
@@ -8747,23 +8759,23 @@
 8,
 "be15a1710151"
 ],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-020-cheek-lo": [
+"geometry/CAF602AAAA::framing/member:bearing-block-1-020": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-021-cheek-lo": [
 5.794375,
 6.0579,
 8,
 "2b1516083fda"
 ],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-020-rail-top": [
+"geometry/CAF602AAAA::framing/member:bearing-block-1-021-rail-top": [
 6.0579,
 6.096,
 8,
 "68c3cbb6391b"
-],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-029": [
-5.794375,
-6.096,
-8,
-"be15a1710151"
 ],
 "geometry/CAF602AAAA::framing/member:bearing-block-1-030": [
 5.794375,
@@ -8778,6 +8790,12 @@
 "be15a1710151"
 ],
 "geometry/CAF602AAAA::framing/member:bearing-block-1-032": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-033": [
 5.794375,
 6.096,
 8,
@@ -8963,6 +8981,12 @@
 8,
 "be15a1710151"
 ],
+"geometry/CAF602AAAA::framing/member:joist-0-x00-0": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
 "geometry/CAF602AAAA::framing/member:joist-1-000-0": [
 5.794375,
 6.096,
@@ -9120,6 +9144,12 @@
 "be15a1710151"
 ],
 "geometry/CAF602AAAA::framing/member:joist-1-027-0": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:joist-1-x00-0": [
 5.794375,
 6.096,
 8,
@@ -28853,30 +28883,6 @@
 8,
 "0c2544548105"
 ],
-"geometry/CMW101AAAA::framing/member:backing-1-000": [
-2.0828,
-2.26695,
-8,
-"8458aa6a7b11"
-],
-"geometry/CMW101AAAA::framing/member:backing-1-001": [
-2.0828,
-2.26695,
-8,
-"8458aa6a7b11"
-],
-"geometry/CMW101AAAA::framing/member:backing-2-000": [
-2.0828,
-2.26695,
-8,
-"8458aa6a7b11"
-],
-"geometry/CMW101AAAA::framing/member:backing-2-001": [
-2.0828,
-2.26695,
-8,
-"8458aa6a7b11"
-],
 "geometry/CMW101AAAA::framing/member:block-2-000-00": [
 -0.2841625,
 -0.1952625,
@@ -30881,25 +30887,13 @@
 8,
 "8458aa6a7b11"
 ],
-"geometry/CMW103AAAA::framing/member:backing-6-001": [
-2.0828,
-2.26695,
-8,
-"8458aa6a7b11"
-],
 "geometry/CMW103AAAA::framing/member:backing-7-000": [
-2.0828,
-2.26695,
-8,
-"8458aa6a7b11"
-],
-"geometry/CMW103AAAA::framing/member:backing-8-000": [
 2.4892,
 2.5781,
 8,
 "d3d66e4db1ec"
 ],
-"geometry/CMW103AAAA::framing/member:backing-9-000": [
+"geometry/CMW103AAAA::framing/member:backing-8-000": [
 2.5273,
 2.667,
 8,
@@ -35033,12 +35027,6 @@
 14,
 "1446d95df9d1"
 ],
-"geometry/CMW111AAAA::framing/member:backing-0-000": [
-2.0828,
-2.26695,
-8,
-"8458aa6a7b11"
-],
 "geometry/CMW111AAAA::framing/member:block-2-000-00": [
 -0.2841625,
 -0.1952625,
@@ -35632,12 +35620,6 @@
 2.7432,
 6,
 "f12abc46aa1a"
-],
-"geometry/CMW112AAAA::framing/member:backing-0-000": [
-2.0828,
-2.26695,
-8,
-"8458aa6a7b11"
 ],
 "geometry/CMW112AAAA::framing/member:cripple-head-0-01": [
 2.29265,
@@ -41687,95 +41669,95 @@
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-006": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-004": [
 2.746375,
 3.048,
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-007-cheek-hi": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-007": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-008-cheek-hi": [
 2.784475,
 3.0099,
 8,
 "8445039a1102"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-007-cheek-lo": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-008-cheek-lo": [
 2.784475,
 3.0099,
 8,
 "8445039a1102"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-007-rail-bottom": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-008-rail-bottom": [
 2.746375,
 2.784475,
 8,
 "c4d4967e8585"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-007-rail-top": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-008-rail-top": [
 3.0099,
 3.048,
 8,
 "a10a5d0008e8"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-008": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-009": [
 2.746375,
 3.048,
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-009-cheek-hi": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-010-cheek-hi": [
 2.784475,
 3.0099,
 8,
 "8445039a1102"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-009-rail-bottom": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-010-rail-bottom": [
 2.746375,
 2.784475,
 8,
 "c4d4967e8585"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-009-rail-top": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-010-rail-top": [
 3.0099,
 3.048,
 8,
 "a10a5d0008e8"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-010": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-011": [
 2.746375,
 3.048,
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-011-cheek-hi": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-012-cheek-hi": [
 2.784475,
 3.0099,
 8,
 "8445039a1102"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-011-cheek-lo": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-012-cheek-lo": [
 2.784475,
 3.0099,
 8,
 "8445039a1102"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-011-rail-bottom": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-012-rail-bottom": [
 2.746375,
 2.784475,
 8,
 "c4d4967e8585"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-011-rail-top": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-012-rail-top": [
 3.0099,
 3.048,
 8,
 "a10a5d0008e8"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-012": [
-2.746375,
-3.048,
-8,
-"3c4d41a19688"
 ],
 "geometry/CSF603AAAA::framing/member:bearing-block-0-013": [
 2.746375,
@@ -41789,29 +41771,11 @@
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-015-cheek-lo": [
-2.784475,
-3.0099,
-8,
-"8445039a1102"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-015-rail-bottom": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-015": [
 2.746375,
-2.784475,
-8,
-"c4d4967e8585"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-015-rail-top": [
-3.0099,
 3.048,
 8,
-"a10a5d0008e8"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-016-cheek-hi": [
-2.784475,
-3.0099,
-8,
-"8445039a1102"
+"3c4d41a19688"
 ],
 "geometry/CSF603AAAA::framing/member:bearing-block-0-016-cheek-lo": [
 2.784475,
@@ -41831,41 +41795,59 @@
 8,
 "a10a5d0008e8"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-017": [
-2.746375,
-3.048,
-8,
-"3c4d41a19688"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-018-cheek-hi": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-017-cheek-hi": [
 2.784475,
 3.0099,
 8,
 "8445039a1102"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-018-cheek-lo": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-017-cheek-lo": [
 2.784475,
 3.0099,
 8,
 "8445039a1102"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-018-rail-bottom": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-017-rail-bottom": [
 2.746375,
 2.784475,
 8,
 "c4d4967e8585"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-018-rail-top": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-017-rail-top": [
 3.0099,
 3.048,
 8,
 "a10a5d0008e8"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-025": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-018": [
 2.746375,
 3.048,
 8,
 "3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-019-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-019-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-019-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-019-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
 ],
 "geometry/CSF603AAAA::framing/member:bearing-block-0-026": [
 2.746375,
@@ -41880,6 +41862,12 @@
 "3c4d41a19688"
 ],
 "geometry/CSF603AAAA::framing/member:bearing-block-0-028": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-029": [
 2.746375,
 3.048,
 8,
@@ -42048,6 +42036,12 @@
 "3c4d41a19688"
 ],
 "geometry/CSF603AAAA::framing/member:joist-0-027-0": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:joist-0-x00-0": [
 2.746375,
 3.048,
 8,
@@ -72449,35 +72443,35 @@
 2,
 "ee0eeebd4433"
 ],
-"member/CAF602AAAA/bearing-block-1-002-cheek-hi": [
+"member/CAF602AAAA/bearing-block-1-002": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-003-cheek-hi": [
 5.832475,
 6.0579,
 2,
 "afa7fad6631e"
 ],
-"member/CAF602AAAA/bearing-block-1-002-cheek-lo": [
+"member/CAF602AAAA/bearing-block-1-003-cheek-lo": [
 5.832475,
 6.0579,
 2,
 "afa7fad6631e"
 ],
-"member/CAF602AAAA/bearing-block-1-002-rail-bottom": [
+"member/CAF602AAAA/bearing-block-1-003-rail-bottom": [
 5.794375,
 5.832475,
 2,
 "12ceeb91b6df"
 ],
-"member/CAF602AAAA/bearing-block-1-002-rail-top": [
+"member/CAF602AAAA/bearing-block-1-003-rail-top": [
 6.0579,
 6.096,
 2,
 "c0916300b024"
-],
-"member/CAF602AAAA/bearing-block-1-006": [
-5.794375,
-6.096,
-2,
-"ee0eeebd4433"
 ],
 "member/CAF602AAAA/bearing-block-1-007": [
 5.794375,
@@ -72491,7 +72485,7 @@
 2,
 "ee0eeebd4433"
 ],
-"member/CAF602AAAA/bearing-block-1-011": [
+"member/CAF602AAAA/bearing-block-1-009": [
 5.794375,
 6.096,
 2,
@@ -72527,29 +72521,29 @@
 2,
 "ee0eeebd4433"
 ],
-"member/CAF602AAAA/bearing-block-1-017-cheek-hi": [
-5.794375,
-6.0579,
-2,
-"4414f72e66fc"
-],
-"member/CAF602AAAA/bearing-block-1-017-cheek-lo": [
-5.794375,
-6.0579,
-2,
-"4414f72e66fc"
-],
-"member/CAF602AAAA/bearing-block-1-017-rail-top": [
-6.0579,
-6.096,
-2,
-"c0916300b024"
-],
-"member/CAF602AAAA/bearing-block-1-018": [
+"member/CAF602AAAA/bearing-block-1-017": [
 5.794375,
 6.096,
 2,
 "ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-018-cheek-hi": [
+5.794375,
+6.0579,
+2,
+"4414f72e66fc"
+],
+"member/CAF602AAAA/bearing-block-1-018-cheek-lo": [
+5.794375,
+6.0579,
+2,
+"4414f72e66fc"
+],
+"member/CAF602AAAA/bearing-block-1-018-rail-top": [
+6.0579,
+6.096,
+2,
+"c0916300b024"
 ],
 "member/CAF602AAAA/bearing-block-1-019": [
 5.794375,
@@ -72557,23 +72551,23 @@
 2,
 "ee0eeebd4433"
 ],
-"member/CAF602AAAA/bearing-block-1-020-cheek-lo": [
+"member/CAF602AAAA/bearing-block-1-020": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-021-cheek-lo": [
 5.794375,
 6.0579,
 2,
 "4414f72e66fc"
 ],
-"member/CAF602AAAA/bearing-block-1-020-rail-top": [
+"member/CAF602AAAA/bearing-block-1-021-rail-top": [
 6.0579,
 6.096,
 2,
 "c0916300b024"
-],
-"member/CAF602AAAA/bearing-block-1-029": [
-5.794375,
-6.096,
-2,
-"ee0eeebd4433"
 ],
 "member/CAF602AAAA/bearing-block-1-030": [
 5.794375,
@@ -72588,6 +72582,12 @@
 "ee0eeebd4433"
 ],
 "member/CAF602AAAA/bearing-block-1-032": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-033": [
 5.794375,
 6.096,
 2,
@@ -72773,6 +72773,12 @@
 2,
 "ee0eeebd4433"
 ],
+"member/CAF602AAAA/joist-0-x00-0": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
 "member/CAF602AAAA/joist-1-000-0": [
 5.794375,
 6.096,
@@ -72930,6 +72936,12 @@
 "ee0eeebd4433"
 ],
 "member/CAF602AAAA/joist-1-027-0": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/joist-1-x00-0": [
 5.794375,
 6.096,
 2,
@@ -81767,30 +81779,6 @@
 2,
 "c550ef7bc2f6"
 ],
-"member/CMW101AAAA/backing-1-000": [
-2.0828,
-2.26695,
-2,
-"a1a479d66f95"
-],
-"member/CMW101AAAA/backing-1-001": [
-2.0828,
-2.26695,
-2,
-"a1a479d66f95"
-],
-"member/CMW101AAAA/backing-2-000": [
-2.0828,
-2.26695,
-2,
-"a1a479d66f95"
-],
-"member/CMW101AAAA/backing-2-001": [
-2.0828,
-2.26695,
-2,
-"a1a479d66f95"
-],
 "member/CMW101AAAA/block-2-000-00": [
 -0.2841625,
 -0.1952625,
@@ -83531,25 +83519,13 @@
 2,
 "a1a479d66f95"
 ],
-"member/CMW103AAAA/backing-6-001": [
-2.0828,
-2.26695,
-2,
-"a1a479d66f95"
-],
 "member/CMW103AAAA/backing-7-000": [
-2.0828,
-2.26695,
-2,
-"a1a479d66f95"
-],
-"member/CMW103AAAA/backing-8-000": [
 2.4892,
 2.5781,
 2,
 "a7a4e4532ec7"
 ],
-"member/CMW103AAAA/backing-9-000": [
+"member/CMW103AAAA/backing-8-000": [
 2.5273,
 2.667,
 2,
@@ -87077,12 +87053,6 @@
 2,
 "f16deafda480"
 ],
-"member/CMW111AAAA/backing-0-000": [
-2.0828,
-2.26695,
-2,
-"a1a479d66f95"
-],
 "member/CMW111AAAA/block-2-000-00": [
 -0.2841625,
 -0.1952625,
@@ -87640,12 +87610,6 @@
 2.667,
 2,
 "eebc11b3c6f0"
-],
-"member/CMW112AAAA/backing-0-000": [
-2.0828,
-2.26695,
-2,
-"a1a479d66f95"
 ],
 "member/CMW112AAAA/cripple-head-0-01": [
 2.29265,
@@ -90527,95 +90491,95 @@
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-006": [
+"member/CSF603AAAA/bearing-block-0-004": [
 2.746375,
 3.048,
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-007-cheek-hi": [
+"member/CSF603AAAA/bearing-block-0-007": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-008-cheek-hi": [
 2.784475,
 3.0099,
 2,
 "7033f5ae779f"
 ],
-"member/CSF603AAAA/bearing-block-0-007-cheek-lo": [
+"member/CSF603AAAA/bearing-block-0-008-cheek-lo": [
 2.784475,
 3.0099,
 2,
 "7033f5ae779f"
 ],
-"member/CSF603AAAA/bearing-block-0-007-rail-bottom": [
+"member/CSF603AAAA/bearing-block-0-008-rail-bottom": [
 2.746375,
 2.784475,
 2,
 "a34fd765ec76"
 ],
-"member/CSF603AAAA/bearing-block-0-007-rail-top": [
+"member/CSF603AAAA/bearing-block-0-008-rail-top": [
 3.0099,
 3.048,
 2,
 "4f5bebcd882e"
 ],
-"member/CSF603AAAA/bearing-block-0-008": [
+"member/CSF603AAAA/bearing-block-0-009": [
 2.746375,
 3.048,
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-009-cheek-hi": [
+"member/CSF603AAAA/bearing-block-0-010-cheek-hi": [
 2.784475,
 3.0099,
 2,
 "7033f5ae779f"
 ],
-"member/CSF603AAAA/bearing-block-0-009-rail-bottom": [
+"member/CSF603AAAA/bearing-block-0-010-rail-bottom": [
 2.746375,
 2.784475,
 2,
 "a34fd765ec76"
 ],
-"member/CSF603AAAA/bearing-block-0-009-rail-top": [
+"member/CSF603AAAA/bearing-block-0-010-rail-top": [
 3.0099,
 3.048,
 2,
 "4f5bebcd882e"
 ],
-"member/CSF603AAAA/bearing-block-0-010": [
+"member/CSF603AAAA/bearing-block-0-011": [
 2.746375,
 3.048,
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-011-cheek-hi": [
+"member/CSF603AAAA/bearing-block-0-012-cheek-hi": [
 2.784475,
 3.0099,
 2,
 "7033f5ae779f"
 ],
-"member/CSF603AAAA/bearing-block-0-011-cheek-lo": [
+"member/CSF603AAAA/bearing-block-0-012-cheek-lo": [
 2.784475,
 3.0099,
 2,
 "7033f5ae779f"
 ],
-"member/CSF603AAAA/bearing-block-0-011-rail-bottom": [
+"member/CSF603AAAA/bearing-block-0-012-rail-bottom": [
 2.746375,
 2.784475,
 2,
 "a34fd765ec76"
 ],
-"member/CSF603AAAA/bearing-block-0-011-rail-top": [
+"member/CSF603AAAA/bearing-block-0-012-rail-top": [
 3.0099,
 3.048,
 2,
 "4f5bebcd882e"
-],
-"member/CSF603AAAA/bearing-block-0-012": [
-2.746375,
-3.048,
-2,
-"e76b7cb538bf"
 ],
 "member/CSF603AAAA/bearing-block-0-013": [
 2.746375,
@@ -90629,29 +90593,11 @@
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-015-cheek-lo": [
-2.784475,
-3.0099,
-2,
-"7033f5ae779f"
-],
-"member/CSF603AAAA/bearing-block-0-015-rail-bottom": [
+"member/CSF603AAAA/bearing-block-0-015": [
 2.746375,
-2.784475,
-2,
-"a34fd765ec76"
-],
-"member/CSF603AAAA/bearing-block-0-015-rail-top": [
-3.0099,
 3.048,
 2,
-"4f5bebcd882e"
-],
-"member/CSF603AAAA/bearing-block-0-016-cheek-hi": [
-2.784475,
-3.0099,
-2,
-"7033f5ae779f"
+"e76b7cb538bf"
 ],
 "member/CSF603AAAA/bearing-block-0-016-cheek-lo": [
 2.784475,
@@ -90671,41 +90617,59 @@
 2,
 "4f5bebcd882e"
 ],
-"member/CSF603AAAA/bearing-block-0-017": [
-2.746375,
-3.048,
-2,
-"e76b7cb538bf"
-],
-"member/CSF603AAAA/bearing-block-0-018-cheek-hi": [
+"member/CSF603AAAA/bearing-block-0-017-cheek-hi": [
 2.784475,
 3.0099,
 2,
 "7033f5ae779f"
 ],
-"member/CSF603AAAA/bearing-block-0-018-cheek-lo": [
+"member/CSF603AAAA/bearing-block-0-017-cheek-lo": [
 2.784475,
 3.0099,
 2,
 "7033f5ae779f"
 ],
-"member/CSF603AAAA/bearing-block-0-018-rail-bottom": [
+"member/CSF603AAAA/bearing-block-0-017-rail-bottom": [
 2.746375,
 2.784475,
 2,
 "a34fd765ec76"
 ],
-"member/CSF603AAAA/bearing-block-0-018-rail-top": [
+"member/CSF603AAAA/bearing-block-0-017-rail-top": [
 3.0099,
 3.048,
 2,
 "4f5bebcd882e"
 ],
-"member/CSF603AAAA/bearing-block-0-025": [
+"member/CSF603AAAA/bearing-block-0-018": [
 2.746375,
 3.048,
 2,
 "e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-019-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-019-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-019-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/CSF603AAAA/bearing-block-0-019-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
 ],
 "member/CSF603AAAA/bearing-block-0-026": [
 2.746375,
@@ -90720,6 +90684,12 @@
 "e76b7cb538bf"
 ],
 "member/CSF603AAAA/bearing-block-0-028": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-029": [
 2.746375,
 3.048,
 2,
@@ -90888,6 +90858,12 @@
 "e76b7cb538bf"
 ],
 "member/CSF603AAAA/joist-0-027-0": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/joist-0-x00-0": [
 2.746375,
 3.048,
 2,

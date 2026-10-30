@@ -1130,10 +1130,12 @@ class ResolvedRoom:
     # reached no viewer, emitter or takeoff. ``area_m2`` is the zone clipped to the room, so
     # a takeoff can subtract it from the room's field finish without re-intersecting.
     finish_zones: tuple[ResolvedFinishZone, ...] = ()
-    # Finish covers the clear face less zones/voids, plus coordinated doorway reveals.
+    # Finish covers the clear face less zones/voids/fixtures, plus doorway reveals.
     # ``area_m2`` stays the gross room area; takeoff bills these net finish parts.
     field_finish: tuple[FinishPart, ...] = ()
     field_area_m2: float = 0.0
+    # Physical fixture installation footprints; coatings may continue beneath them.
+    floor_finish_exclusions: tuple[FinishPart, ...] = ()
     # --- derived head and glazing ----------------------------------------------------------
     # ``clear_height_m`` is floor to the LOWEST thing over the room — deck, slab, or SOFFIT.
     # The soffit is the part that was missing everywhere: ``ceiling_over._is_ceiling_deck``

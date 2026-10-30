@@ -222,6 +222,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.tub_enclosures import resolve_tub_enclosures
 
         findings.extend(resolve_tub_enclosures(model))
+    with _stage("fixture_floor_finishes"):
+        from typehaus.resolve.fixture_floor_finish import resolve_fixture_floor_finishes
+
+        findings.extend(resolve_fixture_floor_finishes(model))
     with _stage("millwork"):
         # After placeables and rooms: a shelf bank hosted on a carcass reads that
         # placeable's resolved type, and a stool's room scope reads the resolved rooms.

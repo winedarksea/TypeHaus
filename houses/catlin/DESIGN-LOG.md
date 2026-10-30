@@ -6637,3 +6637,28 @@ Two base-run bugs were fixed in the engine with this change. Every base used to 
 short of the fixture or casework it dies into, because the break was buffered along the wall as
 well as off it. Now each break is the box's own width. And about 35" of RM-M-BATH2 base was
 drawn inside the enclosed tub deck. A raised platform is now a base obstacle.
+
+## Window coverings: ceiling tracks and cellular shades (2026-10-29)
+
+The seven main-floor rods became four VIDGA runs (`notes/window_coverings.md`): the living
+south wall and the bedroom west wall on ceiling tracks, `D-M-BALC` on a lower wall track
+under `EQ-M-HP2-LIVING`, and Study 2's deck door on a ceiling track. A rod leaks at the top
+and ends, so the curtain drives a convective loop. Every closed edge now ends against a
+wall. The upstairs studies take motorized SmartWings cellular shades (Matter over Thread,
+solar); the main bedroom's south pair and `WIN-A-S3` take the cordless version.
+
+Alternatives not taken:
+- **Moving `EQ-M-HP2-LIVING` / `EQ-M-HP2-BED` to free a ceiling run over `D-M-BALC` and
+  `WIN-M-BED-S2`.** The heads stay. BALC takes a wall track under its head, and the bedroom
+  south pair takes inside-mount shades.
+- **An extra floor truss for a ceiling run over `WIN-M-BED-S1`.** The 64" run did not
+  justify a fabricated truss line in `FS-S-WEST`'s layout; a shade covers it.
+- **Rollers.** More durable, wipeable, and screen fabrics keep the view, but about R-1.5
+  against cellular's R-2 to R-3. Insulation won. The same SmartWings motor takes rollers.
+- **IKEA TREDANSEN/PRAKTLYSING** (Zigbee via DIRIGERA, fixed widths that miss the reveals,
+  no solar) and **Lutron Serena** (Clear Connect, not Matter, ~2× the price).
+
+Engine: `FurnitureType.curtain_track` (`model/curtain_track.py`) draws the track with the
+curtains open in folded stacks, in the viewer, GLB and IFC; the type's envelope is the closed
+curtain. `advisory.wall_backing_present` reads a body wholly inside a rough opening as fixed
+into the opening, and `advisory.trim_device_clash` and the trim scope ignore curtains.

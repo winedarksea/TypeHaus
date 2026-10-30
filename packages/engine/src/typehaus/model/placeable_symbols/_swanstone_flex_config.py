@@ -22,7 +22,7 @@ class SwanstoneFlexDimensions:
     drain_floor_height: float = 0.75
     basin_edge_height: float = 2.25
     drain_diameter: float = 3.0
-    finished_floor_datum: float = 1.5
+    base_datum: float = 0.75  # Slab/subfloor bearing plane, independent of room tile.
     ceiling_datum: float = 106.0
     deck_datum: float = 22.75
     front_height: float = 72.0
@@ -51,7 +51,7 @@ class SwanstoneFlexDimensions:
 
     @property
     def model_height(self) -> float:
-        return self.ceiling_datum - self.finished_floor_datum
+        return self.ceiling_datum - self.base_datum
 
     @property
     def finished_opening(self) -> float:

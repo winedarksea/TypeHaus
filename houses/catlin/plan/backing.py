@@ -52,14 +52,14 @@ from typehaus import WallBacking, ft, inch
 #
 # ** THE SCHEME MOVED WITH THE 2026-09-29 FINISHED-CEILING CORRECTION. ** Counter uppers
 # now start at 53 1/2", their top course at 83 1/2", and the over-cold boxes at 73 1/2".
-# The east hung frame's stock courses start at 56" and 86"; living-room rods remain at 84".
+# The east hung frame's stock courses start at 56" and 86"; the living-room rods are retired.
 #
 # A 2x8 laid flat is 7 1/4", so one band covers a spread of hangs.
 #
 # ** W-M-E1's BANDS FOLLOW THEIR BODIES (2026-10-10). ** The upper bands start at the pantry's
 # south stud face, 272 3/4" (S2 starts at 271 3/8"), not at 20'-0": the 31" south of it is
-# living room. The 82" course is two runs — BK-M-E1-ROD behind the living-room rods and
-# BK-M-E1-STACKER behind the pantry stackers — and the 64" course is the hood's three bays
+# living room. The 82" course is BK-M-E1-STACKER behind the pantry stackers (the living-room
+# rod run went with the rods, 2026-10-29) — and the 64" course is the hood's three bays
 # plus BK-M-E1-MANTEL; 8 ft and 19 ft of open wall separate the two pairs.
 # BK-M-E1-MIXER stays full length: the SEKTION base rail runs from the slat partition north.
 
@@ -150,10 +150,6 @@ MAIN_BACKING = [
                 start=inch(320.75), length=inch(32),
                 elevation=inch(82), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="stock garage upper top rail and stacker lower restraint at 86 in. AFF"),
-    WallBacking(uid="VXX1ME3YWS", tag="BK-M-E1-ROD", wall_ref="W-M-E1",
-                start=inch(32.75), length=inch(142.75),
-                elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="living-room curtain rod brackets (86 in.)"),
     WallBacking(uid="KC1M7649AZ", tag="BK-M-E1-STACKER", wall_ref="W-M-E1",
                 start=inch(272.75), length=inch(46.5),
                 elevation=inch(82), height=inch(7.25), profile="2x8",
@@ -163,23 +159,10 @@ MAIN_BACKING = [
     # said UNKNOWN; hosted, it names the wall and there was nothing behind them.
     WallBacking(uid="PE3FV6DGRM", tag="BK-M-S2-ROD", wall_ref="W-M-S2",
                 elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="curtain rod brackets (84 in.)"),
-    # FURN-M-LIV-ROD-BALC's end bracket, 10" along W-M-C1.
-    WallBacking(uid="DQYV0CA18A", tag="BK-M-C1-ROD", wall_ref="W-M-C1",
-                start=inch(0), length=inch(15.25),
-                elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="FURN-M-LIV-ROD-BALC end bracket (84 in.)"),
-    WallBacking(uid="016TC9913X", tag="BK-M-W4-ROD", wall_ref="W-M-W4",
-                elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="curtain rod brackets (84 in.)"),
-    WallBacking(uid="7T3GDF98A5", tag="BK-M-S1-ROD", wall_ref="W-M-S1",
-                start=inch(0), length=inch(79.25),
-                elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="FURN-M-BED-ROD-S1 curtain rod brackets (84 in.)"),
-    WallBacking(uid="ETQ6V0Y07Z", tag="BK-M-S1-ROD-S2", wall_ref="W-M-S1",
-                start=inch(144.75), length=inch(71.25),
-                elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="FURN-M-BED-ROD-S2 curtain rod brackets (84 in.)"),
+                material_ref="spf", purpose="BALC curtain-track wall fittings (87 1/2 in. AFF)"),
+    # Curtain-rod bands retired 2026-10-29 with the rods (spent uids: VXX1ME3YWS
+    # BK-M-E1-ROD, DQYV0CA18A BK-M-C1-ROD, 016TC9913X BK-M-W4-ROD, 7T3GDF98A5 BK-M-S1-ROD,
+    # ETQ6V0Y07Z BK-M-S1-ROD-S2). The ceiling tracks fasten to joists.
     WallBacking(uid="VBFFYKBZJW", tag="BK-M-CLN-RACK", wall_ref="W-M-CLN",
                 start=inch(48.75), length=inch(6.5),
                 elevation=inch(46), height=inch(7.25), profile="2x8",

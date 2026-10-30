@@ -199,7 +199,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             # ``buildRoomFloor`` in the viewer (→ ``glb-emitter-parity``). Cutting is what
             # makes a coating zone right: polished concrete has no plane of its own, so the
             # hole is the whole drawing and the slab solid below shows through it.
-            # ``field_finish`` is already net of zones and deck voids (resolve/room_finish.py).
+            # ``field_finish`` is already net of zones, deck voids and fixture installations.
             finish_material = next((material for material in model.plan.library.materials
                                     if material.tag == room.floor_finish), None)
             finish_depth_m = (finish_material.finish_thickness_in * 0.0254

@@ -119,6 +119,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `wall_backing.md` | the in-wall backing schedule: every height and the authority behind it, what the code actually requires and what it does not, and the 2026-09-12 pass that replaced the wet walls' 3/4" plywood band with three 2x courses |
 | `wood_supply.md` | the owner's log pile against `haus millwork`'s demand after the red-oak reassignment: the International 1/4" rule estimate, the species flags (ash and locust short, the sauna ~120 bf short), and what the sawyer's tally replaces |
 | `window_and_door_procurement.md` | the chosen window and door lines (Drutex Alucover, Andersen 400 for egress, Therma-Tru / Endura doors) read from the NFRC CPD, the comparison and what is still claimed; the performance spec (NAFS DP ≥ 20 psf, 16 CFR 1201), frame material by orientation, outie flange vs Euro strap, interior sweep coordination, and the egress derivation `code.R310_egress` now grades |
+| `window_coverings.md` | the VIDGA ceiling-track curtains and SmartWings cellular shades: the seal rule, the runs and measured clearances, the BALC header nailer, Matter/solar vs Zigbee vs Lutron, roller vs cellular, and why the plant room has none |
 
 Current powder-room fixture installation: [RM-M-BATH1 basin and solid blocking](main_bath1_basin_spec.md),
 including manufacturer drawings, fittings, fixing positions and coordinated service routes.

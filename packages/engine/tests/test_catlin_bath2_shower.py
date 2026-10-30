@@ -82,11 +82,12 @@ def test_pan_glass_datums_and_carrara_wire_material(catlin_model_ro):
     assert datum(north, -1) == pytest.approx(22.75)
     assert datum(north, 1) == pytest.approx(106)
     assert max(datum(p, 1) for p in parts) == pytest.approx(106)
-    assert max(datum(p, 1) for p in front) < 78  # glass sits within the top rail
+    assert fixture.z_m == pytest.approx(0.75 * INCH)
+    assert max(datum(p, 1) for p in front) < 77.25  # glass sits within the top rail
     rails = [p for p in parts if p["color"] == "chrome"
              and p["size"][0] == pytest.approx(width)
              and p["size"][1] / INCH == pytest.approx(BATH2_SHOWER.rail_width)]
-    assert max(datum(p, 1) for p in rails) == pytest.approx(78)
+    assert max(datum(p, 1) for p in rails) == pytest.approx(77.25)
     assert fixture.body_z1_m == pytest.approx(106 * INCH)
     # The return is wholly supported on the deck, not floating over the pan.
     deck = next(s for s in model.solids if s.tag == "SL-M-TUBDK")
@@ -128,6 +129,10 @@ def test_glb_and_ifc_keep_parts_and_transparency(catlin_model_ro, catlin_ifc_pat
     scene.add_object(mesh, ("plumbing",), kind="canvas_object", uid=fixture.uid)
     document, _ = scene.build()
     assert "Swanstone Carrara (221)" in {m["name"] for m in document["materials"]}
+    positions = [document["accessors"][primitive["attributes"]["POSITION"]]
+                 for mesh in document["meshes"] for primitive in mesh["primitives"]]
+    assert min(accessor["min"][1] for accessor in positions) == pytest.approx(0.75 * INCH)
+    assert max(accessor["max"][1] for accessor in positions) == pytest.approx(106 * INCH)
     file = ifcopenshell.open(str(catlin_ifc_path))
     element = next(e for e in file.by_type("IfcSanitaryTerminal") if e.Name == fixture.tag)
     items = element.Representation.Representations[0].Items
@@ -135,3 +140,17 @@ def test_glb_and_ifc_keep_parts_and_transparency(catlin_model_ro, catlin_ifc_pat
     styles = [item.StyledByItem[0].Styles[0] for item in items]
     assert any(style.Name == "solid-surface-panel" for style in styles)
     assert any(style.Styles[0].Transparency > 0 for style in styles)
+    # IFC uses the same absolute support planes for both generated parts and generic units.
+    fixtures = {item.tag: item for item in model.canvas_objects if item.kind == "Fixture"}
+    bathing = {"FX-B-SAUNA-SH", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
+               "FX-S-BATH1-SH", "FX-S-SUITEBATH-TUBSH", "FX-A-STUBATH-SH"}
+    for product in file.by_type("IfcSanitaryTerminal"):
+        if product.Name not in bathing:
+            continue
+        heights = []
+        for shape in product.Representation.Representations[0].Items:
+            if shape.is_a("IfcTriangulatedFaceSet"):
+                heights.extend(point[2] for point in shape.Coordinates.CoordList)
+            else:
+                heights.append(shape.Position.Location.Coordinates[2])
+        assert min(heights) == pytest.approx(fixtures[product.Name].z_m)

@@ -44,10 +44,11 @@ def spaces_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str
                   "parts": _finish_parts(z.parts)}
                  for z in r.finish_zones
              ],
-             # The floor the field finish covers: clear face less zones and stair wells
-             # (resolve/room_finish.py). The viewer draws this; takeoff bills its area.
+             # Net of zones, wells and fixture installations, plus doorway reveals.
+             # The viewer draws these parts; takeoff bills the same area.
              "field_finish": _finish_parts(r.field_finish),
              "field_area_m2": r.field_area_m2,
+             "floor_finish_exclusions": _finish_parts(r.floor_finish_exclusions),
              # Derived head and glazing: facts about the room (read by
              # code.R305_ceiling_height and code.R303_1_light_and_ventilation), so they ride
              # on the room rather than living only inside a check's message string.
