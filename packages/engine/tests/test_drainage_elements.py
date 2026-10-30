@@ -144,6 +144,10 @@ def test_the_balcony_leader_runs_east_to_a_basin_in_the_yard(catlin_model):
         "the spout lands in the basin"
     assert min(xs) > east_face, "the basin stands clear of the SRW face"
     pad = next(s for s in catlin_model.solids if s.tag == "SL-SG-STAIRPAD")
+    pad_surface = next(s for s in catlin_model.plan.project.site.impervious_surfaces
+                       if s.label == "porch stair pad")
+    assert pad_surface.near_elevation.meters == pytest.approx(pad.z1_m)
+    assert (pad_surface.near_elevation - pad_surface.far_elevation).inches == pytest.approx(3.0)
     assert min(p[1] for p in pad.outline) - max(ys) >= 2.0 * ft_m - 1e-6, \
         "the basin stays 2'-0\" off the stair pad"
     assert basin.z_m == pytest.approx(-40 * 0.0254, abs=1e-6), "set on the yard at -3'-4\""

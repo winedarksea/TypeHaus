@@ -36,7 +36,7 @@ def test_catlin_closes_every_riser(catlin_model_ro):
 @pytest.mark.parametrize(("tag", "count", "opening_in", "top_in", "over_30"), [
     ("ST-B2M", 15, 5.86, 108.88, 11), ("ST-M2S", 16, 6.53, 119.55, 12),
     ("ST-S2A", 16, 6.50, 119.0, 12), ("ST-G-SERVICE", 5, 5.86, 33.06, 1),
-    ("ST-SG-PORCH", 5, 5.65, 32.0, 1)])  # 6.59" rise less the 0.94" Trex tread; top is 32"
+    ("ST-SG-PORCH", 5, 5.85, 33.0, 1)])  # 6.788" rise less the 0.94" Trex tread
 def test_hand_numbers_open(catlin_model_ro, tag, count, opening_in, top_in, over_30):
     """§3: each flight's openings as it stood, with no riser boards."""
     flight = steps(_opened(_stair(catlin_model_ro, tag)))

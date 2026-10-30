@@ -935,8 +935,8 @@ def test_the_flight_has_its_own_pad_with_a_code_landing_on_it(catlin_model) -> N
     27'-6"..31'-2"; and what is left east of that is R311.7.6's bottom landing, which wants
     36" in the direction of travel. The east edge is walk leg D's, less the 1/2" joint: the
     pad is the walk's south end. The two pads must not touch — a single pour spanning the
-    2'-8" between them is 94 sf to serve 40 — and they must share a top, or the flight's
-    authored base is not the surface it lands on.
+    2'-8" between them is 94 sf to serve 40 — and the stair pad must share walk D's
+    top so their isolation joint is flush.
     """
     from shapely.geometry import Polygon
 
@@ -954,11 +954,14 @@ def test_the_flight_has_its_own_pad_with_a_code_landing_on_it(catlin_model) -> N
     assert equipment.distance(pad) / FT == pytest.approx(2.667, abs=0.01)
     slabs = {e.tag: e for st in catlin_model.plan.storeys
              for e in catlin_model.plan.storey_elements(st.tag)
-             if getattr(e, "tag", "") in ("SL-SG-STAIRPAD", "SL-SG-HPPAD")}
+             if getattr(e, "tag", "") in ("SL-SG-STAIRPAD", "SL-WK-D")}
     walk = Polygon(_solid(catlin_model, "SL-WK-D").outline)
     assert walk.distance(pad) / INCH == pytest.approx(0.5, abs=0.01)
     assert (slabs["SL-SG-STAIRPAD"].top_elevation.meters
-            == slabs["SL-SG-HPPAD"].top_elevation.meters)
+            == slabs["SL-WK-D"].top_elevation.meters)
+    assert _solid(catlin_model, "SL-SG-STAIRPAD").z1_m == pytest.approx(
+        _solid(catlin_model, "SL-WK-D").z1_m)
+    assert slabs["SL-SG-STAIRPAD"].top_elevation.inches == pytest.approx(-33.0)
 
 
 def test_the_pocket_condenser_faces_south_square_to_the_plan(catlin_model) -> None:
@@ -993,7 +996,7 @@ def test_the_pocket_condenser_faces_south_square_to_the_plan(catlin_model) -> No
 
 
 def test_the_porch_stair_climbs_five_risers_from_the_pad_to_the_plank(catlin_model) -> None:
-    """ST-SG-PORCH: 5 risers, 4 treads, 36" wide, -2'-8" to +0'-1".
+    """ST-SG-PORCH: 5 risers, 4 treads, 36" wide, -2'-9" to +0'-0.94".
 
     Both elevations are authored because neither is a storey datum — this is a step-down
     within `main`. The top is the porch's WALKING surface (the composite plank), not the 0'-0"
@@ -1001,9 +1004,10 @@ def test_the_porch_stair_climbs_five_risers_from_the_pad_to_the_plank(catlin_mod
     """
     stair = next(s for s in catlin_model.stairs if s.tag == "ST-SG-PORCH")
     assert stair.riser_count == 5
-    assert stair.riser_height_m / INCH == pytest.approx(6.588)
+    assert stair.riser_height_m / INCH == pytest.approx(6.788)
     assert stair.going_depth_m / INCH == pytest.approx(11.0)
-    assert stair.base_elevation_m / FT == pytest.approx(_HP_PAD_TOP_FT)
+    assert stair.base_elevation_m == pytest.approx(
+        _solid(catlin_model, "SL-SG-STAIRPAD").z1_m)
     treads = [m for m in stair.members if m.category == "tread"]
     assert len(treads) == 4
     for tread in treads:
@@ -1028,7 +1032,7 @@ def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catl
     RL-SG-PORCH's east leg opened 3'-0" in its MIDDLE with RL-SG-PORCH-NE carrying the stub.
 
     Nothing in the engine asks for the threshold pair — R312.1.1 measures the FLIGHT, whose
-    top tread is only 26.4" over the pad, and `code.R312_1_guard_height` cannot see a guard
+    top tread is only 27.152" over the pad, and `code.R312_1_guard_height` cannot see a guard
     opening in a deck edge at all, at the end or in the middle (plans/TODO.md). They are the
     author's guard return, so they are asserted here or they are nothing.
     """
@@ -1038,6 +1042,8 @@ def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catl
     for tag in ("RL-SG-PSTAIR-S", "RL-SG-PSTAIR-N"):
         rail = rails[tag]
         assert rail.serves_stair == "ST-SG-PORCH", tag
+        assert rail.base_elevation.meters == pytest.approx(
+            _solid(catlin_model, "SL-SG-STAIRPAD").z1_m), tag
         assert rail.role == "guard_and_handrail", tag
         assert rail.height.inches == pytest.approx(36.0), tag
         assert rail.top_height is not None and rail.top_height.inches == pytest.approx(36.0)

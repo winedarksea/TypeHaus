@@ -3507,11 +3507,11 @@
         ],
         [
           -4.1850000000000005,
-          -40.0
+          -41.00000000000001
         ],
         [
           -24.000000000000004,
-          -40.0
+          -41.00000000000001
         ]
       ],
       "layer": "S-FNDN",
@@ -3527,19 +3527,19 @@
       "points": [
         [
           -24.000000000000004,
-          -40.0
+          -41.00000000000001
+        ],
+        [
+          -4.1850000000000005,
+          -41.00000000000001
         ],
         [
           -4.1850000000000005,
           -40.0
-        ],
-        [
-          -4.1850000000000005,
-          -38.51
         ],
         [
           -24.000000000000004,
-          -38.51
+          -40.0
         ]
       ],
       "layer": "S-FNDN",
@@ -3555,6 +3555,34 @@
       "points": [
         [
           -24.000000000000004,
+          -40.0
+        ],
+        [
+          -4.1850000000000005,
+          -40.0
+        ],
+        [
+          -4.1850000000000005,
+          -38.51
+        ],
+        [
+          -24.000000000000004,
+          -38.51
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-056",
+      "tag": "EX-HOUSE-BF-57"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -24.000000000000004,
           -38.51
         ],
         [
@@ -3574,8 +3602,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-055",
-      "tag": "EX-HOUSE-BF-56"
+      "uid": "51B78YHGNF-BF-059",
+      "tag": "EX-HOUSE-BF-60"
     },
     {
       "space": "model",
@@ -3602,8 +3630,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-058",
-      "tag": "EX-HOUSE-BF-59"
+      "uid": "51B78YHGNF-BF-062",
+      "tag": "EX-HOUSE-BF-63"
     },
     {
       "space": "model",
@@ -3630,8 +3658,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-061",
-      "tag": "EX-HOUSE-BF-62"
+      "uid": "51B78YHGNF-BF-065",
+      "tag": "EX-HOUSE-BF-66"
     },
     {
       "space": "model",

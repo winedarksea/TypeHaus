@@ -91,6 +91,7 @@ from params.column_heads import HETA20Z_PAIR_HEAD
 from params.cladding import HOUSE_NS_OUTBOARD_IN
 from params.landscape_walk import D_X0 as WALK_D_X0
 from params.landscape_walk import GAP_FT as WALK_GAP_FT
+from params.landscape_walk import TOP as WALK_TOP
 from params.sunken_garden_options import OPTION
 
 # ** THE POUR DOES NOT MOVE WHEN THE WASH IS ADDED, AND THIS IS WHAT HOLDS THAT. **
@@ -2172,7 +2173,7 @@ _y_porch_guard_block = _y_ax_front + 2.0 / 12.0
 # east edge into the yard pocket, from the clear stretch of W-SG-E1's top between its two
 # columns, landing on STAIR_PAD below. See notes/porch_stair.md.
 #
-# 5 risers at 6 3/5", 4 treads at 11" and NO nosing, 36" wide, composite on KDAT — the ST-G-SERVICE
+# 5 risers at 6.788", 4 treads at 11" and NO nosing, 36" wide, composite on KDAT — the ST-G-SERVICE
 # pattern (plan/storeys/garage.py), which is the same 0'-0"-to-grade five-riser flight and is
 # already priced and tested. `start` is the FOOT, on the pad at the east end; the flight
 # climbs west (`run_reversed`) to the wall top, and `width` runs +y from `start`, so
@@ -2180,15 +2181,15 @@ _y_porch_guard_block = _y_ax_front + 2.0 / 12.0
 #
 # ** BOTH ELEVATIONS ARE STATED, because neither is a storey datum. ** `from_storey` and
 # `to_storey` are both `main` — this is a step-down within one storey, the case
-# `floor_opening=None` exists for — so the rise is the authored pair: the pad top at -2'-8"
-# to the porch's WALKING surface at +0'-1" (the composite plank over the joists, not the 0'
-# joist top). 33" over five risers is 6.60" each, inside R311.7.5.1, and the 11" going leaves
+# `floor_opening=None` exists for — so the rise is the authored pair: the pad top at -2'-9"
+# to the porch's WALKING surface at +0'-0.94" (the composite plank over the joists, not the 0'
+# joist top). 33.94" over five risers is 6.788" each, inside R311.7.5.1, and the 11" going leaves
 # R311.7.5.2's 10" minimum with an inch to spare.
 #
-# ** THE 12" WALL TOP IS A THRESHOLD, NOT A TREAD. ** W-SG-E1's top is 0'-0", one inch BELOW
-# the porch plank, so a flight springing from x 27'-6" would want its first tread 5 3/5"
+# ** THE 12" WALL TOP IS A THRESHOLD, NOT A TREAD. ** W-SG-E1's top is 0'-0", 0.94" BELOW
+# the porch plank, so a flight springing from x 27'-6" would want its first tread 5.848"
 # below the concrete it has to cross. The flight therefore starts at the wall's EAST face and
-# the wall top is decked flush at +0'-1" with a 3'-0" x 12" board of the porch's own
+# the wall top is decked flush at +0'-0.94" with a 3'-0" x 12" board of the porch's own
 # composite plank. That is 3 sf of trim over concrete with nothing to frame: it is NOT
 # MODELLED, it is priced with the plank in prices.toml [framing] and written down in
 # notes/porch_stair.md — the same call the framed-wall line-set sleeve got.
@@ -2205,12 +2206,13 @@ _y_porch_guard_block = _y_ax_front + 2.0 / 12.0
 # wall on `from_storey` is an `integrity.stair_bearing` error rather than a permission.
 #
 # ** STAIR_PAD: x 27'-6"..36'-7 7/8", y -9'-0"..-6'-0" — 27.5 sf, 0.34 cy at 4". ** Its own
-# pour, poured to `_HP_PAD_TOP` so the flight's authored base is the pad it actually lands
+# pour, poured to `_STAIR_PAD_TOP` so the flight's authored base is the pad it actually lands
 # on. The west edge is W-SG-E1's east face, where the stringers foot; the flight itself
 # covers x 27'-6"..31'-2"; and everything east of that is R311.7.6's bottom landing, 5'-6"
 # against its 36". The east edge runs to walk leg D (SL-WK-D) less its 1/2" isolation joint,
 # so the pad IS the walk's south end — no separate connector slab. It is 2'-8" clear of
 # HP_PAD in y, so the two are separate rectangles and not one L.
+_STAIR_PAD_TOP = WALK_TOP  # The landing meets walk D flush across its isolation joint.
 _STAIR_PAD_X1 = WALK_D_X0 - WALK_GAP_FT  # 36.66' — the walk's west edge, less the joint
 
 STAIR_PAD = Slab(
@@ -2220,12 +2222,12 @@ STAIR_PAD = Slab(
              pt(ft(_STAIR_PAD_X1), ft(_PORCH_STAIR_Y1)),
              pt(ft(_STAIR_PAD_X1), ft(_PORCH_STAIR_Y0)),
              pt(ft(_PORCH_STAIR_X0), ft(_PORCH_STAIR_Y0))),
-    thickness=inch(4.0), top_elevation=_HP_PAD_TOP)
+    thickness=inch(4.0), top_elevation=_STAIR_PAD_TOP)
 
 PORCH_STAIR = Stair(
     uid="SGST01AAAA", tag="ST-SG-PORCH",
     from_storey="main", to_storey="main",
-    base_elevation=_HP_PAD_TOP, top_elevation=_porch_walking_surface,
+    base_elevation=_STAIR_PAD_TOP, top_elevation=_porch_walking_surface,
     width=ft(3), start=pt(ft(_PORCH_STAIR_X1), ft(_PORCH_STAIR_Y1)),
     run_direction="x", run_reversed=True,
     tread_depth=inch(11), nosing_depth=inch(0),
@@ -2237,7 +2239,7 @@ PORCH_STAIR = Stair(
     riser_thickness=inch(0.75),
     material="kdat")
 
-# ** A GUARD ON EACH SIDE, AND EACH ONE IS ALSO THE HANDRAIL. ** The total rise is 33", over
+# ** A GUARD ON EACH SIDE, AND EACH ONE IS ALSO THE HANDRAIL. ** The total rise is 33.94", over
 # R312.1.1's 30" trigger, so both open sides want a guard; five risers is over R311.7.8's
 # four, so the flight wants a graspable handrail. One 36" run with a graspable top rail
 # answers both, which is what `role="guard_and_handrail"` says. 36" clears R312.1.2's 34"
@@ -2270,7 +2272,7 @@ PORCH_STAIR_RAILS = [
             type_ref="RAILING-EXT-ALUMINUM-SURFACE",
             path=(pt(ft(_PORCH_STAIR_X1), ft(_sy)), pt(ft(_PORCH_STAIR_X0), ft(_sy))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
-            base_elevation=_HP_PAD_TOP, post_spacing=inch(36), post_size="2x2",
+            base_elevation=_STAIR_PAD_TOP, post_spacing=inch(36), post_size="2x2",
             rail_count=2, mount="surface", assembly="RAILING_DARK_METAL",
             role="guard_and_handrail", serves_stair="ST-SG-PORCH", top_height=inch(36),
             graspable_profile="1.5in round — Type I",
@@ -2281,7 +2283,7 @@ PORCH_STAIR_RAILS = [
 ]
 
 # ** THE THRESHOLD'S TWO CHEEKS. ** The 12" of W-SG-E1 wall top between the porch plank and
-# the head of the flight (x 27'-6"..28'-6") is decked flush at +0'-1" and is 33" above the
+# the head of the flight (x 27'-6"..28'-6") is decked flush at +0'-0.94" and is 33.94" above the
 # pad on BOTH its north and south sides. Nothing in the engine asks for a guard there:
 # `code.R312_1_1_stair_open_side` measures the FLIGHT, whose top tread is only 26 2/5" over
 # the pad, and `code.R312_1_guard_height` tests RL-SG-PORCH against the deck edge SEGMENT,

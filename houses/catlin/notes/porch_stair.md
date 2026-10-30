@@ -34,7 +34,7 @@ that yet — `plans/TODO.md` carries it.
 
 ## The flight
 
-`ST-SG-PORCH`: **5 risers at 6.60", 4 treads at 11" with no nosing, 36" wide, Trex Enhance Basics Tide Pool treads on KDAT** — the
+`ST-SG-PORCH`: **5 risers at 6.788", 4 treads at 11" with no nosing, 36" wide, Trex Enhance Basics Tide Pool treads on KDAT** — the
 `ST-G-SERVICE` pattern in `plan/storeys/garage.py`, which is the same five-riser
 0'-0"-to-grade flight and is already priced and tested.
 
@@ -42,13 +42,13 @@ that yet — `plans/TODO.md` carries it.
 |---|---|
 | run | x 28'-6"..32'-2" (`start` is the FOOT, at the east end; the flight climbs west) |
 | width | y -9'-0"..-6'-0" |
-| base | `_HP_PAD_TOP`, -2'-8" — the pad top, shared with `SL-SG-HPPAD` |
-| top | `_porch_walking_surface`, +0'-1" — the composite plank, not the 0'-0" joist top |
-| rise | 2'-9" = 33" over five risers |
+| base | `_STAIR_PAD_TOP`, -2'-9" — the pad top, shared with `SL-WK-D` |
+| top | `_porch_walking_surface`, +0'-0.94" — the composite plank, not the 0'-0" joist top |
+| rise | 2'-9.94" = 33.94" over five risers |
 
 Both elevations are **stated on the element**, because neither is a storey datum:
 `from_storey` and `to_storey` are both `main`, which is the step-down-within-one-storey case
-`floor_opening=None` exists for. 6.60" is inside R311.7.5.1's 7 3/4" and the 11" going leaves
+`floor_opening=None` exists for. 6.788" is inside R311.7.5.1's 7 3/4" and the 11" going leaves
 R311.7.5.2's 10" minimum with an inch to spare. No `bearing_refs`: the stringers bear on the
 `W-SG-E1` wall top at the head and on `SL-SG-STAIRPAD` at the foot, and a `bearing_refs` tag
 that names no wall on `from_storey` is an `integrity.stair_bearing` error rather than a
@@ -63,7 +63,7 @@ south of it crowds the column.
 ### Its own pad
 
 `SL-SG-STAIRPAD`, x 27'-6"..36'-7 7/8" by y -9'-0"..-6'-0" — **27.5 sf, 0.34 cy** at 4", on the
-same `HP_PAD_ON_GRADE` specification and topped at the same -2'-8" as the equipment pad, so
+same `HP_PAD_ON_GRADE` specification, topped at -2'-9" to match walk D, 1" below the equipment pad, so
 the flight's authored base is the surface it actually lands on. The west edge is `W-SG-E1`'s
 east face where the stringers foot; the flight covers x 27'-6"..31'-2"; and everything east
 of that is **R311.7.6's bottom landing**, which wants 36" in the direction of travel and gets
@@ -76,10 +76,10 @@ the smallest rectangle covering both is 94 sf — 54 sf of concrete to save one 
 
 ### The 12" wall top is a threshold, not a tread — and it is NOT MODELLED
 
-`W-SG-E1`'s top is 0'-0", **one inch below the porch plank**. A flight springing from the
-wall's west face at x 27'-6" would want its first tread 5.6" *below* the concrete it has to
+`W-SG-E1`'s top is 0'-0", **0.94" below the porch plank**. A flight springing from the
+wall's west face at x 27'-6" would want its first tread 5.848" *below* the concrete it has to
 cross. So the flight starts at the wall's **east** face, x 28'-6", and the 12" of wall top
-between the porch plank and the head of the flight is decked flush at +0'-1" with a
+between the porch plank and the head of the flight is decked flush at +0'-0.94" with a
 **3'-0" x 12" board of the porch's own composite plank** — 3 sf, at y -9'-0"..-6'-0", which
 is clear of both columns by 3'-0" and 9 1/4".
 
@@ -97,7 +97,7 @@ black, the `RAILING-EXT-ALUMINUM-SURFACE` product `RL-SG-PORCH` uses), 36" with
 `role="guard_and_handrail"`, `serves_stair="ST-SG-PORCH"`, `top_height=inch(36)` and a
 `graspable_profile` — the `RL-G-SERVICE` authoring in `plan/storeys/garage.py`.
 
-One 36" run with a graspable top rail answers two rules at once. The total rise is 33" > 30",
+One 36" run with a graspable top rail answers two rules at once. The total rise is 33.94" > 30",
 so `code.R312_1_1_stair_open_side` wants a guard on each open side, and 36" clears
 R312.1.2's 34" stair minimum measured off the nosing line; five risers is over R311.7.8's
 four, so the flight wants a handrail, and 36" is inside R311.7.8.1's 34"–38". A 36" tread
@@ -117,10 +117,10 @@ either — and the pair is unchanged.
 `RL-SG-PTHRESH-S` and `RL-SG-PTHRESH-N`, 1'-0" each, **level** at 42" to match `RL-SG-PORCH`,
 on the wall top between the porch plank and the head of the flight — at y -9'-0" and -6'-0"
 since 2026-09-04, clear of `PT-SG-BF3` by 9 1/4" at the south end. That foot of walking
-surface is 33" above the pad on **both** its north and south sides, and nothing in the engine
+surface is 33.94" above the pad on **both** its north and south sides, and nothing in the engine
 asks for a guard there:
 
-- `code.R312_1_1_stair_open_side` measures the FLIGHT, whose top tread is only 26.4" over the
+- `code.R312_1_1_stair_open_side` measures the FLIGHT, whose top tread is only 27.152" over the
   pad — under the 30" trigger. It reports PASS on this stair with or without any guard at all.
 - `code.R312_1_guard_height` tests `RL-SG-PORCH` against the deck edge **segment** with a
   plain `LineString` distance (`_railing_runs_edge`,
@@ -239,5 +239,5 @@ added is mostly given back, all of it inside the same lump allowance either way.
   anchored, and it wants a rake-adjustable post-and-rail kit. Flagged on the price row
   against the two raked runs; it is not in the numbers.
 - **The raked runs' true length.** The BOM bills a `Railing` by the PLAN length of its path,
-  so 3.7 LF of plan is 4.6 LF of rail on a 33"-in-44" rake — the two `PSTAIR` runs read ~1.9
+  so 3.7 LF of plan is 4.6 LF of rail on a 33.94"-in-44" rake — the two `PSTAIR` runs read ~1.9
   LF light between them. Noted on the price row.

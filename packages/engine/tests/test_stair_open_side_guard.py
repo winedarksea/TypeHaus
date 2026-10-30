@@ -45,9 +45,9 @@ def test_every_catlin_flight_is_walled_guarded_or_inside_its_own_well(ctx):
     gets 30" up. ST-S2A has a genuinely open side, and it carries RL-A-FLIGHT-GUARD.
 
     ST-SG-PORCH (2026-09-03) joins ST-G-SERVICE in the third category and for the same
-    arithmetic: five risers off a pad, top tread 26.4" up, under the 30" trigger. Its two
+    arithmetic: five risers off a pad, top tread 27.152" up, under the 30" trigger. Its two
     RL-SG-PSTAIR guards are there because R311.7.8 wants a handrail on a four-riser flight
-    and because a 33" drop off a threshold is worth guarding, NOT because this rule asked —
+    and because a 33.94" drop off a threshold is worth guarding, NOT because this rule asked —
     which is why it is in the "passes without crediting a guard" list below.
     """
     findings = stair_open_side_guard(ctx)

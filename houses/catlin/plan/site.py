@@ -554,8 +554,8 @@ SITE = Site(
             label="porch stair pad",
             outline=(pt(ft(27, 6), ft(-9)), pt(ft(36.66), ft(-9)),
                      pt(ft(36.66), ft(-6)), pt(ft(27, 6), ft(-6))),
-            near_elevation=ft(-2, -8),
-            far_elevation=ft(-2, -11),
+            near_elevation=ft(-2, -9),
+            far_elevation=ft(-3),
             kind="stair",
         ),
         # The driveway and its surface live in params/driveway.py (merged by plan/manifest.py).

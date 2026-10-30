@@ -193,9 +193,9 @@ clearances are all generous where three of them used to be scant.
 ## The pads — FOUR pours on one specification
 
 `SL-SG-HPPAD` and `SL-SG-STAIRPAD`, both on assembly `HP_PAD_ON_GRADE`: 4" unreinforced
-concrete on 4" of open-graded stone, both topped at **-2'-8"**, two inches proud of the
--2'-10" site grade — Gree's "install 2 in above the expected snow line", and the first two
-of the ~20" the 18" stands then add.
+concrete on 4" of open-graded stone. The equipment pad tops at **-2'-8"**, two inches proud
+of the -2'-10" site grade — Gree's "install 2 in above the expected snow line", before its
+18" stand. The stair pad tops at **-2'-9"**, flush with walk D and one inch proud of grade.
 
 | | extent | area | volume |
 |---|---|---|---|

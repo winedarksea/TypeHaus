@@ -287,7 +287,7 @@ the future.
 - Make door and window pieces (trim, jamb, etc) selectable in the UI as separate pieces (but all still hidden by the same view toggle). Such pieces should have their product name shown in the UI when selected. Generally something like the drip edge should be one piece (even if multiple faces) so the garage drip edge at the eaves is something that has gone too far in being split out, and gutters are another thing where the back, bottom and front should all be shown as one piece.
 - Pg 288 of the book has a roof eave detail where the roof and drip flashing alone extend out about an inch (no metal or sheathing).
 - Pick a soffit product and close the garage attic ventilation grading, and the corrugated soffit to sill junction detailed. Also fix the garage soffit end detail (north and south gable ends) where the sofit is too flat and isn't inline with the roof slope there
-- SL-SG-STAIRPAD is a slightly different finished height than SL-WK-D. They should have the same finished height.
+- [x] SL-SG-STAIRPAD matches SL-WK-D at −2′-9″ finished height.
 - D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
 - Might be worth writing up ICF in cost options as an alternative exterior wall setup (for the house) something like the Quadlock 'plus' form which with 4.25" of EPS on each side delivers R-38.
 - Properly model the drywall channels used (ie corners, and especially for the LED light strips)

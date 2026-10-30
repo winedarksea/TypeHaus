@@ -10,9 +10,9 @@
 **What is asked of the reviewer:** §2's areas and §3's pocket count.
 
 > ⚠ Every slab is modelled FLAT at its high edge, -2'-9". Leg D's south end meets
-> SL-SG-STAIRPAD (-2'-8") at a 1/2" isolation joint, 1" low; the stair pad, not a walk
-> leg, carries the walk from D to the porch flight. The fall is on the impervious surfaces only. Two joints are therefore
-> not flush in the field and are set by the finisher: walk A's west edge stands about 1 1/4"
+> SL-SG-STAIRPAD at the same -2'-9" across a 1/2" isolation joint; the stair pad, not a walk
+> leg, carries the walk from D to the porch flight. The fall is on the impervious surfaces only. The driveway joint remains
+> set by the finisher: walk A's west edge stands about 1 1/4"
 > over the driveway at the taper's north end, falling to 1" at the walk's north edge (on the two
 > impervious falls;
 > 2" in the flat model), a curb at the drive's edge that is ACCEPTED (§2a). Grade it by hand

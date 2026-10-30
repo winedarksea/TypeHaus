@@ -5605,101 +5605,125 @@
 ],
 "geometry/51B78YHGNF-BF-048/body": [
 -1.0922,
--1.016,
+-1.0414,
 2,
-"3b298a135b2a"
+"348d517511cc"
 ],
 "geometry/51B78YHGNF-BF-049/body": [
 -1.0922,
--1.016,
+-1.0414,
 2,
-"3b298a135b2a"
+"348d517511cc"
 ],
 "geometry/51B78YHGNF-BF-050/body": [
 -1.0922,
--1.016,
+-1.0414,
 2,
-"3b298a135b2a"
+"348d517511cc"
 ],
 "geometry/51B78YHGNF-BF-051/body": [
 -1.0922,
--1.016,
+-1.0414,
 2,
-"3b298a135b2a"
+"348d517511cc"
 ],
 "geometry/51B78YHGNF-BF-052/body": [
+-1.0414,
 -1.016,
--0.978154,
 2,
-"6a78531316ab"
+"5486a54d8420"
 ],
 "geometry/51B78YHGNF-BF-053/body": [
+-1.0414,
 -1.016,
--0.978154,
 2,
-"6a78531316ab"
+"5486a54d8420"
 ],
 "geometry/51B78YHGNF-BF-054/body": [
+-1.0414,
+-1.016,
+2,
+"5486a54d8420"
+],
+"geometry/51B78YHGNF-BF-055/body": [
+-1.0414,
+-1.016,
+2,
+"5486a54d8420"
+],
+"geometry/51B78YHGNF-BF-056/body": [
 -1.016,
 -0.978154,
 2,
 "6a78531316ab"
 ],
-"geometry/51B78YHGNF-BF-055/body": [
--0.978154,
--0.9525,
-2,
-"88c96b4e0067"
-],
-"geometry/51B78YHGNF-BF-056/body": [
--0.978154,
--0.9525,
-2,
-"88c96b4e0067"
-],
 "geometry/51B78YHGNF-BF-057/body": [
+-1.016,
 -0.978154,
--0.9525,
 2,
-"88c96b4e0067"
+"6a78531316ab"
 ],
 "geometry/51B78YHGNF-BF-058/body": [
--0.9525,
--0.9398,
+-1.016,
+-0.978154,
 2,
-"c71986a9e272"
+"6a78531316ab"
 ],
 "geometry/51B78YHGNF-BF-059/body": [
+-0.978154,
 -0.9525,
--0.9398,
 2,
-"c71986a9e272"
+"88c96b4e0067"
 ],
 "geometry/51B78YHGNF-BF-060/body": [
+-0.978154,
+-0.9525,
+2,
+"88c96b4e0067"
+],
+"geometry/51B78YHGNF-BF-061/body": [
+-0.978154,
+-0.9525,
+2,
+"88c96b4e0067"
+],
+"geometry/51B78YHGNF-BF-062/body": [
 -0.9525,
 -0.9398,
 2,
 "c71986a9e272"
 ],
-"geometry/51B78YHGNF-BF-061/body": [
--0.9398,
--0.9144,
-2,
-"5b38df1f22c3"
-],
-"geometry/51B78YHGNF-BF-062/body": [
--0.9398,
--0.9144,
-2,
-"5b38df1f22c3"
-],
 "geometry/51B78YHGNF-BF-063/body": [
+-0.9525,
 -0.9398,
--0.9144,
 2,
-"5b38df1f22c3"
+"c71986a9e272"
 ],
 "geometry/51B78YHGNF-BF-064/body": [
+-0.9525,
+-0.9398,
+2,
+"c71986a9e272"
+],
+"geometry/51B78YHGNF-BF-065/body": [
+-0.9398,
+-0.9144,
+2,
+"5b38df1f22c3"
+],
+"geometry/51B78YHGNF-BF-066/body": [
+-0.9398,
+-0.9144,
+2,
+"5b38df1f22c3"
+],
+"geometry/51B78YHGNF-BF-067/body": [
+-0.9398,
+-0.9144,
+2,
+"5b38df1f22c3"
+],
+"geometry/51B78YHGNF-BF-068/body": [
 -0.9398,
 -0.9144,
 2,
@@ -66756,64 +66780,64 @@
 "88803e382023"
 ],
 "geometry/SGRA03AAAA-i000/body": [
--0.554917,
-0.321383,
+-0.5730665,
+0.3032335,
 2,
-"018b7868ca4e"
+"9f320d5780c5"
 ],
 "geometry/SGRA03AAAA-i001/body": [
--0.4891239,
-0.3871761,
+-0.505276,
+0.371024,
 2,
-"15de1d97be54"
+"efe08c4ebbf2"
 ],
 "geometry/SGRA03AAAA-i002/body": [
--0.4233307,
-0.4529693,
+-0.4374854,
+0.4388146,
 2,
-"90c13499c951"
+"60bbc8e8f706"
 ],
 "geometry/SGRA03AAAA-i003/body": [
--0.3575376,
-0.5187624,
+-0.3696949,
+0.5066051,
 2,
-"8c1230fcd295"
+"f98a65710710"
 ],
 "geometry/SGRA03AAAA-i004/body": [
--0.214542,
-0.661758,
+-0.2223583,
+0.6539417,
 2,
-"80f9a7f970a8"
+"6ee504f0e3bd"
 ],
 "geometry/SGRA03AAAA-i005/body": [
--0.1487489,
-0.7275511,
+-0.1545678,
+0.7217322,
 2,
-"f43afddf1dfc"
+"796cb1453e5d"
 ],
 "geometry/SGRA03AAAA-i006/body": [
--0.0829557,
-0.7933443,
+-0.0867773,
+0.7895227,
 2,
-"34452c4f14a7"
+"ef13abddbfbb"
 ],
 "geometry/SGRA03AAAA-i007/body": [
--0.0171625,
-0.8591375,
+-0.0189867,
+0.8573133,
 2,
-"e2af47961fc3"
+"ba265060a6cf"
 ],
 "geometry/SGRA03AAAA-p00/body": [
--0.6454648,
-0.2689352,
+-0.6657848,
+0.2486152,
 2,
-"01a6b9838699"
+"cc2f9e84bbdf"
 ],
 "geometry/SGRA03AAAA-p01/body": [
--0.3050898,
-0.6093102,
+-0.3150766,
+0.5993234,
 2,
-"b5b0ed9551ad"
+"a63c9ae310e4"
 ],
 "geometry/SGRA03AAAA-p02/body": [
 0.023876,
@@ -66822,76 +66846,76 @@
 "8f1dbe413729"
 ],
 "geometry/SGRA03AAAA-r00/body": [
-0.2525921,
-0.9549769,
+0.2324035,
+0.9548591,
 32,
-"779c4d21d645"
+"eddda079b87d"
 ],
 "geometry/SGRA03AAAA-r01/body": [
--0.6618079,
-0.0405769,
+-0.6819965,
+0.0404591,
 32,
-"4e27071001e2"
+"e7a478b689a1"
 ],
 "geometry/SGRA04AAAA-i000/body": [
--0.554917,
-0.321383,
+-0.5730665,
+0.3032335,
 2,
-"018b7868ca4e"
+"9f320d5780c5"
 ],
 "geometry/SGRA04AAAA-i001/body": [
--0.4891239,
-0.3871761,
+-0.505276,
+0.371024,
 2,
-"15de1d97be54"
+"efe08c4ebbf2"
 ],
 "geometry/SGRA04AAAA-i002/body": [
--0.4233307,
-0.4529693,
+-0.4374854,
+0.4388146,
 2,
-"90c13499c951"
+"60bbc8e8f706"
 ],
 "geometry/SGRA04AAAA-i003/body": [
--0.3575376,
-0.5187624,
+-0.3696949,
+0.5066051,
 2,
-"8c1230fcd295"
+"f98a65710710"
 ],
 "geometry/SGRA04AAAA-i004/body": [
--0.214542,
-0.661758,
+-0.2223583,
+0.6539417,
 2,
-"80f9a7f970a8"
+"6ee504f0e3bd"
 ],
 "geometry/SGRA04AAAA-i005/body": [
--0.1487489,
-0.7275511,
+-0.1545678,
+0.7217322,
 2,
-"f43afddf1dfc"
+"796cb1453e5d"
 ],
 "geometry/SGRA04AAAA-i006/body": [
--0.0829557,
-0.7933443,
+-0.0867773,
+0.7895227,
 2,
-"34452c4f14a7"
+"ef13abddbfbb"
 ],
 "geometry/SGRA04AAAA-i007/body": [
--0.0171625,
-0.8591375,
+-0.0189867,
+0.8573133,
 2,
-"e2af47961fc3"
+"ba265060a6cf"
 ],
 "geometry/SGRA04AAAA-p00/body": [
--0.6454648,
-0.2689352,
+-0.6657848,
+0.2486152,
 2,
-"01a6b9838699"
+"cc2f9e84bbdf"
 ],
 "geometry/SGRA04AAAA-p01/body": [
--0.3050898,
-0.6093102,
+-0.3150766,
+0.5993234,
 2,
-"b5b0ed9551ad"
+"a63c9ae310e4"
 ],
 "geometry/SGRA04AAAA-p02/body": [
 0.023876,
@@ -66900,16 +66924,16 @@
 "8f1dbe413729"
 ],
 "geometry/SGRA04AAAA-r00/body": [
-0.2525921,
-0.9549769,
+0.2324035,
+0.9548591,
 32,
-"779c4d21d645"
+"eddda079b87d"
 ],
 "geometry/SGRA04AAAA-r01/body": [
--0.6618079,
-0.0405769,
+-0.6819965,
+0.0404591,
 32,
-"4e27071001e2"
+"e7a478b689a1"
 ],
 "geometry/SGRA05AAAA-i000/body": [
 0.042926,
@@ -67128,100 +67152,100 @@
 "bf6a7dbc8582"
 ],
 "geometry/SGSPADAAAA-capillary-break/body": [
--1.016,
--0.9144,
+-1.0414,
+-0.9398,
 2,
-"aed321c226d0"
+"3368f60a7d4b"
 ],
 "geometry/SGSPADAAAA/body": [
--0.9144,
--0.8128,
+-0.9398,
+-0.8382,
 2,
-"4b64cafaaa94"
+"7c90174f96b7"
 ],
 "geometry/SGST01AAAA::framing/member:riser-000": [
--0.8128,
--0.6693408,
+-0.8382,
+-0.6896608,
 8,
-"aaff8df9dd15"
+"9b9c4007aa1c"
 ],
 "geometry/SGST01AAAA::framing/member:riser-001": [
--0.6454648,
--0.5020056,
+-0.6657848,
+-0.5172456,
 8,
-"7751ac845937"
+"9c6f61aad363"
 ],
 "geometry/SGST01AAAA::framing/member:riser-002": [
--0.4781296,
--0.3346704,
+-0.4933696,
+-0.3448304,
 8,
-"e1134da62ead"
+"6df8fa9369ec"
 ],
 "geometry/SGST01AAAA::framing/member:riser-003": [
--0.3107944,
--0.1673352,
+-0.3209544,
+-0.1724152,
 8,
-"36c9f7defbba"
+"9204dfd41099"
 ],
 "geometry/SGST01AAAA::framing/member:riser-004": [
--0.1434592,
--0.0,
+-0.1485392,
+0.0,
 8,
-"6d1bd2622c56"
+"a10fb7ecf2e5"
 ],
 "geometry/SGST01AAAA::framing/member:stringer-0": [
--0.8128,
--0.167335,
+-0.8382,
+-0.172415,
 28,
-"014ac7fe77d6"
+"c5f8b5614a91"
 ],
 "geometry/SGST01AAAA::framing/member:stringer-1": [
--0.8128,
--0.167335,
+-0.8382,
+-0.172415,
 28,
-"014ac7fe77d6"
+"c5f8b5614a91"
 ],
 "geometry/SGST01AAAA::framing/member:stringer-2": [
--0.8128,
--0.167335,
+-0.8382,
+-0.172415,
 28,
-"014ac7fe77d6"
+"c5f8b5614a91"
 ],
 "geometry/SGST01AAAA::framing/member:stringer-3": [
--0.8128,
--0.167335,
+-0.8382,
+-0.172415,
 28,
-"014ac7fe77d6"
+"c5f8b5614a91"
 ],
 "geometry/SGST01AAAA::framing/member:stringer-4": [
--0.8128,
--0.167335,
+-0.8382,
+-0.172415,
 28,
-"014ac7fe77d6"
+"c5f8b5614a91"
 ],
 "geometry/SGST01AAAA::framing/member:tread-000": [
--0.6693408,
--0.6454648,
+-0.6896608,
+-0.6657848,
 8,
-"e36da805e5cc"
+"ff849cc9e891"
 ],
 "geometry/SGST01AAAA::framing/member:tread-001": [
--0.5020056,
--0.4781296,
+-0.5172456,
+-0.4933696,
 8,
-"ff4751b027e0"
+"91da11305c00"
 ],
 "geometry/SGST01AAAA::framing/member:tread-002": [
--0.3346704,
--0.3107944,
+-0.3448304,
+-0.3209544,
 8,
-"0adbb7131a2a"
+"01a63b431e17"
 ],
 "geometry/SGST01AAAA::framing/member:tread-003": [
--0.1673352,
--0.1434592,
+-0.1724152,
+-0.1485392,
 8,
-"1f36fb9d1d79"
+"9b84586c69ca"
 ],
 "geometry/SGTB01AAAA-board/body": [
 -2.9829125,
@@ -103302,88 +103326,88 @@
 "759694dcde8c"
 ],
 "member/SGST01AAAA/riser-000": [
--0.8128,
--0.6693408,
+-0.8382,
+-0.6896608,
 2,
-"05dc85c1c134"
+"7432c341686b"
 ],
 "member/SGST01AAAA/riser-001": [
--0.6454648,
--0.5020056,
+-0.6657848,
+-0.5172456,
 2,
-"45589b41fdfb"
+"1295d6923089"
 ],
 "member/SGST01AAAA/riser-002": [
--0.4781296,
--0.3346704,
+-0.4933696,
+-0.3448304,
 2,
-"33ff4d460da6"
+"796ed2adb7bf"
 ],
 "member/SGST01AAAA/riser-003": [
--0.3107944,
--0.1673352,
+-0.3209544,
+-0.1724152,
 2,
-"39554f88328d"
+"8523a52681a0"
 ],
 "member/SGST01AAAA/riser-004": [
--0.1434592,
--0.0,
+-0.1485392,
+0.0,
 2,
-"3be4d8e08392"
+"cc83c96bdcfe"
 ],
 "member/SGST01AAAA/stringer-0": [
--0.8128,
+-0.8382,
 0.0,
 4,
-"0715cae99abc"
+"e2063d3fd4c9"
 ],
 "member/SGST01AAAA/stringer-1": [
--0.8128,
+-0.8382,
 0.0,
 4,
-"0715cae99abc"
+"e2063d3fd4c9"
 ],
 "member/SGST01AAAA/stringer-2": [
--0.8128,
+-0.8382,
 0.0,
 4,
-"0715cae99abc"
+"e2063d3fd4c9"
 ],
 "member/SGST01AAAA/stringer-3": [
--0.8128,
+-0.8382,
 0.0,
 4,
-"0715cae99abc"
+"e2063d3fd4c9"
 ],
 "member/SGST01AAAA/stringer-4": [
--0.8128,
+-0.8382,
 0.0,
 4,
-"0715cae99abc"
+"e2063d3fd4c9"
 ],
 "member/SGST01AAAA/tread-000": [
--0.6693408,
--0.6454648,
+-0.6896608,
+-0.6657848,
 2,
-"864239caf153"
+"3860b45431d8"
 ],
 "member/SGST01AAAA/tread-001": [
--0.5020056,
--0.4781296,
+-0.5172456,
+-0.4933696,
 2,
-"44adda1adf18"
+"1bd9ff385d34"
 ],
 "member/SGST01AAAA/tread-002": [
--0.3346704,
--0.3107944,
+-0.3448304,
+-0.3209544,
 2,
-"c4ca1f4bad55"
+"3ce7c079ed58"
 ],
 "member/SGST01AAAA/tread-003": [
--0.1673352,
--0.1434592,
+-0.1724152,
+-0.1485392,
 2,
-"e19423a10dfb"
+"66b0dd583d20"
 ],
 "member/TD5N23A4SZ/backing-0-000": [
 0.06985,
@@ -108631,43 +108655,51 @@
 "solids/EX-HOUSE-BF-48/z0_m": -1.1684,
 "solids/EX-HOUSE-BF-48/z1_m": -1.0922,
 "solids/EX-HOUSE-BF-49/z0_m": -1.0922,
-"solids/EX-HOUSE-BF-49/z1_m": -1.016,
+"solids/EX-HOUSE-BF-49/z1_m": -1.0414,
 "solids/EX-HOUSE-BF-5/z0_m": -3.7025793,
 "solids/EX-HOUSE-BF-5/z1_m": -3.478213,
 "solids/EX-HOUSE-BF-50/z0_m": -1.0922,
-"solids/EX-HOUSE-BF-50/z1_m": -1.016,
+"solids/EX-HOUSE-BF-50/z1_m": -1.0414,
 "solids/EX-HOUSE-BF-51/z0_m": -1.0922,
-"solids/EX-HOUSE-BF-51/z1_m": -1.016,
+"solids/EX-HOUSE-BF-51/z1_m": -1.0414,
 "solids/EX-HOUSE-BF-52/z0_m": -1.0922,
-"solids/EX-HOUSE-BF-52/z1_m": -1.016,
-"solids/EX-HOUSE-BF-53/z0_m": -1.016,
-"solids/EX-HOUSE-BF-53/z1_m": -0.978154,
-"solids/EX-HOUSE-BF-54/z0_m": -1.016,
-"solids/EX-HOUSE-BF-54/z1_m": -0.978154,
-"solids/EX-HOUSE-BF-55/z0_m": -1.016,
-"solids/EX-HOUSE-BF-55/z1_m": -0.978154,
-"solids/EX-HOUSE-BF-56/z0_m": -0.978154,
-"solids/EX-HOUSE-BF-56/z1_m": -0.9525,
-"solids/EX-HOUSE-BF-57/z0_m": -0.978154,
-"solids/EX-HOUSE-BF-57/z1_m": -0.9525,
-"solids/EX-HOUSE-BF-58/z0_m": -0.978154,
-"solids/EX-HOUSE-BF-58/z1_m": -0.9525,
-"solids/EX-HOUSE-BF-59/z0_m": -0.9525,
-"solids/EX-HOUSE-BF-59/z1_m": -0.9398,
+"solids/EX-HOUSE-BF-52/z1_m": -1.0414,
+"solids/EX-HOUSE-BF-53/z0_m": -1.0414,
+"solids/EX-HOUSE-BF-53/z1_m": -1.016,
+"solids/EX-HOUSE-BF-54/z0_m": -1.0414,
+"solids/EX-HOUSE-BF-54/z1_m": -1.016,
+"solids/EX-HOUSE-BF-55/z0_m": -1.0414,
+"solids/EX-HOUSE-BF-55/z1_m": -1.016,
+"solids/EX-HOUSE-BF-56/z0_m": -1.0414,
+"solids/EX-HOUSE-BF-56/z1_m": -1.016,
+"solids/EX-HOUSE-BF-57/z0_m": -1.016,
+"solids/EX-HOUSE-BF-57/z1_m": -0.978154,
+"solids/EX-HOUSE-BF-58/z0_m": -1.016,
+"solids/EX-HOUSE-BF-58/z1_m": -0.978154,
+"solids/EX-HOUSE-BF-59/z0_m": -1.016,
+"solids/EX-HOUSE-BF-59/z1_m": -0.978154,
 "solids/EX-HOUSE-BF-6/z0_m": -3.478213,
 "solids/EX-HOUSE-BF-6/z1_m": -3.465512,
-"solids/EX-HOUSE-BF-60/z0_m": -0.9525,
-"solids/EX-HOUSE-BF-60/z1_m": -0.9398,
-"solids/EX-HOUSE-BF-61/z0_m": -0.9525,
-"solids/EX-HOUSE-BF-61/z1_m": -0.9398,
-"solids/EX-HOUSE-BF-62/z0_m": -0.9398,
-"solids/EX-HOUSE-BF-62/z1_m": -0.9144,
-"solids/EX-HOUSE-BF-63/z0_m": -0.9398,
-"solids/EX-HOUSE-BF-63/z1_m": -0.9144,
-"solids/EX-HOUSE-BF-64/z0_m": -0.9398,
-"solids/EX-HOUSE-BF-64/z1_m": -0.9144,
-"solids/EX-HOUSE-BF-65/z0_m": -0.9398,
-"solids/EX-HOUSE-BF-65/z1_m": -0.9144,
+"solids/EX-HOUSE-BF-60/z0_m": -0.978154,
+"solids/EX-HOUSE-BF-60/z1_m": -0.9525,
+"solids/EX-HOUSE-BF-61/z0_m": -0.978154,
+"solids/EX-HOUSE-BF-61/z1_m": -0.9525,
+"solids/EX-HOUSE-BF-62/z0_m": -0.978154,
+"solids/EX-HOUSE-BF-62/z1_m": -0.9525,
+"solids/EX-HOUSE-BF-63/z0_m": -0.9525,
+"solids/EX-HOUSE-BF-63/z1_m": -0.9398,
+"solids/EX-HOUSE-BF-64/z0_m": -0.9525,
+"solids/EX-HOUSE-BF-64/z1_m": -0.9398,
+"solids/EX-HOUSE-BF-65/z0_m": -0.9525,
+"solids/EX-HOUSE-BF-65/z1_m": -0.9398,
+"solids/EX-HOUSE-BF-66/z0_m": -0.9398,
+"solids/EX-HOUSE-BF-66/z1_m": -0.9144,
+"solids/EX-HOUSE-BF-67/z0_m": -0.9398,
+"solids/EX-HOUSE-BF-67/z1_m": -0.9144,
+"solids/EX-HOUSE-BF-68/z0_m": -0.9398,
+"solids/EX-HOUSE-BF-68/z1_m": -0.9144,
+"solids/EX-HOUSE-BF-69/z0_m": -0.9398,
+"solids/EX-HOUSE-BF-69/z1_m": -0.9144,
 "solids/EX-HOUSE-BF-7/z0_m": -3.465512,
 "solids/EX-HOUSE-BF-7/z1_m": -3.249613,
 "solids/EX-HOUSE-BF-8/z0_m": -3.249613,
@@ -111290,58 +111322,58 @@
 "solids/RL-SG-PORCH-RAIL1/z1_m": 1.109726,
 "solids/RL-SG-PORCH-RAIL2/z0_m": 0.004826,
 "solids/RL-SG-PORCH-RAIL2/z1_m": 0.042926,
-"solids/RL-SG-PSTAIR-N-BAL1/z0_m": -0.554917,
-"solids/RL-SG-PSTAIR-N-BAL1/z1_m": 0.321383,
-"solids/RL-SG-PSTAIR-N-BAL2/z0_m": -0.4891239,
-"solids/RL-SG-PSTAIR-N-BAL2/z1_m": 0.3871761,
-"solids/RL-SG-PSTAIR-N-BAL3/z0_m": -0.4233307,
-"solids/RL-SG-PSTAIR-N-BAL3/z1_m": 0.4529693,
-"solids/RL-SG-PSTAIR-N-BAL4/z0_m": -0.3575376,
-"solids/RL-SG-PSTAIR-N-BAL4/z1_m": 0.5187624,
-"solids/RL-SG-PSTAIR-N-BAL5/z0_m": -0.214542,
-"solids/RL-SG-PSTAIR-N-BAL5/z1_m": 0.661758,
-"solids/RL-SG-PSTAIR-N-BAL6/z0_m": -0.1487489,
-"solids/RL-SG-PSTAIR-N-BAL6/z1_m": 0.7275511,
-"solids/RL-SG-PSTAIR-N-BAL7/z0_m": -0.0829557,
-"solids/RL-SG-PSTAIR-N-BAL7/z1_m": 0.7933443,
-"solids/RL-SG-PSTAIR-N-BAL8/z0_m": -0.0171625,
-"solids/RL-SG-PSTAIR-N-BAL8/z1_m": 0.8591375,
-"solids/RL-SG-PSTAIR-N-POST1/z0_m": -0.6454648,
-"solids/RL-SG-PSTAIR-N-POST1/z1_m": 0.2689352,
-"solids/RL-SG-PSTAIR-N-POST2/z0_m": -0.3050898,
-"solids/RL-SG-PSTAIR-N-POST2/z1_m": 0.6093102,
+"solids/RL-SG-PSTAIR-N-BAL1/z0_m": -0.5730665,
+"solids/RL-SG-PSTAIR-N-BAL1/z1_m": 0.3032335,
+"solids/RL-SG-PSTAIR-N-BAL2/z0_m": -0.505276,
+"solids/RL-SG-PSTAIR-N-BAL2/z1_m": 0.371024,
+"solids/RL-SG-PSTAIR-N-BAL3/z0_m": -0.4374854,
+"solids/RL-SG-PSTAIR-N-BAL3/z1_m": 0.4388146,
+"solids/RL-SG-PSTAIR-N-BAL4/z0_m": -0.3696949,
+"solids/RL-SG-PSTAIR-N-BAL4/z1_m": 0.5066051,
+"solids/RL-SG-PSTAIR-N-BAL5/z0_m": -0.2223583,
+"solids/RL-SG-PSTAIR-N-BAL5/z1_m": 0.6539417,
+"solids/RL-SG-PSTAIR-N-BAL6/z0_m": -0.1545678,
+"solids/RL-SG-PSTAIR-N-BAL6/z1_m": 0.7217322,
+"solids/RL-SG-PSTAIR-N-BAL7/z0_m": -0.0867773,
+"solids/RL-SG-PSTAIR-N-BAL7/z1_m": 0.7895227,
+"solids/RL-SG-PSTAIR-N-BAL8/z0_m": -0.0189867,
+"solids/RL-SG-PSTAIR-N-BAL8/z1_m": 0.8573133,
+"solids/RL-SG-PSTAIR-N-POST1/z0_m": -0.6657848,
+"solids/RL-SG-PSTAIR-N-POST1/z1_m": 0.2486152,
+"solids/RL-SG-PSTAIR-N-POST2/z0_m": -0.3150766,
+"solids/RL-SG-PSTAIR-N-POST2/z1_m": 0.5993234,
 "solids/RL-SG-PSTAIR-N-POST3/z0_m": 0.023876,
 "solids/RL-SG-PSTAIR-N-POST3/z1_m": 0.938276,
-"solids/RL-SG-PSTAIR-N-RAIL1/z0_m": 0.2525921,
-"solids/RL-SG-PSTAIR-N-RAIL1/z1_m": 0.9549769,
-"solids/RL-SG-PSTAIR-N-RAIL2/z0_m": -0.6618079,
-"solids/RL-SG-PSTAIR-N-RAIL2/z1_m": 0.0405769,
-"solids/RL-SG-PSTAIR-S-BAL1/z0_m": -0.554917,
-"solids/RL-SG-PSTAIR-S-BAL1/z1_m": 0.321383,
-"solids/RL-SG-PSTAIR-S-BAL2/z0_m": -0.4891239,
-"solids/RL-SG-PSTAIR-S-BAL2/z1_m": 0.3871761,
-"solids/RL-SG-PSTAIR-S-BAL3/z0_m": -0.4233307,
-"solids/RL-SG-PSTAIR-S-BAL3/z1_m": 0.4529693,
-"solids/RL-SG-PSTAIR-S-BAL4/z0_m": -0.3575376,
-"solids/RL-SG-PSTAIR-S-BAL4/z1_m": 0.5187624,
-"solids/RL-SG-PSTAIR-S-BAL5/z0_m": -0.214542,
-"solids/RL-SG-PSTAIR-S-BAL5/z1_m": 0.661758,
-"solids/RL-SG-PSTAIR-S-BAL6/z0_m": -0.1487489,
-"solids/RL-SG-PSTAIR-S-BAL6/z1_m": 0.7275511,
-"solids/RL-SG-PSTAIR-S-BAL7/z0_m": -0.0829557,
-"solids/RL-SG-PSTAIR-S-BAL7/z1_m": 0.7933443,
-"solids/RL-SG-PSTAIR-S-BAL8/z0_m": -0.0171625,
-"solids/RL-SG-PSTAIR-S-BAL8/z1_m": 0.8591375,
-"solids/RL-SG-PSTAIR-S-POST1/z0_m": -0.6454648,
-"solids/RL-SG-PSTAIR-S-POST1/z1_m": 0.2689352,
-"solids/RL-SG-PSTAIR-S-POST2/z0_m": -0.3050898,
-"solids/RL-SG-PSTAIR-S-POST2/z1_m": 0.6093102,
+"solids/RL-SG-PSTAIR-N-RAIL1/z0_m": 0.2324035,
+"solids/RL-SG-PSTAIR-N-RAIL1/z1_m": 0.9548591,
+"solids/RL-SG-PSTAIR-N-RAIL2/z0_m": -0.6819965,
+"solids/RL-SG-PSTAIR-N-RAIL2/z1_m": 0.0404591,
+"solids/RL-SG-PSTAIR-S-BAL1/z0_m": -0.5730665,
+"solids/RL-SG-PSTAIR-S-BAL1/z1_m": 0.3032335,
+"solids/RL-SG-PSTAIR-S-BAL2/z0_m": -0.505276,
+"solids/RL-SG-PSTAIR-S-BAL2/z1_m": 0.371024,
+"solids/RL-SG-PSTAIR-S-BAL3/z0_m": -0.4374854,
+"solids/RL-SG-PSTAIR-S-BAL3/z1_m": 0.4388146,
+"solids/RL-SG-PSTAIR-S-BAL4/z0_m": -0.3696949,
+"solids/RL-SG-PSTAIR-S-BAL4/z1_m": 0.5066051,
+"solids/RL-SG-PSTAIR-S-BAL5/z0_m": -0.2223583,
+"solids/RL-SG-PSTAIR-S-BAL5/z1_m": 0.6539417,
+"solids/RL-SG-PSTAIR-S-BAL6/z0_m": -0.1545678,
+"solids/RL-SG-PSTAIR-S-BAL6/z1_m": 0.7217322,
+"solids/RL-SG-PSTAIR-S-BAL7/z0_m": -0.0867773,
+"solids/RL-SG-PSTAIR-S-BAL7/z1_m": 0.7895227,
+"solids/RL-SG-PSTAIR-S-BAL8/z0_m": -0.0189867,
+"solids/RL-SG-PSTAIR-S-BAL8/z1_m": 0.8573133,
+"solids/RL-SG-PSTAIR-S-POST1/z0_m": -0.6657848,
+"solids/RL-SG-PSTAIR-S-POST1/z1_m": 0.2486152,
+"solids/RL-SG-PSTAIR-S-POST2/z0_m": -0.3150766,
+"solids/RL-SG-PSTAIR-S-POST2/z1_m": 0.5993234,
 "solids/RL-SG-PSTAIR-S-POST3/z0_m": 0.023876,
 "solids/RL-SG-PSTAIR-S-POST3/z1_m": 0.938276,
-"solids/RL-SG-PSTAIR-S-RAIL1/z0_m": 0.2525921,
-"solids/RL-SG-PSTAIR-S-RAIL1/z1_m": 0.9549769,
-"solids/RL-SG-PSTAIR-S-RAIL2/z0_m": -0.6618079,
-"solids/RL-SG-PSTAIR-S-RAIL2/z1_m": 0.0405769,
+"solids/RL-SG-PSTAIR-S-RAIL1/z0_m": 0.2324035,
+"solids/RL-SG-PSTAIR-S-RAIL1/z1_m": 0.9548591,
+"solids/RL-SG-PSTAIR-S-RAIL2/z0_m": -0.6819965,
+"solids/RL-SG-PSTAIR-S-RAIL2/z1_m": 0.0404591,
 "solids/RL-SG-PTHRESH-N-BAL1/z0_m": 0.042926,
 "solids/RL-SG-PTHRESH-N-BAL1/z1_m": 1.071626,
 "solids/RL-SG-PTHRESH-N-BAL2/z0_m": 0.042926,
@@ -111426,10 +111458,10 @@
 "solids/SL-SG-HPPAD/z1_m": -0.8128,
 "solids/SL-SG-HPPAD:capillary-break/z0_m": -1.016,
 "solids/SL-SG-HPPAD:capillary-break/z1_m": -0.9144,
-"solids/SL-SG-STAIRPAD/z0_m": -0.9144,
-"solids/SL-SG-STAIRPAD/z1_m": -0.8128,
-"solids/SL-SG-STAIRPAD:capillary-break/z0_m": -1.016,
-"solids/SL-SG-STAIRPAD:capillary-break/z1_m": -0.9144,
+"solids/SL-SG-STAIRPAD/z0_m": -0.9398,
+"solids/SL-SG-STAIRPAD/z1_m": -0.8382,
+"solids/SL-SG-STAIRPAD:capillary-break/z0_m": -1.0414,
+"solids/SL-SG-STAIRPAD:capillary-break/z1_m": -0.9398,
 "solids/SL-WK-A/z0_m": -0.9398,
 "solids/SL-WK-A/z1_m": -0.8382,
 "solids/SL-WK-A:base/z0_m": -1.0922,
@@ -113449,7 +113481,7 @@
 "stairs/ST-S2A/arrival_elevation_m": 6.1341,
 "stairs/ST-S2A/base_elevation_m": 3.0861,
 "stairs/ST-SG-PORCH/arrival_elevation_m": 0.023876,
-"stairs/ST-SG-PORCH/base_elevation_m": -0.8128,
+"stairs/ST-SG-PORCH/base_elevation_m": -0.8382,
 "wall_columns/#0/z0_m": -3.1607125,
 "wall_columns/#1/z0_m": -3.1607125,
 "wall_columns/#10/z0_m": -2.7797125,
