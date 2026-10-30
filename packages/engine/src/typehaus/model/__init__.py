@@ -138,6 +138,7 @@ from typehaus.model.paneling import BoardAndBatten, PanelingSpan, WallPaneling
 from typehaus.model.placeables import (
     ClearancePolicy,
     ClearanceZone,
+    CountertopHole,
     Footprint2D,
     Location,
     ModelRepresentation,
@@ -339,7 +340,8 @@ for _name, _obj in (
     ("HeadConnector", HeadConnector), ("InServiceMoisture", InServiceMoisture),
     ("Library", Library), ("PlanModel", PlanModel),
     ("BookcaseDoorSpec", BookcaseDoorSpec),
-    ("Footprint2D", Footprint2D), ("ClearanceZone", ClearanceZone), ("ServicePort", ServicePort),
+    ("Footprint2D", Footprint2D), ("CountertopHole", CountertopHole),
+    ("ClearanceZone", ClearanceZone), ("ServicePort", ServicePort),
     ("PlanRepresentation", PlanRepresentation), ("ModelRepresentation", ModelRepresentation),
     ("Location", Location), ("WallAttachment", WallAttachment), ("Mount", Mount),
 ):
@@ -433,7 +435,7 @@ __all__ = [
     "BackupTier", "DeviceKind", "LuminaireForm", "RatingBasis", "UtilityKind",
     "ConnectorKind", "RailingKind", "TrimKind", "ShelfProcurement",
     "ClearZone", "PlacementStrategy", "MountKind", "ClearancePolicy",
-    "Footprint2D", "ClearanceZone",
+    "Footprint2D", "CountertopHole", "ClearanceZone",
     "ServicePort", "PortCertainty",
     "PlanRepresentation", "ModelRepresentation", "Location", "WallAttachment",
     "Mount",

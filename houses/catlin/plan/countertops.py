@@ -25,19 +25,32 @@
 from typehaus import ft, inch
 from typehaus.model import Countertop, WindowStool
 
+# corner_radius: 1" on every exposed outside corner of a top (owner, 2026-10-29); inside
+# corners take the material's stress-relief radius and anything at a wall, seam or tall
+# cabinet stays square (`haus countertops`).
 MAIN_COUNTERTOPS = [
-    # The north run and the NE corner as one L slab: B12, the dishwasher, the 36" sink base,
-    # B18, and FURN-M-KIT-CORNER-NE, whose east leg carries the slab to
-    # y=32'-3 3/8" beside the range. 25" deep: 24" of carcass and 1" of oversail; an L host
-    # oversails only its notch faces.
+    # The north run: B12, the dishwasher, the 36" sink base and B18. 25" deep: 24" of
+    # carcass and 1" of oversail. It and the NE corner were one 128" L until 2026-10-30,
+    # longer than any quartz slab (`advisory.countertop_fabrication`), so it seams at the
+    # corner cabinet's west face, x=32'-3 3/8", like the peninsula corner.
     Countertop(
         uid="GQ3B84T2WH", tag="CT-M-KIT-N",
         cutouts=("FX-M-KITCH-SINK",),
-        hosts=("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE", "FURN-M-KIT-E2",
-               "FURN-M-KIT-CORNER-NE"),
+        hosts=("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE", "FURN-M-KIT-E2"),
         material_ref="quartz-counter",
         thickness=inch(1.181),  # 3 cm
         overhang=inch(1),
+        corner_radius=inch(1),
+    ),
+    # FURN-M-KIT-CORNER-NE, both legs: its east leg carries the stone to y=32'-3 3/8" beside
+    # the range. An L host oversails only its notch faces.
+    Countertop(
+        uid="7T1GNWPRB3", tag="CT-M-KIT-NE",
+        hosts=("FURN-M-KIT-CORNER-NE",),
+        material_ref="quartz-counter",
+        thickness=inch(1.181),
+        overhang=inch(1),
+        corner_radius=inch(1),
     ),
     # The peninsula-corner carousel, both legs: the east leg to the range, the peninsula leg to the seam at x=32'-3 3/8". A separate slab because a slide-in range
     # interrupts the stone, and the seam is where the free-standing bases start.
@@ -47,6 +60,7 @@ MAIN_COUNTERTOPS = [
         material_ref="quartz-counter",
         thickness=inch(1.181),
         overhang=inch(1),
+        corner_radius=inch(1),
     ),
     # ** THE PENINSULA IS ONE NOTCHED SLAB. ** 1" over the drawer fronts to the north, and a
     # 15" seating cantilever behind the bases for the first 73 1/2" from the west end panel,
@@ -66,6 +80,7 @@ MAIN_COUNTERTOPS = [
         cantilever_side="back",
         cantilever_length=inch(73.5),
         support="brackets",
+        corner_radius=inch(1),
     ),
     # The living room's ash slab (plan/living_east_run.py), 1 1/4" over a 1 1/4" sub-top
     # (3/4" + 1/2" ply), 25" deep: 1" over the 24" run's fronts, a straight eased edge. 6/4,
@@ -94,6 +109,7 @@ MAIN_COUNTERTOPS = [
         thickness=inch(0.472),
         overhang=inch(1),
         profile="built-up eased",
+        corner_radius=inch(1),
     ),
 ]
 
@@ -102,13 +118,14 @@ SECOND_COUNTERTOPS = [
     Countertop(uid="1F694EGPAW", tag="CT-S-VANITY", hosts=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2"),
                cutouts=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2"),
                material_ref="solid-surface-fabricated", thickness=inch(0.472),
-               length=inch(61), depth=inch(18), overhang=inch(0), profile="built-up eased"),
+               length=inch(61), depth=inch(18), overhang=inch(0), profile="built-up eased",
+               corner_radius=inch(1)),
 ]
 ATTIC_COUNTERTOPS = [
     Countertop(uid="0FZ728B09A", tag="CT-A-STUBATH-VANITY", hosts=("FX-A-STUBATH-LAV",),
                cutouts=("FX-A-STUBATH-LAV",), material_ref="solid-surface-fabricated",
                thickness=inch(0.472), length=inch(24), depth=inch(18),
-               overhang=inch(0), profile="built-up eased"),
+               overhang=inch(0), profile="built-up eased", corner_radius=inch(1)),
 ]
 
 # --- window stools: plant-room Corian, kitchen quartz -----------------------------------
@@ -129,16 +146,20 @@ ATTIC_COUNTERTOPS = [
 PLANT_STOOLS = [
     WindowStool(uid="XP74RX3EKK", tag="STOOL-WIN-S-PLANT1", window_ref="WIN-S-PLANT1",
                 material_ref="solid-surface-fabricated", thickness=inch(0.472),
-                overhang=inch(0.75), horn=inch(1), profile="built-up eased"),
+                overhang=inch(0.75), horn=inch(1), profile="built-up eased",
+                corner_radius=inch(0.5)),
     WindowStool(uid="TCHNPGC1RT", tag="STOOL-WIN-S-PLANT2", window_ref="WIN-S-PLANT2",
                 material_ref="solid-surface-fabricated", thickness=inch(0.472),
-                overhang=inch(0.75), horn=inch(1), profile="built-up eased"),
+                overhang=inch(0.75), horn=inch(1), profile="built-up eased",
+                corner_radius=inch(0.5)),
     WindowStool(uid="W86GNRQ4ZW", tag="STOOL-WIN-S-PLANT3", window_ref="WIN-S-PLANT3",
                 material_ref="solid-surface-fabricated", thickness=inch(0.472),
-                overhang=inch(0.75), horn=inch(1), profile="built-up eased"),
+                overhang=inch(0.75), horn=inch(1), profile="built-up eased",
+                corner_radius=inch(0.5)),
     WindowStool(uid="YRS03M2AJW", tag="STOOL-WIN-S-PLANT4", window_ref="WIN-S-PLANT4",
                 material_ref="solid-surface-fabricated", thickness=inch(0.472),
-                overhang=inch(0.75), horn=inch(1), profile="built-up eased"),
+                overhang=inch(0.75), horn=inch(1), profile="built-up eased",
+                corner_radius=inch(0.5)),
 ]
 
 # The sink and corner pair share the countertop's 3 cm quartz and eased edge for one
@@ -147,11 +168,14 @@ PLANT_STOOLS = [
 KITCHEN_STOOLS = [
     WindowStool(uid="N7C4V2M8QK", tag="STOOL-WIN-M-KITCH", window_ref="WIN-M-KITCH",
                 material_ref="quartz-counter", thickness=inch(1.181),
-                overhang=inch(0.75), horn=inch(1), profile="eased"),
+                overhang=inch(0.75), horn=inch(1), profile="eased",
+                corner_radius=inch(0.5)),
     WindowStool(uid="Z9XJDD5SWM", tag="STOOL-WIN-M-KIT-E", window_ref="WIN-M-KIT-E",
                 material_ref="quartz-counter", thickness=inch(1.181),
-                overhang=inch(0.75), horn=inch(1), profile="eased"),
+                overhang=inch(0.75), horn=inch(1), profile="eased",
+                corner_radius=inch(0.5)),
     WindowStool(uid="GZZ0Y78PY1", tag="STOOL-WIN-M-KITCH-N", window_ref="WIN-M-KITCH-N",
                 material_ref="quartz-counter", thickness=inch(1.181),
-                overhang=inch(0.75), horn=inch(1), profile="eased"),
+                overhang=inch(0.75), horn=inch(1), profile="eased",
+                corner_radius=inch(0.5)),
 ]

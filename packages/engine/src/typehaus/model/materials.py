@@ -260,6 +260,12 @@ class Material(HausModel):
     # species' logs. ``takeoff/hardwood.py`` reads it ahead of
     # ``MillworkStandard.max_board_width`` for the layup column. ``None`` is the standard's.
     max_board_width_in: float | None = None
+    # The stone/solid-surface analogue: the slab or sheet this material is cut from, in
+    # inches (length, width). ``advisory.countertop_fabrication`` fits each piece to it.
+    slab_size_in: tuple[float, float] | None = None
+    # Inside-corner radius a fabricated piece needs, inches (a solid-surface bulletin's
+    # minimum). None = the stone yards' 3/8" (``resolve/countertop_edges.py``).
+    inside_corner_radius_in: float | None = None
     # Extra materials ordered over the same floor area. The installed height above already
     # includes these layers; this tuple exists only for the priced takeoff.
     floor_companion_refs: tuple[str, ...] = ()

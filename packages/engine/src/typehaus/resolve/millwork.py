@@ -39,6 +39,7 @@ from typehaus.model.enums import LayerFunction, ShelfProcurement
 from typehaus.model.millwork import MillworkStandard, ShelfBank, WindowStool
 from typehaus.model.plan import PlanModel
 from typehaus.model.types import FurnitureType
+from typehaus.resolve.countertop_edges import inside_radius_m, stool_corner_radii
 from typehaus.resolve.countertops import resolve_countertops
 from typehaus.resolve.model import (
     ResolvedCanvasObject,
@@ -204,6 +205,9 @@ def _resolve_stools(plan: PlanModel, model: ResolvedModel,
             return_m=interior_return,
             frame_depth_m=frame_depth,
             derived=derived,
+            corner_radii_m=stool_corner_radii(
+                stool.corner_radius.meters if stool and stool.corner_radius else 0.0,
+                inside_radius_m(plan, material_ref)),
         ))
     return findings
 

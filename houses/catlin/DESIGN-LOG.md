@@ -6743,3 +6743,24 @@ only membrane laps onto foam. Koppers' "encased, sealed, or wrapped" line, quote
 `board_batten_girt_span.md` §7.10 as the general rule, is about aluminium contact; the general
 caution is "trapped moisture or water". Decision #102; `resolve/opening_raccoon.py`;
 `notes/opening_flashing_spec.md` §3.
+
+## Countertops ready for the slab yard (2026-10-30)
+
+`haus countertops` writes one package per material: a DXF per piece with true arcs, a PDF
+shop drawing set and a piece list (`docs/countertop-fabrication-format.md`). Owner's calls
+(2026-10-29): 1" on exposed outside corners of the tops, 1/2" on stool horn fronts, a
+fits-a-slab check and no nesting, and the 3D model filleted to match.
+
+Each slab edge is classified from the model (wall, seam, abutment, finished) and split where
+that changes, so CT-M-KIT-E's south edge is eased to the pantry's face and butts it from
+there. Inside corners take 3/8" in quartz and Corian's bulletin 1/2" in solid surface
+(`inside_corner_radius_in`). The kitchen faucet hole is a `CountertopHole` on the sink type,
+so it moves with the sink; it lands at (352, 423.49) as `notes/kitchen_sink_installation.md`
+sets it out.
+
+**CT-M-KIT-N was one 128" L and fit no quartz slab.** MSI quotes no Frost White slab size;
+~120 x 55 is the published MSI norm (authored, confirm at order), and even a 126" jumbo is
+short. It now seams at the NE carousel's west face, x=32'-3 3/8", into the 90" run and
+`CT-M-KIT-NE` over the corner L — the same seam the peninsula corner already takes. The
+engine also stopped jogging the run's edges 5/16" over the deeper dishwasher: a straight run
+is cut straight.

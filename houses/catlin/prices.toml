@@ -5344,8 +5344,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # changed is not the number, it is that the number now follows the cabinets.
 #
 # THE DERIVATION, so the next reader can re-run it rather than trust it:
-#   CT-M-KIT-N            24.89 SF  the north run, B15 + dishwasher + 36" sink base + B15
-#                                   + the NE carousel's L, 25" deep over 24" carcasses
+#   CT-M-KIT-N            15.62 SF  the north run, B12 + dishwasher + 36" sink base + B18,
+#                                   90 x 25 over 24" carcasses
+#   CT-M-KIT-NE            8.85 SF  the NE carousel's L (seamed off the run 2026-10-30:
+#                                   the 128" L fit no quartz slab)
 #   CT-M-KIT-E             8.85 SF  the peninsula-corner carousel's L
 #   CT-M-KIT-PENINSULA    14.67 SF  the SEKTION peninsula's three bases + end panel, 84 1/2"
 #   (the three kitchen tops were 47.67 SF before the 2026-10-02 SEKTION corners; 48.41 now)

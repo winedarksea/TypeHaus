@@ -1050,6 +1050,9 @@ class ResolvedWindowStool:
     # True when derived from the house's ``MillworkStandard`` rather than authored as its
     # own ``WindowStool``. An authored stool always wins for its window.
     derived: bool = True
+    # One radius per ``window_stool_ring`` vertex (``countertop_edges.stool_corner_radii``):
+    # the front corners and the shoulder notches. Empty = square.
+    corner_radii_m: tuple[float, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -1081,6 +1084,27 @@ class ResolvedCountertop:
     outline: Ring
     area_m2: float
     cutouts: tuple[Ring, ...] = ()
+    # The fixture each cutout belongs to, in ``cutouts`` order.
+    cutout_refs: tuple[str, ...] = ()
+    holes: tuple[ResolvedCountertopHole, ...] = ()
+    # Fabrication edges (``resolve/countertop_edges.py``): one kind per outline edge i
+    # (outline[i] -> outline[i+1]), one radius per vertex, and the edges whose probes
+    # disagreed (graded by ``advisory.countertop_fabrication``). ``area_m2`` stays the
+    # square-cornered area: a yard quotes the rectangle.
+    corner_radius_m: float = 0.0  # authored, for exposed convex corners
+    edge_kinds: tuple[str, ...] = ()
+    corner_radii_m: tuple[float, ...] = ()
+    mixed_edges: tuple[int, ...] = ()
+
+
+@dataclass(frozen=True)
+class ResolvedCountertopHole:
+    """A drilled hole through a countertop, placed from a fixture's ``countertop_holes``."""
+
+    center: tuple[float, float]
+    diameter_m: float
+    purpose: str
+    fixture_ref: str
 
 
 @dataclass(frozen=True)

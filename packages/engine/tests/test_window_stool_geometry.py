@@ -10,7 +10,7 @@ from shapely.geometry import Polygon
 from typehaus.emit.gltf.emitter import emit_gltf_dict
 from typehaus.emit.gltf.palette import _authored_material_color
 from typehaus.resolve.geometry import wall_frame
-from typehaus.resolve.geometry_millwork import window_stool_prism
+from typehaus.resolve.geometry_millwork import window_stool_prism, window_stool_ring
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.server.model_json import model_to_dict
 
@@ -31,9 +31,12 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
         frame = next(part for part in opening_parts(wall, opening, None)
                      if part.key == "frame")
         assert prism.z1_m == pytest.approx(frame.solids[-1].z1_m)
-        assert len(prism.ring) == 8, "the horns stop at the interior wall face"
-        assert Polygon(prism.ring).area == pytest.approx(
+        ring = window_stool_ring(wall, opening, stool)
+        assert len(ring) == 8, "the horns stop at the interior wall face"
+        assert Polygon(ring).area == pytest.approx(
             opening.width_m * stool.depth_m + 2 * stool.horn_m * stool.overhang_m)
+        # A fabricated stool's corners are rounded; a milled one stays square.
+        assert len(prism.ring) == (8 if not stool.corner_radii_m else 8 + 4 * 6)
 
     stool = stools[0]
     opening = openings[stool.window_ref]
@@ -113,7 +116,8 @@ def test_stools_export_as_ifc_moldings(catlin_model_ro, catlin_ifc_path):
         assert representation.Depth == pytest.approx(stool.thickness_m)
         assert representation.Position.Location.Coordinates[2] == pytest.approx(
             payload[stool.tag]["z0_m"])
-        assert len(representation.SweptArea.OuterCurve.Points) == 9
+        assert len(representation.SweptArea.OuterCurve.Points) == (
+            len(payload[stool.tag]["outline"]) + 1)
         assert {tuple(round(value, 8) for value in point.Coordinates)
                 for point in representation.SweptArea.OuterCurve.Points[:-1]} == {
                     tuple(round(value, 8) for value in point)

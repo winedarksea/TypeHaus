@@ -24,6 +24,7 @@ from typehaus.model.furniture_cut import FurnitureCut
 from typehaus.model.opening_size import OpeningSize
 from typehaus.model.placeables import (
     ClearanceZone,
+    CountertopHole,
     Footprint2D,
     ModelRepresentation,
     Mount,
@@ -493,6 +494,8 @@ class FixtureType(HausModel):
     # Finished counter opening in the fixture's local frame, separate from its flange
     # and faucet installation envelope. Countertop.cutouts follows the placed fixture.
     countertop_cutout: Footprint2D | None = None
+    # Drilled holes (faucet, soap pump) in the same local frame; ``haus countertops`` prints them.
+    countertop_holes: tuple[CountertopHole, ...] = ()
     # Solid cabinet sides below an overhanging purchased top, in the type's local frame.
     # Cabinet-mounted accessories fasten to these faces, not to the ceramic/quartz envelope.
     cabinet_body_footprint: Footprint2D | None = None

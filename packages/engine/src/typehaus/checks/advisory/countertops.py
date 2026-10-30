@@ -28,6 +28,7 @@ from __future__ import annotations
 from typehaus.checks._authoring import advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, not_applicable, passed
+from typehaus.takeoff.stone_pieces import FabricatedPiece, fabricated_pieces
 
 _M_TO_IN = 39.37007874
 
@@ -95,3 +96,53 @@ def _grade(top) -> Finding:
         fix="carry the overhang on brackets, corbels or a steel plate (set "
             "Countertop.support), shorten it, or put a material that spans it on the "
             "cantilever and meet the stone at the carcass face")
+
+
+_FAB_ID = "advisory.countertop_fabrication"
+
+
+@check(Tier.ADVISORY, _FAB_ID)
+def countertop_fabrication(ctx: CheckContext) -> list[Finding]:
+    """Hard geometric facts a slab yard cannot cut: an oversize piece, a clamped radius.
+
+    Graded off ``haus countertops``' own pieces (``takeoff/stone_pieces.py``). Web minimums
+    are dimensioned there and not graded: no published number covers them.
+    """
+    pieces = fabricated_pieces(ctx.model)
+    if not pieces:
+        return [not_applicable(_FAB_ID, "this plan has no fabricated countertop or stool")]
+    materials = {material.tag: material for material in ctx.plan.library.materials}
+    return [_grade_piece(piece, getattr(materials.get(piece.material_ref),
+                                        "slab_size_in", None)) for piece in pieces]
+
+
+def _grade_piece(piece: FabricatedPiece, slab: tuple[float, float] | None) -> Finding:
+    size = f'{piece.length_in:.3f}" x {piece.depth_in:.3f}"'
+    where = f"{piece.tag} ({piece.material_ref}, {size})"
+    broken = []
+    if slab is not None:
+        length, width = max(slab), min(slab)
+        if not (max(piece.length_in, piece.depth_in) <= length
+                and min(piece.length_in, piece.depth_in) <= width):
+            broken.append(f'does not fit the authored {slab[0]:g}" x {slab[1]:g}" slab in '
+                          "either orientation: it needs a seam or a jumbo slab")
+    for index in piece.clamped_corners:
+        fillet = next(f for f in piece.fillets if f.index == index)
+        broken.append(f'corner {index} asks R{fillet.requested_m:.3f}" but its edges leave '
+                      f'room for R{fillet.radius_m:.3f}"')
+    if broken:
+        return advisory(_FAB_ID, f"{where}: " + "; ".join(broken), (piece.tag,), Result.FAIL,
+                        fix="seam the piece (split the Countertop's hosts), author a larger "
+                            "slab_size_in on the material, or reduce corner_radius")
+    if piece.mixed_edges:
+        return advisory(_FAB_ID, (
+            f"{where}: edge(s) {', '.join(map(str, piece.mixed_edges))} meet a wall, seam or "
+            "tall neighbour for under an inch; the drawing labels the whole edge by its "
+            "majority"), (piece.tag,), Result.UNKNOWN,
+            fix="square the neighbour to the slab, or move the slab end clear of it")
+    if slab is None:
+        return advisory(_FAB_ID, f"{where}: material authors no slab_size_in, so no "
+                        "fits-a-slab check", (piece.tag,), Result.UNKNOWN,
+                        fix="author Material.slab_size_in from the slab maker's sheet")
+    return passed(_FAB_ID, f'{where} fits the {slab[0]:g}" x {slab[1]:g}" slab; every '
+                  "corner radius fits its edges", (piece.tag,))

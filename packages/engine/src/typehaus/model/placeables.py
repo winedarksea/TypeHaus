@@ -38,6 +38,17 @@ class Footprint2D(HausModel):
     points: tuple[Point2D, ...]
 
 
+class CountertopHole(HausModel):
+    """A drilled hole through the counter in a fixture's local frame (a faucet, a soap pump).
+
+    Beside ``countertop_cutout`` so the hole moves with its sink; ``haus countertops`` prints it.
+    """
+
+    center: Point2D
+    diameter: Length
+    purpose: str
+
+
 class ClearanceZone(HausModel):
     footprint: Footprint2D
     purpose: str

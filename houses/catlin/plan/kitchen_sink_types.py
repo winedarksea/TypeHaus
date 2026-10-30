@@ -1,6 +1,6 @@
 """Large standard single bowl: the Kraus KHU100-32 (owner selection 2026-10-22)."""
 
-from typehaus.model import FixtureType, Footprint2D, Mount, MountKind, Product, Service, inch, pt
+from typehaus.model import CountertopHole, FixtureType, Footprint2D, Mount, MountKind, Product, Service, inch, pt
 
 COUNTER_HEIGHT_IN = 36.0
 QUARTZ_THICKNESS_IN = 1.181
@@ -47,6 +47,10 @@ KITCHEN_SINK_32_SINGLE = FixtureType(
         pt(inch(-15), inch(-10)), pt(inch(15), inch(-10)),
         pt(inch(15), inch(7)), pt(inch(-15), inch(7)),
     )),
+    # Centred across the bowl, rear edge + 1" flange + 2": (352, 423.49) as placed
+    # (notes/kitchen_sink_installation.md §2).
+    countertop_holes=(CountertopHole(center=pt(inch(0), inch(10)), diameter=inch(1.375),
+                                     purpose="faucet, Kraus KPF-1610SFS"),),
     basin=False,
     product_ref=KRAUS_KHU100_32.tag,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),

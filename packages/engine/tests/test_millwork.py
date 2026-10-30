@@ -319,17 +319,17 @@ def test_a_countertops_area_is_derived_from_the_cabinets_under_it(countertops):
     """
     M2_TO_FT2 = 10.7639104
     north = countertops["CT-M-KIT-N"]
-    # Five hosts: the dishwasher and stock base modules close directly to the carousel.
+    # Four hosts; the NE carousel is its own slab (CT-M-KIT-NE), seamed at its face.
     assert north.hosts == ("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE",
-                           "FURN-M-KIT-E2", "FURN-M-KIT-CORNER-NE")
+                           "FURN-M-KIT-E2")
     # 24" of carcass plus the 1" a top oversails its doors — nothing authored the 25".
     assert north.depth_m * M_TO_IN == pytest.approx(25.0, abs=1e-6)
-    # The run is straight up to the NE carousel, whose L adds its 13" east-leg tail beyond
-    # the 38" it contributes to the length: (length - 38") x 25" + the L's 38x25 + 13x25.
-    corner = 38.0 / M_TO_IN
-    l_slab = (38.0 * 25.0 + 13.0 * 25.0) / M_TO_IN**2
-    expected = ((north.length_m - corner) * north.depth_m + l_slab) * M2_TO_FT2
-    assert north.area_m2 * M2_TO_FT2 == pytest.approx(expected, rel=0.01)
+    # A straight run: the deeper dishwasher no longer jogs the stone's edges.
+    assert len(north.outline) == 4
+    assert north.area_m2 * M2_TO_FT2 == pytest.approx(
+        north.length_m * north.depth_m * M2_TO_FT2, rel=1e-6)
+    corner = countertops["CT-M-KIT-NE"]
+    assert corner.area_m2 * M2_TO_FT2 == pytest.approx((38.0 * 25.0 + 13.0 * 25.0) / 144.0)
 
 
 def test_the_peninsula_is_one_notched_slab_on_brackets(countertops):
@@ -363,7 +363,8 @@ def test_an_l_host_takes_the_slab_over_its_whole_l(countertops):
     # Two 24"-deep legs, 38" long, plus 1" on each of the two 14" notch faces.
     expected = (38 * 25 + 13 * 25) / 144.0
     assert ring.area * _M2_TO_FT2 == pytest.approx(expected, abs=1e-6)
-    assert len(corner.outline) == 6, "an L, not a rectangle"
+    # An L, not a rectangle (its south edge splits where the pantry starts).
+    assert len(ring.simplify(0).exterior.coords) - 1 == 6, "an L, not a rectangle"
     x0, y0, x1, y1 = ring.bounds
     # The backs and the leg ends stay on the 38" box; nothing oversails them.
     assert ((x1 - x0) * M_TO_IN, (y1 - y0) * M_TO_IN) == pytest.approx((38.0, 38.0), abs=1e-6)

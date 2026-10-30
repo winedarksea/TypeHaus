@@ -1098,6 +1098,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   The current kitchen counter run is B12 + DW24 +
   SINK-36 + B18, without a filler. The 32-inch single bowl sits 5/8 inch east inside its
   base to centre under the fixed window (`notes/kitchen_stock_cabinet_details.md`).
+  Its quartz is `CT-M-KIT-N` (90") seamed to `CT-M-KIT-NE` at the NE carousel's west face:
+  do not merge them, the 128" L fits no quartz slab (`advisory.countertop_fabrication`).
 
 - **Rows.** Where a column is impossible, the storey's rhythm must be centred, not merely
   even. East second storey: 5'-4"/13'-4"/22'-8"/34'-0". The inner pair mirrors about

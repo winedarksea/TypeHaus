@@ -24,10 +24,20 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import ResolvedModel, ResolvedWindowStool
 
 _M2_TO_FT2 = 10.7639104
 _M_TO_IN = 39.37007874
+
+
+def countertop_stools(model: ResolvedModel) -> list[ResolvedWindowStool]:
+    """The stools billed with the countertops: cut from a material some top is cut from.
+
+    One predicate for this takeoff and ``haus countertops`` (``takeoff/stone_pieces.py``).
+    """
+    materials = {top.material_ref for top in model.countertops}
+    return [stool for stool in model.window_stools
+            if stool.material_ref in materials and stool.depth_m is not None]
 
 
 def countertop_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -42,9 +52,8 @@ def countertop_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         length[top.material_ref] += top.length_m
         tops[top.material_ref].append(top.tag)
         thicknesses[top.material_ref].add(round(top.thickness_m * _M_TO_IN, 3))
-    for stool in model.window_stools:
-        if stool.material_ref not in tops or stool.depth_m is None:
-            continue
+    for stool in countertop_stools(model):
+        assert stool.depth_m is not None
         area[stool.material_ref] += stool.length_m * stool.depth_m
         stools[stool.material_ref].append(stool.tag)
         thicknesses[stool.material_ref].add(round(stool.thickness_m * _M_TO_IN, 3))

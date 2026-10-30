@@ -77,6 +77,8 @@ class WindowStool(Element):
     # What the mill runs: "S4S", "eased", "bullnose", ... A stool's front edge is the one
     # part of it anybody touches, so it is a real instruction and not decoration.
     profile: str = "eased"
+    # Radius on the two exposed front (horn) corners; None = square (``haus countertops``).
+    corner_radius: Length | None = None
 
 
 class ShelfBay(HausModel):
@@ -189,6 +191,10 @@ class Countertop(Element):
     support: str = "none"
     # What the fabricator runs on the exposed edge: "eased", "bullnose", "mitred", ...
     profile: str = "eased"
+    # Radius on exposed convex corners (both edges finished); None = every corner square.
+    # Authored, inside corners also take the material's stress-relief radius
+    # (``resolve/countertop_edges.py``).
+    corner_radius: Length | None = None
 
 
 class StairLandingMillwork(HausModel):

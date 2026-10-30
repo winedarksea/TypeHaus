@@ -233,6 +233,9 @@ MATERIALS_ISHTAR = [
              name="Fabricated acrylic solid surface (12 mm), Corian Glacier White or HI-MACS/Staron equal",
              r_per_inch=0.0, density=1700.0, hatch="stone", color="#f4f5f4",
              product_ref="PROD-CORIAN-GLACIER-WHITE",
+             # 12 mm standard palette sheet, 30 x 144 in. (Corian product overview); a
+             # >= 1/2 in. inside radius on L/U pieces per the Corian bulletins.
+             slab_size_in=(144.0, 30.0), inside_corner_radius_in=0.5,
              source="RM-M-BATH2 tub deck, faces, splash, vanity top and stool, and RM-S-PLANT's four window stools (UV, 2026-10-22), owner selection 2026-10-22: Corian Glacier White or HI-MACS/Staron equal; fabricated and bonded with colour-matched joint adhesive"),
     # The above-grade foundation band on BASEMENT_8/_12: a trowel-applied acrylic
     # coating over the exposed XPS, on the Styro Industries Tuff II product data

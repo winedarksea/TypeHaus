@@ -27,7 +27,8 @@ MAIN_WINDOW_STOOLS = [
     # with a built-up eased front edge.
     WindowStool(uid="YMJS812EK0", tag="STOOL-WIN-M-BATH2", window_ref="WIN-M-BATH2",
                 material_ref="solid-surface-fabricated", thickness=inch(0.472),
-                overhang=inch(0.75), horn=inch(1), profile="built-up eased"),
+                overhang=inch(0.75), horn=inch(1), profile="built-up eased",
+                corner_radius=inch(0.5)),
     # Other wet rooms, splash and snowmelt: black locust.
     WindowStool(uid="5STRZYV0G0", tag="STOOL-WIN-M-BATH1-W", window_ref="WIN-M-BATH1-W",
                 material_ref="locust-stool-5q", thickness=inch(1),

@@ -59,9 +59,13 @@ def test_the_peninsula_draws_its_notched_slab_at_the_counter(catlin_model_ro):
     prisms = countertop_prisms(catlin_model_ro, top)
     assert len(prisms) == 1
     (prism,) = prisms
-    assert Polygon(prism.ring).equals_exact(Polygon(top.outline), 1e-9)
-    assert Polygon(prism.ring).area == pytest.approx(
-        (84.5 * 25 + 73.5 * 15) * INCH * INCH)
+    from typehaus.resolve.fillet import filleted_ring
+
+    # The viewer draws the fabricator's corners: R1" outside, R3/8" in the notch.
+    assert Polygon(prism.ring).equals_exact(
+        Polygon(filleted_ring(top.outline, top.corner_radii_m)), 1e-9)
+    assert Polygon(top.outline).area == pytest.approx((84.5 * 25 + 73.5 * 15) * INCH * INCH)
+    assert Polygon(prism.ring).area < Polygon(top.outline).area
     assert prism.z1_m == pytest.approx(max(objects[tag].body_z1_m for tag in top.hosts))
     assert prism.z1_m - prism.z0_m == pytest.approx(top.thickness_m)
 
@@ -90,11 +94,17 @@ def test_the_seating_brackets_are_steel_under_the_knee(catlin_model_ro):
 
 def test_explicit_sink_opening_replaces_the_bases_centred_counter(catlin_model_ro):
     top = next(item for item in catlin_model_ro.countertops if item.tag == "CT-M-KIT-N")
+    from shapely.geometry import Point
+
+    from typehaus.resolve.fillet import filleted_ring
+
     sink = Polygon(top.cutouts[0])
-    slab = Polygon(top.outline)
+    slab = Polygon(filleted_ring(top.outline, top.corner_radii_m))
+    (faucet,) = top.holes
+    drilled = Point(faucet.center).buffer(faucet.diameter_m / 2.0, quad_segs=4)
     drawn = sum(Polygon(prism.ring, holes=prism.voids).area
                 for prism in countertop_prisms(catlin_model_ro, top))
-    assert drawn == pytest.approx(slab.difference(sink).area, rel=1e-6)
+    assert drawn == pytest.approx(slab.difference(sink).difference(drilled).area, rel=1e-6)
     hosted = slab_hosts(catlin_model_ro)
     assert hosted["FURN-M-KIT-SINKBASE"] == "CT-M-KIT-N"
     assert hosted["FURN-M-KIT-PEN-B24-W"] == "CT-M-KIT-PENINSULA"
@@ -182,8 +192,9 @@ def test_hosted_cabinets_drop_their_symbol_counter_in_model_json(catlin_model_ro
     assert peninsula["material_ref"] == "quartz-counter"
     assert peninsula["host_uid"] == objects["FURN-M-KIT-PEN-END"]["uid"]
     assert peninsula["z1_m"] - peninsula["z0_m"] == pytest.approx(1.181 * INCH)
+    # Filleted (four R1" corners, one R3/8" notch), so a little under the gross rectangle.
     assert Polygon(peninsula["parts"][0]["outline"]).area == pytest.approx(
-        (84.5 * 25 + 73.5 * 15) * INCH * INCH)
+        (84.5 * 25 + 73.5 * 15) * INCH * INCH, rel=1e-3)
     assert "CT-M-LIV-E-S" not in rows
     assert rows["CT-M-LIV-E-N"]["material_ref"] == "ash-counter-6q"
 

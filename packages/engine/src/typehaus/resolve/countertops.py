@@ -10,13 +10,21 @@ import math
 from dataclasses import replace
 from typing import NamedTuple
 
-from shapely.geometry import Polygon
+from shapely.geometry import Point, Polygon
+from shapely.geometry.polygon import orient
 
 from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.millwork import Countertop
 from typehaus.model.placeable_symbols import place_local
 from typehaus.model.plan import PlanModel
-from typehaus.resolve.model import ResolvedCanvasObject, ResolvedCountertop, ResolvedModel, Ring
+from typehaus.resolve.countertop_edges import classify_countertop_edges
+from typehaus.resolve.model import (
+    ResolvedCanvasObject,
+    ResolvedCountertop,
+    ResolvedCountertopHole,
+    ResolvedModel,
+    Ring,
+)
 from typehaus.resolve.overlay import union_all
 from typehaus.resolve.placeable_groups import (
     RUN_GAP_TOLERANCE_M,
@@ -82,10 +90,41 @@ def resolve_countertops(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             findings.extend(record_findings)
             if record is not None:
                 rings, cutout_findings = _fixture_cutouts(el, record, plan, placeables)
-                findings.extend(cutout_findings)
-                if not cutout_findings:
-                    model.countertops.append(replace(record, cutouts=rings))
+                holes, hole_findings = _fixture_holes(el, record, plan, placeables)
+                findings.extend(cutout_findings + hole_findings)
+                if not cutout_findings and not hole_findings:
+                    model.countertops.append(replace(
+                        record, cutouts=rings, cutout_refs=el.cutouts, holes=holes))
+    classify_countertop_edges(model)
     return findings
+
+
+def _fixture_holes(el: Countertop, slab: ResolvedCountertop, plan: PlanModel,
+                   placeables: dict[str, ResolvedCanvasObject]
+                   ) -> tuple[tuple[ResolvedCountertopHole, ...], list[Finding]]:
+    """Drilled holes from each cutout fixture's ``countertop_holes``, placed like the cutout."""
+    types = {typ.tag: typ for typ in plan.library.fixture_types}
+    outline = Polygon(slab.outline)
+    holes: list[ResolvedCountertopHole] = []
+    findings: list[Finding] = []
+    for tag in el.cutouts:
+        obj = placeables.get(tag)
+        typ = types.get(obj.type_ref or "") if obj is not None else None
+        if obj is None or typ is None:
+            continue  # _fixture_cutouts reports the missing fixture
+        for hole in typ.countertop_holes:
+            center = place_local([hole.center.xy_m], obj.position, obj.rotation_degrees)[0]
+            radius = hole.diameter.meters / 2.0
+            if radius <= 0.0 or not outline.contains(Point(center).buffer(radius)):
+                findings.append(element_error(
+                    "integrity.countertop_cutout",
+                    f"countertop {el.tag}'s {hole.purpose} hole from {tag!r} must lie "
+                    "wholly inside the slab", el.tag))
+                continue
+            holes.append(ResolvedCountertopHole(
+                center=(float(center[0]), float(center[1])), diameter_m=2.0 * radius,
+                purpose=hole.purpose, fixture_ref=tag))
+    return tuple(holes), findings
 
 
 def _fixture_cutouts(el: Countertop, slab: ResolvedCountertop, plan: PlanModel,
@@ -210,26 +249,51 @@ def _slab(el: Countertop, run: list[ResolvedCanvasObject], storey: str,
     def near_end(obj: ResolvedCanvasObject, width: float, partial: bool) -> float:
         return sizes[obj.type_ref or ""].width_m - width if reverse_travel and partial else 0.0
 
+    shift = {obj.tag: _back_shift(obj, run[0], sizes) for obj in run}
     rects = [_covered_l(obj, sizes[obj.type_ref or ""], overhang)
              if sizes[obj.type_ref or ""].shape is not None
              else _covered_rect(obj, width, sizes[obj.type_ref or ""], offset, depth_main,
-                                near_end(obj, width, obj is run[-1]))
+                                near_end(obj, width, obj is run[-1]), shift[obj.tag])
              for obj, width in zip(run, covered, strict=True)]
     if strip is not None:
         strip_offset, widths = strip
         rects.extend(_covered_rect(obj, width, sizes[obj.type_ref or ""], strip_offset,
-                                   unsupported, near_end(obj, width, True))
+                                   unsupported, near_end(obj, width, True), shift[obj.tag])
                      for obj, width in zip(run, widths, strict=True) if width > 0.0)
     if extension > 0.0:
         rects.append(_extension_rect(run, sizes[run[-1].type_ref or ""], extension, offset,
-                                     depth))
+                                     depth, shift[run[-1].tag]))
     outline, area = _slab_outline(rects)
     return ResolvedCountertop(
         uid=el.uid, tag=el.tag, storey=storey, room=run[0].room,
         hosts=tuple(obj.tag for obj in run), material_ref=el.material_ref,
         thickness_m=el.thickness.meters, depth_m=depth, length_m=length,
         overhang_m=overhang, unsupported_overhang_m=unsupported, support=el.support,
-        profile=el.profile, outline=outline, area_m2=area), []
+        profile=el.profile, outline=outline, area_m2=area,
+        corner_radius_m=el.corner_radius.meters if el.corner_radius is not None else 0.0
+    ), []
+
+
+def _back_shift(obj: ResolvedCanvasObject, first: ResolvedCanvasObject,
+                sizes: dict[str, _Size]) -> float:
+    """How far to slide ``obj``'s slab onto the run's back line (``hosts[0]``'s back face).
+
+    A dishwasher 5/8" deeper than the bases must not jog the stone's front and back edges;
+    the slab is cut straight. Only a same-facing host within the filler tolerance moves.
+    """
+    size, ref = sizes[obj.type_ref or ""], sizes[first.type_ref or ""]
+    if (obj is first or size.shape is not None or ref.shape is not None
+            or abs(obj.rotation_degrees - first.rotation_degrees) > 1e-6):
+        return 0.0
+    angle = math.radians(obj.rotation_degrees)
+    back = (-math.sin(angle), math.cos(angle))
+
+    def face(item: ResolvedCanvasObject, item_size: _Size) -> float:
+        return (item.position[0] * back[0] + item.position[1] * back[1]
+                + item_size.depth_m / 2.0)
+
+    shift = face(first, ref) - face(obj, size)
+    return shift if abs(shift) <= RUN_GAP_TOLERANCE_M else 0.0
 
 
 def _strip_widths(run: list[ResolvedCanvasObject], covered: list[float],
@@ -245,19 +309,22 @@ def _strip_widths(run: list[ResolvedCanvasObject], covered: list[float],
 
 
 def _covered_rect(obj: ResolvedCanvasObject, width: float, size: _Size,
-                  offset: float, depth: float, start: float = 0.0) -> Polygon:
+                  offset: float, depth: float, start: float = 0.0,
+                  back_shift: float = 0.0) -> Polygon:
     """The slab's footprint over one host, in world coordinates.
 
     Local +y is the host's BACK — ``model/placeable_symbols`` draws every counter's front
     edge at local -y — so the slab runs forward from the back face by ``offset`` and covers
     ``depth``. ``width`` is measured from ``start`` along the host's local +x, counted from
-    its local -x end, which is where an authored length starts.
+    its local -x end, which is where an authored length starts. ``back_shift`` slides the
+    back face onto the run's back line.
     """
     angle = math.radians(obj.rotation_degrees)
     along = (math.cos(angle), math.sin(angle))
     back = (-math.sin(angle), math.cos(angle))
-    origin = (obj.position[0] - along[0] * size.width_m / 2.0 + back[0] * size.depth_m / 2.0,
-              obj.position[1] - along[1] * size.width_m / 2.0 + back[1] * size.depth_m / 2.0)
+    reach = size.depth_m / 2.0 + back_shift
+    origin = (obj.position[0] - along[0] * size.width_m / 2.0 + back[0] * reach,
+              obj.position[1] - along[1] * size.width_m / 2.0 + back[1] * reach)
     corners = [(origin[0] + along[0] * step - back[0] * dive,
                 origin[1] + along[1] * step - back[1] * dive)
                for step, dive in ((start, offset), (start + width, offset),
@@ -266,7 +333,7 @@ def _covered_rect(obj: ResolvedCanvasObject, width: float, size: _Size,
 
 
 def _extension_rect(run: list[ResolvedCanvasObject], size: _Size, extension: float,
-                    offset: float, depth: float) -> Polygon:
+                    offset: float, depth: float, back_shift: float = 0.0) -> Polygon:
     """The slab carried ``extension`` past the last host, on the side the run travels to."""
     last = run[-1]
     angle = math.radians(last.rotation_degrees)
@@ -276,7 +343,7 @@ def _extension_rect(run: list[ResolvedCanvasObject], size: _Size, extension: flo
     travel = ((last.position[0] - first[0]) * along[0]
               + (last.position[1] - first[1]) * along[1])
     start = size.width_m if travel >= 0.0 else -extension
-    return _covered_rect(last, extension, size, offset, depth, start)
+    return _covered_rect(last, extension, size, offset, depth, start, back_shift)
 
 
 def _covered_l(obj: ResolvedCanvasObject, size: _Size, overhang: float) -> Polygon:
@@ -310,4 +377,6 @@ def _slab_outline(rects: list[Polygon]) -> tuple[Ring, float]:
     if closed.geom_type != "Polygon" or closed.is_empty:
         closed = merged if merged.geom_type == "Polygon" else max(
             merged.geoms, key=lambda part: part.area)
+    # Counter-clockwise, collinear vertices dropped: each ring edge is one fabricated edge.
+    closed = orient(Polygon(closed.exterior).simplify(0.0), 1.0)
     return tuple((float(x), float(y)) for x, y in closed.exterior.coords[:-1]), closed.area

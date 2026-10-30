@@ -5,6 +5,7 @@ The viewer payload, the GLB and the IFC all read these; none re-derives a board.
 
 from __future__ import annotations
 
+from typehaus.resolve.fillet import filleted_ring
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_ir import GPrism
 from typehaus.resolve.geometry_openings import opening_parts
@@ -12,13 +13,15 @@ from typehaus.resolve.model import ResolvedWall, ResolvedWindowStool
 from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing
 
 
-def window_stool_prism(wall: ResolvedWall, opening,
-                       stool: ResolvedWindowStool) -> GPrism | None:
-    """A notched board from the room face to the window's inner frame face.
+def window_stool_ring(wall: ResolvedWall, opening,
+                      stool: ResolvedWindowStool) -> tuple[tuple[float, float], ...] | None:
+    """The stool's notched plan ring, square-cornered, in a fixed vertex order.
 
-    The horns occupy only the room-side lip. Extending them through the reveal would put
-    oak inside the jamb wall and create overlapping IFC solids. Layer polygons establish
-    the wall's interior side, so reversing its axis does not reverse the stool.
+    front-left, front-right, horn-back right, shoulder right, back right, back left,
+    shoulder left, horn-back left — so ``countertop_edges.STOOL_EDGE_KINDS`` names each
+    edge. The horns occupy only the room-side lip. Extending them through the reveal
+    would put oak inside the jamb wall and create overlapping IFC solids. Layer polygons
+    establish the wall's interior side, so reversing its axis does not reverse the stool.
     """
     if (stool.depth_m is None or stool.depth_m <= stool.overhang_m
             or stool.thickness_m <= 0 or opening.kind != "window"):
@@ -51,12 +54,25 @@ def window_stool_prism(wall: ResolvedWall, opening,
                 origin[1] + tangent[1] * along + normal[1] * offset)
 
     horn = stool.horn_m
-    ring = (
+    return (
         point(-half_width - horn, front), point(half_width + horn, front),
         point(half_width + horn, shoulder), point(half_width, shoulder),
         point(half_width, back), point(-half_width, back),
         point(-half_width, shoulder), point(-half_width - horn, shoulder),
     )
+
+
+def window_stool_prism(wall: ResolvedWall, opening,
+                       stool: ResolvedWindowStool) -> GPrism | None:
+    """A notched board from the room face to the window's inner frame face.
+
+    Rounded where the stool carries ``corner_radii_m`` — the arcs ``haus countertops`` cuts.
+    """
+    ring = window_stool_ring(wall, opening, stool)
+    if ring is None:
+        return None
+    if len(stool.corner_radii_m) == len(ring):
+        ring = filleted_ring(ring, stool.corner_radii_m)
     # Read the product's actual lower rail; a raked wall can clip its height, and a copied
     # frame-width formula here would eventually drift from the opening it must meet.
     frame = next((part for part in opening_parts(wall, opening, None)

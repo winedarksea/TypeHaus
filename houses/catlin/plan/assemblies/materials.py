@@ -70,6 +70,9 @@ MATERIALS = [
     Material(tag="quartz-counter", name="Engineered quartz countertop, 3 cm",
              density=2400.0, hatch="masonry", color="#f2efe9", finish="polished",
              product_ref="PROD-MSI-Q-QUARTZ-SPECKLED-WHITE", engineered_stone=True,
+             # MSI quartz slabs run ~120 x 55 in. (slabwise.com MSI guide, read 2026-10-30;
+             # MSI's own sheet publishes none for Frost White). Confirm the lot at order.
+             slab_size_in=(120.0, 55.0),
              source="MSI Q Quartz Frost White (pencilled 2026-10-22; confirm at order), speckled white, Group 1, 3 cm, standard polished, standard eased edge (owner selection 2026-10-22; replaces Silestone Et Calacatta Gold of 2026-09-06). Kitchen perimeter and sink run, the 48\" and 51\" vanity tops, and the peninsula's one-piece top, its 15\" seating overhang on hidden steel bars. ** NEVER CLEAN IT WITH ANYTHING HIGH-pH: ** bleach, ammonia, glass cleaner, degreasers, scouring powder and melamine sponges are the #1 cause of light quartz yellowing across every brand — not UV. #2 is heat scorch, which is irreversible; induction helps (no flame spill, no hot grate) but a 400 F pan is still a 400 F pan. Put that in the owner's manual."),
     # RM-M-BED desk top (CT-M-BED-DESK), over two SEKTION drawer bases and the knee ledger.
     Material(tag="walnut-counter", name='Black walnut top, 1", 5/4 S4S',
