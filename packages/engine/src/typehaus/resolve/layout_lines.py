@@ -126,6 +126,7 @@ def _datum_offset_m(plan: PlanModel, wall: Any, storey: Any) -> float:
     if assembly is None:
         return 0.0
     # Imported lazily: ``topology`` imports nothing from here, and this keeps it that way.
+    from typehaus.resolve.coatings import coating_tags
     from typehaus.resolve.topology import (
         _added_thicknesses,
         _axis_offset_from_interior,
@@ -133,7 +134,7 @@ def _datum_offset_m(plan: PlanModel, wall: Any, storey: Any) -> float:
     )
 
     stack = list(assembly.default_lining) + list(assembly.layers)
-    added = _added_thicknesses(stack)
+    added = _added_thicknesses(stack, coating_tags(plan.library))
     total = sum(a for (_layer, a, _cavity) in added)
     if total <= 0.0:
         return 0.0

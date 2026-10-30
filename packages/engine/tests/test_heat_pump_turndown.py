@@ -55,7 +55,8 @@ _CATLIN = {
     # 2026-10-25 French pair U 0.15 -> 0.21: +2 UA x85 F = +170 Btu/h.
     # BBD75 layer depth correction (2026-10-25): the envelope area moves slightly.
     # The 19/32-inch roof deck changes the envelope load slightly (2026-10-28).
-    "EQ-M-HP1-OD": (14_652, 14_000, 5.0, 0.96, -9.4, _ADVISED),
+    # 14,652 before paint took no depth (2026-10-30): finish-face volumes grow 0.01".
+    "EQ-M-HP1-OD": (14_653, 14_000, 5.0, 0.96, -9.4, _ADVISED),
     # The living-east rework replaces two 27x48 windows with one 63x48 unit, adding 3 sf
     # of glass to System 2's main-storey zone (2026-10-16). 13,855 / 0.64 / 23.6 °F, and
     # HP3 910 / 3.08, before the 2026-10-21 bath 1 rework moved the powder room's walls.
@@ -64,7 +65,8 @@ _CATLIN = {
     # BBD75 layer depth correction (2026-10-25): -1 Btu/h, the same envelope-area shift as HP1.
     # D-M-BALC's published unit replaces its held 60x80 void (2026-10-29): +2.29 sf at
     # U 0.21 x 85 F, 14,255 / 25.5 °F -> 14,291 / 25.6 °F.
-    "EQ-M-HP2-OD": (14_291, 8_800, 5.0, 0.62, 25.6, not _ADVISED),
+    # 14,291 before paint took no depth (2026-10-30).
+    "EQ-M-HP2-OD": (14_292, 8_800, 5.0, 0.62, 25.6, not _ADVISED),
     # D-M-ENTRY's Therma-Tru unit replaces its 36x80 void (2026-10-29): 905 -> 921.
     "EQ-M-HP3-OD": (921, 2_800, 17.0, 3.04, None, _ADVISED),
 }

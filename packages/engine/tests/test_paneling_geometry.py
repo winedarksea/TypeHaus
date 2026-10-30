@@ -242,8 +242,8 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     # assertion exists to hold.
     closed = by_tag["WP-M-BATH2-SURR"]
     assert {b.wall_tag for b in closed} == {"W-M-BA2E2", "W-M-BDN1"}
-    # The pan's 3'; BA2E2 stops 0.01" short, on the paint film of the face it meets.
-    runs_in = {"W-M-BA2E2": 35.99, "W-M-BDN1": 36.0}
+    # The pan's 3'; BA2E2 meets the face it stops on (paint takes no depth).
+    runs_in = {"W-M-BA2E2": 36.0, "W-M-BDN1": 36.0}
     for band in closed:
         assert band.run_m == pytest.approx(runs_in[band.wall_tag] * _IN, abs=1e-6)
         assert band.z0_m == pytest.approx(0.0, abs=1e-6)
@@ -293,9 +293,9 @@ def test_the_bands_still_bill_what_they_billed(bands):
     """Removing the north walnut reduces both its drawn and ordered area."""
     walnut = sum(b.area_m2 for b in bands if b.tag == "WP-M-STUDY-WAINSCOT") * _M2_TO_FT2
     tile = sum(b.area_m2 for b in bands if b.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
-    # Runs end on painted faces; 27.80 since D-M-STUDY's derived RO (2026-10-29) is 2 1/4"
+    # Runs end on finish faces; 27.82 (27.80 before paint took no depth), D-M-STUDY's derived RO is 2 1/4"
     # wider across the 36" band.
-    assert walnut == pytest.approx(27.80, abs=0.005)
+    assert walnut == pytest.approx(27.816, abs=0.005)
     assert tile == pytest.approx(45.0, abs=0.5)
 
 

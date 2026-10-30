@@ -217,7 +217,7 @@ def _deck_only_clear_height(ctx: CheckContext, storey: Any, resolved: Any) -> fl
 
     face = Polygon([tuple(point) for point in resolved.clear_face])
     undersides = [value for value in
-                  (ceiling_underside_m(deck_storey, deck)
+                  (ceiling_underside_m(deck_storey, deck, ctx.plan.library)
                    for deck_storey, deck in ceiling_decks_over(ctx.plan, storey.tag, face))
                   if value is not None]
     if not undersides:

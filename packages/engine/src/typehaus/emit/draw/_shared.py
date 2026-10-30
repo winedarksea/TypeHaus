@@ -117,7 +117,7 @@ def emit_wall(
             layer=aia, closed=True, lineweight=weight,
             uid=wall.uid, tag=wall.tag,
         ))
-        if hatch and layer_override is None:
+        if hatch and layer_override is None and not layer.coating:
             pattern = HATCH_PATTERN.get(layer.function)
             if pattern is not None and len(layer.polygon) >= 3:
                 b.add(Hatch(

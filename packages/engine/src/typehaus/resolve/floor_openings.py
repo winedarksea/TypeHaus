@@ -22,6 +22,7 @@ from dataclasses import dataclass, replace
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.quantities import inch, m
+from typehaus.resolve.coatings import layer_depth_m
 from typehaus.resolve.floor_opening_support import OpeningHeaderRun, edge_header_runs
 from typehaus.resolve.framing.profiles import cross_section, is_sawn_lumber
 from typehaus.resolve.framing.tables import ENGINEERED_LVL, header_size
@@ -170,7 +171,7 @@ def opening_frames(model: ResolvedModel, system: FloorSystem, along_x: bool,
                 element_tags=(system.tag, opening.tag), result=Result.FAIL,
             )]
         minx, maxx, miny, maxy = box
-        setback = sum(layer.thickness.meters for layer in opening.lining)
+        setback = sum(layer_depth_m(model.plan.library, layer) for layer in opening.lining)
         perp0, perp1 = (miny, maxy) if along_x else (minx, maxx)
         axis0, axis1 = (minx, maxx) if along_x else (miny, maxy)
         perp0, perp1, axis0, axis1 = perp0 - setback, perp1 + setback, axis0 - setback, \

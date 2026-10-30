@@ -378,6 +378,6 @@ def test_a_lining_steps_the_framing_back_and_closes_every_edge():
     joists = [m for m in floor.members if m.category == "joist"]
     height = max(m.z1_m for m in joists) - min(m.z0_m for m in joists)
     area = 2 * (ft(6).meters + ft(3, 4).meters) * height
-    assert floor.linings == (("FO-1", pytest.approx(area)),)
+    assert floor.linings == (("FO-1", pytest.approx(area), None),)  # no Room paints it
     row = next(r for r in sheet_goods_takeoff(model) if r["scope"] == "opening lining")
     assert row["net_area_sqft"] == pytest.approx(area * 10.7639104, abs=0.05)

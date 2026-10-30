@@ -204,8 +204,8 @@ GARAGE_ROOF = Assembly(
     # PRIMER, NOT PAINT, and that is a decision rather than an omission (owner): the
     # ceiling is taped and primed, not finished. GARAGE_WALL_2X6 keeps its paint, so the
     # garage is board-and-paint on the walls and board-and-primer overhead. The primer is
-    # authored so the board is not bare: bare gypsum facing a room is billed paint
-    # (takeoff/derived_paint.py).
+    # authored so the board is not bare: bare gypsum facing a used room is painted by the
+    # room (resolve/room_paint.py).
     default_lining=(
         Layer(name="primer", material_ref="gwb-primer", thickness=inch(0.01),
               function=LayerFunction.FINISH),

@@ -11,6 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from shapely.geometry import Polygon
+
 from typehaus.checks.building_science.condensation_verdict import (
     EnvelopeVerdict,
     assess_layers,
@@ -31,6 +33,7 @@ from typehaus.findings import Finding, Result, Severity, not_applicable
 from typehaus.model.assembly import Assembly, Layer
 from typehaus.model.enums import ControlLayer, LayerFunction, Occupancy
 from typehaus.model.spatial import Room
+from typehaus.resolve.room_paint import paint_room, paint_stack_end
 from typehaus.resolve.room_walls import bounding_walls
 
 __all__ = [
@@ -194,12 +197,12 @@ def _effective_lining(ctx: CheckContext, wall_tag: str, room: Room,
     """
     if not assembly.default_lining:
         return ()
-    for exception in room.wall_lining_exceptions:
-        if exception.wall_ref == wall_tag:
-            return tuple(exception.lining)
-    if room.wall_lining:
-        return tuple(room.wall_lining)
-    return tuple(assembly.default_lining)
+    lining = next((tuple(exception.lining) for exception in room.wall_lining_exceptions
+                   if exception.wall_ref == wall_tag),
+                  tuple(room.wall_lining or assembly.default_lining))
+    # The room's paint, as resolve builds it; an envelope face is never stripped.
+    painter = paint_room(room, Polygon(), 0.0, 0.0)
+    return tuple(paint_stack_end(list(lining), 0, [painter], ctx.plan.library, True)[0])
 
 
 def conditioned_envelope_surfaces(ctx: CheckContext) -> list[EnvelopeSurface]:

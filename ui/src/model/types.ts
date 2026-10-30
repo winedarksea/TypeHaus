@@ -84,6 +84,9 @@ export interface Layer {
   // a band and its members draw together, so a framed FURRING band is not extruded there
   // (three/builders/walls.ts): a solid plane over the girts hides them and seals the vent gap.
   framed?: boolean;
+  // A zero-depth coating (paint, wash): thickness_m is 0 and `polygon` is its display skin,
+  // stood resolve/coatings.py COATING_SKIN_M off the host face by the engine.
+  coating?: boolean;
 }
 
 // Orientation convention (defined once, engine side: resolve/framing/profiles.py):
@@ -524,6 +527,10 @@ export interface Room {
   provenance: Provenance | null;
   conditioned: boolean;
   area_m2: number;
+  // The room owns its paint (engine resolve/room_paint.py): the coating its faces take, or
+  // `unpainted` for none. Display only.
+  paint?: string | null;
+  unpainted?: boolean;
   /**
    * `area_m2` less the part a roof rakes below 5'-0" of clear head — the "how big is this
    * room" figure, where `area_m2` is "how much floor is built". Equal to `area_m2` under a

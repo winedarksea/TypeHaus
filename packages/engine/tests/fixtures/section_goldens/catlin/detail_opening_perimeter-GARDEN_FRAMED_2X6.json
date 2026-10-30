@@ -807,6 +807,27 @@
       "node": "polyline",
       "points": [
         [
+          6.499999999999999,
+          -21.06249999999999
+        ],
+        [
+          6.499999999999999,
+          -13.437499999999996
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "Z4NRTGEDY5",
+      "tag": "W-B-S3-FR/room-paint-a",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           6.249999999999999,
           -102.1875
         ],
@@ -1990,67 +2011,67 @@
       "node": "polyline",
       "points": [
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -12.4375
         ],
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -10.673155737704917
         ],
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -9.8125
         ],
         [
-          -6.0703360655737715,
+          -6.070336065573768,
           -9.8125
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -9.8125
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -11.591564627656632
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -12.459401031391577
         ],
         [
-          -6.908277239623046,
+          -6.908277239623042,
           -12.533369182206666
         ],
         [
-          -7.3208515028538,
+          -7.320851502853795,
           -12.569451206994515
         ],
         [
-          -7.613731739708055,
+          -7.613731739708051,
           -12.86233144384877
         ],
         [
-          -7.756600147929643,
+          -7.756600147929639,
           -13.005199852070358
         ],
         [
-          -7.767959064894966,
+          -7.767959064894962,
           -12.993840935105036
         ],
         [
-          -7.773500000000002,
+          -7.773499999999998,
           -12.9883
         ],
         [
-          -7.476485245901641,
+          -7.476485245901637,
           -12.69128524590164
         ],
         [
-          -7.331600000000001,
+          -7.331599999999998,
           -12.5464
         ],
         [
-          -6.494662295081969,
+          -6.494662295081965,
           -12.473204918032787
         ]
       ],
@@ -2542,11 +2563,11 @@
           -11.1875
         ],
         [
-          -0.0,
+          0.0,
           -11.1875
         ],
         [
-          -0.0,
+          0.0,
           -7.687500000000001
         ],
         [
@@ -2570,11 +2591,11 @@
           -11.1875
         ],
         [
-          -0.0,
+          0.0,
           -11.1875
         ],
         [
-          -0.0,
+          0.0,
           -7.687500000000001
         ],
         [
@@ -2654,11 +2675,11 @@
           -3.5
         ],
         [
-          -0.0,
+          0.0,
           -3.5
         ],
         [
-          -0.0,
+          0.0,
           -3.3459645669291227
         ],
         [
@@ -2682,11 +2703,11 @@
           -3.5
         ],
         [
-          -0.0,
+          0.0,
           -3.5
         ],
         [
-          -0.0,
+          0.0,
           -3.3459645669291227
         ],
         [
@@ -3696,12 +3717,13 @@
           1.468
         ]
       ],
-      "pattern": "gypsum",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb"
+      "material": "latex-paint",
+      "fill": "#f0ede6"
     },
     {
       "space": "paper",
@@ -3738,7 +3760,7 @@
         0.7,
         1.3980000000000001
       ],
-      "content": "gwb  0.5\"",
+      "content": "latex-paint  0\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3768,12 +3790,12 @@
           1.298
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "spf"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -3810,7 +3832,7 @@
         0.7,
         1.228
       ],
-      "content": "spf  5.5\"",
+      "content": "gwb  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3840,12 +3862,12 @@
           1.1280000000000001
         ]
       ],
-      "pattern": "batt",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "mineral-wool"
+      "material": "spf"
     },
     {
       "space": "paper",
@@ -3882,7 +3904,7 @@
         0.7,
         1.058
       ],
-      "content": "mineral-wool  5.5\"",
+      "content": "spf  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3912,12 +3934,12 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "osb",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "struct-1-plywood"
+      "material": "mineral-wool"
     },
     {
       "space": "paper",
@@ -3954,7 +3976,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "struct-1-plywood  0.5\"",
+      "content": "mineral-wool  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3984,12 +4006,12 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "membrane",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "waterproofing"
+      "material": "struct-1-plywood"
     },
     {
       "space": "paper",
@@ -4026,7 +4048,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "waterproofing  0.06\"",
+      "content": "struct-1-plywood  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4056,12 +4078,12 @@
           1.468
         ]
       ],
-      "pattern": "none",
+      "pattern": "membrane",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "xps"
+      "material": "waterproofing"
     },
     {
       "space": "paper",
@@ -4098,7 +4120,7 @@
         2.85,
         1.3980000000000001
       ],
-      "content": "xps  2\"",
+      "content": "waterproofing  0.06\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4133,7 +4155,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "eps"
+      "material": "xps"
     },
     {
       "space": "paper",
@@ -4169,6 +4191,78 @@
       "anchor": [
         2.85,
         1.228
+      ],
+      "content": "xps  2\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          2.65,
+          0.988
+        ],
+        [
+          2.79,
+          0.988
+        ],
+        [
+          2.79,
+          1.1280000000000001
+        ],
+        [
+          2.65,
+          1.1280000000000001
+        ]
+      ],
+      "pattern": "none",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "eps"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          2.65,
+          0.988
+        ],
+        [
+          2.79,
+          0.988
+        ],
+        [
+          2.79,
+          1.1280000000000001
+        ],
+        [
+          2.65,
+          1.1280000000000001
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        2.85,
+        1.058
       ],
       "content": "eps  2\"",
       "height": 3.0,

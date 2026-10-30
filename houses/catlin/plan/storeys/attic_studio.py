@@ -453,7 +453,7 @@ ROOMS = [
     # spacing and the R303.1 glazing rule off a room nobody occupies.
     Room(uid="17XB5CH977", tag="RM-A-POCKET", seed=pt(ft(5), ft(30)),
          occupancy=Occupancy.STORAGE, floor_finish=None,
-         ceiling=FollowRoof(roof_ref="RF-HOUSE")),
+         ceiling=FollowRoof(roof_ref="RF-HOUSE"), unpainted=True),
 ]
 
 # ============================== ALARMS ================================================

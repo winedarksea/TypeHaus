@@ -209,10 +209,13 @@ actually paid), `tasks.toml` (work-package status). The engine ships no price da
   `emit/trades.CONSTRUCTION_SEQUENCE`. Task ids are stable GlobalIds, so re-exporting
   updates rather than duplicates. No durations, crew sizes or dates — the model cannot know
   them.
-- **Paint is derived where no assembly authors it** (`takeoff/derived_paint.py`): a gypsum
-  layer ending a stack and facing a non-UNCONDITIONED room bills `latex-paint` under scope
-  `wall (derived)` / `ceiling (derived)`. To leave a board unpainted, author the coat it
-  does get (catlin's garage ceiling carries `gwb-primer`).
+- **The room owns its paint** (`resolve/room_paint.py`, decision #104): `Room.paint` swaps an
+  authored coat and is the coat added to bare gypsum facing a used room; `Room.unpainted`
+  strips coatings from its faces and ceiling. An envelope wall's room-face paint (its Class III
+  retarder) always stays. Paint is resolved, so model and bill agree: walls bill off their
+  layers, ceilings off `model.ceilings` (`takeoff/coating_areas.py`).
+- **A coating takes no depth** (`resolve/coatings.py`): `ResolvedLayer.thickness_m` is 0 and
+  its ring is zero-width on its host face; emitters draw it as a skin or a stroke, never a solid.
 
 ## Building it: visits and inspections
 

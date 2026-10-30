@@ -77,10 +77,10 @@ def test_the_porch_deck_is_the_stairs_arrival_surface(ctx):
     outline = Polygon([p.xy_m if hasattr(p, "xy_m") else p for p in deck.deck_outline])
 
     assert deck.deck_z1_m == pytest.approx(stair.arrival_elevation_m, abs=1e-9)
-    # W-SG-E1's 12" plus its 1/8" court-face wash: since 2026-09-22 the porch is hung on a
-    # ledger that bears on the wash, and the deck runs ledger face to ledger face. Plus the
+    # W-SG-E1's 12" (the court-face wash takes no depth): since 2026-09-22 the porch is hung on
+    # a ledger, and the deck runs ledger face to ledger face. Plus the
     # head riser's 3/4" board, which stands between the flight and the wall (2026-09-28).
-    assert outline.distance(Polygon(stair.outline)) == pytest.approx(12.875 * 0.0254, abs=1e-4)
+    assert outline.distance(Polygon(stair.outline)) == pytest.approx(12.75 * 0.0254, abs=1e-4)
 
 
 def test_the_deck_lights_are_out_of_reach_of_the_flight_ring(ctx):

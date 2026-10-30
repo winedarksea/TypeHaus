@@ -47,7 +47,7 @@ def test_sf_s_duct_derives_clearance_from_the_wall_width(catlin_model_ro) -> Non
     soffit, section = _section(catlin_model_ro, "SF-S-DUCT")
     width = max(x for x, _ in soffit.outline) - min(x for x, _ in soffit.outline)
     assert section.width_m / M_PER_IN == pytest.approx(width / M_PER_IN - 4.25)
-    assert section.width_m / M_PER_IN == pytest.approx(37.23)  # between painted faces
+    assert section.width_m / M_PER_IN == pytest.approx(37.25)  # between finish faces
 
 
 def test_open_top_recovers_the_fictional_top_board_allowance(catlin_model_ro) -> None:

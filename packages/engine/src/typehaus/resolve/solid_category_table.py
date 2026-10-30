@@ -142,7 +142,7 @@ ROWS: tuple[C, ...] = (
     # colour (fiberglass is pink), and its trade puts it under Walls → Insulation in the viewer.
     C("insulation", trade="insulation", ifc_class=_COVER, ifc_predefined="INSULATION",
       billed_elsewhere=True),
-    # A floor opening's well lining: sheet_goods / derived_paint bill it off ResolvedFloor.
+    # A floor opening's well lining: sheet_goods / coating_areas bill it off ResolvedFloor.
     C("opening_lining", trade="drywall", ifc_class=_COVER, ifc_predefined="CLADDING",
       billed_elsewhere=True),
     C("window_return", trade="drywall", ifc_class=_COVER, ifc_predefined="CLADDING",

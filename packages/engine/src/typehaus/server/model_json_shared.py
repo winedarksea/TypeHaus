@@ -14,6 +14,7 @@ from typing import Any
 
 from typehaus.emit.trade_rules import layer_trade
 from typehaus.findings import Finding
+from typehaus.resolve.coatings import coating_skin_ring
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
 from typehaus.server.model_json_mesh import mesh_json
@@ -103,7 +104,7 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
     }
 
 
-def _layer_json(layer, scope: str = "wall") -> dict[str, Any]:
+def _layer_json(layer, scope: str = "wall", wall=None) -> dict[str, Any]:
     """One resolved layer, including its band when it has one.
 
     ``z0_m``/``z1_m`` are ``Layer.extent`` resolved to absolute elevations — null on the
@@ -111,11 +112,17 @@ def _layer_json(layer, scope: str = "wall") -> dict[str, Any]:
     reason the glTF emitter and the takeoff do: a banded layer covers part of the wall,
     and drawing it full height puts a protection panel over nine feet of buried foam, or
     stacks three brick colours on top of each other in one place.
+
+    A coating's zero-width ring is served as its display skin (``coating_skin_ring``), so
+    the viewer extrudes it like any layer.
     """
+    polygon = (coating_skin_ring(wall, layer) if layer.coating and wall is not None
+               else layer.polygon)
     return {**({"surface_mesh": _surface_mesh_json(layer.surface_mesh)}
                if layer.surface_mesh is not None else {}),
             "name": layer.name, "material": layer.material_ref, "function": layer.function,
-            "thickness_m": layer.thickness_m, "polygon": [list(point) for point in layer.polygon],
+            "thickness_m": layer.thickness_m, "polygon": [list(point) for point in polygon],
+            "coating": layer.coating,
             "control": sorted(layer.control),
             "view_trade": layer.view_trade,
             "is_cavity": layer.is_cavity, "cavity_host": layer.cavity_host,

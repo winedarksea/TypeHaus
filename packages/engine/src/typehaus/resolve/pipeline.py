@@ -46,6 +46,7 @@ from typehaus.resolve.platform import (
 )
 from typehaus.resolve.roof_edge import resolve_roof_edges
 from typehaus.resolve.roof_geometry import apply_to_roof_wall_tops, apply_truss_heel_lift
+from typehaus.resolve.room_paint import RoomPaint
 from typehaus.resolve.rooms import resolve_rooms
 from typehaus.resolve.soffits import resolve_soffit_contacts, resolve_soffit_finishes
 from typehaus.resolve.solar import resolve_solar
@@ -76,13 +77,14 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         lines_for_wall = lines_by_wall(model.layout_lines)
 
     with _stage("junctions"):
+        room_paint = RoomPaint.of(plan)
         ordered = sorted(plan.storeys, key=lambda s: s.elevation.meters)
         for storey in ordered:
             z0 = storey.elevation.meters
             z1 = z0 + storey.default_ceiling_height.meters
             findings.extend(detect_gaps(plan, storey.tag))
             walls, junctions, junction_findings = resolve_storey_walls(
-                plan, storey.tag, z0, z1, layout_lines=lines_for_wall
+                plan, storey.tag, z0, z1, layout_lines=lines_for_wall, room_paint=room_paint
             )
             model.walls.extend(walls)
             model.junctions.extend(junctions)
@@ -323,6 +325,8 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         model.geometry = build_geometry(model)
 
     model.index_by_tag()
+    findings.extend(room_paint.findings)
+    findings.extend(room_paint.envelope_findings(model))
     return model, findings
 
 
@@ -337,12 +341,14 @@ def resolve_preview(plan: PlanModel) -> ResolvedModel:
 
     model.layout_lines = resolve_layout_lines(plan)
     lines_for_wall = lines_by_wall(model.layout_lines)
+    room_paint = RoomPaint.of(plan)
     ordered = sorted(plan.storeys, key=lambda s: s.elevation.meters)
     for storey in ordered:
         z0 = storey.elevation.meters
         z1 = z0 + storey.default_ceiling_height.meters
         walls, junctions, _junction_findings = resolve_storey_walls(
-            plan, storey.tag, z0, z1, layout_lines=lines_for_wall
+            plan, storey.tag, z0, z1, layout_lines=lines_for_wall,
+            room_paint=room_paint,
         )
         model.walls.extend(walls)
         model.junctions.extend(junctions)

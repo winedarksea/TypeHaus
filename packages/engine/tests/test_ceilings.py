@@ -41,10 +41,10 @@ def _solid(catlin_model, tag: str):
 
 
 def test_default_case_bills_the_covering_decks_own_ceiling_below(catlin_model) -> None:
-    """A room with no override reads its covering deck's own layer stack."""
+    """A room with no override reads its covering deck's own layer stack, painted by the room."""
     ceiling = _ceiling(catlin_model, "RM-M-LIVING")
     assert ceiling is not None
-    assert [layer.material_ref for layer in ceiling.layers] == ["gwb"]
+    assert [layer.material_ref for layer in ceiling.layers] == ["latex-paint", "gwb"]
     assert ceiling.z0_m is not None and ceiling.z1_m is not None
     assert ceiling.z1_m > ceiling.z0_m  # structure side above the finished (room) side
 
@@ -87,7 +87,7 @@ def test_room_override_wins_under_a_deck_that_lines_the_rest_of_the_storey(catli
 
     neighbour = _ceiling(catlin_model, "RM-S-BED1")
     assert neighbour is not None
-    assert [layer.material_ref for layer in neighbour.layers] == ["gwb"]
+    assert [layer.material_ref for layer in neighbour.layers] == ["latex-paint", "gwb"]
     # The liner hangs BELOW the board it replaces — same joist soffit, deeper stack — so
     # the plant room's finished ceiling is the lower of the two.
     assert neighbour.z1_m == pytest.approx(ceiling.z1_m)
@@ -112,7 +112,7 @@ def test_slab_ceiling_below_resolves_like_a_floor_systems(catlin_model) -> None:
     """``RM-B-PLAY-N`` sits under ``SL-M-DECK``, a ``Slab``, not a ``FloorSystem``."""
     ceiling = _ceiling(catlin_model, "RM-B-PLAY-N")
     assert ceiling is not None
-    assert [layer.material_ref for layer in ceiling.layers] == ["gwb"]
+    assert [layer.material_ref for layer in ceiling.layers] == ["latex-paint", "gwb"]
     assert _solid(catlin_model, ceiling.tag) is not None
 
 

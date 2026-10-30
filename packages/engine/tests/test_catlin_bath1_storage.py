@@ -104,12 +104,12 @@ def test_run_is_flush_and_has_a_stock_matte_white_end_panel(catlin_plan, catlin_
     objects = _objects(catlin_model_ro)
     bounds = [Polygon(objects[tag].footprint).bounds for tag in CABINET_TAGS]
     assert [bound[0] / INCH for bound in bounds] == pytest.approx((7.125, 31.125, 55.125))
-    assert [bound[1] / INCH for bound in bounds] == pytest.approx((322.76,) * 3)
-    assert [bound[3] / INCH for bound in bounds] == pytest.approx((347.635,) * 3)
+    assert [bound[1] / INCH for bound in bounds] == pytest.approx((322.75,) * 3)
+    assert [bound[3] / INCH for bound in bounds] == pytest.approx((347.625,) * 3)
     cover = objects["FURN-S-BATH1-CLOSET-COVER"]
     typ = next(t for t in catlin_plan.library.furniture_types if t.tag == cover.type_ref)
     assert typ.product_ref == "PROD-IKEA-FORBATTRA-MATTE-25-90"
-    assert Polygon(cover.footprint).bounds[2:] == pytest.approx((73.625 * INCH, 347.635 * INCH))
+    assert Polygon(cover.footprint).bounds[2:] == pytest.approx((73.625 * INCH, 347.625 * INCH))
     assert cover.body_z1_m == pytest.approx(objects[CABINET_TAGS[0]].body_z1_m)
 
 
@@ -163,8 +163,8 @@ def test_open_entry_has_a_continuous_turn_between_storage_and_countertop(catlin_
     counter = Polygon(objects["FX-S-BATH1-LAV"].footprint)
     cover = Polygon(objects["FURN-S-BATH1-CLOSET-COVER"].footprint)
     assert (counter.bounds[0] - cover.bounds[2]) / INCH == pytest.approx(21.37)
-    assert (counter.bounds[1] - cover.bounds[3]) / INCH == pytest.approx(8.365)
-    assert counter.distance(cover) / INCH == pytest.approx(22.948858904)
+    assert (counter.bounds[1] - cover.bounds[3]) / INCH == pytest.approx(8.375)
+    assert counter.distance(cover) / INCH == pytest.approx(22.9525058545)
     door = next(o for o in model.openings if o.tag == "D-S-BATH1")
     leaf = LineString((door.swing_clearance[0], door.swing_clearance[-1]))
     leaf_body = leaf.buffer(door.cased_product.leaf_thickness_m / 2)

@@ -235,53 +235,17 @@
           -40.0
         ],
         [
-          436.185,
-          -40.0
-        ],
-        [
-          436.185,
-          -13.437499999999998
-        ],
-        [
           436.06000000000006,
           -13.437499999999998
         ]
       ],
       "layer": "A-WALL",
-      "lineweight": 0.35,
+      "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "CBW104AAAA",
-      "tag": "W-B-E1/foundation-coating"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          436.06000000000006,
-          -40.0
-        ],
-        [
-          436.185,
-          -40.0
-        ],
-        [
-          436.185,
-          -13.437499999999998
-        ],
-        [
-          436.06000000000006,
-          -13.437499999999998
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "foundation-coating-acrylic-black",
-      "fill": "#1c1f24"
+      "tag": "W-B-E1/foundation-coating",
+      "material": "foundation-coating-acrylic-black"
     },
     {
       "space": "model",
@@ -512,57 +476,21 @@
       "node": "polyline",
       "points": [
         [
-          -4.1850000000000005,
-          -40.0
-        ],
-        [
           -4.06,
           -40.0
         ],
         [
           -4.06,
-          -13.437499999999998
-        ],
-        [
-          -4.1850000000000005,
           -13.437499999999998
         ]
       ],
       "layer": "A-WALL",
-      "lineweight": 0.35,
+      "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "CBW110AAAA",
-      "tag": "W-B-W2/foundation-coating"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -4.1850000000000005,
-          -40.0
-        ],
-        [
-          -4.06,
-          -40.0
-        ],
-        [
-          -4.06,
-          -13.437499999999998
-        ],
-        [
-          -4.1850000000000005,
-          -13.437499999999998
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "foundation-coating-acrylic-black",
-      "fill": "#1c1f24"
+      "tag": "W-B-W2/foundation-coating",
+      "material": "foundation-coating-acrylic-black"
     },
     {
       "space": "model",
@@ -793,34 +721,6 @@
       "node": "polyline",
       "points": [
         [
-          169.93750000000003,
-          -109.4375
-        ],
-        [
-          169.94750000000002,
-          -109.4375
-        ],
-        [
-          169.94750000000002,
-          -12.625
-        ],
-        [
-          169.93750000000003,
-          -12.625
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CQRJZCM0R1",
-      "tag": "W-B-HALL-W/paint-a"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           169.4375,
           -109.4375
         ],
@@ -990,84 +890,42 @@
       "node": "polyline",
       "points": [
         [
-          163.42750000000004,
+          169.93750000000003,
           -109.4375
         ],
         [
-          163.43750000000003,
-          -109.4375
-        ],
-        [
-          163.43750000000003,
-          -12.625
-        ],
-        [
-          163.42750000000004,
+          169.93750000000003,
           -12.625
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "CQRJZCM0R1",
-      "tag": "W-B-HALL-W/paint-b"
+      "tag": "W-B-HALL-W/paint-a",
+      "material": "latex-paint"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          425.49000000000007,
-          0.0
+          163.4375,
+          -109.4375
         ],
         [
-          425.50000000000006,
-          0.0
-        ],
-        [
-          425.50000000000006,
-          34.0
-        ],
-        [
-          425.49000000000007,
-          34.0
+          163.4375,
+          -12.625
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW103AAAA",
-      "tag": "W-M-E1/paint"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          425.49000000000007,
-          82.00000000000001
-        ],
-        [
-          425.50000000000006,
-          82.00000000000001
-        ],
-        [
-          425.50000000000006,
-          108.00000000000001
-        ],
-        [
-          425.49000000000007,
-          108.00000000000001
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW103AAAA",
-      "tag": "W-M-E1/paint"
+      "closed": false,
+      "uid": "CQRJZCM0R1",
+      "tag": "W-B-HALL-W/paint-b",
+      "material": "latex-paint"
     },
     {
       "space": "model",
@@ -1918,188 +1776,202 @@
       "node": "polyline",
       "points": [
         [
-          425.49500000000006,
-          34.0
-        ],
-        [
-          425.49500000000006,
-          82.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW103AAAA",
-      "tag": "W-M-E1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          425.75000000000006,
-          34.0
-        ],
-        [
-          425.75000000000006,
-          82.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW103AAAA",
-      "tag": "W-M-E1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          428.7500000000001,
-          34.0
-        ],
-        [
-          428.7500000000001,
-          82.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW103AAAA",
-      "tag": "W-M-E1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          431.75,
-          34.0
-        ],
-        [
-          431.75,
-          82.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW103AAAA",
-      "tag": "W-M-E1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          434.0000000000001,
-          34.0
-        ],
-        [
-          434.0000000000001,
-          82.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW103AAAA",
-      "tag": "W-M-E1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          436.2500000000001,
-          34.0
-        ],
-        [
-          436.2500000000001,
-          82.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW103AAAA",
-      "tag": "W-M-E1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          437.25000000000006,
-          34.0
-        ],
-        [
-          437.25000000000006,
-          82.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW103AAAA",
-      "tag": "W-M-E1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          438.62500000000006,
-          34.0
-        ],
-        [
-          438.62500000000006,
-          82.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW103AAAA",
-      "tag": "W-M-E1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          6.5,
+          425.50000000000006,
           0.0
         ],
         [
-          6.510000000000001,
-          0.0
+          425.50000000000006,
+          34.0
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW103AAAA",
+      "tag": "W-M-E1/paint",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          425.50000000000006,
+          82.00000000000001
         ],
         [
-          6.510000000000001,
-          108.00000000000001
-        ],
-        [
-          6.5,
+          425.50000000000006,
           108.00000000000001
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW110AAAA",
-      "tag": "W-M-W3/paint"
+      "closed": false,
+      "uid": "CMW103AAAA",
+      "tag": "W-M-E1/paint",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          425.50000000000006,
+          34.0
+        ],
+        [
+          425.50000000000006,
+          82.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW103AAAA",
+      "tag": "W-M-E1-void"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          425.75000000000006,
+          34.0
+        ],
+        [
+          425.75000000000006,
+          82.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW103AAAA",
+      "tag": "W-M-E1-void"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          428.7500000000001,
+          34.0
+        ],
+        [
+          428.7500000000001,
+          82.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW103AAAA",
+      "tag": "W-M-E1-void"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          431.75,
+          34.0
+        ],
+        [
+          431.75,
+          82.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW103AAAA",
+      "tag": "W-M-E1-void"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          434.0000000000001,
+          34.0
+        ],
+        [
+          434.0000000000001,
+          82.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW103AAAA",
+      "tag": "W-M-E1-void"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          436.2500000000001,
+          34.0
+        ],
+        [
+          436.2500000000001,
+          82.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW103AAAA",
+      "tag": "W-M-E1-void"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          437.25000000000006,
+          34.0
+        ],
+        [
+          437.25000000000006,
+          82.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW103AAAA",
+      "tag": "W-M-E1-void"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          438.62500000000006,
+          34.0
+        ],
+        [
+          438.62500000000006,
+          82.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW103AAAA",
+      "tag": "W-M-E1-void"
     },
     {
       "space": "model",
@@ -2529,28 +2401,21 @@
       "node": "polyline",
       "points": [
         [
-          212.74,
+          6.499999999999999,
           0.0
         ],
         [
-          212.75000000000003,
-          0.0
-        ],
-        [
-          212.75000000000003,
-          108.00000000000001
-        ],
-        [
-          212.74,
+          6.499999999999999,
           108.00000000000001
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW113AAAA",
-      "tag": "W-M-C2/paint-a"
+      "closed": false,
+      "uid": "CMW110AAAA",
+      "tag": "W-M-W3/paint",
+      "material": "latex-paint"
     },
     {
       "space": "model",
@@ -2726,56 +2591,42 @@
       "node": "polyline",
       "points": [
         [
-          219.25,
+          212.75000000000003,
           0.0
         ],
         [
-          219.26000000000002,
-          0.0
-        ],
-        [
-          219.26000000000002,
-          108.00000000000001
-        ],
-        [
-          219.25,
+          212.75000000000003,
           108.00000000000001
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "CMW113AAAA",
-      "tag": "W-M-C2/paint-b"
+      "tag": "W-M-C2/paint-a",
+      "material": "latex-paint"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          101.25000000000001,
+          219.25000000000006,
           0.0
         ],
         [
-          101.26,
-          0.0
-        ],
-        [
-          101.26,
-          107.375
-        ],
-        [
-          101.25000000000001,
-          107.375
+          219.25000000000006,
+          108.00000000000001
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW127AAAA",
-      "tag": "W-M-BA2E2/paint-a"
+      "closed": false,
+      "uid": "CMW113AAAA",
+      "tag": "W-M-C2/paint-b",
+      "material": "latex-paint"
     },
     {
       "space": "model",
@@ -2948,34 +2799,6 @@
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          94.74000000000001,
-          0.0
-        ],
-        [
-          94.75,
-          0.0
-        ],
-        [
-          94.75,
-          107.375
-        ],
-        [
-          94.74000000000001,
-          107.375
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW127AAAA",
-      "tag": "W-M-BA2E2/paint-b"
-    },
-    {
-      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3007,7 +2830,49 @@
       "node": "polyline",
       "points": [
         [
-          101.26,
+          101.25000000000001,
+          0.0
+        ],
+        [
+          101.25000000000001,
+          107.375
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW127AAAA",
+      "tag": "W-M-BA2E2/paint-a",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          94.75000000000001,
+          0.0
+        ],
+        [
+          94.75000000000001,
+          107.375
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW127AAAA",
+      "tag": "W-M-BA2E2/paint-b",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          101.25000000000001,
           0.0
         ],
         [
@@ -3019,7 +2884,7 @@
           107.375
         ],
         [
-          101.26,
+          101.25000000000001,
           107.375
         ]
       ],
@@ -3035,7 +2900,7 @@
       "node": "hatch",
       "boundary": [
         [
-          101.26,
+          101.25000000000001,
           0.0
         ],
         [
@@ -3047,7 +2912,7 @@
           107.375
         ],
         [
-          101.26,
+          101.25000000000001,
           107.375
         ]
       ],
@@ -3068,11 +2933,11 @@
           0.0
         ],
         [
-          212.74,
+          212.75000000000003,
           0.0
         ],
         [
-          212.74,
+          212.75000000000003,
           107.375
         ],
         [
@@ -3096,11 +2961,11 @@
           0.0
         ],
         [
-          212.74,
+          212.75000000000003,
           0.0
         ],
         [
-          212.74,
+          212.75000000000003,
           107.375
         ],
         [
@@ -3311,34 +3176,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "mineral-wool"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          425.49000000000007,
-          120.0
-        ],
-        [
-          425.50000000000006,
-          120.0
-        ],
-        [
-          425.50000000000006,
-          228.0
-        ],
-        [
-          425.49000000000007,
-          228.0
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSW104AAAA",
-      "tag": "W-S-E3/paint"
     },
     {
       "space": "model",
@@ -3767,28 +3604,21 @@
       "node": "polyline",
       "points": [
         [
-          6.5,
+          425.50000000000006,
           120.0
         ],
         [
-          6.510000000000001,
-          120.0
-        ],
-        [
-          6.510000000000001,
-          228.0
-        ],
-        [
-          6.5,
+          425.50000000000006,
           228.0
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSW112AAAA",
-      "tag": "W-S-W3/paint"
+      "closed": false,
+      "uid": "CSW104AAAA",
+      "tag": "W-S-E3/paint",
+      "material": "latex-paint"
     },
     {
       "space": "model",
@@ -4217,28 +4047,21 @@
       "node": "polyline",
       "points": [
         [
-          212.74,
+          6.499999999999999,
           120.0
         ],
         [
-          212.75000000000003,
-          120.0
-        ],
-        [
-          212.75000000000003,
-          228.0
-        ],
-        [
-          212.74,
+          6.499999999999999,
           228.0
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSW139AAAA",
-      "tag": "W-S-C2C/paint-a"
+      "closed": false,
+      "uid": "CSW112AAAA",
+      "tag": "W-S-W3/paint",
+      "material": "latex-paint"
     },
     {
       "space": "model",
@@ -4415,56 +4238,42 @@
       "node": "polyline",
       "points": [
         [
-          219.25,
+          212.75000000000003,
           120.0
         ],
         [
-          219.26000000000002,
-          120.0
-        ],
-        [
-          219.26000000000002,
-          228.0
-        ],
-        [
-          219.25,
+          212.75000000000003,
           228.0
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "CSW139AAAA",
-      "tag": "W-S-C2C/paint-b"
+      "tag": "W-S-C2C/paint-a",
+      "material": "latex-paint"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          260.74,
+          219.25000000000006,
           120.0
         ],
         [
-          260.75,
-          120.0
-        ],
-        [
-          260.75,
-          227.37500000000003
-        ],
-        [
-          260.74,
-          227.37500000000003
+          219.25000000000006,
+          228.0
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSW123AAAA",
-      "tag": "W-S-BW2/paint-a"
+      "closed": false,
+      "uid": "CSW139AAAA",
+      "tag": "W-S-C2C/paint-b",
+      "material": "latex-paint"
     },
     {
       "space": "model",
@@ -4640,16 +4449,29 @@
       "node": "polyline",
       "points": [
         [
+          260.75,
+          120.0
+        ],
+        [
+          260.75,
+          227.37500000000003
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CSW123AAAA",
+      "tag": "W-S-BW2/paint-a",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           265.25,
           120.0
-        ],
-        [
-          265.26,
-          120.0
-        ],
-        [
-          265.26,
-          227.37500000000003
         ],
         [
           265.25,
@@ -4659,28 +4481,29 @@
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "CSW123AAAA",
-      "tag": "W-S-BW2/paint-b"
+      "tag": "W-S-BW2/paint-b",
+      "material": "latex-paint"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          265.26,
+          265.25,
           120.0
         ],
         [
-          425.49000000000007,
+          425.50000000000006,
           120.0
         ],
         [
-          425.49000000000007,
+          425.50000000000006,
           227.37500000000003
         ],
         [
-          265.26,
+          265.25,
           227.37500000000003
         ]
       ],
@@ -4696,19 +4519,19 @@
       "node": "hatch",
       "boundary": [
         [
-          265.26,
+          265.25,
           120.0
         ],
         [
-          425.49000000000007,
+          425.50000000000006,
           120.0
         ],
         [
-          425.49000000000007,
+          425.50000000000006,
           227.37500000000003
         ],
         [
-          265.26,
+          265.25,
           227.37500000000003
         ]
       ],
@@ -4724,19 +4547,19 @@
       "node": "hatch",
       "boundary": [
         [
-          265.26,
+          265.25,
           120.0
         ],
         [
-          425.49000000000007,
+          425.50000000000006,
           120.0
         ],
         [
-          425.49000000000007,
+          425.50000000000006,
           227.37500000000003
         ],
         [
-          265.26,
+          265.25,
           227.37500000000003
         ]
       ],
@@ -4746,34 +4569,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "fiberglass"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          112.24000000000001,
-          120.0
-        ],
-        [
-          112.25000000000001,
-          120.0
-        ],
-        [
-          112.25000000000001,
-          227.37500000000003
-        ],
-        [
-          112.24000000000001,
-          227.37500000000003
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSW142AAAA",
-      "tag": "W-S-DC2/paint-a"
     },
     {
       "space": "model",
@@ -4946,34 +4741,6 @@
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          118.75,
-          120.0
-        ],
-        [
-          118.76,
-          120.0
-        ],
-        [
-          118.76,
-          227.37500000000003
-        ],
-        [
-          118.75,
-          227.37500000000003
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSW142AAAA",
-      "tag": "W-S-DC2/paint-b"
-    },
-    {
-      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4999,6 +4766,48 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "fiberglass"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          112.25000000000003,
+          120.0
+        ],
+        [
+          112.25000000000003,
+          227.37500000000003
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CSW142AAAA",
+      "tag": "W-S-DC2/paint-a",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          118.75000000000001,
+          120.0
+        ],
+        [
+          118.75000000000001,
+          227.37500000000003
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CSW142AAAA",
+      "tag": "W-S-DC2/paint-b",
+      "material": "latex-paint"
     },
     {
       "space": "model",
@@ -5111,34 +4920,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "spf"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          212.74,
-          240.0
-        ],
-        [
-          212.75000000000003,
-          240.0
-        ],
-        [
-          212.75000000000003,
-          346.125
-        ],
-        [
-          212.74,
-          346.125
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "78VGE6A81J",
-      "tag": "W-A-C2M/paint-a"
     },
     {
       "space": "model",
@@ -5314,56 +5095,21 @@
       "node": "polyline",
       "points": [
         [
-          219.25,
+          212.75000000000003,
           240.0
         ],
         [
-          219.26000000000002,
-          240.0
-        ],
-        [
-          219.26000000000002,
-          346.125
-        ],
-        [
-          219.25,
+          212.75000000000003,
           346.125
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "78VGE6A81J",
-      "tag": "W-A-C2M/paint-b"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          112.24000000000001,
-          240.0
-        ],
-        [
-          112.25000000000001,
-          240.0
-        ],
-        [
-          112.25000000000001,
-          300.12500000000006
-        ],
-        [
-          112.24000000000001,
-          300.12500000000006
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "ZEF56D047J",
-      "tag": "W-A-STU-W/paint-a"
+      "tag": "W-A-C2M/paint-a",
+      "material": "latex-paint"
     },
     {
       "space": "model",
@@ -5539,28 +5285,42 @@
       "node": "polyline",
       "points": [
         [
-          118.75,
+          112.25000000000003,
           240.0
         ],
         [
-          118.76,
-          240.0
-        ],
-        [
-          118.76,
-          300.12500000000006
-        ],
-        [
-          118.75,
+          112.25000000000003,
           300.12500000000006
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "ZEF56D047J",
-      "tag": "W-A-STU-W/paint-b"
+      "tag": "W-A-STU-W/paint-a",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          118.75000000000001,
+          240.0
+        ],
+        [
+          118.75000000000001,
+          300.12500000000006
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "ZEF56D047J",
+      "tag": "W-A-STU-W/paint-b",
+      "material": "latex-paint"
     },
     {
       "space": "model",
@@ -5623,19 +5383,19 @@
       "node": "polyline",
       "points": [
         [
-          418.09250000000003,
+          418.03000000000003,
           -117.4375
         ],
         [
-          438.09250000000003,
+          438.03,
           -117.4375
         ],
         [
-          438.09250000000003,
+          438.03,
           -109.4375
         ],
         [
-          418.09250000000003,
+          418.03000000000003,
           -109.4375
         ]
       ],
@@ -5651,19 +5411,19 @@
       "node": "hatch",
       "boundary": [
         [
-          418.09250000000003,
+          418.03000000000003,
           -117.4375
         ],
         [
-          438.09250000000003,
+          438.03,
           -117.4375
         ],
         [
-          438.09250000000003,
+          438.03,
           -109.4375
         ],
         [
-          418.09250000000003,
+          418.03000000000003,
           -109.4375
         ]
       ],
@@ -5679,19 +5439,19 @@
       "node": "polyline",
       "points": [
         [
-          -8.0925,
+          -8.030000000000001,
           -117.4375
         ],
         [
-          11.9075,
+          11.969999999999999,
           -117.4375
         ],
         [
-          11.9075,
+          11.969999999999999,
           -109.4375
         ],
         [
-          -8.0925,
+          -8.030000000000001,
           -109.4375
         ]
       ],
@@ -5707,19 +5467,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -8.0925,
+          -8.030000000000001,
           -117.4375
         ],
         [
-          11.9075,
+          11.969999999999999,
           -117.4375
         ],
         [
-          11.9075,
+          11.969999999999999,
           -109.4375
         ],
         [
-          -8.0925,
+          -8.030000000000001,
           -109.4375
         ]
       ],
@@ -6073,47 +5833,19 @@
       "node": "polyline",
       "points": [
         [
-          219.26000000000002,
+          219.25,
           214.0
         ],
         [
-          220.76000000000002,
+          220.75,
           214.0
         ],
         [
-          220.76000000000002,
+          220.75,
           214.62500000000003
         ],
         [
-          219.26000000000002,
-          214.62500000000003
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSF601AAAA",
-      "tag": "SF-S-DUCT"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          222.76,
-          214.0
-        ],
-        [
-          257.24,
-          214.0
-        ],
-        [
-          257.24,
-          214.62500000000003
-        ],
-        [
-          222.76,
+          219.25,
           214.62500000000003
         ]
       ],
@@ -6129,19 +5861,47 @@
       "node": "polyline",
       "points": [
         [
-          259.24,
+          222.75,
           214.0
         ],
         [
-          260.74,
+          257.25,
           214.0
         ],
         [
-          260.74,
+          257.25,
           214.62500000000003
         ],
         [
-          259.24,
+          222.75,
+          214.62500000000003
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSF601AAAA",
+      "tag": "SF-S-DUCT"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          259.25,
+          214.0
+        ],
+        [
+          260.75,
+          214.0
+        ],
+        [
+          260.75,
+          214.62500000000003
+        ],
+        [
+          259.25,
           214.62500000000003
         ]
       ],
@@ -6213,19 +5973,19 @@
       "node": "polyline",
       "points": [
         [
-          436.09250000000003,
+          436.03000000000003,
           -122.43749999999999
         ],
         [
-          440.0925,
+          440.03000000000003,
           -122.43749999999999
         ],
         [
-          440.0925,
+          440.03000000000003,
           -118.4375
         ],
         [
-          436.09250000000003,
+          436.03000000000003,
           -118.4375
         ]
       ],
@@ -6241,19 +6001,19 @@
       "node": "hatch",
       "boundary": [
         [
-          436.09250000000003,
+          436.03000000000003,
           -122.43749999999999
         ],
         [
-          440.0925,
+          440.03000000000003,
           -122.43749999999999
         ],
         [
-          440.0925,
+          440.03000000000003,
           -118.4375
         ],
         [
-          436.09250000000003,
+          436.03000000000003,
           -118.4375
         ]
       ],
@@ -6269,19 +6029,19 @@
       "node": "polyline",
       "points": [
         [
-          416.0925,
+          416.03000000000003,
           -122.43749999999999
         ],
         [
-          420.09250000000003,
+          420.03,
           -122.43749999999999
         ],
         [
-          420.09250000000003,
+          420.03,
           -118.4375
         ],
         [
-          416.0925,
+          416.03000000000003,
           -118.4375
         ]
       ],
@@ -6297,19 +6057,19 @@
       "node": "hatch",
       "boundary": [
         [
-          416.0925,
+          416.03000000000003,
           -122.43749999999999
         ],
         [
-          420.09250000000003,
+          420.03,
           -122.43749999999999
         ],
         [
-          420.09250000000003,
+          420.03,
           -118.4375
         ],
         [
-          416.0925,
+          416.03000000000003,
           -118.4375
         ]
       ],
@@ -6325,19 +6085,19 @@
       "node": "polyline",
       "points": [
         [
-          -10.092500000000001,
+          -10.03,
           -122.43749999999999
         ],
         [
-          -6.092500000000001,
+          -6.03,
           -122.43749999999999
         ],
         [
-          -6.092500000000001,
+          -6.03,
           -118.4375
         ],
         [
-          -10.092500000000001,
+          -10.03,
           -118.4375
         ]
       ],
@@ -6353,19 +6113,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -10.092500000000001,
+          -10.03,
           -122.43749999999999
         ],
         [
-          -6.092500000000001,
+          -6.03,
           -122.43749999999999
         ],
         [
-          -6.092500000000001,
+          -6.03,
           -118.4375
         ],
         [
-          -10.092500000000001,
+          -10.03,
           -118.4375
         ]
       ],
@@ -6381,19 +6141,19 @@
       "node": "polyline",
       "points": [
         [
-          9.9075,
+          9.97,
           -122.43749999999999
         ],
         [
-          13.9075,
+          13.97,
           -122.43749999999999
         ],
         [
-          13.9075,
+          13.97,
           -118.4375
         ],
         [
-          9.9075,
+          9.97,
           -118.4375
         ]
       ],
@@ -6409,19 +6169,19 @@
       "node": "hatch",
       "boundary": [
         [
-          9.9075,
+          9.97,
           -122.43749999999999
         ],
         [
-          13.9075,
+          13.97,
           -122.43749999999999
         ],
         [
-          13.9075,
+          13.97,
           -118.4375
         ],
         [
-          9.9075,
+          9.97,
           -118.4375
         ]
       ],
@@ -11789,7 +11549,7 @@
       "node": "polyline",
       "points": [
         [
-          169.94751968503937,
+          169.93751968503938,
           -12.5
         ],
         [
@@ -11801,7 +11561,7 @@
           -11.875
         ],
         [
-          169.94751968503937,
+          169.93751968503938,
           -11.875
         ]
       ],
@@ -11817,7 +11577,7 @@
       "node": "hatch",
       "boundary": [
         [
-          169.94751968503937,
+          169.93751968503938,
           -12.5
         ],
         [
@@ -11829,7 +11589,7 @@
           -11.875
         ],
         [
-          169.94751968503937,
+          169.93751968503938,
           -11.875
         ]
       ],
@@ -11849,11 +11609,11 @@
           -12.5
         ],
         [
-          163.42748031496063,
+          163.43748031496062,
           -12.5
         ],
         [
-          163.42748031496063,
+          163.43748031496062,
           -11.875
         ],
         [
@@ -11877,11 +11637,11 @@
           -12.5
         ],
         [
-          163.42748031496063,
+          163.43748031496062,
           -12.5
         ],
         [
-          163.42748031496063,
+          163.43748031496062,
           -11.875
         ],
         [
@@ -11961,11 +11721,11 @@
           107.50000000000001
         ],
         [
-          425.49000000000007,
+          425.50000000000006,
           107.50000000000001
         ],
         [
-          425.49000000000007,
+          425.50000000000006,
           108.125
         ],
         [
@@ -11989,11 +11749,11 @@
           107.50000000000001
         ],
         [
-          425.49000000000007,
+          425.50000000000006,
           107.50000000000001
         ],
         [
-          425.49000000000007,
+          425.50000000000006,
           108.125
         ],
         [
@@ -12013,7 +11773,7 @@
       "node": "polyline",
       "points": [
         [
-          219.26000000000002,
+          219.25,
           107.50000000000001
         ],
         [
@@ -12025,7 +11785,7 @@
           108.125
         ],
         [
-          219.26000000000002,
+          219.25,
           108.125
         ]
       ],
@@ -12041,7 +11801,7 @@
       "node": "hatch",
       "boundary": [
         [
-          219.26000000000002,
+          219.25,
           107.50000000000001
         ],
         [
@@ -12053,7 +11813,7 @@
           108.125
         ],
         [
-          219.26000000000002,
+          219.25,
           108.125
         ]
       ],
@@ -12069,7 +11829,7 @@
       "node": "polyline",
       "points": [
         [
-          6.510000000000001,
+          6.5,
           107.50000000000001
         ],
         [
@@ -12081,7 +11841,7 @@
           108.125
         ],
         [
-          6.510000000000001,
+          6.5,
           108.125
         ]
       ],
@@ -12097,7 +11857,7 @@
       "node": "hatch",
       "boundary": [
         [
-          6.510000000000001,
+          6.5,
           107.50000000000001
         ],
         [
@@ -12109,7 +11869,7 @@
           108.125
         ],
         [
-          6.510000000000001,
+          6.5,
           108.125
         ]
       ],
@@ -12130,11 +11890,11 @@
           107.50000000000001
         ],
         [
-          94.74000000000001,
+          94.75,
           107.50000000000001
         ],
         [
-          94.74000000000001,
+          94.75,
           108.125
         ],
         [
@@ -12158,11 +11918,11 @@
           107.50000000000001
         ],
         [
-          94.74000000000001,
+          94.75,
           107.50000000000001
         ],
         [
-          94.74000000000001,
+          94.75,
           108.125
         ],
         [
@@ -12187,11 +11947,11 @@
           227.50000000000003
         ],
         [
-          112.24000000000001,
+          112.25000000000001,
           227.50000000000003
         ],
         [
-          112.24000000000001,
+          112.25000000000001,
           228.12500000000003
         ],
         [
@@ -12215,11 +11975,11 @@
           227.50000000000003
         ],
         [
-          112.24000000000001,
+          112.25000000000001,
           227.50000000000003
         ],
         [
-          112.24000000000001,
+          112.25000000000001,
           228.12500000000003
         ],
         [
@@ -12239,7 +11999,7 @@
       "node": "polyline",
       "points": [
         [
-          6.510000000000001,
+          6.5,
           227.50000000000003
         ],
         [
@@ -12251,7 +12011,7 @@
           228.12500000000003
         ],
         [
-          6.510000000000001,
+          6.5,
           228.12500000000003
         ]
       ],
@@ -12267,7 +12027,7 @@
       "node": "hatch",
       "boundary": [
         [
-          6.510000000000001,
+          6.5,
           227.50000000000003
         ],
         [
@@ -12279,7 +12039,7 @@
           228.12500000000003
         ],
         [
-          6.510000000000001,
+          6.5,
           228.12500000000003
         ]
       ],
@@ -12351,19 +12111,19 @@
       "node": "polyline",
       "points": [
         [
-          118.76,
+          118.75,
           227.50000000000003
         ],
         [
-          212.74,
+          212.75000000000003,
           227.50000000000003
         ],
         [
-          212.74,
+          212.75000000000003,
           228.12500000000003
         ],
         [
-          118.76,
+          118.75,
           228.12500000000003
         ]
       ],
@@ -12379,19 +12139,19 @@
       "node": "hatch",
       "boundary": [
         [
-          118.76,
+          118.75,
           227.50000000000003
         ],
         [
-          212.74,
+          212.75000000000003,
           227.50000000000003
         ],
         [
-          212.74,
+          212.75000000000003,
           228.12500000000003
         ],
         [
-          118.76,
+          118.75,
           228.12500000000003
         ]
       ],
@@ -12408,7 +12168,7 @@
       "node": "polyline",
       "points": [
         [
-          219.26000000000002,
+          219.25,
           227.50000000000003
         ],
         [
@@ -12420,7 +12180,7 @@
           228.12500000000003
         ],
         [
-          219.26000000000002,
+          219.25,
           228.12500000000003
         ]
       ],
@@ -12436,7 +12196,7 @@
       "node": "hatch",
       "boundary": [
         [
-          219.26000000000002,
+          219.25,
           227.50000000000003
         ],
         [
@@ -12448,7 +12208,7 @@
           228.12500000000003
         ],
         [
-          219.26000000000002,
+          219.25,
           228.12500000000003
         ]
       ],
@@ -12468,11 +12228,11 @@
           227.50000000000003
         ],
         [
-          260.74,
+          260.75,
           227.50000000000003
         ],
         [
-          260.74,
+          260.75,
           228.12500000000003
         ],
         [
@@ -12496,11 +12256,11 @@
           227.50000000000003
         ],
         [
-          260.74,
+          260.75,
           227.50000000000003
         ],
         [
-          260.74,
+          260.75,
           228.12500000000003
         ],
         [
@@ -12576,19 +12336,19 @@
       "node": "polyline",
       "points": [
         [
-          254.5,
+          248.5,
           227.50000000000003
         ],
         [
-          255.5,
+          249.5,
           227.50000000000003
         ],
         [
-          255.5,
+          249.5,
           228.12500000000003
         ],
         [
-          254.5,
+          248.5,
           228.12500000000003
         ]
       ],
@@ -12604,19 +12364,19 @@
       "node": "hatch",
       "boundary": [
         [
-          254.5,
+          248.5,
           227.50000000000003
         ],
         [
-          255.5,
+          249.5,
           227.50000000000003
         ],
         [
-          255.5,
+          249.5,
           228.12500000000003
         ],
         [
-          254.5,
+          248.5,
           228.12500000000003
         ]
       ],
@@ -12632,19 +12392,19 @@
       "node": "polyline",
       "points": [
         [
-          248.5,
+          254.5,
           227.50000000000003
         ],
         [
-          249.5,
+          255.5,
           227.50000000000003
         ],
         [
-          249.5,
+          255.5,
           228.12500000000003
         ],
         [
-          248.5,
+          254.5,
           228.12500000000003
         ]
       ],
@@ -12660,19 +12420,19 @@
       "node": "hatch",
       "boundary": [
         [
-          248.5,
+          254.5,
           227.50000000000003
         ],
         [
-          249.5,
+          255.5,
           227.50000000000003
         ],
         [
-          249.5,
+          255.5,
           228.12500000000003
         ],
         [
-          248.5,
+          254.5,
           228.12500000000003
         ]
       ],
@@ -12688,19 +12448,19 @@
       "node": "polyline",
       "points": [
         [
-          438.09251968503935,
+          438.03,
           -124.4375
         ],
         [
-          452.18500000000006,
+          452.06,
           -124.4375
         ],
         [
-          452.18500000000006,
+          452.06,
           -48.00000000000001
         ],
         [
-          438.09251968503935,
+          438.03,
           -48.00000000000001
         ]
       ],
@@ -12716,19 +12476,19 @@
       "node": "hatch",
       "boundary": [
         [
-          438.09251968503935,
+          438.03,
           -124.4375
         ],
         [
-          452.18500000000006,
+          452.06,
           -124.4375
         ],
         [
-          452.18500000000006,
+          452.06,
           -48.00000000000001
         ],
         [
-          438.09251968503935,
+          438.03,
           -48.00000000000001
         ]
       ],
@@ -12745,19 +12505,19 @@
       "node": "polyline",
       "points": [
         [
-          436.185,
+          436.06000000000006,
           -109.4375
         ],
         [
-          438.09251968503935,
+          438.03,
           -109.4375
         ],
         [
-          438.09251968503935,
+          438.03,
           -48.00000000000001
         ],
         [
-          436.185,
+          436.06000000000006,
           -48.00000000000001
         ]
       ],
@@ -12773,19 +12533,19 @@
       "node": "hatch",
       "boundary": [
         [
-          436.185,
+          436.06000000000006,
           -109.4375
         ],
         [
-          438.09251968503935,
+          438.03,
           -109.4375
         ],
         [
-          438.09251968503935,
+          438.03,
           -48.00000000000001
         ],
         [
-          436.185,
+          436.06000000000006,
           -48.00000000000001
         ]
       ],
@@ -12802,19 +12562,19 @@
       "node": "polyline",
       "points": [
         [
-          -20.185000000000002,
+          -20.06,
           -124.4375
         ],
         [
-          -8.09248031496063,
+          -8.030000000000001,
           -124.4375
         ],
         [
-          -8.09248031496063,
+          -8.030000000000001,
           -48.00000000000001
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -48.00000000000001
         ]
       ],
@@ -12830,19 +12590,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -20.185000000000002,
+          -20.06,
           -124.4375
         ],
         [
-          -8.09248031496063,
+          -8.030000000000001,
           -124.4375
         ],
         [
-          -8.09248031496063,
+          -8.030000000000001,
           -48.00000000000001
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -48.00000000000001
         ]
       ],
@@ -12859,19 +12619,19 @@
       "node": "polyline",
       "points": [
         [
-          -8.09248031496063,
+          -8.030000000000001,
           -109.4375
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -109.4375
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -48.00000000000001
         ],
         [
-          -8.09248031496063,
+          -8.030000000000001,
           -48.00000000000001
         ]
       ],
@@ -12887,19 +12647,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -8.09248031496063,
+          -8.030000000000001,
           -109.4375
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -109.4375
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -48.00000000000001
         ],
         [
-          -8.09248031496063,
+          -8.030000000000001,
           -48.00000000000001
         ]
       ],
@@ -12916,19 +12676,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -124.43748031496064
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -124.43748031496064
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -121.43748031496064
         ],
         [
-          -44.185,
+          -44.06,
           -121.43748031496064
         ]
       ],
@@ -12944,19 +12704,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -124.43748031496064
         ],
         [
-          476.185,
+          476.06000000000006,
           -124.43748031496064
         ],
         [
-          476.185,
+          476.06000000000006,
           -121.43748031496064
         ],
         [
-          452.18500000000006,
+          452.06,
           -121.43748031496064
         ]
       ],
@@ -12972,19 +12732,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -121.43748031496064
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -121.43748031496064
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -120.18751968503938
         ],
         [
-          -44.185,
+          -44.06,
           -120.18751968503938
         ]
       ],
@@ -13000,19 +12760,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -121.43748031496064
         ],
         [
-          476.185,
+          476.06000000000006,
           -121.43748031496064
         ],
         [
-          476.185,
+          476.06000000000006,
           -120.18751968503938
         ],
         [
-          452.18500000000006,
+          452.06,
           -120.18751968503938
         ]
       ],
@@ -13028,19 +12788,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -120.18751968503938
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -120.18751968503938
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -119.43751968503938
         ],
         [
-          -44.185,
+          -44.06,
           -119.43751968503938
         ]
       ],
@@ -13056,19 +12816,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -120.18751968503938
         ],
         [
-          476.185,
+          476.06000000000006,
           -120.18751968503938
         ],
         [
-          476.185,
+          476.06000000000006,
           -119.43751968503938
         ],
         [
-          452.18500000000006,
+          452.06,
           -119.43751968503938
         ]
       ],
@@ -13084,19 +12844,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -119.43751968503938
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -119.43751968503938
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -118.93748031496062
         ],
         [
-          -44.185,
+          -44.06,
           -118.93748031496062
         ]
       ],
@@ -13112,19 +12872,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -119.43751968503938
         ],
         [
-          476.185,
+          476.06000000000006,
           -119.43751968503938
         ],
         [
-          476.185,
+          476.06000000000006,
           -118.93748031496062
         ],
         [
-          452.18500000000006,
+          452.06,
           -118.93748031496062
         ]
       ],
@@ -13140,19 +12900,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -118.93748031496062
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -118.93748031496062
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -117.93748031496064
         ],
         [
-          -44.185,
+          -44.06,
           -117.93748031496064
         ]
       ],
@@ -13168,19 +12928,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -118.93748031496062
         ],
         [
-          476.185,
+          476.06000000000006,
           -118.93748031496062
         ],
         [
-          476.185,
+          476.06000000000006,
           -117.93748031496064
         ],
         [
-          452.18500000000006,
+          452.06,
           -117.93748031496064
         ]
       ],
@@ -13196,19 +12956,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -117.93748031496064
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -117.93748031496064
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -117.43748031496062
         ],
         [
-          -44.185,
+          -44.06,
           -117.43748031496062
         ]
       ],
@@ -13224,19 +12984,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -117.93748031496064
         ],
         [
-          476.185,
+          476.06000000000006,
           -117.93748031496064
         ],
         [
-          476.185,
+          476.06000000000006,
           -117.43748031496062
         ],
         [
-          452.18500000000006,
+          452.06,
           -117.43748031496062
         ]
       ],
@@ -13252,19 +13012,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -117.43748031496062
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -117.43748031496062
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -114.94748031496063
         ],
         [
-          -44.185,
+          -44.06,
           -114.94748031496063
         ]
       ],
@@ -13280,19 +13040,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -117.43748031496062
         ],
         [
-          476.185,
+          476.06000000000006,
           -117.43748031496062
         ],
         [
-          476.185,
+          476.06000000000006,
           -114.94748031496063
         ],
         [
-          452.18500000000006,
+          452.06,
           -114.94748031496063
         ]
       ],
@@ -13308,19 +13068,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -114.94748031496063
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -114.94748031496063
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -112.93751968503936
         ],
         [
-          -44.185,
+          -44.06,
           -112.93751968503936
         ]
       ],
@@ -13336,19 +13096,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -114.94748031496063
         ],
         [
-          476.185,
+          476.06000000000006,
           -114.94748031496063
         ],
         [
-          476.185,
+          476.06000000000006,
           -112.93751968503936
         ],
         [
-          452.18500000000006,
+          452.06,
           -112.93751968503936
         ]
       ],
@@ -13364,19 +13124,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -112.93751968503936
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -112.93751968503936
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -109.43751968503938
         ],
         [
-          -44.185,
+          -44.06,
           -109.43751968503938
         ]
       ],
@@ -13392,19 +13152,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -112.93751968503936
         ],
         [
-          476.185,
+          476.06000000000006,
           -112.93751968503936
         ],
         [
-          476.185,
+          476.06000000000006,
           -109.43751968503938
         ],
         [
-          452.18500000000006,
+          452.06,
           -109.43751968503938
         ]
       ],
@@ -13420,19 +13180,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -109.43751968503938
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -109.43751968503938
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -108.25818897637795
         ],
         [
-          -44.185,
+          -44.06,
           -108.25818897637795
         ]
       ],
@@ -13448,19 +13208,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -109.43751968503938
         ],
         [
-          476.185,
+          476.06000000000006,
           -109.43751968503938
         ],
         [
-          476.185,
+          476.06000000000006,
           -108.25818897637795
         ],
         [
-          452.18500000000006,
+          452.06,
           -108.25818897637795
         ]
       ],
@@ -13476,19 +13236,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -108.25818897637795
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -108.25818897637795
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -107.43748031496062
         ],
         [
-          -44.185,
+          -44.06,
           -107.43748031496062
         ]
       ],
@@ -13504,19 +13264,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -108.25818897637795
         ],
         [
-          476.185,
+          476.06000000000006,
           -108.25818897637795
         ],
         [
-          476.185,
+          476.06000000000006,
           -107.43748031496062
         ],
         [
-          452.18500000000006,
+          452.06,
           -107.43748031496062
         ]
       ],
@@ -13532,19 +13292,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -107.43748031496062
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -107.43748031496062
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -102.43751968503938
         ],
         [
-          -44.185,
+          -44.06,
           -102.43751968503938
         ]
       ],
@@ -13560,19 +13320,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -107.43748031496062
         ],
         [
-          476.185,
+          476.06000000000006,
           -107.43748031496062
         ],
         [
-          476.185,
+          476.06000000000006,
           -102.43751968503938
         ],
         [
-          452.18500000000006,
+          452.06,
           -102.43751968503938
         ]
       ],
@@ -13588,19 +13348,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -102.43751968503938
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -102.43751968503938
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -95.2187598425197
         ],
         [
-          -44.185,
+          -44.06,
           -95.2187598425197
         ]
       ],
@@ -13616,19 +13376,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -102.43751968503938
         ],
         [
-          476.185,
+          476.06000000000006,
           -102.43751968503938
         ],
         [
-          476.185,
+          476.06000000000006,
           -95.2187598425197
         ],
         [
-          452.18500000000006,
+          452.06,
           -95.2187598425197
         ]
       ],
@@ -13644,19 +13404,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -95.2187598425197
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -95.2187598425197
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -88.0
         ],
         [
-          -44.185,
+          -44.06,
           -88.0
         ]
       ],
@@ -13672,19 +13432,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -95.2187598425197
         ],
         [
-          476.185,
+          476.06000000000006,
           -95.2187598425197
         ],
         [
-          476.185,
+          476.06000000000006,
           -88.0
         ],
         [
-          452.18500000000006,
+          452.06,
           -88.0
         ]
       ],
@@ -13700,19 +13460,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -88.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -88.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -84.0
         ],
         [
-          -44.185,
+          -44.06,
           -84.0
         ]
       ],
@@ -13728,19 +13488,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -88.0
         ],
         [
-          476.185,
+          476.06000000000006,
           -88.0
         ],
         [
-          476.185,
+          476.06000000000006,
           -84.0
         ],
         [
-          452.18500000000006,
+          452.06,
           -84.0
         ]
       ],
@@ -13756,19 +13516,19 @@
       "node": "polyline",
       "points": [
         [
-          -44.185,
+          -44.06,
           -84.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -84.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -82.43751968503938
         ],
         [
-          -44.185,
+          -44.06,
           -82.43751968503938
         ]
       ],
@@ -13784,19 +13544,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -84.0
         ],
         [
-          476.185,
+          476.06000000000006,
           -84.0
         ],
         [
-          476.185,
+          476.06000000000006,
           -82.43751968503938
         ],
         [
-          452.18500000000006,
+          452.06,
           -82.43751968503938
         ]
       ],
@@ -13812,19 +13572,19 @@
       "node": "polyline",
       "points": [
         [
-          -46.599055118110236,
+          -46.47405511811024,
           -82.43751968503938
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -82.43751968503938
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -76.0
         ],
         [
-          -46.599055118110236,
+          -46.47405511811024,
           -76.0
         ]
       ],
@@ -13840,19 +13600,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -82.43751968503938
         ],
         [
-          478.59905511811024,
+          478.47405511811024,
           -82.43751968503938
         ],
         [
-          478.59905511811024,
+          478.47405511811024,
           -76.0
         ],
         [
-          452.18500000000006,
+          452.06,
           -76.0
         ]
       ],
@@ -13868,19 +13628,19 @@
       "node": "polyline",
       "points": [
         [
-          -53.13811023622047,
+          -53.01311023622048,
           -76.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -76.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -65.0
         ],
         [
-          -53.13811023622047,
+          -53.01311023622048,
           -65.0
         ]
       ],
@@ -13896,19 +13656,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -76.0
         ],
         [
-          485.1381102362205,
+          485.0131102362205,
           -76.0
         ],
         [
-          485.1381102362205,
+          485.0131102362205,
           -65.0
         ],
         [
-          452.18500000000006,
+          452.06,
           -65.0
         ]
       ],
@@ -13924,19 +13684,19 @@
       "node": "polyline",
       "points": [
         [
-          -61.38811023622048,
+          -61.26311023622048,
           -65.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -65.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -54.0
         ],
         [
-          -61.38811023622048,
+          -61.26311023622048,
           -54.0
         ]
       ],
@@ -13952,19 +13712,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -65.0
         ],
         [
-          493.3881102362205,
+          493.2631102362205,
           -65.0
         ],
         [
-          493.3881102362205,
+          493.2631102362205,
           -54.0
         ],
         [
-          452.18500000000006,
+          452.06,
           -54.0
         ]
       ],
@@ -13980,19 +13740,19 @@
       "node": "polyline",
       "points": [
         [
-          -66.26311023622048,
+          -66.13811023622047,
           -54.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -54.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -52.0
         ],
         [
-          -66.26311023622048,
+          -66.13811023622047,
           -52.0
         ]
       ],
@@ -14008,19 +13768,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -54.0
         ],
         [
-          498.2631102362205,
+          498.13811023622054,
           -54.0
         ],
         [
-          498.2631102362205,
+          498.13811023622054,
           -52.0
         ],
         [
-          452.18500000000006,
+          452.06,
           -52.0
         ]
       ],
@@ -14036,19 +13796,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -52.0
         ],
         [
-          500.1381102362205,
+          500.01311023622054,
           -52.0
         ],
         [
-          500.1381102362205,
+          500.01311023622054,
           -49.0
         ],
         [
-          452.18500000000006,
+          452.06,
           -49.0
         ]
       ],
@@ -14064,19 +13824,19 @@
       "node": "polyline",
       "points": [
         [
-          -68.13811023622047,
+          -68.01311023622047,
           -52.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -52.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -49.0
         ],
         [
-          -68.13811023622047,
+          -68.01311023622047,
           -49.0
         ]
       ],
@@ -14092,19 +13852,19 @@
       "node": "polyline",
       "points": [
         [
-          452.18500000000006,
+          452.06,
           -49.0
         ],
         [
-          501.6381102362205,
+          501.51311023622054,
           -49.0
         ],
         [
-          501.6381102362205,
+          501.51311023622054,
           -48.00000000000001
         ],
         [
-          452.18500000000006,
+          452.06,
           -48.00000000000001
         ]
       ],
@@ -14120,19 +13880,19 @@
       "node": "polyline",
       "points": [
         [
-          -69.63811023622047,
+          -69.51311023622047,
           -49.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -49.0
         ],
         [
-          -20.185000000000002,
+          -20.06,
           -48.00000000000001
         ],
         [
-          -69.63811023622047,
+          -69.51311023622047,
           -48.00000000000001
         ]
       ],
@@ -14148,19 +13908,19 @@
       "node": "polyline",
       "points": [
         [
-          -70.76311023622047,
+          -70.63811023622047,
           -48.00000000000001
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -48.00000000000001
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -46.00000000000001
         ],
         [
-          -70.76311023622047,
+          -70.63811023622047,
           -46.00000000000001
         ]
       ],
@@ -14176,19 +13936,19 @@
       "node": "polyline",
       "points": [
         [
-          436.185,
+          436.06000000000006,
           -48.00000000000001
         ],
         [
-          502.7631102362205,
+          502.63811023622054,
           -48.00000000000001
         ],
         [
-          502.7631102362205,
+          502.63811023622054,
           -46.00000000000001
         ],
         [
-          436.185,
+          436.06000000000006,
           -46.00000000000001
         ]
       ],
@@ -14204,19 +13964,19 @@
       "node": "polyline",
       "points": [
         [
-          -72.63811023622047,
+          -72.51311023622048,
           -46.00000000000001
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -46.00000000000001
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -43.00000000000001
         ],
         [
-          -72.63811023622047,
+          -72.51311023622048,
           -43.00000000000001
         ]
       ],
@@ -14232,19 +13992,19 @@
       "node": "polyline",
       "points": [
         [
-          436.185,
+          436.06000000000006,
           -46.00000000000001
         ],
         [
-          504.6381102362205,
+          504.51311023622054,
           -46.00000000000001
         ],
         [
-          504.6381102362205,
+          504.51311023622054,
           -43.00000000000001
         ],
         [
-          436.185,
+          436.06000000000006,
           -43.00000000000001
         ]
       ],
@@ -14260,19 +14020,19 @@
       "node": "polyline",
       "points": [
         [
-          -74.51311023622047,
+          -74.38811023622048,
           -43.00000000000001
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -43.00000000000001
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -41.00000000000001
         ],
         [
-          -74.51311023622047,
+          -74.38811023622048,
           -41.00000000000001
         ]
       ],
@@ -14288,7 +14048,7 @@
       "node": "polyline",
       "points": [
         [
-          436.185,
+          436.06000000000006,
           -43.00000000000001
         ],
         [
@@ -14300,7 +14060,7 @@
           -41.00000000000001
         ],
         [
-          436.185,
+          436.06000000000006,
           -41.00000000000001
         ]
       ],
@@ -14320,11 +14080,11 @@
           -43.00000000000001
         ],
         [
-          506.5131102362205,
+          506.38811023622054,
           -43.00000000000001
         ],
         [
-          506.5131102362205,
+          506.38811023622054,
           -41.00000000000001
         ],
         [
@@ -14344,19 +14104,19 @@
       "node": "polyline",
       "points": [
         [
-          -75.63811023622047,
+          -75.51311023622048,
           -41.00000000000001
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -41.00000000000001
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -40.0
         ],
         [
-          -75.63811023622047,
+          -75.51311023622048,
           -40.0
         ]
       ],
@@ -14372,7 +14132,7 @@
       "node": "polyline",
       "points": [
         [
-          436.185,
+          436.06000000000006,
           -41.00000000000001
         ],
         [
@@ -14384,7 +14144,7 @@
           -40.0
         ],
         [
-          436.185,
+          436.06000000000006,
           -40.0
         ]
       ],
@@ -14404,11 +14164,11 @@
           -41.00000000000001
         ],
         [
-          507.6381102362205,
+          507.51311023622054,
           -41.00000000000001
         ],
         [
-          507.6381102362205,
+          507.51311023622054,
           -40.0
         ],
         [
@@ -14428,19 +14188,19 @@
       "node": "polyline",
       "points": [
         [
-          -76.57188976377952,
+          -76.44688976377954,
           -40.0
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -40.0
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -38.51
         ],
         [
-          -76.57188976377952,
+          -76.44688976377954,
           -38.51
         ]
       ],
@@ -14456,7 +14216,7 @@
       "node": "polyline",
       "points": [
         [
-          436.185,
+          436.06000000000006,
           -40.0
         ],
         [
@@ -14468,7 +14228,7 @@
           -38.51
         ],
         [
-          436.185,
+          436.06000000000006,
           -38.51
         ]
       ],
@@ -14488,11 +14248,11 @@
           -40.0
         ],
         [
-          508.57188976377955,
+          508.44688976377955,
           -40.0
         ],
         [
-          508.57188976377955,
+          508.44688976377955,
           -38.51
         ],
         [
@@ -14512,19 +14272,19 @@
       "node": "polyline",
       "points": [
         [
-          -77.50937007874016,
+          -77.38437007874016,
           -38.51
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -38.51
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -37.5
         ],
         [
-          -77.50937007874016,
+          -77.38437007874016,
           -37.5
         ]
       ],
@@ -14540,7 +14300,7 @@
       "node": "polyline",
       "points": [
         [
-          436.185,
+          436.06000000000006,
           -38.51
         ],
         [
@@ -14552,7 +14312,7 @@
           -37.5
         ],
         [
-          436.185,
+          436.06000000000006,
           -37.5
         ]
       ],
@@ -14572,11 +14332,11 @@
           -38.51
         ],
         [
-          509.5093700787402,
+          509.38437007874023,
           -38.51
         ],
         [
-          509.5093700787402,
+          509.38437007874023,
           -37.5
         ],
         [
@@ -14596,19 +14356,19 @@
       "node": "polyline",
       "points": [
         [
-          -78.07562992125985,
+          -77.95062992125985,
           -37.5
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -37.5
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -37.0
         ],
         [
-          -78.07562992125985,
+          -77.95062992125985,
           -37.0
         ]
       ],
@@ -14624,7 +14384,7 @@
       "node": "polyline",
       "points": [
         [
-          436.185,
+          436.06000000000006,
           -37.5
         ],
         [
@@ -14636,7 +14396,7 @@
           -37.0
         ],
         [
-          436.185,
+          436.06000000000006,
           -37.0
         ]
       ],
@@ -14656,11 +14416,11 @@
           -37.5
         ],
         [
-          510.07562992125986,
+          509.95062992125986,
           -37.5
         ],
         [
-          510.07562992125986,
+          509.95062992125986,
           -37.0
         ],
         [
@@ -14680,19 +14440,19 @@
       "node": "polyline",
       "points": [
         [
-          -78.63811023622048,
+          -78.51311023622047,
           -37.0
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -37.0
         ],
         [
-          -4.1850000000000005,
+          -4.06,
           -36.0
         ],
         [
-          -78.63811023622048,
+          -78.51311023622047,
           -36.0
         ]
       ],
@@ -14708,7 +14468,7 @@
       "node": "polyline",
       "points": [
         [
-          436.185,
+          436.06000000000006,
           -37.0
         ],
         [
@@ -14720,7 +14480,7 @@
           -36.0
         ],
         [
-          436.185,
+          436.06000000000006,
           -36.0
         ]
       ],
@@ -14740,11 +14500,11 @@
           -37.0
         ],
         [
-          510.6381102362205,
+          510.51311023622054,
           -37.0
         ],
         [
-          510.6381102362205,
+          510.51311023622054,
           -36.0
         ],
         [
@@ -14758,120 +14518,6 @@
       "closed": true,
       "uid": "51B78YHGNF-BF-068",
       "tag": "EX-HOUSE-BF-69"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          425.49000000000007,
-          80.84500000000001
-        ],
-        [
-          432.56,
-          80.84500000000001
-        ],
-        [
-          432.56,
-          80.85500000000002
-        ],
-        [
-          425.49000000000007,
-          80.85500000000002
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "83YR1VW00D-RETURN-0-head",
-      "tag": "WIN-M-DINING-E-return-0-head"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          425.49000000000007,
-          80.84500000000001
-        ],
-        [
-          432.56,
-          80.84500000000001
-        ],
-        [
-          432.56,
-          80.85500000000002
-        ],
-        [
-          425.49000000000007,
-          80.85500000000002
-        ]
-      ],
-      "pattern": "latex-paint",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "latex-paint",
-      "fill": "#f0ede6"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          425.49000000000007,
-          80.85500000000002
-        ],
-        [
-          425.50000000000006,
-          80.85500000000002
-        ],
-        [
-          425.50000000000006,
-          81.35500000000002
-        ],
-        [
-          425.49000000000007,
-          81.35500000000002
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "83YR1VW00D-RETURN-0-head-front",
-      "tag": "WIN-M-DINING-E-return-0-head-front"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          425.49000000000007,
-          80.85500000000002
-        ],
-        [
-          425.50000000000006,
-          80.85500000000002
-        ],
-        [
-          425.50000000000006,
-          81.35500000000002
-        ],
-        [
-          425.49000000000007,
-          81.35500000000002
-        ]
-      ],
-      "pattern": "latex-paint",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "latex-paint",
-      "fill": "#f0ede6"
     },
     {
       "space": "model",
@@ -14934,51 +14580,51 @@
       "node": "polyline",
       "points": [
         [
-          323.46507883189537,
+          323.46565022722956,
           -0.062499999999998175
         ],
         [
-          323.59213840030793,
+          323.59271961403965,
           -0.24999999999999833
         ],
         [
-          323.9392715967988,
+          323.9398796348914,
           -0.38725952641916267
         ],
         [
-          324.41346436170215,
+          324.41410904255315,
           -0.4374999999999981
         ],
         [
-          324.88765712660546,
+          324.88833845021503,
           -0.3872595264191625
         ],
         [
-          325.2347903230963,
+          325.23549847106676,
           -0.24999999999999808
         ],
         [
-          325.36184989150894,
+          325.36256785787685,
           -0.06249999999999813
         ],
         [
-          325.2347903230963,
+          325.23549847106676,
           0.12500000000000178
         ],
         [
-          324.88765712660546,
+          324.88833845021503,
           0.2622595264191663
         ],
         [
-          324.41346436170215,
+          324.41410904255315,
           0.3125000000000018
         ],
         [
-          323.9392715967988,
+          323.9398796348914,
           0.2622595264191663
         ],
         [
-          323.59213840030793,
+          323.59271961403965,
           0.12500000000000178
         ]
       ],
@@ -14994,51 +14640,51 @@
       "node": "hatch",
       "boundary": [
         [
-          323.46507883189537,
+          323.46565022722956,
           -0.062499999999998175
         ],
         [
-          323.59213840030793,
+          323.59271961403965,
           -0.24999999999999833
         ],
         [
-          323.9392715967988,
+          323.9398796348914,
           -0.38725952641916267
         ],
         [
-          324.41346436170215,
+          324.41410904255315,
           -0.4374999999999981
         ],
         [
-          324.88765712660546,
+          324.88833845021503,
           -0.3872595264191625
         ],
         [
-          325.2347903230963,
+          325.23549847106676,
           -0.24999999999999808
         ],
         [
-          325.36184989150894,
+          325.36256785787685,
           -0.06249999999999813
         ],
         [
-          325.2347903230963,
+          325.23549847106676,
           0.12500000000000178
         ],
         [
-          324.88765712660546,
+          324.88833845021503,
           0.2622595264191663
         ],
         [
-          324.41346436170215,
+          324.41410904255315,
           0.3125000000000018
         ],
         [
-          323.9392715967988,
+          323.9398796348914,
           0.2622595264191663
         ],
         [
-          323.59213840030793,
+          323.59271961403965,
           0.12500000000000178
         ]
       ],
@@ -15062,15 +14708,15 @@
           307.33904337083607
         ],
         [
-          -6.2655330723281,
+          -6.2655330723280995,
           252.5310661446562
         ],
         [
-          -6.134578619968452,
+          -6.134578619968451,
           252.26915723993693
         ],
         [
-          -6.000000000000001,
+          -5.999999999999999,
           252.00000000000003
         ],
         [
@@ -15122,15 +14768,15 @@
           307.33904337083607
         ],
         [
-          -6.2655330723281,
+          -6.2655330723280995,
           252.5310661446562
         ],
         [
-          -6.134578619968452,
+          -6.134578619968451,
           252.26915723993693
         ],
         [
-          -6.000000000000001,
+          -5.999999999999999,
           252.00000000000003
         ],
         [
@@ -15183,15 +14829,15 @@
           307.43647381955725
         ],
         [
-          -6.013416407865,
+          -6.013416407864999,
           252.69066549655028
         ],
         [
-          -6.006799761851038,
+          -6.006799761851037,
           252.67743220452238
         ],
         [
-          -6.000000000000001,
+          -5.999999999999999,
           252.66383268082026
         ],
         [
@@ -15243,15 +14889,15 @@
           307.43647381955725
         ],
         [
-          -6.013416407865,
+          -6.013416407864999,
           252.69066549655028
         ],
         [
-          -6.006799761851038,
+          -6.006799761851037,
           252.67743220452238
         ],
         [
-          -6.000000000000001,
+          -5.999999999999999,
           252.66383268082026
         ],
         [
@@ -15296,7 +14942,7 @@
       "node": "polyline",
       "points": [
         [
-          -0.17693162228192572,
+          -0.1769316222819246,
           255.63562890167293
         ],
         [
@@ -15320,11 +14966,11 @@
           343.94985782230594
         ],
         [
-          -0.16624321734947672,
+          -0.1662432173494756,
           255.61425209180803
         ],
         [
-          -0.16820791520765374,
+          -0.16820791520765266,
           255.6181814875244
         ]
       ],
@@ -15340,7 +14986,7 @@
       "node": "hatch",
       "boundary": [
         [
-          -0.17693162228192572,
+          -0.1769316222819246,
           255.63562890167293
         ],
         [
@@ -15364,11 +15010,11 @@
           343.94985782230594
         ],
         [
-          -0.16624321734947672,
+          -0.1662432173494756,
           255.61425209180803
         ],
         [
-          -0.16820791520765374,
+          -0.16820791520765266,
           255.6181814875244
         ]
       ],
@@ -17982,19 +17628,19 @@
       "node": "polyline",
       "points": [
         [
-          -4.0,
+          -3.9999999999999996,
           240.75
         ],
         [
-          0.0,
+          5.463695987328526e-16,
           240.75
         ],
         [
-          0.0,
+          5.463695987328526e-16,
           255.00000000000003
         ],
         [
-          -4.0,
+          -3.9999999999999996,
           253.00000000000003
         ]
       ],
@@ -18010,19 +17656,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -4.0,
+          -3.9999999999999996,
           240.75
         ],
         [
-          0.0,
+          5.463695987328526e-16,
           240.75
         ],
         [
-          0.0,
+          5.463695987328526e-16,
           255.00000000000003
         ],
         [
-          -4.0,
+          -3.9999999999999996,
           253.00000000000003
         ]
       ],
@@ -18039,19 +17685,19 @@
       "node": "polyline",
       "points": [
         [
-          -4.5,
+          -4.499999999999998,
           240.75
         ],
         [
-          -4.0,
+          -3.999999999999999,
           240.75
         ],
         [
-          -4.0,
+          -3.999999999999999,
           253.00000000000003
         ],
         [
-          -4.5,
+          -4.499999999999998,
           252.75000000000003
         ]
       ],
@@ -18067,19 +17713,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -4.5,
+          -4.499999999999998,
           240.75
         ],
         [
-          -4.0,
+          -3.999999999999999,
           240.75
         ],
         [
-          -4.0,
+          -3.999999999999999,
           253.00000000000003
         ],
         [
-          -4.5,
+          -4.499999999999998,
           252.75000000000003
         ]
       ],
@@ -18095,19 +17741,19 @@
       "node": "polyline",
       "points": [
         [
-          -5.999999999999999,
+          -5.999999999999997,
           247.75000000000003
         ],
         [
-          -4.5,
+          -4.499999999999998,
           247.75000000000003
         ],
         [
-          -4.5,
+          -4.499999999999998,
           252.75000000000003
         ],
         [
-          -5.999999999999999,
+          -5.999999999999997,
           252.00000000000003
         ]
       ],
@@ -18123,19 +17769,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -5.999999999999999,
+          -5.999999999999997,
           247.75000000000003
         ],
         [
-          -4.5,
+          -4.499999999999998,
           247.75000000000003
         ],
         [
-          -4.5,
+          -4.499999999999998,
           252.75000000000003
         ],
         [
-          -5.999999999999999,
+          -5.999999999999997,
           252.00000000000003
         ]
       ],
@@ -18151,19 +17797,19 @@
       "node": "polyline",
       "points": [
         [
-          -7.250000000000001,
+          -7.249999999999997,
           240.75
         ],
         [
-          -6.000000000000001,
+          -5.999999999999997,
           240.75
         ],
         [
-          -6.000000000000001,
+          -5.999999999999997,
           252.62889411867184
         ],
         [
-          -7.250000000000001,
+          -7.249999999999997,
           252.0038941186718
         ]
       ],
@@ -18179,19 +17825,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -7.250000000000001,
+          -7.249999999999997,
           240.75
         ],
         [
-          -6.000000000000001,
+          -5.999999999999997,
           240.75
         ],
         [
-          -6.000000000000001,
+          -5.999999999999997,
           252.62889411867184
         ],
         [
-          -7.250000000000001,
+          -7.249999999999997,
           252.0038941186718
         ]
       ],
@@ -19643,67 +19289,67 @@
       "node": "hatch",
       "boundary": [
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -12.4375
         ],
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -11.102265625000001
         ],
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -9.8125
         ],
         [
-          -6.074243008928573,
+          -6.074243008928569,
           -9.8125
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -9.8125
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -11.15989136607143
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -12.4614
         ],
         [
-          -6.705447293349138,
+          -6.705447293349136,
           -12.4614
         ],
         [
-          -7.326500295859284,
+          -7.32650029585928,
           -12.4614
         ],
         [
-          -7.547716765256144,
+          -7.5477167652561405,
           -12.68261646939686
         ],
         [
-          -7.761400147929643,
+          -7.761400147929638,
           -12.896299852070358
         ],
         [
-          -7.769996438755074,
+          -7.7699964387550695,
           -12.887703561244926
         ],
         [
-          -7.7783000000000015,
+          -7.778299999999997,
           -12.879399999999999
         ],
         [
-          -7.553522830357145,
+          -7.5535228303571404,
           -12.654622830357143
         ],
         [
-          -7.336400000000001,
+          -7.336399999999998,
           -12.4375
         ],
         [
-          -6.700574107142858,
+          -6.700574107142855,
           -12.4375
         ]
       ],
@@ -19719,71 +19365,71 @@
       "node": "polyline",
       "points": [
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -12.4375
         ],
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -11.102265625000001
         ],
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -9.8125
         ],
         [
-          -6.074243008928573,
+          -6.074243008928569,
           -9.8125
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -9.8125
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -11.15989136607143
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -12.4614
         ],
         [
-          -6.705447293349138,
+          -6.705447293349136,
           -12.4614
         ],
         [
-          -7.326500295859284,
+          -7.32650029585928,
           -12.4614
         ],
         [
-          -7.547716765256144,
+          -7.5477167652561405,
           -12.68261646939686
         ],
         [
-          -7.761400147929643,
+          -7.761400147929638,
           -12.896299852070358
         ],
         [
-          -7.769996438755074,
+          -7.7699964387550695,
           -12.887703561244926
         ],
         [
-          -7.7783000000000015,
+          -7.778299999999997,
           -12.879399999999999
         ],
         [
-          -7.553522830357145,
+          -7.5535228303571404,
           -12.654622830357143
         ],
         [
-          -7.336400000000001,
+          -7.336399999999998,
           -12.4375
         ],
         [
-          -6.700574107142858,
+          -6.700574107142855,
           -12.4375
         ],
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -12.4375
         ]
       ],
@@ -20495,15 +20141,15 @@
       "node": "hatch",
       "boundary": [
         [
-          -5.023117028557671,
+          -5.02311702855767,
           253.309134335163
         ],
         [
-          -4.261870046297642,
+          -4.261870046297641,
           253.68975782629303
         ],
         [
-          -4.28982089601639,
+          -4.289820896016389,
           253.74565952573056
         ],
         [
@@ -20511,7 +20157,7 @@
           251.53096835809563
         ],
         [
-          -8.691252381567425,
+          -8.691252381567423,
           251.47506665865816
         ],
         [
@@ -20523,39 +20169,39 @@
           250.60392213297
         ],
         [
-          -7.768442034100875,
+          -7.768442034100874,
           250.17188009886914
         ],
         [
-          -7.724247860276717,
+          -7.724247860276716,
           250.12768592504497
         ],
         [
-          -7.387594321753802,
+          -7.3875943217538,
           250.46433946356788
         ],
         [
-          -7.3706944696834436,
+          -7.370694469683441,
           250.44743961149754
         ],
         [
-          -7.724247860276717,
+          -7.724247860276716,
           250.09388622090427
         ],
         [
-          -7.802241738241593,
+          -7.802241738241591,
           250.17188009886914
         ],
         [
-          -7.3603000000000005,
+          -7.3603,
           250.61382183711072
         ],
         [
-          -7.3603000000000005,
+          -7.3603,
           252.11382183711072
         ],
         [
-          -8.701940786499875,
+          -8.701940786499874,
           251.4430014438608
         ],
         [
@@ -20563,15 +20209,15 @@
           251.54165676302807
         ],
         [
-          -4.27913249108394,
+          -4.2791324910839394,
           253.77772474052787
         ],
         [
-          -4.229804831500295,
+          -4.229804831500294,
           253.6790694213606
         ],
         [
-          -5.012428623625222,
+          -5.01242862362522,
           253.2877575252981
         ]
       ],
@@ -20588,15 +20234,15 @@
       "node": "polyline",
       "points": [
         [
-          -5.023117028557671,
+          -5.02311702855767,
           253.309134335163
         ],
         [
-          -4.261870046297642,
+          -4.261870046297641,
           253.68975782629303
         ],
         [
-          -4.28982089601639,
+          -4.289820896016389,
           253.74565952573056
         ],
         [
@@ -20604,7 +20250,7 @@
           251.53096835809563
         ],
         [
-          -8.691252381567425,
+          -8.691252381567423,
           251.47506665865816
         ],
         [
@@ -20616,39 +20262,39 @@
           250.60392213297
         ],
         [
-          -7.768442034100875,
+          -7.768442034100874,
           250.17188009886914
         ],
         [
-          -7.724247860276717,
+          -7.724247860276716,
           250.12768592504497
         ],
         [
-          -7.387594321753802,
+          -7.3875943217538,
           250.46433946356788
         ],
         [
-          -7.3706944696834436,
+          -7.370694469683441,
           250.44743961149754
         ],
         [
-          -7.724247860276717,
+          -7.724247860276716,
           250.09388622090427
         ],
         [
-          -7.802241738241593,
+          -7.802241738241591,
           250.17188009886914
         ],
         [
-          -7.3603000000000005,
+          -7.3603,
           250.61382183711072
         ],
         [
-          -7.3603000000000005,
+          -7.3603,
           252.11382183711072
         ],
         [
-          -8.701940786499875,
+          -8.701940786499874,
           251.4430014438608
         ],
         [
@@ -20656,19 +20302,19 @@
           251.54165676302807
         ],
         [
-          -4.27913249108394,
+          -4.2791324910839394,
           253.77772474052787
         ],
         [
-          -4.229804831500295,
+          -4.229804831500294,
           253.6790694213606
         ],
         [
-          -5.012428623625222,
+          -5.01242862362522,
           253.2877575252981
         ],
         [
-          -5.023117028557671,
+          -5.02311702855767,
           253.309134335163
         ]
       ],
@@ -20873,15 +20519,15 @@
       "node": "hatch",
       "boundary": [
         [
-          -0.6274322377088082,
+          -0.6274322377088071,
           255.41859614377677
         ],
         [
-          -3.716752831067888,
+          -3.716752831067887,
           253.87393584709724
         ],
         [
-          -4.293107915943314,
+          -4.293107915943313,
           253.80567559024664
         ],
         [
@@ -20889,19 +20535,19 @@
           251.56960761274684
         ],
         [
-          -8.778660278807893,
+          -8.778660278807891,
           251.59644042847685
         ],
         [
-          -4.301838660084441,
+          -4.30183866008444,
           253.83485123783856
         ],
         [
-          -3.7254835752090156,
+          -3.7254835752090147,
           253.90311149468917
         ],
         [
-          -0.6408486455738075,
+          -0.6408486455738065,
           255.44542895950678
         ]
       ],
@@ -20918,15 +20564,15 @@
       "node": "polyline",
       "points": [
         [
-          -0.6274322377088082,
+          -0.6274322377088071,
           255.41859614377677
         ],
         [
-          -3.716752831067888,
+          -3.716752831067887,
           253.87393584709724
         ],
         [
-          -4.293107915943314,
+          -4.293107915943313,
           253.80567559024664
         ],
         [
@@ -20934,23 +20580,23 @@
           251.56960761274684
         ],
         [
-          -8.778660278807893,
+          -8.778660278807891,
           251.59644042847685
         ],
         [
-          -4.301838660084441,
+          -4.30183866008444,
           253.83485123783856
         ],
         [
-          -3.7254835752090156,
+          -3.7254835752090147,
           253.90311149468917
         ],
         [
-          -0.6408486455738075,
+          -0.6408486455738065,
           255.44542895950678
         ],
         [
-          -0.6274322377088082,
+          -0.6274322377088071,
           255.41859614377677
         ]
       ],
@@ -21059,23 +20705,23 @@
       "node": "hatch",
       "boundary": [
         [
-          -0.17031028162138662,
+          -0.1703102816213855,
           255.61266441065186
         ],
         [
-          -0.6567847900763082,
+          -0.6567847900763071,
           255.47239944940398
         ],
         [
-          -3.7345781003560226,
+          -3.7345781003560212,
           253.93350279426411
         ],
         [
-          -4.310933185231449,
+          -4.310933185231448,
           253.8652425374135
         ],
         [
-          -8.820586553386013,
+          -8.820586553386011,
           251.61041585333626
         ],
         [
@@ -21083,7 +20729,7 @@
           251.4010751692827
         ],
         [
-          -8.290079425724189,
+          -8.290079425724187,
           251.61399356210023
         ],
         [
@@ -21091,7 +20737,7 @@
           251.59261675223533
         ],
         [
-          -8.726604616291697,
+          -8.726604616291695,
           251.36900995448536
         ],
         [
@@ -21099,19 +20745,19 @@
           251.62110425826867
         ],
         [
-          -4.31788867806388,
+          -4.317888678063879,
           253.88848580332842
         ],
         [
-          -3.7415335931884535,
+          -3.7415335931884526,
           253.95674606017906
         ],
         [
-          -0.6655124753656299,
+          -0.6655124753656287,
           255.49475661909042
         ],
         [
-          -0.1769316222819255,
+          -0.1769316222819244,
           255.63562890167293
         ]
       ],
@@ -21128,23 +20774,23 @@
       "node": "polyline",
       "points": [
         [
-          -0.17031028162138662,
+          -0.1703102816213855,
           255.61266441065186
         ],
         [
-          -0.6567847900763082,
+          -0.6567847900763071,
           255.47239944940398
         ],
         [
-          -3.7345781003560226,
+          -3.7345781003560212,
           253.93350279426411
         ],
         [
-          -4.310933185231449,
+          -4.310933185231448,
           253.8652425374135
         ],
         [
-          -8.820586553386013,
+          -8.820586553386011,
           251.61041585333626
         ],
         [
@@ -21152,7 +20798,7 @@
           251.4010751692827
         ],
         [
-          -8.290079425724189,
+          -8.290079425724187,
           251.61399356210023
         ],
         [
@@ -21160,7 +20806,7 @@
           251.59261675223533
         ],
         [
-          -8.726604616291697,
+          -8.726604616291695,
           251.36900995448536
         ],
         [
@@ -21168,23 +20814,23 @@
           251.62110425826867
         ],
         [
-          -4.31788867806388,
+          -4.317888678063879,
           253.88848580332842
         ],
         [
-          -3.7415335931884535,
+          -3.7415335931884526,
           253.95674606017906
         ],
         [
-          -0.6655124753656299,
+          -0.6655124753656287,
           255.49475661909042
         ],
         [
-          -0.1769316222819255,
+          -0.1769316222819244,
           255.63562890167293
         ],
         [
-          -0.17031028162138662,
+          -0.1703102816213855,
           255.61266441065186
         ]
       ],
@@ -21341,11 +20987,11 @@
       "node": "polyline",
       "points": [
         [
-          -102.6381102362205,
+          -102.51311023622047,
           -36.00000000000001
         ],
         [
-          -78.63811023622048,
+          -78.51311023622047,
           -36.00000000000001
         ]
       ],
@@ -21361,11 +21007,11 @@
       "node": "polyline",
       "points": [
         [
-          -102.6381102362205,
+          -102.51311023622047,
           -36.00000000000001
         ],
         [
-          -108.54362204724411,
+          -108.41862204724409,
           -41.90551181102362
         ]
       ],
@@ -21381,11 +21027,11 @@
       "node": "polyline",
       "points": [
         [
-          -78.6381102362205,
+          -78.51311023622047,
           -36.00000000000001
         ],
         [
-          -84.54362204724411,
+          -84.41862204724409,
           -41.90551181102362
         ]
       ],
@@ -21401,12 +21047,12 @@
       "node": "polyline",
       "points": [
         [
-          509.5093700787402,
-          -38.30607611548557
+          509.38437007874023,
+          -38.299131671041124
         ],
         [
-          534.6381102362205,
-          -39.702117235345575
+          534.5131102362205,
+          -39.69517279090114
         ]
       ],
       "layer": "L-SITE-GRAD",
@@ -21421,12 +21067,12 @@
       "node": "polyline",
       "points": [
         [
-          509.5093700787402,
-          -38.30607611548557
+          509.38437007874023,
+          -38.299131671041124
         ],
         [
-          503.60385826771653,
-          -44.21158792650919
+          503.4788582677166,
+          -44.204643482064746
         ]
       ],
       "layer": "L-SITE-GRAD",
@@ -21441,12 +21087,12 @@
       "node": "polyline",
       "points": [
         [
-          533.5093700787402,
-          -39.639409448818895
+          533.3843700787402,
+          -39.63246500437445
         ],
         [
-          527.6038582677165,
-          -45.54492125984251
+          527.4788582677165,
+          -45.53797681539807
         ]
       ],
       "layer": "L-SITE-GRAD",
@@ -21460,7 +21106,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        -102.6381102362205,
+        -102.51311023622047,
         -42.22222222222223
       ],
       "content": "GRADE",
@@ -21477,7 +21123,7 @@
       "node": "symbol",
       "name": "level-marker",
       "insert": [
-        546.6381102362205,
+        546.5131102362205,
         -109.4375
       ],
       "rotation": 0.0,
@@ -21492,17 +21138,17 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          546.6381102362205,
+          546.5131102362205,
           -109.4375
         ],
         "name": "BASEMENT FLOOR"
       },
       "at": [
-        582.6381102362205,
+        582.5131102362205,
         -109.4375
       ],
       "to": [
-        546.6381102362205,
+        546.5131102362205,
         -109.4375
       ],
       "text": "BASEMENT FLOOR  EL. -9'-1\"",
@@ -21516,7 +21162,7 @@
       "node": "symbol",
       "name": "level-marker",
       "insert": [
-        546.6381102362205,
+        546.5131102362205,
         -34.0
       ],
       "rotation": 0.0,
@@ -21531,17 +21177,17 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          546.6381102362205,
+          546.5131102362205,
           -34.0
         ],
         "name": "GRADE"
       },
       "at": [
-        582.6381102362205,
+        582.5131102362205,
         -34.89759444444444
       ],
       "to": [
-        546.6381102362205,
+        546.5131102362205,
         -34.0
       ],
       "text": "GRADE  EL. -2'-10\"",
@@ -21555,7 +21201,7 @@
       "node": "symbol",
       "name": "level-marker",
       "insert": [
-        546.6381102362205,
+        546.5131102362205,
         0.0
       ],
       "rotation": 0.0,
@@ -21570,17 +21216,17 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          546.6381102362205,
+          546.5131102362205,
           0.0
         ],
         "name": "MAIN FLOOR"
       },
       "at": [
-        582.6381102362205,
+        582.5131102362205,
         -16.97537222222222
       ],
       "to": [
-        546.6381102362205,
+        546.5131102362205,
         0.0
       ],
       "text": "MAIN FLOOR  EL. 0'-0\"",
@@ -21594,7 +21240,7 @@
       "node": "symbol",
       "name": "level-marker",
       "insert": [
-        546.6381102362205,
+        546.5131102362205,
         0.9468499999999999
       ],
       "rotation": 0.0,
@@ -21609,17 +21255,17 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          546.6381102362205,
+          546.5131102362205,
           0.9468499999999999
         ],
         "name": "BASEMENT T.O. PLATE"
       },
       "at": [
-        582.6381102362205,
+        582.5131102362205,
         0.9468499999999999
       ],
       "to": [
-        546.6381102362205,
+        546.5131102362205,
         0.9468499999999999
       ],
       "text": "BASEMENT T.O. PLATE  EL. 0'-1\"",
@@ -21633,7 +21279,7 @@
       "node": "symbol",
       "name": "level-marker",
       "insert": [
-        546.6381102362205,
+        546.5131102362205,
         120.0
       ],
       "rotation": 0.0,
@@ -21648,17 +21294,17 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          546.6381102362205,
+          546.5131102362205,
           120.0
         ],
         "name": "MAIN T.O. PLATE"
       },
       "at": [
-        582.6381102362205,
+        582.5131102362205,
         120.0
       ],
       "to": [
-        546.6381102362205,
+        546.5131102362205,
         120.0
       ],
       "text": "MAIN T.O. PLATE / SECOND FLOOR  EL. 10'-0\"",
@@ -21672,7 +21318,7 @@
       "node": "symbol",
       "name": "level-marker",
       "insert": [
-        546.6381102362205,
+        546.5131102362205,
         240.0
       ],
       "rotation": 0.0,
@@ -21687,17 +21333,17 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          546.6381102362205,
+          546.5131102362205,
           240.0
         ],
         "name": "ATTIC FLOOR"
       },
       "at": [
-        582.6381102362205,
+        582.5131102362205,
         222.82777777777778
       ],
       "to": [
-        546.6381102362205,
+        546.5131102362205,
         240.0
       ],
       "text": "ATTIC FLOOR  EL. 20'-0\"",
@@ -21711,7 +21357,7 @@
       "node": "symbol",
       "name": "level-marker",
       "insert": [
-        546.6381102362205,
+        546.5131102362205,
         240.75
       ],
       "rotation": 0.0,
@@ -21726,17 +21372,17 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          546.6381102362205,
+          546.5131102362205,
           240.75
         ],
         "name": "SECOND T.O. PLATE"
       },
       "at": [
-        582.6381102362205,
+        582.5131102362205,
         240.75
       ],
       "to": [
-        546.6381102362205,
+        546.5131102362205,
         240.75
       ],
       "text": "SECOND T.O. PLATE  EL. 20'-1\"",
@@ -21750,7 +21396,7 @@
       "node": "symbol",
       "name": "level-marker",
       "insert": [
-        546.6381102362205,
+        546.5131102362205,
         363.0
       ],
       "rotation": 0.0,
@@ -21765,17 +21411,17 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          546.6381102362205,
+          546.5131102362205,
           363.0
         ],
         "name": "ATTIC T.O. PLATE"
       },
       "at": [
-        582.6381102362205,
+        582.5131102362205,
         363.0
       ],
       "to": [
-        546.6381102362205,
+        546.5131102362205,
         363.0
       ],
       "text": "ATTIC T.O. PLATE / RIDGE  EL. 30'-3\"",
@@ -21792,7 +21438,7 @@
         {
           "kind": "point",
           "xy": [
-            546.6381102362205,
+            546.5131102362205,
             -109.4375
           ],
           "name": "BASEMENT FLOOR"
@@ -21800,18 +21446,18 @@
         {
           "kind": "point",
           "xy": [
-            546.6381102362205,
+            546.5131102362205,
             -34.0
           ],
           "name": "GRADE"
         }
       ],
       "p0": [
-        546.6381102362205,
+        546.5131102362205,
         -109.4375
       ],
       "p1": [
-        546.6381102362205,
+        546.5131102362205,
         -34.0
       ],
       "offset": 6.0,
@@ -21829,7 +21475,7 @@
         {
           "kind": "point",
           "xy": [
-            546.6381102362205,
+            546.5131102362205,
             -34.0
           ],
           "name": "GRADE"
@@ -21837,18 +21483,18 @@
         {
           "kind": "point",
           "xy": [
-            546.6381102362205,
+            546.5131102362205,
             0.0
           ],
           "name": "MAIN FLOOR"
         }
       ],
       "p0": [
-        546.6381102362205,
+        546.5131102362205,
         -34.0
       ],
       "p1": [
-        546.6381102362205,
+        546.5131102362205,
         0.0
       ],
       "offset": 6.0,
@@ -21866,7 +21512,7 @@
         {
           "kind": "point",
           "xy": [
-            546.6381102362205,
+            546.5131102362205,
             0.0
           ],
           "name": "MAIN FLOOR"
@@ -21874,18 +21520,18 @@
         {
           "kind": "point",
           "xy": [
-            546.6381102362205,
+            546.5131102362205,
             120.0
           ],
           "name": "MAIN T.O. PLATE"
         }
       ],
       "p0": [
-        546.6381102362205,
+        546.5131102362205,
         0.0
       ],
       "p1": [
-        546.6381102362205,
+        546.5131102362205,
         120.0
       ],
       "offset": 6.0,
@@ -21903,7 +21549,7 @@
         {
           "kind": "point",
           "xy": [
-            546.6381102362205,
+            546.5131102362205,
             120.0
           ],
           "name": "MAIN T.O. PLATE"
@@ -21911,18 +21557,18 @@
         {
           "kind": "point",
           "xy": [
-            546.6381102362205,
+            546.5131102362205,
             240.0
           ],
           "name": "ATTIC FLOOR"
         }
       ],
       "p0": [
-        546.6381102362205,
+        546.5131102362205,
         120.0
       ],
       "p1": [
-        546.6381102362205,
+        546.5131102362205,
         240.0
       ],
       "offset": 6.0,
@@ -21940,7 +21586,7 @@
         {
           "kind": "point",
           "xy": [
-            546.6381102362205,
+            546.5131102362205,
             240.0
           ],
           "name": "ATTIC FLOOR"
@@ -21948,18 +21594,18 @@
         {
           "kind": "point",
           "xy": [
-            546.6381102362205,
+            546.5131102362205,
             363.0
           ],
           "name": "ATTIC T.O. PLATE"
         }
       ],
       "p0": [
-        546.6381102362205,
+        546.5131102362205,
         240.0
       ],
       "p1": [
-        546.6381102362205,
+        546.5131102362205,
         363.0
       ],
       "offset": 6.0,
@@ -21973,7 +21619,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        189.97375984251966,
+        189.9687598425197,
         -85.4375
       ],
       "content": "STAIR",
@@ -21989,7 +21635,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        189.97375984251966,
+        189.9687598425197,
         -98.10416666666667
       ],
       "content": "CLG 8'-0 15/16\"",
@@ -22005,7 +21651,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        85.71374015748032,
+        85.71874015748031,
         -85.4375
       ],
       "content": "WORKSHOP",
@@ -22021,7 +21667,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        85.71374015748032,
+        85.71874015748031,
         -98.10416666666667
       ],
       "content": "CLG 8'-0 15/16\"",
@@ -22101,7 +21747,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        59.37500000000001,
+        59.375,
         145.5
       ],
       "content": "SUITE",
@@ -22117,7 +21763,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        59.37500000000001,
+        59.375,
         132.83333333333334
       ],
       "content": "CLG 8'-10\"",
@@ -22197,7 +21843,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        322.63,
+        322.625,
         264.75
       ],
       "content": "EAST UNFIN",
@@ -22213,7 +21859,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        59.120000000000005,
+        59.12500000000001,
         264.87
       ],
       "content": "STUDIO",
@@ -22253,7 +21899,7 @@
         "name": "ROOF"
       },
       "at": [
-        -90.63811023622048,
+        -90.51311023622046,
         251.515834650024
       ],
       "to": [
@@ -22278,7 +21924,7 @@
         "name": "EXT_2X6"
       },
       "at": [
-        -90.63811023622048,
+        -90.51311023622046,
         53.28125
       ],
       "to": [
@@ -22297,18 +21943,18 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -4.1850000000000005,
-          -38.291666666666664
+          -4.06,
+          -44.078125
         ],
         "name": "BASEMENT_8"
       },
       "at": [
-        -90.63811023622048,
+        -90.51311023622046,
         -60.144444444444446
       ],
       "to": [
-        -4.1850000000000005,
-        -38.291666666666664
+        -4.06,
+        -44.078125
       ],
       "text": "BASEMENT_8",
       "height": 6.222222222222221,

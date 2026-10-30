@@ -23,11 +23,12 @@ _ON_EDGE_M = 1e-6
 def wall_body(wall: ResolvedWall, z0: float, z1: float) -> BaseGeometry:
     """Union of ``wall``'s non-cavity layer polygons whose band overlaps ``[z0, z1]``.
 
-    Cavity fills share their host layer's polygon, so they add nothing and are skipped.
+    Cavity fills share their host layer's polygon and coatings are zero-width rings, so
+    both add nothing and are skipped.
     """
     parts = []
     for layer in wall.layers:
-        if layer.is_cavity or len(layer.polygon) < 3:
+        if layer.is_cavity or layer.coating or len(layer.polygon) < 3:
             continue
         b0, b1 = layer.band(wall)
         if b1 <= z0 + _BAND_EPS_M or b0 >= z1 - _BAND_EPS_M:

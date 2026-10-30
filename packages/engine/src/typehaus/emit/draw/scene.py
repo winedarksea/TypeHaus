@@ -86,6 +86,16 @@ class Polyline(_Node):
     closed: bool = False
     uid: str | None = None  # element provenance → XDATA
     tag: str | None = None
+    # The material a stroke stands for: a zero-depth coating (``section_cavity``) has no
+    # hatch to carry it. Serialized only when set.
+    material: str | None = None
+
+    @model_serializer(mode="wrap")
+    def _omit_unset_material(self, handler):  # noqa: ANN001, ANN202
+        data = handler(self)
+        if isinstance(data, dict) and data.get("material") is None:
+            data.pop("material", None)
+        return data
 
 
 class Hatch(_Node):

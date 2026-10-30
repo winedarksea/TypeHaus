@@ -60,7 +60,7 @@ ACCENT_GWB_LINING = (
 # finished; its plywood stair face IS painted, `paint-stair`), the masonry/concrete/deck/glazing assemblies (no gypsum face), POST_WHITE_PAINT
 # (its own exterior-paint material), and INT_2X4_PARTITION (a tested STC assembly — see
 # library/assemblies/ for why it doesn't get layers added). A gypsum face left bare and
-# facing a room is still billed paint, by takeoff/derived_paint.py.
+# facing a used room is painted by the room (resolve/room_paint.py); `Room.unpainted` opts out.
 # LAYOUT_ORIGIN, INTERIOR. The five bearing assemblies below join the four
 # facades on ``layout_origin="line"``. The facades were done first because they are what you
 # look at; the centreline is the one that actually matters structurally. `W-M-C1..C5B`,

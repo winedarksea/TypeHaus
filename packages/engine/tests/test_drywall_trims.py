@@ -63,7 +63,7 @@ def test_a_cove_off_its_wall_is_an_integrity_error(catlin_model_ro):
     found = host_plaster_in_runs(model, standard)
     assert [(f.check_id, f.element_tags) for f in found] == [
         ("integrity.light_run_host", ("LR-M-LIVING-W",))]
-    assert "8.74\"" in found[0].message
+    assert "8.75\"" in found[0].message
 
 
 def test_jbead_stops_with_the_bare_face_and_slivers_are_not_corners(catlin_model_ro):

@@ -103,6 +103,9 @@ class ResolvedLayer:
     view_trade: str | None = None
     # Optional display skin; depth and takeoff accounting keep the nominal layer envelope.
     surface_mesh: GMesh | None = None
+    # A ``Material.coating``: zero depth, a zero-width ring on its host face. Emitters draw
+    # it as a skin (``resolve/coatings.coating_skin_ring``), never as a solid.
+    coating: bool = False
 
     def band(self, wall: ResolvedWall) -> tuple[float, float]:
         """This layer's absolute (z0, z1), falling back to the wall's where unbanded."""
@@ -843,9 +846,10 @@ class ResolvedFloor:
     #: exists only because THESE runs pass through it and a different run standing in it is
     #: still a defect. ``mep.riser_through_deck`` is the reader.
     penetrations: tuple[tuple[str, Ring, tuple[str, ...]], ...] = ()
-    #: ``(opening tag, well-face area m²)`` per ``FloorOpening.lining``; its solids are in
+    #: ``(opening tag, well-face area m², face coating)`` per ``FloorOpening.lining``, the
+    #: coating as the rooms resolve it (``room_paint.lining_coating``); its solids are in
     #: ``model.solids`` as ``opening_lining`` (``resolve/opening_lining.py``).
-    linings: tuple[tuple[str, float], ...] = ()
+    linings: tuple[tuple[str, float, str | None], ...] = ()
     #: ``(pitch, clear opening, offset)`` in metres for an open-web deck whose ``JoistSpec``
     #: states its panel layout; ``None`` where it does not. Carried rather than re-read off
     #: the plan because ``checks``, ``resolve/mep_crossings`` and ``routing/obstacles`` all

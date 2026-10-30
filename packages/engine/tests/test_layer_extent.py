@@ -125,7 +125,7 @@ def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model
 
 
 def test_both_basement_assemblies_stand_the_same_distance_off_the_concrete(catlin_model):
-    """The two banded assemblies agree with each other, and the number is 4.185".
+    """The two banded assemblies agree with each other, and the number is 4.06".
 
     It used to be 4.55", matching N-B-BRICK-W/-E's authored ``inch(-4.55)`` stand-off, and
     the docstring here used to claim the skin was sized to keep that match. **That reasoning
@@ -146,8 +146,8 @@ def test_both_basement_assemblies_stand_the_same_distance_off_the_concrete(catli
         return sum(ly.thickness_m for ly in wall.depth_layers()
                    if ly.name != "concrete") / inch(1).meters
 
-    assert outboard_in("W-B-N1") == pytest.approx(4.185, abs=1e-6)
-    assert outboard_in("W-B-S1") == pytest.approx(4.185, abs=1e-6)
+    assert outboard_in("W-B-N1") == pytest.approx(4.06, abs=1e-6)
+    assert outboard_in("W-B-S1") == pytest.approx(4.06, abs=1e-6)
 
 
 def test_the_solid_is_cut_to_the_band_not_to_the_wall(catlin_model):
@@ -204,7 +204,6 @@ def test_mudroom_upper_closure_and_flat_caps_export_at_the_authored_height(catli
     settings.set(settings.USE_WORLD_COORDS, True)
     targets = {
         "W-M-STRW:gwb-mudroom-upper": (84, 108, "gwb-ar"),
-        "W-M-STRW:paint-mudroom-upper": (84, 108, "latex-paint"),
         **{f"W-M-STRW/blocking-{course}-{index:03d}": (bottom, bottom + 1.5, "oak-8q")
            for course, bottom in ((0, 15), (1, 70.5), (2, 84)) for index in range(6)},
     }
@@ -226,7 +225,8 @@ def test_mudroom_upper_closure_and_flat_caps_export_at_the_authored_height(catli
             assigned.append(association.MaterialProfiles[0].Material.Name
                             if association.is_a("IfcMaterialProfileSet") else association.Name)
         assert assigned == [material]
-    for name in ("gwb-mudroom-upper", "paint-mudroom-upper"):
+    # The paint coat takes no depth, so it exports no part of its own.
+    for name in ("gwb-mudroom-upper",):
         part = products[f"W-M-STRW:{name}"]
         assert [relation.RelatingObject.Name for relation in part.Decomposes] == ["W-M-STRW"]
 
@@ -240,47 +240,32 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     model = ifcopenshell.open(str(catlin_ifc_path))
 
     parts = {p.Name: p for p in model.by_type("IfcBuildingElementPart")}
-    assert f"W-B-N1:{_PANEL}" in parts
-    # Only the south segments outside the excavation get the band: W-B-S1 and W-B-S4 are
-    # backfilled 6'-4" with 2'-2 9/16" out of the ground, which is a grade band. The four
-    # inside the court are not — their XPS is in W-B-BRICK's ventilated cavity — and they
-    # carry no skin at all, so there is nothing for the exporter to aggregate. (W-B-S1B was
-    # a third for one afternoon on 2026-09-05; the sauna shrink took it back.)
-    south_banded = {name for name in parts
-                    if name.startswith("W-B-S") and name.endswith(_PANEL)}
-    assert south_banded == {f"W-B-S1:{_PANEL}", f"W-B-S4:{_PANEL}"}
-    # The sauna's south liner is the other banded stack in the house, and it exports the
-    # same way: three layers stopping at the room's 7'-6" ceiling, not at the wall's top.
-    # W-B-S2-FR's south face is a framed wall on a curb; the curb's own liner is unbanded
-    # (it runs the curb's full 7 1/4"), so only the framed wall's three layers are partial
-    # and only they aggregate.
+    # The grade-band protection coat is a coating since 2026-10-30: it takes no depth and
+    # exports no part. The sauna's south liner is the banded stack that aggregates: three
+    # layers stopping at the room's 7'-6" ceiling, each FOUR parts because W-B-S2-FR carries
+    # the sauna window and a banded layer is cut around the openings in its own wall.
     #
-    # Each of those three is FOUR parts, not one: W-B-S2-FR carries the sauna window, and a
-    # banded layer is cut around the openings in its own wall exactly as the wall is. Until
-    # 2026-09-15 the liner extruded straight across the glass.
-    #
-    # W-B-S3-FR's ``gwb-a`` is the third entry, and it is not an authored band at all: that
-    # wall is lifted to the platform above it, and ``layer_bands.clamp_to_plates`` stops its
-    # interior finish at the top plate while its sheathing and XPS keep lapping the rim. An
-    # instance trim exports exactly like a type band — as parts — and it is three of them
-    # because the wall carries the garden door.
+    # W-B-S3-FR's ``gwb-a`` is not an authored band at all: that wall is lifted to the
+    # platform above it, and ``layer_bands.clamp_to_plates`` stops its interior finish at the
+    # top plate while its sheathing and XPS keep lapping the rim. An instance trim exports
+    # exactly like a type band — as parts — three of them because of the garden door.
+    assert not any(name.endswith(f":{_PANEL}") for name in parts)
     assert {n for n in parts if n.startswith("W-B-S")} == {
-        f"W-B-S1:{_PANEL}", f"W-B-S4:{_PANEL}",
         *(f"W-B-S3-FR:gwb-a ({index}/3)" for index in range(1, 4)),
         *(f"W-B-S2-FR:{layer} ({index}/4)"
           for layer in ("shiplap-liner", "liner-furring", "foil-polyiso")
           for index in range(1, 5))}
 
-    part = parts[f"W-B-N1:{_PANEL}"]
+    part = parts["W-B-S2-FR:shiplap-liner (1/4)"]
     parents = [rel.RelatingObject for rel in model.by_type("IfcRelAggregates")
                if part in (rel.RelatedObjects or ())]
-    assert [p.Name for p in parents] == ["W-B-N1"]
+    assert [p.Name for p in parents] == ["W-B-S2-FR"]
     materials = [rel.RelatingMaterial for rel in model.by_type("IfcRelAssociatesMaterial")
                  if part in (rel.RelatedObjects or ())]
-    assert [m.Name for m in materials] == ["foundation-coating-acrylic-black"]
+    assert len(materials) == 1
 
-    # And it is *not* also a layer of the wall type's set, which would double-describe it
-    # and make the set thicker than the geometry it belongs to.
+    # And a banded layer is *not* also a layer of the wall type's set, which would
+    # double-describe it and make the set thicker than the geometry it belongs to.
     layer_set = next(s for s in model.by_type("IfcMaterialLayerSet")
                      if s.LayerSetName == "BASEMENT_8")
     assert _PANEL not in [ly.Name for ly in layer_set.MaterialLayers]

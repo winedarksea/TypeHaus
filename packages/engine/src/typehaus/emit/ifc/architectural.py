@@ -27,6 +27,7 @@ from typehaus.emit.ifc import lowlevel as ll
 from typehaus.emit.ifc.structural import _emit_framed_member
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
+from typehaus.resolve.coatings import coating_tags
 from typehaus.resolve.envelope_geometry import envelope_geometry
 from typehaus.resolve.geometry import opening_center, rect_between
 from typehaus.resolve.geometry_openings import opening_parts
@@ -109,8 +110,10 @@ def _assembly_default_signature(model: ResolvedModel, assembly_tag: str) -> tupl
     if assembly is None:
         return None
     stack = list(assembly.default_lining) + list(assembly.layers)
-    return tuple((layer.name, layer.material_ref, round(layer.thickness.meters, 6))
-                 for (layer, _added, cavity) in _added_thicknesses(stack)
+    coatings = coating_tags(model.plan.library)
+    return tuple((layer.name, layer.material_ref,
+                  round(0.0 if layer.material_ref in coatings else layer.thickness.meters, 6))
+                 for (layer, _added, cavity) in _added_thicknesses(stack, coatings)
                  if not cavity and getattr(layer, "extent", None) is None)
 
 
@@ -163,7 +166,7 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
     body_representation = ll.add_prisms_from_profiles(
         f, body,
         [layer.polygon for layer in rw.depth_layers()
-         if len(layer.polygon) >= 3 and at_body_band(layer, rw)],
+         if len(layer.polygon) >= 3 and not layer.coating and at_body_band(layer, rw)],
         band_z1 - band_z0, band_z0,
     )
     axis_representation = ll.add_axis_representation(f, body, rw.axis)
@@ -232,7 +235,7 @@ def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
         # it would double-describe the same solid. That is every layer of a lifted
         # partition, which is why trimming one adds no parts at all.
         if (not getattr(layer, "is_banded", False) or len(layer.polygon) < 3
-                or at_body_band(layer, rw)):
+                or layer.coating or at_body_band(layer, rw)):
             continue
         z0, z1 = layer.band(rw)
         if z1 - z0 <= 1e-9:

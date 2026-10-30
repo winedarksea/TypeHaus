@@ -12,6 +12,7 @@ from typehaus.model.assembly import Assembly
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import Library
 from typehaus.quantities import RValue, rsi
+from typehaus.resolve.coatings import is_coating
 
 
 @dataclass(frozen=True)
@@ -156,7 +157,8 @@ def assembly_metrics(asm: Assembly, library: Library) -> AssemblyMetrics:
     return AssemblyMetrics(
         tag=asm.tag,
         r_value=assembly_r_value(asm, library),
-        thickness_in=sum(layer.thickness.inches for layer in stack),
+        thickness_in=sum(0.0 if is_coating(library, layer.material_ref)
+                         else layer.thickness.inches for layer in stack),
         layer_count=len(stack),
         structure_member=spec.member if spec is not None else None,
         framing_spacing_in=spacing_in,

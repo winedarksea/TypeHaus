@@ -31,6 +31,7 @@ from typehaus.model.enums import LayerFunction, TrimKind
 from typehaus.model.layer_functions import LAYER_FUNCTIONS
 from typehaus.model.spatial import Room
 from typehaus.resolve.ceiling_over import ceiling_decks_over, room_roof_over
+from typehaus.resolve.coatings import coating_tags
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
@@ -38,7 +39,7 @@ from typehaus.resolve.rainscreen_closures import BUG_SCREEN_MATERIAL
 from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
 from typehaus.resolve.sheathing_corner import layer_run_m
 from typehaus.resolve.solid_categories import in_slab_family
-from typehaus.takeoff.derived_paint import derived_paint_rows
+from typehaus.takeoff.coating_areas import ceiling_coating_areas, covered_paneling_m2
 
 _M2_TO_FT2 = 10.7639104
 _M_TO_FT = 3.280839895
@@ -183,6 +184,7 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     areas: dict[tuple[str, str, str, float], float] = defaultdict(float)
     net_areas = wall_net_areas_m2(model)
     replaced = replaced_finish_m2(model)
+    coatings = coating_tags(model.plan.library)
 
     for wall in model.walls:
         net = net_areas[wall.tag]
@@ -190,7 +192,8 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         for layer in wall.layers:
             # A finish a paneling band replaces (the sauna's tile splash) is not bought.
             covered = max(0.0, wall_layer_net_area_m2(model, wall, layer, net)
-                          - replaced.get((wall.tag, layer.name), 0.0))
+                          - replaced.get((wall.tag, layer.name), 0.0)
+                          - (covered_paneling_m2(model, wall, layer) if layer.coating else 0.0))
             # A cavity layer shares the structure layer's polygon and adds no depth; billing
             # it as its own area would order insulation for a wall band twice.
             if getattr(layer, "is_cavity", False):
@@ -268,7 +271,9 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             )
             net_ceiling_m2 = max(0.0, ceiling_m2 - overridden_m2)
             for lining_layer in assembly.default_lining:
-                if lining_layer.function in _BILLABLE:
+                # A coat is the room's: billed once off ``model.ceilings`` (coating_areas).
+                if (lining_layer.function in _BILLABLE
+                        and lining_layer.material_ref not in coatings):
                     areas[("roof ceiling", lining_layer.function.value,
                            lining_layer.material_ref,
                            lining_layer.thickness.meters)] += net_ceiling_m2
@@ -282,7 +287,7 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         if not isinstance(plan_room, Room):
             continue
         for lining_layer in plan_room.ceiling_lining:
-            if lining_layer.function in _BILLABLE:
+            if lining_layer.function in _BILLABLE and lining_layer.material_ref not in coatings:
                 areas[("ceiling", lining_layer.function.value, lining_layer.material_ref,
                        lining_layer.thickness.meters)] += room.area_m2
 
@@ -349,12 +354,15 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                                  and not in_slab_family(scope))}
         for (scope, function, material, thickness), area in sorted(areas.items())
     ]
-    # The paint no assembly authors, on exposed gypsum facing a used room.
+    rows += [{"scope": scope, "function": LayerFunction.FINISH.value, "material": material,
+              "thickness_in": 0.0, "net_area_sqft": round(area * _M2_TO_FT2, 1),
+              "also_in_sheet_goods": False}
+             for (scope, material), area in sorted(ceiling_coating_areas(model).items())
+             if area > 0.0]
     from typehaus.takeoff.door_hardening import door_field_paint_rows
     from typehaus.takeoff.window_returns import window_return_finish_rows
 
-    return (rows + derived_paint_rows(model, net_areas)
-            + window_return_finish_rows(model) + door_field_paint_rows(model))
+    return rows + window_return_finish_rows(model) + door_field_paint_rows(model)
 
 
 def bug_screen_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

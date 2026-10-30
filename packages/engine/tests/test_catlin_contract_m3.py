@@ -2212,8 +2212,8 @@ def test_the_house_strip_footings_sit_under_the_walls_they_carry(catlin_model):
 
     ** THE BAND IS NOT THE CONCRETE, WHICH IS WHY THESE NUMBERS ARE ASYMMETRIC. **
     `band_axis` is handed EVERY layer's polygon, so the new datum is the midline of the
-    whole stack, the 4" of exterior XPS included — 2 3/32" outboard of the pour's own
-    midline. The toes below are the best this datum can do, and they are pinned so that
+    whole stack, the 4.06" of exterior XPS and waterproofing included (the protection coat
+    takes no depth) — 2.03" outboard of the pour's own midline. The toes below are the best this datum can do, and they are pinned so that
     residue stays visible rather than being rediscovered as a defect.
 
     The other eleven strips stay on the node line and this test says so in GEOMETRY, not in
@@ -2245,11 +2245,11 @@ def test_the_house_strip_footings_sit_under_the_walls_they_carry(catlin_model):
     for tag in ("W-B-N1", "W-B-N2", "W-B-N3", "W-B-N4", "W-B-W1", "W-B-W2"):
         footing, pour = spans(tag)
         assert pour == pytest.approx((0.0, 8.0), abs=1e-6), tag
-        assert footing == pytest.approx((-8.0925, 11.9075), abs=1e-6), tag
+        assert footing == pytest.approx((-8.03, 11.97), abs=1e-6), tag
     for tag in ("W-B-E1", "W-B-E2"):
         footing, pour = spans(tag)
         assert pour == pytest.approx((0.0, 12.0), abs=1e-6), tag
-        assert footing == pytest.approx((-6.0925, 13.9075), abs=1e-6), tag
+        assert footing == pytest.approx((-6.03, 13.97), abs=1e-6), tag
 
     # The eleven that stay on the node line: the garden-end four on their 6" trim, and the
     # seven interior walls a 20" strip already straddles symmetrically.

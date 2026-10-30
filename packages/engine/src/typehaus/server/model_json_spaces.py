@@ -28,6 +28,9 @@ def spaces_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str
             {"uid": r.uid, "tag": r.tag, "storey": r.storey, "occupancy": r.occupancy,
              "provenance": _provenance(provenance, r.tag),
              "conditioned": r.conditioned, "area_m2": r.area_m2,
+             # The room owns its paint (resolve/room_paint.py): display only.
+             "paint": getattr(model.plan.by_tag(r.tag), "paint", None),
+             "unpainted": bool(getattr(model.plan.by_tag(r.tag), "unpainted", False)),
              "clear_face": [list(p) for p in r.clear_face], "floor_finish": r.floor_finish,
              # The wall-axis cell (ownership); clear_face is the finish face.
              "axis_face": [list(p) for p in r.axis_face],

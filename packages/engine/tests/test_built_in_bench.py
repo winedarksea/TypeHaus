@@ -40,12 +40,12 @@ def test_fit_uses_current_finishes_and_preserves_working_gap(catlin_model_ro, be
     room = next(r for r in model.rooms if r.tag == "RM-M-STUDY")
     west, south, east, north = Polygon(room.clear_face).bounds
     assert (west / INCH, south / INCH, east / INCH, north / INCH) == pytest.approx(
-        (164.26, 219.26, 214.74, 266.74))  # painted faces, 0.01" film
+        (164.25, 219.25, 214.75, 266.75))  # paint takes no depth
     bench = objects[BENCH_TAG]
     bx0, by0, bx1, by1 = Polygon(bench.footprint).bounds
-    # 13/16" and 1/16" to the gypsum; the 0.01" paint film takes its share of each gap.
-    assert (bx0 - west, east - bx1) == pytest.approx((.8025 * INCH,) * 2)
-    assert north - by1 == pytest.approx(.0525 * INCH)
+    # 13/16" and 1/16" to the gypsum; paint takes no depth.
+    assert (bx0 - west, east - bx1) == pytest.approx((.8125 * INCH,) * 2)
+    assert north - by1 == pytest.approx(.0625 * INCH)
     assert bench.uid == "AZ3GY4JQFH"
     fixed = objects["FURN-M-STUDY-DESK"]
     leaf = objects["FURN-M-STUDY-DESK-LEAF"]
@@ -55,7 +55,7 @@ def test_fit_uses_current_finishes_and_preserves_working_gap(catlin_model_ro, be
     assert (fy0, fy1) == pytest.approx((ly0, ly1))
     assert fy1 - fy0 == pytest.approx(16 * INCH)
     assert by0 - fy1 >= 7.125 * INCH
-    assert fy0 - south == pytest.approx(.8025 * INCH)
+    assert fy0 - south == pytest.approx(.8125 * INCH)
     assert fx0 == pytest.approx(bx0) and lx1 == pytest.approx(bx1)
     spec = bench_type.built_in_bench
     assert spec.back_angle_degrees == 100

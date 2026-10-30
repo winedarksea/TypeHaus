@@ -44,7 +44,7 @@ def test_catlin_returns_inherit_finishes_and_skip_other_liners(catlin_model_ro):
 def test_returns_reach_viewer_and_glb_with_material_and_trade(catlin_model_ro):
     model = catlin_model_ro
     solids = {s.uid: s for s in model.solids if s.category == 'window_return'}
-    assert len(solids) == 324
+    assert len(solids) == 108  # 36 returns x the board's jambs and head; paint has no solid
     payload = model_to_dict(model)
     rows = [row for row in payload['solids'] if row['category'] == 'window_return']
     assert {row['uid'] for row in rows} == set(solids)
@@ -76,7 +76,7 @@ def test_returns_export_as_ifc_coverings(catlin_model_ro, catlin_ifc_path):
                 if ifcopenshell.util.element.get_psets(p).get(PSET_SOURCE, {}).get(
                     'category') == 'window_return'}
     solids = [s for s in model.solids if s.category == 'window_return']
-    assert len(products) == len(solids) == 324
+    assert len(products) == len(solids) == 108
     for solid in solids:
         product = products[solid.tag]
         assert product.PredefinedType == 'CLADDING'

@@ -285,34 +285,6 @@
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          219.25,
-          -19.68503937007874
-        ],
-        [
-          219.26000000000002,
-          -19.68503937007874
-        ],
-        [
-          219.26000000000002,
-          -13.437499999999996
-        ],
-        [
-          219.25,
-          -13.437499999999996
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CBW111AAAA",
-      "tag": "W-B-CS/paint-b"
-    },
-    {
-      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -344,28 +316,21 @@
       "node": "polyline",
       "points": [
         [
-          212.24,
-          0.0
+          219.25000000000006,
+          -19.68503937007874
         ],
         [
-          212.25,
-          0.0
-        ],
-        [
-          212.25,
-          19.68503937007874
-        ],
-        [
-          212.24,
-          19.68503937007874
+          219.25000000000006,
+          -13.437499999999996
         ]
       ],
       "layer": "A-WALL-FINI",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW112AAAA",
-      "tag": "W-M-C1/paint-a"
+      "closed": false,
+      "uid": "CBW111AAAA",
+      "tag": "W-B-CS/paint-b",
+      "material": "latex-paint"
     },
     {
       "space": "model",
@@ -594,34 +559,6 @@
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          219.25,
-          0.0
-        ],
-        [
-          219.26000000000002,
-          0.0
-        ],
-        [
-          219.26000000000002,
-          19.68503937007874
-        ],
-        [
-          219.25,
-          19.68503937007874
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW112AAAA",
-      "tag": "W-M-C1/paint-b"
-    },
-    {
-      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -647,6 +584,48 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "fiberglass"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          212.25000000000003,
+          0.0
+        ],
+        [
+          212.25000000000003,
+          19.68503937007874
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW112AAAA",
+      "tag": "W-M-C1/paint-a",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          219.25000000000006,
+          0.0
+        ],
+        [
+          219.25000000000006,
+          19.68503937007874
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW112AAAA",
+      "tag": "W-M-C1/paint-b",
+      "material": "latex-paint"
     },
     {
       "space": "model",
@@ -790,19 +769,19 @@
       "node": "polyline",
       "points": [
         [
-          219.26000000000002,
+          219.25,
           -12.5
         ],
         [
-          229.10251968503943,
+          229.0925196850394,
           -12.5
         ],
         [
-          229.10251968503943,
+          229.0925196850394,
           -11.875
         ],
         [
-          219.26000000000002,
+          219.25,
           -11.875
         ]
       ],
@@ -818,19 +797,19 @@
       "node": "hatch",
       "boundary": [
         [
-          219.26000000000002,
+          219.25,
           -12.5
         ],
         [
-          229.10251968503943,
+          229.0925196850394,
           -12.5
         ],
         [
-          229.10251968503943,
+          229.0925196850394,
           -11.875
         ],
         [
-          219.26000000000002,
+          219.25,
           -11.875
         ]
       ],
@@ -1130,11 +1109,11 @@
           0.0
         ],
         [
-          229.10251968503943,
+          229.0925196850394,
           0.0
         ],
         [
-          229.10251968503943,
+          229.0925196850394,
           0.7499999999999999
         ],
         [
@@ -1158,11 +1137,11 @@
           0.0
         ],
         [
-          229.10251968503943,
+          229.0925196850394,
           0.0
         ],
         [
-          229.10251968503943,
+          229.0925196850394,
           0.7499999999999999
         ],
         [
@@ -1588,32 +1567,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          219.25500000000002,
-          -11.295833333333333
-        ],
-        "name": ""
-      },
-      "at": [
-        199.15748031496065,
-        -11.295833333333333
-      ],
-      "to": [
-        219.25500000000002,
-        -11.295833333333333
-      ],
-      "text": "paint-b 0.01\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          212.245,
+          212.5,
           17.868372703412074
         ],
         "name": ""
@@ -1623,33 +1577,8 @@
         17.868372703412074
       ],
       "to": [
-        212.245,
-        17.868372703412074
-      ],
-      "text": "paint-a 0.01\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          212.5,
-          15.97253937007874
-        ],
-        "name": ""
-      },
-      "at": [
-        199.15748031496065,
-        15.97253937007874
-      ],
-      "to": [
         212.5,
-        15.97253937007874
+        17.868372703412074
       ],
       "text": "gwb-a 0.5\"",
       "height": 1.6,
@@ -1664,17 +1593,17 @@
         "kind": "point",
         "xy": [
           213.0,
-          14.076706036745406
+          15.97253937007874
         ],
         "name": ""
       },
       "at": [
         199.15748031496065,
-        14.076706036745406
+        15.97253937007874
       ],
       "to": [
         213.0,
-        14.076706036745406
+        15.97253937007874
       ],
       "text": "resilient-channel 0.5\"",
       "height": 1.6,
@@ -1689,17 +1618,17 @@
         "kind": "point",
         "xy": [
           216.0,
-          12.180872703412073
+          14.076706036745406
         ],
         "name": ""
       },
       "at": [
         199.15748031496065,
-        12.180872703412073
+        14.076706036745406
       ],
       "to": [
         216.0,
-        12.180872703412073
+        14.076706036745406
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
@@ -1714,17 +1643,17 @@
         "kind": "point",
         "xy": [
           219.0,
-          10.285039370078739
+          12.180872703412073
         ],
         "name": ""
       },
       "at": [
         199.15748031496065,
-        10.285039370078739
+        12.180872703412073
       ],
       "to": [
         219.0,
-        10.285039370078739
+        12.180872703412073
       ],
       "text": "gwb-b 0.5\"",
       "height": 1.6,
@@ -1734,34 +1663,9 @@
     },
     {
       "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          219.25500000000002,
-          8.389206036745405
-        ],
-        "name": ""
-      },
-      "at": [
-        199.15748031496065,
-        8.389206036745405
-      ],
-      "to": [
-        219.25500000000002,
-        8.389206036745405
-      ],
-      "text": "paint-b 0.01\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "text",
       "anchor": [
-        224.26000000000005,
+        224.25000000000006,
         16.051706036745408
       ],
       "content": "air continuity — sheathing-ext →\nsheathing-ext",
@@ -1777,7 +1681,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        224.26000000000005,
+        224.25000000000006,
         12.566289370078742
       ],
       "content": "water continuity — spray-foam-ext →\nspray-foam-ext",
@@ -1793,7 +1697,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        224.26000000000005,
+        224.25000000000006,
         9.080872703412076
       ],
       "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
@@ -2434,7 +2338,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "resilient-channel"
+      "material": "latex-paint",
+      "fill": "#f0ede6"
     },
     {
       "space": "paper",
@@ -2471,7 +2376,7 @@
         2.85,
         1.228
       ],
-      "content": "resilient-channel  0.5\"",
+      "content": "latex-paint  0.01\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2501,12 +2406,12 @@
           1.1280000000000001
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "lsl"
+      "material": "resilient-channel"
     },
     {
       "space": "paper",
@@ -2543,7 +2448,7 @@
         2.85,
         1.058
       ],
-      "content": "lsl  5.5\"",
+      "content": "resilient-channel  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2573,12 +2478,12 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "batt",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "fiberglass"
+      "material": "lsl"
     },
     {
       "space": "paper",
@@ -2615,7 +2520,7 @@
         2.85,
         0.8880000000000001
       ],
-      "content": "fiberglass  5.5\"",
+      "content": "lsl  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2645,13 +2550,12 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "gypsum",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb-ar",
-      "fill": "#d3dbe3"
+      "material": "fiberglass"
     },
     {
       "space": "paper",
@@ -2688,6 +2592,79 @@
         2.85,
         0.7180000000000002
       ],
+      "content": "fiberglass  5.5\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          4.8,
+          1.328
+        ],
+        [
+          4.9399999999999995,
+          1.328
+        ],
+        [
+          4.9399999999999995,
+          1.468
+        ],
+        [
+          4.8,
+          1.468
+        ]
+      ],
+      "pattern": "gypsum",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "gwb-ar",
+      "fill": "#d3dbe3"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          4.8,
+          1.328
+        ],
+        [
+          4.9399999999999995,
+          1.328
+        ],
+        [
+          4.9399999999999995,
+          1.468
+        ],
+        [
+          4.8,
+          1.468
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        4.999999999999999,
+        1.3980000000000001
+      ],
       "content": "gwb-ar  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
@@ -2711,7 +2688,7 @@
       5.199999999999999
     ],
     "center": [
-      222.13000000000005,
+      222.12500000000003,
       0.0
     ],
     "scale": 1.0,

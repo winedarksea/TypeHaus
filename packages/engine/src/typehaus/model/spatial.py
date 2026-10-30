@@ -55,6 +55,12 @@ class Room(Element):
     # Room side first, same convention as ``wall_lining``. Empty = no override, fall
     # through to the derived default.
     ceiling_lining: tuple[Layer, ...] = ()
+    # The room owns its paint (``resolve/room_paint.py``). ``paint`` names the coating
+    # material its faces take: it swaps an authored coat and is the coat added to bare
+    # gypsum (None = the library's latex). ``unpainted`` strips coatings from its faces and
+    # adds none, except an envelope wall's, whose paint is its vapour retarder.
+    paint: str | None = None
+    unpainted: bool = False
     # ** THE CEILING OF THIS ROOM IS DELIBERATELY OPEN, AND THIS IS THE SENTENCE THAT SAYS
     # SO. ** The owner's decision to live with exposed pipe and duct is a decision about a
     # ROOM, not about a run: it is taken once for the basement gym and it then covers every
@@ -109,6 +115,12 @@ class Room(Element):
                 "write the sentence a reviewer should read "
                 f"(e.g. 'owner accepts exposed service runs in the gym'), not {value!r}")
         return reason
+
+    @model_validator(mode="after")
+    def _paint_or_unpainted(self) -> Room:
+        if self.paint is not None and self.unpainted:
+            raise ValueError(f"Room {self.tag}: paint and unpainted contradict each other")
+        return self
 
     @property
     def interior_design_relative_humidity(self) -> float | None:

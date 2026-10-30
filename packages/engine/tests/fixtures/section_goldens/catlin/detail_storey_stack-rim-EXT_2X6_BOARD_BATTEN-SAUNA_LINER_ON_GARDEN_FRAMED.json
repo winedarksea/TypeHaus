@@ -653,34 +653,6 @@
       "node": "polyline",
       "points": [
         [
-          6.5,
-          0.0
-        ],
-        [
-          6.510000000000001,
-          0.0
-        ],
-        [
-          6.510000000000001,
-          21.65354330708662
-        ],
-        [
-          6.5,
-          21.65354330708662
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1/paint"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           6.000000000000001,
           0.0
         ],
@@ -1103,6 +1075,27 @@
       "node": "polyline",
       "points": [
         [
+          6.499999999999999,
+          0.0
+        ],
+        [
+          6.499999999999999,
+          21.65354330708662
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMW101AAAA",
+      "tag": "W-M-S1/paint",
+      "material": "latex-paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -10.0,
           -2.0
         ],
@@ -1293,67 +1286,67 @@
       "node": "polyline",
       "points": [
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -12.4375
         ],
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -10.628461564126518
         ],
         [
-          -6.086400000000001,
+          -6.086399999999998,
           -9.8125
         ],
         [
-          -6.06992913576481,
+          -6.069929135764807,
           -9.8125
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -9.8125
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -11.636631695901153
         ],
         [
-          -6.062500000000001,
+          -6.062499999999998,
           -12.459401031391577
         ],
         [
-          -6.929702375048261,
+          -6.929702375048256,
           -12.535242935216468
         ],
         [
-          -7.3208515028538,
+          -7.320851502853795,
           -12.569451206994515
         ],
         [
-          -7.6211509494526535,
+          -7.621150949452649,
           -12.86975065359337
         ],
         [
-          -7.756600147929643,
+          -7.756600147929639,
           -13.005199852070358
         ],
         [
-          -7.76824680772235,
+          -7.768246807722345,
           -12.993553192277654
         ],
         [
-          -7.773500000000002,
+          -7.773499999999998,
           -12.9883
         ],
         [
-          -7.468961301023814,
+          -7.4689613010238105,
           -12.683761301023813
         ],
         [
-          -7.331600000000001,
+          -7.331599999999998,
           -12.5464
         ],
         [
-          -6.473461081771559,
+          -6.473461081771555,
           -12.471350748317477
         ]
       ],
@@ -2568,31 +2561,6 @@
     },
     {
       "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          6.505000000000001,
-          1.8702099737532825
-        ],
-        "name": ""
-      },
-      "at": [
-        -16.902519685039373,
-        1.8702099737532825
-      ],
-      "to": [
-        6.505000000000001,
-        1.8702099737532825
-      ],
-      "text": "paint 0.01\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2846,7 +2814,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -2.0,
+          -1.9999999999999996,
           0.0
         ],
         "name": ""
@@ -2856,7 +2824,7 @@
         12.828543307086619
       ],
       "to": [
-        -2.0,
+        -1.9999999999999996,
         0.0
       ],
       "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
@@ -2871,7 +2839,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -2.0,
+          -1.9999999999999996,
           0.0
         ],
         "name": ""
@@ -2881,7 +2849,7 @@
         8.181321084864397
       ],
       "to": [
-        -2.0,
+        -1.9999999999999996,
         0.0
       ],
       "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
@@ -3658,12 +3626,13 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "gypsum",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb"
+      "material": "latex-paint",
+      "fill": "#f0ede6"
     },
     {
       "space": "paper",
@@ -3700,7 +3669,7 @@
         2.85,
         0.8880000000000001
       ],
-      "content": "gwb  0.5\"",
+      "content": "latex-paint  0.01\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3730,12 +3699,12 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "lsl"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -3772,7 +3741,7 @@
         2.85,
         0.7180000000000002
       ],
-      "content": "lsl  5.5\"",
+      "content": "gwb  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3802,12 +3771,12 @@
           1.468
         ]
       ],
-      "pattern": "batt",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "fiberglass"
+      "material": "lsl"
     },
     {
       "space": "paper",
@@ -3844,7 +3813,7 @@
         4.999999999999999,
         1.3980000000000001
       ],
-      "content": "fiberglass  5.5\"",
+      "content": "lsl  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3879,8 +3848,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "closed-cell-spray-foam",
-      "fill": "#e8d9b5"
+      "material": "fiberglass"
     },
     {
       "space": "paper",
@@ -3917,7 +3885,7 @@
         4.999999999999999,
         1.228
       ],
-      "content": "closed-cell-spray-foam  4\"",
+      "content": "fiberglass  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3947,12 +3915,13 @@
           1.1280000000000001
         ]
       ],
-      "pattern": "membrane",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "air-barrier"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "paper",
@@ -3989,7 +3958,7 @@
         4.999999999999999,
         1.058
       ],
-      "content": "air-barrier  0.5\"",
+      "content": "closed-cell-spray-foam  4\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4019,12 +3988,12 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "membrane",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "kdat"
+      "material": "air-barrier"
     },
     {
       "space": "paper",
@@ -4061,7 +4030,7 @@
         4.999999999999999,
         0.8880000000000001
       ],
-      "content": "kdat  1.5\"",
+      "content": "air-barrier  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4091,13 +4060,12 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "board-batten-24",
-      "fill": "#2f2f2f"
+      "material": "kdat"
     },
     {
       "space": "paper",
@@ -4134,7 +4102,7 @@
         4.999999999999999,
         0.7180000000000002
       ],
-      "content": "board-batten-24  0.75\"",
+      "content": "kdat  1.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4150,7 +4118,7 @@
         6.95,
         1.532
       ],
-      "content": "+1 more (see notes)",
+      "content": "+2 more (see notes)",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

@@ -31,6 +31,7 @@ from typehaus.model.floors import FloorSystem, Slab
 from typehaus.model.plan import PlanModel
 from typehaus.model.refs import FollowRoof
 from typehaus.model.spatial import Roof
+from typehaus.resolve.coatings import layer_depth_m
 from typehaus.resolve.construction_geometry import _EPS
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.overlay import difference, intersection, union_all
@@ -138,7 +139,7 @@ def deck_structure_underside_m(storey: Any, deck: Any) -> float | None:
     return top - section.depth_m
 
 
-def ceiling_underside_m(storey: Any, deck: Any) -> float | None:
+def ceiling_underside_m(storey: Any, deck: Any, library: Any) -> float | None:
     """Absolute elevation of the underside of ``deck``'s OWN ceiling, or None if derivable.
 
     A FloorSystem's storey datum is the TOP of its structure, so the room below sees the
@@ -153,7 +154,7 @@ def ceiling_underside_m(storey: Any, deck: Any) -> float | None:
     underside = deck_structure_underside_m(storey, deck)
     if underside is None:
         return None
-    return underside - sum(layer.thickness.meters for layer in deck.ceiling_below)
+    return underside - sum(layer_depth_m(library, layer) for layer in deck.ceiling_below)
 
 
 def room_roof_over(plan: PlanModel, storey_tag: str, room: Any) -> Roof | None:

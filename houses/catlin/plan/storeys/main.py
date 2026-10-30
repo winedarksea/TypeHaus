@@ -1028,46 +1028,38 @@ WALLS = [
     #
     # The slots stay OPEN and UNMORTARED — they are clearance, not bearing. Pointing them up
     # is the one way to turn this detail back into brick standing on a joist.
-    # ** THE BRICK DOES NOT MOVE WHEN THE WASH IS ADDED. ** Same rule as
-    # `params/sunken_garden._COURT_AXIS_SHIFT`, opposite sign. FIREPLACE_BRICK_WYTHE is
-    # `layers=(brick, wash)` — the wash is LAST because these walls are authored S->N on their own
-    # open_end pairs and so take outward sign +1, which lands layer 0 EAST against W-M-E1's studs.
-    # Measuring from the interior face the stack is brick 0..3 5/8", wash 3 5/8"..3 3/4", so the
-    # brick's centre is 1 13/16" where the default axis is 1 7/8": -1/16", half of `_WASH_FILM`.
-    # Without it the wythe slides 1/16" west into the room and its overhang past W-B-E1's pour
-    # grows; with it the brick holds exactly where notes/east_breast_bearing.md worked it and the
-    # film oversails into the room, which is what actually gets built.
+    # FIREPLACE_BRICK_WYTHE is `layers=(brick, wash)`: the wash is LAST because these walls are
+    # authored S->N on their own open_end pairs and so take outward sign +1, which lands layer 0
+    # EAST against W-M-E1's studs. The wash is a coating (no depth), so the brick sits centred
+    # on its node line where notes/east_breast_bearing.md worked it.
     # The middle pier keeps the retired stub's uid so one IFC GlobalId survives the split
     # (decision #16's habit); the two outer piers are minted by `haus fmt`.
     Wall(uid="Q9ZJ24BP84", tag="W-M-FIRE-STUB-S", start_node="N-M-FIRE-STUB-S",
          end_node="N-M-FIRE-PIER-S2", assembly="FIREPLACE_BRICK_WYTHE",
-         alignment=face("center", offset=inch(-0.0625)),
          base_elevation=inch(-13.4375), top=inch(14.375),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="ZG0Q6KGNXB", tag="W-M-FIRE-STUB-M", start_node="N-M-FIRE-PIER-M1",
          end_node="N-M-FIRE-PIER-M2", assembly="FIREPLACE_BRICK_WYTHE",
-         alignment=face("center", offset=inch(-0.0625)),
          base_elevation=inch(-13.4375), top=inch(14.375),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="XZPB2TEJ3P", tag="W-M-FIRE-STUB-N", start_node="N-M-FIRE-PIER-N1",
          end_node="N-M-FIRE-STUB-N", assembly="FIREPLACE_BRICK_WYTHE",
-         alignment=face("center", offset=inch(-0.0625)),
          base_elevation=inch(-13.4375), top=inch(14.375),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="4MHYR1HBC8", tag="W-M-FIRE-PLINTH", start_node="N-M-FIRE-S", end_node="N-M-FIRE-N",
-         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(0.9375), top=inch(24),
+         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(0.9375), top=inch(24),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="BVEVY6KVW8", tag="W-M-FIRE-JAMB-S", start_node="N-M-FIRE-JS-S",
          end_node="N-M-FIRE-JS-N",
-         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(24.9375), top=inch(24),
+         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(24.9375), top=inch(24),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="R8VJRRE4M6", tag="W-M-FIRE-JAMB-N", start_node="N-M-FIRE-JN-S",
          end_node="N-M-FIRE-JN-N",
-         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(24.9375), top=inch(24),
+         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(24.9375), top=inch(24),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="Z5314GVSNX", tag="W-M-FIRE-HEAD", start_node="N-M-FIRE-HD-S",
          end_node="N-M-FIRE-HD-N",
-         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(48.9375), top=inch(16),
+         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(48.9375), top=inch(16),
          structural_role=StructuralRole.NONBEARING),
 ]
 
@@ -1597,7 +1589,7 @@ ROOMS = [
     #
     # The utility closet follows the mudroom LVP at D-M-MECH.
     Room(uid="CMR411AAAA", tag="RM-M-MECH", seed=pt(ft(3), ft(34, 6)),
-         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
+         occupancy=Occupancy.STORAGE, floor_finish="lvp", unpainted=True),
     # Framed south mudroom closet, replacing FURN-M-MUD-CLOSET-S: the last
     # furniture closet becomes a real reach-in — 31 1/4" deep clear after the 2026-10-21 wall move
     # north on 2026-08-29 (34 3/4" before), bypass slider in its north partition. Tagged RM-M-MUD-CLOSET because RM-M-CLOSET (CMR407AAAA) already

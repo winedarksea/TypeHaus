@@ -47,8 +47,10 @@ from typehaus.resolve.ceiling_over import (
     room_roof_over,
     split_holes,
 )
+from typehaus.resolve.coatings import coating_tags, layer_depth_m
 from typehaus.resolve.model import ResolvedCeiling, ResolvedModel, ResolvedSolid, Ring
 from typehaus.resolve.overlay import union_all
+from typehaus.resolve.room_paint import paint_room, paint_stack_end
 
 #: A ceiling's layer stack, room side first — the shape ``ResolvedCeiling.layers`` carries.
 Stack = tuple[Layer, ...]
@@ -71,17 +73,24 @@ def resolve_ceilings(plan: PlanModel, model: ResolvedModel) -> None:
             if resolved_room is None or len(resolved_room.clear_face) < 3:
                 continue
             face = Polygon(resolved_room.clear_face)
+            painter = paint_room(room, face, 0.0, 0.0)
+            coatings = coating_tags(plan.library)
             for uid, tag, outline, layers, structure_z, host in _pieces(
                     plan, storey.tag, room, face, resolved_room.clear_face, model.walls):
+                # The room owns its ceiling's paint (resolve/room_paint.py); no depth moves.
+                layers = tuple(paint_stack_end(list(layers), 0, [painter], plan.library,
+                                               envelope=False)[0])
                 z0 = None if structure_z is None else structure_z - sum(
-                    layer.thickness.meters for layer in layers)
+                    layer_depth_m(plan.library, layer) for layer in layers)
                 z1 = structure_z
                 model.ceilings.append(ResolvedCeiling(
                     uid=uid, tag=tag, storey=storey.tag, room_ref=room.tag,
                     outline=outline, z0_m=z0, z1_m=z1, layers=layers,
                 ))
                 if z0 is not None and z1 is not None:
-                    finish = finish_layer(layers)
+                    # The solid is the board: a coating draws no solid of its own.
+                    finish = finish_layer(tuple(layer for layer in layers
+                                                if layer.material_ref not in coatings))
                     # The solid is filed under the deck that hangs it, like the deck's joists
                     # and its resilient channel (resolve/construction_ceiling.py): hiding a
                     # level in 3D lifts the lid off the rooms below. The record keeps the

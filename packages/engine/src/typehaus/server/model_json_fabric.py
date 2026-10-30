@@ -136,7 +136,7 @@ def wall_graph_json(
                                "reach_out_m": c.reach_out, "deck_u_m": c.deck_u,
                                "deck_z_m": c.deck_z, "deck_clear_m": c.deck_clear}
                               for c in w.head_caps],
-                "layers": [_layer_json(ly, _wall_scope(w)) for ly in w.layers],
+                "layers": [_layer_json(ly, _wall_scope(w), w) for ly in w.layers],
                 "members": [_member_json(m) for m in w.members],
                 # Every trade the body layers belong to (→ resolve/geometry_build).
                 "trades": list(wall_trades(w)),

@@ -20,7 +20,7 @@ def test_faucet_base_hole_and_parked_stream_fit_resolved_counter(catlin_model_ro
     counter = next(item for item in catlin_model_ro.countertops if item.tag == "CT-M-KIT-N")
     opening = Polygon(counter.cutouts[0])
     faucet = (sink.position[0], opening.bounds[3] + 3 * INCH)
-    assert tuple(v / INCH for v in faucet) == pytest.approx((352, 423.49))
+    assert tuple(v / INCH for v in faucet) == pytest.approx((352, 423.5))
     assert Polygon(counter.outline).contains(Point(faucet).buffer(1.0625 * INCH))
     assert not opening.intersects(Point(faucet).buffer(1.375 / 2 * INCH))
     assert opening.contains(Point(faucet[0], faucet[1] - 8.625 * INCH))

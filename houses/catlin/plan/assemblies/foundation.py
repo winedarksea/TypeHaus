@@ -96,8 +96,8 @@ from .mixes import BURIED_MIX, DECK_CAP_MIX, INTERIOR_SLAB_MIX
 # rather than by answering it. CLADDING also holds `_is_exterior_assembly`, the rainscreen
 # terminator, and `code.MN_1309_0406_waterproofing`'s accepted-function list.
 #
-# **The outboard sum moves 4.55" -> 4.185"** over the band (0.06 waterproofing + 2 + 2 XPS +
-# 0.125 coating) and is unchanged at 4.05" below it. `W-B-BRICK` does NOT follow: its
+# **The outboard sum is 4.06"** over the band and below it (0.06 waterproofing + 2 + 2 XPS):
+# the coating takes no depth (resolve/coatings.py). `W-B-BRICK` does NOT follow: its
 # `N-B-BRICK-W/-E` nodes stand over the *south court* walls, which carry no band at all, so
 # the band's thickness was never theirs and the 1-1/2" cavity (IRC R703.8.4 asks 1"
 # minimum) is untouched. The face moves INBOARD, so nothing wall-mounted can be buried.

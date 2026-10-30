@@ -17,6 +17,7 @@ from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
+from typehaus.resolve.coatings import coating_tags, restore_coatings, strip_coatings
 from typehaus.resolve.geometry import length, polygon_area, rect_between, sub, unit
 from typehaus.resolve.layer_bands import (
     band_datums,
@@ -32,6 +33,7 @@ from typehaus.resolve.model import (
 )
 from typehaus.resolve.orientation import resolve_storey_windings, wall_outward_sign
 from typehaus.resolve.overlay import union_all
+from typehaus.resolve.room_paint import RoomPaint
 from typehaus.resolve.rooms import wall_lining_overrides
 from typehaus.resolve.sheathing_corner import butt_sheathing
 
@@ -111,8 +113,11 @@ def _slot_host(layers: list, index: int) -> int | None:
     return None
 
 
-def _added_thicknesses(layers: list) -> list[tuple[object, float, bool]]:
+def _added_thicknesses(layers: list,
+                       coatings: frozenset[str]) -> list[tuple[object, float, bool]]:
     """Per layer: (layer, added_thickness_m, is_cavity).
+
+    A coating (``coatings``: the library's ``Material.coating`` tags) adds no depth either.
 
     Cavity insulation — whether the modern ``Layer.cavity`` (which is not a list entry at
     all) or a legacy sibling batt layer — occupies the framing bays and adds no wall depth.
@@ -124,7 +129,8 @@ def _added_thicknesses(layers: list) -> list[tuple[object, float, bool]]:
     out: list[tuple[object, float, bool]] = []
     for i, layer in enumerate(layers):
         cavity = _cavity_host(layers, i) is not None
-        shares = cavity or _slot_host(layers, i) is not None
+        shares = (cavity or _slot_host(layers, i) is not None
+                  or layer.material_ref in coatings)
         out.append((layer, 0.0 if shares else layer.thickness.meters, cavity))
     return out
 
@@ -153,9 +159,11 @@ def _face_offset_from_interior(layers: list, added: list, alignment: object,
     # face:<name>-ext / face:<name>-int -> the outboard/inboard face of that layer.
     target = role.replace("face:", "")
     pos = 0.0
-    for (layer, add_t, _cav) in added:
+    for (layer, add_t, cav) in added:
         pos_out = pos + add_t
         lname = getattr(layer, "name", "")
+        if add_t == 0.0 and not cav and getattr(layer, "slot", None) is None:
+            continue  # a coating: the fuzzy name match must never bind a face to it
         if target.startswith(lname) or lname.startswith(target.split("-")[0]):
             return pos_out if target.endswith("ext") else pos
         pos = pos_out
@@ -183,7 +191,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                           outward_sign: float = 1.0,
                           lining_override: tuple | None = None,
                           nodes: dict[str, object] | None = None,
-                          line: object | None = None) -> ResolvedWall | None:
+                          line: object | None = None,
+                          room_paint: RoomPaint | None = None) -> ResolvedWall | None:
     """Build a ResolvedWall with per-layer polygons for one authored wall.
 
     ``lining_override`` is a Room-authored replacement for the assembly's interior lining
@@ -208,22 +217,13 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
     # Full inside→outside stack: interior lining, then the core layers.
     lining = lining_override if lining_override is not None else asm.default_lining
     stack = list(lining) + list(asm.layers)
-    added = _added_thicknesses(stack)
+    coatings = coating_tags(plan.library)
+    added = _added_thicknesses(stack, coatings)
     total = sum(a for (_l, a, _c) in added)
     axis_from_int = _axis_offset_from_interior(stack, added, wall.alignment, total)
 
     ext0 = endpoint_extensions.get((wall.tag, "start"), 0.0)
     ext1 = endpoint_extensions.get((wall.tag, "end"), 0.0)
-
-    # Interior→exterior spans, walked over the depth-bearing layers only. A cavity layer
-    # borrows its host structure layer's span, so it must be placed after the walk rather
-    # than during it (a batt authored *before* the studs would otherwise land nowhere).
-    spans: list[tuple[float, float]] = []
-    pos = 0.0
-    for (_layer, add_t, cavity) in added:
-        spans.append((pos, pos + add_t))
-        if not cavity:
-            pos += add_t
 
     if is_foundation:
         # Foundation elevations are absolute project elevations so a walkout wall
@@ -240,6 +240,24 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
             z0 = base.meters
         if getattr(wall, "top", None) is not None and hasattr(wall.top, "meters"):
             z1 = z0 + wall.top.meters
+
+    if room_paint is not None:
+        # The rooms' paint edit (resolve/room_paint.py) touches coatings only: no face moves.
+        stack = room_paint.edit_wall(
+            wall, stack, (p0, p1), outward_sign,
+            (-axis_from_int * outward_sign, (total - axis_from_int) * outward_sign),
+            (z0, z1), is_foundation or _is_exterior_assembly(plan, wall.assembly))
+        added = _added_thicknesses(stack, coatings)
+
+    # Interior→exterior spans, walked over the depth-bearing layers only. A cavity layer
+    # borrows its host structure layer's span, so it must be placed after the walk rather
+    # than during it (a batt authored *before* the studs would otherwise land nowhere).
+    spans: list[tuple[float, float]] = []
+    pos = 0.0
+    for (_layer, add_t, cavity) in added:
+        spans.append((pos, pos + add_t))
+        if not cavity:
+            pos += add_t
 
     def _ring(span_in: float, span_out: float):
         return rect_between(p0, p1, (span_in - axis_from_int) * outward_sign,
@@ -289,7 +307,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 name=layer.name,
                 material_ref=overrides.get(layer.name, layer.material_ref),
                 function=layer.function.value,
-                thickness_m=layer.thickness.meters,
+                thickness_m=(0.0 if layer.material_ref in coatings
+                             else layer.thickness.meters),
                 polygon=_ring(span_in, span_out),
                 control=frozenset(c.value for c in layer.control),
                 view_trade=layer.view_trade,
@@ -301,6 +320,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 band_spec=spec,
                 board_run=_board_run(stack, index),
                 framed=layer.framing is not None,
+                coating=layer.material_ref in coatings,
             )
         )
         # One resolved layer per fill. A bay may hold several in series (flash-and-batt),
@@ -342,7 +362,8 @@ def _wall_total_thickness(plan: PlanModel, wall) -> float:
     if assembly is None:
         return 0.0
     stack = list(assembly.default_lining) + list(assembly.layers)
-    return sum(added for (_layer, added, _cavity) in _added_thicknesses(stack))
+    return sum(added for (_layer, added, _cavity)
+               in _added_thicknesses(stack, coating_tags(plan.library)))
 
 
 def _cross(a: tuple[float, float], b: tuple[float, float]) -> float:
@@ -939,6 +960,7 @@ def _walls(plan: PlanModel, storey_tag: str) -> list:
 
 def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float, z1: float,
                          layout_lines: dict | None = None,
+                         room_paint: RoomPaint | None = None,
                          ) -> tuple[list[ResolvedWall], list[ResolvedJunction],
                                     list[Finding]]:
     junctions = classify_storey_junctions(plan, storey_tag)
@@ -960,9 +982,11 @@ def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float, z1: float,
             lining_override=lining_overrides.get(wall.tag),
             nodes=nodes,
             line=(layout_lines or {}).get(wall.tag),
+            room_paint=room_paint,
         )
         if rw is not None:
             out.append(rw)
-    solved, junction_findings = solve_junction_polygons(out, junctions)
+    bare, coatings = strip_coatings(out)
+    solved, junction_findings = solve_junction_polygons(bare, junctions)
     findings.extend(junction_findings)
-    return solved, junctions, findings
+    return restore_coatings(solved, coatings), junctions, findings

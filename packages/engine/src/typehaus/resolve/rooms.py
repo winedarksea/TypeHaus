@@ -35,6 +35,20 @@ def _storey_faces(plan: PlanModel, storey_tag: str) -> list[Polygon]:
     return list(polygonize(merged))
 
 
+def claimed_room_faces(plan: PlanModel, storey_tag: str) -> list[tuple[object, Polygon]]:
+    """``(Room, axis face)`` for each storey Room whose seed claims a face; unclaimed skip
+    (``resolve_rooms`` reports those)."""
+    faces = _storey_faces(plan, storey_tag)
+    out = []
+    for room in plan.storey_elements(storey_tag):
+        if room.element_kind != "Room":
+            continue
+        face = next((f for f in faces if f.contains(Point(room.seed.xy_m))), None)
+        if face is not None:
+            out.append((room, face))
+    return out
+
+
 # A wall's axis midpoint sits *on* its room face boundary exactly (the faces are polygonized
 # from the wall axes themselves), so the tolerance only absorbs shapely's floating-point
 # noise. Verified empirically on the catlin plan: boundary distance for a bounding wall is
@@ -61,22 +75,18 @@ def wall_lining_overrides(plan: PlanModel,
     lining it does not have would silently do nothing or invent a face.
     """
     findings: list[Finding] = []
-    rooms = [e for e in plan.storey_elements(storey_tag)
-             if e.element_kind == "Room"
-             and (e.wall_lining or e.wall_lining_exceptions)]
-    if not rooms:
+    if not any(e.element_kind == "Room" and (e.wall_lining or e.wall_lining_exceptions)
+               for e in plan.storey_elements(storey_tag)):
         return {}, findings
-    faces = _storey_faces(plan, storey_tag)
+    rooms = [(room, face) for room, face in claimed_room_faces(plan, storey_tag)
+             if room.wall_lining or room.wall_lining_exceptions]
     nodes = {e.tag: e.position.xy_m
              for e in plan.storey_elements(storey_tag) if e.element_kind == "Node"}
     walls = {e.tag: e for e in plan.storey_elements(storey_tag)
              if e.element_kind in ("Wall", "FoundationWall")}
     # wall tag -> [(room tag, lining), ...]: every claim first, then conflicts resolved.
     claims: dict[str, list[tuple[str, tuple]]] = {}
-    for room in rooms:
-        face = next((f for f in faces if f.contains(Point(room.seed.xy_m))), None)
-        if face is None:
-            continue  # resolve_rooms already reports the unclaimed seed as an ERROR
+    for room, face in rooms:
         boundary = face.exterior
         exceptions = {exc.wall_ref: tuple(exc.lining)
                       for exc in room.wall_lining_exceptions}
@@ -234,7 +244,7 @@ def _clear_head(plan: PlanModel, model, storey, clear: Polygon,
     from typehaus.resolve.ceiling_over import ceiling_decks_over, ceiling_underside_m
 
     undersides = [value for value in
-                  (ceiling_underside_m(deck_storey, deck)
+                  (ceiling_underside_m(deck_storey, deck, plan.library)
                    for deck_storey, deck in ceiling_decks_over(plan, storey.tag, clear))
                   if value is not None]
     soffit_m2 = 0.0

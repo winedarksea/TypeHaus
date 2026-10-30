@@ -132,7 +132,7 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
     # A lined well: the same board run down the joist band on every edge.
     for floor in model.floors:
-        for tag, area in floor.linings:
+        for tag, area, _coating in floor.linings:
             for layer in _sheets(model, model.plan.by_tag(tag).lining):
                 areas[("opening lining", layer.material_ref, layer.thickness.meters,
                        layer_sheet_length_in(layer))] += area
@@ -209,8 +209,8 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 def _sheets(model: ResolvedModel, layers) -> list:
     """The layers of a ceiling stack that are hung as sheets.
 
-    A coating is not a sheet: ``takeoff/derived_paint.py`` bills an authored ceiling coat
-    by area instead of ordering it here as a stack of 4x8s.
+    A coating is not a sheet: ``envelope_layer_takeoff`` bills a ceiling's coat by area
+    off ``model.ceilings`` instead of ordering it here as a stack of 4x8s.
     """
     return [layer for layer in layers
             if not getattr(model.plan.library.material(layer.material_ref), "coating", False)]

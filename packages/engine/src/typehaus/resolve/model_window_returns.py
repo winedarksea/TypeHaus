@@ -22,4 +22,3 @@ class ResolvedWindowReturn:
     layers: tuple[WindowReturnLayer, ...]
     exposed_area_m2: float
     bead_length_m: float
-    derived_paint: bool

@@ -150,7 +150,6 @@ from typehaus import (
     PlantingBed,
     SegmentalWallSpec,
     SrwDrainageZone,
-    face,
     ft,
     inch,
     pt,
@@ -350,16 +349,8 @@ _APRON = dict(
 # Of the three, the SOUTH leg does most of the work: 28' of face pointing south over the yard,
 # where the east and west legs each catch half a day. All three are in scope; that is the order
 # if the scope is ever cut.
-# ** THE BLOCK DOES NOT MOVE WHEN THE WASH IS ADDED. ** Same rule and same reason as
-# `params/sunken_garden._COURT_AXIS_SHIFT` — read that comment, it carries the derivation. Without
-# an alignment the resolver centres the whole 12 1/8" stack on the node line and the SRW units
-# slide 1/16" toward the court, which is not what gets built (a 12" block wall on its levelling
-# pad, painted on its yard face) and which stopped the apron closing on the sunken-garden walls.
-# Positive because the wash is layer 0. It is HALF of `_WASH_FILM` in plan/assemblies.py and must
-# move with it.
-_WASH_AXIS_SHIFT = face("center", offset=inch(0.0625))
-_APRON_WASHED = dict(_APRON, assembly="RETAINING_BLOCK_12_WASHED",
-                     alignment=_WASH_AXIS_SHIFT)
+# The wash is a coating (no depth), so the washed legs sit on their node lines unaligned.
+_APRON_WASHED = dict(_APRON, assembly="RETAINING_BLOCK_12_WASHED")
 
 # ** THE RETURNS RETAIN TO THE NORTH YARD, NOT THE SOUTH ONE (2026-09-22). ** `_APRON`'s
 # differential is the south yard's at -3'-4"; each return's yard face looks at the north bench

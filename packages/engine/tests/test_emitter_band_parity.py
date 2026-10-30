@@ -153,8 +153,8 @@ def _banded_part_names(wall, openings=()) -> set[str]:
     body = wall_body_band(wall)
     names = set()
     for layer in wall.body_layers():
-        if not layer.is_banded or len(layer.polygon) < 3:
-            continue
+        if not layer.is_banded or len(layer.polygon) < 3 or layer.coating:
+            continue  # a coating takes no depth and exports no part
         z0, z1 = layer.band(wall)
         # A layer standing at the wall's own body band is IN the body prism, not a part —
         # the same predicate ``_emit_wall`` uses. Every layer of a platform-trimmed
@@ -239,7 +239,8 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     finish stops at the plate while its skin runs the rim band, so the finish is now a part
     too. None of the 41 original keys moved — this count grew, it did not shift. 59 since
     2026-09-23: the ICF grade beam under D-G-OVERHEAD is retired, and W-GF-N-DR's two coil
-    layers went with the wall. 61 with W-M-STRW's upper gypsum and paint closure.
+    layers went with the wall. 61 with W-M-STRW's upper gypsum and paint closure. 38 since
+    2026-10-30: a coating takes no depth and exports no part, which drops 21 banded coats.
 
     A GlobalId is an identity a federated model and its issue log hold onto. Re-keying a
     part that still means exactly what it meant before would break those references for
@@ -251,8 +252,8 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     parts = {p.Name: p.GlobalId for p in catlin_ifc.by_type("IfcBuildingElementPart")}
     unsplit = [(w, ly) for w in catlin_model_ro.walls for ly in w.body_layers()
                if f"{w.tag}:{ly.name}" in parts]
-    assert len(unsplit) == 59, \
-        f"expected the 65 banded layers less the 6 that split, got {len(unsplit)}"
+    assert len(unsplit) == 38, \
+        f"expected the banded non-coating layers less the 6 that split, got {len(unsplit)}"
     for wall, layer in unsplit:
         assert parts[f"{wall.tag}:{layer.name}"] == derive_child_guid(
             project_uuid, "wall-parts", f"{wall.uid}/{layer.name}")
@@ -401,7 +402,7 @@ def test_a_lifted_partition_exports_one_shortened_body_and_no_parts(catlin_model
     body = next(rep for rep in _wall(catlin_ifc, _LIFTED_PARTITION)
                 .Representation.Representations
                 if rep.RepresentationIdentifier == "Body")
-    assert len(body.Items) == len(wall.depth_layers())
+    assert len(body.Items) == len([ly for ly in wall.depth_layers() if not ly.coating])
     # The body really is shorter than the wall — the joist bay above it is open.
     depth = body.Items[0].Depth
     assert depth == pytest.approx(wall.plate_top_z_m - wall.z0_m, abs=1e-9)
@@ -432,7 +433,8 @@ def test_a_lifted_envelope_wall_exports_its_interior_finishes_as_parts(catlin_mo
 
     parts = _parts_of(catlin_ifc, _LIFTED_ENVELOPE)
     assert parts, "the trimmed finishes must still reach the IFC somewhere"
-    assert {name.split(":")[1].split(" (")[0] for name in parts} == set(trimmed)
+    # The paint is a coating: no depth, so no part; the board still exports.
+    assert {name.split(":")[1].split(" (")[0] for name in parts} == {"gwb-int"}
 
     wall_type = next(iter(_wall(catlin_ifc, _LIFTED_ENVELOPE).IsTypedBy)).RelatingType
     assert wall_type.Name == "EXT_2X6"

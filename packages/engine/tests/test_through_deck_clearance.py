@@ -187,8 +187,8 @@ def test_the_derived_voids_are_the_three_piers_and_the_sheet_still_bills(catlin_
     assert len(deck.deck_voids) == 3
     for ring in deck.deck_voids:
         minx, miny, maxx, maxy = Polygon(ring).bounds
-        # 3 5/8" brick + 1/8" wash + 1/2" of clearance each side.
-        assert (maxx - minx) / _IN == pytest.approx(4.75, abs=1e-6)
+        # 3 5/8" brick + 1/2" of clearance each side (a wash takes no depth).
+        assert (maxx - minx) / _IN == pytest.approx(4.625, abs=1e-6)
         assert 13.0 <= (maxy - miny) / _IN <= 13.2
     assert not any(opening.tag == "FO-M-FIRE"
                    for opening in catlin_model_ro.plan.all_elements()

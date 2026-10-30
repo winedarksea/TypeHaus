@@ -221,12 +221,11 @@ def _toe_offset(tag: str) -> Length | None:
 #
 # ** THE BAND IS NOT THE CONCRETE, AND THAT IS THE WHOLE CAVEAT. ** ``band_axis`` is handed
 # EVERY layer's polygon, so the datum is the midline of the entire stack — the 4" of
-# exterior XPS and its coating included, not the pour's midline. Measured: the new datum
-# sits 1 29/32" inboard of the node line on the 8" walls and 3 29/32" on the 12" ones,
-# which is 2 3/32" outboard of the concrete's own midline in both cases. So the toes go
-# 10"/2" -> 8 3/32"/3 29/32" on an 8" wall and 10"/-2" -> 6 3/32"/1 29/32" on a 12" one:
-# the eccentricity halves and every wall lands on its footing, but it is NOT symmetric and
-# cannot be made so from here. Closing the last 2 3/32" means centring on the STRUCTURE
+# exterior XPS and its waterproofing included (the coating takes no depth), not the pour's
+# midline: 2.03" outboard of the concrete's own midline. So the toes go 10"/2" ->
+# 8.03"/3.97" on an 8" wall and 10"/-2" -> 6.03"/1.97" on a 12" one: the eccentricity
+# halves and every wall lands on its footing, but it is NOT symmetric and cannot be made so
+# from here. Closing the last 2.03" means centring on the STRUCTURE
 # layer, which is an engine change and not this one.
 #
 # TWO GROUPS STAY ON THE NODE LINE, and neither is an oversight.

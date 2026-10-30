@@ -213,8 +213,8 @@ def test_two_anchors_on_one_line_grade_heavier_than_either_alone(catlin_plan, ca
                                 if r.tag != "HA-SG-DAYBED-SE"]
     single = _finding(_ctx(catlin_plan, alone), "HA-SG-DAYBED-SW")
     assert "the line also carries HA-SG-DAYBED-SE" in both.message
-    assert "bending 4,698/5,933" in both.message
-    assert "also carries" not in single.message and "bending 4,698" not in single.message
+    assert "bending 4,708/5,933" in both.message
+    assert "also carries" not in single.message and "bending 4,708" not in single.message
 
 
 def test_the_daybed_passes_on_its_hangers(catlin_plan, catlin_model_ro):
@@ -224,18 +224,18 @@ def test_the_daybed_passes_on_its_hangers(catlin_plan, catlin_model_ro):
         assert finding.result is Result.PASS, finding.message
         for text in ("P = 250 lb x 2 + 39.0 lb own weight = 539 lb", "wet",
                      "LUS210-3Z at BM-SG-LDGW (C_M 0.7) 1,126/1,281 lb (0.88)",
-                     "0.199/0.421 in (0.47)", "539/2,119 lb (0.25)",
+                     "0.200/0.422 in (0.47)", "539/2,119 lb (0.25)",
                      "Governs: LUS210-3Z at BM-SG-LDGW"):
             assert text in finding.message, (tag, text)
     west = _finding(ctx, "HA-SG-DAYBED-SW")
-    assert "(d_e 9.06\") 992/2,995 lb (0.33)" in west.message
-    assert "32.9\" from W-SG-W1's face" in west.message
+    assert "(d_e 9.06\") 991/2,995 lb (0.33)" in west.message
+    assert "33.0\" from W-SG-W1's face" in west.message
 
 
 def test_mid_depth_bolts_fail_the_west_rope(catlin_plan, catlin_model_ro):
     plan = _replace_elements(catlin_plan, **{"HA-SG-DAYBED-SW": {"bolt_top_distance": None}})
     finding = _finding(_ctx(plan, catlin_model_ro), "HA-SG-DAYBED-SW")
-    assert finding.result is Result.FAIL and "992/842 lb (1.18)" in finding.message
+    assert finding.result is Result.FAIL and "991/842 lb (1.18)" in finding.message
 
 
 def test_a_dry_grade_in_wet_service_is_unknown(catlin_plan, catlin_model_ro):

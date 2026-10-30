@@ -92,5 +92,5 @@ def test_stair_wall_studs_remain_plumb_beneath_the_flush_finish(catlin_model_ro)
         assert stair_finish is not None
         finish_x = [point[0] / _INCH for point in stair_finish.polygon]
         mdo = stair_finish.name == "mdo-stair"
-        assert min(finish_x) == pytest.approx(122.635 if mdo else 122.625)
-        assert max(finish_x) == pytest.approx(123.135 if mdo else 123.25)
+        assert min(finish_x) == pytest.approx(122.625)
+        assert max(finish_x) == pytest.approx(123.125 if mdo else 123.25)

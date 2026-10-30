@@ -80,7 +80,7 @@ def test_jamb_foam_replaces_exact_clear_bay_area_and_blocks_at_anchors(hardware,
                     jamb_framing=JambFraming(kings=2, jacks=2, blocking=True,
                                             bay_fill_ref="foam"))
     # Empty non-wall collections make this a hand-worked two-bay takeoff.
-    plan = NS(library=NS(door_types=[spec], material=lambda ref: None),
+    plan = NS(library=NS(door_types=[spec], material=lambda ref: None, materials=()),
               all_elements=lambda: (), storeys=())
     opening = ResolvedOpening("d", "D", "W", "DT", .9, 2.1, 0, 1.5, "door", True)
     model = ResolvedModel(plan, walls=[wall], openings=[opening])

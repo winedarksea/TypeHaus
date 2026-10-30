@@ -32,14 +32,16 @@ def test_upper_finish_is_on_the_mudroom_face_and_stops_at_the_ceiling(catlin_mod
     assert max(x for x, _ in studs.polygon) == pytest.approx(inch(122.625).meters)
     # 1/2" MDO since 2026-10-23 (5/8" plywood to 123 1/4" before).
     assert stair_mdo.material_ref == "mdo-plywood-interior"
-    assert max(x for x, _ in stair_mdo.polygon) == pytest.approx(inch(123.135).meters)
+    assert max(x for x, _ in stair_mdo.polygon) == pytest.approx(inch(123.125).meters)
     for name, thickness, material in (("gwb-mudroom-upper", 0.5, "gwb-ar"),
-                                      ("paint-mudroom-upper", 0.01, "latex-paint")):
+                                      ("paint-mudroom-upper", 0.0, "latex-paint")):
         layer = next(layer for layer in wall.layers if layer.name == name)
         assert layer.material_ref == material
         assert layer.thickness_m == pytest.approx(inch(thickness).meters)
         assert layer.band(wall) == pytest.approx((inch(84).meters, inch(108).meters))
         assert max(x for x, _ in layer.polygon) <= min(x for x, _ in studs.polygon) + 1e-9
+        if not thickness:  # a coating takes no depth, so no solid
+            continue
         solids = catlin_model_ro.geometry.part(wall.uid, f"layer:{name}").solids
         assert solids == layer_solids(wall, layer.polygon, [], band=layer.band(wall),
                                       layer_name=name)

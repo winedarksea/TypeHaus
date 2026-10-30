@@ -104,7 +104,8 @@ def test_no_resolved_layer_ring_has_consecutive_duplicate_vertices(catlin_model)
     for wall in catlin_model.walls:
         for index, layer in enumerate(wall.layers):
             ring = list(layer.polygon)
-            if len(ring) < 2:
+            # A coating's ring is zero-width by design and never reaches an overlay.
+            if len(ring) < 2 or layer.coating:
                 continue
             for a, b in zip(ring, ring[1:] + ring[:1], strict=True):
                 if abs(a[0] - b[0]) <= 1e-9 and abs(a[1] - b[1]) <= 1e-9:

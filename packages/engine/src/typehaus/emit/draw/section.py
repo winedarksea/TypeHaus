@@ -21,6 +21,7 @@ from typehaus.emit.draw.section_annotate import annotate_building_section
 from typehaus.emit.draw.section_cavity import (
     emit_roof_cavity,
     emit_wall_cavity,
+    emit_wall_coatings,
     opening_splits,
 )
 from typehaus.emit.draw.section_clip import (
@@ -283,13 +284,9 @@ def _too_close(point, placed) -> bool:
 def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
                    is_detail, min_draw, joints=None, ladder_labels=None,
                    scale=None) -> None:
-    """One wall's cut, sliced out of the geometry IR.
-
-    The IR's wall body is already jamb-split into piers, sill bands and headers, already
-    banded (``Layer.extent``), already raked under a gable and already arched at a curved
-    head. What stays here is what genuinely belongs on the drawing side: the crop,
-    thin-layer exaggeration (#36), the true-dimension label, the authored joint termination
-    and the glazing line.
+    """One wall's cut, sliced out of the geometry IR (already jamb-split, banded, raked and
+    arched). What stays here is drawing-side: the crop, thin-layer exaggeration (#36), the
+    true-dimension label, the authored joint termination, the glazing and coating lines.
     """
     element = model.geometry.by_uid(wall.uid)
     # One ladder entry per (wall, layer name) — a layer cut into several profiles must not
@@ -356,6 +353,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
                                 material=catalog.material_ref))
 
     emit_wall_cavity(b, model, wall, plane, crop, is_detail, min_draw, wall_top, joints)
+    emit_wall_coatings(b, model, wall, plane, crop, wall_top)
     _emit_glazing_lines(b, model, wall, plane, crop, is_detail)
     wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels, scale)
 

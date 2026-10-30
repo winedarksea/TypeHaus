@@ -37,14 +37,15 @@ def return_model():
              occupancy='living', face=-0.18):
         layers = []
         offset = face
-        specs = ([('paint', 'latex-paint', 0.000254)] if coating else [])
+        specs = ([('paint', 'latex-paint', 0.0)] if coating else [])  # a coating takes no depth
         specs += [(f'board-{i}', material, thickness) for i, thickness in enumerate(boards)]
         specs += [('stud', 'spf', 0.1397), ('clad', 'fiber-cement', 0.008)]
         for name, ref, thickness in specs:
             layers.append(ResolvedLayer(name, ref, 'cladding' if name == 'clad' else 'finish',
                                         thickness, [(0, offset), (4, offset),
                                                     (4, offset + thickness),
-                                                    (0, offset + thickness)]))
+                                                    (0, offset + thickness)],
+                                        coating=name == 'paint'))
             offset += thickness
         wall = ResolvedWall('wall-uid', 'W', 'main', 'EXT', ((0, 0), (4, 0)),
                             tuple(layers), 0, 3)
@@ -75,7 +76,7 @@ def test_pieces_fit_frame_and_never_overlap_glazing_or_each_other(return_model):
     model = return_model()
     assert not resolve_window_returns(model)
     reveal, = model.window_returns
-    assert len(model.solids) == 9
+    assert len(model.solids) == 3  # the board's jambs and head; a coating has no solid
     assert {layer.material_ref for layer in reveal.layers} == {'gwb', 'latex-paint'}
     _assert_no_overlap(model.solids)
     frame = opening_parts(model.walls[0], model.openings[0], None)
@@ -86,15 +87,14 @@ def test_pieces_fit_frame_and_never_overlap_glazing_or_each_other(return_model):
                 if overlap_z > 1e-9:
                     assert Polygon(solid.ring).intersection(Polygon(lining.outline)).area < 1e-12
     for layer in reveal.layers:
+        if layer.coating:
+            assert layer.area_m2 == pytest.approx(reveal.exposed_area_m2)
+            continue
         pieces = [s for s in model.solids if s.material == layer.material_ref]
         # Board area is volume divided by its stated thickness, including the lapped head.
         area = sum(Polygon(s.outline).area * (s.z1_m - s.z0_m)
                    for s in pieces) / layer.thickness_m
-        if layer.coating:
-            assert layer.area_m2 == pytest.approx(reveal.exposed_area_m2)
-        else:
-            assert layer.area_m2 == pytest.approx(area)
-    assert not reveal.derived_paint
+        assert layer.area_m2 == pytest.approx(area)
     rows = window_return_finish_rows(model)
     assert {r['material'] for r in rows} == {'gwb', 'latex-paint'}
     beads = window_return_bead_rows(model)
@@ -114,18 +114,9 @@ def test_inherits_double_gypsum_and_accent_coating(return_model):
                                           *wall.layers[1:]))
     assert not resolve_window_returns(model)
     reveal, = model.window_returns
-    assert [layer.thickness_m for layer in reveal.layers] == [0.000254, 0.0127, 0.015875]
+    assert [layer.thickness_m for layer in reveal.layers] == [0.0, 0.0127, 0.015875]
     assert reveal.layers[0].material_ref == 'latex-paint-accent'
     _assert_no_overlap(model.solids)
-
-
-@pytest.mark.parametrize('occupancy,painted', [('living', True), ('unconditioned', False)])
-def test_derived_paint_uses_the_existing_room_occupancy_rule(return_model, occupancy, painted):
-    model = return_model(coating=False, occupancy=occupancy)
-    assert not resolve_window_returns(model)
-    reveal, = model.window_returns
-    assert reveal.derived_paint is painted
-    assert ('latex-paint' in {r['material'] for r in window_return_finish_rows(model)}) is painted
 
 
 @pytest.mark.parametrize('kwargs', [{'enabled': False}, {'material': 'cedar-tg'},

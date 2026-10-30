@@ -50,10 +50,8 @@ def test_actual_finished_opening_and_outward_swing(catlin_model_ro):
     assert min(y for _, y in deck.outline) == pytest.approx(north_jamb[1])
     east_panel = next(panel for panel in model.panelings
                       if panel.tag == "WP-M-BATH2-SURR" and panel.wall_tag == "W-M-BA2E2")
-    # Its run is clipped by the room's clear face, which still counts W-M-BDN1's 0.01" paint
-    # film; the south panel itself replaces that film, so the corner leaves a 0.01" sealant gap.
-    assert min(y for _, y in east_panel.outline) == pytest.approx(
-        finished_south_face + 0.01 * INCH)
+    # Its run is clipped by the room's clear face (paint takes no depth): no corner gap.
+    assert min(y for _, y in east_panel.outline) == pytest.approx(finished_south_face)
     assert max(y for _, y in east_panel.outline) == pytest.approx(north_jamb[1])
     sweep = Polygon(place_local(door_swing_outline(width, depth), fixture.position,
                                 fixture.rotation_degrees))

@@ -105,8 +105,8 @@ def _wall_geometry(wall: ResolvedWall, openings) -> ElementGeometry:
     """
     parts: list[GPart] = []
     for layer in wall.body_layers():
-        if not layer.polygon:
-            continue
+        if not layer.polygon or layer.coating:
+            continue  # a coating has no solid; the glTF draws it as a skin
         solids = layer_solids(wall, layer.polygon, openings,
                               band=layer.band(wall) if layer.is_banded else None,
                               layer_name=layer.name)

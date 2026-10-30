@@ -12,6 +12,7 @@ from typehaus.model.enums import FloorOpeningPurpose
 from typehaus.model.floors import FloorSystem
 from typehaus.model.structure import Beam
 from typehaus.quantities import inch
+from typehaus.resolve.coatings import layer_depth_m
 from typehaus.resolve.floor_ends import floor_ends
 from typehaus.resolve.floor_lines import extra_lines, move_lines
 from typehaus.resolve.floor_openings import (
@@ -24,6 +25,7 @@ from typehaus.resolve.floor_tilt import joist_lift, twisted
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
 from typehaus.resolve.opening_lining import lining_solids
+from typehaus.resolve.room_paint import lining_coating
 from typehaus.resolve.suspension_anchors import anchor_targets, lay_anchor_lines, unframed
 from typehaus.resolve.through_deck import through_deck_cuts, through_deck_walls
 
@@ -283,15 +285,17 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
 
     # A lined well: gypsum from the ceiling plane below to the joist tops; the sheet runs
     # over it to the finished edge (opening_lining.py).
-    ceiling_m = sum(layer.thickness.meters for layer in system.ceiling_below)
-    linings: list[tuple[str, float]] = []
+    ceiling_m = sum(layer_depth_m(model.plan.library, layer) for layer in system.ceiling_below)
+    linings: list[tuple[str, float, str | None]] = []
     for frame in opening_boxes:
         if not frame.opening.lining:
             continue
         lo, hi = _plane_range(deck_plane, frame.framed_ring(along_x))
         solids, area = lining_solids(frame, storey.tag, z0 - ceiling_m + lo, z1 + hi)
         model.solids.extend(solids)
-        linings.append((frame.opening.tag, area))
+        centre = ((frame.minx + frame.maxx) / 2.0, (frame.miny + frame.maxy) / 2.0)
+        linings.append((frame.opening.tag, area,
+                        lining_coating(model.plan, storey.tag, frame.opening.lining, centre)))
 
     chases = tuple(
         (f.opening.tag, [(f.minx, f.miny), (f.maxx, f.miny),

@@ -1245,9 +1245,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       11 1/2" pocket, so the wash line and the appliance no longer meet at all. The mantel goes on **after the wash cures**; its hold-down
       blocking is still pre-brick. Mineral silicate on brick is non-combustible, so no clearance
       number moves.
-    - Geometry: the stack totals 3 3/4" rather than 3 5/8", so the centred panel drifts 1/16"
-      west and the overhang past `W-B-E1`'s pour goes 1/8" -> 3/16". Below every tolerance in
-      `notes/east_breast_bearing.md`, whose numbers all stand (both bricks are 1,920 kg/m3).
+    - Geometry: the wash is a coating and takes no depth, so the panel is the 3 5/8" brick,
+      centred where `notes/east_breast_bearing.md` worked it.
   - **The appliance is a ClassicFlame 28II042FGL infrared insert since 2026-09-20, and it is
     CORD-ONLY on purpose.** It replaced the Amantii BI-30-XTRASLIM, which was fan-forced and
     sole-source at the old 4 1/2" recess. The pocket carries **both** a hardwire J-box and
@@ -2396,16 +2395,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   (`assembly_material.is_cast_beam`). Delete it, retype it to wood, or rename either node, and the
   sign falls to +1 and the wash moves to the outboard, buried face of all five walls — **silently,
   at 0 FAIL**. `test_masonry_finish.py::test_court_wash_faces_the_court` is the guard.
-- **The POUR DOES NOT MOVE, and `alignment` is what holds it.** Every washed wall carries an
-  offset: `±_WASH_FILM/2` on the RG legs (`+`) and the fireplace (`−`), and on the five court
-  walls `_COURT_AXIS_SHIFT`, derived from the wash inboard AND the 5/16" dimpleboard outboard. Without it the resolver centres the
-  whole 12 1/8" stack on the node line and the concrete slides 1/16" off the grid, which is not
-  what gets built. That 1/16" broke three things and only one was caught by a check:
-  `SP-SG-W1-CD-SPA` fell out of its own host (a FAIL), while the corner columns stopped being
-  flush with the walls they stand on and the raised garden stopped closing on the court walls —
-  both at 0 FAIL, by test only. **If `_WASH_FILM` or the board thickness changes, every
-  alignment offset changes with it**; nothing derives one from the other across the params/plan
-  boundary.
+- **The POUR DOES NOT MOVE, and `alignment` is what holds it.** The wash is a coating and takes
+  no depth (`resolve/coatings.py`), so only the five court walls carry an offset:
+  `_COURT_AXIS_SHIFT`, half the 5/16" dimpleboard outboard. Without it the concrete slides off the
+  grid, which broke `SP-SG-W1-CD-SPA` (a FAIL) and, at 0 FAIL, the corner columns' flush faces and
+  the raised garden's closure. **If the board thickness changes, the offset changes with it.**
 - **The court walls' outboard face is DIMPLEBOARD, not membrane + composite (2026-09-16).** A
   plain 5/16" DELTA-MS-class sheet (`dimple-board`, library material): full height on
   W-SG-W2/E2/S (`SUNKEN_GARDEN_WALL_DRAINED`), below grade only on W-SG-W1/E1
@@ -2449,16 +2443,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   carry an **integral water repellent**. Beecko-SOL (silica-sol modified) is the answer, the open
   dry-stacked joints will take it unevenly, and efflorescence out of the backfill can lift or
   stain it. The manufacturers' own instructions require the trial.
-- **The wash is 1/8" thick and `polygonOffset` is what stops it z-fighting — not the thickness.**
-  `Material.coating=True` does NOT stop a wall layer drawing (`_is_coating` is scoped to room
-  floor finishes), so the wash gets a real plane, and Panel3D's 24-bit depth buffer on
-  `PerspectiveCamera(50, 1, 0.05, 500)` resolves only `z² × 1.19e-6` m — 0.48 mm at 20 m, 3.2 mm
-  at 52 m. Thickening the layer was a losing race (0.01", 1/16" and 1/8" all shimmered);
-  `WASH_POLYGON_OFFSET` in `ui/src/three/materials.ts` wins the depth test deterministically at
-  any distance. **Do not "fix" a future shimmer by inflating `_WASH_FILM`** — the offset is the
-  mechanism, and every washed wall's `alignment` is half of `_WASH_FILM`, so inflating it moves
-  three files. glTF has no `polygonOffset`, so an exported `.glb` in a third-party viewer can
-  still shimmer; that is a format limitation, not a reason to re-inflate.
+- **The wash takes no depth; the viewer draws it as a skin.** A coating's resolved ring sits on
+  its host face, served as a ~0.5 mm skin (`COATING_SKIN_M`), and `WASH_POLYGON_OFFSET` in
+  `ui/src/three/materials.ts` wins the depth test. `_WASH_FILM` (1/8") is the authored film the
+  legend quotes; changing it moves nothing.
 - **The wash has a procedural texture, like the metal skins and the masonry do.**
   `createMineralWashMaterial` builds one shared 4-ft-module tile of low-frequency mottle with a
   matching roughness map, world-scaled by `applyMineralWashUv` so a 10' court wall and a 20 SF

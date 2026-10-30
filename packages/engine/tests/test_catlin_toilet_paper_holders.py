@@ -57,7 +57,7 @@ def test_every_toilet_has_one_selected_holder_at_26_aff(catlin_plan, catlin_mode
 
 def test_mounting_positions_are_referenced_to_actual_supports(catlin_model_ro):
     objects = {obj.tag: obj for obj in catlin_model_ro.canvas_objects}
-    for room, y in zip(ROOMS[:3], (267.4375, 300.51, 226.74), strict=True):
+    for room, y in zip(ROOMS[:3], (267.4375, 300.5, 226.74), strict=True):
         holder = next(obj for obj in _holders(catlin_model_ro) if obj.room == room)
         toilet = next(obj for obj in objects.values()
                       if obj.room == room and obj.tag.endswith("-WC"))

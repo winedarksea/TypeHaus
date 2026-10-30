@@ -56,7 +56,9 @@ def test_cavity_shares_its_host_polygon_and_adds_no_depth(catlin_model):
 def test_no_wall_layer_overlaps_another(catlin_model):
     """The bug class the sibling-batt spelling produced: two layers claiming one strip."""
     for wall in catlin_model.walls:
-        spans = [(ly.name, _span(ly)) for ly in wall.depth_layers() if len(ly.polygon) >= 3]
+        # A coating is a zero-width ring on its host face: it claims no strip.
+        spans = [(ly.name, _span(ly)) for ly in wall.depth_layers()
+                 if len(ly.polygon) >= 3 and not ly.coating]
         spans.sort(key=lambda item: item[1][0])
         for (name_a, (_a0, a1)), (name_b, (b0, _b1)) in zip(spans, spans[1:]):
             assert a1 <= b0 + 1e-6, (

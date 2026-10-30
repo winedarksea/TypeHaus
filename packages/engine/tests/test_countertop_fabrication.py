@@ -68,9 +68,9 @@ def test_a_piece_dxf_reads_back_with_true_arcs(catlin_model_ro, tmp_path):
     assert cut.get_xdata("TYPEHAUS")[0][1] == f"uid={piece.uid}"
     (hole,) = doc.modelspace().query('CIRCLE[layer=="HOLE"]')
     assert 2 * hole.dxf.radius == pytest.approx(1.375)
-    # The faucet sits at the note's (352, 423.49): 54.625" from the west end, 1.885" off
+    # The faucet sits at the note's (352, 423.5): 54.625" from the west end, 1.875" off
     # the back of a 25" top.
-    assert (hole.dxf.center.x, hole.dxf.center.y) == pytest.approx((54.625, 23.115), abs=1e-3)
+    assert (hole.dxf.center.x, hole.dxf.center.y) == pytest.approx((54.625, 23.125), abs=1e-3)
     peninsula = next(p for p in fabricated_pieces(catlin_model_ro, "quartz-counter")
                      if p.tag == "CT-M-KIT-PENINSULA")
     doc = ezdxf.readfile(write_piece_dxf(peninsula, tmp_path / "pen.dxf"))

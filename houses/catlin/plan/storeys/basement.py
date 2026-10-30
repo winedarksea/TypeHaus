@@ -1252,7 +1252,7 @@ OPENINGS = [
 
 ROOMS = [
     Room(uid="CBR401AAAA", tag="RM-B-FURNACE", seed=pt(ft(5), ft(30)),
-         occupancy=Occupancy.MECHANICAL, floor_finish="sealed-concrete"),
+         occupancy=Occupancy.MECHANICAL, floor_finish="sealed-concrete", unpainted=True),
     # W-B-STR now separates this from the furnace room, so the stair bottom is its own
     # space instead of dumping arrivals into the mechanical room.
     # **The HALL is part of this room's loop, not a room of its own** (2026-09-05): the
@@ -1412,7 +1412,7 @@ ROOMS = [
     # trigger habitability rules a battery cabinet has no use for. R327.4 permits an ESS in
     # a utility closet, which is exactly what this is.
     Room(uid="CBR408AAAA", tag="RM-B-ESS", seed=pt(ft(8), ft(33, 6)),
-         occupancy=Occupancy.MECHANICAL, floor_finish="sealed-concrete"),
+         occupancy=Occupancy.MECHANICAL, floor_finish="sealed-concrete", unpainted=True),
 ]
 
 ALARMS = [

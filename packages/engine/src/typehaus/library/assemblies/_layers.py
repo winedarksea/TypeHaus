@@ -26,6 +26,8 @@ STUD_BEARING = AssemblyInterface(role="bearing", layer_name="stud", outboard=Fal
 # consumed (``list(default_lining) + list(layers)``), so the paint is *first*: it is the
 # room-side face, and that position is what makes it the assembly's warm-side vapour
 # retarder in the Glaser walk (IRC R702.7 / R702.7.1 Class III, → checks/building_science).
+# A coating: it takes no depth (resolve/coatings.py), and the room may swap or strip it
+# (resolve/room_paint.py) except on an envelope wall.
 PAINT_FINISH = Layer(name="paint", material_ref="latex-paint", thickness=inch(0.01),
                      function=LayerFunction.FINISH,
                      control={ControlLayer.VAPOR})

@@ -18,8 +18,9 @@ this module is the honest statement of what the section knows that the IR does n
 
 from __future__ import annotations
 
+from typehaus.emit.draw.lineweights import REFERENCE
 from typehaus.emit.draw.palette import aia_layer, library_hatch
-from typehaus.emit.draw.scene import Hatch
+from typehaus.emit.draw.scene import Hatch, Polyline
 from typehaus.emit.draw.section_clip import clip_polygon, clip_rect, quad_nodes, rect_nodes
 from typehaus.emit.draw.section_labels import DrawnBand
 from typehaus.model.enums import LayerFunction
@@ -106,6 +107,27 @@ def opening_splits(wall, openings, direction, station, z0, z1):
     if head_z < z1:
         bands.append((max(head_z, z0), z1, False))
     return bands or [(z0, z1, False)]
+
+def emit_wall_coatings(b, model, wall, plane: CutPlane, crop, wall_top) -> None:
+    """A coating has no solid in the IR (zero depth): it draws as a stroke on its host face,
+    unhatched, broken where the cut passes through an opening."""
+    openings = [op for op in model.openings if op.host_wall == wall.tag]
+    for layer in wall.layers:
+        if not layer.coating:
+            continue
+        z0, z1 = layer.band(wall)
+        for (u0, _u1) in ring_intervals(layer.polygon, plane):
+            for (s0, s1, void) in opening_splits(wall, openings, plane.axis, plane.station_m,
+                                                 z0, min(z1, wall_top)):
+                rect = None if void else clip_rect(u0 - 1e-9, u0 + 1e-9, s0, s1, crop)
+                if rect is None:
+                    continue
+                u = u0 / M_PER_IN
+                b.add(Polyline(points=((u, rect[2] / M_PER_IN), (u, rect[3] / M_PER_IN)),
+                               layer=aia_layer(layer.function), lineweight=REFERENCE,
+                               uid=wall.uid, tag=f"{wall.tag}/{layer.name}",
+                               material=layer.material_ref))
+
 
 def _rafter_plan_span(roof, direction: str) -> tuple[float, float] | None:
     """The rafters' in-section (u) extent — where the framed structure actually ends.

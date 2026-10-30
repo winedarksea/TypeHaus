@@ -43,6 +43,6 @@ def test_the_landing_takes_base_at_its_own_floor(catlin_model_ro) -> None:
     runs = {r.wall_tag: r for r in catlin_model_ro.base_runs
             if r.tag.startswith("BASE-ST-M2S-LANDING-")}
     assert {k: round(r.length_m / IN, 3) for k, r in runs.items()} == {
-        "W-M-C5": 13.875, "W-M-C5B": 28.490, "W-M-N2": 88.845, "W-M-STRW": 28.229}
+        "W-M-C5": 13.875, "W-M-C5B": 28.5, "W-M-N2": 88.875, "W-M-STRW": 28.239}
     assert all(r.piece.z0_m / IN == pytest.approx(61.2234, abs=1e-4) for r in runs.values())
     assert sum(r.end_corner == "inside" for r in runs.values()) == 2

@@ -160,42 +160,8 @@ INTERIOR_SLAB_MIX = ConcreteSpec(
     source="the basement slab on grade SL-B-FLOOR: same 4,000 psi F0/W0/C0 as the polished cap, and the same dose of the same macro-synthetic fibre EXPOSED_MIX carries, so the house buys one macro product and not two. Macro rather than micro because this slab has no mesh and something has to carry drying shrinkage and thermal movement (ACI 544.4R); it is a service floor with a covering over it, so the surface visibility that rules macro out of SL-M-DECK does not apply. Control joints are still required and are not modelled here",
 )
 
-# ** THE WASH LAYER'S THICKNESS IS A RENDER DECISION, NOT A CLAIM ABOUT FILM BUILD. ** A
-# two-coat mineral silicate wash is a film, not a board; `PAINT_FINISH` above carries such a
-# film at inch(0.01) and that is the honest number. It cannot be used here, and the reason is
-# the renderer rather than the chemistry.
-#
-# `Material.coating=True` does NOT stop a WALL layer from drawing: `_is_coating`
-# (emit/gltf/emitter.py) is scoped to room FLOOR finishes — a sealer on the deck rather than a
-# covering over it — and wall layers draw by thickness regardless. So the wash gets a real
-# plane, and at 0.01" that plane sits 5 thousandths of an inch off the concrete behind it, which
-# is inside the depth buffer's precision at this scene's scale: the viewer flashes the grey
-# substrate through the white face as the camera moves. That was observed, not predicted.
-#
-# ** 1/8", AND THE DEPTH-BUFFER ARGUMENT THAT USED TO PICK IT IS GONE. ** For a while this
-# value was a renderer workaround. `Material.coating=True` does NOT stop a wall layer drawing
-# (`_is_coating` is scoped to room FLOOR finishes), so the wash gets a real plane, and at
-# `PAINT_FINISH`'s honest inch(0.01) it z-fought: Panel3D's ordinary 24-bit depth buffer on
-# `PerspectiveCamera(50, 1, 0.05, 500)` resolves only about z^2 * 1.19e-6 metres (0.48 mm at
-# 20 m, 3.2 mm at 52 m), so the viewer flashed grey through the white. Thickening it was a losing
-# race — 0.01", 1/16" and 1/8" all still shimmered — and the race is over: the viewer now gives
-# every wash surface a `polygonOffset` (`WASH_POLYGON_OFFSET` in ui/src/three/materials.ts),
-# which wins the depth test deterministically at ANY camera distance.
-#
-# So the thickness is free to be a thickness, and 1/8" is kept on build grounds rather than
-# render ones: it is two coats plus, on the SRW block, the whole-face Quartz Filler or Bonding
-# Coat the Beeckosil TDS requires as a CMU pretreatment — and it is exactly what this house's
-# other coating, `foundation-coating-acrylic`, has carried since 2026-09-04. It is deliberately
-# NOT `PAINT_FINISH`'s 0.01": that is a brushed latex film on gypsum, which this is not.
-#
-# ** ONE PARITY CAVEAT. ** glTF has no `polygonOffset`, so an exported .glb opened in a third-party
-# viewer can still shimmer here where the live viewer does not. That is a limitation of the
-# format, not a reason to re-inflate this number (-> glb-emitter-parity).
-#
-# Nothing numeric rides on the value: a coating bills by COVERAGE AREA (`Material.coating`'s own
-# contract), its R/inch is 0.0, and its vapour rating is authored as a thickness-independent
-# PERMEANCE precisely so this cannot leak into the Glaser walk. What it DOES move is geometry —
-# each washed wall grows 1/8" — which is why it is a named constant rather than a number buried in
-# three layer literals, and why every washed wall carries an `alignment` of HALF this value so the
-# pour itself does not move. **Change this and every one of those offsets changes with it.**
+# The wash's authored film: two coats plus, on the SRW block, the whole-face Quartz Filler or
+# Bonding Coat the Beeckosil TDS requires as a CMU pretreatment. A coating takes no depth
+# (resolve/coatings.py), so this moves no geometry; Glaser reads its permeance, which is
+# authored thickness-independent, and the drawing legend quotes it.
 _WASH_FILM = inch(0.125)

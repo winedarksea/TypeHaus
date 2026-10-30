@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _layer_color
+from typehaus.resolve.coatings import coating_skin_ring
 from typehaus.resolve.geometry_ir import GMesh, GPrism
 
 # `_wall_top_at` keeps its old name here: openings.py and emitter.py import it from this
@@ -53,6 +54,8 @@ def _add_wall_body(mb: _MeshBuilder, wall: ResolvedWall, lod: str, openings=(),
                 mb.add_mesh(layer.surface_mesh, color)
             continue
         band = layer.band(wall) if layer.is_banded else None
-        for solid in layer_solids(wall, layer.polygon, openings, band=band,
+        # A coating is zero-width: its skin stands COATING_SKIN_M off the host face.
+        ring = coating_skin_ring(wall, layer) if layer.coating else layer.polygon
+        for solid in layer_solids(wall, ring, openings, band=band,
                                   layer_name=layer.name):
             _add_solid(mb, solid, color)

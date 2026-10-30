@@ -313,7 +313,8 @@ def test_every_wall_becomes_one_element_with_a_part_per_body_layer(model, geomet
     for wall in model.walls:
         element = geometry.by_uid(wall.uid)
         assert element is not None, wall.tag
-        expected = [ly for ly in wall.body_layers() if ly.polygon]
+        # A coating is zero-width and has no solid (the glTF draws it as a skin).
+        expected = [ly for ly in wall.body_layers() if ly.polygon and not ly.coating]
         assert len(element.parts) == len(expected), wall.tag
 
 

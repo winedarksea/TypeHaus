@@ -14,6 +14,7 @@ from shapely.geometry import LineString, Polygon
 
 from typehaus.model.refs import FollowRoof
 from typehaus.resolve.ceiling_over import room_roof_over
+from typehaus.resolve.coatings import layer_depth_m
 from typehaus.resolve.model import ResolvedCeiling, ResolvedModel, ResolvedRoof
 from typehaus.resolve.roof_geometry import (
     MIN_COUNTABLE_HEAD_M,
@@ -76,5 +77,5 @@ def sloped_plane(model: ResolvedModel, plan: Any, ceiling: ResolvedCeiling) -> S
     roof = next((r for r in model.roofs if source is not None and r.tag == source.tag), None)
     if roof is None or not roof.footprint:
         return None
-    lining = sum(layer.thickness.meters for layer in ceiling.layers)
+    lining = sum(layer_depth_m(plan.library, layer) for layer in ceiling.layers)
     return SlopedPlane(roof, roof_structure_depth_m(model, roof) + lining)

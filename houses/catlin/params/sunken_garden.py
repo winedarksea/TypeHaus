@@ -94,47 +94,18 @@ from params.landscape_walk import GAP_FT as WALK_GAP_FT
 from params.landscape_walk import TOP as WALK_TOP
 from params.sunken_garden_options import OPTION
 
-# ** THE POUR DOES NOT MOVE WHEN THE WASH IS ADDED, AND THIS IS WHAT HOLDS THAT. **
-# `SUNKEN_GARDEN_WALL` carries a 1/8" white mineral silicate wash at layer 0 (the court face).
-# Without an alignment the resolver centres the WHOLE stack on the node line, so a 12" pour
-# becomes 12 1/8" of stack and the concrete slides 1/16" away from the court — which is not what
-# gets built. What gets built is a 12" pour on the grid with a film painted onto its court face.
-#
-# That 1/16" is not cosmetic. It broke three things at once and only one of them was caught by a
-# check: `SP-SG-W1-CD-SPA` fell out of its own host (`integrity.sleeve_in_opening`, a FAIL), and
-# the corner columns stopped being flush with the wall faces they stand on while the raised
-# garden stopped closing on the court walls — both of those only by test, at 0 FAIL.
-#
-# `_axis_offset_from_interior` measures the axis from the INTERIOR face outward, and its own
-# docstring names this exact case: the offset "is what lets a layer be added to one side of an
-# existing wall without moving the layer that actually holds the datum". Interior here is the
-# wash's outer face, so the stack reads wash 0..1/8", concrete 1/8"..12 1/8"; the concrete's
-# centre is 6 1/8" from the interior face where the default axis is 6 1/16". Hence +1/16" —
-# HALF THE WASH — and the pour lands back on 90"..102" exactly as before.
-#
-# ** IT IS NO LONGER HALF THE WASH: THE OUTBOARD FACE CARRIES DIMPLEBOARD. ** The rule is
-#
-#     offset = (the concrete's centre, measured from the interior face)
-#              − (half the whole stack, which is where the default axis lands)
-#
-# and a 5/16" dimpleboard outboard (plan/assemblies.py) flips its sign. All five court walls
-# share this one stack depth — W1/E1's board stops at grade inside a `slot`, so its row keeps
-# its depth — and so one `_COURT_AXIS_SHIFT`.
-#
-# `test_masonry_finish.py::test_court_wash_faces_the_court` and
-# `test_catlin_outdoor_structures.py`'s `_pour_faces` hold the faces. Thicknesses are
-# transcribed (a params module cannot import the plan that imports it); a mismatch slides the
-# pour, and the pour-on-grid assertion in `test_court_wash_faces_the_court` catches it.
-_WASH_FILM_IN = 0.125
-_SG_POUR_IN = 12.0
+# ** THE 12" POUR SITS ON ITS NODE LINE; THE OUTBOARD DIMPLEBOARD MUST NOT SHIFT IT. ** The
+# resolver centres the whole stack on the axis, so the 5/16" board outboard would slide the pour
+# 5/32" toward the court; the alignment takes half the board back. The court-face wash is a
+# coating and takes no depth. All five court walls share this stack depth — W1/E1's board stops
+# at grade inside a `slot`, so its row keeps its depth — and so one `_COURT_AXIS_SHIFT`.
+# `test_masonry_finish.py::test_court_wash_faces_the_court` holds the pour on the grid.
 _SG_RETAINED_FACE_IN = 0.3125          # dimpleboard, 5/16"
 
 
 def _pour_on_grid_offset(outboard_in: float):
     """The alignment that keeps the 12" pour centred on its own node line."""
-    return face("center", offset=inch(
-        (_WASH_FILM_IN + _SG_POUR_IN / 2.0)
-        - (_WASH_FILM_IN + _SG_POUR_IN + outboard_in) / 2.0))
+    return face("center", offset=inch(-outboard_in / 2.0))
 
 
 _COURT_AXIS_SHIFT = _pour_on_grid_offset(_SG_RETAINED_FACE_IN)
@@ -1894,8 +1865,7 @@ HP_STAND_ANCHORS = [
 # 20 ea) — 16'-9" face to face. Both joist fields are inset 3/4" at the carriers so the end
 # joists sit flush with the ledger ends; each ledger runs 2" past its end joists.
 #
-# The ledger's back face is on the WASH, not the pour: the 1/8" silicate film is layer 0 of
-# SUNKEN_GARDEN_WALL and `structural.deck_ledger` measures to the wall's whole body.
+# The ledger's back face is on the pour's court face (the wash on it is a coating, no depth).
 #
 # ** THE ANCHORS: 1/2" x 6" TYPE 316 TITEN HD (THD50600H6SS), STAGGERED, 16" O.C. ** AWC DCA6
 # leaves spacing into concrete to the anchor maker; Simpson's L-A-THDSSLDGR23 publishes it
@@ -1906,7 +1876,7 @@ HP_STAND_ANCHORS = [
 #
 # The four nodes are the ledger ends, 2" past the end joists so the end hangers' flanges land
 # on wood. They keep the uids of the retired beam-end nodes (SGNM01/02/04/05).
-_LEDGER_FACE_IN = _WASH_FILM_IN + cross_section(SPEC.porch_joist).width_m / 0.0254 / 2.0
+_LEDGER_FACE_IN = cross_section(SPEC.porch_joist).width_m / 0.0254 / 2.0
 _x_ldg_w = _x_in_w + _LEDGER_FACE_IN / 12.0
 _x_ldg_e = _x_in_e - _LEDGER_FACE_IN / 12.0
 _LEDGER_ANCHOR = "THD50600H6SS"
@@ -2009,12 +1979,8 @@ def _guard_post_stations(path_ft, spacing_ft):
 
 _PORCH_OUTLINE = (pt(ft(_x_in_w), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_y_ax_front)),
                   pt(ft(_x_in_e), ft(_y_porch_deck_n)), pt(ft(_x_in_w), ft(_y_porch_deck_n)))
-# The plank: the full N-S outline, and across the span to the wash faces the ledgers bear on.
-_x_wash_w = _x_in_w + _WASH_FILM_IN / 12.0
-_x_wash_e = _x_in_e - _WASH_FILM_IN / 12.0
-_PORCH_PLANK_OUTLINE = (pt(ft(_x_wash_w), ft(_y_ax_front)), pt(ft(_x_wash_e), ft(_y_ax_front)),
-                        pt(ft(_x_wash_e), ft(_y_porch_deck_n)),
-                        pt(ft(_x_wash_w), ft(_y_porch_deck_n)))
+# The plank: the full N-S outline, across the span to the pour faces the ledgers bear on.
+_PORCH_PLANK_OUTLINE = _PORCH_OUTLINE
 _PORCH_JOIST_OUTLINE = (pt(ft(_x_in_w), ft(_porch_y0)), pt(ft(_x_in_e), ft(_porch_y0)),
                         pt(ft(_x_in_e), ft(_porch_y1)), pt(ft(_x_in_w), ft(_porch_y1)))
 

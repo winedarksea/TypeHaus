@@ -546,7 +546,7 @@ ROOMS = [
     # it is authored in, and ~30 lines of comment here about an unfinished loft went with it.
     Room(uid="CAR402AAAA", tag="RM-A-EAST-UNFIN", seed=pt(ft(27), ft(20)),
          occupancy=Occupancy.STORAGE, floor_finish=None,
-         ceiling=FollowRoof(roof_ref="RF-HOUSE")),
+         ceiling=FollowRoof(roof_ref="RF-HOUSE"), unpainted=True),
     Room(uid="CAR404AAAA", tag="RM-A-STUDY", seed=pt(ft(27), ft(4)),
          occupancy=Occupancy.OFFICE, floor_finish="oak-floor-custom",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),

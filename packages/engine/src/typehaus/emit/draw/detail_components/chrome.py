@@ -38,7 +38,9 @@ def _participating_layers(model, derived):
             # would break this module's rule that the strip names what the cut is made of.
             # ``_paper_legend`` intersects this list with what the scene drew, so nothing
             # here can over-name.
-            out.append((layer.material_ref, layer.thickness_m / M_PER_IN, layer.function))
+            thickness = (_authored_thickness_m(model, wall, layer) if layer.coating
+                         else layer.thickness_m)
+            out.append((layer.material_ref, thickness / M_PER_IN, layer.function))
     tags = derived.condition.element_tags
     for roof in model.roofs:
         # By **assembly** as well as by element tag. A wall/roof condition is keyed on the
@@ -61,6 +63,14 @@ def _participating_layers(model, derived):
                             layer.cavity_thickness(fill).meters / M_PER_IN,
                             layer.function))
     return out
+
+
+def _authored_thickness_m(model, wall, layer) -> float:
+    """A coating resolves to zero depth; the legend still names its authored film."""
+    asm = model.plan.library.resolve_assembly(wall.assembly)
+    stack = (*asm.default_lining, *asm.layers) if asm is not None else ()
+    return next((ly.thickness.meters for ly in stack if ly.name == layer.name
+                 and ly.material_ref == layer.material_ref), 0.0)
 
 
 #: Materials a detail **component** draws with rather than an assembly layer, so
@@ -122,10 +132,10 @@ def drawn_materials(scene) -> set[str]:
     is in the assembly and not in the drawing. Legending it invites a reader to look for
     something that is not there, and it is why the band ran a third longer than it needed to.
     """
-    from typehaus.emit.draw.scene import Hatch
+    from typehaus.emit.draw.scene import Hatch, Polyline
 
     return {node.material for node in getattr(scene, "nodes", ())
-            if isinstance(node, Hatch) and node.material}
+            if isinstance(node, (Hatch, Polyline)) and node.material}
 
 
 def material_legend(model, derived, u_left: float, z_top: float,

@@ -67,18 +67,18 @@ MAIN_CLOSET = [
 
     # --- west wall: two wire extensions flush with the corner tiers ----------------------
     # y 13'-2 3/8"..15'-7 7/8", 12" deep; same body bottom/top and rod offset as the L.
-    # Station 42.76" (not 42 3/4"): W-M-CLN's 0.01" paint film moves the north-hosted L south.
+    # Station 42 3/4": flush with the north-hosted L on W-M-CLN's finish face.
     # Supported shelf joiners and rod connectors at the seam; see notes/closet_wire.md.
     Furniture(uid="PMF55DJ74K", tag="FURN-M-CLOSET-WEST-HI", type_ref="FT-M-CLOSET-WEST-WIRE",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(78.6875)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(42.76),
-                  normal_gap=inch(0.115), rotation_offset=deg(-180)))),
+                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(42.75),
+                  normal_gap=inch(0.125), rotation_offset=deg(-180)))),
     Furniture(uid="NX7D3QR6WT", tag="FURN-M-CLOSET-WEST-LO", type_ref="FT-M-CLOSET-WEST-WIRE",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(38.6875)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(42.76),
-                  normal_gap=inch(0.115), rotation_offset=deg(-180)))),
+                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(42.75),
+                  normal_gap=inch(0.125), rotation_offset=deg(-180)))),
 
     # --- south wall: robe pegs -----------------------------------------------------------
     # x 10'-4 3/8"..13'-10 3/8", ~3/4" short of a 2 1/2" casing on

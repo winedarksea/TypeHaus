@@ -530,21 +530,21 @@ SECOND_PLACEABLES = [
     Furniture(uid="CHR703AAAA", tag="FURN-S-DESK-CHAIR3", type_ref="FURN-DESK-CHAIR", room="RM-S-BED3",
               position=pt(m(7.6327), m(10.1621)), rotation=deg(-90)),
     # The 31 1/2" side runs north–south, with its south edge on W-S-S2's painted
-    # drywall face at y=6.635". Centre is that face plus half the table length;
+    # drywall face at y=6.625". Centre is that face plus half the table length;
     # rotation 90 leaves the drawer accessible from the east side. The whole group moved
     # 30" west for the southeast corner shelf (owner, 2026-10-14).
     Furniture(uid="TAB701AAAA", tag="FURN-S-STUDY-TABLE", type_ref="FURN-CHESS-TABLE-315",
-              room="RM-S-STUDY2", position=pt(m(8.79495), inch(22.26)), rotation=deg(90)),
+              room="RM-S-STUDY2", position=pt(m(8.79495), inch(22.25)), rotation=deg(90)),
     Furniture(uid="CHR704AAAA", tag="FURN-S-STUDY-CHAIR1", type_ref="FURN-CANTILEVER-CHAIR",
               room="RM-S-STUDY2", position=pt(m(9.4696), m(0.589194)), rotation=deg(-90)),
     Furniture(uid="CHR705AAAA", tag="FURN-S-STUDY-CHAIR2", type_ref="FURN-CANTILEVER-CHAIR",
               room="RM-S-STUDY2", position=pt(m(8.1304), m(0.588713)), rotation=deg(90)),
-    # Finish corner (425.365", 6.635") minus/plus 1/2" gap and half the 23.62" case.
+    # Finish corner (425.5", 6.5") minus/plus 1/2" gap and half the 23.62" case.
     # -90 turns the symbol's +x/+y backs east/south. The compact Frailey keeps both south
     # windows; even the smaller BILLY combination would cover WIN-S-STUDY2.
     Furniture(uid="CSBOOK0001", tag="FURN-S-STUDY-CORNER-BOOKCASE",
               type_ref="FT-STUDY-CORNER-BOOKCASE", room="RM-S-STUDY2",
-              position=pt(inch(413.18), inch(18.82)), rotation=deg(-90)),
+              position=pt(inch(413.19), inch(18.81)), rotation=deg(-90)),
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
               room="RM-S-SUITE", position=pt(m(1.52182), m(5.57379)), rotation=deg(0)),
     # Flush with the queen's sides; backs stop at the 3/4" walnut paneling face.

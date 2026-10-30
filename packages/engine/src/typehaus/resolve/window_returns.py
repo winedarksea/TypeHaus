@@ -2,15 +2,7 @@
 
 from __future__ import annotations
 
-from shapely.geometry import Point
-
 from typehaus.findings import Finding, Result, Severity
-from typehaus.resolve.finish_exposure import (
-    FACE_PROBE_M,
-    MIN_ROOM_Z_OVERLAP_M,
-    UsedRoom,
-    used_rooms,
-)
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.resolve.geometry_openings import opening_parts
@@ -49,7 +41,6 @@ def resolve_window_returns(model: ResolvedModel) -> list[Finding]:
     model.solids[:] = [solid for solid in model.solids if solid.category != "window_return"]
     walls = {wall.tag: wall for wall in model.walls}
     stools = {stool.window_ref: stool for stool in model.window_stools}
-    rooms = used_rooms(model)
     findings = []
     for opening in model.openings:
         if opening.kind != "window":
@@ -64,8 +55,7 @@ def resolve_window_returns(model: ResolvedModel) -> list[Finding]:
         if not stack:
             continue
         try:
-            record, solids = _fit_return(wall, opening, stools.get(opening.tag),
-                                         stack, rooms)
+            record, solids = _fit_return(wall, opening, stools.get(opening.tag), stack)
         except ValueError as error:
             findings.append(Finding(
                 severity=Severity.WARN, result=Result.UNKNOWN,
@@ -80,8 +70,8 @@ def resolve_window_returns(model: ResolvedModel) -> list[Finding]:
 
 
 def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
-                stool: ResolvedWindowStool | None, stack: FinishStack,
-                rooms: list[UsedRoom]) -> tuple[ResolvedWindowReturn, list[ResolvedSolid]]:
+                stool: ResolvedWindowStool | None,
+                stack: FinishStack) -> tuple[ResolvedWindowReturn, list[ResolvedSolid]]:
     if opening.arch_rise_m > _GEOMETRY_TOLERANCE_M:
         raise ValueError("arched window heads are not supported")
     origin, tangent, normal, run = wall_frame(wall)
@@ -186,14 +176,9 @@ def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
         remaining = backing
     exposed_area = (depth * (2 * (top - total - bottom) + opening.width_m - 2 * total)
                     + total * (opening.width_m + 2 * (top - total - bottom)))
-    probe = Point(point(0, face - FACE_PROBE_M))
-    painted_room = any(prepared.contains(probe)
-                       and min(top, z1) - max(bottom, z0) > MIN_ROOM_Z_OVERLAP_M
-                       for _, prepared, z0, z1 in rooms)
     return ResolvedWindowReturn(
         uid=f"{opening.uid}-RETURN", tag=f"{opening.tag}-return",
         window_ref=opening.tag, wall_tag=wall.tag, storey=wall.storey,
         layers=tuple(quantities), exposed_area_m2=exposed_area,
         bead_length_m=2 * (top - total - bottom) + opening.width_m - 2 * total,
-        derived_paint=not stack[0][1] and painted_room,
     ), solids

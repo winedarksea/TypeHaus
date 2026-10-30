@@ -160,9 +160,8 @@ BASEMENT_FIBER_CEMENT_SCREEN = Assembly(
 # ** NO ControlLayer.VAPOR. ** A silicate wash is ~25 perms — the opposite of a retarder. See
 # `silicate-wash-white` in library/materials/ for the derivation.
 #
-# Geometry: the stack totals 3 3/4" rather than 3 5/8", so the centred panel drifts 1/16" west
-# and the overhang past W-B-E1's pour goes 1/8" -> 3/16". Below every tolerance in
-# notes/east_breast_bearing.md, whose numbers all stand (both bricks are 1,920 kg/m3).
+# Geometry: the wash is a coating and takes no depth, so the stack is the 3 5/8" brick and the
+# panel sits where notes/east_breast_bearing.md worked it.
 _FIREPLACE_WYTHE = inch(3.625)
 FIREPLACE_BRICK_WYTHE = Assembly(
     tag="FIREPLACE_BRICK_WYTHE",
