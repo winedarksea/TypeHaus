@@ -92,9 +92,15 @@ There is no transom, and the gap to the ceiling remains the steam path.
 for the viewer, GLB and IFC. `WP-M-BATH2-SURR` supplies the two wall panels separately.
 The return is inset ¾" north onto the deck; the 1½" post sits wholly on Corian, with its
 inside face on the pan's north edge. Its front-to-back centre is 1⅜" in from the pan's west
-edge, so its base clears the deck's west edge. The resolved south panel's finished face is already flush with the pan edge (its ½"
+edge, so its base clears the deck's west edge. The resolved south panel's finished face is already flush with the pan edge (its ¼"
 thickness is on the wall side), so there is **36"** between it and the post: the upper
 limit of the Flex's 32–36" adjustment range. Do not subtract the wall panel twice.
+The MSMK-9636-1 panels are **¼"** (`thickness` on the band, 2026-10-30; it drew the ½"
+default before). The room face did not move, so the pan fit, the 36" opening and the reveal
+bead LF are unchanged. On site the panel stands about ¼" proud of the painted board past its
+free edges, where the F reveal stops it; set the R10000 plaster guard to the actual panel
+face at rough-in, about ¼" nearer the backer than a ½" panel, and confirm that depth against
+Delta's rough-in sheet.
 **Owner confirmed 2026-10-23:** move `W-M-TUBDK-S` and the unchanged 36" pan ⅛" south
 to close the south jamb gap introduced by the thinner wall board. The pan now runs
 y=158.25"–194.25", flush with the south surround. The deck edge, west apron and east-wall

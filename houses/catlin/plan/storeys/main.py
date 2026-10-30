@@ -2213,13 +2213,14 @@ PANELING = [
     #
     # Floor to ceiling since 2026-10-12: `inch(106)` is RM-M-BATH2's clear height
     # (clear_height_m 2.6924). 2 x 3'-0" x 8'-10" = 53.0 SF of Swanstone Modern Subway, White (.010).
+    # MSMK-9636-1 is a 1/4" glue-up panel (plan/products_showering.py), not the 1/2" default.
     #
     # Known limitation: `replaces_wall_finish` only nets out in `wood_surfaces`, so
     # `envelope_layers` still bills about 53 SF of latex paint behind the panel (~$80-155).
     # The gypsum genuinely stays and is genuinely bought; only the paint on it is wrong.
     WallPaneling(uid="AWV1DA0P86", tag="WP-M-BATH2-SURR", room="RM-M-BATH2",
                  material_ref="solid-surface-panel", height=inch(106),
-                 replaces_wall_finish=True,
+                 replaces_wall_finish=True, thickness=inch(0.25),
                  spans=(PanelingSpan(wall_ref="W-M-BA2E2", start=ft(1, 9.75),
                                      length=ft(3)),
                         PanelingSpan(wall_ref="W-M-BDN1", start=ft(4, 10.615),

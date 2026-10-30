@@ -214,7 +214,7 @@ MATERIALS_ISHTAR = [
              source="RM-M-BATH2 shower surround, 2026-09-02; \"marble-look\" spans cultured marble, cast solid surface and acrylic and the product family is an OPEN OWNER SELECTION — see prices.toml [wood_surfaces] for the price spread that collapses when it is made"),
     # RM-M-BATH2's shower walls since 2026-10-12, WP-M-BATH2-SURR, floor to ceiling. Swanstone
     # Modern Subway relief in White (.010), owner 2026-10-29. Same reasoning as
-    # marble-look-panel above: no species, 1/2" default, no vapour field.
+    # marble-look-panel above: no species, no vapour field. The band authors the panel's 1/4".
     Material(tag="solid-surface-panel",
              name="Solid-surface shower wall panel, Swanstone Modern Subway, White",
              r_per_inch=0.0, density=1700.0, hatch="stone", color="#f4f4f2",
