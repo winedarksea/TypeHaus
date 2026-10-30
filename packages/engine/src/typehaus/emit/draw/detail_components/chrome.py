@@ -38,8 +38,7 @@ def _participating_layers(model, derived):
             # would break this module's rule that the strip names what the cut is made of.
             # ``_paper_legend`` intersects this list with what the scene drew, so nothing
             # here can over-name.
-            thickness = (_authored_thickness_m(model, wall, layer) if layer.coating
-                         else layer.thickness_m)
+            thickness = layer.film_m if layer.coating else layer.thickness_m
             out.append((layer.material_ref, thickness / M_PER_IN, layer.function))
     tags = derived.condition.element_tags
     for roof in model.roofs:
@@ -63,14 +62,6 @@ def _participating_layers(model, derived):
                             layer.cavity_thickness(fill).meters / M_PER_IN,
                             layer.function))
     return out
-
-
-def _authored_thickness_m(model, wall, layer) -> float:
-    """A coating resolves to zero depth; the legend still names its authored film."""
-    asm = model.plan.library.resolve_assembly(wall.assembly)
-    stack = (*asm.default_lining, *asm.layers) if asm is not None else ()
-    return next((ly.thickness.meters for ly in stack if ly.name == layer.name
-                 and ly.material_ref == layer.material_ref), 0.0)
 
 
 #: Materials a detail **component** draws with rather than an assembly layer, so

@@ -38,6 +38,12 @@ def _storey_faces(plan: PlanModel, storey_tag: str) -> list[Polygon]:
 def claimed_room_faces(plan: PlanModel, storey_tag: str) -> list[tuple[object, Polygon]]:
     """``(Room, axis face)`` for each storey Room whose seed claims a face; unclaimed skip
     (``resolve_rooms`` reports those)."""
+    return room_faces(plan, storey_tag)[0]
+
+
+def room_faces(plan: PlanModel, storey_tag: str,
+               ) -> tuple[list[tuple[object, Polygon]], list[Polygon]]:
+    """:func:`claimed_room_faces`, plus the storey's axis faces no Room claims."""
     faces = _storey_faces(plan, storey_tag)
     out = []
     for room in plan.storey_elements(storey_tag):
@@ -46,7 +52,7 @@ def claimed_room_faces(plan: PlanModel, storey_tag: str) -> list[tuple[object, P
         face = next((f for f in faces if f.contains(Point(room.seed.xy_m))), None)
         if face is not None:
             out.append((room, face))
-    return out
+    return out, [f for f in faces if not any(f is claimed for _room, claimed in out)]
 
 
 # A wall's axis midpoint sits *on* its room face boundary exactly (the faces are polygonized

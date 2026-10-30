@@ -17,8 +17,8 @@ from typehaus.cli.app import app, main  # `main` is the packaging entry point â€
 from _helpers import CATLIN, copy_house
 
 EXPECTED_COMMANDS = {
-    "analysis", "bids", "build", "calcs", "check", "compare", "diff", "doctor", "energy",
-    "engineering", "explain", "export", "fmt", "handoff",
+    "analysis", "bids", "build", "calcs", "check", "compare", "countertops", "diff", "doctor",
+    "energy", "engineering", "explain", "export", "fmt", "handoff",
     "import", "import-project", "ls", "millwork", "new", "order", "permit-check", "print",
     "inspections", "record", "render", "retaining-court-study", "route", "schedule",
     "serve", "sunken-garden-study", "takeoff", "tasks", "trial", "version",

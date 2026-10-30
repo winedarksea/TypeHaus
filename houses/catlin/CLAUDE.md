@@ -2444,7 +2444,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   dry-stacked joints will take it unevenly, and efflorescence out of the backfill can lift or
   stain it. The manufacturers' own instructions require the trial.
 - **The wash takes no depth; the viewer draws it as a skin.** A coating's resolved ring sits on
-  its host face, served as a ~0.5 mm skin (`COATING_SKIN_M`), and `WASH_POLYGON_OFFSET` in
+  its host face, served as a ~0.5 mm skin (`COATING_SKIN_M`), and `WALL_COATING_POLYGON_OFFSET` in
   `ui/src/three/materials.ts` wins the depth test. `_WASH_FILM` (1/8") is the authored film the
   legend quotes; changing it moves nothing.
 - **The wash has a procedural texture, like the metal skins and the masonry do.**

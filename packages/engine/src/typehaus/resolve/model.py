@@ -106,6 +106,8 @@ class ResolvedLayer:
     # A ``Material.coating``: zero depth, a zero-width ring on its host face. Emitters draw
     # it as a skin (``resolve/coatings.coating_skin_ring``), never as a solid.
     coating: bool = False
+    # A coating's authored film (its ``thickness_m`` is 0): the drawing legend quotes it.
+    film_m: float = 0.0
 
     def band(self, wall: ResolvedWall) -> tuple[float, float]:
         """This layer's absolute (z0, z1), falling back to the wall's where unbanded."""

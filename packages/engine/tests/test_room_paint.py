@@ -51,3 +51,13 @@ def test_catlin_latex_paint_total(catlin_model_ro) -> None:
     total = sum(r["net_area_sqft"] for r in rows if r["material"] == "latex-paint")
     assert 12_500 < total < 14_000
     assert not any("(derived)" in str(r["scope"]) for r in rows if "paint" in r["material"])
+
+
+def test_a_roof_ceiling_no_room_claims_keeps_its_authored_coat(catlin_model_ro) -> None:
+    """The attic stair hall (FO-A-HALL) has no Room, so RF-HOUSE's latex stays as authored."""
+    from typehaus.takeoff.coating_areas import _ceiling_area_m2, ceiling_coating_areas
+
+    rooms = sum(_ceiling_area_m2(catlin_model_ro, c) for c in catlin_model_ro.ceilings
+                if c.layers and c.layers[0].material_ref == "latex-paint")
+    unroomed = ceiling_coating_areas(catlin_model_ro)[("ceiling", "latex-paint")] - rooms
+    assert 9.0 < unroomed < 11.0  # m², ~109 SF of sloped hall ceiling

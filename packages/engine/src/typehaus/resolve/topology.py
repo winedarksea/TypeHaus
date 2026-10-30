@@ -321,6 +321,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 board_run=_board_run(stack, index),
                 framed=layer.framing is not None,
                 coating=layer.material_ref in coatings,
+                film_m=layer.thickness.meters if layer.material_ref in coatings else 0.0,
             )
         )
         # One resolved layer per fill. A bay may hold several in series (flash-and-batt),

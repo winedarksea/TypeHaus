@@ -3,7 +3,8 @@
 Paint is resolved, not derived (``resolve/room_paint.py``): every coat a room takes is a
 coating layer on a resolved wall, ceiling or lining. Walls bill in ``envelope_layer_takeoff``;
 a ceiling's coat bills once here off ``model.ceilings`` (the roof and room-lining loops skip
-coatings), and a lining's off ``ResolvedFloor.linings``.
+coatings), and a lining's off ``ResolvedFloor.linings``. A roof's authored coat under a face
+no Room claims bills as authored.
 """
 
 from __future__ import annotations
@@ -15,10 +16,13 @@ from shapely.geometry import Polygon
 
 from typehaus.model.refs import FollowRoof
 from typehaus.model.spatial import Roof
-from typehaus.resolve.ceiling_over import room_roof_over
+from typehaus.resolve.ceiling_over import ceiling_decks_over, room_roof_over
 from typehaus.resolve.coatings import coating_tags
-from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
+from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedRoof, ResolvedWall
+from typehaus.resolve.overlay import difference
 from typehaus.resolve.roof_geometry import roof_is_trussed
+from typehaus.resolve.rooms import room_faces
+from typehaus.resolve.wall_faces import storey_wall_mass
 
 
 def covered_paneling_m2(model: ResolvedModel, wall: ResolvedWall,
@@ -52,7 +56,41 @@ def ceiling_coating_areas(model: ResolvedModel) -> dict[tuple[str, str], float]:
         for _tag, area, coating in floor.linings:
             if coating is not None:
                 areas[("opening lining", coating)] += area
+    for roof in model.roofs:
+        _unroomed_roof_ceiling(model, roof, coatings, areas)
     return areas
+
+
+def _unroomed_roof_ceiling(model: ResolvedModel, roof: ResolvedRoof, coatings, areas) -> None:
+    """A roof's own ceiling coat under faces no Room claims (a stair hall): no Room decides
+    it, so it stays as authored, as a wall face with no Room does."""
+    plan = model.plan
+    assembly = plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
+    coats = []
+    for layer in getattr(assembly, "default_lining", ()):
+        if layer.material_ref not in coatings:
+            break
+        coats.append(layer.material_ref)
+    if not coats or len(roof.footprint) < 3:
+        return
+    cover = Polygon(roof.footprint)
+    claimed, open_faces = room_faces(plan, roof.storey)
+    open_faces = [face for face in open_faces if cover.contains(face.representative_point())
+                  and not ceiling_decks_over(plan, roof.storey, face)]
+    if not open_faces:
+        return
+    mass = storey_wall_mass(model, roof.storey, [face for _room, face in claimed] + open_faces)
+    area = sum(difference(face, mass).area for face in open_faces) * _slope(model, roof)
+    for tag in coats:
+        areas[("ceiling", tag)] += area
+
+
+def _slope(model: ResolvedModel, roof: ResolvedRoof | None) -> float:
+    """The sloped-to-plan area factor of a rafter roof's ceiling; 1.0 on a truss's flat one."""
+    source = None if roof is None else model.plan.by_tag(roof.tag)
+    if roof is None or roof_is_trussed(model, roof) or not isinstance(source, Roof):
+        return 1.0
+    return math.sqrt(1.0 + (source.pitch.rise / source.pitch.run) ** 2)
 
 
 def _ceiling_area_m2(model: ResolvedModel, ceiling) -> float:
@@ -63,6 +101,4 @@ def _ceiling_area_m2(model: ResolvedModel, ceiling) -> float:
         return area
     source = room_roof_over(model.plan, ceiling.storey, room)
     roof = next((r for r in model.roofs if source is not None and r.tag == source.tag), None)
-    if roof is None or roof_is_trussed(model, roof) or not isinstance(source, Roof):
-        return area
-    return area * math.sqrt(1.0 + (source.pitch.rise / source.pitch.run) ** 2)
+    return area * _slope(model, roof)
