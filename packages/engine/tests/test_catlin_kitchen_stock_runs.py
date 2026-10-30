@@ -454,11 +454,12 @@ def cabinet_ifc(catlin_ifc_path):
     "FURN-M-KIT-PANTRYC", "FURN-M-KIT-COLD-SCRIBE-S",
     "FURN-M-KIT-E-HUNG", "FURN-M-KIT-E-HUNG-ST",
     "FURN-M-LIV-E-B24", "FURN-M-BED-DESK-CAB-S", "FURN-S-STUDY-NOOK-SEAT-W",
-    "FX-M-BATH2-SINK",
+    "FX-M-BATH2-SINK", "FX-S-VANITY-LAV1", "FX-A-STUBATH-LAV",
 ])
 def test_configured_geometry_matches_ifc_and_glb(tag, catlin_model_ro, cabinet_ifc):
     from typehaus.model.canvas import model_symbol_for
     from typehaus.model.placeable_symbols import model_parts
+    from typehaus.model.placeable_symbols._frame import is_counter_part
     from typehaus.resolve.geometry_countertops import slab_hosts
 
     obj = next(item for item in catlin_model_ro.canvas_objects if item.tag == tag)
@@ -468,7 +469,7 @@ def test_configured_geometry_matches_ifc_and_glb(tag, catlin_model_ro, cabinet_i
     hosted = tag in slab_hosts(catlin_model_ro)
     parts = [part for part in model_parts(model_symbol_for(typ), *(v.meters for v in typ.footprint),
                                          typ.height.meters)
-             if not hosted or part["color"] != "counter"]
+             if not hosted or not is_counter_part(part)]
     entity_class = "IfcSanitaryTerminal" if obj.domain == "plumbing" else "IfcFurniture"
     entity = next(item for item in cabinet_ifc.by_type(entity_class) if item.Name == tag)
     representation = entity.Representation.Representations[0]
@@ -484,3 +485,11 @@ def test_configured_geometry_matches_ifc_and_glb(tag, catlin_model_ro, cabinet_i
             min(v[axis] for v in glb_vertices))
         assert max(v[axis] for v in ifc_vertices) == pytest.approx(
             max(v[axis] for v in glb_vertices))
+
+
+def test_ifc_carries_the_rounded_vanity_slab(cabinet_ifc):
+    top = next(item for item in cabinet_ifc.by_type("IfcCovering") if item.Name == "CT-S-VANITY")
+    assert top.ObjectType == "COUNTERTOP"
+    (solid,) = top.Representation.Representations[0].Items
+    assert len(solid.SweptArea.OuterCurve.Points) > 5  # the R1" fillet, not a square end
+    assert len(solid.SweptArea.InnerCurves) == 2  # the two bowl mouths

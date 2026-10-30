@@ -1,8 +1,9 @@
-"""Countertop slab prisms shared by the viewer (model.json) and the GLB.
+"""Countertop slab prisms shared by the viewer (model.json), the GLB and the IFC.
 
 A slab is drawn in its own material. Explicit fixture cutouts replace a sink base's
-schematic centred counter; other basin hosts keep their own cut-out counter and the slab
-leaves their footprints clear. Viewer and GLB consume the same rings and holes.
+schematic centred counter and a seam-bonded vanity's deck; other basin hosts keep their own
+cut-out counter and the slab leaves their footprints clear. Every emitter consumes the same
+rings and holes.
 """
 
 from __future__ import annotations
@@ -20,13 +21,18 @@ from typehaus.resolve.overlay import union_all
 
 #: Plan symbols whose own counter is cut round a bowl; the slab leaves their footprint alone.
 SINK_SYMBOLS = frozenset({"sink-base", "sektion-axstad-kitchen-sink", "vanity"})
+#: Plan or model symbols whose counter a declared cutout over them hands to the slab: a sink
+#: base's centred schematic, a seam-bonded vanity's deck (its bowl mouth is the cutout).
+_CUTOUT_REPLACES = frozenset({"sink-base", "sektion-axstad-kitchen-sink",
+                              "solid-surface-vanity", "sektion-vanity", "sektion-vanity-indy"})
 
 _PLACEABLE_TYPE_COLLECTIONS = ("furniture_types", "fixture_types", "appliance_types",
                                "equipment_types")
 
 
-def _plan_symbols(model: ResolvedModel) -> dict[str, str | None]:
-    return {item.tag: getattr(item, "plan_symbol", None)
+def _plan_symbols(model: ResolvedModel) -> dict[str, tuple[str | None, str | None]]:
+    """Type tag -> (plan symbol, model symbol)."""
+    return {item.tag: (getattr(item, "plan_symbol", None), model_symbol_for(item))
             for name in _PLACEABLE_TYPE_COLLECTIONS
             for item in getattr(model.plan.library, name)}
 
@@ -46,13 +52,13 @@ def slab_hosts(model: ResolvedModel) -> dict[str, str]:
 
 def _keeps_symbol_counter(obj: Any, top: ResolvedCountertop,
                          symbols: dict[str, Any]) -> bool:
-    symbol = symbols.get(obj.type_ref or "")
-    if symbol in {"sink-base", "sektion-axstad-kitchen-sink"} and any(
+    plan_symbol, model_symbol = symbols.get(obj.type_ref or "", (None, None))
+    if _CUTOUT_REPLACES & {plan_symbol, model_symbol} and any(
         Polygon(ring).intersects(Polygon(obj.footprint)) for ring in top.cutouts
     ):
-        # An explicitly placed opening replaces the cabinet's centred schematic hole.
+        # An explicitly placed opening replaces the host's own counter or deck.
         return False
-    return symbol in SINK_SYMBOLS
+    return plan_symbol in SINK_SYMBOLS
 
 
 def countertop_top_z(model: ResolvedModel, top: ResolvedCountertop) -> float | None:

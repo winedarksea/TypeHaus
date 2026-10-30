@@ -67,6 +67,13 @@ class Part(TypedDict):
     shape: str  # box, prism, or a supported oriented primitive
     mesh: NotRequired[PartMesh]
     material_ref: NotRequired[str]
+    # "counter": a host's own counter, dropped where a countertop slab draws over it.
+    role: NotRequired[str]
+
+
+def is_counter_part(part: Part) -> bool:
+    """The symbol's counter or deck: a slab hosted on it draws it instead."""
+    return part.get("role") == "counter" or part["color"] == "counter"
 
 
 # Linear RGBA, matching the convention ``emit/gltf/emitter._PALETTE`` already uses: the same

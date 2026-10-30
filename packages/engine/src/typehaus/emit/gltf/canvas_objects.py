@@ -25,6 +25,7 @@ from typehaus.model.canvas import (
     wood_material,
 )
 from typehaus.model.placeable_symbols import PART_COLORS, lamp_role, model_parts, place_local
+from typehaus.model.placeable_symbols._frame import is_counter_part
 from typehaus.resolve.geometry_countertops import countertop_prisms, slab_hosts
 from typehaus.resolve.geometry_ir import GMesh
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
@@ -182,7 +183,7 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     # a 4000K can exports the same shade the viewer draws.
     lamp = lamp_role(getattr(product_type, "cct_k", None))
     for part in parts:
-        if skip_counter and part["color"] == "counter":
+        if skip_counter and is_counter_part(part):
             continue  # the countertop slab draws it (→ _add_countertops)
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         color = (wood_color if wood_color and part["color"] in MATERIAL_WOOD_ROLES

@@ -1,4 +1,4 @@
-"""IFC products for resolved interior millwork: stools, base runs and door casings."""
+"""IFC products for resolved interior millwork: stools, countertops, base and casings."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ from typing import Any
 from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.model.ids import derive_guid
+from typehaus.resolve.geometry_countertops import countertop_prisms
 from typehaus.resolve.geometry_millwork import (
     base_run_prisms,
     door_casing_prisms,
@@ -44,6 +45,42 @@ def emit_window_stools(f: Any, body: Any, model: ResolvedModel,
         })
         ll.assign_container(f, element, storeys[stool.storey])
         entities[stool.tag] = element
+    return entities
+
+
+def emit_countertops(f: Any, body: Any, model: ResolvedModel,
+                     storeys: dict[str, Any], project_uuid: Any) -> dict[str, Any]:
+    """One covering per slab: the filleted, cut-out prisms model.json and the GLB draw.
+
+    IFC4 has no countertop covering type, so it is USERDEFINED / ``COUNTERTOP``; the hosts
+    drop their own counter or deck under it (→ geometry_countertops.slab_hosts).
+    """
+    entities: dict[str, Any] = {}
+    for top in sorted(model.countertops, key=lambda item: item.uid):
+        prisms = countertop_prisms(model, top)
+        if not prisms or top.storey not in storeys:
+            continue
+        solids = []
+        for prism in prisms:
+            representation = ll.add_prism_from_profile(
+                f, body, list(prism.ring), prism.z1_m - prism.z0_m, prism.z0_m, prism.voids)
+            solids.extend(representation.Items)
+            f.remove(representation)
+        element = ll.create_entity(f, "IfcCovering", name=top.tag)
+        element.GlobalId = derive_guid(project_uuid, top.uid)
+        element.PredefinedType = "USERDEFINED"
+        element.ObjectType = "COUNTERTOP"
+        ll.assign_representation(f, element, f.createIfcShapeRepresentation(
+            body, "Body", "SweptSolid", solids))
+        material = f.create_entity("IfcMaterial", Name=top.material_ref)
+        f.create_entity("IfcRelAssociatesMaterial", RelatedObjects=[element],
+                        RelatingMaterial=material)
+        ll.ensure_pset(f, element, PSET_SOURCE, {
+            "uid": top.uid, "tag": top.tag, "material_ref": top.material_ref,
+            "hosts": ",".join(top.hosts),
+        })
+        ll.assign_container(f, element, storeys[top.storey])
+        entities[top.tag] = element
     return entities
 
 

@@ -28,6 +28,7 @@ from typehaus.emit.ifc.structural import _emit_framed_member
 from typehaus.emit.ifc.wall_coatings import emit_banded_coatings
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
+from typehaus.model.placeable_symbols._frame import is_counter_part
 from typehaus.resolve.coatings import coating_tags
 from typehaus.resolve.envelope_geometry import envelope_geometry
 from typehaus.resolve.geometry import opening_center, rect_between
@@ -635,7 +636,8 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
                         furniture_type.height.meters,
                         material_refs=furniture_type.model_representation.material_refs
                         if furniture_type.model_representation else None)
-                        if furniture.tag not in hosted_countertops or part["color"] != "counter"),
+                        if furniture.tag not in hosted_countertops
+                        or not is_counter_part(part)),
                     resolved.position, resolved.rotation_degrees, resolved.z_m)
             elif bookcase is None:
                 representation = ll.add_prism_from_profile(
@@ -722,7 +724,9 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
                               project_uuid: Any) -> None:
     """Export resolved plumbing fixtures and appliances with semantic, stable identities."""
     from typehaus.model.canvas import model_symbol_for
+    from typehaus.resolve.geometry_countertops import slab_hosts
 
+    hosted_countertops = slab_hosts(model)
     fixture_types = {item.tag: item for item in model.plan.library.fixture_types}
     appliance_types = {item.tag: item for item in model.plan.library.appliance_types}
     type_cache: dict[tuple[str, str], Any] = {}
@@ -752,10 +756,13 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
             from typehaus.emit.ifc.placeable_parts import parts_representation
             from typehaus.model.placeable_symbols import model_parts
 
-            parts = model_parts(model_symbol, product_type.footprint[0].meters,
-                                product_type.footprint[1].meters, product_type.height.meters,
-                                material_refs=product_type.model_representation.material_refs
-                                if product_type.model_representation else None)
+            parts = [part for part in model_parts(
+                model_symbol, product_type.footprint[0].meters,
+                product_type.footprint[1].meters, product_type.height.meters,
+                material_refs=product_type.model_representation.material_refs
+                if product_type.model_representation else None)
+                # A vanity under a countertop slab: the slab draws its deck (→ millwork).
+                if item.tag not in hosted_countertops or not is_counter_part(part)]
             representation = parts_representation(
                 f, body, parts, item.position, item.rotation_degrees, item.z_m,
                 materials={material.tag: material for material in model.plan.library.materials})

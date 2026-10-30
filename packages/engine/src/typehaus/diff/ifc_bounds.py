@@ -24,6 +24,7 @@ def _emitted_parts_bounds(model: ResolvedModel, item, hosted_countertops, base_z
     from typehaus.emit.ifc.architectural import is_parts_fixture, is_parts_furniture
     from typehaus.model.canvas import model_symbol_for
     from typehaus.model.placeable_symbols import model_parts
+    from typehaus.model.placeable_symbols._frame import is_counter_part
 
     furniture = next((t for t in model.plan.library.furniture_types if t.tag == item.type_ref),
                      None)
@@ -38,13 +39,14 @@ def _emitted_parts_bounds(model: ResolvedModel, item, hosted_countertops, base_z
         parts = [part for part in model_parts(
             model_symbol_for(furniture), *(d.meters for d in furniture.footprint),
             furniture.height.meters)
-            if item.tag not in hosted_countertops or part.get("color") != "counter"]
+            if item.tag not in hosted_countertops or not is_counter_part(part)]
         return _parts_bounds(parts, item.position, item.rotation_degrees, base_z_m)
     fixture = next((t for t in model.plan.library.fixture_types if t.tag == item.type_ref), None)
     symbol = model_symbol_for(fixture) if fixture is not None else None
     if is_parts_fixture(symbol):
-        parts = model_parts(symbol, fixture.footprint[0].meters, fixture.footprint[1].meters,
-                            fixture.height.meters)
+        parts = [part for part in model_parts(symbol, fixture.footprint[0].meters,
+                                              fixture.footprint[1].meters, fixture.height.meters)
+                 if item.tag not in hosted_countertops or not is_counter_part(part)]
         return _parts_bounds(parts, item.position, item.rotation_degrees, base_z_m)
     return None
 

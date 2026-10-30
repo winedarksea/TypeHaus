@@ -56,14 +56,15 @@ def solid_surface_vanity(width: float, depth: float, height: float, *,
     bottom = deck - min(bowl_drop * 0.0254, deck * 0.5)
     parts = []
     # Four uninterrupted deck strips leave a real opening, rather than covering the bowl.
+    # Role "counter": a countertop slab with the bowl's cutout replaces them.
     for sign in (-1, 1):
         strip_width = (width - basin_width) / 2
-        parts.append(box(sign * (basin_width + strip_width) / 2, 0,
-                         deck - top_thickness, deck, strip_width, depth, "porcelain"))
+        parts.append({**box(sign * (basin_width + strip_width) / 2, 0, deck - top_thickness,
+                            deck, strip_width, depth, "porcelain"), "role": "counter"})
     for edge, mouth in ((-depth / 2, basin_y - basin_depth / 2),
                         (depth / 2, basin_y + basin_depth / 2)):
-        parts.append(box(0, (edge + mouth) / 2, deck - top_thickness, deck,
-                         basin_width, abs(edge - mouth), "porcelain"))
+        parts.append({**box(0, (edge + mouth) / 2, deck - top_thickness, deck,
+                            basin_width, abs(edge - mouth), "porcelain"), "role": "counter"})
 
     vertices, triangles = [], []
     # A rounded floor widens into the rectangular bonding envelope at the deck plane.

@@ -229,3 +229,20 @@ def test_bath2_overhang_meets_the_bonded_bowl_deck(catlin_model_ro):
     prisms = countertop_prisms(catlin_model_ro, top)
     assert prisms
     assert all(prism.z1_m == pytest.approx(vanity.body_z0_m + 36 * INCH) for prism in prisms)
+
+
+@pytest.mark.parametrize("tag", ["CT-S-VANITY", "CT-A-STUBATH-VANITY"])
+def test_a_vanity_top_draws_its_rounded_slab_over_the_bowl_deck(catlin_model_ro, tag):
+    # The bowl's cutout hands the vanity's square deck to the slab, so the authored R1"
+    # reaches the viewer, the GLB and the IFC; the hosts drop their deck (→ slab_hosts).
+    from typehaus.resolve.fillet import filleted_ring
+
+    top = next(item for item in catlin_model_ro.countertops if item.tag == tag)
+    assert all(slab_hosts(catlin_model_ro).get(host) == tag for host in top.hosts)
+    slab = Polygon(filleted_ring(top.outline, top.corner_radii_m))
+    for ring in top.cutouts:
+        slab = slab.difference(Polygon(ring))
+    drawn = sum(Polygon(prism.ring, holes=prism.voids).area
+                for prism in countertop_prisms(catlin_model_ro, top))
+    assert drawn == pytest.approx(slab.area, rel=1e-6)
+    assert any(radius > 0 for radius in top.corner_radii_m)
