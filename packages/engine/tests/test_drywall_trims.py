@@ -81,3 +81,12 @@ def test_jbead_stops_with_the_bare_face_and_slivers_are_not_corners(catlin_model
     assert not rooms & {"RM-S-NCLOSET", "RM-B-ESS", "RM-A-POCKET", "RM-S-SUITEBATH"}
     hp1 = sum(t.length_m for t in trims if "SF-S-HP1" in t.tags) / _IN
     assert hp1 == pytest.approx(40.75 + 35.74, abs=1.5)
+
+
+def test_a_tile_end_reveal_stops_at_what_covers_the_board(catlin_model_ro):
+    # WP-M-BATH2-SURR's north end meets W-M-TUBDK-S, the deck and the 6" splash: its reveal
+    # runs from the splash top (28 3/4") to the band top (106"). The free west end starts at
+    # the room's finished floor (+1 1/2"), not the storey datum.
+    ends = sorted(t.length_m / _IN for t in catlin_model_ro.drywall_trims
+                  if t.kind == "tile_reveal" and "WP-M-BATH2-SURR" in t.tags)
+    assert ends == pytest.approx([36.0, 36.0, 106 - 28.75, 106 - 1.5], abs=1e-3)

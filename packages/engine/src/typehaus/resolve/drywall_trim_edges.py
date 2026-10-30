@@ -3,7 +3,8 @@
 * ``led_profile`` — each plaster-in run, its length;
 * ``outside_corner`` on a soffit — its outline less what a wall or lower soffit backs;
 * ``tile_reveal`` — a non-wood band replacing the wall finish: its top where it stops below
-  the ceiling, and each end not continued round a corner by another band at its height;
+  the ceiling, and each end over the height it meets bare board (less another band carrying
+  on round it, or a knee wall, deck or slab standing against the face past it);
 * ``door_l_bead`` — a trimless door, ``2·h + w`` on each gypsum face;
 * ``window_corner`` / ``window_frame`` — a window return's three-sided bead pair, on the
   standard's beads or, with none declared, the library generics.
@@ -20,15 +21,18 @@ from typehaus.resolve.geometry import wall_frame
 from typehaus.resolve.geometry_door_products import finish_faces
 from typehaus.resolve.interior_trim_scope import face_is_gypsum
 from typehaus.resolve.room_lookup import room_owning
+from typehaus.resolve.solid_categories import SOLID_CATEGORIES
 
 _GENERIC_WINDOW_BEADS = ("drywall-corner-bead", "drywall-frame-termination-bead")
 _ROOM_PROBE_M = 0.15
 _JAMB_PROBE_M = 0.05
 _CONTINUED_M = 0.03
-_SAME_HEIGHT_M = 0.0254
 _TOP_GAP_M = 0.025
 _SOFFIT_BACKED_M = 0.0254
 _SOFFIT_STEP_M = 0.003
+# A tile end's cover is probed this far room-side of the finish face.
+_ROOM_SIDE_M = 0.005
+_BAND_EPS_M = 1e-4
 
 
 def led_profiles(ctx: TrimContext) -> None:
@@ -106,18 +110,43 @@ def tile_reveals(ctx: TrimContext) -> None:
                                                      band.z1_m + 0.08):
             ctx.add("tile_reveal", band.room, band.storey, ctx.standard.tile_reveal_ref,
                     band.run_m, tags)
-        mid_z = (band.z0_m + band.z1_m) / 2.0
+        floor_z = max(band.z0_m, room_floor(model, room))
         for end in _band_ends(band.outline):
-            if not face.at(face.past(end), mid_z - 0.05, mid_z + 0.05):
-                continue  # the band ends on cedar, glass or another finish, not board
-            continued = any(
-                other is not band and abs(other.z1_m - band.z1_m) < _SAME_HEIGHT_M
-                and other.z0_m < band.z1_m and other.z1_m > band.z0_m
-                and Polygon(other.outline).distance(Point(end)) < _CONTINUED_M
-                for other in bands if other.room == band.room)
-            if not continued:
-                ctx.add("tile_reveal", band.room, band.storey, ctx.standard.tile_reveal_ref,
-                        band.z1_m - band.z0_m, tags)
+            ctx.add("tile_reveal", band.room, band.storey, ctx.standard.tile_reveal_ref,
+                    _exposed_end_height(model, face, band, end, floor_z), tags)
+
+
+def _exposed_end_height(model, face: _GypsumBeside, band, end, floor_z: float) -> float:
+    """How much of a band's free end meets bare board: none where another band carries on
+    round it, and nothing a wall, deck or slab standing against the face past it hides."""
+    past = face.past(end)
+    room_side = face.room_point(past)
+    covers = [(other.z0_m, other.z1_m) for other in model.panelings
+              if other is not band and other.room == band.room and len(other.outline) >= 3
+              and other.z0_m is not None and other.z1_m is not None
+              and Polygon(other.outline).distance(Point(end)) < _CONTINUED_M]
+    covers += [(wall.z0_m, wall.z1_m) for wall in model.walls
+               if wall is not face.wall and wall.storey == band.storey
+               and any(len(layer.polygon) >= 3 and Polygon(layer.polygon).covers(room_side)
+                       for layer in wall.layers)]
+    covers += [(solid.z0_m, solid.z1_m) for solid in model.solids
+               if _stands(solid.category) and solid.z0_m < band.z1_m and solid.z1_m > floor_z
+               and len(solid.outline) >= 3 and Polygon(solid.outline).covers(room_side)]
+    breaks = sorted({floor_z, band.z1_m, *(z for pair in covers for z in pair
+                                           if floor_z < z < band.z1_m)})
+    exposed = 0.0
+    for lo, hi in zip(breaks, breaks[1:], strict=False):
+        mid = (lo + hi) / 2.0
+        if (not any(z0 <= mid <= z1 for z0, z1 in covers)
+                and face.at(past, lo + _BAND_EPS_M, hi - _BAND_EPS_M)):
+            exposed += hi - lo  # bare board: not cedar, glass or another finish
+    return exposed
+
+
+def _stands(category: str) -> bool:
+    """A body that hides the face it stands against (a deck, slab, post), not a duct."""
+    row = SOLID_CATEGORIES.get(category)
+    return row is not None and row.supports_on_top
 
 
 class _GypsumBeside:
@@ -138,6 +167,11 @@ class _GypsumBeside:
         away = 1.0 if ((end[0] - self.centroid[0]) * t[0]
                        + (end[1] - self.centroid[1]) * t[1]) > 0 else -1.0
         return (end[0] + t[0] * away * 0.02, end[1] + t[1] * away * 0.02)
+
+    def room_point(self, xy):
+        """Just room-side of the wall's finish face at ``xy`` (on the band's mid-depth)."""
+        lift = self.half + _ROOM_SIDE_M
+        return Point(xy[0] - self.into[0] * lift, xy[1] - self.into[1] * lift)
 
     def at(self, xy, z0: float, z1: float) -> bool:
         # The band replaces the finish, so its room face is the wall's finish face.

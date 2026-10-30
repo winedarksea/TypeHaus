@@ -5467,7 +5467,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "dw-j-bead-metal" = { material = { low = 0.4, high = 0.9 }, labour = { low = 1.5, high = 3.0 } }  # 156.7 LF
 # F reveal, the tile stop: Trim-Tex AS8710 at FBM $140 / 25 x 10' = $0.56/LF. Fussier to set
 # dead straight than a corner bead.
-"dw-reveal-bead-f" = { material = { low = 0.56, high = 1.0 }, labour = { low = 3.0, high = 5.5 } }  # 43.7 LF
+"dw-reveal-bead-f" = { material = { low = 0.56, high = 1.0 }, labour = { low = 3.0, high = 5.5 } }  # 41.0 LF
 # Plaster-in wall-washer channel (the four coves): the drywall sub cuts the slot, sets the
 # profile and mudds its wings in three coats. ESTIMATE: $26.98 listed for an unconfirmed
 # length; plaster-in profiles run ~$6-15/LF. Tape, caps and lens fitting stay electrical.
