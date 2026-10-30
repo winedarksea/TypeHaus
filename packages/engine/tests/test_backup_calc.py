@@ -111,12 +111,12 @@ def test_usable_storage_is_nameplate_times_the_declared_dod(summary):
 
 
 def test_the_always_on_tier_outlasts_the_shed_tier_by_a_wide_margin(summary):
-    """Battery-only autonomy, honestly counted: the always-on tier clears 39 h but no longer
-    a full two days (40-43 h until the 2026-10-28 luminaire products: 14.5 W cans, 60 W
-    workshop panels).
+    """Battery-only autonomy, honestly counted: the always-on tier clears 33 h (39-43 h until
+    the 2026-10-30 PoE doorbell and two cameras put ~41 W more on CKT-HA; 40-43 h before the
+    2026-10-28 luminaire products).
 
-    Genuine always-on load includes the three PoE access points (~30 W on the switch's real
-    circuit) and the kitchen's under-cabinet task light PSU (ED-M-KITCH-LT-PSU) on
+    Genuine always-on load includes the PoE switch's six powered devices (82 W of class
+    ceilings on E-603, CKT-HA's duty 0.44) and the kitchen's under-cabinet task light PSU (ED-M-KITCH-LT-PSU) on
     CKT-LT-BACKUP, per electrical_notes.md line 24, which puts kitchen lighting behind the
     backup relay.
 
@@ -125,26 +125,23 @@ def test_the_always_on_tier_outlasts_the_shed_tier_by_a_wide_margin(summary):
     not the tape's draw (44.6 W, 55.7 W at the 125% sizing factor) — so the 41.3 h figure is
     a floor rather than an estimate. A backup calculation that errs is supposed to err this
     way.
-
-    The 48-hour question the design is built around is still answered yes — see
-    ``test_the_48_hour_cycle_sustains_the_always_on_tier_but_not_both``, which is the one
-    that includes solar — but on battery alone the tier is now well short of two full days.
     """
     autonomy = summary["autonomy"]
-    assert 39.0 < autonomy["hours_always_on_only"] < 43.0
+    assert 33.0 < autonomy["hours_always_on_only"] < 37.0
 
     assert autonomy["hours_all_tiers"] < autonomy["hours_always_on_only"]
 
 
-def test_the_48_hour_cycle_sustains_the_always_on_tier_but_not_both(summary):
-    """The TODO's actual question, and the answer that says one battery is enough: with
-    strong sun every other day the always-on tier is net positive, and both tiers together
-    are not — which is what the shed tier exists to answer."""
+def test_the_48_hour_cycle_falls_just_short_of_the_always_on_tier(summary):
+    """The TODO's actual question. The always-on tier rode one strong solar day per 48 h by
+    0.12 kWh until the 2026-10-30 cameras and doorbell (~41 W on CKT-HA); it now falls about
+    2 kWh short, and both tiers together never did. The answer is array, not battery."""
     cycle = summary["cycle_48h"]
     assert cycle["array_kw"] == pytest.approx(5.28)
-    assert cycle["sustains_always_on"] is True and cycle["net_kwh_always_on"] > 0
+    assert cycle["sustains_always_on"] is False
+    assert -3.0 < cycle["net_kwh_always_on"] < 0
     assert cycle["sustains_all_tiers"] is False
-    assert "which is what the shed tier is for" in summary["verdict"]
+    assert "add array, not battery" in summary["verdict"]
 
 
 def test_the_backup_load_fits_the_inverter(summary):
@@ -156,9 +153,10 @@ def test_the_backup_load_fits_the_inverter(summary):
 
 
 def test_solar_input_scales_the_verdict(catlin_model, summary):
-    """A worse solar year is a parameter, not a rewrite: halve the strong-day yield and the
-    always-on tier stops riding, which is the recommendation flipping on its own evidence."""
-    poor = backup_runtime_summary(catlin_model, strong_day_kwh_per_kw=1.0)
-    assert poor["cycle_48h"]["sustains_always_on"] is False
-    assert "add array, not battery" in poor["verdict"]
-    assert summary["cycle_48h"]["sustains_always_on"] is True
+    """Solar yield is a parameter, not a rewrite: a strong day of 3.5 kWh/kW instead of the
+    authored 3.0 and the always-on tier rides again, the recommendation flipping on its own
+    evidence."""
+    good = backup_runtime_summary(catlin_model, strong_day_kwh_per_kw=3.5)
+    assert good["cycle_48h"]["sustains_always_on"] is True
+    assert "which is what the shed tier is for" in good["verdict"]
+    assert summary["cycle_48h"]["sustains_always_on"] is False

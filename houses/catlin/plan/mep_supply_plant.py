@@ -28,7 +28,8 @@ from typehaus import (
 # room nobody uses in February and a DWV branch through FS-S-WEST's trusses from a storey
 # down (notes/plant_room.md, item 2). The floor is vinyl sheet with a 6" integral flash cove,
 # which holds a spill in the room. The residual — a failed-open line with nobody home — is
-# answered at the box: the future controller is a valve that shuts on a floor leak sensor.
+# answered at the box: a lever ball valve at the stub outlet under a Zooz ZAC36 actuator
+# (APPL-S-PLANT-VALVE, plan/smart_home.py), whose wired floor probe shuts it with HA down.
 # Hard-piping irrigation off this stub makes it P2902.5.3's case: a PVB or RPZ is owed then.
 PLANT_STUB_MAIN = [
     PipeRun(uid="9R0AYJMJZ4", tag="PR-M-CW-PLANT-STUB", system=PipeSystem.WATER_COLD,

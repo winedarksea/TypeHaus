@@ -1,3 +1,33 @@
+## Smart home: local-only, Home Assistant first (2026-10-30)
+
+`plans/TODO.md` asked for every connected device to run in Home Assistant with no vendor cloud
+after setup. Owner, 2026-10-29: Matter is nice to have, not required. The register, rules
+and open checks are in `notes/smart_home.md`. Instances are in `plan/smart_home.py`, types in
+`plan/smart_home_types.py`.
+
+- **Entry lock:** Schlage Sense Pro (Matter/Thread) replaces the Encode Plus, which has no
+  local HA path. The unplaced Yale Assure 2 Wi-Fi is deleted. The Sense Pro has **no
+  keyway**: the fallback is its USB-C jumpstart and the keyed BE365s on the French doors.
+- **EVSE:** the Grizzl-E Smart on local OCPP **supersedes "The Emporia charger stays"**
+  (below). The Emporia has no local API and no OCPP. Neither charger was ever a PCS, so the
+  220.82 position is unchanged.
+- **Newly modelled:**
+  - the PoE doorbell and two PoE cameras (nine drops now);
+  - the LiftMaster Security+ 2.0 opener with a ratgdo32, on the ceiling outlet
+    `ED-G-GDO-RC`, which uses the idle `CKT-RC-GARAGE`;
+  - the Aqara W200 for HP1;
+  - Warmup 7iE stats on all three floor zones;
+  - the Kidde SM120X/CO120X relays;
+  - the Zooz ZAC36 leak valve, replacing YoLink.
+- **Doorbell route:** `W-M-N2` cannot be reached from below (concrete under FO-M-STAIR's
+  trimmer) or from above (FO-S-STAIR's trimmer truss). The raceway leaves
+  `CD-M-DATA-KITCH`'s pull box and comes down `W-M-STRW`.
+- **Backup consequence:** the cameras and doorbell put ~41 W on `CKT-HA` (ALWAYS_ON). One
+  strong solar day per 48 h no longer carries the always-on tier (-1.89 kWh; it had a
+  +0.12 kWh margin). Autonomy is 34.8 h. Rejected: dropping CKT-HA's duty back to hold the
+  verdict. The calc's answer is more array, and the battery itself is deferred
+  (`notes/backup_power.md`).
+
 ## ST-M2S stair skirts (2026-10-30)
 
 - **Painted poplar 1x12 skirts on all four sides of ST-M2S's flights** (`TRIM-STANDARD.stair_skirt`),

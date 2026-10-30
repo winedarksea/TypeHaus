@@ -324,13 +324,13 @@ CIRCUITS = (
             load_va=800, duty_cycle=0.13,
             description="Kitchen outlet 1: fridge + freezer"),
     # 300 VA is again an outlet allowance; the real load is a router (~12W), an always-on
-    # HA server (~28W), and a PoE switch feeding 3 APs (~45W + conversion loss) — ~90W of
-    # 300VA = 0.30. Not a duty cycle in the compressor sense (this load never cycles off,
+    # HA server (~28W), and a PoE switch feeding 3 APs, the doorbell and 2 cameras (82 W on
+    # E-603, ~91 W at the switch) — ~131W of 300VA = 0.44 (0.30 before the cameras, 2026-10-30). Not a duty cycle in the compressor sense (this load never cycles off,
     # the allowance is just generous). Per-device PoE draw is scheduled on E-603
     # (→ takeoff/data.py) since a PoE device names no circuit of its own.
     Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=4, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, gfci=True,
-            load_va=300, duty_cycle=0.30,
+            load_va=300, duty_cycle=0.44,
             description="Basement outlet 1: HA server + router + PoE switch"),
     # load_va is None: the luminaires carry real typed loads and the panel-schedule takeoff
     # sums the fixtures actually on the circuit (782 VA today, 558 before 2026-08-24). 0.15

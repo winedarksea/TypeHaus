@@ -129,9 +129,10 @@ DIODE_OMNIDRIVE_X = Product(
            "exceed the published maximum run (~30 ft at 3.3 W/ft, ~16-20 ft at 5 W/ft; "
            "centre-feed doubles it), and ** put drivers somewhere accessible and ventilated "
            "** -- they are the part that fails and a plastered-in driver is a demolition "
-           "job. ** The wall control is a Lutron DVELV-300P (reverse-phase), NOT the "
-           "DVCL-153P used for the cans: ** mis-pairing an LED+ dimmer with an ELV tape "
-           "driver is one of the most common field causes of tape flicker.",
+           "job. ** The wall control is a reverse-phase ELV dimmer -- the Leviton D2ELV-1BW "
+           "Matter dimmer (plan/device_types.py), NOT an LED+ forward-phase dimmer: ** "
+           "mis-pairing an LED+ dimmer with an ELV tape driver is one of the most common "
+           "field causes of tape flicker.",
 )
 
 LEDSUPPLY_SAUNA_STRIP = Product(

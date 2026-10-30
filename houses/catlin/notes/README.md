@@ -112,6 +112,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `ccspf_spec.md` | closed-cell spray foam as a performance spec: the requirements, the selected product (Enverge OnePass HFO, ER-859), the other qualifiers and rejects with their report limits, and the two-pass application in a 60-80 F window |
 | `opening_flashing_spec.md` | the membrane at a window rough opening as a performance spec: AC148, the plywood buck vs the unevaluated lap onto ccSPF, why the RDH ponding finding does not reach a pan that drains, and cold as a CURE problem |
 | `roof_flash_and_batt.md` | the unvented flash-and-batt roof and its condensation gate |
+| `smart_home.md` | the local-only Home Assistant register: radios, the IoT VLAN, safety that stands alone, and per device the product, transport, integration, fallback and what is still to verify |
 | `stair_wall_finish.md` | W-M-STRW's 1/2" MDO stair face and nook backs, its poplar hook rails, and the drywall movement joint |
 | `titanium_handrail_backsplash.md` | the owner-furnished titanium: ST-B2M's two rails (stock ledger, 42.0 vs 42.4 mm fitting fit, backing, the R301.5 span hand-calc `tests/test_catlin_titanium_handrail.py` reproduces) and the range backsplash's datum and laps |
 | `system1_return_path.md` | the one return grille, and the six door undercuts that are the whole return path |

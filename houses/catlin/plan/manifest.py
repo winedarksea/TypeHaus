@@ -47,7 +47,7 @@ from plan import (appliance_types, assemblies, bath_finish, lav_types, products_
                   lighting_attic, lighting_types, masonry_joints, mep, mep_lavatories, millwork,
                   millwork_vanities, placeables,
                   plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
-                  opening_products, products,
+                  opening_products, products, smart_home, smart_home_types,
                   sauna, sauna_types, site, study_bridge, titanium_types, transitions, views,
                   wind_clamps, window_stools, window_types)
 from plan import french_door_installations
@@ -71,7 +71,7 @@ _library = Library(
               *opening_products.OPENING_PRODUCTS, *bath_accessory_types.BATH_ACCESSORY_PRODUCTS,
               *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS, *products_bath_lavs.BATH_LAV_PRODUCTS,
               *device_types.DEVICE_PRODUCTS, *device_boxes.BOX_PRODUCTS,
-              *window_covering_types.WINDOW_COVERING_PRODUCTS),
+              *window_covering_types.WINDOW_COVERING_PRODUCTS, *smart_home_types.SMART_HOME_PRODUCTS),
     # The one library pocket size this house hangs, alongside the house's own catalog. Only
     # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
     # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
@@ -134,7 +134,7 @@ _library = Library(
     # hood are still unchosen and still correctly generic. Tags are disjoint (APPL-LG-*
     # vs APPL-*), which `integrity.duplicate_catalog_tag` proves rather than assumes.
     appliance_types=(*STARTER_APPLIANCE_TYPES, MICROWAVE_COUNTERTOP_NN_SN686S,
-                     *appliance_types.APPLIANCE_TYPES),
+                     *appliance_types.APPLIANCE_TYPES, *smart_home_types.APPLIANCE_TYPES),
     register_types=(*ALL_REGISTER_TYPES, *mep.REGISTER_TYPES,
                     *equipment_types.STALL_FAN_REGISTER_TYPES),
     duct_product_types=ALL_DUCT_PRODUCT_TYPES,
@@ -143,7 +143,7 @@ _library = Library(
     electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *panel_types.PANEL_TYPES,
                              *mep.ELECTRICAL_DEVICE_TYPES,
                              *electrical.DEVICE_TYPES, *electrical_floor_types.DEVICE_TYPES,
-                             *device_types.DEVICE_TYPES,
+                             *device_types.DEVICE_TYPES, *smart_home_types.DEVICE_TYPES,
                              *lighting_types.LIGHTING_TYPES, *mirror_types.MIRROR_LIGHT_TYPES),
     circuits=circuits.CIRCUITS,
     # No ``load_managements``: retired 2026-09-12 with the Class 320 service. See the
@@ -398,7 +398,7 @@ PLAN = (
          *backing.BASEMENT_BACKING, *backing_wet.BASEMENT_WET_BACKING, *towel_accessories.BASEMENT_TOWEL_ACCESSORIES,
          *backing_towel_accessories.BASEMENT_TOWEL_BACKING,
          *bath_accessories.BASEMENT_BATH_ACCESSORIES,
-         *backing_bath_accessories.BASEMENT_TP_BACKING],
+         *backing_bath_accessories.BASEMENT_TP_BACKING, *smart_home.BASEMENT_ELEMENTS],
     )
     .with_elements(
         "main",
@@ -428,7 +428,7 @@ PLAN = (
          *backing_towel_accessories.MAIN_TOWEL_BACKING,
          *bath_accessories.MAIN_BATH_ACCESSORIES, *backing_bath_accessories.MAIN_TP_BACKING,
          *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS,
-         *plate_ties.MAIN_PLATE_TIES],
+         *plate_ties.MAIN_PLATE_TIES, *smart_home.MAIN_ELEMENTS],
     )
     .with_elements("second", [*french_door_installations.with_catalog_installations(second.ELEMENTS), *attic_studio.SECOND_ELEMENTS,
                                 *fixtures.SECOND_FIXTURES,
@@ -455,7 +455,7 @@ PLAN = (
                                 *backing_bath_accessories.SECOND_TP_BACKING,
                                 *braced_walls.SECOND_BRACED_WALLS,
                                 *braced_walls.SECOND_BRACED_CONNECTORS,
-                                *plate_ties.SECOND_PLATE_TIES])
+                                *plate_ties.SECOND_PLATE_TIES, *smart_home.SECOND_ELEMENTS])
     .with_elements("attic", [*attic.ELEMENTS, *attic_studio.ATTIC_ELEMENTS,
                              *fixtures.ATTIC_FIXTURES,
                              *roof_trim.ATTIC_ELEMENTS,
@@ -488,7 +488,7 @@ PLAN = (
                               *wind_clamps.GARAGE_WALL_WIND_CLAMPS,
                               *wind_clamps.GARAGE_ROOF_WIND_CLAMPS,
                               *braced_walls.GARAGE_BRACED_WALLS,
-                              *braced_walls.GARAGE_BRACED_CONNECTORS])
+                              *braced_walls.GARAGE_BRACED_CONNECTORS, *smart_home.GARAGE_ELEMENTS])
     .with_elements("g-deck", [*mep.GARAGE_DECK_ELEMENTS])
     # --- court (sunken garden / porch / balcony) --------------------------------------------
     .with_elements("court-low", [*sunken_garden.BASEMENT_ELEMENTS,
@@ -507,7 +507,8 @@ PLAN = (
     # is `[]` at line 288 and `.extend()`ed twice further down the module, so read it at
     # import time, not at its assignment.
     .with_elements("entry-low", [*breezeway.GARAGE_STOREY_ELEMENTS])
-    .with_elements("entry", [*breezeway.MAIN_ELEMENTS, *entry_band_brace.ELEMENTS])
+    .with_elements("entry", [*breezeway.MAIN_ELEMENTS, *entry_band_brace.ELEMENTS,
+                             *smart_home.ENTRY_ELEMENTS])
     # --- yard (sitework) -------------------------------------------------------------------
     .with_elements("yard-grade", [*hp3_pad.MAIN_ELEMENTS, *hp1_north_pad.MAIN_ELEMENTS,
                                   *landscape_gardens.MAIN_ELEMENTS, *landscape.APPLES,

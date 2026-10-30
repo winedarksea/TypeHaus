@@ -119,7 +119,7 @@ def test_catlin_hardware_scope_takeoff_and_finish(catlin_model_ro):
     assert all(cost_code("hardware", row["part_number"], row=row).trade == "openings"
                for row in hardware_rows)
     count = lambda ref: sum(row["count"] for row in hardware_rows if row["hardware_tag"] == ref)
-    assert count("PROD-SCHLAGE-ENCODE-PLUS") == 1
+    assert count("PROD-SCHLAGE-BE889WB") == 1
     assert count("PROD-ENDURA-PANOLOCK-PLUS") == 3
     assert count("PROD-THERMATRU-HINGE") == 21
     paint = door_field_paint_rows(model)
@@ -142,6 +142,6 @@ def test_hardware_schedule_includes_installation_and_heights(catlin_model_ro):
 
     rows = hardware_schedule_rows(catlin_model_ro)
     text = " ".join(str(cell) for row in rows for cell in row)
-    assert "BE499WB" in text and "DS2000" in text
+    assert "BE889WB" in text and "DS2000" in text
     assert '60"' in text and '41.5"' in text
     assert "Solid composite shims" in text and "low-expansion foam" in text

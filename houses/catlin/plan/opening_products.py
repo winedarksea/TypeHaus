@@ -84,8 +84,12 @@ CLOPAY_CLASSIC_STEEL = Product(
 
 
 # Purchased sets, with no price data in the product catalog.
-ENCODE_PLUS = Product(tag='PROD-SCHLAGE-ENCODE-PLUS', brand='Schlage', model='BE499WB CEN 622',
-    name='Encode Plus Century matte black deadbolt', url='https://www.schlage.com/en/home/products/BE499WBCENFFF.html', source='Single-point entry deadbolt; 2-3/8 inch backset, 1-3/4 inch leaf.')
+SENSE_PRO = Product(tag='PROD-SCHLAGE-BE889WB', brand='Schlage', model='BE889WB 622',
+    name='Sense Pro smart deadbolt, matte black', url='https://www.schlage.com/en/home/products/BE889WBFFF.html',
+    source='Schlage page, read 2026-10-30: Matter over Thread (HA via ZBT-2), PIN codes local; 2-3/8 or 2-3/4 inch '
+           'backset, 1-3/8 to 1-3/4 inch leaf; outside -31..151 F. NO KEYWAY: entry without power is the '
+           'USB-C jumpstart, and the French doors keep keyed BE365s. Run lithium AA cells (4). Century trim '
+           'is bundle-only: confirm the 622 escutcheon against the Latitude lever. notes/smart_home.md.')
 PASSAGE_LEVER = Product(tag='PROD-SCHLAGE-PASSAGE-LATITUDE', brand='Schlage', model='F10 LAT 622 CEN',
     name='Century / Latitude passage lever, matte black', url='https://www.schlage.com', source='Passage function; no second keyed lock.')
 STRIKE_REINFORCEMENT = Product(tag='PROD-STRIKEMASTER-II-PRO', brand='Safe Homes International', model='StrikeMaster II Pro',
@@ -106,7 +110,7 @@ SECURITY_STRIKE = Product(tag='PROD-THERMATRU-SECURITY-STRIKE', brand='Therma-Tr
     name='Therma-Tru Security Strike Plate', url='https://www.thermatru.com/explore-products/safety-and-security/', source='Requested factory component; dealer to confirm price and compatibility with reinforcement and approved 3 inch screws.')
 
 OPENING_PRODUCTS = (
-    ENCODE_PLUS, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS, DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
+    SENSE_PRO, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS, DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
     DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, DRUTEX_ALUCOVER_TILT, ANDERSEN_400_CASEMENT,
     THERMATRU_SMOOTHSTAR_FULLLITE, THERMATRU_SMOOTHSTAR, MMI_STEEL_SIX_PANEL, CLOPAY_CLASSIC_STEEL,
 )

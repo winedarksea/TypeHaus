@@ -390,16 +390,19 @@ def test_catlin_conduit_trunks(catlin_model):
     # because NEC 800.133/725 forbids comms sharing a RACEWAY with power and
     # `ConduitRun.service` is one value, never a set.
     # 2026-10-29: + the workshop trunk and its two drops, the theater spare and its drop.
+    # 2026-10-30: + the doorbell run and the two camera extensions (plan/smart_home.py).
     authored = [run for run in catlin_model.conduits if run.derived is None]
-    assert len(authored) == 23  # includes the laundry's Class 2 surface feed
+    assert len(authored) == 26  # includes the laundry's Class 2 surface feed
     # Not all from the panel: the three microgrid runs start at the PV junction box and at
-    # the inverter, and every data run starts at the patch enclosure.
+    # the inverter, and every data run starts at the patch enclosure — except the two camera
+    # extensions, which continue from the AP whose raceway carries their Cat 6A.
     # CD-A-PV-EAST's from_ref is the RUN it continues rather than a device, which is the
     # honest statement for a second leg of one raceway: there is no junction box at the
     # elbow, the conduit simply turns.
     assert {run.from_ref for run in authored} == {
         "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV", "ED-B-NET-PATCH", "CD-B-ATTIC-RISER",
-        "ED-M-LAUNDRY-PSU", "ED-B-PANEL-2", "ED-B-WORKSHOP-JB", "ED-B-PLAY-N-JB"}
+        "ED-M-LAUNDRY-PSU", "ED-B-PANEL-2", "ED-B-WORKSHOP-JB", "ED-B-PLAY-N-JB",
+        "ED-M-KITCH-AP", "ED-M-PORCH-AP"}
     rows = conduit_takeoff(catlin_model)
     # Power only — data and the capped spare are billed by takeoff/data.py, because comms
     # and power are separate orders pulled by separate trades and may not share a raceway.

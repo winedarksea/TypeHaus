@@ -153,7 +153,9 @@ RHEEM_PROTERRA_80 = Product(
 EG4_12KPV = Product(
     tag="PROD-EG4-12KPV", brand="EG4", model="12kPV",
     name="12kPV hybrid inverter",
-    source="EG4 spec sheet, read 2026-08-02.",
+    source="EG4 spec sheet, read 2026-08-02. HA: RS-485 Modbus via an Ethernet adapter, EG4 "
+           "web monitor in local mode (one client per link; firmware support to verify). "
+           "notes/smart_home.md.",
 )
 EG4_POWERPRO_WALLMOUNT = Product(
     tag="PROD-EG4-POWERPRO-WM", brand="EG4", model="PowerPro WallMount Indoor",
@@ -293,8 +295,8 @@ KOHLER_CLEARFLO_7272 = Product(
 #
 # ** THE RECEPTACLE, NOT THE CHARGER (owner: "make sure the EV charger is a Leviton 1450R").
 # ** `ED-G-EV-1450` is a NEMA 14-50R outlet on `CKT-EV-1450`; the EVSE that plugs into it is
-# the Emporia unit `plan/electrical.py` already names in prose, and it is not modeled because
-# it is cord-and-plug equipment the house does not build in. What the owner picked is the
+# the Grizzl-E Smart (`APPL-G-EVSE`, plan/smart_home.py: OCPP to Home Assistant, never online),
+# modeled as a cord-and-plug appliance the house names but does not wire in. What the owner picked is the
 # OUTLET, and the pick is a real distinction rather than a brand preference: an ordinary
 # 14-50R is a range receptacle, rated for a handful of insertions and an intermittent load,
 # and EV charging is the opposite of both — one plug left in under a 40 A continuous draw for

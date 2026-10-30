@@ -108,11 +108,10 @@ DEVICE_TYPES = (
     # fifth under the placeholder it replaced.
     # EV receptacles (plans/electrical_notes.md lines 5-7). load_va is the continuous EV
     # load at 80% of the breaker: 6-20 -> 240x16, 14-50 -> 240x40.
-    # The 14-50 EVSE outlet. The Emporia charger stays and is a listed EVSE (UL 2594 3rd
-    # ed.); what it is NOT is a power control system, so its PowerSmart throttling earns no
-    # credit in the 220.82 calculation (2026 NEC 625.42(A) -> Article 130 Part II, which
-    # wants a UL 3141 listing). load_va is the unmanaged continuous rating, which is now
-    # simply what the circuit draws.
+    # The 14-50 EVSE outlet. The EVSE is the Grizzl-E Smart (plan/smart_home.py, 2026-10-30):
+    # local OCPP to HA, superseding the Emporia, which had no local API. No charger here is a
+    # power control system, so nothing earns a 220.82 credit (2026 NEC 625.42(A) -> Article
+    # 130 Part II wants UL 3141). load_va is the unmanaged continuous rating.
     # The backup subsystem's physical presence: one DIN-rail enclosure beside the panel
     # (Shelly Pro 4PM relays, 24V PSUs, DIN UPS). The component list is derived by the
     # backup takeoff from the backup-flagged circuits; only the enclosure is modeled.
@@ -560,7 +559,7 @@ MAIN_DEVICES = [
     # `integrity.wall_mount_on_face` grades the resolved body, not
     # the authored point, so a value even 9/16" off reads as buried in the finish.
     ElectricalDevice(uid="CEE021AAAA", tag="ED-M-BATH2-FH-STAT", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-FLOOR-STAT",
+                     type_ref="ED-T-FLOOR-STAT-WARMUP",
                      circuit="CKT-FH-BATH2", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
@@ -595,7 +594,7 @@ MAIN_DEVICES = [
                          wall_ref="W-M-HS1", face="right", distance_from_start=inch(66.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-FLOOR-STAT",
+                     type_ref="ED-T-FLOOR-STAT-WARMUP",
                      circuit="CKT-FH-DINING", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
                      location=Location(attachment=WallAttachment(
@@ -939,7 +938,7 @@ SECOND_DEVICES = [
     # reach-as-the-door-shuts position as ED-M-BATH2-FH-STAT, and clear of the fixture
     # cluster, which all sits north of y=29'-9".
     ElectricalDevice(uid="CEE025AAAA", tag="ED-S-BATH1-FH-STAT", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-FLOOR-STAT",
+                     type_ref="ED-T-FLOOR-STAT-WARMUP",
                      circuit="CKT-FH-BATH1", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
@@ -1073,8 +1072,8 @@ SECOND_EQUIPMENT = [
 # load; this one sits under 40 A continuous for hours. The 1450W is the heavy-duty EV-duty
 # 14-50R, weather-resistant, and its terminals take #4/#6/#8 AWG COPPER ONLY - a live
 # constraint on the feeder. `ED-T-LEV-EV-1450` (plan/device_types.py) names it; the range
-# takes the plain 1450R (`PROD-LEVITON-1450R`). The EVSE that plugs in is still the Emporia unit; it
-# is cord-and-plug equipment and stays unmodeled.
+# takes the plain 1450R (`PROD-LEVITON-1450R`). The EVSE that plugs in is the Grizzl-E Smart,
+# `APPL-G-EVSE` beside it (plan/smart_home.py): cord-and-plug, so an appliance, not a device.
 GARAGE_DEVICES = [
     ElectricalDevice(uid="CEE008AAAA", tag="ED-G-EV-620", kind=DeviceKind.RECEPTACLE_240,
                      type_ref="ED-T-LEV-EV-620", circuit="CKT-EV-620",

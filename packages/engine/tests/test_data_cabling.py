@@ -56,12 +56,13 @@ def test_power_and_data_raceways_are_billed_apart(catlin_model):
 
 
 def test_poe_load_is_not_on_the_panel_schedule(catlin_model):
-    """A PoE access point names no circuit, so its watts can only be read on E-603."""
+    """A PoE device names no circuit, so its watts can only be read on E-603: three APs at
+    15 W, the doorbell at the 802.3af 12.95 W ceiling and two cameras at 12 W."""
     from typehaus.takeoff import poe_budget
 
     budget = poe_budget(catlin_model)
-    assert budget["powered_devices"] == 3
-    assert budget["connected_watts"] == pytest.approx(45.0)
+    assert budget["powered_devices"] == 6
+    assert budget["connected_watts"] == pytest.approx(82.0, abs=0.06)  # rounded
     aps = [element for storey in catlin_model.plan.storeys
            for element in catlin_model.plan.storey_elements(storey.tag)
            if element.element_kind == "ElectricalDevice"

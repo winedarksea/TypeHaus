@@ -190,7 +190,7 @@ EQUIPMENT_TYPES = (
                       pt(inch(2.412), inch(-12.125)), pt(inch(6.868), inch(-10.279)),
                       pt(inch(10.279), inch(-6.868)), pt(inch(12.125), inch(-2.412)))),
                   plan_symbol="water-heater",
-                  source="Rheem PROPH80 T2 RH400-30 / ProTerra XE80T10HS45U0 class: 80 gal, 4.5 kW resistance element, 30A/240V dedicated circuit, ~360-500W compressor draw in Heat Pump Only mode, EcoNet wifi module.",
+                  source="Rheem PROPH80 T2 RH400-30 / ProTerra XE80T10HS45U0 class: 80 gal, 4.5 kW resistance element, 30A/240V dedicated circuit, ~360-500W compressor draw in Heat Pump Only mode. HA via ESPHome esphome-econet on the RS-485 (RJ11) EcoNet port; the Wi-Fi module is never registered. Mode control on the ProTerra to be tested (notes/smart_home.md).",
                   # Ports off Rheem's RH400-30 sheet and HP-400-SO (letters A-L). Product frame:
                   # -y front, +x right. Nipples at K 76 13/16" (tank top A 74 3/16"); hot 4 1/8"
                   # left/1 1/2" back, cold 4 1/8" right/1 1/2" front, x/y SCALED (+-0.3").

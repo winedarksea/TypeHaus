@@ -754,7 +754,8 @@
 
 [hardware]
 # Door hardware budget allowances; factory hinges, PanoLock+ and astragal included.
-PROD-SCHLAGE-ENCODE-PLUS = { low = 280, high = 380 }
+# 2026-10-30: Sense Pro BE889WB replaces the Encode Plus (no local HA path); allowance, not a quote.
+PROD-SCHLAGE-BE889WB = { low = 300, high = 420 }
 PROD-SCHLAGE-PASSAGE-LATITUDE = { low = 35, high = 65 }
 PROD-STRIKEMASTER-II-PRO = { low = 90, high = 150 }
 PROD-THERMATRU-SECURITY-STRIKE = { low = 0, high = 45 }
@@ -2343,6 +2344,18 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # De’Longhi US EXAM44055W listing, read 2026-10-25; owner-placed countertop appliance.
 "APPL-DELONGHI-EXAM44055W" = { material = { low = 1299.95, high = 1299.95 }, labour = { low = 0, high = 0 } }  # 1 ea
 "APPL-ISE-BADGER5" = { material = { low = 90, high = 300 }, labour = { low = 0, high = 0 } }  # 1 ea
+# Smart-home register (notes/smart_home.md), 2026-10-30. Planning allowances from typical
+# retail, NOT read off a retailer; labour is set-and-commission. The opener row replaces the
+# `finish-garage-door-opener` allowance, which is deleted so it does not bill twice.
+"APPL-LIFTMASTER-8550W" = { material = { low = 330, high = 480 }, labour = { low = 150, high = 350 } }  # 1 ea, ratgdo32 in [install_parts]
+"APPL-GRIZZLE-SMART-40" = { material = { low = 400, high = 600 }, labour = { low = 40, high = 100 } }  # 1 ea, plug-in on ED-G-EV-1450
+"APPL-ZOOZ-ZAC36" = { material = { low = 110, high = 180 }, labour = { low = 60, high = 150 } }  # 1 ea, incl. the 1/2" lever ball valve and a ZSE42
+"ED-T-DOORBELL-POE" = { material = { low = 100, high = 160 }, labour = { low = 60, high = 140 } }  # 1 ea + plug-in chime
+"ED-T-CAM-TURRET" = { material = { low = 90, high = 160 }, labour = { low = 60, high = 140 } }  # 1 ea
+"ED-T-CAM-WIDE" = { material = { low = 150, high = 230 }, labour = { low = 60, high = 140 } }  # 1 ea
+"ED-T-HP-STAT" = { material = { low = 130, high = 200 }, labour = { low = 60, high = 150 } }  # 1 ea, Aqara W200 on 24 VAC
+"ED-T-ALARM-RELAY-SMOKE" = { material = { low = 40, high = 80 }, labour = { low = 45, high = 95 } }  # 1 ea, SM120X + 4" box
+"ED-T-ALARM-RELAY-CO" = { material = { low = 50, high = 90 }, labour = { low = 45, high = 95 } }  # 1 ea, CO120X + 4" box
 "APPL-BROAN-BWP1304SS" = { material = { low = 150, high = 600 }, labour = { low = 100, high = 300 } }  # 1 ea
 # Named LG products, priced 2026-08-24 off LG.com plus the retailer checks in the research
 # note. Low is the observed street/promo price, high is LG's own MSRP — the honest spread
@@ -2616,17 +2629,16 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-BACKUP-ENCL" = { material = { low = 250, high = 800 }, labour = { low = 150, high = 400 } }  # 1 ea
 "ED-T-BACKUP-PANEL" = { material = { low = 90, high = 260 }, labour = { low = 250, high = 600 } }  # 1 ea
 "ED-T-DISCONNECT-3R" = { material = { low = 30, high = 90 }, labour = { low = 90, high = 220 } }  # 4 ea
-# Both EV rows are the RECEPTACLE, per the catalog name — not the EVSE that plugs into it.
-# If the Emporia unit is meant to be in the estimate it is a separate ~$400-600 line. It stays
-# the charger either way: it is a listed EVSE (UL 2594 3rd ed.), and what the 2026-09-12
-# service decision retired is only the CREDIT its PowerSmart throttling used to take.
+# Both EV rows are the RECEPTACLE, per the catalog name. The EVSE that plugs in is the
+# Grizzl-E Smart (APPL-GRIZZLE-SMART-40 in [placeables], 2026-10-30), which replaced the
+# Emporia: local OCPP to Home Assistant (notes/smart_home.md).
 # Device schedule rows (owner decisions 2026-10-27, notes/workshop_receptacles.md): ranges carry over from
 # the commodity class each replaced; Matter/occupancy/USB-C/surge lines carry a retail uplift. Estimates.
 "ED-T-LEV-620-DUPLEX" = { material = { low = 11, high = 24 }, labour = { low = 40, high = 85 } }  # 1 ea; T5461 + E5825, device only: box and cover in [electrical_boxes] (2026-10-29)
 "ED-T-LEV-620-FLUSH" = { material = { low = 14, high = 44 }, labour = { low = 45, high = 95 } }  # 1 ea; kettle, flush 2-gang (the old 620-DUPLEX rate)
 "ED-T-LEV-DRYER-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-DUPLEX-15" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 14 ea
-"ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 58 ea
+"ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 59 ea (ED-G-GDO-RC since 2026-10-30)
 "ED-T-LEV-EV-1450" = { material = { low = 25, high = 80 }, labour = { low = 160, high = 380 } }  # 0 ea
 "ED-T-LEV-EV-620" = { material = { low = 15, high = 45 }, labour = { low = 160, high = 380 } }  # 0 ea
 "ED-T-LEV-GFCI-15" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 6 ea
@@ -2648,7 +2660,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LEV-USBC" = { material = { low = 30, high = 55 }, labour = { low = 40, high = 80 } }  # 2 ea
 "ED-T-LUT-COUNTDOWN" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 1 ea
 "ED-T-LUT-DIVA" = { material = { low = 25, high = 50 }, labour = { low = 52, high = 110 } }  # 2 ea
-"ED-T-FLOOR-STAT" = { material = { low = 130, high = 300 }, labour = { low = 150, high = 300 } }  # 3 ea
+"ED-T-FLOOR-STAT" = { material = { low = 130, high = 300 }, labour = { low = 150, high = 300 } }  # 0 ea: the library class, kept priced
+"ED-T-FLOOR-STAT-WARMUP" = { material = { low = 200, high = 300 }, labour = { low = 150, high = 300 } }  # 3 ea, Warmup 7iE (2026-10-30 allowance)
 "ED-T-JBOX" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-JBOX-8X8" = { material = { low = 18, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea, 8x8x4 steel screw-cover pull box
 # ** REPRICED 2026-09-06 TO A NAMED PRODUCT. ** Lotus LL4SR-30K-WH at $64.40 (the LL4SRG
@@ -6199,6 +6212,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Trap high allows small-order shipping/local supply; connector/PEX kits are explicit
 # planning allowances, NOT vendor quotes. Included trap adapter/washers are not bought again.
 "Kraus Bolden KPF-1610SFS faucet, spot-free stainless" = { low = 179.95, high = 214.95 }
+# 2026-10-30 allowance (typical retail, not read off a seller): the opener's ESPHome board.
+"ratgdo32 ESPHome opener controller (Security+ 2.0)" = { low = 35, high = 60 }
 "Dearborn P9703WBG 1-1/2-inch tubular P-trap with PVC adapter" = { low = 1.89, high = 15 }
 "Kitchen trap PVC connector kit: reducing sanitary tee, vent reducer, joint consumables" = { low = 10.96, high = 20.96 }
 "Kitchen upper-arm cleanout fitting, access extension and threaded cap" = { low = 15, high = 40 }
@@ -7529,7 +7544,8 @@ plumbing-water-softener-and-filtration = { low = 2500, high = 6000 }
 # DRIVEN 2026-08-27 off the low-voltage device count — 7 today. The scope is the CABLE AND
 # TERMINATION per device: the jack and the access point themselves are ED-T-* types priced in
 # [placeables], and the raceway they are pulled through is now the [data_raceways] section.
-# ** THE MODEL HAS 6 DROPS AND A HEAD END; THIS ROW USED TO ASSUME 20-35. ** That is the whole
+# ** THE MODEL HAS 9 DROPS AND A HEAD END (3 APs, 3 jacks, doorbell + 2 cameras since 2026-10-30;
+# the two cameras' Cat 6A share AP raceways). THIS ROW USED TO ASSUME 20-35. ** That is the whole
 # argument for drivers in one line — the lump was a guess about a design that was never drawn,
 # and this number will rise the moment the jacks are placed. $200-450 per drop is a Cat 6A home
 # run, box, termination and test.
@@ -7633,7 +7649,8 @@ plumbing-wall-hung-wc-carrier = { material = { low = 420, high = 900 }, labour =
 # one of those gets a real quote, because today nothing can say whether $2,450 or $8,000 is
 # the honest number for the SPD's share.
 # 2026-10-29 build-up ($2,450-8,000 -> $1,900-4,300): radon fan $190-350 + wiring/switch/gauge $150-400; 13 hardwired
-# smoke/CO/heat devices (plan Alarms: 10 combo, 1 smoke, 2 heat) @ $45-80 mat + $35-75 labour = $1,040-2,015; Type 2 SPD
+# smoke/CO/heat devices (plan Alarms: 10 combo, 1 smoke, 2 heat; ONE Kidde hardwired line, 2026-10-30: 30CUA10-V combo,
+# 20SA10 smoke, HD135F heat — Alarm has no product_ref, so the line is named here) @ $45-80 mat + $35-75 labour = $1,040-2,015; Type 2 SPD
 # $100-250 + install $100-250; commissioning/labelling $300-1,000.
 electrical-radon-fan-smoke-co-surge-and-commissioning = { low = 1900, high = 4300 }
 # Separate from the building permit, which is in the soft-cost row below.
@@ -7882,10 +7899,8 @@ finish-canopy-east-pvc-column-wrap = { material = { low = 200, high = 450 }, lab
 # 2026-10-29: $7-21 -> $4.5-12: the oak treads are owner-milled 5/4 BULLNOSE (nosing is the tread) and the carpeted ST-B2M wraps in
 # its carpet row, so no nosing is bought here. What remains is ~25 floor-to-floor transitions/saddles at $30-75 each over the 136.5 LF.
 finish-transitions-and-stair-nosings = { low = 4.5, high = 12, unit = "LF", driver = "stair_finish.tread_lf[conditioned=True,has_nosing=True]" }
-# DRIVEN 2026-08-27 off the overhead-door count — 1. The smallest conversion in the file and
-# the clearest: the number was already per-door, it just had no door behind it. A second
-# overhead door now doubles the line by itself.
-finish-garage-door-opener = { low = 500, high = 1400, unit = "ea", driver = "openings.count[operation=overhead]" }
+# `finish-garage-door-opener` is DELETED (2026-10-30): the opener is APPL-G-GDO, priced as
+# APPL-LIFTMASTER-8550W in [placeables].
 # ** TWO KITCHEN HARDWARE LINES WITH NO ELEMENT TO HANG ON (2026-08-24). ** The model has one
 # solid CARCASS per cabinet, not a fitting-out, so a pull-out mechanism inside a box is scope
 # no [casework] row can reach — and the allowance rule at the head of this section is
@@ -8210,6 +8225,7 @@ wall_structure = false
 "openings:WT-2764" = "catalog-only: the Juliet pair grew to WT-2754 on 2026-09-10"
 "solids:glazing:GLAZED_WALL_MULTIWALL_16MM" = "the breezeway canopy's 16mm multiwall stack, retired 2026-09-10 for RF-BW-CANOPY"
 "floor_finishes:polished-concrete" = "the costed fallback to the 2K PU coating on SL-M-DECK (2026-09-12)"
+"placeables:ED-T-FLOOR-STAT" = "the library floor stat; the three zones took the Warmup 7iE on 2026-10-30"
 "placeables:FT-CLOSET-SHELFROD-96" = "RM-M-CLOSET's shelf-and-rod until the 2026-10-01 PAX fit-out; a library size, kept priced"
 "placeables:FURN-M-SEKTION-24-DRAWER" = "RM-M-CLOSET's west drawers until the 2026-10-03 PAX-WEST and wire corner; kept priced"
 "placeables:FT-M-CLOSET-ROD-32" = "RM-M-CLOSET's custom-bay rods until 2026-10-03; kept priced"

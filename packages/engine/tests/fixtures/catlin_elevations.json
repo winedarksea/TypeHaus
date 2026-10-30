@@ -2,6 +2,12 @@
 "canvas_objects/APPL-A-STUDIO-FRIDGE/body_z0_m": 6.118098,
 "canvas_objects/APPL-A-STUDIO-FRIDGE/body_z1_m": 6.626098,
 "canvas_objects/APPL-A-STUDIO-FRIDGE/z_m": 6.118098,
+"canvas_objects/APPL-G-EVSE/body_z0_m": 0.2032,
+"canvas_objects/APPL-G-EVSE/body_z1_m": 0.46355,
+"canvas_objects/APPL-G-EVSE/z_m": 0.2032,
+"canvas_objects/APPL-G-GDO/body_z0_m": 1.3716,
+"canvas_objects/APPL-G-GDO/body_z1_m": 1.5748,
+"canvas_objects/APPL-G-GDO/z_m": 1.3716,
 "canvas_objects/APPL-M-COFFEE/body_z0_m": 0.9382125,
 "canvas_objects/APPL-M-COFFEE/body_z1_m": 1.3128625,
 "canvas_objects/APPL-M-COFFEE/z_m": 0.9382125,
@@ -29,6 +35,9 @@
 "canvas_objects/APPL-M-RANGE/body_z0_m": 0.0238125,
 "canvas_objects/APPL-M-RANGE/body_z1_m": 0.9509125,
 "canvas_objects/APPL-M-RANGE/z_m": 0.0238125,
+"canvas_objects/APPL-S-PLANT-VALVE/body_z0_m": 3.457448,
+"canvas_objects/APPL-S-PLANT-VALVE/body_z1_m": 3.584448,
+"canvas_objects/APPL-S-PLANT-VALVE/z_m": 3.457448,
 "canvas_objects/ED-A-EAST-LT/body_z0_m": 8.09625,
 "canvas_objects/ED-A-EAST-LT/body_z1_m": 8.31215,
 "canvas_objects/ED-A-EAST-LT/z_m": 8.09625,
@@ -158,6 +167,12 @@
 "canvas_objects/ED-A-STUDY-SW/body_z0_m": 7.3533,
 "canvas_objects/ED-A-STUDY-SW/body_z1_m": 7.4041,
 "canvas_objects/ED-A-STUDY-SW/z_m": 7.3533,
+"canvas_objects/ED-B-ALARM-RELAY-CO/body_z0_m": -1.7129125,
+"canvas_objects/ED-B-ALARM-RELAY-CO/body_z1_m": -1.6113125,
+"canvas_objects/ED-B-ALARM-RELAY-CO/z_m": -1.7129125,
+"canvas_objects/ED-B-ALARM-RELAY-SMOKE/body_z0_m": -1.7129125,
+"canvas_objects/ED-B-ALARM-RELAY-SMOKE/body_z1_m": -1.6113125,
+"canvas_objects/ED-B-ALARM-RELAY-SMOKE/z_m": -1.7129125,
 "canvas_objects/ED-B-BACKUP-ENCL/body_z0_m": -1.2557125,
 "canvas_objects/ED-B-BACKUP-ENCL/body_z1_m": -0.7477125,
 "canvas_objects/ED-B-BACKUP-ENCL/z_m": -1.2557125,
@@ -338,6 +353,9 @@
 "canvas_objects/ED-B-WORKSHOP-SW/body_z0_m": -1.6113125,
 "canvas_objects/ED-B-WORKSHOP-SW/body_z1_m": -1.5605125,
 "canvas_objects/ED-B-WORKSHOP-SW/z_m": -1.6113125,
+"canvas_objects/ED-BW-CAM-CANOPY/body_z0_m": 1.82245,
+"canvas_objects/ED-BW-CAM-CANOPY/body_z1_m": 1.9304,
+"canvas_objects/ED-BW-CAM-CANOPY/z_m": 1.82245,
 "canvas_objects/ED-G-EAVE-E-PSU/body_z0_m": 1.5748,
 "canvas_objects/ED-G-EAVE-E-PSU/body_z1_m": 1.6129,
 "canvas_objects/ED-G-EAVE-E-PSU/z_m": 1.5748,
@@ -362,6 +380,9 @@
 "canvas_objects/ED-G-GABLE-N-PSU/body_z0_m": 1.5748,
 "canvas_objects/ED-G-GABLE-N-PSU/body_z1_m": 1.6129,
 "canvas_objects/ED-G-GABLE-N-PSU/z_m": 1.5748,
+"canvas_objects/ED-G-GDO-RC/body_z0_m": 2.16535,
+"canvas_objects/ED-G-GDO-RC/body_z1_m": 2.21615,
+"canvas_objects/ED-G-GDO-RC/z_m": 2.16535,
 "canvas_objects/ED-G-LT1/body_z0_m": 1.5748,
 "canvas_objects/ED-G-LT1/body_z1_m": 1.651,
 "canvas_objects/ED-G-LT1/z_m": 1.5748,
@@ -405,7 +426,7 @@
 "canvas_objects/ED-M-BATH2-CAN2/body_z1_m": 2.794,
 "canvas_objects/ED-M-BATH2-CAN2/z_m": 2.7432,
 "canvas_objects/ED-M-BATH2-FH-STAT/body_z0_m": 1.2573,
-"canvas_objects/ED-M-BATH2-FH-STAT/body_z1_m": 1.3589,
+"canvas_objects/ED-M-BATH2-FH-STAT/body_z1_m": 1.3462,
 "canvas_objects/ED-M-BATH2-FH-STAT/z_m": 1.2573,
 "canvas_objects/ED-M-BATH2-MIRROR-HALO/body_z0_m": 1.1049,
 "canvas_objects/ED-M-BATH2-MIRROR-HALO/body_z1_m": 2.0193,
@@ -491,6 +512,9 @@
 "canvas_objects/ED-M-BED-SW2/body_z0_m": 1.2573,
 "canvas_objects/ED-M-BED-SW2/body_z1_m": 1.3081,
 "canvas_objects/ED-M-BED-SW2/z_m": 1.2573,
+"canvas_objects/ED-M-CAM-PORCH/body_z0_m": 2.581275,
+"canvas_objects/ED-M-CAM-PORCH/body_z1_m": 2.68605,
+"canvas_objects/ED-M-CAM-PORCH/z_m": 2.581275,
 "canvas_objects/ED-M-CLOSET-CAN1/body_z0_m": 2.7432,
 "canvas_objects/ED-M-CLOSET-CAN1/body_z1_m": 2.794,
 "canvas_objects/ED-M-CLOSET-CAN1/z_m": 2.7432,
@@ -507,7 +531,7 @@
 "canvas_objects/ED-M-CLOSET-SW/body_z1_m": 1.2573,
 "canvas_objects/ED-M-CLOSET-SW/z_m": 1.2065,
 "canvas_objects/ED-M-DINING-FH-STAT/body_z0_m": 1.3954125,
-"canvas_objects/ED-M-DINING-FH-STAT/body_z1_m": 1.4970125,
+"canvas_objects/ED-M-DINING-FH-STAT/body_z1_m": 1.4843125,
 "canvas_objects/ED-M-DINING-FH-STAT/z_m": 1.3954125,
 "canvas_objects/ED-M-DINING-PEND/body_z0_m": 1.7002125,
 "canvas_objects/ED-M-DINING-PEND/body_z1_m": 2.7670125,
@@ -515,6 +539,9 @@
 "canvas_objects/ED-M-DINING-SW/body_z0_m": 1.1922125,
 "canvas_objects/ED-M-DINING-SW/body_z1_m": 1.2430125,
 "canvas_objects/ED-M-DINING-SW/z_m": 1.1922125,
+"canvas_objects/ED-M-DOORBELL/body_z0_m": 1.1557,
+"canvas_objects/ED-M-DOORBELL/body_z1_m": 1.28905,
+"canvas_objects/ED-M-DOORBELL/z_m": 1.1557,
 "canvas_objects/ED-M-ENTRY-LT/body_z0_m": 1.9304,
 "canvas_objects/ED-M-ENTRY-LT/body_z1_m": 2.0574,
 "canvas_objects/ED-M-ENTRY-LT/z_m": 1.9304,
@@ -804,7 +831,7 @@
 "canvas_objects/ED-S-BATH1-CAN2/body_z1_m": 5.842,
 "canvas_objects/ED-S-BATH1-CAN2/z_m": 5.7912,
 "canvas_objects/ED-S-BATH1-FH-STAT/body_z0_m": 4.3053,
-"canvas_objects/ED-S-BATH1-FH-STAT/body_z1_m": 4.4069,
+"canvas_objects/ED-S-BATH1-FH-STAT/body_z1_m": 4.3942,
 "canvas_objects/ED-S-BATH1-FH-STAT/z_m": 4.3053,
 "canvas_objects/ED-S-BATH1-MIRROR/body_z0_m": 4.9672875,
 "canvas_objects/ED-S-BATH1-MIRROR/body_z1_m": 5.1577875,
@@ -923,6 +950,9 @@
 "canvas_objects/ED-S-HALL-SW2/body_z0_m": 4.2545,
 "canvas_objects/ED-S-HALL-SW2/body_z1_m": 4.3053,
 "canvas_objects/ED-S-HALL-SW2/z_m": 4.2545,
+"canvas_objects/ED-S-HP-STAT/body_z0_m": 4.4069,
+"canvas_objects/ED-S-HP-STAT/body_z1_m": 4.506976,
+"canvas_objects/ED-S-HP-STAT/z_m": 4.4069,
 "canvas_objects/ED-S-LANDING-LT/body_z0_m": 5.7912,
 "canvas_objects/ED-S-LANDING-LT/body_z1_m": 5.842,
 "canvas_objects/ED-S-LANDING-LT/z_m": 5.7912,
@@ -2385,6 +2415,30 @@
 "be7cb6b172b8"
 ],
 "conduits/CD-B-WORKSHOP/z_start_m": -0.4937125,
+"conduits/CD-M-DATA-CAM-CANOPY/z_end_m": 1.8796,
+"conduits/CD-M-DATA-CAM-CANOPY/z_m": [
+1.7526,
+2.80035,
+10,
+"79df6cd713ba"
+],
+"conduits/CD-M-DATA-CAM-CANOPY/z_start_m": 2.80035,
+"conduits/CD-M-DATA-CAM-PORCH/z_end_m": 2.68605,
+"conduits/CD-M-DATA-CAM-PORCH/z_m": [
+2.68605,
+2.8321,
+5,
+"dc52dbb42d53"
+],
+"conduits/CD-M-DATA-CAM-PORCH/z_start_m": 2.69875,
+"conduits/CD-M-DATA-DOORBELL/z_end_m": 1.143,
+"conduits/CD-M-DATA-DOORBELL/z_m": [
+1.143,
+2.8067,
+6,
+"21066e1e3f55"
+],
+"conduits/CD-M-DATA-DOORBELL/z_start_m": 2.8067,
 "conduits/CD-M-DATA-KITCH/z_end_m": 2.80035,
 "conduits/CD-M-DATA-KITCH/z_m": [
 2.7051,
@@ -2524,51 +2578,51 @@
 "conduits/FH-M-BATH2-COLD-LEAD/z_end_m": 0.05715,
 "conduits/FH-M-BATH2-COLD-LEAD/z_m": [
 0.05715,
-1.2573,
+1.25095,
 2,
-"b06abc2c3572"
+"5bf5b48c2216"
 ],
-"conduits/FH-M-BATH2-COLD-LEAD/z_start_m": 1.2573,
+"conduits/FH-M-BATH2-COLD-LEAD/z_start_m": 1.25095,
 "conduits/FH-M-BATH2-SENSOR/z_end_m": 0.01905,
 "conduits/FH-M-BATH2-SENSOR/z_m": [
 0.01905,
-1.2573,
+1.25095,
 2,
-"6a8775731f0e"
+"d9dba9caf706"
 ],
-"conduits/FH-M-BATH2-SENSOR/z_start_m": 1.2573,
+"conduits/FH-M-BATH2-SENSOR/z_start_m": 1.25095,
 "conduits/FH-M-DINING-COLD-LEAD/z_end_m": 0.0619125,
 "conduits/FH-M-DINING-COLD-LEAD/z_m": [
 0.0619125,
-1.3954125,
+1.3890625,
 2,
-"cc1c47db4b5a"
+"75f3ae92c6c8"
 ],
-"conduits/FH-M-DINING-COLD-LEAD/z_start_m": 1.3954125,
+"conduits/FH-M-DINING-COLD-LEAD/z_start_m": 1.3890625,
 "conduits/FH-M-DINING-SENSOR/z_end_m": -0.0015875,
 "conduits/FH-M-DINING-SENSOR/z_m": [
 -0.0015875,
-1.3954125,
+1.3890625,
 3,
-"5b9c3637f596"
+"cbd968396419"
 ],
-"conduits/FH-M-DINING-SENSOR/z_start_m": 1.3954125,
+"conduits/FH-M-DINING-SENSOR/z_start_m": 1.3890625,
 "conduits/FH-S-BATH1-COLD-LEAD/z_end_m": 3.10515,
 "conduits/FH-S-BATH1-COLD-LEAD/z_m": [
 3.10515,
-4.3053,
+4.29895,
 2,
-"ead7de50a7eb"
+"7c1597dcae07"
 ],
-"conduits/FH-S-BATH1-COLD-LEAD/z_start_m": 4.3053,
+"conduits/FH-S-BATH1-COLD-LEAD/z_start_m": 4.29895,
 "conduits/FH-S-BATH1-SENSOR/z_end_m": 3.06705,
 "conduits/FH-S-BATH1-SENSOR/z_m": [
 3.06705,
-4.3053,
+4.29895,
 2,
-"d4606e88ed83"
+"30065bb4f547"
 ],
-"conduits/FH-S-BATH1-SENSOR/z_start_m": 4.3053,
+"conduits/FH-S-BATH1-SENSOR/z_start_m": 4.29895,
 "construction_returns/CR-CONC-TO-FRAMED-SILL/z0_m": 0.0,
 "construction_returns/CR-CONC-TO-FRAMED-SILL/z1_m": 0.0381,
 "construction_returns/CR-FOUNDATION-FOAM-RETURN/z0_m": -1.9304,
@@ -2695,12 +2749,12 @@
 "device_boxes/CEE008AAAA-box/z1_m": 0.454025,
 "device_boxes/CEE009AAAA-box/z0_m": 0.3556,
 "device_boxes/CEE009AAAA-box/z1_m": 0.4572,
-"device_boxes/CEE021AAAA-box/z0_m": 1.2573,
-"device_boxes/CEE021AAAA-box/z1_m": 1.3589,
-"device_boxes/CEE024AAAA-box/z0_m": 1.3954125,
-"device_boxes/CEE024AAAA-box/z1_m": 1.4970125,
-"device_boxes/CEE025AAAA-box/z0_m": 4.3053,
-"device_boxes/CEE025AAAA-box/z1_m": 4.4069,
+"device_boxes/CEE021AAAA-box/z0_m": 1.25095,
+"device_boxes/CEE021AAAA-box/z1_m": 1.35255,
+"device_boxes/CEE024AAAA-box/z0_m": 1.3890625,
+"device_boxes/CEE024AAAA-box/z1_m": 1.4906625,
+"device_boxes/CEE025AAAA-box/z0_m": 4.29895,
+"device_boxes/CEE025AAAA-box/z1_m": 4.40055,
 "device_boxes/CEE040AAAA-box/z0_m": -1.7320895,
 "device_boxes/CEE040AAAA-box/z1_m": -1.6368395,
 "device_boxes/CEE041AAAA-box/z0_m": 0.219075,
@@ -7576,6 +7630,12 @@
 3.0099,
 168,
 "9a9072effd5c"
+],
+"geometry/ASN1XG0FEK-run/body": [
+2.68605,
+2.841625,
+96,
+"117b6d357113"
 ],
 "geometry/AVTBXKVZWX-box/body": [
 -1.0169525,
@@ -19362,10 +19422,10 @@
 "a1104231d0f4"
 ],
 "geometry/CEE021AAAA-box/body": [
-1.2573,
-1.3589,
+1.25095,
+1.35255,
 2,
-"7b298bd6d162"
+"ebe9eabd1221"
 ],
 "geometry/CEE022AAAA/body": [
 0.6334125,
@@ -19380,16 +19440,16 @@
 "b81481463daf"
 ],
 "geometry/CEE024AAAA-box/body": [
-1.3954125,
-1.4970125,
+1.3890625,
+1.4906625,
 2,
-"81a5a29babd2"
+"ca629fc8a627"
 ],
 "geometry/CEE025AAAA-box/body": [
-4.3053,
-4.4069,
+4.29895,
+4.40055,
 2,
-"e1860f688fba"
+"b1088ed02a72"
 ],
 "geometry/CEE027AAAA/body": [
 -0.3556,
@@ -21928,6 +21988,12 @@
 2.2352,
 8,
 "fb5e910e7ef5"
+],
+"geometry/CGW101AAAA::framing/member:backing-0-000": [
+0.7493,
+1.03505,
+8,
+"1b01d3e28c57"
 ],
 "geometry/CGW101AAAA::framing/member:corner-start": [
 -0.2667,
@@ -27925,27 +27991,27 @@
 ],
 "geometry/CMH801AAAA-cold-lead-run/body": [
 0.05715,
-1.2573,
+1.25095,
 24,
-"6e5bb92b9883"
+"1debc1277d11"
 ],
 "geometry/CMH801AAAA-sensor-run/body": [
 0.01905,
-1.2573,
+1.25095,
 24,
-"371e5e5bd5dc"
+"bc2ad3cd41b0"
 ],
 "geometry/CMH802AAAA-cold-lead-run/body": [
 0.0619125,
-1.3954125,
+1.3890625,
 24,
-"1cf59ddb1c60"
+"96092e29cd3a"
 ],
 "geometry/CMH802AAAA-sensor-run/body": [
 -0.0111125,
-1.3954125,
+1.3890625,
 48,
-"0034a402b291"
+"0c3f414eb89a"
 ],
 "geometry/CMLC01AAAA/body": [
 1.5113,
@@ -42103,15 +42169,15 @@
 ],
 "geometry/CSH801AAAA-cold-lead-run/body": [
 3.10515,
-4.3053,
+4.29895,
 24,
-"cb48e9b02791"
+"fd2fa634c766"
 ],
 "geometry/CSH801AAAA-sensor-run/body": [
 3.06705,
-4.3053,
+4.29895,
 24,
-"8ef8ebc71040"
+"c699daa7c0c1"
 ],
 "geometry/CSK901AAAA/body": [
 3.06705,
@@ -61691,6 +61757,12 @@
 2,
 "6fa64beef87b"
 ],
+"geometry/JWWQ53ZA3Z-run/body": [
+1.743075,
+2.809875,
+216,
+"2a0b2b7204b6"
+],
 "geometry/JYMY6WGGP3-box/body": [
 -1.3541375,
 -1.2588875,
@@ -64252,6 +64324,12 @@
 0.94615,
 16,
 "7cedce5d2796"
+],
+"geometry/REEA36N7AS-run/body": [
+1.133475,
+2.816225,
+120,
+"bba14dfeb1d8"
 ],
 "geometry/REREWJKFAZ/layer:gwb-a": [
 6.096,
@@ -80422,6 +80500,12 @@
 3.5433,
 4,
 "2ad9de2bfab5"
+],
+"member/CGW101AAAA/backing-0-000": [
+0.7493,
+1.03505,
+2,
+"540b3c8db3fd"
 ],
 "member/CGW101AAAA/corner-start": [
 -0.2667,
@@ -106398,6 +106482,12 @@
 "solids/CD-B-WORKSHOP-RC2-RUN/z1_m": -0.37465,
 "solids/CD-B-WORKSHOP-RUN/z0_m": -0.4937125,
 "solids/CD-B-WORKSHOP-RUN/z1_m": -0.371475,
+"solids/CD-M-DATA-CAM-CANOPY-RUN/z0_m": 1.743075,
+"solids/CD-M-DATA-CAM-CANOPY-RUN/z1_m": 2.809875,
+"solids/CD-M-DATA-CAM-PORCH-RUN/z0_m": 2.68605,
+"solids/CD-M-DATA-CAM-PORCH-RUN/z1_m": 2.841625,
+"solids/CD-M-DATA-DOORBELL-RUN/z0_m": 1.133475,
+"solids/CD-M-DATA-DOORBELL-RUN/z1_m": 2.816225,
 "solids/CD-M-DATA-KITCH-RUN/z0_m": 2.695575,
 "solids/CD-M-DATA-KITCH-RUN/z1_m": 2.943225,
 "solids/CD-M-DATA-PORCH-RUN/z0_m": 2.6416,
@@ -108366,8 +108456,8 @@
 "solids/ED-M-BATH1-SW-BOX/z1_m": 1.265475,
 "solids/ED-M-BATH1-WC-RC-BOX/z0_m": 0.205025,
 "solids/ED-M-BATH1-WC-RC-BOX/z1_m": 0.300275,
-"solids/ED-M-BATH2-FH-STAT-BOX/z0_m": 1.2573,
-"solids/ED-M-BATH2-FH-STAT-BOX/z1_m": 1.3589,
+"solids/ED-M-BATH2-FH-STAT-BOX/z0_m": 1.25095,
+"solids/ED-M-BATH2-FH-STAT-BOX/z1_m": 1.35255,
 "solids/ED-M-BATH2-MIRROR-BOX/z0_m": 2.117725,
 "solids/ED-M-BATH2-MIRROR-BOX/z1_m": 2.212975,
 "solids/ED-M-BATH2-MIRROR-HALO-BOX/z0_m": 1.514475,
@@ -108416,8 +108506,8 @@
 "solids/ED-M-CLOSET-RC1-BOX/z1_m": 2.549525,
 "solids/ED-M-CLOSET-SW-BOX/z0_m": 1.184275,
 "solids/ED-M-CLOSET-SW-BOX/z1_m": 1.279525,
-"solids/ED-M-DINING-FH-STAT-BOX/z0_m": 1.3954125,
-"solids/ED-M-DINING-FH-STAT-BOX/z1_m": 1.4970125,
+"solids/ED-M-DINING-FH-STAT-BOX/z0_m": 1.3890625,
+"solids/ED-M-DINING-FH-STAT-BOX/z1_m": 1.4906625,
 "solids/ED-M-DINING-SW-BOX/z0_m": 1.1699875,
 "solids/ED-M-DINING-SW-BOX/z1_m": 1.2652375,
 "solids/ED-M-ENTRY-SW-BOX/z0_m": 1.170225,
@@ -108522,8 +108612,8 @@
 "solids/ED-M-STUDY-SPOT-BOX/z1_m": 2.002075,
 "solids/ED-M-STUDY-SW-BOX/z0_m": 1.221025,
 "solids/ED-M-STUDY-SW-BOX/z1_m": 1.316275,
-"solids/ED-S-BATH1-FH-STAT-BOX/z0_m": 4.3053,
-"solids/ED-S-BATH1-FH-STAT-BOX/z1_m": 4.4069,
+"solids/ED-S-BATH1-FH-STAT-BOX/z0_m": 4.29895,
+"solids/ED-S-BATH1-FH-STAT-BOX/z1_m": 4.40055,
 "solids/ED-S-BATH1-MIRROR-BOX/z0_m": 5.0149125,
 "solids/ED-S-BATH1-MIRROR-BOX/z1_m": 5.1101625,
 "solids/ED-S-BATH1-RC-MIRROR-BOX/z0_m": 4.435475,
@@ -108993,17 +109083,17 @@
 "solids/FD-SG-OVERFLOW-DT-1/z0_m": -3.1861125,
 "solids/FD-SG-OVERFLOW-DT-1/z1_m": -3.0845125,
 "solids/FH-M-BATH2-COLD-LEAD-RUN/z0_m": 0.05715,
-"solids/FH-M-BATH2-COLD-LEAD-RUN/z1_m": 1.2573,
+"solids/FH-M-BATH2-COLD-LEAD-RUN/z1_m": 1.25095,
 "solids/FH-M-BATH2-SENSOR-RUN/z0_m": 0.01905,
-"solids/FH-M-BATH2-SENSOR-RUN/z1_m": 1.2573,
+"solids/FH-M-BATH2-SENSOR-RUN/z1_m": 1.25095,
 "solids/FH-M-DINING-COLD-LEAD-RUN/z0_m": 0.0619125,
-"solids/FH-M-DINING-COLD-LEAD-RUN/z1_m": 1.3954125,
+"solids/FH-M-DINING-COLD-LEAD-RUN/z1_m": 1.3890625,
 "solids/FH-M-DINING-SENSOR-RUN/z0_m": -0.0111125,
-"solids/FH-M-DINING-SENSOR-RUN/z1_m": 1.3954125,
+"solids/FH-M-DINING-SENSOR-RUN/z1_m": 1.3890625,
 "solids/FH-S-BATH1-COLD-LEAD-RUN/z0_m": 3.10515,
-"solids/FH-S-BATH1-COLD-LEAD-RUN/z1_m": 4.3053,
+"solids/FH-S-BATH1-COLD-LEAD-RUN/z1_m": 4.29895,
 "solids/FH-S-BATH1-SENSOR-RUN/z0_m": 3.06705,
-"solids/FH-S-BATH1-SENSOR-RUN/z1_m": 4.3053,
+"solids/FH-S-BATH1-SENSOR-RUN/z1_m": 4.29895,
 "solids/FO-A-ERV-CHASE-fireblock-sheet/z0_m": 6.096,
 "solids/FO-A-ERV-CHASE-fireblock-sheet/z1_m": 6.11505,
 "solids/FO-A-ERV-CHASE-fireblock-wool/z0_m": 6.0071,

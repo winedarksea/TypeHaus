@@ -263,18 +263,6 @@ SCHLAGE_LATITUDE = Product(
            "US15A is ANTIQUE nickel and a different colour. ** Buy levers and hinges from "
            "the same finish family and the same lot.",
 )
-YALE_ASSURE_2 = Product(
-    tag="PROD-YALE-ASSURE-2-WIFI", brand="Yale", model="Assure Lock 2, Wi-Fi, keyed",
-    name="Assure Lock 2 keypad deadbolt with Wi-Fi, keyed, satin nickel",
-    source="Yale Home product listing, read 2026-09-06. ONE smart lock, on the door actually "
-           "used -- four of them quadruples battery maintenance to solve a problem already "
-           "solved once. Take the KEYED version, not key-free: in Minnesota you want a "
-           "mechanical override. ** USE LITHIUM AA CELLS. ** Every keypad-lock cold-weather "
-           "complaint traces to alkalines falling off a cliff below 0 F; lithium is rated to "
-           "-40 F. It is a $12 fix nobody makes. The other exterior openings take a plain "
-           "deadbolt-and-lever, KEYED ALIKE AT TIME OF PURCHASE -- rekeying later costs more "
-           "than the discount.",
-)
 
 # --- Surfaces -----------------------------------------------------------------------------
 #
@@ -380,7 +368,7 @@ INTERIOR_PRODUCTS = (
     KOHLER_CAXTON_BASIN, SWAN_CONTOUR_TOP, CORIAN_GLACIER_WHITE,
     HARVIA_CILINDRO_PC110E, HARVIA_XENIO_CX170, CARIITTI_FIBRE_KIT,
     TOPKNOBS_BAR_PULL,
-    SCHLAGE_LATITUDE, YALE_ASSURE_2,
+    SCHLAGE_LATITUDE,
     MSI_Q_QUARTZ_SPECKLED, MARAZZI_MODERN_FORMATION, TILEBAR_BRONX_WHITE,
     SCHLUTER_KERDI_LINE_VARIO, KATELAUREL_ESTERO, GE_SILICONE_2_KB_WHITE,
     *LIGHTING_PRODUCTS,

@@ -96,7 +96,7 @@ and fixed; LC-PG45/CW-PG80 tilt-turn. Every value is over §1's DP 20.
 
 | Door | Line | CPD | U | SHGC | VT | Notes |
 |---|---|---|---|---|---|---|
-| `D-M-ENTRY` | Therma-Tru Smooth-Star flush, inswing | THC-M-5-03881 | 0.15 | — | — | opaque; polyurethane core; single-point Encode Plus; DS2000; black / white field paint |
+| `D-M-ENTRY` | Therma-Tru Smooth-Star flush, inswing | THC-M-5-03881 | 0.15 | — | — | opaque; polyurethane core; single-point Sense Pro (was Encode Plus); DS2000; black / white field paint |
 | `D-B-PATIO`, `D-M-BALC`, `D-S-DECK-E` | Therma-Tru Smooth-Star full-lite, composite frame / Endura | THC-M-5-04493-00001 | 0.21 | 0.12 | 0.27 | provisional CPD basis; laminated triple and assembled pair NFRC/NAFS label are dealer items |
 | `D-G-SERVICE` | MMI Z0364688R stock six-panel insulated steel, 32x80 RH outswing, 6-9/16 composite frame; included fixed composite sill, weatherstrip and NRP hinges; HD Supply 219385, $1,023 listed 2026-10-27 | none | — | — | — | `DT-EXT-SWING32-G`: framed RO 34x81.5; west hinges; black outside/white inside; retain factory sill; see service-door installation note |
 | `D-G-OVERHEAD` | Clopay Classic Steel long panel GDU293, R-12.9, Charcoal, 16x7 | none | — | — | — | unconditioned; wind rating for q_h 19.3 psf to confirm |
@@ -126,7 +126,8 @@ whether the requested glazing and hardware are available and any substitutions r
 lite at `D-M-ENTRY` because the Cascadia line carries no opaque infill. The owner wants a
 sturdy, well-insulated, solid door: a small lite at most. Smooth-Star is the commodity
 fiberglass slab with a foam core and a 1 1/4" engineered lock stile, and Twin Cities stock.
-The 2026-10-25 owner selection is single-point Encode Plus BE499WB plus Century / Latitude
+The 2026-10-25 owner selection is single-point Encode Plus BE499WB (Sense Pro BE889WB since
+2026-10-30, `smart_home.md`) plus Century / Latitude
 passage lever, DS2000 viewer, composite frame and strike reinforcement. Field paint is
 black exterior / white interior; factory black is a quote alternate. All four house
 exterior swings get doubled packs, solid hardware backing, composite strike/keep shims

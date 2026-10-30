@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 94900ca42ff958c4  
+**Model hash:** cb2838de91ccdc2c  
 **Lines:** 183
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -21,7 +21,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | 20 | LF ordered | 2 pcs, 19.1 LF cut | building |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | 140 | LF ordered | 6 pcs, 135.0 LF cut | building |
 | 1.25x7.25 rim — rim board (1.25x7.25 rim) | 8 | LF ordered | 2 pcs, 5.7 LF cut | building |
-| 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 2 pcs, 3.2 LF cut | building |
+| 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 3 pcs, 5.1 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
 | 1.75x11.875 LVL — trimmer (1.75x11.875 LVL) | 192 | LF ordered | 16 pcs, 176.4 LF cut | building |
 | 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,480 | LF ordered | 224 pcs, 2229.7 LF cut | building |

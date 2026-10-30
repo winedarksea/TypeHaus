@@ -72,7 +72,14 @@ tank's 4,500 VA nameplate the SHED tier's peak does not fit the 12kPV's 8 kW con
 ## Does the 12kPV carry it?
 
 This was the TODO's actual question, and `takeoff/backup_calc.py` answers it rather than a
-comment asserting it. As authored today:
+comment asserting it.
+
+**2026-10-30, the PoE doorbell and two cameras** ([smart_home.md](smart_home.md)) put ~41 W
+more on `CKT-HA` (duty 0.30 -> 0.44). Always-on autonomy is now **34.8 h**. The 48-hour cycle
+no longer carries the always-on tier: 17.73 kWh of load against 15.84 kWh of sun, net
+**-1.89 kWh**. It had been +0.12 kWh, so any always-on load would have flipped it. The calc's
+verdict is "add array, not battery". At 3.5 kWh/kW strong-day yield it rides again. The
+figures below are the earlier pass's and are stale:
 
 - **Storage** 12.87 kWh usable of 14.3 nameplate (90% DoD).
 - **Autonomy, no sun** 53.0 h on the always-on tier alone.

@@ -10,8 +10,9 @@ hardware sets and installation instructions print on A-601.
 Keep the opaque 36 × 80-inch Therma-Tru Smooth-Star fiberglass inswing leaf,
 1¾-inch nominal thickness, composite adjustable sill and composite jambs/head.
 Single-point double-bore prep: 2⅜-inch backset, 5½-inch centres. Use a Schlage
-Century / Latitude passage lever in matte black 622 at 36 inches and Encode Plus
-BE499WB CEN 622 deadbolt at 41½ inches. The DoorScope DS2000 is at 60 inches.
+Century / Latitude passage lever in matte black 622 at 36 inches and a Sense Pro
+BE889WB 622 deadbolt at 41½ inches (2026-10-30, replacing the Encode Plus: Matter/Thread,
+local in Home Assistant, keyless — see `smart_home.md`). The DoorScope DS2000 is at 60 inches.
 These heights are above the leaf bottom and were confirmed by the owner.
 
 Field-paint black outside and white inside, including the matching frame faces;
@@ -88,6 +89,6 @@ All new price bands are project budgets, not supplier quotations.
 
 - [StrikeMaster II Pro manufacturer page](https://www.asafehome.net/PAGES/Safe-Homes-International-StrikeMaster-II-Pro.html), including supplied fasteners.
 
-- [Schlage Encode Plus installation guide](https://www.schlage.com/content/dam/sch-us/documents/pdf/installation-manuals/schlage-encode-plus-quick-start-guide-BE499WB.pdf).
+- [Schlage Sense Pro product page](https://www.schlage.com/en/home/products/BE889WBFFF.html).
 - [Therma-Tru safety and security](https://www.thermatru.com/explore-products/safety-and-security/), including the adjustable security strike.
 - [DoorScope DS1000 / DS2000 installation instructions](https://www.metropolitandoor.com/wp-content/uploads/2018/07/door-scope-installation.pdf), including bore diameter and retainer pins.

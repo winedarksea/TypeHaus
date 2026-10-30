@@ -350,6 +350,11 @@ GARAGE_BACKING = [
                 start=ft(18, 0.75), length=inch(22.5),
                 elevation=inch(12), height=inch(11.25), profile="1.5x11.25",
                 material_ref="spf", purpose="handrail brackets (RL-G-SERVICE, foot of flight)"),
+    # The EVSE's four screws (APPL-G-EVSE, 42"..52 1/4"), one bay between studs at 20' and 22'.
+    WallBacking(uid="1X2QB7105T", tag="BK-G-S-EVSE", wall_ref="W-G-S",
+                start=ft(14, 0.75), length=inch(22.5),
+                elevation=inch(41.5), height=inch(11.25), profile="1.5x11.25",
+                material_ref="spf", purpose="EVSE wall mount (APPL-G-EVSE)"),
 ]
 
 ATTIC_BACKING = [

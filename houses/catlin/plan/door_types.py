@@ -12,7 +12,7 @@ from typehaus import DoorCatalogDimensions, DoorHardwareItem, JambFraming, inch,
 from typehaus.quantities import ft
 
 from plan.opening_products import (
-    ENCODE_PLUS, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS,
+    SENSE_PRO, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS,
     DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
     THERMATRU_SMOOTHSTAR_FULLLITE, CLOPAY_CLASSIC_STEEL, MMI_STEEL_SIX_PANEL, THERMATRU_SMOOTHSTAR,
 )
@@ -81,8 +81,8 @@ _ENTRY_HARDWARE = (
       for height in (10, 40, 70)),
     DoorHardwareItem(role="passage", product_ref=PASSAGE_LEVER.tag, height=inch(36),
         installation="Century / Latitude 622 passage lever; 2-3/8 inch backset."),
-    DoorHardwareItem(role="deadbolt", product_ref=ENCODE_PLUS.tag, height=inch(41.5),
-        installation=_SHIM + "BE499WB CEN 622; double bore at 5-1/2 inch centres. " + _SCREWS),
+    DoorHardwareItem(role="deadbolt", product_ref=SENSE_PRO.tag, height=inch(41.5),
+        installation=_SHIM + "Sense Pro BE889WB 622; double bore at 5-1/2 inch centres. " + _SCREWS),
     DoorHardwareItem(role="strike_reinforcement", product_ref=STRIKE_REINFORCEMENT.tag,
         height=inch(41.5), installation=_SHIM + "StrikeMaster II Pro; Door Armor alternate. "
         "Coordinate with composite frame and factory strike; no unapproved stacking. " + _SCREWS),

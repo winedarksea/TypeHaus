@@ -148,6 +148,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
   `mep_erv_types` is the catalog. The split was byte-neutral: every element in
   `out/model.json` is unchanged, and only `contentHash` — which hashes the plan SOURCE —
   moved.
+- `plan/smart_home.py` — `# haus: editable` doorbell, cameras, opener, EVSE, HP1 stat, alarm
+  relays and leak valve; types in `plan/smart_home_types.py`. Local-only HA register:
+  `notes/smart_home.md`.
 - `plan/fixtures.py` — `# haus: editable` plumbing-fixture *instances* (so UI drags
   round-trip). Only explicit constructors in any of these — no functions/generators.
 - `plan/electrical.py` — `# haus: editable` electrical service upgrade: meter, backup
@@ -1910,8 +1913,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `PR-B-CW-SAUNA` run side by side, not stacked, at x=17'-4"/17'-3" — do not restack them;
     two 1/2" lines need 5/8" separation in a band only 3" deep.
   - Lighting/outlets: three `ED-T-LT-CAN4` (mark C retired 2026-10-28) on `CKT-LT-BACKUP` at x=190",
-    y=19'-6"/15'-0"/11'-6" (43.5 VA; `cycle_48h.sustains_always_on` holds,
-    `test_backup_calc.py`). Keep the middle one at **15'-0"**, not 15'-6" — `PR-B-HW-SAUNA`
+    y=19'-6"/15'-0"/11'-6" (43.5 VA; `cycle_48h.sustains_always_on` no longer holds since the
+    2026-10-30 PoE cameras, `test_backup_calc.py`, notes/backup_power.md). Keep the middle one at **15'-0"**, not 15'-6" — `PR-B-HW-SAUNA`
     crosses 2 9/16" below the ceiling there. `ED-B-WORKSHOP-SW` sits 5" north of
     `D-B-SHOP`'s hinge jamb — the only side with room for the box. `ED-B-HALL-RC1` is on
     `CKT-RC-BSMT` at y=16' (NEC 210.52(H)); note `electrical.receptacle_spacing` only walks
@@ -2862,10 +2865,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   automation, now authored as **`CKT-WH-240.backup_va = 500`** — a backup reserve worth
   nothing in 220.82, and **load-bearing**: at the 4,500 VA nameplate the SHED tier's peak
   does not fit the 12kPV's 8 kW continuous.
-- **The Emporia charger stays.** It is a listed EVSE (UL 2594 3rd ed.); what it lacks is a
-  PCS listing for PowerSmart throttling, which a 320 A service no longer needs. If dynamic
-  EV charging is ever to be credited again the path is a UL 3141 PCS, not a different
-  charger.
+- **The EVSE is the Grizzl-E Smart (2026-10-30)**, `APPL-G-EVSE`, local OCPP to Home
+  Assistant; the Emporia (no local API) is superseded. No charger here is a PCS; if dynamic
+  EV charging is ever to be credited the path is a UL 3141 PCS, not a different charger.
 - The aux-heat **outdoor-thermostat lockout is still set** (elements enabled only below the
   -22 F compressor cut-out, so defrost runs unheated) — it is an HVAC control setting
   recorded on `CKT-HP1-AH`, no longer a credit.

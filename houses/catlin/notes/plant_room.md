@@ -343,12 +343,13 @@ continuous water-stop riser under the reducer and seal the turn and both ends in
 the jamb membrane returns, so a spill cannot pass under the profile. The final
 profile follows measured installed planes and the delivered door's swing clearance.
 The nominal 0.380" drop offers limited passive spill storage. **The leak sensor shuts the
-plant room's branch only (owner, 2026-10-22):** a full-port 3/4" ball valve on
-`PR-M-CW-PLANT-STUB` with a YoLink Valve Controller 2 / EVO actuator, closed directly by
-paired YoLink floor leak sensors with no hub or internet, so a leak here leaves the rest of
-the house's water on. Mount the valve where it stays serviceable: an access panel at the
-tee, or the recessed `PA-S-PLANT-WATER-STUB` box. Two sensors: one at the stub and one at the
-lowest corner. Not modelled as an element.
+plant room's branch only (owner, 2026-10-22; hardware 2026-10-30):** a 1/2" full-port lever
+ball valve at `PA-S-PLANT-WATER-STUB`'s outlet, under a Zooz ZAC36 Titan actuator
+(`APPL-S-PLANT-VALVE`, Z-Wave LR). Its wired probe at the stub closes the valve with no hub and
+no internet, so a leak here leaves the rest of the house's water on. A Zooz ZSE42 at the lowest
+corner closes it through Home Assistant. Mount the valve exposed at the box so the actuator
+clamps on; its 12 V adapter takes `ED-S-PLANT-RC2`. YoLink is retired: see
+[smart_home.md](smart_home.md).
 
 **No seam, so nothing to weld (2026-09-25).** The room is 17'-0" x 8'-1" clear, so one
 sheet laid across the 8'-1" width covers it whole. That is what retired the earlier
