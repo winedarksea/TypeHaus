@@ -22,8 +22,9 @@ from typehaus.resolve.solid_categories import in_slab_family
 # authored on Rooms plus the zone finishes, which include one taken from a Slab
 # (SL-M-DECK's coated cap) rather than authored on a room at all. Kept explicit rather
 # than derived so that adding a finish to a storey without adding its material trips here.
-_CATLIN_FINISHES = {"oak-floor-custom", "lvp", "carpet", "sealed-concrete", "rubber",
-                    "vinyl-sheet", "catlin-plant-vinyl-raised", "coated-concrete",
+_CATLIN_FINISHES = {"oak-floor-custom", "lvp", "carpet", "sealed-concrete",
+                    "catlin-rubber-stall-mat", "vinyl-sheet", "catlin-plant-vinyl-raised",
+                    "coated-concrete",
                     "catlin-carpet-raised",
                     "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
                     "catlin-tile-agua-linda", "catlin-tile-carrara"}

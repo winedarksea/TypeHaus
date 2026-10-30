@@ -1394,23 +1394,20 @@ ROOMS = [
          )),
     Room(uid="CBR404AAAA", tag="RM-B-PLAY-N", seed=pt(ft(27), ft(27)),
          occupancy=Occupancy.MEDIA, floor_finish="carpet"),
-    # ** THE GYM CEILING IS OPEN ON PURPOSE (2026-09-13). ** The owner is comfortable with
-    # exposed pipe and duct down here, and saying so is a design statement, not a waiver:
-    # mep.run_in_finished_volume reads the sentence and PASSES with it quoted, and every run
-    # crossing this room is still measured against the 6'-8" headroom line. SF-B-GYM was
-    # built for this room's two runs and is RETIRED on the strength of this sentence — see
-    # the note where it stood, below SOFFITS.
+    # ** THE GYM'S SERVICES RUN EXPOSED, UNDER A CLOSED CEILING (2026-09-13; restated
+    # 2026-10-30). ** The ceiling is not open: CEIL-RM-B-GYM-FS-M-EAST is 5/8" gwb on the
+    # I-joists, the R302.13 membrane (`code.R302_13_floor_protection`), and it stays.
+    # What the owner accepts is the pipe hung below it. mep.run_in_finished_volume reads the
+    # sentence and PASSES with it quoted, and every run crossing this room is still measured
+    # against the 6'-8" headroom line. SF-B-GYM was retired on the strength of it (see the
+    # note below SOFFITS). `PR-B-COND` and `PR-B-HW-KITCH` cross overhead; since D3,
+    # `DU-B-ERV-R-GYM` comes down the hall's x=17'-0" lane and enters on its last leg.
     #
-    # ** WHAT ACTUALLY CROSSES IT IS ONE PIPE NOW (D3, 2026-09-19). ** `DU-B-ERV-R-GYM` used
-    # to run the width of the room at y=10'-6 5/8" on its way to REG-B-SUP1; it comes down
-    # the hall's x=17'-0" lane instead and enters on its last leg. `PR-B-COND` is what is
-    # left overhead. The declaration stays — the ceiling is still open, the decision has not
-    # changed, and a room that says so is how this house answers
-    # `mep.run_in_finished_volume` — but the sentence should not promise a duct the design
-    # no longer runs here.
+    # Floor: 3/4" stall mats (2026-10-30). Rubber is echo-neutral; the acoustic fix is
+    # absorber panels, researched and not authored (notes/gym_acoustics.md).
     Room(uid="CBR405AAAA", tag="RM-B-GYM", seed=pt(ft(27), ft(9)),
-         occupancy=Occupancy.LIVING, floor_finish="rubber",
-         exposed_services="owner accepts exposed services in the basement: the gym ceiling is left open to the deck above, painted out, and the condensate line crossing it is part of how the room looks"),
+         occupancy=Occupancy.LIVING, floor_finish="catlin-rubber-stall-mat",
+         exposed_services="owner accepts exposed services in the basement: the gym's painted gypsum ceiling stays, and the condensate line crossing it below the board is part of how the room looks"),
     # ESS closet: MECHANICAL like the room it's carved from — STORAGE would
     # trigger habitability rules a battery cabinet has no use for. R327.4 permits an ESS in
     # a utility closet, which is exactly what this is.
@@ -1563,7 +1560,7 @@ SOFFITS = [
     # It existed for eleven days and for exactly one reason: DU-B-ERV-R-GYM at y=10'-6 5/8"
     # and PR-B-COND's collector leg at y=10'-11" were in RM-B-GYM's air, 8.4" and 10.6" under
     # its finished ceiling, and neither is reroutable. Boxing them out was the only answer the
-    # engine would read. RM-B-GYM now SAYS its ceiling is open — see the Room above — and
+    # engine would read. RM-B-GYM now SAYS its services run exposed — see the Room above — and
     # `mep.run_in_finished_volume` reads the sentence, so a 107 SF bulkhead built to satisfy a
     # check is 107 SF of board nobody wanted. The declaration is stronger evidence than the
     # box was: the box hid the decision, the sentence states it.

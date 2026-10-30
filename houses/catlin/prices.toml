@@ -3583,7 +3583,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Sources: concretenetwork.com polished-concrete cost guide 2026, homeguide.com polished
 # concrete chart, CPAA cream-polish class specifications.
 "polished-concrete" = { material = { low = 0.75, high = 2 }, labour = { low = 3.5, high = 7 } }  # 0 SF (was 411) — RETIRED 2026-09-12; cream polish over the EPS-deck cap, kept as the costed fallback. Grinding only, the cap is in [concrete]
-"rubber" = { material = { low = 3, high = 8 }, labour = { low = 1.5, high = 3.5 } }  # 316 SF — adhesive-set; substrate prep is NOT in this number
+# 2026-10-30: RM-B-GYM moved to 3/4" loose-laid stall mats. Material is the 4x6 mat at
+# ~$30-60 each (Tractor Supply, Rural King; Greatmats lists the same class higher), $1.25-2.50/SF
+# ordered; labour is loose-lay and cuts only. No adhesive, no underlayment.
+"catlin-rubber-stall-mat" = { material = { low = 1.25, high = 2.5 }, labour = { low = 0.25, high = 0.75 } }  # 313 SF ordered (287 net + 9%)
+"rubber" = { material = { low = 3, high = 8 }, labour = { low = 1.5, high = 3.5 } }  # 0 SF (was 316) — RETIRED 2026-10-30; 8 mm glue-down roll, kept as the costed fallback. Substrate prep is NOT in this number
 "sealed-concrete" = { material = { low = 0.35, high = 1.2 }, labour = { low = 0.75, high = 2 } }  # 1060 SF — densifier + 2 coats, NO grinding. A real polish is a separate specialty contract at $3-7/SF more
 # Tile is now limited to the two heated bathrooms and the nonheated suite bath
 # and vanity. The mudroom and both closets moved to LVP. Setters should quote the
@@ -7682,6 +7686,10 @@ paint-court-mineral-wash-columns = { material = { low = 91, high = 133 }, labour
 # and the garage, plus the standards, brackets and end caps the placeable prices treat as part
 # of a unit rather than as stock.
 cabinet-closet-shelving-and-rod = { low = 600, high = 1500 }
+# 2026-10-30: RM-B-GYM echo treatment (notes/gym_acoustics.md), not authored: 12-16 DIY
+# 2x4 ft x 2" mineral-wool panels in FR701 fabric, hung only if a clap test after move-in
+# calls for them. Batts, fabric, frames and cleats; owner labour.
+finish-gym-acoustic-panels = { low = 300, high = 700 }
 # RETIRED 2026-09-06 — `finish-fireplace-mantel-walnut = { low = 500, high = 1150 }`.
 # It was here for one reason: SB-M-FIRE-MANTEL was hosted on a WALL, and a ShelfBank on a wall
 # has no priced host row anywhere, so the most expensive board in RM-M-LIVING would have billed

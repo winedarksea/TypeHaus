@@ -256,7 +256,8 @@ def test_every_finish_row_resolved_a_real_material(bom):
         "carpet", "catlin-carpet-raised", "lvp", "oak-floor-custom",
         "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
         "catlin-tile-agua-linda", "catlin-tile-carrara", "sealed-concrete",
-        "coated-concrete", "rubber", "vinyl-sheet", "catlin-plant-vinyl-raised", None}
+        "coated-concrete", "catlin-rubber-stall-mat", "vinyl-sheet", "catlin-plant-vinyl-raised",
+        None}
 
 
 def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):

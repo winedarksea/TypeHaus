@@ -391,11 +391,12 @@ BASEMENT_EQUIPMENT = [
     #
     # ** THE HEAD WAS 5 1/2" INTO THE CEILING AND THAT WAS NOT THE DRAG'S DOING. ** The mount
     # was authored at 7'-6" AFF and this is a 10 53/64" cabinet, so its top stood at 100 13/16"
-    # in a room whose ceiling `code.R305_ceiling_height` measures at 7'-11 3/8" (95 3/8").
+    # in a room whose ceiling `code.R305_ceiling_height` then measured at 95 3/8".
     # It read as "high on the wall" and was through the deck; the same numbers held on the
     # centre wall it came off, so this is a pre-existing error the move surfaced rather than
-    # caused. 6'-6" puts the top at 88 13/16" with 6 9/16" of clear above it, which is the
-    # air Gree's Multi R32 wall-mount installation wants over the cabinet.
+    # caused. 6'-6" AFF puts the top at 88 13/16" over the stall mats, 7 3/8" under
+    # FS-M-EAST's gypsum here, which is the air Gree's Multi R32 wall-mount installation
+    # wants over the cabinet (restated 2026-10-30 for the 3/4" mats).
     # On W-B-S4 at 1'-5", wholly east of the jog at x=26'-2" that it straddled 5/8" deep
     # (`integrity.wall_mount_on_face`); west of it, D-B-PATIO's leaf swings through it.
     Equipment(uid="CEE031AAAA", tag="EQ-B-HP2-GYM", kind=EquipmentKind.INDOOR_HEAD,

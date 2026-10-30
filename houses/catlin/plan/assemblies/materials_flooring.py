@@ -1,7 +1,8 @@
 """Catlin floor assemblies whose installed height is coordinated at interior doors.
 
-Depths include all layers above the 3/4-inch framed subfloor. The tile mortar beds
-are design allowances; verify the installed planes with the selected tile and setter.
+Depths include all layers above the 3/4-inch framed subfloor (the gym's mats sit on
+the slab). The tile mortar beds are design allowances; verify the installed planes
+with the selected tile and setter.
 """
 
 from typehaus import Material
@@ -108,4 +109,13 @@ MATERIALS_FLOORING = [
     Material(tag="catlin-ditra-heat", name='DITRA-HEAT cable-retaining membrane, 1/4"',
              hatch="membrane", color="#d47835",
              source="Whole heated bathroom floor, including the area outside cable loops."),
+    Material(tag="catlin-rubber-stall-mat", name='Rubber stall mats, 4x6 ft x 3/4"',
+             hatch="membrane", color="#26282a",
+             finish_thickness_in=0.75, floor_waste_fraction=0.09,
+             source='RM-B-GYM: 4 x 6 ft x 3/4-inch vulcanized recycled rubber stall mats '
+                    '(Tractor Supply / Rural King), loose-laid, no adhesive; 13 mats '
+                    '(312 SF) over ~287 SF. Before laying: slab moisture test (taped poly '
+                    'sheet; 6-mil poly under the mats if damp), and air the mats out 1-2 '
+                    'weeks. Reducer at the open edge to the sealed-concrete hall. '
+                    'Echo-neutral; see notes/gym_acoustics.md.'),
 ]

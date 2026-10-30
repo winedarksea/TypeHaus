@@ -109,17 +109,20 @@ PANEL = [
 BASEMENT_DEVICES = [
     # RM-B-GYM (x 18'-36', y 0-18'): switch just inside D-B-PLAY, the door at (24', 18').
     #
-    # ** RETYPED N -> N3 (FLUSH) AND drop 18" -> 11", 2026-09-06, uid PRESERVED. ** The
-    # room's resolved clear_height_m is 2.42253 = 95 3/8"; an 18" fan assembly left the
-    # blades at ~6'-5 3/8" in a room people exercise in. The Hunter Gallegos (2026-10-22)
-    # is 10 9/16", which puts them at ~7'-0 13/16".
+    # ** RETYPED N -> N3 (FLUSH) AND drop 18" -> 11", 2026-09-06, uid PRESERVED. ** An 18"
+    # fan left the blades near 6'-5" in a room people exercise in. Restated 2026-10-30 over
+    # the 3/4" stall mats: the fan hangs under FS-M-EAST's gypsum, 96 3/16" above the mats
+    # (the room's clear_height_m, 94 5/8", is the lower SL-M-DECK ceiling at the north end).
+    # The Gallegos is modelled at 10 9/16" overall, so its body bottoms at 7'-1 5/8"; Hunter's
+    # sheet puts the blade bottom 7.97" below the ceiling flush-mounted, ~7'-4 1/4" AFF.
     # ** NOTHING GRADES THIS: ** there is no blade-to-floor check in the engine, so this
     # comment and the height on ED-T-LT-FAN52-FLUSH are the only guard.
     # ** OFF THE BACKUP TIER SINCE 2026-10-28: ** the product upgrade (14.5 W cans, 60 W panels)
     # took CKT-LT-BACKUP 0.18 kWh short of `cycle_48h.sustains_always_on`. A lightless fan is
     # the least essential load on the always-on lighting tier, so it moved to CKT-LT-MAIN
-    # (non-backup). It is a DC fan on constant hot with its included wall control, so
-    # ED-B-GYM-SW (still the cans', on CKT-LT-BACKUP) no longer switches it.
+    # (non-backup). It is an AC fan (Hunter's sheet; not DC) on constant hot with its
+    # included wall control, so ED-B-GYM-SW (still the cans', on CKT-LT-BACKUP) no longer
+    # switches it.
     ElectricalDevice(uid="CED010K1AA", tag="ED-B-GYM-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(27), ft(9)), type_ref="ED-T-LT-FAN52-FLUSH", circuit="CKT-LT-MAIN",
                      room="RM-B-GYM",

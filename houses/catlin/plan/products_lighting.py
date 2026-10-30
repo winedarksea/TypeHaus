@@ -158,7 +158,9 @@ HUNTER_GALLEGOS = Product(
     name='Gallegos 52" low-profile ceiling fan, matte black, no light kit',
     url="https://image.hunterfan.com/51583_specification_sheet.pdf",
     source="Hunter spec sheet and retailer listings, read 2026-10-22: 52 in., 3 blades, "
-           "DC reversible motor, wall control included, ~10 9/16 in. overall flush-mounted, "
+           "AC reversible motor (WhisperWind; spec sheet re-read 2026-10-30: flush 9.64 in. "
+           "ceiling to fan bottom, 7.97 in. to blade bottom), wall control included, "
+           "~10 9/16 in. overall flush-mounted per retailers, "
            "5,174 cfm high, ~43 W, ETL damp. Owner 2026-10-22: no light; blade span is "
            "flexible, the <= 11 in. height is not.",
 )

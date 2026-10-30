@@ -10,7 +10,7 @@ BASEMENT_TOWEL_BACKING = [
                 start=inch(0), length=inch(12.625), elevation=inch(45.37),
                 height=inch(5.5), profile="2x6", material_ref="spf",
                 purpose="FURN-B-BATH-HAND-TOWEL north post, beside first stud"),
-    # Bath floor +0.12 in.; gym floor +0.3125 in. above wall framing datum.
+    # Bath floor +0.12 in.; gym floor +0.75 in. (stall mats) above wall framing datum.
     WallBacking(
         uid="TWBBLOCK01",
         tag="BK-B-BATH-HAND-TOWEL",
@@ -31,7 +31,7 @@ BASEMENT_TOWEL_BACKING = [
         face="left",
         start=inch(8.75),
         length=inch(14.5),
-        elevation=inch(51.5625),
+        elevation=inch(52),
         height=inch(5.5),
         profile="2x6",
         material_ref="spf",
@@ -44,7 +44,7 @@ BASEMENT_TOWEL_BACKING = [
         face="left",
         start=inch(40.75),
         length=inch(14.5625),
-        elevation=inch(51.5625),
+        elevation=inch(52),
         height=inch(5.5),
         profile="2x6",
         material_ref="spf",

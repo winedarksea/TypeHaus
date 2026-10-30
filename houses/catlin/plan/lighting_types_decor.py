@@ -216,11 +216,11 @@ DECORATIVE_LUMINAIRE_TYPES = (
         "height": inch(10.5625), "lamp": None, "watts": None, "lumens": None, "cct_k": None,
         "cri": None, "load_va": 43.0, "product_ref": "PROD-HUNTER-51583",
         "integral_switch": True,
-        "source": "Hunter Gallegos 51583 (plan/products_lighting.py), flush-mounted at "
-                  "10 9/16\" overall: the room's 95 3/8\" clear leaves nothing spare "
-                  "against the 7'-0\" blade-to-floor minimum. ** A DC FAN CANNOT BE "
-                  "SPEED-CONTROLLED BY ANY CONVENTIONAL WALL DIMMER: ** constant hot plus "
-                  "its included wall control."}),
+        "source": "Hunter Gallegos 51583 (plan/products_lighting.py), flush-mounted, "
+                  "modelled at 10 9/16\" overall (Hunter: 9.64\" ceiling to fan bottom, "
+                  "7.97\" to blade bottom). In RM-B-GYM the blades sit ~7'-4 1/4\" over "
+                  "the stall mats, 4 1/4\" above the 7'-0\" minimum. ** NEVER ON A LAMP "
+                  "DIMMER: ** constant hot plus its included wall control."}),
     # N1: the 60" wet-listed porch fan.
     LuminaireType(tag="ED-T-LT-FAN60", name='60" porch ceiling fan with LED light kit, wet',
                   form=LuminaireForm.CEILING_FAN_LIGHT, type_mark="N1",

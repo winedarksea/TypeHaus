@@ -255,13 +255,13 @@ def test_room_blocks_say_name_area_and_ceiling_height() -> None:
 def test_a_room_over_two_ceiling_planes_labels_both() -> None:
     """``RM-B-GYM`` resolves TWO ceilings and the plan states both, on their own regions.
 
-    207 SF at 8'-0 5/8" under ``FS-M-EAST``'s I-joists and 78 SF at 7'-11 1/16" under
+    207 SF at 8'-0 3/16" under ``FS-M-EAST``'s I-joists and 78 SF at 7'-10 5/8" under
     ``SL-M-DECK``'s cast deck — the 1 9/16" step one flat bearing seat costs
     (houses/catlin/CLAUDE.md). Collapsing them to one number, or picking the bigger, would
     put a step the house is built with on no drawing at all.
 
-    Both captions are 5/16" lower than the structural datum would give them: the gym's floor
-    is a slab with a 5/16" covering, and the plan measures head from the FINISHED floor.
+    Both captions are 3/4" lower than the structural datum would give them: the gym's floor
+    is a slab under 3/4" stall mats, and the plan measures head from the FINISHED floor.
 
     ``RM-M-LIVING`` is the control: it spans the second floor's truss/I-joist split on one
     plane and gets ONE caption — a deck seam is not a step. (It resolved four records while
@@ -271,8 +271,8 @@ def test_a_room_over_two_ceiling_planes_labels_both() -> None:
     model, _ = resolve(load_plan(house).plan)
     printed = [node.content for node in build_floorplan(model, "basement").nodes
                if isinstance(node, Text) and node.layer == "A-AREA-IDEN"]
-    assert 'CLG 8\'-0 5/8" / 207 SF' in printed
-    assert 'CLG 7\'-11 1/16" / 78 SF' in printed
+    assert 'CLG 8\'-0 3/16" / 207 SF' in printed
+    assert 'CLG 7\'-10 5/8" / 78 SF' in printed
 
     assert len([c for c in model.ceilings if c.room_ref == "RM-M-LIVING"]) == 1
     main = [node.content for node in build_floorplan(model, "main").nodes
