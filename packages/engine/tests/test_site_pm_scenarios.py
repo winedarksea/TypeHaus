@@ -305,6 +305,17 @@ def test_validate_reports_two_visits_claiming_one_bom_row() -> None:
     assert not errors
 
 
+def test_a_rowless_visit_takes_what_its_siblings_leave() -> None:
+    item = _item("concrete", rows=(("concrete", "footing"), ("concrete", "slab")))
+    visits = {"task/concrete/building/footings": VisitEntry(rows=("concrete:footing",)),
+              "task/concrete/building/rest": VisitEntry()}
+    board = _board([item], visits=visits)
+    rows = {v.slug: v.rows for v in board.visits}
+    assert rows["task/concrete/building/rest"] == (("concrete", "slab"),)
+    errors, warnings = validate(board, None)
+    assert not errors and not any("fall to no visit" in line for line in warnings)
+
+
 # --- timing ----------------------------------------------------------------------------
 
 def _timed(**durations):

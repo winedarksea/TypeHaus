@@ -40,8 +40,7 @@ _PLATE_KINDS = frozenset({"plate", "raked_plate"})
 # Vertical wall members a piece of blocking legitimately nails into.
 _STUD_KINDS = frozenset({"stud", "corner", "king", "jack", "cripple"})
 # Stair carriage/infill categories, and the members a stair frame bears on or butts.
-# A skirt board is housed the same way: the treads, risers and stringers butt it.
-_STAIR_HOUSED = frozenset({"tread", "winder", "riser", "stair_skirt"})
+_STAIR_HOUSED = frozenset({"tread", "winder", "riser"})
 # ``partition`` (the U-stair well wall between the up/down runs), ``newel`` (the winder
 # newel every winder's narrow end converges on) and ``hanger`` (the ledger let into a
 # concrete foundation wall that carries a basement stringer) are stair carriage members:
@@ -182,8 +181,9 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     if kinds & _STAIR_BORNE and (kinds - _STAIR_BORNE) <= _STAIR_SUPPORT:
         return True
     # Two ledger/hanger bands of the same stair lapping at a landing-platform corner
-    # (e.g. a rim ledger meeting an edge-joist ledger on perpendicular concrete walls).
-    if kinds == {"hanger"} and same_parent:
+    # (e.g. a rim ledger meeting an edge-joist ledger on perpendicular concrete walls), or a
+    # skirted stringer's ledger lapping its skirt by the lane's shim gap (W-M-C5's 1/4").
+    if "hanger" in kinds and kinds <= {"hanger", "stair_skirt"} and same_parent:
         return True
     # A stair's wall ledger meeting the floor-opening framing at the head of its flight.
     # The flight arrives *at* the opening edge, so the ledger let into the shaft wall and

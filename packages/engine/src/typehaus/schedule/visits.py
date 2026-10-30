@@ -82,9 +82,12 @@ def _guid(slug: str) -> str:
 
 
 def visit_from(item: Any, slug: str, entry: VisitEntry, depends_on: tuple[str, ...], *,
-               implicit: bool, costs_entries: Any) -> Visit:
+               implicit: bool, costs_entries: Any,
+               claimed: frozenset[str] = frozenset()) -> Visit:
+    """``claimed``: rows a sibling visit names, which a visit naming none leaves to it."""
     rows = tuple(row for row in item.rows
-                 if not entry.rows or f"{row[0]}:{row[1]}" in entry.rows)
+                 if (f"{row[0]}:{row[1]}" in entry.rows if entry.rows
+                     else f"{row[0]}:{row[1]}" not in claimed))
     known = {f"{section}:{key}" for section, key in item.rows}
     orphan_rows = tuple(sorted(r for r in entry.rows if r not in known))
     tags = tuple(tag for tag in item.element_tags if _matches(tag, entry.element_tags))
@@ -159,11 +162,15 @@ def build_visits(work_items: Any, visits_state: Any, specs: tuple[Any, ...],
                                   VisitEntry(status=statuses.get(item.slug, "todo")),
                                   depends, implicit=True, costs_entries=costs_entries))
             continue
+        # A visit naming neither rows nor tags takes what its siblings leave, so one row can
+        # be split out of a package without listing every other row it holds.
+        claimed = frozenset(row for entry in authored.values() for row in entry.rows)
         for slug in sorted(authored):
             entry = authored[slug]
             out.append(visit_from(item, slug, entry,
                                   tuple(entry.depends_on) or tuple(item.depends_on),
-                                  implicit=False, costs_entries=costs_entries))
+                                  implicit=False, costs_entries=costs_entries,
+                                  claimed=claimed if not entry.element_tags else frozenset()))
     for slug, entry in sorted((visits_state.standalone if visits_state is not None
                                else {}).items()):
         out.append(standalone_visit(slug, entry))

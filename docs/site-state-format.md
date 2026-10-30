@@ -42,6 +42,8 @@ after framing.
 # derive_guid(project_uuid, slug) — never hand-minted (see the root CLAUDE.md).
 label = "House + court footings, belled piers"
 rows = ["concrete:footing"]                        # optional subset of the package's BOM rows
+                                                   # (a sibling naming neither rows nor tags
+                                                   # takes what the others leave)
 element_tags = ["FT-B-*", "FT-SG-*"]               # globs, matched against the package's tags
 depends_on = ["task/earth/basement", "insp/erosion"]   # visit slugs and/or insp/<id>
 status = "scheduled"          # todo | scheduled | in_progress | done | verified

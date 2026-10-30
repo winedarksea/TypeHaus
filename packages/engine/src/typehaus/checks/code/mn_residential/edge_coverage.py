@@ -159,6 +159,7 @@ def _stair_throat_quads(ctx: CheckContext, surface: float) -> list:
 
     quads = []
     for stair in ctx.model.stairs:
+        throat = []
         for stations in _flight_stations(stair).values():
             pairs = list(zip(stations, stations[1:], strict=False))
             for index, ((a0, b0, z0), (a1, b1, z1)) in enumerate(pairs):
@@ -179,13 +180,19 @@ def _stair_throat_quads(ctx: CheckContext, surface: float) -> list:
                         b1 = (b1[0] + ux * reach, b1[1] + uy * reach)
                 quad = _ShapelyPolygon([a0, b0, b1, a1])
                 if quad.is_valid and quad.area > 1e-6:
-                    quads.append(quad)
-        # A skirt board stands between the treads and the well edge: part of the stairway.
+                    throat.append(quad)
+        quads += throat
+        # A skirt board stands between the treads and the well edge, so beside the throat it
+        # is part of the stairway. Only there: further down the flight it is no guard.
         for member in stair.members:
-            if (member.category == "stair_skirt"
-                    and member.z1_m >= surface - _GUARD_THROAT_Z_WINDOW_M):
-                ring, _, _ = member_footprint(member)
-                quads.append(_ShapelyPolygon(ring).buffer(_SKIRT_FOOTPRINT_SLOP_M))
+            if member.category != "stair_skirt":
+                continue
+            board = _ShapelyPolygon(member_footprint(member)[0])
+            reach = member.plan_width_m + _SKIRT_FOOTPRINT_SLOP_M
+            for quad in throat:
+                beside = board.intersection(quad.buffer(reach, join_style=2))
+                if beside.area > 1e-9:
+                    quads.append(beside.buffer(_SKIRT_FOOTPRINT_SLOP_M, join_style=2))
     return quads
 
 

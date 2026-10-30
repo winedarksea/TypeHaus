@@ -561,7 +561,7 @@ rows = ["allowances:finish-floor-prep-and-self-levelling",
         "floor_finishes:catlin-ditra-heat", "floor_finishes:catlin-ditra-xl",
         "floor_finishes:catlin-plant-sureply", "floor_finishes:catlin-plant-vinyl-raised",
         "floor_finishes:coated-concrete", "floor_finishes:lvp",
-        "floor_finishes:oak-floor-custom", "floor_finishes:rubber",
+        "floor_finishes:oak-floor-custom", "floor_finishes:catlin-rubber-stall-mat",
         "floor_finishes:sealed-concrete", "floor_finishes:vinyl-sheet",
         "interior_trim:flash-cove",
         "sheet_goods:aluminum-deck", "sheet_goods:trex-enhance-basics"]
@@ -602,3 +602,23 @@ rows = ["allowances:cabinet-closet-shelving-and-rod",
         "envelope_layers:catlin-sauna-ceiling-shiplap",
         "envelope_layers:catlin-sauna-shiplap",
         "envelope_layers:pvc-panel"]
+
+# --- ST-M2S SKIRTS: before the stair, not with the trim (2026-10-30) ---------------------------
+# The skirts go up first and the stringers, treads and risers butt them, so the stair waits on
+# them. The skirt row is split out of the second storey's millwork; the rest of that package is
+# the rowless fit-out visit, which takes whatever the skirts do not name.
+[visits."task/millwork/second/stair-skirts"]
+label = "ST-M2S skirt boards — poplar 1x12, scribed to the walls before the stair goes in"
+rows = ["interior_trim:poplar-skirt-paint"]
+depends_on = ["task/drywall/building", "task/drywall/second"]
+constraints = [
+  { label = "boards primed and back-primed; finish coats with the trim (task/paint/building/interior#trim)" },
+]
+
+[visits."task/millwork/second/fit-out"]
+label = "Second-floor fit-out — shelving, mirrors, bath accessories, IKEA fronts and shades"
+
+[visits."task/stairs/building/flights"]
+label = "Stairs — stringers, oak treads and risers, landings and rails"
+depends_on = ["task/drywall/building", "task/drywall/second",
+              "task/millwork/second/stair-skirts"]
