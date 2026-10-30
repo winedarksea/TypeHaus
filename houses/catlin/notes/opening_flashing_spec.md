@@ -146,7 +146,9 @@ Sequence at an opening, step 0 on the flat deck, the rest after the foam:
    go on). One FastFlash application on each buck's **wall-side face**, sheathing to mount
    plane; over the buck's **front edge**; and a **4" band on the sheathing** round the RO,
    corners lapped (`FLASHING.raccoon_band_m`). The foam later laps over the band. The sill
-   buck's front edge is left to the pan's drip coat (step 3).
+   buck's front edge is left to the pan's drip coat (step 3). The 20-mil coat sits between
+   the buck and the post, which goes on over it with no framing move; the model draws the
+   overlap rather than reserving it.
 
 1. **Gauge the foam** at the reveal. It is shaved 1/2" behind the block's outer face; a
    ragged or under-shaved face is a substrate problem, not a coverage problem.

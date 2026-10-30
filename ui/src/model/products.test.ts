@@ -69,6 +69,8 @@ export function runProductTests() {
   assert(pieceProduct(withDoor, door, "casing:CA1:leg_left").product === WASHTOWER
     && pieceProduct(withDoor, door, "casing:CA1:leg_left").label === "Casing, leg left",
   "A casing leg takes its material's product and reads as the leg");
+  assert(pieceProduct(withDoor, door, "exterior_trim:head").product === null,
+    "Exterior casing is not the window's product");
 
   console.log("Product reference tests passed.");
 }

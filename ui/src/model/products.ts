@@ -72,6 +72,8 @@ export function pieceProduct(model: Model, opening: Opening, piece: string): Pie
     return { label, product: productForMaterial(model, board?.material_ref),
              detail: board?.material_ref ?? null };
   }
+  // Exterior casing is a trim category, not part of the window product.
+  if (role === "exterior_trim") return { label, product: null, detail: "window trim" };
   if (role === "casing" || role === "stool") {
     const uid = piece.split(":")[1];
     const trim = role === "casing"
