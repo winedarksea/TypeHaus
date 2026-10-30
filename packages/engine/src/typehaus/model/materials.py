@@ -272,6 +272,9 @@ class Material(HausModel):
     # means "trim". Authored on the floor, not on the room or an engine table, because the
     # base is a fact about the floor (decision #57).
     base_detail: Literal["trim", "tile", "integral_cove", "resilient_base", "none"] | None = None
+    # The sealant along the base's toe where it meets this floor (the floor's perimeter
+    # movement joint), billed by the LF of base. Authored on the floor (decision #57).
+    base_joint_ref: str | None = None
     # The chosen product this material *is*, by ``Product.tag`` (model/product.py).
     # ``None`` is the ordinary case: "5/8\" type X gypsum board" is a specification, and a
     # specification is what most of a house is bought against. Naming a product narrows it

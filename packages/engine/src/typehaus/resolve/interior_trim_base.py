@@ -10,8 +10,11 @@ on a wall whose room-side layer is a FINISH, and breaks those at:
 * what stands against the wall below the base's top (``TrimScope.fixed_footprints``):
   casework, a basin fixture or a wall-hung one (not a floor WC, which the base runs
   behind), an appliance. A floating vanity clears it and the base runs under;
+* a raised platform (an enclosed tub deck);
 * a non-wood paneling band from the floor (a tile surround). A wood band carries the base
   on its face instead, offset by its thickness.
+
+A break is the box's own width along the face, so the base butts it rather than stopping short.
 
 What survives is cut at every corner into straight pieces, butt-jointed: at an inside
 corner the incoming piece runs to the far face and the outgoing one butts it; at an
@@ -30,8 +33,8 @@ from typehaus.resolve.room_walls import _TOUCH_M, bounding_wall_arcs
 _AGAINST_M = 2 * 0.0254
 # A stair-well ledge narrower than this is not floor a base could sit on.
 _WELL_LEDGE_M = 4 * 0.0254
-# Float slop between a casing's face and the room ring it lands on: a nanometre, so the
-# shared face is found and the base still stops at the casing.
+# Float slop between a box's face and the room ring it lands on: a nanometre, so the
+# shared face is found and the base still stops at the box.
 _MEETS_M = 1e-9
 # A casing leg set off the face by a board-thickness change (1/2" over a 5/8" casing) still
 # meets the base. Wider than this is another wall's casing, not this face's.
@@ -87,36 +90,53 @@ def _room_runs(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
                 breaks.append((a, b, opening.tag))
     for a, b in rp.floor_opening_intervals(plan, ring, room.storey, _WELL_LEDGE_M):
         breaks.append((a, b, "floor opening"))
-    for tag, polygon in _obstacles(plan, model, scope, room, floor_z):
-        for a, b in rp.fronting_intervals(ring, [polygon], _AGAINST_M):
-            breaks.append((a, b, tag))
-    # A casing leg stands proud of the face at a door corner: the base butts its outer edge.
-    # Each side of the ring reaches the leg by that side's own standoff, so a leg set off one
-    # face by a board-thickness change still stops the base on that face.
     sides = [LineString([ring[i], ring[(i + 1) % len(ring)]]) for i in range(len(ring))]
+    for tag, polygon in _obstacles(plan, model, scope, room, floor_z):
+        breaks.extend((a, b, tag) for a, b in _butting(sides, polygon, _AGAINST_M))
+    # A casing leg set off one face by a board-thickness change still stops the base there.
     for tag, polygon in _casing_footprints(model, room, floor_z, height):
-        for side in sides:
-            standoff = side.distance(polygon)
-            if standoff > _CASING_STANDOFF_M:
-                continue
-            for a, b in rp.fronting_intervals(ring, [polygon], standoff + _MEETS_M):
-                breaks.append((a, b, tag))
+        breaks.extend((a, b, tag) for a, b in _butting(sides, polygon, _CASING_STANDOFF_M))
     wood: list[tuple[float, float, float]] = []
     for band in model.panelings:
         if band.room != room.tag or band.band_z0_m > _FROM_FLOOR_M or not band.outline:
             continue
         material = scope.materials.get(band.material_ref)
-        spans = rp.fronting_intervals(ring, [Polygon(band.outline)], _TOUCH_M)
         if band.retains_baseboard or getattr(material, "species", None):
             offset = 0.0 if band.replaces_wall_finish else band.thickness_m
+            spans = rp.fronting_intervals(ring, [Polygon(band.outline)], _TOUCH_M)
             wood.extend((a, b, offset) for a, b in spans)
         else:
+            spans = _butting(sides, Polygon(band.outline), _TOUCH_M)
             breaks.extend((a, b, band.tag) for a, b in spans)
 
     kept = _subtract(rp.merged_intervals(finish, perimeter),
                      rp.merged_intervals([(a, b) for a, b, _ in breaks], perimeter))
     pieces = _cut(ring, kept, wood, owned)
     return _runs(room, kind, scope, ring, perimeter, pieces, owned, breaks, floor_z, height)
+
+
+def _butting(sides, polygon, max_standoff: float) -> list[tuple[float, float]]:
+    """Ring intervals where ``polygon`` stands within ``max_standoff`` of a side.
+
+    Each side reaches by its own standoff, so the break is the polygon's own width along that
+    face: a buffer by the full allowance would stop the base that much short of it as well.
+    """
+    from shapely.geometry import Point
+
+    if not polygon.is_valid or polygon.is_empty:
+        return []
+    out, s = [], 0.0
+    for side in sides:
+        standoff = side.distance(polygon)
+        if standoff <= max_standoff:
+            hit = side.intersection(polygon.buffer(standoff + _MEETS_M))
+            for piece in getattr(hit, "geoms", (hit,)):
+                if piece.is_empty or piece.length <= 0:
+                    continue
+                offsets = [side.project(Point(coord)) for coord in piece.coords]
+                out.append((s + min(offsets), s + max(offsets)))
+        s += side.length
+    return out
 
 
 def _one_door(model, ring, room, scope: TrimScope, opening) -> list[tuple[float, float]]:
@@ -141,6 +161,11 @@ def _obstacles(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
     for stair in model.stairs:
         if stair.storey == room.storey and len(stair.outline) >= 3:
             yield stair.tag, Polygon(stair.outline)
+    # A raised platform (an enclosed tub deck, a bench) is a box the base never runs behind.
+    for solid in model.solids:
+        if (solid.category == "slab_platform" and solid.storey == room.storey
+                and solid.z1_m > top and len(solid.outline) >= 3):
+            yield solid.tag, Polygon(solid.outline)
 
 
 def _casing_footprints(model: ResolvedModel, room: ResolvedRoom, floor_z: float, height: float):

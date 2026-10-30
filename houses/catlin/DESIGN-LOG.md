@@ -6622,3 +6622,18 @@ Every held door now frames its derived or published RO. The per-door resolutions
 D-S-NCLOSET's flat head would not fit under SF-S-HP1 with a double plate, so W-S-CLN-S takes
 a single top plate (R602.5, nonbearing). D-B-CLOSET's derived leaf clipped EQ-B-WH at 90
 degrees. The equipment outranks the door, so the door takes a 75-degree stop.
+
+
+## Tile-bath base: painted PVC, silicone at the toe (2026-10-29)
+
+The four tile baths drop the cut-tile base for the painted 3/4" x 3 1/2" `pvc-trim` RM-M-BATH1
+already used. The cut-tile base was never ordered, had no top-edge finish and no named joint, and
+the mosaics are impractical to cut. The floor tile stops 1/4" off the wall, and the base sits on
+the tile over that gap. The toe takes a white silicone bead, never grout. The bead is
+`catlin-base-toe-silicone` (GE 2812565), named by each floor's `base_joint_ref` and billed by the
+LF of base. The plant room's rubber cove base takes the same bead.
+
+Two base-run bugs were fixed in the engine with this change. Every base used to stop about 2"
+short of the fixture or casework it dies into, because the break was buffered along the wall as
+well as off it. Now each break is the box's own width. And about 35" of RM-M-BATH2 base was
+drawn inside the enclosed tub deck. A raised platform is now a base obstacle.

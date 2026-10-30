@@ -15,10 +15,10 @@ from typehaus.server.model_json import model_to_dict
 
 
 def test_trim_reaches_the_viewer_as_drawable_boards(catlin_model_ro):
-    """Every base run is sent, the tile, flash-cove and rubber bases included, with its kind."""
+    """Every base run is sent, the flash-cove and rubber bases included, with its kind."""
     payload = model_to_dict(catlin_model_ro)
     runs = catlin_model_ro.base_runs
-    assert {r.kind for r in runs} == {"trim", "tile", "integral_cove", "resilient_base"}
+    assert {r.kind for r in runs} == {"trim", "integral_cove", "resilient_base"}
     assert {(row["uid"], row["kind"]) for row in payload["base_runs"]} == {
         (r.uid, r.kind) for r in runs}
     rooms = {room.uid for room in catlin_model_ro.rooms}
@@ -50,7 +50,7 @@ def test_glb_draws_the_same_boards_selecting_as_room_and_door(catlin_model_ro):
                    for primitive in gltf["meshes"][node["mesh"]]["primitives"])
     assert vertices == 36 * (sum(len(band.pieces) for band in suite) + 9)
     rooms = {room.tag: room.uid for room in catlin_model_ro.rooms}
-    # A base lands on its kind's trade: a board on millwork, tile on tile, a cove on flooring.
+    # A base lands on its kind's trade: a board on millwork, a cove on flooring.
     # Room floors are flooring|room nodes too, so count against an emit without the base.
     bare = copy.copy(catlin_model_ro)
     bare.base_runs = []
@@ -60,7 +60,7 @@ def test_glb_draws_the_same_boards_selecting_as_room_and_door(catlin_model_ro):
         return Counter(n["extras"]["uid"] for n in doc["nodes"]
                        if n["extras"].get("trade") == trade and n["extras"].get("kind") == "room")
 
-    for trade in ("millwork", "tile", "flooring"):
+    for trade in ("millwork", "flooring"):
         drawn = Counter(rooms[r.room] for r in catlin_model_ro.base_runs
                         if base_run_prisms(r) and base_run_trade(r) == trade)
         assert drawn and room_nodes(gltf, trade) - room_nodes(without, trade) == drawn, trade
@@ -96,7 +96,7 @@ def test_trim_exports_as_ifc_skirting_and_moldings(catlin_model_ro, catlin_ifc_p
         assert product.GlobalId == derive_guid(project, run.uid)
         assert ifcopenshell.util.element.get_psets(product)[PSET_SOURCE]["room"] == run.room
         assert ifcopenshell.util.element.get_psets(product)[PSET_SOURCE]["kind"] == run.kind
-    assert {r.kind for r in drawn} == {"trim", "tile", "integral_cove", "resilient_base"}
+    assert {r.kind for r in drawn} == {"trim", "integral_cove", "resilient_base"}
     for casing in catlin_model_ro.door_casings:
         product = coverings[casing.tag]
         assert product.PredefinedType == "MOLDING"

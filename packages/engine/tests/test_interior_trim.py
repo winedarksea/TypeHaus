@@ -376,12 +376,13 @@ def test_catlin_base_scope_follows_the_standard_and_the_floor(catlin_model_ro) -
     assert {"RM-B-STAIR", "RM-S-PLANT"} <= rooms
     assert rooms.isdisjoint({"RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM",
                              "RM-GARAGE", "RM-A-POCKET", "RM-A-EAST-UNFIN"})
-    # Painted pine base; PVC where a bath's floor takes a board; the sauna's locust.
+    # Painted pine base; PVC in the baths, tile ones included; the sauna's locust.
     stock = {r.room: r.material_ref for r in catlin_model_ro.base_runs if r.kind == "trim"}
     assert stock["RM-S-HALL"] == stock["RM-B-STAIR"] == "pine-fj-base"
-    assert stock["RM-M-BATH1"] == "pvc-trim" and stock["RM-B-SAUNA"] == "locust-trim"
+    assert stock["RM-B-SAUNA"] == "locust-trim"
+    tile_baths = ("RM-M-BATH2", "RM-S-BATH1", "RM-S-SUITEBATH", "RM-S-VANITY")
+    assert all(stock[room] == "pvc-trim" for room in ("RM-M-BATH1", *tile_baths))
     kinds = {r.room: r.kind for r in catlin_model_ro.base_runs}
-    assert kinds["RM-M-BATH2"] == "tile" and kinds["RM-S-SUITEBATH"] == "tile"
     assert kinds["RM-B-BATH"] == "integral_cove" and kinds["RM-A-STUDIO"] == "integral_cove"
     assert kinds["RM-S-PLANT"] == "resilient_base" and kinds["RM-S-HALL"] == "trim"
     # MDF casing; PVC on the wet faces; cedar in the sauna; two hardwood accent faces.
@@ -396,6 +397,25 @@ def test_catlin_base_scope_follows_the_standard_and_the_floor(catlin_model_ro) -
         assert stock == expected, face
     assert casing[("D-S-PLANT", "RM-S-PLANT")] == "pvc-trim"
     assert casing[("D-S-SUITE", "RM-S-HALL")] == "mdf-casing"
+
+
+def test_catlin_bath2_base_butts_the_tub_deck_and_bills_its_toe_joint(catlin_model_ro) -> None:
+    """No base inside the enclosed tub deck; the HS1 run ends on the apron's face."""
+    from shapely.geometry import Polygon
+
+    from typehaus.takeoff.interior_trim import interior_trim_takeoff
+
+    model = catlin_model_ro
+    deck = next(Polygon(s.outline) for s in model.solids if s.tag == "SL-M-TUBDK")
+    bath2 = [r for r in model.base_runs if r.room == "RM-M-BATH2"]
+    assert not [r.tag for r in bath2 if Polygon(r.piece.outline).intersection(deck).area > 1e-6]
+    apron = next(b for b in model.panelings if b.tag == "WP-M-BATH2-TUBDK-APRON")
+    face_x = min(x for x, _y in apron.outline)
+    hs1 = [r for r in bath2 if r.wall_tag == "W-M-HS1"]
+    assert min(abs(x - face_x) for r in hs1 for x, _y in r.piece.outline) < 0.0625 * 0.0254
+    rows = interior_trim_takeoff(model)
+    feet = {(r["kind"], r["room"]): r["length_ft"] for r in rows}
+    assert feet[("base joint", "RM-S-BATH1")] == feet[("baseboard", "RM-S-BATH1")]
 
 
 def test_catlin_expected_clips(catlin_model_ro) -> None:

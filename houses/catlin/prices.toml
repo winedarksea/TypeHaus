@@ -5347,7 +5347,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # oak is LABOUR ONLY (the stock is the `haus millwork` cut list).
 "pine-fj-base" = { material = { low = 1.0, high = 1.8 }, labour = { low = 3.0, high = 5.5 } }
 "mdf-casing:door casing" = { material = { low = 0.8, high = 1.5 }, labour = { low = 4.0, high = 8.0 } }
-"pvc-trim" = { material = { low = 2.5, high = 4.5 }, labour = { low = 3.0, high = 5.5 } }  # RM-M-BATH1's LVP base
+"pvc-trim" = { material = { low = 2.5, high = 4.5 }, labour = { low = 3.0, high = 5.5 } }  # all five baths' base
 "pvc-trim:door casing" = { material = { low = 2.5, high = 4.5 }, labour = { low = 4.0, high = 8.0 } }
 "cherry-trim:door casing" = { material = { low = 1.6, high = 3.0 }, labour = { low = 4.0, high = 8.0 } }  # D-S-SUITE's bedroom face
 "oak-trim:door casing" = { material = { low = 0, high = 0 }, labour = { low = 4.0, high = 8.0 } }  # D-A-STUDY
@@ -5360,12 +5360,13 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # A poplar alternate to the painted pine and MDF, kept priced.
 "poplar-trim-paint" = { material = { low = 1.6, high = 2.75 }, labour = { low = 3.0, high = 5.5 } }
 "poplar-trim-paint:door casing" = { material = { low = 1.6, high = 2.75 }, labour = { low = 4.0, high = 8.0 } }
-# Tile rooms take a cut-tile base off the field tile; the setter's labour is most of it.
-"tile-base" = { material = { low = 2, high = 5 }, labour = { low = 8, high = 14 } }
 # Sheet-vinyl rooms flash the sheet up the wall on a cove stick with a cap strip.
 "flash-cove" = { material = { low = 1.5, high = 3 }, labour = { low = 6, high = 12 } }
-# RM-S-PLANT: 4" Johnsonite rubber cove base, adhered, silicone bead at the toe. Allowance.
+# RM-S-PLANT: 4" Johnsonite rubber cove base, adhered. Allowance; the toe bead is its own row.
 "resilient-base" = { material = { low = 1.5, high = 3.5 }, labour = { low = 2, high = 4 } }
+# Silicone toe bead under the tile baths' PVC base and the plant room's cove base (GE 2812565).
+# ESTIMATE: ~$8-11 per 10.1 oz tube over ~30-45 LF of 1/4" bead; tooled at base install.
+"catlin-base-toe-silicone" = { material = { low = 0.2, high = 0.4 }, labour = { low = 0.4, high = 0.9 } }
 
 [stair_treads]
 # Eight complete 36 x 11 in tread assemblies across ST-G-SERVICE and ST-SG-PORCH,

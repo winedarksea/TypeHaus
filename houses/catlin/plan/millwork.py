@@ -89,13 +89,13 @@ MILLWORK = [
     # Base and door casing, derived per room and per door face (resolve/interior_trim.py),
     # 3/4" x 3 1/2" S4S, butt-jointed, flush where base meets leg (2026-10-19). Bought and
     # painted the wall white: finger-jointed pine base, MDF casing. The baths and the plant
-    # room take PVC casing (and PVC base where the floor is not tile or vinyl). The sauna keeps
+    # room take PVC casing, and PVC base wherever the floor is not vinyl. The sauna keeps
     # locust base and cedar casing. Two hardwood accents: cherry on D-S-SUITE's bedroom face,
     # red oak on D-A-STUDY (it matches the study bridge infill).
     # The base goes in after the hard floors, so there is no shoe; carpet tucks under it.
     # tasks.toml's trim visit names its rows by stock: rename them with the stock.
-    #   * Tile rooms take a tile base and vinyl rooms a flash cove: the floor material's
-    #     `base_detail`, not a list here.
+    #   * Tile rooms take the PVC base, silicone at its toe (owner 2026-10-29); only vinyl
+    #     rooms keep a floor-made base: the floor material's `base_detail`, not a list here.
     #   * Excluded: the basement utility rooms. The garage and the unfinished attic fall out
     #     on their own (unconditioned / no floor finish).
     TrimStandard(

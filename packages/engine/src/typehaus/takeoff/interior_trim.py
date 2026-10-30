@@ -3,7 +3,8 @@
 The ``room_perimeter_lf`` a trim lump was always waiting for. One row per (kind, room,
 material). ``kind`` is ``baseboard`` / ``door casing`` for boards, ``tile base`` /
 ``flash cove`` for a base the floor trade makes from the floor itself, ``resilient base`` for
-a set-on rubber cove base.
+a set-on rubber cove base, ``base joint`` for the sealant bead at the toe of any base whose
+floor names a ``Material.base_joint_ref`` (billed by the LF of base, keyed by the sealant).
 
 ``item`` is the price key: the board's stock tag for a board, ``tile-base`` / ``flash-cove`` /
 ``resilient-base``
@@ -26,7 +27,9 @@ _ITEM = {"tile": "tile-base", "integral_cove": "flash-cove", "resilient_base": "
 
 
 def interior_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    names = {m.tag: m.name for m in model.plan.library.materials}
+    materials = {m.tag: m for m in model.plan.library.materials}
+    names = {tag: m.name for tag, m in materials.items()}
+    floors = {room.tag: room.floor_finish for room in model.rooms}
     length: dict[tuple, float] = defaultdict(float)
     pieces: dict[tuple, int] = defaultdict(int)
     inside: dict[tuple, int] = defaultdict(int)
@@ -42,6 +45,12 @@ def interior_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         inside[key] += run.end_corner == "inside"
         outside[key] += run.end_corner == "outside"
         tags[key].append(run.room)
+        joint = getattr(materials.get(floors.get(run.room) or ""), "base_joint_ref", None)
+        if joint:
+            key = ("base joint", run.room, joint, joint)
+            length[key] += run.length_m
+            pieces[key] += 1
+            tags[key].append(run.room)
     for casing in model.door_casings:
         key = ("door casing", casing.room, casing.material_ref, casing.material_ref)
         length[key] += sum(piece.length_m for piece in casing.pieces)

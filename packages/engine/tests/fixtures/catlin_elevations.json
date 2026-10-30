@@ -28289,24 +28289,6 @@
 2,
 "6d6aff8bad6f"
 ],
-"geometry/CMR404AAAA-base-CMW122AAAA-1/body": [
-0.0381,
-0.127,
-2,
-"6d6aff8bad6f"
-],
-"geometry/CMR404AAAA-base-CMW123AAAA-0/body": [
-0.0381,
-0.127,
-2,
-"6d6aff8bad6f"
-],
-"geometry/CMR404AAAA-base-CMW127AAAA-0/body": [
-0.0381,
-0.127,
-2,
-"6d6aff8bad6f"
-],
 "geometry/CMR404AAAA-ceiling/body": [
 2.7305,
 2.746375,
@@ -28332,6 +28314,12 @@
 "fc5a78449a43"
 ],
 "geometry/CMR405AAAA-base-CMW128AAAA-0/body": [
+0.02405,
+0.11295,
+2,
+"fc5a78449a43"
+],
+"geometry/CMR405AAAA-base-CMW129AAAA-0/body": [
 0.02405,
 0.11295,
 2,

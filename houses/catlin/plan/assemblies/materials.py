@@ -327,7 +327,7 @@ MATERIALS = [
              source="Primed MDF 1x4, painted in the wall colour. Kept out of the wet rooms: MDF swells at a cut edge."),
     Material(tag="pvc-trim", name='Cellular PVC trim, 3/4" x 3 1/2" S4S',
              hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
-             source="White cellular PVC 1x4 (Azek/Versatex class), painted with the walls. The bathrooms and the 70% RH plant room."),
+             source="White cellular PVC 1x4 (Azek/Versatex class), painted with the walls. The bathrooms and the 70% RH plant room. In the tile baths it goes in after tile: stainless trim nails + PVC adhesive, sitting on the tile."),
     Material(tag="mdf-panel-painted", name='Paint-grade MDF backing, 1/4", white enamel',
              color="#f0ede6", finish="satin-enamel",
              source="Bought 1/4 inch MDF sheets over continuous gypsum. Prime faces and cut edges; white enamel matching trim. Includes field painting in the paneling rate."),

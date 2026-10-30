@@ -432,6 +432,16 @@ DURAVIT_B2_POWDER_FAUCET = Product(
            '?ncat=faucets&nser=1821&product=4147387',
 )
 
+# The toe joint of the PVC base in the four tile baths and the plant room's rubber cove base:
+# white, to match the painted base above it. Not paintable, and need not be.
+GE_SILICONE_2_KB_WHITE = Product(
+    tag="PROD-GE-2812565", brand="GE", model="2812565",
+    name="Advanced Silicone 2 Kitchen & Bath sealant, white, 10.1 oz",
+    url="https://www.homedepot.com/p/317778410",
+    source="Home Depot Internet # 317778410, model 2812565, read 2026-10-29: 100% silicone, "
+           "mold-free, waterproof, shower-ready in 30 min.",
+)
+
 INTERIOR_PRODUCTS = (
     DURAVIT_DCODE_070545, DURAVIT_B2_POWDER_FAUCET, TOTO_AP_WALLHUNG, TOTO_DUOFIT_WT173M, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
     TOTO_WASHLET_S5, KOHLER_CACHET_SEAT,
@@ -444,6 +454,6 @@ INTERIOR_PRODUCTS = (
     IKEA_AXSTAD_WHITE, IKEA_BAGGANAS_KNOB_BLACK, IKEA_BAGGANAS_PULL_BLACK,
     SCHLAGE_LATITUDE, YALE_ASSURE_2,
     MSI_Q_QUARTZ_SPECKLED, MARAZZI_MODERN_FORMATION, TILEBAR_BRONX_WHITE,
-    SCHLUTER_KERDI_LINE_VARIO, KATELAUREL_ESTERO,
+    SCHLUTER_KERDI_LINE_VARIO, KATELAUREL_ESTERO, GE_SILICONE_2_KB_WHITE,
     *LIGHTING_PRODUCTS,
 )

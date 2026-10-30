@@ -139,6 +139,24 @@ def unknown_wood_material_ref(ctx: CheckContext) -> list[Finding]:
     return findings
 
 
+@check(Tier.INTEGRITY, "integrity.unknown_floor_material_ref")
+def unknown_floor_material_ref(ctx: CheckContext) -> list[Finding]:
+    """A floor's companion layers and base toe joint name real materials, or bill as UNKNOWN."""
+    known = {m.tag for m in ctx.plan.library.materials}
+    findings = []
+    for material in ctx.plan.library.materials:
+        refs = [*material.floor_companion_refs,
+                *([material.base_joint_ref] if material.base_joint_ref else [])]
+        for ref in sorted(set(refs) - known):
+            findings.append(Finding(
+                severity=Severity.ERROR, check_id="integrity.unknown_floor_material_ref",
+                message=f"floor material {material.tag!r} names material {ref!r}, absent from "
+                        "catalog",
+                element_tags=(material.tag,), result=Result.FAIL,
+                fix_hint="correct the reference, or add the Material to the house catalog"))
+    return findings
+
+
 @check(Tier.INTEGRITY, "integrity.register_duct_ref")
 def register_duct_ref(ctx: CheckContext) -> list[Finding]:
     """``Register.duct_ref`` names a real ``DuctRun``, or the register says why it needs none.

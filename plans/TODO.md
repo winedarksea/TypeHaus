@@ -290,7 +290,6 @@ the future.
 - SL-SG-STAIRPAD is a slightly different finished height than SL-WK-D. They should have the same finished height.
 - D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
 - Might be worth writing up ICF in cost options as an alternative exterior wall setup (for the house) something like the Quadlock 'plus' form which with 4.25" of EPS on each side delivers R-38.
-- Check the modeling of the baseboard/tile surround in tile rooms. Is it fully and correctly detailed?
 - Properly model the drywall channels used (ie corners, and especially for the LED light strips)
 - Make sure the plumbing matches fixtures to their right locations on their connections
 - Make sure sizing and dimensions and placement are correct for junction boxes (ie for LED power supplies), with specified product.
