@@ -1,3 +1,11 @@
+## ST-M2S stair skirts (2026-10-30)
+
+- **Painted poplar 1x12 skirts on all four sides of ST-M2S's flights** (`TRIM-STANDARD.stair_skirt`),
+  set before the oak, so treads and risers are 40 15/16" (were 42 7/16"; R311.7.1 clear past the
+  rail 38.1"). The landing takes the ordinary base, four pieces with two inside corners: W-M-C5
+  runs past the landing edge to y 397, so it is a fourth piece. The well edge backs the west
+  board at the stairhead. ST-S2A's winders stay unskirted. Arithmetic: `notes/stair_skirt_basis.md`.
+
 ## IKEA SEKTION order list (2026-10-30)
 
 `plans/TODO.md` asked for a BOM that shows every SEKTION part, soft close included. Each

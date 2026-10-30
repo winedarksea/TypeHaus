@@ -21,6 +21,7 @@ import math
 from typehaus.checks.code.mn_residential.stairs import _flight_stations
 from typehaus.checks.registry import CheckContext
 from typehaus.quantities import inch
+from typehaus.resolve.framing.footprint import member_footprint
 
 #: R312.1.2, at open sides of walking surfaces.
 _GUARD_MIN_HEIGHT = inch(36)
@@ -30,6 +31,8 @@ _GUARD_TRIGGER_DROP = inch(30)
 _GUARD_THROAT_Z_WINDOW_M = 0.5
 #: Stretch the arrival quad ~a tread to the finished edge.
 _GUARD_THROAT_REACH_M = 0.45
+#: Float slop so a skirt whose back face IS the well edge reads as touching it.
+_SKIRT_FOOTPRINT_SLOP_M = 1e-4
 
 
 def _segment_cover_intervals(p0, p1, closures, railings, stair_quads, *,
@@ -177,6 +180,12 @@ def _stair_throat_quads(ctx: CheckContext, surface: float) -> list:
                 quad = _ShapelyPolygon([a0, b0, b1, a1])
                 if quad.is_valid and quad.area > 1e-6:
                     quads.append(quad)
+        # A skirt board stands between the treads and the well edge: part of the stairway.
+        for member in stair.members:
+            if (member.category == "stair_skirt"
+                    and member.z1_m >= surface - _GUARD_THROAT_Z_WINDOW_M):
+                ring, _, _ = member_footprint(member)
+                quads.append(_ShapelyPolygon(ring).buffer(_SKIRT_FOOTPRINT_SLOP_M))
     return quads
 
 

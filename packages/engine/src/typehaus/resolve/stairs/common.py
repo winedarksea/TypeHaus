@@ -44,6 +44,20 @@ _WELL_PARTITION_THICKNESS_M = inch(
     _WELL_PARTITION_STUD_IN + 2 * _WELL_PARTITION_FINISH_IN).meters
 
 
+def _millwork_standard(model):
+    from typehaus.model.millwork import MillworkStandard
+
+    return next((el for el in model.plan.all_elements()
+                 if isinstance(el, MillworkStandard)), None)
+
+
+def _landing_deck(model, stair: Stair):
+    """The house's hardwood landing declaration when it names this flight."""
+    standard = _millwork_standard(model)
+    deck = standard.landing_deck if standard is not None else None
+    return deck if deck is not None and stair.tag in deck.stair_refs else None
+
+
 def _tread_thickness(stair: Stair) -> float:
     """The stock thickness under this flight's walking surfaces, in metres.
 

@@ -5408,6 +5408,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # $5-9/bf (cherry), $4-8/bf (locust, cedar), ~0.33 rough bf per LF with waste. Owner-milled
 # oak is LABOUR ONLY (the stock is the `haus millwork` cut list).
 "pine-fj-base" = { material = { low = 1.0, high = 1.8 }, labour = { low = 3.0, high = 5.5 } }
+# ST-M2S's four raked poplar 1x12 skirts, by the LF of blank. ESTIMATE: $3-5/LF stock;
+# labour scribes and fits each board before the treads, then primes and paints it.
+"poplar-skirt-paint" = { material = { low = 3.0, high = 5.0 }, labour = { low = 8.0, high = 14.0 } }
 "mdf-casing:door casing" = { material = { low = 0.8, high = 1.5 }, labour = { low = 4.0, high = 8.0 } }
 "pvc-trim" = { material = { low = 2.5, high = 4.5 }, labour = { low = 3.0, high = 5.5 } }  # all five baths' base
 "pvc-trim:door casing" = { material = { low = 2.5, high = 4.5 }, labour = { low = 4.0, high = 8.0 } }

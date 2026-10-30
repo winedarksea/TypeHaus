@@ -27,6 +27,7 @@ from typehaus.model import (
     ShelfBay,
     ShelfProcurement,
     StairLandingMillwork,
+    StairSkirt,
     TrimStandard,
 )
 
@@ -134,6 +135,10 @@ MILLWORK = [
         min_leg_width=inch(1.5),
         # Boards come in 8' lengths: `haus millwork` packs the hardwood cuts into them.
         stock_length=ft(8),
+        # ST-M2S's painted poplar skirts (2026-10-30): up first, so treads and risers butt
+        # them, 3/4" in from each backed side. The landing takes the ordinary base.
+        stair_skirt=StairSkirt(stair_refs=("ST-M2S",), material_ref="poplar-skirt-paint",
+                               thickness=inch(0.75), board_width=inch(11.25)),
         excluded_rooms=("RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM"),
         # The under-stair storage door: a utility door, jamb and drywall only (owner,
         # 2026-10-29), which also drops the head that ran into ST-B2M's stringer.

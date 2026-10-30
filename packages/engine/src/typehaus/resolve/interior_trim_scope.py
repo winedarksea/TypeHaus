@@ -173,6 +173,12 @@ def trim_scope(plan: PlanModel, model: ResolvedModel) -> tuple[TrimScope | None,
                            ("trims", tuple(
                                t for o in standard.room_trims for t in o.rooms)))
         for tag in tags if tag not in room_tags]
+    stair_tags = {stair.tag for stair in model.stairs}
+    findings += [element_error(
+        "integrity.trim_standard",
+        f"trim standard {standard.tag} skirts stair {tag!r}, which is not a stair", standard.tag)
+        for tag in (standard.stair_skirt.stair_refs if standard.stair_skirt else ())
+        if tag not in stair_tags]
     opening_tags = {o.tag for o in model.openings}
     findings += [element_error(
         "integrity.trim_standard",

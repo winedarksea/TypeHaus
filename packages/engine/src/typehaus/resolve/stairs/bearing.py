@@ -59,7 +59,7 @@ def _wall_run_overlap(wall, p0: tuple[float, float], p1: tuple[float, float]
 
 
 def _best_host_wall(model: ResolvedModel, stair: Stair, p0: tuple[float, float],
-                    p1: tuple[float, float]):
+                    p1: tuple[float, float], skirt_m: float = 0.0):
     """The wall a stair member p0→p1 bears on, or ``(None, None)``.
 
     Three independent gates, all required:
@@ -68,8 +68,9 @@ def _best_host_wall(model: ResolvedModel, stair: Stair, p0: tuple[float, float],
        ``StructuralRole.BEARING``, or is named in the stair's ``bearing_refs``. A
        non-bearing partition beside a flight carries nothing.
     2. **Geometry** — the member sits within a tread board of the wall's resolved faces
-       (``_depth_extent``). Not ``axis ± thickness/2``: a face-aligned wall's axis is a
-       face, and that read a joist flush on W-B-N2's inside face as 8" away.
+       (``_depth_extent``), or of a stair skirt's face (``skirt_m``) on a skirted side.
+       Not ``axis ± thickness/2``: a face-aligned wall's axis is a face, and that read a
+       joist flush on W-B-N2's inside face as 8" away.
     3. **Shared run** — they overlap by more than ``_MIN_SHARED_RUN_M``.
 
     Survivors rank by foundation first (concrete beats framing under the same member),
@@ -91,7 +92,8 @@ def _best_host_wall(model: ResolvedModel, stair: Stair, p0: tuple[float, float],
         offset, shared_run, interval = overlap
         cross_axis = 1 if abs(p1[0] - p0[0]) > 1e-6 else 0
         near, far = _depth_extent(wall, cross_axis)
-        if max(near - p0[cross_axis], p0[cross_axis] - far, 0.0) > _TREAD_THICKNESS_M:
+        if (max(near - p0[cross_axis], p0[cross_axis] - far, 0.0) - skirt_m
+                > _TREAD_THICKNESS_M):
             continue
         if shared_run <= _MIN_SHARED_RUN_M:
             continue
@@ -119,7 +121,8 @@ def _depth_extent(host, cross_axis: int) -> tuple[float, float]:
 
 
 def _face_line(host, member: FramedMember, board_width: float, lo: float,
-               hi: float) -> tuple[tuple[float, float], tuple[float, float]]:
+               hi: float, skirt_m: float = 0.0
+               ) -> tuple[tuple[float, float], tuple[float, float]]:
     """``(a, b)`` for a board flush against ``host``'s near face, spanning ``lo``→``hi``.
 
     Where the wall's depth actually sits is read off the resolved layer polygons rather
@@ -129,14 +132,15 @@ def _face_line(host, member: FramedMember, board_width: float, lo: float,
 
     Both host kinds go through here. A framed wall gets a lagged ledger board; concrete
     gets the hanger band let into the pour — neither is fastened along the *stringer's*
-    own centreline, or the band would duplicate the member it carries.
+    own centreline, or the band would duplicate the member it carries. On a skirted side the
+    board stands ``skirt_m`` further off the wall, where the stringer it carries moved.
     """
     # 0 → the member runs in x (cross coordinate is y); 1 → it runs in y (cross is x).
     run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
     cross_axis = 1 - run_axis
     near, far = _depth_extent(host, cross_axis)
-    face = (far + board_width / 2.0 if member.p0[cross_axis] >= (near + far) / 2.0
-            else near - board_width / 2.0)
+    face = (far + skirt_m + board_width / 2.0 if member.p0[cross_axis] >= (near + far) / 2.0
+            else near - skirt_m - board_width / 2.0)
     if run_axis == 1:
         return (face, lo), (face, hi)
     return (lo, face), (hi, face)
@@ -144,7 +148,7 @@ def _face_line(host, member: FramedMember, board_width: float, lo: float,
 
 def _framed_ledger(stair: Stair, host, member: FramedMember,
                    interval: tuple[float, float], subfloor: float,
-                   connection: str) -> FramedMember:
+                   connection: str, skirt_m: float = 0.0) -> FramedMember:
     """The ledger board a framed host wall carries ``member`` on.
 
     Two deliberate differences from the concrete hanger band (both share ``_face_line``'s
@@ -160,7 +164,7 @@ def _framed_ledger(stair: Stair, host, member: FramedMember,
     section = cross_section(_LEDGER_PROFILE)
     lo, hi = interval
     run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
-    a, b = _face_line(host, member, section.width_m, lo, hi)
+    a, b = _face_line(host, member, section.width_m, lo, hi, skirt_m)
     # The member's top along its run: z1_m at p0, z1_end_m (raked) or z1_m at p1.
     s0, s1 = member.p0[run_axis], member.p1[run_axis]
     top0 = member.z1_m
@@ -180,8 +184,9 @@ def _framed_ledger(stair: Stair, host, member: FramedMember,
 
 
 def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
-                         members: tuple[FramedMember, ...],
-                         subfloor: float) -> tuple[FramedMember, ...]:
+                         members: tuple[FramedMember, ...], subfloor: float,
+                         skirts: dict[str, float] | None = None
+                         ) -> tuple[FramedMember, ...]:
     """Give the flight a resolvable load path against the walls it runs beside.
 
     A stair does not float: its outer stringers and its landing rims run against the
@@ -205,6 +210,7 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
       ``ledger-`` child-key prefix keeps the two kinds tellable apart.
 
     Any landing corner no host wall reaches gets a vertical 4x4 post to the subfloor.
+    ``skirts`` maps a stringer a skirt board stands beside to the board's thickness.
     """
     hanger_depth = 0.2032  # 8" ledger band
 
@@ -248,11 +254,13 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
         # framing.
         bearable = member.category in ("stringer", "landing_framing")
         if bearable and member.p0 != member.p1:
-            host, interval = _best_host_wall(model, stair, member.p0, member.p1)
+            skirt_m = (skirts or {}).get(member.child_key, 0.0)
+            host, interval = _best_host_wall(model, stair, member.p0, member.p1, skirt_m)
             if host is not None and not host.is_foundation:
                 tag = f"framed-wall-ledger:{host.tag}"
                 out.append(replace(member, connection=tag))
-                out.append(_framed_ledger(stair, host, member, interval, subfloor, tag))
+                out.append(_framed_ledger(stair, host, member, interval, subfloor, tag,
+                                          skirt_m))
                 if member.category == "landing_framing":
                     # Only the endpoints the wall actually runs past are carried; a host
                     # that overlaps half a rim leaves the far corner needing a post.
@@ -265,7 +273,7 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
                 run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
                 band_a, band_b = _face_line(
                     host, member, cross_section("hanger").width_m,
-                    member.p0[run_axis], member.p1[run_axis])
+                    member.p0[run_axis], member.p1[run_axis], skirt_m)
                 if member.category == "stringer":
                     top_p0 = member.z1_m
                     top_p1 = member.z1_m if member.z1_end_m is None else member.z1_end_m

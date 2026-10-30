@@ -31,6 +31,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "winder": (0.70, 0.52, 0.33, 1.0),
     "stair_subdeck": (0.72, 0.55, 0.36, 1.0),
     "riser": (0.70, 0.52, 0.33, 1.0),
+    # Painted trim white; a skirt's own material colour normally wins.
+    "stair_skirt": (0.94, 0.93, 0.90, 1.0),
     # Opening framing. These existed in ui/src/three/members.ts CATEGORY_COLOR only, so a
     # header's king/jack/cripple studs read as lumber in the browser and as the grey fallback
     # in the GLB. Same tones as their whole-stud/plate/header siblings, as the viewer has.

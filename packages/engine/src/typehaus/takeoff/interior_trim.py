@@ -3,7 +3,8 @@
 The ``room_perimeter_lf`` a trim lump was always waiting for. One row per (kind, room,
 material). ``kind`` is ``baseboard`` / ``door casing`` for boards, ``tile base`` /
 ``flash cove`` for a base the floor trade makes from the floor itself, ``resilient base`` for
-a set-on rubber cove base, ``base joint`` for the sealant bead at the toe of any base whose
+a set-on rubber cove base, ``stair skirt`` for a skirted flight's raked boards (its ``room``
+the stair), ``base joint`` for the sealant bead at the toe of any base whose
 floor names a ``Material.base_joint_ref`` (billed by the LF of base, keyed by the sealant).
 
 ``item`` is the price key: the board's stock tag for a board, ``tile-base`` / ``flash-cove`` /
@@ -17,6 +18,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.doors import door_installation_rows
 
@@ -56,6 +58,16 @@ def interior_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         length[key] += sum(piece.length_m for piece in casing.pieces)
         pieces[key] += len(casing.pieces)
         tags[key].extend((casing.room, casing.opening_ref))
+    for stair in model.stairs:
+        for board in (m for m in stair.members if m.category == "stair_skirt"):
+            # Billed by the raked blank, long point to long point.
+            key = ("stair skirt", stair.tag, board.material, board.material)
+            length[key] += board.cut_length_m
+            pieces[key] += 1
+            tags[key].append(stair.tag)
+            cuts[key].append({"length_in": round(board.cut_length_m / 0.0254, 3),
+                              "width_in": round(cross_section(board.profile).depth_m / 0.0254, 3),
+                              "thickness_in": round(board.plan_width_m / 0.0254, 3)})
     for band in model.panelings:
         for board in band.trim_pieces:
             # Stock width is part of the price key: 1x3 battens and 1x4 rails are

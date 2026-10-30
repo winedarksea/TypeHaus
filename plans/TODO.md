@@ -266,7 +266,6 @@ the future.
 - Specify the products for the ducts and duct vents
 - Consider have the oven/range in the kitchen island across from the sink
 - Consider making W-M-BATH1-W operable. Switch that small operable window type we have to the Aluprof MB-Slimline / MB-79N CSF or Aliplast Max Light Modern ultra slim aluminum for maximum light area (looks like around 2.75" frame is possible there) triple glazed.
-- Possibly poplar 1x12 as stair skirt boards, if not already specified, painted white. Likely installed tight to wall framing/drywall prior to installation of finish treads and risers.
 - [x] Roof sheathing: 19/32" 40/20 plywood, CDX house and Structural I garage/canopy. [Assessment](../houses/catlin/notes/roof_sheathing_and_membranes.md): Image II acceptance, eave cantilevers, narrow/single-span panels and 24-1/8" transition engineering remain open.
 - [x] Roof membranes at installed thickness, near-black under Flashing: house butyl 30 mil, garage/canopy HT rubberized asphalt 40 mil. House unvented/full-coverage product confirmation remains open; see the roof assessment.
 - [ ] House eave/gutter, remaining after the geometry pass ([plan](roof-wall-eave-detail.md), [note](../houses/catlin/notes/roof_wall_eave_detail.md)):

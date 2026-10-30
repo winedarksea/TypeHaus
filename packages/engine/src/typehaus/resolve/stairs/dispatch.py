@@ -27,6 +27,8 @@ from typehaus.resolve.stairs.common import (
     _MIN_NOSING_DEPTH_M,
     _MIN_TREAD_M,
     _WELL_PARTITION_THICKNESS_M,
+    _landing_deck,
+    _millwork_standard,
     _tread_thickness,
 )
 from typehaus.resolve.stairs.finish import (
@@ -37,6 +39,7 @@ from typehaus.resolve.stairs.finish import (
     stair_finish_parts,
     stairhead_nosing_part,
 )
+from typehaus.resolve.stairs.skirt import plan_skirts, skirt_members
 from typehaus.resolve.stairs.straight import _straight_stair_members
 from typehaus.resolve.stairs.stringer_cuts import cut_stringer_profiles
 from typehaus.resolve.stairs.u_split import _u_split_landing_members
@@ -247,6 +250,8 @@ def _resolve_stair(
             raise
         return None, [_error("integrity.stair_winder_framing", f"stair {stair.tag}: {exc}",
                              stair.tag)]
+    skirts, members, skirt_findings = plan_skirts(model, stair, members, outline,
+                                                  _deck_underside(model, stair, opening))
     if winder_layout is not None and not winder_members_fit_opening(members, outline):
         return None, [_error("integrity.stair_opening", f"stair {stair.tag} physical panels "
                              "or decks extend outside its opening polygon", stair.tag)]
@@ -262,8 +267,11 @@ def _resolve_stair(
     # borne on the walls beside it — posted down wherever none reaches.
     unclipped_members = members
     members = _clip_stair_to_subfloor(members, support_floor_m)
-    members = _bear_stair_on_walls(model, stair, members, support_floor_m)
+    members = _bear_stair_on_walls(model, stair, members, support_floor_m,
+                                   skirts.offsets if skirts is not None else None)
     members = cut_stringer_profiles(members, unclipped_members, support_floor_m)
+    members += skirt_members(stair, skirts, members, riser, going_m, nosing_m,
+                             finish_thickness_m, z_top)
     surfaces = _finish_materials(model, stair)
     members = _in_stair_material(stair, members, surfaces)
     finish_parts = (stair_finish_parts(members, stair.finish_material,
@@ -302,21 +310,7 @@ def _resolve_stair(
                          finish_thickness_m=finish_thickness_m,
                          finish_parts=finish_parts,
                          winder_turn=(resolved_winder_layout(stair, origin_x, origin_y, nosing_m)
-                                      if winder_layout is not None else None)), []
-
-
-def _millwork_standard(model: ResolvedModel):
-    from typehaus.model.millwork import MillworkStandard
-
-    return next((el for el in model.plan.all_elements()
-                 if isinstance(el, MillworkStandard)), None)
-
-
-def _landing_deck(model: ResolvedModel, stair: Stair):
-    """The house's hardwood landing declaration when it names this flight."""
-    standard = _millwork_standard(model)
-    deck = standard.landing_deck if standard is not None else None
-    return deck if deck is not None and stair.tag in deck.stair_refs else None
+                                      if winder_layout is not None else None)), skirt_findings
 
 
 def _same_riser(face, lip) -> bool:

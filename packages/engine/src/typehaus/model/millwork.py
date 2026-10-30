@@ -22,8 +22,8 @@ Two derived-geometry elements and one declaration:
   a counter is the one piece of millwork whose quantity is a consequence of the layout,
   and a hand-figured square footage in a price file goes stale the first time a cabinet
   moves. It is not drawn — see ``resolve/millwork.py`` for why.
-* :class:`TrimStandard` — interior base and door casing, declared once and derived per room
-  and per door face (``resolve/interior_trim.py``).
+* :class:`TrimStandard` — interior base, door casing and stair skirts, declared once and
+  derived per room, per door face and per flight (``resolve/interior_trim.py``).
 * :class:`MillworkStandard` — declared once, derived many. It states the default stool
   material/thickness/overhang/horn and the *scope* of which windows get a stool, so 39
   near-identical elements never have to be authored, while a per-window ``WindowStool``
@@ -272,6 +272,26 @@ class MillworkStandard(Element):
     max_board_width: Length
 
 
+class StairSkirt(HausModel):
+    """A raked skirt board on each wall-backed side of the named flights.
+
+    Bought and billed by the LF with the base and casing. It goes up first: the treads,
+    risers and side stringers butt it, so each moves ``thickness`` inboard on a skirted side.
+    Landings take ordinary base (``resolve/interior_trim_landing.py``), not a level skirt.
+    """
+
+    stair_refs: tuple[str, ...]
+    material_ref: str
+    thickness: Length
+    board_width: Length
+
+    @model_validator(mode="after")
+    def sizes_are_buildable(self) -> StairSkirt:
+        if not self.stair_refs or min(self.thickness.meters, self.board_width.meters) <= 0:
+            raise ValueError("a stair skirt needs stair_refs and a positive board size")
+        return self
+
+
 class RoomTrim(HausModel):
     """A trim stock for named rooms — their base and the casing face inside them — that
     differs from the house's (a sauna's rot-proof species, say). Sizes stay the standard's.
@@ -331,6 +351,7 @@ class TrimStandard(Element):
     # into boards this long. An owner-supply fact like ``max_board_width``. None sizes each
     # board to the longest piece, which is what a sawyer milling to order would cut.
     stock_length: Length | None = None
+    stair_skirt: StairSkirt | None = None
 
     def _room_trim(self, room: str) -> RoomTrim | None:
         return next((o for o in self.room_trims if room in o.rooms), None)
@@ -370,7 +391,8 @@ class TrimStandard(Element):
         refs = [self.material_ref, self.base_material_ref,
                 *(ref for override in self.room_trims
                   for ref in (override.material_ref, override.casing_material_ref)),
-                *(accent.material_ref for accent in self.door_trims)]
+                *(accent.material_ref for accent in self.door_trims),
+                self.stair_skirt.material_ref if self.stair_skirt is not None else None]
         return tuple(dict.fromkeys(ref for ref in refs if ref))
 
     @model_validator(mode="after")
@@ -394,6 +416,7 @@ for _name, _obj in (
     ("StairLandingMillwork", StairLandingMillwork),
     ("MillworkStandard", MillworkStandard),
     ("TrimStandard", TrimStandard),
+    ("StairSkirt", StairSkirt),
     ("RoomTrim", RoomTrim),
     ("DoorTrim", DoorTrim),
 ):

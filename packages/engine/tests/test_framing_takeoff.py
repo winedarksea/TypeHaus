@@ -78,9 +78,11 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     assert kit, "catlin has two pocket doors; this should not be empty"
     # And the eave strip-in, a membrane billed by area in `takeoff/envelope`.
     membrane = [m for m in members if m.category == "membrane"]
+    # And stair skirts, bought trim billed by the LF in `interior_trim`.
+    skirts = [m for m in members if m.category == "stair_skirt"]
     assert sum(int(row["pieces"]) for row in rows) == (
         len(members) - len(ripped) - len(not_lumber) - len(straps) - len(hardware) - len(kit)
-        - len(membrane))
+        - len(membrane) - len(skirts))
     assert not any(rip_stock(str(row["profile"]), row["material"]) for row in rows)
 
     for row in rows:
@@ -304,8 +306,9 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     hardware = sum(1 for m in members if m.category == "hanger" and m.material == "steel")
     kit = sum(1 for m in members if m.supplied_by)
     membrane = sum(1 for m in members if m.category == "membrane")
+    skirts = sum(1 for m in members if m.category == "stair_skirt")
     assert sum(int(row["pieces"]) for row in bom["framing"]) == (
-        len(members) - ripped - not_lumber - straps - hardware - kit - membrane)
+        len(members) - ripped - not_lumber - straps - hardware - kit - membrane - skirts)
 
 
 # Every collection on ``ResolvedModel`` is either billed by a BOM section or waived here with
@@ -575,5 +578,6 @@ def test_stair_finish_flags_the_stairs_a_nosing_allowance_cannot_reach(catlin_mo
 
     billed = sum(float(row["tread_lf"]) for row in rows.values()
                  if row["conditioned"] and row["has_nosing"])
-    # 136.4 until ST-M2S's lanes widened 1/16" (2026-10-23).
-    assert billed == pytest.approx(136.5)  # winders' cross-stair edges, round a 12 1/4" notch
+    # 136.4 until ST-M2S's lanes widened 1/16" (2026-10-23); 136.5 until its skirts took
+    # 1 1/2" off each of its 14 treads (2026-10-30).
+    assert billed == pytest.approx(134.8)  # winders' cross-stair edges, round a 12 1/4" notch

@@ -128,6 +128,7 @@ from typehaus.model.millwork import (
     ShelfBank,
     ShelfBay,
     StairLandingMillwork,
+    StairSkirt,
     TrimStandard,
     WindowStool,
 )
@@ -395,7 +396,7 @@ __all__ = [
     "BoardAndBatten", "PanelingSpan", "WallPaneling", "WallBacking", "BracedWallPanel",
     "SuspensionAnchor", "HangingSeatType",
     "Countertop", "MillworkStandard", "RoomTrim", "StairLandingMillwork", "ShelfBank", "ShelfBay",
-    "DoorTrim", "TrimStandard", "WindowStool",
+    "DoorTrim", "StairSkirt", "TrimStandard", "WindowStool",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",

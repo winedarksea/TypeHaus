@@ -476,8 +476,14 @@ def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,
                          for point in layer.polygon]
                 near, far = min(depth), max(depth)
                 face = far if member.p0[cross] >= (near + far) / 2.0 else near
+                # A stringer a skirt board stands beside moved off the wall by the board.
+                carried = member.child_key.removeprefix(f"ledger-{host.tag}-")
+                skirted = carried.startswith("stringer-") and any(
+                    s.category == "stair_skirt"
+                    and min(face, member.p0[cross]) < s.p0[cross] < max(face, member.p0[cross])
+                    for s in stair.members)
                 assert abs(member.p0[cross] - face) == pytest.approx(
-                    inch(0.75).meters), member.child_key
+                    inch(1.5 if skirted else 0.75).meters), member.child_key
                 # And never inside the wall: the board hangs off the face, not in the bays.
                 assert not near < member.p0[cross] < far, member.child_key
     # ST-M2S's known framed hosts each carry at least one real ledger board.

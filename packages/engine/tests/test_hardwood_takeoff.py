@@ -332,7 +332,8 @@ def test_the_landing_decks_are_scheduled_and_flagged(rows):
     # 44.625 until 2026-10-23: ST-M2S's lanes widened 1/16" with W-M-STRW's MDO face.
     assert nosings[("landing-lower", ("ST-M2S",))]["finished_length_in"] == \
         pytest.approx(44.687)
-    assert nosings[("stairhead", ("ST-M2S",))]["finished_length_in"] == pytest.approx(42.437)
+    # 42.437 until 2026-10-30: the stairhead nosing now fits between ST-M2S's skirts.
+    assert nosings[("stairhead", ("ST-M2S",))]["finished_length_in"] == pytest.approx(40.938)
     assert nosings[("stairhead", ("ST-S2A",))]["finished_length_in"] == pytest.approx(36.0)
 
     boards = {row["location"]: row for row in _use(rows, "stair landing board")}

@@ -67,20 +67,7 @@ def _room_runs(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
     floor_z, _structural = scope.floors(model, room)
     height = scope.standard.base_height.meters
     arcs = bounding_wall_arcs(model, room, ring, scope.body)
-
-    finish, bare, owned = [], [], []
-    for wall, (s0, s1) in arcs:
-        # Trim each arc back by the touch band so a bare neighbour cannot nick a corner. An
-        # end at the ring's seam is where cyclic_span split one run in two, not a run's end.
-        a = s0 if s0 <= 1e-9 else s0 + _TOUCH_M
-        b = s1 if s1 >= perimeter - 1e-9 else s1 - _TOUCH_M
-        if b <= a:
-            continue
-        owned.append((wall, (a, b)))
-        mid = (a + b) / 2.0
-        point, outward = _point_and_outward(ring, mid)
-        function = face_function(wall, point, outward, floor_z, floor_z + height)
-        (finish if is_finish(function) else bare).append((a, b))
+    finish, bare, owned = finish_arcs(ring, perimeter, arcs, floor_z, height)
 
     breaks: list[tuple[float, float, str]] = [(a, b, "bare face") for a, b in bare]
     hosts = {wall.tag for wall, _span in arcs}
@@ -113,6 +100,24 @@ def _room_runs(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
                      rp.merged_intervals([(a, b) for a, b, _ in breaks], perimeter))
     pieces = _cut(ring, kept, wood, owned)
     return _runs(room, kind, scope, ring, perimeter, pieces, owned, breaks, floor_z, height)
+
+
+def finish_arcs(ring, perimeter: float, arcs, floor_z: float, height: float):
+    """``(finish, bare, owned)``: the wall arcs whose face over the base band is a FINISH,
+    those that are not, and every arc with its wall."""
+    finish, bare, owned = [], [], []
+    for wall, (s0, s1) in arcs:
+        # Trim each arc back by the touch band so a bare neighbour cannot nick a corner. An
+        # end at the ring's seam is where cyclic_span split one run in two, not a run's end.
+        a = s0 if s0 <= 1e-9 else s0 + _TOUCH_M
+        b = s1 if s1 >= perimeter - 1e-9 else s1 - _TOUCH_M
+        if b <= a:
+            continue
+        owned.append((wall, (a, b)))
+        point, outward = _point_and_outward(ring, (a + b) / 2.0)
+        function = face_function(wall, point, outward, floor_z, floor_z + height)
+        (finish if is_finish(function) else bare).append((a, b))
+    return finish, bare, owned
 
 
 def _butting(sides, polygon, max_standoff: float) -> list[tuple[float, float]]:
@@ -161,11 +166,27 @@ def _obstacles(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
     for stair in model.stairs:
         if stair.storey == room.storey and len(stair.outline) >= 3:
             yield stair.tag, Polygon(stair.outline)
+    yield from stair_skirt_footprints(model, room.storey)
     # A raised platform (an enclosed tub deck, a bench) is a box the base never runs behind.
     for solid in model.solids:
         if (solid.category == "slab_platform" and solid.storey == room.storey
                 and solid.z1_m > top and len(solid.outline) >= 3):
             yield solid.tag, Polygon(solid.outline)
+
+
+def stair_skirt_footprints(model: ResolvedModel, storey: str):
+    """``(stair tag, plan footprint)`` of each skirt board on ``storey``: its toe runs past
+    the stair outline, and the base butts it there."""
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+
+    for stair in model.stairs:
+        if stair.storey != storey:
+            continue
+        for member in stair.members:
+            if member.category == "stair_skirt":
+                yield stair.tag, Polygon(member_footprint(member)[0])
 
 
 def _casing_footprints(model: ResolvedModel, room: ResolvedRoom, floor_z: float, height: float):
