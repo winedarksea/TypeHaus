@@ -87,13 +87,12 @@ WAC_ROLAND = Product(
 )
 # --- J, J1: reading lights -------------------------------------------------------------------
 WAC_STRETCH = Product(
-    tag="PROD-WAC-BL-1660-BK", brand="WAC Lighting", model="BL-1660-BK",
-    name="dweLED Stretch LED double swing-arm wall light, black",
-    source=_READ + "WAC spec sheet: 17 W, 623 delivered lm, 3000 K, CRI 90, damp, hardwired, "
-           "touch dimmer on the backplate; no wall dimmer. Reach is unpublished on the pages "
-           "read (modelled folded, 8 x 4 in.). CONFIRM with WAC: is the touch plate a true "
-           "on/off (mark J1 relies on it), and does the lamp come back ON after a wall switch "
-           "cuts power (mark J relies on that)?",
+    tag="PROD-WAC-BL-23210-BK", brand="WAC Lighting", model="BL-23210-BK",
+    name="Sprig LED swing-arm wall light, black",
+    source=_READ + "WAC spec sheet (Jan 2022): 5 W, 287 delivered lm, 3000 K, CRI 90, 120 VAC, "
+           "ELV/TRIAC 100-10%, damp, canopy on/off toggle, USB port under the canopy, 10 in. "
+           "arm (modelled folded, 8 x 4 in.). CONFIRM it is hardwired (junction box); the "
+           "sheet does not say.",
 )
 # --- M1: the studio bar pendant (catalog-only) -----------------------------------------------
 NUVO_BOWMAN_36 = Product(

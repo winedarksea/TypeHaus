@@ -25,14 +25,15 @@ _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
 
 _STRETCH_BODY = dict(
     footprint=(inch(8), inch(4)), height=inch(8), plan_symbol="sconce-swing-arm",
-    lamp="LED integrated, touch dimmer on the backplate", watts=17.0, lumens=623.0,
-    cct_k=3000, cri=90, dimmable=True, damp_rated=True, load_va=17.0, ports=_POWER_120,
-    product_ref="PROD-WAC-BL-1660-BK")
+    lamp="LED integrated, toggle on the canopy", watts=5.0, lumens=287.0,
+    cct_k=3000, cri=90, dimmable=True, damp_rated=True, load_va=5.0, ports=_POWER_120,
+    product_ref="PROD-WAC-BL-23210-BK")
 _STRETCH = LuminaireType(
     tag="ED-T-LT-SCONCE-SPOT", name="Swing-arm LED reading light, black",
     form=LuminaireForm.SCONCE, type_mark="J", **_STRETCH_BODY,
-    source="WAC dweLED Stretch BL-1660-BK (spec sheet), drawn folded (reach unpublished). "
-           "CONFIRM with WAC that it comes back ON after a wall switch cuts power.")
+    source="WAC Sprig BL-23210-BK (spec sheet), drawn folded. Retyped from the Stretch "
+           "BL-1660-BK 2026-10-29 (plain, cheaper; no touch dimmer). Leave the canopy "
+           "toggle ON so the wall switch rules; CONFIRM it is hardwired (junction box).")
 
 DECORATIVE_LUMINAIRE_TYPES = (
     # --- H/J/K: sconces ---------------------------------------------------------------
@@ -47,14 +48,13 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   product_ref="PROD-WAC-WS-83212-BK",
                   source="WAC dweLED Roland WS-83212-BK (spec sheet). The theatre units sit "
                          "on a DVCL-153P: CONFIRM it against the TRIAC range."),
-    # J and J1 are one product (2026-10-28): its touch dimmer is on the backplate, so no
-    # wall dimmer. J2 (the plant room's wet copy) retyped to J; damp is enough there.
+    # J and J1 are one product (WAC Sprig): J is wall-switched, J1 uses the canopy toggle.
+    # J2 (the plant room's wet copy) retyped to J; damp is enough there.
     _STRETCH,
     LuminaireType(tag="ED-T-LT-SPOT-SW", name="Swing-arm LED reading light, switch on fixture",
                   form=LuminaireForm.SCONCE, type_mark="J1", **_STRETCH_BODY,
                   integral_switch=True,
-                  source="WAC dweLED Stretch BL-1660-BK, switched at its backplate touch "
-                         "plate. CONFIRM with WAC that the plate is a true on/off."),
+                  source="WAC Sprig BL-23210-BK, switched at its canopy toggle (a true on/off)."),
     LuminaireType(tag="ED-T-LT-SAUNA-VT",
                   name="Sauna fibre-optic lighting, 8 ferrules on a remote projector",
                   form=LuminaireForm.SCONCE, type_mark="V",

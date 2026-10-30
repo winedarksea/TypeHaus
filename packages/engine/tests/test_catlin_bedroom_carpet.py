@@ -85,7 +85,11 @@ def test_bedroom_estimate_and_installation_visit_include_every_selected_layer(
     for key in (_BEDROOM_FINISH, _BEDROOM_CUSHION, "catlin-carpet-underlayment"):
         billed = [row for row in rows if row["key"] == key]
         assert len(billed) == 1
-        assert billed[0]["cost"]["low"] > 0
+        # Underlayment is $0 on the low side (owner: only if the mock-up needs it); high stays priced.
+        if key == "catlin-carpet-underlayment":
+            assert billed[0]["cost"]["low"] >= 0 and billed[0]["cost"]["high"] > 0
+        else:
+            assert billed[0]["cost"]["low"] > 0
         assert not any(row["key"] == key for row in estimate["unpriced"])
         assigned = [slug for slug, visit in visits.items()
                     if f"floor_finishes:{key}" in visit.rows]

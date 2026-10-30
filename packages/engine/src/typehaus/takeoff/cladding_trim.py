@@ -32,12 +32,18 @@ from typehaus.resolve.cladding_trim.members import split_stock_run
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.roof_edge_geometry import roof_edge_runs
 from typehaus.resolve.roof_image_ii import wrapped_image_ii_edges
+from typehaus.takeoff.stock_packing import boards_for
 
 _FT = 0.3048
 #: Products whose joint to the frame or panel is sealed along the whole run (K7 joint).
 _SEALED = {"PBR_WINDOW_JAMB", "WINDOW_JAMB_CUSTOM", "WINDOW_SILL_CUSTOM", "OPENING_HEAD",
            "DOOR_HEAD_CUSTOM"}
 _CLOSED_BY_PANEL = {"OPENING_HEAD", "WINDOW_SILL_CUSTOM", "CORRUGATED_BASE"}
+#: Straight window-kit cuts that combine from stock (metal_trim_kit.md, "Procurement may
+#: combine short cuts"); formed, lapped and closure pieces stay one stick per solid.
+_POOLED = {"OPENING_HEAD", "PBR_WINDOW_JAMB"}
+#: Shear kerf per pooled cut, inches.
+_SHEAR_KERF_IN = 0.25
 _LAP_SEALANT_FT = 1.0
 _FLAT_CLEAT_SPACING_FT = 1.5
 #: One pop rivet per 16 in Image II rib, on each side of a vented ridge's step cover.
@@ -55,6 +61,7 @@ def catalog_roof_edge(member) -> bool:
 class _Rows:
     def __init__(self) -> None:
         self.rows: dict[tuple, dict[str, object]] = {}
+        self.cuts: dict[tuple, list[float]] = {}
 
     def add(self, kind, part, profile, stock, *, count, length_m, tag, unit="ea", note=""):
         row = self.rows.setdefault((kind, str(part), stock), {
@@ -64,10 +71,16 @@ class _Rows:
         row["cut_length_ft"] = float(row["cut_length_ft"]) + length_m / _FT
         row["tags"].append(tag)
 
+    def pool(self, kind, part, stock, length_in: float) -> None:
+        """Count one cut of ``part``; ``finish`` sets the row's sticks by packing them."""
+        self.cuts.setdefault((kind, str(part), stock), []).append(length_in)
+
     def finish(self) -> list[dict[str, object]]:
         out = []
         for key in sorted(self.rows, key=lambda k: tuple(map(str, k))):
             row = self.rows[key]
+            if key in self.cuts:
+                row["count"] = boards_for(self.cuts[key], key[2], _SHEAR_KERF_IN)[0]
             row["count"] = int(round(float(row["count"])))
             row["cut_length_ft"] = row["length_ft"] = round(float(row["cut_length_ft"]), 2)
             row["quantity"] = row["length_ft"] if row["unit"] == "LF" else row["count"]
@@ -129,8 +142,11 @@ def _wall_trim_rows(model: ResolvedModel, rows: _Rows) -> None:
         if stock not in stock_lengths or length <= 0 or length > stock * M_PER_IN + 1e-9:
             raise ValueError(f"{solid.tag}: invalid cut or stock length")
         part = _part(profile, stock, solid.product)
-        rows.add("trim", part, profile.name, stock, count=1, length_m=length, tag=solid.tag,
-                 unit="LF" if profile.custom else "ea")
+        pooled = solid.product in _POOLED
+        rows.add("trim", part, profile.name, stock, count=0 if pooled else 1, length_m=length,
+                 tag=solid.tag, unit="LF" if profile.custom else "ea")
+        if pooled:
+            rows.pool("trim", part, stock, length / M_PER_IN)
         if solid.product == "RAINSCREEN_BASE_Z":
             if solid.tag.rsplit("-", 1)[-1] != "1":
                 _supply(rows, "tube-sealant", _LAP_SEALANT_FT * _FT, solid.tag)
@@ -284,8 +300,8 @@ def _catalog_gutter_rows(model: ResolvedModel, rows: _Rows) -> None:
 def cladding_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Group cut pieces by catalog part and purchased stock length, with their supplies.
 
-    A piece is ordered independently; combining short cuts into a shop cutting plan
-    requires an explicit packing calculation and is not assumed here.
+    A piece is ordered independently, except the straight window-kit cuts in ``_POOLED``,
+    which are packed first-fit-decreasing into stock sticks.
     """
     rows = _Rows()
     _wall_trim_rows(model, rows)

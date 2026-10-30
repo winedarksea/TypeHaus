@@ -7,6 +7,12 @@ Our general goals are decent longevity and quality at a reasonable price, avoidi
 
 ## Needs your decision
 
+- **Budget policy (pricing review 2026-10-29):** `site-general-conditions` is $35–80k on an
+  owner-GC build (cash items alone look like $15–30k), and `[contingency]` 10% also applies on
+  top of the lump-sum allowances, which already carry wide spreads (~$15–36k at stake).
+- **Sconce J/J1 (WAC Sprig BL-23210-BK):** confirm it can be hardwired. Output drops from
+  623 lm to 287 lm compared with the Stretch it replaced.
+
 ## Remaining Work
 
 - **Concrete spec UNKNOWNs (8) wait on the mix submittal and a soil test:** chloride x4

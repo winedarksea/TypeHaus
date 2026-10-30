@@ -13,45 +13,14 @@ ripped from the wide stack: the face is far under ``max_board_width``.
 
 from __future__ import annotations
 
-import math
 from collections.abc import Mapping
 
 from typehaus.model.millwork import TrimStandard
 from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff.stock_packing import boards_for as _boards_for
 
 _M_TO_IN = 39.37007874
 _ALSO = {"also_in_interior_trim": True}
-
-#: Length lost per cut piece when packing into stock boards, in inches: squaring the board
-#: end plus the miter or cope at each end of a trim piece.
-_CUT_ALLOWANCE_IN = 1.0
-
-
-def _boards_for(lengths_in: list[float], stock_in: float | None) -> tuple[int, float, int]:
-    """``(boards, board length, splices)`` to cut ``lengths_in`` from."""
-    if stock_in is None:
-        longest = max(lengths_in)
-        return math.ceil(sum(lengths_in) / longest - 1e-9), longest, 0
-    cuts: list[float] = []
-    splices = 0
-    for length in lengths_in:
-        # A run longer than a board is spliced from full boards plus a remainder.
-        cut = length + _CUT_ALLOWANCE_IN
-        whole = 0 if cut <= stock_in + 1e-9 else math.floor(length / stock_in)
-        cuts.extend([stock_in] * whole)
-        rest = cut - whole * stock_in
-        if rest > _CUT_ALLOWANCE_IN + 1e-9:
-            cuts.append(rest)
-        splices += whole - (rest <= _CUT_ALLOWANCE_IN + 1e-9) if whole else 0
-    remaining: list[float] = []
-    for cut in sorted(cuts, reverse=True):
-        slot = next((i for i, left in enumerate(remaining) if left >= cut - 1e-9), None)
-        if slot is None:
-            remaining.append(stock_in - cut)
-        else:
-            remaining[slot] -= cut
-    return len(remaining), stock_in, splices
-
 
 def _lineal_row(use: str, material_ref: str, profile: str, thickness: float, width: float,
                 lengths_in: list[float], stock_in: float | None, tags: list[str],

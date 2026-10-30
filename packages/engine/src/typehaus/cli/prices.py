@@ -37,7 +37,7 @@ from typehaus.cli.price_file import (  # noqa: F401  (re-exported: this is the p
 __all__ = [
     "ALTERNATE_UNITS", "BASES", "INSTALLED", "LABOUR", "MATERIAL", "PRICES_FILENAME",
     "ALLOWANCE_KEY_FIELD", "ALLOWANCES", "Adjustments",
-    "ESTIMATE_PLANS", "EXCLUDED_FROM_TOTAL", "PriceRange", "Prices", "UnitPrice",
+    "ESTIMATE_PLANS", "EXCLUDED_FROM_TOTAL", "MIRRORED_ROWS", "PriceRange", "Prices", "UnitPrice",
     "QUALIFIED_KEY_FIELD", "UNPRICED_VIEWS", "WASTE_IN_QUANTITY", "ZERO",
     "candidate_keys", "qualifier_fields",
     "estimate_costs", "load_prices",
@@ -334,6 +334,12 @@ def rate_for(prices: Prices, section: str, key: object,
 #: ``sections`` (with ``in_total: False``) and roll up into ``excluded_total`` /
 #: ``grand_total``, so nothing is hidden — only re-filed.
 EXCLUDED_FROM_TOTAL = frozenset({"furnishings"})
+
+#: Sections whose BOM rows can mirror another section's: ``{section: (row flag, section that
+#: carries the price)}``. A flagged row stays in the BOM (quantities are the product) but is
+#: not priced here, and is listed in the payload's ``priced_elsewhere`` — never as unpriced.
+#: Sheathing: the SF side (``envelope_layers``) is priced; its sheet count is the order.
+MIRRORED_ROWS = {"sheet_goods": ("also_in_envelope_layers", "envelope_layers")}
 
 #: The price table an estimate section reads: every section shares its table's name.
 _PLAN_TABLE = {name: name for name, *_ in ESTIMATE_PLANS}
@@ -708,6 +714,7 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
     visited: dict[str, set[str]] = {}
     misses: list[tuple[str, dict[str, Any]]] = []
     section_buckets: dict[str, dict[str, PriceRange]] = {}
+    priced_elsewhere: list[dict[str, Any]] = []
     section_waste: dict[str, PriceRange] = {}
     # Material whose authored price ALREADY carries sales tax — tracked beside the buckets
     # rather than as a fourth bucket, so ``basis_subtotals`` keeps the shape every consumer
@@ -728,7 +735,14 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
         waste_sum = ZERO
         tax_paid_sum = ZERO
         solid = name in SOLID_SECTIONS
+        mirror = MIRRORED_ROWS.get(name)
         for row in bom.get(bom_key, []) or []:
+            if mirror and row.get(mirror[0]):
+                priced_elsewhere.append({
+                    "section": name, "key": row.get(key_field), "scope": row.get("scope"),
+                    "quantity": float(row.get(section_quantity_field) or 0.0),
+                    "unit": section_unit, "priced_in": mirror[1]})
+                continue
             if solid:
                 # Each solid belongs to exactly one section (``takeoff/solid_sections``),
                 # which alone prices it and alone reports it unpriced.
@@ -873,6 +887,7 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                # The mirror of ``unpriced``: a price with no quantity. Declared-retired rows
                # are subtracted, so this is the silent class and not the deliberate one.
                "unused_price_rows": _unused_price_rows(prices, visited),
+               "priced_elsewhere": priced_elsewhere,
                "unpriced": unpriced}
     if areas:
         payload["areas"] = dict(areas)

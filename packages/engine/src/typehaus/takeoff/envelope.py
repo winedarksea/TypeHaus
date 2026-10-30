@@ -8,9 +8,10 @@ WRB. On this house that is most of the envelope by both area and cost.
 This is deliberately a *second* section rather than an extension of ``sheet_goods``: a sheet
 count is the right unit for plywood and the wrong one for a roll of housewrap or a lift of
 mineral wool, and folding them together would force one unit onto products that are not
-bought that way. Sheathing therefore appears in both, once as sheets and once as area, and
-the sheathing rows here carry ``also_in_sheet_goods`` so a total cannot double-count it by
-accident.
+bought that way. Sheathing therefore appears in both, once as sheets and once as area. THIS
+side carries the price: the rows here carry ``also_in_sheet_goods``, the hung ``exterior wall``
+/ ``roof`` sheet rows carry ``also_in_envelope_layers``, and the estimate skips the latter
+(``cli/prices.py``, ``MIRRORED_ROWS``). The sheet counts stay in the BOM as the order quantity.
 
 A roof contributes rows on **two** planes and they are not interchangeable. Scope ``roof``
 is the deck: sloped, and run out to the fascia, which is how roofing and underlayment are

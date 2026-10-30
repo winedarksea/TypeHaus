@@ -72,13 +72,15 @@ MMI_STEEL_SIX_PANEL = Product(
            "unit; keep moving leaf/sweep >=1 inch above deck. "
            "No separate replacement sill or custom prehanger assembly.")
 
-CLOPAY_MODERN_STEEL = Product(
-    tag="PROD-CLOPAY-MODERN-STEEL", brand="Clopay", model="Modern Steel, Intellicore",
-    name="Modern Steel 16x7 flush, Intellicore R-18.4, Black", sku="GDU011",
-    url="https://www.clopaydoor.com/residential/buyingguide/garage-door-styles/"
-        "contemporary-garage-doors/modern-steel-collection",
-    source="3-layer steel, polyurethane core, R-18.4. GDU011 is Home Depot's 16x7 black, "
-           "no-window listing. Wind rating for Exp B (q_h 19.3 psf) to confirm with the dealer.")
+CLOPAY_CLASSIC_STEEL = Product(
+    tag="PROD-CLOPAY-CLASSIC-STEEL", brand="Clopay", model="Classic Steel Long Panel",
+    name="Classic Steel long panel 16x7, insulated R-12.9, Charcoal", sku="GDU293",
+    url="https://www.homedepot.com/p/Clopay-Classic-Steel-Long-Panel-16-ft-x-7-ft-Insulated-"
+        "12-9-R-Value-Charcoal-Garage-Door-without-windows-GDU293/333516344",
+    source="Insulated steel, R-12.9 (DASMA TDS-163 section value). GDU293 is Home Depot's 16x7 "
+           "Charcoal no-window listing. Black is offered only at R-6.5 (GDU266) in this line, "
+           "so Charcoal is the dark exterior. Wind rating for Exp B (q_h 19.3 psf) to confirm "
+           "with the dealer.")
 
 
 # Purchased sets, with no price data in the product catalog.
@@ -106,5 +108,5 @@ SECURITY_STRIKE = Product(tag='PROD-THERMATRU-SECURITY-STRIKE', brand='Therma-Tr
 OPENING_PRODUCTS = (
     ENCODE_PLUS, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS, DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
     DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, DRUTEX_ALUCOVER_TILT, ANDERSEN_400_CASEMENT,
-    THERMATRU_SMOOTHSTAR_FULLLITE, THERMATRU_SMOOTHSTAR, MMI_STEEL_SIX_PANEL, CLOPAY_MODERN_STEEL,
+    THERMATRU_SMOOTHSTAR_FULLLITE, THERMATRU_SMOOTHSTAR, MMI_STEEL_SIX_PANEL, CLOPAY_CLASSIC_STEEL,
 )

@@ -14,7 +14,7 @@ from typehaus.quantities import ft
 from plan.opening_products import (
     ENCODE_PLUS, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS,
     DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
-    THERMATRU_SMOOTHSTAR_FULLLITE, CLOPAY_MODERN_STEEL, MMI_STEEL_SIX_PANEL, THERMATRU_SMOOTHSTAR,
+    THERMATRU_SMOOTHSTAR_FULLLITE, CLOPAY_CLASSIC_STEEL, MMI_STEEL_SIX_PANEL, THERMATRU_SMOOTHSTAR,
 )
 
 _FULLLITE = ("NFRC THC-M-5-04493-00001: full-lite E366/Argon/i89, U 0.21, SHGC 0.12, VT 0.27. "
@@ -46,9 +46,9 @@ MMI_OUTSWING_SILL = DoorwayTreatment(threshold=DoorwayProductSpec(
     installation="Full-width supported pan; moving leaf/sweep >=1 inch above deck"))
 
 CLOPAY_BOTTOM = DoorwayTreatment(threshold=DoorwayProductSpec(
-    product_ref=CLOPAY_MODERN_STEEL.tag, variant="UNKNOWN — bottom seal and aluminum retainer section",
+    product_ref=CLOPAY_CLASSIC_STEEL.tag, variant="UNKNOWN — bottom seal and aluminum retainer section",
     role="bottom_seal", source_url="https://www.clopaydoor.com/residential-garage-doors/modern-steel-collection",
-    source_drawing="Modern Steel construction description; dimensioned installed seal section pending",
+    source_drawing="Classic Steel construction description; dimensioned installed seal section pending",
     installation="Leaf-mounted vinyl seal in aluminum retainer; no floor-spanning threshold"))
 
 
@@ -151,10 +151,10 @@ DOOR_TYPES = (
                "CPD row are dealer items; impact full-lite fallback needs its own confirmed rating."),
     DoorType(
         tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
-        operation="overhead", function="overhead", product_ref=CLOPAY_MODERN_STEEL.tag,
+        operation="overhead", function="overhead", product_ref=CLOPAY_CLASSIC_STEEL.tag,
         doorway=CLOPAY_BOTTOM,
-        source="Clopay Modern Steel, Intellicore R-18.4, Black. Unconditioned garage: no "
-               "NFRC rating is needed or claimed."),
+        source="Clopay Classic Steel long panel, R-12.9, Charcoal (was Modern Steel R-18.4 "
+               "Black, 2026-10-29). Unconditioned garage: no NFRC rating is needed or claimed."),
 )
 
 # D-B-PATIO and D-S-DECK-E; D-M-BALC keeps DT-EXT-FRENCH60 for its own hardware and

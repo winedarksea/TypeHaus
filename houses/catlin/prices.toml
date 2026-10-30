@@ -16,6 +16,11 @@
 # (the twelve FX-* plumbing-fixture rows, after the tub-shower was found priced below the
 # bare tub on both halves). Each section header carries its own basis and sources.
 #
+# 2026-10-29 REVIEW PASS (plans/pricing-review-2026-10-29.md): double bills removed (wall/roof
+# sheathing now bills by the SF only, S-5 racking inside solar $/W, gutter coil inside the
+# gutter rate, SAC/WAC once), rows brought to their own stated bases, and nail-strip roof labour.
+# Owner swaps: R-12.9 garage door, WAC Sprig sconces. Construction high $1.78M -> ~$1.66M.
+#
 # --- WHAT THE 2026-08-20 PASS DID ---------------------------------------------------------
 # Added LABOUR: almost every row now carries an explicit { material = ..., labour = ... }
 # split, moving the construction total $306,982-627,214 -> $574,980-1,135,114. It also
@@ -185,7 +190,9 @@
 # filed under a different layer function and is the same strip of the same depth over the
 # same run. 498 LF ordered before, 498 LF ordered after, same blended rip rate. Watch it if
 # the gap is ever respecified as something other than a closure strip.
-"0.5x5 panel" = { low = 1.5, high = 5 }  # 56 LF — formed gutter stock
+# 2026-10-29: zeroed. The gutter profiles are the K-style gutter's own members; `gutter:metal-dark-kstyle` in [drainage] is INSTALLED
+# (roll-formed on site from coil, hangers in the rate), so the coil was billed twice. Bills in [drainage] gutter:metal-dark-kstyle.
+"0.5x5 panel" = { low = 0, high = 0 }  # 136 LF — formed gutter stock (side walls)
 # RETIRED 2026-09-12, kept per the glazed-green-brick convention. These two priced the
 # WallBacking bands when every wet wall carried ONE continuous 3/4" Structural 1 plywood
 # band, 48" tall (24" on the short knee wall W-A-STU-W). They now resolve to 0 LF: the bath
@@ -210,7 +217,7 @@
 "0.75x48.0" = { material = { low = 3.38, high = 5.25 }, labour = { low = 2.5, high = 5 } }  # 0 LF — RETIRED, was the 48" wet-wall band
 "0.75x24.0" = { material = { low = 1.69, high = 2.63 }, labour = { low = 1.25, high = 2.5 } }  # 0 LF — RETIRED, was W-A-STU-W's knee-wall band
 "0.75x3.5" = { material = { low = 1.6, high = 2.75 }, labour = { low = 3, high = 6 } }  # 20 LF — W-M-STRW's two poplar 1x4 hook rails, cut between studs, primed and painted (poplar-trim-paint rate). The only 0.75x3.5 framing member
-"1.25x11.875 rim" = { material = { low = 3, high = 4.75 }, labour = { low = 1.1, high = 2.1 } }  # 72 LF — FS-ATTIC's two went to LSL on 2026-08-29, see below
+"1.25x11.875 rim" = { material = { low = 3, high = 4.75 }, labour = { low = 1.1, high = 2.1 } }  # 140 LF — FS-ATTIC's two went to LSL on 2026-08-29, see below
 # FS-ATTIC's two rims, 2026-08-29. They are the perimeter bearing line under the attic's
 # rafter plates now rather than a band board capping joist ends, and a 1 1/4" OSB rim on that
 # line would crush. 1 3/4" LSL is the ordinary answer and it is roughly double the band
@@ -253,7 +260,7 @@
 # "1x1 panel" = { material = { low = 0.16, high = 0.27 }, labour = { low = 0.5, high = 1 } }  # was 158 LF — girt-wall eave return
 # "1.5x5.5 panel" =    # 112 LF — SPF fascia, billed in [edge_trim]
 "1.5x6 rim" = { material = { low = 0.95, high = 1.55 }, labour = { low = 0.9, high = 1.7 } }  # 80 LF
-"11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 2388 LF — floors only since 2026-08-31 (the roof's 1,115 LF of rafter moved to the TJI 230 row below); the comment read 4580 for weeks against an ordered 3,556
+"11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 2420 LF — floors only since 2026-08-31 (the roof's 1,115 LF of rafter moved to the TJI 230 row below); the comment read 4580 for weeks against an ordered 3,556
 # THE ROOF'S RAFTERS, AND A SEPARATE ROW ON PURPOSE (2026-08-31). Going to 24" o.c. traded
 # 358 LF of joist for a heavier series: at 16" the cheapest TJI in the line carried the
 # 17'-9 3/4" HORIZONTAL run at Ps = 35 psf, at 24" the first one that does is the 230.
@@ -361,12 +368,12 @@
 # wall took it (a KDAT 2x4 outrigger on edge does that job now — "2x4:kdat" below). What is
 # left is the sauna/plant liner strapping and the garage's own rainscreen.
 "1.125x1.5:kdat" = { material = { low = 0.65, high = 1.2 }, labour = { low = 1.5, high = 3 } } # entry veneer packing, includes structural attachment
-"1x4" = { material = { low = 0.45, high = 0.7 }, labour = { low = 0.35, high = 0.7 } }  # 742 LF
+"1x4" = { material = { low = 0.45, high = 0.7 }, labour = { low = 0.35, high = 0.7 } }  # 694 LF
 # "1x6.81165 panel" =    # 112 LF — cellular-PVC fascia, billed in [edge_trim]
 # One ply of the row below: floor-opening trimmer packs on the I-joist decks run bearing to
 # bearing in band-deep LVL since 2026-09-16. Half the 2-ply material; labour per ply a bit over half.
-"1.75x11.875 LVL" = { material = { low = 7, high = 13 }, labour = { low = 5, high = 10 } }  # 204 LF
-"2-1.75x11.875 LVL" = { material = { low = 14, high = 26 }, labour = { low = 8, high = 18 } }  # 8 LF
+"1.75x11.875 LVL" = { material = { low = 7, high = 13 }, labour = { low = 5, high = 10 } }  # 192 LF
+"2-1.75x11.875 LVL" = { material = { low = 14, high = 26 }, labour = { low = 8, high = 18 } }  # 16 LF
 # WIN-M-DINING-E's header (2026-10-16), read off Boise's header table: scaled from the
 # 11 7/8" row by depth.
 "2-1.75x9.5 LVL" = { material = { low = 12, high = 22 }, labour = { low = 7, high = 16 } }
@@ -386,8 +393,8 @@
 # because it bears continuously. 36 LF, three 12s, no offcut, no waste to price.
 "2-1.75x16 LVL" = { material = { low = 18, high = 34 }, labour = { low = 9, high = 20 } }  # 36 LF
 "2-2x10" = { material = { low = 3, high = 4 }, labour = { low = 1, high = 2 } }  # 56 LF — 40 header + 16 canopy collector blocking (2026-10-08: was 3.5x16 LSL, unpriced)
-"2-2x6" = { material = { low = 1.7, high = 2.3 }, labour = { low = 0.9, high = 1.8 } }  # 16 LF
-"2-2x8" = { material = { low = 2.2, high = 3.1 }, labour = { low = 1, high = 2 } }  # 440 LF
+"2-2x6" = { material = { low = 1.7, high = 2.3 }, labour = { low = 0.9, high = 1.8 } }  # 48 LF
+"2-2x8" = { material = { low = 2.2, high = 3.1 }, labour = { low = 1, high = 2 } }  # 168 LF
 "2x10" = { material = { low = 1.5, high = 2 }, labour = { low = 1.3, high = 2.4 } }  # 172 LF — 58 hanger + 114 wet-wall -MID courses (2026-09-12); -MID backing 106 -> 24 LF ordered (2026-10-10 trim)
 # ST-SG-PORCH's stringers are 2x12:kdat and bill on the "2x12:kdat" row below (32 LF ordered),
 # not here. The 3.7 LF plan run of each is 4.6 LF of stick on the rake; the cut list has it.
@@ -399,7 +406,7 @@
 # The court daybed's two built-up porch lines (plan/court_daybed.py): three plies of the row
 # above per LF of line, nailed up on site.
 "3-2x12:kdat" = { material = { low = 7.2, high = 10.8 }, labour = { low = 4.2, high = 7.8 } }  # 40 LF ordered — FS-SG-PORCH lines 003 and 006
-"2x2" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 816 LF
+"2x2" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 260 LF
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
 # W-BW-SCREEN east veneer, 2026-10-25. Preliminary budgets, not supplier quotes.
 # Brick rate includes pointing mortar/labour; setting bed is a separate purchase below.
@@ -417,7 +424,7 @@
 # course and jamb post, 571 LF of block-1, 192 LF of inner head/sill course, and the SPF
 # offcuts that went with them — and hands nothing back, because everything outboard of the
 # sheathing is KDAT now. This is the single largest material line change in the wall.
-"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # ~5100 LF — SPF, ordinary framing only (-80 LF on 2026-09-02: the roof's web stiffeners are plywood, see the stiffener panel row above; -1016 LF on 2026-09-06 when RF-GARAGE's chords/webs/heels became one member per truss and moved to the "24 roof truss" row — they were never ordinary 2x4 framing, they were shop-plated lumber billing at the stick rate)
+"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 4746 LF — SPF, ordinary framing only (-80 LF on 2026-09-02: the roof's web stiffeners are plywood, see the stiffener panel row above; -1016 LF on 2026-09-06 when RF-GARAGE's chords/webs/heels became one member per truss and moved to the "24 roof truss" row — they were never ordinary 2x4 framing, they were shop-plated lumber billing at the stick rate)
 # 2026-08-30, with the INT_2X4_RC retype of the five sleeping-side partitions
 # (plan/storeys/second.py). This is the SAME product [construction_returns] prices as
 # `resilient-channel` and it is deliberately the same number — single-leg RC-1 in 12' sticks,
@@ -438,7 +445,7 @@
 # (`resolve/framing/profiles.py`) it is 64 pcs / 431.4 LF cut / 536 LF ordered, priced at
 # $723.60-$1,206.00. ** DO NOT RENAME THE KEY ** — it is the [framing] price key, and the
 # rename is what would drop the whole row into `unpriced`.
-"25 ga. resilient channel" = { material = { low = 0.55, high = 0.75 }, labour = { low = 0.8, high = 1.5 } }  # 536 LF
+"25 ga. resilient channel" = { material = { low = 0.55, high = 0.75 }, labour = { low = 0.8, high = 1.5 } }  # 336 LF
 # THE CATLIN TRUSS'S ONE GIRT TIER (2026-08-26; the only tier since 2026-09-01), and the
 # single biggest cost lever in the wall. 2,774 LF ordered of KDAT southern yellow pine 2x4,
 # all of it laid FLAT: the girt courses, the jamb posts and the head/sill courses at every
@@ -475,7 +482,7 @@
 # +16 LF ordered 2026-09-02: the breezeway's six drainage wedges (WG-BW-R*), tapered rips
 # off this same stock. Same rate — a rip is a saw cut, and the labour rate here is a
 # per-foot install rate, not a fabrication one.
-"2x4:kdat" = { material = { low = 1.3, high = 1.9 }, labour = { low = 0.7, high = 1.3 } }  # 2790 LF
+"2x4:kdat" = { material = { low = 1.3, high = 1.9 }, labour = { low = 0.7, high = 1.3 } }  # 2938 LF
 # RETIRED 2026-08-26 with the catlin truss. This was the DOUBLED head/sill blocking over the
 # wide openings (60" French/slider) and the two-ply jamb fillers of the Swinburne truss.
 # Neither exists on a girt wall: the head course is blocked back to the cripples at every
@@ -531,7 +538,8 @@
 # snapped stud line on the flat wall, lay the girt over them, drive one screw. No tacking,
 # no plumbing, no second plane. The three plies are what buy the 4-1/2" of thermal break
 # under the screw head and the 1/2" of proud that IS the vent gap.
-"3-2x4:kdat" = { material = { low = 3.9, high = 5.7 }, labour = { low = 0.5, high = 1 } }  # 352 LF (1,128 blocks x 3 plies)
+# 2026-10-29: material -20%: the [framing] order qty already carries stick-rounding waste, so ~20% of the 3.5" pieces are the girt order's offcuts. Labour unchanged.
+"3-2x4:kdat" = { material = { low = 3.1, high = 4.55 }, labour = { low = 0.5, high = 1 } }  # 360 LF (1,128 blocks x 3 plies)
 # RF-HOUSE's gutter girt (2026-09-16, notes/eave_gutter_girt.md): a flat 2x6 KDAT girt on
 # three-ply 2x6 standoffs, one per rafter bay. 2x6 because the gutter's couple needs two
 # screws 3-1/2" apart. Rates scaled 1.5x from the 2x4 rows by section. Since 2026-10-14 it
@@ -550,12 +558,13 @@
 # "1.5x1.5 panel" (the girt), ~176 LF each; it was five runs on the two-tier wall. Retired
 # with the outrigger band it followed; restore with EXT_2X6_SWINBURNE.
 # "3.5x3.5 panel" = { material = { low = 3, high = 4.4 }, labour = { low = 0.8, high = 1.5 } }  # was 158 LF
-"2x6" = { material = { low = 0.85, high = 1.15 }, labour = { low = 0.9, high = 1.6 } }  # 7088 LF (2026-10-03, LSL stud line split out below)
+"2x6" = { material = { low = 0.85, high = 1.15 }, labour = { low = 0.9, high = 1.6 } }  # 7204 LF (2026-10-03, LSL stud line split out below; 2026-10-29 recount)
 # Main-storey exterior + x=18' centreline stud line (studs, kings, jacks, cripples, corner
 # packs) is LSL via `layer_materials` (storeys/main.py); plates and headers stay on "2x6".
-# 1-1/2" x 5-1/2" LSL stud stock runs roughly 3-4x SPF by the foot (estimate, not a quote);
+# 1-1/2" x 5-1/2" LSL stud stock runs roughly 2-2.7x SPF by the foot (see 2026-10-29 note below);
 # labour is the "2x6" row's, since it frames the same.
-"2x6:lsl" = { material = { low = 2.8, high = 4.2 }, labour = { low = 0.9, high = 1.6 } }  # 1646 LF (197 pc)
+# 2026-10-29: owner kept LSL; re-priced to ~2x SPF (GBA: TimberStrand LSL ~$8 vs 2x4x8 SPF $3-4, i.e. 2-2.7x) = 1.70-2.30. Was 2.8-4.2 (unsourced 3-4x).
+"2x6:lsl" = { material = { low = 1.7, high = 2.3 }, labour = { low = 0.9, high = 1.6 } }  # 1742 LF
 # 2026-08-28: 492 -> 464 LF ordered (80 -> 76 pc). The porch joist reinforcement under
 # PT-SG-BR2 — 2 sister 2x8s and 2 blocks, 28 LF — came out when the rear balcony pillar row
 # moved onto the back-beam line and the pillar stopped standing on a cantilevered joist tip.
@@ -576,7 +585,7 @@
 # and that derivation is left pointing at nothing.
 "3-1.75x11.875 LVL" = { material = { low = 21, high = 39 }, labour = { low = 15, high = 30 } }  # 0 LF — see above
 "3x6 rim" = { material = { low = 1.9, high = 3.1 }, labour = { low = 1.3, high = 2.4 } }  # 8 LF
-"4x0.5 panel" = { low = 1.5, high = 5 }  # 28 LF — formed gutter stock
+"4x0.5 panel" = { low = 0, high = 0 }  # 68 LF — formed gutter stock (bottom); bills in [drainage] gutter:metal-dark-kstyle
 "4x4" = { material = { low = 2.2, high = 3.6 }, labour = { low = 1.5, high = 3 } }  # 32 LF
 "6x6" = { material = { low = 5, high = 8.5 }, labour = { low = 2.5, high = 5 } }  # 8 LF
 # ** SUPERSEDED 2026-09-28 for the oak: ** the oak treads now bill in [stair_treads] by the
@@ -613,8 +622,8 @@
 "hanger" = { material = { low = 1.5, high = 4 }, labour = { low = 1.3, high = 2.6 } }  # 32 LF — stair hanger board, 2x stock
 
 [sheet_goods]
-"entry-screen-exterior-plywood" = { material = { low = 58, high = 94 }, labour = { low = 43, high = 79 } } # 4x9; overlaps envelope SF row
-"permabase-exterior" = { material = { low = 48, high = 83 }, labour = { low = 96, high = 160 } } # 4x8; overlaps envelope SF row
+# Hung wall/roof sheathing is priced by the SF in [envelope_layers]; the matching sheet rows
+# carry `also_in_envelope_layers` and are skipped (2026-10-29). Only ceiling and rip sheets bill here.
 # RESEARCHED 2026-08-07 — [low, high] $/4x8 sheet, material only. Basis: 1/2" drywall
 # $12-22/sheet, 1/2" CDX plywood $28-52/sheet, subfloor plywood a grade up from that,
 # ZIP-R quoted per SF ($2.20-4.20) and multiplied by 32 SF. Sources: homeguide.com drywall
@@ -661,8 +670,9 @@
 # and $40-55/SF for SECOND-STOREY work, which this is.
 # $30-52/SF for the plank system only — framing, ledger, wall flashing and railing are billed
 # elsewhere — at roughly 70:30 material to labour, PLUS $400-900 of LTL freight on a factory-cut
-# small order to Minnesota. -> $6,948-12,252 over 6 sheets. CONFIDENCE: LOW above the Homewyse floor.
-"aluminum-deck" = { material = { low = 833, high = 1450 }, labour = { low = 325, high = 592 } }  # 6 sheets = 182.0 SF
+# small order to Minnesota. -> $5,862-10,362 over 6 sheets (2026-10-29: row was $6,948-12,252, above this basis;
+# HomeAdvisor 2nd-storey $40-55/SF argues the top is not low). CONFIDENCE: LOW above the Homewyse floor.
+"aluminum-deck" = { material = { low = 704, high = 1254 }, labour = { low = 273, high = 473 } }  # 6 sheets = 182.0 SF
 # Ceiling gypsum (FS-S-WEST/FS-S-EAST's `ceiling_below`, since 2026-08-21's truss/I-joist
 # split — FS-SECOND before that), by the sheet. Distinct from the
 # `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
@@ -684,7 +694,7 @@
 # retired row in this file — and the lay-and-hold labour above is the number to restore if a
 # nailbase ever comes back, because it is the part a plain plywood rate does not carry.
 "osb" = { material = { low = 24, high = 38 }, labour = { low = 30, high = 58 } }  # 0 sheets (was 45)
-"struct-1-plywood" = { material = { low = 27, high = 42 }, labour = { low = 16, high = 34 } }  # 174 sheets — +49 for the roof deck, -54 as the ZIP and OSB roof decks left, 2026-08-31
+"struct-1-plywood" = { material = { low = 27, high = 42 }, labour = { low = 16, high = 34 } }  # 4 sheets (ceiling 3 + sheathing rip 1); wall/roof sheathing bills in [envelope_layers] (2026-10-29)
 # Plain ZIP (not ZIP-R) — the roof's structural deck and air-barrier plane. Cheaper than the
 # ZIP-R row below by the whole cost of the foam laminated to it, which this roof buys loose.
 # NOT TAKEN as of 2026-08-31 — 0 sheets. The roof deck is 5/8" CDX now and the air barrier
@@ -696,7 +706,7 @@
 # $30-52 the 4x8 sheet is the ordinary-sheathing shelf price a grade below the sanded
 # underlayment row and a thickness above the 1/2" the struct-1-plywood row is basised on;
 # labour is that row's, unchanged, because hanging a sheet is hanging a sheet.
-"cdx-plywood" = { material = { low = 30, high = 52 }, labour = { low = 16, high = 34 } }  # 20 sheets
+"cdx-plywood" = { material = { low = 30, high = 52 }, labour = { low = 16, high = 34 } }  # 1 sheet (sheathing rip); wall sheathing bills in [envelope_layers]
 # ENTRY_SCREEN_WALL's east ply — one sheet, 26.8 SF net. 5/8" APA Rated Siding 303 with an
 # MDO face at $70-120 the 4x8 sheet: roughly double the CDX row above it, which is the whole
 # point of the tag (a bonded resin-fibre paint substrate, not a C/D sheathing face). RETAIL
@@ -955,7 +965,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # and it is a LIST BAND rather than a quote.
 # H10A geometry in 316 stainless, joist to glulam at every interior balcony crossing (owner,
 # 2026-09-22). Stainless H10A-class ties run ~2-3x the G90 part.
-"H10ASS" = { low = 6.0, high = 14.0 }  # 20 ea — CN-SG-TIE-W02..W11 / -E02..E11
+# 2026-10-29: retail H10ASS is $18.36-18.96 (fastenersplus / toolup / usframefactory); the old 6-14 was under-priced.
+"H10ASS" = { low = 16.0, high = 20.0 }  # 20 ea — CN-SG-TIE-W02..W11 / -E02..E11
 "H2.5ASS" = { low = 3.0, high = 6.5 }  # 10 ea — all authored: CN-BW-TRTIE-W1..3 / -E1..3 (canopy), and CN-SG-TIE-W01/-W12/-E01/-E12, the balcony's END joists on BM-SG-BLW/BLE (owner, 2026-09-22)
 # The beam tie at the eight cast-column seats: a PAIR of cast-in HETA20Z embedded anchors per
 # joint (ZMAX, G185), 12 ea — the four balcony corners (CN-SG-SEAT-R1/R3/F1/F3, A and B) and
@@ -1029,7 +1040,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # (HUC26-2 ~$12 single-piece to HUC212-3 ~$68), because a derived row cannot say which.
 # A house that knows the member authors the size and prices it on its own row, as the four
 # beam pockets below do.
-"HUC" = { low = 12, high = 70 }  # 2 ea derived — the stair hangers on W-B-CN
+"HUC" = { low = 12, high = 70 }  # 4 ea derived — the stair hangers on W-B-CN
 # The triple-2x12 concealed-flange hanger carrying **all four** sunken-garden porch beams
 # into pockets cast in concrete (params/sunken_garden.py: CN-SG-HGR-W/E on the back pair,
 # CN-SG-HGR-FW/FE on the front). It replaced HUCQ410-SDS on 2026-09-12; the count is
@@ -1087,7 +1098,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Lateral tie plate at the bottom plate of a framed wall standing on a framed floor
 # band. NOT on a wall standing on concrete: that plate is a sill and its MASA anchors
 # already make the connection, so the takeoff excludes it rather than paying twice.
-"LTP4" = { low = 1.1, high = 2.2 }  # 108 ea
+"LTP4" = { low = 1.1, high = 2.2 }  # 173 ea
 # The canopy's collector plates into treated glulam (CN-BW-EAVE-1..6, -E): ZMAX with HDG
 # nails, Simpson publishing no stainless LTP4. Budget band: the LTP4 row scaled ~1.3x.
 "LTP4Z" = { low = 1.4, high = 2.9 }  # 7 ea — authored
@@ -1175,7 +1186,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "S-5! ColorGard" = { low = 80, high = 180 }  # 2 ea
 # PVKIT 2.0 module grabs exclude the profile-matched seam clamp, ordered below.
 # S-5-S: published MSRP $7.34 (s-5.com/products/s-5-s-clamps/); carton/street range.
-"S-5-PVKIT" = { low = 14, high = 35 }  # 48 ea, clamp ordered separately
+# 2026-10-29: zeroed. [solar_modules] $/W covers modules + racking + rapid shutdown, so PVKIT and its S-5-N clamp
+# are inside it. $0 rows kept: test_every_catlin_hardware_part_reaches_a_price needs a key.
+"S-5-PVKIT" = { low = 0, high = 0 }  # 48 ea — racking bills in [solar_modules] $/W
 "S-5-S" = { low = 6, high = 10 }  # 0 ea — retired: Image II is 1" nail strip, not snap-lock
 # Eclisse steel cassettes since 2026-10-09 (notes/pocket_frame_eclisse.md). EKC3680 listed
 # $341.94 (Home Depot) to $465 (Ferguson). The 2x6 (EKQ series) has no 80" retail listing:
@@ -1211,7 +1224,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # GARAGE_WALL_2X6 is a 7/8" corrugated exposed-fastener panel now, with no seam of any kind
 # for an N clamp to close on — the same swap, and the same argument, as the 48 S-5-S house-
 # wall clamps that went on 2026-08-26. The garage roof remains nail strip.
-"S-5-N" = { low = 6, high = 10 }  # 50 ea — 48 PVKIT carriers + 2 ColorGard carriers (S-5-N MSRP $7.11)
+# 2026-10-29: zeroed, see S-5-PVKIT; the 2 ColorGard carriers sit inside the "S-5! ColorGard" row.
+"S-5-N" = { low = 0, high = 0 }  # 50 ea — 48 PV seam clamps bill in [solar_modules] $/W
 # S-5-N Mini: one setscrew, wind (uplift-only) clamps on both nail-strip roofs. Price is a
 # placeholder range pending a quote; MSRP is below the full S-5-N's.
 "S-5-N Mini" = { low = 4, high = 8 }  # 24 ea — 12 house roof + 12 garage roof wind clamps
@@ -1397,7 +1411,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # wants 2.0" of embedded thread for it and that needs the 1/2" ply counted, which the report
 # is silent on. Also rejected: Rothoblaas HBS/TBS 8 mm (3-1/8" thread at every length;
 # ESR-4645 is dry service only) and HECO TOPIX-plus (no US evaluation report).
-"TLOK08" = { low = 0.81, high = 1.10 }  # 1131 ea — the catlin truss's one girt screw
+"TLOK08" = { low = 0.81, high = 1.10 }  # 1235 ea — the catlin truss's one girt screw
 # RF-HOUSE eave blocking toe screws (notes/eave_gutter_girt.md §4): 2 per end into the
 # stiffener pair (3") and 2 per block down into the rafter plate (4").
 "SDWS22300DB" = { low = 0.55, high = 0.85 }  # 152 ea — 8 toe-screw SB-BW-BAND's two corner infill slats
@@ -1740,7 +1754,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # are the same pour on the same day as the rest of this row's slabs-on-grade, so neither
 # earns a qualified key or a short-load premium — unlike HP_PAD_ON_GRADE below, which is a
 # separate trip. The field itself is sand and stone and is zeroed by qualified key above.
-"slab" = { material = { low = 200, high = 250 }, labour = { low = 190, high = 435 } }  # 24.0 cy — SLAB-ON-GRADE ONLY, was merged $390-685
+"slab" = { material = { low = 200, high = 250 }, labour = { low = 190, high = 435 } }  # 22.3 cy — SLAB-ON-GRADE ONLY, was merged $390-685
 # The heat-pump pad, SL-SG-HPPAD — 0.70 cy (was 0.36 until 2026-09-03, when the two
 # condensers turned to face SOUTH and the pad grew east to the SE corner and north to carry
 # ST-SG-PORCH's foot and step-off; 56.9 SF at 4"). STILL QUALIFIED, and for the same reason:
@@ -1758,11 +1772,13 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # The sidewalk, five legs (params/landscape_walk.py): 4" fibre-only EXPOSED_MIX. The labour
 # band carries the 28 sonotube pocket forms and the control joints on their 4' stations,
 # which is why it sits over the plain slab-on-grade rate. 2026-09-21.
-"slab:SIDEWALK_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 500, high = 950 } }  # 7.16 cy, 580 SF over four pours (SL-WK-E dropped 2026-09-23; leg A notched round the drive's flare; A and B one-sided 64" beside RG-E-BASIN; C run under the canopy to ST-BW-ENTRY, replacing the pavers)
+# 2026-10-29: labour high 950 -> 780/cy: 4 small pours x 3 men x ~8 h + 28 sonotube voids x $25-50 + ~36 tooled joints = $3.5-5.8k over 7.17 cy.
+"slab:SIDEWALK_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 500, high = 780 } }  # 7.16 cy, 580 SF over four pours (SL-WK-E dropped 2026-09-23; leg A notched round the drive's flare; A and B one-sided 64" beside RG-E-BASIN; C run under the canopy to ST-BW-ENTRY, replacing the pavers)
 # The driveway, SL-DW-DRIVE (params/driveway.py): the walk's mix at the walk's material rate.
 # Labour sits under the sidewalk's (no pocket forms) and carries the K8 joint at the grade
 # beam, ~16 LF of 1" 40 psi XPS under traffic-rated PU sealant. PROPOSED 2026-09-23, owner's call.
-"slab:DRIVEWAY_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 450, high = 850 } }  # 2.59 cy, 210 SF, one pour
+# 2026-10-29: labour 450-850 -> 400-700/cy: one pour, no voids; 3 men x 5-6 h + ~16 LF joint/sealant = ~$1.0-1.9k over 2.70 cy.
+"slab:DRIVEWAY_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 400, high = 700 } }  # 2.59 cy, 210 SF, one pour
 # The FPSF frost wings and SL-SG-FIELD are kind="band" slabs (category slab_band), so the
 # bare "slab" $/cy no longer reaches them; their layers bill in [envelope_layers].
 # RESEARCHED 2026-08-18 — the suspended main-floor deck, priced apart from every other
@@ -1829,13 +1845,13 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 414 SF x 0.01869 = 7.74 cy.
 #   ready-mix, 7.74 cy + waste @ $180-200/cy            $3.37- 3.74/SF
 #   reinforcing: PLACING only (2.96 lb/SF @ $0.25-0.50) $0.75- 1.50/SF
-#   place, screed, power trowel, cure                   $3.00- 5.50/SF
+#   place, screed, power trowel, cure                   $2.50- 4.50/SF  (2026-10-29: was 3.00-5.50; deck is ground to CSP 2-3, one trowel pass)
 #   temporary shoring, adjustable posts @ 6' o.c.       $2.00- 5.00/SF
-#   cold-weather protection (Nov-Mar in MN)             $0.00- 0.75/SF
+#   cold-weather protection                             dropped 2026-10-29 (summer pour; [allowances] concrete-cold-weather-protection = 0)
 #   structural engineering, stamped                     $1.00- 3.00/SF
 #   small-job premium                                   $0.15- 2.40/SF
 #                                                      -----------------
-#                                                      $10.27-21.89/SF
+#                                                      $9.77-20.14/SF
 # ** 2026-10-11: the BAR left this build-up. ** The line read "rib bars + cap mesh,
 # furnished/placed $1.50-3.00/SF"; the 1,224 lb of black bar (BuildDeck schedule) now bills
 # by the pound in [reinforcement], so only its placing stays here.
@@ -1861,7 +1877,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # $900-2,060, i.e. $2.00-5.00/SF. Engineering also stays and is still a third of a shored
 # deck's, because the form supplier gives a layout and the shoring is prescriptive out of the
 # manual rather than designed.
-"slab:DECK_EPS_INT" = { low = 10.27, high = 21.89, unit = "SF" }  # 414 SF — EPS-formed deck, concrete + temporary shoring, pump in [allowances]
+"slab:DECK_EPS_INT" = { low = 9.77, high = 20.14, unit = "SF" }  # 414 SF — EPS-formed deck, concrete + temporary shoring, pump in [allowances]
 # 2026-08-20: RE-UNITED, and REPRICED — the old rate was not just mis-keyed, it was wrong.
 # It read $15-60/LF for a structural bearing break (Armatherm FRR, Foamglas Perinsul) under
 # three ~0.3 SF pads at the sunken-garden column and drywell, giving $25-90 each against the
@@ -1908,7 +1924,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # slot. The labour half of this rate was written for cutting, fitting and BRACING a board
 # against a pour; it is now pull-a-blockout-and-set-a-board, plus the blockout stock and its
 # stripping. Noted, not re-rated: the two probably net out, and nobody has quoted either.
-"thermal_break" = { low = 78, high = 183, unit = "cuft" }  # 5.74 cf — the garden closure boards
+# 2026-10-29: $78-183 -> $50-125/cf: the cast-against bracing is gone (each board drops into a stripped blockout slot). 2.5" Type X XPS ~$3.75-6.90/SF + set/blockout/strip $5-12/SF = $42-91/cf + small-lot cover.
+"thermal_break" = { low = 50, high = 125, unit = "cuft" }  # 5.74 cf — the garden closure boards
 
 # Mirrors and markers — billed in their own sections, or in no section at all:
 # "conduit_data" =    # 0.02 cy
@@ -1938,10 +1955,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # `resolve/drain_tile.py` extrudes each run as a band exactly one pipe diameter wide, so at 4"
 # pipe the plan area is LF/3 and $/SF = 3 x $/LF. 253.8 SF is therefore 761.4 LF — and the
 # takeoff agrees independently: [footing_bedding] reports drain_tile_ft 515.3 + 246.0 = 761.3.
-# At $6-14/LF installed that is $18-42/SF. The money is within 3% of the $/cy rate it replaces;
+# At $4-10/LF installed (2026-10-29; was $6-14) that is $12-30/SF. The money is within 3% of the $/cy rate it replaces;
 # what changes is that the multiplier is now 3, not ~230, so the rate is one an estimator can
 # check against a quote. See plans/cost-options.md on whether 761 LF is the right LENGTH.
-"drain_tile" = { low = 18, high = 42, unit = "SF" }  # 153.2 SF = 460 LF @ $6-14/LF (2026-09-23: was 240.7 SF / 722 LF — the six court beds run no pipe, and the overflow leg is a 12" link on W1's heel) (2026-09-22: was 254.0 SF; the court's two well leads and the field lateral's 28" dive went with DRW-SG-MAIN) (-2.9 SF on 2026-09-10: the court shortened 28' -> 26', so the south wall's bed ring and the two side rings lost 4'-0" of run between them, and the narrower strips shortened every ring's cross-run)
+# 2026-10-29: $6-14/LF -> $4-10/LF (x3 for SF): ADS 4" perf + sock $1.36-1.62/LF + fittings/cleanouts ~$0.5-1; laying in an open trench on stone ~30-60 LF/h = $1.5-5/LF. Stone and dig bill elsewhere.
+"drain_tile" = { low = 12, high = 30, unit = "SF" }  # 153.2 SF = 460 LF @ $4-10/LF (2026-09-23: was 240.7 SF / 722 LF — the six court beds run no pipe, and the overflow leg is a 12" link on W1's heel) (2026-09-22: was 254.0 SF; the court's two well leads and the field lateral's 28" dive went with DRW-SG-MAIN) (-2.9 SF on 2026-09-10: the court shortened 28' -> 26', so the south wall's bed ring and the two side rings lost 4'-0" of run between them, and the narrower strips shortened every ring's cross-run)
 # ** THE HYDRANT PIT ONLY SINCE 2026-09-22. ** DRW-SG-MAIN (4.36 cy) is retired: the court's
 # soakaway is now a 12" course under four of its beds, bought in [footing_bedding] by the
 # yard. What is left is DRW-G-HYDRANT's 0.10 cy, spotted off the #57 order; the $/cy stays
@@ -2112,7 +2130,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # ** THE CROSS-RAILS ARE IN THIS ROW AND ARE NOT MODELLED GEOMETRY. ** Only the legs resolve
 # as solids. Pricing the legs alone would buy half a stand.
 # -> material $300-800 and labour $150-400 over 0.01 cy.
-"column:EQUIP_STAND_ALUM" = { material = { low = 30000, high = 80000 }, labour = { low = 15000, high = 40000 } }  # 0.02 cy = 12 legs + 3 sets of cross-rails since 2026-09-04, when EQ-M-HP3-OD got the stand it never had (params/hp3_pad.py). The three stands now sit on three SEPARATE pads (HP1 moved to SL-M-HP1PAD on the north face later the same day) — no change to the quantity or the rate, but they are three trips, not two. The rate is per-cy and the three stands are the same 2" x 18" leg, so it scales honestly: about $450-1,200 mat + $225-600 lab for all three, against $300-800 + $150-400 for the pair
+# 2026-10-29: rate re-solved to the build-up below for 3 stands ($450-1,200 mat + $225-600 lab) at the billed 0.02 cy. Was 600-1,600 + 300-800.
+"column:EQUIP_STAND_ALUM" = { material = { low = 22500, high = 60000 }, labour = { low = 11250, high = 30000 } }  # 0.02 cy = 12 legs + 3 sets of cross-rails since 2026-09-04, when EQ-M-HP3-OD got the stand it never had (params/hp3_pad.py). The three stands now sit on three SEPARATE pads (HP1 moved to SL-M-HP1PAD on the north face later the same day) — no change to the quantity or the rate, but they are three trips, not two. The rate is per-cy and the three stands are the same 2" x 18" leg, so it scales honestly: about $450-1,200 mat + $225-600 lab for all three, against $300-800 + $150-400 for the pair
 #
 # WHITE-PAINTED GARDEN FRAME — 37.3 LF over four members, 0.49 cy. Every stick of the garden's
 # frame that anybody actually sees: BM-SG-FRW/FRE (the porch's front pair, 3-2x12 at 10'-0")
@@ -2207,11 +2226,13 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # entire heated bathroom floor. The $1.90/ft lower end is Schluter's published
 # $804.49 MSRP for 425.8 ft (large 240 V cable); $4.70/ft covers the short
 # DHEHK12016 cable at $243.75 for 52.9 ft. The dining loop is slab embedded,
+# 2026-10-29: row BLENDED over the three 120 V zones (plan/circuits.py), not the 240 V cable: BATH2 ~59 LF @ ~$4.6,
+# BATH1 ~89 LF @ ~$3.4, DINING ~232 LF @ ~$2.1-2.4 (CAD prices; no US SKU price). Was $1.90-4.70.
 # with no tile membrane. Thermostats are billed as placeables. Confirm exact
 # cable-only SKUs and installation quote before ordering.
 # https://www.schluter.com/schluter-us/es_US/projects/print/0a7a93c1-b415-42d1-a0e2-afd3d4f41cf51700324834181
 # https://www.lowes.com/pd/schluter-systems-0-188-in-x-634-8-in-grey-120-volt-warming-wire/50201647
-"electric" = { material = { low = 1.9, high = 4.7 }, labour = { low = 1.5, high = 3.25 } }
+"electric" = { material = { low = 2.3, high = 3.3 }, labour = { low = 1.5, high = 3.25 } }
 
 [placeables]
 # 2026-10-22: Moen shop YB0408BN $65.10, list $86.80, excluding tax/shipping.
@@ -2266,7 +2287,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 #            $25-75, a 225A load centre $250-700. faradaycrew.com 2026 electrical pricing
 #            guide, homedepot.com / destinationlighting.com listings.
 #   EQ-T-*   named products where the plan names one: EG4 12kPV $3,156.88 (signaturesolar /
-#            currentconnected), EG4 PowerPro 14.3 kWh $2,400/module, HPWH unit $1,500-3,000
+#            currentconnected), EG4 WallMount 14.3 kWh ~$3,100-3,400, HPWH unit $1,500-3,000
 #            (todayshomeowner 2026), whole-house ERV $800-2,000 for a 100-300 CFM unit
 #            (pickcomfort.com). ** THE SAUNA HEATER IS 10.5 kW NOW, NOT 9 (2026-09-06): **
 #            Harvia Cilindro PC110E $1,379 + the MANDATORY Xenio CX170 control $1,035 +
@@ -2329,7 +2350,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # on an appliance nobody buys at list and nobody is guaranteed the promo on. Labour is
 # carried over unchanged from the allowance rows: naming the model tells you what the box
 # costs, not what the trade charges to set and connect it.
-"APPL-FRIG-PRO-ALLFREEZER" = { material = { low = 3293, high = 3699 }, labour = { low = 75, high = 200 } }  # 1 ea. FPFU19F8WF, ~$3,293-3,299 street against a $3,699 pre-promo list
+# 2026-10-29: high = street + ~$100 (promo ending); the $3,699 list is not what anyone pays (PC Richard $3,298.97).
+"APPL-FRIG-PRO-ALLFREEZER" = { material = { low = 3293, high = 3399 }, labour = { low = 75, high = 200 } }  # 1 ea. FPFU19F8WF, ~$3,293-3,299 street against a $3,699 pre-promo list
 # ADDED 2026-08-29 with the attic guest studio's wet bar. ** THE RANGE IS WIDE BECAUSE THE
 # APPLIANCE IS UNCHOSEN, ** which is the honest state of it — APPL-BAR-FRIDGE-24 is the one
 # type in plan/appliance_types.py that is a class allowance rather than a model number, so
@@ -2342,9 +2364,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # is a commodity: $120 is the big-box own-brand, $400 a name-brand or a glass-door one. Labour
 # is unchanged — it is still a plug and a levelling, and still no water line.
 "APPL-BAR-FRIDGE-CUBE-19" = { material = { low = 120, high = 400 }, labour = { low = 60, high = 160 } }  # 1 ea
-"APPL-FRIG-PRO-ALLFRIDGE" = { material = { low = 3299, high = 3699 }, labour = { low = 75, high = 200 } }  # 1 ea. FPRU19F8WF, $3,299 at Home Depot/Lowe's against a $3,699 pre-promo list. The pair is ~$6,600, roughly 2x the old fridge+freezer allowance — a Professional column pair is what that costs, and the Bosch alternative was ~$13,000
+# 2026-10-29: high = street + ~$100; $3,699 is pre-promo list.
+"APPL-FRIG-PRO-ALLFRIDGE" = { material = { low = 3299, high = 3399 }, labour = { low = 75, high = 200 } }  # 1 ea. FPRU19F8WF, $3,299 at Home Depot/Lowe's against a $3,699 pre-promo list. The pair is ~$6,600, roughly 2x the old fridge+freezer allowance — a Professional column pair is what that costs, and the Bosch alternative was ~$13,000
 "APPL-LG-DISHWASHER" = { material = { low = 679, high = 1149 }, labour = { low = 150, high = 350 } }  # 1 ea. LDTS5552S, $679 stainless on LG.com against a $1,149 MSRP
-"APPL-LG-INDUCTION-RANGE" = { material = { low = 1150, high = 2999 }, labour = { low = 100, high = 250 } }  # 1 ea. LSIL6336FE. The widest bracket of the three and deliberately so: $1,150 was a Labor Day promo, typical street is $1,800-2,300, list is $2,999. Budget to the middle, not the low
+# 2026-10-29: high = top of the $1,800-2,300 street band; $2,999-3,299 list (HD marks LSIL6336F discontinued) is not a price paid.
+"APPL-LG-INDUCTION-RANGE" = { material = { low = 1150, high = 2300 }, labour = { low = 100, high = 250 } }  # 1 ea. LSIL6336FE. The widest bracket of the three and deliberately so: $1,150 was a Labor Day promo, typical street is $1,800-2,300, list is $2,999. Budget to the middle, not the low
 "APPL-LG-WASHTOWER" = { material = { low = 2499, high = 3399 }, labour = { low = 120, high = 320 } }  # 1 ea. WKHC252HBA, $2,599 Black Steel / $2,499 White on LG.com against a $3,399 MSRP. A heat-pump WashTower is roughly 2x the old stacked-pair allowance — that is the ventless dryer being bought, not an estimating error
 # ** EVERY KITCHEN CASE-* ROW BELOW IS AT 0 ea SINCE 2026-09-11. ** The kitchen moved onto
 # the IKEA SEKTION frame ladder (SEKT-* rows further down, library/placeables/sektion.py,
@@ -2568,8 +2592,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LEV-GFCI-15" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 6 ea
 "ED-T-LEV-GFCI-20" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 20 ea
 "ED-T-LEV-GFCI-ALARM" = { material = { low = 30, high = 70 }, labour = { low = 48, high = 92 } }  # 1 ea
-"ED-T-LEV-GFCI-WR" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 5 ea
-"ED-T-LEV-GUIDE" = { material = { low = 12, high = 28 }, labour = { low = 38, high = 78 } }  # 1 ea
+"ED-T-LEV-GFCI-WR" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 8 ea
+"ED-T-LEV-GUIDE" = { material = { low = 12, high = 28 }, labour = { low = 38, high = 78 } }  # 4 ea
 "ED-T-LEV-MATTER" = { material = { low = 40, high = 70 }, labour = { low = 40, high = 80 } }  # 9 ea
 "ED-T-LEV-MATTER-COMPANION" = { material = { low = 25, high = 50 }, labour = { low = 40, high = 80 } }  # 2 ea
 "ED-T-LEV-MATTER-ELV" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 110 } }  # 1 ea
@@ -2595,7 +2619,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # ** BUY FIXED 3000 K, NEVER A 5CCT SELECTABLE MODULE ** at any price: the DIP switch gets
 # set wrong constantly and one can at the wrong temperature in a run of eight is a visible
 # defect. A dedicated phosphor also gives better R9 than a warm/cool blend.
-"ED-T-LT-CAN4" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 108 } }  # 60 ea (2026-10-28: the 21 mark-C 3" cans retyped to A)
+# 2026-10-29: material 55-95 -> 60-75: every observed Lotus price is $64.40-72 (LL4SR-30K-WH $64.40, sibling $72); $95 exceeded all.
+"ED-T-LT-CAN4" = { material = { low = 60, high = 75 }, labour = { low = 52, high = 108 } }  # 62 ea (2026-10-28: the 21 mark-C 3" cans retyped to A)
 "ED-T-LT-CAN4-4000" = { material = { low = 60, high = 80 }, labour = { low = 52, high = 108 } }  # 4 ea — LL4SRG-41K: no dealer price found, LL4SR sibling $72 (researched 2026-10-28)
 "ED-T-LT-CAN4-WET" = { material = { low = 60, high = 95 }, labour = { low = 68, high = 130 } }  # 8 ea — same LL4SRG-30K as mark A (researched 2026-10-28)
 # B1/B2, BATH2's day (5000 K) and evening (2700 K) cans: the same wet LL4SR in a fixed
@@ -2610,7 +2635,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # convention — a downrod fan is the revert if no flush SKU can be sourced, and
 # `luminaire_schedule` derives its rows from placements, so an unplaced type prints on
 # no sheet and bills nothing. Do not delete it, and do not read this as a live line.
-"ED-T-LT-FAN52" = { material = { low = 320, high = 350 }, labour = { low = 155, high = 320 } }  # 1 ea — Modern Forms FR-W1819-52L-MB $320-350 (researched 2026-10-28)
+"ED-T-LT-FAN52" = { material = { low = 320, high = 350 }, labour = { low = 155, high = 320 } }  # 2 ea — Modern Forms FR-W1819-52L-MB $320-350 (researched 2026-10-28)
 # 2026-09-06: the gym's hugger. Same 52" DC fan and light kit, flush-mount rather than
 # downrod, because RM-B-GYM's 95 3/8" clear cannot take an 18" assembly. Same band as the
 # downrod fan: a low-profile mount is a different housing, not a dearer one, and the SKU is
@@ -2645,7 +2670,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # https://fleurco.com/media/website_catalog.usa/5_Fleurco25_LUNA_US.pdf
 "ED-T-LT-MIRROR-HALO-2700" = { material = { low = 1337, high = 1484 }, labour = { low = 90, high = 200 } }  # 1 ea, 116 W including factory defogger
 
-"ED-T-LT-PANEL" = { material = { low = 115, high = 135 }, labour = { low = 48, high = 115 } }  # 4 ea — Westgate LP-2X4-60W-40K-D $79.85 + LP-SRFC-2X4 kit $36-52 (researched 2026-10-28)
+"ED-T-LT-PANEL" = { material = { low = 115, high = 135 }, labour = { low = 48, high = 115 } }  # 2 ea — Westgate LP-2X4-60W-40K-D $79.85 + LP-SRFC-2X4 kit $36-52 (researched 2026-10-28)
 # ** THE DINING FIXTURE IS THE OWNER'S OWN IMPORT AND HAS NOT BEEN SELECTED ** (48" linear,
 # 2000-3500 lm, 3000 K, CRI 90+). The band brackets an import against the domestic fixture
 # to price it by: Visual Comfort Dessau 48 at $1,449 for 2,261 lm / 36 W. ** BUDGET A SPARE
@@ -2661,8 +2686,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 3 ea
 "ED-T-LT-PSU-96-WE" = { material = { low = 51, high = 63 }, labour = { low = 45, high = 95 } }  # 3 ea — Mean Well HLG-100H-24A, distributor list $51-63 (researched 2026-10-28)
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea since 2026-10-12 — both niche supplies went, ED-M-BATH2-PSU came; ED-B-SAUNA-LT-PSU is surface-mounted on the workshop face of W-B-SA-N rather than in a ceiling box
-"ED-T-LT-SCONCE-EXT" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 3 ea — WAC WS-W2605-BK $186-232 (researched 2026-10-28)
-"ED-T-LT-SCONCE-SPOT" = { material = { low = 190, high = 290 }, labour = { low = 48, high = 115 } }  # 5 ea — WAC Stretch: BL-1660-BK not listed anywhere, BL-1630-BK sibling $190-290; VERIFY SKU (researched 2026-10-28)
+"ED-T-LT-SCONCE-EXT" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 4 ea — WAC WS-W2605-BK $186-232 (researched 2026-10-28)
+"ED-T-LT-SCONCE-SPOT" = { material = { low = 99, high = 130 }, labour = { low = 48, high = 115 } }  # 5 ea — WAC Sprig BL-23210-BK $99 dealer (2026-10-29, owner swap from Stretch); hardwiring unconfirmed
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
 # corrosion-resistant housing. Same ~30-40% adder as the fan above.
 # ** CUT 2026-09-13. THE ROW STAYS, THE COUNT IS ZERO — the mark N / glazed-green-brick
@@ -2679,7 +2704,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # ** CE-MARKED, NOT NRTL-LISTED: ** if the inspector wants an NRTL listing inside the hot
 # room this was the most likely permit snag in the house. Confirm before ordering a revert.
 "ED-T-LT-SAUNA-VT" = { material = { low = 1300, high = 1800 }, labour = { low = 200, high = 450 } }  # 0 ea — CATALOG-ONLY since 2026-09-13; kept priced so the revert costs nothing to evaluate
-"ED-T-LT-SCONCE-STAIR" = { material = { low = 60, high = 220 }, labour = { low = 48, high = 115 } }  # 3 ea
+"ED-T-LT-SCONCE-STAIR" = { material = { low = 60, high = 220 }, labour = { low = 48, high = 115 } }  # 4 ea
 "ED-T-LT-SCONCE-CANDLE" = { material = { low = 95, high = 115 }, labour = { low = 48, high = 115 } }  # 4 ea — Livex 4451-04 at ~$95-102 (retailer, 2026-10-28) plus the Feit E12 bulb
 "ED-T-LT-SCONCE-UD" = { material = { low = 157, high = 196 }, labour = { low = 48, high = 115 } }  # 12 ea — WAC Roland WS-83212-BK $157 street / $196 list (researched 2026-10-28)
 # ** THE COLD RATING IS WHAT COSTS THE MONEY. ** Almost every consumer LED shop light is
@@ -2689,7 +2714,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # linkable cords crack in cold and that is where the failures start, which also means this
 # row's labour is an electrician rather than a hook and a plug.
 "ED-T-LT-SHOP4" = { material = { low = 93, high = 140 }, labour = { low = 60, high = 130 } }  # 4 ea
-"ED-T-LT-SPOT-SW" = { material = { low = 190, high = 290 }, labour = { low = 60, high = 140 } }  # 2 ea — same WAC Stretch as mark J (researched 2026-10-28)
+"ED-T-LT-SPOT-SW" = { material = { low = 99, high = 130 }, labour = { low = 60, high = 140 } }  # 2 ea — same WAC Sprig as mark J; canopy toggle is the switch (2026-10-29)
 "ED-T-LT-GROW-BAR" = { material = { low = 230, high = 290 }, labour = { low = 45, high = 100 } }  # 2 ea — Barron AG90-W-001 $220-261 + cable hangers (researched 2026-10-28)
 "ED-T-LT-WALL-LINEAR" = { material = { low = 480, high = 552 }, labour = { low = 45, high = 100 } }  # 1 ea — WAC WS-6724-30-BK $480-552 (researched 2026-10-28)
 # RM-M-PANTRY's vertical slot (2026-08-24). Same article as WALL-LINEAR — an integral-driver
@@ -2748,7 +2773,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # class bracket. Labour is unchanged in shape — hanging the case, four 6" collars, the
 # balancing pass — but the case now HANGS (see plan/electrical.py), which is the cheaper end
 # of that range rather than the dearer.
-"EQ-T-BROAN-B210E75RT" = { material = { low = 1400, high = 2400 }, labour = { low = 950, high = 2100 } }  # 1 ea
+# 2026-10-29: street $1,471 (Lighting Supply), $1,800 (Jackson), $1,842 (SupplyHouse); list $2,070. Labour (judgement): hang ~45 lb case, 4 collars, wire, balance; ducts bill in [ducts].
+"EQ-T-BROAN-B210E75RT" = { material = { low = 1400, high = 1850 }, labour = { low = 600, high = 1400 } }  # 1 ea
 # ** RE-BANDED 2026-09-12 FOR A FABRICATED PLENUM (plans/buildability.md BLD-08). ** Three
 # rows, five plenums. These were priced as a proprietary 160 mm-collared radial manifold with
 # six or ten 75 mm outlets, plus the ONE 6" -> 160 mm metric adapter each one needed because
@@ -2771,7 +2797,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # labour; MANIFOLD-10 was 260/600 + 150/380. Material falls (commodity steel and butterfly
 # dampers against an imported plenum plus its adapter); labour rises (a shop builds it).
 "EQ-T-ERV-MANIFOLD-6" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 2 ea — the supply side
-"EQ-T-ERV-MANIFOLD-6-EXH" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 2 ea — the same part on the extract side; separate row only because its trunk declares RETURN_AIR
+"EQ-T-ERV-MANIFOLD-6-EXH" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 1 ea — the same part on the extract side; separate row only because its trunk declares RETURN_AIR
 "EQ-T-ERV-MANIFOLD-10" = { material = { low = 175, high = 430 }, labour = { low = 230, high = 530 } }  # 1 ea — ten ports in a longer box
 # ** THE FOUR DIMENSIONED PLENUMS ARE A SHOP DRAWING AND ARE PRICED AS ONE. ** The level-2
 # pair landed with D1 and the basement pair with D3, and none of them had a row until
@@ -2796,7 +2822,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # which is most of it.
 "EQ-T-ERV-HOOD-6" = { material = { low = 35, high = 95 }, labour = { low = 140, high = 320 } }  # 1 ea — the intake
 "EQ-T-ERV-HOOD-6-EXH" = { material = { low = 35, high = 95 }, labour = { low = 140, high = 320 } }  # 1 ea — the discharge, same casting, damper reversed
-"EQ-T-ESS-BATT" = { material = { low = 3000, high = 4400 }, labour = { low = 800, high = 1800 } }  # 1 ea
+# 2026-10-29: EG4 WallMount Indoor 14.3 kWh street $3,109 (ShopSolarKits) to $3,431 (Signature Solar); the $2,400 in the header is
+# unsourced. One module (notes/backup_power.md). Labour: hang on W-B-N3 cast concrete, comms, commission.
+"EQ-T-ESS-BATT" = { material = { low = 2800, high = 3500 }, labour = { low = 700, high = 1500 } }  # 1 ea
 # ** RE-RATED DOWN 2026-09-20, AND THE SAVING IS A SIDE EFFECT RATHER THAN THE POINT. ** This
 # row was $1,450-1,650 material for an Amantii BI-30-XTRASLIM, and the paragraph it replaces
 # argued that the price bought the two things the design needed: a TRIMLESS face, so the brick
@@ -3101,7 +3129,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # The eight fitted FURN-* rows that stay in the build number. The loose ones are in
 # [furnishings] at the bottom of the file.
 "FURN-BESTA-2358" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 160 } }  # 0 ea, retired 2026-10-02 for the SEKTION line; kept as the glazed-green-brick rows are
-"FURN-G-WORKBENCH" = { material = { low = 200, high = 900 }, labour = { low = 60, high = 200 } }  # 1 ea
+# 2026-10-29: high trimmed from $900 (premium cabinet bench) to retail 60x30 steel/wood bench $200-600, assemble + anchor.
+"FURN-G-WORKBENCH" = { material = { low = 200, high = 600 }, labour = { low = 60, high = 150 } }  # 3 ea (garage bench + FURN-B-WORKSHOP-BENCH-N/-S)
 # The two mudroom and two sauna rows are millwork, not catalogue furniture — they are
 # built, and the range is what the built article costs in materials and shop time.
 "FURN-M-MUD-BENCH" = { material = { low = 150, high = 700 }, labour = { low = 80, high = 250 } }  # 1 ea
@@ -3341,7 +3370,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # The glass is the biggest and widest number; a glazier's measure-and-quote collapses it.
 "FX-SHOWER-36-THERMO-COMBO" = { material = { low = 2270, high = 4930 }, labour = { low = 740, high = 1680 } }  # 1 ea
 # +$65-100/ea for the 52535-SS head over the boxed one (2026-10-12; street $64-73).
-"FX-TUBSHOWER-60-DIVERTED" = { material = { low = 965, high = 2700 }, labour = { low = 450, high = 1050 } }  # 2 ea
+# 2026-10-29: high was $700 above FX-TUBSHOWER-60's; the trim delta is Delta T14459-SS $270-310 + R10000 $53-65 + head $65-100 + handshower ~$60-150 = ~$450-625.
+"FX-TUBSHOWER-60-DIVERTED" = { material = { low = 900, high = 2200 }, labour = { low = 450, high = 1050 } }  # 2 ea
 "FX-TUB-60" = { material = { low = 400, high = 1600 }, labour = { low = 330, high = 800 } }  # 1 ea
 # THE CHOSEN BATH — Kohler K-1130-W1-0 Underscore 60x32 with the Bask heated surface, RM-M-BATH2
 # (K-5713-W1-0 until 2026-10-22; the range held: 1130-W1 street $2,492 biscuit / $2,556 black,
@@ -3386,7 +3416,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # in the shower ceiling. ESTIMATES.
 "REG-T-FILTER-GRILLE-10" = { material = { low = 25, high = 60 }, labour = { low = 25, high = 60 } }  # 1 ea
 "REG-T-NOZZLE-DAMPER-4" = { material = { low = 40, high = 120 }, labour = { low = 30, high = 70 } }  # 1 ea
-"REG-T-ERV-EXH" = { material = { low = 25, high = 80 }, labour = { low = 18, high = 45 } }  # 13 ea
+# 2026-10-29: round-collar diffusers retail ~$10-30; high 45 keeps a decorative finish. Same on EXH-WALL and SUP. Was $25-80.
+"REG-T-ERV-EXH" = { material = { low = 15, high = 45 }, labour = { low = 18, high = 45 } }  # 12 ea
 # The sidewall extract (plan/mep_hvac.py) — the same 6" round product as REG-T-ERV-EXH
 # above, one field order apart, so the MATERIAL half is copied verbatim from it. The LABOUR
 # half carries a premium: cutting and boxing a grille into a stud bay costs more than
@@ -3394,7 +3425,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # RM-M-STUDY's low booth extract REG-M-RET-STUDY, whose boot also has to fall 8'-2" inside
 # W-M-CLN2's staggered cavity past a device box. Without this row the type is silently
 # struck from the bill and the total FALLS by the price of a register.
-"REG-T-ERV-EXH-WALL" = { material = { low = 25, high = 80 }, labour = { low = 28, high = 65 } }  # 2 ea
+"REG-T-ERV-EXH-WALL" = { material = { low = 15, high = 45 }, labour = { low = 28, high = 65 } }  # 3 ea
 # The workshop's over-bench capture hood (2026-08-25), which used to be a REG-T-ERV-EXH
 # ceiling diffuser. A 30" x 12" fabricated capture face on a drop, not a stamped grille: the
 # material is shop sheet metal and the labour is hanging it plumb 24" over a bench top.
@@ -3412,7 +3443,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 5 ea since 2026-08-30: REG-M-SUP4 came back out of W-M-LS into RM-M-STUDY's ceiling, and
 # the one-day-old sidewall variant REG-T-ERV-SUP-WALL was deleted with its row rather than
 # left priced with no user.
-"REG-T-ERV-SUP" = { material = { low = 25, high = 80 }, labour = { low = 18, high = 45 } }  # 5 ea
+"REG-T-ERV-SUP" = { material = { low = 15, high = 45 }, labour = { low = 18, high = 45 } }  # 5 ea
 "REG-T-HP-RET" = { material = { low = 30, high = 90 }, labour = { low = 18, high = 45 } }  # 1 ea
 "REG-T-HP-SUP" = { material = { low = 15, high = 50 }, labour = { low = 18, high = 45 } }  # 8 ea
 "REG-T-HP-SUP-DAMPERED" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 1 ea — 8" motorised zone damper
@@ -3448,7 +3479,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "catlin-carpet-raised" = { material = { low = 3, high = 4 }, labour = { low = 1, high = 2.25 } }
 "catlin-bedroom-carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 8 lb/ft3, 7/16 in; labor included once in carpet
 # Plywood remains a provisional allowance until the selected assembly is measured.
-"catlin-carpet-underlayment" = { material = { low = 0.65, high = 1.5 }, labour = { low = 0.75, high = 1.5 } }
+# 2026-10-29: Provisional. notes/bedroom_carpet.md: the 1/4" ply premise no longer describes the selected 7/16" pad + Sweet Spot I;
+# the held 3/4" depth is met WITHOUT ply. Low = none; high = if the mock-up needs it.
+"catlin-carpet-underlayment" = { material = { low = 0, high = 1.5 }, labour = { low = 0, high = 1.5 } }
 # 2026-09-12: SL-M-DECK's cap, COATED. This is the finish BLD-03's resolution moved the deck
 # to — see plans/buildability.md and notes/mixed_deck_movement_joint.md. The cap is billed in
 # [concrete] exactly as `sealed-concrete` and `polished-concrete` say, so this is the
@@ -3466,14 +3499,17 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # ** 414 SF IS BELOW EVERY MOBILISATION MINIMUM FOUND. ** A grinder, a slurry vac and a
 # two-day return for primer-then-topcoat arrive for a day each either way. Treat the $/SF
 # below as a BUDGET FIGURE and expect a LUMP -- the same caution the polish row carries.
-"coated-concrete" = { material = { low = 1.25, high = 3 }, labour = { low = 2.75, high = 7 } }  # 414 SF — grind to CSP 2-3 + moisture-mitigating primer + matte 2K PU; the cap is in [concrete]
+"coated-concrete" = { material = { low = 1.25, high = 3 }, labour = { low = 2.75, high = 7 } }  # 387 SF — grind to CSP 2-3 + moisture-mitigating primer + matte 2K PU; the cap is in [concrete]
 # 417 SF ordered: main circulation, mudroom and both mud closets. The second
 # hall/linen moved to oak. Keep one floating field with manufacturer edge gaps.
-"lvp" = { material = { low = 5.69, high = 5.69 }, labour = { low = 1.5, high = 3.25 } }  # Quincy Oak VV017-01018, COREtec listed $/SF 2026-10-26; attached cork included; local delivery/tax quote pending
+# 2026-10-29: same-SKU street $4.09 (Kennedy Tile / Ferguson, $117.96/28.84 SF carton) to $4.89 (Hurst); $5.69 stays the listed ceiling.
+"lvp" = { material = { low = 4.09, high = 5.69 }, labour = { low = 1.5, high = 3.25 } }  # Quincy Oak VV017-01018, COREtec listed $/SF 2026-10-26; attached cork included; local delivery/tax quote pending
 # Quincy Oak includes its factory cork. No separate acoustic mat is specified or billed.
 # 596 SF ordered: second hall/linen join the suite, walk-in and study; the
 # attic study remains a separate trip. Labour includes sanding and site finish.
-"oak-floor-custom" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 596 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00)
+# 2026-10-29: material was a BOUGHT white-oak rate. The floor is owner-milled red oak (requires_custom_milling, 1.0 bf/SF), so
+# material is kiln $0.35-0.75/bf + moulder run + cull waste only, as the walnut-floor tombstone. Resolve against a kiln/moulder quote.
+"oak-floor-custom" = { material = { low = 2, high = 3.5 }, labour = { low = 7.5, high = 12.5 } }  # 617 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00)
 # RETIRED 2026-09-12 as the deck's finish, kept priced per the glazed-green-brick
 # convention — and kept for a second reason: the cream polish is the NAMED FALLBACK the
 # owner may revert to at pour time (notes/mixed_deck_movement_joint.md), so this is a live
@@ -3492,8 +3528,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Sources: concretenetwork.com polished-concrete cost guide 2026, homeguide.com polished
 # concrete chart, CPAA cream-polish class specifications.
 "polished-concrete" = { material = { low = 0.75, high = 2 }, labour = { low = 3.5, high = 7 } }  # 0 SF (was 411) — RETIRED 2026-09-12; cream polish over the EPS-deck cap, kept as the costed fallback. Grinding only, the cap is in [concrete]
-"rubber" = { material = { low = 3, high = 8 }, labour = { low = 1.5, high = 3.5 } }  # 357 SF — adhesive-set; substrate prep is NOT in this number
-"sealed-concrete" = { material = { low = 0.35, high = 1.2 }, labour = { low = 0.75, high = 2 } }  # 1190 SF — densifier + 2 coats, NO grinding. A real polish is a separate specialty contract at $3-7/SF more
+"rubber" = { material = { low = 3, high = 8 }, labour = { low = 1.5, high = 3.5 } }  # 316 SF — adhesive-set; substrate prep is NOT in this number
+"sealed-concrete" = { material = { low = 0.35, high = 1.2 }, labour = { low = 0.75, high = 2 } }  # 1060 SF — densifier + 2 coats, NO grinding. A real polish is a separate specialty contract at $3-7/SF more
 # Tile is now limited to the two heated bathrooms and the nonheated suite bath
 # and vanity. The mudroom and both closets moved to LVP. Setters should quote the
 # four baths together; membranes are separate rows immediately below.
@@ -3516,8 +3552,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # separate finish row so its SurePly companion is billed only in that room.
 # RM-S-PLANT takes a set-on rubber base, not a flash cove (2026-10-22); re-price the
 # plant row against the doorway detail before buying.
-"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }
-"catlin-plant-vinyl-raised" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # doorway scope provisional
+# 2026-10-29: labour $3.5-7.5 (was $6-12): glue-down sheet vinyl ~$1.5-4/SF plus seams/cuts in three small wet rooms. Prep is separate.
+"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 7.5 } }
+# 2026-10-29: labour $4-8 (was $6-12): vinyl-sheet's band + $0.5-1 for the raised SurePly edge and doorway detail.
+"catlin-plant-vinyl-raised" = { material = { low = 4, high = 8 }, labour = { low = 4, high = 8 } }  # doorway scope provisional
 "catlin-plant-sureply" = { material = { low = 0.65, high = 1.5 }, labour = { low = 0.75, high = 1.5 } }  # provisional plywood panel allowance; confirm with SurePly quote
 # ** TOMBSTONE: `walnut-floor`, rated and retired 2026-09-05. ** For a few hours RM-S-SUITE
 # and RM-S-CLOSET were 181.7 SF net of the family's own site-milled 4/4 walnut T&G, rated
@@ -3978,7 +4016,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # (UltraLight) board. 5/8": the old band, unchanged.
 # Labour is the same hang + tape + Level 4 for both.
 "gwb:0.5" = { material = { low = 0.35, high = 0.55 }, labour = { low = 1.1, high = 1.9 } }  # 6141.2 SF
-"gwb:0.625" = { material = { low = 0.45, high = 0.75 }, labour = { low = 1.1, high = 1.9 } }  # 3757.0 SF
+"gwb:0.625" = { material = { low = 0.45, high = 0.75 }, labour = { low = 1.1, high = 1.9 } }  # 3343.8 SF
 # Upgrade boards, all 1/2" (plan Phase 5). Retail: Purple XP (gwb-mr) $21-23/sheet at two
 # third-party listings (Cooper's True Value $22.99, K&K $21.26) = $0.66-0.72/SF. Paper-faced AR
 # (gwb-ar): Sheetrock AR Type C sheet $39.98-42.19 at Canadian retail (BMR, Kent) = ~$1.25-1.32/SF
@@ -4028,7 +4066,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "eps-deck-form" = { material = { low = 6.25, high = 8.75 }, labour = { low = 4.5, high = 8 } }  # 414 SF — 10" LiteDeck forms only; ready-mix is in [concrete]
 # Authored paint layers AND the derived rows (`wall (derived)` / `ceiling (derived)`,
 # takeoff/derived_paint.py: exposed gypsum facing a used room with no coat authored).
-"latex-paint" = { material = { low = 0.35, high = 0.8 }, labour = { low = 1.2, high = 2.2 } }  # 14,936 SF authored + derived — ~75/25 LABOUR to material
+"latex-paint" = { material = { low = 0.35, high = 0.8 }, labour = { low = 1.2, high = 2.2 } }  # 15,026 SF authored + derived — ~75/25 LABOUR to material
 # The garage ceiling's one coat (owner: taped and primed, not painted). Material only: a
 # 5-gal PVA primer at $60-100 covers ~1,500 SF, and the labour rides in the `gwb` row's
 # hang-tape-finish rate.
@@ -4120,16 +4158,18 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # below is this row's numbers verbatim and this one is kept because EXT_2X6_SWINBURNE and
 # the library's generic row still name `standing-seam`.
 "standing-seam" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
-# 1,430.3 SF — RF-HOUSE, and as of 2026-09-18 this is the row that prices it. Identical to
-# `standing-seam` above and deliberately not "cheaper because it is a house tag": a colour
-# is not a cost. Keep the two in step by hand; if they ever diverge it should be because
-# somebody priced a colour, not because one was edited and the other forgotten.
-"standing-seam-linen-white" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
+# Roof $/SF includes the nail-flange fixings; there is no separate Image II fastener row (2026-10-29).
+# 1,544 SF — RF-HOUSE. Material matches `standing-seam` above (a colour is not a cost).
+# 2026-10-29: labour re-struck to the nail-strip band (no clips/seamer; Sheffield $5-11
+# installed = retired standing-seam-nailstrip $4-7.5 + $0.5 for 24 ga and the PV array). Was seamed $7-12.
+"standing-seam-linen-white" = { material = { low = 3.5, high = 6.5 }, labour = { low = 4.5, high = 7.5 } }
 # Canopy roof. Same Image II panel and installed rate as the garage's vented roof below.
-"standing-seam-image-ii-garage" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
+# 2026-10-29: nail-strip labour, a step above the house roof for small-job mobilisation. Was seamed $7-12.
+"standing-seam-image-ii-garage" = { material = { low = 3.5, high = 6.5 }, labour = { low = 5, high = 8 } }
 # Garage roof since 2026-10-27: its Cobra vented ridge makes it a separate covering tag
 # (materials_metal.py). Same panel and rate as the canopy row above; keep the two in step by hand.
-"standing-seam-image-ii-garage-vented" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
+# 2026-10-29: nail-strip labour as the canopy row; at $5/SF the 714 SF sits near the old $4-6k floor, no lower without a quote.
+"standing-seam-image-ii-garage-vented" = { material = { low = 3.5, high = 6.5 }, labour = { low = 5, high = 8 } }
 # NOT TAKEN as of 2026-08-26 — kept as the revert rate. It clad the house walls
 # (EXT_2X6, PLANT_EXT_2X6_HUMID) until the exposed-fastener PBR row below replaced
 # it, and EXT_2X6_SWINBURNE still names it, so the row stays and the swap back is a
@@ -4208,7 +4248,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # principal facades". Load was never the reason: 318 psf outward at 2'-0" in 24 ga and 236 in
 # 26 (Metal Sales PBR Condensed Technical Reference 1/2026), both an order of magnitude over
 # the -18.3 psf ASD corner-zone demand, and this wall stays PRESCRIPTIVE either way.
-"pbr-panel-24" = { material = { low = 1.9, high = 2.9 }, labour = { low = 2.75, high = 4.5 } }
+# 2026-10-29: trim now bills by the stick in [cladding_trim]: labour -25% for the trim/opening work it carried;
+# material high -0.30 (bare 24 ga PBR PVDF ~$2.0-2.5). Judgement; re-strike when a quote lands.
+"pbr-panel-24" = { material = { low = 1.9, high = 2.6 }, labour = { low = 2.05, high = 3.4 } }
 # 1,678.3 SF — the NORTH AND SOUTH elevations of the house walls (EXT_2X6 and
 # PLANT_EXT_2X6_HUMID), from 2026-08-31, via a per-wall `layer_materials=` override on twenty
 # walls. The east and west walls' 1,416.6 SF stay on the PBR row above; the split is 54.2% /
@@ -4382,7 +4424,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # a standard no-upcharge colour but the Rogers stock charts are 29/26 ga SMP only, so treat it
 # as a made-to-order coil run until told otherwise. That number is what decides whether this
 # material band moves.
-"board-batten-24" = { material = { low = 2.0, high = 3.55 }, labour = { low = 4.15, high = 6.75 } }
+# 2026-10-29: labour -20% now trim bills by the stick ([cladding_trim]); material left (24 ga PVDF bare is $2.50-3.00 published).
+"board-batten-24" = { material = { low = 2.0, high = 3.55 }, labour = { low = 3.4, high = 5.4 } }
 # Retired RF-GARAGE nail-strip rate; Image II now uses standing-seam-image-ii-garage.
 # Formerly 749.6 SF. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
 # lifted for the Twin Cities and for a 749 SF roof being a minimum-mobilisation job for any
@@ -4942,8 +4985,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 4'-0" drop; the old figure predates it. The arithmetic in the notes above (9.07 cy = 245 SF at
 # 27 SF/cy) is therefore historical — it is 11.36 cy today — and the $/SF-of-face rate it argues
 # for is unaffected, which is the point of having re-united the unit.
-"RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 15, high = 34 }, unit = "SF" }  # 28.0 SF of face — the two balcony returns only
-"RETAINING_BLOCK_12_WASHED" = { material = { low = 15, high = 26 }, labour = { low = 15, high = 34 }, unit = "SF" }  # 278.7 SF of face — the three perimeter legs; the WASH itself is in [envelope_layers], not here
+# 2026-10-29: labour 15-34 -> 10-25/SF: 3-man crew + compactor/skid steer $1.5-2.3k/day at 100-150 SF face/day (judgement); dig and pad bill elsewhere. Keep the two rows identical.
+"RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 28.0 SF of face — the two balcony returns only
+"RETAINING_BLOCK_12_WASHED" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 278.7 SF of face — the three perimeter legs; the WASH itself is in [envelope_layers], not here
 # THE NORTH ENTRY SCREEN'S SKIRT (2026-09-11), and it is in this table only because its one
 # layer is STRUCTURE — a self-supporting single skin bills through takeoff/wall_structure.py
 # rather than envelope_layers, on the same footing as RETAINING_BLOCK_12 above it. Priced per
@@ -5273,7 +5317,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # kitchen corner stools add another 2.25 SF since 2026-10-18. See
 # plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the showroom — silica
 # exposure control is the thing to buy here.
-"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 65.28 SF since CT-M-BATH2-VANITY, STOOL-WIN-M-BATH2 and the four plant-room stools left for Corian, 2026-10-22
+# 2026-10-29: row brought to the 10-22 note ($20-35 material; installed $42-78).
+"quartz-counter" = { material = { low = 20, high = 35 }, labour = { low = 22, high = 43 } }  # 59.8 SF since CT-M-BATH2-VANITY, STOOL-WIN-M-BATH2 and the four plant-room stools left for Corian, 2026-10-22
 # RM-M-BATH2's Corian Glacier White vanity top (12 mm, built-up eased front, solid-surface bowl
 # bonded in; the bowl is the vanity row's) and its window stool, same lot as the tub deck, plus
 # RM-S-PLANT's four window stools (off quartz for UV, 2026-10-22).
@@ -5481,8 +5526,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "WT-2736-HP" = { material = { low = 750, high = 1500 }, labour = { low = 195, high = 390 } }  # 0 ea — catalog-only since 2026-10-21, when WIN-S-PLANT3 grew to WT-2754-HP
 # WIN-S-PLANT3 grew 27x36 -> 27x54 (2026-10-21) to match the suite pair. Derived: WT-2736-HP
 # scaled by the casement table's 27x36 -> 27x54 step (+31%), same glass package; no quote.
-"WT-2754-HP" = { material = { low = 980, high = 1960 }, labour = { low = 215, high = 430 } }  # 1 ea
-"WT-3048-HP" = { material = { low = 950, high = 1900 }, labour = { low = 235, high = 470 } }  # 3 ea — two-man set is mandatory
+# 2026-10-29: same Drutex DRU-K-23 fixed line as WT-xxxx-FIX (notes/window_and_door_procurement.md): material = parent casement
+# x 0.75-0.80 (the -FIX rule) + $125-250 laminated inner lite. Labour kept (heavier, two-man). Was 980-1960 / 950-1900.
+"WT-2754-HP" = { material = { low = 670, high = 1340 }, labour = { low = 215, high = 430 } }  # 1 ea
+"WT-3048-HP" = { material = { low = 660, high = 1300 }, labour = { low = 235, high = 470 } }  # 3 ea — two-man set is mandatory
 
 # --- exterior doors -------------------------------------------------------------------------
 # Unit only. Low is a closeout/builder fiberglass pair ($598 at Door Clearance Center); high is
@@ -5508,13 +5555,14 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # as one number and rarely sell labour separately, so this split is a modelling construct.
 # RE-BASED 2026-10-21 on the named door: Clopay Modern Steel 16x7, Intellicore R-18.4, Black,
 # no windows, $2,845 at Home Depot (GDU011); high is a door company's price for the same door.
-"DT-EXT-OVERHEAD192" = { material = { low = 2845, high = 3300 }, labour = { low = 550, high = 1150 } }  # 1 ea
+"DT-EXT-OVERHEAD192" = { material = { low = 2298, high = 2700 }, labour = { low = 550, high = 1150 } }  # 1 ea — Clopay Classic Steel GDU293 16x7 R-12.9 Charcoal, HD $2,298 (2026-10-29, owner swap from R-18.4)
 
 # --- interior doors ---------------------------------------------------------------------------
 # Low is hollow-core molded prehung (Steves 5-pack works out to $161.60 ea at Home Depot);
 # high is solid-core MDF prehung ($519 Masonite 5-panel, $548 Stile 7-lite).
 # ** THE SAME MINIMUM-SIZE FLOOR APPLIES: a 24" door is barely cheaper than a 30". **
-"DT-INT-SWING24" = { material = { low = 145, high = 480 }, labour = { low = 135, high = 280 } }  # 4 ea (D-A-STUBATH joined 2026-09-09) — was 26% low at the top for exactly the floor reason
+# 2026-10-29: prehung hang labour $115-240 = 1.5-3 h at $60-85; casing is in [interior_trim], hardware in finish-door-hardware.
+"DT-INT-SWING24" = { material = { low = 145, high = 480 }, labour = { low = 115, high = 240 } }  # 3 ea (D-A-STUBATH joined 2026-09-09) — was 26% low at the top for exactly the floor reason
 # 24x36, RM-A-POCKET's ERV service access under the attic's 6:12 west rake (2026-08-29). The
 # ONE place the minimum-size floor above does NOT apply: this is not a prehung passage door in
 # a smaller leaf, it is an access panel with hinges and a knob — a flush hollow-core blank cut
@@ -5527,14 +5575,14 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # and a painted jamb, not a service hatch. The material band comes down ~15% for the 8"
 # it loses in height (a 6'-0" leaf is a stock size at most millwork suppliers, so there is
 # no special-order adder) and the labour does not move — hanging a door is hanging a door.
-"DT-INT-CLOSET24" = { material = { low = 125, high = 410 }, labour = { low = 135, high = 280 } }  # 1 ea
-"DT-INT-SWING30" = { material = { low = 150, high = 520 }, labour = { low = 145, high = 305 } }  # 8 ea — high end is solid-core paint-grade. Was "11 ea" until 2026-09-12: the 2026-09-09 note that D-A-STUBATH left was right, but the count never followed it. Read off `haus takeoff`, which splits this type across three rows (4+3+1) by host assembly
-"DT-INT-SWING32" = { material = { low = 155, high = 540 }, labour = { low = 145, high = 305 } }  # 5 ea — was 7 until D-B-FURN widened to 36" and D-B-GYM took the glazed 32" (2026-09-07); the "9 ea" this line carried was already two stale
+"DT-INT-CLOSET24" = { material = { low = 125, high = 410 }, labour = { low = 115, high = 240 } }  # 1 ea
+"DT-INT-SWING30" = { material = { low = 150, high = 520 }, labour = { low = 115, high = 240 } }  # 7 ea — high end is solid-core paint-grade. Was "11 ea" until 2026-09-12: the 2026-09-09 note that D-A-STUBATH left was right, but the count never followed it. Read off `haus takeoff`, which splits this type across three rows (4+3+1) by host assembly
+"DT-INT-SWING32" = { material = { low = 155, high = 540 }, labour = { low = 115, high = 240 } }  # 6 ea — was 7 until D-B-FURN widened to 36" and D-B-GYM took the glazed 32" (2026-09-07); the "9 ea" this line carried was already two stale
 # 2026-09-07, the basement equipment route: D-B-FURN widened and D-B-SHOP is new. Bracketed off
 # the 32" row above with a shade added for the wider leaf and slab — a 36" prehung is a stock
 # size, not a special, so the step is small; labour is the same hang either way plus the wider
 # jamb pack.
-"DT-INT-SWING36" = { material = { low = 175, high = 590 }, labour = { low = 150, high = 315 } }  # 2 ea
+"DT-INT-SWING36" = { material = { low = 175, high = 590 }, labour = { low = 120, high = 250 } }  # 2 ea
 "DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 1 ea, D-S-PLANT; D-M-STUDY uses its own kerfed-jamb type since 2026-10-09
 "DT-INT-DOUBLE60" = { material = { low = 400, high = 1000 }, labour = { low = 255, high = 500 } }  # 1 ea — flush solid-core pair, paint-grade to stain-grade
 # 56" needs a FOUR-panel bifold, not a two-panel — doornmore prices a 4-door at $302.40 against
@@ -5654,8 +5702,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # `backfill` is PLACEMENT of native spoil plus the column stone, in <=8" lifts; the stone
 # itself is `drain-column-stone`, delivered only (the #57 rate in [footing_bedding]), so
 # nothing is bought twice. Off-site disposal of clean clay fill is the widest guess here.
-"cut" = { low = 11, high = 30 }  # bank cy, machine dig incl. the beds and the interiors
-"haul-off" = { low = 6.35, high = 25 }  # loose cy, trucked off as clean fill
+# 2026-10-29: cut high 30 -> 22: excavator+operator+laborer $220-400/hr at 25-40 bcy/hr = $6-16/cy, +$2-4 benching/trim/beds; MnDOT $10.60 is the highway-scale floor.
+"cut" = { low = 11, high = 22 }  # bank cy, machine dig incl. the beds and the interiors
+# 2026-10-29: haul-off 6.35-25 -> 10-20: $6.35 was MnDOT's ON-PROJECT haul, not off-lot trucking; tri-axle ~$110-135/hr, ~13 loose cy, 1-1.25 h round trip = $9-14/cy + $0-6 tipping.
+"haul-off" = { low = 10, high = 20 }  # loose cy, trucked off as clean fill
 "backfill" = { low = 10, high = 25 }  # compacted cy, native lifts + column stone placed
 "cap" = { low = 10, high = 35 }  # cy, selected clayey spoil, shaped to fall 6" in 10'
 "drain-column-stone" = { material = { low = 50, high = 75 }, labour = { low = 0, high = 0 } }  # cy, #57 delivered; placed in `backfill`
@@ -6017,7 +6067,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # inverter, the battery and the PV junction box are placed elements and bill in [placeables];
 # billing them here as well is the one double-count this section can make.
 #
-# $3.00-5.20/W. The low end is the 2026 MN competitive full-scope installed rate the retired
+# $3.00-4.00/W (high was 5.20 until 2026-10-29: MN 2026 EnergySage $3.22 avg, All Energy Solar
+# $3.00-3.30, poweroutage.us $3.82 avg; pre-incentive, the 30% credit ended 12/31/2025). The low end is the 2026 MN competitive full-scope installed rate the retired
 # allowance quoted ($3.00-3.82/W); the high end is the SMALL-ARRAY premium, which the old
 # lump could not express — permitting, interconnection, the crane day and the design fee are
 # nearly fixed, so a 5.3 kW array carries them on a fifth of the watts a 25 kW array does.
@@ -6027,7 +6078,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # the model has 5,280 W. That drift is the whole reason for this section: the line now moves
 # when a module is added or deleted, and the old lump never did.
 # $/W DC, by module product
-"Aptos 440 W module, 69.4 x 44.6 x 1.2 in" = { material = { low = 1.95, high = 3.38 }, labour = { low = 1.05, high = 1.82 } }  # 12 modules, 5,280 W
+"Aptos 440 W module, 69.4 x 44.6 x 1.2 in" = { material = { low = 1.95, high = 2.60 }, labour = { low = 1.05, high = 1.40 } }  # 12 modules, 5,280 W
 
 [data_raceways]
 # NEW SECTION 2026-08-27 — [low, high] $/LF, split material/labour.
@@ -6050,8 +6101,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 #   "spare"  28.0 LF of 2" capped chase — the cheapest line in the file to install and the
 #            most expensive one to add later, which is why it is in the model at all.
 # $/LF, by service
-"data" = { material = { low = 0.55, high = 1.40 }, labour = { low = 2.25, high = 5.00 } }  # 240.1 LF over 7 runs
-"spare" = { material = { low = 1.10, high = 2.60 }, labour = { low = 2.00, high = 4.50 } }  # 28.0 LF, 1 run
+# 2026-10-29: labour trimmed $0.50-1.00/LF: empty ENT in open stud bays, ~50-80 LF/hr (judgement).
+"data" = { material = { low = 0.55, high = 1.40 }, labour = { low = 1.75, high = 4.00 } }  # 257.3 LF
+"spare" = { material = { low = 1.10, high = 2.60 }, labour = { low = 1.50, high = 3.50 } }  # 80.6 LF
 
 [plumbing_specialties]
 # RESEARCHED 2026-08-08 — [low, high] $ each, device only, no installation. Keyed on the
@@ -6081,8 +6133,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "Dearborn P9703WBG 1-1/2-inch tubular P-trap with PVC adapter" = { low = 1.89, high = 15 }
 "Kitchen trap PVC connector kit: reducing sanitary tee, vent reducer, joint consumables" = { low = 10.96, high = 20.96 }
 "Kitchen upper-arm cleanout fitting, access extension and threaded cap" = { low = 15, high = 40 }
-"Kitchen cold PEX manifold reducer and 3/8-inch compression fixture stop" = { low = 15, high = 40 }
-"Kitchen hot PEX tee, dishwasher branch and 3/8-inch compression fixture stop" = { low = 20, high = 50 }
+# 2026-10-29: the stop itself is PA-M-KITCH-STOP-CW/HW "shutoff" in [plumbing_specialties]; these keep the reducer / tee / branch only.
+"Kitchen cold PEX manifold reducer and 3/8-inch compression fixture stop" = { low = 7, high = 20 }
+"Kitchen hot PEX tee, dishwasher branch and 3/8-inch compression fixture stop" = { low = 12, high = 30 }
 # Connector kit includes Charlotte PVC004010800HD reducing sanitary tee, $5.96,
 # https://www.homedepot.com/p/203396197 (2026-10-24); reducer/consumables add $5-15.
 # Actual upright tee is NOT a wye: generic wye-2x1.5in graph row is zeroed below.
@@ -6144,8 +6197,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 #   lower inside the ranges below rather than at their metallic-blended middle. No number
 #   moved — but a quote taken while the metallic stood is now HIGH, not low.
 #   drip_flashing 19.5 LF plain aluminium + 80.0 LF of the garage's PVDF aluminium
-#   (STEM_TOP_Z_FLASHING, the Z at the stem-top band/corrugated-panel junction) + 321.6 LF of
-#   DERIVED formed drip edge since 2026-09-26: 149.7 LF round RF-HOUSE's four edges (one
+#   (STEM_TOP_Z_FLASHING, the Z at the stem-top band/corrugated-panel junction). (The 321.6 LF of
+#   DERIVED formed drip edge since 2026-09-26 now bills in [cladding_trim] as Image II eave/rake, not here: 149.7 LF round RF-HOUSE's four edges (one
 #   piece doing the old corner trim's and drip's two jobs, so `corner_trim` fell to 0 LF) and
 #   171.9 LF over the garage and canopy fascias, which carried no drip at all before.
 # Basis: aluminium soffit material $0.50-2.00/LF and fascia $7-22/LF installed against
@@ -6189,7 +6242,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # and 7.9 LF buys TWO sticks, which is what the high end carries. Labour is a mason's small
 # lump, not a per-foot rate. notes/sunken_garden_veneer_beam.md §6g.
 "movement_joint" = { material = { low = 70, high = 125 }, labour = { low = 6, high = 15 } }  # 15.7 LF — MJ-B-BRICK-E/-W
-"drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 421.1 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
+"drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 112.5 LF — 19.5 LF plain aluminium + 80.0 LF garage STEM_TOP_Z_FLASHING + ~13 LF other. The 321.6 LF of derived roof-edge drip (house 149.7 + garage/canopy 171.9) bills as Image II pieces since 2026-10-27: 52124XX Extended Eave and 52126XX Rake sticks in [cladding_trim]. $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 # 251.8 LF in three runs (81.2 / 96.4 / 74.2): the wall-top closure band, wall-panel metal that
 # the roof edge closes between the wall cladding and the roofing (resolve/roof_edge._closure_segment).
 # It is NOT rake trim; the rake is 52126XX.
@@ -6214,7 +6267,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # "58092XX" = { material = { low = 0, high = 0 } }  # PBR box gutter strap 1'-4", 14 per eave
 # UNPRICED, no quote yet (commented, so each sits on the unpriced list): the PBR window jamb,
 # the garage's 13 in step cover (25.4 LF of vented ridge, no published part number) and its Cobra closure.
-# "58208XX" =    # PBR Jamb, 10'-2" stick, window jambs
+# "58208XX" =    # PBR Jamb, 10'-2" stick, window jambs; 36 cuts pool to 13 sticks
 # "IMAGE_II_VENTED_STEP_RIDGE" =    # 13 in Step Ridge/Hip Cover, Cobra vent, garage ridge
 # "cobra-vented-closure" =    # Cobra vented closure, LF under the step cover; net free area unprinted
 
@@ -6243,14 +6296,16 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "55545XX" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }   # BBD75 Base Trim (vertical)
 "CORRUGATED_BASE" = { material = { low = 30, high = 42 }, labour = { low = 18, high = 30 } }  # no part number published
 "55536XX" = { material = { low = 40, high = 54 }, labour = { low = 24, high = 38 } }   # BBD75 Transition Trim at the +17'-4" band
-"58114XX" = { material = { low = 36, high = 50 }, labour = { low = 14, high = 24 } }   # 1.5" Sill/Head at every window head
+"58114XX" = { material = { low = 36, high = 50 }, labour = { low = 14, high = 24 } }   # 1.5" Sill/Head at every window head; 42 cuts pooled from 10'-2" stock = 10 sticks (2026-10-29)
 "58728XX" = { material = { low = 34, high = 46 }, labour = { low = 16, high = 28 } }   # BBD75 Panel Starter at door jambs
 "CORRUGATED_JAMB" = { material = { low = 30, high = 42 }, labour = { low = 16, high = 28 } }  # screen ends and garage door jambs
-"WINDOW_JAMB_CUSTOM" = { material = { low = 6, high = 10 }, labour = { low = 3, high = 5 }, unit = "LF" }
-"WINDOW_SILL_CUSTOM" = { material = { low = 6.5, high = 11 }, labour = { low = 3, high = 5 }, unit = "LF" }
-"DOOR_HEAD_CUSTOM" = { material = { low = 7, high = 12 }, labour = { low = 3, high = 5.5 }, unit = "LF" }
-"OPENING_HEAD_CAP" = { material = { low = 6, high = 10 }, labour = { low = 3, high = 5 }, unit = "LF" }  # K6 window head cap, 6.6-7" girth, 2 bends and end dams; the door head's shop rate less a hem (2026-10-29)
-"RAINSCREEN_BASE_Z" = { material = { low = 5, high = 9 }, labour = { low = 3, high = 5 }, unit = "LF" }
+# 2026-10-29: custom-brake material re-struck: site-brake from 24 ga PVDF flat, $2.5-3.0/SF x 6-9" girth
+# = $1.3-2.3/LF, x1.5-2 for cut-to-length, kerf, short-run waste. Was $6-12. Base Z is 0.040 Al. Re-strike on RFQ.
+"WINDOW_JAMB_CUSTOM" = { material = { low = 2.5, high = 4.5 }, labour = { low = 3, high = 5 }, unit = "LF" }
+"WINDOW_SILL_CUSTOM" = { material = { low = 3, high = 5 }, labour = { low = 3, high = 5 }, unit = "LF" }
+"DOOR_HEAD_CUSTOM" = { material = { low = 3, high = 5 }, labour = { low = 3, high = 5.5 }, unit = "LF" }
+"OPENING_HEAD_CAP" = { material = { low = 3, high = 5 }, labour = { low = 3, high = 5 }, unit = "LF" }  # K6 window head cap, 6.6-7" girth, 2 bends and end dams; the door head's shop rate less a hem (2026-10-29)
+"RAINSCREEN_BASE_Z" = { material = { low = 3, high = 6 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "CORRUGATED_SILL_TO_SOFFIT" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }
 "6411499" = { material = { low = 0.45, high = 0.90 }, labour = { low = 0.4, high = 0.9 }, unit = "LF" }
 "epdm-isolation" = { material = { low = 0.30, high = 0.70 }, labour = { low = 0.2, high = 0.4 }, unit = "LF" }
@@ -6367,10 +6422,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # then bonded. LOW confidence until the fittings are bought.
 # RAILING-INT-ALUM-HANDRAIL (2026-10-24): the four matte black handrails, EZ Handrail 8 ft kit
 # at $158 = $19.75/LF, plus 4' bracket spacing and end caps; the attic standoff is still
-# fabricated steel. Labour is the placeholder rate above.
-"RAILING-INT-ALUM-HANDRAIL" = { material = { low = 20, high = 30 }, labour = { low = 18, high = 35 } }
+# fabricated steel. Labour 2026-10-29: wall-mounted EZ Handrail 8 ft kit, 3 brackets to blocking, ~45-60 min per 8 ft = $10-22/LF
+# (was the metal-handrail placeholder, $18-35). Blocking bills in [framing].
+"RAILING-INT-ALUM-HANDRAIL" = { material = { low = 20, high = 30 }, labour = { low = 10, high = 22 } }
 "RAILING-INT-TI-HANDRAIL-42" = { material = { low = 20, high = 60 }, labour = { low = 40, high = 90 } }  # 9.9 LF — owner-furnished tube; fittings + labour only
-"RAILING-EXT-ALUMINUM-FASCIA" = { material = { low = 30, high = 45 }, labour = { low = 35, high = 55 } }  # 40.3 LF — RL-SG-BALCONY only. Williams ESR-3485 / Fortress Al13 Home; material dropped from 55-80 when the product left Trex Signature on 2026-09-02. Fascia-mount labour keeps its 25-40% premium over surface mount (through-bolting into rim blocking, cantilevered 200 lb load). NOT INCLUDED: fascia-mount bracket kits at $40-60 per post and their four 5/16" x 4" through-bolts each, ~8 posts at 60" o.c., which no $/LF rail price carries
+"RAILING-EXT-ALUMINUM-FASCIA" = { material = { low = 39.5, high = 62 }, labour = { low = 35, high = 55 } }  # 40.3 LF — RL-SG-BALCONY only. Williams ESR-3485 / Fortress Al13 Home; material dropped from 55-80 when the product left Trex Signature on 2026-09-02. Fascia-mount labour keeps its 25-40% premium over surface mount (through-bolting into rim blocking, cantilevered 200 lb load). 2026-10-29: material 30-45 -> 39.5-62 folds in the fascia-mount bracket kits ($40-60 per post + four 5/16" x 4" through-bolts, ~9 posts at 60" o.c. = $370-650 over the run)
 # 2026-09-03: 42.7 LF over FIVE runs, where it was 36.3 LF over one. RL-SG-PORCH LOST 3.0 LF
 # (33.3) — its east leg stops at y -3'-10" to open a 3'-0" gap for the new porch stair — and
 # four short runs arrived around that opening: RL-SG-PSTAIR-S/N, 3.7 LF each, RAKED along
@@ -6387,7 +6443,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # premium over the level parts). Carry that premium in the estimate against these ~7.4 LF; it
 # is NOT in the numbers below.
 "RAILING-EXT-ALUMINUM-SURFACE" = { material = { low = 30, high = 45 }, labour = { low = 25, high = 40 } }  # 42.7 LF over 6 runs — RL-SG-PORCH 28.1 + RL-SG-PORCH-NE 5.2 + PSTAIR-S/N 3.7 ea (RAKED, see above) + PTHRESH-S/N 1.0 ea; the porch guard split in two on 2026-09-04 when the stair doorway moved to the MIDDLE of its east leg, which changed the TOTAL by nothing (the doorway is 3'-0" wherever it sits) but adds one run start/stop and two end posts to the labour; ~8 posts at 60" o.c. on the porch leg, ~2 per stair run at 36" o.c., 2 per threshold cheek. Same rail, same alloy, same listing as the fascia row; the post arrives welded to a 5x5 baseplate, so the bracket kit the fascia row excludes is INSIDE this material rate and there is nothing to add per post. Labour is lower for the same reason: no through-bolting from underneath. NOT INCLUDED: the four 1/4" x 3" concrete anchors per post on the west/east/threshold legs, the ~5 solid blocks under the south leg where there is no wall top, and the raked stair-post premium above — the first two are in [framing]
-"RAILING-INT-STAIR-GUARD" = { material = { low = 40, high = 90 }, labour = { low = 50, high = 85 } }  # 23 LF — priced as a COMPONENT system. Do not stack the two models: a shop-welded steel guard is material $150-250 + labour $30-60 (the fabrication hours ride inside the material and site labour DROPS, because you are setting finished panels). At 23 LF this is really a $1,700-2,600 minimum-charge lump either way
+# 2026-10-29: rate reconciled to the row's own lump basis: $74-113/LF = $1,700-2,600 minimum-charge lump / 23 LF (was $90-175/LF).
+"RAILING-INT-STAIR-GUARD" = { material = { low = 33, high = 50 }, labour = { low = 41, high = 63 } }  # 26.8 LF — priced as a COMPONENT system. Do not stack the two models: a shop-welded steel guard is material $150-250 + labour $30-60 (the fabrication hours ride inside the material and site labour DROPS, because you are setting finished panels). At 23 LF this is really a $1,700-2,600 minimum-charge lump either way
 
 [drainage]
 # RESEARCHED 2026-08-08b — [low, high] $/LF of run, material only, hangers/straps/elbows
@@ -6647,8 +6704,10 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # Tape: an IP67 COB 5 m reel at ~$38, two per 24-25.5 ft run, offcut included, so
 # ~$3/LF of run. Channel: generic 1/2" aluminium U-channel, clear cover, ~$1-1.90/LF in
 # 10-packs of 6.6 ft. Caps and clips ship with the channel; the gable vertex is a mitre.
-"channel:ED-T-LT-LINEAR-EXT" = { material = { low = 1, high = 2 }, labour = { low = 10, high = 28 } }
-"tape:ED-T-LT-LINEAR-EXT" = { material = { low = 3, high = 4.5 }, labour = { low = 5, high = 15 } }
+# 2026-10-29: labour ~1.5x the interior cove (channel 4-10, tape 3-7) for ladder work and 3 outdoor terminations; was ~2.5x.
+# Channel labour low held at 8.5 (not 6): test_e12 requires the exterior channel's per-ft low to exceed the cove's ($9).
+"channel:ED-T-LT-LINEAR-EXT" = { material = { low = 1, high = 2 }, labour = { low = 8.5, high = 16 } }
+"tape:ED-T-LT-LINEAR-EXT" = { material = { low = 3, high = 4.5 }, labour = { low = 3, high = 9 } }
 "end_cap:ED-T-LT-LINEAR-EXT" = { unit = "EA", material = { low = 0, high = 1 }, labour = { low = 10, high = 21 } }
 "corner_connector:ED-T-LT-LINEAR-EXT" = { unit = "EA", material = { low = 0, high = 2 }, labour = { low = 12, high = 26 } }
 # Mark X, the sauna's two under-bench runs, 12 LF. A sauna-rated silicone IP68 tape is a
@@ -6673,7 +6732,8 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # A type must appear in exactly one of the two tables; `load_prices` rejects the overlap.
 #
 # The ranges are deliberately enormous and are not worth narrowing until pieces are chosen:
-# a sofa is $500 or $3,000 depending on nothing the plan knows.
+# a sofa is $500 or $3,000 depending on nothing the plan knows. Exception: the sectional,
+# TV, dining table and queen beds carry the owner's stated tier (2026-10-29).
 # Basis: 2026 mainstream retail (IKEA / Wayfair / Article class) low end to mid-specified
 # high end, unit only, no delivery or assembly.
 # $ each, by catalog type tag
@@ -6696,12 +6756,12 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # specialty, and the low end is a TCL/Hisense-class 98" rather than anything smaller. The
 # high end is an LG/Samsung flagship at the same diagonal. The articulating anchor mount into
 # 8" concrete is inside the range and is a real part of it.
-"FURN-TV-98-WALL" = { low = 1600, high = 6000 }  # 1 ea
+"FURN-TV-98-WALL" = { low = 2500, high = 4500 }  # 1 ea — owner tier: mid (Sony/Samsung QLED), 2026-10-29
 # The U sectional, 11'-0" x 8'-0" with a 3'-0" seat depth: eight to nine seats' worth of
 # frame, so it prices as roughly two-and-a-half sofas rather than one. Same enormous spread
 # as every other seating row here, and for the same reason — it is an owner decision that can
 # move 5x after the house is built without a drawing changing.
-"FT-SECTIONAL-U-MEDIA" = { low = 1400, high = 8000 }  # 1 ea
+"FT-SECTIONAL-U-MEDIA" = { low = 2500, high = 4500 }  # 1 ea — owner tier: mid, 2026-10-29
 # Retired from FURN-M-BED 2026-10-14 for the Nectar bamboo Twin below; the row stays for reuse.
 "FURN-BED-KING" = { low = 400, high = 2500 }  # 0 ea
 # Nectar Japanese-joinery bamboo frame, King natural; page read 2026-10-14. $898 is the Add to Cart
@@ -6723,13 +6783,17 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "FT-DINING-8-OPEN-CORNERS" = { low = 500, high = 3000 }  # 0 ea
 # FURN-M-DINING since 2026-10-16: owner-milled ash top (~52 rough bf of 6/4 at $4-7) glued up and
 # oiled, on a bought metal base ($300-1,200). ESTIMATE, not researched.
-"FT-CATLIN-DINING-ASH" = { low = 600, high = 1800 }  # 1 ea
+"FT-CATLIN-DINING-ASH" = { low = 600, high = 1000 }  # 1 ea — owner-stock top, plain bought base (owner, 2026-10-29)
 "FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 8 ea
 # IKEA LYCKAN chair, birch veneer, item 005.691.91: $140 US list, checked 2026-10-14.
 # The two upstairs study chairs at the chess table; the frame layout is not priced.
 "FURN-CANTILEVER-CHAIR" = { low = 140, high = 140 }  # 2 ea
 "FURN-PLANT-18" = { low = 30, high = 150 }  # 2 ea
-"FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 3 ea
+# 2026-10-29 additions (outside the construction total):
+"FURN-DESK-MITTZON-47" = { low = 450, high = 600 }  # 1 ea — IKEA MITTZON 995.268.81 electric sit/stand; US price not read, from the US underframe ($449.99) and CA desk ($429 list); confirm at order
+"FURN-CHESS-TABLE-315" = { low = 150, high = 850 }  # 1 ea — FURN-S-STUDY-TABLE; retail 31" game tables with a drawer $358 (Acme Bishop) to $849 (Lamps Plus Madison); not bought
+"FURN-FIDDLE-LEAF-FIG-24" = { low = 94, high = 200 }  # 1 ea — Costa Farms 5-6 ft in grower pot $93.97 (Home Depot) plus a floor planter
+"FURN-QUEEN-BED" = { low = 250, high = 800 }  # 2 ea — owner tier: simple frame, 2026-10-29
 "FURN-BED-FULL" = { low = 200, high = 1200 }  # 1 ea — BED3, a size down from the queen
 "FURN-ROCKING-CHAIR-30" = { low = 150, high = 700 }  # 2 ea
 # FURN-SOFA-84 and FT-SOFA-84-SEAT-BAND are unreferenced: the living sofa now uses
@@ -6845,7 +6909,8 @@ site-excavation-backfill-grading = { material = { low = 1500, high = 4000 }, lab
 # `site/row-permit`. The on-lot drive and walks are modelled and priced as slabs
 # (params/driveway.py, params/landscape_walk.py); the key is kept to avoid a rename.
 # Re-banded for ~12' x 12-15' of 6" apron plus the curb cut. PROPOSED, owner's call.
-concrete-driveway-apron-and-walks = { material = { low = 1500, high = 3500 }, labour = { low = 2500, high = 6000 } }
+# 2026-10-29: material high 3500 -> 2600: ~4.5 cy x $185-215 + short-load $150-250 + base $200-400 + #4 mat/dowels $350-550 + forms/joint $100-200.
+concrete-driveway-apron-and-walks = { material = { low = 1500, high = 2600 }, labour = { low = 2500, high = 6000 } }
 # ** REDUCED 2026-08-30. Three of the four items it named are priced elsewhere. ** The old
 # scope was "the rock envelope beyond the footing bedding, the trench labour, the sump pit and
 # the daylight outlet", and:
@@ -6919,7 +6984,7 @@ plumbing-kohler-k7272-clearflo-overflow = { low = 100, high = 200 }
 # ** AND ON 2026-09-05 THE DRIVER WENT TO ZERO. ** Both of those doors were retired with the
 # basement's west-side replan: D-B-NE is deleted outright and D-B-GYM moved onto W-B-CS3, a
 # framed 2x6 segment of the x=18' line. There is now no opening anywhere in this house whose
-# host wall's STRUCTURE layer is concrete, so this row bills nothing — it shows up in the
+# host wall's STRUCTURE layer is concrete, so this row billed nothing until AO-B-PATIO-SEAT (1 ea, $250-600) hosted a concrete-wall opening; it showed up in the
 # takeoff's unpriced-group list for that reason, not because a rate is missing.
 # The row is KEPT, on the `glazed-green-brick` convention: the rate is researched, the driver
 # is correct, and the day a door or window is formed through a pour again it prices itself
@@ -7183,8 +7248,10 @@ cabinet-study-booth-cushions = { low = 250, high = 800 }
 # closures by the foot — and it is priced. The snow retention is likewise modelled: the
 # `snow_guard` rows in [placeables]. What is genuinely left over is the CUSTOM sheet-metal a
 # linear trim schedule cannot carry: the pipe and duct boots, the kick-outs, the chimney-style
-# saddle at the ERV riser and the counter-flashing where the roof dies into a wall.
-roof-flashings-boots-and-custom-sheet-metal = { low = 3000, high = 8000 }
+# saddle and the counter-flashing where the roof dies into a wall (ERV hoods are on walls).
+# 2026-10-29: $3,000-8,000 -> $2,000-4,500, itemised: ~4 boots $0.6-1.0k, ~6 kick-outs $0.4-0.7k,
+# ~40 LF counterflashing $0.5-1.0k, saddle/custom $0.3-0.8k, snow-guard/PV flashing $0-0.8k. Raise if >8 roof penetrations.
+roof-flashings-boots-and-custom-sheet-metal = { low = 2000, high = 4500 }
 # RETIRED 2026-08-23 with the truss wall. This was the allowance for attaching cladding
 # through 4" of rigid board — the long screws, the shimming, the two-layer board install.
 # Every part of it is now a modelled member with a modelled rate: the outriggers price in
@@ -7273,10 +7340,10 @@ envelope-air-sealing-and-blower-door = { low = 0.15, high = 0.45, unit = "SF", d
 # fill is a real 576 SF line under the "blown-fiberglass" key in [envelope_layers], and
 # ROOF's rafter batts and gypsum ceiling arrived with it. Keeping the allowance would
 # pay for the same insulation twice.
-# DRIVEN 2026-08-27 off clad wall area — 4,328.0 SF of PBR panel and nail-strip seam.
-# $0.42-1.04/SF is the retired $1,800-4,500 over that area, and it is the right axis: what a
-# caulking gun follows is the cladding's joints, laps and terminations.
-envelope-exterior-sealants-and-caulking = { low = 0.42, high = 1.04, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=wall,function=cladding]" }
+# DRIVEN 2026-08-27 off clad wall area (what a caulking gun follows: joints, laps, terminations).
+# 2026-10-29: $0.42-1.04 -> $0.35-0.85. [cladding_trim] tube-sealant bills the window/door perimeter bead
+# (K7) and trim laps; this keeps penetrations, corners and terminations.
+envelope-exterior-sealants-and-caulking = { low = 0.35, high = 0.85, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=wall,function=cladding]" }
 # REMOVED 2026-08-22: envelope-subslab-vapour-barrier-and-capillary-break, $1,255-2,760. It
 # was the placeholder for two layers the model did not have. It has them now — a 10-mil ASTM
 # E1745 Class A retarder on a 4" open-graded course, 1,783.7 SF of each across the basement
@@ -7335,7 +7402,7 @@ envelope-exterior-hoods-and-flashing = { low = 200, high = 500 }
 # --- MEP ------------------------------------------------------------------------------------
 # REMOVED 2026-08-27: electrical-pv-array-modules-and-racking, $24,000-46,000. The money went
 # to the new [solar_modules] section, which prices the SAME scope — modules, racking and
-# rapid shutdown — at $3.00-5.20/W against the 5,280 W the model resolves. It is the same
+# rapid shutdown — at $3.00-4.00/W against the 5,280 W the model resolves. It is the same
 # derivation the lump used ($/W x an array size), except the array size is now measured
 # instead of assumed, and the assumption was wrong: $24,000 at the quoted $3.00/W is an 8 kW
 # array and this one is 5.28 kW. The line falls, and it now moves when a module does.
@@ -7373,12 +7440,13 @@ electrical-service-feeders-4-0-al-ser = { low = 400, high = 900 }
 # adder either way, and the run no longer climbs an occupied second-storey stud bay. HP1 is
 # at ~31 ft of 164 and 21 ft of 49. Routes and
 # lengths against Gree's published limits are in
-# notes/heat_pump_ground_pad.md. The allowance is NOT re-priced for it: at $26-49/LF the
-# added footage is inside its own spread, and the number below was always a lump. NOT DRIVEN (2026-08-27): `pipe_runs` carries
+# notes/heat_pump_ground_pad.md. The allowance is NOT re-priced for it: the added footage is
+# inside its own spread, and the number below was always a lump. NOT DRIVEN (2026-08-27): `pipe_runs` carries
 # drain, vent, water_cold and water_hot and no refrigerant system, so there is no line-set
 # length to read. This is a MODELLING gap, not a pricing one — the day a refrigerant
 # `PipeRun` exists, this becomes `pipe_runs.length_ft[system=refrigerant]` at ~$26-49/LF.
-hvac-refrigerant-line-sets = { low = 3735, high = 7090 }
+# 2026-10-29: $3,735-7,090 -> $3,600-6,300: ~198 LF at ~$18-32/LF installed (insulated copper, braze/nitrogen, vacuum); the "$26-49/LF" text above is stale.
+hvac-refrigerant-line-sets = { low = 3600, high = 6300 }
 # Optional on Minneapolis municipal water; essential on a well.
 plumbing-water-softener-and-filtration = { low = 2500, high = 6000 }
 # DRIVEN 2026-08-27 off the low-voltage device count — 7 today. The scope is the CABLE AND
@@ -7397,7 +7465,9 @@ electrical-structured-low-voltage-drops = { low = 200, high = 450, unit = "ea", 
 # itself is priced 1 ea in [placeables] at $250-900.
 # What genuinely is not priced anywhere is the recirculating hood's consumable: the charcoal
 # filter cartridges and the first replacement set. That is the whole row now.
-hvac-range-hood-recirculation-filters = { low = 150, high = 450 }
+# 2026-10-29: $150-450 -> $60-200. Broan ARKBWP ships with 2 charcoal filters; row = the ARKBWP kit (~$60-110, unverified) + one FILTERBWPTS spare set.
+# If the hood row is confirmed to include the kit, drop to the replacement set alone ($30-60).
+hvac-range-hood-recirculation-filters = { low = 60, high = 200 }
 # DRIVEN 2026-08-27 off the panel schedule — 36 circuits, counted with the `rows` pseudo-field
 # because a schedule is one row per circuit and carries no count column. A "load centre" price
 # is the can and the main only; every branch breaker in a 2026 MN dwelling is AFCI, GFCI or
@@ -7413,7 +7483,7 @@ electrical-afci-gfci-breakers = { low = 39, high = 81, unit = "ea", driver = "pa
 # and `tape:ED-T-LT-STRIP24-SAUNA`, multiplying the same quantity the driver measured.
 # CKT-SPD rides this row as one more $39-81 branch breaker. That is LOW for a plug-on
 # Type 2 SPD (roughly $100-250 delivered), but the device is NOT unpriced: the "surge" in
-# `electrical-radon-fan-smoke-co-surge-and-commissioning` below is a $2,450-8,000 lump that
+# `electrical-radon-fan-smoke-co-surge-and-commissioning` below is a $1,900-4,300 lump that
 # has carried it since the row was written, and a dedicated row here would double bill it.
 # Left as is deliberately. See that row's comment for the code tie.
 hvac-controls-and-zoning = { low = 1200, high = 3000 }
@@ -7422,7 +7492,8 @@ hvac-controls-and-zoning = { low = 1200, high = 3000 }
 # today's run. Note [duct_insulation] already bills the R-8 WRAP on the four ERV risers by the
 # foot — this row is the mastic, the sealing and the MN energy-code test, and must not grow to
 # cover wrap.
-hvac-duct-insulation-mastic-and-test = { low = 1.28, high = 3.19, unit = "LF", driver = "ducts.length_ft" }
+# 2026-10-29: $1.28-3.19 -> $1.00-2.40/LF: mastic ~$0.15-0.40 mat + $0.50-1.20 labour, plus a $300-600 test over ~784 LF (judgement).
+hvac-duct-insulation-mastic-and-test = { low = 1.00, high = 2.40, unit = "LF", driver = "ducts.length_ft" }
 # ** RENAMED AND RE-SCOPED 2026-08-30, from `hvac-bath-exhaust-fans`. THIS HOUSE HAS NO BATH
 # FANS. ** Every wet room is served by ERV radial extract (plan/mep_erv_l1.py) — there is no
 # fan to buy in any of them, and the row was pricing $825-2,640 of hardware that the design
@@ -7432,8 +7503,8 @@ hvac-duct-insulation-mastic-and-test = { low = 1.28, high = 3.19, unit = "LF", d
 # DU-ERV-RISER-EXH and DU-ERV-EA — the 6" riser and the exhaust-air run to the wall hood. They
 # are TRUNKS, not terminations: nothing lands on them. The 9 runs that actually terminate at a
 # room are the count this scope follows.
-# What is left is the boot transition at each of those 9: the 75 mm semi-rigid to the grille
-# collar, the adapter, the strap and the seal. $20-50 apiece, so $180-450 against the old
+# What is left is the boot transition at each of those 10: the 4" galvanized collar adapter to the grille, the strap and the seal
+# (the 75 mm semi-rigid boot was retired with the radials going galvanized snap-lock). $20-50 apiece, so $200-500 against the old
 # $825-2,640. (The 6" trunks' own terminations are the two EQ-T-ERV-HOOD-6 wall hoods, priced
 # in [placeables].)
 # ** NOW ON THE RIGHT AXIS (2026-09-01). ** This filter was `diameter_in=3.0`, which selected
@@ -7441,7 +7512,7 @@ hvac-duct-insulation-mastic-and-test = { low = 1.28, high = 3.19, unit = "LF", d
 # and a 4" radial would have silently dropped out of the bill. `takeoff/mep.py::duct_takeoff`
 # now derives a `terminal` column (some Register names the run in `duct_ref`), which is the
 # predicate this scope was always asking for: the boot is incurred per termination, not per
-# diameter. Same 9 runs today, for the right reason. `duct_schedule` carries the same column
+# diameter. Same predicate; 10 terminating runs today (CSV 10 ea, $200-500). `duct_schedule` carries the same column
 # so the schedule and the bill cannot disagree about it.
 hvac-exhaust-boot-transitions = { low = 20, high = 50, unit = "ea", driver = "ducts.runs[system=exhaust,terminal=True]" }
 # NOT DRIVEN (2026-08-27), same gap as the line sets above: no condensate system in
@@ -7484,7 +7555,10 @@ plumbing-wall-hung-wc-carrier = { material = { low = 420, high = 900 }, labour =
 # radon fan, the smoke/CO devices, the SPD and commissioning. Worth splitting the day any
 # one of those gets a real quote, because today nothing can say whether $2,450 or $8,000 is
 # the honest number for the SPD's share.
-electrical-radon-fan-smoke-co-surge-and-commissioning = { low = 2450, high = 8000 }
+# 2026-10-29 build-up ($2,450-8,000 -> $1,900-4,300): radon fan $190-350 + wiring/switch/gauge $150-400; 13 hardwired
+# smoke/CO/heat devices (plan Alarms: 10 combo, 1 smoke, 2 heat) @ $45-80 mat + $35-75 labour = $1,040-2,015; Type 2 SPD
+# $100-250 + install $100-250; commissioning/labelling $300-1,000.
+electrical-radon-fan-smoke-co-surge-and-commissioning = { low = 1900, high = 4300 }
 # Separate from the building permit, which is in the soft-cost row below.
 permits-mep = { low = 1500, high = 4000 }
 
@@ -7498,7 +7572,9 @@ permits-mep = { low = 1500, high = 4000 }
 # driven by it; the door-leaf FACE area the openings table does not report still cannot (it
 # has count, width and height, but painting a bifold is not painting a slab). Oak trim is
 # oiled, not painted, which is a second reason not to drive it off the trim LF blindly.
-paint-trim-and-doors = { material = { low = 1600, high = 3600 }, labour = { low = 6400, high = 14400 } }
+# 2026-10-29 bottom-up (door-paint rate $2.40-4.80/SF; trim hand-painted two coats): ~1,240 LF primed trim x $1.70-3.40 = $2.1-4.2k;
+# ~30 leaves x 40 SF x $2.40-4.80 = $2.9-5.8k; 41 window aprons/returns ~$0.6-1.2k; caulk/fill/touch-up/mob $0.5-1.5k.
+paint-trim-and-doors = { material = { low = 1000, high = 2200 }, labour = { low = 5200, high = 10800 } }
 # --- the court columns' mineral silicate wash, NEW 2026-09-13 --------------------------------
 # The four 12" round cast columns (PT-SG-BR1/BR3/BF1/BF3), washed white with the same Beeckosil
 # as the court walls. Heights off the resolved solids: 2 x 8.226' + 2 x 8.073' = 32.6 LF, and
@@ -7557,7 +7633,9 @@ cabinet-closet-shelving-and-rod = { low = 600, high = 1500 }
 # See `"FT-MANTEL-ELM-46"` in [placeables].
 # DRIVEN 2026-08-27 off CONDITIONED area — 5,113 SF, not gross: the garage slab is the finish
 # and takes no prep under one. $0.88-2.29/SF is the retired lump over that area.
-finish-floor-prep-and-self-levelling = { low = 0.88, high = 2.29, unit = "SF", driver = "space_summary.conditioned_sf" }
+# 2026-10-29: rate x (4,477.6-387)/4,477.6: the 387 SF coated deck (`coated-concrete`) takes its grind + primer in its own row.
+# A scalar driver can't subtract; a floor_finishes-table driver would (untested).
+finish-floor-prep-and-self-levelling = { low = 0.80, high = 2.09, unit = "SF", driver = "space_summary.conditioned_sf" }
 # Explicitly NOT inside the tile labour rate in [floor_finishes]. NOT DRIVEN (2026-08-27):
 # the quantity this wants is WET-WALL area, and a shower surround is not a modelled finish.
 # Driving it off the floor alone would implicitly re-scope the row to floors, which is worse
@@ -7664,7 +7742,9 @@ finish-wall-tile-material = { low = 900, high = 1800 }
 # Catlin still shares commodity interior types across baths/studies; split those types
 # before assigning function-specific prices. This generic row covers the remaining 28 sets.
 # The four exterior swings carry authored hardware (plan/door_types.py) and leave this count.
-finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.count[takes_hardware=True,hardware_authored=False]" }
+# 2026-10-29: blended 25 swing sets ($84-150: lever $39-95 + 3 hinges + strike/bore) + 3 pocket sets ($184-420: privacy pocket
+# latch $150-300 + two pulls); 28 x $95-180 = $2.7-5.0k. Low rises, high falls.
+finish-door-hardware = { low = 95, high = 180, unit = "ea", driver = "openings.count[takes_hardware=True,hardware_authored=False]" }
 # D-G-SERVICE: ordinary hinges and frame-mounted overhead stop-only are included in
 # finish-door-hardware; confirm reinforced mounting with the prehanger. No closer allowance.
 # DRIVEN 2026-08-27 off the window count; 41 are authored as of 2026-09-27. It was
@@ -7723,7 +7803,9 @@ finish-canopy-east-pvc-column-wrap = { material = { low = 200, high = 450 }, lab
 # number for the wrong reason.
 # The row is NOT dropped from `stair_finish` — ST-G-SERVICE still buys treads, risers and
 # stringers and still appears in the schedule; only this nosing scope excludes it.
-finish-transitions-and-stair-nosings = { low = 7, high = 21, unit = "LF", driver = "stair_finish.tread_lf[conditioned=True,has_nosing=True]" }
+# 2026-10-29: $7-21 -> $4.5-12: the oak treads are owner-milled 5/4 BULLNOSE (nosing is the tread) and the carpeted ST-B2M wraps in
+# its carpet row, so no nosing is bought here. What remains is ~25 floor-to-floor transitions/saddles at $30-75 each over the 136.5 LF.
+finish-transitions-and-stair-nosings = { low = 4.5, high = 12, unit = "LF", driver = "stair_finish.tread_lf[conditioned=True,has_nosing=True]" }
 # DRIVEN 2026-08-27 off the overhead-door count — 1. The smallest conversion in the file and
 # the clearest: the number was already per-door, it just had no door behind it. A second
 # overhead door now doubles the line by itself.
@@ -7761,13 +7843,17 @@ site-protection-final-clean-and-dumpsters = { low = 3500, high = 8500 }
 # --- general conditions and soft costs --------------------------------------------------------
 # GENERAL CONDITIONS IS NOT THE SAME THING AS OVERHEAD AND PROFIT, and conflating the two is
 # the most common way a residential estimate goes wrong by six figures. This is direct job
-# cost: supervision, temporary power and heat, the portable toilet, site fencing, trash and
-# small tools. It belongs in the subtotal. The GC's FEE on top of it is [markup], which is
+# cost: supervision, temporary heat, the portable toilet, site fencing and small tools. It
+# belongs in the subtotal. The GC's FEE on top of it is [markup], which is
 # deliberately zero — see the note there.
-site-general-conditions = { low = 35000, high = 80000 }
-# Design, building permit, plan review, SAC/WAC, testing and builder's-risk insurance.
+# 2026-10-29: temp power ($1.7-4.5k, Fixr) and trash (~$0.5-1.5k) removed: they bill in
+# electrical-service-entrance-and-utility and site-protection-final-clean-and-dumpsters.
+site-general-conditions = { low = 33000, high = 74000 }
+# Design, building permit, plan review, testing and builder's-risk insurance (2026-10-29).
 # Merged on purpose: a fee has no material component, so tax must not reach it.
-permits-design-testing-and-insurance = { low = 20000, high = 60000 }
+# SAC/WAC bills ONCE, in plumbing-municipal-water-sewer-and-sac (Met Council 2026 SAC $2,485/unit + local WAC);
+# this row was cut $2.5-5k for it. "Testing" = geotech, cylinders, special inspection.
+permits-design-testing-and-insurance = { low = 17500, high = 55000 }
 
 # ==========================================================================================
 # THE BID LADDER — turned on 2026-08-20 (owner decision), except markup
@@ -7929,6 +8015,12 @@ floor_finishes = true
 # sections of their own — see [solar_modules] below for where the PV flag went, and
 # [conductors], whose rates are pre-tax cable prices and so needs none.)
 allowances = true
+# 2026-10-29: shelf-priced material halves are pre-tax, so tax reaches them (per-key overrides).
+"allowances:porch-enclosure-panels-mesh" = false
+"allowances:porch-enclosure-panels-vinyl" = false
+"allowances:plumbing-wall-hung-wc-carrier" = false
+"allowances:finish-canopy-east-pvc-column-wrap" = false
+"allowances:cabinet-peninsula-bar-subtop" = false
 
 # $/W back-derived from an installed residential PV price, exactly as the allowance it
 # replaced was. Re-sourcing from a module list price and a separate racking price is the

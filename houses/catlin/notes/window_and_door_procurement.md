@@ -8,7 +8,7 @@
 - **Therma-Tru Smooth-Star full-lite** fiberglass / composite frames / Endura hardware
   for all three French pairs; an opaque **Therma-Tru
   Smooth-Star** for `D-M-ENTRY`; a commodity **Masonite** insulated steel outswing for
-  `D-G-SERVICE`; a Clopay Modern Steel sectional for `D-G-OVERHEAD`.
+  `D-G-SERVICE`; a Clopay Classic Steel sectional for `D-G-OVERHEAD`.
 
 Black outside, white inside throughout. The products are in the model
 (`plan/opening_products.py`, `plan/window_types.py`, `plan/door_types.py`), each type
@@ -99,7 +99,7 @@ and fixed; LC-PG45/CW-PG80 tilt-turn. Every value is over §1's DP 20.
 | `D-M-ENTRY` | Therma-Tru Smooth-Star flush, inswing | THC-M-5-03881 | 0.15 | — | — | opaque; polyurethane core; single-point Encode Plus; DS2000; black / white field paint |
 | `D-B-PATIO`, `D-M-BALC`, `D-S-DECK-E` | Therma-Tru Smooth-Star full-lite, composite frame / Endura | THC-M-5-04493-00001 | 0.21 | 0.12 | 0.27 | provisional CPD basis; laminated triple and assembled pair NFRC/NAFS label are dealer items |
 | `D-G-SERVICE` | MMI Z0364688R stock six-panel insulated steel, 32x80 RH outswing, 6-9/16 composite frame; included fixed composite sill, weatherstrip and NRP hinges; HD Supply 219385, $1,023 listed 2026-10-27 | none | — | — | — | `DT-EXT-SWING32-G`: framed RO 34x81.5; west hinges; black outside/white inside; retain factory sill; see service-door installation note |
-| `D-G-OVERHEAD` | Clopay Modern Steel, Intellicore R-18.4, Black, 16x7 | none | — | — | — | unconditioned; wind rating for q_h 19.3 psf to confirm |
+| `D-G-OVERHEAD` | Clopay Classic Steel long panel GDU293, R-12.9, Charcoal, 16x7 | none | — | — | — | unconditioned; wind rating for q_h 19.3 psf to confirm |
 
 **French pairs (owner, 2026-10-25).** All three use one glass specification: laminated
 low-E triple, special quote, with Therma-Tru impact full-lite as the fallback. No separate
@@ -201,8 +201,8 @@ than ±20% without it.
    non-glass, transferable, not prorated (400 Series product guide), with no black-specific
    term. Get Drutex and Therma-Tru finish terms for the selected black exterior in writing.
 7. Clopay: Texas TDI approval GDR150 lists Modern Steel residential models 7208/7209,
-   non-impact, at **+38/−42 psf**, about twice §1's worst 18.3 psf. Confirm GDU011 is one of
-   them and that the listing reaches 16'-0" wide (drawing 104859/105042-B-TDI).
+   non-impact, at **+38/−42 psf**, about twice §1's worst 18.3 psf. The door is now Classic
+   Steel GDU293 (2026-10-29): get its own rating. Confirm it is listed and that the listing reaches 16'-0" wide (drawing 104859/105042-B-TDI).
 8. 16 CFR 1201 marks on the 11 tempered units and every glazed door (the three French pairs).
 9. **Size standardization, priced, not assumed.** Ask each supplier to quote the schedule
    as drawn and with sizes merged (e.g. the 27" heights 36/48/54 onto fewer). Take a merge only

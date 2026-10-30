@@ -192,6 +192,26 @@ def test_a_declared_view_is_not_reported_as_a_hole(tmp_path) -> None:
     assert not [row for row in estimate["unpriced"] if row["section"] == "electrical_devices"]
 
 
+def test_mirrored_sheathing_bills_once_and_rips_still_bill(tmp_path) -> None:
+    """The hung sheet row (also in envelope SF) is skipped and listed; the rip stays priced."""
+    (tmp_path / "prices.toml").write_text(
+        '[sheet_goods]\n"struct-1-plywood" = 30\n"struct-1-plywood:buck rip" = 20\n'
+        '[envelope_layers]\n"struct-1-plywood" = 2.0\n')
+    sheet = {"material": "struct-1-plywood", "sheets": 10}
+    estimate = estimate_costs({
+        "sheet_goods": [
+            {**sheet, "scope": "exterior wall", "also_in_envelope_layers": True},
+            {**sheet, "scope": "buck rip"}],
+        "envelope_layers": [{"scope": "wall", "function": "sheathing",
+                             "material": "struct-1-plywood", "net_area_sqft": 100.0}],
+    }, load_prices(tmp_path))
+    assert estimate["sections"]["sheet_goods"]["subtotal"]["low"] == pytest.approx(200.0)
+    assert estimate["sections"]["envelope_layers"]["subtotal"]["low"] == pytest.approx(200.0)
+    assert [(r["scope"], r["priced_in"]) for r in estimate["priced_elsewhere"]] == [
+        ("exterior wall", "envelope_layers")]
+    assert not estimate["unpriced"]
+
+
 def test_every_catlin_bom_table_is_priced_declared_or_unpriced(
         catlin_model, catlin_areas) -> None:
     """The completeness guarantee, against the real house.

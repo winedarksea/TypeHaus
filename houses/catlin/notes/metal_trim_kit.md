@@ -248,7 +248,7 @@ What the model derives and bills, with the counts the tests pin
 | Wall tops | PBR inside closure 6460800; BBD75 Universal Closure 6411499; corrugated Sill to Soffit at garage eaves; corrugated outside closure at garage panel tops | 74.25 / 83.01 / 48.29 / 99.04 LF |
 | Outside corners | Wide corner (PBR↔BBD75), corrugated corner | 8 / 4 |
 | BBD75 band | Transition Trim at +17'-4", one run per N/S wall segment | 10 |
-| Window head, jamb, sill | 1.5 in Sill/Head 58114XX at every head; PBR jamb 58208XX (unpriced); BBD75 and corrugated jambs and every sill: site-brake (`WINDOW_JAMB_CUSTOM` 146.9 LF, `WINDOW_SILL_CUSTOM` 87.3 LF) | 43 heads / 86 jambs / 43 sills |
+| Window head, jamb, sill | 1.5 in Sill/Head 58114XX at every head; PBR jamb 58208XX (unpriced); BBD75 and corrugated jambs and every sill: site-brake (`WINDOW_JAMB_CUSTOM` 146.9 LF, `WINDOW_SILL_CUSTOM` 87.3 LF) | 43 heads / 86 jambs / 43 sills; heads and PBR jambs pooled FFD from 10'-2" stock (heads 42 cuts, 91.5 LF, 10 sticks) |
 | Door jambs | Panel Starter 58728XX (BBD75); Corrugated Jamb at the garage door jambs (stock, no part number) | 6 + 4 |
 | Door heads | site-brake drip cap, legacy head section swept at stock; none on catalog unit D-S-DECK-E, whose head is the band | 5 |
 | Small rough openings | 4-side window kit on the niche and both ERV hoods; the two 2.5 in hydrant bores are closed by the fixture's flange and sealant | 3 |

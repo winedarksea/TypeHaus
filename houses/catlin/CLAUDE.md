@@ -994,7 +994,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`); Therma-Tru Smooth-Star full-lite / Endura
   for the French pairs (2026-10-25; laminated triple and pair label pending); an OPAQUE Therma-Tru Smooth-Star for
   `D-M-ENTRY` (owner: a solid, insulated front door, at most a tiny lite); MMI Z0364688R
-  six-panel insulated steel for `D-G-SERVICE` (`DT-EXT-SWING32-G`); Clopay for the overhead. Black outside, white inside.
+  six-panel insulated steel for `D-G-SERVICE` (`DT-EXT-SWING32-G`); Clopay for the overhead. Charcoal outside (Classic Steel has no R-12.9 black), white inside.
   `plan/window_types.py`/`plan/door_types.py` redefine every tag the house hangs, each with
   its NFRC CPD row, and `plan/manifest.py` drops the library preset of that tag; catalog-only
   sizes stay presets. **Edit the house file, never `library/windows.py`.** The escape types

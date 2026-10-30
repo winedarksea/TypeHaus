@@ -34,6 +34,10 @@ from typehaus.takeoff.sheet_rips import rip_sheet_rows, rip_stock
 _M2_TO_FT2 = 10.7639104167
 _M_TO_FT = 3.280839895013123
 
+#: Hung-sheathing scopes ``takeoff/envelope.py`` also bills by the SF (its ``wall`` / ``roof``
+#: SHEATHING rows). The estimate prices the SF side and skips these (``cli/prices.py``).
+_ALSO_IN_ENVELOPE = frozenset({"exterior wall", "roof"})
+
 
 def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Return net-area and whole-sheet quantities for wall, roof, and subfloor sheathing.
@@ -183,7 +187,8 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         {"scope": scope, "material": material, "thickness_in": round(thickness / 0.0254, 3),
          "net_area_sqft": round(area * _M2_TO_FT2, 1),
          "sheet": sheet_label(order_sheet_length_in(sheet)),
-         "sheets": sheets_for(area * _M2_TO_FT2, order_sheet_length_in(sheet))}
+         "sheets": sheets_for(area * _M2_TO_FT2, order_sheet_length_in(sheet)),
+         "also_in_envelope_layers": scope in _ALSO_IN_ENVELOPE}
         for (scope, material, thickness, sheet), area in sorted(
             areas.items(), key=lambda item: (item[0][:3], item[0][3] or 0.0))
     ]
