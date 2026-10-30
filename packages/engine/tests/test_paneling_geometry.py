@@ -250,9 +250,8 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
         # Floor to ceiling since 2026-10-12: RM-M-BATH2's 106" clear height.
         assert band.z1_m == pytest.approx(106 * _IN, abs=1e-6)
         assert band.replaces_wall_finish
-        # A cast panel states no board stock, so it takes the 1/2" default — which is,
-        # again, the panel's own thickness.
-        assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
+        # Authored 1/4": the Swanstone MSMK-9636-1 panel's real thickness, not the default.
+        assert band.thickness_m == pytest.approx(0.25 * _IN, abs=1e-6)
     # The tub deck's Corian waterfall (2026-10-22): the W apron and the stall face under the
     # north glass (the pan's 3' only), one material. Both knee walls stand INSIDE the room,
     # so each span names its face; the stall face is on the south side. Each runs from the
