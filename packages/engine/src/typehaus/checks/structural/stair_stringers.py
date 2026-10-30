@@ -76,7 +76,10 @@ def _carried(stair: ResolvedStair, member: FramedMember) -> bool:
     gaps = [max(lo - end[axis], end[axis] - hi, 0.0) / M_PER_IN
             for end in (member.p0, member.p1)]
     on_floor = abs(min(board.z0_m, board.z0_end_m or board.z0_m) - member.z0_m) < 1e-6
-    return sum(gap > 0.5 for gap in gaps) <= int(on_floor)
+    # Only the foot (the lower end) may stand short of the spacer, and only on the floor.
+    foot = 1 if member.z1_end_m is not None and member.z1_end_m < member.z1_m else 0
+    head_gap, foot_gap = gaps[1 - foot], gaps[foot]
+    return head_gap <= 0.5 and (foot_gap <= 0.5 or on_floor)
 
 
 def _throat_in(stair: ResolvedStair, profile: str) -> float:

@@ -81,8 +81,10 @@ def test_floor_joist_counts_match_old_model(catlin_model):
         floor = next(f for f in catlin_model.floors if f.tag == tag)
         joists = [m for m in floor.members if m.category == "joist"]
         # Less one: FO-A-STAIR's south edge is ON the y=5'-4" line, and its east-span joist
-        # is the trimmer pack now (resolve/floor_openings.py).
-        assert len(joists) == expected_pair_count - 1, tag
+        # is the trimmer pack now (resolve/floor_openings.py). Plus each authored extra line
+        # across both spans (y=9 1/2", FURN-S-STUDY-TRACK-DECK's track).
+        extra = len(catlin_model.plan.by_tag(tag).joists.extra_lines)
+        assert len(joists) == expected_pair_count - 1 + 2 * extra, tag
         # A full-bay joist is NOT ``GRID_FT`` long, and the difference is the point of
         # ``resolve/floor_ends.py``: the 18'-0" grid is the line the joists are cut *at*,
         # while the stick runs from behind the 1 3/4" LSL rim at the west framing face to
@@ -101,7 +103,9 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     # Less two on the west: FO-S-ERV-CHASE's trimmer pack and header (2026-09-24). Less
     # three since 2026-09-25: the y=25'-4" line is FO-S-STAIR's full-span south pack.
     assert len(west_joists) == expected_positions - 3
-    assert len(east_joists) == expected_positions
+    # Plus FS-S-EAST's authored extra line (y=9 1/2", FURN-M-LIV-TRACK-S's track).
+    assert len(east_joists) == expected_positions + len(
+        catlin_model.plan.by_tag("FS-S-EAST").joists.extra_lines)
     # Neither half is 18'-0" of stick, and they are not even the same length as each other:
     # the x=18' plate they share is split 3 1/2" to the trusses and 2" to the I-joists
     # (``params/second_deck.py``), so the truss is the longer member by 1 1/2".

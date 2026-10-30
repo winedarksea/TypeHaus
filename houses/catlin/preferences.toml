@@ -293,7 +293,7 @@ suppress = [
   # Plaster-in coves, 2026-10-30 (open): the channel stands 1.44" above the board face,
   # 0.81" into the I-joists / soffit rungs the 5/8" board is fastened to. No notching an
   # I-joist flange. Owner decision pending (plans/TODO.md): fur the board down (7/8" hat
-  # channel clears it), or a shallower profile.
+  # channel clears it), a shallower profile, or a surface channel.
   "mep.plaster_in_depth:LR-M-LIVING-W",
   "mep.plaster_in_depth:LR-M-LIVING-E",
   "mep.plaster_in_depth:LR-M-BATH2-TUB-CLG",
