@@ -74,27 +74,26 @@ tank's 4,500 VA nameplate the SHED tier's peak does not fit the 12kPV's 8 kW con
 This was the TODO's actual question, and `takeoff/backup_calc.py` answers it rather than a
 comment asserting it.
 
-**2026-10-30, the PoE doorbell and two cameras** ([smart_home.md](smart_home.md)) put ~41 W
-more on `CKT-HA` (duty 0.30 -> 0.44). Always-on autonomy is now **34.8 h**. The 48-hour cycle
-no longer carries the always-on tier: 17.73 kWh of load against 15.84 kWh of sun, net
-**-1.89 kWh**. It had been +0.12 kWh, so any always-on load would have flipped it. The calc's
-verdict is "add array, not battery". At 3.5 kWh/kW strong-day yield it rides again. The
-figures below are the earlier pass's and are stale:
+**2026-10-30, the PoE doorbell and two cameras** ([smart_home.md](smart_home.md)) put ~42 W
+more on `CKT-HA` (duty 0.30 -> 0.44). The always-on tier had cleared the 48-hour cycle by
++0.22 kWh; it now falls short. As authored today:
 
 - **Storage** 12.87 kWh usable of 14.3 nameplate (90% DoD).
-- **Autonomy, no sun** 53.0 h on the always-on tier alone.
+- **Autonomy, no sun** 34.8 h on the always-on tier alone (369 W average); 11.8 h with both
+  tiers running.
 - **48-hour cycle** one strong solar day puts in 15.84 kWh (5.28 kW array × 3.0 kWh/kW,
-  haircut for the E/W split off a N-S ridge) against 11.7 kWh of always-on load over two
-  days (net **+4.19 kWh**) — so the always-on tier rides indefinitely on sun every other
-  day. Both tiers together take 46.45 kWh over the same 48 h and do **not** ride
-  (net −30.61 kWh), which is what the shed tier exists to answer. Battery alone, both
-  tiers running, is 13.3 h.
-- **Peak** 4,658 VA of backup load against 8 kW continuous, and the largest shed-tier motor
+  haircut for the E/W split off a N-S ridge) against 17.73 kWh of always-on load over two
+  days (net **−1.89 kWh**), so the always-on tier is a slow countdown, not indefinite. At
+  3.5 kWh/kW it rides again. Both tiers together take 52.53 kWh over the same 48 h and do
+  **not** ride (net −36.69 kWh), which is what the shed tier exists to answer.
+- **Peak** 4,989 VA of backup load against 8 kW continuous, and the largest shed-tier motor
   start (1,500 VA × 3 for a soft-started VFD = 4,500 VA) against 16 kW surge — comfortable
   on both.
 
-Verdict: **one battery and the 12kPV are enough** for what the two tiers promise. Note the
-12kPV puts out **8 kW AC continuous**; the "12k" in the name is its 12 kW *PV input*.
+Verdict (`backup_calc`): **add array, not battery**. One battery and the 12kPV cover the peak
+and give the always-on tier a day and a half unaided; riding indefinitely on sun every other
+day needs ~0.6 kW more array or a lighter `CKT-HA`. Note the 12kPV puts out **8 kW AC
+continuous**; the "12k" in the name is its 12 kW *PV input*.
 
 Every one of those numbers rests on an authored `duty_cycle` per circuit, and those are the
 softest estimates in the model — 800 VA on the fridge circuit is a breaker allowance, not a

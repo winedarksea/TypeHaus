@@ -122,7 +122,7 @@ def test_the_always_on_tier_outlasts_the_shed_tier_by_a_wide_margin(summary):
 
     ** MOST OF THE PSU'S RATED VA IS NOT A LOAD, AND THE OVERSTATEMENT IS DELIBERATE. ** Per
     plan/lighting_types.py's own rule, a PSU's ``load_va`` is the supply's rating (200 VA),
-    not the tape's draw (44.6 W, 55.7 W at the 125% sizing factor) — so the 41.3 h figure is
+    not the tape's draw (44.6 W, 55.7 W at the 125% sizing factor) — so the 34.8 h figure is
     a floor rather than an estimate. A backup calculation that errs is supposed to err this
     way.
     """
@@ -134,7 +134,7 @@ def test_the_always_on_tier_outlasts_the_shed_tier_by_a_wide_margin(summary):
 
 def test_the_48_hour_cycle_falls_just_short_of_the_always_on_tier(summary):
     """The TODO's actual question. The always-on tier rode one strong solar day per 48 h by
-    0.12 kWh until the 2026-10-30 cameras and doorbell (~41 W on CKT-HA); it now falls about
+    0.22 kWh until the 2026-10-30 cameras and doorbell (~41 W on CKT-HA); it now falls about
     2 kWh short, and both tiers together never did. The answer is array, not battery."""
     cycle = summary["cycle_48h"]
     assert cycle["array_kw"] == pytest.approx(5.28)

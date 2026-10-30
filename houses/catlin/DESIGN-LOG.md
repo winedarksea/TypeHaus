@@ -24,7 +24,7 @@ and open checks are in `notes/smart_home.md`. Instances are in `plan/smart_home.
   `CD-M-DATA-KITCH`'s pull box and comes down `W-M-STRW`.
 - **Backup consequence:** the cameras and doorbell put ~41 W on `CKT-HA` (ALWAYS_ON). One
   strong solar day per 48 h no longer carries the always-on tier (-1.89 kWh; it had a
-  +0.12 kWh margin). Autonomy is 34.8 h. Rejected: dropping CKT-HA's duty back to hold the
+  +0.22 kWh margin). Autonomy is 34.8 h. Rejected: dropping CKT-HA's duty back to hold the
   verdict. The calc's answer is more array, and the battery itself is deferred
   (`notes/backup_power.md`).
 
