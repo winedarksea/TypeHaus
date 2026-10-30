@@ -2150,13 +2150,14 @@ PANELING = [
     WallPaneling(uid="CMK901AAAA", tag="WP-M-STUDY-WAINSCOT", room="RM-M-STUDY",
                  material_ref="walnut-shiplap", height=ft(3),
                  walls=("W-M-LS", "W-M-CLN2", "W-M-C3")),
-    # The mudroom's three east-facing walls (W-M-W1 between the closets, and the closets'
-    # east returns), white-painted oak shiplap to 6'-0" — the underside of the coat-nook caps
-    # across the room. The closets' door walls (W-M-MECH-S, W-M-MUDC-N) are left: less the
-    # door, too little wall to be worth it. Wraps WIN-M-MUD; the sconce at 6'-8" is above it.
+    # The mudroom's closet block, white-painted oak shiplap to 6'-0" — the underside of the
+    # coat-nook caps across the room: W-M-W1 between the closets, the closets' east returns
+    # and their door walls (W-M-MECH-S, W-M-MUDC-N). On the door walls the band stops at the
+    # casing's outer edge, flush with it (both 3/4"); the base end stands 3/4" proud of the
+    # casing face (owner, 2026-10-29). Wraps WIN-M-MUD; the sconce at 6'-8" is above it.
     WallPaneling(uid="G21WZA605X", tag="WP-M-MUDROOM-SHIPLAP", room="RM-M-MUDROOM",
                  material_ref="oak-shiplap-painted", height=ft(6),
-                 walls=("W-M-W1", "W-M-MECH-E", "W-M-MUDC-E")),
+                 walls=("W-M-W1", "W-M-MECH-E", "W-M-MUDC-E", "W-M-MECH-S", "W-M-MUDC-N")),
     # The call booth's acoustic felt, sitting on top of the wainscot: band
     # 3'-0" to 9'-0", south and north walls only.
     #

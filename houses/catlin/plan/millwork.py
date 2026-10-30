@@ -108,6 +108,9 @@ MILLWORK = [
             RoomTrim(rooms=("RM-M-BATH1", "RM-M-BATH2", "RM-S-BATH1", "RM-S-SUITEBATH",
                             "RM-S-VANITY", "RM-B-BATH", "RM-A-STUBATH", "RM-S-PLANT"),
                      material_ref="pvc-trim"),
+            # Wet boots on LVP: PVC base, MDF casing kept (owner, 2026-10-29).
+            RoomTrim(rooms=("RM-M-MUDROOM", "RM-M-MUD-CLOSET"), material_ref="pvc-trim",
+                     casing_material_ref="mdf-casing"),
         ),
         door_trims=(
             DoorTrim(doors=("D-S-SUITE",), room="RM-S-SUITE", material_ref="cherry-trim"),

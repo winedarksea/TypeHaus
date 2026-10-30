@@ -79,16 +79,21 @@ def test_the_drawn_band_agrees_with_the_billed_area(bands, catlin_model):
         assert gross >= band.area_m2 - 1e-9, \
             f"{band.tag} on {band.wall_tag}: billed more than the band's gross area"
         wall = catlin_model.wall(band.wall_tag)
+        # An applied band butts a cased door's casing, so the casing widens its hole.
+        casing = {} if band.replaces_wall_finish else {
+            c.opening_ref: c.casing_width_m for c in catlin_model.door_casings
+            if c.room == band.room}
         punched = 0.0
         for opening in catlin_model.openings:
             if opening.host_wall != band.wall_tag:
                 continue
+            cw = casing.get(opening.tag, 0.0)
             # The band's own frame: wall-local z up from the wall's base reference.
             b0 = band.z0_m - wall.base_ref_z_m
             b1 = band.z1_m - wall.base_ref_z_m
-            dz = min(b1, opening.sill_m + opening.height_m) - max(b0, opening.sill_m)
+            dz = min(b1, opening.sill_m + opening.height_m + cw) - max(b0, opening.sill_m)
             if dz > 0.0:
-                punched += min(opening.width_m, band.run_m) * dz
+                punched += min(opening.width_m + 2 * cw, band.run_m) * dz
         assert gross - band.area_m2 <= punched + 1e-6, \
             f"{band.tag} on {band.wall_tag}: more area subtracted than its openings punch"
 
@@ -115,6 +120,20 @@ def test_the_study_wainscot_stops_at_its_door(bands, catlin_model):
     assert host and len(host[0].pieces) == 2, "the door splits the band in two"
     for ring, _, _ in host[0].pieces:
         assert not Polygon(ring).intersects(hole), "a wainscot piece crosses D-M-STUDY"
+
+
+def test_the_mudroom_wainscot_butts_its_closet_door_casings(bands, catlin_model):
+    """The shiplap on the closets' door walls stops at the casing's outer edge, either side."""
+    for wall_tag, door in (("W-M-MECH-S", "D-M-MECH"), ("W-M-MUDC-N", "D-M-MUDC")):
+        (band,) = [b for b in bands
+                   if b.tag == "WP-M-MUDROOM-SHIPLAP" and b.wall_tag == wall_tag]
+        assert len(band.pieces) == 2, f"{door} splits the band in two"
+        (casing,) = [c for c in catlin_model.door_casings
+                     if c.opening_ref == door and c.room == "RM-M-MUDROOM"]
+        for ring, _, _ in band.pieces:
+            for piece in casing.pieces:
+                assert Polygon(ring).intersection(Polygon(piece.outline)).area < 1e-8, \
+                    f"shiplap on {wall_tag} runs under {door}'s casing"
 
 
 def _band_outline_of(wall, opening):
@@ -183,10 +202,10 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     (splash,) = by_tag["WP-M-KIT-BACKSPLASH"]
     assert splash.thickness_m == pytest.approx(0.004, abs=1e-9)
     assert splash.run_m == pytest.approx(1.0, abs=1e-6)
-    # The mudroom's three east-facing walls to 6'-0"; W-M-MECH-E is the L's inner-corner
-    # wall that a single room-wide interior point once put on the closet's face.
+    # The mudroom's closet block to 6'-0"; W-M-MECH-E is the L's inner-corner wall that a
+    # single room-wide interior point once put on the closet's face.
     assert {b.wall_tag for b in by_tag["WP-M-MUDROOM-SHIPLAP"]} == {
-        "W-M-W1", "W-M-MECH-E", "W-M-MUDC-E"}
+        "W-M-W1", "W-M-MECH-E", "W-M-MUDC-E", "W-M-MECH-S", "W-M-MUDC-N"}
     for band in by_tag["WP-M-MUDROOM-SHIPLAP"]:
         assert band.z1_m - band.z0_m == pytest.approx(72 * _IN, abs=1e-6)
         assert band.thickness_m == pytest.approx(0.75 * _IN, abs=1e-6)

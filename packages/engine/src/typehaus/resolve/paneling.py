@@ -1,16 +1,18 @@
 """Resolve ``WallPaneling`` bands onto their room's bounding walls (→ model/paneling.py).
 
 Each authored paneling becomes one :class:`ResolvedPaneling` per covered wall, its area
-already net of architectural openings; apron leaves stay in the sheet order while their
-cutouts are removed from the fixed-face geometry. Downstream consumers sum rather than
-re-intersect. Refs that resolve to nothing are ERROR findings, never a silent zero — a
-typo'd room tag must not make a wainscot vanish from the order (#32).
+already net of architectural openings (an applied band stops at a cased door's casing);
+apron leaves stay in the sheet order while their cutouts are removed from the fixed-face
+geometry. Downstream consumers sum rather than re-intersect. Refs that resolve to nothing
+are ERROR findings, never a silent zero — a typo'd room tag must not make a wainscot vanish
+from the order (#32).
 """
 
 from __future__ import annotations
 
 from typehaus.findings import Finding, failed
 from typehaus.model.plan import PlanModel
+from typehaus.resolve.interior_trim_scope import cased, cased_side, casing_edges, trim_scope
 from typehaus.resolve.model import ResolvedModel, ResolvedPaneling
 from typehaus.resolve.paneling_access import tub_access_cutouts
 from typehaus.resolve.room_walls import bounding_walls
@@ -24,6 +26,8 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     deck_tops = _knee_wall_deck_tops(plan, model)
     coatings = frozenset(m.tag for m in plan.library.materials if getattr(m, "coating", False))
     access_cutouts = tub_access_cutouts(model)
+    # Its findings are the trim pass's to report.
+    trim, _ = trim_scope(plan, model)
     for storey in plan.storeys:
         for el in plan.storey_elements(storey.tag):
             if el.element_kind != "WallPaneling":
@@ -123,32 +127,34 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 for lo, hi in intervals:
                     if hi - lo <= 1e-6:
                         continue
-                    area = (hi - lo) * (band_z1 - band_z0)
-                    for o in openings:
-                        du = (min(hi, o.center_along_m + o.width_m / 2.0)
-                              - max(lo, o.center_along_m - o.width_m / 2.0))
-                        dz = (min(band_z1, o.sill_m + o.height_m)
-                              - max(band_z0, o.sill_m))
-                        if du > 0.0 and dz > 0.0:
-                            area -= du * dz
-                    if area <= 0.0:
-                        continue
                     face = next((span.face for span in spans_by_wall.get(wall.tag, ())
                                  if span.face), None)
                     toward = (None if room is None
                               else _face_point(wall, lo, hi, face) if face
                               else _room_side_point(room, wall, lo, hi))
+                    panel_face = (None if toward is None else
+                                  "left" if _room_side_sign(wall, toward) > 0 else "right")
+                    # A replacing band is the face the casing nails to; only an applied one
+                    # butts it.
+                    holes = _holes(openings, None if el.replaces_wall_finish else trim,
+                                   room, panel_face)
+                    area = (hi - lo) * (band_z1 - band_z0)
+                    for a, b, s0, s1 in holes:
+                        du = min(hi, b) - max(lo, a)
+                        dz = min(band_z1, s1) - max(band_z0, s0)
+                        if du > 0.0 and dz > 0.0:
+                            area -= du * dz
+                    if area <= 0.0:
+                        continue
                     outline = ([] if toward is None else
                                _band_outline(wall, lo, hi, toward, thickness_m,
                                              el.replaces_wall_finish, skip))
-                    panel_face = (None if toward is None else
-                                  "left" if _room_side_sign(wall, toward) > 0 else "right")
                     pieces = () if not outline else tuple(
                         (_band_outline(wall, a, b, toward, thickness_m,
                                        el.replaces_wall_finish, skip),
                          wall.base_ref_z_m + z0, wall.base_ref_z_m + z1)
                         for a, b, z0, z1 in _net_cells(
-                            lo, hi, band_z0, band_z1, openings,
+                            lo, hi, band_z0, band_z1, holes,
                             access_cutouts.get((wall.tag, panel_face), ())))
                     model.panelings.append(ResolvedPaneling(
                         uid=el.uid, tag=el.tag, storey=wall.storey,
@@ -187,20 +193,40 @@ def _knee_wall_deck_tops(plan: PlanModel, model: ResolvedModel) -> dict[str, flo
     return tops
 
 
-def _net_cells(lo: float, hi: float, z0: float, z1: float, openings,
-               extra_cutouts=()) -> list:
-    """The band's ``lo..hi`` x ``z0..z1`` rectangle minus its openings, as ``(u0, u1, z0, z1)``.
+def _holes(openings, trim, room, panel_face) -> list[tuple[float, float, float, float]]:
+    """``(u0, u1, z0, z1)`` each opening takes out of a band, in wall-local frame.
 
-    Split along the wall at every opening edge; in each stretch keep the band's height less
-    the openings covering it. The same openings the area subtracts, so drawing and billing
+    The rough opening, or with a trim scope a cased door's casing envelope on the band's
+    face: the band butts the casing's outer edge rather than running under it. The casing
+    is derived later (``interior_trim_casing``) from the same three helpers.
+    """
+    out = []
+    for o in openings:
+        half, top = o.width_m / 2.0, o.height_m
+        if (trim is not None and room is not None and o.is_door and panel_face
+                and room.tag in trim.rooms):
+            door_type = trim.door_types.get(o.type_ref or "")
+            side = 1 if panel_face == "left" else -1
+            if (cased(door_type) and o.tag not in trim.standard.uncased_doors
+                    and cased_side(door_type, side)):
+                inner, head = casing_edges(o, door_type, trim.standard)
+                width = trim.standard.casing_width_for(room.tag, o.tag).meters
+                half, top = inner + width, head + width
+        out.append((o.center_along_m - half, o.center_along_m + half, o.sill_m, o.sill_m + top))
+    return out
+
+
+def _net_cells(lo: float, hi: float, z0: float, z1: float, holes,
+               extra_cutouts=()) -> list:
+    """The band's ``lo..hi`` x ``z0..z1`` rectangle minus ``holes``, as ``(u0, u1, z0, z1)``.
+
+    Split along the wall at every hole edge; in each stretch keep the band's height less
+    the holes covering it. The same holes the area subtracts, so drawing and billing
     punch the same holes.
     """
-    holes = list(extra_cutouts)
-    for o in openings:
-        a, b = o.center_along_m - o.width_m / 2.0, o.center_along_m + o.width_m / 2.0
-        s0, s1 = o.sill_m, o.sill_m + o.height_m
-        if min(hi, b) - max(lo, a) > 1e-6 and min(z1, s1) - max(z0, s0) > 1e-6:
-            holes.append((a, b, s0, s1))
+    holes = list(extra_cutouts) + [
+        (a, b, s0, s1) for a, b, s0, s1 in holes
+        if min(hi, b) - max(lo, a) > 1e-6 and min(z1, s1) - max(z0, s0) > 1e-6]
     cuts = sorted({lo, hi, *(u for a, b, _, _ in holes for u in (a, b) if lo < u < hi)})
     cells: list[tuple[float, float, float, float]] = []
     for u0, u1 in zip(cuts, cuts[1:], strict=False):
