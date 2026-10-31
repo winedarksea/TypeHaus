@@ -20,6 +20,7 @@ import { boardStyleFor } from "./millwork";
 import { createModelPartMeshGeometry } from "../modelPartMesh";
 import { applyPlankPlaneUv } from "../plankMaterial";
 import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
+import { mergePartDraws, type MergedGeometryCache, type PartDraw } from "../mergeParts";
 import {
   DEFAULT_EARTH_OPACITY, DEFAULT_EARTH_TONE, EARTH_TONE_HEX, type EarthTone,
 } from "../../state/vocabulary";
@@ -207,8 +208,30 @@ export function buildSuspension(
  * places hundreds of the same few products. Keyed by the catalog's own part object, so it lives
  * exactly as long as the model; flagged `shared` so `disposeGroup` leaves it to `dispose`.
  */
-export class PartGeometries {
+export class PartGeometries implements MergedGeometryCache {
   private readonly byPart = new Map<ModelPart, THREE.BufferGeometry>();
+  // A type's parts folded into one mesh per material (→ mergeParts.ts), keyed by what went in.
+  private readonly byMerge = new Map<string, THREE.BufferGeometry>();
+  private readonly ids = new Map<ModelPart, number>();
+
+  /** A stable name for a catalog part, for merge keys. */
+  idOf(part: ModelPart): number {
+    let id = this.ids.get(part);
+    if (id === undefined) this.ids.set(part, id = this.ids.size);
+    return id;
+  }
+
+  merged(key: string, make: () => THREE.BufferGeometry | null): THREE.BufferGeometry | null {
+    let geometry = this.byMerge.get(key);
+    if (!geometry) {
+      const made = make();
+      if (!made) return null;
+      geometry = made;
+      geometry.userData.shared = true;
+      this.byMerge.set(key, geometry);
+    }
+    return geometry;
+  }
 
   get(part: ModelPart, make: () => THREE.BufferGeometry): THREE.BufferGeometry {
     let geometry = this.byPart.get(part);
@@ -221,8 +244,10 @@ export class PartGeometries {
   }
 
   dispose(): void {
-    for (const geometry of this.byPart.values()) geometry.dispose();
+    for (const geometry of [...this.byPart.values(), ...this.byMerge.values()]) geometry.dispose();
     this.byPart.clear();
+    this.byMerge.clear();
+    this.ids.clear();
   }
 }
 
@@ -251,6 +276,7 @@ export function buildCanvasObjectParts(
 ): THREE.Object3D {
   const group = new THREE.Group();
   const materials = new Map<string, THREE.Material>();
+  const draws: PartDraw[] = [];
   for (const [index, part] of parts.entries()) {
     const board = boardStyleFor(part.material_ref, catalog);
     const marble = !board && isVeinedMarble(authoredAppearance(part.material_ref, catalog)?.finish);
@@ -322,8 +348,16 @@ export function buildCanvasObjectParts(
     // A board's grain is seeded per instance, so it owns its geometry; everything else is the
     // type's and is built once per scene for every instance (→ PartGeometries).
     const geometry = shared && !board ? shared.get(part, makeGeometry) : makeGeometry();
-    const mesh = makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry));
-    if (geometry.userData.centred) mesh.position.set(cx, cz, -cy);
+    draws.push({
+      geometry, material: woodMaterialsForGeometry(material, geometry),
+      offset: geometry.userData.centred ? [cx, cz, -cy] : null,
+      shareKey: shared && !board ? `${key}#${shared.idOf(part)}` : null,
+    });
+  }
+  // Parts sharing a material draw as one mesh (→ mergeParts.ts).
+  for (const draw of mergePartDraws(draws, shared)) {
+    const mesh = makeSurfaceMesh(draw.geometry, draw.material);
+    if (draw.offset) mesh.position.set(...draw.offset);
     mesh.userData.uid = item.uid;
     mesh.userData.selectionKind = "canvas_object";
     group.add(mesh);

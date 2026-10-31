@@ -147,8 +147,16 @@ try {
       out.push({ label: "baluster", want: { kind: "solid", uid },
         query: { uid, at: [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2, (s.z0_m + s.z1_m) / 2] } });
     }
+    // A multi-part product draws its same-material parts as one merged mesh (→ three/mergeParts.ts).
+    const types = new Map((m.catalog?.canvas_object_types ?? []).map(t => [t.tag, t]));
+    for (const c of m.canvas_objects ?? []) {
+      const type = types.get(c.type ?? "");
+      if (c.domain === "opening" || type?.model_glb || (type?.model_parts?.length ?? 0) < 3) continue;
+      out.push({ label: "placed product", want: { kind: "canvas_object", uid: c.uid }, query: { uid: c.uid } });
+    }
     return JSON.stringify(out);`));
-  const wanted = ["window board", "door casing leg", "door hinge", "drip edge", "gutter", "baluster"];
+  const wanted = ["window board", "door casing leg", "door hinge", "drip edge", "gutter", "baluster",
+    "placed product"];
   for (const label of wanted) {
     const candidates = targets.filter((t) => t.label === label);
     let done = null;

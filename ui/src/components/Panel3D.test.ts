@@ -763,23 +763,30 @@ export function runCanvasObjectPartsTests() {
   const built = buildCanvasObjectParts(group, item, parts, [0, 0], "schematic", 1.5, picks, byUid);
 
   assert(built instanceof THREE.Group, "A multi-part massing builds a group, not a single mesh");
-  assert(built.children.length === parts.length, "Every part becomes its own box mesh");
+  // Parts sharing a material draw as one mesh (→ three/mergeParts.ts): two colours, two meshes.
+  assert(built.children.length === 2, "Same-material parts merge into one mesh per material");
   registered(group, "CO-1", "canvas_object", picks, byUid, "buildCanvasObjectParts");
-  assert(picks.filter((mesh) => mesh.userData.uid === "CO-1").length === parts.length,
-    "Clicking any part selects the whole object: all of them are raycast targets for one uid");
+  assert(picks.filter((mesh) => mesh.userData.uid === "CO-1").length === 2,
+    "Clicking any part selects the whole object: every mesh is a raycast target for one uid");
   // Two roles, three parts — the highlight pass must reach both materials and no duplicates.
   assert((byUid.get("CO-1") ?? []).length === 2,
     "One material per distinct colour, shared across the parts that use it");
 
   // Placement lives on the group; a part only carries its local offset, mapped plan → scene
-  // as (x, z, -y). Nothing may be baked into the meshes themselves.
+  // as (x, z, -y). A merged mesh bakes its parts' offsets instead.
   assert(Math.abs(built.position.y - 1.5) < 1e-9, "The group sits at the object's base elevation");
   assert(Math.abs(built.position.x - 2) < 1e-9 && Math.abs(built.position.z + 3) < 1e-9,
     "The group carries the plan position");
   assert(Math.abs(built.rotation.y - Math.PI / 2) < 1e-9, "The group carries the plan rotation");
-  const back = built.children[0] as THREE.Mesh;
-  assert(Math.abs(back.position.x) < 1e-9 && Math.abs(back.position.y - 0.4) < 1e-9
-    && Math.abs(back.position.z + 0.3) < 1e-9, "A part offset maps (x, y, z) -> (x, z, -y)");
+  const merged = built.children[0] as THREE.Mesh;
+  merged.geometry.computeBoundingBox();
+  const box = merged.geometry.boundingBox!;
+  assert(merged.position.lengthSq() === 0 && Math.abs(box.min.x + 1) < 1e-6
+    && Math.abs(box.max.y - 0.8) < 1e-6 && Math.abs(box.min.z + 0.45) < 1e-6,
+    "A merged mesh bakes each part at (x, z, -y)"); // float32 positions
+  const back = built.children[1] as THREE.Mesh;
+  assert(Math.abs(back.position.x) < 1e-9 && Math.abs(back.position.y - 0.45) < 1e-9
+    && Math.abs(back.position.z - 0.1) < 1e-9, "A lone part offset maps (x, y, z) -> (x, z, -y)");
   assert(back.rotation.y === 0, "Rotation is the group's job, never the part's");
 
   const glassParts: ModelPart[] = [
