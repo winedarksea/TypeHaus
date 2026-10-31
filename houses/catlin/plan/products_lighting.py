@@ -25,6 +25,7 @@ from __future__ import annotations
 from plan.products_lighting_selected import SELECTED_LIGHTING_PRODUCTS
 from typehaus.library.track_lighting import MAGNETIC_TRACK_PRODUCTS
 from typehaus.model import Product
+from typehaus.quantities import inch
 
 # --- Lighting -----------------------------------------------------------------------------
 #
@@ -116,8 +117,9 @@ DIODE_VALENT_X = Product(
            "SCHEDULE. ** This is the light food and white oak are seen under, so it is the "
            "one run where R9 -- the deep-red component every '90 CRI' number hides -- "
            "actually earns money, and the kitchen run is only ~16 ft, so the upgrade costs "
-           "about eighty dollars. Also feeds the pantry slot. Mount tape at the FRONT edge "
-           "of the cabinet: back-mounted lights the backsplash and leaves the counter dark.",
+           "about eighty dollars. Also the pantry's jamb channels, at 1.9 W/ft. Mount tape "
+           "at the FRONT edge of the cabinet: back-mounted lights the backsplash and leaves "
+           "the counter dark.",
 )
 DIODE_OMNIDRIVE_X = Product(
     tag="PROD-DIODE-OMNIDRIVE-X", brand="Diode LED", model="OMNIDRIVE X",
@@ -186,11 +188,20 @@ ALCON_14119_GARDEN_FLOOD = Product(
            "per the product page.",
 )
 
+DIODE_S45_CHANNEL = Product(
+    tag="PROD-DIODE-S45-CHANNEL", brand="Diode LED", model="S45 Channel bundle, 96 in., aluminum",
+    sku="DI-CHB-S45-96AL", name="45-degree aluminum tape channel, Classic Frosted lens",
+    url="https://www.diodeled.com/s45-channel.html", stock_length=inch(96),
+    source="Diode LED S45 product page, read 2026-10-30: corner or surface mount, 48/96 in. "
+           "bundles in aluminum, black or white, frosted lens. One 96 in. bundle per pantry "
+           "jamb, cut to 72 in.; end caps and clips from the DI-CHB-S45-ACC pack.",
+)
+
 LIGHTING_PRODUCTS = (
     HUNTER_GALLEGOS,
     *MAGNETIC_TRACK_PRODUCTS,
     *SELECTED_LIGHTING_PRODUCTS, WESTGATE_VAPORTIGHT, DOLRIA_PC0008,
     MODERN_FORMS_BANTAM, CRAFTMADE_FORCE_XL,
-    ARMACOST_RIBBONFLEX_COB, DIODE_VALENT_X, DIODE_OMNIDRIVE_X,
+    ARMACOST_RIBBONFLEX_COB, DIODE_VALENT_X, DIODE_OMNIDRIVE_X, DIODE_S45_CHANNEL,
     LEDSUPPLY_SAUNA_STRIP, ALCON_14119_GARDEN_FLOOD, FLYACHILLES_DJ3616_2L,
 )

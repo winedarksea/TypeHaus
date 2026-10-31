@@ -9,17 +9,18 @@ carries the summary on its `source`, and the arithmetic is here.
 
 ## The room
 
-Interior clear **6'-1 1/4" (E-W) x 2'-2" (N-S)**, 9'-0" to the ceiling.
+Interior clear **6'-1 1/2" (E-W) x 2'-2 1/4" (N-S)**, 9'-0" to the ceiling.
 
 | face | what it is | station |
 |---|---|---|
-| west | `W-M-C5B`'s east gypsum | x = 18'-3 3/8" |
-| east | `W-M-PAN-E`'s west gypsum | x = 24'-4 5/8" (extended another 2 3/8" east 2026-10-03) |
-| north | `W-M-N1B`'s interior gypsum | y = 35'-5 3/8" |
-| south | `W-M-PAN-S`'s north gypsum, with `D-M-PANTRY`'s 36" pocket opening at the east | y = 33'-3 3/8" |
+| west | `W-M-C5B`'s east gypsum | x = 18'-3 1/4" |
+| east | `W-M-PAN-E`'s west gypsum | x = 24'-4 3/4" |
+| north | `W-M-N1B`'s interior gypsum (the exterior wall) | y = 35'-5 1/2" |
+| south | `W-M-PAN-S`'s north gypsum, with `D-M-PANTRY`'s 36" pocket opening at the east | y = 33'-3 1/4" |
 
-Shelves are **73 1/4" wide** — wall face to wall face, the room's whole clear span — and
-**18" deep** against the north wall (owner's decision, replacing 24"; see *Depth* below).
+The carcass is **73 1/4" wide**, a 1/8" scribe off each side wall, and **18" deep**, standing
+1/4" off the north wall (see *Depth* below). (Until 2026-10-30 this table read 1/8" tight
+on every face; the model's finish faces are the ones above.)
 
 ## Why a 3/4" plywood shelf cannot span this room
 
@@ -51,88 +52,96 @@ Owner stock, scheduled as `SB-M-PANTRY` in `plan/millwork.py` and milled **6/4**
 back to the thinnest that still passes). Red oak's E is ~1.8 x 10^6 psi and its MOR is
 comparable to white oak's, so the conservative 1.6 x 10^6 psi stands. `b` = 18", `d` = 1.25":
 
-| | full 73 1/4" span | gabled to ~36 1/4" |
+| | full 73 1/4" span | between uprights, 35 1/2" |
 |---|---|---|
 | `S = b*d^2/6` | 4.69 in^3 | 4.69 in^3 |
 | `I = b*d^3/12` | 2.93 in^4 | 2.93 in^4 |
-| `M = P*L/4` | 4,578 in-lb | 2,266 in-lb |
-| `f = M/S` | **≈ 977 psi** | **≈ 483 psi** |
-| `d = P*L^3/(48*E*I)` | **≈ 0.437"** | **≈ 0.053"** |
-| L/360 | 0.203" | 0.101" |
+| `M = P*L/4` | 4,578 in-lb | 2,219 in-lb |
+| `f = M/S` | **≈ 977 psi** | **≈ 473 psi** |
+| `d = P*L^3/(48*E*I)` | **≈ 0.437"** | **≈ 0.050"** |
+| L/360 | 0.203" | 0.099" |
 
-**The gable is the whole design now.** Gabled, the point load deflects 0.053" against the
-floor criterion's 0.101" (about L/685), and 483 psi is far inside any grade of red oak.
-Ungabled the same shelf deflects **0.44"**, more than twice L/360: it fails badly. Uniform
-load agrees: 40 psf over 18" is w = 5.0 lb/in, and `5wL^4/384EI` is ≈ 0.400" full-span and
-≈ 0.024" gabled.
+**The centre upright is the whole design.** Between uprights the point load deflects 0.050"
+against the floor criterion's 0.099" (about L/710), and 473 psi is far inside any grade of red
+oak. Ungabled the same shelf deflects **0.44"**: it fails badly. Uniform load agrees: 40 psf
+over 18" is w = 5.0 lb/in, and `5wL^4/384EI` is ≈ 0.400" full-span and ≈ 0.022" per bay.
 
-**Why not 5/4.** At 1" (`I` = 1.50 in^4) the gabled point load deflects ≈ 0.103" against
-0.101": it just misses, so 6/4 is the floor. 8/4 bought nothing a gabled shelf needs.
+**The front-edge caveat (2026-10-30).** The table spreads the 250 lb across all 18" of depth.
+A foot lands on the front edge, and oak is weak across the grain, so only a strip near the
+nose really carries it. Take that strip as about half the depth and the numbers double:
+**≈ 0.10" and ≈ 950 psi, right at L/360.** The stress is still easy. The deflection is why
+6/4 is the floor: at 5/4 (1", `I` = 1.50 in^4) even the full-depth case is ≈ 0.097", and the
+front-edge case is about twice that.
 
 ## What makes it standable
 
-### 1. A full-height centre gable at mid-span — NOT OPTIONAL
+### 1. A 3-panel ply ladder, standing on the floor (2026-10-30)
 
-A 3/4" ply gable, floor to top shelf, notched around the cleats, splitting the run into two
-~36 1/4" bays. It is what takes the shelf from ~L/170 to ~L/685, and it is the member the
-cleat and blocking layout is built around. It is structure, not joinery, and it must not be
-"opened up" later for a wider shelf.
+Three 3/4" prefinished maple ply uprights (`maple-ply-prefin-34`, the bath-shelf stock): a
+west end, the centre gable and an east end, each **18" x 84"**, standing on the finished
+floor, with **no back panel**. Bays are **35 1/2"** clear.
+
+- **Gravity goes to the floor through the ply.** The walls only hold the uprights plumb.
+- **The end uprights screw to the corner framing**, which is certain at `N-M-N1` and
+  `N-M-PAN3`: through the 1/8" scribe into the corner studs, low and high.
+- **The centre upright is tied by every shelf**, plus one steel angle at the top to a
+  north-wall stud above the case top.
+- **No blocking anywhere, and no fasteners in the exterior wall**, apart from that one angle
+  and the receptacle box. Shelf heights no longer have to be fixed at framing.
+
+It is structure, not joinery: the centre upright must never be "opened up" later for a wider
+shelf.
 
 ### 2. ~~A 1x3 hardwood nose~~ — RETIRED 2026-08-29
 
-The ply design got a 3/4" x 2 1/2" hardwood edge glued and screwed on edge at every shelf
-front. It was a **stiffener**: it nearly tripled a ply shelf's effective I, and it was the
-cheapest way to take 0.20" of gabled sag out from underfoot. There is 0.053" to take out
-now. Its second job — giving a plywood edge a hardwood face — is done by the shelf being
-hardwood. It is deleted, not deferred, and that closes a quantity gap: the nose was ~41 LF
-of hardwood that nothing in the model counted.
+It was a stiffener for the ply-shelf design, and solid oak needs none of it.
 
-### 3. Continuous 1x3 cleats on three sides
+### 3. 1x3 oak cleats on the uprights, made on the bench
 
-Shelf screwed **down onto** the cleats, so the load path is **cleat → fastener → stud**
-and never **shelf → pin**.
+Cleats are **1x3 red oak, 16" long**, stopping 2" short of the front: 24 of them, two per
+board (`FT-KIT-PANTRY-SHELVES-70`'s cut list, 4/4 owner stock). They are glued and screwed
+to the uprights on the bench, set out from one **story stick** so both faces of the centre
+upright match. Where both faces of the centre upright carry a cleat at the same height,
+stagger the screws so they cannot meet. There are **no back cleats**: the shelf spans
+one-way between the uprights, which is what the calc above assumes.
 
-**Not glued, and the side-cleat holes are slotted.** Boards run the 36 1/4" bay, so the
-grain is along the bay and the shelf's 18" of seasonal movement is **front to back** —
-along the side cleats, across their line of screws. That is roughly 1/4" of tangential
-movement in red oak over a Minnesota RH swing. Screw tight at the **front** only and
-elongate every side- and back-cleat hole rearward. A solid shelf pinned hard on three sides
-splits, and it splits in year two, not on the day it goes in. This is the one detail the
-switch from plywood introduced and the one most likely to be built the old way.
+**Each shelf is screwed UP through its cleats**: a round hole at the front, a **3/8" slot at
+the rear**. Boards run the bay (grain along it), so the 18" of seasonal movement is front to
+back, roughly 1/4" in red oak over a Minnesota RH swing. The shelf stops **1/4" short of the
+north wall**, which takes that movement, so nothing needs slotting into a wall. A solid shelf
+pinned hard on all sides splits in year two, not on the day it goes in.
 
-**No adjustable standards and no shelf pins.** A pin carries a jar, not a person. Losing
-adjustability is the price and it is worth paying; the graduated spacing below is what buys
-the flexibility back.
+**No adjustable standards and no shelf pins.** A pin carries a jar, not a person.
 
-### 4. Fasteners and blocking
-
-- Two **#10 x 3" structural screws per cleat into solid wood at EVERY bay** — not "where
-  a stud happens to land".
-- **Flat 2x4 blocking laid in each bay BEFORE the gypsum.** This is a sequencing item, and
-  it is the one that gets missed: once the board is on, there is nothing to hit.
-
-### 5. Design load: treat it as floor, not shelf
+### 4. Design load: treat it as floor, not shelf
 
 **40 psf uniform PLUS a 250–300 lb concentrated load anywhere.** The concentrated case
-governs, which is the whole reason for the gable and the nose.
+governs, which is the reason for the centre upright.
 
-## Shelf spacing — graduated, not uniform
+## Shelf schedule
 
-| bay | clear height | what it holds |
+Top of board, above the finished floor; six boards per bay, the case top included
+(`board_tops` on the type, so every drawing and the 3D carry it):
+
+| bay | tops | clear openings |
 |---|---|---|
-| bottom | ~20" | small appliances, bulk |
-| middle | 12"–14" | boxes, bottles |
-| top | 8"–10" | cans, jars |
+| west (backstock, bins) | 21¼, 36½, 50¾, 64, 74, 84 | 20, 14, 13, 12, 8¾, 8¾ |
+| east (everyday + microwave) | 17, 35, 54¼, 64, 74, 84 | 15¾, 16¾, 18, 8½, 8¾, 8¾ |
 
-That is the **west** bay; its 20" bottom bay takes the stand mixer. The **east** bay carries
-the microwave trial (2026-10-25): shelf top at ~35", the next shelf's underside at 53" or
-higher (18" clear), ED-M-PANTRY-RC1 behind it on CKT-KITCH-SA2. Pick a unit 15½" deep or
-less so the 18" shelf leaves rear vent clearance, and run it with the pocket door open.
-Still six shelves per bay — a spacing spec only.
+The east bay's 35" → 53" opening holds the microwave trial and `ED-M-PANTRY-RC1` at 48" on
+`CKT-KITCH-SA2`. Pick a unit 15½" deep or less so the 18" shelf leaves rear vent clearance,
+and run it with the pocket door open. The 64, 74 and 84 tops line up across the centre
+upright. The west bay's 20" bottom opening takes the stand mixer.
 
-Uniform 16" wastes roughly two shelves' worth of volume. **Every shelf is rated to be stood
-on regardless of pitch**, so climbing does not require an even rung spacing — the two
-requirements do not actually fight.
+Uniform spacing wastes roughly two shelves' worth of volume. **Every shelf is rated to be
+stood on regardless of pitch**, so climbing does not need even rungs.
+
+## Using it: bins west, everyday east
+
+The doorway exposes the **east** bay, so it holds the everyday items. The **west** bay is
+reached sideways across the 8" strip, so it holds **backstock in clear pull-out bins about 15"
+deep**, sized three to a shelf, carried to the doorway to be picked through. That is what
+makes an 18" bay you cannot face usable. Nothing to model.
 
 ## Depth: 18" — and the mill is what set it, not the ergonomics
 
@@ -151,9 +160,9 @@ is not:
   the only reason this was an easy change.
 - **What is given up is real: about 25% of the shelf area.** The 24" decision was made for
   volume and the volume is what pays for the boards.
-- **The room gets its floor back.** The room is **26" deep**. At 24" the shelves ran
-  y 33'-5 3/8"..35'-5 3/8" and left **2"** to stand in; at 18" they run
-  y 33'-11 3/8"..35'-5 3/8" and leave **8"**. RM-M-PANTRY is still reached from the doorway
+- **The room gets its floor back.** The room is **26 1/4" deep**. At 24" the shelves left
+  about **2"** to stand in; at 18", 1/4" off the north wall, they run
+  y 33'-11 1/4"..35'-5 1/4" and leave **8"**. RM-M-PANTRY is still reached from the doorway
   rather than walked into — 8" is a foothold, not a floor — so the shelves are still the
   thing you stand on, which is what this whole note is about. It is simply no longer true
   that there is nowhere at all to put a foot.
@@ -165,28 +174,43 @@ were already in this design:
 
 1. **The shelves are standable**, so the bottom bay is a step and the top of a 7'-0" stack
    is genuinely reachable.
-2. **`ED-M-PANTRY-LT` is a vertical slot**, which lights the depth *behind* what is on each
-   shelf. Less critical at 18" than it was at 24", and still the right fixture.
+2. **Every bay is lit from both sides** by vertical jamb channels (below), which light the
+   depth *behind* what is on each shelf.
 
 **Door change, 2026-10-20:** a 36 x 80 Eclisse EKC3680 pockets west in the south wall.
 The refrigerator already blocked about 23 inches of the old western bypass opening.
 The new doorway exposes the east bay; the west bay is reached sideways across the
-8-inch strip in front of the shelves. Shelf dimensions and the center gable stay fixed.
-No shelf cleat or long screw may enter the cassette. The RO spans the perpendicular
+8-inch strip in front of the shelves. No shelf fastener or long screw may enter the cassette. The RO spans the perpendicular
 stud faces, with explicit corner supports; see `pocket_frame_eclisse.md`.
 
-## Lighting
+## Lighting (2026-10-30)
 
-`ED-M-PANTRY-LT` (`ED-T-LT-SLOT72`, schedule mark **T**) is a 6'-0" vertical LED slot on
-the west wall (`W-M-C5B`, y=33'-7 3/8"), base at 1'-6", so the lit line runs 1'-6"..7'-6" past every shelf edge.
+The old single slot on the west wall grazed east along the shelf noses, and the 18"-deep
+centre upright shaded the east bay, which is the one you see from the doorway. It is retired.
 
-A vertical strip is the correct single fixture for a reach-in, and at 24" deep it stops
-being a preference: **overhead alone is the worst option**, because every shelf below the
-top sits in its own shadow — and the shadow is 24" long here, not 16". Switched manually from
-the kitchen side on `W-M-PAN-E`'s east face, grouped with the undercabinet dimmer at
-46 inches above finished floor. The controls are 8 and 12 inches north of the south
-node, clear of the corner pack. The light is in front of the shelf noses and outside
-the pocket, keeping its existing six-foot lit line and backup circuit.
+Four **vertical 24V tape channels** (`ED-T-LT-JAMB72`, mark **T**), one on each inside face
+of the uprights: west-E (`ED-M-PANTRY-LT`), centre-W (`-LT2`), centre-E (`-LT3`) and east-W
+(`-LT4`). Each runs **12" → 84"**, about 1" behind the shelf front, aimed into its bay, so
+every bay is lit from both sides.
+
+- **Channel:** Diode LED **S45** 45° aluminium channel (`DI-CHB-S45-96AL`, 96" bundle with a
+  frosted lens, cut to 72"), recorded as `PROD-DIODE-S45-CHANNEL`. It is fitted in the shop
+  on the ply, and each shelf's two front corners are notched so the channel runs straight
+  through.
+- **Tape:** the house VALENT X at **1.9 W/ft** (3000 K, 95+ CRI). Four 6' runs are 45.6 W,
+  57 W with the 125% factor, inside one 60 W driver. The 2.8 W/ft step would need 80 W.
+- **Driver:** one 60 W OMNIDRIVE X (`ED-M-PANTRY-LT-PSU`, `ED-T-LT-PSU-60`), surface-mounted
+  on `W-M-N1B` above the case top at **90"**, over the centre upright. The four leads are
+  wired at the tops of the channels. It is reachable from the top shelf, ventilated, and
+  clear under the 8'-4" cold-water crossing in `plan/mep_supply.py`.
+
+### Controls
+
+`ED-M-PANTRY-SW` is a **PIR-only occupancy sensor** (Leviton ODS10-IDW) on the INSIDE face of
+`W-M-PAN-E`, 56" above the floor, with the lens's south half masked so it sees along the
+shelves and not the kitchen (moved inside 2026-10-27). It switches the driver's 120V line on
+`CKT-LT-BACKUP`, so all four channels come on together. There is no manual pantry switch on
+the kitchen side; the 46" box on `W-M-PAN-E`'s kitchen face is the undercabinet dimmer only.
 
 ## Sources
 

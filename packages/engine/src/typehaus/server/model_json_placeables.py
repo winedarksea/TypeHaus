@@ -76,7 +76,8 @@ def _bookcase_json(spec: Any) -> dict[str, Any] | None:
     return {
         "bays": [{"clear_width_m": bay.clear_width.meters, "height_m": bay.height.meters,
                   "horizontal_board_count": bay.horizontal_board_count,
-                  "closed_base_height_m": bay.closed_base_height.meters} for bay in spec.bays],
+                  "closed_base_height_m": bay.closed_base_height.meters,
+                  "board_tops_m": [top.meters for top in bay.board_tops]} for bay in spec.bays],
         "shelf_depth_m": spec.shelf_depth.meters,
         "horizontal_board_thickness_m": spec.horizontal_board_thickness.meters,
         "divider_thickness_m": spec.divider_thickness.meters,

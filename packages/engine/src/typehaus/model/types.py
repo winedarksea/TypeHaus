@@ -269,6 +269,9 @@ class BuiltInBookcaseBay(HausModel):
     # A fixed carcass-thickness front panel closing the bay from the floor to here (the
     # underside of its lowest board): the boards distribute above it, none below.
     closed_base_height: Length = m(0)
+    # Explicit top-of-board elevations, ascending, one per board, the last at ``height``;
+    # they replace the even distribution (a graduated pantry needs no floor board).
+    board_tops: tuple[Length, ...] = ()
 
     @model_validator(mode="after")
     def _has_usable_geometry(self) -> BuiltInBookcaseBay:
@@ -278,6 +281,14 @@ class BuiltInBookcaseBay(HausModel):
             raise ValueError("built-in bookcase bay needs a base and top board")
         if not 0 <= self.closed_base_height.meters < self.height.meters:
             raise ValueError("built-in bookcase closed base must lie inside the bay height")
+        if self.board_tops:
+            tops = [top.meters for top in self.board_tops]
+            if len(tops) != self.horizontal_board_count:
+                raise ValueError("built-in bookcase board_tops must name every board")
+            if any(lower >= upper for lower, upper in zip(tops, tops[1:], strict=False)):
+                raise ValueError("built-in bookcase board_tops must ascend")
+            if abs(tops[-1] - self.height.meters) > 1e-9:
+                raise ValueError("built-in bookcase top board must finish at the bay height")
         return self
 
 
@@ -300,6 +311,8 @@ class BuiltInBookcaseSpec(HausModel):
     # Sheet goods behind the furniture's named wood fronts. Zero trim dimensions keep
     # the original solid-board construction for bookcases without applied fronts.
     panel_material_ref: str | None = None
+    # Solid boards in a sheet carcass (oak shelves between ply uprights); None follows the panel.
+    board_material_ref: str | None = None
     shelf_nosing_depth: Length = m(0)
     shelf_nosing_height: Length = m(0)
     face_strip_width: Length = m(0)
@@ -308,10 +321,10 @@ class BuiltInBookcaseSpec(HausModel):
     def _has_usable_geometry(self) -> BuiltInBookcaseSpec:
         if not self.bays:
             raise ValueError("built-in bookcase needs at least one bay")
+        # A zero back is a backless carcass: the boards stand off the wall, no back parts.
         if any(value.meters <= 0 for value in (
-            self.shelf_depth, self.horizontal_board_thickness,
-            self.divider_thickness, self.back_thickness,
-        )):
+            self.shelf_depth, self.horizontal_board_thickness, self.divider_thickness,
+        )) or self.back_thickness.meters < 0:
             raise ValueError("built-in bookcase thicknesses and shelf depth must be positive")
         if self.west_filler_width.meters < 0:
             raise ValueError("built-in bookcase west filler width cannot be negative")
@@ -328,9 +341,14 @@ class BuiltInBookcaseSpec(HausModel):
                 for bay in self.bays
             ):
                 raise ValueError("bookcase face strips must cover dividers and leave open bays")
-        if any(bay.height.meters - bay.closed_base_height.meters
-               < self.horizontal_board_thickness.meters for bay in self.bays):
+        board = self.horizontal_board_thickness.meters
+        if any(bay.height.meters - bay.closed_base_height.meters < board for bay in self.bays):
             raise ValueError("built-in bookcase bay is shorter than its boards")
+        for bay in self.bays:
+            tops = [top.meters for top in bay.board_tops]
+            if tops and (tops[0] - board < bay.closed_base_height.meters - 1e-9 or any(
+                    upper - lower < board for lower, upper in zip(tops, tops[1:], strict=False))):
+                raise ValueError("built-in bookcase board_tops overlap each other or the base")
         return self
 
 

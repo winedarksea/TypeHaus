@@ -32,7 +32,7 @@ from plan.laundry_lighting_types import LAUNDRY_TRACK
 from plan.lighting_types_decor import DECORATIVE_LUMINAIRE_TYPES
 from typehaus import ElectricalDeviceType, LuminaireForm, Service, ServicePort, ft, inch
 from typehaus.library.track_lighting import PUREEDGE_SUPPLY
-from typehaus.model import LuminaireType
+from typehaus.model import LuminaireType, ProductPart
 
 # Every line-voltage luminaire lands on a 120V branch; one port tuple serves them all
 # (``electrical.circuit_refs`` checks poles against ports, and these are all 1-pole).
@@ -325,44 +325,23 @@ AMBIENT_LUMINAIRE_TYPES = (
                   source="WAC dweLED LINE WS-6724-30-BK (spec sheet), 3000 K with the house "
                          "standard: 2700 K makes white oak read orange."),
 
-    # --- T: RM-M-PANTRY's vertical slot -----------------------------------------------
-    # ** A POINT DEVICE, AND A ``LightRun`` CANNOT BE ONE. ** ``LightRun.path`` is a PLAN
-    # polyline under ONE ``Mount`` elevation (model/mep.py), so a vertical run degenerates
-    # to two identical points: ``length_m == 0``, ``electrical.light_run_psu`` sizes the
-    # supply at 0 W, the per-foot takeoff bills 0 lineal feet and the plan renderer draws a
-    # dot. It fails SILENTLY, which is the worst of the options.
-    # ``LuminaireForm.STRIP``'s own docstring says it "is the one form with no point
-    # instance", so STRIP is spoken for, and extending the engine for one fixture is not
-    # the trade.
-    #
-    # The model already has the honest article: ``resolve/placeables.py``'s
-    # ``resolved_mount_elevation`` returns the BASE of the body and ``LuminaireType.height``
-    # measures up from it, so a 6'-0" WALL_LAMP on a 2" x 2" footprint IS a vertical slot.
-    # ED-T-LT-WALL-LINEAR (mark G) is the same construction lying down.
-    #
-    # 120V with an integral driver, deliberately: the 3 1/2" of partition at the slot's end
-    # of the pantry is king stud and jack stud, with no cavity for a 24V PSU.
-    #
-    # A vertical strip is the RIGHT fixture for a shallow reach-in, not a stylistic choice:
-    # it lights the depth behind whatever is on each shelf, and overhead alone is the worst
-    # option here because every shelf below the top sits in its own shadow.
-    # ** BUILD IT, DO NOT BUY IT (2026-09-06). ** A manufactured slot sconce is $700-1,500
-    # with a captive driver and an unreplaceable five-year LED; an aluminium channel cut to
-    # 72" with the house's own VALENT X tape and a 60 W OMNIDRIVE X is $400-570 out of parts
-    # already on the order. That also fixes the cavity problem the note above records rather
-    # than working around it: the driver leaves the 3 1/2" of king-and-jack stud entirely and
-    # goes somewhere accessible, which is where a driver belongs. Caveat worth stating: a
-    # tape slot is a linear GLOW, not a downlight — plan a small downlight for the shelves too.
-    LuminaireType(tag="ED-T-LT-SLOT72", name='72" vertical linear LED slot, site-built',
+    # --- T: RM-M-PANTRY's jamb channels (2026-10-30) ------------------------------------
+    # Four, one per inside face of the shelf uprights, 1" behind the shelf front, aimed into
+    # the bay: each bay is lit from both sides, so the gable shades nothing. A WALL_LAMP and
+    # not a LightRun because a vertical run has no length in plan (``LightRun.path`` is plan
+    # only): the body's base is the mount elevation and ``height`` measures up from it.
+    # Shop-fitted to the ply, so no wall box. Sized so all four (24 ft at 1.9 W/ft, 45.6 W)
+    # sit inside 80% of one 60 W OMNIDRIVE X, ED-M-PANTRY-LT-PSU.
+    LuminaireType(tag="ED-T-LT-JAMB72", name='72" vertical 45-degree LED channel, shelf jamb',
                   form=LuminaireForm.WALL_LAMP, type_mark="T",
-                  footprint=(inch(2), inch(2)), height=ft(6), plan_symbol="linear-light",
-                  lamp="24V COB tape in an aluminium channel, remote driver", watts=24.0,
-                  lumens=2000.0, cct_k=3000, cri=95, dimmable=True, load_va=24.0,
-                  ports=_POWER_120,
-                  product_ref="PROD-DIODE-VALENT-X",
-                  source="Diode LED A1 channel cut to 72\" + VALENT X tape + a 60 W "
-                         "OMNIDRIVE X, against $700-1,500 for a manufactured slot sconce "
-                         "with a captive driver."),
+                  footprint=(inch(0.75), inch(0.75)), height=ft(6), plan_symbol="linear-light",
+                  lamp="24V COB tape, 1.9 W/ft, in a 45-degree channel, remote driver",
+                  watts=11.4, lumens=1050.0, cct_k=3000, cri=95, voltage=24, dimmable=True,
+                  device_box=False, product_ref="PROD-DIODE-VALENT-X",
+                  parts=(ProductPart(role="frame", product_ref="PROD-DIODE-S45-CHANNEL",
+                                     length=inch(72)),),
+                  source="Diode LED VALENT X 1.9 W/ft (DI-24V-VLX2 series; ~190-210 lm/ft as "
+                         "listed, less the frosted lens) in an S45 channel cut to 72 in."),
 )
 
 
@@ -378,7 +357,7 @@ AMBIENT_LUMINAIRE_TYPES = (
 LIGHTING_DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-LT-PSU-60", name="24V LED driver, 60 W, in-ceiling box",
                          footprint=(inch(8), inch(6)), height=inch(3),
-                         load_va=60.0, ports=_POWER_120,
+                         load_va=60.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
                          source="Diode LED OMNIDRIVE X, 60 W — ELV + TRIAC + 0-10V in one part "
                                 "and, the spec that matters, NO MINIMUM LOAD: a cheap ELV "
@@ -387,7 +366,7 @@ LIGHTING_DEVICE_TYPES = (
                                 "accessible and ventilated."),
     ElectricalDeviceType(tag="ED-T-LT-PSU-200", name="24V LED driver, 200 W, in-ceiling box",
                          footprint=(inch(12), inch(8)), height=inch(4),
-                         load_va=200.0, ports=_POWER_120,
+                         load_va=200.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
                          source="Diode LED OMNIDRIVE X, 200 W. Same family as the 60 W; see "
                                 "that entry for the no-minimum-load argument."),

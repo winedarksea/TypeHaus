@@ -220,8 +220,8 @@ def test_catlin_pantry_lighting_and_shelves_stay_outside_the_cassette(catlin_pla
     light = catlin_plan.by_tag("ED-M-PANTRY-LT")
     assert light.location.attachment.wall_ref == "W-M-C5B"
     assert light.location.attachment.face == "right"
-    assert light.location.attachment.distance_from_start.inches == 6.375
-    assert light.mount.elevation.inches == 18
+    assert light.location.attachment.distance_from_start.inches == 11.25
+    assert light.mount.elevation.inches == pytest.approx(12)
     assert light.controlled_by == ("ED-M-PANTRY-SW",)
     # The kitchen-side box is a single gang; the pantry's PIR sensor is on the inside face.
     kitchen = catlin_plan.by_tag("ED-M-KITCH-SW-UC")
@@ -237,9 +237,9 @@ def test_catlin_pantry_lighting_and_shelves_stay_outside_the_cassette(catlin_pla
     assert sensor.mount.elevation.inches == 56
     shelves = catlin_plan.by_tag("FURN-M-PANTRY-SHELVES")
     assert shelves.position.x.inches == pytest.approx(256)
-    assert shelves.position.y.inches == pytest.approx(416.375)
+    assert shelves.position.y.inches == pytest.approx(416.25)
     bank = catlin_plan.by_tag("SB-M-PANTRY")
-    assert [bay.width.inches for bay in bank.bays] == pytest.approx([36.25, 36.25])
+    assert [bay.width.inches for bay in bank.bays] == pytest.approx([35.5, 35.5])
 
 
 def test_a_single_support_retains_the_opposite_conventional_jamb_pack():

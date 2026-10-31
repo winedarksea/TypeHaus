@@ -740,21 +740,50 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-PAN-E", face="right", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # --- RM-M-PANTRY's vertical slot -----------------------------------------------------
-    # On the actual west wall, in the 8-inch strip ahead of the shelf noses.
-    # The pocket occupies the south wall; no box or long fastener may enter it.
-    # Preserve the 18-inch base and six-foot lit line; manual control remains on backup.
+    # --- RM-M-PANTRY's jamb channels (2026-10-30) ---------------------------------------
+    # One per inside face of FURN-M-PANTRY-SHELVES' three uprights, 12".."84" AFF, centred 1"
+    # behind the shelf front at y=34'-0 1/4". The ends are hosted on the side walls at the
+    # 1/8" scribe plus the 3/4" ply. The centre pair are fixed to the gable at x=21'-4", with
+    # no wall behind them, so they are FLOOR mounts at a stated height (a WALL mount must bear
+    # on a wall face). All four are 24V on ED-M-PANTRY-LT-PSU and switch with it.
     ElectricalDevice(uid="2A635YS6VW", tag="ED-M-PANTRY-LT", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SLOT72",
-                     circuit="CKT-LT-BACKUP", room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(1, 6)),
+                     type_ref="ED-T-LT-JAMB72", psu_ref="ED-M-PANTRY-LT-PSU",
+                     room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(12)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C5B", face="right", distance_from_start=inch(6.375),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         wall_ref="W-M-C5B", face="right", distance_from_start=inch(11.25),
+                         normal_gap=inch(0.875), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="4W9J90JKEH", tag="ED-M-PANTRY-LT2", kind=DeviceKind.LIGHT,
+                     position=pt(inch(255.25), inch(408.25)), rotation=deg(-90),
+                     type_ref="ED-T-LT-JAMB72", psu_ref="ED-M-PANTRY-LT-PSU",
+                     room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
+                     mount=Mount(kind=MountKind.FLOOR, elevation=inch(12))),
+    ElectricalDevice(uid="9H4SK1RZVM", tag="ED-M-PANTRY-LT3", kind=DeviceKind.LIGHT,
+                     position=pt(inch(256.75), inch(408.25)), rotation=deg(90),
+                     type_ref="ED-T-LT-JAMB72", psu_ref="ED-M-PANTRY-LT-PSU",
+                     room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
+                     mount=Mount(kind=MountKind.FLOOR, elevation=inch(12))),
+    ElectricalDevice(uid="GP9JMATM58", tag="ED-M-PANTRY-LT4", kind=DeviceKind.LIGHT,
+                     type_ref="ED-T-LT-JAMB72", psu_ref="ED-M-PANTRY-LT-PSU",
+                     room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(12)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-PAN-E", face="left", distance_from_start=inch(11.25),
+                         normal_gap=inch(0.875), rotation_offset=deg(-180)))),
+    # Their driver, surface-mounted over the case top above the gable at 90" AFF: reachable
+    # from the top shelf, ventilated, and under the 8'-4" cold-water crossing.
+    ElectricalDevice(uid="DZVAFADH7Y", tag="ED-M-PANTRY-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-PSU-60",
+                     circuit="CKT-LT-BACKUP", room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(90)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-N1B", face="left", distance_from_start=inch(39),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # PIR-only occupancy sensor (Leviton ODS10-IDW) on the INSIDE face of W-M-PAN-E, in the
     # 8" strip ahead of the shelves: plate centre 4 1/2" north of the south wall finish,
     # box centre 56" AFF (clears the kitchen-side box at 46" in the same bay). The lens's
-    # south half is masked so it sees along the shelves, not the kitchen.
+    # south half is masked so it sees along the shelves, not the kitchen. It switches the
+    # driver's 120V, so all four channels.
     ElectricalDevice(uid="1M4ZM8DRWH", tag="ED-M-PANTRY-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-OCC-PANTRY",
                      circuit="CKT-LT-BACKUP", room="RM-M-PANTRY",

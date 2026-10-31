@@ -6868,3 +6868,35 @@ short. It now seams at the NE carousel's west face, x=32'-3 3/8", into the 90" r
 `CT-M-KIT-NE` over the corner L — the same seam the peninsula corner already takes. The
 engine also stopped jogging the run's edges 5/16" over the deeper dishwasher: a straight run
 is cut straight.
+
+## Pantry shelves: a ply ladder, lit from the jambs (2026-10-30)
+
+The review asked for something easy to build beside the oak glue-ups, strong enough to
+stand on, and well lit. The old design scribed oak shelves between the walls on cleats on
+three sides. That needed flat 2x4 blocking at every cleat height before drywall, so shelf
+heights were fixed at framing. It put back cleats into the exterior north wall, notched the
+centre gable round them, and left the gable's own support unstated. None of the blocking
+was modeled. The one light, a wall slot at the west end, grazed the noses, and the gable
+shaded the east bay, which is the one the doorway shows.
+
+Owner's calls: a **3-panel ply ladder**, **vertical jamb light channels**, and the west
+bay kept at 18" with **pull-out bins**. Three 3/4" maple-ply uprights stand on the floor;
+the walls only hold them plumb. The ends screw to the corner framing and the centre is
+tied by the shelves and one top angle. There is no blocking and nothing in the exterior
+wall. Cleats are glued and screwed to the ply on the bench from a story stick. The back
+cleats are gone (the calc was always one-way), and each shelf screws up through its
+cleats, round hole front and slot rear, standing 1/4" off the north wall for its movement.
+
+**Bays are 35 1/2", not the plan's 35 3/8".** The modeled room is 73 1/2" between finish
+faces. The note had carried 73 1/4" from before the pocket rework, so a 73" carcass would
+have left 1/4" a side. 73 1/4" keeps the 1/8" scribe.
+
+The calc was generous: it spread a 250 lb foot over all 18" of depth. On a front-edge strip
+the deflection about doubles, to ≈0.10", right at L/360. That is the reason not to go
+below 6/4.
+
+Four channels (Diode LED S45, VALENT X at 1.9 W/ft) on one 60 W OMNIDRIVE X at 90" on
+`W-M-N1B`, all on the inside PIR. The 2.8 W/ft step would overload one driver. The centre
+pair are FLOOR mounts at a stated height, because a WALL mount must bear on a wall face.
+The engine gained `BuiltInBookcaseBay.board_tops`, a zero `back_thickness`, and
+`board_material_ref` (oak boards in a ply carcass) for this. `notes/pantry_climbable_shelving.md`.

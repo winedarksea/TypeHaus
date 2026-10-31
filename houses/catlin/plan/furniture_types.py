@@ -30,6 +30,7 @@ from typehaus.model import (
     Mount,
     MountKind,
     PlacementStrategy,
+    ProductPart,
     ft,
     inch,
     pt,
@@ -328,73 +329,51 @@ MEDIA_SECTIONAL_U = FurnitureType(
 
 # --- RM-M-PANTRY's shelf stack --------------------------------------------------------
 #
-# House-local by the test at the top of this file: 73 1/4" is this room's clear span, wall
-# face to wall face, and nothing else.
+# House-local: 73 1/4" is this room's 73 1/2" clear span less a 1/8" scribe each end.
+# Built to be STOOD ON (notes/pantry_climbable_shelving.md has the arithmetic).
 #
-# ** IT IS DESIGNED TO BE STOOD ON, AND THAT IS A STRUCTURAL CLAIM, NOT A FINISH. ** There
-# is no model field for "rated to climb", and each of the three mechanisms that could carry
-# it is a dead end: ``Furniture`` cannot take ``install_parts`` (only ``PipeAccessory`` and
-# ``Appliance`` are ``_install_part_carriers``); an ``Assembly`` is a layered WALL stack,
-# not a shelf; and ``FramingSpec.blocking_heights`` is a property of the assembly, so a
-# three-sided cleat would mean cloning three assemblies — the exterior truss wall among
-# them, re-running its Glaser gate, its energy table and truss_wall_opening_support against
-# an unreviewed tag — to bill some 40 bf of 2x4. So the build lives on ``source`` (the
-# FT-BATH1-SHELF-2030 precedent) and in notes/pantry_climbable_shelving.md.
-#
-# ** THE MID-SPAN GABLE IS NOT OPTIONAL. ** Shelves are 1 1/4" solid red oak (6/4 since
-# 2026-10-16; plan/millwork.py, owner stock). Gabled to 36 1/4", 250 lb at midspan is
-# ~484 psi (S = 4.69 in^3) and ~0.053" (I = 2.93 in^4) against L/360 = 0.101". Ungabled the
-# full 73 1/4" span is ~977 psi and ~0.44" against 0.203", which fails badly. The gable also
-# carries the cleat/blocking layout, and it makes the bottom bay a step rather than a plank.
-#
-# No 1x3 hardwood nose: that stiffener existed to triple a PLY shelf's effective I and take
-# the spring out of gabled ply sag; solid oak needs none of it, and it also closes a
-# quantity gap — the nose was ~41 LF of hardwood nothing in the model counted.
-#
-# ** SOLID WOOD ON CLEATS MOVES, AND THE FASTENING HAS TO LET IT. ** Boards run the 36 1/4"
-# bay (grain along it), so seasonal movement is FRONT TO BACK — along the side cleats,
-# across their screw line — roughly 1/4" of tangential movement across 18" of red oak over
-# a Minnesota RH swing. Screw tight at the FRONT only; elongate every side- and back-cleat
-# hole rearward. A solid shelf pinned hard on three sides splits, in year two, not on install.
-#
-# ** 18" DEEP, NOT 24". ** The room is 26" clear N-S, so 24" left 2" of floor and 18" leaves
-# 8". The milling supply drove it, not the ergonomics: the owner's red oak runs to 18"
-# wide (a finished 18" board needs ~18 3/4" in the rough once edge-jointed), so 18" is two
-# boards per shelf where 24" was two wider, scarcer ones. Published guidance favours 18"
-# anyway — 16" is the usual practical reach-in maximum, 20"+ reads too deep to see into.
-# ~25% of shelf area is given up for it. Two things still make an 18" reach-in good: the
-# shelves are STANDABLE (bottom bay a step, top shelf reachable), and ED-M-PANTRY-LT is a
-# vertical slot lighting the depth behind whatever is on each shelf.
-#
-# Shelf pitch is GRADUATED, not uniform — uniform spacing wastes about two shelves' worth of
-# volume, and since every shelf is rated to be stood on regardless of pitch, climbing does
-# not need even rungs.
+# A 3-panel ply ladder (2026-10-30): west, centre and east uprights, 3/4" prefinished maple
+# ply, 18" x 84", on the floor, no back. Gravity goes to the floor through the ply, so the
+# walls only hold it plumb: the ends screw to the corner framing, the centre is tied by
+# every shelf and one angle at the top. NO blocking, nothing fastened into the exterior wall.
+# Each 6/4 red oak shelf sits on two 1x3 oak cleats glued and screwed to the uprights on the
+# bench, screwed UP through them (round hole front, 3/8" slot rear), 1/4" off the north wall
+# so its ~1/4" of front-to-back movement needs no slot into a wall. Gabled to 35 1/2", a 250
+# lb point deflects ~0.050" full depth, ~0.10" on a front-edge strip, against L/360 = 0.099":
+# 6/4 is the floor. Tops are graduated and the 64/74/84 tops line up across the gable.
 PANTRY_SHELVES_70 = FurnitureType(
-    tag="FT-KIT-PANTRY-SHELVES-70", name='Pantry shelf stack, 73 1/4" x 18"',
+    tag="FT-KIT-PANTRY-SHELVES-70", name='Pantry ply-ladder shelf stack, 73 1/4" x 18"',
     footprint=(inch(73.25), inch(18)), height=ft(7),
     storage=True, work_surface=False, plan_symbol="bookcase",
     wood_material_ref="oak-shelf-6q",
-    source="Site-built millwork, DESIGNED TO BE CLIMBED — see "
-           "notes/pantry_climbable_shelving.md. 1 1/4\" (6/4) solid red oak shelves (owner "
-           "stock, scheduled in plan/millwork.py as SB-M-PANTRY) on continuous 1x3 cleats "
-           "on three sides, screwed DOWN onto the cleats (load path is cleat -> fastener "
-           "-> stud, never shelf -> pin); NO adjustable standards and no shelf pins — a "
-           "pin carries a jar, not a person. Screwed tight at the FRONT only, with every "
-           "side- and back-cleat hole elongated rearward so 18\" of solid oak can move "
-           "without splitting. A full-height 3/4\" ply centre gable at mid-span, notched "
-           "around the cleats, floor to top shelf, halves the span to 36 1/4\" and is not "
-           "optional — the full span deflects ~0.44\" under 250 lb, past the L/360 this "
-           "is graded to as a floor. Two #10 x 3\" structural screws per cleat into solid "
-           "wood at EVERY bay, over flat 2x4 blocking laid in each bay BEFORE the gypsum. "
-           "Design load: treat as floor, not shelf — 40 psf uniform PLUS a 250-300 lb "
-           "concentrated load anywhere, which governs. Graduated spacing: ~20\" bottom bay "
-           "(small appliances, bulk), 12\"-14\" middle (boxes, bottles), 8\"-10\" top (cans, "
-           "jars) in the west bay; the 20\" bottom bay takes the stand mixer. East bay: a "
-           "microwave shelf top at ~35\" with the next shelf underside at 53\" or higher "
-           "(18\" clear), ED-M-PANTRY-RC1 behind it; a unit 15 1/2\" deep or less keeps "
-           "rear vent clearance; run it with the pocket door open. Still 6 shelves per bay. "
-           "18\" DEEP by owner's decision (2026-08-29, replacing 24\"), which leaves "
-           "8\" of floor in front of the stack.",
+    built_in_bookcase=BuiltInBookcaseSpec(
+        bays=(
+            # West: backstock in pull-out bins, 20/14/13/12/8 3/4/8 3/4 clear.
+            BuiltInBookcaseBay(clear_width=inch(35.5), height=inch(84), horizontal_board_count=6,
+                               board_tops=(inch(21.25), inch(36.5), inch(50.75), inch(64),
+                                           inch(74), inch(84))),
+            # East: everyday + the microwave in the 35"->53" opening, ED-M-PANTRY-RC1 at 48".
+            BuiltInBookcaseBay(clear_width=inch(35.5), height=inch(84), horizontal_board_count=6,
+                               board_tops=(inch(17), inch(35), inch(54.25), inch(64),
+                                           inch(74), inch(84))),
+        ),
+        shelf_depth=inch(18), horizontal_board_thickness=inch(1.25),
+        divider_thickness=inch(0.75), back_thickness=inch(0),
+        panel_material_ref="maple-ply-prefin-34", board_material_ref="oak-shelf-6q",
+    ),
+    # Shelves are SB-M-PANTRY; these are the cleats, two per board, 2" short of the front.
+    cut_list=(FurnitureCut(part="shelf cleat", count=24, thickness=inch(0.75),
+                           width=inch(2.5), length=inch(16), material_ref="oak-shelf-4q"),),
+    parts=(ProductPart(role="frame", product_ref="PROD-MAPLE-PLY-PREFIN-34", quantity=3,
+                       cut=(inch(18), inch(84))),),
+    source="Site-built millwork, DESIGNED TO BE CLIMBED (notes/pantry_climbable_shelving.md). "
+           "Three 3/4\" prefinished maple ply uprights, 18\" x 84\", floor-bearing, no back; "
+           "ends screwed to the corner framing, centre tied by the shelves and one top angle. "
+           "1 1/4\" solid red oak shelves (SB-M-PANTRY) on 1x3 oak cleats shop-fixed to the "
+           "ply, screwed up through them, front hole round, rear slotted, 1/4\" off the north "
+           "wall. No blocking, no wall cleats, no shelf pins. Design load as a floor: 40 psf "
+           "plus 250-300 lb anywhere. ED-M-PANTRY-LT..LT4 run in each upright's inside face, "
+           "the shelf front corners notched past them.",
 )
 
 

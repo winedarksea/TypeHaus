@@ -124,7 +124,7 @@ def test_psu_leader_connects_a_run_to_its_shared_supply(catlin_model):
     psu_labels = [node for node in scene.nodes if isinstance(node, Text) and node.content == "PSU"]
     supplies = {r.psu_ref for r in catlin_model.light_runs if r.storey == "main"}
     assert len(supplies) == 4
-    assert len(psu_labels) == 5, "one marker per supply, including the laundry track"
+    assert len(psu_labels) == 6, "one marker per supply, incl. laundry track and pantry jambs"
 
 
 def test_switch_legs_are_dashed_and_only_drawn_where_both_ends_are_on_the_sheet(catlin_model):

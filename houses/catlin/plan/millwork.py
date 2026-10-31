@@ -170,29 +170,14 @@ ATTIC_SHELVES = [
 #
 # See notes/pantry_climbable_shelving.md and the FT-KIT-PANTRY-SHELVES-70 source.
 #
-# 1. THIS SHELF IS DESIGNED TO BE CLIMBED, so its thickness is a STRUCTURAL decision, not a
-#    finish one. It is 6/4 red oak, 1 1/4" (2026-10-16; 8/4 before): a climbing 250 lb point
-#    at mid-span over the gabled 36 1/4" half-span governs, graded as a FLOOR at L/360.
-#    f ~484 psi, deflection ~0.054" against 0.101". At 5/4 (1") it is ~0.105" and just
-#    misses, so 6/4 is the floor. THE GABLE IS NOT OPTIONAL: ungabled at 1 1/4" the full
-#    span deflects ~0.44". THE CLEATS AND THE BLOCKING STAY, and the bays below are the
-#    two half-spans the gable creates, not one 70" shelf.
-# 2. THE CARCASS IS 18" DEEP, down from 24" — and the mill is what moved it. 24" was past
-#    the 18" the supply can produce, so every shelf was a two-board edge glue-up; 18" is one
-#    hand-picked wide board. `depth` is still deliberately NOT authored here — the bank
-#    inherits the type's footprint, so the carcass and the shelf can never disagree.
-#    18" IS PAST THE EDGE OF THE SUPPLY, and the schedule says so rather than rounding it
-#    away: a finished 18" face needs an 18 3/4" rough board once an edge is straight-lined
-#    and the other jointed, and `max_board_width` is 18". So `haus millwork` lays each shelf
-#    up as `edge-glued panel x2`, 2 boards at 9". That is not a defeat — a solid 18" shelf
-#    is normally a glued panel anyway, because one 18" board that wide cups — and it is a
-#    far smaller statement than the 24" it replaced, which was a two-board panel with a
-#    wider, scarcer board in it. ** THE ONE-NUMBER LEVER: ** if the family stack really does
-#    hold boards past 18 3/4", raise `max_board_width` above and these panels become
-#    single boards with no other edit.
+# 1. DESIGNED TO BE CLIMBED, so thickness is structural: 6/4 red oak, 1 1/4". A 250 lb point
+#    on the 35 1/2" bays between the ply uprights is ~0.050" full depth and ~0.10" on a
+#    front-edge strip, against L/360 = 0.099". Do not go thinner.
+# 2. 18" deep, the edge of the supply: `depth` is inherited from the type's footprint, and
+#    `haus millwork` lays each shelf up as a two-board 9" panel (an 18" face needs 18 3/4"
+#    rough). Raise `max_board_width` above if the stack holds wider boards.
 #
-# Six boards per bay, the case top included, on the graduated pitch the type specifies —
-# ~20" bottom bay, 12"-14" middle, 8"-10" top — over the 7'-0" carcass.
+# Six boards per bay, the case top included, at the type's explicit `board_tops`.
 MAIN_SHELVES = [
     ShelfBank(
         uid="E97F8XSSZ5", tag="SB-M-PANTRY",
@@ -202,8 +187,8 @@ MAIN_SHELVES = [
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(
-            ShelfBay(width=inch(36.25), clear_height=ft(7), shelf_count=6),
-            ShelfBay(width=inch(36.25), clear_height=ft(7), shelf_count=6),
+            ShelfBay(width=inch(35.5), clear_height=ft(7), shelf_count=6),
+            ShelfBay(width=inch(35.5), clear_height=ft(7), shelf_count=6),
         ),
     ),
     # Booth bench cuts come from BuiltInBenchSpec, including its purchased plywood.

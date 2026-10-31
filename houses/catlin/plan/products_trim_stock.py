@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from plan.exterior_palette import AZEK, METAL
 from typehaus.model import Product
+from typehaus.quantities import inch
 
 AZEK_CAPTIVATE_SHEET = Product(
     tag="PROD-AZEK-CAPTIVATE-SHEET", brand="AZEK", model="Captivate",
@@ -51,8 +52,16 @@ DARK_KSTYLE_COIL = Product(
            "(Metal Sales publishes no K-style gutter line); a different product from the trim "
            "coil, so prices.toml qualifies [drainage] on the tag.",
 )
+MAPLE_PLY_PREFIN_34 = Product(
+    tag="PROD-MAPLE-PLY-PREFIN-34", brand="Columbia Forest Products PureBond, or equal",
+    model='Prefinished maple, 23/32" veneer core, 48" x 96"',
+    name='Prefinished maple plywood sheet, 3/4" veneer core',
+    stock_width=inch(48), stock_length=inch(96),
+    source="The maple-ply-prefin-34 material's own wording: A-1 face, HPVA Type II glue, "
+           "UV-cured clear both faces. The pantry's three 18 x 84 uprights nest on two sheets.",
+)
 
 TRIM_STOCK_PRODUCTS = (
     AZEK_CAPTIVATE_SHEET, MDF_CASING_1X4, PVC_TRIM_1X4, PINE_FJ_BASE_1X4,
-    DARK_TRIM_COIL, DARK_KSTYLE_COIL,
+    DARK_TRIM_COIL, DARK_KSTYLE_COIL, MAPLE_PLY_PREFIN_34,
 )

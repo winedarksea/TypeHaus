@@ -102,3 +102,27 @@ def test_a_closed_base_must_sit_inside_its_bay() -> None:
     with pytest.raises(ValueError):
         BuiltInBookcaseBay(clear_width=inch(18), height=inch(30), horizontal_board_count=2,
                            closed_base_height=inch(30))
+
+
+def test_board_tops_place_each_board_and_a_zero_back_emits_no_back() -> None:
+    """The catlin pantry case: backless ply ladder, graduated tops with no floor board."""
+    tops = (21.25, 36.5, 50.75, 64, 74, 84)
+    spec = BuiltInBookcaseSpec(
+        bays=(BuiltInBookcaseBay(clear_width=inch(35.375), height=inch(84),
+                                 horizontal_board_count=6,
+                                 board_tops=tuple(inch(top) for top in tops)),),
+        shelf_depth=inch(18), horizontal_board_thickness=inch(1.25),
+        divider_thickness=inch(.75), back_thickness=inch(0),
+        panel_material_ref="ply", board_material_ref="oak",
+    )
+    parts = built_in_bookcase_parts(spec)
+    to_in = 12 / .3048
+    assert not [part for part in parts if part.role == "back"]
+    boards = [part for part in parts if part.role == "horizontal_board"]
+    assert [part.z1_m * to_in for part in boards] == pytest.approx(tops)
+    assert {part.material_ref for part in boards} == {"oak"}
+    assert {part.material_ref for part in parts if part.role == "divider"} == {"ply"}
+    assert built_in_bookcase_dimensions(spec)[1] * to_in == pytest.approx(18)
+    with pytest.raises(ValueError):
+        BuiltInBookcaseBay(clear_width=inch(35), height=inch(84), horizontal_board_count=2,
+                           board_tops=(inch(40), inch(80)))

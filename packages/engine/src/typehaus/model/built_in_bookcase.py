@@ -49,7 +49,7 @@ def built_in_bookcase_dimensions(spec: BuiltInBookcaseSpec) -> tuple[float, floa
 
 
 def built_in_bookcase_parts(spec: BuiltInBookcaseSpec) -> tuple[BuiltInBookcasePart, ...]:
-    """Return stepped backs, full-height dividers, and evenly distributed boards.
+    """Return stepped backs, full-height dividers, and boards (evenly or at ``board_tops``).
 
     A divider shared by two bays rises to their maximum height.  Board centers include both
     the base and top, with their outer faces exactly inside the stated bay height.  A bay
@@ -77,10 +77,11 @@ def built_in_bookcase_parts(spec: BuiltInBookcaseSpec) -> tuple[BuiltInBookcaseP
         bay_lefts.append(cursor)
         clear_width = bay.clear_width.meters
         height = bay.height.meters
-        parts.append(BuiltInBookcasePart(
-            "back", index, (cursor + clear_width / 2, back_center_y, height / 2),
-            (clear_width, back, height),
-        ))
+        if back > 0:
+            parts.append(BuiltInBookcasePart(
+                "back", index, (cursor + clear_width / 2, back_center_y, height / 2),
+                (clear_width, back, height),
+            ))
         base = bay.closed_base_height.meters
         if base > 0:
             # Carcass stock, inset between the dividers, flush with the shelf fronts.
@@ -90,8 +91,10 @@ def built_in_bookcase_parts(spec: BuiltInBookcaseSpec) -> tuple[BuiltInBookcaseP
                 (clear_width, divider, base),
             ))
         count = bay.horizontal_board_count
-        for board_index in range(count):
-            center_z = base + board / 2 + board_index * (height - base - board) / (count - 1)
+        centers = [top.meters - board / 2 for top in bay.board_tops] or [
+            base + board / 2 + board_index * (height - base - board) / (count - 1)
+            for board_index in range(count)]
+        for center_z in centers:
             parts.append(BuiltInBookcasePart(
                 "horizontal_board", index,
                 (cursor + clear_width / 2, shelf_center_y, center_z),
@@ -135,7 +138,9 @@ def _apply_bookcase_fronts(
                 "face_strip", None, (x, -depth / 2 + nosing_depth / 2, z),
                 (strip_width, nosing_depth, height)))
     for part in parts:
-        panel = replace(part, material_ref=spec.panel_material_ref)
+        material = (spec.board_material_ref if part.role == "horizontal_board"
+                    and spec.board_material_ref else spec.panel_material_ref)
+        panel = replace(part, material_ref=material)
         if nosing_depth and part.role == "front_panel":
             index = part.bay_index
             assert index is not None

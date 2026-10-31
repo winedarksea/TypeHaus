@@ -276,7 +276,7 @@ def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro
     living_top = next(top for top in catlin_model_ro.countertops if top.tag == "CT-M-LIV-E-N")
     assert Polygon(living_top.outline).bounds[3] / INCH == pytest.approx(271.375)
     bank = catlin_plan.by_tag("SB-M-PANTRY")
-    assert [bay.width.inches for bay in bank.bays] == [36.25, 36.25]
+    assert [bay.width.inches for bay in bank.bays] == [35.5, 35.5]
 
 
 def test_pantry_doors_and_racks_clear_the_seating_bar(catlin_model_ro, kitchen_objects):

@@ -1761,10 +1761,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   pocketing west. The refrigerator obstructed ~23 inches of the old western bypass
   approach. RO x=218 3/4..293 1/4 inches; nominal doorway 257 1/4..293 1/4.
   Explicit `frame_end_supports` use `W-M-C5B` and `W-M-PAN-E`, with full-height
-  west backing and the existing east corner studs. Pantry footprint, stock SEKTION
-  run, shelves and center gable stay. Western storage remains a sideways reach.
-  The light is on the actual west wall ahead of the shelves; pantry and undercabinet
-  switches share the east return at 46 inches. See `notes/pocket_frame_eclisse.md`.
+  west backing and the existing east corner studs. Western storage remains a sideways reach.
+  See `notes/pocket_frame_eclisse.md`.
+- **Pantry shelves (2026-10-30):** a floor-standing 3-panel maple-ply ladder, no back, no
+  blocking, nothing in the exterior wall; 6/4 oak shelves on bench-fixed cleats at explicit
+  `board_tops`, 1/4" off the north wall. Four 24V jamb channels (`ED-M-PANTRY-LT`..`-LT4`) on
+  one 60 W driver at 90" on `W-M-N1B`, all on the inside PIR `ED-M-PANTRY-SW` at 56" (no
+  kitchen-side pantry switch; the 46" box there is the undercabinet dimmer). Built to be
+  stood on: `notes/pantry_climbable_shelving.md`.
 
 ### Basement
 
@@ -2888,7 +2892,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   bowl 30x17x10, placement envelope 32x22 including rear faucet space. Quartz opening
   follows the fixture; flange clips/template remain a fabrication check. Drain, disposer,
   sleeve and cleanout share x=352, y=416 7/8; downstream drain route stays fixed.
-  Pantry shelves are 73 1/4, two 36 1/4 bays plus a 3/4 gable.
+  Pantry shelves are 73 1/4: two 35 1/2 bays between three 3/4 ply uprights.
 - **North uppers:** W36 + 20 stacker, W36 bridge, W30 + 20 stacker. WN1 is the true
   26x26x30 diagonal corner at 73 1/2 AFF; WN2 is W12-30 between it and the hood.
   Shared polygon geometry keeps plan, collisions, viewer and GLB aligned. Light strips

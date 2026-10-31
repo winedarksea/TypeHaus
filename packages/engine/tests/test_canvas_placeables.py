@@ -376,20 +376,21 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     # exception — a step light on W-SG-E1's east face, whose top IS the `main` datum — and it
     # moved back onto W-M-S2 at 7'-0" on 2026-09-20. The exception was retired, not forgotten.
     assert all(above_floor(item.tag) > 0.05 for item in placed)
-    # The 0.5 m line is the "did it fall to the floor" heuristic, and exactly one fixture is
-    # legitimately below it: ED-M-PANTRY-LT, RM-M-PANTRY's 6'-0" vertical WALL slot, whose
-    # authored base is 1'-6" so the lit line runs 1'-6"..7'-6" past every shelf edge.
+    # The 0.5 m line is the "did it fall to the floor" heuristic, and only RM-M-PANTRY's four
+    # 6'-0" vertical jamb channels are legitimately below it: their authored base is 1'-0".
     # ``resolved_mount_elevation`` returns the BASE of a body and LuminaireType.height
-    # measures up from it, so a low z_m here is the fixture working, not falling. Naming it
-    # keeps the heuristic sharp for the other fifty-odd. The closet now has plain glass.
+    # measures up from it, so a low z_m here is the fixture working, not falling. Naming them
+    # keeps the heuristic sharp for the other fifty-odd.
     low = {item.tag for item in placed if above_floor(item.tag) <= 0.5}
-    assert low == {"ED-M-PANTRY-LT"}, sorted(low)
-    # ...and it is 1'-6" off the floor it STANDS on, which is the point of the paragraph
-    # below: RM-M-PANTRY sits on SL-M-DECK like RM-M-LIVING, so its floor is 15/16" above
-    # the storey datum and the raw z_m reads 0.481 m where 1'-6" is 0.457 m.
+    pantry_channels = {"ED-M-PANTRY-LT", "ED-M-PANTRY-LT2", "ED-M-PANTRY-LT3", "ED-M-PANTRY-LT4"}
+    assert low == pantry_channels, sorted(low)
+    # ...and 1'-0" off the floor they STAND on, which is the point of the paragraph below:
+    # RM-M-PANTRY sits on SL-M-DECK like RM-M-LIVING, so its floor is 15/16" above the
+    # storey datum.
     pantry = next(room for room in model.rooms if room.tag == "RM-M-PANTRY")
     pantry_floor = room_floor_elevation(model, pantry) - storey_elevation["main"]
-    assert above_floor("ED-M-PANTRY-LT") == pytest.approx(pantry_floor + ft(1, 6).meters)
+    for tag in pantry_channels:
+        assert above_floor(tag) == pytest.approx(pantry_floor + ft(1).meters)
 
     # A placeable is measured off the floor it STANDS on, not off the storey datum
     # (``resolve/room_floor.py``) — and on this storey those are not the same plane. The

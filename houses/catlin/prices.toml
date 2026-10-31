@@ -2741,7 +2741,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LT-PENDANT-BAR" = { material = { low = 180, high = 700 }, labour = { low = 70, high = 200 } }  # 0 ea — CATALOG-ONLY since 2026-09-10, the mark N convention: its one placement retyped to ED-T-LT-MIRROR when the attic rake left no room for a hung fixture. Kept priced so the revert costs nothing
 "ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 3 ea
 "ED-T-LT-PSU-96-WE" = { material = { low = 51, high = 63 }, labour = { low = 45, high = 95 } }  # 3 ea — Mean Well HLG-100H-24A, distributor list $51-63 (researched 2026-10-28)
-"ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea since 2026-10-12 — both niche supplies went, ED-M-BATH2-PSU came; ED-B-SAUNA-LT-PSU is surface-mounted on the workshop face of W-B-SA-N rather than in a ceiling box
+"ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 4 ea since 2026-10-30 (ED-M-PANTRY-LT-PSU drives the four pantry jamb channels); 3 ea since 2026-10-12 — both niche supplies went, ED-M-BATH2-PSU came; ED-B-SAUNA-LT-PSU is surface-mounted on the workshop face of W-B-SA-N rather than in a ceiling box
 "ED-T-LT-SCONCE-EXT" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 4 ea — WAC WS-W2605-BK $186-232 (researched 2026-10-28)
 "ED-T-LT-SCONCE-SPOT" = { material = { low = 99, high = 130 }, labour = { low = 48, high = 115 } }  # 5 ea — WAC Sprig BL-23210-BK $99 dealer (2026-10-29, owner swap from Stretch); hardwiring unconfirmed
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
@@ -2773,11 +2773,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LT-SPOT-SW" = { material = { low = 99, high = 130 }, labour = { low = 60, high = 140 } }  # 2 ea — same WAC Sprig as mark J; canopy toggle is the switch (2026-10-29)
 "ED-T-LT-GROW-BAR" = { material = { low = 230, high = 290 }, labour = { low = 45, high = 100 } }  # 2 ea — Barron AG90-W-001 $220-261 + cable hangers (researched 2026-10-28)
 "ED-T-LT-WALL-LINEAR" = { material = { low = 480, high = 552 }, labour = { low = 45, high = 100 } }  # 1 ea — WAC WS-6724-30-BK $480-552 (researched 2026-10-28)
-# RM-M-PANTRY's vertical slot (2026-08-24). Same article as WALL-LINEAR — an integral-driver
-# 120V linear LED — twice as long, hung vertically. Note the tape rows are NOT here:
-# ED-T-LT-STRIP24 and its task sibling ED-T-LT-STRIP24-TASK bill per lineal foot in
-# [light_run_materials], and this is a point fixture.
-"ED-T-LT-SLOT72" = { material = { low = 140, high = 420 }, labour = { low = 45, high = 100 } }  # 1 ea
+# RM-M-PANTRY's jamb channels (2026-10-30), replacing the one wall slot: per channel, 6 ft of
+# VALENT X 1.9 W/ft plus end caps and clips, shop-fitted to the ply. The S45 channel itself is
+# its own part row (PROD-DIODE-S45-CHANNEL) and the driver is ED-T-LT-PSU-60. Unresearched.
+"ED-T-LT-JAMB72" = { material = { low = 60, high = 110 }, labour = { low = 30, high = 70 } }  # 4 ea
+"PROD-DIODE-S45-CHANNEL" = { material = { low = 45, high = 90 }, labour = 0 }  # 4 ea, one 96 in. bundle per jamb; unresearched
 # ** REPRICED 2026-09-12 WITH THE CLASS 320 RETYPE. ** This is no longer a plain $70-200
 # meter socket: it is a Class 320 heavy-duty lever-bypass COMBINATION meter-main carrying the
 # two 200 A mains outdoors (Milbank/Eaton HD class, the Xcel MN residential standard above
@@ -2986,20 +2986,14 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # FT-KIT-MIXER24-20 was retired 2026-10-25; both stock courses now hang over an open
 # countertop-appliance cave, and their underside/fixing is in [allowances].
 # RM-M-PANTRY's shelf stack, and it is NOT a closet system — see the type's `source` and
-# notes/pantry_climbable_shelving.md. ** MATERIAL FELL BY ~2/3 ON 2026-08-29 AND THE SHELVES
-# DID NOT GET CHEAPER. ** The twelve shelves are 1 1/4" (6/4 since 2026-10-16) solid red oak off the owner's own
-# stock now, so they are scheduled by `haus millwork` (SB-M-PANTRY) and carry NO dollar
-# anywhere in this file — the hardwood section is a deliberate unpriced view, and the oak's
-# real cost is the owner's ~$2/sf rough-milling rate, which the engine does not model.
-# What is left here is everything that is not the shelf: the full-height 3/4" ply centre
-# gable, continuous 1x3 cleats on three sides, structural screws, and the flat 2x4 blocking
-# that has to be laid in each bay BEFORE the gypsum. The 1x3 hardwood nose is gone with the
-# ply — it was a stiffener. Labour went the other way: solid stock has to be flattened,
-# fitted and fastened with slotted holes so 18" of oak can move, which is more careful work
-# than dropping a ply shelf on a cleat. The high end is a cabinetmaker building it as
-# casework; the low end is a good carpenter building it in place. A wire or melamine system
-# is a fraction of this and CANNOT be substituted — it is not standable.
-"FT-KIT-PANTRY-SHELVES-70" = { material = { low = 160, high = 420 }, labour = { low = 400, high = 1050 } }  # 1 ea
+# notes/pantry_climbable_shelving.md. The twelve 6/4 red oak shelves and 24 oak cleats are
+# owner stock, scheduled by `haus millwork` and carrying NO dollar here. The three ply
+# uprights bill as PROD-MAPLE-PLY-PREFIN-34 part rows below. What is left here: screws, the
+# top angle, edge banding and finish touch-up (2026-10-30: the ply ladder retired the
+# wall blocking and the back cleats). Labour is shop work on a story stick plus a scribed
+# install. A wire or melamine system cannot be substituted — it is not standable.
+"FT-KIT-PANTRY-SHELVES-70" = { material = { low = 40, high = 120 }, labour = { low = 400, high = 1000 } }  # 1 ea
+"PROD-MAPLE-PLY-PREFIN-34" = { material = { low = 70, high = 110 }, labour = 0 }  # 3 ea, per 18 x 84 upright (they nest on 2 sheets); unresearched
 "FT-BATH1-SHELF-2030" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
 # The suite bath's twin of it, open to the west since 2026-10-03: the same build and the same
 # two ends of the band, a little lower, as 11 1/4" x 30" is less carcass than 20" x 30" and

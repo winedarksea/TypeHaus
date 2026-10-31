@@ -294,8 +294,8 @@ MAIN_KITCHEN_CASEWORK = [
               position=pt(inch(415.6), inch(331.375)), rotation=deg(-90),
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(36))),
 
-    # Reach-in shelves remain 18 inches deep, leaving 8 inches of standing floor.
-    # 73 1/4-inch width with a structural centre gable gives two 36 1/4-inch clear spans.
+    # Ply ladder, 18" deep and 1/4" off the north wall (the oak's movement), 8" of floor
+    # in front; 1/8" scribe each end, two 35 1/2" bays either side of the centre upright.
     Furniture(uid="J49EW9WWTQ", tag="FURN-M-PANTRY-SHELVES", type_ref="FT-KIT-PANTRY-SHELVES-70",
-              room="RM-M-PANTRY", position=pt(inch(256), ft(34, 8.375))),
+              room="RM-M-PANTRY", position=pt(inch(256), ft(34, 8.25))),
 ]
