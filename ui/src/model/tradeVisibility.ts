@@ -142,8 +142,9 @@ export const ROLE_PRESETS: Record<string, RolePreset> = {
   // Drainage sits in both MEP and Site: it is a service run an MEP reviewer sizes, and the
   // half of it that matters on site is read against the grade sheet.
   MEP: { groups: ["plumbing", "electrical", "mechanical"], trades: ["drainage"] },
-  // Site reads the pour, not the cage inside it (and never pays for the lazy bar fetch).
-  Site: { groups: ["site", "concrete_masonry"], exclude: ["concrete:rebar"] },
+  // Site reads the pour, not the cage inside it (and never pays for the lazy bar fetch), and
+  // the finished grade, not the open dig.
+  Site: { groups: ["site", "concrete_masonry"], exclude: ["concrete:rebar", "earth:excavation"] },
   // The rainscreen cavity: insulation, framing and siding's facets (flashing, insect screens)
   // without the cladding panels or the vent-gap prism, both of which are bare `siding`.
   Rainscreen: { trades: ["insulation", "framing", "siding"], exclude: ["siding"] },

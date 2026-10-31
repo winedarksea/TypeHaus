@@ -290,6 +290,9 @@ the future.
 - Possibly the ESS closet can just be wood studs (metal studs seeming silly as an extra spec for just a small amount) with a Fire-Retardant Spray over the studs.
 - Let's make sure all the charcoal gray and black details of the house exterior (various metal trim, window frames, foundation insulation cover) show real manufacturer colors. We are using this to determine if we should switch all to more gray or more black.
 - One of the things we've found with 3d printing is that getting a proper solid is hard. Are there any 3d printing tools for creating 'manifold solid' that might be clear value to bring in here, checking that things work together? We could even do real world 3d prints if that helps, but note that we would generally want to avoid the effort and plastic waste for that, since digital modeling should cover most things just as well.
+- Lighting review
+- Excavation depth should be on a separate view toggle
+- Double check the 17' 4" horizonal BBD band, BBD-transition. Does it make sense to have it integrated with the door top? Also it looks like the ventilation faces upwards uncovered (rain catch?). Also it should go back to linen white. We are leaning towards having it up higher, around gutter height, if it can be.
 
 # Project Management
 

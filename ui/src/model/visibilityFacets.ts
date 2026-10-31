@@ -19,6 +19,9 @@
 // fetched (`/model/rebar`) the first time the chip turns on, and they sit inside the pour.
 // Its meshes carry ONLY the facet key, so dropping the `concrete` chip leaves the cage
 // standing — the x-ray view.
+//
+// Excavation is the over-dig's backfill prisms: a construction phase, gone into the ground
+// once backfilled, so it defaults off and the Earthwork chip reads as the finished site.
 import type { Trade } from "../state/vocabulary";
 
 export interface FacetSpec {
@@ -44,6 +47,8 @@ export const FACETS = [
     solidCategories: ["connector", "connector_hanger"] },
   { key: "framing:connector-embedded", label: "Cast-in connectors", defaultOff: false,
     solidCategories: ["connector_embedded"] },
+  { key: "earth:excavation", label: "Excavation", defaultOff: true,
+    solidCategories: ["backfill_native", "backfill_cap"] },
   { key: "concrete:rebar", label: "Rebar", defaultOff: true, memberCategories: ["rebar"] },
   { key: "roofing:flashing", label: "Roof flashing", defaultOff: false,
     layerFunctions: ["membrane"], memberCategories: ["drip_edge", "ridge_cap", "membrane"],

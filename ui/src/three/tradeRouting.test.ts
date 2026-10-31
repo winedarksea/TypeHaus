@@ -165,6 +165,9 @@ export function runConnectorFacetTests() {
     "A hanger is a connector to a viewer — one toggle, not two");
   assert(solidVisibilityKeys(solid("connector_embedded")).join() === "framing:connector-embedded",
     "Cast-in hardware separates: it is the concrete sub's scope");
+  assert(["backfill_native", "backfill_cap"].every((category) =>
+    solidVisibilityKeys(solid(category)).join() === "earth:excavation"),
+    "The over-dig's backfill is the Excavation toggle, not the finished-site Earthwork chip");
 
   // …and `solidTrades` itself is untouched, so no non-viewer caller sees a facet.
   assert(solidTrades(solid("connector_embedded")).join() === "framing",
