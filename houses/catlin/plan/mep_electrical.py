@@ -137,7 +137,7 @@ BASEMENT_DEVICES = [
 
 MAIN_DEVICES = [
     ElectricalDevice(uid="CED001K1AA", tag="ED-M-LIVING-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(4)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-MAIN",
+                     position=pt(ft(27, 4), ft(7, 4)), type_ref="ED-T-LT-CAN4-PREM", circuit="CKT-LT-MAIN",
                      room="RM-M-LIVING", controlled_by=("ED-M-LIVING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED001K2AA", tag="ED-M-LIVING-SW", kind=DeviceKind.SWITCH,
@@ -147,7 +147,7 @@ MAIN_DEVICES = [
                          wall_ref="W-M-C1", face="right", distance_from_start=inch(144),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED002K1AA", tag="ED-M-BED-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5), ft(4)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-MAIN",
+                     position=pt(ft(4), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM", circuit="CKT-LT-MAIN",
                      room="RM-M-BED", controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # The closet door's switch, and it follows D-M-BED. The door moved 16" east on
@@ -171,7 +171,7 @@ MAIN_DEVICES = [
                          wall_ref="W-M-S1", face="left", distance_from_start=inch(120),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     ElectricalDevice(uid="CED003K1AA", tag="ED-M-STUDY-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(15, 8), ft(19, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-MAIN",
+                     position=pt(ft(14, 11.5), ft(19, 4)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-MAIN",
                      room="RM-M-STUDY", controlled_by=("ED-M-STUDY-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED003K2AA", tag="ED-M-STUDY-SW", kind=DeviceKind.SWITCH,
@@ -317,7 +317,7 @@ SECOND_DEVICES = [
                          wall_ref="W-S-SS1", face="right", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED006K1AA", tag="ED-S-BED1-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25), ft(11, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
+                     position=pt(ft(26, 4), ft(14)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-BED1", controlled_by=("ED-S-BED1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # On the north wall since 2026-10-02: the latch jamb is now the PAX side panel. x 24'-8",
@@ -327,6 +327,13 @@ SECOND_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BD1", face="right", distance_from_start=inch(33),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    # The reading leg: a second gang 4" over from ED-S-BED1-SW.
+    ElectricalDevice(uid="3RQFN92MPQ", tag="ED-S-BED1-SW-READ", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BD1", face="right", distance_from_start=inch(37),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # y follows W-S-BD1's south face: the wall is INT_2X4_RC (plan/storeys/second.py) with
     # the resilient channel on the BED1 side. The box's back sits ON the face and the box is
@@ -338,7 +345,7 @@ SECOND_DEVICES = [
                          wall_ref="W-S-BD1", face="right", distance_from_start=inch(48),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED007K1AA", tag="ED-S-BED2-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25), ft(20, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
+                     position=pt(ft(26, 6), ft(22)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-BED2", controlled_by=("ED-S-BED2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # As ED-S-BED1-SW, one bedroom north.
@@ -348,6 +355,13 @@ SECOND_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BD2", face="right", distance_from_start=inch(33),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # The reading leg: a second gang 4" over from ED-S-BED2-SW.
+    ElectricalDevice(uid="5DG7KH9CA2", tag="ED-S-BED2-SW-READ", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BD2", face="right", distance_from_start=inch(37),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # Same 1/2" as ED-S-BED1-RC1, on W-S-BD2's south face, for the same reason.
     ElectricalDevice(uid="CED007K3AA", tag="ED-S-BED2-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-SECOND",
@@ -356,7 +370,7 @@ SECOND_DEVICES = [
                          wall_ref="W-S-BD2", face="right", distance_from_start=inch(47),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED008K1AA", tag="ED-S-BED3-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25), ft(29, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
+                     position=pt(ft(31, 3.5), ft(30)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-BED3", controlled_by=("ED-S-BED3-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED008K2AA", tag="ED-S-BED3-SW", kind=DeviceKind.SWITCH,
@@ -364,6 +378,13 @@ SECOND_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW3", face="right", distance_from_start=inch(46),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    # The reading leg: a second gang 4" over from ED-S-BED3-SW.
+    ElectricalDevice(uid="6RW73D2Q06", tag="ED-S-BED3-SW-READ", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BW3", face="right", distance_from_start=inch(50),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED008K3AA", tag="ED-S-BED3-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-SECOND",
@@ -374,7 +395,7 @@ SECOND_DEVICES = [
                          wall_ref="W-S-N1", face="left", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="CED009K1AA", tag="ED-S-SUITE-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4), ft(11)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
+                     position=pt(ft(2, 4.5), ft(9, 10.25)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-SUITE", controlled_by=("ED-S-SUITE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # In the suite's east arm, beside D-S-SUITE (the hall door through the bearing wall).
@@ -400,7 +421,7 @@ SECOND_DEVICES = [
     # at 18'-0". ~15" clear of PR-A-STUBATH-DRAIN. Nothing grades this; re-measure after
     # a move. (2 x 900 + 1,300 bar) lm x CU 0.6 x LLF 0.8 / 46 sf = ~32 fc.
     ElectricalDevice(uid="CED013K1AA", tag="ED-S-SUITEBATH-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(12, 6.75), ft(19, 4)), type_ref="ED-T-LT-CAN4-WET", circuit="CKT-LT-UPPER",
+                     position=pt(ft(12, 6.75), ft(19, 4)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-SUITEBATH", controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # On the bath face east of D-S-SUITEBATH, 55 1/2" from the wall start; clear of its casing.
@@ -410,8 +431,13 @@ SECOND_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SBS", face="left", distance_from_start=inch(55.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # One can over each lavatory, 20" off the mirror wall, ahead of whoever stands there.
     ElectricalDevice(uid="CED014K1AA", tag="ED-S-VANITY-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(3), ft(23, 6)), type_ref="ED-T-LT-CAN4-WET", circuit="CKT-LT-UPPER",
+                     position=pt(ft(1, 10.25), ft(24, 8)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
+                     room="RM-S-VANITY", controlled_by=("ED-S-VANITY-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="EGJBXN0J2K", tag="ED-S-VANITY-CAN2", kind=DeviceKind.LIGHT,
+                     position=pt(ft(4, 4.25), ft(24, 8)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-VANITY", controlled_by=("ED-S-VANITY-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # On W-S-BD-N's vanity face beside the two mirror lights, so it travels with them.
@@ -422,7 +448,7 @@ SECOND_DEVICES = [
                          wall_ref="W-S-BD-N", face="right", distance_from_start=inch(37.375),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED015K1AA", tag="ED-S-LANDING-LT", kind=DeviceKind.LIGHT,
-                     position=pt(m(2.44371), m(7.41198)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
+                     position=pt(ft(7, 9), ft(24, 8)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-HALL", controlled_by=("ED-S-LANDING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # On W-S-SN3's north face beside ED-S-STAIR-SW (plan/lighting.py).
@@ -441,7 +467,7 @@ SECOND_DEVICES = [
     # It is 12 3/8" east of FO-S-STAIR's east edge — CLOSER to the stair than the old
     # station, so `code.R303_7_stairway_illumination` still counts it for ST-M2S.
     ElectricalDevice(uid="CED016K1AA", tag="ED-S-NCLOSET-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 9), ft(33, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(18, 9), ft(33, 6)), type_ref="ED-T-LT-WAFER4",
                      circuit="CKT-LT-UPPER",
                      room="RM-S-NCLOSET", controlled_by=("ED-S-NCLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3),

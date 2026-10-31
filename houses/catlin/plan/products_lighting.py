@@ -6,12 +6,11 @@ Split off its parent for the 500-line rule, and the subject splits cleanly: ever
 is a luminaire, a tape or a driver, and every one of them answers to two house rules that no
 plumbing fixture does.
 
-** THE HOUSE STANDARD IS 3000 K, AND NO INSTALL-TIME SELECTABLE MODULES. ** A 5CCT DIP
-switch gets set wrong constantly, one can at 4000 K in a run of eight is a screaming defect,
-and a dedicated phosphor gives better R9 than a warm/cool blend. Each deliberate exception
-(4000 K over the work surfaces, BATH2's 5000 K day and 2700 K evening layers) is its own
-schedule row. A USER-ADJUSTABLE fixture with a live control (tunable white, RGB) is allowed
-(2026-10-12): it records its working CCT in ``cct_k`` and its range in ``source``.
+** THE HOUSE STANDARD IS 3000 K. ** Each deliberate exception (the lounge's 4000 K layer,
+BATH2's 5000 K day and 2700 K evening layers) is its own schedule row. A selectable (5CCT)
+module is allowed (owner, 2026-10-31) when it is set once and its working CCT is the type's
+``cct_k``; rating, CCT and lumen figures are suggestions, not gates. Dimming and tunable
+white ride on the tape; most cans need neither.
 
 ** A DRIVER IS THE PART THAT DIES, NOT THE LED. ** Electrolytic capacitors are rated at 25 C
 and halve their life per 10 C above it, so a 25,000-hour LED behind a captive driver in an
@@ -29,8 +28,8 @@ from typehaus.quantities import inch
 
 # --- Lighting -----------------------------------------------------------------------------
 #
-# The house standard is 3000 K everywhere it is not deliberately something else, and never
-# an install-time selectable (DIP) module: see the module docstring.
+# The house standard is 3000 K everywhere it is not deliberately something else: see the
+# module docstring.
 WESTGATE_VAPORTIGHT = Product(
     tag="PROD-WESTGATE-LVTE-4FT", brand="Westgate", model="LVTE-4FT-30-46W-MCTP",
     name="4' vaportight linear LED, IP66, cold rated",

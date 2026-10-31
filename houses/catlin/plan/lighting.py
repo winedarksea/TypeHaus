@@ -49,18 +49,9 @@ from typehaus.model import Location, WallAttachment, m
 # lighting behind the smart-relay backup subsystem, so the house keeps light in the two
 # rooms you would actually need it in when the grid drops.
 BASEMENT_LIGHTING = [
-    # RM-B-GYM: the fan-light (ED-B-GYM-LT, re-typed in plan/mep.py) plus a 4-can grid.
-    #
-    # ** THE GRID MOVED OFF THE CONCRETE, y 4'-6"/13'-6" -> 6'-0"/12'-0" (2026-09-06). **
-    # SL-M-DECK's band starts at y=13'-0", so CAN3 and CAN4 at y=13'-6" stood 6" inside a
-    # 14 3/8" solid deck: 4 3/8" of cast cap over a 10" EPS stay-in-place form on 1/2" steel
-    # furring, under the 5/8" gypsum R316.4 requires as the thermal barrier over that foam.
-    # There is nothing to recess into at any depth and cutting the barrier is what the layer
-    # exists to prevent. The room is 18' x 18', so y=6'-0"/12'-0" is its thirds and reads
-    # better than the 4'-6"/13'-6" it replaces; both rows now sit over the wood joist bays
-    # south of the band, where a 2"-deep canless fixture is a legitimate detail.
-    # ** No lumen consequence: ** RM-B-GYM passes code.R303_1_light_and_ventilation on its
-    # 33.3 sf of glazing, not on Exception 1's 6 fc, so moving light around costs nothing.
+    # RM-B-GYM: the fan-light (ED-B-GYM-LT, re-typed in plan/mep.py) plus a 4-can grid in
+    # FS-M-EAST's mid-bays, y 6'-0"/11'-4". The north row stays south of SL-M-DECK's band at
+    # y=13'-0" (solid deck, nothing to recess into) and off joist 009 at y=12'-0".
     ElectricalDevice(uid="QTB0001AAA", tag="ED-B-GYM-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(22), ft(6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-GYM",
@@ -72,12 +63,12 @@ BASEMENT_LIGHTING = [
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTB0003AAA", tag="ED-B-GYM-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(12)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(22), ft(11, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTB0004AAA", tag="ED-B-GYM-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(12)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(32), ft(11, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -217,9 +208,9 @@ BASEMENT_LIGHTING = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-B-FURNACE: two cans, not 2x4 panels — the ceiling is full of supply, drain and ERV
-    # runs, and each panel sat ~3" off a pipe. Re-typed in place (uids kept). Stations are the
-    # widest gaps: CAN1 ~9" off PR-B-SAUNA-VENT, over the water heater; CAN2 ~12" off
-    # everything, over the ERV and the panelboards. Open ceiling, as the gym's cans.
+    # runs, and each panel sat ~3" off a pipe. Re-typed in place (uids kept). Each station is
+    # a gap the 6" housing clears (electrical.ceiling_can_framing): CAN1 over the aisle
+    # between the utility sink and the water heater, CAN2 south of the inverter.
     ElectricalDevice(uid="QTB0008AAA", tag="ED-B-FURNACE-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(8, 3), ft(24)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
@@ -409,12 +400,10 @@ BASEMENT_LIGHTING = [
     # true centre is 191 5/16"; holding 190" keeps the ladder straight, which is worth more
     # than 1 5/16" on a 3" aperture.)
     #
-    # ** 43.5 VA, AND THAT IS THE WHOLE BUDGET QUESTION. ** CKT-LT-BACKUP is the ALWAYS_ON
-    # tier on a 14.3 kWh battery. These were three 9 VA 3" cans until 2026-10-28; as 14.5 W
-    # mark A cans (with the other product upgrades) the tier went 0.18 kWh short, and moving
-    # the lightless gym fan off it (plan/mep_electrical.py) bought back ~0.3 kWh per 48 h.
-    # `cycle_48h.sustains_always_on` holds by ~0.13 kWh; `test_backup_calc.py` is the
-    # assertion, and a fourth can is not free.
+    # ** THE BUDGET QUESTION. ** CKT-LT-BACKUP is the ALWAYS_ON tier on a 14.3 kWh battery;
+    # `cycle_48h.sustains_always_on` and `test_backup_calc.py` hold it. Mark A is a 6.5 W
+    # PAR20 since 2026-10-31 (14.5 W before), so these three cost 19.5 VA, and a can is
+    # still not free.
     #
     # ** THE MIDDLE ONE IS AT 15'-0", NOT THE 15'-6" A 4'-0" LADDER WANTS. ** PR-B-HW-SAUNA
     # crosses the hall east-west at y=15'-6", 2 9/16" below the finished ceiling, and a
@@ -422,7 +411,7 @@ BASEMENT_LIGHTING = [
     # 4'-0"/4'-6"/3'-6" spacings, which nobody standing in a 3'-4" hall can read.
     #
     # Recessing is legitimate here: SL-M-DECK is the x 18'-36' half, so this hall's ceiling
-    # is FS-M-WEST's joist bays and there is depth for a 5" housing.
+    # is FS-M-WEST's joist bays and there is depth for the 6" housing.
     ElectricalDevice(uid="J2YZPDZ9MP", tag="ED-B-STAIR-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(inch(190), ft(19, 6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
@@ -440,12 +429,12 @@ BASEMENT_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
     # RM-B-BATH (2026-07-30; rotated 2026-09-05). On CKT-LT-BACKUP, deliberately, so this
-    # room and the stair foot stay lit together on backup power. Can on the room's centre
-    # line between the vanity and the water closet, clear of REG-B-EXH1 over the WC at
-    # 24'-1 5/8"; switch on the latch-jamb side (door swings out, so it isn't behind the
-    # leaf).
+    # room and the stair foot stay lit together on backup power. The can is the vanity light,
+    # on the room's centre line 17 1/2" off the mirror wall: the only joist bay in the 18-24"
+    # band (the doubled joists at 20'-0"/21'-4" hold the rest); switch on the latch-jamb side
+    # (door swings out, so it isn't behind the leaf).
     ElectricalDevice(uid="QTB000KAAA", tag="ED-B-BATH-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(12), ft(21, 6)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(ft(12), ft(19, 7.75)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-BATH",
                      controlled_by=("ED-B-BATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -485,50 +474,53 @@ MAIN_LIGHTING = [
                      position=pt(ft(19), ft(22, 6)), type_ref="ED-T-LT-PSU-200",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.CEILING)),
-    # The lounge can grid. ED-M-LIVING-LT (re-typed, plan/mep.py) is the fourth corner and
-    # stays on the backup circuit — one light in the main room that survives an outage.
+    # The lounge, laid out off the furniture (2026-10-31): ED-M-LIVING-LT (plan/mep_electrical)
+    # over the coffee table on the fire axis y=7'-4"; CAN2 a gimbal 27" off the fireplace wall
+    # aimed at the mantel; CAN3/CAN4 gimbals 33" off the south glazing, washing the curtains;
+    # CAN5/CAN6 their mirror about the fire axis. Nothing over the sofa or armchairs, every can
+    # in a joist mid-bay clear of the ERV returns at y=10'-0"/12'-8". The W/E coves wash the
+    # side walls.
     ElectricalDevice(uid="QTM0002AAA", tag="ED-M-LIVING-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(4)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(33, 2), ft(7, 4)), type_ref="ED-T-LT-CAN4-PREM-GIMBAL",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0003AAA", tag="ED-M-LIVING-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(10)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(25, 6), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM-GIMBAL",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0004AAA", tag="ED-M-LIVING-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(10)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(29, 2), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM-GIMBAL",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The daylight set: mark A1, same 4" can but 4000K, on its own switch leg so the lounge
-    # can run warm evenings / cool when worked in. Interleaved as a diamond inside the warm
-    # 2x2, symmetric about (27', 7'), so either set alone still lights the room evenly.
+    ElectricalDevice(uid="55ZCN0PWCS", tag="ED-M-LIVING-CAN5", kind=DeviceKind.LIGHT,
+                     position=pt(ft(25, 6), ft(11, 4)), type_ref="ED-T-LT-CAN4-PREM",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     controlled_by=("ED-M-LIVING-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="QKY6VSH030", tag="ED-M-LIVING-CAN6", kind=DeviceKind.LIGHT,
+                     position=pt(ft(29, 2), ft(11, 4)), type_ref="ED-T-LT-CAN4-PREM",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     controlled_by=("ED-M-LIVING-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # The daylight set: mark A1, 4000K, on its own switch leg so the lounge can run warm
+    # evenings / cool when worked in. One in each warm row, on the coffee table's x.
     # Same circuit as the warm cans — only the switch leg needs to be separate.
     ElectricalDevice(uid="QTM0019AAA", tag="ED-M-LIVING-CAND1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27), ft(4)), type_ref="ED-T-LT-CAN4-4000",
+                     position=pt(ft(27, 4), ft(3, 4)), type_ref="ED-T-LT-CAN4-4000",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM001AAAA", tag="ED-M-LIVING-CAND2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27), ft(10)), type_ref="ED-T-LT-CAN4-4000",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
-                     controlled_by=("ED-M-LIVING-SW-DAY",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTM001BAAA", tag="ED-M-LIVING-CAND3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(7)), type_ref="ED-T-LT-CAN4-4000",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
-                     controlled_by=("ED-M-LIVING-SW-DAY",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTM001CAAA", tag="ED-M-LIVING-CAND4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(7)), type_ref="ED-T-LT-CAN4-4000",
+                     position=pt(ft(27, 4), ft(11, 4)), type_ref="ED-T-LT-CAN4-4000",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # Second gang beside ED-M-LIVING-SW (plan/mep.py, at 26'-0"), 4" over on the same wall.
     # A dimmer rather than the warm set's plain switch: the daylight cans are the ones you
-    # turn down, since they are the set that is on when you do not want the full 4800 lm.
+    # turn down, since they are the set that is on when you do not want the full warm layer.
     ElectricalDevice(uid="QTM001DAAA", tag="ED-M-LIVING-SW-DAY", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
@@ -559,108 +551,51 @@ MAIN_LIGHTING = [
     # The kitchen end of the same room, on the backup circuit with the basement
     # (electrical_notes.md line 24).
     #
-    # ** THE TWO 2x4 PANELS ARE GONE, 2026-09-06, AND FOUR CANS REPLACE THEM. ** They were
-    # 4000 K / CRI 80 / 4800 lm commercial troffers surface-mounted 1.5" below a
-    # residential ceiling — the only 4000 K/CRI 80 fixtures on this floor, in the same
-    # open-plan sightline as 3000 K/CRI 90 cans, a CRI 95 under-cabinet tape and the dining
-    # pendant. ** NOTHING GRADES COLOUR TEMPERATURE: ** there is no CCT-consistency check,
-    # so the schedule would have carried two colours of white forever.
-    #
-    # The comment this replaces argued "panels over the working floor, cans over the
-    # counters — a can right above where you stand puts your own shadow on the cutting
-    # board". That reasoning is about standing AT A COUNTER. It says nothing about the open
-    # floor in the middle of the room, where there is no work surface to shadow.
-    #
-    # ** CAN1-CAN4 NOW SIT ON THEIR RUN'S COUNTER FRONT EDGE (2026-09-11). ** They were
-    # scattered — 8" out into the room on the north run, 9 5/8" IN over the cabinets on the
-    # east — and two of them were measurably inside something: **CAN3's centre was inside
-    # FURN-M-KIT-N4** (the 2'-0" x 2'-6" corner base) with its 4" body lapping the 13" upper
-    # FURN-M-KIT-WN1 by 5/8", and **CAN4's centre was inside APPL-M-RANGE**, 4 11/16" off
-    # APPL-M-HOOD, 2 3/8" north of the FURN-M-KIT-N3 its own comment said it was over.
-    # A can over a cabinet lights the cabinet; a recessed can over a cooktop is a grease trap.
-    #
-    # ONE RULE NOW, so the next move has something to be checked against: **a counter can's
-    # centre is on its run's counter front edge** — 2" of the 4" body over the counter's
-    # outer 2", 2" over the aisle. A 24" base under a 15" upper leaves 9" of counter, so
-    # every body clears every upper by 7" — measured, not assumed (see below) — and the tape
-    # under the upper lights the 9" the upper shades. It also keeps the can off the standing
-    # zone, which is in FRONT of the edge, not behind it.
-    #
-    # ~9,600 lm of panel down to 3,600 lm of can, and the whole room on one colour
-    # temperature.
-    #
-    # ** NOTHING GRADES A CAN'S POSITION EITHER, SO THE LAYOUT WAS MEASURED. ** A 2x2 on the
-    # panels' own x centres (23'/31') straddling their y=30' line was the first draft and
-    # fails twice against the resolved model: (31', 28'-6") lands 5/8" off
-    # FURN-M-KIT-PENINSULA's back edge at y=28'-5 3/8" — a can over the head of whoever is
-    # standing at that counter, which is the very shadow case the paragraph above describes
-    # — and (31', 31'-6") sits 1'-4 1/2" from ED-M-KITCH-CAN2. So instead:
-    #
-    # CAN6/7/8 are a **row of three at y=30'-6"** on a 4'-0" pitch, mid-depth in the galley
-    # floor: 2'-0" north of the peninsula's back edge and 2'-11" south of the north counter
-    # face, with CAN1-CAN4 already washing both of those. CAN5 takes the west walkway
-    # between FURN-M-KIT-PANTRYC and the peninsula's west end, which the 2x2 also covered
-    # and a bare row of three would not.
-    #
-    # ** RE-MEASURED 2026-09-11 against the resolved footprints, and one figure was off. **
-    # CAN5-CAN8 stand **>= 1'-11 23/32"** from any cabinet or appliance — CAN8 to
-    # APPL-M-RANGE at 23.72", which is 1/32" under the "1'-11 3/4"" this comment used to
-    # claim. The claim is corrected rather than the can moved: it is a stated layout margin,
-    # not a code clearance, and 23.72" is what the model says. Can to can is now
-    # **>= 2'-8"** (CAN4 to CAN8, 31.97"), up from the 2'-4" the old row measured, because
-    # CAN3 and CAN4 moved off the cabinets onto the counter-front lines.
+    # Two rows (2026-10-31), each in a FS-S-EAST mid-bay and on one x pitch of 3'-0" off the
+    # sink centre: CAN1-CAN3 at y=34'-0", between the uppers' face (34'-2 1/2") and the
+    # counter edge (33'-5 3/8"), CAN2 on the sink; CAN5-CAN8 at y=27'-4" over the peninsula
+    # worktop, ahead of both the cook in the aisle and the stools. CAN5 is the row's west end
+    # and lights the pantry and fridge faces 2'-10" off them. CAN3 stays west of
+    # PR-M-KITCH-VENT at x=32'-7".
     ElectricalDevice(uid="7WE319EHB5", tag="ED-M-KITCH-CAN5", kind=DeviceKind.LIGHT,
-                     position=pt(ft(23), ft(27)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(23, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="Z256WYTAN6", tag="ED-M-KITCH-CAN6", kind=DeviceKind.LIGHT,
-                     position=pt(ft(23), ft(30, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(26, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="T5YZRQ2P6K", tag="ED-M-KITCH-CAN7", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27), ft(30, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(29, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QXW0T5DB2J", tag="ED-M-KITCH-CAN8", kind=DeviceKind.LIGHT,
-                     position=pt(ft(31), ft(30, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(32, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # x=25'-2 1/2" follows FURN-M-KIT-E1's centre — the north counter run's west end, at the
-    # pantry wall. It is NOT retagged into RM-M-PANTRY: its `controlled_by` is ED-M-KITCH-SW
-    # and the kitchen needs the can. y=33'-5 3/8" is the north run's counter front edge
-    # (FURN-M-KIT-E1/SINKBASE/E2 all front on it); the body clears FURN-M-KIT-WE1 by 7".
-    # CAN2 shares that line. Its body laps FX-M-KITCH-SINK's plan footprint by an inch,
-    # which is the point and not a clash: the sink is a counter-height basin and this is a
-    # ceiling can over it.
     ElectricalDevice(uid="QTM0009AAA", tag="ED-M-KITCH-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25, 2.5), ft(33, 5.375)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(26, 4), ft(34)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000AAAA", tag="ED-M-KITCH-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(m(9.29111), ft(33, 5.375)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(29, 4), ft(34)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # CAN3 serves the NE carousel and CAN4 the peninsula carousel's 14" south landing, both on
-    # a counter front edge rather than over the casework (2026-10-02 layout).
-    #
-    # CAN3 at (33'-2", 33'-5 3/8") is on FURN-M-KIT-CORNER-NE's north-leg front edge, 9"
-    # clear of FURN-M-KIT-WE5. LR-M-KIT-E-WN1 lights the corner's east leg.
-    #
-    # CAN4 at (33'-5 3/8", 29'-2 3/8") is mid-landing on FURN-M-KIT-CORNER-PEN's east-leg
-    # front edge, 7" clear of both the hung upper's front and APPL-M-RANGE (2026-10-03).
+    # CAN4 is over the peninsula carousel's landing in front of the microwave, between the
+    # upper's face and the east counter edge.
     ElectricalDevice(uid="QTM000BAAA", tag="ED-M-KITCH-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(33, 2), ft(33, 5.375)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(32, 4), ft(34)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000CAAA", tag="ED-M-KITCH-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(33, 5.375), ft(29, 2.375)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(33, 10), ft(28, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -792,22 +727,28 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-PAN-E", face="left", distance_from_start=inch(6.76),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # RM-M-BED: a four-can grid (ED-M-BED-LT is the SW corner of it, plan/mep.py), on a
-    # 3-WAY since 2026-09-15. The only switch in this room stood at the CLOSET door. There
-    # was none at D-M-BED2, which is the room's actual entry from the living room — you
-    # crossed a dark bedroom to reach the light. ED-M-BED-SW2 below fixes that.
+    # RM-M-BED (premium tier, 2026-10-31), on a 3-WAY with ED-M-BED-SW2 at D-M-BED2. A south
+    # row at y=3'-4": ED-M-BED-LT (plan/mep_electrical) over the reading chair's lap, CAN5 a
+    # gimbal washing the bookcases, CAN2 over the desk top ahead of the user. CAN3/CAN4 flank
+    # the bed at y=8'-8", 52" either side of its centre and off the mattress, in the one bay
+    # the ERV returns leave free. The fan and the north reading bar stay.
     ElectricalDevice(uid="QTM000EAAA", tag="ED-M-BED-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13), ft(4)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(16, 10.75), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM",
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
                      controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000FAAA", tag="ED-M-BED-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5), ft(10)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(5, 1.875), ft(8, 8)), type_ref="ED-T-LT-CAN4-PREM",
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
                      controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000GAAA", tag="ED-M-BED-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13), ft(10)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(13, 9.875), ft(8, 8)), type_ref="ED-T-LT-CAN4-PREM",
+                     circuit="CKT-LT-MAIN", room="RM-M-BED",
+                     controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="2FXG2TPSRY", tag="ED-M-BED-CAN5", kind=DeviceKind.LIGHT,
+                     position=pt(ft(9, 4), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM-GIMBAL",
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
                      controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -938,10 +879,11 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-C3", face="left", distance_from_start=inch(45.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # RM-M-BATH1: wet-rated can plus a mirror light over the lavatory, which backs onto
-    # the shared south wet wall (FX-M-BATH1-LAV, plan/fixtures.py).
+    # RM-M-BATH1: one can over the lavatory, 22" off the mirror wall and east of the ERV
+    # trunk, plus the mirror light; the basin backs onto the shared south wet wall
+    # (FX-M-BATH1-LAV, plan/fixtures.py). No shower, so mark A.
     ElectricalDevice(uid="QTM000JAAA", tag="ED-M-BATH1-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(m(0.959081), m(7.35676)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(ft(4, 6.5), ft(24, 5.5)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1",
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -959,27 +901,28 @@ MAIN_LIGHTING = [
     # DAY, 5000 K on a plain toggle (ED-M-BATH2-SW-DAY): three B1 cans and the P3 make-up
     # Karlie task light (plan/mirrors.py). EVENING, 2700 K on ED-M-BATH2-SW-EVE:
     # the B2 shower can and three E3 runs off ED-M-BATH2-PSU. The Halo Plus uses its own
-    # touch dimmer and unswitched plug power (2026-10-22). Every can sits in the
-    # y 176"-192" FS-S-WEST bay, clear of both chords; CAN1 was on the y=192" chord. The
-    # radiant-floor stat ED-M-BATH2-FH-STAT is a separate control and switches none of this.
+    # touch dimmer and unswitched plug power (2026-10-22). CAN1 is the vanity can, 23" off
+    # the mirror; CAN2 is centred on the tub. The radiant-floor stat ED-M-BATH2-FH-STAT is a
+    # separate control and switches none of this.
     ElectricalDevice(uid="QTM000NAAA", tag="ED-M-BATH2-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(2, 6), ft(15, 4)), type_ref="ED-T-LT-CAN4-WET-5000",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      controlled_by=("ED-M-BATH2-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000PAAA", tag="ED-M-BATH2-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5, 6), ft(19, 6)), type_ref="ED-T-LT-CAN4-WET-5000",
+                     position=pt(ft(6, 6.5), ft(19, 4)), type_ref="ED-T-LT-CAN4-WET-5000",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      controlled_by=("ED-M-BATH2-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # Inside the glass, either side of REG-M-BATH2-DRY-OUT at x=6'-4".
+    # Inside the glass in the y 176"-192" bay, west of DU-M-BATH2-DRY: as central as the
+    # dryer duct allows.
     ElectricalDevice(uid="N45GBJ06HG", tag="ED-M-BATH2-CAN-SH", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5, 8), ft(15, 4)), type_ref="ED-T-LT-CAN4-WET-5000",
+                     position=pt(ft(5, 3), ft(15, 4)), type_ref="ED-T-LT-CAN4-WET-5000",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      controlled_by=("ED-M-BATH2-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="5KYF1YKZM6", tag="ED-M-BATH2-CAN-SH-EVE", kind=DeviceKind.LIGHT,
-                     position=pt(ft(7), ft(15, 4)), type_ref="ED-T-LT-CAN4-WET-2700",
+                     position=pt(ft(6), ft(15, 4)), type_ref="ED-T-LT-CAN4-WET-2700",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      controlled_by=("ED-M-BATH2-SW-EVE",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1066,17 +1009,18 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-BA2E", face="left", distance_from_start=inch(14),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RM-M-CLOSET's cans, switch, mirror and PAX strips are in plan/closet.py.
-    # Centred in RM-M-MUD-CLOSET's 63" x 32 3/4" clear footprint, between the resolved
-    # interior faces of W-M-W1C/W-M-MUDC-E and W-M-STOS/W-M-MUDC-N.
+    # Centred east-west in RM-M-MUD-CLOSET; y keeps the trim 6" outside the 16" shelf's
+    # storage space (NEC 410.16) and inside the one joist bay that allows it.
     ElectricalDevice(uid="QTM000XAAA", tag="ED-M-STORAGE-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(3, 2.125), ft(28, 0.75)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(3, 2.125), ft(28, 10.75)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MUD-CLOSET",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # room=RM-M-MECH: its ceiling position lands inside the framed shaft closet carved out
-    # of the mudroom's north end, not the mudroom itself.
+    # room=RM-M-MECH, the shaft closet off the mudroom's north end. Its ceiling is risers,
+    # trunk and the ERV chase header; the one bay a 6" housing clears is over
+    # EQ-M-ERV-MAN-EXH, so the can lights that plenum's dampers from 3" above it.
     ElectricalDevice(uid="QTM000YAAA", tag="ED-M-STORAGE-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(3), ft(34, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(5, 1), ft(35, 0.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MECH",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1144,26 +1088,22 @@ MAIN_LIGHTING = [
     # all: only CD-M-DATA-KITCH at 9'-2 1/4" and PR-M-S-BATH1-LAV-DRAIN's leg at
     # 9'-6 11/16"..9'-9 3/4", both above a 5" housing hung off a 106 1/4" ceiling.
     #
-    # The original layout kept cans on the walk and lit the bench with a sconce. A third
-    # 3" can is now centred over the bench below; its bay and housing depth need coordination
-    # with the ERV radials before installation. The two walk cans remain at x=8'-0",
-    # which is D-M-ENTRY's RO centreline AND D-M-MUD's — the walk is one straight line and
-    # the lights are on it. y=28'-8" and y=34'-0" are both mid-bay on the truss module
-    # (chords at 16" off y=0, so 8" + n x 16"), 6" of clear chord either side of a 3 3/4"
-    # housing, and 24" / 17" off the two end walls.
+    # The two walk cans at x=8'-0", D-M-ENTRY's and D-M-MUD's RO centreline, each in a
+    # truss mid-bay: y=28'-8", and y=33'-10" between the 32'-11"/33'-2" chords and the
+    # 34'-6" override.
     ElectricalDevice(uid="1QB0DSS28T", tag="ED-M-MUDROOM-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(8), ft(28, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      controlled_by=("ED-M-MUDROOM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CZBCJDJJ6G", tag="ED-M-MUDROOM-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(8), ft(34)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(8), ft(33, 10)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      controlled_by=("ED-M-MUDROOM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # A third can centres over the 36" bench (position x=15 1/8", y=31'-4"). It joins the
-    # existing mudroom dimmer. The west ceiling band carries ERV radials; confirm a clear
-    # bay and the 3" fixture's actual housing depth during duct coordination before install.
+    # A third can centres over the 36" bench (x=15 1/8", y=31'-4"), a task light for
+    # boots on and off; the bench is the one seat in this house a can stands over on
+    # purpose. It joins the mudroom dimmer, in a bay clear of the ERV radials.
     ElectricalDevice(uid="MUDCAN00001", tag="ED-M-MUDROOM-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(inch(15.125), ft(31, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
@@ -1198,20 +1138,21 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-MUDC-E", face="left", distance_from_start=inch(9),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # RM-M-HALL: three 3" cans down the run, on a 3-way pair — a 14' hall switched from
-    # one end only is the classic thing to get wrong.
+    # RM-M-HALL: three cans down the run on a 3-way pair, with ED-M-STAIR-CAN1 below as the
+    # fourth: one row at y=24'-8" (the mid-bay nearest the hall's centre line), 2'-8" apart,
+    # 2'-0" off each end.
     ElectricalDevice(uid="QTM0010AAA", tag="ED-M-HALL-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(6, 6), ft(24)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(8, 3), ft(24, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-HALL-SW", "ED-M-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0011AAA", tag="ED-M-HALL-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(11), ft(24)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(10, 11), ft(24, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-HALL-SW", "ED-M-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0012AAA", tag="ED-M-HALL-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(15, 6), ft(24)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(16, 3), ft(24, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-HALL-SW", "ED-M-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1238,11 +1179,12 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-HS4", face="left", distance_from_start=inch(50),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # The stair head. Both kept their tags and positions when RM-M-STAIR retired into
-    # RM-M-LIVING (2026-07-30) — they still light the well, they are just no longer in a
-    # room of their own. The switch is also one end of the basement railing run's 3-way.
+    # The stair head. The can stood under FO-S-STAIR's open well with no ceiling to recess
+    # into; since 2026-10-31 it is the hall row's third can, at the foot of ST-M2S, on its
+    # own backup-circuit switch. The switch is also one end of the basement railing run's
+    # 3-way.
     ElectricalDevice(uid="QTM0015AAA", tag="ED-M-STAIR-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(27)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(13, 7), ft(24, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-STAIR-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1274,32 +1216,14 @@ SECOND_LIGHTING = [
              mount=Mount(kind=MountKind.CEILING, elevation=inch(94.5))),
     # The driver moved with the cove: (20'-0", 30'-6") is inside EQ-S-HP1-AH's footprint
     # since the 2026-09-04 HP1 move. (19'-0", 27'-2") keeps the relationship it always had
-    # — a driver hidden in SF-S-DUCT, 12" west of ED-S-HALL-CAN3 — on the other side of the
+    # — a driver hidden in SF-S-DUCT — on the other side of the
     # y=27'-8" seam from the machine.
     ElectricalDevice(uid="QTS0001AAA", tag="ED-S-HALL-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(19), ft(27, 2)), type_ref="ED-T-LT-PSU-200",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      mount=Mount(kind=MountKind.CEILING)),
-    # CAN1-3 recess into the SF-S-DUCT dropped duct soffit face (drop 14" -> 7'-10"),
-    # not the 9' structural ceiling above it.
-    ElectricalDevice(uid="QTS0002AAA", tag="ED-S-HALL-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(20), ft(13)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
-                     controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True,
-                                 elevation=ft(7, 10))),
-    ElectricalDevice(uid="QTS0003AAA", tag="ED-S-HALL-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(20), ft(20)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
-                     controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True,
-                                 elevation=ft(7, 10))),
-    ElectricalDevice(uid="QTS0004AAA", tag="ED-S-HALL-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(20), ft(27)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
-                     controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True,
-                                 elevation=ft(7, 10))),
+    # No hall cans since 2026-10-31: the three that recessed into SF-S-DUCT sat inside
+    # DU-S-HP-SUP. The LR-S-HALL-GAP shadow-gap cove lights the hall on these switches.
     # Both x's follow the hall face of W-S-BW1/BW2, INT_2X4_RC (plan/storeys/second.py) —
     # the resilient channel faces the hall, because the hall is what the bedrooms are being
     # protected from. Authored x is the face LESS 1" (box back on the face, 2" box):
@@ -1319,8 +1243,10 @@ SECOND_LIGHTING = [
                          wall_ref="W-S-BW2", face="left", distance_from_start=inch(106),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # RM-S-SUITE: the linear wall lamp the notes ask for over the bed, on the long west
-    # wall, plus cans down the west strip and one in the arm past the walk-in.
+    # RM-S-SUITE: the linear wall lamp over the bed is the feature light. The cans
+    # (2026-10-31): ED-S-SUITE-LT over the desk ahead of its user, CAN2 on the bed's axis
+    # between the dresser and the bed foot, CAN3 in the east aisle beside the bed's foot
+    # half, CAN4 in the arm past the walk-in on ED-S-CLOSET-CAN1's x. None over the mattress.
     # y tracks W-S-SN1's south face (same station as ED-S-SUITE-RC5), the 8" staggered
     # sound wall.
     ElectricalDevice(uid="QTS0007AAA", tag="ED-S-SUITE-LAMP", kind=DeviceKind.LIGHT,
@@ -1331,23 +1257,24 @@ SECOND_LIGHTING = [
                          wall_ref="W-S-SN1", face="right", distance_from_start=inch(59.875),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTS0008AAA", tag="ED-S-SUITE-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4), ft(15)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(5), ft(14)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITE",
                      controlled_by=("ED-S-SUITE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0009AAA", tag="ED-S-SUITE-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4), ft(20)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(8, 8.75), ft(16, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITE",
                      controlled_by=("ED-S-SUITE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS000AAAA", tag="ED-S-SUITE-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13, 6), ft(14, 2)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(13, 9.5), ft(14)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITE",
                      controlled_by=("ED-S-SUITE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
+    # Centred on the shelf run, its trim 6" outside the 16" shelf's storage space (NEC 410.16).
     ElectricalDevice(uid="QTS000BAAA", tag="ED-S-CLOSET-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13, 10), ft(10, 8)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(13, 9.5), ft(11, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-CLOSET",
                      controlled_by=("ED-S-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1373,18 +1300,19 @@ SECOND_LIGHTING = [
     # notes/superseded/shower_niche.md). Mark E1 stays in the catalog as a named revert.
 
 
-    # RM-S-BATH1: two wet cans, one over the shower, and the mirror the brief is most
+    # RM-S-BATH1: a general can, a wet can over the shower clear of the stack vent at
+    # y=34'-3", and the mirror the brief is most
     # specific about — a 36" front-lit ring on the room's east wall, on the lavatory's
     # centre line (the lav faces east across the room). Front-lit, not edge-lit: an
     # edge-lit ring backlights the face and is useless to shave or do makeup by. The
     # controller has to remember its last setting and its standby LED has to be dim.
     ElectricalDevice(uid="QTS000HAAA", tag="ED-S-BATH1-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(m(1.22226), m(9.29491)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(m(1.22226), ft(30)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1",
                      controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS000JAAA", tag="ED-S-BATH1-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(m(1.6574), m(10.3827)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(ft(5, 5.75), ft(33, 9)), type_ref="ED-T-LT-CAN4-WET",
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1",
                      controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1478,51 +1406,61 @@ SECOND_LIGHTING = [
                          wall_ref="W-S-SS2", face="right", distance_from_start=inch(121),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # RM-S-BED1/2/3: identical four-can grids flanking each bed wall.
+    # RM-S-BED1/2/3, one template laid off the furniture (2026-10-31): ED-S-BED*-LT in front
+    # of the PAX fronts, CAN2 over the open floor beside or past the bed foot, CAN3 over the
+    # desk ahead of its user, and CAN4 a reading can 21" off the headboard wall on its own
+    # switch leg (no bedside lamp in these rooms). BED2's centred queen gets a pair, CAN4 and
+    # CAN5, 2' either side of its centre; BED1's twin and BED3's full stand against a wall
+    # and take one, on the open side. Joist mid-bays throughout; no duct runs over these rooms.
     ElectricalDevice(uid="QTS0010AAA", tag="ED-S-BED1-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(11, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(30), ft(14)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED1",
                      controlled_by=("ED-S-BED1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0011AAA", tag="ED-S-BED1-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25), ft(15, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(34, 4), ft(15, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED1",
                      controlled_by=("ED-S-BED1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0012AAA", tag="ED-S-BED1-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(15, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(33, 8.5), ft(12, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED1",
-                     controlled_by=("ED-S-BED1-SW",),
+                     controlled_by=("ED-S-BED1-SW-READ",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0013AAA", tag="ED-S-BED2-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(20, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(28, 8), ft(20, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED2",
                      controlled_by=("ED-S-BED2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0014AAA", tag="ED-S-BED2-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25), ft(24, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(27, 10.5), ft(25, 7.75)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED2",
                      controlled_by=("ED-S-BED2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0015AAA", tag="ED-S-BED2-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(24, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(30, 8), ft(24, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED2",
-                     controlled_by=("ED-S-BED2-SW",),
+                     controlled_by=("ED-S-BED2-SW-READ",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="XSN6WX8VW4", tag="ED-S-BED2-CAN5", kind=DeviceKind.LIGHT,
+                     position=pt(ft(34, 8), ft(24, 8)), type_ref="ED-T-LT-CAN4",
+                     circuit="CKT-LT-UPPER", room="RM-S-BED2",
+                     controlled_by=("ED-S-BED2-SW-READ",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0016AAA", tag="ED-S-BED3-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(29, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(27, 5), ft(32, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED3",
                      controlled_by=("ED-S-BED3-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0017AAA", tag="ED-S-BED3-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25), ft(33, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(23, 1.5), ft(32, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED3",
                      controlled_by=("ED-S-BED3-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0018AAA", tag="ED-S-BED3-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(33, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(33, 8.5), ft(31, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED3",
-                     controlled_by=("ED-S-BED3-SW",),
+                     controlled_by=("ED-S-BED3-SW-READ",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
     # The landing end of RM-S-HALL + the stairwell chandelier, hung over the ST-M2S

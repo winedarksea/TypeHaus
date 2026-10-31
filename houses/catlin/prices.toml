@@ -2703,17 +2703,17 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # the Nora NSIC-401QAT housing plus installing it; its trim and lamp are part rows priced by
 # product key, so a tier costs what its trim and lamp add. Allowances, not quotes: re-quote
 # before ordering. Mark C, the Juno wafer, is a whole fixture on its own key.
-"ED-T-LT-CAN4" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # @CAN4
-"ED-T-LT-CAN4-4000" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # @CAN4-4000
-"ED-T-LT-CAN4-PREM" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # @CAN4-PREM
-"ED-T-LT-CAN4-PREM-GIMBAL" = { material = { low = 22, high = 32 }, labour = { low = 60, high = 120 } }  # @CAN4-PREM-GIMBAL, aimed on site
-"ED-T-LT-CAN4-WET" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # @CAN4-WET
-"ED-T-LT-CAN4-WET-5000" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # @CAN4-WET-5000
-"ED-T-LT-CAN4-WET-2700" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # @CAN4-WET-2700
-"ED-T-LT-WAFER4" = { material = { low = 30, high = 40 }, labour = { low = 52, high = 108 } }  # @WAFER4
-"PROD-NORA-NS-40P" = { material = { low = 10, high = 16 }, labour = 0 }  # stepped baffle trim
-"PROD-NORA-NS-12" = { material = { low = 15, high = 25 }, labour = 0 }  # gimbal trim
-"PROD-NORA-NS-76W" = { material = { low = 15, high = 25 }, labour = 0 }  # wet shower trim
+"ED-T-LT-CAN4" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 57 ea, mark A
+"ED-T-LT-CAN4-4000" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 2 ea, A1
+"ED-T-LT-CAN4-PREM" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 7 ea, A2
+"ED-T-LT-CAN4-PREM-GIMBAL" = { material = { low = 22, high = 32 }, labour = { low = 60, high = 120 } }  # 4 ea, A3, aimed on site
+"ED-T-LT-CAN4-WET" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # 2 ea, B
+"ED-T-LT-CAN4-WET-5000" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # 3 ea, B1
+"ED-T-LT-CAN4-WET-2700" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # 1 ea, B2
+"ED-T-LT-WAFER4" = { material = { low = 30, high = 40 }, labour = { low = 52, high = 108 } }  # 2 ea, C
+"PROD-NORA-NS-40P" = { material = { low = 10, high = 16 }, labour = 0 }  # 66 ea, stepped baffle trim
+"PROD-NORA-NS-12" = { material = { low = 15, high = 25 }, labour = 0 }  # 4 ea, gimbal trim
+"PROD-NORA-NS-76W" = { material = { low = 15, high = 25 }, labour = 0 }  # 6 ea, wet shower trim
 "PROD-BULBRITE-PAR20-90-30K" = { material = { low = 7, high = 12 }, labour = 0 }
 "PROD-BULBRITE-PAR20-90-27K" = { material = { low = 7, high = 12 }, labour = 0 }
 "PROD-BULBRITE-PAR20-90-40K" = { material = { low = 7, high = 14 }, labour = 0 }

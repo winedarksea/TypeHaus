@@ -1778,10 +1778,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   one-piece tub-shower insert takes no niche, screw or accessory: only the valve and spout
   knockouts. Both lit niches are gone. The spec lives on the fixture types' `source` and
   their price rows (`notes/bath2_shower.md` §6); the sauna rinse is the open exception.
-- **CCT rule: no install-time selectable modules; user-adjustable fixtures are allowed**
-  (2026-10-12). A 5CCT DIP switch is set once, blind, and wrong; one mark per fixed CCT. A
-  tunable-white or RGB fixture with a live control is fine: `cct_k` is its working CCT,
-  `source` its range. BATH2 is 5000 K day / 2700 K evening (`notes/bath2_lighting.md`).
+- **CCT rule (owner, 2026-10-31): one schedule mark per working CCT.** A selectable (5CCT)
+  module is allowed, set once to its mark's `cct_k`; a tunable fixture records its working
+  CCT in `cct_k` and its range in `source`. BATH2 is 5000 K day / 2700 K evening
+  (`notes/bath2_lighting.md`).
+- **Recessed cans are one replaceable-lamp housing** (2026-10-31): Nora NSIC-401QAT, 6" tall,
+  with the tier set by its trim and lamp `parts`: A cheap PAR20, A2/A3 95-CRI in RM-M-LIVING
+  and RM-M-BED, B wet. Mark C (Juno wafer) only where 6" cannot fit. Every can sits in a
+  clear joist bay off the furniture, graded by `electrical.ceiling_can_framing`.
 - **`W-M-HS4` is a pocket wall and nothing may ever go in it again** — no outlet, switch,
   pipe, register, blocking, or towel bar between 12'-2" and 15'-4 1/2" on the y=22'-4" datum
   (the built cavity is 1" north of it; no stud to fasten to, no depth to recess into).

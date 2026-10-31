@@ -321,7 +321,9 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # 1136 -> 1164 on 2026-10-27: the BBD75 band's +17'-4" backing course packs 28 more
     # girt stations across the N/S walls. 1163 since the door holds released (2026-10-29):
     # D-M-BALC's re-centred 63 5/16" RO packs one girt station fewer.
-    assert row["count"] == 1163 and furring[0]["count"] == 198
+    # 1165 since the band moved to +19'-0" (2026-10-31): its course now runs unbroken past
+    # the north window heads it used to stop at.
+    assert row["count"] == 1165 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

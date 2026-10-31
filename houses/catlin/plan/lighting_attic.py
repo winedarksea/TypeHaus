@@ -40,22 +40,17 @@ from typehaus.model import Location, WallAttachment, m
 # than it was, not less. That rule held through the 2026-09-06 rework below: every uid in
 # this file is still here, and the lumen count went UP.
 #
-# ** 2026-09-06 — THE STOREY CAME OFF ITS RECESSED CANS, AND THE REASON IS NOT THE ONE THE
-# REVIEW GAVE. ** The finding was that a 6" can housing eats the ROOF assembly's whole
-# 6 7/8" batt zone and punches the 5" of ccSPF that is the only air barrier R806.5 rests on.
-# ** THE 6" WAS WRONG DATA. ** Lotus's LL4SR sheet — the product this house has named all
-# along — reads 2" deep, "Type IC Rated - No Housing Required", "Driver Inside Connection
-# Box", Air-Tight, Approved Location "Insulated Ceilings, Open Plenum, Wet". At 2" it sits
-# inside the batt and never reaches the foam, and the type is corrected in
-# plan/lighting_types.py. So the cans were never the code problem they were written up as.
+# ** 2026-09-06 — THE STOREY CAME OFF ITS RECESSED CANS. ** A 6" housing eats the ROOF
+# assembly's 6 7/8" batt zone and reaches the 5" of ccSPF R806.5 rests on, so the one can
+# kept here is mark C, the 2 1/4" Juno wafer, which stays inside the batt.
 #
-# What is real, and is why they went anyway (owner's call), is the AIM: a flat trim in a
+# The reason the rest went (owner's call) is the AIM: a flat trim in a
 # 6:12 plane throws its cone 26.6 deg off plumb and scallops one wall of every room. Wall
 # fittings on the CENTRE LINE — W-A-C1/C1B/C2/C2B, the only full-height walls this storey
 # has, since both gables rake to a 1 1/2" plate at the eave — light the slope the way the
-# slope wants to be lit. ** ONE CAN IS DELIBERATELY KEPT: ** ED-A-STUBATH-CAN1, over a
-# shower pan, where a sconce is the wrong fitting and a 26.6 deg tilt aims INTO the room
-# rather than away from it. Its own note says so.
+# slope wants to be lit. ** ONE CAN IS DELIBERATELY KEPT: ** ED-A-STUBATH-CAN1, in the
+# bath between the WC and the lav, where its 26.6 deg tilt aims INTO the room. Its own
+# note says so.
 #
 # ** THE LUMEN FLOOR SHAPED THIS LAYOUT AND NO LONGER BINDS IT (2026-09-10). ** It read:
 # RM-A-STUDIO is on R303.1 Exception 1 and needs 12.5 lm per square foot of point
@@ -316,17 +311,13 @@ ATTIC_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C2", face="left", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # ** THE ONE RECESSED CAN THIS STOREY KEEPS, AND THE REASON IS THE SHOWER. ** Everything
-    # else here went to a wall fitting on 2026-09-06; a sconce over a 36" pan is the wrong
-    # article, and the 26.6 deg tilt a flat trim takes in a 6:12 plane — the objection that
-    # moved the rest — aims this one DOWN-SLOPE INTO THE ROOM, at the person, which is where
-    # you want it. The fixture is legitimate here on the corrected data: Lotus's LL4SR is 2"
-    # deep, Type IC, Air-Tight, Wet and Plenum rated, approved for insulated ceilings, so it
-    # sits inside the ROOF assembly's 6 7/8" batt and never reaches the 5" of ccSPF that
-    # carries R806.5. Retyped wet-listed because its station falls inside the bath box. Same
-    # 900 lm; not part of the studio's count.
+    # ** THE ONE RECESSED CAN THIS STOREY KEEPS. ** It lights the bath between the WC and the
+    # lav, west of the shower; the 26.6 deg tilt a flat trim takes in a 6:12 plane aims it
+    # DOWN-SLOPE into the room, at the person (owner's aim). Mark C, the 2 1/4" Juno wafer
+    # (IC, airtight, wet), so it sits inside the ROOF assembly's 6 7/8" batt and never
+    # reaches the ccSPF. 900 lm; not part of the studio's count.
     ElectricalDevice(uid="QTA0009AAA", tag="ED-A-STUBATH-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13, 9), ft(19, 6)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(ft(13, 9), ft(19, 6)), type_ref="ED-T-LT-WAFER4",
                      circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
                      controlled_by=("ED-A-STUBATH-SW",),
                      # 7'-0" exactly: x 13'-9" is where H(x) reaches 7'-0", which is why
