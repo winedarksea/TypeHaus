@@ -6,11 +6,38 @@ from typehaus.resolve.doorway import DOORWAY
 from typehaus.resolve.geometry import wall_frame
 
 
+def _pocket_cavity(model, opening):
+    """``(wall, low, high)`` stations of a pocket's cavity, mouth outward, clipped to its run."""
+    from typehaus.resolve.framing.pockets import pocket_segments
+
+    if not opening.pocket_run_m:
+        return []
+    segments, _shortfall = pocket_segments(model.plan, model, opening)
+    remaining, cuts = opening.pocket_run_m, []
+    for segment in segments:  # past the run is the closed-end jamb pack, which keeps its plate
+        take = min(remaining, segment.high_m - segment.low_m)
+        if take <= 0:
+            break
+        # The leaf enters a segment at its low end when it travels up that wall's axis.
+        mouth_low = (opening.pocket_sign > 0 if segment.wall_tag == opening.host_wall
+                     else segment.low_m <= 1e-9)
+        cuts.append((segment.wall_tag, segment.low_m, segment.low_m + take) if mouth_low
+                    else (segment.wall_tag, segment.high_m - take, segment.high_m))
+        remaining -= take
+    return cuts
+
+
 def clear_doorway_sole_plates(model):
+    # Each cut is (opening, low, high) in its wall's axis stations. A pocket's leaf travels
+    # its whole cavity at the undercut, so the cassette's RO is cut, not only the mouth.
     openings = {}
     for opening in model.openings:
         if opening.doorway:
-            openings.setdefault(opening.host_wall, []).append(opening)
+            openings.setdefault(opening.host_wall, []).append(
+                (opening, opening.center_along_m - opening.width_m / 2,
+                 opening.center_along_m + opening.width_m / 2))
+            for wall_tag, low, high in _pocket_cavity(model, opening):
+                openings.setdefault(wall_tag, []).append((opening, low, high))
     walls = []
     for wall in model.walls:
         origin, tangent, _, _ = wall_frame(wall)
@@ -27,7 +54,7 @@ def clear_doorway_sole_plates(model):
             if abs(end - start) <= DOORWAY.height_tolerance_m:
                 members.append(member)
                 continue
-            for opening in openings.get(wall.tag, ()):
+            for opening, low, high in openings.get(wall.tag, ()):
                 assembly = opening.doorway
                 floors = assembly.adjacent_floors
                 known_surfaces = [f.surface_m for f in floors
@@ -45,8 +72,8 @@ def clear_doorway_sole_plates(model):
                        and c.base_z_m >= member.z1_m - DOORWAY.height_tolerance_m
                        for c in assembly.components):
                     continue
-                lo = (opening.center_along_m - opening.width_m / 2 - start) / (end - start)
-                hi = (opening.center_along_m + opening.width_m / 2 - start) / (end - start)
+                lo = (low - start) / (end - start)
+                hi = (high - start) / (end - start)
                 lo, hi = sorted((lo, hi))
                 trimmed = []
                 for a, b in segments:
@@ -69,5 +96,32 @@ def clear_doorway_sole_plates(model):
                     continue
                 members.append(replace(member, child_key=f"{member.child_key}-passage-{index}",
                                        p0=p0, p1=p1, length_m=remaining_length))
-        walls.append(replace(wall, members=tuple(members)))
+        walls.append(replace(wall, members=_seat_split_studs(wall, members, origin, tangent)))
     model.walls = walls
+
+
+def _seat_split_studs(wall, members, origin, tangent):
+    """A pocket kit's split studs stood on the plate just cut away; drop them to its bottom."""
+    def station(point):
+        return sum((point[i] - origin[i]) * tangent[i] for i in (0, 1))
+
+    tol = DOORWAY.height_tolerance_m
+
+    def plate_under(member, plates):
+        at = station(member.p0)
+        return next((p for p in plates
+                     if abs(p.z1_m - member.z0_m) <= tol
+                     and min(station(p.p0), station(p.p1)) - tol <= at
+                     <= max(station(p.p0), station(p.p1)) + tol), None)
+
+    before = [m for m in wall.members if m.child_key.startswith("plate-bottom")]
+    after = [m for m in members if m.child_key.startswith("plate-bottom")]
+    out = []
+    for member in members:
+        cut = (member.child_key.startswith("pocketsplit")
+               and plate_under(member, after) is None and plate_under(member, before))
+        if cut:
+            drop = member.z0_m - cut.z0_m
+            member = replace(member, z0_m=cut.z0_m, length_m=member.length_m + drop)
+        out.append(member)
+    return tuple(out)

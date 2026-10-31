@@ -130,9 +130,11 @@ def _casing(plan, model, scope: TrimScope, wall: ResolvedWall, opening, side: in
             laid.append((wall.storey, opening.tag, Polygon(rect(sign * inner, sign * stop))))
     pieces = list(legs)
     span = reach[-1] + reach[1]
-    pieces.append(TrimPiece(name="head", outline=rect(-reach[-1], reach[1]), z0_m=head_z,
-                            z1_m=head_z + width, length_m=span, width_m=width))
-    if raised:
+    # A head stands on its legs: with both dropped, the face is uncased (the clips say why).
+    if legs:
+        pieces.append(TrimPiece(name="head", outline=rect(-reach[-1], reach[1]), z0_m=head_z,
+                                z1_m=head_z + width, length_m=span, width_m=width))
+    if raised and legs:
         pieces.append(TrimPiece(name="sill", outline=rect(-reach[-1], reach[1]),
                                 z0_m=sill_z0, z1_m=sill_z0 + width, length_m=span,
                                 width_m=width))

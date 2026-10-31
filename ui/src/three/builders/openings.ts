@@ -156,6 +156,8 @@ export function buildOpening(parent: THREE.Group, roughOpening: Opening, wall: W
   if (exterior) {
     const outerEdge = seat?.outer_m ?? exterior.plane + exterior.sign * WINDOW_TRIM_PROUD_DEPTH_M;
     let innerEdge = -exterior.sign * (depth / 2);
+    // The unit's own frame depth off the mount plane (geometry_openings.py:168).
+    if (seat?.outer_m != null && seat.frame_depth_m) innerEdge = seat.outer_m - exterior.sign * seat.frame_depth_m;
     // Outboard of the back dam: the unit never stands in the pan's upturn.
     if (seat) innerEdge = exterior.sign * Math.max(exterior.sign * innerEdge, exterior.sign * seat.inner_m);
     frameDepth = Math.abs(outerEdge - innerEdge);

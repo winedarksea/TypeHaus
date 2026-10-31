@@ -14,6 +14,11 @@ from typehaus.resolve.geometry_millwork import (
 from typehaus.server.model_json import model_to_dict
 
 
+def _drawn_casings(model):
+    """A face whose legs both dropped keeps its record (for the clips) but draws nothing."""
+    return [c for c in model.door_casings if door_casing_prisms(c)]
+
+
 def test_trim_reaches_the_viewer_as_drawable_boards(catlin_model_ro):
     """Every base run is sent, the flash-cove and rubber bases included, with its kind."""
     payload = model_to_dict(catlin_model_ro)
@@ -28,9 +33,9 @@ def test_trim_reaches_the_viewer_as_drawable_boards(catlin_model_ro):
     assert sum(len(row["trim_pieces"]) for row in suite) == 9
     assert all(p["material_ref"] == "poplar-batten-painted"
                for row in suite for p in row["trim_pieces"])
-    assert len(payload["door_casings"]) == len(catlin_model_ro.door_casings)
+    assert len(payload["door_casings"]) == len(_drawn_casings(catlin_model_ro))
     for row, casing in zip(sorted(payload["door_casings"], key=lambda r: r["uid"]),
-                           sorted(catlin_model_ro.door_casings, key=lambda c: c.uid),
+                           sorted(_drawn_casings(catlin_model_ro), key=lambda c: c.uid),
                            strict=True):
         assert len(row["pieces"]) == len(casing.pieces)
         assert row["opening_uid"] == casing.opening_uid
@@ -67,9 +72,9 @@ def test_glb_draws_the_same_boards_selecting_as_room_and_door(catlin_model_ro):
     doors = {o.uid for o in catlin_model_ro.openings if o.is_door}
     casing_nodes = [n for n in millwork if n["extras"].get("kind") == "opening"
                     and n["extras"]["uid"] in doors]
-    assert len(casing_nodes) == len(catlin_model_ro.door_casings)
+    assert len(casing_nodes) == len(_drawn_casings(catlin_model_ro))
     assert {n["extras"]["uid"] for n in casing_nodes} == {
-        c.opening_uid for c in catlin_model_ro.door_casings}
+        c.opening_uid for c in _drawn_casings(catlin_model_ro)}
 
 
 def test_trim_exports_as_ifc_skirting_and_moldings(catlin_model_ro, catlin_ifc_path):
@@ -97,7 +102,7 @@ def test_trim_exports_as_ifc_skirting_and_moldings(catlin_model_ro, catlin_ifc_p
         assert ifcopenshell.util.element.get_psets(product)[PSET_SOURCE]["room"] == run.room
         assert ifcopenshell.util.element.get_psets(product)[PSET_SOURCE]["kind"] == run.kind
     assert {r.kind for r in drawn} == {"trim", "integral_cove", "resilient_base"}
-    for casing in catlin_model_ro.door_casings:
+    for casing in _drawn_casings(catlin_model_ro):
         product = coverings[casing.tag]
         assert product.PredefinedType == "MOLDING"
         items = product.Representation.Representations[0].Items

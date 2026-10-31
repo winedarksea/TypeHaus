@@ -165,6 +165,9 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         outer_edge = (seat.outer_m if seat is not None and seat.outer_m is not None
                       else plane + sign * _WINDOW_TRIM_PROUD_DEPTH_M)
         inner_edge = -sign * (depth / 2.0)
+        if seat is not None and seat.outer_m is not None and seat.frame_depth_m:
+            # The product's own depth off the mount plane (the stool and returns meet it).
+            inner_edge = outer_edge - sign * seat.frame_depth_m
         if seat is not None:
             # Outboard of the back dam: the unit never stands in the pan's upturn.
             inner_edge = sign * max(sign * inner_edge, sign * seat.inner_m)

@@ -379,6 +379,8 @@ export interface WindowSeat {
   head_drop_m: number;
   inner_m: number;
   outer_m?: number | null;
+  // WindowType.frame_depth (metres); null when the type authors none.
+  frame_depth_m?: number | null;
 }
 
 export interface AuthoredDoorPart {

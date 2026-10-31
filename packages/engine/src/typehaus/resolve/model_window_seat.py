@@ -29,6 +29,8 @@ class WindowSeat:
     inner_m: float
     #: The signed mount plane when a profiled metal trim kit terminates the reveal.
     outer_m: float | None = None
+    #: The product's ``WindowType.frame_depth`` back from ``outer_m``; None draws to the dam.
+    frame_depth_m: float | None = None
 
 
 def orderable_size(available_m: float, step: Length | None) -> float:

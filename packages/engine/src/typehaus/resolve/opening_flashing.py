@@ -138,7 +138,9 @@ def resolve_window_seats(model: ResolvedModel, cfg: FlashingConfig = FLASHING) -
                 if frame else None)
         if seat is not None and metal_window:
             sign = frame.outward[0] * -frame.along[1] + frame.outward[1] * frame.along[0]
-            seat = replace(seat, outer_m=sign * frame.mount)
+            depth = getattr(product, "frame_depth", None)
+            seat = replace(seat, outer_m=sign * frame.mount,
+                           frame_depth_m=depth.meters if depth is not None else None)
         seated.append(opening if frame is None else replace(opening, window_seat=seat))
     model.openings = seated
 

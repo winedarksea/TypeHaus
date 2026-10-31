@@ -115,6 +115,12 @@ def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
         raise ValueError("window product has no rectangular frame")
     left, _right, head, sill = frame.solids
     frame_face = min(sign * project(point) for solid in frame.solids for point in solid.ring)
+    # Gypsum lines the framed jamb only: an outie frame stands past the sheathing, and that
+    # buck-lined reveal is not a board return (geometry-review O4-002, open).
+    shell = [sign * project(point) for layer in layers
+             if layer.function in ("structure", "sheathing") for point in layer.polygon]
+    if shell:
+        frame_face = min(frame_face, max(shell))
     depth = frame_face - face
     if depth <= _GEOMETRY_TOLERANCE_M:
         raise ValueError("window frame leaves no interior reveal depth")

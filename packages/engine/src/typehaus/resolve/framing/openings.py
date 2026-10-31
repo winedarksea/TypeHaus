@@ -492,10 +492,11 @@ def _append_pocket_cavity(out: list[FramedMember], rw, direction, wall_start,
     the jamb pack has already been relocated to ``closed`` by the caller, and that king and
     jack together are the solid post the leaf stops against; emitting another one there
     puts two members on one station, which is a clash, not framing. And nothing reaches
-    above ``header_bottom``: the cavity exists only under the header, so the wall's own
-    plates run continuously over and under the pocket. That is what still lets a partition
-    tee into this wall over the cavity, tied plate to plate, with only its vertical edge
-    floating.
+    above ``header_bottom``: the cavity exists only under the header, so the wall's top
+    plates run continuously over the pocket. That is what still lets a partition tee into
+    this wall over the cavity, tied plate to plate, with only its vertical edge floating.
+    The sole plate under the cavity is cut away (``doorway_framing``), so the split studs
+    bear on the subfloor.
     """
     spacing = POCKET_SPLIT_STUD_SPACING.meters
     split_member = (POCKET_SPLIT_STUD_MEMBER_2X6

@@ -369,7 +369,7 @@ continuous envelope.
 | 30×48 | 28.710×46.805 (Drutex) · **28⅝×46½ (Andersen)** |
 | 63×48 | 61.710×46.805 |
 
-The two garage frames are about 13.460×23.509". **WIN-B-SAUNA is unresolved:** its
+The two garage frames are 13.460×23.553" (14×24 RO less a 0.270" jamb/head and 0.177" sill seat). **WIN-B-SAUNA is unresolved:** its
 manual court-opening detail supplies no modeled seat. Its schematic placeholder is not a
 frame dimension; A-602 prints UNRESOLVED and IFC leaves overall frame dimensions unset.
 Add a dimensioned buck/pan/seat detail before ordering it. Stool heights still require the
