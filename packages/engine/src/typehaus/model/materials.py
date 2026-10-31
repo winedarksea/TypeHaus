@@ -156,7 +156,8 @@ class Material(HausModel):
     fastener_coverage_in: float | None = None
     # The CONCEALED panel screw as a counted part (decision #105): the catalog model to bill
     # and the spacing along the fastened edge. ``ceil(area / (coverage x pitch))``. Set only
-    # where ``exposed_fastener`` is False, or the screws bill twice.
+    # where ``exposed_fastener`` is False, or the screws bill twice. No pitch: one screw per
+    # support crossing, at the host wall's girt spacing (``takeoff/panel_fasteners.py``).
     panel_fastener_part: str | None = None
     panel_fastener_pitch_in: float | None = None
     # Specific gravity, G, of a WOOD material, oven-dry — NDS 2018 Table 12.3.3A. It is a

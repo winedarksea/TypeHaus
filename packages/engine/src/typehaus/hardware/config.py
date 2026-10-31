@@ -376,14 +376,18 @@ class TreatedFramingFastenerRules:
 
     Read off IRC Table R602.3(1): 3 nails at each end of a stick (joist to sill or top plate,
     toe nail, 3-8d; rim to joist, end nail), built-up plies face nailed in 2 rows at 16" o.c.
-    (built-up headers, item 6), and a plate face nailed to the sill under it at 16" o.c.
-    (bottom plate to rim or blocking). A connector-hung end overlaps its hanger's nails.
+    (built-up headers, item 6). A treated sill that IS a wall's bottom plate takes each stud
+    landing on it end nailed (stud to bottom plate, 2-16d); one under a floor takes the rim or
+    blocking toe nailed at 6" o.c. plus 3 per joist end bearing on it. A connector-hung end
+    overlaps its hanger's nails.
     """
 
     nails_per_end: int = 3
     ply_interface_rows: int = 2
     ply_nail_spacing_in: float = 16.0
-    sill_face_nail_spacing_in: float = 16.0
+    sill_stud_end_nails: int = 2
+    sill_rim_toenail_spacing_in: float = 6.0
+    sill_joist_categories: frozenset = frozenset({"joist", "sister_joist", "trimmer"})
     # Fastened elsewhere: girts, their blocks and closures (TLOK), and the boards a stair
     # wears (finish nailing). Stair spacers are excluded by connection, not category.
     excluded_categories: frozenset = frozenset({

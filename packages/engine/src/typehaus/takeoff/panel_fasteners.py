@@ -2,8 +2,10 @@
 
 A clipped or nail-strip panel's screws used to ride inside its $/SF rate; when the coating
 is the spec (316 on the walls), that is how it gets cheaped out. A cladding material opts
-in with ``Material.panel_fastener_part`` and ``panel_fastener_pitch_in``: one screw per
-``fastener_coverage_in`` of panel width per pitch along it, over the layer's net area.
+in with ``Material.panel_fastener_part``: one screw per ``fastener_coverage_in`` of panel
+width per pitch along it, over the layer's net area. The pitch is the product's own
+``panel_fastener_pitch_in`` (a nail strip over a solid deck), else one screw per support
+crossing at the wall's own girt spacing — the tributary ``structural.cladding_wind`` grades.
 A face-fastened (``exposed_fastener``) panel is billed by ``takeoff/fasteners.py`` instead.
 """
 
@@ -15,6 +17,7 @@ from collections import Counter
 from typehaus.hardware.catalog import hardware_by_model
 from typehaus.model.enums import LayerFunction
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.framing.truss_girts import truss_girt_bands
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.envelope import wall_layer_net_area_m2, wall_net_areas_m2
 from typehaus.takeoff.hardware_row import hardware_row
@@ -36,10 +39,21 @@ def _counted_material(model: ResolvedModel, material_ref: str):
     if material.exposed_fastener:
         raise ValueError(f"{material.tag}: panel_fastener_part on an exposed_fastener panel "
                          "bills its screws twice")
-    if not material.fastener_coverage_in or not material.panel_fastener_pitch_in:
-        raise ValueError(f"{material.tag}: panel_fastener_part needs fastener_coverage_in "
-                         "and panel_fastener_pitch_in")
+    if not material.fastener_coverage_in:
+        raise ValueError(f"{material.tag}: panel_fastener_part needs fastener_coverage_in")
     return material
+
+
+def _pitch_in(model: ResolvedModel, material, assembly_tag: str | None, host: str) -> float:
+    """The product's pitch along the fastened edge, else the host's girt spacing."""
+    if material.panel_fastener_pitch_in:
+        return material.panel_fastener_pitch_in
+    bands = truss_girt_bands(model.plan, assembly_tag)
+    spacing = bands[1].framing.spacing if bands and bands[1].framing else None
+    if spacing is None:
+        raise ValueError(f"{host}: {material.tag} has no panel_fastener_pitch_in and its "
+                         "host has no girt band to read one screw per support from")
+    return float(spacing.inches)
 
 
 def _roof_cladding_ref(model: ResolvedModel, roof) -> str | None:
@@ -52,27 +66,31 @@ def _roof_cladding_ref(model: ResolvedModel, roof) -> str | None:
 
 def concealed_panel_screw_rows(model: ResolvedModel) -> list:
     """One row per (material, scope): wall net area or roof deck area, per storey."""
-    areas: dict[tuple[str, str], Counter] = {}
+    areas: dict[tuple[str, str, float], Counter] = {}
     net = wall_net_areas_m2(model)
     for wall in model.walls:
         cladding = [layer for layer in wall.layers if layer.function == _CLADDING]
-        if cladding and _counted_material(model, cladding[-1].material_ref):
+        material = cladding and _counted_material(model, cladding[-1].material_ref)
+        if material:
             layer = cladding[-1]
             area = wall_layer_net_area_m2(model, wall, layer, net[wall.tag])
-            areas.setdefault((layer.material_ref, "wall"), Counter())[wall.storey] += area
+            pitch = _pitch_in(model, material, wall.assembly, wall.tag)
+            areas.setdefault((layer.material_ref, "wall", pitch), Counter())[wall.storey] += area
     for roof in model.roofs:
         ref = _roof_cladding_ref(model, roof)
-        if ref and _counted_material(model, ref):
-            areas.setdefault((ref, "roof"), Counter())[roof.storey] += roof.surface_area_m2
+        material = ref and _counted_material(model, ref)
+        if material:
+            pitch = _pitch_in(model, material, None, roof.tag)
+            areas.setdefault((ref, "roof", pitch), Counter())[roof.storey] += roof.surface_area_m2
 
     rows = []
-    for (ref, scope), by_storey_m2 in sorted(areas.items()):
+    for (ref, scope, pitch), by_storey_m2 in sorted(areas.items()):
         material = model.plan.library.material(ref)
         item = hardware_by_model(material.panel_fastener_part)
         if item is None or item.model != material.panel_fastener_part:
             raise LookupError(f"{ref}: panel_fastener_part {material.panel_fastener_part!r} "
                               "is not a catalogued part")
-        coverage, pitch = material.fastener_coverage_in, material.panel_fastener_pitch_in
+        coverage = material.fastener_coverage_in
         by_storey = {storey: panel_screw_count(area, coverage, pitch)
                      for storey, area in sorted(by_storey_m2.items())}
         count = sum(by_storey.values())

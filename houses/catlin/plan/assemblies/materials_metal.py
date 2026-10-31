@@ -318,7 +318,6 @@ MATERIALS_METAL = [
              open_framing_source="Metal Sales BBD75 Board & Batten (Concealed Direct-Fastened) install guide, 2025-10-16, p.7: the panel is \"designed to be installed over open framing and/or directly over a wood substrate\", and p.12's Support Materials list reads \"Lumber - 1x or thicker\" and \"Steel Framing - 18 gauge or thicker\" (neither is a solid substrate). The Spec Data Sheet says the same in its own words: \"Designed for application over solid sheathing or open framing\", typical assembly \"Wood framing with moisture barrier\"",
              panel_fastener="#10-12 x 1-1/2\" pancake head wood screw, Type 17 point, 316 stainless",
              panel_fastener_part="#10-12x1-1/2 PH T17 316SS",
-             panel_fastener_pitch_in=24.0,
              panel_fastener_diameter_in=0.190,
              panel_fastener_length_in=1.5,
              panel_fastener_head_dia_in=0.40,

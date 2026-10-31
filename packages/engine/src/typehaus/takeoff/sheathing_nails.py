@@ -41,7 +41,9 @@ def nails_per_sheet(sheet_w_in: float, sheet_l_in: float, support_oc_in: float,
     nails = 2 * along_edge + max(0, lines - 2) * along_field
     if blocked:
         on_edge = math.ceil(sheet_l_in / edge_oc_in - 1e-9) + 1
-        shared = lines if support_oc_in % edge_oc_in < 1e-9 else 2
+        # An authored 24" reads back as 23.999...: test the remainder from both sides.
+        remainder = support_oc_in % edge_oc_in
+        shared = lines if min(remainder, edge_oc_in - remainder) < 1e-6 else 2
         nails += 2 * max(0, on_edge - shared)
     return nails
 
@@ -53,17 +55,24 @@ def _support_oc_in(assembly) -> float:
     return DEFAULT_SPACING.inches
 
 
-def _density_per_sf(layer, support_oc_in: float, vertical: bool) -> tuple[float, str]:
+def _roof_blocked(model: ResolvedModel, roof) -> bool:
+    """A roof whose ``DiaphragmSpec`` is blocked AND authors the blocks nails every edge."""
+    spec = getattr(model.plan.by_tag(roof.tag), "diaphragm", None)
+    return bool(spec and spec.blocked and spec.panel_edge_blocking)
+
+
+def _density_per_sf(layer, support_oc_in: float, vertical: bool,
+                    blocked: bool) -> tuple[float, str]:
     """Nails per SF of this layer, and the sheet arithmetic behind it."""
     length_in = order_sheet_length_in(layer.sheet_length.inches if layer.sheet_length else None)
     # A wall sheet stands with its long side up the studs; a deck sheet spans across them.
     line_in, across_in = (length_in, SHEET_WIDTH_IN) if vertical else (SHEET_WIDTH_IN, length_in)
     spec = layer.nailing
     per_sheet = nails_per_sheet(line_in, across_in, support_oc_in, spec.edge_oc_in,
-                                spec.field_oc_in, spec.blocked)
+                                spec.field_oc_in, blocked)
     note = (f"{per_sheet} per 4x{length_in / 12:g} sheet over {support_oc_in:g} in o.c. "
             f"supports at {spec.edge_oc_in:g} in edges / {spec.field_oc_in:g} in field"
-            f"{', all edges blocked' if spec.blocked else ''}")
+            f"{', all edges blocked' if blocked else ''}")
     return per_sheet / (SHEET_WIDTH_IN * length_in / 144.0), note
 
 
@@ -72,8 +81,10 @@ def sheathing_nail_rows(model: ResolvedModel) -> list:
     by_part: dict[str, Counter] = defaultdict(Counter)
     notes: dict[str, set] = defaultdict(set)
 
-    def add(layer, area_m2: float, storey: str, support_oc: float, vertical: bool, host: str):
-        density, note = _density_per_sf(layer, support_oc, vertical)
+    def add(layer, area_m2: float, storey: str, support_oc: float, vertical: bool, host: str,
+            blocked: bool = False):
+        density, note = _density_per_sf(layer, support_oc, vertical,
+                                        blocked or layer.nailing.blocked)
         by_part[layer.nailing.part][storey] += density * area_m2 / _M2_PER_SF
         notes[layer.nailing.part].add(f"{host} {layer.material_ref}: {note}")
 
@@ -91,7 +102,7 @@ def sheathing_nail_rows(model: ResolvedModel) -> list:
         for layer in assembly.layers if assembly else ():
             if layer.nailing is not None:
                 add(layer, roof.surface_area_m2, roof.storey, _support_oc_in(assembly), False,
-                    roof.tag)
+                    roof.tag, _roof_blocked(model, roof))
 
     rows = []
     for part, storeys in sorted(by_part.items()):

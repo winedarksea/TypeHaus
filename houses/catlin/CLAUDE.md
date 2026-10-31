@@ -430,7 +430,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Treated-wood fasteners are counted** (decision #105): KDAT and treated glulam take 304 SS
   `S10ACN` (`Project.treated_framing_fasteners`, an allowance off R602.3(1)), `pt-syp` sills the
   HDG A153 default; every ZMAX/HDG/stainless connector bills its schedule's nails (SSA8D,
-  SSNA10D, SSA10D, HDG 8d/10d/16d, SD9112); RF-HOUSE's deck is RSRS-01 ring-shank at 4" o.c.
+  SSNA10D, SSA10D, HDG 8d/10d/16d, SD9112); RF-HOUSE's deck is RSRS-01 ring-shank at 4" o.c.,
+  the garage/canopy decks 8d HDG 6"/12" (the canopy's blocked edges too, off its `DiaphragmSpec`)
   and W-BW-SCREEN's CDX 304 `S8ACN` at 4" edges.
   Blocks are on the STUD module, every OTHER stud, at 32" from the wall's LAYOUT LINE (girts
   run their own 24" module) — 32"x24"=5.33 ft2 is the crossing tributary in
@@ -611,7 +612,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     Sales permit open girts, and Western States publishes no load data at all (doc 4209-22,
     read in full) — substituting another forces a second girt course or a continuous deck.
   - **The B&B screw is 316 SS and a counted part** (owner, 2026-10-30; decision #105): 842 ea,
-    `panel_fastener_part` on `board-batten-24`, `[hardware]` "#10-12x1-1/2 PH T17 316SS". No
+    `panel_fastener_part` on `board-batten-24` with no pitch, so one per panel per GIRT at the
+    girt band's own 24" (the tributary `cladding_wind` grades), `[hardware]` "#10-12x1-1/2 PH T17 316SS". No
     stocked 316 found; stocked 304 is ST Fastening 10A150TQPSSN. The A153-D option is dropped.
   - Cladding screw is **#10-12 x 1-1/2"** since 2026-09-22 (owner, D3): withdrawal 0.334 →
     **0.182**, tip still inside the girt. Metal Sales stocks only the 1" (8243100, plated).
@@ -1838,9 +1840,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     would not. It does not change their R404.4 case either way — sliding is graded on the
     closed court loop at FS 1.73 (`retaining_system/W-SG-ARCH`), not on these walls
     individually (→ "Sunken garden court").
-  - Skin: `BASEMENT_12`/`_8` cover the XPS with a 1/8" `foundation-coating-acrylic-black`
-    (troweled over mesh; the library product in the house's exterior dark since 2026-09-23 —
-    black over foam runs hot, confirm the maker's LRV floor) banded from 6" below grade to the wall top, `Layer.extent` off the `GRADE`
+  - Skin: `BASEMENT_12`/`_8` cover the XPS with a 1/8" `foundation-coating-acrylic-tinted`
+    (troweled over mesh; custom-tinted to `METAL` since 2026-10-30, `plan/exterior_palette.py` —
+    a dark over foam runs hot, confirm the maker's LRV floor) banded from 6" below grade to the wall top, `Layer.extent` off the `GRADE`
     datum so a grade lift grows it with no edit. Do not revert to the old
     `foundation-protection-panel` alternate (kept, priced, as a named alternate only) — its
     joint permeance is unpublished and makes `building_science.condensation` report UNKNOWN,
@@ -2219,7 +2221,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - One exterior dark, `#1c1f24`, on every dark metal element on the envelope:
   opening casings, roof rake/eave/ridge trim coil, eave water chain (drip edge,
   box gutter, downspouts), guards, and since 2026-09-23 the four wall corners
-  (`TR-H-CORNER-*`) and the basement's coated XPS band (`foundation-coating-acrylic-black`).
+  (`TR-H-CORNER-*`) and the basement's coated XPS band (`foundation-coating-acrylic-tinted`).
   The garage stem band + Z are the exception: a fixed Una-Clad Matte Black
   (`aluminum-flat-pvdf`, aluminium, never retag it) that `METAL` does not recolour.
 - Windows/doors in a clad wall draw casing (resolve/geometry_openings.py

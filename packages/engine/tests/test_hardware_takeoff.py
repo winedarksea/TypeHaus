@@ -30,7 +30,7 @@ from typehaus.hardware.config import FT_TO_M
 from typehaus.joints.sills import anchored_sill_returns, pinned_partition_returns
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Connector
-from typehaus.quantities import M_PER_IN
+from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedConstructionReturn,
@@ -918,6 +918,8 @@ def test_upgrade_fastener_counts_are_the_sheet_and_tributary_arithmetic() -> Non
     assert nails_per_sheet(48, 96, 24, 4, 4) == 65
     # A blocked 4x8 shear panel on 16" studs: 50 edge + 18 field + 18 on the plates.
     assert nails_per_sheet(96, 48, 16, 4, 12, blocked=True) == 86
+    # The blocked canopy deck, 6"/12" over 24" trusses read back off an authored inch(24).
+    assert nails_per_sheet(48, 96, inch(24).inches, 6, 12, blocked=True) == 33 + 2 * 12
     # Board and batten: 1,679.5 SF at one screw per 12" x 24" is the guide's ~840.
     assert panel_screw_count(1679.5 * (12 * M_PER_IN) ** 2, 12, 24) == 840
 
@@ -951,6 +953,8 @@ def test_coated_and_stainless_connectors_carry_a_matching_fastener_schedule(catl
         for _count, model, _into in schedule.fasteners:
             fastener = hardware_by_model(model)
             assert fastener is not None and fastener.model == model, model
+            # A zinc joint takes a hot-dip or mechanically galvanized nail, never G90/EG.
             allowed = (STAINLESS_FINISHES if schedule.finish in STAINLESS_FINISHES
-                       else ZINC_FINISHES | STAINLESS_FINISHES)
+                       else {"hdg", "mech_galv"} | STAINLESS_FINISHES)
+            assert schedule.finish in STAINLESS_FINISHES | ZINC_FINISHES, part
             assert fastener.finish in allowed, f"{part} ({schedule.finish}) with {model}"

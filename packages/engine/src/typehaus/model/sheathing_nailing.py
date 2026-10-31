@@ -19,6 +19,7 @@ class SheathingNailing(HausModel):
     edge_oc_in: float = Field(gt=0)
     field_oc_in: float = Field(gt=0)
     # A shear wall nails every panel edge at ``edge_oc_in``, the ones on plates or blocking
-    # included; an unblocked roof deck nails only the edges that land on a support.
+    # included; an unblocked roof deck nails only the edges that land on a support. A roof
+    # whose ``DiaphragmSpec`` is blocked and authors its blocks counts as blocked anyway.
     blocked: bool = False
     source: str = ""
