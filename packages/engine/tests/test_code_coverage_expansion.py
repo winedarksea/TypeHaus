@@ -471,10 +471,7 @@ def _railing_ctx(railings, stairs=()):
     from _railing_fixtures import resolve_railings
 
     model = resolve_railings(railings, stairs=stairs)
-    return SimpleNamespace(
-        plan=SimpleNamespace(all_elements=lambda: list(railings)),
-        model=model,
-    )
+    return SimpleNamespace(plan=model.plan, model=model)
 
 
 def test_guard_opening_limit_passes_at_four_inches_and_fails_above_it():
@@ -744,7 +741,7 @@ def test_water_heater_relief_fails_a_discharge_that_rises():
                                  relief_discharge_ref="PR-TPR", drain_pan=False)
         run = SimpleNamespace(tag="PR-TPR", z_m=tuple(z_profile),
                               z_start_m=z_profile[0], z_end_m=z_profile[-1])
-        slab = SimpleNamespace(category="slab", tag="SL-B",
+        slab = SimpleNamespace(category="slab", tag="SL-B", voids=(),
                                outline=((0.0, 0.0), (5.0, 0.0), (5.0, 5.0), (0.0, 5.0)))
         return SimpleNamespace(
             plan=SimpleNamespace(all_elements=lambda: [heater],

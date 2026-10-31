@@ -30,11 +30,31 @@ _RAIL_PARALLEL_DOT = 0.9  # rail runs along the flight, not across it
 # only when drawn outboard in their brackets (``guard_line_offset_m`` > 0, it states its
 # fascia face); one that states none is drawn on its path, which is not where it stands.
 _POST_MOUNTS = frozenset({"surface", "fascia"})
+# A guard serving another level (a well guard on the deck above) obstructs a flight only
+# where its post reaches the envelope R311.7.1 keeps clear: from the lowest permitted
+# handrail height (R311.7.8.1) to the required headroom (R311.7.2) over the tread below it.
+_CLEAR_FROM = inch(34)
+_CLEAR_TO = inch(80)
 
 Flight = tuple[float, float, float, float, float]  # width, rail 0/1, post 0/1 (m)
+# A post's drawn outline and, for a guard not serving the flight, its (z0, z1) to test
+# against the clear envelope; ``None`` for a serving guard's, which stand on the treads.
+Post = tuple[list, tuple[float, float] | None]
 
 
-def _flight_projections(stair, rails, library, posts) -> dict[str, Flight]:
+def _in_clear_envelope(z_range, treads, r_of, rs, half_going: float) -> bool:
+    """Does a post spanning ``z_range`` reach the clear envelope over a tread under it?"""
+    z0, z1 = z_range
+    for tread in treads:
+        r = r_of(tread.p0)
+        if max(rs) < r - half_going or min(rs) > r + half_going:
+            continue
+        if z0 < tread.z1_m + _CLEAR_TO.meters and z1 > tread.z1_m + _CLEAR_FROM.meters:
+            return True
+    return False
+
+
+def _flight_projections(stair, rails, library, posts: list[Post]) -> dict[str, Flight]:
     """Per straight flight, ``(width, rail low, rail high, post low, post high)`` in m.
 
     Geometry is measured, never assumed: the flight's edges come off its tread boards'
@@ -87,9 +107,12 @@ def _flight_projections(stair, rails, library, posts) -> dict[str, Flight]:
                     proj0 = max(proj0, min(c + half - e0, e1 - e0))
                 else:
                     proj1 = max(proj1, min(e1 - (c - half), e1 - e0))
-        for outline in posts:
+        for outline, z_range in posts:
             cs, rs = [c_of(p) for p in outline], [r_of(p) for p in outline]
             if min(rs) > r1 or max(rs) < r0:
+                continue
+            if z_range is not None and not _in_clear_envelope(
+                    z_range, treads, r_of, rs, stair.tread_depth_m / 2.0):
                 continue
             c = (min(cs) + max(cs)) / 2.0
             if not (e0 - reach <= c <= e1 + reach):
@@ -102,19 +125,37 @@ def _flight_projections(stair, rails, library, posts) -> dict[str, Flight]:
     return out
 
 
-def _guard_posts(ctx: CheckContext, stair_tag: str, railings) -> list:
-    """Drawn outlines of the posts of every guard serving ``stair_tag``, including a post
-    one of them ends on that another guard draws (``Railing.end_post_ref``)."""
+def _guard_posts(ctx: CheckContext, stair_tag: str, railings) -> tuple[list[Post], list[str]]:
+    """Posts that may stand in ``stair_tag``'s width, and the fascia guards whose posts are
+    not drawn where they stand.
+
+    A serving guard's posts count wherever they are, including a post one of them ends on
+    that another guard draws (``Railing.end_post_ref``). Any other guard's count only where
+    they reach the clear envelope over a tread (a well guard hung on the deck edge above).
+    A fascia guard that states no fascia face is drawn on its path, which is not where it
+    stands: it is returned by tag, for an UNKNOWN wherever its drawn posts would count.
+    """
     library = getattr(getattr(ctx, "plan", None), "library", None)
-    serving = [r for r in railings
-               if r.serves_stair == stair_tag and r.mount in _POST_MOUNTS
-               and (r.mount != "fascia" or guard_line_offset_m(library, r) > 0)]
-    owners = {r.tag for r in serving}
-    owners |= {ref for r in serving for ref in (r.start_post_ref, r.end_post_ref) if ref}
-    if not owners:
-        return []
-    return [s.outline for s in getattr(ctx.model, "solids", ())
-            if s.host_ref in owners and "-POST" in s.tag and len(s.outline) >= 3]
+    placed = [r for r in railings if r.mount in _POST_MOUNTS
+              and (r.mount != "fascia" or guard_line_offset_m(library, r) > 0)]
+    unplaced = {r.tag for r in railings
+                if r.mount == "fascia" and guard_line_offset_m(library, r) <= 0}
+    serving = {r.tag for r in placed if r.serves_stair == stair_tag}
+    serving |= {ref for r in placed if r.serves_stair == stair_tag
+                for ref in (r.start_post_ref, r.end_post_ref) if ref}
+    others = {r.tag for r in placed} - serving
+    posts: list[Post] = []
+    unplaced_posts: list[tuple[str, Post]] = []
+    for s in getattr(ctx.model, "solids", ()):
+        if "-POST" not in s.tag or len(s.outline) < 3:
+            continue
+        if s.host_ref in serving:
+            posts.append((s.outline, None))
+        elif s.host_ref in others:
+            posts.append((s.outline, (s.z0_m, s.z1_m)))
+        elif s.host_ref in unplaced:
+            unplaced_posts.append((s.host_ref, (s.outline, (s.z0_m, s.z1_m))))
+    return posts, unplaced_posts
 
 
 @check(Tier.CODE, "code.R311_7_1_stair_width")
@@ -151,8 +192,14 @@ def stair_width(ctx: CheckContext) -> list[Finding]:
             out.append(_fail(cid, f"{head} < 36\"", (stair.tag,), code))
             continue
         serving = [r for r in handrails if r.serves_stair == stair.tag]
-        posts = _guard_posts(ctx, stair.tag, railings)
-        if not serving and not posts:
+        posts, unplaced_posts = _guard_posts(ctx, stair.tag, railings)
+        library = getattr(plan, "library", None)
+        # A fascia guard whose drawn posts would reach a flight stands 1 1/2"+ outboard of
+        # them, on a side its path does not say: the width there is not measured.
+        unplaced = sorted({tag for tag, post in unplaced_posts
+                           if any(p0 > 1e-9 or p1 > 1e-9 for *_, p0, p1 in
+                                  _flight_projections(stair, [], library, [post]).values())})
+        if not serving and not posts and not unplaced:
             out.append(_pass(cid, f"{head} >= 36\" (no handrail authored to project into it)",
                              code))
             continue
@@ -160,7 +207,7 @@ def stair_width(ctx: CheckContext) -> list[Finding]:
         worst_rail: tuple[float, float, int] | None = None  # (clear, limit, sides)
         worst_posts: float | None = None
         for key, (flight_w, proj0, proj1, post0, post1) in sorted(_flight_projections(
-                stair, serving, getattr(plan, "library", None), posts).items()):
+                stair, serving, library, posts).items()):
             if post0 > 1e-9 or post1 > 1e-9:
                 between = flight_w - post0 - post1
                 worst_posts = between if worst_posts is None else min(worst_posts, between)
@@ -184,6 +231,13 @@ def stair_width(ctx: CheckContext) -> list[Finding]:
                                  f"R311.7.1 requires {limit / .0254:.1f}\"",
                                  (stair.tag,), code))
         if failed:
+            continue
+        if unplaced:
+            out.append(_unknown(
+                cid, f"{stair.tag}: fascia guard(s) {', '.join(unplaced)} state no "
+                "fascia_face_offset, so their posts are drawn on the path, not in the "
+                "brackets where they stand; the clear width past them is not measured",
+                (stair.tag, *unplaced), code))
             continue
         parts = [f"{head} >= 36\""]
         if worst_posts is not None:

@@ -66,7 +66,9 @@ _CATLIN = {
     # D-M-BALC's published unit replaces its held 60x80 void (2026-10-29): +2.29 sf at
     # U 0.21 x 85 F, 14,255 / 25.5 °F -> 14,291 / 25.6 °F.
     # 14,291 before paint took no depth (2026-10-30).
-    "EQ-M-HP2-OD": (14_292, 8_800, 5.0, 0.62, 25.6, not _ADVISED),
+    # 14,292 / 25.6 °F before one owner per rim band (ab6a8179, 2026-10-31): W-B-S2-FR/-S3-FR
+    # no longer rise into the band W-M-S1/-S2 drop through, 2 x 8.17' x 1.12' = 18.3 sf less.
+    "EQ-M-HP2-OD": (14_261, 8_800, 5.0, 0.62, 25.5, not _ADVISED),
     # D-M-ENTRY's Therma-Tru unit replaces its 36x80 void (2026-10-29): 905 -> 921.
     "EQ-M-HP3-OD": (921, 2_800, 17.0, 3.04, None, _ADVISED),
 }

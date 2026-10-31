@@ -24,6 +24,7 @@ from __future__ import annotations
 from shapely.geometry import Polygon
 
 from typehaus.resolve.model import ResolvedModel, ResolvedRoom
+from typehaus.resolve.slab_clip import floor_outline
 from typehaus.resolve.solid_categories import SLAB_FAMILY
 from typehaus.resolve.walking_surface import surfaces_at
 
@@ -68,7 +69,7 @@ def room_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> float:
             continue
         if abs(solid.z1_m - wall_z) >= SLAB_MATCH_TOLERANCE_M:
             continue
-        if not Polygon(solid.outline).contains(centroid):
+        if not Polygon(floor_outline(model, solid)).contains(centroid):  # a flush footing is floor
             continue
         if best is None or abs(solid.z1_m - wall_z) < abs(best.z1_m - wall_z):
             best = solid

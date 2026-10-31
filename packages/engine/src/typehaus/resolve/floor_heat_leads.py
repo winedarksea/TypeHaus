@@ -24,6 +24,7 @@ from shapely.geometry import Point, Polygon
 from typehaus.quantities import inch
 from typehaus.resolve.device_drops import add_derived_run
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.slab_clip import floor_outline
 from typehaus.resolve.solid_categories import is_pour_slab
 
 _WALL_SIZE_M = inch(0.5).meters
@@ -44,7 +45,7 @@ def _pour_top(model: ResolvedModel, xy: tuple[float, float], near_z: float) -> f
     tops = [solid.z1_m for solid in model.solids
             if is_pour_slab(solid.category) and len(solid.outline) >= 3
             and abs(solid.z1_m - near_z) <= _SLAB_TOP_TOLERANCE_M
-            and Polygon(solid.outline).contains(point)]
+            and Polygon(floor_outline(model, solid)).contains(point)]  # flush footing: floor
     return max(tops) if tops else None
 
 
