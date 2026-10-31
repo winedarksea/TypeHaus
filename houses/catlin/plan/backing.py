@@ -33,8 +33,9 @@
 # Not fireblocking. IRC R302.11 is a draft stop that fills the cavity; this is a fastening
 # target laid flat on the stud face. An 8' wall triggers no horizontal fireblock at all.
 #
-# Elevations are above the storey datum — the same datum `Mount.elevation` and an opening's
-# sill use — and the dialect forbids arithmetic, so every one is a literal.
+# Elevations are above the wall's framing base (an opening's sill datum). `Mount.elevation`
+# is off the FINISHED floor, 3/4"-1 1/2" higher (22" in the garage, on its stem); the dialect
+# forbids arithmetic, so every one is a literal.
 
 from typehaus import WallBacking, ft, inch
 
@@ -344,16 +345,17 @@ SECOND_BACKING = [
 GARAGE_BACKING = [
     WallBacking(uid="YJH79SSVTK", tag="BK-G-W-RAIL-TOP", wall_ref="W-G-W",
                 start=ft(22, 0.75), length=inch(15.625),
-                elevation=inch(33), height=inch(11.25), profile="1.5x11.25",
+                elevation=inch(33), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="handrail brackets (RL-G-SERVICE, head of flight)"),
     WallBacking(uid="1FTWGZ1WJ3", tag="BK-G-W-RAIL-FOOT", wall_ref="W-G-W",
                 start=ft(18, 0.75), length=inch(22.5),
-                elevation=inch(12), height=inch(11.25), profile="1.5x11.25",
+                elevation=inch(12), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="handrail brackets (RL-G-SERVICE, foot of flight)"),
-    # The EVSE's four screws (APPL-G-EVSE, 42"..52 1/4"), one bay between studs at 20' and 22'.
+    # The EVSE's four screws (APPL-G-EVSE, 42"..52 1/4" AFF), one bay between studs at 20' and
+    # 22'. The slab is 22" under this wall's base, so 19 1/2" here is 41 1/2" AFF.
     WallBacking(uid="1X2QB7105T", tag="BK-G-S-EVSE", wall_ref="W-G-S",
                 start=ft(14, 0.75), length=inch(22.5),
-                elevation=inch(41.5), height=inch(11.25), profile="1.5x11.25",
+                elevation=inch(19.5), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="EVSE wall mount (APPL-G-EVSE)"),
 ]
 

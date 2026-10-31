@@ -177,7 +177,7 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
                 f"{body.tag} declares discrete fixings; advisory.wall_fixing_support "
                 "grades each post against emitted studs and backing", tags))
             continue
-        low = mount.elevation.meters
+        low = _band_datum_low(ctx, body, wall, mount)
         covering = [b for b in bands.get(wall.tag, ())
                     if b.elevation_m - _REACH_M <= low <= b.elevation_m + b.height_m + _REACH_M
                     and _covers_station(b, station, wall)]
@@ -199,8 +199,22 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
                 f"band behind it. Nothing in the IRC requires one; this is the irreversible "
                 f"item, since after the drywall closes it is a demolition", tags, Result.FAIL,
                 fix=f"author a WallBacking on {wall.tag} spanning "
-                    f"{low / M_PER_IN:.0f}\" above the floor"))
+                    f"{low / M_PER_IN:.0f}\" above its framing base"))
     return out
+
+
+def _band_datum_low(ctx: CheckContext, body: WallMountedBody, wall: ResolvedWall,
+                    mount: Mount) -> float:
+    """The body's bottom on the band's datum, the wall's framing base.
+
+    ``Mount.elevation`` is off the room's FINISHED floor (``resolve/placeables``) and a band
+    is off ``base_ref_z_m``; they differ by the covering and, in the garage, by the 22"
+    stem. Read the resolved body's absolute bottom; fall back to the mount only unplaced.
+    """
+    placed = next((obj for obj in ctx.model.canvas_objects if obj.uid == body.uid), None)
+    if placed is None or placed.body_z0_m is None:
+        return mount.elevation.meters
+    return placed.body_z0_m - wall.base_ref_z_m
 
 
 def _opening_holding(ctx: CheckContext, wall: ResolvedWall, station: float,

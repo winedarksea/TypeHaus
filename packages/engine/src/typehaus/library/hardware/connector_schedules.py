@@ -31,6 +31,8 @@ CONNECTOR_FASTENERS: dict[str, ConnectorFastening] = {
     # A 1-1/4 x 7-1/4 rim in the LUS family: the 2x8-depth (LUS28) row.
     "LUSZ": ConnectorFastening("zmax", ((6, HDG_10D, "header"), (4, HDG_10D, "joist")),
                                f"{_CC} pp.113-114, LUS28 row (rim at 2x8 depth)"),
+    "LUS28Z": ConnectorFastening("zmax", ((6, HDG_10D, "header"), (4, HDG_10D, "joist")),
+                                 f"{_CC} pp.113-114, LUS28 row"),
     "LUS210-3Z": ConnectorFastening(
         "zmax", ((8, HDG_16D, "header"), (6, HDG_16D, "joist")), _RECORD),
     "LUS210SS": ConnectorFastening(

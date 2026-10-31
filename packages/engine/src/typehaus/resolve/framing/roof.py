@@ -59,8 +59,8 @@ _RAFTER_CONNECTION = "ridge:adjustable-slope-hanger;eave:birdsmouth"
 # the plate already spans, above it there is a real span the refs are not describing.
 _SUPPORT_GAP_TOL_M = inch(16.0).meters
 # Reference birdsmouth seat (roof_wall_eave_detail_ifc.py): seated over the width of the top
-# plate the rafter bears on. The reference's 1.17" notch depth is not a second constant —
-# it is this run times the rafter's slope, and stating it twice is how the two drifted.
+# plate the rafter bears on. Its notch depth is not a second constant — it is this run times
+# the rafter's slope (1.17" at the reference's 4:12, 1.75" at 6:12), never stated twice.
 _SEAT_LEN_M = inch(3.5).meters
 
 

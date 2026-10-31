@@ -13,9 +13,9 @@ where today's model's screws land pins the house to today's model forever — th
 ``houses/catlin/plan/fixture_types_wc.py`` already sets out.
 
 **Elevation is measured from the wall's framing base**, ``ResolvedWall.base_ref_z_m``, the
-same datum an opening's ``sill_m`` uses and the same one ``Mount.elevation`` means by "above
-the storey datum". That is what makes the coverage check's comparison honest: a band and the
-cabinet it backs are read off one datum rather than two that agree by luck.
+same datum an opening's ``sill_m`` uses. ``Mount.elevation`` is NOT on it: a mount is off the
+room's finished floor (0.75-1.5" higher; 22" in a garage on a stem), so the coverage check
+reads the resolved body's absolute bottom, never the authored mount.
 
 A leaf: it imports ``model``/``resolve`` and is imported by ``framing/solver.py``, never the
 other way round.

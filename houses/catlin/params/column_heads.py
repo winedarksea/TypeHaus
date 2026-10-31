@@ -25,16 +25,8 @@ HETA20Z_PAIR_HEAD = HeadConnector(
                      "(Lateral Parallel / Allowable) + (Lateral Perpendicular / Allowable) "
                      "< 1.0, for more than one direction on a single connection")
 
-#: PT-BW-W / -GW: the head is the ABU66SS under PT-BW-CW / -CNW, and the seat beam hangs off
-#: that 6x6 on an HU28-2Z (`params/breezeway.py`). ESR-1622 Table 2 publishes uplift and
-#: download only, so there is no lateral figure to quote and the record says so.
-ABU66SS_HEAD = HeadConnector(
-    tie="ABU66SS", tie_count=1, uplift_lb=2190.0, lateral_lb=None,
-    load_duration_factor=1.6,
-    bearing="SS316-SHIM-35", bearing_width_in=3.5, bearing_length_in=3.5,
-    source="ICC-ES ESR-1622 Table 2, ABU66 row (bolted, 2,190 lb uplift at C_D 1.6), "
-           "extended to ABU66SS by Simpson letter L-F-SSNAILS; no lateral value published")
-
+#: PT-BW-W / -GW: the head is the CBSQ66-SDS2 base under PT-BW-CW / -CNW (ABU66SS until
+#: 2026-09-30), and the seat beam hangs off that 6x6 on an HU28-2Z (`params/breezeway.py`).
 CBSQ66_HEAD = HeadConnector(
     tie="CBSQ66-SDS2", tie_count=1, uplift_lb=3060.0, lateral_lb=485.0,
     load_duration_factor=1.6,

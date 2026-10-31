@@ -60,7 +60,7 @@ PIER_CONCRETE_12 = Assembly(
     # stainless shim pack holding the KDAT soffit 1/2"-1" clear so the joint drains and dries
     # (AITC/WoodWorks), and a cast-in HETA20Z pair beside it as the TIE. **The shim
     # pack IS the bearing and the tie is never it** — two parts, two jobs, as
-    # params/breezeway.py already states. PT-BW-W and PT-BW-GW take a 6x6's ABU66SS base on
+    # params/breezeway.py already states. PT-BW-W and PT-BW-GW take a 6x6's CBSQ66-SDS2 base on
     # the same circle as their seat beam; that base is a wood COLUMN on concrete and
     # IRC R317.1.4 really does reach it, which is the one place in this set that citation fits.
     #
@@ -103,7 +103,7 @@ COURT_FOOTING_12 = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
-    source="every strip footing in the sunken-garden court, 1'-0\" deep: the three retaining strips FT-SG-W2/E2/S at 8'-0\" wide, reinforced #6 @ 10\" transverse top and bottom (notes/sunken_garden_court_free_body.md §7), and the two braced porch strips FT-SG-W1/E1 at 7'-0\" wide and plain. One F3+C2 mix throughout: every footing here stands INSIDE the excavation, 8\" under a garden floor itself 9' below site grade, frost-protected by drained NFS stone rather than by depth, and concrete in the freezing zone is F3 concrete however it got protected",
+    source="every strip footing in the sunken-garden court, 1'-0\" deep, its top at the garden floor: FT-SG-W1/E1/W2/E2 at 7'-0\" wide and FT-SG-S at 8'-4\", every one reinforced top and bottom (the bars are their rebar sets, printed in S-100's reinforcement schedule; notes/sunken_garden_court_free_body.md §7). One F3+C2 mix throughout: every footing here stands INSIDE the excavation, under a garden floor itself 9' below site grade, frost-protected by drained NFS stone rather than by depth, and concrete in the freezing zone is F3 concrete however it got protected",
 )
 
 FOOTING_20 = Assembly(

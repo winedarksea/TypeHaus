@@ -81,7 +81,8 @@ FLOOR = FloorSystem(
     joists=JoistSpec(member="2x8", spacing=inch(12), direction="y",
                      bearing_refs=("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"),
                      cantilever_start=ft(HOUSE_SEAT_Y_FT - FRAME_Y0_FT),
-                     cantilever_end=ft(FRAME_Y1_FT - GARAGE_SEAT_Y_FT)),
+                     cantilever_end=ft(FRAME_Y1_FT - GARAGE_SEAT_Y_FT),
+                     rim_member="2x8"),  # no 1 1/4" treated rim is stocked; LUSZ is 1 9/16"
     outline=rectangle(FIELD_WEST_X_FT, FRAME_Y0_FT, FIELD_EAST_X_FT, FRAME_Y1_FT),
     subfloor_outline=rectangle(LANDING_WEST_FT, DECK_SHEET_SOUTH_Y_FT,
                                LANDING_EAST_FT, DECK_SHEET_NORTH_Y_FT),

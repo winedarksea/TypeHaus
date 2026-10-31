@@ -140,6 +140,30 @@ def _is_shared(model: ResolvedModel, system: FloorSystem, storey_tag: str, coord
     return False
 
 
+def _sill_span(model: ResolvedModel, refs: tuple[str, ...], storey_tag: str,
+               across: int) -> tuple[float, float] | None:
+    """On a pour, the joists and rim sit on the mudsill of the framed wall stacked on it.
+
+    That sill is the framed wall's structure footprint, flush with its framing face, not the
+    concrete's: on catlin's 8" pour under a face-aligned 2x6 the rim ran 1/2" proud of the
+    stud face and the seat read the 8" concrete instead of the 5 1/2" sill.
+    """
+    from typehaus.resolve.construction_geometry import _stack_overlap
+
+    for ref in refs:
+        lower = model.wall(ref)
+        if lower is None or not lower.is_foundation:
+            continue
+        for upper in model.walls:
+            if (upper.storey != storey_tag or upper.is_foundation
+                    or _stack_overlap(lower, upper) is None):
+                continue
+            span = structure_span(model, upper.tag, across)
+            if span is not None:
+                return span
+    return None
+
+
 def floor_ends(model: ResolvedModel, system: FloorSystem, storey_tag: str,
                boundaries: list[float], across: int, perp0: float, perp1: float,
                rim_thickness_m: float, cant_start_m: float, cant_end_m: float) -> FloorEnds:
@@ -195,6 +219,7 @@ def floor_ends(model: ResolvedModel, system: FloorSystem, storey_tag: str,
             # and the joists stop against its inboard face, so the two touch rather than
             # overlap and the tip is the length the member is actually cut to.
             lo, hi = structure  # not None: the branch above is the only way it can be
+            lo, hi = _sill_span(model, line.refs, storey_tag, across) or (lo, hi)
             face, opposite = (lo, hi) if low_end else (hi, lo)
             tip = face + sign * rim_thickness_m
             ends.append((tip, face + sign * rim_thickness_m / 2.0, face,

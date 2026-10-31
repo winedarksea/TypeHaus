@@ -142,9 +142,10 @@ def test_the_vanity_fits_the_west_wall_without_entering_the_toilets_clearance():
     wc = Polygon(_canvas(model, "FX-M-BATH2-WC").footprint)
     envelope_starts = min(p[1] for p in wc.exterior.coords) / M_PER_IN - 24.0
     assert vy1 < envelope_starts, "the cabinet stands in the water closet's code envelope"
-    # ...and the slack is a real margin now rather than a rounding error: 4 1/4" at 48",
-    # where the 54" cabinet left 0.24" and the next deeper bowl would have eaten it.
-    assert 3.5 < envelope_starts - vy1 < 5.0
+    # ...and the slack is a real margin now rather than a rounding error: 6 3/16" at 48"
+    # with the 28 5/16" Carlyle II (4 1/4" when it was carried at 30"), where the 54"
+    # cabinet left 0.24".
+    assert 5.5 < envelope_starts - vy1 < 7.0
 
 
 def test_the_vanity_backs_onto_the_wall_face_and_the_room_reports_that_face():
@@ -364,9 +365,9 @@ def test_the_filled_bath_is_answered_with_blocking_and_one_sister():
     sisters = [m for m in floor.members if m.category == "sister_joist"]
     assert len(blocks) == 4
     assert len(sisters) == 1
-    # 17.9', not the 18'-0" bearing grid: the joist it doubles stops behind the rim board
+    # 17.85', not the 18'-0" bearing grid: the joist it doubles stops behind the rim board
     # at the framing face, and the sister is cut to the joist (``resolve/floor_ends.py``).
-    assert round(sisters[0].length_m / 0.3048, 2) == 17.9, "a sister must run the whole span"
+    assert round(sisters[0].length_m / 0.3048, 2) == 17.85, "a sister must run the whole span"
 
 
 def test_the_blocks_tile_the_bays_and_do_not_overlap_the_sister():

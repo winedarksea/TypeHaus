@@ -103,13 +103,15 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
     """``(role, catalog item, part number)`` for one hung end.
 
     An authored spec for its (carrier, floor) wins and bills under its own catalog role.
-    Otherwise the derived family: LSCZ for a stair stringer, LSSR sloped, LUS/LUSZ level by
-    the carrier's treatment.
+    Otherwise the derived family: LSCZ for a stair stringer, LSSR sloped, IUS/THA for an
+    I-joist/floor-truss end, LUS/LUSZ level by the carrier's treatment.
     """
     from typehaus.hardware.catalog import (
         EXPOSURE_DRY,
         EXPOSURE_TREATED,
         ROLE_FACE_MOUNT_JOIST_HANGER,
+        ROLE_FLOOR_TRUSS_HANGER,
+        ROLE_IJOIST_FACE_MOUNT_HANGER,
         ROLE_SCL_FACE_MOUNT_HANGER,
         ROLE_SLOPED_JOIST_HANGER,
         ROLE_STAIR_STRINGER_CONNECTOR,
@@ -118,6 +120,7 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
         sized_hanger_model,
         structural_hardware_catalog,
     )
+    from typehaus.resolve.framing.profiles import cross_section
 
     authored = specs.get((connection.carrier_tag, connection.member_floor))
     if authored is not None and not connection.sloped:
@@ -141,6 +144,14 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
                 and item.exposure in (None, exposure)), None)
     if scl is not None:
         return ROLE_SCL_FACE_MOUNT_HANGER, scl, scl.model
+    # An I-joist or open-web truss end takes its own family, never the sawn-lumber LUS
+    # (no size guessed: the series' flange is not the model's to invent).
+    shape = cross_section(connection.member_profile.split(":")[0]).shape
+    family = {"i_joist": ROLE_IJOIST_FACE_MOUNT_HANGER,
+              "floor_truss": ROLE_FLOOR_TRUSS_HANGER}.get(shape)
+    if family is not None:
+        item = hardware_for_role(family)
+        return family, item, item.model
     item = hardware_for_role(ROLE_FACE_MOUNT_JOIST_HANGER, exposure=exposure)
     return (ROLE_FACE_MOUNT_JOIST_HANGER, item,
             sized_hanger_model(item, connection.member_profile))

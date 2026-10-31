@@ -1153,6 +1153,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Floor truss hanger, BM-M-HALL x FS-S-WEST (3 hung ends). ESTIMATE, unconfirmed: a THA-series
 # top-flange hanger is a similar single-piece retail band to the IUS above.
 "THA422" = { low = 4, high = 9 }  # 3 ea
+# Derived I-joist ends bill the bare series (the engine does not guess the flange size;
+# geometry review 2026-10-31, F3-006). ESTIMATE, unconfirmed: the IUS2.56/11.88 band above.
+"IUS" = { low = 4, high = 9 }
 # Floor-opening LVL header ends into their trimmer packs. ESTIMATE, unconfirmed: single-piece
 # retail band for a 12-ga HHUS face-mount.
 "HHUS410" = { low = 14, high = 24 }  # 10 ea

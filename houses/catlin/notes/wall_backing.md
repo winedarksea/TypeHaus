@@ -98,7 +98,8 @@ Wall-cavity, soffit and stair-stringer fireblocking stay un-modelled, and nothin
 
 Until 2026-09-12 every wet wall carried **one continuous 3/4" Structural 1 plywood band,
 48" tall, 32"–80" AFF** — 17 of them, 106 LF + 8 LF ordered, about 13 sheets. It is retired.
-**Every one of those walls puts 5/8" gypsum straight on the studs**, so a 3/4" sheet either
+**Every one of those walls puts gypsum straight on the studs** (5/8" then; 1/2" since the
+2026-10-23 wall board policy), so a 3/4" sheet either
 stands proud of the finish plane or is let into them; §5 of this note used to claim the
 second, which for a 48"-tall band means routing a 3/4" × 48" dado across roughly 65 studs.
 Nothing draws that and nothing prices it. The three courses below are laid flat and **fitted

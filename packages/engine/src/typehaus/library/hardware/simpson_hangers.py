@@ -330,8 +330,10 @@ HU28_2Z_FACE_MOUNT_HANGER = StructuralHardware(
     source="Simpson Strong-Tie HU28-2 in ZMAX (G185) — the WOOD face-mount hanger, nailed "
            "into the 6x6 KDAT column rather than screwed into a pour. Chosen over the HUC "
            "twin by the owner on 2026-09-15 because the carrying member here is wood. "
-           "DIMENSIONS AND ALLOWABLES NOT YET TRANSCRIBED: read the C-C SPF/HF face-mount "
-           "table's HU28 row before sizing or installing this joint",
+           "14 ga, W 3-1/8\", H 6-5/16\", B 2-1/2\" (strongtie.com HU page, read 2026-10-31; "
+           "the drawn body, resolve/connector_geometry/hangers.py). ALLOWABLES NOT YET "
+           "TRANSCRIBED: read the C-C SPF/HF face-mount table's HU28-2 row before sizing or "
+           "installing this joint",
 )
 
 

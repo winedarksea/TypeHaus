@@ -78,10 +78,15 @@ _KERF_FT = 0.125 / 12.0
 #: with no waste and no odd stick, which is luck rather than design — the cap is set by what a
 #: pair of framers can lift, and the arithmetic happens to be kind here.
 _MAX_SPLICE_PIECE_FT = 12
+#: A wall plate is joined over a stud (IRC R602.3.2 laps the top plates 24" min), so a run past
+#: the longest stock is bought in stock sticks; it is light, so its cap is the ladder's top.
+_PLATE_CATEGORY = "plate"
+_MAX_PLATE_PIECE_FT = _STOCK_LENGTHS_FT[-1]
 
 
 @lru_cache(maxsize=128)
-def _splice_into_stock(length_ft: int) -> tuple[int, ...]:
+def _splice_into_stock(length_ft: int,
+                       max_piece_ft: int = _MAX_SPLICE_PIECE_FT) -> tuple[int, ...]:
     """Stock lengths that cover a spliceable run, fewest ordered feet then fewest pieces.
 
     A member supported along its whole length can be butt-spliced over any bearing point, so
@@ -95,7 +100,7 @@ def _splice_into_stock(length_ft: int) -> tuple[int, ...]:
     between plies on a built-up member — a detail note, not a quantity, because the lineal feet
     are the same either way.
     """
-    ladder = tuple(s for s in _STOCK_LENGTHS_FT if s <= _MAX_SPLICE_PIECE_FT)
+    ladder = tuple(s for s in _STOCK_LENGTHS_FT if s <= max_piece_ft)
     best: list[tuple[int, int, tuple[int, ...]]] = [(0, 0, ())] * (length_ft + 1)
     for target in range(1, length_ft + 1):
         best[target] = min(
@@ -107,7 +112,8 @@ def _splice_into_stock(length_ft: int) -> tuple[int, ...]:
 
 
 def _bucket_cut_lengths(lengths: list[float], profile: str | None,
-                        spliceable: bool = False) -> Counter:
+                        spliceable: bool = False,
+                        max_piece_ft: int = _MAX_SPLICE_PIECE_FT) -> Counter:
     """The stock sticks one ``(profile, category, material)`` group is actually bought in.
 
     Long pieces bucket one-for-one. Short ones are packed first-fit-
@@ -133,8 +139,8 @@ def _bucket_cut_lengths(lengths: list[float], profile: str | None,
             own_stick.append(cut_ft)
     for cut_ft in own_stick:
         whole = _order_length_ft(cut_ft, profile)
-        if spliceable and cut_ft > _MAX_SPLICE_PIECE_FT + 1e-6:
-            pieces = _splice_into_stock(int(math.ceil(cut_ft - 1e-9)))
+        if spliceable and cut_ft > max_piece_ft + 1e-6:
+            pieces = _splice_into_stock(int(math.ceil(cut_ft - 1e-9)), max_piece_ft)
             # Splicing wins ties and loses when it costs wood. A 36' run is three 12s either
             # way, so it splices; a 13' one is a single 14' stick against 8+8, so it does not.
             # Without this the cap would turn a one-foot overshoot into three feet of offcut
@@ -222,11 +228,14 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             continue
         key = (member.stock_profile or member.profile, member.category, member.material or "")
         cuts[key].append((member.cut_length_m or member.length_m) * _M_TO_FT)
-        splice[key] = splice.get(key, True) and member.continuously_supported
+        splice[key] = splice.get(key, True) and (member.continuously_supported
+                                                 or member.category == _PLATE_CATEGORY)
 
     rows: list[dict[str, object]] = []
     for (profile, category, material), lengths in sorted(cuts.items()):
-        buckets = _bucket_cut_lengths(lengths, profile, splice[(profile, category, material)])
+        cap = _MAX_PLATE_PIECE_FT if category == _PLATE_CATEGORY else _MAX_SPLICE_PIECE_FT
+        buckets = _bucket_cut_lengths(lengths, profile, splice[(profile, category, material)],
+                                      cap)
         order_ft_total = sum(length_ft * count for length_ft, count in buckets.items())
         bf_per_ft = _board_feet_per_ft(profile)
         rows.append({

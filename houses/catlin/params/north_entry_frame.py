@@ -272,7 +272,8 @@ def beam(number, tag, x0, y0, x1, y1, bearings, top=DECK_JOIST_TOP_FT, size="2-2
 # The clash is cleared by the authored hanger, not by this field -- bearing_refs is a
 # statement about load path, not about where the wood stops.
 # ** BOTH SEAT BEAMS START AT THE COLUMN'S EAST FACE (2026-09-23). ** Authored from the
-# column line, their west 2 3/4" sat in the ABU66SS's 1 3/16" standoff under PT-BW-CW/-CNW
+# column line, their west 2 3/4" sat in the post base's standoff under PT-BW-CW/-CNW (then an
+# ABU66SS, now a CBSQ66-SDS2 at 1.105")
 # (`structural.post_base_interference`). At the face the beam still has 3 1/4" on the 12"
 # pier (R507.5.2: 3"), the way BM-BW-SCSILL already stops.
 beam(1, "BM-BW-HOUSE-SEAT", LANDING_WEST_FT + COLUMN_HALF_FT, HOUSE_SEAT_Y_FT,
