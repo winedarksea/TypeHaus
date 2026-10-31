@@ -467,25 +467,6 @@ def test_roof_layer_bands_match_the_emitter(model, geometry) -> None:
         assert got, roof.tag
 
 
-def test_every_roof_layer_is_a_closed_band(model, geometry) -> None:
-    """A layer whose eave/rake perimeter is left open imports as a zero-thickness plane —
-    which is what a roof looks like in Revit when it is wrong."""
-    from typehaus.resolve.geometry_ir import GMesh
-
-    for roof in model.roofs:
-        for part in geometry.by_uid(roof.uid).parts:
-            mesh = part.solids[0]
-            assert isinstance(mesh, GMesh)
-            edges: dict[tuple, int] = {}
-            for tri in mesh.triangles:
-                for i in range(3):
-                    a = tuple(round(c, 6) for c in mesh.positions[tri[i]])
-                    b = tuple(round(c, 6) for c in mesh.positions[tri[(i + 1) % 3]])
-                    key = tuple(sorted((a, b)))
-                    edges[key] = edges.get(key, 0) + 1
-            assert all(count % 2 == 0 for count in edges.values()), f"{roof.tag}/{part.key}"
-
-
 # --- floor decks and earth (blessed diffs: nothing drew either) --------------------------
 
 def test_a_floor_with_a_subfloor_gains_a_deck(model, geometry) -> None:

@@ -58,7 +58,8 @@ def test_bagganas_published_dimensions_and_round_stock():
     assert all(p["shape"] == "mesh" and p["color"] == "metal-black" for p in knob + pull)
 
 
-def test_axstad_has_stock_envelope_softened_profile_and_closed_outward_faces():
+def test_axstad_has_stock_envelope_and_softened_profile():
+    # Closed and outward: tests/test_solids3d.py, wherever a front is drawn.
     front = axstad_front(14.875 * INCH, 0, 0.75 * INCH, 0, 29.875 * INCH)[0]
     assert front["size"] == pytest.approx((14.875 * INCH, 0.75 * INCH, 29.875 * INCH))
     vertices = front["mesh"]["positions"]
@@ -69,16 +70,6 @@ def test_axstad_has_stock_envelope_softened_profile_and_closed_outward_faces():
     ]
     assert min(p[1] for p in panel_points) == pytest.approx(0.25 * INCH)
     assert len({round(p[1], 8) for p in vertices}) >= 6
-    # A closed solid with consistent winding has positive signed volume.
-    volume = 0.0
-    for a, b, c in front["mesh"]["triangles"]:
-        p, q, r = vertices[a], vertices[b], vertices[c]
-        volume += (
-            p[0] * (q[1] * r[2] - q[2] * r[1])
-            + p[1] * (q[2] * r[0] - q[0] * r[2])
-            + p[2] * (q[0] * r[1] - q[1] * r[0])
-        ) / 6
-    assert volume > 0
 
 
 @pytest.mark.parametrize(

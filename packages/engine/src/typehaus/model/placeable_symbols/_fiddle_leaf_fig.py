@@ -6,8 +6,8 @@ import math
 
 from typehaus.model.placeable_symbols._families import Geometry
 from typehaus.model.placeable_symbols._frame import DETAIL_WEIGHT, circle, polygon, prism
-from typehaus.model.placeable_symbols._mesh import mesh_part
 from typehaus.model.placeable_symbols._plant_primitives import (
+    leaf_blade,
     slender_segment,
     tapered_pot,
 )
@@ -33,7 +33,7 @@ PETIOLE_RADIUS_SHARE = 0.009
 
 
 def fiddle_leaf_fig(width: float, depth: float, height: float) -> Geometry:
-    """Ten double-sided leaf meshes on a visible trunk; one shared model for all outputs."""
+    """Ten closed leaf blades on a visible trunk; one shared model for all outputs."""
     radius = min(width, depth) / 2
     pot_radius, rim = radius * POT_DIAMETER_SHARE, height * POT_HEIGHT_SHARE
     trunk_radius = min(radius * TRUNK_RADIUS_SHARE, height * 0.02)
@@ -70,11 +70,8 @@ def fiddle_leaf_fig(width: float, depth: float, height: float) -> Geometry:
         strokes.append(polygon(tuple(point[:2] for point in positions),
                                fill="foliage", weight=DETAIL_WEIGHT))
         # A raised midrib makes both sides legible without adding veins or tiny leaf parts.
-        positions.append((attachment[0] + along[0] * leaf_length * 0.55,
-                          attachment[1] + along[1] * leaf_length * 0.55,
-                          elevation + height * LEAF_RISE_HEIGHT_SHARE * 0.55 + fold))
-        front = [(edge, (edge + 1) % len(outline), len(outline))
-                 for edge in range(len(outline))]
-        parts.append(mesh_part(positions, front + [(a, c, b) for a, b, c in front],
-                                "foliage"))
+        parts.append(leaf_blade(positions, (
+            attachment[0] + along[0] * leaf_length * 0.55,
+            attachment[1] + along[1] * leaf_length * 0.55,
+            elevation + height * LEAF_RISE_HEIGHT_SHARE * 0.55 + fold)))
     return tuple(strokes), tuple(parts)

@@ -14,7 +14,7 @@ from typehaus.resolve.cladding_trim.runs import cladding_face, subtract_spans
 from typehaus.resolve.cladding_trim.section import folded_section_mesh
 from typehaus.resolve.geometry_ir import GBox, GMesh
 from typehaus.resolve.geometry_members import member_box
-from typehaus.resolve.geometry_slice_box import _box_mesh
+from typehaus.resolve.geometry_slice_box import outward_box_mesh
 from typehaus.resolve.geometry_walls import body_top_at
 from typehaus.resolve.metal_skin_profiles import (
     CORRUGATED_PROFILE,
@@ -365,7 +365,7 @@ def _closure_mesh(phase, start, end, z_start, z_end, d, n, back, section, pitch_
                 continue
             if any(t[2] - b[2] < 1e-6 for t, b in zip(top, bottom, strict=True)):
                 continue
-            mesh = _box_mesh(GBox(bottom, top))
+            mesh = outward_box_mesh(GBox(bottom, top))
             offset = len(positions)
             positions.extend(mesh.positions)
             triangles.extend(tuple(index+offset for index in tri) for tri in mesh.triangles)
@@ -422,4 +422,5 @@ def resolve_wall_top_closures(model):
                       (x0+n[0]*width,y0+n[1]*width,edge.z_start-height))
             top = tuple((x, y, _top_z(z+height, depth, limits)) for (x, y, z), depth
                         in zip(bottom, (0.0, 0.0, width, width), strict=True))
-            _append(model, edge, tag, edge.product, _box_mesh(GBox(bottom,top)), edge.length_m)
+            _append(model, edge, tag, edge.product, outward_box_mesh(GBox(bottom, top)),
+                    edge.length_m)

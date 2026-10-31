@@ -20,6 +20,16 @@ def _cross(first: Point3D, second: Point3D) -> Point3D:
             first[0] * second[1] - first[1] * second[0])
 
 
+def outward(positions, triangles) -> list[tuple[int, int, int]]:
+    """``triangles`` wound so a closed mesh's signed volume is positive (normals out)."""
+    total = 0.0
+    for a, b, c in triangles:
+        p, q, r = positions[a], positions[b], positions[c]
+        total += (p[0] * (q[1] * r[2] - q[2] * r[1]) + p[1] * (q[2] * r[0] - q[0] * r[2])
+                  + p[2] * (q[0] * r[1] - q[1] * r[0]))
+    return list(triangles) if total >= 0 else [(a, c, b) for a, b, c in triangles]
+
+
 def mesh_part(positions: list[Point3D], triangles: list[tuple[int, int, int]],
                color: str) -> Part:
     # Split triangle vertices so adjacent faces retain crisp normals.

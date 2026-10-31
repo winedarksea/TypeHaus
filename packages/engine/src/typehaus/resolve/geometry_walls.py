@@ -142,9 +142,9 @@ def _arch_spandrel_mesh(edges, opening_start: float, opening_end: float, z1: flo
         triangles.append((current, next_ + 2, current + 2))
         triangles.append((current + 1, current + 3, next_ + 3))
         triangles.append((current + 1, next_ + 3, next_ + 1))
-    for section in (0, segment_count * 4):                        # jamb faces at springline
-        triangles.append((section, section + 2, section + 3))
-        triangles.append((section, section + 3, section + 1))
+    # Jamb faces at the springlines face opposite ways, so the far one winds reversed.
+    last = segment_count * 4
+    triangles += [(0, 2, 3), (0, 3, 1), (last, last + 3, last + 2), (last, last + 1, last + 3)]
 
     return GMesh(positions=tuple(positions), triangles=tuple(triangles),
                  normals=tuple(normals), curved_vertices=frozenset(curved))

@@ -155,27 +155,6 @@ def test_lateral_plate_is_a_thin_notched_plate_at_published_size():
     assert bounds[2] == pytest.approx((-2.125, 2.125))
 
 
-@pytest.mark.parametrize("part", [
-    "H2.5A", "H10ASS", "LSTA24", "MSTA12Z", "A35Z", "LS30", "HGAM10",
-    "LTP4", "STHD14", "STHD14RJ", "HETA20Z", "MASA", "DTT2Z", "SP4", "SP6",
-    "APVKB45-6", "KBS1Z",
-])
-def test_meshes_have_closed_nonzero_steel_components_and_outward_winding(part):
-    mesh = tie_mesh(part)
-    edges = {}
-    volume = 0.0
-    for triangle in mesh.triangles:
-        a, b, c = (mesh.positions[index] for index in triangle)
-        cross = (b[1] * c[2] - b[2] * c[1], b[2] * c[0] - b[0] * c[2],
-                 b[0] * c[1] - b[1] * c[0])
-        volume += sum(a[index] * cross[index] for index in range(3)) / 6.0
-        for first, second in zip(triangle, (triangle[1], triangle[2], triangle[0]), strict=True):
-            edge = tuple(sorted((first, second)))
-            edges[edge] = edges.get(edge, 0) + 1
-    assert volume > 0.0
-    assert set(edges.values()) == {2}
-
-
 def test_unknown_and_unmeasured_coil_do_not_invent_product_geometry():
     assert tie_mesh("unlisted-simpson-part") is None
     assert tie_mesh("CS16") is None

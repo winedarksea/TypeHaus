@@ -5,11 +5,12 @@ from __future__ import annotations
 import math
 
 from typehaus.model.placeable_symbols._frame import Part
-from typehaus.model.placeable_symbols._mesh import mesh_part
+from typehaus.model.placeable_symbols._mesh import mesh_part, outward
 
 Point3D = tuple[float, float, float]
 ROUND_SEGMENTS = 16
 LEAF_FOLD_SHARE = 0.12
+LEAF_THICKNESS_M = 0.002
 
 
 def _unit(vector: Point3D) -> Point3D:
@@ -52,17 +53,21 @@ def slender_segment(start: Point3D, end: Point3D, radius: float, color: str) -> 
         across[i] * math.cos(2 * math.pi * segment / ROUND_SEGMENTS)
         + other[i] * math.sin(2 * math.pi * segment / ROUND_SEGMENTS)) for i in range(3))
         for point in (start, end) for segment in range(ROUND_SEGMENTS)]
+    positions += [start, end]  # cap centres: a closed rod, not an open sleeve
+    start_centre, end_centre = 2 * ROUND_SEGMENTS, 2 * ROUND_SEGMENTS + 1
     triangles = []
     for segment in range(ROUND_SEGMENTS):
         following = (segment + 1) % ROUND_SEGMENTS
         triangles.extend(((segment, following, segment + ROUND_SEGMENTS),
-                          (following, following + ROUND_SEGMENTS, segment + ROUND_SEGMENTS)))
+                          (following, following + ROUND_SEGMENTS, segment + ROUND_SEGMENTS),
+                          (start_centre, following, segment),
+                          (end_centre, segment + ROUND_SEGMENTS, following + ROUND_SEGMENTS)))
     return mesh_part(positions, triangles, color)
 
 
 def folded_leaf(center: Point3D, length: float, width: float,
                 angle: float, rise: float) -> Part:
-    """A pointed leaf with a raised midrib and visible faces on both sides."""
+    """A pointed leaf with a raised midrib, closed underneath so both sides show."""
     along = (math.cos(angle), math.sin(angle))
     across = (-along[1], along[0])
     positions = [
@@ -72,7 +77,19 @@ def folded_leaf(center: Point3D, length: float, width: float,
         (center[0] + along[0] * length / 2, center[1] + along[1] * length / 2,
          center[2] + rise / 2),
         (center[0] - across[0] * width / 2, center[1] - across[1] * width / 2, center[2]),
-        (center[0], center[1], center[2] + width * LEAF_FOLD_SHARE),
     ]
-    front = [(edge, (edge + 1) % 4, 4) for edge in range(4)]
-    return mesh_part(positions, front + [(a, c, b) for a, b, c in front], "foliage")
+    return leaf_blade(positions, (center[0], center[1], center[2] + width * LEAF_FOLD_SHARE))
+
+
+def leaf_blade(rim: list[Point3D], midrib: Point3D, color: str = "foliage") -> Part:
+    """A blade fanned from its rim to a raised midrib on top and to one a blade's thickness
+    lower beneath: a closed sliver of a solid, not one surface drawn twice, which has no
+    volume to print or to test. The underside never drops past the rim's lowest point, so
+    the blade's box is the rim and midrib's."""
+    count = len(rim)
+    thickness = min(LEAF_THICKNESS_M, (midrib[2] - min(point[2] for point in rim)) / 2)
+    positions = [*rim, midrib, (midrib[0], midrib[1], midrib[2] - thickness)]
+    triangles = [(edge, count, (edge + 1) % count) for edge in range(count)]
+    triangles += [(edge, (edge + 1) % count, count + 1) for edge in range(count)]
+    return mesh_part(positions, outward(positions, triangles), color)
+

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from collections import Counter
 
 import pytest
 
@@ -38,7 +39,7 @@ def test_small_plant_has_a_three_and_a_half_inch_open_pot_and_leaf_meshes():
     assert all(part["shape"] == "mesh" for part in leaves)
 
 
-def test_fiddle_leaf_fig_has_a_woody_trunk_and_lightweight_double_sided_leaves():
+def test_fiddle_leaf_fig_has_a_woody_trunk_and_lightweight_closed_leaves():
     parts = model_parts("fiddle-leaf-fig", inch(24).meters, inch(24).meters,
                         inch(60).meters)
     assert parts[0]["size"][:2] == pytest.approx((inch(14).meters,) * 2)
@@ -53,14 +54,11 @@ def test_fiddle_leaf_fig_has_a_woody_trunk_and_lightweight_double_sided_leaves()
     for leaf in leaves:
         mesh = leaf["mesh"]
         assert all(math.isfinite(value) for normal in mesh["normals"] for value in normal)
-        # Each front triangle has the same vertices and an opposite normal on its back.
-        half = len(mesh["positions"]) // 2
-        for index in range(0, half, 3):
-            assert mesh["positions"][index:index + 3] == (
-                mesh["positions"][half + index], mesh["positions"][half + index + 2],
-                mesh["positions"][half + index + 1])
-            assert mesh["normals"][index] == pytest.approx(
-                tuple(-value for value in mesh["normals"][half + index]))
+        # Visible from both sides as a closed sliver: every edge is shared by two faces.
+        edges = Counter(tuple(sorted((mesh["positions"][a], mesh["positions"][b])))
+                        for tri in zip(*[iter(range(len(mesh["positions"])))] * 3, strict=True)
+                        for a, b in ((tri[0], tri[1]), (tri[1], tri[2]), (tri[2], tri[0])))
+        assert set(edges.values()) == {2}
     assert sum(len(part["mesh"]["triangles"]) for part in parts if "mesh" in part) < 1500
 
 

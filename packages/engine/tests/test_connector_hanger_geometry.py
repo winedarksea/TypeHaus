@@ -1,6 +1,5 @@
 """Catalog envelopes, folded installation and datum tests without a house fixture."""
 
-from collections import Counter
 from math import atan, cos, sin, tan
 
 import pytest
@@ -140,24 +139,16 @@ def test_unformed_tha_preserves_the_catalog_stock_height():
 
 @pytest.mark.parametrize("part", ["LUS28", "IUS2.56/11.88", "HU28-2Z", "HUC212-3",
                                   "HHUS410", "LSSR2.37Z", "LSCZ", "THA422"])
-def test_folded_plates_are_closed_and_faces_are_non_degenerate(part):
+def test_folded_plate_faces_are_non_degenerate(part):
+    """Closed and outward: tests/test_solids3d.py, on manifold3d."""
     mesh = hanger_mesh(part)
     assert mesh is not None
-    edge_counts = Counter()
-    volume = 0.0
     for a, b, c in mesh.triangles:
-        for start, end in ((a, b), (b, c), (c, a)):
-            edge_counts[tuple(sorted((start, end)))] += 1
         p, q, r = (mesh.positions[index] for index in (a, b, c))
         u, v = ([point[i] - p[i] for i in range(3)] for point in (q, r))
         cross = (u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2],
                  u[0] * v[1] - u[1] * v[0])
         assert sum(value * value for value in cross) > 1e-20
-        volume += (p[0] * (q[1] * r[2] - q[2] * r[1])
-                   + p[1] * (q[2] * r[0] - q[0] * r[2])
-                   + p[2] * (q[0] * r[1] - q[1] * r[0])) / 6
-    assert set(edge_counts.values()) == {2}
-    assert volume > 0
 
 
 def test_unknown_products_and_unsupported_family_dimensions_are_not_guessed():

@@ -49,6 +49,21 @@ def _box_mesh(solid: GBox) -> GMesh:
     return GMesh(positions=positions, triangles=tuple(triangles))
 
 
+def outward_box_mesh(solid: GBox) -> GMesh:
+    """:func:`_box_mesh` wound outward whichever way the rings turn: a box built in a wall
+    face's (d, n) frame turns clockwise on half the faces, and an inverted mesh renders
+    inside out and reads as negative volume."""
+    mesh = _box_mesh(solid)
+    pts = mesh.positions
+    volume = sum(pts[a][0] * (pts[b][1] * pts[c][2] - pts[b][2] * pts[c][1])
+                 + pts[a][1] * (pts[b][2] * pts[c][0] - pts[b][0] * pts[c][2])
+                 + pts[a][2] * (pts[b][0] * pts[c][1] - pts[b][1] * pts[c][0])
+                 for a, b, c in mesh.triangles)
+    if volume >= 0:
+        return mesh
+    return GMesh(positions=pts, triangles=tuple((a, c, b) for a, b, c in mesh.triangles))
+
+
 #: How far off a face a crossing may sit and still count as *on* it. A hair above
 #: :data:`WELD_M`, because the hull below inherits that tolerance from the rest of the file.
 _ON_PLANE_M = 1e-9

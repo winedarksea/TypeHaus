@@ -53,38 +53,20 @@ class TrimScope:
         return self._cache[key]
 
     def fixed_footprints(self, plan, model: ResolvedModel, storey: str) -> list:
-        """``(tag, plan polygon, z0, z1)`` of the fixed things trim stops at, on ``storey``.
-
-        Casework (a declared ``work_surface``, or any furniture hung on a wall), a fixture
-        with a basin body (it needs hot water: a tub, a vanity — not a floor WC, whose
-        pedestal the base runs behind) or hung on a wall, and an appliance. The caller tests
-        the body's height against the board it is laying.
-        """
+        """``(tag, plan polygon, z0, z1)`` of the fixed things trim stops at, on ``storey``
+        (``placeable_fixity.is_fixed``). The caller tests the body's height against the board
+        it is laying."""
         from shapely.geometry import Polygon
 
-        from typehaus.model.enums import Service
+        from typehaus.resolve.placeable_fixity import fixity_types, is_fixed
 
         key = ("fixed", storey)
         if key in self._cache:
             return self._cache[key]
-        furniture = {t.tag: t for t in plan.library.furniture_types}
-        fixtures = {t.tag: t for t in plan.library.fixture_types}
+        types = fixity_types(plan)
         out = []
         for item in model.canvas_objects:
-            if item.storey != storey or len(item.footprint) < 3:
-                continue
-            hung = item.attachment_wall is not None
-            if item.kind == "Furniture":
-                ftype = furniture.get(item.type_ref or "")
-                # A curtain hangs in front of the trim; its envelope is cloth, not casework.
-                if ftype is None or ftype.curtain_track is not None or (
-                        ftype.work_surface is None and not hung):
-                    continue
-            elif item.kind == "Fixture":
-                ftype = fixtures.get(item.type_ref or "")
-                if ftype is None or (Service.WATER_HOT not in ftype.needs and not hung):
-                    continue
-            elif item.kind != "Appliance":
+            if item.storey != storey or len(item.footprint) < 3 or not is_fixed(item, types):
                 continue
             footprint = Polygon(item.footprint)
             if not footprint.is_valid or footprint.is_empty:

@@ -4,6 +4,7 @@ imported .glb sidecar, or a plain massing box, routed to the trade its domain be
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 from pathlib import Path
 
 from typehaus.emit.gltf.geometry import _to_gltf
@@ -51,28 +52,49 @@ def _add_canvas_objects(scene: _SceneBuilder, model: ResolvedModel) -> None:
     ``domain=="opening"`` objects are skipped — they are already drawn as wall cuts +
     fillings — so they never produce an unclassifiable node.
     """
-    types = {item.tag: item for name in _PLACEABLE_TYPE_COLLECTIONS
-             for item in getattr(model.plan.library, name)}
-    heights = {t["tag"]: t.get("height_m") for t in canvas_object_types(model.plan)}
-    materials = {m.tag: m for m in model.plan.library.materials}
-    root = Path(model.plan.source_root or ".")
-    hosted = slab_hosts(model)
+    context = CanvasDrawContext.of(model)
     for item in sorted(model.canvas_objects, key=lambda co: co.uid):
         if item.domain == "opening":
             continue
         mb = _MeshBuilder()
-        product_type = types.get(item.type_ref)
-        drawn = False
-        if product_type is not None and getattr(product_type, "mesh", None) is not None:
-            drawn = _add_mesh_sidecar(mb, root / product_type.mesh.path, item.position, item.z_m)
-        if not drawn:
-            drawn = _add_canvas_parts(mb, item, product_type, materials,
-                                      skip_counter=item.tag in hosted)
-        if not drawn:
-            _add_canvas_box(mb, item, heights.get(item.type_ref))
-        _add_suspension(mb, item, product_type)
+        draw_canvas_object(mb, item, context)
         scene.add_object(mb, (_canvas_trade(item.domain),),
                          kind="canvas_object", uid=item.uid)
+
+
+@dataclass(frozen=True)
+class CanvasDrawContext:
+    """The per-model lookups one canvas object's draw needs, built once."""
+
+    types: dict
+    heights: dict
+    materials: dict
+    root: Path
+    hosted: set
+
+    @classmethod
+    def of(cls, model: ResolvedModel) -> CanvasDrawContext:
+        return cls(types={item.tag: item for name in _PLACEABLE_TYPE_COLLECTIONS
+                          for item in getattr(model.plan.library, name)},
+                   heights={t["tag"]: t.get("height_m") for t in canvas_object_types(model.plan)},
+                   materials={m.tag: m for m in model.plan.library.materials},
+                   root=Path(model.plan.source_root or "."), hosted=set(slab_hosts(model)))
+
+
+def draw_canvas_object(mb, item: ResolvedCanvasObject, context: CanvasDrawContext) -> None:
+    """One object's solids into ``mb``: a ``_MeshBuilder``, or anything with its add methods
+    (``solids3d.recorder.SolidRecorder`` takes the same calls as true solids)."""
+    product_type = context.types.get(item.type_ref)
+    drawn = False
+    if product_type is not None and getattr(product_type, "mesh", None) is not None:
+        drawn = _add_mesh_sidecar(mb, context.root / product_type.mesh.path, item.position,
+                                  item.z_m)
+    if not drawn:
+        drawn = _add_canvas_parts(mb, item, product_type, context.materials,
+                                  skip_counter=item.tag in context.hosted)
+    if not drawn:
+        _add_canvas_box(mb, item, context.heights.get(item.type_ref))
+    _add_suspension(mb, item, product_type)
 
 
 def _add_countertops(scene: _SceneBuilder, model: ResolvedModel, authored: dict) -> None:

@@ -10,7 +10,7 @@ from typehaus.model.placeable_symbols._families import Geometry
 from typehaus.model.placeable_symbols._frame import box, circle, ellipse, rect
 from typehaus.model.placeable_symbols._lav_faucets import faucet_band, lav_faucet
 from typehaus.model.placeable_symbols._lav_waste import lav_waste
-from typehaus.model.placeable_symbols._mesh import mesh_part
+from typehaus.model.placeable_symbols._mesh import mesh_part, outward
 from typehaus.model.placeable_symbols._sektion_fronts import axstad_front
 
 REFERENCE_DEPTH_IN = 18.0
@@ -28,6 +28,21 @@ FAUCET_REAR_CLEARANCE_M = 2.5 * 0.0254
 BASIN_SEGMENTS = 64
 BASIN_LEVELS = 12
 BASIN_FLOOR_FRACTION = 0.22
+
+
+def _shell(vertices, triangles, basin_y, wall, span):
+    """Close the bowl surface into a solid: a second surface ``wall`` inside it, joined at
+    the rim ring. The authored surface stays the outside, so the bowl's bottom (which the
+    waste reads) does not move."""
+    rim = BASIN_LEVELS * BASIN_SEGMENTS
+    shrink = 1 - 2 * wall / span
+    inner = {index: len(vertices) + slot for slot, index in
+             enumerate(i for i in range(len(vertices)) if not rim <= i < rim + BASIN_SEGMENTS)}
+    vertices = vertices + [(x * shrink, basin_y + (y - basin_y) * shrink, z + wall)
+                           for i, (x, y, z) in enumerate(vertices) if i in inner]
+    triangles = list(triangles) + [tuple(inner.get(i, i) for i in (a, c, b))
+                                   for a, b, c in triangles]
+    return vertices, outward(vertices, triangles)
 
 
 def deck_height(height: float, faucet: str = "genta") -> float:
@@ -88,6 +103,8 @@ def solid_surface_vanity(width: float, depth: float, height: float, *,
     vertices.append((0, basin_y, bottom))
     triangles.extend((center, index, (index + 1) % BASIN_SEGMENTS)
                      for index in range(BASIN_SEGMENTS))
+    vertices, triangles = _shell(vertices, triangles, basin_y, top_thickness / 2,
+                                 min(basin_width, basin_depth))
     parts.append(mesh_part(vertices, triangles, "porcelain"))
     drain_size = min(basin_width, basin_depth) * 0.09
     parts.append(box(0, basin_y, bottom, bottom + top_thickness / 8,

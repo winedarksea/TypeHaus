@@ -13,6 +13,7 @@ from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.soffits import SOFFIT_LINING_THICKNESS
 from typehaus.resolve.strap_braces import STRAP_CATEGORY
+from typehaus.resolve.sweep import sweep_length_m
 from typehaus.takeoff.fabrication import FABRICATED_SHAPES
 from typehaus.takeoff.sheet_rips import rip_stock
 from typehaus.takeoff.steel import steel_member_tags
@@ -282,24 +283,58 @@ def framing_bom_by_size(model: ResolvedModel) -> list[dict[str, object]]:
     return [by_size[key] for key in sorted(by_size)]
 
 
-def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """Bill the resolved solids the framing take-off cannot see — slabs, footings, pads,
-    posts/columns, standalone beams, and the modeled accessories.
+def solid_net_area_m2(solid) -> float:
+    """A ``ResolvedSolid``'s billed plan area: its outline less its voids. A void may lap
+    the outline's edge or another void, so the voids are clipped, never just summed."""
+    gross = abs(polygon_area(list(solid.outline)))
+    if not solid.voids:
+        return gross
+    from shapely.geometry import Polygon
 
-    ``framing_takeoff`` reconciles 1:1 with ``model.all_members()``, but a member is a stick
-    of lumber; the concrete and the standalone structure are ``ResolvedSolid`` records. Both
-    are needed for the BOM to account for everything the model emits. Volume is the plan
-    outline (less its voids) extruded through the solid's elevation range, so concrete rows
-    can be ordered in cubic yards.
-    """
-    Row = dict[str, object]
+    from typehaus.resolve.overlay import difference, union_all
+
+    voids = union_all(Polygon(void).buffer(0) for void in solid.voids)
+    return difference(Polygon(solid.outline).buffer(0), voids).area
+
+
+def solid_volume_m3(solid) -> float:
+    """A ``ResolvedSolid``'s billed volume, graded against the exact solid by
+    ``tests/test_solids3d.py``. A purchased part's mesh and a swept run carry their own
+    shape; their ``outline`` and z range are only a silhouette, and a sloped drain's flat
+    prism of that silhouette is ten to a hundred times its real volume."""
+    if solid.body_mesh is not None:
+        return abs(mesh_signed_volume_m3(solid.body_mesh))
+    if solid.sweep is not None:
+        return sweep_length_m(solid.sweep) * abs(polygon_area(list(solid.sweep.profile)))
+    return solid_net_area_m2(solid) * max(0.0, solid.z1_m - solid.z0_m)
+
+
+def billed_volume_m3(solid, soffits: dict) -> float:
+    """What ``structural_solids_takeoff`` bills: a soffit by its lining panels (its solid is
+    the box it encloses), everything else by :func:`solid_volume_m3`."""
+    soffit = soffits.get(solid.uid)
+    if soffit is not None:
+        return sum(panel.area_m2 for panel in soffit.finish_panels) * (
+            SOFFIT_LINING_THICKNESS.meters)
+    return solid_volume_m3(solid)
+
+
+def mesh_signed_volume_m3(mesh) -> float:
+    """Divergence-theorem volume of a closed ``GMesh``: positive when wound outward."""
+    pts = mesh.positions
+    return sum(pts[a][0] * (pts[b][1] * pts[c][2] - pts[b][2] * pts[c][1])
+               + pts[a][1] * (pts[b][2] * pts[c][0] - pts[b][0] * pts[c][2])
+               + pts[a][2] * (pts[b][0] * pts[c][1] - pts[b][1] * pts[c][0])
+               for a, b, c in mesh.triangles) / 6.0
+
+
+def volume_billed_solids(model: ResolvedModel):
+    """The ``model.solids`` that ``structural_solids_takeoff`` bills by volume."""
     # A rolled steel member bills by the FOOT of its section out of ``[steel_members]``
     # (``takeoff/steel.py``), so it must not also appear here as a fraction of a cubic yard:
     # a bare "beam" row in [concrete] accepts a solid whose structure material is None, and
     # a $/cy ready-mix rate on a steel angle is both a wrong price and a second one.
     billed_as_steel = steel_member_tags(model)
-    groups: dict[tuple[str, str], Row] = {}
-    soffits = {soffit.uid: soffit for soffit in model.soffits}
     for solid in model.solids:
         if solid.tag in billed_as_steel:
             continue
@@ -313,12 +348,25 @@ def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         # beside the rows that already bought them. This is the critical one.
         if solid.derived:
             continue
-        net_area_m2 = abs(polygon_area(list(solid.outline))) - sum(
-            abs(polygon_area(list(void))) for void in solid.voids)
-        volume_m3 = max(0.0, net_area_m2) * max(0.0, solid.z1_m - solid.z0_m)
-        if solid.uid in soffits:
-            panels = soffits[solid.uid].finish_panels
-            volume_m3 = sum(panel.area_m2 for panel in panels) * SOFFIT_LINING_THICKNESS.meters
+        yield solid
+
+
+def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Bill the resolved solids the framing take-off cannot see — slabs, footings, pads,
+    posts/columns, standalone beams, and the modeled accessories.
+
+    ``framing_takeoff`` reconciles 1:1 with ``model.all_members()``, but a member is a stick
+    of lumber; the concrete and the standalone structure are ``ResolvedSolid`` records. Both
+    are needed for the BOM to account for everything the model emits. Volume is the plan
+    outline (less its voids) extruded through the solid's elevation range, so concrete rows
+    can be ordered in cubic yards.
+    """
+    Row = dict[str, object]
+    groups: dict[tuple[str, str], Row] = {}
+    soffits = {soffit.uid: soffit for soffit in model.soffits}
+    for solid in volume_billed_solids(model):
+        net_area_m2 = solid_net_area_m2(solid)
+        volume_m3 = billed_volume_m3(solid, soffits)
         key = (solid.category, solid.assembly or "")
         row = groups.get(key)
         if row is None:
@@ -336,7 +384,7 @@ def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             row["finish_area_sqft"] = float(row.get("finish_area_sqft", 0.0)) + sum(
                 panel.area_m2 for panel in soffits[solid.uid].finish_panels) * _M2_TO_FT2
         row["count"] = int(row["count"]) + 1
-        row["plan_area_sqft"] = float(row["plan_area_sqft"]) + max(0.0, net_area_m2) * _M2_TO_FT2
+        row["plan_area_sqft"] = float(row["plan_area_sqft"]) + net_area_m2 * _M2_TO_FT2
         row["volume_cuft"] = float(row["volume_cuft"]) + volume_m3 * _M3_TO_FT3
         tags = row["tags"]
         assert isinstance(tags, list)

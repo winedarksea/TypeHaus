@@ -4,7 +4,7 @@ Reach and height are published dimensions; surface profiles are illustrative. Th
 envelope includes raised-handle travel, while its spout sits much lower than its lever.
 """
 
-from typehaus.model.placeable_symbols._mesh import mesh_part
+from typehaus.model.placeable_symbols._mesh import mesh_part, outward
 from typehaus.model.placeable_symbols._sektion_fronts import round_bar
 
 INCH_M = 0.0254
@@ -30,7 +30,7 @@ def _blade(points, width):
         triangles.extend(
             ((index, following, following + count), (index, following + count, index + count))
         )
-    return mesh_part(vertices, triangles, "faucet")
+    return mesh_part(vertices, outward(vertices, triangles), "faucet")
 
 
 def lav_faucet(width, depth, deck, height, center_y, faucet="genta"):
