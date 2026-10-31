@@ -1,0 +1,400 @@
+{
+  "area": "I4",
+  "model": "claude-sonnet-5-5",
+  "review_sha": "247a13e9",
+  "inventory_summary": "Inventoried: 62 ceilings (all 5/8\" gwb/gwb-mr/gwb-x; sauna/plant special), 37 rooms' floor stacks, 36 doorways' adjacent floors, 6 drywall bead products + 20 termination / 8 tile-reveal / 4 L-bead / 4 LED / 36+36 window trims, 20 wall assemblies' gypsum + RC layers, 10 floor materials. Web-checked: Trim-Tex AS6010 (5/8x5/8 ok), AS8710 (1/2x1/2 ok), 9010 (1/2\" ok), JT6 (5/8 mismatch), 7010 (3/4 radius; board-thickness meaning unclear), DITRA-HEAT 5.5mm, SurePly ~0.205\", AR gypsum. Sheets opened: A-603, A-002, A-301, A-516, A-567 (5 of the requested set). Pass 2: opened 13 interior detail sheets in total (A-516, A-519, A-520, A-521, A-525, A-528, A-530, A-567, A-579, A-583 plus A-603, A-002, A-301); layer thicknesses (0.5/0.625 gwb, 3.5/5.5 studs, plant stack, sauna liner) all match the model; layer_bands.py and coatings.py walked: no nominal-vs-actual or band-height bug found (band clamp, reband and coating-restore logic are consistent; coatings take 0 depth). NOT examined: remaining A-517..A-584 sheets of the same families (identical patterns), Fry Reglet profiles, Johnsonite base thickness (O2 seam; listing found 0.080\" vinyl vs rubber 1/8\").",
+  "verified_clean": [
+    "AS6010 Z shadow bead: A=5/8 matches the 5/8\" ceiling board, B=5/8 reveal (Trim-Tex spec).",
+    "AS8710 F reveal 1/2x1/2 and 9010 1/2\" tear-away L-bead match the 1/2\" walls they sit on.",
+    "Ceilings: all 62 are 5/8\" gypsum, 0.625\" z-thickness; main bottom 107.5\" and second 227.5\" = 120 - 11 7/8 joist - 5/8; consistent per storey.",
+    "A-301 section clear heights (BATH2 8'-10\", LIVING 8'-10 9/16\", HALL 6'-11 5/8\", WORKSHOP 8'-0 15/16\") equal model clear_height_m (106.0, 106.55, 83.63, 96.94).",
+    "Wall gypsum thicknesses: 1/2\" partitions/exterior liners; 5/8\" kept on garage, stair-well, Type X walls per the wall board policy; resilient channel layer 1/2\" matches RC-1 depth.",
+    "LVP 5 mm total (0.197\") + 3/4\" subfloor = 0.947\" and coated cap 0.9375\": 0.009\" flush as documented.",
+    "Oak 3/4\" hardwood at +1.5\" over 3/4\" subfloor; second-storey oak/tile/carpet all land at +1.5\" (flush).",
+    "Paint/coatings: latex-paint 0.01\" layer is a zero-depth coating by design; A-516 section labels gwb 0.5\" / stud 3.5\" correctly.",
+    "A-603 lists floor/ceiling finishes consistent with the model's room finish refs.",
+    "COREtec Quincy Oak VV017-01018 is 5 mm with attached cork (manufacturer page): LVP 0.19685\" correct.",
+    "layer_bands.py / coatings.py: bands clamp to the wall, reband re-resolves top=None, coatings return 0 depth and re-host on the solved face; no bug found.",
+    "Sampled opening/rim sheets A-516, A-519, A-520, A-521, A-525, A-528, A-530, A-579, A-583: printed layer thicknesses and stud widths equal model values."
+  ],
+  "findings": [
+    {
+      "id": "I4-001",
+      "area": "I4",
+      "title": "Bedroom carpet stack modelled at 3/4\" over subfloor; selected carpet + 7/16\" cushion + 1/4\" plywood allowance is ~1.25-1.35\"",
+      "elements": [
+        "catlin-carpet-raised",
+        "RM-M-BED",
+        "RM-M-CLOSET",
+        "RM-S-BED1",
+        "RM-S-BED2",
+        "RM-S-BED3",
+        "D-S-BED1",
+        "D-S-BED2",
+        "D-S-BED3"
+      ],
+      "files": [
+        "houses/catlin/plan/assemblies/materials_flooring.py:41",
+        "houses/catlin/plan/products_bedroom_carpet.py:7",
+        "houses/catlin/notes/bedroom_carpet.md"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-603"
+        ],
+        "pages": [
+          135
+        ]
+      },
+      "confidence": 0.75,
+      "evidence": {
+        "measured": "finish_thickness_in=0.75 for the whole carpet stack; the same material lists companions pad 7/16\" (0.4375) + carpet-underlayment 1/4\" (0.25) and the carpet's published pile is 0.56\" (+ unreported backing). Sum of the cited layers >= 0.4375+0.25+0.56 = 1.25\" before backing and before pad compression. Web pass 2: Quincy Oak confirmed 5 mm incl. attached cork (coretecfloors.com), so LVP 0.197\" is right; Sweet Spot I has no published total thickness (backing excluded from 0.56\" pile), but the two PUBLISHED numbers alone (cushion 7/16\" + pile 0.56\") already give 0.9975\" > 0.75\" even with plywood dropped.",
+        "expected": "Minimum published stack 1.0\" (no plywood, no backing) or ~1.25\" with the 1/4\" plywood allowance, vs 0.75\" modelled: carpet floors 0.25-0.5\" high of the hall oak at +1.5\".",
+        "method": "Load /tmp pickle; room_finished_floor_elevation - room_floor_elevation = 1.5\" for carpet rooms (probe p3.py). Compare materials_flooring.py companions. Known provisional (bedroom_carpet.md) but nothing in the model/set flags it as unreconciled."
+      },
+      "source": "notes/bedroom_carpet.md (own admission); Future Foam 150553488-33 7/16\"; STAINMASTER 7L89100101 0.56\" pile",
+      "proposed_fix": "Model carpet at >=1.0\" (cushion 7/16 + pile 0.56) or choose 3/8\" cushion + <=0.4\" pile (~0.78\"); delete the plywood allowance if not needed. Re-strike with doorway heights.",
+      "size_guess": "large",
+      "seam_with": [
+        "O2",
+        "I2"
+      ],
+      "dedupe_key": "I4:carpet-stack-height"
+    },
+    {
+      "id": "I4-002",
+      "area": "I4",
+      "title": "No transition product exists at any flooring change; 0.553\" LVP-to-carpet step at D-M-BED2 exceeds a stock reducer/ramp range",
+      "elements": [
+        "D-M-BED2",
+        "D-M-BATH2",
+        "D-B-PLAY",
+        "D-B-SAUNA",
+        "D-B-BATH",
+        "D-S-PLANT",
+        "D-A-HALVES"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/doorway.py:1",
+        "houses/catlin/notes/floor_heights.md"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": false
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "58 integrity.doorway_assembly UNKNOWN; every doorway with a floor change has components=() and 'compatible flooring trim or documented transition is unspecified'. Steps (in): D-M-BED2 0.553, D-S-PLANT 0.38, D-B-SAUNA 0.75 (concrete to stall mat), D-B-PLAY 0.25, D-A-HALVES 0.63.",
+        "expected": "A named transition product per change with its height range covering the step (stock carpet-to-hard-surface reducers/ramps typically cover <= ~1/2\"; steps over 1/4\" need a bevel).",
+        "method": "p4.py: open each o.doorway; print adjacent_floors surface_m, components, unknown."
+      },
+      "source": "floor_heights.md (saddle intent only); no product named",
+      "proposed_fix": "Select transition products (or author the hardwood saddle and stall-mat reducers as Products) so doorway_assembly can grade the range; for D-M-BED2 consider matching carpet to 0.947\" or stepping the saddle.",
+      "size_guess": "large",
+      "seam_with": [
+        "O2"
+      ],
+      "dedupe_key": "I4:transition-products"
+    },
+    {
+      "id": "I4-003",
+      "area": "I4",
+      "title": "J-bead is Phillips JT6 listed for 5/8\" board but 20 terminations sit on 1/2\" board (and Trim-Tex J sizes are board-specific)",
+      "elements": [
+        "dw-j-bead-metal",
+        "PROD-PHILLIPS-JT6HDGMEN10",
+        "RM-B-FURNACE",
+        "RM-B-GYM",
+        "RM-M-MUDROOM"
+      ],
+      "files": [
+        "houses/catlin/plan/drywall.py:30",
+        "packages/engine/src/typehaus/resolve/drywall_trims.py:176"
+      ],
+      "kind": "product-data",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": false
+      },
+      "confidence": 0.55,
+      "evidence": {
+        "measured": "Product source reads 'listed for 5/8 in. board. Confirm the 1/2 in. part'; walls the terminations meet are 1/2\" (INT_2X4_PARTITION_HALF etc, probe p6.py); 20 'termination' trims, ~1,800 in of J-bead.",
+        "expected": "J-bead size matches board: 1/2\" J (Phillips 1/2\" metal J 8 ft, Trim-Tex 1/2\" J) for 1/2\" walls.",
+        "method": "p5.py lists terminations; p6.py gypsum thickness per wall assembly. Web: Menards JT6 page lists 5/8\" J; Phillips 1/2\" x 8' metal J exists; Trim-Tex catalog 1510 (1/2\") / 1610 (5/8\")."
+      },
+      "source": "drywall.py own source string; https://trim-tex.com catalog 2024",
+      "proposed_fix": "Swap to a 1/2\" J-bead product (stock may become 8 ft) or use 5/8\" only where the board is 5/8\"; check stock_length.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "I4:jbead-size"
+    },
+    {
+      "id": "I4-004",
+      "area": "I4",
+      "title": "Tile stacks carry 0.10-0.15\" of combined mortar under 24x48 / large tile; DITRA-HEAT is 5.5 mm (0.217\") not 0.25\"",
+      "elements": [
+        "catlin-tile-opera-blue",
+        "catlin-tile-kaleo-brick",
+        "catlin-tile-carrara",
+        "catlin-ditra-heat",
+        "RM-M-BATH2",
+        "RM-S-SUITEBATH",
+        "RM-S-BATH1"
+      ],
+      "files": [
+        "houses/catlin/plan/assemblies/materials_flooring.py:67",
+        "houses/catlin/plan/assemblies/materials_flooring.py:81",
+        "houses/catlin/plan/assemblies/materials_flooring.py:101"
+      ],
+      "kind": "commodity-size",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-603"
+        ],
+        "pages": [
+          135
+        ]
+      },
+      "confidence": 0.4,
+      "evidence": {
+        "measured": "Each stack is forced to 0.75\": Opera Blue = 0.25+0.40+0.10; Kaleo = 0.3125+0.3125+0.125; Carrara = 0.25+0.354+0.146. Tile thickness for Opera Blue/Kaleo is an unpublished allowance.",
+        "expected": "A thinset under the membrane (~1/16\") plus a tile bed over DITRA studs (>= ~1/8-3/16\") for large-format tile suggests 0.19-0.25\" mortar; tile-to-oak flush (+/-1/16\") target in floor_heights.md will not hold at 0.10\".",
+        "method": "Read materials_flooring.py source strings; web: DITRA-HEAT 5.5 mm sheet (ceramed.ca listing); Agua Linda 10.16 mm per product row."
+      },
+      "source": "Schluter DITRA-HEAT 5.5mm retail data (not Schluter datasheet); product rows 'thickness not published'",
+      "proposed_fix": "Get delivered tile thickness; re-derive mortar as a minimum, set finished height from the sum, and adjust oak/tile flush by underlayment.",
+      "size_guess": "large",
+      "seam_with": [],
+      "dedupe_key": "I4:tile-mortar-allowance"
+    },
+    {
+      "id": "I4-005",
+      "area": "I4",
+      "title": "SurePly 'nominal 1/4\"' used as the actual thickness (real ~0.205\"/5.2 mm) in the plant-room and carpet stacks",
+      "elements": [
+        "catlin-plant-vinyl-raised",
+        "catlin-plant-sureply",
+        "catlin-carpet-underlayment",
+        "RM-S-PLANT"
+      ],
+      "files": [
+        "houses/catlin/plan/assemblies/materials_flooring.py:15"
+      ],
+      "kind": "commodity-size",
+      "severity": "model-only",
+      "on_permit_set": {
+        "printed": false
+      },
+      "confidence": 0.55,
+      "evidence": {
+        "measured": "catlin-plant-vinyl-raised finish_thickness_in=0.370 (0.120 sheet + 0.25 plywood); D-S-PLANT step 0.38\".",
+        "expected": "0.120 + ~0.205 = ~0.325\"; step 0.425\".",
+        "method": "Lowe's Patriot Timber 1/4\" underlayment actual 0.205\" (inference; SurePly datasheet not found)."
+      },
+      "source": "Patriot Timber 1/4\" (5.2 mm) underlayment listing",
+      "proposed_fix": "Set 0.325 (verify SurePly sheet); re-check the reducer/water-stop riser height.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "I4:sureply-actual"
+    },
+    {
+      "id": "I4-006",
+      "area": "I4",
+      "title": "Interior-partition rim-band sheets print exterior air/water/thermal continuity notes (sheathing-ext, spray-foam-ext)",
+      "elements": [
+        "TR-CATLIN-RIM-BAND",
+        "TR-CATLIN-STACK-SHELF",
+        "INT_2X4_PARTITION_HALF"
+      ],
+      "files": [
+        "houses/catlin/plan/transitions.py:105",
+        "houses/catlin/plan/transitions.py:112"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-567",
+          "A-579",
+          "A-583"
+        ],
+        "pages": [
+          102,
+          114,
+          118
+        ]
+      },
+      "confidence": 0.65,
+      "evidence": {
+        "measured": "A-567 (INT_2X4_PARTITION_HALF rim band, page 102) shows 'air continuity - sheathing-ext -> sheathing-ext / water ... spray-foam-ext / thermal ... spray-foam-ext' on a gypsum/stud partition that has neither layer. Same AIR_WATER_THERMAL tuple is on every storey_stack:rim:* and stack_width_change key. Re-confirmed on A-579 (mudroom bearing wall / stair wall, p114) and A-583 (INT_2X6_PLUMBING_HALF / staggered, p118): same three continuity labels on interior-to-interior rim bands.",
+        "expected": "Interior partition keys carry no envelope continuity note (only the plant rim band's vapour-barrier claim and envelope keys).",
+        "method": "Read permit_set_full.pdf p102 (A-567) and p51 (A-516, no such note); transitions.py CATR003AAAA/CATR004AAAA continuity=AIR_WATER_THERMAL."
+      },
+      "source": "transitions.py",
+      "proposed_fix": "Give interior-only stacks a continuity=() variant (or condition the continuity on the stack having an envelope layer).",
+      "size_guess": "small",
+      "seam_with": [
+        "O1"
+      ],
+      "dedupe_key": "I4:interior-rimband-continuity"
+    },
+    {
+      "id": "I4-007",
+      "area": "I4",
+      "title": "RM-B-SAUNA clear_height_m reads 96.94\" but the shiplap ceiling underside is 83.06\" AFF (CLAUDE.md says 82 13/16\")",
+      "elements": [
+        "RM-B-SAUNA",
+        "CEIL-RM-B-SAUNA"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/rooms.py:221",
+        "packages/engine/src/typehaus/resolve/ceilings.py"
+      ],
+      "kind": "engine-geometry",
+      "severity": "model-only",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-528"
+        ],
+        "pages": [
+          63
+        ]
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "ceiling z0=-26.375\" vs sauna floor -109.4375\" = 83.06\"; room.clear_height_m = 96.94\" (floor to joist/ slab only); documented 82.8125\" differs by 1/4\". A-528 (p63) note prints 'finished ceiling at 82 13/16 inches' while the model ceiling gives 83.06\".",
+        "expected": "clear height = lowest ceiling underside; reconcile 83.06 vs 82.81 (bench/sealed-concrete top).",
+        "method": "p7.py ceilings; p3.py room clear heights."
+      },
+      "source": "houses/catlin/CLAUDE.md sauna section",
+      "proposed_fix": "Make clear_height_m read a lowered ceiling (not only soffits) or document the exemption; settle the 1/4\" discrepancy.",
+      "size_guess": "small",
+      "seam_with": [
+        "I5"
+      ],
+      "dedupe_key": "I4:sauna-clear-height"
+    },
+    {
+      "id": "I4-008",
+      "area": "I4",
+      "title": "1/2\" paper-faced abuse-resistant board (gwb-ar) used on hall/stair/mudroom faces has no US 1/2\" listing found",
+      "elements": [
+        "gwb-ar",
+        "INT_2X4_PARTITION_HALF",
+        "INT_2X6_BRG_HALF",
+        "INT_2X6_BRG_MUDROOM_UPPER_GWB"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/library/materials/finishes.py:54"
+      ],
+      "kind": "product-data",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": false
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "Material source already says a supply-yard item; search found USG AR only as 5/8\" Type X (US) and a 1/2\" AR Firecode C from CGC (Canada).",
+        "expected": "A US-orderable 1/2\" AR board, or the stated 1/2\" regular/Type C substitute.",
+        "method": "WebSearch ASTM C1629 USG Sheetrock AR thicknesses."
+      },
+      "source": "usg.com AR Firecode X (5/8\"); bmr.ca CGC AR Firecode C 1/2\"",
+      "proposed_fix": "Name the substitute (1/2\" Type C or regular) as the default in the material note; keep AR as a 5/8\" Type X option where space allows.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "I4:gwb-ar-half"
+    },
+    {
+      "id": "I4-009",
+      "area": "I4",
+      "title": "Title/legend text overprints and clips on interior opening detail sheets (A-519, A-530, A-520)",
+      "elements": [
+        "TR-CATLIN-INTERIOR-OPENING",
+        "TR-CATLIN-UNDERSTAIR-OPENING"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-519",
+          "A-520",
+          "A-530"
+        ],
+        "pages": [
+          54,
+          55,
+          65
+        ]
+      },
+      "confidence": 0.7,
+      "evidence": {
+        "measured": "A-519 and A-530: a second 'Catlin House / detail title / MATERIALS ... 0.625\"/0.01\"' text block is drawn on top of itself at upper left, illegible; A-520 has a clipped fragment 'ening' at the page's left edge.",
+        "expected": "One legible title/materials block per detail sheet.",
+        "method": "Read permit_set_full.pdf pages 54, 55, 65."
+      },
+      "source": "permit_set_full.pdf",
+      "proposed_fix": "Fix the detail-sheet legend placement so it is not drawn twice and clips inside the border (same family as F5's A-588/589 overlap).",
+      "size_guess": "small",
+      "seam_with": [
+        "F5"
+      ],
+      "dedupe_key": "I4:detail-legend-overprint"
+    },
+    {
+      "id": "I4-010",
+      "area": "I4",
+      "title": "Gypsum type not printed on opening details: 5/8\" Type X wall labelled only 'gwb-a/gwb-b'",
+      "elements": [
+        "INT_2X6_BRG",
+        "TR-CATLIN-INTERIOR-OPENING"
+      ],
+      "files": [
+        "houses/catlin/plan/assemblies/interior.py"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-516",
+          "A-519",
+          "A-520",
+          "A-521",
+          "A-530",
+          "A-579"
+        ],
+        "pages": [
+          51,
+          54,
+          55,
+          56,
+          65,
+          114
+        ]
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "A-519 (INT_2X6_BRG, gwb-x 5/8 both faces in the model) labels 'gwb-b 0.625\" / gwb-a 0.625\"' with no type; A-530 and A-579 label the same board 'gwb-x 0.625\"'. Thicknesses on all sampled sheets (0.5 / 0.625 / 3.5 / 5.5 stud) match the model.",
+        "expected": "Layer labels name the board type (Type X / AR / MR) consistently; fire-rated board is a field-checked item.",
+        "method": "Compare p54 label text to model wall layers (p6.py: INT_2X6_BRG gwb-x 0.625)."
+      },
+      "source": "permit_set_full.pdf; model layers",
+      "proposed_fix": "Label layers by material tag (gwb-x) not by layer name role where the layer name is gwb-a/gwb-b.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "I4:gwb-type-label"
+    }
+  ]
+}

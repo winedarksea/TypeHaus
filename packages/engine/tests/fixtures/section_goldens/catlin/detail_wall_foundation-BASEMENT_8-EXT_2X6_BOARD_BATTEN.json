@@ -1011,52 +1011,52 @@
       "node": "polyline",
       "points": [
         [
-          11.500000000000002,
+          11.4185,
           -27.5
         ],
         [
-          11.566987298107781,
-          -27.75
+          11.496406227699351,
+          -27.790750000000003
         ],
         [
-          11.75,
-          -27.93301270189222
+          11.70925,
+          -28.00359377230065
         ],
         [
           12.000000000000002,
-          -28.000000000000004
+          -28.081500000000002
         ],
         [
-          12.250000000000002,
-          -27.93301270189222
+          12.290750000000001,
+          -28.00359377230065
         ],
         [
-          12.43301270189222,
-          -27.75
+          12.503593772300652,
+          -27.790750000000003
         ],
         [
-          12.5,
+          12.581500000000002,
           -27.5
         ],
         [
-          12.43301270189222,
-          -27.250000000000004
+          12.503593772300652,
+          -27.20925
         ],
         [
-          12.250000000000002,
-          -27.066987298107783
+          12.290750000000001,
+          -26.99640622769935
         ],
         [
           12.000000000000002,
-          -27.0
+          -26.9185
         ],
         [
-          11.75,
-          -27.066987298107783
+          11.70925,
+          -26.99640622769935
         ],
         [
-          11.566987298107781,
-          -27.250000000000004
+          11.496406227699351,
+          -27.20925
         ]
       ],
       "layer": "S-FNDN",
@@ -1071,52 +1071,52 @@
       "node": "hatch",
       "boundary": [
         [
-          11.500000000000002,
+          11.4185,
           -27.5
         ],
         [
-          11.566987298107781,
-          -27.75
+          11.496406227699351,
+          -27.790750000000003
         ],
         [
-          11.75,
-          -27.93301270189222
+          11.70925,
+          -28.00359377230065
         ],
         [
           12.000000000000002,
-          -28.000000000000004
+          -28.081500000000002
         ],
         [
-          12.250000000000002,
-          -27.93301270189222
+          12.290750000000001,
+          -28.00359377230065
         ],
         [
-          12.43301270189222,
-          -27.75
+          12.503593772300652,
+          -27.790750000000003
         ],
         [
-          12.5,
+          12.581500000000002,
           -27.5
         ],
         [
-          12.43301270189222,
-          -27.250000000000004
+          12.503593772300652,
+          -27.20925
         ],
         [
-          12.250000000000002,
-          -27.066987298107783
+          12.290750000000001,
+          -26.99640622769935
         ],
         [
           12.000000000000002,
-          -27.0
+          -26.9185
         ],
         [
-          11.75,
-          -27.066987298107783
+          11.70925,
+          -26.99640622769935
         ],
         [
-          11.566987298107781,
-          -27.250000000000004
+          11.496406227699351,
+          -27.20925
         ]
       ],
       "pattern": "concrete",
@@ -2415,7 +2415,7 @@
         -6.375,
         18.817793088363956
       ],
-      "text": "cladding 0.75\"",
+      "text": "cladding 3/4\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2440,7 +2440,7 @@
         -5.25,
         13.7622375328084
       ],
-      "text": "outer-girt 1.5\"",
+      "text": "outer-girt 1 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2465,7 +2465,7 @@
         -4.25,
         8.706681977252845
       ],
-      "text": "vent-gap 0.5\"",
+      "text": "vent-gap 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2515,7 +2515,7 @@
         0.25,
         -1.4044291338582653
       ],
-      "text": "sheathing 0.5\"",
+      "text": "sheathing 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2540,7 +2540,7 @@
         3.25,
         -6.459984689413821
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2565,7 +2565,7 @@
         6.25,
         -11.515540244969376
       ],
-      "text": "gwb-int 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3987,7 +3987,7 @@
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "5.5\" stud",
+      "text": "5 1/2\" stud",
       "text_along": 0.0,
       "uid": null
     },
@@ -4000,7 +4000,7 @@
           "kind": "point",
           "xy": [
             -4.06,
-            -61.4375
+            -39.02805118110236
           ],
           "name": ""
         },
@@ -4008,18 +4008,18 @@
           "kind": "point",
           "xy": [
             -0.05999999999999991,
-            -61.4375
+            -39.02805118110236
           ],
           "name": ""
         }
       ],
       "p0": [
         -4.06,
-        -61.4375
+        -39.02805118110236
       ],
       "p1": [
         -0.05999999999999991,
-        -61.4375
+        -39.02805118110236
       ],
       "offset": 3.0,
       "height_pt": 9.5,
@@ -4533,7 +4533,7 @@
         2.85,
         1.3980000000000001
       ],
-      "content": "gwb  0.5\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4605,7 +4605,7 @@
         2.85,
         1.228
       ],
-      "content": "lsl  5.5\"",
+      "content": "lsl  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4677,7 +4677,7 @@
         2.85,
         1.058
       ],
-      "content": "fiberglass  5.5\"",
+      "content": "fiberglass  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4749,7 +4749,7 @@
         2.85,
         0.8880000000000001
       ],
-      "content": "struct-1-plywood  0.5\"",
+      "content": "struct-1-plywood  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4894,7 +4894,7 @@
         4.999999999999999,
         1.3980000000000001
       ],
-      "content": "air-barrier  0.5\"",
+      "content": "air-barrier  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4966,7 +4966,7 @@
         4.999999999999999,
         1.228
       ],
-      "content": "kdat  1.5\"",
+      "content": "kdat  1 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -5039,7 +5039,7 @@
         4.999999999999999,
         1.058
       ],
-      "content": "board-batten-24  0.75\"",
+      "content": "board-batten-24  3/4\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -5214,21 +5214,18 @@
     "NOTES:",
     "• Framed wall: 2x6 at 16\" o.c., R-19 bays, 4\" continuous exterior.",
     "• Basement wall: 8\" pour, #5 at 41\" o.c., aligned on the concrete face.",
-    "• Waterproofed per Minn. R. 1309.0406, not dampproofed: 60 mil self-adhered asphalt, footing to grade.",
-    "• Basement CI: 4\" XPS in two layers, seams staggered, outer layer taped.",
-    "• Exposed XPS band: 1/8\" acrylic over mesh, 276.3 SF, grade-6\" to wall top.",
-    "• Bearing seat: pour tops at -13 7/16\", then gasket, mudsill and 11 7/8\" rim.",
-    "• Sill: one shared 2x6 PT mudsill, 370.0 LF, on 1/16\" compressed EPDM.",
-    "• Slab: 3-1/2\" at 3,500 psi on 3\" XPS, 10 mil poly, 4\" gravel. Drain: 4\" pipe.",
+    "• 60 mil waterproofing, footing to grade (Minn. R. 1309.0406).",
+    "• CI: 4\" XPS, two layers, seams staggered, outer taped; grade-6\" up: 1/8\" acrylic on mesh, 276.3 SF.",
+    "• Seat: pour top -13 7/16\"; one shared 2x6 PT mudsill (329.3 LF) on 1/16\" EPDM, 11 7/8\" rim.",
+    "• Slab: 3-1/2\" at 4,000 psi on 2\" XPS, 10 mil poly, 4\" stone. Drain: 4\" pipe.",
     "",
     "KEYED NOTES:",
-    "K1  Bituthene 3000 or equal on concrete and sheathing. 2\" laps; 2-ply corners; insulation over it; backfill in 30 days.",
+    "K1  Bituthene 3000 or equal, concrete to sheathing; 2\" laps, 2-ply corners; backfill in 30 days.",
     "K2  Z-flashing with drip at the girt band base, set to the 2\" cavity.",
     "K3  2\"x2\" perforated aluminium U on the Z; base trim 1\" up, lapping it on EPDM.",
     "K4  L-flashing from sheathing base onto the foam; seal its outer end.",
     "K5  Mudsill anchors per IRC R403.1.6. Plate joint peel-and-stick on the envelope.",
-    "K6  Slab perimeter: 1\" XPS thermal break with 1/2\" polyurethane sealant.",
-    "K7  Veneer: 2\" EPS on the backup wall, 4\" clear air, weeps at the beam. Two-piece adjustable anchors through the full 6\"."
+    "K6  Slab perimeter: 1\" XPS thermal break with 1/2\" polyurethane sealant."
   ],
   "frame": {
     "paper": [

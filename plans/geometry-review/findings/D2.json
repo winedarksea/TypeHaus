@@ -1,0 +1,711 @@
+{
+ "area": "D2",
+ "model": "houses/catlin @247a13e9",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Opened every listed sheet in permit_set.pdf: A-201..A-204, A-301/.1/.2, A-501, A-503..A-506, A-508..A-515, A-525, A-526, A-585, A-587, A-591, A-592..A-594, S-501.1 (A-502, A-507 from the full set); plus full-set A-516, A-528, A-532, A-553, A-565, A-597, A-502, A-507 at 95-110 dpi. Read emit/draw section.py, section_annotate.py, section_labels.py, elevation_annotate.py, details.py, detail_card.py, chrome.py (dimension_strings), datum.py, eave_water.py, title_block.py. Probes: build_detail() paper nodes, detail crops vs anchors, condition walls vs cut station, Site.grade vs spots. Findings deliberately not repeated: F3-002/F4-009 (T.O. PLATE labels), E1-006/F4-007 (A-592 blank), E2-003/F5-012 (label piles), E2-004/F5-004 (foundation notes), O3-010/011, O4-010, F1-010, F5-011/013. NOT examined: A-519..A-524, A-527, A-529/530, A-531, A-533..A-552, A-554..A-584 individually, A-586..A-590 pixel review (cited via others), 24x36 render (not run; no render allowed), IFC/GLB emitters, UI viewer.",
+ "verified_clean": [
+  "A-201..A-204 datum chain closes: 10'-3\" + 10'-0\" + 10'-0\" + 2'-10\" + 6'-3\" = 39'-4\" from basement floor -9'-1\" to ridge 30'-3\"",
+  "Graphic scale bars match stated scale on A-201 (1/8\"), A-203 (1/16\"), A-204 (3/32\"), A-301 (1/8\"): 20 ft / 40 ft bars measure 2.5 in. on the page",
+  "A-301 room names are inside the rooms they name; CLG values (e.g. LIVING 8'-10 9/16\") are printed from clear_height_m, no sheet-vs-check mismatch seen",
+  "A-301/A-301.1/A-301.2 datum values agree across the three sheets (same merged_levels column)",
+  "A-512 36\" R.O., A-513/A-515 82.88\" R.O., A-525 54\" R.O. dimension lines run sill to head on the drawn bands (value provenance is O1/O4)"
+ ],
+ "findings": [
+  {
+   "id": "D2-001",
+   "area": "D2",
+   "title": "ROOT CAUSE of the detail-sheet text pile-ups: the permit writer draws the card's paper-space title/legend nodes as MODEL-space text at their paper-inch anchors",
+   "elements": [
+    "TR-CATLIN-FRAMED-OPENING (A-512)",
+    "TR-CATLIN-GARDEN-FRAMED-OPENING (A-515)",
+    "A-586..A-589"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/sheet_writer.py:266",
+    "packages/engine/src/typehaus/emit/draw/pdf_writer.py:877",
+    "packages/engine/src/typehaus/emit/draw/pdf_writer.py:921",
+    "packages/engine/src/typehaus/emit/draw/details.py:275",
+    "packages/engine/src/typehaus/emit/draw/details.py:225"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-512",
+     "A-515",
+     "A-586",
+     "A-587",
+     "A-588",
+     "A-589"
+    ],
+    "pages": [
+     44,
+     47,
+     121,
+     122,
+     123,
+     124
+    ]
+   },
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "build_detail() puts 4 Text nodes with space='paper' on every card at card-paper anchors (0.5, 7.76) 'Catlin House' 13pt/height 3.0, (0.5,7.44) 'SHEET A-512', (0.5,7.30) 'Type:Haus - derived transition detail', (0.5,1.53) 'MATERIALS'. pdf_writer.py:374-388 (haus render) splits paper_nodes onto a second axes; the permit path sheet_writer.py:266 calls _render_nodes(ax, scene) with the whole scene and _render_nodes' Text branch (pdf_writer.py:921) has no space check, so they print at model coordinates u=0.5in, z=1.5..7.8in with model height 3.0in. They show wherever the viewport window (crop centre +-~60in at 3/4in scale) contains that point: A-512 (crop u -17..16, z 18..90), A-515, A-586 print the garbled stack; A-513/A-525/A-585 (crop far from origin) are clipped, which is why only some sheets look broken.",
+    "expected": "Paper nodes are drawn only on the card axes (as in pdf_writer.py:374-388), or are skipped on a permit sheet that already has its own title block. No Text with space='paper' reaches _render_nodes' model axes.",
+    "method": "Probe scratchpad D2/probe1.py + probe4.py: build_detail() for keys of A-512/513/515/525 lists the paper Text nodes; probe4 prints crop (inches) vs anchors: A-586 contains both anchors, A-512/515 fall inside the viewport window but outside the crop. Open permit_set.pdf p44 (A-512), p47 (A-515), full p121 (A-586): stacked 'Catlin House / SHEET / MATERIALS' text under the detail."
+   },
+   "source": "plans/geometry-review findings O5-003, E2-003, F5-012 report the symptom; code: emit/draw/sheet_writer.py, pdf_writer.py",
+   "proposed_fix": "In sheet_writer (line 266) filter node space=='model' for _render_nodes and either drop paper nodes or render them with the pdf_writer ax_paper branch; one place fixes A-512, A-515, A-586..589 and any future detail whose crop sits near the origin.",
+   "size_guess": "small",
+   "seam_with": [
+    "O5-003",
+    "E2-003",
+    "F5-012"
+   ],
+   "dedupe_key": "O5:A-512-overprint"
+  },
+  {
+   "id": "D2-002",
+   "area": "D2",
+   "title": "Detail notes are authored per Transition, not per condition: one notes file prints unchanged on every detail the pattern spawns, so B&B/interior/garage conditions carry another wall's note block",
+   "elements": [
+    "TR-CATLIN-EAVE",
+    "TR-CATLIN-FRAMED-OPENING",
+    "TR-CATLIN-PLANT-OPENING",
+    "TR-CATLIN-FOUNDATION"
+   ],
+   "files": [
+    "houses/catlin/plan/transitions.py:36",
+    "houses/catlin/plan/transitions.py:58",
+    "houses/catlin/plan/transitions.py:83",
+    "packages/engine/src/typehaus/emit/draw/details.py:355",
+    "packages/engine/src/typehaus/emit/draw/details.py:341"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-592",
+     "A-593",
+     "A-595",
+     "A-596",
+     "A-597",
+     "A-512",
+     "A-513",
+     "A-585",
+     "A-586",
+     "A-591"
+    ],
+    "pages": [
+     54,
+     55,
+     127,
+     128,
+     129,
+     130,
+     131,
+     132
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Transition.notes is one file per transition (transitions.py:58 'wall_roof:*' -> roof_wall_eave_detail.md). The same block prints on A-592 (EXT_2X6_BOARD_BATTEN wall, drawn cladding 0.75 in B&B) saying 'Wall: ... 1-1/4\" PBR. No WRB', on A-595/A-596/A-597 (interior partitions under the roof, which the transition comment says have 'no eave at all') with K7 'PBR 5x4 gutter, back behind eave face', K9 'bracket pending', and on A-597 an interior 2x6 partition. A-512 (PBR wall) and A-513 (B&B wall) both print 'E/W PBR 7-1/4\"; N/S BBD75 6-3/4\"' and the 1,131-TLOK08 total. A-585..A-591 print one basement-wall block (F5-004).",
+    "expected": "Notes keyed to the condition drawn (wall cladding family, interior vs exterior host, garage vs house). A detail whose conditions the transition itself calls unstarred framing does not print an eave KEYED-NOTES list.",
+    "method": "Open permit_set_full.pdf pp127-132 and permit_set.pdf pp44-45,54-55; compare cladding label in each ladder with the 'Wall:' bullet. grep notes= in houses/catlin/plan/transitions.py."
+   },
+   "source": "houses/catlin/plan/transitions.py (notes= per Transition); roof_wall_eave_detail.md; basement_to_framed_wall_detail.md",
+   "proposed_fix": "Let a Transition carry notes per condition sub-pattern (or split the wildcard wall_roof:* into EXT-PBR / EXT-BBD / INT-partition transitions) and suppress the eave KEYED notes on the unstarred interior keys. Supplies the root cause for F5-004/E2-004/F4-007.",
+   "size_guess": "large",
+   "seam_with": [
+    "F5-004",
+    "E2-004",
+    "F4-007"
+   ],
+   "dedupe_key": "A-58x:shared-note-wrong"
+  },
+  {
+   "id": "D2-003",
+   "area": "D2",
+   "title": "A-301 detail bubbles sit at wall-top heights of conditions that are not on the cut: garage details float in the living room, A-592 (blank) floats above the ridge, and 'detail number' is the last digit of the sheet",
+   "elements": [
+    "A-301",
+    "TR-CATLIN-GARAGE-OPENING (A-514)",
+    "wall_foundation:GARAGE_ICF_6|GARAGE_WALL_2X6 (A-591)",
+    "A-592",
+    "A-515"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/section.py:211",
+    "packages/engine/src/typehaus/emit/draw/section.py:267",
+    "packages/engine/src/typehaus/emit/draw/section.py:254"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-301"
+    ],
+    "pages": [
+     32
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "_detail_callouts() filters only by crop and in-plane station; _condition_point() returns (derived.station, max wall top) and never compares the condition's other-axis coordinate with the cut. Cut station y=5.41 m. Starred details: A-514 walls at y=20.49 (garage), A-591 y=13.17 (garage), A-513 y=10.97, A-515 y=0.0, A-526 y=0.0 -- the garage is 8-15 m behind a cut that does not draw it, yet bubbles '4 A-514' (z 2.24 m = 7'-4\") and '1 A-591' are printed inside LIVING/BATH2, '2 A-592' (top of attic wall 9.22 m) hangs above the ridge pointing at the blank A-592 (E1-006), '5 A-515' sits at the basement ceiling. The bubble number is sheet.split('-')[-1][-1], i.e. the last digit of the sheet number (A-513 -> 3, A-510/A-520 would both be 0).",
+    "expected": "Bubbles only for conditions the cut passes through (or points at the wall actually shown); detail number is the detail's number on its sheet (each sheet has one drawing).",
+    "method": "scratchpad D2/probe2.py (needs D2/model.pkl): prints derived.key, station, condition wall x/y extents, top vs cut station; sheet permit_set.pdf p32 shows bubbles 1-6."
+   },
+   "source": "emit/draw/section.py:211-262; callouts.callout_nodes",
+   "proposed_fix": "In _condition_point require the wall extent along the cut depth to include plane.station_m (within a tolerance) and skip conditions on another building; replace the digit-of-sheet number by the detail number.",
+   "size_guess": "small",
+   "seam_with": [
+    "E1"
+   ],
+   "dedupe_key": "A-301:callouts-off-cut"
+  },
+  {
+   "id": "D2-004",
+   "area": "D2",
+   "title": "A-301 'CLG' ceiling-height lines overprint neighbouring rooms because only the room NAME's width is tested, not the longer CLG line",
+   "elements": [
+    "A-301",
+    "RM-S-SUITEBATH",
+    "RM-S-HALL",
+    "RM-B-WORKSHOP",
+    "RM-B-STAIR"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/section_annotate.py:387",
+    "packages/engine/src/typehaus/emit/draw/section_annotate.py:412"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-301"
+    ],
+    "pages": [
+     32
+    ]
+   },
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "SUITEBATH 'CLG 8'-10 9/16\"' starts at pdf x=380 and runs to ~443; HALL's 'CLG 6'-11 5/8\"' starts at x=424 (19 pt overlap); WORKSHOP and STAIR 'CLG 8'-0 15/16\"' lines also collide (x 305-... vs 384). section_annotate.py:387 sets width_in = len(name) * ROOM_PT * CHAR_ASPECT * per_pt and skips the room only if the name does not fit; the CLG string (up to 18 chars, line 412) is never measured. Detail bubbles (finding D2-003) also land on room labels (A-513 on SUITE, A-591 on BATH2).",
+    "expected": "Each label (name and CLG line) fits inside its own room's width at the cut, else the CLG moves to a leader or is dropped.",
+    "method": "pdftotext -f 32 -l 32 -bbox permit_set.pdf ; words CLG/8'-10 at y=363..373; image p32."
+   },
+   "source": "emit/draw/section_annotate.py _emit_room_names",
+   "proposed_fix": "Measure max(len(name), len('CLG '+text)) against the interval (and skip/abbreviate to 'CLG 8'-10\"' in narrow rooms).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "A-301:clg-overprint"
+  },
+  {
+   "id": "D2-005",
+   "area": "D2",
+   "title": "Printed GRADE datum (-2'-10\") is 2 to 6 in. above every authored grade spot (-3'-0\" to -3'-4\") that draws the ground line",
+   "elements": [
+    "Site.grade",
+    "SpotElevation (16 grade spots)"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:109",
+    "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:289",
+    "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:115",
+    "houses/catlin/plan/site.py:106"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-201",
+     "A-202",
+     "A-203",
+     "A-204",
+     "A-301",
+     "A-301.1",
+     "A-301.2"
+    ],
+    "pages": [
+     28,
+     29,
+     30,
+     31,
+     32,
+     33,
+     34
+    ]
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "Site.grade = -34.0 in. (site.py:106 ft(-2,-10)); all 16 kind='grade' spots are -36 in. (x6), -37 in. (x4) and -40 in. (x6) (probe3.py). merged_levels() prints 'GRADE EL. -2'-10\"' from grade_datum() (flat Site.grade) while grade_profile_points() draws the ground polyline through the spots, so the labelled datum and the drawn ground line differ by 2-6 in. on every elevation and section; the same flat value also decides which area is 'above grade' for callouts (split_at_grade).",
+    "expected": "GRADE datum on the sheet equals the ground line drawn on that sheet (spot at the wall), or the label says 'GRADE (nominal)'.",
+    "method": "scratchpad D2/probe3.py prints Site.grade and spots."
+   },
+   "source": "houses/catlin/plan/site.py:106,316; decision 2 (flat Site.grade) cited in elevation_annotate.py:134",
+   "proposed_fix": "Label the datum from the profile at the facade/cut (or print the range) and keep Site.grade as the nominal; confirm whether -34 in. is deliberate before touching the house.",
+   "size_guess": "small",
+   "seam_with": [
+    "S2"
+   ],
+   "dedupe_key": "D2:grade-datum-vs-spots"
+  },
+  {
+   "id": "D2-006",
+   "area": "D2",
+   "title": "Elevation datum dimension chain overprints at the E/W elevation scales (A-203 '6'-2'-10\"', A-204 '6'-3\"2'-10\"') and the four elevations use three different scales",
+   "elements": [
+    "A-203",
+    "A-204",
+    "A-201",
+    "A-202"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:101",
+    "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:355"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-203",
+     "A-204"
+    ],
+    "pages": [
+     30,
+     31
+    ]
+   },
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "emit_level_dimensions() skips a rung only when it is shorter than _MIN_DIM_IN = 24 model inches regardless of sheet scale. At 1/16\" (A-203) and 3/32\" (A-204) the 2'-10\" (34 in.) rung is only 0.18-0.27 in. of paper, so its rotated text lands on the adjoining 6'-3\" text: pdftotext returns one merged word \"6'-3\"2'-10\"\" (A-204) and 'EL. 6'-2'-10' (A-203). Scales: A-201/A-202 1/8\", A-203 1/16\", A-204 3/32\".",
+    "expected": "Rung skip threshold in paper inches (text height + gap), e.g. > ~0.5 in. of paper; one scale for the elevation set.",
+    "method": "permit_set.pdf pp30-31 (zoom to the dimension column right of the drawing); pdftotext -f 31 -l 31 -bbox | grep 2'-10."
+   },
+   "source": "emit/draw/elevation_annotate.py:101 (_MIN_DIM_IN), 355",
+   "proposed_fix": "Make the threshold scale-aware (ft*scale*dpi vs text height) and chain 6'-3\"+2'-10\" as 9'-1\" when the short rung is skipped.",
+   "size_guess": "small",
+   "seam_with": [
+    "O3-011"
+   ],
+   "dedupe_key": "D2:elev-dim-chain-overprint"
+  },
+  {
+   "id": "D2-007",
+   "area": "D2",
+   "title": "Elevation lettering prints at about 4 pt on A-201..A-204 (7 pt on A-301, 8 pt notes); material callouts and datum labels are below the readable minimum on 11x17",
+   "elements": [
+    "A-201",
+    "A-202",
+    "A-203",
+    "A-204"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:76",
+    "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:83"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-201",
+     "A-202",
+     "A-203",
+     "A-204"
+    ],
+    "pages": [
+     28,
+     29,
+     30,
+     31
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "pdftotext bbox heights: A-201/A-203/A-204 labels 4.7 pt (46 words) vs A-301 level labels 8.2 pt and 11.1 pt room names, A-512 notes 10.5 pt. ANNO_HEIGHT_IN = 4.0 model inches (elevation_annotate.py:76). Drawing bodies are 1/8\" to 3/32\" and fill about one third of the 11x17 sheet (A-203 drawing 480 of 1560 px wide) while text stays at 4 pt. On 24x36 the sheet gets a bigger scale (decision: ARCH D climbs the ladder) but the same pt rule only holds if text is pt-sized, not verified.",
+    "expected": "Elevation callouts at least 6-7 pt on the reduced set, same as the section ladder.",
+    "method": "python: parse pdftotext -bbox of pages 28-32 and histogram yMax-yMin (D2/mk.py session)."
+   },
+   "source": "NCS/AIA minimum lettering 3/32 in.",
+   "proposed_fix": "Share the section's ANNO_PT (pt-sized) with elevation_annotate and raise the 1/16\" and 3/32\" elevations to a fit scale.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "D2:elev-text-size"
+  },
+  {
+   "id": "D2-008",
+   "area": "D2",
+   "title": "Authored detail sheets A-501..A-511 (11 sheets) carry no dimension at all, no keyed notes, and print the raw slice tag as the drawing title at inconsistent sizes",
+   "elements": [
+    "SL-D-FNDN",
+    "SL-D-DECKBRG",
+    "SL-D-WALLTYP",
+    "SL-D-RIDGE",
+    "SL-D-SAUNA",
+    "SL-D-SAUNA-READING",
+    "SL-D-SHOWER",
+    "SL-D-BREEZEWAY",
+    "SL-D-NORTH-BRIDGE",
+    "SL-D-STAIRVOID",
+    "SL-D-EAVE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/details.py:140",
+    "packages/engine/src/typehaus/emit/draw/details.py:63"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-501",
+     "A-502",
+     "A-503",
+     "A-504",
+     "A-505",
+     "A-506",
+     "A-507",
+     "A-508",
+     "A-509",
+     "A-510",
+     "A-511"
+    ],
+    "pages": [
+     35,
+     36,
+     37,
+     38,
+     39,
+     40,
+     41,
+     42,
+     43
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "build_authored_detail_scene() (details.py:140-185) is build_section + overlays only: it never calls _dimension_nodes, _chrome or _notes_lines, which build_detail() (details.py:63-110) runs for derived details. Result: A-503 'typical wall section' has no floor-to-floor, plate or footing dimension; A-504 ridge, A-505/A-506 sauna (no ceiling, bench, lighting-rail heights although A-528 K4 quotes them), A-507 shower, A-510 stair void (void width/heights) are undimensioned. Titles are the raw tag ('SL-D-DECKBRG' about 28 pt on A-502, 'SL-D-SAUNA' 20 pt, 'SL-D-BREEZEWAY' 9 pt) because the tag text is only stripped when a frame is present (details.py:152-156).",
+    "expected": "Each construction detail carries its key vertical/horizontal dimensions (R.O., floor to plate, bench heights, void width) and a human title at one size.",
+    "method": "permit_set.pdf pp35-43 (A-501..A-511): look for ArchDimension strings (none); grep details.py for _dimension_nodes call sites."
+   },
+   "source": "emit/draw/details.py; compare derived path",
+   "proposed_fix": "Call a dimension pass for authored details (at minimum storey heights and the slice's authored dimensions) and render the slice title in the title block, not as scene text.",
+   "size_guess": "large",
+   "seam_with": [
+    "O5",
+    "E2"
+   ],
+   "dedupe_key": "D2:authored-detail-no-dims"
+  },
+  {
+   "id": "D2-009",
+   "area": "D2",
+   "title": "Detail dimension strings are placed off the full wall, not the crop: '4\" XPS (2 layers)' floats in blank paper on rim/stack sheets, 5.5\" stud floats above the wall, and the ICF garage wall's EPS is labelled XPS",
+   "elements": [
+    "A-553",
+    "A-532",
+    "A-565",
+    "A-597",
+    "A-591"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/detail_components/chrome.py:332",
+    "packages/engine/src/typehaus/emit/draw/detail_components/chrome.py:317",
+    "packages/engine/src/typehaus/emit/draw/detail_components/chrome.py:331"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-591",
+     "A-532",
+     "A-553",
+     "A-565",
+     "A-597"
+    ],
+    "pages": [
+     53,
+     67,
+     88,
+     100,
+     132
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "chrome.py:332 puts the insulation dimension at z_here = mid-height of the whole concrete wall (8 ft), even when the detail's crop shows only the top 1.5 ft: on A-553/A-532 the '4\" XPS (2 layers)' arrow stands ~125 px (1.3 in. of sheet) below the XPS it measures; on A-565 and A-597 the '5.5\" stud' string (z_here+8, line 324) floats 60-100 px above the stud. chrome.py:331-334 also sums every 'insulation' interval and prints the word XPS: on GARAGE_ICF_6 (A-591) the 2.5 in. EPS-ext + 2.5 in. EPS-int on opposite faces of the 6 in. core are summed to '5\" XPS (2 layers)' spanning the concrete; the same sheet's ladder says eps-ext/eps-int.",
+    "expected": "Dimension strings clamped inside the crop at the thing they measure; material word taken from the layer's material (EPS vs XPS) and only adjacent layers chained.",
+    "method": "permit_set_full.pdf p88 (A-553), p67 (A-532), p100 (A-565), p132 (A-597); permit_set.pdf p53 (A-591)."
+   },
+   "source": "houses/catlin/plan/assemblies GARAGE_ICF_6 layers eps-ext/eps-int",
+   "proposed_fix": "In dimension_strings clamp z_here to the crop, group insulation by contiguous run, and name the material from the layer.",
+   "size_guess": "small",
+   "seam_with": [
+    "F5"
+   ],
+   "dedupe_key": "D2:detail-dim-float"
+  },
+  {
+   "id": "D2-010",
+   "area": "D2",
+   "title": "Permit detail sheets print engine placeholders: 'PROVISIONAL (width: GCP)' strip-in and 'PROVISIONAL gutter hanger ... pending' are hard-coded in the eave overlay",
+   "elements": [
+    "A-511",
+    "A-593",
+    "A-592",
+    "A-594"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/detail_components/eave_water.py:16",
+    "packages/engine/src/typehaus/emit/draw/detail_components/eave_water.py:19",
+    "packages/engine/src/typehaus/emit/draw/detail_components/eave_water.py:100"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-511",
+     "A-593",
+     "A-592"
+    ],
+    "pages": [
+     43,
+     55,
+     54
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "eave_water.py:16 _STRIP_NOTE = '9\" PROVISIONAL (width: GCP)', :19 _HANGER_SHORT = 'PROVISIONAL gutter hanger: bracket and sealed fastener pending', :100 prefixes every hanger text with PROVISIONAL; the K9 note says 'bracket pending'. These strings are not tied to any house decision so a house that has chosen the bracket still prints them. The gutter is the only water path of the zero-overhang eave and the sheet gives the installer no bracket, spacing or fastener.",
+    "expected": "The gutter hanger and strip-in width are either specified (product, spacing) or printed as an open item driven by a house field, not an engine constant.",
+    "method": "permit_set.pdf p43 (A-511), p55 (A-593): leader text right of the drawing."
+   },
+   "source": "Metal Sales PBR/Image II guide (strip-in width), E1-004 covers the gutter geometry",
+   "proposed_fix": "Move the strings to the Transition/EaveTrim (house-authored) and print the open item only when unset.",
+   "size_guess": "small",
+   "seam_with": [
+    "E1"
+   ],
+   "dedupe_key": "D2:provisional-eave-text"
+  },
+  {
+   "id": "D2-011",
+   "area": "D2",
+   "title": "A-515 note block leaks check status ('support/bonds UNKNOWN') from the notes file into the construction notes",
+   "elements": [
+    "TR-CATLIN-GARDEN-FRAMED-OPENING"
+   ],
+   "files": [
+    "houses/catlin/notes/court_opening_detail.md:17",
+    "houses/catlin/plan/transitions.py:36"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-515"
+    ],
+    "pages": [
+     47
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "First bullet of A-515 NOTES reads 'D-B-PATIO geometry coordinated; support/bonds UNKNOWN. WIN-B-SAUNA: no flashing.' -- a haus-check verdict and a developer remark, not a construction instruction (and it reads as if the sauna window has no flashing). court_opening_detail.md:17 under '## Sheet notes / General'.",
+    "expected": "General notes state what to build; check status stays in checks.",
+    "method": "permit_set.pdf p47; notes file line 17."
+   },
+   "source": "houses/catlin/notes/court_opening_detail.md",
+   "proposed_fix": "Rewrite as 'WIN-B-SAUNA: head flashing per K2; door D-B-PATIO bonds per K6' and drop UNKNOWN.",
+   "size_guess": "small",
+   "seam_with": [
+    "O4",
+    "O3"
+   ],
+   "dedupe_key": "D2:notes-check-status"
+  },
+  {
+   "id": "D2-012",
+   "area": "D2",
+   "title": "A-508 prints the retired breezeway: tag SL-D-BREEZEWAY, a free-standing roof on a one-wall ladder, and a title truncated in the title block",
+   "elements": [
+    "SL-D-BREEZEWAY",
+    "A-508"
+   ],
+   "files": [
+    "houses/catlin/plan/views.py:101",
+    "packages/engine/src/typehaus/emit/draw/title_block.py:323"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-508",
+     "A-509",
+     "A-511"
+    ],
+    "pages": [
+     41,
+     42,
+     44
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "views.py:101 tag 'SL-D-BREEZEWAY' (comment at views.py:82 says the enclosure is 'retired'); the sheet prints it as the drawing title in 9 pt, the ladder labels one wall ('cladding-out 0.875, thin-brick-in 0.5 ...') and nothing else (rafters, purlins, tier steps, gutters unlabelled), and the title block cell shows 'North entry: gable, bridge landing and ea...' (title_block.py:323 _shorten at the 11x17 cell width). A-509/A-510/A-511 titles clip the same way.",
+    "expected": "Current name (north entry gable), whole sheet title, and labels for the roof and steps that are drawn.",
+    "method": "permit_set.pdf p41; views.py:101"
+   },
+   "source": "memory: breezeway retired, stale refs remain",
+   "proposed_fix": "Rename the tag/title; ladder every cut assembly; shorten sheet titles at authoring.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "D2:breezeway-stale-tag"
+  },
+  {
+   "id": "D2-013",
+   "area": "D2",
+   "title": "Derived detail sheet titles are transition key + assembly pair and clip at the ledger title cell: A-525 and A-526 print the same 'PLANT_EXT_2X6_H...'",
+   "elements": [
+    "A-513",
+    "A-515",
+    "A-525",
+    "A-526",
+    "A-532",
+    "A-565",
+    "A-597"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/sheets.py:94",
+    "packages/engine/src/typehaus/emit/draw/title_block.py:323"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-513",
+     "A-515",
+     "A-525",
+     "A-526"
+    ],
+    "pages": [
+     45,
+     47,
+     48,
+     49
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "_derived_detail_title() = 'TR-CATLIN-PLANT-OPENING \u00b7 PLANT_EXT_2X6_HUMID / ...'; _shorten(title, columns) at title_block.py:323 keeps about 38 chars on ledger, cutting exactly the distinguishing half: A-525/A-526 are indistinguishable (one is the B&B wall), A-513 'EXT_2X6_BOARD_...', A-515 'GARDEN_...'. Internal keys (TR-CATLIN-..., 'outie-window-truss') are the human title. 24x36 prints whole (comment at title_block.py:319).",
+    "expected": "Distinct, human sheet titles ('Window head/sill - board and batten wall') that fit.",
+    "method": "permit_set.pdf pp45-49 title cell; pdftotext p48/49."
+   },
+   "source": "title_block.py comment lines 319-322",
+   "proposed_fix": "Author a display name on the Transition and put the condition on a second title line.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "D2:detail-title-clip"
+  },
+  {
+   "id": "D2-014",
+   "area": "D2",
+   "title": "A-301.1 dry-fire lane: the sheet title promises 10.25 m but no lane dimension, and A-301.1/.2 each print the whole-building datum ladder beside a fragment",
+   "elements": [
+    "SL-S-DRYFIRE",
+    "CZ-B-DRYFIRE",
+    "SL-S-FIRE"
+   ],
+   "files": [
+    "houses/catlin/plan/dry_fire_lane.py:16",
+    "packages/engine/src/typehaus/emit/draw/section_annotate.py:261"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-301.1",
+     "A-301.2"
+    ],
+    "pages": [
+     33,
+     34
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "CZ-B-DRYFIRE runs y 8.06..411.6 in. = 403.56 in.; the section prints no 403 9/16\" / 10.25 m dimension, no clear zone outline, and the crop ends abruptly at 420 in. (right edge cuts the slab and the FURNACE room mid-fill). The datum ladder (ridge 30'-3\" ... basement) occupies two thirds of both sheets while the drawn fragment is basement-only (A-301.1) or a 1 ft wide wall strip (A-301.2).",
+    "expected": "The sheet that exists to prove the 10.25 m lane dimensions it and its two ends; datum ladder trimmed to the levels the crop contains.",
+    "method": "permit_set.pdf pp33-34; dry_fire_lane.py:5-19."
+   },
+   "source": "houses/catlin/plan/dry_fire_lane.py",
+   "proposed_fix": "Add an authored dimension node for the lane; limit _emit_level_column to levels inside crop.",
+   "size_guess": "small",
+   "seam_with": [
+    "I1"
+   ],
+   "dedupe_key": "D2:a301-fragments"
+  },
+  {
+   "id": "D2-015",
+   "area": "D2",
+   "title": "Layer-ladder leaders run the full width of the drawing and across other assemblies (A-505, A-506, A-507, A-510); A-509 and A-511 have text over text",
+   "elements": [
+    "SL-D-SAUNA",
+    "SL-D-SAUNA-READING",
+    "SL-D-SHOWER",
+    "SL-D-STAIRVOID",
+    "SL-D-NORTH-BRIDGE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/section_labels.py:48",
+    "packages/engine/src/typehaus/emit/draw/section_labels.py:177"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-505",
+     "A-506",
+     "A-507",
+     "A-510",
+     "A-509"
+    ],
+    "pages": [
+     39,
+     40,
+     41,
+     42,
+     43
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "wall_layer_ladder puts every ladder at x = crop left - 1 in. (text_u) and aims each leader at its layer's mid_u, so a 12 ft sauna or shower section has 700-800 px leaders (6-7 in. of sheet) crossing gypsum/studs of other assemblies to land on the right-hand wall (A-505 'gwb-a 0.5\" (NTS)' and 'resilient-channel' run to x=1210). A-507's second-storey ladder arrows end at different depths without touching the bands they name; A-509's roof note 'Metal Sales Image II Striated 16 in, 24 ga PVDF Linen White (81), vented ridge' prints on top of the 'sheathing 0.5 / stud 5.5 / vent-gap' rungs.",
+    "expected": "Ladder placed on the side of the wall it names, leaders short and non-crossing, no text over text.",
+    "method": "permit_set.pdf pp39-43."
+   },
+   "source": "section_labels.py docstring (single column left of the crop)",
+   "proposed_fix": "Choose left/right column per assembly (nearest crop edge) and dodge ladder text against the roof note.",
+   "size_guess": "small",
+   "seam_with": [
+    "E2",
+    "F5"
+   ],
+   "dedupe_key": "D2:ladder-leaders-long"
+  }
+ ]
+}

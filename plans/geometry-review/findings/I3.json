@@ -1,0 +1,304 @@
+{
+ "area": "I3",
+ "model": "houses/catlin",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Inventoried 14 sauna parts, 17 ShelfBanks, study booth bench/desk/leaf, attic built-in + bridge, nook, BED1-3 and master PAX sets, BILLY/HEMNES/SEKTION cases, millwork.md rows. Measured bbox/z vs clear faces from the resolved canvas_objects; read A-505, A-506, A-101..A-104; pdftotext of the Harvia HPCS11U1H manual. NOT examined: A-301.x/elevation sheets (no built-in interior elevations exist in the set), IKEA web listings (trusted cited rows), window stools (O4), nook SEKTION hardware, per-sheet detail of A-102/103 at 1/8in scale (too small to read dimensions).",
+ "verified_clean": [
+  "BENCH booth: bench 48.875in = desk 29 + leaf 19.875, 0.8125in per end to gypsum matches walnut return 3/4in + 1/16in scribe (study_booth.md); desk 29.5in vs occupied seat 19.5in = 10in drop.",
+  "Sauna slat check: 3/4in x 3.5in basswood, P=85 lb, L=16in -> 340 in-lb, 1,037 psi, 0.040in deflection reproduced by hand (E 1.46e6, MOR 8,700).",
+  "Sauna slat layout: 7x3.5+6x0.5 = 27.5in in 28in; 5 slats in 20in; 3x3 in 10in step; bearer counts keep spans <= 16in at 78in and 58.5in.",
+  "Harvia HPCS11U1H manual (pdftotext): A 1.2in, B 4in, C 32.5in, min room 78in, 16/15/45in body, 141-636 cu ft, bench-to-ceiling max 47in; model: heater 16x15x45, 2.75in east, 3.25in south, 10.5in to reading deck, 4in to junction box, 40.8in over upper bench.",
+  "SB-A-STUDY: 1in oak, 31.25in bay, 9.875in deep, 30 lb/ft, E1.6e6 -> 0.024in vs 0.052in limit (reproduced); 3 bays + 4 partitions + 2 5/8in filler = 99.375in case.",
+  "Pantry shelves 1 1/4in oak 35.5in span 250 lb: 0.050in vs L/360 0.099in reproduced.",
+  "S4S sizes in millwork: 4/4->3/4, 5/4->1in, 6/4->1 1/4, 8/4->1 1/2, 12/4->2 1/4 (owner-milled from rough; rough width = finished + 3/4in) all achievable from owner rough stock; not a defect despite NHLA S2S 13/16, 1-1/16, 1-3/4.",
+  "Grain: walnut front horizontal along the 48.875in; desk 29x16 and leaf 19.625x16 both run E-W, matching memory (grain follows longer dimension) and the desk it butts.",
+  "IKEA catalog sizes: BILLY 31.5x11x79.5, HEMNES 35 3/8x14 5/8x77 1/2, PAX 39 3/8/19 5/8x22 7/8x92 7/8, SEKTION 90in frame on 4.5in legs = 94.5in.",
+  "Closet: north wall 32 + 39.375 + 39.375 + 0.5in scribe = 111.25in = clear 101.375..212.625; rod lines 79in/39in.",
+  "Study bridge: casing east leg 259 3/8..262 7/8, infill 262 7/8..269 3/8, built-in filler start 269 3/8 are contiguous at y=105.75."
+ ],
+ "findings": [
+  {
+   "id": "I3-001",
+   "area": "I3",
+   "title": "Sauna locust base (0.75in thick, 3.5in tall) runs behind benches that stop 0.19in off the north liner",
+   "elements": [
+    "RM-B-SAUNA",
+    "BASE-RM-B-SAUNA-W-B-SA-N-0",
+    "BASE-RM-B-SAUNA-W-B-SA-N2-0",
+    "FURN-B-SAUNA-UPPER",
+    "FURN-B-SAUNA-LOWER"
+   ],
+   "files": [
+    "houses/catlin/plan/sauna_types.py:12",
+    "houses/catlin/plan/millwork.py:96"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-505",
+     "A-101"
+    ],
+    "pages": [
+     38,
+     23
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Upper bench and lower platform north faces at y=116.19in vs north clear face y=116.375in (gap 0.19in); west gap 0.75in, south reading deck 0.75in. TRIM-STANDARD gives RM-B-SAUNA a 0.75x3.5in locust base on all five wall runs (base_runs thickness_m 0.75in, height 3.5in), so a base standing proud of the liner overlaps the bench/post footprint by 0.56in on the north run and exactly touches on west/south.",
+    "expected": "Bench ends scribed to the base face (>= 0.75in + 1/16in) or base omitted behind benches (RoomTrim excluding the bench runs)",
+    "method": "Probe scratchpad I3/sauna.py (canvas_objects bbox vs room.clear_face) and I3/b.py (model.base_runs for RM-B-SAUNA). Sauna benches are authored from 'finished liner faces' (sauna_types.py) with no base allowance."
+   },
+   "source": "TRIM-STANDARD RoomTrim for RM-B-SAUNA (millwork.py); sauna_types.py UPPER_/BENCH_NORTH_Y_IN",
+   "proposed_fix": "Either drop base in the sauna (benches/posts sit on the floor, base is not needed behind them in a wet hot room) or pull bench north end to 115.6in. Verify whether posts or bearers actually reach the floor at the north wall.",
+   "size_guess": "small",
+   "seam_with": [
+    "I2"
+   ],
+   "dedupe_key": "B-SAUNA:base-vs-bench"
+  },
+  {
+   "id": "I3-002",
+   "area": "I3",
+   "title": "REG-B-SAUNA exhaust hatch footprint is oriented 90 degrees wrong on the west liner (11in plate sticking into the room)",
+   "elements": [
+    "REG-B-EXH2",
+    "REG-T-SAUNA-VENT-EXH",
+    "W-B-SA-W"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_registers.py:616",
+    "houses/catlin/plan/mep_erv_types.py:318"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Resolved canvas object: position (126.19, 38.0)in, rotation_degrees 0.0, footprint x 120.69..131.69 (11in) by y 37.75..38.25 (0.5in) on W-B-SA-W, a wall running along y whose clear face is x=122.5in. Every other wall register on a y-running wall has rotation +-90 and dy > dx. Centre is 5.5in (half of 11) plus -1.8125in normal_gap off the wall, i.e. the 11in width was treated as depth.",
+    "expected": "Plate 0.5in deep in x, 11in wide in y, centred about x=122.5-ish (recessed), footprint dx 0.5 dy 11",
+    "method": "scratchpad I3/s3.py, s4.py (canvas_objects Register with attachment_wall; compare footprint bbox)"
+   },
+   "source": "memory register-type-orientation; type authored (face width, depth)",
+   "proposed_fix": "Authored rotation_offset=-90 appears to double-rotate; try rotation_offset 0 and re-read footprint dx/dy; check the same for REG-B-SUP3 (ceiling type, fine).",
+   "size_guess": "small",
+   "seam_with": [
+    "M1"
+   ],
+   "dedupe_key": "B-SAUNA:exh-hatch-rotation"
+  },
+  {
+   "id": "I3-003",
+   "area": "I3",
+   "title": "A-505/A-506 print no dimension for bench heights, headroom or heater clearance",
+   "elements": [
+    "FURN-B-SAUNA-UPPER",
+    "FURN-B-SAUNA-LOWER",
+    "FURN-B-SAUNA-READING",
+    "FURN-B-SAUNA-STEP",
+    "EQ-B-SAUNA-HTR"
+   ],
+   "files": [
+    "houses/catlin/notes/sauna_seating.md:8"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-505",
+     "A-506"
+    ],
+    "pages": [
+     38,
+     39
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Pages 38 and 39 draw the section and wall-stack leaders only; no 42/24/12in tops, 28in depths, 40 13/16in headroom, 10.5in heater to reading deck or 4in junction-box gap are dimensioned. The 12/24/42 step sequence and Harvia clearances live only in the note.",
+    "expected": "Dimensioned bench tops, widths, headroom and heater clearances (Harvia HPCS11U1H fig. 5: 1.2in side/back, 4in front, 32.5in above, 78in min room)",
+    "method": "Read permit_set.pdf pages 38-39 (A-505, A-506)."
+   },
+   "source": "Harvia installation manual (HPCS11U1H) fig. 5; notes/sauna_seating.md",
+   "proposed_fix": "Add dimension strings to the SL-D-SAUNA slices (bench top AFF, depth, headroom) and the heater clearances",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "B-SAUNA:sheet-no-dims"
+  },
+  {
+   "id": "I3-004",
+   "area": "I3",
+   "title": "Sauna headroom stated as 82 13/16in AFF but the model ceiling underside measures 83.06in",
+   "elements": [
+    "CEIL-RM-B-SAUNA",
+    "EQ-B-SAUNA-HTR"
+   ],
+   "files": [
+    "houses/catlin/notes/sauna_seating.md:17",
+    "houses/catlin/plan/equipment_types.py:60"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "CEIL-RM-B-SAUNA z0 = -26.375in; bench/heater base z = -109.44in; difference 83.06in. Notes and the heater source say 82 13/16in (82.81in), 40 13/16in over the upper bench and 37 13/16in above the heater; model gives 41.06in and 38.06in. A 1/4in offset (likely the floor-finish datum). Conservative direction (real headroom smaller), clears the 32.5in/78in/47in Harvia limits either way.",
+    "expected": "One consistent figure between note, source string and the resolved model",
+    "method": "scratchpad I3/s2.py, sauna.py"
+   },
+   "source": "Harvia HPCS11U1H manual (fig. 5, table 2): 32.5in top, 78in room, 47in bench-to-ceiling max",
+   "proposed_fix": "Reconcile which datum the 82 13/16in uses and say so in the note",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "B-SAUNA:headroom-quarter-inch"
+  },
+  {
+   "id": "I3-005",
+   "area": "I3",
+   "title": "PAX corner unit (93 1/8in) and adjoining PAX frames (92 7/8in) both hung 1/4in up: corner tops stand 1/4in proud",
+   "elements": [
+    "FURN-S-BED1-WARD",
+    "FURN-S-BED1-PAX-SHELF",
+    "FURN-S-BED2-WARD",
+    "FURN-S-BED3-WARD"
+   ],
+   "files": [
+    "houses/catlin/plan/bedroom_wardrobe_types.py:78",
+    "houses/catlin/plan/bedroom_wardrobes.py:34"
+   ],
+   "kind": "product-data",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Resolved top z: FURN-S-BED1-WARD 214.88in vs FURN-S-BED1-PAX-SHELF 214.63in (same mount elevation 0.25in). The product text calls the corner set '93 1/8' but its frame is 92 7/8 in the same listing; type height is 93.125 vs 92.875.",
+    "expected": "Corner and frames share one top (92 7/8in + 1/4in = 93 1/8in) as the file comment says for BED3",
+    "method": "scratchpad I3/fit.py (z1 of FURN-S-BED*-WARD vs PAX-SHELF)"
+   },
+   "source": "IKEA PAX 39 3/8 x 22 7/8 x 92 7/8in frame, listing cited in bedroom_wardrobe_types.py",
+   "proposed_fix": "Set PAX_CORNER height to 92.875in",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "PAX:corner-height"
+  },
+  {
+   "id": "I3-006",
+   "area": "I3",
+   "title": "BILLY shelf stock modelled as 3/4in oak; real BILLY shelves are ~5/8in particleboard at a ~29 1/2in span",
+   "elements": [
+    "SB-B-PLAY-BOOK-W1",
+    "SB-B-PLAY-BOOK-W2",
+    "SB-B-PLAY-BOOK-E1",
+    "SB-B-PLAY-BOOK-E2"
+   ],
+   "files": [
+    "houses/catlin/plan/millwork.py:341"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "ShelfBank material oak-shelf-4q, 0.75in, bay width 30in, six boards, 77in clear. Case is 31.5 x 11 x 79.5in (correct). The shelves are INCLUDED_IN_HOST so nothing is billed or milled.",
+    "expected": "Bank records the bought particleboard shelf (IKEA BILLY ~16mm, inner width ~29 1/8in) or states its span/load limit",
+    "method": "Inspect plan; sag of 5/8in particleboard at 29in under books exceeds L/360 at ~25 psf (computed from E~0.45e6 psi - low confidence)"
+   },
+   "source": "IKEA BILLY listing (31 1/2 x 11 x 79 1/2in)",
+   "proposed_fix": "Mark the banks as informational or correct material/thickness; add a note that heavy book loads want a mid-support or a stiffer shelf",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "BILLY:shelf-stock"
+  },
+  {
+   "id": "I3-007",
+   "area": "I3",
+   "title": "Plans A-101/A-102 print overlapping room labels at the sauna and study",
+   "elements": [
+    "RM-B-SAUNA",
+    "RM-B-WORKSHOP",
+    "RM-M-STUDY",
+    "RM-M-LAUNDRY"
+   ],
+   "files": [
+    "houses/catlin/plan/storeys/basement.py"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-101",
+     "A-102"
+    ],
+    "pages": [
+     23,
+     24
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "A-101 prints 'WORKSHOBAUNAL' (WORKSHOP and SAUNA labels collide); A-102 prints 'LAUNDRYSTUDY'. Built-ins in the study and sauna have no dimension strings on any plan.",
+    "expected": "Legible, non-overlapping labels; built-in runs dimensioned",
+    "method": "Read permit_set.pdf pages 23-26"
+   },
+   "source": "n/a",
+   "proposed_fix": "Offset the two label positions or shorten names; add built-in dimension strings in a plan or elevation",
+   "size_guess": "small",
+   "seam_with": [
+    "D1"
+   ],
+   "dedupe_key": "plans:label-collision"
+  },
+  {
+   "id": "I3-008",
+   "area": "I3",
+   "title": "Study nook seat top 19.5in AFF plus 3in cushion = 22.5in seat height",
+   "elements": [
+    "FURN-S-STUDY-NOOK-SEAT-W",
+    "FURN-S-STUDY-NOOK-CUSHION",
+    "RM-S-STUDY2"
+   ],
+   "files": [
+    "houses/catlin/plan/study_nook_types.py",
+    "houses/catlin/CLAUDE.md:101"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "Seat units z 121.5..141.0in (19.5in AFF), cushion 141..144 (3in thick), so loaded seat ~21-22.5in. Common seat height is 17-19in; the window-seat reading position puts knees at 22in.",
+    "expected": "17-19in loaded seat height for sustained reading, or owner-accepted",
+    "method": "Resolved canvas_objects bbox z"
+   },
+   "source": "owner 2026-10-21 choice (SEKTION 15in unit + 4in legs)",
+   "proposed_fix": "Owner decision; mock-up per the study-booth precedent",
+   "size_guess": "large",
+   "seam_with": [],
+   "dedupe_key": "nook:seat-height"
+  }
+ ]
+}

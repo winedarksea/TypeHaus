@@ -1994,7 +1994,7 @@
         8.25,
         -135.20523840769908
       ],
-      "text": "liner-furring 0.5\"",
+      "text": "liner-furring 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2019,7 +2019,7 @@
         8.875,
         -137.86912729658798
       ],
-      "text": "shiplap-liner 0.75\"",
+      "text": "shiplap-liner 3/4\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2144,7 +2144,7 @@
         0.25,
         -100.5746828521435
       ],
-      "text": "sheathing 0.5\"",
+      "text": "sheathing 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2169,7 +2169,7 @@
         3.25,
         -103.23857174103239
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2219,7 +2219,7 @@
         8.25,
         -108.56634951881017
       ],
-      "text": "liner-furring 0.5\"",
+      "text": "liner-furring 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2244,7 +2244,7 @@
         8.875,
         -116.55801618547684
       ],
-      "text": "shiplap-liner 0.75\"",
+      "text": "shiplap-liner 3/4\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2269,7 +2269,7 @@
         -11.8725,
         -84.59134951881015
       ],
-      "text": "brick 3.62\"",
+      "text": "brick 3 5/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2775,7 +2775,7 @@
           "kind": "point",
           "xy": [
             0.4999999999999996,
-            0.5625000000000018
+            -15.437499999999998
           ],
           "name": ""
         },
@@ -2783,23 +2783,23 @@
           "kind": "point",
           "xy": [
             5.999999999999999,
-            0.5625000000000018
+            -15.437499999999998
           ],
           "name": ""
         }
       ],
       "p0": [
         0.4999999999999996,
-        0.5625000000000018
+        -15.437499999999998
       ],
       "p1": [
         5.999999999999999,
-        0.5625000000000018
+        -15.437499999999998
       ],
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "5.5\" stud",
+      "text": "5 1/2\" stud",
       "text_along": 0.0,
       "uid": null
     },
@@ -2819,7 +2819,7 @@
         {
           "kind": "point",
           "xy": [
-            8.0,
+            -0.05999999999999991,
             -105.81250000000001
           ],
           "name": ""
@@ -2830,13 +2830,13 @@
         -105.81250000000001
       ],
       "p1": [
-        8.0,
+        -0.05999999999999991,
         -105.81250000000001
       ],
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "8\" XPS (4 layers)",
+      "text": "6\" EPS/XPS (3 layers)",
       "text_along": 0.0,
       "uid": null
     },
@@ -3058,7 +3058,7 @@
         0.7,
         1.3980000000000001
       ],
-      "content": "catlin-sauna-shiplap  0.75\"",
+      "content": "catlin-sauna-shiplap  3/4\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3130,7 +3130,7 @@
         0.7,
         1.228
       ],
-      "content": "struct-1-plywood  0.5\"",
+      "content": "struct-1-plywood  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3562,7 +3562,7 @@
         2.85,
         1.058
       ],
-      "content": "air-barrier  0.5\"",
+      "content": "air-barrier  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

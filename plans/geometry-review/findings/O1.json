@@ -1,0 +1,333 @@
+{
+  "area": "O1",
+  "model": "houses/catlin",
+  "review_sha": "247a13e9",
+  "inventory_summary": "36 interior door openings (+3 exterior seen for seam) inventoried from the resolved model: nominal leaf, sizing (leaf/RO/passage/clear), floor build-up, host wall stack, cased_product faces, framing members; pocket kit vs wall; schedule A-601, plans A-102, details A-516/528/530. 8 findings.",
+  "verified_clean": [
+    "All interior swing doors: RO width = leaf + 2.236in (1in jamb+shim + 3mm gap each side), matches prehung practice (leaf + 2in +/- shim).",
+    "Interior RO heights: leaf + 0.394in undercut + 1.118in head, measured from base; integrity.door_floor_finish passes for all 28 non-published-RO openings.",
+    "D-M-PANTRY/D-M-LAUN/D-B-BATH: cassette RO 74.5in and head 83.25in over finished floor match the Eclisse Single 2x4-2x6 sheet; headers sit exactly at RO head z.",
+    "Pocket kit wall depth: 2x4 4.5in (LAUN, PANTRY) and 2x6 6.5in (BATH) within Eclisse single-kit range; kit lookup uses passage width.",
+    "D-B-ESS 24x80 steel KD leaf: RO 26.24 x 81.51in vs wrap-around KD frame rule (opening + 2in wide, +1in high = 26 x 81).",
+    "D-A-STUDY: 4-9/16 Murphy jamb in a 4.5in wall (1/16in proud), 38x82 RO per Murphy.",
+    "Floor finish depths feeding door heights (carpet 0.5, LVP 0.197, tile 0.75, vinyl 0.12) are plausible.",
+    "Door sizing equation basis strings, clear_w (leaf - 2-11/16in) and published catalog/clear figures for D-M-ENTRY/French pairs are self-consistent (exterior is O3)."
+  ],
+  "findings": [
+    {
+      "id": "O1-001",
+      "area": "O1",
+      "title": "Pocket-door sole plate survives under the cassette and in the leaf's travel; leaf bottom sits below the retained plate top",
+      "elements": [
+        "D-M-PANTRY",
+        "D-M-LAUN",
+        "D-B-BATH",
+        "W-M-PAN-S",
+        "W-M-HS3",
+        "W-B-BA-E"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/doorway_framing.py:48",
+        "packages/engine/src/typehaus/resolve/doorway_framing.py:49"
+      ],
+      "kind": "engine-geometry",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.55,
+      "evidence": {
+        "measured": "clear_doorway_sole_plates cuts the bottom plate only over opening.width_m (the 36in mouth). Cavity beside it keeps a full 1.5in plate: W-M-PAN-S plate-bottom-passage-0 spans 3.25..41.25 under the 2.75..41.25 cavity; W-M-HS3 passage-1 spans 48..63 under the 48..86.5 cavity; W-B-BA-E passage-1 69.94..90 under 69.94..108.44. Plate tops are z=1.5in above base (D-M-*), -107.94 (D-B-BATH). Resolved leaf bottoms are 1.331in / 1.341in / -108.924in, i.e. 0.17in (main) and 0.98in (D-B-BATH) BELOW the retained plate top, and the finished floor is only 0.947 / 0.12in.",
+        "expected": "Cassette (Eclisse EKC/EKQ) is set at finished-floor level (notes/pocket_frame_eclisse.md) and the leaf runs the whole cavity at undercut 0.39in over finished floor; no wood plate may stand taller than the finished floor anywhere in the 74.5in RO.",
+        "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/a9292deb-6aa8-41a7-a63e-497e3c7970b9/scratchpad/geometry-review/O1/probe6.py: load plan, resolve, for each pocket opening print plate-bottom* members on host wall with station ranges and z; compare to opening.pocket_run_m cavity and cased_product.leaf_bottom_z_m (probe2.py)."
+      },
+      "source": "notes/pocket_frame_eclisse.md (RO 74 1/2 x 83 1/4 from finished floor, 'frame goes in at finished-floor level'); Eclisse Single 2x4-2x6 tech sheet 11/2022",
+      "proposed_fix": "In clear_doorway_sole_plates widen the cut for a pocket to the whole frame RO (width_m + pocket_run_m, signed by pocket_sign), including the colinear neighbour wall segments from framing/pockets.pocket_segments. Re-check bottom-plate LF in takeoff.",
+      "size_guess": "small",
+      "seam_with": [
+        "O4"
+      ],
+      "dedupe_key": "O1:pocket-sole-plate"
+    },
+    {
+      "id": "O1-002",
+      "area": "O1",
+      "title": "A-601 prints the pocket doors' leaf width as their rough opening (36 x 83.37) instead of the 74.5in cassette RO",
+      "elements": [
+        "D-M-PANTRY",
+        "D-M-LAUN",
+        "D-B-BATH"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py:223",
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py:221"
+      ],
+      "kind": "drawing",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601"
+        ],
+        "pages": [
+          57,
+          133
+        ]
+      },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "A-601 row D-B-BATH: '36 x 83.37 RO'; D-M-PANTRY '36 x 84.1875 RO'; D-M-LAUN '36 x 84.1969 RO'. _door_dimensions_text formats opening.width_m (the passage) with the label RO; sizing.rough_w_m (74.5in) and the pocket-kit model are not printed.",
+        "expected": "RO column should read 74.5 x 83.25 + finish-floor build-up (kit RO, frame_w), with the 36in leaf as nominal and the kit (EKC3680 / EKQ) named.",
+        "method": "pdftotext -f 133 -l 133 -layout permit_set_full.pdf (also permit_set.pdf p57); probe1.py prints sizing.rough_w_m = 74.50 vs passage_w_m = 36.00 for the three pockets."
+      },
+      "source": "notes/pocket_frame_eclisse.md; plans/door-sizing.md 'Pocket doors carry two widths'",
+      "proposed_fix": "In _door_dimensions_text use sizing.rough_w_m / rough_h_m (and show nominal leaf for every door, not only catalog ones); add the kit model for pockets.",
+      "size_guess": "small",
+      "seam_with": [
+        "O2"
+      ],
+      "dedupe_key": "O1:a601-pocket-ro"
+    },
+    {
+      "id": "O1-003",
+      "area": "O1",
+      "title": "Bypass closet door RO is derived with the swing-door equation (50.24in) for a 48in bypass; products fit a 46-48in opening",
+      "elements": [
+        "D-M-MUDC"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/door_sizing.py:186",
+        "packages/engine/src/typehaus/resolve/door_sizing.py:188",
+        "houses/catlin/plan/storeys/main.py:1115"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601",
+          "A-102"
+        ],
+        "pages": [
+          57,
+          133,
+          25
+        ]
+      },
+      "confidence": 0.55,
+      "evidence": {
+        "measured": "D-M-MUDC (DT-INT-BYPASS48): rough_w = 48 + 2(1.0 + 0.118) = 50.24in; header framed 4.26..57.5 for it. Basis string says 'derived ... (generic: no sourced track)'. Same equation gives bifold O-S-CLOSET 58.24in for a 56in bifold (that one is within the 56.5-58in published spread).",
+        "expected": "A 48x80 bypass kit overlaps its two panels and fits a 46-48in rough opening (no side jambs, track in the head); a 50.24in opening leaves ~2in of the opening uncovered or needs custom panels.",
+        "method": "probe1.py (sizing.rough_w_m for D-M-MUDC); A-601 page 133 row D-M-MUDC '50.2362 x 82.4587 RO'."
+      },
+      "source": "doordesignlab.com/blog/bypass-door-sizes-guide (RO = 2 x door - 2in = 46in); retailer 48x80 bypass listings (HD Supply, Lowe's: 48x80 RO)",
+      "proposed_fix": "Give SLIDE/bypass its own rule (RO = nominal width, head track allowance only), or author rough_opening on a house bypass type; then re-check the east corner pack clearance noted at main.py:1114.",
+      "size_guess": "large",
+      "seam_with": [
+        "O3"
+      ],
+      "dedupe_key": "O1:bypass-ro"
+    },
+    {
+      "id": "O1-004",
+      "area": "O1",
+      "title": "No jamb depth is specified anywhere for interior doors; 7 openings sit in walls that are not a stock-jamb depth",
+      "elements": [
+        "D-S-SUITE",
+        "D-S-PLANT",
+        "D-B-SAUNA",
+        "D-B-ESS",
+        "D-B-CLOSET",
+        "D-M-BED2",
+        "D-M-STUDY"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/door_product_spec.py:62",
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py:221"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601"
+        ],
+        "pages": [
+          57,
+          133
+        ]
+      },
+      "confidence": 0.6,
+      "evidence": {
+        "measured": "Finish-to-finish wall depths at doors: 4.5in (2x4, 17 doors) and 6.5in (2x6) are stock-jamb depths (4-9/16, 6-9/16). Others: D-S-SUITE 7.0in, D-S-PLANT 7.29in, D-B-SAUNA 9.25in (faces -6.0/+3.25), D-B-ESS 6.75in, D-B-CLOSET 6.125in (one face bare studs). Resolved cased_product models only a 0.75in jamb board spanning finish faces; A-601 has no jamb-depth or extension column, takeoff bills no jamb extension (only exterior placement boards do).",
+        "expected": "A trade ordering prehung units needs the jamb depth per opening: 6-9/16 jamb in a 7.0in wall is 7/16in shy (extension required), 9.25in sauna wall needs a 2-11/16in extension, etc.",
+        "method": "probe2.py prints host-wall layers and cased_product.finish_faces_m per door; compare thickness to 4-9/16 / 6-9/16."
+      },
+      "source": "Murphy note study_bookcase_bridge.md (4 9/16 jamb for 4.5in wall) is the only recorded jamb depth; standard prehung jamb stock 4-9/16 / 6-9/16",
+      "proposed_fix": "Add a 'jamb depth' column to A-601 (= wall finish depth) and bill extension-jamb LF where depth is not 4-9/16/6-9/16; D-M-BED2 and D-M-STUDY are site-built full-depth, so mark them.",
+      "size_guess": "small",
+      "seam_with": [
+        "O2"
+      ],
+      "dedupe_key": "O1:interior-jamb-depth"
+    },
+    {
+      "id": "O1-005",
+      "area": "O1",
+      "title": "D-A-STUDY Murphy bookcase door: published 82in RO is measured from the subfloor, but the finished floor is 1.5in above it",
+      "elements": [
+        "D-A-STUDY",
+        "W-A-SN"
+      ],
+      "files": [
+        "houses/catlin/plan/products.py:230",
+        "houses/catlin/plan/storeys/main.py:100",
+        "packages/engine/src/typehaus/resolve/door_sizing.py:180"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601",
+          "A-104"
+        ],
+        "pages": [
+          57,
+          133,
+          27
+        ]
+      },
+      "confidence": 0.45,
+      "evidence": {
+        "measured": "RO head z=322.0 on base 240.0 -> 82.0in above subfloor; resolved finished floor 241.5 (1.5in build-up). Header-0 underside 322.0. Above the finished floor the opening is 80.5in. The published-RO branch of door_sizing uses the 82in as is; integrity.door_floor_finish does not grade it (not in its 27 lines).",
+        "expected": "If the unit stands on the finished floor, 82in RO must be taken from it: head at 323.5in (1.5in higher); Murphy listings say jamb is 1-1/8in less than RO (80.875in) so it would not fit under a 80.5in head.",
+        "method": "probe7.py (D-A-STUDY header z); checks.json integrity.door_floor_finish has no D-A-STUDY row."
+      },
+      "source": "murphydoor.com guide measures RO 'from subfloor'; product page says 'floor to header' -- unresolved, confirm with Murphy",
+      "proposed_fix": "Confirm datum with Murphy; if from finished floor, add floor build-up to published RO height (door_sizing published branch) and raise the 2x4 flat header 1.5in.",
+      "size_guess": "large",
+      "seam_with": [
+        "O4"
+      ],
+      "dedupe_key": "O1:bookcase-ro-datum"
+    },
+    {
+      "id": "O1-006",
+      "area": "O1",
+      "title": "A-516..A-524, A-528..A-530 interior-opening details print one R.O. height per wall assembly that hosts openings of several heights",
+      "elements": [
+        "INT_2X4_PARTITION_HALF",
+        "D-M-PANTRY",
+        "D-M-LAUN",
+        "D-A-POCKET",
+        "D-A-STUDY"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/detail_components/chrome.py:305",
+        "packages/engine/src/typehaus/emit/draw/detail_components/dispatch.py:161"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-516",
+          "A-528",
+          "A-530"
+        ],
+        "pages": [
+          51,
+          63,
+          65
+        ]
+      },
+      "confidence": 0.7,
+      "evidence": {
+        "measured": "A-516 (INT_2X4_PARTITION_HALF) prints '82.46 R.O.' but that assembly hosts 15 doors with RO heights 38.38 (D-A-POCKET), 82.0, 82.46, 83.01, 84.19 and 84.20 (pockets). A-518 etc. same pattern. No jamb, leaf, header or pocket cassette is drawn. A-530 also overprints a garbled title block at top left.",
+        "expected": "Detail should state RO = leaf + head allowance above FINISHED floor + floor build-up, or list per-opening heights.",
+        "method": "probe3.py groups openings by wall.assembly; Read permit_set_full.pdf pages 51, 63, 65."
+      },
+      "source": "n/a (drawing)",
+      "proposed_fix": "Print the datum and range ('RO 82.46-84.2, see A-601') or one detail per distinct RO; fix the overprinted header in the A-530 template.",
+      "size_guess": "small",
+      "seam_with": [
+        "O2"
+      ],
+      "dedupe_key": "O1:interior-detail-ro"
+    },
+    {
+      "id": "O1-007",
+      "area": "O1",
+      "title": "A-601 prints interior ROs to four decimals with no datum and no nominal leaf; code comment promises 1/8in",
+      "elements": [
+        "A-601"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py:223",
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py:84"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601"
+        ],
+        "pages": [
+          57,
+          133
+        ]
+      },
+      "confidence": 0.7,
+      "evidence": {
+        "measured": "Rows read '34.2362 x 82.4587 RO', '32.2362 x 83.0118 RO'. Interior rows omit the nominal leaf (only catalog types print nominal/unit). Heights differ 82.4587 / 83.0118 / 82.2618 by floor build-up with no statement that they are measured from the subfloor/framing base. Marks D17/D14/D13 repeat across openings with different RO heights.",
+        "expected": "RO to nearest 1/8in in feet-inches, nominal leaf shown, datum stated ('RO height from top of subfloor').",
+        "method": "pdftotext A-601 page 133; _eighths() exists at line 84 but _door_dimensions_text does not use it."
+      },
+      "source": "n/a (drawing)",
+      "proposed_fix": "Use _eighths in _door_dimensions_text, add nominal and datum note, split marks by RO height.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "O1:a601-format"
+    },
+    {
+      "id": "O1-008",
+      "area": "O1",
+      "title": "A-528 keyed note K2 gives an 11 1/2in rough jamb that does not match the 9.25in sauna door wall",
+      "elements": [
+        "D-B-SAUNA",
+        "W-B-CS"
+      ],
+      "files": [
+        "houses/catlin/plan/storeys/basement.py"
+      ],
+      "kind": "drawing",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-528"
+        ],
+        "pages": [
+          63
+        ]
+      },
+      "confidence": 0.35,
+      "evidence": {
+        "measured": "A-528 (SAUNA_LINER_INT_2X6_BRG, which hosts D-B-SAUNA, wall 9.25in) prints 'K2 South rough jamb 11 1/2in deep: 8in pour plus 3 1/2in liner' beside an 82.26in R.O. door cut.",
+        "expected": "Door jamb depth 9.25in for this wall; 11.5in is a concrete-wall window buck.",
+        "method": "Read permit_set_full.pdf page 63; probe2.py wall layers for W-B-CS."
+      },
+      "source": "n/a",
+      "proposed_fix": "Check whether K2 is keyed to the right opening; strip window keynotes from the door detail.",
+      "size_guess": "small",
+      "seam_with": [
+        "O3"
+      ],
+      "dedupe_key": "O1:a528-k2"
+    }
+  ]
+}

@@ -1708,7 +1708,7 @@
         0.25,
         -100.5746828521435
       ],
-      "text": "sheathing 0.5\"",
+      "text": "sheathing 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1733,7 +1733,7 @@
         3.25,
         -103.23857174103239
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1758,7 +1758,7 @@
         6.25,
         -105.90246062992128
       ],
-      "text": "gwb-a 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1783,7 +1783,7 @@
         -11.8725,
         -84.59134951881015
       ],
-      "text": "brick 3.62\"",
+      "text": "brick 3 5/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2001,7 +2001,7 @@
           "kind": "point",
           "xy": [
             0.4999999999999996,
-            0.5625000000000018
+            -15.437499999999998
           ],
           "name": ""
         },
@@ -2009,23 +2009,23 @@
           "kind": "point",
           "xy": [
             5.999999999999999,
-            0.5625000000000018
+            -15.437499999999998
           ],
           "name": ""
         }
       ],
       "p0": [
         0.4999999999999996,
-        0.5625000000000018
+        -15.437499999999998
       ],
       "p1": [
         5.999999999999999,
-        0.5625000000000018
+        -15.437499999999998
       ],
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "5.5\" stud",
+      "text": "5 1/2\" stud",
       "text_along": 0.0,
       "uid": null
     },
@@ -2062,7 +2062,7 @@
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "6\" XPS (3 layers)",
+      "text": "6\" EPS/XPS (3 layers)",
       "text_along": 0.0,
       "uid": null
     },
@@ -2644,7 +2644,7 @@
         2.85,
         1.3980000000000001
       ],
-      "content": "gwb  0.5\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2716,7 +2716,7 @@
         2.85,
         1.228
       ],
-      "content": "struct-1-plywood  0.5\"",
+      "content": "struct-1-plywood  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2788,7 +2788,7 @@
         2.85,
         1.058
       ],
-      "content": "air-barrier  0.5\"",
+      "content": "air-barrier  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

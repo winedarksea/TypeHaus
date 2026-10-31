@@ -1438,7 +1438,7 @@
         216.0,
         -2.633333333333333
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1463,7 +1463,7 @@
         219.0,
         -6.424999999999999
       ],
-      "text": "gwb-b 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1488,7 +1488,7 @@
         212.5,
         98.09501312335958
       ],
-      "text": "gwb-a 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1513,7 +1513,7 @@
         213.0,
         94.3033464566929
       ],
-      "text": "resilient-channel 0.5\"",
+      "text": "resilient-channel 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1538,7 +1538,7 @@
         216.0,
         90.51167979002624
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1563,7 +1563,7 @@
         219.0,
         86.72001312335956
       ],
-      "text": "gwb-b 0.5\"",
+      "text": "gwb-ar 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1838,7 +1838,7 @@
         0.7,
         1.228
       ],
-      "content": "gwb  0.5\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1910,7 +1910,7 @@
         0.7,
         1.058
       ],
-      "content": "resilient-channel  0.5\"",
+      "content": "resilient-channel  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1982,7 +1982,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "lsl  5.5\"",
+      "content": "lsl  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2054,7 +2054,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "fiberglass  5.5\"",
+      "content": "fiberglass  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2127,7 +2127,7 @@
         2.85,
         1.3980000000000001
       ],
-      "content": "gwb-ar  0.5\"",
+      "content": "gwb-ar  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

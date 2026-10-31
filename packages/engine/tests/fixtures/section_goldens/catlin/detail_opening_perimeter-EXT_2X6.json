@@ -1033,7 +1033,7 @@
       "node": "polyline",
       "points": [
         [
-          -0.56,
+          0.0,
           70.85500000000002
         ],
         [
@@ -1045,7 +1045,7 @@
           71.355
         ],
         [
-          -0.56,
+          0.0,
           71.355
         ]
       ],
@@ -1061,7 +1061,7 @@
       "node": "hatch",
       "boundary": [
         [
-          -0.56,
+          0.0,
           70.85500000000002
         ],
         [
@@ -1073,7 +1073,7 @@
           71.355
         ],
         [
-          -0.56,
+          0.0,
           71.355
         ]
       ],
@@ -1495,7 +1495,7 @@
         -6.625000000000001,
         87.627646544182
       ],
-      "text": "cladding 1.25\"",
+      "text": "cladding 1 1/4\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1520,7 +1520,7 @@
         -5.25,
         85.09986876640423
       ],
-      "text": "outer-girt 1.5\"",
+      "text": "outer-girt 1 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1545,7 +1545,7 @@
         -4.25,
         82.57209098862646
       ],
-      "text": "vent-gap 0.5\"",
+      "text": "vent-gap 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1595,7 +1595,7 @@
         0.25,
         77.51653543307091
       ],
-      "text": "sheathing 0.5\"",
+      "text": "sheathing 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1620,7 +1620,7 @@
         3.25,
         74.98875765529314
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1645,7 +1645,7 @@
         6.25,
         72.46097987751537
       ],
-      "text": "gwb-int 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3242,7 +3242,7 @@
         0.7,
         1.228
       ],
-      "content": "gwb  0.5\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3314,7 +3314,7 @@
         0.7,
         1.058
       ],
-      "content": "lsl  5.5\"",
+      "content": "lsl  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3386,7 +3386,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "fiberglass  5.5\"",
+      "content": "fiberglass  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3458,7 +3458,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "struct-1-plywood  0.5\"",
+      "content": "struct-1-plywood  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3603,7 +3603,7 @@
         2.85,
         1.228
       ],
-      "content": "air-barrier  0.5\"",
+      "content": "air-barrier  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3675,7 +3675,7 @@
         2.85,
         1.058
       ],
-      "content": "kdat  1.5\"",
+      "content": "kdat  1 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3748,7 +3748,7 @@
         2.85,
         0.8880000000000001
       ],
-      "content": "pbr-panel-24  1.25\"",
+      "content": "pbr-panel-24  1 1/4\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

@@ -2247,7 +2247,7 @@
         0.25,
         -31.405222222222214
       ],
-      "text": "sheathing 0.5\"",
+      "text": "sheathing 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2272,7 +2272,7 @@
         3.25,
         -34.069111111111106
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2297,7 +2297,7 @@
         6.25,
         -36.733
       ],
-      "text": "gwb-a 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2322,7 +2322,7 @@
         -11.8725,
         -15.421888888888887
       ],
-      "text": "brick 3.62\"",
+      "text": "brick 3 5/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2372,7 +2372,7 @@
         -6.375,
         6.1271544181977315
       ],
-      "text": "cladding 0.75\"",
+      "text": "cladding 3/4\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2397,7 +2397,7 @@
         -5.25,
         3.599376640419954
       ],
-      "text": "outer-girt 1.5\"",
+      "text": "outer-girt 1 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2422,7 +2422,7 @@
         -4.25,
         1.0715988626421762
       ],
-      "text": "vent-gap 0.5\"",
+      "text": "vent-gap 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2472,7 +2472,7 @@
         0.25,
         -3.983956692913379
       ],
-      "text": "sheathing 0.5\"",
+      "text": "sheathing 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2497,7 +2497,7 @@
         3.25,
         -6.511734470691157
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2522,7 +2522,7 @@
         6.25,
         -9.039512248468935
       ],
-      "text": "gwb-int 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2889,7 +2889,7 @@
           "kind": "point",
           "xy": [
             0.4999999999999996,
-            -11.437499999999996
+            -27.437499999999996
           ],
           "name": ""
         },
@@ -2897,23 +2897,23 @@
           "kind": "point",
           "xy": [
             5.999999999999999,
-            -11.437499999999996
+            -27.437499999999996
           ],
           "name": ""
         }
       ],
       "p0": [
         0.4999999999999996,
-        -11.437499999999996
+        -27.437499999999996
       ],
       "p1": [
         5.999999999999999,
-        -11.437499999999996
+        -27.437499999999996
       ],
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "5.5\" stud",
+      "text": "5 1/2\" stud",
       "text_along": 0.0,
       "uid": null
     },
@@ -3133,7 +3133,7 @@
         0.7,
         1.228
       ],
-      "content": "gwb  0.5\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3205,7 +3205,7 @@
         0.7,
         1.058
       ],
-      "content": "spf  5.5\"",
+      "content": "spf  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3277,7 +3277,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "mineral-wool  5.5\"",
+      "content": "mineral-wool  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3349,7 +3349,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "struct-1-plywood  0.5\"",
+      "content": "struct-1-plywood  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3637,7 +3637,7 @@
         2.85,
         0.8880000000000001
       ],
-      "content": "lsl  5.5\"",
+      "content": "lsl  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3709,7 +3709,7 @@
         2.85,
         0.7180000000000002
       ],
-      "content": "fiberglass  5.5\"",
+      "content": "fiberglass  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3854,7 +3854,7 @@
         4.999999999999999,
         1.228
       ],
-      "content": "air-barrier  0.5\"",
+      "content": "air-barrier  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3926,7 +3926,7 @@
         4.999999999999999,
         1.058
       ],
-      "content": "kdat  1.5\"",
+      "content": "kdat  1 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3999,7 +3999,7 @@
         4.999999999999999,
         0.8880000000000001
       ],
-      "content": "board-batten-24  0.75\"",
+      "content": "board-batten-24  3/4\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

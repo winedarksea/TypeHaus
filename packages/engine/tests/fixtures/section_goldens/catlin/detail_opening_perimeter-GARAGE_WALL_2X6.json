@@ -657,7 +657,7 @@
         800.1875,
         65.08320209973752
       ],
-      "text": "gwb-int 0.625\"",
+      "text": "gwb 5/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -682,7 +682,7 @@
         803.25,
         61.291535433070855
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -707,7 +707,7 @@
         806.3125000000001,
         57.49986876640419
       ],
-      "text": "cdx 0.625\"",
+      "text": "cdx 5/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -732,7 +732,7 @@
         807.0625000000001,
         53.70820209973753
       ],
-      "text": "cladding 0.875\"",
+      "text": "cladding 7/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1698,7 +1698,7 @@
         0.7,
         1.228
       ],
-      "content": "gwb  0.625\"",
+      "content": "gwb  5/8\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1770,7 +1770,7 @@
         0.7,
         1.058
       ],
-      "content": "spf  5.5\"",
+      "content": "spf  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1916,7 +1916,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "cdx-plywood  0.625\"",
+      "content": "cdx-plywood  5/8\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1989,7 +1989,7 @@
         2.85,
         1.3980000000000001
       ],
-      "content": "corrugated-panel-24  0.875\"",
+      "content": "corrugated-panel-24  7/8\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2078,7 +2078,7 @@
     "• Stem footing: 12\"x6\" over compacted stone per IRC R403.1 and R403.4.1.",
     "• Slab: 3-1/2\" min, 3,500 psi min per IRC R506.1, sloped to the door.",
     "• Wood wall: 2x6 at 24\" o.c., 5/8\" CDX, 2\" of 2 lb closed-cell foam per bay.",
-    "• Cladding: 7/8\" corrugated 26 ga PVDF steel, house white, screwed at the crowns.",
+    "• Cladding: 7/8\" corrugated 24 ga PVDF steel, house white, screwed at the crowns.",
     "• Stem band: PVDF aluminium sheet, 0.040\" min, 2\" below grade to the stem top.",
     "• Interior: 5/8\" drywall on the wall, 5/8\" exterior gypsum on the stem.",
     "• Roof: gable trusses at 24\" o.c., OSB deck, underlayment, standing-seam metal.",

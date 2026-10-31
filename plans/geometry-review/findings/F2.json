@@ -1,0 +1,446 @@
+{
+ "area": "F2",
+ "model": "houses/catlin @247a13e9",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Inventoried 121 authored WallBacking bands (130 resolved runs), 400+ wall-mounted bodies vs absolute z, 213 stud crossings for R602.6, 3 fireblocks, towel/TP sources (Moen specs cited; spec PDF fetch unreadable). Sheets read: S-101.1-.3 (floor framing, no backing shown), S-601, A-507, A-553/554/558/565/570/572/578/584. NOT examined: A-555..A-584 remaining, Kohler mirror rails, TANNFORSEN product data, plate-cut ties, joist bores (R502.8), furring.py. IKEA Sektion rail is 2 1/8 in. tall (bands 7.25 in. generous).",
+ "verified_clean": [
+  "Band heights equal profile depth for all 121 WallBacking (integrity.wall_backing_ref)",
+  "Moen towel/TP fixing points land on bands or studs (30 posts pass); absolute z coverage clean except EVSE",
+  "Stud bore limits 40/60%, 25/40% notch, 5/8 in. edge and 50% plate rule match R602.6/R602.6.1",
+  "Bores graded with true ODs (1.9, 2.375, 3.5 in.); 210 of 213 stud crossings pass",
+  "Bands break at headers/sills (no band overlaps a header or sill); only hydrant penetrations cross RO voids",
+  "No wall cavity exceeds 10 ft so no horizontal R302.11 block needed",
+  "Fireblock chases use 3/4 in. ply and 3.5 in. mineral wool"
+ ],
+ "findings": [
+  {
+   "id": "F2-001",
+   "area": "F2",
+   "title": "BK-G-S-EVSE sits 22 in. above the EVSE it backs (authored AFF, framed from wall base)",
+   "elements": [
+    "BK-G-S-EVSE",
+    "APPL-G-EVSE",
+    "W-G-S"
+   ],
+   "files": [
+    "houses/catlin/plan/backing.py:353"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "Garage floor -34 in., W-G-S base_ref_z -12 in. (framing sits on ICF stem). EVSE body abs z 8.0..18.25 (Mount 42 in. AFF = 42..52.25 AFF). Resolved band backing-0-000 abs z 29.5..40.75 (63.5..74.75 AFF), stations 168.8..191.3 cover the EVSE station 186. Gap: band bottom 11.25 in. above EVSE top.",
+    "expected": "Band abs z 8..19 or wider (elevation 19.5 in. from wall base for 42 in. AFF, i.e. 41.5-22).",
+    "method": "Load model; compare o.body_z0/z1 of APPL-G-EVSE with W-G-S members 'backing-*' z0/z1 (scratchpad geometry-review/F2/ (pickled model m.pkl from load_plan+resolve; probes p6.py, p8.py, p18.py))."
+   },
+   "source": "Comment at backing.py:353 'EVSE four screws 42..52 1/4 in.' (AFF)",
+   "proposed_fix": "Set elevation=inch(19.5) (41.5 minus 22 in. stem), height 11.25; recheck advisory.wall_backing_present passes against absolute z.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "BK-G-S-EVSE:datum"
+  },
+  {
+   "id": "F2-002",
+   "area": "F2",
+   "title": "advisory.wall_backing_present compares Mount.elevation (AFF) to band elevation (wall-base datum) directly",
+   "elements": [
+    "BK-*",
+    "advisory.wall_backing_present"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/advisory/backing.py:157",
+    "packages/engine/src/typehaus/resolve/framing/backing_panels.py:152"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "Bodies stand at finished floor + mount: main +0.94 in., basement +0.75 in., second +1.5 in., garage +22 in. relative to wall base_ref. Check uses low=mount.elevation vs b.elevation_m with 1 in. reach, so it passed APPL-G-EVSE (11 in. miss) as 'backed'. Only the garage is out of tolerance today; others shift bands 0.75-1.5 in. low (grab course 32-39.25 becomes 30.5-37.75 AFF on second floor).",
+    "expected": "Compare absolute body z0/z1 (o.body_z0_m/body_z1_m) or add finished-floor offset of the wall's room to band elevation.",
+    "method": "p3.py/p8.py: for every wall-mounted canvas object compare abs body z range to resolved 'backing-' members; only EVSE fails. Offsets from model.canvas_objects z_m - mount.elevation."
+   },
+   "source": "IRC R328.1.1 (32-39.25 in. above floor) via notes/wall_backing.md",
+   "proposed_fix": "Convert band elevation by room finished-floor offset in check, or fix the check to read absolute z; consider a check of the resolved member not authored run.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "wall_backing_present:datum"
+  },
+  {
+   "id": "F2-003",
+   "area": "F2",
+   "title": "Continuous backing bands run through 3 in. stacks and a 4 in. duct standing in the same bay",
+   "elements": [
+    "BK-M-STOS-SHELF",
+    "BK-M-CLN-RACK",
+    "BK-M-CLN-PAX",
+    "BK-M-CLN2-PAX",
+    "PR-M-S-BATH1-DRAIN",
+    "PR-M-S-SUITE-DRAIN",
+    "DU-M-ERV-R-LAUNDRY"
+   ],
+   "files": [
+    "houses/catlin/plan/backing.py:207",
+    "packages/engine/src/typehaus/resolve/framing/backing_panels.py:152"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "Plan-and-z overlap of run envelope with band footprint: PR-M-S-BATH1-DRAIN (3.5 in. OD, x=60 in., z -22..123) overlaps BK-M-STOS-SHELF (no start/length, whole 72 in. wall, z 64..71.25) by 3.93 sq in. on a 2x4 wall (3.5 in. cavity); PR-M-S-SUITE-DRAIN overlaps backing-1 (46..53.2) and backing-3 (86..93.2) of W-M-CLN by 0.84 sq in. each; DU-M-ERV-R-LAUNDRY 4 in. overlaps BK-M-CLN2-PAX band by 1.63 sq in. Note wall_backing.md s5 admits nothing grades band vs pipe.",
+    "expected": "Bands break at the stack bay (author start/length around the run) or the stack moves.",
+    "method": "p18.py: swept run envelope (run_polylines/run_sections) intersect Polygon(member_footprint(backing member)) with z overlap."
+   },
+   "source": "notes/wall_backing.md s5",
+   "proposed_fix": "Split BK-M-STOS-SHELF/-CLN-RACK/-PAX around the stack and duct bays; add a run-vs-backing check.",
+   "size_guess": "small",
+   "seam_with": [
+    "M2",
+    "F1"
+   ],
+   "dedupe_key": "backing:vs-pipe-stack"
+  },
+  {
+   "id": "F2-004",
+   "area": "F2",
+   "title": "3 in. DWV (3.5 in. OD) stack through a 2x4 partition plate is graded UNKNOWN, not FAIL",
+   "elements": [
+    "PR-M-S-BATH1-DRAIN",
+    "W-M-STOS",
+    "mep.run_through_plate"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/mep_bores.py:213",
+    "packages/engine/src/typehaus/resolve/mep_bores.py:318"
+   ],
+   "kind": "engine-geometry",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "W-M-STOS INT_2X4_PARTITION_HALF: 3.5 in. structure, plates 3.5 in. wide; stack at (60,319.5) is 3.5 in. OD (hub ~4.2 in.) through plate-top-0/1 and sole plate. stud_bore/top_plate_cut return None for diameter >= depth ('framed opening with header'); checks.json: mep.run_through_plate UNKNOWN for PR-M-S-BATH1-DRAIN. No header or opening is framed.",
+    "expected": "A stack as wide as the wall is a build conflict (2x6 wall or furred chase) and should FAIL, or the wall carries an authored opening/chase.",
+    "method": "p10.py crossing census (3 UNKNOWN of 213 stud crossings) + p11.py wall/plate dims; checks.json mep.run_through_plate."
+   },
+   "source": "framing_bore_limits.md s1 (6 in. duct case)",
+   "proposed_fix": "Treat penetration >= depth with no framed opening/header in the model as FAIL; fix W-M-STOS (2x6) or chase.",
+   "size_guess": "large",
+   "seam_with": [
+    "M2",
+    "F1"
+   ],
+   "dedupe_key": "STOS:3in-stack-2x4"
+  },
+  {
+   "id": "F2-005",
+   "area": "F2",
+   "title": "PR-A-STUBATH-DRAIN 3.5 in. stack lands on stud-005 of W-S-DC2",
+   "elements": [
+    "PR-A-STUBATH-DRAIN",
+    "W-S-DC2"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/mep_bores.py:213"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Stack at (115.5,232), z 231.5..116, radius 1.75 in.; stud-005 2x4 at (116.5,231.0) z 121.5..224.4 overlaps in plan by 1.5 in. along wall; check says UNKNOWN 'wider than 3.5 in. depth'.",
+    "expected": "Stack stands in a clear bay (stud shifted) or flagged FAIL.",
+    "method": "p10.py/p11.py"
+   },
+   "source": "wall_cavity / staggered stud layout",
+   "proposed_fix": "Shift stud-005 or the stack ~2 in.; same engine fix as F2-004.",
+   "size_guess": "small",
+   "seam_with": [
+    "M2",
+    "F1"
+   ],
+   "dedupe_key": "DC2:stud-005-stack"
+  },
+  {
+   "id": "F2-006",
+   "area": "F2",
+   "title": "Backing bands are modelled as continuous boards through every stud (380 overlaps) though the note says fitted between studs",
+   "elements": [
+    "BK-*"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/framing/backing_panels.py:152",
+    "houses/catlin/notes/wall_backing.md:4"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "130 band runs overlap 380 stud/king/jack footprints by the full 1.5 in. band thickness (e.g. W-M-HS1 backing-2 across stud-002/004). Let into a stud that would be 1.5/3.5=43% (2x4) or 27% (2x6 exterior) vs R602.6 notch 25%/40%. Takeoff bills the full run LF (2x8 316 LF) with no stud deduction (~9% over).",
+    "expected": "Per-bay blocks (as s4 says) or a model that shows the board stopping at stud faces.",
+    "method": "p19.py intersect Polygon(member_footprint) band vs studs."
+   },
+   "source": "notes/wall_backing.md s4; IRC R602.6",
+   "proposed_fix": "Cut band runs at stud faces in the resolver (billing and drawing then match).",
+   "size_guess": "large",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "backing:through-studs"
+  },
+  {
+   "id": "F2-007",
+   "area": "F2",
+   "title": "Bore check treats only joist-bearing walls as bearing; exterior and roof-bearing walls get 60%",
+   "elements": [
+    "mep.run_through_stud",
+    "W-M-W3",
+    "W-M-N1",
+    "W-M-N3",
+    "W-A-N2",
+    "W-A-BATH-S"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/mep/routing_bores.py:50"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "bearing_wall_tags = foundation + JoistSpec.bearing_refs. Exterior EXT_2X6 walls W-M-W3, W-M-N1, W-M-N3, W-A-N2 (wall_is_exterior True) are graded non-bearing (60% = 3.30 in.); R602.6 gives exterior walls 40% (2.20 in.). Largest OD there is 1.9 in. so no verdict changes today; PR-A-BAR-VENT (2.375 in.) on W-A-BATH-S would flip if that wall bears roof.",
+    "expected": "Exterior walls and walls carrying roof/beam/post loads use 40%/25%.",
+    "method": "p10.py walls with bearing False + wall_is_exterior."
+   },
+   "source": "IRC R602.6",
+   "proposed_fix": "Add wall_is_exterior and roof/beam bearing to bearing_wall_tags.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "bore:bearing-set"
+  },
+  {
+   "id": "F2-008",
+   "area": "F2",
+   "title": "Title/legend text piled on itself at the left of ~20 stack-shelf and rim-band detail sheets",
+   "elements": [
+    "A-554",
+    "A-555",
+    "A-559",
+    "A-562",
+    "A-570",
+    "A-512",
+    "A-515",
+    "A-519",
+    "A-523",
+    "A-529",
+    "A-530",
+    "A-533",
+    "A-534",
+    "A-536",
+    "A-539",
+    "A-545",
+    "A-586",
+    "A-587",
+    "A-588",
+    "A-589"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-554",
+     "A-570"
+    ],
+    "pages": [
+     89,
+     105
+    ]
+   },
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "A-554 (p89) shows 'Catlin House / derived transition detail / MATERIALS' overprinted illegibly on the detail; A-570 (p105) same pile left of the detail. Same text pattern on pages 47,50,54,58,64,65,68,69,71,74,80,89,90,94,97,105,121-124. The rim-band details also carry no dimension strings.",
+    "expected": "Legend and title laid out clear of the drawing.",
+    "method": "pdftotext -raw grep 'derived transition detail' per page; visual check of p89, p105."
+   },
+   "source": "permit_set_full.pdf",
+   "proposed_fix": "Fix the transition-detail legend placement in the detail sheet emitter.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "A-5xx:legend-overprint"
+  },
+  {
+   "id": "F2-009",
+   "area": "F2",
+   "title": "No R302.11 fireblock note or detail for soffits, drop ceilings and stair stringers",
+   "elements": [
+    "SF-B-BATH",
+    "SF-S-DUCT",
+    "SF-S-HP1",
+    "ST-B2M",
+    "ST-M2S",
+    "ST-S2A"
+   ],
+   "files": [
+    "houses/catlin/notes/wall_backing.md:62"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-102"
+    ],
+    "pages": []
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Engine models fireblocks only for 3 floor chases (FO-M-ERV-OA etc., 3 in. mineral wool and 3/4 in. ply, passes). Set text mentions fire blocking only at duct bearing-wall crossings. 3 soffits and 6 stairs exist; no wall exceeds 10 ft cavity (max stud run 114.5 in.).",
+    "expected": "A general note (R302.11 items 2-4) on the framing sheets.",
+    "method": "pdftotext grep fireblock; model.soffits/stairs counts."
+   },
+   "source": "IRC R302.11",
+   "proposed_fix": "Add a general note on S-sheets.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "R302.11:soffit-stair-note"
+  },
+  {
+   "id": "F2-010",
+   "area": "F2",
+   "title": "wall_backing.md says walls take 5/8 in. gypsum; catlin walls are 1/2 in.",
+   "elements": [
+    "notes/wall_backing.md"
+   ],
+   "files": [
+    "houses/catlin/notes/wall_backing.md:100",
+    "packages/engine/src/typehaus/library/assemblies/_layers.py:42"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Resolved interior finish layer 0.5 in. (GWB_LINING_HALF, 'catlin walls are 1/2 in., ceilings 5/8'); note s4 and backing.py say 5/8 in. gypsum on studs. Garage 0.625 in.",
+    "expected": "1/2 in. for walls.",
+    "method": "p16.py layer thicknesses."
+   },
+   "source": "_layers.py comment",
+   "proposed_fix": "Correct the note.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "wall_backing:gwb-thickness"
+  },
+  {
+   "id": "F2-011",
+   "area": "F2",
+   "title": "Wall-backing coverage check never reads Equipment or ElectricalDevice (meter-main 36 in. tall on a framed exterior wall)",
+   "elements": [
+    "ED-M-METER",
+    "EQ-M-HP3-STAIR",
+    "W-M-W1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/advisory/backing.py:57"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "WallMountedBody = Furniture|Fixture|Appliance. ED-M-METER (Mount elevation 0, body 0..36 in.) on W-M-W1 EXT_2X6 has no band; utility meter sockets need a rigid backer. Not graded. Confidence low: mounting through 4 in. foam and girts may be solved by the supplier.",
+    "expected": "A band or backer plate behind heavy exterior-mounted devices.",
+    "method": "p21.py listing of wall-mounted Equipment/ED on framed walls."
+   },
+   "source": "plan/electrical.py:179",
+   "proposed_fix": "Extend the check to Equipment/ElectricalDevice or document backer.",
+   "size_guess": "small",
+   "seam_with": [
+    "E1"
+   ],
+   "dedupe_key": "backing:equipment-gap"
+  },
+  {
+   "id": "F2-012",
+   "area": "F2",
+   "title": "S-601 bills the same lumber under two size names (1.5x11.25 and 2x12)",
+   "elements": [
+    "BK-G-W-RAIL-TOP",
+    "BK-G-W-RAIL-FOOT",
+    "BK-G-S-EVSE"
+   ],
+   "files": [
+    "houses/catlin/plan/backing.py:344"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-601"
+    ],
+    "pages": [
+     20
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Cut list has '1.5x11.25 blocking 3 pcs 5 LF' beside '2x12 blocking 4 pcs 11 LF'; also a poplar '0.75x3.5 blocking' trim board in the framing order.",
+    "expected": "One 2x12 row.",
+    "method": "S-601 p20 / takeoff.json framing; cross_section('1.5x11.25')."
+   },
+   "source": "S-601",
+   "proposed_fix": "Author profile='2x12'.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S-601:1.5x11.25"
+  }
+ ]
+}

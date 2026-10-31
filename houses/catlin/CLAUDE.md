@@ -1615,7 +1615,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   DERIVED — never author a clear width.** `mep.duct_soffit_occupancy` derives the cavity from
   the soffit's own drop, `FramingSpec` member, 5/8" lining, and a 2" hanger gap; an authored
   width is a second source of truth that drifts the first time framing changes. Current
-  derived boxes: `SF-S-DUCT` 30 3/4" x 11 1/4"; `SF-S-HP1`
+  derived boxes: `SF-S-DUCT` 41 1/2" wide, drop 14 1/8" (clear section 37 1/4" x 12"); `SF-S-HP1`
   40 3/4" x 7'-9 3/8" (in `RM-S-NCLOSET`'s ceiling), drop 23", underside at 7'-1".
   **Three soffits were retired on 2026-09-13** — `SF-B-HALL`, `SF-B-GYM` and `SF-S-SUITE` —
   each one built only to satisfy `mep.run_in_finished_volume`, each replaced by a
@@ -1896,10 +1896,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Sauna (`RM-B-SAUNA`).** Current seating is in `plan/sauna.py` with dimensions/types in
   `plan/sauna_types.py`; construction and acceptance: `notes/sauna_seating.md` (2026-10-11).
   The current clear box is approximately 7'-3" × 8'-10 11/16". Read the resolved polygon
-  for containment. The finished ceiling underside is **82 13/16" AFF**, not the stale 90".
+  for containment. The finished ceiling underside is **83 1/16" AFF**, not the stale 90".
   - West upper lying bench **78 × 28, 42" AFF**, with a full unobstructed surface. Independent
     foot platform **78 3/16 × 20, 24" AFF**; south reading deck **58½ × 28, 24" AFF**;
-    access step **14 × 10, 12" AFF**. Upper headroom **40 13/16"**.
+    access step **14 × 10, 12" AFF**. Upper headroom **41 1/16"**.
   - Armless removable wood recliner faces east, back west, on the south deck near the window.
     Wood/pad share a **26 × 57½"** envelope and the platform datum. Drawn at 110°; positive
     locks 105/110/112°. Flat custom mattress **26 × 80 × 4"**, segmented linen/wool with

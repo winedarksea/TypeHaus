@@ -1,0 +1,380 @@
+{
+ "area": "O3",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Inventoried the 6 exterior doors (D-M-ENTRY, D-G-SERVICE, D-G-OVERHEAD, D-B-PATIO, D-M-BALC, D-S-DECK-E), their 4 DoorTypes (DT-EXT-SWING36, -SWING32-G, -FRENCH60, -FRENCH60-CATALOG, -OVERHEAD192), product rows in plan/opening_products.py and the resolved ExteriorDoorPlacement (frame zone, threshold sections, landings). Measured unit/RO/clear sizes, threshold-vs-landing and vs interior finish, the service-door stair arrival, garage-door headroom, and read A-601 and A-509. Web verification of manufacturer sheets was not done (time); product sizes are checked against the note citations only.",
+ "verified_clean": [
+  "D-M-ENTRY: unit 37 5/8x82, RO 38 3/8x82 7/8 (3/8 per side, 7/8 height incl 3/8 pan); clear 33 5/16x79 1/4 equals the cited Therma-Tru Arch 1 values; threshold top 2.0 in above landing (inswing egress door, limit 7 3/4 in).",
+  "D-M-BALC / D-B-PATIO / D-S-DECK-E: unit 62 9/16x82, RO 63 5/16x82 7/8, clear 56 3/8x79 1/4 consistent with the Arch 1.4 5/0 French data; 3/8 in shim per side.",
+  "D-G-SERVICE: unit 33.5x81 in RO 34x81.5 matches the MMI listing in the note (1/4 in per side, 1/2 in head); leaf bottom 1 5/8 in above deck (note asks >= 1 in).",
+  "D-G-OVERHEAD: 16x7 RO equals the nominal door; plate 100 in less 84 in leaves 16 in above the head (>= 12-15 in torsion-spring headroom); sits on slab at -34 in, drive 1 in lower.",
+  "R311.3 landing drops: ENTRY 2.0 in, BALC 1.3 in, DECK-E 1.2 in, SERVICE 1.5 in, PATIO 7.6 in all within the check's limits.",
+  "Garage service door outswing: swing_clearance lies wholly on the deck side; R311.7.6 exception check passes."
+ ],
+ "findings": [
+  {
+   "id": "O3-001",
+   "area": "O3",
+   "title": "ST-G-SERVICE arrives at the RO bottom (0) but D-G-SERVICE's threshold top is +1.5 in: last step 8.3 in, not 6.8 in",
+   "elements": [
+    "ST-G-SERVICE",
+    "D-G-SERVICE"
+   ],
+   "files": [
+    "houses/catlin/plan/door_types.py:100",
+    "houses/catlin/notes/garage_service_door_outswing.md:2"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Stair: riser_count 5, riser_height 6.8 in, base -34 in, arrival 0. Threshold sections of D-G-SERVICE span z 0.5..1.5 in above the RO bottom (R311_3 check: deck is 1.5 in below the threshold). Stepping from tread 4 (-6.8 in) to threshold top (+1.5 in) is 8.3 in; or if risers are re-cut from the threshold, 35.5/5 = 7.1 in, not the 6.8 in drawn.",
+    "expected": "Stair rise measured to the walking surface the leaf crosses (threshold top, +1.5 in); riser <= 7 3/4 in and uniform within 3/8 in (R311.7.5.1).",
+    "method": "Load model; stairs tag ST-G-SERVICE (riser_height_m, arrival_elevation_m are in inches here); openings D-G-SERVICE .doorway.exterior_placement.sections max z of threshold-*; scratchpad geometry-review/O3/p5.py. Note says risers are field-cut from the installed threshold, so the sheets and the model disagree with the note."
+   },
+   "source": "IRC R311.7.5.1; houses/catlin/notes/garage_service_door_outswing.md section 2 (field-fit text)",
+   "proposed_fix": "Set ST-G-SERVICE arrival to the threshold top (+1.5 in) and let risers derive (7.1 in), or state the 6.8 in risers plus a 1.5 in shortfall as a drawn dimension. riser_stringer/StairSeat blast radius is the garage stair only.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1"
+   ],
+   "dedupe_key": "ST-G-SERVICE:arrival-vs-threshold"
+  },
+  {
+   "id": "O3-002",
+   "area": "O3",
+   "title": "D-B-PATIO threshold is 7.6 in above the court slab against a 7.75 in limit (0.15 in margin), RO sill raised 5.5 in on a curb",
+   "elements": [
+    "D-B-PATIO",
+    "SL-SG-FLOOR"
+   ],
+   "files": [
+    "houses/catlin/plan/french_door_installations.py:28",
+    "packages/engine/src/typehaus/checks/code/"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "RO bottom z -2.640 m vs slab deck top -2.7797 m (5.5 in curb); sill section top at +1.9 in; check R311_3 reports 7.6 in below the threshold. Interior step from the gym stall mat (finish top 0.75 in) is about 6.9 in.",
+    "expected": "A basement door that is also the sole basement egress (R310.1 pass cites D-B-PATIO) should not rely on 0.15 in of tolerance on an unsupported flood-curb dimension; field tolerance and mat thickness can push it over 7 3/4 in.",
+    "method": "Probe p2/p3 in scratchpad geometry-review/O3; checks.json code.R311_3_exterior_landing message for D-B-PATIO. Confidence low: the curb is a recorded decision and the check is the author's reading of MN R311.3.2 for a non-designated egress door."
+   },
+   "source": "MN R311.3.2 (<= 7 3/4 in); houses/catlin/CLAUDE.md (D-M-ENTRY is the designated egress door)",
+   "proposed_fix": "Confirm the curb height as-built; consider lowering the approach/curb 1/2 in or adding a drawn tolerance note.",
+   "size_guess": "large",
+   "seam_with": [
+    "O1"
+   ],
+   "dedupe_key": "D-B-PATIO:landing-margin"
+  },
+  {
+   "id": "O3-003",
+   "area": "O3",
+   "title": "Frame depth modelled as a 5.5 in zone for D-G-SERVICE; MMI frame is 6 9/16 in and wall stack is 6.75 in gwb-to-sheathing",
+   "elements": [
+    "D-G-SERVICE",
+    "W-G-S"
+   ],
+   "files": [
+    "houses/catlin/plan/door_types.py:104",
+    "houses/catlin/plan/opening_products.py:75"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "frame_inner 6.125 in minus frame_outer 0.625 in gives a 5.5 in frame zone; factory_frame_depth None. Wall: gwb 0.625 + 2x6 5.5 + cdx 0.625 = 6.75 in. Product: 6-9/16 (6.5625 in) composite frame.",
+    "expected": "Jamb drawn 6.5625 in, 3/16 in shy of the 6.75 in wall, flush to the gypsum and ply faces; same for D-M-ENTRY and D-M-BALC where factory depth is also None.",
+    "method": "scratchpad geometry-review/O3/p6.py (wall layers, ExteriorDoorPlacement frame_inner_m/frame_outer_m, specification.factory_frame_depth)."
+   },
+   "source": "MMI Z0364688R listing cited in opening_products.py; notes/exterior_door_hardening.md",
+   "proposed_fix": "Author factory_frame_depth=inch(6.5625) on the service-door installation; for D-M-ENTRY/D-M-BALC author the ordered jamb (4 9/16 or 6 9/16) once the prehanger confirms.",
+   "size_guess": "small",
+   "seam_with": [
+    "O5"
+   ],
+   "dedupe_key": "D-G-SERVICE:frame-depth"
+  },
+  {
+   "id": "O3-004",
+   "area": "O3",
+   "title": "D-M-BALC uses the generic 7 3/4 in design-envelope sill while the same French product on PATIO/DECK-E uses the Endura ZAI catalog outline",
+   "elements": [
+    "D-M-BALC",
+    "D-B-PATIO",
+    "D-S-DECK-E"
+   ],
+   "files": [
+    "houses/catlin/plan/french_door_installations.py:47",
+    "houses/catlin/plan/door_types.py:157"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-601"
+    ],
+    "pages": [
+     57
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Threshold top above RO bottom: BALC 2.25 in (generic envelope, 7.75 in deep, x from 1.25 to 5.82 in), DECK-E 1.9 in (catalog-sill-outline). Frame zone 5.5 in vs 4.5625 in. Duplicate DT-EXT-FRENCH60 and DT-EXT-FRENCH60-CATALOG types: schedule HW-1 and HW-2 are identical text.",
+    "expected": "One product, one sill section, one frame depth on all three pairs (owner chose one glass/hardware spec).",
+    "method": "p6.py in scratchpad; A-601 page 57 hardware sets HW-1 and HW-2."
+   },
+   "source": "houses/catlin/notes/french_door_catalog_installation.md; window_and_door_procurement.md section 2.3",
+   "proposed_fix": "Apply with_catalog_installations to D-M-BALC (with its own landing support) and drop the duplicate type.",
+   "size_guess": "large",
+   "seam_with": [
+    "O5"
+   ],
+   "dedupe_key": "D-M-BALC:sill-source"
+  },
+  {
+   "id": "O3-005",
+   "area": "O3",
+   "title": "A-601 Doorway column text for the exterior doors runs past the sheet border",
+   "elements": [
+    "D-B-PATIO",
+    "D-M-BALC",
+    "D-M-ENTRY",
+    "D-G-SERVICE",
+    "D-S-DECK-E"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-601"
+    ],
+    "pages": [
+     57
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Doorway strings like 'UNKNOWN: PROD-THERMATRU-SMOOTHSTAR-FULLLITE (factory); section UNKNOWN; supplier PENDING' extend beyond the table and the outer frame at the right edge.",
+    "expected": "Text wrapped or truncated inside the table.",
+    "method": "Read permit_set.pdf page 57."
+   },
+   "source": "sheet A-601",
+   "proposed_fix": "Wrap/clip the Doorway column in the door-schedule emitter.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "A-601:doorway-overflow"
+  },
+  {
+   "id": "O3-006",
+   "area": "O3",
+   "title": "D-G-SERVICE clear width uses the Therma-Tru hinge deduction, not an MMI figure",
+   "elements": [
+    "D-G-SERVICE",
+    "DT-EXT-SWING32-G"
+   ],
+   "files": [
+    "houses/catlin/plan/door_types.py:100"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "sizing.basis clear_w: 'estimated: Therma-Tru deduction (2026 Arch 1.29-1.30)'; clear 29.31 in on a 32 in MMI leaf.",
+    "expected": "MMI publishes no clear opening; estimate is plausible but cites another manufacturer.",
+    "method": "p2.py sizing.basis for D-G-SERVICE."
+   },
+   "source": "MMI listing url in opening_products.py",
+   "proposed_fix": "Label the figure as an estimate in the type source; no geometry change.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "D-G-SERVICE:clear-width-basis"
+  },
+  {
+   "id": "O3-007",
+   "area": "O3",
+   "title": "Garage overhead door headroom is 16 in: zero margin against Clopay's 16 in standard-lift figure, no allowance for an opener",
+   "elements": [
+    "D-G-OVERHEAD",
+    "W-G-N"
+   ],
+   "files": [
+    "houses/catlin/plan/door_types.py:138",
+    "houses/catlin/plan/opening_products.py:97"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Plate 100 in above slab, door head at 84 in: 16 in to the plate line; the 14 in LVL header sits in that 16 in (tracks run back under the trusses, whose heels the CLAUDE.md note says the header already approaches). Side room: 48 in piers each side (braced_walls.py), backroom 20 ft.",
+    "expected": "Clopay (FAQ) quotes 12 in headroom for torsion springs but 16 in for the standard 2 in track / 15 in radius, plus more for an opener; side room 3 3/4 in per side and backroom door height + 18 in. Side room and backroom pass; headroom is at the limit.",
+    "method": "WebSearch of Clopay residential FAQ and install overview (sources conflict 12 vs 16 in; Classic Steel install PDF not found); geometry from model: plate 100 in minus RO 84 in. Re-run: scratchpad geometry-review/O3/p4.py."
+   },
+   "source": "https://www.clopaydoor.com/residential/buyingguide/residential-faq ; https://mig.clopaydoor.com/residential/buyingguide/install-overview-residential-contractor ; INST-0130006 (clopay.com)",
+   "proposed_fix": "Specify low-headroom track hardware and confirm the opener model with Clopay, or note the 16 in on the garage-opening detail; verify against the Classic Steel installation manual.",
+   "size_guess": "large",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "D-G-OVERHEAD:headroom"
+  },
+  {
+   "id": "O3-008",
+   "area": "O3",
+   "title": "MMI Z0364688R unit/RO sizes confirmed, but no sill height is published; the 1.5 in threshold top and 1 in leaf clearance rest on an unknown",
+   "elements": [
+    "D-G-SERVICE",
+    "DT-EXT-SWING32-G"
+   ],
+   "files": [
+    "houses/catlin/plan/opening_products.py:75",
+    "houses/catlin/plan/door_types.py:100"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Model threshold sections top at 1.5 in above RO bottom and leaf bottom 1 5/8 in; unit 33.5x81, RO 34x81.5 matches the listing found (sibling Z0364688L). A sibling listing P219656 gives 81.75 in unit height for an inswing 6-9/16 unit.",
+    "expected": "A cited sill height (or Home Depot/MMI spec) for the composite sill; the 1.5 in threshold feeds R311.3 (1.5 in exactly at limit) and ST-G-SERVICE rise (O3-001).",
+    "method": "WebSearch: HD Supply listings for MMI Z0364688L / P219656 / P219642: unit 33.5x81, RO 34x81.5, jamb 6-9/16, no sill height stated."
+   },
+   "source": "https://hdsupplysolutions.com/p/mmi-door-6-panel-32-x-80-rh-out-on-6-9-16-primed-composite-frame-p219385 (and sibling listings)",
+   "proposed_fix": "Obtain the MMI sill drawing; state the threshold height as an assumption on the type until then.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "D-G-SERVICE:sill-height-source"
+  },
+  {
+   "id": "O3-009",
+   "area": "O3",
+   "title": "Therma-Tru French pair sizes (62 9/16 x 82 unit) match Therma-Tru's sizing booklet, but 5/0 French composite-frame/ZAI data rests on a 5/0 single-table row",
+   "elements": [
+    "DT-EXT-FRENCH60",
+    "DT-EXT-FRENCH60-CATALOG"
+   ],
+   "files": [
+    "houses/catlin/plan/door_types.py:73"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Model unit 62.5625 x 82, RO 63.3125 x 82.875 (82.5 published + 3/8 in pan). Search found 62 9/16 x 82 for a 5/0 x 6/8 inswing unit in a reproduction of the Therma-Tru sizing booklet; French-astragal rows and the Endura ZAI public-access sill (which Therma-Tru says subtracts 13/16 in from inswing height) were unreadable.",
+    "expected": "French astragal RO width/height for the Smooth-Star composite frame with ZAI sill from the current Therma-Tru Unit & RO Sizing Booklet.",
+    "method": "WebSearch (bc.com Therma-Tru RO sizing booklet and 2020 architectural details); no direct PDF read."
+   },
+   "source": "https://www.bc.com/resource/2020-therma-tru-rough-opening-sizing-booklet",
+   "proposed_fix": "Read the 2026 sizing booklet row for 5/0 French inswing / ZAI and record the page in _FRENCH_DIMENSIONS.source_drawing.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "DT-EXT-FRENCH60:ro-source"
+  },
+  {
+   "id": "O3-010",
+   "area": "O3",
+   "title": "A-514 garage-opening detail prints '26 ga PVDF' corrugated cladding and an RO dimension without the door height above slab; A-513 door RO detail has no threshold height",
+   "elements": [
+    "TR-CATLIN-GARAGE-OPENING",
+    "D-G-OVERHEAD",
+    "D-M-ENTRY"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-514",
+     "A-513",
+     "A-509"
+    ],
+    "pages": [
+     46,
+     45,
+     41
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "A-514 note: 'Cladding: 7/8\" corrugated 26 ga PVDF' (house is 24 ga PVDF since 2026-09-14); K7 says 2-ply 14\" LVL while houses/catlin/CLAUDE.md says 3-ply. A-513 (door RO 82.88\") and A-509 (north entry threshold section) dimension RO height and layers only: no threshold height, sill-to-landing step, or interior floor step.",
+    "expected": "24 ga PVDF; consistent header ply count; threshold height above landing and finished floor printed on the door/threshold details.",
+    "method": "Read permit_set.pdf pages 41, 45, 46."
+   },
+   "source": "sheets A-509, A-513, A-514; CLAUDE.md garage plates bullet",
+   "proposed_fix": "Correct the detail note text (assembly note source) and add a threshold-height dimension to the door detail views.",
+   "size_guess": "small",
+   "seam_with": [
+    "O5"
+   ],
+   "dedupe_key": "A-514:cladding-gauge-note"
+  },
+  {
+   "id": "O3-011",
+   "area": "O3",
+   "title": "A-204 west elevation clips datum labels at the title block; door elevations carry no door head or sill-to-grade dimensions",
+   "elements": [
+    "A-204",
+    "A-201",
+    "A-202"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-204",
+     "A-201",
+     "A-202"
+    ],
+    "pages": [
+     31,
+     28,
+     29
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "A-204 datum labels 'ATTIC T.O. PLATE / RIDGE', 'SECOND T.O. PLATE EL. 20', 'BASEMENT FLOOR EL. -9'-1' are cut off by the title block. A-201/A-202 show the garage door (bottom at grade -2'-10\") and the French pairs correctly placed but no head heights (6'-10 7/8\" over finished floor) or step-to-grade dimensions. A-512/A-515 also show overprinted title text under the detail.",
+    "expected": "Complete datum labels; door head and sill dimensions on elevations or schedule.",
+    "method": "Read permit_set.pdf pages 28-31, 44-47."
+   },
+   "source": "sheets A-201..A-204, A-512, A-515",
+   "proposed_fix": "Right-align or wrap datum labels inside the sheet; drop the duplicated title text in the detail drawings.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "A-204:label-clip"
+  }
+ ]
+}

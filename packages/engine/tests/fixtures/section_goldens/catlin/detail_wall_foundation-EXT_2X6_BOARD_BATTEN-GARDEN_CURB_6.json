@@ -1772,7 +1772,7 @@
         0.25,
         -101.89887357830274
       ],
-      "text": "sheathing 0.5\"",
+      "text": "sheathing 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1797,7 +1797,7 @@
         3.25,
         -107.22665135608052
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1822,7 +1822,7 @@
         6.25,
         -112.5544291338583
       ],
-      "text": "gwb-a 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1847,7 +1847,7 @@
         -11.8725,
         -69.93220691163604
       ],
-      "text": "brick 3.62\"",
+      "text": "brick 3 5/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3264,7 +3264,7 @@
           "kind": "point",
           "xy": [
             0.4999999999999996,
-            0.5625000000000018
+            -15.437499999999998
           ],
           "name": ""
         },
@@ -3272,23 +3272,23 @@
           "kind": "point",
           "xy": [
             5.999999999999999,
-            0.5625000000000018
+            -15.437499999999998
           ],
           "name": ""
         }
       ],
       "p0": [
         0.4999999999999996,
-        0.5625000000000018
+        -15.437499999999998
       ],
       "p1": [
         5.999999999999999,
-        0.5625000000000018
+        -15.437499999999998
       ],
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "5.5\" stud",
+      "text": "5 1/2\" stud",
       "text_along": 0.0,
       "uid": null
     },
@@ -3325,7 +3325,7 @@
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "6\" XPS (3 layers)",
+      "text": "6\" EPS/XPS (3 layers)",
       "text_along": 0.0,
       "uid": null
     },
@@ -3907,7 +3907,7 @@
         2.85,
         1.3980000000000001
       ],
-      "content": "gwb  0.5\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3979,7 +3979,7 @@
         2.85,
         1.228
       ],
-      "content": "struct-1-plywood  0.5\"",
+      "content": "struct-1-plywood  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4051,7 +4051,7 @@
         2.85,
         1.058
       ],
-      "content": "air-barrier  0.5\"",
+      "content": "air-barrier  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4124,7 +4124,7 @@
         2.85,
         0.8880000000000001
       ],
-      "content": "board-batten-24  0.75\"",
+      "content": "board-batten-24  3/4\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4354,22 +4354,16 @@
   "notes": [
     "NOTES:",
     "• Framed wall: 2x6 at 16\" o.c., R-19 bays, 4\" continuous exterior.",
-    "• Basement wall: 8\" pour, #5 at 41\" o.c., aligned on the concrete face.",
-    "• Waterproofed per Minn. R. 1309.0406, not dampproofed: 60 mil self-adhered asphalt, footing to grade.",
-    "• Basement CI: 4\" XPS in two layers, seams staggered, outer layer taped.",
-    "• Exposed XPS band: 1/8\" acrylic over mesh, 276.3 SF, grade-6\" to wall top.",
-    "• Bearing seat: pour tops at -13 7/16\", then gasket, mudsill and 11 7/8\" rim.",
-    "• Sill: one shared 2x6 PT mudsill, 370.0 LF, on 1/16\" compressed EPDM.",
-    "• Slab: 3-1/2\" at 3,500 psi on 3\" XPS, 10 mil poly, 4\" gravel. Drain: 4\" pipe.",
+    "• Pour and steel per the S-100 schedule.",
+    "• 60 mil waterproofing, footing to grade (Minn. R. 1309.0406).",
     "",
     "KEYED NOTES:",
-    "K1  Bituthene 3000 or equal on concrete and sheathing. 2\" laps; 2-ply corners; insulation over it; backfill in 30 days.",
+    "K1  Bituthene 3000 or equal, concrete to sheathing; 2\" laps, 2-ply corners; backfill in 30 days.",
     "K2  Z-flashing with drip at the girt band base, set to the 2\" cavity.",
     "K3  2\"x2\" perforated aluminium U on the Z; base trim 1\" up, lapping it on EPDM.",
     "K4  L-flashing from sheathing base onto the foam; seal its outer end.",
     "K5  Mudsill anchors per IRC R403.1.6. Plate joint peel-and-stick on the envelope.",
-    "K6  Slab perimeter: 1\" XPS thermal break with 1/2\" polyurethane sealant.",
-    "K7  Veneer: 2\" EPS on the backup wall, 4\" clear air, weeps at the beam. Two-piece adjustable anchors through the full 6\"."
+    "K7  Veneer: 2\" EPS, 4\" air, weeps at the beam; two-piece anchors through 6\"."
   ],
   "frame": {
     "paper": [

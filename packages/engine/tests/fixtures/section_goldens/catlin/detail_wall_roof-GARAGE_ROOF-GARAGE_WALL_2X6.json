@@ -1674,7 +1674,7 @@
         353.56249999999994,
         85.36666666666666
       ],
-      "text": "gwb-int 0.625\"",
+      "text": "gwb 5/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1699,7 +1699,7 @@
         356.625,
         81.57499999999999
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1724,7 +1724,7 @@
         359.68750000000006,
         77.78333333333332
       ],
-      "text": "cdx 0.625\"",
+      "text": "cdx 5/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1749,7 +1749,7 @@
         360.43750000000006,
         73.99166666666665
       ],
-      "text": "cladding 0.875\"",
+      "text": "cladding 7/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1824,7 +1824,7 @@
         350.1811023622047,
         98.58589960605264
       ],
-      "text": "deck 0.594\"",
+      "text": "deck 19/32\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1849,7 +1849,7 @@
         350.1811023622047,
         92.33546587926514
       ],
-      "text": "truss 11.9\"",
+      "text": "truss 11 7/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1874,7 +1874,7 @@
         350.1811023622047,
         91.291820971201
       ],
-      "text": "truss fill 14.5\"",
+      "text": "truss fill 14 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2104,7 +2104,7 @@
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "5.5\" stud",
+      "text": "5 1/2\" stud",
       "text_along": 0.0,
       "uid": null
     },
@@ -2324,7 +2324,7 @@
         0.7,
         1.228
       ],
-      "content": "gwb  0.625\"",
+      "content": "gwb  5/8\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2396,7 +2396,7 @@
         0.7,
         1.058
       ],
-      "content": "spf  5.5\"",
+      "content": "spf  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2542,7 +2542,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "cdx-plywood  0.625\"",
+      "content": "cdx-plywood  5/8\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2615,7 +2615,7 @@
         2.85,
         1.3980000000000001
       ],
-      "content": "corrugated-panel-24  0.875\"",
+      "content": "corrugated-panel-24  7/8\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2687,7 +2687,7 @@
         2.85,
         1.228
       ],
-      "content": "blown-fiberglass  14.5\"",
+      "content": "blown-fiberglass  14 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2759,7 +2759,7 @@
         2.85,
         1.058
       ],
-      "content": "struct-1-plywood  0.594\"",
+      "content": "struct-1-plywood  19/32\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2918,7 +2918,7 @@
   "notes": [
     "NOTES:",
     "• Roof: standard-heel trusses at 24\" o.c., 4:12, 16\" overhang on the top chord tails.",
-    "• Deck: 3/4\" Structural 1 plywood. Self-adhered membrane, full field. Nail-strip standing seam.",
+    "• Deck: 19/32\" Structural 1 plywood (40/20). Self-adhered membrane, full field. Nail-strip standing seam.",
     "• Attic: vented, unconditioned garage. Blown fill level on the ceiling, tapering over the plate.",
     "• Wall: 2x6, sheathing with integral WRB, corrugated metal panel.",
     "",

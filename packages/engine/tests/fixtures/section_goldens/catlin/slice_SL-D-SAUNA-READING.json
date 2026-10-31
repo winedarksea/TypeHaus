@@ -2836,7 +2836,7 @@
         210.375,
         -4.060000000000001
       ],
-      "text": "shiplap-liner 0.75\" (NTS)",
+      "text": "shiplap-liner 3/4\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2861,7 +2861,7 @@
         211.0,
         -9.540000000000003
       ],
-      "text": "liner-furring 0.5\" (NTS)",
+      "text": "liner-furring 1/2\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2911,7 +2911,7 @@
         216.0,
         -15.02
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2936,7 +2936,7 @@
         219.0,
         -17.759999999999998
       ],
-      "text": "gwb-b 0.5\" (NTS)",
+      "text": "gwb 1/2\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2961,7 +2961,7 @@
         116.625,
         -21.5575
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3011,7 +3011,7 @@
         121.50000000000001,
         -26.757500000000004
       ],
-      "text": "liner-furring 0.5\" (NTS)",
+      "text": "liner-furring 1/2\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3036,7 +3036,7 @@
         122.125,
         -29.357500000000005
       ],
-      "text": "shiplap-liner 0.75\" (NTS)",
+      "text": "shiplap-liner 3/4\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3061,7 +3061,7 @@
         212.5,
         3.879999999999999
       ],
-      "text": "gwb-a 0.5\" (NTS)",
+      "text": "gwb 1/2\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3086,7 +3086,7 @@
         213.0,
         1.279999999999999
       ],
-      "text": "resilient-channel 0.5\" (NTS)",
+      "text": "resilient-channel 1/2\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3111,7 +3111,7 @@
         216.0,
         -1.3200000000000012
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3136,7 +3136,7 @@
         219.0,
         -6.800000000000001
       ],
-      "text": "gwb-b 0.5\" (NTS)",
+      "text": "gwb-ar 1/2\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

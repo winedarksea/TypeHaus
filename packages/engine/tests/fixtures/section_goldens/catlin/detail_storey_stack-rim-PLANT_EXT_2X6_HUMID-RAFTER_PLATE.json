@@ -2772,7 +2772,7 @@
         -6.625000000000001,
         237.4972222222222
       ],
-      "text": "cladding 1.25\"",
+      "text": "cladding 1 1/4\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2797,7 +2797,7 @@
         -5.25,
         234.8333333333333
       ],
-      "text": "outer-girt 1.5\"",
+      "text": "outer-girt 1 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2822,7 +2822,7 @@
         -4.25,
         232.16944444444437
       ],
-      "text": "vent-gap 0.5\"",
+      "text": "vent-gap 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2872,7 +2872,7 @@
         0.25,
         226.84166666666653
       ],
-      "text": "sheathing 0.5\"",
+      "text": "sheathing 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2897,7 +2897,7 @@
         3.25,
         224.1777777777776
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2922,7 +2922,7 @@
         6.25,
         221.5138888888887
       ],
-      "text": "gwb-plant 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2972,7 +2972,7 @@
         6.915,
         216.18611111111085
       ],
-      "text": "liner-furring 0.75\"",
+      "text": "liner-furring 3/4\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2997,7 +2997,7 @@
         7.54,
         213.52222222222193
       ],
-      "text": "pvc-panel 0.5\"",
+      "text": "pvc-panel 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3022,7 +3022,7 @@
         3.25,
         240.16111111111113
       ],
-      "text": "plate 5.5\"",
+      "text": "plate 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3097,7 +3097,7 @@
         10.687511811023622,
         260.675672245922
       ],
-      "text": "sheathing 0.594\"",
+      "text": "sheathing 19/32\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3147,7 +3147,7 @@
         10.687511811023622,
         254.40625590551184
       ],
-      "text": "rafter 11.9\"",
+      "text": "rafter 11 7/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3172,7 +3172,7 @@
         10.687511811023622,
         251.90625590551184
       ],
-      "text": "rafter fill (fiberglass-r30c) 6.88\"",
+      "text": "rafter fill (fiberglass-r30c) 6 7/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3315,7 +3315,7 @@
           "kind": "point",
           "xy": [
             0.4999999999999996,
-            242.75
+            226.75
           ],
           "name": ""
         },
@@ -3323,23 +3323,23 @@
           "kind": "point",
           "xy": [
             5.999999999999999,
-            242.75
+            226.75
           ],
           "name": ""
         }
       ],
       "p0": [
         0.4999999999999996,
-        242.75
+        226.75
       ],
       "p1": [
         5.999999999999999,
-        242.75
+        226.75
       ],
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "5.5\" stud",
+      "text": "5 1/2\" stud",
       "text_along": 0.0,
       "uid": null
     },
@@ -3487,7 +3487,7 @@
         0.7,
         1.3980000000000001
       ],
-      "content": "pvc-panel  0.5\"",
+      "content": "pvc-panel  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3559,7 +3559,7 @@
         0.7,
         1.228
       ],
-      "content": "spf  0.75\"",
+      "content": "spf  3/4\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3704,7 +3704,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "gwb  0.5\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3776,7 +3776,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "mineral-wool  5.5\"",
+      "content": "mineral-wool  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3848,7 +3848,7 @@
         2.85,
         1.3980000000000001
       ],
-      "content": "struct-1-plywood  0.5\"",
+      "content": "struct-1-plywood  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3993,7 +3993,7 @@
         2.85,
         1.058
       ],
-      "content": "air-barrier  0.5\"",
+      "content": "air-barrier  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4065,7 +4065,7 @@
         2.85,
         0.8880000000000001
       ],
-      "content": "kdat  1.5\"",
+      "content": "kdat  1 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4138,7 +4138,7 @@
         2.85,
         0.7180000000000002
       ],
-      "content": "pbr-panel-24  1.25\"",
+      "content": "pbr-panel-24  1 1/4\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

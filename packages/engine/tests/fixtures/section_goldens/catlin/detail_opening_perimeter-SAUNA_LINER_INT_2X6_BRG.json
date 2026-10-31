@@ -1300,7 +1300,7 @@
         210.375,
         -12.092486876640411
       ],
-      "text": "shiplap-liner 0.75\"",
+      "text": "shiplap-liner 3/4\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1325,7 +1325,7 @@
         211.0,
         -15.884153543307077
       ],
-      "text": "liner-furring 0.5\"",
+      "text": "liner-furring 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1375,7 +1375,7 @@
         216.0,
         -23.46748687664041
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1400,7 +1400,7 @@
         219.0,
         -27.25915354330708
       ],
-      "text": "gwb-b 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2055,7 +2055,7 @@
         0.7,
         1.3980000000000001
       ],
-      "content": "catlin-sauna-shiplap  0.75\"",
+      "content": "catlin-sauna-shiplap  3/4\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2127,7 +2127,7 @@
         0.7,
         1.228
       ],
-      "content": "struct-1-plywood  0.5\"",
+      "content": "struct-1-plywood  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2271,7 +2271,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "spf  5.5\"",
+      "content": "spf  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2343,7 +2343,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "mineral-wool  5.5\"",
+      "content": "mineral-wool  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2415,7 +2415,7 @@
         2.85,
         1.3980000000000001
       ],
-      "content": "gwb  0.5\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2503,7 +2503,7 @@
     "• Sauna liner: 2\" foil-faced polyiso, taped seams, over the wall and the ceiling.",
     "• Liner furring: 1/2\" plywood strips. Fasten to framing per IRC Table R703.15.2.",
     "• Liner finish: 5/4 shiplap, 5-1/2\" face over 5\". Basswood, poplar or aspen.",
-    "• Wall liner is banded to 90 inches AFF above the finished ceiling at 82 13/16 inches; keep the ceiling/wall vapor-control junction continuous.",
+    "• Wall liner is banded to 90 inches AFF above the finished ceiling at 83 1/16 inches; keep the ceiling/wall vapor-control junction continuous.",
     "• Sauna floor: 4\" slab on R-10 XPS at 25 psi on 10 mil polyethylene.",
     "• Slab perimeter isolation joint: 1\" XPS with 1/2\" polyurethane sealant.",
     "• Base: 6\" fiber cement replaces shiplap and furring, membrane lapped up it.",

@@ -1,0 +1,102 @@
+{
+ "area": "S1",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Six Stair elements resolved (ST-B2M u_split, ST-M2S u_level, ST-S2A right_angle_winder, ST-G-SERVICE, ST-SG-PORCH, ST-BW-ENTRY). Measured every riser/tread/landing/winder z from the resolved model, end-floor stacks, winder walkline, and the two R311.7.1 FAILs; read S-501.1 and A-301. The two FAILs are real geometry (guard posts drawn inside the 36in flight), not a check bug. Everything else in the stair area measured clean.",
+ "verified_clean": [
+  "ST-B2M: base -109.4375 (sealed slab, no finish) to arrival 0.94685 (0.75 subfloor + 5mm LVP); 15 equal risers 7.359in; treads 1in + 0.5in carpet; last riser top -0.5532 + 1.5 = 0.94685",
+  "ST-M2S: 0.94685 to 121.5 (120 + 1.5 oak on 0.75 subfloor); 16 risers 7.5346in uniform; landing top 61.2234 = 8 risers",
+  "ST-S2A: 121.5 to 241.5 both oak stacks (0.75 subfloor + 0.75 oak); 16 risers 7.500in; top riser z1 240.5 + 1in tread = 241.5",
+  "ST-G-SERVICE / ST-SG-PORCH: tread thickness 0.94in carried in rise; uniform 6.8in / 6.788in; arrival 0.0 / 0.94",
+  "ST-BW-ENTRY: 5 x 6.6in, 1.5in cast-tier treads, top 0.0",
+  "Riser variation 0.000in everywhere (R311.7.5.1 3/8in); max riser 7.5346in < 7.75; tread 10in + 1in nosing (R311.7.5.2/.3)",
+  "Winder walkline 12.594/12.469/12.595in, narrow ends 6.27/6.27/6.52in, spread 0.126in: matches IRC R311.7.5.2.1 (10in walkline, 6in min; rectangular-vs-winder spread exempt)",
+  "ST-S2A LSL stringers 1.75x11.875 at 18in, throat 5.875in vs Weyerhaeuser footnote 5.75in; 10ft run < 11'-8in",
+  "Headroom: ST-B2M 7.05ft, ST-M2S 8.30ft, ST-S2A 7.05ft (>= 6'-8in); landings 41.5in+ deep (R311.7.6)",
+  "A-301 datums: basement floor -9'-1in, main 0, second 10'-0in, attic 20'-0in match model storeys",
+  "S-501.1 prints W1-W3 12.594/12.469/12.595 and narrow 6.266/6.270/6.518, equal to the check output"
+ ],
+ "findings": [
+  {
+   "id": "S1-001", "area": "S1",
+   "title": "RL-A-STAIR fascia posts stand 2.9in inside ST-S2A's 36in flight: R311.7.1 FAILs are real, not a check bug",
+   "elements": ["ST-S2A", "RL-A-STAIR", "RL-A-STAIR-POST2", "RL-A-STAIR-POST3", "RL-A-HANDRAIL"],
+   "files": ["houses/catlin/plan/storeys/attic.py:888", "packages/engine/src/typehaus/checks/code/mn_residential/stair_width.py:90"],
+   "kind": "interface-fit", "severity": "wrong-build",
+   "on_permit_set": {"printed": true, "sheets": ["A-104", "A-510"], "pages": [26, 42]},
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "RL-A-STAIR posts (3x3, z 240..282) occupy y 69.64..72.64 at x 351-354, 302.9-305.9, 254.9-257.9; flight edge is y 69.75, so 2.89in intrudes. Tread tops under them are ~166/~200/234in, so post z lies 40-80in above the tread (inside the R311.7.1 36in zone). Clear between posts = 36 - 2.89 = 33.11in; past handrail = 36 - 2.89 - 3.45 (RL-A-HANDRAIL projection) = 29.66in. The check's own arithmetic reproduces both.",
+    "expected": ">= 36in clear above handrail height and >= 31.5in past the one handrail",
+    "method": "pickled resolved model; solids with host_ref RL-A-STAIR/RL-A-FLIGHT-GUARD, outline min/max in inches; stair_width.py _flight_projections logic by hand. scratchpad geometry-review/S1/p5.py"
+   },
+   "source": "IRC R311.7.1 (MN 2020 residential); attic.py comment says posts 'stand 3.036in into the well ... (code.R311_7_1, TODO)'; houses/catlin/CLAUDE.md records the FAILs as open",
+   "proposed_fix": "Posts must not stand in the flight: RL-A-STAIR is fascia-mounted on the well face (offset 0), so its posts hang into the well over the flight. Either top-mount the posts on the 3.5in trimmer pack/study side of y=69.625 (S3 owns the product/mount), or set the post line south so its inboard face is on y<=69.75. RL-A-FLIGHT-GUARD already stands outboard (y 66.73..69.73) and is fine. The check logic is correct (only posts reaching tread+34..+80 count).",
+   "size_guess": "large", "seam_with": ["S3"], "dedupe_key": "ST-S2A:guard-post-width"
+  },
+  {
+   "id": "S1-002", "area": "S1",
+   "title": "RL-A-STAIR POST3 sits on the stairhead landing edge, narrowing the 36in arrival width",
+   "elements": ["ST-S2A", "RL-A-STAIR-POST3", "FO-A-STAIR"],
+   "files": ["houses/catlin/plan/storeys/attic.py:888"],
+   "kind": "interface-fit", "severity": "wrong-build",
+   "on_permit_set": {"printed": true, "sheets": ["A-104"], "pages": [26]},
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "POST3 x 254.88..257.88, y 69.64..72.64, z 240..282: straddles the well west edge (256.375) and the top riser (256.75), taking 2.9in of the 36in landing/top step at the south side",
+    "expected": "R311.7.6 landing as wide as the stairway (36in) at the head",
+    "method": "same probe as S1-001; compare to FO-A-STAIR west edge 256.375in"
+   },
+   "source": "IRC R311.7.6", "proposed_fix": "Resolved by the same post relocation as S1-001; check stair_head_landing is blind to guard posts (prints 36x36.00).",
+   "size_guess": "small", "seam_with": ["S3"], "dedupe_key": "ST-S2A:stairhead-post"
+  },
+  {
+   "id": "S1-003", "area": "S1",
+   "title": "ST-M2S stair width is UNKNOWN: RL-S-STAIR/RL-S-STAIRHEAD fascia guards state no fascia_face_offset, so any post intrusion is unmeasured",
+   "elements": ["ST-M2S", "RL-S-STAIR", "RL-S-STAIRHEAD"],
+   "files": ["packages/engine/src/typehaus/checks/code/mn_residential/stair_width.py:117"],
+   "kind": "interface-fit", "severity": "model-only",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "haus check: UNKNOWN code.R311_7_1_stair_width ST-M2S (posts drawn on path). Flight is 42.4in wide with a 1.55in-clear wall rail; same fascia-into-well pattern as S1-001 could hide an intrusion",
+    "expected": "authored offset so the width is graded",
+    "method": ".venv/bin/haus check houses/catlin | grep R311_7_1_stair_width"
+   },
+   "source": "check text", "proposed_fix": "Author fascia_face_offset on both guards and re-run; expect pass given 42in flight unless posts land in it.",
+   "size_guess": "small", "seam_with": ["S3"], "dedupe_key": "ST-M2S:guard-unknown"
+  },
+  {
+   "id": "S1-004", "area": "S1",
+   "title": "Tread/riser plywood and subfloor modelled at 3/4in nominal; APA 23/32 Performance Category is 0.719in",
+   "elements": ["ST-B2M", "FS-M-STAIR"],
+   "files": ["houses/catlin/plan/storeys/attic.py:848", "houses/catlin/plan/storeys/main.py:2026"],
+   "kind": "commodity-size", "severity": "doc",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "riser_thickness inch(0.75) and subfloor 0.75 (comment says 23/32 PC); stair end elevations 0.94685 / 241.5 built on 0.75",
+    "expected": "23/32 = 0.71875in; 0.031in per layer, inside 3/8in riser tolerance",
+    "method": "read plan source; house-wide convention, not stair specific"
+   },
+   "source": "APA panel thickness labeling (cited in notes/stair_wall_finish.md)", "proposed_fix": "None needed; note that field-measured subfloor governs. House-wide choice, likely reject.",
+   "size_guess": "large", "seam_with": [], "dedupe_key": "subfloor:nominal-0.75"
+  },
+  {
+   "id": "S1-005", "area": "S1",
+   "title": "ST-G-SERVICE 11in tread equals two 5.5in Trex boards with no board gap",
+   "elements": ["ST-G-SERVICE"],
+   "files": ["houses/catlin/plan/storeys/garage.py:779"],
+   "kind": "commodity-size", "severity": "model-only",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "tread_depth 11in, going 11in, nosing 0, tread_thickness from TREX_ENHANCE_BASICS_DECK_LAYER (0.94in)",
+    "expected": "two 5.5in boards plus ~3/16in gap = ~11.19in tread, or a 10.8in going; rule R311.7.5.2 still passes either way (>= 10in, no nosing needed at >= 11in)",
+    "method": "read garage.py; Trex width not re-verified against the spec sheet (no web fetch done)"
+   },
+   "source": "Trex Enhance Basics 5.5in nominal board width (unverified here)", "proposed_fix": "Confirm board width/gap; if two boards, set tread 11.1875in or accept.",
+   "size_guess": "small", "seam_with": [], "dedupe_key": "ST-G-SERVICE:trex-tread-gap"
+  }
+ ]
+}

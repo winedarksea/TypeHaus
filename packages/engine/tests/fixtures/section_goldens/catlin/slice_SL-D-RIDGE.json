@@ -1846,7 +1846,7 @@
         213.0,
         344.005
       ],
-      "text": "gwb-a 0.5\"",
+      "text": "gwb-mr 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1871,7 +1871,7 @@
         216.0,
         341.405
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1896,7 +1896,7 @@
         219.0,
         338.80499999999995
       ],
-      "text": "gwb-b 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

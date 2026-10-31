@@ -229,8 +229,33 @@ the future.
 - [ ] Before fabricating RM-M-STUDY: complete the 60-minute seating mock-up, verify occupied cushion height, lumbar fit and bracket/blocking connections, and record any dimensional changes in the bench spec.
 - Plant room needs review on bottom of wall detail (switch to a flash cove capable vinyl?) and also a review on if plumbing or drainage is present.
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
-- The bottoms of 3d modeled windows are a bit glitchy in 3d movement.
-- Do passes to confirm geometry and dimensions of select products all align together correctly for real world build dimensions. Major items to check: stairs, doors and windows (and their trim/flashing), framing, cabinets, trusses.
+- Window bottoms in 3D: the cause (stool top coplanar with a frame drawn 5.44" deep) is fixed in engine and viewer (geometry review O4-001); confirm by eye in the viewer, then delete this line.
+- Geometry & dimensional-accuracy review 2026-10-31 done: [report](geometry-review/REPORT.md) (244 findings; ~84 fixed). Open escalations, ranked (detail in `geometry-review/adjudicated/`):
+  - [ ] ST-S2A guard posts in the flight and head landing; the 2 baseline FAILs block `haus print`. Rec: surface-mount RL-A-STAIR on the deck (C1-E1).
+  - [ ] S-602/S-601/S-101/S-100/S-001 schedules overprint; needs continuation sheets (C7-E1).
+  - [ ] Plan dimension convention: state face-of-stud, print to 1/8", add locating strings on S-100/S-101 (C7-E2).
+  - [ ] Authored details A-501..A-511, the A-512 head/sill and A-507 carry no dimensions or enlarged parts (C7-E4).
+  - [ ] Transitions first-match: the plant-room vapour-barrier rim detail never derives; interior rims inherit envelope data (C5-E10).
+  - [ ] Headers into top plates: D-G-SERVICE 2", D-B-PATIO 4 5/8" on a bearing wall (C3-E1/E2).
+  - [ ] Service panels: top breaker ~90" AFF vs NEC 240.24(A) 79"; ungraded (C6-E8).
+  - [ ] Garage sill 3 5/8" of 5 1/2" on the ICF core (C3-E8).
+  - [ ] RF-HOUSE birdsmouth notches the TJI 230 flange (C3-E5).
+  - [ ] HU28-2Z on a single 2x8 -> LUS28Z (C3-E11).
+  - [ ] Frost-wing credit by distance only, FT-B-S1..S4 (C3-E10).
+  - [ ] Canopy truss bearing 2 3/4", heel lift, north-entry seat-beam hangers and shim pack (C3-E6/E7/E12-E14).
+  - [ ] Floor-to-floor stack 120" vs 120.625": walls on the subfloor, studs 102 7/8" (C3-E3).
+  - [ ] BBD75 band panel top unfastened; lap check reads the trim leg (C4 E2-001).
+  - [ ] B&B window heads use PBR 58114XX; BBD75 publishes Head Trim 58720XX (O5-005).
+  - [ ] 3" stacks in 2x4 walls W-M-STOS / W-S-DC2; bore checks ignore insulation and exterior bearing (C6-E3..E6).
+  - [ ] ERV starts off the Broan collars; 39 duct legs shorter than their elbows (C6-E1/E2).
+  - [ ] Trap arm measured in plan; vents unconnected in 3D (C6-E7).
+  - [ ] Buck-lined window reveal finish (C2-E1); Drutex sill rail vs 2.953" stools (C2-E10).
+  - [ ] ST-G-SERVICE top riser vs the MMI threshold (C1-E2).
+  - [ ] Kitchen: fridge rear clearance, north-run build-up, stone overhang (C5-E1..E3).
+  - [ ] Carpet stack >= 1.0" vs 0.75"; no transition product at 58 doorways (C5-E5/E6).
+  - [ ] Swanstone 96" vs 106"; J-bead per board thickness; sauna base behind benches; dropped-ceiling clear height (C5-E4, E7..E9).
+  - [ ] Doors/trim: MDF casing 11/16", bypass ROs, jamb depths, mudroom base, Murphy RO, exterior frame anchor (C2-E2..E8).
+  - [ ] Roof: Metal Sales vented ridge part, rectangular leaders, ridge end caps, seam register (C4).
 - Generally our goal is to have every piece of the house linked to a named product (or a standard or commodity size, like a 2x4) so we can confirm every piece fits together correctly.
 - Kitchen sink fabrication hold: dry-fit KHU100-32 / Bolden KPF-1610SFS / Badger 5 / Dearborn P9703WBG in the 36-inch SEKTION. Verify delivered Badger revision, clip/washer and rail access, full hose stroke, cleanout clearance, vent fitting/bore envelopes and the inward tilt-turn window sweep (full turn likely obstructed). See houses/catlin/notes/kitchen_sink_installation.md; product/connection specification is complete, physical fit is not released.
 - Can we widen D-M-BATH2 to 36"? Not sure if/how the casing would work as that puts it into the shower area (the casing).
@@ -242,7 +267,7 @@ the future.
 - [ ] Before ordering LVP/pouring the cap: confirm Quincy Oak sample and local delivered quote, measure the installed plank and coating stack, and set the flush movement/edge joint from those samples.
 - See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
 - Workshop receptacles: RC1's 120/240 V circuit and RC2's 120 V quad are modeled, with their boxes, covers and raceway. Resolve the required tamper-resistant listings and the field wiring before installation; see [workshop receptacles](../houses/catlin/notes/workshop_receptacles.md).
-- Basement surface wiring open items ([note](../houses/catlin/notes/basement_surface_wiring.md#open-items)): the six PLAY-N sconce canopies must cover a 4" square surface box.
+- Basement surface wiring open items ([note](../houses/catlin/notes/basement_surface_wiring.md#open-items)): the six PLAY-N sconce canopies must cover a 4" square surface box — confirmed they cannot (WAC 4.5x1" backplate vs RACO 232 + cover; geometry review C6-E10), and the TV sits over two boxes (C6-E11).
 - D-B-PATIO: separate brick reveal, widened RO, 5-1/2 inch concrete seat, composite returns, one blind curb-skin recess and XMN5 sill extension are modeled. Sill/approach/pan intersections pass; crest heights come from the [engine-generated review](../houses/catlin/notes/french_door_catalog_installation.md#3-height-and-geometry-review). Complete concrete reinforcement/development, support root and cross-bearer bearing, field membrane bonds, installed pan/sweep/hinge sections, and assembled-unit label/warranty evidence. Standard rainproofing only; drainage/sump back up the revised concrete curb. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
 - D-S-DECK-E: catalog coordination replaces the schematic plate/wrapped trim with a digitized ZAI outline, composite returns and short AridDek boards. BE365 adapter F is documented; crest heights come from the [engine-generated review](../houses/catlin/notes/french_door_catalog_installation.md#3-height-and-geometry-review). Complete house-root connections and cross-bearer bearing, installed pan/sweep/hinge sections and the flexible flashing-end application; confirm assembly dimensions/label/warranty. Complete preferred/Tru-Defense prices remain unavailable publicly. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
 - Research most commonly failed residential code items and make sure checks or tests exist for those here.

@@ -1,0 +1,303 @@
+{
+ "area": "I1",
+ "model": "houses/catlin @247a13e9",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Inventoried ~45 kitchen placeables (SEKTION bases, uppers, highs, corners, peninsula, brackets), 11 appliances, sink/faucet/trap, 4 kitchen countertops + 3 stools; measured positions from the resolved model against room clear faces; web-checked IKEA leg, 24x24x30 base, 24x24x80 high, 36x15x30 wall, Kraus KHU100-32, LG LSIL6336FE, LDTS5552S, Panasonic NN-SN686S, Frigidaire FPRU19F8WF, Broan BWP1304SS, Badger 5 (known conflict). Sheets read: A-102 (p25 full set; too small to read kitchen dims), A-603 (p135), countertop shop-drawings.pdf pp1-8. No kitchen interior elevation exists in the sets (A-201..204 exterior only). NOT examined: IKEA 402.655.12 / 902.653.88 / carousel corner article dims individually; AXSTAD door sizes vs reveal (1/8); Rev-A-Shelf 5374-24FL; Severin/De'Longhi dims (cited); hung-base mixer cave detail K5.",
+ "verified_clean": [
+  "Cabinet module along north wall: E1 297.375-309.375, DW bay 309.375-333.375, sink base 333.375-369.375, E2 369.375-387.375, corner to 425.375 (K1 table matches model)",
+  "CT-M-KIT-N 90x25 spans exactly E1..E2; seam at x=387.375 meets NE corner west face; faucet hole at (352,423.49) in model; stone top 36.0, underside 34.819",
+  "Peninsula stack per K6: brackets 34.25-34.75 AFF under stone underside 34.819; cantilever 15 in to y=304.375; slab 84.5x40",
+  "Range 29.875 in the 30 in slot (357.375-387.375): 1/16 each side; cutout depth 25, LG 36 1/2 H / 29 5/16 D / cutout 30x36x25 confirmed",
+  "Dishwasher 23.75 in the 24 in bay (1/8 each side); LG 23 3/4 x 24 5/8 x 33 5/8 confirmed; opening under stone 34.8 AFF",
+  "Microwave 20.69 W x 12.25 H x 15.81 D matches Panasonic NN-SN686S; clear to hung frame (56 AFF) 7.75 in",
+  "Frigidaire 32 7/8 W x 27 D x 72 1/2 H hinge confirmed; uppers at 73.5 AFF = 1 in over hinge",
+  "SEKTION base 24x24x30 (23 5/8 + rail = 24) and high 24x24x80 dims match nominal envelope; fronts 3/4 in beyond",
+  "KHU100-32: 32x19, bowl 30x17x10, 36 in min cabinet confirmed; sink flange 5/8 in east / 1 7/8 west inside the 36 in base",
+  "Coffee machine to WE1 underside 2.75 in (accepted in DESIGN-LOG); kettle 6.7 in clear",
+  "Window stool WIN-M-KITCH top 44.57 AFF, 8.6 in above the counter (not flush; premise N/A), projects 0.75 in into room, 0.2 in clear of faucet base footprint",
+  "Titanium backsplash datum 36.9375 above wall base = 36 AFF + floor cap; hood bottom 66 AFF = 30 in over 36 in cooktop"
+ ],
+ "findings": [
+  {
+   "id": "I1-001",
+   "area": "I1",
+   "title": "North-run base frames sit at the SEKTION leg minimum with an unspecified 1.319 in gap under the stone",
+   "elements": [
+    "FURN-M-KIT-E1",
+    "FURN-M-KIT-SINKBASE",
+    "FURN-M-KIT-E2",
+    "CT-M-KIT-N",
+    "FURN-M-KIT-CORNER-NE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/placeables/sektion.py:35",
+    "houses/catlin/notes/ikea_sektion_ladder.md:19",
+    "houses/catlin/notes/kitchen_stock_cabinet_details.md:20",
+    "houses/catlin/notes/kitchen_stock_cabinet_details.md:222"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "Frame top = 3.5 (leg) + 30 = 33.5 AFF; stone underside 34.819 AFF (z0 of CT-M-KIT-N/NE/E in model). 1.319 in of unspecified build-up. K1 says 'no extra filler substrate under the quartz'; ladder note calls it 'approximately 1.319 substrate'; the only subtop in the takeoff is cabinet-peninsula-bar-subtop. IKEA leg 905.560.71 adjusts 3 1/2 to 5 1/8 in, so 3.5 is the minimum: no room to lower a leg on a high floor spot.",
+    "expected": "Same stack as the peninsula (K6): 4 in legs + 30 frame + 3/4 ply subtop + 1/16 setting = 34.8125 vs 34.819, and legs mid-range. Or legs at 4.82 (in range) but the 4 1/2 in FORBATTRA toe kick then shows a 0.32 in gap.",
+    "method": "Probe: countertops z0_m/z1_m in model.json (34.819/36.0 AFF); IKEA leg page https://www.ikea.com/us/en/p/sektion-leg-for-cabinet-90556071/ (fetched 2026-10-31); grep subtop prices.toml/takeoff.json"
+   },
+   "source": "IKEA US SEKTION leg 905.560.71 page; notes/kitchen_stock_cabinet_details.md K6",
+   "proposed_fix": "Spec the north run like the peninsula: legs 4 in, 3/4 in ply subtop under the stone (sink base: rails per cutout), add a priced subtop allowance; state it in K1 and the ladder note. Envelope heights stay 36.",
+   "size_guess": "small",
+   "seam_with": [
+    "M3"
+   ],
+   "dedupe_key": "I1:north-run-subtop-leg"
+  },
+  {
+   "id": "I1-002",
+   "area": "I1",
+   "title": "Frigidaire column pair stands 1/8 in off the rear wall (1 in required) and has zero/1/8 in end clearance (3/16 in required)",
+   "elements": [
+    "APPL-M-FRIDGE",
+    "APPL-M-FREEZER",
+    "FURN-M-KIT-PANTRYC"
+   ],
+   "files": [
+    "houses/catlin/plan/appliance_types.py:225",
+    "houses/catlin/plan/kitchen_casework.py:45"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-102"
+    ],
+    "pages": [
+     25
+    ]
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "Fridge x 219.375-246.375 vs west wall clear face x=219.25: rear 0.125 in. Freezer south end y=328.875 = PANTRYC north face 328.875 (0 gap, needs 3/16 each side); fridge north end 394.625 vs wall face 394.75 (0.125). Pair 65.75 in bay vs the 66 1/4 in recommended paired cutout.",
+    "expected": "Type's own source string: 'Clearances 3/16 in sides, 1 in top and rear'; recommended paired cutout 66 1/4 in.",
+    "method": "Probe p2.py footprints; clear_face segments from model.rooms RM-M-LIVING (p3.py)"
+   },
+   "source": "appliance_types.py _FRIGIDAIRE_SOURCE (Frigidaire spec rev 10/21); width 32 7/8 confirmed via retailer listings (townappliance, tascoappliance)",
+   "proposed_fix": "Pull both columns 7/8 in forward (fronts 3 7/8 in proud of the 24 in cabinets) or confirm the 1 in rear with Frigidaire for a twin-kit install; ask the maker whether TWINSPAIRKIT waives the end gaps. Owner-visible, so likely escalate.",
+   "size_guess": "large",
+   "seam_with": [
+    "O1"
+   ],
+   "dedupe_key": "I1:fridge-rear-clearance"
+  },
+  {
+   "id": "I1-003",
+   "area": "I1",
+   "title": "Stone overhangs the door/drawer fronts by only 1/4 in, not the documented 1 in",
+   "elements": [
+    "CT-M-KIT-N",
+    "CT-M-KIT-NE",
+    "CT-M-KIT-E",
+    "CT-M-KIT-PENINSULA"
+   ],
+   "files": [
+    "houses/catlin/plan/countertops.py:37",
+    "houses/catlin/plan/countertops.py:68",
+    "packages/engine/src/typehaus/library/placeables/sektion.py:59"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-102"
+    ],
+    "pages": [
+     25
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "CT-M-KIT-N front edge y=400.375; frame front 401.375; AXSTAD fronts are 3/4 in so door face y=400.625: stone is 0.25 in beyond the fronts. Peninsula north edge 344.375 vs frame 343.375 + 0.75 = 344.125 (0.25).",
+    "expected": "Comments say '1 in of oversail' / '1 in over the drawer fronts'; usual practice is 1 in or more past the door face, and a slide-in range/DW handles project beyond.",
+    "method": "Outline of model.countertops vs canvas_objects footprints; front thickness 3/4 per kitchen_front_types source"
+   },
+   "source": "countertops.py comments; kitchen_front_types.py source string (3/4 in fronts project beyond the frame)",
+   "proposed_fix": "Measure overhang from the front face: set overhang to 1.75 in (or restate as 1/4 in) and re-check aisle clearances (north aisle 58 in) and range slot. If 1/4 in is the owner's intent, fix the comments.",
+   "size_guess": "small",
+   "seam_with": [
+    "I2"
+   ],
+   "dedupe_key": "I1:counter-overhang-vs-fronts"
+  },
+  {
+   "id": "I1-004",
+   "area": "I1",
+   "title": "Sink opening sits 1.1 in behind the SEKTION sink-base frame front; top front rail/sink support interference unproven",
+   "elements": [
+    "FX-M-KITCH-SINK",
+    "FURN-M-KIT-SINKBASE"
+   ],
+   "files": [
+    "houses/catlin/notes/kitchen_sink_installation.md:55",
+    "houses/catlin/plan/kitchen_sink_types.py:36"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "Flange front y=402.49, bowl opening front 403.49; sink-base frame front 401.375, so flange is 1.1 in and the stone opening 2.1 in behind the frame front. A 30x17 bowl in a 24 in box leaves the front steel top rail under the flange/clips; IKEA reviews report the front-centre sink support is weak at 32 in sinks. Note says 'no cabinet side or rail cutting is specified'.",
+    "expected": "Rail width and clip fit confirmed from the IKEA sink-base drawing or a dry-fit; Kraus clip kit needs the rail clear or a support added.",
+    "method": "Probe sink fixture footprint 336-368 x 402.5-424.5; IKEA sink base listing s79454366 reviews (no rail dimension published)"
+   },
+   "source": "Not confirmed: IKEA publishes no rail width. KHU100-32 32x19, bowl 30x17x10, 36 in min cabinet confirmed (AJ Madison/Home Depot).",
+   "proposed_fix": "Add a dry-fit hold: confirm rail vs opening before drilling; plan a ply sink-support strip under the front stone web.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "I1:sink-rail-fit"
+  },
+  {
+   "id": "I1-005",
+   "area": "I1",
+   "title": "Model offsets: wall cabinets drawn 15 in deep (real 14 3/4); base backs 1/8 in off the wall while uppers/talls are flush; DW body 0.19 in into the wall face",
+   "elements": [
+    "FURN-M-KIT-WE1",
+    "FURN-M-KIT-WE5",
+    "FURN-M-KIT-E1",
+    "APPL-M-DW",
+    "FURN-M-KIT-PANTRY-S1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/placeables/sektion.py:49",
+    "houses/catlin/plan/kitchen_casework.py:141"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Wall frames y 410.5-425.5 (15 deep, back at 425.5 = wall face); base backs 425.375; high S1 x to 425.5; DW y 401.062-425.687 (wall face 425.5).",
+    "expected": "IKEA 36x15x30 wall: 14 3/8 without rail, 14 3/4 with; base/high 23 5/8 / 24 with rail.",
+    "method": "Probe p2.py; IKEA pages 90265449 (wall) and 20265438 (high 24x24x80) fetched 2026-10-31"
+   },
+   "source": "ikea.com/us SEKTION product pages",
+   "proposed_fix": "Set _WALL_DEPTH to 14.75 in and back the DW off 0.2 in; invisible on the set.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "I1:depth-offsets"
+  },
+  {
+   "id": "I1-006",
+   "area": "I1",
+   "title": "A-603 prints the sink fixture as 32 x 22 in; the KHU100-32 is 32 x 19",
+   "elements": [
+    "FX-M-KITCH-SINK"
+   ],
+   "files": [
+    "houses/catlin/plan/kitchen_sink_types.py:36"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-603"
+    ],
+    "pages": [
+     135
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "A-603 FIXTURES AND APPLIANCES: FX-M-KITCH-SINK nominal footprint 32\" x 22\" (envelope includes 3 in faucet zone).",
+    "expected": "32\" x 19\" exterior (Kraus spec); 22 in is a placement envelope.",
+    "method": "Read A-603 page 135 of permit_set_full.pdf; type footprint=(32,22)"
+   },
+   "source": "Kraus KHU100-32 spec (30x17x10 bowl, 32x19) via retailer listings; kitchen_sink_installation.md",
+   "proposed_fix": "Label the column as 'envelope', or print the product size.",
+   "size_guess": "small",
+   "seam_with": [
+    "I2"
+   ],
+   "dedupe_key": "I1:a603-sink-footprint"
+  },
+  {
+   "id": "I1-007",
+   "area": "I1",
+   "title": "Hood modelled as a 30x20x18 canopy; BWP1304SS is 29.5 W x 19.7 D x ~25.4 H before chimney extension",
+   "elements": [
+    "APPL-M-HOOD"
+   ],
+   "files": [
+    "houses/catlin/plan/appliance_types.py:327"
+   ],
+   "kind": "product-data",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-603"
+    ],
+    "pages": [
+     135
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Hood z 66-84 AFF (18 in tall, 20 deep, 30 wide); WN2 abuts its side.",
+    "expected": "Retail listings: 29.5 W, 19.69 D, 25.38 H (no manufacturer sheet found); chimney not modelled by design.",
+    "method": "WebSearch Broan BWP1304SS (coastappliances, thebrick, AJ Madison)"
+   },
+   "source": "retailer listings only",
+   "proposed_fix": "Retype height/width from Broan's spec; keep bottom at 66.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "I1:hood-size"
+  },
+  {
+   "id": "I1-008",
+   "area": "I1",
+   "title": "Product citations blank or stale: three AXSTAD articles unread; ladder note still says VOXTORP; slab size 120x55 vs note 57x120",
+   "elements": [
+    "PROD-IKEA-AXSTAD-DOOR-24-50",
+    "PROD-IKEA-AXSTAD-CORNER-PAIR-13-30",
+    "PROD-IKEA-AXSTAD-DRAWER-24-15",
+    "quartz-counter"
+   ],
+   "files": [
+    "houses/catlin/plan/products_ikea.py:127",
+    "houses/catlin/notes/ikea_sektion_ladder.md:57",
+    "houses/catlin/notes/kitchen_stock_cabinet_details.md:208"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "countertop pieces"
+    ],
+    "pages": [
+     1
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "sku='' on 3 rows ('article not read'); ladder note: 'paired VOXTORP 15 by 20 fronts' (house is AXSTAD); K6 says 'standard 57 x 120 slab' while shop drawings print 120 x 55.",
+    "expected": "Articles resolved before the order; one slab size.",
+    "method": "grep products_ikea.py sku=\"\"; shop-drawings.pdf page 1"
+   },
+   "source": "files cited",
+   "proposed_fix": "Read the three articles; fix wording; align slab size.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "I1:stale-citations"
+  }
+ ]
+}

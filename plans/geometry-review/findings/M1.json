@@ -1,0 +1,352 @@
+{
+ "area": "M1",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Inventoried 42 resolved ducts (round 4/6/8 in, rectangular 18x8/10x18/10x8/10x6), 3 soffits, 13 air products (products_air.py), air_terminal_types.py registers and 2 hoods, EQ-B-ERV (Broan B210E75RT), plenums and mixing box. Probed model (ducts z, joist-bay/truss clearances, soffit sections, wall stacks at the hoods, elbow take-offs), read check findings (duct_joist_bay, duct_soffit_occupancy, duct_penetration_fit, terminal_neck_fit, fitting_pattern), opened G-005 and M-101..M-104, web-checked Broan B210E75RT drawing, RenewAire hoods, Fantech FML8, Reggio 412, Vents-US AM100VRF, Snappy boots. NOT examined: individual REG-* terminal neck-vs-cavity fit beyond the passing mep.terminal_neck_fit, TRUaire A220VO/H&C 531SA/EWC/Honeywell damper dimensions (not published online), duct-through-truss-web geometry beyond the passing mep.open_web_panel, per-terminal heights against ceilings, permit_set_full pages, ERV condensate/pan.",
+ "verified_clean": [
+  "EQ-T-BROAN-B210E75RT: 24.8 W x 21.6 H x 21 D, ports 6 in round on top, 206 cfm at 0.4 in. w.g. match Broan (24-13/16 / 21-11/16 / 21 in; 3 in service on box side, 13 in maintenance front)",
+  "ERV hung with case bottom 54 in: top -33.84 equals trunk start z; case top 21.6 in includes the collars",
+  "DU-ERV-OA/EA through AO-M-ERV-OA/AO-S-ERV-EA: 8 in bare in 9x9 RO, 0.25 in annulus spare, centred 0.00 in (duct_penetration_fit)",
+  "Wall W-M-N3B/W-S-N3B stack 13.25 in (0.5 gyp, 5.5 stud, 0.5 sheathing, 4 ccSPF, 0.5 gap, 1.5 furring, 0.75 cladding): 6.75 in of bare 8 in duct outboard of sheathing; wrap clipped at sheathing as documented",
+  "FS-S-WEST 11-7/8 in floor truss (108.12-120): 4 in radials at 111.63 centre sit on the 1.5 in bottom chord (bottom 109.63 vs chord top 109.62); 8 in EXH trunk 110.06-118.06 under top chord 118.5; web clear 13 in (open_web_panel pass)",
+  "Duct sizes: round duct OD equals nominal (4/6/8 in); 4 in disc valve spigot 98 mm slips into 4 in collar; Vents AM 100 VRF diameters 3 7/8 / 5 1/16 in match the type",
+  "SF-B-BATH 20.37x8.87, SF-S-DUCT 37.25x12.00, SF-S-HP1 36.50x20.87 hold 4 in, 18x8/10x6, 10x18 occupants with margin",
+  "G-005: TVR 203, CVR 102, provided 210, delivered 203.9 at 0.441 in. w.g., 4,900 sf match the model and decisions (210 kept as design intent)",
+  "Fantech FML8 / RenewAire FA8: 12x12x12 envelope exceeds any of the candidate hoods, so clearances hold"
+ ],
+ "findings": [
+  {
+   "id": "M1-001",
+   "area": "M1",
+   "title": "ERV duct start points do not sit on the Broan B210E75RT's four real top ports",
+   "elements": [
+    "EQ-B-ERV",
+    "DU-B-ERV-SUP-TRUNK",
+    "DU-B-ERV-RET-TRUNK",
+    "DU-ERV-OA",
+    "DU-ERV-EA"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_erv_l1.py:207",
+    "houses/catlin/plan/mep_erv_risers.py",
+    "houses/catlin/plan/electrical.py:342",
+    "houses/catlin/plan/mep_erv_types.py:50"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101"
+    ],
+    "pages": [
+     59
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Case x 68.04-92.84, y 347.5-368.5 (centre-positioned). Authored port points in unit frame (u from W edge, v from S edge): supply (15.96,18.5), return (17.96,2.5), OA (5.96,3.5), EA (5.96,15.5). OA and EA 12\" apart in one column; supply/return 16\" apart. Broan drawing: ports 1/2 (top row) centres 4-5/16\" and 4-3/16\" from opposite case sides (~13.4\" apart) at 5-5/8\" and 3-7/8\" from rear; ports 4/3 (bottom row) 6-1/16\" from each side (~9.75\" apart) both 13-3/4\" from rear; case is 21-7/8\" wide plus a ~3\" electrical box (24-13/16\" overall), collars \u00d86. For either handedness the model points land 5-16\" from the real collars (e.g. return vs port 1, EA vs port 3 about 15\").",
+    "expected": "Collars on the delivered unit; every start point within ~1/2\" of a real port",
+    "method": "Broan spec PDF page 2 (6\" Ports Dimensions) vs /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/a9292deb-6aa8-41a7-a63e-497e3c7970b9/scratchpad/geometry-review/M1/model.pkl ducts[tag].path[0] minus EQ-B-ERV centre +-(12.4,10.5)\"; probe inline in report. Handedness (box west/east, door south) is not encoded in the model (Equipment.rotation=None), so confidence is 0.5."
+   },
+   "source": "https://broan-nutone.com/getmedia/a131be08-4510-4a59-ab11-026e99737f2e/Spec_Sheet_V210E75RT_En_Fr.pdf (V210 = Canadian twin of B210E75RT, same drawing); notes/erv_service_access.md cites the B210 sheet",
+   "proposed_fix": "Author the port pattern from the Broan drawing on EQ-T-BROAN-B210E75RT.ports with a rotation, pick box side west (east face is 0.06\" from EQ-B-WH), and re-start the four trunk/hood legs on the real collars (reducers to 8\" above the case). Routing re-proposal is out of scope here.",
+   "size_guess": "large",
+   "seam_with": [
+    "M2"
+   ],
+   "dedupe_key": "EQ-B-ERV:ports"
+  },
+  {
+   "id": "M1-002",
+   "area": "M1",
+   "title": "Round ducts are labelled as rectangular W x D on every HVAC plan (4x4, 6x6, 8x8)",
+   "elements": [
+    "DU-B-ERV-*",
+    "DU-M-ERV-*",
+    "DU-A-ERV-*",
+    "DU-ERV-OA",
+    "DU-ERV-EA",
+    "DU-ERV-RISER-SUP",
+    "DU-ERV-RISER-EXH"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101",
+     "M-102",
+     "M-103",
+     "M-104"
+    ],
+    "pages": [
+     59,
+     60,
+     61,
+     62
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Plans print '4x4 SUPPLY', '6x6 RETURN', '8x8 OUTDOOR_AIR', '8x8 EXHAUST'; M-103's note says 'Duct labels indicate width x depth'. ResolvedDuct stores diameter_m with width_m=depth_m=diameter for rounds. The only true rectangular ducts (18x8, 10x18, 10x8, 10x6) read the same way as the rounds.",
+    "expected": "'4in dia' / '6in dia' / '8in dia (2in wrap, 12in OD)' for rounds; W x D only for rectangular",
+    "method": "Read M-101..M-104 (permit_set.pdf pp 59-62); ducts diameter_m not None in model.pkl"
+   },
+   "source": "n/a (drawing convention)",
+   "proposed_fix": "Label by diameter when ResolvedDuct.diameter_m is set; print the 12\" wrapped OD of OA/EA on the label or a note.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "M-HVAC:round-label"
+  },
+  {
+   "id": "M1-003",
+   "area": "M1",
+   "title": "Round-duct vertices are zero-radius mitres: many legs are shorter than the two elbow take-offs the catalog's own 1.5 D elbow needs",
+   "elements": [
+    "DU-ERV-EA",
+    "DU-ERV-OA",
+    "DU-ERV-RISER-EXH",
+    "DU-ERV-RISER-SUP",
+    "DU-M-ERV-EXH-FEED",
+    "DU-S-ERV-HP-FEED",
+    "DU-B-ERV-R-SAUNA-EXH",
+    "DU-B-ERV-RET-TRUNK",
+    "DU-M-ERV-R-LIVING"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/fittings.py:218-241",
+    "packages/engine/src/typehaus/resolve/mep_ducts.py:195",
+    "houses/catlin/notes/erv_static_budget.md:98"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101",
+     "M-102",
+     "M-103",
+     "M-104"
+    ],
+    "pages": [
+     59,
+     60,
+     61,
+     62
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Library says gored elbow centreline radius 1.5 D (take-off R*tan(theta/2) = 1.5 D per 90). 50 inter-vertex legs in 28 round runs are shorter than the sum of the take-offs at their ends; at 1.0 D still 39, at 0.75 D (tight stamped snap-lock) still 29. Hard cases that no elbow can make: DU-ERV-RISER-EXH leg 4 = 1.56\" between two 90s (6\"); DU-ERV-EA leg 4 = 2.9\" between two 90s and leg 0 = 2.9\" off the ERV collar (8\", 12\" OD wrapped; needs >=6\" even at 0.75 D); DU-ERV-OA leg 6 = 2.9\"; DU-B-ERV-R-SAUNA-EXH leg 6 = 2.0\"; DU-B-ERV-RET-TRUNK leg 1 = 8\" between two 6\" 90s. The 4.87\" jogs (111.63 -> 116.5) in FS-S-WEST on 9 radials only work with stamped elbows <=~0.75 D.",
+    "expected": "Each leg >= sum of fitting take-offs for the stocked fitting (stamped adjustable 4\"/6\" elbow, gored or stamped 8\"), or an offset fitting drawn",
+    "method": "/private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/a9292deb-6aa8-41a7-a63e-497e3c7970b9/scratchpad/geometry-review/M1/elbows.py (R=1.5D; edit factor for 1.0/0.75): per duct, clean 3-D vertices, t=R*tan(deflection/2), flag leg length < t_i+t_{i+1}. The pressure budget (erv_static_budget.md:98) assumes r/D=1.5 elbows (C=0.22) while the geometry cannot hold one."
+   },
+   "source": "library/fittings.py SMACNA gored elbow R=1.5 D; Snappy/Hart & Cooley stamped adjustable elbow catalogue radii not published online (could not source)",
+   "proposed_fix": "Grade leg length against take-off in mep.fitting_pattern (it names patterns but never checks laying length), and either lengthen the worst legs or author the offset/step fitting; re-derive static budget with stamped-elbow K if stamped parts are what is bought.",
+   "size_guess": "large",
+   "seam_with": [
+    "M2"
+   ],
+   "dedupe_key": "M-DUCT:elbow-takeoff"
+  },
+  {
+   "id": "M1-004",
+   "area": "M1",
+   "title": "Wrapped (12 in OD) OA/EA first legs overlap the ERV case top by ~1 in and touch each other",
+   "elements": [
+    "DU-ERV-OA",
+    "DU-ERV-EA",
+    "EQ-B-ERV",
+    "DU-ERV-OA-WRAP",
+    "DU-ERV-EA-WRAP"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_erv_risers.py",
+    "houses/catlin/plan/electrical.py:342"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101"
+    ],
+    "pages": [
+     59
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "ERV case: bottom -109.44+54 = -55.44, body top (19.5\" case, drawing) -35.94; collars to -33.75. OA first horizontal leg z centre -30.94 (OA wrap ring r 6 -> bottom -36.94) runs from x=74 to x=40 over case x 68-74..80: wrap bottom 1.0 in below the case top. OA (y=351) and EA (y=363) wraps are centred exactly 12.0 in apart, so the two 12 in OD wraps touch; the 2.9 in stub above the collar cannot hold the 6x8 increaser plus elbow.",
+    "expected": ">=0 in clear of the case body, a reducer and elbow stack above the collars",
+    "method": "Wrap sweep path from model.pkl solids 'DU-ERV-OA-WRAP'; case dims from Broan page 2; z values from ducts[].z_m."
+   },
+   "source": "Broan spec drawing (case 19-1/2 in, 21-11/16 in with collars); AP Armaflex 2x1 in per air_distribution_products.md \u00a79",
+   "proposed_fix": "Raise both legs' first horizontal run so wrap bottoms clear the case top (max headroom to joist soffit -11.88 is ~22 in) or drop wrap on the first 12 in; see M1-001.",
+   "size_guess": "large",
+   "seam_with": [
+    "M2"
+   ],
+   "dedupe_key": "EQ-B-ERV:wrap-case"
+  },
+  {
+   "id": "M1-005",
+   "area": "M1",
+   "title": "Floor-extract grille face is estimated 4 x 11 3/4 in; Reggio 412 scroll series publishes 3 1/2 x 12 in",
+   "elements": [
+    "REG-T-ERV-EXH-FLOOR",
+    "PROD-AIR-FLOOR-GRILLE-2X10"
+   ],
+   "files": [
+    "houses/catlin/plan/air_terminal_types.py",
+    "houses/catlin/plan/products_air.py:27"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Type footprint (11.75, 4) 'estimated'; Reggio listing for 412-H/412-ANH sibling shows outside length 12, outside width 3-1/2 (412-AH's own page shows none). Boot 2 1/4x10x4 height 5 in also unpublished (Ferguson sells 10x2-1/4x5 for 5 in collar; P13-206 is 2-1/4x10x6 round, so 4 in collar boot likely ~5 in).",
+    "expected": "face 12 x 3 1/2 in (flange), boot height from submittal",
+    "method": "WebSearch 'Reggio 412-AH' (Amazon/Walmart listings) and 'Snappy P13-204'; compared with air_terminal_types.py"
+   },
+   "source": "https://www.amazon.com/Reggio-Registers-Scroll-Grille-Mounting/dp/B0716GT7VR (412-H: 12 x 3-1/2)",
+   "proposed_fix": "Set footprint to 12 x 3.5 and keep the 5 in boot as an estimate; confirm with the boot submittal.",
+   "size_guess": "small",
+   "seam_with": [
+    "F3"
+   ],
+   "dedupe_key": "REG-T-ERV-EXH-FLOOR:face"
+  },
+  {
+   "id": "M1-006",
+   "area": "M1",
+   "title": "CLAUDE.md derived soffit clear sections are stale against the check",
+   "elements": [
+    "SF-S-DUCT",
+    "SF-S-HP1"
+   ],
+   "files": [
+    "houses/catlin/CLAUDE.md (Ventilation, ducts and soffits)"
+   ],
+   "kind": "interface-fit",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "CLAUDE.md: SF-S-DUCT 30 3/4 x 11 1/4 in; SF-S-HP1 40 3/4 in x 7'-9 3/8 in. checks.json mep.duct_soffit_occupancy: SF-S-DUCT 37.25 x 12.00; SF-S-HP1 36.50 x 20.87 drop; SF-B-BATH 20.37 x 8.87. All three hold their occupants (18x8, 10x18, 10x6 rect; 4 in round).",
+    "expected": "guide matches the resolved section",
+    "method": "checks.json findings check_id mep.duct_soffit_occupancy"
+   },
+   "source": "houses/catlin/out/geometry-review-2026-10-31/baseline/checks.json",
+   "proposed_fix": "Update the CLAUDE.md figures (or drop them; the guide itself says never author a clear width).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "M-SOFFIT:doc-stale"
+  },
+  {
+   "id": "M1-007",
+   "area": "M1",
+   "title": "Or-equal hood Fantech FML8 is a 9x9 plate; the OA/EA rough openings are 9x9 in",
+   "elements": [
+    "AO-M-ERV-OA",
+    "AO-S-ERV-EA",
+    "EQ-T-ERV-HOOD-8"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_erv_outdoor.py",
+    "houses/catlin/plan/products_air.py:90"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "FML8 spec table A=8, B=9, C=9, D=5 (duct 8, plate 9 x 9?, projection 5), so the or-equal plate does not lap a 9x9 hole; the basis RenewAire FA8-P plate size is unpublished (hoods PDF gives no dimensions). Model keeps a 12x12x12 envelope. Plate laps are a trim/sealing item at the cladding RO.",
+    "expected": "plate laps the RO by >=3/4 in each side",
+    "method": "WebSearch FML8 (fantech spec pdf d3nq8rpsskbdh6.cloudfront.net fml8_specs.pdf; eComfort 9x9x5); RenewAire Hoods-Dampers PDF read in full: no FA8 dims"
+   },
+   "source": "https://d3nq8rpsskbdh6.cloudfront.net/userfiles/documents/fm/l8/_s/fml8_specs.pdf",
+   "proposed_fix": "Record on the submittal that the or-equal must have a plate >= 11 in, or trim the RO to the hood.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "EQ-T-ERV-HOOD-8:plate"
+  },
+  {
+   "id": "M1-008",
+   "area": "M1",
+   "title": "DU-B-ERV-R-GYM carries 18.2 and 95.3 degree turns no stock 4 in elbow makes",
+   "elements": [
+    "DU-B-ERV-R-GYM"
+   ],
+   "files": [
+    "houses/catlin/plan/mep_erv_l1.py:233"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "mep.fitting_pattern UNKNOWN: vertex 4 (18.2 deg), vertex 7 (95.3 deg); legs there are 6.12 in (needs 12.6 at 1.5 D) between a 95 and a 90 deg turn.",
+    "expected": "30/45/90 stock turns or a fabricated offset",
+    "method": "checks.json mep.fitting_pattern for DU-B-ERV-R-GYM; elbows.py"
+   },
+   "source": "SMACNA / catalog 30,45,90",
+   "proposed_fix": "Square the 95.3 deg turn to 90 and replace the 18.2 deg kink with a 15 deg-free offset or a 30 deg fitting.",
+   "size_guess": "small",
+   "seam_with": [
+    "M2"
+   ],
+   "dedupe_key": "DU-B-ERV-R-GYM:odd-angles"
+  },
+  {
+   "id": "M1-009",
+   "area": "M1",
+   "title": "M-101 labels collide at the plenums and ERV (DUCT MANIFOLD, WATER HEATER, 6x6 RETURN, INVERTER/BATTERY overprint)",
+   "elements": [
+    "EQ-B-ERV-MAN-SUP",
+    "EQ-B-ERV-MAN-EXH",
+    "EQ-B-ERV"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "M-101"
+    ],
+    "pages": [
+     59
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "At 3/32\"=1'-0\" the furnace-room labels overprint; the ERV itself carries no label or port callouts.",
+    "expected": "legible, ERV labelled with port tags",
+    "method": "Read permit_set.pdf p.59"
+   },
+   "source": "n/a",
+   "proposed_fix": "Add a larger-scale enlarged plan of RM-B-FURNACE or leader-offset labels; label EQ-B-ERV.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "M-101:label-collision"
+  }
+ ]
+}

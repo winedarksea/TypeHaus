@@ -1,0 +1,438 @@
+{
+ "area": "F3",
+ "model": "houses/catlin @247a13e9",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Inventoried 10 ResolvedFloors (FS-M-WEST/MECH/STAIR/EAST, FS-S-WEST/EAST, FS-ATTIC, FS-SG-PORCH/DECK, FS-BW-FLOOR): member profiles, z extents, rim/tip/seat ends, subfloor, wall base/plate/storey chain. Opened S-100, S-101.1-3, A-301 and rim-band A-553, A-556, A-565, A-566, A-575 (5 of 32 rim/foundation sheets). NOT examined: A-554..A-584 remainder, floor_opening_pockets/support/blocking internals, hanger-vs-LVL-size table (HHUS410 row flagged 'not transcribed'), THA422 vs 3.5 in truss chord, FS-SG-DECK sloped joist geometry, web-searches for TJI/rim product data (WebSearch unavailable).",
+ "verified_clean": [
+  "Storey elevations: basement -109.4376 in (-9'-1 7/16), main 0, second 120.0001, attic 240.0001; S-100 T.O.W. -1.12' = -13.44 in matches bearing seat -13 7/16",
+  "Basement seat chain: -13.4375 + 1/16 gasket + 1.5 PT mudsill = -11.875 joist soffit (11.875 depth) exact",
+  "Joist depth 11.875 on all five interior decks; rim 1.25x11.875, LVL header/trimmer 1.75x11.875 (ply multiples), LSL rim 1.75 on FS-ATTIC; 2x12 actual 11.25, 2x8 7.25 on porch/entry",
+  "Open-web truss clear opening 11.875 - 2*1.5 = 8.875 in; truss 17'-11\" (tips 1.75..216.75) per CLAUDE.md",
+  "Shared plate seats: FS-M-MECH 2.875 + FS-M-STAIR 2.625 = 5.5 in; FS-S-WEST 3.5 + FS-S-EAST 2.0 = 5.5 in; all >= 1.75 in min I-joist end bearing",
+  "Second/attic rim outboard face at 0.5/431.5 = framing face (correct); finished-floor +1.5 in = 3/4 subfloor + 3/4 finish matches floor_heights.md",
+  "A-301 ceiling heights (suite 8'-10\", basement 8'-0 15/16\") reproduce from 108.125 - 5/8 gwb - 1.5 FFE"
+ ],
+ "findings": [
+  {
+   "id": "F3-001",
+   "area": "F3",
+   "title": "Floor-to-floor stack does not close: framed walls start at top-of-joist datum, inside the 3/4\" subfloor, and leave a 1/8\" gap to the joists above",
+   "elements": [
+    "W-M-S1",
+    "W-M-STOS",
+    "W-S-S1",
+    "FS-M-WEST",
+    "FS-S-WEST",
+    "FS-S-EAST",
+    "FS-ATTIC"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/floors.py:267",
+    "packages/engine/src/typehaus/resolve/platform.py:1",
+    "houses/catlin/params/second_deck.py:60"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-301",
+     "S-101.1",
+     "S-101.2"
+    ],
+    "pages": [
+     32,
+     9,
+     10
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Main/second exterior sole plate z 0.0-1.5 (second 120.0-121.5) while FS subfloor occupies z 0-0.75 (120-120.75) over the same footprint (deck_voids only 4 openings, no wall cut). Top plates end z 108.0 / 228.0; joist bottom 108.125 / 228.125 (11.875 deep to datum 120/240): 1/8\" air gap. Attic rafter plates (W-A-E1/E2/W1) DO sit on the subfloor at 240.75. Real platform stack = 0.75 subfloor + 108 plates + 11.875 joist = 120.625 per storey, not 120.",
+    "expected": "A built stack from the drawn members closes at 120.625 (second FFE +1.5 at 121.375 over the model's 120 datum) or the subfloor must stop at the sole plates and the plates bear on joists; model silently assumes the latter without drawing it. Main-to-second finished-floor rise is 0.625\" different from what stair/door/ceiling heights assume.",
+    "method": "Load model per README (load_plan+resolve); probe scripts in scratchpad geometry-review/F3/ (p4.py, p5.py, p8.py). Compare plate z0/z1 of W-M-S1/W-S-S1 vs ResolvedFloor.deck_z0_m/deck_z1_m and member z0 of joists; attic: W-A-E1 plate z0=240.75."
+   },
+   "source": "notes/floor_heights.md (assemblies above the '3/4-in framed subfloor'); params/main_deck.py docstring 'walls bear there and the subfloor rides above'; platform.py header",
+   "proposed_fix": "Owner/engineer decision: either (a) raise each upper wall base to subfloor top and shorten studs/raise storey datums 0.625-0.75\", or (b) author the subfloor to stop at bearing wall plates and detail it on A-5xx; at minimum print the stack on A-301. Escalate: moves storey elevation or stud length.",
+   "size_guess": "large",
+   "seam_with": [
+    "F1",
+    "S1"
+   ],
+   "dedupe_key": "F3:subfloor-under-sole-plate-stack"
+  },
+  {
+   "id": "F3-002",
+   "area": "F3",
+   "title": "A-301 'T.O. PLATE' levels print the wall BODY top (floor-to-floor), not the plate top: main 10'-0\" (true 9'-0\"), second 20'-1\" (true 19'-0\"), basement 0'-1\" (true -1'-0 5/8\")",
+   "elements": [
+    "A-301",
+    "W-M-S1",
+    "W-S-S1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/elevation_annotate.py:303"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-301"
+    ],
+    "pages": [
+     32
+    ]
+   },
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "Sheet prints 'MAIN T.O. PLATE / SECOND FLOOR EL. 10'-0\"', 'SECOND T.O. PLATE EL. 20'-1\"', 'BASEMENT T.O. PLATE EL. 0'-1\"'. Code uses max(wall.z1_m); resolved max z1 = main 120.0, second 240.75, basement 0.947 in, but max plate_top_z_m = 108.0, 228.0, -12.625 in.",
+    "expected": "Top-of-plate = ResolvedWall.plate_top_z_m: 9'-0\" main, 19'-0\" second, -1'-0 5/8\" basement. (Also the 10'-0\" label merges 'MAIN T.O. PLATE' with 'SECOND FLOOR', hiding a 1'-0\" joist band the framer must frame.)",
+    "method": "p11.py: max z1_m vs max plate_top_z_m per storey; read A-301 page 32 level column."
+   },
+   "source": "Resolved model; elevation_annotate.merged_levels line 303 comment says 'plate' but reads z1_m",
+   "proposed_fix": "Use max(plate_top_z_m or z1_m) in merged_levels; consider printing TOP OF JOIST / SUBFLOOR levels too.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "F3:a301-top-of-plate-labels"
+  },
+  {
+   "id": "F3-003",
+   "area": "F3",
+   "title": "Main-storey rim board and subfloor edge are flush with the CONCRETE face, 1/2\" proud of the framed wall's stud face; joist seat reported against concrete not the 5 1/2\" mudsill",
+   "elements": [
+    "FS-M-WEST",
+    "FS-M-MECH",
+    "FS-M-STAIR",
+    "FS-M-EAST",
+    "W-B-W1",
+    "W-B-E1",
+    "W-M-W1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/floor_ends.py:60",
+    "packages/engine/src/typehaus/resolve/floor_ends.py:196"
+   ],
+   "kind": "engine-geometry",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1",
+     "A-553",
+     "A-554"
+    ],
+    "pages": [
+     9,
+     88,
+     89
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "Main floor: rim spans x 0.0-1.25 (west) and 430.75-432.0 (east); stud outer face of W-M-W1/E1 at x 0.5/431.5 (structure_span 0.5-6.0, 426-431.5). Second/attic rims correct (0.5-1.75). Seat_lo 6.75 in / seat_hi 10.75 in (concrete width) vs actual mudsill bearing ~4.25 in (1.75 rim face to 6.0 stud/sill face) on the 8 in wall. Joist length 214.75 vs 214.25 in.",
+    "expected": "Rim outer face flush with the framing face (x 0.5 / 431.5) and seat measured on the 5.5 in mudsill/plate, as for storeys 2-3.",
+    "method": "p8.py + p10.py: floor_ends rim/deck vs structure_span('W-M-W1'/'W-B-W1')."
+   },
+   "source": "floor_ends docstring itself states rim flush with the FRAMING face; main storey bearing_refs name foundation walls",
+   "proposed_fix": "In floor_ends use the stacked framed wall's structure span (or mudsill width) when the bearing ref is a foundation wall; seat = to the sill's inboard edge. Fingerprints change; joist order length -1/2\" each end.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1",
+    "S2"
+   ],
+   "dedupe_key": "F3:main-rim-flush-with-concrete"
+  },
+  {
+   "id": "F3-004",
+   "area": "F3",
+   "title": "Rim-band details A-553..A-584 draw only the wall stacks: no rim board, joist, subfloor, mudsill or gasket, and no band dimension; upper and lower wall touch",
+   "elements": [
+    "TR-CATLIN-RIM-BAND"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/construction_rim.py:1"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-553",
+     "A-556",
+     "A-565",
+     "A-566",
+     "A-575"
+    ],
+    "pages": [
+     88,
+     91,
+     100,
+     101,
+     110
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Opened A-553, A-556, A-565, A-566, A-575: A-556 shows the upper stud stack resting on the lower with ~1 in gap; no 11 7/8 in band, rim 1 1/4 in, 3/4 in subfloor or dimension labelled. A-565 shows an unlabelled hatched block at the floor line.",
+    "expected": "A rim-band detail should show 11 7/8\" I-joist/truss, 1 1/4\" rim, 3/4\" subfloor, 1 1/2\" PT mudsill + 1/16\" gasket on the concrete, with the band height dimensioned (12\" floor-to-floor).",
+    "method": "Read permit_set_full.pdf pages 88,91,100,101,110."
+   },
+   "source": "construction_rim.py docstring (rim is where the control layer fails)",
+   "proposed_fix": "Add rim/joist/subfloor/sill members to the detail slice and a vertical dimension string; or retitle sheets as 'wall stack at floor line'.",
+   "size_guess": "large",
+   "seam_with": [
+    "F1",
+    "S1"
+   ],
+   "dedupe_key": "F3:rimband-details-omit-floor"
+  },
+  {
+   "id": "F3-005",
+   "area": "F3",
+   "title": "Floor I-joist is the generic '11.875 I-joist' (2.5 in flange, 1.375 in thick) that matches no TJI/BCI/LPI series; hanger IUS2.56 is chosen off that guessed flange",
+   "elements": [
+    "FS-M-WEST",
+    "FS-M-EAST",
+    "FS-S-EAST",
+    "FS-ATTIC"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/framing/profiles.py:298",
+    "houses/catlin/params/second_deck.py:50",
+    "houses/catlin/prices.toml:263"
+   ],
+   "kind": "product-data",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1",
+     "S-101.2",
+     "S-101.3"
+    ],
+    "pages": [
+     9,
+     10,
+     11
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Resolved profile '11.875 I-joist' -> flange 2.5 in, thickness 1.375, web 0.375. profiles._TJI_SERIES_IN (cites TB-808) gives TJI 110 1.75, 210/230 2.3125 flange, 1.25 thick. prices.toml itself says '\"11.875 I-joist\" cannot be ordered from anybody'. Hardware row IUS2.56/11.88 is for 2-1/2..2-9/16 in flanges; a 2-5/16 in TJI 210/230 takes IUS2.37/11.88.",
+    "expected": "A named series (e.g. 11.875 TJI 210) so flange, web holes, hangers, bearing and rim/blocking come from the manufacturer.",
+    "method": "Takeoff framing_bom 'joist:11.875 I-joist' x131 + hardware rows; profiles.py lines 288-306."
+   },
+   "source": "Weyerhaeuser TJ-4000 / TB-808 (cited in profiles.py); not re-fetched this pass",
+   "proposed_fix": "Pick the series (TJI 210 likely), name it on _JOIST, re-grade hangers and web-hole tables. Series choice is an owner/engineer decision.",
+   "size_guess": "large",
+   "seam_with": [
+    "S2"
+   ],
+   "dedupe_key": "F3:generic-ijoist-flange"
+  },
+  {
+   "id": "F3-006",
+   "area": "F3",
+   "title": "Derived hung connections bill generic LUS (sawn-lumber hanger) for 11 7/8\" I-joist and floor-truss ends hung off LVL headers",
+   "elements": [
+    "FO-A-STAIR",
+    "FO-M-ERV-OA",
+    "FO-S-ERV-CHASE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/takeoff/hangers.py:100",
+    "packages/engine/src/typehaus/library/hardware/simpson_hangers.py:122"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "takeoff.json hardware: LUS x2 '11.875 I-joist' (header-FO-A-STAIR-0), x2 (header-FO-M-ERV-OA-1), x1 '11.875 floor truss' (header-FO-S-ERV-CHASE-1). LUS family tops out at 2x10-class depth; I-joists use IUS, trusses THA/other.",
+    "expected": "IUS2.56/11.88 (or series-correct IUS) for I-joist ends, truss-specific top-flange hanger for trusses.",
+    "method": "python: json.load(takeoff.json)['hardware'] filter part_number=='LUS'."
+   },
+   "source": "strongtie.com/lus vs /ius (sources quoted in the rows)",
+   "proposed_fix": "Make hanger_part fall back by member profile shape (i_joist/floor_truss) when no spec is authored.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "F3:lus-for-ijoist-hangers"
+  },
+  {
+   "id": "F3-007",
+   "area": "F3",
+   "title": "S-101.1/S-101.2 schedule blocks overprint: header/beam schedule columns collide, and framing notes/NOT SHOWN text lands on the connector schedule",
+   "elements": [
+    "S-101.1",
+    "S-101.2"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1",
+     "S-101.2"
+    ],
+    "pages": [
+     9,
+     10
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "S-101.1 right column: 'BEAM / POST SCHEDULE' MARK/MARK headings overprint 'HEADER SCHEDULE' rows (spans 9'-0\"... unreadable); S-101.2: header-schedule QTY/SPAN rows overlap beam schedule and 'NOT SHOWN' note overprints connector rows.",
+    "expected": "Non-overlapping tables.",
+    "method": "Read permit_set.pdf pages 9-10."
+   },
+   "source": "drawing",
+   "proposed_fix": "Stack schedules with measured heights or move notes to a second column.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "F3:s101-schedule-overprint"
+  },
+  {
+   "id": "F3-008",
+   "area": "F3",
+   "title": "S-101.1 'not shown' note says no blocking/bridging is generated, but the same sheet schedules BL1/BL2/BL3 blocking and the model carries ~89 I-joist blocking pieces",
+   "elements": [
+    "FS-M-WEST",
+    "S-101.1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/floor_blocking.py:1"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1"
+    ],
+    "pages": [
+     9
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Note 2 under NOT SHOWN: 'no blocking/bridging is generated for this deck, so the sheet shows none at bearing lines' vs schedule rows BL1 12, BL2 9, BL3 6, BL4 33 and takeoff blocking:11.875 I-joist 89.",
+    "expected": "Note consistent with schedule (or blocking drawn).",
+    "method": "Read page 9; count FramedMember category 'blocking' in model.floors (p3.py)."
+   },
+   "source": "sheet text",
+   "proposed_fix": "Gate the note on decks with zero blocking members.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "F3:s101-blocking-note"
+  },
+  {
+   "id": "F3-009",
+   "area": "F3",
+   "title": "Subfloor modelled and printed as 0.75 in; the product the cost basis names is 23/32 in (0.719 in) CDX/T&G",
+   "elements": [
+    "plywood-subfloor",
+    "FS-M-WEST"
+   ],
+   "files": [
+    "houses/catlin/params/second_deck.py:60",
+    "houses/catlin/prices.toml:285"
+   ],
+   "kind": "commodity-size",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1"
+    ],
+    "pages": [
+     9
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "DeckLayer thickness 0.75 in on all decks; sheet_goods plywood-subfloor 0.75; prices.toml basis '23/32 CDX'.",
+    "expected": "Sheathing '3/4 in' nominal = 23/32 actual: finished-floor stack 1/32 in lower per layer; negligible for fit but the flush-floor schedule (1/16 in target) spends 1/32 of it.",
+    "method": "grep thickness in params/*_deck.py; prices.toml line 285."
+   },
+   "source": "APA Rated Sturd-I-Floor 23/32 category (cited in prices.toml)",
+   "proposed_fix": "Either keep 0.75 as modelled allowance and state it, or author 0.71875.",
+   "size_guess": "small",
+   "seam_with": [
+    "F2"
+   ],
+   "dedupe_key": "F3:subfloor-23-32"
+  },
+  {
+   "id": "F3-010",
+   "area": "F3",
+   "title": "Rim board stock described as OSB in prices/comments but modelled 1 1/4 in; common OSB rim is 1 1/8 in (LSL rim is 1 1/4 in)",
+   "elements": [
+    "rim:1.25x11.875 rim"
+   ],
+   "files": [
+    "houses/catlin/prices.toml:220"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "Profile '1.25x11.875 rim' x6 decks; comment at prices.toml:222 says '1 1/4\" OSB rim'. Not web-verified this pass (WebSearch unavailable in my toolset); recalled from Weyerhaeuser/LP rim board lines.",
+    "expected": "Name the product (TimberStrand LSL 1 1/4 in rim, or OSB 1 1/8 in) so thickness and cost agree.",
+    "method": "grep rim prices.toml"
+   },
+   "source": "Weyerhaeuser Rim Board / TimberStrand rim literature (unchecked)",
+   "proposed_fix": "Verify and relabel; if OSB 1 1/8 in, rim_profile and joist tip shift 1/8 in.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "F3:rim-board-thickness"
+  },
+  {
+   "id": "F3-011",
+   "area": "F3",
+   "title": "Mudsill and sill-seal are billed but not modelled as geometry; the 1.5625 in between the -13 7/16 in seat and the joist soffit is empty in viewer/sections",
+   "elements": [
+    "pt-sill-plate",
+    "sill-seal-foam",
+    "W-B-CS"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/construction_sills.py:1"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "No wall member or solid with category sill/mudsill/gasket at z -13.4375..-11.875 (only one 'sill' member in the basement); takeoff pt-sill-plate 329.3 LF/52 pcs while basement_to_framed_wall_detail.md says it bills 370.0 LF.",
+    "expected": "Mudsill 1.5 in + 1/16 in gasket drawn on the seat; note and takeoff agree.",
+    "method": "p7.py; takeoff construction_returns pt-sill-plate."
+   },
+   "source": "notes/basement_to_framed_wall_detail.md line 78",
+   "proposed_fix": "Emit the return as a resolved solid; refresh the 370 LF in the note.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "F3:mudsill-not-modelled"
+  }
+ ]
+}

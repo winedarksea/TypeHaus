@@ -1,0 +1,366 @@
+{
+ "area": "O2",
+ "model": "catlin",
+ "review_sha": "247a13e9",
+ "inventory_summary": "174 base runs, 46 door casings, 4 landing base runs, stair skirts, 7 trim stock products inspected from the resolved model; A-603, A-002, A-516..530 text-searched. Main defects: set is silent on interior trim, A-603 Base column empty, MDF thickness, shiplap-offset base proud of casing.",
+ "verified_clean": [
+  "Reveal: inner edge = RO/2 - 13/16 -> 3/16\" reveal to a 1\" jamb+shim allowance, inside the 3/16-1/4\" norm (interior_trim_scope.casing_edges).",
+  "Casing head bottom = RO head - 13/16\" for all 28 doors with a plain RO (probe p9).",
+  "Casing/base size 3/4 x 3-1/2 matches pine FJ, PVC (AZEK 1x4) actual sizes; poplar 1x12 = 11-1/4\".",
+  "Base and casing never overlap in plan (probe p3); head stays within its legs on all 45 headed casings.",
+  "Legs start at finished floor of the room; base z0 = finished floor on tile/LVP/oak/concrete; landing base at landing floor z=1.555.",
+  "Hardwood casing/base cut list (millwork.md) packs 8' boards and flags the spliced locust base run.",
+  "Stair skirt board 11-1/4\" x 3/4\" gives >5\" above the nosing line."
+ ],
+ "findings": [
+  {
+   "id": "O2-001",
+   "area": "O2",
+   "title": "A-603 room finish schedule prints '\u2014' in the Base (and Walls) column for all 36 rooms although 174 base runs are derived",
+   "elements": [
+    "A-603",
+    "TRIM-STANDARD"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/schedules/openings.py:141",
+    "packages/engine/src/typehaus/emit/draw/schedules/openings.py:130"
+   ],
+   "kind": "drawing",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-603"
+    ]
+   },
+   "confidence": 0.9,
+   "evidence": {
+    "measured": "Base column is '\u2014' for every room; model.base_runs has 174 runs (pine-fj-base, pvc-trim, locust-trim, vinyl cove, resilient). Walls column also '\u2014' in every room.",
+    "expected": "Base column states the derived base stock/height per room (e.g. pine-fj-base 3-1/2\" x 3/4\"), or 'by floor' for tile/vinyl cove.",
+    "method": "pdftotext -f 135 -l 135 -layout houses/catlin/out/geometry-review-2026-10-31/baseline/permit_set_full.pdf (A-603); code: _finish(room,'base_finish') reads an unauthored Room field, not model.base_runs."
+   },
+   "source": "emit/draw/schedules/openings.py docstring claims 'every column is DERIVED'; decision #85",
+   "proposed_fix": "Derive Base from model.base_runs per room (material name, height, kind) and Walls from room-face finish layer; add casing stock/width line.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1"
+   ],
+   "dedupe_key": "A-603:base-column-empty"
+  },
+  {
+   "id": "O2-002",
+   "area": "O2",
+   "title": "No sheet in the set specifies interior casing or base: no stock, width, reveal, jamb allowance or milled-vs-bought",
+   "elements": [
+    "TRIM-STANDARD"
+   ],
+   "files": [
+    "houses/catlin/plan/millwork.py:103"
+   ],
+   "kind": "drawing",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-002",
+     "A-516..A-530"
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "grep casing/baseboard/skirt/reveal over all 158 pages: only A-603 'Base' header, cladding trim and connector base posts. A-002 has no trim spec. 46 casings / 174 base runs are in the BOM only.",
+    "expected": "A-002 (or an interior-trim detail) states 3/4x3-1/2 casing, 3/16 reveal, 13/16 inside RO, 3-1/2 base, stock by room, scribe rule, 2-1/4/1-1/2 one-offs.",
+    "method": "for i in 1..158: pdftotext -f i -l i -layout permit_set_full.pdf - | grep -i 'casing\\|baseboard\\|skirt\\|reveal'"
+   },
+   "source": "TRIM-STANDARD values (houses/catlin/plan/millwork.py:150-165)",
+   "proposed_fix": "Add an interior-trim spec block to A-002 generated from TrimStandard and its Room/DoorTrim overrides.",
+   "size_guess": "large",
+   "seam_with": [],
+   "dedupe_key": "A-002:no-interior-trim-spec"
+  },
+  {
+   "id": "O2-003",
+   "area": "O2",
+   "title": "MDF 1x4 casing modelled 3/4\" thick; retail primed MDF 1x4 is 11/16\" (0.669\")",
+   "elements": [
+    "mdf-casing",
+    "PROD-STOCK-MDF-1X4",
+    "TRIM-STANDARD"
+   ],
+   "files": [
+    "houses/catlin/plan/products_trim_stock.py:27",
+    "houses/catlin/plan/assemblies/materials.py:332",
+    "houses/catlin/plan/millwork.py:159"
+   ],
+   "kind": "commodity-size",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "All 46 casings (mostly mdf-casing) and all base share TrimStandard.thickness = 0.75\"; product model string says '3/4\" x 3 1/2\" S4S'.",
+    "expected": "Primed MDF 1x4: 11/16\" (HD 0.669\"x3.5\"; Lowes 21/32\"). A 3/4\" MDF exists only as a Kent.ca special item. Casing 1/16\" thinner than the 3/4\" pine/PVC base: base ends stand 1/16\" proud.",
+    "method": "WebSearch 'primed MDF board 1x4 actual thickness'; python: {c.material_ref:c.thickness_m*39.37 for c in model.door_casings}"
+   },
+   "source": "https://www.homedepot.com/p/questions/Primed-MDF-Board-Common-11-16-in-x-3-1-2-in-x-8-ft-Actual-0-669-in-x-3-5-in-x-96-in-242738/100061915/0",
+   "proposed_fix": "Correct the MDF product/material wording to 11/16\" and let casing thickness follow the stock (or specify 3/4\" MDF source); expect base-proud note on spec.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "mdf-casing:thickness"
+  },
+  {
+   "id": "O2-004",
+   "area": "O2",
+   "title": "Mudroom base stands 3/4\" proud of its door casing: shiplap-backed base offset 0.75\" while casing sits on the drywall plane flush with the shiplap face",
+   "elements": [
+    "CASING-D-M-MECH-R",
+    "CASING-D-M-MUDC-R",
+    "BASE-RM-M-MUDROOM-W-M-MECH-S-0",
+    "BASE-RM-M-MUDROOM-W-M-MUDC-N-0",
+    "WP-M-MUDROOM-SHIPLAP"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/interior_trim_base.py",
+    "packages/engine/src/typehaus/resolve/interior_trim_casing.py"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "W-M-MECH-S: casing leg 2.25-3.0\" from axis, base 3.0-3.75\" (offset 0.75\"), shiplap 2.25..3.0 abutting the legs (0.0\" gap). Base ends at casing outer edge 3/4\" proud of it. 7 PVC runs offset 0.75\"; D-M-ENTRY leg_right also overlaps shiplap by 3.6 cm2.",
+    "expected": "Base no thicker than casing at the meeting (casing over the shiplap, or a plinth block), casing not sharing volume with shiplap.",
+    "method": "scratchpad/geometry-review/O2/p5.py, p6.py, p13.py in scratchpad: wall-axis distances of casing legs vs base vs WP-M-MUDROOM-SHIPLAP pieces"
+   },
+   "source": "decision #85 'flush where base meets leg'",
+   "proposed_fix": "Offset the casing by the band thickness on banded walls (casing sits on the band) or end the band at the jamb.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1"
+   ],
+   "dedupe_key": "mudroom:base-proud-of-casing"
+  },
+  {
+   "id": "O2-005",
+   "area": "O2",
+   "title": "D-M-BATH2 bathroom face: both casing legs dropped, leaving a floating 3-1/2\" head with no legs",
+   "elements": [
+    "CASING-D-M-BATH2-L",
+    "D-M-BATH2",
+    "FX-M-BATH2-SINK",
+    "FX-M-BATH2-SH"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/interior_trim_casing.py"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "pieces=[head 34.1\"]; clips: leg_left vs FX-M-BATH2-SINK 0.94\" left, leg_right vs FX-M-BATH2-SH 0.56\" left (min_leg_width 1.5\"). BOM bills head only.",
+    "expected": "Either a full narrow casing (DoorTrim casing_width like BATH1) or drywall-return/no casing; a head with no legs is not buildable trim.",
+    "method": "m.door_casings -> CASING-D-M-BATH2-L pieces/clips; checks.json advisory.casing_clipped"
+   },
+   "source": "decision #85; DoorTrim precedent on D-M-BATH1",
+   "proposed_fix": "Add D-M-BATH2 to uncased_doors, or drop the head when both legs drop.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1",
+    "M3"
+   ],
+   "dedupe_key": "D-M-BATH2:head-no-legs"
+  },
+  {
+   "id": "O2-006",
+   "area": "O2",
+   "title": "Engine drops a head when both legs drop; and scribed legs of 1.58-2.94\" leave unequal reveals-to-wall that the set never states",
+   "elements": [
+    "CASING-D-A-HALVES-R",
+    "CASING-D-M-ENTRY-L",
+    "CASING-D-M-BATH1-L",
+    "CASING-D-S-BED2-R",
+    "CASING-D-S-SUITE-L",
+    "CASING-D-A-POCKET-R"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/interior_trim_casing.py"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Scribed legs: HALVES-R 1.58, ENTRY-L 2.19, BATH1-L 2.56, BED2-R 2.94, SUITE 2.44/2.45, POCKET-R 3.33; head full-width stays within legs hull (checked, frac 0).",
+    "expected": "Acceptable carpentry; head correctly follows legs. Recorded for the trade as site scribe.",
+    "method": "scratchpad/geometry-review/O2/p1.py, p2.py"
+   },
+   "source": "advisory.casing_clipped",
+   "proposed_fix": "Document in spec (see O2-002).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "casing:scribed-legs"
+  },
+  {
+   "id": "O2-007",
+   "area": "O2",
+   "title": "Base on carpet rooms is modelled sitting on the carpet surface, contradicting 'carpet tucks under it'",
+   "elements": [
+    "BASE-RM-M-BED",
+    "pine-fj-base",
+    "catlin-carpet-raised"
+   ],
+   "files": [
+    "houses/catlin/plan/millwork.py:100",
+    "packages/engine/src/typehaus/resolve/interior_trim_base.py"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Base z0 = room_finished_floor_elevation for carpet / catlin-carpet-raised (29 runs, floor build-up 0.5\"/1.5\" above structure).",
+    "expected": "Base bottom ~1/2\" above the sub-floor/pad with carpet tucked under; base top then 4\" above carpet or base 3.5\" from pad.",
+    "method": "scratchpad/geometry-review/O2/p11.py (z0-ff per floor kind)"
+   },
+   "source": "millwork.py comment line 100",
+   "proposed_fix": "Start carpet-room base at the pad/subfloor plane (+1/2\") rather than carpet top.",
+   "size_guess": "small",
+   "seam_with": [
+    "O3"
+   ],
+   "dedupe_key": "base:carpet-seat"
+  },
+  {
+   "id": "O2-008",
+   "area": "O2",
+   "title": "Devices within 1/4\" of casing legs: ED-M-LIVING-RC10 0.08\", ED-M-BATH1-SW 0.20\", ED-M-CLOSET-SW 0.31\", ED-S-PLANT-SW-TIMER 0.31\", ED-S-NCLOSET-SW 0.33\"",
+   "elements": [
+    "ED-M-LIVING-RC10",
+    "ED-M-BATH1-SW",
+    "ED-M-CLOSET-SW",
+    "ED-S-PLANT-SW-TIMER",
+    "ED-S-NCLOSET-SW"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/advisory/interior_trim.py:70"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Footprint-to-casing distance 0.076-0.33\" (check only flags overlap > 1e-6 m2).",
+    "expected": "Plate edge >= ~1/4\" off casing for a cut-in box and painter caulk.",
+    "method": "scratchpad/geometry-review/O2/p8.py (distance of wall-hosted canvas_objects to casing prisms, z-overlapped)"
+   },
+   "source": "",
+   "proposed_fix": "Leave to M3; optionally add a clearance band to trim_device_clash.",
+   "size_guess": "small",
+   "seam_with": [
+    "M3"
+   ],
+   "dedupe_key": "trim:device-near-casing"
+  },
+  {
+   "id": "O2-009",
+   "area": "O2",
+   "title": "Devices overlapping D-A-POCKET casing (already UNKNOWN) - ED-A-POCKET-SW and ED-A-STUDIO-AP straddle leg and head",
+   "elements": [
+    "ED-A-POCKET-SW",
+    "ED-A-STUDIO-AP",
+    "CASING-D-A-POCKET-R"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/checks/advisory/interior_trim.py"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "Distance 0.0 to leg_left (both) and head (POCKET-SW); two UNKNOWN in checks.json.",
+    "expected": "Devices clear of casing or casing scribed.",
+    "method": "checks.json advisory.trim_device_clash; scratchpad/geometry-review/O2/p8.py"
+   },
+   "source": "",
+   "proposed_fix": "Move devices or narrow casing (owner).",
+   "size_guess": "small",
+   "seam_with": [
+    "M3"
+   ],
+   "dedupe_key": "D-A-POCKET:device-clash"
+  },
+  {
+   "id": "O2-010",
+   "area": "O2",
+   "title": "ST-M2S skirt blank is 103.5\" long, longer than the 8' stock assumed for trim; no stock-length or splice stated",
+   "elements": [
+    "ST-M2S",
+    "poplar-skirt-paint"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/stairs/skirt.py:353",
+    "houses/catlin/plan/millwork.py:168"
+   ],
+   "kind": "commodity-size",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Blank cut lengths 103.5\" and 92.1\"; TrimStandard.stock_length = 8'; poplar 1x12 has no product_ref.",
+    "expected": "10' or 12' 1x12 poplar for the 103.5\" board (11-1/4\" actual width is correct).",
+    "method": "scratchpad/geometry-review/O2/p7.py"
+   },
+   "source": "materials.py poplar-skirt-paint",
+   "proposed_fix": "Note 10' stock in the material source / add product row.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "ST-M2S:skirt-stock"
+  },
+  {
+   "id": "O2-011",
+   "area": "O2",
+   "title": "Base-to-casing gap of 0.3\" at D-S-SUITE where legs are scribed",
+   "elements": [
+    "BASE-RM-S-SUITE-W-S-SBS-0",
+    "BASE-RM-S-SUITE-W-S-CLN-1",
+    "CASING-D-S-SUITE-L"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/interior_trim_base.py"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "Only 2 of 69 base/casing meetings do not butt (0.299\", 0.313\"); rest 0.0\".",
+    "expected": "Butt joint.",
+    "method": "scratchpad/geometry-review/O2/p10.py"
+   },
+   "source": "",
+   "proposed_fix": "Ignore unless seen on A-sheet.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "suite:base-casing-gap"
+  }
+ ]
+}

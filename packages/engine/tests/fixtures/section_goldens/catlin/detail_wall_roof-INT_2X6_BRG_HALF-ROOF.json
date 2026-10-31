@@ -1836,7 +1836,7 @@
         213.0,
         344.0361111111111
       ],
-      "text": "gwb-a 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1861,7 +1861,7 @@
         216.0,
         341.5083333333333
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1886,7 +1886,7 @@
         219.0,
         338.98055555555555
       ],
-      "text": "gwb-b 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1961,7 +1961,7 @@
         207.35708661417328,
         359.01045964749676
       ],
-      "text": "sheathing 0.594\"",
+      "text": "sheathing 19/32\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2011,7 +2011,7 @@
         207.35708661417328,
         352.74104330708667
       ],
-      "text": "rafter 11.9\"",
+      "text": "rafter 11 7/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2036,74 +2036,10 @@
         207.35708661417328,
         350.24104330708667
       ],
-      "text": "rafter fill (fiberglass-r30c) 6.88\"",
+      "text": "rafter fill (fiberglass-r30c) 6 7/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        224.25000000000006,
-        371.4747812773403
-      ],
-      "content": "air continuity — sheathing-ext →\nsheathing-ext",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        224.25000000000006,
-        366.82755905511806
-      ],
-      "content": "water continuity — membrane-ext → eave-\nmetal-ext",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        224.25000000000006,
-        362.1803368328958
-      ],
-      "content": "water continuity — spray-foam-ext →\ngutter-flange-ext",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        224.25000000000006,
-        357.5331146106736
-      ],
-      "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
       "uid": null
     },
     {
@@ -2155,7 +2091,7 @@
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "5.5\" stud",
+      "text": "5 1/2\" stud",
       "text_along": 0.0,
       "uid": null
     },
@@ -2375,7 +2311,7 @@
         0.7,
         1.228
       ],
-      "content": "gwb  0.5\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2447,7 +2383,7 @@
         0.7,
         1.058
       ],
-      "content": "spf  5.5\"",
+      "content": "spf  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2520,7 +2456,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "fiberglass-r30c  6.88\"",
+      "content": "fiberglass-r30c  6 7/8\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2666,7 +2602,7 @@
         2.85,
         1.3980000000000001
       ],
-      "content": "cdx-plywood  0.594\"",
+      "content": "cdx-plywood  19/32\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2827,19 +2763,11 @@
     "• Roof: 11-7/8\" TJI 230 at 24\" o.c., LSSR hangers to a structural ridge beam.",
     "• Bay: 5\" ccSPF on deck, R-30C batt. Foam is the air and vapour barrier.",
     "• Deck: 19/32\" CDX, 40/20, oversailing the rafter ends to the girt face.",
-    "• Butyl membrane 240 F min, full field plus eave strip-in. 24 ga Image II, nail flange.",
-    "• Wall: 2x6, 1/2\" sheathing, 4\" ccSPF, 1/2\" vent gap, KDAT girts, 1-1/4\" PBR. No WRB.",
+    "• Butyl membrane 240 F, full field + eave strip-in. 24 ga Image II, nail flange.",
+    "• Partition stops 3/4\" under rafters; SDPW19600 screw per crossing.",
     "",
     "KEYED NOTES:",
-    "K1  Birdsmouth seat: beveled web stiffeners per APA D710 10h; H2.5A each rafter.",
-    "K2  Foam first lift 1-1/2\" min. Lap onto ridge beam and hanger flanges in one pass.",
-    "K3  2x6 eave block on edge on the plate, every bay. ccSPF over it.",
-    "K4  Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.",
-    "K5  Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04\".",
-    "K6  Strip-in membrane over both flanges, 4\" past the hem. Pan rides over it.",
-    "K7  PBR 5x4 gutter, level, back behind eave face, flange under eave leg.",
-    "K8  Eave face over the gutter back, kick and hem into the trough. Pan hemmed round the lip. No fascia, no soffit.",
-    "K9  2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Hanger below the eave face; bracket pending."
+    "K2  Foam first lift 1-1/2\" min; lap ridge beam and hanger flanges in one pass."
   ],
   "frame": {
     "paper": [

@@ -1,0 +1,376 @@
+{
+ "area": "E1",
+ "model": "houses/catlin @247a13e9",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Inventoried RF-HOUSE (6:12), RF-GARAGE and RF-BW-CANOPY (4:12): Image II Striated 16 in. 24 ga panel profile and seam stations, Extended Eave 52124XX, Residential Rake 52126XX + cleats, 7 in. ridge cover 52131XX, vented ridge, PBR 5x4 box gutter 58077/79XX, K-gutters, leaders, PVC soffit and fascia on garage/canopy; compared catalog sections to Metal Sales RDM 5/2024, Image II PIM 2021 and PBR install guide 4/2024 (read from houses/catlin/notes/sources); resolved-model probes (scratchpad geometry-review/E1/p4-p7.py), takeoff.json and checks.json; opened A-105, A-203, A-511, A-592, A-593, A-594 (not A-201/202/204 individually, not A-504 which is a ridge beam connection, F4). NOT examined: sheets A-201, A-202, A-204 and A-504 at readable zoom; Image II striation count/rib width on the 16 in. panel (no callouts; traced); S-5!/PV clamp fit to the Image II seam (other area); gutter hanger/strap vs the 24 in. standoffs (known open item); downspout elbows and the garage 3 in. leaders; valley/hip/Peak flashings (none in the model); PVC soffit and vent products (no manufacturer data in repo).",
+ "verified_clean": [
+  "Image II 16 in. coverage, 1 in. rib, 24 ga PVDF: PANEL_PITCH 16 in. (params/roof_panel.py) and IMAGE_II_16_PROFILE match RDM 5/2024 p.6-7 (27187XX/27189XX 24 ga PVDF exists; 5 ft min, 30 ft max panel length; house panel run ~20.8 ft plus hem, garage/canopy ~14 ft)",
+  "Min slope 3:12 (house 6:12, garage/canopy 4:12) and solid substrate (19/32 in. CDX / Structural 1 deck, no open framing) satisfy RDM p.7 / PIM p.2",
+  "Gauge: Image II roof, trims and box gutter are all 24 ga PVDF (58077XX/58079XX 24 ga PVDF listed, PBR guide p.12); consistent with the Metal Sales PVDF = 24 ga rule",
+  "Direct (nail-flange) fastening is correct for Image II (RDM p.7 attachment detail); screw count 1,159 on RF-HOUSE = 1,544 SF / (16 in. x 12 in.) and 12 in. o.c. is tighter than the PIM p.9 table's 18 in. o.c. (UL 580 Class 90); RDM p.7 outward 96 psf at 1'-0\" o.c.",
+  "Extended Eave section legs 7/8, 5, 1-1/2, 1-1/2, 5/8 at 135 deg, 1/2 hem = 10 in. stretch-out (RDM p.11); Residential Rake 1 + 2-5/8 + 5/8 + 1/2 = 4-3/4 in.; Rake Cleat 2-7/8/1-1/2/5/8 = 5 in.; 7 in. Ridge Cover 7+7+1+1 = 16 in. stretch; Offset Cleat/Flat Cleat/Z-closure part numbers 5806499, 5806199, 58603XX all match RDM pp.9-12",
+  "RF-HOUSE ridge cap ring: legs 7 in. at 26.57 deg (6.26 in. horizontal, 3.13 in. rise), 1 in. hems, apex z 364.83 clears the 1 in. panel rib at the peak (about 364.2)",
+  "PBR 5 x 4 box gutter section (3-1/2 in. flange, 5 in. back, 5 in. floor, 4 in. front, 1 in. bead) matches PBR guide p.12; 58079XX 20'-3\" sticks: 2 per 445.5 in. run with 3 in. lap = 483 in. cover; 28 straps at 3 ft; 4 in. leader <= 5 in. gutter bottom (PGI-15), 37.12 ft per leader < 50 ft (PGI-18)",
+  "Extended Eave stock count 16 ea (house 4/side, garage 3/side, canopy 1/side) covers each run with the 3 in. telescope notch; eave strip-in, ridge cover (5 ea, 7 in. cover with 2 in. lap) and Z-closure LF consistent with model lengths",
+  "Garage eave geometry vs A-594: kick 0.75 in. (88.42-89.17), gutter top 0.5 in. below deck edge (89.17 vs 89.67), gutter fall 1/16 in. per ft stated, 5 in. K-gutter depth; vented soffit at fascia SPF bottom with metal fascia hanging 0.5 in. below it",
+  "A-511 east eave section agrees with the model and notes: 52124XX with 1-1/2 in. doubled lip, pan hemmed around hook, gutter back behind eave face, strip-in 9 in. flagged PROVISIONAL, flange under eave leg; A-593 draws the same section with matching layer thicknesses (sheathing 0.594, membrane 0.03, roofing 1.0)",
+  "SEAM_STATIONS_IN in params/roof_panel.py (first seam 8 in. from the south rake, 16 in. pitch) equals the engine's seam_stations for RF-HOUSE (8.0 ... 424.0), so PV clamp columns sit on real seams",
+  "A-203 ridge label 30'-3\" = ridge_z 363.0 in. (deck/footprint ridge); cap crown is 1-13/16 in. higher, not a printed dimension"
+ ],
+ "findings": [
+  {
+   "id": "E1-001",
+   "area": "E1",
+   "title": "Roof rake trim (52126XX Residential Rake, 52132XX cleat, flat cleats) is billed on plan length, not slope length",
+   "elements": [
+    "RF-HOUSE:rake-lo-0",
+    "RF-HOUSE:rake-lo-1",
+    "RF-HOUSE:rake-hi-0",
+    "RF-HOUSE:rake-hi-1",
+    "RF-GARAGE:rake-hi-*",
+    "RF-BW-CANOPY:rake-lo-*"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/takeoff/cladding_trim.py:236",
+    "packages/engine/src/typehaus/resolve/roof_image_ii.py:136",
+    "packages/engine/src/typehaus/resolve/roof_drip_edge.py:138"
+   ],
+   "kind": "engine-geometry",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "Each RF-HOUSE rake member has length_m = 220.1 in. = hypot of the PLAN p0/p1 (-4.14,-6.53)->(216,-6.53), but it climbs z 252.11 -> 362.18 (6:12), so the piece is 246.1 in. along the slope (+4.6 in. foot = 250.7). takeoff `_rake` stocks the plan figure: 2 x 122 in. sticks per house rake run (cover 243 in.), real need 3. Takeoff 52126XX and 52132XX = 16 ea / 129.25 ft total; with slope length the house runs need 12 + garage/canopy 8 = 20 ea and ~139.8 ft (8% short). Flat-cleat and rivet counts on barge runs scale with the same length.",
+    "expected": "Stock count from the true 3-D length of the sloped run: house rakes 3 sticks x 4 = 12 (not 8); total rake and rake cleat 20 ea each (not 16).",
+    "method": "Python: load_plan+resolve; for m in RF-HOUSE.members if m.child_key.endswith('-image-ii-rake'): print(m.length_m/0.0254, m.z0_m, m.z0_end_m) -> 220.1 plan, z rises 110.07 in. Then typehaus.takeoff.cladding_trim.split_stock_run(len, (122in,), 1in): 224.8 in. -> 2 sticks, 250.7 in. -> 3. Baseline takeoff.json cladding_trim[1],[3]. Probe scratchpad geometry-review/E1/p6.py"
+   },
+   "source": "Metal Sales Residential Design Manual 5/2024 p.9 (rake 10'-2\" stock); geometry",
+   "proposed_fix": "In `_rake` (and the eave/rake callers) use sqrt(plan_len^2 + dz^2) from p0/p1 and z0_m/z0_end_m (or set FramedMember.length_m to the 3-D length for sloped edge runs). Check fascia/barge boards and rake drip-edge runs for the same plan-length reading (garage rake-hi fascia 158.5 in. plan vs ~167 in. slope). Fixes quantities only; no geometry moves.",
+   "size_guess": "small",
+   "seam_with": [
+    "F4"
+   ],
+   "dedupe_key": "RF-HOUSE:rake-billed-plan-length"
+  },
+  {
+   "id": "E1-002",
+   "area": "E1",
+   "title": "Garage and canopy roof panels are laid out per roof, so seams do not line up across the garage/canopy joint and the joint leaves 4.0 in. and 8.4 in. stub pans",
+   "elements": [
+    "RF-GARAGE",
+    "RF-BW-CANOPY"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/roof_panel_skin.py:47",
+    "packages/engine/src/typehaus/resolve/roof_panel_skin.py:55"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [
+     "A-105"
+    ],
+    "pages": [
+     27
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "`panel_stations` anchors seams on each roof's own rectangle centre. RF-BW-CANOPY (y 446.6-518.6, 72 in. = 4.5 panels): seams at 450.63..514.63, edge pans 4.0 in. each end. RF-GARAGE (y 517.75-822.6): first seam 526.19, edge pan 8.44 in. Seams across y~518 are 11.6 in. out of register (514.63 vs 526.19 against a 16 in. pitch), leaving a 3.97 in. pan and an 8.44 in. pan at the joint. The two roofs are authored as ONE plane (same eave z 89.67, same ridge 143.0, one continuous gutter and sheathing), so real Image II panels (eave to ridge, 169 in. long, well under the 30 ft max) run straight across the joint.",
+    "expected": "One run of 16 in. seams along the whole N-S length (y 446.6-822.6 = 376 in. = 23.5 panels), one rip at a rake, no panel break or stub at y=518.",
+    "method": "Python: seam_stations(roof, model) and profiled_roof_layers for RF-GARAGE / RF-BW-CANOPY (scratchpad geometry-review/E1/p4.py). Prints edge pans 8.44/8.44 (garage), 4.0/4.0 (canopy)."
+   },
+   "source": "Metal Sales Residential Design Manual 5/2024 p.7 (16 in. coverage, 5 ft min / 30 ft max panel length); houses/catlin/CLAUDE.md canopy 'ONE plane'",
+   "proposed_fix": "Anchor the seam datum on the combined canopy+garage rectangle, or share the garage's datum with the canopy. Viewer/GLB geometry only; the permit set draws no seams, so the sheets are unaffected.",
+   "size_guess": "small",
+   "seam_with": [
+    "F4"
+   ],
+   "dedupe_key": "RF-GARAGE+CANOPY:seam-register"
+  },
+  {
+   "id": "E1-003",
+   "area": "E1",
+   "title": "Image II seams are laid out symmetrically from the roof centre: both rake edges get a ripped pan (house 14.6 in. each) instead of one starter panel and one rip",
+   "elements": [
+    "RF-HOUSE",
+    "RF-GARAGE",
+    "RF-BW-CANOPY"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/roof_panel_skin.py:47",
+    "houses/catlin/params/roof_panel.py:25"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "RF-HOUSE roofing rect is 445.2 in. along the ridge = 27.825 panels at 16 in. Seams at 8,24,...424 in.; both rake pans are 14.6 in. (the 0.825 remainder split 0.4125 each side) so two panels are field-ripped and two edges hand-turned up 1 in. RDM 5/2024 p.33: 'Turn panel up 1 in. along rake edge' is a field operation at each rake. Garage: 8.44 in. each end; canopy 4.0 in. each end.",
+    "expected": "A real install starts with a full 16 in. panel at one rake and rips only the last (house: 27 full + one 13.2 in. pan); counts of panels and screws are unchanged (28), only the field cuts differ.",
+    "method": "Python: seam_stations / panel_stations (scratchpad geometry-review/E1/p4.py). The mirror-about-ridge datum is deliberate (params/roof_panel.py SEAM_STATIONS_IN is consistent with it and drives PV clamp columns), so this is a layout preference, not a quantity error."
+   },
+   "source": "Metal Sales RDM 5/2024 pp.7, 33",
+   "proposed_fix": "No fix needed unless the owner wants one rip; flag only. If changed, params/roof_panel.py SEAM_STATIONS_IN and the PV clamp columns move with it (escalate).",
+   "size_guess": "large",
+   "seam_with": [
+    "O5"
+   ],
+   "dedupe_key": "RF-HOUSE:symmetric-rip-layout"
+  },
+  {
+   "id": "E1-004",
+   "area": "E1",
+   "title": "Garage eave: K-gutter back sheet sits 0.23 in. OUTBOARD of the drip-edge face, not behind it, and the drip kick passes through the back sheet top",
+   "elements": [
+    "RF-GARAGE:eave-lo",
+    "RF-GARAGE:eave-hi",
+    "RF-BW-CANOPY:eave-lo",
+    "RF-BW-CANOPY:eave-hi",
+    "TR-CATLIN-GARAGE-EAVE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/roof_drip_edge.py",
+    "packages/engine/src/typehaus/resolve/roof_edge_geometry.py",
+    "houses/catlin/notes/garage_eave_detail.md:28"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-594"
+    ],
+    "pages": [
+     56
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "West garage eave centrelines (in.): drip face x=54.98 (z 89.17-90.33), kick tip x=54.11,z=88.42; gutter back x=54.75 (z 84.17-89.17), floor 52.5, front 50.25; metal fascia 55.5. Outboard is -x, so the back sheet is 0.23 in. in FRONT of the drip face. The kick line from (54.98,89.17) to (54.11,88.42) crosses x=54.75 at z=88.97, 0.20 in. below the back sheet's top (89.17): the kick cuts the back sheet. A-594 K6/K7 and garage_eave_detail.md say 'back sheet BEHIND the drip face'.",
+    "expected": "Gutter back top tucked 1/4-1/2 in. inboard of the drip face (behind it), kick 3/4 in. out and down landing inside the trough, no overlap.",
+    "method": "Python: member.p0 x-coordinates of RF-GARAGE members eave-lo-drip-edge-{flange,nose,face,kick} and eave-lo-gutter-{back,bottom,front} (scratchpad geometry-review/E1/p5.py). Sheet A-594 (permit_set.pdf p.56) notes K6, K7 and callout 'back sheet BEHIND the drip edge'."
+   },
+   "source": "houses/catlin/notes/garage_eave_detail.md K6/K7 and lap-order line 35",
+   "proposed_fix": "Move the gutter back 0.5 in. inboard (or the drip face 0.5 in. outboard) in the garage eave derivation so the back sheet lands behind the face; or reword K6. Check the gutter hanger and fascia gap (back is 0.75 in. off the metal fascia).",
+   "size_guess": "small",
+   "seam_with": [
+    "F4"
+   ],
+   "dedupe_key": "RF-GARAGE:gutter-back-vs-drip-face"
+  },
+  {
+   "id": "E1-005",
+   "area": "E1",
+   "title": "A-594 and garage_eave_detail.md note says the garage deck is 3/4 in. Structural 1 plywood; the model, the same sheet's callout and the roof note use 19/32 in. (0.594 in.)",
+   "elements": [
+    "TR-CATLIN-GARAGE-EAVE",
+    "GARAGE_ROOF",
+    "CANOPY_ROOF"
+   ],
+   "files": [
+    "houses/catlin/notes/garage_eave_detail.md:18"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-594"
+    ],
+    "pages": [
+     56
+    ]
+   },
+   "confidence": 0.9,
+   "evidence": {
+    "measured": "A-594 general note reads 'Deck: 3/4\" Structural 1 plywood'; the section callout on the same sheet reads 'deck 0.594\"'. GARAGE_ROOF 'deck' = ROOF_DECK_THICKNESS = inch(0.59375); notes/roof_sheathing_and_membranes.md line 4: GARAGE_ROOF and CANOPY_ROOF use Structural I 40/20, 19/32 in.",
+    "expected": "'Deck: 19/32\" Structural 1 plywood (0.594\")'.",
+    "method": "Read A-594 (permit_set.pdf p.56) general notes vs section callout; grep -n 'Structural 1' houses/catlin/notes/garage_eave_detail.md; plan/assemblies/envelope_roofs.py GARAGE_ROOF 'deck' layer."
+   },
+   "source": "houses/catlin/plan/assemblies/envelope_roofs.py; notes/roof_sheathing_and_membranes.md",
+   "proposed_fix": "Edit the note line to 19/32 in. (a note is sheet text pulled from the transition's notes file).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "A-594:deck-thickness-note"
+  },
+  {
+   "id": "E1-006",
+   "area": "E1",
+   "title": "A-592 (TR-CATLIN-EAVE, EXT_2X6_BOARD_BATTEN / ROOF) prints no section: only callout arrows and a '5.5 stud / 4 CI' dimension float on an empty sheet",
+   "elements": [
+    "TR-CATLIN-EAVE"
+   ],
+   "files": [
+    "houses/catlin/plan/transitions.py:48",
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-592"
+    ],
+    "pages": [
+     54
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "permit_set.pdf p.54: notes and keyed notes K1-K9 print, the detail itself (wall, roof, gutter, eave) is absent; A-593 (EXT_2X6 / ROOF, the same junction on the PBR wall) draws the full section.",
+    "expected": "A-592 draws the eave section for the board-and-batten wall variant, or the sheet is not issued.",
+    "method": "Read permit_set.pdf pp.54-55 (A-592 vs A-593). Manifest permit_set.json number A-592 page 54."
+   },
+   "source": "Sheet comparison",
+   "proposed_fix": "Find why the board-batten eave detail cut yields no geometry (probably the section cut is placed on a wall with no such assembly at the eave); drop the sheet or fix the cut. BBD75 is 3/4 in. deep against the PBR 1-1/4 in. that the roof footprint (7.25 in. outboard) is struck for, so confirm which wall actually meets the E/W eave.",
+   "size_guess": "large",
+   "seam_with": [
+    "E2"
+   ],
+   "dedupe_key": "A-592:blank-section"
+  },
+  {
+   "id": "E1-007",
+   "area": "E1",
+   "title": "The 4 in. ROUND leaders (TR-RF-LEADER-E/-W) are not a Metal Sales part; the PBR line stocks only 4 x 3-1/2 and 4 x 6 rectangular downspouts, yet the estimate prices a Metal Sales 24 ga PVDF 4 in. downspout",
+   "elements": [
+    "TR-RF-LEADER-E",
+    "TR-RF-LEADER-W",
+    "TR-RF-GUTTER-E",
+    "TR-RF-GUTTER-W"
+   ],
+   "files": [
+    "houses/catlin/params/roof_trim.py:112",
+    "houses/catlin/notes/box_gutter_sizing.md:87"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "PBR Install Guide 4/2024 pp.13-14: downspouts 58094XX/58097XX (4 x 3-1/2, 10'-2\"/20'-3\"), 58098XX/58101XX (4 x 6), elbows 58102XX/58106XX, straps 58110XX; no round tube. Model: Downspout diameter=4 in., takeoff drainage[2] 'Downspout, 4\" - Metal Sales 24 ga PVDF Slate Grey, formed' 39.2 LF. Round 4 in. = 12.57 sq in.; 4 x 3-1/2 = 14.0 sq in. (clears the 4/5 in. outlet and PGI-15's bottom-width rule); the buried 4 in. PVC extension is round.",
+    "expected": "Leader specified as 4 x 3-1/2 in. 58094XX/58097XX (rectangular, with 58102XX elbows and 58110XX straps) and a rectangular-to-round adapter into the 4 in. PVC extension, or a site-formed round tube named as custom.",
+    "method": "PDF text: pdftotext houses/catlin/notes/sources/metal-sales-pbr-install-2024.pdf (lines 755-830); takeoff.json drainage[2]; params/roof_trim.py _LEADER_DIA_IN."
+   },
+   "source": "Metal Sales PBR Install Guide 4/2024 pp.13-14",
+   "proposed_fix": "Re-state the leader as the stocked rectangular 4 x 3-1/2 (area 14.0 vs 12.57 sq in., better capacity) or label the round tube custom-formed; update the S-5!/standoff strap description. Not geometry-neutral if drawn rectangular.",
+   "size_guess": "large",
+   "seam_with": [
+    "M2"
+   ],
+   "dedupe_key": "TR-RF-LEADER:round-vs-rect"
+  },
+  {
+   "id": "E1-008",
+   "area": "E1",
+   "title": "Garage vented ridge: the 13 in. step cover with Cobra vent has no Metal Sales part number, but the 5/2024 Residential manual publishes the Image II Vented Peak (52134XX over Profile Vent 6441899 and clip 6540000)",
+   "elements": [
+    "RF-GARAGE:ridge-vent-cap"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/trim/_image_ii.py:92",
+    "packages/engine/src/typehaus/takeoff/cladding_trim.py:256"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "Catalog IMAGE_II_VENTED_STEP_RIDGE draws 6-1/2 in. legs 'read off the drawing' from PIM p.20 and bills under key IMAGE_II_VENTED_STEP_RIDGE (3 ea, unpriced); check integrity.cladding_trim_coverage is UNKNOWN for exactly this. RDM 5/2024 p.41 'Image II Vented Peak': Residential Peak 52134XX (7 in. leg, 3 in. return, stretch-out 12-1/8 in.), Image II Profile Vent 6441899 (16 in., 100 ft notched), Profile Vent Clip 6540000, 2 clips per panel. The catalog already holds IMAGE_II_RESIDENTIAL_PEAK 52134XX, referenced by nothing.",
+    "expected": "Vented ridge built from the published, part-numbered Vented Peak system; NFA still unprinted so code.R806_2_attic_ventilation stays UNKNOWN regardless.",
+    "method": "pdftotext houses/catlin/notes/sources/metal-sales-residential-design-2024.pdf; lines 2500-2570 and 880-895; baseline checks.json integrity.cladding_trim_coverage; grep IMAGE_II_RESIDENTIAL_PEAK in engine."
+   },
+   "source": "Metal Sales RDM 5/2024 pp.12, 41-42",
+   "proposed_fix": "Swap the garage vented ridge to Residential Peak + Profile Vent + clips (swaps a product, so escalate); keep the Cobra option only as the PIM-based alternative.",
+   "size_guess": "large",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "RF-GARAGE:vented-ridge-part"
+  },
+  {
+   "id": "E1-009",
+   "area": "E1",
+   "title": "Ridge cap steps 1.5 in. at the canopy/garage joint: canopy closed 7 in. cover crowns at z 144.75, garage vented cap at 146.22, no end cap or transition",
+   "elements": [
+    "RF-BW-CANOPY:ridge-vent-cap",
+    "RF-GARAGE:ridge-vent-cap"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/roof_ridge_trim.py",
+    "packages/engine/src/typehaus/takeoff/cladding_trim.py:243"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Resolved ridge_cap members: canopy z 141.58-144.75 (closed-cap, 72 in.), garage z 143.22-146.22 (vented, 304.9 in.), both on the same 4:12 plane with ridge z 143.0. The vented cap, with its open Cobra block, begins exactly at y=517.75 where the canopy cap ends (518.63): an open vent end faces outdoors and the crowns differ by 1.47 in. Takeoff bills no Image II End Cap (52111XX, RDM p.12) or Cobra end closure for any ridge end (house ridge ends at the gables are likewise uncapped).",
+    "expected": "Ridge caps meet at one crown height with an end closure at the vented cap's south end (RDM p.38 hip end cap / Z-closure tabs).",
+    "method": "Python: [m for m in roof.members if m.category=='ridge_cap'] z0_m/z1_m and p0/p1 (scratchpad geometry-review/E1/p4.py); takeoff.json cladding_trim rows contain no 52111XX."
+   },
+   "source": "Metal Sales RDM 5/2024 pp.12 (End Cap 5211141/52111XX), 37-38, PIM p.20",
+   "proposed_fix": "Carry one cap type over the joint, or end the vented cap short with an end cap; add 52111XX end caps to the takeoff at ridge ends.",
+   "size_guess": "large",
+   "seam_with": [],
+   "dedupe_key": "RF:ridge-cap-joint-and-ends"
+  },
+  {
+   "id": "E1-010",
+   "area": "E1",
+   "title": "A-105 roof plan dimensions '0'-8\"' and '0'-7\"' as overhangs on a roof the notes call zero-overhang",
+   "elements": [
+    "RF-HOUSE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/roofplan.py:97"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-105"
+    ],
+    "pages": [
+     27
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "A-105 prints 0'-8\" (west) and 0'-7\" (south) beside RF-HOUSE. The roof footprint is -7.25 / 439.25 in. (x) and -6.75 / 438.75 (y): 7 1/4 in. and 6 3/4 in. outboard of the sheathing line, flush with the cladding face by design (A-592/593 title 'zero-overhang-eave'). `_emit_overhangs` measures from the bearing walls' outermost resolved layer to the roof edge, so it reports a cladding/lip offset the roof does not have. The printed 8 in. matches neither 7.25 nor 7.25+1.5 lip.",
+    "expected": "No overhang dimension on a flush eave, or the real 7 1/4 in. x / 6 3/4 in. y outboard-of-sheathing offsets; A-105 prints no ridge, seam layout, eave/rake trim, gutter or leader labels.",
+    "method": "Read A-105 (permit_set.pdf p.27); roofplan.py lines 97-151; params/roof_panel.py EAVE_X_IN. Not reproduced numerically (the bearing_refs layer extent was not probed), hence low confidence."
+   },
+   "source": "Sheet A-105; houses/catlin/params/cladding.py HOUSE_EW_OUTBOARD_IN",
+   "proposed_fix": "Suppress the overhang dimension where the roof edge is flush with the wall cladding, and print eave/rake trim, ridge and leader notes on the plan.",
+   "size_guess": "small",
+   "seam_with": [
+    "F4"
+   ],
+   "dedupe_key": "A-105:overhang-dims"
+  }
+ ]
+}

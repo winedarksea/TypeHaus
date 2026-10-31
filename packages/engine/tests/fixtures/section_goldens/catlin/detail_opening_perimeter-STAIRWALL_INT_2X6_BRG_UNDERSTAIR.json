@@ -899,7 +899,7 @@
         119.87500000000001,
         -20.842486876640415
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -924,7 +924,7 @@
         122.9375,
         -24.634153543307082
       ],
-      "text": "gwb-x 0.625\"",
+      "text": "gwb-x 5/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1126,7 +1126,7 @@
         0.7,
         1.3980000000000001
       ],
-      "content": "spf  5.5\"",
+      "content": "spf  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1199,7 +1199,7 @@
         0.7,
         1.228
       ],
-      "content": "gwb-x  0.625\"",
+      "content": "gwb-x  5/8\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

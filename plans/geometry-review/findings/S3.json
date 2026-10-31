@@ -1,0 +1,154 @@
+{
+ "area": "S3",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "247a13e9",
+ "inventory_summary": "19 Railing elements inventoried (plan/storeys/*.py), 5 RailingTypes (library/railings.py, handrail_types.py, titanium_types.py), 3 products (Williams CP262406B / AD901102B, EZ EZA8KIT-HB, Waltly Ti tube). Resolved solids probed for ST-S2A guards/handrail. Checks R311.7.1 width, R311.7.8, R311.7.8.2, R312.1.3, R301.5 spacing read from baseline checks.json and the R311.7.1 body (checks/code/mn_residential/stair_width.py). Both baseline R311.7.1 FAILs trace to REAL product dimensions, not a check bug.",
+ "verified_clean": [
+  "RL-A-STAIR post section: true 3.000in post (RailingType.post_width), not nominal 2.5/3.5; ESR-3485 pocket 3.036in matches fascia_post_offset 1.518.",
+  "RL-A-FLIGHT-GUARD: posts at y 66.73..69.73 stand outside the flight (tread edge y 69.75); 0 encroachment from this guard.",
+  "RL-A-FLIGHT-GUARD rail top 242.85in at x=305.12 vs nosing line z~206.3 = ~36.6in above nosings, >= 36in R312.1.1.",
+  "RL-A-HANDRAIL / RL-S-HANDRAIL-E,W / RL-G-SERVICE: path 2.5in off the wall face + 0.95in rail radius = 1.55in clear (check 1.55..1.61), >= 1.5in; projection 3.45..3.75in <= 4.5in.",
+  "RL-M-HANDRAIL-E/-W (Ti 42mm): wall-to-centre 1.92+0.83 = 2.75in = 70mm, inside the saddle bracket's 60-93mm range; 42mm = 1.65in grip within Type I 1.25-2in.",
+  "Handrail bracket spacing: widest span 41.5in (RL-A-HANDRAIL) vs 48in manual; Ti 37.2in vs 39.4in (1000mm).",
+  "R312.1.3: all balusters draw <= 4.0in clear (3.5-4.0in); gaps beside posts 3.64in on RL-A-STAIR.",
+  "Baluster picket 0.5in face (Williams 0.50x0.75) used as the sphere face, per library note."
+ ],
+ "findings": [
+  {
+   "id": "S3-001", "area": "S3",
+   "title": "ST-S2A: RL-A-STAIR fascia posts stand 2.89in inside the 36in flight (R311.7.1 FAIL is real, not a check bug)",
+   "elements": ["RL-A-STAIR", "RL-A-STAIR-POST1", "RL-A-STAIR-POST2", "RL-A-STAIR-POST3", "ST-S2A", "RL-A-FLIGHT-GUARD"],
+   "files": ["houses/catlin/plan/storeys/attic.py:888", "houses/catlin/plan/storeys/attic.py:897", "packages/engine/src/typehaus/library/railings.py:70", "packages/engine/src/typehaus/checks/code/mn_residential/stair_width.py:135"],
+   "kind": "interface-fit", "severity": "wrong-build",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Tread boards y 69.75..105.75 (36.00in). RL-A-STAIR posts (3.00in true) y 69.64..72.64 at x 351-354, 302.9-305.9, 254.9-257.9, z 240..282 over tread tops 175..234 (34..80in clear envelope). Intrusion 72.64-69.75 = 2.89in -> 33.11in between posts (matches check). Bracket hat is 3.29in (library fascia_bracket_projection), so true intrusion ~3.18in -> ~32.8in; the check measures only the 3.0in post.",
+    "expected": "36in clear above the handrail height between finished faces (R311.7.1), so posts/brackets must stand outside y 69.75, or the flight is wider by >= 3.3in.",
+    "method": "scratchpad/geometry-review/S3/p1.py (load_plan+resolve; print RL-A-STAIR-POST* outlines vs ST-S2A tread-000 p0/p1). Check body read at stair_width.py:_flight_projections/_guard_posts."
+   },
+   "source": "ESR-3485 Fig.10 via library/railings.py _FASCIA_BRACKET (post pocket 3.036in, bracket 3.29in); houses/catlin/CLAUDE.md 'FO-A-STAIR WEST edge' paragraph already records it as an open R311.7.1 item.",
+   "proposed_fix": "Design call, not a dimension correction: (a) move RL-A-STAIR's guard line so its posts stand on the deck side (fascia_face_offset to put the bracket on the deck-side face, or surface-mount posts on the deck behind the well edge), (b) widen ST-S2A/FO-A-STAIR by >= 3.3in (S1), or (c) top-mount a rail only. Tell the check to read the 3.29in bracket if it is kept inboard.",
+   "size_guess": "large", "seam_with": ["S1"], "dedupe_key": "S3:ST-S2A-guard-post-intrusion"
+  },
+  {
+   "id": "S3-002", "area": "S3",
+   "title": "ST-S2A second FAIL (29.66in past handrail) is the same post plus a real 3.45in handrail projection; handrail side is correct",
+   "elements": ["RL-A-HANDRAIL", "ST-S2A", "RL-A-STAIR"],
+   "files": ["houses/catlin/plan/storeys/attic.py:948", "packages/engine/src/typehaus/checks/code/mn_residential/stair_width.py:172"],
+   "kind": "interface-fit", "severity": "wrong-build",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.75,
+   "evidence": {
+    "measured": "Handrail rail section y 102.3..104.2 (path 103.25, r 0.95) against tread edge y 105.75: projection 3.45in (check: 3.45in from W-A-SN/W-S-E1/W-S-SS2), 1.55in clear to wall. Post side 2.89in. 36 - 3.45 - 2.89 = 29.66in vs 31.5in.",
+    "expected": "Handrail alone is fine (<= 4.5in projection, 36-3.45 = 32.55in >= 31.5in). With RL-A-STAIR posts removed from the flight the FAIL clears; no handrail change needed.",
+    "method": "p1.py output for RL-A-HANDRAIL-RAIL1 outline vs tread ends; check body clear = flight_w - max(proj0,post0) - max(proj1,post1)."
+   },
+   "source": "IRC R311.7.1 (31.5in one rail); EZ Handrail EZA8KIT-HB kit.",
+   "proposed_fix": "Clears with S3-001. Do not move the handrail: 1.55in wall clearance has only 0.05in margin over R311.7.8.2.",
+   "size_guess": "large", "seam_with": ["S1"], "dedupe_key": "S3:ST-S2A-handrail-clear"
+  },
+  {
+   "id": "S3-003", "area": "S3",
+   "title": "EZ Handrail EZA200 bracket projection not published or cited; handrail wall clearance rests on an assumed 2.5in standoff with 0.05in margin",
+   "elements": ["PROD-EZ-HANDRAIL-EZA8KIT-HB", "RAILING-INT-ALUM-HANDRAIL", "RL-A-HANDRAIL", "RL-S-HANDRAIL-E", "RL-S-HANDRAIL-W", "RL-G-SERVICE"],
+   "files": ["houses/catlin/plan/handrail_types.py:14", "packages/engine/src/typehaus/resolve/railings/frame.py:42"],
+   "kind": "product-data", "severity": "doc",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Engine _BRACKET_DROP_M = 2.5in (rail centre to wall); catalog row cites no wall-to-rail dimension. Modelled clear 1.55in (r 0.95in).",
+    "expected": "Manufacturer's wall-to-rail-underside (ADA minimum 1.5in); web search found no published projection for EZA200 (only 400+ lb rating, 1.9in ADA rail).",
+    "method": "WebSearch 'EZ Handrail EZA200 bracket projection'; read handrail_types.py source strings; checks.json R311_7_8_2 findings."
+   },
+   "source": "ezhandrail.com install manual / EZA200 spec sheet (not located); Home Depot 205958100.",
+   "proposed_fix": "Measure or request the EZA200 projection before ordering; add it to Product.source. If it is < 2.45in centre-to-wall the 1.5in clearance fails.",
+   "size_guess": "small", "seam_with": [], "dedupe_key": "S3:ez-bracket-projection"
+  },
+  {
+   "id": "S3-004", "area": "S3",
+   "title": "Guard top rail drawn 0.75in above the post top and bottom rail straddles the deck (rail centred on z0 and z0+h)",
+   "elements": ["RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH"],
+   "files": ["packages/engine/src/typehaus/resolve/railings/frame.py:125", "packages/engine/src/typehaus/library/railings.py:46"],
+   "kind": "engine-geometry", "severity": "model-only",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "RL-A-STAIR: post z 240.00..282.00; RAIL1 z 281.25..282.75 (top 0.75in over post); RAIL2 z 239.25..240.75 (0.75in below the deck). Guard drawn 42.75in to rail top.",
+    "expected": "Williams CP262406B panel is 39in x 69.43in actual on a 42in post (Menards 1717891): top rail flush with or below the post top, bottom rail a few inches above the deck.",
+    "method": "p1.py: print RL-A-STAIR-POST1/RAIL1/RAIL2 z0/z1."
+   },
+   "source": "library/railings.py WILLIAMS_COLONIAL_42_BLACK.source ('39in x 69.43in actual').",
+   "proposed_fix": "Place rails off the product's panel (top at post top, 39in panel) in emit_rails; verify before touching since 42in guard height is code-neutral (>= 36in).",
+   "size_guess": "small", "seam_with": [], "dedupe_key": "S3:guard-rail-vs-post-height"
+  },
+  {
+   "id": "S3-005", "area": "S3",
+   "title": "RL-A-STAIR bays are 48.06in c/c but the cited Williams system is a 6ft (72.43in c/c) panel and 'fascia runs use 6ft panels only'",
+   "elements": ["RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-A-FLIGHT-GUARD"],
+   "files": ["packages/engine/src/typehaus/library/railings.py:20", "houses/catlin/plan/storeys/attic.py:888", "packages/engine/src/typehaus/resolve/railings/frame.py:72"],
+   "kind": "product-data", "severity": "doc",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "RL-A-STAIR path 96.1in, post_spacing 60 -> two even 48.06in bays (posts at x 352.5/304.4/256.4); RL-A-FLIGHT-GUARD 55in bays on 72in run (2 bays 36in).",
+    "expected": "Panel stock is 72.43in c/c (6ft) or the 36in x 6ft raked stair panel (55.68in max c/c); field-cutting a picket panel is not documented in the cited ESR-3485 text.",
+    "method": "library/railings.py _SPACING; resolve emit_infill bay logic; p1.py post x stations."
+   },
+   "source": "ESR-3485 Table 1; Williams catalog p.6.",
+   "proposed_fix": "Confirm panel cut-to-length is allowed under ESR-3485 or re-space posts at 72.43in c/c; note it in the stair guard type source.",
+   "size_guess": "small", "seam_with": [], "dedupe_key": "S3:panel-bay-vs-stock"
+  },
+  {
+   "id": "S3-006", "area": "S3",
+   "title": "S-602 Connection hardware schedule prints overlapping text blocks: Basis of Quantity runs over the structural-solids table and the title block",
+   "elements": ["S-602"],
+   "files": ["houses/catlin/out/geometry-review-2026-10-31/baseline/permit_set.pdf"],
+   "kind": "drawing", "severity": "drawing-error",
+   "on_permit_set": {"printed": true, "sheets": ["S-602"], "pages": [20]},
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Page 20: the numbered 'BASIS OF QUANTITY' lines overprint the 'STRUCTURAL SOLIDS - BY CATEGORY' tables and run into the title block; both connector tables render at hairline size.",
+    "expected": "Non-overlapping, legible schedule (it is a permit sheet).",
+    "method": "Read permit_set.pdf pages 20."
+   },
+   "source": "n/a (sheet layout)",
+   "proposed_fix": "Paginate or wrap the basis text in the S-602 emitter; cap table height.",
+   "size_guess": "large", "seam_with": ["S2"], "dedupe_key": "S3:S-602-layout-overlap"
+  },
+  {
+   "id": "S3-007", "area": "S3",
+   "title": "Handrail heights on ST-B2M, ST-M2S, ST-G-SERVICE and ST-SG-PORCH are only 'as drawn'; porch stair rail at 34.25in has 0.25in margin and no nosing cross-check",
+   "elements": ["RL-SG-PSTAIR-HR", "RL-M-HANDRAIL-E", "RL-M-HANDRAIL-W", "RL-S-HANDRAIL-E", "RL-S-HANDRAIL-W", "RL-G-SERVICE"],
+   "files": ["houses/catlin/plan/storeys/main.py", "packages/engine/src/typehaus/checks/code/mn_residential/stairs.py:249"],
+   "kind": "interface-fit", "severity": "model-only",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "checks.json: 'no measurable nosing line under it - height not cross-checked' on the five stairs; ST-SG-PORCH RL-SG-PSTAIR-HR top 34.25in (ADA pipe, post mounted).",
+    "expected": "34-38in above the nosing line (R311.7.8.1); rails at 36in authored on walls have more margin.",
+    "method": "checks.json R311_7_8_handrail rows; low confidence because I did not measure the resolved rail z against tread tops for those stairs."
+   },
+   "source": "IRC R311.7.8.1",
+   "proposed_fix": "Sample the resolved rail z against nosing z on ST-SG-PORCH; raise the rail to 36in if tread finish thickness eats the margin.",
+   "size_guess": "small", "seam_with": ["S1"], "dedupe_key": "S3:handrail-height-uncrosschecked"
+  },
+  {
+   "id": "S3-008", "area": "S3",
+   "title": "RAILING-EXT-ALUMINUM-ADA-HANDRAIL OD (1.5in) is inferred from part names; return standoff unpublished",
+   "elements": ["RAILING-EXT-ALUMINUM-ADA-HANDRAIL", "RL-SG-PSTAIR-HR", "PROD-WILLIAMS-AD901102B"],
+   "files": ["packages/engine/src/typehaus/library/railings.py:86"],
+   "kind": "product-data", "severity": "doc",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "rail_diameter = 1.5in, comment 'Inferred from the part names; measure on delivery'.",
+    "expected": "Williams ADA pipe rail AD903194 published OD (a Type I grip must be 1.25-2in; 1.5in is inside the band).",
+    "method": "read library/railings.py source strings; no Williams OD located in the cited ESR."
+   },
+   "source": "Williams ADA instructions p.5 (Menards 1717885).",
+   "proposed_fix": "Record the published OD and return standoff once read off the Williams instruction sheet.",
+   "size_guess": "small", "seam_with": [], "dedupe_key": "S3:williams-ada-od"
+  }
+ ]
+}

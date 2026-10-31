@@ -8,11 +8,11 @@
       "points": [
         [
           210.75,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           211.25000000000003,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           211.25000000000003,
@@ -36,11 +36,11 @@
       "boundary": [
         [
           210.75,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           211.25000000000003,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           211.25000000000003,
@@ -65,11 +65,11 @@
       "points": [
         [
           205.25000000000003,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           210.75,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           210.75,
@@ -93,11 +93,11 @@
       "boundary": [
         [
           205.25000000000003,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           210.75,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           210.75,
@@ -121,11 +121,11 @@
       "points": [
         [
           204.75000000000003,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           205.25000000000003,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           205.25000000000003,
@@ -149,11 +149,11 @@
       "boundary": [
         [
           204.75000000000003,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           205.25000000000003,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           205.25000000000003,
@@ -177,7 +177,7 @@
       "points": [
         [
           211.25000000000006,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           211.25000000000006,
@@ -198,7 +198,7 @@
       "points": [
         [
           204.75000000000003,
-          320.84744094488195
+          293.6446850393701
         ],
         [
           204.75000000000003,
@@ -1592,11 +1592,11 @@
       "points": [
         [
           205.25000000000003,
-          320.84744094488195
+          320.1722440944882
         ],
         [
           210.75,
-          320.84744094488195
+          320.1722440944882
         ],
         [
           210.75,
@@ -1620,11 +1620,11 @@
       "boundary": [
         [
           205.25000000000003,
-          320.84744094488195
+          320.1722440944882
         ],
         [
           210.75,
-          320.84744094488195
+          320.1722440944882
         ],
         [
           210.75,
@@ -1893,7 +1893,7 @@
         205.00000000000003,
         321.0833552055993
       ],
-      "text": "gwb-b 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1918,7 +1918,7 @@
         208.0,
         318.5555774278215
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1943,7 +1943,7 @@
         211.0,
         316.02779965004373
       ],
-      "text": "gwb-a 0.5\"",
+      "text": "gwb-mr 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1962,7 +1962,7 @@
       },
       "at": [
         191.9389763779528,
-        377.81367016622926
+        350.6109142607174
       ],
       "to": [
         218.61141732283468,
@@ -1987,7 +1987,7 @@
       },
       "at": [
         191.9389763779528,
-        375.2858923884515
+        348.0831364829396
       ],
       "to": [
         218.61141732283468,
@@ -2012,13 +2012,13 @@
       },
       "at": [
         191.9389763779528,
-        372.7581146106737
+        345.55535870516184
       ],
       "to": [
         218.61141732283468,
         336.1291604348983
       ],
-      "text": "sheathing 0.594\"",
+      "text": "sheathing 19/32\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2037,7 +2037,7 @@
       },
       "at": [
         191.9389763779528,
-        370.23033683289594
+        343.02758092738407
       ],
       "to": [
         218.61141732283468,
@@ -2062,13 +2062,13 @@
       },
       "at": [
         191.9389763779528,
-        367.7025590551182
+        340.4998031496063
       ],
       "to": [
         218.61141732283468,
         329.8597440944882
       ],
-      "text": "rafter 11.9\"",
+      "text": "rafter 11 7/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2087,13 +2087,13 @@
       },
       "at": [
         191.9389763779528,
-        365.1747812773404
+        337.9720253718285
       ],
       "to": [
         218.61141732283468,
         327.3597440944882
       ],
-      "text": "rafter fill (fiberglass-r30c) 6.88\"",
+      "text": "rafter fill (fiberglass-r30c) 6 7/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2103,72 +2103,8 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        216.25000000000006,
-        375.72478127734036
-      ],
-      "content": "air continuity — sheathing-ext →\nsheathing-ext",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        216.25000000000006,
-        371.0775590551181
-      ],
-      "content": "water continuity — membrane-ext → eave-\nmetal-ext",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        216.25000000000006,
-        366.4303368328959
-      ],
-      "content": "water continuity — spray-foam-ext →\ngutter-flange-ext",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        216.25000000000006,
-        361.78311461067364
-      ],
-      "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
-      "height": 3.0,
-      "height_pt": 7.0,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
         192.9389763779528,
-        316.84744094488195
+        289.6446850393701
       ],
       "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
       "height": 3.0,
@@ -2212,7 +2148,7 @@
       "offset": 3.0,
       "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
-      "text": "5.5\" stud",
+      "text": "5 1/2\" stud",
       "text_along": 0.0,
       "uid": null
     },
@@ -2433,7 +2369,7 @@
         0.7,
         1.228
       ],
-      "content": "gwb-mr  0.5\"",
+      "content": "gwb-mr  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2505,7 +2441,7 @@
         0.7,
         1.058
       ],
-      "content": "spf  5.5\"",
+      "content": "spf  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2577,7 +2513,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "gwb  0.5\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2650,7 +2586,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "fiberglass-r30c  6.88\"",
+      "content": "fiberglass-r30c  6 7/8\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2796,7 +2732,7 @@
         2.85,
         1.228
       ],
-      "content": "cdx-plywood  0.594\"",
+      "content": "cdx-plywood  19/32\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2957,19 +2893,11 @@
     "• Roof: 11-7/8\" TJI 230 at 24\" o.c., LSSR hangers to a structural ridge beam.",
     "• Bay: 5\" ccSPF on deck, R-30C batt. Foam is the air and vapour barrier.",
     "• Deck: 19/32\" CDX, 40/20, oversailing the rafter ends to the girt face.",
-    "• Butyl membrane 240 F min, full field plus eave strip-in. 24 ga Image II, nail flange.",
-    "• Wall: 2x6, 1/2\" sheathing, 4\" ccSPF, 1/2\" vent gap, KDAT girts, 1-1/4\" PBR. No WRB.",
+    "• Butyl membrane 240 F, full field + eave strip-in. 24 ga Image II, nail flange.",
+    "• Partition stops 3/4\" under rafters; SDPW19600 screw per crossing.",
     "",
     "KEYED NOTES:",
-    "K1  Birdsmouth seat: beveled web stiffeners per APA D710 10h; H2.5A each rafter.",
-    "K2  Foam first lift 1-1/2\" min. Lap onto ridge beam and hanger flanges in one pass.",
-    "K3  2x6 eave block on edge on the plate, every bay. ccSPF over it.",
-    "K4  Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.",
-    "K5  Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04\".",
-    "K6  Strip-in membrane over both flanges, 4\" past the hem. Pan rides over it.",
-    "K7  PBR 5x4 gutter, level, back behind eave face, flange under eave leg.",
-    "K8  Eave face over the gutter back, kick and hem into the trough. Pan hemmed round the lip. No fascia, no soffit.",
-    "K9  2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Hanger below the eave face; bracket pending."
+    "K2  Foam first lift 1-1/2\" min; lap ridge beam and hanger flanges in one pass."
   ],
   "frame": {
     "paper": [
@@ -2984,7 +2912,7 @@
     ],
     "center": [
       218.984251968504,
-      350.37500000000006
+      323.1722440944882
     ],
     "scale": 0.75,
     "scale_label": "3/4\" = 1'-0\"",

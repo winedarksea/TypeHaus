@@ -1,0 +1,409 @@
+{
+ "area": "F1",
+ "model": "houses/catlin @247a13e9",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Probed all 184 resolved walls' members: stud/plate heights vs storey stack, header vs plates, 90 openings' kings/jacks/headers, stud gaps off module, takeoff stock lengths; read S-601 and A-503. Time-limited: corner packs, stagger studs, A-532..552 and S-101/103 sheets not examined in detail. Second pass: corners, staggered walls, S-101.1, S-103.2/.3, A-532, A-544 examined; S-101.2/.3, S-103.1/.4 and the other A-5xx details not individually viewed.",
+ "verified_clean": [
+  "All framed walls: stud top = bottom of lowest top plate and stud bottom = sole plate top (stack continuous, no gaps), main/second 103.5 in. ext (108 in. plates), partitions 102.875 (107.375 top, deliberate 3/4 in. clear per CLAUDE.md), basement/garage consistent",
+  "Actual lumber dims: 2x4=1.5x3.5, 2x6=1.5x5.5, 2x8 7.25, 2x10 9.25 in headers; LVL header depths exact (9.5, 14, 5.5)",
+  "Jack inner faces land on RO edge (e.g. 38.24 in. RO: jack centre 19.87 in. = 19.12+0.75) with kings packed outboard, jack bottoms on sole plate, tops on header bottom",
+  "Every header except D-G-SERVICE and D-B-PATIO tops below the lowest top plate (p14.py)",
+  "Window RO jamb packs 27.5/30 in.: 1 king+1 jack per side, header 2-2x8 sits at RO head; no stud/jack stacking conflicts",
+  "Garage walls frame at 24 in. o.c. (2x6, 95.5 in. studs) as designed; W-B/W-M partition gaps only at doors/walls ends",
+  "R602.7.5 jack/king table not independently verified (ICC site 403, web search inconclusive)",
+  "Corners (W-M/W-S S1,E1,N1,W1B): 4-stud corner = end stud + two corner studs on the owner wall (2x6, z 1.5..105/121.5..225) with the neighbour's end stud butting; sizes true 1.5x5.5, heights match the stack, corner studs billed as lsl on main",
+  "Staggered walls (W-M-LS, W-M-HS1): 2x4 studs at +/-1.0 in. off axis on a 2x6 plate (flush to alternating plate faces, 3.5 in. in a 5.5 in. plate), 16 in. o.c. per face / 8 in. along, 2x6 end studs; plate profile 2x6 as per memory",
+  "S-103.2/.3 panel labels vs braced_walls.py: east main 34/43/154 = 34.25/42.75/153.5; second S1 six 32-34 in. runs total ~16.7 ft vs PROV 16.78",
+  "S-101.1 header schedule spans = RO + 2 jacks (26.24->2'-5\", 36->3'-3\", 63.31->5'-9\")"
+ ],
+ "findings": [
+  {
+   "id": "F1-001",
+   "area": "F1",
+   "title": "D-G-SERVICE header runs 2 in. up into the garage double top plate",
+   "elements": [
+    "D-G-SERVICE",
+    "W-G-S"
+   ],
+   "files": [
+    "houses/catlin/plan/storeys/garage.py",
+    "packages/engine/src/typehaus/resolve/framing/openings.py:410"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "header-0 3-1.75x5.5 LVL z 81.5..87.0; plate-top-1 z 85.0..86.5 and plate-top-0 86.5..88.0; kings/studs stop at 85.0. Header overlaps plate-top-1 fully and 0.5 in. of plate-top-0 (RO head 81.5 + 5.5 in. = 87 vs 85 framing height).",
+    "expected": "Header top <= 85.0 (underside of lower top plate), or plates notched/header replaces the lower plate with a stated detail.",
+    "method": "Probe: load_plan(houses/catlin)+resolve; scratchpad geometry-review/F1/p13.py, p14.py (header z1 > lowest top-plate z0 per wall). Wall W-G-S members within the opening station."
+   },
+   "source": "IRC R602.7 (header sits under top plate); houses/catlin/CLAUDE.md garage plates 8'-4\"",
+   "proposed_fix": "Shorten RO height (door RO 81.5 is derived from DT-EXT-SWING32-G; 79.5 max with a 5.5 in. header) or raise garage plate height; or drop plate-top-1 over the header and say so. Escalate: moves RO/plate height.",
+   "size_guess": "large",
+   "seam_with": [
+    "F5"
+   ],
+   "dedupe_key": "D-G-SERVICE:header-into-plate"
+  },
+  {
+   "id": "F1-002",
+   "area": "F1",
+   "title": "D-B-PATIO liner header stands 1.6 in. above the framed liner wall top",
+   "elements": [
+    "D-B-PATIO",
+    "W-B-S3-FR"
+   ],
+   "files": [
+    "houses/catlin/plan/assemblies/",
+    "packages/engine/src/typehaus/resolve/framing/openings.py:410"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "header-0 2-2x10 z -21.06..-11.81; plate-top-1 bottom -16.44, wall top -13.44. Header top is 4.6 in. into the plate zone and 1.63 in. above the wall top (basement ceiling/joist-bottom plane). RO height 82.88 + 9.25 in. header = 92.1 in. vs 84.25 in. stud height available.",
+    "expected": "Header top <= -16.44 or the liner header omitted where the concrete/ICF opening above carries the load.",
+    "method": "Probe: load_plan(houses/catlin)+resolve; scratchpad geometry-review/F1/p13.py, p14.py (header z1 > lowest top-plate z0 per wall). (HDR over plate list: W-B-S3-FR header-0)."
+   },
+   "source": "Model geometry; IRC R602.7",
+   "proposed_fix": "Decide what carries load over D-B-PATIO in the garden liner; if the concrete does, frame a flat nailer only; else reduce RO or raise the liner wall.",
+   "size_guess": "large",
+   "seam_with": [
+    "F2",
+    "F3"
+   ],
+   "dedupe_key": "D-B-PATIO:liner-header-over-top"
+  },
+  {
+   "id": "F1-003",
+   "area": "F1",
+   "title": "Plates over 20 ft ordered in non-stock lengths (22/28/36 ft) and never spliced",
+   "elements": [
+    "W-M-E1",
+    "W-A-E2",
+    "W-G-S",
+    "W-G-E",
+    "W-G-N",
+    "W-G-W"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/takeoff/framing.py:29",
+    "packages/engine/src/typehaus/takeoff/framing.py:56",
+    "packages/engine/src/typehaus/takeoff/framing.py:135"
+   ],
+   "kind": "engine-geometry",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-601"
+    ],
+    "pages": [
+     20
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "framing_bom 2x6 plate stock: 3 x 36 ft, 1 x 28, 1 x 22, 11 x 24 (W-M-E1 plates are 35.46 ft cut). _order_length_ft rounds past 20 ft to next 2 ft; plates are not 'spliceable'.",
+    "expected": "Dimension lumber stocked to 16/20 ft (24 ft special); plates are lap-spliced (4 ft min over a stud) in 12-20 ft sticks.",
+    "method": "takeoff.json framing_bom; probe p15.py lists members > 20 ft."
+   },
+   "source": "Local lumber yard stock; IRC R602.3.2 top-plate laps",
+   "proposed_fix": "Mark plate/raked_plate runs spliceable in _bucket_cut_lengths (cap 20 ft) with a lap allowance.",
+   "size_guess": "small",
+   "seam_with": [
+    "F2"
+   ],
+   "dedupe_key": "takeoff:plate-stock-over-20ft"
+  },
+  {
+   "id": "F1-004",
+   "area": "F1",
+   "title": "W-S-W3 exterior wall drops module studs at 60 in. and 108 in. (32 in. bays)",
+   "elements": [
+    "W-S-W3"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/framing/solver.py:1005"
+   ],
+   "kind": "engine-geometry",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.2"
+    ],
+    "pages": [
+     10
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Studs at 12,13.5(jack),44,76,92,124,...: no stud at 60 or 108; bays 44-76 and 92-124 are 32 in. Truss blocks stand at 76 and 108 with no stud behind 108. All other second-storey facade walls keep 16 in. module.",
+    "expected": "16 in. o.c. stud line (module stations 28/44/60/76/92/108/124) except inside openings.",
+    "method": "scratchpad F1/p9.py (gap > 16.3 in. outside openings), p10.py W-S-W3."
+   },
+   "source": "IRC R602.3.1 (2x6 at 16 in. o.c. bearing); houses/catlin/CLAUDE.md ONE GRID PER FACADE",
+   "proposed_fix": "Find why the solver omitted stud-at-60/108 (continuation_roles seam owner at the W-S-W3/W-S-W2 tee? pocket?) and restore; confirm on S-101.2.",
+   "size_guess": "small",
+   "seam_with": [
+    "F2"
+   ],
+   "dedupe_key": "W-S-W3:missing-module-studs"
+  },
+  {
+   "id": "F1-005",
+   "area": "F1",
+   "title": "W-M-PAN-S pocket-door header (74.5 in. 2-2x6) has no king/jack/end stud",
+   "elements": [
+    "D-M-PANTRY",
+    "W-M-PAN-S"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/framing/openings.py:348"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "header-0 218.75..293.25 in. on a 79 in. wall; members: pocketsplit studs at 221/233/245, cripples at 273/289; no king/jack, no stud-000. Header ends 2.75 in. and 1.75 in. short of wall ends.",
+    "expected": "Header ends bearing on kings/jacks or on the end-wall studs of the abutting walls.",
+    "method": "scratchpad F1/p8.py. Low confidence: nonbearing partition, abutting walls may carry the ends."
+   },
+   "source": "IRC R602.7.4/R602.7.5",
+   "proposed_fix": "Confirm intent; add end studs or document bearing on abutting walls.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "W-M-PAN-S:header-no-supports"
+  },
+  {
+   "id": "F1-006",
+   "area": "F1",
+   "title": "Stud heights are not precut stock lengths; ordered from 8/10 ft and cut",
+   "elements": [
+    "W-M-S1",
+    "W-B-CW",
+    "W-M-HS1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/takeoff/framing.py:29"
+   ],
+   "kind": "commodity-size",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Studs: main ext 103.5 in. (10 ft stock, 16.5 in. offcut each), partitions 102.875, basement 92.3125/91.5/90.75, garage 95.5. Precut studs are 92-5/8, 104-5/8, 116-5/8 (3-plate stack 4.5 in.).",
+    "expected": "Plate stack 108 in. needs 103.5; precut 104-5/8 gives 109-1/8. Not a defect; BOM relies on field cutting.",
+    "method": "scratchpad F1/p2.py, takeoff.json framing_bom stud rows."
+   },
+   "source": "Common precut stud sizes",
+   "proposed_fix": "Note in S-601/DESIGN-LOG that studs are cut from 10 ft stock; no geometry change.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "studs:not-precut"
+  },
+  {
+   "id": "F1-007",
+   "area": "F1",
+   "title": "S-103.x braced-wall line summaries run off the sheet; code citations truncated",
+   "elements": [
+    "S-103.2",
+    "S-103.3"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-103.1",
+     "S-103.2",
+     "S-103.3",
+     "S-103.4"
+    ],
+    "pages": [
+     15,
+     16,
+     17,
+     18
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "BWL-W-A-E1/N1/S1/W1 result lines and the 'PANELS SHOWN ARE...' note are single unwrapped lines clipped at the right border: Table R602.10.3(1) text ends at 'Table R602.' / 'Table R6' and the R602.10.8 sentence ends mid-word ('LE', 'A').",
+    "expected": "Wrapped lines inside the drawing area so the table and item cited are legible.",
+    "method": "permit_set.pdf pages 16 and 17 (S-103.2, S-103.3)."
+   },
+   "source": "Sheet render",
+   "proposed_fix": "Wrap the note/summary text to the sheet width.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S-103:summary-text-clipped"
+  },
+  {
+   "id": "F1-008",
+   "area": "F1",
+   "title": "S-103.2/.3 line labels collide with panel-length labels",
+   "elements": [
+    "BWL-W-G-W",
+    "BWL-W-A-E1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-103.2",
+     "S-103.3"
+    ],
+    "pages": [
+     16,
+     17
+    ]
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "S-103.2: 'BWL-W-G-W 24.0' WSP' printed over the panel label at the garage west wall and the S line label beside '29\" CS-WSP'; S-103.3: 'BWL-W-A-E1 36.0' WSP' printed on top of the east '53\"' panel label. Panel lengths themselves match the model (E1 34.25/42.75/153.5 -> 34/43/154).",
+    "expected": "Non-overlapping labels.",
+    "method": "permit_set.pdf pages 16-17 vs houses/catlin/plan/braced_walls.py:61-66."
+   },
+   "source": "Sheet render",
+   "proposed_fix": "Offset line labels from panel labels.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S-103:label-overlap"
+  },
+  {
+   "id": "F1-009",
+   "area": "F1",
+   "title": "S-101.1 member and beam/post schedules overprint each other",
+   "elements": [
+    "S-101.1"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-101.1"
+    ],
+    "pages": [
+     9
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "MEMBER SCHEDULE's QTY/MARK columns run into BEAM / POST SCHEDULE's first column (e.g. 'MARKMARK', span values stacked on mark text) and the HEADER SCHEDULE span/qty values overprint mark text. Header schedule values themselves match the model (D-B-CLOSET/GYM 2-2x8, D-B-PATIO 2-2x10, span = RO + jacks).",
+    "expected": "Columns separated; every value readable.",
+    "method": "permit_set.pdf page 9."
+   },
+   "source": "Sheet render",
+   "proposed_fix": "Widen column gap or reflow the three tables.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S-101.1:schedule-overprint"
+  },
+  {
+   "id": "F1-010",
+   "area": "F1",
+   "title": "A-532/A-544 stack-shelf dimension strings misplaced or ambiguous",
+   "elements": [
+    "A-532",
+    "A-544"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-532",
+     "A-544"
+    ],
+    "pages": [
+     67,
+     79
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "A-532: dimension '4\" CI' is clipped by the foam hatch and '4\" XPS (2 layers)' floats ~1 ft below the stack; A-544: '3.5\" stud' dimension sits on the upper staggered wall whose layer reads 'staggered-studs 5.5\"' (it measures the lower partition stud). Layer depths themselves are right (2x6 plate 5.5, 2x4 stud 3.5).",
+    "expected": "Dimension strings adjacent to what they measure.",
+    "method": "permit_set_full.pdf pages 67 and 79."
+   },
+   "source": "Sheet render",
+   "proposed_fix": "Place dimension text on its member; no model change.",
+   "size_guess": "small",
+   "seam_with": [
+    "E1"
+   ],
+   "dedupe_key": "A-532:dim-labels"
+  },
+  {
+   "id": "F1-011",
+   "area": "F1",
+   "title": "Openings 3'-6\" to 5'-3\" wide get only 1 king + 1 jack per side",
+   "elements": [
+    "D-M-MUDC",
+    "D-B-PLAY",
+    "WIN-M-DINING-E",
+    "D-B-FURN",
+    "D-B-SHOP"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/framing/tables.py:37",
+    "packages/engine/src/typehaus/resolve/framing/tables.py:254"
+   ],
+   "kind": "engine-geometry",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "king_jack_counts returns (1,1) up to 6 ft: D-M-MUDC 50.24 in. K1/J1, D-B-PLAY 62.35 in. K1/J1, WIN-M-DINING-E 63 in. K1/J1 (2-ply 9.5 in. LVL), 38.24 in. doors K1/J1. 63.31 in. doors get K2/J2 only through their door-pattern jamb_framing.",
+    "expected": "Per coordinator's approximate IRC 2021 Table R602.7.5 (<=3 ft 1 king; >3-4 ft 2; >4-8 ft 2) these need 2 kings per side if the wall is bearing/exterior. NOT verified against the table (fetch blocked); applicability depends on wall role and header span, so confidence low.",
+    "method": "p6/p7 probes (scratchpad F1/p7.py) list K/J per opening; code read in tables.py."
+   },
+   "source": "IRC 2021 R602.7.5 (approximate, unverified)",
+   "proposed_fix": "Verify the table, then make king_jack_counts depend on span and bearing role; billing and S-101 header schedule would move.",
+   "size_guess": "large",
+   "seam_with": [
+    "F2"
+   ],
+   "dedupe_key": "framing:king-jack-count-table"
+  }
+ ]
+}

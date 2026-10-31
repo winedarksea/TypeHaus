@@ -1,0 +1,353 @@
+{
+  "area": "M2",
+  "model": "houses/catlin",
+  "review_sha": "247a13e9",
+  "inventory_summary": "123 pipe runs (supply PEX/copper, DWV PVC, vents, radon, sump, condensate) dumped from the resolved model with OD, slopes per segment, insulation; 13 cleanouts; 31 sleeves present; 71 fixture ports (AFF heights); checks mep.drain_slope/vent_grade/trap_arm/riser_through_deck/run_through_stud/plate read. Sheets P-101..P-104 (pages 136-139) and P-201..P-204 (140-143) opened; P-20x are stormwater/roof drainage only (DWV is on P-10x). Baseline UNKNOWNs: riser_through_deck x46 are all I-joist/truss web holes where the fabricator's chart is needed (correct UNKNOWN, 3\" drain 3.50\" under the 4\" bore); run_through_stud/plate UNKNOWNs are a cripple under 2 depths and 3.50\" in 2x4 (M2-006). NOT examined: per-sleeve annulus fits (mep_sleeves), hydrant freeze/bury geometry beyond check text, sump/radon vertical riser OD vs deck holes, web-searches of fixture products (I2 seam), copper type L OD vs wall thickness, cleanout code clearance basis.",
+  "verified_clean": [
+    "pipe_sections.py: IPS ODs (PVC DWV 1.5=1.900, 2=2.375, 3=3.500, 4=4.500) and CTS/PEX ODs (1/2=0.625, 3/4=0.875, 1=1.125, 1-1/4=1.375) match ASTM D2665/B88; material routing correct (PEX/copper tube, PVC IPS, None -> IPS).",
+    "Drain slope: every horizontal DWV segment >= 0.250 in/ft (flattest PR-B-MAIN-DRAIN seg3 0.250, kitchen/bath drains 0.25-0.30); engine encodes UPC 708.0 1/4\"/ft at all sizes (MN is UPC), so the brief's 1/8\" >=3\" is deliberately not used; 4\" main has no reduced-slope approval.",
+    "Trap arm table (30/42/60/72/120 in) matches UPC 906.1 as adopted by MN 4714 (distance measurement is M2-003).",
+    "Vent runs are monotone rising (mep.vent_grade pass 14); 1/8\" margin advisory only.",
+    "Cleanouts: 13 resolved, sizes equal pipe size (4\" on 4\", 3\" on 3\", 2\"/1.5\"), 18-24\" clearance per drain_cleanouts.py; 100 ft and 135 deg rules coded.",
+    "Fixture water/drain heights: WC supply 8-9.5\" AFF, lav 24-25.5\" AFF/drain 20-21.5\", showers valve 48.75\" (30.75\" tub-shower) are conventional rough-in values.",
+    "Hot-water insulation spec strings (1\" and 1/2\" fiberglass) pass mep.hot_water_insulation; wet_wall_occupancy uses the insulated envelope (2.88\").",
+    "mep.riser_through_deck UNKNOWN: read body; holes are clear of both I-joist flanges and the 3.50\" OD is under the 4\" a trade drills; UNKNOWN is the right verdict (fabricator chart)."
+  ],
+  "findings": [
+    {
+      "id": "M2-001",
+      "area": "M2",
+      "title": "Pipe size labels on P-101..P-104 print nominal with :.0f: 1/2\" PEX reads 0\", 3/4\" reads 1\", 1-1/2\" reads 2\"",
+      "elements": [
+        "PR-B-CW-SAUNA",
+        "PR-B-COND",
+        "PR-M-KITCH-LOCAL-VENT",
+        "PR-B-HW-BATH"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/plumbingplan.py:107"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "P-101",
+          "P-102",
+          "P-103",
+          "P-104"
+        ],
+        "pages": [
+          136,
+          137,
+          138,
+          139
+        ]
+      },
+      "confidence": 0.9,
+      "evidence": {
+        "measured": "label f'{diameter_in:.0f}\"' -> 0.5 prints '0\"' (banker's rounding), 0.75 and 1.25 print '1\"', 1.5 prints '2\"'. Sheet P-103/P-104 show '2\" VENT' for the 1-1/2\" PR-S-... / PR-A-STUBATH-SH-VENT runs; 113 of 123 runs are not whole-inch.",
+        "expected": "1/2\", 3/4\", 1-1/4\", 1-1/2\" printed as fractions (the sizes the plumber orders)",
+        "method": "read plumbingplan.py:107-108; python: f'{0.5:.0f}', f'{1.5:.0f}'; pickled model runs diameter_m/0.0254; view P-103 p.138 vent labels"
+      },
+      "source": "ASME/IPS nominal size convention; model diameter_m",
+      "proposed_fix": "format nominal as a mixed fraction (e.g. 1-1/2\")",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "M2:plan-label-size-rounding"
+    },
+    {
+      "id": "M2-002",
+      "area": "M2",
+      "title": "Plumbing-plan slope label is whole-run average (incl. risers), not pipe grade: drains read 4.79\"/FT when horizontal grade is 0.29\"",
+      "elements": [
+        "PR-B-KITCH-DRAIN",
+        "PR-B-MAIN-DRAIN",
+        "PR-B-SAUNA-VENT"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/plumbingplan.py:106"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "P-101",
+          "P-102",
+          "P-103",
+          "P-104"
+        ],
+        "pages": [
+          136,
+          137,
+          138,
+          139
+        ]
+      },
+      "confidence": 0.75,
+      "evidence": {
+        "measured": "slope=(z_start-z_end)/length_m*... over total developed length including vertical legs: PR-B-KITCH-DRAIN 4.79 in/ft vs per-segment 0.26-0.30; PR-B-MAIN-DRAIN 3.84 vs 0.25; PR-B-WC2-DRAIN 5.16; vents print negative (-0.04..).",
+        "expected": "label the horizontal grade the plumber must hold (min 1/4\"/ft, UPC 708.0), or omit on runs with risers",
+        "method": ".venv/bin/python probe over model.pipe_runs: segment h=plan length, dz=z[i+1]-z[i]; compare with label formula; sheet P-101 p.136"
+      },
+      "source": "MN 4714 / UPC 708.0 drain grade",
+      "proposed_fix": "label per horizontal segment (min of segments with plan run > 1 ft)",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "M2:plan-label-slope"
+    },
+    {
+      "id": "M2-003",
+      "area": "M2",
+      "title": "mep.trap_arm_length grades straight-line plan distance to the nearest vent point, not developed arm length; FX-B-BATH-WC arm is ~10 ft against a 6 ft (72\") limit",
+      "elements": [
+        "FX-B-BATH-WC",
+        "PR-B-BATH-DRAIN",
+        "PR-B-BATH-VENT",
+        "PR-B-USINK-DRAIN"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/checks/mep/plumbing_dwv.py:435",
+        "packages/engine/src/typehaus/takeoff/plumbing_calc.py:123",
+        "houses/catlin/plan/mep_venting.py"
+      ],
+      "kind": "engine-geometry",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "P-101",
+          "P-201"
+        ],
+        "pages": [
+          136,
+          140
+        ]
+      },
+      "confidence": 0.55,
+      "evidence": {
+        "measured": "Check reports 67\" (WC to vent) PASS vs 72\". PR-B-BATH-VENT (1.5\") is a stub at (120.0,229.5) joining only the utility sink drop; WC drain goes (144,291.8)->(144,208.8) 83\"->(120,208.8) 24\"->up sink drop 21\" = ~128\" plan + vertical to the vent tee, 3D gap WC drain to vent run 33\". FX-S-BATH1-WC (70\" straight, developed 97\") and FX-M-BATH1-WC (74\" by my nearest-point, drain to vent 3D gap 130\") are also near/over the limit.",
+        "expected": "trap arm length measured along the drain from the trap weir to the vent connection <= 72\" for 3\" (UPC 906.1 as coded)",
+        "method": "plumbing_dwv.py:436-465 uses hypot(vent_point - drain_point); .venv/bin/python probe: pickle model, walk PR-B-BATH-DRAIN path from FX-B-BATH-WC, scratchpad M2/p5.py p6.py"
+      },
+      "source": "MN Plumbing Code 4714 Table 906.1 (as in takeoff/plumbing_calc.TRAP_ARM_MAX_IN)",
+      "proposed_fix": "measure developed length along the serving drain to the vent's tee; likely author a real vent tee/riser for the basement WC (or a wet-vent) -- escalate (moves pipe)",
+      "size_guess": "large",
+      "seam_with": [
+        "M1"
+      ],
+      "dedupe_key": "M2:trap-arm-straight-line"
+    },
+    {
+      "id": "M2-004",
+      "area": "M2",
+      "title": "Vent runs hang in the ceiling plane with no riser or tee to the drain they serve; vent-to-drain 3D gaps 90-130\" on 14 fixtures",
+      "elements": [
+        "PR-M-WC-VENT",
+        "PR-M-BATH2-VENT",
+        "PR-S-BATH1-VENT",
+        "PR-S-SUITEBATH-VENT",
+        "PR-B-WC1-DRAIN"
+      ],
+      "files": [
+        "houses/catlin/plan/mep_venting.py",
+        "packages/engine/src/typehaus/checks/mep/vent_path.py"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "P-102",
+          "P-103"
+        ],
+        "pages": [
+          137,
+          138
+        ]
+      },
+      "confidence": 0.45,
+      "evidence": {
+        "measured": "e.g. PR-M-WC-VENT z=116\"..231\" starts at (75,300) vs PR-B-WC1-DRAIN end (72,262) z=-17\": 38\" in plan and 133\" vertical; FX-M-BATH2-SH/TUB/LAUNDRY-SINK vent PR-M-BATH2-VENT 3D gap 115-125\"; second-floor fixtures 89-116\". Connections exist only by 'serves' lists, so riser lengths, fittings and bores for the missing risers are not modelled/billed.",
+        "expected": "each vent connects to its drain by a modelled riser/tee within the trap-arm limit",
+        "method": "scratchpad M2/p5.py: sample 3D polylines of each fixture's drain and vent runs and take minimum distance"
+      },
+      "source": "UPC 905/906",
+      "proposed_fix": "author the connecting vent risers (or add a check that the vent run touches the drain run in 3D)",
+      "size_guess": "large",
+      "seam_with": [
+        "M1"
+      ],
+      "dedupe_key": "M2:vent-not-connected"
+    },
+    {
+      "id": "M2-005",
+      "area": "M2",
+      "title": "Insulated hot-water runs bore studs/plates at bare pipe OD while the sleeve continues through (0.88\" graded; 1.88-2.88\" real)",
+      "elements": [
+        "PR-B-HW-WASH",
+        "PR-B-HW-BATH1",
+        "PR-B-HW-SBATH",
+        "PR-B-HW-SUITE",
+        "PR-A-HW-STUBATH"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/mep_envelopes.py:127",
+        "packages/engine/src/typehaus/resolve/mep_bores.py:150"
+      ],
+      "kind": "engine-geometry",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "mep.run_through_stud passes PR-B-HW-WASH at 0.88\" through W-M-BA2E/W-M-CLN 2x4 non-bearing studs (limit 2.10\"); the run wears 1\" fiberglass: OD 0.875+2x1 = 2.875\" (the wall-cavity check itself uses 2.88\" for HW-BATH1). A 2.875\" hole exceeds the 60% = 2.10\" R602.6 limit in a 2x4 stud and 5/8\" edge clearance.",
+        "expected": "bore sized to what passes: pipe OD + insulation (or insulation stopped and field note), <= 60% (2.10\") in 2x4 non-bearing",
+        "method": "checks.json run_through_stud messages for '-HW-' tags; mep_envelopes.py:127 radii use pipe_outside_diameter_m(run.diameter_m, material) with no insulation term; grep 'insulation' in resolve/mep_bores*"
+      },
+      "source": "IRC R602.6; insulation string on PipeRun",
+      "proposed_fix": "add insulation thickness (parse spec or add field) to the bore OD; or author sleeves stopping short of studs",
+      "size_guess": "small",
+      "seam_with": [
+        "M3"
+      ],
+      "dedupe_key": "M2:insulated-pipe-bore-od"
+    },
+    {
+      "id": "M2-006",
+      "area": "M2",
+      "title": "3\" DWV (3.50\" OD) stack and arm run in 2x4/4.5\" walls and plates: pipe fills the whole stud depth, hubs (~4\") cannot fit",
+      "elements": [
+        "PR-M-S-BATH1-DRAIN",
+        "PR-A-STUBATH-DRAIN",
+        "W-M-STOS",
+        "W-S-DC2"
+      ],
+      "files": [
+        "houses/catlin/plan/mep_drainage.py"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.55,
+      "evidence": {
+        "measured": "PR-M-S-BATH1-DRAIN (3\", vertical at (60.0\",319.5\") from z=123\" to -22\") sits on W-M-STOS axis, a 4.5\" wall with 2x4 studs and plates (mep.run_through_plate UNKNOWN: 3.50\" = plate width, framed opening needed); PR-A-STUBATH-DRAIN 3\" through 2x4 stud-005 of W-S-DC2 (mep.run_through_stud UNKNOWN). 3.500 OD vs 3.50 depth leaves zero for fittings (3\" DWV hub OD ~4.0-4.2\") and 1/2\" gypsum is the only cover.",
+        "expected": "wet wall deep enough for the 3\" fittings (2x6 / furred), plates framed with header",
+        "method": "model.walls W-M-STOS thickness 4.5 members {'2x4':9,'2x8':1}; baseline checks.json run_through_plate / run_through_stud UNKNOWN messages; hub OD from Charlotte Pipe 3\" sanitary tee dims (library/fittings.py _STACK_DIMS shows 3.0625 stop-to-stop)"
+      },
+      "source": "Charlotte Pipe SUB-PAC-PVC-DWV (cited in library/fittings.py); IRC R602.6/R602.6.1",
+      "proposed_fix": "furr W-M-STOS locally to 2x6 depth or move the stack to a 2x6 wet wall; escalate (wall thickness, door D-M-BATH1 clearances)",
+      "size_guess": "large",
+      "seam_with": [
+        "F",
+        "M1"
+      ],
+      "dedupe_key": "M2:3in-stack-2x4-wall"
+    },
+    {
+      "id": "M2-007",
+      "area": "M2",
+      "title": "Fitting laying lengths are None in the catalog, so no fitting solid or offset is drawn or graded (long-sweep 90, wyes, closet bends)",
+      "elements": [
+        "FIT-DWV-*",
+        "FIT-CU-*"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/library/fittings.py:19"
+      ],
+      "kind": "product-data",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "every center_to_face_in is None; only Charlotte stack stations (tee/wye/combo/street) carry numbers. Vertex positions on PR-* drains are therefore mitred centrelines: e.g. closet bends and the 1/4-bend drops (PR-M-S-BATH1-WC-DRAIN 4.1\" run over 4.0\" drop) are not checked for fitting length vs the cavity.",
+        "expected": "centre-to-face per size from Charlotte submittal (1/4 bend 3\" ~4.5\", 2\" ~3.5\")",
+        "method": "read library/fittings.py header and _NO_SUBMITTAL; python MEP_FITTINGS center_to_face_in"
+      },
+      "source": "library/fittings.py docstring (known, recorded)",
+      "proposed_fix": "read the remaining submittal pages (known debt, Phase 5 routing)",
+      "size_guess": "large",
+      "seam_with": [],
+      "dedupe_key": "M2:fitting-laying-lengths"
+    },
+    {
+      "id": "M2-008",
+      "area": "M2",
+      "title": "Several fixture supply ports are far from the authored supply endpoint (approximate stations, UNKNOWN): WC S-BATH1 4.67\", hydrants 3-6\"",
+      "elements": [
+        "FX-S-BATH1-WC",
+        "FX-G-HYDRANT",
+        "FX-M-PORCH-HYD",
+        "FX-S-BALC-HYD"
+      ],
+      "files": [
+        "houses/catlin/plan/mep_supply_devices.py",
+        "houses/catlin/plan/fixtures.py"
+      ],
+      "kind": "interface-fit",
+      "severity": "model-only",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.4,
+      "evidence": {
+        "measured": "mep.fixture_port_connection UNKNOWN: FX-S-BATH1-WC cold port vs PR-S-BATH1-WC-CW 4.67\" away; FX-G-HYDRANT inlet vs PR-G-SERVICE-CW 6.16\"; PORCH-HYD 3.13\"; BALC-HYD 2.77\". Approximate-port products are I2.",
+        "expected": "stub within ~1\" of the product's published supply station",
+        "method": "checks.json fixture_port_connection messages; scratchpad M2/p8.py lists port z AFF"
+      },
+      "source": "fixture catalog ports (I2)",
+      "proposed_fix": "re-station after product confirmation",
+      "size_guess": "small",
+      "seam_with": [
+        "I2"
+      ],
+      "dedupe_key": "M2:port-stub-offsets"
+    },
+    {
+      "id": "M2-009",
+      "area": "M2",
+      "title": "Kitchen sink supply ports authored at 35.76\" AFF (faucet tail height) while the stub-out feeding them ends at the faucet; angle stops/wall stubs are typically 18-22\" AFF",
+      "elements": [
+        "FX-M-KITCH-SINK",
+        "PR-B-HW-KITCH"
+      ],
+      "files": [
+        "houses/catlin/plan/kitchen_sink_plumbing.py"
+      ],
+      "kind": "interface-fit",
+      "severity": "model-only",
+      "on_permit_set": {
+        "printed": false,
+        "sheets": [],
+        "pages": []
+      },
+      "confidence": 0.3,
+      "evidence": {
+        "measured": "port z_rel_storey = 35.76\" for supply-hot/cold; drain 6.44\" AFF (exact). Not a rough-in check; low confidence because the kitchen sink is cabinet-fed and the run may end at the cabinet back.",
+        "expected": "published rough-in: supply stops ~20\" AFF",
+        "method": "scratchpad M2/p8.py output"
+      },
+      "source": "fixture type ports (I2/F)",
+      "proposed_fix": "confirm with kitchen sink product sheet",
+      "size_guess": "small",
+      "seam_with": [
+        "I2"
+      ],
+      "dedupe_key": "M2:kitchen-supply-height"
+    }
+  ]
+}

@@ -1508,7 +1508,7 @@
         317.49999999999994,
         117.36666666666666
       ],
-      "text": "gwb-b 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1533,7 +1533,7 @@
         319.50000000000006,
         113.57499999999999
       ],
-      "text": "stud 3.5\"",
+      "text": "stud 3 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1558,7 +1558,7 @@
         321.5,
         109.78333333333332
       ],
-      "text": "gwb-a 0.5\"",
+      "text": "gwb-ar 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1583,7 +1583,7 @@
         316.50000000000006,
         218.09501312335962
       ],
-      "text": "gwb-b 0.5\"",
+      "text": "gwb-ar 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1608,7 +1608,7 @@
         319.50000000000006,
         214.30334645669296
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1633,7 +1633,7 @@
         322.50000000000006,
         210.5116797900263
       ],
-      "text": "gwb-a 0.5\"",
+      "text": "gwb-mr 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1909,7 +1909,7 @@
         0.7,
         1.228
       ],
-      "content": "gwb-mr  0.5\"",
+      "content": "gwb-mr  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1981,7 +1981,7 @@
         0.7,
         1.058
       ],
-      "content": "spf  5.5\"",
+      "content": "spf  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2053,7 +2053,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "fiberglass  5.5\"",
+      "content": "fiberglass  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2126,7 +2126,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "gwb-ar  0.5\"",
+      "content": "gwb-ar  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

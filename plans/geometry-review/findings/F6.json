@@ -1,0 +1,188 @@
+{
+ "area": "F6",
+ "model": "houses/catlin @247a13e9",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Inventoried all 237 authored Connectors (exterior-structure ones in detail: 4 HU28-2Z, 4 ACE6Z, 4 CBSQ66-SDS2, 6 A35Z, 12 HETA20Z, 13 SS316-SHIM-35, 2 LUS210SS + derived LUS210SS/LUS210-3Z/LUSZ deck hangers, 18 THD50600H6SS ledger anchors, HL33/HL43 landing ties, H10ASS/H2.5ASS balcony ties) and every Post/Beam in the area (north-entry posts/piers/seat beams/headers, porch ledgers BM-SG-LDGW/E, balcony beams BM-SG-BLW/E, 12 in. court columns), resolved sizes and z-stacks from the pickled resolved model. Catalog W/H/D read from library/hardware/*.py and web-checked (HU28-2 3-1/8x6-5/16x2-1/2, LUS210-3Z, Titen HD THD50600H6SS SKU). Opened S-602, S-102.1, S-100, A-508, A-502 (full set). There is no authored 'main deck'/'second deck' deck framing: params/main_deck.py and second_deck.py are the interior floor decks (out of F6; seam). NOT examined: breezeway guards/slat screen/KBS1Z knee-brace geometry, east_posts/entry_band_brace dimension chains, ABU44 and 4x4 stair-well posts, fastener-length vs member-thickness for the SDS/16d schedules (no per-fastener lengths in the model), Simpson STHD/DTT2Z/MSTC52 embed vs pour (house-side F-areas), HHUS410/IUS/THA422 (interior floor hangers, seam F5/S). A-502 'deck bearing' is the interior EPS-deck/wall bearing section (SL-D-DECKBRG), not the exterior decks, and prints no dimensions to check.",
+ "verified_clean": [
+  "PT-BW-CW/-CNW/-RE/-RNE: nominal 6x6 resolves to 5.5 x 5.5 in. (true size); BM-BW-RW/-RE 5.5x11.875 glulam matches ACE6Z 'W 5-1/2 in.' seat and the glulam true 5-1/2 x 11-7/8",
+  "CBSQ66-SDS2: base plate top = pier top + 1.1046 in. (post bottom -14.335 vs pier top -15.44; PT-BW-RE 3.105 vs 2.0); embed 6-7/8 in. below pier top (connector z0 -22.315 = -15.44-6.875); W 5-1/2 matches the 5.5 in. post; 14 in. pier leaves 4.25 in. side cover vs the 3 in. requirement",
+  "ACE6Z: two-piece end cap, 5.5 in. tall centred on the post/beam joint, no seat steel so post top = beam soffit (76.125) is correct for the AC/ACE family",
+  "HU28-2Z catalog dims: web read W 3-1/8, H 6-5/16 (6.312 modelled), B 2-1/2; fits BM-BW-HOUSE/GARAGE-SEAT 2-2x8 (3.0 in. wide, 1/8 in. gap, 7.25 deep -> 87% cover)",
+  "LUS210SS/LUS210Z/LUS210-3Z on 2x12 KDAT ledgers: W 1-9/16 and 4-5/8 hold 1.5 and 4.5 in. members; LUS210 H 7-13/16 is 69% of an 11.25 in. joist (Simpson publishes no LUS212; the 2x12 row of the DF/SP table lists LUS210)",
+  "THD50600H6SS = Titen HD 1/2 x 6 in. Type 316 stainless (SKU confirmed at fastenersplus); 6 in. less 1.5 in. ledger leaves 4.5 in. embedment; rows at 3.5/8.5 in. below ledger top keep 2.75 in. to the bottom edge",
+  "HL43HDG (3 ga, 4-1/4 legs, 3/4 in. bolt) through BM-BW-FE 4.5 in. + 1.5 in. rim = 6 in. >= HL fn 5's 5-1/8 in.; HL33HDG on 3-1/2 in. 4x4 tie block/filler satisfies fn 3/4",
+  "Seat-beam bearing: BM-BW-HOUSE/GARAGE-SEAT start at the column face and keep 3-1/4 in. on the 12 in. pier (R507.5.2 3 in.)",
+  "Cast piers PT-BW-PE/-PNE 14 in. vs CBSQ strap cover; pier/post/beam z-stack is continuous (no gap or overlap) from -15.44 to 88.0 in. except the findings below",
+  "S-100 foundation schedule/K callouts agree with the model's pier diameters (14 in. PT-BW-W/GW/PE/PNE, 12 in. PT-BW-E/GE) and pad rows; S-102.1 member schedule (T1 24 ft truss x3, BK1 2-2x10, BK2 2-2x6, BK3 2x4) matches the notes; A-508 stack labels (stud 3.5, cdx 0.625, cladding 0.875) are true sizes"
+ ],
+ "findings": [
+  {
+   "id": "F6-001",
+   "area": "F6",
+   "title": "CN-BW-HGR-SCS-S/-N: HU28-2Z (double-2x8, W 3-1/8 in.) hung on BM-BW-SCSILL, a single 1.5 in. 2x8",
+   "elements": ["CN-BW-HGR-SCS-S", "CN-BW-HGR-SCS-N", "BM-BW-SCSILL", "PT-BW-CW", "PT-BW-CNW"],
+   "files": ["houses/catlin/params/breezeway.py:470", "packages/engine/src/typehaus/library/hardware/simpson_hangers.py:328"],
+   "kind": "product-data",
+   "severity": "wrong-build",
+   "on_permit_set": {"printed": true, "sheets": ["S-602", "A-508"], "pages": [21, 43]},
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "BM-BW-SCSILL resolves 1.5 x 7.25 in. (size '2x8'); HU28-2Z is the double-2x8 hanger, seat W 3-1/8 in. (catalog record fits_nominal ('2-2x8',)). The single sill sits in a seat 1-5/8 in. too wide (Simpson requires <= 1/8 in. clearance); the two seat-beam HU28-2Z (2-2x8, 3.0 in.) are correct.",
+    "expected": "A single 2x8 (1.5 in.) takes a 1-9/16 in. hanger (LUS28Z / HU28 single, W 1-9/16 in. per retailer table) or the sill is built 2-ply",
+    "method": ".venv/bin/python probe: for Connector tags CN-BW-HGR-* print size vs connected Beam.size (plan.all_elements()); HU28-2 dims from Simpson table via search (14 ga, 3-1/8 W, 6-5/16 H, 2-1/2 B)"
+   },
+   "source": "Simpson C-C HU face-mount table (HU28-2: W 3-1/8, H 6-5/16, B 2-1/2); catalog row fits_nominal ('2-2x8',)",
+   "proposed_fix": "Retype the two SCSILL hangers to a single-2x8 treated-wood hanger (HU28Z/LUS28Z; check ZMAX and the 6x6 face width) or make BM-BW-SCSILL 2-2x8; reread allowable (record carries none) and re-grade seat hardware.",
+   "size_guess": "large",
+   "seam_with": ["F5"],
+   "dedupe_key": "CN-BW-HGR-SCS:hu28-2-on-single-2x8"
+  },
+  {
+   "id": "F6-002",
+   "area": "F6",
+   "title": "Seat-beam hangers CN-BW-HGR-CW/-CNW (and SCS) extend 1.1 in. below the bottom of the post they are nailed to",
+   "elements": ["CN-BW-HGR-CW", "CN-BW-HGR-CNW", "PT-BW-CW", "PT-BW-CNW", "BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"],
+   "files": ["houses/catlin/params/breezeway.py:460", "houses/catlin/params/north_entry_frame.py:278"],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {"printed": true, "sheets": ["A-508"], "pages": [43]},
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Seat beams bottom at -15.44 in. (pier top); PT-BW-CW/-CNW start at -14.335 in. (CBSQ66 standoff 1.105 in. above that pier top). Hanger CN-BW-HGR-CW z -15.515..-9.203 (6.31 in.), so the lowest ~1.18 in. of the header leg stands over the open standoff gap with no post behind it, leaving ~5.1 in. of the 6.31 in. face to nail. The 5.5 in. face also barely accepts HU28-2 flange-to-flange (~5.6 in. est., not verified).",
+    "expected": "Hanger header leg fully backed by the post (seat at or above post bottom), or hanger seat beam raised/post base lowered",
+    "method": "sol.py in scratchpad: print z0/z1 of PT-BW-CW, BM-BW-HOUSE-SEAT, CN-BW-HGR-CW from the resolved model (pickle)"
+   },
+   "source": "Simpson HU28-2 H 6-5/16; CBSQ66-SDS2 catalog bearing_standoff_in 1.1046",
+   "proposed_fix": "Owner/EOR call: either let the seat beams bear 1.1 in. higher (changes landing deck elevation, large) or accept a hanger whose bottom row of nail holes is unused and record the reduced nailing in the hanger schedule. Check the flange width on the 5.5 in. face.",
+   "size_guess": "large",
+   "seam_with": ["F5"],
+   "dedupe_key": "CN-BW-HGR-CW:hanger-below-post-bottom"
+  },
+  {
+   "id": "F6-003",
+   "area": "F6",
+   "title": "Pier tops coplanar with seat-beam soffits: the 1/2-1 in. SS316 shim pack (and its drained gap) has no height in the model",
+   "elements": ["CN-BW-STDF-W", "CN-BW-STDF-E", "CN-BW-STDF-GW", "CN-BW-STDF-GE", "PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE", "CN-SG-STDF-R1", "CN-SG-STDF-F1"],
+   "files": ["houses/catlin/params/north_entry_frame.py:114", "houses/catlin/params/breezeway.py:406", "houses/catlin/params/sunken_garden.py:2982"],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {"printed": true, "sheets": ["A-508", "S-100"], "pages": [43, 8]},
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "PT-BW-W/E/GW/GE z1 = -15.44 in. = BM-BW-*-SEAT z0 (BEARING_TOP_FT); the shim marker spans -15.94..-14.94 (straddles the joint, 0.5 in. inside pier, 0.5 in. inside beam). SG: post top 95.708 = beam soffit, shim 94.708..95.708 lies inside the post's top inch. The catalog/CLAUDE.md state the pack holds a 1/2-1 in. gap, so the real beam soffit sits 0.5-1 in. above the modelled pour, raising the landing deck and everything stacked on it relative to the D-G-SERVICE threshold/stair rise (or the pier must be cast 0.5-1 in. low, which S-100's pier-top callouts do not say).",
+    "expected": "Pier top = beam soffit minus shim thickness (e.g. -16.19 in. for a 3/4 in. pack) or an explicit note that the pour is cast low",
+    "method": "sol.py: z1 of PT-BW-W vs z0 of BM-BW-HOUSE-SEAT; Connector.elevation of CN-BW-STDF-W (breezeway.py:408 elevation=ft(BEARING_TOP_FT))"
+   },
+   "source": "houses/catlin/CLAUDE.md 'Every wood-on-concrete beam seat is a drained STANDOFF' (1/2-1 in. pack); catalog SS316-SHIM-35 (specialty.py:257)",
+   "proposed_fix": "Make the pier-top elevation one shim thickness below BEARING_TOP_FT (and the garden columns likewise) so the pack is a real height, or add a detail callout that the pour is cast 3/4 in. below the beam soffit; retake S-100 pier top elevations.",
+   "size_guess": "large",
+   "seam_with": ["F4", "F5"],
+   "dedupe_key": "CN-BW-STDF:shim-height-not-modelled"
+  },
+  {
+   "id": "F6-004",
+   "area": "F6",
+   "title": "HETA20Z 16 in. straps stand 8.75 in. above the 7.25 in. seat beams at E/GE, through the joist plane and 1.5 in. above the deck",
+   "elements": ["CN-BW-TIE-EA", "CN-BW-TIE-EB", "CN-BW-TIE-GEA", "CN-BW-TIE-GEB", "BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"],
+   "files": ["packages/engine/src/typehaus/resolve/connector_geometry/ties.py:87", "houses/catlin/params/breezeway.py:386"],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "HETA20 modelled 1-1/8 in. x 16 in. strap above a 4 in. embed: connector z -19.44..0.56 in. The 2-2x8 seat beam spans -15.44..-8.19 and joists bear on it to -0.94 (deck surface ~0), so each strap rises 8.75 in. above the beam top beside the joist ends and its tip ends above the deck surface. Catalog says nails go in the lowest holes (6 per strap), so a field-bent/cut strap is plausible, but nothing in the model or sheets says so.",
+    "expected": "Strap length clear of the joist/deck plane (cut or folded) with the cut/fold stated; or HETA12",
+    "method": "sol.py '^CN-BW-TIE': z0/z1; beam z from BM-BW-HOUSE-SEAT row"
+   },
+   "source": "library/hardware/roof_ties.py:395 (HETA20Z, 'strap nailed to the member's face'); FL11473 Table 3 note 7 (strap wrapped over)",
+   "proposed_fix": "Add an annotation (hold point) that the straps are trimmed/wrapped below deck top, or use the shorter HETA part where the table row exists; low priority, check with Simpson whether HETA20 straps may be cut.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "CN-BW-TIE:heta20-strap-overrun"
+  },
+  {
+   "id": "F6-005",
+   "area": "F6",
+   "title": "Hanger rim 1.25x7.25 in. (two rims, FS-BW-FLOOR) hung from LUSZ (W 1-9/16): 5/16 in. slack and no stock 1-1/4 in. treated rim",
+   "elements": ["FS-BW-FLOOR", "BM-BW-FE", "rim-0", "rim-1"],
+   "files": ["packages/engine/src/typehaus/library/hardware/simpson_hangers.py:131", "houses/catlin/params/north_entry_frame.py:213"],
+   "kind": "commodity-size",
+   "severity": "wrong-build",
+   "on_permit_set": {"printed": true, "sheets": ["S-602"], "pages": [21]},
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Resolved FS-BW-FLOOR members rim-0/rim-1 profile '1.25x7.25 rim' (no rim_material/rim_member authored); takeoff hangs 2 of them on LUSZ in BM-BW-FE (face_mount row 15). LUSZ/LUS28Z W = 1-9/16 in. leaves 5/16 in. against a 1-1/4 in. member (Simpson limit 1/8 in.). A 1-1/4 in. x 7-1/4 in. KDAT/PT rim is not a stock item; a 2x8 deck would be rimmed with 1.5 in. lumber.",
+    "expected": "Rim = 2x8 (1.5 in.) KDAT like the joists, hung in LUS28Z",
+    "method": "model.floors FS-BW-FLOOR .members categories 'rim'; takeoff.json hardware[15]"
+   },
+   "source": "Engine default rim profile; Simpson LUS28 W 1-9/16",
+   "proposed_fix": "Author rim_member='2x8' (KDAT) on FS-BW-FLOOR's JoistSpec so the rim is lumber and the LUSZ fits; check takeoff/sheets.",
+   "size_guess": "small",
+   "seam_with": ["F5"],
+   "dedupe_key": "FS-BW-FLOOR:rim-1.25-in-lusz"
+  },
+  {
+   "id": "F6-006",
+   "area": "F6",
+   "title": "S-602 connection hardware schedule prints illegibly small and its BASIS OF QUANTITY text overprints the structural-solids table and title block",
+   "elements": ["S-602"],
+   "files": ["packages/engine/src/typehaus/emit/draw/"],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {"printed": true, "sheets": ["S-602"], "pages": [21]},
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "permit_set_full.pdf p.21: the two hardware tables render at ~3 pt row height; the numbered BASIS OF QUANTITY paragraphs (items 1-100) run on top of the STRUCTURAL SOLIDS - BY CATEGORY table and past the bottom edge into the title block ('...CLIP-ON STUDS...' text over 'Catlin House / LOT TBD').",
+    "expected": "Notes wrapped inside their column and clear of the title block; schedule rows readable at 24x36",
+    "method": "Read permit_set_full.pdf pages=21 (sheet map: permit_set_full.json S-602 -> 21)"
+   },
+   "source": "snapshot permit_set_full.pdf p.21",
+   "proposed_fix": "Paginate S-602 (hardware table, basis notes, solids) or wrap/clip the basis column; owner of the S-6xx sheet writer should pick the file.",
+   "size_guess": "large",
+   "seam_with": [],
+   "dedupe_key": "S-602:overprint"
+  },
+  {
+   "id": "F6-007",
+   "area": "F6",
+   "title": "Stale ABU66SS references: PT-BW-CW/-CNW stand on CBSQ66-SDS2 bases but notes, ABU66SS_HEAD and S-100 prose still say ABU66SS",
+   "elements": ["CN-BW-BASE-W", "CN-BW-BASE-NW", "PT-BW-CW", "PT-BW-CNW"],
+   "files": ["houses/catlin/params/column_heads.py:28", "houses/catlin/params/north_entry_frame.py:275", "houses/catlin/plan/assemblies/footings.py:63", "houses/catlin/plan/assemblies/site_hardscape.py:136"],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "Model has CN-BW-BASE-W/-NW = CBSQ66-SDS2 (z -22.315..-6.69, standoff 1.105 in.); column_heads.py defines ABU66SS_HEAD for PT-BW-W/-GW ('the head is the ABU66SS under PT-BW-CW/-CNW') and nothing references it; CLAUDE.md line 308 still says ABU66SS stainless bases; takeoff has 4 post_base CBSQ66 and no ABU66SS (ABU44 x2 only).",
+    "expected": "Text, orphan record and the wall-skirt comments name CBSQ66-SDS2 (1.105 in. standoff, 3 in. strap cover)",
+    "method": "grep -rn ABU66SS houses/catlin; takeoff.json hardware[46,70]"
+   },
+   "source": "houses/catlin/CLAUDE.md 'Current canopy, 2026-09-30' (CBSQ66-SDS2 bases)",
+   "proposed_fix": "Delete or retarget ABU66SS_HEAD to CBSQ66 numbers; update the comments and the stale CLAUDE.md sentence (historical entry already labelled superseded).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "ABU66SS:stale-refs"
+  },
+  {
+   "id": "F6-008",
+   "area": "F6",
+   "title": "HU28-2Z catalog row has no transcribed dimensions or allowable although four are on the S-602 schedule",
+   "elements": ["CN-BW-HGR-CW", "CN-BW-HGR-CNW", "CN-BW-HGR-SCS-S", "CN-BW-HGR-SCS-N"],
+   "files": ["packages/engine/src/typehaus/library/hardware/simpson_hangers.py:328"],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {"printed": true, "sheets": ["S-602"], "pages": [21]},
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "source= 'DIMENSIONS AND ALLOWABLES NOT YET TRANSCRIBED'; allowable=None. Web read gives W 3-1/8, H 6-5/16, B 2-1/2 (14 ga) matching what the model draws (6.312 in. tall), so the geometry is right but unrecorded.",
+    "expected": "Row carries W/H/B and the C-C DF/SP (not SPF) face-mount row, since the beams are KDAT southern pine",
+    "method": "read record; strongtie.com HU table via search (retail table W 3-1/8, H 6-5/16, B 2-1/2)"
+   },
+   "source": "Simpson C-C HU28-2 row (not retrieved here; dims from retailer table)",
+   "proposed_fix": "Transcribe the C-C SP row and dims into the record (the capacity gap is the register's job, flagged here only for source).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "HU28-2Z:record-untranscribed"
+  }
+ ]
+}

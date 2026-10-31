@@ -1,0 +1,509 @@
+{
+  "area": "D1",
+  "model": "houses/catlin @ 247a13e9 (baseline snapshot 2026-10-31)",
+  "review_sha": "247a13e9",
+  "inventory_summary": "Opened every listed sheet (permit_set p8-11, 23-27, 57, 58, 63; permit_set_full p20, 135, 157, 158; S-602 skimmed via F6/S3 findings). Read plan_dimensions.py, dimension_rows.py, _shared.py facade/bbox dims, schedules/openings.py, structural.py, electrical.py, tables.py; probed main-storey interior chain, door mark groups, S-601 BOM rows, ceiling layers and fixture footprints on the resolved model. 12 findings. NOT examined: SVG/PSD writers for the rounding path, door_hardware.py rows beyond the A-601 hardware table, S-602 beyond already-filed F6-006/S3-006, interior chain on A-101 basement beyond the sheet read, pocket/door hand correctness vs plan.",
+  "verified_clean": [
+    "A-102..A-104 overall strings: 36'-0\" (432.0 in sheathing bbox) match wall_face_bounds; A-102 67'-3\" and A-101 98'-10\" are face extents.",
+    "A-602 rough openings print in 1/8 in via _eighths (27.5 x 36, 63 x 48) and agree with the model RO widths/heights.",
+    "A-601/A-602 energy columns (U/SHGC/VT/tempered) read off the library types, '\u2014' where unstated; no defaults.",
+    "G-002 DIMENSIONS note 'exterior strings to sheathing face' matches facade chain end stations.",
+    "E-601 panel schedule rows, service load arithmetic (65,139 VA = 271.4 A vs 320 A) legible and self-consistent; E-603 raceway table consistent with tags.",
+    "A-603 floor finish and area columns print for all 36 rooms; area column integer ft2 acceptable."
+  ],
+  "findings": [
+    {
+      "id": "D1-001",
+      "area": "D1",
+      "title": "Interior partition chains on A-101..A-104 dimension to each wall's NEAR stud face only, so a printed segment is 'wall + gap' and the reference is stated nowhere (G-002 covers only exterior strings and openings)",
+      "elements": [
+        "A-101",
+        "A-102",
+        "A-103",
+        "A-104"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/plan_dimensions.py:70",
+        "packages/engine/src/typehaus/emit/draw/plan_dimensions.py:93",
+        "packages/engine/src/typehaus/emit/draw/_shared.py:312",
+        "packages/engine/src/typehaus/emit/draw/_shared.py:340"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-101",
+          "A-102",
+          "A-103",
+          "A-104",
+          "G-002"
+        ],
+        "pages": [
+          23,
+          24,
+          25,
+          26,
+          2
+        ]
+      },
+      "confidence": 0.7,
+      "evidence": {
+        "measured": "Main storey E-W chain probe: wall stations (structure-layer faces) 59.12/62.62 (W-M-TUBDK-W 3.5in), 70.25/73.75 (W-M-BAE, -MECH-E, -MUDC-E 4.5in), 95.25/100.75, 117.13/122.63 (W-M-STRW, 5.5in structure of a 6.5in wall). _chain() keeps 59.12 and 70.25 and drops 62.62/73.75 (<6in gap), so the printed '0'-11\"' (11.13in) is 3.5in of knee wall + 7.6in clear, and 4.5in/5.5in walls are absorbed the same way. Segments of 7.94, 6.5, 12.12in sit in the chain with no way to tell room from wall. The faces are STRUCTURE (stud) faces, not finish: gypsum is excluded by DIMENSION_FACE_FUNCTIONS, so a clear room dimension is not recoverable from the string. G-002 says only 'Exterior strings are struck to the sheathing face. Openings dimension to centreline.' Facade strings also place perpendicular partitions by AXIS (_facade_stations) and concrete/masonry openings by RO EDGES (_shared.py:340), contradicting 'openings to centreline' on A-101. plan_dimensions.py docstring claims it 'measures FACES ... room's clear dimension face to face', which is not what prints.",
+        "expected": "Each partition located by both faces (or by its near face with the wall thickness shown as its own segment), the reference (stud face / sheathing face / centreline) stated on the sheet or G-002 per tier, and the masonry exception noted.",
+        "method": ".venv/bin/python probe: load model, walls=[w for w in model.walls if w.storey=='main' and not w.is_foundation]; plan_dimensions._face_stations(walls,0) then _chain(...); compare with printed strings on permit_set.pdf p24 (A-102). G-002 text: pdftotext -f 2 -l 2 permit_set.pdf. Probe: scratchpad/geometry-review/D1/p2.py"
+      },
+      "source": "plan_dimensions.py docstring; G-002 DIMENSIONS notes",
+      "proposed_fix": "Emit both faces of each crossing wall as stations (wall segment + clear segment), or label the tier 'to near stud face'; add a DIMENSIONS note per tier incl. the concrete-opening edge convention.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "D1:interior-chain-reference"
+    },
+    {
+      "id": "D1-002",
+      "area": "D1",
+      "title": "Every plan dimension string rounds to whole inches, so chains do not sum to the overall string (A-104 south opening chain adds to 36'-1\" under a 36'-0\" overall) and the 1/2 in cases round the wrong way",
+      "elements": [
+        "A-101",
+        "A-102",
+        "A-103",
+        "A-104"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/_shared.py:284",
+        "packages/engine/src/typehaus/emit/draw/pdf_writer.py:1060"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-101",
+          "A-102",
+          "A-103",
+          "A-104"
+        ],
+        "pages": [
+          23,
+          24,
+          25,
+          26
+        ]
+      },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "_dimension_label and pdf_writer._feet_inches do total=round(span_in); '{total//12}'-{total%12}\"'. A-104 lower south chain prints 9'-5\", 0'-9\", 7'-8\", 4'-4\", 8'-8\", 5'-3\" = 36'-1\" against the 36'-0\" overall on the same sheet. Probe spans of the main-floor interior chain: 59.12, 11.13, 25.0, 21.88, 41.13, 7.94, 47.06 print as 4'-11\", 0'-11\", 2'-1\", 1'-10\", 3'-5\", 0'-8\", 3'-11\". Python round() is banker's: 6.5in prints 0'-6\" (round-half-even). On a 16in/1.5in-stud module the 1/8-1/2in detail is the content; plan_labels.py:76 already notes the writers' rounding is only right for a room label.",
+        "expected": "Strings to the nearest 1/8 in (or 1/4 in) in feet-inches so a chain sums to its overall, or an explicit 'strings rounded to 1 in' note.",
+        "method": "pdftotext -f 26 -l 26 permit_set.pdf and add the six lower-chain strings; inline: round(6.5)==6."
+      },
+      "source": "emit/draw/_shared.py:284-296",
+      "proposed_fix": "Share one fractional feet-inch formatter (openings._eighths style) between the label reservation and the writers; keep the width reservation in sync.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "D1:dim-whole-inch-rounding"
+    },
+    {
+      "id": "D1-003",
+      "area": "D1",
+      "title": "S-101.x 'overall' strings are the extent of the declared-bearing-wall AXES, not the building: S-101.3 prints 22'-4\" N-S on a 36 ft square plan, and S-100 prints 98'-7\" for the footprint A-101 states as 98'-10\"",
+      "elements": [
+        "S-100",
+        "S-101.1",
+        "S-101.2",
+        "S-101.3",
+        "A-101"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/framingplan.py:85",
+        "packages/engine/src/typehaus/emit/draw/framingplan.py:87",
+        "packages/engine/src/typehaus/emit/draw/_shared.py:246",
+        "packages/engine/src/typehaus/emit/draw/foundationplan.py:128"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "S-100",
+          "S-101.1",
+          "S-101.3",
+          "A-101"
+        ],
+        "pages": [
+          8,
+          9,
+          11,
+          23
+        ]
+      },
+      "confidence": 0.7,
+      "evidence": {
+        "measured": "framingplan.py:85-87 passes only level.declared_bearing_walls to emit_bbox_dimension_chain(reference='axis'). S-101.3 (attic) arrows span only the bearing-wall y-extent beside a drawn 36 ft deck and print 22'-4\"; S-101.1/2 print 36'-0\" E-W and N-S for bearing axes rather than the framed deck. S-100 uses axis bbox of foundation walls (98'-7\") while A-101 uses the sheathing/face bbox (98'-10\"): a 3 in disagreement for the same three-structure footprint. Nothing on either sheet says which. _shared.py:253-257 states the axis default was kept for exactly this subset, but the printed label is indistinguishable from an overall.",
+        "expected": "Overall strings on structural plans measure the same extent as A-1xx (face) or are labelled 'BEARING LINES c/c'.",
+        "method": "Read permit_set.pdf pages 8, 9, 11, 23; compare with wall_face_bounds on model.walls."
+      },
+      "source": "emit_bbox_dimension_chain docstring",
+      "proposed_fix": "Strike the overall from all walls of the storey at face reference, and add a separate bearing-line c/c chain.",
+      "size_guess": "small",
+      "seam_with": [
+        "S2"
+      ],
+      "dedupe_key": "D1:framing-overall-subset"
+    },
+    {
+      "id": "D1-004",
+      "area": "D1",
+      "title": "S-100 and S-101.1..3 carry no locating strings: no footing/pier/pad/beam/post/bearing-line dimensions, and S-100 has two stray unlabelled 2'-0\" / 4'-1\" strings under the K leaders; A-105 has no roof outline, ridge or eave dimension",
+      "elements": [
+        "S-100",
+        "S-101.1",
+        "S-101.2",
+        "S-101.3",
+        "A-105"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/foundationplan.py:128",
+        "packages/engine/src/typehaus/emit/draw/framingplan.py:87",
+        "packages/engine/src/typehaus/emit/draw/roofplan.py"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "S-100",
+          "S-101.1",
+          "S-101.2",
+          "S-101.3",
+          "A-105"
+        ],
+        "pages": [
+          8,
+          9,
+          10,
+          11,
+          27
+        ]
+      },
+      "confidence": 0.6,
+      "evidence": {
+        "measured": "S-100: only the overall chain plus a stray vertical '2'-0\"' / rotated '4'-1\"' beside the garage/house gap (the _emit_sleeve_pour_dimensions strings), overprinted by K1-K19 leaders; 19 footing callouts K1..K19 locate nothing in dimension. S-101.1-3: only 36'-0\" and one N-S overall; joist lines, beams (BM-S-HALL, BM-SG-*), posts and bearing walls are labelled but not dimensioned from any grid, so a framer cannot place a beam/post/opening header from the sheet. A-105: only '1'-3\"' (x2), '0'-8\"', '0'-7\"' strings: no building/ridge/eave extents, no garage-to-house joint dimension.",
+        "expected": "Footings, piers, posts, beams and floor openings located from the bearing grid (every-element-located rule); roof plan carries eave-to-eave and ridge strings.",
+        "method": "Read permit_set.pdf pages 8-11, 27; grep emit_*dimension in foundationplan.py/framingplan.py/roofplan.py (only emit_bbox_dimension_chain called)."
+      },
+      "source": "n/a (drawing)",
+      "proposed_fix": "Add a grid-referenced chain for footings/pads and beam/post/opening tiers using the existing dimension_offsets stagger.",
+      "size_guess": "large",
+      "seam_with": [
+        "S2",
+        "F6"
+      ],
+      "dedupe_key": "D1:structural-plans-no-locating-strings"
+    },
+    {
+      "id": "D1-005",
+      "area": "D1",
+      "title": "A-601/A-602 marks are per TYPE, numbered by sorted type tag: D17/D14/D13/D20 and W2 each cover openings with different RO heights or modeled frames, and adding one type renumbers every plan bubble",
+      "elements": [
+        "A-601",
+        "A-602",
+        "D-M-BATH1",
+        "D-S-SUITE",
+        "D-A-HALVES",
+        "WIN-G-N1",
+        "WIN-A-S2"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/plan_marks.py:56",
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py:56"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601",
+          "A-602",
+          "A-102",
+          "A-103"
+        ],
+        "pages": [
+          57,
+          58,
+          24,
+          25
+        ]
+      },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "Probe grouping door openings by opening_type_marks()[type_ref]: D17 (DT-INT-SWING32) RO 34.236 x 82.459 and 34.236 x 83.012; D14 (SWING30) 82.459 / 83.012; D13 (SWING24) 82.262 / 82.382; D20 (POCKET-INT-36) 83.37 / 84.188 / 84.197. A-602: W2 (WT-1424-FIX) lists a modeled frame of 13.460 x 23.553 (garage) and 12.710 x 22.805 (house). A plan bubble 'D17' therefore matches eight rows with two RO heights ~0.55 in apart. opening_type_marks numbers sorted(type tags), so any new/renamed type shifts every later mark (D17 today is not stable across revisions).",
+        "expected": "One unique mark per opening (or per type+RO+frame) so a bubble resolves to one row; marks stable across a type addition.",
+        "method": ".venv/bin/python scratchpad/geometry-review/D1/p3.py (loads model pickle, groups marks)."
+      },
+      "source": "emit/draw/plan_marks.py:56-72 docstring",
+      "proposed_fix": "Mark per distinct (type, width, height, frame) tuple, with letter suffix, assigned in a stable order not by sorted tag; seam O1-007 asks the same of the schedule.",
+      "size_guess": "small",
+      "seam_with": [
+        "O1",
+        "O4"
+      ],
+      "dedupe_key": "O1:a601-format"
+    },
+    {
+      "id": "D1-006",
+      "area": "D1",
+      "title": "S-601 prints at the 3.2 pt floor and its 'Summary by lumber size' hides the material column: five rows read '2x6', three '2x4', two '1x4' with no species/grade, and the biggest rows have material None",
+      "elements": [
+        "S-601"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/schedules/structural.py:23",
+        "packages/engine/src/typehaus/emit/draw/schedules/tables.py:133",
+        "packages/engine/src/typehaus/emit/draw/schedules/tables.py:146"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "S-601"
+        ],
+        "pages": [
+          20
+        ]
+      },
+      "confidence": 0.75,
+      "evidence": {
+        "measured": "framing_bom_by_size returns 86 rows with a 'material' key; _write_framing_bom (structural.py:21-24) prints only profile/pieces/LF/bf. Result: '2x6 1,173 / 2x6 230 / 2x6 25 / 2x6 21 / 2x6 14 / 2x6 9' (materials None, lsl, spf, oak-8q, kdat, df-select-s4s), '1x4 spf' and '1x4 struct-1-plywood', '3-2x4 1,165 pieces 360 LF'. The 2x4 and 2x6 majority rows have material None, so the default species is unstated on the lumber order. Non-lumber trim/flashing blanks appear as '0.0239x1 panel', '13.2816x3.16228 panel', '8.68234x4.26662 panel', '0.750x5.848' vs '0.750x5.860' (same riser, two rows 0.012 in apart). _add_table clamps font_pt = max(3.2, ...) and splits a list into at most two runs, so 86 and ~190 rows land at 3.2 pt on a ledger sheet (permit_set_full p20).",
+        "expected": "Species/grade/treatment column; trim and panel stock in their own table at 1/16 in; table paginated at >= 5 pt.",
+        "method": "Read permit_set_full.pdf p20; .venv/bin/python scratchpad/geometry-review/D1/p5.py."
+      },
+      "source": "takeoff.framing_bom_by_size",
+      "proposed_fix": "Add a Material column, route panel/trim profiles out of the lumber summary, round profile dims to 1/16, paginate _add_table instead of shrinking.",
+      "size_guess": "small",
+      "seam_with": [
+        "F6"
+      ],
+      "dedupe_key": "D1:s601-illegible-no-material"
+    },
+    {
+      "id": "D1-007",
+      "area": "D1",
+      "title": "A-603 fixture footprints are rounded to whole inches: 17 3/4 x 13 3/8 prints 18 x 13, 14 15/16 x 21 1/4 prints 15 x 21",
+      "elements": [
+        "A-603",
+        "FX-M-BATH1-LAV",
+        "FX-M-BATH1-WC"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py:160"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-603"
+        ],
+        "pages": [
+          135
+        ]
+      },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "openings.py:160-161 formats footprint with .0f. FX-DURAVIT-DCODE-070545 is 17.75 x 13.375 and prints 18\" x 13\"; FX-TOTO-AP-WH is 14.9375 x 21.25 and prints 15\" x 21\". Rough-in and cabinet-cutout trades read this column as the nominal envelope. Distinct from I1-006 (wrong sink value).",
+        "expected": "Nominal footprint to 1/8 in (as _eighths already does on A-602).",
+        "method": "pdftotext -f 135 -l 135 permit_set_full.pdf; probe p6.py prints the type footprints."
+      },
+      "source": "fixture type catalog",
+      "proposed_fix": "Use _eighths for both axes.",
+      "size_guess": "small",
+      "seam_with": [
+        "I1"
+      ],
+      "dedupe_key": "D1:a603-footprint-rounding"
+    },
+    {
+      "id": "D1-008",
+      "area": "D1",
+      "title": "A-603 Ceiling column prints the paint coat, not the board: bath ceilings read 'latex-paint' though the board is 5/8 in mold-resistant gwb-mr",
+      "elements": [
+        "A-603",
+        "RM-M-BATH1"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py:194"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-603"
+        ],
+        "pages": [
+          135
+        ]
+      },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "_room_side_material returns the first layer with a material_ref. Resolved ceilings carry [latex-paint (0 thk coating), gwb-mr] for RM-M-BATH1, [latex-paint, gwb] for RM-B-STAIR; since coatings take no depth (resolve/coatings.py) the first layer is always the paint. 31 of 36 rooms print 'latex-paint'; only unpainted rooms print 'gwb'/'gwb-x'. The board type (mold-resistant, Type X under the stair) and its thickness never reach the sheet that O2-001 notes is also empty for Base/Walls.",
+        "expected": "Ceiling column states board (e.g. '5/8in gwb-mr') plus coat.",
+        "method": "probe p6.py; read permit_set_full.pdf p135."
+      },
+      "source": "decision #104 (room owns its paint)",
+      "proposed_fix": "Skip zero-thickness coating layers when choosing the name, and print 'board + coat'.",
+      "size_guess": "small",
+      "seam_with": [
+        "O2"
+      ],
+      "dedupe_key": "D1:a603-ceiling-paint-not-board"
+    },
+    {
+      "id": "D1-009",
+      "area": "D1",
+      "title": "E-602 luminaire schedule clips and overprints: only the Locations column is truncatable, so Description, Brand/Model and Lamp are painted over by the next cell and Watts/Lumens/CCT/V run together",
+      "elements": [
+        "E-602"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/schedules/electrical.py:166",
+        "packages/engine/src/typehaus/emit/draw/schedules/tables.py:122"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "E-602"
+        ],
+        "pages": [
+          157
+        ]
+      },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "permit_set_full p157: '4\" recessed can, whi' | 'Nora Lighting NS' | 'PAR20 LED, E26, rep'; Watts/Lumens/CCT/V print as '6 W5003012' with no gap; Mount 'recess', Dim 'dim da'. pdftotext shows overlapping strings in the same line. _add_table(...truncate=(12,)) protects only column 12. Title block project text also overlaps ('LOT TBD - Saint Paul, Ramsey County, MN' collides with CRS).",
+        "expected": "Every cell visible in its column (wrap or truncate with '+n more').",
+        "method": "Read permit_set_full.pdf p157; pdftotext -f 157 -l 157 -layout."
+      },
+      "source": "n/a (drawing)",
+      "proposed_fix": "Pass truncate=(1,2,3,12) or wrap the cells; widen Watts/Lumens columns.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "D1:e602-clipped-columns"
+    },
+    {
+      "id": "D1-010",
+      "area": "D1",
+      "title": "E-601/E-602 'Conditioned floor area' 4,479 ft2 is the sum of room clear areas; the set's own G-001 states 4,900 sf, and NEC 220.82/220.12 measures outside dimensions",
+      "elements": [
+        "E-601",
+        "E-602",
+        "G-001"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/takeoff/electrical.py:295",
+        "packages/engine/src/typehaus/takeoff/lighting.py:392"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "E-601",
+          "E-602",
+          "G-001"
+        ],
+        "pages": [
+          63,
+          5,
+          157
+        ]
+      },
+      "confidence": 0.7,
+      "evidence": {
+        "measured": "takeoff/electrical.py:295 floor_area_ft2 = sum(room.area_m2 for conditioned rooms) * 10.7639 -> 4,479; lighting.py:392 the same for E-602's 13,436 VA allowance. permit_set p5 (G-001) prints CONDITIONED FLOOR AREA 4,900 sf 'to the structural face'. Two figures under one label differ by 421 sf (9%): general-lighting allowance understated by ~1.26 kVA before demand factors. Service stays OK (271 A of 320 A), so the effect is small but the label is wrong.",
+        "expected": "NEC 220.82 area from outside dimensions of each storey (the model's 4,900 sf, resolve/conditioned_area.py) or a relabel 'sum of room areas'.",
+        "method": "pdftotext -f 63 -l 63 / -f 5 -l 5 permit_set.pdf; grep floor_area_ft2."
+      },
+      "source": "NEC 220.82(B); notes/conditioned_floor_area.md",
+      "proposed_fix": "Read the area from resolve/conditioned_area (one source of truth) in both takeoffs.",
+      "size_guess": "small",
+      "seam_with": [
+        "E1"
+      ],
+      "dedupe_key": "D1:e601-floor-area-two-sources"
+    },
+    {
+      "id": "D1-011",
+      "area": "D1",
+      "title": "E-603 mounting heights print in decimal feet ('2.2'', '3.8'', '2.7'') with no datum, and the PoE budget table's header row is blank",
+      "elements": [
+        "E-603"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/schedules/electrical.py:242",
+        "packages/engine/src/typehaus/emit/draw/schedules/electrical.py:262"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "E-603"
+        ],
+        "pages": [
+          158
+        ]
+      },
+      "confidence": 0.8,
+      "evidence": {
+        "measured": "_number(row['mount_elevation_ft'],'{:.1f}\\'') prints ED-A-STUDIO-AP '2.2'' (26.4 in), ED-M-DOORBELL '3.8'', ED-M-STUDY-DATA1 '2.7''. Set convention is ft-in; 0.1 ft = 1.2 in so 2.2' cannot be set out. 'Elev' does not say AFF or to centre of the box. PoE BUDGET table prints an empty header row above 'Data devices / Powered over ethernet'.",
+        "expected": "Heights in ft-in to 1/2 in, labelled 'AFF to box centre'; PoE table with headers.",
+        "method": "Read permit_set_full.pdf p158."
+      },
+      "source": "n/a (drawing)",
+      "proposed_fix": "Format via feet-inches helper; add column labels to the PoE table.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "D1:e603-decimal-feet"
+    },
+    {
+      "id": "D1-012",
+      "area": "D1",
+      "title": "A-601 has no hand/swing column although the model carries flip_hinge/flip_swing per opening; A-601 also lacks jamb depth/leaf thickness for the door supplier",
+      "elements": [
+        "A-601"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py:35",
+        "packages/engine/src/typehaus/emit/draw/schedules/openings.py:64"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "A-601"
+        ],
+        "pages": [
+          57
+        ]
+      },
+      "confidence": 0.55,
+      "evidence": {
+        "measured": "Opening exposes flip_hinge, flip_swing, pocket_sign, depth_m; the A-601 header tuple is Mark/Tag/Kind/Type/RO/U/SHGC/VT/Operation/Tempered/HW set/Doorway. A prehung order needs LH/RH (in/out) per opening; today it must be read off plan arcs, and the Doorway column holds only the doorway-check status. Lower confidence: the plan swing symbol does carry hand.",
+        "expected": "Hand/swing and jamb-depth columns derived from the resolved opening.",
+        "method": "Read permit_set.pdf p57; probe p4.py lists Opening attributes."
+      },
+      "source": "door supplier practice",
+      "proposed_fix": "Add 'Hand' (LH/RH, in/out) derived from flip_hinge/flip_swing; jamb depth from O1-004 once specified.",
+      "size_guess": "small",
+      "seam_with": [
+        "O1"
+      ],
+      "dedupe_key": "D1:a601-hand-column"
+    }
+  ]
+}

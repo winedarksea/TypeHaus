@@ -1,0 +1,120 @@
+{
+ "area": "U1",
+ "model": "houses/catlin",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Read ui/src/three/builders/{openings,doorway,casedDoors,doorProducts,bookcaseDoor,openingPieces,stairFinish,wallBandShape,millwork(stool)}.ts, roofGeometry.ts, floorTruss.ts, members.ts (I-joist/bucket), memberBox.ts, structure.ts (roof, solid) against engine twins geometry_openings.py, geometry_door_products.py, geometry_cased_doors.py, geometry_bookcase_door.py, geometry_millwork.py and baseline model.json (89 openings: 41 windows, 40 seated; 22 cased_product; only 4 carry authored_product_parts; 37 stools; 444 floor members; 3 rect gable roofs). Every viewer-side constant was diffed against its engine twin: no drift found. The window-bottom glitch is confirmed from the viewer side. NOT examined: walls.ts skin/wall-layer drawing, wallFrame arch sampling beyond constants, roofTruss.ts web layout, headless render (no browser allowed).",
+ "verified_clean": [
+  "openings.ts / geometry_openings.py: frame face 0.075, depth 0.08, leaf 0.045, glass 0.015, trim 0.032/0.019, seat inset/rise/head-drop handling are identical constants and logic; only seated-window frame depth is wrong, and it is wrong identically in both (see U1-001).",
+  "doorProducts.ts vs geometry_door_products.py: concealed jamb 16 mm, shadow gap 3 mm, stop 13 mm, strip 6 mm, undercut 19 mm, leaf 45 mm, rebate 16 mm, glazed rail 101.6 mm, pane 15 mm, all lever-set constants match; concealed_leaf/concealed_jamb/buildConcealedFrame box-for-box equal.",
+  "casedDoors.ts vs geometry_cased_doors.py: liner, pocket slot, head cover, stops and lever heights are box-for-box equal and consume only engine-served CasedDoorSpec fields (22 cased_product openings).",
+  "bookcaseDoor.ts vs geometry_bookcase_door.py: side/shelf 3/4in, top-bottom 1 1/2in, back 1/2in, shelf depth 6 1/2in, 4 interior shelves identical; body size and mounting face come from the catalog.",
+  "finishFaces (TS, non-cavity layers) equals the engine's wall.depth_layers() extents (slot de-dup does not change the extremes).",
+  "doorway.ts and the board/part paths in openings.ts draw engine-supplied polygons and boards (no re-derivation); stairFinish.ts draws StairFinishPart prisms; wallBandShape.ts takes wall.layers polygons and openings as served.",
+  "floorTruss.ts: chord thickness 1.5in and width 3.5in come from served flange_thickness_m 0.0381 / flange_width_m 0.0889 (the 0.126*depth fallback also gives 1.5in); depth = z1-z0 = 0.3016 m (11 7/8in); only the 3.5in end block and the panel layout are drawing conventions, documented as such.",
+  "members.ts buildIJoists: depth foreshortened by cos(theta) for raked rafters so plies stay inside z0..z1; flange/web from served fields.",
+  "roofGeometry.ts roofPlaneZ/layerInsetRect: all three roofs (RF-HOUSE, RF-GARAGE, RF-BW-CANOPY) are 4-point axis-aligned gables, so the bbox-based plane equals the true plane; roofing layer is drawn from the served layer_surface_meshes.",
+  "Coplanar self-overlaps (floor-truss web side faces vs chord side faces, frame jamb/head/sill corner overlaps, cased/concealed liner corner overlaps) share one material colour, so a tie is invisible."
+ ],
+ "findings": [
+  {
+   "id": "U1-001",
+   "area": "U1",
+   "title": "Confirmed from the viewer: the window stool top and the frame's bottom-rail top are coplanar over a 45 mm x unit-width strip, and neither mesh has any depth bias, so the sill z-fights in 3D motion",
+   "elements": ["all 37 seated stools: STOOL-WIN-M-*, STOOL-WIN-S-*, STOOL-WIN-A-*"],
+   "files": [
+    "ui/src/three/builders/openings.ts:155-164",
+    "ui/src/three/builders/openings.ts:373-377",
+    "ui/src/three/builders/millwork.ts:33-58",
+    "packages/engine/src/typehaus/resolve/geometry_millwork.py:78-84",
+    "packages/engine/src/typehaus/resolve/geometry_openings.py:162-178"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.85,
+   "evidence": {
+    "measured": "WIN-M-BED-W1: stool z1 = 1.00336 = sill 0.9144 + sill_rise 0.01396 + 0.075 (frame bottom-rail top, by construction: window_stool_prism sets top = frame.solids[-1].z1_m). The same 0.075 holds for all 37 seated stools (z1 minus unit bottom = 0.0750). In the wall-normal axis the rail spans seat.outer_m -0.1524 .. seat.inner_m -0.0142 (frame_depth 0.138 m = 5.44in); the stool spans -0.0594 .. +0.1841, so the overlap is -0.0594 .. -0.0142 (45 mm) across the whole unit width (about 0.70 m for WT-2736-TT): two upward faces at the same z. Stool back edge -0.0594 = mount plane -0.1524 + Drutex frame_depth 0.0930, i.e. the stool already assumes the correct 3.66in frame. Depth bias: the rail is a BoxGeometry in standardMaterial (openings.ts addBox), the stool a plan prism in standardMaterial/plank material (millwork.ts buildWindowStool); a grep of polygonOffset in ui/src finds only solidMaterials (flashing/backfill), materials.ts (coating/trim tiers), boardBattenMaterial and openings.ts DOOR_TRIM_WRAP_DEPTH_BIAS, so neither stool nor window frame carries any offset. Different materials (charcoal frame vs cedar/oak stool) make the fight visible as a flickering stripe at the sill.",
+    "expected": "Frame rail should end at mount plane + WindowType.frame_depth (-0.1524 .. -0.0594, Drutex 3.66in; Andersen 3.25in), so the stool's back edge butts the rail's rear face instead of overlapping its top.",
+    "method": "python3 over houses/catlin/out/geometry-review-2026-10-31/baseline/model.json: for each window_stools row join openings[uid], walls[host]; project stool outline and window_seat.{outer_m,inner_m} on the wall left normal (axis (x1-x0, y1-y0)); compare stool.z1_m with openings.sill_m + window_seat.sill_rise_m + min(0.075, w/4, h/4). Code: grep -rn polygonOffset ui/src."
+   },
+   "source": "Same root cause as O4-001 (frame depth ignores WindowType.frame_depth). Viewer side: openings.ts:159-164 mirrors _opening_parts line for line, so a viewer-only edit would desync from the engine twin; the served catalog window_types carry no frame_depth and the served window_stools carry no frame_depth_m, so the viewer cannot clamp on its own.",
+   "proposed_fix": "Fix in the engine (O4-001: clamp the seated frame inner edge to outer -/+ frame_depth in _opening_parts), then mirror the same two lines in openings.ts; serve frame_depth_m on window_seat (or the stool) so the viewer does not need the window type. Do not paper over it with a polygonOffset on the stool: the glb emitter and the print3d solids carry the same overlap. If a stop-gap is wanted, WALL_FINISH-style units -1 on the stool material is enough to win the tie.",
+   "size_guess": "small",
+   "seam_with": ["O4", "O5"],
+   "dedupe_key": "O4:frame-depth-vs-stool-overlap"
+  },
+  {
+   "id": "U1-002",
+   "area": "U1",
+   "title": "openings.ts is a 497-line hand copy of _opening_parts plus the door post-process; the post-process (leaf_bottom / jamb_bottom clamps) is re-expressed per box and differs from the engine's per-part rules",
+   "elements": ["D-* doors with opening.doorway.leaf_bottom_z_m / jamb_bottom_z_m (36 doors)", "double-swing and slider doors with a SCHEMATIC sill design"],
+   "files": [
+    "ui/src/three/builders/openings.ts:178-205",
+    "packages/engine/src/typehaus/resolve/geometry_openings.py:363-418"
+   ],
+   "kind": "viewer",
+   "severity": "model-only",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "Engine: for leaf/sliding_panel/bifold_leaf/glass it clamps only the lowest solids to leaf_bottom (moves a bottom rail when the part has more than 2 solids and the solid is within one rail width); for frame/mullion/jamb_liner/stop/shadow_gap it replaces z0 of any solid straddling jamb_bottom, with a special case putting a SCHEMATIC-sill mullion on leaf_bottom; glazing is shifted by a delta. Viewer: addBox trims every leaf/glass box whose top is above leaf_bottom, switches to a different rule for height <= 0.1016 (moves the box up if its old bottom is below mid-height), clamps frame boxes only when height > 0.1016, and has no mullion SCHEMATIC special case and no sliding_stile handling. Only 4 of 89 openings (D-B-PATIO, D-M-ENTRY, D-M-BALC, D-S-DECK-E) take the served authored_product_parts path that avoids this; the other 85 are rebuilt in the browser. No concrete mismatch was reproduced on catlin (not run: no browser/render allowed), hence low confidence.",
+    "expected": "One answer for the door product's geometry: either the engine serves resolved parts for every opening (the authored_product_parts path already exists and the viewer draws it box-exact), or the TS rules are an exact twin.",
+    "method": "Diff openings.ts lines 178-205 against geometry_openings.py lines 376-410; list openings with authored_product_parts in model.json (4 of 89). A render diff of a door with doorway.leaf_bottom_z_m against the GLB (emit/gltf/openings.py) would settle it."
+   },
+   "source": "Structural: two implementations of the same geometry with no parity test (the file header says 'change both').",
+   "proposed_fix": "Serve opening_parts for every door/window (reuse authored_product_parts) and keep openings.ts for materials/picking only; this also removes U1-001's mirrored line pair. Large because it changes the served model size and the GLB parity tests.",
+   "size_guess": "large",
+   "seam_with": ["O4", "O5"],
+   "dedupe_key": "U1:openings-ts-duplicate-of-engine-parts"
+  },
+  {
+   "id": "U1-003",
+   "area": "U1",
+   "title": "Short solid 'floor_truss' blocking (bearing-block, partition-block) and trimmers are routed to the open-web truss drawer, so 12.5in / 10.5in blocking is drawn as two steep diagonals between end blocks",
+   "elements": ["bearing-block-1-000..012 (10)", "partition-block-W-M-STOS2-001/002", "trimmer-FO-S-STAIR-0-0/0-1/1-0", "trimmer-FO-S-ERV-CHASE-0-0/0-1/1-0"],
+   "files": [
+    "ui/src/three/members.ts:240",
+    "ui/src/three/floorTruss.ts:93-120"
+   ],
+   "kind": "viewer",
+   "severity": "model-only",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "model.json floors[].members: 12 category 'blocking' and 6 'trimmer' have shape 'floor_truss' (flange 0.0381 x 0.0889, depth 0.3016). Blocking lengths are 0.317/0.318 m (bearing) and 0.267 m (partition). bucket() dispatches on shape only, so floorTruss.ts draws 2 x 3.5in end blocks, clear = 0.318-0.178 = 0.140 m (> bay/2 = 0.113 m) and panels = max(2, round(0.140/0.603)) = 2, giving two diagonals of rise 0.2255 m over run 0.070 m (about 73 degrees). The 0.267 m blocks have clear 0.089 < 0.113, so they get end blocks only.",
+    "expected": "A block between two trusses at a bearing or under a partition is solid filler (the model names the category 'blocking'); only joist and trimmer trusses with real length should show web openings. The trimmers (2.5-5.5 m) correctly zig-zag.",
+    "method": "python3 over model.json: for f in floors: for m in f['members']: print m['category'], m['shape'], length; read members.ts bucket() and floorTruss.ts lines 93-120."
+   },
+   "source": "members.ts:238-241 and floorTruss.ts header comment; whether a bearing block is solid is a framing-detail question (O-area for floors).",
+   "proposed_fix": "In bucket(), send shape floor_truss with category blocking to the rect bucket (solid box); keep trimmers on the truss drawer. One-line change plus a bucket test.",
+   "size_guess": "small",
+   "seam_with": ["S3"],
+   "dedupe_key": "U1:truss-blocking-drawn-as-webs"
+  },
+  {
+   "id": "U1-004",
+   "area": "U1",
+   "title": "Viewer window frame uses one schematic 75 mm face x (mount plane to back dam) for every unit; the drawn glass is 15 mm and the stool meets a schematic rail, not the product's sill profile",
+   "elements": ["all seated windows (Drutex tilt-turn, Andersen 400 egress)"],
+   "files": [
+    "ui/src/three/builders/openings.ts:123-129",
+    "ui/src/three/builders/openings.ts:455-459",
+    "packages/engine/src/typehaus/resolve/geometry_openings.py:32-36"
+   ],
+   "kind": "viewer",
+   "severity": "doc",
+   "on_permit_set": {"printed": false},
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "frameWidth = min(0.075, w/4, h/4) = 0.075 for every catlin window; glass pane box 0.015 thick; frame_width coincides with Drutex's 75 mm visible face but not with Andersen 400's 2.1in-class rails. The stool top is tied to this rail (geometry_millwork.py:78-84 reads frame.solids[-1].z1_m), so the stool's height above the unit bottom is the schematic 75 mm on both makes: 2.953in. The unit bottom itself is correct (O4 verified).",
+    "expected": "A drawn rail height from the product (Drutex sill adaptor / Andersen bottom rail) so the stool sits at the real rail top; at present the stool height above the unit bottom is a drawing constant.",
+    "method": "model.json: window_stools z1_m minus (openings.sill_m + window_seat.sill_rise_m) = 0.0750 for all 37 seated; engine constants geometry_openings.py:32-36."
+   },
+   "source": "Drutex 93 mm frame / sill adaptor procurement item 2.6 (open per O4); Andersen 400 rail height not read here.",
+   "proposed_fix": "Record in the stool/millwork note that the 3 in stool height is the schematic rail; when the Drutex sill adaptor is selected, take rail height from the product row. No viewer edit.",
+   "size_guess": "small",
+   "seam_with": ["O4", "O5"],
+   "dedupe_key": "U1:schematic-rail-height-sets-stool-top"
+  }
+ ]
+}

@@ -1,0 +1,386 @@
+{
+ "area": "F4",
+ "model": "houses/catlin @247a13e9",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Inventoried RF-HOUSE (TJI 230 @24in, 38 rafters, 2-1.75x16 LVL ridge, 36 eave blocks, stiffeners), RF-GARAGE (13 trusses, 15 outlookers, barge rafters, fascia/soffit), RF-BW-CANOPY (3 trusses), girt walls (W-S-S1, W-S-N1, garage walls). Opened S-101.3, S-102.1-3, A-301, A-504, A-511, A-531, A-592..597 (full set). Web-checked Weyerhaeuser TJI notch rule and LSSR2.37Z size. NOT examined: truss plate/web layout (fabricator), roof stiffener/diaphragm edge engine files line by line, H/params/roof_panel/roof_trim/roof_wind_clamps products (E1 seam), A-592..A-597 hidden-layer geometry beyond labels, girt-vs-window sliver counts, LSSR2.37Z height/load table and APA D710 10h text (unread), truss-to-wall tie product H2.5ASS/H2.5A schedule values.",
+ "verified_clean": [
+  "RF-HOUSE: pitch 6:12, rafter run 213.75in to beam face, ridge 363.0in = beam top 362.125 + 0.875 (0.875in under peak, 1.75*0.5), beam 3.5in wide at x 214.25..217.75 centred 216",
+  "Ridge beam 2-1.75x16: bottom 346.125 is 2.72in under the 13.28in plumb rafter face, matching ridge_beam_detail.md",
+  "Rafter top at plumb cut x=0.5 equals deck underside plane (255.25) exactly; bearing_z 242.25 = 20'0.75in subfloor + 1.5in plate",
+  "RF-HOUSE schedule/notes numbers: eave 6.38 m, ridge 9.22 m, bearing 6.15 m, rafter max 19'-11in = 6.07 m, 38 rafters, 36 eave blocks 2x6 on edge x 0.5..2.0",
+  "Garage/canopy: eave 89.667, ridge 143.0, bearing 88.0 match S-102.1/.2 notes (2.28 m, 3.63 m, 2.24 m); canopy and garage planes are one plane",
+  "Garage truss heel bears on the full 5.5in plate (axis at sheathing face); gable trusses flush with sheathing; truss spacing 24in with first bay 23.25in from sheathing",
+  "Rake: 2x4 outlookers 41in long on 24in backspan with 16in cantilever; barge 2x6 14'-1in matches schedule",
+  "Girt walls: one tier of 2x4 flat girts, 3.5in tall x 1.5in deep, face 4.5in..6.0in off sheathing, courses 120/144/168/192/216 (24in module from framing base), forced 228 and 236.5 top courses; clamped stack 6.0in + 1/2in ply + 1.5in stud = 8in TLOK08 on house walls",
+  "Eave blocking 2x6 on edge on the plate, outer face at the plumb cut, 5.5in tall in 13.28in plumb bay"
+ ],
+ "findings": [
+  {
+   "id": "F4-001",
+   "area": "F4",
+   "title": "RF-HOUSE birdsmouth notches 1.47in plumb out of an 11-7/8 TJI 230 bottom flange (flange is 1-1/2in)",
+   "elements": [
+    "RF-HOUSE",
+    "rafter-000..037"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/framing/roof.py:272",
+    "packages/engine/src/typehaus/resolve/framing/roof.py:63",
+    "houses/catlin/notes/roof_wall_eave_detail.md:29"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-593",
+     "A-596",
+     "A-301"
+    ],
+    "pages": [
+     128,
+     132,
+     33
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Seat plane z=242.25in (plate top); rafter underside is 13.28in plumb below the deck line (11.875*sqrt(1.25)); at the heel (x=4.0in, seat_run 3.5in) underside is z=243.72, so the notch is 1.47in deep and starts at x=1.06in. TJI 230 flange is 1-1/2in thick (1.68in plumb at 6:12): the seat removes essentially the whole bottom flange at the heel.",
+    "expected": "Weyerhaeuser: do not cut or notch I-joist flanges; rafter ends take a plumb/bevel bearing cut with the bottom flange bearing full on the plate (beveled plate or beveled web stiffeners, TB-805 'TJI in rafter cut applications'). Note cites 'birdsmouth ... APA D710 10h'; 10h could not be read here, hence low confidence.",
+    "method": "load model.pkl; rafter=roof.members[0]; top(x)=z1+0.5(x-0.5); bottom=top-11.875*sqrt(1.25); compare to SeatCut.plate_top_z_m=6.15315 m. Scratchpad F4/p9.py."
+   },
+   "source": "https://www.techsupport.weyerhaeuser.com/hc/en-us/articles/201758510-TJI-joists-with-top-flange-notches (bottom flange notching: avoid); TB-805 not fetched",
+   "proposed_fix": "Replace the birdsmouth by a plumb-cut tail seated on a beveled bearing plate (D710 10q, already named as the alternative in ridge_beam_detail.md), or confirm TB-805 allows the 1.47in bottom-flange notch; update SeatCut/emitters, takeoff (plate), A-593 K1, and recheck H2.5A tie and eave blocking elevations.",
+   "size_guess": "large",
+   "seam_with": [
+    "S3"
+   ],
+   "dedupe_key": "RF-HOUSE:tji-birdsmouth-flange"
+  },
+  {
+   "id": "F4-002",
+   "area": "F4",
+   "title": "Canopy trusses bear only 2.75in on the 5.5in glulam headers: heel point is at the beam centreline",
+   "elements": [
+    "RF-BW-CANOPY",
+    "BM-BW-RW",
+    "BM-BW-RE",
+    "truss-000..002"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/framing/roof_gable.py:200",
+    "packages/engine/src/typehaus/resolve/roof_bearing.py"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-102.1"
+    ],
+    "pages": [
+     12
+    ]
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "BM-BW-RW spans x=69.25..74.75in (axis 72.0); BM-BW-RE 357.25..362.75 (axis 360.0). Truss bottom chords run x=72..360 (bearing axis to bearing axis), tails to 56/376. Bearing under each heel = 2.75in (half the beam); the outboard 2.75in of the glulam is under the tail. Garage walls by contrast: axis is the outer sheathing face, truss bears the full 5.5in plate (72.6..78.1).",
+    "expected": "Truss bearing width on a header at least 3.5in (typical truss design minimum), ideally full 5.5in with the heel at the beam's outer face; fabricator drawing will state required bearing.",
+    "method": "model.solids tag BM-BW-RW outline x; roofs[RF-BW-CANOPY].members truss p0/p1 (scratchpad p4.py, p6.py); build_truss_layout uses bearing.axis as bear_lo/bear_hi."
+   },
+   "source": "TPI/ICC truss bearing practice; CLAUDE.md canopy notes (bearing run inset 3/4in along y only)",
+   "proposed_fix": "Either shift the heel/bear datum for beam bearings to the beam outer face (span becomes 290.75in, overhang from the face) or state bearing width on S-102.1 and ask the fabricator to confirm 2.75in; affects the canopy wind oracles (canopy-roof-plane-cascade) so treat as large.",
+   "size_guess": "large",
+   "seam_with": [
+    "S1",
+    "E1"
+   ],
+   "dedupe_key": "RF-BW-CANOPY:truss-bearing-width"
+  },
+  {
+   "id": "F4-003",
+   "area": "F4",
+   "title": "Truss heel lift treats the 3.5in top-chord depth as vertical: deck plane 3/16in low on garage and canopy (4:12)",
+   "elements": [
+    "RF-GARAGE",
+    "RF-BW-CANOPY"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/roof_geometry.py:226",
+    "packages/engine/src/typehaus/resolve/framing/profiles.py:458"
+   ],
+   "kind": "engine-geometry",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-102.2",
+     "A-594"
+    ],
+    "pages": [
+     13,
+     129
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "ridge_z = 143.000in = plate 88 + heel 3.5 + chord 3.5 + 48 (144in half-run at 4:12) exactly; eave_z 89.667.",
+    "expected": "Top chord underside meets the heel 3.5in above plate; the chord is 3.5in measured perpendicular, 3.5*sqrt(1+(1/3)^2)=3.689in plumb, so deck underside at the heel should be 95.19in and ridge 143.19in (+0.19in).",
+    "method": "roof.eave_z_m*39.3701 and ridge_z_m for RF-GARAGE (p4.py); needed = plate_top + heel + truss_chord_depth_m in truss_heel_lift_m."
+   },
+   "source": "geometry; roof_geometry.py docstring says top-chord underside clears plate+heel",
+   "proposed_fix": "Multiply chord depth by the slope factor in truss_heel_lift_m (the house rafter path already uses 13.28in plumb). Moves garage/canopy plane 0.19in: re-bless goldens and the canopy wind oracles, so this is a budgeted cascade, not a quick fix.",
+   "size_guess": "large",
+   "seam_with": [
+    "E1"
+   ],
+   "dedupe_key": "truss-heel-lift:chord-plumb"
+  },
+  {
+   "id": "F4-004",
+   "area": "F4",
+   "title": "S-102.1/.2 truss schedule 'MAX LENGTH 24'-0\"' is bearing-to-bearing; trusses are 26'-8\" overall with 16in tails",
+   "elements": [
+    "RF-GARAGE",
+    "RF-BW-CANOPY"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-102.1",
+     "S-102.2"
+    ],
+    "pages": [
+     12,
+     13
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "Schedule prints 24'-0\" for T1/T2; TrussShape tail_lo/hi = 0.4064 m (16in) each end, footprint 56..376in = 320in = 26'-8\".",
+    "expected": "Fabricator orders overall length 26'-8\" (or must be told the 16in tails are included).",
+    "method": "Read S-102.1/S-102.2 member schedule; roofs[].footprint and truss p0/p1 + tails."
+   },
+   "source": "model",
+   "proposed_fix": "Print overall length (and note bearing span 24'-0\") in the schedule.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "S-102:truss-length"
+  },
+  {
+   "id": "F4-005",
+   "area": "F4",
+   "title": "A-594 note says 'Deck: 3/4in Structural 1 plywood' but the model and the same sheet's label are 19/32in (0.594in)",
+   "elements": [
+    "TR-CATLIN-GARAGE-EAVE",
+    "GARAGE_ROOF"
+   ],
+   "files": [
+    "houses/catlin/notes/garage_eave_detail.md",
+    "houses/catlin/plan/assemblies/envelope_roofs.py:197"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-594"
+    ],
+    "pages": [
+     129
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "Notes bullet: 3/4in; leader: deck 0.594in; ROOF_DECK_THICKNESS = inch(0.59375).",
+    "expected": "19/32in (the 3/4in rating class is 23/32in actual).",
+    "method": "Read A-594 notes vs labels."
+   },
+   "source": "assembly GARAGE_ROOF",
+   "proposed_fix": "Edit note in garage_eave_detail.md to 19/32in Structural I.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "A-594:deck-thickness"
+  },
+  {
+   "id": "F4-006",
+   "area": "F4",
+   "title": "A-594 labels the truss layer 'truss 11.9in' though the trusses are 2x4 chords (3.5in); the 11.875 is a placeholder layer thickness",
+   "elements": [
+    "GARAGE_ROOF",
+    "CANOPY_ROOF"
+   ],
+   "files": [
+    "houses/catlin/plan/assemblies/envelope_roofs.py:174"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-594"
+    ],
+    "pages": [
+     129
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Label 'truss 11.9\"' and 'truss fill 14.5\"'; chord_member 2x4.",
+    "expected": "Label the truss as 2x4 top/bottom chords, standard heel 3.5in; fill depth 14.5in settled R-38 tapering at eave.",
+    "method": "Read A-594; assembly source."
+   },
+   "source": "assembly",
+   "proposed_fix": "Relabel or hide the structural layer thickness for roof_frame=truss.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "A-594:truss-label"
+  },
+  {
+   "id": "F4-007",
+   "area": "F4",
+   "title": "A-592 prints no detail (empty sheet with notes and dimension arrows only); A-595..A-597 carry the eave gutter K-notes though they are partition-to-roof sections",
+   "elements": [
+    "TR-CATLIN-EAVE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-592",
+     "A-595",
+     "A-596",
+     "A-597"
+    ],
+    "pages": [
+     127,
+     130,
+     131,
+     132
+    ]
+   },
+   "confidence": 0.65,
+   "evidence": {
+    "measured": "A-592 drawing area blank; A-597 draws the roof as a flat slab with the partition as a small box below.",
+    "expected": "Each detail drawn; notes limited to what the cut shows.",
+    "method": "Read pages 127-132 of permit_set_full.pdf."
+   },
+   "source": "model",
+   "proposed_fix": "Fix detail extraction for EXT_2X6_BOARD_BATTEN/ROOF and the parallel-cut partition cases; filter keyed notes by what is in the cut.",
+   "size_guess": "large",
+   "seam_with": [],
+   "dedupe_key": "A-592:blank"
+  },
+  {
+   "id": "F4-008",
+   "area": "F4",
+   "title": "Ridge details A-504/A-531 and S-102.3 carry no ridge-beam size, LSSR hanger, LSTA24, stiffener or H2.5A callouts",
+   "elements": [
+    "RB-HOUSE",
+    "RF-HOUSE"
+   ],
+   "files": [
+    "houses/catlin/notes/ridge_beam_detail.md"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-504",
+     "A-531",
+     "S-102.3"
+    ],
+    "pages": [
+     39,
+     66,
+     14
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "A-504/A-531 label only roofing/membrane/sheathing/foam/rafter/gwb layers; S-102.3 schedule lists rafters, RB1 2-1.75x16 LVL and eave blocking only.",
+    "expected": "Hardware a framer needs: 38 LSSR2.37Z, 19 LSTA24, 38 beveled stiffeners, 10 H2.5A at beam, 36 H2.5A eave ties (CLAUDE.md Attic and roof).",
+    "method": "Read the three sheets."
+   },
+   "source": "notes/ridge_beam_detail.md",
+   "proposed_fix": "Add connector schedule and callouts to S-102.3 and key A-504/A-531.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "RB-HOUSE:hardware-callouts"
+  },
+  {
+   "id": "F4-009",
+   "area": "F4",
+   "title": "A-301 'ATTIC T.O. PLATE / RIDGE EL. 30'-3\"' conflates plate and ridge; plate labels and the dimension chain disagree",
+   "elements": [
+    "RF-HOUSE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-301"
+    ],
+    "pages": [
+     33
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Label shows 30'-3\" for plate/ridge; attic plate top is 242.25in = 20'-2 1/4\"; 'SECOND T.O. PLATE 20'-1\"' while the 10'-3\" dimension to the ridge implies 20'-0\".",
+    "expected": "Ridge 30'-3\" (363in), attic rafter plate 20'-2 1/4\", second plate per walls (240in).",
+    "method": "A-301 vs model walls z1 and roofs[RF-HOUSE].bearing_z_m."
+   },
+   "source": "model",
+   "proposed_fix": "Separate the attic plate and ridge datum labels; reconcile plate rounding.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "A-301:attic-plate-label"
+  },
+  {
+   "id": "F4-010",
+   "area": "F4",
+   "title": "roof.py comment says the 3.5in seat is a 1.17in notch; at 6:12 it is 1.75in horizontal run x slope (and 1.47in measured at the plumb underside)",
+   "elements": [
+    "RF-HOUSE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/framing/roof.py:62"
+   ],
+   "kind": "engine-geometry",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false,
+    "sheets": [],
+    "pages": []
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "_SEAT_LEN_M=3.5in, slope 0.5 -> 1.75in; comment says 1.17in.",
+    "expected": "consistent comment.",
+    "method": "read roof.py:59-63."
+   },
+   "source": "code",
+   "proposed_fix": "Fix the comment (or the constant if 1.17in was intended).",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "roof.py:seat-comment"
+  }
+ ]
+}

@@ -1822,7 +1822,7 @@
         213.0,
         343.4916666666667
       ],
-      "text": "gwb-a 0.5\"",
+      "text": "gwb-mr 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1847,7 +1847,7 @@
         216.0,
         339.7
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1872,7 +1872,7 @@
         219.0,
         335.9083333333333
       ],
-      "text": "gwb-b 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1947,7 +1947,7 @@
         233.7165354330709,
         354.4736486238747
       ],
-      "text": "sheathing 0.594\"",
+      "text": "sheathing 19/32\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1997,7 +1997,7 @@
         233.7165354330709,
         348.2042322834646
       ],
-      "text": "rafter 11.9\"",
+      "text": "rafter 11 7/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2022,7 +2022,7 @@
         233.7165354330709,
         345.7042322834646
       ],
-      "text": "rafter fill (fiberglass-r30c) 6.88\"",
+      "text": "rafter fill (fiberglass-r30c) 6 7/8\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2331,7 +2331,7 @@
         0.7,
         1.3980000000000001
       ],
-      "content": "spf  11.9\"",
+      "content": "spf  11 7/8\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2404,7 +2404,7 @@
         0.7,
         1.228
       ],
-      "content": "fiberglass-r30c  6.88\"",
+      "content": "fiberglass-r30c  6 7/8\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2550,7 +2550,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "cdx-plywood  0.594\"",
+      "content": "cdx-plywood  19/32\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

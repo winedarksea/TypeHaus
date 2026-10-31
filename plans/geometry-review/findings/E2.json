@@ -1,0 +1,355 @@
+{
+ "area": "E2",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Inventoried 3 metal skins (board-batten-24 BBD75-1212 0.75in on 20 N/S walls; pbr-panel-24 1.25in on 16 E/W walls; corrugated-panel-24 0.875in garage/entry screen), BASEMENT_BRICK_VENEER and FIREPLACE_BRICK_WYTHE, rainscreen base (Z, perforated U, strips, EPDM), band Transition Trim, PBR/BBD trim kits against the vendored PBR 4/2024 and BBD75 10/2025 guides, 42 wall cladding layers, N/S opening-vs-batten phase, girt-vs-joint heights, stack depth (6-3/4in B&B / 7-1/4in PBR) vs mount plane. Opened A-201..A-204 (A-201/A-202 inspected; A-203/A-204 not separately opened), A-503, A-512, A-513, A-585..A-591 in permit_set_full.pdf. NOT examined: A-203/A-204 elevation detail, A-514/A-515 (garage/garden opening details), ties/anchor spacing, W-BW-SCREEN thin brick, mixed-corner solids measured against crown planes, wind span for PBR vs 24in girt beyond the table cited.",
+ "verified_clean": [
+  "board-batten-24: BBD75-1212 profile 12in coverage, 2in batten, 3/4in rib height match guide p.12; layer thickness 0.75in",
+  "pbr-panel-24: 36in coverage, 12in major-rib pitch, 1-1/4in rib depth, two minor ribs per pan match PBR guide; layer 1.25in",
+  "Stack depth from sheathing: foam 4 + vent 0.5 + girt 1.5 + panel = 6.75in (BBD) / 7.25in (PBR); A-512/A-513 note text matches; window mount plane 6in matches",
+  "PBR_BASE 2-5/8 x 1-1/4 x 5/8 hem, OPENING_HEAD 2-1/2 x 1-1/2 x 1/2 hem, wide outside corner 5-1/2 x 5-1/2, BBD_BASE 2-5/8 x 1-1/4 x 5/8, BBD_TRANSITION 2 / 1 / 2-1/2: all match the manufacturer sheets",
+  "BBD lower panel run 239.44in (19'-11 7/16in) is under the 20'-0in recommended maximum; band joint at 228in sits on the band girt course (228-231.5)",
+  "Cladding bottom -13.44in is 20.6in above grade (-34in); rainscreen Z drips 2in clear of the exposed XPS band",
+  "Movement joints MJ-B-BRICK-E/-W and brick air gap 4in (>= R703.8.4 1in) consistent with A-585 K7",
+  "Door AO-B-BRICK-DOOR head and arch spring land on whole courses (30 and 27)"
+ ],
+ "findings": [
+  {
+   "id": "E2-001",
+   "area": "E2",
+   "title": "BBD75 band: lower panel stops 1in under the band girt, leaving a ~9in tail past its last fastener; lap check measures the trim leg, not the panel overlap",
+   "elements": [
+    "W-S-S1",
+    "W-S-S2",
+    "W-S-N1",
+    "W-S-N2",
+    "W-A-*"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/board_batten.py:303",
+    "packages/engine/src/typehaus/resolve/rainscreen_strips.py:37",
+    "packages/engine/src/typehaus/checks/integrity/cladding_trim_fit.py:245",
+    "houses/catlin/plan/assemblies/board_batten.py:14"
+   ],
+   "kind": "interface-fit",
+   "severity": "wrong-build",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-201",
+     "A-202",
+     "A-592"
+    ],
+    "pages": [
+     29,
+     30,
+     127
+    ]
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "W-S-N2 girt courses (strapping, centre z): 217.75 (216-219.5) then 229.75 (228-231.5), the band course. Joint 228; lower panel top = 228-1 = 227. The panel's last girt is 217.75, so its nail-strip tail runs 9.25in past the last fastener (7.5in past the girt's top edge) and never reaches the 228 girt. _band_laps reports 'lap the lower panel 2-1/2 in' from the trim leg depth below the joint (2.5in); with the panel 1in short of the shelf the true leg-on-panel overlap is 1.5in.",
+    "expected": "BBD75 p.40 draws the lower panel running up to the Transition Trim shelf, nail strip fastened at the trim; tail past last fastener should stay within the 2'-0in fastener-spacing basis (<= ~12in) and the leg lap should be 2.5in on the panel.",
+    "method": "Load model; W-S-N2 members category=='strapping' z; BAND_PANEL_GAP_IN=1.0 at rainscreen_strips.py:37; see joint_segments board_batten.py:291-306; scratchpad geometry-review/E2/p7.py."
+   },
+   "source": "Metal Sales BBD75 Install Guide 10/2025 p.40 (houses/catlin/notes/sources/metal-sales-bbd75-install-2025.pdf); decision #99 (owner's 1in outlet slot)",
+   "proposed_fix": "Keep the outlet slot but add a girt course (or lower the band girt) so the lower panel's last fastener sits within ~6in of its end, and make _band_laps measure leg-over-panel (leg depth minus BAND_PANEL_GAP_IN). Or accept 9in tail and say so in notes/metal_trim_kit.md.",
+   "size_guess": "large",
+   "seam_with": [
+    "E1"
+   ],
+   "dedupe_key": "BBD-band:lower-panel-tail"
+  },
+  {
+   "id": "E2-002",
+   "area": "E2",
+   "title": "BBD75 section is drawn symmetric with the 2in batten centred mid-pitch; the product has its batten at the panel edge, so drawn battens and corner/jamb relations are off by up to 1in",
+   "elements": [
+    "board-batten-24",
+    "W-M-S2/D-M-BALC",
+    "W-S-S2/D-S-DECK-E"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/resolve/metal_skin_profiles.py:27",
+    "packages/engine/src/typehaus/emit/draw/elevation_finish.py:75"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-201",
+     "A-202"
+    ],
+    "pages": [
+     29,
+     30
+    ]
+   },
+   "confidence": 0.35,
+   "evidence": {
+    "measured": "_board_batten_profile: crown +-1in about 0, flats +-6in, battens at 12in*k from the layout-line origin (a half rib at station 0 = the corner). D-M-BALC jamb sits 0.34in from a batten centreline, so a 2in rib straddles its RO edge; WIN-M-BED-S2 jamb 1.0in, WIN-S-PLANT2 1.0in.",
+    "expected": "BBD75-1212 profile (guide p.12): 12in coverage with the 2in batten at ONE EDGE of the panel (rib centre 11in from the start edge); runs either hand. Rib centres therefore sit 1in off the 12in*k grid and the installer sets the start line to place ribs ('plan the work to get the ribs where desired').",
+    "method": "Read guide p.12 image; probe scratchpad geometry-review/E2/p6.py prints jamb-to-batten-centre distance for every N/S opening."
+   },
+   "source": "Metal Sales BBD75 Install Guide 10/2025 p.12, p.30",
+   "proposed_fix": "Offset the batten phase by 1in (or note in G-002 that battens are set by the installer from the corner start panel). No dimensioned print depends on it.",
+   "size_guess": "small",
+   "seam_with": [
+    "O5"
+   ],
+   "dedupe_key": "BBD:batten-phase"
+  },
+  {
+   "id": "E2-003",
+   "area": "E2",
+   "title": "A-586..A-589 print illegible overlapping label clusters, and A-588/A-589 drop the framed wall's cladding/girt/foam rows from the legend",
+   "elements": [
+    "TR-CATLIN-FOUNDATION"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-586",
+     "A-587",
+     "A-588",
+     "A-589",
+     "A-512"
+    ],
+    "pages": [
+     121,
+     122,
+     123,
+     124,
+     47
+    ]
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "A-586/587 (BASEMENT_8 / EXT_2X6 and BOARD_BATTEN): '5.5in stud', '4in CI', 'Catlin House' and the wall's layer callouts are over-printed at one point beside the section; A-588/589 show the brick stack and footing but the framed wall above it is unlabelled (callouts collapsed to the same point at top-left). A-512 has the title block text 'Catlin House' over-printed on the detail title and a garbled strip below the section.",
+    "expected": "Each layer callout readable, framed wall labelled (cladding 0.75in / outer-girt 1.5in / vent-gap 0.5in / spray-foam 4in).",
+    "method": "Read permit_set_full.pdf pages 47, 121-124."
+   },
+   "source": "snapshot PDFs",
+   "proposed_fix": "Fix label placement for details whose wall stack sits above the cut crop; likely leader-collision handling in the detail-sheet label pass.",
+   "size_guess": "large",
+   "seam_with": [
+    "O5"
+   ],
+   "dedupe_key": "A-58x:label-collision"
+  },
+  {
+   "id": "E2-004",
+   "area": "E2",
+   "title": "Foundation detail sheets A-585..A-591 share one generic NOTES block that is wrong for several of them",
+   "elements": [
+    "A-585",
+    "A-586",
+    "A-587",
+    "A-588",
+    "A-589",
+    "A-590",
+    "A-591"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/emit/draw/"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-585",
+     "A-586",
+     "A-587",
+     "A-588",
+     "A-589",
+     "A-590",
+     "A-591"
+    ],
+    "pages": [
+     120,
+     121,
+     122,
+     123,
+     124,
+     125,
+     126
+    ]
+   },
+   "confidence": 0.7,
+   "evidence": {
+    "measured": "A-591 (GARAGE_ICF_6 / GARAGE_WALL_2X6) prints 'Framed wall: 2x6 at 16in o.c., R-19 bays, 4in continuous exterior' and K2/K3/K4 (Z flashing, perforated U, base trim, L-flashing) and K7 (veneer); the garage wall is 24in o.c. 2x6 with 2in ccSPF, CDX, no rainscreen. A-590 (interior footing wall) prints K2-K4 and K7. K7 'Veneer: 2in EPS, 4in clear air, weeps at the beam' appears on A-585..587, which have no veneer.",
+    "expected": "Notes keyed to the assemblies actually shown: veneer notes only on A-588/589; cavity base notes K2-K4 only where a rainscreen cavity exists; garage framing note from GARAGE_WALL_2X6.",
+    "method": "Read permit_set_full.pdf pages 120-126 and compare NOTES to the detail's assemblies."
+   },
+   "source": "snapshot PDFs",
+   "proposed_fix": "Scope keyed notes per detail from the assemblies cut; generate the framed-wall bullet from the wall assembly.",
+   "size_guess": "small",
+   "seam_with": [
+    "F1"
+   ],
+   "dedupe_key": "A-585-591:generic-notes"
+  },
+  {
+   "id": "E2-005",
+   "area": "E2",
+   "title": "Sheet label 'brick 3.62in' (3.625in wythe) and A-503 'typical' section shows only the B&B stack",
+   "elements": [
+    "A-503",
+    "A-588",
+    "A-589",
+    "BASEMENT_BRICK_VENEER"
+   ],
+   "files": [
+    "houses/catlin/plan/assemblies/envelope_masonry.py:46"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-503",
+     "A-588",
+     "A-589"
+    ],
+    "pages": [
+     38,
+     123,
+     124
+    ]
+   },
+   "confidence": 0.5,
+   "evidence": {
+    "measured": "Callout prints 3.62 for 3.625in (two-decimal rounding to even); A-503's 'Typical exterior wall section' labels cladding 0.75in on every storey, no 1.25in PBR stack (E/W walls, ~45% of wall area).",
+    "expected": "3 5/8in or 3.625in; sheet title 'north/south wall section' or a PBR counterpart.",
+    "method": "Read permit_set_full.pdf pages 38, 123, 124."
+   },
+   "source": "BASEMENT_BRICK_VENEER _VENEER_WYTHE = inch(3.625)",
+   "proposed_fix": "Print inches as fractions (3 5/8); retitle A-503 or add the PBR section.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "A-503:label-and-title"
+  },
+  {
+   "id": "E2-006",
+   "area": "E2",
+   "title": "Court brick: window sill and veneer top are not on 2-2/3in course lines (sill 1/3in off, top 1.1in into a course)",
+   "elements": [
+    "W-B-BRICK",
+    "AO-B-BRICK-WIN"
+   ],
+   "files": [
+    "houses/catlin/plan/assemblies/envelope_masonry.py:46"
+   ],
+   "kind": "interface-fit",
+   "severity": "model-only",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.4,
+   "evidence": {
+    "measured": "Wall base -102.4375in, top -13.333in: height 89.104in = 33.41 courses. AO-B-BRICK-WIN sill 37.0in = 13.875 courses (course line 37.33in), head 57in, arch spring 55in = 20.625 courses. AO-B-BRICK-DOOR head 80in and spring 72in = 30 and 27 courses (on course).",
+    "expected": "Sill/head/top on whole 2-2/3in courses as the fireplace surround does (assembly comment: 'every datum lands on a whole course'); a 1/3in sill error is absorbed in the bed joints, 1.1in top is a cut course.",
+    "method": "Scratchpad geometry-review/E2/p4.py: (sill, head, z1-z0) / (8/3)."
+   },
+   "source": "houses/catlin/notes/sunken_garden_veneer_beam.md; BIA modular brick (2-2/3in per 3 courses)",
+   "proposed_fix": "Move window sill to 37 1/3in (RO 14x20 -> sill 37 1/3); decide top as a cut course or soldier cap.",
+   "size_guess": "small",
+   "seam_with": [
+    "O1"
+   ],
+   "dedupe_key": "W-B-BRICK:coursing"
+  },
+  {
+   "id": "E2-007",
+   "area": "E2",
+   "title": "Stale citation: notes/sunken_garden_veneer_beam.md says the veneer airspace is 2in; model and sheets are 4in air plus 2in EPS",
+   "elements": [
+    "BASEMENT_BRICK_VENEER"
+   ],
+   "files": [
+    "houses/catlin/notes/sunken_garden_veneer_beam.md:29"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "Note line 29: 'The airspace itself is 2in and compliant'; BASEMENT_BRICK_VENEER air-gap = 4.0in (envelope_masonry.py:75-83), A-585 K7 '2in EPS ... 4in clear air'.",
+    "expected": "Note matches the 4in cavity (R703.8.4 minimum 1in; 4-1/2in ceiling).",
+    "method": "grep -n 'airspace' notes/sunken_garden_veneer_beam.md; compare assembly layer thickness."
+   },
+   "source": "envelope_masonry.py air-gap layer",
+   "proposed_fix": "Edit note line 29.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "veneer:airspace-note"
+  },
+  {
+   "id": "E2-008",
+   "area": "E2",
+   "title": "Library trim sources cite wrong PBR guide pages; BBD walls cite the PBR guide for a part BBD75 prints itself",
+   "elements": [
+    "WIDE_OUTSIDE_CORNER",
+    "PBR_BASE"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/trim/metal_sales.py:28"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.6,
+   "evidence": {
+    "measured": "WIDE_OUTSIDE_CORNER source 'PBR Install Guide 4/2024 pp. 16, 58'. In the vendored guide the Outside Corner profile is printed p.18 and the detail p.66 (p.16 is the step rake; p.58 is the Rakewall). BBD_KIT uses the same 58132XX, which BBD75 guide p.16/p.30 lists as 'Outside Corner - Wide' (5-1/2 x 5-1/2in, closed hem, installed over C-Closure). Dimensions agree (5.5 x 5.5).",
+    "expected": "Cite PBR pp. 18, 66 and BBD75 pp. 16, 30.",
+    "method": "pdftotext of houses/catlin/notes/sources/metal-sales-pbr-install-2024.pdf pages 17-19, 59, 67."
+   },
+   "source": "metal-sales-pbr-install-2024.pdf; metal-sales-bbd75-install-2025.pdf",
+   "proposed_fix": "Correct the source string.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "trim:corner-citation"
+  },
+  {
+   "id": "E2-009",
+   "area": "E2",
+   "title": "PBR wall allowable cited from a 1/2026 CTR that is not in notes/sources; the vendored 4/2024 guide prints 314/330 psf (24 ga) and 223/261 psf (26 ga) at 2ft",
+   "elements": [
+    "pbr-panel-24",
+    "pbr-panel-26"
+   ],
+   "files": [
+    "packages/engine/src/typehaus/library/materials/cladding.py:318"
+   ],
+   "kind": "product-data",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.45,
+   "evidence": {
+    "measured": "pbr-panel-24 source: '318 psf outward at 2'-0in'; pbr-panel-26: '236'. Guide p.31 (PBR-Panel table): 24 ga outward 314, inward 330; 26 ga outward 223, inward 261. Demand is ~18 psf so no verdict moves.",
+    "expected": "Source string either matches a vendored document or says the number is from a CTR not on file.",
+    "method": "pdftotext metal-sales-pbr-install-2024.pdf page 32 (printed p.31)."
+   },
+   "source": "metal-sales-pbr-install-2024.pdf p.31",
+   "proposed_fix": "Vendor the 1/2026 CTR or cite the 4/2024 numbers.",
+   "size_guess": "small",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "pbr:allowable-source"
+  }
+ ]
+}

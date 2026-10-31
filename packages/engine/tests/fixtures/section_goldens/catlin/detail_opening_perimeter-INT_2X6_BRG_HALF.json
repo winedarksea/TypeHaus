@@ -796,7 +796,7 @@
         213.0,
         -14.354297900262466
       ],
-      "text": "gwb-b 0.5\"",
+      "text": "gwb-ar 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -821,7 +821,7 @@
         216.0,
         -18.145964566929134
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -846,7 +846,7 @@
         219.0,
         -21.937631233595802
       ],
-      "text": "gwb-a 0.5\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1121,7 +1121,7 @@
         0.7,
         1.228
       ],
-      "content": "gwb  0.5\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1193,7 +1193,7 @@
         0.7,
         1.058
       ],
-      "content": "spf  5.5\"",
+      "content": "spf  5 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1266,7 +1266,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "gwb-ar  0.5\"",
+      "content": "gwb-ar  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

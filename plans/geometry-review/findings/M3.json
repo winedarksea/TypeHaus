@@ -1,0 +1,384 @@
+{
+  "area": "M3",
+  "model": "catlin @ 247a13e9",
+  "review_sha": "247a13e9",
+  "inventory_summary": "Inventoried 222 derived device boxes (RACO 232 surface x19, Carlon B122A/BH235A flush x196, flush_raceway x5), 371 electrical devices, 47 conduit runs (14 derived NM sleeves), 18 light runs (4 in shadow gaps), 78 ceiling cans, 4 panels + disconnects; opened E-101..E-104, E-201..E-204, E-601..E-603. Web-checked Roland, Nora NSIC, Carlon BH235A. NOT examined: per-luminaire dimensions of non-Nora fixtures (WAC Sprig, Livex, Hunter), IC contact/insulation rating of cans in attic cavities, box fill (graded by check, 219 pass), E-602 luminaire cell text (rendered too small to read), receptacle spacing, shadow-gap bead geometry beyond host/aperture.",
+  "verified_clean": [
+    "device boxes: every flush cavity >= 3.5\" box depth (min 3.5 in 2x4 walls, nail-on boxes set flush to finish)",
+    "device box product dims B122A 3.75x2.25x3.5, RACO 232 4x4x2.125 match distributor data",
+    "kitchen counter receptacles at 42\" centre: clear 36\" top + 6\" backsplash, under 54\" uppers; titanium backsplash (352.7..392\") clears KGF3 by ~2\"",
+    "no wall device overlaps a rough opening; box-to-RO gaps all >=0 (min 1.4\")",
+    "door casings clip only on walls/fixtures/furniture, no device clipped",
+    "can housing check passes on 78 cans; Nora housing 6\" vs 11-7/8\" cavities",
+    "E-603 elevations match model (PLAY-N-DATA1 30\", WORKSHOP-DATA1 42\", STUDY 32\")",
+    "LED shadow-gap runs: 4 runs, aperture 0.63\", host gypsum, mep.plaster_in_depth 4 pass",
+    "surface-box NM sleeves derived 3/4\" EMT to ceiling (nm_sleeve_reach 11 pass, 3 advisory)"
+  ],
+  "findings": [
+    {
+      "id": "M3-001",
+      "area": "M3",
+      "title": "PLAY-N sconce canopies cannot cover the 4\" square surface box (box+cover 2-5/8\" proud vs 2-1/2\" fixture; 1\" backplate vs 4-3/16\" cover)",
+      "elements": [
+        "ED-B-PLAY-N-SCONCE1",
+        "ED-B-PLAY-N-SCONCE2",
+        "ED-B-PLAY-N-SCONCE3",
+        "ED-B-PLAY-N-SCONCE4",
+        "ED-B-PLAY-N-SCONCE5",
+        "ED-B-PLAY-N-SCONCE6",
+        "ED-T-LT-SCONCE-UD"
+      ],
+      "files": [
+        "houses/catlin/plan/lighting.py:264",
+        "houses/catlin/plan/lighting_types_decor.py:40",
+        "houses/catlin/plan/device_boxes.py:45",
+        "houses/catlin/notes/basement_surface_wiring.md:open-items"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "E-101",
+          "E-201"
+        ]
+      },
+      "confidence": 0.65,
+      "evidence": {
+        "measured": "Six sconces on bare concrete take a surface RACO 232 (4x4x2-1/8) under a 1/2\" raised cover = 2.625\" proud, 4\"+ square. WAC Roland WS-83212 projects 2.5\" (type height 12, footprint 4.5x2.5); Ferguson lists backplate 4.5 W x 1 H in. Box+cover is deeper than the fixture and 3+ in taller than its backplate, so it shows above/below the canopy.",
+        "expected": "Fixture canopy fully covers the box: projection > box+cover, backplate >= box height, or a shallow/flush mount (e.g. 1-1/2\" box, or the can-style canopy). The TODO item is real.",
+        "method": "Probe /private/tmp/claude-501/-Users-colincatlin-Documents-NoCloud-TypeHaus/a9292deb-6aa8-41a7-a63e-497e3c7970b9/scratchpad/geometry-review/M3/p1.py (box rows); box_size from device_boxes.py BOX_STANDARD; web: Ferguson WS-83212-BK page (backplate 1x4.5, ext 2.5). Sources disagree on body width (4.5 vs 2.5) so recheck the install sheet."
+      },
+      "source": "https://www.fergusonhome.com/product/s1833734 ; notes/basement_surface_wiring.md Open items",
+      "proposed_fix": "Pick a sconce with a >=4-1/2\" square, >=2-3/4\" deep canopy or a plain 4\" box (no raised cover, 1-1/2\" deep) with a canopy that hides it; or recess the six on a furred face. Product swap, owner decision.",
+      "size_guess": "large",
+      "seam_with": [
+        "O3"
+      ],
+      "dedupe_key": "M3:playn-sconce-canopy"
+    },
+    {
+      "id": "M3-002",
+      "area": "M3",
+      "title": "Service panels hung with bottom at 60\" AFF: top breaker handle ~90-93\" vs NEC 240.24(A)/404.8(A) 6'-7\" (79\")",
+      "elements": [
+        "ED-B-PANEL",
+        "ED-B-PANEL-2",
+        "ED-B-BACKUP-PANEL",
+        "ED-B-BACKUP-ENCL"
+      ],
+      "files": [
+        "houses/catlin/plan/electrical.py:211",
+        "packages/engine/src/typehaus/library/electrical.py:230"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "E-101"
+        ]
+      },
+      "confidence": 0.65,
+      "evidence": {
+        "measured": "ED-B-PANEL body z -49.4..-13.4 (60\"..96\" above the basement floor, 36\" tall); PANEL-2 60\"..90\"; BACKUP-PANEL mount ft(5). Highest possible handle is a few inches under the top: ~90-93\" > 79\".",
+        "expected": "Highest breaker handle <= 79\" above the floor (240.24(A)); a 36\" can then has its bottom <= ~40\". The plan comments apply 404.8(A) to disconnects but nothing grades panels.",
+        "method": "Probe p10.py canvas_objects body_z0/z1 minus storey -109.44\". Mount elevation 60 is the body bottom (resolved z_m)."
+      },
+      "source": "NEC 2026 240.24(A)(1); houses/catlin/plan/electrical.py:469 comment",
+      "proposed_fix": "Lower the four mounts (elevation ~ 36-40\"); conduit start/end elevations (absolute -48\") and the trunk heights follow. Also: a 54-space 225A enclosure is modelled 20x36x4, shorter than real 54-space cans, so true top is higher still.",
+      "size_guess": "large",
+      "seam_with": [
+        "M2",
+        "E1"
+      ],
+      "dedupe_key": "M3:panel-handle-height"
+    },
+    {
+      "id": "M3-003",
+      "area": "M3",
+      "title": "Raceway solids, derived sleeves and concrete-crossing sleeve sizes use trade size as the diameter (3/4\" EMT drawn 0.75\", OD is 0.922\")",
+      "elements": [
+        "CD-B-*",
+        "nm_sleeve (14 derived)"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/device_drops.py:47",
+        "packages/engine/src/typehaus/resolve/mep.py:242",
+        "packages/engine/src/typehaus/resolve/mep_concrete.py:183",
+        "packages/engine/src/typehaus/routing/trades/conduit.py:46",
+        "packages/engine/src/typehaus/cli/route_support.py:337"
+      ],
+      "kind": "engine-geometry",
+      "severity": "model-only",
+      "on_permit_set": {
+        "printed": false
+      },
+      "confidence": 0.6,
+      "evidence": {
+        "measured": "round_profile(trade_size_m/2) drawn: 3/4\" -> 0.75\" dia, 1\" -> 1.0, 1-1/4 -> 1.25, 2\" -> 2.0. raceway_outside_diameter_m (pipe_sections.py:105) gives 0.922 / 1.163 / 1.51 / 2.375 and is already used by mep_envelopes.py:131 and floor_blocking.py:564. mep_concrete passes trade_size as the diameter a cast sleeve must clear.",
+        "expected": "EMT OD: 1/2 0.706, 3/4 0.922, 1 1.163, 1-1/4 1.510, 1-1/2 1.740, 2 2.197 in (NEC Ch.9 T4/ nominal). Solids, clearance and sleeve checks should use the OD.",
+        "method": "grep trade_size_m/2 in resolve/; compare with raceway_outside_diameter_m; routing/conduit.py:37 docstring admits the under-statement."
+      },
+      "source": "NEC Chapter 9 Table 4 / Table 2 EMT dimensions; pipe_sections.RACEWAY_OD_IN",
+      "proposed_fix": "Use raceway_outside_diameter_m(run.trade_size_m, run.material) in device_drops.py:47, mep.py:242 and mep_concrete.py:183 (goldens: conduit solids, sleeve findings).",
+      "size_guess": "small",
+      "seam_with": [
+        "M2"
+      ],
+      "dedupe_key": "M3:conduit-od-vs-trade"
+    },
+    {
+      "id": "M3-004",
+      "area": "M3",
+      "title": "ED-A-POCKET-SW box overlaps the 3-1/2\" casing leg of the pocket hatch",
+      "elements": [
+        "ED-A-POCKET-SW",
+        "CASING-D-A-POCKET-R"
+      ],
+      "files": [
+        "houses/catlin/plan/electrical_attic.py",
+        "packages/engine/src/typehaus/resolve/interior_trim_casing.py:100"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "E-104"
+        ]
+      },
+      "confidence": 0.55,
+      "evidence": {
+        "measured": "Switch box x-span overlaps casing leg_left by 0.56\" including a 2.75\" plate (box alone ~0.3\"); box z 276.0-279.7 vs leg z 240.9-277.6 (storey frame, attic).",
+        "expected": "Switch plate edge >= ~1\" clear of casing (or switch on the opposite jamb).",
+        "method": "Probe p6.py: casing pieces projected on wall axis vs box face_point +/- max(box,plate)/2, same side."
+      },
+      "source": "model.door_casings pieces; Leviton Decora plate 2.75\" wide",
+      "proposed_fix": "Move ED-A-POCKET-SW ~2\" along the wall (check the rake) or narrow the casing; casing resolver does not treat devices as obstacles (_obstacles lists no ElectricalDevice).",
+      "size_guess": "small",
+      "seam_with": [
+        "O2"
+      ],
+      "dedupe_key": "M3:pocket-sw-casing"
+    },
+    {
+      "id": "M3-005",
+      "area": "M3",
+      "title": "Six switches/receptacles sit <1\" from casing legs (plate edge to casing): BATH1-SW 0.83\", LIVING-RC10 0.70\", S-PLANT-SW-TIMER/M-CLOSET-SW/S-NCLOSET-SW 0.94-0.95\"",
+      "elements": [
+        "ED-M-BATH1-SW",
+        "ED-M-LIVING-RC10",
+        "ED-S-PLANT-SW-TIMER",
+        "ED-M-CLOSET-SW",
+        "ED-S-NCLOSET-SW"
+      ],
+      "files": [
+        "packages/engine/src/typehaus/resolve/interior_trim_casing.py:100"
+      ],
+      "kind": "interface-fit",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": false
+      },
+      "confidence": 0.5,
+      "evidence": {
+        "measured": "Gaps 0.70-0.95\" between a 2.75\" plate and the same-face casing leg; no overlap, no casing clip recorded (casing keeps full 3-1/2\"/1-1/2\" width).",
+        "expected": "Buildable but tight; casing nails and plate screws fine at >=1/2\".",
+        "method": "Probe p6.py (gap column)."
+      },
+      "source": "model.door_casings, device_boxes",
+      "proposed_fix": "None required; note only.",
+      "size_guess": "small",
+      "seam_with": [
+        "O2"
+      ],
+      "dedupe_key": "M3:switch-casing-gap"
+    },
+    {
+      "id": "M3-006",
+      "area": "M3",
+      "title": "Raceways leave the panel wall 12\" out and run at 61\" AFF through the 36\" working space in front of the panels",
+      "elements": [
+        "CD-B-SPA",
+        "CD-B-GARAGE",
+        "CD-B-ATTIC-RISER",
+        "CD-B-DATA-CHASE",
+        "CD-B-SPARE-CHASE"
+      ],
+      "files": [
+        "houses/catlin/plan/electrical.py:1168"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "E-101"
+        ]
+      },
+      "confidence": 0.4,
+      "evidence": {
+        "measured": "Path starts at x=24\" (panel face x=12\"), z -48 (61.4\" AFF, just above the panel bottom at 60\"); CD-B-SPA then runs ~28 ft along x=24 at that height; the attic riser stands at x=19.6, y=404 beside the group.",
+        "expected": "Raceways terminate at the enclosure (no unmodelled 12\" gap); anything crossing the 30\" x 36\" x 78\" working space (110.26(A)) should be only the panel's own conductors.",
+        "method": "Probe p12.py (conduit path/z) vs panel footprint x 8..12, p11.py intersect with W (x 12..48, y 288..402)."
+      },
+      "source": "NEC 110.26(A),(E)",
+      "proposed_fix": "Re-route off the working space or add the stub from the knockout; routing is M2/I-area.",
+      "size_guess": "large",
+      "seam_with": [
+        "M2"
+      ],
+      "dedupe_key": "M3:panel-working-space"
+    },
+    {
+      "id": "M3-007",
+      "area": "M3",
+      "title": "Surface boxes for PLAY-N-RC1/DATA1 are 4\" proud of the wall inside FURN-B-PLAY-TV's footprint",
+      "elements": [
+        "ED-B-PLAY-N-RC1",
+        "ED-B-PLAY-N-DATA1",
+        "FURN-B-PLAY-TV"
+      ],
+      "files": [
+        "houses/catlin/plan/electrical.py"
+      ],
+      "kind": "interface-fit",
+      "severity": "wrong-build",
+      "on_permit_set": {
+        "printed": false
+      },
+      "confidence": 0.45,
+      "evidence": {
+        "measured": "Box+cover ring (2.625\" proud, 4\" wide) overlaps FURN-B-PLAY-TV footprint by 16 sq in; TV body z -78.9..-28.8 vs box z -79.9..-75.9 (3\" of z overlap).",
+        "expected": "Wall-hung TV with a box behind it needs the box recessed or the TV standing off >= box + plug.",
+        "method": "Probe p8.py (device_footprint vs canvas footprint with z overlap)."
+      },
+      "source": "model.device_boxes",
+      "proposed_fix": "Raise the outlets above or below the TV, or give the TV a stand-off; confirm any authored relation.",
+      "size_guess": "small",
+      "seam_with": [
+        "I1"
+      ],
+      "dedupe_key": "M3:playn-tv-box"
+    },
+    {
+      "id": "M3-008",
+      "area": "M3",
+      "title": "E-601 service load uses 4,479 ft2 conditioned area; the house standard (N1103 / CFA note) is 4,900 ft2",
+      "elements": [
+        "E-601"
+      ],
+      "files": [
+        "houses/catlin/notes/conditioned_floor_area.md"
+      ],
+      "kind": "drawing",
+      "severity": "drawing-error",
+      "on_permit_set": {
+        "printed": true,
+        "sheets": [
+          "E-601"
+        ]
+      },
+      "confidence": 0.4,
+      "evidence": {
+        "measured": "E-601 prints 'Conditioned floor area 4,479 ft2' and general lighting 13,436 VA at 3 VA/ft2.",
+        "expected": "Same CFA as code.N1103 (4,900 sf); NEC 220.82 area is from outside dimensions, so the two figures should reconcile or the sheet should say why they differ (~1.3 kVA).",
+        "method": "Read p.156 of permit_set_full.pdf; compare notes/conditioned_floor_area.md."
+      },
+      "source": "houses/catlin/notes/conditioned_floor_area.md",
+      "proposed_fix": "Either relabel the line or feed the NEC 220.82 area from the same derivation.",
+      "size_guess": "small",
+      "seam_with": [
+        "E1"
+      ],
+      "dedupe_key": "M3:e601-floor-area"
+    },
+    {
+      "id": "M3-009",
+      "area": "M3",
+      "title": "Carlon BH235A modelled 4.0W x 3.75H; retailer data conflict (3.55x2.11 vs catalog 3-7/8 x 4-1/8)",
+      "elements": [
+        "PROD-CARLON-BH235A"
+      ],
+      "files": [
+        "houses/catlin/plan/device_boxes.py:66"
+      ],
+      "kind": "product-data",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": false
+      },
+      "confidence": 0.4,
+      "evidence": {
+        "measured": "box_size (4.0, 3.75, 3.5) in; Elliott/Stoneway list 3.55 L x 2.11 W (single-gang style data), Lowe's Carlon catalog PDF lists 3-7/8 x 4-1/8 x 3-1/2.",
+        "expected": "Catalog 3-7/8\" x 4-1/8\" x 3-1/2\" deep, 35 in3.",
+        "method": "WebSearch 'Carlon BH235A dimensions'."
+      },
+      "source": "https://elliottelectric.com/P/Item/TAB/BH235A/ ; Carlon catalog via pdf.lowes.com",
+      "proposed_fix": "Set box_size to 4.125 x 3.875 x 3.5 after reading the Carlon sheet.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "M3:bh235a-size"
+    },
+    {
+      "id": "M3-010",
+      "area": "M3",
+      "title": "Nora NSIC-401QAT housing: height 6\", cutout and frame dims sourced from retailers (no sheet read); can type footprint 5x5 vs 8-1/2\" frame; NS-76W/NS-12 unconfirmed",
+      "elements": [
+        "PROD-NORA-NSIC-401QAT",
+        "PROD-NORA-NS-12",
+        "PROD-NORA-NS-76W",
+        "ED-T-LT-CAN4"
+      ],
+      "files": [
+        "houses/catlin/plan/products_lighting_selected.py:17",
+        "houses/catlin/plan/lighting_types.py:56"
+      ],
+      "kind": "product-data",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": false
+      },
+      "confidence": 0.4,
+      "evidence": {
+        "measured": "Retailer listings: height 6\", cutout 4-1/4 vs 4-3/8, depth 6-3/8 (Steiner); the Nora PDF could not be parsed here. Source string says 'Not read' for NS-12 and 'No sheet found' for NS-76W.",
+        "expected": "Spec sheet values; ceiling_can_framing grades a 5x5x6 body, the bar hangers and 8-1/2\" frame ride across bays.",
+        "method": "WebSearch + WebFetch lightingsupply NSIC-401QAT.pdf (binary)."
+      },
+      "source": "https://lightingsupply.com/cdn/shop/files/NSIC-401QAT.pdf",
+      "proposed_fix": "Confirm 6-3/8\" height against the 11-7/8\" joist cavity (passes by 5\") and cutout 4-3/8\".",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "M3:nora-housing-source"
+    },
+    {
+      "id": "M3-011",
+      "area": "M3",
+      "title": "WAC Roland WS-83212 dimensions disagree across sources (width 4.5\" vs 2.5\")",
+      "elements": [
+        "PROD-WAC-WS-83212-BK",
+        "ED-T-LT-SCONCE-UD"
+      ],
+      "files": [
+        "houses/catlin/plan/lighting_types_decor.py:40"
+      ],
+      "kind": "product-data",
+      "severity": "doc",
+      "on_permit_set": {
+        "printed": false
+      },
+      "confidence": 0.4,
+      "evidence": {
+        "measured": "Type footprint 4.5x2.5x12; Ferguson: 12 H x 4.5 W, ext 2.5, backplate 1H x 4.5W; Xologic/El Design: width 2.5.",
+        "expected": "WAC install sheet dimensions.",
+        "method": "WebSearch."
+      },
+      "source": "https://www.fergusonhome.com/product/s1833734",
+      "proposed_fix": "Read the WAC sheet; settle width and backplate.",
+      "size_guess": "small",
+      "seam_with": [],
+      "dedupe_key": "M3:roland-dims"
+    }
+  ]
+}

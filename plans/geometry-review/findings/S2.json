@@ -1,0 +1,206 @@
+{
+ "area": "S2",
+ "model": "claude-sonnet-5-5",
+ "review_sha": "247a13e9",
+ "inventory_summary": "Inventoried the three exterior flights (ST-BW-ENTRY with SL-BW-TIER1..4, ST-SG-PORCH with SL-SG-STAIRPAD and the W-SG-E1 wall-top threshold, ST-G-SERVICE), the SL-WK-C/-D walks they spring from, and the deck/threshold elevations at D-M-ENTRY, D-G-SERVICE and D-M-BALC. Elevations were measured from the resolved model (risers, tier z0/z1, deck tops, swing_clearance polygons) and the baseline checks.json was read for these tags. A-508/A-509 and the S-100 foundation schedule were read from the snapshot PDF; C-101, A-201..A-204 and A-101/A-102 were NOT opened (time), so elevation and plan labels are unreviewed. No web product lookups were made (Trex 0.94 x 5.5, MMI Z0364688R are cited in the repo notes). Three flights verified clean; 4 low-severity findings, mostly stale notes and one unmodelled threshold step. Re-brief pass: C-101, A-102, A-201, A-202 opened; Trex guide and MMI listings searched; S2-001 and S2-002 lowered to doc; S2-005 added. A-203/A-204 not opened.",
+ "verified_clean": [
+  "ST-BW-ENTRY: 5 risers at 6.60 in (0.16764 m) each, 18 in goings, base -33.0 in (SL-WK-C top) to deck 0.0; tier tops -26.4/-19.8/-13.2/-6.6, each tier 6.6 in thick, wedding-caked; end-risers check 0.00 in variation",
+  "ST-BW-ENTRY: SL-WK-C east edge to SL-BW-TIER1 west is a 1/2 in isolation joint (4.7625 vs 4.7498 m); width 73 in; top deck landing 43 in deep west of tier 4 (>= 36 in R311.7.6); door leaves do not sweep the stair (D-G-SERVICE leaf x 2.08-2.90 m, hinge west, stair starts x 2.921 m)",
+  "D-M-ENTRY swings inward (swing polygon y 9.93-10.84 m, south of the deck) and D-G-SERVICE outward onto a 73 in deep deck; the two swing areas do not interact; landing depth 73 in vs R311.3.1 36 in",
+  "ST-SG-PORCH: 5 risers at 6.788 in (33.94 in over 5) from SL-SG-STAIRPAD top -33.0 to porch plank +0.94; 11 in goings; arrival matches FS-SG-PORCH deck_top 0.0239 m; pad 4 in thick on grade; 45 in wide",
+  "ST-G-SERVICE: 5 risers at 6.80 in (34 in) from SL-G-FLOOR top -34.0 to 0.0; 4 x 11 in goings = 44 in run (outline y 13.36-14.48 m); 36 in wide; headroom and R311.7.6 exception check pass",
+  "Tread/nosing: exterior 11 in goings with no nosing satisfy R311.7.5.2/.3 (nosing only required under 11 in)",
+  "Riser boards: 3/4 in KDAT closed risers on both wood flights; 5.86/5.85 in board heights match notes/stair_riser_basis.md section 3",
+  "Plans: A-102 labels all three exterior flights 'UP 5 R' (garage service, entry tiers, porch), matching 5 risers each; C-101 shows tiers, walks and the porch stair pad at the modelled places; elevations A-201/A-202 draw no stair dimensions and the datum chain (main 0'-0\", grade -2'-10\") matches",
+  "Trex Enhance Basics tread: 0.94 x 5.5 in boards (repo source), Trex guide: Enhance 1x6 stringers max 9 in o.c., tread gap 1/4-3/8 in, tread depth >= 11 in, overhang <= 3/4 in, 5 stringers above 36 in width. Model: 11 in going, two boards plus 1/4 in gap = 11.25 in (0.25 in overhang), 9 in stringer spacing, 5 stringers on the 36 in garage flight and 6 on the 45 in porch flight: all consistent"
+ ],
+ "findings": [
+  {
+   "id": "S2-001",
+   "area": "S2",
+   "title": "floor_heights.md states deck +1.0000 in (0.053 in under D-M-ENTRY's LVP); the deliberate model datum is deck 0.0, 0.947 in below the LVP",
+   "elements": [
+    "D-M-ENTRY",
+    "D-G-SERVICE",
+    "FS-BW-FLOOR",
+    "ST-BW-ENTRY"
+   ],
+   "files": [
+    "houses/catlin/notes/floor_heights.md:38",
+    "houses/catlin/notes/floor_heights.md:111",
+    "houses/catlin/params/north_entry_frame.py:75"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "A-509",
+     "A-601"
+    ],
+    "pages": [
+     41,
+     57
+    ]
+   },
+   "confidence": 0.8,
+   "evidence": {
+    "measured": "Resolved D-M-ENTRY.doorway.adjacent_floors: FS-BW-FLOOR deck_top_m = 0.0 (DECK_FINISH_FT = 0.0, joists at -0.94 in); FS-M-MECH deck_top 0.75 in + LVP 0.197 in = 0.947 in. Stair arrival (ST-BW-ENTRY, ST-G-SERVICE) is 0.0. The note's entry row lists deck +1.0000 and a 0.05315 in step, and its section drawing shows the deck above the LVP.",
+    "expected": "Model governs: houses/catlin/CLAUDE.md records 'bridge composite finish 0' (2026-09-11) and 'D-G-SERVICE threshold stays 0'-0\" with the bridge deck'; DESIGN-LOG notes both doors open onto the deck at 0'-0\". Note's +1.0000 and 0.05315 in step are stale; the real doorway step is 0.947 in plus the flashed sill upstand.",
+    "method": ".venv/bin/python probe: load_plan + resolve; print o.doorway.adjacent_floors for D-M-ENTRY/D-G-SERVICE; compare with sed -n 30,60p notes/floor_heights.md"
+   },
+   "source": "notes/floor_heights.md opening schedule; params/north_entry_frame.py DECK_FINISH_FT",
+   "proposed_fix": "Correct floor_heights.md (opening-schedule row and section sketch) to deck 0.0 and a 0.947 in step bridged by the weather sill; no model change.",
+   "size_guess": "small",
+   "seam_with": [
+    "O3",
+    "S3"
+   ],
+   "dedupe_key": "D-M-ENTRY:deck-vs-lvp-datum"
+  },
+  {
+   "id": "S2-002",
+   "area": "S2",
+   "title": "ST-G-SERVICE top riser is authored to the deck (0.0); MMI Z0364688R sill upstand is unpublished in public listings, so riser-to-threshold is unverified",
+   "elements": [
+    "ST-G-SERVICE",
+    "D-G-SERVICE"
+   ],
+   "files": [
+    "houses/catlin/notes/garage_service_door_outswing.md:84",
+    "houses/catlin/plan/storeys/garage.py:779"
+   ],
+   "kind": "interface-fit",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "Stair base -34.0 in, arrival 0.0 (deck finish); D-G-SERVICE rough_opening_z = 0.0 so the 'fixed composite sill' of MMI Z0364688R (81 in unit for an 80 in leaf, RO 81.5) sits on or above 0.0. Model and checks show 5 x 6.80 in with 0.00 in variation. Web check (HD Supply/Home Depot MMI 32x80 steel listings): only 'composite non-adjustable sill', unit 33.5x81, RO 34x81.5; no sill height or threshold dimension is published for this SKU. 81 in unit for an 80 in leaf implies roughly 1 in of sill/frame below the leaf.",
+    "expected": "R311.7.5.1: riser variation 3/8 in max; with no top landing the last riser ends at the threshold top. A sill upstand of ~1 in makes the top riser ~7.8 in. The note defers this ('cut the five equal risers from the installed threshold') but nothing on the set tells the carpenter, and the stair is authored to the deck. Sill height is unverified: I did not fetch the MMI spec.",
+    "method": "Read notes/garage_service_door_outswing.md section 2; probe model.stairs ST-G-SERVICE arrival_elevation_m and openings D-G-SERVICE; WebFetch the HD Supply MMI listing for sill height (not done)."
+   },
+   "source": "notes/garage_service_door_outswing.md (HD Supply MMI Z0364688R, unit 33.5x81)",
+   "proposed_fix": "Obtain the MMI installation sheet or a delivered sample and record the sill height in garage_service_door_outswing.md; if above 3/8 in, set ST-G-SERVICE top to threshold top (risers 6.8 + sill/5). Until then the note's field-cut instruction stands; not a model defect.",
+   "size_guess": "small",
+   "seam_with": [
+    "O3"
+   ],
+   "dedupe_key": "ST-G-SERVICE:top-riser-to-sill"
+  },
+  {
+   "id": "S2-003",
+   "area": "S2",
+   "title": "porch_stair.md and a code comment place the flight and head at x 28'-6\"..32'-2\"; the model is at 27'-6\"..31'-2\"",
+   "elements": [
+    "ST-SG-PORCH",
+    "W-SG-E1",
+    "SL-SG-STAIRPAD"
+   ],
+   "files": [
+    "houses/catlin/notes/porch_stair.md:56",
+    "houses/catlin/notes/porch_stair.md:84",
+    "houses/catlin/params/sunken_garden.py:2064",
+    "houses/catlin/params/sunken_garden.py:2280"
+   ],
+   "kind": "drawing",
+   "severity": "doc",
+   "on_permit_set": {
+    "printed": false
+   },
+   "confidence": 0.9,
+   "evidence": {
+    "measured": "_x_in_e = 26.5 (sunken_garden.py:452) so _PORCH_STAIR_X0 = 27.5 ft, the wall's east face (axis 27.0 ft, 12.31 in thick); resolved stair outline x 27.562..31.229 ft; pad outline 27.5..36.66 ft. The note says 'run x 28'-6\"..32'-2\"', 'east face x 28'-6\"', and the code comment says '28.5'' and 'x 27'-6\"..28'-6\" head', while the same note's pad section says 27'-6\"..31'-2\".",
+    "expected": "One value, 27'-6\" (east face) per the resolved model.",
+    "method": ".venv/bin/python: model.stairs ST-SG-PORCH polygon bounds * 3.28084; walls W-SG-E1 axis"
+   },
+   "source": "params/sunken_garden.py:452,2064",
+   "proposed_fix": "Correct the stale 28'-6\" / 32'-2\" figures in the note and the comment at :2064; no geometry change.",
+   "size_guess": "small",
+   "seam_with": [],
+   "dedupe_key": "ST-SG-PORCH:note-x-stale"
+  },
+  {
+   "id": "S2-004",
+   "area": "S2",
+   "title": "S-100 foundation schedule prints tier thickness as 6-5/8\" and tops in decimal feet; the model tier is 6.6\" and the set gives no riser/going dimension for the tiers",
+   "elements": [
+    "SL-BW-TIER1",
+    "SL-BW-TIER2",
+    "SL-BW-TIER3",
+    "SL-BW-TIER4",
+    "ST-BW-ENTRY"
+   ],
+   "files": [
+    "houses/catlin/params/breezeway.py:148",
+    "houses/catlin/params/breezeway.py:154"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "S-100",
+     "A-508",
+     "A-509"
+    ],
+    "pages": [
+     8,
+     40,
+     41
+    ]
+   },
+   "confidence": 0.55,
+   "evidence": {
+    "measured": "S-100 schedule rows S2..S5 read '6-5/8\"' with tops -2.20', -1.65', -1.10', -0.55'; model tiers are 6.600 in thick (tops -26.4/-19.8/-13.2/-6.6 in). A-508/A-509 text layer carries only wall-layer callouts: no 6.6 in rise, 18 in going, deck or walk elevations on the tier stair. 6-5/8 in is 6.625 in; four tiers at 6.625 sum to 26.5 in against 26.4 in, so the top riser reads 6.5 in at the deck. Within 3/8 in, but not what was modelled.",
+    "expected": "Print 5 equal risers at 6 19/32 in (6.6 in) or a dimensioned '5 @ 6.6\" = 33\"' note on the tier section, with going 18 in and walk/deck elevations, since riser uniformity is the one tolerance R311.7.5.1 gives this stair.",
+    "method": "pdftotext -layout permit_set.pdf and grep SL-BW-TIER (S-100 lines ~696-705); Read pages 40-41 for A-508/A-509."
+   },
+   "source": "params/breezeway.py TIER_RISE_IN",
+   "proposed_fix": "Add a stair dimension string or note to A-508/A-509 and have the schedule print thickness to 1/32 in or as 6.6 in; no geometry change.",
+   "size_guess": "small",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "SL-BW-TIER:printed-rise"
+  },
+  {
+   "id": "S2-005",
+   "area": "S2",
+   "title": "C-101 site-data table prints STAIR AREA 27 SF; tier footprints are 36.5 SF and the porch stair pad 34.4 SF",
+   "elements": [
+    "ST-BW-ENTRY",
+    "SL-BW-TIER1",
+    "SL-SG-STAIRPAD"
+   ],
+   "files": [
+    "houses/catlin/params/breezeway.py:154"
+   ],
+   "kind": "drawing",
+   "severity": "drawing-error",
+   "on_permit_set": {
+    "printed": true,
+    "sheets": [
+     "C-101"
+    ],
+    "pages": [
+     6
+    ]
+   },
+   "confidence": 0.3,
+   "evidence": {
+    "measured": "C-101 table: 'STAIR AREA 27 SF'. Model: tier 1 outline x 2.921-4.7498 m by y 11.22-13.07 m = 3.39 m2 = 36.5 SF (the four tiers overlap, so union = tier 1); S-100 lists tiers 37/27/18/9 SF; SL-SG-STAIRPAD 34.4 SF. The 27 SF may be a single tier (SL-BW-TIER2 = 27 SF) or the sum of a different set; I could not find the generator in the engine.",
+    "expected": "Stair/step impervious area consistent with the slabs that form it (tiers 37 SF at least, pad 34 SF if counted).",
+    "method": "Read permit_set.pdf page 6 (C-101 SITE / ZONING DATA); pdftotext S-100 schedule rows S2-S5; probe SL-BW-TIER1 outline area."
+   },
+   "source": "model slabs; S-100 foundation schedule",
+   "proposed_fix": "Find which slabs the C-101 STAIR AREA row sums (grep the impervious-area emitter) and include all stair-forming pours, or relabel the row.",
+   "size_guess": "small",
+   "seam_with": [
+    "S1"
+   ],
+   "dedupe_key": "C-101:stair-area"
+  }
+ ]
+}

@@ -2315,7 +2315,7 @@
         237.0,
         -15.557499999999996
       ],
-      "text": "staggered-studs 5.5\"",
+      "text": "staggered-studs 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2340,7 +2340,7 @@
         213.0,
         13.140000000000002
       ],
-      "text": "gwb-a 0.5\" (NTS)",
+      "text": "gwb 1/2\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2365,7 +2365,7 @@
         216.0,
         7.6600000000000055
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2390,7 +2390,7 @@
         219.0,
         2.1800000000000086
       ],
-      "text": "gwb-b 0.5\" (NTS)",
+      "text": "gwb-ar 1/2\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2415,7 +2415,7 @@
         213.0,
         10.400000000000004
       ],
-      "text": "gwb-a 0.5\" (NTS)",
+      "text": "gwb 1/2\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2440,7 +2440,7 @@
         216.0,
         4.920000000000007
       ],
-      "text": "stud 5.5\"",
+      "text": "stud 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2465,7 +2465,7 @@
         219.0,
         -0.5599999999999898
       ],
-      "text": "gwb-b 0.5\" (NTS)",
+      "text": "gwb-ar 1/2\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2490,7 +2490,7 @@
         196.37500000000003,
         15.88
       ],
-      "text": "staggered-studs 5.5\"",
+      "text": "staggered-studs 5 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
