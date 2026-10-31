@@ -54,29 +54,54 @@ let ifcExtTarUrl: string | undefined;
 let ifcWasmUrl: string | undefined;
 let ifcReady: Promise<void> | null = null;
 
+// Boot timeline (→ window.__haus.boot): a step's duration, posted as it lands and stamped on the
+// epoch clock so the page can place it on its own timeline.
+function mark(name: string, ms: number): void {
+  (self as unknown as Worker).postMessage({ type: "boot", name, ms, at: performance.timeOrigin + performance.now() });
+}
+async function timed<T>(name: string, step: () => T | Promise<T>): Promise<T> {
+  const t0 = performance.now();
+  const out = await step();
+  mark(name, performance.now() - t0);
+  return out;
+}
+// A call's whole cost (`name`, since `t0`) plus the bootstrap's own split from OfflineEngine.timings.
+function markEngine(name: string, t0: number): void {
+  mark(name, performance.now() - t0);
+  const t = engine.timings.toJs({ dict_converter: Object.fromEntries }) as Record<string, number>;
+  for (const [step, ms] of Object.entries(t)) mark(step, ms);
+}
+
 async function init(msg: InitMsg): Promise<void> {
   ifcExtTarUrl = msg.ifcExtTarUrl;
   ifcWasmUrl = msg.ifcWasmUrl;
-  const { loadPyodide } = await import(
+  // The tarball does not depend on the runtime: start its round trip now, await it later.
+  const tar = timed("tarFetch", async () => {
+    const res = await fetch(msg.engineTarUrl);
+    if (!res.ok) throw new Error(`engine tarball ${res.status} @ ${msg.engineTarUrl}`);
+    return res.arrayBuffer();
+  });
+  tar.catch(() => undefined); // surfaced by the await below, not as an unhandled rejection
+  const { loadPyodide } = await timed("pyodideModule", () => import(
     /* @vite-ignore */ `${msg.pyodideIndexUrl}pyodide.mjs`
-  );
-  pyodide = await loadPyodide({ indexURL: msg.pyodideIndexUrl });
+  ));
+  pyodide = await timed("runtime", () => loadPyodide({ indexURL: msg.pyodideIndexUrl }));
   // pydantic (+ pydantic-core) and shapely ship in the pyodide distribution — the only
   // third-party imports the offline compute path reaches.
-  await pyodide.loadPackage(["pydantic", "shapely"]);
+  await timed("loadPackage", () => pyodide.loadPackage(["pydantic", "shapely"]));
 
   // Unpack the engine source tree onto sys.path.
-  const res = await fetch(msg.engineTarUrl);
-  if (!res.ok) throw new Error(`engine tarball ${res.status} @ ${msg.engineTarUrl}`);
-  const buf = await res.arrayBuffer();
+  const buf = await tar;
+  const t0 = performance.now();
   // "gztar", not "tar": the bundle ships gzipped because Cloudflare will not compress
   // application/x-tar, so the plain tar crossed the wire at 8 MB. unpackArchive takes any
   // shutil.unpack_archive format and zlib is in the pyodide stdlib, so this costs nothing.
   pyodide.unpackArchive(buf, "gztar", { extractDir: "/engine" });
   pyodide.runPython("import sys; sys.path.insert(0, '/engine')");
+  mark("unpack", performance.now() - t0);
 
   // Run the bootstrap; ENGINE lives in the pyodide global namespace.
-  await pyodide.runPythonAsync(bootstrapSrc);
+  await timed("bootstrap", () => pyodide.runPythonAsync(bootstrapSrc));
   engine = pyodide.globals.get("ENGINE");
 }
 
@@ -139,11 +164,13 @@ async function handle(msg: InMsg): Promise<unknown> {
     }
     case "loadHouse": {
       await ensureReady();
+      const t0 = performance.now();
       const filesProxy = pyodide.toPy(msg.files);
       try {
         const result = engine.load_house(msg.root, filesProxy);
         const out = result.toJs({ dict_converter: Object.fromEntries });
         result.destroy();
+        markEngine("loadHouse", t0);
         return out;
       } finally {
         filesProxy.destroy();
@@ -151,9 +178,11 @@ async function handle(msg: InMsg): Promise<unknown> {
     }
     case "model": {
       await ensureReady();
+      const t0 = performance.now();
       const d = engine.model_json();
       const out = d.toJs({ dict_converter: Object.fromEntries });
       d.destroy();
+      markEngine("model", t0);
       return out;
     }
     case "engineering": {

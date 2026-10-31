@@ -10,8 +10,14 @@ import { lazy, Suspense } from "react";
 // The fallback is deliberately nothing: the pane is an empty box until the WebGL context and the
 // scene exist anyway, so a spinner would only add a flash of chrome to a load that is a local
 // chunk fetch.
+let chunk: Promise<typeof import("./Panel3D")> | null = null;
+/** Start the chunk fetch early (App does so while the engine boots); idempotent. */
+export function preloadPanel3D() {
+  chunk ??= import("./Panel3D");
+  return chunk;
+}
 const Panel3DImpl = lazy(() =>
-  import("./Panel3D").then((module) => ({ default: module.Panel3D })));
+  preloadPanel3D().then((module) => ({ default: module.Panel3D })));
 
 export function Panel3D({ compact = false }: { compact?: boolean }) {
   return (

@@ -14,7 +14,7 @@ import { Workbench } from "./components/Workbench";
 import { LensBar } from "./components/LensBar";
 import { Preview3D } from "./components/Preview3D";
 import { Canvas2D } from "./components/Canvas2D";
-import { Panel3D } from "./components/Panel3DLazy";
+import { Panel3D, preloadPanel3D } from "./components/Panel3DLazy";
 import { Inspector } from "./components/Inspector";
 import { ConflictBanner, EngineStaleBanner, LoadErrorBanner } from "./components/ConflictBanner";
 import { ExtentsHUD } from "./components/ExtentsHUD";
@@ -114,6 +114,13 @@ export function App() {
     void init();
   }, [init]);
 
+  // The snapshot preview is up and the engine is still booting: fetch three.js now, so a
+  // switch to 3D waits on neither.
+  const previewing = !!model && !engineReady;
+  useEffect(() => {
+    if (previewing) preloadPanel3D();
+  }, [previewing]);
+
   // Split is not viable on a phone: two ~195px panes render the plan illegibly and cost a
   // second GPU surface. Coerce on entry only — one tap restores it, so there is no state to
   // remember and nothing to get wrong on the way back out.
@@ -174,6 +181,13 @@ export function App() {
     );
   }
 
+  const engineBanner = model && !engineReady && (
+    <div className="banner" role="status">
+      {error ? <>Engine startup failed: {error} <button className="btn" onClick={() => void retryEngine()}>Retry engine</button></>
+        : "Preparing engine… Viewing and navigation are available."}
+    </div>
+  );
+
   return (
     <div className="app">
       <div className="canvas-layer">
@@ -208,21 +222,19 @@ export function App() {
               <ConflictBanner />
               <EngineStaleBanner />
               <LoadErrorBanner />
-              {model && !engineReady && (
-                <div className="banner" role="status">
-                  {error ? <>Engine startup failed: {error} <button className="btn" onClick={() => void retryEngine()}>Retry engine</button></>
-                    : "Preparing engine… Viewing and navigation are available."}
-                </div>
-              )}
+              {engineBanner}
               <ExtentsHUD />
             </div>
           )}
           {viewMode !== "2d" && (
             <div className="pane">
-              {engineReady ? <Panel3D /> : <div className="muted" style={{ padding: 24 }}>
+              {/* The snapshot builds the scene; the engine's first model carries the same revision,
+                  so its arrival does not rebuild it. */}
+              {model ? <Panel3D /> : <div className="muted" style={{ padding: 24 }}>
                 {error ? <>Engine startup failed: {error} <button className="btn" onClick={() => void retryEngine()}>Retry engine</button></>
                   : "Preparing engine for 3D…"}
               </div>}
+              {viewMode === "3d" && engineBanner}
             </div>
           )}
         </div>

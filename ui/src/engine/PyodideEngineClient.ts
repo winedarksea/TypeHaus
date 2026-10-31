@@ -63,6 +63,22 @@ export class OfflineUnsupported extends EngineError {
   }
 }
 
+// A worker boot step (→ worker.ts mark). `at` is epoch ms; the page keeps it on its own clock.
+interface BootMark {
+  type: "boot";
+  name: string;
+  ms: number;
+  at: number;
+}
+// `window.__haus.boot` for `measure-first-house`: each step's duration and when it ended, in page
+// ms. First landing only — a later edit's resolve is not boot.
+function publishBootMark({ name, ms, at }: BootMark): void {
+  const haus = (window as unknown as { __haus?: Record<string, unknown> }).__haus;
+  if (!haus) return;
+  const boot = (haus.boot ??= {}) as Record<string, { ms: number; at: number }>;
+  boot[name] ??= { ms, at: at - performance.timeOrigin };
+}
+
 interface Pending {
   resolve: (v: unknown) => void;
   reject: (e: Error) => void;
@@ -73,6 +89,8 @@ export class PyodideEngineClient implements EngineClient {
   private readonly pending = new Map<number, Pending>();
   private seq = 1;
   private initialized: Promise<void>;
+  // The first model, requested with loadHouse (→ boot) and handed to the first getModel.
+  private firstModel: Promise<Model> | null = null;
   private statusListeners = new Set<(up: boolean) => void>();
 
   constructor(private files: HouseFiles | Promise<HouseFiles>, private readonly root = "/house") {
@@ -82,7 +100,8 @@ export class PyodideEngineClient implements EngineClient {
     this.initialized = this.boot();
   }
 
-  private onMessage(data: { id: number; ok: boolean; result?: unknown; error?: string }): void {
+  private onMessage(data: { id: number; ok: boolean; result?: unknown; error?: string } | BootMark): void {
+    if ("type" in data) return publishBootMark(data);
     const p = this.pending.get(data.id);
     if (!p) return;
     this.pending.delete(data.id);
@@ -105,14 +124,21 @@ export class PyodideEngineClient implements EngineClient {
   }
 
   private async boot(): Promise<void> {
-    await this.call("init", {
+    const init = this.call("init", {
       pyodideIndexUrl: PYODIDE_INDEX_URL,
       engineTarUrl: new URL("typehaus-engine.tar.gz", document.baseURI).href,
       ifcExtTarUrl: new URL(IFC_EXT_TAR, document.baseURI).href,
       ifcWasmUrl: IFC_WASM_URL,
     });
+    init.catch(() => undefined); // surfaced by the Promise.all below
+    // Post loadHouse, and the first model after it, as soon as the files land; the worker queues
+    // both behind init. Waiting for init here would leave them to the main thread, which the
+    // snapshot's 3D build can hold for seconds.
     const files = await this.files;
-    await this.call("loadHouse", { root: this.root, files });
+    const loaded = this.call("loadHouse", { root: this.root, files });
+    this.firstModel = this.call<Model>("model");
+    this.firstModel.catch(() => undefined); // surfaced by getModel
+    await Promise.all([init, loaded]);
     for (const l of this.statusListeners) l(true);
   }
 
@@ -120,12 +146,15 @@ export class PyodideEngineClient implements EngineClient {
   async openHouse(files: HouseFiles): Promise<void> {
     this.files = files;
     await this.initialized;
+    this.firstModel = null;
     await this.call("loadHouse", { root: this.root, files });
   }
 
   async getModel(): Promise<Model> {
     await this.initialized;
-    return this.call<Model>("model");
+    const first = this.firstModel;
+    this.firstModel = null;
+    return first ?? this.call<Model>("model");
   }
 
   async getChecks(): Promise<Finding[]> {

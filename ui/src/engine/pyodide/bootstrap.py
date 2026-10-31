@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import os
 import sys
+import time
 import types
 from pathlib import Path
 from typing import Any
@@ -101,6 +102,8 @@ class OfflineEngine:
         self._revision: str = "0"
         self._coord: Any = None  # lazily-built ProjectCoordinator (owns the undo journal)
         self._calculation_cache: Any = None
+        # The latest rebuild's split in ms (→ worker.ts markEngine, window.__haus.boot).
+        self.timings: dict[str, float] = {}
 
     def load_house(self, root: str, files: dict[str, str]) -> dict[str, Any]:
         base = Path(root)
@@ -173,12 +176,16 @@ class OfflineEngine:
         # Use the loader's content hash so the model revision the UI echoes back on a patch
         # matches the coordinator's optimistic-concurrency revision (both are _content_hash).
         self._revision = loader._content_hash(self.house_dir)
+        t0 = time.perf_counter()
         plan = loader._import_manifest(self.house_dir, self.findings)
+        self.timings["importPlan"] = (time.perf_counter() - t0) * 1000
         if plan is None:
             self.model = None
             self.ok = False
         else:
+            t0 = time.perf_counter()
             model, rfindings = resolve(plan)
+            self.timings["resolve"] = (time.perf_counter() - t0) * 1000
             self.findings.extend(rfindings)
             self.model = model
             self.ok = not any(f.severity is Severity.ERROR for f in self.findings)
@@ -188,6 +195,7 @@ class OfflineEngine:
         from typehaus.checks import load_preferences
         from typehaus.server.model_json import load_variant_catalog, model_to_dict
 
+        t0 = time.perf_counter()
         if self.model is None:
             return {
                 "revision": self._revision,
@@ -207,6 +215,7 @@ class OfflineEngine:
             variants=load_variant_catalog(self.house_dir),
         )
         payload["ok"] = self.ok
+        self.timings["modelJson"] = (time.perf_counter() - t0) * 1000
         return payload
 
     def findings_json(self) -> list[dict[str, Any]]:
