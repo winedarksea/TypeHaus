@@ -166,6 +166,9 @@ class MepPreferences:
     #: packages meet, which is ``cli/cmd_route.py`` and nowhere else. Nothing in ``checks``
     #: reads it.
     routing: dict = field(default_factory=dict)
+    #: ``[mep.illuminance_lux]``: ``advisory.room_illuminance`` targets keyed by occupancy
+    #: value or room tag (the tag wins); 0 drops a target. Over the check's own defaults.
+    illuminance_lux: dict = field(default_factory=dict)
 
 
 @dataclass

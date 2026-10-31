@@ -133,8 +133,9 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
     """Three tables that between them make the E-2xx plans readable.
 
     The plans carry marks, not specifications — that is the whole point of a mark — so this
-    sheet is where a mark becomes a product: what lamp, how many lumens, at what colour
-    temperature, listed for how wet a place, dimmable or not, how many, and where. Then the
+    sheet is where a mark becomes a product: what lamp and base, how many lumens, at what
+    colour temperature or span, listed for how wet a place, whether the product can dim
+    (whether a dimmer reaches it is the control schedule's), how many, where. Then the
     control schedule, which is the authoritative statement of the switch legs the plans can
     only draw as dashed lines. Then the runs, with each supply sized against the tape it
     actually drives (→ takeoff/lighting.py — nothing here is hand-summed).
@@ -153,20 +154,20 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
             (row["mark"], _clip(row["description"], 22),
              _clip(" ".join(str(part) for part in (row["brand"], row["model"]) if part)
                    or "—", 18),
-             _clip(row["lamp"] or "—", 14),
+             _clip(row["lamp"] or "—", 14), _lamp_base(row),
              _number(row["watts"], "{:.0f}") or _number(row["watts_per_ft"], "{:.1f}/ft"),
-             _number(row["lumens"], "{:,.0f}"), _number(row["cct_k"], "{:.0f}"),
+             _number(row["lumens"], "{:,.0f}"), _kelvin(row),
              str(row["volts"]), str(row["mount"]).replace(" ceiling", "").replace(", ", "/"),
-             {"dimmable": "dim", "switched": "sw"}.get(row["dimming"], row["dimming"]),
+             "yes" if row["dimming"] == "dimmable" else "no",
              row["rating"],
              str(row["count"]) if row["count"] else f"{row['length_ft'] or 0:.0f} LF",
              _rooms(row["rooms"], 30))
             for row in schedule
         ]
         _add_table(fig, schedule_rows,
-                   ("Mark", "Description", "Brand / Model", "Lamp", "W", "lm", "K",
-                    "V", "Mount", "Dim", "Listing", "Qty", "Locations"),
-                   bbox=(0.03, 0.72, 0.94, 0.215), truncate=(12,))
+                   ("Mark", "Description", "Brand / Model", "Lamp", "Base", "W", "lm", "K",
+                    "V", "Mount", "Dim-capable", "Listing", "Qty", "Locations"),
+                   bbox=(0.03, 0.72, 0.94, 0.215), truncate=(13,))
 
         controls = lighting_controls(model)
         section(fig, 0.04, 0.695, "LIGHTING CONTROL SCHEDULE")
@@ -217,6 +218,23 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
         _add_table(fig, load_rows, ("Circuit", "Fixtures", "Connected VA"),
                    bbox=(0.03, 0.09, 0.52, 0.07))
         fig.text(0.57, 0.15, str(load["basis"]), fontsize=6, family="sans-serif", wrap=True)
+
+
+_COLOR_MODE = {"tunable": "TW", "rgb": "RGB", "rgbw": "RGBW", "rgbcct": "RGBCCT"}
+
+
+def _kelvin(row) -> str:
+    """The CCT, or its span, and the colour mode (TW = tunable white) where not fixed."""
+    span = row.get("cct_range_k")
+    kelvin = f"{span[0]}-{span[1]}" if span else _number(row["cct_k"], "{:.0f}")
+    return " ".join(p for p in (kelvin, _COLOR_MODE.get(row.get("color_mode"), "")) if p)
+
+
+def _lamp_base(row) -> str:
+    """The replaceable lamp's base, "integral" for a fixture whose source is not, else —."""
+    if row.get("lamp_base"):
+        return str(row["lamp_base"])
+    return "integral" if row.get("replaceable_lamp") is False else "—"
 
 
 def _clip(text: object, limit: int) -> str:

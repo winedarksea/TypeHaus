@@ -120,7 +120,8 @@ not instruction: when it disagrees with this file or the model, it is the one th
   its hanger on a ledger Titen HD. Hand pass and the open ledger question:
   `notes/court_daybed_anchor.md`.
 - `plan/lighting_attic.py`, `plan/electrical_attic.py` — `# haus: editable`, split off for the
-  same reason (`lighting.py` was 1,158 lines, `electrical.py` 1,700). Split
+  same reason (`lighting.py` was 1,158 lines, `electrical.py` 1,700; `lighting.py` itself was
+  split by zone on 2026-10-31). Split
   by STOREY, which is how `plan/manifest.py` already consumes both. An editable file cannot
   `from plan import ...`, so the manifest composes; nothing imports across.
 - `plan/assemblies/` (a package: materials, mixes, envelope_*, foundation, footings, site*, interior*, and `catalog.py` holding the ordered `ASSEMBLIES`), `plan/site.py`, `plan/placeables.py` — editable assemblies/site/placeables.
@@ -205,18 +206,31 @@ not instruction: when it disagrees with this file or the model, it is the one th
     and every `PR-*-HW-*` deliberately omits the WC. The heated SEAT is switched off by
     owner's choice (heated floors); it is a setting on the same appliance, so it is worth no
     line in the order either way.
-- `plan/lighting.py` — `# haus: editable` luminaire/LED-run/control *instances*, room by
-  room. Every light names its switch(es) in `controlled_by`; 24V runs name a `psu_ref`
-  instead of a circuit. The `ED-*-LT` fixtures still live in `plan/mep_electrical.py` — they were
+- `plan/lighting_{basement,living,main,entry,second,attic,garage}.py` — `# haus: editable`
+  luminaire/LED-run/control *instances*, split by zone (2026-10-31; `lighting.py` was 1,741
+  lines; conventions header in `lighting_basement.py`). `living` is RM-M-LIVING (lounge,
+  dining, kitchen); `main` the pantry, bedroom, study and baths; `entry` the mudroom, closets,
+  north entry and hall. Every light names its switch(es) in `controlled_by`; 24V runs name a
+  `psu_ref` instead of a circuit. The `ED-*-LT` fixtures still live in `plan/mep_electrical.py` — they were
   re-typed in place from the old generic `ED-T-LIGHT` so their uids (and IFC GlobalIds)
   survived — and each is one corner of a grid completed here.
-- `plan/lighting_types.py` + `plan/lighting_types_decor.py` — the `LuminaireType` catalog, marks A–X (NOT
-  editable: `frozenset` again). It said A–P until 2026-09-15 and had been wrong for a
-  while: the run is A…X with `I` and `O` never used (they read as digits on a drawing),
-  plus numbered variants of an existing family (`A1`, `E1`, `J1`, `P1`…), 31 marks in all.
-  Only `Y` and `Z` are free — `V` is held by a retained revert. Prefer reusing a mark's
-  family over minting a letter. Marks must stay unique; the E-602 schedule is keyed on
-  them. Also holds the two 24V supply types and the dimmer/timer switch types.
+- `plan/lighting_types.py` + `plan/lighting_types_decor.py` — the `LuminaireType` catalog (NOT
+  editable: `frozenset` again). Letters A…Z with `I` and `O` never used (they read as
+  digits); `Y` (laundry track) and `Z` (candle sconce) are taken, so **no letter is free**
+  and a new type is a numbered variant of its family (`A4`, `E4`-`E6`, `J2`, `P6`, `Q1`,
+  `Q2`, `U1`…). Marks must stay unique; the E-602 schedule is keyed on them. Every type
+  states `replaceable_lamp` (and `lamp_base` where it has one); coloured or tunable tape
+  states `color_mode`/`cct_range_k`, with `cct_k` the white channel or warm end. Also holds
+  the 24V supplies (OMNIDRIVE dimmable; HLG non-dimming behind an `ED-T-LT-CTRL-5IN1`
+  controller for E4/E6/W; LPV-20 for the night lights) and the switch types.
+- **Lighting conventions (2026-10-31 review, `DESIGN-LOG.md` "Lighting review"):** the lounge
+  is four D215S groups (accents, downlights, day, coves) plus a ZEN32 scene keypad; scenes
+  live in `notes/smart_home.md`, not the engine. Coves are RGB+CCT (E4), the second-floor
+  hall cove tunable (E6), the garage linear RGBW (W, white 3000 K). Kitchen under-cabinet is
+  IKEA MITTLED (U1; mark U the revert). Every bath has an E5 2200 K night light on its own
+  driver and Matter relay, run by an HA PIR automation. The conditioned basement's work
+  light is the Q1 T8 strip on `CKT-LT-BSMT` (off backup); mark D is the revert.
+  `advisory.room_illuminance` grades average lux; `[mep.illuminance_lux]` adds the gym.
 - `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
 - `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves, stacked bottom
   to top on the deck: field membrane → PBR 5 x 4 box gutter 58079XX (level, back behind the

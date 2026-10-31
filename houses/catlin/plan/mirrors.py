@@ -2,8 +2,8 @@
 # Selected bathroom mirrors and lights; products/types in mirror_types.py.
 # Mount elevations are BODY BOTTOMS above finished floor, not electrical box centres.
 # Karlie shades face down; the junction box is 5.5 in. above its body bottom.
-from typehaus import DeviceKind, ElectricalDevice, Furniture, Location, Mount, MountKind, WallAttachment, WallBacking
-from typehaus.model import deg, inch
+from typehaus import DeviceKind, ElectricalDevice, Furniture, LightRun, Location, Mount, MountKind, WallAttachment, WallBacking
+from typehaus.model import deg, inch, pt
 
 BASEMENT_MIRRORS = [
     Furniture(uid="E63FE4725D", tag="FURN-B-BATH-MIRROR", type_ref="FT-MIRROR-KOHLER-26052-BNL", room="RM-B-BATH",
@@ -30,6 +30,23 @@ BASEMENT_MIRRORS = [
         start=inch(16.75), length=inch(14.5),
         elevation=inch(78), height=inch(7.25), profile="2x8",
         material_ref="spf", purpose="Karlie box at 81 11/16 in. AFF"),
+    # The basement bath's night light (2026-10-31; here, not lighting_basement.py, which is at
+    # its 500-line limit): E5 under the ANGSJON's 8 3/8" bottom, 2" behind its front, on its own
+    # PSU (mid-bay between the doubled joists) and a Matter relay 4" north of ED-B-BATH-SW.
+    # CKT-LT-BACKUP with the rest of the room. The pattern is plan/lighting_second.py's.
+    LightRun(uid="DZ7N0FJTY2", tag="LR-B-BATH-NIGHT", type_ref="ED-T-LT-STRIP24-NIGHT",
+        path=(pt(inch(127), inch(237.25)), pt(inch(161), inch(237.25))),
+        room="RM-B-BATH", psu_ref="ED-B-BATH-NL-PSU", controlled_by=("ED-B-BATH-SW-NL",),
+        mount=Mount(kind=MountKind.WALL, elevation=inch(8))),
+    ElectricalDevice(uid="N14TT2JC5A", tag="ED-B-BATH-NL-PSU", kind=DeviceKind.JUNCTION_BOX,
+            position=pt(inch(147), inch(248)), type_ref="ED-T-LT-PSU-20",
+            circuit="CKT-LT-BACKUP", room="RM-B-BATH", mount=Mount(kind=MountKind.CEILING)),
+    ElectricalDevice(uid="D5926D536W", tag="ED-B-BATH-SW-NL", kind=DeviceKind.SWITCH,
+            type_ref="ED-T-LEV-MATTER", room="RM-B-BATH", circuit="CKT-LT-BACKUP",
+            mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-B-BA-E", face="right", distance_from_start=inch(12),
+                normal_gap=inch(0), rotation_offset=deg(0)))),
 
 ]
 
@@ -107,27 +124,39 @@ SECOND_MIRRORS = [
             location=Location(attachment=WallAttachment(
                 wall_ref="W-S-BD-N", face="right", distance_from_start=inch(22.375),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
-    ElectricalDevice(uid="QTS000FAAA", tag="ED-S-VANITY-MIRROR1", kind=DeviceKind.LIGHT,
-            type_ref="ED-T-LT-KARLIE-2-BN", room="RM-S-VANITY",
-            circuit="CKT-LT-UPPER", controlled_by=("ED-S-VANITY-SW",),
-            mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
-            location=Location(attachment=WallAttachment(
-                wall_ref="W-S-BD-N", face="right", distance_from_start=inch(22.375),
-                normal_gap=inch(0), rotation_offset=deg(0)))),
     Furniture(uid="3436262C8E", tag="FURN-S-VANITY-MIRROR2", type_ref="FT-MIRROR-KOHLER-30638-BNL", room="RM-S-VANITY",
             mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-S-BD-N", face="right", distance_from_start=inch(52.375),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
-    ElectricalDevice(uid="QTS000GAAA", tag="ED-S-VANITY-MIRROR2", kind=DeviceKind.LIGHT,
-            type_ref="ED-T-LT-KARLIE-2-BN", room="RM-S-VANITY",
+    # Makeup light (2026-10-31): three P6 opal sconces flank the two arches at face height,
+    # centres 64" AFF, symmetric about the switch. The 5" bodies leave 7/16" to each side
+    # wall and to each mirror edge; the outer two take a <= 4 1/2" backplate if one is
+    # found. Boxes land in BK-S-BD-N-MIRROR-HANG. The W/E uids are the two retired Karlies'.
+    ElectricalDevice(uid="QTS000FAAA", tag="ED-S-VANITY-SCONCE-W", kind=DeviceKind.LIGHT,
+            type_ref="ED-T-LT-SCONCE-VANITY", room="RM-S-VANITY",
             circuit="CKT-LT-UPPER", controlled_by=("ED-S-VANITY-SW",),
-            mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(55)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-S-BD-N", face="right", distance_from_start=inch(52.375),
+                wall_ref="W-S-BD-N", face="right", distance_from_start=inch(9.4375),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="PMRKTC441J", tag="ED-S-VANITY-SCONCE-C", kind=DeviceKind.LIGHT,
+            type_ref="ED-T-LT-SCONCE-VANITY", room="RM-S-VANITY",
+            circuit="CKT-LT-UPPER", controlled_by=("ED-S-VANITY-SW",),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(55)),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-S-BD-N", face="right", distance_from_start=inch(37.375),
+                normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="QTS000GAAA", tag="ED-S-VANITY-SCONCE-E", kind=DeviceKind.LIGHT,
+            type_ref="ED-T-LT-SCONCE-VANITY", room="RM-S-VANITY",
+            circuit="CKT-LT-UPPER", controlled_by=("ED-S-VANITY-SW",),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(55)),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-S-BD-N", face="right", distance_from_start=inch(65.3125),
+                normal_gap=inch(0), rotation_offset=deg(0)))),
+    # P5 three-light bar (2026-10-31): flanking sconces would stand in the tub's spray zone.
     ElectricalDevice(uid="QTS000EAAA", tag="ED-S-SUITEBATH-MIRROR", kind=DeviceKind.LIGHT,
-            type_ref="ED-T-LT-KARLIE-2-BN", room="RM-S-SUITEBATH",
+            type_ref="ED-T-LT-KARLIE-3-BN", room="RM-S-SUITEBATH",
             circuit="CKT-LT-UPPER", controlled_by=("ED-S-SUITEBATH-SW",),
             mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
             location=Location(attachment=WallAttachment(
@@ -135,10 +164,7 @@ SECOND_MIRRORS = [
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     WallBacking(uid="95329D8DEB", tag="BK-S-BD-N-MIRROR-HANG", wall_ref="W-S-BD-N", face="right",
         elevation=inch(60), height=inch(11.25), profile="2x12",
-        material_ref="spf", purpose="two K-30638 hanging rails at about 64.8 in. AFF"),
-    WallBacking(uid="958FE8500B", tag="BK-S-BD-N-MIRROR-LIGHT", wall_ref="W-S-BD-N", face="right",
-        elevation=inch(80), height=inch(7.25), profile="2x8",
-        material_ref="spf", purpose="Karlie junction boxes at 81.5 in. AFF"),
+        material_ref="spf", purpose="two K-30638 rails at about 64.8 in.; three sconce boxes at 64 in."),
     WallBacking(uid="AE86C7623C", tag="BK-S-BA-E1B-MIRROR-HANG", wall_ref="W-S-BA-E1B", face="right",
         start=inch(16.75), length=inch(30.5),
         elevation=inch(60), height=inch(11.25), profile="2x12",
@@ -150,7 +176,7 @@ SECOND_MIRRORS = [
     WallBacking(uid="18CE157467", tag="BK-S-SN3-MIRROR-LIGHT", wall_ref="W-S-SN3", face="right",
         start=inch(40.75), length=inch(22.5),
         elevation=inch(80), height=inch(7.25), profile="2x8",
-        material_ref="spf", purpose="suite Karlie junction box at 81.5 in. AFF"),
+        material_ref="spf", purpose="suite 3-light Karlie junction box at 81.5 in. AFF"),
 
 ]
 

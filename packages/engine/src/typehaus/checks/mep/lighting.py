@@ -178,6 +178,9 @@ def dark_sky_lighting(ctx: CheckContext) -> list[Finding]:
     are exempt from the cutoff grading: the structure they hang beneath is the shield,
     and no fan light kit carries a cutoff listing. Their CCT still counts; skyglow is not
     the only thing warm light is for.
+
+    A coloured source grades its white channel (``cct_k``); a tunable one its warm end, the
+    setting it is left at overnight (→ ``_graded_cct``).
     """
     cid = "advisory.dark_sky_lighting"
     types = luminaire_types(ctx.plan.library)
@@ -203,7 +206,7 @@ def dark_sky_lighting(ctx: CheckContext) -> list[Finding]:
                 cid, "exterior luminaire " + element.tag + " uses " + product.tag
                      + ", which is not a full-cutoff fixture — it spills light above "
                      "the horizontal", (element.tag,)))
-        cct = getattr(product, "cct_k", None)
+        cct, basis = _graded_cct(product)
         if cct is None:
             out.append(_unknown(
                 cid, "exterior luminaire " + element.tag + "'s type " + product.tag
@@ -213,7 +216,7 @@ def dark_sky_lighting(ctx: CheckContext) -> list[Finding]:
         elif cct > DARK_SKY_MAX_CCT_K:
             out.append(_warn_fail(
                 cid, "exterior luminaire " + element.tag + " runs at " + str(cct)
-                     + "K, over the " + str(DARK_SKY_MAX_CCT_K) + "K dark-sky ceiling",
+                     + "K" + basis + ", over the " + str(DARK_SKY_MAX_CCT_K) + "K dark-sky ceiling",
                 (element.tag,)))
     if not checked:
         return [_unknown(cid, "no exterior luminaires modeled")]
@@ -222,6 +225,17 @@ def dark_sky_lighting(ctx: CheckContext) -> list[Finding]:
                               "shielded by the ceiling they hang under) and <= "
                               + str(DARK_SKY_MAX_CCT_K) + "K"))
     return out
+
+
+def _graded_cct(product) -> tuple[int | None, str]:
+    """``(kelvin dark-sky grades, a phrase naming which)`` — tunable: its low end."""
+    mode = getattr(product, "color_mode", "fixed")
+    span = getattr(product, "cct_range_k", None)
+    if mode == "tunable" and span is not None:
+        return span[0], " (tunable low end)"
+    if mode in ("rgb", "rgbw", "rgbcct"):
+        return getattr(product, "cct_k", None), " (white channel)"
+    return getattr(product, "cct_k", None), ""
 
 
 def _stands_outside_every_room(ctx: CheckContext, element: object, storey_tag: str) -> bool:

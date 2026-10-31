@@ -118,13 +118,12 @@ def test_psu_leader_connects_a_run_to_its_shared_supply(catlin_model):
               and any(pt == pytest.approx(psu_in, abs=1e-6) for pt in node.points)]
     living_runs = [r for r in catlin_model.light_runs if r.psu_ref == "ED-M-LIVING-LT-PSU"]
     assert len(leaders) == len(living_runs) == 2
-    # Four supplies on the sheet now (RM-M-CLOSET's PAX driver joined on 2026-10-01, and
-    # ED-M-BATH2-PSU with three E3 runs on 2026-10-12), so four markers — still exactly one
-    # per PSU against eleven runs.
+    # Seven supplies on the main sheet since 2026-10-31 (the dining coves' driver and two
+    # bath night-light drivers joined the living, kitchen, closet and BATH2 supplies).
     psu_labels = [node for node in scene.nodes if isinstance(node, Text) and node.content == "PSU"]
     supplies = {r.psu_ref for r in catlin_model.light_runs if r.storey == "main"}
-    assert len(supplies) == 4
-    assert len(psu_labels) == 6, "one marker per supply, incl. laundry track and pantry jambs"
+    assert len(supplies) == 7
+    assert len(psu_labels) == 9, "one marker per supply, incl. laundry track and pantry jambs"
 
 
 def test_switch_legs_are_dashed_and_only_drawn_where_both_ends_are_on_the_sheet(catlin_model):

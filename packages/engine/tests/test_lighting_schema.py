@@ -63,6 +63,22 @@ def test_luminaire_defaults_are_the_conservative_ones():
     assert bare.watts is None and bare.watts_per_ft is None and bare.type_mark is None
 
 
+def test_colour_and_lamp_fields_round_trip_and_default_to_fixed():
+    from typehaus.checks.mep.lighting import _graded_cct
+
+    tape = _luminaire(color_mode="tunable", cct_range_k=(2700, 6500), cct_k=2700,
+                      replaceable_lamp=True, lamp_base="GU10")
+    stored = Library(electrical_device_types=(tape,)).electrical_device_types[0]
+    assert (stored.color_mode, stored.cct_range_k) == ("tunable", (2700, 6500))
+    assert (stored.replaceable_lamp, stored.lamp_base) == (True, "GU10")
+    assert _graded_cct(stored) == (2700, " (tunable low end)")
+    bare = _luminaire()
+    assert (bare.color_mode, bare.cct_range_k, bare.replaceable_lamp, bare.lamp_base) == (
+        "fixed", None, None, None)
+    with pytest.raises(ValueError):
+        _luminaire(cct_range_k=(6500, 2700))
+
+
 def test_electrical_device_type_carries_a_control_attribute():
     plain = ElectricalDeviceType(tag="ED-T-SWITCH", name="Wall switch",
                                  footprint=(inch(4), inch(2)), height=inch(2))

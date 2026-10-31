@@ -313,6 +313,13 @@ def test_ikea_order_list_covers_every_sektion_frame(catlin_model_ro):
     hinges = next(i for i in listing["items"] if i["product"] == "PROD-IKEA-UTRUSTA-HINGE-110")
     assert hinges["packs"] == -(-hinges["units"] // 2)
     assert not any(row["reason"] == "no product_ref" for row in listing["unresolved"])
+    # A light run of a bought strip (MITTLED, OVERSIDAN) reaches the list by the piece.
+    items = {i["product"]: i for i in listing["items"]}
+    for run in catlin_model_ro.light_runs:
+        entry = next(t for t in library.electrical_device_types if t.tag == run.type_ref)
+        product = library.product(getattr(entry, "product_ref", None) or "")
+        if product is not None and product.brand == "IKEA":
+            assert run.tag in items[product.tag]["used_by"], run.tag
 
 
 def test_cover_panel_cuts_nest_onto_whole_sheets(catlin_model_ro):

@@ -57,11 +57,16 @@ def test_mirror_and_light_centrelines_follow_the_basins_with_two_inches_between(
             continue
         mirror = objects[tag]
         basin = objects[basin_tag]
-        light = objects[tag.replace("FURN-", "ED-", 1)]
         angle = math.radians(mirror.rotation_degrees)
         axis = math.cos(angle), math.sin(angle)
         centre = _horizontal_coordinate(mirror, axis)
         assert _horizontal_coordinate(basin, axis) == pytest.approx(centre)
+        light = objects.get(tag.replace("FURN-", "ED-", 1))
+        if light is None:  # RM-S-VANITY: P6 sconces flank each mirror at eye height
+            stations = sorted(_horizontal_coordinate(objects[f"ED-S-VANITY-SCONCE-{s}"], axis)
+                              for s in "WCE")
+            assert any(a < centre < b for a, b in zip(stations, stations[1:]))
+            continue
         assert _horizontal_coordinate(light, axis) == pytest.approx(centre)
         assert light.body_z0_m - mirror.body_z1_m == pytest.approx(2 * IN)
     halo, task = objects["ED-M-BATH2-MIRROR-HALO"], objects["ED-M-BATH2-MIRROR"]
@@ -127,7 +132,7 @@ def test_actual_mounting_rails_and_boxes_have_backing(catlin_plan):
         assert band.elevation.meters < (74 - 9.1875) * IN
         assert band.elevation.meters + band.height.meters > (74 - 9.1875 + 2) * IN
     for tag in ("BK-B-CW2-MIRROR-LIGHT", "BK-M-HS1-MIRROR-LIGHT",
-                "BK-S-BD-N-MIRROR-LIGHT", "BK-S-BA-E1B-MIRROR-LIGHT",
+                "BK-S-BA-E1B-MIRROR-LIGHT",
                 "BK-S-SN3-MIRROR-LIGHT"):
         assert tag in backing
 

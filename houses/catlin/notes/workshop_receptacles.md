@@ -48,13 +48,12 @@ steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
 ## Switches and dimmers
 
 - **Plain switches:** Lever Edge `E5601-W` single-pole, `E5603-W` 3-way (`5604-2W` 4-way if one
-  appears; none today). Fixtures that dim themselves (dining pendant, stair chandelier, mirrors,
-  DC fans) stay on plain switches.
-- **Dimmers, two Lutron Diva only**, each under its own Lutron Claro plate:
+  appears; none today). Fixtures that dim themselves (stair chandelier, mirrors, DC fans) stay
+  on plain switches; the dining pendant is on a `D215S-1BW` for scenes (2026-10-31).
+- **Dimmers, one Lutron Diva only**, under its own Lutron Claro plate:
   - `ED-B-PLAY-N-SW`, theatre sconces: `DVCL-153P`.
-  - `ED-M-BED-SW` / `-SW2`, main bedroom cans: one `DVCL-153P` + one `E5603-W` 3-way.
-- **Become plain switches:** `ED-M-BED-LAMP-SW`, `ED-S-SUITE-SW`, `ED-S-STUDY2-NOOK-SW`,
-  `ED-M-LIVING-SW-DAY`.
+- **Plain since 2026-10-31:** `ED-M-BED-SW` / `-SW2` (two `E5603-W`; the bed sconces switch
+  at the fixture), `ED-S-SUITE-SW`, `ED-S-STUDY2-NOOK-SW`.
 - **Smart control is Matter, local through Home Assistant**, never a vendor cloud. Leviton
   Decora Smart 2nd Gen on Wi-Fi: commission from the strap QR straight into HA, no My Leviton
   account, block the devices' internet at the router. Matter is enabled by a firmware update
@@ -62,9 +61,11 @@ steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
 - **Every LED tape gets a Matter switch on the 120 V side of its driver**, and either the
   paddle or HA turns it on or off (last command wins; no lockout). `D215S-1BW` is a 15 A
   relay, 600 W LED; the OMNIDRIVE X has no minimum load, so it is happy behind a relay.
-  - `ED-M-KITCH-SW-UC` (kitchen tape), `ED-M-BATH2-SW-EVE` (toe kick, cabinet, tub tape),
-    `ED-M-LAUNDRY-SW` (PureEdge), `ED-M-CLOSET-SW` (PAX strips), `ED-M-LIVING-SW` (coves +
-    cans): `D215S-1BW`.
+  - `ED-M-KITCH-SW-UC` (MITTLED's TRADFRI, on its switched outlet), `ED-M-BATH2-SW-EVE`
+    (toe kick, cabinet, tub tape), `ED-M-LAUNDRY-SW` (PureEdge), `ED-M-CLOSET-SW` (PAX
+    strips), `ED-M-LIVING-SW-COVE` (the coves' HLG drivers): `D215S-1BW`. The lounge's cans
+    (`ED-M-LIVING-SW`, `-SW-ACCENT`, `-SW-DAY`) and the kitchen's (`ED-M-KITCH-SW`, `-SW-PEN`)
+    are D215S too; scenes: [smart_home.md](smart_home.md).
   - 3-ways with tape: `ED-S-HALL-SW`/`-SW2` (gap strip + cans) and `ED-B-STAIR-SW` /
     `ED-M-STAIR-SW` (rail strip + cans): one `D215S-1BW` + one Leviton wired companion
     (`DD0SR-DLZ` class, confirm).

@@ -117,6 +117,10 @@ ODS10 = _prod("ODS10-IDW", "PIR occupancy sensor, 10 A, LED-rated, no neutral",
               "https://leviton.com/products/ODS10-IDW")
 MAT51 = _prod("MA-T51", "Maestro countdown timer, 5-60 min", brand="Lutron",
               url="https://www.lutron.com/")
+# The lounge's scene keypad (2026-10-31): five buttons on the house's Z-Wave 800 LR stick,
+# local in Z-Wave JS; its relay is unused (the loads are on their own D215S switches).
+ZEN32 = _prod("ZEN32", "ZEN32 800LR scene controller, 5 buttons, Z-Wave", brand="Zooz",
+              url="https://www.getzooz.com/zooz-zen32-scene-controller/")
 
 SWITCH_TYPES = (
     _dev("ED-T-LEV-SW1", "Lever Edge single-pole switch (E5601-W)", E5601, symbol=None),
@@ -137,10 +141,12 @@ SWITCH_TYPES = (
          symbol=None, control="occupancy"),
     _dev("ED-T-LUT-COUNTDOWN", "Lutron Maestro countdown timer (MA-T51)", MAT51, symbol=None,
          control="timer"),
+    _dev("ED-T-ZOOZ-ZEN32", "Scene keypad, 5 buttons (Zooz ZEN32)", ZEN32, symbol=None,
+         control="smart"),
 )
 
 DEVICE_TYPES = (*RECEPTACLE_TYPES, *SWITCH_TYPES)
 DEVICE_PRODUCTS = (
     E5825, E5325, GFTR2, GFTR1, GFTA2, GFWT2, GFRBF, T5836, T5380, T6525, T5020, T5461,
-    R278, IN_USE, E5601, E5603, DIVA, D215S, D2ELV, DD0SR, DOS02, ODS10, MAT51,
+    R278, IN_USE, E5601, E5603, DIVA, D215S, D2ELV, DD0SR, DOS02, ODS10, MAT51, ZEN32,
 )

@@ -2,9 +2,10 @@
 
 **House:** catlin
 **Structure:** `ED-M-BATH2-CAN1`, `-CAN2`, `-CAN-SH` (B1), `-CAN-SH-EVE` (B2), `-MIRROR` (P3),
-`-MIRROR-HALO` (P4), `LR-M-BATH2-TOEKICK` / `-CAB` / `-TUB-CLG` (E3), `ED-M-BATH2-PSU`,
-`ED-M-BATH2-SW-DAY` / `-SW-EVE`, `ED-M-BATH2-RC1`, `BK-M-W3-MID` / `-HIGH`.
-**Written:** 2026-10-12; mirror selection and controls amended 2026-10-22 (`mirror_selections.md`).
+`-MIRROR-HALO` (P4), `LR-M-BATH2-CAB` / `-TUB-CLG` (E3), `ED-M-BATH2-PSU`, `LR-M-BATH2-TOEKICK`
+(E5 night) / `ED-M-BATH2-NL-PSU` / `ED-M-BATH2-SW-NL`, `ED-M-BATH2-SW-DAY` / `-SW-EVE`, `ED-M-BATH2-RC1`, `BK-M-W3-MID` / `-HIGH`.
+**Written:** 2026-10-12; mirror selection and controls amended 2026-10-22 (`mirror_selections.md`);
+night layer and the 42 × 36 halo, 2026-10-31.
 **Oracle for:** nothing. A **decision record**: no engine module computes melanopic light,
 and none is proposed. It follows `notes/TEMPLATE.md`'s shape so each choice can be re-argued.
 **Companions:** `notes/bath2_shower.md` (the stall, its glass and the drying fan that shares
@@ -37,13 +38,15 @@ Rewritten in `plan/lighting_types.py` (mark A1), `plan/products_lighting.py` and
 | layer | control | fixtures | CCT | CRI |
 |---|---|---|---|---|
 | **day** | `ED-M-BATH2-SW-DAY`, plain toggle, no dimmer | B1 x3: CAN1 (2'-6", 15'-4"), CAN2 over the tub (5'-6", 19'-6"), CAN-SH inside the glass (5'-8", 15'-4"); P3 Karlie 54623CM over the mirror head | 5000 K (P3 may be up to 6000 K) | 90 (cans), **>= 95 with R9 published** (P3) |
-| **evening** | `ED-M-BATH2-SW-EVE`, dimmer | B2 CAN-SH-EVE (7'-0", 15'-4"); E3 x3 off `ED-M-BATH2-PSU` | 2700 K | 90 |
+| **evening** | `ED-M-BATH2-SW-EVE`, Matter relay | B2 CAN-SH-EVE (6'-0", 15'-4"); E3 x2 off `ED-M-BATH2-PSU` | 2700 K | 90 |
+| **night** | `ED-M-BATH2-SW-NL`, Matter relay, HA PIR 22:00-07:00 | E5 toe kick off `ED-M-BATH2-NL-PSU` | 2200 K | 90 |
 
-The evening wall dimmer controls the warm shower can and three low-voltage runs. The
-MHAP2436 mirror has its own touch dimmer at 2700 K, independently powered at full line
-voltage. Its lit border and wall glow are both accepted by the owner. The tape runs light
-the floor from under the vanity and over-toilet cabinet, plus the ceiling over the tub
-(`LR-M-BATH2-TUB-CLG`, replacing the deck-nosing run on 2026-10-22: no LEDs near the floor).
+The evening relay controls the warm shower can and two low-voltage runs: under the
+over-toilet cabinet, and the ceiling over the tub (`LR-M-BATH2-TUB-CLG`, which replaced the
+deck-nosing run on 2026-10-22: no LEDs near the floor). The vanity toe kick became the 2200 K
+night light on 2026-10-31, on its own driver and relay (`notes/smart_home.md`, "Bath night
+lights"). The 42 × 36 MHAP4236 mirror has its own touch dimmer at 2700 K, independently powered
+at full line voltage. Its lit border and wall glow are both accepted by the owner.
 The separate 5000 K Karlie remains the daytime task light.
 
 ## 3. Geometry
@@ -52,18 +55,19 @@ The separate 5000 K Karlie remains the daytime task light.
 |---|---|---|
 | every can | y = 15'-4" bay (176"-192") or the tub at 19'-6" | CAN1 sat on the y=192" truss chord at 16'-0"; the bay centre clears both chords |
 | shower cans and nozzle | x 5'-8" / 6'-4" / 7'-0" | `REG-M-BATH2-DRY-OUT` between them, 3.4" clear of each |
-| P4 halo mirror | `W-M-W3`, 24" x 36", 3'-6" to 6'-6", centred on the basin at y=14'-5 3/8" | 30" is all the wall south of the basin centre allows to `W-M-BDN1`'s face; 24" leaves 3" |
+| P4 halo mirror | `W-M-W3`, 42" x 36", 3'-6" to 6'-6", centred on the vanity at y=15'-2 3/8" | centred on the 48" vanity since 2026-10-22, not the basin |
 | P3 Karlie task light | 80" body bottom, 87 1/2" top, 2" over mirror head | same uid, 54623CM + three 80795-SU bulbs |
 | `ED-M-BATH2-RC1` | moved 85" -> 74" along `W-M-W3`, now y=16'-2", 44" | the mirror's glass would have buried it (the BATH1 lesson) |
-| mirror backing | `BK-M-W3-MID` (44") and `-HIGH` (72"), stud face 76 3/4" to 107 1/4" | whole bays between the 76" and 108" studs; a free end FAILs `advisory.wall_backing_bearing` |
-| E3 runs | toe kick 3" behind the vanity face (46"); the `FURN-M-BATH2-CAB-W/-E` pair's front edge at 4'-0" (35", 2026-10-22); the ceiling over the tub, 2" off `W-M-BA2E` (66", 2026-10-22) | 12.25 ft x 3 W/ft = 36.75 W on a 60 W supply: 163% (>= 125%) |
+| mirror backing | `BK-M-W3-MID` (44") and `-HIGH` (72"), plan/backing_wet.py | whole bays; a free end FAILs `advisory.wall_backing_bearing` |
+| E3 runs | the `FURN-M-BATH2-CAB-W/-E` pair's front edge at 4'-0" (35"); the ceiling over the tub, 2" off `W-M-BA2E` (66") | 8.4 ft x 3 W/ft = 25 W on a 60 W supply |
+| E5 night run | toe kick 3" behind the vanity face (46") | 3.8 ft x 1.5 W/ft on its own 60 W supply at (1'-3", 16'-8"), same bay as `ED-M-BATH2-PSU` |
 | `ED-M-BATH2-PSU` | ceiling at (2'-6", 16'-8"), in the 192"-208" bay | outside the shower zone, off the extract trunk |
 
 **Controls.** The old single switch on `W-M-BDN1` (box x 17.7"-21.7", uid kept, now
-`-SW-DAY`) gains a second gang 4" west for the dimmer. A third gang does not fit:
+`-SW-DAY`) gains a second gang 4" west for the evening relay. A third gang does not fit:
 `ED-M-BATH2-FH-STAT` is at x 9 3/4"-13 3/4", and `D-M-BATH2`'s casing starts about 22", so
-the stall fan's countdown timer `ED-M-BATH2-SW-DRY` went on `W-M-W3` at y=16'-8", 6" north of
-RC1, outside the shower zone.
+the stall fan's countdown timer `ED-M-BATH2-SW-DRY` went on `W-M-W3` at y=18'-1", north of
+RC1, outside the shower zone. The night relay `ED-M-BATH2-SW-NL` gangs with it, 4" north.
 
 ## 4. Evening light and sleep
 
@@ -82,10 +86,11 @@ engine, and neither is graded.
 2. **P3 closed 2026-10-22.** Hinkley Karlie 54623CM with three fixed-5000 K Sunlite
    80795-SU E26 bulbs, CRI 95 and published R9 82. Delivered fixture lumens unpublished;
    bulb output is 3 × 800 source lumens. Verify exact-bulb availability before ordering.
-3. **P4 closed 2026-10-22.** Fleurco **MHAP2436** Halo Plus, 24 × 36, 70 W total,
-   published ETL certification, own touch dimmer and defogger. Unswitched plug supply on
-   the existing GFCI-protected bathroom branch; no wall dimmer or hardwire conversion.
-   See `mirror_selections.md` for the outlet and factory controls. CRI unpublished.
+3. **P4: Fleurco MHAP4236 Halo Plus**, 42 × 36, 116 W total, published ETL certification,
+   own touch dimmer and defogger. Unswitched plug supply on the existing GFCI-protected
+   bathroom branch; no wall dimmer or hardwire conversion. See `mirror_selections.md`.
+   **CRI is unconfirmed** (unpublished): it stays as the one integrated mirror light if Fleurco
+   confirms CRI 90 or higher; below that, swap to a front-lit 42 × 36 with a published CRI of 93 or more.
 4. **E3 tape.** The Armacost COB family in 2700 K, silicone-coated for a damp room.
 
 ## Sources

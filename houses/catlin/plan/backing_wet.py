@@ -148,7 +148,7 @@ SECOND_WET_BACKING = [
     WallBacking(uid="HZ7NZAV31W", tag="BK-S-BD-N-HIGH", wall_ref="W-S-BD-N",
                 elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
-                purpose="ED-S-VANITY-MIRROR1/2 top cleats"),
+                purpose="FURN-S-VANITY-MIRROR1/2 arch heads; sconce tops"),
     # The WC's back and the tub-shower's end are 40" apart on W-S-SN3; one run takes both.
     WallBacking(uid="YQESA1JG5K", tag="BK-S-SN3-GRAB", wall_ref="W-S-SN3",
                 elevation=_GRAB_ELEVATION, height=_GRAB_HEIGHT,

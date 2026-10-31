@@ -1,13 +1,15 @@
 """Selected mirror glass, serviceable vanity lighting, and their product identities.
 
 Bulb lumens are source output; delivered lumens through the opal shades are unpublished.
-Prices, including the fitted bulbs, live in prices.toml rather than product identities.
+Prices live in prices.toml. The 3000 K Karlies' lamps bill as a lamp part line; the 5000 K
+P3's bulbs are still in its fixture row.
 """
 
 from typehaus import (
     FurnitureType, LuminaireForm, LuminaireType, Mount, MountKind, Product,
     Service, ServicePort, inch,
 )
+from typehaus.model import ProductPart
 
 _KOHLER_SPEC = "https://resources.kohler.com/webassets/kpna/catalog/pdf/en/K-{}_spec_US-CA_Kohler_en.pdf"
 _FLEURCO_SPEC = "https://fleurco.com/media/website_furnishing.specification/GENERALSPECS_HALOPLUS-MHAP_07_2023.pdf"
@@ -66,7 +68,9 @@ _FLEURCO_PRODUCT = Product(
     source=_READ_DATE + "42 W x 36 H x 1.75 D in. Factory plug installation, 120 V, "
            "116 W TOTAL including defogger (spec dated 2023-08-01), maximum published output "
            "2243 lm (not a 2700 K photometric measurement). The 24 x 36 MHAP2436 was 70 W and "
-           "1711 lm. CRI unpublished. ETL/CEC certified. "
+           "1711 lm. CRI UNCONFIRMED: unpublished on the spec sheet and manual (searched "
+           "2026-10-31). Kept as the house's one integrated mirror light; ask Fleurco, and if "
+           "below 90 swap to a front-lit 42 x 36 with published CRI >= 93. ETL/CEC certified. "
            "Own touch ON/OFF and brightness, 2700/4500/6500 K selection, work at 2700 K. "
            "Light and defogger share the power button; no separate defogger wall leg. "
            "Supply full, unswitched line voltage; no wall dimmer. Five-year limited warranty. "
@@ -74,14 +78,9 @@ _FLEURCO_PRODUCT = Product(
            "Lift off for plug and hardware access; retain removal clearance. Manual: "
            + _FLEURCO_MANUAL,
 )
-_BULB_3000 = Product(
-    tag="PROD-SUNLITE-80793-SU", brand="Sunlite", model="80793-SU",
-    name="9 W E26 A19 LED bulb, fixed 3000 K, CRI 94",
-    url="https://sunlite.com/ecomutils/downloadproductfileexternal?id=2063",
-    source=_READ_DATE + "9 W, 800 source lumens, CRI 94, R9 69, dimmable. "
-           "2.34 in. diameter x 4.5 in. long; three-year warranty. "
-           "Not rated for enclosed fixtures; Karlie's downward open shades permit cooling.",
-)
+# The 3000 K lamp is the makeup-grade Waveform CentricHOME A19 (plan/products_lighting_selected.py,
+# 95 CRI, R9 90+), billed as a lamp part; it replaced the Sunlite 80793-SU (CRI 94, R9 69).
+_LAMP_3000 = "PROD-WAVEFORM-CENTRICHOME-A19-30K"
 _BULB_5000 = Product(
     tag="PROD-SUNLITE-80795-SU", brand="Sunlite", model="80795-SU",
     name="9 W E26 A19 LED bulb, fixed 5000 K, CRI 95, R9 82",
@@ -93,7 +92,7 @@ _BULB_5000 = Product(
 
 
 def _karlie(model, count, finish, type_tag, mark, *, daylight=False):
-    bulb = _BULB_5000 if daylight else _BULB_3000
+    bulb = "Sunlite " + _BULB_5000.model if daylight else "Waveform CentricHOME A19 3000K"
     product = Product(
         tag="PROD-HINKLEY-" + model, brand="Hinkley", model=model,
         name=f"Karlie {count}-light vanity fixture, {finish}",
@@ -101,7 +100,7 @@ def _karlie(model, count, finish, type_tag, mark, *, daylight=False):
         source=_READ_DATE + f"{13.25 if count == 2 else 22.5} W x 7.5 H x 6 D in. "
                "Etched opal glass, downward open shades, 120 V, damp listed. "
                "Medium E26 sockets, maximum 14 W LED each; no integral driver. "
-               f"Fit {count} Sunlite {bulb.model} bulbs. "
+               f"Fit {count} {bulb} bulbs. "
                "Replace bulbs and remove glass for cleaning. Junction-box centre is "
                "5.5 in. above body bottom in the selected shades-down orientation. "
                "Delivered fixture lumens are unpublished; do not substitute bulb lumens.",
@@ -111,14 +110,17 @@ def _karlie(model, count, finish, type_tag, mark, *, daylight=False):
         form=LuminaireForm.MIRROR_LIGHT, type_mark=mark,
         footprint=(inch(13.25 if count == 2 else 22.5), inch(6)), height=inch(7.5),
         plan_symbol=f"socketed-vanity-{count}-{'chrome' if finish == 'chrome' else 'nickel'}",
-        lamp=f"{count} x E26 A19 Sunlite {bulb.model}, replaceable",
+        lamp=f"{count} x E26 A19 {bulb}, replaceable",
         watts=count * 9, load_va=count * 9, lumens=None,
-        cct_k=5000 if daylight else 3000, cri=95 if daylight else 94,
+        cct_k=5000 if daylight else 3000, cri=95,
         dimmable=not daylight, damp_rated=True, product_ref=product.tag,
+        replaceable_lamp=True, lamp_base="E26",
+        parts=() if daylight else (ProductPart(role="lamp", product_ref=_LAMP_3000,
+                                               quantity=count),),
         ports=(ServicePort(tag="power", service=Service.POWER_120,
                            position=(inch(0), inch(3), inch(5.5))),),
         source=product.source + f" Total bulb source output {count * 800} lm; "
-               + ("published bulb R9 82." if daylight else "published bulb R9 69."),
+               + ("published bulb R9 82." if daylight else "bulb R9 90+ (CONFIRM on its sheet)."),
     )
     return product, luminaire
 
@@ -130,7 +132,7 @@ _KARLIE_SELECTIONS = (
     _karlie("54623BN", 3, "brushed nickel", "ED-T-LT-KARLIE-3-BN", "P5"),
 )
 _HALO_TYPE = LuminaireType(
-    tag="ED-T-LT-MIRROR-HALO-2700", name=_FLEURCO_PRODUCT.name,
+    tag="ED-T-LT-MIRROR-HALO-2700", replaceable_lamp=False, name=_FLEURCO_PRODUCT.name,
     form=LuminaireForm.MIRROR_LIGHT, type_mark="P4",
     footprint=(inch(42), inch(1.75)), height=inch(36), plan_symbol="halo-mirror-light",
     lamp="Factory LED border and rear glow, integral touch dimmer",
@@ -156,7 +158,7 @@ _ATTIC_KARLIE = _KARLIE_SELECTIONS[0][1].model_copy(update={
 
 MIRROR_PRODUCTS = (
     *(product for product, _ in _KOHLER_SELECTIONS), _UMBRA_PRODUCT,
-    _FLEURCO_PRODUCT, _BULB_3000, _BULB_5000,
+    _FLEURCO_PRODUCT, _BULB_5000,
     *(product for product, _ in _KARLIE_SELECTIONS),
 )
 MIRROR_FURNITURE_TYPES = (*(kind for _, kind in _KOHLER_SELECTIONS), _UMBRA_MIRROR)

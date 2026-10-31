@@ -24,6 +24,30 @@ STAIR_BASEMENT = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-N2", face="left", distance_from_start=inch(71),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # Tread night lights (2026-10-31): a mark K sconce on each face of W-B-WELL, 14-15" over
+    # the fourth tread of each flight (lower 28.9", upper 80.4" AFF). Own Matter relay 6 1/2"
+    # north of ED-B-STAIR-SW, in the bay past the partition's head stud, on CKT-LT-BSMT; HA runs them dusk to dawn on the stair's motion, so the
+    # 3-way cans stay the "on" light.
+    ElectricalDevice(uid="WQM6PM2543", tag="ED-B-STAIR-NIGHT1", kind=DeviceKind.LIGHT,
+                     type_ref="ED-T-LT-SCONCE-STAIR", circuit="CKT-LT-BSMT", room="RM-B-STAIR",
+                     controlled_by=("ED-B-STAIR-NIGHT-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(43)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-WELL", face="right", distance_from_start=inch(40),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="BVVKMV2S3T", tag="ED-B-STAIR-NIGHT2", kind=DeviceKind.LIGHT,
+                     type_ref="ED-T-LT-SCONCE-STAIR", circuit="CKT-LT-BSMT", room="RM-B-STAIR",
+                     controlled_by=("ED-B-STAIR-NIGHT-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(95)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-WELL", face="left", distance_from_start=inch(41),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    ElectricalDevice(uid="YBYP0465RJ", tag="ED-B-STAIR-NIGHT-SW", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-MATTER", circuit="CKT-LT-BSMT", room="RM-B-STAIR",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-WELL", face="right", distance_from_start=inch(10.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
 STAIR_MAIN = [

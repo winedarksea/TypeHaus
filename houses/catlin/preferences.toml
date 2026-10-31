@@ -175,6 +175,11 @@ min_drain_slope_margin_in_per_ft = 0.0
 # drain and insulated hot riser in the house. A riser ON a member still FAILs at any size.
 max_undrawn_deck_hole_in = 4.0
 
+# advisory.room_illuminance targets beyond the engine's per-occupancy defaults (owner,
+# 2026-10-31): the gym is Occupancy.LIVING but is a workspace.
+[mep.illuminance_lux]
+"RM-B-GYM" = 300
+
 [mep.routing]
 # **The router's weights, and they are preferences rather than code.** Everything here is
 # stated in INCHES OF EQUIVALENT TRAVEL, the one unit `typehaus/routing/cost.py` prices in,

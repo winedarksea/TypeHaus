@@ -195,10 +195,103 @@ LIVEX_4451 = Product(
            "UL/ETL mark. Fallback: Kichler 52505BK (dry, 40 W).",
 )
 
+# --- 2026-10-31 lighting review: tape families, drivers, controllers, utility fittings ----
+# Products, not prices (#28). Every 24V family is plain 2- or 5-wire tape in a standard
+# 12 mm channel, so a same-size tape can replace it; a controller sits beside its driver.
+_REVIEW = "Lighting review 2026-10-31. "
+SLL_COB_RGBCCT = Product(
+    tag="PROD-SLL-COB-RGBCCT-24V", brand="SuperLightingLED", model="DC24V RGB+CCT COB (p-4545)",
+    name="24V RGB+CCT COB LED tape, 12 mm, 6-wire",
+    url="https://www.superlightingled.com/dc24v-rgb-cct-color-changing-flexible-cob-led-strip-p-4545.html",
+    source=_REVIEW + "Retailer page: RGB plus warm and cool white COB, 24 V, 12 mm. Coves "
+           "(mark E4). CONFIRM white-channel CRI >= 90 and >= 250 lm/ft, and that 12 mm fits "
+           "the 5/8 in. reveal.",
+)
+SLL_COB_RGBW_IP67 = Product(
+    tag="PROD-SLL-COB-RGBW-IP67-30", brand="SuperLightingLED", model="DC24V RGBW COB, IP67 tube, W 3000K",
+    name="24V RGBW COB LED tape, IP67, 3000 K white channel",
+    source=_REVIEW + "The garage linear (mark W) as RGBW with a 3000 K white channel, same "
+           "1/2 in. U-channel. CONFIRM the IP67 SKU, watts per foot and white-channel CRI.",
+)
+COB_TUNABLE_24V = Product(
+    tag="PROD-SLL-COB-CCT-24V", brand="SuperLightingLED", model="DC24V tunable-white COB, 2700-6500K",
+    name="24V tunable-white COB LED tape, 10 mm, 3-wire",
+    source=_REVIEW + "The second-floor hall cove (mark E6). CONFIRM CRI >= 90 at both ends.",
+)
+COB_NIGHT_2200 = Product(
+    tag="PROD-COB-24V-2200K-DAMP", brand="SuperLightingLED", model="DC24V COB 2200K, silicone coated",
+    name="24V COB LED tape, 2200 K, low output, damp",
+    source=_REVIEW + "Bath night light (mark E5): 2200 K (or amber), ~60-80 lm/ft, "
+           "silicone coated, in a frosted channel. CONFIRM the SKU and output.",
+)
+MEANWELL_HLG_150H_24A = Product(
+    tag="PROD-MEANWELL-HLG-150H-24A", brand="Mean Well", model="HLG-150H-24A",
+    name="24V constant-voltage LED driver, 150 W, IP65",
+    source=_REVIEW + "Mean Well HLG-150H-24A: 150 W, 24 V / 6.25 A, IP65, UL 8750, not "
+           "dimming; dimming and colour are the controller's. HLG-100H-24A's family.",
+)
+MEANWELL_HLG_240H_24A = MEANWELL_HLG_150H_24A.model_copy(update={
+    "tag": "PROD-MEANWELL-HLG-240H-24A", "model": "HLG-240H-24A",
+    "name": "24V constant-voltage LED driver, 240 W, IP65",
+    "source": _REVIEW + "Mean Well HLG-240H-24A: 240 W, 24 V / 10 A, IP65, UL 8750."})
+MEANWELL_LPV_20_24 = MEANWELL_HLG_150H_24A.model_copy(update={
+    "tag": "PROD-MEANWELL-LPV-20-24", "model": "LPV-20-24",
+    "name": "24V constant-voltage LED driver, 20 W, IP67",
+    "source": _REVIEW + "Mean Well LPV-20-24: 20 W, 24 V, IP67, Class 2. One per bath night "
+              "light."})
+GLEDOPTO_GL_C_001P = Product(
+    tag="PROD-GLEDOPTO-GL-C-001P", brand="Gledopto", model="GL-C-001P",
+    name="5-in-1 Zigbee 3.0 Pro LED controller (RGB/RGBW/RGBCCT/CCT/dim), 12-54 V",
+    source=_REVIEW + "One controller type for every coloured or tunable run, set to its "
+           "mode once. Local in ZHA; needs a Zigbee dongle beside the ZBT-2 (which runs "
+           "Thread). CONFIRM per-channel current against the run.",
+)
+HALCO_LED_READY_STRIP = Product(
+    tag="PROD-HALCO-90511", brand="Halco", model="90511",
+    name="4 ft LED-ready 2-lamp strip, non-shunted, Type B double-ended T8",
+    source=_REVIEW + "Distributor pages: pre-wired for Type B (ballast-bypass) double-ended "
+           "T8 tubes, 120-277 V, no ballast. The tubes are the lamp.",
+)
+WAVEFORM_T8_95 = Product(
+    tag="PROD-WAVEFORM-T8-95-50K", brand="Waveform Lighting", model="Absolute Series T8, 5000K, 4 ft",
+    name="4 ft T8 LED tube, 95 CRI, 5000 K, ballast bypass",
+    source=_REVIEW + "CONFIRM it is Type B double-ended and ~1,800 lm. Any 90+ CRI 5000 K "
+           "Type B tube fits the strip.",
+)
+LEVITON_9880 = Product(
+    tag="PROD-LEVITON-9880", brand="Leviton", model="9880",
+    name="Keyless porcelain lampholder, E26, on a 4 in. box",
+    source=_REVIEW + "Utility light for storage and equipment spaces (NEC 210.70(C)); takes "
+           "an ordinary A19 LED.",
+)
+WAVEFORM_A19_95 = Product(
+    tag="PROD-WAVEFORM-CENTRICHOME-A19-30K", brand="Waveform Lighting", model="CentricHOME A19 3000K",
+    name="A19 LED bulb, E26, 800 lm, 3000 K, 95 CRI, R9 90+",
+    source=_REVIEW + "Makeup-grade lamp for the vanity lights. CONFIRM 800 lm, R9 >= 90 and "
+           "the enclosed/damp rating against each fixture.",
+)
+VANITY_SCONCE_OPAL = Product(
+    tag="PROD-VANITY-SCONCE-OPAL-2E26", brand="Owner selection", model="vertical opal sconce, 2 x E26",
+    name="Vertical opal-glass vanity sconce, 2 x E26, damp",
+    source=_REVIEW + "Not yet chosen (Kichler, Access, JESCO all list one): vertical opal "
+           "diffuser ~18-20 in. tall, <= 5 in. projection, damp listed, two E26 sockets, "
+           "centred on a 4 in. box. Lamp: two Waveform CentricHOME A19.",
+)
+BED_SWING_ARM_SCONCE = Product(
+    tag="PROD-SWING-ARM-SCONCE-E26", brand="Owner selection", model="swing-arm sconce, shaded E26",
+    name="Hardwired swing-arm reading sconce, switch on fixture, shaded E26",
+    source=_REVIEW + "Not yet chosen: hardwire-capable swing arm, on/off at the fixture, a "
+           "shade that hides the lamp from the pillow, E26 (GU10 heads are scarce). Lamp: "
+           "2700 K, CRI 95, 450-500 lm A19.",
+)
+
 SELECTED_LIGHTING_PRODUCTS = (
     NORA_NSIC_401QAT, NORA_NS_40P, NORA_NS_12, NORA_NS_76W, PAR20_90_30K, PAR20_90_27K,
     PAR20_90_40K, PAR20_90_50K, SORAA_VIVID_PAR20, SORAA_VIVID_PAR20_25, JUNO_WF4_DREG,
     WESTGATE_LP_2X4,
     SCHLUTER_SNLT, BARRON_VARIUS_AG90, WAC_LINE_24, WAC_ROLAND, WAC_STRETCH, NUVO_BOWMAN_36,
     MODERN_FORMS_MYKONOS, WAC_TUBE_EXT, SLL_COB_IP67, MEANWELL_HLG_100H_24A, LIVEX_4451,
+    SLL_COB_RGBCCT, SLL_COB_RGBW_IP67, COB_TUNABLE_24V, COB_NIGHT_2200, MEANWELL_HLG_150H_24A,
+    MEANWELL_HLG_240H_24A, MEANWELL_LPV_20_24, GLEDOPTO_GL_C_001P, HALCO_LED_READY_STRIP, WAVEFORM_T8_95,
+    LEVITON_9880, WAVEFORM_A19_95, VANITY_SCONCE_OPAL, BED_SWING_ARM_SCONCE,
 )

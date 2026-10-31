@@ -2,7 +2,8 @@
 
 A view of the ``placeables`` BOM rows, never an addition to the estimate: a frame row
 joins its type's ``product_ref``, a part row (``FurnitureType``/``FixtureType.parts``)
-is already keyed by product. Units become packs by ``Product.pack_quantity``. What would
+is already keyed by product. A ``LightRun`` whose type names a product is bought by the
+piece (``_add_light_runs``). Units become packs by ``Product.pack_quantity``. What would
 leave the list silently short — a SEKTION-family type with no product, a product with no
 article number — is reported as ``unresolved`` rather than dropped. A sheet product's
 pieces nest onto whole sheets (``takeoff/sheet_nesting.py``): its packs are sheets, and
@@ -14,12 +15,13 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from typehaus.model.electrical import luminaire_types
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.placeables import _placeable_types, placeables_takeoff
 from typehaus.takeoff.sheet_nesting import cut_list, nest, sheet_pieces
 
 ORDER_COLUMNS = ("brand", "article", "name", "roles", "units", "pack_quantity", "packs",
-                 "length_ft", "unit_price", "used_by", "cuts")
+                 "length_ft", "unit_price", "used_by", "cuts", "note")
 _FAMILY_WORDS = ("sektion", "förbättra")
 
 
@@ -65,19 +67,14 @@ def order_list(model: ResolvedModel,
         product = library.product(product_tag)
         if product is None or product.brand.lower() not in wanted:
             continue
-        item = items.get(product_tag)
-        if item is None:
-            item = items[product_tag] = {
-                "brand": product.brand, "article": product.sku, "product": product_tag,
-                "name": product.name or product.model, "url": product.url, "roles": [],
-                "units": 0, "pack_quantity": product.pack_quantity, "length_ft": None,
-                "price_keys": [product_tag], "used_by": set()}
+        item = _item(items, product_tag, product)
         item["units"] += int(row["count"])
         item["roles"] += [role for role in roles if role not in item["roles"]]
         item["price_keys"] += [key for key in price_keys if key not in item["price_keys"]]
         item["used_by"].update(row["tags"])
         if row.get("length_ft") is not None:
             item["length_ft"] = round((item["length_ft"] or 0) + float(row["length_ft"]), 2)
+    _add_light_runs(model, items, wanted)
     pieces = sheet_pieces(model)
     listed = []
     for tag in sorted(items, key=lambda t: (items[t]["brand"], items[t]["roles"][0],
@@ -99,3 +96,35 @@ def order_list(model: ResolvedModel,
                        "unit_price": "", "used_by": ", ".join(sorted(item["used_by"])),
                        "cuts": cuts})
     return {"items": listed, "unresolved": unresolved}
+
+
+def _item(items: dict[str, dict[str, Any]], tag: str, product) -> dict[str, Any]:
+    if tag not in items:
+        items[tag] = {
+            "brand": product.brand, "article": product.sku, "product": tag,
+            "name": product.name or product.model, "url": product.url, "roles": [],
+            "units": 0, "pack_quantity": product.pack_quantity, "length_ft": None,
+            "price_keys": [tag], "used_by": set(), "note": ""}
+    return items[tag]
+
+
+def _add_light_runs(model: ResolvedModel, items: dict[str, dict[str, Any]],
+                    wanted: set[str]) -> None:
+    """Finished strips by the piece: whole ``stock_length`` pieces per run, or, where the
+    product states none, one piece per run — and the line says that is assumed."""
+    library = model.plan.library
+    types = luminaire_types(library)
+    for run in model.light_runs:
+        tag = getattr(types.get(run.type_ref), "product_ref", None)
+        product = library.product(tag) if tag else None
+        if product is None or product.brand.lower() not in wanted:
+            continue
+        item = _item(items, tag, product)
+        stock = product.stock_length
+        item["units"] += math.ceil(run.length_m / stock.meters - 1e-9) if stock else 1
+        if stock is None:
+            item["note"] = "1 piece per run assumed: product states no stock_length"
+        if "light_run" not in item["roles"]:
+            item["roles"].append("light_run")
+        item["used_by"].add(run.tag)
+        item["length_ft"] = round((item["length_ft"] or 0) + run.length_m / 0.3048, 2)

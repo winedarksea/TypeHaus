@@ -1013,7 +1013,13 @@ class LuminaireType(ElectricalDeviceType):
     lamp: str | None = None  # "LED integrated" | "T8 LED" | "E26" — what gets replaced
     watts: float | None = None
     lumens: float | None = None
-    cct_k: int | None = None  # correlated colour temperature, kelvin
+    cct_k: int | None = None  # kelvin: the fixed value, or the white channel's / warm end's
+    # A tunable or CCT-channel source's (low, high) kelvin span; None = fixed.
+    cct_range_k: tuple[int, int] | None = None
+    color_mode: Literal["fixed", "tunable", "rgb", "rgbw", "rgbcct"] = "fixed"
+    # A lamp (bulb, tube, tape) is swapped without the housing; None = not stated.
+    replaceable_lamp: bool | None = None
+    lamp_base: str | None = None  # "E26", "GU10", "G13", "GU24"
     cri: int | None = None  # colour rendering index
     voltage: int = 120  # 120 line voltage, or 24 for a driver-fed LED strip
     dimmable: bool = False
@@ -1040,6 +1046,8 @@ class LuminaireType(ElectricalDeviceType):
 
     @model_validator(mode="after")
     def _track_configuration(self):
+        if self.cct_range_k is not None and self.cct_range_k[0] > self.cct_range_k[1]:
+            raise ValueError("cct_range_k is (low, high) kelvin")
         if (self.form == LuminaireForm.TRACK) != (self.track_lighting is not None):
             raise ValueError("TRACK luminaires require a track_lighting configuration")
         if self.track_lighting is not None:

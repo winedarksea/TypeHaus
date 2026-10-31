@@ -105,6 +105,7 @@ def load_preferences(house_dir: Path) -> Preferences:
                 "min_drain_slope_margin_in_per_ft", 0.0625),
             fireblock_min_web_in=mep.get("fireblock_min_web_in", 1.5),
             routing=dict(mep.get("routing") or {}),
+            illuminance_lux=dict(mep.get("illuminance_lux") or {}),
         ),
         structural=StructuralPreferences(
             max_guard_dead_load_on_wood_plf=structural.get(

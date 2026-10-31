@@ -109,6 +109,11 @@ ARMACOST_RIBBONFLEX_COB = Product(
            "emitters: dot-free in a shallow channel with a light lens, and it does not pay "
            "the 15-30% (opal) or 40-60% (smoked) lumen tax a deep diffuser charges.",
 )
+# E3's tape: the same RibbonFlex Pro family in 2700 K, silicone-coated for a damp room.
+ARMACOST_RIBBONFLEX_COB_2700 = ARMACOST_RIBBONFLEX_COB.model_copy(update={
+    "tag": "PROD-ARMACOST-RIBBONFLEX-COB-2700", "model": "RibbonFlex Pro 24V COB, 2700K, damp",
+    "name": "24V COB LED tape, 2700K, silicone-coated",
+    "source": "Armacost RibbonFlex Pro family, 2700 K. CONFIRM the damp (silicone) SKU."})
 DIODE_VALENT_X = Product(
     tag="PROD-DIODE-VALENT-X", brand="Diode LED", model="VALENT X, 3000K, 95+ CRI",
     name="24V high-output COB LED task tape, 3000K, CRI 95+ / R9 90+",
@@ -197,6 +202,7 @@ DIODE_S45_CHANNEL = Product(
 )
 
 LIGHTING_PRODUCTS = (
+    ARMACOST_RIBBONFLEX_COB_2700,
     HUNTER_GALLEGOS,
     *MAGNETIC_TRACK_PRODUCTS,
     *SELECTED_LIGHTING_PRODUCTS, WESTGATE_VAPORTIGHT, DOLRIA_PC0008,

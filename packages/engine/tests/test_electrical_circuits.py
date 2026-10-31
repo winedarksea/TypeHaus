@@ -203,7 +203,8 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # Then PLUS CKT-SPD, the Type 2 surge protective device NEC 2023 230.67 requires on the
     # service of a dwelling. It is a 2-pole breaker in ED-B-PANEL carrying no load; it is a
     # schedule row because it occupies two spaces, not because anything draws through it.
-    assert len(rows) == 41  # plus the workshop's two-pole receptacle branch
+    # Then PLUS CKT-LT-BSMT (2026-10-31): the workshop/gym/furnace strips off backup.
+    assert len(rows) == 42  # plus the workshop's two-pole receptacle branch
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor; the
     # dining zone takes the same protection because every mat maker asks for it).
@@ -583,8 +584,8 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     assert main[0] <= main[1] and backup[0] <= backup[1]
     # 47 -> 39 on 2026-09-12: CKT-SPA, CKT-SAUNA, CKT-EV-1450 and CKT-GAR-240 (then CKT-EV-620; four 2-pole,
     # eight spaces) moved to ED-B-PANEL-2, feeder 2 of the Class 320 service. Fifteen spare
-    # here, twelve there.
-    assert main == (39, 54)
+    # here, twelve there. 40 since CKT-LT-BSMT took slot 26 (2026-10-31).
+    assert main == (40, 54)
     assert spaces("ED-B-PANEL-2", "ED-T-PANEL-2") == (10, 20)
     assert backup == (8, 12)
     required = sum(circuit.poles for circuit in circuits)
@@ -888,7 +889,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     # 40: the 36 that survived the microgrid refactor plus CKT-DISPOSAL, minus CKT-WH-HP
     # folded into CKT-WH-240, plus CKT-BATH2-TUB for the drop-in bath's Bask heated surface,
     # plus the two washlet circuits, plus CKT-SPD (the NEC 230.67 service surge device).
-    assert len(payload["panel_schedule"]) == 41  # includes the workshop branch
+    assert len(payload["panel_schedule"]) == 42  # includes the workshop branch
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

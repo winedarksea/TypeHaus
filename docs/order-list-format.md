@@ -1,8 +1,8 @@
 # Order list format
 
-`haus order houses/<name>` is a retailer's shopping list built from the placeables BOM. Like
-`haus millwork` and `haus bids`, it is only a view of quantities the estimate already bills,
-so running it adds nothing to the estimate.
+`haus order houses/<name>` is a retailer's shopping list built from the placeables BOM and
+the light runs. Like `haus millwork` and `haus bids`, it is only a view of quantities the
+estimate already bills, so running it adds nothing to the estimate.
 
 ```
 haus order houses/catlin --brand IKEA                 # printed
@@ -20,6 +20,10 @@ haus order houses/catlin --json
   - Frames on one storey that sit within 1/2" of each other form a run.
   - Each run is rounded up to whole `Product.stock_length` sticks, and the takeoff row's
     `count` is that number of sticks. `length_ft` keeps the net length.
+- **Light run.** A `LightRun` whose type's `product_ref` names a product of the brand (a
+  finished strip such as MITTLED or OVERSIDAN) is bought by the piece: each run rounds up
+  to whole `Product.stock_length` pieces. A product with no `stock_length` counts one
+  piece per run, and its `note` says that is assumed. `length_ft` keeps the net length.
 - **Packs.** `packs = ceil(units / Product.pack_quantity)`.
 - **Sheet goods** (a product with `stock_width` and `stock_length`, such as a FÖRBÄTTRA
   cover panel) nest instead (`takeoff/sheet_nesting.py`). `units` counts pieces and
@@ -37,11 +41,11 @@ haus order houses/catlin --json
 
 ## Columns
 
-`brand, article, name, roles, units, pack_quantity, packs, length_ft, unit_price, used_by, cuts`
+`brand, article, name, roles, units, pack_quantity, packs, length_ft, unit_price, used_by, cuts, note`
 
 `article` is `Product.sku`. `used_by` lists the instance tags that consume the item. `cuts`
 is a sheet good's cut list, `1: A 24 x 34" + B 24 x 34"; 2: C (whole)`: which pieces come
-off which sheet.
+off which sheet. `note` flags a count the list had to assume.
 
 ## Unresolved
 

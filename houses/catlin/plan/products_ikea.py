@@ -220,6 +220,13 @@ AXILO_LEVELER = Product(
     sku="637.76.355", name="AXILO plinth leveler, 140-170 mm, with screw-mount plate",
     source="Häfele base fittings catalogue (K4): four per 24-inch high pantry, at 6 inches.")
 
+# --- Lighting (2026-10-31) --------------------------------------------------------------
+# Kitchen under-cabinet strip, mark U1, on the TRADFRI driver the closet already uses.
+MITTLED = _ikea("PROD-IKEA-MITTLED", "", "MITTLED",
+                "MITTLED LED kitchen countertop lighting strip, dimmable, white",
+                "IKEA listings (EU/CA), read 2026-10-31: CRI > 90, 2700 K; 60 cm 410 lm / "
+                "5.5 W (~208 lm/ft). US article and lengths unread.")
+
 IKEA_PRODUCTS = (
     IKEA_SEKTION, IKEA_VOXTORP_WHITE, IKEA_MAXIMERA, IKEA_AXSTAD_WHITE,
     IKEA_BAGGANAS_KNOB_BLACK, IKEA_BAGGANAS_PULL_BLACK,
@@ -228,5 +235,5 @@ IKEA_PRODUCTS = (
     *AXSTAD_DOORS, *AXSTAD_DRAWER_FRONTS, *MAXIMERA_MEDIUM, *VOXTORP_FRONTS,
     UTRUSTA_HINGE, UTRUSTA_HORIZONTAL_HINGE, UTRUSTA_CORNER_HINGES, UTRUSTA_CAROUSEL,
     SEKTION_LEG, FORBATTRA_TOE_KICK, *UTRUSTA_SHELVES,
-    REV_A_SHELF_SWING_OUT, AXILO_LEVELER,
+    REV_A_SHELF_SWING_OUT, AXILO_LEVELER, MITTLED,
 )

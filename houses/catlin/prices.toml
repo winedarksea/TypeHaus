@@ -2685,6 +2685,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LEV-GFCI-WR" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 8 ea
 "ED-T-LEV-GUIDE" = { material = { low = 12, high = 28 }, labour = { low = 38, high = 78 } }  # 4 ea
 "ED-T-LEV-MATTER" = { material = { low = 40, high = 70 }, labour = { low = 40, high = 80 } }  # 9 ea
+"ED-T-ZOOZ-ZEN32" = { material = { low = 45, high = 60 }, labour = { low = 40, high = 80 } }  # lounge scene keypad (2026-10-31), retailer estimate
 "ED-T-LEV-MATTER-COMPANION" = { material = { low = 25, high = 50 }, labour = { low = 40, high = 80 } }  # 2 ea
 "ED-T-LEV-MATTER-ELV" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 110 } }  # 1 ea
 "ED-T-LEV-OCC-PANTRY" = { material = { low = 40, high = 80 }, labour = { low = 40, high = 80 } }  # 1 ea
@@ -2697,7 +2698,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LEV-SW3" = { material = { low = 4, high = 12 }, labour = { low = 32, high = 68 } }  # 5 ea
 "ED-T-LEV-USBC" = { material = { low = 30, high = 55 }, labour = { low = 40, high = 80 } }  # 2 ea
 "ED-T-LUT-COUNTDOWN" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 1 ea
-"ED-T-LUT-DIVA" = { material = { low = 25, high = 50 }, labour = { low = 52, high = 110 } }  # 2 ea
+"ED-T-LUT-DIVA" = { material = { low = 25, high = 50 }, labour = { low = 52, high = 110 } }  # 1 ea since 2026-10-31 (ED-M-BED-SW went plain)
 "ED-T-FLOOR-STAT" = { material = { low = 130, high = 300 }, labour = { low = 150, high = 300 } }  # 0 ea: the library class, kept priced
 "ED-T-FLOOR-STAT-WARMUP" = { material = { low = 200, high = 300 }, labour = { low = 150, high = 300 } }  # 3 ea, Warmup 7iE (2026-10-30 allowance)
 "ED-T-JBOX" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
@@ -2707,7 +2708,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # product key, so a tier costs what its trim and lamp add. Allowances, not quotes: re-quote
 # before ordering. Mark C, the Juno wafer, is a whole fixture on its own key.
 "ED-T-LT-CAN4" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 57 ea, mark A
-"ED-T-LT-CAN4-4000" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 2 ea, A1
+"ED-T-LT-CAN4-5000" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # A1, the lounge day layer (5000 K since 2026-10-31)
+"ED-T-LT-CAN4-TASK" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # A4, kitchen task cans (2026-10-31); trim and Soraa 25 deg lamp are part rows
 "ED-T-LT-CAN4-PREM" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 7 ea, A2
 "ED-T-LT-CAN4-PREM-GIMBAL" = { material = { low = 22, high = 32 }, labour = { low = 60, high = 120 } }  # 4 ea, A3, aimed on site
 "ED-T-LT-CAN4-WET" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # 2 ea, B
@@ -2749,24 +2751,25 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LT-FAN60" = { material = { low = 270, high = 650 }, labour = { low = 155, high = 320 } }  # 1 ea
 "ED-T-LT-FLOOD-GARDEN" = { material = { low = 80, high = 250 }, labour = { low = 65, high = 145 } }  # 1 ea — shielded 60-degree garden flood, underside box on balcony blocking; provisional allowance
 # Mirror pass 2026-10-22. ED-T-LT-MIRROR now serves ONLY the studio wet-bar task light.
-# Bathroom lights below include fitted bulbs, so bulbs are not billed a second time.
+# 2026-10-31: the 3000 K Karlies (P1/P1A/P2/P5) no longer include bulbs: their Waveform
+# CentricHOME A19s bill as lamp part rows. P3 (MIRROR-DAY) still includes its 80795-SU.
 # Hinkley retail: 54622CM/BN $189, 54623CM/BN $209, read from hinkley.com product pages.
 # Sunlite 80795-SU-6 listing $16.88/6 ($2.81/bulb), Bulb Center, SOLD OUT:
 # https://bulbcenter.com/products/sunlite-80795-led-a19-standard-household-light-bulb-9-watts-60w-equivalent-800-lumens-medium-base-e26-dimmable-ul-listed-energy-star-90-cri-title-20-5000k-daylight-6-count
 # Carry $3-8 per exact bulb (80793-SU 3000 K / 80795-SU 5000 K); upper end and 3000 K
 # allowance are estimating judgement, not observed quotes. Verify availability; do not silently
 # substitute the V2 lamp without its own CRI/R9 sheet. Tax/freight and spare bulbs excluded.
-"ED-T-LT-KARLIE-2-BN" = { material = { low = 195, high = 205 }, labour = { low = 60, high = 135 } }  # 4 ea (2026-10-28: the studio wet bar's mark P retyped to P1), 54622BN + two 80793-SU
-"ED-T-LT-KARLIE-2-BN-ATTIC" = { material = { low = 200, high = 215 }, labour = { low = 60, high = 135 } }  # 1 ea, same fixture/bulbs plus offset box/crossbar allowance
-"ED-T-LT-KARLIE-2-CM" = { material = { low = 195, high = 205 }, labour = { low = 60, high = 135 } }  # 1 ea, 54622CM + two 80793-SU
-"ED-T-LT-KARLIE-3-BN" = { material = { low = 218, high = 233 }, labour = { low = 60, high = 135 } }  # 2 ea, 54623BN + three 80793-SU
+"ED-T-LT-KARLIE-2-BN" = { material = { low = 189, high = 195 }, labour = { low = 60, high = 135 } }  # 54622BN, fixture only
+"ED-T-LT-KARLIE-2-BN-ATTIC" = { material = { low = 194, high = 205 }, labour = { low = 60, high = 135 } }  # 1 ea, same fixture plus offset box/crossbar allowance
+"ED-T-LT-KARLIE-2-CM" = { material = { low = 189, high = 195 }, labour = { low = 60, high = 135 } }  # 54622CM, fixture only
+"ED-T-LT-KARLIE-3-BN" = { material = { low = 209, high = 215 }, labour = { low = 60, high = 135 } }  # 54623BN, fixture only
 "ED-T-LT-MIRROR-DAY" = { material = { low = 218, high = 233 }, labour = { low = 60, high = 135 } }  # 1 ea, 54623CM + three 80795-SU
 # MHAP4236 (2026-10-22, replaces the 24 x 36 MHAP2436 at $968): Fleurco's US catalog lists
 # $1,484; Modern Furnishings lists $1,337. Five-year warranty, own dimmer. Quote the dealer.
 # https://fleurco.com/media/website_catalog.usa/5_Fleurco25_LUNA_US.pdf
 "ED-T-LT-MIRROR-HALO-2700" = { material = { low = 1337, high = 1484 }, labour = { low = 90, high = 200 } }  # 1 ea, 116 W including factory defogger
 
-"ED-T-LT-PANEL" = { material = { low = 115, high = 135 }, labour = { low = 48, high = 115 } }  # 2 ea — Westgate LP-2X4-60W-40K-D $79.85 + LP-SRFC-2X4 kit $36-52 (researched 2026-10-28)
+"ED-T-LT-PANEL" = { material = { low = 115, high = 135 }, labour = { low = 48, high = 115 } }  # 0 ea since 2026-10-31 (the workshop took Q1 strips; mark D is the revert) — Westgate LP-2X4-60W-40K-D $79.85 + LP-SRFC-2X4 kit $36-52 (researched 2026-10-28)
 # ** THE DINING FIXTURE IS THE OWNER'S OWN IMPORT AND HAS NOT BEEN SELECTED ** (48" linear,
 # 2000-3500 lm, 3000 K, CRI 90+). The band brackets an import against the domestic fixture
 # to price it by: Visual Comfort Dessau 48 at $1,449 for 2,261 lm / 36 W. ** BUDGET A SPARE
@@ -2780,7 +2783,14 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # the room's R303.1 compliance depends on rather than against a look.
 "ED-T-LT-PENDANT-BAR" = { material = { low = 180, high = 700 }, labour = { low = 70, high = 200 } }  # 0 ea — CATALOG-ONLY since 2026-09-10, the mark N convention: its one placement retyped to ED-T-LT-MIRROR when the attic rake left no room for a hung fixture. Kept priced so the revert costs nothing
 "ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 3 ea
-"ED-T-LT-PSU-96-WE" = { material = { low = 51, high = 63 }, labour = { low = 45, high = 95 } }  # 3 ea — Mean Well HLG-100H-24A, distributor list $51-63 (researched 2026-10-28)
+"ED-T-LT-PSU-96-WE" = { material = { low = 51, high = 63 }, labour = { low = 45, high = 95 } }  # 0 ea since 2026-10-31 (RGBW runs moved to HLG-150; the single-white revert) — Mean Well HLG-100H-24A, distributor list $51-63 (researched 2026-10-28)
+# Lighting review 2026-10-31: Mean Well HLG-150H/240H-24A drivers (distributor list ~$60-80 /
+# ~$85-115, estimate) feed the coloured and tunable runs through a Gledopto GL-C-001P
+# (~$25-40, retailer estimate). Allowances, not quotes.
+"ED-T-LT-PSU-150-HLG" = { material = { low = 60, high = 80 }, labour = { low = 45, high = 95 } }
+"ED-T-LT-PSU-240-HLG" = { material = { low = 85, high = 115 }, labour = { low = 45, high = 95 } }
+"ED-T-LT-PSU-20" = { material = { low = 12, high = 20 }, labour = { low = 45, high = 95 } }  # 7 ea, the bath night lights; Mean Well LPV-20-24 (estimate)
+"ED-T-LT-CTRL-5IN1" = { material = { low = 25, high = 40 }, labour = { low = 20, high = 45 } }
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 4 ea since 2026-10-30 (ED-M-PANTRY-LT-PSU drives the four pantry jamb channels); 3 ea since 2026-10-12 — both niche supplies went, ED-M-BATH2-PSU came; ED-B-SAUNA-LT-PSU is surface-mounted on the workshop face of W-B-SA-N rather than in a ceiling box
 "ED-T-LT-SCONCE-EXT" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 4 ea — WAC WS-W2605-BK $186-232 (researched 2026-10-28)
 "ED-T-LT-SCONCE-SPOT" = { material = { low = 99, high = 130 }, labour = { low = 48, high = 115 } }  # 5 ea — WAC Sprig BL-23210-BK $99 dealer (2026-10-29, owner swap from Stretch); hardwiring unconfirmed
@@ -2810,6 +2820,17 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # linkable cords crack in cold and that is where the failures start, which also means this
 # row's labour is an electrician rather than a hook and a plug.
 "ED-T-LT-SHOP4" = { material = { low = 93, high = 140 }, labour = { low = 60, high = 130 } }  # 4 ea
+# Lighting review 2026-10-31 (estimates; the two sconces are not yet chosen):
+# J2 bed sconce, hardwired swing arm with a shaded E26 and its lamp.
+"ED-T-LT-SCONCE-BED" = { material = { low = 70, high = 180 }, labour = { low = 48, high = 115 } }
+# P6 vanity sconce, vertical opal, 2 x E26; its two lamps are part rows.
+"ED-T-LT-SCONCE-VANITY" = { material = { low = 90, high = 250 }, labour = { low = 60, high = 135 } }
+"PROD-WAVEFORM-CENTRICHOME-A19-30K" = { material = { low = 10, high = 16 }, labour = 0 }  # Karlie and P6 lamps
+# Q1 LED-ready T8 strip (Halco 90511 ~$25-45) and its two Waveform 95-CRI tubes (part rows).
+"ED-T-LT-STRIP-T8" = { material = { low = 25, high = 45 }, labour = { low = 60, high = 130 } }
+"PROD-WAVEFORM-T8-95-50K" = { material = { low = 15, high = 25 }, labour = 0 }
+# Q2 keyless lampholder (Leviton 9880) with an A19 LED.
+"ED-T-LT-KEYLESS" = { material = { low = 8, high = 18 }, labour = { low = 40, high = 90 } }
 "ED-T-LT-SPOT-SW" = { material = { low = 99, high = 130 }, labour = { low = 60, high = 140 } }  # 2 ea — same WAC Sprig as mark J; canopy toggle is the switch (2026-10-29)
 "ED-T-LT-GROW-BAR" = { material = { low = 230, high = 290 }, labour = { low = 45, high = 100 } }  # 2 ea — Barron AG90-W-001 $220-261 + cable hangers (researched 2026-10-28)
 "ED-T-LT-WALL-LINEAR" = { material = { low = 480, high = 552 }, labour = { low = 45, high = 100 } }  # 1 ea — WAC WS-6724-30-BK $480-552 (researched 2026-10-28)
@@ -2818,7 +2839,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # at $2,700 (~$27/ft, read 2026-10-31), so 6 ft is ~$160 at list; the low end assumes a
 # distributor discount. The S45 bundle (channel, lens, caps, clips) is its own part row and the
 # driver is ED-T-LT-PSU-60.
-"ED-T-LT-JAMB72" = { material = { low = 110, high = 165 }, labour = { low = 30, high = 70 } }  # 4 ea
+# 2026-10-31: generic 90-CRI COB (mark E's Armacost tape) in place of VALENT X: 6 ft of
+# tape at the cove rate ($5-13/ft) plus fitting; the channel stays its own part row.
+"ED-T-LT-JAMB72" = { material = { low = 30, high = 80 }, labour = { low = 30, high = 70 } }  # 4 ea
 "PROD-DIODE-S45-CHANNEL" = { material = { low = 70, high = 90 }, labour = 0 }  # 4 ea, one 96 in. bundle per jamb; HomElectrical $85.05 (read 2026-10-31)
 # ** REPRICED 2026-09-12 WITH THE CLASS 320 RETYPE. ** This is no longer a plain $70-200
 # meter socket: it is a Class 320 heavy-duty lever-bypass COMBINATION meter-main carrying the
@@ -6893,7 +6916,7 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # 2026-10-29: labour ~1.5x the interior cove (channel 4-10, tape 3-7) for ladder work and 3 outdoor terminations; was ~2.5x.
 # Channel labour low held at 8.5 (not 6): test_e12 requires the exterior channel's per-ft low to exceed the cove's ($9).
 "channel:ED-T-LT-LINEAR-EXT" = { material = { low = 1, high = 2 }, labour = { low = 8.5, high = 16 } }
-"tape:ED-T-LT-LINEAR-EXT" = { material = { low = 3, high = 4.5 }, labour = { low = 3, high = 9 } }
+"tape:ED-T-LT-LINEAR-EXT" = { material = { low = 4.5, high = 8 }, labour = { low = 3, high = 9 } }  # RGBW since 2026-10-31 (estimate)
 "end_cap:ED-T-LT-LINEAR-EXT" = { unit = "EA", material = { low = 0, high = 1 }, labour = { low = 10, high = 21 } }
 "corner_connector:ED-T-LT-LINEAR-EXT" = { unit = "EA", material = { low = 0, high = 2 }, labour = { low = 12, high = 26 } }
 # Mark X, the sauna's two under-bench runs, 12 LF. A sauna-rated silicone IP68 tape is a
@@ -6905,6 +6928,26 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "tape:ED-T-LT-STRIP24-SAUNA" = { material = { low = 7, high = 17 }, labour = { low = 5, high = 13 } }
 "end_cap:ED-T-LT-STRIP24-SAUNA" = { unit = "EA", material = { low = 3, high = 6 }, labour = { low = 4, high = 8 } }
 "corner_connector:ED-T-LT-STRIP24-SAUNA" = { unit = "EA", material = { low = 4, high = 7 }, labour = { low = 5, high = 9 } }
+# Lighting review 2026-10-31 (retailer estimates, not quotes). E4 RGB+CCT COB coves bill
+# their Z bead in [drywall_trims] like E. E5 night tape in a frosted channel. E6 tunable
+# COB. U1 is IKEA MITTLED, a finished strip bought by the piece (~$10/LF), so the channel,
+# caps and connectors are $0 as for OVERSIDAN.
+"channel:ED-T-LT-STRIP24-RGBCCT" = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
+"tape:ED-T-LT-STRIP24-RGBCCT" = { material = { low = 8, high = 18 }, labour = { low = 4, high = 9 } }
+"end_cap:ED-T-LT-STRIP24-RGBCCT" = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
+"corner_connector:ED-T-LT-STRIP24-RGBCCT" = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 6, high = 13 } }
+"channel:ED-T-LT-STRIP24-NIGHT" = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
+"tape:ED-T-LT-STRIP24-NIGHT" = { material = { low = 4, high = 10 }, labour = { low = 3, high = 7 } }
+"end_cap:ED-T-LT-STRIP24-NIGHT" = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
+"corner_connector:ED-T-LT-STRIP24-NIGHT" = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 5, high = 11 } }
+"channel:ED-T-LT-STRIP24-TUNABLE" = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
+"tape:ED-T-LT-STRIP24-TUNABLE" = { material = { low = 6, high = 14 }, labour = { low = 3, high = 8 } }
+"end_cap:ED-T-LT-STRIP24-TUNABLE" = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
+"corner_connector:ED-T-LT-STRIP24-TUNABLE" = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 5, high = 11 } }
+"channel:ED-T-LT-MITTLED" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
+"tape:ED-T-LT-MITTLED" = { material = { low = 9, high = 12 }, labour = { low = 3, high = 8 } }
+"end_cap:ED-T-LT-MITTLED" = { unit = "EA", material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
+"corner_connector:ED-T-LT-MITTLED" = { unit = "EA", material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 
 [furnishings]
 # RESEARCHED 2026-08-08a, split out of [placeables] 2026-08-08b — [low, high] $ each, same

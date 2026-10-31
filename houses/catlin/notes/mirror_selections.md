@@ -1,6 +1,6 @@
 # Selected mirrors and vanity lighting
 
-**Decision record · 2026-10-22.** Sources of model identity and geometry are
+**Decision record · 2026-10-22; lighting amended 2026-10-31** (vanity sconces, suite 3-light bar, 95-CRI lamps, bath2 at 42 × 36). Sources of model identity and geometry are
 `plan/mirror_types.py` and `plan/mirrors.py`; the suite's existing Estero remains in its
 original furniture catalog and placement. This closes the hall-bath replacement-risk review
 and supplies the missing mirror glass in the other bathrooms. No purchases have been made.
@@ -19,10 +19,10 @@ a fabrication drawing of its floating SEKTION frames.
 |---|---|---|---|---|
 | Basement bath | Kohler K-26052-BNL | 22 3/16 × 34 3/16 × 1 3/8 | 40 / 74 3/16 | Soft rectangle gives the narrow room height without filling its wall |
 | Main powder room | Kohler K-30638-CPL | 20 × 32 × 1 3/8 | 42 / 74 | Slim chrome arch over the D-Code basin and chrome B.2 mixer |
-| Main bath2 | Fleurco **MHAP2436** Halo Plus | 24 × 36 × 1 3/4 | 42 / 78 | Illuminated border **and** rear glow; owner accepted both |
+| Main bath2 | Fleurco **MHAP4236** Halo Plus | 42 × 36 × 1 3/4 | 42 / 78 | Illuminated border **and** rear glow; owner accepted both; centred on the vanity |
 | Upstairs hall bath | Kohler K-26050-BNL | 28 1/16 diameter × 1 3/8 | 44 / 72 1/16 | Plain round keeps the softened silhouette over the 36-inch vanity |
 | Suite bath | Kate and Laurel Estero 221484 | Existing 20 1/8 × 28 × 5 1/2 model | 46 / 74 | Preserve the owner's gold arch and shelf, including its existing placement |
-| Upstairs double vanity | Two Kohler K-30638-BNL | Each 20 × 32 × 1 3/8 | Each 42 / 74 | Repeated arches, centered at x=22 3/8 and 52 3/8, with a 10-inch gap |
+| Upstairs double vanity | Two Kohler K-30638-BNL | Each 20 × 32 × 1 3/8 | Each 42 / 74 | Repeated arches, centered at x=22 3/8 and 52 3/8, with a 10-inch gap; three side sconces |
 | Attic guest bath | Kohler K-31367-BNL | 22 diameter × 1 3/8 | 48 / 70 | Compact round permits a socketed light below the sloping roof |
 | Main closet | Umbra Hubba Pill **1023469-624** | 17.88 × 62 × 2 | 12 / 74 | Plain full-length capsule, metallic titanium; no electrical load |
 
@@ -46,48 +46,60 @@ Manufacturer sources, read 2026-10-22:
 
 ## Replaceable lighting
 
-All new separate lights are Hinkley Karlie, with etched opal glass and **open shades facing
-down**. Two-light 54622 fixtures measure 13 1/4 W × 7 1/2 H × 6 D inches; three-light
-54623 fixtures measure 22 1/2 W × 7 1/2 H × 6 D. Their E26 sockets accept LED bulbs up to
-14 W each; the selected bulbs draw 9 W. Glass removes for cleaning and bulbs replace
-independently of both the fixture and mirror. No fixture driver needs replacing.
+Every separate light takes replaceable E26 lamps; no fixture has a driver to fail. The
+3000 K lamp everywhere is the **Waveform CentricHOME A19 3000K** (800 lm, 95 CRI, R9 90+,
+`PROD-WAVEFORM-CENTRICHOME-A19-30K`), which replaced the Sunlite 80793-SU (CRI 94, R9 69) on
+2026-10-31; it bills as its own lamp line. Bath2's 5000 K day bar keeps the Sunlite 80795-SU.
 
-| Location | Fixture / schedule mark | Bulbs | Body bottom / top AFF |
+Hinkley Karlie bars have etched opal glass and **open shades facing down**: the 54622
+two-light is 13 1/4 W × 7 1/2 H × 6 D, the 54623 three-light 22 1/2 W × 7 1/2 H × 6 D,
+sockets to 14 W each.
+
+| Location | Fixture / schedule mark | Lamps | Body bottom / top AFF |
 |---|---|---|---|
-| Basement | 54623BN / P5 | 3 × 80793-SU | 76 3/16 / 83 11/16 |
-| Powder room | 54622CM / P2 | 2 × 80793-SU | 76 / 83 1/2 |
+| Basement | 54623BN / P5 | 3 × CentricHOME | 76 3/16 / 83 11/16 |
+| Powder room | 54622CM / P2 | 2 × CentricHOME | 76 / 83 1/2 |
 | Bath2 daytime | 54623CM / P3 | 3 × 80795-SU | 80 / 87 1/2 |
-| Hall bath | 54623BN / P5 | 3 × 80793-SU | 74 1/16 / 81 9/16 |
-| Suite and each double-vanity basin | 54622BN / P1 | 2 × 80793-SU each | 76 / 83 1/2 |
-| Attic | 54622BN / P1A | 2 × 80793-SU | 72 / 79 1/2 |
+| Hall bath | 54623BN / P5 | 3 × CentricHOME | 74 1/16 / 81 9/16 |
+| Suite | 54623BN / P5 (was P1 until 2026-10-31) | 3 × CentricHOME | 76 / 83 1/2 |
+| Double vanity | three P6 vertical opal sconces, 2 × E26, damp | 2 × CentricHOME each | 55 / 73 (centres 64) |
+| Attic | 54622BN / P1A | 2 × CentricHOME | 72 / 79 1/2 |
 
-Each new fixture body starts **2 inches above its mirror head**. Its mounting elevation
-is the body bottom, not the box centre. For the selected shades-down orientation, rough-in
-the junction box 5 1/2 inches above the body bottom, checking the supplied mounting plate.
-Confirm the factory plate's small projection above the catalog body before drilling, especially in the attic.
+Each Karlie body starts **2 inches above its mirror head**, and its mounting elevation is the
+body bottom: rough-in the box 5 1/2 inches above it, and check the supplied plate.
 The attic's lowest roof height over the light's footprint is about 80 1/2 inches; the
 basement soffit is about 86 7/16 inches above finished floor. Neither needs a ceiling move.
 
+**Double vanity (2026-10-31).** Makeup light comes from the side, at the face, rather than
+from over the mirror. The two Karlies over the arches became three P6 sconces at x = 9 7/16,
+37 3/8 and 65 5/16 inches (`ED-S-VANITY-SCONCE-W/-C/-E`). Each 5-inch body clears the side
+wall and the mirror edge by **7/16 inch**. Shifting the mirrors east does not help, because
+both outer gaps are already equal, so choose a sconce with a backplate of 4 1/2 inches or
+less. The boxes land in `BK-S-BD-N-MIRROR-HANG` (60 to 71 1/4 inches); the old Karlie band
+`BK-S-BD-N-MIRROR-LIGHT` is gone. The product is still an owner selection
+(`PROD-VANITY-SCONCE-OPAL-2E26`).
+
+**Suite (2026-10-31).** The three-light bar sits on the existing 22 1/2-inch
+`BK-S-SN3-MIRROR-LIGHT`. Flanking sconces would stand in the tub's spray zone.
+
 - [Hinkley 54622CM](https://www.hinkley.com/54622cm.html) /
   [54623BN](https://www.hinkley.com/54623bn.html); BN is brushed nickel, CM is chrome.
-- [Sunlite 80793-SU](https://sunlite.com/ecomutils/downloadproductfileexternal?id=2063):
-  fixed 3000 K, 9 W, 800 source lumens, CRI 94, R9 69, dimmable.
 - [Sunlite 80795-SU](https://sunlite.com/ecomutils/downloadproductfileexternal?id=2066):
   fixed 5000 K, 9 W, 800 source lumens, CRI 95, R9 82; bath2 uses its plain daytime toggle.
+- Waveform CentricHOME A19: confirm R9 ≥ 90 and the damp/enclosed rating on its sheet before ordering.
 
-The schedule leaves **delivered fixture lumens unknown**. Three 800-lumen bulbs are 2400
-source lumens, not 2400 delivered through opal glass. Retain the exact bulb SKU and its
-photometric sheet; a similarly named V2 lamp is not an automatic substitute. The researched
-80795-SU six-pack listing was sold out on 2026-10-22, so availability remains a procurement
-check. The studio wet-bar task light retains its existing generic linear type and price row.
+The schedule leaves **delivered fixture lumens unknown**. The listed lumens are lamp source
+output, not what comes through the opal glass.
 
 ## Bath2 factory controls and power
 
-The selected mirror is **Halo Plus MHAP2436**, not the old MHA2436. The owner's final choice
-allows a glowing glass border as well as the wall halo. The manufacturer publishes 24 × 36,
-120 V plug installation, **70 W total including defogger**, up to 1711 lumens, and a five-year
-limited warranty. CRI is unpublished; neither 1711 lumens at 2700 K nor field-replaceable
-LEDs/drivers is established by those documents.
+The selected mirror is **Halo Plus MHAP4236**, 42 × 36, centred on the vanity. The owner
+accepted the glowing glass border as well as the wall halo. The manufacturer publishes 120 V
+plug installation, **116 W total including defogger**, up to 2243 lumens and a five-year limited
+warranty. **CRI is UNCONFIRMED.** Neither the spec sheet nor the manual publishes it (searched
+2026-10-31). The mirror stays as the house's one integrated mirror light; ask Fleurco, and if
+the answer is below 90, swap to a front-lit 42 × 36 with a published CRI of 93 or more. Field-replaceable
+LEDs and drivers are not documented either.
 
 Use its **own touch dimmer**, normally at 2700 K, with 4500/6500 K available to the user.
 The power button switches light and defogger together. There is no independent defogger
@@ -100,9 +112,9 @@ recommended outlet zone. Recess the plug behind the wall plane and route the cor
 clear of direct contact with the heater pad, as the manual requires. It shares the existing protected 20 A bathroom-receptacle branch,
 `CKT-BATH-ATTIC`, whose description now includes bath2. This avoids another panel space and
 an inaccessible GFCI reset behind the mirror. Reset/test is at the GFCI breaker; general
-main-storey receptacles stay on their original non-GFCI-breaker branch. The mirror's 70 VA
-is counted once, on the same branch as its plug; the circuit's explicit allowance is
-updated from 0 to 70 VA because that field overrides device-load summation. Leave access to lift the mirror off its
+main-storey receptacles stay on their original non-GFCI-breaker branch. The mirror's 116 VA
+is counted once, on the same branch as its plug; the circuit's explicit `load_va=116`
+overrides device-load summation. Leave access to lift the mirror off its
 mounting screws and keep the spare cord clear of the heater.
 
 [Fleurco specification](https://fleurco.com/media/website_furnishing.specification/GENERALSPECS_HALOPLUS-MHAP_07_2023.pdf)
@@ -135,7 +147,8 @@ Its receptacle shifts one inch east to x=65 1/2 inches at 44 inches AFF, clear o
 mirror. The existing hall-bath GFCI stays exposed south of its new plain round glass.
 
 `prices.toml` carries dated retail evidence, an explicit allowance where no firm price was
-found, installation labour, and fitted bulbs in each light price. The suite mirror is billed
+found, installation labour, and the fitted bulbs in each light price (except the 3000 K CentricHOME
+lamps, which bill as their own line since 2026-10-31). The suite mirror is billed
 once, unchanged; the retired Robern and closet LED allowance rows are removed. Ordinary
-plain mirrors remain in the agreed $150–400 range; the $968 Halo Plus is the deliberate
+plain mirrors remain in the agreed $150–400 range; the 42 × 36 Halo Plus is the deliberate
 premium exception. These are estimates before tax/freight, not supplier quotes.

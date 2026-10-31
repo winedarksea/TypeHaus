@@ -3,7 +3,7 @@
 NOT ``# haus: editable``: like ``fixture_types.py`` these are catalog type definitions,
 not placed instances, and ``ElectricalDeviceType.needs`` is a ``frozenset``, which the
 editable dialect forbids. The movable instances that reference these tags live in
-``plan/lighting.py`` (editable, so UI drags round-trip).
+``plan/lighting_*.py`` (editable, so UI drags round-trip).
 
 Every entry is a ``LuminaireType`` — an ``ElectricalDeviceType`` subclass, so it rides in
 ``Library.electrical_device_types`` beside the receptacles and the panel and needs no new
@@ -56,6 +56,7 @@ def _can(tag: str, mark: str, name: str, trim: str, lamp: str, watts: float, lum
         footprint=(inch(5), inch(5)), height=inch(6), plan_symbol="recessed-can",
         lamp="PAR20 LED, E26, replaceable", watts=watts, lumens=lumens, cct_k=cct_k,
         cri=cri, dimmable=True, load_va=watts, ports=_POWER_120, product_ref=_HOUSING,
+        replaceable_lamp=True, lamp_base="E26",
         parts=(ProductPart(role="trim", product_ref=trim),
                ProductPart(role="lamp", product_ref=lamp)),
         source=source, **extra)
@@ -74,11 +75,12 @@ AMBIENT_LUMINAIRE_TYPES = (
          "Nora NSIC-401QAT + NS-40P + 90-CRI PAR20 40 deg: the cheap, efficient tier "
          "(halls, closets, basement, bedrooms, kitchen, mudroom, mechanical).",
          damp_rated=True),
-    # A1: the lounge's cool layer. CCT is a type property everywhere it matters (E-602, IFC),
-    # so two CCTs in one room are two schedule rows. Do not fold this into A.
-    _can("ED-T-LT-CAN4-4000", "A1", '4" recessed can, white stepped baffle, PAR20 4000K',
-         _STEPPED, "PROD-BULBRITE-PAR20-90-40K", 6.5, 520.0, 4000, 90,
-         "Mark A's housing and trim with a 4000 K lamp: RM-M-LIVING's day layer.",
+    # A1: the lounge's day layer, over the puzzle table. CCT is a type property everywhere it
+    # matters (E-602, IFC), so two CCTs in one room are two schedule rows. Do not fold this
+    # into A. 5000 K since the 2026-10-31 review (the day layer is >= 5000 K; was 4000 K).
+    _can("ED-T-LT-CAN4-5000", "A1", '4" recessed can, white stepped baffle, PAR20 5000K',
+         _STEPPED, "PROD-PAR20-90-50K-WET", 6.5, 520.0, 5000, 90,
+         "Mark A's housing and trim with a 5000 K 90-CRI lamp: RM-M-LIVING's day layer.",
          damp_rated=True),
     # A2/A3: the premium tier, RM-M-LIVING and RM-M-BED only. Same housing; the 95-CRI lamp.
     _can("ED-T-LT-CAN4-PREM", "A2", '4" recessed can, white stepped baffle, 95-CRI PAR20',
@@ -89,6 +91,12 @@ AMBIENT_LUMINAIRE_TYPES = (
          _GIMBAL, "PROD-SORAA-VIVID-PAR20-30K-25", 10.8, 540.0, 3000, 95,
          "Nora NSIC-401QAT + NS-12 gimbal + Soraa Vivid PAR20 25 deg, aimed at a wall, "
          "a bookcase or the mantel from 24-36 in. off it."),
+    # A4: kitchen task cans (2026-10-31): mark A's stepped trim with the 25 deg 95-CRI lamp,
+    # so the sink, range and peninsula get a tight pool where A's 40 deg spreads.
+    _can("ED-T-LT-CAN4-TASK", "A4", '4" recessed can, white stepped baffle, 25 deg 95-CRI PAR20',
+         _STEPPED, "PROD-SORAA-VIVID-PAR20-30K-25", 10.8, 540.0, 3000, 95,
+         "Nora NSIC-401QAT + NS-40P + Soraa Vivid PAR20 25 deg: kitchen work zones.",
+         damp_rated=True),
     # B/B1/B2: showers and tubs. The same housing behind the lensless wet trim.
     _can("ED-T-LT-CAN4-WET", "B", '4" recessed can, wet, white shower baffle, PAR20 3000K',
          _SHOWER, "PROD-BULBRITE-PAR20-90-30K", 6.5, 500.0, 3000, 90,
@@ -103,7 +111,8 @@ AMBIENT_LUMINAIRE_TYPES = (
          _SHOWER, "PROD-BULBRITE-PAR20-90-27K", 6.5, 480.0, 2700, 90,
          "Mark B with a 2700 K lamp, on BATH2's evening dimmer inside the shower glass.",
          **_WET),
-    LuminaireType(tag="ED-T-LT-WAFER4", name='4" wafer downlight, deep regressed, wet',
+    LuminaireType(tag="ED-T-LT-WAFER4",
+                  replaceable_lamp=False, name='4" wafer downlight, deep regressed, wet',
                   form=LuminaireForm.RECESSED_CAN, type_mark="C",
                   footprint=(inch(5), inch(5)), height=inch(2.25), plan_symbol="recessed-can",
                   lamp="LED integrated, canless, set to 3000K", watts=14.5, lumens=900.0,
@@ -113,7 +122,8 @@ AMBIENT_LUMINAIRE_TYPES = (
                          "roof bay, a soffit, a run the layout cannot dodge)."),
 
     # --- D: flat panels (kitchen, fitness, workshop) ----------------------------------
-    LuminaireType(tag="ED-T-LT-PANEL", name="2x4 LED flat panel, surface kit, 4000K",
+    LuminaireType(tag="ED-T-LT-PANEL",
+                  replaceable_lamp=False, name="2x4 LED flat panel, surface kit, 4000K",
                   form=LuminaireForm.PANEL, type_mark="D",
                   footprint=(inch(47.75), inch(23.75)), height=inch(2.5),
                   plan_symbol="panel-light", lamp="LED integrated, 0-10V", watts=60.0,
@@ -134,7 +144,8 @@ AMBIENT_LUMINAIRE_TYPES = (
     # dots anyway. COB is a continuous phosphor strip with NO discrete emitters: dot-free in
     # a shallow channel with a light lens, and it does not pay the 15-30% (opal) or 40-60%
     # (smoked) lumen tax a deep diffuser charges.
-    LuminaireType(tag="ED-T-LT-STRIP24", name="24V COB LED tape in aluminium cove channel",
+    LuminaireType(tag="ED-T-LT-STRIP24",
+                  replaceable_lamp=True, name="24V COB LED tape in aluminium cove channel",
                   form=LuminaireForm.STRIP, type_mark="E",
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
                   lamp="LED tape, 24V DC, COB", watts_per_ft=3.0, lumens=250.0,
@@ -149,17 +160,52 @@ AMBIENT_LUMINAIRE_TYPES = (
     # vanity, the over-toilet cabinet and in the ceiling over the tub. Soft, low, widespread: the
     # evening layer, on the dimmer with the halo mirror. Prices on its own
     # [light_run_materials] keys.
-    LuminaireType(tag="ED-T-LT-STRIP24-2700",
+    LuminaireType(tag="ED-T-LT-STRIP24-2700", replaceable_lamp=True,
                   name="24V COB LED tape, 2700K, damp, in aluminium channel",
                   form=LuminaireForm.STRIP, type_mark="E3",
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
                   lamp="LED tape, 24V DC, COB, silicone-coated", watts_per_ft=3.0,
                   lumens=230.0, cct_k=2700, cri=90, voltage=24, dimmable=True,
                   damp_rated=True,
-                  product_ref="PROD-ARMACOST-RIBBONFLEX-COB",
+                  product_ref="PROD-ARMACOST-RIBBONFLEX-COB-2700",
                   source="Armacost RibbonFlex Pro 24V COB family in 2700K, silicone-coated "
                          "for a damp room (confirm the damp SKU). Toe kick, cabinet underside "
                          "and ceiling over the tub in RM-M-BATH2."),
+
+    # --- E4/E5/E6: the 2026-10-31 review's tape variants ------------------------------
+    # E4: the lounge and dining coves in RGB+CCT. The white channels carry the room; colour
+    # is a scene. Fed by a non-dimming HLG driver through a 5-in-1 controller, which dims.
+    LuminaireType(tag="ED-T-LT-STRIP24-RGBCCT",
+                  replaceable_lamp=True, color_mode="rgbcct", cct_range_k=(2700, 6500),
+                  name="24V RGB+CCT COB LED tape in the shadow-gap reveal",
+                  form=LuminaireForm.STRIP, type_mark="E4",
+                  footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
+                  lamp="LED tape, 24V DC, RGB+CCT COB, 12 mm", watts_per_ft=5.0, lumens=300.0,
+                  cct_k=3000, cri=90, voltage=24, dimmable=True,
+                  product_ref="PROD-SLL-COB-RGBCCT-24V",
+                  source="SuperLightingLED DC24V RGB+CCT COB, 12 mm, white channels 2700-6500 K "
+                         "CRI 90+; GL-C-001P controller in RGBCCT mode."),
+    # E5: the bath night light under the vanity toe or bottom rail. Fixed 2200 K, low and
+    # warm so it does not wake anybody; a PIR automation runs it (notes/smart_home.md).
+    LuminaireType(tag="ED-T-LT-STRIP24-NIGHT", replaceable_lamp=True,
+                  name="24V COB night-light tape, 2200K, damp, frosted channel",
+                  form=LuminaireForm.STRIP, type_mark="E5",
+                  footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
+                  lamp="LED tape, 24V DC, COB, 2200 K, silicone-coated", watts_per_ft=1.5,
+                  lumens=70.0, cct_k=2200, cri=90, voltage=24, dimmable=False,
+                  damp_rated=True, product_ref="PROD-COB-24V-2200K-DAMP",
+                  source="24V COB 2200 K, ~70 lm/ft, silicone-coated, frosted channel."),
+    # E6: the second-floor hall cove in tunable white, with a low warm night preset.
+    LuminaireType(tag="ED-T-LT-STRIP24-TUNABLE",
+                  replaceable_lamp=True, color_mode="tunable", cct_range_k=(2700, 6500),
+                  name="24V tunable-white COB LED tape in the shadow-gap reveal",
+                  form=LuminaireForm.STRIP, type_mark="E6",
+                  footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
+                  lamp="LED tape, 24V DC, tunable-white COB, 10 mm", watts_per_ft=3.0,
+                  lumens=250.0, cct_k=2700, cri=90, voltage=24, dimmable=True,
+                  product_ref="PROD-SLL-COB-CCT-24V",
+                  source="SuperLightingLED DC24V tunable COB 2700-6500 K, CRI 90+; GL-C-001P "
+                         "in CCT mode. cct_k is the warm (night) end."),
 
     # --- E1: the shower niche's lit shelf ---------------------------------------------
     # ZERO INSTANCES since 2026-10-12: both niches were dropped (notes/superseded/
@@ -184,8 +230,8 @@ AMBIENT_LUMINAIRE_TYPES = (
 
     # --- U: the kitchen's under-cabinet task tape -------------------------------------
     # A SEPARATE TYPE FROM E, NOT A LONGER RUN OF IT, and the whole reason is output.
-    # ED-T-LT-STRIP24 is cove tape: 3 W/ft lands near 120 lm/ft, which is right for washing
-    # a ceiling and is not a task light. A work counter wants 350-500 lm/ft — 4 to 6 W/ft —
+    # ED-T-LT-STRIP24 is cove tape: 3 W/ft, ~250 lm/ft through the lens (Armacost lists 315
+    # bare), right for washing a ceiling and not a task light. A work counter wants 350-500 lm/ft — 4 to 6 W/ft —
     # so this is 5 W/ft at roughly 400 lm/ft. Same 24V family so it shares the PSU idiom and
     # the per-lineal-foot pricing; a separate mark so a future reader cannot "simplify" the
     # cove tape and the task tape into one row, which would either underlight the counter or
@@ -205,7 +251,7 @@ AMBIENT_LUMINAIRE_TYPES = (
     # number hides — earns money. The run is ~16 ft, so the upgrade costs about eighty
     # dollars: the best-value splurge in the schedule. Mount at the cabinet's FRONT edge;
     # back-mounted tape lights the backsplash and leaves the working counter dark.
-    LuminaireType(tag="ED-T-LT-STRIP24-TASK",
+    LuminaireType(tag="ED-T-LT-STRIP24-TASK", replaceable_lamp=True,
                   name="24V COB LED task tape in aluminium channel, CRI 95",
                   form=LuminaireForm.STRIP, type_mark="U",
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
@@ -214,6 +260,19 @@ AMBIENT_LUMINAIRE_TYPES = (
                   product_ref="PROD-DIODE-VALENT-X",
                   source="Diode LED VALENT X, 3000K, 95+ CRI / R9 90+, behind a light "
                          "rail/valance at the cabinet nose."),
+    # U1: the owner's preferred under-cabinet light, IKEA MITTLED, fixed white on its own
+    # TRADFRI driver. ~208 lm/ft at 2700 K against U's ~400 at 3000 K: U stays as the
+    # fallback if the counter reads short (the 2026-10-31 rule: keep MITTLED unless it falls
+    # well short of ~300 lm/ft). Billed by the foot as tape, like the closet's OVERSIDAN.
+    LuminaireType(tag="ED-T-LT-MITTLED",
+                  replaceable_lamp=False, name="IKEA MITTLED LED countertop strip, dimmable",
+                  form=LuminaireForm.STRIP, type_mark="U1",
+                  footprint=(inch(0.75), inch(0.5)), height=inch(0.4),
+                  lamp="LED integrated strip, IKEA 24V system", watts_per_ft=2.8, lumens=208.0,
+                  cct_k=2700, cri=90, voltage=24, dimmable=True,
+                  product_ref="PROD-IKEA-MITTLED",
+                  source="IKEA MITTLED: CRI > 90, 2700 K, 60 cm 410 lm / 5.5 W. TRADFRI 30 W "
+                         "driver; Dirigera (Matter bridge) or plain on/off at the receptacle."),
 
     # --- W: the garage's exterior linear (eave soffits + the north gable) --------------
     # ** COMMODITY PARTS, STANDARD SIZE, 24V (2026-10-28). ** The WAC InvisiLED kit was
@@ -228,16 +287,20 @@ AMBIENT_LUMINAIRE_TYPES = (
     # ** full_cutoff IS A MOUNTING INSTRUCTION AS MUCH AS A PRODUCT ATTRIBUTE. ** Aperture
     # DOWN: `advisory.dark_sky_lighting` exempts the soffit runs and grades the gable run on
     # this flag, so the flag and the detail must stay in step.
-    LuminaireType(tag="ED-T-LT-LINEAR-EXT", name="Exterior 24V COB tape in clear channel, IP67",
+    # ** RGBW SINCE 2026-10-31 ** (owner): W = 3000 K holds the dark-sky white line; colour
+    # is for occasions. One GL-C-001P (RGBW mode) beside each driver. The single-white
+    # SK-512BB10 is the revert.
+    LuminaireType(tag="ED-T-LT-LINEAR-EXT",
+                  replaceable_lamp=True,
+                  color_mode="rgbw", name="Exterior 24V RGBW COB tape in clear channel, IP67",
                   form=LuminaireForm.STRIP, type_mark="W",
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.25),
-                  lamp="COB LED tape, 24V DC, IP67 silicone tube, in a 1/2 in. U-channel",
-                  watts_per_ft=3.0, lumens=350.0, cct_k=3000, cri=90, voltage=24,
-                  dimmable=False, damp_rated=True, wet_rated=True, full_cutoff=True,
-                  product_ref="PROD-SLL-SK512BB10-IP67-30",
-                  source="SuperLightingLED SK-512BB10DDWWZZ, IP67 tube option (retailer "
-                         "page): 10 W/m, 1,150 lm/m at 3000 K, CRI 90+, -20 to +50 C; "
-                         "generic aluminium U-channel, clear cover, aperture down."),
+                  lamp="RGBW COB LED tape, 24V DC, IP67 silicone tube, in a 1/2 in. U-channel",
+                  watts_per_ft=4.5, lumens=300.0, cct_k=3000, cri=90, voltage=24,
+                  dimmable=True, damp_rated=True, wet_rated=True, full_cutoff=True,
+                  product_ref="PROD-SLL-COB-RGBW-IP67-30",
+                  source="SuperLightingLED 24V RGBW COB, IP67 tube, W 3000 K; generic "
+                         "aluminium U-channel, clear cover, aperture down. CONFIRM W/ft."),
 
     # --- X: the sauna's under-bench tape (2026-09-13) ---------------------------------
     # ** THIS REPLACES THE FIBRE-OPTIC KIT, AND THE REASON IS MONEY, NOT PHYSICS. **
@@ -266,7 +329,7 @@ AMBIENT_LUMINAIRE_TYPES = (
     # `electrical.wet_location` walks LightRuns as well as point fixtures (the E1 precedent).
     # No ports, no plan_symbol, no load_va — a run is named by a LightRun and fed by a PSU,
     # the same convention E / E1 / U follow.
-    LuminaireType(tag="ED-T-LT-STRIP24-SAUNA", type_mark="X",
+    LuminaireType(tag="ED-T-LT-STRIP24-SAUNA", replaceable_lamp=True, type_mark="X",
                   name="Sauna under-bench LED strip, 24V IP68 silicone",
                   form=LuminaireForm.STRIP,
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
@@ -286,7 +349,8 @@ AMBIENT_LUMINAIRE_TYPES = (
     # Two 45" bars at full output over the plants at the south windows (owner, 2026-10-28).
     # UL 8800 is the listing NEC 410 Part XVI asks of horticultural equipment. DAMP, not wet:
     # the plant-room lights are never misted.
-    LuminaireType(tag="ED-T-LT-GROW-BAR", name='45" horticultural LED grow bar, UL 8800, damp',
+    LuminaireType(tag="ED-T-LT-GROW-BAR",
+                  replaceable_lamp=False, name='45" horticultural LED grow bar, UL 8800, damp',
                   form=LuminaireForm.LINEAR_TUBE, type_mark="F",
                   footprint=(inch(44.78), inch(2.5)), height=ft(2, 3),
                   plan_symbol="suspended-flat-bar",
@@ -297,7 +361,8 @@ AMBIENT_LUMINAIRE_TYPES = (
                          "damp; hung on its safety cable. CCT and hanger kit CONFIRM."),
 
     # --- G: the suite's over-bed wall lamp --------------------------------------------
-    LuminaireType(tag="ED-T-LT-WALL-LINEAR", name='24" linear LED wall light, brushed black',
+    LuminaireType(tag="ED-T-LT-WALL-LINEAR",
+                  replaceable_lamp=False, name='24" linear LED wall light, brushed black',
                   form=LuminaireForm.WALL_LAMP, type_mark="G",
                   footprint=(inch(24), inch(2)), height=inch(4), plan_symbol="linear-light",
                   lamp="LED integrated, ELV", watts=22.0, lumens=1140.0, cct_k=3000, cri=90,
@@ -311,18 +376,20 @@ AMBIENT_LUMINAIRE_TYPES = (
     # the bay: each bay is lit from both sides, so the gable shades nothing. A WALL_LAMP and
     # not a LightRun because a vertical run has no length in plan (``LightRun.path`` is plan
     # only): the body's base is the mount elevation and ``height`` measures up from it.
-    # Shop-fitted to the ply, so no wall box. Sized so all four (24 ft at 1.9 W/ft, 45.6 W)
-    # sit inside 80% of one 60 W OMNIDRIVE X, ED-M-PANTRY-LT-PSU.
-    LuminaireType(tag="ED-T-LT-JAMB72", name='72" vertical 45-degree LED channel, shelf jamb',
+    # Shop-fitted to the ply, so no wall box. Generic 90-CRI COB since 2026-10-31 (VALENT X
+    # was over-spec for a pantry): mark E's tape, so all four (24 ft at 3 W/ft, 72 W) want
+    # the 200 W OMNIDRIVE X, ED-M-PANTRY-LT-PSU.
+    LuminaireType(tag="ED-T-LT-JAMB72",
+                  replaceable_lamp=True, name='72" vertical 45-degree LED channel, shelf jamb',
                   form=LuminaireForm.WALL_LAMP, type_mark="T",
                   footprint=(inch(0.75), inch(0.75)), height=ft(6), plan_symbol="linear-light",
-                  lamp="24V COB tape, 1.9 W/ft, in a 45-degree channel, remote driver",
-                  watts=11.4, lumens=1050.0, cct_k=3000, cri=95, voltage=24, dimmable=True,
-                  device_box=False, product_ref="PROD-DIODE-VALENT-X",
+                  lamp="24V COB tape, 3 W/ft, in a 45-degree channel, remote driver",
+                  watts=18.0, lumens=1500.0, cct_k=3000, cri=90, voltage=24, dimmable=True,
+                  device_box=False, product_ref="PROD-ARMACOST-RIBBONFLEX-COB",
                   parts=(ProductPart(role="frame", product_ref="PROD-DIODE-S45-CHANNEL",
                                      length=inch(72)),),
-                  source="Diode LED VALENT X 1.9 W/ft (DI-24V-VLX2 series; ~190-210 lm/ft as "
-                         "listed, less the frosted lens) in an S45 channel cut to 72 in."),
+                  source="Armacost RibbonFlex Pro 24V COB 3000 K (mark E's tape) in a "
+                         "standard 45-degree channel cut to 72 in."),
 )
 
 
@@ -358,6 +425,30 @@ LIGHTING_DEVICE_TYPES = (
                          product_ref="PROD-MEANWELL-HLG-100H-24A",
                          source="Mean Well HLG-100H-24A: 96 W, 24 V / 4 A, IP65, UL 8750, "
                                 "228 x 68 x 38.8 mm, not dimmable."),
+    # The bath night lights (E5): a few watts of fixed tape each, so a 20 W driver, not a
+    # 60 W OMNIDRIVE counted at nameplate on the lighting circuit.
+    ElectricalDeviceType(tag="ED-T-LT-PSU-20", name="24V LED driver, 20 W, IP67",
+                         footprint=(inch(6.5), inch(1.7)), height=inch(1.4),
+                         load_va=20.0, output_voltage=24, ports=_POWER_120,
+                         product_ref="PROD-MEANWELL-LPV-20-24",
+                         source="Mean Well LPV-20-24: 20 W, 24 V, IP67, Class 2, not dimmable."),
+    # Coloured and tunable runs (E4, E6, W): a non-dimming HLG driver feeds a controller.
+    ElectricalDeviceType(tag="ED-T-LT-PSU-150-HLG", name="24V LED driver, 150 W, IP65",
+                         footprint=(inch(9.4), inch(2.7)), height=inch(1.5),
+                         load_va=150.0, output_voltage=24, ports=_POWER_120,
+                         product_ref="PROD-MEANWELL-HLG-150H-24A",
+                         source="Mean Well HLG-150H-24A: 150 W, 24 V, IP65, not dimmable."),
+    ElectricalDeviceType(tag="ED-T-LT-PSU-240-HLG", name="24V LED driver, 240 W, IP65",
+                         footprint=(inch(9.8), inch(2.7)), height=inch(1.7),
+                         load_va=240.0, output_voltage=24, ports=_POWER_120,
+                         product_ref="PROD-MEANWELL-HLG-240H-24A",
+                         source="Mean Well HLG-240H-24A: 240 W, 24 V, IP65, not dimmable."),
+    # The controller is on the 24V side: no branch circuit, no load of its own worth summing.
+    ElectricalDeviceType(tag="ED-T-LT-CTRL-5IN1", name="5-in-1 Zigbee LED controller, 12-54 V",
+                         footprint=(inch(4.5), inch(1.8)), height=inch(0.9),
+                         needs=frozenset(), product_ref="PROD-GLEDOPTO-GL-C-001P",
+                         source="Gledopto GL-C-001P, set once to RGBCCT (E4), CCT (E6) or "
+                                "RGBW (W). Beside its driver, accessible."),
 )
 
 

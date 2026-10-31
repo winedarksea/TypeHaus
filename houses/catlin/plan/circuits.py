@@ -340,7 +340,7 @@ CIRCUITS = (
             backup_shed_poe=("ED-M-DOORBELL", "ED-M-CAM-PORCH", "ED-BW-CAM-CANOPY"),
             description="Basement outlet 1: HA server + router + PoE switch"),
     # load_va is None: the luminaires carry real typed loads and the panel-schedule takeoff
-    # sums the fixtures actually on the circuit (782 VA today, 558 before 2026-08-24). 0.15
+    # sums the fixtures actually on the circuit (~723 VA on 2026-10-31, mid-review). 0.15
     # is about five hours of the twenty-four with roughly two thirds of those fixtures lit —
     # an outage evening in the kitchen and the mechanical room while the rest of the house
     # stays dark.
@@ -435,19 +435,25 @@ CIRCUITS = (
             description="Laundry receptacle (washer)"),
     # The garage's exterior linear runs landed here on 2026-09-11: LR-G-EAVE-W/-E (24'-0"
     # each, in the two eave soffits) and LR-G-GABLE-N (~25'-5" raked up the north gable's rake
-    # soffits), ~73 LF of ED-T-LT-LINEAR-EXT (24V since 2026-10-28, one driver per run). They are on this circuit rather than CKT-RC-GARAGE for
+    # soffits), ~73 LF of ED-T-LT-LINEAR-EXT (24V RGBW, one driver + controller per run). They are on this circuit rather than CKT-RC-GARAGE for
     # the same reason ED-G-LT1/2/3 are: a tool tripping a garage GFCI must not take the
     # lights with it. The panel schedule sums their drivers like any device, so no `load_va` is authored here — an authored
     # value preempts the derivation and would freeze the thirty-eight fixtures against a
     # number nobody re-adds when a can moves.
-    # ** 20 A SINCE 2026-10-28 (12 AWG). ** Mark W went 24V on three 96 W drivers, which sum
-    # at their rating (288 VA against ~184 W of tape), and the cans went to 14.5 W: the
-    # branch reached ~1,510 VA against a 15 A circuit's 1,440 VA continuous limit.
+    # ** 20 A SINCE 2026-10-28 (12 AWG). ** Mark W's drivers sum at their rating, now three
+    # HLG-150s for the RGBW tape (450 VA against ~330 W), and the garage has five shop lights:
+    # ~1,890 VA on 2026-10-31, near a 20 A circuit's 1,920 VA continuous line. The next
+    # addition here wants a garage lighting circuit of its own.
     Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", slot=38, panel_ref=_PANEL, breaker_amps=20, poles=1,
             afci=True,
             description="General lighting — main storey, porch and garage (incl. the garage's exterior linear runs); + EQ-M-BATH2-STALL-FAN ~30 VA, an Equipment the derived sum does not count"),
     Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", slot=43, panel_ref=_PANEL, breaker_amps=15, poles=1,
             afci=True, description="General lighting — second + attic"),
+    # The basement's work light (2026-10-31): the workshop, gym and furnace-room T8 strips
+    # plus the stair's tread night lights and the gym fan. Off the backup tier on purpose: a strip is
+    # not outage light, and the cans beside them stay on CKT-LT-BACKUP. Slot 26 was spare.
+    Circuit(uid="J3RFM1RVCW", tag="CKT-LT-BSMT", slot=26, panel_ref=_PANEL, breaker_amps=15,
+            poles=1, afci=True, description="Basement work lighting — workshop, gym, furnace room (T8 strips), stair night lights, gym fan"),
     # The two storey receptacle circuits stay non-GFCI at the breaker on purpose: each
     # reaches a whole floor, and thirty outlets behind one 5 mA trip is not buildable.
     # The handful in an E3902 location (bath, mudroom sink, wet bar) are GFCI *devices*

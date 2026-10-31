@@ -119,12 +119,12 @@ BASEMENT_DEVICES = [
     # comment and the height on ED-T-LT-FAN52-FLUSH are the only guard.
     # ** OFF THE BACKUP TIER SINCE 2026-10-28: ** the product upgrade (14.5 W cans, 60 W panels)
     # took CKT-LT-BACKUP 0.18 kWh short of `cycle_48h.sustains_always_on`. A lightless fan is
-    # the least essential load on the always-on lighting tier, so it moved to CKT-LT-MAIN
-    # (non-backup). It is an AC fan (Hunter's sheet; not DC) on constant hot with its
-    # included wall control, so ED-B-GYM-SW (still the cans', on CKT-LT-BACKUP) no longer
-    # switches it.
+    # the least essential load on the always-on lighting tier, so it moved off it, and since
+    # 2026-10-31 it is on CKT-LT-BSMT, the basement's non-backup lighting circuit. It is an AC
+    # fan (Hunter's sheet; not DC) with no lamp, on constant hot with its included wall
+    # control, so ED-B-GYM-SW (the cans', on CKT-LT-BACKUP) does not switch it.
     ElectricalDevice(uid="CED010K1AA", tag="ED-B-GYM-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27), ft(9)), type_ref="ED-T-LT-FAN52-FLUSH", circuit="CKT-LT-MAIN",
+                     position=pt(ft(27), ft(9)), type_ref="ED-T-LT-FAN52-FLUSH", circuit="CKT-LT-BSMT",
                      room="RM-B-GYM",
                      mount=Mount(kind=MountKind.CEILING, drop=inch(10.5625))),
     ElectricalDevice(uid="CED010K2AA", tag="ED-B-GYM-SW", kind=DeviceKind.SWITCH,
@@ -140,6 +140,8 @@ MAIN_DEVICES = [
                      position=pt(ft(27, 4), ft(7, 4)), type_ref="ED-T-LT-CAN4-PREM", circuit="CKT-LT-MAIN",
                      room="RM-M-LIVING", controlled_by=("ED-M-LIVING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # Group B, the lounge downlights (LT, CAN5, CAN6), one gang of the 4-gang station whose
+    # other three are in plan/lighting_living.py.
     ElectricalDevice(uid="CED001K2AA", tag="ED-M-LIVING-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER", circuit="CKT-LT-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
@@ -156,10 +158,11 @@ MAIN_DEVICES = [
     # 4" of clear wall to the strike side of the new RO at 14'-2". After the 2026-10-03 bed
     # move, this switch sits 2 1/8" east of the bed's east face in the 8 1/8" strip before
     # the RO; at 48" AFF it clears the furniture. Half the 3-way with ED-M-BED-SW2 at
-    # D-M-BED2 (plan/lighting.py), both on CKT-LT-MAIN: a switch on another circuit than its
-    # load FAILs electrical.lighting_controls (NEC 210.7).
+    # D-M-BED2 (plan/lighting_main.py), both on CKT-LT-MAIN: a switch on another circuit than
+    # its load FAILs electrical.lighting_controls (NEC 210.7). A plain 3-way since 2026-10-31;
+    # ED-M-BED-SCONCE-E's body ends 1/2" west of this box.
     ElectricalDevice(uid="CED002K2AA", tag="ED-M-BED-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LUT-DIVA", circuit="CKT-LT-MAIN",
+                     type_ref="ED-T-LEV-SW3", circuit="CKT-LT-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BDN2", face="right", distance_from_start=inch(66),

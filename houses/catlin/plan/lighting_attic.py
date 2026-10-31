@@ -12,6 +12,7 @@
 from typehaus import (
     DeviceKind,
     ElectricalDevice,
+    LightRun,
     Mount,
     MountKind,
     deg,
@@ -123,25 +124,44 @@ ATTIC_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C2M", face="right", distance_from_start=inch(38),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # Two keyless lampholders (2026-10-31) on the rafters at x=20'-6", 2'-6" off the centre
+    # wall, where the 6:12 underside is 7'-10 1/2" and the 5 1/2" holder hangs to 7'-5": light
+    # into the storage the wall sconces leave dark. Same switch.
+    ElectricalDevice(uid="2S0EP92C13", tag="ED-A-EAST-LT2", kind=DeviceKind.LIGHT,
+                     position=pt(ft(20, 6), ft(17)), type_ref="ED-T-LT-KEYLESS",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
+                     controlled_by=("ED-A-EAST-SW",),
+                     mount=Mount(kind=MountKind.CEILING, elevation=inch(89))),
+    ElectricalDevice(uid="S4AY538D7V", tag="ED-A-EAST-LT3", kind=DeviceKind.LIGHT,
+                     position=pt(ft(20, 6), ft(27)), type_ref="ED-T-LT-KEYLESS",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
+                     controlled_by=("ED-A-EAST-SW",),
+                     mount=Mount(kind=MountKind.CEILING, elevation=inch(89))),
 
     # RM-A-STUDY: the second of the notes' two studies. The stair sconce lights ST-S2A's
     # landing at the top of the flight.
     #
-    # The study's two cans join ED-A-STUDY-SPOT on the centre wall's east face, at
-    # y=4'-6" and (in plan/mep_electrical.py) y=8'-0", above SPOT's own 2'-3" station and
-    # its 4'-0" mount, so the three read as one vertical family rather than two ceiling
-    # holes and a spot.
+    # Three up/down sconces (mark H, 680 lm) on the centre wall's east face at y=2'-5",
+    # 3'-4" (ED-A-STUDY-LT, plan/mep_electrical.py) and 4'-6", over the desk; SPOT is below
+    # at 2'-3", 4'-0". SCONCE3's box shares the 16"-32" stud bay with ED-A-STUDIO-WALL1's
+    # (studio face, 24"), so it sits 5" north of it. W-A-C1 ends at 5'-7"; D-A-HALVES is past it.
     # ** RM-A-STUDY PASSES R303.1 ON GLAZING, NOT ON EXCEPTION 1, so no lumen floor binds
     # here — but by 0.4 sf (13.6 sf against 8% of 165.1 = 13.2 sf), so it is one window
-    # change away from binding. ** After this swap the room still holds 2,400 lm against the
-    # 2,064 Exception 1 would ask for, which is the margin that made a two-for-two swap
-    # acceptable instead of a three-for-two.
+    # change away from binding. ** Two H, the spot and the stair sconce were 2,047 lm against
+    # the 2,064 Exception 1 would ask for; SCONCE3 (2026-10-31) restores 2,727 lm, 32% clear.
     ElectricalDevice(uid="QTA0005AAA", tag="ED-A-STUDY-SCONCE2", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-UD",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDY", controlled_by=("ED-A-STUDY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C1", face="right", distance_from_start=inch(54),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="H26W7D1G7P", tag="ED-A-STUDY-SCONCE3", kind=DeviceKind.LIGHT,
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", controlled_by=("ED-A-STUDY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C1", face="right", distance_from_start=inch(29),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # On the CENTRE wall (W-A-C1, x=18'-0"), study side — x 18'-5 3/8" is that wall's
     # study-side finish face plus a sconce body's own reveal — at 2'-3" in y, 4'-0" mount,
@@ -349,17 +369,40 @@ ATTIC_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-BATH-S", face="left", distance_from_start=inch(43.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # Bath night light (2026-10-31; the pattern is plan/lighting_second.py's): E5 under the
+    # SEKTION 24's 5 1/2" bottom. No ceiling bay under the rake and no second gang beside
+    # ED-A-STUBATH-SW (vent riser west, jamb pack east), so relay and PSU share W-A-HALL-S's
+    # west bay, x=10'-10", west of the hand towel bar.
+    LightRun(uid="74Q6JEA2H2", tag="LR-A-STUBATH-NIGHT", type_ref="ED-T-LT-STRIP24-NIGHT",
+             path=(pt(inch(153.625), inch(249.625)), pt(inch(175.625), inch(249.625))),
+             room="RM-A-STUBATH", psu_ref="ED-A-STUBATH-NL-PSU",
+             controlled_by=("ED-A-STUBATH-SW-NL",),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(5.875))),
+    ElectricalDevice(uid="8DW8EBYM0H", tag="ED-A-STUBATH-NL-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-PSU-20",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(12)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-HALL-S", face="right", distance_from_start=inch(10),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="QW45BVQRN7", tag="ED-A-STUBATH-SW-NL", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-MATTER",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-HALL-S", face="right", distance_from_start=inch(10),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # The pocket's light: its old station (14'-0", 30'-0") fell inside FO-A-HALL, open to
-    # the roof with no ceiling to recess into. Retyped can -> ED-T-LT-SHOP4, a 4' surface
-    # strip, damp rated, 4,400 lm — the pocket runs x 0..10' under the west rake (ceiling
-    # 1 1/2" to 5'-1 1/2"), too shallow anywhere for a recessed 4" can. At x=7'-0"
-    # (3'-7 1/2" of ceiling) beside the ERV manifold, satisfying IRC M1305.1.3's light at
-    # the appliance. No `recessed_into_host_surface`: this one is surface mounted.
+    # the roof with no ceiling to recess into. The pocket runs x 0..10' under the west rake
+    # (ceiling 1 1/2" to 5'-1 1/2"), too shallow for a recessed can, and is entered on hands
+    # and knees, so a keyless lampholder with an A19 (Q2, 2026-10-31; the vaportight Q before)
+    # on the rafter at x=8'-9", where the underside is 4'-6": IRC M1305.1.3's light at the
+    # appliance passageway.
     ElectricalDevice(uid="QTA000AAAA", tag="ED-A-POCKET-LT1", kind=DeviceKind.LIGHT,
-                     position=pt(m(2.66693), m(9.14322)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(m(2.66693), m(9.14322)), type_ref="ED-T-LT-KEYLESS",
                      circuit="CKT-LT-UPPER", room="RM-A-POCKET",
                      controlled_by=("ED-A-POCKET-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(3, 4.5)), rotation=deg(90)),
+                     mount=Mount(kind=MountKind.CEILING, elevation=inch(48.5))),
     # ** IT SWITCHES THE POCKET AND IT LIVES IN THE STUDIO, 2026-09-09 — BOTH HALVES. **
     # `room=` names the room the device is IN, not the room it controls, and this box is
     # 1 1/8" off W-A-STU-N's studio-side gypsum (axis y=268", INT_2X4_PARTITION); RM-A-POCKET

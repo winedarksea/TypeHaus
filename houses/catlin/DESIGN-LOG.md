@@ -5093,7 +5093,8 @@ The fix, if it is ever wanted, is one more `ConstructionRule` with
 `CR-LIVING-CEIL-RC`, and nothing else has to move for it.
 
 `RM-B-ESS`, the 20 sf battery closet, also has no luminaire. Not in this pass's scope —
-recorded so it reads as a choice rather than an oversight.
+recorded so it reads as a choice rather than an oversight. **Closed 2026-10-31**: a keyless
+lampholder (Q2) and an inside switch; see "Lighting review" below.
 
 ## 2026-09-16 — BM-SG-BLC goes flush; R507.4 is a flat 14' for a 6x6
 
@@ -6965,3 +6966,37 @@ Four channels (Diode LED S45, VALENT X at 1.9 W/ft) on one 60 W OMNIDRIVE X at 9
 pair are FLOOR mounts at a stated height, because a WALL mount must bear on a wall face.
 The engine gained `BuiltInBookcaseBay.board_tops`, a zero `back_thickness`, and
 `board_material_ref` (oak boards in a ply carcass) for this. `notes/pantry_climbable_shelving.md`.
+
+## Lighting review (2026-10-31)
+
+Owner goals: excellent task light in the kitchen and the (cheap) workshop, makeup light at
+three mirrors, a bath night light, a many-scene living room, replaceable lamps and generic
+tape, day/night layers only where they matter, few dimmers. Owner's calls: bed sconces
+replace the headboard bar; the engine gets type fields and an advisory lux check only;
+kitchen tape stays fixed white, preferably MITTLED; the sweep is the whole house.
+
+- **Scenes need groups.** One relay ran most of the lounge. It is four D215S groups (accents,
+  downlights, day, coves) plus a ZEN32 keypad on the existing Z-Wave stick; the scene table
+  is `notes/smart_home.md`. Coves went RGB+CCT (E4), split at the slat partition so the
+  dining end scenes alone; non-dimming HLG drivers feed a Gledopto 5-in-1 controller, which
+  is Zigbee and so needs the second dongle the smart-home rules already allow.
+- **MITTLED kept although it is ~208 lm/ft at 2700 K**, against the ~300 lm/ft rule: A/A4
+  task cans now stand over every counter run. Mark U (~400 lm/ft) is the revert.
+- **The day layer is 5000 K** (A1 relamped; it was 4000 K) over the puzzle table.
+- **Makeup light is from the front.** RM-S-VANITY's two over-mirror Karlies became three
+  flanking opal sconces at 64" (P6, 95 CRI / R9 90+ lamps); the suite bath takes the 3-light
+  Karlie; every 3000 K Karlie takes the CentricHOME lamp. The bath2 halo's CRI is
+  unpublished: kept, recorded unconfirmed, swap if it reads under 90.
+- **Night lights**: one E5 2200 K strip per bath (seven), each on a 20 W driver and its own
+  Matter relay. The first pass used 60 W OMNIDRIVEs and put `CKT-LT-MAIN` over 80%: a
+  driver counts at nameplate.
+- **The workshop was ~290 lx against 500.** Six Q1 T8 strips (replaceable 95-CRI tubes) on a
+  new non-backup `CKT-LT-BSMT`; four more in the gym, two in the furnace room. The 2x4
+  panels (mark D) are the revert. Backup lighting fell 765 -> 683 VA (`notes/backup_power.md`).
+- **Over-spec trimmed**: the pantry jambs use mark E's tape, the attic pocket a keyless
+  lampholder. The second-floor hall cove is tunable (E6); the garage linear RGBW (W).
+- **Engine**: `LuminaireType` gained `color_mode`, `cct_range_k`, `replaceable_lamp`,
+  `lamp_base`; `advisory.room_illuminance` grades average lux (preference, never FAIL);
+  `electrical.room_lighting` now covers equipment spaces; LightRun products reach
+  `haus order`. Studies stay short of 300 lx by average; a desk lamp is the answer there.
+

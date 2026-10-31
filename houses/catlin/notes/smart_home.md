@@ -150,3 +150,69 @@ the cable warranty survives a non-Schluter thermostat.
 **Recording, alarms, UPS.** No cloud recording plans. The HA host, router and PoE switch share
 `CKT-HA` (ALWAYS_ON); a small UPS for them is the separate backup-battery TODO. On battery the
 doorbell and cameras are shed (rule 6).
+
+## Lighting scenes
+
+RM-M-LIVING's lights (2026-10-31, `plan/lighting_living.py`). The engine models no scenes; this
+table is the HA configuration. Every load is a Leviton D215S relay (on/off) except the coves,
+which dim and colour at their Gledopto GL-C-001P controllers (RGBCCT mode).
+
+| Group | Loads | Control |
+|---|---|---|
+| A accents | gimbals `ED-M-LIVING-CAN2`-`4` (mantel, curtains) | `ED-M-LIVING-SW-ACCENT` |
+| B downlights | `ED-M-LIVING-LT`, `-CAN5`, `-CAN6` | `ED-M-LIVING-SW` |
+| C day | `ED-M-LIVING-CAND1`/`2`, 5000 K over the puzzle table | `ED-M-LIVING-SW-DAY` |
+| D coves | lounge `LR-M-LIVING-W`/`-E` and dining `LR-M-DINING-W`/`-E`, E4 RGB+CCT | `ED-M-LIVING-SW-COVE` (both HLG drivers) + `ED-M-LIVING-LT-CTRL` / `ED-M-DINING-LT-CTRL` |
+| Pendant | `ED-M-DINING-PEND` (dims by its own remote) | `ED-M-DINING-SW` |
+| Kitchen | perimeter `ED-M-KITCH-CAN1`/`2`/`3`/`5`/`9`/`10`; peninsula `-CAN4`/`6`/`7`/`8` | `ED-M-KITCH-SW` / `ED-M-KITCH-SW-PEN` |
+| Under-cabinet | MITTLED on its TRADFRI's switched outlet `ED-M-KITCH-UC-RC` | `ED-M-KITCH-SW-UC` |
+
+| Scene | A | B | C | Lounge coves | Dining coves | Pendant | Kitchen / peninsula / UC |
+|---|---|---|---|---|---|---|---|
+| Fireplace | on | off | off | 2200 K, 15% | off | off | off / off / off |
+| Evening | on | off | off | 2700 K, 40% | 2700 K, 25% | low | off / off / on |
+| Dinner | on | off | off | 2700 K, 20% | 2700 K, 50% | on | off / off / on |
+| Social | on | on | off | 3000 K, 60% | 3000 K, 60% | on | off / on / on |
+| Day / work | off | on | on | 5000 K, 100% | 5000 K, 60% | off | unchanged |
+| Cooking | unchanged | unchanged | unchanged | unchanged | unchanged | unchanged | on / on / on |
+| Night path | off | off | off | amber, 5% | amber, 5% | off | off / off / off |
+| Party | on | off | off | colour, slow fade | colour, slow fade | low | off / on / on |
+
+- **Keypad** `ED-M-LIVING-KEYPAD` (Zooz ZEN32, beside the kitchen switches on `W-M-C3`): big
+  button Evening, double-tap all lounge and dining off; small buttons Fireplace, Dinner,
+  Social, Day/work; a double-tap on Fireplace is Party, on Day/work Night path. Cooking stays
+  on the kitchen paddles. It joins the existing Z-Wave 800 LR stick (Z-Wave JS, local); its
+  relay is unwired, so set it to scene-only.
+- **The coves need Zigbee.** The GL-C-001P is a Zigbee controller, so the coves take the second
+  dongle rule 2 allows, on ZHA. MITTLED's TRADFRI driver can pair there too to dim; no DIRIGERA.
+- **Leave `ED-M-LIVING-SW-COVE` on.** The controllers do on/off, so a scene has no boot lag;
+  the paddle is the hard off. Set both controllers' power-on state to "previous".
+- **Night path is the warm layer**: amber at 5% only, never a white channel. The day layer is
+  the 5000 K cans plus the coves' white channels at 5000 K.
+- **Check items.** The dining pendant must come back at its last state when its relay powers
+  it, or a scene "on" leaves it dark; bench it before the trim-out. Confirm each D215S's
+  power-on behaviour after an outage.
+- **HA down**: every D215S paddle still switches its group; the keypad does nothing; the coves
+  return at their last setting. Kitchen and under-cabinet ride `CKT-LT-BACKUP`; the lounge does not.
+
+## Bath night lights
+
+Added 2026-10-31. Every bath has one, all built the same way: E5 2200 K tape (`ED-T-LT-STRIP24-NIGHT`, about 70 lm/ft, damp-rated, fixed CCT) in a frosted channel under the vanity. Each bath has its own `ED-T-LT-PSU-60` and its own D215S relay (`ED-T-LEV-MATTER`, Matter over Wi-Fi). Each relay sits on the same circuit as that bath's other lights.
+
+| Bath | Run | PSU | Relay |
+|---|---|---|---|
+| B-BATH | `LR-B-BATH-NIGHT` | `ED-B-BATH-NL-PSU` | `ED-B-BATH-SW-NL`, on `CKT-LT-BACKUP` |
+| M-BATH1 | `LR-M-BATH1-NIGHT`, on the wall under the basin | `ED-M-BATH1-NL-PSU` | `ED-M-BATH1-SW-NL` |
+| M-BATH2 | `LR-M-BATH2-TOEKICK` | `ED-M-BATH2-NL-PSU` | `ED-M-BATH2-SW-NL` |
+| S-VANITY | `LR-S-VANITY-NIGHT` | `ED-S-VANITY-NL-PSU` | `ED-S-VANITY-SW-NL` |
+| S-SUITEBATH | `LR-S-SUITEBATH-NIGHT` | `ED-S-SUITEBATH-NL-PSU` | `ED-S-SUITEBATH-SW-NL` |
+| S-BATH1 | `LR-S-BATH1-NIGHT` | `ED-S-BATH1-NL-PSU` | `ED-S-BATH1-SW-NL` |
+| A-STUBATH | `LR-A-STUBATH-NIGHT` | `ED-A-STUBATH-NL-PSU` | `ED-A-STUBATH-SW-NL` |
+
+- **The motion sensor.** Each bath gets one battery PIR on the Zigbee dongle (ZHA). It is not modelled. Mount it high, aimed at the door and the vanity, and keep it out of the shower's view.
+- **The automation** is one HA automation per bath:
+  - **Turn on** when motion is seen between 22:00 and 07:00.
+  - **Turn off** after 3 minutes with no motion.
+  - If the bath's main switch comes on, the night light stays on and still times out.
+- **When HA is down**, the relay paddle still switches the night light by hand. Set each relay's power-on state to "off", so the tape doesn't light the whole night after an outage.
+- **Nothing dims.** E5 is fixed at its low output, and the PSU only switches.

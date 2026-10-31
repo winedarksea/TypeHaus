@@ -35,7 +35,8 @@ def _markdown(listing: dict[str, list[dict[str, Any]]], brand: str | None) -> st
     brands = sorted({item["brand"] for item in items})
     blocks = [heading(f"{brand or 'Parts'} order list"),
               "Units are what the model counts; packs round each up to the retail pack. "
-              "Linear stock (rail, toe kick) is whole sticks per touching run. A view of "
+              "Linear stock (rail, toe kick) is whole sticks per touching run; a light run "
+              "is whole strip pieces. A view of "
               "the takeoff, not an addition to it."]
     for name in brands:
         blocks += [heading(name, 2), table(
@@ -95,9 +96,10 @@ def order(
         return
     for item in listing["items"]:
         length = f" ({item['length_ft']} ft)" if item.get("length_ft") else ""
+        note = f"  [yellow]{item['note']}[/yellow]" if item.get("note") else ""
         console.print(f"  {item['brand']:<11} {item['article'] or '?':<12} "
                       f"{item['packs']:>3} pk / {item['units']:>3} u{length}  "
-                      f"{item['name']}  [dim]{item['unit_price']}[/dim]", soft_wrap=True)
+                      f"{item['name']}  [dim]{item['unit_price']}[/dim]{note}", soft_wrap=True)
     if listing["unresolved"]:
         console.print("[bold yellow]Unresolved[/bold yellow]")
         for row in listing["unresolved"]:

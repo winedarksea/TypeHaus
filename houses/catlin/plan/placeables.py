@@ -29,8 +29,8 @@ BASEMENT_PLACEABLES = [
     # (BASEMENT_8, interior face at x=0'-8" — the pour's inboard face, the foam is all
     # outboard). `rotation=deg(90)` turns FURN-G-WORKBENCH's 30" depth into the wall-to-room
     # dimension, exactly as the garage instance does, so the centre sits 15" off that face at
-    # x=1'-11". Centres at y=6'-0" (under ED-B-WORKSHOP-PANEL1, the "over a bench" panel
-    # that has been naming a bench that did not exist since it was authored) and y=11'-0",
+    # x=1'-11". Centres at y=6'-0" (under the ED-B-WORKSHOP-LT1..3 bench row of Q1 strips)
+    # and y=11'-0",
     # giving one contiguous 10'-0" run from y=3'-6" to y=13'-6" that crosses the sauna's
     # north face at y=10'-0" without stopping at it — the west bay and the north strip are
     # one wall.

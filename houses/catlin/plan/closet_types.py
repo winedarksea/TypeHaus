@@ -157,7 +157,8 @@ CLOSET_FURNITURE_TYPES = (PAX_SHOW, PAX_SHOW_HANG, PAX_DOUBLE_30, CLOSET_CORNER_
 # --- lighting: the PAX strips and their driver (plain mirror in mirror_types.py) --------
 
 CLOSET_LUMINAIRE_TYPES = (
-    LuminaireType(tag="ED-T-LT-PAX-STRIP", name="IKEA OVERSIDAN wardrobe LED strip",
+    LuminaireType(tag="ED-T-LT-PAX-STRIP",
+                  replaceable_lamp=False, name="IKEA OVERSIDAN wardrobe LED strip",
                   form=LuminaireForm.STRIP, type_mark="E2",
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
                   lamp="LED strip, IKEA low-voltage", watts_per_ft=1.5, lumens=116.0,

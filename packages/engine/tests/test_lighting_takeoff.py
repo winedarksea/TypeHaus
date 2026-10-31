@@ -91,9 +91,9 @@ def test_run_lengths_and_watts_sum_from_the_authored_polylines(catlin_model):
     by_type = takeoff["by_type"]
     assert takeoff["total_length_ft"] == pytest.approx(
         sum(row["length_ft"] for row in by_type), abs=0.05 * (len(by_type) + 1))
-    # 3 W/ft is the authored tape; the run watts are that times its own length.
+    # 5 W/ft is the authored RGB+CCT tape (E4); the run watts are that times its length.
     living = by_tag["LR-M-LIVING-W"]
-    assert living["watts"] == pytest.approx(round(living["length_ft"] * 3.0, 1))
+    assert living["watts"] == pytest.approx(round(living["length_ft"] * 5.0, 1))
 
 
 def test_light_run_materials_splits_the_blended_length_into_order_lines(catlin_model):
@@ -107,9 +107,11 @@ def test_light_run_materials_splits_the_blended_length_into_order_lines(catlin_m
 
     strip24 = {run.tag: run for run in catlin_model.light_runs if run.type_ref == "ED-T-LT-STRIP24"}
     surface = {tag: run for tag, run in strip24.items() if run.profile == "surface"}
-    # The shadow-gap coves' tape sticks in the drywall trade's bead (#103), so only the
-    # surface runs bill channel and caps here; the tape rides every run.
-    assert set(strip24) - set(surface) == {"LR-M-LIVING-W", "LR-M-LIVING-E", "LR-S-HALL-GAP"}
+    # The shadow-gap coves' tape sticks in the drywall trade's bead (#103), so only surface
+    # runs bill channel and caps; the tape rides every run. The coves are E4/E6 since
+    # 2026-10-31, so mark E is surface runs only, and the RGB+CCT coves bill no channel.
+    assert set(strip24) == set(surface)
+    assert by_key[("ED-T-LT-STRIP24-RGBCCT", "channel")]["quantity"] == 0
     channel = by_key[("ED-T-LT-STRIP24", "channel")]
     tape = by_key[("ED-T-LT-STRIP24", "tape")]
     assert channel["quantity"] == pytest.approx(
@@ -177,7 +179,8 @@ def test_multiway_and_control_kinds_survive_into_the_schedule(catlin_model):
 def test_connected_load_counts_supplies_not_tape_and_sits_under_the_allowance(catlin_model):
     load = connected_lighting_va(catlin_model)
     per_circuit = {row["circuit"]: row for row in load["per_circuit"]}
-    assert set(per_circuit) == {"CKT-LT-BACKUP", "CKT-LT-MAIN", "CKT-LT-UPPER", "CKT-BATH-ATTIC"}
+    assert set(per_circuit) == {"CKT-LT-BACKUP", "CKT-LT-BSMT", "CKT-LT-MAIN", "CKT-LT-UPPER",
+                                "CKT-BATH-ATTIC"}
     assert load["total_connected_va"] == pytest.approx(
         round(sum(row["connected_va"] for row in load["per_circuit"]), 1))
 
@@ -216,7 +219,7 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     assert line_voltage_run_va(catlin_model) == {}
     lighting = {r["circuit"]: r for r in connected_lighting_va(catlin_model)["per_circuit"]}
     panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-MAIN"]
-    # The three 96 W drivers sum at their rating; the panel agrees with the lighting sum.
+    # Every driver sums at its rating; the panel agrees with the lighting sum.
     assert panel["connected_va"] == pytest.approx(lighting["CKT-LT-MAIN"]["connected_va"],
                                                   abs=0.5)
     # The 20A branch stays below the 80% continuous-load allowance.
@@ -233,10 +236,14 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
                        for r in connected_lighting_va(catlin_model)["per_circuit"]}
     finally:
         catlin_model.light_runs = original
-    # 24' of eave at 3.0 W/ft.
+    # 24' of eave at its type's W/ft.
+    library = catlin_model.plan.library
+    w_per_ft = next(t for t in library.electrical_device_types if t.tag == run.type_ref).watts_per_ft
+    driver = next(d for d in catlin_model.plan.all_elements() if d.tag == run.psu_ref)
+    rating = next(t for t in library.electrical_device_types if t.tag == driver.type_ref).load_va
     assert set(va) == {"LR-G-EAVE-W"}
-    assert va["LR-G-EAVE-W"] == pytest.approx(run.length_m * _M_TO_FT * 3.0)
+    assert va["LR-G-EAVE-W"] == pytest.approx(run.length_m * _M_TO_FT * w_per_ft)
     assert per_circuit["CKT-LT-MAIN"]["runs"] == 1
-    # The run's tape joins the branch and its idle 96 W driver leaves the lighting sum.
+    # The run's tape joins the branch and its idle driver leaves the lighting sum.
     assert per_circuit["CKT-LT-MAIN"]["connected_va"] == pytest.approx(
-        lighting["CKT-LT-MAIN"]["connected_va"] + va["LR-G-EAVE-W"] - 96.0, abs=0.5)
+        lighting["CKT-LT-MAIN"]["connected_va"] + va["LR-G-EAVE-W"] - rating, abs=0.5)

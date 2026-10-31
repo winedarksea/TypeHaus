@@ -54,8 +54,8 @@ _HABITABLE = HABITABLE_OCCUPANCIES
 # values (a light-coloured room with recessed cans); a room that only clears 6 fc by
 # rounding is a room to light better, not a number to argue with.
 _EXCEPTION_MIN_FOOTCANDLES = 6.0
-_COEFFICIENT_OF_UTILIZATION = 0.60
-_LIGHT_LOSS_FACTOR = 0.80
+COEFFICIENT_OF_UTILIZATION = 0.60
+LIGHT_LOSS_FACTOR = 0.80
 
 
 def _r303_floor_area(room) -> tuple[float, str | None]:
@@ -176,10 +176,10 @@ def _exception_1(ctx: CheckContext, room, area_sf: float):
     if verdict == "fail":
         return "fail", (f"the whole-house ventilation system is short ({provided:.0f} cfm vs "
                         f"{required:.0f} cfm), so R303.1 Exception 1 does not carry it")
-    delivered = (lumens * _COEFFICIENT_OF_UTILIZATION * _LIGHT_LOSS_FACTOR / area_sf
+    delivered = (lumens * COEFFICIENT_OF_UTILIZATION * LIGHT_LOSS_FACTOR / area_sf
                  if area_sf > 1e-9 else 0.0)
-    numbers = (f"{lumens:.0f} lm at CU {_COEFFICIENT_OF_UTILIZATION:.2f} x LLF "
-               f"{_LIGHT_LOSS_FACTOR:.2f} over {area_sf:.0f} sf = {delivered:.1f} fc, "
+    numbers = (f"{lumens:.0f} lm at CU {COEFFICIENT_OF_UTILIZATION:.2f} x LLF "
+               f"{LIGHT_LOSS_FACTOR:.2f} over {area_sf:.0f} sf = {delivered:.1f} fc, "
                f"and {provided:.0f} cfm of whole-house outdoor air reaches it")
     # An unrated fixture only adds light, so the rated total is a lower bound: it can
     # carry the exception on its own, but cannot sink it.

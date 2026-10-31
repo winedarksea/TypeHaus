@@ -16,7 +16,7 @@ from __future__ import annotations
 from library.lighting import luminaire_class
 
 from typehaus import LuminaireForm, Service, ServicePort, ft, inch
-from typehaus.model import LuminaireType
+from typehaus.model import LuminaireType, ProductPart
 
 from .porch_lighting_types import GARDEN_FLOOD_TYPE
 
@@ -27,7 +27,7 @@ _STRETCH_BODY = dict(
     footprint=(inch(8), inch(4)), height=inch(8), plan_symbol="sconce-swing-arm",
     lamp="LED integrated, toggle on the canopy", watts=5.0, lumens=287.0,
     cct_k=3000, cri=90, dimmable=True, damp_rated=True, load_va=5.0, ports=_POWER_120,
-    product_ref="PROD-WAC-BL-23210-BK")
+    product_ref="PROD-WAC-BL-23210-BK", replaceable_lamp=False)
 _STRETCH = LuminaireType(
     tag="ED-T-LT-SCONCE-SPOT", name="Swing-arm LED reading light, black",
     form=LuminaireForm.SCONCE, type_mark="J", **_STRETCH_BODY,
@@ -39,7 +39,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # --- H/J/K: sconces ---------------------------------------------------------------
     # Up-and-down for the basement theatre, on a dimmer: the traditional answer for a room
     # you want lit enough to walk through and dark enough to watch something in.
-    LuminaireType(tag="ED-T-LT-SCONCE-UD", name="Slim up/down LED wall sconce, black",
+    LuminaireType(tag="ED-T-LT-SCONCE-UD",
+                  replaceable_lamp=False, name="Slim up/down LED wall sconce, black",
                   form=LuminaireForm.SCONCE, type_mark="H",
                   footprint=(inch(4.5), inch(2.5)), height=inch(12),
                   plan_symbol="sconce-slim-updown", lamp="LED integrated, ELV + TRIAC",
@@ -55,6 +56,19 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   form=LuminaireForm.SCONCE, type_mark="J1", **_STRETCH_BODY,
                   integral_switch=True,
                   source="WAC Sprig BL-23210-BK, switched at its canopy toggle (a true on/off)."),
+    # J2 (2026-10-31): RM-M-BED's pair of bed sconces, replacing the headboard bar. J1's
+    # idea (switch at the fixture) with a shaded replaceable E26 lamp instead of a module.
+    LuminaireType(tag="ED-T-LT-SCONCE-BED",
+                  replaceable_lamp=True,
+                  lamp_base="E26", name="Swing-arm bed sconce, shaded E26, switch on fixture",
+                  form=LuminaireForm.SCONCE, type_mark="J2",
+                  footprint=(inch(7), inch(9)), height=inch(10), plan_symbol="sconce-swing-arm",
+                  lamp="E26 A19 LED, 2700K, CRI 95, 450-500 lm, replaceable", watts=6.0,
+                  lumens=450.0, cct_k=2700, cri=95, dimmable=False, load_va=6.0,
+                  integral_switch=True, ports=_POWER_120,
+                  product_ref="PROD-SWING-ARM-SCONCE-E26",
+                  source="Hardwired swing-arm sconce, switch on the fixture, shade hides the "
+                         "lamp from the pillow. Drawn folded."),
     LuminaireType(tag="ED-T-LT-SAUNA-VT",
                   name="Sauna fibre-optic lighting, 8 ferrules on a remote projector",
                   form=LuminaireForm.SCONCE, type_mark="V",
@@ -76,7 +90,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # hold even where the ADA does not apply. 393 lm against the 400 authored here is within
     # a rounding error, and these three are the stair's REAL light — mark L twelve feet up
     # the void delivers almost nothing to the treads. 2700 K -> 3000 K with the house.
-    LuminaireType(tag="ED-T-LT-SCONCE-STAIR", name="Stair wall sconce, ADA projection",
+    LuminaireType(tag="ED-T-LT-SCONCE-STAIR",
+                  replaceable_lamp=False, name="Stair wall sconce, ADA projection",
                   form=LuminaireForm.SCONCE, type_mark="K",
                   footprint=(inch(5), inch(4)), height=inch(8), plan_symbol="sconce",
                   lamp="LED integrated", watts=6.0, lumens=400.0, cct_k=3000, cri=90,
@@ -90,7 +105,9 @@ DECORATIVE_LUMINAIRE_TYPES = (
 
     # Z: a plain black candle sconce (Livex 4451-04, 2026-10-28), replacing the gothic iron
     # one the owner found too ornate. Storage room only (RM-A-EAST-UNFIN): no R303.1 floor.
-    LuminaireType(tag="ED-T-LT-SCONCE-CANDLE", name="Plain black candle wall sconce, E12 LED",
+    LuminaireType(tag="ED-T-LT-SCONCE-CANDLE",
+                  replaceable_lamp=True,
+                  lamp_base="E12", name="Plain black candle wall sconce, E12 LED",
                   form=LuminaireForm.SCONCE, type_mark="Z",
                   footprint=(inch(4.25), inch(7.75)), height=inch(8.5),
                   plan_symbol="sconce-candle",
@@ -101,15 +118,17 @@ DECORATIVE_LUMINAIRE_TYPES = (
                          "replaces (owner, 2026-10-28). CONFIRM the E12 socket and the UL/ETL "
                          "mark."),
 
-    LuminaireType(tag="ED-T-LT-CHANDELIER", name="20-globe cascade over the stairwell",
+    LuminaireType(tag="ED-T-LT-CHANDELIER",
+                  replaceable_lamp=False, name="20-globe cascade over the stairwell",
                   form=LuminaireForm.CHANDELIER, type_mark="L",
                   footprint=(inch(23), inch(23)), height=ft(6), plan_symbol="cluster-pendant",
                   lamp="20 x LED integrated, not replaceable", watts=100.0,
-                  cct_k=3000, dimmable=False, load_va=100.0, ports=_POWER_120,
+                  cct_k=3000, dimmable=True, load_va=100.0, ports=_POWER_120,
                   max_overall_height=inch(156), canopy_diameter=inch(23),
                   product_ref="PROD-DOLRIA-PC0008",
                   source="dolria PC0008-20T-G: 23\" canopy, 20 globes on wires adjustable "
-                         "3.9\"-156\", 100 W integrated LED with its own remote dimmer. "
+                         "3.9\"-156\", 100 W integrated LED with its own remote dimmer "
+                         "(dims at the fixture; lumens unpublished). "
                          "The stair SCONCES (mark K) are the stair's real light; this is "
                          "decorative."),
     # ** RE-TYPED FROM A ROUND PENDANT TO A 48" LINEAR CHANDELIER, 2026-09-06, AND THE
@@ -153,6 +172,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # the strips' spread.
     luminaire_class("ED-T-LT-PENDANT").model_copy(update={
         "type_mark": "M", "name": '48" LED wave chandelier', "plan_symbol": "wave-chandelier",
+        "replaceable_lamp": False,
         "footprint": (ft(4), inch(16)),
         "product_ref": "PROD-FLYACHILLES-DJ3616-2L", "lumens": 5400.0,
         "source": "Owner selection 2026-09-26, unit picked 2026-10-22: Flyachilles DJ3616-16 "
@@ -190,7 +210,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # 2'-6" assembly, not M's 3'-6": the ceiling over the bar's ORIGINAL centre-wall station
     # was 8'-6 3/4" (the 6:12 plane at x=16'-9"), and a 3'-6" drop would have left the shade
     # bottom at 5'-0 3/4" — head height at a counter you stand at.
-    LuminaireType(tag="ED-T-LT-PENDANT-BAR", name='36" LED linear bar pendant, matte black',
+    LuminaireType(tag="ED-T-LT-PENDANT-BAR",
+                  replaceable_lamp=False, name='36" LED linear bar pendant, matte black',
                   form=LuminaireForm.CHANDELIER, type_mark="M1",
                   footprint=(inch(35.875), inch(2)), height=ft(2, 6),
                   plan_symbol="suspended-linear-light", lamp="LED integrated",
@@ -200,7 +221,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
                          "Unplaced."),
 
     # N2 (the plant room's wet copy) retyped to N: the Mykonos is itself ETL wet.
-    LuminaireType(tag="ED-T-LT-FAN52", name='52" 3-blade DC ceiling fan with LED light, wet',
+    LuminaireType(tag="ED-T-LT-FAN52",
+                  replaceable_lamp=False, name='52" 3-blade DC ceiling fan with LED light, wet',
                   form=LuminaireForm.CEILING_FAN_LIGHT, type_mark="N",
                   footprint=(inch(52), inch(52)), height=inch(14.75),
                   plan_symbol="ceiling-fan-light-3",
@@ -222,7 +244,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   "the stall mats, 4 1/4\" above the 7'-0\" minimum. ** NEVER ON A LAMP "
                   "DIMMER: ** constant hot plus its included wall control."}),
     # N1: the 60" wet-listed porch fan.
-    LuminaireType(tag="ED-T-LT-FAN60", name='60" porch ceiling fan with LED light kit, wet',
+    LuminaireType(tag="ED-T-LT-FAN60",
+                  replaceable_lamp=False, name='60" porch ceiling fan with LED light kit, wet',
                   form=LuminaireForm.CEILING_FAN_LIGHT, type_mark="N1",
                   footprint=(inch(60), inch(60)), height=ft(1, 6),
                   plan_symbol="ceiling-fan-light",
@@ -249,13 +272,40 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # start. 4000 K rather than 5000 K — 5000 K makes airborne sawdust glare. And note that
     # wall-box occupancy sensors are typically rated to 32 F minimum, so this room takes a
     # cold-rated ceiling PIR or a plain switch.
-    LuminaireType(tag="ED-T-LT-SHOP4", name="4' vaportight LED shop light, IP66, cold rated",
+    LuminaireType(tag="ED-T-LT-SHOP4",
+                  replaceable_lamp=False, name="4' vaportight LED shop light, IP66, cold rated",
                   form=LuminaireForm.LINEAR_TUBE, type_mark="Q",
                   footprint=(ft(4), inch(5)), height=inch(3), plan_symbol="linear-light",
                   lamp="LED integrated", watts=46.0, lumens=4400.0, cct_k=4000, cri=80,
                   damp_rated=True, wet_rated=True, load_va=46.0, ports=_POWER_120,
                   product_ref="PROD-WESTGATE-LVTE-4FT",
                   source="Westgate LVTE-4FT-30-46W-MCTP, IP66 vaportight, cold rated"),
+    # Q1 (2026-10-31): the conditioned basement's work light. Two replaceable 95-CRI 5000 K
+    # T8 tubes in an LED-ready strip: the tubes are the lamp, the strip lasts the house.
+    # D (the 2x4 panel) is the documented revert.
+    LuminaireType(tag="ED-T-LT-STRIP-T8",
+                  replaceable_lamp=True,
+                  lamp_base="G13", name="4' LED-ready 2-lamp T8 strip, 5000K 95-CRI tubes",
+                  form=LuminaireForm.LINEAR_TUBE, type_mark="Q1",
+                  footprint=(ft(4), inch(3)), height=inch(2.5), plan_symbol="linear-light",
+                  lamp="2 x 4 ft T8 LED, Type B, G13, 5000K, 95 CRI, replaceable", watts=36.0,
+                  lumens=3600.0, cct_k=5000, cri=95, load_va=36.0, ports=_POWER_120,
+                  product_ref="PROD-HALCO-90511",
+                  parts=(ProductPart(role="lamp", product_ref="PROD-WAVEFORM-T8-95-50K",
+                                     quantity=2),),
+                  source="Halco 90511 LED-ready strip (non-shunted, Type B double-ended) with "
+                         "two Waveform Absolute 95-CRI 5000 K tubes, ~1,800 lm each."),
+    # Q2 (2026-10-31): a keyless lampholder, the cheapest replaceable light there is, for
+    # storage and equipment spaces NEC 210.70(C) wants lit.
+    LuminaireType(tag="ED-T-LT-KEYLESS",
+                  replaceable_lamp=True,
+                  lamp_base="E26", name="Keyless porcelain lampholder, A19 LED",
+                  form=LuminaireForm.PANEL, type_mark="Q2",
+                  footprint=(inch(4.5), inch(4.5)), height=inch(5.5), plan_symbol="light",
+                  lamp="E26 A19 LED, 800 lm, 3000K, 90 CRI, replaceable", watts=9.0,
+                  lumens=800.0, cct_k=3000, cri=90, load_va=9.0, ports=_POWER_120,
+                  product_ref="PROD-LEVITON-9880",
+                  source="Leviton 9880 keyless porcelain lampholder on a 4 in. box, A19 LED."),
 
     # --- R/S: exterior fixtures, both full cutoff ------------------------------------
     # Both are dark-sky fixtures by specification, not accident: `full_cutoff=True` says
@@ -267,7 +317,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # R is the garage-door light: a shielded down-only wall sconce beside D-G-OVERHEAD.
     # `form=SCONCE` rather than a new enum kind — the enum docstring discourages new
     # kinds, and a wall pack is a sconce that grew a cutoff hood.
-    LuminaireType(tag="ED-T-LT-SCONCE-EXT", name="Exterior LED tube wall light, down, black",
+    LuminaireType(tag="ED-T-LT-SCONCE-EXT",
+                  replaceable_lamp=False, name="Exterior LED tube wall light, down, black",
                   form=LuminaireForm.SCONCE, type_mark="R",
                   footprint=(inch(4.5), inch(5)), height=inch(5), plan_symbol="sconce-tube",
                   lamp="LED integrated, ELV/0-10V", watts=16.0, lumens=800.0, cct_k=3000,
@@ -278,4 +329,18 @@ DECORATIVE_LUMINAIRE_TYPES = (
     GARDEN_FLOOD_TYPE,
     # Mark P (a 24" mirror bar) retired 2026-10-28: the studio's wet-bar light is P1, the
     # Karlie 54622BN (plan/mirror_types.py).
+    # P6 (2026-10-31): RM-S-VANITY's makeup light, three flanking the mirrors at eye height
+    # so the face is lit from the front, not from overhead. Lumens are lamp source output.
+    LuminaireType(tag="ED-T-LT-SCONCE-VANITY",
+                  replaceable_lamp=True,
+                  lamp_base="E26", name="Vertical opal vanity sconce, 2 x E26, damp",
+                  form=LuminaireForm.SCONCE, type_mark="P6",
+                  footprint=(inch(5), inch(5)), height=inch(18), plan_symbol="sconce",
+                  lamp="2 x E26 A19 LED, 3000K, CRI 95, R9 90+, replaceable", watts=18.0,
+                  lumens=1600.0, cct_k=3000, cri=95, dimmable=True, damp_rated=True,
+                  load_va=18.0, ports=_POWER_120, product_ref="PROD-VANITY-SCONCE-OPAL-2E26",
+                  parts=(ProductPart(role="lamp", product_ref="PROD-WAVEFORM-CENTRICHOME-A19-30K",
+                                     quantity=2),),
+                  source="Vertical opal sconce, damp, two Waveform CentricHOME A19 (800 lm, "
+                         "95 CRI, R9 90+). Centre at 64 in. AFF."),
 )
