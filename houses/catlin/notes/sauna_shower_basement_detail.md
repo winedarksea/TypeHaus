@@ -15,7 +15,7 @@ source:
 **Seating revision, 2026-10-11:** [sauna_seating.md](sauna_seating.md) supersedes earlier
 bench layouts and heights. Independent 42/24-inch levels, a 78 × 28-inch lying
 bench, south reading recliner and removable service decks are now modeled. Finished ceiling
-is 82 13/16 inches AFF; use that surface for headroom and heater checks.
+is 83 1/16 inches AFF; use that surface for headroom and heater checks.
 
 # Notes
 

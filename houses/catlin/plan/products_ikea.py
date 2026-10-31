@@ -148,12 +148,12 @@ AXSTAD_DOORS = (
           'AXSTAD door, matte white, 18 x 40"'),
     _ikea("PROD-IKEA-AXSTAD-DOOR-24-30", "004.260.79", "AXSTAD door 24x30",
           'AXSTAD door, matte white, 24 x 30"', _READ),
-    _ikea("PROD-IKEA-AXSTAD-DOOR-24-50", "", "AXSTAD door 24x50",
+    _ikea("PROD-IKEA-AXSTAD-DOOR-24-50", "604.260.81", "AXSTAD door 24x50",
           'AXSTAD door, matte white, 24 x 50"',
-          "Size listed in the US selector; article not read."),
-    _ikea("PROD-IKEA-AXSTAD-CORNER-PAIR-13-30", "", "AXSTAD bifold pair for corner base",
+          "IKEA US listing, read 2026-10-31: 23 7/8 x 49 7/8, 3/4 thick."),
+    _ikea("PROD-IKEA-AXSTAD-CORNER-PAIR-13-30", "204.260.83", "AXSTAD bifold pair for corner base",
           'AXSTAD 2-piece door for corner base cabinet, matte white, 13 x 30"',
-          "Replaces the VALLSTENA pair in s79582533; AXSTAD corner set not yet read."),
+          "Replaces the VALLSTENA pair in s79582533. " + _SELECTOR),
 )
 AXSTAD_DRAWER_FRONTS = (
     _ikea("PROD-IKEA-AXSTAD-DRAWER-18-10", "204.260.64", "AXSTAD drawer front 18x10",
@@ -163,9 +163,8 @@ AXSTAD_DRAWER_FRONTS = (
     _ikea("PROD-IKEA-AXSTAD-DRAWER-36-10", "304.260.73", "AXSTAD drawer front 36x10",
           'AXSTAD drawer front, matte white, 36 x 10"'),
     # The 24x24x15 top's lift-up front: IKEA sells no 24x15 door, so its drawer front.
-    _ikea("PROD-IKEA-AXSTAD-DRAWER-24-15", "", "AXSTAD drawer front 24x15",
-          'AXSTAD front, matte white, 24 x 15", as a lift-up door',
-          "Size listed in the US selector; article not read."),
+    _ikea("PROD-IKEA-AXSTAD-DRAWER-24-15", "304.260.68", "AXSTAD drawer front 24x15",
+          'AXSTAD front, matte white, 24 x 15", as a lift-up door'),
 )
 MAXIMERA_MEDIUM = (
     _ikea("PROD-IKEA-MAXIMERA-MEDIUM-18-24", "002.656.65", "MAXIMERA medium 18x24",

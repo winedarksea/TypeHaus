@@ -138,8 +138,9 @@ MAIN_KITCHEN_CASEWORK = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-N1", face="left", distance_from_start=inch(80),
                   normal_gap=inch(5.34375), rotation_offset=deg(-180)))),
+    # Door face flush with the AXSTAD fronts at y=400 5/8: the 24 5/8" body ends 1/4" off the wall.
     Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-LG-DISHWASHER", room="RM-M-LIVING",
-              position=pt(inch(321.375), inch(413.375))),
+              position=pt(inch(321.375), inch(412.9375))),
     Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="SEKT-B18", room="RM-M-LIVING",
               position=pt(inch(378.375), inch(413.375))),
 

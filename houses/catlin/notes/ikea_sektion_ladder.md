@@ -56,7 +56,7 @@ The 24 by 24 by 40 garage lower is the only custom carcass in the revised north/
 Site-cut finish panels, plinth, rear platforms and support pieces remain explicit custom
 installation work. On the west wall, the 18 by 24 by 20 pantry top remains custom.
 The two cold-appliance uppers now use stock 30 by 24 by 20 ventilated frames (402.655.12),
-one per appliance, with paired VOXTORP 15 by 20 fronts. Bottoms remain 73 1/2 and tops
+one per appliance, with paired AXSTAD 15 by 20 fronts. Bottoms remain 73 1/2 and tops
 drop to 93 1/2; leave the space above open. Split 2 7/8 end scribes remain, cut to the
 new 20-inch height. Top rail backing and installation are specified in detail K7.
 

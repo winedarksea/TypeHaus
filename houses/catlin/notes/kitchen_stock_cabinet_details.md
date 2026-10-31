@@ -205,7 +205,7 @@ END-N; it no longer stands on the counter.
 Seating overhang: one quartz slab with the work surface, no seam on the knee line. It
 cantilevers 15 behind the cabinet backs (y=319 3/8) for 73 1/2, x=302 7/8–376 3/8, so
 its south edge is y=304 3/8; east of x=376 3/8 the slab stops at the backs. The slab is
-84 1/2 x 40, notched, and fits a standard 57 x 120 slab. 15 exceeds the 14 that 3 cm
+84 1/2 x 40, notched, and fits a standard 120 x 55 slab. 15 exceeds the 14 that 3 cm
 quartz may hang unsupported, so it is carried:
 
 - **Bars.** Five 1/2 x 2 1/2 x 24 A36 hidden flat bars, powder-coated (the Original

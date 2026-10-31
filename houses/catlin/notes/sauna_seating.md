@@ -14,8 +14,8 @@ The catalog is `plan/sauna_types.py`, and editable placements are `plan/sauna.py
 | Recliner and bent pad envelope | 57½ × 26 | Platform mounted | 123¾–181¼; 11–37 |
 
 Keep the upper **78 × 28** surface uninterrupted: a backrest cannot project into the
-28-inch usable depth. The ceiling underside is `CEIL-RM-B-SAUNA.z0_m`, **82 13/16 AFF**,
-leaving **40 13/16 inches** over the upper bench. Older 90-inch and 18/36-inch notes are
+28-inch usable depth. The ceiling underside is `CEIL-RM-B-SAUNA.z0_m`, **83 1/16 AFF**,
+leaving **41 1/16 inches** over the upper bench. Older 90-inch and 18/36-inch notes are
 superseded. Section cuts at y=72 and y=24 show placed platforms and the reading profile.
 
 [Dimensioned occupancy review](assets/sauna_seating_review.svg) shows lounging and four
@@ -111,7 +111,7 @@ verify the actual installed box's service needs before making the deck.
 
 The selected **US Harvia HPCS11U1H / PC110E 10.5 kW** manual Figure 5 requires 1.2 inches
 side/back, 4 inches in front, 32.5 inches above and a minimum 78-inch room height. The modeled
-heater has 2½ inches east, 3 inches south and **37 13/16 inches above**. The furniture clears
+heater has 2½ inches east, 3 inches south and **38 1/16 inches above**. The furniture clears
 the conservative 4-inch horizontal limit. [Harvia's installation manual, §§3.2–3.3 and
 Figure 5](https://www.kbauthority.com/files/PDF/Harvia/HPCS11U1H%20Manual%20Sheet.pdf)
 also requires a wall-attached softwood heater fence below the rock line. Fabricate this with

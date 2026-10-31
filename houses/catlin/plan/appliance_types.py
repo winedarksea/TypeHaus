@@ -320,13 +320,17 @@ BAR_REFRIGERATOR_CUBE = BAR_REFRIGERATOR_CUBE_19
 
 
 # --- the hood and the disposer (owner 2026-10-22) ---------------------------------------
-# The hood keeps the class's 30" x 20" x 18" canopy envelope; the chimney cover above it is
-# not modelled. The disposer's 11 1/2" body hangs from the same sink flange as the 12 1/2"
+# The hood is Broan's BWP1 canopy (spec sheet 99529070D): 29 1/2" W x 19 11/16" D x 9 11/16"
+# body; the 8 3/4" x 6 3/4" chimney cover above it (25 3/8"-40 3/8" overall) is not
+# modelled. The disposer's 11 1/2" body hangs from the same sink flange as the 12 1/2"
 # class did, so its placement rises 1" (plan/kitchen_casework.py).
 BROAN_HOOD_30 = HOOD_RECIRC.model_copy(update={
     "tag": "APPL-BROAN-BWP1304SS", "name": 'Broan BWP1304SS 30" chimney hood, ductless kit',
     "product_ref": "PROD-BROAN-BWP1304SS",
-    "source": "Broan BWP1304SS with the ARKBWP non-duct kit (plan/products.py).",
+    "footprint": (inch(29.5), inch(19.6875)), "height": inch(9.6875),
+    "source": ("Broan BWP1304SS with the ARKBWP non-duct kit (plan/products.py). BWP1 series "
+               "spec sheet 99529070D: 29 1/2 W x 19 11/16 D, 9 11/16 canopy body; chimney "
+               "8 3/4 x 6 3/4, 25 3/8-40 3/8 overall, not modelled."),
 })
 BADGER_5 = DISPOSAL.model_copy(update={
     "tag": "APPL-ISE-BADGER5", "name": "InSinkErator Badger 5 disposer, 1/2 HP",

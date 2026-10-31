@@ -30,9 +30,10 @@ from typehaus.model import Countertop, WindowStool
 # cabinet stays square (`haus countertops`).
 MAIN_COUNTERTOPS = [
     # The north run: B12, the dishwasher, the 36" sink base and B18. 25" deep: 24" of
-    # carcass and 1" of oversail. It and the NE corner were one 128" L until 2026-10-30,
-    # longer than any quartz slab (`advisory.countertop_fabrication`), so it seams at the
-    # corner cabinet's west face, x=32'-3 3/8", like the peninsula corner.
+    # carcass and 1" of oversail, 1/4" past the 3/4" AXSTAD fronts. It and the NE corner
+    # were one 128" L until 2026-10-30, longer than any quartz slab
+    # (`advisory.countertop_fabrication`), so it seams at the corner cabinet's west face,
+    # x=32'-3 3/8", like the peninsula corner.
     Countertop(
         uid="GQ3B84T2WH", tag="CT-M-KIT-N",
         cutouts=("FX-M-KITCH-SINK",),
@@ -62,10 +63,10 @@ MAIN_COUNTERTOPS = [
         overhang=inch(1),
         corner_radius=inch(1),
     ),
-    # ** THE PENINSULA IS ONE NOTCHED SLAB. ** 1" over the drawer fronts to the north, and a
-    # 15" seating cantilever behind the bases for the first 73 1/2" from the west end panel,
-    # which leaves 25" clear to the tall pantry's nominal west face for its doors and
-    # swing-out racks. 15" is past quartz's 14" unsupported cap, so five hidden flat bars
+    # ** THE PENINSULA IS ONE NOTCHED SLAB. ** 1" past the frames (1/4" past the fronts) to
+    # the north, and a 15" seating cantilever behind the bases for the first 73 1/2" from
+    # the west end panel, which leaves 25" clear to the tall pantry's nominal west face for
+    # its doors and swing-out racks. 15" is past quartz's 14" unsupported cap, so five hidden flat bars
     # carry it (FURN-M-KIT-PEN-BRACKET1..5, notes/kitchen_stock_cabinet_details.md K6). No
     # seam on the knee line: that is the weakest place in the stone.
     Countertop(

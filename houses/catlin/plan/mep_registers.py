@@ -619,7 +619,7 @@ REGISTERS_BASEMENT = [
             mount=Mount(kind=MountKind.WALL, elevation=inch(4), recessed_into_host_surface=True),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-B-SA-W", face="right", distance_from_start=inch(38),
-                 normal_gap=inch(-1.8125), rotation_offset=deg(-90)))),
+                 normal_gap=inch(0), rotation_offset=deg(0)))),
     # Fresh air in high, over the stones, directly above EQ-B-SAUNA-HTR (the EAST liner
     # since 2026-09-05 round three, plan/electrical.py) at 7'-0" — below the 8' ceiling so
     # the boot doesn't fight the drop ceiling the condensate line already runs above. It

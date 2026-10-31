@@ -75,7 +75,7 @@ def _door_zone(x0: float, y0: float, x1: float, y1: float, purpose: str) -> Clea
 PAX_CORNER = FurnitureType(
     tag="FURN-S-PAX-CORNER",
     name='PAX/GRIMO corner wardrobe, 43 3/8" L both ways, two doors',
-    footprint=(_CORNER, _CORNER), height=inch(93.125),
+    footprint=(_CORNER, _CORNER), height=inch(92.875),  # frame and corner unit are both 92 7/8"
     footprint_shape=Footprint2D(points=tuple(pt(m(x), m(y)) for x, y in _ring)),
     storage=True, work_surface=False, plan_symbol="wardrobe-corner",
     wood_material_ref="pax-frame-white",
