@@ -1,10 +1,12 @@
 """Large standard single bowl: the Kraus KHU100-32 (owner selection 2026-10-22)."""
 
-from typehaus.model import CountertopHole, FixtureType, Footprint2D, Mount, MountKind, Product, Service, inch, pt
+from typehaus.model import (CountertopHole, FixtureType, Footprint2D, Mount, MountKind, PortCertainty,
+                            Product, Service, ServicePort, inch, pt)
 
 COUNTER_HEIGHT_IN = 36.0
 QUARTZ_THICKNESS_IN = 1.181
 BOWL_DEPTH_IN = 10.0
+BASE_AFF_IN = COUNTER_HEIGHT_IN - QUARTZ_THICKNESS_IN - BOWL_DEPTH_IN
 
 KRAUS_BOLDEN = Product(
     tag="PROD-KRAUS-KPF-1610SFS", brand="Kraus", model="KPF-1610SFS",
@@ -41,7 +43,7 @@ KITCHEN_SINK_32_SINGLE = FixtureType(
     footprint=(inch(32), inch(22)),
     height=inch(20),
     mount=Mount(kind=MountKind.WALL,
-                elevation=inch(COUNTER_HEIGHT_IN - QUARTZ_THICKNESS_IN - BOWL_DEPTH_IN)),
+                elevation=inch(BASE_AFF_IN)),
     plan_symbol="kitchen-sink-undermount-single",
     countertop_cutout=Footprint2D(points=(
         pt(inch(-15), inch(-10)), pt(inch(15), inch(-10)),
@@ -51,6 +53,23 @@ KITCHEN_SINK_32_SINGLE = FixtureType(
     # (notes/kitchen_sink_installation.md §2).
     countertop_holes=(CountertopHole(center=pt(inch(0), inch(10)), diameter=inch(1.375),
                                      purpose="faucet, Kraus KPF-1610SFS"),),
+    # z is from the bowl bottom (24.819" AFF). The house's drain station is the foot of the
+    # 45-degree waste return, 5 1/2" AFF on the rear-centre drain line; disposer and trap are
+    # products between the bowl and it. Both supplies are the faucet's own 26 1/2" lines,
+    # dropped from the hole to the stops (notes/kitchen_sink_installation.md).
+    ports=(
+        ServicePort(tag="drain", service=Service.DRAIN,
+                    position=(inch(0), inch(3.49), inch(5.5 - BASE_AFF_IN)),
+                    connection_size=inch(2), direction=(0, 0, -1), certainty=PortCertainty.EXACT,
+                    notes="Waste return foot, 5 1/2 in. AFF under the rear-centre drain"),
+        *(ServicePort(tag=f"supply-{side}", service=service,
+                      position=(inch(0), inch(10), inch(COUNTER_HEIGHT_IN - QUARTZ_THICKNESS_IN
+                                                       - BASE_AFF_IN)),
+                      connection_size=inch(0.375), direction=(0, 0, -1),
+                      certainty=PortCertainty.EXACT, hose_length=inch(26.5),
+                      notes="KPF-1610 factory 26 1/2 in. supply line from the faucet hole")
+          for side, service in (("hot", Service.WATER_HOT), ("cold", Service.WATER_COLD))),
+    ),
     basin=False,
     product_ref=KRAUS_KHU100_32.tag,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),

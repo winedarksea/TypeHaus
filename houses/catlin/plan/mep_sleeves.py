@@ -59,7 +59,7 @@ STACK_SLEEVES = []
 SLAB_STUBS = [
     # Upsized to 3" for a WC (needing a closet bend) in place of the old utility sink.
     SleevePenetration(uid="CBP901AAAA", tag="SP-B-BATH-WC", host_ref="SL-B-FLOOR",
-                      position=pt(ft(12), inch(289.625)), pipe_diameter=inch(3),
+                      position=pt(ft(12), inch(291.8125)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-B-BATH-WC"),
     SleevePenetration(uid="CBP904AAAA", tag="SP-B-BATH-LAV", host_ref="SL-B-FLOOR",
                       position=pt(ft(12), inch(224.375)), pipe_diameter=inch(1.5),

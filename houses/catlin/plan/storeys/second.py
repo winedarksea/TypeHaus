@@ -1312,8 +1312,8 @@ FLOOR_OPENINGS = [
                  penetration_for=("DU-M-ERV-R-LAUNDRY",)),
     # PR-M-S-BATH1-WC-DRAIN's drop into the mudroom closet's ceiling, in the 28'-8" bay.
     FloorOpening(uid="Y65XXEBD0G", tag="FO-S-BATH1-WC-DRAIN", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(inch(19), inch(340.5)), pt(inch(25.2), inch(340.5)),
-                          pt(inch(25.2), inch(347.5)), pt(inch(19), inch(347.5))),
+                 outline=(pt(inch(17.2), inch(340.5)), pt(inch(23.4), inch(340.5)),
+                          pt(inch(23.4), inch(347.5)), pt(inch(17.2), inch(347.5))),
                  penetration_for=("PR-M-S-BATH1-WC-DRAIN",)),
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
                  # North edge on W-M-N2's 1/2" face (35'-5 1/2" since 2026-10-23), the same as the

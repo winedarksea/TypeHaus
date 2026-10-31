@@ -23,7 +23,7 @@ points below are fixtures; the fourth is the root they have to reach.
 
 | point | plan (in) | how it is derived |
 |---|---|---|
-| `FX-S-SUITEBATH-WC` | (134.81, 250.625) | its own position. A water closet is the one common fixture with no hot connection, which is the model's only reliable signal that a fixture is floor-drained — `resolve/mep_sleeves._expected_drain_point` |
+| `FX-S-SUITEBATH-WC` | (134.81, 250.625) | its own position (since 2026-10-30 its type's DRAIN port, the 12" rough-in flange at (134.81, 252.406); the gap below is the 09-07 world's). A water closet is the one common fixture with no hot connection, which is the model's only reliable signal that a fixture is floor-drained — `resolve/mep_sleeves._expected_drain_point` |
 | `FX-S-SUITEBATH-LAV` | (165.5, 268.0) | the cabinet stands at (165.5, 254.13) and needs hot water, so the derivation projects it onto `wall_ref` `W-S-SN3`'s axis at y=268 — the wet wall the waste actually turns down in |
 | `FX-S-SUITEBATH-TUBSH` | (197.615, 261.125) | **authored** `drain_position`. Left to the convention it landed on `W-S-C2C`'s axis at x=216, inside a bearing wall's studs. The tub runs y 204.625..264.625 on the x=197.615 centreline; its waste-and-overflow is 3 1/2" in from the north end face |
 | root: `PR-M-S-SUITE-DRAIN` head | (156.0, 202.8) | the stack's top vertex, at elevation 115.5 |
@@ -56,19 +56,21 @@ monotone potential, `invert = start − slope × developed plan length`, and not
 
 **The 3" collector, `PR-M-S-SUITE-WC-DRAIN`, as authored.** Flange at the finished floor,
 drop, east in its bay to the x=144 lane, south across the trusses, east onto the stack
-(2026-10-26: the south leg moved 134.81 → 144 to clear the truss webs).
+(2026-10-26: the south leg moved 134.81 → 144 to clear the truss webs; 2026-10-30: the flange
+moved 1.781" north onto the Aquia IV's 12" rough-in, its `FX-TOTO-AQUIA-IV` DRAIN port, and
+the head rose 1/4" so the longer south leg still clears `DU-M-ERV-R-STUDY` at y=242.3).
 
 | leg | from → to | plan length | fall | slope |
 |---|---|---|---|---|
-| flange drop | (134.81, 250.625) 120.75 → 116.5 | 0 | 4.25" | vertical |
-| east | → (144, 250.625) 116.3 | 144 − 134.81 = 9.19" = 0.7658 ft | 0.2" | 0.261"/ft |
-| south | → (144, 216) 112.6 | 250.625 − 216 = 34.625" = 2.8854 ft | 3.7" | 1.282"/ft |
+| flange drop | (134.81, 252.406) 120.75 → 116.75 | 0 | 4.0" | vertical |
+| east | → (144, 252.406) 116.5 | 144 − 134.81 = 9.19" = 0.7658 ft | 0.25" | 0.326"/ft |
+| south | → (144, 216) 112.6 | 252.406 − 216 = 36.406" = 3.0338 ft | 3.9" | 1.286"/ft |
 | east | → (150, 216) 111.0 | 150 − 144 = 6" = 0.5 ft | 1.6" | 3.2"/ft |
 
-Developed plan length 49.815" = 4.1513 ft; total fall 5.5"; **mean 1.325"/ft**, and the
-flattest segment is 0.261"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum, which asks
-1.0378" of it. The surplus is in the total (5.5 − 1.0378 = 4.462"), not in the first leg:
-that 9.19" holds +0.011"/ft, which is what `mep.drain_slope_margin` reports. (2026-09-26: the tie dropped 112.0 → 111.0 so the attic branch's street
+Developed plan length 51.596" = 4.2997 ft; total fall 5.75"; **mean 1.337"/ft**, and the
+flattest segment is 0.326"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum, which asks
+1.0749" of it. The surplus is in the total (5.75 − 1.0749 = 4.675"), not in the first leg:
+that 9.19" holds +0.076"/ft, which is what `mep.drain_slope_margin` reports. (2026-09-26: the tie dropped 112.0 → 111.0 so the attic branch's street
 sanitary tee can spigot into this branch's combo, 3 1/2" apart — Charlotte Pipe
 SUB-PAC-PVC-DWV, parts 501 and 403.) `mep.drain_slope` grades the flattest and reports it.
 
@@ -96,7 +98,7 @@ the number has been read the other way. It is measured to the stack **head** at 
 because that is the arrival a *search* must assume before it knows where on the barrel the
 tie will land. The authored run tied at **112.0** (111.0 since 2026-09-26), 3.5" lower, so what the pipe as
 drawn holds is **3.062" of surplus fall** in that world (0.779"/ft flattest then; the
-current run's surplus is §2's 4.462", spent mostly past its first leg). `mep.drain_slope_margin` is the check that reports the build number; `slack_in` is
+current run's surplus is §2's 4.675", spent mostly past its first leg). `mep.drain_slope_margin` is the check that reports the build number; `slack_in` is
 an ordering key and reports the search number. Had the stack head stayed at 115.5 with the
 collector tying there, rather than at 112 on the barrel below it, there would have been 1/16"
 in hand — which is exactly what makes 0.0622" the right *ordering* number and the wrong
@@ -115,9 +117,9 @@ Each end elevation is checked against the collector's own **centreline** at that
 centreline — see `model/mep.py`). An arm entering in the collector's upper half is an
 ordinary side entry; `mep.drain_tie_in` grades it. That station is
 the interpolation along the south leg as authored: at y=246 the collector reads
-116.3 − 3.7 × (4.625/34.625) = 115.806, and the arm arrives at 116.2 — **0.394" above
+116.5 − 3.9 × (6.406/36.406) = 115.814, and the arm arrives at 116.2 — **0.386" above
 it**, a side entry into the upper half of the 3". At y=228 it reads
-116.3 − 3.7 × (22.625/34.625) = 113.882 against the arm's 114.3, **0.418" above**. Both are inside `_TIE_IN_INVERT_TOL_M` (1"), which is what keeps
+116.5 − 3.9 × (24.406/36.406) = 113.886 against the arm's 114.3, **0.414" above**. Both are inside `_TIE_IN_INVERT_TOL_M` (1"), which is what keeps
 `drain_tie_ins` linking them and `accumulated_serves` rolling the load up: 13 DFU on the
 stack, 48 still on `PR-B-MAIN-DRAIN`'s 4".
 

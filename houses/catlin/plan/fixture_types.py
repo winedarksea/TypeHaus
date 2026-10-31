@@ -39,6 +39,12 @@ KOHLER_UNDERSCORE_6032 = FixtureType(
     product_ref="PROD-KOHLER-1130-W1-0",
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT,
                      Service.POWER_120}),
+    # The end drain at the south end (rotation 90 puts local -x there), at the shell bottom.
+    ports=(ServicePort(tag="drain", service=Service.DRAIN,
+                       position=(inch(-(30 - 12.5625)), inch(0), inch(0)),
+                       connection_size=inch(1.5), direction=(0, 0, -1),
+                       certainty=PortCertainty.EXACT,
+                       notes="K-1130-W1: 1 1/2 in. end drain 12 9/16 in. from the end"),),
     source="Kohler specification sheet K-1130-W1, US-CA 10-14-2026, read 2026-10-22: "
            "60 x 32 x 21 in., basin top 55 1/8 x 27 1/8, bottom 42 x 23 1/2, water depth "
            "17 1/8 in., 81 gal, 81 lb, minimum floor load 59 lb/ft2, cutout 59 1/2 x 31 1/2, "

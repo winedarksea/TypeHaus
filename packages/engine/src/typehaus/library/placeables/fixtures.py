@@ -17,6 +17,7 @@ from typehaus.model import (
     Footprint2D,
     Mount,
     MountKind,
+    PortCertainty,
     Service,
     ServicePort,
     ft,
@@ -134,6 +135,11 @@ FLOOR_DRAIN = FixtureType(
     tag="FX-FLOOR-DRAIN", name="Floor drain", footprint=(inch(6), inch(6)), height=inch(0.5),
     plan_symbol="floor-drain", basin=False,
     needs=frozenset({Service.DRAIN, Service.VENT}),
+    # The body is the floor penetration: its outlet drops straight under the strainer.
+    ports=(ServicePort(tag="DRAIN", service=Service.DRAIN, position=(inch(0), inch(0), inch(0)),
+                       connection_size=inch(2), direction=(0, 0, -1),
+                       certainty=PortCertainty.EXACT,
+                       notes="2\" outlet under the strainer centre, at the finish floor"),),
     source='6" square adjustable strainer over a 2" cast body with an integral trap; final '
            "selection by owner. Set the strainer flush with the finish floor at the low "
            "point of the slope, and coordinate the flange with the waterproofing membrane's "
@@ -202,25 +208,26 @@ TOILET_WALL_HUNG = FixtureType(
     # Local product frame: the bowl faces -y (the clearance zone above is drawn that way),
     # so +y is into the wall and the back of the china is at +9.65" (half of 19.3"). The
     # waste and vent are both a further 2 1/4" back — 1/2" of gypsum plus the frame's own
-    # 1 3/4" — which is 11.9" from the bowl centre.
+    # 1 3/4" — which is 11.9" from the bowl centre. Port z is from the body base, which the
+    # mount sets 1 3/8" over the floor, so every height below subtracts it.
     ports=(
-        # z=0: the drop crosses the floor plane here. This is the point a ``drain_position``
+        # z=-1 3/8": the drop crosses the floor plane here. This is the point a ``drain_position``
         # override and any sleeve/joist-bay penetration must land on.
         ServicePort(tag="waste", service=Service.DRAIN,
-                    position=(inch(0), inch(11.9), inch(0)), connection_size=inch(3),
+                    position=(inch(0), inch(11.9), inch(-1.375)), connection_size=inch(3),
                     notes="3\" (90 mm) vertical drop through the deck inside the carrier "
                           "frame; the long-turn to the branch is below the floor"),
         # The individual vent is a tapping ON the waste fitting, just above the bend — 2" NH
         # on a Zurn carrier, 2" NPTF on the Geberit cast-iron bend — so it rises in the same
         # bay the drop falls in, not in whatever chase the room happens to have.
         ServicePort(tag="vent", service=Service.VENT,
-                    position=(inch(0), inch(11.9), inch(4)), connection_size=inch(2),
+                    position=(inch(0), inch(11.9), inch(2.625)), connection_size=inch(2),
                     notes="2\" vent takeoff integral to the carrier's waste fitting"),
         # Behind the actuator plate, which is the only opening in the finished wall: Geberit
         # puts that opening 26 3/8" above the base of the frame, and the angle stop is
         # reached through it. Concealed but accessible, which is what UPC 402.4 is after.
         ServicePort(tag="cold", service=Service.WATER_COLD,
-                    position=(inch(0), inch(11.9), inch(26.375)), connection_size=inch(0.5),
+                    position=(inch(0), inch(11.9), inch(25)), connection_size=inch(0.5),
                     notes="1/2\" fill supply to the concealed tank, with its angle stop "
                           "reached through the actuator-plate opening"),
     ),
@@ -249,6 +256,13 @@ WALL_HYDRANT = FixtureType(
     footprint=(inch(6), inch(6)), height=ft(2, 6), plan_symbol="hydrant",
     basin=False,
     needs=frozenset({Service.WATER_COLD}),
+    # The inlet is the buried valve foot, one bury length under the head. APPROXIMATE because
+    # a plan may draw the barrel as its supply's terminal standpipe (catlin does, and
+    # `mep.hydrant_freeze_depth` exempts it), so the run's end is the head, not this point.
+    ports=(ServicePort(tag="inlet", service=Service.WATER_COLD,
+                       position=(inch(0), inch(0), ft(-6)), connection_size=inch(0.75),
+                       direction=(0, 0, -1),
+                       notes="3/4\" inlet at the valve foot, 6' bury"),),
     source='Y34SS-class frost-free wall hydrant, 3/4" stainless, 6\' bury. Specify the '
            "manufacturer's supplemental epoxy coating over the buried barrel where the "
            "floor runs salt slush (the standard finish is not rated for chloride "
@@ -280,6 +294,12 @@ WALL_HYDRANT_SELF_DRAINING = FixtureType(
     needs=frozenset({Service.WATER_COLD}),
     mount=Mount(kind=MountKind.WALL, elevation=inch(24)),
     integral_vacuum_breaker=True,
+    # The seat is one barrel length inboard, and the barrel is chosen per wall stack.
+    ports=(ServicePort(tag="inlet", service=Service.WATER_COLD,
+                       position=(inch(0), inch(0), inch(0)), connection_size=inch(0.75),
+                       direction=(0, 1, 0),
+                       notes="3/4\" NPT seat at the inboard end of the barrel; its depth "
+                             "behind the escutcheon is the barrel length the wall takes"),),
     source="Woodford Model 19 self-draining frost-free wall faucet, 3/4\" NPT inlet, MHT "
            "outlet, integral anti-siphon vacuum breaker (ASSE 1052), barrel length chosen "
            "for the wall stack it passes (here 2x6 + 4\" continuous exterior insulation + "

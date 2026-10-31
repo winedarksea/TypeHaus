@@ -82,12 +82,13 @@ def test_per_crossing_beats_the_envelope_on_the_bld05_run(
 
     +1.209" since 0db0c103 re-laned the suite stack out of the master closet; +1.477" since
     its tie dropped to 9'-3" (2026-09-26), the leg's 0.268" fall at the 240" truss; +1.585"
-    since the south leg moved to x=144 and starts at 116.3 (2026-10-26).
+    since the south leg moved to x=144 and starts at 116.3 (2026-10-26); +1.579" since the
+    flange moved onto the Aquia's 12" rough-in and the leg starts at 116.5 (2026-10-30).
     """
     findings = _findings(catlin_plan, catlin_model_ro)
     finding = _for(findings, "PR-M-S-SUITE-WC-DRAIN", "FS-S-WEST")
     assert finding.result is Result.PASS
-    assert _crown_in(finding.message) == pytest.approx(1.585, abs=0.001)
+    assert _crown_in(finding.message) == pytest.approx(1.579, abs=0.001)
     assert "joist-0-015-0" in finding.message
 
 

@@ -177,9 +177,12 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 #:
 #: PR-B-COND re-pinned 2026-10-11: north-wall drop and low leg replace a riser through
 #: the new foot deck. The first four inverts and 9" air gap remain; seven vertices now.
+#:
+#: PR-B-BATH-DRAIN re-pinned 2026-10-30: its head moved 2 3/16" north onto the Drake's 12"
+#: rough-in flange, and the drop's foot rose 1/20" so the longer run still holds 1/4"/ft.
 _PINNED_FT = {
     "PR-B-COND": [-1.45313, -1.67813, -1.72604, -1.83854, -1.86654, -8.32135, -8.36979],
-    "PR-B-BATH-DRAIN": [-9.11979, -9.83646, -9.97687, -10.16479],
+    "PR-B-BATH-DRAIN": [-9.11979, -9.83229, -9.9765, -10.16479],
     "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.90495, -10.12474, -10.34896],
 }
 

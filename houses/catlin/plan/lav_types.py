@@ -8,7 +8,7 @@ from plan.bath_finish import (
 from plan.lav_ports import lav_ports
 from typehaus.model import (
     FixtureType, Footprint2D, ModelRepresentation, Mount,
-    PortCertainty, ProductPart, Service, inch, pt,
+    PortCertainty, ProductPart, Service, ServicePort, inch, pt,
 )
 
 NEEDS = frozenset({Service.DRAIN, Service.WATER_HOT, Service.WATER_COLD, Service.VENT})
@@ -110,7 +110,15 @@ LAUNDRY_TUB = FixtureType(
     parts=(ProductPart(role="faucet", product_ref="PROD-GLACIER-BAY-QL033Y-FAUCET"),),
     source="Owner selection 2026-10-24: Glacier Bay QL033Y, Home Depot #206057007 (spec sheet "
            "not retrieved). Bundled flex-neck faucet; its hose adapter is not used, so no "
-           "hose-bibb tee is carried on the cold. Ports are the library's allowance.",
+           "hose-bibb tee is carried on the cold. No rough-in published: the ports are the "
+           "house's stations (floor sleeve, W-M-CLN stubs at 20 in.) and stay approximate.",
+    ports=tuple(ServicePort(tag=tag, service=service, position=(inch(x), inch(y), inch(z)),
+                            connection_size=inch(size), direction=direction,
+                            notes="House station; the QL033Y spec sheet is not retrieved")
+                for tag, service, x, y, z, size, direction in (
+                    ("drain", Service.DRAIN, 1.5524, 4.4459, -0.94685, 2, (0, 0, -1)),
+                    ("supply-hot", Service.WATER_HOT, -0.4476, 14.0709, 19.0532, 0.5, (0, 1, 0)),
+                    ("supply-cold", Service.WATER_COLD, 4.0524, 14.0709, 19.0532, 0.5, (0, 1, 0)))),
 )
 LAV_TYPES = (ANGSJON_36, ANGSJON_36_SS, SEKTION_30, SEKTION_24_SS, CHULTON_30,
              SUNNERSTA_BAR_SINK, LAUNDRY_TUB)

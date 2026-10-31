@@ -27,7 +27,10 @@ from library.placeables.fixtures import (
     water_closet_required_clearance,
 )
 
-from typehaus.model import FixtureType, Footprint2D, Mount, MountKind, Service, ft, inch, m, pt
+from plan.wet_ports import floor_drain_port, floor_wc_ports, valve_ports
+
+from typehaus.model import (FixtureType, Footprint2D, Mount, MountKind, PortCertainty, Service,
+                            ServicePort, ft, inch, m, pt)
 from typehaus.model.placeable_symbols._swanstone_flex_config import BATH2_SHOWER
 from typehaus.model.placeable_symbols.plumbing import NEO_ANGLE_CUT_FRACTION, neo_angle_points
 from typehaus.model.placeables import ModelRepresentation
@@ -56,9 +59,21 @@ TOTO_AP_WALL_HUNG = TOILET_WALL_HUNG.model_copy(update={
     "height": inch(13.125),
     "mount": Mount(kind=MountKind.WALL, elevation=inch(3)),
     "clearances": (water_closet_required_clearance(inch(21.25)),),
-    "ports": tuple(port.model_copy(update={
-        "position": (port.position[0], inch(12.875), port.position[2]),
-    }) for port in TOILET_WALL_HUNG.ports),
+    # z is from the bowl base, 3" over the finished floor, so the deck crossing is -3".
+    # The drop rides W-M-HS1's axis (house setout: SS-02352 dimensions no outlet).
+    "ports": (
+        ServicePort(tag="waste", service=Service.DRAIN,
+                    position=(inch(0), inch(13.875), inch(-3)), connection_size=inch(3),
+                    direction=(0, 0, -1), certainty=PortCertainty.EXACT,
+                    notes="Carrier drop on the wet-wall axis, crossing the finished floor"),
+        ServicePort(tag="vent", service=Service.VENT,
+                    position=(inch(0), inch(13.875), inch(1)), connection_size=inch(2),
+                    notes="2\" vent takeoff on the carrier waste fitting"),
+        ServicePort(tag="cold", service=Service.WATER_COLD,
+                    position=(inch(-8.8), inch(13.875), inch(8.75)), connection_size=inch(0.5),
+                    notes="WT173M 1/2\" NPT inlet, lower left of the frame, ~11 3/4\" AFF: "
+                          "scaled from SS-02352 p.3, not dimensioned"),
+    ),
     "source": 'TOTO SS-02352 v.01 p.2, read 2026-10-21: CT426CFGT40#01 AP '
               'wall-hung bowl, 14 15/16 x 21 1/4 in., 16 1/8 in. rim installation shown, '
               '1.28/0.9 gpf. CWT4263446CMFG pairs it with WT173M DuoFit, '
@@ -81,6 +96,7 @@ TOTO_CARLYLE_II = FixtureType(
     product_ref="PROD-TOTO-CST614CEFGAT40",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(30)),),
+    ports=floor_wc_ports(30),
     source='TOTO Carlyle II CST614CEFGAT40#01, owner selection 2026-09-06. TOTO USA spec '
            'sheet read 2026-09-06: 30" L x 18 1/4" W x 28 1/4" H, 12" rough-in, 1.28 gpf '
            'Tornado Flush, CEFIONTECT, one-piece skirted. The AT40 suffix is WASHLET+ '
@@ -103,6 +119,7 @@ TOTO_AQUIA_IV = FixtureType(
     product_ref="PROD-TOTO-CST446CEMGN",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(27.5625)),),
+    ports=floor_wc_ports(27.5625),
     source='TOTO Aquia IV CST446CEMGN#01, owner selection 2026-09-06. TOTO USA spec sheet '
            'read 2026-09-06: 27 9/16" D x 15 1/2" W x 29 1/8" H, rim 14 15/16", 12" '
            'rough-in, 1.28/0.9 gpf dual flush, CEFIONTECT, skirted trapway. ** THAT RIM '
@@ -124,6 +141,7 @@ TOTO_DRAKE = FixtureType(
     product_ref="PROD-TOTO-CST776CEFG",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(water_closet_required_clearance(inch(28.375)),),
+    ports=floor_wc_ports(28.375),
     source='TOTO Drake CST776CEFG#01, owner selection 2026-09-06. Published dimensions read '
            '2026-09-06: 28 3/8" D x 17 3/16" W x 30 1/8" H, rim 16 1/8" (universal height), '
            '12" rough-in, 2 1/8" trapway, 1.28 gpf Tornado Flush, CEFIONTECT. Seat is the '
@@ -184,6 +202,11 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
         symbol="swanstone-flex-3636", material_refs={"solid-surface": "solid-surface-base"}),
     "name": 'Shower, 36", thermostatic valve with a two-in-one rainshower combo',
     "product_ref": "PROD-DELTA-T17T",
+    # Back wall is W-M-BA2E (+y). The drain is the authored 2 3/4" offset off the SS-3636's
+    # centre drain, which the base maker has not confirmed (notes/bath2_shower.md).
+    "ports": (floor_drain_port(-2.75, 0, note="SS-3636 is a centre drain; the 2 3/4\" offset "
+                               "clearing joist 11 is unconfirmed with Swanstone"),
+              *valve_ports((0, 18, 48), (0, 1), "R10000-UNBX valve-body allowance; no Delta rough-in sheet read; 48\" over the base")),
     "source": 'RM-M-BATH2, owner selection 2026-10-12, replacing FX-SHOWER-36-DIVERTED. '
               'Delta MultiChoice R10000-UNBX rough (ASSE 1016) under a Trinsic T17T059 17T '
               'thermostatic trim (PROD-DELTA-T17T): separate temperature and volume, no '
@@ -224,6 +247,11 @@ SHOWER_36_COMBO = SHOWER.model_copy(update={
     "tag": "FX-SHOWER-36-COMBO",
     "name": 'Shower, 36", pressure-balance valve with a two-in-one combo head',
     "product_ref": "PROD-MOEN-26010SRN",
+    # RM-B-SAUNA only (the attic took the neo-angle type): pan drain at its centre on the
+    # liner's 2" build-up, valve in W-B-CS east of the pan.
+    "ports": (floor_drain_port(0, 0, 2, note="Curbed liner pan, no base SKU; centre drain"),
+              *valve_ports((24.25, -22.1875, 51.4375), (1, 0),
+                           "R10000-UNBX valve-body allowance; no Delta rough-in sheet read; station read off the authored W-B-CS stubs")),
     "source": 'RM-B-SAUNA and RM-A-STUBATH, owner selection 2026-09-06. Delta MultiChoice '
               'R10000-UNBX rough (ASSE 1016), single-function trim, and a Moen Engage '
               'Magnetix 26010SRN two-in-one head — ONE outlet, so no diverter and no second '
@@ -270,6 +298,9 @@ SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
     "tag": "FX-SHOWER-36-NEO-COMBO",
     "name": 'Shower, 36" neo-angle, pressure-balance valve with a two-in-one combo head',
     "plan_symbol": "shower-neo-angle",
+    "ports": (floor_drain_port(0, 0, note="Class-allowance base: drain centre vs corner offset "
+                               "varies by maker; confirm on the ordered base"),
+              *valve_ports((0, 18, 48), (0, 1), "R10000-UNBX valve-body allowance; no Delta rough-in sheet read; 48\" over the base, north wall")),
     "footprint_shape": Footprint2D(points=tuple(
         pt(m(x), m(y)) for x, y in neo_angle_points(
             _NEO_SIZE[0].meters, _NEO_SIZE[1].meters,
@@ -305,6 +336,10 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
     "tag": "FX-TUBSHOWER-60-DIVERTED",
     "name": 'Alcove tub-shower, 60", complete trim with diverter and handshower',
     "product_ref": "PROD-DELTA-T14459-SS",
+    # Plumbing end at local -x on both placements.
+    "ports": (floor_drain_port(-26.5, 0, size_in=1.5, note="Waste-and-overflow 3 1/2\" in from "
+                               "the plumbing end; the insert has no published drain drawing"),
+              *valve_ports((-30, 0, 30), (-1, 0), "R10000-UNBX valve-body allowance; no Delta rough-in sheet read; 30\" over the tub base")),
     "source": 'RM-S-BATH1 and RM-S-SUITEBATH, owner selection 2026-09-06. Delta MultiChoice '
               'R10000-UNBX rough (ASSE 1016) under a Delta T14459-SS COMPLETE trim — valve '
               'trim, H2Okinetic showerhead and tub spout in one box, which removes the '

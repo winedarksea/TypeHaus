@@ -25,12 +25,16 @@ def test_expected_drain_point_is_the_authored_outlet_when_there_is_one(catlin_mo
 
 
 def test_floor_wc_drains_under_its_own_bowl(catlin_model):
-    """A floor-mounted WC puts the closet flange under the bowl, so the convention needs no
-    override and the sleeve sits on the fixture's own position. RM-B-BATH's WC is on a slab."""
+    """A floor-mounted WC puts the closet flange under the bowl, at its type's DRAIN port, so
+    the convention needs no override. RM-B-BATH's WC is on a slab."""
+    from typehaus.model import Service
+    from typehaus.resolve.mep_sleeves import expected_port_point
+
     sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-B-BATH-WC")
     fixture = catlin_model.plan.by_tag("FX-B-BATH-WC")
     assert fixture.drain_position is None
-    assert sleeve.expected_center == fixture.position.xy_m
+    flange = expected_port_point(catlin_model, fixture.tag, Service.DRAIN)[:2]
+    assert sleeve.expected_center == pytest.approx(flange)
     assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9)
 
 
@@ -348,7 +352,9 @@ def test_basement_slab_fixtures_drain_through_their_own_slab_stub_ups(catlin_mod
         assert sleeve.host_slab == "SL-B-FLOOR", tag
         # The convention only needs an authored `drain_position` where the trap is not under
         # the fixture: a closet flange, a shower pan's outlet and a floor drain's body all are.
+        # The WC's flange is its DRAIN port, 12" off the wall rather than under the centre.
         expected = ((12 * 12 * 0.0254, 224.375 * 0.0254) if tag == "FX-B-BATH-LAV"
+                    else (12 * 12 * 0.0254, 291.8125 * 0.0254) if tag == "FX-B-BATH-WC"
                     else (fixture.drain_position or fixture.position).xy_m)
         assert sleeve.expected_center == pytest.approx(expected), tag
         assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9), tag

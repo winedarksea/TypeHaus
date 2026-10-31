@@ -35,7 +35,7 @@ those two are Broan and InSinkErator (owner 2026-10-22).
 
 from __future__ import annotations
 
-from typehaus.model import ApplianceType, Service, ServicePort, ft, inch, mm
+from typehaus.model import ApplianceType, PortCertainty, Service, ServicePort, ft, inch, mm
 
 from library.placeables import front_zone
 from library.placeables.appliances import (
@@ -80,15 +80,23 @@ LG_WASHTOWER = ApplianceType(
                        position=(ft(0), ft(0), ft(0))),
            ServicePort(tag="power-dryer", service=Service.POWER_240,
                        position=(ft(0), ft(0), inch(43))),
+           # Inlets on the washer's back panel; LG's manual draws them undimensioned and sells
+           # the hoses separately, so the 5' pair is the house's purchase, not a product fact.
            ServicePort(tag="supply-hot", service=Service.WATER_HOT,
-                       position=(ft(0), ft(0), inch(36))),
+                       position=(inch(5), inch(16.375), inch(34)), connection_size=inch(0.75),
+                       direction=(0, 1, 0), hose_length=ft(5),
+                       notes="Rear inlet, hot left from behind; station scaled, not dimensioned"),
            ServicePort(tag="supply-cold", service=Service.WATER_COLD,
-                       position=(ft(0), ft(0), inch(36))),
+                       position=(inch(-5), inch(16.375), inch(34)), connection_size=inch(0.75),
+                       direction=(0, 1, 0), hose_length=ft(5),
+                       notes="Rear inlet; station scaled, not dimensioned"),
            # The washer's discharge and the dryer's condensate both leave at the standpipe
            # band: LG's drain-hose connector joins the dryer hose to the washer's and both
            # drop into PR-M-WASH-STANDPIPE (plan/mep_drainage.py).
            ServicePort(tag="drain", service=Service.DRAIN,
-                       position=(ft(0), ft(0), inch(36)))),
+                       position=(inch(10), inch(16.375), inch(30)), connection_size=inch(1),
+                       direction=(0, 1, 0),
+                       notes="Hose end 24-96 in. over the base (LG); hose length unpublished")),
     # LG's door-open depth is 57 1/2" overall, so the leaf itself projects 24 3/4" past the
     # 32 3/4" body. 30" is that leaf plus the few inches a person needs to stand in it, and
     # it stays RECOMMENDED (front_zone's only policy) so a laundry *closet* — where the band
@@ -153,8 +161,17 @@ LG_DISHWASHER = ApplianceType(
     needs=frozenset({Service.WATER_HOT, Service.DRAIN, Service.POWER_120}),
     quick_closing=True,  # solenoid fill valve — P2903.5
     ports=(ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
-           ServicePort(tag="supply", service=Service.WATER_HOT, position=(ft(0), ft(0), ft(0))),
-           ServicePort(tag="drain", service=Service.DRAIN, position=(ft(0), ft(0), ft(0)))),
+           # Both leave through the rear-left channel; LG's diagram labels are not legible as
+           # dimensions, so the stations are approximate. The drain's receptor is the disposer's
+           # knockout (APPL-ISE-BADGER5 dw-inlet), not a house pipe.
+           ServicePort(tag="supply", service=Service.WATER_HOT,
+                       position=(inch(-7.2), inch(10), inch(4.5)), connection_size=inch(0.375),
+                       direction=(0, 1, 0),
+                       notes="90-degree 3/8 in. compression fill, left side channel, rear low"),
+           ServicePort(tag="drain", service=Service.DRAIN,
+                       position=(inch(-3), inch(12), inch(4.5)), connection_size=inch(0.625),
+                       direction=(0, 1, 0),
+                       notes="Pump outlet, rear low; LG allows up to 12 ft to the sink")),
     # 24" of door plus standing room, unchanged from the allowance: the leaf drops rather
     # than swinging, so the band is the open door's own reach across the aisle.
     clearances=(front_zone(inch(23.75), inch(24.625), ft(2), "dishwasher door swing"),),
@@ -315,8 +332,17 @@ BADGER_5 = DISPOSAL.model_copy(update={
     "tag": "APPL-ISE-BADGER5", "name": "InSinkErator Badger 5 disposer, 1/2 HP",
     "footprint": (inch(6.3125), inch(6.3125)), "height": inch(11.5),
     "ports": (ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
+              # Side discharge, elbow turned west to the Dearborn trap (notes/
+              # kitchen_sink_installation.md s3): 6 1/2 in. under a stainless sink bottom.
               ServicePort(tag="drain", service=Service.DRAIN,
-                          position=(ft(0), ft(0), inch(11.5)))),
+                          position=(inch(-5), inch(0), inch(5)), connection_size=inch(1.5),
+                          direction=(-1, 0, 0), certainty=PortCertainty.EXACT,
+                          notes="Badger 5 submittal outlet centreline, 18.319 in. AFF here"),
+              ServicePort(tag="dw-inlet", service=Service.DRAIN,
+                          position=(inch(3.156), inch(0), inch(9)), connection_size=inch(0.875),
+                          direction=(1, 0, 0),
+                          notes="Dishwasher knockout, upper body; side and height to confirm "
+                                "on the delivered unit")),
     "product_ref": "PROD-ISE-BADGER5",
     "source": "InSinkErator Badger 5 spec sheet: 11 1/2 in. overall, 6 5/16 in. body.",
 })

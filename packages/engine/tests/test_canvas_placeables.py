@@ -524,6 +524,8 @@ def test_coupled_drain_move_writes_source_that_reloads(tmp_path: Path) -> None:
     fixture = next(item for item in plan.storey_elements("basement")
                    if item.tag == "FX-B-BATH-WC")
     old_x, old_y = fixture.position.xy_m
+    flange_x, flange_y = next(item for item in plan.all_elements()
+                              if item.tag == "SP-B-BATH-WC").position.xy_m
     ops = move_placeable(plan, "basement", tag="FX-B-BATH-WC",
                          position=(old_x + 0.1, old_y - 0.05)).ops
     coordinator = ProjectCoordinator(house)
@@ -533,9 +535,9 @@ def test_coupled_drain_move_writes_source_that_reloads(tmp_path: Path) -> None:
     assert reloaded.plan is not None, [finding.message for finding in reloaded.findings]
     moved = {item.tag: item for item in reloaded.plan.all_elements()}
     assert moved["SP-B-BATH-WC"].position.xy_m == pytest.approx(
-        (old_x + 0.1, old_y - 0.05), abs=1e-3)
+        (flange_x + 0.1, flange_y - 0.05), abs=1e-3)
     run = moved["PR-B-BATH-DRAIN"]
-    assert run.path[0].xy_m == pytest.approx((old_x + 0.1, old_y - 0.05), abs=1e-3)
+    assert run.path[0].xy_m == pytest.approx((flange_x + 0.1, flange_y - 0.05), abs=1e-3)
     assert run.path[0] == run.path[1]
     # The rewrite replaces vertices in place, so the per-vertex invert list still lines up.
     assert len(run.elevations) == len(run.path)

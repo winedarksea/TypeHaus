@@ -20,7 +20,7 @@ def connection():
                                height=inch(40), ports=(port,))
     library = Library(fixture_types=(fixture_type,))
     plan = SimpleNamespace(library=library, by_tag=lambda tag: fixture,
-                           elements_of_kind=lambda kind: (fixture,),
+                           elements_of_kind=lambda kind: (fixture,) if kind == "Fixture" else (),
                            storeys=(SimpleNamespace(tag="main", elevation=inch(120)),),
                            storey_elements=lambda tag: (fixture,))
     model = SimpleNamespace(plan=plan, canvas_objects=[], wall=lambda tag: None, pipe_runs=[])
@@ -103,6 +103,28 @@ def test_resolved_finished_floor_is_included_in_storey_relative_port_z(connectio
         inch(21.5).meters)
     run.z_m = (inch(141.5).meters, 0)
     assert fixture_port_connection(ctx)[0].result is Result.PASS
+
+
+def test_appliance_ports_are_graded(connection):
+    ctx, fixture, fixture_type, _ = connection
+    from typehaus.model import Appliance, ApplianceType
+
+    washer = Appliance(tag="FX", type_ref="TYPE", position=fixture.position, rotation=deg(90))
+    washer_type = ApplianceType(tag="TYPE", name="Test washer", footprint=fixture_type.footprint,
+                                height=inch(40), ports=fixture_type.ports)
+    ctx.plan.library = Library(appliance_types=(washer_type,))
+    ctx.plan.by_tag = lambda tag: washer
+    ctx.plan.elements_of_kind = lambda kind: (washer,) if kind == "Appliance" else ()
+    assert [f.result for f in fixture_port_connection(ctx)] == [Result.PASS]
+
+
+@pytest.mark.parametrize("hose_in, expected", [(12, Result.PASS), (6, Result.FAIL)])
+def test_hose_port_passes_within_connector_reach(connection, hose_in, expected):
+    ctx, _, fixture_type, run = connection
+    port = fixture_type.ports[0].model_copy(update={"hose_length": inch(hose_in)})
+    object.__setattr__(fixture_type, "ports", (port,))
+    run.path = ((inch(90).meters, inch(210).meters), (0, 0))  # 8" in plan from the port
+    assert fixture_port_connection(ctx)[0].result is expected
 
 
 def test_part_quantity_counts_in_addition_to_primary_fixture():

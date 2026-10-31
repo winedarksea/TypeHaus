@@ -56,9 +56,9 @@ BASEMENT_CLEANOUTS = [
     # the cap needs an access panel. Its turn east into the stack is only 90° now that the
     # collector drops at that corner, so it carries no turn cleanout.
     DrainCleanout(uid="COB0000011", tag="CO-B-WC2-HEAD", pipe_ref="PR-B-WC2-DRAIN",
-                  position=pt(ft(2, 6), ft(20, 10.615)),
+                  position=pt(ft(2, 6), inch(252.74)),
                   fitting_elevation=ft(7, 4.4375),
-                  cap_position=pt(ft(2, 6), ft(20, 10.615)),
+                  cap_position=pt(ft(2, 6), inch(252.74)),
                   cap_elevation=ft(8, 0.9375),
                   access="ceiling", clear_width=inch(24), clear_depth=inch(24)),
 ]

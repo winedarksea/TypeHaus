@@ -196,8 +196,9 @@ MAIN_FIXTURES = (
               wall_ref="W-M-BA2E"),
     # Utility tub, 4 1/4" east of the stack.
     #
-    # `drain_position` at y=18'-9" — offset 3" to clear W-B-CW2 (12" concrete on the y=18'
-    # axis) — is what SP-M-LSINK/PR-B-LSINK-DRAIN/the 45" trap arm below are all authored on.
+    # `drain_position` at y=18'-10 5/8" — clear of W-B-CW2 (12" concrete on the y=18' axis)
+    # and joist-0-014's flange — is where PR-B-LSINK-DRAIN drops; it was 18'-9" until
+    # 2026-10-30, 1 5/8" off the pipe, which the tub's DRAIN port now catches.
     #
     # SL-M-DECK (9" concrete) means every main-storey fixture drops straight down its own
     # sleeve rather than running a trap arm sideways — same as PR-B-SINK2/WASH-DRAIN. The
@@ -211,7 +212,7 @@ MAIN_FIXTURES = (
     # its riser wall and repointing it would move the risers, not the sink.
     Fixture(uid="J7VY2GZ062", tag="FX-M-LAUNDRY-SINK", type_ref="FX-LAUNDRY-SINK-24", room="RM-M-LAUNDRY",
             position=pt(m(3.69703), m(5.86920)), rotation=deg(180), wall_ref="W-M-BA2E",
-            drain_position=pt(ft(12, 0), ft(18, 9))),
+            drain_position=pt(ft(12, 0), ft(18, 10.625))),
     # Window-centred x=352", 5/8" east within the fixed 36" base. The 32x19 flange
     # sits forward of a 3" rear faucet zone in the 32x22 installation envelope.
     # Rim meets the underside of 3 cm quartz: 36 - 1.181 - 10 = 24.819" bowl base.

@@ -115,6 +115,9 @@ class ServicePort(HausModel):
     #: Unit vector in the product frame; ``None`` when the sheet does not say.
     direction: tuple[float, float, float] | None = None
     certainty: PortCertainty = PortCertainty.APPROXIMATE
+    #: The product's own connector (washer inlet hose, faucet supply line). The house rough-in
+    #: then only has to lie within this straight-line reach of the port, not on it.
+    hose_length: Length | None = None
     notes: str | None = None
 
     def is_exact(self) -> bool:

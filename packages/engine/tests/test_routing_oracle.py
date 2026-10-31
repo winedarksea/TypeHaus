@@ -47,7 +47,8 @@ def test_the_derived_drain_points_are_what_the_note_says(catlin_model_ro) -> Non
     """
     from typehaus.resolve.mep import _expected_drain_point
 
-    current_terminals = {**_TERMINALS, "FX-S-SUITEBATH-LAV": (165.5, 264.755)}
+    current_terminals = {**_TERMINALS, "FX-S-SUITEBATH-LAV": (165.5, 264.755),
+                         "FX-S-SUITEBATH-WC": (134.81, 252.406)}  # the 12" rough-in flange
     for tag, expected in current_terminals.items():
         point = _expected_drain_point(catlin_model_ro, tag)
         assert point is not None, tag
@@ -80,17 +81,17 @@ def test_the_collector_profile_is_the_note_s_arithmetic(catlin_model_ro) -> None
     path = [(_in(p[0]), _in(p[1])) for p in run.path]
 
     assert z[0] == pytest.approx(120.75, abs=0.001)   # the finished floor
-    assert z[1] == pytest.approx(116.5, abs=0.001)    # the drop bottom, under the chord
+    assert z[1] == pytest.approx(116.75, abs=0.001)   # the drop bottom, under the chord
     assert z[-1] == pytest.approx(111.0, abs=0.001)   # on the stack barrel
 
     legs = [math.dist(path[i], path[i + 1]) for i in (1, 2, 3)]
-    assert legs == pytest.approx([9.19, 34.625, 6.0], abs=0.001)   # east, south, east
+    assert legs == pytest.approx([9.19, 36.406, 6.0], abs=0.001)   # east, south, east
     slopes = [(z[i] - z[i + 1]) / (leg / 12.0) for i, leg in zip((1, 2, 3), legs, strict=True)]
-    assert slopes == pytest.approx([0.261, 1.282, 3.2], abs=0.001)
+    assert slopes == pytest.approx([0.326, 1.286, 3.2], abs=0.001)
 
     developed_ft = sum(legs) / 12.0
-    assert developed_ft == pytest.approx(4.1513, abs=0.001)
-    assert 0.25 * developed_ft == pytest.approx(1.0378, abs=0.001)
+    assert developed_ft == pytest.approx(4.2997, abs=0.001)
+    assert 0.25 * developed_ft == pytest.approx(1.0749, abs=0.001)
 
 
 def test_the_two_arms_arrive_above_the_collector_they_tie_into(catlin_model_ro) -> None:
@@ -99,11 +100,11 @@ def test_the_two_arms_arrive_above_the_collector_they_tie_into(catlin_model_ro) 
     `_TIE_IN_INVERT_TOL_M` so `drain_tie_ins` still links the load."""
     runs = {r.tag: r for r in catlin_model_ro.pipe_runs}
     collector = runs["PR-M-S-SUITE-WC-DRAIN"]
-    start, south_fall, south = 116.3, 3.7, 34.625
+    start, south_fall, south = 116.5, 3.9, 36.406
 
-    for tag, station, expected in (("PR-M-S-SUITE-LAV-DRAIN", 246.0, 115.806),
-                                   ("PR-M-S-SUITE-TUB-DRAIN", 228.0, 113.882)):
-        travelled = 250.625 - station
+    for tag, station, expected in (("PR-M-S-SUITE-LAV-DRAIN", 246.0, 115.814),
+                                   ("PR-M-S-SUITE-TUB-DRAIN", 228.0, 113.886)):
+        travelled = 252.406 - station
         invert = start - south_fall * (travelled / south)
         assert invert == pytest.approx(expected, abs=0.001)
         arrival = _in(runs[tag].z_m[-1])

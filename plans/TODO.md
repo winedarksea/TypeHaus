@@ -272,7 +272,21 @@ the future.
 - [x] SL-SG-STAIRPAD matches SL-WK-D at −2′-9″ finished height.
 - D-B-PATIO has too short a threshold, it needs to go out over the foam gap. And it has some weird top flashing that isn't needed here it seems.
 - Might be worth writing up ICF in cost options as an alternative exterior wall setup (for the house) something like the Quadlock 'plus' form which with 4.25" of EPS on each side delivers R-38.
-- Make sure the plumbing matches fixtures to their right locations on their connections
+- Fixture connections (audit 2026-10-30): every fixture and appliance now declares ports and
+  `mep.fixture_port_connection` grades them (`--only all`). Still open:
+  - Supply branches that do not exist: the cold stop at all six WCs, the valve hot/cold at
+    `FX-M-BATH2-SH`, `FX-A-STUBATH-SH`, `FX-S-BATH1-SH`, `FX-S-SUITEBATH-TUBSH`, the
+    `FX-M-BATH2-FILLER` pair (no run serves it), and a DW hot stub (51" from `PR-B-HW-KITCH`;
+    `PA-M-DW-WHA-HW` sits at x=334" off that pipe). Each prints its distance as an UNKNOWN.
+    `FX-S-BATH1-WC`'s stop wants an owner call: its back wall `W-S-W1` is exterior.
+  - The sauna's valve stubs are hot south, cold north; the R10000 body is hot-left. Swap the
+    stubs or turn the cartridge.
+  - `FX-S-BATH1-WC` stands 1 3/4" off `W-S-W1`, so its flange is 13 3/4" off the wall: move
+    the bowl to the wall (radiant keepout and drain follow) or accept the gap.
+  - Datasheets that would make the APPROXIMATE stations EXACT: Delta R10000-UNBX inlet spacing
+    and height, the TOTO supply inlets, LG WashTower and LDTS5552 connection stations and hose
+    lengths, Glacier Bay QL033Y, Kohler Chulton, SUNNERSTA, Moen 4794 stub depth. The washer's
+    real valves are mid-run tees, which the endpoint grade cannot see.
 - Make sure sizing and dimensions and placement are correct for junction boxes (ie for LED power supplies), with specified product.
 - Double check the calculations for accuracy of BTU heating and cooling load.
 - Rainscreen closures (2026-10-29): close the supplier questions in `houses/catlin/notes/metal_trim_kit.md` "Open with suppliers" (Metal Sales x4, the membrane maker, the screen supplier). The panel bottoms are still drawn to the seat, not on the raised strip (in `resolve/board_batten.py`), and so are the wide outside corners (`cladding_trim/mixed_corners.py`, off the same layer band): both pass through the raised trim foot and the base strip, and `integrity.rainscreen_cavity` cannot see a panel surface, so it grades the slot open regardless. At the four outside corners the base and band strips also run into the corner trim and the adjoining wall's base trim; stop them at the corner once the corners land on the trim.

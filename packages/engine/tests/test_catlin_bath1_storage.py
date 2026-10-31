@@ -56,7 +56,12 @@ def test_toilet_centres_under_the_window_and_preserves_its_required_clear_floor(
 def test_toilet_drain_follows_the_flange_into_the_next_clear_truss_bay(catlin_model_ro):
     toilet = _objects(catlin_model_ro)["FX-S-BATH1-WC"]
     drain = next(run for run in catlin_model_ro.pipe_runs if run.tag == "PR-M-S-BATH1-WC-DRAIN")
-    assert drain.path[0] == pytest.approx(toilet.position)
+    # The flange is the type's DRAIN port: 12" rough-in, so it sits west of the bowl centre.
+    from typehaus.model import Service
+    from typehaus.resolve.mep_sleeves import expected_port_point
+    flange = expected_port_point(catlin_model_ro, "FX-S-BATH1-WC", Service.DRAIN)
+    assert drain.path[0] == pytest.approx(flange[:2], abs=0.001)
+    assert drain.path[0][1] == pytest.approx(toilet.position[1])
     floor = next(floor for floor in catlin_model_ro.floors if floor.tag == "FS-S-WEST")
     adjoining_truss_lines = sorted({member.p0[1] for member in floor.members
                                    if member.category == "joist"})

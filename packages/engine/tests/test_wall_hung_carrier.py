@@ -167,18 +167,20 @@ def test_the_drain_point_is_derived_from_the_type_and_the_host_wall(catlin_plan,
                         if t.tag == fixture.type_ref)
     port = next(p for p in fixture_type.ports if p.service is Service.DRAIN)
     nominal = centre[1] - port.position[1].meters
-    assert abs(point[1] - nominal) / IN == pytest.approx(1.01, abs=0.01)
+    assert abs(point[1] - nominal) / IN == pytest.approx(0.0, abs=0.02)  # port is on the axis
 
 
 def test_a_floor_drained_wc_still_drops_under_its_own_footprint(catlin_model_ro):
-    """The WALL branch must not have swallowed the "no WATER_HOT" heuristic it precedes."""
-    from typehaus.resolve.mep_sleeves import _expected_drain_point
+    """The WALL branch must not have swallowed a floor bowl: its drain is its own flange port,
+    in plan, with no projection onto a wall axis."""
+    from typehaus.resolve.mep_sleeves import _expected_drain_point, expected_port_point
 
     for tag in ("FX-M-BATH2-WC", "FX-B-BATH-WC", "FX-A-STUBATH-WC"):
         fixture = catlin_model_ro.plan.by_tag(tag)
         if fixture.drain_position is not None:
             continue
-        assert _expected_drain_point(catlin_model_ro, tag) == fixture.position.xy_m
+        flange = expected_port_point(catlin_model_ro, tag, Service.DRAIN)[:2]
+        assert _expected_drain_point(catlin_model_ro, tag) == pytest.approx(flange)
 
 
 def test_the_carrier_checks_report_the_bath2_crowding_without_failing(catlin_model_ro):

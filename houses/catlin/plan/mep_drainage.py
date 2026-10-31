@@ -139,11 +139,11 @@ DRAINS = [
                         ft(8, 0.3125), ft(8, 0.21875),
                         ft(7, 11.25), inch(94.2625), inch(93.925), inch(-19.1625), inch(-19.25)),
             serves=("FX-M-KITCH-SINK",)),
-    # BATH2's WC, at its flange on the wet wall (→ SP-M-WC2), x 2'-6" y 20'-10 5/8" — the
-    # run's first two points ARE the fixture's drain convention, under the bowl.
+    # BATH2's WC, at its flange on the wet wall (→ SP-M-WC2): x 2'-6", y 21'-0 3/4", the
+    # Carlyle's 12" rough-in off W-M-HS1's finish, starting at the finished floor.
     PipeRun(uid="CBPD01AAAA", tag="PR-B-WC2-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(2, 6), ft(20, 10.615)), pt(ft(2, 6), ft(20, 10.615)),
-                  pt(inch(28.5), ft(20, 8.99)), pt(inch(28.5), ft(16, 6)),
+            path=(pt(ft(2, 6), inch(252.74)), pt(ft(2, 6), inch(252.74)),
+                  pt(inch(28.5), inch(251.115)), pt(inch(28.5), ft(16, 6)),
                   pt(ft(3), ft(16, 6))),
             diameter=inch(3), material="pvc",
             # Keep the outlet under the bowl at x=30"; a 1 1/2" lateral offset puts the
@@ -154,7 +154,7 @@ DRAINS = [
             # upper-terminal cleanout. Square, it was 180° and wanted a second ceiling panel.
             # The raised collector shortens the south leg's fall to 2 1/2"; the
             # final 7 1/2" leg still falls 2", keeping the shower branch above it.
-            elevations=(ft(9, 1.4375), ft(7, 4.4375), ft(7, 4.375),
+            elevations=(ft(9, 2.9375), ft(7, 4.4375), ft(7, 4.375),
                         ft(7, 1.9375), ft(6, 11.9375)),
             serves=("FX-M-BATH2-WC",)),
     # ** BATH1's WALL-HUNG WC, ON ITS OWN BRANCH, NOT PR-B-MAIN-DRAIN'S FIRST VERTEX. **
@@ -167,7 +167,8 @@ DRAINS = [
     #   * and it started 3 5/16" BELOW the finished floor, which is a closet-flange invert.
     #     A wall-hung bowl's trap is integral and above the deck: there is no flange, the
     #     stub turns down inside the carrier frame, and the pipe crosses the floor plane —
-    #     ft(9, 4.75), the main floor's finished surface — on its way into the joist bay.
+    #     the bath's finished surface, 110.38435" basement-relative, the AP's waste port —
+    #     on its way into the joist bay.
     #
     # Route is the house's standard two-move branch (cf. PR-B-WC2-DRAIN): drop in W-M-HS1's
     # own bay under the bowl, 6" south to clear the wall's plate line, then 3'-9 5/8" east to
@@ -179,7 +180,7 @@ DRAINS = [
             path=(pt(inch(24.5), ft(22, 4)), pt(inch(24.5), ft(22, 4)),
                   pt(inch(24.5), ft(21, 10)), pt(ft(6), ft(21, 10))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(9, 4.75), ft(7, 9.625), ft(7, 9.4375), ft(7, 8.4375)),
+            elevations=(inch(110.38435), ft(7, 9.625), ft(7, 9.4375), ft(7, 8.4375)),
             serves=("FX-M-BATH1-WC",)),
     # South wet-wall basin: drop below the floor, then north and east to the collector head.
     # Tee/vent stays behind the north-face timber block, not through a fixing target.
@@ -200,7 +201,7 @@ DRAINS = [
             diameter=inch(1.5), material="pvc",
             # The end drain drops in the 208"..224" joist bay and the leg runs west inside it to
             # PR-B-MAIN-DRAIN: 11 1/4" of fall over 6 1/2", a 60-degree leg (1/6 bend).
-            elevations=(ft(9, 1.4375), inch(97.6), inch(86.35)),
+            elevations=(ft(9, 3.1875), inch(97.6), inch(86.35)),
             serves=("FX-M-BATH2-TUB",)),
     PipeRun(uid="CBPD04AAAA", tag="PR-B-SH2-DRAIN", system=PipeSystem.DRAIN,
             # Moved to the centre drain (2026-10-22). The drop at y=14'-11" is in joist 11's bay
@@ -270,10 +271,10 @@ DRAINS = [
     # It turns south then west, and the main carries it north: 180° in aggregate, so 707.4
     # wants a cleanout at the tie. CO-B-STACK-BASE is that cleanout.
     PipeRun(uid="CBPD07AAAA", tag="PR-B-BATH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(12), inch(289.625)), pt(ft(12), inch(289.625)),
+            path=(pt(ft(12), inch(291.8125)), pt(ft(12), inch(291.8125)),
                   pt(ft(12), ft(17, 4.75)), pt(ft(3), ft(17, 4.75))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(0), inch(-8.6), None, inch(-12.54)),
+            elevations=(ft(0), inch(-8.55), None, inch(-12.54)),
             slope_in_per_ft=0.25,
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     # The lavatory's own 1 1/2" arm. The vanity sits on the same x=12' line as the WC, so
@@ -413,8 +414,8 @@ SECOND_BRANCH_DRAINS = [
     # hole (FO-S-BATH1-WC-DRAIN) into the closet ceiling — STORAGE, where exposed pipe is by
     # design — and east at 8'-4" onto the stack's side. Dropping early only gains head.
     PipeRun(uid="K28BQ29KCW", tag="PR-M-S-BATH1-WC-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(m(0.560313), inch(376)), pt(m(0.560313), inch(372.32)),
-                  pt(m(0.560313), inch(344)), pt(m(0.560313), inch(344)),
+            path=(pt(inch(20.278), inch(376)), pt(inch(20.278), inch(372.32)),
+                  pt(inch(20.278), inch(344)), pt(inch(20.278), inch(344)),
                   pt(ft(5), inch(344)), pt(ft(5), ft(26, 7.5))),
             diameter=inch(3), material="pvc",
             elevations=(ft(10, 0.75), inch(116.75), inch(116), inch(100.5), inch(99.51),
@@ -460,14 +461,15 @@ SECOND_BRANCH_DRAINS = [
             elevations=(inch(140.5), inch(139.875), inch(139.6875), inch(122.5625),),
             serves=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2"), wall_ref="W-S-BD-N"),
     # ** THE SUITE BATH'S 3" COLLECTOR. ** The water closet is floor-drained and its flange
-    # at (134.81", 250.625") lands cleanly in the 241.75"..254.25" bay, so this one drops
+    # at (134.81", 252.406"), the Aquia's 12" rough-in, lands in the 241.75"..254.25" bay with
+    # 0.09" to spare on the 3.5" OD, so this one drops
     # vertically — no offset bend needed. East in that bay to x=12'-0" (x=11'-2.81" is a web
     # band; 137 1/2"..150 1/2" is the opening), south across the trusses to the y=18'-0" bay
-    # the stack head sits in, then 6" east onto it. It starts at 9'-8 1/2".
+    # the stack head sits in, then 6" east onto it. It starts at 9'-8 3/4".
     #
     # ** THE 1/2" IS THE WHOLE-LEG ENVELOPE, NOT WHAT THIS PIPE CLEARS. ** Taken as nominal
-    # 3" at the leg's HIGH end, the crown is 118.0 against the webs' 118.5 ceiling — but that
-    # high end (y=250.625) sits in the 241.75..254.25 clear bay, where there is no truss.
+    # 3" at the leg's HIGH end, the crown is 118.25 against the webs' 118.5 ceiling — but that
+    # high end (y=252.406) sits in the 241.75..254.25 clear bay, where there is no truss.
     # Graded at the three truss lines the leg actually crosses, and at 3" PVC's real 3.500"
     # OD, `mep.run_member_crossing` reports **+0.944"** of crown at `joist-0-015-0`, the
     # tightest of them.
@@ -476,10 +478,10 @@ SECOND_BRANCH_DRAINS = [
     # nothing under it but the ceiling; its crown at the 240" truss is 117.0" against the web
     # window's 118.5".
     PipeRun(uid="885X4850FE", tag="PR-M-S-SUITE-WC-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(134.81), inch(250.625)), pt(inch(134.81), inch(250.625)),
-                  pt(ft(12), inch(250.625)), pt(ft(12), ft(18)), pt(ft(12, 6), ft(18))),
+            path=(pt(inch(134.81), inch(252.406)), pt(inch(134.81), inch(252.406)),
+                  pt(ft(12), inch(252.406)), pt(ft(12), ft(18)), pt(ft(12, 6), ft(18))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(10, 0.75), ft(9, 8.5), inch(116.3), inch(112.6), ft(9, 3)),
+            elevations=(ft(10, 0.75), inch(116.75), inch(116.5), inch(112.6), ft(9, 3)),
             serves=("FX-S-SUITEBATH-WC",)),
     # The 30" vanity's 1 1/2" arm: down inside W-S-SN3 (the staggered wet wall this bath was
     # laid out around), south across one truss, then west on the y=246" bay to the collector.
@@ -805,11 +807,13 @@ STUDIO_DRAINS = [
     # what UPC Table 703.2 allows. `drain_inlet_spacing` grades barrels only, so this
     # spacing is this comment's claim, not a check's.
     PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(11, 0.875), ft(19, 4)), pt(ft(9, 7.5), ft(19, 4)),
+            path=(pt(inch(130.69), ft(19, 4)), pt(inch(130.69), ft(19, 4)),
+                  pt(ft(9, 7.5), ft(19, 4)),
                   pt(ft(9, 7.5), ft(19, 4)), pt(ft(9, 7.5), ft(19, 8)),
                   pt(ft(12), ft(19, 8))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(19, 4), ft(19, 3.5), ft(9, 8), inch(115.875), inch(115.0)),
+            elevations=(inch(240.87), ft(19, 4), ft(19, 3.5), ft(9, 8), inch(115.875),
+                        inch(115.0)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
     # ** THE HEAD FOLLOWED THE BOWL ONTO W-A-BATH-S AND THE RUN GOT SHORTER, 2026-09-09. **
     # The bar was three pieces on W-A-C2's west face and is now one SUNNERSTA kitchenette on
