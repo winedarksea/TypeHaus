@@ -42,12 +42,13 @@ haus print3d houses/catlin --include railing,site --exclude plant --no-furniture
 |---|---|---|
 | BODY | wall, slab (room-owned), floor, ceiling, roof, stair, soffit, fascia, column, beam, countertop, slab band/platform/finish, pad | thickened up to `--min-wall-mm` (2 x nozzle) |
 | DETAIL | fixtures, appliances, fixed casework, equipment, surface luminaires, trellis | thickened up to `--min-feature-mm` (nozzle) |
-| TRIM | cladding trim, baseboard, door casing, window return and stool, gutter, downspout, opening lining | never thickened; dropped below a feature |
-| DROP | site and landscape, footings and sub-slab, framing, connectors, every MEP run and box, flashing, sill pans, screens, clamps, solar panels, railings, door leaves and glass, suspended lights, registers, other devices | never printed |
+| TRIM | cladding trim, baseboard, door casing, window return and stool, gutter, opening lining | never thickened; dropped below a feature |
+| DROP | site and landscape, downspouts (they stand off the wall on unmodelled brackets), footings and sub-slab, framing, connectors, every MEP run and box, flashing, sill pans, screens, clamps, solar panels, railings, door leaves and glass, suspended lights, registers, other devices | never printed |
 | LOOSE | movable furniture | `furniture.3mf`, graded below |
 
 - `--include railing,solar_panel,site` prints a dropped kind (site is room-less flatwork);
-  `--exclude KIND` drops one. An unknown kind is an error: add its row.
+  `--exclude KIND` drops one. A kind with no row, in the model or in either flag, is an
+  error: add its row.
 - **Fixed vs movable** is `resolve/placeable_fixity.is_fixed`, the same rule interior trim stops
   at: casework with a work surface or hung on a wall, a fixture that needs hot water or is hung,
   and every appliance.

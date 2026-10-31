@@ -10,6 +10,7 @@ from functools import lru_cache
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.framing.profiles import _RE_PANEL, cross_section
 from typehaus.resolve.geometry import polygon_area
+from typehaus.resolve.geometry_ir import signed_volume
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.soffits import SOFFIT_LINING_THICKNESS
 from typehaus.resolve.strap_braces import STRAP_CATEGORY
@@ -303,7 +304,7 @@ def solid_volume_m3(solid) -> float:
     shape; their ``outline`` and z range are only a silhouette, and a sloped drain's flat
     prism of that silhouette is ten to a hundred times its real volume."""
     if solid.body_mesh is not None:
-        return abs(mesh_signed_volume_m3(solid.body_mesh))
+        return abs(signed_volume(solid.body_mesh.positions, solid.body_mesh.triangles))
     if solid.sweep is not None:
         return sweep_length_m(solid.sweep) * abs(polygon_area(list(solid.sweep.profile)))
     return solid_net_area_m2(solid) * max(0.0, solid.z1_m - solid.z0_m)
@@ -317,15 +318,6 @@ def billed_volume_m3(solid, soffits: dict) -> float:
         return sum(panel.area_m2 for panel in soffit.finish_panels) * (
             SOFFIT_LINING_THICKNESS.meters)
     return solid_volume_m3(solid)
-
-
-def mesh_signed_volume_m3(mesh) -> float:
-    """Divergence-theorem volume of a closed ``GMesh``: positive when wound outward."""
-    pts = mesh.positions
-    return sum(pts[a][0] * (pts[b][1] * pts[c][2] - pts[b][2] * pts[c][1])
-               + pts[a][1] * (pts[b][2] * pts[c][0] - pts[b][0] * pts[c][2])
-               + pts[a][2] * (pts[b][0] * pts[c][1] - pts[b][1] * pts[c][0])
-               for a, b, c in mesh.triangles) / 6.0
 
 
 def volume_billed_solids(model: ResolvedModel):

@@ -108,6 +108,16 @@ class GMesh:
             raise ValueError(f"GMesh triangle {tri} indexes past {count} positions")
 
 
+def signed_volume(positions, triangles) -> float:
+    """Divergence-theorem volume of a closed triangle mesh: positive when wound outward."""
+    total = 0.0
+    for a, b, c in triangles:
+        p, q, r = positions[a], positions[b], positions[c]
+        total += (p[0] * (q[1] * r[2] - q[2] * r[1]) + p[1] * (q[2] * r[0] - q[0] * r[2])
+                  + p[2] * (q[0] * r[1] - q[1] * r[0]))
+    return total / 6.0
+
+
 @dataclass(frozen=True)
 class GSweep:
     """A planar profile swept along a vector — a member with a shape cut out of it.

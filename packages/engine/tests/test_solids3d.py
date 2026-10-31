@@ -112,6 +112,21 @@ def test_overlap_ratchet(catlin_model_ro, request):
                        "change:\n  " + "\n  ".join(grown))
 
 
+def test_every_void_is_cut_whatever_its_winding():
+    """Two overlapping voids wound opposite ways, and a raked prism's second void."""
+    from typehaus.resolve.geometry_ir import GPrism
+
+    def square(x0, y0, x1, y1):
+        return ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
+
+    crossed = (square(1, 1, 3, 3), tuple(reversed(square(2, 2, 4, 4))))
+    assert to_manifold(GPrism(square(0, 0, 5, 5), 0.0, 1.0, voids=crossed)).volume() == (
+        pytest.approx(25 - 7))
+    raked = GPrism(square(0, 0, 5, 5), 0.0, 1.0, top=(2.0, 2.0, 2.0, 2.0),
+                   voids=(square(1, 1, 2, 2), square(3, 3, 4, 4)))
+    assert to_manifold(raked).volume() == pytest.approx(2 * (25 - 2))
+
+
 _TIES = ("H2.5A", "H10ASS", "LSTA24", "MSTA12Z", "A35Z", "LS30", "HGAM10", "LTP4", "STHD14",
          "STHD14RJ", "HETA20Z", "MASA", "DTT2Z", "SP4", "SP6", "APVKB45-6", "KBS1Z")
 _HANGERS = ("LUS28", "IUS2.56/11.88", "HU28-2Z", "HUC212-3", "HHUS410", "LSSR2.37Z", "LSCZ",

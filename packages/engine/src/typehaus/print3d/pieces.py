@@ -27,6 +27,8 @@ STANDARD_SCALES: tuple[tuple[int, str], ...] = (
 OVERHANG_NZ = -math.cos(math.radians(45.0))
 #: Plate and piece fuse through this much overlap, in print mm.
 FUSE_MM = 0.05
+#: Each side of a storey cut is trimmed this far off the plane, in model metres (0.1 mm).
+CUT_GAP_M = 1e-4
 
 
 @dataclass(frozen=True)
@@ -118,9 +120,12 @@ def build_pieces(solids: list, bands: list[Band], mm_per_m: float,
     body = union(solids).trim_by_plane((0.0, 0.0, 1.0), bands[0].z0)
     slabs = []
     for band in bands[:-1]:
-        above, below = body.split_by_plane((0.0, 0.0, 1.0), band.z1)
-        slabs.append(below)
-        body = above
+        # Each cut is a floor package's underside, so the plane is coplanar with faces and
+        # an exact split can leave a micron sliver of that floor on the piece below (seen:
+        # 85 m² of "overhang" on catlin's second storey). Trimming each side a hair off the
+        # plane drops any sliver thinner than the gap.
+        slabs.append(body.trim_by_plane((0.0, 0.0, -1.0), -(band.z1 - CUT_GAP_M)))
+        body = body.trim_by_plane((0.0, 0.0, 1.0), band.z1 + CUT_GAP_M)
     slabs.append(body)
     pieces: list[Piece] = []
     for index, (band, slab) in enumerate(zip(bands, slabs, strict=True)):

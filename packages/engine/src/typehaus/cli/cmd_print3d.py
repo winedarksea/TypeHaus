@@ -15,7 +15,13 @@ from typehaus.findings import Severity
 
 
 def _kinds(value: str | None) -> frozenset[str]:
-    return frozenset(part.strip() for part in (value or "").split(",") if part.strip())
+    from typehaus.print3d.policy import KIND_POLICY
+
+    kinds = frozenset(part.strip() for part in (value or "").split(",") if part.strip())
+    unknown = sorted(kinds - set(KIND_POLICY))
+    if unknown:
+        raise typer.BadParameter(f"no print3d policy row for {', '.join(unknown)}")
+    return kinds
 
 
 def _bed(value: str) -> tuple[float, float, float]:

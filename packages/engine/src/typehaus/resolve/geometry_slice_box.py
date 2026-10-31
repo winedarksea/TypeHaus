@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from typehaus.resolve.geometry_ir import GBox, GMesh
+from typehaus.resolve.geometry_ir import GBox, GMesh, signed_volume
 from typehaus.resolve.geometry_slice_plane import CutPlane, SectionProfile, Vec2UZ
 
 #: A ``GBox`` whose two rings differ only in Z is *upright*: its bottom ring is a plan
@@ -55,10 +55,7 @@ def outward_box_mesh(solid: GBox) -> GMesh:
     inside out and reads as negative volume."""
     mesh = _box_mesh(solid)
     pts = mesh.positions
-    volume = sum(pts[a][0] * (pts[b][1] * pts[c][2] - pts[b][2] * pts[c][1])
-                 + pts[a][1] * (pts[b][2] * pts[c][0] - pts[b][0] * pts[c][2])
-                 + pts[a][2] * (pts[b][0] * pts[c][1] - pts[b][1] * pts[c][0])
-                 for a, b, c in mesh.triangles)
+    volume = signed_volume(pts, mesh.triangles)
     if volume >= 0:
         return mesh
     return GMesh(positions=pts, triangles=tuple((a, c, b) for a, b, c in mesh.triangles))

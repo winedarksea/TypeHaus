@@ -1,8 +1,9 @@
 """Geometry IR -> manifold3d solids.
 
 Two pitfalls shape this module. IR ring winding is not normalised, so a flat ``GPrism`` is
-filled NonZero (either winding fills) with its voids subtracted the same way; and every
-ring-pair solid (``GBox``, ``GSweep``, a raked ``GPrism``) is oriented by its signed volume.
+filled NonZero (either winding fills) less the union of its voids, each filled on its own;
+and every ring-pair solid (``GBox``, ``GSweep``, a raked ``GPrism``) is oriented by its
+signed volume.
 A ``GMesh`` is taken exactly as authored and never re-oriented: an inverted mesh comes back
 with negative volume, and that is a finding, not something to fix here.
 """
@@ -14,7 +15,15 @@ from collections.abc import Iterable, Sequence
 
 import numpy as np
 
-from typehaus.resolve.geometry_ir import ElementGeometry, GBox, GMesh, GPrism, GSolid, GSweep
+from typehaus.resolve.geometry_ir import (
+    ElementGeometry,
+    GBox,
+    GMesh,
+    GPrism,
+    GSolid,
+    GSweep,
+    signed_volume,
+)
 from typehaus.solids3d import require_manifold3d
 
 Vec3 = tuple[float, float, float]
@@ -30,8 +39,9 @@ def to_manifold(solid: GSolid):
         top = [(x, y, z) for (x, y), z in zip(solid.ring, solid.top, strict=True)]
         body = ring_pair_manifold(bottom, top)
         if solid.voids:  # none on catlin today; cut through the full raked height
-            body = body - _flat_prism(m3d, solid.voids[0], solid.voids[1:], solid.z0_m - 1.0,
-                                      max(solid.top) + 1.0)
+            depth = max(solid.top) - solid.z0_m + 2.0
+            body = body - _holes(m3d, solid.voids).extrude(depth).translate(
+                (0.0, 0.0, solid.z0_m - 1.0))
         return body
     if isinstance(solid, GBox):
         return ring_pair_manifold(solid.corners_bottom, solid.corners_top)
@@ -62,11 +72,19 @@ def union(manifolds: Iterable):
 def _flat_prism(m3d, ring: Sequence, voids: Sequence, z0: float, z1: float):
     if z1 - z0 <= 0:
         return m3d.Manifold()
-    fill = m3d.FillRule.NonZero
-    section = m3d.CrossSection([list(ring)], fill)
+    section = m3d.CrossSection([list(ring)], m3d.FillRule.NonZero)
     if voids:
-        section = section - m3d.CrossSection([list(void) for void in voids], fill)
+        section = section - _holes(m3d, voids)
     return section.extrude(z1 - z0).translate((0.0, 0.0, z0))
+
+
+def _holes(m3d, voids: Sequence):
+    """The union of the voids, each filled on its own: two overlapping voids wound opposite
+    ways would cancel to winding 0 in one NonZero section, and their overlap stay solid."""
+    sections = [m3d.CrossSection([list(void)], m3d.FillRule.NonZero) for void in voids]
+    if len(sections) == 1:
+        return sections[0]
+    return m3d.CrossSection.batch_boolean(sections, m3d.OpType.Add)
 
 
 def mesh_manifold(positions: Sequence[Vec3], triangles: Sequence[tuple[int, int, int]]):
@@ -114,15 +132,6 @@ def _cap_triangles(ring: Sequence[Vec3]) -> list[tuple[int, int, int]]:
     flat = np.array([[_dot(p, u), _dot(p, v)] for p in ring], dtype=np.float64)
     # Newell's normal makes the projected ring CCW in (u, v), which is what triangulate wants.
     return [tuple(int(i) for i in tri) for tri in m3d.triangulate([flat])]
-
-
-def signed_volume(positions: Sequence[Vec3], triangles: Iterable[tuple[int, int, int]]) -> float:
-    total = 0.0
-    for a, b, c in triangles:
-        p, q, r = positions[a], positions[b], positions[c]
-        total += (p[0] * (q[1] * r[2] - q[2] * r[1]) + p[1] * (q[2] * r[0] - q[0] * r[2])
-                  + p[2] * (q[0] * r[1] - q[1] * r[0]))
-    return total / 6.0
 
 
 def _newell(ring: Sequence[Vec3]) -> Vec3:

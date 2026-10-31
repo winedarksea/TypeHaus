@@ -33,12 +33,14 @@ KIND_POLICY: dict[str, Treatment] = {
                      "trellis"), _D),
     # Thin trim: printed only where it is already thick enough.
     **dict.fromkeys(("cladding_trim", "baseboard", "door_casing", "window_return",
-                     "window_stool", "gutter", "downspout", "opening_lining"), _T),
+                     "window_stool", "gutter", "opening_lining"), _T),
     # Site and landscape.
     **dict.fromkeys(("plant", "earth", "backfill_native", "backfill_cap", "footing", "sub_slab",
                      "drain_tile", "french_drain", "drywell", "area_drain", "area_drain_riser",
                      "sump", "rain_garden_media", "rain_garden_stone", "planting_soil",
                      "planting_fill", "leader_extension", "drain_column", "site"), _X),
+    # A downspout stands off the wall on brackets nobody models: printed, it floats.
+    "downspout": _X,
     # Structure detail.
     **dict.fromkeys(("framing", "connector", "connector_embedded", "connector_hanger",
                      "panel_strap", "beam_cap", "rebar"), _X),
