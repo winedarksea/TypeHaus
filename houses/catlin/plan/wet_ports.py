@@ -32,15 +32,16 @@ def floor_wc_ports(depth_in: float) -> tuple[ServicePort, ...]:
 
 def valve_ports(centre_in: tuple[float, float, float], wall: tuple[float, float],
                 note: str) -> tuple[ServicePort, ...]:
-    """Hot and cold inlets of a valve body at ``centre_in`` on the wall whose inward normal is
-    ``wall`` (product frame). Hot sits on the left of a person facing the valve."""
+    """Hot and cold inlets of a valve body at ``centre_in``; ``wall`` points from the room into
+    the valve's wall (product frame). Hot sits on the left of a person facing the valve."""
     (x, y, z), (nx, ny) = centre_in, wall
-    left = (-ny, nx)  # facing the wall (+n), left is +90 degrees from it
+    left = (-ny, nx)  # facing +n, left is +90 degrees from it
     return tuple(
         ServicePort(tag=tag, service=service,
                     position=(inch(x + side * left[0] * VALVE_HALF_SPACING_IN),
                               inch(y + side * left[1] * VALVE_HALF_SPACING_IN), inch(z)),
-                    connection_size=inch(0.5), direction=(nx, ny, 0), notes=note)
+                    connection_size=inch(0.5), direction=(nx, ny, 0),
+                    notes=f"R10000-UNBX valve-body allowance; no Delta rough-in sheet read; {note}")
         for tag, service, side in (("VALVE-HOT", Service.WATER_HOT, 1),
                                    ("VALVE-COLD", Service.WATER_COLD, -1)))
 

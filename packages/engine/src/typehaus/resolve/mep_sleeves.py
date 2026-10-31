@@ -20,7 +20,7 @@ from dataclasses import replace
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import Service
 from typehaus.model.mep import SleevePenetration
-from typehaus.model.placeables import MountKind
+from typehaus.model.placeables import MountKind, ServicePort
 from typehaus.model.spatial import Appliance, Fixture
 from typehaus.resolve.assembly_material import is_cast_beam
 from typehaus.resolve.framing.carriers import backing_wall
@@ -415,19 +415,29 @@ def _expected_drain_point(model: ResolvedModel,
     return _project_onto_line(placed[0], wall.axis)
 
 
-def expected_port_point(model: ResolvedModel, fixture_tag: str,
-                        service: Service) -> tuple[float, float, float] | None:
-    """Placed service station, with z relative to the fixture's storey datum."""
+def _placeable_and_type(model: ResolvedModel, fixture_tag: str):
     fixture = model.plan.by_tag(fixture_tag)
     if not isinstance(fixture, (Fixture, Appliance)):
-        return None
-    fixture_type = next((entry for entry in (*model.plan.library.fixture_types,
-                                             *model.plan.library.appliance_types)
-                         if entry.tag == fixture.type_ref), None)
+        return None, None
+    return fixture, next((entry for entry in (*model.plan.library.fixture_types,
+                                              *model.plan.library.appliance_types)
+                          if entry.tag == fixture.type_ref), None)
+
+
+def expected_port_point(model: ResolvedModel, fixture_tag: str,
+                        service: Service) -> tuple[float, float, float] | None:
+    """The type's first ``service`` port, placed (see :func:`placed_port_point`)."""
+    _, fixture_type = _placeable_and_type(model, fixture_tag)
+    port = next((port for port in fixture_type.ports if port.service is service), None) \
+        if fixture_type is not None else None
+    return placed_port_point(model, fixture_tag, port) if port is not None else None
+
+
+def placed_port_point(model: ResolvedModel, fixture_tag: str,
+                      port: ServicePort) -> tuple[float, float, float] | None:
+    """One port's placed station, with z relative to the fixture's storey datum."""
+    fixture, fixture_type = _placeable_and_type(model, fixture_tag)
     if fixture_type is None:
-        return None
-    port = next((port for port in fixture_type.ports if port.service is service), None)
-    if port is None:
         return None
     x, y = rotate_into_plan(fixture, tuple(v.meters for v in port.position[:2]), model)
     placed = next((obj for obj in model.canvas_objects if obj.tag == fixture_tag), None)

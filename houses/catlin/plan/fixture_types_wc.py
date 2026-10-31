@@ -28,9 +28,19 @@ from library.placeables.fixtures import (
 )
 
 from plan.wet_ports import floor_drain_port, floor_wc_ports, valve_ports
-
-from typehaus.model import (FixtureType, Footprint2D, Mount, MountKind, PortCertainty, Service,
-                            ServicePort, ft, inch, m, pt)
+from typehaus.model import (
+    FixtureType,
+    Footprint2D,
+    Mount,
+    MountKind,
+    PortCertainty,
+    Service,
+    ServicePort,
+    ft,
+    inch,
+    m,
+    pt,
+)
 from typehaus.model.placeable_symbols._swanstone_flex_config import BATH2_SHOWER
 from typehaus.model.placeable_symbols.plumbing import NEO_ANGLE_CUT_FRACTION, neo_angle_points
 from typehaus.model.placeables import ModelRepresentation
@@ -206,7 +216,7 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
     # centre drain, which the base maker has not confirmed (notes/bath2_shower.md).
     "ports": (floor_drain_port(-2.75, 0, note="SS-3636 is a centre drain; the 2 3/4\" offset "
                                "clearing joist 11 is unconfirmed with Swanstone"),
-              *valve_ports((0, 18, 48), (0, 1), "R10000-UNBX valve-body allowance; no Delta rough-in sheet read; 48\" over the base")),
+              *valve_ports((0, 18, 48), (0, 1), "48\" over the base")),
     "source": 'RM-M-BATH2, owner selection 2026-10-12, replacing FX-SHOWER-36-DIVERTED. '
               'Delta MultiChoice R10000-UNBX rough (ASSE 1016) under a Trinsic T17T059 17T '
               'thermostatic trim (PROD-DELTA-T17T): separate temperature and volume, no '
@@ -251,7 +261,7 @@ SHOWER_36_COMBO = SHOWER.model_copy(update={
     # liner's 2" build-up, valve in W-B-CS east of the pan.
     "ports": (floor_drain_port(0, 0, 2, note="Curbed liner pan, no base SKU; centre drain"),
               *valve_ports((24.25, -22.1875, 51.4375), (1, 0),
-                           "R10000-UNBX valve-body allowance; no Delta rough-in sheet read; station read off the authored W-B-CS stubs")),
+                           "station read off the authored W-B-CS stubs")),
     "source": 'RM-B-SAUNA and RM-A-STUBATH, owner selection 2026-09-06. Delta MultiChoice '
               'R10000-UNBX rough (ASSE 1016), single-function trim, and a Moen Engage '
               'Magnetix 26010SRN two-in-one head — ONE outlet, so no diverter and no second '
@@ -300,7 +310,7 @@ SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
     "plan_symbol": "shower-neo-angle",
     "ports": (floor_drain_port(0, 0, note="Class-allowance base: drain centre vs corner offset "
                                "varies by maker; confirm on the ordered base"),
-              *valve_ports((0, 18, 48), (0, 1), "R10000-UNBX valve-body allowance; no Delta rough-in sheet read; 48\" over the base, north wall")),
+              *valve_ports((0, 18, 48), (0, 1), "48\" over the base, north wall")),
     "footprint_shape": Footprint2D(points=tuple(
         pt(m(x), m(y)) for x, y in neo_angle_points(
             _NEO_SIZE[0].meters, _NEO_SIZE[1].meters,
@@ -339,7 +349,7 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
     # Plumbing end at local -x on both placements.
     "ports": (floor_drain_port(-26.5, 0, size_in=1.5, note="Waste-and-overflow 3 1/2\" in from "
                                "the plumbing end; the insert has no published drain drawing"),
-              *valve_ports((-30, 0, 30), (-1, 0), "R10000-UNBX valve-body allowance; no Delta rough-in sheet read; 30\" over the tub base")),
+              *valve_ports((-30, 0, 30), (-1, 0), "30\" over the tub base")),
     "source": 'RM-S-BATH1 and RM-S-SUITEBATH, owner selection 2026-09-06. Delta MultiChoice '
               'R10000-UNBX rough (ASSE 1016) under a Delta T14459-SS COMPLETE trim — valve '
               'trim, H2Okinetic showerhead and tub spout in one box, which removes the '

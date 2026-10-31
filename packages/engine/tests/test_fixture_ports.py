@@ -118,6 +118,16 @@ def test_appliance_ports_are_graded(connection):
     assert [f.result for f in fixture_port_connection(ctx)] == [Result.PASS]
 
 
+def test_a_second_port_of_one_service_is_graded_at_its_own_station(connection):
+    """A disposer's knockout is a second DRAIN port; it must not borrow the outlet's station."""
+    ctx, _, fixture_type, _ = connection
+    knockout = fixture_type.ports[0].model_copy(update={"tag": "KNOCKOUT",
+                                                       "position": (inch(-6), inch(0), inch(20))})
+    object.__setattr__(fixture_type, "ports", (*fixture_type.ports, knockout))
+    results = {f.element_tags[1]: f.result for f in fixture_port_connection(ctx)}
+    assert results == {"DRAIN": Result.PASS, "KNOCKOUT": Result.FAIL}
+
+
 @pytest.mark.parametrize("hose_in, expected", [(12, Result.PASS), (6, Result.FAIL)])
 def test_hose_port_passes_within_connector_reach(connection, hose_in, expected):
     ctx, _, fixture_type, run = connection

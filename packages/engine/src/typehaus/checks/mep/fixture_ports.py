@@ -9,7 +9,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model import Service
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.mep_sleeves import expected_port_point
+from typehaus.resolve.mep_sleeves import placed_port_point
 
 CHECK_ID = "mep.fixture_port_connection"
 PLUMBING_SERVICES = (Service.DRAIN, Service.WATER_HOT, Service.WATER_COLD)
@@ -34,14 +34,16 @@ def fixture_port_connection(ctx: CheckContext) -> list[Finding]:
         fixture_type = types.get(fixture.type_ref)
         if fixture_type is None:
             continue
+        # ``drain_position`` overrides the type's first DRAIN port, the one the drain derives from.
+        first_drain = next((p for p in fixture_type.ports if p.service is Service.DRAIN), None)
         for port in fixture_type.ports:
             if port.service not in PLUMBING_SERVICES:
                 continue
-            point = expected_port_point(ctx.model, fixture.tag, port.service)
+            point = placed_port_point(ctx.model, fixture.tag, port)
             if point is None:
                 continue
             tags = (fixture.tag, port.tag)
-            if port.service is Service.DRAIN and fixture.drain_position is not None:
+            if port is first_drain and fixture.drain_position is not None:
                 drift = dist(fixture.drain_position.xy_m, point[:2])
                 if drift > preferences.fixture_port_exact_tolerance_in * M_PER_IN:
                     out.append(failed(CHECK_ID, f"{fixture.tag} authored drain_position drifts "
