@@ -337,6 +337,27 @@ def test_panel_schedule_sheet_is_in_the_permit_set(catlin_sheet_index):
     assert not [n for n in permit if n.startswith("E-1")]
 
 
+@pytest.mark.parametrize("paper", [(17.0, 11.0), (36.0, 24.0)])
+def test_e601_tables_stay_above_the_title_block(catlin_model_ro, paper):
+    """The backup component table once sat at 0.095, inside the title strip."""
+    import matplotlib.pyplot as plt
+
+    from typehaus.emit.draw.schedules import _write_panel_schedule
+    from typehaus.emit.draw.sheet_writer import set_paper, title_height
+
+    tops = []
+
+    class _Pdf:
+        def savefig(self, fig):
+            tops.extend(ax.get_position().y0 for ax in fig.axes if ax.tables)
+
+    with set_paper(paper):
+        _write_panel_schedule(_Pdf(), catlin_model_ro, "E-601", "Panel schedule")
+    plt.close("all")
+    strip_top = (0.25 + title_height(paper)) / paper[1]
+    assert len(tops) >= 4 and min(tops) >= strip_top
+
+
 def test_conduit_run_developed_length(project):
     """Length = plan polyline + the vertical rise between the absolute end elevations."""
     from typehaus.model import ConduitRun, ft, inch

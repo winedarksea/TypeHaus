@@ -12,6 +12,13 @@ from typehaus.emit.draw.schedules.tables import _add_table, _number
 from typehaus.emit.draw.sheet_writer import PORTRAIT_LEDGER, schedule_sheet, section
 from typehaus.resolve.model import ResolvedModel
 
+#: Schedule pages lay out above figure fraction 0.11, the title strip's top on every paper
+#: (``title_block.title_height``). E-601's backup table once sat at 0.095, under the block.
+_CONTENT_FLOOR = 0.11
+#: E-601's lower half: two columns under the panel schedule, each block's top fixed.
+_LEFT_X, _LEFT_W, _RIGHT_X, _RIGHT_W = 0.04, 0.54, 0.62, 0.34
+_LOWER_TOP = 0.43
+
 
 def _hours_label(hours: float | None) -> str:
     """An unknown autonomy prints as unknown — never as "0.0 h", which reads as a fact."""
@@ -48,10 +55,10 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
         _add_table(fig, schedule_rows,
                    ("Circuit", "Description", "Breaker", "Volts", "NEMA", "Panel", "Prot.",
                     "VA"),
-                   bbox=(0.04, 0.42, 0.92, 0.46))
+                   bbox=(0.04, 0.46, 0.92, 0.42), truncate=(1,))
 
         load = service_load_summary(model)
-        section(fig, 0.04, 0.38, "SERVICE LOAD — " + str(load["method"]).upper())
+        section(fig, _LEFT_X, _LOWER_TOP, "SERVICE LOAD — " + str(load["method"]).upper())
         load_rows = [
             ("Conditioned floor area", f"{load['floor_area_ft2']:,.0f} ft2"),
             ("General lighting + small appliance/laundry",
@@ -70,15 +77,18 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
             (f"{row['panel']} feeder (estimate)",
              f"{row['demand_amps']:.1f} A of {row['main_amps']:.0f} A main")
             for row in _panel_feeder_rows(model))
-        _add_table(fig, load_rows, ("Line", "Value"), bbox=(0.04, 0.18, 0.6, 0.18))
+        _add_table(fig, load_rows, ("Line", "Value"), bbox=(_LEFT_X, 0.29, _LEFT_W, 0.13))
 
+        # Under the service load, down to the content floor: ``_add_table`` compresses or
+        # splits a long list inside its box, so no row count reaches the title block.
         backup = backup_component_rows(model)
         if backup:
-            section(fig, 0.04, 0.165, "BACKUP MICROGRID COMPONENTS")
+            section(fig, _LEFT_X, 0.265, "BACKUP MICROGRID COMPONENTS")
             backup_rows = [(row["component"], f"{row['count']}", row["basis"])
                            for row in backup]
             _add_table(fig, backup_rows, ("Component", "Qty", "Basis"),
-                       bbox=(0.04, 0.095, 0.92, 0.06))
+                       bbox=(_LEFT_X, _CONTENT_FLOOR, _LEFT_W, 0.255 - _CONTENT_FLOOR),
+                       truncate=(2,))
 
         # The runtime estimate rides beside the component list and is labeled an ESTIMATE on
         # the sheet, because that is exactly what it is (→ takeoff/backup_calc.py).
@@ -88,9 +98,8 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
             summer, winter = runtime["cycle_48h"], runtime["cycle_48h_winter"]
             bridge = runtime["darkness_bridge"]
             peak = runtime["peak"]
-            # Beside the service load, not under the component list: the two bottom blocks
-            # were overrunning each other, and this half of the sheet is otherwise empty.
-            section(fig, 0.62, 0.38, "BACKUP RUNTIME — ESTIMATE, NOT A GUARANTEE")
+            # The right column, beside the service load and the component list.
+            section(fig, _RIGHT_X, _LOWER_TOP, "BACKUP RUNTIME — ESTIMATE, NOT A GUARANTEE")
             idle, efficiency = autonomy["inverter_idle_w"], autonomy["inverter_efficiency"]
             runtime_rows = [
                 ("Usable storage",
@@ -111,12 +120,13 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
                 (f"Dark day + {bridge['longest_night_h']:.1f} h night",
                  f"needs {bridge['required_kwh']:g} kWh, has {bridge['usable_kwh']:g}"),
             ]
-            _add_table(fig, runtime_rows, ("Line", "Value"), bbox=(0.62, 0.225, 0.34, 0.14))
+            _add_table(fig, runtime_rows, ("Line", "Value"),
+                       bbox=(_RIGHT_X, 0.29, _RIGHT_W, 0.13))
             # The verdict is a sentence, not a cell — it wraps as text under the table rather
             # than running off the right edge of a column sized for numbers.
             # Wrapped by hand: matplotlib's wrap runs to the figure edge, not the column.
             verdict = textwrap.fill(f"Verdict: {runtime['verdict']}", 82)
-            fig.text(0.62, 0.21, verdict, fontsize=7, family="monospace", va="top")
+            fig.text(_RIGHT_X, 0.275, verdict, fontsize=7, family="monospace", va="top")
 
 
 def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
