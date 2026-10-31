@@ -977,7 +977,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -1034,7 +1034,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -1123,7 +1123,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -1372,7 +1372,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -1429,7 +1429,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -1518,7 +1518,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -1623,7 +1623,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",

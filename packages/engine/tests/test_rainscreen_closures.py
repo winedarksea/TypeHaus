@@ -219,7 +219,7 @@ def test_base_z_matches_screen_and_follows_stock_laps(catlin_model_ro):
     assert (run.end - run.start) / _IN == pytest.approx(162)
     pieces = _of(model, "W-M-W4", "RAINSCREEN_BASE_Z")
     assert sorted(s.trim_length_m / _IN for s in pieces) == pytest.approx([44, 120])
-    assert all(s.material == "aluminum-flat-pvdf" for s in pieces)
+    assert all(s.material == "metal-flat-sheet" for s in pieces)
     assert sorted(s.trim_length_m / _IN for s in _of(model, "W-M-W4", BASE_SCREEN_PRODUCT)) \
         == pytest.approx([44, 120])
     assert len([s for s in model.solids if s.product == "EPDM_BASE_ISOLATION"]) == 14

@@ -114,16 +114,18 @@ DOOR_TYPES = (
     DoorType(
         tag="DT-EXT-SWING36", width=ft(3), height=ft(6, 8), exterior=True, function="entry",
         hardware=_ENTRY_HARDWARE, jamb_framing=_JAMB,
-        field_finish=("door-paint-black", "door-paint-white"),
+        field_finish=("door-paint-exterior", "door-paint-white"),
+        frame_material_ref="door-paint-exterior",
         u_factor=u_us(0.15), product_ref=THERMATRU_SMOOTHSTAR.tag, doorway=THERMATRU_SILL,
         catalog_dimensions=_ENTRY_DIMENSIONS,
         rough_opening=OpeningSize(width=inch(38.375), height=inch(82.875)),
         source="D-M-ENTRY, inswing single, opaque. Nominal 3/0 x 6/8; 37-5/8 x 82 unit; "
                "38-3/8 x 82-7/8 RO with the pan allowance. NFRC THC-M-5-03881-00001: flush, no lite, "
-               "U 0.15. Single-point Encode Plus; field-painted black outside / white inside."),
+               "U 0.15. Single-point Encode Plus; field-painted outside (matched to the trim) / white inside."),
     DoorType(
         tag="DT-EXT-SWING32-G", width=inch(32), height=inch(80), exterior=True,
         function="entry", product_ref=MMI_STEEL_SIX_PANEL.tag, doorway=MMI_OUTSWING_SILL,
+        frame_material_ref="door-paint-exterior",
         # The continuous jamb pack backs factory hinge/strike positions without
         # horizontal bay blocking at assumed hardware heights.
         jamb_framing=JambFraming(kings=2, jacks=1),
@@ -133,7 +135,7 @@ DOOR_TYPES = (
             source_url=MMI_STEEL_SIX_PANEL.url,
             source_drawing="MMI Z0364688R product details: unit and suggested rough opening"),
         source="D-G-SERVICE: stock MMI Z0364688R six-panel insulated steel prehung, "
-               "6-9/16 composite frame. West hinges, outswing, black outside/white inside. "
+               "6-9/16 composite frame. West hinges, outswing, painted outside to match the trim/white inside. "
                "34x81.5 framed opening, nominal 32x80 purchased unit. "
                "STHD14 on garage face of two full-height east king studs; one jack inboard. "
                "Retain factory sill; set support from delivered unit; see service-door note."),
@@ -142,6 +144,7 @@ DOOR_TYPES = (
         operation="double_swing", glazed=True, tempered=True,
         u_factor=u_us(0.21), shgc=0.12, vt=0.27, product_ref=THERMATRU_SMOOTHSTAR_FULLLITE.tag,
         doorway=ENDURA_ZAI_SILL, hardware=_FRENCH_HARDWARE, jamb_framing=_JAMB,
+        frame_material_ref="door-paint-exterior",
         catalog_dimensions=_FRENCH_DIMENSIONS, rough_opening=_PAIR_RO,
         source="Catalog nominal 60x80 pair; 62-9/16x82 unit; 63-5/16x82-7/8 RO includes the "
                "3/8-inch pan allowance over the published 82-1/2-inch RO. These are Therma-Tru "
@@ -152,7 +155,7 @@ DOOR_TYPES = (
     DoorType(
         tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
         operation="overhead", function="overhead", product_ref=CLOPAY_CLASSIC_STEEL.tag,
-        doorway=CLOPAY_BOTTOM, leaf_material_ref="clopay-charcoal",
+        doorway=CLOPAY_BOTTOM, leaf_material_ref="clopay-classic-steel",
         source="Clopay Classic Steel long panel, R-12.9, Charcoal (was Modern Steel R-18.4 "
                "Black, 2026-10-29). Unconditioned garage: no NFRC rating is needed or claimed."),
 )

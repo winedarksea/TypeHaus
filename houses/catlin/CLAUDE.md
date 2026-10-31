@@ -551,8 +551,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `BBD_KIT`, `CORRUGATED_KIT`) names a `TrimProfile` per condition, and `resolve/cladding_trim/`
     sweeps it from the published section: base, wide/corrugated outside corners, the BBD75 band
     (one run per N/S wall segment, at +17'-4"), window/door/small-RO opening trim, and the
-    W-BW-SCREEN ends. The `TR-H-CORNER-*` runs are gone; `TR-G-STEMZ-*` stays (aluminium on the
-    stem band). `takeoff/cladding_trim.py` bills it by part and stock length with closures,
+    W-BW-SCREEN ends. The `TR-H-CORNER-*` runs are gone; `TR-G-STEMZ-*` stays (Metal Sales PVDF
+    flat on the stem band). Every exterior dark is coloured from `plan/exterior_palette.py`
+    (`METAL`, `WINDOW`; `notes/exterior_darks.md`). `takeoff/cladding_trim.py` bills it by part and stock length with closures,
     sealant and fasteners, and the roof's eave/rake/closed ridge as Image II pieces; prices are
     `prices.toml [cladding_trim]` (estimates) and the panel $/SF rates were cut 12% (an assumption, no source).
     A window frame box stops at the mount plane (`test_cladding_trim_frame_box.py`); a hydrant
@@ -2126,10 +2127,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `back_side`** — get one wall wrong and the drip points at the wall at 0 FAIL.
     `test_garage_base_skin_is_the_stem_band_alone_and_its_top_is_flashed` pins it; confirm in
     the viewer too.
-  - **Aluminium over aluminium; no check grades it.** `corrugated-panel-24` above the band is
-    26 ga PVDF-coated steel; the band and the Z are aluminium — never lap metal-to-metal
-    (sealant/EPDM between) or let aluminium touch concrete/mortar. `aluminum-flat-pvdf` on
-    the Z, not `metal-dark-exterior`, is the whole enforcement.
+  - **Steel over aluminium; no check grades it.** `corrugated-panel-24` is PVDF Galvalume;
+    the band and the stem-top Z under it (`aluminum-flat-pvdf`) are Una-Clad aluminium in
+    Matte Black, 0.050" and 0.040". Never let the panel touch the Z metal-to-metal
+    (sealant/EPDM between), and never let the aluminium touch concrete or mortar. They are
+    aluminium for chloride resistance at the plowed apron (`notes/exterior_darks.md`).
+    `aluminum-flat-pvdf` on the Z, not `metal-flat-sheet`, is the whole enforcement.
   - `OVERHEAD_DOOR_OFFSET`'s 4'-0" has lost its defence (the asymmetric-pier argument died
     with the wainscot) and is now an open question — moving it drags the stem gap,
     footings, Z break stations, and a water-service sleeve. Left suppressed while undecided;
@@ -2174,7 +2177,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **The garage ICF stem is covered on both faces above grade.**
   - Inside: 5/8" gypsum banded from `GRADE` up (`code.R316_4`), continuing the board
     `GARAGE_WALL_2X6` already lines with.
-  - Outside: `coil-gap`+`coil-ext`, PVDF-painted aluminium (`aluminum-flat-pvdf`) from 2"
+  - Outside: `coil-gap`+`coil-ext`, Una-Clad PVDF aluminium, Matte Black (`aluminum-flat-pvdf`) from 2"
     below grade to stem top on a **1/4" vented standoff**, 316 stainless gasketed screws into
     the ICF webs. 162.7 SF, $813-1,627 (156.2 SF until 2026-09-11, when the service door's
     stem gap closed and 3'-6" of bare wall gained the band), the garage's entire base skin, flashed at the top by
@@ -2196,8 +2199,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - One exterior dark, `#1c1f24`, on every dark metal element on the envelope:
   opening casings, roof rake/eave/ridge trim coil, eave water chain (drip edge,
   box gutter, downspouts), guards, and since 2026-09-23 the four wall corners
-  (`TR-H-CORNER-*`), the garage stem band + Z (`aluminum-flat-pvdf`, aluminium, never
-  retag it) and the basement's coated XPS band (`foundation-coating-acrylic-black`).
+  (`TR-H-CORNER-*`) and the basement's coated XPS band (`foundation-coating-acrylic-black`).
+  The garage stem band + Z are the exception: a fixed Una-Clad Matte Black
+  (`aluminum-flat-pvdf`, aluminium, never retag it) that `METAL` does not recolour.
 - Windows/doors in a clad wall draw casing (resolve/geometry_openings.py
   `exterior_trim`) in this tone. Recolor only via `window_trim` in
   emit/gltf/palette.py + ui/src/three/members.ts `CATEGORY_COLOR.window_trim`.

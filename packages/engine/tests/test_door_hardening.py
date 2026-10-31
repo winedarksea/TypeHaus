@@ -123,12 +123,12 @@ def test_catlin_hardware_scope_takeoff_and_finish(catlin_model_ro):
     assert count("PROD-ENDURA-PANOLOCK-PLUS") == 3
     assert count("PROD-THERMATRU-HINGE") == 21
     paint = door_field_paint_rows(model)
-    assert {row["material"] for row in paint} == {"door-paint-black", "door-paint-white"}
+    assert {row["material"] for row in paint} == {"door-paint-exterior", "door-paint-white"}
     assert paint[0]["net_area_sqft"] == paint[1]["net_area_sqft"]
     entry = next(opening for opening in model.openings if opening.tag == "D-M-ENTRY")
     parts = model.geometry.by_uid(entry.uid).parts
     assert {part.catalog.material_ref for part in parts if part.key.startswith("leaf:")} == {
-        "door-paint-black", "door-paint-white"}
+        "door-paint-exterior", "door-paint-white"}
     for tag in expected:
         opening = next(opening for opening in model.openings if opening.tag == tag)
         wall = model.wall(opening.host_wall)

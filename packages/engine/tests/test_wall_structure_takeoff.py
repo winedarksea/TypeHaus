@@ -126,7 +126,7 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # **45 SINCE 2026-09-23:** `W-M-WELL`, the main stair's well partition — faces only, its
     # studs are ST-M2S's own and bill in [framing] (see `W-B-WELL`).
     assert len({tag for row in rows for tag in row["tags"]}) == 45
-    # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
+    # **`metal-flat-sheet` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,
     # unchanged, because that band always ran behind the wainscot. What this table lost is
@@ -153,7 +153,7 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # `glazed-green-brick` convention, so that reverting is one `material_ref` edit. Check the
     # catalog and `[envelope_layers]` before concluding anything from this assertion.
     # `corrugated-panel-26` ARRIVED 2026-09-11 with `W-BW-SCREEN-SKIRT`, and it is METAL back in
-    # this table for the first time since `aluminum-flat-pvdf` left it three paragraphs up —
+    # this table for the first time since `metal-flat-sheet` left it three paragraphs up —
     # for the identical reason that one was here: a free-standing sheet whose panel IS the
     # assembly's STRUCTURE layer prices on the assembly tag, not through `[envelope_layers]`.
     # The same panel on the wall ABOVE the skirt is a CLADDING layer and still bills there, so

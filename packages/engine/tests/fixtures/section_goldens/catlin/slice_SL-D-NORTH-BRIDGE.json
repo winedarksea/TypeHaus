@@ -245,7 +245,7 @@
       "closed": false,
       "uid": "CBW108AAAA",
       "tag": "W-B-N3/foundation-coating",
-      "material": "foundation-coating-acrylic-black"
+      "material": "foundation-coating-acrylic-tinted"
     },
     {
       "space": "model",
@@ -582,7 +582,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "aluminum-flat-pvdf",
-      "fill": "#2b2b2b"
+      "fill": "#2d2d2e"
     },
     {
       "space": "model",
@@ -919,7 +919,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "aluminum-flat-pvdf",
-      "fill": "#2b2b2b"
+      "fill": "#2d2d2e"
     },
     {
       "space": "model",
@@ -15708,7 +15708,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -15765,7 +15765,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -15822,7 +15822,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -15879,7 +15879,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -15936,7 +15936,7 @@
       "layer": "A-WALL-PATT",
       "uid": "YX2GDZJMBV",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",

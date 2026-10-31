@@ -14,7 +14,7 @@ def test_authored_parts_include_two_finishes_and_viewer(catlin_model_ro):
     entry = next(opening for opening in model.openings if opening.tag == "D-M-ENTRY")
     parts = authored_product_parts(model, entry)
     assert {part["material_ref"] for part in parts if part["key"].startswith("leaf:")} == {
-        "door-paint-black", "door-paint-white"}
+        "door-paint-exterior", "door-paint-white"}
     spec = next(spec for spec in model.plan.library.door_types if spec.tag == entry.type_ref)
     viewer_index = next(index for index, item in enumerate(spec.hardware) if item.role == "viewer")
     viewer = next(part for part in parts if part["key"] == f"hardware:{viewer_index}")

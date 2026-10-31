@@ -159,14 +159,10 @@ WALLS = [
 # the CDX face behind the corrugated panel, so cavity water lands on the Z rather than
 # behind it. `WRB_COUNTERFLASHING` is a flat back pan and has no turn-down.
 #
-# ALUMINIUM, AND THAT IS THE CORROSION RULE WRITTEN INTO THE MODEL. `corrugated-panel-24`
-# above this line is 26 ga PVDF-coated STEEL and the band below it is aluminium, so the Z
-# between them must be aluminium and must never lap the panel metal-to-metal — sealant or
-# EPDM between, the Z's upper leg behind the corrugated. In a plowed, salted splash zone
-# that contact line is where the detail fails, and nothing in the engine grades dissimilar
-# metals. Naming `aluminum-flat-pvdf` here rather than the `metal-dark-exterior` steel coil
-# the rest of the envelope's dark trim is ordered in is what makes the rule readable off the
-# model, and it keeps band and Z one colour and one coil order.
+# BAND AND Z ARE ONE ALUMINIUM (2026-10-30): Una-Clad PVDF, Matte Black
+# (`aluminum-flat-pvdf`), for the plowed, salted splash zone; the Z at 0.040", open hems.
+# The corrugated panel above is Metal Sales PVDF Galvalume and oversails the Z's upstand:
+# sealant or EPDM between the panel and the Z, never metal-to-metal.
 #
 # ** IT BREAKS AT THE ONE STEM GAP. ** There is no stem — and so no band and no Z — across
 # the 16'-0" overhead door, where params/foundations.py gaps the stem and the slab runs out

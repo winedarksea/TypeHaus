@@ -245,7 +245,7 @@
       "closed": false,
       "uid": "CBW104AAAA",
       "tag": "W-B-E1/foundation-coating",
-      "material": "foundation-coating-acrylic-black"
+      "material": "foundation-coating-acrylic-tinted"
     },
     {
       "space": "model",
@@ -490,7 +490,7 @@
       "closed": false,
       "uid": "CBW110AAAA",
       "tag": "W-B-W2/foundation-coating",
-      "material": "foundation-coating-acrylic-black"
+      "material": "foundation-coating-acrylic-tinted"
     },
     {
       "space": "model",
@@ -18007,7 +18007,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -18064,7 +18064,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -18153,7 +18153,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -18426,7 +18426,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -18483,7 +18483,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -18572,7 +18572,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -18677,7 +18677,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -20002,7 +20002,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",
@@ -20191,7 +20191,7 @@
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
-      "fill": "#252122"
+      "fill": "#4d4b50"
     },
     {
       "space": "model",

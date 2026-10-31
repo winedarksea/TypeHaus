@@ -102,7 +102,7 @@ from .mixes import BURIED_MIX, DECK_CAP_MIX, INTERIOR_SLAB_MIX
 # the band's thickness was never theirs and the 1-1/2" cavity (IRC R703.8.4 asks 1"
 # minimum) is untouched. The face moves INBOARD, so nothing wall-mounted can be buried.
 _PROTECTION_PANEL = Layer(name="foundation-coating",
-                          material_ref="foundation-coating-acrylic-black",
+                          material_ref="foundation-coating-acrylic-tinted",
                           thickness=inch(0.125), function=LayerFunction.CLADDING,
                           extent=LayerExtent(
                               bottom=LayerBound(datum=LayerDatum.GRADE, offset=inch(-6))))
@@ -317,7 +317,7 @@ GARAGE_ICF_6 = Assembly(
         # ITS TOP IS A REAL JUNCTION AND IT IS FLASHED. The band's top and the corrugated
         # panel's base both land on the stem top, and a rainscreen's cavity water arrives at
         # exactly that line. `STEM_TOP_Z_FLASHING` in plan/storeys/garage.py is the Z that
-        # catches it — aluminium over aluminium, broken only at the two stem gaps where
+        # catches it — the same PVDF steel flat sheet, broken only at the two stem gaps where
         # there is no stem to band.
         #
         # The band pushes the stem's exterior face 0.30" east (gap + sheet), which nicks the "stem and wood
@@ -326,12 +326,12 @@ GARAGE_ICF_6 = Assembly(
         # and it is physically true — the band really does stand proud by its own build.
         # Do not recess the EPS to hold the face still.
         # ON A VENTED STANDOFF, NOT GLUED TO THE FOAM, and `building_science.condensation`
-        # is what settled that. A painted aluminium sheet is 0 perms: laid directly on
+        # is what settled that. A painted metal sheet is 0 perms: laid directly on
         # `eps-ext` it is a Class I retarder on the COLD side of the stem, and the Glaser
         # walk immediately found a January dew point at the concrete — a crossing against a
         # monthly MEAN, i.e. a plane that runs wet for weeks. A 1/4" drainage/vent gap
         # behind the sheet restores the drying path and is the better build anyway: it
-        # drains what gets behind the band, and it keeps aluminium off damp foam and out of
+        # drains what gets behind the band, and it keeps the sheet off damp foam and out of
         # contact with the concrete below. It is the same standoff the east wainscot uses,
         # at a quarter of the depth. CONFIRMED BY EXPERIMENT, not assumed: deleting this
         # layer puts the FAIL straight back.
@@ -355,5 +355,5 @@ GARAGE_ICF_6 = Assembly(
               extent=LayerExtent(bottom=LayerBound(datum=LayerDatum.GRADE,
                                                    offset=inch(-2.0)))),
     ),
-    source="library GARAGE_ICF's 6\" concrete core (ICF-6, matching masonry spec) + this house's 2.5\" EPS facing (thinner than library's 2.625\" generic default) and gwb-stem interior banding above grade (code.R316_4); exterior face protected above grade by a PVDF-painted aluminium band from 2\" below grade to the stem top, fixed with 316 stainless gasketed screws into the ICF webs, closing the other half of the note's both-faces requirement",
+    source="library GARAGE_ICF's 6\" concrete core (ICF-6, matching masonry spec) + this house's 2.5\" EPS facing (thinner than library's 2.625\" generic default) and gwb-stem interior banding above grade (code.R316_4); exterior face protected above grade by a Una-Clad PVDF aluminium flat-sheet band from 2\" below grade to the stem top, fixed with 316 stainless gasketed screws into the ICF webs, closing the other half of the note's both-faces requirement",
 )

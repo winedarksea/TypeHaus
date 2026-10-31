@@ -3651,7 +3651,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 [envelope_layers]
 # Installed budget rates for full-depth jamb foam and site door paint.
 "closed-cell-spray-foam:5.5" = { material = { low = 2.2, high = 3.3 }, labour = { low = 3.3, high = 4.95 } }
-"door-paint-black" = { material = { low = 0.4, high = 0.8 }, labour = { low = 2, high = 4 } }
+"door-paint-exterior" = { material = { low = 0.4, high = 0.8 }, labour = { low = 2, high = 4 } }
 "door-paint-white" = { material = { low = 0.4, high = 0.8 }, labour = { low = 2, high = 4 } }
 
 # RESEARCHED 2026-08-07 — [low, high] $/SF net, material only. IMPORTANT: this section is
@@ -3960,7 +3960,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # minimum call-out comes back and the high column is the number to believe.
 # Sources: superarbor.io Tuff II 5-gal list 2026; homedepot.com SM38 Sticky Mesh HD 38" x
 # 150 ft; Styro Industries "Applying TUFF II Over Rigid Foam & ICF" for coverage and coats.
-"foundation-coating-acrylic-black" = { material = { low = 1.78, high = 2.65 }, labour = { low = 4.5, high = 9 } }  # 276.3 SF — 2 coats + mesh over XPS; ~75/25 LABOUR to material
+"foundation-coating-acrylic-tinted" = { material = { low = 1.78, high = 2.65 }, labour = { low = 4.5, high = 9 } }  # 276.3 SF — 2 coats + mesh over XPS; ~75/25 LABOUR to material
 # --- THE MINERAL SILICATE WASH, NEW 2026-09-13 ---------------------------------------------
 # The sunken garden court's daylighting coat: two coats of untinted white potassium-silicate
 # mineral paint. Product of record BEECK Beeckosil Fine, White C-102 (LRV 90). The design
@@ -6414,7 +6414,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "58728XX" = { material = { low = 34, high = 46 }, labour = { low = 16, high = 28 } }   # BBD75 Panel Starter at door jambs
 "CORRUGATED_JAMB" = { material = { low = 30, high = 42 }, labour = { low = 16, high = 28 } }  # screen ends and garage door jambs
 # 2026-10-29: custom-brake material re-struck: site-brake from 24 ga PVDF flat, $2.5-3.0/SF x 6-9" girth
-# = $1.3-2.3/LF, x1.5-2 for cut-to-length, kerf, short-run waste. Was $6-12. Base Z is 0.040 Al. Re-strike on RFQ.
+# = $1.3-2.3/LF, x1.5-2 for cut-to-length, kerf, short-run waste. Was $6-12. Base Z is 24 ga Galvalume. Re-strike on RFQ.
 "WINDOW_JAMB_CUSTOM" = { material = { low = 2.5, high = 4.5 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "WINDOW_SILL_CUSTOM" = { material = { low = 3, high = 5 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "DOOR_HEAD_CUSTOM" = { material = { low = 3, high = 5 }, labour = { low = 3, high = 5.5 }, unit = "LF" }

@@ -2776,7 +2776,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "aluminum-flat-pvdf"
+      "material": "metal-flat-sheet"
     },
     {
       "space": "model",
@@ -4709,8 +4709,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "aluminum-flat-pvdf",
-      "fill": "#2b2b2b"
+      "material": "metal-flat-sheet",
+      "fill": "#4d4b50"
     },
     {
       "space": "paper",
@@ -4747,7 +4747,7 @@
         4.999999999999999,
         1.3980000000000001
       ],
-      "content": "aluminum-flat-pvdf",
+      "content": "metal-flat-sheet",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

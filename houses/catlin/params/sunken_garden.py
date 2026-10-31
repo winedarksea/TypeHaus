@@ -3092,7 +3092,7 @@ BALCONY_RUNNEL = Gutter(
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
     top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(3),
-    material="aluminum-flat-pvdf", host_ref="FS-SG-DECK",
+    material="metal-flat-sheet", host_ref="FS-SG-DECK",
     section=FormedFlashingSection(drip=inch(_drip_depth_in)))
 # ** THE REAR EDGE IS TWO PIECES ACROSS A MOVEMENT GAP (2026-10-16). ** The deck's north edge
 # stands 2 3/4" off the house cladding, and the two are separately founded structures. The
@@ -3125,7 +3125,7 @@ BALCONY_REAR_FLASH = [
     Flashing(uid=uid, tag=f"TR-SG-BASE-FLASH-{side}", kind=TrimKind.WRB_COUNTERFLASHING,
              path=_rear_run(_REAR_DECK_Y_IN - _REAR_BASE_W_IN / 2.0, x0, x1),
              top_elevation=_REAR_PLANK_TOP, depth=inch(_REAR_UPSTAND_IN),
-             thickness=inch(_REAR_BASE_W_IN), material="aluminum-flat-pvdf",
+             thickness=inch(_REAR_BASE_W_IN), material="metal-flat-sheet",
              host_ref="FS-SG-DECK", back_side="left",
              section=FormedFlashingSection(profile="counter", slope=0.25 / 12,
                                            upstand=inch(_REAR_UPSTAND_IN), drip=inch(0),
@@ -3229,7 +3229,7 @@ PORCH_SLOT_CLOSURE = Flashing(
     path=(pt(ft(_x_in_w), ft(_slot_closure_y)),
           pt(ft(_x_in_e), ft(_slot_closure_y))),
     top_elevation=_porch_top, depth=inch(2), thickness=inch(_SLOT_CLOSURE_REACH_IN),
-    material="aluminum-flat-pvdf", host_ref="FS-SG-PORCH",
+    material="metal-flat-sheet", host_ref="FS-SG-PORCH",
     # West→east, so the left-hand normal points north — the house side, which is the end
     # carrying the lip rather than the fastener line.
     back_side="left")

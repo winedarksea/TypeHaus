@@ -1714,8 +1714,8 @@ def test_garage_base_skin_is_the_stem_band_alone_and_its_top_is_flashed(catlin_m
     stem_top_m = grade_m + ft(1, 10).meters
     assert max(z.z1_m for z in zs) == pytest.approx(stem_top_m + inch(2).meters)
 
-    # ** ALUMINIUM OVER ALUMINIUM. ** The corrugated panel above is PVDF-coated STEEL and the
-    # band below is aluminium; in a plowed, salted splash zone the metal-to-metal lap is
+    # ** STEEL OVER ALUMINIUM. ** The corrugated panel above is PVDF Galvalume and the Z and
+    # band below are aluminium; in a plowed, salted splash zone the metal-to-metal lap is
     # where this detail fails. Nothing in the engine grades dissimilar metals, so naming the
     # material is the whole enforcement — a Z that quietly took the envelope's
     # `metal-dark-exterior` steel trim coil would pass every other check in the suite.

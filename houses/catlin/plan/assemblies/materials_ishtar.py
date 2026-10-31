@@ -24,7 +24,7 @@ MATERIALS_ISHTAR = [
     # An authored colour is an albedo, and the viewer lights with 0.8 hemisphere + 0.9 key +
     # 0.6 IBL over unit irradiance, so a saturated surface arrives on screen well above what
     # is written here (true of saturated colours; a near-black is crushed instead, see
-    # `metal-dark-exterior` below). Author under the tone you
+    # plan/exterior_palette.py). Author under the tone you
     # want to see, and re-check against `haus render --view elevation`.
     Material(tag="glazed-lapis-brick", name="Glazed lapis-blue face brick",
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
@@ -61,93 +61,6 @@ MATERIALS_ISHTAR = [
     # cmu, grout (porch railing wythe/balcony post bases) were promoted to
     # library/materials/ (CONTRIBUTING §Promotion flow); they arrive here
     # through ALL_MATERIALS above.
-    # The house's one exterior dark: every dark metal element on the
-    # envelope — rake/eave/ridge trim coil, opening casings, guards — shares this value.
-    # Metal Sales Matte Black (106), the only near-black in its 24 ga PVDF line (Charcoal 17
-    # and Black 06 are 29/26 ga SMP only); the grey route there is Slate Grey (W38) #4d4b50.
-    # Authored at the chip, not pre-darkened: the viewer CRUSHES a dark albedo, it does not
-    # lift it (2026-10-30; it was a generic #1c1f24 before).
-    # Deliberately not named "*seam*" — renderers key the ribbed standing-seam finish off
-    # that substring and this is flat brake-formed stock.
-    Material(tag="metal-dark-exterior", name="Metal Sales 24 ga PVDF Matte Black (106), formed",
-             r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
-             color="#252122", product_ref="PROD-STOCK-DARK-TRIM-COIL",
-             source="RF-HOUSE rake/eave/ridge trim coil, opening casings, exterior guards; Metal Sales 24 ga PVDF Matte Black (106). Colour sampled from the Metal Sales 24 ga PVDF colour guide (02/2026, Impact Steel Buildings edition); SR not found, confirm with the branch"),
-    # The SAME dark, on seamless K-style stock. It exists only because it is a different
-    # PRODUCT, and prices.toml qualifies [drainage] on the material tag: the garage low eave
-    # and the balcony run are roll-formed on site from prefinished coil off the truck, which
-    # every manufacturer's colour card carries, while the house eaves are shop-brake-formed
-    # box gutter at 3x the foot. Sharing `metal-dark-exterior` with those billed 47.8 LF of
-    # colour-card stock as fabrication. Colour is deliberately identical — the eave line must
-    # read continuous — so every palette entry for it points at the same ink.
-    Material(tag="metal-dark-kstyle", name="Near-black prefinished K-style gutter coil",
-             r_per_inch=0.0, density=2700.0, perm_rating=0.0, hatch="metal",
-             color="#252122", product_ref="PROD-STOCK-DARK-KSTYLE-COIL",
-             source="garage south eave + balcony gutter/leaders, prefinished aluminium coil; no coil maker named, so drawn in the trim's Metal Sales Matte Black (106) and ordered to match it"),
-    # The garage's base skin, and since 2026-09-03 it is the ONLY thing on it: the 24" band
-    # on the ICF stem, all four walls, plus the stem-top Z at the corrugated panel base.
-    # The 4'-0" east wainscot this material also clad was deleted that day. Painted
-    # aluminium flat sheet, 3105-H14 or 5005, 2-coat 70% PVDF (Kynar 500 / Hylar 5000),
-    # 0.040" minimum and 0.050" preferred — NOT 0.019" trim coil, which takes a permanent
-    # dimple from a shovel corner in exactly the zone this exists to survive.
-    #
-    # ** THE HEAVY GAUGE SURVIVED THE WAINSCOT, AND IT IS FREE. ** With only a ~24" band
-    # left, 24" trim coil is the obvious buy and it is the WRONG one: stock 48" x 120"
-    # architectural sheet rips into exactly TWO 24" bands with no waste, so the heavier
-    # metal costs nothing per SF over coil and the dent argument above is unchanged. The
-    # band is still the shovel/plow-splash zone; it just got shorter.
-    #
-    # SECOND BEST, IF A SUPPLIER CANNOT GET SHEET: 0.024" heavy-gauge aluminium trim coil in
-    # a 24" width, the thickest the trim-coil product line reaches (0.027" in a few lines).
-    # That is a REAL fallback and is why it is written down rather than left to the field.
-    # 0.019" standard trim coil is NOT the fallback — it is the thing this note rejects.
-    #
-    # ALUMINIUM, WHERE EVERY OTHER PANEL ON THIS BUILDING IS STEEL, AND THAT IS THE POINT.
-    # `corrugated-panel-24` above it is 24 ga PVDF-coated STEEL. The driveway apron is
-    # plowed and salted, and chloride is what separates the two metals: aluminium's oxide
-    # film re-forms in it and steel's does not. Two consequences that no check can see —
-    # the Z-flash at the transition must be ALUMINIUM, not steel, and the two panels must
-    # never lap metal-to-metal (sealant/EPDM separation, the aluminium's leg behind).
-    #
-    # No `finish` key, deliberately: a new one costs ~5 hand-kept renderer registrations
-    # (materials.ts, palette.ts, gltf/palette.py, draw/palette.py, DetailCanvas.tsx), each
-    # of which falls through SILENTLY if missed — the board-batten-24 precedent. An authored
-    # `color` needs none of them: it reaches both renderers through the material catalog
-    # (`authored_colors` in emit/gltf/palette.py, `materialColor` in ui/src/nordic/palette.ts),
-    # which is what makes the colourway a one-word swap where a `finish` would not be.
-    #
-    # BLACK SINCE 2026-09-23 (owner): the house's one exterior dark. Order it as Western
-    # States "Matte Black" (SR 4.1%, SRI 2), drawn at WS's own flat chip #2b2b2b
-    # (2026-10-30). The grey route is "Matte Charcoal Gray" #383838 (SR 26.8%, SRI 26), what
-    # it wore 2026-09-02..09-23. The tag stays: it names the METAL, and aluminium on the Z
-    # is what keeps it off the steel panel.
-    #
-    # No `skin_family`: that field is the wall/roof continuous-skin reading at a
-    # zero-overhang edge, and a base band is not skin (the `metal-copper-penny` reasoning
-    # below). No `exposed_fastener`: the sheet is hung on hems and concealed cleats with
-    # only a perimeter fixing, so the screws belong inside the $/SF rate — the same call
-    # `board-batten-24` makes, and the flag is the double-billing guard, not a description.
-    # Not named "*seam*": both renderers key the ribbed standing-seam finish off that
-    # substring and this is flat brake-formed sheet.
-    Material(tag="aluminum-flat-pvdf",
-             name="PVDF-painted aluminium flat sheet (0.040-0.050\")",
-             r_per_inch=0.0, density=2700.0, vapor_permeance_perms=0.0, hatch="metal",
-             color="#2b2b2b",
-             source="garage ICF stem exterior protection band (all four walls) + the stem-top Z-flash at the corrugated panel base; 3105-H14 or 5005 painted aluminium flat sheet, 2-coat 70% PVDF in Matte Black (Kynar 500/Hylar 5000), 0.040\" min / 0.050\" preferred, stock 48\" x 120\" ripped into two 24\" bands with no waste (second best if sheet is unobtainable: 0.024\" heavy-gauge 24\" trim coil, never 0.019\"); fixed with #9 316 stainless gasketed screws (EPDM washer is the dielectric break) into KDAT furring, every exposed edge hemmed or folded; NEVER in contact with concrete or fresh mortar (alkali strips the oxide film) and never lapped metal-to-metal against the steel corrugated panel above"),
-    # The basement's exposed-XPS band (`_PROTECTION_PANEL`), black to match the window trim
-    # (owner, 2026-09-23). The library's `foundation-coating-acrylic` is the same product in
-    # stock grey; a tag cannot be shadowed, so the colourway is its own house tag. Every
-    # other property is the library row's, so the condensation verdict does not move.
-    # ** HEAT OVER FOAM: ** a black skin in sun runs far hotter than grey, and XPS softens
-    # near 165 F. Confirm the coating maker's LRV floor over XPS before ordering.
-    # Tuff II has NO stock black or charcoal (stock: Concrete Grey, White, Tanner, Linens,
-    # Cairn, Taupe, Sand), so this is a custom tint, drawn at the colour it is matched to:
-    # the Western States Matte Black Z-flashing drip directly above it.
-    Material(tag="foundation-coating-acrylic-black",
-             name="Trowel-applied acrylic foundation coating over mesh (1/8\"), black",
-             r_per_inch=0.0, density=1400.0, vapor_permeance_perms=5.0, coating=True,
-             hatch="concrete", color="#2b2b2b",
-             source="basement exposed-XPS band, 6\" below grade to wall top; acrylic foundation coating over mesh (Tuff II class), custom-tinted to Western States Matte Black (the Z-flashing above it); Tuff II publishes no stock black, so confirm the custom match and the maker's minimum LRV over foam before ordering"),
     # `metal-copper-penny` — the garage's accent coil from 2026-08-26 to 2026-09-08, carrying
     # both the vented ridge cap and all six fascia pieces. **Referenced by nothing now.** The
     # garage roof edge went to `metal-dark-exterior` above, so the garage no longer departs

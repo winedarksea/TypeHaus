@@ -10,13 +10,6 @@ from typehaus.model.cladding_trim import BBD_KIT
 
 
 MATERIALS_METAL = [
-    # The canopy's east posts when EAST_POST_SYSTEM = "steel" (2026-09-29): ASTM A500 Gr C
-    # HSS, galvanized AFTER fabrication (ASTM A123) and powder-coated — a "duplex" system —
-    # in the house's one exterior dark so it reads with the guards and the trim coil.
-    Material(tag="steel-hss-duplex", name="HSS, hot-dip galvanized + powder-coated (duplex)",
-             r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
-             color="#252122",
-             source="PT-BW-RE/-RNE steel variant — ASTM A500 Gr C, ASTM A123 then powder coat (notes/canopy_garage_diaphragm.md §5)"),
     # --- the metal skins --------------------------------------------------------
     # House roof: Image II Striated direct-fastened snap-seam, 24 ga PVDF.
     # Garage and canopy roofs use the same Image II panel. Wall panels retain their separate profile/gauge records.
@@ -323,14 +316,6 @@ MATERIALS_METAL = [
              panel_fastener_head_dia_in=0.40,
              fastener_coverage_in=12.0,
              source="Metal Sales BBD75-1212 (product nos. 2520741 ACG / 25207XX PVDF): 24 ga. PVDF-coated steel board & batten wall panel, 12\" net coverage, 3/4\" rib, concealed DIRECT-fastened at the nail strip over open framing; allowable 58 psf outward / 43 psf inward at 2'-0\" fastener spacing (AISI 2016, 3+ equal spans, L/180, no 1/3 stress increase, and by its own note 2 it does not address web crippling, fasteners, support material); PVDF Linen White (81), SR 0.73 / TE 0.86 / SRI 89 per ASTM C1549 / C1371 / E1980, CRRC-listed steep and low slope, 45-yr film / 35-yr chalk-fade warranty; same vapour-impermeable sheet steel as the five skins above"),
-    # The BBD75 Transition Trim at the panel's horizontal joints (`Layer.joint_trim_material_ref`).
-    # Coil white, the colour the panel itself renders (`#e8e8e2`, `_SEAM_BASE`), not the
-    # `board-batten-24` swatch: the trim takes its colour from the material it names.
-    Material(tag="bbd-transition-linen-white",
-             name="Metal Sales BBD75 Transition Trim 55536XX, 24 ga., PVDF Linen White (81)",
-             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
-             color="#e8e8e2",
-             source="Metal Sales BBD75 Install Guide 10/2025 p.14, 40 (Transition Trim 55536XX); coil colour as the panel it caps"),
     # Loose-fill for the garage attic (GARAGE_ROOF). A separate tag from `fiberglass`
     # because blown wool is installed at roughly half batt density and rates R-2.5/in
     # rather than R-3.7 — reusing the batt tag would overstate the ceiling by ~48%.

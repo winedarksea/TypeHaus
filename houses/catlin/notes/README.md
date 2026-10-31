@@ -97,6 +97,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `bath2_swap_review.md` | measured shower/tub swap: the basin aisle, doorway approach, shower entrance and dependent construction |
 | `beam_water_protection.md` | current garden framing tape, drained column seats, and treatment procurement |
 | `east_breast_bearing.md` | RM-M-LIVING's fireplace surround: why the brick bears on `W-B-E1`'s pour and not on the floor, the opening it needs through `FS-M-EAST`, and the list of things nothing in `haus check` looks at |
+| `exterior_darks.md` | the exterior-dark palette (`METAL`, `WINDOW`): every option's chip hex and SR/SRI, and what follows each switch |
 | `fortified_roof_cert.md` | what the FORTIFIED Roof designation asks for |
 | `garage_orientation_lot.md` | the south-lot/east-driveway premise the garage was drawn for, why it never agreed with `plan/site.py`'s own north FRONT setback, what turning the door north moved, the eastward move that followed it, and the revert recipe |
 | `heat_pump_ground_pad.md` | why the condensers left the balcony, and why the three of them now stand on three separate pads on three sides of the house |

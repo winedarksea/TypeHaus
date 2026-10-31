@@ -103,7 +103,7 @@ _HUMID_LINER = (
 # 1/2" sheathing everywhere else.
 PLANT_EXT_2X6_HUMID = Assembly(
     tag="PLANT_EXT_2X6_HUMID",
-    rainscreen_base_flashing=RainscreenBaseFlashing(material="aluminum-flat-pvdf"),
+    rainscreen_base_flashing=RainscreenBaseFlashing(material="metal-flat-sheet"),
     layers=(
         *_HUMID_LINER,
         Layer(name="gwb-plant", material_ref="gwb", thickness=inch(0.5),

@@ -309,7 +309,7 @@ def test_catalog_trim_layout_is_derived_across_doors(catlin_model_ro):
     from typehaus.takeoff.door_trim_layout import TrimSheetStock, door_trim_sheet_layouts
 
     stock = TrimSheetStock("selected sheet", "finish", .75, 48, 96, .125)
-    layouts = door_trim_sheet_layouts(catlin_model_ro, {"captivate-graphite-sheet": stock})
+    layouts = door_trim_sheet_layouts(catlin_model_ro, {"captivate-sheet": stock})
     assert len(layouts) == 2
     assert {p["door"] for s in layouts for p in s["pieces"]} == {"D-B-PATIO", "D-S-DECK-E"}
     assert sum(len(s["pieces"]) for s in layouts) == 9

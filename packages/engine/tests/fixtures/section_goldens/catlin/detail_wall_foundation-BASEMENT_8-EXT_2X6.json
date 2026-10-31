@@ -321,7 +321,7 @@
       "closed": false,
       "uid": "CBW109AAAA",
       "tag": "W-B-W1/foundation-coating",
-      "material": "foundation-coating-acrylic-black"
+      "material": "foundation-coating-acrylic-tinted"
     },
     {
       "space": "model",
@@ -3733,7 +3733,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "aluminum-flat-pvdf"
+      "material": "metal-flat-sheet"
     },
     {
       "space": "model",
@@ -5142,8 +5142,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "foundation-coating-acrylic-black",
-      "fill": "#2b2b2b"
+      "material": "foundation-coating-acrylic-tinted",
+      "fill": "#4d4b50"
     },
     {
       "space": "paper",
@@ -5180,7 +5180,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "foundation-coating-acrylic-black  0.125\"",
+      "content": "foundation-coating-acrylic-tinted  0.125\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -5938,8 +5938,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "aluminum-flat-pvdf",
-      "fill": "#2b2b2b"
+      "material": "metal-flat-sheet",
+      "fill": "#4d4b50"
     },
     {
       "space": "paper",
@@ -5976,7 +5976,7 @@
         4.999999999999999,
         0.7180000000000002
       ],
-      "content": "aluminum-flat-pvdf",
+      "content": "metal-flat-sheet",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

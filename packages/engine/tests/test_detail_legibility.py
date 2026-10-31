@@ -339,7 +339,7 @@ def test_the_dark_exterior_coil_is_dark(catlin_model):
     gutter, downspouts, guards. No engine table names it (decision #57): the palette reads
     the resolved Material, so the coil draws as the dark metal it authors itself as."""
     coil = catlin_model.plan.library.material("metal-dark-exterior")
-    assert detail_fill("metal-dark-exterior", None, coil) == "#252122"
+    assert detail_fill("metal-dark-exterior", None, coil) == coil.color
     assert detail_hatch("metal-dark-exterior", None, coil) == "metal"
 
 

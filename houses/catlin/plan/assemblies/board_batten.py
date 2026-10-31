@@ -12,7 +12,7 @@ def _with_board_batten(assembly, tag):
         layer.model_copy(update={"material_ref": "board-batten-24",
                                  "thickness": BOARD_BATTEN_DEPTH,
                                  "panel_joint_elevations": (inch(208),),
-                                 "joint_trim_material_ref": "bbd-transition-linen-white"})
+                                 "joint_trim_material_ref": "bbd-transition-trim"})
         if layer.name == "cladding" else
         layer.model_copy(update={"framing": layer.framing.model_copy(
             update={"additional_course_elevations": (inch(208),)})})
