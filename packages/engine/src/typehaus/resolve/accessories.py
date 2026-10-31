@@ -73,10 +73,10 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
     """Append accessory solids to ``model.solids``. Geometry only, so the findings it can
     return are WARN-tier reports of geometry it could not derive — never a build failure."""
     findings: list[Finding] = []
+    # A mount="post" rail hangs on another railing's posts: resolve it after every storey's.
+    post_mounted: list[tuple[Railing, str]] = []
     for storey in model.plan.storeys:
-        # A mount="post" rail hangs on another railing's posts, so it resolves after them.
-        for el in sorted(model.plan.storey_elements(storey.tag),
-                         key=lambda el: isinstance(el, Railing) and el.mount == "post"):
+        for el in model.plan.storey_elements(storey.tag):
             if isinstance(el, Dowel):
                 _resolve_dowel(model, el, storey.tag)
             elif isinstance(el, IsolationBoard):
@@ -103,6 +103,8 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                 findings.extend(resolve_slat_brace(model, el, storey.tag))
             elif isinstance(el, Wedge):
                 _resolve_wedge(model, el, storey.tag)
+            elif isinstance(el, Railing) and el.mount == "post":
+                post_mounted.append((el, storey.tag))
             elif isinstance(el, Railing):
                 findings.extend(resolve_railing(model, el, storey.tag))
             elif isinstance(el, Sump):
@@ -114,6 +116,8 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
             elif isinstance(el, (EaveSoffit, Fascia, Gutter, Flashing, GlazingTrim,
                                  MovementJoint)):
                 resolve_edge_run(model, el, storey.tag)
+    for el, storey_tag in post_mounted:
+        findings.extend(resolve_railing(model, el, storey_tag))
     resolve_bug_screens(model)
     from typehaus.resolve.rainscreen_base_flashing import resolve_rainscreen_base_flashing
 

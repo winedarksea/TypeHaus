@@ -14,18 +14,17 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from typehaus.checks.code.mn_residential.fall_protection import stairwell_guard
+from typehaus.checks.code.mn_residential.stair_width import stair_width
 from typehaus.checks.code.mn_residential.stairs import (
     stair_handrail,
     stair_headroom,
     stair_landing_depth,
-    stair_width,
 )
 from typehaus.findings import Result
 from typehaus.quantities import inch
 from typehaus.resolve.model import FramedMember, ResolvedDuct, ResolvedFloor, ResolvedStair
 from typehaus.routing.diagnostics import Mobility, mobility_of
 from typehaus.routing.obstacles import hard_prisms
-
 
 _RISER = 0.19
 _GOING = 0.254
@@ -264,6 +263,35 @@ def test_width_past_rails_both_sides_uses_the_27_inch_limit():
         _flight(width_m=1.0),
         [_handrail_at(2.0), _handrail_at(1.0 / .0254 - 2.0, tag="RL-T2")])
     assert [f.result for f in stair_width(both_edge)] == [Result.PASS]
+
+
+def test_width_between_surface_guard_posts_uses_the_36_inch_limit(catlin_ctx):
+    """Posts standing on the treads bound R311.7.1's 36" above the handrail: 3" posts with
+    their faces 1 1/2" in leave ~36.4" of the 39.4" flight; 3 1/2" in, ~32.4" and FAIL. On
+    catlin it is ST-SG-PORCH's 45" flight: 36 1/2" between posts, ~33.9" past the ADA rail."""
+    from typehaus.model import pt
+    from typehaus.model.structure import Railing
+
+    guard = Railing(uid="AAAAAAAAAY", tag="RL-G", path=(pt(inch(0), inch(0)), pt(inch(0), inch(1))),
+                    height=inch(36), base_elevation=inch(0), post_spacing=inch(48),
+                    mount="surface", role="guard", serves_stair="S-STR")
+
+    def ctx(face_in: float):
+        w, h = 1.0, inch(1.5).meters
+        posts = [SimpleNamespace(tag=f"RL-G-POST{i}", host_ref="RL-G", outline=[
+            (x0, y), (x0 + inch(3).meters, y), (x0 + inch(3).meters, y + h), (x0, y + h)])
+            for i, x0 in enumerate((inch(face_in - 3).meters, w - inch(face_in).meters))
+            for y in (0.2,)]
+        return SimpleNamespace(model=SimpleNamespace(stairs=[_flight(width_m=w)], solids=posts),
+                               plan=SimpleNamespace(all_elements=lambda: [guard]))
+
+    assert [f.result for f in stair_width(ctx(1.5))] == [Result.PASS]
+    (narrow,) = stair_width(ctx(3.5))
+    assert narrow.result is Result.FAIL and "between its guard posts" in narrow.message
+    (porch,) = [f for f in stair_width(catlin_ctx) if f.message.startswith("ST-SG-PORCH")]
+    assert porch.result is Result.PASS
+    assert "36.50\" between its guard posts" in porch.message, porch.message
+    assert "33.88\" clear past its handrail" in porch.message, porch.message
 
 
 # ------------------------------------------------------------------- landings

@@ -107,26 +107,30 @@ scope, and it is 2.25" wide. Until 2026-10-30 the two guards claimed `guard_and_
 "1.5in round" profile they do not have. Five risers is over R311.7.8's four, so the flight
 gets one real one: **`RL-SG-PSTAIR-HR`**, the Williams Black ADA Pipe Rail and 90 deg Return
 Kit (AD901102B, `RAILING-EXT-ALUMINUM-ADA-HANDRAIL`), on the **south** side — the right hand
-going down. It is `mount="post"`: it hangs on brackets off `RL-SG-PSTAIR-S`'s three posts,
-and its returns fix to the end posts with 3 x #10 TEK screws and a backer (`newel` ends). Its
+going down. It is `mount="post"`: its two 90 deg returns fix to `RL-SG-PSTAIR-S`'s end posts
+with 3 x #10 TEK screws and a backer (`newel` ends), 52.3" apart on the rake against the
+kit's 72", so there is no mid bracket — ESR-3485 Table 1 lists the midspan bracket on a 2"
+post only, and the guard's middle post is 3". Its
 line is 3 3/8" inboard of the guard line, 1 1/2" clear of the Colonial rail, with its
 centreline 34 1/4" over the nosings (pipe top 35"). The ~1.5" OD is read off the part names
 and the returns' standoff is unpublished: **measure both on delivery**.
 
-`code.R311_7_1_stair_width` reports 38.13" past the rail; it measures tread width less
-handrails and does not see guard posts, so the honest number is ~34" from the rail to the
-north posts (`plans/TODO.md`). `code.R301_5_handrail_support_spacing` grades the three
-brackets against the kit's 72".
+`code.R311_7_1_stair_width` measures both R311.7.1 numbers off the drawn posts and rail:
+36 1/2" between the post faces (>= 36") and 33 7/8" from the rail to the north posts
+(>= 31 1/2"). `code.R301_5_handrail_support_spacing` grades the two supports against the
+kit's 72".
 
 **Both sides are open yard**, since 2026-09-04: the flight sits in the middle of the pocket,
 4'-5" south of the house and 1'-6" north of the `W-RG-EAST-BALCONY` apron, so there is no
 wall on either side that `code.R312_1_1_stair_open_side` could credit even in principle.
 
-**Post bases, still open.** The drawn stations are the path's ends and its middle: the foot
-post is centred on the lowest riser line, the middle one on a riser line, and the head post
-stands 2 3/4" beside `RL-SG-PTHRESH`'s end post. 36" spacing cannot put three bases on four
-11" treads, and two posts would stop the handrail short of the end risers. Set them on site;
-`plans/TODO.md` carries it.
+**Post bases, still open.** The drawn stations are the path's ends and its middle, each on
+a riser line, so no drawn base is wholly on a tread: the foot base straddles the lowest riser
+and the pad, and the head post is centred on W-SG-E1's east face, half over the top tread.
+The head posts' centres are also 2 3/4" from `RL-SG-PTHRESH-S/N`'s end posts, so the two 3"
+posts overlap 1/4" in plan. 36" spacing cannot put three bases on four 11" treads, and two
+posts would stop the handrail short of the end risers. A designer's call; `plans/TODO.md`
+carries it.
 
 ### The threshold's two cheeks
 

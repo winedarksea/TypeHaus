@@ -67,7 +67,7 @@ RAILING_INT_STAIR_GUARD = RailingType(
     name="Interior stair guard rail",
     product_ref=WILLIAMS_COLONIAL_42_BLACK.tag,
     post_width=inch(3), baluster_width=inch(0.5),
-    source=f"Williams Colonial 42\" black; ESR-3485 §1.0/§5.1 list it for interior use. "
+    source=f"Williams Colonial 42\" black; ESR-3485 §2.0/§5.1 list it for interior use. "
            f"Posts on the 42\" surface kit (Menards 1717824) or {_FASCIA_BRACKET}. {_SPACING}.",
     fascia_bracket_height=inch(5),
     fascia_bracket_width=inch(5.64),

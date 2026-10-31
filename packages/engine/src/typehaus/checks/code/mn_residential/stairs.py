@@ -1,4 +1,4 @@
-"""R311.7 stairways — built geometry, headroom, width, landings and handrails.
+"""R311.7 stairways — built geometry, headroom, landings and handrails (width: ``stair_width``).
 
 Split out of ``rules.py`` unchanged. The doctrine here is measure-the-output: every rule
 reads the *resolved* members rather than re-deriving the flight from authored inputs, which
@@ -23,7 +23,6 @@ from typehaus.findings import Finding, not_applicable
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.overhead import OverheadIndex
-from typehaus.resolve.railings.parts import rail_half_section_m
 from typehaus.resolve.stair_headroom import STAIR_HEADROOM, run_clearances
 from typehaus.resolve.stairs.walkline import (
     flight_stations,
@@ -35,7 +34,6 @@ from typehaus.resolve.stairs.walkline import (
 _MAX_STAIR_RISER = inch(7.75)
 _MIN_STAIR_GOING = inch(10)
 _MIN_STAIR_HEADROOM = STAIR_HEADROOM
-_MIN_STAIR_WIDTH = inch(36)  # R311.7.1, above the handrail / between finished walls
 _MIN_STAIR_LANDING_DEPTH = inch(36)  # R311.7.6, in the direction of travel
 _MIN_HANDRAIL_RISERS = 4  # R311.7.8: required on flights with four or more risers
 # R311.7.8.1: handrail top measured above the sloped nosing line, not above any floor.
@@ -205,145 +203,6 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
         elements = tuple(dict.fromkeys((stair.tag, tag, *(t for _, t in low_runs))))
         out.append(_fail(cid, f"{stair.tag} headroom {where} < 6'-8\"{extra}",
                          elements, code))
-    return out
-
-
-# R311.7.1's clear-width-past-handrail limits: 31.5" with a handrail on one side of the
-# flight, 27" with handrails both sides. Measured against the authored rail's plan line
-# plus the section the resolver frames (``rail_half_section_m``: the type's diameter).
-_MIN_WIDTH_PAST_ONE_RAIL = inch(31.5)
-_MIN_WIDTH_PAST_TWO_RAILS = inch(27)
-# A rail whose plan line sits farther than this outside a flight's tread edge belongs to
-# some other run (the same stair's opposite lane), not to this flight's side.
-_RAIL_LATERAL_REACH = inch(12)
-_RAIL_PARALLEL_DOT = 0.9  # rail runs along the flight, not across it
-
-
-def _flight_rail_projections(stair, rails, library) -> dict[str, tuple[float, float, float]]:
-    """Per straight flight, ``(width, low-side projection, high-side projection)`` in m.
-
-    Geometry is measured, never assumed: the flight's edges come off its tread boards'
-    endpoints, the handrail's plan line off the authored path. A rail counts against a
-    flight when it runs parallel to it, overlaps its run extent, and sits within
-    ``_RAIL_LATERAL_REACH`` of one edge; its projection into the flight is however far the
-    near face of its drawn section reaches past that edge. Winders are excluded exactly as
-    before — only ``tread`` boards define a lane.
-    """
-    flights: dict[str, list] = {}
-    for member in stair.members:
-        if member.category == "tread":
-            flights.setdefault(member.child_key.rsplit("-", 1)[0], []).append(member)
-    out: dict[str, tuple[float, float, float]] = {}
-    for key, treads in flights.items():
-        (x0, y0), (x1, y1) = treads[0].p0, treads[0].p1
-        span = math.hypot(x1 - x0, y1 - y0)
-        if span < 1e-9:
-            continue
-        cross = ((x1 - x0) / span, (y1 - y0) / span)  # across the lane
-        run = (-cross[1], cross[0])  # along the climb
-
-        def c_of(p, cross=cross):  # noqa: E306 - tiny projection helpers, scoped to this flight
-            return p[0] * cross[0] + p[1] * cross[1]
-
-        def r_of(p, run=run):
-            return p[0] * run[0] + p[1] * run[1]
-
-        ends = [p for t in treads for p in (t.p0, t.p1)]
-        e0, e1 = min(c_of(p) for p in ends), max(c_of(p) for p in ends)
-        r0, r1 = min(r_of(p) for p in ends), max(r_of(p) for p in ends)
-        proj0 = proj1 = 0.0
-        for rail in rails:
-            pts, half = [p.xy_m for p in rail.path], rail_half_section_m(library, rail)
-            for a, b in zip(pts[:-1], pts[1:], strict=True):
-                seg = math.hypot(b[0] - a[0], b[1] - a[1])
-                if seg < 1e-9:
-                    continue
-                u = ((b[0] - a[0]) / seg, (b[1] - a[1]) / seg)
-                if abs(u[0] * run[0] + u[1] * run[1]) < _RAIL_PARALLEL_DOT:
-                    continue
-                if min(r_of(a), r_of(b)) > r1 or max(r_of(a), r_of(b)) < r0:
-                    continue  # alongside a different flight of the same stair
-                c = c_of(((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0))
-                if not (e0 - _RAIL_LATERAL_REACH.meters <= c
-                        <= e1 + _RAIL_LATERAL_REACH.meters):
-                    continue
-                if abs(c - e0) <= abs(c - e1):
-                    proj0 = max(proj0, min(c + half - e0, e1 - e0))
-                else:
-                    proj1 = max(proj1, min(e1 - (c - half), e1 - e0))
-        out[key] = (e1 - e0, max(proj0, 0.0), max(proj1, 0.0))
-    return out
-
-
-@check(Tier.CODE, "code.R311_7_1_stair_width")
-def stair_width(ctx: CheckContext) -> list[Finding]:
-    """Built flight width from the tread boards (R311.7.1: 36" minimum), and — now that
-    handrails are authored elements — the clear width past them.
-
-    Two numbers per flight, both measured off the output: 36" between finished walls
-    (the minimum tread board), and where a ``serves_stair`` handrail runs alongside a
-    flight, the width that remains past the rail's 1.5" section — 31.5" with a rail on
-    one side, 27" with rails both sides. Until the handrail role existed this check
-    could only measure the first number. The winder turn is excluded: its width is the
-    turn square's by construction, and its own code minimums are the narrow-end and
-    walk-line checks.
-    """
-    cid, code = "code.R311_7_1_stair_width", "R311.7.1"
-    from typehaus.model.structure import Railing
-
-    if not ctx.model.stairs:
-        return [_unknown(cid, "no resolved stairs", (), code)]
-    plan = getattr(ctx, "plan", None)
-    handrails = [e for e in plan.all_elements() if isinstance(e, Railing)
-                 and e.role in ("handrail", "guard_and_handrail")] if plan else []
-    out: list[Finding] = []
-    for stair in ctx.model.stairs:
-        widths = [member.length_m for member in stair.members
-                  if member.category == "tread"]
-        if not widths:
-            out.append(_unknown(cid, f"{stair.tag} has no tread boards to measure",
-                                (stair.tag,), code))
-            continue
-        width = min(widths)
-        if width < _MIN_STAIR_WIDTH.meters - 1e-9:
-            out.append(_fail(cid, f"{stair.tag} flight width {width / .0254:.2f}\" "
-                             "< 36\"", (stair.tag,), code))
-            continue
-        serving = [r for r in handrails if r.serves_stair == stair.tag]
-        if not serving:
-            out.append(_pass(cid, f"{stair.tag} flight width {width / .0254:.2f}\" "
-                             ">= 36\" (no handrail authored to project into it)", code))
-            continue
-        clear_fail = False
-        worst: tuple[float, float, int] | None = None  # (clear, limit, sides)
-        for key, (flight_w, proj0, proj1) in sorted(
-                _flight_rail_projections(stair, serving, getattr(plan, "library", None)).items()):
-            sides = (proj0 > 1e-9) + (proj1 > 1e-9)
-            if sides == 0:
-                continue
-            clear = flight_w - proj0 - proj1
-            limit = (_MIN_WIDTH_PAST_TWO_RAILS if sides == 2
-                     else _MIN_WIDTH_PAST_ONE_RAIL).meters
-            if worst is None or clear - limit < worst[0] - worst[1]:
-                worst = (clear, limit, sides)
-            if clear < limit - 1e-9:
-                clear_fail = True
-                out.append(_fail(cid, f"{stair.tag} {key} clears {clear / .0254:.2f}\" "
-                                 f"past its handrail{'s' if sides == 2 else ''}; "
-                                 f"R311.7.1 requires {limit / .0254:.1f}\"",
-                                 (stair.tag,), code))
-        if clear_fail:
-            continue
-        if worst is None:
-            out.append(_pass(cid, f"{stair.tag} flight width {width / .0254:.2f}\" "
-                             ">= 36\" (its handrails project into no measured flight)",
-                             code))
-        else:
-            clear, limit, sides = worst
-            out.append(_pass(cid, f"{stair.tag} flight width {width / .0254:.2f}\" "
-                             f">= 36\" and {clear / .0254:.2f}\" clear past "
-                             f"{'handrails both sides' if sides == 2 else 'its handrail'} "
-                             f"(>= {limit / .0254:.1f}\")", code))
     return out
 
 

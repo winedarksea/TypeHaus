@@ -2224,8 +2224,8 @@ PORCH_STAIR = Stair(
 # wholly on a tread: 45" less two 4 1/4" (inset + half post) leaves 36 1/2" between the post
 # faces, R311.7.1's 36" above the handrail with 1/2" to spare. The handrail runs 3 3/8"
 # inboard of the south guard line — 1 1/2" clear of the 2.25" Colonial rail — which leaves
-# about 38" past it on the treads and 34" from it to the north posts. That second number is
-# the honest one; `code.R311_7_1_stair_width` sees handrails only (plans/TODO.md).
+# 33 7/8" from it to the north posts (R311.7.1's 31 1/2"), which `code.R311_7_1_stair_width`
+# measures along with the 36 1/2" between the posts.
 #
 # These stop at the flight — x 28'-6", the head — and the threshold beyond it is guarded
 # by PORCH_STAIR_THRESHOLD_RAILS below rather than by extending these. A `serves_stair`
@@ -2250,16 +2250,18 @@ PORCH_STAIR_RAILS = [
     for _si, _sh, _sy in ((3, "S", _PORCH_STAIR_Y1 + _POST_INSET_FT),
                           (4, "N", _PORCH_STAIR_Y0 - _POST_INSET_FT))
 ]
-# South side: the right hand going down. Same stations as RL-SG-PSTAIR-S (path and spacing),
-# so a bracket meets a post face at each; the end returns are the 90 deg kit's, into the
-# end posts. Centreline 34 1/4" over the nosings puts the pipe's top at 35". The returns'
-# standoff is unpublished: confirm on delivery.
+# South side: the right hand going down. Supported at its two ends only, the 90 deg kit's
+# returns into RL-SG-PSTAIR-S's end posts (ESR-3485 Table 1 lists that return on a 3" post;
+# its midspan bracket only on a 2" post), 52.3" apart on the rake against the kit's 72".
+# Centreline 34 1/4" over the nosings puts the pipe's top at 35". The returns' standoff is
+# unpublished: confirm on delivery. uid minted 2026-10-30 with
+# typehaus.model.ids.new_uid() (`haus fmt` does not visit params/); unique by grep.
 _HANDRAIL_Y = _PORCH_STAIR_Y1 + _POST_INSET_FT + _HANDRAIL_INBOARD_FT
 PORCH_STAIR_RAILS.append(Railing(
     uid="9ETPM8ZA74", tag="RL-SG-PSTAIR-HR", type_ref="RAILING-EXT-ALUMINUM-ADA-HANDRAIL",
     path=(pt(ft(_PORCH_STAIR_X1), ft(_HANDRAIL_Y)), pt(ft(_PORCH_STAIR_X0), ft(_HANDRAIL_Y))),
     kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(34.25),
-    base_elevation=_STAIR_PAD_TOP, post_spacing=inch(36), rail_count=1, mount="post",
+    base_elevation=_STAIR_PAD_TOP, post_spacing=inch(72), rail_count=1, mount="post",
     assembly="RAILING_DARK_METAL", role="handrail", serves_stair="ST-SG-PORCH",
     top_height=inch(34.25), graspable_profile="1.5in round — Type I",
     start_termination="newel", end_termination="newel"))
@@ -2275,8 +2277,8 @@ PORCH_STAIR_RAILS.append(Railing(
 # Level, not raked — they stand on the wall top, not on a flight — so 42" to match
 # RL-SG-PORCH, whose south cheek they run out of at its new terminus. Same product, same
 # cast-base-on-concrete condition, which is exactly what the surface row's rate is built for.
-# Their east posts stand at x 28'-6", beside the raked guards' head posts 2 3/4" inboard:
-# on site the two share one base (plans/TODO.md).
+# Their east posts stand on the head line with the raked guards' head posts, centres 2 3/4"
+# apart, so the two 3" posts overlap 1/4": one shared base on site (plans/TODO.md).
 PORCH_STAIR_THRESHOLD_RAILS = [
     Railing(uid=f"SGRA0{_ti}AAAA", tag=f"RL-SG-PTHRESH-{_th}",
             type_ref="RAILING-EXT-ALUMINUM-SURFACE",

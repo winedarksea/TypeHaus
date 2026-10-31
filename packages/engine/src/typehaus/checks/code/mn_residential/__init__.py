@@ -32,6 +32,7 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     stair_arrival,
     stair_guards,
     stair_nosings,
+    stair_width,
     stair_winders,
     stairs,
     ventilation,

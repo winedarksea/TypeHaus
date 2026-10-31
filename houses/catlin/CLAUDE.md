@@ -2328,7 +2328,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   legs on 12" concrete wall tops take ESR-3485's anchors through the post kit's cast
   4.99" base (screwed, not welded).
 - `ST-SG-PORCH` is 45" wide (y -9'-0"..-5'-3", widened north 2026-10-30) so the cast bases
-  land on treads, 2 3/4" in, with 36 1/2" between post faces. Its two raked guards are
+  fit the tread width, 2 3/4" in, with 36 1/2" between post faces (graded by
+  `code.R311_7_1_stair_width`). Along the run they are still drawn on riser lines: open in
+  `plans/TODO.md`. Its two raked guards are
   guards only (the Colonial top rail is no handrail, ESR §5.7); `RL-SG-PSTAIR-HR` is the
   Williams ADA pipe rail, `mount="post"` on the south guard's posts
   (`notes/porch_stair.md`). Do not widen further north: HP2's disconnect working space. The south leg

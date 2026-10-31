@@ -141,7 +141,8 @@ def test_a_bracket_reaches_the_wall_face_it_lands_on(catlin_model):
 
 
 def test_a_post_mounted_rail_hangs_on_its_guards_posts(catlin_model):
-    """``mount="post"``: brackets end on RL-SG-PSTAIR-S's post faces, and R301.5 grades them."""
+    """``mount="post"``: brackets end on RL-SG-PSTAIR-S's end post faces (the kit's two
+    returns; no midspan bracket on a 3" post), and R301.5 grades them."""
     from types import SimpleNamespace
 
     from shapely.geometry import Polygon
@@ -153,7 +154,7 @@ def test_a_post_mounted_rail_hangs_on_its_guards_posts(catlin_model):
     assert not _solids(catlin_model, "RL-SG-PSTAIR-HR", "POST")
     posts = [Polygon(s.outline) for s in _solids(catlin_model, "RL-SG-PSTAIR-S", "POST")]
     brackets = [Polygon(s.outline) for s in _solids(catlin_model, "RL-SG-PSTAIR-HR", "BRACKET")]
-    assert len(brackets) == len(posts) == 3
+    assert (len(brackets), len(posts)) == (2, 3)
     for bracket in brackets:  # touches a post face, never buried in it
         assert any(bracket.distance(post) < 1e-6 and bracket.intersection(post).area < 1e-9
                    for post in posts)
