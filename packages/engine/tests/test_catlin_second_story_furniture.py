@@ -248,7 +248,10 @@ def test_east_pax_frame_meets_corner_and_leaves_outlet_and_erv_access(catlin_mod
     outlet = objects[f"ED-S-{bedroom}-RC4"]
     grille = objects[f"REG-S-RET-{bedroom}"]
     assert Polygon(outlet.footprint).bounds[0] - east == pytest.approx(inch(5.625).meters)
-    assert Polygon(grille.footprint).bounds[0] - east == pytest.approx(inch(5.125).meters)
+    # The 11 3/4" floor-grille face (REG-T-ERV-EXH-FLOOR, 2026-10-31) is centred where the
+    # 7" one was, at x 28'-1", so its west edge now clears the frame by 2 3/4".
+    assert grille.position[0] == pytest.approx(ft(28, 1).meters)
+    assert Polygon(grille.footprint).bounds[0] - east == pytest.approx(inch(2.75).meters)
     duct = next(item for item in catlin_model_ro.ducts if item.tag == f"DU-M-ERV-R-{bedroom}")
     assert duct.path[-1] == pytest.approx(grille.position)
     assert grille.position[1] == pytest.approx(

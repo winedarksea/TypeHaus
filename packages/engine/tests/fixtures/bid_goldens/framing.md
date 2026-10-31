@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 54e3dedb34cba88b  
+**Model hash:** 6f13b21c431a2372  
 **Lines:** 198
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -47,7 +47,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 SPF framing lumber — blocking (2x12:spf) | 16 | LF ordered | 4 pcs, 10.8 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 260 | LF ordered | 77 pcs, 209.2 LF cut | building |
 | 2x3 — corner stud, plate, stud (2x3) | 48 | LF ordered | 12 pcs, 28.0 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,708 | LF ordered | 654 pcs, 3997.4 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,708 | LF ordered | 656 pcs, 3994.5 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,938 | LF ordered | 479 pcs, 2511.0 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 55.6 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,040 | LF ordered | 1173 pcs, 6091.7 LF cut | building |
@@ -193,7 +193,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 139.2 | bf | 4 placed, 10.6 SF plan; 0.43 cy in the takeoff | main, second |
+| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 126 | bf | 4 placed, 10.6 SF plan; 0.39 cy in the takeoff | main, second |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | 58.8 | bf | 6 placed, 6.9 SF plan; 0.18 cy in the takeoff | main |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 86.4 | bf | 3 placed, 7.2 SF plan; 0.27 cy in the takeoff | main, second |
 | Column — POST_KDAT (column:POST_KDAT) | 38.4 | bf | 2 placed, 0.4 SF plan; 0.12 cy in the takeoff | main |
