@@ -49,11 +49,11 @@ export const TILE_STYLES: Readonly<Record<string, TileStyle>> = {
   // Onyx-look polished porcelain, 24x48 with 8 faces per repeat; grout is platinum.
   "tile-onyx-opera-blue-grid": {
     pattern: "grid", sizeM: [24 * INCH, 48 * INCH], jointM: INCH / 16, repeat: [4, 2],
-    color: [197, 198, 204], grout: [200, 201, 200], roughness: 0.08, print: "opera-blue",
+    color: [197, 198, 204], grout: [200, 201, 200], roughness: 0.16, print: "opera-blue",
   },
   "tile-onyx-agua-linda-grid": {
     pattern: "grid", sizeM: [24 * INCH, 48 * INCH], jointM: INCH / 16, repeat: [4, 2],
-    color: [199, 213, 226], grout: [200, 201, 200], roughness: 0.08, print: "agua-linda",
+    color: [199, 213, 226], grout: [200, 201, 200], roughness: 0.16, print: "agua-linda",
   },
 };
 
@@ -181,7 +181,7 @@ export function createTileMaterial(mode: "nordic" | "schematic", style: TileStyl
     const onyx = buildOnyxMaps(style);
     if (onyx) return new THREE.MeshPhysicalMaterial({
       color: 0xffffff, metalness: 0, roughness: 1, map: onyx.color, normalMap: onyx.normal,
-      roughnessMap: onyx.orm, clearcoatMap: onyx.orm, clearcoat: 0.5, clearcoatRoughness: 0.03, ior: 1.5,
+      roughnessMap: onyx.orm, clearcoatMap: onyx.orm, clearcoat: 0.25, clearcoatRoughness: 0.12, ior: 1.5,
     });
   }
   const maps = mode === "nordic" ? buildTileMaps(style) : null;

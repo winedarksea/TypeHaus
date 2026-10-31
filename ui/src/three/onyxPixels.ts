@@ -29,9 +29,9 @@ export const ONYX_PRINTS = {
   // Softer, more swirled and less strictly banded; golden-brown veining.
   "agua-linda": {
     deep: [150, 176, 206], body: [172, 196, 222], pale: [198, 214, 230],
-    ivory: [241, 238, 230], greige: [226, 220, 208], cloud: [246, 246, 244], vein: [176, 140, 90],
-    faceMean: "#c7d5e2", faces: 8, periodM: 0.46, angleDeg: 18, warp: 0.24, wisp: 1.0,
-    fracture: 0.05, veinWeight: 0.45, opaqueAt: 0.80, saturation: 1.1,
+    ivory: [241, 238, 230], greige: [226, 220, 208], cloud: [226, 234, 240], vein: [176, 140, 90],
+    faceMean: "#c0d1e2", faces: 8, periodM: 0.46, angleDeg: 18, warp: 0.24, wisp: 0.5,
+    fracture: 0.05, veinWeight: 0.45, opaqueAt: 0.86, saturation: 1.1,
   },
 } as const satisfies Record<string, OnyxPrint>;
 export type OnyxPrintKey = keyof typeof ONYX_PRINTS;
@@ -153,7 +153,7 @@ export interface OnyxPixels {
   readonly normal: Uint8ClampedArray;
   readonly orm: Uint8ClampedArray; // R clearcoat mask, G roughness, B depth mask
 }
-export const ONYX_SURFACE = { faceRoughness: 0.07, groutRoughness: 0.85, groutDepthM: 0.0006, bevelM: 0.0007 };
+export const ONYX_SURFACE = { faceRoughness: 0.16, groutRoughness: 0.85, groutDepthM: 0.0006, bevelM: 0.0007 };
 
 /** Analytic face coverage and metric distance inside the face edge, for a point in the cell. */
 function coverage(lx: number, ly: number, job: OnyxPixelJob, pxPerM: number) {

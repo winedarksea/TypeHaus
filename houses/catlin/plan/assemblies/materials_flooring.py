@@ -71,7 +71,7 @@ MATERIALS_FLOORING = [
                     '= 3/4 inch. Confirm tile thickness and beds before installation. ' + _TOE),
     Material(tag="catlin-tile-agua-linda",
              name="Agua Linda 24x48 polished, platinum epoxy grout",
-             hatch="masonry", color="#c7d5e2", finish="tile-onyx-agua-linda-grid",
+             hatch="masonry", color="#c0d1e2", finish="tile-onyx-agua-linda-grid",
              finish_thickness_in=0.75, floor_waste_fraction=0.20,
              base_joint_ref="catlin-base-toe-silicone",
              floor_companion_refs=("tile-uncoupling-membrane",),
