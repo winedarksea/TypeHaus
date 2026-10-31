@@ -876,7 +876,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   through the well and never asks where in it the flight ends. `code.R311_7_6_stair_arrival_floor`
   asks in plan, and it found that hole.
   **The hole is the straight flight only (2026-10-09)**: its south edge is the flight's south
-  face (5'-9 5/8"), so `RL-A-STAIR` and `RL-A-FLIGHT-GUARD` are one line, and the winder
+  face (5'-9 5/8"), so `RL-A-STAIR` and `RL-A-FLIGHT-GUARD` share one path (their fascia
+  posts stand on opposite faces of it since 2026-10-31: R311.7.1 FAILs, plans/TODO.md), and the winder
   turn sits under intact `FS-ATTIC` deck, where `code.R311_7_2_stair_headroom` grades it
   (7.05'). The y=5'-4" joist line is moved into the trimmer pack (`line_overrides`). Moving
   the turn or the deck re-opens that check, not `integrity.stair_opening`.
