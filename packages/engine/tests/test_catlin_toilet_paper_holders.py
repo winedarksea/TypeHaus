@@ -57,14 +57,17 @@ def test_every_toilet_has_one_selected_holder_at_26_aff(catlin_plan, catlin_mode
 
 def test_mounting_positions_are_referenced_to_actual_supports(catlin_model_ro):
     objects = {obj.tag: obj for obj in catlin_model_ro.canvas_objects}
-    for room, y in zip(ROOMS[:3], (267.4375, 300.5, 226.74), strict=True):
+    # BATH2's Carlyle II is TOTO's published 28 5/16" deep (geometry review 2026-10-31,
+    # I2-008), not the 30" envelope, so its bowl front sits 9 11/16" off the holder's block.
+    for room, y, gap in zip(ROOMS[:3], (267.4375, 300.5, 226.74), (8, 8, 9.6875),
+                            strict=True):
         holder = next(obj for obj in _holders(catlin_model_ro) if obj.room == room)
         toilet = next(obj for obj in objects.values()
                       if obj.room == room and obj.tag.endswith("-WC"))
         assert holder.position[1] / IN == pytest.approx(y)
         bowl = Polygon(toilet.footprint).bounds
         distance = (y - bowl[3] / IN if room == "RM-M-BATH1" else bowl[1] / IN - y)
-        assert distance == pytest.approx(8)
+        assert distance == pytest.approx(gap)
     assert objects["FURN-S-BATH1-TP"].position[0] / IN == pytest.approx(27)
     for tag, y in (("FURN-S-SUITEBATH-TP", 248.25), ("FURN-A-STUBATH-TP", 253)):
         holder = objects[tag]

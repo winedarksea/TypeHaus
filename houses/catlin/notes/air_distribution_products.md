@@ -58,8 +58,8 @@ projection, with the face height in `height`); its `TerminalNeck` is the part in
 
 A disc valve cannot go in a floor. **Reggio 412-AH** 2 1/4x10 aluminium floor grille (~$30),
 or equal Reggio G412 / Shoemaker AFP, on a **2 1/4x10x4 stamped 90° boot** (Snappy P13-204 or
-equal). Face estimated 4 x 11 3/4", boot height estimated 5": **neither is published** —
-confirm on the submittal (§13). Long side along the joist bay. Free area ~22 in² against the
+equal). Face 12 x 3 1/2" outside (Ferguson 412-AH listing, 2026-10-31); the boot's 5" height
+is still an estimate — confirm it on the submittal (§13). Long side along the joist bay. Free area ~22 in² against the
 duct's 12.6, so the grille is not the restriction; loss stays the derived K 5.
 
 ## 4. System 1 aluminium family

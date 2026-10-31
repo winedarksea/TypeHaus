@@ -63,6 +63,7 @@ from typehaus.resolve.model import (
     ResolvedSolid,
     SolidSweep,
 )
+from typehaus.resolve.pipe_sections import raceway_outside_diameter_m
 from typehaus.resolve.placeables import resolved_mount_elevation
 from typehaus.resolve.round_solids import PIPE_FACETS
 from typehaus.resolve.sweep import (
@@ -239,7 +240,8 @@ def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str)
         solid_path, solid_z = profile
         _emit_run_solids(model, run.uid or run.tag, run.tag, storey_tag,
                          solid_path, solid_z,
-                         round_profile(run.trade_size.meters / 2.0, PIPE_FACETS),
+                         round_profile(raceway_outside_diameter_m(
+                             resolved.trade_size_m, resolved.material) / 2.0, PIPE_FACETS),
                          conduit_category(resolved.service))
     return []
 

@@ -99,16 +99,17 @@ TOTO_AP_WALL_HUNG = TOILET_WALL_HUNG.model_copy(update={
 TOTO_CARLYLE_II = FixtureType(
     tag="FX-TOTO-CARLYLE-II",
     name="Carlyle II one-piece skirted water closet",
-    footprint=(inch(18.25), inch(30)),
-    height=inch(28.25),
+    footprint=(inch(16.5), inch(28.3125)),
+    height=inch(28.75),
     plan_symbol="toilet",
     basin=False,
     product_ref="PROD-TOTO-CST614CEFGAT40",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(water_closet_required_clearance(inch(30)),),
-    ports=floor_wc_ports(30),
-    source='TOTO Carlyle II CST614CEFGAT40#01, owner selection 2026-09-06. TOTO USA spec '
-           'sheet read 2026-09-06: 30" L x 18 1/4" W x 28 1/4" H, 12" rough-in, 1.28 gpf '
+    clearances=(water_closet_required_clearance(inch(28.3125)),),
+    ports=floor_wc_ports(28.3125),
+    source='TOTO Carlyle II CST614CEFGAT40#01, owner selection 2026-09-06. 28 5/16" D x '
+           '16 1/2" W x 28 3/4" H (TOTO SS-01809, same bowl/tank as MS614124CEF(R)G; '
+           'Ferguson CST614CEFGAT40 listing, 2026-10-31), 12" rough-in, 1.28 gpf '
            'Tornado Flush, CEFIONTECT, one-piece skirted. The AT40 suffix is WASHLET+ '
            'readiness — the concealed supply the S5 seat (PROD-TOTO-SW3446) uses — so this '
            'bowl needs a GFCI receptacle 6"-12" AFF, offset to the rear-left cord exit and '

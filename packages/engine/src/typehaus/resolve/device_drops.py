@@ -44,7 +44,8 @@ def add_derived_run(model: ResolvedModel, *, uid: str, tag: str, storey: str,
         derived=derived, cast_in=cast_in, stops_under=stops_under, unsleeved_m=unsleeved_m)
     model.conduits.append(run)
     _emit_run_solids(model, uid, tag, storey, path, list(z),
-                     round_profile(trade_size_m / 2.0, PIPE_FACETS), conduit_category(service))
+                     round_profile(raceway_outside_diameter_m(trade_size_m, material) / 2.0,
+                                   PIPE_FACETS), conduit_category(service))
     return run
 
 

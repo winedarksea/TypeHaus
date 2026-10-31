@@ -377,11 +377,13 @@ ATTIC_LIGHTING = [
     # 3'-10".
     # ** 3'-0" SINCE 2026-09-25. ** At 3'-10" the box stood 6 1/2" above W-A-STU-N's raked
     # top (41 1/2" AFF at this station) and through the roof; ED-A-STUDIO-AP went to 2'-2".
+    # ** 6'-6 1/2" SINCE 2026-10-31. ** At 6'-8" the plate sat 0.56" over the 3 1/2" casing leg
+    # (80.81"..84.31"); now the plate clears it by 0.94", the 4" footprint by 0.31".
     ElectricalDevice(uid="G5RDBXPZVD", tag="ED-A-POCKET-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-STU-N", face="right", distance_from_start=inch(80),
+                         wall_ref="W-A-STU-N", face="right", distance_from_start=inch(78.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]

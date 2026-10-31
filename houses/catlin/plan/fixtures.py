@@ -109,15 +109,15 @@ MAIN_FIXTURES = (
     # W-M-W3's face, east of 3'-5.24" it runs into the tub deck's west face at x=4'-8.24".
     # 2'-6" sits in that 1'-7 5/8" band, 11 1/4" clear of the deck (7" before the 2026-10-21
     # deck narrowing).
-    # y=20'-10 5/8" is the bowl centre with its tank on the wall's new face (22'-0 5/8"
-    # less the type's 14" half-depth). The 21" front clearance then reaches to y=17'-11 5/8"
-    # and clears FX-M-BATH2-SINK's south end by 1 1/4" — the tightest dimension in the room
-    # and the one to re-check if that sink ever moves north.
+    # y=250.58375" is the bowl centre with its tank on the wall face (264.74" less the type's
+    # 14 5/32" half-depth); flange and stop unchanged by the 28 5/16" retype (2026-10-31). The
+    # 21" front clearance clears FX-M-BATH2-SINK's south end by about 2 15/16" (1 1/4" with the
+    # old 30" bowl) — the room's tightest dimension; re-check it if that sink moves north.
     #
     # No `drain_position`: the convention (under the bowl) is correct, and PR-B-WC2-DRAIN
     # follows the bowl to its new flange rather than the reverse.
     Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOTO-CARLYLE-II", room="RM-M-BATH2",
-            position=pt(ft(2, 6), inch(249.74)), rotation=deg(0), wall_ref="W-M-HS1"),
+            position=pt(ft(2, 6), inch(250.58375)), rotation=deg(0), wall_ref="W-M-HS1"),
     # BATH2 has separate bathing fixtures: the 36" shower at the south end of the east
     # plumbing wall, the drop-in bath north of it. Intentionally separate instances/types
     # rather than a tub-shower combination, so the permit schedule and future owner
@@ -247,10 +247,10 @@ MAIN_FIXTURES = (
 # ALCOVE CHECK. FX-TUBSHOWER-60 is a 60"x30" flanged insert, which is exactly the standard
 # alcove footprint (the type's 7'-0" height is the modelled surround envelope, matching
 # FX-SHOWER-36 — not a product dimension). A flanged insert nails to studs on THREE sides.
-# Measured at real finish faces, FX-S-BATH1-SH has two: the chase wall at x 2'-11 3/8"
-# against the tub's west end at 2'-11 3/4" (0.36" of scribe), and the north wall at
-# y 35'-5 3/8" against the tub's north edge at 35'-4 1/2". Its EAST end at x 7'-11 3/4" is
-# open, with 1'-8 7/8" of dead floor out to the east wall at x 9'-8 5/8".
+# Measured at real finish faces, FX-S-BATH1-SH has two: the chase wall at x 2'-11 1/4"
+# against the tub's west end at 2'-11 3/4" (0.49" of scribe), and the north wall at
+# y 35'-5 1/2" against its north edge at 35'-4 1/2" (1.00"); the flange stands 1"/1 1/2" off
+# the studs (C6 escalation). Open EAST end at 7'-11 3/4", 1'-9" of dead floor to x 9'-8 3/4".
 # FURN-S-BATH1-SHELF (plan/placeables.py) closes it: the shelf's west panel is the return,
 # with a 2x4 framed behind it for the flange to nail to. The west side is also real: the
 # chase's south corners run the tub's full 30" (storeys/second.py, NODES).

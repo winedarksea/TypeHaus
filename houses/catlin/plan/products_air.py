@@ -86,7 +86,9 @@ WALL_HOOD_8 = Product(
     url="https://renewaire.com/wp-content/uploads/2025/09/Hoods-Dampers-.pdf",
     source=f"Basis of design for both hoods, or equal: Fantech FML8 with its bug screen "
            f"swapped for 1/4in mesh (no published curve). 1/4in screen, not insect mesh, so "
-           f"frost does not blind it. Painted to the north-face cladding. {_SPEC} §8.",
+           f"frost does not blind it. Painted to the north-face cladding. Either hood's plate "
+           f"must lap the 9x9in RO (AO-M-ERV-OA/AO-S-ERV-EA): Fantech's FML8 card lists "
+           f"9 x 9in, which does not; FA8-P's plate is unpublished, confirm. {_SPEC} §8.",
 )
 BACKDRAFT_DAMPER_8 = Product(
     tag="PROD-AIR-BACKDRAFT-8", brand="RenewAire", model="BD8 (102401)",

@@ -1715,11 +1715,13 @@ ATTIC_DATA_DEVICES = [
     # ** 2'-2", NOT 3'-0" (2026-09-25). ** `integrity.wall_mount_below_ceiling` graded the
     # BODY: the 8" AP at 3'-0" topped out 2.7" into RF-HOUSE's underside (the 4 1/2" above
     # was measured to the mount, the base). At 2'-2" it tops out 34", clear of the switch.
+    # ** x=6'-4 1/2" SINCE 2026-10-31: ** the 8" body at 6'-6" ran 1.2" onto the D-A-POCKET
+    # casing leg (80.81"); it now stops 0.31" short of it.
     ElectricalDevice(uid="CND004AAAA", tag="ED-A-STUDIO-AP", kind=DeviceKind.DATA_OUTLET,
                      type_ref="ED-T-AP-WALL",
                      room="RM-A-STUDIO", mount=Mount(kind=MountKind.WALL, elevation=ft(2, 2)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-STU-N", face="right", distance_from_start=inch(78),
+                         wall_ref="W-A-STU-N", face="right", distance_from_start=inch(76.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
@@ -2100,14 +2102,15 @@ NEC_FILL_MAIN = [
     # measures, which is why the two entries in plans/TODO.md that quoted 42.9" and 37.2" to
     # receptacles in RM-S-SUITE were understating the problem rather than describing it.
     #
-    # South-wall basin outlet, 44" AFF; below the mirror-light footprint.
+    # East wall (adjacent to the basin, (D)(2)), under ED-M-BATH1-SW at its station, 40" AFF.
+    # Not the south wall: FURN-M-BATH1-MIRROR covers it from 43" to 75" (2026-10-31).
     ElectricalDevice(uid="4KMFZPRJPX", tag="ED-M-BATH1-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-20",
                      circuit="CKT-RC-MAIN", room="RM-M-BATH1",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(40)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-HS1", face="left", distance_from_start=inch(60),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(41.125),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # ------------------------------------------------------------------------------------
     # THE TWO WASHLET OUTLETS (2026-09-06) — one stud bay, both baths.
     # ------------------------------------------------------------------------------------

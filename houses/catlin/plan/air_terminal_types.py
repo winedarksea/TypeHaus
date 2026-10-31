@@ -100,13 +100,14 @@ AIR_REGISTER_TYPES = (
     # A disc valve cannot sit in a floor. Long side along the joist bay.
     RegisterType(tag="REG-T-ERV-EXH-FLOOR",
                  name="ERV extract floor grille, 2 1/4x10 aluminium, on a 4in-round boot",
-                 footprint=(inch(11.75), inch(4)), height=inch(1), plan_symbol="register",
+                 footprint=(inch(12), inch(3.5)), height=inch(1), plan_symbol="register",
                  ventilation_terminal=True, product_ref="PROD-AIR-FLOOR-GRILLE-2X10",
                  static_loss_pa_at_cfm=_FLOOR_GRILLE_PA,
                  neck=TerminalNeck(width=inch(10), height=inch(2.25), depth=inch(5),
                                    part="2 1/4x10x4 stamped 90-degree boot"),
-                 source=f"Face estimated at 4 x 11 3/4in and the boot at 5in tall; neither "
-                        f"is published. Loss: derived K 5 (erv_static_budget §5). {_NOTE} §3.",
+                 source=f"Face 12 x 3 1/2in outside (Ferguson 412-AH listing, 2026-10-31); "
+                        f"the boot's 5in height is unpublished, an estimate. Loss: derived K 5 "
+                        f"(erv_static_budget §5). {_NOTE} §3.",
                  ports=(_port("return", Service.RETURN_AIR),)),
     # RM-S-PLANT is held at 75 F / 70% RH and slightly negative (notes/plant_room.md): its
     # extract is RH-controlled. The 4in 24 VAC damper sits on DU-M-ERV-R-PLANT's start

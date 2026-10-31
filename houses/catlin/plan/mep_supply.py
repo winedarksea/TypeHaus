@@ -702,7 +702,7 @@ SUPPLY = [
     # the bay, 6 1/4" behind the liner, which is where a mixer body belongs and where the
     # trim escutcheon reaches it from. The two are 4" apart in y, so one x serves both.
     # The east jog itself rides at 8'-4 5/8" — 6" higher than the 7'-10 5/8" it was
-    # authored at, and still above the sauna's 6'-10 13/16" ceiling and inside its service
+    # authored at, and still above the sauna's 6'-11 1/16" ceiling and inside its service
     # cavity, which is the only thing that paragraph ever asked of it.
     # ** HOT IS NORTH SINCE 2026-10-31 (owner): the R10000 body is hot-left facing east. **
     # The hot's lane is the west one, so its jog to the north inlet crosses the cold's leg:
