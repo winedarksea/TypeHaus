@@ -21,7 +21,11 @@ def _visit(trade, tags=()):
 def test_the_pour_lists_every_cast_in_sleeve(catlin_model_ro) -> None:
     items = handoff_items(catlin_model_ro, _visit("concrete"))
     sleeves = [item for item in items if item.id.startswith("sleeves:")]
-    assert sum(item.count for item in sleeves) == len(catlin_model_ro.sleeves)
+    # A duct's framed-wall seal (DU-ERV-OA/-EA) is the mechanical trade's, never cast.
+    cast = [s for s in catlin_model_ro.sleeves
+            if not (s.serves_duct and s.host_category == "framed_wall")]
+    assert len(cast) == len(catlin_model_ro.sleeves) - 2
+    assert sum(item.count for item in sleeves) == len(cast)
     assert all(item.sheet_ref == "S-100" for item in sleeves)
 
 

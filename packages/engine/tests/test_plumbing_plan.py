@@ -40,8 +40,10 @@ def test_basement_plan_shows_drain_run_and_sleeves_from_below(catlin_model):
     scene = build_plumbing_plan(catlin_model, "basement")
     assert "P-SANR-PIPE" in scene.by_layer()
     assert "PR-B-MAIN-DRAIN" in _pipe_tags(scene)
-    own = [s for s in catlin_model.sleeves if s.storey == "basement"]
-    above = [s for s in catlin_model.sleeves if s.storey == "main"]
+    own = [s for s in catlin_model.sleeves if s.storey == "basement" and not s.serves_duct]
+    # A framed-wall sleeve upstairs (SP-M-ERV-OA-SEAL) is not a pour seen from below.
+    above = [s for s in catlin_model.sleeves
+             if s.storey == "main" and s.host_category != "framed_wall"]
     assert own and above  # both halves of the "from below" rule are exercised
     assert _sleeve_count(scene) == len(own) + len(above)
 
@@ -49,7 +51,10 @@ def test_basement_plan_shows_drain_run_and_sleeves_from_below(catlin_model):
 def test_main_plan_shows_sleeves_in_true_position_and_fixtures(catlin_model):
     scene = build_plumbing_plan(catlin_model, "main")
     assert "A-FIXT" in scene.by_layer()
-    assert _sleeve_count(scene) == len([s for s in catlin_model.sleeves if s.storey == "main"])
+    # The ERV intake's wall seal is the mechanical trade's, not drawn here.
+    main = [s for s in catlin_model.sleeves if s.storey == "main"]
+    assert [s.tag for s in main if s.serves_duct] == ["SP-M-ERV-OA-SEAL"]
+    assert _sleeve_count(scene) == len(main) - 1
     # The collector drain run is a basement-storey run, so it must not appear here; the
     # main-storey vent branch to the chase must.
     assert "PR-B-MAIN-DRAIN" not in _pipe_tags(scene)

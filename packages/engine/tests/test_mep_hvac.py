@@ -201,7 +201,19 @@ def test_each_bedroom_grille_is_fed_by_a_drawn_branch(catlin_plan, catlin_model,
     assert len(leg.path) == 2
     assert leg.z_m[0] == pytest.approx(leg.z_m[1])
     assert leg.path[0][1] == pytest.approx(leg.path[1][1])
-    assert at[1] == pytest.approx(end[1])
+    # The collar enters the 12x6 register box behind the face. BED3's box sits 2 3/4" north
+    # of its collar (off D-S-BED3's king; the collar cannot follow: EQ-S-ERV-MIX).
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.quantities import inch
+    from typehaus.resolve.terminal_necks import neck_boxes
+
+    ring = next(b[1] for b in neck_boxes(catlin_model) if b[0] == register.tag)
+    neck = Polygon(ring)
+    _, y0, _, y1 = neck.bounds
+    radius = leg.diameter_m / 2
+    assert y0 - 1e-9 <= end[1] - radius and end[1] + radius <= y1 + 1e-9
+    assert neck.distance(Point(end)) <= inch(.25).meters
     assert register.location.attachment.wall_ref == f"W-S-BW{n}"
 
 
@@ -239,8 +251,11 @@ def test_bed3_straight_branch_clears_framing_and_keeps_return_grille_in_plenum(
                 structural_shapes.append(shape)
     assert structural_shapes
     assert min(branch_body.distance(shape) for shape in structural_shapes) >= inch(.5).meters - 1e-9
-    return_grille = next(o for o in model.canvas_objects if o.tag == "REG-S-HP-RET")
-    assert Polygon(plenum.footprint).buffer(1e-9).covers(Polygon(return_grille.footprint))
+    # The 28x12 hole (the grille's neck), not its wider face, must open into the plenum.
+    from typehaus.resolve.terminal_necks import neck_boxes
+
+    hole = next(b[1] for b in neck_boxes(model) if b[0] == "REG-S-HP-RET")
+    assert Polygon(plenum.footprint).buffer(1e-9).covers(Polygon(hole))
 
 
 def test_study_sidewall_boot_connects_and_clears_soffit_framing(catlin_plan, catlin_model_ro):
@@ -266,11 +281,12 @@ def test_study_sidewall_boot_connects_and_clears_soffit_framing(catlin_plan, cat
     assert branch.diameter_m == pytest.approx(inch(6).meters)
     assert branch.path[-1] == pytest.approx(grille.position)
     assert branch.z_m[0] == pytest.approx(riser.z_m[0])
-    assert branch.z_m[0] == pytest.approx(grille.z_m + inch(3).meters)
+    assert branch.z_m[0] == pytest.approx((grille.body_z0_m + grille.body_z1_m) / 2)  # face mid
     assert LineString(riser.path[:2]).distance(Point(branch.path[0])) < 1e-9
     assert bay.path[0] == pytest.approx(riser.path[-1])
     attic_boot = next(o for o in model.canvas_objects if o.tag == "REG-A-HP-STUDY")
-    assert LineString(bay.path).distance(Point(attic_boot.position)) < 1e-9
+    # Bay-centred between FS-ATTIC joists since 2026-10-31: 1" off the axis, over the 10" duct.
+    assert LineString(bay.path).distance(Point(attic_boot.position)) < bay.width_m / 2
     assert Polygon(room.clear_face).covers(Polygon(grille.footprint))
     assert bay.length_m == pytest.approx(inch(90).meters)
     assert not bay.conflicts
