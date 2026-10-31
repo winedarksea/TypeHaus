@@ -591,10 +591,10 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     basement's, and `FS-ATTIC` is the second storey's — the last one to be authored, and
     while it was not, every bedroom below resolved open to the I-joists.
 
-    Two rooms carve themselves back out of the blanket: ``RM-B-SAUNA``'s ``ceiling_lining``
+    Three rooms carve themselves back out of the blanket: ``RM-B-SAUNA``'s ``ceiling_lining``
     override subtracts its clear face from ``FS-M-WEST``'s share and ``RM-S-PLANT``'s from
     ``FS-ATTIC``'s, each billing under its own liner materials instead — the room-override
-    rows checked separately below.
+    rows checked separately below. ``RM-B-ESS``'s two-layer Type X lid is the third.
     """
     from typehaus.resolve.geometry import polygon_area
     from typehaus.takeoff.framing import sheet_goods_takeoff
@@ -658,9 +658,14 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     attic_net = _net_sqft("FS-ATTIC") + _opening_sqft("FO-A-RADON-STACK")
     sauna_net = _room_sqft("RM-B-SAUNA")
     plant_net = _room_sqft("RM-S-PLANT")
+    # RM-B-ESS carves its face out of the blanket too, and lines it with TWO 5/8" Type X
+    # layers — gypsum of the same thickness, so it nets +1 face inside this family.
+    ess_net = _room_sqft("RM-B-ESS")
     total = (west_second_net + east_second_net + others + sl_m_deck_net + attic_net
-             - sauna_net - plant_net)
+             - sauna_net - plant_net + ess_net)
     assert float(gwb["net_area_sqft"]) == pytest.approx(total, abs=0.5)
+    assert float(ceiling[("gwb-x", 0.625)]["net_area_sqft"]) == pytest.approx(
+        2 * ess_net, abs=0.5)
 
     # Several decks of several: the house's subfloor area is larger than this one ceiling.
     subfloor_area = sum(float(row["net_area_sqft"]) for row in rows
