@@ -11,6 +11,8 @@ import math
 from collections import Counter
 
 from typehaus.hardware.catalog import (
+    EXPOSURE_DRY,
+    EXPOSURE_TREATED,
     ROLE_BRACE_THROUGH_BOLT,
     ROLE_COIL_STRAP,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
@@ -155,20 +157,24 @@ def _is_exterior_framed_wall(wall) -> bool:
 
 def stud_plate_tie_rows(model: ResolvedModel, rules: WallTieRules) -> list:
     """One stud-to-plate tie per full-height stud in the framed exterior walls, sized to
-    the stud it ties (SP4 on a 2x4, SP6 on a 2x6)."""
+    the stud it ties (SP4 on a 2x4, SP6 on a 2x6), ZMAX on a treated stud (R317.3.1)."""
+    from typehaus.joints.bearing import is_treated
+
     by_profile: dict = {}
     for wall in model.walls:
         if not _is_exterior_framed_wall(wall):
             continue
         for member in wall.members:
             if member.category in rules.tied_stud_categories:
-                by_profile.setdefault(member.profile, Counter())[wall.storey] += \
+                exposure = (EXPOSURE_TREATED if is_treated(model, wall.assembly, member.material)
+                            else EXPOSURE_DRY)
+                by_profile.setdefault((member.profile, exposure), Counter())[wall.storey] += \
                     rules.ties_per_stud
 
     rows = []
-    for profile in sorted(by_profile):
-        by_storey = by_profile[profile]
-        item = hardware_for_role_and_nominal(ROLE_STUD_PLATE_TIE, profile)
+    for profile, exposure in sorted(by_profile):
+        by_storey = by_profile[(profile, exposure)]
+        item = hardware_for_role_and_nominal(ROLE_STUD_PLATE_TIE, profile, exposure=exposure)
         rows.append(hardware_row(
             item, scope="framed exterior wall", count=int(sum(by_storey.values())),
             size=profile, by_storey=dict(sorted(by_storey.items())),

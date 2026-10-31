@@ -29,6 +29,7 @@ from typehaus.findings import Finding
 from typehaus.model.enums import Service
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.placeables import placed_xy
+from typehaus.resolve.slab_clip import floor_outline
 from typehaus.resolve.solid_categories import is_pour_slab
 
 _ALIGNMENT_TOLERANCE_M = 0.0127  # 1/2"
@@ -96,7 +97,8 @@ def _missing_sleeve_findings(ctx: CheckContext) -> list[Finding]:
             if fixture_type is None or Service.DRAIN not in fixture_type.needs:
                 continue
             point = Point(placed_xy(ctx.model, fixture))
-            host = next((s for s in storey_slabs if Polygon(s.outline).contains(point)), None)
+            host = next((s for s in storey_slabs
+                         if Polygon(floor_outline(ctx.model, s)).contains(point)), None)
             if host is None:
                 continue  # fixture isn't over a structural slab at all
             if (fixture.tag, host.tag) not in served:
@@ -194,7 +196,7 @@ def under_slab_burial(ctx: CheckContext) -> list[Finding]:
     for s in ctx.model.solids:
         if not is_pour_slab(s.category) or len(s.outline) < 3:
             continue
-        footprint = Polygon(s.outline)
+        footprint = Polygon(floor_outline(ctx.model, s))
         suspended = any(elev < s.z0_m - 0.1 and poly.intersects(footprint)
                         for elev, poly in room_polys)
         if not suspended:

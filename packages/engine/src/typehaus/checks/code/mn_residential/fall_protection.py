@@ -25,6 +25,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.ownership import children_of
+from typehaus.resolve.slab_clip import floor_outline
 from typehaus.resolve.solid_categories import in_slab_family
 
 # --- R312.1 guards at stair-well openings ----------------------------------------------
@@ -225,7 +226,7 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
     surfaces = [(floor.tag, list(floor.deck_outline), floor.deck_z1_m, floor.deck_top_at)
                 for floor in ctx.model.floors
                 if floor.deck_outline and len(floor.deck_outline) >= 3]
-    surfaces += [(solid.tag, list(solid.outline), solid.z1_m,
+    surfaces += [(solid.tag, list(floor_outline(ctx.model, solid)), solid.z1_m,
                   lambda _x, _y, z=solid.z1_m: z)
                  for solid in ctx.model.solids
                  if in_slab_family(solid.category) and len(solid.outline) >= 3]

@@ -6,6 +6,8 @@ Split out of the former ``library/hardware.py``; see the package docstring.
 from __future__ import annotations
 
 from typehaus.hardware.catalog import (
+    EXPOSURE_DRY,
+    EXPOSURE_TREATED,
     ROLE_COIL_STRAP,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_FLOOR_TIE_HOLDOWN,
@@ -17,14 +19,17 @@ from typehaus.hardware.catalog import (
 )
 from typehaus.library.hardware._common import _SIMPSON
 
+# ZMAX, never G90: a sill on concrete is preservative-treated (IRC R317.1), so every nail
+# of this strap is in treated contact (R317.3.1). Same ESR-2555 row as the G90 MASA.
 MASA_MUDSILL_ANCHOR = StructuralHardware(
-    tag="simpson-masa-mudsill-anchor",
-    name="MASA mudsill anchor",
+    tag="simpson-masaz-mudsill-anchor",
+    name="MASAZ mudsill anchor (ZMAX)",
     role=ROLE_MUDSILL_ANCHOR,
     manufacturer=_SIMPSON,
-    model="MASA",
-    source="Simpson Strong-Tie MASA mudsill anchor (strongtie.com/masa) — cast into the "
-           "top of a concrete or ICF wall to anchor the sill plate",
+    model="MASAZ",
+    source="Simpson Strong-Tie MASAZ mudsill anchor, 16 ga ZMAX (strongtie.com/masa; "
+           "ESR-2555) — cast into the top of a concrete or ICF wall to anchor the treated "
+           "sill plate, nailed with HDG",
     # ESR-2555 Table 1, STANDARD INSTALLATION / 2x4, 2x6 / uncracked concrete / Wind and
     # SDC A&B. Two choices in reading this table are worth stating:
     #   * **Uncracked** is recorded (920 vs 750 lbf uplift cracked). A sill plate at the top
@@ -192,8 +197,22 @@ SP4_STUD_PLATE_TIE = StructuralHardware(
     manufacturer=_SIMPSON,
     model="SP4",
     fits_nominal=("2x4",),
+    exposure=EXPOSURE_DRY,
     source="Simpson Strong-Tie SP stud plate tie family (strongtie.com/sp) — SP4 is the "
            "published size for a 2x4 stud-to-plate connection",
+)
+
+#: A 2x4 stud of treated wood (catlin's KDAT W-BW-SCREEN) takes the ZMAX tie, R317.3.1.
+SP4Z_STUD_PLATE_TIE = StructuralHardware(
+    tag="simpson-sp4z-stud-plate-tie",
+    name="SP4Z stud plate tie (2x4, ZMAX)",
+    role=ROLE_STUD_PLATE_TIE,
+    manufacturer=_SIMPSON,
+    model="SP4Z",
+    fits_nominal=("2x4",),
+    exposure=EXPOSURE_TREATED,
+    source="Simpson Strong-Tie SP4Z, 20 ga ZMAX, 3-9/16 x 7-1/4 (strongtie.com/sp), "
+           "(6) 0.148 x 1-1/2 in HDG nails into the stud",
 )
 
 SP6_STUD_PLATE_TIE = StructuralHardware(

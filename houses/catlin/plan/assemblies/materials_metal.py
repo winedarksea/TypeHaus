@@ -226,7 +226,7 @@ MATERIALS_METAL = [
     # ** The screw is a #10-12 x 1-1/2" (owner, 2026-09-22): the guide's named 1", longer. **
     # The published read accepts it — its length guard is increase-only, because the row
     # excludes fasteners by footnote. Metal Sales stocks only the 1" (8243100, plated); the
-    # 1-1/2" is bought with the 316 SS / A153-D coating the KDAT needs, as the 1" had to be.
+    # 1-1/2" is bought in 304 stainless for the KDAT (ST Fastening 10A150TQPSSN, stocked).
     # History: this row carried a #10-12 x 2" for three days on one argument: Metal Sales' detail
     # asks that "fasteners should extend 1/2" or more past the inside face of the support",
     # and in a 1-1/2" girt nothing shorter than 2" can. That argument does not hold, for
@@ -249,8 +249,8 @@ MATERIALS_METAL = [
     # 0.024" off the ccSPF face, so a thin girt or one overdriven screw puts ~840 tips in
     # the foam. Nothing longer than 1-1/2" should ever be specified here.
     # It must still be a wood-point (Type 17) screw — a self-drilling point reams its own
-    # thread out of a 1-1/2" nailer — and the 316 SS / A153-D coating call is unchanged
-    # (KDAT contact; see prices.toml).
+    # thread out of a 1-1/2" nailer — in 304 stainless for the KDAT contact (owner,
+    # 2026-10-31: the stocked part; see prices.toml).
     #
     # ** `panel_fastener_head_dia_in=0.40` is not decoration either. ** IRC R703.1.2 names
     # three failure modes a design analysis must reach — "bending rupture of siding,
@@ -324,8 +324,8 @@ MATERIALS_METAL = [
                  wind_speed_mph=115.0,
                  exposure="B"),
              open_framing_source="Metal Sales BBD75 Board & Batten (Concealed Direct-Fastened) install guide, 2025-10-16, p.7: the panel is \"designed to be installed over open framing and/or directly over a wood substrate\", and p.12's Support Materials list reads \"Lumber - 1x or thicker\" and \"Steel Framing - 18 gauge or thicker\" (neither is a solid substrate). The Spec Data Sheet says the same in its own words: \"Designed for application over solid sheathing or open framing\", typical assembly \"Wood framing with moisture barrier\"",
-             panel_fastener="#10-12 x 1-1/2\" pancake head wood screw, Type 17 point, 316 stainless",
-             panel_fastener_part="#10-12x1-1/2 PH T17 316SS",
+             panel_fastener="#10-12 x 1-1/2\" pancake head wood screw, wood point, 304 stainless (ST Fastening 10A150TQPSSN)",
+             panel_fastener_part="10A150TQPSSN",
              panel_fastener_diameter_in=0.190,
              panel_fastener_length_in=1.5,
              panel_fastener_head_dia_in=0.40,

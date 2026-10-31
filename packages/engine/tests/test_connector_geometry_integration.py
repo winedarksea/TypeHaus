@@ -204,7 +204,7 @@ def test_sill_anchors_use_their_local_run_despite_repeated_detail_tags(catlin_mo
     index = ConnectorPlacementIndex(catlin_model_ro)
     solids = {solid.uid: solid for solid in _simpson_solids(catlin_model_ro)}
     for joint in derived_joints(catlin_model_ro, DEFAULT_HARDWARE_TAKEOFF_CONFIG):
-        if joint.part != "MASA":
+        if joint.part != "MASAZ":
             continue
         run = index.return_at(joint.members[0], joint.point, joint.z_m)
         assert run.z0_m == pytest.approx(joint.z_m)

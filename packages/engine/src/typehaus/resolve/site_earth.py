@@ -22,6 +22,7 @@ from shapely.geometry import Polygon
 
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, Ring
 from typehaus.resolve.overlay import union_all
+from typehaus.resolve.slab_clip import floor_outline
 from typehaus.resolve.solid_categories import in_slab_family
 
 # A slab-on-grade tops out level with the finished exterior grade, and rounding through
@@ -58,9 +59,10 @@ def earth_plane_void_rings(model: ResolvedModel) -> list[Ring]:
             continue
         if solid.z1_m > ceiling:  # a raised deck sits *on* the earth, it does not displace it
             continue
-        if len(solid.outline) < _MINIMUM_RING_VERTICES:
+        outline = floor_outline(model, solid)
+        if len(outline) < _MINIMUM_RING_VERTICES:
             continue
-        polygon = Polygon(solid.outline)
+        polygon = Polygon(outline)
         if polygon.is_valid and polygon.area > 0.0:
             footprints.append(polygon)
     if not footprints:
@@ -161,11 +163,12 @@ def _below_grade_floors(
             continue
         if solid.z1_m >= ceiling:  # at or above grade — not an excavation that lowers grade
             continue
-        if len(solid.outline) < _MINIMUM_RING_VERTICES:
+        outline = floor_outline(model, solid)
+        if len(outline) < _MINIMUM_RING_VERTICES:
             continue
         if not _is_a_floor(model, solid):
             continue
-        polygon = Polygon(solid.outline)
+        polygon = Polygon(outline)
         if not polygon.is_valid or polygon.area <= 0.0:
             continue
         if conditioned is not None and polygon.intersection(conditioned).area > 0.5 * polygon.area:

@@ -18,8 +18,9 @@ shares volume with is a collision, because nothing was ever going to be poured w
 Continuous foundation work — strip footing to strip footing, wall to wall, a slab over the
 footing ledge it bears on — is **out of scope, and said so rather than silently cleared**.
 Those bodies lap by design at every corner and every junction: two strip footings meeting at
-a building corner share 0.06 m² and 8" of height because they are one pour, and a basement
-slab crosses every footing in the house because it is cast onto their ledges. Grading them
+a building corner share 0.06 m² and 8" of height because they are one pour. A slab cast onto
+a footing ledge shares no height with it, and one cast against a footing's side stops at it
+(``resolve/slab_clip.py``). Grading them
 here would report ~80 findings of correct construction, which is worse than reporting none.
 Wall-to-wall junctions already have a grader of their own (``integrity.junction_*`` and the
 assembly interface rules). Widening this check to continuous work needs a junction model for

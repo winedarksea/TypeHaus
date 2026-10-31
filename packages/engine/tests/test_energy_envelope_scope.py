@@ -78,7 +78,9 @@ _INTERNAL_SENSIBLE_BTUH = 2_810.0
 _COMPONENTS = (
     # 27" -> 27 1/2" ROs (2026-10-23): 2.8 sf from walls (3186.9 / 72.587) to windows
     # (290.8 / 48.673).
-    ("walls", 3182.7, 72.488),
+    # W-B-S2-FR/-S3-FR stop at their plates under W-M-S1/-S2's band (#107, 2026-10-31): the
+    # band was counted twice, −25.2 sf.
+    ("walls", 3157.5, 72.15),
     ("foundation_walls", 775.5, 28.604),
     ("foundation_walls_above_grade", 255.7, 11.677),
     ("roof", 1547.9, 29.103),

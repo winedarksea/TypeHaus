@@ -139,6 +139,7 @@ def extend_walls_to_foundation(model: ResolvedModel) -> None:
         band = upper.z0_m - lower.z1_m
         if band <= 1e-6 or band > _MAX_BAND_M:
             continue
+        _unlift_under(model, upper, grade_m, lines)
         _drop(model, upper, lower.z1_m, grade_m, lines)
         dropped.add(upper.tag)
 
@@ -260,6 +261,24 @@ def _drop(model: ResolvedModel, upper: Any, z0: float, grade_m: float,
     )
 
 
+
+
+def _unlift_under(model: ResolvedModel, upper: Any, grade_m: float,
+                  lines: dict[str, Any]) -> None:
+    """One owner per rim band: a wall dropping through it owns it, so a framed wall lifted
+    into the same band under it goes back to its plate (catlin's W-B-S2-FR under W-M-S1)."""
+    for lower in list(model.walls):
+        if (lower is upper or lower.is_foundation or lower.plate_top_z_m is None
+                or abs(lower.z1_m - upper.z0_m) > 1e-6
+                or not _collinear_overlap(lower.axis, upper.axis,
+                                          _axis_tolerance(lower, upper), _MIN_OVERLAP_M)):
+            continue
+        top = lower.plate_top_z_m
+        index = next(i for i, w in enumerate(model.walls) if w is lower)
+        model.walls[index] = replace(
+            lower, z1_m=top, plate_top_z_m=None,
+            layers=reband_for_platform(lower, lower.z0_m, top, grade_m, lines.get(lower.tag),
+                                       plate_base=lower.plate_base_z_m))
 
 
 def _lift(model: ResolvedModel, lower: Any, z1: float,

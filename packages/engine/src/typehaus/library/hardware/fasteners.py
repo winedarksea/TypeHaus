@@ -298,21 +298,23 @@ SIDELAP_STITCH_SCREW = StructuralHardware(
 # ``panel_fastener_pitch_in``, set only where the panel is NOT ``exposed_fastener``.
 # One role per cladding so the cost code can tell the siding crew's from the roofer's.
 #
-# 316 is the owner's call (2026-10-30). No stocked #10-12 x 1-1/2 pancake 316 was found on
-# 2026-10-31 (Fasteners Plus, All Points, Triangle, McMaster, Bolt Depot, Simpson, Metal
-# Sales): the nearest is ST Fastening 10A150TQPSSN in 304. So this is a SPEC line for a
-# special order, which is why the model is a description and the maker is "generic".
+# 304, the stocked part (owner, 2026-10-31; 316 was the 2026-10-30 call): no stocked 316
+# #10 x 1-1/2 pancake head was found (Fasteners Plus, All Points, Triangle, McMaster, Bolt
+# Depot, Simpson, Metal Sales). 304 is the KDAT-contact stainless the sidelap screw is too.
 CONCEALED_SIDING_PANEL_SCREW = StructuralHardware(
-    tag="pancake-10-12x1-5-t17-ss316",
-    name="#10-12 x 1-1/2\" pancake-head wood screw, Type 17 point, 316 stainless",
+    tag="st-fastening-10a150tqpssn-pancake-ss304",
+    name="#10 x 1-1/2\" pancake-head metal-to-wood screw, 304 stainless "
+         "(ST Fastening 10A150TQPSSN)",
     role=ROLE_CONCEALED_SIDING_PANEL_SCREW,
-    manufacturer="generic",
-    model="#10-12x1-1/2 PH T17 316SS",
-    finish="ss316",
+    manufacturer="ST Fastening",
+    model="10A150TQPSSN",
+    finish="ss304",
     source="Metal Sales BBD75 install guide (2025-10-16): one #10-12 pancake-head wood screw "
-           "per panel per support at the nail strip; length 1-1/2\" and Type 17 point by the "
-           "catlin cladding_fastener grade. Special order in 316; stocked 304 equivalent ST "
-           "Fastening 10A150TQPSSN (fastenersplus.com, 2026-10-31)",
+           "per panel per support at the nail strip; length 1-1/2\" by the catlin "
+           "cladding_fastener grade. Part: ST Fastening #10 x 1-1/2\" Pancake Head Metal to "
+           "Wood ST Clip Screw, 304 Stainless Steel, pkg 250, SKU 10A150TQPSSN "
+           "(fastenersplus.com, read 2026-10-31): wood (not drill) point, sold for treated "
+           "lumber",
 )
 
 # Image II's own nail-strip screw. The PIM names no coating and no stainless option, so

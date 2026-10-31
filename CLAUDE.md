@@ -72,6 +72,9 @@ a release or for exhaustive local verification.
   face (`integrity.light_run_host`), the reveal cut from the board, `z_m` on the board face,
   the Z bead's depth graded by `mep.plaster_in_depth`. The run's swept section is served to
   the viewer, never copied there.
+- **A pour slab stops at what it is cast against; a rim band has one wall** (decision #107):
+  `resolve/slab_clip.py` cuts flush footings and through-walls out of the slab; read the slab
+  as a floor through `floor_plan`. A wall dropping to a foundation owns its band outright.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure

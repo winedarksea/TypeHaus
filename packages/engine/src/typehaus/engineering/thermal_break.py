@@ -40,6 +40,7 @@ from typehaus.engineering.item import (
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.retaining_system import footing_shortfalls, loop_free_bodies
+from typehaus.resolve.slab_clip import floor_outline
 
 KIND = "thermal_break_transfer"
 BASIS = ("ACI 347R-14 (fresh-concrete pressure); ACI 209R-92 (stem shrinkage); ACI 318-19 "
@@ -255,7 +256,7 @@ def _near_line(ctx, mine, sh):
     estimated = brk.modulus_psi is None
     e = grade[0] * line.E_PER_PSI_ESTIMATE if estimated else brk.modulus_psi
     depth = brk.depth.inches if brk.depth is not None else slab[0].thickness.inches
-    lo, hi = path._span(slab[1].outline, 1 - mine[0].ax)
+    lo, hi = path._span(floor_outline(ctx.model, slab[1]), 1 - mine[0].ax)
     result = line.share(ctx, found, loads, e * depth / brk.thickness.inches, (lo, hi))
     result["edge_depth"] = depth
     frac = brk.sustained_load_fraction

@@ -380,7 +380,8 @@ def tie_mesh(part: str, *, member_width_in: float | None = None,
     coating_aliases = {"H2.5AZ": "H2.5A", "H2.5ASS": "H2.5A",
                        "H10ASS": "H10A", "A35Z": "A35", "A35SS": "A35",
                        "LS30Z": "LS30", "MSTA12Z": "MSTA12", "LTP4Z": "LTP4",
-                       "HETA20Z": "HETA20", "STHD": "STHD14"}
+                       "HETA20Z": "HETA20", "STHD": "STHD14", "SP4Z": "SP4",
+                       "MASAZ": "MASA"}
     normalized = coating_aliases.get(normalized, normalized)
     if normalized in HURRICANE_TIES:
         return _hurricane_tie(normalized)

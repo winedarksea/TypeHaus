@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from typehaus.engineering.item import LimitState
 from typehaus.engineering.thermal_break_board import CONCRETE_PCF, rated
+from typehaus.resolve.slab_clip import floor_outline
 from typehaus.resolve.solid_categories import in_slab_family, is_pour_slab
 
 REQUIRED_FS = 1.5
@@ -55,10 +56,11 @@ def house_slab(ctx, footings: list[str]):
         el = ctx.plan.by_tag(s.tag)
         if not is_pour_slab(s.category) or not isinstance(el, Slab):
             continue
-        poly = _poly(s.outline)
+        poly = _poly(floor_outline(ctx.model, s))
         touches = any(abs(s.z1_m * _IN - t) < 1.0 for t in tops) and any(
             poly.distance(n) <= FOOTPRINT_REACH_IN for n in near)
-        if touches and (best is None or poly.area > _poly(best[1].outline).area):
+        if touches and (best is None
+                        or poly.area > _poly(floor_outline(ctx.model, best[1])).area):
             best = (el, s)
     return best
 
@@ -72,7 +74,8 @@ def take_down(ctx, slab_solid) -> tuple[float, str]:
     from typehaus.model.floors import Slab
     from typehaus.model.structure import Footing
 
-    zone = _poly(slab_solid.outline).buffer(FOOTPRINT_REACH_IN, join_style=2)
+    # The slab's authored plan: the footings it is cast against are inside it.
+    zone = _poly(floor_outline(ctx.model, slab_solid)).buffer(FOOTPRINT_REACH_IN, join_style=2)
     parts = {"footings": 0.0, "slabs": 0.0, "concrete walls": 0.0, "framed walls": 0.0}
     for s in ctx.model.solids:
         el = ctx.plan.by_tag(s.tag)
@@ -171,7 +174,7 @@ def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missin
     notes.append(soil_provenance_note(soil))
     slab, solid = found
     ax = boards[0].ax
-    lo, hi = _span(solid.outline, 1 - ax)
+    lo, hi = _span(floor_outline(ctx.model, solid), 1 - ax)
     edge_len, t = hi - lo, slab.thickness.inches
     line = total_lb - floor_line_lb
     if slab.perimeter_thermal_break is not None:

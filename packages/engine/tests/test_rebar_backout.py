@@ -40,8 +40,8 @@ _SCHEDULE = {
     ("foundation wall", "#5", "hdg-a767"): (135, 1311.7),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
     ("slab", "#3", "black"): (220, 237.3),
-    ("slab", "#4", "black"): (43, 576.9),
-    ("slab", "#5", "black"): (22, 410.1),
+    ("slab", "#4", "black"): (43, 562.5),
+    ("slab", "#5", "black"): (22, 398.6),
 }
 # +3,215.6 lb on 2026-09-17 over the area/spacing era's 3,514.7 (newly authored steel, laps and
 # hooks out of [waste], the fencepost), then −122.3 the same day after the detailing review:
@@ -82,7 +82,9 @@ _SCHEDULE = {
 # +58.1 lb, +17 pieces the same day, the review (note addendum): FT-SG-W2/E2's #4 spliced
 # into W1/E1 and FT-SG-S (24 bars, +67.0); W-SG-BRKBM's ties kept out of the toes (19 -> 12,
 # −9.5); its dowels at the authored 30" projection, W2/E2's south feet on FT-SG-S's mat (+0.6).
-_TOTAL_LB = 6586.0
+# −25.9 lb on 2026-10-31 (#107): SL-M-DECK stops at W-M-E1's band body, so its 65 beam
+# bars each lose 6" at the east bearing.
+_TOTAL_LB = 6560.2
 _TOTAL_PIECES = 1125
 
 @pytest.fixture(scope="module")
@@ -161,7 +163,7 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     walls_cy = sum(row["volume_cubic_yards"] for row in wall_structure_takeoff(catlin_model)
                    if row.get("material") == "concrete")
     total_cy = concrete_cy + walls_cy
-    assert total_cy == pytest.approx(141.45, rel=0.02), (
+    assert total_cy == pytest.approx(137.39, rel=0.02), (
         f"the concrete volume moved to {total_cy:.2f} cy; notes/rebar_backout.md §2 and the "
         f"lb/cy figure in §3 both need re-working")
 
@@ -211,5 +213,6 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # against −0.65 cy billed — the S/W2/E2 overlap no longer billed twice (−1.25), the corner
     # squares (+0.91), the ARCH strut at 12" x 12" (−0.31). 46.4 on 2026-10-11: FT-SG-S's
     # top E-W bars confined to the heels (−139 lb, no concrete); 46.8 after the review's
-    # splices (+58 lb).
-    assert total_lb / total_cy == pytest.approx(46.81, rel=0.02)
+    # splices (+58 lb). 47.7 on 2026-10-31: the basement slab stops at its footings and the
+    # deck at W-M-E1's band (#107), −3.4 cy billed twice before, −26 lb of deck bar.
+    assert total_lb / total_cy == pytest.approx(47.75, rel=0.02)

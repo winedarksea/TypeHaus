@@ -206,6 +206,10 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                 findings.extend(bedding_findings)
                 if bedding is not None:
                     model.footing_beddings.append(bedding)
+    # Last: every footing exists (and the walls are dropped), so a pour slab can stop at them.
+    from typehaus.resolve.slab_clip import clip_pour_slabs
+
+    findings.extend(clip_pour_slabs(model))
     return findings
 
 

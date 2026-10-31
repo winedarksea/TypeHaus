@@ -188,6 +188,7 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     ``model.all_members()`` is the complete resolved member set (walls, floors, roofs,
     stairs, braces), so the pieces here reconcile 1:1 with what the 3D model frames.
     """
+    from typehaus.takeoff.ceiling_framing import ceiling_lining_members
     from typehaus.takeoff.stairs import cast_stair_members, separate_stair_wear_members
 
     wear_members = {(m.parent_uid, m.child_key)
@@ -199,7 +200,8 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # sharing a profile and a category with ones that do not, would otherwise be silently
     # bought in pieces it cannot be built from.
     splice: dict[tuple[str, str, str], bool] = {}
-    for member in model.all_members():
+    # A framed ceiling lining is billed here as the sticks it is (→ takeoff/ceiling_framing).
+    for member in (*model.all_members(), *ceiling_lining_members(model)):
         # A stair skirt is a bought trim board, billed by the LF in ``interior_trim``.
         if (member.category in ("stair_subdeck", "stair_skirt")
                 or (member.category == "hanger" and member.connection

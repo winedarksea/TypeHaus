@@ -458,10 +458,14 @@ def sized_hanger_model(item: StructuralHardware, profile: str) -> str:
     return f"{family}2{size}{'Z' if coated else ''}"
 
 
-def hardware_for_role_and_nominal(role: str, nominal: str) -> StructuralHardware:
-    """The catalog item serving ``role`` for a nominal member size (e.g. a 2x6 stud)."""
+def hardware_for_role_and_nominal(role: str, nominal: str, *,
+                                  exposure: str | None = None) -> StructuralHardware:
+    """The catalog item serving ``role`` for a nominal member size (e.g. a 2x6 stud), keyed on
+    ``exposure`` the way :func:`hardware_for_role` is where one size comes in two coatings."""
     items = [item for item in structural_hardware_catalog()
              if item.role == role and nominal in item.fits_nominal]
+    if len(items) > 1 and exposure is not None:
+        items = [item for item in items if item.exposure == exposure]
     if len(items) != 1:
         raise LookupError(f"expected exactly one library hardware item for role {role!r} at "
                           f"{nominal}, found {[item.tag for item in items]}")

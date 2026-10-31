@@ -13,6 +13,7 @@ from typehaus.takeoff import (
     structural_solids_takeoff,
 )
 from typehaus.resolve.strap_braces import STRAP_CATEGORY
+from typehaus.takeoff.ceiling_framing import ceiling_lining_members
 from typehaus.takeoff.framing import _bucket_cut_lengths
 from typehaus.takeoff.steel import steel_members_takeoff
 from typehaus.takeoff.sheet_rips import rip_stock
@@ -80,9 +81,12 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     membrane = [m for m in members if m.category == "membrane"]
     # And stair skirts, bought trim billed by the LF in `interior_trim`.
     skirts = [m for m in members if m.category == "stair_skirt"]
+    # Plus the framed ceiling linings, derived for the order only (→ takeoff/ceiling_framing).
+    ceiling = ceiling_lining_members(catlin_model)
+    assert ceiling, "catlin frames the sauna, plant-room and ESS ceilings; this should not be empty"
     assert sum(int(row["pieces"]) for row in rows) == (
         len(members) - len(ripped) - len(not_lumber) - len(straps) - len(hardware) - len(kit)
-        - len(membrane) - len(skirts))
+        - len(membrane) - len(skirts) + len(ceiling))
     assert not any(rip_stock(str(row["profile"]), row["material"]) for row in rows)
 
     for row in rows:
@@ -307,8 +311,10 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     kit = sum(1 for m in members if m.supplied_by)
     membrane = sum(1 for m in members if m.category == "membrane")
     skirts = sum(1 for m in members if m.category == "stair_skirt")
+    ceiling = len(ceiling_lining_members(catlin_model))
     assert sum(int(row["pieces"]) for row in bom["framing"]) == (
-        len(members) - ripped - not_lumber - straps - hardware - kit - membrane - skirts)
+        len(members) - ripped - not_lumber - straps - hardware - kit - membrane - skirts
+        + ceiling)
 
 
 # Every collection on ``ResolvedModel`` is either billed by a BOM section or waived here with
@@ -353,6 +359,8 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
               "are a finish material, by the piece in `stair_treads`",
     "light_runs": "billed as `light_runs` by the lineal foot (a dict, not a row list)",
     "solar_panels": "billed as `solar` (a dict summary of installed wattage)",
+    "slab_floor_plans": "the authored plan behind a slab clipped at its footings, read as "
+                        "floor; the slab itself bills as its solid",
     "geometry": "the derived-geometry IR: a second view of collections already billed "
                 "above (a stud is one FramedMember and one GPart), so billing it would "
                 "double-count the whole house",

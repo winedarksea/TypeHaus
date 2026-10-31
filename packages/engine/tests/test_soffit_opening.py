@@ -34,6 +34,7 @@ from typehaus.model import (
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.soffit import (
+    MIN_SOFFIT_STUB_M,
     SOFFIT_HEADER_KEY_PREFIX,
     SOFFIT_RUNG_KEY_PREFIX,
 )
@@ -249,11 +250,14 @@ def test_catlin_heads_off_one_rung_for_its_air_handler_hatch(catlin_model) -> No
     assert hole == lid, "the access panel and the framed opening are one rectangle"
 
     # Exactly one rung is cut. The west edge is 4 1/2" off the rail, so its header stands
-    # outboard and leaves a 1" stub; the east edge is 2" off the rail, too close for a
-    # header, so the rail carries that 2" stub. One header spans the 32" between the rungs.
+    # outboard and would leave a 1" stub, under the 1 1/2" minimum, so none is cut and the
+    # header takes it; the east edge is 2" off the rail, too close for a header, so the rail
+    # carries that 2" stub. One header spans the 32" between the rungs.
     stubs = sorted(round(m.length_m / M_PER_IN, 3) for m in soffit.members
                    if m.child_key.startswith("soffit-rung-004"))
-    assert stubs == [1.0, 2.0]
+    assert stubs == [2.0]
+    assert all(m.length_m >= MIN_SOFFIT_STUB_M for m in soffit.members
+               if m.child_key.startswith("soffit-rung-") and m.child_key[-1] in "ab")
     headers = [m for m in soffit.members
                if m.child_key.startswith(f"{SOFFIT_HEADER_KEY_PREFIX}AO-S-HP1-AP")]
     assert len(headers) == 1

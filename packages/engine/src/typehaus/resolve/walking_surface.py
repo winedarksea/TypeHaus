@@ -30,6 +30,7 @@ from shapely.geometry import Point, Polygon
 
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
+from typehaus.resolve.slab_clip import floor_plan
 from typehaus.resolve.solid_categories import SLAB_FAMILY, in_slab_family
 
 # Deck covers shrink by this before containment. Stair edges and room boundaries are
@@ -139,10 +140,11 @@ def _covers(model: ResolvedModel, point: tuple[float, float]):
     for solid in model.solids:
         if solid.category not in SLAB_FAMILY:
             continue
-        outline = _ring_key(solid.outline)
+        floor_ring, floor_voids = floor_plan(model, solid)  # a flush footing is floor
+        outline = _ring_key(floor_ring)
         if len(outline) < 3 or _bbox_misses(point, outline):
             continue
-        holes = tuple(_ring_key(void) for void in solid.voids)
+        holes = tuple(_ring_key(void) for void in floor_voids)
         cover = _shrunk_polygon(outline, holes)
         if not cover.is_empty and cover.contains(probe):
             yield solid.tag, solid.storey, solid.z1_m

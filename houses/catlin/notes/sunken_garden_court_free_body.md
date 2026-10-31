@@ -2602,6 +2602,17 @@ D = 376,173.7;  friction 94,043.4;  capped 121,600.6 / 27,315.75 = 4.4517  ratio
                                     uncapped 121,600.6 / 42,074.2 = 2.8902  ratio 0.5190
 ```
 
+2026-10-31: the take-down stops counting concrete twice (decision #107). `SL-B-FLOOR` stopped
+at its flush strip footings (−67.7 ft³ x 150 = −10,155 lb) and `SL-M-DECK` at `W-M-E1`'s
+band body (−24.2 ft³, −3,630 lb): slabs 131,579 → 117,787. `W-B-S2-FR`/`-S3-FR` stop at
+their plate under `W-M-S1`/`-S2`'s band, 13.44" x 195" x 8 psf = −146 lb. As read by the
+engine (which already sat 141 lb under the 376,173.7 above):
+
+```
+D = 362,095.0;  friction 90,523.7;  capped 118,080.9 / 27,315.75 = 4.3228  ratio 0.3470
+                                    uncapped 118,080.9 / 42,074.2 = 2.8065  ratio 0.5345
+```
+
 ### 12a. FT-SG-S's toe grows 1'-4" (2026-09-22) — the south strip row
 
 The owner squared the planted field (11'-0" x 11'-0") by paving its shaded south 16" with

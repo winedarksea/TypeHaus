@@ -34,6 +34,9 @@ SOFFIT_HEADER_KEY_PREFIX = "soffit-header-"
 # corners come from foot/inch quantities, so they land on the box exactly; this only
 # absorbs float round-trip noise.
 _RECT_TOLERANCE_M = 1e-6
+#: A cut-rung stub shorter than one stud width is not cut: nobody nails a sliver that short,
+#: and the board edge it would carry bears on the header (or the rail) beside it.
+MIN_SOFFIT_STUB_M = 1.5 * 0.0254
 
 
 @dataclass(frozen=True)
@@ -267,7 +270,8 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
 
     def headed(across_at: float) -> bool:
         """An edge takes a header only where one fits outboard of it, short of the rail;
-        nearer a rail than a header's width, the rail carries the stub."""
+        nearer a rail than a header's width, the rail carries the stub. Either way a stub
+        under ``MIN_SOFFIT_STUB_M`` is dropped and the header or rail takes the load."""
         return (across_at - span_low > rung_depth + _RECT_TOLERANCE_M
                 and span_high - across_at > rung_depth + _RECT_TOLERANCE_M)
 
@@ -290,6 +294,8 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
                    if a0 < station + rung_thickness / 2.0
                    and station - rung_thickness / 2.0 < a1]
         for suffix, (seg_low, seg_high) in _segments(span_low, span_high, blocked):
+            if suffix and seg_high - seg_low < MIN_SOFFIT_STUB_M - _RECT_TOLERANCE_M:
+                continue  # a sliver stub; keys of the rest stay put
             members.append(FramedMember(
                 soffit.uid, f"{SOFFIT_RUNG_KEY_PREFIX}{index:03d}{suffix}", "blocking",
                 rung_profile, point(station, seg_low), point(station, seg_high),

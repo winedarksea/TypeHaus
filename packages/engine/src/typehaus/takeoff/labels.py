@@ -68,6 +68,7 @@ ROLE_GLOSSARY: dict[str, str] = {
     "raked_plate": "raked top plate", "outlooker": "outlooker", "barge_rafter": "barge rafter",
     "sister_joist": "sister joist", "truss_block": "truss girt block",
     "truss_blocking": "truss ladder blocking", "strapping": "girt strapping",
+    "ceiling_furring": "ceiling furring",
     "corner": "corner stud", "partition": "partition backer", "landing_framing": "landing framing",
     "newel": "newel post", "winder": "winder tread", "hanger": "hanger board",
     "bearing_stiffener": "bearing stiffener", "seat_cut": "seat cut", "roof_truss": "roof truss",

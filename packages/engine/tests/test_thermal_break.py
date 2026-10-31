@@ -35,7 +35,9 @@ _ALL = (*_FOOT, *_STEM, _BEAM)
 #     (123" -> 107", 432" of wall x 16" x 8 psf = −384 lb; §12, 2026-09-23), then gained
 #     FT-B-CS/-CS2's 26" of 20" x 8" strip, +361.1 lb: D 375,771.1, FS 4.4480; then the
 #     W-M-WELL stair-well wall (+352.3 lb) and W-B-WELL up to the main floor (+49.9 lb):
-#     D 376,173.7, friction 94,043.4, FS 121,600.6 / 27,315.75 = 4.4517;
+#     D 376,173.7, friction 94,043.4, FS 121,600.6 / 27,315.75 = 4.4517; then the slab
+#     stopped at its footings and the walkout walls at their plates (#107, −13,938 lb):
+#     D 362,095.0, friction 90,523.7, FS 118,080.9 / 27,315.75 = 4.3228;
 #   * court friction at 130 pcf, 0.35 x (5,974.8 x 32.667' + 6,174.8 x 18.0') / 1.5 = 71,474
 #     (FT-SG-S's 4'-4" toe, free body §12a; 70,634 at one 7'-0" strip);
 #   * W-B-S1/S4 are 118" panels (N-B-S1 at 9'-10", was 8'-10", 106"): φMn and φVc go with
@@ -44,7 +46,7 @@ _PATH = {
     "house slab-edge bearing": (22_155.0, 151_200.0, 0.1465),
     "house slab-edge sustained load": (22_155.0, 50_394.96, 0.4396),
     "house slab strut compression": (14.6528, 2_040.0, 0.00718),
-    "house global sliding": (1.5, 4.4517, 0.3370),
+    "house global sliding": (1.5, 4.3228, 0.3470),
     "house far-wall soil bearing": (52_213.6, 130_534.1, 0.4000),
     "court sliding under break thrust": (0.0, 71_474.1, 0.0),
 }
@@ -76,12 +78,12 @@ _CAPPED_TOTAL_LB = 27_315.75
 # court: S = Σ E A/t ε = 2 x 141,120 x 1.65e-4 + 2 x 275,782.5 x 2.758e-5 + 1,006,425 x
 # 1.65e-4 = 227.84 lb/in; at 110 pcf H 56,210, μwL 97,508 over L 322.565" (μw 302.29; §12a,
 # FT-SG-S's heavier strip), so x = 153,718 / (227.84 + 604.58) = 184.66" and
-# T = 227.84 x 184.66 = 42,074.2 lb. Global: 121,600.6 / 42,074.2 = 2.8902 (D 376,174, above).
+# T = 227.84 x 184.66 = 42,074.2 lb. Global: 118,080.9 / 42,074.2 = 2.8065 (D 362,095, above).
 _PATH_8 = {
     "house slab-edge bearing": (40_497.2, 151_200.0, 0.2678),
     "house slab-edge sustained load": (40_497.2, 50_394.96, 0.8036),
     "house slab strut compression": (26.784, 2_040.0, 0.013129),
-    "house global sliding": (1.5, 2.8902, 0.5190),
+    "house global sliding": (1.5, 2.8065, 0.5345),
     "house far-wall soil bearing": (52_213.6, 130_534.1, 0.4000),
     # Net thrust less the retained soil is NEGATIVE, so the row is a force, not an FS.
     "court sliding under break thrust": (0.0, 71_474.1, 0.0),

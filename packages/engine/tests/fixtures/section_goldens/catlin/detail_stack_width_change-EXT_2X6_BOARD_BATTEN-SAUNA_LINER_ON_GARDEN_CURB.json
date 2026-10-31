@@ -1214,7 +1214,7 @@
       "node": "polyline",
       "points": [
         [
-          0.0,
+          16.0,
           -112.93750000000001
         ],
         [
@@ -1226,7 +1226,7 @@
           -109.4375
         ],
         [
-          0.0,
+          16.0,
           -109.4375
         ]
       ],
@@ -1242,7 +1242,7 @@
       "node": "hatch",
       "boundary": [
         [
-          0.0,
+          16.0,
           -112.93750000000001
         ],
         [
@@ -1254,7 +1254,7 @@
           -109.4375
         ],
         [
-          0.0,
+          16.0,
           -109.4375
         ]
       ],
@@ -2637,118 +2637,6 @@
       "closed": true,
       "uid": null,
       "tag": "detail-component:sauna-membrane"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          9.25,
-          -112.93750000000001
-        ],
-        [
-          10.75,
-          -112.93750000000001
-        ],
-        [
-          10.75,
-          -109.4375
-        ],
-        [
-          9.25,
-          -109.4375
-        ]
-      ],
-      "pattern": "rigid",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "xps"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          9.25,
-          -112.93750000000001
-        ],
-        [
-          10.75,
-          -112.93750000000001
-        ],
-        [
-          10.75,
-          -109.4375
-        ],
-        [
-          9.25,
-          -109.4375
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:thermal-break"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          9.25,
-          -109.4375
-        ],
-        [
-          10.75,
-          -109.4375
-        ],
-        [
-          10.75,
-          -108.9375
-        ],
-        [
-          9.25,
-          -108.9375
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "sealant"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          9.25,
-          -109.4375
-        ],
-        [
-          10.75,
-          -109.4375
-        ],
-        [
-          10.75,
-          -108.9375
-        ],
-        [
-          9.25,
-          -108.9375
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:thermal-break-sealant"
     },
     {
       "space": "model",

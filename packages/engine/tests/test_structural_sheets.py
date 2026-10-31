@@ -218,7 +218,7 @@ def test_s100_schedules_the_sill_anchorage_it_already_derived(catlin_model):
     pitch = CONFIG.sill_plate_anchors.mudsill_anchor_pitch_ft
     # The printed pitch IS the takeoff's, not a second number that looks like it.
     assert all(row[3] == f"{pitch:.0f}'-0\" O.C." for row in table.rows), table.rows
-    assert {row[2] for row in table.rows} == {"MASA"}
+    assert {row[2] for row in table.rows} == {"MASAZ"}
     # The table splits the house by condition; the split must not lose or gain an anchor.
     takeoff = mudsill_anchor_rows(catlin_model, CONFIG.sill_plate_anchors,
                                   CONFIG.sill_plate_takeoff_category)
@@ -227,7 +227,7 @@ def test_s100_schedules_the_sill_anchorage_it_already_derived(catlin_model):
     # foundation wall, and a partition plate on the basement slab.
     types = {row[1].split(" — ")[0] for row in table.rows}
     assert types == {"FDN WALL", "SLAB"}
-    assert "MASA" in _joined(build_foundation_plan(catlin_model))
+    assert "MASAZ" in _joined(build_foundation_plan(catlin_model))
 
 
 def test_s100_schedules_the_authored_reinforcement(catlin_model):

@@ -244,14 +244,10 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     # exports no part. The sauna's south liner is the banded stack that aggregates: three
     # layers stopping at the room's 7'-6" ceiling, each FOUR parts because W-B-S2-FR carries
     # the sauna window and a banded layer is cut around the openings in its own wall.
-    #
-    # W-B-S3-FR's ``gwb-a`` is not an authored band at all: that wall is lifted to the
-    # platform above it, and ``layer_bands.clamp_to_plates`` stops its interior finish at the
-    # top plate while its sheathing and XPS keep lapping the rim. An instance trim exports
-    # exactly like a type band — as parts — three of them because of the garden door.
+    # (W-B-S3-FR's ``gwb-a`` exported as parts while the wall was lifted into W-M-S2's band;
+    # since #107 W-M-S2 owns that band and W-B-S3-FR stops at its plate, whole.)
     assert not any(name.endswith(f":{_PANEL}") for name in parts)
     assert {n for n in parts if n.startswith("W-B-S")} == {
-        *(f"W-B-S3-FR:gwb-a ({index}/3)" for index in range(1, 4)),
         *(f"W-B-S2-FR:{layer} ({index}/4)"
           for layer in ("shiplap-liner", "liner-furring", "foil-polyiso")
           for index in range(1, 5))}

@@ -615,10 +615,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     16 ga steel. Do not reintroduce it. Of eight surveyed, only Western States and Metal
     Sales permit open girts, and Western States publishes no load data at all (doc 4209-22,
     read in full) — substituting another forces a second girt course or a continuous deck.
-  - **The B&B screw is 316 SS and a counted part** (owner, 2026-10-30; decision #105): 842 ea,
+  - **The B&B screw is 304 SS and a counted part** (owner, 2026-10-31; decision #105): 842 ea,
     `panel_fastener_part` on `board-batten-24` with no pitch, so one per panel per GIRT at the
-    girt band's own 24" (the tributary `cladding_wind` grades), `[hardware]` "#10-12x1-1/2 PH T17 316SS". No
-    stocked 316 found; stocked 304 is ST Fastening 10A150TQPSSN. The A153-D option is dropped.
+    girt band's own 24" (the tributary `cladding_wind` grades), `[hardware]` "10A150TQPSSN"
+    (ST Fastening, stocked; no stocked 316 was found). The A153-D option is dropped.
   - Cladding screw is **#10-12 x 1-1/2"** since 2026-09-22 (owner, D3): withdrawal 0.334 →
     **0.182**, tip still inside the girt. Metal Sales stocks only the 1" (8243100, plated).
     Before that the stocked **1"**, wood-point (Type 17), 316 stainless or

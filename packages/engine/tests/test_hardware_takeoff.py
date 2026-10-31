@@ -444,7 +444,7 @@ def test_mudsill_anchor_pitch_and_minimum_per_run() -> None:
         rules, CONFIG.sill_plate_takeoff_category)
     # 40 ft at 4 ft o.c. = 10 bays, anchored at both ends of every bay line.
     assert long_run[0]["count"] == 11
-    assert long_run[0]["part_number"] == "MASA"
+    assert long_run[0]["part_number"] == "MASAZ"
 
     short_run = mudsill_anchor_rows(
         ResolvedModel(plan=None, construction_returns=[_sill_return("B", 3.0 * FT_TO_M)]),
@@ -616,8 +616,9 @@ def test_stud_plate_ties_are_sized_to_the_stud_they_tie(catlin_model) -> None:
     # Every exterior storey frames 2x6, so the house's own tie is SP6 throughout. SP4 joined
     # it on 2026-09-10 with `W-BW-SCREEN`, the north entry's west screen panel — KDAT 2x4 at
     # 16" o.c., the only 2x4 exterior framing in the model — and that is the schedule doing
-    # its job: the tie follows the stud, and a second stud size is a second part.
-    assert {row["part_number"] for row in rows} == {"SP4", "SP6"}
+    # its job: the tie follows the stud, and a second stud size is a second part. Those
+    # studs are treated, so the tie is the ZMAX SP4Z (R317.3.1).
+    assert {row["part_number"] for row in rows} == {"SP4Z", "SP6"}
     assert {row["size"] for row in rows} == {"2x4", "2x6"}
     assert all(row["count"] > 0 for row in rows)
 
@@ -952,6 +953,9 @@ def test_coated_and_stainless_connectors_carry_a_matching_fastener_schedule(catl
             assert schedule is not None, f"{part} has no fastener schedule"
         if schedule is None:
             continue
+        # A schedule exists only for treated or coated contact, where G90 is the defect
+        # (R317.3.1): the plain MASA carried one, so this lint passed it.
+        assert schedule.finish != "g90", f"{part} is G90 in treated contact"
         for _count, model, _into in schedule.fasteners:
             fastener = hardware_by_model(model)
             assert fastener is not None and fastener.model == model, model

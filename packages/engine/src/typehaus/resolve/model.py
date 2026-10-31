@@ -1676,6 +1676,10 @@ class ResolvedModel:
     light_runs: list[ResolvedLightRun] = field(default_factory=list)
     solar_panels: list[ResolvedSolarPanel] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
+    # Pour slab uid -> (authored outline, authored voids, voids after the clip): the floor a
+    # slab clipped at its footings still presents (→ resolve/slab_clip.py).
+    slab_floor_plans: dict[str, tuple[Ring, tuple[Ring, ...], tuple[Ring, ...]]] = field(
+        default_factory=dict)
     # Earthwork beside and around the beds (→ resolve/wall_column.py, resolve/excavation.py).
     wall_columns: list[ResolvedWallColumn] = field(default_factory=list)
     excavations: list[ResolvedExcavation] = field(default_factory=list)

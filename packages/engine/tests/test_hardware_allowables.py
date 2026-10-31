@@ -204,7 +204,7 @@ def test_the_species_the_numbers_belong_to_is_recorded_wherever_it_matters():
         assert allowable_for_model(model).uplift_lb == 700.0, model
     assert "SPF/HF" in allowable_for_model("HGAM10").species
     assert "SPF/HF" in allowable_for_model("KBS1Z").species
-    assert "SG 0.42" in allowable_for_model("MASA").species
+    assert "SG 0.42" in allowable_for_model("MASAZ").species
 
 
 def test_the_knee_brace_capacity_this_house_can_actually_use():

@@ -48,6 +48,12 @@ pins the current row values: **1,127 pieces, 6,379.7 lb** (45.1 lb/cy against th
 141.45 cy concrete denominator). The price back-out gate remains closed
 by the decision in §3.
 
+**2026-10-31 (decision #107):** `SL-B-FLOOR` stops at its flush strip footings (−2.51 cy,
+billed twice before) and `SL-M-DECK` at `W-M-E1`'s band body (−0.90 cy), so its 65 beam bars
+each lose 6" at the east bearing: slab #4 576.9 → **562.5 lb**, #5 410.1 → **398.6 lb**,
+total **6,560.2 lb** over **137.39 cy** (§2, the engine's own filter), **47.7 lb/cy**. The
+table below is the older 6,717.9 lb schedule.
+
 The detailed layout table below records the earlier cast-column pass; its pieces and
 weights are historical and must not be read as the active KDAT purchase schedule.
 

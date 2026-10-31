@@ -73,6 +73,7 @@ from typehaus.resolve.site_earth import (
     open_excavation_floors,
     strip_grade_elevation_m,
 )
+from typehaus.resolve.slab_clip import floor_outline
 from typehaus.resolve.solid_categories import is_pour_slab
 
 # Component kinds whose exterior boundary is the ground, not the outdoor design air.
@@ -460,7 +461,9 @@ def estimate_block_load(
              and geometry.is_envelope_slab(solid)[0]]
     roof_fraction = {roof.tag: _polygon_scope_fraction(roof.footprint, roof.storey, scope)
                      for roof in roofs}
-    slab_fraction = {slab.tag: _polygon_scope_fraction(slab.outline, slab.storey, scope)
+    # The floor's authored outline: footings cast flush in it are floor too.
+    slab_plan = {slab.tag: floor_outline(model, slab) for slab in slabs}
+    slab_fraction = {slab.tag: _polygon_scope_fraction(slab_plan[slab.tag], slab.storey, scope)
                      for slab in slabs}
     roofs = [roof for roof in roofs if roof_fraction[roof.tag] > 0.0]
     slabs = [slab for slab in slabs if slab_fraction[slab.tag] > 0.0]
@@ -526,15 +529,15 @@ def estimate_block_load(
         slab_r = _assembly_r_value(model, slab.assembly, unknown)
         if slab_r is None:
             continue
-        area = (abs(polygon_area(slab.outline)) * _M2_TO_FT2 * slab_fraction[slab.tag])
-        grade_z = local_grade_elevation_m(model, slab.outline, floors=floors,
+        area = (abs(polygon_area(slab_plan[slab.tag])) * _M2_TO_FT2 * slab_fraction[slab.tag])
+        grade_z = local_grade_elevation_m(model, slab_plan[slab.tag], floors=floors,
                                           sheltered_by=sheltered)[0]
         depth_ft = (grade_z - slab.z1_m) / 0.3048
         if depth_ft > _SLAB_BELOW_GRADE_MIN_FT:
             # A below-grade floor: the soil is most of the resistance, and how much depends
             # on the floor's shortest plan dimension and its depth (→ ``ground``). Billing
             # ``A / r_assembly`` against a soil ΔT overstated catlin's basement floor ~2x.
-            short_ft = _short_plan_dimension_ft(slab.outline)
+            short_ft = _short_plan_dimension_ft(slab_plan[slab.tag])
             slab_area += area
             slab_ua += area * basement_floor_u(slab_r, short_ft, depth_ft)
         else:
@@ -544,7 +547,7 @@ def estimate_block_load(
             # as a number, so the F-factor is a named gap rather than an invented row.
             # catlin has no slab on grade inside its envelope; this is here so the first
             # house that does gets a gap instead of a ~2-10x understatement.
-            perimeter_ft = _plan_perimeter_ft(slab.outline) * slab_fraction[slab.tag]
+            perimeter_ft = _plan_perimeter_ft(slab_plan[slab.tag]) * slab_fraction[slab.tag]
             f_factor, gap = slab_on_grade_f_factor(_slab_edge_r(model, slab))
             if f_factor is None:
                 unknown.append(f"slab {slab.tag}: {gap}")

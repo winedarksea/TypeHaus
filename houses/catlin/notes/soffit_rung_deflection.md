@@ -167,6 +167,10 @@ generator builds:
   ends and the panel's frame bear on;
 - an edge landing **on** a rail takes no header: the rail is already there, and framing one
   against it would put two members in the same square.
+- **2026-10-31:** a stub under **1 1/2"** (one stud width) is not cut; the header or rail
+  beside it carries the board. That drops `SF-S-HP1`'s 1" west stub on rung 004 (so the
+  AP header carries no stub point load, the UDL term alone) and the RET hole's two 1/2"
+  stubs; the 2" east stub on rung 004 stays.
 
 ### The header, worked by hand
 

@@ -801,12 +801,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "S10ACN" = { low = 0.18, high = 0.25 }
 "S8ACN" = { low = 0.15, high = 0.25 }
 "RSRS-01 0.113x2.375" = { low = 0.03, high = 0.05 }
-# Concealed panel screws, out of the panel $/SF rates since 2026-10-31. The 316 B&B screw is
-# a SPECIAL ORDER: no stocked #10-12 x 1-1/2 316 pancake head was found; ST Fastening
-# 10A150TQPSSN (304) is $57.99/250 = $0.23, $502/2,500 = $0.20 (fastenersplus), and the band
-# assumes 316 at ~1.3-2x that. ESTIMATE, confirm with the supplier. Metal Sales 8243100 has
-# no published price: the band is plated #10 pancake-head screws, ESTIMATE.
-"#10-12x1-1/2 PH T17 316SS" = { low = 0.26, high = 0.45 }  # 842 ea, BBD75
+# Concealed panel screws, out of the panel $/SF rates since 2026-10-31. The B&B screw is the
+# stocked 304 ST Fastening 10A150TQPSSN (owner, 2026-10-31; 316 found only special order):
+# $57.99/250 = $0.23, $502/2,500 = $0.20 (fastenersplus.com, read 2026-10-31). Metal Sales
+# 8243100 has no published price: the band is plated #10 pancake-head screws, ESTIMATE.
+"10A150TQPSSN" = { low = 0.20, high = 0.24 }  # 842 ea, BBD75
 "8243100" = { low = 0.05, high = 0.12 }  # 1,822 ea, Image II nail strip at 12" o.c.
 # Schematic installed allowances, not supplier quotations. Replace with the engineered
 # fabrication bid; includes anchors/flashing/shims, and may exceed the removed pier cost.
@@ -1171,7 +1170,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # retype moved them onto HUCQ410-SDS, after which nothing in the house authored a LUS210 and
 # the row billed nothing. A price row for a part the model does not contain is not harmless:
 # it reads as coverage.
-"MASA" = { low = 1.75, high = 3 }  # 91 ea
+# ZMAX (R317.3.1: every nail is in the pt-syp sill). Retail 2026-10-31: $1.95 (fastenersplus)
+# to $2.78 (Home Depot) for the MASAZ.
+"MASAZ" = { low = 1.95, high = 3 }  # 91 ea
 # Retail, 2026-10-09: ToolUp/Total Fastening $14.54 to McCoy's $19.99.
 "MSTC52" = { low = 14.5, high = 20 }  # 2 ea — CN-M-HD-BALC-W/E
 # Retail, 2026-10-09: $25-38 per 100 (PDPAWL-287MG), plus ~$0.10 of powder load each.
@@ -1476,10 +1477,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # The 2x4 rung of the same ladder, and the house's only 2x4 exterior framing: W-BW-SCREEN,
 # the north entry's west screen panel. Same part family, one size down, so the same band less
 # the material — a stud plate tie is a small stamping and the two sizes retail within pennies
-# of each other. **In this location it should be bought STAINLESS or A153 Class D HDG**, like
-# every other fastener touching KDAT here (AN-BW-KDAT); the catalog carries no SS variant, so
-# the band is widened upward rather than the row being wrong about the part.
-"SP4" = { low = 1.4, high = 3.25 }  # 6 ea — W-BW-SCREEN only
+# of each other. The studs are KDAT, so the tie is the ZMAX SP4Z with HDG nails (R317.3.1).
+# Retail 2026-10-31: $2.56 to $2.99 each (toolnut, fastenersplus).
+"SP4Z" = { low = 2.5, high = 3.25 }  # 6 ea — W-BW-SCREEN only
 "SS-GASKET-12" = { low = 0.35, high = 0.9 }  # 32 ea — generic 304 SS #12 screw, bonded EPDM washer
 "STHD" = { low = 18, high = 32 }  # 8 ea — 6 derived exterior corners, 2 entry jambs
 # The braced-wall end devices (IRC R602.10.7), authored 2026-09-22. The retail reads that
@@ -4407,7 +4407,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # which is the conservative direction. The band itself has never moved — only where in it
 # this panel sits.
 #
-# ** ~840 CONCEALED SCREWS — a counted `[hardware]` row since 2026-10-31 (842, 316 SS). ** One screw
+# ** ~840 CONCEALED SCREWS — a counted `[hardware]` row since 2026-10-31 (842, 304 SS). ** One screw
 # per panel per girt at the nail strip is BBD75's own detail, so each screw is responsible for
 # 24" x 12" = 2.00 SF: 1,678.3 / 2.0 = ~840 (it was ~915 at 11"). That is the same tributary
 # the withdrawal calculation grades against (see below), so the count and the structural
@@ -4416,7 +4416,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # concealed legs the count roughly doubles and every screw's demand halves: cheaper
 # structurally, dearer in labour, and neither the model nor this rate assumes it.
 #
-# ** THE CLADDING SCREW IS THE GUIDE'S OWN STOCKED 1", 316 SS OR ASTM A153 CLASS D HDG —
+# ** THE CLADDING SCREW WAS THE GUIDE'S OWN STOCKED 1", 316 SS OR ASTM A153 CLASS D HDG —
 # REVERSED from the 2" this row carried 2026-09-11 to 2026-09-14. ** The 2" had exactly one
 # argument behind it: Metal Sales' detail asks that fasteners "extend 1/2" or more past the
 # inside face of the support", and in a 1-1/2" girt nothing shorter can. That argument does
@@ -4430,14 +4430,15 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # no-cost margin, recorded and not taken), 2" 0.133 and is **REJECTED**: its tip stands
 # 0.476" into a 0.500" vent gap, 0.024" off the ccSPF, so a thin girt or one overdriven screw
 # puts ~840 tips in the foam. Dropping it also takes a special length off a PO that is
-# already custom for the 316 SS / A153-D coating. It must still be a wood-point (Type 17)
-# screw: a self-drilling point reams its own thread out of a 1-1/2" nailer. The coating call
+# already custom for the stainless coating. It must still be a wood-point screw (304 SS
+# since 2026-10-31, ST Fastening 10A150TQPSSN): a self-drilling point reams its own thread
+# out of a 1-1/2" nailer. The coating call
 # is the KDAT contact — see the SDWS22800DB note in [hardware] for why the GIRT screw,
 # encapsulated and dry, is the opposite case and stays carbon steel.
 #
 # ** THE FIXINGS ARE OUT OF THIS RATE since 2026-10-31 ** (decision #105): the material sets
-# `panel_fastener_part`, so `takeoff/panel_fasteners.py` bills the 316 screw as a counted part
-# ("#10-12x1-1/2 PH T17 316SS"). It still does NOT set `exposed_fastener` — that would bill
+# `panel_fastener_part`, so `takeoff/panel_fasteners.py` bills the 304 screw as a counted part
+# ("10A150TQPSSN"). It still does NOT set `exposed_fastener` — that would bill
 # them a second time as T09150HWAM. Labour came down $0.04/SF, the screw share it carried.
 #
 # ** A MANUFACTURER READ SINCE 2026-09-22 — THERE IS NO ENGINEERING ITEM ANY MORE. **

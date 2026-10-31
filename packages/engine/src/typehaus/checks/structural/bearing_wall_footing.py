@@ -105,12 +105,15 @@ def bearing_wall_footing(ctx: CheckContext) -> list[Finding]:
     # The foundation sheet's own reading of "bears on grade"; one definition, two readers.
     from typehaus.emit.draw.foundation_schedule import slabs_on_grade
     from typehaus.resolve.overlay import union_all
+    from typehaus.resolve.slab_clip import floor_outline
 
     named = _named_bearings(ctx.plan)
     authored = {el.tag: el for el in ctx.plan.all_elements()}
     walls = [w for w in ctx.model.walls if w.tag in named
              and not isinstance(authored.get(w.tag), FoundationWall)]
-    slabs = [(s, Polygon(s.outline)) for s in slabs_on_grade(ctx.model) if len(s.outline) >= 3]
+    # The floor plan, not the poured plan: a wall on a footing flush in the slab is on the floor.
+    slabs = [(s, Polygon(floor_outline(ctx.model, s))) for s in slabs_on_grade(ctx.model)
+             if len(s.outline) >= 3]
     supports = [s for s in ctx.model.solids
                 if s.category in ("footing", "pad") and len(s.outline) >= 3]
 

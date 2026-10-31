@@ -29,6 +29,7 @@ from typehaus.resolve.sheet_stock import (
     sheets_for,
     wall_sheathing,
 )
+from typehaus.takeoff.ceiling_framing import ceiling_lining_members
 from typehaus.takeoff.sheet_rips import rip_sheet_rows, rip_stock
 
 _M2_TO_FT2 = 10.7639104167
@@ -198,7 +199,7 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # STICKS of a profile no lumber yard has ever stocked. ``framing_takeoff`` drops exactly
     # this set, so nothing is billed twice.
     rips = [(member, stock, member.length_m * _M_TO_FT)
-            for member in model.all_members()
+            for member in (*model.all_members(), *ceiling_lining_members(model))
             if member.category != "stair_subdeck"
             and (stock := rip_stock(member.profile, member.material)) is not None]
     return sorted(rows + rip_sheet_rows(rips),
@@ -210,7 +211,9 @@ def _sheets(model: ResolvedModel, layers) -> list:
     """The layers of a ceiling stack that are hung as sheets.
 
     A coating is not a sheet: ``envelope_layer_takeoff`` bills a ceiling's coat by area
-    off ``model.ceilings`` instead of ordering it here as a stack of 4x8s.
+    off ``model.ceilings`` instead of ordering it here as a stack of 4x8s. Nor is a framed
+    layer: its sticks bill in ``framing`` (→ ``takeoff/ceiling_framing.py``).
     """
     return [layer for layer in layers
-            if not getattr(model.plan.library.material(layer.material_ref), "coating", False)]
+            if layer.framing is None
+            and not getattr(model.plan.library.material(layer.material_ref), "coating", False)]

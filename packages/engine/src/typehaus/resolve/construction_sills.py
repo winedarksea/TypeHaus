@@ -313,6 +313,8 @@ def _framed_on_slab(model: ResolvedModel, rule: ConstructionRule,
     """
     from shapely.geometry import Point, Polygon
 
+    from typehaus.resolve.slab_clip import floor_outline
+
     slabs = [solid for solid in model.solids
              if in_slab_family(solid.category) and len(solid.outline) >= 3
              and _is_concrete_ref(model, solid.assembly)]
@@ -341,7 +343,8 @@ def _framed_on_slab(model: ResolvedModel, rule: ConstructionRule,
         mid = ((a0[0] + a1[0]) / 2.0, (a0[1] + a1[1]) / 2.0)
         slab = next((s for s in slabs
                      if abs(s.z1_m - wall.z0_m) <= lap + _EPS
-                     and Polygon(s.outline).buffer(_EPS).contains(Point(mid))), None)
+                     and Polygon(floor_outline(model, s)).buffer(_EPS).contains(Point(mid))),
+                    None)
         if slab is None:
             continue
         width = bearing.thickness.meters

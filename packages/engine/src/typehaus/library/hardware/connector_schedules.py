@@ -5,7 +5,7 @@ record's own ``AllowableLoads.fasteners`` where it has one, otherwise from Simps
 where the catalog prints Min and Max, Max is billed (the count a "can't be cheaped out"
 order has to cover). Zinc connectors take HDG (IRC R317.3.1: a G90 nail through a ZMAX tie
 into treated wood is the same corrosion cell); stainless ones take stainless (L-F-SSNAILS
-line 1). Out of scope, on purpose: G90 parts into dry SPF (LTP4, SP, STHD, MSTC52, the
+line 1). Out of scope, on purpose: G90 parts into dry SPF (LTP4, SP4/SP6, STHD, MSTC52, the
 house-ridge LSTA24) — their nails are commodity and ride in the framing rate.
 """
 
@@ -53,10 +53,12 @@ CONNECTOR_FASTENERS: dict[str, ConnectorFastening] = {
     "LTP4Z": ConnectorFastening("zmax", _pair(6, HDG_0131_15, "block", "header"), _RECORD),
     "KBS1Z": ConnectorFastening("zmax", ((12, HDG_8D, "brace and post"),), _RECORD),
     "LS30Z": ConnectorFastening("zmax", _pair(3, HDG_0148_15, "leg 1", "leg 2"), _RECORD),
-    # G90 strap, but every nail lands in the pt-syp sill.
-    "MASA": ConnectorFastening(
-        "g90", ((3, HDG_0148_15, "sill sides"), (6, HDG_0148_15, "sill top")),
+    # Every nail lands in the pt-syp sill, so the strap is ZMAX too (R317.3.1).
+    "MASAZ": ConnectorFastening(
+        "zmax", ((3, HDG_0148_15, "sill sides"), (6, HDG_0148_15, "sill top")),
         f"{_CC} p.34, standard installation, 2x sill"),
+    "SP4Z": ConnectorFastening("zmax", ((6, HDG_0148_15, "stud"),),
+                               f"{_CC}, SP4: (6) 0.148 x 1-1/2 into the stud"),
     # Plain ABU44 is ZMAX: the catalog lists only ABU44Z (C-C-2026 p.76).
     "ABU44": ConnectorFastening("zmax", ((12, HDG_16D, "post"),),
                                 f"{_CC} pp.76-77, ABU44Z: (12) 0.162 x 3-1/2 into the post"),
