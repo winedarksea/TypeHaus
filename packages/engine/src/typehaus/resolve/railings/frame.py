@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Callable
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.structure import Railing
@@ -16,7 +17,7 @@ from typehaus.resolve.railings.parts import (
     railing_type,
 )
 from typehaus.resolve.railings.spans import RAIL_BAND_STEP_M, RailingSurface
-from typehaus.resolve.railings.wall_contact import mounting_wall_face
+from typehaus.resolve.railings.wall_contact import mounting_wall_face, nearest_post_face
 from typehaus.resolve.sweep import (
     rect_profile,
     round_profile,
@@ -36,6 +37,8 @@ MIN_POST_SPACING_M = 0.3
 #: every station of every wall-mounted rail, marching up the flight beside a rail that is
 #: actually screwed to the wall.
 _WALL_MOUNTS = frozenset({"wall"})
+#: Carried on brackets off another railing's posts (the ADA rail inside a stair guard).
+_POST_MOUNT = "post"
 #: Bracket stock: the drop from the rail centreline to the arm, and the arm's section.
 _BRACKET_DROP_M = inch(2.5).meters
 _BRACKET_SECTION_M = inch(1.0).meters
@@ -82,6 +85,11 @@ def emit_posts(model: ResolvedModel, el: Railing, storey: str, stations: list[Ve
     """
     if el.mount in _WALL_MOUNTS:
         return emit_brackets(model, el, storey, stations, surface, parts, rail_h)
+    if el.mount == _POST_MOUNT:
+        def post_face(station, z, **_):
+            return nearest_post_face(model, station, z, exclude_tag=el.tag), ()
+        return emit_brackets(model, el, storey, stations, surface, parts, rail_h,
+                             find_contact=post_face)
     half = parts.post_section_m / 2.0
     if el.mount == "fascia":
         _emit_fascia_brackets(model, el, storey, stations, surface, parts)
@@ -134,12 +142,17 @@ def _emit_fascia_brackets(model: ResolvedModel, el: Railing, storey: str,
 
 
 def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list[Vec],
-                  surface: RailingSurface, parts: RailingParts, rail_h: float) -> list[Finding]:
-    """A short arm at each station, from the wall face out to the rail centreline.
+                  surface: RailingSurface, parts: RailingParts, rail_h: float,
+                  find_contact: Callable | None = None) -> list[Finding]:
+    """A short arm at each station, from the wall (or guard-post) face to the rail centreline.
 
     Only a solid face supporting the full arm footprint can carry a bracket. An end
-    carried by a wall return (:mod:`.terminations`) gets no bracket.
+    carried by a wall return (:mod:`.terminations`) gets no bracket. ``find_contact(station,
+    z, **kw) -> (contact, obstructing tags)`` defaults to :func:`mounting_wall_face`.
     """
+    if find_contact is None:
+        def find_contact(station, z, **kw):
+            return mounting_wall_face(model, station, z, **kw)
     half = _BRACKET_SECTION_M / 2.0
     findings: list[Finding] = []
     bracket_drops = dict(el.bracket_drop_overrides)
@@ -151,15 +164,15 @@ def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list
         rail_z = surface.height_at(station) + rail_h
         custom_drop = bracket_drops.get(index + 1)
         arm_z = rail_z - (_BRACKET_DROP_M if custom_drop is None else custom_drop.meters)
-        contact, obstructing_tags = mounting_wall_face(
-            model, station, rail_z if custom_drop is None else arm_z,
+        contact, obstructing_tags = find_contact(
+            station, rail_z if custom_drop is None else arm_z,
             along=_directions_at(stations, index), half_width_m=half,
             z0_m=arm_z - half, z1_m=rail_z if custom_drop is None else arm_z + half)
         if contact is None or contact.distance_m < 1e-4:
             findings.append(Finding(
                 severity=Severity.WARN, check_id="geometry.railing_bracket_unanchored",
-                message=(f"railing {el.tag} bracket {index + 1} has no solid wall face "
-                         "supporting its full footprint within reach; no bracket drawn"),
+                message=(f"railing {el.tag} bracket {index + 1} has no solid wall or post "
+                         "face supporting its full footprint within reach; no bracket drawn"),
                 element_tags=(el.tag, *obstructing_tags), result=Result.FAIL))
             continue
         outline = rect_between(contact.face_point, station, -half, half)

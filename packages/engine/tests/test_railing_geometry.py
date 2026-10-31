@@ -140,6 +140,29 @@ def test_a_bracket_reaches_the_wall_face_it_lands_on(catlin_model):
     assert inch(1).meters < arm < inch(9).meters
 
 
+def test_a_post_mounted_rail_hangs_on_its_guards_posts(catlin_model):
+    """``mount="post"``: brackets end on RL-SG-PSTAIR-S's post faces, and R301.5 grades them."""
+    from types import SimpleNamespace
+
+    from shapely.geometry import Polygon
+
+    from typehaus.checks.code.mn_residential.handrail_hardware import (
+        handrail_support_spacing,
+    )
+
+    assert not _solids(catlin_model, "RL-SG-PSTAIR-HR", "POST")
+    posts = [Polygon(s.outline) for s in _solids(catlin_model, "RL-SG-PSTAIR-S", "POST")]
+    brackets = [Polygon(s.outline) for s in _solids(catlin_model, "RL-SG-PSTAIR-HR", "BRACKET")]
+    assert len(brackets) == len(posts) == 3
+    for bracket in brackets:  # touches a post face, never buried in it
+        assert any(bracket.distance(post) < 1e-6 and bracket.intersection(post).area < 1e-9
+                   for post in posts)
+    ctx = SimpleNamespace(model=catlin_model, plan=catlin_model.plan)
+    (finding,) = [f for f in handrail_support_spacing(ctx)
+                  if "RL-SG-PSTAIR-HR" in f.message]
+    assert finding.result is Result.PASS, finding.message
+
+
 # --- 4. the rake follows the flight the rail is beside --------------------------------
 
 def test_the_rake_takes_its_elevation_from_the_flight_it_runs_along(catlin_model):

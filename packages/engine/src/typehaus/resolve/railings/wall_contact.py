@@ -81,6 +81,29 @@ def nearest_wall_face(model: ResolvedModel, point: Vec, z: float, *,
     return best
 
 
+def nearest_post_face(model: ResolvedModel, point: Vec, z: float, *, exclude_tag: str,
+                      reach_m: float = REACH_M) -> WallContact | None:
+    """The nearest guard-post face to ``point`` at ``z``: what a ``mount="post"`` rail hangs on.
+
+    ``wall_tag`` carries the post's solid tag. Posts are read off the resolved railing
+    solids, so the guard carrying the rail must resolve first (``resolve/accessories.py``).
+    """
+    here = Point(point)
+    best: WallContact | None = None
+    for solid in model.solids:
+        if (solid.category != "railing" or "-POST" not in solid.tag
+                or solid.host_ref == exclude_tag or len(solid.outline) < 3
+                or not (solid.z0_m - 1e-6 <= z <= solid.z1_m + 1e-6)):
+            continue
+        body = Polygon(solid.outline)
+        gap = body.distance(here)
+        if gap > reach_m or (best is not None and gap >= best.distance_m):
+            continue
+        face = nearest_points(body.exterior, here)[0]
+        best = WallContact(solid.tag, gap, (face.x, face.y))
+    return best
+
+
 def mounting_wall_face(model: ResolvedModel, point: Vec, z: float, *,
                        along: tuple[Vec, ...], half_width_m: float,
                        z0_m: float, z1_m: float) -> tuple[WallContact | None, tuple[str, ...]]:

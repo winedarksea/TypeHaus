@@ -233,7 +233,9 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
         return [_unknown(cid, "no floor decks or slabs resolve, so there is no raised "
                          "walking surface to measure", (), code)]
     grade = ctx.plan.project.site.grade
-    railings = guard_lines(ctx.plan)
+    # A pure handrail is no guard: under 36" by design, it would read as a short one.
+    railings = [g for g in guard_lines(ctx.plan)
+                if getattr(g.source, "role", "guard") != "handrail"]
     out: list[Finding] = []
     for tag, ring, surface, top_at in surfaces:
         neighbours = [(Polygon(other_ring), other_at)

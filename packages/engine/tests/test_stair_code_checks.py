@@ -310,9 +310,12 @@ def test_catlin_flights_have_graded_handrails(catlin_ctx):
 
     Nine since 2026-09-16: RL-A-FLIGHT-GUARD is a plain `guard` now; RL-A-HANDRAIL is
     ST-S2A's one continuous rail.
+
+    Eight since 2026-10-30: RL-SG-PSTAIR-S/N are plain guards (the Colonial top rail is no
+    handrail, ESR-3485 §5.7); ST-SG-PORCH's one rail is the ADA pipe RL-SG-PSTAIR-HR.
     """
     findings = stair_handrail(catlin_ctx)
-    assert [f.result for f in findings] == [Result.PASS] * 9, \
+    assert [f.result for f in findings] == [Result.PASS] * 8, \
         [f.message for f in findings]
     assert {f.message.split()[0] for f in findings} == {
         "ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"}

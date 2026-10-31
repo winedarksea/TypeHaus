@@ -5,7 +5,7 @@ Model: `params/sunken_garden.py` (`PORCH_STAIR`, `PORCH_STAIR_RAILS`,
 `plan/electrical.py` (the two disconnects), `plan/lighting.py` (`ED-M-STAIR-LT`),
 `plan/site.py` (the pads' fall), `prices.toml`. Authored 2026-09-03; **moved to the pocket's
 south half and given its own pad on 2026-09-04**, when `PT-SG-BR3` turned out to be standing
-on the threshold. The heat pumps that had to turn, and then cross the pocket, to make room
+on the threshold; **widened north to 45" and given a separate ADA handrail on 2026-10-30**. The heat pumps that had to turn, and then cross the pocket, to make room
 are `notes/heat_pump_ground_pad.md`.
 
 ## Why
@@ -34,14 +34,14 @@ that yet — `plans/TODO.md` carries it.
 
 ## The flight
 
-`ST-SG-PORCH`: **5 risers at 6.788", 4 treads at 11" with no nosing, 36" wide, Trex Enhance Basics Tide Pool treads on KDAT** — the
+`ST-SG-PORCH`: **5 risers at 6.788", 4 treads at 11" with no nosing, 45" wide, Trex Enhance Basics Tide Pool treads on KDAT** — the
 `ST-G-SERVICE` pattern in `plan/storeys/garage.py`, which is the same five-riser
 0'-0"-to-grade flight and is already priced and tested.
 
 | | |
 |---|---|
 | run | x 28'-6"..32'-2" (`start` is the FOOT, at the east end; the flight climbs west) |
-| width | y -9'-0"..-6'-0" |
+| width | y -9'-0"..-5'-3" (`_PORCH_STAIR_WIDTH_IN`) |
 | base | `_STAIR_PAD_TOP`, -2'-9" — the pad top, shared with `SL-WK-D` |
 | top | `_porch_walking_surface`, +0'-0.94" — the composite plank, not the 0'-0" joist top |
 | rise | 2'-9.94" = 33.94" over five risers |
@@ -54,15 +54,17 @@ R311.7.5.2's 10" minimum with an inch to spare. No `bearing_refs`: the stringers
 that names no wall on `from_storey` is an `integrity.stair_bearing` error rather than a
 permission.
 
-**Why y -9'-0"..-6'-0" and not somewhere else in the 6'-9 1/4" of walkable wall top.** The
-flight is pushed as far south as the machines want and no further. `-6'-0"` leaves 3'-6"
-between HP2's discharge face and the north rail, against a published 24"; `-9'-0"` leaves
-9 1/4" to `PT-SG-BF3` for the south rail's baseplates. North of that crowds the condensers,
-south of it crowds the column.
+**Why y -9'-0"..-5'-3" and not somewhere else in the 6'-9 1/4" of walkable wall top.** The
+south side stays pinned at `-9'-0"`, 9 1/4" off `PT-SG-BF3`. The flight was 36" until
+2026-10-30, when it widened **north** to 45": the Williams post's 4.99" cast base has to land
+wholly on a tread, and R311.7.1 wants 36" between the posts above the handrail — 45" less two
+4 1/4" (2 3/4" inset + half the 3" post) is 36 1/2", the 1/2" spare so the 36" is not held at
+zero. Widening was cheaper than fascia-mounting the guards. `-5'-3"` keeps ~2'-9" to HP2's
+cabinet face against its published 24", and 2'-3" to `PT-SG-BR3`.
 
 ### Its own pad
 
-`SL-SG-STAIRPAD`, x 27'-6"..36'-7 7/8" by y -9'-0"..-6'-0" — **27.5 sf, 0.34 cy** at 4", on the
+`SL-SG-STAIRPAD`, x 27'-6"..36'-7 7/8" by y -9'-0"..-5'-3" — **34.4 sf, 0.42 cy** at 4", on the
 same `HP_PAD_ON_GRADE` specification, topped at -2'-9" to match walk D, 1" below the equipment pad, so
 the flight's authored base is the surface it actually lands on. The west edge is `W-SG-E1`'s
 east face where the stringers foot; the flight covers x 27'-6"..31'-2"; and everything east
@@ -70,7 +72,7 @@ of that is **R311.7.6's bottom landing**, which wants 36" in the direction of tr
 5'-6". The east edge is walk leg `SL-WK-D`'s west edge less a 1/2" isolation joint: since
 2026-09-23 the pad is the walk's south end, and the 1'-4" connector `SL-WK-E` is gone.
 
-It shared one 56.9 sf pour with the condensers for a day. They are 2'-8" apart in y now, and
+It shared one 56.9 sf pour with the condensers for a day. They were 2'-8" apart in y (1'-11" since the 45" widening), and
 the smallest rectangle covering both is 94 sf — 54 sf of concrete to save one form, which at
 20 sf a pour is the wrong way round.
 
@@ -80,8 +82,8 @@ the smallest rectangle covering both is 94 sf — 54 sf of concrete to save one 
 wall's west face at x 27'-6" would want its first tread 5.848" *below* the concrete it has to
 cross. So the flight starts at the wall's **east** face, x 28'-6", and the 12" of wall top
 between the porch plank and the head of the flight is decked flush at +0'-0.94" with a
-**3'-0" x 12" board of the porch's own composite plank** — 3 sf, at y -9'-0"..-6'-0", which
-is clear of both columns by 3'-0" and 9 1/4".
+**3'-9" x 12" board of the porch's own composite plank** — 3.75 sf, at y -9'-0"..-5'-3", which
+is clear of both columns by 2'-3" and 9 1/4".
 
 That board is trim over 12" of concrete with nothing to frame under it, so no element models
 it and no takeoff row would find it. It is priced with the plank instead: `prices.toml`
@@ -92,31 +94,45 @@ is the same call the framed-wall line-set sleeve got.
 
 ## Guards and the handrail
 
-`RL-SG-PSTAIR-S` and `RL-SG-PSTAIR-N`, one each side, Williams aluminium (ICC-ES ESR-3485
-black, the `RAILING-EXT-ALUMINUM-SURFACE` product `RL-SG-PORCH` uses), 36" with
-`role="guard_and_handrail"`, `serves_stair="ST-SG-PORCH"`, `top_height=inch(36)` and a
-`graspable_profile` — the `RL-G-SERVICE` authoring in `plan/storeys/garage.py`.
+`RL-SG-PSTAIR-S` and `RL-SG-PSTAIR-N`, one each side, are **guards** (`role="guard"`): the
+Williams Colonial panel on the 42" surface post kit (ICC-ES ESR-3485 black, the
+`RAILING-EXT-ALUMINUM-SURFACE` product `RL-SG-PORCH` uses), 36" over the nosings, which clears
+R312.1.2's 34" stair minimum; the Williams stair panel (CS252306B) spans 34"-38" there. Their
+path runs **2 3/4" inside each flight edge** (`_POST_INSET_FT`) so the 3" post's 4.99" cast
+base lands wholly on a tread, screwed into the KDAT stringers with ESR-3485's 4 GRK RSS
+5/16" x 6" (SG >= 0.50). Clear between the post faces: **36 1/2"**.
 
-One 36" run with a graspable top rail answers two rules at once. The total rise is 33.94" > 30",
-so `code.R312_1_1_stair_open_side` wants a guard on each open side, and 36" clears
-R312.1.2's 34" stair minimum measured off the nosing line; five risers is over R311.7.8's
-four, so the flight wants a handrail, and 36" is inside R311.7.8.1's 34"–38". A 36" tread
-past two 1 1/2" sections leaves **33" clear** against R311.7.1's 27" for two rails (the check
-measures 34.50", which is the same number with the rail lines on the tread edges).
+**The Colonial top rail is not a handrail** — ESR-3485 §5.7 puts it outside the report's
+scope, and it is 2.25" wide. Until 2026-10-30 the two guards claimed `guard_and_handrail` on a
+"1.5in round" profile they do not have. Five risers is over R311.7.8's four, so the flight
+gets one real one: **`RL-SG-PSTAIR-HR`**, the Williams Black ADA Pipe Rail and 90 deg Return
+Kit (AD901102B, `RAILING-EXT-ALUMINUM-ADA-HANDRAIL`), on the **south** side — the right hand
+going down. It is `mount="post"`: it hangs on brackets off `RL-SG-PSTAIR-S`'s three posts,
+and its returns fix to the end posts with 3 x #10 TEK screws and a backer (`newel` ends). Its
+line is 3 3/8" inboard of the guard line, 1 1/2" clear of the Colonial rail, with its
+centreline 34 1/4" over the nosings (pipe top 35"). The ~1.5" OD is read off the part names
+and the returns' standoff is unpublished: **measure both on delivery**.
+
+`code.R311_7_1_stair_width` reports 38.13" past the rail; it measures tread width less
+handrails and does not see guard posts, so the honest number is ~34" from the rail to the
+north posts (`plans/TODO.md`). `code.R301_5_handrail_support_spacing` grades the three
+brackets against the kit's 72".
 
 **Both sides are open yard**, since 2026-09-04: the flight sits in the middle of the pocket,
-5'-2" south of the house and 1'-6" north of the `W-RG-EAST-BALCONY` apron, so there is no
+4'-5" south of the house and 1'-6" north of the `W-RG-EAST-BALCONY` apron, so there is no
 wall on either side that `code.R312_1_1_stair_open_side` could credit even in principle.
-While the flight ran along the house the north rail was authored for a subtler reason —
-`W-M-S2`'s band starts at 0'-0" and every nosing but the last runs below it, so the check,
-which asks whether a wall's own z band brackets the nosing, would not have credited it there
-either — and the pair is unchanged.
+
+**Post bases, still open.** The drawn stations are the path's ends and its middle: the foot
+post is centred on the lowest riser line, the middle one on a riser line, and the head post
+stands 2 3/4" beside `RL-SG-PTHRESH`'s end post. 36" spacing cannot put three bases on four
+11" treads, and two posts would stop the handrail short of the end risers. Set them on site;
+`plans/TODO.md` carries it.
 
 ### The threshold's two cheeks
 
 `RL-SG-PTHRESH-S` and `RL-SG-PTHRESH-N`, 1'-0" each, **level** at 42" to match `RL-SG-PORCH`,
-on the wall top between the porch plank and the head of the flight — at y -9'-0" and -6'-0"
-since 2026-09-04, clear of `PT-SG-BF3` by 9 1/4" at the south end. That foot of walking
+on the wall top between the porch plank and the head of the flight — at y -9'-0" and -5'-3"
+(since 2026-10-30), clear of `PT-SG-BF3` by 9 1/4" at the south end. That foot of walking
 surface is 33.94" above the pad on **both** its north and south sides, and nothing in the engine
 asks for a guard there:
 
@@ -125,16 +141,15 @@ asks for a guard there:
 - `code.R312_1_guard_height` tests `RL-SG-PORCH` against the deck edge **segment** with a
   plain `LineString` distance (`_railing_runs_edge`,
   `checks/code/mn_residential/fall_protection.py`), and the east edge's midpoint stays
-  guarded, so the 3'-0" opening reports PASS either way. Splitting the run in two on
+  guarded, so the 3'-9" opening reports PASS either way. Splitting the run in two on
   2026-09-04 did not improve that: the two pieces together still cover the midpoint, and the
   check would report PASS if the gap were 9'. Recorded in `plans/TODO.md`.
 
 The guard return at an opening is on the author, and these are it. They are separate elements
 rather than 12" more on the two stair rails because a `serves_stair` `Railing` is **raked
 along the nosing line for its whole authored path** — a foot of level wall top on the end of
-one resolves at 0" above the (absent) nosings and fails R311.7.8.1 outright. Two elements is
-not a workaround: one raked handrail-guard on the flight, one level guard on the wall top, is
-the true statement.
+one resolves at 0" above the (absent) nosings. Two elements is not a workaround: one raked
+guard on the flight, one level guard on the wall top, is the true statement.
 
 ### And the porch guard has to split in two
 
@@ -145,13 +160,14 @@ edge, one path edit, no split. Moving the flight to y -9'-0"..-6'-0" put the ope
 
 So the east leg is two elements now. `RL-SG-PORCH` runs the west leg, the south leg and the
 east leg up to the flight's south side at -9'-0"; **`RL-SG-PORCH-NE`** picks up at the north
-side, -6'-0", and runs the 5'-2" to the porch's north edge. Same `type_ref`, same mount, same
+side, now -5'-3", and runs the 4'-5" to the porch's north edge. Same `type_ref`, same mount, same
 height, same assembly — it is one run of guard with a doorway in it, and it is two elements
 only because the schema says so. The long one keeps its uid: it is the same element,
 shortened.
 
-**The total footage does not move**: 42.7 LF over six runs instead of five, because the
-doorway is 3'-0" wherever it sits. What the split does cost is a run start/stop and two end
+**The split moved no footage**: 42.7 LF over six runs instead of five, because the doorway
+was 3'-0" wherever it sat. Widening the flight to 45" opened it to 3'-9": 40.0 LF since
+2026-10-30. What the split does cost is a run start/stop and two end
 posts of labour, flagged on the `RAILING-EXT-ALUMINUM-SURFACE` price row.
 
 The four `_PORCH_STAIR_*` constants are shared by the flight, its pad, the opening and all
@@ -174,7 +190,10 @@ it is this:
   elevation with it. The only stretch of wall left is the **42" between the cabinets and this
   flight**, y -2'-6 1/16"..-6'-0"; two 12" cans there share a 30" working space spanning
   -3'-0"..-5'-6", which leaves **6" to the stair**. That 6" is the stair's constraint on the
-  electrical layout, and it is why the flight cannot slide north.
+  electrical layout, and it is why the flight cannot slide north. **2026-10-30:** HP1's can
+  has since left for the north face, so only `ED-M-HP2-DISC` (y -4'-6") is here; the 45"
+  flight's north side at -5'-3" leaves its 30" space y -5'-3"..-2'-9", flush with the stair
+  and 3" off HP2's cabinet. No further widening north.
 
 **`ED-M-STAIR-LT` moved with the flight, and changed character doing it.**
 `code.R303_8_exterior_stairway_illumination` wants a luminaire within 4'-0" of the flight's
@@ -220,7 +239,8 @@ difference back.
 
 Also +6.4 LF of `RAILING-EXT-ALUMINUM-SURFACE` net (−3.0 for the doorway, +7.4 over four new
 runs; the 2026-09-04 split of `RL-SG-PORCH` moved 5.2 LF onto `RL-SG-PORCH-NE` and changed
-the total by nothing), the composite-on-KDAT flight (five 2x12 stringers at no more than 9" o.c.,
+the total by nothing), the composite-on-KDAT flight (six 2x12 stringers at no more than 9" o.c.
+since the 45" widening,
 four 0.94" composite tread assemblies, closed 3/4" KDAT risers and butyl stringer tape,
 matching `ST-G-SERVICE`), one exterior sconce, 3 sf of unmodelled
 composite threshold board, and one more run start and two more end posts of railing labour.
@@ -233,11 +253,11 @@ added is mostly given back, all of it inside the same lump allowance either way.
 ## What is not modelled
 
 - **The threshold board** — above, priced with the plank.
-- **The raked stair-post premium.** Every post in the `RAILING-EXT-ALUMINUM-SURFACE` rate
-  stands on a 12" concrete wall top and arrives welded to a 5x5 baseplate. A post on a 2x12
-  KDAT stringer is a different baseplate on a different substrate, through-bolted rather than
-  anchored, and it wants a rake-adjustable post-and-rail kit. Flagged on the price row
-  against the two raked runs; it is not in the numbers.
+- **The raked stair-post premium.** Every other post in the `RAILING-EXT-ALUMINUM-SURFACE`
+  rate stands on a 12" concrete wall top on the post kit's cast 4.99" base (screwed to the
+  post, not welded). A raked post stands on a tread over a KDAT stringer, screwed rather than
+  anchored, and takes the stair panel. Flagged on the price row against the two raked runs;
+  it is not in the numbers.
 - **The raked runs' true length.** The BOM bills a `Railing` by the PLAN length of its path,
   so 3.7 LF of plan is 4.6 LF of rail on a 33.94"-in-44" rake — the two `PSTAIR` runs read ~1.9
   LF light between them. Noted on the price row.

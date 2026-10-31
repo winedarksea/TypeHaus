@@ -92,7 +92,7 @@ from typehaus.library.placeables import (
     STARTER_FURNITURE_PRODUCTS,
     STARTER_FURNITURE_TYPES,
 )
-from typehaus.library.railings import ALL_RAILING_TYPES
+from typehaus.library.railings import ALL_RAILING_TYPES, RAILING_PRODUCTS
 from typehaus.library.windows import WINDOW_TYPES_16_INCH_MODULE
 
 __all__ = [
@@ -168,6 +168,7 @@ __all__ = [
     "DT_POCKET_INT_36",
     "DT_POCKET_INT_48",
     "ALL_RAILING_TYPES",
+    "RAILING_PRODUCTS",
     "WINDOW_TYPES_16_INCH_MODULE",
     "ALL_ELECTRICAL_DEVICE_TYPES",
     "ALL_REGISTER_TYPES",

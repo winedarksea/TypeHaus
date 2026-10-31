@@ -28,6 +28,8 @@ from typehaus.resolve.railings.parts import railing_type
 #: How close a post must stand to a rail end to be the newel it terminates in.
 _NEWEL_REACH_M = inch(6).meters
 _WALL_MOUNTS = frozenset({"wall"})
+#: Mounts whose supports are BRACKET solids: off a wall, or off another guard's posts.
+_BRACKET_MOUNTS = frozenset({"wall", "post"})
 #: A bracket no longer than its own 1" section is a stub with no wall behind it.
 _STUB_EXTENT_M = inch(1.0).meters + 0.001
 
@@ -136,7 +138,7 @@ def support_stations(ctx: CheckContext, rail: Railing, path) -> tuple[list[float
 
 @check(Tier.CODE, "code.R301_5_handrail_support_spacing")
 def handrail_support_spacing(ctx: CheckContext) -> list[Finding]:
-    """R301.5 — a wall handrail's supports sit no farther apart than its product allows."""
+    """R301.5 — a bracketed handrail's supports sit no farther apart than its product allows."""
     cid, code = "code.R301_5_handrail_support_spacing", "R301.5"
     if not ctx.model.stairs:
         return [_unknown(cid, "no resolved stairs", (), code)]
@@ -145,7 +147,7 @@ def handrail_support_spacing(ctx: CheckContext) -> list[Finding]:
         return [_unknown(cid, "no Railing declares a handrail role", (), code)]
     out: list[Finding] = []
     for rail in rails:
-        if rail.mount not in _WALL_MOUNTS:
+        if rail.mount not in _BRACKET_MOUNTS:
             out.append(_na(cid, f"handrail {rail.tag} is carried by posts, not brackets",
                            (rail.tag,), code))
             continue
@@ -160,7 +162,7 @@ def handrail_support_spacing(ctx: CheckContext) -> list[Finding]:
         stations, stubs = support_stations(ctx, rail, path)
         if len(stations) < 2:
             out.append(_fail(cid, f"handrail {rail.tag} has {len(stations)} support(s) "
-                             "with a wall behind them", (rail.tag,), code))
+                             "with a wall or post behind them", (rail.tag,), code))
             continue
         widest = max(b - a for a, b in zip(stations[:-1], stations[1:], strict=True))
         stub_note = f"; {stubs} bracket(s) with no wall behind them ignored" if stubs else ""

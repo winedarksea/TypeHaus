@@ -897,7 +897,7 @@ def test_each_stand_leg_stands_under_a_published_foot_hole_and_on_the_pad(catlin
 _PAD_X = (28.0, 31.583333)
 _PAD_Y = (-3.333333, -0.833333)
 _STAIR_PAD_X = (27.5, 36.66)
-_STAIR_PAD_Y = (-9.0, -6.0)
+_STAIR_PAD_Y = (-9.0, -5.25)
 
 
 def test_the_pad_carries_the_row_and_nothing_else(catlin_model) -> None:
@@ -929,13 +929,13 @@ def test_the_pad_carries_the_row_and_nothing_else(catlin_model) -> None:
 
 
 def test_the_flight_has_its_own_pad_with_a_code_landing_on_it(catlin_model) -> None:
-    """SL-SG-STAIRPAD, 27.5 sf / 0.34 cy, x 27'-6"..36'-7 7/8" by y -9'-0"..-6'-0".
+    """SL-SG-STAIRPAD, 34.4 sf / 0.42 cy, x 27'-6"..36'-7 7/8" by y -9'-0"..-5'-3".
 
     Its west edge is W-SG-E1's east face where the stringers foot; the flight covers x
     27'-6"..31'-2"; and what is left east of that is R311.7.6's bottom landing, which wants
     36" in the direction of travel. The east edge is walk leg D's, less the 1/2" joint: the
     pad is the walk's south end. The two pads must not touch — a single pour spanning the
-    2'-8" between them is 94 sf to serve 40 — and the stair pad must share walk D's
+    1'-11" between them is 94 sf to serve 40 — and the stair pad must share walk D's
     top so their isolation joint is flush.
     """
     from shapely.geometry import Polygon
@@ -945,13 +945,13 @@ def test_the_flight_has_its_own_pad_with_a_code_landing_on_it(catlin_model) -> N
     assert (x0 / FT, x1 / FT) == pytest.approx(_STAIR_PAD_X)
     assert (y0 / FT, y1 / FT) == pytest.approx(_STAIR_PAD_Y)
     area_sf = pad.area / (FT * FT)
-    assert area_sf == pytest.approx(27.48, abs=0.05)
+    assert area_sf == pytest.approx(34.35, abs=0.05)
     # 5'-6" of landing east of the bottom riser, against R311.7.6's 36".
     assert (_STAIR_PAD_X[1] - (_STAIR_PAD_X[0] + 4 * 11.0 / 12.0)) * 12.0 >= 36.0
     # Separate pours, and the gap is the point.
     equipment = Polygon(_solid(catlin_model, "SL-SG-HPPAD").outline)
     assert not pad.intersects(equipment)
-    assert equipment.distance(pad) / FT == pytest.approx(2.667, abs=0.01)
+    assert equipment.distance(pad) / FT == pytest.approx(1.917, abs=0.01)  # 2'-8" before 45"
     slabs = {e.tag: e for st in catlin_model.plan.storeys
              for e in catlin_model.plan.storey_elements(st.tag)
              if getattr(e, "tag", "") in ("SL-SG-STAIRPAD", "SL-WK-D")}
@@ -996,7 +996,7 @@ def test_the_pocket_condenser_faces_south_square_to_the_plan(catlin_model) -> No
 
 
 def test_the_porch_stair_climbs_five_risers_from_the_pad_to_the_plank(catlin_model) -> None:
-    """ST-SG-PORCH: 5 risers, 4 treads, 36" wide, -2'-9" to +0'-0.94".
+    """ST-SG-PORCH: 5 risers, 4 treads, 45" wide (since 2026-10-30), -2'-9" to +0'-0.94".
 
     Both elevations are authored because neither is a storey datum — this is a step-down
     within `main`. The top is the porch's WALKING surface (the composite plank), not the 0'-0"
@@ -1011,9 +1011,9 @@ def test_the_porch_stair_climbs_five_risers_from_the_pad_to_the_plank(catlin_mod
     treads = [m for m in stair.members if m.category == "tread"]
     assert len(treads) == 4
     for tread in treads:
-        assert tread.length_m / FT == pytest.approx(3.0)
+        assert tread.length_m / FT == pytest.approx(3.75)
     stringers = [m for m in stair.members if m.category == "stringer"]
-    assert len(stringers) == 5
+    assert len(stringers) == 6  # 45" at Trex's 9" maximum
     assert {t.material for t in treads} == {"trex-enhance-basics"}
     assert all(t.z1_m - t.z0_m == pytest.approx(0.94 * INCH) for t in treads)
     # It lands on its own pad, not beside it — and not on the condensers', which since
@@ -1028,8 +1028,8 @@ def test_the_porch_stair_climbs_five_risers_from_the_pad_to_the_plank(catlin_mod
 
 def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catlin_model
                                                                             ) -> None:
-    """Two raked guard-handrails on the flight, two level cheeks on the threshold, and
-    RL-SG-PORCH's east leg opened 3'-0" in its MIDDLE with RL-SG-PORCH-NE carrying the stub.
+    """Two raked guards and one ADA handrail on the flight, two level cheeks on the threshold,
+    and RL-SG-PORCH's east leg opened 3'-9" in its MIDDLE with RL-SG-PORCH-NE carrying the stub.
 
     Nothing in the engine asks for the threshold pair — R312.1.1 measures the FLIGHT, whose
     top tread is only 27.152" over the pad, and `code.R312_1_guard_height` cannot see a guard
@@ -1044,10 +1044,12 @@ def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catl
         assert rail.serves_stair == "ST-SG-PORCH", tag
         assert rail.base_elevation.meters == pytest.approx(
             _solid(catlin_model, "SL-SG-STAIRPAD").z1_m), tag
-        assert rail.role == "guard_and_handrail", tag
+        assert rail.role == "guard", tag  # the Colonial top rail is no handrail
         assert rail.height.inches == pytest.approx(36.0), tag
         assert rail.top_height is not None and rail.top_height.inches == pytest.approx(36.0)
-        assert rail.graspable_profile is not None, tag
+    handrail = rails["RL-SG-PSTAIR-HR"]
+    assert (handrail.role, handrail.mount, handrail.serves_stair) == (
+        "handrail", "post", "ST-SG-PORCH")
     for tag in ("RL-SG-PTHRESH-S", "RL-SG-PTHRESH-N"):
         rail = rails[tag]
         assert rail.serves_stair is None, tag  # level on the wall top, never raked
@@ -1060,13 +1062,13 @@ def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catl
     assert porch.path[-1].xy_m[0] / FT == pytest.approx(26.5)
     stub = rails["RL-SG-PORCH-NE"]
     assert [round(p.xy_m[0] / FT, 4) for p in stub.path] == [26.5, 26.5]
-    assert stub.path[0].xy_m[1] / FT == pytest.approx(-6.0, abs=1e-3)
+    assert stub.path[0].xy_m[1] / FT == pytest.approx(-5.25, abs=1e-3)
     # Same product, same mount, same height — it is one run of guard with a doorway in it.
     assert stub.type_ref == porch.type_ref and stub.mount == porch.mount
     assert stub.height.inches == pytest.approx(porch.height.inches)
-    # The doorway is exactly the flight's 36", and the two pieces do not overlap it.
-    assert (stub.path[0].xy_m[1] - porch.path[-1].xy_m[1]) / FT == pytest.approx(3.0,
-                                                                                abs=1e-3)
+    # The doorway is exactly the flight's 45", and the two pieces do not overlap it.
+    assert (stub.path[0].xy_m[1] - porch.path[-1].xy_m[1]) / FT == pytest.approx(3.75,
+                                                                                 abs=1e-3)
 
 
 # ---------------------------------------------------------------------------------------

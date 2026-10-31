@@ -2321,10 +2321,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   fascia, drip, gutter and `BALCONY_FRONT_AXIS_Y_FT` together.
 - Fallback: New Castle Steel HDG 6x6x3/16" post w/ welded base plate
   (~$458/10'), still needs a fabricated saddle with no shop drawing made.
-- Both guards: Williams Architectural Products, ICC-ES ESR-3485, 42" black
-  (Menards; Eagan MN); alternate Fortress Al13 Home.
+- Every guard (porch, balcony, interior stairs): Williams Architectural Products 42"
+  Colonial black (CP262406B), ICC-ES ESR-3485 (Ultralox; Menards; Eagan MN); alternate
+  Fortress Al13 Home. Library types carry the real sections: 3" posts, 0.5" pickets.
 - `RL-SG-PORCH` is surface-mounted (`RAILING-EXT-ALUMINUM-SURFACE`): west/east
-  legs on 12" concrete wall tops take ESR-3485's baseplate anchors directly. The south leg
+  legs on 12" concrete wall tops take ESR-3485's anchors through the post kit's cast
+  4.99" base (screwed, not welded).
+- `ST-SG-PORCH` is 45" wide (y -9'-0"..-5'-3", widened north 2026-10-30) so the cast bases
+  land on treads, 2 3/4" in, with 36 1/2" between post faces. Its two raked guards are
+  guards only (the Colonial top rail is no handrail, ESR §5.7); `RL-SG-PSTAIR-HR` is the
+  Williams ADA pipe rail, `mount="post"` on the south guard's posts
+  (`notes/porch_stair.md`). Do not widen further north: HP2's disconnect working space. The south leg
   stands over the porch's south EDGE JOIST (the joists run with it now) and bolts through the
   plank into a block 2" inside it at each post — the balcony's inset pattern.
 - `RL-SG-BALCONY` stays fascia-mounted (through-bolted PVC fascia + 2x8 rim)

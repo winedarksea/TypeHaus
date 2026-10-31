@@ -19,7 +19,7 @@ from pathlib import Path
 from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_basemap_geojson
 
 from library import (
-    ALL_DUCT_PRODUCT_TYPES, ALL_ELECTRICAL_DEVICE_TYPES, ALL_RAILING_TYPES,
+    ALL_DUCT_PRODUCT_TYPES, ALL_ELECTRICAL_DEVICE_TYPES, ALL_RAILING_TYPES, RAILING_PRODUCTS,
     ALL_REGISTER_TYPES, ALL_VENTILATION_EQUIPMENT_TYPES, DT_POCKET_INT_36,
     MICROWAVE_COUNTERTOP_NN_SN686S, STANDARD_DOOR_TYPES, STARTER_APPLIANCE_TYPES,
     STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES,
@@ -72,7 +72,8 @@ _library = Library(
               *opening_products.OPENING_PRODUCTS, *bath_accessory_types.BATH_ACCESSORY_PRODUCTS,
               *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS, *products_bath_lavs.BATH_LAV_PRODUCTS,
               *device_types.DEVICE_PRODUCTS, *device_boxes.BOX_PRODUCTS, *drywall.DRYWALL_PRODUCTS,
-              *window_covering_types.WINDOW_COVERING_PRODUCTS, *smart_home_types.SMART_HOME_PRODUCTS),
+              *window_covering_types.WINDOW_COVERING_PRODUCTS, *smart_home_types.SMART_HOME_PRODUCTS,
+              *RAILING_PRODUCTS),
     # The one library pocket size this house hangs, alongside the house's own catalog. Only
     # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
     # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
@@ -117,9 +118,8 @@ _library = Library(
                      *kitchen_deep_cabinets.KITCHEN_DEEP_CABINET_TYPES,
                      *plant_room_types.PLANT_ROOM_FURNITURE_TYPES,
                      *bath_accessory_types.BATH_ACCESSORY_TYPES, *towel_accessory_types.TOWEL_TYPES),
-    # The library's fascia guard plus the house's own surface-mounted one — the porch
-    # guard's baseplates land on concrete wall tops and buy no bracket kit, which is a
-    # different order at a different rate. Tags are disjoint.
+    # The library's Williams guards — fascia, surface and interior stair — and the ADA
+    # handrail, beside the house's own handrails. Tags are disjoint.
     railing_types=(*ALL_RAILING_TYPES, *titanium_types.RAILING_TYPES,
                    *handrail_types.RAILING_TYPES),
     # The library's plumbing catalog is a planning ALLOWANCE (its own header says final

@@ -6527,10 +6527,12 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 #
 #   RAILING-EXT-ALUMINUM-FASCIA  40.3 LF — the BALCONY guard alone (RL-SG-BALCONY) since
 #                                2026-09-03, when the porch's went to surface mount below.
-#   RAILING-EXT-ALUMINUM-SURFACE 42.7 LF over six runs — the PORCH guard (RL-SG-PORCH, which
+#   RAILING-EXT-ALUMINUM-SURFACE 40.0 LF over six runs — the PORCH guard (RL-SG-PORCH, which
 #                                replaced the masonry parapet on 2026-08-18) plus the stub
 #                                RL-SG-PORCH-NE past ST-SG-PORCH's doorway, the flight's two
-#                                raked guard-handrails and the two threshold cheeks.
+#                                raked guards and the two threshold cheeks.
+#   RAILING-EXT-ALUMINUM-ADA-HANDRAIL 3.7 LF — RL-SG-PSTAIR-HR, the Williams ADA pipe rail on
+#                                the south raked guard's posts (2026-10-30).
 #
 #   ** THE PRODUCT IS WILLIAMS ARCHITECTURAL PRODUCTS, NOT TREX SIGNATURE ** (2026-09-02).
 #   Williams (Menards; made in Eagan MN at the Ultralox factory) is ICC-ES ESR-3485 listed
@@ -6544,7 +6546,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 #
 #   ** THE TWO MOUNTS ARE PRICED SEPARATELY BECAUSE THEY ARE DIFFERENT ORDERS. ** A fascia
 #   guard is bought with a bracket kit at every post and through-bolts; a surface guard is
-#   bought with its post welded to a baseplate and four anchors. Grouping them under one
+#   bought with the post kit's cast 4.99" base (screwed, not welded) and four anchors. Grouping them under one
 #   type_ref would bill fascia brackets on a concrete wall top where none exist and average
 #   two labour rates that differ by the fascia premium.
 #   RAILING-INT-STAIR-GUARD      23.0 LF over three flights, assembly RAILING_DARK_METAL.
@@ -6574,7 +6576,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # (was the metal-handrail placeholder, $18-35). Blocking bills in [framing].
 "RAILING-INT-ALUM-HANDRAIL" = { material = { low = 20, high = 30 }, labour = { low = 10, high = 22 } }
 "RAILING-INT-TI-HANDRAIL-42" = { material = { low = 20, high = 60 }, labour = { low = 40, high = 90 } }  # 9.9 LF — owner-furnished tube; fittings + labour only
-"RAILING-EXT-ALUMINUM-FASCIA" = { material = { low = 39.5, high = 62 }, labour = { low = 35, high = 55 } }  # 40.3 LF — RL-SG-BALCONY only. Williams ESR-3485 / Fortress Al13 Home; material dropped from 55-80 when the product left Trex Signature on 2026-09-02. Fascia-mount labour keeps its 25-40% premium over surface mount (through-bolting into rim blocking, cantilevered 200 lb load). 2026-10-29: material 30-45 -> 39.5-62 folds in the fascia-mount bracket kits ($40-60 per post + four 5/16" x 4" through-bolts, ~9 posts at 60" o.c. = $370-650 over the run)
+# ESTIMATE 2026-10-30 (no live Menards price readable): 57-79 = the $30-45 panel rate plus an
+# Ultralox fascia bracket kit (~$75-92) and fascia post kit, ~$120-150 a post x ~9 posts
+# over 40.3 LF. Replaces the 2026-10-29 39.5-62 bracket guess.
+"RAILING-EXT-ALUMINUM-FASCIA" = { material = { low = 57, high = 79 }, labour = { low = 35, high = 55 } }  # 40.3 LF — RL-SG-BALCONY only. Williams ESR-3485 / Fortress Al13 Home; material dropped from 55-80 when the product left Trex Signature on 2026-09-02. Fascia-mount labour keeps its 25-40% premium over surface mount (through-bolting into rim blocking, cantilevered 200 lb load). 2026-10-29: material 30-45 -> 39.5-62 folds in the fascia-mount bracket kits ($40-60 per post + four 5/16" x 4" through-bolts, ~9 posts at 60" o.c. = $370-650 over the run)
 # 2026-09-03: 42.7 LF over FIVE runs, where it was 36.3 LF over one. RL-SG-PORCH LOST 3.0 LF
 # (33.3) — its east leg stops at y -3'-10" to open a 3'-0" gap for the new porch stair — and
 # four short runs arrived around that opening: RL-SG-PSTAIR-S/N, 3.7 LF each, RAKED along
@@ -6584,15 +6589,21 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # rail on a 33"-in-44" rake, so read the two PSTAIR runs as ~1.9 LF light between them.
 #
 # ** THE TWO RAKED RUNS ARE NOT THIS ROW'S POST CONDITION, and the rate does not carry them. **
-# Every post priced here stands on a 12" concrete wall top and arrives welded to a 5x5
-# baseplate the material rate includes. A raked stair post stands on a 2x12 KDAT stringer: it
-# is a different baseplate on a different substrate, through-bolted rather than anchored, and
-# it wants a rake-adjustable post-and-rail kit (Williams and Fortress both sell one at a
-# premium over the level parts). Carry that premium in the estimate against these ~7.4 LF; it
-# is NOT in the numbers below.
-"RAILING-EXT-ALUMINUM-SURFACE" = { material = { low = 30, high = 45 }, labour = { low = 25, high = 40 } }  # 42.7 LF over 6 runs — RL-SG-PORCH 28.1 + RL-SG-PORCH-NE 5.2 + PSTAIR-S/N 3.7 ea (RAKED, see above) + PTHRESH-S/N 1.0 ea; the porch guard split in two on 2026-09-04 when the stair doorway moved to the MIDDLE of its east leg, which changed the TOTAL by nothing (the doorway is 3'-0" wherever it sits) but adds one run start/stop and two end posts to the labour; ~8 posts at 60" o.c. on the porch leg, ~2 per stair run at 36" o.c., 2 per threshold cheek. Same rail, same alloy, same listing as the fascia row; the post arrives welded to a 5x5 baseplate, so the bracket kit the fascia row excludes is INSIDE this material rate and there is nothing to add per post. Labour is lower for the same reason: no through-bolting from underneath. NOT INCLUDED: the four 1/4" x 3" concrete anchors per post on the west/east/threshold legs, the ~5 solid blocks under the south leg where there is no wall top, and the raked stair-post premium above — the first two are in [framing]
+# Every other post priced here stands on a 12" concrete wall top on the post kit's cast 4.99"
+# base, which the material rate includes. The raked posts (2026-10-30) stand on TREADS, 2 3/4"
+# inside the 45" flight's edges, screwed through into the KDAT stringers with ESR-3485's
+# 4 GRK RSS 5/16" x 6" (SG >= 0.50), and take the 36" x 6' stair panel CS252306B (Menards
+# 1717812) at a premium over the level parts. Carry that premium against these ~7.4 LF; it is
+# NOT in the numbers below.
+"RAILING-EXT-ALUMINUM-SURFACE" = { material = { low = 30, high = 45 }, labour = { low = 25, high = 40 } }  # 40.0 LF over 6 runs — RL-SG-PORCH 28.1 + RL-SG-PORCH-NE 4.4 + PSTAIR-S/N 3.7 ea (RAKED guards, see above) + PTHRESH-S/N 1.0 ea (the doorway widened to 3'-9" with the 45" flight, 2026-10-30); the porch guard split in two on 2026-09-04 when the stair doorway moved to the MIDDLE of its east leg, which changed the TOTAL by nothing (the doorway is 3'-0" wherever it sits) but adds one run start/stop and two end posts to the labour; ~8 posts at 60" o.c. on the porch leg, ~2 per stair run at 36" o.c., 2 per threshold cheek. Same rail, same alloy, same listing as the fascia row; the post kit carries its cast 4.99" base, so the bracket kit the fascia row excludes is INSIDE this material rate and there is nothing to add per post. Labour is lower for the same reason: no through-bolting from underneath. NOT INCLUDED: the four 1/4" x 3" concrete anchors per post on the west/east/threshold legs, the ~5 solid blocks under the south leg where there is no wall top, and the raked stair-post premium above — the first two are in [framing]
+# ESTIMATE 2026-10-30: Williams ADA Pipe Rail and 90 deg Return Kit AD901102B (Menards 1717885),
+# ~$158 a kit over ~3.7 LF plan = ~$43/LF; one kit covers the flight. Labour: two returns TEK-
+# screwed to the guard's end posts and one mid bracket, about an hour.
+"RAILING-EXT-ALUMINUM-ADA-HANDRAIL" = { material = { low = 40, high = 50 }, labour = { low = 15, high = 25 } }  # 3.7 LF — RL-SG-PSTAIR-HR
 # 2026-10-29: rate reconciled to the row's own lump basis: $74-113/LF = $1,700-2,600 minimum-charge lump / 23 LF (was $90-175/LF).
-"RAILING-INT-STAIR-GUARD" = { material = { low = 33, high = 50 }, labour = { low = 41, high = 63 } }  # 26.8 LF — priced as a COMPONENT system. Do not stack the two models: a shop-welded steel guard is material $150-250 + labour $30-60 (the fabrication hours ride inside the material and site labour DROPS, because you are setting finished panels). At 23 LF this is really a $1,700-2,600 minimum-charge lump either way
+# ESTIMATE 2026-10-30: material 33-50 -> 70-100 by the fascia row's arithmetic — the Williams
+# panel plus a post kit or Ultralox bracket kit at every post, over ~27 LF. Labour unchanged.
+"RAILING-INT-STAIR-GUARD" = { material = { low = 70, high = 100 }, labour = { low = 41, high = 63 } }  # 26.8 LF — priced as a COMPONENT system. Do not stack the two models: a shop-welded steel guard is material $150-250 + labour $30-60 (the fabrication hours ride inside the material and site labour DROPS, because you are setting finished panels). At 23 LF this is really a $1,700-2,600 minimum-charge lump either way
 
 [drainage]
 # RESEARCHED 2026-08-08b — [low, high] $/LF of run, material only, hangers/straps/elbows

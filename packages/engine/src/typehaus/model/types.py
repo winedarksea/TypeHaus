@@ -474,6 +474,8 @@ class RailingType(HausModel):
     rail_material: str | None = None
     infill_material: str | None = None
     baluster_width: Length | None = None   # picket cross-section, square
+    # The product's true square post section; wins over ``Railing.post_size``'s nominal.
+    post_width: Length | None = None
     cable_diameter: Length | None = None   # tensioned cable, e.g. 3/16"
     panel_thickness: Length | None = None  # lite / sheet thickness
     # Safety glazing in a glass infill. Mirrors ``WindowType.tempered`` / ``DoorType

@@ -224,8 +224,9 @@ def test_the_pocket_condenser_disconnect_clears_the_stair_and_reaches_from_grade
                  for e in catlin_model.plan.storey_elements(storey.tag)
                  if getattr(e, "tag", None) == "ST-SG-PORCH")
     stair_north = stair.start.xy_m[1] / 0.3048 + stair.width.inches / 12.0
-    assert stair_north == pytest.approx(-6.0)
-    free = hp2_south - stair_north                       # 42", the whole clear stretch
+    # -5'-3" since the flight widened north to 45" (2026-10-30): the stretch is 33" now.
+    assert stair_north == pytest.approx(-5.25)
+    free = hp2_south - stair_north
     assert free >= 2.5, f"only {free * 12:.1f}in of wall for a 30in working space"
     # The two cans occupy y -3'-0"..-5'-0"; 30" around them lands inside that stretch with
     # 3" to give at each end.

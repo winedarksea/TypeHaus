@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from typehaus.findings import Finding
+from typehaus.findings import Finding, element_error
 from typehaus.model.enums import RailingKind
 from typehaus.model.structure import Railing
 from typehaus.resolve.model import ResolvedModel
@@ -32,9 +32,15 @@ __all__ = ["railing_post_stations", "resolve_railing"]
 
 def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Finding]:
     """Frame one railing into ``model.solids``; returns WARN-tier geometry findings."""
+    findings: list[Finding] = []
+    if el.type_ref is not None and not any(
+            product.tag == el.type_ref for product in model.plan.library.railing_types):
+        findings.append(element_error(
+            "integrity.unknown_railing_type",
+            f"railing {el.tag} references missing type {el.type_ref!r}", el.tag))
     path = [p.xy_m for p in el.path]
     if len(path) < 2:
-        return []
+        return findings
     if el.kind is RailingKind.MASONRY:
         # A masonry guard is a wall — a layered stucco/CMU/air/brick stack standing at an
         # edge, whose grouted cores can carry a post base and whose volume bills in cubic
@@ -42,7 +48,7 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
         # authors it as a ``Wall``/``FoundationWall`` with ``guard=True`` and the checks and
         # take-off read it there. Framing a stick guard here would draw a second, wrong
         # guard on top of the real one.
-        return []
+        return findings
 
     stair = (next((s for s in model.stairs if s.tag == el.serves_stair), None)
              if el.serves_stair is not None else None)
@@ -60,7 +66,7 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
     parts = resolve_parts(model, el)
     stations = railing_post_stations(path, max(el.post_spacing.meters, MIN_POST_SPACING_M))
     first = len(model.solids)
-    findings = emit_posts(model, el, storey, stations, surface, parts, rail_h)
+    findings += emit_posts(model, el, storey, stations, surface, parts, rail_h)
     emit_rails(model, el, storey, path, surface, parts, rail_h)
     findings.extend(emit_terminations(model, el, storey, path, surface, parts, rail_h))
     findings += emit_infill(model, el, storey, stations, surface, parts, rail_h)

@@ -36,8 +36,8 @@ def test_the_guard_draws_a_bracket_at_each_post_station(catlin_model):
 
 
 @pytest.mark.xfail(strict=True, reason=(
-    "OPEN: the gutter back sheet lies flush on the fascia where the brackets stand; the "
-    "fix (notch, stand-off or relocated bracket) waits on the bracket drawing."))
+    "OPEN: the gutter back sheet lies flush on the fascia where the brackets stand. "
+    "Drawing read (5.64\" x 3.29\", ESR-3485 Fig. 10); the clash is real."))
 def test_the_gutter_clears_the_guard_brackets(catlin_model):
     gutter = [_box(s) for s in catlin_model.solids
               if s.tag.startswith("TR-SG-GUTTER-") and s.category == "gutter"]

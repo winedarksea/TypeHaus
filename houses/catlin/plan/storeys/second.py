@@ -1388,7 +1388,7 @@ STAIR_GUARDS = [
             pt(ft(17, 8.75), ft(30, 10)),
         ),
         kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
-        base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,
+        base_elevation=ft(10), post_spacing=inch(60), post_size="3x3", rail_count=2,
         mount="fascia", assembly="RAILING_DARK_METAL",
         # R312.1.3: vertical balusters between the 60" posts, 4" clear gap — the largest
         # opening the 4"-sphere rule admits.
@@ -1398,17 +1398,17 @@ STAIR_GUARDS = [
     # 2026-09-25, a leg north along the well partition's top. That top is flush with the
     # deck, so the upper flight's top four nosings stand 7 1/2"-30" under it over a 60"-98"
     # fall into the lower lane (R312.1.1). The leg ends at nosing 5, the first the partition
-    # stands 34" over. Level at 42", like every guard round this well. x=13'-10 3/4" puts a
-    # 2x2 post flush with the partition's stair face: centred on it (14'-0") the head edge
-    # opens 2 1/4" west of the corner (code.R312_1_guard).
+    # stands 34" over. Level at 42", like every guard round this well. x=13'-10" puts the
+    # 3" Williams post's face flush with the partition's stair face at 13'-11 1/2": centred
+    # on it (14'-0") the head edge opens west of the corner (code.R312_1_guard).
     Railing(
         uid="CSRL02AAAA", tag="RL-S-STAIRHEAD", type_ref="RAILING-INT-STAIR-GUARD", path=(
-            pt(ft(13, 10.75), ft(30, 2.375)),
-            pt(ft(13, 10.75), ft(26, 0.375)),
+            pt(ft(13, 10), ft(30, 2.375)),
+            pt(ft(13, 10), ft(26, 0.375)),
             pt(ft(17, 8.75), ft(26, 0.375)),
         ),
         kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
-        base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,
+        base_elevation=ft(10), post_spacing=inch(60), post_size="3x3", rail_count=2,
         mount="fascia", assembly="RAILING_DARK_METAL",
         infill="balusters", baluster_spacing=inch(4),
     ),

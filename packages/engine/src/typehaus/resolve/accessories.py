@@ -74,7 +74,9 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
     return are WARN-tier reports of geometry it could not derive — never a build failure."""
     findings: list[Finding] = []
     for storey in model.plan.storeys:
-        for el in model.plan.storey_elements(storey.tag):
+        # A mount="post" rail hangs on another railing's posts, so it resolves after them.
+        for el in sorted(model.plan.storey_elements(storey.tag),
+                         key=lambda el: isinstance(el, Railing) and el.mount == "post"):
             if isinstance(el, Dowel):
                 _resolve_dowel(model, el, storey.tag)
             elif isinstance(el, IsolationBoard):
@@ -102,12 +104,6 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
             elif isinstance(el, Wedge):
                 _resolve_wedge(model, el, storey.tag)
             elif isinstance(el, Railing):
-                if (el.type_ref is not None
-                        and not any(product.tag == el.type_ref
-                                    for product in model.plan.library.railing_types)):
-                    findings.append(element_error(
-                        "integrity.unknown_railing_type",
-                        f"railing {el.tag} references missing type {el.type_ref!r}", el.tag))
                 findings.extend(resolve_railing(model, el, storey.tag))
             elif isinstance(el, Sump):
                 _resolve_sump(model, el, storey)

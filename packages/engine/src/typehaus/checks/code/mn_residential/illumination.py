@@ -241,6 +241,9 @@ def _landing_region(ctx: CheckContext, stair, polygon, elevation_m: float | None
     if elevation_m is None:
         return polygon
     region = polygon
+    # Adjacent to the FLIGHT, not to its 4 ft ring: the ring reached the living floor through
+    # W-M-S2 once ST-SG-PORCH widened, and an indoor can lights no exterior landing.
+    flight = _stair_outline(stair) or polygon
     for floor in ctx.model.floors:
         if floor.deck_z1_m is None or len(floor.deck_outline) < 3:
             continue
@@ -251,7 +254,7 @@ def _landing_region(ctx: CheckContext, stair, polygon, elevation_m: float | None
         deck = Polygon([p.xy_m if hasattr(p, "xy_m") else p for p in floor.deck_outline])
         if not deck.is_valid or deck.area <= 1e-9:
             continue
-        if deck.distance(polygon) <= _LANDING_THRESHOLD.meters:
+        if deck.distance(flight) <= _LANDING_THRESHOLD.meters:
             region = region.union(deck.buffer(_LANDING_RIM.meters))
     return region
 

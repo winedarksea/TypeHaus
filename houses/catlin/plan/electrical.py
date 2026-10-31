@@ -493,6 +493,8 @@ MAIN_DEVICES = [
     # they share spans y -3'-0"..-5'-6", which leaves 6" to the cabinets and 6" to the stair,
     # over 36" of depth (x 27'-6"..30'-6") with nothing in it. Within sight of both units,
     # 1'-9" away — 440.14 asks for sight, and here it is nearly reach as well.
+    # 2026-10-30: the flight widened north to -5'-3". Only HP2's can (y -4'-6") is left here,
+    # and its 30" space spans y -5'-3"..-2'-9": flush with the stair, 3" off HP2's cabinet.
     #
     # ** THE MOUNT DROPS TO -0'-8", AND ACCESS IS FINE. ** This wall tops out at 0'-0", so
     # there is no 3'-6" to hang from; -0'-8" puts the handles 2'-2" above grade, against

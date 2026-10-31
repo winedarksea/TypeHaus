@@ -36,8 +36,9 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     which is what keeps a wall-as-guard from being ordered twice."""
     rows = [row for row in bom["railings"] if row["style"] != "masonry"]
     # The flight guard stops at the newel; RL-A-FLIGHT-SKIRT closes the band under it.
-    # 19 since 2026-10-13: RL-BW-GARAGE-E left with the garage's interior landing.
-    assert sum(int(row["count"]) for row in rows) == 19
+    # 19 since 2026-10-13: RL-BW-GARAGE-E left with the garage's interior landing; 20 since
+    # 2026-10-30, with ST-SG-PORCH's ADA handrail RL-SG-PSTAIR-HR.
+    assert sum(int(row["count"]) for row in rows) == 20
     masonry = [row for row in bom["railings"] if row["style"] == "masonry"]
     assert [row["tags"] for row in masonry] == [["W-BW-SCREEN"]]
     assert all(row["post_count"] == 0 and row["bracket_count"] == 0 for row in masonry), \
@@ -71,8 +72,11 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # 38.8 / 40.7 since the 17'-0" court (2026-09): both front legs lost exactly the 2'-0"
     # the court did — RL-SG-BALCONY 21'-6" -> 19'-6" (8'-3" to 27'-9", sides 9'-8" each),
     # RL-SG-PORCH's south leg 19'-0" -> 17'-0" (9'-6" to 26'-6"). No side leg moved.
+    #
+    # 39.95 since 2026-10-30: ST-SG-PORCH widened north 36" -> 45", so its doorway in the
+    # east leg grew 9" and RL-SG-PORCH-NE lost 0.75 LF. The raked runs kept their length.
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(38.8, abs=0.1)
-    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(40.7, abs=0.1)
+    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(39.95, abs=0.1)
     # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run joined the
     # group, but the well's east leg is inside the roof past x=29'-4 1/2" (a 42" guard's top
     # at 282" meets the roof underside there) and carries nothing — a raked ToRoof partition,

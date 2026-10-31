@@ -130,7 +130,9 @@ def resolve_parts(model: ResolvedModel, el: Railing) -> RailingParts:
         post_material=material("post_material"),
         rail_material=material("rail_material"),
         infill_material=infill_material,
-        post_section_m=nominal_actual_m(el.post_size),
+        post_section_m=(product.post_width.meters
+                        if product is not None and product.post_width is not None
+                        else nominal_actual_m(el.post_size)),
         rail_section_m=rail_section,
         baluster_width_m=dimension("baluster_width", _DEFAULT_BALUSTER_WIDTH),
         cable_diameter_m=dimension("cable_diameter", _DEFAULT_CABLE_DIAMETER),

@@ -374,7 +374,7 @@ def test_the_porch_guards_doorway_is_the_stair_throat_and_not_an_open_side(catli
     assert with_stair == []
     without_stair, _s, _u = ec._uncovered_runs(*east, closures, rails, [], **kwargs)
     opening = max(hi - lo for lo, hi in without_stair)
-    assert opening == pytest.approx(inch(36).meters, abs=0.02)
+    assert opening == pytest.approx(inch(45).meters, abs=0.02)  # the 45" flight
 
 
 def test_the_garage_has_no_raised_landing_left_to_guard(catlin_ctx):
@@ -412,7 +412,7 @@ def test_the_porch_stair_head_is_graded_against_its_wall_top(catlin_ctx):
     findings = wall_top_landing_width(catlin_ctx)
     assert len(findings) == 1, [f.message for f in findings]
     assert findings[0].result is Result.PASS
-    assert "W-SG-E1" in findings[0].message and "36.0\"" in findings[0].message
+    assert "W-SG-E1" in findings[0].message and "45.0\"" in findings[0].message
 
 
 def test_a_column_on_the_wall_top_splits_the_threshold():

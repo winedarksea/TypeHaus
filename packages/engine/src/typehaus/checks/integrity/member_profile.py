@@ -28,6 +28,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, not_applicable, passed, unknown
 from typehaus.model.floors import JoistSpec
 from typehaus.resolve.framing.profiles import parses
+from typehaus.resolve.railings.parts import railing_type
 
 _CHECK_ID = "integrity.member_profile_parses"
 
@@ -64,11 +65,19 @@ _FRAMING_FIELDS = ("member", "plate_member", "chord_member", "web_member")
 _JOIST_FIELDS = ("member", "rim_member")
 
 
+def _post_width_governs(ctx: CheckContext, element, field: str) -> bool:
+    """A railing whose product states ``post_width`` never reads its ``post_size``."""
+    if field != "post_size" or element.element_kind != "Railing":
+        return False
+    product = railing_type(ctx.plan.library, element)
+    return product is not None and product.post_width is not None
+
+
 def _authored(ctx: CheckContext) -> Iterator[tuple[str, str, str]]:
     """``(owner, field, profile)`` for every authored nominal in the plan and its catalog."""
     for element in ctx.plan.all_elements():
         for kind, field in _ELEMENT_FIELDS:
-            if element.element_kind != kind:
+            if element.element_kind != kind or _post_width_governs(ctx, element, field):
                 continue
             value = getattr(element, field, None)
             if isinstance(value, str) and value:
