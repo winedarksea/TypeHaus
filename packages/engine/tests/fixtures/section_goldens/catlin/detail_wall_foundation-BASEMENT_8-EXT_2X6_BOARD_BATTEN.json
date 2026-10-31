@@ -4351,7 +4351,7 @@
       "layer": "A-DETL-CMPT",
       "uid": null,
       "material": "foundation-coating-acrylic-black",
-      "fill": "#1c1f24"
+      "fill": "#2b2b2b"
     },
     {
       "space": "paper",
@@ -5147,7 +5147,7 @@
       "layer": "A-DETL-CMPT",
       "uid": null,
       "material": "aluminum-flat-pvdf",
-      "fill": "#1c1f24"
+      "fill": "#2b2b2b"
     },
     {
       "space": "paper",

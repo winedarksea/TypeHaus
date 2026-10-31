@@ -228,6 +228,9 @@ class WindowType(HausModel):
     # which must exceed the unit by at least the allowance (total, per dimension).
     frame_size_increment: Length | None = None
     minimum_rough_opening_allowance: Length | None = None
+    # Surface appearance only, like ``DoorType.frame_material_ref``: the frame, mullion and
+    # sash boxes take this Material's colour. None keeps the palette's frame tone.
+    frame_material_ref: str | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None

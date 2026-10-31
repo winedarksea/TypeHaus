@@ -1130,7 +1130,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "aluminum-flat-pvdf",
-      "fill": "#1c1f24"
+      "fill": "#2b2b2b"
     },
     {
       "space": "model",
@@ -4035,7 +4035,7 @@
       "layer": "A-DETL-CMPT",
       "uid": null,
       "material": "aluminum-flat-pvdf",
-      "fill": "#1c1f24"
+      "fill": "#2b2b2b"
     },
     {
       "space": "paper",

@@ -17,9 +17,23 @@ from .materials_study_booth import MATERIALS_STUDY_BOOTH
 
 
 MATERIALS = [
+    # Exterior darks are authored at the maker's own chip value, never pre-darkened
+    # (2026-10-30). Graphite Gray is a MID grey on AZEK's chip, not the charcoal #41464a it
+    # carried; the near Captivate options are Dark Shale #5c5b5e and Midnight Black #20201f.
     Material(tag="captivate-graphite-sheet", name="AZEK Captivate Graphite Gray 3/4 inch sheet trim",
-             color="#41464a", product_ref="PROD-AZEK-CAPTIVATE-GRAPHITE-SHEET",
-             source="AZEK 2026 product guide AS03448096, 3/4 x 48 x 96 smooth sheet; Captivate Graphite Gray factory finish. Field-rip returns/casing; two sheets for both doors."),
+             color="#848581", product_ref="PROD-AZEK-CAPTIVATE-GRAPHITE-SHEET",
+             source="AZEK 2026 product guide AS03448096, 3/4 x 48 x 96 smooth sheet; Captivate Graphite Gray factory finish. Field-rip returns/casing; two sheets for both doors. Colour sampled from AZEK's captivate_swatch_graphitegray.png (2025 swatch set, read 2026-10-30); AZEK says screen colour is approximate, so a physical sample governs."),
+    # Window frames, by product (`WindowType.frame_material_ref`).
+    Material(tag="drutex-alucover-ral9005", name="Drutex Alucover aluminium cap, RAL 9005 jet black matt",
+             hatch="metal", color="#131516",
+             source="Drutex IGLO Energy Alucover exterior cap, RAL 9005 matt powder coat (plan/opening_products.py). Colour is RAL's own sRGB for RAL 9005 (ral-farben.de colour list, read 2026-10-30). The grey route on the same cap is RAL 7016 anthracite #3b4044 or RAL 7021 black grey #323537."),
+    Material(tag="andersen-400-black", name="Andersen 400 Series Black exterior (Perma-Shield vinyl)",
+             color="#323433",
+             source="Andersen 400 casement, Black exterior. Colour sampled from Andersen's black-exterior swatch (andersenwindows.com, read 2026-10-30). The 400 Series offers no grey: White, Sandtone, Canvas, Terratone, Forest Green, Dark Bronze and Black only (Andersen help centre), so the nine escape units stay black whichever way the house goes."),
+    # The overhead door's leaf (`DT-EXT-OVERHEAD192.leaf_material_ref`).
+    Material(tag="clopay-charcoal", name="Clopay Classic Steel factory paint, Charcoal",
+             hatch="metal", color="#535353",
+             source="Clopay Classic Steel GDU293, Charcoal. Colour sampled from Clopay's paint-color-charcoal chip (clopaydoor.com, read 2026-10-30). Clopay offers Black in this line only at R-6.5 (GDU266)."),
     Material(tag="pvc-opening-flashing", name="SureSill PVC opening flashing",
              color="#eeeeee", source="SureSill stock HeadFlash/sloped sill pan; catalog coordination envelopes."),
     Material(tag="silicone-transition", name="Proglaze ETA standard silicone transition",

@@ -152,7 +152,7 @@ DOOR_TYPES = (
     DoorType(
         tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
         operation="overhead", function="overhead", product_ref=CLOPAY_CLASSIC_STEEL.tag,
-        doorway=CLOPAY_BOTTOM,
+        doorway=CLOPAY_BOTTOM, leaf_material_ref="clopay-charcoal",
         source="Clopay Classic Steel long panel, R-12.9, Charcoal (was Modern Steel R-18.4 "
                "Black, 2026-10-29). Unconditioned garage: no NFRC rating is needed or claimed."),
 )

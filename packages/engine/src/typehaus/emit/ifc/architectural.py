@@ -502,7 +502,7 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     product = door_type.bookcase_door if door_type is not None else None
     if (opening.doorway is not None or opening.cased_product is not None
             or (door_type and (door_type.hardware or door_type.field_finish))
-            or (product is None and
+            or (opening.is_door and product is None and
             (opening.effective_frame_material_ref or opening.effective_leaf_material_ref))):
         from typehaus.emit.ifc.door_fillings import cased_door_representation
 

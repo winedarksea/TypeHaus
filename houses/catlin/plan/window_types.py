@@ -54,6 +54,7 @@ def _drutex(tag, width, height, operation, row, product, *, tempered=False,
     return WindowType(
         tag=tag, width=width, height=height, operation=operation, tempered=tempered,
         u_factor=u_us(u), shgc=shgc, vt=vt, frame_depth=_DRUTEX_DEPTH,
+        frame_material_ref="drutex-alucover-ral9005",
         product_ref=product.tag, source=f"{row} {_SIZE}")
 
 
@@ -79,6 +80,7 @@ def _egress(tag, width, height, height_deduction, *, tempered=False) -> WindowTy
         u_factor=u_us(0.20), shgc=0.40, vt=0.51, frame_depth=_ANDERSEN_DEPTH,
         net_clear_width_deduction=inch(5.81), net_clear_height_deduction=height_deduction,
         frame_size_increment=_ANDERSEN_STEP, minimum_rough_opening_allowance=_ANDERSEN_ALLOWANCE,
+        frame_material_ref="andersen-400-black",
         product_ref=ANDERSEN_400_CASEMENT.tag, source=f"{_AND} {_SIZE}")
 
 

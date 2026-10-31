@@ -582,7 +582,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "aluminum-flat-pvdf",
-      "fill": "#1c1f24"
+      "fill": "#2b2b2b"
     },
     {
       "space": "model",
@@ -919,7 +919,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "aluminum-flat-pvdf",
-      "fill": "#1c1f24"
+      "fill": "#2b2b2b"
     },
     {
       "space": "model",
@@ -15708,7 +15708,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#1c1f24"
+      "fill": "#252122"
     },
     {
       "space": "model",
@@ -15765,7 +15765,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#1c1f24"
+      "fill": "#252122"
     },
     {
       "space": "model",
@@ -15822,7 +15822,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#1c1f24"
+      "fill": "#252122"
     },
     {
       "space": "model",
@@ -15879,7 +15879,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "metal-dark-exterior",
-      "fill": "#1c1f24"
+      "fill": "#252122"
     },
     {
       "space": "model",
@@ -15936,7 +15936,7 @@
       "layer": "A-WALL-PATT",
       "uid": "YX2GDZJMBV",
       "material": "metal-dark-exterior",
-      "fill": "#1c1f24"
+      "fill": "#252122"
     },
     {
       "space": "model",

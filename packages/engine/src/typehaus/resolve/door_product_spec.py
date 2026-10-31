@@ -83,12 +83,18 @@ def resolve_cased_door(wall, opening, door_type, *, standard=None,
 def resolve_door_products(model) -> None:
     """Resolve after rooms/floor finishes, once for IR, model JSON and both exports."""
     types = {item.tag: item for item in model.plan.library.door_types}
+    window_types = {item.tag: item for item in model.plan.library.window_types}
     standards = [item for item in model.plan.all_elements() if isinstance(item, TrimStandard)]
     standard = standards[0] if len(standards) == 1 else None
     walls = {wall.tag: wall for wall in model.walls}
     resolved = []
     floor_cache = {}
     for opening in model.openings:
+        window_type = window_types.get(opening.type_ref) if opening.kind == "window" else None
+        if window_type is not None and window_type.frame_material_ref:
+            resolved.append(replace(
+                opening, effective_frame_material_ref=window_type.frame_material_ref))
+            continue
         product_type = types.get(opening.type_ref)
         if opening.kind != "door" or product_type is None:
             resolved.append(opening)

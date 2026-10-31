@@ -15,7 +15,7 @@ MATERIALS_METAL = [
     # in the house's one exterior dark so it reads with the guards and the trim coil.
     Material(tag="steel-hss-duplex", name="HSS, hot-dip galvanized + powder-coated (duplex)",
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
-             color="#1c1f24",
+             color="#252122",
              source="PT-BW-RE/-RNE steel variant — ASTM A500 Gr C, ASTM A123 then powder coat (notes/canopy_garage_diaphragm.md §5)"),
     # --- the metal skins --------------------------------------------------------
     # House roof: Image II Striated direct-fastened snap-seam, 24 ga PVDF.

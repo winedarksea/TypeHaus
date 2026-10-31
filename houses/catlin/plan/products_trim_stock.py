@@ -36,10 +36,11 @@ PINE_FJ_BASE_1X4 = Product(
     source="Primed finger-jointed pine 1x4 from the yard.",
 )
 DARK_TRIM_COIL = Product(
-    tag="PROD-STOCK-DARK-TRIM-COIL", brand="Near-black prefinished metal trim coil",
-    name="Near-black painted metal trim, brake-formed",
-    source="RF-HOUSE rake, eave and ridge trim coil, opening casings and exterior guards; "
-           "colour #1c1f24, shared with the K-style gutter coil so the eave line reads continuous.",
+    tag="PROD-STOCK-DARK-TRIM-COIL", brand="Metal Sales", model="24 ga PVDF Matte Black (106)",
+    name="Matte Black (106) PVDF trim and flat stock, brake-formed",
+    source="RF-HOUSE rake, eave and ridge trim coil, opening casings and exterior guards. The "
+           "only near-black in Metal Sales' 24 ga PVDF guide (02/2026); the K-style gutter coil "
+           "is ordered to match so the eave line reads continuous.",
 )
 DARK_KSTYLE_COIL = Product(
     tag="PROD-STOCK-DARK-KSTYLE-COIL", brand="Near-black prefinished aluminium gutter coil",
