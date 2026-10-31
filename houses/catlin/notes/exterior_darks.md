@@ -26,7 +26,6 @@ Black (06) is 0.30 / 31 on the 26 ga guide but 0.20 / 17 on the 29 ga Eastern on
 | Element | Tag | How it follows |
 |---|---|---|
 | Roof edge chain, trim coil, casings, guards, garage fascia | `metal-dark-exterior` | the colour itself |
-| BBD75 band, Transition Trim 55536XX | `bbd-transition-trim` | the colour itself |
 | Rainscreen base Z, balcony base flashings | `metal-flat-sheet` | Metal Sales PVDF flat, the colour itself |
 | Garage stem band and stem-top Z | `aluminum-flat-pvdf` | **does not follow**: fixed Una-Clad Matte Black `#2d2d2e` aluminium |
 | K-style gutters and leaders | `metal-dark-kstyle` | coil colour-matched; Metal Sales publishes no gutter line |

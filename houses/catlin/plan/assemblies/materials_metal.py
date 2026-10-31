@@ -289,6 +289,14 @@ MATERIALS_METAL = [
     # {"standing-seam"} and the flush zero-overhang edge survives on all four edges. Omit it
     # and the edge silently reverts to fascia-and-drip-edge, including on the PBR walls.
     #
+    # BBD75 Transition Trim at the panel's horizontal joints (`Layer.joint_trim_material_ref`).
+    # Linen White like the panel it joins, not an exterior dark (owner, 2026-10-31); the hex is
+    # the panel's rendered white (`_SEAM_BASE`), not the `board-batten-24` swatch.
+    Material(tag="bbd-transition-trim",
+             name="Metal Sales BBD75 Transition Trim 55536XX, 24 ga PVDF Linen White (81)",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#e8e8e2",
+             source="Metal Sales BBD75 Install Guide 10/2025 pp. 14, 40 (Transition Trim 55536XX); coil colour as the panel it joins"),
     # Installed profile depth is 3/4 inch in the board-batten assembly variants.
     # Material overrides alone cannot change an assembly layer thickness.
     Material(tag="board-batten-24", name="Metal Sales BBD75-1212 board & batten panel, 12\" coverage, 24 ga., PVDF Linen White (81)",

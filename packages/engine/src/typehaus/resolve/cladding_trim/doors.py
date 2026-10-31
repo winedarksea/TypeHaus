@@ -27,12 +27,12 @@ def door_face(model, wall):
     return (*jambs[wall.tag], heads[wall.tag])
 
 
-def add_door_trim(model, wall, opening, frame, cfg, material, *, catalog: bool) -> bool:
-    """Append jambs for a kit-trimmed door and a swept drip head unless the unit carries its own.
+def add_door_trim(model, wall, opening, frame, cfg, material) -> bool:
+    """Append jambs and a swept drip head for a kit-trimmed door.
 
     Jambs finish the panel against the casing edge. The head is the legacy drip section
-    swept as a billable cut, so the 3D piece and the order agree; a catalog door's head
-    belongs to the product, or to the band that passes over it.
+    swept as a billable cut, so the 3D piece and the order agree. A catalog unit takes it too:
+    its own head flashing is behind the cladding and leaves the casing top open.
     """
     found = door_face(model, wall)
     if found is None:
@@ -47,8 +47,7 @@ def add_door_trim(model, wall, opening, frame, cfg, material, *, catalog: bool) 
         add_vertical_run(model, face, PROFILES[jamb_key], jamb_key,
                          f"{opening.tag}-TRIM-JAMB-{side}", station, max(sill, face.z0),
                          head + casing, inward, host_ref=opening.tag)
-    if not catalog:
-        _add_head(model, wall, opening, frame, cfg, material, head_key)
+    _add_head(model, wall, opening, frame, cfg, material, head_key)
     return True
 
 

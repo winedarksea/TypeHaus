@@ -288,13 +288,21 @@ def resolve_profiled_metal_surfaces(model) -> None:
     def profile_for(ref):
         return PANEL_PROFILES.get(finishes.get(ref))
 
-    def joint_cuts(wall, layer_name, profile, z0, z1):
+    def joint_segments(wall, layer_name, profile, z0, z1):
+        """(bottom, top) panel runs: the lower stops 1" under a band, the upper hangs 1/4" over."""
+        from typehaus.quantities import M_PER_IN
+        from typehaus.resolve.rainscreen_strips import BAND_PANEL_GAP_IN, BAND_UPPER_GAP_IN
+
         assembly = model.plan.library.resolve_assembly(wall.assembly) if wall.assembly else None
         authored = next((layer for layer in assembly.layers if layer.name == layer_name), None) \
             if assembly else None
         joints = (authored.panel_joint_elevations if authored is not None
                   and profile.key == "board-and-batten" else ())
-        return [z0, *sorted({j.meters for j in joints if z0 < j.meters < z1}), z1]
+        segments, bottom = [], z0
+        for joint in sorted({j.meters for j in joints if z0 < j.meters < z1}):
+            segments.append((bottom, joint - BAND_PANEL_GAP_IN * M_PER_IN))
+            bottom = joint + BAND_UPPER_GAP_IN * M_PER_IN
+        return [*segments, (bottom, z1)]
 
     for i, wall in enumerate(model.walls):
         layers = []
@@ -304,7 +312,7 @@ def resolve_profiled_metal_surfaces(model) -> None:
                 z0, z1 = layer.band(wall)
                 clearance = panel_support_clearance_m(model, wall, layer)
                 support_clearances[wall.uid, layer.material_ref] = clearance
-                cuts = joint_cuts(wall, layer.name, profile, z0, z1)
+                segments = joint_segments(wall, layer.name, profile, z0, z1)
                 meshes = [profile_mesh(
                     wall, layer.polygon, bottom, top, lines.get(wall.tag, wall.axis),
                     openings=[op for op in model.openings if op.host_wall == wall.tag],
@@ -313,7 +321,7 @@ def resolve_profiled_metal_surfaces(model) -> None:
                     height_breakpoints=(*wall.axis, *head_cap_breakpoints(wall)),
                     profile=profile,
                     support_clearance_m=clearance,
-                ) for bottom, top in zip(cuts, cuts[1:], strict=False)]
+                ) for bottom, top in segments]
                 mesh = _join_meshes(meshes)
                 layer = replace(layer, surface_mesh=mesh)
             layers.append(layer)
@@ -347,15 +355,15 @@ def resolve_profiled_metal_surfaces(model) -> None:
                 layer_name = next(layer.name for layer in wall.layers
                                   if layer.material_ref == member.material
                                   and layer.function == "cladding")
-                cuts = joint_cuts(wall, layer_name, profile,
-                                  min(p[2] for p in box.corners_bottom), top_bound)
+                segments = joint_segments(wall, layer_name, profile,
+                                          min(p[2] for p in box.corners_bottom), top_bound)
                 mesh = _join_meshes([profile_mesh(
                     wall, polygon, bottom, top, lines.get(wall.tag, wall.axis),
                     lower_at=lambda x, y, h=height, m=member: h(x, y, m.z0_m, m.z0_end_m),
                     upper_at=(upper_height, *_deck_cut_at(model, roof, member)),
                     profile=profile,
                     support_clearance_m=support_clearances[wall.uid, member.material],
-                ) for bottom, top in zip(cuts, cuts[1:], strict=False)])
+                ) for bottom, top in segments])
                 member = replace(member, surface_mesh=mesh)
             members.append(member)
         model.roofs[i] = replace(roof, members=tuple(members))

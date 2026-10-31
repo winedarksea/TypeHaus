@@ -44,12 +44,6 @@ MATERIALS_EXTERIOR_DARKS = [
              r_per_inch=0.0, density=2700.0, vapor_permeance_perms=0.0, hatch="metal",
              color=UNA_CLAD_MATTE_BLACK.hex,
              source=f"garage ICF stem exterior band (all four walls, 0.050\") + stem-top Z-flashing (0.040\"); Una-Clad Kynar 500/Hylar 5000 pre-finished aluminium sheet, ASTM B209 3105-H14, 48\" x 120\", {UNA_CLAD_MATTE_BLACK.colour} (stocked at 0.040\" and 0.050\"), {UNA_CLAD_MATTE_BLACK.solar}; manufactured Anoka MN (Elevate TIS 2016, 2026-08-11); 2T/3T minimum bend radius, open hems; #9 316 stainless gasketed screws; sealant/EPDM where the Galvalume corrugated panel oversails the Z; never in contact with concrete or fresh mortar"),
-    # BBD75 Transition Trim at the panel's horizontal joints (Layer.joint_trim_material_ref).
-    Material(tag="bbd-transition-trim",
-             name=f"Metal Sales BBD75 Transition Trim 55536XX, {METAL.line}, {METAL.colour}",
-             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
-             color=METAL.hex,
-             source=f"Metal Sales BBD75 Install Guide 10/2025 p.14, 40 (Transition Trim 55536XX); {_M}, {METAL.solar}"),
     # The canopy's steel east posts when EAST_POST_SYSTEM = "steel": ASTM A500 Gr C HSS,
     # galvanized after fabrication (A123) then powder-coated, a "duplex" system.
     Material(tag="steel-hss-duplex", name="HSS, hot-dip galvanized + powder-coated (duplex)",

@@ -327,17 +327,11 @@ def _band(model):
         face = cladding_face(wall, next(ly for ly in wall.layers if ly.function == "cladding"))
         before = len(findings)
         lower = _mine(model, wall.tag, {BAND_OUTLET_PRODUCT})
-        upper = [s for s in _mine(model, wall.tag, {STRIP_PRODUCT}) if "-BANDSTRIP-" in s.tag]
         for _joint, lo, hi in spans:
             if not spans_cover([_along(p, face.d) for p in lower], lo, hi):
                 findings.append(failed(CAVITY, f"{wall.tag}: the band has no vented outlet "
                                        "strip, so the cavity below it cannot breathe out",
                                        (wall.tag,), code=_CITE))
-                break
-            if not spans_cover([_along(p, face.d) for p in upper], lo, hi):
-                findings.append(failed(CAVITY, f"{wall.tag}: the upper panel's batten ends "
-                                       "open to insects at the band (no strip)", (wall.tag,),
-                                       code=_CITE))
                 break
         holes = perforation(model, lower)
         if lower and holes is None:
@@ -355,8 +349,8 @@ def _band(model):
         graded += len(findings) == before
     if graded and not findings:
         findings.append(passed(CAVITY, f"{graded} BBD75 bands vent the cavity through a "
-                               f"perforated outlet ({min(areas):.0f} cm2/m) and seat the upper "
-                               "panel on a strip", code=_CITE))
+                               f"perforated outlet ({min(areas):.0f} cm2/m); the upper panel hangs "
+                               "1/4 in over the shelf (BBD75 p. 40)", code=_CITE))
     return findings
 
 

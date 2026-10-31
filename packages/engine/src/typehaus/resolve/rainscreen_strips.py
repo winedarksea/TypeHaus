@@ -5,8 +5,8 @@ Instead of a foam or polyethylene closure (chewable, and it holds water against 
 end) the end sits on a flat perforated aluminium strip, seated directly on the trim leg:
 painted aluminium against Galvalume, as Metal Sales' PBR vented ridge bears (owner,
 2026-10-29; no EPDM pads). At the BBD75 band the lower panel stops 1" under the Transition
-Trim's seat and a strip across that slot is the cavity's vented outlet
-(``notes/metal_trim_kit.md``). Derived from the trim each one lands on.
+Trim's seat and a strip across that slot is the cavity's vented outlet; the upper panel hangs
+1/4" over the seat on no strip, as Metal Sales draws it (``notes/metal_trim_kit.md``). Derived from the trim each one lands on.
 
 Over a non-metal rainscreen's generic Z head flashing the strip closes the cavity's foot
 under the cladding's bottom edge, 1/4" up off the flashing (``opening_head_drip``).
@@ -34,6 +34,9 @@ STRIP_PRODUCT = "PANEL_END_STRIP"
 BAND_OUTLET_PRODUCT = "BAND_OUTLET_STRIP"
 #: The lower panel stops this far under the Transition Trim's seat: the band's outlet slot.
 BAND_PANEL_GAP_IN = 1.0
+#: The upper panel hangs this far over the Transition Trim's shelf, its batten ends open
+#: (Metal Sales BBD75 Install Guide 10/2025 p. 40): no strip, so nothing holds water there.
+BAND_UPPER_GAP_IN = 0.25
 #: A strip is cut this short of each edge of its seat, so its aluminium edge stands off the
 #: steel legs (and the band girt's KDAT) it lies between; the gap is under the 1/8" hole.
 STRIP_EDGE_CLEAR_IN = 1.0 / 32.0
@@ -142,49 +145,10 @@ def _head_strips(model) -> None:
 
 
 def band_screen_spans(model, wall) -> list[tuple[float, float, float]]:
-    """``(joint z, s0, s1)`` along a BBD75 band, in the cladding face's stations.
+    """``(joint z, s0, s1)`` along a rainscreened BBD75 band (``cladding_trim.bands``)."""
+    from typehaus.resolve.cladding_trim.bands import band_spans
 
-    Read off the assembly's authored ``panel_joint_elevations``. An opening framed through the
-    Transition Trim's height is left out: its own head detail governs there.
-    """
-    from typehaus.library.trim.metal_sales import BBD_TRANSITION
-    from typehaus.resolve.cladding_trim.runs import cladding_face, subtract_spans
-
-    if rainscreen_band(wall.layers) is None or not wall.assembly:
-        return []
-    assembly = model.plan.library.resolve_assembly(wall.assembly)
-    finishes = {m.tag: m.finish for m in model.plan.library.materials}
-    authored = {layer.name: layer for layer in assembly.layers} if assembly else {}
-    legs = [z * M_PER_IN for _, z in BBD_TRANSITION.section_in]
-    course = _course_face(model, wall)
-    spans = []
-    for layer in wall.layers:
-        spec = authored.get(layer.name)
-        if (layer.function != "cladding" or spec is None
-                or finishes.get(layer.material_ref) != "board-and-batten"):
-            continue
-        face = cladding_face(wall, layer)
-        if face is None:
-            continue
-        z0, z1 = layer.band(wall)
-        for joint in sorted({j.meters for j in spec.panel_joint_elevations}):
-            if not z0 < joint < z1:
-                continue
-            low, high = joint + min(legs), joint + max(legs)
-            cuts = [(a - course, b + course) for opening, a, b in face.openings(model)
-                    if wall.base_ref_z_m + opening.sill_m - course < high
-                    and wall.base_ref_z_m + opening.sill_m + opening.height_m + course > low]
-            spans += [(joint, a, b) for a, b in subtract_spans(face.lo, face.hi, cuts)]
-    return spans
-
-
-def _course_face(model, wall) -> float:
-    from typehaus.resolve.framing.profiles import cross_section
-    from typehaus.resolve.framing.truss_girts import truss_girt_bands
-
-    bands = truss_girt_bands(model.plan, wall.assembly)
-    spec = bands[1].framing if bands is not None else None
-    return cross_section(spec.member).depth_m if spec is not None else 0.0
+    return band_spans(model, wall) if rainscreen_band(wall.layers) is not None else []
 
 
 def _band_strips(model) -> None:
@@ -193,7 +157,6 @@ def _band_strips(model) -> None:
 
     section = BBD_TRANSITION.section_in
     width = section[2][0] * M_PER_IN
-    seat = tuple((b - a) * M_PER_IN for a, b in zip(section[1], section[2], strict=True))
     for wall in model.walls:
         spans = band_screen_spans(model, wall)
         if not spans:
@@ -208,7 +171,3 @@ def _band_strips(model) -> None:
                           host=wall.tag, product=BAND_OUTLET_PRODUCT,
                           origin=(x, y, joint - gap), outward=face.n, along=face.d,
                           seat=(width, 0.0), length=hi - lo)
-            add_strip_run(model, uid=f"{wall.uid}-bandstrip-upper-{index}",
-                          tag=f"{wall.tag}-BANDSTRIP-UPPER-{index}", storey=wall.storey,
-                          host=wall.tag, product=STRIP_PRODUCT, origin=(x, y, joint),
-                          outward=face.n, along=face.d, seat=seat, length=hi - lo)

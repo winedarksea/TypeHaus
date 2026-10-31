@@ -187,7 +187,7 @@ def resolve_opening_flashing(model: ResolvedModel, cfg: FlashingConfig = FLASHIN
             )
 
             trimmed = opening.kind == "door" and add_door_trim(
-                model, wall, opening, frame, cfg, metal, catalog=bool(catalog))
+                model, wall, opening, frame, cfg, metal)
             # A non-metal rainscreen's kit Z drip head, billed as trim (not a catalog unit's).
             key = None if trimmed or catalog else drip_head_key(model, wall, opening)
             if key:

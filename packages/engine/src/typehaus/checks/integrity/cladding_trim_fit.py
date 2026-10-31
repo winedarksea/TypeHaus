@@ -134,19 +134,39 @@ def _depth(piece, frame) -> float:
 
 
 def _run_limits(ctx, pieces):
-    """No BBD75 panel run over 20 ft: the band splits each wall's height."""
+    """No BBD75 panel over 20 ft, measured up the whole facade: a panel runs through storeys."""
+    from typehaus.resolve.rainscreen_strips import (
+        BAND_PANEL_GAP_IN,
+        BAND_UPPER_GAP_IN,
+        STRIP_PRODUCT,
+    )
+
+    model = ctx.model
+    line_of = {m.wall_tag: line.tag for line in model.layout_lines for m in line.members}
+    seats: dict[str, float] = {}
+    for solid in model.solids:
+        if solid.product == STRIP_PRODUCT and "-BASESTRIP-" in (solid.tag or ""):
+            seats[solid.host_ref] = max(seats.get(solid.host_ref, -math.inf), solid.z1_m)
+    facades: dict[str, list] = {}
+    for face in metal_faces(model, {"board-and-batten"}):
+        facades.setdefault(line_of.get(face.wall.tag, face.wall.tag), []).append(face)
     findings, checked = [], 0
-    for face in metal_faces(ctx.model, {"board-and-batten"}):
-        spec = _spec(ctx.model, face)
-        joints = sorted(j.meters for j in spec.panel_joint_elevations) if spec else []
-        top = max(_top_at(face.wall, face, point) for point in (face.lo, face.hi))
-        edges = [face.z0, *[j for j in joints if face.z0 < j < top], top]
-        for low, high in zip(edges, edges[1:], strict=False):
+    for line, faces in facades.items():
+        bottom = min(seats.get(face.wall.tag, face.z0) for face in faces)
+        top = max(_top_at(face.wall, face, s) for face in faces for s in (face.lo, face.hi))
+        joints = sorted({j.meters for face in faces if (spec := _spec(model, face))
+                         for j in spec.panel_joint_elevations if bottom < j.meters < top})
+        runs, low = [], bottom
+        for joint in joints:
+            runs.append((low, joint - BAND_PANEL_GAP_IN * M_PER_IN))
+            low = joint + BAND_UPPER_GAP_IN * M_PER_IN
+        for low, high in [*runs, (low, top)]:
             checked += 1
             if high - low > _BBD_RUN_LIMIT_M + _TOL:
                 findings.append(failed(
-                    FIT, f"{face.wall.tag} has a {(high - low) / M_PER_IN / 12:.1f} ft BBD75 run, "
-                         "over the 20 ft panel maximum", (face.wall.tag,),
+                    FIT, f"{line} has a {(high - low) / M_PER_IN / 12:.2f} ft BBD75 run, "
+                         "over the 20 ft panel maximum",
+                    tuple(sorted({face.wall.tag for face in faces})),
                     code="BBD75 Install Guide 10/2025"))
     for piece in pieces:
         profile = PROFILES.get(piece.product or "")
