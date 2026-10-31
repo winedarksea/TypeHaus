@@ -159,9 +159,8 @@ def test_cavity_grades_pass_catlin(catlin_model_ro):
     for part in ("_base", "_kdat", "_heads", "_band", "_panel_end_strips"):
         findings = _grade(catlin_model_ro, part)
         assert any(f.result.name == "PASS" for f in findings), part
-        # The one ungraded head is the catalog door's, a recorded hold point.
-        assert [f.element_tags for f in findings if f.result.name != "PASS"] \
-            == ([("D-S-DECK-E",)] if part == "_heads" else []), (part, findings)
+        assert [f.element_tags for f in findings if f.result.name != "PASS"] == [], \
+            (part, findings)
 
 
 def _failing(model, part, needle):

@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 6f13b21c431a2372  
+**Model hash:** 47da9f3f4e633342  
 **Lines:** 198
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -219,7 +219,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| firestop-sealant | 29.7 | LF |  | attic, main, second |
+| firestop-sealant | 30 | LF |  | attic, main, second |
 
 ## Construction returns
 

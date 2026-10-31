@@ -21,7 +21,7 @@ def test_trim_inventory_by_profile(catlin_model_ro):
         "PBR_WINDOW_JAMB": 36, "WINDOW_JAMB_CUSTOM": 48, "WINDOW_SILL_CUSTOM": 42,
         "OPENING_HEAD": 42,
         "PBR_BASE": 11, "BBD_BASE": 10, "CORRUGATED_BASE": 12, "BBD_TRANSITION": 10,
-        "BBD_PANEL_STARTER": 6, "CORRUGATED_JAMB": 8, "DOOR_HEAD_CUSTOM": 5,
+        "BBD_PANEL_STARTER": 6, "CORRUGATED_JAMB": 8, "DOOR_HEAD_CUSTOM": 6,
         "WIDE_OUTSIDE_CORNER": 8, "CORRUGATED_OUTSIDE_CORNER": 4,
         "RAINSCREEN_BASE_Z": 21, "EPDM_BASE_ISOLATION": 14,
         "OPENING_HEAD_CAP": 38,
@@ -44,13 +44,13 @@ def test_screen_ends_close_both_edges_of_the_screen_and_its_skirt(catlin_model_r
     assert ends["TRIM-W-BW-SCREEN-END-HI-1"].trim_length_m / M_PER_IN == pytest.approx(48.9, 0.01)
 
 
-def test_catalog_door_takes_jambs_but_its_head_is_the_band(catlin_model_ro):
+def test_catalog_door_takes_the_kit_jambs_and_head(catlin_model_ro):
     pieces = _pieces(catlin_model_ro)
     deck = [s for s in pieces if s.host_ref == "D-S-DECK-E"]
-    assert sorted(s.product for s in deck) == ["BBD_PANEL_STARTER", "BBD_PANEL_STARTER"]
-    assert all("-TRIM-HEAD-" not in s.tag for s in deck)
+    assert sorted(s.product for s in deck) == [
+        "BBD_PANEL_STARTER", "BBD_PANEL_STARTER", "DOOR_HEAD_CUSTOM"]
     bands = [s for s in pieces if s.product == "BBD_TRANSITION"]
-    assert any(s.z0_m / M_PER_IN < 208 < s.z1_m / M_PER_IN for s in bands)
+    assert bands and all(s.z0_m / M_PER_IN < 228 < s.z1_m / M_PER_IN for s in bands)
 
 
 def test_penetrations_under_six_inches_take_no_trim(catlin_model_ro):

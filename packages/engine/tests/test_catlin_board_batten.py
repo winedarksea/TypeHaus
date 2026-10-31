@@ -6,7 +6,9 @@ from typehaus.emit.gltf.validate import validate_gltf
 
 
 def test_band_is_a_panel_cut_with_backed_girt_courses(catlin_model_ro):
-    joint = 208 * .0254
+    """Lower panel stops 1" under the joint, upper hangs 1/4" over it (BBD75 p. 40)."""
+    joint = 228 * .0254
+    below, above = joint - .0254, joint + .25 * .0254
     walls = [wall for wall in catlin_model_ro.walls
              if wall.z0_m < joint < wall.z1_m
              and any(layer.material_ref == 'board-batten-24' for layer in wall.layers)]
@@ -14,10 +16,9 @@ def test_band_is_a_panel_cut_with_backed_girt_courses(catlin_model_ro):
     for wall in walls:
         mesh = next(layer.surface_mesh for layer in wall.layers
                     if layer.material_ref == 'board-batten-24')
-        assert mesh and any(abs(position[2] - joint) < 1e-8 for position in mesh.positions)
-        assert not any(min(mesh.positions[i][2] for i in tri) < joint - 1e-8
-                       and max(mesh.positions[i][2] for i in tri) > joint + 1e-8
-                       for tri in mesh.triangles)
+        zs = {position[2] for position in mesh.positions}
+        assert any(abs(z - below) < 1e-8 for z in zs) and any(abs(z - above) < 1e-8 for z in zs)
+        assert not any(below + 1e-8 < z < above - 1e-8 for z in zs)
         courses = [member for member in wall.members
                    if member.child_key.startswith('strapping-outer-girt-')
                    and abs(member.z0_m - joint) < 1e-8]
