@@ -27,6 +27,9 @@ STANDARD_SCALES: tuple[tuple[int, str], ...] = (
 OVERHANG_NZ = -math.cos(math.radians(45.0))
 #: Plate and piece fuse through this much overlap, in print mm.
 FUSE_MM = 0.05
+#: A downward face within the first layer of the bed is laid on it, not supported. A
+#: merged ceiling a lining's thickness above its storey's cut is one (0.13 mm at 1:128).
+FIRST_LAYER_MM = 0.2
 #: Each side of a storey cut is trimmed this far off the plane, in model metres (0.1 mm).
 CUT_GAP_M = 1e-4
 
@@ -158,7 +161,7 @@ def support_area_mm2(solid) -> float:
     area = np.linalg.norm(cross, axis=1) / 2
     with np.errstate(invalid="ignore", divide="ignore"):
         nz = np.where(area > 0, cross[:, 2] / (2 * area), 0.0)
-    on_bed = points[tris][:, :, 2].max(axis=1) <= points[:, 2].min() + 1e-3
+    on_bed = points[tris][:, :, 2].max(axis=1) <= points[:, 2].min() + FIRST_LAYER_MM
     return float(area[(nz < OVERHANG_NZ) & ~on_bed].sum())
 
 

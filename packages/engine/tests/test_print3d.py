@@ -11,6 +11,7 @@ import pytest
 m3d = pytest.importorskip("manifold3d")
 
 from typehaus.print3d.build import build_print  # noqa: E402
+from typehaus.print3d.collect import PrintItem  # noqa: E402
 from typehaus.print3d.policy import PrintSettings, Treatment  # noqa: E402
 from typehaus.print3d.threemf import write_3mf  # noqa: E402
 
@@ -63,3 +64,23 @@ def test_a_dropped_kind_never_prints(starter_run):
     assert run.dropped["framing"] > 0
     assert "framing" not in run.kept and "opening" not in run.kept
     assert all(result.item.treatment is not Treatment.DROP for result in run.thickened)
+
+
+def test_a_thin_ceiling_prints_as_part_of_the_floor_it_hangs_from():
+    from types import SimpleNamespace
+
+    from typehaus.print3d.merge import merge_into_hosts
+    from typehaus.print3d.pieces import cut_bands
+
+    def item(uid, kind, z0, z1):
+        solid = m3d.Manifold.cube((4.0, 4.0, z1 - z0)).translate((0.0, 0.0, z0))
+        return PrintItem(uid, uid, kind, Treatment.BODY, solid, "upper")
+
+    floor, ceiling = item("F", "floor", 3.0, 3.3), item("C", "ceiling", 2.984, 3.0)
+    model = SimpleNamespace(countertops=(), canvas_objects=(), walls=())
+    settings = PrintSettings()
+    house, _, merged = merge_into_hosts(model, [floor, ceiling], [], 1000.0 / 128, settings)
+    assert merged == {"ceiling": 1} and [i.uid for i in house] == ["F"]
+    _, _, z0, _, _, z1 = house[0].solid.bounding_box()
+    assert z0 == pytest.approx(2.984) and z1 == pytest.approx(3.3)  # exposed face held
+    assert cut_bands(house, 0.0, 6.0, settings)[0].z1 == pytest.approx(2.984)

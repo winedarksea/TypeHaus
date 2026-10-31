@@ -23,12 +23,13 @@ def report_lines(run: PrintRun, settings, files: list[str]) -> list[str]:
                      f"{piece.orientation} | {_islands(piece.islands_mm3)} |")
     lines += ["", "Cuts: " + ", ".join(f"{band.name} {band.z0:+.2f}..{band.z1:+.2f} m"
                                        for band in run.bands), "", "## Kept, thickened, dropped",
-              "", "| kind | kept | thickened | too thin | dropped by policy |",
-              "|---|---|---|---|---|"]
+              "", "| kind | kept | merged into host | thickened | too thin | dropped by policy |",
+              "|---|---|---|---|---|---|"]
     thickened = Counter(result.item.kind for result in run.thickened)
     thin = Counter(result.item.kind for result in run.too_thin)
-    for kind in sorted(set(run.kept) | set(thin) | set(run.dropped)):
-        lines.append(f"| {kind} | {run.kept.get(kind, 0)} | {thickened.get(kind, 0)} | "
+    for kind in sorted(set(run.kept) | set(thin) | set(run.dropped) | set(run.merged)):
+        lines.append(f"| {kind} | {run.kept.get(kind, 0)} | {run.merged.get(kind, 0)} | "
+                     f"{thickened.get(kind, 0)} | "
                      f"{thin.get(kind, 0)} | {run.dropped.get(kind, 0)} |")
     if run.thickened:
         lines += ["", "Most thickened: " + ", ".join(
@@ -40,6 +41,10 @@ def report_lines(run: PrintRun, settings, files: list[str]) -> list[str]:
             f"{result.item.tag} ({result.item.kind}, {result.thin_mm:.2f} mm)" for result in
             sorted(dropped_bodies, key=lambda result: result.thin_mm)[:_WORST * 4])]
     lines += ["", f"## Furniture: {len(run.furniture)} printable, {len(run.rejected)} rejected", ""]
+    if run.merged.get("furniture") or run.plated:
+        lines += [f"{run.merged.get('furniture', 0)} hung on a fixture, wall or counter run "
+                  f"print with the house; {run.plated} had thin plates fused into their own "
+                  "base.", ""]
     for piece in run.furniture:
         lines.append(f"- {piece.name}: {_mm(piece.dims_mm)}")
     reasons = Counter(rejection.reason.split(" ")[0] for rejection in run.rejected)

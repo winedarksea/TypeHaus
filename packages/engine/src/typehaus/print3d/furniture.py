@@ -4,7 +4,9 @@ Never thickened: a chair is printed true or not at all. A piece passes when it i
 solid, its smallest drawn feature (read exactly off the recorder's primitives, not measured
 off the mesh) is at least ``min_feature_mm``, it stands on at least ``MIN_BASE_SHARE`` of its
 own footprint, it is no taller than ``MAX_SLENDERNESS`` base widths, and it needs little
-support. At 1:128 most chairs fail on their legs, and the report says so.
+support. Like a storey, a piece is tried upright and then upside down, so a table stands on
+its top. Thin plates are fused into their base first (``plates.py``). At 1:128 most chairs
+still fail on their legs, and the report says so.
 """
 
 from __future__ import annotations
@@ -36,25 +38,36 @@ def furniture_pieces(items: list[PrintItem], mm_per_m: float, settings: PrintSet
     pieces: list[Piece] = []
     rejected: list[Rejection] = []
     for item in items:
-        reason = _grade(m3d, item, mm_per_m, settings)
+        reason = _grade_solid(m3d, item, mm_per_m, settings)
+        orientation = None
+        if reason is None:
+            solid = item.solid.scale((mm_per_m, mm_per_m, mm_per_m))
+            graded = [(label, candidate, _grade_stance(candidate)) for label, candidate in
+                      (("upright", solid), ("flipped", solid.rotate((180.0, 0.0, 0.0))))]
+            passing = [(label, candidate) for label, candidate, why in graded if why is None]
+            reason = None if passing else graded[0][2]
+            orientation, solid = passing[0] if passing else (None, None)
         if reason is not None:
             rejected.append(Rejection(item.tag, reason))
             continue
-        solid = item.solid.scale((mm_per_m, mm_per_m, mm_per_m))
         x0, y0, z0, x1, y1, z1 = solid.bounding_box()
         rested = solid.translate((-(x0 + x1) / 2, -(y0 + y1) / 2, -z0))
         pieces.append(Piece(item.tag, rested, (x1 - x0, y1 - y0, z1 - z0),
-                            support_area_mm2(rested), "upright"))
+                            support_area_mm2(rested), orientation))
     return pieces, rejected
 
 
-def _grade(m3d, item: PrintItem, mm_per_m: float, settings: PrintSettings) -> str | None:
+def _grade_solid(m3d, item: PrintItem, mm_per_m: float, settings: PrintSettings) -> str | None:
     if item.solid.status() != m3d.Error.NoError or item.solid.volume() <= 0:
         return "not a closed solid"
     thinnest = min((p.min_feature_m for p in item.primitives), default=0.0) * mm_per_m
     if thinnest < settings.feature_mm:
         return f"smallest feature {thinnest:.2f} mm < {settings.feature_mm:.2f} mm"
-    solid = item.solid.scale((mm_per_m, mm_per_m, mm_per_m))
+    return None
+
+
+def _grade_stance(solid) -> str | None:
+    """Why ``solid`` (print mm, as it would sit on the bed) is not an easy print, or None."""
     footprint = solid.project()
     footprint_area = footprint.area()
     base_area, base_width = _base(solid)

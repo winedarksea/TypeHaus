@@ -22,7 +22,8 @@ haus print3d houses/catlin --include railing,site --exclude plant --no-furniture
 - **Pieces.** Cut at grade and at the underside of each storey's floor package, so every
   upper piece stands on its own ceiling plane and lifting one off shows the rooms below. A
   floor prints as its whole package, solid from its joists' underside to its deck (joists are
-  framing and never print). Cuts closer than `--min-piece-m` (0.6 m) merge into the one with
+  framing and never print), with the ceiling under it fused on (see MERGE below), so the cut
+  falls at the ceiling's face. Cuts closer than `--min-piece-m` (0.6 m) merge into the one with
   the most floor. There is no registration: walls stack on walls.
 - **Objects.** One per building per piece, named by storey (`main`, `second`, `attic`). A shell
   inside the building's box stays in its object (a sink a hair above its floor still prints:
@@ -31,7 +32,8 @@ haus print3d houses/catlin --include railing,site --exclude plant --no-furniture
 - **Plate.** The lowest piece is fused to a 1.5 mm plate, its footprint's box plus
   `--plate-margin-mm` (3).
 - **Orientation.** Each upper piece is tried upright and upside down and keeps the one with less
-  support: downward area steeper than 45 degrees that is not on the bed, reported in mm².
+  support: downward area steeper than 45 degrees that is not within the first layer
+  (0.2 mm) of the bed, reported in mm².
 - **Files.** `house.3mf` and `furniture.3mf` are core-spec 3MF, one object and one build item
   per piece, laid out in a row; Bambu Studio auto-arranges. Plates and filament assignments are
   Bambu/Orca project features and are not written. Two runs are byte-identical.
@@ -40,12 +42,21 @@ haus print3d houses/catlin --include railing,site --exclude plant --no-furniture
 
 | treatment | kinds | rule |
 |---|---|---|
-| BODY | wall, slab (room-owned), floor, ceiling, roof, stair, soffit, fascia, column, beam, countertop, slab band/platform/finish, pad | thickened up to `--min-wall-mm` (2 x nozzle) |
+| BODY | wall, slab (room-owned), floor, ceiling, roof, stair, soffit, fascia, column, beam, countertop, slab band/platform/finish, pad | thickened up to `--min-wall-mm` (2 x nozzle), unless merged |
 | DETAIL | fixtures, appliances, fixed casework, equipment, surface luminaires, trellis | thickened up to `--min-feature-mm` (nozzle) |
 | TRIM | cladding trim, baseboard, door casing, window return and stool, gutter, opening lining | never thickened; dropped below a feature |
 | DROP | site and landscape, downspouts (they stand off the wall on unmodelled brackets), footings and sub-slab, framing, connectors, every MEP run and box, flashing, sill pans, screens, clamps, solar panels, railings, door leaves and glass, suspended lights, registers, other devices | never printed |
 | LOOSE | movable furniture | `furniture.3mf`, graded below |
 
+- **MERGE into host** (`print3d/merge.py`), before any thickening. A countertop fuses to the
+  largest base in its own `hosts` (a loose end panel or cover in that run comes along); a
+  ceiling to the floor or slab package whose underside its top touches, by most plan overlap;
+  a loose placeable to its `host_fixture_ref` fixture or `attachment_wall` wall (towel bars,
+  paper holders, curtain tracks). A merged part thinner than its minimum grows toward its
+  host to it, exposed face fixed, with no `--max-thicken` cap: the growth is inside the host.
+  The merged item takes the host's kind and treatment. A part with no host (catlin's garage
+  ceiling, under trusses) falls back to its own row. The report's "merged into host" column
+  counts them.
 - `--include railing,solar_panel,site` prints a dropped kind (site is room-less flatwork);
   `--exclude KIND` drops one. A kind with no row, in the model or in either flag, is an
   error: add its row.
@@ -59,11 +70,14 @@ haus print3d houses/catlin --include railing,site --exclude plant --no-furniture
 
 ## Furniture
 
-Printed true, never thickened. A piece passes when it is a closed solid, its smallest drawn
-primitive is at least `--min-feature-mm`, it stands on at least 30% of its footprint, it is no
-taller than four base widths, and its support is under a quarter of its footprint. Every
-rejection is listed with its first failing test. At 1:128 most chairs and tables fail on their
-legs; that is expected.
+Printed true, with one exception: a flat plate thinner than `--min-feature-mm` that rests on
+another of the piece's primitives (a tabletop on its legs) or hangs from one (an apron) grows
+to that minimum toward it, top or bottom face fixed (`print3d/plates.py`). A vertical thin
+panel is not grown. A piece passes when it is a closed solid, its smallest drawn primitive is
+at least `--min-feature-mm`, and, upright or else upside down (a table on its top), it stands
+on at least 30% of its footprint, is no taller than four base widths, and needs support under
+a quarter of its footprint. Every rejection is listed with its first failing test. At 1:128
+catlin prints 30 of 82 pieces; most chairs still fail on their legs, which is expected.
 
 ## Slicer hints
 
