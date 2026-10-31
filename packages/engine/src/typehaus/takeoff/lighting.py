@@ -314,8 +314,8 @@ def light_run_materials(model: ResolvedModel) -> list[dict[str, object]]:
     A run's channel and tape are the same length (the tape rides the channel end to end); a
     run always takes two end caps, one per open end; and it takes one corner connector per
     interior path vertex, the fitting a straight length of stock cannot become on its own.
-    A plaster-in run's channel is the drywall trade's profile (``drywall_trims``) and its
-    corners are mitred, so it bills tape and end caps here and no channel or connector.
+    A shadow-gap run's tape sticks in the drywall trade's bead (``drywall_trims``), so it
+    bills tape here and no channel, end cap or connector.
     """
     types = _device_types(model)
     by_type: dict[str, _RunMaterialTotals] = {}
@@ -325,11 +325,11 @@ def light_run_materials(model: ResolvedModel) -> list[dict[str, object]]:
             "type": run.type_ref, "mark": getattr(product, "type_mark", None) or "",
             "runs": 0, "length_ft": 0.0, "channel_ft": 0.0, "end_caps": 0,
             "corner_connectors": 0})
-        surface = run.profile != "plaster_in"
+        surface = run.profile == "surface"
         row["runs"] = int(row["runs"]) + 1
         row["length_ft"] = float(row["length_ft"]) + run.length_m * _M_TO_FT
         row["channel_ft"] = float(row["channel_ft"]) + surface * run.length_m * _M_TO_FT
-        row["end_caps"] = int(row["end_caps"]) + 2
+        row["end_caps"] = int(row["end_caps"]) + 2 * surface
         row["corner_connectors"] = int(row["corner_connectors"]) + surface * max(
             len(run.path) - 2, 0)
 

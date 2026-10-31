@@ -42,8 +42,7 @@ steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
   south half so it sees along the shelves, not the kitchen (the mask is in the type's name,
   `ED-T-LEV-OCC-PANTRY`; no geometry). The kitchen-side 2-gang becomes
   1-gang (`ED-M-KITCH-SW-UC` only).
-- **Heavy outlets** (confirm each against the appliance plug): EV 14-50R `1450W`, range
-  14-50R `1450R`, dryer 14-30R `278`, EV 6-20 `T5461-W`, disposer TR single 5-20R `T5020-W`.
+- **Heavy outlets** (confirm each against the appliance plug): range 14-50R `1450R`, dryer 14-30R `278`, EV 6-20 `T5461-W`, disposer TR single 5-20R `T5020-W`.
 - **Kettle:** same as workshop RC1, a 2-gang `T5461-W` + `E5825-W`.
 
 ## Switches and dimmers
@@ -93,28 +92,36 @@ RC1 and RC2 stay at their stations, 42" AFF over the 34" benches, surface-mounte
 The kitchen kettle outlet (`CKT-KETTLE`) uses the same arrangement; its 120 V half also needs a
 neutral.
 
-## Garage (NEC 210.52(G)(1))
+## Garage (NEC 210.52(G)(1), simplified 2026-10-30)
 
-The 16' door makes two vehicle bays, and each needs a receptacle no higher than 5'-6"
-(`code.NEC_210_52_G_garage_receptacles` grades it; owner, 2026-10-30).
+The 16' door makes two vehicle bays; each needs a receptacle no higher than 5'-6"
+(`code.NEC_210_52_G_garage_receptacles` grades it). The bench group moved to the south end of
+`W-G-W` beside `ST-G-SERVICE`, 2'-2" north of the stair foot; everything else is on `W-G-S`,
+near the feeder's stub-up at x 16'-0".
 
-- **West bay: `ED-G-RC-240`**, 48" AFF on `W-G-W`. It was the 6-20 "smaller EV charger"
-  (`ED-G-EV-620` on `CKT-EV-620`). Most charging uses the 14-50, so this is a general-use
-  point that doubles as a backup charger. It is RC1's device (a 6-20R beside a 5-20R duplex)
-  on `CKT-GAR-240`, a 2-pole 20 A common-trip GFCI. NEC 210.8(A)(2) covers 125-250 V garage
-  receptacles. Pull two hots, a **neutral** (the 6-20 alone had none) and a ground. No AFCI:
-  garages are not on 210.12(A) or E3902.16.
-- **East bay: `ED-G-RC-E`**, a 20 A duplex, 48" AFF on `W-G-E`, 11'-4" from the SE corner,
-  on `CKT-RC-GARAGE`. Without it the east bay had nothing that counts: the 14-50R serves only
-  the EVSE, and the opener's outlet is 9'-11" up. It also puts a required outlet on the
-  120 V/20 A garage circuit that 210.11(C)(4) asks for. The AHJ should confirm the west-bay
-  5-20R on a 2-pole circuit. If they want every bay outlet on that circuit, feed a west-bay
-  5-20R from `CKT-RC-GARAGE`.
-- **Open: the 14-50R has no GFCI.** `CKT-EV-1450` is a plain 50 A 2-pole. 2023 NEC
-  210.8(A)(2) and 625.54 want GFCI on a plug-in EVSE's garage receptacle. The owner chooses
-  between a 50 A 2-pole GFCI breaker and a hardwired EVSE, which 210.8 does not reach. Read
-  the Grizzl-E manual first: an upstream GFCI can trip alongside the charger's own
-  ground-fault protection.
+- **Bench group, `W-G-W`** (bench centre y 52'-2 5/8"): `EQ-G-HEATER` over the bench centre
+  (180" from the NW corner), `ED-G-RC-W` (20 A duplex, 48" AFF, 156") and `ED-G-RC-240`
+  (single 6-20R, 48" AFF, 204"), mid-bay either side of it.
+- **West bay: `ED-G-RC-W`**, **east bay: `ED-G-RC-E`** (`W-G-S`, x 25'-0", 48" AFF). Both are on
+  `CKT-RC-GARAGE`, the 120 V 20 A GFCI circuit 210.11(C)(4) asks for, and nothing else is: "no
+  other outlets". Lights and the heater are elsewhere (`CKT-LT-MAIN`, `CKT-GAR-HEAT`).
+- **Opener outlet `ED-G-GDO-RC`** (ceiling, 9'-11 1/4") is on `CKT-LT-MAIN` (owner, 2026-10-30),
+  on the load side of `ED-G-GDO-GFCI`, a Leviton GFRBF-W blank-face GFCI beside `ED-G-SW`.
+  210.8(A)(2) wants it GFCI with a reset in reach; the blank face protects only the opener, so a
+  trip never takes the lights.
+- **`ED-G-RC-240`: one 6-20R alone on `CKT-GAR-240`** (2-pole 20 A GFCI, 210.8(A)(2)). Two hots
+  and ground, no neutral, no 120 V device; it is not a counting receptacle. It was a 6-20R
+  beside a 5-20R duplex, which put a 210.52(G) outlet on a circuit with another outlet and
+  needed a neutral.
+- **EVSE hardwired.** The Grizzl-E Smart manual documents removing the 14-50P. `ED-G-EV-1450`
+  (kept tag, centre of the south wall's EV station) is now the 240 V junction box
+  `ED-T-EVSE-JB` behind the unit; `CD-B-GARAGE`/`CD-B-GAP-EV` still end on it. With no
+  receptacle, 210.8(A)(2) and 625.54 do not apply; the charger's own CCID protects. 625.43 wants
+  no disconnect (240 V split-phase is 120 V to ground, under 60 A). `CKT-EV-1450` stays a plain
+  50 A 2-pole, 40 A charge.
+- **Option, not taken: drop the 6-20R.** The notes call it a general-use point and backup
+  charger, not dispensable. Removing it saves a 2-pole GFCI breaker, a device and ~25 ft of
+  12/2 and frees panel-2 slot 13.
 
 ## Boxes and covers
 
@@ -151,6 +158,5 @@ box on the 1" CD-B-WORKSHOP trunk. The kettle's `ED-T-LEV-620-FLUSH` is flush in
 | Dimmer, LED cans/sconces | Lutron DVCL-153P |
 | Smart switch, Matter | [D215S-1BW](https://www.leviton.com/en/products/d215s-1bw) |
 | Smart dimmer, ELV, Matter | [D2ELV-1BW](https://www.leviton.com/en/products/D2ELV-1BW) |
-| EV 14-50R | [1450W](https://leviton.com/products/1450w) |
 | Range 14-50R | [1450R](https://leviton.com/products/1450r) |
 | Dryer 14-30R | [278](https://leviton.com/products/278) |

@@ -63,19 +63,17 @@ CIRCUITS = (
     # for the standard method.
     Circuit(uid="CKT002AAAA", tag="CKT-DRYER", slot=5, panel_ref=_PANEL, breaker_amps=15, poles=2,
             nema="14-30R", load_va=830, description="Dryer"),
-    # The two EV circuits author load_va explicitly (same figures as their receptacle
-    # types), so the schedule reads the same number the conductors are sized for whether or
-    # not a device happens to be placed on the circuit.
+    # load_va is explicit so the schedule reads the figure the conductors are sized for.
+    # CKT-EV-1450 feeds a HARDWIRED Grizzl-E (owner, 2026-10-30): no receptacle, so 210.8(A)(2)
+    # and 625.54 do not apply and the charger's CCID protects; 40 A charge, 125% = 50 A plain.
     Circuit(uid="CKT003AAAA", tag="CKT-EV-1450", slot=9, panel_ref=_PANEL_2, breaker_amps=50, poles=2,
-            nema="14-50R", load_va=9600,
-            description="EV charging, NEMA 14-50 (garage)"),
-    # The garage's general-use 120/240 V point, and the backup EV charger (owner, 2026-10-30):
-    # a 6-20R beside a 5-20R duplex on a common-trip 2-pole GFCI (NEC 210.8(A)(2) reaches
-    # 125-250 V garage receptacles), two hots, neutral, ground — CKT-WORKSHOP-240's pattern.
-    # No AFCI: garages are not on 210.12(A)'s list. load_va keeps the 6-20's 16 A charging draw.
+            load_va=9600, description="EV charging, hardwired Grizzl-E 40 A (garage)"),
+    # The garage's 240 V point (backup EV charging, tools): one 6-20R, two hots + ground, no
+    # neutral. 2-pole GFCI (210.8(A)(2) reaches 125-250 V garage receptacles); no AFCI.
+    # Not a 210.52(G)(1) outlet, so the 120 V bay receptacles are on CKT-RC-GARAGE instead.
     Circuit(uid="CKT004AAAA", tag="CKT-GAR-240", slot=13, panel_ref=_PANEL_2, breaker_amps=20,
-            poles=2, nema="5-20R/6-20R", gfci=True, load_va=3840,
-            description="Garage general use, 120/240 V receptacle (backup EV charging)"),
+            poles=2, nema="6-20R", gfci=True, load_va=3840,
+            description="Garage 240 V receptacle (6-20R; backup EV charging, tools)"),
     # Budget the full 20 A at 240 V until the electronics load is known; this is an
     # allowance, not a nameplate or a claim that continuous loads can draw 20 A.
     # Common-trip 2-pole GFCI protects both voltages; supply two hots, neutral and ground.
@@ -458,8 +456,8 @@ CIRCUITS = (
             afci=True, load_va=1000, description="General receptacles — attic rooms"),
     Circuit(uid="CKT030AAAA", tag="CKT-RC-GARAGE", slot=48, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, load_va=1500, description="Garage general receptacles"),
-    # ^ The 210.11(C)(4) garage circuit: 120 V, 20 A, garage outlets only (the east-bay
-    # receptacle and the opener's ceiling outlet).
+    # ^ The 210.11(C)(4) garage circuit: 120 V, 20 A, "no other outlets" than the two bay
+    # receptacles ED-G-RC-W/-E. The opener's outlet is on CKT-LT-MAIN behind ED-G-GDO-GFCI.
     # ADDED 2026-08-29 with the attic guest bath. NEC 210.11(C)(3) / IRC E3901.6 wants a
     # dedicated 20A circuit for bathroom receptacles, and ** THE ENGINE HAS NO E3901
     # BRANCH-CIRCUIT RULE ** (it does now grade E3901.6's other half, the receptacle a basin

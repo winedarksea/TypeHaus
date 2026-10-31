@@ -123,9 +123,9 @@ def resolve_soffit_finishes(model: ResolvedModel) -> list[Finding]:
         for run in model.light_runs:
             if run.soffit_ref != soffit.tag:
                 continue
-            # A plaster-in profile was seated on this face (→ resolve/drywall_led.py).
+            # A shadow gap's reveal was set on this face (→ resolve/drywall_led.py).
             width = run.aperture_m or LIGHT_STRIP_WIDTH_M
-            if run.profile != "plaster_in" and not (
+            if run.profile != "shadow_gap" and not (
                     soffit.z0_m <= run.z_m - LIGHT_STRIP_WIDTH_M
                     and run.z_m <= soffit.z0_m + thickness):
                 findings.append(element_error("integrity.soffit_channel",

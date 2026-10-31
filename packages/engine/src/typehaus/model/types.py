@@ -945,6 +945,9 @@ class ElectricalDeviceType(FurnitureType):
     # NEMA configuration (e.g. "5-20R", "14-50R") — typed data the panel schedule reads,
     # instead of parsing it out of the display name. Voltage stays derivable from ports.
     nema: str | None = None
+    # A blank-face (deadfront) GFCI: protects what its load side feeds (`gfci_ref`) and is
+    # no receptacle, so no 210.52 rule counts it.
+    deadfront: bool = False
     # Connected load in volt-amps; summed per circuit by the panel-schedule takeoff.
     load_va: float | None = None
     output_voltage: int | None = None  # DC supplies; distinct from branch voltage

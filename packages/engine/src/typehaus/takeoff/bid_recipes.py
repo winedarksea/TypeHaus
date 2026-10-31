@@ -137,7 +137,7 @@ SHAPES: dict[str, Shape] = {
     "bug_screens": Shape("Rainscreen insect screens and strips", None, "LF"),
     "member_protection": Shape("Member protection tape", None, "LF"),
     "fireblock_sealant": Shape("Firestop sealant", None, "LF"),
-    "drywall_trims": Shape("Drywall beads and plaster-in profiles", None, "LF"),
+    "drywall_trims": Shape("Drywall beads and LED shadow gaps", None, "LF"),
     "construction_returns": Shape("Construction returns", None, "LF"),
     "sill_gaskets": Shape("Sill gaskets", None, "LF"),
     "drainage": Shape("Stormwater runs", None, "LF"),

@@ -106,9 +106,9 @@ def test_light_run_materials_splits_the_blended_length_into_order_lines(catlin_m
         "channel", "tape", "end_cap", "corner_connector"}
 
     strip24 = {run.tag: run for run in catlin_model.light_runs if run.type_ref == "ED-T-LT-STRIP24"}
-    surface = {tag: run for tag, run in strip24.items() if run.profile != "plaster_in"}
-    # The plaster-in coves' channel is the drywall trade's profile (#103), so only the
-    # surface runs bill channel here; the tape rides every run.
+    surface = {tag: run for tag, run in strip24.items() if run.profile == "surface"}
+    # The shadow-gap coves' tape sticks in the drywall trade's bead (#103), so only the
+    # surface runs bill channel and caps here; the tape rides every run.
     assert set(strip24) - set(surface) == {"LR-M-LIVING-W", "LR-M-LIVING-E", "LR-S-HALL-GAP"}
     channel = by_key[("ED-T-LT-STRIP24", "channel")]
     tape = by_key[("ED-T-LT-STRIP24", "tape")]
@@ -117,12 +117,12 @@ def test_light_run_materials_splits_the_blended_length_into_order_lines(catlin_m
     assert tape["quantity"] == pytest.approx(
         round(sum(run.length_m * _M_TO_FT for run in strip24.values()), 1))
     assert channel["unit"] == tape["unit"] == "LF"
-    # Every run takes exactly two end caps, one per open end.
+    # Every surface run takes exactly two end caps, one per open end.
     end_cap = by_key[("ED-T-LT-STRIP24", "end_cap")]
-    assert end_cap["quantity"] == 2 * len(strip24)
+    assert end_cap["quantity"] == 2 * len(surface)
     assert end_cap["unit"] == "EA"
-    # A corner connector for every interior vertex of a surface run; a plaster-in corner
-    # (the hall cove's two) is mitred.
+    # A corner connector for every interior vertex of a surface run; a shadow-gap corner
+    # (the hall cove's two) is the tape's own bend.
     corner = by_key[("ED-T-LT-STRIP24", "corner_connector")]
     assert corner["quantity"] == sum(max(len(run.path) - 2, 0) for run in surface.values())
 

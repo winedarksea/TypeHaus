@@ -539,6 +539,9 @@ class ElectricalDevice(Element):
     # switch itself, on an always-on device, and on a fixture whose type carries
     # ``integral_switch``.
     controlled_by: tuple[str, ...] = ()
+    # The readily accessible GFCI device (NEC 210.8) whose load side feeds this one, e.g. a
+    # deadfront beside a switch protecting a ceiling outlet. Same circuit.
+    gfci_ref: str | None = None
 
     @model_validator(mode="after")
     def _placed_or_hosted(self):

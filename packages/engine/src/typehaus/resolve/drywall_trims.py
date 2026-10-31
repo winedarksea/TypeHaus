@@ -23,7 +23,7 @@ from shapely.geometry.polygon import orient
 from typehaus.findings import Finding
 from typehaus.model.drywall import DrywallStandard
 from typehaus.quantities import ft
-from typehaus.resolve.drywall_led import drywall_standard, host_plaster_in_runs
+from typehaus.resolve.drywall_led import drywall_standard, host_shadow_gap_runs
 from typehaus.resolve.interior_trim_scope import face_function, face_is_gypsum, is_finish
 from typehaus.resolve.model import ResolvedModel, ResolvedRoom
 from typehaus.resolve.model_trim import ResolvedDrywallTrim
@@ -92,7 +92,7 @@ def resolve_drywall_trims(plan, model: ResolvedModel) -> list[Finding]:
     from typehaus.resolve import drywall_trim_edges as edges
 
     standard, findings = drywall_standard(plan)
-    findings.extend(host_plaster_in_runs(model, standard))
+    findings.extend(host_shadow_gap_runs(model, standard))
     ctx = TrimContext(model, standard)
     edges.window_returns(ctx)
     if standard is not None:

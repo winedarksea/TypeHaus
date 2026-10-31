@@ -129,12 +129,14 @@ GARAGE_ELEMENTS = [
               position=pt(ft(18), ft(56, 6)),
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 4)),
               install_parts=("ratgdo32 ESPHome opener controller (Security+ 2.0)",)),
-    # The opener's own outlet, on the spare CKT-RC-GARAGE (GFCI at the breaker).
+    # The opener's own outlet, on the garage lights' CKT-LT-MAIN (2026-10-30): 210.11(C)(4)'s
+    # circuit may have no outlet but the bay receptacles. 210.8(A)(2) still wants GFCI, with
+    # a reset in reach, so it rides the load side of ED-G-GDO-GFCI beside ED-G-SW.
     ElectricalDevice(uid="8F8ER9WZ7X", tag="ED-G-GDO-RC", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(19, 6), ft(56, 6)), type_ref="ED-T-LEV-DUPLEX-20",
-                     circuit="CKT-RC-GARAGE", room="RM-GARAGE",
+                     circuit="CKT-LT-MAIN", room="RM-GARAGE", gfci_ref="ED-G-GDO-GFCI",
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 11.25))),
-    # Beside ED-G-EV-1450, plugged into it; OCPP to HA, never online.
+    # Hardwired from ED-G-EV-1450's box (no plug, 2026-10-30); OCPP to HA, never online.
     Appliance(uid="KF9QATERC5", tag="APPL-G-EVSE", type_ref="APPL-GRIZZLE-SMART-40", room="RM-GARAGE",
               mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
               location=Location(attachment=WallAttachment(

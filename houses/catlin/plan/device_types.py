@@ -45,13 +45,13 @@ GFTR2 = _prod("GFTR2-W", "Lever Edge SmartlockPro GFCI, 20 A, TR, white")
 GFTR1 = _prod("GFTR1-W", "Lever Edge SmartlockPro GFCI, 15 A, TR, white")
 GFTA2 = _prod("GFTA2-W", "SmartlockPro GFCI with audible alarm, 20 A, TR, white")
 GFWT2 = _prod("GFWT2-W", "SmartlockPro GFCI, weather-resistant, 20 A, TR, white")
+GFRBF = _prod("GFRBF-W", "SmartlockPro Slim blank-face GFCI, 20 A feed-through, white")
 T5836 = _prod("T5836-W", "Decora duplex with 60 W USB-C PD, 20 A TR, white")
 T5380 = _prod("T5380-W", "Decora surge duplex, 20 A TR, white",
               _LEV + "t5380")
 T6525 = _prod("T6525-W", "Decora guide-light duplex, 15 A TR, white")
 T5020 = _prod("T5020-W", "Decora single receptacle 5-20R, TR, white", "https://leviton.com/")
 T5461 = _prod("T5461-W", "Decora 6-20R receptacle, 20 A 250 V, TR, white")
-R1450W = _prod("1450W", "50 A EV receptacle 14-50R, weather-resistant")
 R278 = _prod("278", "30 A dryer receptacle 14-30R", _LEV + "278")
 IN_USE = _prod("5980-UCL", "Extra-duty clear in-use cover")
 
@@ -71,6 +71,8 @@ RECEPTACLE_TYPES = (
          "WR GFCI 20 A TR (GFWT2-W), 5980-UCL in-use cover, non-metallic gasketed box",
          GFWT2, footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-20R",
          device_box=False),
+    _dev("ED-T-LEV-GFCI-DF", "Blank-face GFCI 20 A, feed-through (GFRBF-W)", GFRBF,
+         symbol=None, deadfront=True),
     _dev("ED-T-LEV-USBC", "Duplex with 60 W USB-C PD (T5836-W), deep box", T5836,
          nema="5-20R", **_DEEP),
     _dev("ED-T-LEV-SURGE", "Surge duplex 20 A TR (T5380-W)", T5380, nema="5-20R"),
@@ -88,9 +90,9 @@ RECEPTACLE_TYPES = (
     _dev("ED-T-LEV-QUAD-520", "2-gang: two TR 5-20R duplexes (E5825-W)",
          E5825, footprint=(inch(4.5), inch(1)), height=inch(4.5), nema="5-20R",
          symbol="receptacle-quad", gangs=2),
-    _dev("ED-T-LEV-EV-1450", "EV receptacle 14-50R (1450W)", R1450W, ports=_P240,
-         footprint=(inch(4), inch(4)), height=inch(4), nema="14-50R", load_va=9600,
-         symbol="receptacle-240-four-wire"),
+    _dev("ED-T-LEV-620", "Single 6-20R, 240 V only (T5461-W)", T5461, ports=_P240,
+         footprint=(inch(2.75), inch(1)), height=inch(4.5), nema="6-20R", load_va=3840,
+         symbol="receptacle-240"),
     _dev("ED-T-LEV-RANGE-1450", "Range receptacle 14-50R (1450R)", None, ports=_P240,
          footprint=(inch(4), inch(4)), height=inch(4), nema="14-50R",
          symbol="receptacle-240-four-wire"),
@@ -139,6 +141,6 @@ SWITCH_TYPES = (
 
 DEVICE_TYPES = (*RECEPTACLE_TYPES, *SWITCH_TYPES)
 DEVICE_PRODUCTS = (
-    E5825, E5325, GFTR2, GFTR1, GFTA2, GFWT2, T5836, T5380, T6525, T5020, T5461, R1450W,
+    E5825, E5325, GFTR2, GFTR1, GFTA2, GFWT2, GFRBF, T5836, T5380, T6525, T5020, T5461,
     R278, IN_USE, E5601, E5603, DIVA, D215S, D2ELV, DD0SR, DOS02, ODS10, MAT51,
 )

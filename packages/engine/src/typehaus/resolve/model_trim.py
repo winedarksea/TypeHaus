@@ -98,8 +98,8 @@ class ResolvedDoorCasing:
 
 @dataclass(frozen=True)
 class ResolvedDrywallTrim:
-    """One contiguous drywall accessory: a bead along one board edge, or a plaster-in
-    LED profile (→ resolve/drywall_trims.py, decision #103).
+    """One contiguous drywall accessory: a bead along one board edge, or an LED
+    shadow-gap bead (→ resolve/drywall_trims.py, decision #103).
 
     ``kind`` is ``led_profile`` / ``outside_corner`` / ``termination`` / ``tile_reveal`` /
     ``door_l_bead`` / ``window_corner`` / ``window_frame``. ``pieces`` is the stock lengths

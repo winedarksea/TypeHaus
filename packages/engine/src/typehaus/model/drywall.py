@@ -10,24 +10,24 @@ from __future__ import annotations
 
 from typehaus.model.base import Element, HausModel
 from typehaus.model.registry import register_constructor, register_element
-from typehaus.quantities import Angle, Length, deg, ft
+from typehaus.quantities import Length, ft
 
 
-class PlasterInProfile(HausModel):
-    """A plaster-in LED wall-washer: an aluminium channel set in a slot cut through the
-    ceiling (or soffit) board, flanges mudded flush, tape tilted toward the washed wall.
+class ShadowGapProfile(HausModel):
+    """An LED shadow gap at the wall-ceiling edge: the ceiling (or soffit) board stops
+    ``reveal`` short of the washed wall, a Z shadow bead lines the board's edge and the
+    reveal's back, and bare tape stuck to that back faces down and washes the wall.
 
-    ``aperture`` is the slot cut through the board, ``depth`` how far the channel stands
-    above the board's room face, ``flange`` each mudded wing's width on the face. The wall
-    offsets bound the distance from the slot centre (the run's path) to the washed face.
+    ``depth`` is the bead's reveal depth, the board's thickness, so nothing rises past the
+    board into what it is fastened to; ``flange`` is its mudded leg on the board face.
+    ``wall_offset_max`` bounds how far an authored run may stand off its wall: the resolver
+    moves each leg onto the reveal's centre, ``reveal / 2`` off the finished face.
     """
 
     material_ref: str
-    aperture: Length
+    reveal: Length
     depth: Length
     flange: Length
-    tilt: Angle = deg(45)
-    wall_offset_min: Length
     wall_offset_max: Length
 
 
@@ -37,7 +37,7 @@ class DrywallStandard(Element):
 
     One per plan (a second is an ``integrity.drywall_standard`` error). Without one, the
     window returns bill the library's generic beads and nothing else is derived.
-    ``led_profile`` makes every light run set into a gypsum ceiling or soffit plaster-in.
+    ``led_profile`` puts every light run in a gypsum ceiling or soffit in a shadow gap.
     """
 
     outside_corner_ref: str
@@ -49,7 +49,7 @@ class DrywallStandard(Element):
     # The window-return corner bead's nose radius (a bullnose); None is a square bead. A
     # fabricated stool's shoulder notch takes it, so the stone seats against the bead.
     window_corner_radius: Length | None = None
-    led_profile: PlasterInProfile | None = None
+    led_profile: ShadowGapProfile | None = None
     stock_length: Length = ft(10)
 
     def material_refs(self) -> tuple[str, ...]:
@@ -60,4 +60,4 @@ class DrywallStandard(Element):
 
 
 register_constructor("DrywallStandard", DrywallStandard)
-register_constructor("PlasterInProfile", PlasterInProfile)
+register_constructor("ShadowGapProfile", ShadowGapProfile)

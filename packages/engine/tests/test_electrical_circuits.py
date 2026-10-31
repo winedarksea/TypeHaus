@@ -446,7 +446,7 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
     assert bom["solar"]["panels"] == 12
     devices = {(row["kind"], row["type"]): row["count"] for row in bom["electrical_devices"]}
     assert devices[("meter", "ED-T-METER")] == 1
-    assert devices[("receptacle_240", "ED-T-LEV-EV-1450")] == 1
+    assert devices[("junction_box", "ED-T-EVSE-JB")] == 1
     assert sum(row["count"] for row in bom["electrical_devices"]) == sum(
         1 for storey in catlin_model.plan.storeys
         for element in catlin_model.plan.storey_elements(storey.tag)

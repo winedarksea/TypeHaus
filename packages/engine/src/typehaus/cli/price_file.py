@@ -350,7 +350,7 @@ class Prices:
     member_protection: Mapping[str, PriceRange] = field(default_factory=dict)
     # Firestop sealant by the lineal foot of fireblock penetration, keyed on material tag.
     fireblock_sealant: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Drywall beads and plaster-in LED profiles by the LF, keyed on material (#103).
+    # Drywall beads and LED shadow-gap beads by the LF, keyed on material (#103).
     drywall_trims: Mapping[str, PriceRange] = field(default_factory=dict)
     # Monolithic wall structure, keyed on the *assembly* tag rather than the material: a
     # placed yard of SUNKEN_GARDEN_WALL and a yard of BASEMENT_12 are both "concrete"

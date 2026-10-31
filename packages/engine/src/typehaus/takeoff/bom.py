@@ -145,7 +145,7 @@ def bill_of_materials(
         "floor_heat": floor_heat_takeoff(model),
         "floor_finishes": floor_finish_rows(model),
         "envelope_layers": envelope_layer_takeoff(model),
-        # Beads and plaster-in LED profiles by the LF, off the DrywallStandard (#103).
+        # Beads and LED shadow-gap beads by the LF, off the DrywallStandard (#103).
         "drywall_trims": drywall_trim_rows(model),
         # The other half of the wall stack: a STRUCTURE layer that does not frame — a pour,
         # an ICF core, a CMU/SRW course, a brick wythe — produces no members and is not a

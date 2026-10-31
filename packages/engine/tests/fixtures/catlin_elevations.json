@@ -377,6 +377,9 @@
 "canvas_objects/ED-G-GABLE-N-PSU/body_z0_m": 1.5748,
 "canvas_objects/ED-G-GABLE-N-PSU/body_z1_m": 1.6129,
 "canvas_objects/ED-G-GABLE-N-PSU/z_m": 1.5748,
+"canvas_objects/ED-G-GDO-GFCI/body_z0_m": 1.0668,
+"canvas_objects/ED-G-GDO-GFCI/body_z1_m": 1.1176,
+"canvas_objects/ED-G-GDO-GFCI/z_m": 1.0668,
 "canvas_objects/ED-G-GDO-RC/body_z0_m": 2.16535,
 "canvas_objects/ED-G-GDO-RC/body_z1_m": 2.21615,
 "canvas_objects/ED-G-GDO-RC/z_m": 2.16535,
@@ -395,6 +398,9 @@
 "canvas_objects/ED-G-RC-E/body_z0_m": 0.3556,
 "canvas_objects/ED-G-RC-E/body_z1_m": 0.4064,
 "canvas_objects/ED-G-RC-E/z_m": 0.3556,
+"canvas_objects/ED-G-RC-W/body_z0_m": 0.3556,
+"canvas_objects/ED-G-RC-W/body_z1_m": 0.4064,
+"canvas_objects/ED-G-RC-W/z_m": 0.3556,
 "canvas_objects/ED-G-SOFFIT-SW/body_z0_m": 1.0668,
 "canvas_objects/ED-G-SOFFIT-SW/body_z1_m": 1.1176,
 "canvas_objects/ED-G-SOFFIT-SW/z_m": 1.0668,
@@ -2758,8 +2764,6 @@
 "device_boxes/CEE007AAAA-box/z1_m": 1.214675,
 "device_boxes/CEE008AAAA-box/z0_m": 0.365125,
 "device_boxes/CEE008AAAA-box/z1_m": 0.460375,
-"device_boxes/CEE009AAAA-box/z0_m": 0.3556,
-"device_boxes/CEE009AAAA-box/z1_m": 0.4572,
 "device_boxes/CEE021AAAA-box/z0_m": 1.25095,
 "device_boxes/CEE021AAAA-box/z1_m": 1.35255,
 "device_boxes/CEE024AAAA-box/z0_m": 1.3890625,
@@ -3056,12 +3060,16 @@
 "device_boxes/QTS0020AAA-box/z1_m": 5.054473,
 "device_boxes/RB8M3Y2Q4N-box/z0_m": 1.1001375,
 "device_boxes/RB8M3Y2Q4N-box/z1_m": 1.1953875,
+"device_boxes/RKGTAV787W-box/z0_m": 0.333375,
+"device_boxes/RKGTAV787W-box/z1_m": 0.428625,
 "device_boxes/S7ANA4Q300-box/z0_m": 1.044575,
 "device_boxes/S7ANA4Q300-box/z1_m": 1.139825,
 "device_boxes/S8DH5FRQQA-box/z0_m": 0.1793875,
 "device_boxes/S8DH5FRQQA-box/z1_m": 0.2746375,
 "device_boxes/SZ4K3PX817-box/z0_m": 6.502273,
 "device_boxes/SZ4K3PX817-box/z1_m": 6.597523,
+"device_boxes/T2P1VW9FJE-box/z0_m": 1.044575,
+"device_boxes/T2P1VW9FJE-box/z1_m": 1.139825,
 "device_boxes/T3ZXRZ1CN3-box/z0_m": 1.184275,
 "device_boxes/T3ZXRZ1CN3-box/z1_m": 1.279525,
 "device_boxes/TBSBS6V58H-box/z0_m": 6.502273,
@@ -18750,12 +18758,6 @@
 2,
 "8bdece8f8a20"
 ],
-"geometry/CEE009AAAA-box/body": [
-0.3556,
-0.4572,
-2,
-"adaf8bd7a31c"
-],
 "geometry/CEE016AAAA/body": [
 -1.4081125,
 -0.8594725,
@@ -27552,42 +27554,6 @@
 2,
 "e9f6a787462f"
 ],
-"geometry/CMR401AAAA-ceiling-slot1/body": [
-2.7305,
-2.746375,
-2,
-"dbe020883c57"
-],
-"geometry/CMR401AAAA-ceiling-slot2/body": [
-2.7305,
-2.746375,
-2,
-"dbe020883c57"
-],
-"geometry/CMR401AAAA-ceiling-slot3/body": [
-2.7305,
-2.746375,
-2,
-"dbe020883c57"
-],
-"geometry/CMR401AAAA-ceiling-slot4/body": [
-2.7305,
-2.746375,
-2,
-"dbe020883c57"
-],
-"geometry/CMR401AAAA-ceiling-slot5/body": [
-2.7305,
-2.746375,
-2,
-"dbe020883c57"
-],
-"geometry/CMR401AAAA-ceiling-slot6/body": [
-2.7305,
-2.746375,
-2,
-"dbe020883c57"
-],
 "geometry/CMR401AAAA-ceiling/body": [
 2.7305,
 2.746375,
@@ -27707,24 +27673,6 @@
 0.127,
 2,
 "6d6aff8bad6f"
-],
-"geometry/CMR404AAAA-ceiling-slot1/body": [
-2.7305,
-2.746375,
-2,
-"dbe020883c57"
-],
-"geometry/CMR404AAAA-ceiling-slot2/body": [
-2.7305,
-2.746375,
-2,
-"dbe020883c57"
-],
-"geometry/CMR404AAAA-ceiling-slot3/body": [
-2.7305,
-2.746375,
-2,
-"dbe020883c57"
 ],
 "geometry/CMR404AAAA-ceiling/body": [
 2.7305,
@@ -62184,6 +62132,12 @@
 2,
 "9d590c7e3bd6"
 ],
+"geometry/RKGTAV787W-box/body": [
+0.333375,
+0.428625,
+2,
+"8b601634f6b9"
+],
 "geometry/RTDS01AAAA-00/body": [
 0.3048,
 6.275897,
@@ -65585,6 +65539,12 @@
 0.27305,
 56,
 "e51000cca446"
+],
+"geometry/T2P1VW9FJE-box/body": [
+1.044575,
+1.139825,
+2,
+"683cd5d24585"
 ],
 "geometry/T3ZXRZ1CN3-box/body": [
 1.184275,
@@ -103989,12 +103949,6 @@
 "solids/CEIL-RM-GARAGE/z1_m": 2.2352,
 "solids/CEIL-RM-M-BATH1/z0_m": 2.7305,
 "solids/CEIL-RM-M-BATH1/z1_m": 2.746375,
-"solids/CEIL-RM-M-BATH2-SLOT1/z0_m": 2.7305,
-"solids/CEIL-RM-M-BATH2-SLOT1/z1_m": 2.746375,
-"solids/CEIL-RM-M-BATH2-SLOT2/z0_m": 2.7305,
-"solids/CEIL-RM-M-BATH2-SLOT2/z1_m": 2.746375,
-"solids/CEIL-RM-M-BATH2-SLOT3/z0_m": 2.7305,
-"solids/CEIL-RM-M-BATH2-SLOT3/z1_m": 2.746375,
 "solids/CEIL-RM-M-BATH2/z0_m": 2.7305,
 "solids/CEIL-RM-M-BATH2/z1_m": 2.746375,
 "solids/CEIL-RM-M-BED/z0_m": 2.7305,
@@ -104003,18 +103957,6 @@
 "solids/CEIL-RM-M-CLOSET/z1_m": 2.746375,
 "solids/CEIL-RM-M-LAUNDRY/z0_m": 2.7305,
 "solids/CEIL-RM-M-LAUNDRY/z1_m": 2.746375,
-"solids/CEIL-RM-M-LIVING-SLOT1/z0_m": 2.7305,
-"solids/CEIL-RM-M-LIVING-SLOT1/z1_m": 2.746375,
-"solids/CEIL-RM-M-LIVING-SLOT2/z0_m": 2.7305,
-"solids/CEIL-RM-M-LIVING-SLOT2/z1_m": 2.746375,
-"solids/CEIL-RM-M-LIVING-SLOT3/z0_m": 2.7305,
-"solids/CEIL-RM-M-LIVING-SLOT3/z1_m": 2.746375,
-"solids/CEIL-RM-M-LIVING-SLOT4/z0_m": 2.7305,
-"solids/CEIL-RM-M-LIVING-SLOT4/z1_m": 2.746375,
-"solids/CEIL-RM-M-LIVING-SLOT5/z0_m": 2.7305,
-"solids/CEIL-RM-M-LIVING-SLOT5/z1_m": 2.746375,
-"solids/CEIL-RM-M-LIVING-SLOT6/z0_m": 2.7305,
-"solids/CEIL-RM-M-LIVING-SLOT6/z1_m": 2.746375,
 "solids/CEIL-RM-M-LIVING/z0_m": 2.7305,
 "solids/CEIL-RM-M-LIVING/z1_m": 2.746375,
 "solids/CEIL-RM-M-MECH/z0_m": 2.7305,
@@ -105927,14 +105869,16 @@
 "solids/ED-B-WORKSHOP-RC2-BOX/z1_m": -1.6049625,
 "solids/ED-B-WORKSHOP-SW-BOX/z0_m": -1.6335375,
 "solids/ED-B-WORKSHOP-SW-BOX/z1_m": -1.5382875,
-"solids/ED-G-EV-1450-BOX/z0_m": 0.3556,
-"solids/ED-G-EV-1450-BOX/z1_m": 0.4572,
 "solids/ED-G-EXT-SW-BOX/z0_m": 1.044575,
 "solids/ED-G-EXT-SW-BOX/z1_m": 1.139825,
+"solids/ED-G-GDO-GFCI-BOX/z0_m": 1.044575,
+"solids/ED-G-GDO-GFCI-BOX/z1_m": 1.139825,
 "solids/ED-G-RC-240-BOX/z0_m": 0.365125,
 "solids/ED-G-RC-240-BOX/z1_m": 0.460375,
 "solids/ED-G-RC-E-BOX/z0_m": 0.333375,
 "solids/ED-G-RC-E-BOX/z1_m": 0.428625,
+"solids/ED-G-RC-W-BOX/z0_m": 0.333375,
+"solids/ED-G-RC-W-BOX/z1_m": 0.428625,
 "solids/ED-G-SOFFIT-SW-BOX/z0_m": 1.044575,
 "solids/ED-G-SOFFIT-SW-BOX/z1_m": 1.139825,
 "solids/ED-G-SW-BOX/z0_m": 1.044575,

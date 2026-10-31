@@ -70,6 +70,9 @@ def gfci_locations(ctx: CheckContext) -> list[Finding]:
     # Circuits are schedule data in the library, not storey elements — they have no
     # position and never appear in an element list.
     circuits = {c.tag: c for c in ctx.plan.library.circuits}
+    guards = {element.tag: element for storey in ctx.plan.storeys
+              for element in ctx.plan.storey_elements(storey.tag)
+              if element.element_kind == "ElectricalDevice"}
     rooms: dict[str, list] = {}
     for room in ctx.model.rooms:
         if len(axis_ring(room)) >= 3:
@@ -95,6 +98,19 @@ def gfci_locations(ctx: CheckContext) -> list[Finding]:
                                  f"{device.tag} is a GFCI device — {reason}", (), code))
             continue
         circuit = circuits.get(device.circuit) if device.circuit else None
+        if device.gfci_ref:
+            guard = guards.get(device.gfci_ref)
+            if guard is not None and guard.kind.value == "gfci" and guard.circuit == device.circuit:
+                out.append(by_result(cid, Result.PASS,
+                                     f"{device.tag} is fed from the load side of GFCI "
+                                     f"{guard.tag} — {reason}", (), code))
+            else:
+                out.append(by_result(cid, Result.FAIL,
+                                     f"{device.tag} names gfci_ref {device.gfci_ref}, which is "
+                                     f"not a GFCI device on {device.circuit} — {reason}",
+                                     tags, code, "point gfci_ref at a GFCI device on the "
+                                     "same circuit"))
+            continue
         if circuit is None:
             out.append(by_result(cid, Result.UNKNOWN,
                                  f"{device.tag} requires GFCI protection — {reason} — and "

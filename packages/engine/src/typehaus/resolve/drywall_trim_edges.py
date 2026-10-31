@@ -1,6 +1,6 @@
 """The drywall accessories that follow one element rather than a room ring (→ drywall_trims).
 
-* ``led_profile`` — each plaster-in run, its length;
+* ``led_profile`` — each shadow-gap run's bead, its length;
 * ``outside_corner`` on a soffit — its outline less what a wall or lower soffit backs;
 * ``tile_reveal`` — a non-wood band replacing the wall finish: its top where it stops below
   the ceiling, and each end over the height it meets bare board (less another band carrying
@@ -38,7 +38,7 @@ _BAND_EPS_M = 1e-4
 def led_profiles(ctx: TrimContext) -> None:
     profile = ctx.standard.led_profile
     for run in ctx.model.light_runs:
-        if run.profile == "plaster_in" and profile is not None:
+        if run.profile == "shadow_gap" and profile is not None:
             ctx.add("led_profile", run.room, run.storey, profile.material_ref, run.length_m,
                     (run.tag, run.room or ""))
 

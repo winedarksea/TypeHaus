@@ -1,4 +1,4 @@
-"""Generic drywall beads and the plaster-in LED profile (→ ``DrywallStandard``, #103).
+"""Generic drywall beads and the LED shadow-gap bead (→ ``DrywallStandard``, #103).
 
 Placeholders a house replaces with its own products: no product, no price, the
 ``drywall-corner-bead`` idiom. Billed by the LF in ``takeoff/drywall_trims.py``.
@@ -20,7 +20,7 @@ MATERIALS: tuple[Material, ...] = (
     Material(tag="drywall-reveal-bead", name="Drywall reveal bead (tile stop)",
              source="Generic shadow reveal where tile ends on gypsum; product selection "
              "pending."),
-    Material(tag="led-plaster-in-profile", name="Plaster-in LED wall-washer profile",
-             source="Generic aluminium plaster-in channel with lens; product selection "
+    Material(tag="drywall-shadow-gap-bead", name="Drywall LED shadow-gap bead",
+             source="Generic Z shadow bead at the wall-ceiling edge; product selection "
              "pending."),
 )

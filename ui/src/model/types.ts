@@ -1837,8 +1837,8 @@ export interface LightRun {
   provenance: Provenance | null;
   soffit_ref?: string | null;
   emission_side?: "left" | "right";
-  // "plaster_in" when set into a gypsum ceiling or soffit (z_m is then the board face).
-  profile?: "surface" | "plaster_in";
+  // "shadow_gap" when set in a gypsum ceiling or soffit's edge reveal (z_m is then the board face).
+  profile?: "surface" | "shadow_gap";
   // The swept cross-section (→ resolve/geometry.py light_run_parts): each quad corner is
   // [across toward the emission side, drop below the run's height], metres.
   section?: LightRunSectionPart[];

@@ -53,7 +53,7 @@ BASEMENT_FIXTURES = (
     # `wall_ref` on both is **W-B-BA-E**, the room's one wet wall and its only 5 1/2" stud
     # cavity — venting reads `wall_ref`, not geometry, and W-B-BA-N dropped to a dry 2x4
     # when the plumbing moved off it. Their shared 1 1/2" vent rises in it at
-    # (13'-10 11/16", 19'-3") — the wall's own x, which moved with it.
+    # (13'-10 5/8", 19'-3") — the wall's own x, which moved with it.
     # Trap arms: lav ~2'-1", WC ~5'-9", both inside Table 1002.2's 3'-6"/6'-0" limits.
     #
     # WC at the NORTH end, backing W-B-BA-N, floor-mounted (a wall-hung carrier wants 6 1/2"

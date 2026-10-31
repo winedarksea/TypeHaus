@@ -6,18 +6,22 @@ import dataclasses
 import pytest
 from shapely.geometry import LineString, Polygon
 
-from typehaus.resolve.drywall_led import drywall_standard, host_plaster_in_runs
+from typehaus.resolve.drywall_led import drywall_standard, host_shadow_gap_runs
 
 _IN = 0.0254
 _COVES = {"LR-M-LIVING-W", "LR-M-LIVING-E", "LR-M-BATH2-TUB-CLG", "LR-S-HALL-GAP"}
 
 
-def test_the_four_coves_are_plaster_in_and_slot_their_host(catlin_model_ro):
+def test_the_four_coves_are_shadow_gaps_cut_from_their_host(catlin_model_ro):
     model = catlin_model_ro
-    plaster = {run.tag: run for run in model.light_runs if run.profile == "plaster_in"}
-    assert set(plaster) == _COVES
+    gaps = {run.tag: run for run in model.light_runs if run.profile == "shadow_gap"}
+    assert set(gaps) == _COVES
     soffits = {soffit.tag: soffit for soffit in model.soffits}
-    for run in plaster.values():
+    for run in gaps.values():
+        # The 5/8" Z bead rises no further than the 5/8" board it sits in.
+        assert run.aperture_m / _IN == pytest.approx(0.625)
+        assert -min(d for _key, quad in run.section for _a, d in quad) / _IN == pytest.approx(
+            0.625)
         slot = LineString(run.path).buffer(run.aperture_m / 2.0 - 1e-4, cap_style=2,
                                            join_style=2)
         if run.host_ref in soffits:
@@ -28,7 +32,6 @@ def test_the_four_coves_are_plaster_in_and_slot_their_host(catlin_model_ro):
         else:
             boards = [Polygon(s.outline) for s in model.solids
                       if s.category == "ceiling" and s.uid.startswith(run.host_ref)]
-            assert len(boards) > 1, "the slot splits the ceiling into pieces"
         assert boards and sum(board.intersection(slot).area for board in boards) < 1e-9
         # The profile's record bills the run's own length.
         assert sum(t.length_m for t in model.drywall_trims
@@ -50,20 +53,29 @@ def test_trimless_door_bead_and_living_corner_by_hand(catlin_model_ro):
                            for t in corners)
 
 
-def test_a_cove_off_its_wall_is_an_integrity_error(catlin_model_ro):
+def test_a_cove_moves_onto_its_reveal_and_one_out_of_reach_is_an_error(catlin_model_ro):
     standard, findings = drywall_standard(catlin_model_ro.plan)
     assert standard is not None and not findings
-    model = copy.copy(catlin_model_ro)
-    model.solids = list(catlin_model_ro.solids)
-    model.light_runs = [
-        dataclasses.replace(run, profile="surface", section=(),
-                            path=[(x + 6 * _IN, y) for x, y in run.path])
-        if run.tag == "LR-M-LIVING-W" else run
-        for run in catlin_model_ro.light_runs]
-    found = host_plaster_in_runs(model, standard)
+    resolved = next(r for r in catlin_model_ro.light_runs if r.tag == "LR-M-LIVING-W")
+
+    def host(shift_in):
+        model = copy.copy(catlin_model_ro)
+        model.solids = list(catlin_model_ro.solids)
+        model.light_runs = [
+            dataclasses.replace(run, profile="surface", section=(),
+                                path=[(x + shift_in * _IN, y) for x, y in run.path])
+            if run.tag == "LR-M-LIVING-W" else run
+            for run in catlin_model_ro.light_runs]
+        return model, host_shadow_gap_runs(model, standard)
+
+    # 2" off the reveal, within the 4" reach: back onto its centre, 5/16" off the wall.
+    model, found = host(2)
+    moved = next(r for r in model.light_runs if r.tag == "LR-M-LIVING-W")
+    assert not found and moved.path == pytest.approx(resolved.path)
+    model, found = host(6)
     assert [(f.check_id, f.element_tags) for f in found] == [
         ("integrity.light_run_host", ("LR-M-LIVING-W",))]
-    assert "8.75\"" in found[0].message
+    assert "6.31\"" in found[0].message
 
 
 def test_jbead_stops_with_the_bare_face_and_slivers_are_not_corners(catlin_model_ro):

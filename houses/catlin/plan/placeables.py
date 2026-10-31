@@ -492,9 +492,10 @@ MAIN_PLACEABLES = [
 ]
 GARAGE_PLACEABLES = [
     # The 60"-wide work surface runs along the west wall directly below the infrared
-    # heater lamp. Rotation 90° turns the 30" depth into the wall-to-room dimension.
+    # heater lamp. Rotation 90° turns the 30" depth into the wall-to-room dimension. Moved to
+    # the stair end 2026-10-30 (centre y 52'-2 5/8", 2'-2" north of the stair foot).
     Furniture(uid="CGF601AAAA", tag="FURN-G-WORKBENCH", type_ref="FURN-G-WORKBENCH",
-              room="RM-GARAGE", position=pt(m(2.449983), m(19.3941)), rotation=deg(90)),
+              room="RM-GARAGE", position=pt(m(2.449983), m(15.91628)), rotation=deg(90)),
 ]
 # The beds are placed per room: BED1 and BED2 face north; BED3 faces east. The integration
 # assertion in test_catlin_source_alignment checks their clearances and door swings.

@@ -105,7 +105,7 @@ BASEMENT_LIGHTING = [
     # ** IT MOVED ONTO THE NEW DOOR'S WALL (2026-09-07). ** It was 7" west of O-B-HALL's
     # west jamb on W-B-CW2's workshop face, 8 5/16" from what is now a wall tee at
     # N-B-BA-SE, and it was justified by a cased opening that no longer exists. The way in
-    # is D-B-SHOP, so the switch goes on W-B-HALL-W's workshop face (x=163.3025", the
+    # is D-B-SHOP, so the switch goes on W-B-HALL-W's workshop face (x=163.24", the
     # device 0.135" into it, the same seat ED-B-STAIR-SW takes on W-B-BA-E), 41" along it
     # since D-B-SHOP's derived RO (2026-10-29): 4 9/16" further north than it was.
     #
@@ -117,8 +117,8 @@ BASEMENT_LIGHTING = [
     # a workshop door open; at 90 degrees the switch is in the clear and it is the first
     # thing your hand finds coming through.
     #
-    # ** x IS THE BOX'S CENTRE, NOT ITS FACE. ** 163.4375" is where the plate lands — the
-    # face at 163.3025" plus the 0.135" seat — and authoring it as the position put the
+    # ** x IS THE BOX'S CENTRE, NOT ITS FACE. ** 163.375" is where the plate lands — the
+    # face at 163.24" plus the 0.135" seat — and authoring it as the position put the
     # whole 2" body 1" further east, 1.61" inside W-B-HALL-W's studs
     # (`integrity.wall_mount_on_face`). A device footprint is a
     # plan rectangle CENTRED on `position`, so the centre is an inch back: 162.4375".
@@ -377,10 +377,10 @@ BASEMENT_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING)),
     # The 3-way at the stair foot. It hung on W-B-STR3's east face at (10'-4 3/8", 26'-6")
     # until 2026-09-05, which the under-stair closet then enclosed — so it moved across the
-    # well onto **W-B-WELL's east face** (x=14'-0 15/16") at the same height, level with the
+    # well onto **W-B-WELL's east face** (x=14'-0 7/8") at the same height, level with the
     # bathroom's north wall. That is the hall side, which is where you reach for it.
     # y=25'-10" and not 25'-6": at the bathroom's north wall line the box straddles
-    # W-B-BA-E's own end — that wall's gypsum runs to x=14'-2 1/16", four inches past this
+    # W-B-BA-E's own end — that wall's gypsum runs to x=14'-2", four inches past this
     # face — and reads as 0.8" buried. Four inches north is clear of it and still the first
     # thing your hand finds at the stair foot.
     ElectricalDevice(uid="QTB000HAAA", tag="ED-B-STAIR-SW", kind=DeviceKind.SWITCH,
@@ -393,7 +393,7 @@ BASEMENT_LIGHTING = [
     # The can lights the HALL — the slot between W-B-BA-E and W-B-CN2 — centred in it and
     # level with D-B-BATH's leaf. The slot was 3'-2 5/8" and the can sat at x=15'-9";
     # sliding W-B-BA-E 1 5/16" west onto the well partition's line (2026-09-05) made it
-    # **3'-3 15/16", x 14'-2 1/16"..17'-6"**, whose centre is x=15'-10". x=14' would still
+    # **3'-4", x 14'-2"..17'-6"** (since 2026-10-30), whose centre is x=15'-10". x=14' would still
     # put the can inside W-B-BA-E's studs. It no longer runs "south to O-B-HALL": since
     # 2026-09-07 the slot runs to the sauna wall and this is the first of four cans on it.
     ElectricalDevice(uid="QTB000JAAA", tag="ED-B-STAIR-CAN1", kind=DeviceKind.LIGHT,
@@ -465,17 +465,17 @@ BASEMENT_LIGHTING = [
 # --- Main storey ----------------------------------------------------------------------
 MAIN_LIGHTING = [
     # RM-M-LIVING, the lounge end: the shadow-gap coves the notes lead with. Two runs, one
-    # down each side, 2.74" off the wall each washes (plaster-in, DRYWALL-STANDARD, #103),
-    # mounted at the 9' ceiling plane — installed with the drywall and
-    # fixed to the board rather than to the framing, so the reveal stays a sound break
-    # rather than becoming a rigid path between the room and the joists.
+    # down each side in the 5/8" reveal where the ceiling board stops short of the wall it
+    # washes (DRYWALL-STANDARD's Z bead, #103; the resolver centres each on its reveal),
+    # at the 9' ceiling plane — the tape on the bead, fixed to the board rather than to the
+    # framing, so the reveal stays a sound break between the room and the joists.
     LightRun(uid="QRM0001AAA", tag="LR-M-LIVING-W", type_ref="ED-T-LT-STRIP24",
-             path=(pt(ft(18, 6), ft(1)), pt(ft(18, 6), ft(21, 6))),
+             path=(pt(ft(18, 3.5625), ft(1)), pt(ft(18, 3.5625), ft(21, 6))),
              room="RM-M-LIVING", psu_ref="ED-M-LIVING-LT-PSU",
              controlled_by=("ED-M-LIVING-SW",),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     LightRun(uid="QRM0002AAA", tag="LR-M-LIVING-E", type_ref="ED-T-LT-STRIP24",
-             path=(pt(ft(35, 2.75), ft(1)), pt(ft(35, 2.75), ft(21, 6))),
+             path=(pt(ft(35, 5.1875), ft(1)), pt(ft(35, 5.1875), ft(21, 6))),
              room="RM-M-LIVING", psu_ref="ED-M-LIVING-LT-PSU",
              controlled_by=("ED-M-LIVING-SW",), emission_side="right",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
@@ -967,13 +967,13 @@ MAIN_LIGHTING = [
              room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
              controlled_by=("ED-M-BATH2-SW-EVE",),
              mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
-    # Over the tub, in the ceiling 2" off W-M-BA2E's face, north of the glass to HS1: the
-    # LR-M-LIVING-* shadow-gap idiom, fixed to the board. It replaced the deck-nosing run
+    # Over the tub, in the ceiling's shadow gap at W-M-BA2E's face, north of the glass to
+    # HS1: the LR-M-LIVING-* idiom, fixed to the board. It replaced the deck-nosing run
     # LR-M-BATH2-TUBDECK (owner, 2026-10-22: no LEDs near the floor). 5.5 ft against the
     # old 5.4, so the PSU line stands. Damp-rated E3, as NEC 410.10(D) wants within 8' of
     # the rim. Clear of DU-M-BATH2-DRY (in the stall), the cans and the towel bars at 55".
     LightRun(uid="WEQM9XB2MM", tag="LR-M-BATH2-TUB-CLG", type_ref="ED-T-LT-STRIP24-2700",
-             path=(pt(inch(92.625), inch(196)), pt(inch(92.625), inch(262))),
+             path=(pt(inch(94.4375), inch(196)), pt(inch(94.4375), inch(262))),
              room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
              controlled_by=("ED-M-BATH2-SW-EVE",), emission_side="right",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
@@ -1230,16 +1230,17 @@ MAIN_LIGHTING = [
 
 # --- Second storey --------------------------------------------------------------------
 SECOND_LIGHTING = [
-    # Three-sided plaster-in wall-washer in SF-S-DUCT's underside, slot centre 2 1/2" in
-    # from each edge (DRYWALL-STANDARD, decision #103). Host-relative width and north return
-    # follow the resolved wall finishes; the south ends remain at 9'-7".
+    # Three-sided shadow gap in SF-S-DUCT's underside: the board stops 5/8" short of both
+    # walls and of SF-S-HP1's bulkhead, the tape in the reveal (DRYWALL-STANDARD, #103); the
+    # bead is the board's depth, so nothing rises into the 2x2 rungs. Host-relative width
+    # and north return follow the resolved wall finishes; the south ends remain at 9'-7".
     # Clockwise path, opening left: west/east wall wash and the north bulkhead transition.
     LightRun(uid="QRS0001AAA", tag="LR-S-HALL-GAP", type_ref="ED-T-LT-STRIP24",
              path=(pt(ft(18, 6), ft(9, 7)), pt(ft(18, 6), ft(27, 6)),
                    pt(ft(21, 6), ft(27, 6)), pt(ft(21, 6), ft(9, 7))),
              room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU",
              controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
-             soffit_ref="SF-S-DUCT", soffit_edge_offset=inch(2.5),
+             soffit_ref="SF-S-DUCT", soffit_edge_offset=inch(0.3125),
              emission_side="left",
              mount=Mount(kind=MountKind.CEILING, elevation=inch(94.5))),
     # The driver moved with the cove: (20'-0", 30'-6") is inside EQ-S-HP1-AH's footprint
@@ -1588,6 +1589,15 @@ GARAGE_LIGHTING = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(56),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # Blank-face GFCI beside the switch: the opener's ceiling outlet ED-G-GDO-RC is on its
+    # load side, so its reset is in reach (NEC 210.8) and a tripped opener leaves the lights on.
+    ElectricalDevice(uid="T2P1VW9FJE", tag="ED-G-GDO-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
+                     type_ref="ED-T-LEV-GFCI-DF",
+                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-S", face="left", distance_from_start=inch(59),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # The garage-door lights (2026-08-02; a PAIR since 2026-09-07): mark R, full-cutoff

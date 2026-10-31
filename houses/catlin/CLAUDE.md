@@ -151,10 +151,11 @@ not instruction: when it disagrees with this file or the model, it is the one th
 - `plan/smart_home.py` — `# haus: editable` doorbell, cameras, opener, EVSE, HP1 stat, alarm
   relays and leak valve; types in `plan/smart_home_types.py`. Local-only HA register:
   `notes/smart_home.md`.
-- `plan/drywall.py` — `# haus: editable` `DRYWALL-STANDARD` (decision #103) with its bead and
-  plaster-in LED profile products. The four gypsum-hosted coves are plaster-in: slot centre
-  2-4" off the washed wall, which `integrity.light_run_host` grades. Move a cove and its
-  `emission_side` must still face that wall. Beads bill in `prices.toml [drywall_trims]`.
+- `plan/drywall.py` — `# haus: editable` `DRYWALL-STANDARD` (decision #103) with its bead
+  products. The four gypsum-hosted coves sit in a 5/8" shadow gap (Trim-Tex AS6010 Z bead,
+  owner 2026-10-30): the board stops short of the washed wall and the resolver centres each
+  leg on the reveal if it is within 4" of a gypsum face (`integrity.light_run_host`). Move a
+  cove and its `emission_side` must still face that wall. Beads bill in `[drywall_trims]`.
 - `plan/fixtures.py` — `# haus: editable` plumbing-fixture *instances* (so UI drags
   round-trip). Only explicit constructors in any of these — no functions/generators.
 - `plan/electrical.py` — `# haus: editable` electrical service upgrade: meter, backup
@@ -1883,7 +1884,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   their face (`location.attachment`) and `integrity.wall_mount_on_face` grades the body.
 
 - **Hall and circulation.** The hall runs from the stair foot south, west of `W-B-CN2`, the
-  full way to the sauna's north wall, on the x=13'-10 11/16" well-partition centreline shared
+  full way to the sauna's north wall, on the x=13'-10 5/8" well-partition centreline shared
   with `W-B-BA-E`/`W-B-WELL`; part of `RM-B-STAIR`'s loop (114.8 -> 147.7 sf, one seed, no
   separate `Room`). Circulation is stair -> hall -> gym (`D-B-GYM`) -> `D-B-PLAY`, and
   stair -> hall -> `D-B-SHOP` -> workshop -> `D-B-FURN`. There are now **no doors through a

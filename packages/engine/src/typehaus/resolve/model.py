@@ -1394,16 +1394,16 @@ class ResolvedLightRun:
 
     soffit_ref: str | None = None
     emission_side: str = "left"
-    #: ``plaster_in`` where the run is set into a gypsum ceiling or soffit board and the
-    #: house has a plaster-in profile (→ resolve/drywall_led.py); ``z_m`` is then the
-    #: board's room face. ``section`` is that profile's swept parts, ``(key, quad)`` with
+    #: ``shadow_gap`` where the run sits in a gypsum ceiling or soffit board's edge reveal
+    #: and the house has a shadow-gap profile (→ resolve/drywall_led.py); ``z_m`` is then
+    #: the board's room face. ``section`` is that profile's swept parts, ``(key, quad)`` with
     #: quad corners ``(across toward the emission side, drop below z)``; empty is the
     #: surface channel (→ resolve/geometry.light_run_parts).
     profile: str = "surface"
     section: tuple[tuple[str, tuple[tuple[float, float], ...]], ...] = ()
-    #: The ceiling solid or soffit the plaster-in slot is cut through.
+    #: The ceiling solid or soffit the shadow-gap reveal is cut from.
     host_ref: str | None = None
-    #: The slot cut through the host board (plaster-in only).
+    #: The reveal's width, cut from the host board (shadow gap only).
     aperture_m: float | None = None
 
     def vertex_z(self) -> list[float]:
@@ -1655,7 +1655,7 @@ class ResolvedModel:
     # Derived base and door casing off the house's ``TrimStandard`` (→ resolve/interior_trim.py).
     base_runs: list[ResolvedBaseRun] = field(default_factory=list)
     door_casings: list[ResolvedDoorCasing] = field(default_factory=list)
-    # Drywall beads and plaster-in profiles off the house's DrywallStandard (#103).
+    # Drywall beads and shadow-gap LED reveals off the house's DrywallStandard (#103).
     drywall_trims: list[ResolvedDrywallTrim] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)

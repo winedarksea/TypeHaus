@@ -278,7 +278,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # ui/src/three/builders/structure.ts COVE_CHANNEL_COLOR / LED_TAPE_COLOR.
     "cove_channel": (0.80, 0.80, 0.80, 1.0),  # mill-finish aluminium extrusion
     "led_tape": (1.00, 0.92, 0.72, 1.0),      # warm-white tape, bright rather than lit
-    "cove_lens": (0.96, 0.96, 0.94, 1.0),     # frosted diffuser over a plaster-in profile
+    "cove_lens": (0.96, 0.96, 0.94, 1.0),     # frosted diffuser
     "cove_flange": (0.93, 0.92, 0.89, 1.0),   # mudded wing, the ceiling's gypsum white
 }
 _FALLBACK = (0.70, 0.70, 0.70, 1.0)

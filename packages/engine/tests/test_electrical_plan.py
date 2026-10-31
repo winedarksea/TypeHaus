@@ -141,8 +141,8 @@ def test_service_upgrade_devices_are_present(catlin_model):
                if element.element_kind == "ElectricalDevice"}
     assert devices["ED-M-METER"].kind.value == "meter"
     assert devices["ED-B-BACKUP-ENCL"].kind.value == "panel"
-    assert devices["ED-G-RC-240"].type_ref == "ED-T-LEV-620-DUPLEX"  # general use, 2026-10-30
-    assert devices["ED-G-EV-1450"].type_ref == "ED-T-LEV-EV-1450"
+    assert devices["ED-G-RC-240"].type_ref == "ED-T-LEV-620"  # lone 6-20R, 2026-10-30
+    assert devices["ED-G-EV-1450"].type_ref == "ED-T-EVSE-JB"  # EVSE hardwired
     assert devices["ED-B-SPA-DISC"].kind.value == "disconnect"
     # One 440.14 disconnect per outdoor unit — three systems now, not two minisplits.
     assert devices["ED-M-HP1-DISC"].kind.value == "disconnect"
@@ -151,8 +151,8 @@ def test_service_upgrade_devices_are_present(catlin_model):
     assert devices["ED-A-PV-JB"].kind.value == "junction_box"
     # Typed NEMA data replaces name parsing (WS1 schema).
     types = {t.tag: t for t in catlin_model.plan.library.electrical_device_types}
-    assert types["ED-T-LEV-EV-1450"].nema == "14-50R"
-    assert types["ED-T-LEV-EV-1450"].load_va == 9600
+    assert types["ED-T-LEV-620"].nema == "6-20R"
+    assert types["ED-T-EVSE-JB"].load_va == 9600
 
 
 def test_bedroom_three_north_receptacle_sits_east_of_window_at_sill_height(catlin_model):

@@ -2445,9 +2445,9 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     # ST-SG-PORCH (2026-09-03) is the second of those: the porch's only way down to grade,
     # five risers from the heat-pump pad at -2'-8" to the composite plank at +0'-1".
     assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"}
-    # 3'-5 1/16" flights and the 4 1/2" partition occupy the 7'-2 3/4" well with 1/8"
-    # fit clearance. The west stringer follows W-B-STR/W-B-STR3's plywood face.
-    assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 5.0625).meters, abs=1e-9)
+    # 3'-5 1/8" flights and the 4 1/2" partition fill the 7'-2 3/4" well face to face, so
+    # the partition centres between them. The west stringer follows W-B-STR/W-B-STR3's face.
+    assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 5.125).meters, abs=1e-9)
     assert stairs["ST-B2M"]["floor_opening"] == "FO-M-STAIR"
     assert stairs["ST-B2M"]["run_direction"] == "y"
     assert stairs["ST-B2M"]["layout"] == "u_split_landing"

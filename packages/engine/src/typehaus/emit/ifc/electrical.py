@@ -90,7 +90,7 @@ def emit_light_runs(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
 
 def _strip_shells(run: Any) -> list[list[list[tuple[float, ...]]]]:
     """One closed shell per section part per plan leg: the surface channel and its tape, or
-    a plaster-in profile (→ :func:`~typehaus.resolve.geometry.light_run_section_shells`)."""
+    a shadow-gap bead (→ :func:`~typehaus.resolve.geometry.light_run_section_shells`)."""
     return [faces for _key, faces in light_run_section_shells(
         list(run.path), run.vertex_z(), light_run_parts(run), run.emission_side)]
 

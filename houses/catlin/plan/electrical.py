@@ -106,13 +106,15 @@ DEVICE_TYPES = (
     # not the yellow slab the domain fallback colour draws — `plan_symbol` gives it both the
     # handle and the steel grey. Sized off the product (6-1/2" x 3-1/4" x 9-1/2"), about a
     # fifth under the placeholder it replaced.
-    # EV receptacles (plans/electrical_notes.md lines 5-7). load_va is the continuous EV
-    # load at 80% of the breaker: 6-20 -> 240x16, 14-50 -> 240x40. The 6-20 is now half of
-    # the garage's general-use point, ED-G-RC-240 (2026-10-30).
-    # The 14-50 EVSE outlet. The EVSE is the Grizzl-E Smart (plan/smart_home.py, 2026-10-30):
-    # local OCPP to HA, superseding the Emporia, which had no local API. No charger here is a
-    # power control system, so nothing earns a 220.82 credit (2026 NEC 625.42(A) -> Article
-    # 130 Part II wants UL 3141). load_va is the unmanaged continuous rating.
+    # The EVSE is hardwired (owner, 2026-10-30): ED-T-EVSE-JB is the surface box its 6-3 / #6
+    # feeder lands in, behind the Grizzl-E. load_va is the unmanaged 40 A continuous draw. No
+    # charger here is a power control system, so nothing earns a 220.82 credit (2026 NEC
+    # 625.42(A) -> Article 130 Part II wants UL 3141).
+    ElectricalDeviceType(tag="ED-T-EVSE-JB", name="EVSE hardwire junction box, 240 V",
+                          load_va=9600, plan_symbol="junction-box",
+                          footprint=(inch(4), inch(4)), height=inch(4),
+                          ports=(ServicePort(tag="power", service=Service.POWER_240,
+                                             position=(ft(0), ft(0), ft(0))),)),
     # The backup subsystem's physical presence: one DIN-rail enclosure beside the panel
     # (Shelly Pro 4PM relays, 24V PSUs, DIN UPS). The component list is derived by the
     # backup takeoff from the backup-flagged circuits; only the enclosure is modeled.
@@ -1057,54 +1059,58 @@ SECOND_EQUIPMENT = [
               soffit_ref="SF-S-HP1"),
 ]
 
-# --- Garage: EV receptacles on the west and south walls ----------
-# ED-G-EV-1450 is on W-G-S's INTERIOR face. GARAGE_WALL_2X6's sheathing is 5/8" CDX and its
-# cladding is 7/8" corrugated, and the wall also carries a 3/8" node-line offset
-# (`GARAGE_Y_SOUTH`, plan/storeys/garage.py) that keeps the breezeway slot — net, W-G-S's
-# interior face sits +3/8" (node) - 7/8" (wall depth) = -1/2" off the sheathing plane.
-# `ED-G-RC-240` is on W-G-W, which has no node-line move, so its interior face is 7/8" off
-# the sheathing plane. Both west-wall devices here and `EQ-G-HEATER` below travelled the
-# garage's 6'-0" east move on 2026-09-07 — they sit ON that wall. `ED-G-EV-1450` did not:
-# it is a station on the SOUTH wall's interior face, still well inside its new x 6'..30'
-# run, and holding it still keeps `CD-B-GARAGE` and its three sleeves untouched.
+# --- Garage: south-wall EV feed, west-wall bench group, east-bay outlet ----------
+# Offsets are from each wall's start node (W-G-W: NW corner, y = 67'-2 5/8" - d; W-G-S: SW
+# corner, x = 6'-0" - d/12 + ...). Studs are 24" o.c., so a device at 12 + 24n sits mid-bay.
+# Interior faces are not on the node line: W-G-S's is -1/2" off the sheathing plane (3/8" node
+# move less the 7/8" wall depth), W-G-W's 7/8".
 #
-# ** THE EV 14-50R IS A LEVITON 1450W (device schedule, 2026-10-27), THE DEVICE CHOSEN, NOT THE
-# CHARGER. ** A range receptacle is rated for a handful of insertions and an intermittent
-# load; this one sits under 40 A continuous for hours. The 1450W is the heavy-duty EV-duty
-# 14-50R, weather-resistant, and its terminals take #4/#6/#8 AWG COPPER ONLY - a live
-# constraint on the feeder. `ED-T-LEV-EV-1450` (plan/device_types.py) names it; the range
-# takes the plain 1450R (`PROD-LEVITON-1450R`). The EVSE that plugs in is the Grizzl-E Smart,
-# `APPL-G-EVSE` beside it (plan/smart_home.py): cord-and-plug, so an appliance, not a device.
+# ** OWNER, 2026-10-30: SIMPLER AND CHEAPER. ** The bench, its heater and the 6-20R moved from
+# the north end of W-G-W to the south end, beside ST-G-SERVICE, 8'-10" of cable from the
+# feeder's stub-up at x 16'-0" instead of 20'+. Everything else sits on the south wall.
 #
-# ** NEC 210.52(G)(1): a receptacle in each vehicle bay, <= 5'-6" (owner, 2026-10-30). ** The
-# 16' door makes two bays. West: ED-G-RC-240, the 6-20 EV outlet made a general-use point
-# (5-20R + 6-20R, CKT-GAR-240), backup charging when the 14-50 is busy. East: ED-G-RC-E on
-# CKT-RC-GARAGE, the 120 V/20 A circuit 210.11(C)(4) wants for these outlets.
+# ** EVSE HARDWIRED. ** The Grizzl-E Smart's manual documents removing the 14-50P for a
+# hardwired install. With no receptacle, NEC 210.8(A)(2) and 625.54 do not reach it and the
+# charger's own CCID protects: CKT-EV-1450 is a plain 50 A 2-pole (125% of 40 A). ED-G-EV-1450
+# keeps its tag (CD-B-GARAGE / CD-B-GAP-EV end on it) but is now the surface box behind the
+# unit, not an outlet.
+#
+# ** NEC 210.52(G)(1) / 210.11(C)(4). ** One counting receptacle per bay (door width 16' =
+# two): ED-G-RC-W on the bench (west bay), ED-G-RC-E on the south wall (east bay), both on
+# CKT-RC-GARAGE (120 V, 20 A, GFCI, receptacle outlets only: these two and the opener's).
+# The 6-20R is alone on the 2-pole CKT-GAR-240: no neutral, no 120 V device, not counted.
 GARAGE_DEVICES = [
-    ElectricalDevice(uid="CEE008AAAA", tag="ED-G-RC-240", kind=DeviceKind.RECEPTACLE_240,
-                     type_ref="ED-T-LEV-620-DUPLEX", circuit="CKT-GAR-240",
+    # Bench group, W-G-W, 48" AFF over the 34" bench, mid-bay either side of the heater.
+    ElectricalDevice(uid="RKGTAV787W", tag="ED-G-RC-W", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE",
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-G-W", face="left", distance_from_start=inch(103.875),
+                         wall_ref="W-G-W", face="left", distance_from_start=inch(156),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.RECEPTACLE_240,
-                     type_ref="ED-T-LEV-EV-1450", circuit="CKT-EV-1450",
+    ElectricalDevice(uid="CEE008AAAA", tag="ED-G-RC-240", kind=DeviceKind.RECEPTACLE_240,
+                     type_ref="ED-T-LEV-620", circuit="CKT-GAR-240",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE",
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-W", face="left", distance_from_start=inch(204),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-EVSE-JB", circuit="CKT-EV-1450",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE",
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(167.375),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
-    # Mid-bay on the east wall, between studs at 128" and 144".
+    # East bay, mid-bay of the stud bay at x 25'-0".
     ElectricalDevice(uid="D8QHKRB3HB", tag="ED-G-RC-E", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE",
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-G-E", face="left", distance_from_start=inch(136),
+                         wall_ref="W-G-S", face="left", distance_from_start=inch(228),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
 ]
 
 GARAGE_EQUIPMENT = [
-    # West wall — the only wall with nothing else in it. Mounted 6'-0" on an 8' wall, 15"
-    # case tops at 7'-3", blows down over a bench.
+    # West wall beside the stair, centred over the bench (2026-10-30). Mounted 6'-0" on an 8'
+    # wall, 15" case tops at 7'-3", blows down over a bench.
     # Hard-wired, not cord-and-plug: NEC 210.8(A)(2) GFCI applies to garage *receptacles*
     # only, so CKT-GAR-HEAT carries none — a plug-in unit would need CKT-RC-GARAGE instead.
     # FX-G-HYDRANT left this corner for the SW stair foot on 2026-09-16.
@@ -1113,7 +1119,7 @@ GARAGE_EQUIPMENT = [
               room="RM-GARAGE", type_ref="EQ-T-GARAGE-HEATER", circuit="CKT-GAR-HEAT",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-G-W", face="left", distance_from_start=inch(73.5625),
+                  wall_ref="W-G-W", face="left", distance_from_start=inch(180),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
@@ -1908,7 +1914,7 @@ NEC_FILL_BASEMENT = [
     # ever call this gap. It is authored because the code says so, not because the model
     # noticed.
     #
-    # On W-B-HALL-W's hall face (east face at 14'-2 1/16") 1" proud of it — the face
+    # On W-B-HALL-W's hall face (east face at 14'-2") 1" proud of it — the face
     # convention at the top of this file — at y=16'-0", roughly the hall's midpoint and
     # clear of both doors: D-B-SHOP's north jamb is at 13'-10 9/16" and D-B-GYM is opposite,
     # on the other side. `rotation=deg(90)` turns the plate east into the hall. Elevation

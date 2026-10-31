@@ -2351,7 +2351,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # retail, NOT read off a retailer; labour is set-and-commission. The opener row replaces the
 # `finish-garage-door-opener` allowance, which is deleted so it does not bill twice.
 "APPL-LIFTMASTER-8550W" = { material = { low = 330, high = 480 }, labour = { low = 150, high = 350 } }  # 1 ea, ratgdo32 in [install_parts]
-"APPL-GRIZZLE-SMART-40" = { material = { low = 400, high = 600 }, labour = { low = 40, high = 100 } }  # 1 ea, plug-in on ED-G-EV-1450
+"APPL-GRIZZLE-SMART-40" = { material = { low = 400, high = 600 }, labour = { low = 40, high = 100 } }  # 1 ea, hardwired from ED-G-EV-1450
 "APPL-ZOOZ-ZAC36" = { material = { low = 110, high = 180 }, labour = { low = 60, high = 150 } }  # 1 ea, incl. the 1/2" lever ball valve and a ZSE42
 "ED-T-DOORBELL-POE" = { material = { low = 100, high = 160 }, labour = { low = 60, high = 140 } }  # 1 ea + plug-in chime
 "ED-T-CAM-TURRET" = { material = { low = 90, high = 160 }, labour = { low = 60, high = 140 } }  # 1 ea
@@ -2632,19 +2632,20 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-BACKUP-ENCL" = { material = { low = 250, high = 800 }, labour = { low = 150, high = 400 } }  # 1 ea
 "ED-T-BACKUP-PANEL" = { material = { low = 90, high = 260 }, labour = { low = 250, high = 600 } }  # 1 ea
 "ED-T-DISCONNECT-3R" = { material = { low = 30, high = 90 }, labour = { low = 90, high = 220 } }  # 4 ea
-# Both EV rows are the RECEPTACLE, per the catalog name. The EVSE that plugs in is the
-# Grizzl-E Smart (APPL-GRIZZLE-SMART-40 in [placeables], 2026-10-30), which replaced the
-# Emporia: local OCPP to Home Assistant (notes/smart_home.md).
+# The EVSE is the hardwired Grizzl-E Smart (APPL-GRIZZLE-SMART-40 in [placeables], 2026-10-30),
+# which replaced the Emporia: local OCPP to Home Assistant (notes/smart_home.md).
 # Device schedule rows (owner decisions 2026-10-27, notes/workshop_receptacles.md): ranges carry over from
 # the commodity class each replaced; Matter/occupancy/USB-C/surge lines carry a retail uplift. Estimates.
-"ED-T-LEV-620-DUPLEX" = { material = { low = 11, high = 24 }, labour = { low = 40, high = 85 } }  # 2 ea (workshop RC1, garage ED-G-RC-240); T5461 + E5825, device only: box and cover in [electrical_boxes] (2026-10-29)
+"ED-T-LEV-620-DUPLEX" = { material = { low = 11, high = 24 }, labour = { low = 40, high = 85 } }  # 1 ea (workshop RC1); T5461 + E5825, device only: box and cover in [electrical_boxes] (2026-10-29)
 "ED-T-LEV-620-FLUSH" = { material = { low = 14, high = 44 }, labour = { low = 45, high = 95 } }  # 1 ea; kettle, flush 2-gang (the old 620-DUPLEX rate)
 "ED-T-LEV-DRYER-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-DUPLEX-15" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 14 ea
-"ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 57 ea (incl. ED-G-GDO-RC, ED-G-RC-E, 2026-10-30)
-"ED-T-LEV-EV-1450" = { material = { low = 25, high = 80 }, labour = { low = 160, high = 380 } }  # 0 ea
+"ED-T-LEV-DUPLEX-20" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 58 ea (incl. ED-G-GDO-RC, ED-G-RC-E, ED-G-RC-W, 2026-10-30)
+"ED-T-LEV-620" = { material = { low = 6, high = 16 }, labour = { low = 38, high = 78 } }  # 1 ea, garage ED-G-RC-240 (T5461 single 6-20R)
+"ED-T-EVSE-JB" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea, ED-G-EV-1450 hardwire box
 "ED-T-LEV-GFCI-15" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 6 ea
 "ED-T-LEV-GFCI-20" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 20 ea
+"ED-T-LEV-GFCI-DF" = { material = { low = 30, high = 45 }, labour = { low = 48, high = 92 } }  # 1 ea, ED-G-GDO-GFCI (GFRBF-W ~$42, McNaughton-McKay 2026-10-30)
 "ED-T-LEV-GFCI-ALARM" = { material = { low = 30, high = 70 }, labour = { low = 48, high = 92 } }  # 1 ea
 "ED-T-LEV-GFCI-WR" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 8 ea
 "ED-T-LEV-GUIDE" = { material = { low = 12, high = 28 }, labour = { low = 38, high = 78 } }  # 4 ea
@@ -5472,10 +5473,11 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # F reveal, the tile stop: Trim-Tex AS8710 at FBM $140 / 25 x 10' = $0.56/LF. Fussier to set
 # dead straight than a corner bead.
 "dw-reveal-bead-f" = { material = { low = 0.56, high = 1.0 }, labour = { low = 3.0, high = 5.5 } }  # 41.0 LF
-# Plaster-in wall-washer channel (the four coves): the drywall sub cuts the slot, sets the
-# profile and mudds its wings in three coats. ESTIMATE: $26.98 listed for an unconfirmed
-# length; plaster-in profiles run ~$6-15/LF. Tape, caps and lens fitting stay electrical.
-"led-plaster-in-wallwash" = { material = { low = 6, high = 15 }, labour = { low = 8, high = 16 } }  # 85.3 LF
+# Z shadow bead, Trim-Tex AS6010 5/8 x 5/8 (the four coves' shadow gaps, owner 2026-10-30):
+# the drywall sub stops the ceiling board short, sets the bead and mudds its leg. ESTIMATE:
+# no price read; vinyl reveal beads run near the F reveal's $0.56/LF and set like it. The
+# tape stays electrical.
+"led-shadow-gap-bead" = { material = { low = 0.6, high = 1.5 }, labour = { low = 3.0, high = 5.5 } }  # 86.0 LF
 
 [stair_treads]
 # Eight complete 36 x 11 in tread assemblies across ST-G-SERVICE and ST-SG-PORCH,
@@ -6790,10 +6792,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # The 24V families (E `ED-T-LT-STRIP24`, U `ED-T-LT-STRIP24-TASK`, and E1 `ED-T-LT-NICHE-SNLT` at zero runs since 2026-10-12, a
 # named revert) price on the BARE keys below: interior dry-location cove, an
 # anodized extrusion with a frosted lens, tape cut to length off a 16.4' reel.
-# 88.9 LF of tape, 8 end caps (takeoff, 2026-10-30). Since 2026-10-30 (decision #103) the
-# three plaster-in coves (LR-M-LIVING-W/-E, LR-S-HALL-GAP) bill their profile in
-# [drywall_trims] and no channel or corner connector here: 9.2 LF of channel remains, the
-# stair-rail run. Same for E3's LR-M-BATH2-TUB-CLG.
+# 89.7 LF of tape, 2 end caps (takeoff, 2026-10-30). Since 2026-10-30 (decision #103) the
+# three shadow-gap coves (LR-M-LIVING-W/-E, LR-S-HALL-GAP) bill their Z bead in
+# [drywall_trims] and no channel, end cap or corner connector here: 9.2 LF of channel
+# remains, the stair-rail run. Same for E3's LR-M-BATH2-TUB-CLG.
 channel = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
 tape = { material = { low = 5, high = 13 }, labour = { low = 3, high = 7 } }
 end_cap = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }

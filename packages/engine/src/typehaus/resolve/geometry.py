@@ -209,7 +209,7 @@ SectionPart = tuple[str, tuple[tuple[float, float], ...]]
 
 
 def light_run_parts(run) -> tuple[SectionPart, ...]:
-    """The run's swept cross-section: its plaster-in profile's parts, else the surface
+    """The run's swept cross-section: its shadow-gap bead's parts, else the surface
     half-inch channel (→ resolve/trim_bands.py)."""
     from typehaus.resolve.trim_bands import surface_channel_parts
 

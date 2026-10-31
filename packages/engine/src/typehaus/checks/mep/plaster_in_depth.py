@@ -1,12 +1,13 @@
-"""``mep.plaster_in_depth`` — a plaster-in LED channel needs room above its board.
+"""``mep.plaster_in_depth`` — a board-set LED profile needs room above its board.
 
-A plaster-in run (``resolve/drywall_led.py``) sets an aluminium channel into a slot cut
-through the ceiling or soffit board, and the channel stands ``PlasterInProfile.depth`` above
-the board's room face: more than a 5/8" board, so it rises into whatever the board is
-fastened to. Nothing else grades that volume: the slot is cut from the board only.
+A shadow-gap run (``resolve/drywall_led.py``) sets a Z bead in a reveal cut from the
+ceiling or soffit board, its back ``ShadowGapProfile.depth`` above the board's room face.
+At the board's thickness it stops on whatever the board is fastened to; any deeper and it
+rises into it. Nothing else grades that volume: the reveal is cut from the board only. (The
+id is the plaster-in channel's this replaced, decision #103.)
 
 Each leg's occupied volume is its swept section's parts that rise above the face (the mudded
-wings lie on it), over the face-to-top band. It is graded against every framed member and
+leg lies on it), over the face-to-top band. It is graded against every framed member and
 column or beam (``_interference_geom.framing_candidates``, the framing checks' own reading)
 and every placed pipe, duct and raceway envelope (``resolve/mep_envelopes``, the router's).
 A schematic raceway is not placed, so it is not graded (as ``mep.run_interference``).
@@ -71,8 +72,8 @@ def _obstacles(ctx: CheckContext) -> list[tuple[str, Polygon, object]]:
 
 @check(Tier.STRUCTURAL, CID)
 def plaster_in_depth(ctx: CheckContext) -> list[Finding]:
-    """Every plaster-in channel clears the framing and runs above its board."""
-    runs = [run for run in ctx.model.light_runs if run.profile == "plaster_in"]
+    """Every shadow-gap bead clears the framing and runs above its board."""
+    runs = [run for run in ctx.model.light_runs if run.profile == "shadow_gap"]
     if not runs:
         return [_na(CID, "no light run is set into a gypsum board in this building")]
     obstacles = _obstacles(ctx)
@@ -95,15 +96,15 @@ def plaster_in_depth(ctx: CheckContext) -> list[Finding]:
         host = run.soffit_ref or f"{run.room} ceiling"
         rise = f'{(top - run.z_m) / _IN:.2f}"'
         if not clashes:
-            out.append(_pass(CID, f"{run.tag}: its channel's {rise} above the {host} board "
+            out.append(_pass(CID, f"{run.tag}: its bead's {rise} above the {host} board "
                                   "face is clear", (run.tag,)))
             continue
         worst = sorted(clashes, key=lambda label: (-clashes[label], label))
         named = ", ".join(f'{label} ({clashes[label] / _IN:.2f}")' for label in worst[:3])
         more = f" and {len(worst) - 3} more" if len(worst) > 3 else ""
         out.append(_fail(CID, (
-            f"{run.tag}: its plaster-in channel stands {rise} above the {host} board face "
+            f"{run.tag}: its shadow-gap bead stands {rise} above the {host} board face "
             f"and runs into {len(worst)} element(s): {named}{more}"), (run.tag,),
-            fix="fur the board down clear of the channel, re-route what crosses it, or "
-                "choose a shallower profile"))
+            fix="fur the board down clear of the bead, re-route what crosses it, or "
+                "choose a bead no deeper than the board"))
     return out

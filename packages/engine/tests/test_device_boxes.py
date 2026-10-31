@@ -97,6 +97,6 @@ def test_a_raceway_fed_box_prices_apart_from_the_same_product_on_concrete(catlin
     rows = {(r["product"], r["mounting"]): r for r in device_box_takeoff(catlin_model_ro)}
     surface = rate_for(prices, "electrical_boxes", "PROD-RACO-232", "surface")
     raceway = rate_for(prices, "electrical_boxes", "PROD-RACO-232", "flush_raceway")
-    assert rows["PROD-RACO-232", "flush_raceway"]["count"] == 6
+    assert rows["PROD-RACO-232", "flush_raceway"]["count"] == 5  # was 6 until the EVSE was hardwired (2026-10-30)
     assert surface[0] == "PROD-RACO-232" and surface[1].labour.high > 0
     assert raceway[0] == "PROD-RACO-232:flush_raceway" and raceway[1].labour.high == 0

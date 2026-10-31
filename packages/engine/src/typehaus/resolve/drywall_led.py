@@ -1,13 +1,14 @@
-"""Plaster-in LED wall-washers: which runs are set into the board, and the slot they cut.
+"""LED shadow gaps: which runs sit in a board's edge reveal, and the reveal they cut.
 
-A run is plaster-in when the house's ``DrywallStandard`` names a ``led_profile`` and the run
-sits in a gypsum board overhead: its soffit's underside (``soffit_ref``), or a flat room
-ceiling whose board holds the run's height. Derived from the host face, never authored
-(decision #103). Each leg must wash a face on its ``emission_side`` within the profile's
-offset range, else ``integrity.light_run_host``.
+A run is in a shadow gap when the house's ``DrywallStandard`` names a ``led_profile`` and
+the run sits in a gypsum board overhead: its soffit's underside (``soffit_ref``), or a flat
+room ceiling whose board holds the run's height. Derived from the host face, never authored
+(decision #103). Each leg moves onto its reveal's centre, half the reveal off the gypsum
+face it washes on its ``emission_side``; a leg with no such face within the profile's reach
+is ``integrity.light_run_host``.
 
-A ceiling host loses the slot from its ``ceiling`` solid (split into simple pieces, the
-first keeping its uid). A soffit's slot is cut with its board in ``resolve/soffits.py``.
+A ceiling host loses the reveal from its ``ceiling`` solid (split into simple pieces, the
+first keeping its uid). A soffit's reveal is cut with its board in ``resolve/soffits.py``.
 """
 
 from __future__ import annotations
@@ -18,13 +19,13 @@ from typing import Any
 from shapely.geometry import LineString, Polygon
 
 from typehaus.findings import Finding, element_error
-from typehaus.model.drywall import DrywallStandard, PlasterInProfile
+from typehaus.model.drywall import DrywallStandard, ShadowGapProfile
 from typehaus.resolve.ceiling_over import split_holes
-from typehaus.resolve.geometry import length, normal, sub, unit
+from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.interior_trim_scope import face_is_gypsum
 from typehaus.resolve.model import ResolvedLightRun, ResolvedModel, ResolvedSolid
 from typehaus.resolve.soffits import SOFFIT_LINING_THICKNESS
-from typehaus.resolve.trim_bands import plaster_in_washer_parts
+from typehaus.resolve.trim_bands import shadow_gap_parts
 
 _CID = "integrity.light_run_host"
 # A run "in" a board: its height within the board, to this.
@@ -37,14 +38,14 @@ _WASH_PROBE_M = (0.05, 0.3)
 _IN = 0.0254
 
 
-def host_plaster_in_runs(model: ResolvedModel, standard: DrywallStandard | None) -> list[Finding]:
-    """Make each gypsum-hosted run ``plaster_in`` and cut its slot from a ceiling host."""
+def host_shadow_gap_runs(model: ResolvedModel, standard: DrywallStandard | None) -> list[Finding]:
+    """Put each gypsum-hosted run in its wall's shadow gap and cut the reveal from a ceiling."""
     profile = standard.led_profile if standard is not None else None
     if profile is None:
         return []
     materials = {m.tag: m for m in model.plan.library.materials}
-    parts = plaster_in_washer_parts(profile.aperture.meters, profile.depth.meters,
-                                    profile.flange.meters, profile.tilt.radians)
+    reveal = profile.reveal.meters
+    parts = shadow_gap_parts(reveal, profile.depth.meters, profile.flange.meters)
     findings: list[Finding] = []
     for index, run in enumerate(model.light_runs):
         if run.z_path_m and len(set(run.z_path_m)) > 1:
@@ -53,15 +54,16 @@ def host_plaster_in_runs(model: ResolvedModel, standard: DrywallStandard | None)
         if host is None:
             continue
         host_ref, face_z, candidates = host
-        error = _washed_faces(model, run, profile, candidates, face_z, materials)
-        if error is not None:
-            findings.append(error)
+        path = _reveal_path(run, profile, candidates, face_z, materials)
+        if isinstance(path, Finding):
+            findings.append(path)
             continue
+        developed = sum(length(sub(b, a)) for a, b in zip(path, path[1:], strict=False))
         model.light_runs[index] = dataclasses.replace(
-            run, z_m=face_z, z_path_m=(), profile="plaster_in", section=parts,
-            host_ref=host_ref, aperture_m=profile.aperture.meters)
+            run, path=path, length_m=developed, z_m=face_z, z_path_m=(), profile="shadow_gap",
+            section=parts, host_ref=host_ref, aperture_m=reveal)
         if run.soffit_ref is None:
-            _cut_ceiling(model, host_ref, run.path, profile.aperture.meters / 2.0, face_z)
+            _cut_ceiling(model, host_ref, path, reveal / 2.0, face_z)
     return findings
 
 
@@ -122,25 +124,26 @@ def _room_edges(model: ResolvedModel, room) -> list:
     return out
 
 
-def _washed_faces(model: ResolvedModel, run: ResolvedLightRun, profile: PlasterInProfile,
-                  candidates: list, face_z: float, materials: dict) -> Finding | None:
-    """None when every leg has a face to wash within range; else the finding naming the fix."""
-    lo, hi = profile.wall_offset_min.meters, profile.wall_offset_max.meters
+def _reveal_path(run: ResolvedLightRun, profile: ShadowGapProfile, candidates: list,
+                 face_z: float, materials: dict) -> list | Finding:
+    """The path moved onto the reveal's centre, leg by leg; else the finding naming the fix."""
+    reach, half = profile.wall_offset_max.meters, profile.reveal.meters / 2.0
     sign = 1.0 if run.emission_side == "left" else -1.0
-    for p0, p1 in zip(run.path, run.path[1:], strict=False):
+    points = [p for i, p in enumerate(run.path)
+              if i == 0 or length(sub(p, run.path[i - 1])) > 1e-6]
+    lines = []  # per leg: (moved start, direction)
+    for p0, p1 in zip(points, points[1:], strict=False):
         leg = sub(p1, p0)
-        if length(leg) < 1e-6:
-            continue
         d = unit(leg)
         n = normal(d)
         toward = (n[0] * sign, n[1] * sign)
         best = None
         for (a, b), wall in candidates:
             e = sub(b, a)
-            if length(e) < 1e-6 or abs(d[0] * e[1] - d[1] * e[0]) / length(e) > _PARALLEL:
+            if length(e) < 1e-6 or abs(_cross(d, e)) / length(e) > _PARALLEL:
                 continue
             offset = (a[0] - p0[0]) * toward[0] + (a[1] - p0[1]) * toward[1]
-            if offset <= 1e-6:
+            if offset < -1e-6:
                 continue
             ta = (a[0] - p0[0]) * d[0] + (a[1] - p0[1]) * d[1]
             tb = (b[0] - p0[0]) * d[0] + (b[1] - p0[1]) * d[1]
@@ -157,21 +160,39 @@ def _washed_faces(model: ResolvedModel, run: ResolvedLightRun, profile: PlasterI
                 best = None
         if best is None:
             return element_error(_CID, (
-                f"plaster-in run {run.tag} has no gypsum face to wash on its "
+                f"shadow-gap run {run.tag} has no gypsum face to wash on its "
                 f"{run.emission_side} side: set emission_side toward the washed wall"),
                 run.tag)
-        if not lo - 1e-6 <= best[0] <= hi + 1e-6:
+        if best[0] > reach + 1e-6:
             what = best[3].tag if best[3] is not None else "its soffit's edge"
             return element_error(_CID, (
-                f"plaster-in run {run.tag} sits {best[0] / _IN:.2f}\" from {what}, outside "
-                f"its profile's {lo / _IN:g}-{hi / _IN:g}\" slot-to-wall range: move the run"),
-                run.tag)
-    return None
+                f"shadow-gap run {run.tag} sits {best[0] / _IN:.2f}\" from {what}, beyond "
+                f"its profile's {reach / _IN:g}\" reach: move the run to the wall"), run.tag)
+        lines.append((add(p0, scale(toward, best[0] - half)), d))
+    return _join(lines, points)
+
+
+def _join(lines: list, points: list) -> list:
+    """Each leg's moved line, joined at the corners (a straight-on vertex keeps its leg's)."""
+    out = [lines[0][0]]
+    for (a, da), (b, db) in zip(lines, lines[1:], strict=False):
+        turn = _cross(da, db)
+        if abs(turn) < 1e-9:
+            out.append(b)
+            continue
+        out.append(add(a, scale(da, _cross(sub(b, a), db) / turn)))
+    last, d = lines[-1]
+    out.append(add(last, scale(d, length(sub(points[-1], points[-2])))))
+    return out
+
+
+def _cross(a, b) -> float:
+    return a[0] * b[1] - a[1] * b[0]
 
 
 def _cut_ceiling(model: ResolvedModel, host_uid: str, path, half_width: float,
                  face_z: float) -> None:
-    """Take the slot out of every ``ceiling`` solid piece of ``host_uid`` it crosses."""
+    """Take the reveal out of every ``ceiling`` solid piece of ``host_uid`` it crosses."""
     slot = LineString(path).buffer(half_width, cap_style=2, join_style=2)
     taken = {solid.uid for solid in model.solids}
     out: list[ResolvedSolid] = []
@@ -215,12 +236,4 @@ def drywall_standard(plan: Any) -> tuple[DrywallStandard | None, list[Finding]]:
         return None, [element_error("integrity.drywall_standard",
                                     f"drywall standard {standard.tag} names no material "
                                     f"{missing[0]!r}", standard.tag)]
-    profile = standard.led_profile
-    if profile is not None:
-        bed = profile.aperture.meters / 2.0 + profile.flange.meters
-        if profile.wall_offset_min.meters < bed - 1e-6:
-            return None, [element_error("integrity.drywall_standard", (
-                f"drywall standard {standard.tag}'s LED profile puts its wall-side flange "
-                f"past the wall below {bed / _IN:.2f}\": raise wall_offset_min"),
-                standard.tag)]
     return standard, []

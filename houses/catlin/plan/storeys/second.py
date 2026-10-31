@@ -1136,8 +1136,8 @@ FLOOR_HEAT = [
 #
 # North y=27'-8" abuts SF-S-HP1; south y=2'-10" encloses DU-S-HP-SOUTH-RISE's handoff.
 # Even at the wider east face, the box clears the stair ledger beginning at x=273 7/8".
-# The 94" face stays pinned. LR-S-HALL-GAP follows its underside perimeter with a recessed
-# channel opening toward the walls, rather than lighting tall gaps beside a narrow box.
+# The 94" face stays pinned. LR-S-HALL-GAP follows its underside perimeter with a 5/8"
+# shadow-gap reveal opening toward the walls, rather than lighting tall gaps beside a narrow box.
 SOFFITS = [
     Soffit(uid="CSF601AAAA", tag="SF-S-DUCT",
            outline=(pt(ft(18, 6.5), ft(2, 10)), pt(ft(21, 5.5), ft(2, 10)),
@@ -1474,7 +1474,7 @@ POSTS = [
 ]
 
 STAIRS = [
-    # 7'-5 3/8" well = two 3'-6 3/8" flights + 4 1/2" partition + 1/8" fit clearance. Landing is the
+    # 7'-5 5/8" well = two 3'-6 9/16" flights + 4 1/2" partition, wall face to wall face. Landing is the
     # R311.7.6 36" minimum. `turn_direction="left"`, same hand as ST-B2M below: the flight
     # springs east lane on main, arrives west lane on second, so the stack alternates sides
     # as one continuous run.
@@ -1487,11 +1487,12 @@ STAIRS = [
     # at ft(3) until 2026-09-24. The turn is level at 61.22343" with 7 tread boards on
     # each run; the former split turn put one of the 16 risers between the half-decks.
     Stair(uid="CST702AAAA", tag="ST-M2S", floor_opening="FO-S-STAIR",
-          from_storey="main", to_storey="second", width=ft(3, 6.4375),
+          from_storey="main", to_storey="second", width=ft(3, 6.5625),
           base_elevation=inch(0.94685), top_elevation=inch(121.5),
           layout="u_level_landing", run_direction="y", turn_direction="left",
-          # Start and width follow W-M-STRW's 1/2" MDO face (2026-10-23): 1/8" west, 1/16"
-          # a lane, so the east lane still meets the opening's east edge.
+          # Start on W-M-STRW's 1/2" MDO face (123 1/8"); two equal lanes fill the well to
+          # W-M-C5's gypsum (212 3/4"), so the partition (and W-M-WELL) centres at
+          # 167 15/16" (2026-10-30).
           start=pt(ft(10, 3.125), ft(26, 0.375)), landing_depth=ft(3, 6.25),
           bearing_refs=("W-M-N2",),
           # 5/4 oak S2S to 1", the stock tread. The landing is 3/4" oak over 3/4" subfloor,

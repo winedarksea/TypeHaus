@@ -329,12 +329,13 @@ def test_the_landing_decks_are_scheduled_and_flagged(rows):
         assert row["nominal_stock"] == "5/4"
         assert row["finished_width_in"] == pytest.approx(3.5)
         assert row["milling_profile"] == "landing tread"
-    # 44.625 until 2026-10-23: ST-M2S's lanes widened 1/16" with W-M-STRW's MDO face.
+    # 44.625 until 2026-10-23, 44.687 until 2026-10-30: ST-M2S widened to centre its well
+    # partition between W-M-STRW and W-M-C5.
     assert nosings[("landing-lower", ("ST-M2S",))]["finished_length_in"] == \
-        pytest.approx(44.687)
+        pytest.approx(44.812)
     # 42.437 until 2026-10-30: the stairhead nosing now fits between ST-M2S's skirts, which
-    # are scribed to W-M-STRW's and W-M-WELL's faces.
-    assert nosings[("stairhead", ("ST-M2S",))]["finished_length_in"] == pytest.approx(41.125)
+    # are scribed to W-M-STRW's and W-M-WELL's faces; 41.125 until the partition centred.
+    assert nosings[("stairhead", ("ST-M2S",))]["finished_length_in"] == pytest.approx(41.062)
     assert nosings[("stairhead", ("ST-S2A",))]["finished_length_in"] == pytest.approx(36.0)
 
     boards = {row["location"]: row for row in _use(rows, "stair landing board")}
@@ -351,7 +352,7 @@ def test_the_landing_decks_are_scheduled_and_flagged(rows):
         assert row["material"] == "oak-floor-custom"
         assert row["finished_thickness_in"] == pytest.approx(0.75)
         assert row["finished_width_in"] == pytest.approx(3.5)
-        assert row["finished_length_in"] == pytest.approx(44.687)  # 44.625 before the 2026-10-23 1/16" lane widening
+        assert row["finished_length_in"] == pytest.approx(44.812)  # 44.687 before the 2026-10-30 partition centring
         assert row["milling_profile"] == "T&G"
     assert not _use(rows, "stair landing deck")
 

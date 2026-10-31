@@ -156,15 +156,13 @@ def test_the_glb_emitter_draws_a_channel_and_tape_for_every_run(two_run_model):
     assert _color("led_tape") in material_colors
 
 
-def test_a_plaster_in_channel_is_graded_against_the_framing_above_its_board(catlin_ctx):
-    """1.44" of channel over a 5/8" board on I-joists runs 0.81" into every joist it crosses;
-    catlin suppresses the four as an open item (preferences.toml)."""
+def test_a_shadow_gap_bead_is_graded_against_the_framing_above_its_board(catlin_ctx):
+    """A 5/8" bead in a 5/8" board stops on the joists and soffit rungs it is fastened to;
+    the 1.44" plaster-in channel it replaced ran 0.81" into them (#103)."""
     from typehaus.checks.mep.plaster_in_depth import plaster_in_depth
     from typehaus.findings import Result
 
     by_run = {f.element_tags[0]: f for f in plaster_in_depth(catlin_ctx)}
     assert set(by_run) == {"LR-M-LIVING-W", "LR-M-LIVING-E", "LR-M-BATH2-TUB-CLG",
                            "LR-S-HALL-GAP"}
-    assert all(f.result is Result.FAIL for f in by_run.values())
-    assert 'joist CSF603AAAA:joist-0-001-0 (0.81")' in by_run["LR-M-LIVING-E"].message
-    assert "soffit-rung" in by_run["LR-S-HALL-GAP"].message
+    assert all(f.result is Result.PASS for f in by_run.values()), by_run

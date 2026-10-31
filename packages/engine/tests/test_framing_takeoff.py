@@ -395,7 +395,7 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # A stone stool is the slab yard's, so the stools reach both (→ takeoff/countertops.py).
     "window_stools": ("hardwood", "countertops"),
     "window_returns": ("envelope_layers", "drywall_trims"),
-    # Beads and plaster-in profiles by the LF, off the DrywallStandard (#103).
+    # Beads and LED shadow-gap beads by the LF, off the DrywallStandard (#103).
     "drywall_trims": ("drywall_trims",),
     "shelf_banks": ("hardwood",),
     # The work surfaces, by the square foot a slab yard quotes. Not "hardwood": a

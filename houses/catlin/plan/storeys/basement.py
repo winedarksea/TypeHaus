@@ -212,26 +212,27 @@ NODES = [
     # needs no edit.
     Node(uid="YW3E1CW7DT", tag="N-B-BA-NW", position=pt(ft(10), ft(25, 6))),
     #
-    # ** BOTH SLID WEST TO x=13'-10 11/16" ON 2026-09-05 (round two). ** x=14'-0" missed the
-    # stair well's partition centreline by 1 5/16": `resolve/stairs/common.py` reserves
-    # 4 1/2" for that partition at x 13'-8 7/16"..14'-0 15/16" and builds nothing in it, so
+    # ** BOTH SLID WEST TO x=13'-10 11/16" ON 2026-09-05 (round two), 13'-10 5/8" since
+    # 2026-10-30. ** x=14'-0" missed the stair well's partition centreline by 1 5/16": `resolve/stairs/common.py` reserves
+    # 4 1/2" for that partition at x 13'-8 3/8"..14'-0 7/8" and builds nothing in it, so
     # the bathroom's east wall and the flight divider were two nearly-collinear planes an
     # inch and a third apart — the kind of jog that reads as a mistake and is not one on any
-    # drawing. `inch(166.6875)` IS that centreline, so W-B-BA-E, the new W-B-WELL above it
+    # drawing. `inch(166.625)` IS that centreline (1/16" west on 2026-10-30, when ST-B2M's
+    # lanes were evened to centre it between the well's faces), so W-B-BA-E, W-B-WELL above it
     # and W-B-CL-N's east end are one continuous plane from y=18' to y=31' now. Everything
     # that references these two nodes rides along and needed no edit; the wet-wall risers,
     # which are absolute coordinates and not node references, did (mep_venting.py,
     # mep_supply.py, mep_supply_devices.py).
-    Node(uid="ZHKG5KWP08", tag="N-B-BA-NE", position=pt(inch(166.6875), ft(25, 6))),
-    Node(uid="R1KFP0S4NQ", tag="N-B-BA-SE", position=pt(inch(166.6875), ft(18))),
+    Node(uid="ZHKG5KWP08", tag="N-B-BA-NE", position=pt(inch(166.625), ft(25, 6))),
+    Node(uid="R1KFP0S4NQ", tag="N-B-BA-SE", position=pt(inch(166.625), ft(18))),
     # ** THE HALL'S SOUTH END, NEW 2026-09-07. ** The 2026-09-05 hall stopped at the y=18'
     # line and crossed into the workshop through a cased opening, which made the workshop a
     # corridor. The hall runs the rest of the way south now — from N-B-BA-SE to the sauna's
-    # north wall — on the SAME x=13'-10 11/16" well-partition centreline the node above
+    # north wall — on the SAME x=13'-10 5/8" well-partition centreline the node above
     # stands on, so W-B-BA-E, W-B-WELL and the new W-B-HALL-W are one plane from y=10' to
     # y=31'. This node splits W-B-SA-N so the new partition tees into it rather than dying
     # in the middle of a wall.
-    Node(uid="XE20Z4ZSS6", tag="N-B-HALL-S", position=pt(inch(166.6875), ft(10))),
+    Node(uid="XE20Z4ZSS6", tag="N-B-HALL-S", position=pt(inch(166.625), ft(10))),
     # W-B-CW's east end. Keep the split so the ESS partition tees into the south wall here;
     # W-B-CW3 now continues W-B-CW's assembly at the same 2x4 stud depth. Its uid is unchanged.
     Node(uid="CBN017AAAA", tag="N-B-CW-E", position=pt(ft(6, 9), ft(18))),
@@ -266,7 +267,7 @@ NODES = [
     # `open_end=True` is the honest description and not a silencer: a wall that dies in the
     # middle of a stair well has one edge at this node, which is `integrity.wall_loop_open`'s
     # whole subject, and the flag is how the model says "this end is meant to be free".
-    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(166.6875), ft(31)),
+    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(166.625), ft(31)),
          open_end=True),
     # Glazed-brick veneer over the exposed south wall (W-B-BRICK): a freestanding wythe off
     # the concrete, both ends ``open_end`` like the sunken garden's N-SG-NW/NE (not part of
@@ -906,7 +907,7 @@ WALLS = [
          end_node="N-B-SA-NE", assembly="SAUNA_2X4",
          layer_materials=(LayerMaterial(layer="gwb-cold", material="gwb-ar"),), top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
-    # ** THE HALL'S WEST SIDE, NEW 2026-09-07. ** x=13'-10 11/16" from the y=18' line south
+    # ** THE HALL'S WEST SIDE, NEW 2026-09-07. ** x=13'-10 5/8" from the y=18' line south
     # to the sauna's north wall, walling the workshop off the hall and hosting D-B-SHOP.
     #
     # INT_2X6_PLUMBING and not INT_2X6_STAGGERED_PLUMBING — continuous full-depth studs —
@@ -921,7 +922,7 @@ WALLS = [
     # ** RETYPED AND RE-NODED 2026-09-05, AND IT IS DRY NOW. ** This was the stair-foot
     # bathroom's only framed wall and it carried the whole room's plumbing. What is left
     # here is the bathroom's north end: a plain 2x4 partition running
-    # x 10'-0"..13'-10 11/16" at y=25'-6" — 1 5/16"
+    # x 10'-0"..13'-10 5/8" at y=25'-6" — 1 3/8"
     # shorter since W-B-BA-E slid onto the well-partition line.
     # Top=8'-0" is the bearing seat, like every other partition in this basement.
     Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-NW",
@@ -1261,7 +1262,7 @@ ROOMS = [
     # with the same occupancy, and a second `Room` here would only split one space in two
     # for every check that walks rooms.
     # **The seed moved into the hall on 2026-09-05.** (14', 30') is inside W-B-WELL's new
-    # footprint (x 13'-8 7/16"..14'-0 15/16"), which would be a guaranteed
+    # footprint (x 13'-8 3/8"..14'-0 7/8"), which would be a guaranteed
     # `integrity.room_unclaimed`. The hall is the same room, so the seed only has to find it.
     # ** THE HALL'S CEILING IS OPEN ON PURPOSE (2026-09-13), AND SF-B-HALL IS RETIRED. **
     # DU-B-ERV-R-GYM and PR-B-SAUNA-VENT cross the hall's south end and cannot be routed
@@ -1514,7 +1515,7 @@ PANELING = [
 # --- SF-B-HALL IS RETIRED (2026-09-13) ------------------------------------------------
 #
 # ** THE HALL INHERITED THE WORKSHOP'S SERVICE CEILING (2026-09-07). ** Two runs cross the
-# x=13'-10 11/16"..18'-0" band at y~10'-6" on their way east: `DU-B-ERV-R-GYM` (3" round,
+# x=13'-10 5/8"..18'-0" band at y~10'-6" on their way east: `DU-B-ERV-R-GYM` (3" round,
 # el 7'-6", to the gym's register through W-B-CS3) and `PR-B-SAUNA-VENT` (2", falling from
 # 7'-3 7/16" at the sauna riser). While that band was RM-B-WORKSHOP nothing graded them —
 # UTILITY is in `EXPOSED_SERVICE_OCCUPANCIES` and a workshop ceiling is a service plane. The

@@ -100,14 +100,13 @@ def test_the_hydrant_is_on_the_garage_storey_at_the_authored_spot(catlin_model):
 def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model):
     """A working annulus around the handle, graded on the resolved bodies.
 
-    A y-only proxy is wrong here: the heater and workbench share the NW corner with the
-    hydrant and can sit close in y while still 3'-8" apart in x. What the hydrant actually
+    A y-only proxy is wrong here: the workbench can sit close in y while still 24" apart in x.
+    What the hydrant actually
     needs is plan clearance in both axes: room to swing a hose onto the spout and to get a
     hand on the handle, from whatever else the corner is asked to hold.
 
-    12" is the number. Since the 2026-09-16 move beside ST-G-SERVICE the NW-corner bench
-    and heater are far off; the nearest placeable is ED-G-LT3, 24.3" away after the
-    hydrant's move to the south footing clearance limit (2026-10-13).
+    12" is the number. The bench came back beside ST-G-SERVICE on 2026-10-30 and is now the
+    nearest placeable, 24.0" away (ED-G-LT3 is 24.3").
     """
     from shapely.geometry import Polygon
 
@@ -119,8 +118,8 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
     assert tight, "the garage resolves no other placeable to grade against"
     assert min(tight.values()) >= 12, sorted(tight.items(), key=lambda kv: kv[1])[:3]
     # Named so a future move reads as a decision.
-    assert min(tight, key=tight.get) == "ED-G-LT3"
-    assert tight["ED-G-LT3"] == pytest.approx(24.3, abs=0.5)
+    assert min(tight, key=tight.get) == "FURN-G-WORKBENCH"
+    assert tight["FURN-G-WORKBENCH"] == pytest.approx(24.0, abs=0.5)
 
 
 # --- 3. the supply run --------------------------------------------------------------------

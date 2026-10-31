@@ -57,7 +57,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Canopy camera | `ED-BW-CAM-CANOPY` | Reolink Duo 3 PoE | core `reolink` | none | records to microSD | none |
 | Garage opener | `APPL-G-GDO` | LiftMaster 8550W (Security+ 2.0) + ratgdo32 | ESPHome (local push) | none; MyQ never set up | wall button and remotes | head size; the manual's headroom figure |
 | Smoke/CO/heat | `AL-*` (13) | Kidde hardwired interconnect | relay dry contacts into an isolated input in `ED-B-BACKUP-ENCL` | none | interconnect sounds every alarm | confirm part numbers on kidde.com |
-| EVSE | `APPL-G-EVSE` | Grizzl-E Smart 40 A on the 14-50 | OCPP 1.6J to HACS `ocpp` (local push) | none | charges at the DIP-set amps | the Smart's own UL file; 1.6J vs 1.6 |
+| EVSE | `APPL-G-EVSE` | Grizzl-E Smart 40 A, hardwired | OCPP 1.6J to HACS `ocpp` (local push) | none | charges at the DIP-set amps | the Smart's own UL file; 1.6J vs 1.6 |
 | HP1 thermostat | `ED-S-HP-STAT` | Aqara W200 | Matter over Wi-Fi (local push) | Aqara app for firmware | runs its schedule standalone | aux staging in HA (below) |
 | HP2/HP3 heads | `EQ-*-HP2-*`, `EQ-M-HP3-STAIR` | Gree built-in Wi-Fi | core `gree` (local polling) | Gree+ once, then WAN blocked | IR remote | GCM-encrypted firmware may not pair |
 | ERV boost | `EQ-B-ERV` | Shelly relay on the Broan dry-contact aux input (manual §3.2.2) | Shelly core (local push) | none | Broan wall control | read the terminal names before wiring |
@@ -113,8 +113,8 @@ integration. There is no NVR; Frigate is optional later.
 
 **Garage opener.** It must be a yellow-button Security+ 2.0 unit. Not Security+ 3.0 (white
 button: ratgdo cannot speak it), and not the 8500/RJ020 jackshaft. The head is 11' back on the
-door's centreline, hung on straps. It plugs into `ED-G-GDO-RC` on `CKT-RC-GARAGE`, which fed
-nothing until now. The ceiling is 10'-1" above the slab, so there is 3'-1" over the 7'-0" door:
+door's centreline, hung on straps. It plugs into `ED-G-GDO-RC`, on `CKT-LT-MAIN` behind the
+blank-face GFCI `ED-G-GDO-GFCI` by the light switch (2026-10-30). The ceiling is 10'-1" above the slab, so there is 3'-1" over the 7'-0" door:
 room for a standard-lift track and a trolley rail. The 8550W manual's own headroom figure is
 not yet read.
 
@@ -131,8 +131,8 @@ alarm price row.
 
 **EVSE.** The Emporia has no local API and no OCPP, and OpenEVSE appears not to be UL-listed.
 The Grizzl-E Smart is listed and speaks OCPP. Keep it off the internet, and point its OCPP
-server at HA. It is an `Appliance`, cord-and-plug on `ED-G-EV-1450`, with backing
-`BK-G-S-EVSE`. The 14-50R's missing GFCI is an open owner choice
+server at HA. It is an `Appliance`, hardwired from the `ED-G-EV-1450` box (plug removed, per its manual), with
+backing `BK-G-S-EVSE`; its own CCID is the ground-fault protection
 ([workshop_receptacles.md](workshop_receptacles.md), Garage).
 
 **HP1 thermostat.** 24 VAC with a C-wire from `EQ-S-HP1-AH`'s board. Wire `L` (leak) and

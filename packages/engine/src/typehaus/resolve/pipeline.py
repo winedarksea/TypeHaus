@@ -244,7 +244,7 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_interior_trim(plan, model))
     with _stage("drywall_trims"):
         # After rooms, ceilings, paneling, window returns and trim scope; before geometry,
-        # whose soffit boards take a plaster-in run's slot (decision #103).
+        # whose soffit boards take a shadow-gap run's reveal (decision #103).
         from typehaus.resolve.drywall_trims import resolve_drywall_trims
 
         findings.extend(resolve_drywall_trims(plan, model))

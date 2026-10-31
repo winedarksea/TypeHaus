@@ -14,10 +14,10 @@ Billed by the LF in `interior_trim` (`stair skirt`). `tests/test_stair_skirts.py
   carpenter nails a skirt tight to the studs and scribes it to the wall (Striegler, FHB), and
   fits the treads within 1/32" of it (WOODWEB). A shimmed board shows a gap along its top
   edge that needs caulk, and it can bow between the shims.
-- Two partitions model the well wall: the authored W-M-WELL (faces x 165 3/4 and 170 1/4)
-  and the stair's generated partition, 3/16" west of it. The board scribes to the authored
-  wall. Off the lane edge, the upper-left board had a 3/16" gap and the lower-left lapped
-  W-M-WELL's gypsum by 3/16".
+- Two partitions model the well wall: the authored W-M-WELL (the faces, x 165 11/16 and
+  170 3/16) and the stair's generated partition (the studs). Since 2026-10-30 both are on
+  x 167 15/16, midway between W-M-STRW's MDO and W-M-C5's gypsum, and the lanes are equal.
+  The board scribes to the authored wall.
 - A wall-carried side stringer stands a flat 2x4 spacer off the studs. There is no ledger
   beside it (§6).
 - The landing takes the ordinary 3 1/2" base, not a level skirt.
@@ -66,12 +66,13 @@ Each tread and riser runs between the two boards. Each board's back is on its wa
 
 | Flight | Faces (x) | Clear | Less 2 × 3/4" |
 |---|---|---|---|
-| upper | W-M-STRW MDO 123 1/8 → W-M-WELL 165 3/4 | 42.625 | **41.125"** (41 1/8") |
-| lower | W-M-WELL 170 1/4 → W-M-C5 paint 212 3/4 | 42.500 | **41.000"** |
+| upper | W-M-STRW MDO 123 1/8 → W-M-WELL 165 11/16 | 42.5625 | **41.0625"** (41 1/16") |
+| lower | W-M-WELL 170 3/16 → W-M-C5 paint 212 3/4 | 42.5625 | **41.0625"** |
 
-The stairhead nosing is in the upper lane, so it is 41 1/8" too. R311.7.1 passes: 41.00" ≥ 36",
-with 38.30" clear past the handrail (41.125 less the rail's 2.825"). The head landing is
-36" x 41 1/8". Before the scribe these were 40 15/16" and 38.11". The boards move across the
+The stairhead nosing is in the upper lane, so it is 41 1/16" too. R311.7.1 passes: 41.06" ≥ 36",
+with 38.24" clear past the handrail (41.0625 less the rail's 2.825"). The head landing grades
+36" x 41.12". Before the scribe these were 40 15/16" and 38.11"; before the well was centred
+(2026-10-30), 41 1/8" upper and 41" lower. The boards move across the
 stair and not along it, so the blanks below do not change.
 
 The blank is long point to long point along the rake. For skirt-lower-left (s 0 → 70.0),
@@ -89,7 +90,7 @@ The blank is **95.821"**. The model gives 95.821, 98.657, 92.140 and 103.470, wh
 ## 5. Landing base
 
 The landing walking face is z0 + 8R = 0.94685 + 60.27657 = **61.2234"**. Its ring is the
-two decks' union (x 123 1/8 → 212 1/2, y 383 1/8 → 424 5/8), with each side snapped to the
+two decks' union (x 123 1/8 → 212 3/4, y 383 1/8 → 424 5/8), with each side snapped to the
 wall face within 1": x 123.145 (STRW), x 212.74 (C5/C5B), y 425.49 (N2). The pieces are
 butt-jointed as a room's base is: at an inside corner, the incoming piece runs to the far
 face and the outgoing one butts it.

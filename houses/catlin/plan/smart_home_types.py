@@ -56,11 +56,11 @@ LIFTMASTER_8550W = Product(
            "shell): the envelope is an allowance." + _NOTE)
 GRIZZLE_SMART = Product(
     tag="PROD-GRIZZLE-SMART-40", brand="United Chargers", model="Grizzl-E Smart 40A, 14-50P",
-    name="Grizzl-E Smart EVSE, plug-in NEMA 14-50, 40 A",
+    name="Grizzl-E Smart EVSE, 40 A (hardwired: 14-50P removed)",
     url="https://roulezelectrique.com/wp-content/uploads/2021/05/Grizzl-E_Smart_v9.pdf",
     source="Grizzl-E Smart v9 manual, read 2026-10-30: 10.25 x 6.25 x 3.75 in, NEMA 4, "
            "-30..50 C, 40 A default (DIP 16/24/32/40), OCPP 1.6 over Wi-Fi, 'UL Certified'. "
-           "Confirm the Smart's own UL file and OCPP 1.6J before buying. Runs against HA's "
+           "Manual documents removing the plug to hardwire (CCID is the ground-fault protection, no receptacle GFCI). Confirm the Smart's own UL file and OCPP 1.6J before buying. Runs against HA's "
            "OCPP integration (HACS lbbrhzn/ocpp) with no internet." + _NOTE)
 KIDDE_SM120X = Product(
     tag="PROD-KIDDE-SM120X", brand="Kidde", model="SM120X",
@@ -149,14 +149,14 @@ DEVICE_TYPES = (
         source=KIDDE_CO120X.source),
 )
 
-# --- appliances: cord-and-plug equipment the house names but does not wire in --------------
+# --- appliances: equipment the house names but does not wire in --------------
 APPLIANCE_TYPES = (
     ApplianceType(
         tag="APPL-LIFTMASTER-8550W", name="Garage door opener, belt trolley (LiftMaster 8550W)",
         product_ref=LIFTMASTER_8550W.tag, footprint=(inch(13), inch(20)), height=inch(8),
         needs=frozenset({Service.POWER_120}), ports=_P120, source=LIFTMASTER_8550W.source),
     ApplianceType(
-        tag="APPL-GRIZZLE-SMART-40", name="EVSE, 40 A plug-in 14-50 (Grizzl-E Smart)",
+        tag="APPL-GRIZZLE-SMART-40", name="EVSE, 40 A hardwired (Grizzl-E Smart, plug removed)",
         product_ref=GRIZZLE_SMART.tag, footprint=(inch(6.25), inch(3.75)),
         height=inch(10.25), needs=frozenset({Service.POWER_240}), ports=_P240,
         source=GRIZZLE_SMART.source),

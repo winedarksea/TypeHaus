@@ -67,9 +67,11 @@ a release or for exhaustive local verification.
   `resolve/drywall_trims.py` finds outside corners, J-bead terminations, tile-stop reveals,
   trimless-door L-bead and window-return beads off the host faces into
   `ResolvedModel.drywall_trims`, billed by the LF in `[drywall_trims]`. Its `led_profile`
-  makes a light run set into a gypsum ceiling or soffit `plaster_in` (`resolve/drywall_led.py`):
-  slot cut, `z_m` on the board face, the washed wall graded by `integrity.light_run_host`. The
-  run's swept section is served to the viewer, never copied there.
+  (a `ShadowGapProfile`) puts a light run in a gypsum ceiling or soffit in a `shadow_gap`
+  (`resolve/drywall_led.py`): each leg moved onto the reveal's centre off the washed gypsum
+  face (`integrity.light_run_host`), the reveal cut from the board, `z_m` on the board face,
+  the Z bead's depth graded by `mep.plaster_in_depth`. The run's swept section is served to
+  the viewer, never copied there.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure

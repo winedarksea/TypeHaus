@@ -17,11 +17,11 @@ def test_treads_and_risers_butt_the_skirts(stair) -> None:
     boards = [m for m in stair.members if m.category in ("tread", "riser")]
     assert len(boards) == 30
     lengths = {(m.child_key.split("-")[1], round(m.length_m / IN, 4)) for m in boards}
-    assert lengths == {("lower", 41.0), ("upper", 41.125)}
+    assert lengths == {("lower", 41.0625), ("upper", 41.0625)}
     skirts = {m.child_key: m.p0[0] / IN for m in stair.members if m.category == "stair_skirt"}
     # Board centres 3/8" off W-M-STRW, W-M-WELL (both faces) and W-M-C5's paint.
-    assert skirts == pytest.approx({"skirt-upper-right": 123.5, "skirt-upper-left": 165.375,
-                                    "skirt-lower-left": 170.625, "skirt-lower-right": 212.375})
+    assert skirts == pytest.approx({"skirt-upper-right": 123.5, "skirt-upper-left": 165.3125,
+                                    "skirt-lower-left": 170.5625, "skirt-lower-right": 212.375})
 
 
 def test_four_skirts_with_the_note_s_reveal_toe_and_blanks(stair) -> None:

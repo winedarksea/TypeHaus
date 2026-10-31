@@ -1,4 +1,4 @@
-// A cove/shadow-gap or plaster-in LED run (→ emit/gltf/emitter.py::_add_light_run). Split
+// A surface-channel or shadow-gap LED run (→ emit/gltf/emitter.py::_add_light_run). Split
 // out of structure.ts. The engine serves the run's cross-section (`section`, from
 // resolve/geometry.py light_run_parts); this sweeps it along each leg and keeps no copy of
 // a profile. A raked run (`z_path_m`) is a sheared prism per leg, so it is built as triangles.

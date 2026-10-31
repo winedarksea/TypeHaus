@@ -46,6 +46,18 @@ found three runs that could not be built as drawn:
 The tear-away L-bead left the two trimless door-type prices (material -$20/40, labour
 -$60/150 each) for `[drywall_trims]`, so it is not billed twice.
 
+**Superseded the same day: the coves are shadow gaps.** `mep.plaster_in_depth` found the
+1.44" channel rising 0.81" into the I-joists and SF-S-DUCT's rungs; notching an I-joist
+flange is out, and furring the board down costs 7/8" of room. Owner: "a simple shadow gap /
+shadow bead Z channel right at the edge of the wall", a standard tape inside it. The ceiling
+board stops 5/8" short of the washed wall, a Trim-Tex AS6010 5/8 x 5/8 Z shadow bead lines
+the reveal, and the 8 mm RibbonFlex COB tape sticks to its back. The bead is the board's
+depth, so nothing reaches the framing. The engine replaced its plaster-in profile with
+`ShadowGapProfile` and centres each run on its reveal. LR-S-HALL-GAP washes W-S-C2B,
+W-S-BW1 and SF-S-HP1's bulkhead at its soffit's edges, so it takes the same shadow gap. The
+rungs did not move. The four suppressions are lifted. A shadow-gap run bills no channel or
+end caps.
+
 ## Smart home: local-only, Home Assistant first (2026-10-30)
 
 `plans/TODO.md` asked for every connected device to run in Home Assistant with no vendor cloud

@@ -138,15 +138,6 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
   not the other (`W-B-S1`->`W-M-S1` + 8 garage walls). All under-framed-wall pours, so nothing
   reads the difference today. The two endpoint formulations differ too and are preserved
   behind `both_ends=`.
-- **ST-M2S's well wall: its faces and its studs are 3/16" apart.** The wall is modelled twice:
-  - the authored `W-M-WELL` (x 168, faces 165 3/4 and 170 1/4), the faces only: its
-    `STAIRWELL_PARTITION_4H` structure layer has no `FramingSpec`, so it frames no stick;
-  - the stair's generated `well-partition-*` (`resolve/stairs/u_split.py`), the studs and
-    plates, centred 3/16" west at 167 13/16.
-
-  So the west gypsum laps the studs 3/16" and the east gypsum stands 3/16" off them. The skirts
-  now scribe to `W-M-WELL`'s faces. Move the wall onto the partition's line (or the partition
-  onto the wall's), then re-check the skirt and tread lengths (`notes/stair_skirt_basis.md` §4).
 - **A `Slab`/`FloorSystem` rim has no cladding concept.** `SL-M-DECK`'s exposed edge takes no
   fascia/trim/drip — the roof-edge machinery (`resolve/roof_edge.py`, `resolve/trim_bands.py`)
   has no horizontal-element analog.
@@ -217,15 +208,6 @@ the future.
 - **Plan lettering residue after 96b845f4 (3/32" lettering):** at 1/4" a few small rooms still
   touch a tag (PANTRY/D8, STUDY/D13, MECH's "CHASE TYP. OF 2"), and on the 11x17 reduced check
   print the 12 pt room names spill past small rooms' walls.
-- **Plaster-in coves clash with their framing** (`mep.plaster_in_depth`, suppressed in
-  `houses/catlin/preferences.toml`): the 1.44" channel rises 0.81" into the I-joists
-  (LR-M-LIVING-W/-E, LR-M-BATH2-TUB-CLG) and SF-S-DUCT's rungs (LR-S-HALL-GAP). No notching
-  an I-joist flange. Owner decision, per run:
-  - fur the ceiling down (7/8" hat channel clears 0.81" by 1/16"; the room loses 7/8" of
-    height, and the soffit 7/8" of drop);
-  - a shallower plaster-in profile, no deeper than the 5/8" board it sits in;
-  - or a surface channel under the whole board (no slot, no clash; the light no longer reads
-    flush). Then lift the four `mep.plaster_in_depth` suppressions.
 - The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
 - Extra light switches by beds
 - A reviewer suggested 1/2" drywall as the standard otherwise, with cheaper end 'abuse' resistant drywall 1/2" for major Hallways, Kids' Rooms, Stairwells. Some options: 1/2" Type C, Paper-Faced 1/2" AR (e.g., Gold Bond Hi-Abuse or USG Sheetrock AR), LP SmartSide 38 Series Panel 7/16" (Sidings Used Indoors), 1/2" MDF (4x8 Sheets with V-Groove or Batten Strips), 1/2" MDO (Medium Density Overlay) Plywood
@@ -304,8 +286,6 @@ the future.
   - Pair one Gree head (Sys 2/3) with HA's `gree` integration first: GCM-encrypted firmware may not pair (fallback is the RS485 wired controller).
   - Bench one Aqara W200 on EQ-S-HP1-AH: aux staging and what HA actually exposes.
   - Sense Pro trim: Century is bundle-only. Match the 622 escutcheon to the Latitude lever.
-- Garage 14-50R GFCI (`houses/catlin/notes/workshop_receptacles.md`, Garage): NEC 210.8(A)(2)/625.54 want it for the plug-in Grizzl-E. Choose a 50 A 2-pole GFCI breaker on `CKT-EV-1450` or a hardwired EVSE.
-- Garage west bay, NEC 210.11(C)(4): its counted outlet is `ED-G-RC-240`'s 5-20R, on the 2-pole `CKT-GAR-240` that also feeds the 6-20R. Read strictly, a 210.52(G)(1) outlet belongs on the 120 V/20 A garage circuit that has no other outlets (`CKT-RC-GARAGE`). `code.NEC_210_52_G_garage_receptacles` counts it anyway. Ask the AHJ, or add a west-bay 5-20R on `CKT-RC-GARAGE` (notes/workshop_receptacles.md, Garage).
 - We likely won't be getting a home backup battery when we first power the house (too expensive alongside everything else) but we will have solar and we want it easy to add a battery (possibly using an EV as the backup battery, that is becoming more common, but ideally specified in a way that might work with various brands of car in the future, not just one short term supported product). Separately, home assistant (likely hardwired LAN into the main router) and the router are probably on a smaller more standard computer backup battery. With all of these things, our main goal is being able to make sure the batteries never start on fire, and if they do start on fire, that the fire is contained in a manageable area.
 - Possibly the ESS closet can just be wood studs (metal studs seeming silly as an extra spec for just a small amount) with a Fire-Retardant Spray over the studs.
 - Let's make sure all the charcoal gray and black details of the house exterior (various metal trim, window frames, foundation insulation cover) show real manufacturer colors. We are using this to determine if we should switch all to more gray or more black.

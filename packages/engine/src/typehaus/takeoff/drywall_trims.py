@@ -1,4 +1,4 @@
-"""Drywall accessories by the LF: beads and plaster-in LED profiles (decision #103).
+"""Drywall accessories by the LF: beads and the LED shadow-gap bead (decision #103).
 
 One row per (kind, material, room) off ``ResolvedModel.drywall_trims``
 (→ resolve/drywall_trims.py). ``pieces`` sums each contiguous record's stock lengths, the
@@ -13,7 +13,7 @@ from typehaus.resolve.model import ResolvedModel
 
 _FT = 0.3048
 KIND_LABELS = {
-    "led_profile": "Plaster-in LED profile", "outside_corner": "Outside corner bead",
+    "led_profile": "LED shadow-gap bead", "outside_corner": "Outside corner bead",
     "termination": "J-bead termination", "tile_reveal": "Tile-stop reveal",
     "door_l_bead": "Trimless door L-bead", "window_corner": "Window return corner bead",
     "window_frame": "Window return frame bead",

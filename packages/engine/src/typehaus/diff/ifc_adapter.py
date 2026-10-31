@@ -215,7 +215,7 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
     # phantom addition on every round trip against our own IFC.
     for run in model.light_runs:
         # Project the *swept* section, not the bare polyline: the emitted solid is the
-        # channel (or plaster-in profile) around each leg, so a straight run's bbox is not
+        # channel (or shadow-gap bead) around each leg, so a straight run's bbox is not
         # zero-deep. Reading the bare path would report every run as resized.
         points = [point for _key, faces in light_run_section_shells(
             list(run.path), run.vertex_z(), light_run_parts(run), run.emission_side)

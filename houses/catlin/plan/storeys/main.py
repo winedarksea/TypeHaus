@@ -204,9 +204,11 @@ NODES = [
     Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 7.5))),
     # W-M-WELL's ends: FO-M-STAIR's south edge (the stairhead) and the south face of
     # ST-M2S's level-landing joist (its axis is the landing edge, 31'-11 1/8": one head riser
-    # board past the lower flight's last riser line). Both free.
-    Node(uid="4YBM7GZBJZ", tag="N-M-WELL-S", position=pt(ft(14), ft(26, 0.375)), open_end=True),
-    Node(uid="0RW1TEC7JH", tag="N-M-WELL-N", position=pt(ft(14), ft(31, 10.375)), open_end=True),
+    # board past the lower flight's last riser line). Both free. x is ST-M2S's generated
+    # partition centreline, midway between W-M-STRW's MDO (123 1/8") and W-M-C5's gypsum
+    # (212 3/4"), so these faces and the stair's studs are one wall (2026-10-30).
+    Node(uid="4YBM7GZBJZ", tag="N-M-WELL-S", position=pt(inch(167.9375), ft(26, 0.375)), open_end=True),
+    Node(uid="0RW1TEC7JH", tag="N-M-WELL-N", position=pt(inch(167.9375), ft(31, 10.375)), open_end=True),
     # W-M-BAE shifts 2' east; the mudroom door remains at its existing
     # 6" tee clearance.
     #
@@ -1952,12 +1954,12 @@ SLABS = [
          top_elevation=inch(22.75), openings=("FO-M-TUBDK",)),
 ]
 
-# 7'-2 3/4" well = two 3'-5 1/16" flights + 4 1/2" partition + 1/8" fit clearance, each flight clearing
-# IRC R311.7.1's 36" minimum above the handrail; landing is R311.7.6's 36" minimum.
+# 7'-2 3/4" well = two 3'-5 1/8" flights + 4 1/2" partition, face to face, each flight clearing
+# IRC R311.7.1's 36" minimum above the handrail; landing is R311.7.6's 36" minimum. The
+# partition (and W-B-WELL) centres at 13'-10 5/8", midway between the faces (2026-10-30).
 # It read 7'-0" = two 3'-3 3/4" flights until 2026-08-24, when W-B-STR/W-B-STR3 stopped
 # being 12" pours and the well's west face came down to x=10'-3 1/4" (basement.py). The
-# wall moves another 1/8" west with the thinner plywood; the stair start follows it while
-# the flight widths stay fixed, leaving 1/8" fit clearance at the east wall. The shaft
+# start sits on that face and the lanes now fill the well to W-B-CN's concrete. The shaft
 # now reads exactly as FO-S-STAIR does one storey up — same west face and anchor corner,
 # narrower only because W-M-C5 is 2x6 where W-B-CN
 # is 12" concrete.
@@ -2010,7 +2012,7 @@ SLABS = [
 # required 36", which `code.R311_7_2_stair_headroom` grades as advisory only.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
-          from_storey="basement", to_storey="main", width=ft(3, 5.0625),
+          from_storey="basement", to_storey="main", width=ft(3, 5.125),
           base_elevation=inch(-109.4375), top_elevation=inch(0.94685),
           tread_thickness=inch(1),
           finish_material="carpet",
@@ -2305,7 +2307,7 @@ CONNECTORS = [
 #
 # ST-M2S's landing is a pair of half-width platforms half a step apart, each ledgered to
 # the shaft wall on its outer edge (W-M-STRW at x=10', W-M-C5 at x=18') and closed by a rim
-# on the well line at x=14'-0". Those two inner rims meet no wall, so the stair resolver
+# on the well line (13'-11 15/16"; ST-B2M's is 13'-10 5/8"). Those inner rims meet no wall, so the stair resolver
 # stands a 4x4 under each of their four ends — and the deck it stands them on, at the head
 # of the basement stairwell, is FO-M-STAIR's hole. They were in mid-air.
 #
@@ -2340,7 +2342,7 @@ POSTS = [
     # Now that the bearing is declared, `takeoff/uplift.py::post_base_rows` derives an ABU44
     # under each — the 4x4 rung of the same size ladder the ten ABU66SS outside sit on, ZMAX
     # rather than stainless because this is a dry interior slab.
-    Post(uid="A9J80KK6AE", tag="P-M-STRWELL-S", position=pt(ft(14), ft(31, 11.124)), size="4x4",
+    Post(uid="A9J80KK6AE", tag="P-M-STRWELL-S", position=pt(inch(167.9375), ft(31, 11.124)), size="4x4",
          height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
     # A THIRD one on the well centreline, 2026-09-15 (notes/u_stair_split_landing.md), under
     # ST-B2M's half-landings, which start at y=31'-1 5/8": its 60" flights plus the head
@@ -2349,7 +2351,7 @@ POSTS = [
     # `bearing.py` stands a 4x4 on it, and it is over FO-M-STAIR's hole — so, like the two
     # above and unlike P-M-STRLAND-SE, it is a full-height column to the basement slab rather
     # than a squash block in a joist bay.
-    Post(uid="H8TV2XS6B2", tag="P-M-STRWELL-SS", position=pt(ft(14), ft(31, 1.625)), size="4x4",
+    Post(uid="H8TV2XS6B2", tag="P-M-STRWELL-SS", position=pt(inch(166.625), ft(31, 1.625)), size="4x4",
          height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
     # ST-M2S's lower landing gained a THIRD corner post on 2026-08-24, and it is a direct
     # consequence of splitting W-M-C5 for RM-M-PANTRY.

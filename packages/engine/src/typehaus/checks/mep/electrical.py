@@ -99,12 +99,12 @@ _FIXED_CABINET_FLOOR_CONTACT_M = room_perimeter.FLOOR_CONTACT_M
 
 
 def _counts_as_a_125v_receptacle(ctx: CheckContext, device) -> bool:
-    if device.kind.value in _RECEPTACLE_KINDS:
-        return True
-    if device.kind.value != _COMBINATION_RECEPTACLE_KIND or device.type_ref is None:
-        return False
     device_type = next((t for t in ctx.plan.library.electrical_device_types
-                        if t.tag == device.type_ref), None)
+                        if t.tag == device.type_ref), None) if device.type_ref else None
+    if device.kind.value in _RECEPTACLE_KINDS:
+        return not getattr(device_type, "deadfront", False)
+    if device.kind.value != _COMBINATION_RECEPTACLE_KIND:
+        return False
     return device_type is not None and any(
         port.service.value == "power_120" for port in device_type.ports)
 
