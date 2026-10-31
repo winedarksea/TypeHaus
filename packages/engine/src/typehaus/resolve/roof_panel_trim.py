@@ -67,7 +67,7 @@ def rake_panel_trim(roof, profile, base, material, *, skip=frozenset()):
                     z1_m=span.z0_m + top - top_drop,
                     z0_end_m=span.z1_m + top - bottom_drop,
                     z1_end_m=span.z1_m + top - top_drop,
-                    length_m=math.dist(p0, p1),
+                    length_m=math.hypot(p1[0] - p0[0], p1[1] - p0[1], span.z1_m - span.z0_m),
                     material=material,
                     connection="roof:panel-rake",
                 )

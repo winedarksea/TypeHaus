@@ -384,7 +384,7 @@ def _closure_segment(
             category=layer.function, profile=panel_profile(thickness_in, thickness_in),
             p0=p0, p1=p1,
             z0_m=tops[0], z1_m=max(tops[0], targets[0]),
-            length_m=math.hypot(p1[0] - p0[0], p1[1] - p0[1]),
+            length_m=math.hypot(p1[0] - p0[0], p1[1] - p0[1], tops[1] - tops[0]),
             z0_end_m=tops[1], z1_end_m=max(tops[1], targets[1]),
             connection="roof:wall-top-closure",
             material=layer.material_ref, section_ring=section_ring,

@@ -132,7 +132,7 @@ def edge_member(parent_uid: str, child_key: str, category: str, a, b, z_a: float
     nx, ny = normal
     a = (a[0] + nx * center, a[1] + ny * center)
     b = (b[0] + nx * center, b[1] + ny * center)
-    length = math.hypot(b[0] - a[0], b[1] - a[1])
+    length = math.hypot(b[0] - a[0], b[1] - a[1], z_b - z_a)  # along the slope, like a rafter
     # The ring's frame is the run's LEFT normal; ``u`` runs along ``normal``: flip if they differ.
     sign = 1.0 if (-(b[1] - a[1]) * nx + (b[0] - a[0]) * ny) >= 0.0 else -1.0
     return FramedMember(

@@ -39,7 +39,7 @@ WIDE_OUTSIDE_CORNER = TrimProfile(
     fastener_role="trim_pop_rivet",
     fastener_rows=2,
     lap_fasteners=4,
-    source="PBR Install Guide 4/2024 pp. 16, 58",
+    source="PBR Install Guide 4/2024 pp. 18, 66; BBD75 Install Guide 10/2025 pp. 16, 30",
 )
 BBD_BASE = TrimProfile(
     "Base Trim (vertical)",

@@ -15,7 +15,7 @@ source:
 
 ### General
 - Roof: standard-heel trusses at 24" o.c., 4:12, 16" overhang on the top chord tails.
-- Deck: 3/4" Structural 1 plywood. Self-adhered membrane, full field. Nail-strip standing seam.
+- Deck: 19/32" Structural 1 plywood (40/20). Self-adhered membrane, full field. Nail-strip standing seam.
 - Attic: vented, unconditioned garage. Blown fill level on the ceiling, tapering over the plate.
 - Wall: 2x6, sheathing with integral WRB, corrugated metal panel.
 

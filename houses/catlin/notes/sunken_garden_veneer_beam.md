@@ -26,7 +26,7 @@ one that needs a seal.
 > `structural.foundation_unbalanced_fill` on the last published row of IRC Table
 > R404.1.2(8). This beam is a thermal device that happens to be made of concrete.
 
-> ⚠ **The veneer anchor is an engineered item.** The airspace itself is 2" and compliant,
+> ⚠ **The veneer anchor is an engineered item.** The airspace itself is 4" and compliant,
 > but the beam holds the wythe ~10" off the backup's structural face and no prescriptive
 > table reaches that. See §5.1 — including why IRC R703.15's 4" foam limit does *not*
 > apply here, and why the wythe must NOT be anchored to the side retaining walls.

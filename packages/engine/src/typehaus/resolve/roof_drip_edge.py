@@ -132,7 +132,7 @@ def _leg_member(roof: ResolvedRoof, run: EdgeRun, leg: str, quad: Quad, span: Mi
     nx, ny = run.normal
     a = (span.p0[0] + nx * center, span.p0[1] + ny * center)
     b = (span.p1[0] + nx * center, span.p1[1] + ny * center)
-    length = math.hypot(b[0] - a[0], b[1] - a[1])
+    length = math.hypot(b[0] - a[0], b[1] - a[1], span.z1_m - span.z0_m)  # along the slope
     # The ring's frame is the run's LEFT normal; ``u`` is outward, so flip where they differ.
     sign = 1.0 if (-(b[1] - a[1]) * nx + (b[0] - a[0]) * ny) >= 0.0 else -1.0
     ring = tuple(((u - center) * sign, z - z_lo) for u, z in quad)

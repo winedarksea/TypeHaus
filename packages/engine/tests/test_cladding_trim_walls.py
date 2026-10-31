@@ -85,9 +85,10 @@ def test_roof_edges_bill_as_image_ii_pieces(catlin_model_ro):
     assert rows["52131XX"]["count"] == 5         # closed ridge cover: house and canopy
     # Every exposed rake: the house's four runs, the garage's north gable and the canopy's
     # south gable. The garage south and canopy north are one plane (abutted_run_keys), no piece.
-    assert rows["52126XX"]["count"] == 16
-    assert rows["52132XX"]["count"] == 16        # one rake cleat per rake stick
-    assert rows["5806199"]["count"] == 40        # flat cleats on barge boards only (the fascias)
+    # Billed along the slope: a 6:12 house rake is 246" + its foot, three 10'-2" sticks.
+    assert rows["52126XX"]["count"] == 20
+    assert rows["52132XX"]["count"] == 20        # one rake cleat per rake stick
+    assert rows["5806199"]["count"] == 44        # flat cleats on barge boards only (the fascias)
     assert "IMAGE_II_RAKE_4IN_CUSTOM" not in rows  # the house rake is the stock 2-5/8 in leg
 
 
