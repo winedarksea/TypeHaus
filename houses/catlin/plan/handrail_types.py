@@ -18,7 +18,9 @@ EZ_HANDRAIL_8_BLACK_KIT = Product(
     source="Home Depot listing, $158, read 2026-10-24. Manual: 1.9 in. OD aluminum rail; wall "
            "bracket EZA200 on 2-1/4 in. Tapcon and 1 in. stainless pan-head fasteners into a "
            "solid stud. The manual spaces brackets 'every 4' to 6''; the house uses 4' (48 in.). "
-           "No load rating is published, and the kit's bracket count is not verified.",
+           "No load rating is published, and the kit's bracket count is not verified. No "
+           "wall-to-rail standoff is published either: the paths set the rail centre ~2 1/2 in. "
+           "off the finish (1.55-1.61 in. clear, R311.7.8.2 wants 1 1/2); confirm on a bracket.",
 )
 
 RAILING_INT_ALUM_HANDRAIL = RailingType(

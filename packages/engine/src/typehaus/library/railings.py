@@ -92,7 +92,8 @@ RAILING_EXT_ALUMINUM_ADA_HANDRAIL = RailingType(
     tag="RAILING-EXT-ALUMINUM-ADA-HANDRAIL",
     name="Exterior aluminum ADA pipe handrail",
     product_ref=WILLIAMS_ADA_HANDRAIL_BLACK.tag,
-    # Inferred from the part names (~1.5" OD); measure on delivery.
+    # ~1.5" OD from the part names; the comparable Aria Railing 94" ADA pipe kit
+    # (Home Depot AADAPRBK) reads "94 in. x 1.5 in.". Measure on delivery.
     rail_diameter=inch(1.5),
     stock_length=inch(94),
     bracket_spacing_max=inch(72),

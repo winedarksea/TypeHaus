@@ -2061,9 +2061,9 @@ _PORCH_JOIST_OUTLINE = (pt(ft(_x_in_w), ft(_porch_y0)), pt(ft(_x_in_e), ft(_porc
 # 4.99" cast post bases land on treads and R311.7.1 keeps 36" between the posts above the
 # handrail (36 1/2" with the posts 2 3/4" in). -5'-3" keeps ~2'-9" to HP2's cabinet face
 # against its published 24", and 2'-3" to PT-SG-BR3's south face.
-_PORCH_STAIR_X0 = _x_in_e + 1.0  # 28.5' — W-SG-E1's east face, where the stringers land
+_PORCH_STAIR_X0 = _x_in_e + 1.0  # 27.5' — W-SG-E1's east face, where the stringers land
 # Four 11" treads east of it, plus the 3/4" head riser board standing against the wall face.
-_PORCH_STAIR_X1 = _PORCH_STAIR_X0 + (4 * 11.0 + 0.75) / 12.0  # 32.229'
+_PORCH_STAIR_X1 = _PORCH_STAIR_X0 + (4 * 11.0 + 0.75) / 12.0  # 31.229'
 
 _PORCH_STAIR_WIDTH_IN = 45.0
 _PORCH_STAIR_Y1 = -9.0   # the flight's SOUTH side
@@ -2163,7 +2163,7 @@ _y_porch_guard_block = _y_ax_front + 2.0 / 12.0
 # R311.7.5.2's 10" minimum with an inch to spare.
 #
 # ** THE 12" WALL TOP IS A THRESHOLD, NOT A TREAD. ** W-SG-E1's top is 0'-0", 0.94" BELOW
-# the porch plank, so a flight springing from x 27'-6" would want its first tread 5.848"
+# the porch plank, so a flight springing from x 26'-6" would want its first tread 5.848"
 # below the concrete it has to cross. The flight therefore starts at the wall's EAST face and
 # the wall top is decked flush at +0'-0.94" with a 3'-9" x 12" board of the porch's own
 # composite plank. That is 3.75 sf of trim over concrete with nothing to frame: it is NOT
@@ -2173,7 +2173,7 @@ _y_porch_guard_block = _y_ax_front + 2.0 / 12.0
 # ** AND AN UNMODELLED THRESHOLD IS WHY THE FIRST TRY LANDED ON A COLUMN. ** Drawn against
 # the pocket's north strip, this board ran straight through PT-SG-BR3 — a 12" round on a 12"
 # wall, so it filled the top edge to edge and left 10" of passage one side and 14" the other.
-# Nothing failed: the column's east face is exactly tangent to the stair's head at x 28'-6",
+# Nothing failed: the column's east face is exactly tangent to the stair's head at x 27'-6",
 # so no solid overlapped, and the board that would have overlapped is trim. Read the wall
 # top's occupants by hand before moving this flight along it.
 #
@@ -2233,7 +2233,7 @@ PORCH_STAIR = Stair(
 # 33 7/8" from it to the north posts (R311.7.1's 31 1/2"), which `code.R311_7_1_stair_width`
 # measures along with the 36 1/2" between the posts.
 #
-# These stop at the flight — x 28'-6", the head — and the threshold beyond it is guarded
+# These stop at the flight — x 27'-6", the head — and the threshold beyond it is guarded
 # by PORCH_STAIR_THRESHOLD_RAILS below rather than by extending these. A `serves_stair`
 # Railing is RAKED along the nosing line for its whole authored path, so level wall top on
 # the end of one resolves at 0" above the (absent) nosings. Two elements is the true
@@ -2277,7 +2277,7 @@ PORCH_STAIR_RAILS.append(Railing(
     start_termination="newel", end_termination="newel"))
 
 # ** THE THRESHOLD'S TWO CHEEKS. ** The 12" of W-SG-E1 wall top between the porch plank and
-# the head of the flight (x 27'-6"..28'-6") is decked flush at +0'-0.94" and is 33.94" above the
+# the head of the flight (x 26'-6"..27'-6") is decked flush at +0'-0.94" and is 33.94" above the
 # pad on BOTH its north and south sides. Nothing in the engine asks for a guard there:
 # `code.R312_1_1_stair_open_side` measures the FLIGHT, whose top tread is only 26 2/5" over
 # the pad, and `code.R312_1_guard_height` tests RL-SG-PORCH against the deck edge SEGMENT,

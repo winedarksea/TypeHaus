@@ -26,7 +26,7 @@ walkable only between them: **y -9'-9 1/4"..-3'-0"**. The north-strip flight put
 threshold straight across `PT-SG-BR3`, leaving 10" of passage one side and 14" the other.
 
 Nothing reported it. The threshold board is trim rather than an element (below), so there
-was nothing to overlap; and the flight starts at the wall's east face, x 28'-6", which is
+was nothing to overlap; and the flight starts at the wall's east face, x 27'-6", which is
 *exactly* `PT-SG-BR3`'s east face, so the two solids were tangent and
 `structural.member_interference` had nothing to say either. **A stair whose head lands on a
 wall TOP has to be read against what stands on that top**, and no rule in this engine does
@@ -40,7 +40,7 @@ that yet — `plans/TODO.md` carries it.
 
 | | |
 |---|---|
-| run | x 28'-6"..32'-2" (`start` is the FOOT, at the east end; the flight climbs west) |
+| run | x 27'-6"..31'-2" (`start` is the FOOT, at the east end; the flight climbs west) |
 | width | y -9'-0"..-5'-3" (`_PORCH_STAIR_WIDTH_IN`) |
 | base | `_STAIR_PAD_TOP`, -2'-9" — the pad top, shared with `SL-WK-D` |
 | top | `_porch_walking_surface`, +0'-0.94" — the composite plank, not the 0'-0" joist top |
@@ -79,8 +79,8 @@ the smallest rectangle covering both is 94 sf — 54 sf of concrete to save one 
 ### The 12" wall top is a threshold, not a tread — and it is NOT MODELLED
 
 `W-SG-E1`'s top is 0'-0", **0.94" below the porch plank**. A flight springing from the
-wall's west face at x 27'-6" would want its first tread 5.848" *below* the concrete it has to
-cross. So the flight starts at the wall's **east** face, x 28'-6", and the 12" of wall top
+wall's west face at x 26'-6" would want its first tread 5.848" *below* the concrete it has to
+cross. So the flight starts at the wall's **east** face, x 27'-6", and the 12" of wall top
 between the porch plank and the head of the flight is decked flush at +0'-0.94" with a
 **3'-9" x 12" board of the porch's own composite plank** — 3.75 sf, at y -9'-0"..-5'-3", which
 is clear of both columns by 2'-3" and 9 1/4".
@@ -186,6 +186,11 @@ four rails, so none of them can drift apart. `_PORCH_GUARD_SOUTH_STATIONS` reads
 path segment and is unaffected either way.
 
 ## Electrical
+
+**History, superseded (checked 2026-10-31):** `ED-M-STAIR-LT` is now wall-hosted on `W-M-S2`
+at 7'-0" (`plan/porch_lighting.py`) and `ED-M-HP2-DISC` on `W-SG-E1` at -0'-10"
+(`plan/electrical.py`); the stations below predate both moves and W-SG-E1's east face is
+x 27'-6", not 28'-6".
 
 **The two disconnects moved twice**, and by the second move they had left the house
 altogether. `notes/heat_pump_ground_pad.md` carries the full argument; the stair's share of

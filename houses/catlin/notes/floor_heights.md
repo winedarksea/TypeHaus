@@ -75,7 +75,7 @@ modeled height difference is zero.
 | `D-M-BATH2` | bedroom carpet +1.5000 | heated porcelain +1.5000 | 0 | Flush carpet/tile edge with suitable profile |
 | `ST-M2S` lower and upper head | main LVP +0.94685 | second oak +1.5000 (+121.5000 absolute) | stair rise | 16 equal risers at 7.5346 in; level turn +61.22343 absolute |
 | `ST-S2A` lower head | second oak +1.5000 (+121.5000 absolute) | oak stair | 0 at head | Retain existing authored 121.5-in start |
-| `D-M-ENTRY` exterior | mudroom LVP +0.94685 | breezeway deck +1.0000 | 0.05315 | Weather sill, **not** an interior reducer |
+| `D-M-ENTRY` exterior | mudroom LVP +0.94685 | breezeway deck 0.0000 | 0.94685 down | Flashed weather sill, **not** an interior reducer |
 
 Use a restrained, shallow solid-surface reducer at the 0.3800-in plant change, sloping
 down toward the vinyl over roughly 4 1/2 in of run. The wet-side sheet must turn up
@@ -114,7 +114,7 @@ it is a flush field joint rather than a doorway reducer.
 
 ```
        interior                          exterior / breezeway
-  LVP top +0.94685  ───┐  raised weather sill  ┌── composite deck +1.0000
+  LVP top +0.94685  ───┐  raised weather sill  ┌── composite deck 0.0000
   floating edge gap  →│  gasket / door sweep   │  open deck drainage ↓
   3/4-in plywood  ────┴─ sloped sill pan ──────┴── flashing drains outward
                       pan laps WRB at jambs and discharges past rim
@@ -124,9 +124,10 @@ Use a manufacturer-approved exterior door sill with an upstand above the LVP, a 
 pan with end dams, and flashing that drains outward over the breezeway edge. Terminate
 the floating plank with its required perimeter gap under a removable sill trim; do not
 seal a drainage path shut. Set the sill height from the selected door system's instructions
-and verify door sweep clearance after the plank is installed. The nearby exterior deck
-being nominally 0.05315 in higher than the LVP is precisely why the water path must rely
-on the sill and pan, not floor-level fall alone. Use a removable boot mat or tray inside
+and verify door sweep clearance after the plank is installed. The breezeway deck finishes at
+0'-0" (`params/north_entry_frame.py` `DECK_FINISH_FT`; "bridge composite finish 0",
+2026-09-11), 0.94685 in below the LVP, so the step out is that drop plus the sill
+upstand. The water path still relies on the sill and pan, not on floor-level fall. Use a removable boot mat or tray inside
 the mudroom so standing snowmelt does not sit at floating plank seams.
 
 `RM-S-PLANT` stays fully adhered sheet vinyl over one nominal 1/4-in SurePly layer.
