@@ -203,3 +203,36 @@ def test_tall_bracket_checks_the_wall_anchor_footprint_not_the_outboard_upright(
     if not supported:
         assert any('bracket 2 ' in f.message and f.element_tags == ('RL-H', 'WIN-T')
                    for f in model.railing_findings)
+
+
+# --- posts: where a fascia post stands, and a post two guards share -----------------------
+
+def test_a_fascia_post_stands_in_its_bracket_outboard_of_the_path():
+    """ESR-3485 Fig. 10: the post centres ``fascia_post_offset`` past the fascia face."""
+    product = railing_type("RT-F", post_width=inch(3), fascia_bracket_height=inch(5),
+                           fascia_bracket_width=inch(5.64),
+                           fascia_bracket_projection=inch(3.29),
+                           fascia_post_offset=inch(1.518))
+    guard = railing("RL-F", type_ref="RT-F", mount="fascia", fascia_face_offset=inch(0.5),
+                    fascia_bracket_drop=inch(2))
+    model = resolve_railings([guard], types=[product])
+    post = next(s for s in solids_of(model, "RL-F") if s.tag.endswith("-POST1"))
+    bracket = next(s for s in solids_of(model, "RL-F") if "FASCIA-BRACKET1" in s.tag)
+    # Path along +x, so outboard (right-hand) is -y: face at -0.5", post centre at -2.018".
+    assert inches(sum(y for _x, y in post.outline) / 4) == pytest.approx(-2.018, abs=1e-6)
+    assert inches(max(y for _x, y in bracket.outline)) == pytest.approx(-0.5, abs=1e-6)
+    assert post.z0_m == pytest.approx(bracket.z0_m)  # down into the pocket
+
+
+def test_a_guard_ending_on_another_guards_post_draws_none_there():
+    a = railing("RL-A", mount="surface")
+    b = railing("RL-B", mount="surface", start_post_ref="RL-A",
+                path=(pt(ft(10), ft(0)), pt(ft(15), ft(0))))
+    stray = railing("RL-C", mount="surface", start_post_ref="RL-A",
+                    path=(pt(ft(10), inch(3)), pt(ft(15), inch(3))))
+    model = resolve_railings([a, b, stray])
+    assert [t for t in _tags(model, "RL-B") if t.startswith("POST")] == ["POST2"]
+    # Off the named guard's station: it keeps its own post and says so.
+    assert "POST1" in _tags(model, "RL-C")
+    assert [f.check_id for f in model.railing_findings] == [
+        "geometry.railing_shared_post_missing"]

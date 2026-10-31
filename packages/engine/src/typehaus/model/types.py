@@ -495,6 +495,10 @@ class RailingType(HausModel):
     fascia_bracket_height: Length | None = None
     fascia_bracket_width: Length | None = None
     fascia_bracket_projection: Length | None = None
+    # The post centreline's distance outboard of the mounting face, in the bracket's pocket.
+    # Set, a fascia guard's posts, rails and infill stand on the path offset by
+    # ``Railing.fascia_face_offset`` plus this, not on the path.
+    fascia_post_offset: Length | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None

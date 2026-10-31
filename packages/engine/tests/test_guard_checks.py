@@ -374,7 +374,8 @@ def test_the_porch_guards_doorway_is_the_stair_throat_and_not_an_open_side(catli
     assert with_stair == []
     without_stair, _s, _u = ec._uncovered_runs(*east, closures, rails, [], **kwargs)
     opening = max(hi - lo for lo, hi in without_stair)
-    assert opening == pytest.approx(inch(45).meters, abs=0.02)  # the 45" flight
+    # 39 1/2": the guard ends on the stair guards' lines, 2 3/4" inside the 45" flight.
+    assert opening == pytest.approx(inch(39.5).meters, abs=0.02)
 
 
 def test_the_garage_has_no_raised_landing_left_to_guard(catlin_ctx):

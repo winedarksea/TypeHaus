@@ -13,6 +13,7 @@ from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import inch
+from typehaus.resolve.railings.guard_line import guard_line_offset_m
 from typehaus.resolve.railings.parts import rail_half_section_m
 
 _MIN_STAIR_WIDTH = inch(36)  # above the handrail / between finished walls and guard posts
@@ -25,9 +26,10 @@ _MIN_WIDTH_PAST_TWO_RAILS = inch(27)
 # some other run (the same stair's opposite lane), not to this flight's side.
 _RAIL_LATERAL_REACH = inch(12)
 _RAIL_PARALLEL_DOT = 0.9  # rail runs along the flight, not across it
-# Only a SURFACE guard's posts are read: they stand on the treads where they are drawn. A
-# fascia post is drawn on its path but stands outboard of the edge (plans/TODO.md).
-_POST_MOUNTS = frozenset({"surface"})
+# A surface guard's posts stand on the treads where they are drawn. A fascia guard's are read
+# only when drawn outboard in their brackets (``guard_line_offset_m`` > 0, it states its
+# fascia face); one that states none is drawn on its path, which is not where it stands.
+_POST_MOUNTS = frozenset({"surface", "fascia"})
 
 Flight = tuple[float, float, float, float, float]  # width, rail 0/1, post 0/1 (m)
 
@@ -101,9 +103,14 @@ def _flight_projections(stair, rails, library, posts) -> dict[str, Flight]:
 
 
 def _guard_posts(ctx: CheckContext, stair_tag: str, railings) -> list:
-    """Drawn outlines of the posts of every surface guard serving ``stair_tag``."""
-    owners = {r.tag for r in railings
-              if r.serves_stair == stair_tag and r.mount in _POST_MOUNTS}
+    """Drawn outlines of the posts of every guard serving ``stair_tag``, including a post
+    one of them ends on that another guard draws (``Railing.end_post_ref``)."""
+    library = getattr(getattr(ctx, "plan", None), "library", None)
+    serving = [r for r in railings
+               if r.serves_stair == stair_tag and r.mount in _POST_MOUNTS
+               and (r.mount != "fascia" or guard_line_offset_m(library, r) > 0)]
+    owners = {r.tag for r in serving}
+    owners |= {ref for r in serving for ref in (r.start_post_ref, r.end_post_ref) if ref}
     if not owners:
         return []
     return [s.outline for s in getattr(ctx.model, "solids", ())
@@ -113,10 +120,10 @@ def _guard_posts(ctx: CheckContext, stair_tag: str, railings) -> list:
 @check(Tier.CODE, "code.R311_7_1_stair_width")
 def stair_width(ctx: CheckContext) -> list[Finding]:
     """Built flight width from the tread boards (R311.7.1: 36" minimum), the clear width
-    past the handrails, and the clear width between surface guard posts.
+    past the handrails, and the clear width between guard posts.
 
     Three numbers per flight, all measured off the output: 36" between the tread board's
-    ends; where a ``serves_stair`` surface guard's posts stand on the treads, 36" between
+    ends; where a ``serves_stair`` guard's posts stand on the treads, 36" between
     their faces ("above the permitted handrail height"); and where a ``serves_stair``
     handrail runs alongside, what remains past its section and any post on either side —
     31.5" with a rail on one side, 27" with rails both sides. The winder turn is excluded:

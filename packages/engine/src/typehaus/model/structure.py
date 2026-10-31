@@ -995,6 +995,10 @@ class Railing(Element):
     # far outboard of ``path``, and the bracket top this far below ``base_elevation``.
     fascia_face_offset: Length | None = None
     fascia_bracket_drop: Length | None = None
+    # Tag of another railing whose post stands at this end: this one draws no post there and
+    # its rails terminate on that one (one post, one base). Its end must be on that station.
+    start_post_ref: str | None = None
+    end_post_ref: str | None = None
     assembly: str | None = None  # optional finish assembly for render/IFC material
     # --- guard vs handrail (R311.7.8, R312.1.3) ------------------------------------------
     # A Railing was only ever a *guard*: a plan path with a height, framed into posts and

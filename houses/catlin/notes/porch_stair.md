@@ -107,7 +107,8 @@ scope, and it is 2.25" wide. Until 2026-10-30 the two guards claimed `guard_and_
 "1.5in round" profile they do not have. Five risers is over R311.7.8's four, so the flight
 gets one real one: **`RL-SG-PSTAIR-HR`**, the Williams Black ADA Pipe Rail and 90 deg Return
 Kit (AD901102B, `RAILING-EXT-ALUMINUM-ADA-HANDRAIL`), on the **south** side — the right hand
-going down. It is `mount="post"`: its two 90 deg returns fix to `RL-SG-PSTAIR-S`'s end posts
+going down. It is `mount="post"`: its two 90 deg returns fix to the south guard's end posts (the head one
+is `RL-SG-PTHRESH-S`'s)
 with 3 x #10 TEK screws and a backer (`newel` ends), 52.3" apart on the rake against the
 kit's 72", so there is no mid bracket — ESR-3485 Table 1 lists the midspan bracket on a 2"
 post only, and the guard's middle post is 3". Its
@@ -124,19 +125,23 @@ kit's 72".
 4'-5" south of the house and 1'-6" north of the `W-RG-EAST-BALCONY` apron, so there is no
 wall on either side that `code.R312_1_1_stair_open_side` could credit even in principle.
 
-**Post bases, still open.** The drawn stations are the path's ends and its middle, each on
-a riser line, so no drawn base is wholly on a tread: the foot base straddles the lowest riser
-and the pad, and the head post is centred on W-SG-E1's east face, half over the top tread.
-The head posts' centres are also 2 3/4" from `RL-SG-PTHRESH-S/N`'s end posts, so the two 3"
-posts overlap 1/4" in plan. 36" spacing cannot put three bases on four 11" treads, and two
-posts would stop the handrail short of the end risers. A designer's call; `plans/TODO.md`
-carries it.
+**Post bases (owner, 2026-10-31).** One post per junction: each raked guard ends on its
+threshold cheek's east post (`end_post_ref`), a single 42" post on one cast base centred on
+W-SG-E1's east face, so the head is drawn and billed once. The foot and middle posts stay on
+riser lines, where 36" spacing puts them; two posts would stop the handrail short of the end
+risers. **Site detail:** a base on a riser line straddles the riser: half bears on the upper
+tread, half on a solid KDAT block cut to the 6.79" rise, set on the tread below (the pad at
+the foot) tight to the riser and screwed through it. Two of ESR-3485's four GRK RSS 5/16" x
+6" go into the framing under the upper tread, two through the block. The block is the flat
+SG >= 0.50 substrate the ESR's wood row assumes; confirm it with Ultralox before ordering.
 
 ### The threshold's two cheeks
 
 `RL-SG-PTHRESH-S` and `RL-SG-PTHRESH-N`, 1'-0" each, **level** at 42" to match `RL-SG-PORCH`,
-on the wall top between the porch plank and the head of the flight — at y -9'-0" and -5'-3"
-(since 2026-10-30), clear of `PT-SG-BF3` by 9 1/4" at the south end. That foot of walking
+on the wall top between the porch plank and the head of the flight — on the stair guards'
+lines, 2 3/4" inside y -9'-0" and -5'-3" (since 2026-10-31). Each draws ONE post: its west
+end is `RL-SG-PORCH`'s (or `-NE`'s) end post (`start_post_ref`), which stops on the same
+line, and its east post is the stair guard's head. That foot of walking
 surface is 33.94" above the pad on **both** its north and south sides, and nothing in the engine
 asks for a guard there:
 
@@ -163,16 +168,18 @@ edge, one path edit, no split. Moving the flight to y -9'-0"..-6'-0" put the ope
 **middle** of that leg instead, and a `path` cannot carry a hole.
 
 So the east leg is two elements now. `RL-SG-PORCH` runs the west leg, the south leg and the
-east leg up to the flight's south side at -9'-0"; **`RL-SG-PORCH-NE`** picks up at the north
-side, now -5'-3", and runs the 4'-5" to the porch's north edge. Same `type_ref`, same mount, same
+east leg up to the south stair guard's line (-9'-0" plus 2 3/4", since 2026-10-31);
+**`RL-SG-PORCH-NE`** picks up on the north one (-5'-3" less 2 3/4") and runs to the porch's
+north edge. Each end post is also its threshold cheek's west post. Same `type_ref`, same mount, same
 height, same assembly — it is one run of guard with a doorway in it, and it is two elements
 only because the schema says so. The long one keeps its uid: it is the same element,
 shortened.
 
 **The split moved no footage**: 42.7 LF over six runs instead of five, because the doorway
-was 3'-0" wherever it sat. Widening the flight to 45" opened it to 3'-9": 40.0 LF since
-2026-10-30. What the split does cost is a run start/stop and two end
-posts of labour, flagged on the `RAILING-EXT-ALUMINUM-SURFACE` price row.
+was 3'-0" wherever it sat. Widening the flight to 45" opened it to 3'-9" (40.0 LF,
+2026-10-30); closing it to the stair guards' lines makes it 3'-3 1/2" (40.4 LF, 2026-10-31).
+What the split does cost is a run start/stop, flagged on the `RAILING-EXT-ALUMINUM-SURFACE`
+price row.
 
 The four `_PORCH_STAIR_*` constants are shared by the flight, its pad, the opening and all
 four rails, so none of them can drift apart. `_PORCH_GUARD_SOUTH_STATIONS` reads the *middle*

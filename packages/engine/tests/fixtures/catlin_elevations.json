@@ -64269,58 +64269,58 @@
 "41701121eda2"
 ],
 "geometry/SGRA01AAAA-p00/body": [
-3.0099,
+2.8321,
 4.0767,
 2,
-"db871274288a"
+"39592f175d00"
 ],
 "geometry/SGRA01AAAA-p01/body": [
-3.0099,
+2.8321,
 4.0767,
 2,
-"db871274288a"
+"39592f175d00"
 ],
 "geometry/SGRA01AAAA-p02/body": [
-3.0099,
+2.8321,
 4.0767,
 2,
-"db871274288a"
+"39592f175d00"
 ],
 "geometry/SGRA01AAAA-p03/body": [
-3.0099,
+2.8321,
 4.0767,
 2,
-"db871274288a"
+"39592f175d00"
 ],
 "geometry/SGRA01AAAA-p04/body": [
-3.0099,
+2.8321,
 4.0767,
 2,
-"db871274288a"
+"39592f175d00"
 ],
 "geometry/SGRA01AAAA-p05/body": [
-3.0099,
+2.8321,
 4.0767,
 2,
-"db871274288a"
+"39592f175d00"
 ],
 "geometry/SGRA01AAAA-p06/body": [
-3.0099,
+2.8321,
 4.0767,
 2,
-"db871274288a"
+"39592f175d00"
 ],
 "geometry/SGRA01AAAA-p07/body": [
-3.0099,
+2.8321,
 4.0767,
 2,
-"db871274288a"
+"39592f175d00"
 ],
 "geometry/SGRA01AAAA-p08/body": [
-3.0099,
+2.8321,
 4.0767,
 2,
-"db871274288a"
+"39592f175d00"
 ],
 "geometry/SGRA01AAAA-r00/body": [
 4.05765,
@@ -64694,6 +64694,12 @@
 2,
 "43a4689eff75"
 ],
+"geometry/SGRA02AAAA-i060/body": [
+0.042926,
+1.071626,
+2,
+"43a4689eff75"
+],
 "geometry/SGRA02AAAA-p00/body": [
 0.023876,
 1.090676,
@@ -64814,12 +64820,6 @@
 2,
 "a63c9ae310e4"
 ],
-"geometry/SGRA03AAAA-p02/body": [
-0.023876,
-0.938276,
-2,
-"8f1dbe413729"
-],
 "geometry/SGRA03AAAA-r00/body": [
 0.2324035,
 0.9548591,
@@ -64892,12 +64892,6 @@
 2,
 "a63c9ae310e4"
 ],
-"geometry/SGRA04AAAA-p02/body": [
-0.023876,
-0.938276,
-2,
-"8f1dbe413729"
-],
 "geometry/SGRA04AAAA-r00/body": [
 0.2324035,
 0.9548591,
@@ -64921,12 +64915,6 @@
 1.071626,
 2,
 "43a4689eff75"
-],
-"geometry/SGRA05AAAA-p00/body": [
-0.023876,
-1.090676,
-2,
-"d370f3439032"
 ],
 "geometry/SGRA05AAAA-p01/body": [
 0.023876,
@@ -64957,12 +64945,6 @@
 1.071626,
 2,
 "43a4689eff75"
-],
-"geometry/SGRA06AAAA-p00/body": [
-0.023876,
-1.090676,
-2,
-"d370f3439032"
 ],
 "geometry/SGRA06AAAA-p01/body": [
 0.023876,
@@ -109451,23 +109433,23 @@
 "solids/RL-SG-BALCONY-FASCIA-BRACKET8/z1_m": 2.9591,
 "solids/RL-SG-BALCONY-FASCIA-BRACKET9/z0_m": 2.8321,
 "solids/RL-SG-BALCONY-FASCIA-BRACKET9/z1_m": 2.9591,
-"solids/RL-SG-BALCONY-POST1/z0_m": 3.0099,
+"solids/RL-SG-BALCONY-POST1/z0_m": 2.8321,
 "solids/RL-SG-BALCONY-POST1/z1_m": 4.0767,
-"solids/RL-SG-BALCONY-POST2/z0_m": 3.0099,
+"solids/RL-SG-BALCONY-POST2/z0_m": 2.8321,
 "solids/RL-SG-BALCONY-POST2/z1_m": 4.0767,
-"solids/RL-SG-BALCONY-POST3/z0_m": 3.0099,
+"solids/RL-SG-BALCONY-POST3/z0_m": 2.8321,
 "solids/RL-SG-BALCONY-POST3/z1_m": 4.0767,
-"solids/RL-SG-BALCONY-POST4/z0_m": 3.0099,
+"solids/RL-SG-BALCONY-POST4/z0_m": 2.8321,
 "solids/RL-SG-BALCONY-POST4/z1_m": 4.0767,
-"solids/RL-SG-BALCONY-POST5/z0_m": 3.0099,
+"solids/RL-SG-BALCONY-POST5/z0_m": 2.8321,
 "solids/RL-SG-BALCONY-POST5/z1_m": 4.0767,
-"solids/RL-SG-BALCONY-POST6/z0_m": 3.0099,
+"solids/RL-SG-BALCONY-POST6/z0_m": 2.8321,
 "solids/RL-SG-BALCONY-POST6/z1_m": 4.0767,
-"solids/RL-SG-BALCONY-POST7/z0_m": 3.0099,
+"solids/RL-SG-BALCONY-POST7/z0_m": 2.8321,
 "solids/RL-SG-BALCONY-POST7/z1_m": 4.0767,
-"solids/RL-SG-BALCONY-POST8/z0_m": 3.0099,
+"solids/RL-SG-BALCONY-POST8/z0_m": 2.8321,
 "solids/RL-SG-BALCONY-POST8/z1_m": 4.0767,
-"solids/RL-SG-BALCONY-POST9/z0_m": 3.0099,
+"solids/RL-SG-BALCONY-POST9/z0_m": 2.8321,
 "solids/RL-SG-BALCONY-POST9/z1_m": 4.0767,
 "solids/RL-SG-BALCONY-RAIL1/z0_m": 4.05765,
 "solids/RL-SG-BALCONY-RAIL1/z1_m": 4.09575,
@@ -109587,6 +109569,8 @@
 "solids/RL-SG-PORCH-BAL6/z1_m": 1.071626,
 "solids/RL-SG-PORCH-BAL60/z0_m": 0.042926,
 "solids/RL-SG-PORCH-BAL60/z1_m": 1.071626,
+"solids/RL-SG-PORCH-BAL61/z0_m": 0.042926,
+"solids/RL-SG-PORCH-BAL61/z1_m": 1.071626,
 "solids/RL-SG-PORCH-BAL7/z0_m": 0.042926,
 "solids/RL-SG-PORCH-BAL7/z1_m": 1.071626,
 "solids/RL-SG-PORCH-BAL8/z0_m": 0.042926,
@@ -109669,8 +109653,6 @@
 "solids/RL-SG-PSTAIR-N-POST1/z1_m": 0.2486152,
 "solids/RL-SG-PSTAIR-N-POST2/z0_m": -0.3150766,
 "solids/RL-SG-PSTAIR-N-POST2/z1_m": 0.5993234,
-"solids/RL-SG-PSTAIR-N-POST3/z0_m": 0.023876,
-"solids/RL-SG-PSTAIR-N-POST3/z1_m": 0.938276,
 "solids/RL-SG-PSTAIR-N-RAIL1/z0_m": 0.2324035,
 "solids/RL-SG-PSTAIR-N-RAIL1/z1_m": 0.9548591,
 "solids/RL-SG-PSTAIR-N-RAIL2/z0_m": -0.6819965,
@@ -109695,8 +109677,6 @@
 "solids/RL-SG-PSTAIR-S-POST1/z1_m": 0.2486152,
 "solids/RL-SG-PSTAIR-S-POST2/z0_m": -0.3150766,
 "solids/RL-SG-PSTAIR-S-POST2/z1_m": 0.5993234,
-"solids/RL-SG-PSTAIR-S-POST3/z0_m": 0.023876,
-"solids/RL-SG-PSTAIR-S-POST3/z1_m": 0.938276,
 "solids/RL-SG-PSTAIR-S-RAIL1/z0_m": 0.2324035,
 "solids/RL-SG-PSTAIR-S-RAIL1/z1_m": 0.9548591,
 "solids/RL-SG-PSTAIR-S-RAIL2/z0_m": -0.6819965,
@@ -109705,8 +109685,6 @@
 "solids/RL-SG-PTHRESH-N-BAL1/z1_m": 1.071626,
 "solids/RL-SG-PTHRESH-N-BAL2/z0_m": 0.042926,
 "solids/RL-SG-PTHRESH-N-BAL2/z1_m": 1.071626,
-"solids/RL-SG-PTHRESH-N-POST1/z0_m": 0.023876,
-"solids/RL-SG-PTHRESH-N-POST1/z1_m": 1.090676,
 "solids/RL-SG-PTHRESH-N-POST2/z0_m": 0.023876,
 "solids/RL-SG-PTHRESH-N-POST2/z1_m": 1.090676,
 "solids/RL-SG-PTHRESH-N-RAIL1/z0_m": 1.071626,
@@ -109717,8 +109695,6 @@
 "solids/RL-SG-PTHRESH-S-BAL1/z1_m": 1.071626,
 "solids/RL-SG-PTHRESH-S-BAL2/z0_m": 0.042926,
 "solids/RL-SG-PTHRESH-S-BAL2/z1_m": 1.071626,
-"solids/RL-SG-PTHRESH-S-POST1/z0_m": 0.023876,
-"solids/RL-SG-PTHRESH-S-POST1/z1_m": 1.090676,
 "solids/RL-SG-PTHRESH-S-POST2/z0_m": 0.023876,
 "solids/RL-SG-PTHRESH-S-POST2/z1_m": 1.090676,
 "solids/RL-SG-PTHRESH-S-RAIL1/z0_m": 1.071626,

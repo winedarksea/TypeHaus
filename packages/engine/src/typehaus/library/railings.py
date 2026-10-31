@@ -56,10 +56,12 @@ RAILING_EXT_ALUMINUM_FASCIA = RailingType(
     source=f"Williams Colonial 42\" black on 3\" fascia posts. {_FASCIA_BRACKET}. "
            f"Fascia runs use 6' panels only. {_SPACING}.",
     # The bracket's 5" flange on the mounting face (it wraps 6" at a corner). Width and
-    # projection are read off ESR-3485 Fig. 10.
+    # projection are read off ESR-3485 Fig. 10: a 1/4" hat over a 3.036" square pocket, the
+    # post's fascia face on the mounting face, so its centre stands 3.036/2 outboard.
     fascia_bracket_height=inch(5),
     fascia_bracket_width=inch(5.64),
     fascia_bracket_projection=inch(3.29),
+    fascia_post_offset=inch(1.518),
 )
 
 RAILING_INT_STAIR_GUARD = RailingType(
@@ -72,6 +74,7 @@ RAILING_INT_STAIR_GUARD = RailingType(
     fascia_bracket_height=inch(5),
     fascia_bracket_width=inch(5.64),
     fascia_bracket_projection=inch(3.29),
+    fascia_post_offset=inch(1.518),
 )
 
 RAILING_EXT_ALUMINUM_SURFACE = RailingType(

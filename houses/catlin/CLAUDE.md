@@ -2355,8 +2355,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   4.99" base (screwed, not welded).
 - `ST-SG-PORCH` is 45" wide (y -9'-0"..-5'-3", widened north 2026-10-30) so the cast bases
   fit the tread width, 2 3/4" in, with 36 1/2" between post faces (graded by
-  `code.R311_7_1_stair_width`). Along the run they are still drawn on riser lines: open in
-  `plans/TODO.md`. Its two raked guards are
+  `code.R311_7_1_stair_width`). Run posts stay on riser lines, bases straddling the riser;
+  each head post IS its threshold cheek's (`end_post_ref`, one post per junction, owner
+  2026-10-31; `notes/porch_stair.md`). Its two raked guards are
   guards only (the Colonial top rail is no handrail, ESR §5.7); `RL-SG-PSTAIR-HR` is the
   Williams ADA pipe rail, `mount="post"` on the south guard's posts
   (`notes/porch_stair.md`). Do not widen further north: HP2's disconnect working space. The south leg
@@ -2365,7 +2366,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `RL-SG-BALCONY` stays fascia-mounted (through-bolted PVC fascia + 2x8 rim)
   because `FS-SG-DECK`'s aluminium plank is the porch roof and carries no other
   penetrations — do not switch to surface mounting. Needs rim blocking in
-  `FS-SG-DECK.reinforcements`.
+  `FS-SG-DECK.reinforcements`. Its posts stand in the brackets 1.518" outboard of the fascia
+  face (`RailingType.fascia_post_offset`, ESR-3485 Fig. 10); bracket and post both cross
+  `TR-SG-GUTTER`'s back sheet (open, `plans/TODO.md`).
 - Veneer `W-B-BRICK` (both faces exposed; top at -13 1/3" since 2026-09-22 so
   `FS-SG-PORCH`'s 2x12s pass over it with 2 1/12" of air — nothing grades that gap) stands on
   `W-SG-BRKBM`, a 12" x 17-3/4" grade beam bearing on `FT-SG-W1`/`E1`'s 3'-0" toes and

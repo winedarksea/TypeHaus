@@ -22,12 +22,17 @@ from typehaus.resolve.railings.frame import (
     emit_rails,
     railing_post_stations,
 )
+from typehaus.resolve.railings.guard_line import (
+    guard_line,
+    guard_post_stations,
+    shared_post_ends,
+)
 from typehaus.resolve.railings.infill import emit_infill
 from typehaus.resolve.railings.parts import resolve_parts
 from typehaus.resolve.railings.spans import flat_surface, raking_surface
 from typehaus.resolve.railings.terminations import emit_terminations
 
-__all__ = ["railing_post_stations", "resolve_railing"]
+__all__ = ["guard_line", "guard_post_stations", "railing_post_stations", "resolve_railing"]
 
 
 def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Finding]:
@@ -38,7 +43,8 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
         findings.append(element_error(
             "integrity.unknown_railing_type",
             f"railing {el.tag} references missing type {el.type_ref!r}", el.tag))
-    path = [p.xy_m for p in el.path]
+    # Where the guard stands: the path, or outboard of it on a fascia (→ .guard_line).
+    path = guard_line(model.plan.library, el)
     if len(path) < 2:
         return findings
     if el.kind is RailingKind.MASONRY:
@@ -65,8 +71,10 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
 
     parts = resolve_parts(model, el)
     stations = railing_post_stations(path, max(el.post_spacing.meters, MIN_POST_SPACING_M))
+    shared, shared_findings = shared_post_ends(model.plan, el, stations)
+    findings += shared_findings
     first = len(model.solids)
-    findings += emit_posts(model, el, storey, stations, surface, parts, rail_h)
+    findings += emit_posts(model, el, storey, stations, surface, parts, rail_h, shared)
     emit_rails(model, el, storey, path, surface, parts, rail_h)
     findings.extend(emit_terminations(model, el, storey, path, surface, parts, rail_h))
     findings += emit_infill(model, el, storey, stations, surface, parts, rail_h)

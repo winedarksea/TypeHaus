@@ -499,15 +499,19 @@ def test_catlin_balcony_guard_is_a_42in_railing(catlin_model) -> None:
     """42" is measured from the surface underfoot, not from the storey datum.
 
     The aluminum boards sit *on* the joists whose tops define the datum, so a guard based
-    on the datum stands only 40.5" above the deck someone actually walks on.
+    on the datum stands only 40.5" above the deck someone actually walks on. Each post runs
+    down past the boards into its fascia bracket, to the bracket's bottom.
     """
     deck_top = _balcony_deck_top(catlin_model)
     posts = [s for s in _solids(catlin_model, "railing")
-             if "RL-SG-BALCONY" in s.tag and "POST" in s.tag]
+             if "RL-SG-BALCONY" in s.tag and "-POST" in s.tag]
+    brackets = {s.tag.rsplit("BRACKET", 1)[1]: s for s in _solids(catlin_model, "railing")
+                if "RL-SG-BALCONY-FASCIA-BRACKET" in s.tag}
     assert posts, "railing posts expected"
     for post in posts:
-        assert math.isclose(post.z0_m, deck_top, abs_tol=0.02), "guard must start on the boards"
         assert math.isclose(post.z1_m - deck_top, 3.5 * FT, abs_tol=0.02)
+        bracket = brackets[post.tag.rsplit("POST", 1)[1]]
+        assert math.isclose(post.z0_m, bracket.z0_m, abs_tol=1e-9), "post seats in its bracket"
 
 
 def test_catlin_stair_guard_still_resolves_flat(catlin_model) -> None:
@@ -576,13 +580,13 @@ def _bay_pickets(model, tag):
     a genuine cross-check: the pickets have to land where the posts say the bays are.
     """
     from typehaus.resolve.geometry import length, normal, project_onto_axis, sub, unit
-    from typehaus.resolve.railings import railing_post_stations
+    from typehaus.resolve.railings import guard_post_stations
 
     guard = model.plan.by_tag(tag)
     pickets = [s for s in model.solids
                if s.category == "railing_infill" and s.tag.startswith(f"{tag}-")]
-    path = [p.xy_m for p in guard.path]
-    stations = railing_post_stations(path, max(guard.post_spacing.meters, 0.3))
+    # Off the line the guard stands on: a fascia guard's is outboard of its path.
+    stations = guard_post_stations(model.plan.library, guard)
     bays = []
     for a, b in zip(stations[:-1], stations[1:]):
         run = length(sub(b, a))

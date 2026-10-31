@@ -10,6 +10,7 @@ from typehaus.model.structure import Railing
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import Vec, length, rect_between, square, sub
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, SolidSweep, Vec3
+from typehaus.resolve.railings.guard_line import guard_line_offset_m
 from typehaus.resolve.railings.parts import (
     RAILING_CATEGORY,
     RAILING_FACETS,
@@ -77,11 +78,14 @@ def railing_post_stations(path: list[Vec], spacing: float) -> list[Vec]:
 
 
 def emit_posts(model: ResolvedModel, el: Railing, storey: str, stations: list[Vec],
-               surface: RailingSurface, parts: RailingParts, rail_h: float) -> list[Finding]:
+               surface: RailingSurface, parts: RailingParts, rail_h: float,
+               shared: frozenset[int] | set[int] = frozenset()) -> list[Finding]:
     """One prism per station, standing on the walking surface under it.
 
     Unless the rail is carried by a wall, in which case it stands on nothing at all and
-    gets brackets instead — see :func:`emit_brackets`.
+    gets brackets instead — see :func:`emit_brackets`. A ``shared`` station is another
+    guard's post (:func:`~.guard_line.shared_post_ends`) and draws nothing here. A fascia
+    post runs down into its bracket, to the bracket's bottom.
     """
     if el.mount in _WALL_MOUNTS:
         return emit_brackets(model, el, storey, stations, surface, parts, rail_h)
@@ -91,35 +95,46 @@ def emit_posts(model: ResolvedModel, el: Railing, storey: str, stations: list[Ve
         return emit_brackets(model, el, storey, stations, surface, parts, rail_h,
                              find_contact=post_face)
     half = parts.post_section_m / 2.0
+    below = 0.0
     if el.mount == "fascia":
-        _emit_fascia_brackets(model, el, storey, stations, surface, parts)
+        below = _emit_fascia_brackets(model, el, storey, stations, surface, parts, shared)
     for index, (px, py) in enumerate(stations):
+        if index in shared:
+            continue
         z0 = surface.height_at((px, py))
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-p{index:02d}", tag=f"{el.tag}-POST{index + 1}", storey=storey,
             category=RAILING_CATEGORY, outline=square(px, py, half, half),
-            z0_m=z0, z1_m=z0 + rail_h, assembly=el.assembly, material=parts.post_material,
+            z0_m=z0 - below, z1_m=z0 + rail_h, assembly=el.assembly,
+            material=parts.post_material,
         ))
     return []
 
 
 def _emit_fascia_brackets(model: ResolvedModel, el: Railing, storey: str,
                           stations: list[Vec], surface: RailingSurface,
-                          parts: RailingParts) -> None:
+                          parts: RailingParts, shared: set[int]) -> float:
     """A plate on the fascia's outer face at each post, so it shows what it displaces.
 
     Drawn only where the product states its height and the guard states where its fascia
-    face and bracket top are; the right-hand normal of the path is outboard.
+    face and bracket top are; the right-hand normal of the path is outboard. Returns how far
+    below the walking surface the posts run (to the bracket bottom), 0 when none is drawn.
     """
     product = railing_type(model.plan.library, el)
     if (product is None or product.fascia_bracket_height is None
             or product.fascia_bracket_width is None
             or product.fascia_bracket_projection is None
             or el.fascia_face_offset is None or el.fascia_bracket_drop is None):
-        return
+        return 0.0
     half_w = product.fascia_bracket_width.meters / 2.0
     projection = product.fascia_bracket_projection.meters
+    # Stations stand on the guard line, ``line_offset`` outboard of the path (0 when the
+    # product states no post standoff); the fascia face is ``face`` outboard of the path.
+    line_offset = guard_line_offset_m(model.plan.library, el)
+    face = el.fascia_face_offset.meters - line_offset
     for index, station in enumerate(stations):
+        if index in shared:
+            continue
         dirs = _directions_at(stations, index)
         # Corner stations take the segment that arrives; the first station the one leaving.
         dx, dy = dirs[0]
@@ -128,7 +143,6 @@ def _emit_fascia_brackets(model: ResolvedModel, el: Railing, storey: str,
             continue
         ux, uy = dx / n, dy / n
         out = (uy, -ux)
-        face = el.fascia_face_offset.meters
         a = (station[0] + out[0] * face, station[1] + out[1] * face)
         b = (a[0] + out[0] * projection, a[1] + out[1] * projection)
         top = surface.height_at(station) - el.fascia_bracket_drop.meters
@@ -139,6 +153,10 @@ def _emit_fascia_brackets(model: ResolvedModel, el: Railing, storey: str,
             z0_m=top - product.fascia_bracket_height.meters, z1_m=top,
             assembly=el.assembly, material=parts.post_material,
         ))
+    # A post seated in the bracket's pocket runs down to the bracket's bottom.
+    if line_offset <= 0.0:
+        return 0.0
+    return el.fascia_bracket_drop.meters + product.fascia_bracket_height.meters
 
 
 def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list[Vec],

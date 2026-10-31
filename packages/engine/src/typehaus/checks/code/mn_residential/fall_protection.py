@@ -507,7 +507,7 @@ def _largest_drawn_opening_m(ctx: CheckContext, guard) -> float | None:
     """
     from typehaus.model.structure import Railing
     from typehaus.resolve.geometry import length, normal, project_onto_axis, sub, unit
-    from typehaus.resolve.railings import railing_post_stations
+    from typehaus.resolve.railings import guard_post_stations
 
     # Bay-by-bay, off the guard's own post rhythm — which only a Railing has. A slat screen
     # has no posts and no bays, but it DOES draw its slats, so it is measured directly: the
@@ -520,10 +520,10 @@ def _largest_drawn_opening_m(ctx: CheckContext, guard) -> float | None:
     solids = children_of(ctx.model, guard, _INFILL_CATEGORIES)
     if not solids:
         return None
-    path = [p.xy_m for p in guard.path]
-    if len(path) < 2:
+    # Off the line the guard stands on (a fascia guard's is outboard of its path).
+    stations = guard_post_stations(ctx.plan.library, guard)
+    if len(stations) < 2:
         return None
-    stations = railing_post_stations(path, max(guard.post_spacing.meters, 0.3))
     largest = 0.0
     for a, b in zip(stations[:-1], stations[1:], strict=True):
         bay = length(sub(b, a))

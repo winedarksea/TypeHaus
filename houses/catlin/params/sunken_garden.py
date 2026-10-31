@@ -2049,10 +2049,10 @@ _PORCH_JOIST_OUTLINE = (pt(ft(_x_in_w), ft(_porch_y0)), pt(ft(_x_in_e), ft(_porc
 # guard return at the opening is on the author. Recorded in plans/TODO.md, same shape as the
 # SL-G-STEP-0 gap already there.
 #
-# The four constants are shared with the stair, its pad and its rails below precisely so
-# they cannot drift: the opening's south edge, the flight's south side, the south rail and
-# the stair pad's south edge are one line, and the opening's north edge, the flight's north
-# side and the north rail are another.
+# The constants are shared with the stair, its pad and its rails below precisely so they
+# cannot drift: the flight's south side and the pad's south edge are one line, and the
+# guard's end, the threshold cheek and the stair guard 2 3/4" inside it are another
+# (`_GUARD_LINE_S`); the same twice over on the north.
 #
 # ** WHY y -5'-3"..-9'-0" AND NOT SOMEWHERE ELSE ON THE WALL. ** W-SG-E1's top is walkable
 # only between its two 12" round columns — PT-SG-BR3 (y -3'-0"..-2'-0") and PT-SG-BF3
@@ -2068,6 +2068,12 @@ _PORCH_STAIR_X1 = _PORCH_STAIR_X0 + (4 * 11.0 + 0.75) / 12.0  # 32.229'
 _PORCH_STAIR_WIDTH_IN = 45.0
 _PORCH_STAIR_Y1 = -9.0   # the flight's SOUTH side
 _PORCH_STAIR_Y0 = _PORCH_STAIR_Y1 + _PORCH_STAIR_WIDTH_IN / 12.0  # -5.25': its NORTH side
+# The stair guards' posts stand 2 3/4" inside each flight edge (see PORCH_STAIR_RAILS), and
+# so do the threshold cheeks and the porch guard's two ends at the opening: one line a side,
+# one post at each junction (`start_post_ref`/`end_post_ref`), never two bases side by side.
+_POST_INSET_FT = 2.75 / 12.0
+_GUARD_LINE_S = _PORCH_STAIR_Y1 + _POST_INSET_FT
+_GUARD_LINE_N = _PORCH_STAIR_Y0 - _POST_INSET_FT
 
 # ** THE TWO FRONT CORNERS HAVE NO BASEPLATE — THEY DIE INTO PT-SG-BF1 / BF3. ** The path's
 # two front vertices are at (`_x_in_w` / `_x_in_e`, `_y_ax_front`), which is the west/east
@@ -2080,7 +2086,7 @@ _PORCH_STAIR_Y0 = _PORCH_STAIR_Y1 + _PORCH_STAIR_WIDTH_IN / 12.0  # -5.25': its 
 # Titen screws kept out of the exterior environment — the reason the beam seats went to a
 # cast-in HETA20Z; the rail maker's own anchor schedule governs here.)
 _PORCH_GUARD_PATH = (pt(ft(_x_in_w), ft(_y_porch_deck_n)), pt(ft(_x_in_w), ft(_y_ax_front)),
-                     pt(ft(_x_in_e), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_PORCH_STAIR_Y1)))
+                     pt(ft(_x_in_e), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_GUARD_LINE_S)))
 PORCH_GUARD = Railing(
     uid="SGRA02AAAA", tag="RL-SG-PORCH", type_ref="RAILING-EXT-ALUMINUM-SURFACE",
     path=_PORCH_GUARD_PATH, kind=RailingKind.METAL_SURFACE_MOUNT,
@@ -2097,7 +2103,7 @@ PORCH_GUARD = Railing(
 # billed as part of the same run, which is why it shares the type_ref and the assembly.
 PORCH_GUARD_NE = Railing(
     uid="SGRA07AAAA", tag="RL-SG-PORCH-NE", type_ref="RAILING-EXT-ALUMINUM-SURFACE",
-    path=(pt(ft(_x_in_e), ft(_PORCH_STAIR_Y0)), pt(ft(_x_in_e), ft(_y_porch_deck_n))),
+    path=(pt(ft(_x_in_e), ft(_GUARD_LINE_N)), pt(ft(_x_in_e), ft(_y_porch_deck_n))),
     kind=RailingKind.METAL_SURFACE_MOUNT,
     height=ft(SPEC.railing_height_ft),
     base_elevation=_porch_walking_surface,
@@ -2236,7 +2242,11 @@ PORCH_STAIR = Stair(
 # Same product as RL-SG-PORCH (Williams ESR-3485 black, surface-mounted), so they read as one
 # system from the porch. On the rake the posts stand on treads into the KDAT stringers: ESR
 # wants 4 GRK RSS 5/16" x 6" into SG >= 0.50 (prices.toml's surface row says so).
-_POST_INSET_FT = 2.75 / 12.0
+#
+# ** THE HEAD POST IS THE THRESHOLD CHEEK'S** (owner, 2026-10-31): each raked guard ends on
+# `RL-SG-PTHRESH-S/N`'s east post (`end_post_ref`), one 42" post on one cast base astride
+# W-SG-E1's east face. The foot and middle posts stay on riser lines, their bases straddling
+# the riser (notes/porch_stair.md).
 _HANDRAIL_INBOARD_FT = 3.375 / 12.0
 PORCH_STAIR_RAILS = [
     Railing(uid=f"SGRA0{_si}AAAA", tag=f"RL-SG-PSTAIR-{_sh}",
@@ -2246,9 +2256,9 @@ PORCH_STAIR_RAILS = [
             base_elevation=_STAIR_PAD_TOP, post_spacing=inch(36), post_size="3x3",
             rail_count=2, mount="surface", assembly="RAILING_DARK_METAL",
             role="guard", serves_stair="ST-SG-PORCH", top_height=inch(36),
+            end_post_ref=f"RL-SG-PTHRESH-{_sh}",
             infill="balusters", baluster_spacing=inch(4))
-    for _si, _sh, _sy in ((3, "S", _PORCH_STAIR_Y1 + _POST_INSET_FT),
-                          (4, "N", _PORCH_STAIR_Y0 - _POST_INSET_FT))
+    for _si, _sh, _sy in ((3, "S", _GUARD_LINE_S), (4, "N", _GUARD_LINE_N))
 ]
 # South side: the right hand going down. Supported at its two ends only, the 90 deg kit's
 # returns into RL-SG-PSTAIR-S's end posts (ESR-3485 Table 1 lists that return on a 3" post;
@@ -2256,7 +2266,7 @@ PORCH_STAIR_RAILS = [
 # Centreline 34 1/4" over the nosings puts the pipe's top at 35". The returns' standoff is
 # unpublished: confirm on delivery. uid minted 2026-10-30 with
 # typehaus.model.ids.new_uid() (`haus fmt` does not visit params/); unique by grep.
-_HANDRAIL_Y = _PORCH_STAIR_Y1 + _POST_INSET_FT + _HANDRAIL_INBOARD_FT
+_HANDRAIL_Y = _GUARD_LINE_S + _HANDRAIL_INBOARD_FT
 PORCH_STAIR_RAILS.append(Railing(
     uid="9ETPM8ZA74", tag="RL-SG-PSTAIR-HR", type_ref="RAILING-EXT-ALUMINUM-ADA-HANDRAIL",
     path=(pt(ft(_PORCH_STAIR_X1), ft(_HANDRAIL_Y)), pt(ft(_PORCH_STAIR_X0), ft(_HANDRAIL_Y))),
@@ -2275,10 +2285,11 @@ PORCH_STAIR_RAILS.append(Railing(
 # (plans/TODO.md). The guard return at an opening is on the author, and this is it.
 #
 # Level, not raked — they stand on the wall top, not on a flight — so 42" to match
-# RL-SG-PORCH, whose south cheek they run out of at its new terminus. Same product, same
-# cast-base-on-concrete condition, which is exactly what the surface row's rate is built for.
-# Their east posts stand on the head line with the raked guards' head posts, centres 2 3/4"
-# apart, so the two 3" posts overlap 1/4": one shared base on site (plans/TODO.md).
+# RL-SG-PORCH, whose east leg they run out of. Same product, same cast-base-on-concrete
+# condition, which is exactly what the surface row's rate is built for. Each runs on its
+# stair guard's line, 2 3/4" inside the flight edge, and draws ONE post: its west end is
+# RL-SG-PORCH's (or -NE's) end post (`start_post_ref`), and its east post is the stair
+# guard's head post too, the taller of the two, so it is this 42" cheek's.
 PORCH_STAIR_THRESHOLD_RAILS = [
     Railing(uid=f"SGRA0{_ti}AAAA", tag=f"RL-SG-PTHRESH-{_th}",
             type_ref="RAILING-EXT-ALUMINUM-SURFACE",
@@ -2287,9 +2298,10 @@ PORCH_STAIR_THRESHOLD_RAILS = [
             height=ft(SPEC.railing_height_ft),
             base_elevation=_porch_walking_surface,
             post_spacing=inch(60), post_size="3x3", rail_count=2, mount="surface",
-            assembly="RAILING_DARK_METAL",
+            assembly="RAILING_DARK_METAL", start_post_ref=_owner,
             infill="balusters", baluster_spacing=inch(4))
-    for _ti, _th, _ty in ((5, "S", _PORCH_STAIR_Y1), (6, "N", _PORCH_STAIR_Y0))
+    for _ti, _th, _ty, _owner in ((5, "S", _GUARD_LINE_S, "RL-SG-PORCH"),
+                                  (6, "N", _GUARD_LINE_N, "RL-SG-PORCH-NE"))
 ]
 
 # ============================================================================
@@ -3005,7 +3017,8 @@ BALCONY_GUARD = Railing(
     base_elevation=_deck_walking_surface,
     post_spacing=inch(60), post_size="3x3", rail_count=2, mount="fascia",
     # Drawn so the bracket/gutter clash shows: fascia outer face = half TR-SG-FASCIA's 1";
-    # bracket top = plank 1 1/2" + 1/2" below the rim top.
+    # bracket top = plank 1 1/2" + 1/2" below the rim top. The posts stand in the brackets,
+    # 1.518" past that face (the type's `fascia_post_offset`), not on the path.
     fascia_face_offset=inch(0.5), fascia_bracket_drop=inch(2.0),
     assembly="RAILING_DARK_METAL",
     # R312.1.3: vertical balusters between the 60" posts at a 4" clear gap — the largest

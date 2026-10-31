@@ -75,8 +75,11 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     #
     # 39.95 since 2026-10-30: ST-SG-PORCH widened north 36" -> 45", so its doorway in the
     # east leg grew 9" and RL-SG-PORCH-NE lost 0.75 LF. The raked runs kept their length.
+    #
+    # 40.41 since 2026-10-31: the doorway closed to the stair guards' lines, 2 3/4" inside
+    # each flight edge, so RL-SG-PORCH and -NE each gained 2 3/4" (one post per junction).
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(38.8, abs=0.1)
-    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(39.95, abs=0.1)
+    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(40.41, abs=0.1)
     # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run joined the
     # group, but the well's east leg is inside the roof past x=29'-4 1/2" (a 42" guard's top
     # at 282" meets the roof underside there) and carries nothing — a raked ToRoof partition,
