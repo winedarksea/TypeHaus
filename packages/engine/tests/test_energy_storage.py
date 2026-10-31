@@ -13,9 +13,7 @@ with it.
 
 from __future__ import annotations
 
-
 import pytest
-
 from _helpers import check_context
 
 from typehaus.checks.advisory.energy_storage import ess_clearance, ess_enclosure
@@ -25,8 +23,6 @@ from typehaus.checks.mep.power_sources import interconnection_busbar, rapid_shut
 from typehaus.checks.registry import CheckContext
 from typehaus.findings import Result
 from typehaus.model.enums import AlarmKind
-
-
 
 
 def _context(plan, model=None) -> CheckContext:
@@ -137,8 +133,8 @@ def test_the_ess_room_has_both_smoke_and_heat_coverage(catlin_plan, catlin_model
 @pytest.mark.parametrize("tag,missing", [("AL-B-ESS-SMOKE", "smoke"),
                                          ("AL-B-ESS-HEAT", "heat")])
 def test_removing_either_alarm_fails(catlin_plan, tag, missing):
-    """Both, not either. 2021 R328.7 sends you to R314 for smoke and adds a heat detector
-    for the locations a smoke alarm cannot serve; a battery closet is such a location."""
+    """Both, not either: smoke is 2021 R328.7's line, heat the owner's closet standard
+    (R328.7 asks heat only where a smoke alarm's listing bars one)."""
     plan = _without_alarm(catlin_plan, tag)
     fails = _fails(ess_detection(_context(plan)))
     assert len(fails) == 1 and f"no {missing} alarm" in fails[0].message
@@ -318,6 +314,6 @@ def test_every_ess_rule_answers_not_applicable_on_a_house_with_no_battery(catlin
 
 
 def test_the_alarm_kinds_the_detection_rule_looks_for_exist():
-    """A guard on the enum this rule reads: renaming either member would turn the R327.7
+    """A guard on the enum this rule reads: renaming either member would turn the R328.7
     check into one that can never pass, silently."""
     assert AlarmKind.SMOKE and AlarmKind.HEAT and AlarmKind.COMBO

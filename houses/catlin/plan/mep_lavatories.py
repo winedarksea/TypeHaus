@@ -4,7 +4,7 @@ from typehaus import PipeRun, PipeSystem, PipeAccessory, PipeAccessoryKind, inch
 
 BASEMENT_LAV_CONNECTIONS = [
     PipeRun(uid="XPPK42CSP2", tag="PR-B-LAV-TERMINAL-HW", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(120), inch(232.5)), pt(inch(122), inch(232.5)), pt(inch(122), inch(220)), pt(inch(147), inch(220)), pt(inch(147), inch(218.25)),),
+            path=(pt(inch(120), inch(224.5)), pt(inch(122), inch(224.5)), pt(inch(122), inch(220)), pt(inch(147), inch(220)), pt(inch(147), inch(218.25)),),
             elevations=(inch(27.4375), inch(30.0), inch(30.0), inch(30.0), inch(24.12),),
             diameter=inch(0.5), material="pex",
             serves=("FX-B-BATH-LAV",)),
@@ -30,14 +30,14 @@ BASEMENT_LAV_CONNECTIONS = [
             elevations=(inch(16), inch(15.84375), inch(-8.25), inch(-8.8125),),
             diameter=inch(1.5), material="pvc", serves=("FX-B-UTIL-SINK",)),
     # Stubs tee off the bath branches' W-B-STR2 drop ends (the hot carries on down to 24",
-    # under the lavatory's cold terminal) and drop in the cabinet. Hot south of cold; the
-    # faucet's flex supplies cross under the basin.
+    # under the lavatory's cold terminal) and drop in the cabinet: hot at 18'-8 1/2", south
+    # of the vent and trap arm, cold at 19'-10". The faucet's flex supplies span the 13 1/2".
     PipeRun(uid="5M7GZHHZB7", tag="PR-B-USINK-TERMINAL-HW", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(120), inch(232.5)), pt(inch(120), inch(232.5)), pt(inch(116.5), inch(232.5)), pt(inch(116.5), inch(232.5)),),
+            path=(pt(inch(120), inch(224.5)), pt(inch(120), inch(224.5)), pt(inch(116.5), inch(224.5)), pt(inch(116.5), inch(224.5)),),
             elevations=(inch(27.4375), inch(24), inch(24), inch(20),),
             diameter=inch(0.5), material="pex", serves=("FX-B-UTIL-SINK",)),
     PipeAccessory(uid="8QR20SWNYZ", tag="PA-B-USINK-TERMINAL-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-USINK-TERMINAL-HW", position=pt(inch(116.5), inch(232.5)), elevation=inch(20),
+                  pipe_ref="PR-B-USINK-TERMINAL-HW", position=pt(inch(116.5), inch(224.5)), elevation=inch(20),
                   accessible=True, room="RM-B-FURNACE", model='1/2 in. quarter-turn fixture angle stop',
                   serves=("FX-B-UTIL-SINK",)),
     PipeRun(uid="88RGQW1SYP", tag="PR-B-USINK-TERMINAL-CW", system=PipeSystem.WATER_COLD,

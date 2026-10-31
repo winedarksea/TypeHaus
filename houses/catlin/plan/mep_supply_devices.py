@@ -198,18 +198,19 @@ SUPPLY_STOPS = [
                   accessible=True, room="RM-S-SUITEBATH",
                   model='3/4" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
-    # RM-B-BATH, the stair-foot bathroom. 1/2" branches, so 1/2" valves — the only pair
-    # here that is not 3/4". Both stops moved to W-B-STR2, clear of the bath pocket.
+    # RM-B-BATH, the stair-foot bathroom. Each valve matches its branch: the cold is 3/4"
+    # since it also feeds FX-B-UTIL-SINK (2026-10-30), the hot stays 1/2". Both stops moved
+    # to W-B-STR2, clear of the bath pocket, and both sit upstream of the sink's stubs.
     PipeAccessory(uid="F1M7RSZV67", tag="PA-B-BATH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-B-CW-BATH", position=pt(ft(10), ft(19, 10)),
                   accessible=True, room="RM-B-BATH",
-                  model='1/2" quarter-turn ball valve, chrome, at the riser head',
-                  serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
+                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
+                  serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
     PipeAccessory(uid="2DD9DEYNAS", tag="PA-B-BATH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-BATH", position=pt(ft(10), ft(19, 4.5)),
+                  pipe_ref="PR-B-HW-BATH", position=pt(ft(10), ft(18, 8.5)),
                   accessible=True, room="RM-B-BATH",
                   model='1/2" quarter-turn ball valve, chrome, at the riser head',
-                  serves=("FX-B-BATH-LAV",)),
+                  serves=("FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
     # The kitchen. Its hot has its own branch; its COLD comes straight off the end of
     # PR-B-CW-TRUNK, so the cold stop sits on the trunk's own terminus at the sink base.
     # That is a stop for the kitchen, not a second main: PA-B-MAIN-SHUTOFF is upstream of

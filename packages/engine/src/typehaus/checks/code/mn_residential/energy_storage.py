@@ -7,9 +7,10 @@ instructions, and *not within the habitable space of a dwelling unit*), R327.4 e
 (NFPA 70; inverter UL 1741 or part of the UL 9540 listing), R327.5 ventilation (only for
 batteries that gas off hydrogen — not LFP), R327.6 vehicle impact.
 
-The 20/40 kWh caps, the location list and the smoke-and-heat rule are the 2021 IRC's R328.4,
-R328.5 and R328.7 (and NFPA 855). They are not in the adopted book, so they live in
-``checks/advisory/energy_storage_anticipated.py`` as the code the next adoption brings.
+The 20/40 kWh caps and the smoke-alarm rule are the 2021 IRC's R328.5 and R328.7 (from NFPA
+855). They are not in the adopted book, so they live in
+``checks/advisory/energy_storage_anticipated.py`` as the code the next adoption brings. The
+2021 R328.4 location list is graded nowhere.
 
 Every check reports NOT_APPLICABLE when no ESS is placed: a permit item with no matched
 findings resolves to UNKNOWN, so returning nothing would make "there is no battery here" and

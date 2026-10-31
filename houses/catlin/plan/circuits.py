@@ -358,8 +358,9 @@ CIRCUITS = (
 
     # The sump rides ALWAYS_ON since 2026-10-30: the long stormy night is exactly when a
     # SHED relay drops it (battery low, no sun) and exactly when it must run. 1000 VA x 0.05
-    # is a pump running a minute or two an hour in wet weather; the start is graded as a
-    # motor in backup_calc's surge test. GFCI at the DEVICE (2026-10-27): ED-B-SUMP-RC is an
+    # is a pump running a minute or two an hour in wet weather. Its across-the-line start
+    # (~6 kVA at 6x) is not what backup_calc's 3x surge test grades (that is HP3, the
+    # largest circuit); it is far inside the 16 kW surge either way. GFCI at the DEVICE (2026-10-27): ED-B-SUMP-RC is an
     # audible-alarm GFCI, so a trip is heard (NEC 2023 210.8(A)(5)); the breaker is not GFCI.
     Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=7, panel_ref=_BACKUP_PANEL,
             breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON,

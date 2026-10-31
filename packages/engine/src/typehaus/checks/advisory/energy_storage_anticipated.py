@@ -3,8 +3,9 @@
 The adopted 2018 IRC R327 has no capacity caps and no detection rule
 (``checks/code/mn_residential/energy_storage.py``). The 2021 IRC moved the article to R328
 and added both, from NFPA 855: R328.5's 20 kWh per unit and 40 kWh aggregate in a utility
-closet, basement or storage space (80 kWh in a garage), and R328.7's smoke alarm plus a
-listed heat detector where the ESS is. Minnesota's next residential code is built on a
+closet, basement or storage space (80 kWh in a garage), and R328.7's smoke alarm in the
+room the ESS is in (a listed heat detector only where a smoke alarm's listing bars one).
+Minnesota's next residential code is built on a
 later IRC, so the house is held to them now — as advice, citing the book they come from,
 never under a 2018 section number they do not have.
 """
@@ -80,10 +81,13 @@ def ess_capacity(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.ADVISORY, "advisory.ess_detection")
 def ess_detection(ctx: CheckContext) -> list[Finding]:
-    """2021 IRC R328.7 — smoke *and* heat detection in the room the ESS is in.
+    """2021 IRC R328.7 — a smoke alarm in the room the ESS is in; heat as the owner standard.
 
-    In the room, with no proximity allowance: the point is sensing the cabinet, and a head
-    on the far side of the enclosure senses the room the enclosure protects instead.
+    R328.7 asks for smoke alarms per R314, and a listed, interconnected heat detector only
+    where a smoke alarm cannot be installed under its listing. So smoke (or a combo) is the
+    code line. A heat alarm in a room a smoke alarm can serve is the owner's closet standard
+    (a cell fails as heat first), graded here without a code citation. In the room, with no
+    proximity allowance: a head outside the enclosure senses the wrong room.
     """
     cid, code = "advisory.ess_detection", "2021 IRC R328.7"
     batteries = _batteries(ctx)
@@ -94,16 +98,22 @@ def ess_detection(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for room_tag in sorted({getattr(b, "room", None) for b in batteries} - {None}):
         covering = [a for a in alarms if a.room == room_tag]
-        for kind, label in ((AlarmKind.SMOKE, "smoke"), (AlarmKind.HEAT, "heat")):
-            found = next((a for a in covering
-                          if a.kind is kind
-                          or (kind is AlarmKind.SMOKE and a.kind is AlarmKind.COMBO)), None)
-            if found is None:
-                out.append(advisory_fail(cid, f"ESS room {room_tag} has no {label} alarm in "
-                                              "it; 2021 R328.7 wants both smoke and heat "
-                                              "detection at the storage system",
-                                         (str(room_tag),), code=code))
-            else:
-                out.append(_pass(cid, f"ESS room {room_tag} is covered by {label} alarm "
-                                      f"{found.tag}", (str(room_tag),), code=code))
+        smoke = next((a for a in covering
+                      if a.kind in (AlarmKind.SMOKE, AlarmKind.COMBO)), None)
+        heat = next((a for a in covering if a.kind is AlarmKind.HEAT), None)
+        if smoke is None:
+            out.append(advisory_fail(cid, f"ESS room {room_tag} has no smoke alarm in it; "
+                                          "2021 R328.7 wants R314 smoke alarms where the "
+                                          "storage system is", (str(room_tag),), code=code))
+        else:
+            out.append(_pass(cid, f"ESS room {room_tag} is covered by smoke alarm "
+                                  f"{smoke.tag}", (str(room_tag),), code=code))
+        if heat is None:
+            out.append(advisory_fail(cid, f"ESS room {room_tag} has no heat alarm in it; "
+                                          "the owner's ESS closet standard senses the "
+                                          "cabinet with one (beyond 2021 R328.7)",
+                                     (str(room_tag),)))
+        else:
+            out.append(_pass(cid, f"ESS room {room_tag} is covered by heat alarm "
+                                  f"{heat.tag} (owner standard)", (str(room_tag),)))
     return out

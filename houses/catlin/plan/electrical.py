@@ -217,9 +217,8 @@ BACKUP_ENCLOSURE = [
 ]
 
 ESS_EQUIPMENT = [
-    # On the NE closet's north wall, W-B-N3. (8'-1 1/5", 34'-11") puts the 10"-deep cabinet's
-    # back flat on that wall's inner face at y=35'-4" and centres it in the 2'-9 5/8" clear
-    # width, north of D-B-ESS's swing.
+    # On the NE closet's north wall, W-B-N3, 22 13/16" along it: the 9 5/8"-deep cabinet's
+    # back flat on the wall's inner face at y=35'-4", north of D-B-ESS's swing.
     #
     # **A 282 lb wall load (WallMount Indoor sheet), and the wall matters.** It is on cast
     # concrete — an 8" pour, anchored directly — which is the fixing this load wants.
@@ -237,7 +236,8 @@ ESS_EQUIPMENT = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-B-N3", face="left", distance_from_start=inch(22.8125),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # The inverter, outside the closet on the north concrete. Not on a branch circuit: its grid port IS CKT-ESS-GRID, which is a source, and its load output feeds
+    # The inverter, outside the closet on the north concrete. Not on a branch circuit: its
+    # grid port IS CKT-ESS-GRID, which is a source, and its load output feeds
     # ED-B-BACKUP-PANEL.
     Equipment(uid="CEQ021AAAA", tag="EQ-B-ESS-INV", kind=EquipmentKind.INVERTER,
               footprint=(inch(27), inch(12)),

@@ -639,10 +639,13 @@ SUPPLY = [
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
             # It tees at the trunk's south turn, then runs west and south to the bath riser.
-            # This stays below the ERV manifold and clear of its service lane.
+            # This stays below the ERV manifold and clear of its service lane. The drop is at
+            # 18'-8 1/2" (2026-10-31): at 19'-4 1/2" it stood in W-B-STR2's stud-001; north
+            # of the stud DU-B-ERV-R-PLAY fills the bay, and south of it PR-B-BATH-VENT and
+            # PR-B-LSINK-DRAIN's crossing leave no 5/8" gap until here.
             path=(pt(ft(7, 6), ft(25, 6)), pt(ft(7, 3.6), ft(25)),
                   pt(ft(7, 3.6), ft(19, 9)), pt(ft(10), ft(19, 9)),
-                  pt(ft(10), ft(19, 4.5)), pt(ft(10), ft(19, 4.5))),
+                  pt(ft(10), ft(18, 8.5)), pt(ft(10), ft(18, 8.5))),
             diameter=inch(0.5), material="copper",
             elevations=(ft(7, 4), ft(7, 11.4375), ft(7, 11.4375), ft(7, 11.4375),
                         ft(7, 11.4375), ft(2, 3.4375)),

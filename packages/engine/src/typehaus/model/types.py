@@ -763,10 +763,10 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     # Self-consumption while islanded, W — drawn from the battery on top of the loads.
     # House-authored from the datasheet; absent, the backup calc reports an unknown
     # contributor, never zero.
-    inverter_idle_w: float | None = None
-    # Battery-to-AC conversion efficiency (0-1) the backup calc divides battery-delivered
-    # load by. Absent is unknown, never 1.0.
-    inverter_efficiency: float | None = None
+    inverter_idle_w: float | None = Field(default=None, ge=0)
+    # Battery-to-AC conversion efficiency, a fraction (0.94, not 94), the backup calc divides
+    # battery-delivered load by. Absent is unknown, never 1.0.
+    inverter_efficiency: float | None = Field(default=None, gt=0, le=1)
 
     @model_validator(mode="after")
     def _check_heating_ratings(self) -> EquipmentType:

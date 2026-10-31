@@ -60,10 +60,10 @@ WINTER_STRONG_DAY_KWH_PER_KW = 1.5
 _HORIZON_ALTITUDE_DEG = -0.833
 _SOLSTICE_DECLINATION_DEG = -23.44
 
-# Motor-start multiple applied to the largest single SHED-tier motor load when checking
-# the inverter's surge rating. A soft-started VFD compressor (the Sapphire R32 on CKT-HP3)
-# is the reason the surge column is small rather than the 5-7x a PSC compressor would
-# demand; 3x is the conservative allowance for a soft-started inverter-driven motor.
+# Motor-start multiple applied to the largest backup circuit (either tier) when checking
+# the inverter's surge rating. 3x is the allowance for a soft-started inverter-driven motor
+# (the Sapphire R32 on CKT-HP3). An across-the-line motor such as a sump pump starts at
+# 5-7x and is NOT covered by it: one that is not also the largest circuit is ungraded.
 MOTOR_START_MULTIPLE = 3.0
 
 # Efficiency of the PoE switch's supply, for what a shed port saves at the outlet. 88% is the
@@ -149,9 +149,10 @@ def longest_night_hours(latitude_deg: float) -> float:
     """Sunset to sunrise at the winter solstice, from the site's latitude.
 
     ``cos H = (sin h0 - sin L sin d) / (cos L cos d)``; day = 2H/15. St Paul (44.98 N) is
-    15.2 h. Clamped so a polar site reads 24 h, not a math error.
+    15.2 h. Clamped so a polar site reads 24 h, not a math error. ``abs`` because the
+    longest night south of the equator is the June solstice, by symmetry the same number.
     """
-    lat = math.radians(latitude_deg)
+    lat = math.radians(abs(latitude_deg))
     dec = math.radians(_SOLSTICE_DECLINATION_DEG)
     cos_h = ((math.sin(math.radians(_HORIZON_ALTITUDE_DEG)) - math.sin(lat) * math.sin(dec))
              / (math.cos(lat) * math.cos(dec)))

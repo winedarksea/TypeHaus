@@ -129,8 +129,9 @@ SW corner, on the wood stud module. The engine has no partial-lite leaf, so the 
 it all glass.
 
 **Detection**: `AL-B-ESS-SMOKE` and `AL-B-ESS-HEAT` inside the closet, on `CKT-LT-BACKUP`.
-Not required by the adopted code (section 7); kept because it is cheap and senses the
-cabinet.
+Neither is required by the adopted code (section 7). The 2021 R328.7 asks for the smoke alarm,
+and a heat detector only where a smoke alarm's listing bars one. The heat alarm is the
+owner's standard: it is cheap and senses the cabinet.
 
 **Declined for now**: a combustible-gas detector and an exhaust fan to outdoors.
 
@@ -143,8 +144,11 @@ sits in the cabinet: its 1 1/2" arm runs 5" into `W-B-STR2` and tees under
 `PR-B-BATH-VENT`'s riser — vent first, then the drop (no S-trap) — through `SP-B-SLAB-USINK`
 and 20 3/4" south under the slab onto `PR-B-BATH-DRAIN`. `CO-B-USINK` is its sink-line
 cleanout. Stubs tee off the bath branches' `W-B-STR2` drops; `PR-B-CW-BATH` went to 3/4"
-for the extra 1.25 WSFU. `PR-B-BATH-VENT`'s riser moved 1 1/2" south to y=19'-1 1/2" for
-it — at 19'-3" it stood in stud-001.
+for the extra 1.25 WSFU, and its stop with it. `PR-B-BATH-VENT`'s riser moved 1 1/2" south
+to y=19'-1 1/2" for it; at 19'-3" it stood in stud-001. `PR-B-HW-BATH`'s drop stood in the
+same stud at 19'-4 1/2" and moved to 18'-8 1/2" (2026-10-31): north of the stud
+`DU-B-ERV-R-PLAY` fills the bay, and the vent and `PR-B-LSINK-DRAIN`'s crossing sit between.
+The sink's hot stub drops there, 13 1/2" from the cold.
 
 The bundled faucet ships with a garden-hose adapter (Home Depot Q&A,
 [listing](https://www.homedepot.com/p/questions/Glacier-Bay-24-in-W-x-21-in-D-x-34-in-L-Stainless-Steel-Laundry-Utility-Sink-with-Faucet-and-Cabinet-in-White-QL033Y/206057007/4));
@@ -219,13 +223,15 @@ Solar is counted at the DC side and all load at 94%, which errs heavy: PV-to-bat
 
 **Darkness bridge**: the battery alone must carry the always-on tier from one evening's last
 sun through a dark day and the longest night after it. St Paul (44.98 N) at the winter
-solstice: cos H = (sin -0.833 - sin 44.98 sin -23.44) / (cos 44.98 cos -23.44) = 0.4105,
-H = 65.76°, day = 8.77 h, **night = 15.23 h** (`longest_night_hours`, from the site's own
+solstice: cos H = (sin -0.833 - sin 44.98 sin -23.44) / (cos 44.98 cos -23.44)
+= (-0.01454 + 0.28118) / 0.64897 = 0.4109, H = 65.74°, day = 8.77 h, **night = 15.23 h** (`longest_night_hours`, from the site's own
 latitude). Needs 0.4622 x (24 + 15.23) = **18.13 kWh** (the calc prints 18.14 from its
 unrounded inputs); has 12.87.
 
 **Peak**: 5,025 VA connected on the microgrid against 8 kW continuous; the largest motor start
-(HP3, 1,500 VA x 3 for a soft-started VFD = 4,500 VA) against 16 kW. Both fit.
+(HP3, 1,500 VA x 3 for a soft-started VFD = 4,500 VA) against 16 kW. Both fit. The calc's 3x
+does not describe the sump, an across-the-line motor: at 6x it starts at 6,000 VA, also well
+inside 16 kW, but nothing in the engine grades that figure.
 
 **Verdict (`backup_calc`)**: one strong summer day does not cover 48 h of even the always-on
 tier, and one battery does not bridge a December dark day. The idle draw alone (55 W x 48 h
@@ -255,8 +261,8 @@ Its **R327** is code change RB171-16 as modified
 **No kWh caps, no location list, no detection rule.** The old checks cited "R327.5" for the
 20/40 kWh caps and "R327.7" for detection; those are the **2021 IRC R328.5 and R328.7**
 (from NFPA 855). They now grade as `advisory.ess_capacity` (20 kWh per unit, 40 indoor,
-80 in a garage) and `advisory.ess_detection`, citing the 2021 book as the code the next
-adoption brings. MN's fire code (2018 IFC base) reaches lithium ESS only above 20 kWh.
+80 in a garage) and `advisory.ess_detection` (smoke per R328.7; the heat alarm graded as the
+owner standard, uncited), citing the 2021 book as the code the next adoption brings. MN's fire code (2018 IFC base) reaches lithium ESS only above 20 kWh.
 
 ## 8. Rapid shutdown
 

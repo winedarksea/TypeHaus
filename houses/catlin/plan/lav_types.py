@@ -131,7 +131,7 @@ UTILITY_TUB = LAUNDRY_TUB.model_copy(update={
                                notes="House station; the QL033Y spec sheet is not retrieved")
                    for tag, service, x, y, z, size, direction in (
                        ("drain", Service.DRAIN, 3.5, 8.5, 16, 1.5, (0, 1, 0)),
-                       ("supply-hot", Service.WATER_HOT, 0.5, 10, 20, 0.5, (0, 1, 0)),
+                       ("supply-hot", Service.WATER_HOT, 8.5, 10, 20, 0.5, (0, 1, 0)),
                        ("supply-cold", Service.WATER_COLD, -5, 10, 20, 0.5, (0, 1, 0)))),
 })
 LAV_TYPES = (ANGSJON_36, ANGSJON_36_SS, SEKTION_30, SEKTION_24_SS, CHULTON_30,
