@@ -313,6 +313,101 @@ def _network(ctx: CheckContext, machine_tag: str, landings: dict[str, str]) -> l
     return connected_distribution(ctx.model.ducts, {duct.tag for duct in out})
 
 
+def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
+                landings: dict[str, str], plenums: dict, kinds: dict[str, str]
+                ) -> tuple[tuple[float, str, list[str]] | None, list[str]]:
+    """The worse side's (static in. w.g., path, terms), and the runs that resolved no drop."""
+    worst: tuple[float, str, list[str]] | None = None
+    gaps: list[str] = []
+    network = _network(ctx, machine_tag, landings)
+    for side, name in ((_SUPPLY_SIDE, "supply"), (_EXTRACT_SIDE, "extract")):
+        runs = [duct for duct in network if duct.system in side]
+        if not runs:
+            continue
+        radials = [duct for duct in runs if duct.tag in landings]
+        trunks = [duct for duct in runs if duct.tag not in landings]
+        # The trunk chain is summed WHOLE. A branch that parallels the path rather than
+        # lying on it — Catlin's mixing-box feed — is counted, which over-states that
+        # side. Conservative, named in the note's §9, and the alternative is a graph
+        # walk over joints the model does not author.
+        trunk_total = 0.0
+        terms: list[str] = []
+        for duct in trunks:
+            leg = _duct_drop(ctx, duct, elbows.get(duct.tag, 0))
+            if leg.drop_in_wg is None:
+                gaps.append(f"{leg.tag}: {leg.gap}")
+                continue
+            trunk_total += leg.drop_in_wg
+            terms.append(f"{leg.tag} {leg.drop_in_wg:.3f}\"")
+            # The outdoor hood passes the whole side's air, so it rides with the trunk.
+            for hood, loss in hood_losses(ctx, duct, plenums, kinds):
+                trunk_total += loss / PA_PER_IN_WG
+                terms.append(f"{hood} {loss:.1f} Pa")
+
+        # A plenum's curve is keyed on its trunk-collar flow (note §4). A trunk-and-branch
+        # tree counts its trunk once, never the trunk plus the branches it carries; and a
+        # box whose trunk runs to the machine passes that trunk's flow, riser air included.
+        plenum_cfm: dict[str, float] = {}
+        direct = _direct(ctx, landings)
+        for duct in radials:
+            if duct.design_cfm is not None and duct.tag in direct:
+                plenum_cfm[landings[duct.tag]] = (
+                    plenum_cfm.get(landings[duct.tag], 0.0) + duct.design_cfm)
+        for host, cfm in machine_trunk_flows(ctx, trunks, machine_tag, plenums).items():
+            plenum_cfm[host] = max(plenum_cfm.get(host, 0.0), cfm)
+
+        for duct in radials:
+            leg = _duct_drop(ctx, duct, elbows.get(duct.tag, 0))
+            if leg.drop_in_wg is None:
+                gaps.append(f"{leg.tag}: {leg.gap}")
+                continue
+            branch = leg.drop_in_wg
+            detail = [f"{leg.tag} {leg.drop_in_wg:.3f}\""]
+            terminal = terminal_loss(ctx, duct)
+            if terminal is not None:
+                branch += terminal / PA_PER_IN_WG
+                detail.append(f"terminal {terminal:.1f} Pa")
+            host = landings[duct.tag]
+            curve_pa = tuple(getattr(plenums[host], "static_loss_pa_at_cfm", ()) or ())
+            if curve_pa:
+                loss = _interpolate(curve_pa, plenum_cfm.get(host, 0.0))
+                branch += loss / PA_PER_IN_WG
+                detail.append(f"{host} {loss:.1f} Pa at "
+                              f"{plenum_cfm.get(host, 0.0):.0f} cfm")
+            total = branch + trunk_total
+            if worst is None or total > worst[0]:
+                worst = (total, f"{name} side via {duct.tag}", detail + terms)
+
+    return worst, gaps
+
+
+def delivered_flows(ctx: CheckContext) -> dict[str, tuple[float, float] | None]:
+    """``{ERV tag: (delivered cfm, worst static)}`` off each curve, as this check grades it.
+
+    ``None`` where no honest figure exists: no curve, an unresolved run (a partial path
+    would read high), or a static past the curve or its ceiling. Reads only ``ctx.model``
+    and ``ctx.plan``, so a code check or a sheet may hand it any such view.
+    """
+    kinds = _equipment_kinds(ctx)
+    machines = [obj for obj in ctx.model.canvas_objects
+                if kinds.get(obj.tag) == EquipmentKind.ERV.value]
+    if not machines:
+        return {}
+    landings, plenums, elbows = radial_landings(ctx), _manifolds(ctx), _elbow_counts(ctx)
+    out: dict[str, tuple[float, float] | None] = {}
+    for machine in machines:
+        product = _type_for(ctx, machine.type_ref, "equipment_types")
+        curve = tuple(getattr(product, "fan_curve", ()) or ())
+        worst, gaps = (_worst_path(ctx, machine.tag, elbows, landings, plenums, kinds)
+                       if curve else (None, []))
+        ceiling = getattr(product, "fan_curve_max_static_in_wg", None)
+        flow = None
+        if worst is not None and not gaps and (ceiling is None or worst[0] <= ceiling):
+            flow = _delivered(curve, worst[0])
+        out[machine.tag] = None if flow is None else (flow, worst[0])
+    return out
+
+
 @check(Tier.ADVISORY, "mep.erv_static_budget")
 def erv_static_budget(ctx: CheckContext) -> list[Finding]:
     """Static of the worst air path against the ventilator's own published fan curve."""
@@ -342,66 +437,7 @@ def erv_static_budget(ctx: CheckContext) -> list[Finding]:
                      "curve off the spec sheet", (machine.tag,)))
             continue
 
-        worst: tuple[float, str, list[str]] | None = None
-        gaps: list[str] = []
-        network = _network(ctx, machine.tag, landings)
-        for side, name in ((_SUPPLY_SIDE, "supply"), (_EXTRACT_SIDE, "extract")):
-            runs = [duct for duct in network if duct.system in side]
-            if not runs:
-                continue
-            radials = [duct for duct in runs if duct.tag in landings]
-            trunks = [duct for duct in runs if duct.tag not in landings]
-            # The trunk chain is summed WHOLE. A branch that parallels the path rather than
-            # lying on it — Catlin's mixing-box feed — is counted, which over-states that
-            # side. Conservative, named in the note's §9, and the alternative is a graph
-            # walk over joints the model does not author.
-            trunk_total = 0.0
-            terms: list[str] = []
-            for duct in trunks:
-                leg = _duct_drop(ctx, duct, elbows.get(duct.tag, 0))
-                if leg.drop_in_wg is None:
-                    gaps.append(f"{leg.tag}: {leg.gap}")
-                    continue
-                trunk_total += leg.drop_in_wg
-                terms.append(f"{leg.tag} {leg.drop_in_wg:.3f}\"")
-                # The outdoor hood passes the whole side's air, so it rides with the trunk.
-                for hood, loss in hood_losses(ctx, duct, plenums, kinds):
-                    trunk_total += loss / PA_PER_IN_WG
-                    terms.append(f"{hood} {loss:.1f} Pa")
-
-            # A plenum's curve is keyed on its trunk-collar flow (note §4). A trunk-and-branch
-            # tree counts its trunk once, never the trunk plus the branches it carries; and a
-            # box whose trunk runs to the machine passes that trunk's flow, riser air included.
-            plenum_cfm: dict[str, float] = {}
-            direct = _direct(ctx, landings)
-            for duct in radials:
-                if duct.design_cfm is not None and duct.tag in direct:
-                    plenum_cfm[landings[duct.tag]] = (
-                        plenum_cfm.get(landings[duct.tag], 0.0) + duct.design_cfm)
-            for host, cfm in machine_trunk_flows(ctx, trunks, machine.tag, plenums).items():
-                plenum_cfm[host] = max(plenum_cfm.get(host, 0.0), cfm)
-
-            for duct in radials:
-                leg = _duct_drop(ctx, duct, elbows.get(duct.tag, 0))
-                if leg.drop_in_wg is None:
-                    gaps.append(f"{leg.tag}: {leg.gap}")
-                    continue
-                branch = leg.drop_in_wg
-                detail = [f"{leg.tag} {leg.drop_in_wg:.3f}\""]
-                terminal = terminal_loss(ctx, duct)
-                if terminal is not None:
-                    branch += terminal / PA_PER_IN_WG
-                    detail.append(f"terminal {terminal:.1f} Pa")
-                host = landings[duct.tag]
-                curve_pa = tuple(getattr(plenums[host], "static_loss_pa_at_cfm", ()) or ())
-                if curve_pa:
-                    loss = _interpolate(curve_pa, plenum_cfm.get(host, 0.0))
-                    branch += loss / PA_PER_IN_WG
-                    detail.append(f"{host} {loss:.1f} Pa at "
-                                  f"{plenum_cfm.get(host, 0.0):.0f} cfm")
-                total = branch + trunk_total
-                if worst is None or total > worst[0]:
-                    worst = (total, f"{name} side via {duct.tag}", detail + terms)
+        worst, gaps = _worst_path(ctx, machine.tag, elbows, landings, plenums, kinds)
 
         if worst is None:
             out.append(unknown(
@@ -443,10 +479,9 @@ def erv_static_budget(ctx: CheckContext) -> list[Finding]:
             out.append(unknown(
                 cid, note + f", delivering {flow:.0f} cfm against a {design_cfm:.0f} cfm "
                             f"design rate — {design_cfm - flow:.0f} cfm short. Whether that "
-                            "is enough is the code's question, and "
-                            "code.N1103_6_whole_house_ventilation asks it of the type's "
-                            "rated ventilation_cfm, not of this delivered figure: compare "
-                            "this one to the code rate. This is UNKNOWN and not a FAIL "
+                            "is enough is the code's question: "
+                            "code.N1103_6_whole_house_ventilation grades this delivered "
+                            "figure against the code rate. This is UNKNOWN and not a FAIL "
                             "because a design rate is a hope and a curve is a measurement",
                 (machine.tag,),
                 fix="measure it at commissioning with a low-flow hood, and take the trunk "

@@ -10,23 +10,23 @@ by `tests/test_erv_static_oracle.py`.
 BLD-08 pass; `notes/system1_return_path.md` — the *other* air system's return path, which
 shares none of this machine's duct.
 **What is asked of the reviewer:** redo §6's two column sums and §10.4/§10.6's additions, and
-say whether a 1.1 cfm residual UNDER 205 is acceptable to build on and commission (§10.6). Both of §7's 8" upsizes are now bought, so there
+check that 203.9 delivered against R403.5's 203.0 (4,900 sf CFA, §10.6) holds. Both of §7's 8" upsizes are now bought, so there
 is no cheap lever left in this note — what remains is `DU-ERV-RISER-EXH`, which is 58 % of the
 governing column on its own. The friction arithmetic in §2–§5 is ordinary Darcy–Weisbach and
 is offered for checking, not for deciding.
 
 > ⚠ **2026-10-31: THE HOODS ARE COUNTED NOW, AND THE MACHINE DELIVERS 203.9 cfm** (§10.6):
-> extract governs at 0.4413 in. w.g., 1.1 cfm under 205 — accepted per the owner's shortfall
-> policy and left to commissioning. Every 2026-09/-10 figure below is the pre-hood reading.
-> **205 is this note's target, not what the engine grades**: room areas moved to the finish
-> face on 2026-09-24 (decision #82), and `code.N1103_6_whole_house_ventilation` now requires
-> 195 (4,479 sf, §10.6).
+> extract governs at 0.4413 in. w.g. **R403.5 asks 203.0 cfm** on 4,900 sf of CFA measured to
+> the structural face (owner, 2026-10-31; `notes/conditioned_floor_area.md`), and
+> `code.N1103_6_whole_house_ventilation` grades the delivered 203.9 against it: +0.9 cfm.
+> Every 2026-09/-10 figure below is the pre-hood reading, and every "205" below is the old
+> centreline-area target.
 
 > ⚠ **`ventilation_cfm = 210` IS A DESIGN INTENT, NOT A PROMISE THE CURVE CAN KEEP.** 210 is
 > the model-name number and it is the curve's value at 0.2 in. w.g. No duct system this size
 > lands under 0.2 in. w.g., so the delivered figure will always read short of 210. What
-> governs is MN 1322 R403.5's **205 cfm**, which `code.N1103_6_whole_house_ventilation`
-> grades. `mep.erv_static_budget` reports the shortfall against 210 as UNKNOWN and never as
+> governs is MN 1322 R403.5's **203.0 cfm** (§10.6), which `code.N1103_6_whole_house_ventilation`
+> grades against the delivered figure. `mep.erv_static_budget` reports the shortfall against 210 as UNKNOWN and never as
 > a FAIL, for exactly that reason — see §8.
 
 > ⚠ **THE GRADED NUMBER IS DELIBERATELY CONSERVATIVE IN TWO PLACES**, both named in §9: the
@@ -500,7 +500,7 @@ measured one.
   makes it whistle.
 - **Report per terminal**: tag, design cfm, measured cfm, damper position. 23 rows, one
   page, filed with the O&M.
-- **The number to hit is 205 cfm net supply**, MN 1322 R403.5, not 210.
+- **The number to hit is 203 cfm net supply** (MN 1322 R403.5 on 4,900 sf, §10.6), not 210.
 
 ## 9. What is NOT graded here
 
@@ -635,11 +635,12 @@ level-2 extract paths by 3.8 Pa. (The basement plenums were left at their radial
 Extract governs. Delivered off the curve between (0.4, 206) and (0.5, 201):
 206 − 5 × 0.600 = **203.0 cfm**. The engine reports 0.460 in. w.g. and 203 cfm.
 
-**203.0 was 2.0 cfm under MN 1322 R403.5's 205; §10.6 corrects it to 203.9.** The owner's shortfall policy
-(2026-10-30) accepts a residual of about 1-2 cfm rather than redesign, records it here, and
-leaves it to commissioning (§8: LoFlo-class hood, balanced at the plenum collar dampers, valves
-fully open). `code.N1103_6_whole_house_ventilation` reads the authored 210 and passes; the
-static budget stays UNKNOWN. **What would close it, for the owner to price:**
+**203.0 was 2.0 cfm under the then-target 205; §10.6 corrects it to 203.9, against a
+requirement now 203.0.** The owner's shortfall policy (2026-10-30) stands and is now the
+code check's: a delivered flow 2 cfm or less under the R403.5 rate is UNKNOWN (never
+suppressed), left to commissioning (§8: LoFlo-class hood, balanced at the plenum collar
+dampers, valves fully open); more is a FAIL. **What would add margin, if commissioning
+reads low:**
 
 - a 10" hood on an 8x10 increaser in the foam/girt zone, both sides. RenewAire lists FA10 but
   publishes no curve; at equal hood K the loss scales as (8/10)⁴ = 0.41, so ~13 Pa a side,
@@ -682,20 +683,24 @@ supply-direction coefficients (conservative, as §4 already is for the level-2 e
 | supply, via `DU-B-ERV-R-PLAY` | 0.4392 | − 0.0776 | + 0.0590 | **0.4206** |
 
 Extract governs. 206 − 5 x 0.413 = **203.9 cfm**; the engine reports 0.441 in. w.g. and 204.
-That is **1.1 cfm under 205**, inside the owner's 1-2 cfm band, so it is accepted and left to
-commissioning as §10.4 says. The 10" hood pair would now give ~0.387 in. and ~206 cfm.
+Against the 203.0 cfm R403.5 now asks (below) that is **0.9 cfm over**, and
+`code.N1103_6_whole_house_ventilation` grades exactly this figure. The 10" hood pair would
+give ~0.387 in. and ~206 cfm.
 
 **The graded column is still conservative.** The sauna's own
 air never enters the extract riser or `DU-M-ERV-EXH-FEED` (0.147 of the 0.441, §6's whole-chain
 rule), and the riser's upper 16 ft carry 50 cfm, not 164. The worst series path (an attic or
 level-2 extract through the riser and both boxes) works out near 0.426 in., about 204.7 cfm.
 
-**What the code asks is not settled by this note.** 205 was the requirement on 2026-09-09,
-when room areas ran to wall centrelines (~5,000 sf). Since decision #82 (2026-09-24) they are
-measured at the finish face, and the engine's MN 1322 R403.5 figure is 0.02 x 4,479 + 15 x 7 =
-**195 cfm**, which 203.9 clears by 9. Measured over the exterior walls instead (5,455 sf), it
-is **214 cfm**, more than the machine's 210 rating. Which floor area R403.5's "conditioned
-floor area" means is for the owner and the AHJ to confirm; this note keeps 205 as its target.
+**What the code asks is settled (owner, 2026-10-31): 203.0 cfm.** R403.5's "conditioned
+floor area" is measured to the outer face of the structure (studs + sheathing, or the
+foundation concrete), excluding the ccSPF, girts and cladding, with each stair well deducted
+once on the storey above: basement 1,296 + main 1,228 + second 1,226 + attic 1,150 =
+**4,900 sf**, and 0.02 x 4,900 + 15 x 7 = **203.0 cfm** (`notes/conditioned_floor_area.md`,
+`resolve/conditioned_area.py`). Delivered 203.9 clears it by 0.9 cfm, which is inside the
+chart-reading error of §10.1, so commissioning (§8) remains the real check. The superseded
+readings: finish-face rooms 4,479 sf / 195 cfm, centrelines ~5,000 / 205, exterior
+dimensions 5,455 / 214.
 
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
@@ -741,8 +746,9 @@ it. `SP-M-ERV-OA-SEAL` / `SP-S-ERV-EA-SEAL` carry the detail and bill it.
 - Broan **AI Series installation manual** — quarterly filter and intake-hood inspection,
   unit-door access, and low-airflow troubleshooting (W22/W32).
 - HVI **Certified Products Directory**, HVI ID 2004940 — 206 cfm net supply at 0.4 in. w.g.
-- Minnesota Rules **1322** (MN amendments to IRC Ch. 11), R403.5 — the 205 cfm whole-house
-  rate this building requires, graded by `code.N1103_6_whole_house_ventilation`.
+- Minnesota Rules **1322** (MN amendments to IRC Ch. 11), R403.5 — the 203.0 cfm whole-house
+  rate this building requires on 4,900 sf of CFA (§10.6), graded against the delivered flow
+  by `code.N1103_6_whole_house_ventilation`.
 - RenewAire **Hoods and Dampers** sheet (renewaire.com, 2025-09) — FA8 supply/exhaust and BD8
   pressure-drop charts (§10.1).
 - TROX **LVS** product data sheet PD-02/2022 — LVS 100 and LVS 125 quick-sizing tables (§10.2).

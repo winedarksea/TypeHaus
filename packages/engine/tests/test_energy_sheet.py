@@ -174,7 +174,7 @@ def test_g005_worksheet_is_the_check_s_own_numbers(catlin_model, tmp_path):
     One function, two consumers: the worksheet is built from ``whole_house_summary``, so a
     rate printed here and a rate graded by the check cannot disagree.
     """
-    from typehaus.checks.code.mn_residential.ventilation import whole_house_summary
+    from typehaus.checks.code.mn_residential.whole_house_ventilation import whole_house_summary
     from typehaus.emit.draw.schedules.energy import _write_ventilation_sheet
 
     vent = whole_house_summary(catlin_model, catlin_model.plan)

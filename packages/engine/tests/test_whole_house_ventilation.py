@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 
 from typehaus.checks.code.mn_energy import _MAX_ACH50, air_leakage_summary
-from typehaus.checks.code.mn_residential.ventilation import whole_house_summary
+from typehaus.checks.code.mn_residential.whole_house_ventilation import whole_house_summary
 from typehaus.checks.registry import Preferences
 from typehaus.findings import Result
 
@@ -32,13 +32,34 @@ def test_the_continuous_rate_is_half_the_total_with_a_forty_cfm_floor(catlin_mod
     assert summary.continuous_rate_cfm >= 40.0
 
 
-def test_catlin_still_passes_on_the_minnesota_formula(catlin_model_ro) -> None:
-    """The ERV's headroom is the reason to watch this: 210 cfm provided, and the switch
-    from 62.2 raised the requirement rather than lowering it."""
+def test_catlin_grades_the_delivered_flow_against_the_cfa_rate(catlin_model_ro) -> None:
+    """4,900 sf of CFA to the structural face (`notes/conditioned_floor_area.md`) and six
+    bedrooms ask 203.0 cfm; the ERV delivers 203.9 off its curve, not its 210 rating."""
     summary = whole_house_summary(catlin_model_ro, catlin_model_ro.plan)
     assert summary is not None
+    assert summary.conditioned_area_ft2 == pytest.approx(4900.1, abs=1.0)
+    assert dict(summary.storey_areas_ft2) == pytest.approx(
+        {"basement": 1296.0, "main": 1228.2, "second": 1225.6, "attic": 1150.3}, abs=0.5)
+    assert summary.total_rate_cfm == pytest.approx(203.0, abs=0.1)
     assert summary.provided_cfm == pytest.approx(210.0)
-    assert summary.provided_cfm >= summary.total_rate_cfm
+    assert summary.delivered_cfm == pytest.approx(203.9, abs=0.1)
+    assert summary.verdict() == "pass"
+
+
+@pytest.mark.parametrize(("delivered", "verdict"), [
+    (203.0, "pass"), (201.5, "unknown"), (200.0, "fail")])
+def test_a_commissioning_sized_shortfall_is_unknown_and_a_larger_one_fails(
+        delivered: float, verdict: str) -> None:
+    """The owner's policy: ~1-2 cfm under the rate only a commissioning reading settles."""
+    from typehaus.checks.code.mn_residential.whole_house_ventilation import (
+        WholeHouseVentilation,
+    )
+
+    summary = WholeHouseVentilation(
+        conditioned_area_ft2=4900.0, storey_areas_ft2=(), area_basis="", bedrooms=6,
+        total_rate_cfm=203.0, continuous_rate_cfm=101.5, provided_cfm=210.0,
+        unit_tags=("EQ",), unrated_tags=(), delivered_cfm=delivered)
+    assert summary.verdict() == verdict
 
 
 def test_the_finding_prints_the_summarys_numbers(catlin_model_ro) -> None:
@@ -52,7 +73,8 @@ def test_the_finding_prints_the_summarys_numbers(catlin_model_ro) -> None:
     matched = [f for f in report.findings
                if f.check_id == "code.N1103_6_whole_house_ventilation"]
     assert matched and all(f.result is Result.PASS for f in matched)
-    assert f"{summary.total_rate_cfm:.0f} cfm total" in matched[0].message
+    assert f"{summary.total_rate_cfm:.1f} cfm total" in matched[0].message
+    assert f"{summary.delivered_cfm:.1f} cfm delivered" in matched[0].message
     assert f"{summary.continuous_rate_cfm:.0f} cfm continuous" in matched[0].message
     # Minnesota's own rule, not the IRC article this check id is still spelled after.
     assert matched[0].code_ref == "MN 1322 R403.5"

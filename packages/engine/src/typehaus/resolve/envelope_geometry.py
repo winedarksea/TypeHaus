@@ -113,6 +113,8 @@ class EnvelopeGeometry:
     # has nowhere to get a temperature for (→ ``buffer_adjacent``).
     buffer_by_storey: dict[str, object] = field(default_factory=dict)
     _wall_cache: dict[str, bool] = field(default_factory=dict, repr=False)
+    # ``resolve.conditioned_area``'s CFA, which is derived from this boundary.
+    conditioned_area: object | None = field(default=None, repr=False)
 
     # --- walls -------------------------------------------------------------------------
     def bounds_conditioned_space(self, wall: ResolvedWall) -> bool:

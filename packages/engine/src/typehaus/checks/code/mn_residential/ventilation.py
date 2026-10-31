@@ -1,4 +1,4 @@
-"""R303 light and ventilation, R303.3 local exhaust, MN 1322 R403.5 whole-house ventilation.
+"""R303 light and ventilation, R303.3 local exhaust (R403.5 is in `whole_house_ventilation`).
 
 Three rules a plan reviewer asks about on every set and none of which were encoded. The
 closest thing that existed was ``advisory.habitable_window``, which reports natural light as
@@ -6,8 +6,6 @@ a suggestion — the same requirement, non-gating, and without the openable-area
 """
 
 from __future__ import annotations
-
-from dataclasses import dataclass
 
 from shapely.geometry import Point, Polygon
 
@@ -19,11 +17,10 @@ from typehaus.checks.code.mn_residential._common import (
     _room_windows,
     _unknown,
 )
+from typehaus.checks.code.mn_residential.whole_house_ventilation import whole_house_summary
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
-from typehaus.model.enums import DuctSystem, EquipmentKind, Occupancy
-from typehaus.model.plan import PlanModel
-from typehaus.resolve.model import ResolvedModel
+from typehaus.model.enums import DuctSystem, Occupancy
 
 # R303.1: aggregate glazing >= 8% of the floor area, openable >= 4%.
 _MIN_GLAZING_FRACTION = 0.08
@@ -35,20 +32,6 @@ _MIN_BATH_EXHAUST_CONTINUOUS_CFM = 20.0
 # R303.3's window alternative: 3 sf glazed, half of it openable.
 _MIN_BATH_WINDOW_SF = 3.0
 _MIN_BATH_OPENABLE_SF = 1.5
-# MN Rules 1322 R403.5 — Minnesota's own whole-house rate, which is NOT ASHRAE 62.2's and
-# is not the IRC's N1103.6 either. Total ventilation rate:
-#
-#     TVR = 0.02 cfm/ft2 x conditioned floor area + 15 cfm x (bedrooms + 1)
-#
-# and the *continuous* portion must be at least half of that, and never below 40 cfm. The
-# two are separate requirements: a system may run the balance intermittently, but it may not
-# run the whole rate intermittently.
-_VENT_CFM_PER_FT2 = 0.02
-_VENT_CFM_PER_OCCUPANT = 15.0
-_CONTINUOUS_FRACTION_OF_TOTAL = 0.5
-_MIN_CONTINUOUS_CFM = 40.0
-_WHOLE_HOUSE_REF = "MN 1322 R403.5"
-
 _SF_PER_M2 = SF_PER_M2
 
 # R303.1 binds *habitable* rooms — R202's list, which lives in `_common` because R305.1 and
@@ -169,25 +152,6 @@ def _has_fresh_air_supply(ctx: CheckContext, room) -> bool:
                for element in ctx.plan.all_elements())
 
 
-def _whole_house_ventilation_rate(ctx: CheckContext) -> tuple[float, float] | None:
-    """(provided, required) whole-house cfm, or None when either side is unstated."""
-    area_ft2 = sum(r.area_m2 for r in ctx.model.rooms if r.conditioned) * _SF_PER_M2
-    if area_ft2 <= 1e-6:
-        return None
-    bedrooms = sum(1 for r in ctx.model.rooms if r.occupancy == Occupancy.BEDROOM.value)
-    required = area_ft2 * _VENT_CFM_PER_FT2 + _VENT_CFM_PER_OCCUPANT * (bedrooms + 1)
-    provided = 0.0
-    for unit in (e for e in ctx.plan.all_elements()
-                 if e.element_kind == "Equipment" and e.kind is EquipmentKind.ERV):
-        unit_type = next((t for t in ctx.plan.library.equipment_types
-                          if t.tag == unit.type_ref), None)
-        cfm = getattr(unit_type, "ventilation_cfm", None) if unit_type else None
-        if cfm is None:
-            return None
-        provided += cfm
-    return (provided, required)
-
-
 def _exception_1(ctx: CheckContext, room, area_sf: float):
     """Adjudicate R303.1 Exception 1 for a room short of glazing.
 
@@ -202,12 +166,14 @@ def _exception_1(ctx: CheckContext, room, area_sf: float):
     if not _has_fresh_air_supply(ctx, room):
         return "fail", ("it has no mechanical fresh-air supply register, so R303.1 "
                         "Exception 1 is not available")
-    rate = _whole_house_ventilation_rate(ctx)
-    if rate is None:
+    summary = whole_house_summary(ctx.model, ctx.plan, ctx)
+    verdict = "unstated" if summary is None else summary.verdict()
+    if verdict in ("unstated", "unknown"):
         return "unknown", ("R303.1 Exception 1 would apply, but the whole-house ventilation "
-                           "rate is not stated, so its outdoor-air half cannot be decided")
-    provided, required = rate
-    if provided + 1e-6 < required:
+                           "rate is not stated or not yet settled, so its outdoor-air half "
+                           "cannot be decided")
+    provided, required = summary.graded_cfm, summary.total_rate_cfm
+    if verdict == "fail":
         return "fail", (f"the whole-house ventilation system is short ({provided:.0f} cfm vs "
                         f"{required:.0f} cfm), so R303.1 Exception 1 does not carry it")
     delivered = (lumens * _COEFFICIENT_OF_UTILIZATION * _LIGHT_LOSS_FACTOR / area_sf
@@ -377,118 +343,3 @@ def bathroom_exhaust(ctx: CheckContext) -> list[Finding]:
         else:
             out.append(_pass(cid, f"{bath.tag} exhausts {total:.0f} cfm (>= 50 cfm)", code))
     return out
-
-
-@dataclass(frozen=True)
-class WholeHouseVentilation:
-    """MN 1322 R403.5's two rates and what the plan actually provides.
-
-    One function, two consumers: this is what the check grades and what G-005's ventilation
-    worksheet prints, so the sheet cannot state a required rate the finding disagrees with.
-
-    ``provided_cfm`` is ``None`` when the plan states no rate at all — either no ERV/HRV is
-    modelled, or one is and its type carries no ``ventilation_cfm``. ``reason`` says which,
-    because "nothing installed" and "installed, unrated" are different gaps and only the
-    second is a datasheet away from an answer.
-    """
-
-    conditioned_area_ft2: float
-    bedrooms: int
-    total_rate_cfm: float  # TVR
-    continuous_rate_cfm: float  # CVR — at least half of TVR, never under 40 cfm
-    provided_cfm: float | None
-    unit_tags: tuple[str, ...]
-    unrated_tags: tuple[str, ...]
-    reason: str | None = None
-
-
-def whole_house_summary(model: ResolvedModel,
-                        plan: PlanModel) -> WholeHouseVentilation | None:
-    """Derive R403.5's TVR and CVR and the rate the modelled equipment provides.
-
-    ``None`` when no conditioned floor area resolves — with no area there is no requirement
-    to state, which is a different answer from a requirement nothing meets. Conditioned area
-    comes from the resolved rooms' ``conditioned`` flag, so the garage and the sunken garden
-    are outside it, as they must be for every area-derived number in this engine.
-    """
-    area_ft2 = sum(room.area_m2 for room in model.rooms if room.conditioned) * _SF_PER_M2
-    if area_ft2 <= 1e-6:
-        return None
-    bedrooms = sum(1 for room in model.rooms if room.occupancy == Occupancy.BEDROOM.value)
-    total = area_ft2 * _VENT_CFM_PER_FT2 + _VENT_CFM_PER_OCCUPANT * (bedrooms + 1)
-    continuous = max(total * _CONTINUOUS_FRACTION_OF_TOTAL, _MIN_CONTINUOUS_CFM)
-
-    units = [e for e in plan.all_elements()
-             if e.element_kind == "Equipment" and e.kind is EquipmentKind.ERV]
-    unit_tags = tuple(sorted(unit.tag for unit in units))
-    if not units:
-        return WholeHouseVentilation(
-            conditioned_area_ft2=area_ft2, bedrooms=bedrooms, total_rate_cfm=total,
-            continuous_rate_cfm=continuous, provided_cfm=None, unit_tags=(),
-            unrated_tags=(), reason="no ERV/HRV equipment modeled")
-    provided = 0.0
-    unrated: list[str] = []
-    for unit in units:
-        unit_type = next((t for t in plan.library.equipment_types
-                          if t.tag == unit.type_ref), None)
-        cfm = getattr(unit_type, "ventilation_cfm", None) if unit_type else None
-        if cfm is None:
-            unrated.append(unit.tag)
-        else:
-            provided += cfm
-    if unrated:
-        return WholeHouseVentilation(
-            conditioned_area_ft2=area_ft2, bedrooms=bedrooms, total_rate_cfm=total,
-            continuous_rate_cfm=continuous, provided_cfm=None, unit_tags=unit_tags,
-            unrated_tags=tuple(sorted(unrated)),
-            reason=(f"ventilation unit(s) {', '.join(sorted(unrated))} state no "
-                    "ventilation_cfm on their type"))
-    return WholeHouseVentilation(
-        conditioned_area_ft2=area_ft2, bedrooms=bedrooms, total_rate_cfm=total,
-        continuous_rate_cfm=continuous, provided_cfm=provided, unit_tags=unit_tags,
-        unrated_tags=())
-
-
-@check(Tier.CODE, "code.N1103_6_whole_house_ventilation")
-def whole_house_ventilation(ctx: CheckContext) -> list[Finding]:
-    """MN Rules 1322 R403.5 — the dwelling needs a whole-house ventilation rate.
-
-    ``0.02 cfm/ft2 of conditioned floor area + 15 cfm x (bedrooms + 1)``, with at least half
-    of it (and never less than 40 cfm) delivered continuously, against the rate the ERV/HRV
-    equipment types state. ``EquipmentType.ventilation_cfm`` IS a continuous balanced flow,
-    so a unit that meets the total rate meets the continuous one by construction; the
-    continuous figure is carried and printed because the certificate posted at the panel
-    has a line for it. The check id keeps its N1103.6 spelling — it is an identifier
-    houses suppress by name — but the citation is Minnesota's own rule, which is what
-    actually governs here and is not the same arithmetic as ASHRAE 62.2's.
-    """
-    cid, code = "code.N1103_6_whole_house_ventilation", _WHOLE_HOUSE_REF
-    summary = whole_house_summary(ctx.model, ctx.plan)
-    if summary is None:
-        return [_unknown(cid, "no conditioned floor area resolved", (), code)]
-    rates = (f"{summary.total_rate_cfm:.0f} cfm total / "
-             f"{summary.continuous_rate_cfm:.0f} cfm continuous")
-    if summary.provided_cfm is None:
-        return [_unknown(cid, f"{summary.reason}; R403.5 requires {rates} "
-                         f"({summary.conditioned_area_ft2:.0f} sf conditioned, "
-                         f"{summary.bedrooms} bedroom(s))",
-                         summary.unrated_tags, code)]
-    detail = (f"{summary.provided_cfm:.0f} cfm provided vs {rates} required "
-              f"({summary.conditioned_area_ft2:.0f} sf conditioned, "
-              f"{summary.bedrooms} bedroom(s))")
-    if summary.provided_cfm + 1e-6 < summary.total_rate_cfm:
-        return [_fail(cid, f"whole-house ventilation short: {detail}",
-                      summary.unit_tags, code)]
-    # The rate is only delivered if a ventilator riding an air handler's ducts runs with
-    # that blower on — an authored control fact (``mep.erv_blower_interlock``).
-    from typehaus.checks.mep.erv_interlock import uninterlocked
-
-    loose = uninterlocked(ctx)
-    if loose:
-        pairs = "; ".join(f"{c.erv} -> {', '.join(c.missing)}" for c in loose)
-        return [_unknown(cid, f"{detail}, but it reaches the rooms through an air handler's "
-                         f"ducts with no blower interlock recorded ({pairs}; "
-                         "Equipment.blower_interlock_ref)",
-                         tuple(sorted({t for c in loose for t in (c.erv, *c.missing)})),
-                         code)]
-    return [_pass(cid, f"whole-house ventilation ok: {detail}", code)]

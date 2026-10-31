@@ -54,8 +54,8 @@ from typehaus.checks.code.mn_residential.fire_separation import (
 from typehaus.checks.code.mn_residential.ventilation import (
     bathroom_exhaust,
     habitable_light_and_ventilation,
-    whole_house_ventilation,
 )
+from typehaus.checks.code.mn_residential.whole_house_ventilation import whole_house_ventilation
 from typehaus.checks.code.mn_energy import air_leakage
 from typehaus.checks.mep.electrical_code import afci_branch_circuits, gfci_locations
 from typehaus.checks.mep.exhaust import dryer_exhaust
@@ -295,9 +295,13 @@ def _light_ctx(glazed_w: float, glazed_h: float, *, operation: str = "casement",
                                 door_types=[],
                                 electrical_device_types=device_types,
                                 equipment_types=equipment_types),
-        all_elements=lambda: elements)
-    model = SimpleNamespace(rooms=[room], openings=[opening],
-                            wall=lambda tag: wall if tag == "W-S" else None)
+        all_elements=lambda: elements, storey_elements=lambda tag: [],
+        storeys=[SimpleNamespace(tag="main", elevation=ft(0), default_ceiling_height=ft(9))])
+    # No walls: the CFA is the room itself, and no duct means the rating is graded.
+    model = SimpleNamespace(rooms=[room], openings=[opening], walls=[], ducts=[],
+                            canvas_objects=[], wall=lambda tag: wall if tag == "W-S" else None)
+    plan.storey_elements = lambda tag: []
+    model.plan = plan
     glazing = room_glazing_areas(plan, model, room)
     room.glazed_area_m2 = glazing[0] if glazing else None
     room.operable_glazed_area_m2 = glazing[1] if glazing else None

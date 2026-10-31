@@ -11,8 +11,7 @@ rectangular trunks.
 **Companions:** `notes/erv_static_budget.md` — pressure; `notes/erv_service_access.md` —
 reaching the dampers; `notes/plant_room.md` — why the plant room's pair is dampered.
 **What is asked of the reviewer:** confirm each basis-of-design row against its source
-(§2-§11), and **decide the trimless question (§12)** — the standard aluminium family is what
-is modelled and priced until then.
+(§2-§11). Trimless was declined (§12): the standard flanged family is modelled and priced.
 
 > ⚠ **Every type is a PERFORMANCE SPEC plus a basis of design, "or equal"** (owner,
 > 2026-10-30): commodity sizes any maker fits. A substitute must meet the face, the neck depth
@@ -123,7 +122,9 @@ still holds. Painted to the north-face cladding. **10" option**: budget §10.4.
   K-Flex Insul-Sheet), joints staggered, Armaflex 520 adhesive, R-4.2 per layer = **R-8.4**,
   its own vapour retarder, over the whole of both legs. Two layers and not one 2" sheet:
   plain AP is 25/50-rated only through 1", and 2" FS reads ~R-7.1. 12" OD on an 8" duct,
-  the OD every clearance was already graded at. Duct joints mastic-sealed first.
+  the OD every clearance was already graded at. Duct joints mastic-sealed first. **Kept over
+  FSK fibreglass wrap** (owner, 2026-10-31; the ~$600-1,200 option is in
+  `plans/cost-options.md` §1).
 - **Through-wall detail, no bare metal** (owner, 2026-10-30), sequence:
   1. the duct is set and sealed before the ccSPF pass, through a 9" hole in the sheathing;
   2. the sprayer sprays the 4" ccSPF tight to the duct outboard of the sheathing;
@@ -154,7 +155,10 @@ the corrosion answer. The intake keeps its filter grille.
   sides, **30 ga** for the 10" ones, printed on the duct schedule. Shop-fabricated,
   mastic-sealed, no liner (cleanability), canvas connectors at the air handler.
 
-## 12. Trimless — the owner's decision (NOT modelled; standard aluminium is)
+## 12. Trimless — declined (owner, 2026-10-31)
+
+**Decision: no trimless terminals. Flanged everywhere, as modelled.** The study below is
+kept as the record of what was weighed.
 
 | candidate | product | installed $ vs standard (est.) | sequencing | access / cleaning | static / sound |
 |---|---|---|---|---|---|
@@ -169,8 +173,7 @@ the corrosion answer. The intake keeps its filter grille.
 finishing labour. The disc valves (SUP1, RET5, SUP3) are the cheap, natural fit — a
 plaster frame for the same valve; the EU frames need a US source confirmed before board.
 The return `REG-S-HP-RET` is a poor fit: the hinged face is what reaches the filter, and a
-mud-in face cannot hold one. **Question for the owner: does "the heat pump over the
-stairway" mean `REG-S-HP-STAIR` (the supply) only, or the 28x12 return too?**
+mud-in face cannot hold one. (Whether the stairway request covered that return is moot now.)
 
 ## 13. Fit sign-off (Step 6a)
 

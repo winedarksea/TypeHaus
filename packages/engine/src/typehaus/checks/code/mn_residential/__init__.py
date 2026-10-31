@@ -36,6 +36,7 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     stair_winders,
     stairs,
     ventilation,
+    whole_house_ventilation,
 )
 from typehaus.checks.code.mn_residential.profile import MN_2020, PROFILES, get_profile
 

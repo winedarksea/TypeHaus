@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 from _helpers import check_context
 
-from typehaus.checks.code.mn_residential.ventilation import whole_house_ventilation
+from typehaus.checks.code.mn_residential.whole_house_ventilation import whole_house_ventilation
 from typehaus.checks.mep.erv_interlock import couplings, erv_blower_interlock
 from typehaus.checks.mep.hvac import ventilation_distribution
 from typehaus.findings import Result

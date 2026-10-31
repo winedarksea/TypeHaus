@@ -139,6 +139,7 @@ Every live scope or spec change, one row each. **These do not add up** — see *
 | Garage stem → frost-protected shallow foundation | $2,000–3,900 | arithmetic | no | — | The option of ever leaving the garage unheated |
 | Elm tudor posts → paint/stain-grade species | $1,300–4,500 | `[timber]` | no | — | 6-1/8" S4S elm is not a purchasable article. **Get a quote first** — the low end is only $2,006 |
 | Trimless interior door → standard cased prehung | $915–2,045 | `[openings]` | no | trim simplification | A 3-trade sequencing item; the frame is set before drywall, so it cannot be reversed later |
+| ERV outdoor legs: two 1" AP Armaflex (R-8.4) → 2" FSK fibreglass wrap (~R-6). **KEPT, owner 2026-10-31** | $600–1,200 section (~$700–1,400 bid) | arithmetic: `[duct_insulation]` elastomeric row, 48.9 LF at $22–42/LF installed, less an FSK wrap rate | no | — | The vapour retarder becomes a facing: a torn seam or a staple lets 35–40% RH room air into the fibreglass against a −15 °F outdoor-air duct, and it condenses where nobody sees it. Closed-cell elastomeric is its own retarder through its thickness. Also ~+330 Btu/h of design-day leg loss (a few $/yr). Code (R-3.3 + vapour retarder) is met either way |
 | Fabricated box gutter → seamless K-style | $600–1,400 | `[edge_trim]` | no | — | Plus $150–400/ea for the conductor heads a box gutter needs, which are not in the estimate |
 
 ⏳ **Deferrable to a later contract** — outside the weather envelope, not trapped behind

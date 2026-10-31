@@ -7,7 +7,7 @@ worksheet, R303.3's local exhaust per bathroom, the equipment that serves both, 
 load, and the Energy Code Compliance Certificate that gets posted at the panel.
 
 Every number is read from one of the two pure summaries the checks grade against —
-``mn_energy.air_leakage_summary`` and ``mn_residential.ventilation.whole_house_summary`` —
+``mn_energy.air_leakage_summary`` and ``whole_house_ventilation.whole_house_summary`` —
 so a sheet can never state a rate the finding beside it disagrees with. What the model does
 not carry prints ``NOT MODELLED`` or a ruled blank line, never a default: a certificate
 posted at a panel is a statement somebody is answerable for.
@@ -112,7 +112,7 @@ def _write_ventilation_sheet(pdf, model: ResolvedModel, number: str, name: str,
     would be forging them.
     """
     from typehaus.checks.code.mn_energy import air_leakage_summary
-    from typehaus.checks.code.mn_residential.ventilation import whole_house_summary
+    from typehaus.checks.code.mn_residential.whole_house_ventilation import whole_house_summary
     from typehaus.checks.registry import Preferences
     from typehaus.energy import estimate_block_load
 
@@ -184,7 +184,7 @@ def _whole_house_rows(vent) -> list[tuple[str, str, str]]:
                 else NOT_MODELLED)
     rows = [
         ("CONDITIONED FLOOR AREA", f"{vent.conditioned_area_ft2:,.0f} sf",
-         "resolved rooms flagged conditioned"),
+         "to the structural face; stair wells deducted on the storey above"),
         ("BEDROOMS", f"{vent.bedrooms}", "bedroom-occupancy rooms"),
         ("TOTAL RATE (TVR)", f"{vent.total_rate_cfm:.0f} cfm",
          "0.02 cfm/sf + 15 cfm x (bedrooms + 1)"),
@@ -192,6 +192,9 @@ def _whole_house_rows(vent) -> list[tuple[str, str, str]]:
          "at least 50% of TVR, never under 40 cfm"),
         ("PROVIDED", provided, ", ".join(vent.unit_tags) or NOT_MODELLED),
     ]
+    if vent.delivered_cfm is not None:
+        rows.append(("DELIVERED", f"{vent.delivered_cfm:.1f} cfm",
+                     f"fan curve at {vent.delivered_static_in_wg:.3f} in. w.g."))
     if vent.reason:
         rows.append(("GAP", "", vent.reason))
     return rows
