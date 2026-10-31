@@ -231,6 +231,7 @@ the future.
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
 - The bottoms of 3d modeled windows are a bit glitchy in 3d movement.
 - Do passes to confirm geometry and dimensions of select products all align together correctly for real world build dimensions. Major items to check: stairs, doors and windows (and their trim/flashing), framing, cabinets, trusses.
+- Generally our goal is to have every piece of the house linked to a named product (or a standard or commodity size, like a 2x4) so we can confirm every piece fits together correctly.
 - Kitchen sink fabrication hold: dry-fit KHU100-32 / Bolden KPF-1610SFS / Badger 5 / Dearborn P9703WBG in the 36-inch SEKTION. Verify delivered Badger revision, clip/washer and rail access, full hose stroke, cleanout clearance, vent fitting/bore envelopes and the inward tilt-turn window sweep (full turn likely obstructed). See houses/catlin/notes/kitchen_sink_installation.md; product/connection specification is complete, physical fit is not released.
 - Can we widen D-M-BATH2 to 36"? Not sure if/how the casing would work as that puts it into the shower area (the casing).
 - Gym echo ([note](../houses/catlin/notes/gym_acoustics.md)): after move-in, clap-test RM-B-GYM and hang the 12-16 FR701-wrapped mineral-wool panels per the note if it rings. Before laying the stall mats: slab moisture (plastic-sheet) test, 6-mil poly if damp, and air the mats 1-2 weeks.
@@ -251,6 +252,9 @@ the future.
 - D-B-PATIO has a MASA connector sprouting up in the middle, plus it's got some sort of awkward trim around the brick veneer (the brick IS the trim there, the door itself has a more utilitarian trim into the main house wall behind). Looks like previous door work accidentally bumped the brick arch up too high. It should partially obscure the door top.
 - Look up a guide to how plumbers and such route, then make sure the autorouter follows that, and also code for it
 - Air-distribution products (specified 2026-10-31, [note](../houses/catlin/notes/air_distribution_products.md)); still open:
+  - Owner: trimless for RM-M-LIVING / RM-M-BED / the stair hall (note §12), and whether "the heat pump over the stairway" includes the 28x12 return.
+  - Owner: the 1.1 cfm residual under 205, or the 10" hoods (needs RenewAire FA10 test data and a plate fit check) — `notes/erv_static_budget.md` §10.4, §10.6.
+  - Owner/AHJ: which floor area MN 1322 R403.5 means. The engine grades finish-face room area (195 cfm required); centreline gave 205, exterior dimensions give 214, past the 210 cfm machine — `notes/erv_static_budget.md` §10.6.
   - Supplier confirmations: Vents-US AM 100/125 loss curves; FA8 plate and projection; floor-boot and Snappy P13-204 heights; motorised damper body and actuator sizes; H&C 531SA 6x12 face; a 125 mm retail valve; prices marked "not read" in `prices.toml`.
   - Engine, deferred: an insulation-vs-R403.2.1 check; per-segment duct insulation; M1506.3's 3 ft exception and the operable-opening distance; checking an insulation spec's thickness against its R-value; grading a damper actuator inside a duct.
 - Consider have the oven/range in the kitchen island across from the sink
@@ -273,15 +277,6 @@ the future.
 - Might be worth writing up ICF in cost options as an alternative exterior wall setup (for the house) something like the Quadlock 'plus' form which with 4.25" of EPS on each side delivers R-38.
 - Fixture connections (audit 2026-10-30): every fixture and appliance now declares ports and
   `mep.fixture_port_connection` grades them (`--only all`). Still open:
-  - Supply branches that do not exist: the cold stop at all six WCs, the valve hot/cold at
-    `FX-M-BATH2-SH`, `FX-A-STUBATH-SH`, `FX-S-BATH1-SH`, `FX-S-SUITEBATH-TUBSH`, the
-    `FX-M-BATH2-FILLER` pair (no run serves it), and a DW hot stub (51" from `PR-B-HW-KITCH`;
-    `PA-M-DW-WHA-HW` sits at x=334" off that pipe). Each prints its distance as an UNKNOWN.
-    `FX-S-BATH1-WC`'s stop wants an owner call: its back wall `W-S-W1` is exterior.
-  - The sauna's valve stubs are hot south, cold north; the R10000 body is hot-left. Swap the
-    stubs or turn the cartridge.
-  - `FX-S-BATH1-WC` stands 1 3/4" off `W-S-W1`, so its flange is 13 3/4" off the wall: move
-    the bowl to the wall (radiant keepout and drain follow) or accept the gap.
   - Datasheets that would make the APPROXIMATE stations EXACT: Delta R10000-UNBX inlet spacing
     and height, the TOTO supply inlets, LG WashTower and LDTS5552 connection stations and hose
     lengths, Glacier Bay QL033Y, Kohler Chulton, SUNNERSTA, Moen 4794 stub depth. The washer's
@@ -293,7 +288,6 @@ the future.
 - Make sure the railing and guard rail assembly is correctly modeled (especially how they are mounted). `RL-SG-BALCONY`'s posts stand on `_GUARD_PATH`, the deck edge, but a 3" post in the Ultralox fascia bracket centres ~1.52" outboard of the fascia face: move them and re-run the gutter clash. `ST-SG-PORCH`'s raked guard posts are drawn at the path ends and middle, all on riser lines (the plan wanted them on treads): the foot base straddles the lowest riser, the head post is centred on W-SG-E1's east face, and the head posts overlap `RL-SG-PTHRESH-S/N`'s end posts by 1/4" (centres 2 3/4" apart). Decide where each cast base lands (one shared base at the head; two posts would stop `RL-SG-PSTAIR-HR` short of the end risers). `code.R311_7_1_stair_width` reads only SURFACE guard posts: a fascia post is drawn on its path, not outboard where it stands, so fixing that placement is also what lets the width check read it.
 - Upgrade fasteners still uncounted (decision #105 covers panel screws, connector schedules, treated framing, roof/screen sheathing): wall sheathing and subfloor nailing, fascia/trim screws, window-install screws, and the HL angles' site-length through-bolts. Open: no stocked 316 #10-12 x 1-1/2 pancake screw was found for the BBD75 walls — get a special-order price, or accept the stocked 304 (ST Fastening 10A150TQPSSN); and a Metal Sales price for 8243100. The six derived `SP4` stud-plate ties on W-BW-SCREEN are plain G90 in KDAT (R317.3.1): name a ZMAX/stainless tie or drop the rule there, then schedule its nails.
 - A framed `ceiling_lining` layer (sauna 2x12 service cavity and 1x4 furring, plant-room furring, the ESS lid's 2x4 furring) bills as 4x8 SHEETS of its material in `takeoff/sheet_goods.py::_sheets`; bill it as sticks at its `FramingSpec` spacing instead.
-- Generally our goal is to have every piece of the house linked to a named product (or a standard or commodity size, like a 2x4) so we can confirm every piece fits together correctly.
 - Smart home (`houses/catlin/notes/smart_home.md`), still to verify:
   - Schluter's written answer on whether the heating-cable warranty survives the Warmup 7iE stats.
   - Pair one Gree head (Sys 2/3) with HA's `gree` integration first: GCM-encrypted firmware may not pair (fallback is the RS485 wired controller).
@@ -304,10 +298,8 @@ the future.
 - True-solid clashes the overlap ratchet (`tests/test_solids3d.py`, decision #106) blessed as known, not fixed:
   - The basement slab `SL-B-FLOOR`, its XPS and its capillary break run through every strip footing (the footing tops are flush with the slab top, so it is not cast on their ledges): 2.0 m³ of slab and 2.6 m³ of sub-slab inside footings, billed twice in the takeoff. Needs a concrete junction model (`structural.concrete_interference` scopes continuous work out, assuming the slab sits on the ledges) or a footing-clipped slab outline.
   - `W-B-S2-FR` / `W-B-S3-FR` rise to 0'-0" (for D-B-PATIO's head) through `W-M-S1` / `W-M-S2`'s rim band (-13 7/16" to 0): both walls model the band, 0.26 m³ each. The same convention puts `SL-M-DECK` under `W-M-E1` (0.39 m³). Decide which owns the band.
-  - `PR-B-CW-TRUNK`'s riser, `PA-B-MAIN-SHUTOFF`, the hydrant tee and `PA-G-HYD-BFP` stand at y=35'-6", 2" inside `W-B-N2`'s concrete. Inboard is `ST-B2M`'s landing framing, so moving them is a re-route.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.
-- Lighting review
-- Excavation depth should be on a separate view toggle
+- Lighting review. Great lighting is important. Some areas where we want excellent task lighting: the kitchen and the basement workshop (basement workshop can be cheap, doesn't need to look pretty). We want quality do-your-makeup lighting in RM-S-VANITY, RM-M-BATH2 (master bath) and RM-S-SUITEBATH by the mirrors (lit mirrors or over mirror lights). The living room (extending from kitchen to dining room to fireplace) has the most complex needs (multiple lighting zones that take it from soft cozy fireplace vibes to brightly lit social gathering or task work) and also is meant to be the prettiest area. Generally we love efficiency. We prefer using replaceable blubs (or generic LED strips) rather than deeply integrated lights (although integrated may be fine in one or two special occasions). Avoid expensive LED extrusions and use standard aluminum channels where practical.
 - Double check the 17' 4" horizonal BBD band, BBD-transition. Does it make sense to have it integrated with the door top? Also it looks like the ventilation faces upwards uncovered (rain catch?). Also it should go back to linen white. We are leaning towards having it up higher, around gutter height, if it can be.
 - Check the door handle specification, interior doors. Make sure bathroom doors are simple locks.
 

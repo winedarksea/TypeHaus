@@ -171,11 +171,13 @@ MAIN_LAV_CONNECTIONS = [
             elevations=(inch(141.5), inch(139.875),),
             diameter=inch(1.5), material="pvc",
             serves=("FX-S-VANITY-LAV2",)),
+    # Both also feed FX-A-STUBATH-SH, whose pair tees on at the stop corners
+    # (plan/mep_supply_branches.py): 0.75 + 1.5 WSFU a side, inside a 1/2" branch's 4.
     PipeRun(uid="HY88AM9MS4", tag="PR-A-STUBATH-LAV-HW", system=PipeSystem.WATER_HOT,
             path=(pt(inch(115.5), inch(250)), pt(inch(110.75), inch(250)), pt(inch(110.75), inch(267.5)), pt(inch(161.625), inch(267.5)), pt(inch(161.625), inch(265.625)),),
             elevations=(inch(270.0), inch(272.0), inch(272.0), inch(272.0), inch(264.87),),
             diameter=inch(0.5), material="pex",
-            serves=("FX-A-STUBATH-LAV",)),
+            serves=("FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
     PipeAccessory(uid="9F9VTAPSHG", tag="PA-A-STUBATH-LAV-HW", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-A-STUBATH-LAV-HW", position=pt(inch(161.625), inch(265.625)), elevation=inch(264.87000000),
                   accessible=True, room="RM-A-STUBATH", model='1/2 in. quarter-turn fixture angle stop',
@@ -184,7 +186,7 @@ MAIN_LAV_CONNECTIONS = [
             path=(pt(inch(113.5), inch(246)), pt(inch(111), inch(246)), pt(inch(111), inch(266)), pt(inch(167.625), inch(266)), pt(inch(167.625), inch(265.625)),),
             elevations=(inch(270.0), inch(270.0), inch(270.0), inch(270.0), inch(264.87),),
             diameter=inch(0.5), material="pex",
-            serves=("FX-A-STUBATH-LAV",)),
+            serves=("FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
     PipeAccessory(uid="Z2FTXP1AR6", tag="PA-A-STUBATH-LAV-CW", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-A-STUBATH-LAV-CW", position=pt(inch(167.625), inch(265.625)), elevation=inch(264.87000000),
                   accessible=True, room="RM-A-STUBATH", model='1/2 in. quarter-turn fixture angle stop',

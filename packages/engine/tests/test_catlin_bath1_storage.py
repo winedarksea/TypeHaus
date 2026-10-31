@@ -39,7 +39,8 @@ def test_toilet_centres_under_the_window_and_preserves_its_required_clear_floor(
     window = next(opening for opening in catlin_model_ro.openings if opening.tag == "WIN-S-BATH-W")
     window_center_y = Polygon(window.framing_bumper).centroid.y
     assert toilet.uid == "CSQ801AAAA"
-    assert toilet.position == pytest.approx((0.560313, window_center_y))
+    # Tank back on W-S-W1's 6 1/2" finish face (2026-10-31): flange at the 12" rough-in.
+    assert toilet.position == pytest.approx((20.28125 * INCH, window_center_y))
     tub_south_face = Polygon(objects["FX-S-BATH1-SH"].footprint).bounds[1]
     vanity_west_face = Polygon(objects["FX-S-BATH1-LAV"].footprint).bounds[0]
     toilet_front_face = Polygon(toilet.footprint).bounds[2]
@@ -123,11 +124,11 @@ def test_heating_keeps_its_cable_and_clearance_from_all_fixed_storage(catlin_pla
     zone = next(zone for zone in catlin_model_ro.floor_heat if zone.tag == "FH-S-BATH1")
     polygon = Polygon(zone.zone)
     assert polygon.is_valid
-    assert polygon.area / SQFT == pytest.approx(26.789921875)
+    assert polygon.area / SQFT == pytest.approx(27.026901041666)
     assert polygon.area / SQFT >= 26.7
     authored_zone = next(e for e in catlin_plan.all_elements() if e.tag == zone.tag)
     assert authored_zone.watts == 338
-    assert round(polygon.area / SQFT * 22.8) == 611
+    assert round(polygon.area / SQFT * 22.8) == 616
     for obj in objects.values():
         if obj.room != "RM-S-BATH1":
             continue

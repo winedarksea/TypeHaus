@@ -21,12 +21,21 @@ def _visit(trade, tags=()):
 def test_the_pour_lists_every_cast_in_sleeve(catlin_model_ro) -> None:
     items = handoff_items(catlin_model_ro, _visit("concrete"))
     sleeves = [item for item in items if item.id.startswith("sleeves:")]
-    # A duct's framed-wall seal (DU-ERV-OA/-EA) is the mechanical trade's, never cast.
-    cast = [s for s in catlin_model_ro.sleeves
-            if not (s.serves_duct and s.host_category == "framed_wall")]
-    assert len(cast) == len(catlin_model_ro.sleeves) - 2
+    # A framed-wall sleeve (the two ERV seals, the balcony hydrant's bore) is never cast.
+    cast = [s for s in catlin_model_ro.sleeves if s.host_category != "framed_wall"]
+    assert len(cast) == len(catlin_model_ro.sleeves) - 3
     assert sum(item.count for item in sleeves) == len(cast)
     assert all(item.sheet_ref == "S-100" for item in sleeves)
+
+
+def test_a_framed_wall_sleeve_rides_the_trade_that_sets_it(catlin_model_ro) -> None:
+    """By host, not by purpose: the hydrant's bore is the plumber's, a duct seal mechanical's."""
+    def wall_tags(trade):
+        return {tag for i in handoff_items(catlin_model_ro, _visit(trade))
+                if i.id.startswith("wall_sleeves:") for tag in i.element_tags}
+    assert wall_tags("plumbing") == {"SP-S-BALC-HYD"}
+    assert wall_tags("mechanical") == {"SP-M-ERV-OA-SEAL", "SP-S-ERV-EA-SEAL"}
+    assert not wall_tags("concrete")
 
 
 def test_every_sleeve_item_names_its_own_elements(catlin_model_ro) -> None:

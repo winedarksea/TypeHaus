@@ -258,9 +258,10 @@ SECOND_FIXTURES = (
     # Centred under WIN-S-BATH-W at y=376" (2026-10-02), 12 1/2" north of the former bay.
     # The 3.5" drain envelope clears FS-S-WEST's 369.75"..382.25" bay faces by 4 1/2";
     # the tub is 18 1/2" from the WC centreline, against UPC 402.5's 15" minimum.
-    # The drain bend and radiant-floor keepout follow in mep_drainage.py / storeys/second.py.
+    # Tank back on W-S-W1's 6 1/2" finish face since 2026-10-31 (owner): the flange is at the
+    # 12" rough-in, x=18 1/2", not 13 3/4". Drain, keepout and floor-fed stop follow.
     Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOTO-AQUIA-IV", room="RM-S-BATH1",
-            position=pt(m(0.560313), inch(376)), rotation=deg(90), wall_ref="W-S-W1"),
+            position=pt(inch(20.28125), inch(376)), rotation=deg(90), wall_ref="W-S-W1"),
     # ÄNGSJÖN 36 with the 37 in. ORRSJÖN top: y=356..393, half-inch side overhang.
     # Backs the east finish face; retains 1.5 in. to the tub return and the east-hinged entry.
     Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-ANGSJON-36",

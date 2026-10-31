@@ -1110,17 +1110,18 @@ ALARMS = [
 # storage. This polygon keeps at least 2" from walls, cabinets and fixtures, including
 # the new east cover panel, and over 7" from the toilet drain centre. It uses the open
 # floor around the toilet instead. The WC keepout follows its 12 1/2" move north under
-# WIN-S-BATH-W (2026-10-02), exchanging heated floor north of the WC for floor south of it.
-# Its 26.82 ft2 still takes the UNCUTTABLE DHEHK12027
-# cable (26.7 ft2 / 338 W / 2.8 A at 120 V), with a 0.12 ft2 buffer at 3-stud spacing.
-# Delivered heat at an 84 F floor / 72 F operative temperature remains 612 Btu/h against
+# WIN-S-BATH-W (2026-10-02), exchanging heated floor north of the WC for floor south of it,
+# and 1 3/4" west with the bowl when it went to the wall (2026-10-31).
+# Its 27.03 ft2 still takes the UNCUTTABLE DHEHK12027
+# cable (26.7 ft2 / 338 W / 2.8 A at 120 V), with a 0.33 ft2 buffer at 3-stud spacing.
+# Delivered heat at an 84 F floor / 72 F operative temperature is 616 Btu/h against
 # the room's 606 Btu/h design loss; see notes/room_heat_loss_baths.md.
 FLOOR_HEAT = [
     FloorHeat(uid="CSH801AAAA", tag="FH-S-BATH1", room_ref="RM-S-BATH1",
               zone=(pt(inch(114.5), inch(323.5)), pt(inch(77.75), inch(323.5)),
                     pt(inch(77.75), inch(349.875)), pt(inch(8.75), inch(349.875)),
-                    pt(inch(8.75), inch(366.25)), pt(inch(37.875), inch(366.25)),
-                    pt(inch(37.875), inch(385.75)), pt(inch(8.75), inch(385.75)),
+                    pt(inch(8.75), inch(366.25)), pt(inch(36.125), inch(366.25)),
+                    pt(inch(36.125), inch(385.75)), pt(inch(8.75), inch(385.75)),
                     pt(inch(8.75), inch(392.4375)), pt(inch(92.99), inch(392.4375)),
                     pt(inch(92.99), inch(343.875)), pt(inch(114.5), inch(343.875))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3.625), embed=in_slab(inch(0.5)),

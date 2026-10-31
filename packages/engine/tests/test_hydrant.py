@@ -253,8 +253,10 @@ def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
         assert catlin_model.plan.by_tag(tag).position.xy_m == pytest.approx(position), tag
     run = _supply(catlin_model)
     assert run.path[-2] == run.path[-1] == pytest.approx(position)
-    assert (run.path[-1][1] - run.path[0][1]) * _M_TO_FT == pytest.approx(
-        12 + 7.3125 / 12, abs=1e-6)
+    # The buried leg: from W-B-N2's outer face (y=36'-0") to the hydrant. The tee is 6"
+    # inboard of the wall's inner face since 2026-10-31 and is not trench.
+    assert (run.path[-1][1] - 36 * 12 * 0.0254) * _M_TO_FT == pytest.approx(
+        12 + 1.3125 / 12, abs=1e-6)
     # Stone from 5'-6" to 7'-0" *below grade*: the 6' shutoff sits 6" below the top of it
     # with a foot of stone under the weep. → test_the_hydrant_assembly_clears_the_footings.
     # Depths are read from grade, not from the house datum: grade is at -2'-6", so the

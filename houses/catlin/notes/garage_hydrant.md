@@ -178,7 +178,8 @@ in wet stone at -6'-0". A breaker 2'-6" above the slab is nowhere near that path
 
 So the fixture is not the thing to change. What is worth having is cheap insurance against
 that three-way coincidence, and that is `PA-G-HYD-BFP`: a 3/4" dual check on
-`PR-G-HYDRANT-CW` at (11'-0", 35'-6"), 3'-0" up, in `RM-B-STAIR` beside `PA-B-MAIN-SHUTOFF`.
+`PR-G-HYDRANT-CW` at (11'-0", 35'-0") since 2026-10-31 (was 35'-6", inside `W-B-N2`'s
+concrete), 3'-0" up, in `RM-B-STAIR` beside `PA-B-MAIN-SHUTOFF`.
 
 **Current layout (2026-10-29, owner; supersedes the next paragraph's geometry).** The hydrant
 line is a 3/4" branch teed off `PR-B-CW-TRUNK`'s riser inside the basement, downstream of the
@@ -220,7 +221,8 @@ x = 11'-0" with no buried turn. It was at (11', 62') with the service entering t
 x = 5'-0" and jogging east at y = 38' — 30'-6" of trench and two buried elbows.
 
 - **Entry.** `SP-B-N3-HYD` (tag kept) moved to x = 11'-0" in `W-B-N2`, under `ST-B2M`'s upper
-  landing. The service rises tight to the wall there; `PA-B-MAIN-SHUTOFF` is on that riser at
+  landing. The service rises 6" inboard there (y=35'-0" since 2026-10-31, clear of the
+  concrete and between the landing's joists); `PA-B-MAIN-SHUTOFF` is on that riser at
   3'-0", reached from under the open landing (4'-2" clear). `PR-B-CW-TRUNK` steps 6" off the
   concrete at the ceiling and runs west over `RM-B-ESS` to the old x = 5'-0" riser line, inside
   the heated envelope. Firestop its bores through `W-B-STR` and the ESS partition.

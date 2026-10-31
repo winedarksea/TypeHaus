@@ -406,6 +406,8 @@ SECOND_BRANCH_DRAINS = [
     # y=344" vertical drop. The bend's 116.75" invert keeps the pipe crown below the new
     # 368" crossing's 118.5" web ceiling; the next leg falls 3/4" in 28.32" (0.318"/ft),
     # holding UPC 708.0's 1/4"/ft minimum. The closet-ceiling drop and stack inlet stay put.
+    # Since the bowl moved to the wall (2026-10-31) the flange is at x=18 1/2" and the bend
+    # also offsets 1 3/4" east: the x=1'-6 1/2" leg would sit on the 1'-5 1/2" truss web.
     # ** SINCE 2026-09-24 THE VERTICAL DROP LANDS IN RM-M-MUD-CLOSET. **
     # It used to run east on the 30'-0" bay to x=5'-0", and that line crossed the lane of
     # DU-M-ERV-EXH-TRUNK and DU-M-ERV-R-STUDY: 3 1/2" of drain and an 8" trunk do not share an
@@ -414,7 +416,7 @@ SECOND_BRANCH_DRAINS = [
     # hole (FO-S-BATH1-WC-DRAIN) into the closet ceiling — STORAGE, where exposed pipe is by
     # design — and east at 8'-4" onto the stack's side. Dropping early only gains head.
     PipeRun(uid="K28BQ29KCW", tag="PR-M-S-BATH1-WC-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(20.278), inch(376)), pt(inch(20.278), inch(372.32)),
+            path=(pt(inch(18.5), inch(376)), pt(inch(20.278), inch(372.32)),
                   pt(inch(20.278), inch(344)), pt(inch(20.278), inch(344)),
                   pt(ft(5), inch(344)), pt(ft(5), ft(26, 7.5))),
             diameter=inch(3), material="pvc",

@@ -94,6 +94,11 @@ WSFU_BY_SYMBOL: dict[str, tuple[float, float, float]] = {
     "hydrant": (2.5, 0.0, 2.5),  # hose bibb
 }
 
+# Trim mounted on a fixture that carries the row (a Roman tub filler on its bath): the
+# host's row is the demand, so the trim's is zero rather than missing. A branch serving the
+# trim names the host too, which is what sizes it.
+HOST_COUNTED_SYMBOLS: frozenset[str] = frozenset({"roman-tub-filler"})
+
 # MN Plumbing Code Table 703.2: max DFU on a horizontal drainage branch, by size (in).
 DRAIN_BRANCH_CAPACITY_DFU: tuple[tuple[float, float], ...] = (
     (1.25, 1.0),
@@ -165,7 +170,7 @@ def fixture_units(plan) -> list[FixtureUnits]:
             continue
         symbol = placeable_type.plan_symbol
         dfu = DFU_BY_SYMBOL.get(symbol) if Service.DRAIN in needs else 0.0
-        wsfu = WSFU_BY_SYMBOL.get(symbol)
+        wsfu = (0.0, 0.0, 0.0) if symbol in HOST_COUNTED_SYMBOLS else WSFU_BY_SYMBOL.get(symbol)
         rows.append(FixtureUnits(
             tag=element.tag, symbol=symbol, room=getattr(element, "room", None),
             dfu=dfu,

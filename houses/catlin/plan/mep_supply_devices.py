@@ -23,8 +23,9 @@ from typehaus import (
 # height — author one.
 SUPPLY_DEVICES_BASEMENT = [
     # P2903.9.1. The service (buried -8'-10", PR-G-SERVICE-CW) enters at (11'-4", 35'-6") —
-    # SP-B-N2-SVC, under ST-B2M's upper landing — and rises to the basement ceiling; this
-    # valve sits on that riser at 3'-0", under the landing (4'-2" clear beneath it). Since
+    # SP-B-N2-SVC, under ST-B2M's upper landing — and rises to the basement ceiling 6"
+    # inboard (y=35'-0" since 2026-10-31, clear of W-B-N2's concrete); this valve sits on
+    # that riser at 3'-0", under the landing (4'-2" clear beneath it). Since
     # the landing reached the wall (2026-09-24) it is reached from the storage under it,
     # open to the stair foot and D-B-CLOSET, not from the landing above.
     #
@@ -33,7 +34,7 @@ SUPPLY_DEVICES_BASEMENT = [
     # `mep.hydrant_freeze_depth` grades only the buried ones.
     PipeAccessory(uid="N5PK9WQ2TB", tag="PA-B-MAIN-SHUTOFF",
                   kind=PipeAccessoryKind.MAIN_SHUTOFF, pipe_ref="PR-B-CW-TRUNK",
-                  position=pt(ft(11, 4), ft(35, 6)), elevation=ft(3), accessible=True,
+                  position=pt(ft(11, 4), inch(420)), elevation=ft(3), accessible=True,
                   room="RM-B-STAIR",
                   model='1 1/4" full-port bronze ball valve, lever handle',
                   serves=("PR-B-CW-TRUNK",)),
@@ -88,12 +89,12 @@ SUPPLY_DEVICES_BASEMENT = [
                   model="Sioux Chief MiniRester 660-G class, size A",
                   serves=("FX-M-LAUNDRY",)),
     # The dishwasher's fill solenoid is the other quick-closing valve in the house. It takes
-    # hot water only, so it takes one arrestor, on the kitchen hot branch at the sink base,
-    # at the sink base's WEST face — the dishwasher's own side — rather than the branch's
-    # +9" offset, which would put this 41" east of the machine, across the whole carcass.
+    # hot water only, so it takes one arrestor, on the dishwasher's own stub (PR-M-DW-HW)
+    # at the sink base's WEST face, the machine's side (2026-10-31: it sat at x=27'-10",
+    # 2'-5" off PR-B-HW-KITCH's riser, on no pipe).
     PipeAccessory(uid="W4NL8QSJ0M", tag="PA-M-DW-WHA-HW",
-                  kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-B-HW-KITCH",
-                  position=pt(ft(27, 10), inch(421.5)), room="RM-M-LIVING",
+                  kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-M-DW-HW",
+                  position=pt(ft(27, 10), inch(422.75)), room="RM-M-LIVING",
                   model="Sioux Chief MiniRester 660-G class, size A",
                   serves=("APPL-M-DW",)),
     # Branch isolation for both wall hydrants, at the tee off the cold trunk. Not a code
@@ -288,7 +289,7 @@ SUPPLY_DEVICES_GARAGE = [
     # ahead of the answer.
     PipeAccessory(uid="R7QB4XKD2M", tag="PA-G-HYD-BFP",
                   kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-G-HYDRANT-CW",
-                  position=pt(ft(11), ft(35, 6)), elevation=inch(-73.4375),
+                  position=pt(ft(11), inch(420)), elevation=inch(-73.4375),
                   room="RM-B-STAIR", accessible=True,
                   model='3/4" dual-check backflow preventer, testable',
                   serves=("FX-G-HYDRANT",)),

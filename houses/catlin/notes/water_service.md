@@ -94,7 +94,9 @@ summer, so the allowance is a rounding error against the ERV core's.
 **The hydrant tees off the trunk (owner, 2026-10-29).** `PR-G-SERVICE-CW` (1 1/4" PEX) is the
 lateral, street entry (11'-4", 48'-6") to the house at (11'-4", 35'-6"), 6' under grade, through
 `SP-GF-S-SVC` (3", under `FT-GF-S-DR`) and `SP-B-N2-SVC` (2 1/2", `W-B-N2`). It feeds
-`PR-B-CW-TRUNK` alone, which rises past `PA-B-MAIN-SHUTOFF` (3'-0"). `PR-G-HYDRANT-CW` (3/4")
+`PR-B-CW-TRUNK` alone, which rises past `PA-B-MAIN-SHUTOFF` (3'-0") 6" inboard at y=35'-0"
+(2026-10-31: on the 35'-6" line the riser, tee and dual check stood 2" inside `W-B-N2`'s
+concrete; 35'-0" is a bay between `ST-B2M`'s landing joists, so no joist is cut). `PR-G-HYDRANT-CW` (3/4")
 tees off that riser at 4'-0", carries `PA-G-HYD-BFP` (3/4" dual check, 3'-0", beside the main
 shutoff), leaves through `SP-B-N3-HYD` (back to 1 1/2") and runs 4" west of the lateral to the
 yard hydrant through `SP-GF-S-HYD` (back to 2"). The **house trunk is open**: the dual check
@@ -105,6 +107,19 @@ The lateral passes 4" east of the hydrant's buried valve, inside its weep stone
 (`DRW-G-HYDRANT`), and the street utility line moved to x=11'-4" with it (`plan/site.py`).
 `mep.hydrant_freeze_depth` now ignores a vertex inside a conditioned room (the branch's tee and
 drop, the trunk), since a warm high point is not a freeze point; the buried legs hold 72".
+
+### Fixture branches (2026-10-31)
+
+Every WC stop, shower and tub valve body and the dishwasher has a branch reaching its port
+(`plan/mep_supply_branches.py`, all 1/2" PEX except the hall bath's 3/4" shower cold, which
+also feeds its WC: 5.5 WSFU). WCs get an angle stop each. Three are floor-fed: `FX-M-BATH2-WC`
+(its wall bay is `FX-M-BATH1-WC`'s DuoFit carrier), `FX-S-BATH1-WC` (owner: no pipe in exterior
+`W-S-W1`; the stop tees off the shower cold in the chase and runs through `FS-S-WEST`) and
+`FX-B-BATH-WC`'s is wall-fed but off the trunk, because the x=10'-0" bearing line's blocking
+closes the bath's own riser off. The hall bath's shower pair runs north in `FS-ATTIC`'s webs and
+drops down `W-S-CH-W`: `DU-M-ERV-EXH-TRUNK` fills `FS-S-WEST`'s depth between the risers and the
+chase. `PA-M-DW-WHA-HW` is on the dishwasher's own stub. The sauna's stubs were swapped so hot
+meets the R10000's hot-left inlet.
 
 ## 4. Thermal expansion (research; nothing modelled)
 

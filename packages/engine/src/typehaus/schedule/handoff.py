@@ -25,6 +25,8 @@ from typehaus.schedule.model import HandoffItem
 _BY_TRADE: dict[str, tuple[str, ...]] = {
     "concrete": ("sleeves", "dowels", "mudsill_anchors", "holdowns", "post_bases",
                  "radon", "floor_heat", "slab_edge"),
+    "electrical": ("wall_sleeves_electrical",),
+    "mechanical": ("wall_sleeves_mechanical",),
     "earth": ("drain_tile",),
     "drainage": ("drain_tile",),
     "framing": ("braced_walls", "rough_openings", "post_bases"),
@@ -32,8 +34,12 @@ _BY_TRADE: dict[str, tuple[str, ...]] = {
     "roofing": ("roof_penetrations",),
     "insulation": ("roof_penetrations",),
     "siding": ("roof_penetrations",),
-    "plumbing": ("sleeves", "radon"),
+    "plumbing": ("sleeves", "wall_sleeves_plumbing", "radon"),
 }
+
+#: A framed-wall sleeve is set by the trade whose run it carries, never cast: by purpose.
+_AIR = frozenset({"supply_air", "return_air", "outdoor_air", "exhaust_air"})
+_WIRE = frozenset({"power_120", "power_240", "power_24", "data"})
 
 
 def handoff_items(model: Any, visit: Any) -> list[HandoffItem]:
@@ -63,16 +69,30 @@ def _tags(elements: Any, limit: int | None = None) -> tuple[str, ...]:
 
 # --- probes ---------------------------------------------------------------------------
 
-def sleeves(model: Any) -> list[HandoffItem]:
-    """Cast-in block-outs, per pour host. The one item that cannot be fixed afterwards."""
+def _framed(sleeve: Any) -> bool:
+    return getattr(sleeve, "host_category", "") == "framed_wall"
+
+
+def _wall_trade(sleeve: Any) -> str:
+    purpose = str(getattr(sleeve, "purpose", "") or "")
+    if getattr(sleeve, "serves_duct", None) or purpose in _AIR:
+        return "mechanical"
+    return "electrical" if purpose in _WIRE else "plumbing"
+
+
+def _by_host(found: list[Any]) -> list[tuple[str, list[Any]]]:
     by_host: dict[str, list[Any]] = {}
-    for sleeve in getattr(model, "sleeves", []) or []:
-        if getattr(sleeve, "serves_duct", None) and sleeve.host_category == "framed_wall":
-            continue  # a duct's wall seal is set by the mechanical trade, not cast
+    for sleeve in found:
         by_host.setdefault(str(getattr(sleeve, "host_slab", "") or "unassigned"),
                            []).append(sleeve)
-    if not by_host:
-        return []
+    return sorted(by_host.items())
+
+
+def sleeves(model: Any) -> list[HandoffItem]:
+    """Cast-in block-outs, per pour host. The one item that cannot be fixed afterwards.
+
+    A sleeve through a FRAMED wall is not cast: it is a bore the trade carrying the run
+    sets and seals, so it is on that trade's visit (:func:`_wall_sleeves`), by host."""
     return [HandoffItem(
         id=f"sleeves:{host}",
         label=f"{len(found)} cast-in sleeve(s) placed and blocked in {host}",
@@ -80,7 +100,21 @@ def sleeves(model: Any) -> list[HandoffItem]:
         sheet_ref="S-100",
         derived=("model.sleeves, by host — each one is modelled with a position, so this "
                  "is a list of places and not only a count"))
-        for host, found in sorted(by_host.items())]
+        for host, found in _by_host([s for s in getattr(model, "sleeves", []) or []
+                                     if not _framed(s)])]
+
+
+def _wall_sleeves(model: Any, trade: str) -> list[HandoffItem]:
+    """Framed-wall sleeves and seals this trade sets, per wall."""
+    found = [s for s in getattr(model, "sleeves", []) or []
+             if _framed(s) and _wall_trade(s) == trade]
+    return [HandoffItem(
+        id=f"wall_sleeves:{host}",
+        label=f"{len(found)} sleeve(s) set and sealed through framed wall {host}",
+        count=len(found), element_tags=_tags(found), scope_tags=(host,),
+        derived=("model.sleeves hosted in a framed wall, by the trade whose run each one "
+                 "carries — a bore set with the run, never a pour item"))
+        for host, found in _by_host(found)]
 
 
 def dowels(model: Any) -> list[HandoffItem]:
@@ -288,6 +322,9 @@ def roof_penetrations_item(model: Any) -> list[HandoffItem]:
 
 _PROBES = {
     "sleeves": sleeves,
+    "wall_sleeves_plumbing": lambda model: _wall_sleeves(model, "plumbing"),
+    "wall_sleeves_mechanical": lambda model: _wall_sleeves(model, "mechanical"),
+    "wall_sleeves_electrical": lambda model: _wall_sleeves(model, "electrical"),
     "dowels": dowels,
     "mudsill_anchors": mudsill_anchors,
     "holdowns": holdowns,

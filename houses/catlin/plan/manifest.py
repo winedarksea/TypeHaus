@@ -44,7 +44,7 @@ from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, 
                   dining_types, door_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets, kitchen_front_types,
                   landscape, lighting, living_east_run, living_east_run_types,
                   living_puzzle_table_types,
-                  lighting_attic, lighting_types, masonry_joints, mep, mep_lavatories, millwork,
+                  lighting_attic, lighting_types, masonry_joints, mep, mep_lavatories, mep_supply_branches, millwork,
                   millwork_vanities, placeables,
                   plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
                   opening_products, products, smart_home, smart_home_types,
@@ -392,7 +392,7 @@ PLAN = (
          *foundations.HOUSE_FOOTINGS, *foundations.HOUSE_FOOTING_BEDDING, *earthwork.EXCAVATION,
          *foundations.VENEER_PLINTH, *foundations.VENEER_PLINTH_BEDDING,
          *masonry_joints.JOINTS,
-         *mep.BASEMENT_ELEMENTS, *mep_lavatories.BASEMENT_LAV_CONNECTIONS, *electrical.BASEMENT_ELEMENTS, *device_boxes.BOX_STANDARD, *drywall.DRYWALL_STANDARD,
+         *mep.BASEMENT_ELEMENTS, *mep_lavatories.BASEMENT_LAV_CONNECTIONS, *mep_supply_branches.BASEMENT_SUPPLY_BRANCHES, *electrical.BASEMENT_ELEMENTS, *device_boxes.BOX_STANDARD, *drywall.DRYWALL_STANDARD,
          *electrical_branches.BRANCH_PULL_BOXES, *electrical_branches.BRANCH_RACEWAYS,
          *electrical_branches.BRANCH_SLEEVES,
          *electrical_stair_ext.STAIR_BASEMENT,
@@ -412,7 +412,7 @@ PLAN = (
         # hydrant you reach from the porch still belongs to the wall it penetrates. Same for
         # `BALCONY_HYDRANT` on `second` (`W-S-S1`, `RM-S-PLANT`).
         [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *fixtures.PORCH_HYDRANT,
-         *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS, *mep_lavatories.MAIN_LAV_CONNECTIONS,
+         *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS, *mep_lavatories.MAIN_LAV_CONNECTIONS, *mep_supply_branches.MAIN_SUPPLY_BRANCHES,
          # The four wall corners where the north/south board & batten meets the east/west
          # PBR. Filed on `main` (the run starts below the main datum) though the module
          # that derives them is the roof eave's — it owns the cladding-face constant.

@@ -37,7 +37,7 @@ needs no decision.
 |---|---|---|
 | room | `RM-M-BATH2` | `RM-S-BATH1` |
 | room floor area | 64.9 ft² | 73.3 ft² |
-| heated zone polygon | **17.52 ft²** | **26.82 ft²** |
+| heated zone polygon | **17.52 ft²** | **27.03 ft²** |
 | fraction of floor heated | 27.0 % | 36.6 % |
 | cable SKU | Schluter DITRA-HEAT-E-HK **DHEHK12016** | **DHEHK12027** |
 | nameplate | 203 W, 1.7 A, 120 V, 16.0 ft² of coverage | 338 W, 2.8 A, 120 V, 26.7 ft² |
@@ -93,7 +93,7 @@ both rooms, which is the finding of §4.
 | | area term | watts term | binding | delivered |
 |---|---|---|---|---|
 | `FH-M-BATH2` | 17.52 × 22.8 = 399.5 | 203 × 3.412 = 692.6 | **area** | **399 Btu/h** |
-| `FH-S-BATH1` | 26.82 × 22.8 = 611.5 | 338 × 3.412 = 1,153.3 | **area** | **612 Btu/h** |
+| `FH-S-BATH1` | 27.03 × 22.8 = 616.3 | 338 × 3.412 = 1,153.3 | **area** | **616 Btu/h** |
 
 ## 3. What each room loses
 
@@ -124,6 +124,9 @@ interior, and three of its four walls bound conditioned space.
 named Drutex fixed unit: U 0.25 -> 0.15 over 2.333 ft², ΔUA −0.233 × 85 °F = −19.8 Btu/h.
 `FH-S-BATH1`'s 612 now covers it by 25.
 
+**\*\* 2026-10-31: 612 -> 616. \*\*** `FX-S-BATH1-WC` moved 1 3/4" west to the wall and its
+keepout followed, adding 0.24 ft² of heated floor (26.79 -> 27.03 ft² as resolved).
+
 **\*\* 2026-09-24: 567 -> 556 and 619 -> 606. \*\*** The room areas became finish-face
 areas, which shrinks the conditioned volume and each bath's share of the air-side terms; pass A is conduction
 through the same exterior wall and window and does not move.
@@ -153,7 +156,7 @@ only. Pass B adds the two air-side terms — blower-door infiltration and ERV ve
 | | delivered | load (engine) | margin | verdict |
 |---|---|---|---|---|
 | `RM-M-BATH2` | 399 Btu/h | 556 Btu/h | **−157 (28 % short)** | UNKNOWN |
-| `RM-S-BATH1` | 612 Btu/h | 606 Btu/h | **+5 (0.9 % over)** | PASS |
+| `RM-S-BATH1` | 616 Btu/h | 606 Btu/h | **+10 (1.7 % over)** | PASS |
 
 *(2026-09-24: the margin is +5 Btu/h on the finish-face loads above — the 2" standoff
 cost 11 Btu/h of delivery and the smaller volume took 13 off the load; the paragraph below

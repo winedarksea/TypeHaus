@@ -108,7 +108,8 @@ def test_hydrant_backflow_preventer_is_on_the_hydrant_branch_only(catlin_model_r
     floor = room_floor_elevation(catlin_model_ro, next(r for r in catlin_model_ro.rooms if r.tag == "RM-B-STAIR"))
     assert valve.pipe_ref == "PR-G-HYDRANT-CW"
     assert set(riser.serves) == {"FX-G-HYDRANT"}
-    assert valve.position == pytest.approx((132 * M_PER_IN, 426 * M_PER_IN))
+    # On the tee, 6" inboard of W-B-N2's concrete since 2026-10-31.
+    assert valve.position == pytest.approx((132 * M_PER_IN, 420 * M_PER_IN))
     assert (valve.z_m - floor) / M_PER_IN == pytest.approx(36)
     heights = pipe_elevations_at(riser, valve.position)
     assert min(heights) <= valve.z_m <= max(heights)

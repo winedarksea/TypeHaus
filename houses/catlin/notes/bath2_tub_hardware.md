@@ -43,6 +43,11 @@ The 4794 accepts the modeled 2¼ in. rough deck plus ½ in. finish, and includes
 PEX adapters for the house's PEX-A supply. Its 13 gpm at 45 psi is a valve rating, not an
 installed-flow prediction.
 
+Supplies (2026-10-31): `PR-B-FILLER-CW`/`-HW`, 1/2" PEX off the cold and hot trunks under the
+foot, rise inside the trim's footprint between `W-M-TUBDK-S` and the shell to the 4794's two
+inlets (hot on the bather's left, `FX-MOEN-ALIGN-ROMAN`'s ports; their depth is an allowance,
+the 4794 sheet gives none). Both name the tub, whose fixture-unit row is the filler's demand.
+
 ## Supports and service handoff
 
 Four towel-bar posts use three SPF 2×6 backing blocks, all flush with the bathroom stud

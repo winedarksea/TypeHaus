@@ -60,6 +60,11 @@ drop, east in its bay to the x=144 lane, south across the trusses, east onto the
 moved 1.781" north onto the Aquia IV's 12" rough-in, its `FX-TOTO-AQUIA-IV` DRAIN port, and
 the head rose 1/4" so the longer south leg still clears `DU-M-ERV-R-STUDY` at y=242.3).
 
+**`PR-M-S-BATH1-WC-DRAIN` (2026-10-31).** `FX-S-BATH1-WC` moved 1.78" west onto `W-S-W1`, so
+its flange is at x=18 1/2", the 12" rough-in. The closet bend now also offsets 1.78" east,
+back to x=20.278": on x=18 1/2" the south leg sat on `FS-S-WEST`'s 1'-5 1/2" truss web. Every
+invert and the downstream legs are unchanged.
+
 | leg | from → to | plan length | fall | slope |
 |---|---|---|---|---|
 | flange drop | (134.81, 252.406) 120.75 → 116.75 | 0 | 4.0" | vertical |

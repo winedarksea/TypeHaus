@@ -61,6 +61,16 @@ MOEN_ALIGN_ROMAN = FixtureType(
     plan_symbol="roman-tub-filler",
     basin=False,
     product_ref="PROD-MOEN-T393",
+    # The 4794 rough's two valve inlets, 1/2" PEX pointing down under the deck, on the hole
+    # line at the 10" handle centres; hot on the bather's left. The 4794 sheet gives no inlet
+    # depth, so z (5 1/4" under the trim base) is an allowance. Its demand is the bath's row.
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD}),
+    ports=tuple(ServicePort(tag=tag, service=service,
+                            position=(inch(x), inch(3.390625), inch(-5.25)),
+                            connection_size=inch(0.5), direction=(0, 0, -1),
+                            notes="4794 valve inlet allowance; no inlet depth published")
+                for tag, service, x in (("INLET-HOT", Service.WATER_HOT, -5.0),
+                                        ("INLET-COLD", Service.WATER_COLD, 5.0))),
     source="Moen t393sp.pdf Rev. 1/18, read 2026-10-22: 10 in. handle centres, "
            "7 29/32 in. overall reach, outlet centre 7 1/4 in. from hole, "
            "3 23/32 in. outlet underside, 6 13/32 in. overall height. "
