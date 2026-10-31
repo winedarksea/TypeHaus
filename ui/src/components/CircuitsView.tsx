@@ -28,9 +28,15 @@ function hours(value: number | null): string {
   return value === null ? "not computable" : `${value.toFixed(1)} h`;
 }
 
+function signed(value: number): string {
+  return `${value > 0 ? "+" : ""}${value}`;
+}
+
 function BackupRuntimeCard({ runtime }: { runtime: BackupRuntime }) {
   const autonomy = runtime.autonomy!;
   const cycle = runtime.cycle_48h!;
+  const winter = runtime.cycle_48h_winter;
+  const bridge = runtime.darkness_bridge;
   const peak = runtime.peak!;
   const unknown = [
     ...(runtime.tiers?.always_on.unknown_duty_cycle ?? []),
@@ -64,12 +70,30 @@ function BackupRuntimeCard({ runtime }: { runtime: BackupRuntime }) {
         <span>{hours(autonomy.hours_all_tiers)}</span>
         <span className="k">Autonomy, always-on only</span>
         <span>{hours(autonomy.hours_always_on_only)}</span>
-        <span className="k">48-hour cycle</span>
+        <span className="k">Inverter idle / efficiency</span>
+        <span>
+          {autonomy.inverter_idle_w === null ? "not declared" : `${autonomy.inverter_idle_w} W`}
+          {" / "}
+          {autonomy.inverter_efficiency === null
+            ? "not declared"
+            : `${Math.round(autonomy.inverter_efficiency * 100)}%`}
+        </span>
+        <span className="k">48-hour cycle, always-on</span>
         <span>
           {cycle.array_kw} kW array · {cycle.solar_day_kwh} kWh in vs
-          {" "}{cycle.two_day_load_kwh_all_tiers} kWh out ={" "}
-          {cycle.net_kwh_all_tiers > 0 ? "+" : ""}{cycle.net_kwh_all_tiers} kWh
+          {" "}{cycle.two_day_load_kwh_always_on} kWh out ={" "}
+          {signed(cycle.net_kwh_always_on)} kWh
+          {winter && <> · December {signed(winter.net_kwh_always_on)} kWh</>}
         </span>
+        {bridge && (
+          <>
+            <span className="k">Dark day + longest night</span>
+            <span>
+              needs {bridge.required_kwh} kWh over {bridge.bridge_hours.toFixed(1)} h,
+              {" "}has {bridge.usable_kwh}
+            </span>
+          </>
+        )}
         {unknown.length > 0 && (
           <>
             <span className="k">No authored duty cycle</span>

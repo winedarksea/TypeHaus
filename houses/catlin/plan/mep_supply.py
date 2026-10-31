@@ -621,7 +621,8 @@ SUPPLY = [
             wall_refs=(None, None, None, "W-M-CLN2", None, None, None, None, None, None, None,
                        None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
-    # The bathroom's 36" pocket occupies the east wall south of its opening. The cold branch
+    # The bathroom's 36" pocket occupies the east wall south of its opening. 3/4" since it
+    # also feeds FX-B-UTIL-SINK (4.25 WSFU, mep.pipe_sizing). The cold branch
     # leaves the tank's cold port at top elevation, turns south and west over the tank, then
     # rises at x=6'-6", y=26'-0" before following its existing ceiling route to the bathroom.
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
@@ -631,11 +632,11 @@ SUPPLY = [
                   pt(ft(6, 6), ft(26)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
                   pt(ft(7), ft(20, 3)), pt(ft(10), ft(20, 3)),
                   pt(ft(10), ft(19, 10)), pt(ft(10), ft(19, 10))),
-            diameter=inch(0.5), material="copper",
+            diameter=inch(0.75), material="copper",
             elevations=(inch(76.8125), inch(76.8125), inch(76.8125), ft(8, 4.6375),
                         ft(8, 4.6375), ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375),
                         ft(8, 6.6375), ft(2, 3.4375)),
-            serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
+            serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
             # It tees at the trunk's south turn, then runs west and south to the bath riser.
             # This stays below the ERV manifold and clear of its service lane.
@@ -645,7 +646,7 @@ SUPPLY = [
             diameter=inch(0.5), material="copper",
             elevations=(ft(7, 4), ft(7, 11.4375), ft(7, 11.4375), ft(7, 11.4375),
                         ft(7, 11.4375), ft(2, 3.4375)),
-            serves=("FX-B-BATH-LAV",)),
+            serves=("FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
     # Sauna shower mixer, the first supply this room ever had. Both legs tee off the existing
     # trunks and run south — cold down x=17'-4" (2" clear of W-B-CS2's face at 17'-6"), hot
     # down x=17'-3" beside it — through W-B-SA-N2's framed stud bay (no cast sleeve needed)

@@ -104,9 +104,8 @@ def test_the_work_list_is_clear(findings) -> None:
     said otherwise.
 
     TAKEN INTO A WALL: ``PR-B-CW-BATH2`` into ``W-M-HS1``, ``PR-B-CW-SUITE`` and
-    ``PR-B-HW-SUITE`` into ``W-S-SN3`` (via ``FS-S-WEST``'s truss webs), and
-    ``PR-B-ERV-COND``'s crossing into the bath inside ``W-B-STR2``'s cavity (2026-10-17;
-    across the bath floor it failed this check) on its way to ``FX-B-BATH-LAV``.
+    ``PR-B-HW-SUITE`` into ``W-S-SN3`` (via ``FS-S-WEST``'s truss webs). ``PR-B-ERV-COND``
+    no longer crosses into the bath at all: it ends over ``FX-B-UTIL-SINK`` (2026-10-30).
 
     DECLARED OPEN: ``DU-B-ERV-R-GYM`` and ``PR-B-COND``'s gym leg. A 3" duct under a
     ceiling can never make the 3" this check allows — its own radius spends half of it — so

@@ -141,8 +141,9 @@ MILLWORK = [
                                thickness=inch(0.75), board_width=inch(11.25)),
         excluded_rooms=("RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM"),
         # The under-stair storage door: a utility door, jamb and drywall only (owner,
-        # 2026-10-29), which also drops the head that ran into ST-B2M's stringer.
-        uncased_doors=("D-B-CLOSET",),
+        # 2026-10-29), which also drops the head that ran into ST-B2M's stringer. D-B-ESS's
+        # steel KD frame wraps the wall itself.
+        uncased_doors=("D-B-CLOSET", "D-B-ESS"),
     ),
 ]
 

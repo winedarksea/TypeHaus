@@ -75,18 +75,21 @@ def test_erv_condensate_stays_outside_the_dry_fire_lane(catlin_model_ro):
                for prism in next(e for e in run_envelopes(catlin_model_ro) if e.tag == condensate.tag).prisms)
 
 
-def test_erv_condensate_falls_to_the_bath_lavatory(catlin_model_ro):
+def test_erv_condensate_falls_to_the_utility_sink(catlin_model_ro):
     """No pump and no sump (owner, 2026-10-17): the line falls the whole way and ends over
-    FX-B-BATH-LAV's trap, above the weir."""
+    FX-B-UTIL-SINK's basin (2026-10-30), an air gap above its 34" rim and 43" faucet box."""
     import math
+
+    from shapely.geometry import Point, Polygon
 
     from typehaus.quantities import M_PER_IN
     from typehaus.resolve.room_floor import room_floor_elevation
 
     run = next(r for r in catlin_model_ro.pipe_runs if r.tag == "PR-B-ERV-COND")
-    assert run.path[-1] == pytest.approx((144 * M_PER_IN, 224.375 * M_PER_IN))
-    bath = next(r for r in catlin_model_ro.rooms if r.tag == "RM-B-BATH")
-    assert (run.z_m[-1] - room_floor_elevation(catlin_model_ro, bath)) / M_PER_IN == pytest.approx(38)
+    sink = next(o for o in catlin_model_ro.canvas_objects if o.tag == "FX-B-UTIL-SINK")
+    assert Polygon(sink.footprint).contains(Point(run.path[-1]))
+    room = next(r for r in catlin_model_ro.rooms if r.tag == "RM-B-FURNACE")
+    assert (run.z_m[-1] - room_floor_elevation(catlin_model_ro, room)) / M_PER_IN > 43
     for a, b, za, zb in zip(run.path, run.path[1:], run.z_m, run.z_m[1:]):
         run_ft = math.dist(a, b) / M_PER_IN / 12
         assert za - zb >= 0
@@ -262,7 +265,7 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     ``FX-KITCHEN-SINK-33`` had been loading the bathroom lavatory as a kitchen sink.
     Retyping it to the real 54" vanity took the house to its correct 48. This number
     going up by one without a fixture being added would mean that stand-in has crept
-    back somewhere."""
+    back somewhere. FX-B-UTIL-SINK (2026-10-30, a 2 DFU laundry tray) took it to 50."""
     from typehaus.resolve.mep import accumulated_serves, drain_tie_ins
     from typehaus.takeoff.plumbing_calc import branch_load, fixture_units
 
@@ -276,7 +279,7 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
         assert fx in main, fx
     load, unresolved = branch_load(main, units, "drain")
     assert not unresolved
-    assert load == 48.0
+    assert load == 50.0
     # Every drain run discharges somewhere except the building drain itself and the runs
     # that terminate at an air gap — the condensate lines and the water heater's TPR
     # relief discharge, which Minn. R. 4714.0608 (UPC 608.5) requires to end within 18" of the
@@ -284,8 +287,8 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     # to be piped into a drain at all. A new run silently missing its tie-in would show up
     # here as an extra terminal, understating every load downstream of it.
     #
-    # PR-B-ERV-COND ends over FX-B-BATH-LAV's trap (since 2026-10-17), not on a drain run,
-    # so it stays a terminal. PR-B-COND still air-gaps over FX-B-SAUNA-FD.
+    # PR-B-ERV-COND ends over FX-B-UTIL-SINK (since 2026-10-30), not on a drain run, so it
+    # stays a terminal. PR-B-COND still air-gaps over FX-B-SAUNA-FD.
     ties = drain_tie_ins(drains)
     terminals = {r.tag for r in drains} - set(ties)
     #

@@ -233,25 +233,25 @@ EQUIPMENT_TYPES = (
     # datasheet's 16 kW/0.5 s (12 kW/1 s, 10 kW/1 min) — 0.5 s is what a compressor start asks.
     # UL 9540 belongs to the battery, not here — marking the inverter would pass R327.2's
     # check on the strength of the wrong product.
+    # Idle/efficiency: the sheet's "<55 W standby" and 94% MAX — meter at commissioning.
     EquipmentType(tag="EQ-T-EG4-12KPV", name="EG4 12kPV hybrid inverter",
                   product_ref="PROD-EG4-12KPV",
                   footprint=(inch(27), inch(12)), height=inch(35),
                   inverter_kw_continuous=8.0, inverter_kw_surge=16.0, pv_input_kw=12.0,
+                  inverter_idle_w=55.0, inverter_efficiency=0.94,
                   ports=(ServicePort(tag="grid", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),
                          ServicePort(tag="load", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),),
-                  source="EG4 12kPV spec sheet, read 2026-08-02: 8,000 W continuous AC output (120/240V split phase), 12,000 W PV input over 2 MPPTs at 600 VDC max, 16 kW/0.5 s surge, UL 1741 + UL 9540 listed."),
-    # EG4 PowerPro WallMount Indoor, 14.3 kWh. One unit to start; R327.5's 40 kWh indoor
-    # aggregate ceiling is what a second (28.6 kWh) or third (42.9, fails) would answer to.
-    # `ul_9540_listed=True` is a declaration `code.R327_ess_listing` reports as-is — it never
-    # infers a listing from the name. The 3'-0" REQUIRED clearance is the owner's separation
-    # rule (plans/TODO.md), not a code working space — `advisory.ess_clearance` grades it,
-    # no CODE check does — authored as a band all around since it's about any neighbouring
-    # device, not front-face access.
-    EquipmentType(tag="EQ-T-ESS-BATT", name="EG4 PowerPro WallMount Indoor, 14.3 kWh",
+                  source="EG4 12kPV spec sheet v1.0.9 (eg4electronics.com, read 2026-10-31): 8,000 W continuous AC output (120/240V split phase), 12,000 W PV input over 2 MPPTs at 600 VDC max, 16 kW/0.5 s surge, idle consumption (standby) <55 W, battery-to-grid max efficiency 94%, UL 1741 SA/SB."),
+    # EG4 WallMount Indoor, 14.3 kWh; `advisory.ess_capacity`'s 40 kWh (2021 R328.5) caps a
+    # third. `ul_9540_listed` is declared, never inferred. The owner's 3'-0" zone is still
+    # drawn off the old 24x10 body, so the 18.1" cabinet gets 39" at its sides.
+    # Any later pack: on EG4's UL 9540 list for the 12kPV (or a 3rd-ed. DC ESS listing the
+    # AHJ accepts in writing), closed-loop CAN, own BMS contactor, a UL 9540A report.
+    EquipmentType(tag="EQ-T-ESS-BATT", name="EG4 WallMount Indoor 280Ah, 14.3 kWh",
                   product_ref="PROD-EG4-POWERPRO-WM",
-                  footprint=(inch(24), inch(10)), height=inch(43),
+                  footprint=(inch(18.125), inch(9.625)), height=inch(36.375),
                   storage_kwh=14.3, ul_9540_listed=True,
                   clearances=(ClearanceZone(
                       footprint=Footprint2D(points=(
@@ -262,7 +262,7 @@ EQUIPMENT_TYPES = (
                       source="owner rule, plans/TODO.md backup-power block"),),
                   ports=(ServicePort(tag="dc", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),),
-                  source="EG4 PowerPro WallMount Indoor 14.3 kWh (LFP), UL 9540 listed. Capacity is nameplate; the autonomy calc applies its own depth of discharge (takeoff/backup_calc.py)."),
+                  source="EG4 WallMount Indoor 280Ah product page (read 2026-10-31): 14.3 kWh LFP, 36.4 x 18.1 x 9.6 in (H x W x D), 282 lb, UL 1973 + UL 9540A; UL 9540 as a system with the 12kPV/18kPV/FlexBOSS21; closed-loop RS485 comms. Capacity is nameplate; the autonomy calc applies its own depth of discharge (takeoff/backup_calc.py)."),
 )
 
 # --- Ventilation: ERV fresh-air / stale-air trunks ------------------------------------

@@ -25,9 +25,9 @@ from typehaus.findings import Finding
 from typehaus.model.enums import EquipmentKind
 from typehaus.quantities import inch
 
-# The owner's enclosure standard: 5/8" Type X on the interior face of the closet, the same
-# membrane R302.6 asks for over a garage. Reuses ``fire_separation``'s reader so "is this
-# layer Type X" has one answer in the engine.
+# The owner's enclosure standard: 5/8" Type X on the closet's walls and lid (UL U305 wood
+# studs, Type X both faces), the same membrane R302.6 asks for over a garage. Reuses
+# ``fire_separation``'s reader so "is this layer Type X" has one answer in the engine.
 _MIN_TYPE_X_MEMBRANE = inch(0.625)
 
 
@@ -38,12 +38,25 @@ _MIN_TYPE_X_MEMBRANE = inch(0.625)
 _MASS_NONCOMBUSTIBLE_MATERIALS = frozenset({"concrete", "concrete-icf", "cmu"})
 
 
-def _is_mass_noncombustible(ctx: CheckContext, layer) -> bool:
-    from typehaus.model.enums import LayerFunction
+def _is_mass_noncombustible(layer) -> bool:
+    function = getattr(layer, "function", None)
+    return (getattr(function, "value", function) == "structure"
+            and getattr(layer, "material_ref", None) in _MASS_NONCOMBUSTIBLE_MATERIALS)
 
-    if getattr(layer, "function", None) is not LayerFunction.STRUCTURE:
-        return False
-    return getattr(layer, "material_ref", None) in _MASS_NONCOMBUSTIBLE_MATERIALS
+
+def _type_x_m(ctx: CheckContext, layers) -> float:
+    """Type X depth in a stack of resolved (``thickness_m``) or authored layers."""
+    from typehaus.checks.code.mn_residential.fire_separation import _gypsum_grade
+
+    total = 0.0
+    for layer in layers:
+        if _gypsum_grade(ctx, layer) != "type-x":
+            continue
+        thickness = getattr(layer, "thickness_m", None)
+        if thickness is None and getattr(layer, "thickness", None) is not None:
+            thickness = layer.thickness.meters
+        total += thickness or 0.0
+    return total
 
 
 def _panel_tags(ctx: CheckContext) -> set:
@@ -102,14 +115,15 @@ def _batteries(ctx: CheckContext) -> list:
 
 @check(Tier.ADVISORY, "advisory.ess_enclosure")
 def ess_enclosure(ctx: CheckContext) -> list[Finding]:
-    """The ESS closet's walls carry at least 5/8" Type X on the interior face.
+    """The ESS closet's walls and lid carry at least 5/8" Type X (the UL U305 build).
 
-    Measured off the assembly's own layers, through ``fire_separation._gypsum_grade`` — the
-    material states its gypsum grade, so a library that spells the product differently
-    still grades correctly. Walls bounding the ESS room are found from the room's resolved
-    face, not by tag prefix: a wall counts when most of its own length runs along the
-    room's boundary, which keeps out the wall that merely touches a corner from the far
-    side of a partition.
+    Measured off each wall's RESOLVED layers, so a ``layer_materials`` swap to Type X counts,
+    and off the room's resolved ceiling stack. The grade comes from
+    ``fire_separation._gypsum_grade`` — the material states it, so a library that spells the
+    product differently still grades correctly. Walls bounding the ESS room are found from
+    the room's resolved face, not by tag prefix: a wall counts when most of its own length
+    runs along the room's boundary, which keeps out the wall that merely touches a corner
+    from the far side of a partition.
 
     A wall of solid non-combustible mass passes outright. The owner's rule is about what
     the enclosure is made of, and 12" of concrete is not improved by gypsum: demanding a
@@ -118,17 +132,11 @@ def ess_enclosure(ctx: CheckContext) -> list[Finding]:
     """
     from shapely.geometry import LineString, Polygon
 
-    from typehaus.checks.code.mn_residential.fire_separation import _gypsum_grade
-
     cid = "advisory.ess_enclosure"
     batteries = _batteries(ctx)
     if not batteries:
         return [_na(cid, _NO_ESS)]
     rooms = {room.tag: room for room in ctx.model.rooms}
-    # RESOLVED, not authored: a variant's own ``layers`` is empty and its stack lives on
-    # its base (#35), so a raw lookup reads it as no wall at all.
-    assemblies = {a.tag: ctx.plan.library.resolve_assembly(a.tag)
-                  for a in ctx.plan.library.assemblies}
 
     out: list[Finding] = []
     for room_tag in sorted({getattr(b, "room", None) for b in batteries} - {None}):
@@ -154,29 +162,32 @@ def ess_enclosure(ctx: CheckContext) -> list[Finding]:
             continue
         thin = []
         for wall in bounding:
-            assembly = assemblies.get(wall.assembly)
-            if assembly is None:
+            if any(_is_mass_noncombustible(layer) for layer in wall.layers):
                 continue
-            layers = tuple(assembly.layers) + tuple(assembly.default_lining)
-            if any(_is_mass_noncombustible(ctx, layer) for layer in layers):
-                continue
-            type_x = sum(layer.thickness.meters for layer in layers
-                         if _gypsum_grade(ctx, layer) == "type-x"
-                         and layer.thickness is not None)
+            type_x = _type_x_m(ctx, wall.layers)
             if type_x + 1e-9 < _MIN_TYPE_X_MEMBRANE.meters:
                 thin.append((wall.tag, type_x))
+        # The lid: every resolved ceiling region of the room. No ceiling is a missing lid.
+        ceilings = [c for c in ctx.model.ceilings if c.room_ref == room_tag]
+        if not ceilings:
+            thin.append(("ceiling", 0.0))
+        for ceiling in ceilings:
+            type_x = _type_x_m(ctx, ceiling.layers)
+            if type_x + 1e-9 < _MIN_TYPE_X_MEMBRANE.meters:
+                thin.append((ceiling.tag, type_x))
         if thin:
             out.append(advisory_fail(
                 cid, f"ESS room {room_tag} is enclosed by "
                      + ", ".join(f"{tag} ({value / .0254:.2f}\" Type X)"
                                  for tag, value in sorted(thin))
                      + f"; the owner's ESS closet standard is "
-                       f"{_MIN_TYPE_X_MEMBRANE.inches:.3g}\" Type X on the interior face",
+                       f"{_MIN_TYPE_X_MEMBRANE.inches:.3g}\" Type X on walls and lid",
                 tuple([str(room_tag)] + [tag for tag, _ in sorted(thin)])))
         else:
             out.append(_pass(
-                cid, f"all {len(bounding)} walls bounding ESS room {room_tag} carry at "
-                     f"least {_MIN_TYPE_X_MEMBRANE.inches:.3g}\" Type X", (str(room_tag),)))
+                cid, f"all {len(bounding)} walls bounding ESS room {room_tag} and its "
+                     f"ceiling carry at least {_MIN_TYPE_X_MEMBRANE.inches:.3g}\" Type X "
+                     "(or are mass concrete)", (str(room_tag),)))
     return out
 
 

@@ -3278,6 +3278,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # Add $30-100 support/sealant allowance, rounded; no faucet or drain kit in this material.
 "FX-KITCHEN-SINK-32-SINGLE" = { material = { low = 400, high = 470 }, labour = { low = 250, high = 600 } }  # 1 ea
 "FX-LAUNDRY-SINK-24" = { material = { low = 130, high = 450 }, labour = { low = 120, high = 290 } }  # 1 ea
+# 2026-10-30: the same QL033Y in the furnace room (FX-B-UTIL-SINK); its trap arm, stops and
+# vacuum breaker bill in their own rows, so this is the laundry tub's band.
+"FX-UTILITY-SINK-24" = { material = { low = 130, high = 450 }, labour = { low = 120, high = 290 } }  # 1 ea
 # Read as the lavatory AND its vanity: no CASE-* row covers the bathrooms, so if this were
 # the bowl alone the vanities would be missing from the estimate entirely.
 # ** ZERO INSTANCES SINCE 2026-08-30, AND THE ROW STAYS. ** All five FX-LAV-24 lavatories
@@ -5670,7 +5673,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # high is solid-core MDF prehung ($519 Masonite 5-panel, $548 Stile 7-lite).
 # ** THE SAME MINIMUM-SIZE FLOOR APPLIES: a 24" door is barely cheaper than a 30". **
 # 2026-10-29: prehung hang labour $115-240 = 1.5-3 h at $60-85; casing is in [interior_trim], hardware in finish-door-hardware.
-"DT-INT-SWING24" = { material = { low = 145, high = 480 }, labour = { low = 115, high = 240 } }  # 3 ea (D-A-STUBATH joined 2026-09-09) — was 26% low at the top for exactly the floor reason
+"DT-INT-SWING24" = { material = { low = 145, high = 480 }, labour = { low = 115, high = 240 } }  # 2 ea (D-A-STUBATH joined 2026-09-09; D-B-ESS went steel 2026-10-30) — was 26% low at the top for exactly the floor reason
 # 24x36, RM-A-POCKET's ERV service access under the attic's 6:12 west rake (2026-08-29). The
 # ONE place the minimum-size floor above does NOT apply: this is not a prehung passage door in
 # a smaller leaf, it is an access panel with hinges and a knob — a flush hollow-core blank cut
@@ -5684,6 +5687,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # it loses in height (a 6'-0" leaf is a stock size at most millwork suppliers, so there is
 # no special-order adder) and the labour does not move — hanging a door is hanging a door.
 "DT-INT-CLOSET24" = { material = { low = 125, high = 410 }, labour = { low = 115, high = 240 } }  # 1 ea
+# 2026-10-30, D-B-ESS: a 24x80 hollow-metal leaf, KD steel frame, small tempered lite, spring
+# hinges. Estimate, no quote: stock is 32" and up, so 24" is a distributor special order.
+"DT-INT-STEEL24-LITE" = { material = { low = 450, high = 1100 }, labour = { low = 150, high = 320 } }  # 1 ea
 "DT-INT-SWING30" = { material = { low = 150, high = 520 }, labour = { low = 115, high = 240 } }  # 7 ea — high end is solid-core paint-grade. Was "11 ea" until 2026-09-12: the 2026-09-09 note that D-A-STUBATH left was right, but the count never followed it. Read off `haus takeoff`, which splits this type across three rows (4+3+1) by host assembly
 "DT-INT-SWING32" = { material = { low = 155, high = 540 }, labour = { low = 115, high = 240 } }  # 6 ea — was 7 until D-B-FURN widened to 36" and D-B-GYM took the glazed 32" (2026-09-07); the "9 ea" this line carried was already two stale
 # 2026-09-07, the basement equipment route: D-B-FURN widened and D-B-SHOP is new. Bracketed off
@@ -6223,10 +6229,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # $ each, by device kind
 "backflow_preventer" = { material = { low = 60, high = 300 }, labour = { low = 25, high = 70 } }  # 2 ea
 "main_shutoff" = { material = { low = 25, high = 70 }, labour = { low = 25, high = 70 } }  # 1 ea
-"penetration_seal" = { material = { low = 25, high = 90 }, labour = { low = 25, high = 70 } }  # 2 ea
+"penetration_seal" = { material = { low = 25, high = 90 }, labour = { low = 25, high = 70 } }  # 4 ea (PA-B-ESS-SEAL-W/-E joined 2026-10-30)
 "ro_stub" = { material = { low = 15, high = 45 }, labour = { low = 25, high = 70 } }  # 3 ea
 "shutoff" = { material = { low = 8, high = 25 }, labour = { low = 25, high = 70 } }  # 4 ea
-"vacuum_breaker" = { material = { low = 10, high = 35 }, labour = { low = 25, high = 70 } }  # 1 ea
+"vacuum_breaker" = { material = { low = 10, high = 35 }, labour = { low = 25, high = 70 } }  # 2 ea (PA-B-USINK-VB joined 2026-10-30; Woodford 34HD ~$32)
 "water_hammer_arrestor" = { material = { low = 12, high = 35 }, labour = { low = 25, high = 70 } }  # 3 ea
 
 [install_parts]

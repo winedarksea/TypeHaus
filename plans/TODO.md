@@ -112,13 +112,10 @@ suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted a
   as feasible. Request incremental installed pricing and site-specific production estimates.
   [MN DLI solar guidance](https://www.dli.mn.gov/sites/default/files/pdf/fs_res_solar.pdf).
 
-- **Include inverter overhead in backup runtime.** `takeoff/backup_calc.py` applies usable
-  battery capacity directly to circuit-average AC watts; it does not model inverter idle
-  draw or conversion loss. Measure the EG4's grid-connected and islanded overhead and
-  low-load efficiency, then update runtime without double-counting losses. This matters
-  against the always-on tier's small average load and should inform commissioning and any
-  later battery decision; peak-capacity checking remains separate. See
-  `houses/catlin/notes/backup_power.md` for current assumptions and verdict.
+- **Meter the EG4's real overhead.** `takeoff/backup_calc.py` now counts the 12kPV's
+  datasheet idle (<55 W standby) and 94% maximum efficiency; both flatter a ~400 W outage
+  load. Measure islanded idle and low-load efficiency at commissioning, with the backup duty
+  cycles, and re-author them. See `houses/catlin/notes/backup_power.md` §6.
 
 - **Resolve the dining radiant floor's operating schedule.** The 58 ft², 700 W
   `FH-M-DINING` zone supplements heat-pump space heating. `houses/catlin/notes/room_heat_loss_baths.md`
@@ -299,8 +296,7 @@ the future.
   - Pair one Gree head (Sys 2/3) with HA's `gree` integration first: GCM-encrypted firmware may not pair (fallback is the RS485 wired controller).
   - Bench one Aqara W200 on EQ-S-HP1-AH: aux staging and what HA actually exposes.
   - Sense Pro trim: Century is bundle-only. Match the 622 escutcheon to the Latitude lever.
-- We likely won't be getting a home backup battery when we first power the house (too expensive alongside everything else) but we will have solar and we want it easy to add a battery (possibly using an EV as the backup battery, that is becoming more common, but ideally specified in a way that might work with various brands of car in the future, not just one short term supported product). Separately, home assistant (likely hardwired LAN into the main router) and the router are probably on a smaller more standard computer backup battery. With all of these things, our main goal is being able to make sure the batteries never start on fire, and if they do start on fire, that the fire is contained in a manageable area.
-- Possibly the ESS closet can just be wood studs (metal studs seeming silly as an extra spec for just a small amount) with a Fire-Retardant Spray over the studs.
+- Backup battery, still open (`houses/catlin/notes/backup_power.md` §10-§12): EG4's UL 9540 certificate naming 12kPV + WallMount Indoor; whether the 12kPV's load port backs up from PV alone with no battery (ask EG4); declare future storage on the Xcel application; DSI's position on a UL 9540 3rd-ed. DC ESS battery; a freeze drain-down plan; a small LFP UPS for Home Assistant, the router and the leak valve. Model the V2H rough-in — a 1 1/2" spare and a 1" data conduit panel-to-garage beside `CD-B-GARAGE`, a reserved 2-pole space, wall room by the meter — as its own routing pass. The one-battery always-on tier is a ~28 h countdown, not a steady state (§6): decide between more array, a second battery, or a leaner always-on tier.
 - Let's make sure all the charcoal gray and black details of the house exterior (various metal trim, window frames, foundation insulation cover) show real manufacturer colors. We are using this to determine if we should switch all to more gray or more black.
 - One of the things we've found with 3d printing is that getting a proper solid is hard. Are there any 3d printing tools for creating 'manifold solid' that might be clear value to bring in here, checking that things work together? We could even do real world 3d prints if that helps, but note that we would generally want to avoid the effort and plastic waste for that, since digital modeling should cover most things just as well.
 - Lighting review

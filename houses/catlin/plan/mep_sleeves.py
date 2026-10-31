@@ -64,6 +64,11 @@ SLAB_STUBS = [
     SleevePenetration(uid="CBP904AAAA", tag="SP-B-BATH-LAV", host_ref="SL-B-FLOOR",
                       position=pt(ft(12), inch(224.375)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-B-BATH-LAV"),
+    # FX-B-UTIL-SINK's drop, inside W-B-STR2 under the vent tee (mep_lavatories.py).
+    SleevePenetration(uid="RF0AQ0KDPT", tag="SP-B-SLAB-USINK", host_ref="SL-B-FLOOR",
+                      position=pt(inch(120), inch(229.5)), pipe_diameter=inch(1.5),
+                      sleeve_diameter=inch(2), serves_fixture="FX-B-UTIL-SINK",
+                      seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
     # The sauna's two. The pan's is under the centre of the 36" x 36" curbed shower; the floor
     # drain's is the drain body itself, which is why its position and the fixture's are the
     # same point with no `drain_position` override on either.

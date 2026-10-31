@@ -41,6 +41,12 @@ BASEMENT_CLEANOUTS = [
                   cap_position=pt(ft(12, 0), ft(18, 2)), cap_elevation=inch(98.04),
                   access="wall", wall_ref="W-B-CW2",
                   clear_width=inch(18), clear_depth=inch(18)),
+    # FX-B-UTIL-SINK's line is a sink line (707.4): a cleanout tee on the trap arm at the
+    # W-B-STR2 face, reached through the tub's cabinet.
+    DrainCleanout(uid="NY556FY4H7", tag="CO-B-USINK", pipe_ref="PR-B-USINK-DRAIN",
+                  position=pt(inch(117.5), inch(229.5)), fitting_elevation=inch(15.9375),
+                  cap_position=pt(inch(115.5), inch(229.5)), cap_elevation=inch(18),
+                  access="cabinet", clear_width=inch(18), clear_depth=inch(18)),
     # Buried branches use flush caps in the basement slab, away from their fixture drops.
     DrainCleanout(uid="COB0000006", tag="CO-B-BATH", pipe_ref="PR-B-BATH-DRAIN",
                   position=pt(ft(12), ft(21, 6)), fitting_elevation=inch(-9.258854),

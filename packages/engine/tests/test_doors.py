@@ -117,6 +117,8 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
         # arriving flight's rake admits at its far jamb. A finished door, not a hatch —
         # ACCESS24 above is the service opening, this one has casing and a passage set.
         "DT-INT-CLOSET24": (24.0, DoorOperation.SWING, False, False),
+        # D-B-ESS (2026-10-30): unrated steel leaf with a small tempered vision lite.
+        "DT-INT-STEEL24-LITE": (24.0, DoorOperation.SWING, False, True),
     }
     # The house catalog is its own types plus the ONE library pocket size it hangs —
     # DT-POCKET-INT-36, shared by D-M-LAUN and D-B-BATH. It is not the whole pocket

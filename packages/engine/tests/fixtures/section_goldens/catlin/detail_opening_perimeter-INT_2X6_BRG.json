@@ -1,5 +1,5 @@
 {
-  "name": "detail-D-opening_perimeter-INT_ESS_CLOSET_STEEL_6",
+  "name": "detail-D-opening_perimeter-INT_2X6_BRG",
   "units": "in",
   "nodes": [
     {
@@ -28,7 +28,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW124AAAA",
-      "tag": "W-B-ESS-W/gwb-x-a"
+      "tag": "W-B-ESS-W/gwb-a"
     },
     {
       "space": "model",
@@ -85,7 +85,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW124AAAA",
-      "tag": "W-B-ESS-W/steel-stud"
+      "tag": "W-B-ESS-W/stud"
     },
     {
       "space": "model",
@@ -108,13 +108,12 @@
           -13.437499999999996
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "steel-stud",
-      "fill": "#91979d"
+      "material": "spf"
     },
     {
       "space": "model",
@@ -142,7 +141,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW124AAAA",
-      "tag": "W-B-ESS-W/gwb-x-b"
+      "tag": "W-B-ESS-W/gwb-b"
     },
     {
       "space": "model",
@@ -551,11 +550,11 @@
       "points": [
         [
           75.375,
-          -12.5
+          -16.625
         ],
         [
           85.21751968503938,
-          -12.5
+          -16.625
         ],
         [
           85.21751968503938,
@@ -579,11 +578,11 @@
       "boundary": [
         [
           75.375,
-          -12.5
+          -16.625
         ],
         [
           85.21751968503938,
-          -12.5
+          -16.625
         ],
         [
           85.21751968503938,
@@ -594,68 +593,13 @@
           -11.875
         ]
       ],
-      "pattern": "gwb",
+      "pattern": "gwb-x",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          58.78248031496064,
-          -11.875
-        ],
-        [
-          85.21751968503938,
-          -11.875
-        ],
-        [
-          85.21751968503938,
-          -10.209153543307078
-        ],
-        [
-          58.78248031496064,
-          -10.209153543307078
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMFS03AAAA",
-      "tag": "trimmer-FO-M-ERV-OA-0-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          58.78248031496064,
-          -11.875
-        ],
-        [
-          85.21751968503938,
-          -11.875
-        ],
-        [
-          85.21751968503938,
-          -10.209153543307078
-        ],
-        [
-          58.78248031496064,
-          -10.209153543307078
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
+      "material": "gwb-x",
+      "fill": "#efeae2"
     },
     {
       "space": "model",
@@ -844,7 +788,7 @@
         68.9375,
         -12.842486876640411
       ],
-      "text": "gwb-x-b 0.625\"",
+      "text": "gwb-b 0.625\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -869,7 +813,7 @@
         72.0,
         -16.63415354330708
       ],
-      "text": "steel-stud 5.5\"",
+      "text": "stud 5.5\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -894,7 +838,7 @@
         75.0625,
         -20.425820209973747
       ],
-      "text": "gwb-x-a 0.625\"",
+      "text": "gwb-a 0.625\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -992,7 +936,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-524",
+      "content": "SHEET A-519",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -1127,13 +1071,12 @@
           1.298
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "steel-stud",
-      "fill": "#91979d"
+      "material": "spf"
     },
     {
       "space": "paper",
@@ -1170,7 +1113,7 @@
         0.7,
         1.228
       ],
-      "content": "steel-stud  5.5\"",
+      "content": "spf  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

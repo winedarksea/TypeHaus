@@ -182,31 +182,10 @@ ACCENT_GWB_LINING = (
 # interior partition has no specified thermal or rated acoustic requirement for it.
 
 # --- energy storage closet -------------------------------------------------------
-# The ESS closet's partitions (notes/backup_power.md), an owner decision not a
-# code requirement (IRC R327 permits an ESS in an ordinary utility closet; that's why
-# `advisory.ess_enclosure`, not the code check, grades it): steel studs (no combustible
-# framing around the 14 kWh lithium pack), 5/8" Type X both faces (R302.6-style fire
-# membrane, both directions — the fire may start *inside* this closet). No cavity fill on
-# purpose: heat should reach AL-B-ESS-HEAT outside, not be insulated away from it.
-# The "INT" tag token is load-bearing: `mn_energy._is_interior_assembly` and the IFC
-# emitter's IsExternal both key off it to keep this out of the R-21 exterior-wall table.
-
-# The same closet standard on a 6 in. C-stud, for W-B-ESS-W — the one ESS partition a pipe
-# crosses. PR-B-SAUNA-VENT's 2" vent (2 3/8" outside) passes king-0-l0 beside D-B-ESS, and
-# a 3 1/2" web has nowhere to put that hole under EITHER rule: IRC R602.6 allows 2.10" and
-# cold-formed steel's own R603.2.5 allows half the web depth, 1.75". A 6" web allows 3.00"
-# under R603.2.5, and R602.6's 2x6 row (which is what `mep.run_through_stud` actually reads,
-# since it grades by member size and not by material) allows 3.30".
-#
-# ** STEEL, STILL. ** The point of this closet is no combustible framing around a 14 kWh
-# lithium pack and 5/8" Type X both faces; a variant keeps both and changes only the web.
-# Retyping to wood would have thrown the standard away to clear a bore, and would also have
-# made this a mixed-material junction against W-B-ESS-S — the `integrity.junction_fallback`
-# trap W-B-CW3 was re-specified as a wood wet wall to avoid (see plan/storeys/basement.py).
-#
-# W-B-ESS-S stays 3 1/2": nothing bores it. Only the plates are crossed, and
-# `mep.run_through_plate` is suppressed house-wide for a reason `preferences.toml` states
-# (no PlateTie vocabulary), not for anything this retype could fix.
+# No closet assembly of its own since 2026-10-30: W-B-ESS-S/-W are the library's
+# INT_2X4_PARTITION / INT_2X6_BRG with both gwb layers swapped to `gwb-x` — UL U305 wood
+# studs, 5/8" Type X both faces (notes/backup_power.md §3). Steel studs were declined. The
+# library keeps INT_ESS_CLOSET_STEEL(_6) as the named revert.
 
 # --- sauna ---------------------------------------------------------------------
 # The hot side of a sauna is its own wall type, not a lining override on a partition:
@@ -425,7 +404,7 @@ STAIRWALL_INT_2X6_BRG_UNDERSTAIR = Assembly(
 
 # The same wall where it forms RM-B-ESS's west side: one 5/8" Type X leaf ADDED on the
 # closet face, which is what `advisory.ess_enclosure` sums for now that the mass of 12" of
-# concrete is no longer there to satisfy it. Same `gwb-x` material as INT_ESS_CLOSET_STEEL.
+# concrete is no longer there to satisfy it. Same `gwb-x` material as the ESS closet walls.
 # `inside_of("stud")` on a stack whose first layer IS the stud is a pure insert: nothing is
 # replaced, the plywood face is untouched.
 STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(

@@ -111,7 +111,8 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
     result = runner.invoke(app, ["route", str(_CATLIN),
                                  "--tree", "PR-B-BATH-DRAIN", "--explain"])
     assert result.exit_code == 0, result.output
-    assert '2 branch sizes (3", 1.25")' in result.output
+    # 1 1/2" is FX-B-UTIL-SINK's arm (2026-10-30).
+    assert '3 branch sizes (3", 1.5", 1.25")' in result.output
     assert "FX-B-BATH-WC-PROPOSED" in result.output
     assert "diameter=inch(3)" in result.output
     assert 'FX-B-BATH-LAV: short' in result.output

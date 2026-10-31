@@ -6,6 +6,8 @@ and a mark only becomes a product here.
 
 from __future__ import annotations
 
+import textwrap
+
 from typehaus.emit.draw.schedules.tables import _add_table, _number
 from typehaus.emit.draw.sheet_writer import PORTRAIT_LEDGER, schedule_sheet, section
 from typehaus.resolve.model import ResolvedModel
@@ -83,11 +85,13 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
         runtime = backup_runtime_summary(model)
         if runtime.get("modeled"):
             autonomy = runtime["autonomy"]
-            cycle = runtime["cycle_48h"]
+            summer, winter = runtime["cycle_48h"], runtime["cycle_48h_winter"]
+            bridge = runtime["darkness_bridge"]
             peak = runtime["peak"]
             # Beside the service load, not under the component list: the two bottom blocks
             # were overrunning each other, and this half of the sheet is otherwise empty.
             section(fig, 0.62, 0.38, "BACKUP RUNTIME — ESTIMATE, NOT A GUARANTEE")
+            idle, efficiency = autonomy["inverter_idle_w"], autonomy["inverter_efficiency"]
             runtime_rows = [
                 ("Usable storage",
                  f"{autonomy['usable_kwh']:g} kWh of {autonomy['nameplate_kwh']:g} "
@@ -96,18 +100,23 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
                  f"{peak['simultaneous_va']:,.0f} VA vs "
                  + (f"{peak['inverter_kw_continuous']:g} kW cont."
                     if peak["inverter_kw_continuous"] is not None else "no rating")),
-                ("Autonomy, both tiers", _hours_label(autonomy["hours_all_tiers"])),
-                ("Autonomy, always-on only", _hours_label(autonomy["hours_always_on_only"])),
-                (f"48h cycle ({cycle['array_kw']:g} kW array)",
-                 f"{cycle['solar_day_kwh']:g} kWh in vs "
-                 f"{cycle['two_day_load_kwh_all_tiers']:g} kWh out "
-                 f"= {cycle['net_kwh_all_tiers']:+g} kWh"),
+                ("Inverter idle / efficiency",
+                 (f"{idle:g} W" if idle is not None else "not declared") + " / "
+                 + (f"{efficiency:.0%}" if efficiency is not None else "not declared")),
+                ("Autonomy, always-on / both",
+                 f"{_hours_label(autonomy['hours_always_on_only'])} / "
+                 f"{_hours_label(autonomy['hours_all_tiers'])}"),
+                (f"48h always-on, {summer['array_kw']:g} kW (summer / Dec)",
+                 f"{summer['net_kwh_always_on']:+g} / {winter['net_kwh_always_on']:+g} kWh"),
+                (f"Dark day + {bridge['longest_night_h']:.1f} h night",
+                 f"needs {bridge['required_kwh']:g} kWh, has {bridge['usable_kwh']:g}"),
             ]
-            _add_table(fig, runtime_rows, ("Line", "Value"), bbox=(0.62, 0.24, 0.34, 0.12))
+            _add_table(fig, runtime_rows, ("Line", "Value"), bbox=(0.62, 0.225, 0.34, 0.14))
             # The verdict is a sentence, not a cell — it wraps as text under the table rather
             # than running off the right edge of a column sized for numbers.
-            fig.text(0.62, 0.225, f"Verdict: {runtime['verdict']}", fontsize=7,
-                     family="monospace", wrap=True, va="top")
+            # Wrapped by hand: matplotlib's wrap runs to the figure edge, not the column.
+            verdict = textwrap.fill(f"Verdict: {runtime['verdict']}", 82)
+            fig.text(0.62, 0.21, verdict, fontsize=7, family="monospace", va="top")
 
 
 def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:

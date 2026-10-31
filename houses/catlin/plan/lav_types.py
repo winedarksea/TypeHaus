@@ -109,9 +109,9 @@ LAUNDRY_TUB = FixtureType(
     product_ref="PROD-GLACIER-BAY-QL033Y",
     parts=(ProductPart(role="faucet", product_ref="PROD-GLACIER-BAY-QL033Y-FAUCET"),),
     source="Owner selection 2026-10-24: Glacier Bay QL033Y, Home Depot #206057007 (spec sheet "
-           "not retrieved). Bundled flex-neck faucet; its hose adapter is not used, so no "
-           "hose-bibb tee is carried on the cold. No rough-in published: the ports are the "
-           "house's stations (floor sleeve, W-M-CLN stubs at 20 in.) and stay approximate.",
+           "not retrieved). Bundled flex-neck faucet with sprayer and garden-hose adapter. "
+           "No rough-in published: the ports are the house's stations (floor sleeve, W-M-CLN "
+           "stubs at 20 in.) and stay approximate.",
     ports=tuple(ServicePort(tag=tag, service=service, position=(inch(x), inch(y), inch(z)),
                             connection_size=inch(size), direction=direction,
                             notes="House station; the QL033Y spec sheet is not retrieved")
@@ -120,5 +120,19 @@ LAUNDRY_TUB = FixtureType(
                     ("supply-hot", Service.WATER_HOT, -0.4476, 14.0709, 19.0532, 0.5, (0, 1, 0)),
                     ("supply-cold", Service.WATER_COLD, 4.0524, 14.0709, 19.0532, 0.5, (0, 1, 0)))),
 )
+# The same tub on a slab (FX-B-UTIL-SINK, 2026-10-30): a slab has no floor sleeve to drop a
+# trap through, so the trap sits in the cabinet and its arm runs back into the wet wall,
+# where the vent tees in before the drop. Local +y is the back. Stubs at 20 in., as above.
+UTILITY_TUB = LAUNDRY_TUB.model_copy(update={
+    "tag": "FX-UTILITY-SINK-24",
+    "name": "Glacier Bay QL033Y utility tub, wall trap arm (slab-on-grade)",
+    "ports": tuple(ServicePort(tag=tag, service=service, position=(inch(x), inch(y), inch(z)),
+                               connection_size=inch(size), direction=direction,
+                               notes="House station; the QL033Y spec sheet is not retrieved")
+                   for tag, service, x, y, z, size, direction in (
+                       ("drain", Service.DRAIN, 3.5, 8.5, 16, 1.5, (0, 1, 0)),
+                       ("supply-hot", Service.WATER_HOT, 0.5, 10, 20, 0.5, (0, 1, 0)),
+                       ("supply-cold", Service.WATER_COLD, -5, 10, 20, 0.5, (0, 1, 0)))),
+})
 LAV_TYPES = (ANGSJON_36, ANGSJON_36_SS, SEKTION_30, SEKTION_24_SS, CHULTON_30,
-             SUNNERSTA_BAR_SINK, LAUNDRY_TUB)
+             SUNNERSTA_BAR_SINK, LAUNDRY_TUB, UTILITY_TUB)

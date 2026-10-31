@@ -158,8 +158,8 @@ EG4_12KPV = Product(
            "notes/smart_home.md.",
 )
 EG4_POWERPRO_WALLMOUNT = Product(
-    tag="PROD-EG4-POWERPRO-WM", brand="EG4", model="PowerPro WallMount Indoor",
-    name="PowerPro WallMount Indoor 14.3 kWh LFP battery",
+    tag="PROD-EG4-POWERPRO-WM", brand="EG4", model="WallMount Indoor 280Ah",
+    name="WallMount Indoor 280Ah 14.3 kWh LFP battery",
     source="EG4 product literature — UL 9540 listing declared on EQ-T-ESS-BATT, which is "
            "where a check reads it.",
 )

@@ -6,6 +6,8 @@ applied_to:
   - equipment: EQ-B-ESS-INV
   - device: ED-B-BACKUP-PANEL
   - device: ED-B-BACKUP-ENCL
+  - door: D-B-ESS
+  - fixture: FX-B-UTIL-SINK
 tags:
   - electrical
   - energy-storage
@@ -15,174 +17,301 @@ tags:
 source:
   - plan/circuits.py
   - plan/electrical.py
-  - plan/mep.py
+  - plan/mep_hvac.py
   - plan/storeys/basement.py
-  - plan/assemblies.py
+  - plan/door_types.py
+  - plan/mep_lavatories.py
+  - plan/mep_drainage.py
   - params/solar.py
 ---
 
 # Notes
 
-The backup power system is a real microgrid: an EG4 12kPV hybrid inverter, one 14.3 kWh
-battery in its own closet, the rooftop array landing on the inverter instead of backfeeding
-on its own, and a subpanel that stays live when the grid does not.
+The backup system is an EG4 12kPV hybrid inverter, one 14.3 kWh EG4 WallMount Indoor
+battery in its own Type X closet, the rooftop array landing on the inverter's MPPTs, and a
+subpanel (`ED-B-BACKUP-PANEL`) on the inverter's load port that stays live when the grid
+does not. The battery may be deferred; everything below is written so that adding it later,
+or a different battery, or a car, is a swap and not a redesign.
 
-## The topology, and why it is a subpanel
+## 1. The inverter decision (owner, 2026-10-30)
 
-The 12kPV's grid port lands on a 50A 2-pole breaker in ED-B-PANEL (`CKT-ESS-GRID`, slot 40 —
-the position the old `CKT-PV` backfeed already held, at the opposite end of the bus from the
-main). Its *dedicated load output* feeds a new 12-space subpanel, `ED-B-BACKUP-PANEL`, and
-the six backup circuits moved off the main panel onto it.
+**Keep the EG4 12kPV.** It is a grid-tied hybrid with UL 1741 SA/SB, so it keeps net
+metering, and it runs with or without a battery. Rejected:
 
-That move is the design, not bookkeeping. A hybrid inverter's load port is physically a
-separate bus that stays energized through an outage; putting the backup circuits anywhere
-else means an interlock and a story about which breakers you are allowed to leave on. Two
-side effects worth stating: the main panel went from 52 spaces used of 54 to 46, so it has
-eight spare instead of two; and `electrical.panel_spaces` now reconciles two panels, which is
-what makes the subpanel's own capacity a checked number rather than an assumption.
+| Alternative | Why not |
+|---|---|
+| Off-grid all-in-one with AC input | Loses ~$250-500/yr of net metering and needs a ~20 kWh battery on day one |
+| Victron | No UL 1741 SB; its 2x120 V model cannot make 240 V off-grid |
+| Luxpower | The same Lux OEM as EG4, with thinner US support |
+| MidNite | ~85 W idle and no third-party UL 9540 listing |
+| Sol-Ark 15K | +$2.3k for nothing this house uses |
 
-`CKT-BACKUP-FEED` is retired. It fed the DIN enclosure from the *grid* side, which is exactly
-backwards once the enclosure's gear lives downstream of the inverter.
+Ratings on `EQ-T-EG4-12KPV`, from the spec sheet v1.0.9
+([EG4](https://eg4electronics.com/wp-content/uploads/2024/05/EG4%C2%AE-12kPV-Spec-Sheet.pdf),
+read 2026-10-31): 8,000 W continuous AC (the "12k" is PV *input*), 16 kW for 0.5 s surge,
+**idle <55 W** ("standby mode"), **94% maximum battery-to-grid efficiency**, 96.4% CEC.
+Both of the last two are authored as `inverter_idle_w=55`, `inverter_efficiency=0.94` and
+both flatter a ~400 W outage load: 94% is the peak of the curve, and an islanded inverter
+may idle above its standby figure. Meter both at commissioning.
 
-## The two tiers
+The sheet also gives a 4,000 W maximum per line (leg). Every always-on circuit is 120 V and
+together they connect 3,025 VA, so they fit one leg even unbalanced; balance them anyway.
+
+## 2. The listing reality, and the battery spec
+
+The Pylon CAN protocol lets a third-party battery *talk* to the 12kPV. Talking is not the
+code question. IRC R327.2 (and NEC 706.5) want a **UL 9540** listing, and UL 9540 lists a
+*system*: inverter + battery model + count. EG4's product page lists the WallMount Indoor
+under UL 9540 with the 12kPV, 18kPV and FlexBOSS21
+([EG4](https://eg4electronics.com/categories/batteries/eg4-wallmount-indoor-280ah-lithium-battery/));
+third-party packs (Pylon, Pytes, Fortress) are "ongoing". The decoupling route is the UL
+9540 3rd edition "DC ESS" battery-only listing (effective 2025-08-29). It is unconfirmed
+for the WallMount, and no AHJ has a position on it yet.
+
+So the **battery spec** (on `EQ-T-ESS-BATT`'s comment) for any first, second or
+replacement pack is:
+
+1. on EG4's current UL 9540 list for the 12kPV, **or** a UL 9540 3rd-ed. DC ESS listing the
+   AHJ (St Paul DSI) accepts in writing;
+2. closed-loop comms (Lux or Pylon CAN), never open-loop voltage charging;
+3. a BMS with its own contactor;
+4. a UL 9540A test report.
+
+The WallMount Indoor's sheet: 36.4 x 18.1 x 9.6 in (H x W x D), **282 lb** (the model had
+24 x 10 and "300 lb"), UL 1973 + UL 9540A, RS485 closed loop. The type now carries the real
+18.1 x 9.6 x 36.4 body; the owner's 3'-0" separation zone is still drawn off the old 24 x 10
+envelope, so the cabinet gets 39" at its sides and 36" front and back.
+
+## 3. The closet: fire containment first
+
+The owners rank containment first. The research behind the build:
+
+- One 280 Ah LFP cell vents 165-221 L of gas, 36-44% of it hydrogen. The ~3 m³ closet
+  sits near the lower flammable limit from **one** cell. A sealed box concentrates that gas,
+  which is why there is no steel cabinet and no NEMA 3R box (3R carries no fire rating).
+- Water is the only agent shown to stop cell-to-cell spread. Hence the sink outside the
+  door (below), with a hose.
+
+**The enclosure is UL Design U305**: wood studs, one layer of 5/8" Type X on each face
+(1-hour; the build USG SA924 cites for `INT_2X4_PARTITION`). Steel studs and a fire-retardant
+spray were both declined (the TODO's "wood studs vs spray" question is closed): the tested
+build is also the cheap one.
+
+| Side | Element | Build |
+|---|---|---|
+| North | `W-B-N3` | 8" cast concrete (mass; the battery hangs on it) |
+| East | `W-B-STR` | 2x6 with a 5/8" Type X leaf on the closet face |
+| South | `W-B-ESS-S` | `INT_2X4_PARTITION`, both gwb layers swapped to `gwb-x` |
+| West | `W-B-ESS-W` | `INT_2X6_BRG`, both gwb layers to `gwb-x`, `NONBEARING` |
+| Lid | `RM-B-ESS.ceiling_lining` | two 5/8" Type X on 3 1/2" furring, face 7'-8 13/16" |
+
+No new tag: the library partitions with `layer_materials` (decision #72). `W-B-ESS-W` is a
+2x6 because `PR-B-KITCH-DRAIN` crosses it at y=35'-0", 95"-97 1/2" AFF, and a 2 3/8" bore
+is 68% of a 3 1/2" stud against R602.6's 60%; in a 2x6 it is 43%. The two steel assemblies
+left the house catalog; the library keeps them.
+
+**The lid is furred down** so the PVC kitchen drain runs above it, outside the box, rather
+than as plastic pipe inside it. `PA-B-ESS-SEAL-W` and `-E` firestop that drain where it
+passes `W-B-ESS-W` and `W-B-STR` (intumescent sealant, Hilti FS-ONE MAX or equal). The
+conduits that enter the closet — the battery's DC run through `W-B-ESS-W` and
+`CD-B-GARAGE`, which crosses the closet under the lid — get the same sealant at each wall;
+a `ConduitRun` takes no accessory, so those two are prose, not BOM rows.
+
+`advisory.ess_enclosure` grades all of it off the **resolved** wall layers (so the swap
+counts) and the room's resolved ceiling; take the swap off `W-B-ESS-S`, or the lid off the
+room, and it fails (`test_energy_storage.py`).
+
+**The door**, `DT-INT-STEEL24-LITE`: a cheap 24x80 hollow-metal leaf in a knock-down steel
+frame, a small tempered vision lite (R308.4.1), spring hinges (`self_closing`), and no fire
+rating — the owner declined a rated door. 24" steel is a special order (stock KD frames
+start at 32"): a door distributor item. It swings into the closet and sits 18 7/8" off the
+SW corner, on the wood stud module. The engine has no partial-lite leaf, so the viewer draws
+it all glass.
+
+**Detection**: `AL-B-ESS-SMOKE` and `AL-B-ESS-HEAT` inside the closet, on `CKT-LT-BACKUP`.
+Not required by the adopted code (section 7); kept because it is cheap and senses the
+cabinet.
+
+**Declined for now**: a combustible-gas detector and an exhaust fan to outdoors.
+
+## 4. The utility sink and the condensate
+
+`FX-B-UTIL-SINK` stands in the furnace room's SE corner, back on `W-B-STR2`, clear of the
+dry-fire lane, the ESS zone, the panel working space and `D-B-CLOSET`'s swing. It is the
+same Glacier Bay QL033Y as the laundry, typed `FX-UTILITY-SINK-24` because on a slab the trap
+sits in the cabinet: its 1 1/2" arm runs 5" into `W-B-STR2` and tees under
+`PR-B-BATH-VENT`'s riser — vent first, then the drop (no S-trap) — through `SP-B-SLAB-USINK`
+and 20 3/4" south under the slab onto `PR-B-BATH-DRAIN`. `CO-B-USINK` is its sink-line
+cleanout. Stubs tee off the bath branches' `W-B-STR2` drops; `PR-B-CW-BATH` went to 3/4"
+for the extra 1.25 WSFU. `PR-B-BATH-VENT`'s riser moved 1 1/2" south to y=19'-1 1/2" for
+it — at 19'-3" it stood in stud-001.
+
+The bundled faucet ships with a garden-hose adapter (Home Depot Q&A,
+[listing](https://www.homedepot.com/p/questions/Glacier-Bay-24-in-W-x-21-in-D-x-34-in-L-Stainless-Steel-Laundry-Utility-Sink-with-Faucet-and-Cabinet-in-White-QL033Y/206057007/4));
+the laundry declines it, this sink uses it. A hose thread on a potable line needs an ASSE
+1011 hose-connection vacuum breaker (UPC 603.5.7): `PA-B-USINK-VB`, a Woodford 34HD (~$32,
+[Consolidated Supply](https://www.consolidatedsupply.com/Product/15289)) or Watts 8A
+(ASSE 1011, [Macomb](https://www.macombgroup.com/2335247/product/Watts-0061877)). No separate
+hose bib. **Confirm the adapter's thread (3/4" GHT assumed) on the delivered carton.**
+
+`PR-B-ERV-COND` now ends over this basin, 44 1/4" up — a 10" air gap over the 34" rim, above
+the faucet's 43" box. The W-B-STR2 bore and the bath-lavatory termination are gone;
+`PR-B-WH-COND` still tees in behind the tank. The TPR stays piped to the floor.
+
+No receptacle stands within 6' of the sink, so E3902's sink rule adds nothing here.
+
+## 5. The tiers
 
 | Tier | Circuits | What it is |
 |---|---|---|
-| `ALWAYS_ON` | `CKT-FRIDGE`, `CKT-HA`, `CKT-LT-BACKUP` | Food, network, and light in the kitchen and the mechanical room. Rides the whole outage. |
-| `SHED` | `CKT-HP3`, `CKT-WH-240`, `CKT-SUMP` | Comfort and convenience. Dropped by a relay when the battery is low and the sun is not out. |
+| `ALWAYS_ON` | `CKT-FRIDGE`, `CKT-HA`, `CKT-LT-BACKUP`, `CKT-SUMP` | Food, network, light in the kitchen and mechanical room, the sump |
+| `SHED` | `CKT-HP3`, `CKT-WH-240` | Fallback heat into the open stair; hot water |
 
-The tier is authored on the circuit (`Circuit.backup_tier`) and nothing infers it: whether a
-load is worth carrying through an outage is an owner decision, not a property of the load.
-The switching hardware follows from the tier — relay-driven contactors for all three shed
-circuits (the 2-pole heat pump, the 20A sump, the 2-pole water heater), with the Pro 4PM
-relay still bought to drive the contactor coils even though no circuit switches through one
-of its channels directly.
+**The sump moved to ALWAYS_ON** (2026-10-30). A SHED relay drops on low battery with no sun —
+exactly the long stormy night the sump must run. Its start is now graded with the motors.
 
-**The water heater.** This house has one water heater — an 80-gal Rheem ProTerra hybrid
-HPWH on one 240V/4,500 VA circuit. `CKT-WH-240` carries the whole unit on the SHED tier,
-and its 500 VA backup contribution comes from a Home Assistant automation (ESPHome's
-`esphome-econet`, bridging the unit's EcoNet API) that forces Heat-Pump-Only mode whenever
-the house is on battery. It is a **backup reserve measure only** — it used to be authored as
-a `LoadManagement` (`LM-WH`) and credited against the service calculation, which it never
-earned: an unlisted software governor is not a power control system (2026 NEC 130.2). It
-lives on the circuit now, as `CKT-WH-240.backup_va = 500` beside `backup_tier=SHED`, and
-nothing in the 220.82 calculation reads it. **The 500 VA is load-bearing here**: at the
-tank's 4,500 VA nameplate the SHED tier's peak does not fit the 12kPV's 8 kW continuous.
+**Winter outage**: the water heater goes to off/vacation (80 gal of stored water rides a day
+or two, and its compressor would be cooling a basement the battery cannot heat); HP3 is the
+fallback heat. **The battery cannot do freeze protection** — that needs a drain-down plan.
 
-## Does the 12kPV carry it?
+`CKT-FRIDGE` is the fridge plus the upright freezer column beside it. `CKT-HA` sheds the
+doorbell's and cameras' PoE ports on battery (`backup_shed_poe`, 42.0 W at the outlet).
 
-This was the TODO's actual question, and `takeoff/backup_calc.py` answers it rather than a
-comment asserting it.
+## 6. The numbers — the hand oracle for `takeoff/backup_calc.py`
 
-**2026-10-30, the PoE doorbell and two cameras** ([smart_home.md](smart_home.md)) put ~42 W
-more on `CKT-HA` (duty 0.30 -> 0.44), and the always-on tier fell 1.89 kWh short of the
-48-hour cycle (34.8 h unaided). The owner's answer, the same day: **on battery, Home
-Assistant turns off the doorbell's and cameras' PoE ports.** That is authored on the circuit,
-`CKT-HA.backup_shed_poe`, naming the three devices; the calc reads their E-603 draw, so a
-camera swap moves the number on its own. Worked by hand:
+Every average rests on an authored `duty_cycle` — the softest numbers in the model. **Meter
+and revise.** A circuit with none is an unknown contributor, never zero; so is an inverter
+with no idle or efficiency.
 
-- **Shed** 12.95 + 12.0 + 12.0 = 36.95 W at the ports. Through the switch's supply at 88%
-  (DOE Level VI floor for an external supply over 49 W, 10 CFR 430.32(w)) that is 36.95 / 0.88
-  = **42.0 W** at the outlet. Cable loss on those ports is saved too and not credited.
-- **CKT-HA on battery** 300 VA × 0.44 = 132 W, less 42.0 = **90.0 W**: the camera-free figure.
-- **Always-on tier** fridge 104.0 + HA 90.0 + backup lighting 133.4 = **327.4 W** average,
-  7.86 kWh/day.
-- **Storage** 14.3 kWh × 0.90 DoD = 12.87 kWh usable.
-- **Autonomy, no sun** 12.87 / 0.3274 = **39.3 h** on the always-on tier alone; with the
-  shed tier's 725 W too, 12.87 / 1.0524 = **12.2 h**.
-- **48-hour cycle** one strong solar day puts in 5.28 kW × 3.0 kWh/kW = 15.84 kWh against
-  0.3274 × 48 = 15.72 kWh of always-on load: net **+0.12 kWh**, so the always-on tier rides
-  indefinitely on sun every other day. Both tiers take 1.0524 × 48 = 50.52 kWh and do not
-  ride (net −34.68 kWh), which is what the shed tier exists to answer.
-- **Peak** unchanged: 4,989 VA of connected backup load against 8 kW continuous (the shed is
-  an average, not a breaker), and the largest shed-tier motor start (1,500 VA × 3 for a
-  soft-started VFD = 4,500 VA) against 16 kW surge.
+**AC load (connected VA x duty, less shed PoE):**
 
-Verdict (`backup_calc`): **one strong solar day covers the always-on tier over 48 h but not
-both tiers together — which is what the shed tier is for.** The margin is thin: +0.12 kWh is
-+2.5 W of average draw, or a strong day of 2.98 kWh/kW. It was +0.22 kWh before the cameras;
-the 0.10 kWh between is the two Kidde relays (13.2 VA × 0.15) now on `CKT-LT-BACKUP`. One
-more always-on watt-hungry device, or a weaker strong day, puts it back to "add array, not
-battery". Note the 12kPV puts out **8 kW AC continuous**; the "12k" in the name is its 12 kW
-*PV input*.
+| Circuit | VA | Duty | Average |
+|---|---|---|---|
+| `CKT-FRIDGE` | 800 | 0.13 | 104.0 W |
+| `CKT-HA` | 300 | 0.44 | 132.0 - 42.0 = 90.0 W |
+| `CKT-LT-BACKUP` | 925 | 0.15 | 138.8 W |
+| `CKT-SUMP` | 1,000 | 0.05 | 50.0 W |
+| **always-on** | 3,025 | | **382.8 W** |
+| `CKT-HP3` | 1,500 | 0.4 | 600.0 W |
+| `CKT-WH-240` | 500 (`backup_va`) | 0.15 | 75.0 W |
+| **shed** | 2,000 | | **675.0 W** |
 
-Every one of those numbers rests on an authored `duty_cycle` per circuit, and those are the
-softest estimates in the model — 800 VA on the fridge circuit is a breaker allowance, not a
-draw, and the calc multiplies it by 0.15 to get the ~120 W two modern appliances actually
-average. **Meter it and revise.** A circuit with no `duty_cycle` is reported as an unknown
-contributor and never as zero, so the calc cannot quietly flatter itself.
+**Battery-side draw** = AC / 0.94 + 55 W idle:
 
-## The closet
+- always-on: 382.8 / 0.94 + 55 = 407.2 + 55 = **462.2 W** (was 327.4 W before idle, efficiency
+  and the sump).
+- both tiers: (382.8 + 675.0) / 0.94 + 55 = 1,125.3 + 55 = **1,180.3 W**.
 
-`RM-B-ESS` is a 3'-3 5/8" × 4'-1 5/8" closet in the **NE** corner of the furnace room
-(x 6'-0"–10'-0", y 31'-0"–36'-0" on the node lines): concrete on its north and east — the 8"
-`W-B-N3` and the 12" `W-B-STR`, both existing — two `INT_ESS_CLOSET_STEEL` partitions on its
-south and west (steel studs, 5/8" Type X both faces), and a 2'-0" door in the west partition
-opening onto the room's open floor.
+**Storage**: 14.3 kWh x 0.90 DoD = **12.87 kWh** usable.
 
-The closet stands in the NE corner because the SE corner does not clear it: `EQ-B-WH`, the
-24"×24" water heater, stood in the NE corner itself, and the battery's REQUIRED ±48"/±41"
-separation zone has no room or wall exemption, so no position in that corner cleared it. The
-owner's answer was to move the tank, which went to
-(5'-6", 24'-0") — south of `EQ-B-ERV`, north of `D-B-FURN`'s swing, and east of the 36" NEC
-110.26 working space in front of the panel wall. `advisory.ess_clearance` PASSES; put the
-tank back and it FAILs naming `EQ-B-WH`, which is the check that the move is what unblocked
-it.
+**Autonomy, no sun**: 12,870 / 462.2 = **27.8 h** always-on; 12,870 / 1,180.3 = **10.9 h**
+both tiers.
 
-Two things the relocation cost, both worth knowing:
+**48-hour cycle** (one strong day in two; array 12 x 440 W = 5.28 kW):
 
-- **Both concrete sides had to be split**, because a partition dying against the middle of an
-  unsplit wall leaves a one-edge node and `integrity.wall_loop_open` (an ERROR) reports it.
-  `W-B-N3` split at x=6'-0" into `W-B-N3` + `W-B-N4`, and `W-B-STR` at y=31'-0" into
-  `W-B-STR` + `W-B-STR3`. The x=6'-0" line is `N-M-MECH3`, where the main storey already
-  breaks, so that pair stacks one-to-one; the east wall has no such line and `W-M-STRW`
-  crosses the split. `FO-M-STAIR.bearing_refs` had to gain `W-B-STR3` — without it the
-  resolver emitted a 9'-0" LVL header over the stair well, which is precisely the failure
-  the old comment on those refs warned about.
-- **The DC run got ~10' longer.** `EQ-B-ESS-INV` and `ED-B-BACKUP-PANEL` did not move. On an
-  EG4 12kPV that is a real voltage-drop question and it is the one argument that could send
-  this decision back.
+- 48 h of always-on: 0.4622 x 48 = **22.19 kWh**; both tiers 1.1803 x 48 = 56.66 kWh.
+- Summer strong day, 3.0 kWh/kW: 15.84 kWh -> always-on net **-6.35 kWh**.
+- December strong day, 1.5 kWh/kW (`WINTER_STRONG_DAY_KWH_PER_KW`): 7.92 kWh -> net
+  **-14.27 kWh**. A low-pitch E/W split loses more of December than of June.
 
-And one it gained: the battery hangs on **cast concrete** (`W-B-N3`, 8"), not steel studs.
-300 lb wants that.
+Solar is counted at the DC side and all load at 94%, which errs heavy: PV-to-battery is
+99.9%, and daytime loads run PV-to-AC near 97.5%.
 
-Smoke *and* heat alarms (`AL-B-ESS-SMOKE`, `AL-B-ESS-HEAT`), both inside the closet, both on
-`CKT-LT-BACKUP` so they ride the always-on tier — an alarm that dies with the grid is the
-wrong alarm for the thing that carries the house when the grid dies.
+**Darkness bridge**: the battery alone must carry the always-on tier from one evening's last
+sun through a dark day and the longest night after it. St Paul (44.98 N) at the winter
+solstice: cos H = (sin -0.833 - sin 44.98 sin -23.44) / (cos 44.98 cos -23.44) = 0.4105,
+H = 65.76°, day = 8.77 h, **night = 15.23 h** (`longest_night_hours`, from the site's own
+latitude). Needs 0.4622 x (24 + 15.23) = **18.13 kWh** (the calc prints 18.14 from its
+unrounded inputs); has 12.87.
 
-Neither the steel studs nor the Type X is code. IRC R327 permits an ESS in an ordinary
-utility closet; this is owner hardening, which is why `advisory.ess_enclosure` grades it and
-no CODE check does.
+**Peak**: 5,025 VA connected on the microgrid against 8 kW continuous; the largest motor start
+(HP3, 1,500 VA x 3 for a soft-started VFD = 4,500 VA) against 16 kW. Both fit.
 
-## Rapid shutdown: an outcome, not a preference
+**Verdict (`backup_calc`)**: one strong summer day does not cover 48 h of even the always-on
+tier, and one battery does not bridge a December dark day. The idle draw alone (55 W x 48 h
+= 2.64 kWh) took the +0.12 kWh margin of the old calc to about -2.5; efficiency and the sump
+do the rest. Read it as: **the always-on tier is a 28-hour countdown, not a steady state.**
+The levers, in order of cost: meter the duty cycles and the real idle; shed `CKT-LT-BACKUP`
+lighting harder; the second PV row (`plans/TODO.md`); a second battery (28.6 kWh bridges at
+18.1). The verdict says "add array" rather than "not battery" because both are short.
 
-plans/TODO.md hoped for a transmitter on every other module. The Aptos 440 W module is
-Voc 39.03 V at STC with a −0.25%/°C coefficient, so at the −30 °C design low it is **44.40 V**
-— two of them sum to 88.8 V against NEC 690.12(B)(2)'s 80 V limit. Every module gets its own
-SunSpec transmitter. `code.NEC_690_12_rapid_shutdown` computes that from `voc_cold` rather
-than being written around the answer: a future module with a lower Voc would change the
-verdict without changing the check.
+A system with zero usable storage used to report "sustains" (the cycle never looked at the
+battery). `sustains_*` and `bridges` now require usable storage > 0.
 
-Rated Voc would have said 78.1 V for a pair and passed. That is why `voc_cold` is the only
-voltage the rule may read.
+## 7. Code: what the adopted book actually says
 
-## Future seams
+Minnesota's residential code is the 2018 IRC (MN Rules ch. 1309; no R327 amendment found).
+Its **R327** is code change RB171-16 as modified
+([ICC monograph](https://www.floridabuilding.org/fbc/commission/FBC_0618/Code_Mod/TC-with-Monograph/IRC/IRC-Building-Electrical-Linked-With-Monograph.pdf);
+[ICC summary](https://cdn-web.iccsafe.org/wp-content/uploads/Energy-Storage-Systems-Fire-Safety-Concepts-in-the-2018-IFC-and-IRC.pdf)):
 
-- **V2H (car as the battery).** The car becomes a second *source* on the system. The
-  clean landing is another `source=True` circuit — but `code.NEC_705_12_interconnection`
-  currently applies the *service* main to any panel carrying a source, because the model has
-  no feeder element. A source on `ED-B-BACKUP-PANEL` needs that feeder first. The 705.12
-  headroom is there: 225 × 1.2 − 200 = 70A allowed, 50A used, 20A spare on the main bus —
-  still 200 here, because `ED-T-PANEL` states its own 200 A main and the check now prefers it
-  over the Class 320 service size.
-- **Moving the ESS to the garage.** Still open, and now a bigger change than it was: the
-  closet is two partitions and two wall splits, not a `room=` string.
-  `code.R327_ess_capacity` already exempts garage rooms
-  from the 40 kWh indoor aggregate (R327.4 treats a garage as its own permitted location),
-  so the move is: re-room `EQ-B-ESS-BATT`, re-run the two conduits, move the two alarms.
-  No check changes.
-- **A second battery.** 28.6 kWh indoors is still inside R327.5's 40 kWh; a third is 42.9
-  and fails. That article, not the closet, is the ceiling.
-- **Not modeled yet:** the high-flow spigot near the battery and mechanical ventilation from
-  the cabinet direct to exterior. Both are in plans/TODO.md and neither has an element to
-  author against today.
+- R327.1 scope; **R327.2** UL 9540 listing (under 1 kWh exempt) — `code.R327_ess_listing`;
+- **R327.3** per the manufacturer's instructions and listing, and *not within the habitable
+  space of a dwelling unit* — `code.R327_ess_location` (new);
+- R327.4 NFPA 70, inverter UL 1741 or part of the UL 9540 listing;
+- R327.5 ventilation only for batteries that gas hydrogen while charging (not LFP);
+- R327.6 vehicle-impact barriers.
+
+**No kWh caps, no location list, no detection rule.** The old checks cited "R327.5" for the
+20/40 kWh caps and "R327.7" for detection; those are the **2021 IRC R328.5 and R328.7**
+(from NFPA 855). They now grade as `advisory.ess_capacity` (20 kWh per unit, 40 indoor,
+80 in a garage) and `advisory.ess_detection`, citing the 2021 book as the code the next
+adoption brings. MN's fire code (2018 IFC base) reaches lithium ESS only above 20 kWh.
+
+## 8. Rapid shutdown
+
+The Aptos 440 W module is Voc 39.03 V at STC, -0.25%/°C, so **44.40 V** at the -30 °C design
+low; two sum to 88.8 V against NEC 690.12(B)(2)'s 80 V. Every module gets its own SunSpec
+transmitter. `code.NEC_690_12_rapid_shutdown` computes that from `voc_cold`; rated Voc
+would say 78.1 V for a pair and pass, which is why `voc_cold` is the only voltage it reads.
+
+## 9. Wiring as built
+
+`CKT-ESS-GRID` (50 A 2-pole, slot 40 of `ED-B-PANEL`) is the 12kPV's grid port; its load
+port feeds the 12-space `ED-B-BACKUP-PANEL`. The three raceways (`CD-B-PV-INV`,
+`CD-B-INV-PANEL`, `CD-B-INV-BACKUP`) were re-laid 2026-10-30 onto the inverter where it
+hangs, on `W-B-N4` west of the closet: each rises into the case bottom at its own height
+(30", 26", 22" AFF), north of the dry-fire lane, then down `W-B-W1` with one conduit body
+each. The battery's DC run is ~5 ft through `W-B-ESS-W`.
+
+## 10. The V2H seam (rough-in, recorded here)
+
+No V2H product integrates with a 48 V hybrid inverter. A car lands as **its own system at
+the service entrance** (a bidirectional charger plus a microgrid interconnection device),
+not on `ED-B-BACKUP-PANEL`. NEC 705.12 leaves 20 A on the main bus (225 x 1.2 - 200 = 70 A
+allowed, 50 A used). On the EG4 path the MID is the **EG4 GridBOSS** (200 A transfer switch,
+up to three 12kPV/18kPV/FlexBOSS21, generator and smart-load ports;
+[EG4](https://eg4electronics.com/categories/inverters/eg4-gridboss/)).
+
+Rough-in to build now:
+
+- a 1 1/2" spare conduit, panel to garage, sized for a 100 A feeder;
+- a 1" data conduit beside it;
+- a reserved 2-pole space in `ED-B-PANEL`;
+- ~30 x 36" of clear wall by the meter for a gateway or MID.
+
+**Not modelled.** A `ConduitRun` can express an empty raceway (`CD-B-SPARE-CHASE`), but the
+panel-to-garage path is `CD-B-GARAGE`'s corridor — the north-wall ceiling lane, the
+`W-B-N2` sleeve and the buried gap leg, routed 3/8" off the drain — and two more raceways
+in it are a routing pass of their own (`plans/TODO.md`).
+
+**Moving the ESS to the garage** was rejected: unheated, -20 F.
+
+## 11. Deferring the battery
+
+The 12kPV runs without a battery, but EG4 does not document its load port working from PV
+alone, so **ask EG4** before counting on PV-only backup. With zero storage the calc now
+reports no usable storage rather than "sustains". A small LFP UPS (separate from the ESS)
+should carry Home Assistant, the router and the leak valve regardless.
+
+## 12. Open
+
+- EG4's ETL/UL 9540 certificate naming **12kPV + WallMount Indoor** by model and count.
+- What EG4 means by the WallMount's "fire arrestors".
+- Declare future storage on the Xcel interconnection application now.
+- St Paul DSI's position on a UL 9540 3rd-ed. DC ESS listing.
+- The declined gas detector and exhaust fan, if the owners revisit containment.
+- A freeze drain-down plan (the battery cannot hold the house above freezing).
+- A small LFP UPS for HA, the router and the leak valve.
+- Meter the 12kPV's islanded idle and low-load efficiency; revise the duty cycles.
+- Confirm the QL033Y hose adapter's thread; source the 24" steel door.

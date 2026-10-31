@@ -760,6 +760,13 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     inverter_kw_surge: float | None = None
     # Maximum PV array the inverter accepts, kW DC.
     pv_input_kw: float | None = None
+    # Self-consumption while islanded, W — drawn from the battery on top of the loads.
+    # House-authored from the datasheet; absent, the backup calc reports an unknown
+    # contributor, never zero.
+    inverter_idle_w: float | None = None
+    # Battery-to-AC conversion efficiency (0-1) the backup calc divides battery-delivered
+    # load by. Absent is unknown, never 1.0.
+    inverter_efficiency: float | None = None
 
     @model_validator(mode="after")
     def _check_heating_ratings(self) -> EquipmentType:

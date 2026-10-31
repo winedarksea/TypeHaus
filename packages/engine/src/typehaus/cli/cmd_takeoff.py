@@ -362,11 +362,15 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
     runtime = payload["backup_power"]["runtime"]
     if runtime.get("modeled"):
         autonomy, cycle = runtime["autonomy"], runtime["cycle_48h"]
+        winter, bridge = runtime["cycle_48h_winter"], runtime["darkness_bridge"]
         hours = autonomy["hours_always_on_only"]
         console.print(f"[bold]Backup runtime[/bold] (estimate)  "
                       f"{autonomy['usable_kwh']:g} kWh usable · always-on tier "
                       + (f"{hours:.1f} h" if hours is not None else "not computable")
-                      + f" · 48h net {cycle['net_kwh_all_tiers']:+g} kWh")
+                      + f" at {autonomy['battery_w_always_on']:g} W battery-side"
+                      + f" · 48h always-on net {cycle['net_kwh_always_on']:+g} summer / "
+                        f"{winter['net_kwh_always_on']:+g} Dec kWh"
+                      + f" · dark-day bridge needs {bridge['required_kwh']:g} kWh")
         console.print(f"        [dim]{runtime['verdict']}[/dim]")
     if payload["luminaire_schedule"]:
         console.print("[bold]Luminaire schedule[/bold]  (mark · qty: description)")

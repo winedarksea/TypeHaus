@@ -1,8 +1,9 @@
 """The laundry utility tub, selected 2026-10-24: identity only, never a price.
 
-The cabinet and its faucet are one purchase. The Home Depot listing carries the flex-neck
-faucet with its hose adapter, and the owner has declined the adapter for this room, so the
-Adler 87233SRS and its hose-bibb tee are retired with it. Spec sheet not retrieved: the
+The cabinet and its faucet are one purchase, bought twice: the main-floor laundry tub and
+the furnace room's utility sink. The listing carries the flex-neck faucet with a garden-hose
+adapter; the laundry declines it, the utility sink uses it behind a hose-connection vacuum
+breaker (PA-B-USINK-VB). Spec sheet not retrieved: the
 listing page refused automated reads, so every dimension here is the listing's own.
 """
 
@@ -19,11 +20,11 @@ GLACIER_BAY_QL033Y = Product(
 )
 GLACIER_BAY_QL033Y_FAUCET = Product(
     tag="PROD-GLACIER-BAY-QL033Y-FAUCET", brand="Glacier Bay", model="QL033Y bundled faucet",
-    name="Flex-neck laundry faucet, bundled with QL033Y; hose adapter declined",
-    source="Bundled with PROD-GLACIER-BAY-QL033Y, read 2026-10-24 (listing summary only). "
-           "Sprayer and garden-hose adapter are supplied; the adapter is NOT used at this sink "
-           "(owner, 2026-10-24: 'we don't need a garden hose adapter here'). Finish, spout "
-           "reach and supply connections unverified: confirm on the delivered carton.",
+    name="Flex-neck laundry faucet with sprayer and garden-hose adapter, bundled with QL033Y",
+    source="Bundled with PROD-GLACIER-BAY-QL033Y, read 2026-10-24 (listing summary only; HD "
+           "Q&A, re-read 2026-10-31, names the hose adapter). The adapter's thread (3/4 in. "
+           "GHT assumed), finish, spout reach and supply connections are unverified: confirm "
+           "on the delivered carton.",
 )
 
 LAUNDRY_PRODUCTS = (GLACIER_BAY_QL033Y, GLACIER_BAY_QL033Y_FAUCET)

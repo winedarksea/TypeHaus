@@ -190,8 +190,8 @@ SERVICE_DEVICES = [
 
 # --- the backup microgrid (notes/backup_power.md) -------------------------------------
 # Four pieces, positions carry the design: EQ-B-ESS-BATT is the only thing in the RM-B-ESS
-# Type X closet, in the furnace room's NE corner; EQ-B-ESS-INV sits outside it, mid-room
-# against the east concrete (not a fire risk, needs to be reachable to reset);
+# Type X closet, in the furnace room's NE corner; EQ-B-ESS-INV sits outside it on the north
+# concrete (W-B-N4), west of the closet (not a fire risk, needs to be reachable to reset);
 # ED-B-BACKUP-PANEL is on the west wall on the inverter's dedicated load output;
 # ED-B-BACKUP-ENCL stays in place but demoted to shed-tier relays + 24V bus only, no feed of
 # its own. The DC run between the battery and the inverter is flagged on the battery below.
@@ -221,27 +221,23 @@ ESS_EQUIPMENT = [
     # back flat on that wall's inner face at y=35'-4" and centres it in the 2'-9 5/8" clear
     # width, north of D-B-ESS's swing.
     #
-    # **This is a 300 lb wall load and the wall matters.** It is on cast concrete — an 8"
-    # pour, anchored directly — which is the fixing this load wants.
+    # **A 282 lb wall load (WallMount Indoor sheet), and the wall matters.** It is on cast
+    # concrete — an 8" pour, anchored directly — which is the fixing this load wants.
     #
-    # `code.R327_ess_capacity` reads `room="RM-B-ESS"` to count this as indoor storage
-    # (14.3 of the 40 kWh article limit) — a future garage relocation is just this one line.
+    # `advisory.ess_capacity` reads `room="RM-B-ESS"` to count this as indoor storage
+    # (14.3 of 2021 R328.5's 40 kWh) — a future garage relocation is just this one line.
     #
-    # **Flag, not a silent acceptance: the DC run is ~10' long.** EQ-B-ESS-INV is at
-    # (8'-1 13/16", 24'-11 7/8") and ED-B-BACKUP-PANEL at (0'-10", 27'-0"). On an EG4 12kPV
-    # that is real copper and a real voltage-drop question, and it is the one argument that
-    # could send this decision back — the corner was chosen for the battery's separation
-    # zone and its concrete fixing, not for the run length.
+    # The DC run is short: EQ-B-ESS-INV hangs on W-B-N4 at x 3'-4"..5'-7", 2'-6" west of the
+    # closet, so the battery cable crosses W-B-ESS-W (sealed) in about 5 ft.
     Equipment(uid="CEQ020AAAA", tag="EQ-B-ESS-BATT", kind=EquipmentKind.BATTERY,
-              footprint=(inch(24), inch(10)),
+              footprint=(inch(18.125), inch(9.625)),
               type_ref="EQ-T-ESS-BATT",
               room="RM-B-ESS", circuit="CKT-ESS-GRID",
               mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-B-N3", face="left", distance_from_start=inch(22.8125),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # The inverter, outside the closet on the furnace room's west wall. Not on a branch
-    # circuit: its grid port IS CKT-ESS-GRID, which is a source, and its load output feeds
+    # The inverter, outside the closet on the north concrete. Not on a branch circuit: its grid port IS CKT-ESS-GRID, which is a source, and its load output feeds
     # ED-B-BACKUP-PANEL.
     Equipment(uid="CEQ021AAAA", tag="EQ-B-ESS-INV", kind=EquipmentKind.INVERTER,
               footprint=(inch(27), inch(12)),
@@ -1223,25 +1219,41 @@ CONDUIT_TRUNKS = [
                from_ref="CD-B-ATTIC-RISER", to_ref="ED-A-PV-JB"),
     # --- the backup microgrid's three raceways ----------------------------------------
     #
-    # The PV string conductors no longer terminate at the panel: they land on the
-    # inverter's MPPTs, and only the inverter's AC grid port reaches ED-B-PANEL. So the
-    # attic riser above feeds ED-A-PV-JB as before, and this run takes it the rest of the
-    # way down the same chase to EQ-B-ESS-INV.
+    # Re-laid 2026-10-30 onto the inverter where it actually hangs (W-B-N4, case x 39.9"..
+    # 66.9", bottom 33" AFF; they used to stop at x=2' mid-room). Each rises into the case
+    # bottom from its own height — PV 30", grid 26", load 22" AFF, so they cross 4" apart —
+    # north of CZ-B-DRYFIRE's y=411.6" end, and the two panel runs turn south either side of
+    # PR-B-KITCH-DRAIN's x=32.5" drop, short of the NW corner's VR-M-STACK and sump risers,
+    # to reach W-B-W1 at y~400" under its boxes. One conduit body each splits the bends. PV comes from the attic riser's chase station (1'-7.6", 33'-8").
     ConduitRun(uid="CDT005AAAA", tag="CD-B-PV-INV", trade_size=inch(1),
-               path=(pt(ft(2), ft(29)), pt(ft(2), ft(24, 6))),
-               start_elevation=ft(-4), end_elevation=ft(-4), elevations=(ft(-4), ft(-4)),
+               path=(pt(inch(19.6), inch(404)), pt(inch(19.6), inch(404)),
+                     pt(inch(19.6), inch(416)), pt(inch(45), inch(416)),
+                     pt(inch(45), inch(416))),
+               start_elevation=ft(-4), end_elevation=inch(-76.4375),
+               elevations=(ft(-4), inch(-79.4375), inch(-79.4375), inch(-79.4375),
+                           inch(-76.4375)),
                from_ref="ED-A-PV-JB", to_ref="EQ-B-ESS-INV"),
-    # Grid port up to the service panel's CKT-ESS-GRID breaker: 4'-6" of wall, but it is
-    # the run that carries the backfeed and it is billed like any other.
+    # Grid port to ED-B-PANEL's CKT-ESS-GRID breaker: the run that carries the backfeed.
     ConduitRun(uid="CDT006AAAA", tag="CD-B-INV-PANEL", trade_size=inch(1),
-               path=(pt(ft(2), ft(24, 6)), pt(ft(2), ft(29))),
-               start_elevation=ft(-4), end_elevation=ft(-4), elevations=(ft(-4), ft(-4)),
+               path=(pt(inch(50), inch(418)), pt(inch(50), inch(418)),
+                     pt(inch(30), inch(418)), pt(inch(30), inch(400)),
+                     pt(inch(10), inch(400)), pt(inch(10), inch(348)),
+                     pt(inch(10), inch(348))),
+               start_elevation=inch(-76.4375), end_elevation=inch(-49.4375),
+               elevations=(inch(-76.4375), inch(-83.4375), inch(-83.4375), inch(-83.4375),
+                           inch(-83.4375), inch(-83.4375), inch(-49.4375)),
+               pull_points=(3,),
                from_ref="EQ-B-ESS-INV", to_ref="ED-B-PANEL"),
-    # Load output down to the backup subpanel — the conductors that stay live when the
-    # grid does not.
+    # Load output to ED-B-BACKUP-PANEL — the conductors that stay live when the grid does not.
     ConduitRun(uid="CDT007AAAA", tag="CD-B-INV-BACKUP", trade_size=inch(1),
-               path=(pt(ft(2), ft(24, 6)), pt(ft(2), ft(27))),
-               start_elevation=ft(-4), end_elevation=ft(-4), elevations=(ft(-4), ft(-4)),
+               path=(pt(inch(55), inch(420)), pt(inch(55), inch(420)),
+                     pt(inch(35.5), inch(420)), pt(inch(35.5), inch(397.5)),
+                     pt(inch(12.5), inch(397.5)), pt(inch(12.5), inch(324)),
+                     pt(inch(10), inch(324)), pt(inch(10), inch(324))),
+               start_elevation=inch(-76.4375), end_elevation=inch(-49.4375),
+               elevations=(inch(-76.4375), inch(-87.4375), inch(-87.4375), inch(-87.4375),
+                           inch(-87.4375), inch(-87.4375), inch(-87.4375), inch(-49.4375)),
+               pull_points=(4,),
                from_ref="EQ-B-ESS-INV", to_ref="ED-B-BACKUP-PANEL"),
     # ** ONE FEEDER, TWO RUNS SINCE 2026-09-09, AND THE SPLIT IS THE POINT. ** The whole
     # thing used to sit at -4'-0" — the burial depth it wants in the house/garage gap —

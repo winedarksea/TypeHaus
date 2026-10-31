@@ -170,7 +170,7 @@ def test_both_taps_stand_over_the_tank(water_heater, wh_ports) -> None:
 def test_the_condensate_run_leaves_the_published_port_and_ties_into_the_erv_line(
         catlin_model, water_heater) -> None:
     """Rheem puts the 3/4" condensate connection 59" up (sheet dimension C); PR-B-WH-COND
-    starts on it and ends on PR-B-ERV-COND, which carries it to the lavatory air gap."""
+    starts on it and ends on PR-B-ERV-COND, which carries it to the utility sink air gap."""
     from typehaus.resolve.mep_ports import placed_ports
 
     port = next(p for p in placed_ports(catlin_model)

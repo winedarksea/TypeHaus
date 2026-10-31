@@ -291,10 +291,9 @@ REGISTERS_HVAC_ATTIC = [
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
 
-# CONDENSATE — planned plumbing item, no geometry this pass. The four indoor units make
-# condensate in cooling and gravity-drain into a collected air-gap line terminating over the
-# mechanical-room sink (keeps a trapped condensate line out of the sanitary system), but that
-# sink has no drain of its own yet (plans/TODO.md).
+# CONDENSATE — the indoor heads gravity-drain through PR-M-COND-HEADS / PR-B-COND to an air
+# gap over FX-B-SAUNA-FD; the ERV and water heater drain to FX-B-UTIL-SINK
+# (plan/mep_drainage.py).
 
 # Every register here drops into a boot in the second floor's joist bay (FS-S-EAST's
 # I-joists for the three east bedroom boots at x=29'; FS-S-WEST's open-web trusses for the

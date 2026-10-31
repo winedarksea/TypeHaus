@@ -1,4 +1,5 @@
-"""Catlin's chosen exterior door products (2026-10-25; catalog, not editable).
+"""Catlin's chosen exterior door products (2026-10-25; catalog, not editable), and the
+ESS closet's steel door.
 
 House-local overrides merged by tag in plan/manifest.py. The three French pairs share
 Therma-Tru Smooth-Star full-lite, composite frames and Endura hardware. Laminated triple
@@ -159,6 +160,20 @@ DOOR_TYPES = (
         source="Clopay Classic Steel long panel, R-12.9, Charcoal (was Modern Steel R-18.4 "
                "Black, 2026-10-29). Unconditioned garage: no NFRC rating is needed or claimed."),
 )
+
+# D-B-ESS (owner 2026-10-30): a cheap steel leaf, NOT a rated fire door. The Type X box
+# is the containment; the door's job is to close itself and let someone look in first.
+# 24" steel is a special order (stock KD frames start at 32"): distributor item.
+ESS_STEEL_DOOR = DoorType(
+    tag="DT-INT-STEEL24-LITE", width=ft(2), height=ft(6, 8), function="passage",
+    # `glazed` so R308.4.1 grades the lite; the engine has no partial-lite leaf, so the
+    # viewer draws it all glass and it takes no leaf_material_ref.
+    glazed=True, tempered=True, self_closing=True, core="hollow",
+    frame_material_ref="door-paint-white",
+    source="24x80 hollow-metal steel leaf in a knock-down steel frame, small tempered "
+           "vision lite (R308.4.1), spring hinges. No fire_rating_minutes: unrated by "
+           "choice. Ceco/Steelcraft/Republic narrow-lite class; 24 in. is special order.")
+DOOR_TYPES = (*DOOR_TYPES, ESS_STEEL_DOOR)
 
 # D-B-PATIO and D-S-DECK-E; D-M-BALC keeps DT-EXT-FRENCH60 for its own hardware and
 # installation review (plans/door-sizing.md, decision 10). Same product, same sizes.

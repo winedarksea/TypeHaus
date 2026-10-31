@@ -937,31 +937,24 @@ WALLS = [
          end_node="N-B-BA-SE", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
          interior_room="RM-B-BATH", structural_role=StructuralRole.NONBEARING),
-    # ESS closet's two framed walls (moved to the NE corner, same uids, so the enclosure is
-    # the same two walls relocated rather than a new pair).
-    # INT_ESS_CLOSET_STEEL (steel studs, 5/8" Type X both faces) is an owner standard, not a
-    # code-rated assembly, hence `advisory.ess_enclosure` being advisory (see
-    # plan/assemblies.py). `interior_room` on both keeps the Type X face unambiguous; the
-    # other two sides of the closet are concrete and satisfy the same check by being mass
-    # noncombustible.
+    # ESS closet's two framed walls: UL U305 wood studs, 5/8" Type X both faces (owner,
+    # 2026-10-30) — the library partitions with their gwb swapped to `gwb-x`, no new tag.
+    # Steel studs and fire-retardant spray were both declined: the tested build is the cheap
+    # one. Type X lid on RM-B-ESS (ROOMS). `advisory.ess_enclosure` grades walls and lid off
+    # the resolved layers; the concrete north and the Type X W-B-STR leaf close the box.
     #
-    # W-B-ESS-N runs north-to-south down the closet's west side and carries D-B-ESS, which
-    # is the change of habit from the old corner: there the door was in the long north wall,
-    # here the west wall is the one facing the room's open floor. The south partition cannot
-    # take it — EQ-B-ERV stands 10 1/4" south of it and a 2'-0" leaf needs 2'-0".
-    #
-    # ** W-B-ESS-W ONLY, RETYPED TO INT_ESS_CLOSET_STEEL_6 ON 2026-09-20. ** PR-B-SAUNA-VENT
-    # crosses the jamb stud beside D-B-ESS at 2 3/8", which no 3 1/2" web can take under
-    # either R602.6 or steel's own R603.2.5. Still steel, still Type X both faces — only the
-    # web deepens, so the closet's owner standard and its material continuity with W-B-ESS-S
-    # are both intact. The closet's west face moves ~1" east; D-B-ESS's jamb depth grows with
-    # the wall, which is what a deeper stud is.
+    # W-B-ESS-W carries D-B-ESS (it swings INTO the closet, the wall's left normal) and
+    # PR-B-KITCH-DRAIN's 2" crossing at y=35'-0", 95"-97 1/2" AFF: no 3 1/2" stud takes a
+    # 2 3/8" bore (R602.6 caps it at 60%), so this one is a nonbearing 2x6. PA-B-ESS-SEAL-W/-E
+    # firestop that drain where it passes both closet walls (mep_supply_devices.py).
     Wall(uid="CBW124AAAA", tag="W-B-ESS-W", start_node="N-B-ESS-N",
-         end_node="N-B-ESS-SW", assembly="INT_ESS_CLOSET_STEEL_6", top=ft(8),
-         interior_room="RM-B-ESS"),
+         end_node="N-B-ESS-SW", assembly="INT_2X6_BRG", top=ft(8),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-x"), LayerMaterial(layer="gwb-b", material="gwb-x"),),
+         interior_room="RM-B-ESS", structural_role=StructuralRole.NONBEARING),
     Wall(uid="CBW125AAAA", tag="W-B-ESS-S", start_node="N-B-ESS-SW",
-         end_node="N-B-ESS-SE", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),
-         interior_room="RM-B-ESS"),
+         end_node="N-B-ESS-SE", assembly="INT_2X4_PARTITION", top=ft(8),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-x"), LayerMaterial(layer="gwb-b", material="gwb-x"),),
+         interior_room="RM-B-ESS", structural_role=StructuralRole.NONBEARING),
     # ================= THE STAIR WELL'S PARTITION =================
     #
     # One wall, drawing a divider the model has always reserved space for and never built,
@@ -1122,15 +1115,12 @@ OPENINGS = [
     # DU-B-ERV-R-GYM rose 1/2" to pass over it.
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-POCKET-INT-36",
          position=from_node("N-B-BA-NE", ft(2, 9.9375)), header_spec="flat 2x6 nonbearing"),
-    # ESS closet door, opening west into the furnace room. DT-INT-SWING24: a 2'-0" leaf is
-    # what a closet this size takes with jamb both sides. 10" offset from the corner, not
-    # the original 4": at 4" the opening's king stud clashed with the wall's corner post
-    # (`structural.member_interference` against CBW125AAAA); 10" clears it, and the same 10"
-    # is carried over to the new corner for the same reason. Measured from N-B-ESS-SW so the
-    # leaf sits in the closet's south half and EQ-B-ESS-BATT, hung on the north concrete,
-    # stands clear of the swing.
-    Door(uid="CBD208AAAA", tag="D-B-ESS", host="W-B-ESS-W", type_ref="DT-INT-SWING24",
-         position=from_node("N-B-ESS-SW", ft(1, 4))),
+    # ESS closet door: a cheap 24x80 steel leaf with a small tempered vision lite in a KD
+    # frame, on spring hinges (DT-INT-STEEL24-LITE; owner 2026-10-30, not a rated door). It
+    # swings into the closet. 18 7/8" off N-B-ESS-SW lands it on the wood stud module
+    # (`structural.door_framing_module`) and keeps it clear of EQ-B-ESS-BATT and the post.
+    Door(uid="CBD208AAAA", tag="D-B-ESS", host="W-B-ESS-W", type_ref="DT-INT-STEEL24-LITE",
+         position=from_node("N-B-ESS-SW", inch(18.875))),
     # ** The under-stair storage's door, new 2026-09-05 — the thing that makes the floor
     # under the arriving flight reachable without walking the well. ** In W-B-STR3, opening
     # WEST into RM-B-FURNACE: W-B-STR3 runs north-to-south, so its default left-hand normal
@@ -1409,20 +1399,30 @@ ROOMS = [
     Room(uid="CBR405AAAA", tag="RM-B-GYM", seed=pt(ft(27), ft(9)),
          occupancy=Occupancy.LIVING, floor_finish="catlin-rubber-stall-mat",
          exposed_services="owner accepts exposed services in the basement: the gym's painted gypsum ceiling stays, and the condensate line crossing it below the board is part of how the room looks"),
-    # ESS closet: MECHANICAL like the room it's carved from — STORAGE would
-    # trigger habitability rules a battery cabinet has no use for. R327.4 permits an ESS in
-    # a utility closet, which is exactly what this is.
+    # ESS closet: MECHANICAL like the room it's carved from, so it is not habitable space
+    # (R327.3). The LID is two 5/8" Type X layers on 2x4 furring: furred down 3 1/2" so
+    # PR-B-KITCH-DRAIN (95"-97 1/2" AFF along y=35'-0") runs above the lid, outside the box,
+    # rather than as plastic pipe inside it. Face at 7'-8 13/16".
     Room(uid="CBR408AAAA", tag="RM-B-ESS", seed=pt(ft(8), ft(33, 6)),
-         occupancy=Occupancy.MECHANICAL, floor_finish="sealed-concrete", unpainted=True),
+         occupancy=Occupancy.MECHANICAL, floor_finish="sealed-concrete", unpainted=True,
+         ceiling_lining=(
+             Layer(name="gwb-x-lid-a", material_ref="gwb-x", thickness=inch(0.625),
+                   function=LayerFunction.FINISH),
+             Layer(name="gwb-x-lid-b", material_ref="gwb-x", thickness=inch(0.625),
+                   function=LayerFunction.FINISH),
+             Layer(name="lid-furring", material_ref="spf", thickness=inch(3.5),
+                   function=LayerFunction.FURRING,
+                   framing=FramingSpec(member="2x4", direction="horizontal",
+                                       spacing=inch(16))),
+         )),
 ]
 
 ALARMS = [
     Alarm(uid="CBA701AAAA", tag="AL-B-COMBO", kind=AlarmKind.COMBO, room="RM-B-PLAY-N",
           circuit="CKT-LT-BACKUP"),
-    # IRC R327.7 wants both smoke and heat: a lithium cell's failure announces itself as
-    # heat before smoke reaches outside the cabinet. Both alarms sit inside RM-B-ESS, not
-    # just within `code.R327_ess_detection`'s 6' allowance in RM-B-FURNACE, so the heat
-    # alarm actually senses the cabinet and not the room outside the Type X membrane.
+    # 2021 IRC R328.7 (not the adopted 2018 book; `advisory.ess_detection`) wants smoke and
+    # heat: a lithium cell's failure announces itself as heat first. Both sit INSIDE
+    # RM-B-ESS so the heat alarm senses the cabinet, not the room outside the Type X.
     # CKT-LT-BACKUP so they survive an outage.
     Alarm(uid="CBA702AAAA", tag="AL-B-ESS-SMOKE", kind=AlarmKind.SMOKE, room="RM-B-ESS",
           circuit="CKT-LT-BACKUP"),

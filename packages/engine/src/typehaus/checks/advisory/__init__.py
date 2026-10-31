@@ -10,6 +10,7 @@ from typehaus.checks.advisory import (  # noqa: F401 - registers checks
     checks,
     countertops,
     energy_storage,
+    energy_storage_anticipated,
     floor_finish,
     guards,
     held_rough_opening,

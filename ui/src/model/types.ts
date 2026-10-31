@@ -884,6 +884,13 @@ export interface BackupTierSummary {
   complete: boolean;
 }
 
+export interface BackupCycle {
+  array_kw: number; strong_day_kwh_per_kw: number; solar_day_kwh: number;
+  two_day_load_kwh_all_tiers: number; two_day_load_kwh_always_on: number;
+  net_kwh_all_tiers: number; net_kwh_always_on: number;
+  sustains_all_tiers: boolean; sustains_always_on: boolean; basis: string;
+}
+
 export interface BackupRuntime {
   modeled: boolean;
   estimate?: boolean;
@@ -905,13 +912,16 @@ export interface BackupRuntime {
   };
   autonomy?: {
     usable_kwh: number; nameplate_kwh: number; depth_of_discharge: number;
+    battery_w_always_on: number; battery_w_all_tiers: number;
+    inverter_idle_w: number | null; inverter_efficiency: number | null;
     hours_all_tiers: number | null; hours_always_on_only: number | null; basis: string;
   };
-  cycle_48h?: {
-    array_kw: number; strong_day_kwh_per_kw: number; solar_day_kwh: number;
-    two_day_load_kwh_all_tiers: number; two_day_load_kwh_always_on: number;
-    net_kwh_all_tiers: number; net_kwh_always_on: number;
-    sustains_all_tiers: boolean; sustains_always_on: boolean; basis: string;
+  // Summer and December strong days, the same shape (takeoff/backup_calc.py::_cycle).
+  cycle_48h?: BackupCycle;
+  cycle_48h_winter?: BackupCycle;
+  darkness_bridge?: {
+    longest_night_h: number; bridge_hours: number; required_kwh: number;
+    usable_kwh: number; bridges: boolean; basis: string;
   };
   verdict?: string;
 }

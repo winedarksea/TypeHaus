@@ -14,12 +14,18 @@ Three questions get answered:
 1. **Peak** — can the inverter's continuous output cover the backup loads running at
    once, and can its surge cover the largest motor start?
 2. **Autonomy** — how many hours the battery alone carries each tier, with no sun.
-3. **The 48-hour cycle** — the TODO's actual question: with strong sun every *other* day,
-   does one solar day put back more than two days of load takes out? If it does the
-   system rides indefinitely; if it does not, the battery is a countdown, not a buffer.
+3. **The 48-hour cycle** — with strong sun every *other* day, does one solar day put back
+   more than two days of load takes out? Asked twice, at a summer and a December yield.
+4. **The darkness bridge** — does the battery alone carry the always-on tier through a
+   dark day and the longest night after it?
+
+All of it is battery-side: AC load over the inverter's efficiency plus its idle draw, both
+read off the inverter type. Missing either is an unknown, never a free inverter.
 """
 
 from __future__ import annotations
+
+import math
 
 from typehaus.model.enums import BackupTier
 from typehaus.resolve.model import ResolvedModel
@@ -45,6 +51,14 @@ DEPTH_OF_DISCHARGE = 0.90
 # a south-facing array; 3.0 is that number haircut for the E/W split. Estimate, not a
 # production model — no shading, soiling, snow, or hourly curve is modeled.
 STRONG_DAY_KWH_PER_KW = 3.0
+# The same strong day in December: PVWatts-class MN December yield is ~1.5-2 kWh/kW/day
+# south-facing, and a low-pitch E/W split loses more of it than of the summer figure. A
+# winter outage is the one the house cares about, so it is reported beside the summer one.
+WINTER_STRONG_DAY_KWH_PER_KW = 1.5
+
+# Sun altitude at sunrise/sunset: refraction plus the solar radius (NOAA convention).
+_HORIZON_ALTITUDE_DEG = -0.833
+_SOLSTICE_DECLINATION_DEG = -23.44
 
 # Motor-start multiple applied to the largest single SHED-tier motor load when checking
 # the inverter's surge rating. A soft-started VFD compressor (the Sapphire R32 on CKT-HP3)
@@ -131,16 +145,103 @@ def _tier_summary(rows: list[dict[str, object]]) -> dict[str, object]:
     }
 
 
+def longest_night_hours(latitude_deg: float) -> float:
+    """Sunset to sunrise at the winter solstice, from the site's latitude.
+
+    ``cos H = (sin h0 - sin L sin d) / (cos L cos d)``; day = 2H/15. St Paul (44.98 N) is
+    15.2 h. Clamped so a polar site reads 24 h, not a math error.
+    """
+    lat = math.radians(latitude_deg)
+    dec = math.radians(_SOLSTICE_DECLINATION_DEG)
+    cos_h = ((math.sin(math.radians(_HORIZON_ALTITUDE_DEG)) - math.sin(lat) * math.sin(dec))
+             / (math.cos(lat) * math.cos(dec)))
+    day_h = 2.0 * math.degrees(math.acos(max(-1.0, min(1.0, cos_h)))) / 15.0
+    return _HOURS_PER_DAY - day_h
+
+
+def _storage(placed, types) -> tuple[list, float, list]:
+    rows, nameplate_kwh, undeclared = [], 0.0, []
+    for element in sorted(placed["batteries"], key=lambda e: e.tag):
+        product = types.get(element.type_ref or "")
+        kwh = getattr(product, "storage_kwh", None) if product is not None else None
+        if kwh is None:
+            undeclared.append(element.tag)
+        else:
+            nameplate_kwh += float(kwh)
+        rows.append({"equipment": element.tag, "type": element.type_ref or "",
+                     "storage_kwh": kwh})
+    return rows, nameplate_kwh, undeclared
+
+
+def _conversion(placed, types) -> dict[str, object]:
+    """Inverter ratings, summed where they stack. None stays None so "not declared"
+    survives the sum; the idle draws add, and the worst efficiency governs."""
+    rows = []
+    totals: dict[str, float | None] = {"kw_continuous": None, "kw_surge": None,
+                                       "pv_input_kw": None, "idle_w": None}
+    efficiency = None
+    unknown: list[str] = []
+    for element in sorted(placed["inverters"], key=lambda e: e.tag):
+        product = types.get(element.type_ref or "")
+        row = {"equipment": element.tag, "type": element.type_ref or ""}
+        for key, field in (("kw_continuous", "inverter_kw_continuous"),
+                           ("kw_surge", "inverter_kw_surge"), ("pv_input_kw", "pv_input_kw"),
+                           ("idle_w", "inverter_idle_w")):
+            value = getattr(product, field, None) if product else None
+            row[key] = value
+            if value is not None:
+                totals[key] = (totals[key] or 0.0) + float(value)
+        eff = getattr(product, "inverter_efficiency", None) if product else None
+        row["efficiency"] = eff
+        if eff is not None:
+            efficiency = eff if efficiency is None else min(efficiency, float(eff))
+        unknown += [f"{element.tag}.{name}" for name in ("idle_w", "efficiency")
+                    if row[name] is None]
+        rows.append(row)
+    return {"rows": rows, **totals, "efficiency": efficiency, "unknown": unknown}
+
+
+def _battery_w(ac_w: float, conversion: dict) -> float:
+    """What the battery supplies for ``ac_w`` of load. An undeclared idle or efficiency
+    counts as free here, which is why it also makes the summary incomplete."""
+    efficiency = conversion["efficiency"] or 1.0
+    return ac_w / efficiency + float(conversion["idle_w"] or 0.0)
+
+
+def _cycle(array_kw: float, kwh_per_kw: float, usable_kwh: float,
+           always_w: float, both_w: float) -> dict[str, object]:
+    """One strong solar day against 48 h of battery-side load. A system with no usable
+    storage sustains nothing, however big the array: the dark day has nowhere to come from."""
+    solar_day_kwh = array_kw * kwh_per_kw
+    always_2day = always_w * 2 * _HOURS_PER_DAY / 1000.0
+    both_2day = both_w * 2 * _HOURS_PER_DAY / 1000.0
+    stores = usable_kwh > 0.0
+    return {
+        "array_kw": array_kw,
+        "strong_day_kwh_per_kw": kwh_per_kw,
+        "solar_day_kwh": round(solar_day_kwh, 2),
+        "two_day_load_kwh_all_tiers": round(both_2day, 2),
+        "two_day_load_kwh_always_on": round(always_2day, 2),
+        "net_kwh_all_tiers": round(solar_day_kwh - both_2day, 2),
+        "net_kwh_always_on": round(solar_day_kwh - always_2day, 2),
+        "sustains_all_tiers": stores and solar_day_kwh >= both_2day,
+        "sustains_always_on": stores and solar_day_kwh >= always_2day,
+        "basis": ("one strong solar day per 48h against 48h of battery-side tier load; the "
+                  "battery buffers the dark day"),
+    }
+
+
 def backup_runtime_summary(
     model: ResolvedModel,
     *,
     depth_of_discharge: float = DEPTH_OF_DISCHARGE,
     strong_day_kwh_per_kw: float = STRONG_DAY_KWH_PER_KW,
+    winter_strong_day_kwh_per_kw: float = WINTER_STRONG_DAY_KWH_PER_KW,
 ) -> dict[str, object]:
-    """Peak, autonomy, and the every-other-day-sun verdict for the backup microgrid.
+    """Peak, autonomy, the two 48 h cycles and the darkness bridge for the backup microgrid.
 
-    Returns an empty-ish dict with ``modeled: False`` when no ESS is placed and nothing is
-    tiered, so every consumer can skip the block rather than print zeros.
+    Returns ``{"modeled": False}`` when no ESS is placed and nothing is tiered, so every
+    consumer can skip the block rather than print zeros.
     """
     placed = backup_equipment(model)
     tiers = {
@@ -152,67 +253,35 @@ def backup_runtime_summary(
         return {"modeled": False}
 
     types = {t.tag: t for t in model.plan.library.equipment_types}
-
-    # --- Storage and conversion, from the placed equipment -----------------------------
-    battery_rows = []
-    nameplate_kwh = 0.0
-    undeclared_batteries = []
-    for element in sorted(placed["batteries"], key=lambda e: e.tag):
-        product = types.get(element.type_ref or "")
-        kwh = getattr(product, "storage_kwh", None) if product is not None else None
-        if kwh is None:
-            undeclared_batteries.append(element.tag)
-        else:
-            nameplate_kwh += float(kwh)
-        battery_rows.append({"equipment": element.tag, "type": element.type_ref or "",
-                             "storage_kwh": kwh})
+    battery_rows, nameplate_kwh, undeclared_batteries = _storage(placed, types)
     usable_kwh = nameplate_kwh * depth_of_discharge
-
-    inverter_kw = None
-    surge_kw = None
-    pv_input_kw = None
-    inverter_rows = []
-    for element in sorted(placed["inverters"], key=lambda e: e.tag):
-        product = types.get(element.type_ref or "")
-        cont = getattr(product, "inverter_kw_continuous", None) if product else None
-        surge = getattr(product, "inverter_kw_surge", None) if product else None
-        pv_in = getattr(product, "pv_input_kw", None) if product else None
-        inverter_rows.append({"equipment": element.tag, "type": element.type_ref or "",
-                              "kw_continuous": cont, "kw_surge": surge,
-                              "pv_input_kw": pv_in})
-        # Multiple inverters stack; None stays None so "not declared" survives the sum.
-        if cont is not None:
-            inverter_kw = (inverter_kw or 0.0) + float(cont)
-        if surge is not None:
-            surge_kw = (surge_kw or 0.0) + float(surge)
-        if pv_in is not None:
-            pv_input_kw = (pv_input_kw or 0.0) + float(pv_in)
+    conversion = _conversion(placed, types)
+    inverter_kw, surge_kw = conversion["kw_continuous"], conversion["kw_surge"]
 
     # --- Peak: everything on the microgrid at once -------------------------------------
-    both_va = float(tiers["always_on"]["connected_va"]) + float(tiers["shed"]["connected_va"])
-    largest_shed_va = max(
-        [float(r["connected_va"]) for r in tiers["shed"]["circuits"]] or [0.0])
+    always_va = float(tiers["always_on"]["connected_va"])
+    both_va = always_va + float(tiers["shed"]["connected_va"])
+    # Every backup circuit, not only the shed tier: the sump rides always-on and starts too.
+    largest_va = max([float(r["connected_va"]) for tier in tiers.values()
+                      for r in tier["circuits"]] or [0.0])
     peak: dict[str, object] = {
         "simultaneous_va": round(both_va, 0),
         "always_on_va": tiers["always_on"]["connected_va"],
         "inverter_kw_continuous": inverter_kw,
         "inverter_kw_surge": surge_kw,
-        "largest_motor_start_va": round(largest_shed_va * MOTOR_START_MULTIPLE, 0),
+        "largest_motor_start_va": round(largest_va * MOTOR_START_MULTIPLE, 0),
         "motor_start_multiple": MOTOR_START_MULTIPLE,
+        "within_continuous": None if inverter_kw is None else both_va <= inverter_kw * 1000.0,
+        "always_on_within_continuous": (None if inverter_kw is None
+                                        else always_va <= inverter_kw * 1000.0),
+        "within_surge": (None if surge_kw is None
+                         else largest_va * MOTOR_START_MULTIPLE <= surge_kw * 1000.0),
     }
-    if inverter_kw is None:
-        peak["within_continuous"] = None
-        peak["always_on_within_continuous"] = None
-    else:
-        peak["within_continuous"] = both_va <= inverter_kw * 1000.0
-        peak["always_on_within_continuous"] = (
-            float(tiers["always_on"]["connected_va"]) <= inverter_kw * 1000.0)
-    peak["within_surge"] = (None if surge_kw is None
-                            else largest_shed_va * MOTOR_START_MULTIPLE <= surge_kw * 1000.0)
 
-    # --- Autonomy: battery alone, no sun -----------------------------------------------
-    both_w = float(tiers["always_on"]["average_w"]) + float(tiers["shed"]["average_w"])
-    always_w = float(tiers["always_on"]["average_w"])
+    # --- Battery-side draw: AC load through the inverter, plus its idle ----------------
+    always_w = _battery_w(float(tiers["always_on"]["average_w"]), conversion)
+    both_w = _battery_w(float(tiers["always_on"]["average_w"])
+                        + float(tiers["shed"]["average_w"]), conversion)
 
     def _hours(watts: float) -> float | None:
         if usable_kwh <= 0.0 or watts <= 0.0:
@@ -223,54 +292,65 @@ def backup_runtime_summary(
         "usable_kwh": round(usable_kwh, 2),
         "nameplate_kwh": round(nameplate_kwh, 2),
         "depth_of_discharge": depth_of_discharge,
+        "battery_w_always_on": round(always_w, 1),
+        "battery_w_all_tiers": round(both_w, 1),
+        "inverter_idle_w": conversion["idle_w"],
+        "inverter_efficiency": conversion["efficiency"],
         "hours_all_tiers": _hours(both_w),
         "hours_always_on_only": _hours(always_w),
-        "basis": ("battery only, no solar; tier average draw = connected VA x authored "
-                  "duty cycle, less PoE ports shed on battery"),
+        "basis": ("battery only, no solar; tier draw = connected VA x authored duty cycle, "
+                  "less PoE ports shed, over inverter efficiency, plus inverter idle"),
     }
 
-    # --- The 48-hour cycle: strong sun every other day ---------------------------------
     array_kw = round(sum(panel.watts for panel in model.solar_panels) / 1000.0, 3)
-    solar_day_kwh = array_kw * strong_day_kwh_per_kw
-    always_2day = always_w * 2 * _HOURS_PER_DAY / 1000.0
-    both_2day = both_w * 2 * _HOURS_PER_DAY / 1000.0
-    cycle = {
-        "array_kw": array_kw,
-        "strong_day_kwh_per_kw": strong_day_kwh_per_kw,
-        "solar_day_kwh": round(solar_day_kwh, 2),
-        "two_day_load_kwh_all_tiers": round(both_2day, 2),
-        "two_day_load_kwh_always_on": round(always_2day, 2),
-        "net_kwh_all_tiers": round(solar_day_kwh - both_2day, 2),
-        "net_kwh_always_on": round(solar_day_kwh - always_2day, 2),
-        "sustains_all_tiers": solar_day_kwh >= both_2day,
-        "sustains_always_on": solar_day_kwh >= always_2day,
-        "basis": ("one strong solar day per 48h against 48h of tier load; the battery "
-                  "buffers the dark day"),
+    cycle = _cycle(array_kw, strong_day_kwh_per_kw, usable_kwh, always_w, both_w)
+    winter = _cycle(array_kw, winter_strong_day_kwh_per_kw, usable_kwh, always_w, both_w)
+
+    night_h = longest_night_hours(model.plan.project.site.lat)
+    bridge_h = _HOURS_PER_DAY + night_h
+    required_kwh = always_w * bridge_h / 1000.0
+    bridge = {
+        "longest_night_h": round(night_h, 2),
+        "bridge_hours": round(bridge_h, 2),
+        "required_kwh": round(required_kwh, 2),
+        "usable_kwh": round(usable_kwh, 2),
+        "bridges": usable_kwh > 0.0 and usable_kwh >= required_kwh,
+        "basis": ("battery alone carries the always-on tier from one evening's last sun "
+                  "through a dark day and the longest night after it"),
     }
 
     complete = (bool(tiers["always_on"]["complete"]) and bool(tiers["shed"]["complete"])
-                and not undeclared_batteries and inverter_kw is not None)
+                and not undeclared_batteries and inverter_kw is not None
+                and not conversion["unknown"])
     return {
         "modeled": True,
         "estimate": True,
         "complete": complete,
         "batteries": battery_rows,
         "batteries_without_capacity": undeclared_batteries,
-        "inverters": inverter_rows,
-        "pv_input_kw": pv_input_kw,
+        "inverters": conversion["rows"],
+        "inverter_unknown": conversion["unknown"],
+        "pv_input_kw": conversion["pv_input_kw"],
         "tiers": tiers,
         "peak": peak,
         "autonomy": autonomy,
         "cycle_48h": cycle,
-        "verdict": _verdict(complete, peak, autonomy, cycle),
+        "cycle_48h_winter": winter,
+        "darkness_bridge": bridge,
+        "verdict": _verdict(complete, peak, autonomy, cycle, winter, bridge),
     }
 
 
-def _verdict(complete: bool, peak: dict, autonomy: dict, cycle: dict) -> str:
+def _verdict(complete: bool, peak: dict, autonomy: dict, cycle: dict, winter: dict,
+             bridge: dict) -> str:
     """One sentence a plan reader can act on: keep this system, or add to it."""
     if not complete:
         return ("UNKNOWN — the model is missing a duty cycle, a battery capacity, or an "
-                "inverter rating; the numbers below are a floor, not a total")
+                "inverter rating, idle or efficiency; the numbers below are a floor, not a "
+                "total")
+    if autonomy["usable_kwh"] <= 0.0:
+        return ("no usable storage — the backup port carries nothing through a night, so "
+                "nothing here is sustained however large the array")
     problems = []
     if peak["within_continuous"] is False:
         problems.append(
@@ -278,16 +358,28 @@ def _verdict(complete: bool, peak: dict, autonomy: dict, cycle: dict) -> str:
             f"inverter's {peak['inverter_kw_continuous']:g} kW continuous output — the "
             "shed tier must not run with the always-on tier")
     if peak["within_surge"] is False:
-        problems.append("the largest shed-tier motor start exceeds the inverter surge")
+        problems.append("the largest backup motor start exceeds the inverter surge")
     if not cycle["sustains_always_on"]:
+        # A bigger battery cannot fix a cycle that loses energy every 48 h; it can only fix
+        # the bridge, so "not battery" is said only when the bridge already holds.
+        remedy = "add array, not battery" if bridge["bridges"] else "add array"
         problems.append(
-            f"one strong solar day ({cycle['solar_day_kwh']:g} kWh) does not cover 48h of "
-            f"even the always-on tier ({cycle['two_day_load_kwh_always_on']:g} kWh) — add "
-            "array, not battery")
+            f"one strong summer day ({cycle['solar_day_kwh']:g} kWh) does not cover 48h of "
+            f"even the always-on tier ({cycle['two_day_load_kwh_always_on']:g} kWh) — "
+            f"{remedy}")
     elif not cycle["sustains_all_tiers"]:
         problems.append(
             "one strong solar day covers the always-on tier over 48h but not both tiers "
             "together — which is what the shed tier is for")
+    if cycle["sustains_always_on"] and not winter["sustains_always_on"]:
+        problems.append(
+            f"a strong December day ({winter['solar_day_kwh']:g} kWh) does not cover 48h of "
+            f"the always-on tier ({winter['two_day_load_kwh_always_on']:g} kWh)")
+    if not bridge["bridges"]:
+        problems.append(
+            f"{bridge['usable_kwh']:g} kWh usable does not bridge a dark day and the "
+            f"{bridge['longest_night_h']:.1f} h longest night on the always-on tier "
+            f"(needs {bridge['required_kwh']:g} kWh)")
     if not problems:
         return (f"sufficient — {autonomy['usable_kwh']:g} kWh usable carries the always-on "
                 f"tier {autonomy['hours_always_on_only']} h unaided, and one strong solar "

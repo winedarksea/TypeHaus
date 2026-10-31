@@ -43,8 +43,20 @@ SUPPLY_DEVICES_BASEMENT = [
     PipeAccessory(uid="H2VD7MCX4L", tag="PA-B-BFP-BATH",
                   kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-B-CW-BATH",
                   position=pt(ft(7), ft(26)), room="RM-B-FURNACE", accessible=True,
-                  model='1/2" dual-check backflow preventer, testable',
-                  serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
+                  model='3/4" dual-check backflow preventer, testable',
+                  serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
+    # ESS closet firestop (owner standard, not a rated assembly): PR-B-KITCH-DRAIN passes
+    # both closet walls above the furred lid. Intumescent sealant at each annulus; the
+    # conduits that enter the closet (CD-B-GARAGE through W-B-ESS-W, the battery's DC run)
+    # get the same sealant at their sleeves, unbilled here — a ConduitRun takes no accessory.
+    PipeAccessory(uid="5BA8B4S73T", tag="PA-B-ESS-SEAL-W", kind=PipeAccessoryKind.PENETRATION_SEAL,
+                  pipe_ref="PR-B-KITCH-DRAIN", position=pt(inch(72), inch(420)),
+                  room="RM-B-ESS", wall_ref="W-B-ESS-W",
+                  model="intumescent firestop sealant at a 2 in. PVC annulus (Hilti FS-ONE MAX or equal)"),
+    PipeAccessory(uid="75Z157906Q", tag="PA-B-ESS-SEAL-E", kind=PipeAccessoryKind.PENETRATION_SEAL,
+                  pipe_ref="PR-B-KITCH-DRAIN", position=pt(inch(117), inch(421)),
+                  room="RM-B-ESS", wall_ref="W-B-STR",
+                  model="intumescent firestop sealant at a 2 in. PVC annulus (Hilti FS-ONE MAX or equal)"),
     PipeAccessory(uid="Q8RJ1ZFN6V", tag="PA-B-BFP-SAUNA",
                   kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-B-CW-SAUNA",
                   # room= said RM-B-SAUNA until 2026-09-05 and never was: y=16'-0" is six and

@@ -1,4 +1,4 @@
-"""The ESS rules — R327, NEC 705.12/690.12, and the two advisories — each proved twice.
+"""The ESS rules — R327, NEC 705.12/690.12, and the advisories — each proved twice.
 
 Same pattern as ``test_supply_protection.py``: a check that passes on a house which already
 complies proves almost nothing, since it would pass just as well if it returned ``[]``. So
@@ -19,11 +19,8 @@ import pytest
 from _helpers import check_context
 
 from typehaus.checks.advisory.energy_storage import ess_clearance, ess_enclosure
-from typehaus.checks.code.mn_residential.energy_storage import (
-    ess_capacity,
-    ess_detection,
-    ess_listing,
-)
+from typehaus.checks.advisory.energy_storage_anticipated import ess_capacity, ess_detection
+from typehaus.checks.code.mn_residential.energy_storage import ess_listing, ess_location
 from typehaus.checks.mep.power_sources import interconnection_busbar, rapid_shutdown
 from typehaus.checks.registry import CheckContext
 from typehaus.findings import Result
@@ -98,18 +95,27 @@ def test_an_undeclared_listing_fails(catlin_plan):
     assert len(fails) == 1 and "EQ-B-ESS-BATT" in fails[0].message
 
 
-# --- R327.5 energy ratings ------------------------------------------------------------
+# --- R327.3 location ------------------------------------------------------------------
+
+def test_the_battery_is_not_in_habitable_space(catlin_plan, catlin_model):
+    findings = ess_location(_context(catlin_plan, catlin_model))
+    assert [f.result for f in findings] == [Result.PASS]
+    assert findings[0].code_ref == "R327.3" and "RM-B-ESS" in findings[0].message
+
+
+# --- 2021 R328.5 energy ratings (advisory: not in the adopted 2018 book) ---------------
 
 def test_capacity_is_within_both_the_unit_and_the_aggregate_limit(catlin_plan, catlin_model):
     findings = ess_capacity(_context(catlin_plan, catlin_model))
     assert not _fails(findings)
-    assert any("14.3 kWh aggregate inside the dwelling" in f.message for f in findings)
+    assert any("14.3 kWh indoor aggregate" in f.message for f in findings)
+    assert all(f.code_ref == "2021 IRC R328.5" for f in findings)
 
 
 def test_an_oversized_unit_fails_the_per_unit_limit(catlin_plan):
     plan = _retype_battery(catlin_plan, storage_kwh=25.0)
     fails = _fails(ess_capacity(_context(plan)))
-    assert any("R327.5 limits one unit to 20 kWh" in f.message for f in fails)
+    assert any("R328.5 limits one unit to 20 kWh" in f.message for f in fails)
 
 
 def test_an_undeclared_capacity_is_unknown_not_zero(catlin_plan):
@@ -120,7 +126,7 @@ def test_an_undeclared_capacity_is_unknown_not_zero(catlin_plan):
     assert [f.result for f in findings] == [Result.UNKNOWN]
 
 
-# --- R327.7 fire detection ------------------------------------------------------------
+# --- 2021 R328.7 fire detection (advisory) ---------------------------------------------
 
 def test_the_ess_room_has_both_smoke_and_heat_coverage(catlin_plan, catlin_model):
     findings = ess_detection(_context(catlin_plan, catlin_model))
@@ -131,8 +137,8 @@ def test_the_ess_room_has_both_smoke_and_heat_coverage(catlin_plan, catlin_model
 @pytest.mark.parametrize("tag,missing", [("AL-B-ESS-SMOKE", "smoke"),
                                          ("AL-B-ESS-HEAT", "heat")])
 def test_removing_either_alarm_fails(catlin_plan, tag, missing):
-    """Both, not either. R327.7 sends you to R314 for smoke and adds a heat detector for
-    the locations a smoke alarm cannot serve; a battery closet is such a location."""
+    """Both, not either. 2021 R328.7 sends you to R314 for smoke and adds a heat detector
+    for the locations a smoke alarm cannot serve; a battery closet is such a location."""
     plan = _without_alarm(catlin_plan, tag)
     fails = _fails(ess_detection(_context(plan)))
     assert len(fails) == 1 and f"no {missing} alarm" in fails[0].message
@@ -220,23 +226,30 @@ def test_the_closet_meets_the_owners_type_x_standard(catlin_plan, catlin_model):
 
 
 def test_a_plain_gypsum_partition_fails_the_enclosure_standard(catlin_plan):
-    """Re-material the closet assembly's two membranes from Type X to regular board and
-    change nothing else — same tag, same thickness, same steel studs. The advisory has to
-    notice, because it reads the material's declared gypsum grade and not the layer's
-    thickness or the assembly's name."""
-    target = next(a for a in catlin_plan.library.assemblies
-                  if a.tag == "INT_ESS_CLOSET_STEEL")
-    layers = tuple(layer.model_copy(update={"material_ref": "gwb"})
-                   if layer.material_ref == "gwb-x" else layer
-                   for layer in target.layers)
-    assert any(layer.material_ref == "gwb" for layer in layers), "fixture: no Type X to swap"
-    swapped = target.model_copy(update={"layers": layers})
-    assemblies = tuple(swapped if a.tag == target.tag else a
-                       for a in catlin_plan.library.assemblies)
-    library = catlin_plan.library.model_copy(update={"assemblies": assemblies})
-    plan = catlin_plan.model_copy(update={"library": library})
+    """Take W-B-ESS-S's Type X swap off and change nothing else — same assembly, same
+    thickness, same studs. The advisory has to notice, because it reads the RESOLVED layers'
+    declared gypsum grade, not the assembly name or a layer's thickness."""
+    for storey in catlin_plan.storeys:
+        elements = catlin_plan.storey_elements(storey.tag)
+        if any(e.tag == "W-B-ESS-S" for e in elements):
+            plan = catlin_plan.with_elements(storey.tag, [
+                e.model_copy(update={"layer_materials": ()}) if e.tag == "W-B-ESS-S" else e
+                for e in elements])
     fails = _fails(ess_enclosure(_context(plan)))
-    assert len(fails) == 1 and "0.00\" Type X" in fails[0].message
+    assert len(fails) == 1 and "W-B-ESS-S (0.00\" Type X)" in fails[0].message
+
+
+def test_the_lid_is_graded_too(catlin_plan):
+    """The owner's box includes the lid: RM-B-ESS without its Type X ceiling_lining falls
+    back to the deck's plain gypsum and fails."""
+    for storey in catlin_plan.storeys:
+        elements = catlin_plan.storey_elements(storey.tag)
+        if any(e.tag == "RM-B-ESS" for e in elements):
+            plan = catlin_plan.with_elements(storey.tag, [
+                e.model_copy(update={"ceiling_lining": ()}) if e.tag == "RM-B-ESS" else e
+                for e in elements])
+    fails = _fails(ess_enclosure(_context(plan)))
+    assert len(fails) == 1 and "CEIL-RM-B-ESS" in fails[0].message
 
 
 def test_nothing_stands_in_the_batterys_separation_zone(catlin_plan, catlin_model):
@@ -296,7 +309,8 @@ def test_every_ess_rule_answers_not_applicable_on_a_house_with_no_battery(catlin
                         and getattr(getattr(e, "kind", None), "value", None) == "battery")]
         plan = plan.with_elements(storey.tag, kept)
     ctx = _context(plan)
-    for rule in (ess_listing, ess_capacity, ess_detection, ess_enclosure, ess_clearance):
+    for rule in (ess_listing, ess_location, ess_capacity, ess_detection, ess_enclosure,
+                 ess_clearance):
         findings = rule(ctx)
         assert len(findings) == 1, rule.__name__
         assert findings[0].result is Result.NOT_APPLICABLE, rule.__name__

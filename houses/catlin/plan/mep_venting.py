@@ -443,20 +443,21 @@ VENT_CLAMPS = [
 # Neither shares a leg with the other — the bathroom's runs north at x=7', the sauna's at
 # x=9' — the same rule PR-S-SUITEBATH-VENT follows against the hall bath's branch.
 VENT_BRANCHES_BASEMENT = [
-    # RM-B-BATH: the riser stands in W-B-STR2 at y=19'-3", clear of the east-wall pocket.
-    # Both fixtures name this service wall; the short west leg ties into the sauna vent.
+    # RM-B-BATH: the riser stands in W-B-STR2 at y=19'-1 1/2", clear of the east-wall pocket
+    # and, since 2026-10-30, in the bay south of stud-001 (at 19'-3" it stood in the stud).
+    # FX-B-UTIL-SINK's trap arm tees in at its base. The short west leg ties into the sauna vent.
     # ** A COMMON VENT INTO PR-B-SAUNA-VENT SINCE 2026-09-23. ** It ran north on x=7'-0"
     # and west on y=34'-6" to the chase; the re-packed chase leaves one lane in at the
     # basement ceiling, which the 2" sauna vent takes, and this 1 1/2" ties into that 2" line
     # at x=9'-0", rising all the way. The notes below describe the retired x=7' leg.
     PipeRun(uid="CBPV01AAAA", tag="PR-B-BATH-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(10), ft(19, 3)), pt(ft(10), ft(19, 3)),
-                  pt(ft(9), ft(19, 3))),
+            path=(pt(ft(10), inch(229.5)), pt(ft(10), inch(229.5)),
+                  pt(ft(9), inch(229.5))),
             diameter=inch(1.5), material="pvc",
             # Follow the sauna vent's raised y=19'-0" station, preserving drainage
             # back to the fixtures and keeping the riser below W-B-STR2's top plate.
             elevations=(ft(1, 3.4375), inch(91.551), inch(93.7678)),
-            serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
+            serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
     # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-3", 8'-2 3/16") — inside
     # W-B-CS's 3 1/2" liner build-up, in the pan's own east wall, on the pan-and-floor-drain
     # y centreline and clear of the mixer's two supply drops. That is both fixtures' declared
@@ -470,7 +471,7 @@ VENT_BRANCHES_BASEMENT = [
     # y=29'-4", west to x=5'-1 1/2", north between the ERV cabinet (x<=5'-0") and
     # DU-ERV-RISER-SUP's port, west on y=33'-4" just under FS-M-MECH's joists — 1" north of
     # the backup enclosure's 110.26 dedicated space, over the supply duct's leg — and north
-    # onto the vent riser at x=10". PR-B-BATH-VENT ties into it at (9'-0", 19'-3").
+    # onto the vent riser at x=10". PR-B-BATH-VENT ties into it at (9'-0", 19'-1 1/2").
     PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
             # The riser moved west 1" from x=17'-4" to clear W-B-SA-N2's stud-003 at
             # x=17'-5"; the short jog into the same westbound run stays above the wall.

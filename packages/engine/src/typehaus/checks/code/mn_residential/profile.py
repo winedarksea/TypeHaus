@@ -68,10 +68,11 @@ MN_2020 = JurisdictionProfile(
         "is modeled, which makes that reach test permissive rather than exact. No "
         "conductor sizing, box fill, or load calculation, none of which is claimed as a "
         "code result. "
-        "Energy storage: R327.2 UL 9540 listing, R327.5 per-unit and aggregate energy "
-        "ratings, and R327.7 smoke and heat detection at the system. R327.3 installation "
-        "per the manufacturer's instructions and R327.6 protection from impact are NOT "
-        "covered — neither has anything in the model to grade. Source-side NEC: 705.12 "
+        "Energy storage: R327.2 UL 9540 listing and R327.3's habitable-space exclusion. "
+        "R327.3 installation per the manufacturer's instructions, R327.4 inverter "
+        "listing, R327.5 ventilation and R327.6 protection from impact are NOT covered. "
+        "The 2021 R328 kWh caps and detection are advisories, not 2018 code. "
+        "Source-side NEC: 705.12 "
         "busbar interconnection and 690.12 PV rapid shutdown; no other article of the NEC "
         "is claimed. "
         "Wall bracing: R602.10 in full for the wind path — line spacing (R602.10.1.3), "
@@ -301,12 +302,11 @@ MN_2020 = JurisdictionProfile(
                        ("IRC E3901.6", "NEC 210.52(D)")),
         PermitItemSpec("AFCI branch circuits", ("code.E3902_16_afci",),
                        ("IRC E3902.16",), blocking=False),
-        # The energy storage system. R327 is the 2018 IRC's article number for it; the 2021
-        # edition renumbered the same material to R328, and this profile's base is 2018.
+        # The energy storage system, as the adopted 2018 IRC R327 has it. The kWh caps and
+        # detection are 2021 R328 and grade as advisories (energy_storage_anticipated.py).
         PermitItemSpec("Energy storage system",
-                       ("code.R327_ess_listing", "code.R327_ess_capacity",
-                        "code.R327_ess_detection"),
-                       ("IRC R327.2", "IRC R327.5", "IRC R327.7")),
+                       ("code.R327_ess_listing", "code.R327_ess_location"),
+                       ("IRC R327.2", "IRC R327.3")),
         # The two source-side NEC rules. Separate item from the ESS: an inspector signs off
         # on a backfeed breaker and a roof shutdown at a different moment than on a battery.
         PermitItemSpec("PV interconnection and rapid shutdown",

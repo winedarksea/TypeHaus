@@ -276,7 +276,7 @@ DRAINS = [
             diameter=inch(3), material="pvc",
             elevations=(ft(0), inch(-8.55), None, inch(-12.54)),
             slope_in_per_ft=0.25,
-            serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
+            serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
     # The lavatory's own 1 1/2" arm. The vanity sits on the same x=12' line as the WC, so
     # its trap drops straight onto the 3" branch below it — one vertical leg with no
     # horizontal arm under the slab at all, authored as its own run (not a vertex on the
@@ -562,32 +562,32 @@ LAUNDRY_MAIN = [
 # A cold-climate ERV core makes water, on the order of a gallon or two a day at this flow
 # against -15 F outdoor air. `pan_drain_ref` on EQ-B-ERV names this run.
 #
-# ** GRAVITY TO THE BATH LAVATORY, NOT THE SUMP (owner, 2026-10-17). ** No pump: the pan
+# ** GRAVITY TO A RECEPTOR, NOT THE SUMP (owner, 2026-10-17). ** No pump: the pan
 # (52 1/2" AFF, under the case bottom at 54") is the highest the line can ever be, so it
 # cannot hang up at the joists (the owner's other option, 2026-10-29) and must stay out of
 # the room at walking height instead.
 #
-# ** BEHIND THE TANK AND THROUGH THE UNDER-STAIR STORAGE (owner, 2026-10-29). ** The old
-# x=80.6"/y=302" legs fenced D-B-CLOSET's alcove on two sides at 45"-52". Now: north under
+# ** BEHIND THE TANK AND THROUGH THE UNDER-STAIR STORAGE (owner, 2026-10-29). ** North under
 # the case to y 30'-7 3/8", east through the tank's 4 1/2" T&P gap (9" over the valve) and
 # W-B-STR3 into the storage, across its low north end (stringers 58" over it), south 3 1/2"
 # off W-B-WELL, then west INSIDE W-B-BA-N (bores at 152", 136", 124") and through the
 # W-B-STR3 line at N-B-BA-NW, under its 49 1/2" ladder block (pipe top 47 1/2"), to the
-# mech face. From there the 10-29 legs: along W-B-STR3B/STR2 and east through W-B-STR2 to
-# the lavatory at 12'-0". Nothing crosses open floor, the swing (x 96.8"..120", y >= 317")
-# or D-B-CLOSET's doorway inside the storage (a leg down W-B-STR3's storage face would).
-# 26'-6" at 0.33"-0.99"/ft (MN 708.0 wants 1/4"; every leg keeps the 1/16" margin), 14 1/2"
-# in all, ending 38" up, visibly over the basin flood rim. PR-B-WH-COND tees in behind the
-# tank at x=94".
+# mech face. Nothing crosses open floor, the swing (x 96.8"..120", y >= 317") or
+# D-B-CLOSET's doorway inside the storage.
+# ** IT ENDS OVER FX-B-UTIL-SINK NOW (2026-10-30), not the bath lavatory. ** South on the
+# x=115.5" leg along W-B-STR2's face to y=19'-10", then 5 1/2" west to end 44 1/4" up over
+# the basin: a 10" air gap over the 34" rim, above the faucet's 43" box. The W-B-STR2 bore
+# and the bath crossing are gone. Every leg >= 0.35"/ft; PR-B-WH-COND still tees in behind
+# the tank at x=94".
 ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(inch(80.6), inch(352)), pt(inch(80.6), inch(367.375)),
                   pt(inch(160.5), inch(367.375)), pt(inch(160.5), inch(306)),
-                  pt(inch(115.5), inch(306)), pt(inch(115.5), inch(224.375)),
-                  pt(inch(144), inch(224.375))),
+                  pt(inch(115.5), inch(306)), pt(inch(115.5), inch(238)),
+                  pt(inch(110), inch(238))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(52.5), inch(52), inch(49.75), inch(48), inch(46.75), inch(40),
-                        inch(38),)),
+            elevations=(inch(52.5), inch(52), inch(49.75), inch(48), inch(46.75), inch(44.5),
+                        inch(44.25),)),
     # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem RH400-30 sheet C), 1.2" off the
     # ERV case's east face: a street elbow turns it down to 52 1/2", then it runs north past
     # the round tank's NW corner onto PR-B-ERV-COND behind the tank (Rheem: no trap to a

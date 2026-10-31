@@ -302,7 +302,7 @@ CIRCUITS = (
     # --- the backup microgrid (notes/backup_power.md) ---------------------------------
     # Every circuit below is homed to ED-B-BACKUP-PANEL, the 12-space subpanel on the
     # EG4 12kPV's dedicated load output. Two tiers: ALWAYS_ON rides the whole outage
-    # (food, network, enough light for two rooms); SHED drops via relay (or a
+    # (food, network, light for two rooms, the sump); SHED drops via relay (or a
     # relay-driven contactor for 2-pole/over-16A loads) when the battery is low and the
     # sun isn't out.
     #
@@ -316,8 +316,8 @@ CIRCUITS = (
 
     # -- ALWAYS_ON --
     # 800 VA is the *circuit allowance*, not the draw — the gap is why duty_cycle exists.
-    # Fridge averages ~60W, chest freezer ~45W: 105W of 800VA = 0.13, still the largest
-    # always-on term and the one most worth metering.
+    # The fridge averages ~60W and the upright freezer column beside it ~45W: 105W of 800VA
+    # = 0.13, still the largest always-on term and the one most worth metering.
     #
     # The ~15W PoE allowance this circuit used to carry moved to CKT-HA on 2026-08-02: the
     # access points are fed by the switch in ED-B-NET-PATCH, not a kitchen receptacle.
@@ -356,11 +356,22 @@ CIRCUITS = (
             duty_cycle=0.15,
             description="Basement + kitchen lighting (LED, backup light)"),
 
+    # The sump rides ALWAYS_ON since 2026-10-30: the long stormy night is exactly when a
+    # SHED relay drops it (battery low, no sun) and exactly when it must run. 1000 VA x 0.05
+    # is a pump running a minute or two an hour in wet weather; the start is graded as a
+    # motor in backup_calc's surge test. GFCI at the DEVICE (2026-10-27): ED-B-SUMP-RC is an
+    # audible-alarm GFCI, so a trip is heard (NEC 2023 210.8(A)(5)); the breaker is not GFCI.
+    Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=7, panel_ref=_BACKUP_PANEL,
+            breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON,
+            load_va=1000, duty_cycle=0.05, description="Sump pump"),
+
     # -- SHED --
-    # 2-pole, so it switches through a relay-driven contactor rather than a Pro 4PM channel
-    # (takeoff/electrical.py::RELAY_CHANNEL_AMPS). 0.4: a modulating 9K head holding one
-    # room in shoulder weather runs most of the time at a fraction of nameplate; this is
-    # the term that decides whether the shed tier is affordable at all.
+    # HP3 is the house's fallback heat on battery: one 9K head blowing into the open stair,
+    # which carries it up through the house. 2-pole, so it switches through a relay-driven
+    # contactor rather than a Pro 4PM channel (takeoff/electrical.py::RELAY_CHANNEL_AMPS).
+    # 0.4: a modulating head holding the stair in shoulder weather runs most of the time at
+    # a fraction of nameplate; this is the term that decides whether the shed tier is
+    # affordable at all.
     Circuit(uid="CKT010AAAA", tag="CKT-HP3", slot=1, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=2, backup_tier=BackupTier.SHED, load_va=1500,
             duty_cycle=0.4,
@@ -375,7 +386,9 @@ CIRCUITS = (
     # what governs the backup-event draw (see EQ-T-WATER-HEATER's note in plan/mep_hvac.py).
     # It buys nothing in the 220.82 calculation and never did — an unlisted software
     # governor is not a PCS (2026 NEC 130.2). `duty_cycle=0.15`: a HPWH makes a household
-    # day of hot water in 3-4 hours of compressor run.
+    # day of hot water in 3-4 hours of compressor run. In a WINTER outage the tank goes to
+    # off/vacation instead: 80 gal of stored water rides a day or two, and its compressor
+    # would be cooling a basement the battery cannot heat.
     # Slot 9 (not 5): a 2-pole breaker occupies slot and slot+2 in the same column
     # (electrical.panel_spaces); 5+7 collides with CKT-SUMP at slot 7, 9+11 is clear.
     # `backup_va=500`: the compressor's steady-state ceiling in Heat-Pump-Only mode
@@ -388,13 +401,6 @@ CIRCUITS = (
             backup_va=500, duty_cycle=0.15,
             description="Water heater, Rheem ProTerra 80gal hybrid HPWH (EQ-B-WH; "
                         "EcoNet-automated to Heat-Pump-Only on backup)"),
-    # GFCI at the DEVICE (2026-10-27): ED-B-SUMP-RC is an audible-alarm GFCI, so a trip is
-    # heard (NEC 2023 210.8(A)(5)) and the breaker is not GFCI. 0.05 is a pump
-    # running a minute or two an hour in wet weather — the peak matters, not the average,
-    # hence the shed tier despite the small energy number.
-    Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=7, panel_ref=_BACKUP_PANEL,
-            breaker_amps=20, poles=1, backup_tier=BackupTier.SHED,
-            load_va=1000, duty_cycle=0.05, description="Sump pump"),
 
     # --- general-use 120V ------------------------------------------------------------
     # ``afci=True`` on every circuit below (2026-08-01, code.E3902_16_afci): each reaches

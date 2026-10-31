@@ -21,6 +21,40 @@ BASEMENT_LAV_CONNECTIONS = [
                   pipe_ref="PR-B-LAV-TERMINAL-CW", position=pt(inch(141), inch(218.25)), elevation=inch(24.12000000),
                   accessible=True, room="RM-B-BATH", model='1/2 in. quarter-turn fixture angle stop',
                   serves=("FX-B-BATH-LAV",)),
+    # FX-B-UTIL-SINK (2026-10-30). The cabinet trap's 1 1/2" arm runs 5" east into W-B-STR2
+    # and tees under PR-B-BATH-VENT's riser at (10'-0", 19'-1 1/2") — the vent before the
+    # drop, so no S-trap — then drops through SP-B-SLAB-USINK and runs 20 3/4" south under
+    # the slab onto PR-B-BATH-DRAIN's y=17'-4 3/4" leg, upper half.
+    PipeRun(uid="TV31MEHNBX", tag="PR-B-USINK-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(inch(115), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(120), inch(208.75)),),
+            elevations=(inch(16), inch(15.84375), inch(-8.25), inch(-8.8125),),
+            diameter=inch(1.5), material="pvc", serves=("FX-B-UTIL-SINK",)),
+    # Stubs tee off the bath branches' W-B-STR2 drop ends (the hot carries on down to 24",
+    # under the lavatory's cold terminal) and drop in the cabinet. Hot south of cold; the
+    # faucet's flex supplies cross under the basin.
+    PipeRun(uid="5M7GZHHZB7", tag="PR-B-USINK-TERMINAL-HW", system=PipeSystem.WATER_HOT,
+            path=(pt(inch(120), inch(232.5)), pt(inch(120), inch(232.5)), pt(inch(116.5), inch(232.5)), pt(inch(116.5), inch(232.5)),),
+            elevations=(inch(27.4375), inch(24), inch(24), inch(20),),
+            diameter=inch(0.5), material="pex", serves=("FX-B-UTIL-SINK",)),
+    PipeAccessory(uid="8QR20SWNYZ", tag="PA-B-USINK-TERMINAL-HW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-USINK-TERMINAL-HW", position=pt(inch(116.5), inch(232.5)), elevation=inch(20),
+                  accessible=True, room="RM-B-FURNACE", model='1/2 in. quarter-turn fixture angle stop',
+                  serves=("FX-B-UTIL-SINK",)),
+    PipeRun(uid="88RGQW1SYP", tag="PR-B-USINK-TERMINAL-CW", system=PipeSystem.WATER_COLD,
+            path=(pt(inch(120), inch(238)), pt(inch(120), inch(238)), pt(inch(116.5), inch(238)),),
+            elevations=(inch(27.4375), inch(20), inch(20),),
+            diameter=inch(0.5), material="pex", serves=("FX-B-UTIL-SINK",)),
+    PipeAccessory(uid="REJC2RJ9CR", tag="PA-B-USINK-TERMINAL-CW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-USINK-TERMINAL-CW", position=pt(inch(116.5), inch(238)), elevation=inch(20),
+                  accessible=True, room="RM-B-FURNACE", model='1/2 in. quarter-turn fixture angle stop',
+                  serves=("FX-B-UTIL-SINK",)),
+    # The faucet's hose adapter is a hose thread on a potable line (UPC 603.5.7): a screw-on
+    # ASSE 1011 hose-connection vacuum breaker, billed here on the cold that feeds it.
+    PipeAccessory(uid="MWNBD5RR8S", tag="PA-B-USINK-VB", kind=PipeAccessoryKind.VACUUM_BREAKER,
+                  pipe_ref="PR-B-USINK-TERMINAL-CW", position=pt(inch(116.5), inch(238)),
+                  accessible=True, room="RM-B-FURNACE",
+                  model='screw-on hose-connection vacuum breaker, 3/4" GHT, ASSE 1011 (Woodford 34HD or Watts 8A)',
+                  serves=("FX-B-UTIL-SINK",)),
 ]
 
 MAIN_LAV_CONNECTIONS = [

@@ -245,19 +245,19 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     backup = {tag for tag, row in rows.items() if row["backup"]}
     assert backup == {"CKT-WH-240", "CKT-SUMP", "CKT-FRIDGE", "CKT-HA",
                       "CKT-LT-BACKUP", "CKT-HP3"}
+    # The sump rides always-on since 2026-10-30: the stormy night is when shed fires.
     assert {tag for tag, row in rows.items() if row["backup_tier"] == "always_on"} == {
-        "CKT-FRIDGE", "CKT-HA", "CKT-LT-BACKUP"}
+        "CKT-FRIDGE", "CKT-HA", "CKT-LT-BACKUP", "CKT-SUMP"}
     assert {tag for tag, row in rows.items() if row["backup_tier"] == "shed"} == {
-        "CKT-WH-240", "CKT-SUMP", "CKT-HP3"}
+        "CKT-WH-240", "CKT-HP3"}
     assert all(rows[tag]["panel"] == "ED-B-BACKUP-PANEL" for tag in backup)
-    # Only the SHED tier buys switching gear — that is what the tier means. Every shed
-    # circuit is now 2-pole or over the 16A relay-channel limit (CKT-WH-240 joined CKT-SUMP
-    # at 20A and the 2-pole CKT-HP3), so no circuit switches through a direct relay channel
-    # any more — but the relay itself is still bought, to drive the three contactor coils.
-    # The always-on tier contributes none, where the old flat `backup` flag bought three.
+    # Only the SHED tier buys switching gear — that is what the tier means. Both shed
+    # circuits are 2-pole, so neither switches through a direct relay channel — but the
+    # relay itself is still bought, to drive the two contactor coils. The always-on tier
+    # contributes none.
     components = {row["component"]: row["count"] for row in backup_component_rows(catlin_model)}
     assert components["Shelly Pro 4PM 4-channel DIN relay"] == 1
-    assert components["DIN contactor (relay-driven)"] == 3
+    assert components["DIN contactor (relay-driven)"] == 2
     # The source circuit is a source, and the schedule says so rather than leaving a reader
     # to infer it from a zero.
     assert rows["CKT-ESS-GRID"]["source"] and not rows["CKT-ESS-GRID"]["backup"]
@@ -459,11 +459,11 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
     # shed-tier switching gear. The first row is the inverter because equipment leads.
     components = bom["backup_power"]["components"]
     assert components[0]["component"].startswith("EG4 12kPV")
-    assert any(row["component"].startswith("EG4 PowerPro") for row in components)
+    assert any(row["component"].startswith("EG4 WallMount") for row in components)
     relays = next(row for row in components if "Pro 4PM" in row["component"])
     assert relays["count"] == 1  # drives the shed-tier contactor coils
     contactors = next(row for row in components if "contactor" in row["component"])
-    assert contactors["count"] == 3  # CKT-HP3 (2-pole), CKT-SUMP (20A), CKT-WH-240 (2-pole)
+    assert contactors["count"] == 2  # CKT-HP3 and CKT-WH-240, both 2-pole
     assert bom["backup_power"]["runtime"]["modeled"] is True
 
 

@@ -7,6 +7,13 @@
 > beams into the garage was rejected (DESIGN-LOG). Calcs: `notes/canopy_west_band.md`
 > 2026-10-28 amendment.
 
+> **Battery closet, 2026-10-30 (`notes/backup_power.md`):** EG4 12kPV kept. `RM-B-ESS` is
+> UL U305 wood studs + 5/8" Type X both faces (library partitions, `gwb-x` swap; W-B-ESS-W
+> 2x6 for the kitchen drain bore) under a furred two-layer Type X lid, behind an unrated
+> 24" steel door with a tempered lite. `FX-B-UTIL-SINK` (SE furnace room, hose behind an
+> ASSE 1011 vacuum breaker) is the ERV/WH condensate receptor. `CKT-SUMP` rides ALWAYS_ON.
+> The 2018 IRC R327 has no kWh caps or detection rule: those grade as advisories (2021 R328).
+
 > **Door sizing, 2026-10-29 (`plans/door-sizing.md`, decisions #96-#98):** `DoorType.width`
 > is the nominal leaf; the RO is published (`rough_opening`) or derived from `TRIM-STANDARD`.
 > No door holds its framing since the owner's answers (2026-10-29; per-door resolutions in
@@ -1922,8 +1929,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `PR-B-CW-SAUNA` run side by side, not stacked, at x=17'-4"/17'-3" — do not restack them;
     two 1/2" lines need 5/8" separation in a band only 3" deep.
   - Lighting/outlets: three `ED-T-LT-CAN4` (mark C retired 2026-10-28) on `CKT-LT-BACKUP` at x=190",
-    y=19'-6"/15'-0"/11'-6" (43.5 VA; `cycle_48h.sustains_always_on` no longer holds since the
-    2026-10-30 PoE cameras, `test_backup_calc.py`, notes/backup_power.md). Keep the middle one at **15'-0"**, not 15'-6" — `PR-B-HW-SAUNA`
+    y=19'-6"/15'-0"/11'-6" (43.5 VA; `cycle_48h.sustains_always_on` does not hold once
+    inverter idle and efficiency count, `test_backup_calc.py`, notes/backup_power.md §6). Keep the middle one at **15'-0"**, not 15'-6" — `PR-B-HW-SAUNA`
     crosses 2 9/16" below the ceiling there. `ED-B-WORKSHOP-SW` sits 5" north of
     `D-B-SHOP`'s hinge jamb — the only side with room for the box. `ED-B-HALL-RC1` is on
     `CKT-RC-BSMT` at y=16' (NEC 210.52(H)); note `electrical.receptacle_spacing` only walks
@@ -1972,7 +1979,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     slab to **72" AFF**: 10.25 m usable, over the owner's 10 m x 6' minimum. The target
     hangs on the south concrete face; hold `D-B-FURN` open during use; keep fixed
     furniture out of the inverter working space. Anything crossing the lane keeps its
-    envelope (with wrap) above 72". `PR-B-ERV-COND` falls by gravity to `FX-B-BATH-LAV`.
+    envelope (with wrap) above 72". `PR-B-ERV-COND` falls by gravity to `FX-B-UTIL-SINK`.
 
 - **Engine behaviour to rely on.** `illumination._gypsum_finishes` matches `gwb*`/`gwb`/
   `gwb-x` (every gypsum layer in this catalog), not the literal string `"gyp"`.

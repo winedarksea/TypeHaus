@@ -73,6 +73,13 @@ BASEMENT_FIXTURES = (
     Fixture(uid="5BBZTZNBWN", tag="FX-B-BATH-LAV", type_ref="FX-ANGSJON-36-SS",
             room="RM-B-BATH", position=pt(ft(12), inch(229.125)), mount=Mount(elevation=inch(8.375)), rotation=deg(180),
             wall_ref="W-B-STR2"),
+    # Furnace-room utility sink (owner 2026-10-30): SE corner, back on W-B-STR2's bare studs,
+    # clear of the dry-fire lane, the ESS zone, the panel working space and D-B-CLOSET. The
+    # bundled faucet's hose adapter is used here, behind PA-B-USINK-VB; it is the ERV/WH
+    # condensate receptor too (PR-B-ERV-COND). Trap arm, vent and stubs: mep_lavatories.py.
+    Fixture(uid="590H31JNNJ", tag="FX-B-UTIL-SINK", type_ref="FX-UTILITY-SINK-24",
+            room="RM-B-FURNACE", position=pt(inch(106.5), inch(233)), rotation=deg(-90),
+            wall_ref="W-B-STR2"),
 )
 
 # RM-M-BATH1: AP wall-hung bowl and roomier D-Code basin share the south wet wall. The aligned storage walls move 1 1/2" north
@@ -194,7 +201,8 @@ MAIN_FIXTURES = (
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-LG-WASHTOWER",
               room="RM-M-LAUNDRY", position=pt(m(2.9421), m(6.01059)), rotation=deg(180),
               wall_ref="W-M-BA2E"),
-    # Utility tub, 4 1/4" east of the stack.
+    # Utility tub, 4 1/4" east of the stack. Its faucet's hose adapter is not used here
+    # (owner, 2026-10-24), so no vacuum breaker or hose-bibb tee is carried.
     #
     # `drain_position` at y=18'-10 5/8" — clear of W-B-CW2 (12" concrete on the y=18' axis)
     # and joist-0-014's flange — is where PR-B-LSINK-DRAIN drops; it was 18'-9" until
