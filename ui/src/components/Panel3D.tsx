@@ -323,6 +323,9 @@ function createScene(
   // as moiré. Set before any texture is constructed — the maps are built lazily in setModel.
   THREE.Texture.DEFAULT_ANISOTROPY = renderer.capabilities.getMaxAnisotropy();
   mount.appendChild(renderer.domElement);
+  // setSize(…, false) leaves CSS size alone; without this the canvas shows at buffer size.
+  renderer.domElement.style.width = renderer.domElement.style.height = "100%";
+  renderer.domElement.style.display = "block";
 
   const content = new THREE.Group();
   scene.add(content);
@@ -504,8 +507,9 @@ function createScene(
   const setDragQuality = (active: boolean) => {
     const ratio = active ? 1 : restingPixelRatio;
     if (renderer.getPixelRatio() === ratio) return;
+    // setPixelRatio resizes the buffer itself; resize() would re-frame an untouched view.
     renderer.setPixelRatio(ratio);
-    resize();
+    requestRender();
   };
 
   const el = renderer.domElement;
