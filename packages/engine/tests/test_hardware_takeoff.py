@@ -905,3 +905,52 @@ def test_catlin_bills_panel_screws_on_the_house_and_garage_walls(catlin_model) -
     # exactly one 36" coverage long, so it has no sidelap joint (6 stitches).
     assert sidelap["count"] == 374
     assert sidelap["by_storey"]["garage"] == 140 and sidelap["by_storey"]["entry-low"] == 6
+
+
+# --- counted upgrade fasteners (decision #105) ----------------------------------------
+
+
+def test_upgrade_fastener_counts_are_the_sheet_and_tributary_arithmetic() -> None:
+    from typehaus.takeoff.panel_fasteners import panel_screw_count
+    from typehaus.takeoff.sheathing_nails import nails_per_sheet
+
+    # RSRS-01 on a 4x8 across 24" rafters: 5 support lines x 13 nails.
+    assert nails_per_sheet(48, 96, 24, 4, 4) == 65
+    # A blocked 4x8 shear panel on 16" studs: 50 edge + 18 field + 18 on the plates.
+    assert nails_per_sheet(96, 48, 16, 4, 12, blocked=True) == 86
+    # Board and batten: 1,679.5 SF at one screw per 12" x 24" is the guide's ~840.
+    assert panel_screw_count(1679.5 * (12 * M_PER_IN) ** 2, 12, 24) == 840
+
+
+def test_coated_and_stainless_connectors_carry_a_matching_fastener_schedule(catlin_model):
+    """Every billed zinc-heavy or stainless connector has a schedule, and no joint mixes
+    stainless with zinc (notes/north_entry_structure.md §6; L-F-SSNAILS line 1)."""
+    import re
+
+    from typehaus.hardware.catalog import EXPOSURE_TREATED, hardware_by_model
+    from typehaus.hardware.connector_fastening import (
+        STAINLESS_FINISHES,
+        ZINC_FINISHES,
+        connector_fastening,
+    )
+
+    # Parts that ARE fasteners or rigging, not connectors nailed to the wood.
+    not_connectors = {"ledger_anchor", "post_base_anchor", "suspension_saddle",
+                      "suspension_shackle", "bearing_standoff", "equipment_pad_anchor",
+                      "through_panel_pipe_strap", "tie_block"}
+    for row in hardware_takeoff(catlin_model):
+        part, item = row["part_number"], hardware_by_model(row["part_number"])
+        if item is None or item.role in not_connectors or item.finish is not None:
+            continue
+        coated = re.search(r"(Z|HDG|SS)$", part) or item.exposure == EXPOSURE_TREATED
+        schedule = connector_fastening(part)
+        if coated:
+            assert schedule is not None, f"{part} has no fastener schedule"
+        if schedule is None:
+            continue
+        for _count, model, _into in schedule.fasteners:
+            fastener = hardware_by_model(model)
+            assert fastener is not None and fastener.model == model, model
+            allowed = (STAINLESS_FINISHES if schedule.finish in STAINLESS_FINISHES
+                       else ZINC_FINISHES | STAINLESS_FINISHES)
+            assert fastener.finish in allowed, f"{part} ({schedule.finish}) with {model}"

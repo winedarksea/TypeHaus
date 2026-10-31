@@ -12,6 +12,7 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_ir import GSweep
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.roof_geometry import roof_height_at, roof_slope_factor
+from typehaus.takeoff.connector_fasteners import connector_fastener_rows
 from typehaus.takeoff.diaphragm_attachments import diaphragm_attachment_rows
 
 
@@ -178,7 +179,10 @@ def test_added_framing_and_fasteners_are_billed(catlin_model_ro):
     assert rows["diaphragm blocking end angles"]["count"] == 32
     assert rows["diaphragm blocking end angles"]["role"] == "diaphragm_blocking_end_tie"
     assert rows["diaphragm blocking end angles"]["part_number"] == "LS30Z"
-    assert rows["diaphragm blocking angle nails"]["count"] == 32 * 6
+    # The angle nails come from the LS30Z's connector schedule (decision #105).
+    angle_nails = connector_fastener_rows(list(rows.values()))
+    assert [(r["part_number"], r["count"]) for r in angle_nails] == [
+        ("0.148x1.5 connector nail", 32 * 6)]
     assert rows["diaphragm joint strap nails"]["count"] == 6 * 12
     # 4 x 18 canopy + 6 x 16 garage + 2 x 18 on the two end blocks.
     # 4 x 18 + 6 x 16 + 2 x 18 deck, (10 nailers + 6 blocks) x 5 lamination, 28 x 6
@@ -186,7 +190,7 @@ def test_added_framing_and_fasteners_are_billed(catlin_model_ro):
     nails = rows["diaphragm 8d nails"]
     assert nails["count"] == 204 + 16 * 5 + 28 * 6
     assert "204 deck-to-nailer" in nails["basis"] and "168 panel-edge" in nails["basis"]
-    assert "six outermost" in rows["diaphragm joint strap nails"]["basis"]
+    assert "6 outermost" in rows["diaphragm joint strap nails"]["basis"]
 
 
 def test_roof_sheets_separate_stock_sizes_and_print_both_attachments(catlin_model_ro):

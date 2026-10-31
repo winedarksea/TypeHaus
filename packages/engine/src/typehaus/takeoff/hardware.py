@@ -15,6 +15,7 @@ from typehaus.hardware.config import (
 )
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.anchors import anchorage_rows
+from typehaus.takeoff.connector_fasteners import connector_fastener_rows
 from typehaus.takeoff.diaphragm_attachments import diaphragm_attachment_rows
 from typehaus.takeoff.doors import door_hardware_rows
 from typehaus.takeoff.fasteners import (
@@ -23,11 +24,14 @@ from typehaus.takeoff.fasteners import (
 )
 from typehaus.takeoff.glazing import glazing_fastener_rows
 from typehaus.takeoff.hangers import joist_hanger_rows, ridge_tie_strap_rows
+from typehaus.takeoff.panel_fasteners import concealed_panel_screw_rows
 from typehaus.takeoff.partition_fasteners import partition_deflection_screw_rows
+from typehaus.takeoff.sheathing_nails import sheathing_nail_rows
 from typehaus.takeoff.slat_braces import slat_brace_rows
 from typehaus.takeoff.stair_spacers import stair_spacer_screw_rows
 from typehaus.takeoff.strap_braces import strap_brace_rows
 from typehaus.takeoff.suspension_anchors import suspension_anchor_rows
+from typehaus.takeoff.treated_framing_fasteners import treated_framing_fastener_rows
 from typehaus.takeoff.uplift import uplift_rows
 
 
@@ -39,9 +43,10 @@ def hardware_takeoff(model: ResolvedModel,
     :func:`~typehaus.hardware.catalog.hardware_row`): what the part is, how many,
     the purchase unit, and the ``basis`` rule that produced the count.
     """
-    return [
+    rows = [
         *exterior_insulation_screw_rows(model, config.exterior_insulation_fasteners),
         *exposed_fastener_cladding_screw_rows(model, config.exposed_fastener_cladding),
+        *concealed_panel_screw_rows(model),
         *partition_deflection_screw_rows(model, config.partition_deflection),
         *joist_hanger_rows(model, config.hanger_detection),
         *ridge_tie_strap_rows(model, config.hanger_detection),
@@ -54,4 +59,11 @@ def hardware_takeoff(model: ResolvedModel,
         *glazing_fastener_rows(model),
         *door_hardware_rows(model),
         *suspension_anchor_rows(model),
+    ]
+    # Decision #105: the fasteners whose spec a contractor could otherwise cheapen.
+    return [
+        *rows,
+        *connector_fastener_rows(rows),
+        *treated_framing_fastener_rows(model, config.treated_framing),
+        *sheathing_nail_rows(model),
     ]

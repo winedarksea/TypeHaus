@@ -261,6 +261,9 @@ _project = Project(
     # (owner, 2026-10-16; notes/opening_flashing_spec.md §4). Steel, so it may bear on the
     # KDAT head course across the membrane; aluminium may not (AWC DCA6).
     opening_flashing_material="metal-dark-exterior",
+    # 304 stainless at every KDAT joint (owner, 2026-09-10; notes/north_entry_structure.md
+    # §6). pt-syp sills take the library's HDG A153 default (owner, 2026-10-30).
+    treated_framing_fasteners={"kdat": "S10ACN", "glulam-treated": "S10ACN"},
     # Required: any ClearanceZone carrying a ``code_profile`` (in this catalog, only the
     # water-closet envelope) is silently dropped by
     # ``resolve/placeables.py::_resolved_clearance_zones`` without it, and every water closet

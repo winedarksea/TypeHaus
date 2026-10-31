@@ -226,6 +226,9 @@ class Project(HausModel):
     # The derived opening head flashing's metal (resolve/opening_flashing.py). A house names
     # its own trim coil here; the engine cannot name a house-local tag.
     opening_flashing_material: str = "formed-steel-flashing"
+    # Treated-framing nail per material tag (``takeoff/treated_framing_fasteners.py``); a
+    # treated material not named here takes the library's HDG A153 default.
+    treated_framing_fasteners: dict[str, str] = {}
 
 
 for _name, _obj in (

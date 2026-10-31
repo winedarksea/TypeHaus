@@ -42,8 +42,9 @@ MASA_MUDSILL_ANCHOR = StructuralHardware(
         load_duration_factor=1.6,
         species="DF/SP or better — §3.2.3 requires assigned SG >= 0.50; catlin's SPF "
                 "sill plates are SG 0.42 and these values do not apply to them unreduced",
-        fasteners="3 - 10d x 1.5 in each side leg + 6 - 10d x 1.5 in top, "
-                  "strap cast into the wet concrete",
+        fasteners="(3) 0.148 x 1-1/2 in into the sides + (6) 0.148 x 1-1/2 in into the top, "
+                  "9 per anchor (C-C-2026 p.34; was read as 3 per side leg, 12), strap cast "
+                  "into the wet concrete",
         citation=("ICC-ES ESR-2555 (MASA/MASAP foundation anchor straps) Table 1, standard "
                   "installation, 2x4/2x6 sill, uncracked concrete, Wind and SDC A&B; §3.2.3 "
                   "for the SG >= 0.50 requirement. Read 2026-08-30"),

@@ -227,6 +227,15 @@ ROLE_SNOW_RETENTION = "snow_retention"
 ROLE_SUSPENSION_SADDLE = "suspension_saddle"
 ROLE_SUSPENSION_SWIVEL = "suspension_swivel"
 ROLE_SUSPENSION_SHACKLE = "suspension_shackle"
+# Counted "upgrade" fasteners (decision #105). Looked up by model, never by role, except
+# where one product serves the role: the concealed panel screws (one per cladding, so the
+# cost code can tell siding from roofing) and the HDG nail treated framing falls back to.
+ROLE_CONCEALED_SIDING_PANEL_SCREW = "concealed_siding_panel_screw"
+ROLE_CONCEALED_ROOFING_PANEL_SCREW = "concealed_roofing_panel_screw"
+ROLE_CONNECTOR_NAIL = "connector_nail"
+ROLE_TREATED_FRAMING_NAIL = "treated_framing_nail"
+ROLE_STAINLESS_FRAMING_NAIL = "stainless_framing_nail"
+ROLE_SHEATHING_NAIL = "sheathing_nail"
 
 
 @dataclass(frozen=True)
@@ -365,6 +374,11 @@ class StructuralHardware:
     #: A pocket frame whose track screws up into wood gets a flat 2x6 nailer over the header
     #: (the commodity kits). ``False``: the kit's own steel header carries the track (Eclisse).
     pocket_track_nailer: bool = True
+    #: A fastener's coating: ``"ss304"``, ``"ss316"``, ``"hdg"``, ``"zmax"``, ``"g90"`` or
+    #: ``"mech_galv"``.
+    #: Read by the connector-schedule lint (never mix stainless and zinc in one joint).
+    #: ``None``: not a fastener, or not recorded.
+    finish: str | None = None
 
     @property
     def available_lengths_in(self) -> tuple:

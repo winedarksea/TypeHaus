@@ -19,6 +19,7 @@ zip-r = { low = 42.0, high = 55.0 }
 
 [hardware]       # $ per takeoff unit (usually each), keyed by part number
 LUS210 = 1.85
+"SSA8D" = { low = 0.20, high = 0.27 }   # counted nails and screws are priced PER PIECE (box / count)
 
 [concrete]       # $ per cubic yard placed, keyed by solid category (slab, footing, ...)
 slab = { low = 180, high = 240 }

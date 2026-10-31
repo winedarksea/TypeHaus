@@ -154,6 +154,11 @@ class Material(HausModel):
     # directly, and it is a product fact (11", 12", 16") that no dimension in the assembly
     # implies.
     fastener_coverage_in: float | None = None
+    # The CONCEALED panel screw as a counted part (decision #105): the catalog model to bill
+    # and the spacing along the fastened edge. ``ceil(area / (coverage x pitch))``. Set only
+    # where ``exposed_fastener`` is False, or the screws bill twice.
+    panel_fastener_part: str | None = None
+    panel_fastener_pitch_in: float | None = None
     # Specific gravity, G, of a WOOD material, oven-dry — NDS 2018 Table 12.3.3A. It is a
     # species fact, not a section fact, so it belongs on the material and not on a framing
     # spec. The one consumer is fastener withdrawal, where W = 2850 G^2 D and the answer

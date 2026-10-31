@@ -777,6 +777,37 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "0.148x1.5 connector nail" = { low = 0.04, high = 0.06 }
 "8d common 0.131x2.5" = { low = 0.04, high = 0.06 }
 "10d short common 0.148x2.5" = { low = 0.07, high = 0.10 }
+
+# Counted "upgrade" fasteners (decision #105), material only, per piece: retail box price /
+# count, seen 2026-10-31, banded over small-box and carton. Driving them stays in framing,
+# siding and roofing labour. Connector nails (Simpson Strong-Drive SCN HDG / SCNR 316):
+#   N8D5HDG-R 750 $24.99 (toolnut) / N8DHDG 1 lb ~147 $5.99 (fastenersplus)
+#   10D5HDG-R 250 $21.99-24.99; Grip-Rite 10HGC5 330 $25.99 (hemlockhardware)
+#   16D5HDG-R 200 $21.99-24.99 (toolnut / fastenersplus)
+#   SSA8D5 450 $91.99, SSA8DD 90 $22.99; SSNA10D5 600 $108.99, 120 $26.99;
+#   SSA10D5 250 $79.99, SSA10DD 50 $19.99 (toolnut)
+#   SD9112R500 $58.99, SD9112R100 $13.99 (toolnut)
+"0.131x1.5 connector nail" = { low = 0.03, high = 0.05 }
+"10d common 0.148x3" = { low = 0.08, high = 0.12 }
+"16d common 0.162x3.5" = { low = 0.11, high = 0.15 }
+"SSA8D" = { low = 0.20, high = 0.27 }
+"SSNA10D" = { low = 0.18, high = 0.23 }
+"SSA10D" = { low = 0.32, high = 0.40 }
+"SD9112" = { low = 0.11, high = 0.14 }
+# Treated framing (304 at KDAT) and sheathing nails. S10ACN1 1 lb $13.99 at ~67/lb; S8ACN5
+# 5 lb $65.99, collated S10A250CNB 4,000 $792.99 = $0.20 (toolnut). RSRS-01: Paslode
+# RounDrive 0.113 x 2-3/8 bright ring shank, full round head, 3,000 $109.99 (hemlockhardware);
+# the clipped-head Grip-Rite strips are cheaper and FORTIFIED rejects them.
+"S10ACN" = { low = 0.18, high = 0.25 }
+"S8ACN" = { low = 0.15, high = 0.25 }
+"RSRS-01 0.113x2.375" = { low = 0.03, high = 0.05 }
+# Concealed panel screws, out of the panel $/SF rates since 2026-10-31. The 316 B&B screw is
+# a SPECIAL ORDER: no stocked #10-12 x 1-1/2 316 pancake head was found; ST Fastening
+# 10A150TQPSSN (304) is $57.99/250 = $0.23, $502/2,500 = $0.20 (fastenersplus), and the band
+# assumes 316 at ~1.3-2x that. ESTIMATE, confirm with the supplier. Metal Sales 8243100 has
+# no published price: the band is plated #10 pancake-head screws, ESTIMATE.
+"#10-12x1-1/2 PH T17 316SS" = { low = 0.26, high = 0.45 }  # 842 ea, BBD75
+"8243100" = { low = 0.05, high = 0.12 }  # 1,822 ea, Image II nail strip at 12" o.c.
 # Schematic installed allowances, not supplier quotations. Replace with the engineered
 # fabrication bid; includes anchors/flashing/shims, and may exceed the removed pier cost.
 # RESEARCHED 2026-08-08 — [low, high] $ each, material only. Basis: single-piece and
@@ -1268,9 +1299,9 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # estimate. The high end carries a 25% small-order adjustment for a job that buys four
 # cartons and not forty.
 #
-# ** This is the one cladding fixing in this file billed as a counted part rather than
-# inside a $/SF rate, and that is the whole reason `Material.exposed_fastener` exists. **
-# The four seam profiles' clips and fixings are inside their [envelope_layers] rows. See
+# ** The face-fastened cladding fixing, counted because `Material.exposed_fastener` says so. **
+# The B&B and Image II concealed screws are counted off `panel_fastener_part` (#105); the
+# retired seam profiles' clips and fixings stay inside their [envelope_layers] rows. See
 # [basis_notes]. Labour is NOT here: driving them is inside the "pbr-panel-24" labour rate,
 # which is where the care they need (land in the flat, drive to gasket compression and no
 # further) is actually priced.
@@ -4234,18 +4265,19 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # below is this row's numbers verbatim and this one is kept because EXT_2X6_SWINBURNE and
 # the library's generic row still name `standing-seam`.
 "standing-seam" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
-# Roof $/SF includes the nail-flange fixings; there is no separate Image II fastener row (2026-10-29).
+# The nail-flange screws are a counted [hardware] "8243100" row since 2026-10-31 (#105), out of
+# these three rates: material -$0.04/-0.09 per SF, one screw per 1.33 SF at $0.05-0.12.
 # 1,544 SF — RF-HOUSE. Material matches `standing-seam` above (a colour is not a cost).
 # 2026-10-29: labour re-struck to the nail-strip band (no clips/seamer; Sheffield $5-11
 # installed = retired standing-seam-nailstrip $4-7.5 + $0.5 for 24 ga and the PV array). Was seamed $7-12.
-"standing-seam-linen-white" = { material = { low = 3.5, high = 6.5 }, labour = { low = 4.5, high = 7.5 } }
+"standing-seam-linen-white" = { material = { low = 3.46, high = 6.41 }, labour = { low = 4.5, high = 7.5 } }
 # Canopy roof. Same Image II panel and installed rate as the garage's vented roof below.
 # 2026-10-29: nail-strip labour, a step above the house roof for small-job mobilisation. Was seamed $7-12.
-"standing-seam-image-ii-garage" = { material = { low = 3.5, high = 6.5 }, labour = { low = 5, high = 8 } }
+"standing-seam-image-ii-garage" = { material = { low = 3.46, high = 6.41 }, labour = { low = 5, high = 8 } }
 # Garage roof since 2026-10-27: its Cobra vented ridge makes it a separate covering tag
 # (materials_metal.py). Same panel and rate as the canopy row above; keep the two in step by hand.
 # 2026-10-29: nail-strip labour as the canopy row; at $5/SF the 714 SF sits near the old $4-6k floor, no lower without a quote.
-"standing-seam-image-ii-garage-vented" = { material = { low = 3.5, high = 6.5 }, labour = { low = 5, high = 8 } }
+"standing-seam-image-ii-garage-vented" = { material = { low = 3.46, high = 6.41 }, labour = { low = 5, high = 8 } }
 # NOT TAKEN as of 2026-08-26 — kept as the revert rate. It clad the house walls
 # (EXT_2X6, PLANT_EXT_2X6_HUMID) until the exposed-fastener PBR row below replaced
 # it, and EXT_2X6_SWINBURNE still names it, so the row stays and the swap back is a
@@ -4289,7 +4321,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # (`[hardware]` "T09150HWAM"), which is what `Material.exposed_fastener` exists to enable.
 # See [basis_notes] — this and the garage's corrugated are the wall panels where that split
 # applies, and folding the screws back into $/SF here would double-bill them. The board &
-# batten row below is the other way round: concealed fixings, inside its $/SF.
+# batten and Image II concealed screws are counted too since 2026-10-31, off
+# `Material.panel_fastener_part` instead (decision #105).
 "pbr-panel-26" = { material = { low = 1.75, high = 2.75 }, labour = { low = 2.75, high = 4.5 } }
 # 1,416.6 SF — the house's EAST AND WEST walls (EXT_2X6 and PLANT_EXT_2X6_HUMID), from
 # 2026-09-14. The same Metal Sales PBR profile as the 26 ga row above, in 24 ga PVDF Linen
@@ -4367,12 +4400,12 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # which is the conservative direction. The band itself has never moved — only where in it
 # this panel sits.
 #
-# ** ~840 CONCEALED SCREWS, at ~$0.04/SF, and they are inside the labour rate. ** One screw
+# ** ~840 CONCEALED SCREWS — a counted `[hardware]` row since 2026-10-31 (842, 316 SS). ** One screw
 # per panel per girt at the nail strip is BBD75's own detail, so each screw is responsible for
 # 24" x 12" = 2.00 SF: 1,678.3 / 2.0 = ~840 (it was ~915 at 11"). That is the same tributary
 # the withdrawal calculation grades against (see below), so the count and the structural
 # demand cannot drift apart. There is NO CLIP LINE on this panel — that is the BB75 product —
-# so nothing else is hidden in this rate. If the installer puts a screw at each of the two
+# and nothing hidden in this rate. If the installer puts a screw at each of the two
 # concealed legs the count roughly doubles and every screw's demand halves: cheaper
 # structurally, dearer in labour, and neither the model nor this rate assumes it.
 #
@@ -4395,11 +4428,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # is the KDAT contact — see the SDWS22800DB note in [hardware] for why the GIRT screw,
 # encapsulated and dry, is the opposite case and stays carbon steel.
 #
-# ** THE FIXINGS ARE INSIDE THIS RATE, unlike the PBR row. ** `board-batten-24` deliberately
-# does NOT set `Material.exposed_fastener`, so `takeoff.fasteners` bills no counted screw for
-# these walls (the T09150HWAM row fell from 3,263 to 1,804 the day this landed: 640 garage
-# corrugated + 1,164 on the E/W PBR). Setting that flag AND leaving the screws in this $/SF
-# would double-bill them.
+# ** THE FIXINGS ARE OUT OF THIS RATE since 2026-10-31 ** (decision #105): the material sets
+# `panel_fastener_part`, so `takeoff/panel_fasteners.py` bills the 316 screw as a counted part
+# ("#10-12x1-1/2 PH T17 316SS"). It still does NOT set `exposed_fastener` — that would bill
+# them a second time as T09150HWAM. Labour came down $0.04/SF, the screw share it carried.
 #
 # ** A MANUFACTURER READ SINCE 2026-09-22 — THERE IS NO ENGINEERING ITEM ANY MORE. **
 # `structural.cladding_wind` grades the guide's own row both ways (0.315 outward against 58
@@ -4501,7 +4533,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # as a made-to-order coil run until told otherwise. That number is what decides whether this
 # material band moves.
 # 2026-10-29: labour -20% now trim bills by the stick ([cladding_trim]); material left (24 ga PVDF bare is $2.50-3.00 published).
-"board-batten-24" = { material = { low = 2.0, high = 3.55 }, labour = { low = 3.4, high = 5.4 } }
+"board-batten-24" = { material = { low = 2.0, high = 3.55 }, labour = { low = 3.36, high = 5.36 } }
 # Retired RF-GARAGE nail-strip rate; Image II now uses standing-seam-image-ii-garage.
 # Formerly 749.6 SF. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
 # lifted for the Twin Cities and for a 749 SF roof being a minimum-mobilisation job for any
@@ -8352,5 +8384,5 @@ drainage        = "material plus installed labour for the prefinished K-style gu
 floor_heat      = "material plus installed labour, backed out of published $/SF-of-floor prices. The 3 floor sensors are not in it"
 floor_finishes  = "material plus installed labour on the ORDER quantity. carpet-pad and catlin-bedroom-carpet-pad carry labour = 0 on purpose: laying the pad is inside the carpet rate"
 placeables      = "unit price plus INSTALL labour. Rough-in is billed by the foot in [pipe_runs], [ducts] and [conduit]; branch-circuit conductors are in neither and are the largest single omission in the file"
-envelope_layers = "Garage and canopy Image II roof uses the house Image II panel rate; a separate material tag retains the garage ice barrier allowance without extending the house-only vent mat driver. Material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is NINE rows keyed on fixing method, seam profile and gauge, not one: mechanical seam, snap lock, nail strip, 26 ga nail strip, exposed-fastener PBR in BOTH gauges, 7/8 in corrugated in BOTH gauges, and 24 ga concealed-fastener board & batten differ by up to $4.50/SF of LABOUR and must never be re-merged. Since 2026-09-14 the live wall rows are all 24 ga (PVDF is a 24 ga product at Metal Sales) and the two 26 ga rows sit at 0 SF as the documented reverts, alongside snap-lock and 26 ga nail strip. The two EXPOSED-fastener rows are the odd ones out and the split matters beyond labour: PBR and corrugated are the wall panels whose FIXINGS are billed as a separate counted part ([hardware] T09150HWAM, 1,804 screws), because a face-fastened panel opts in via Material.exposed_fastener. Every other row, board & batten included, has its clips and fixings inside its $/SF rate. Folding those screws back into this section, or adding a screw count against any of the concealed rows, double-bills them"
+envelope_layers = "Garage and canopy Image II roof uses the house Image II panel rate; a separate material tag retains the garage ice barrier allowance without extending the house-only vent mat driver. Material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is NINE rows keyed on fixing method, seam profile and gauge, not one: mechanical seam, snap lock, nail strip, 26 ga nail strip, exposed-fastener PBR in BOTH gauges, 7/8 in corrugated in BOTH gauges, and 24 ga concealed-fastener board & batten differ by up to $4.50/SF of LABOUR and must never be re-merged. Since 2026-09-14 the live wall rows are all 24 ga (PVDF is a 24 ga product at Metal Sales) and the two 26 ga rows sit at 0 SF as the documented reverts, alongside snap-lock and 26 ga nail strip. The two EXPOSED-fastener rows are the odd ones out and the split matters beyond labour: PBR and corrugated are the wall panels whose FIXINGS are billed as a separate counted part ([hardware] T09150HWAM, 1,804 screws), because a face-fastened panel opts in via Material.exposed_fastener. Since 2026-10-31 (decision #105) the board & batten and Image II concealed screws are counted too, off Material.panel_fastener_part ([hardware] "#10-12x1-1/2 PH T17 316SS" and "8243100"), and those four rates had the screw share cut out. Every other row has its clips and fixings inside its $/SF rate. Folding counted screws back into this section, or adding a screw count against a row that still carries them, double-bills them"
 framing         = "material plus installed labour, $/LF of ordered stock. Add 10-15% for framing general conditions (mobilisation, bracing, layout, hardware, punch-out), which no per-unit rate captures"

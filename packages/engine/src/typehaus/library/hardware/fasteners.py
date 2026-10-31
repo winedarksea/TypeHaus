@@ -7,6 +7,8 @@ from __future__ import annotations
 
 from typehaus.hardware.catalog import (
     EXPOSURE_DRY,
+    ROLE_CONCEALED_ROOFING_PANEL_SCREW,
+    ROLE_CONCEALED_SIDING_PANEL_SCREW,
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_GIRT_STANDOFF_SCREW,
@@ -289,4 +291,41 @@ SIDELAP_STITCH_SCREW = StructuralHardware(
            "panel-to-panel side lap stitching; 0-2000 rpm gun with depth-sensing nosepiece, "
            "no impact. The 7/8\" length is Metal Sales' and was not listed on the SFS page — "
            "confirm on order",
+)
+
+
+# Concealed panel screws (decision #105): counted off ``Material.panel_fastener_part`` /
+# ``panel_fastener_pitch_in``, set only where the panel is NOT ``exposed_fastener``.
+# One role per cladding so the cost code can tell the siding crew's from the roofer's.
+#
+# 316 is the owner's call (2026-10-30). No stocked #10-12 x 1-1/2 pancake 316 was found on
+# 2026-10-31 (Fasteners Plus, All Points, Triangle, McMaster, Bolt Depot, Simpson, Metal
+# Sales): the nearest is ST Fastening 10A150TQPSSN in 304. So this is a SPEC line for a
+# special order, which is why the model is a description and the maker is "generic".
+CONCEALED_SIDING_PANEL_SCREW = StructuralHardware(
+    tag="pancake-10-12x1-5-t17-ss316",
+    name="#10-12 x 1-1/2\" pancake-head wood screw, Type 17 point, 316 stainless",
+    role=ROLE_CONCEALED_SIDING_PANEL_SCREW,
+    manufacturer="generic",
+    model="#10-12x1-1/2 PH T17 316SS",
+    finish="ss316",
+    source="Metal Sales BBD75 install guide (2025-10-16): one #10-12 pancake-head wood screw "
+           "per panel per support at the nail strip; length 1-1/2\" and Type 17 point by the "
+           "catlin cladding_fastener grade. Special order in 316; stocked 304 equivalent ST "
+           "Fastening 10A150TQPSSN (fastenersplus.com, 2026-10-31)",
+)
+
+# Image II's own nail-strip screw. The PIM names no coating and no stainless option, so
+# this is the manual's screw as Metal Sales stocks it (plated), and the source says so.
+CONCEALED_ROOFING_PANEL_SCREW = StructuralHardware(
+    tag="metal-sales-8243100-pancake-screw",
+    name="#10-12 x 1\" pancake-head wood screw, plated (Metal Sales 8243100)",
+    role=ROLE_CONCEALED_ROOFING_PANEL_SCREW,
+    manufacturer="Metal Sales",
+    model="8243100",
+    source="Metal Sales Image II Product Installation Manual (3/21) PIM-8: \"#10-12 Pancake "
+           "Head Wood Screw\" at the panel seam, no coating stated and no stainless named; "
+           "PIM-10 eave/cleat details at 1'-0\" o.c.; FL11560.4-R5 p.3: penetrate the deck "
+           "1/4\" minimum, \"corrosion resistant\". Part 8243100 per the Metal Sales "
+           "Residential Design Guide p.14",
 )

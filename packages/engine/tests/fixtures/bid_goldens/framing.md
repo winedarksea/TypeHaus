@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.2  
 **Model hash:** df754dd57f178a19  
-**Lines:** 184
+**Lines:** 197
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -92,9 +92,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 192 | ea |  | building |
+| HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail) | 84 | ea |  | building |
+| HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 1,098 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 44 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | 285 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | 72 | ea |  | building |
+| HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5) | 288 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 452 | ea |  | building |
+| HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 176 | ea |  | building |
+| HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 911 | ea |  | building |
 | A35Z framing angle | 6 | ea |  | building |
 | A35Z framing angle | 4 | ea |  | main |
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
@@ -148,8 +154,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | 2 | ea |  | building |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | 49 | ea |  | basement, main |
+| RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375) | 3,138 | ea |  | building |
 | S-5-N Mini nail-strip seam clamp | 24 | ea |  | building |
+| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN) | 614 | ea |  | building |
+| 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN) | 73 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | 4 | ea |  | basement |
+| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112) | 120 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 71 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 105 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 12 | ea |  | building |
@@ -159,6 +169,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP6 stud plate tie (2x6) | 323 | ea |  | building |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | 4 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 13 | ea |  | building |
+| SCNR ring-shank connector nail, 0.148in x 3in, Type 316 (SSA10D) | 192 | ea |  | building |
+| SCNR ring-shank connector nail, 0.131in x 2.5in, Type 316 (SSA8D) | 100 | ea |  | building |
+| SCNR ring-shank connector nail, 0.148in x 1.5in, Type 316 (SSNA10D) | 360 | ea |  | building |
 | THA422 top-flange floor truss hanger | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 1 | ea |  | building |
@@ -331,8 +344,14 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | — |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | — |
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | — |
+| HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail) | — |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | — |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | — |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3) | — |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | — |
+| HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5) | — |
+| HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | — |
+| HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | — |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | — |
 | A35Z framing angle | — |
 | A35Z framing angle | SB-BW-BAND |
@@ -387,8 +406,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUSZ) | — |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | — |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | SL-B-FLOOR, SL-M-DECK |
+| RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375) | — |
 | S-5-N Mini nail-strip seam clamp | — |
+| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN) | — |
+| 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN) | — |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | HA-SG-DAYBED-NE, HA-SG-DAYBED-NW, HA-SG-DAYBED-SE, HA-SG-DAYBED-SW |
+| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
@@ -398,6 +421,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP6 stud plate tie (2x6) | — |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | — |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | — |
+| SCNR ring-shank connector nail, 0.148in x 3in, Type 316 (SSA10D) | — |
+| SCNR ring-shank connector nail, 0.131in x 2.5in, Type 316 (SSA8D) | — |
+| SCNR ring-shank connector nail, 0.148in x 1.5in, Type 316 (SSNA10D) | — |
 | THA422 top-flange floor truss hanger | — |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | — |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | — |

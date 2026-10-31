@@ -190,6 +190,7 @@ from typehaus.model.registry import (
     register_constructor,
 )
 from typehaus.model.screens import SlatScreen
+from typehaus.model.sheathing_nailing import SheathingNailing
 from typehaus.model.site import (
     Basemap,
     Benchmark,
@@ -331,7 +332,7 @@ for _name, _obj in (
     ("ToRoof", ToRoof), ("FollowRoof", FollowRoof), ("Arch", Arch),
     ("PublishedSpan", PublishedSpan), ("PublishedCapacity", PublishedCapacity),
     ("PublishedReaction", PublishedReaction), ("PublishedCladdingLoad", PublishedCladdingLoad),
-    ("PublishedHole", PublishedHole),
+    ("PublishedHole", PublishedHole), ("SheathingNailing", SheathingNailing),
     ("SegmentalWallSpec", SegmentalWallSpec), ("SrwDrainageZone", SrwDrainageZone),
     ("EndRestraint", EndRestraint),
     ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
@@ -409,7 +410,7 @@ __all__ = [
     "FaceRef", "face", "LayerMaterial", "ToRoof", "FollowRoof", "Arch", "LayerSpan",
     "OpeningFrameEndSupports", "OpeningPosition", "OpeningSize",
     "PublishedSpan", "PublishedCapacity", "PublishedReaction",
-    "PublishedCladdingLoad", "PublishedHole",
+    "PublishedCladdingLoad", "PublishedHole", "SheathingNailing",
     "ShearPanelSpec", "DiaphragmSpec", "DiaphragmDelivery", "ReceivingLine", "HeadConnector",
     "CollectorBlocking", "JointNailing", "PanelEdgeBlocking",
     "InServiceMoisture",

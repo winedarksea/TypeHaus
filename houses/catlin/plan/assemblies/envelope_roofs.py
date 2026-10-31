@@ -8,6 +8,7 @@ from typehaus import (
     FramingSpec,
     Layer,
     LayerFunction,
+    SheathingNailing,
     inch,
 )
 from library import (
@@ -118,8 +119,11 @@ ROOF = Assembly(
               )),
         # 19/32" CDX, APA Rated Sheathing 40/20: deck, screw substrate and metal-pan bed
         # in one panel — and no longer any part of the air barrier: that moved to the foam under it.
+        # FORTIFIED RSRS-01 ring-shank at 4" o.c. everywhere (notes/fortified_roof_cert.md).
         Layer(name="sheathing", material_ref="cdx-plywood", thickness=ROOF_DECK_THICKNESS,
-              function=LayerFunction.SHEATHING),
+              function=LayerFunction.SHEATHING,
+              nailing=SheathingNailing(part="RSRS-01 0.113x2.375", edge_oc_in=4.0, field_oc_in=4.0,
+                                       source="2025 FORTIFIED Home Standard 4.2.2: RSRS-01 at 4 in. o.c. maximum in all areas of the roof")),
         # High-temp self-adhered butyl over the WHOLE deck, not an eave band. This is also
         # the strongest form of the FORTIFIED sealed-roof-deck requirement, and it retires
         # the open "screwed nailbase vs RSRS-01" item in notes/fortified_roof_cert.md §4.2.2
@@ -185,8 +189,13 @@ GARAGE_ROOF = Assembly(
                                   chord_member="2x4", web_member="2x4"),
               cavity=CavityFill(material_ref="blown-fiberglass", thickness=inch(14.5),
                                 framing_factor=0.0625)),
+        # The designed diaphragm's 8d common HDG at 6" boundary (canopy_garage_diaphragm.md);
+        # 12" field per IRC Table R602.3(1). Not RSRS-01: a 0.113 nail is not the 8d the
+        # diaphragm was graded on, and FORTIFIED covers the house roof.
         Layer(name="deck", material_ref="struct-1-plywood", thickness=ROOF_DECK_THICKNESS,
-              function=LayerFunction.SHEATHING),
+              function=LayerFunction.SHEATHING,
+              nailing=SheathingNailing(part="8d common 0.131x2.5", edge_oc_in=6.0, field_oc_in=12.0,
+                                       source="canopy_garage_diaphragm.md: deck boundary 8d HDG at 6 in; IRC Table R602.3(1) 12 in field")),
         Layer(name="membrane", material_ref="roof-adhered-asphalt-ht",
               thickness=GARAGE_ROOF_MEMBRANE_THICKNESS,
               function=LayerFunction.MEMBRANE,
@@ -243,8 +252,13 @@ CANOPY_ROOF = Assembly(
                                   spacing=inch(24),
                                   heel_height=inch(3.5),
                                   chord_member="2x4", web_member="2x4")),
+        # The designed diaphragm's 8d common HDG at 6" boundary (canopy_garage_diaphragm.md);
+        # 12" field per IRC Table R602.3(1). Not RSRS-01: a 0.113 nail is not the 8d the
+        # diaphragm was graded on, and FORTIFIED covers the house roof.
         Layer(name="deck", material_ref="struct-1-plywood", thickness=ROOF_DECK_THICKNESS,
-              function=LayerFunction.SHEATHING),
+              function=LayerFunction.SHEATHING,
+              nailing=SheathingNailing(part="8d common 0.131x2.5", edge_oc_in=6.0, field_oc_in=12.0,
+                                       source="canopy_garage_diaphragm.md: deck boundary 8d HDG at 6 in; IRC Table R602.3(1) 12 in field")),
         Layer(name="membrane", material_ref="roof-adhered-asphalt-ht",
               thickness=GARAGE_ROOF_MEMBRANE_THICKNESS,
               function=LayerFunction.MEMBRANE,

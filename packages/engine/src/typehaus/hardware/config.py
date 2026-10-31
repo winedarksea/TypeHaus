@@ -371,6 +371,29 @@ class PartitionDeflectionRules:
 
 
 @dataclass(frozen=True)
+class TreatedFramingFastenerRules:
+    """The treated-framing nail ALLOWANCE (decision #105) — not a nailing schedule.
+
+    Read off IRC Table R602.3(1): 3 nails at each end of a stick (joist to sill or top plate,
+    toe nail, 3-8d; rim to joist, end nail), built-up plies face nailed in 2 rows at 16" o.c.
+    (built-up headers, item 6), and a plate face nailed to the sill under it at 16" o.c.
+    (bottom plate to rim or blocking). A connector-hung end overlaps its hanger's nails.
+    """
+
+    nails_per_end: int = 3
+    ply_interface_rows: int = 2
+    ply_nail_spacing_in: float = 16.0
+    sill_face_nail_spacing_in: float = 16.0
+    # Fastened elsewhere: girts, their blocks and closures (TLOK), and the boards a stair
+    # wears (finish nailing). Stair spacers are excluded by connection, not category.
+    excluded_categories: frozenset = frozenset({
+        "strapping", "truss_block", "truss_blocking", "furring",
+        "riser", "tread", "winder", "stair_subdeck", "stair_skirt"})
+    # The construction-return kind a sill plate is resolved as.
+    sill_return_kind: str = "bearing_plate"
+
+
+@dataclass(frozen=True)
 class HardwareTakeoffConfig:
     """The complete rule set behind :func:`typehaus.takeoff.hardware_takeoff`."""
 
@@ -386,6 +409,8 @@ class HardwareTakeoffConfig:
     gable_end_ties: GableEndTieRules = field(default_factory=GableEndTieRules)
     partition_deflection: PartitionDeflectionRules = field(
         default_factory=PartitionDeflectionRules)
+    treated_framing: TreatedFramingFastenerRules = field(
+        default_factory=TreatedFramingFastenerRules)
     # The construction-return take-off category that marks a wood sill plate on concrete.
     sill_plate_takeoff_category: str = "pt-sill-plate"
 

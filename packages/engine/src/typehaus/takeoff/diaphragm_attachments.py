@@ -18,7 +18,6 @@ from typehaus.resolve.framing.roof_diaphragm import (
 )
 from typehaus.takeoff.hardware_row import hardware_row
 
-CONNECTOR_NAILS_PER_ANGLE = 6
 LAMINATION_END_NAILS = 2
 LAMINATION_END_INSET_M = 0.0508
 DECK_NAIL = "8d common 0.131x2.5"
@@ -109,12 +108,11 @@ def diaphragm_attachment_rows(model):
         hardware_for_role(ROLE_DIAPHRAGM_BLOCKING_END_TIE),
         scope="diaphragm blocking end angles", count=count,
         part_number=part, by_storey={storey: count},
-        basis="one angle per collector-block or longitudinal nailer end; "
-              "six 0.148x1.5in HDG nails per LS30Z, three per leg, direct to side-grain wood")
+        basis="one angle per collector-block or longitudinal nailer end, direct to "
+              "side-grain wood; its nails bill from the connector schedule")
             for (part, storey), count in sorted(counts.items())]
+    strap_each_end = sorted({recipe.strap_nails_each_end for recipe in owners.values()})
     for part, count, scope, basis in (
-        ("0.148x1.5 connector nail", sum(counts.values()) * CONNECTOR_NAILS_PER_ANGLE,
-         "diaphragm blocking angle nails", "six per resolved LS30Z end angle, three per leg"),
         # One part, one bid line; the basis keeps the three uses apart.
         (DECK_NAIL, nails["deck"] + nails["lamination"] + nails["toenail"],
          "diaphragm 8d nails",
@@ -122,7 +120,8 @@ def diaphragm_attachment_rows(model):
          f"included), {nails['lamination']} laminating the two-ply nailers and blocks, "
          f"{nails['toenail']} panel-edge block toenails"),
         ("10d short common 0.148x2.5", nails["strap"], "diaphragm joint strap nails",
-         "six outermost nails per leg; 12 per LSTA24, reduced installed capacity"),
+         f"the authored JointNailing: {'/'.join(map(str, strap_each_end))} outermost "
+         "nails per leg, reduced installed capacity"),
     ):
         if count:
             rows.append(hardware_row(hardware_by_model(part), scope=scope, count=count,

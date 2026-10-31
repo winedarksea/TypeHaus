@@ -42,6 +42,8 @@ from typehaus.library.hardware.diaphragm import (
     LTP4Z_LATERAL_TIE_PLATE,
 )
 from typehaus.library.hardware.fasteners import (
+    CONCEALED_ROOFING_PANEL_SCREW,
+    CONCEALED_SIDING_PANEL_SCREW,
     EXPOSED_FASTENER_PANEL_SCREW,
     FASTENMASTER_TIMBERLOK,
     PDPAWL_SLAB_PLATE_PIN,
@@ -52,7 +54,12 @@ from typehaus.library.hardware.fasteners import (
     SDWS_TIMBER_SCREW,
     SIDELAP_STITCH_SCREW,
 )
-from typehaus.library.hardware.nails import DIAPHRAGM_NAILS
+from typehaus.library.hardware.nails import (
+    CONNECTOR_NAILS,
+    DIAPHRAGM_NAILS,
+    SHEATHING_NAILS,
+    TREATED_FRAMING_NAILS,
+)
 from typehaus.library.hardware.roof_ties import (
     H10ASS_HURRICANE_TIE,
     H25A_HURRICANE_TIE,
@@ -143,6 +150,11 @@ from typehaus.library.hardware.ties import TIE_HARDWARE
 
 STRUCTURAL_HARDWARE: tuple = (
     *DIAPHRAGM_NAILS,
+    *CONNECTOR_NAILS,
+    *TREATED_FRAMING_NAILS,
+    *SHEATHING_NAILS,
+    CONCEALED_SIDING_PANEL_SCREW,
+    CONCEALED_ROOFING_PANEL_SCREW,
     SDWS_TIMBER_SCREW,
     SDWH_TIMBER_HEX_SCREW,
     SDPW_DEFLECTOR_SCREW,

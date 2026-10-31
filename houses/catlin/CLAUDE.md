@@ -427,6 +427,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   Wood and the screw pass happen on the FLAT wall before tilt; fillet the foam against the
   block sides (BSI-048), never butt square.
 - Everything outboard of sheathing is KDAT — one BOM row, plus `3-2x4:kdat` for the block.
+- **Treated-wood fasteners are counted** (decision #105): KDAT and treated glulam take 304 SS
+  `S10ACN` (`Project.treated_framing_fasteners`, an allowance off R602.3(1)), `pt-syp` sills the
+  HDG A153 default; every ZMAX/HDG/stainless connector bills its schedule's nails (SSA8D,
+  SSNA10D, SSA10D, HDG 8d/10d/16d, SD9112); RF-HOUSE's deck is RSRS-01 ring-shank at 4" o.c.
+  and W-BW-SCREEN's CDX 304 `S8ACN` at 4" edges.
   Blocks are on the STUD module, every OTHER stud, at 32" from the wall's LAYOUT LINE (girts
   run their own 24" module) — 32"x24"=5.33 ft2 is the crossing tributary in
   `notes/catlin_truss_engineering.md`. Block phase is solved for 32", not 16" — reusing the
@@ -605,6 +610,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     16 ga steel. Do not reintroduce it. Of eight surveyed, only Western States and Metal
     Sales permit open girts, and Western States publishes no load data at all (doc 4209-22,
     read in full) — substituting another forces a second girt course or a continuous deck.
+  - **The B&B screw is 316 SS and a counted part** (owner, 2026-10-30; decision #105): 842 ea,
+    `panel_fastener_part` on `board-batten-24`, `[hardware]` "#10-12x1-1/2 PH T17 316SS". No
+    stocked 316 found; stocked 304 is ST Fastening 10A150TQPSSN. The A153-D option is dropped.
   - Cladding screw is **#10-12 x 1-1/2"** since 2026-09-22 (owner, D3): withdrawal 0.334 →
     **0.182**, tip still inside the girt. Metal Sales stocks only the 1" (8243100, plated).
     Before that the stocked **1"**, wood-point (Type 17), 316 stainless or
@@ -907,7 +915,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `condensation._r806_5_deferral` defers ONLY where `code.R806_5_unvented_roof` passes.
   - Do not restore a permeable underlayment/vent mat — the impermeable panel above now
     leaves no gap to dry into. The butyl membrane replacing both self-seals ~1,160
-    standing-seam nail-flange screws, this roof's real water risk.
+    standing-seam nail-flange screws, this roof's real water risk (counted since
+    2026-10-31: Metal Sales 8243100 at 16" x 12" o.c., 1,159 here, 1,822 on all three roofs).
   - 24" o.c. spacing is NOT FINAL: `structural.rafter_span` is UNKNOWN/engineered at both
     16" and 24" o.c., and the printed TJ-4000 table assumes bearing at the high end where
     these joists instead HANG off the ridge on 38 LSSR hangers — confirm in ForteWEB

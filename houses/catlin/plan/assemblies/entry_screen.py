@@ -1,7 +1,7 @@
 """Entry guard/shear wall: west structure; independently supported east thin brick."""
 from typehaus import (
     Assembly, ControlLayer, FramingSpec, Layer, LayerBound, LayerDatum, LayerExtent,
-    LayerFunction, inch,
+    LayerFunction, SheathingNailing, inch,
 )
 from plan.entry_screen_finish_spec import (
     BACKER_THICKNESS_IN, BRICK_THICKNESS_IN,
@@ -42,8 +42,14 @@ ENTRY_SCREEN_WALL = Assembly(
         Layer(name="stud", material_ref="kdat", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x4", spacing=inch(16))),
+        # The shear panel: 8d at 4" edges (canopy_west_band.md §4a), every edge blocked, in
+        # 304 ring-shank because it lands in KDAT (north_entry_structure.md §6).
         Layer(name="cdx-out", material_ref="cdx-plywood", thickness=inch(0.625),
-              function=LayerFunction.SHEATHING),
+              function=LayerFunction.SHEATHING,
+              nailing=SheathingNailing(
+                  part="S8ACN", edge_oc_in=4.0, field_oc_in=12.0, blocked=True,
+                  source="canopy_west_band.md 4a: SDPWS-2015 Table 4.3A 8d at 4 in edges; "
+                         "SDPWS 4.3.7.1 12 in field")),
         Layer(name="cladding-out", material_ref="corrugated-panel-24", thickness=inch(0.875),
               function=LayerFunction.CLADDING),
     ),

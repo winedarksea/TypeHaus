@@ -320,8 +320,9 @@ _LOOSE_FURNITURE_WORDS = ("sofa", "sectional", "chair", "stool", "bed", "table",
 _SIDING_EDGE_TRIM = frozenset({"fascia", "soffit", "eave_soffit", "corner_trim",
                                "wall_corner", "wrb_counterflashing", "bug_screen",
                                "beam_cap"})
-_ROOFING_HARDWARE_ROLES = frozenset({"snow_retention", "standing_seam_clamp",
-                                     "nail_strip_seam_clamp", "through_panel_pipe_strap"})
+_ROOFING_HARDWARE_ROLES = frozenset({
+    "snow_retention", "standing_seam_clamp", "nail_strip_seam_clamp",
+    "through_panel_pipe_strap", "concealed_roofing_panel_screw"})
 #: Fasteners the SIDING crew brings. ``girt_standoff_screw`` is deliberately NOT here and
 #: falls to the framing default: the girt wall's whole screw pass happens on the flat wall
 #: before tilt-up, by the framer, and the girts and blocks it clamps already bill as framing
@@ -329,7 +330,7 @@ _ROOFING_HARDWARE_ROLES = frozenset({"snow_retention", "standing_seam_clamp",
 #: because it shared ``exterior_insulation_screw``'s role, which put the screw in a
 #: different package from the wood it holds.
 _SIDING_HARDWARE_ROLES = frozenset({"exposed_fastener_panel_screw",
-                                    "sidelap_stitch_screw",
+                                    "sidelap_stitch_screw", "concealed_siding_panel_screw",
                                     "exterior_insulation_screw"})
 _CAST_HARDWARE_ROLES = frozenset({"post_base_anchor", "mudsill_anchor",
                                   "embedded_strap_holdown"})

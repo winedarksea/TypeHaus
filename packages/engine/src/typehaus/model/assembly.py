@@ -18,6 +18,7 @@ from typehaus.model.enums import (
 )
 from typehaus.model.refs import LayerSpan
 from typehaus.model.registry import register_constructor
+from typehaus.model.sheathing_nailing import SheathingNailing
 from typehaus.quantities import Length, inch
 
 
@@ -436,6 +437,8 @@ class Layer(HausModel):
     # a sheet reach the plate, Table R602.10.3(2) item 8) and the sheet order. Unstated, the
     # check is UNKNOWN and the order bills 4x8.
     sheet_length: Length | None = None
+    # The panel's nailing schedule, counted per piece (``takeoff/sheathing_nails.py``).
+    nailing: SheathingNailing | None = None
 
     @field_validator("sheet_length")
     @classmethod

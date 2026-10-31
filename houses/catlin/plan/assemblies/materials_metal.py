@@ -84,6 +84,9 @@ MATERIALS_METAL = [
     # 101 F (notes/solar_gain_basis.md section 6), and `color` cannot carry that. House-local
     # because the colour is this house's choice; every other building-science number is
     # `standing-seam`'s (continuous steel carries no R and no vapour permeance).
+    # Nail-strip screws counted at 16" x 12" o.c. (decision #105): PIM-10's eave/cleat details
+    # and FL11560.4-R5 (56.8 psf at 12"); the PIM's 18" UL 580 row is 26 ga at 32 psf. The
+    # guide's "~1,160" is this roof alone, 1,544 SF / 1.33 SF; all three roofs are 1,822.
     Material(tag="standing-seam-linen-white",
              name="Metal Sales Image II Striated 16 in, 24 ga, 70% PVDF Kynar 500 Linen White (81), direct-fastened through nail flange",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
@@ -91,6 +94,7 @@ MATERIALS_METAL = [
              skin_family="standing-seam",
              finish="standing-seam", roof_ridge_trim_profile="IMAGE_II_RIDGE_COVER",
              roof_edge_trim_kit="IMAGE_II", solar_absorptance=0.27,
+             fastener_coverage_in=16.0, panel_fastener_part="8243100", panel_fastener_pitch_in=12.0,
              source="Metal Sales Image II Striated, 16 inch coverage, 1 inch rib, 24 ga, 70% PVDF Kynar 500, direct-fastened snap-seam nail flange, ESR-2385; minimum 3:12 on solid substrate, maximum recommended length 30 ft, UL 580 Class 90 / UL 2218 Class 4 (MS/0426 brochure), in PVDF Linen White (81) — the same colour as `pbr-panel-24` on the walls and `corrugated-panel-24` on the garage, on a different profile. SR 0.73 / TE 0.86 / SRI 89 from the Metal Sales PVDF colour guide, so solar_absorptance = 1 - 0.73 = 0.27. Caveat carried from the wall panel's own record: SRI is NIR-weighted, no visible LRV is published, and it is NOT a low-gloss colour."),
     # Separate roof tag keeps garage-specific allowance drivers distinct from the house.
     Material(tag="standing-seam-image-ii-garage",
@@ -99,6 +103,7 @@ MATERIALS_METAL = [
              color="#6b7076", skin_family="standing-seam", finish="standing-seam",
              roof_ridge_trim_profile="IMAGE_II_RIDGE_COVER", roof_edge_trim_kit="IMAGE_II",
              solar_absorptance=0.27,
+             fastener_coverage_in=16.0, panel_fastener_part="8243100", panel_fastener_pitch_in=12.0,
              source="Metal Sales Image II Striated, 16 inch coverage, 1 inch rib, 24 ga PVDF, direct-fastened snap-seam; Residential Design Manual 5/2024"),
     # The garage's own covering, identical except for its ridge: the Cobra vented step cover
     # (PIM p. 20) instead of the closed 7 in cover the canopy keeps. A ridge is a property of
@@ -109,6 +114,7 @@ MATERIALS_METAL = [
              color="#6b7076", skin_family="standing-seam", finish="standing-seam",
              roof_ridge_trim_profile="IMAGE_II_VENTED_RIDGE", roof_edge_trim_kit="IMAGE_II",
              solar_absorptance=0.27,
+             fastener_coverage_in=16.0, panel_fastener_part="8243100", panel_fastener_pitch_in=12.0,
              source="Metal Sales Image II Striated, 16 inch coverage, 24 ga PVDF; vented ridge per Image II PIM p. 20 (13 in step ridge/hip cover, Cobra vented closure)"),
     # `corrugated-panel-24` (a library row since 2026-09-24, as are `pbr-panel-24/-26` and
     # the three seam profiles) — `corrugated-panel-26` one gauge heavier, ordered here in
@@ -310,7 +316,9 @@ MATERIALS_METAL = [
                  wind_speed_mph=115.0,
                  exposure="B"),
              open_framing_source="Metal Sales BBD75 Board & Batten (Concealed Direct-Fastened) install guide, 2025-10-16, p.7: the panel is \"designed to be installed over open framing and/or directly over a wood substrate\", and p.12's Support Materials list reads \"Lumber - 1x or thicker\" and \"Steel Framing - 18 gauge or thicker\" (neither is a solid substrate). The Spec Data Sheet says the same in its own words: \"Designed for application over solid sheathing or open framing\", typical assembly \"Wood framing with moisture barrier\"",
-             panel_fastener="#10-12 x 1-1/2\" pancake head wood screw, Type 17 point, 316 stainless or ASTM A153 Class D HDG",
+             panel_fastener="#10-12 x 1-1/2\" pancake head wood screw, Type 17 point, 316 stainless",
+             panel_fastener_part="#10-12x1-1/2 PH T17 316SS",
+             panel_fastener_pitch_in=24.0,
              panel_fastener_diameter_in=0.190,
              panel_fastener_length_in=1.5,
              panel_fastener_head_dia_in=0.40,
