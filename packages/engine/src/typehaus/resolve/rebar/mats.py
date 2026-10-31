@@ -10,8 +10,9 @@ cross the middle — and keeps its hooks at the outer ends.
 
 A ribbed slab (``ReinforcementSpec.ribs``) holds its mat in the cap: the cap is the assembly's
 STRUCTURE layer at the top of the solid, and each rib hangs ``ribs.depth`` below it. ``rib``
-bars are ``count`` per rib at the rib bottom, their ``hooks`` turning up; ``stirrups`` are closed loops from the rib
-bottom to under the cap's top mat, within ``zone`` of each rib end. A mat stops where an
+bars are ``count`` per rib at the rib bottom, their ``hooks`` turning up; ``stirrups`` are
+closed loops from the rib bottom to under the cap's top mat, within ``zone`` of each rib
+end. A mat stops where an
 ``earlier`` pour's concrete is, so an overlap between two pours carries one mat.
 """
 

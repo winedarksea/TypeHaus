@@ -550,12 +550,18 @@ DECK = Slab(
     # the span it publishes: 2-#5 in each beam rib, #3 stirrups at 5" over 4'-0" from each end,
     # and a 12"x12" grid of #4 in the cap. The ribs run with the 18' span (x), one per 24"
     # panel joint (detail sheet 5E). Cover 3/4": ACI 318-19 Table 20.5.1.3.1, joists and slabs
-    # not exposed to weather or earth.
+    # not exposed to weather or earth. The east face is cast against W-M-E1's LSL rim band:
+    # sill seal or building paper on it first (notes/mixed_deck_movement_joint.md).
     reinforcement=ReinforcementSpec(
         bars=(
             BarSpec(role="top-x", bar=4, spacing=inch(12), note="cap grid, BuildDeck row"),
             BarSpec(role="top-y", bar=4, spacing=inch(12), note="cap grid, BuildDeck row"),
-            BarSpec(role="rib", bar=5, count=2, note="2-#5 beam bars per rib, BuildDeck row"),
+            # Both ends 180° hooks turned up over the 6" bearings (owner, 2026-10-31): a 90°
+            # tail reaches the top cover plane through the cap's end top-y bar; the 180°
+            # stands 5" inside the rib. Neither develops fy at the face (ldh 14.77" vs 5.25"):
+            # notes/rebar_layout_basis.md §5.
+            BarSpec(role="rib", bar=5, count=2, hooks=("start", "end"), hook_kind="std180",
+                    note="2-#5 beam bars per rib, BuildDeck row; 180° hooks into each bearing"),
             BarSpec(role="stirrups", bar=3, spacing=inch(5), zone=ft(4),
                     note="#3 @ 5\" within 4'-0\" of each end, BuildDeck row"),
         ),

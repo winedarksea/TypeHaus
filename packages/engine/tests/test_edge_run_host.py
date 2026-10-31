@@ -127,7 +127,7 @@ def test_a_wall_host_is_graded_base_to_top(catlin_plan, catlin_model_ro) -> None
 
 
 def test_the_gutter_hangs_below_its_fascia_and_that_is_not_a_defect(findings) -> None:
-    """TR-SG-GUTTER names TR-SG-FASCIA and is authored 3" below it, on purpose.
+    """TR-SG-GUTTER names TR-SG-FASCIA and is authored 6 1/2" below its top, on purpose.
 
     An _EdgeRun host is graded in plan only for exactly this reason. A rule that compared
     elevations would report the one thing a gutter is supposed to do.

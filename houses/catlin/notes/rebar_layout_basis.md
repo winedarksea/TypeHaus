@@ -165,3 +165,48 @@ is 94" x 210" and bottom-x tightens to `#5 @ 9"`. Same steps: bottom-x
 `ceil((210 - 0.625)/9) + 1 = 25` #5 at 94" (2,350" = 195.83' = 204.25 lb); top-x 19 #5 at 94"
 (1,786" = 148.83' = 155.23 lb); bottom-y `ceil((94 - 0.5)/18) + 1 = 7` #4 at 210" (1,470" =
 122.5' = 81.83 lb). Heights in the mat are unchanged.
+
+## §5. SL-M-DECK rib ends — 180° hooks in a 6" bearing (2026-10-31)
+
+Since decision #107 the deck bears 6" at each end: `W-B-CS2`/`-CN` (face x 222") and
+`W-B-E1`/`-E2` (face x 420"). 22 rib bars (11 ribs × 2-#5) run 216.75"–425.25", 3/4" end
+cover. Owner: hook them into both bearings and bill it. f'c 4,000, black bar, cover 3/4",
+#3 stirrup under the bars; bar centre 0.75 + 0.375 + 0.3125 = **1.4375"** over the rib soffit.
+Rib 6" × 7.5" under a 4.375" cap, so the cap top is 7.5 + 4.375 − 1.4375 = **10.4375"** over
+the bar centre, and the cap's top-y #4 (under top-x) sits at 0.75 + 0.5 + 0.25 = 1.5" down.
+
+**Fit.** #5, db 0.625, D = 6 db = 3.75" (Table 25.3.1).
+
+* 90°: tail tip `D/2 + db/2 + 12 db` = 1.875 + 0.3125 + 7.5 = **9.6875"** over the bar centre
+  against 10.4375 − 0.75 = 9.6875" to the top cover plane: zero tolerance, and the tail
+  (x 424.63–425.25") runs through the cap's end top-y bar (x 424.75–425.25", 1.5" down).
+  **Does not fit.**
+* 180°: out to out `D + 2 db` = **5.0"** tall, so the return's top is 1.125 + 5.0 = 6.125"
+  over the rib soffit, under the cap at 7.5". Along the bar: `D/2 + db` = 2.5" of
+  bend plus a `max(4 db, 2.5")` = 2.5" tail back, so the hook spans 425.25 → 420.25" (west
+  216.75 → 221.75"): wholly over the wall, inside the rib, clear of the cap mat. **Fits.**
+* Hairpin: a horizontal U through the rib's two bars (3.125" centres) bends 2.5" inside,
+  4 db, under the 6 db a #5 standard bend needs, and laps class B (1.3 × 23.72 = 30.83") into
+  the span for the same end condition. Rejected.
+
+**Development at the face** (§25.4.3.1, the same ldh for 90° and 180°):
+ψe 1.0 (black), ψr 1.6 (hooked bars 3.125" apart < 6 db = 3.75"), ψo 1.25 (side cover
+1.125" < 6 db), ψc = 4,000/15,000 + 0.6 = 0.8667, √4,000 = 63.246.
+`ldh = 60,000 × 1.6 × 1.25 × 0.8667 / (55 × 63.246) × 0.4941 = 29.898 × 0.4941 =`
+**14.77"** (floor max(8 db, 6") = 6"). Available, face to outside of hook: 425.25 − 420 =
+222 − 216.75 = **5.25"**. Even at every ψ 1.0 ldh is 7.39". **No hook develops fy at the face
+in this bearing**, so ACI 318-19 §9.8.1.6's joist integrity bar (anchored to develop fy at the
+face) is still unmet; it wants ~15.5" of bearing (14.77 + 0.75) or the bar carried into the
+support. That is BuildDeck's end detail to answer (`plans/TODO.md`). The simple-support check
+§9.7.3.8.3 already passes straight: per 24" rib Mn = 0.62 × 60 × (10.4375 − 0.228) =
+379.8 k-in, wu = 1.2 × 93 + 1.6 × 62 = 211 psf → Vu = 0.422 klf × 9' = 3.79 k, and
+1.3 Mn / Vu = 130" ≫ ld 23.72".
+
+**Bill.** 180° allowance `π (D + db)/2 + ext − (D/2 + db)` = 6.872 + 2.5 − 2.5 = **6.872"**
+(90° would be 8.436"). 44 hooks × 6.872 = 302.4" = 25.20' × 1.043 = **+26.28 lb**: the rib
+row 398.69 → **424.97 lb**.
+
+**Bond break.** The cap's east face is cast against `W-M-E1`'s LSL rim band. Sill seal or
+building paper stapled to the rim's inner face before the pour (the plinth's idiom,
+`east_breast_bearing.md`): no bond, and no wet concrete against the LSL. Do not tie the cap's
+steel to it (`mixed_deck_movement_joint.md`).

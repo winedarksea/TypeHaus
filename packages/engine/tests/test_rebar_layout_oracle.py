@@ -139,3 +139,21 @@ def test_pt_sg_col_cage() -> None:
         assert tie.hook_length_m / _IN == pytest.approx(15.185, abs=0.001)
     assert _lb(ties) == pytest.approx(15.94, abs=0.01)
     assert not [b for b in bars if b.role == "dowels"]
+
+
+def test_sl_m_deck_rib_bars_hook_180_inside_each_bearing(catlin_model_ro) -> None:
+    """§5: 22 #5 rib bars, 208.5" placed, a 6.872" 180° hook each end turned up; each hook's
+    return stays over its 6" bearing (x 216.75-221.75", 420.25-425.25") and under the cap."""
+    m = catlin_model_ro
+    bars = _role(m, "SL-M-DECK", "rib")
+    assert len(bars) == 22
+    cap_bottom = next(s for s in m.solids if s.tag == "SL-M-DECK").z1_m - 4.375 * _IN
+    for b in bars:
+        assert b.hook_kinds == ("std180", "std180")
+        assert b.placed_length_m / _IN == pytest.approx(208.5, abs=0.01)
+        assert b.hook_length_m / _IN == pytest.approx(2 * 6.872, abs=0.002)
+        xs = sorted(p[0] / _IN for p in b.path)
+        assert xs[0] == pytest.approx(216.75) and xs[-1] == pytest.approx(425.25)
+        assert {round(x, 2) for x in xs} == {216.75, 221.75, 420.25, 425.25}
+        assert max(p[2] for p in b.path) + b.diameter_m / 2 < cap_bottom
+    assert _lb(bars) == pytest.approx(424.97, abs=0.01)

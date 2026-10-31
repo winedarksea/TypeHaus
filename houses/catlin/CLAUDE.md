@@ -2385,8 +2385,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   because `FS-SG-DECK`'s aluminium plank is the porch roof and carries no other
   penetrations — do not switch to surface mounting. Needs rim blocking in
   `FS-SG-DECK.reinforcements`. Its posts stand in the brackets 1.518" outboard of the fascia
-  face (`RailingType.fascia_post_offset`, ESR-3485 Fig. 10); bracket and post both cross
-  `TR-SG-GUTTER`'s back sheet (open, `plans/TODO.md`).
+  face (`RailingType.fascia_post_offset`, ESR-3485 Fig. 10). `TR-SG-GUTTER` hangs 1" under
+  the bracket bottoms (derived from them, 2026-10-31) and `TR-SG-APRON` laps from behind the
+  drip's face into the trough; `test_catlin_balcony_guard_gutter.py` holds the clearance.
 - Veneer `W-B-BRICK` (both faces exposed; top at -13 1/3" since 2026-09-22 so
   `FS-SG-PORCH`'s 2x12s pass over it with 2 1/12" of air — nothing grades that gap) stands on
   `W-SG-BRKBM`, a 12" x 17-3/4" grade beam bearing on `FT-SG-W1`/`E1`'s 3'-0" toes and

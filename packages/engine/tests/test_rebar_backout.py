@@ -41,7 +41,7 @@ _SCHEDULE = {
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
     ("slab", "#3", "black"): (220, 237.3),
     ("slab", "#4", "black"): (43, 562.5),
-    ("slab", "#5", "black"): (22, 398.6),
+    ("slab", "#5", "black"): (22, 425.0),
 }
 # +3,215.6 lb on 2026-09-17 over the area/spacing era's 3,514.7 (newly authored steel, laps and
 # hooks out of [waste], the fencepost), then −122.3 the same day after the detailing review:
@@ -84,7 +84,9 @@ _SCHEDULE = {
 # −9.5); its dowels at the authored 30" projection, W2/E2's south feet on FT-SG-S's mat (+0.6).
 # −25.9 lb on 2026-10-31 (#107): SL-M-DECK stops at W-M-E1's band body, so its 65 beam
 # bars each lose 6" at the east bearing.
-_TOTAL_LB = 6560.2
+# +26.3 lb the same day: SL-M-DECK's 22 rib bars hook 180° into both bearings
+# (rebar_layout_basis.md §5), 44 × 6.872".
+_TOTAL_LB = 6586.5
 _TOTAL_PIECES = 1125
 
 @pytest.fixture(scope="module")

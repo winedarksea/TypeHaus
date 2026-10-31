@@ -85,6 +85,7 @@ from typehaus.library import (
     TREX_ENHANCE_BASICS_DECK_LAYER,
     TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING,
 )
+from typehaus.library.railings import RAILING_EXT_ALUMINUM_FASCIA
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.model.structure import CompliantLayer
 from params.column_heads import HETA20Z_PAIR_HEAD
@@ -3010,16 +3011,19 @@ _deck_walking_surface = _deck_top + inch(SPEC.balcony_deck_thickness_in)
 # instructions (four 5/16" x 4" bolts, nuts on the rim's inside face, reachable from the
 # open bays below), landing in the rim blocking authored in ``FS-SG-DECK.reinforcements``.
 # ``type_ref`` stays the library's fascia type for exactly that reason.
+_BALCONY_BRACKET_DROP_IN = 2.0  # walking surface to bracket top: plank 1 1/2" + 1/2"
+_BALCONY_BRACKET_BOTTOM = (_deck_walking_surface - inch(_BALCONY_BRACKET_DROP_IN)
+                           - RAILING_EXT_ALUMINUM_FASCIA.fascia_bracket_height)
 BALCONY_GUARD = Railing(
     uid="SGRA01AAAA", tag="RL-SG-BALCONY", type_ref="RAILING-EXT-ALUMINUM-FASCIA",
     path=_GUARD_PATH,
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
     base_elevation=_deck_walking_surface,
     post_spacing=inch(60), post_size="3x3", rail_count=2, mount="fascia",
-    # Drawn so the bracket/gutter clash shows: fascia outer face = half TR-SG-FASCIA's 1";
-    # bracket top = plank 1 1/2" + 1/2" below the rim top. The posts stand in the brackets,
-    # 1.518" past that face (the type's `fascia_post_offset`), not on the path.
-    fascia_face_offset=inch(0.5), fascia_bracket_drop=inch(2.0),
+    # Fascia outer face = half TR-SG-FASCIA's 1"; bracket top = plank 1 1/2" + 1/2" below the
+    # rim top. The posts stand in the brackets, 1.518" past that face (the type's
+    # `fascia_post_offset`), not on the path. TR-SG-GUTTER hangs under the bracket bottoms.
+    fascia_face_offset=inch(0.5), fascia_bracket_drop=inch(_BALCONY_BRACKET_DROP_IN),
     assembly="RAILING_DARK_METAL",
     # R312.1.3: vertical balusters between the 60" posts at a 4" clear gap — the largest
     # opening the 4"-sphere rule admits.
@@ -3058,12 +3062,17 @@ _SG_LEADER_DIA_IN = 3.0
 _SG_GUTTER_Y = _y_balcony_front - (2.5 + 0.5) / 12.0
 _GUTTER_PATH = (pt(ft(_deck_x_w), ft(_SG_GUTTER_Y)),
                 pt(ft(_deck_x_e + _SG_GUTTER_OVERSAIL), ft(_SG_GUTTER_Y)))
-# Gutter rim meets the drip flashing's lower edge, so water shedding off the drip lands in
-# the trough.
+# ** THE TROUGH HANGS 1" UNDER THE GUARD BRACKETS (owner, 2026-10-31). ** Its back sheet
+# lay on the fascia where RL-SG-BALCONY's Ultralox brackets (and the posts in them) bolt
+# through, so the rim dropped 3 1/2" from the drip's lower edge to 1" below the bracket
+# bottoms. TR-SG-APRON bridges that drop: flat on the fascia under the brackets, tucked 1 1/2"
+# up behind the drip's face, kicked over the back sheet and down into the trough.
 _drip_depth_in = 3.0
+_SG_GUTTER_DEPTH_IN = 4.0
+_SG_GUTTER_TOP = _BALCONY_BRACKET_BOTTOM - inch(1)
 BALCONY_GUTTER = Gutter(
     uid="SGGT01AAAA", tag="TR-SG-GUTTER", kind=TrimKind.GUTTER, path=_GUTTER_PATH,
-    top_elevation=_deck_top - inch(_drip_depth_in), depth=inch(4), thickness=inch(5),
+    top_elevation=_SG_GUTTER_TOP, depth=inch(_SG_GUTTER_DEPTH_IN), thickness=inch(5),
     material="metal-dark-kstyle", host_ref="TR-SG-FASCIA", slope="1/16 in/ft to SE downspout",
     downspout_ref="TR-SG-LEADER-SE",
     # The last 6" oversails TR-SG-FASCIA (and the drip above it): that bay exists only to
@@ -3089,7 +3098,7 @@ _SG_LEADER_BOTTOM = _ret_top + inch(4)
 BALCONY_LEADER = Downspout(
     uid="SGDS01AAAA", tag="TR-SG-LEADER-SE",
     position=pt(ft(_SG_LEADER_X), ft(_SG_GUTTER_Y)),
-    top_elevation=_deck_top - inch(_drip_depth_in) - inch(4),  # the trough floor
+    top_elevation=_SG_GUTTER_TOP - inch(_SG_GUTTER_DEPTH_IN),  # the trough floor
     bottom_elevation=_SG_LEADER_BOTTOM,
     diameter=inch(_SG_LEADER_DIA_IN), material="metal-dark-kstyle",
     gutter_ref="TR-SG-GUTTER", discharge_ref="daylight",
@@ -3127,6 +3136,21 @@ BALCONY_DRIP = Flashing(
     top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(3),
     material="metal-flat-sheet", host_ref="FS-SG-DECK",
     section=FormedFlashingSection(drip=inch(_drip_depth_in)))
+# The gutter apron (2026-10-31): a "counter" section — the upstand lies on the fascia face
+# (the brackets bolt over it), the 3/4" leg kicks out over the back sheet 1/2" above the
+# rim, falling 3/8" outboard, and the drip leg ends 1 3/8" inside the trough.
+_APRON_KICK_IN = 0.75
+_APRON_KICK_TOP = _SG_GUTTER_TOP + inch(0.5)
+_APRON_UPSTAND_TOP = _deck_top - inch(_drip_depth_in) + inch(1.5)  # behind the drip's face
+_APRON_Y = _y_balcony_front - (0.5 + _APRON_KICK_IN / 2.0) / 12.0
+BALCONY_APRON = Flashing(
+    uid="0R90J0KW4T", tag="TR-SG-APRON", kind=TrimKind.DRIP_FLASHING,
+    path=(pt(ft(_deck_x_w), ft(_APRON_Y)), pt(ft(_deck_x_e), ft(_APRON_Y))),
+    top_elevation=_APRON_KICK_TOP, depth=_APRON_UPSTAND_TOP - _SG_GUTTER_TOP + inch(1),
+    thickness=inch(_APRON_KICK_IN), material="metal-flat-sheet", host_ref="FS-SG-DECK",
+    section=FormedFlashingSection(profile="counter", slope=0.5, hem=inch(0),
+                                  upstand=_APRON_UPSTAND_TOP - _APRON_KICK_TOP,
+                                  drip=inch(1.5)))
 # ** THE REAR EDGE IS TWO PIECES ACROSS A MOVEMENT GAP (2026-10-16). ** The deck's north edge
 # stands 2 3/4" off the house cladding, and the two are separately founded structures. The
 # house has no WRB to tuck into, so the old single run (uid SGFF02AAAA, retired) was a free
@@ -3279,5 +3303,5 @@ MAIN_ELEMENTS = [*MAIN_NODES, *LEDGERS, *LEDGER_ANCHORS, *LEDGER_HANGERS, PORCH_
                  *PORCH_STAIR_THRESHOLD_RAILS]
 SECOND_ELEMENTS = [*SECOND_NODES, *BALCONY_BEAMS, *PILLARS,
                    BALCONY_JOISTS, *BALCONY_TIES, BALCONY_GUARD, BALCONY_FASCIA,
-                   BALCONY_GUTTER, BALCONY_LEADER, BALCONY_RUNNEL, BALCONY_DRIP,
+                   BALCONY_GUTTER, BALCONY_LEADER, BALCONY_RUNNEL, BALCONY_DRIP, BALCONY_APRON,
                    *BALCONY_REAR_FLASH]

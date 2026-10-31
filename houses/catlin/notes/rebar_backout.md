@@ -52,6 +52,8 @@ by the decision in §3.
 billed twice before) and `SL-M-DECK` at `W-M-E1`'s band body (−0.90 cy), so its 65 beam bars
 each lose 6" at the east bearing: slab #4 576.9 → **562.5 lb**, #5 410.1 → **398.6 lb**,
 total **6,560.2 lb** over **137.39 cy** (§2, the engine's own filter), **47.7 lb/cy**. The
+same day its 22 rib bars took 180° hooks into both bearings (`rebar_layout_basis.md` §5):
+44 × 6.872" = +26.3 lb, slab #5 → **424.9 lb**, total **6,586.5 lb** (47.9 lb/cy). The
 table below is the older 6,717.9 lb schedule.
 
 The detailed layout table below records the earlier cast-column pass; its pieces and

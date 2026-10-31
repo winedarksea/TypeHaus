@@ -715,28 +715,31 @@ def test_porch_joists_run_ledger_to_ledger_with_no_oversail(catlin_model) -> Non
     assert balcony.cantilever_start is None and balcony.cantilever_end is None
 
 
-def test_balcony_gutter_rim_meets_the_drip_edge(catlin_model) -> None:
-    """Water shedding off the drip flashing lands in the trough: the gutter's top meets
-    the drip's lower edge instead of hanging 6" of open air below it.
-
-    The gutter stays an open-top U composed from bands; the drip is a thin folded mesh.
-    Its turn-down hangs off the outboard end. The
-    turn-down is the piece that has to reach the rim, and it has to reach it *over the
-    channel*: a drip that clears the rim outboard of the front sheet misses the trough.
+def test_balcony_gutter_apron_carries_the_drip_into_the_trough(catlin_model) -> None:
+    """The trough hangs under the guard brackets (2026-10-31), 3 1/2" below the drip's lower
+    edge, so TR-SG-APRON bridges the drop: its upstand rises behind the drip's face, its
+    turn-down ends below the rim and between the two sheets. The drip's own turn-down still
+    stands over the channel, so what falls free off it lands in the trough too.
     """
     bands = [s for s in catlin_model.solids if s.tag.startswith("TR-SG-GUTTER-1-")]
     assert {s.tag.rsplit("-", 1)[1] for s in bands} == {"BACK", "BOTTOM", "FRONT"}
+    rim = max(s.z1_m for s in bands)  # an open-top U: its rim is its tallest band's top
+    span = [p[1] for p in _solid(catlin_model, "TR-SG-GUTTER-1-BOTTOM").outline]
+
+    def foot(tag):
+        mesh = _solid(catlin_model, tag).body_mesh
+        low = min(z for _x, _y, z in mesh.positions)
+        return low, [y for _x, y, z in mesh.positions if abs(z - low) < 1e-9]
+
     drip = _solid(catlin_model, "TR-SG-DRIP-1")
-    assert drip.body_mesh is not None
-    low = min(z for _x, _y, z in drip.body_mesh.positions)
-    foot = [(x, y, z) for x, y, z in drip.body_mesh.positions if abs(z - low) < 1e-9]
-    # The channel is an open-top U, so its rim is the top of its tallest band.
-    assert max(s.z1_m for s in bands) == pytest.approx(low)
-    # And the turn-down hangs between the two sheets, not past either of them.
-    trough = _solid(catlin_model, "TR-SG-GUTTER-1-BOTTOM")
-    span = [p[1] for p in trough.outline]
-    drop = [p[1] for p in foot]
-    assert min(span) < min(drop) and max(drop) < max(span)
+    apron = _solid(catlin_model, "TR-SG-APRON-1")
+    drip_low, drip_ys = foot("TR-SG-DRIP-1")
+    apron_low, apron_ys = foot("TR-SG-APRON-1")
+    assert apron.z1_m > drip_low, "the apron's upstand laps up behind the drip"
+    assert apron_low < rim, "and its turn-down ends inside the trough"
+    for ys in (drip_ys, apron_ys):
+        assert min(span) < min(ys) and max(ys) < max(span)
+    assert drip.z0_m > rim
 
 
 # --- the heat-pump ground pad, east of the porch --------------------------------------

@@ -66,6 +66,9 @@ the line, so the differential shows up as a hinge. Two consequences to draw:
   formed against it. Do not tie the cap's reinforcing into the rim. The concrete bears on
   the x=18' wall and the east wall; the joists bear on x=18' and their own lines; nothing
   spans the boundary and nothing should.
+- **Bond breaks (2026-10-31).** Sill seal or building paper on every wood face the cap is
+  cast against: this rim, and `W-M-E1`'s LSL rim band at the east bearing. The rib bars hook
+  180° into both 6" bearings; the calc is `rebar_layout_basis.md` §5.
 - **Ceiling below.** Gypsum is continuous over both (5/8", IRC R316.4 over the EPS,
   `ceiling_below` on the joists). Break the board on the line with a control joint —
   otherwise the same differential cracks the taped seam, which is the visible half of this

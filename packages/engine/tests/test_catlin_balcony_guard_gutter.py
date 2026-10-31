@@ -1,10 +1,9 @@
 """RL-SG-BALCONY's fascia brackets and TR-SG-GUTTER share the same few inches of TR-SG-FASCIA.
 
-The guard is through-bolted to the PVC fascia and rim blocking; the gutter's back sheet lies
-flush on the same fascia face, 3" below the deck top, so the board ends drain into it. The
-brackets are drawn (``RailingType.fascia_bracket_*``) so the clash is visible in 3D, and each
-3" post stands in its bracket's pocket, 1.518" outboard of the fascia face (ESR-3485 Fig. 10),
-down to the bracket's bottom.
+The guard is through-bolted to the PVC fascia and rim blocking. Each 3" post stands in its
+bracket's pocket, 1.518" outboard of the fascia face (ESR-3485 Fig. 10), down to the
+bracket's bottom. Since 2026-10-31 the gutter's back sheet lies on the fascia 1" BELOW the
+bracket bottoms, and TR-SG-APRON carries the drip's water down to it.
 """
 
 from __future__ import annotations
@@ -51,9 +50,6 @@ def test_each_post_stands_in_its_brackets_pocket(catlin_model):
         assert p[4] == pytest.approx(b[4]), post.tag
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "OPEN: the gutter back sheet lies flush on the fascia where the brackets (and the posts "
-    "in them) stand. Drawing read (5.64\" x 3.29\", ESR-3485 Fig. 10); the clash is real."))
 def test_the_gutter_clears_the_guard_brackets(catlin_model):
     gutter = [_box(s) for s in catlin_model.solids
               if s.tag.startswith("TR-SG-GUTTER-") and s.category == "gutter"]

@@ -107,7 +107,8 @@ def lay_beam(sink: Sink, entries, frame: LinearFrame, cover: float,
                     sink.straight(entry, frame.world(sa, t, z), frame.world(sb, t, z),
                                   hook_dirs=_hooks(entry, frame, down=top),
                                   lap_offset=(frame.n[0], frame.n[1], 0.0),
-                                  top_cast=top and z - frame.z0 > 12 * _IN)
+                                  top_cast=top and z - frame.z0 > 12 * _IN,
+                                  hook_kind=entry.hook_kind or "std90")
                 z += -db if top else db
         elif entry.role == "horizontal" and entry.count:
             zs = _spread(frame.z0 + inner, frame.z1 - inner, entry.count + 2)[1:-1]

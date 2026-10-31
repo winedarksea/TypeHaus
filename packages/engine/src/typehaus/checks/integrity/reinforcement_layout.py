@@ -99,6 +99,8 @@ def _schema_errors(ctx: CheckContext, element, spec):
         for tag in e.continues_into or ():
             if ctx.plan.by_tag(tag) is None:
                 yield f"continues_into names {tag!r}, which is not in this plan"
+        if e.hook_kind is not None and (not e.hooks or e.role not in _MAT | {"rib"}):
+            yield f"role {e.role} takes hook_kind only as a hooked mat, rib or beam row"
         if e.hook_ties is not None and (e.role not in ("top-y", "bottom-y") or not e.hooks):
             yield f"role {e.role} takes hook_ties only as a hooked top-y/bottom-y row"
         if e.hook_turn is not None and (e.role not in ("top-y", "bottom-y") or not e.hooks):

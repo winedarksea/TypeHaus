@@ -4129,6 +4129,12 @@
 2,
 "f5a904311a45"
 ],
+"geometry/0R90J0KW4T-00/body": [
+2.771775,
+2.9337,
+24,
+"4a3b38a30970"
+],
 "geometry/0RA7PE7K5N/body": [
 0.55745,
 0.70985,
@@ -63285,9 +63291,9 @@
 ],
 "geometry/SGDS01AAAA-00/body": [
 0.1016,
-2.794,
+2.7051,
 2,
-"6e6802b2277a"
+"76241243ad63"
 ],
 "geometry/SGF102AAAA/body": [
 -3.0845125,
@@ -63716,22 +63722,22 @@
 "06c89396a7a5"
 ],
 "geometry/SGGT01AAAA-00-back/body": [
-2.794,
-2.8956,
-2,
-"ba10c93255bf"
-],
-"geometry/SGGT01AAAA-00-bottom/body": [
-2.794,
+2.7051,
 2.8067,
 2,
-"339197929d5a"
+"b2b6956160dc"
+],
+"geometry/SGGT01AAAA-00-bottom/body": [
+2.7051,
+2.7178,
+2,
+"81816991e1ed"
 ],
 "geometry/SGGT01AAAA-00-front/body": [
-2.794,
-2.8956,
+2.7051,
+2.8067,
 2,
-"ba10c93255bf"
+"b2b6956160dc"
 ],
 "geometry/SGHCB1AAAA/body": [
 -0.8636,
@@ -110270,6 +110276,8 @@
 "solids/TR-RF-LEADER-W-EXT/z1_m": -0.9144411,
 "solids/TR-RF-LEADER-W/z0_m": 0.3048,
 "solids/TR-RF-LEADER-W/z1_m": 6.275897,
+"solids/TR-SG-APRON-1/z0_m": 2.771775,
+"solids/TR-SG-APRON-1/z1_m": 2.9337,
 "solids/TR-SG-BASE-FLASH-E-1/z0_m": 3.0691667,
 "solids/TR-SG-BASE-FLASH-E-1/z1_m": 3.1601833,
 "solids/TR-SG-BASE-FLASH-W-1/z0_m": 3.0691667,
@@ -110286,14 +110294,14 @@
 "solids/TR-SG-FASCIA-2/z1_m": 2.9718,
 "solids/TR-SG-FASCIA-3/z0_m": 2.6416,
 "solids/TR-SG-FASCIA-3/z1_m": 2.9718,
-"solids/TR-SG-GUTTER-1-BACK/z0_m": 2.794,
-"solids/TR-SG-GUTTER-1-BACK/z1_m": 2.8956,
-"solids/TR-SG-GUTTER-1-BOTTOM/z0_m": 2.794,
-"solids/TR-SG-GUTTER-1-BOTTOM/z1_m": 2.8067,
-"solids/TR-SG-GUTTER-1-FRONT/z0_m": 2.794,
-"solids/TR-SG-GUTTER-1-FRONT/z1_m": 2.8956,
+"solids/TR-SG-GUTTER-1-BACK/z0_m": 2.7051,
+"solids/TR-SG-GUTTER-1-BACK/z1_m": 2.8067,
+"solids/TR-SG-GUTTER-1-BOTTOM/z0_m": 2.7051,
+"solids/TR-SG-GUTTER-1-BOTTOM/z1_m": 2.7178,
+"solids/TR-SG-GUTTER-1-FRONT/z0_m": 2.7051,
+"solids/TR-SG-GUTTER-1-FRONT/z1_m": 2.8067,
 "solids/TR-SG-LEADER-SE/z0_m": 0.1016,
-"solids/TR-SG-LEADER-SE/z1_m": 2.794,
+"solids/TR-SG-LEADER-SE/z1_m": 2.7051,
 "solids/TR-SG-RUNNEL-1-BACK/z0_m": 0.0,
 "solids/TR-SG-RUNNEL-1-BACK/z1_m": 0.0762,
 "solids/TR-SG-RUNNEL-1-BOTTOM/z0_m": 0.0,

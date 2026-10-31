@@ -46,6 +46,14 @@ def test_hook_allowances_reproduce_the_note(bar: int) -> None:
     assert det.hook_allowance_in(bar, "std90", galvanized=True) == pytest.approx(std, abs=0.0006)
 
 
+def test_the_deck_rib_180_hook_reproduces_the_note() -> None:
+    """§5: #5 standard 180°, π (D + db)/2 + max(4 db, 2.5") − (D/2 + db) = 6.872"; and the
+    rib ends' ldh at 4,000 psi, ψr 1.6, ψo 1.25 is 14.77"."""
+    assert det.hook_allowance_in(5, "std180") == pytest.approx(6.872, abs=0.0006)
+    assert det.hooked_development_in(5, 4000, confined_spacing=False,
+                                     side_cover_ok=False) == pytest.approx(14.77, abs=0.006)
+
+
 @pytest.mark.parametrize("bar", sorted(_WALL))
 def test_wall_laps_and_hooked_development_reproduce_the_note(bar: int) -> None:
     lap, ldh = _WALL[bar]
