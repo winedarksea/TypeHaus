@@ -407,9 +407,13 @@ def _emit_room_names(b: SceneBuilder, model: ResolvedModel, plane: CutPlane,
         # 8'-11 1/2" plate. ``clear_height_m`` is the number ``code.R305_ceiling_height``
         # grades, so the sheet and the check state one height.
         clear = getattr(room, "clear_height_m", None)
-        if clear:
+        clg = f"CLG {feet_inches(clear / M_PER_IN)}" if clear else ""
+        # The CLG line is longer than most names: it must fit the room too (D2-004).
+        if clg and (u1 - u0) / M_PER_IN < len(clg) * ROOM_PT * CHAR_ASPECT * per_pt:
+            clg = ""
+        if clg:
             b.add(Text(anchor=(centre_u, z_in - ROOM_IN * 1.5),
-                       content=f"CLG {feet_inches(clear / M_PER_IN)}",
+                       content=clg,
                        height=ROOM_IN, height_pt=ROOM_PT,
                        # A-ANNO-DIMS, not A-AREA-IDEN: this is a DIMENSION that happens to
                        # sit under a room name. On the identifier layer it reads as part of

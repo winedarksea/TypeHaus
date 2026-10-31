@@ -15,23 +15,23 @@ source:
 ## Sheet notes
 
 ### General
-- Framed wall: 2x6 at 16" o.c., R-19 bays, 4" continuous exterior.
-- Basement wall: 8" pour, #5 at 41" o.c., aligned on the concrete face.
-- Waterproofed per Minn. R. 1309.0406, not dampproofed: 60 mil self-adhered asphalt, footing to grade.
-- Basement CI: 4" XPS in two layers, seams staggered, outer layer taped.
-- Exposed XPS band: 1/8" acrylic over mesh, 276.3 SF, grade-6" to wall top.
-- Bearing seat: pour tops at -13 7/16", then gasket, mudsill and 11 7/8" rim.
-- Sill: one shared 2x6 PT mudsill, 370.0 LF, on 1/16" compressed EPDM.
-- Slab: 3-1/2" at 3,500 psi on 3" XPS, 10 mil poly, 4" gravel. Drain: 4" pipe.
+- {*EXT_2X6*} Framed wall: 2x6 at 16" o.c., R-19 bays, 4" continuous exterior.
+- {*GARAGE*} Framed wall: 2x6 at 24" o.c., 2" ccSPF bays, 5/8" CDX. No rainscreen.
+- {*BASEMENT_8*} Basement wall: 8" pour, #5 at 41" o.c., aligned on the concrete face.
+- {!*BASEMENT_8*} Pour and steel per the S-100 schedule.
+- {*BASEMENT_*,*GARDEN_CURB*} 60 mil waterproofing, footing to grade (Minn. R. 1309.0406).
+- {*BASEMENT_*} CI: 4" XPS, two layers, seams staggered, outer taped; grade-6" up: 1/8" acrylic on mesh, 276.3 SF.
+- {*BASEMENT_*,*FOUNDATION_WALL*} Seat: pour top -13 7/16"; one shared 2x6 PT mudsill (329.3 LF) on 1/16" EPDM, 11 7/8" rim.
+- {*BASEMENT_*,*FOUNDATION_WALL*} Slab: 3-1/2" at 4,000 psi on 2" XPS, 10 mil poly, 4" stone. Drain: 4" pipe.
 
 ### Keyed
-- [K1 @ host#layer:waterproofing:out] Bituthene 3000 or equal on concrete and sheathing. 2" laps; 2-ply corners; insulation over it; backfill in 30 days.
-- [K2 @ host#layer:xps-b:out] Z-flashing with drip at the girt band base, set to the 2" cavity.
-- [K3] 2"x2" perforated aluminium U on the Z; base trim 1" up, lapping it on EPDM.
-- [K4] L-flashing from sheathing base onto the foam; seal its outer end.
+- {*BASEMENT_*,*GARDEN_CURB*} [K1 @ host#layer:waterproofing:out] Bituthene 3000 or equal, concrete to sheathing; 2" laps, 2-ply corners; backfill in 30 days.
+- {*EXT_2X6*} [K2 @ host#layer:xps-b:out] Z-flashing with drip at the girt band base, set to the 2" cavity.
+- {*EXT_2X6*} [K3] 2"x2" perforated aluminium U on the Z; base trim 1" up, lapping it on EPDM.
+- {*EXT_2X6*} [K4] L-flashing from sheathing base onto the foam; seal its outer end.
 - [K5 @ host#layer:concrete:out] Mudsill anchors per IRC R403.1.6. Plate joint peel-and-stick on the envelope.
-- [K6] Slab perimeter: 1" XPS thermal break with 1/2" polyurethane sealant.
-- [K7] Veneer: 2" EPS on the backup wall, 4" clear air, weeps at the beam. Two-piece adjustable anchors through the full 6".
+- {*BASEMENT_*} [K6] Slab perimeter: 1" XPS thermal break with 1/2" polyurethane sealant.
+- {*GARDEN_CURB*} [K7] Veneer: 2" EPS, 4" air, weeps at the beam; two-piece anchors through 6".
 
 ### Spec 07 21 00
 - Use XPS with published low water absorption; confirm compressive strength for below-grade use.
@@ -75,7 +75,7 @@ source:
 
 - **The pour stops at the bearing seat, -13 7/16", and this detail's junction is there.** The top of the concrete and the bottom of the framed wall are 13 7/16" apart: the pour tops out on one flat seat all the way round, the framed wall above still starts at the storey datum (the house-wide datum convention is a known split — see `plans/TODO.md`), and the 13 7/16" between them is the mudsill, its gasket, and the 11 7/8" rim band the joists die into. The L-flashing, the Z-flashing with its drip, the bug screen and the sill gasket all draw on the concrete rather than a foot above it.
 
-- **The sill is one board and it is shared.** The I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on. One rule takes the **union** of the two runs, on the seat, and it bills 370.0 LF. There is no second rule and there must not be: two rules over one board is a double-bill.
+- **The sill is one board and it is shared.** The I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on. One rule takes the **union** of the two runs, on the seat, and it bills 329.3 LF. There is no second rule and there must not be: two rules over one board is a double-bill.
 
 - **The pour is 8" everywhere the detail applies, and the steel is `#5 @ 41" o.c.`** This detail is the wood-over-concrete transition: the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on, and an 8" wall carries that sill with 2" to spare. The north, west and south perimeter is 8" (`BASEMENT_8`, `BASEMENT_8_GARDEN`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`) with `#5 @ 41" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8" where 12" reads NR. Only `SL-M-DECK` is still a cast deck, and it lands on the east wall and the centre line — neither of which this detail draws. The walls align on `face("concrete-ext")`, so the exterior face, the 4" of XPS and its hand-off to the framed wall's 4" of CI all stand exactly where they are drawn, and the 4" came off the inside face where the sill has room to spare.
 

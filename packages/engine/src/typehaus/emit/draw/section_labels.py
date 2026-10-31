@@ -13,6 +13,7 @@ from typing import NamedTuple
 
 from typehaus.emit.draw.annotate import LEGACY_IN_PER_PT, LabelSpec, dodge, place_column
 from typehaus.emit.draw.annotation_ladders import LadderRequest
+from typehaus.emit.draw.plan_labels import inches_fraction
 from typehaus.emit.draw.scene import Leader, NamedPoint
 from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.quantities import M_PER_IN
@@ -150,7 +151,7 @@ def roof_layer_ladder(roof, bands, crop, z_at, ladder_labels,
         point = _point_on_band(band_outlines, probe_in)
         if point is None:
             continue
-        entries.append(LabelSpec(text=f'{name} {thickness[name]:.3g}"',
+        entries.append(LabelSpec(text=f'{name} {inches_fraction(thickness[name])}',
                                  target=point, key=(roof.uid, name)))
     if not entries:
         return

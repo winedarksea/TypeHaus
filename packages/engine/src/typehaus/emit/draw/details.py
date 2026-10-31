@@ -349,7 +349,8 @@ def _sheet_note_set(model: ResolvedModel, derived: DerivedDetail):
     path = _notes_path(model, derived)
     if path is None:
         return SheetNoteSet()
-    return parse_sheet_notes(path.read_text(encoding="utf-8"), source=path.name)
+    return parse_sheet_notes(path.read_text(encoding="utf-8"),
+                             source=path.name).for_condition(derived.key)
 
 
 def _notes_lines(model: ResolvedModel, derived: DerivedDetail) -> list[str]:
@@ -630,7 +631,8 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail,
     # A layer anchor resolves at its wall's mid-height, which for a storey-tall wall is far
     # outside a junction crop. What the callout is about is the layer *at the junction*, so
     # pin the elevation there and only take the layer's position across the wall depth.
-    junction_z = _junction_z(model, derived.condition, wall) / M_PER_IN if wall else None
+    junction_z = (_junction_z(model, derived.condition, wall, derived.direction,
+                              derived.station) / M_PER_IN if wall else None)
     # Either side of a junction may own the layer being claimed — at a foundation detail the
     # sheathing and WRB belong to the framed wall above, not the concrete below. An opening
     # condition names no wall at all, so its host carries every claim.
@@ -655,9 +657,12 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail,
 
     entries: list = []
     for cont in getattr(tr, "continuity", ()):
+        target = _anchor(cont.from_face) or _anchor(cont.to_face)
+        if target is None:  # neither face is in this cut (an interior rim band): no claim
+            continue
         content = wrap_label(
             f"{cont.control} continuity — {cont.from_face} → {cont.to_face}")
-        entries.append(LabelSpec(text=content, target=_anchor(cont.from_face)))
+        entries.append(LabelSpec(text=content, target=target))
     placed = place_column(entries, x=text_x, z_top=top_y, step_pt=step_pt,
                           height_pt=ANNOTATION_TEXT_PT, align="left", scale=scale)
     fixed = tuple(leader_box(n, scale) for n in (scene.nodes if scene is not None else ())

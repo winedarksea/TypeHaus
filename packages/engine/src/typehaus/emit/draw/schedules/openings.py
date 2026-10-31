@@ -55,10 +55,13 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
             frame = window_frame_dimensions(opening)
             rows.append((
                 marks.get(opening.type_ref or "", "—"), opening.tag,
-                "Door" if opening.is_door else "Window", opening.type_ref or "RO",
+                "Door" if opening.is_door else
+                ("Rough opening" if opening.kind == "rough_opening" else "Window"),
+                opening.type_ref or "RO",
                 _door_dimensions_text(spec, opening) if opening.is_door else
                 f"{_eighths(opening.width_m)}\" × {_eighths(opening.height_m)}\"",
-                *((_frame_size_text(frame),) if kinds == "window" else ()),
+                *((_frame_size_text(frame, opening.kind == "rough_opening"),)
+                  if kinds == "window" else ()),
                 *_energy_columns(spec, opening.is_door),
                 *((hardware_marks.get(opening.type_ref, "—"), _doorway_text(opening))
                   if kinds == "door" else ())))
@@ -76,7 +79,8 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
                                     *(("HW set", "Doorway") if kinds == "door" else ()))
         has_hardware = kinds == "door" and bool(hardware_marks)
         _add_table(fig, rows, headers,
-                   bbox=(.04, .55, .92, .37) if has_hardware else (.04, .11, .92, .80))
+                   bbox=(.04, .55, .92, .37) if has_hardware else (.04, .11, .92, .80),
+                   truncate=(len(headers) - 1,) if kinds == "door" else ())
         if has_hardware:
             draw_hardware_schedule(fig, model)
 
@@ -86,9 +90,9 @@ def _eighths(length_m: float) -> str:
     return f"{round(length_m / M_PER_IN * 8) / 8:g}"
 
 
-def _frame_size_text(frame: tuple[float, float, float] | None) -> str:
+def _frame_size_text(frame: tuple[float, float, float] | None, is_ro: bool = False) -> str:
     if frame is None:
-        return "UNRESOLVED"
+        return "—" if is_ro else "UNRESOLVED"  # a rough opening has no frame by definition
     width, height, _sill = frame
     return f'{width / M_PER_IN:.3f}″ × {height / M_PER_IN:.3f}″'
 
@@ -146,7 +150,7 @@ def _write_room_finish_schedule(pdf, model: ResolvedModel, number: str, name: st
     with schedule_sheet(pdf, model, number, name) as fig:
         section(fig, 0.04, 0.93, "ROOM FINISH SCHEDULE")
         rows = [(room.tag, (room.storey or "—"), _finish(room, "floor_finish"),
-                 _finish(room, "base_finish"), _finish(room, "wall_finish"),
+                 _base_finish(model, room), _wall_finish(model, room),
                  _ceiling_finish(model, room), f"{room.area_m2 * 10.7639:,.0f}")
                 for room in rooms]
         _add_table(fig, rows,
@@ -157,13 +161,13 @@ def _write_room_finish_schedule(pdf, model: ResolvedModel, number: str, name: st
         fixture_rows = [
             (fixture.tag, getattr(fixture, "room", None) or "—", fixture.element_kind,
              fixture.type_ref,
-             f"{types[fixture.type_ref].footprint[0].inches:.0f}\" × "
-             f"{types[fixture.type_ref].footprint[1].inches:.0f}\"")
+             f"{_eighths(types[fixture.type_ref].footprint[0].inches * M_PER_IN)}\" × "
+             f"{_eighths(types[fixture.type_ref].footprint[1].inches * M_PER_IN)}\"")
             for storey in model.plan.storeys
             for fixture in model.plan.storey_elements(storey.tag)
             if fixture.element_kind in {"Fixture", "Appliance"} and fixture.type_ref in types
         ]
-        _add_table(fig, fixture_rows, ("Tag", "Room", "Kind", "Type", "Nominal footprint"),
+        _add_table(fig, fixture_rows, ("Tag", "Room", "Kind", "Type", "Footprint (envelope)"),
                    bbox=(0.04, 0.11, 0.92, 0.32))
 
 
@@ -171,6 +175,39 @@ def _finish(room, field: str) -> str:
     """A room's stated finish, or ``—``. Never a default — see the schedule's docstring."""
     value = getattr(room, field, None)
     return str(value) if value else "—"
+
+
+def _base_finish(model, room) -> str:
+    """Base material and height from the room's derived ``base_runs``, or ``—``."""
+    names = sorted({f'{run.material_ref} {_eighths(run.height_m)}"'
+                    for run in model.base_runs if run.room in (room.tag, room.uid)})
+    return " / ".join(names) if names else "—"
+
+
+def _wall_finish(model, room) -> str:
+    """The room-side board of each bounding wall: the thick layer standing furthest
+    toward the room (a coating has no depth, so it never wins)."""
+    from typehaus.resolve.geometry import normal, sub, unit
+    from typehaus.resolve.paneling import _room_side_sign
+    from typehaus.resolve.room_walls import bounding_walls
+
+    cx = sum(p[0] for p in room.clear_face) / max(len(room.clear_face), 1)
+    cy = sum(p[1] for p in room.clear_face) / max(len(room.clear_face), 1)
+    names: set[str] = set()
+    for wall, _span in bounding_walls(model, room):
+        n = normal(unit(sub(wall.axis[1], wall.axis[0])))
+        sign = _room_side_sign(wall, (cx, cy))
+        best, ref = float("-inf"), ""
+        for layer in wall.layers:
+            if layer.thickness_m <= 0 or not layer.material_ref or not layer.polygon:
+                continue
+            reach = max(((x - wall.axis[0][0]) * n[0] + (y - wall.axis[0][1]) * n[1]) * sign
+                        for x, y in layer.polygon)
+            if reach > best + 1e-6:
+                best, ref = reach, layer.material_ref
+        if ref:
+            names.add(ref)
+    return " / ".join(sorted(names)) if names else "—"
 
 
 def _ceiling_finish(model, room) -> str:
@@ -186,23 +223,30 @@ def _ceiling_finish(model, room) -> str:
     90 sf under the cast deck, 1 9/16" apart. Both are named. A vaulted room resolves a
     stack with no flat plane and still names its board.
     """
-    names = sorted({_room_side_material(c) for c in model.ceilings
+    names = sorted({_room_side_material(c, model.plan.library) for c in model.ceilings
                     if c.room_ref == room.tag or c.room_ref == room.uid} - {""})
     return " / ".join(names) if names else "—"
 
 
-def _room_side_material(ceiling) -> str:
+def _room_side_material(ceiling, library) -> str:
     """The material of the layer a person standing in the room can touch.
 
     Layers run interior-first, so it is ``layers[0]`` — and it is a *material* ref rather
     than the layer's function name, because "FINISH" tells a builder nothing and
     ``gwb-x`` tells them which board to buy.
     """
+    from typehaus.resolve.coatings import is_coating
+
+    coat = ""
     for layer in ceiling.layers:
         ref = getattr(layer, "material_ref", "") or ""
-        if ref:
-            return ref
-    return ""
+        if not ref:
+            continue
+        if is_coating(library, ref):  # a coating takes no depth; name the board, then the coat
+            coat = coat or ref
+            continue
+        return f"{ref} + {coat}" if coat else ref
+    return coat
 
 
 
@@ -220,9 +264,11 @@ def _doorway_text(opening):
 
 def _door_dimensions_text(spec, opening):
     sizing = getattr(opening, "sizing", None)
-    rough = f'{opening.width_m/M_PER_IN:g} × {opening.height_m/M_PER_IN:g} RO'
+    rw, rh = ((sizing.rough_w_m, sizing.rough_h_m) if sizing is not None
+              else (opening.width_m, opening.height_m))
+    rough = f'{_eighths(rw)} × {_eighths(rh)} RO'
     unit = sizing.installed_unit if sizing is not None else None
     if unit is None:
         return rough
-    return (f'{sizing.nominal_w_m/M_PER_IN:g} × {sizing.nominal_h_m/M_PER_IN:g} nominal; '
-            f'{unit[0]/M_PER_IN:g} × {unit[1]/M_PER_IN:g} unit; {rough}')
+    return (f'{_eighths(sizing.nominal_w_m)} × {_eighths(sizing.nominal_h_m)} nominal; '
+            f'{_eighths(unit[0])} × {_eighths(unit[1])} unit; {rough}')

@@ -17,6 +17,7 @@ Authoring format — a body section, not frontmatter
     - Structural ridge beam; not a rafter-tie roof. Do not omit the LSSR hangers.
     ### Keyed
     - [K1 @ W-M-N-EXT#layer:sheathing:out] 5" closed-cell foam to deck underside.
+    - {*BOARD_BATTEN*} [K2] Batten wall only: a note scoped to the conditions it is true of.
     ### Spec 07 21 00
     - Install window bucks before spraying foam. Fillet against block sides.
 
@@ -30,6 +31,10 @@ already load-bearing for ``applied_to``/``source``. And a 200-character imperati
 in a YAML scalar invites folded blocks, indentation bugs and quoting of the ``"`` marks that
 every dimension in this house is written with.
 
+A leading ``{glob,!glob}`` scopes a bullet to the derived condition keys it matches
+(``fnmatch``; any positive glob, and none of the ``!`` ones): one Transition's file serves
+every condition its pattern spawns, so a line true of one wall must not print on all.
+
 Anything under ``## Sheet notes`` that is not under a recognised ``###`` subheading is a
 **parse problem**, surfaced as a check finding. It is never silently swallowed.
 
@@ -41,7 +46,8 @@ from __future__ import annotations
 
 import re
 import textwrap
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from fnmatch import fnmatchcase
 
 from typehaus.emit.draw.note_text import banned_terms, clean, logical_bullets
 
@@ -75,6 +81,7 @@ _KEY = re.compile(
     r"^`?\[\s*(?P<key>[A-Za-z0-9]+)\s*(?:@\s*(?P<uid>[^\]#\s]+)"
     r"(?:#(?P<face>[^\]\s]+))?)?\s*\]`?\s*(?P<text>.*)$"
 )
+_WHEN = re.compile(r"^\{(?P<globs>[^}]*)\}\s*(?P<rest>.*)$")
 _SPEC_HEAD = re.compile(r"^spec\b\s*(?P<section>[0-9 ]{2,})?$", re.IGNORECASE)
 
 
@@ -87,10 +94,18 @@ class SheetNote:
     anchor_uid: str = ""
     anchor_face: str = ""
     spec_section: str = ""
+    when: str = ""  #: comma-separated condition globs; ``!`` excludes. Empty = always.
 
     @property
     def anchored(self) -> bool:
         return bool(self.key and self.anchor_uid)
+
+    def applies_to(self, condition_key: str) -> bool:
+        globs = [g.strip() for g in self.when.split(",") if g.strip()]
+        pos = [g for g in globs if not g.startswith("!")]
+        neg = [g[1:] for g in globs if g.startswith("!")]
+        return ((not pos or any(fnmatchcase(condition_key, g) for g in pos))
+                and not any(fnmatchcase(condition_key, g) for g in neg))
 
 
 @dataclass(frozen=True)
@@ -114,6 +129,13 @@ class SheetNoteSet:
         """True when the file carries a ``## Sheet notes`` section at all."""
         return not self.legacy and bool(self.general or self.keyed or self.spec
                                         or self.problems)
+
+    def for_condition(self, condition_key: str) -> SheetNoteSet:
+        """Only the notes whose ``{...}`` scope matches this derived condition key."""
+        def keep(notes):
+            return tuple(n for n in notes if n.applies_to(condition_key))
+        return replace(self, general=keep(self.general), keyed=keep(self.keyed),
+                       spec=keep(self.spec))
 
     def sheet_lines(self) -> list[str]:
         """The ``Scene.notes`` payload: a header, the general notes, then the keyed ones.
@@ -211,6 +233,10 @@ def parse_sheet_notes(text: str, *, source: str = "") -> SheetNoteSet:
 def _add(bullet: str, kind: str, section: str, general: list[SheetNote],
          keyed: list[SheetNote], spec: list[SheetNote], problems: list[str],
          where: str) -> None:
+    when = ""
+    scoped = _WHEN.match(bullet.strip())
+    if scoped:
+        when, bullet = scoped.group("globs").strip(), scoped.group("rest")
     match = _KEY.match(bullet)
     key = uid = face = ""
     if match:
@@ -233,23 +259,29 @@ def _add(bullet: str, kind: str, section: str, general: list[SheetNote],
     if banned:
         problems.append(f"{where}banned term(s) {', '.join(banned)} in: {body[:60]!r}")
     note = SheetNote(text=body, key=key, anchor_uid=uid, anchor_face=face,
-                     spec_section=section)
+                     spec_section=section, when=when)
     {"general": general, "keyed": keyed, "spec": spec}[kind].append(note)
 
 
 def _budget_problems(general: list[SheetNote], keyed: list[SheetNote],
                      where: str) -> list[str]:
+    # Budgeted per scope: the unscoped notes plus one scope's own, as one sheet prints them.
     out: list[str] = []
-    if len(general) > MAX_GENERAL:
-        out.append(f"{where}{len(general)} general notes (max {MAX_GENERAL})")
-    if len(keyed) > MAX_KEYED:
-        out.append(f"{where}{len(keyed)} keyed notes (max {MAX_KEYED})")
-    seen: set[str] = set()
-    for note in keyed:
-        if note.key in seen:
-            out.append(f"{where}duplicate keyed-note key {note.key}")
-        seen.add(note.key)
-    return out
+    scopes = sorted({n.when for n in (*general, *keyed)}) or [""]
+    for scope in scopes:
+        g = [n for n in general if n.when in ("", scope)]
+        k = [n for n in keyed if n.when in ("", scope)]
+        tag = f" {{{scope}}}" if scope else ""
+        if len(g) > MAX_GENERAL:
+            out.append(f"{where}{len(g)} general notes{tag} (max {MAX_GENERAL})")
+        if len(k) > MAX_KEYED:
+            out.append(f"{where}{len(k)} keyed notes{tag} (max {MAX_KEYED})")
+        seen: set[str] = set()
+        for note in k:
+            if note.key in seen:
+                out.append(f"{where}duplicate keyed-note key {note.key}{tag}")
+            seen.add(note.key)
+    return list(dict.fromkeys(out))
 
 
 def legacy_notes(text: str) -> list[str]:

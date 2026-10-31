@@ -61,8 +61,9 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
             b.add(Polyline(points=tuple(_in(p) for p in outline), layer=layer, closed=True,
                            lineweight=PROFILE, uid=duct.uid, tag=f"{duct.tag}-seg{i}"))
         mid = duct.path[len(duct.path) // 2]
-        label = (f'{duct.width_m / M_PER_IN:.0f}×{duct.depth_m / M_PER_IN:.0f} '
-                f'{duct.system.upper()}')
+        size = (f'{duct.diameter_m / M_PER_IN:.0f}" RD' if duct.diameter_m is not None
+                else f'{duct.width_m / M_PER_IN:.0f}×{duct.depth_m / M_PER_IN:.0f}')
+        label = f'{size} {duct.system.upper()}'
         add_point_label(b, key=f"duct-{duct.uid}", text=label, target=_in(mid), layer=layer,
                         height_pt=TEXT_PT, priority=50, leader=True,
                         preferred_direction=(0.0, 1.0), avoid_obstacles=False)
@@ -82,7 +83,7 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
         scene = scene.model_copy(update={"notes": (
             "DUCTS IN JOIST BAYS: X marks bearing-wall crossings requiring fire blocking. "
             "Provide fire blocking at every marked crossing.",
-            "Duct labels indicate width × depth in inches and air system. "
+            "Duct labels: width × depth in inches (round: diameter, RD) and air system. "
             "Leaders identify the associated duct run.",
         )})
     return scene

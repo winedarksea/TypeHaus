@@ -14,7 +14,7 @@ import math
 
 from typehaus.model.enums import BackupTier
 from typehaus.resolve.model import ResolvedModel
-from typehaus.takeoff.lighting import line_voltage_run_va
+from typehaus.takeoff.lighting import line_voltage_run_va, nec_floor_area_ft2
 from typehaus.takeoff.raceways import conductor_takeoff as conductor_takeoff
 from typehaus.takeoff.raceways import conduit_takeoff as conduit_takeoff
 
@@ -292,7 +292,7 @@ def service_load_summary(
     estimate. The general-lighting allowance follows the subset's ``general`` circuits, so
     a panel hosting none of them carries none of it.
     """
-    floor_area_ft2 = sum(room.area_m2 for room in model.rooms if room.conditioned) * _M2_TO_FT2
+    floor_area_ft2 = nec_floor_area_ft2(model)
     general_va = GENERAL_LIGHTING_VA_PER_FT2 * floor_area_ft2 + SMALL_APPLIANCE_AND_LAUNDRY_VA
 
     consumers = _circuit_consumers(model)

@@ -32,6 +32,17 @@ from typehaus.takeoff.lighting_supplies import (
 _M_TO_FT = 3.280839895013123
 _M2_TO_FT2 = 10.7639104167
 
+
+def nec_floor_area_ft2(model: ResolvedModel) -> float:
+    """NEC 220.12/220.82 floor area: outside dimensions, the one CFA the set prints (G-001),
+    not the sum of room clear areas (D1-010). Falls back to rooms when no envelope resolves."""
+    from typehaus.resolve.conditioned_area import conditioned_floor_area
+
+    area_m2 = conditioned_floor_area(model).area_m2
+    if area_m2 <= 1e-6:
+        area_m2 = sum(room.area_m2 for room in model.rooms if room.conditioned)
+    return area_m2 * _M2_TO_FT2
+
 # Mirrors ``takeoff/electrical.GENERAL_LIGHTING_VA_PER_FT2``. Restated rather than imported
 # so this module can be read on its own; the parity is pinned by the takeoff test.
 GENERAL_LIGHTING_VA_PER_FT2 = 3.0
@@ -389,7 +400,7 @@ def connected_lighting_va(model: ResolvedModel) -> dict[str, object]:
         row["runs"] = int(row["runs"]) + 1
         row["connected_va"] = float(row["connected_va"]) + _run_watts(run, types.get(run.type_ref))
 
-    conditioned_ft2 = sum(room.area_m2 for room in model.rooms if room.conditioned) * _M2_TO_FT2
+    conditioned_ft2 = nec_floor_area_ft2(model)
     total = sum(float(row["connected_va"]) for row in by_circuit.values())
     return {
         "per_circuit": [{"circuit": row["circuit"], "fixtures": int(row["fixtures"]),

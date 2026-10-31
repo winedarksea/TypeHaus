@@ -159,6 +159,12 @@ def _spacing_note(spec) -> str:
     return f'{DEFAULT_SPACING.inches:.0f}" O.C. (SOLVER DEFAULT)'
 
 
+def _overall_m(member) -> float:
+    """A truss ships with its tails; its member runs bearing to bearing only (F4-004)."""
+    truss = getattr(member, "truss", None)
+    return member.length_m + ((truss.tail_lo_m + truss.tail_hi_m) if truss is not None else 0.0)
+
+
 def build_roof_framing_schedule(model: ResolvedModel, roof: ResolvedRoof) -> ScheduleTable:
     spacing = _spacing_note(roof_framing_spec(model, roof))
     rows: list[tuple[str, ...]] = []
@@ -176,7 +182,7 @@ def build_roof_framing_schedule(model: ResolvedModel, roof: ResolvedRoof) -> Sch
             if label in _BLOCKING_TITLES.values():
                 member_spacing = "PER PLAN"
             rows.append((f"{prefix}{number}", label, profile, member_spacing,
-                         str(len(group)), feet_inches(max(member.length_m for member in group))))
+                         str(len(group)), feet_inches(max(_overall_m(m) for m in group))))
     return ScheduleTable(title=f"{roof.tag} MEMBER SCHEDULE",
                          columns=("MARK", "MEMBER", "SIZE", "SPACING", "QTY", "MAX LENGTH"),
                          rows=tuple(rows))

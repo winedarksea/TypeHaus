@@ -292,16 +292,19 @@ def merged_levels(model: ResolvedModel) -> list[Level]:
     # G-FOUNDATION FLOOR / COURT-LOW FLOOR / YARD-LOW FLOOR", which says four times over what
     # a datum line exists to say once. The level is named for the floor a reader knows.
     #
-    # The plate is the level's highest, so a level holding two structures reports the taller
-    # one's. An accessory building's own plate is a real datum, but it is one a section CUT
-    # THROUGH THAT BUILDING should caption, and this list is built for the whole set.
-    for primary, here in model.plan.levels():
+    # The plate is the PRIMARY storey's: an accessory building's own plate is a real datum,
+    # but one a section CUT THROUGH THAT BUILDING should caption (court walls topped at grade
+    # printed "BASEMENT T.O. PLATE 0'-1"").
+    for primary, _here in model.plan.levels():
         named.append((f"{primary.tag.upper()} FLOOR", primary.elevation.meters))
-        tags = {storey.tag for storey in here}
-        level_walls = [wall for wall in model.walls if wall.storey in tags]
-        if level_walls:
-            named.append((f"{primary.tag.upper()} T.O. PLATE",
-                          max(wall.z1_m for wall in level_walls)))
+        own = [wall for wall in model.walls if wall.storey == primary.tag]
+        platform = [w.plate_top_z_m for w in own if w.plate_top_z_m is not None]
+        # Under a pitched roof no wall is platform-framed; the eave plate is then the LOWEST
+        # flat top (the ridge-bearing wall's soffit is not the level's plate).
+        flat = [w.z1_m for w in own if w.top_z0_m is None and w.top_z1_m is None]
+        plate = max(platform) if platform else (min(flat) if flat else None)
+        if plate is not None:
+            named.append((f"{primary.tag.upper()} T.O. PLATE", plate))
     if model.roofs:
         named.append(("RIDGE", max(roof.ridge_z_m for roof in model.roofs)))
 

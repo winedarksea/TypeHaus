@@ -109,13 +109,21 @@ def _emit_overhangs(b: SceneBuilder, model: ResolvedModel, roof: ResolvedRoof,
                if w is not None]
     if not bearing:
         return
-    clad_pts: list[tuple[float, float]] = []
-    for wall in bearing:
-        layers = wall.depth_layers()
-        clad_pts.extend(layers[-1].polygon if layers else wall.axis)
+    fx0, fx1, fy0, fy1 = bbox
+    # The face an overhang is measured from is the CLADDING under the roof. A rafter plate
+    # bears the roof but is not that face: off it, the flush house eave read 0'-8" (E1-010).
+    under = [w for w in model.walls
+             if all(fx0 - 0.01 <= p[0] <= fx1 + 0.01 and fy0 - 0.01 <= p[1] <= fy1 + 0.01
+                    for p in w.axis)]
+    clad_pts: list[tuple[float, float]] = [
+        p for w in under for layer in w.depth_layers()[-1:]
+        if layer.function == "cladding" for p in layer.polygon]
+    if not clad_pts:
+        for wall in bearing:
+            layers = wall.depth_layers()
+            clad_pts.extend(layers[-1].polygon if layers else wall.axis)
     if not clad_pts:
         return
-    fx0, fx1, fy0, fy1 = bbox
     cx0 = max(min(p[0] for p in clad_pts), fx0)
     cx1 = min(max(p[0] for p in clad_pts), fx1)
     cy0 = max(min(p[1] for p in clad_pts), fy0)

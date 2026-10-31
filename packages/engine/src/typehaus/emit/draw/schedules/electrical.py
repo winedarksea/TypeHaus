@@ -150,18 +150,21 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
         schedule = luminaire_schedule(model)
         section(fig, 0.04, 0.945, "LUMINAIRE SCHEDULE")
         schedule_rows = [
-            (row["mark"], row["description"],
-             " ".join(str(part) for part in (row["brand"], row["model"]) if part) or "—",
-             row["lamp"] or "—",
-             _number(row["watts"], "{:.0f} W") or _number(row["watts_per_ft"], "{:.1f} W/ft"),
-             _number(row["lumens"], "{:,.0f}"), _number(row["cct_k"], "{:.0f}K"),
-             f"{row['volts']}V", row["mount"], row["dimming"], row["rating"],
+            (row["mark"], _clip(row["description"], 22),
+             _clip(" ".join(str(part) for part in (row["brand"], row["model"]) if part)
+                   or "—", 18),
+             _clip(row["lamp"] or "—", 14),
+             _number(row["watts"], "{:.0f}") or _number(row["watts_per_ft"], "{:.1f}/ft"),
+             _number(row["lumens"], "{:,.0f}"), _number(row["cct_k"], "{:.0f}"),
+             str(row["volts"]), str(row["mount"]).replace(" ceiling", "").replace(", ", "/"),
+             {"dimmable": "dim", "switched": "sw"}.get(row["dimming"], row["dimming"]),
+             row["rating"],
              str(row["count"]) if row["count"] else f"{row['length_ft'] or 0:.0f} LF",
-             ", ".join(row["rooms"]))
+             _rooms(row["rooms"], 30))
             for row in schedule
         ]
         _add_table(fig, schedule_rows,
-                   ("Mark", "Description", "Brand / Model", "Lamp", "Watts", "Lumens", "CCT",
+                   ("Mark", "Description", "Brand / Model", "Lamp", "W", "lm", "K",
                     "V", "Mount", "Dim", "Listing", "Qty", "Locations"),
                    bbox=(0.03, 0.72, 0.94, 0.215), truncate=(12,))
 
@@ -216,6 +219,35 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
         fig.text(0.57, 0.15, str(load["basis"]), fontsize=6, family="sans-serif", wrap=True)
 
 
+def _clip(text: object, limit: int) -> str:
+    """Text cut to ``limit`` characters with an ellipsis, so one long cell cannot claim the
+    column width the numeric cells need."""
+    text = str(text)
+    return text if len(text) <= limit else text[:limit - 1].rstrip() + "…"
+
+
+def _rooms(rooms, limit: int) -> str:
+    """Room list kept to ``limit`` characters on a whole-name boundary, count of the rest."""
+    kept: list[str] = []
+    for room in rooms:
+        if kept and len(", ".join([*kept, room])) > limit:
+            break
+        kept.append(room)
+    more = len(rooms) - len(kept)
+    return ", ".join(kept) + (f" +{more}" if more else "")
+
+
+def _ft_in(feet: object) -> str:
+    """Decimal feet as ft-in to the nearest 1/2", or an em dash."""
+    if not isinstance(feet, (int, float)):
+        return "—"
+    halves = round(feet * 24)
+    sign, halves = ("-" if halves < 0 else ""), abs(halves)
+    ft, rem = divmod(halves, 24)
+    whole, half = divmod(rem, 2)
+    return f"{sign}{ft}'-{whole}{' 1/2' if half else ''}\""
+
+
 def _has_data_content(model: ResolvedModel) -> bool:
     return any(element.element_kind == "ElectricalDevice"
                and element.kind.value == "data_outlet"
@@ -239,13 +271,13 @@ def _write_data_schedule(pdf, model: ResolvedModel, number: str, name: str) -> N
         section(fig, 0.04, 0.90, "LOW-VOLTAGE DEVICE SCHEDULE")
         device_rows = [
             (row["tag"], row["type_name"] or row["type_ref"] or "—", row["room"] or "—",
-             row["mount"], _number(row["mount_elevation_ft"], "{:.1f}'") or "—",
+             row["mount"], _ft_in(row["mount_elevation_ft"]),
              _number(row["poe_watts"], "{:.0f} W") or "—",
              row["circuit"] or "PoE")
             for row in devices
         ]
         _add_table(fig, device_rows,
-                   ("Tag", "Product", "Room", "Mount", "Elev", "PoE", "Circuit"),
+                   ("Tag", "Product", "Room", "Mount", "Elev AFF", "PoE", "Circuit"),
                    bbox=(0.03, 0.60, 0.94, 0.28))
 
         raceways = data_raceway_takeoff(model)
@@ -269,7 +301,7 @@ def _write_data_schedule(pdf, model: ResolvedModel, number: str, name: str) -> N
         unknown = int(budget.get("unknown_devices", 0) or 0)
         if unknown:
             budget_rows.append(("Unrated devices", f"{unknown} — PoE draw not stated"))
-        _add_table(fig, budget_rows, ("", ""), bbox=(0.03, 0.26, 0.52, 0.05))
+        _add_table(fig, budget_rows, ("Item", "Value"), bbox=(0.03, 0.26, 0.52, 0.05))
         fig.text(0.57, 0.30, str(budget.get("basis", "")), fontsize=6, family="sans-serif",
                  wrap=True)
         fig.text(0.03, 0.21,

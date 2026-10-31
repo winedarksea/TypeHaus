@@ -361,8 +361,8 @@ def framing_sheet_findings(model: ResolvedModel, level: FramedLevel) -> list[Fin
     if not any(member.category == "blocking" for member in level.floor.members):
         findings.append(Finding(
             severity=Severity.WARN, check_id="sheet.framing.joist_blocking",
-            message="no blocking/bridging is generated for this deck, so the sheet shows "
-                    "none at bearing lines", element_tags=(level.floor.tag,),
+            message=f"no blocking/bridging is generated for {level.floor.tag}, so the sheet "
+                    "shows none at its bearing lines", element_tags=(level.floor.tag,),
             result=Result.UNKNOWN))
     return findings
 

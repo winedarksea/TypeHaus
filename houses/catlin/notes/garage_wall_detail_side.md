@@ -19,7 +19,7 @@ source:
 - Stem footing: 12"x6" over compacted stone per IRC R403.1 and R403.4.1.
 - Slab: 3-1/2" min, 3,500 psi min per IRC R506.1, sloped to the door.
 - Wood wall: 2x6 at 24" o.c., 5/8" CDX, 2" of 2 lb closed-cell foam per bay.
-- Cladding: 7/8" corrugated 26 ga PVDF steel, house white, screwed at the crowns.
+- Cladding: 7/8" corrugated 24 ga PVDF steel, house white, screwed at the crowns.
 - Stem band: PVDF aluminium sheet, 0.040" min, 2" below grade to the stem top.
 - Interior: 5/8" drywall on the wall, 5/8" exterior gypsum on the stem.
 - Roof: gable trusses at 24" o.c., OSB deck, underlayment, standing-seam metal.

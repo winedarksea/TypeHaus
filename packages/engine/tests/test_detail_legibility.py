@@ -34,7 +34,7 @@ def _eave(model):
 
 #: A ladder rung says `<layer name> <n>"` and nothing else. The name may carry a space
 #: ("rafter fill"), so it is anything that is not the trailing dimension.
-_RUNG_TEXT = re.compile(r'^(?P<name>.+?) [\d.]+"$')
+_RUNG_TEXT = re.compile(r'^(?P<name>.+?) (?:\d+ )?[\d./]+"$')  # 0.03" or 11 7/8"
 
 
 def _rungs(scene):

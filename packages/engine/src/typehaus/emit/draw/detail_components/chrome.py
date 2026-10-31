@@ -21,6 +21,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     rect_points,
 )
 from typehaus.emit.draw.lineweights import LIGHT
+from typehaus.emit.draw.plan_labels import inches_fraction
 from typehaus.emit.draw.scene import ArchDimension, Hatch, IRNode, NamedPoint, Polyline, Text
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
@@ -112,7 +113,7 @@ def _with_component_materials(seen: dict[str, float | None], drawn: set[str] | N
 
 
 def _legend_label(material: str, thickness: float | None) -> str:
-    return material if thickness is None else f'{material}  {thickness:.3g}"'
+    return material if thickness is None else f'{material}  {inches_fraction(thickness)}'
 
 
 def drawn_materials(scene) -> set[str]:
@@ -265,6 +266,27 @@ def _continuous_insulation(wall, intervals: dict):
     return (min(lo, b_hi - packed), hi, total + packed, "ext. insul.")
 
 
+def _outboard_insulation_run(wall, intervals: dict) -> list:
+    """``[(interval, label)]`` for the insulation contiguous outboard of the structure.
+
+    Membranes between the pour and the first board are stepped over; anything else ends the
+    run, so an ICF core's inside and outside EPS are never summed across the concrete."""
+    names = list(intervals)
+    structure = [i for i, n in enumerate(names) if intervals[n][2] == "structure"]
+    if not structure:
+        return []
+    material = {layer.name: layer.material_ref for layer in wall.layers}
+    run: list = []
+    for name in names[structure[-1] + 1:]:
+        if intervals[name][2] == "insulation":
+            ref = material.get(name, "").lower()
+            run.append((intervals[name], "XPS" if "xps" in ref
+                        else "EPS" if "eps" in ref else ref or name))
+        elif run:
+            break
+    return run
+
+
 def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
     """``ArchDimension`` strings derived from the resolved layer thicknesses.
 
@@ -315,23 +337,35 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
         # enough that both strings sit in clear wall.
         drop = 16.0 if derived.condition.kind.value == "wall_roof" else 6.0
         z_here = junction_z + 6.0 if concrete is not None else top - drop
+        # Keep both strings on the wall as CROPPED (D2-009), not the whole storey's wall.
+        vis_lo = max(framed.z0_m / M_PER_IN, min(crop[0][1], crop[1][1]) / M_PER_IN) + 2.0
+        vis_hi = min(top, max(crop[0][1], crop[1][1]) / M_PER_IN) - 2.0
+        if vis_hi > vis_lo:
+            z_here = min(max(z_here, vis_lo), vis_hi)
         ci = _continuous_insulation(framed, intervals)
         if ci is not None and outboard_is_high(framed, direction, station) is not None:
             lo, hi, total, label = ci
-            _dim((lo, z_here), (hi, z_here), 4.0, f'{total:.3g}" {label}')
+            _dim((lo, z_here), (hi, z_here), 4.0, f'{inches_fraction(total)} {label}')
         stud = outermost_with_function(intervals, "structure")
+        stud_z = z_here + 8.0 if z_here + 8.0 <= vis_hi else z_here - 8.0
         if stud is not None:
-            _dim((stud[0], z_here + 8.0), (stud[1], z_here + 8.0), 3.0,
-                 f'{abs(stud[1] - stud[0]):.3g}" stud')
+            _dim((stud[0], stud_z), (stud[1], stud_z), 3.0,
+                 f'{inches_fraction(abs(stud[1] - stud[0]))} stud')
 
     if concrete is not None:
         intervals = layer_intervals(concrete, direction, station)
-        xps = [iv for iv in intervals.values() if iv[2] == "insulation"]
+        xps = _outboard_insulation_run(concrete, intervals)
         if xps and outboard_is_high(concrete, direction, station) is not None:
-            total = sum(abs(iv[1] - iv[0]) for iv in xps)
-            z_here = (concrete.z0_m + concrete.z1_m) / 2.0 / M_PER_IN
-            _dim((min(iv[0] for iv in xps), z_here), (max(iv[1] for iv in xps), z_here),
-                 3.0, f'{total:.3g}" XPS ({len(xps)} layers)')
+            total = sum(abs(iv[1] - iv[0]) for iv, _m in xps)
+            # Mid-height of the wall AS CROPPED, not of the whole 8' pour (D2-009).
+            (_u0, cz0), (_u1, cz1) = crop
+            z_lo = max(concrete.z0_m, min(cz0, cz1))
+            z_hi = min(concrete.z1_m, max(cz0, cz1))
+            z_here = (z_lo + z_hi) / 2.0 / M_PER_IN
+            names = sorted({m for _iv, m in xps})
+            plies = f" ({len(xps)} layers)" if len(xps) > 1 else ""
+            _dim((min(iv[0] for iv, _m in xps), z_here), (max(iv[1] for iv, _m in xps), z_here),
+                 3.0, f'{inches_fraction(total)} {"/".join(names)}{plies}')
 
     # Footing width + depth, from the resolved strip footing — drawn only when the footing is
     # actually in the crop, so a wall-top junction (footing out of frame) gets neither.
@@ -347,7 +381,7 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
             f_hi = max(max(iv) for iv in intervals_f) / M_PER_IN
             top, bottom = footing.z1_m / M_PER_IN, footing.z0_m / M_PER_IN
             _dim((f_lo, bottom - 3.0), (f_hi, bottom - 3.0), 3.0,
-                 f'{f_hi - f_lo:.3g}" ftg width')
+                 f'{inches_fraction(f_hi - f_lo)} ftg width')
             _dim((f_lo - 3.0, bottom), (f_lo - 3.0, top), 3.0,
-                 f'{top - bottom:.3g}" ftg depth')
+                 f'{inches_fraction(top - bottom)} ftg depth')
     return nodes

@@ -22,19 +22,21 @@ source:
 - Roof: 11-7/8" TJI 230 at 24" o.c., LSSR hangers to a structural ridge beam.
 - Bay: 5" ccSPF on deck, R-30C batt. Foam is the air and vapour barrier.
 - Deck: 19/32" CDX, 40/20, oversailing the rafter ends to the girt face.
-- Butyl membrane 240 F min, full field plus eave strip-in. 24 ga Image II, nail flange.
-- Wall: 2x6, 1/2" sheathing, 4" ccSPF, 1/2" vent gap, KDAT girts, 1-1/4" PBR. No WRB.
+- Butyl membrane 240 F, full field + eave strip-in. 24 ga Image II, nail flange.
+- {wall_roof:EXT_2X6|*} Wall: 2x6, 1/2" ply, 4" ccSPF, 1/2" gap, KDAT girts, 1-1/4" PBR. No WRB.
+- {*BOARD_BATTEN*} Wall: 2x6, 1/2" ply, 4" ccSPF, 1/2" gap, KDAT girts, 3/4" BBD75. No WRB.
+- {wall_roof:INT_*} Partition stops 3/4" under rafters; SDPW19600 screw per crossing.
 
 ### Keyed
-- [K1] Birdsmouth seat: beveled web stiffeners per APA D710 10h; H2.5A each rafter.
-- [K2] Foam first lift 1-1/2" min. Lap onto ridge beam and hanger flanges in one pass.
-- [K3] 2x6 eave block on edge on the plate, every bay. ccSPF over it.
-- [K4] Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.
-- [K5] Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04".
-- [K6] Strip-in membrane over both flanges, 4" past the hem. Pan rides over it.
-- [K7] PBR 5x4 gutter, level, back behind eave face, flange under eave leg.
-- [K8] Eave face over the gutter back, kick and hem into the trough. Pan hemmed round the lip. No fascia, no soffit.
-- [K9] 2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Hanger below the eave face; bracket pending.
+- {wall_roof:EXT_2X6|*} [K1] Birdsmouth seat: beveled web stiffeners per APA D710 10h; H2.5A each rafter.
+- [K2] Foam first lift 1-1/2" min; lap ridge beam and hanger flanges in one pass.
+- {wall_roof:EXT_2X6|*} [K3] 2x6 eave block on edge on the plate, every bay. ccSPF over it.
+- {wall_roof:EXT_2X6|*} [K4] Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.
+- {wall_roof:EXT_2X6|*} [K5] Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04".
+- {wall_roof:EXT_2X6|*} [K6] Strip-in membrane over both flanges, 4" past the hem. Pan rides over it.
+- {wall_roof:EXT_2X6|*} [K7] PBR 5x4 gutter, level, back behind eave face, flange under eave leg.
+- {wall_roof:EXT_2X6|*} [K8] Eave face over the gutter back, hemmed into the trough; pan hemmed round the lip.
+- {wall_roof:EXT_2X6|*} [K9] 2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Hanger below the eave face; bracket pending.
 
 ### Spec 07 21 00
 - Hold point: plywood under 16% MC, bay by bay, before foam.

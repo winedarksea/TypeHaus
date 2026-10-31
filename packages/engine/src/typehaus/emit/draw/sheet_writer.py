@@ -6,13 +6,11 @@ exact architectural scale (the largest standard scale that fits the viewport), a
 scale bar, and an optional north arrow. ``sheet_chrome`` applies the same border + title
 block to table pages that compose their own matplotlib figures.
 
-The truth rule: the scale printed in the title block is the scale the sheet is actually
-drawn at — ``SheetSpec.scale_note`` is a hint only. When no standard scale fits the
-viewport, the drawing is fit-to-page and honestly labeled N.T.S.
+The truth rule: the printed scale is the scale drawn at (``SheetSpec.scale_note`` is a
+hint); when no standard scale fits, the drawing is fit-to-page and labeled N.T.S.
 
-``frame_for_scene`` is the same decision taken *ahead* of composing, so a caller that is
-not the permit set — ``haus render --paper`` — can put a plan, elevation or section on the
-same paper at the same true scale, and know which scale it got.
+``frame_for_scene`` is the same decision taken *ahead* of composing, so ``haus render
+--paper`` can put a drawing on the same paper at the same true scale.
 
 Rendering the IR stays in ``pdf_writer`` (imported read-only); this module only owns the
 paper: where the viewport sits, what the data limits are, and what the chrome says. The
@@ -263,6 +261,9 @@ def compose_sheet(scene: Scene, spec: object, model: ResolvedModel,
                     "%s annotation %s: %s (%s)", spec.number, diagnostic.key,
                     diagnostic.reason, ", ".join(diagnostic.conflicts),
                 )
+    # A detail card's title/legend are PAPER nodes (card inches); this sheet has its own.
+    scene = scene.model_copy(update={"nodes": tuple(
+        n for n in scene.nodes if getattr(n, "space", "model") == "model")})
     scaled_text = _render_nodes(ax, scene, tagger)
     scale_label = NTS_LABEL
     if frame is None:  # nothing measurable on the sheet — nothing to scale

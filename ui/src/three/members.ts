@@ -237,7 +237,8 @@ function bucket(members: Member[], materials?: readonly MaterialAppearance[]): B
     else if (m.shape === "i_joist") out.ijoist.push(m);
     // An open-web floor truss is not a bar: it draws as chords + webs (three/floorTruss.ts),
     // and the open bay between the chords is the whole reason the member was specified.
-    else if (m.shape === "floor_truss") out.truss.push(m);
+    // A floor-truss-shaped BLOCK (bearing/partition blocking) is solid filler, not webs.
+    else if (m.shape === "floor_truss" && m.category !== "blocking") out.truss.push(m);
     // A roof truss is one member for a whole plated assembly: its box is the envelope, not
     // the wood, so drawing it as a bar would fill the attic with lumber that is not there.
     else if (m.shape === "roof_truss") out.roofTruss.push(m);

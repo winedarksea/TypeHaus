@@ -8,6 +8,8 @@ rough-in against the cast-in-place pour above it, → 2.5).
 
 from __future__ import annotations
 
+import math
+
 from shapely.geometry import Polygon
 
 from typehaus.emit.draw._shared import emit_fixtures, emit_ghost_walls
@@ -85,6 +87,32 @@ def has_plumbing_content(model: ResolvedModel, storey_tag: str) -> bool:
                 or any(c.storey == storey_tag for c in model.drain_cleanouts))
 
 
+def _nominal(inches: float) -> str:
+    """Nominal pipe size as a fraction: 0.75 -> 3/4", 1.25 -> 1-1/4"."""
+    eighths = round(inches * 8)
+    whole, rem = divmod(eighths, 8)
+    if rem == 0:
+        return f'{whole}"'
+    num, den = rem, 8
+    while num % 2 == 0:
+        num, den = num // 2, den // 2
+    return f'{whole}-{num}/{den}"' if whole else f'{num}/{den}"'
+
+
+def _governing_grade(run) -> float | None:
+    """Flattest grade (in/ft) over the horizontal segments (> 1 ft plan run); vertical legs
+    are not slope. None when the run has no horizontal segment or no per-vertex inverts."""
+    if run.z_m is None or len(run.z_m) != len(run.path):
+        return None
+    grades = []
+    pairs = zip(run.path, run.path[1:], run.z_m, run.z_m[1:], strict=False)
+    for (x0, y0), (x1, y1), z0, z1 in pairs:
+        plan_ft = math.hypot(x1 - x0, y1 - y0) * 3.280839895
+        if plan_ft > 1.0:
+            grades.append(abs(z0 - z1) / M_PER_IN / plan_ft)
+    return min(grades) if grades else None
+
+
 def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
     b = SceneBuilder(name=f"plumbing-{storey}", units="in")
     emit_ghost_walls(b, model, storey)
@@ -102,12 +130,9 @@ def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
         diameter_in = run.diameter_m / M_PER_IN
         label = "SUMP DISCHARGE" if run.system == "sump_discharge" else run.system.upper()
         # A pump's pressure line rises out of its pit: it carries no slope label.
-        if (run.system != "sump_discharge" and run.z_start_m is not None
-                and run.z_end_m is not None and run.length_m > 1e-9):
-            slope = (run.z_start_m - run.z_end_m) / M_PER_IN / (run.length_m * 3.280839895)
-            text = f'{diameter_in:.0f}" {label} @ {slope:.2f}"/FT'
-        else:
-            text = f'{diameter_in:.0f}" {label}'
+        grade = None if run.system == "sump_discharge" else _governing_grade(run)
+        size = _nominal(diameter_in)
+        text = f'{size} {label} @ {grade:.2f}"/FT' if grade is not None else f"{size} {label}"
         b.add(Leader(anchor=NamedPoint(xy=_in(mid), name=run.tag), at=_in(mid),
                      to=_in((mid[0], mid[1] + 1.0)), text=text, layer=layer))
 

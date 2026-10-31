@@ -90,6 +90,22 @@ def feet_inches(total_in: float, denominator: int = 16) -> str:
     return text + '"'
 
 
+def inches_fraction(value_in: float) -> str:
+    """``3.625`` → ``3 5/8"``; ``0.594`` → ``19/32"``. A thickness callout in drafting form.
+
+    Mil-scale layers (under 1/4") and values off the 1/32" grid keep their decimal: a 60 mil
+    membrane printed as 1/16" would state a product that does not exist (E2-005)."""
+    ticks = round(value_in * 32)
+    if value_in < 0.25 or abs(ticks / 32 - value_in) > 0.004:
+        return f'{value_in:.3g}"'
+    whole, fraction = divmod(ticks, 32)
+    if not fraction:
+        return f'{whole}"'
+    common = gcd(fraction, 32)
+    frac = f"{fraction // common}/{32 // common}"
+    return f'{whole} {frac}"' if whole else f'{frac}"'
+
+
 def room_display_name(tag: str) -> str:
     """``RM-M-LIVING`` → ``LIVING``; ``RM-GARAGE`` → ``GARAGE``.
 

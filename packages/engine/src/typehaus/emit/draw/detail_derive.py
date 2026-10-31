@@ -138,7 +138,8 @@ def _wall_u_extent(wall, direction: str, station: float,
     return min(bounds), max(bounds)
 
 
-def _junction_z(model, cond, wall) -> float:
+def _junction_z(model, cond, wall, direction: str | None = None,
+                station: float | None = None) -> float:
     """The elevation the detail is *about* — what the crop's below/above measure from.
 
     For the stacked kinds that is the *shared* plane between the two elements, i.e. the top
@@ -158,7 +159,8 @@ def _junction_z(model, cond, wall) -> float:
             return wall.base_ref_z_m + opening.sill_m + opening.height_m / 2.0
     top = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
     if kind == "wall_roof":
-        return top
+        # A raked (gable) top is read AT the cut, not at the wall's end (A-592 was blank).
+        return _top_at(wall, direction, station) if station is not None else top
     if kind in ("wall_foundation", "storey_stack", "stack_width_change", "assembly_change"):
         walls = [w for w in (model.wall(tag) for tag in cond.element_tags) if w is not None]
         if len(walls) >= 2:
@@ -168,6 +170,19 @@ def _junction_z(model, cond, wall) -> float:
     if kind == "wall_slab":
         return wall.z0_m
     return (wall.z0_m + top) / 2.0
+
+
+def _top_at(wall, direction: str | None, station: float) -> float:
+    top = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
+    if wall.top_z0_m is None or wall.top_z1_m is None or direction is None:
+        return top
+    i = 0 if direction == "y" else 1  # a "y" cut is a plane at x = station
+    (a, b) = wall.axis
+    span = b[i] - a[i]
+    if abs(span) < 1e-9:
+        return top
+    t = min(1.0, max(0.0, (station - a[i]) / span))
+    return wall.top_z0_m + (wall.top_z1_m - wall.top_z0_m) * t
 
 
 _TRIM_CATEGORIES = frozenset({"fascia", "soffit", "gutter", "drip_edge", "corner_trim"})
@@ -343,6 +358,8 @@ def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
     u_lo, u_hi = _wall_u_extent(wall, direction, station, center_u)
     if cond.kind.value == "wall_roof":
         station = _mid_pan_station(model, cond, direction, station, u_lo, u_hi)
+        junction_z = _junction_z(model, cond, wall, direction, station)
+        z0, z1 = junction_z - below, junction_z + above
         # Hold the roof's eave trim (fascia, soffit, drip edge, gutter) whole: an overhung
         # eave reaches well past a fixed margin, and a crop through the fascia hides it.
         reach_lo, reach_hi = _trim_reach(model, cond, direction, station, u_lo, u_hi)

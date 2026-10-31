@@ -14,7 +14,7 @@ source:
 ## Sheet notes
 
 ### General
-- D-B-PATIO geometry coordinated; support/bonds UNKNOWN. WIN-B-SAUNA: no flashing.
+- D-B-PATIO: seat, support and membrane bonds per K4-K6.
 - Water plane: the 60 mil waterproofing. Opening membranes lap onto it, shingle-fashion.
 - Veneer arches are self-supporting, under the porch: no lintel, no head flashing (IRC R703.8.5).
 - WIN-B-SAUNA is 3'-8" above the court, clear of the flood line. Liner vapour return seals inside.

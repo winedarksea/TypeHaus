@@ -92,8 +92,11 @@ def _shorten(text: str, budget: float) -> str:
         if kept and _text_width(", ".join([*kept, item]) + tail) > budget:
             break
         kept.append(item)
-    if not kept:  # a single item wider than the whole column
-        return items[0]
+    if len(kept) == 1 and _text_width(kept[0]) > budget:  # one item wider than the column
+        text = kept[0]
+        while text and _text_width(text + "…") > budget * 0.9:  # render runs wider than measured
+            text = text[:-1]
+        kept = [text + "…"]
     dropped = len(items) - len(kept)
     return ", ".join(kept) + (f" +{dropped} more" if dropped else "")
 
