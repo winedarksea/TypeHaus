@@ -50,7 +50,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   source="WAC dweLED Roland WS-83212-BK (spec sheet). The theatre units sit "
                          "on a DVCL-153P: CONFIRM it against the TRIAC range."),
     # J and J1 are one product (WAC Sprig): J is wall-switched, J1 uses the canopy toggle.
-    # J2 (the plant room's wet copy) retyped to J; damp is enough there.
+    # The plant room's old wet copy retyped to J (damp is enough there); mark J2 is now the
+    # bed sconce below.
     _STRETCH,
     LuminaireType(tag="ED-T-LT-SPOT-SW", name="Swing-arm LED reading light, switch on fixture",
                   form=LuminaireForm.SCONCE, type_mark="J1", **_STRETCH_BODY,
@@ -142,7 +143,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
     #
     # 2700 K was ** a live defect, not a preference **: this fixture and the kitchen's 3000 K
     # cans are seen at once across an open plan, and a CCT mismatch in one sightline reads as
-    # a construction error.
+    # a construction error. (The 2700 K MITTLED under the kitchen's 3000 K cans is the
+    # owner's accepted exception, 2026-10-31.)
     #
     # ** PRODUCT PICKED (owner, 2026-10-22): Flyachilles 2-light, 47.2",
     # `FLYACHILLES_DJ3616_2L`.** It is dimmable, so its 5,400 lm is a ceiling and it runs in
@@ -164,7 +166,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # 220-240. Confirm the driver is ELV/TRIAC-dimmable AND replaceable — a captive
     # proprietary driver is the part that dies at 12-20 years and on an import there is no
     # replacement channel at all, so ** budget a spare driver with the order. ** Dim it on
-    # its own remote; the wall control is a plain switch (ED-M-DINING-SW), not a dimmer.
+    # its own remote; the wall control (ED-M-DINING-SW) is a D215S relay for scenes, not a
+    # dimmer.
     #
     # The look (2026-09-26): a WAVE chandelier — five flat LED strips side by side, each
     # rising and falling out of phase with its neighbours, off one canopy, brushed gold. The
@@ -180,7 +183,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   "gold. OPEN BEFORE ORDER: a UL/ETL/cETL mark ON THE FIXTURE (none is "
                   "published), 120 V, a replaceable ELV/TRIAC driver with a spare, and whether "
                   "the gold is PVD or lacquered. It dims by its own remote; the wall control "
-                  "(ED-M-DINING-SW) is a plain switch."}),
+                  "(ED-M-DINING-SW) is a D215S relay for scenes."}),
 
     # M1: the attic studio's bar pendant (2026-09-06). A separate mark from M, not a second
     # instance of it: M is a 4'-0" dining fixture and this would have hung over a 4'-7" bar
@@ -269,7 +272,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # vaportight/cold-storage, because it sells into freezer warehouses; IP66 is a bonus
     # here rather than the point, keeping sawdust and cobwebs outside a lens that wipes.
     # ** HARDWIRE IT: ** plug-in linkable cords crack in cold and that is where failures
-    # start. 4000 K rather than 5000 K — 5000 K makes airborne sawdust glare. And note that
+    # start. Q stays 4000 K in this unheated garage; Q1, the 95-CRI 5000 K T8 strip, is the
+    # conditioned basement's work light. And note that
     # wall-box occupancy sensors are typically rated to 32 F minimum, so this room takes a
     # cold-rated ceiling PIR or a plain switch.
     LuminaireType(tag="ED-T-LT-SHOP4",

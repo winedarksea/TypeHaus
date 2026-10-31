@@ -30,17 +30,17 @@ SECOND_LIGHTING = [
     # Tunable white (E6) since 2026-10-31: the controller holds a low 2700 K night preset that
     # HA recalls after dark; the 3-way relays still switch both drivers' 120 V.
     # Two runs since 2026-10-31 (Class 2: a <=100 VA certified supply per segment), split at
-    # the north return's midpoint: the west half keeps the tag, the east half is -GAP2.
+    # the NW corner: the west leg keeps the tag, the north return and east leg are -GAP2. A
+    # split mid-return does not hold: the resolver runs each piece's end to the reveal corner.
     LightRun(uid="QRS0001AAA", tag="LR-S-HALL-GAP", type_ref="ED-T-LT-STRIP24-TUNABLE",
-             path=(pt(ft(18, 6), ft(9, 7)), pt(ft(18, 6), ft(27, 6)),
-                   pt(ft(20), ft(27, 6))),
+             path=(pt(ft(18, 6), ft(9, 7)), pt(ft(18, 6), ft(27, 6))),
              room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU",
              controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
              soffit_ref="SF-S-DUCT", soffit_edge_offset=inch(0.3125),
              emission_side="left",
              mount=Mount(kind=MountKind.CEILING, elevation=inch(94.5))),
     LightRun(uid="6V6YZABYSN", tag="LR-S-HALL-GAP2", type_ref="ED-T-LT-STRIP24-TUNABLE",
-             path=(pt(ft(20), ft(27, 6)), pt(ft(21, 6), ft(27, 6)),
+             path=(pt(ft(18, 6), ft(27, 6)), pt(ft(21, 6), ft(27, 6)),
                    pt(ft(21, 6), ft(9, 7))),
              room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU2",
              controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
@@ -50,8 +50,8 @@ SECOND_LIGHTING = [
     # The driver moved with the cove: (20'-0", 30'-6") is inside EQ-S-HP1-AH's footprint
     # since the 2026-09-04 HP1 move. (19'-0", 27'-2") keeps the relationship it always had
     # — a driver hidden in SF-S-DUCT — on the other side of the
-    # y=27'-8" seam from the machine. One Class 2 HLG-100 (96 W) per half since 2026-10-31:
-    # ~19'-9" at 3 W/ft x1.25 is ~74 W each. PSU2 mirrors it at x=21'-0" for the east half;
+    # y=27'-8" seam from the machine. One Class 2 HLG-100 (96 W) per run since 2026-10-31:
+    # 18'-1" / 21'-6" at 3 W/ft x1.25 is 68 / 81 W. PSU2 mirrors it at x=21'-0" for -GAP2;
     # each GL-C-001P (CCT mode) sits 6" south of its driver in the same soffit.
     ElectricalDevice(uid="QTS0001AAA", tag="ED-S-HALL-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(19), ft(27, 2)), type_ref="ED-T-LT-PSU-96-WE",

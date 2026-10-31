@@ -21,7 +21,7 @@ from typehaus.takeoff.raceways import conduit_takeoff as conduit_takeoff
 _M2_TO_FT2 = 10.7639104167
 
 # One Shelly Pro 4PM switches four circuits; the DIN rail carries one 24V PSU and one UPS
-# regardless of relay count (electrical_notes.md lines 10-15).
+# regardless of relay count.
 BACKUP_CIRCUITS_PER_RELAY = 4
 # A Pro 4PM channel is rated 16A at 120V — a backup circuit breakered above that, or any
 # 2-pole one, switches through a relay-driven DIN contactor instead (notes line 10:

@@ -47,7 +47,7 @@ def test_the_study_stair_sconce_is_counted_where_it_now_stands(ctx):
     """SC1 at 7'-6" and x=29' is over its tread, so it lights ST-S2A.
 
     The pin on the fix, not on the bug: the sconce moved east and up
-    (``plan/lighting.py``) precisely so it would clear the flight it lights, and a check
+    (``plan/lighting_second.py``) precisely so it would clear the flight it lights, and a check
     that discounted it here would be reporting a fixture that is fine.
     """
     from typehaus.checks.code.mn_residential.illumination import stairway_illumination
@@ -105,7 +105,7 @@ def test_a_fitting_inside_the_riser_band_still_counts(ctx):
 
     ED-M-STAIR-LT used to BE that specimen: it hung 8" under the top of W-SG-E1, because
     that face had no 7'-0" to mount at. It is a 7'-0" sconce on W-M-S2 again since
-    2026-09-20 (``plan/lighting.py`` — R303.8 grades the landing, so the fitting no longer
+    2026-09-20 (``plan/porch_lighting.py`` — R303.8 grades the landing, so the fitting no longer
     has to crowd the flight), which leaves the band with no natural specimen in the house.
     So it is driven to the edge of the band instead of found there: one riser under the
     nosing line is inside it, and a fixture inside it is over its stair.
@@ -144,7 +144,7 @@ def test_the_handrail_tape_that_does_not_climb_is_reported(ctx):
 
     ``LightRun`` carries one mount elevation for a whole path, so the tape under ST-B2M's
     handrail lies flat at 34" off the slab while the flight climbs away from it. The house
-    documents that in prose (``plan/lighting.py``) and noted that nothing graded it. The
+    documents that in prose (``plan/lighting_basement.py``) and noted that nothing graded it. The
     stair is still lit by five other fixtures, so this is a parenthetical on a PASS rather
     than a FAIL — but it is no longer silent.
     """

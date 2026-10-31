@@ -356,18 +356,23 @@ def test_catlin_width_channel_and_wall_support_share_the_boundaries(catlin_model
     assert abs(xmin - wall_footprint(west).bounds[2]) < 1e-9
     assert abs(xmax - wall_footprint(east).bounds[0]) < 1e-9
     assert abs(host.z0_m / inch(1).meters - 214) < 1e-9
-    run = next(run for run in model.light_runs if run.tag == "LR-S-HALL-GAP")
-    assert run.soffit_ref == host.tag and run.emission_side == "left"
+    # One cove in two Class 2 halves since 2026-10-31: the west leg, and the return + east leg.
+    runs = [run for run in model.light_runs if run.tag in ("LR-S-HALL-GAP", "LR-S-HALL-GAP2")]
+    assert len(runs) == 2
+    for run in runs:
+        assert run.soffit_ref == host.tag and run.emission_side == "left"
+        assert run.profile == "shadow_gap" and run.host_ref == host.tag
     # The shadow gap's reveal centre stands 5/16" in from each wall (#103).
-    assert run.profile == "shadow_gap" and run.host_ref == host.tag
-    assert abs(min(x for x, _ in run.path) - xmin - inch(0.3125).meters) < 1e-9
-    assert abs(max(x for x, _ in run.path) - xmax + inch(0.3125).meters) < 1e-9
-    slot = LineString(run.path).buffer(run.aperture_m / 2, cap_style=2, join_style=2)
-    for panel in host.finish_panels:
-        if panel.key.startswith("underside"):
-            assert Polygon(panel.prism.ring, panel.prism.voids).intersection(slot).area < 1e-9
+    xs = [x for run in runs for x, _ in run.path]
+    assert abs(min(xs) - xmin - inch(0.3125).meters) < 1e-9
+    assert abs(max(xs) - xmax + inch(0.3125).meters) < 1e-9
+    for run in runs:
+        slot = LineString(run.path).buffer(run.aperture_m / 2, cap_style=2, join_style=2)
+        for panel in host.finish_panels:
+            if panel.key.startswith("underside"):
+                assert Polygon(panel.prism.ring, panel.prism.voids).intersection(slot).area < 1e-9
     for member in host.members:
-        assert member.z0_m >= run.z_m - 1e-9  # The reveal fits below its backing.
+        assert all(member.z0_m >= run.z_m - 1e-9 for run in runs)  # Reveal fits below backing.
         footprint = Polygon(member_footprint(member)[0])
         for wall in model.walls:
             if wall.storey == host.storey and wall.z0_m < member.z1_m and wall.z1_m > member.z0_m:

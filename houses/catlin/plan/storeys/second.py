@@ -718,7 +718,7 @@ OPENINGS = [
     # Plant room — south glazing: centres 4'-0" and 9'-4" are stud lines on W-S-S1's grid,
     # stacking exactly over WIN-M-BED-S1/2. Sill 2'-8" = the shared 6'-8" head line.
     # Narrowed 42" -> 30" and moved 8" east off the old bay centres (WT-3048, 2026-08-01,
-    # see WIN-M-BED-S1/2). Grow pots/LED tubes (placeables.py/lighting.py) stay at
+    # see WIN-M-BED-S1/2). Grow pots/LED tubes (placeables.py/lighting_second.py) stay at
     # x 3'-4"/8'-8", still inside each window's 30" of glass.
     # Retyped to the U-0.14 twins 2026-08-18 (WT-*-HP in main.py): at 75 F / 70% RH the
     # room's dew point is 64.4 F and a U-0.25 unit's inner glass runs 59.7 F at design —

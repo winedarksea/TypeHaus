@@ -287,7 +287,7 @@ REGISTERS_HVAC_ATTIC = [
     # `room=RM-A-STUDIO` is LOAD-BEARING TWICE OVER: the room is a BEDROOM, and this one
     # register answers two different checks for it — `mep.ventilation_distribution` wants a
     # fresh-air supply in a conditioned bedroom, and R303.1 Exception 1 (which is how this
-    # room gets out of its 8% glazing shortfall — see plan/lighting.py) requires a
+    # room gets out of its 8% glazing shortfall — see plan/lighting_attic.py) requires a
     # mechanical fresh-air SUPPLY Register in the room as one of its four conditions. NO
     # MINI-SPLIT IS WANTED: reusing this boot is the whole reason the studio costs what it
     # costs.

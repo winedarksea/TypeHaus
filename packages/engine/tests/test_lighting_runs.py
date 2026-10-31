@@ -164,5 +164,5 @@ def test_a_shadow_gap_bead_is_graded_against_the_framing_above_its_board(catlin_
 
     by_run = {f.element_tags[0]: f for f in plaster_in_depth(catlin_ctx)}
     assert set(by_run) == {"LR-M-LIVING-W", "LR-M-LIVING-E", "LR-M-DINING-W", "LR-M-DINING-E",
-                           "LR-M-BATH2-TUB-CLG", "LR-S-HALL-GAP"}
+                           "LR-M-BATH2-TUB-CLG", "LR-S-HALL-GAP", "LR-S-HALL-GAP2"}
     assert all(f.result is Result.PASS for f in by_run.values()), by_run

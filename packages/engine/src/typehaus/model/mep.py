@@ -482,7 +482,7 @@ class ConduitRun(Element):
     must never see a power raceway. Elevations are project-frame absolute because trunks
     cross storeys (panel → attic riser); where they differ the run rises vertically at
     its last point, and the developed length is plan length plus that rise. The point of
-    conduit (electrical_notes.md line 3) is making future pulls easy, so only main
+    conduit is making future pulls easy, so only main
     trunks are modeled — branch wiring stays undrawn."""
 
     path: tuple[Point2D, ...]  # plan-frame polyline, >= 2 points

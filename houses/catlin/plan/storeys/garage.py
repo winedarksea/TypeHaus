@@ -276,7 +276,7 @@ OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 # ** MOVING THIS CONSTANT MOVES MORE THAN A DOOR. ** params/north_entry_frame.py derives the
 # east edge beam BM-BW-FE and the exterior landing's east edge from it
 # (SERVICE_RO_WEST_FT / SERVICE_RO_EAST_FT); the stair, the handrail, the two backing bands
-# in plan/backing.py, the three switch/light stations in plan/lighting.py and the
+# in plan/backing.py, the three switch/light stations in plan/lighting_garage.py and the
 # SL-D-NORTH-BRIDGE cut in plan/views.py are LITERALS that follow it by hand. The stem under
 # it no longer follows at all: the two nodes `N-GF-S-DRW/-DRE` are pinned where the retired
 # gap left them (2'-3" and 5'-9" off `N-GF-SW`) as a fossil split, so the water service's

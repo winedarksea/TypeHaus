@@ -21,7 +21,7 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment
 
 # --- Garage ---------------------------------------------------------------------------
-# Shop lights on their own switch by the service door, on CKT-LT-GARAGE (since 2026-10-31;
+# Five Q shop lights on one switch by the service door, on CKT-LT-GARAGE (since 2026-10-31;
 # CKT-LT-MAIN before), the garage's own lighting circuit from ED-B-PANEL, not the GFCI
 # receptacle circuit, which would drop the lights every time a tool trips one. Surface mounted at 8' —
 # nothing above the garage ceiling to recess a can into.

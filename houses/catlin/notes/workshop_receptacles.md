@@ -77,8 +77,8 @@ steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
   - `ED-B-SAUNA-SW`: `D2ELV-1BW`, Matter, reverse-phase by default, replacing the Diva
     `DVELV-300P`. Confirm HA sees it as a dimmer and not only on/off.
   - **Exception:** `ED-M-PANTRY-LT` stays on its `ODS10-IDW` occupancy sensor (not Matter).
-- **Garage soffit** `ED-G-SOFFIT-SW` (eave + rake runs, RGBW, three HLG-150 drivers each
-  behind a GL-C-001P): `D215S-1BW` in the existing third gang, scheduled in HA. The paddle is
+- **Garage soffit** `ED-G-SOFFIT-SW` (eave + rake runs, RGBW, six Class 2 HLG-100H drivers
+  each behind a GL-C-001P): `D215S-1BW` in the existing third gang, scheduled in HA. The paddle is
   spare, not required.
 - **Grow lights** `ED-S-PLANT-SW-TIMER` (two 6' tubes + spot, non-dimmable): `D215S-1BW`,
   scheduled in HA.

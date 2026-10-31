@@ -139,12 +139,12 @@ def test_every_supply_is_sized_at_125_percent_of_what_it_drives(catlin_model):
             supply["connected_watts"] * PSU_SIZING_FACTOR, abs=0.05 * (1 + PSU_SIZING_FACTOR) + 1e-9)
         assert supply["adequate"] is True, supply
         assert supply["rated_watts"] >= supply["required_watts"]
-    # Two runs share the living-room supply, so its demand is their sum, not the larger.
-    living = next(s for s in supplies if s["psu"] == "ED-M-LIVING-LT-PSU")
-    assert len(living["runs"]) == 2
-    assert living["connected_watts"] == pytest.approx(
+    # Four MITTLED runs share the kitchen supply, so its demand is their sum, not the larger.
+    kitchen = next(s for s in supplies if s["psu"] == "ED-M-KITCH-LT-PSU")
+    assert len(kitchen["runs"]) == 4
+    assert kitchen["connected_watts"] == pytest.approx(
         round(sum(row["watts"] for row in light_run_takeoff(catlin_model)["runs"]
-                  if row["psu"] == "ED-M-LIVING-LT-PSU"), 1))
+                  if row["psu"] == "ED-M-KITCH-LT-PSU"), 1))
 
 
 def test_controls_name_a_resolvable_switch_or_carry_one_on_the_fixture(catlin_model):
@@ -179,8 +179,8 @@ def test_multiway_and_control_kinds_survive_into_the_schedule(catlin_model):
 def test_connected_load_counts_supplies_not_tape_and_sits_under_the_allowance(catlin_model):
     load = connected_lighting_va(catlin_model)
     per_circuit = {row["circuit"]: row for row in load["per_circuit"]}
-    assert set(per_circuit) == {"CKT-LT-BACKUP", "CKT-LT-BSMT", "CKT-LT-MAIN", "CKT-LT-UPPER",
-                                "CKT-BATH-ATTIC"}
+    assert set(per_circuit) == {"CKT-LT-BACKUP", "CKT-LT-BSMT", "CKT-LT-GARAGE", "CKT-LT-MAIN",
+                                "CKT-LT-UPPER", "CKT-BATH-ATTIC"}
     assert load["total_connected_va"] == pytest.approx(
         round(sum(row["connected_va"] for row in load["per_circuit"]), 1))
 
@@ -218,9 +218,9 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     # As built, every run is on a driver and none is a branch load of its own.
     assert line_voltage_run_va(catlin_model) == {}
     lighting = {r["circuit"]: r for r in connected_lighting_va(catlin_model)["per_circuit"]}
-    panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-MAIN"]
+    panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-GARAGE"]
     # Every driver sums at its rating; the panel agrees with the lighting sum.
-    assert panel["connected_va"] == pytest.approx(lighting["CKT-LT-MAIN"]["connected_va"],
+    assert panel["connected_va"] == pytest.approx(lighting["CKT-LT-GARAGE"]["connected_va"],
                                                   abs=0.5)
     # The 20A branch stays below the 80% continuous-load allowance.
     assert panel["connected_va"] <= panel["breaker_amps"] * 120 * 0.8
@@ -228,7 +228,7 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     runs = list(catlin_model.light_runs)
     index = next(i for i, run in enumerate(runs) if run.tag == "LR-G-EAVE-W")
     run = runs[index]
-    runs[index] = dataclasses.replace(run, psu_ref=None, circuit="CKT-LT-MAIN")
+    runs[index] = dataclasses.replace(run, psu_ref=None, circuit="CKT-LT-GARAGE")
     original, catlin_model.light_runs = catlin_model.light_runs, runs
     try:
         va = line_voltage_run_va(catlin_model)
@@ -243,7 +243,7 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     rating = next(t for t in library.electrical_device_types if t.tag == driver.type_ref).load_va
     assert set(va) == {"LR-G-EAVE-W"}
     assert va["LR-G-EAVE-W"] == pytest.approx(run.length_m * _M_TO_FT * w_per_ft)
-    assert per_circuit["CKT-LT-MAIN"]["runs"] == 1
+    assert per_circuit["CKT-LT-GARAGE"]["runs"] == 1
     # The run's tape joins the branch and its idle driver leaves the lighting sum.
-    assert per_circuit["CKT-LT-MAIN"]["connected_va"] == pytest.approx(
-        lighting["CKT-LT-MAIN"]["connected_va"] + va["LR-G-EAVE-W"] - rating, abs=0.5)
+    assert per_circuit["CKT-LT-GARAGE"]["connected_va"] == pytest.approx(
+        lighting["CKT-LT-GARAGE"]["connected_va"] + va["LR-G-EAVE-W"] - rating, abs=0.5)

@@ -6993,7 +6993,7 @@ kitchen tape stays fixed white, preferably MITTLED; the sweep is the whole house
   driver counts at nameplate.
 - **The workshop was ~290 lx against 500.** Six Q1 T8 strips (replaceable 95-CRI tubes) on a
   new non-backup `CKT-LT-BSMT`; four more in the gym, two in the furnace room. The 2x4
-  panels (mark D) are the revert. Backup lighting fell 765 -> 683 VA (`notes/backup_power.md`).
+  panels (mark D) are the revert. Backup lighting fell 765 -> 579 VA (`notes/backup_power.md`).
 - **Over-spec trimmed**: the pantry jambs use mark E's tape, the attic pocket a keyless
   lampholder. The second-floor hall cove is tunable (E6); the garage linear RGBW (W).
 - **Engine**: `LuminaireType` gained `color_mode`, `cct_range_k`, `replaceable_lamp`,

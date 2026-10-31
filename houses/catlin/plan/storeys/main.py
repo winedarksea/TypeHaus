@@ -1226,7 +1226,7 @@ OPENINGS = [
     #
     # The hinge stays at the EAST jamb and the leaf swings into the living room. Three
     # devices moved with the opening in 2026-09-15 — see ED-M-BED-SW (mep_electrical.py),
-    # ED-M-BED-RC2 (electrical.py) and ED-M-BED-SW2 (lighting.py).
+    # ED-M-BED-RC2 (electrical.py) and ED-M-BED-SW2 (lighting_main.py).
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT-SWING32",
          position=from_node("N-M-D3", ft(6, 0)), flip_hinge=False, flip_swing=True),
     # Second bedroom <-> living connection, straight through the centre bearing wall.

@@ -1,4 +1,4 @@
-"""Catlin luminaire selections of 2026-10-28 (cans 2026-10-31) (plans/lighting-products.md §2).
+"""Catlin luminaire selections of 2026-10-28 (cans 2026-10-31).
 
 Owner goals: long life, solid quality, fair price; no overpriced brands except the signature
 pieces. "Sheet" in a source means the manufacturer spec sheet was read; anything else came
@@ -224,21 +224,12 @@ COB_NIGHT_2200 = Product(
     source=_REVIEW + "Bath night light (mark E5): 2200 K (or amber), ~60-80 lm/ft, "
            "silicone coated, in a frosted channel. CONFIRM the SKU and output.",
 )
-MEANWELL_HLG_150H_24A = Product(
-    tag="PROD-MEANWELL-HLG-150H-24A", brand="Mean Well", model="HLG-150H-24A",
-    name="24V constant-voltage LED driver, 150 W, IP65",
-    source=_REVIEW + "Mean Well HLG-150H-24A: 150 W, 24 V / 6.25 A, IP65, UL 8750, not "
-           "dimming; dimming and colour are the controller's. HLG-100H-24A's family.",
+MEANWELL_LPV_20_24 = Product(
+    tag="PROD-MEANWELL-LPV-20-24", brand="Mean Well", model="LPV-20-24",
+    name="24V constant-voltage LED driver, 20 W, IP67",
+    source=_REVIEW + "Mean Well LPV-20-24: 20 W, 24 V, IP67, Class 2. One per bath night "
+           "light.",
 )
-MEANWELL_HLG_240H_24A = MEANWELL_HLG_150H_24A.model_copy(update={
-    "tag": "PROD-MEANWELL-HLG-240H-24A", "model": "HLG-240H-24A",
-    "name": "24V constant-voltage LED driver, 240 W, IP65",
-    "source": _REVIEW + "Mean Well HLG-240H-24A: 240 W, 24 V / 10 A, IP65, UL 8750."})
-MEANWELL_LPV_20_24 = MEANWELL_HLG_150H_24A.model_copy(update={
-    "tag": "PROD-MEANWELL-LPV-20-24", "model": "LPV-20-24",
-    "name": "24V constant-voltage LED driver, 20 W, IP67",
-    "source": _REVIEW + "Mean Well LPV-20-24: 20 W, 24 V, IP67, Class 2. One per bath night "
-              "light."})
 GLEDOPTO_GL_C_001P = Product(
     tag="PROD-GLEDOPTO-GL-C-001P", brand="Gledopto", model="GL-C-001P",
     name="5-in-1 Zigbee 3.0 Pro LED controller (RGB/RGBW/RGBCCT/CCT/dim), 12-54 V",
@@ -297,7 +288,7 @@ SELECTED_LIGHTING_PRODUCTS = (
     WESTGATE_LP_2X4,
     SCHLUTER_SNLT, BARRON_VARIUS_AG90, WAC_LINE_24, WAC_ROLAND, WAC_STRETCH, NUVO_BOWMAN_36,
     MODERN_FORMS_MYKONOS, WAC_TUBE_EXT, SLL_COB_IP67, MEANWELL_HLG_100H_24A, LIVEX_4451,
-    SLL_COB_RGBCCT, SLL_COB_RGBW_IP67, COB_TUNABLE_24V, COB_NIGHT_2200, MEANWELL_HLG_150H_24A,
-    MEANWELL_HLG_240H_24A, MEANWELL_LPV_20_24, GLEDOPTO_GL_C_001P, HALCO_LED_READY_STRIP, WAVEFORM_T8_95,
+    SLL_COB_RGBCCT, SLL_COB_RGBW_IP67, COB_TUNABLE_24V, COB_NIGHT_2200,
+    MEANWELL_LPV_20_24, GLEDOPTO_GL_C_001P, HALCO_LED_READY_STRIP, WAVEFORM_T8_95,
     LEVITON_9880, CHANNEL_45_GENERIC, WAVEFORM_A19_95, VANITY_SCONCE_OPAL, BED_SWING_ARM_SCONCE,
 )

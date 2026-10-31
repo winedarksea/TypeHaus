@@ -149,8 +149,7 @@ runs to the ceiling.
 
 ## Open items
 
-- The six PLAY-N sconce canopies must cover a 4" square surface box. See
-  `plans/lighting-products.md`.
+- The six PLAY-N sconce canopies must cover a 4" square surface box.
 - **Pull boxes.**
   - CD-B-PLAY-SPARE: vertex 7 in RM-B-BATH's ceiling at x 13'-6 1/4", y 20'-3 1/2", and
     vertex 12 in RM-B-PLAY-N at x 19'-4 1/2", y 26'-0".

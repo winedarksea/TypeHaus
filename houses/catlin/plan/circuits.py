@@ -1,4 +1,4 @@
-"""Catlin panel schedule — every branch circuit in ED-B-PANEL (plans/electrical_notes.md).
+"""Catlin panel schedule — every branch circuit in ED-B-PANEL.
 
 NOT ``# haus: editable``: circuits are schedule data, not geometry — nothing here can be
 dragged. Devices/equipment reference these tags via their ``circuit=`` field (the editable
@@ -50,7 +50,7 @@ _BACKUP_PANEL = "ED-B-BACKUP-PANEL"
 _PANEL_2 = "ED-B-PANEL-2"
 
 CIRCUITS = (
-    # --- 240V dedicated loads (electrical_notes.md line 4) ---------------------------
+    # --- 240V dedicated loads ---------------------------------------------------------
     # LG LSIL6336FE nameplate: 11.9 kW at 240 V, 40 A minimum circuit (LG spec sheet,
     # plan/appliance_types.py). A 14-50R is permitted on a 40 A circuit (NEC Table
     # 210.21(B)(3)). 220.82(B)(3) counts the nameplate, not the breaker.
@@ -340,17 +340,16 @@ CIRCUITS = (
             backup_shed_poe=("ED-M-DOORBELL", "ED-M-CAM-PORCH", "ED-BW-CAM-CANOPY"),
             description="Basement outlet 1: HA server + router + PoE switch"),
     # load_va is None: the luminaires carry real typed loads and the panel-schedule takeoff
-    # sums the fixtures actually on the circuit (~723 VA on 2026-10-31, mid-review). 0.15
+    # sums the fixtures actually on the circuit (579 VA after the 2026-10-31 review,
+    # notes/backup_power.md). 0.15
     # is about five hours of the twenty-four with roughly two thirds of those fixtures lit —
     # an outage evening in the kitchen and the mechanical room while the rest of the house
     # stays dark.
     #
-    # ** 224 VA of that is the kitchen's under-cabinet task light, and 200 of the 224 is a
-    # RATING, not a load. ** ED-M-KITCH-LT-PSU is an ED-T-LT-PSU-200 driving 8'-11" of
-    # 5 W/ft tape — 44.6 W, 55.7 W at the sizing factor — but per plan/lighting_types.py a
-    # PSU's load_va is the supply's rating, so it sums here at 200. That is what took
-    # battery-only always-on autonomy from 46.3 h to 41.3 h (test_backup_calc.py). The
-    # overstatement is left in: a backup calculation is supposed to err heavy.
+    # The kitchen's under-cabinet light is IKEA MITTLED (~7.8 ft x 2.8 W/ft, ~22 W) on
+    # ED-M-KITCH-LT-PSU, a TRADFRI 30 W driver that sums here at its 30 VA rating: a PSU's
+    # load_va is the supply's rating (plan/lighting_types.py). That errs heavy, as a backup
+    # calculation should.
     Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=6, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
             duty_cycle=0.15,

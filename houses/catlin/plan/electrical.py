@@ -1,5 +1,5 @@
 # haus: editable
-# Catlin electrical service (plans/electrical_notes.md): a Class 320 HDLB meter-main with
+# Catlin electrical service: a Class 320 HDLB meter-main with
 # two 200A mains, two basement panels (plan/mep_electrical.py), 240V appliance circuits,
 # the garage's 14-50 EVSE outlet and general receptacles, the
 # backup subsystem's DIN enclosure, hot tub + heat-pump disconnects, PV junction box.
@@ -146,7 +146,7 @@ DEVICE_TYPES = (
     # No `load_va`: one type serves three zones of different sizes, so a single figure would
     # be wrong. VA is authored per-zone on the circuit in plan/circuits.py instead, which is
     # what `takeoff.electrical._connected_va` prefers anyway.
-    # --- structured cabling (plans/electrical_notes.md: "WiFi (energy efficient, POE") ----
+    # --- structured cabling (PoE) ---------------------------------------------------------
     # All three are DeviceKind.DATA_OUTLET (plan-symbol axis only); `ifc_entity`/
     # `ifc_predefined_type` carry what each one *is*, so they reach Revit as Communication
     # Devices rather than proxies — future PoE cameras are just another entry here.
@@ -1164,7 +1164,7 @@ PV_JBOX = [
 # mechanically seamed ROOF, which is untouched, and they stay exactly as they are.
 PV_JBOX_CLAMP = []
 
-# --- Conduit trunks (electrical_notes.md line 3: make it easy to run new lines) -------
+# --- Conduit trunks (owner: make it easy to run new lines) ---------------------------
 # Four EMT trunks from ED-B-PANEL, elevations project-frame absolute (they cross
 # storeys). Each run travels its plan polyline flat at start_elevation and rises
 # vertically at its last point to end_elevation; the takeoff bills the developed length.
@@ -1411,8 +1411,8 @@ DATA_TRUNKS = [
                elevations=(ft(-4), ft(-4), ft(-4), ft(20, 6)),
                from_ref="ED-B-NET-PATCH"),
     # The capped spare, another 6" east. No service and no conductors — a pull string and
-    # 2" of room, which is the whole of what electrical_notes.md line 3 ("conduit, make it
-    # easy to run new lines") asks for. It is where the PoE cameras go.
+    # 2" of room, which is the whole of what the owner's "conduit, make it easy to run new
+    # lines" asks for. It is where the PoE cameras go.
     ConduitRun(uid="CDT009AAAA", tag="CD-B-SPARE-CHASE", trade_size=inch(2),
                service=None,
                path=(pt(ft(2), ft(31)), pt(ft(2, 6), ft(31)), pt(ft(2, 6), inch(409.4)),

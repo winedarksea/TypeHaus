@@ -174,7 +174,7 @@ LIVING_LIGHTING = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # The kitchen end of the same room, on the backup circuit with the basement
-    # (electrical_notes.md line 24).
+    # (notes/backup_power.md).
     #
     # Two rows (2026-10-31), each in a FS-S-EAST mid-bay and on one x pitch of 3'-0" off the
     # sink centre: CAN1-CAN3 at y=34'-0", between the uppers' face (34'-2 1/2") and the
@@ -215,13 +215,13 @@ LIVING_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # CAN4 is over the peninsula carousel's landing in front of the microwave, between the
-    # upper's face and the east counter edge.
     ElectricalDevice(uid="QTM000BAAA", tag="ED-M-KITCH-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(32, 4), ft(34)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # CAN4 is over the peninsula carousel's landing in front of the microwave, between the
+    # upper's face and the east counter edge.
     ElectricalDevice(uid="QTM000CAAA", tag="ED-M-KITCH-CAN4", kind=DeviceKind.LIGHT,
                      position=pt(ft(33, 10), ft(28, 8)), type_ref="ED-T-LT-CAN4-TASK",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",

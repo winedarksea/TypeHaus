@@ -1,4 +1,4 @@
-"""Rooftop PV array — parametric module (plans/electrical_notes.md lines 31-33).
+"""Rooftop PV array — parametric module.
 
 One row of 440 W modules each side of the house gable ridge (RF-HOUSE: ridge N-S at
 x=18', 6:12, 36' footprint), landscape orientation (69.4" edge along the ridge), max fit:

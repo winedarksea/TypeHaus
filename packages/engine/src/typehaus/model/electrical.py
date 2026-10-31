@@ -1,4 +1,4 @@
-"""Circuits — the panel-schedule vocabulary (plans/electrical_notes.md).
+"""Circuits — the panel-schedule vocabulary.
 
 A ``Circuit`` is schedule data, not geometry: it has no position and never appears in a
 storey element list. Circuits live in ``Library.circuits``; devices and equipment point

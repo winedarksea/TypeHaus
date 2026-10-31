@@ -63,7 +63,8 @@ from typehaus.model import Location, WallAttachment, m
 # lumen floor is adjudicated here at all.
 #
 # ** WHAT THAT MEANS FOR ANYTHING BELOW THAT CITES R303.1: it is history, not a
-# constraint. ** The room carries 5,400 lm over 146 sf of floor a person can stand on. Every
+# constraint. ** The room carries 2,327 rated lm (three H, one J1; the bar Karlie publishes
+# none) over 146 sf of floor a person can stand on. Every
 # fitting in the studio block is now a DESIGN choice and may be deleted on taste alone — the
 # opposite of the rule the rest of this header states. Two things are still real: a LightRun
 # would count for nothing if the floor ever came back, and the studio still has exactly one
@@ -71,8 +72,8 @@ from typehaus.model import Location, WallAttachment, m
 # cannot simply be re-sited somewhere better.
 #
 # ** THE READING IS ARGUABLE. ** R303.1 does not cite R304.3, and a plan reviewer taking the
-# literal scope puts this room back on Exception 1 with a 4,457 lm floor — which five
-# sconces plus the bar bar only just clear. Read `_r303_floor_area` in
+# literal scope puts this room back on Exception 1 with a 4,457 lm floor — which the
+# three sconces no longer clear. Read `_r303_floor_area` in
 # checks/code/mn_residential/ventilation.py before deleting a fitting on the strength of it.
 ATTIC_LIGHTING = [
     # A 43 ft2 nook with no wall on the way in to put a switch on, so the fixture carries
@@ -80,7 +81,7 @@ ATTIC_LIGHTING = [
     # deliberately — `integral_switch` on the type exempts it from
     # `electrical.lighting_controls`. x=14'-0" clears the window jamb by 1'-11".
     # Room reassigned through RM-A-DEN -> west loft -> RM-A-STUDIO; position, type, mount,
-    # elevation and circuit are all unchanged, and its 600 lm now count toward RM-A-STUDIO's
+    # elevation and circuit are all unchanged, and its 287 lm now count toward RM-A-STUDIO's
     # R303.1 Exception 1 (see below).
     ElectricalDevice(uid="QTA0001AAA", tag="ED-A-STUDIO-SCONCE", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SPOT-SW",
@@ -222,14 +223,13 @@ ATTIC_LIGHTING = [
     # is a guest studio, and it was arrived at by dividing a lumen total by a fitting, not by
     # asking what the wall wanted. Three at **5'-0"** centres — y=2'-0", 7'-0", 12'-0" — keep
     # the run's own endpoints, so the composition is unchanged and only the infill goes.
-    # 3,500 lm -> 2,100 lm of sconce; the room totals 4,000 lm.
+    # 3,400 lm -> 2,040 lm of sconce (H is 680 lm).
     #
     # ** THE ONE THING THIS SPENDS, STATED PLAINLY: the literal-reading fallback is gone. **
     # If a plan reviewer refuses the R304.3 denominator (the finding prints both areas for
-    # exactly that argument), this room returns to Exception 1 owing 4,457 lm, and 4,000 lm
-    # FAILS it by 457. Five sconces cleared it; four would have (4,700 lm). **The remedy is
-    # to restore ONE fitting**, not to redesign the room — mint a fresh uid at y=4'-6" or
-    # y=9'-6" and the run reads four at 40" centres.
+    # exactly that argument), this room returns to Exception 1 owing 4,457 lm against 2,327
+    # rated, and reads UNKNOWN while the bar Karlie states no lumens. Restoring one fitting
+    # no longer clears it.
     #
     # ** THE LAYOUT IS STILL DICTATED BY THERE BEING ONE WALL. ** Both gables rake to a
     # 1 1/2" plate, so the only full-height wall in a 356 sf room is the centre wall,

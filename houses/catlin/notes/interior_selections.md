@@ -207,15 +207,19 @@ Most of the choices in this pass fall out of four rules rather than out of taste
 
 ## Lighting — what changed and why
 
-**3000 K, fixed, house-wide.** The dining fixture was 2700 K and the kitchen cans 3000 K in
-an open plan where you see both at once, which reads as a defect rather than as warmth. 2700 K
-also pushes white paint yellow and makes oak read orange, which is precisely this
-palette's failure mode. **No install-time selectable modules:** a 5CCT DIP switch gets set
-wrong constantly, one can at 4000 K in a run of eight is a screaming defect, and a dedicated
-phosphor gives better R9 than a warm/cool blend. Since 2026-10-12 a **user-adjustable**
-fixture with a live control (tunable white, RGB) is allowed; its type records the working
-CCT and its range. RM-M-BATH2 is the deliberate exception to 3000 K: a 5000 K day layer and a
-2700 K evening layer, each its own schedule mark (`notes/bath2_lighting.md`).
+**3000 K is the default, not universal.** The dining fixture was 2700 K and the kitchen cans
+3000 K in an open plan where you see both at once, which reads as a defect rather than as
+warmth; 2700 K also pushes white paint yellow and makes oak read orange. The exceptions,
+each its own schedule mark:
+- day layers at 5000 K: A1 (lounge), B1 (RM-M-BATH2), Q1 (basement work light);
+- 2700 K: U1 (kitchen MITTLED, under 3000 K cans: the owner's accepted exception) and J2
+  (bed sconces); E5 night lights at 2200 K;
+- adjustable on a live control: E4 RGB+CCT coves, E6 tunable hall cove, W RGBW (white
+  3000 K). The type records the white channel or warm end in `cct_k` and the range in
+  `cct_range_k`.
+
+Since 2026-10-31 an install-time selectable module (a 5CCT switch) is allowed, set once at
+install and recorded at that CCT. RM-M-BATH2's layers: `notes/bath2_lighting.md`.
 
 **The black baffles went white, and the glare argument survives intact.** The old spec bought
 glare control with a dark absorbing ring; a **deeply regressed white reflector** hides the
@@ -223,11 +227,9 @@ source behind the aperture's own depth instead. It controls glare at least as we
 disappears into a white ceiling instead of reading as a row of dark holes, and there is a
 smooth surface to wipe rather than a ribbed baffle that traps dust and shows a grey halo.
 
-**The 3" cans stay, against the review that proposed dropping them.** They are not a
-stylistic inconsistency: all thirteen are in halls, closets, the laundry and the two stairs,
-and they *are* the house's output split. Dropping them would push every one of those from
-650 lm to 900 and over-light the circulation. Every can is on a dimmer, so trimming a living
-room below 900 lm is a commissioning setting rather than a different fixture.
+**The 3" cans are gone.** Every can is now the 4" Nora housing with a replaceable PAR20
+(about 500-540 lm); output is split by lamp and trim, not by aperture. Few cans dim: most
+are on plain switches or D215S relays.
 
 **COB retires the deep frosted diffuser.** The dots a tape shows are geometry: a diffuser only
 blends discrete emitters when the standoff is at least one LED pitch, which at 60 LED/m means

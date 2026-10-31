@@ -2,7 +2,7 @@
 
 Model: `params/sunken_garden.py` (`PORCH_STAIR`, `PORCH_STAIR_RAILS`,
 `PORCH_STAIR_THRESHOLD_RAILS`, `_PORCH_STAIR_*`, `_PORCH_GUARD_PATH`, `HP_PAD`),
-`plan/electrical.py` (the two disconnects), `plan/lighting.py` (`ED-M-STAIR-LT`),
+`plan/electrical.py` (the two disconnects), `plan/porch_lighting.py` (`ED-M-STAIR-LT`),
 `plan/site.py` (the pads' fall), `prices.toml`. Authored 2026-09-03; **moved to the pocket's
 south half and given its own pad on 2026-09-04**, when `PT-SG-BR3` turned out to be standing
 on the threshold; **widened north to 45" and given a separate ADA handrail on 2026-10-30**. The heat pumps that had to turn, and then cross the pocket, to make room

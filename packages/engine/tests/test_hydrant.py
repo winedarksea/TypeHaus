@@ -214,7 +214,7 @@ def test_the_whole_garage_stands_on_its_floor_not_on_the_stem_top(catlin_model):
             above_floor_ft, abs=1e-6), tag
     # The one deliberate exception: the ED-G-EXT-LT-E/-W pair is authored with no `room` (it
     # stands outside RM-GARAGE, and `electrical.wet_location` decides "exterior" from that),
-    # so both keep the storey datum plan/lighting.py already accounts for: 5'-8" over a datum
+    # so both keep the storey datum plan/lighting_garage.py already accounts for: 5'-8" over a datum
     # 1'-10" up is 7'-6" over the apron, 6" clear of D-G-OVERHEAD's head.
     for tag in ("ED-G-EXT-LT-E", "ED-G-EXT-LT-W"):
         assert (by_tag[tag].z_m - grade) * _M_TO_FT == pytest.approx(7.5, abs=1e-6), tag

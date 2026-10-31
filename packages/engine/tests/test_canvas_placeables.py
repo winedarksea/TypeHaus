@@ -573,7 +573,7 @@ def test_mount_height_edit_preserves_the_rest_of_the_authored_mount() -> None:
     assert can.fields["mount"].expr == (
         "Mount(kind=MountKind.CEILING, elevation=m(2.4), recessed_into_host_surface=True)")
 
-    pendant = set_placeable_mount(plan, "basement", tag="ED-B-WORKSHOP-PANEL1", elevation="8'").ops[0]
+    pendant = set_placeable_mount(plan, "basement", tag="ED-B-FURNACE-STRIP1", elevation="8'").ops[0]
     assert 'drop=' in pendant.fields["mount"].expr
 
     # An object authored with no mount at all is floor-mounted; raising it states that.

@@ -51,7 +51,7 @@ MAIN_STALL_FAN = [
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # The third control: a countdown timer on W-M-W3 over the counter, 5" north of
     # ED-M-BATH2-RC1 and clear of the 42" halo glass and its cleat. It did not fit as a third
-    # gang on W-M-BDN1 (plan/lighting.py).
+    # gang on W-M-BDN1 (plan/lighting_main.py).
     ElectricalDevice(uid="T3ZXRZ1CN3", tag="ED-M-BATH2-SW-DRY", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LUT-COUNTDOWN",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",

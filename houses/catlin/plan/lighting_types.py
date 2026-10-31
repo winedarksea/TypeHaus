@@ -1,4 +1,4 @@
-"""Catlin luminaire *type* catalog — the E-602 schedule's marks A through Z, plus numbered variants.
+"""Catlin luminaire *type* catalog — the E-602 schedule's marks A to Z and their variants.
 
 NOT ``# haus: editable``: like ``fixture_types.py`` these are catalog type definitions,
 not placed instances, and ``ElectricalDeviceType.needs`` is a ``frozenset``, which the
@@ -68,7 +68,7 @@ _WET = {"damp_rated": True, "wet_rated": True}
 
 
 AMBIENT_LUMINAIRE_TYPES = (
-    # --- A-C: recessed cans (plans/electrical_notes.md, "Recessed cans") ------------------
+    # --- A-C: recessed cans --------------------------------------------------------------
     # A white stepped baffle, not black: the regress hides the lamp, the trim disappears in a
     # white ceiling, and a smooth step wipes clean.
     _can("ED-T-LT-CAN4", "A", '4" recessed can, white stepped baffle, PAR20 3000K',
@@ -104,13 +104,14 @@ AMBIENT_LUMINAIRE_TYPES = (
          "Nora NSIC-401QAT + NS-76W + wet-rated 90-CRI PAR20 (CONFIRM the NS-76W listing).",
          **_WET),
     # B1/B2: RM-M-BATH2's two layers (notes/bath2_lighting.md): 5000 K on the day toggle,
-    # 2700 K on the evening dimmer. Separate marks so the electrician knows which lamp goes where.
+    # 2700 K on the evening Matter relay. Separate marks so the electrician knows which lamp
+    # goes where.
     _can("ED-T-LT-CAN4-WET-5000", "B1", '4" recessed can, wet, white shower baffle, 5000K',
          _SHOWER, "PROD-PAR20-90-50K-WET", 6.5, 520.0, 5000, 90,
          "Mark B with a wet-rated 5000 K lamp: BATH2's day layer (CONFIRM the lamp).", **_WET),
     _can("ED-T-LT-CAN4-WET-2700", "B2", '4" recessed can, wet, white shower baffle, 2700K',
          _SHOWER, "PROD-BULBRITE-PAR20-90-27K", 6.5, 480.0, 2700, 90,
-         "Mark B with a 2700 K lamp, on BATH2's evening dimmer inside the shower glass.",
+         "Mark B with a 2700 K lamp, on BATH2's evening relay inside the shower glass.",
          **_WET),
     LuminaireType(tag="ED-T-LT-WAFER4",
                   replaceable_lamp=False, name='4" wafer downlight, deep regressed, wet',
@@ -133,11 +134,11 @@ AMBIENT_LUMINAIRE_TYPES = (
                   source="Westgate LP-2X4-60W-40K-D (spec sheet), fixed 4000 K, on the "
                          "LP-SRFC-2X4 surface kit; 2.5\" depth with the kit is an allowance."),
 
-    # --- E: the 24V cove tape (shadow-gap ceilings, stair railing) --------------------
+    # --- E: the 24V tape (the basement stair rail; the coves are E4/E6 since 2026-10-31) --
     # No ports and no plan symbol: this type is never placed as a device. It is named by a
     # ``LightRun`` polyline, priced per lineal foot off ``watts_per_ft``, and fed at 24V
     # from a PSU rather than from a branch circuit — which is what makes it a UPS-backed
-    # light source (electrical_notes.md lines 13-15) instead of one more 120V load.
+    # light source instead of one more 120V load.
     # ** COB, AND THAT IS A SPECIFICATION (2026-09-06). ** The dots a cove tape shows are
     # geometry, not quality: a diffuser only blends discrete emitters when the standoff is at
     # least one LED pitch, which at 60 LED/m is a 16-25 mm deep channel — and most "slim"
@@ -152,15 +153,14 @@ AMBIENT_LUMINAIRE_TYPES = (
                   lamp="LED tape, 24V DC, COB", watts_per_ft=3.0, lumens=250.0,
                   cct_k=3000, cri=90, voltage=24, dimmable=True,
                   product_ref="PROD-ARMACOST-RIBBONFLEX-COB",
-                  source="Armacost RibbonFlex Pro 24V COB, 3000K, on the shadow-gap ceilings "
-                         "and the stair rail. Nobody reads by a cove, which is why the "
-                         "R9-grade tape is spent on the kitchen (mark U) and not here."),
+                  source="Armacost RibbonFlex Pro 24V COB, 3000K: the basement stair rail "
+                         "(and mark T's tape). The coves are E4/E6 since 2026-10-31."),
 
     # --- E3: RM-M-BATH2's evening glow (2026-10-12) ------------------------------------
-    # Mark E's tape in a fixed 2700 K, damp-rated (silicone-coated) because it runs under the
-    # vanity, the over-toilet cabinet and in the ceiling over the tub. Soft, low, widespread: the
-    # evening layer, on the dimmer with the halo mirror. Prices on its own
-    # [light_run_materials] keys.
+    # Mark E's tape in a fixed 2700 K, damp-rated (silicone-coated): under the over-toilet
+    # cabinet and in the ceiling over the tub (the vanity toe kick is E5 since 2026-10-31).
+    # The evening layer, on a Matter relay; the halo mirror is on its own plug. Prices on its
+    # own [light_run_materials] keys.
     LuminaireType(tag="ED-T-LT-STRIP24-2700", replaceable_lamp=True,
                   name="24V COB LED tape, 2700K, damp, in aluminium channel",
                   form=LuminaireForm.STRIP, type_mark="E3",
@@ -170,8 +170,8 @@ AMBIENT_LUMINAIRE_TYPES = (
                   damp_rated=True,
                   product_ref="PROD-ARMACOST-RIBBONFLEX-COB-2700",
                   source="Armacost RibbonFlex Pro 24V COB family in 2700K, silicone-coated "
-                         "for a damp room (confirm the damp SKU). Toe kick, cabinet underside "
-                         "and ceiling over the tub in RM-M-BATH2."),
+                         "for a damp room (confirm the damp SKU). Cabinet underside and "
+                         "ceiling over the tub in RM-M-BATH2."),
 
     # --- E4/E5/E6: the 2026-10-31 review's tape variants ------------------------------
     # E4: the lounge and dining coves in RGB+CCT. The white channels carry the room; colour
@@ -239,8 +239,8 @@ AMBIENT_LUMINAIRE_TYPES = (
     # cove tape and the task tape into one row, which would either underlight the counter or
     # triple the load on the cove runs.
     #
-    # 3000K and CRI 90 match the cove tape: food has to look like food, and the kitchen's
-    # cans are the 3000K ED-T-LT-CAN4, not the 4000K A1 variant.
+    # 0 ea since 2026-10-31: the kitchen is U1 MITTLED under A/A4 3000 K cans (A1 is the
+    # 5000 K day can); this is the revert if the counters read short.
     # ** THE "DEEP FROSTED DIFFUSER" THIS TYPE USED TO SPECIFY IS RETIRED, AND COB IS WHY
     # (2026-09-06). ** The reasoning behind it was right — a bare tape reflects as a row of
     # dots in a polished counter, and an unshielded diode line is visible from a seated
@@ -279,10 +279,9 @@ AMBIENT_LUMINAIRE_TYPES = (
     # --- W: the garage's exterior linear (eave soffits + the north gable) --------------
     # ** COMMODITY PARTS, STANDARD SIZE, 24V (2026-10-28). ** The WAC InvisiLED kit was
     # ~$2,900 of tape for 73.5 LF; this is an off-the-shelf IP67 COB tape in a generic
-    # 1/2" aluminium U-channel with a clear cover, two 5 m reels per run, each run on its
-    # own Mean Well HLG-150 INDOORS behind a GL-C-001P (PSU-96-WE is the single-white
-    # revert, 0 ea). No fixture listing is claimed:
-    # the tape is cheap to swap, and the listed part is the driver.
+    # 1/2" aluminium U-channel with a clear cover, each run split in two halves, each half on
+    # its own Class 2 HLG-100H (PSU-96-WE) INDOORS behind a GL-C-001P. No fixture listing is
+    # claimed: the tape is cheap to swap, and the listed part is the Class 2 driver.
     #
     # ** damp_rated AND wet_rated ARE IP67, NOT A UL WET LISTING. ** Every run is under a
     # soffit, aperture down, in a closed channel; the gable run is the wet one (NEC 410.10).
@@ -421,8 +420,6 @@ LIGHTING_DEVICE_TYPES = (
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
                          source="Diode LED OMNIDRIVE X, 200 W. Same family as the 60 W; see "
                                 "that entry for the no-minimum-load argument."),
-    # 0 ea since 2026-10-31: mark W's single-white revert. The coloured and tunable runs
-    # (E4, E6, W) are on the HLG-150/-240 below, each behind its own GL-C-001P.
     ElectricalDeviceType(tag="ED-T-LT-PSU-96-WE", name="24V LED driver, 96 W, IP65",
                          footprint=(inch(9), inch(2.7)), height=inch(1.5),
                          load_va=96.0, output_voltage=24, ports=_POWER_120,
@@ -436,17 +433,6 @@ LIGHTING_DEVICE_TYPES = (
                          load_va=20.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-MEANWELL-LPV-20-24",
                          source="Mean Well LPV-20-24: 20 W, 24 V, IP67, Class 2, not dimmable."),
-    # Coloured and tunable runs (E4, E6, W): a non-dimming HLG driver feeds a controller.
-    ElectricalDeviceType(tag="ED-T-LT-PSU-150-HLG", name="24V LED driver, 150 W, IP65",
-                         footprint=(inch(9.4), inch(2.7)), height=inch(1.5),
-                         load_va=150.0, output_voltage=24, ports=_POWER_120,
-                         product_ref="PROD-MEANWELL-HLG-150H-24A",
-                         source="Mean Well HLG-150H-24A: 150 W, 24 V, IP65, not dimmable."),
-    ElectricalDeviceType(tag="ED-T-LT-PSU-240-HLG", name="24V LED driver, 240 W, IP65",
-                         footprint=(inch(9.8), inch(2.7)), height=inch(1.7),
-                         load_va=240.0, output_voltage=24, ports=_POWER_120,
-                         product_ref="PROD-MEANWELL-HLG-240H-24A",
-                         source="Mean Well HLG-240H-24A: 240 W, 24 V, IP65, not dimmable."),
     # The controller is on the 24V side: no branch circuit, no load of its own worth summing.
     ElectricalDeviceType(tag="ED-T-LT-CTRL-5IN1", name="5-in-1 Zigbee LED controller, 12-54 V",
                          footprint=(inch(4.5), inch(1.8)), height=inch(0.9),

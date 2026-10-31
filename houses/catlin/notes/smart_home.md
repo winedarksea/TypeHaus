@@ -69,7 +69,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Lighting | `ED-T-LEV-MATTER*` | Leviton D215S / D2ELV / companion | Matter (local push) | one My Leviton session (D215S firmware) | paddles | confirm companion `DD0SR-DLZ` |
 | Shades | `plan/window_coverings.py` | SmartWings, Matter/Thread | Matter via ZBT-2 | none | wand and remote | none |
 | Scene keypad | `ED-M-LIVING-KEYPAD` | Zooz ZEN32 | Z-Wave JS on the 800 LR stick (local push) | none | does nothing | set scene-only (relay unwired) |
-| Tape controllers (6) | `ED-M-LIVING-LT-CTRL`, `ED-M-DINING-LT-CTRL`, `ED-S-HALL-LT-CTRL`, `ED-G-EAVE-W/-E-CTRL`, `ED-G-GABLE-N-CTRL` | Gledopto GL-C-001P | Zigbee, ZHA (local push) | none | its power-on state | set power-on to "previous" |
+| Tape controllers (12) | `ED-M-LIVING-LT-CTRL`/`-E`, `ED-M-DINING-LT-CTRL`/`-E`, `ED-S-HALL-LT-CTRL`/`-CTRL2`, `ED-G-EAVE-W/-W2/-E/-E2-CTRL`, `ED-G-GABLE-N/-N2-CTRL` | Gledopto GL-C-001P | Zigbee, ZHA (local push) | none | its power-on state | set power-on to "previous" |
 | Closet and kitchen tape | `ED-M-CLOSET-LT-PSU`, `ED-M-KITCH-LT-PSU` (MITTLED) | IKEA TRADFRI 30 W | unpaired, or Zigbee on ZHA to dim | none | powers on lit | bench-test power-on unpaired |
 | Night-light motion (8) | not modelled: one per bath, one at the basement stair | PIR sensor (to select), battery | Zigbee, ZHA | none | relay paddles | select the product |
 | HA host | `ED-B-UTIL-RC1` / `CKT-HA` | mini PC + ZBT-2 + Z-Wave 800 LR stick + Zigbee coordinator dongle | wired LAN | none | none | UPS: the backup-battery TODO |
@@ -227,7 +227,7 @@ Added 2026-10-31. Every bath has one, all built the same way: E5 2200 K tape (`E
 
 ## Other lighting automations
 
-- **Second-floor hall cove** (`LR-S-HALL-GAP`, E6 tunable): after dark HA recalls a low 2700 K night preset on `ED-S-HALL-LT-CTRL`. The 3-way relays `ED-S-HALL-SW`/`-SW2` cut its HLG's 120 V, so set the controller's power-on state to "previous".
+- **Second-floor hall cove** (`LR-S-HALL-GAP`, E6 tunable): after dark HA recalls a low 2700 K night preset on both halves' controllers (`ED-S-HALL-LT-CTRL`, `-CTRL2`, one HA group). The 3-way relays `ED-S-HALL-SW`/`-SW2` cut the drivers' 120 V, so set both controllers' power-on state to "previous".
 - **Garage linear** (W, RGBW): HA turns `ED-G-SOFFIT-SW` on at dusk and off at a curfew (owner sets the time); the W channel at 3000 K is the default, a holiday colour is a scene on the six garage controllers.
 - **Entry and garage door lights**: `ED-M-ENTRY-SW` and `ED-G-EXT-SW` come on at dusk and on arrival (the entry lock, the opener), then time out.
 - **Basement stair at night**: no night lights (owner, 2026-10-31); the railing tape on the stair 3-way and the landing guide-light receptacles light it.

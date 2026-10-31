@@ -504,9 +504,8 @@ OPENINGS = [
     # it four units, four bucks, four flashings and eight jamb returns.
     #
     # What it costs: RM-A-STUDIO's daylight drops about a third (21.3 sf -> 13.6 sf, the
-    # south pair alone), so R303.1 Exception 1's electric-light substitute is now doing real
-    # work there — the studio's six cans plus sconce, 6,000 lm against the 4,450 lm the
-    # exception needs at 6 fc. RELOCATE THOSE FIXTURES, NEVER DELETE ONE (lighting.py).
+    # south pair alone). That once put the studio on R303.1 Exception 1; since 2026-09-10 the
+    # check reads R304.3's 146 sf and the room passes on glazing (plan/lighting_attic.py).
     # The only levers that would give the daylight back are a shed dormer or a roof
     # penetration, and both are excluded.
 ]

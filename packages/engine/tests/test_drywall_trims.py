@@ -10,7 +10,7 @@ from typehaus.resolve.drywall_led import drywall_standard, host_shadow_gap_runs
 
 _IN = 0.0254
 _COVES = {"LR-M-LIVING-W", "LR-M-LIVING-E", "LR-M-DINING-W", "LR-M-DINING-E",
-          "LR-M-BATH2-TUB-CLG", "LR-S-HALL-GAP"}
+          "LR-M-BATH2-TUB-CLG", "LR-S-HALL-GAP", "LR-S-HALL-GAP2"}
 
 
 def test_the_coves_are_shadow_gaps_cut_from_their_host(catlin_model_ro):

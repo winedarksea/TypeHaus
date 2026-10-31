@@ -193,34 +193,35 @@ with no idle or efficiency.
 |---|---|---|---|
 | `CKT-FRIDGE` | 800 | 0.13 | 104.0 W |
 | `CKT-HA` | 300 | 0.44 | 132.0 - 42.0 = 90.0 W |
-| `CKT-LT-BACKUP` | 683 | 0.15 | 102.5 W |
+| `CKT-LT-BACKUP` | 579 | 0.15 | 86.9 W |
 | `CKT-SUMP` | 1,000 | 0.05 | 50.0 W |
-| **always-on** | 2,783 | | **346.5 W** |
+| **always-on** | 2,679 | | **330.9 W** |
 | `CKT-HP3` | 1,500 | 0.4 | 600.0 W |
 | `CKT-WH-240` | 500 (`backup_va`) | 0.15 | 75.0 W |
 | **shed** | 2,000 | | **675.0 W** |
 
 **Battery-side draw** = AC / 0.94 + 55 W idle:
 
-- always-on: 346.5 / 0.94 + 55 = 368.6 + 55 = **423.6 W** (436.7 W at 765 VA earlier on
+- always-on: 330.9 / 0.94 + 55 = 352.0 + 55 = **407.0 W** (436.7 W at 765 VA earlier on
   2026-10-31; 462.2 W before the twenty backup cans went from 14.5 W modules to 6.5 W PAR20s).
-  The lighting review the same day took 765 -> 683 VA: the workshop panels left for
+  The lighting review the same day took 765 -> 579 VA: the workshop panels left for
   `CKT-LT-BSMT` (-120), the kitchen's 200 VA OMNIDRIVE became a 30 W TRADFRI for MITTLED
-  (-170), the A4 task cans and two new kitchen cans (+38.8), the pantry PSU 60 -> 200 W
-  (+140), the ESS closet light (+9) and the basement bath night-light driver (+20).
-- both tiers: (346.5 + 675.0) / 0.94 + 55 = 1,086.7 + 55 = **1,141.7 W**.
+  (-170), the A4 task cans and two new kitchen cans (+38.8), the pantry PSU 60 W OMNIDRIVE
+  -> 96 W Class 2 HLG (+36), the ESS closet light (+9) and the basement bath night-light
+  driver (+20).
+- both tiers: (330.9 + 675.0) / 0.94 + 55 = 1,070.1 + 55 = **1,125.1 W**.
 
 **Storage**: 14.3 kWh x 0.90 DoD = **12.87 kWh** usable.
 
-**Autonomy, no sun**: 12,870 / 423.6 = **30.4 h** always-on; 12,870 / 1,141.7 = **11.3 h**
+**Autonomy, no sun**: 12,870 / 407.0 = **31.6 h** always-on; 12,870 / 1,125.1 = **11.4 h**
 both tiers.
 
 **48-hour cycle** (one strong day in two; array 12 x 440 W = 5.28 kW):
 
-- 48 h of always-on: 0.4236 x 48 = **20.33 kWh**; both tiers 1.1417 x 48 = 54.80 kWh.
-- Summer strong day, 3.0 kWh/kW: 15.84 kWh -> always-on net **-4.49 kWh**.
+- 48 h of always-on: 0.4070 x 48 = **19.54 kWh**; both tiers 1.1251 x 48 = 54.00 kWh.
+- Summer strong day, 3.0 kWh/kW: 15.84 kWh -> always-on net **-3.70 kWh**.
 - December strong day, 1.5 kWh/kW (`WINTER_STRONG_DAY_KWH_PER_KW`): 7.92 kWh -> net
-  **-12.41 kWh**. A low-pitch E/W split loses more of December than of June.
+  **-11.62 kWh**. A low-pitch E/W split loses more of December than of June.
 
 Solar is counted at the DC side and all load at 94%, which errs heavy: PV-to-battery is
 99.9%, and daytime loads run PV-to-AC near 97.5%.
@@ -229,9 +230,9 @@ Solar is counted at the DC side and all load at 94%, which errs heavy: PV-to-bat
 sun through a dark day and the longest night after it. St Paul (44.98 N) at the winter
 solstice: cos H = (sin -0.833 - sin 44.98 sin -23.44) / (cos 44.98 cos -23.44)
 = (-0.01454 + 0.28118) / 0.64897 = 0.4109, H = 65.74°, day = 8.77 h, **night = 15.23 h** (`longest_night_hours`, from the site's own
-latitude). Needs 0.4236 x (24 + 15.23) = **16.62 kWh**; has 12.87.
+latitude). Needs 0.4070 x (24 + 15.23) = **15.97 kWh**; has 12.87.
 
-**Peak**: 4,783 VA connected on the microgrid against 8 kW continuous; the largest motor start
+**Peak**: 4,679 VA connected on the microgrid against 8 kW continuous; the largest motor start
 (HP3, 1,500 VA x 3 for a soft-started VFD = 4,500 VA) against 16 kW. Both fit. The calc's 3x
 does not describe the sump, an across-the-line motor: at 6x it starts at 6,000 VA, also well
 inside 16 kW, but nothing in the engine grades that figure.
@@ -239,10 +240,10 @@ inside 16 kW, but nothing in the engine grades that figure.
 **Verdict (`backup_calc`)**: one strong summer day does not cover 48 h of even the always-on
 tier, and one battery does not bridge a December dark day. The idle draw alone (55 W x 48 h
 = 2.64 kWh) took the +0.12 kWh margin of the old calc to about -2.5; efficiency and the sump
-do the rest. Read it as: **the always-on tier is a 30-hour countdown, not a steady state.**
+do the rest. Read it as: **the always-on tier is a 32-hour countdown, not a steady state.**
 The levers, in order of cost: meter the duty cycles and the real idle; shed `CKT-LT-BACKUP`
 lighting harder; the second PV row (`plans/TODO.md`); a second battery (28.6 kWh bridges at
-16.6). The verdict says "add array" rather than "not battery" because both are short.
+16.0). The verdict says "add array" rather than "not battery" because both are short.
 
 A system with zero usable storage used to report "sustains" (the cycle never looked at the
 battery). `sustains_*` and `bridges` now require usable storage > 0.

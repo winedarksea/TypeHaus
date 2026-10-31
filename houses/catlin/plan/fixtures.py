@@ -341,8 +341,8 @@ SECOND_FIXTURES = (
     #
     # y=305.62" backs onto W-S-BD-N: a lavatory that BACKS a wall has to travel with the
     # wall's own station or it stands off the face by the amount the wall moved (see
-    # RM-M-BATH1's note in this file for the same rule). Both mirror lights and the switch
-    # above them track the same y (plan/lighting.py).
+    # RM-M-BATH1's note in this file for the same rule). The P6 sconces (plan/mirrors.py)
+    # and the switch (plan/mep_electrical.py) track the same y.
     # Two SEKTION 30 halves under one 61 in. Corian slab; two drains and two lav loads.
     # Keep 30 in. bowl spacing; ED-S-VANITY-RC1 continues to serve both basins.
     Fixture(uid="CSQ807AAAA", tag="FX-S-VANITY-LAV1", type_ref="FX-VANITY-30-SEKTION",

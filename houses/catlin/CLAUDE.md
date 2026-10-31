@@ -101,7 +101,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
 - `plan/study_nook.py` — `# haus: editable`, Study 2's window seat under ST-S2A: an 18" open
   SEKTION shelf frame by the door plus three 24x24x15 SEKTION seat units with lift-up fronts on
   a 2x4 base, 19 1/2" top, under one 3" cushion held 1/2" behind the fronts. Types/products are in `plan/study_nook_types.py`. ED-S-STUDY2-RC3 is
-  at 26" AFF above the seat; the mark-K reading sconce and its seat-side dimmer live in this file.
+  at 26" AFF above the seat; the mark-K reading sconce and its seat-side plain switch live in this file.
 - `plan/bed_reading_corner.py` — `# haus: editable`, RM-M-BED's STRANDMON reading chair by the
   west wall (the SEKTION window seat was retired 2026-10-21). Types in `_types.py`.
 - `plan/bed_desk.py` — `# haus: editable`, RM-M-BED's SE-corner desk: two 15" SEKTION/AXSTAD
@@ -807,7 +807,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       (`checks/code/mn_residential/ventilation.py`). (→ log4.md, literal-reading risk)
     - Exception 1's lumen floor no longer binds this room while it passes on daylight —
       `plan/lighting_attic.py` claims of R303.1-required fittings are stale (room carries
-      5,400 lm over 146 sf). `REG-A-HP-WEST` stays regardless (graded on BEDROOM
+      2,327 rated lm over 146 sf). `REG-A-HP-WEST` stays regardless (graded on BEDROOM
       occupancy, not Exception 1).
   - **The studio eave's services are exposed by choice** (owner, 2026-10-29: "a little
     rustic"): the three lav lines along `W-A-STU-W` and the four west-deck ducts, declared by
@@ -1798,11 +1798,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   their price rows (`notes/bath2_shower.md` §6); the sauna rinse is the open exception.
 - **CCT rule (owner, 2026-10-31): one schedule mark per working CCT.** A selectable (5CCT)
   module is allowed, set once to its mark's `cct_k`; a tunable fixture records its working
-  CCT in `cct_k` and its range in `source`. BATH2 is 5000 K day / 2700 K evening
-  (`notes/bath2_lighting.md`).
+  CCT in `cct_k` and its range in `cct_range_k`. BATH2 is 5000 K day / 2700 K evening
+  (`notes/bath2_lighting.md`); every bath's night layer is E5 at 2200 K.
 - **Recessed cans are one replaceable-lamp housing** (2026-10-31): Nora NSIC-401QAT, 6" tall,
-  with the tier set by its trim and lamp `parts`: A cheap PAR20, A2/A3 95-CRI in RM-M-LIVING
-  and RM-M-BED, B wet. Mark C (Juno wafer) only where 6" cannot fit. Every can sits in a
+  with the tier set by its trim and lamp `parts`: A cheap PAR20, A1 5000 K (the lounge day
+  layer), A2/A3 95-CRI in RM-M-LIVING and RM-M-BED, A4 95-CRI 25 deg kitchen task, B wet. Mark C (Juno wafer) only where 6" cannot fit. Every can sits in a
   clear joist bay off the furniture, graded by `electrical.ceiling_can_framing`.
 - **`W-M-HS4` is a pocket wall and nothing may ever go in it again** — no outlet, switch,
   pipe, register, blocking, or towel bar between 12'-2" and 15'-4 1/2" on the y=22'-4" datum
@@ -1829,7 +1829,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   blocking, one top angle its only fastener in the exterior wall; 6/4 oak shelves on bench-fixed cleats at explicit
   `board_tops`, 1/4" off the north wall. Four 24V jamb channels (`ED-M-PANTRY-LT`..`-LT4`) on
   one 60 W driver at 90" on `W-M-N1B`, all on the inside PIR `ED-M-PANTRY-SW` at 56" (no
-  kitchen-side pantry switch; the 46" box there is the undercabinet dimmer). Built to be
+  kitchen-side pantry switch; the 46" box there is the undercabinet relay). Built to be
   stood on: `notes/pantry_climbable_shelving.md`.
 
 ### Basement

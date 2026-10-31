@@ -1,6 +1,6 @@
 # haus: editable
 # RM-M-CLOSET, the master walk-in: every fitted piece and every device in it, in one file
-# so plan/placeables.py and plan/lighting.py do not grow. Types: plan/closet_types.py.
+# so plan/placeables.py and the plan/lighting_*.py files do not grow. Types: plan/closet_types.py.
 #
 # The room: clear x 8'-5 3/8"..17'-8 5/8", y 13'-2 3/8"..17'-8 5/8" (41.9 sf). Walls, with
 # the closet on the named face: W-M-CLN / W-M-CLN2 north (right), W-M-BA2E2 west (left),

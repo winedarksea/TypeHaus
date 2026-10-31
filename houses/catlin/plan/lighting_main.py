@@ -154,9 +154,10 @@ MAIN_LIGHTING = [
     # canopy-on-register overlap nothing in the engine would have reported.
     #
     # ** CONSTANT HOT, AND THE SWITCH IS A PLAIN ED-T-LEV-SW1, NOT A DIMMER. ** Mark N's
-    # `source` says in capitals that a DC fan cannot be speed-controlled by a conventional wall dimmer and
-    # that a Caseta dimmer will corrupt its receiver. The fan gets its own leg and its own
-    # plain switch; speed and light are the hardwired Bluetooth wall control plus the remote.
+    # `source` says in capitals that a DC fan cannot be speed-controlled by a conventional
+    # wall dimmer and that a Caseta dimmer will corrupt its receiver. The fan gets its own
+    # leg and its own plain switch; speed and light are the hardwired Bluetooth wall control
+    # plus the remote.
     # CKT-LT-MAIN, the same circuit as the load it switches — a switch on another circuit
     # than its load FAILs electrical.lighting_controls (NEC 210.7).
     ElectricalDevice(uid="SFVAJZ0YEM", tag="ED-M-BED-FAN", kind=DeviceKind.LIGHT,

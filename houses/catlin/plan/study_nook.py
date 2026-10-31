@@ -7,7 +7,7 @@
 # The partition clears D-S-STUDY2's casing (x~261.6"). ED-S-STUDY2-RC3 rose above the top.
 # Cushion: one 3" HR-foam piece on the seat top, 1/2" behind the lift-up fronts.
 # Reading light: a mark-K sconce (<=4" projection) over the west seat, the head end, where the
-# stringers are highest; its dimmer is by the shelves, reachable seated or lying.
+# stringers are highest; its plain switch is by the shelves, reachable seated or lying.
 
 from typehaus import (
                       DeviceKind,

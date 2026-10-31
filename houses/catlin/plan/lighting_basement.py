@@ -45,7 +45,7 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment, m
 
 # --- Basement -------------------------------------------------------------------------
-# The cans, coves and sconces are on CKT-LT-BACKUP (electrical_notes.md line 24: basement
+# The cans, coves and sconces are on CKT-LT-BACKUP (notes/backup_power.md: basement
 # and kitchen light survive an outage). The work light is not: the mark Q1 T8 strips in the
 # workshop, gym and furnace room are on CKT-LT-BSMT, each on its own switch (NEC 210.7).
 # Q1 is surface (`drop` = its 2.5" height) or chain-hung (a larger `drop`).
@@ -318,11 +318,10 @@ BASEMENT_LIGHTING = [
     # code.R303_1_light_and_ventilation counts POINT luminaires only — LightRuns are
     # deliberately excluded from `_room_lumens` ("a cove can only add light, which makes the
     # number conservative"), so the cove below is worth exactly 0 fc to the check no matter
-    # how long it is. The floor is 6 fc x 324 sf / (CU 0.60 x LLF 0.80) = 4,050 lm.
-    # Two sconces alone is 1,400 lm / 2.1 fc and FAILS. Six ED-T-LT-SCONCE-UD at 700 lm is
-    # 4,200 lm / 6.2 fc and passes. ** THAT IS 0.2 fc OF MARGIN AND IT IS THE WHOLE MARGIN: **
-    # drop one sconce, or swap the type for anything dimmer, and this room is a FAIL. An
-    # eighth-sconce scheme was offered and 6 was the call.
+    # how long it is. The check reads 282 sf, so the floor is 6 fc x 282 / (CU 0.60 x LLF
+    # 0.80) = 3,525 lm. Six ED-T-LT-SCONCE-UD at 680 lm is 4,080 lm / 7.0 fc and passes.
+    # ** ONE SCONCE IS THE WHOLE MARGIN: ** five is 3,400 lm / 5.8 fc and FAILS, as does any
+    # dimmer type. An eighth-sconce scheme was offered and 6 was the call.
     #
     # Three a side on the two side walls at the room's quarter points, y = 22'-6", 27'-0",
     # 31'-6" — SCONCE1/2 keep their uids and move onto the outer east stations, so the
