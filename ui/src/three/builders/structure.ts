@@ -20,8 +20,8 @@ import {
   type ResolvedNordicPalette,
 } from "../../nordic/palette";
 import {
-  applyDeckBoardUv, applyPerforatedMap, applyPerforatedUv, createDeckBoardMaterial,
-  createStandingSeamMaterial, isAluminumDeckBoard, isPerforatedFinish, isStandingSeam,
+  applyPerforatedMap, applyPerforatedUv, createStandingSeamMaterial, isPerforatedFinish,
+  isStandingSeam,
   metalPanelProfileForFinish, SEAM_PROFILE,
 } from "../materials";
 import { applyTileUv, createTileMaterial, tileRepeatSizeM, tileStyleOrNull } from "../tileMaterial";
@@ -72,18 +72,14 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
         solid.category === "window_return" ? solid.z1_m
           : Math.max(solid.z1_m, solid.z0_m + 0.01), solid.voids ?? [], center));
   if (!geo) return;
-  const deckBoards = catalog?.assemblies.find((a) => a.tag === solid.assembly)?.layers
-    .some((layer) => isAluminumDeckBoard(layer.material));
-  if (deckBoards) applyDeckBoardUv(geo, center);
   // A boarded ceiling: `resolve/ceilings.py` puts the ceiling stack's FINISH layer material
   // straight on the solid, so the sauna's shiplap arrives here as `material: "sauna-shiplap"` with no
   // assembly to walk. Boards run along the room's long axis — a ceiling's furring is
   // authored "horizontal", which says nothing about which horizontal.
   const woodRef = solid.material ?? assemblyFaceMaterial(catalog, solid.assembly);
   const appearances = materials ?? catalog?.materials;
-  const plankStyle = deckBoards ? null
-    : plankStyleOrNull(woodRef, authoredAppearance(woodRef, appearances)?.finish,
-      authoredAppearance(woodRef, appearances)?.species);
+  const plankStyle = plankStyleOrNull(woodRef, authoredAppearance(woodRef, appearances)?.finish,
+    authoredAppearance(woodRef, appearances)?.species);
   if (plankStyle && !solid.sweep) {
     if (plankStyle.key === "solid-board" || plankStyle.key === "oak-board") {
       const [gx, gy] = planLongAxis(solid.outline);
@@ -92,23 +88,22 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
       applyPieceGrainUv(geo, grain, plankStyle, pieceSeed(solid.uid));
     } else applyPlankPlaneUv(geo, center, planLongAxis(solid.outline), plankTileSizeM(plankStyle));
   }
-  const foam = !deckBoards && !plankStyle && isSprayFoamFinish(authoredAppearance(woodRef, appearances)?.finish);
+  const foam = !plankStyle && isSprayFoamFinish(authoredAppearance(woodRef, appearances)?.finish);
   if (foam) applySprayFoamUv(geo, center);
-  const perforated = !deckBoards && !plankStyle && !foam
+  const perforated = !plankStyle && !foam
     && isPerforatedFinish(authoredAppearance(woodRef, appearances)?.finish);
   if (perforated) applyPerforatedUv(geo, center);
-  const stoneKind = deckBoards || plankStyle || foam || perforated ? null : aggregateKindOfSolid(solid, woodRef);
+  const stoneKind = plankStyle || foam || perforated ? null : aggregateKindOfSolid(solid, woodRef);
   if (stoneKind) uvForAggregate(geo, center, stoneKind);
   const firstChildIndex = parent.children.length;
   const material =
-    deckBoards ? createDeckBoardMaterial(mode)
-      : plankStyle
-        ? createPlankMaterial(mode, plankStyle,
-          materialColor(woodRef, palette, appearances), undefined,
-          authoredAppearance(woodRef, appearances))
-        : foam ? createSprayFoamMaterial(mode, materialColor(woodRef!, palette, appearances))
-        : stoneKind ? stoneMaterial(mode, solidColor(solid, catalog, palette), stoneKind)
-        : createSolidMaterial(solid, catalog, mode, palette);
+    plankStyle
+      ? createPlankMaterial(mode, plankStyle,
+        materialColor(woodRef, palette, appearances), undefined,
+        authoredAppearance(woodRef, appearances))
+      : foam ? createSprayFoamMaterial(mode, materialColor(woodRef!, palette, appearances))
+      : stoneKind ? stoneMaterial(mode, solidColor(solid, catalog, palette), stoneKind)
+      : createSolidMaterial(solid, catalog, mode, palette);
   // Holes are a nordic look only; with no canvas the flat metal stays.
   if (perforated && mode === "nordic") applyPerforatedMap(material as THREE.MeshStandardMaterial);
   const mesh = makeSurfaceMesh(geo, woodMaterialsForGeometry(material, geo));

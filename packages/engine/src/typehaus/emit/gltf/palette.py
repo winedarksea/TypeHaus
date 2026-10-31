@@ -327,7 +327,6 @@ _ROMAN_MAXIMUS_BRICK_BASE = "#e4ddc9"
 # Roofing "Classic Green", materials.ts CLASSIC_GREEN_SEAM_BASE. A second colourway of the
 # same 26 ga. nail-strip panel, so it keeps the seam profile and only the paint differs.
 _CLASSIC_GREEN_SEAM_BASE = "#2f5233"
-_DECK_BOARD_BASE = "#7b7e81"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0x7b7e81)
 
 
 _FINISH_BASE: dict[str, str] = {
@@ -378,16 +377,6 @@ def _is_cmu(material_ref: str | None) -> bool:
 def _is_white_brick(material_ref: str | None) -> bool:
     s = (material_ref or "").lower()
     return "white" in s or "limewash" in s or "whitewash" in s
-
-
-def _is_aluminum_deck_board(material_ref: str | None) -> bool:
-    """Aluminum plank decking — the viewer's grooved 6" board finish (materials.ts
-    isAluminumDeckBoard). The metal family colour would read as dark flashing, so the
-    export pins the plank's own granite base instead."""
-    if not material_ref:
-        return False
-    s = material_ref.lower()
-    return "deck" in s and ("alum" in s or family_of(material_ref) == "metal")
 
 
 def srgb_material_color(material: object) -> tuple[float, float, float, float]:
@@ -477,8 +466,6 @@ def _material_finish_color(material_ref: str | None,
         return _hex_rgba(_FINISH_BASE.get(declared, _SEAM_BASE))
     if material is not None:
         return _authored_material_color(material)
-    if _is_aluminum_deck_board(material_ref):
-        return _hex_rgba(_DECK_BOARD_BASE)
     if family_of(material_ref) == "masonry":
         if _is_cmu(material_ref):
             return _hex_rgba(_CMU_BASE)
@@ -537,8 +524,6 @@ def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, floa
     # of it here — the resolver reads the same one when it stamps ``GPart.catalog``.
     layer_ref = assembly_structure_material(model.plan, solid.assembly)
     if layer_ref:
-        if _is_aluminum_deck_board(layer_ref):
-            return _hex_rgba(_DECK_BOARD_BASE)
         material = next((m for m in model.plan.library.materials if m.tag == layer_ref), None)
         if material is not None:
             return _authored_material_color(material)

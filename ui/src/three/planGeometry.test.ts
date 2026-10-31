@@ -13,7 +13,7 @@ import {
   projectPointToScene,
   projectScenePointToPlan,
 } from "./planGeometry";
-import { applyDeckBoardUv, applyStandingSeamWallUv, DECK_BOARD_WIDTH_M, SEAM_PAN_WIDTH_M } from "./materials";
+import { applyStandingSeamWallUv, SEAM_PAN_WIDTH_M } from "./materials";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { buildWindowStool } from "./builders/millwork";
 
@@ -152,7 +152,6 @@ export function runPlanGeometryTests() {
   checkAsymmetricPlanIsNotReflected();
   checkGeographicBearings();
   checkWallUvUsesProjectCoordinates();
-  checkDeckBoardUvRunsNorthSouth();
   checkDoorSwingArcsPivotOnHinge();
 }
 
@@ -422,46 +421,6 @@ function checkWallUvUsesProjectCoordinates() {
     );
     closeTo(uv.getX(index), (projectY - 20) / (SEAM_PAN_WIDTH_M * 4),
       "Wall UV distance follows authored project Y after scene reflection is removed");
-  }
-  geometry.dispose();
-}
-
-// The deck-board normal map's x-axis runs across the 6" planks, so tying u to project X is
-// what makes the boards run north–south (perpendicular to the house and to the balcony's
-// east–west joists). A u that varied with project Y would lay them the wrong way.
-function checkDeckBoardUvRunsNorthSouth() {
-  const center: [number, number] = [10, 20];
-  const tile = DECK_BOARD_WIDTH_M * 4;
-  const geometry = createPlanPrismGeometry(
-    [[10, 20], [14, 20], [14, 26], [10, 26]], 3.048, 3.086, [], center,
-  );
-  if (!geometry) throw new Error("Expected deck prism for board-UV orientation test");
-  applyDeckBoardUv(geometry, center);
-  const positions = geometry.getAttribute("position");
-  const uv = geometry.getAttribute("uv");
-  const uByProjectX = new Map<number, number>();
-  for (let index = 0; index < positions.count; index++) {
-    const [projectX, projectY] = projectScenePointToPlan(
-      positions.getX(index), positions.getZ(index), center,
-    );
-    // UVs are Float32, so compare to a relative 1e-6 rather than closeTo's absolute one.
-    for (const [got, want, why] of [
-      [uv.getX(index), projectX / tile, "Deck board U counts planks across project X"],
-      [uv.getY(index), projectY / tile, "Deck board V runs along the plank in project Y"],
-    ] as const) {
-      if (Math.abs(got - want) > 1e-6 * Math.max(1, Math.abs(want))) {
-        throw new Error(`${why}: expected ${want}, received ${got}`);
-      }
-    }
-    const key = Math.round(projectX * 1e6);
-    const seen = uByProjectX.get(key);
-    if (seen !== undefined) {
-      closeTo(uv.getX(index), seen, "Deck boards stay constant along project north");
-    }
-    uByProjectX.set(key, uv.getX(index));
-  }
-  if (uByProjectX.size < 2) {
-    throw new Error("Deck board UV test needs at least two distinct project-X columns");
   }
   geometry.dispose();
 }

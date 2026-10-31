@@ -105,6 +105,12 @@ export const WOOD_PLANK_STYLES: Readonly<Record<string, PlankStyle>> = {
     faceWidthM: 5.75 * INCH, jointFraction: 0.25 / 5.75, jointProfile: "butt",
     jitter: 0.015, grain: 0.12, reliefScale: 0.18,
   },
+  // Powder-coated extruded aluminum (AridDek): 6" boards, a ¼" drainage gap, faint extrusion line.
+  "aluminum-deck-board": {
+    ...SHIPLAP_STYLE, key: "aluminum-deck-board",
+    faceWidthM: 6 * INCH, jointFraction: 0.25 / 6, jointProfile: "butt",
+    jitter: 0.01, grain: 0.04, reliefScale: 0.2,
+  },
   "tg-board": TG_BOARD_STYLE,
   "shiplap": SHIPLAP_STYLE,
   "strip-floor": STRIP_FLOOR_STYLE,

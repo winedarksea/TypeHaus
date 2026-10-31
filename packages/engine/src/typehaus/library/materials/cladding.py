@@ -199,6 +199,7 @@ _BASE_ROWS: tuple[Material, ...] = (
         perm_rating=0.05,
         hatch="metal",
         color="#7b7e81",
+        finish="aluminum-deck-board",
         source=("AridDek Granite powder-coated waterproof aluminum plank decking; metal is "
                 "effectively vapor-impermeable"),
     ),

@@ -293,6 +293,7 @@ the future.
 - Lighting review
 - Excavation depth should be on a separate view toggle
 - Double check the 17' 4" horizonal BBD band, BBD-transition. Does it make sense to have it integrated with the door top? Also it looks like the ventilation faces upwards uncovered (rain catch?). Also it should go back to linen white. We are leaning towards having it up higher, around gutter height, if it can be.
+- Check the door handle specification, interior doors. Make sure bathroom doors are simple locks.
 
 # Project Management
 
