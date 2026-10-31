@@ -117,11 +117,13 @@ class Sink:
             kinds: list[str] = []
             hook = 0.0
             if i == 0 and hook_dirs[0] is not None:
-                path.insert(0, _add(a, hook_dirs[0], self._leg_m(bar, hook_kind, galv)))
+                tail = self._hook_points(a, hook_dirs[0], u, bar, hook_kind, galv)
+                path[:0] = tail[::-1]
                 kinds.append(hook_kind)
                 hook += hooks[0]
             if last and hook_dirs[1] is not None:
-                path.append(_add(b, hook_dirs[1], self._leg_m(bar, hook_kind, galv)))
+                path.extend(self._hook_points(b, hook_dirs[1], (-u[0], -u[1], -u[2]),
+                                              bar, hook_kind, galv))
                 kinds.append(hook_kind)
                 hook += hooks[1]
             lap_here = 0.0 if last else lap
@@ -136,6 +138,18 @@ class Sink:
     def _leg_m(bar: int, kind: det.HookKind, galvanized: bool = False) -> float:
         _, bend, extension = det.hook_geometry_in(bar, kind, galvanized=galvanized)
         return (bend / 2.0 + BARS[bar].diameter_in + extension) * _IN
+
+    @classmethod
+    def _hook_points(cls, end: Vec3, turn: Vec3, inward: Vec3, bar: int,
+                     kind: det.HookKind, galvanized: bool) -> list[Vec3]:
+        """Drawn hook beyond ``end`` (the bend's outside face): a 90° tail along ``turn``, or
+        a 180° return ``D + db`` along ``turn`` whose tail runs back ``inward`` into the bar."""
+        if kind != "std180":
+            return [_add(end, turn, cls._leg_m(bar, kind, galvanized))]
+        _, bend, extension = det.hook_geometry_in(bar, kind, galvanized=galvanized)
+        db = BARS[bar].diameter_in
+        top = _add(end, turn, (bend + db) * _IN)
+        return [top, _add(top, inward, (bend / 2.0 + db + extension) * _IN)]
 
     def loop(self, entry, points: list[Vec3], *, hook_kind: det.HookKind = "tie135",
              overlap_in: float = 0.0, perimeter_m: float | None = None) -> None:

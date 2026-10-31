@@ -21,19 +21,19 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment
 
 # --- Garage ---------------------------------------------------------------------------
-# Two 4' shop lights on their own switch by the service door, on the house's main lighting
-# circuit (garage is freestanding but fed from ED-B-PANEL) rather than the GFCI receptacle
-# circuit, which would drop the lights every time a tool trips one. Surface mounted at 8' —
+# Shop lights on their own switch by the service door, on CKT-LT-GARAGE (since 2026-10-31;
+# CKT-LT-MAIN before), the garage's own lighting circuit from ED-B-PANEL, not the GFCI
+# receptacle circuit, which would drop the lights every time a tool trips one. Surface mounted at 8' —
 # nothing above the garage ceiling to recess a can into.
 GARAGE_LIGHTING = [
     ElectricalDevice(uid="QTG0001AAA", tag="ED-G-LT1", kind=DeviceKind.LIGHT,
                      position=pt(ft(18), ft(50, 6)), type_ref="ED-T-LT-SHOP4",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="QTG0002AAA", tag="ED-G-LT2", kind=DeviceKind.LIGHT,
                      position=pt(ft(18), ft(60, 6)), type_ref="ED-T-LT-SHOP4",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # A third shop light over ST-G-SERVICE, the service door's flight. The two above are at
@@ -48,19 +48,19 @@ GARAGE_LIGHTING = [
                      # Centred on the flight (x 6'-11 5/8"..9'-11 5/8", y 43'-9 3/8"..
                      # 47'-6 1/8") since the interior landing went, 2026-10-13.
                      position=pt(ft(8, 5.625), ft(45, 7.75)), type_ref="ED-T-LT-SHOP4",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # LT4/LT5 (2026-10-31): one over each bay at mid-depth, y=55'-6", south of where the open
     # overhead door's panel stops (~59'-2") and clear of the opener head at x=18'-0".
     ElectricalDevice(uid="PQX96QHYWG", tag="ED-G-LT4", kind=DeviceKind.LIGHT,
                      position=pt(ft(11), ft(55, 6)), type_ref="ED-T-LT-SHOP4",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="F64CZX32H8", tag="ED-G-LT5", kind=DeviceKind.LIGHT,
                      position=pt(ft(25), ft(55, 6)), type_ref="ED-T-LT-SHOP4",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # On W-G-S's INTERIOR face (plan/storeys/garage.py::GARAGE_Y_SOUTH) — see
@@ -77,7 +77,7 @@ GARAGE_LIGHTING = [
     # and 42" over the threshold you walk in on.
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(56),
@@ -125,7 +125,7 @@ GARAGE_LIGHTING = [
                      # x=28'-0" is 2'-0" in from the NE corner. The uid is the original
                      # light's: this element did not stop existing when it was retagged.
                      type_ref="ED-T-LT-SCONCE-EXT",
-                     circuit="CKT-LT-MAIN", controlled_by=("ED-G-EXT-SW",),
+                     circuit="CKT-LT-GARAGE", controlled_by=("ED-G-EXT-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-N", face="right", distance_from_start=inch(24),
@@ -135,7 +135,7 @@ GARAGE_LIGHTING = [
                      # the door's centreline at x=18'-0". Same circuit, same switch: the pair
                      # is one control, not two.
                      type_ref="ED-T-LT-SCONCE-EXT",
-                     circuit="CKT-LT-MAIN", controlled_by=("ED-G-EXT-SW",),
+                     circuit="CKT-LT-GARAGE", controlled_by=("ED-G-EXT-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-N", face="right", distance_from_start=inch(264),
@@ -150,7 +150,7 @@ GARAGE_LIGHTING = [
     # so HA can light the apron at dusk and on the opener's arrival.
     ElectricalDevice(uid="QTG0005AAA", tag="ED-G-EXT-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(50),
@@ -191,13 +191,23 @@ GARAGE_LIGHTING = [
     # resolved underside of RF-GARAGE's eave soffit — the fascia bottom, re-read when the
     # standard-heel trusses dropped the plane 5.75" (2026-10-08). If the heel or fascia
     # depth moves, this follows by hand.
+    # Each eave is two 12'-0" runs since 2026-10-31 (Class 2, below): the south halves keep
+    # the original tags, the north halves are -W2/-E2.
     LightRun(uid="N2XWJEVXGS", tag="LR-G-EAVE-W", type_ref="ED-T-LT-LINEAR-EXT",
-             path=(pt(ft(5, 9.875), ft(43, 2.625)), pt(ft(5, 9.875), ft(67, 2.625))),
+             path=(pt(ft(5, 9.875), ft(43, 2.625)), pt(ft(5, 9.875), ft(55, 2.625))),
              psu_ref="ED-G-EAVE-W-PSU", controlled_by=("ED-G-SOFFIT-SW",),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
+    LightRun(uid="T7GB8BJ2JP", tag="LR-G-EAVE-W2", type_ref="ED-T-LT-LINEAR-EXT",
+             path=(pt(ft(5, 9.875), ft(55, 2.625)), pt(ft(5, 9.875), ft(67, 2.625))),
+             psu_ref="ED-G-EAVE-W2-PSU", controlled_by=("ED-G-SOFFIT-SW",),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
     LightRun(uid="QPT63YW4TW", tag="LR-G-EAVE-E", type_ref="ED-T-LT-LINEAR-EXT",
-             path=(pt(ft(30, 2.125), ft(43, 2.625)), pt(ft(30, 2.125), ft(67, 2.625))),
+             path=(pt(ft(30, 2.125), ft(43, 2.625)), pt(ft(30, 2.125), ft(55, 2.625))),
              psu_ref="ED-G-EAVE-E-PSU", controlled_by=("ED-G-SOFFIT-SW",),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
+    LightRun(uid="7G3Y0ST61X", tag="LR-G-EAVE-E2", type_ref="ED-T-LT-LINEAR-EXT",
+             path=(pt(ft(30, 2.125), ft(55, 2.625)), pt(ft(30, 2.125), ft(67, 2.625))),
+             psu_ref="ED-G-EAVE-E2-PSU", controlled_by=("ED-G-SOFFIT-SW",),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
     # The north gable: under RF-GARAGE's two RAKE soffits, corner -> ridge -> corner, tight
     # to W-G-N's cladding, aperture down — the eave runs' detail turned up the 4:12 rake.
@@ -214,11 +224,17 @@ GARAGE_LIGHTING = [
     #
     # `full_cutoff` is a DETAIL (aperture aimed down), and CEILING under the rake soffit
     # takes the same shelter reading as the two eave runs.
+    # Split at the ridge vertex since 2026-10-31: the east rake keeps the tag, the west rake
+    # is -N2. Each half climbs from its corner to the ridge.
     LightRun(uid="12K1TBK2FC", tag="LR-G-GABLE-N", type_ref="ED-T-LT-LINEAR-EXT",
-             path=(pt(ft(5, 11.125), ft(67, 3.75)), pt(ft(18), ft(67, 3.75)),
-                   pt(ft(30, 0.875), ft(67, 3.75))),
-             rise=(ft(0), ft(4, 0.292), ft(0)),
+             path=(pt(ft(18), ft(67, 3.75)), pt(ft(30, 0.875), ft(67, 3.75))),
+             rise=(ft(4, 0.292), ft(0)),
              psu_ref="ED-G-GABLE-N-PSU", controlled_by=("ED-G-SOFFIT-SW",),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 5.208))),
+    LightRun(uid="WJ6P1GC7H2", tag="LR-G-GABLE-N2", type_ref="ED-T-LT-LINEAR-EXT",
+             path=(pt(ft(5, 11.125), ft(67, 3.75)), pt(ft(18), ft(67, 3.75))),
+             rise=(ft(0), ft(4, 0.292)),
+             psu_ref="ED-G-GABLE-N2-PSU", controlled_by=("ED-G-SOFFIT-SW",),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 5.208))),
     # ** ITS OWN CONTROL, NOT ED-G-EXT-SW, AND THE REASON IS DUTY CYCLE. ** Ganging ~73 LF of
     # perimeter linear onto the door pair's switch would force one of two bad habits: either
@@ -233,12 +249,13 @@ GARAGE_LIGHTING = [
     # Third in the gang at the service door, 6" east of ED-G-SW on the 6" spacing those two
     # already use (10'-2", 10'-8", 11'-2"), same 76" over the slab, 48.8" over the top tread.
     # Same circuit as the loads it switches, so no NEC 210.7 two-circuit box.
-    # Mark W is 24V RGBW (4.5 W/ft) since 2026-10-31: one non-dimming HLG-150 per run,
-    # INDOORS high on the wall nearest it, fed to the run's middle (135 W / 143 W at 1.25x,
-    # 90-95% of nameplate), and a GL-C-001P in RGBW mode 12" along the wall beside each.
+    # Mark W is 24V RGBW (4.5 W/ft). ** CLASS 2 (owner, 2026-10-31): ** the tape is unlisted,
+    # so every segment is on a <=100 VA Class 2 supply, the certified part: an HLG-100 (96 W)
+    # per half run, 12' x 4.5 x 1.25 = 68 W (gable halves 72 W). Each driver is INDOORS at
+    # 96" on the wall nearest its half, with a GL-C-001P (RGBW mode) 12" along the wall.
     ElectricalDevice(uid="7RB4FGXA5Q", tag="ED-G-EAVE-W-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-PSU-150-HLG",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-W", face="left", distance_from_start=inch(200),
@@ -249,9 +266,22 @@ GARAGE_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-W", face="left", distance_from_start=inch(188),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="YX5KGQZP6W", tag="ED-G-EAVE-W2-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-W", face="left", distance_from_start=inch(72),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="BN45YA6PCY", tag="ED-G-EAVE-W2-CTRL", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-W", face="left", distance_from_start=inch(60),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="6EGKQSPTH2", tag="ED-G-EAVE-E-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-PSU-150-HLG",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-E", face="left", distance_from_start=inch(100),
@@ -262,9 +292,22 @@ GARAGE_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-E", face="left", distance_from_start=inch(88),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="V7SSVTKSDT", tag="ED-G-EAVE-E2-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-E", face="left", distance_from_start=inch(216),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="F5NJA2SN4G", tag="ED-G-EAVE-E2-CTRL", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-E", face="left", distance_from_start=inch(228),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="D8THMTHKHZ", tag="ED-G-GABLE-N-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-PSU-150-HLG",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-N", face="left", distance_from_start=inch(30),
@@ -275,9 +318,22 @@ GARAGE_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-N", face="left", distance_from_start=inch(18),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="VT871B9SWE", tag="ED-G-GABLE-N2-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-N", face="left", distance_from_start=inch(262),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="B5X6YRRPHS", tag="ED-G-GABLE-N2-CTRL", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(96)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-N", face="left", distance_from_start=inch(276),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="S7ANA4Q300", tag="ED-G-SOFFIT-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(62),

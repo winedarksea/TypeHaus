@@ -116,10 +116,13 @@ class BarSpec(HausModel):
     #: Which wall face the bars sit behind. ``None``: centred for one layer, both faces for
     #: two. Interior/exterior follow the assembly's layer order (layer 0 is interior).
     face: Literal["interior", "exterior", "center"] | None = None
-    #: Standard 90° hooks (ACI 318-19 §25.3.1) at these ends of a straight bar. ``None`` is
+    #: Standard hooks (ACI 318-19 §25.3.1) at these ends of a straight bar. ``None`` is
     #: straight; ties, stirrups and dowels carry their own hooks regardless. On a wall
     #: ``vertical``, ``"start"`` runs the bar continuous from the footing below on a foot.
     hooks: tuple[Literal["start", "end"], ...] | None = None
+    #: Mat, rib and beam rows only: which standard hook ``hooks`` bends. ``None`` is 90°; a
+    #: 180° hook stands ``D + 2 db`` tall where a 90° tail needs ``D/2 + db + 12 db``.
+    hook_kind: Literal["std90", "std180"] | None = None
     #: Beam ``top-y``/``bottom-y`` hooks only: which way the tail turns. ``None`` is the
     #: layout's convention, into the member's own depth (top row down, bottom row up). A
     #: row anchored in a support that stands ABOVE the joint turns ``"up"`` into it (ACI

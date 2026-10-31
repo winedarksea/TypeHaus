@@ -258,6 +258,12 @@ WAVEFORM_T8_95 = Product(
     source=_REVIEW + "CONFIRM it is Type B double-ended and ~1,800 lm. Any 90+ CRI 5000 K "
            "Type B tube fits the strip.",
 )
+CHANNEL_45_GENERIC = Product(
+    tag="PROD-CHANNEL-45-GENERIC", brand="generic", model="45-degree aluminium LED channel, 8 ft",
+    name="45-degree corner aluminium channel with frosted lens, caps and clips, 8 ft",
+    source=_REVIEW + "Standard 16 mm-class 45-degree extrusion sold in multi-packs; replaces "
+           "the Diode S45 bundle (avoid premium extrusions). Fits 10-12 mm tape.",
+)
 LEVITON_9880 = Product(
     tag="PROD-LEVITON-9880", brand="Leviton", model="9880",
     name="Keyless porcelain lampholder, E26, on a 4 in. box",
@@ -293,5 +299,5 @@ SELECTED_LIGHTING_PRODUCTS = (
     MODERN_FORMS_MYKONOS, WAC_TUBE_EXT, SLL_COB_IP67, MEANWELL_HLG_100H_24A, LIVEX_4451,
     SLL_COB_RGBCCT, SLL_COB_RGBW_IP67, COB_TUNABLE_24V, COB_NIGHT_2200, MEANWELL_HLG_150H_24A,
     MEANWELL_HLG_240H_24A, MEANWELL_LPV_20_24, GLEDOPTO_GL_C_001P, HALCO_LED_READY_STRIP, WAVEFORM_T8_95,
-    LEVITON_9880, WAVEFORM_A19_95, VANITY_SCONCE_OPAL, BED_SWING_ARM_SCONCE,
+    LEVITON_9880, CHANNEL_45_GENERIC, WAVEFORM_A19_95, VANITY_SCONCE_OPAL, BED_SWING_ARM_SCONCE,
 )

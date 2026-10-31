@@ -105,7 +105,7 @@ PANEL = [
 #
 # Each `-LT` fixture was re-typed in place from a generic ED-T-LIGHT when the lighting plan
 # went in, preserving uid/IFC GlobalId. Each now names a real product and one corner of the
-# grid completed in plan/lighting.py; switches were left where they were.
+# grid completed in a plan/lighting_<zone>.py file; switches were left where they were.
 BASEMENT_DEVICES = [
     # RM-B-GYM (x 18'-36', y 0-18'): switch just inside D-B-PLAY, the door at (24', 18').
     #
@@ -117,8 +117,8 @@ BASEMENT_DEVICES = [
     # sheet puts the blade bottom 7.97" below the ceiling flush-mounted, ~7'-4 1/4" AFF.
     # ** NOTHING GRADES THIS: ** there is no blade-to-floor check in the engine, so this
     # comment and the height on ED-T-LT-FAN52-FLUSH are the only guard.
-    # ** OFF THE BACKUP TIER SINCE 2026-10-28: ** the product upgrade (14.5 W cans, 60 W panels)
-    # took CKT-LT-BACKUP 0.18 kWh short of `cycle_48h.sustains_always_on`. A lightless fan is
+    # ** OFF THE BACKUP TIER SINCE 2026-10-28: ** the product upgrade of the day (14.5 W cans,
+    # 60 W panels, both since replaced) took CKT-LT-BACKUP 0.18 kWh short of `cycle_48h.sustains_always_on`. A lightless fan is
     # the least essential load on the always-on lighting tier, so it moved off it, and since
     # 2026-10-31 it is on CKT-LT-BSMT, the basement's non-backup lighting circuit. It is an AC
     # fan (Hunter's sheet; not DC) with no lamp, on constant hot with its included wall
@@ -422,7 +422,8 @@ SECOND_DEVICES = [
     # it, 11" in front of the vanity. Both suite-bath cans sit on y 19'-4", the middle of the
     # clear FS-ATTIC bay between the I-joists at 18'-8"/20'-0"; it was under DU-A-ERV-R-BED3
     # at 18'-0". ~15" clear of PR-A-STUBATH-DRAIN. Nothing grades this; re-measure after
-    # a move. (2 x 900 + 1,300 bar) lm x CU 0.6 x LLF 0.8 / 46 sf = ~32 fc.
+    # a move. (2 x 500 + 2,400 Karlie bulb source) lm x CU 0.6 x LLF 0.8 / 46 sf = ~35 fc
+    # (the Karlie's delivered lumens are unpublished).
     ElectricalDevice(uid="CED013K1AA", tag="ED-S-SUITEBATH-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(12, 6.75), ft(19, 4)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-SUITEBATH", controlled_by=("ED-S-SUITEBATH-SW",),
@@ -443,7 +444,7 @@ SECOND_DEVICES = [
                      position=pt(ft(4, 4.25), ft(24, 8)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-VANITY", controlled_by=("ED-S-VANITY-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # On W-S-BD-N's vanity face beside the two mirror lights, so it travels with them.
+    # On W-S-BD-N's vanity face between the two mirrors, under P6 sconce C (plan/mirrors.py).
     ElectricalDevice(uid="CED014K2AA", tag="ED-S-VANITY-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
@@ -454,7 +455,7 @@ SECOND_DEVICES = [
                      position=pt(ft(7, 9), ft(24, 8)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-HALL", controlled_by=("ED-S-LANDING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # On W-S-SN3's north face beside ED-S-STAIR-SW (plan/lighting.py).
+    # On W-S-SN3's north face beside ED-S-STAIR-SW (plan/lighting_second.py).
     ElectricalDevice(uid="CED015K2AA", tag="ED-S-LANDING-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW3", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),

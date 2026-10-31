@@ -37,7 +37,7 @@ LIVING_LIGHTING = [
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     LightRun(uid="QRM0002AAA", tag="LR-M-LIVING-E", type_ref="ED-T-LT-STRIP24-RGBCCT",
              path=(pt(ft(35, 5.1875), ft(1)), pt(ft(35, 5.1875), ft(13))),
-             room="RM-M-LIVING", psu_ref="ED-M-LIVING-LT-PSU",
+             room="RM-M-LIVING", psu_ref="ED-M-LIVING-LT-PSU-E",
              controlled_by=("ED-M-LIVING-SW-COVE",), emission_side="right",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     LightRun(uid="BJTQTK477J", tag="LR-M-DINING-W", type_ref="ED-T-LT-STRIP24-RGBCCT",
@@ -47,26 +47,42 @@ LIVING_LIGHTING = [
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     LightRun(uid="H7WQ6SD52G", tag="LR-M-DINING-E", type_ref="ED-T-LT-STRIP24-RGBCCT",
              path=(pt(ft(35, 5.1875), ft(13)), pt(ft(35, 5.1875), ft(21, 6))),
-             room="RM-M-LIVING", psu_ref="ED-M-DINING-LT-PSU",
+             room="RM-M-LIVING", psu_ref="ED-M-DINING-LT-PSU-E",
              controlled_by=("ED-M-LIVING-SW-COVE",), emission_side="right",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # Non-dimming HLG drivers, each feeding its zone's GL-C-001P (which dims and mixes), at
-    # the old OMNIDRIVE's spot by the kitchen soffit's service hatch. Lounge: 24' x 5 W/ft =
-    # 120 W, x1.25 = 150 W, the HLG-150's whole nameplate, so the 240. Dining: 17' = 85 W,
-    # x1.25 = 106 W on the 150. The cove relay cuts both drivers' 120 V.
+    # ** ONE CLASS 2 DRIVER PER COVE HALF (owner, 2026-10-31). ** The tape carries no
+    # listing, so the listed part is the supply, and each segment gets a <=100 VA Class 2
+    # HLG-100H-24A (non-dimming) with its own GL-C-001P beside it, which dims and mixes; HA
+    # groups each zone's pair. Lounge halves 12' x 5 W/ft = 60 W, x1.25 = 75 W; dining
+    # 8.5' = 42.5 W, x1.25 = 53 W; all on 96 W. At the old OMNIDRIVE's spot by the kitchen
+    # soffit's service hatch; the cove relay cuts all four drivers' 120 V.
     ElectricalDevice(uid="QTM0001AAA", tag="ED-M-LIVING-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(19), ft(22, 6)), type_ref="ED-T-LT-PSU-240-HLG",
+                     position=pt(ft(19), ft(22, 6)), type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.CEILING)),
+    ElectricalDevice(uid="BT4Y3QPQYX", tag="ED-M-LIVING-LT-PSU-E", kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(ft(19), ft(22, 10)), type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.CEILING)),
     ElectricalDevice(uid="KADE9WHCBJ", tag="ED-M-LIVING-LT-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(19), ft(23, 3)), type_ref="ED-T-LT-CTRL-5IN1",
+                     position=pt(ft(19), ft(23, 2)), type_ref="ED-T-LT-CTRL-5IN1",
+                     room="RM-M-LIVING", mount=Mount(kind=MountKind.CEILING)),
+    ElectricalDevice(uid="A4G60525S8", tag="ED-M-LIVING-LT-CTRL-E", kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(ft(19), ft(23, 6)), type_ref="ED-T-LT-CTRL-5IN1",
                      room="RM-M-LIVING", mount=Mount(kind=MountKind.CEILING)),
     ElectricalDevice(uid="AMDV43NTPM", tag="ED-M-DINING-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(20, 3), ft(22, 6)), type_ref="ED-T-LT-PSU-150-HLG",
+                     position=pt(ft(20, 3), ft(22, 6)), type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.CEILING)),
+    ElectricalDevice(uid="M9S69APGYK", tag="ED-M-DINING-LT-PSU-E", kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(ft(20, 3), ft(22, 10)), type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.CEILING)),
     ElectricalDevice(uid="WEY30PQ1C8", tag="ED-M-DINING-LT-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(20, 3), ft(23, 3)), type_ref="ED-T-LT-CTRL-5IN1",
+                     position=pt(ft(20, 3), ft(23, 2)), type_ref="ED-T-LT-CTRL-5IN1",
+                     room="RM-M-LIVING", mount=Mount(kind=MountKind.CEILING)),
+    ElectricalDevice(uid="4KSC9M1MHX", tag="ED-M-DINING-LT-CTRL-E", kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(ft(20, 3), ft(23, 6)), type_ref="ED-T-LT-CTRL-5IN1",
                      room="RM-M-LIVING", mount=Mount(kind=MountKind.CEILING)),
     # The lounge, laid out off the furniture (2026-10-31): ED-M-LIVING-LT (plan/mep_electrical)
     # over the coffee table on the fire axis y=7'-4"; CAN2 a gimbal 27" off the fireplace wall

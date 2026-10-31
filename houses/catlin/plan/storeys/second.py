@@ -1390,36 +1390,53 @@ BEAMS = [
 # fascia mounted to the well rim (BM-S-HALL on the east side). They leave exactly one
 # gap — the flight's own throat, where the upper flight arrives southbound on the well's
 # west half. Both moved north and swapped hands on 2026-07-28 with the well itself.
-# Drawn to FO-S-STAIR's own coordinates, not the retired wall centrelines.
+# Drawn to FO-S-STAIR's own coordinates, not the retired wall centrelines. Each fascia leg
+# runs so its right hand (outboard) is the well; its posts stand 1.518" in from the rim
+# (ESR-3485 Fig. 10). The NE corner is one post, RL-S-STAIR's: both legs stop 1.518" short
+# of the rim corner so their bracket lines meet there.
 STAIR_GUARDS = [
     Railing(
         uid="CSRL01AAAA", tag="RL-S-STAIR", type_ref="RAILING-INT-STAIR-GUARD", path=(
-            pt(ft(17, 8.75), ft(26, 0.375)),
             pt(ft(17, 8.75), ft(30, 10)),
+            pt(ft(17, 8.75), inch(313.893)),
         ),
         kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
         base_elevation=ft(10), post_spacing=inch(60), post_size="3x3", rail_count=2,
-        mount="fascia", assembly="RAILING_DARK_METAL",
+        # Brackets on BM-S-HALL's wrapped well face (the path; run south so outboard is west).
+        mount="fascia", fascia_face_offset=inch(0), assembly="RAILING_DARK_METAL",
         # R312.1.3: vertical balusters between the 60" posts, 4" clear gap — the largest
         # opening the 4"-sphere rule admits.
         infill="balusters", baluster_spacing=inch(4),
     ),
-    # Across the well head to the east edge, where RL-S-STAIR turns the corner — and, since
-    # 2026-09-25, a leg north along the well partition's top. That top is flush with the
+    # Across the well head, on the header's well face (run west so outboard is north), from
+    # RL-S-STAIR's corner post to x=13'-10", where the partition leg takes over.
+    Railing(
+        uid="CSRL02AAAA", tag="RL-S-STAIRHEAD", type_ref="RAILING-INT-STAIR-GUARD", path=(
+            pt(inch(211.232), ft(26, 0.375)),
+            pt(ft(13, 10), ft(26, 0.375)),
+        ),
+        kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
+        base_elevation=ft(10), post_spacing=inch(60), post_size="3x3", rail_count=2,
+        mount="fascia", fascia_face_offset=inch(0), start_post_ref="RL-S-STAIR",
+        assembly="RAILING_DARK_METAL",
+        infill="balusters", baluster_spacing=inch(4),
+    ),
+    # Since 2026-09-25, north along the well partition's top. That top is flush with the
     # deck, so the upper flight's top four nosings stand 7 1/2"-30" under it over a 60"-98"
     # fall into the lower lane (R312.1.1). The leg ends at nosing 5, the first the partition
     # stands 34" over. Level at 42", like every guard round this well. x=13'-10" puts the
     # 3" Williams post's face flush with the partition's stair face at 13'-11 1/2": centred
-    # on it (14'-0") the head edge opens west of the corner (code.R312_1_guard).
+    # on it (14'-0") the head edge opens west of the corner (code.R312_1_guard). Surface kit
+    # on the wall top (its 4.99" base overhangs the ~4 1/2" top ~1/2"); its south end is
+    # RL-S-STAIRHEAD's west post, in the well clear of ST-M2S's head landing.
     Railing(
-        uid="CSRL02AAAA", tag="RL-S-STAIRHEAD", type_ref="RAILING-INT-STAIR-GUARD", path=(
+        uid="FR1DYXJJH7", tag="RL-S-STAIRHEAD-N", type_ref="RAILING-INT-STAIR-GUARD", path=(
             pt(ft(13, 10), ft(30, 2.375)),
-            pt(ft(13, 10), ft(26, 0.375)),
-            pt(ft(17, 8.75), ft(26, 0.375)),
+            pt(ft(13, 10), inch(313.893)),
         ),
-        kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
+        kind=RailingKind.METAL_SURFACE_MOUNT, height=ft(3.5),
         base_elevation=ft(10), post_spacing=inch(60), post_size="3x3", rail_count=2,
-        mount="fascia", assembly="RAILING_DARK_METAL",
+        mount="surface", end_post_ref="RL-S-STAIRHEAD", assembly="RAILING_DARK_METAL",
         infill="balusters", baluster_spacing=inch(4),
     ),
 ]

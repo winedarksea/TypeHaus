@@ -41,7 +41,7 @@ def test_every_catlin_flight_is_walled_guarded_or_inside_its_own_well(ctx):
     ST-B2M and ST-M2S are switchbacks in a shaft: their outer sides are wall, and their inner
     sides face each other across the well partition. ST-B2M's is closed by W-M-WELL standing
     on its partition; ST-M2S's partition stops flush with the arrival deck, so its top four
-    nosings are guarded by RL-S-STAIRHEAD's north leg. ST-G-SERVICE is five risers and never
+    nosings are guarded by RL-S-STAIRHEAD-N on its top. ST-G-SERVICE is five risers and never
     gets 30" up. ST-S2A has a genuinely open side, and it carries RL-A-FLIGHT-GUARD.
 
     ST-SG-PORCH (2026-09-03) joins ST-G-SERVICE in the third category and for the same
@@ -56,7 +56,7 @@ def test_every_catlin_flight_is_walled_guarded_or_inside_its_own_well(ctx):
                              "ST-BW-ENTRY"}
     assert {f.result for f in findings} == {Result.PASS}, [f.message for f in findings]
     assert "RL-A-FLIGHT-GUARD" in by_stair["ST-S2A"].message
-    assert "RL-S-STAIRHEAD" in by_stair["ST-M2S"].message
+    assert "RL-S-STAIRHEAD-N" in by_stair["ST-M2S"].message
     # The others pass without crediting a guard — nothing stands on their sides.
     assert not [tag for tag, f in by_stair.items()
                 if tag not in ("ST-S2A", "ST-M2S") and "guarded by" in f.message]
@@ -149,14 +149,12 @@ def test_a_house_with_no_stairs_is_unknown_never_a_silent_pass(ctx):
 
 # --- the switchback's inner side, across the well partition ------------------------------
 
-_HEAD = "RL-S-STAIRHEAD"
+_HEAD = "RL-S-STAIRHEAD-N"
 
 
 def _head_only(e):
-    """RL-S-STAIRHEAD as it stood before its north leg: across the well head alone."""
-    if getattr(e, "tag", None) != _HEAD:
-        return e
-    return e.model_copy(update={"path": e.path[1:]})
+    """The well as it stood before the partition leg: RL-S-STAIRHEAD across the head alone."""
+    return None if getattr(e, "tag", None) == _HEAD else e
 
 
 def test_the_inner_side_over_a_flush_partition_is_an_open_side(ctx):

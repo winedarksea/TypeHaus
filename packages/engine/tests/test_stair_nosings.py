@@ -85,3 +85,15 @@ def test_a_wall_in_the_head_landing_fails(catlin_model_ro):
     [finding] = [f for f in stair_head_landing(check_context(model=model))
                  if "ST-S2A" in f.element_tags]
     assert finding.result is Result.FAIL and "W-TEST" in finding.message
+
+
+def test_a_guard_post_in_the_head_landing_fails(catlin_model_ro):
+    """RL-A-STAIR's fascia POST3 as it stood until 2026-10-31: 2.89" into ST-S2A's landing."""
+    ring = [(254.875 * _IN, 69.64 * _IN), (257.875 * _IN, 69.64 * _IN),
+            (257.875 * _IN, 72.64 * _IN), (254.875 * _IN, 72.64 * _IN)]
+    post = SimpleNamespace(tag="RL-TEST-POST1", category="railing", outline=ring,
+                           z0_m=240 * _IN, z1_m=282 * _IN)
+    model = replace(catlin_model_ro, solids=[*catlin_model_ro.solids, post])
+    [finding] = [f for f in stair_head_landing(check_context(model=model))
+                 if "ST-S2A" in f.element_tags]
+    assert finding.result is Result.FAIL and "RL-TEST-POST1" in finding.message

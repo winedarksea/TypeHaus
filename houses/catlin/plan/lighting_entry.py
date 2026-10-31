@@ -116,7 +116,7 @@ ENTRY_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # A third can centres over the 36" bench (x=15 1/8", y=31'-4"), a task light for
     # boots on and off; the bench is the one seat in this house a can stands over on
-    # purpose. It joins the mudroom dimmer, in a bay clear of the ERV radials.
+    # purpose. It joins the mudroom's occupancy sensor, in a bay clear of the ERV radials.
     ElectricalDevice(uid="MUDCAN00001", tag="ED-M-MUDROOM-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(inch(15.125), ft(31, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
@@ -136,13 +136,10 @@ ENTRY_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-W1", face="left", distance_from_start=inch(24),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # ** A DIMMER, AND IT IS NOT ON THE NORTH WALL. ** D-M-ENTRY fills W-M-N3 to within 6"
+    # A PIR OCCUPANCY SENSOR, NOT ON THE NORTH WALL. D-M-ENTRY fills W-M-N3 to within 6"
     # and 3 5/8" of its ends, so this is the middle gang of the 3-gang plate on W-M-MUDC-E (see
-    # ED-M-STORAGE-SW): closet cans, house light, porch light.
-    #
-    # ED-T-SWITCH-DIM carries no load_va, so the dimmer is free electrically; what it buys
-    # is arriving at 11pm into something other than a bright white box. All three fixtures
-    # above are dimmable=True. The whole addition is 30 VA (2 x 9 + 12) on CKT-LT-MAIN.
+    # ED-M-STORAGE-SW): closet cans, house light, porch light. The room's load is 34.5 VA
+    # (3 x 6.5 + 15) on CKT-LT-MAIN.
     ElectricalDevice(uid="0ZZNRE9AV0", tag="ED-M-MUDROOM-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-OCC-PIR",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
@@ -151,9 +148,9 @@ ENTRY_LIGHTING = [
                          wall_ref="W-M-MUDC-E", face="left", distance_from_start=inch(9),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # RM-M-HALL: three cans down the run on a 3-way pair, with ED-M-STAIR-CAN1 below as the
-    # fourth: one row at y=24'-8" (the mid-bay nearest the hall's centre line), 2'-8" apart,
-    # 2'-0" off each end.
+    # RM-M-HALL: one row of four cans at y=24'-8" (the mid-bay nearest the hall's centre
+    # line), 2'-8" apart. CAN1, CAN2 and CAN3 are on the 3-way pair; ED-M-STAIR-CAN1 below,
+    # third from the west, is on ED-M-STAIR-SW.
     ElectricalDevice(uid="QTM0010AAA", tag="ED-M-HALL-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(8, 3), ft(24, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
@@ -193,7 +190,7 @@ ENTRY_LIGHTING = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # The stair head. The can stood under FO-S-STAIR's open well with no ceiling to recess
-    # into; since 2026-10-31 it is the hall row's third can, at the foot of ST-M2S, on its
+    # into; since 2026-10-31 it is in the hall row, third from the west, at ST-M2S's foot, on its
     # own backup-circuit switch. The switch is also one end of the basement railing run's
     # 3-way.
     ElectricalDevice(uid="QTM0015AAA", tag="ED-M-STAIR-CAN1", kind=DeviceKind.LIGHT,

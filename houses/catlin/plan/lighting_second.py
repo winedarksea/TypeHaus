@@ -28,11 +28,21 @@ SECOND_LIGHTING = [
     # and north return follow the resolved wall finishes; the south ends remain at 9'-7".
     # Clockwise path, opening left: west/east wall wash and the north bulkhead transition.
     # Tunable white (E6) since 2026-10-31: the controller holds a low 2700 K night preset that
-    # HA recalls after dark; the 3-way relays still switch the driver's 120 V.
+    # HA recalls after dark; the 3-way relays still switch both drivers' 120 V.
+    # Two runs since 2026-10-31 (Class 2: a <=100 VA certified supply per segment), split at
+    # the north return's midpoint: the west half keeps the tag, the east half is -GAP2.
     LightRun(uid="QRS0001AAA", tag="LR-S-HALL-GAP", type_ref="ED-T-LT-STRIP24-TUNABLE",
              path=(pt(ft(18, 6), ft(9, 7)), pt(ft(18, 6), ft(27, 6)),
-                   pt(ft(21, 6), ft(27, 6)), pt(ft(21, 6), ft(9, 7))),
+                   pt(ft(20), ft(27, 6))),
              room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU",
+             controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
+             soffit_ref="SF-S-DUCT", soffit_edge_offset=inch(0.3125),
+             emission_side="left",
+             mount=Mount(kind=MountKind.CEILING, elevation=inch(94.5))),
+    LightRun(uid="6V6YZABYSN", tag="LR-S-HALL-GAP2", type_ref="ED-T-LT-STRIP24-TUNABLE",
+             path=(pt(ft(20), ft(27, 6)), pt(ft(21, 6), ft(27, 6)),
+                   pt(ft(21, 6), ft(9, 7))),
+             room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU2",
              controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
              soffit_ref="SF-S-DUCT", soffit_edge_offset=inch(0.3125),
              emission_side="left",
@@ -40,14 +50,22 @@ SECOND_LIGHTING = [
     # The driver moved with the cove: (20'-0", 30'-6") is inside EQ-S-HP1-AH's footprint
     # since the 2026-09-04 HP1 move. (19'-0", 27'-2") keeps the relationship it always had
     # — a driver hidden in SF-S-DUCT — on the other side of the
-    # y=27'-8" seam from the machine. A non-dimming HLG-150 since the E6 retype: 39'-6" at
-    # 3 W/ft x1.25 is 148 W. Its GL-C-001P (CCT mode) sits 6" south in the same soffit.
+    # y=27'-8" seam from the machine. One Class 2 HLG-100 (96 W) per half since 2026-10-31:
+    # ~19'-9" at 3 W/ft x1.25 is ~74 W each. PSU2 mirrors it at x=21'-0" for the east half;
+    # each GL-C-001P (CCT mode) sits 6" south of its driver in the same soffit.
     ElectricalDevice(uid="QTS0001AAA", tag="ED-S-HALL-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(19), ft(27, 2)), type_ref="ED-T-LT-PSU-150-HLG",
+                     position=pt(ft(19), ft(27, 2)), type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      mount=Mount(kind=MountKind.CEILING)),
     ElectricalDevice(uid="RTFGRQ9WBV", tag="ED-S-HALL-LT-CTRL", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(19), ft(26, 8)), type_ref="ED-T-LT-CTRL-5IN1",
+                     room="RM-S-HALL", mount=Mount(kind=MountKind.CEILING)),
+    ElectricalDevice(uid="PZY7PB1XX0", tag="ED-S-HALL-LT-PSU2", kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(ft(21), ft(27, 2)), type_ref="ED-T-LT-PSU-96-WE",
+                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
+                     mount=Mount(kind=MountKind.CEILING)),
+    ElectricalDevice(uid="MW0FDQBB4F", tag="ED-S-HALL-LT-CTRL2", kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(ft(21), ft(26, 8)), type_ref="ED-T-LT-CTRL-5IN1",
                      room="RM-S-HALL", mount=Mount(kind=MountKind.CEILING)),
     # No hall cans since 2026-10-31: the three that recessed into SF-S-DUCT sat inside
     # DU-S-HP-SUP. The LR-S-HALL-GAP shadow-gap cove lights the hall on these switches.
@@ -138,11 +156,8 @@ SECOND_LIGHTING = [
 
 
     # RM-S-BATH1: a general can, a wet can over the shower clear of the stack vent at
-    # y=34'-3", and the mirror the brief is most
-    # specific about — a 36" front-lit ring on the room's east wall, on the lavatory's
-    # centre line (the lav faces east across the room). Front-lit, not edge-lit: an
-    # edge-lit ring backlights the face and is useless to shave or do makeup by. The
-    # controller has to remember its last setting and its standby LED has to be dim.
+    # y=34'-3". The mirror is a plain Kohler K-26050 round under a 3-light Karlie on the
+    # east wall, on the lavatory's centre line (plan/mirrors.py).
     ElectricalDevice(uid="QTS000HAAA", tag="ED-S-BATH1-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(m(1.22226), ft(30)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1",
@@ -173,7 +188,7 @@ SECOND_LIGHTING = [
     # The hall bath's lit niche and its PSU are gone too (2026-10-12), same reason.
 
     # Bath night lights (2026-10-31), one per bath: E5 2200 K tape in a frosted channel under
-    # the vanity, its own PSU-60 in a clear ceiling bay and its own Matter relay, driven by the
+    # the vanity, its own PSU-20 in a clear ceiling bay and its own Matter relay, driven by the
     # HA PIR automation in notes/smart_home.md. ANGSJON and SEKTION tape sits on the cabinet
     # underside 2" behind its front (8 3/8" / 5 1/2" AFF); the Chulton's in its toe recess.
     # A run's elevation is off the storey datum, 1 1/2" under the finished floor here.

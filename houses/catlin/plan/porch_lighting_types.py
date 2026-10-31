@@ -16,6 +16,7 @@ GARDEN_FLOOD_TYPE = luminaire_class("ED-T-LT-FLOOD-NARROW").model_copy(update={
     "tag": "ED-T-LT-FLOOD-GARDEN",
     "name": "Sunken garden adjustable LED flood, shielded, wet",
     "type_mark": "S",
+    "replaceable_lamp": False,
     "plan_symbol": "flood-light",
     "lamp": f"LED integrated, {FLOOD_BEAM_DEGREES:g} deg beam",
     "product_ref": "PROD-ALCON-14119-3ND-TFBK-B60",

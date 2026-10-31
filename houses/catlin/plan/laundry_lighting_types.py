@@ -29,7 +29,8 @@ LAUNDRY_TRACK_SPEC = magnetic_track_spec(heads=tuple(
     for head, target in zip(_HEADS, TASK_TARGETS_IN, strict=True)))
 LAUNDRY_TRACK = track_luminaire(
     "ED-T-LT-TRACK-LAUNDRY", LAUNDRY_TRACK_SPEC, type_mark="Y",
-    name='Laundry: 36" white magnetic rail, two adjustable 45° Radiant Medium heads')
+    name='Laundry: 36" white magnetic rail, two adjustable 45° Radiant Medium heads',
+).model_copy(update={"replaceable_lamp": False})
 LAUNDRY_TRACK_DROP = LAUNDRY_TRACK.height
 # Mount.elevation is measured from finished floor; the requested 84" is from datum.
 LAUNDRY_SUPPLY_MOUNT = inch(84 - MAIN_FINISHED_FLOOR_LVP.inches)

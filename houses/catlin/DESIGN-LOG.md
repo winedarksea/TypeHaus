@@ -6978,8 +6978,9 @@ kitchen tape stays fixed white, preferably MITTLED; the sweep is the whole house
 - **Scenes need groups.** One relay ran most of the lounge. It is four D215S groups (accents,
   downlights, day, coves) plus a ZEN32 keypad on the existing Z-Wave stick; the scene table
   is `notes/smart_home.md`. Coves went RGB+CCT (E4), split at the slat partition so the
-  dining end scenes alone; non-dimming HLG drivers feed a Gledopto 5-in-1 controller, which
-  is Zigbee and so needs the second dongle the smart-home rules already allow.
+  dining end scenes alone. Each half has its own Gledopto 5-in-1 controller on its own
+  driver, the pairs grouped in HA; the controllers are Zigbee, so the second dongle the
+  smart-home rules already allow is now wanted.
 - **MITTLED kept although it is ~208 lm/ft at 2700 K**, against the ~300 lm/ft rule: A/A4
   task cans now stand over every counter run. Mark U (~400 lm/ft) is the revert.
 - **The day layer is 5000 K** (A1 relamped; it was 4000 K) over the puzzle table.
@@ -6998,5 +6999,20 @@ kitchen tape stays fixed white, preferably MITTLED; the sweep is the whole house
 - **Engine**: `LuminaireType` gained `color_mode`, `cct_range_k`, `replaceable_lamp`,
   `lamp_base`; `advisory.room_illuminance` grades average lux (preference, never FAIL);
   `electrical.room_lighting` now covers equipment spaces; LightRun products reach
-  `haus order`. Studies stay short of 300 lx by average; a desk lamp is the answer there.
+  `haus order`.
+- **Class 2 or nothing (owner, follow-up).** The tape carries no listing, so the certified
+  part is the supply, and that only holds on Class 2 wiring (<= 100 VA). The first pass put
+  the coves, the hall cove and the garage runs on 150/240 W HLGs; every coloured or tunable
+  segment is now on its own 96 W HLG-100H-24A with its own controller (runs split where one
+  driver would exceed 80%), and the pantry jambs too. The garage's lighting moved to its own
+  `CKT-LT-GARAGE`, which kept `CKT-LT-MAIN` under 80%.
+- **Owner's other calls in the follow-up:** the basement stair "night" sconces were dropped
+  (the rail tape and guide receptacles light the stair); the remaining integrated fixtures
+  stay as accepted exceptions — halo mirror, dining pendant, stair chandelier, fans, grow
+  bars, the suite's headboard light (G) and the garage's cold-rated shop lights (Q); the
+  studies keep the 300 lx target and its advisory as a reminder (desk lamps are the plan).
+- **Left fixed white, on purpose:** the stair-rail tape (E), BATH2's evening glow (E3) and the
+  pantry jambs (T) each sit on one relay doing one job; tunable would add a controller and
+  buy nothing. **Known gaps:** the kitchen counter is not graded (the lumen method averages
+  RM-M-LIVING's 701 sf); the gym reads 297 lx against 300, accepted as at target.
 

@@ -433,27 +433,26 @@ CIRCUITS = (
     Circuit(uid="CKT023AAAA", tag="CKT-LAUNDRY", slot=36, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1500,
             description="Laundry receptacle (washer)"),
-    # The garage's exterior linear runs landed here on 2026-09-11: LR-G-EAVE-W/-E (24'-0"
-    # each, in the two eave soffits) and LR-G-GABLE-N (~25'-5" raked up the north gable's rake
-    # soffits), ~73 LF of ED-T-LT-LINEAR-EXT (24V RGBW, one driver + controller per run). They are on this circuit rather than CKT-RC-GARAGE for
-    # the same reason ED-G-LT1/2/3 are: a tool tripping a garage GFCI must not take the
-    # lights with it. The panel schedule sums their drivers like any device, so no `load_va` is authored here — an authored
-    # value preempts the derivation and would freeze the thirty-eight fixtures against a
-    # number nobody re-adds when a can moves.
-    # ** 20 A SINCE 2026-10-28 (12 AWG). ** Mark W's drivers sum at their rating, now three
-    # HLG-150s for the RGBW tape (450 VA against ~330 W), and the garage has five shop lights:
-    # ~1,890 VA on 2026-10-31, near a 20 A circuit's 1,920 VA continuous line. The next
-    # addition here wants a garage lighting circuit of its own.
+    # No `load_va`: the panel schedule sums the fixtures on the circuit, and an authored value
+    # would freeze them against a number nobody re-adds when a can moves.
+    # ** 20 A SINCE 2026-10-28 (12 AWG). ** The garage's lights left for CKT-LT-GARAGE on
+    # 2026-10-31; only the opener's outlet (ED-G-GDO-GFCI / ED-G-GDO-RC) is still out there.
     Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", slot=38, panel_ref=_PANEL, breaker_amps=20, poles=1,
             afci=True,
-            description="General lighting — main storey, porch and garage (incl. the garage's exterior linear runs); + EQ-M-BATH2-STALL-FAN ~30 VA, an Equipment the derived sum does not count"),
+            description="General lighting — main storey and porch, + the garage opener outlet; + EQ-M-BATH2-STALL-FAN ~30 VA, an Equipment the derived sum does not count"),
+    # The garage's lighting (2026-10-31): five shop lights, the door-pair sconces and the six
+    # Class 2 drivers for the RGBW eave and gable tape (ED-T-LT-PSU-96-WE, summed at their
+    # 96 VA rating). Its own breaker rather than CKT-RC-GARAGE so a tool tripping a garage GFCI
+    # does not take the lights with it; no AFCI (a garage is not on 210.12's list). Spare slot.
+    Circuit(uid="GWECBY2WVZ", tag="CKT-LT-GARAGE", slot=24, panel_ref=_PANEL, breaker_amps=15,
+            poles=1, description="Garage lighting — shop lights, door sconces, eave + gable linear drivers"),
     Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", slot=43, panel_ref=_PANEL, breaker_amps=15, poles=1,
             afci=True, description="General lighting — second + attic"),
     # The basement's work light (2026-10-31): the workshop, gym and furnace-room T8 strips
-    # plus the stair's tread night lights and the gym fan. Off the backup tier on purpose: a strip is
-    # not outage light, and the cans beside them stay on CKT-LT-BACKUP. Slot 26 was spare.
+    # plus the gym fan. Off the backup tier on purpose: a strip is not outage light, and the
+    # cans beside them stay on CKT-LT-BACKUP. Slot 26 was spare.
     Circuit(uid="J3RFM1RVCW", tag="CKT-LT-BSMT", slot=26, panel_ref=_PANEL, breaker_amps=15,
-            poles=1, afci=True, description="Basement work lighting — workshop, gym, furnace room (T8 strips), stair night lights, gym fan"),
+            poles=1, afci=True, description="Basement work lighting — workshop, gym, furnace room (T8 strips), gym fan"),
     # The two storey receptacle circuits stay non-GFCI at the breaker on purpose: each
     # reaches a whole floor, and thirty outlets behind one 5 mA trip is not buildable.
     # The handful in an E3902 location (bath, mudroom sink, wet bar) are GFCI *devices*

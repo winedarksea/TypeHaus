@@ -10,7 +10,7 @@ cross the middle — and keeps its hooks at the outer ends.
 
 A ribbed slab (``ReinforcementSpec.ribs``) holds its mat in the cap: the cap is the assembly's
 STRUCTURE layer at the top of the solid, and each rib hangs ``ribs.depth`` below it. ``rib``
-bars are ``count`` per rib at the rib bottom; ``stirrups`` are closed loops from the rib
+bars are ``count`` per rib at the rib bottom, their ``hooks`` turning up; ``stirrups`` are closed loops from the rib
 bottom to under the cap's top mat, within ``zone`` of each rib end. A mat stops where an
 ``earlier`` pour's concrete is, so an overlap between two pours carries one mat.
 """
@@ -101,7 +101,8 @@ def lay_mat(sink: Sink, spec, solid, cover: float, *, ey=(0.0, 1.0),
                     for (a1, b1), hk in _zoned(a, b, hooks, entry.zone):
                         sink.straight(entry, frame.world(*a1, z), frame.world(*b1, z),
                                       hook_dirs=hk, lap_offset=frame.along(not runs_x),
-                                      top_cast=level == "top" and z - solid.z0_m > 12 * _IN)
+                                      top_cast=level == "top" and z - solid.z0_m > 12 * _IN,
+                                      hook_kind=entry.hook_kind or "std90")
     if ribs is not None:
         _lay_ribs(sink, spec, concrete, region, frame, cover, z_bot, z_top)
 
@@ -132,12 +133,17 @@ def _lay_ribs(sink: Sink, spec, concrete, region, frame: _Frame, cover: float,
                 db = BARS[entry.bar].diameter_in * _IN
                 if entry.role == "rib" and entry.count:
                     z = rib_bottom + cover + dst + db / 2
+                    # A bottom bar's hooks turn up, into the rib over the bearing.
+                    up = (0.0, 0.0, 1.0)
+                    hooks = (up if entry.hooks and "start" in entry.hooks else None,
+                             up if entry.hooks and "end" in entry.hooks else None)
                     for t in _spread(q - half + cover + dst + db / 2,
                                      q + half - cover - dst - db / 2, entry.count):
                         p0 = (s_a, t) if runs_x else (t, s_a)
                         p1 = (s_b, t) if runs_x else (t, s_b)
                         sink.straight(entry, frame.world(*p0, z), frame.world(*p1, z),
-                                      lap_offset=frame.along(not runs_x))
+                                      hook_dirs=hooks, lap_offset=frame.along(not runs_x),
+                                      hook_kind=entry.hook_kind or "std90")
                 elif entry.role == "stirrups" and entry.spacing is not None:
                     positions = fence(s_a, s_b, entry.spacing.meters)
                     if entry.zone is not None:

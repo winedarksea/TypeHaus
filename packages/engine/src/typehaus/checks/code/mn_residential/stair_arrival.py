@@ -19,6 +19,7 @@ from shapely.geometry import Point, Polygon
 from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, not_applicable, passed
+from typehaus.resolve.railings.parts import RAILING_CATEGORY
 
 #: How far past the top nosing, as a fraction of a going, the first footfall off a flight
 #: lands. Half a going is inside the arrival tread's own depth, so the probe is never a
@@ -139,9 +140,9 @@ def stair_head_landing(ctx: CheckContext) -> list[Finding]:
 
     ``stair_arrival_floor`` asks whether a foot lands on something; this asks whether the
     whole landing is there — a floor at the arrival elevation under every sample of the
-    36" x width rectangle past the top nosing, and no wall standing in it. A header moved
-    back to seat the head riser board eats into exactly this rectangle. Scope is the same
-    as the sibling rule: a flight through a floor opening.
+    36" x width rectangle past the top nosing, and no wall or guard post standing in it. A
+    header moved back to seat the head riser board eats into exactly this rectangle. Scope
+    is the same as the sibling rule: a flight through a floor opening.
     """
     from typehaus.resolve.stairs.walkline import stair_walk_stations
     from typehaus.resolve.walking_surface import surfaces_at as _surfaces_at
@@ -187,6 +188,12 @@ def stair_head_landing(ctx: CheckContext) -> list[Finding]:
                        if wall.z0_m < arrival_z + 0.05 < wall.z1_m
                        and _wall_polygon(wall) is not None
                        and _wall_polygon(wall).intersects(inside))
+        # A guard post standing on the landing obstructs it like a wall; a handrail draws
+        # brackets, not posts, so R311.7.1's permitted projection never reaches this.
+        walls += sorted(s.tag for s in ctx.model.solids
+                        if s.category == RAILING_CATEGORY and "-POST" in s.tag
+                        and len(s.outline) >= 3 and s.z0_m < arrival_z + 0.05 < s.z1_m
+                        and Polygon(s.outline).intersects(inside))
         if walls:
             out.append(_fail(cid, f"{stair.tag}'s head landing is not 36\" deep x "
                              f"{width / .0254:.2f}\" clear: {', '.join(walls)} stands in it",

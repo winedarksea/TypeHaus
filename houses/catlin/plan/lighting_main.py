@@ -56,10 +56,11 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-PAN-E", face="left", distance_from_start=inch(11.25),
                          normal_gap=inch(0.875), rotation_offset=deg(-180)))),
     # Their driver, surface-mounted over the case top above the gable at 90" AFF: reachable
-    # from the top shelf, ventilated, and under the 8'-4" cold-water crossing. A PSU-200 since
-    # the channels went to generic COB (2026-10-31): 4 x 18 W x1.25 = 90 W outgrew the 60.
+    # from the top shelf, ventilated, and under the 8'-4" cold-water crossing. Since the
+    # channels went to generic COB (2026-10-31), 4 x 18 W x 1.25 = 90 W: a 96 W Class 2 HLG,
+    # on/off with the occupancy sensor (the pantry needs no dimming).
     ElectricalDevice(uid="DZVAFADH7Y", tag="ED-M-PANTRY-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-PSU-200",
+                     type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-BACKUP", room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(90)),
                      location=Location(attachment=WallAttachment(
@@ -145,15 +146,15 @@ MAIN_LIGHTING = [
     # only guard, exactly as on ED-B-GYM-LT.
     #
     # TRUE ROOM CENTRE. The clear face runs x 0.635"..215.365", y 0.635"..155.365", so
-    # (9'-0", 6'-6") is the centre of it to the sixteenth. The four-can grid centres 6"
-    # north of that at y=7'-0" and is deliberately NOT matched: the cans are a floor-wash
-    # grid, the fan is the thing a person looks up at. The 26" sweep clears the nearest can
-    # (ED-M-BED-LT at (5'-0", 4'-0")) by 30" and every wall by 6'-0"+. REG-M-SUP3 moved 2'-0"
+    # (9'-0", 6'-6") is the centre of it to the sixteenth. The cans (a south row at y=3'-4",
+    # CAN3/CAN4 at y=8'-8") are deliberately NOT centred on it: the fan is the thing a person
+    # looks up at. The 26" sweep clears the nearest can centre (CAN5 at (9'-4", 3'-4")) by
+    # ~12" and every wall by 6'-0"+. REG-M-SUP3 moved 2'-0"
     # west for this (plan/mep_registers.py) — it sat on the room seed, 6" away, which is a
     # canopy-on-register overlap nothing in the engine would have reported.
     #
-    # ** CONSTANT HOT, AND THE SWITCH IS ED-T-SWITCH, NOT -DIM. ** Mark N's `source` says in
-    # capitals that a DC fan cannot be speed-controlled by a conventional wall dimmer and
+    # ** CONSTANT HOT, AND THE SWITCH IS A PLAIN ED-T-LEV-SW1, NOT A DIMMER. ** Mark N's
+    # `source` says in capitals that a DC fan cannot be speed-controlled by a conventional wall dimmer and
     # that a Caseta dimmer will corrupt its receiver. The fan gets its own leg and its own
     # plain switch; speed and light are the hardwired Bluetooth wall control plus the remote.
     # CKT-LT-MAIN, the same circuit as the load it switches — a switch on another circuit
@@ -204,11 +205,10 @@ MAIN_LIGHTING = [
     # opening down to 21'-0 11/16" and FURN-M-STUDY-BENCH from there to the corner. See
     # plan/mep_registers.py for both.
     #
-    # ** NEITHER THIS NOR ED-M-STUDY-LT MAY BE DELETED. ** RM-M-STUDY is windowless and
+    # ** KEEP AT LEAST ONE OF THIS AND ED-M-STUDY-LT. ** RM-M-STUDY is windowless and
     # passes `code.R303_1_light_and_ventilation` only on Exception 1's electric-light
-    # substitute — 1500 lm from the point luminaires carrying room="RM-M-STUDY" (LightRun
-    # coves are excluded by `_room_lumens`). Moving one within the room is safe; removing
-    # one is a FAIL.
+    # substitute: 787 lm (500 can + 287 spot) over its 16 sf is 23.6 fc against 6 (LightRun
+    # coves are excluded by `_room_lumens`). Either alone still passes; neither is a FAIL.
     ElectricalDevice(uid="QTM000HAAA", tag="ED-M-STUDY-SPOT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-SPOT",
                      circuit="CKT-LT-MAIN", room="RM-M-STUDY", controlled_by=("ED-M-STUDY-SW",),
@@ -235,10 +235,11 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-BAE", face="right", distance_from_start=inch(41.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Bath night light (2026-10-31, every bath alike; HA automation in notes/smart_home.md):
-    # E5 2200 K tape in a frosted channel, its own PSU-60 and its own Matter relay on the
+    # E5 2200 K tape in a frosted channel, its own PSU-20 and its own Matter relay on the
     # bath's lighting circuit. No vanity here, so the channel is on W-M-HS1 just under the
     # D-Code basin, facing down. The PSU is in a clear ceiling bay off the ERV radials; the
-    # relay gangs with ED-M-BATH1-SW, 1 1/8" off the south corner.
+    # relay is on W-M-HS1 east of the mirror (ED-M-HALL-SW is back to back with the switch
+    # bay on W-M-BAE, so no second gang fits there).
     LightRun(uid="ZHSSP4TXSQ", tag="LR-M-BATH1-NIGHT", type_ref="ED-T-LT-STRIP24-NIGHT",
              path=(pt(inch(47.75), inch(271.5)), pt(inch(61.5), inch(271.5))),
              room="RM-M-BATH1", psu_ref="ED-M-BATH1-NL-PSU",
@@ -253,8 +254,8 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(45.125),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         wall_ref="W-M-HS1", face="left", distance_from_start=inch(67),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-BATH2: two layers, two controls (2026-10-12, notes/bath2_lighting.md).
     # DAY, 5000 K on a plain toggle (ED-M-BATH2-SW-DAY): three B1 cans and the P3 make-up
@@ -329,7 +330,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.CEILING)),
     # A 2-gang over the vanity's south end: day toggle (the old ED-M-BATH2-SW, same uid)
-    # and evening dimmer 4" west. A third gang does not fit: ED-M-BATH2-FH-STAT is at
+    # and the evening Matter relay 4" west. A third gang does not fit: ED-M-BATH2-FH-STAT is at
     # x 9 3/4"-13 3/4" and D-M-BATH2's casing starts ~22" — so the stall fan's timer is on
     # W-M-W3 beside the mirror (ED-M-BATH2-SW-DRY).
     ElectricalDevice(uid="QTM000RAAA", tag="ED-M-BATH2-SW-DAY", kind=DeviceKind.SWITCH,

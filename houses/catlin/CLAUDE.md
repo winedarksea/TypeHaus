@@ -221,8 +221,10 @@ not instruction: when it disagrees with this file or the model, it is the one th
   `Q2`, `U1`…). Marks must stay unique; the E-602 schedule is keyed on them. Every type
   states `replaceable_lamp` (and `lamp_base` where it has one); coloured or tunable tape
   states `color_mode`/`cct_range_k`, with `cct_k` the white channel or warm end. Also holds
-  the 24V supplies (OMNIDRIVE dimmable; HLG non-dimming behind an `ED-T-LT-CTRL-5IN1`
-  controller for E4/E6/W; LPV-20 for the night lights) and the switch types.
+  the 24V supplies and the switch types. **Every tape segment is on a Class 2 driver
+  (<= 100 VA)**: the tape is unlisted, so the supply is the certified part (owner,
+  2026-10-31). Coloured/tunable runs (E4, E6, W) take one 96 W HLG-100H-24A plus one
+  `ED-T-LT-CTRL-5IN1` per segment; split a run rather than reach for a bigger driver.
 - **Lighting conventions (2026-10-31 review, `DESIGN-LOG.md` "Lighting review"):** the lounge
   is four D215S groups (accents, downlights, day, coves) plus a ZEN32 scene keypad; scenes
   live in `notes/smart_home.md`, not the engine. Coves are RGB+CCT (E4), the second-floor
@@ -890,8 +892,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   through the well and never asks where in it the flight ends. `code.R311_7_6_stair_arrival_floor`
   asks in plan, and it found that hole.
   **The hole is the straight flight only (2026-10-09)**: its south edge is the flight's south
-  face (5'-9 5/8"), so `RL-A-STAIR` and `RL-A-FLIGHT-GUARD` share one path (their fascia
-  posts stand on opposite faces of it since 2026-10-31: R311.7.1 FAILs, plans/TODO.md), and the winder
+  face (5'-9 5/8"), which `RL-A-FLIGHT-GUARD` hangs off and `RL-A-STAIR` stands behind (surface
+  kit on the deck, base edge on the well face, since 2026-10-31: a fascia post there stood in
+  ST-S2A's width; ST-M2S's well guards state their fascia faces), and the winder
   turn sits under intact `FS-ATTIC` deck, where `code.R311_7_2_stair_headroom` grades it
   (7.05'). The y=5'-4" joist line is moved into the trimmer pack (`line_overrides`). Moving
   the turn or the deck re-opens that check, not `integrity.stair_opening`.

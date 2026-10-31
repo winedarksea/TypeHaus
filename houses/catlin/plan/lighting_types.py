@@ -1,4 +1,4 @@
-"""Catlin luminaire *type* catalog — the E-602 schedule's marks A through X.
+"""Catlin luminaire *type* catalog — the E-602 schedule's marks A through Z, plus numbered variants.
 
 NOT ``# haus: editable``: like ``fixture_types.py`` these are catalog type definitions,
 not placed instances, and ``ElectricalDeviceType.needs`` is a ``frozenset``, which the
@@ -7,12 +7,13 @@ editable dialect forbids. The movable instances that reference these tags live i
 
 Every entry is a ``LuminaireType`` — an ``ElectricalDeviceType`` subclass, so it rides in
 ``Library.electrical_device_types`` beside the receptacles and the panel and needs no new
-library collection. Two plain ``ElectricalDeviceType`` entries come along for the ride: the
-24V supplies the LED runs feed from, and the two controlled switches (dimmer, timer).
+library collection. Plain ``ElectricalDeviceType`` entries come along for the ride: the
+24V supplies the LED runs feed from and the tape controller. Switch types live in
+``plan/device_types.py``.
 
 Marks are the schedule letters and must stay unique — ``tests/test_lighting_takeoff.py``
-pins that. I is skipped (it reads as a 1 on a drawing), which is why the sequence runs
-…H, J, K…; a numbered suffix (J1, N1, P1) is a variant of the mark before it.
+pins that. I and O are skipped (they read as digits), and every letter is taken, so a new
+type is a numbered variant of its family (A4, E4-E6, J2, P6, Q1, Q2, U1).
 
 Two wattages, deliberately different:
 - ``watts`` is the *lamp* load — what the photometric row means.
@@ -225,6 +226,7 @@ AMBIENT_LUMINAIRE_TYPES = (
     # as fixtures, so it grades this one without any extension.
     luminaire_class("ED-T-LT-NICHE-SNLT").model_copy(update={
         "type_mark": "E1", "lumens": 118.0, "product_ref": "PROD-SCHLUTER-KB12SNLT2WW",
+        "replaceable_lamp": False,
         "source": "Schluter KB12SNLT2WW + LIPROTEC-ECD LTECD1W, 3000 K, ~118 lm. Dims only "
                   "from Schluter-listed dimmers (DVELV-300P)."}),
 
@@ -278,7 +280,8 @@ AMBIENT_LUMINAIRE_TYPES = (
     # ** COMMODITY PARTS, STANDARD SIZE, 24V (2026-10-28). ** The WAC InvisiLED kit was
     # ~$2,900 of tape for 73.5 LF; this is an off-the-shelf IP67 COB tape in a generic
     # 1/2" aluminium U-channel with a clear cover, two 5 m reels per run, each run on its
-    # own Mean Well driver INDOORS (ED-T-LT-PSU-96-WE below). No fixture listing is claimed:
+    # own Mean Well HLG-150 INDOORS behind a GL-C-001P (PSU-96-WE is the single-white
+    # revert, 0 ea). No fixture listing is claimed:
     # the tape is cheap to swap, and the listed part is the driver.
     #
     # ** damp_rated AND wet_rated ARE IP67, NOT A UL WET LISTING. ** Every run is under a
@@ -386,16 +389,16 @@ AMBIENT_LUMINAIRE_TYPES = (
                   lamp="24V COB tape, 3 W/ft, in a 45-degree channel, remote driver",
                   watts=18.0, lumens=1500.0, cct_k=3000, cri=90, voltage=24, dimmable=True,
                   device_box=False, product_ref="PROD-ARMACOST-RIBBONFLEX-COB",
-                  parts=(ProductPart(role="frame", product_ref="PROD-DIODE-S45-CHANNEL",
+                  parts=(ProductPart(role="frame", product_ref="PROD-CHANNEL-45-GENERIC",
                                      length=inch(72)),),
                   source="Armacost RibbonFlex Pro 24V COB 3000 K (mark E's tape) in a "
                          "standard 45-degree channel cut to 72 in."),
 )
 
 
-# --- 24V supplies and controlled switches ----------------------------------------------
+# --- 24V supplies and the tape controller ----------------------------------------------
 # Not luminaires, so plain ``ElectricalDeviceType``: a PSU is a junction box with a driver
-# in it, and a dimmer is a switch.
+# in it. The switch types live in plan/device_types.py.
 #
 # Per-area supplies rather than one central 24V bus. A house-wide 24V distribution would
 # mean 24V home runs the length of the building, where the voltage drop that matters is on
@@ -418,10 +421,11 @@ LIGHTING_DEVICE_TYPES = (
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
                          source="Diode LED OMNIDRIVE X, 200 W. Same family as the 60 W; see "
                                 "that entry for the no-minimum-load argument."),
-    # Mark W's driver: one per garage exterior run, indoors. On/off only (relay switch).
+    # 0 ea since 2026-10-31: mark W's single-white revert. The coloured and tunable runs
+    # (E4, E6, W) are on the HLG-150/-240 below, each behind its own GL-C-001P.
     ElectricalDeviceType(tag="ED-T-LT-PSU-96-WE", name="24V LED driver, 96 W, IP65",
                          footprint=(inch(9), inch(2.7)), height=inch(1.5),
-                         load_va=96.0, ports=_POWER_120,
+                         load_va=96.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-MEANWELL-HLG-100H-24A",
                          source="Mean Well HLG-100H-24A: 96 W, 24 V / 4 A, IP65, UL 8750, "
                                 "228 x 68 x 38.8 mm, not dimmable."),

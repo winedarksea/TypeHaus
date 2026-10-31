@@ -69,7 +69,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   product_ref="PROD-SWING-ARM-SCONCE-E26",
                   source="Hardwired swing-arm sconce, switch on the fixture, shade hides the "
                          "lamp from the pillow. Drawn folded."),
-    LuminaireType(tag="ED-T-LT-SAUNA-VT",
+    LuminaireType(tag="ED-T-LT-SAUNA-VT", replaceable_lamp=False,
                   name="Sauna fibre-optic lighting, 8 ferrules on a remote projector",
                   form=LuminaireForm.SCONCE, type_mark="V",
                   footprint=(inch(5), inch(4)), height=inch(7), plan_symbol="sconce",
@@ -294,7 +294,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   parts=(ProductPart(role="lamp", product_ref="PROD-WAVEFORM-T8-95-50K",
                                      quantity=2),),
                   source="Halco 90511 LED-ready strip (non-shunted, Type B double-ended) with "
-                         "two Waveform Absolute 95-CRI 5000 K tubes, ~1,800 lm each."),
+                         "two Waveform Absolute 95-CRI 5000 K tubes, ~1,800 lm each. Any 90+ "
+                         "CRI 5000 K Type B double-ended tube is an equal (the room can be cheap)."),
     # Q2 (2026-10-31): a keyless lampholder, the cheapest replaceable light there is, for
     # storage and equipment spaces NEC 210.70(C) wants lit.
     LuminaireType(tag="ED-T-LT-KEYLESS",
@@ -337,10 +338,11 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   form=LuminaireForm.SCONCE, type_mark="P6",
                   footprint=(inch(5), inch(5)), height=inch(18), plan_symbol="sconce",
                   lamp="2 x E26 A19 LED, 3000K, CRI 95, R9 90+, replaceable", watts=18.0,
-                  lumens=1600.0, cct_k=3000, cri=95, dimmable=True, damp_rated=True,
+                  lumens=None, cct_k=3000, cri=95, dimmable=True, damp_rated=True,
                   load_va=18.0, ports=_POWER_120, product_ref="PROD-VANITY-SCONCE-OPAL-2E26",
                   parts=(ProductPart(role="lamp", product_ref="PROD-WAVEFORM-CENTRICHOME-A19-30K",
                                      quantity=2),),
                   source="Vertical opal sconce, damp, two Waveform CentricHOME A19 (800 lm, "
-                         "95 CRI, R9 90+). Centre at 64 in. AFF."),
+                         "95 CRI, R9 90+): 1,600 source lm, delivered unpublished (the Karlie "
+                         "convention). Centre at 64 in. AFF."),
 )

@@ -223,9 +223,9 @@ BASEMENT_LIGHTING = [
     # sauna is not, which is why an integral-switch J1 could never stand inside. On W-B-CS's
     # GYM face, 4 3/8" north of D-B-SAUNA's north jamb, so it is the switch you reach on the
     # way in; `room` is RM-B-GYM because the device is in the gym.
-    # ** ED-T-SWITCH-DIM SINCE 2026-09-13, TO KEEP THE DIMMING MARK V ALREADY HAD. ** Pair it
-    # with the OMNIDRIVE X as a reverse-phase ELV control (now the D2ELV-1BW Matter dimmer),
-    # NEVER the DVCL-153P the cans use — that mis-pairing is the commonest cause of tape flicker.
+    # ** A DIMMER, TO KEEP THE DIMMING MARK V HAD: ED-T-LEV-MATTER-ELV (D2ELV-1BW), a
+    # reverse-phase ELV control for the OMNIDRIVE X. NEVER a TRIAC DVCL-153P (the theatre's):
+    # that mis-pairing is the commonest cause of tape flicker. **
     ElectricalDevice(uid="MDVC5HGQZ8", tag="ED-B-SAUNA-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER-ELV",
                      circuit="CKT-LT-BACKUP", room="RM-B-GYM",

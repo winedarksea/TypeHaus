@@ -60,20 +60,26 @@ steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
   out of the box, so plan one app session before cutting them off. Neutral required.
 - **Every LED tape gets a Matter switch on the 120 V side of its driver**, and either the
   paddle or HA turns it on or off (last command wins; no lockout). `D215S-1BW` is a 15 A
-  relay, 600 W LED; the OMNIDRIVE X has no minimum load, so it is happy behind a relay.
+  relay, 600 W LED; neither the OMNIDRIVE X nor the HLG has a minimum load. A
+  controller-fed run (E4, E6, W) dims and colours at its GL-C-001P; its relay stays on and
+  is only the hard off.
   - `ED-M-KITCH-SW-UC` (MITTLED's TRADFRI, on its switched outlet), `ED-M-BATH2-SW-EVE`
-    (toe kick, cabinet, tub tape), `ED-M-LAUNDRY-SW` (PureEdge), `ED-M-CLOSET-SW` (PAX
-    strips), `ED-M-LIVING-SW-COVE` (the coves' HLG drivers): `D215S-1BW`. The lounge's cans
-    (`ED-M-LIVING-SW`, `-SW-ACCENT`, `-SW-DAY`) and the kitchen's (`ED-M-KITCH-SW`, `-SW-PEN`)
-    are D215S too; scenes: [smart_home.md](smart_home.md).
-  - 3-ways with tape: `ED-S-HALL-SW`/`-SW2` (gap strip + cans) and `ED-B-STAIR-SW` /
+    (cabinet and tub tape, the 2700 K shower can), `ED-M-LAUNDRY-SW` (PureEdge),
+    `ED-M-CLOSET-SW` (PAX strips), `ED-M-LIVING-SW-COVE` (the coves' HLG drivers):
+    `D215S-1BW`. The lounge's cans (`ED-M-LIVING-SW`, `-SW-ACCENT`, `-SW-DAY`), the
+    kitchen's (`ED-M-KITCH-SW`, `-SW-PEN`) and the dining pendant's `ED-M-DINING-SW` are
+    D215S too; scenes: [smart_home.md](smart_home.md).
+  - Night and dusk relays (2026-10-31), each a `D215S-1BW`: the seven bath `-SW-NL`
+    (BATH2's toe kick is one), `ED-M-ENTRY-SW`, `ED-G-EXT-SW`.
+  - 3-ways with tape: `ED-S-HALL-SW`/`-SW2` (the gap cove only) and `ED-B-STAIR-SW` /
     `ED-M-STAIR-SW` (rail strip + cans): one `D215S-1BW` + one Leviton wired companion
     (`DD0SR-DLZ` class, confirm).
   - `ED-B-SAUNA-SW`: `D2ELV-1BW`, Matter, reverse-phase by default, replacing the Diva
     `DVELV-300P`. Confirm HA sees it as a dimmer and not only on/off.
   - **Exception:** `ED-M-PANTRY-LT` stays on its `ODS10-IDW` occupancy sensor (not Matter).
-- **Garage soffit** `ED-G-SOFFIT-SW` (eave + rake runs, ~215 W, 120 V integral drivers):
-  `D215S-1BW` in the existing third gang, scheduled in HA. The paddle is spare, not required.
+- **Garage soffit** `ED-G-SOFFIT-SW` (eave + rake runs, RGBW, three HLG-150 drivers each
+  behind a GL-C-001P): `D215S-1BW` in the existing third gang, scheduled in HA. The paddle is
+  spare, not required.
 - **Grow lights** `ED-S-PLANT-SW-TIMER` (two 6' tubes + spot, non-dimmable): `D215S-1BW`,
   scheduled in HA.
 - **BATH2 shower fan** `ED-M-BATH2-SW-DRY`: Lutron Maestro `MA-T51` countdown, 5-60 min.

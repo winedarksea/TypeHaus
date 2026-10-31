@@ -6650,6 +6650,8 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 2026-10-29: rate reconciled to the row's own lump basis: $74-113/LF = $1,700-2,600 minimum-charge lump / 23 LF (was $90-175/LF).
 # ESTIMATE 2026-10-30: material 33-50 -> 70-100 by the fascia row's arithmetic — the Williams
 # panel plus a post kit or Ultralox bracket kit at every post, over ~27 LF. Labour unchanged.
+# 2026-10-31: RL-A-STAIR and RL-S-STAIRHEAD-N are on surface kits, the other well guards on
+# Ultralox brackets; one kit per post either way, so the rate stands.
 "RAILING-INT-STAIR-GUARD" = { material = { low = 70, high = 100 }, labour = { low = 41, high = 63 } }  # 26.8 LF — priced as a COMPONENT system. Do not stack the two models: a shop-welded steel guard is material $150-250 + labour $30-60 (the fabrication hours ride inside the material and site labour DROPS, because you are setting finished panels). At 23 LF this is really a $1,700-2,600 minimum-charge lump either way
 
 [drainage]

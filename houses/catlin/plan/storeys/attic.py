@@ -887,14 +887,16 @@ FLOOR = [
 # flight below it (see RL-A-FLIGHT-GUARD).
 STAIR_GUARD = Railing(
     uid="CARL01AAAA", tag="RL-A-STAIR", type_ref="RAILING-INT-STAIR-GUARD", path=(
-        pt(ft(29, 4.5), inch(69.625)),
-        pt(inch(256.375), inch(69.625)),
+        pt(ft(29, 4.5), inch(67.125)),
+        pt(inch(256.375), inch(67.125)),
     ),
-    kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
+    kind=RailingKind.METAL_SURFACE_MOUNT, height=ft(3.5),
     base_elevation=ft(20), post_spacing=inch(60), post_size="3x3", rail_count=2,
-    # Brackets on the trimmer pack's well face (the path; run west so outboard is north): the
-    # posts stand 3.036" into the well, over the flight's top treads (code.R311_7_1, TODO).
-    mount="fascia", fascia_face_offset=inch(0), assembly="RAILING_DARK_METAL",
+    # On the 42" surface kit (Menards 1717824), its 4.99" base's north edge on the trimmer
+    # pack's well face (y=5'-9 5/8"): posts stand on the deck, clear of the flight and its
+    # head landing (R311.7.1, R311.7.6). 4 GRK RSS 5/16" x 6" per base into SG >= 0.50
+    # (ESR-3485 wood row): block under each base, the pack's own plies are not that.
+    mount="surface", assembly="RAILING_DARK_METAL",
     # R312.1.3: 4" clear between balusters — the largest opening the sphere rule admits.
     infill="balusters", baluster_spacing=inch(4),
 )
@@ -905,7 +907,8 @@ STAIR_GUARD = Railing(
 # ONE LINE ON y=5'-9 5/8" WITH A NEWEL TRANSITION, NO TAPER. This run holds 36" over the
 # nosings from the first straight riser (31'-5 1/8") to the x=25'-5 1/8" newel, where its cap
 # stands 2 1/4" over the deck and RL-A-STAIR takes over; west of that RL-A-STAIR stands >= 36"
-# over every nosing. The cap meets the deck at 25'-8 1/8", but the newel sits 3" west of that
+# over every nosing. The two post lines are ~1 1/8" apart (this one in brackets outside the
+# flight, RL-A-STAIR's on the deck behind the well edge). The cap meets the deck at 25'-8 1/8", but the newel sits 3" west of that
 # so the skirt below closes to 3 1/8" of the pack there (5 3/8" at 25'-8 1/8" would pass the
 # 4" sphere). Constant rake height, so a stock adjustable stair panel kit fits.
 #
