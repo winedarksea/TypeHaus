@@ -377,9 +377,15 @@ def test_pipe_runs_bill_by_system_and_diameter(catlin_model, bom):
 def test_ducts_and_sleeves_bill_every_resolved_record(catlin_model, bom):
     assert ({tag for row in bom["ducts"] for tag in row["tags"]}
             == {duct.tag for duct in catlin_model.ducts})
+    # A framed-wall duct seal bills as a `wall-seal` kit in duct_fittings, not as a sleeve.
+    seals = {s.tag for s in catlin_model.sleeves
+             if s.serves_duct and s.host_category == "framed_wall"}
+    assert seals == {tag for row in bom["duct_fittings"]
+                     if str(row["fitting"]).startswith("wall-seal-") for tag in row["tags"]}
     assert ({tag for row in bom["sleeves"] for tag in row["tags"]}
-            == {sleeve.tag for sleeve in catlin_model.sleeves})
-    assert sum(int(row["count"]) for row in bom["sleeves"]) == len(catlin_model.sleeves)
+            == {sleeve.tag for sleeve in catlin_model.sleeves} - seals)
+    assert (sum(int(row["count"]) for row in bom["sleeves"])
+            == len(catlin_model.sleeves) - len(seals))
 
 
 def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):

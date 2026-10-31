@@ -11,10 +11,11 @@ def connected_distribution(ducts: list[ResolvedDuct], seeds: set[str]) -> list[R
 
     A diameter change splits one physical header into several authored runs. A remote
     segment need not touch equipment to contribute its full pressure drop. Only endpoint
-    joints establish membership: a crossing, the other air side, or an untyped System 1
+    joints establish membership: a crossing, the other air side, or a rectangular System 1
     trunk cannot pull its own distribution into the ventilator's budget.
     """
-    eligible = {duct.tag: duct for duct in ducts if duct.material is not None and duct.path}
+    eligible = {duct.tag: duct for duct in ducts
+                if duct.material is not None and duct.path and duct.diameter_m is not None}
     reached = seeds & eligible.keys()
     frontier = sorted(reached)
     remaining = {tag: duct for tag, duct in eligible.items() if tag not in reached}

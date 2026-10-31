@@ -57,7 +57,7 @@ from plan import (
 )
 
 # Catalogs, re-exported so ``manifest.py``'s Library(...) call is untouched by the split.
-REGISTER_TYPES = (*mep_hvac.REGISTER_TYPES, *mep_erv_types.REGISTER_TYPES_ERV)
+REGISTER_TYPES = mep_erv_types.REGISTER_TYPES_ERV
 EQUIPMENT_TYPES = (*mep_hvac.EQUIPMENT_TYPES, *mep_erv_types.EQUIPMENT_TYPES_ERV)
 ELECTRICAL_DEVICE_TYPES = mep_electrical.ELECTRICAL_DEVICE_TYPES
 

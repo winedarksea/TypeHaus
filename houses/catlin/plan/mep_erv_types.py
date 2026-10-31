@@ -128,12 +128,14 @@ EQUIPMENT_TYPES_ERV = (
     # the cabinet's south face at y=30'-4 1/2"; 18" fills the 18 1/4" cavity. 750 cfm through
     # the 12 x 18 it presents to DU-S-HP-RET is 500 fpm, a duct velocity, and the grille's own
     # face is 336 in2 at 279 fpm. The south end was trimmed 1/2" on 2026-10-02
-    # for BED3's straight collar, retaining full coverage of the 28" return grille.
+    # for BED3's straight collar, retaining full coverage of the 28" return grille. It grew
+    # 1/4" north on 2026-10-31 (still 1/4" off the cabinet) so the grille's hole could clear
+    # the ladder's south end block: the 28" hole now sits y 28'-0 1/4"..30'-4 1/4".
     EquipmentType(tag="EQ-T-ERV-MIXING-BOX",
                   name="Return-air mixing plenum, 6\" ERV leg with backdraft damper",
-                  footprint=(inch(12), inch(29)), height=inch(18),
+                  footprint=(inch(12), inch(29.25)), height=inch(18),
                   plan_symbol="erv",
-                  source="Fabricated plenum box, 12 x 29 x 18 in: System 1's return plenum, with a 6 in ERV inlet on a gravity backdraft damper and a filter-back return grille in its underside. The damper is the whole point — the ERV and the air handler run on independent schedules and each must breathe without the other. It was a 10 x 12 x 8 box until 2026-09-04, beside the return rather than containing it; the grille then lapped the box, the duct and 120 in2 of bare cavity at once.",
+                  source="Fabricated plenum box, 12 x 29 1/4 x 18 in: System 1's return plenum, with a 6 in ERV inlet on a gravity backdraft damper and a filter-back return grille in its underside. The damper is the whole point — the ERV and the air handler run on independent schedules and each must breathe without the other. It was a 10 x 12 x 8 box until 2026-09-04, beside the return rather than containing it; the grille then lapped the box, the duct and 120 in2 of bare cavity at once.",
                   ports=(ServicePort(tag="fresh", service=Service.SUPPLY_AIR,
                                      position=(ft(0), ft(0), inch(4))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,

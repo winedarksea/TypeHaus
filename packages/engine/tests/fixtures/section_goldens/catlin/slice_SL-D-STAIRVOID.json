@@ -1459,6 +1459,34 @@
           205.12500000000003
         ],
         [
+          245.5,
+          205.12500000000003
+        ],
+        [
+          245.5,
+          205.75000000000003
+        ],
+        [
+          219.375,
+          205.75000000000003
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "6DAADXAD7P",
+      "tag": "SF-S-HP1"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          257.5,
+          205.12500000000003
+        ],
+        [
           260.125,
           205.12500000000003
         ],
@@ -1467,7 +1495,7 @@
           205.75000000000003
         ],
         [
-          219.375,
+          257.5,
           205.75000000000003
         ]
       ],
@@ -3732,6 +3760,62 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          245.5,
+          206.5
+        ],
+        [
+          257.5,
+          206.5
+        ],
+        [
+          257.5,
+          208.25000000000003
+        ],
+        [
+          245.5,
+          208.25000000000003
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSRH05AAAA-neck",
+      "tag": "REG-S-HP-RET-NECK"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          245.5,
+          206.5
+        ],
+        [
+          257.5,
+          206.5
+        ],
+        [
+          257.5,
+          208.25000000000003
+        ],
+        [
+          245.5,
+          208.25000000000003
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
     },
     {
       "space": "model",

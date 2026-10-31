@@ -88,7 +88,7 @@ EQUIPMENT_ERV_ATTIC = [
 # 18" fills the 18 1/4" cavity.
 EQUIPMENT_ERV_SECOND = [
     Equipment(uid="8PE9E87JX5", tag="EQ-S-ERV-MIX", kind=EquipmentKind.MIXING_BOX,
-              position=pt(inch(251.5), inch(349.5)), footprint=(inch(12), inch(29)),
+              position=pt(inch(251.5), inch(349.625)), footprint=(inch(12), inch(29.25)),
               room="RM-S-HALL", type_ref="EQ-T-ERV-MIXING-BOX",
               soffit_ref="SF-S-HP1",
               mount=Mount(kind=MountKind.CEILING)),

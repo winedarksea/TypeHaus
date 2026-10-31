@@ -141,6 +141,31 @@ def _bay_occupancy(model: ResolvedModel, duct: DuctRun, storey_tag: str,
     return tuple(conflicts), tuple(crossings), depth_ok
 
 
+def _emit_wrap(model: ResolvedModel, duct: DuctRun, storey_tag: str,
+               path: list[tuple[float, float]], z: list[float],
+               diameter_m: float | None) -> None:
+    """A round run's stated wrap as its own swept solid, clipped at its wall's sheathing."""
+    from typehaus.resolve.duct_wrap import wrap_path
+    from typehaus.resolve.mep_envelopes import insulation_thickness_m
+    from typehaus.resolve.model import ResolvedSolid, SolidSweep
+    from typehaus.resolve.sweep import clean_path, sweep_plan_silhouette, sweep_z_extent
+
+    thickness = insulation_thickness_m(duct.insulation) if duct.insulation else None
+    if diameter_m is None or not thickness:
+        return
+    points = wrap_path(model, duct.tag, clean_path(
+        [(p[0], p[1], zi) for p, zi in zip(path, z, strict=False)]))
+    if len(points) < 2:
+        return
+    sweep = SolidSweep(path=tuple(points),
+                       profile=round_profile(diameter_m / 2.0 + thickness, PIPE_FACETS))
+    z0, z1 = sweep_z_extent(sweep)
+    model.solids.append(ResolvedSolid(
+        uid=f"{duct.uid or duct.tag}-wrap", tag=f"{duct.tag}-WRAP", storey=storey_tag,
+        category="insulation_wrap", outline=sweep_plan_silhouette(sweep), z0_m=z0, z1_m=z1,
+        sweep=sweep))
+
+
 def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
                      emit_solids) -> list[Finding]:
     """Validate one run, give it elevations and a swept solid, and record it.
@@ -178,6 +203,7 @@ def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
                else rect_profile(width_m, depth_m))
     emit_solids(model, duct.uid or duct.tag, duct.tag, storey.tag, path, z, profile,
                 f"duct_{duct.system.value}")
+    _emit_wrap(model, duct, storey.tag, path, z, diameter_m)
     model.ducts.append(ResolvedDuct(
         uid=duct.uid, tag=duct.tag, storey=storey.tag, system=duct.system.value,
         path=path, width_m=width_m, depth_m=depth_m, routing=duct.routing.value,

@@ -1441,6 +1441,7 @@ class ResolvedSleeve:
     length_m: float | None = None
     seal: str | None = None
     insulation: str | None = None
+    serves_duct: str | None = None  # the DuctRun a framed-wall seal is for
 
 
 @dataclass(frozen=True)

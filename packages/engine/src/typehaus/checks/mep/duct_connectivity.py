@@ -237,6 +237,13 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
             landed = (_meets_another_duct(ctx, duct, z, point)
                       or equipment_at_end(ctx, z, point)
                       or _boot(ctx, duct, point))
+            mismatch = _collar_mismatch(ctx, duct, landed) if landed is not None else None
+            if mismatch is not None:
+                out.append(failed("mep.duct_connectivity", f"duct {duct.tag} {label} lands "
+                                  f"on {landed}, {mismatch}", (duct.tag, landed),
+                                  fix="match the run to the collar, or author the "
+                                      "transition as its own run"))
+                continue
             if landed is not None:
                 out.append(passed(
                     "mep.duct_connectivity",
@@ -266,6 +273,30 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
                 "or of the leg it ends, and "
                 "it is not outdoors", (duct.tag,)))
     return out
+
+
+def _collar_mismatch(ctx: CheckContext, duct: ResolvedDuct, landed: str) -> str | None:
+    """Why a round run cannot fit a ONE-collar machine (a hood), or None.
+
+    A single-collar type states its spigot in ``port_diameter``; an 8" leg on a 6" hood
+    collar connects to nothing an installer can buy. Multi-port plenums take a larger trunk
+    collar beside their branch collars, so only the one-collar case is graded here.
+    """
+    if duct.diameter_m is None:
+        return None
+    obj = next((o for o in ctx.model.canvas_objects if o.tag == landed), None)
+    if obj is None or not obj.type_ref:
+        return None
+    product = next((t for t in getattr(ctx.plan.library, "equipment_types", ())
+                    if t.tag == obj.type_ref), None)
+    port = getattr(product, "port_diameter", None)
+    # A dimensioned collar marks a trunk-and-branch plenum, whose inlet is another size.
+    if product is None or product.duct_ports != 1 or port is None or product.collars():
+        return None
+    if abs(port.meters - duct.diameter_m) <= 1e-4:
+        return None
+    return (f"a {duct.diameter_m / M_PER_IN:.0f}\" run on its "
+            f"{port.meters / M_PER_IN:.0f}\" collar")
 
 
 def _port_note(ctx: CheckContext, duct: ResolvedDuct, point: tuple[float, float],

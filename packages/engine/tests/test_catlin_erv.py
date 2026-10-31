@@ -356,10 +356,14 @@ def test_the_mixing_box_is_upstream_of_the_coil_and_the_strip_heater(catlin_mode
     # grille used to lap the plenum, the return duct and 120 in2 of bare soffit cavity at
     # once, and a return drawing part of its face out of a framed cavity is IMC 601.5's
     # building-cavity-as-plenum. Nothing in this engine grades that, so it is pinned here.
-    grille = next(o for o in catlin_model.canvas_objects if o.tag == "REG-S-HP-RET")
+    # The HOLE (the filter rack behind the face, 28 x 12) is what must be inside; the face's
+    # flange laps the soffit board round it (2026-10-31: footprints are submittal faces).
+    from typehaus.resolve.terminal_necks import neck_boxes
+
+    hole = next(ring for tag, ring, *_ in neck_boxes(catlin_model) if tag == "REG-S-HP-RET")
     for axis in (0, 1):
-        assert min(p[axis] for p in grille.footprint) >= min(p[axis] for p in box.footprint) - tol
-        assert max(p[axis] for p in grille.footprint) <= max(p[axis] for p in box.footprint) + tol
+        assert min(p[axis] for p in hole) >= min(p[axis] for p in box.footprint) - tol
+        assert max(p[axis] for p in hole) <= max(p[axis] for p in box.footprint) + tol
     # And it is in the box the machine is in, not the trunk's.
     plan_refs = {el.tag: getattr(el, "soffit_ref", None)
                  for el in catlin_model.plan.all_elements()}
@@ -475,7 +479,7 @@ def test_the_duct_product_catalog_is_keyed_like_the_price_rows(catlin_plan) -> N
     ``prices.toml``'s ``[ducts]`` qualifies on — so a run that prices as 4" galvanized cannot
     resist as something else."""
     rows = {(r.material, round(r.nominal_diameter.meters / M_PER_IN, 1)): r
-            for r in catlin_plan.library.duct_product_types}
+            for r in catlin_plan.library.duct_product_types if r.section == "round"}
     assert ("galvanized", 4.0) in rows
     assert ("galvanized", 6.0) in rows
     # The physics is the engine's; these coefficients are ASHRAE reads the house owns.

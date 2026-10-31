@@ -13,6 +13,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     drainage,
     drainage_network,
     duct_connectivity,
+    duct_penetrations,
     electrical,
     electrical_boxes,
     electrical_code,
@@ -56,6 +57,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     soakaway_storage,
     sump_discharge,
     supply_protection,
+    terminal_necks,
     vent_geometry,
     water_heater,
 )

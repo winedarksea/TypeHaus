@@ -24,6 +24,7 @@ saying a model number twice would churn every schedule and its tests for no gain
 from __future__ import annotations
 
 from plan.bath1_storage_types import BATH1_STORAGE_PRODUCTS
+from plan.products_air import AIR_PRODUCTS
 from plan.products_trim_stock import TRIM_STOCK_PRODUCTS
 from plan.bath2_vanity_types import BATH2_VANITY_PRODUCTS
 from plan.bed_desk_types import BED_DESK_PRODUCTS
@@ -210,16 +211,6 @@ ERV_VOLUME_DAMPER_4 = Product(
            "reached at. None is authored today; the row exists so the first one is a "
            "selection rather than an invention.",
 )
-ERV_TERMINAL_4 = Product(
-    tag="PROD-ERV-TERMINAL-4", brand="", model="",
-    name="4\" round-collar ceiling diffuser / bath grille",
-    source="Commodity bath-fan terminal: a 4 in. round collar behind a stamped face. Every "
-           "REG-T-ERV-* row is one of these. 4 in. and not 3 in. is the whole catalogue "
-           "argument in plan/mep_erv_l1.py's header — 3 in. pipe is stocked, 3 in. dampers and "
-           "grilles are not. Loss curves on the types are DERIVED (notes/erv_static_budget.md "
-           "§5), not published; a submitted product with a real curve replaces them.",
-)
-
 # The sauna's two closeable vents. Wood, not plastic: a sauna vent sits in 80-100 C air (the
 # supply is over the heater) and the trade makes them in aspen/alder/cedar for that. One
 # part for both ends, US-sold (owner, 2026-10-29; the UK Finnmark 713H was the stand-in).
@@ -320,7 +311,7 @@ PRODUCTS = (
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,
     BROAN_B210E75RT, MURPHY_BOOKCASE_36,
     ERV_PLENUM_FABRICATED, ERV_START_COLLAR_DAMPERED, ERV_VOLUME_DAMPER_4,
-    ERV_TERMINAL_4, PROSAUNAS_VENT_HATCH_ASPEN,
+    PROSAUNAS_VENT_HATCH_ASPEN, *AIR_PRODUCTS,
     KOHLER_UNDERSCORE_1130_W1, KOHLER_CLEARFLO_7272,
     LEVITON_EV_RECEPTACLE_1450R,
     FLOOR_BOX_PRODUCT,

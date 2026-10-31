@@ -1,6 +1,6 @@
 # haus: editable
-# Catlin MEP — the ERV's OUTDOOR side: the two north-facade hoods and the two wall
-# penetrations they stand on.
+# Catlin MEP — the ERV's OUTDOOR side: the two north-facade hoods, the two wall
+# penetrations they stand on, and the two wall seals.
 #
 # The legs that reach them, DU-ERV-OA and DU-ERV-EA, are in plan/mep_erv_risers.py with
 # the three risers — they are one authored list because plan/mep.py spreads it whole.
@@ -11,6 +11,8 @@ from typehaus import (
     Mount,
     MountKind,
     RoughOpening,
+    Service,
+    SleevePenetration,
     from_node,
     ft,
     inch,
@@ -65,11 +67,12 @@ from typehaus.model import Location, WallAttachment, deg
 # Both hoods clear TR-RF-LEADER-W, the roof leader at y=35'-6" on the WEST face, by leaving
 # that face entirely.
 #
-# An 8" duct with R-8 wrap is ~10" OD against a 5 1/2" stud cavity, so NEITHER hood may turn
-# and travel inside the wall — each is a straight through-wall penetration, wrap terminated
-# at the wall line, flashed curb through the board-and-batten cladding, on the outer girt.
-# That is the one part of the old west-facade objection that stands, and it only bites a run
-# travelling ALONG the facade. Coming straight out at its own station, neither does.
+# An 8" duct in 2" of elastomeric is 12" OD against a 5 1/2" stud cavity, so NEITHER hood may
+# turn and travel inside the wall — each is a straight through-wall penetration. The wrap
+# runs through the gypsum into the stud bay and stops 1-2" short of the sheathing; from
+# there the bare 8" duct is foamed through the sheathing hole and wrapped by the 4" exterior
+# ccSPF, and the hood's plate covers the 9" hole on the cladding. No bare metal faces a cold
+# surface (owner, 2026-10-30; the detail is notes/air_distribution_products.md §9).
 #
 # ** BOTH HOOD BOXES HANG ON THE CLADDING, NOT INSIDE IT (2026-09-11, re-derived on the
 # NORTH wall 2026-09-15). ** Read off the resolved layers of W-M-N3B / W-S-N3B, which carry
@@ -92,13 +95,12 @@ from typehaus.model import Location, WallAttachment, deg
 # nearest one raises `integrity.placeable_room_mismatch` — the same call EQ-M-HP3-OD and the
 # porch AP make.
 #
-# NOT MODELLED, deliberately: the sealed hole itself. A framed-wall penetration is spelled
-# `PipeAccessory(PENETRATION_SEAL)` here (PA-M-PORCH-HYD-SEAL; `SleevePenetration` is cast
-# concrete only), but `resolve/mep._resolve_pipe_accessory` requires a resolved **PipeRun**
-# host and raises `integrity.pipe_accessory_host` without one — there is no duct-side
-# spelling of the element. Authoring one against an unrelated pipe to get the line item would
-# be a lie about what it sits on. The flashed curb stays prose until the element grows a duct
-# host; the take-off under-bills two escutcheon-and-foam kits, which is the honest gap.
+# The sealed hole is a `SleevePenetration` naming its duct (`serves_duct`) since 2026-10-31,
+# below the openings: it bills as a `wall-seal-8in` kit and `mep.duct_penetration_fit`
+# grades it against the duct's bare 8".
+#
+# The hoods are 8" since 2026-10-31 (RenewAire FA8-P basis, 1/4" screen), matching the legs;
+# they were typed 6" behind 8" ducts from 2026-09-15 and `mep.duct_connectivity` now says so.
 EQUIPMENT_ERV_HOODS_MAIN = [
     Equipment(uid="0NF97ZR9Z3", tag="EQ-M-ERV-HOOD-OA", kind=EquipmentKind.DUCT_MANIFOLD,
               footprint=(inch(12), inch(12)),
@@ -118,7 +120,7 @@ EQUIPMENT_ERV_HOODS_MAIN = [
               # is not equipment associated with the electrical installation, so
               # 110.26(A)(3)'s 6" overhang allowance does not apply: keep the hood wholly
               # above the work space.
-              room=None, type_ref="EQ-T-ERV-HOOD-6",
+              room=None, type_ref="EQ-T-ERV-HOOD-8",
               mount=Mount(kind=MountKind.WALL, elevation=ft(4, 6)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-N3B", face="right", distance_from_start=inch(32),
@@ -129,7 +131,7 @@ EQUIPMENT_ERV_HOODS_SECOND = [
               footprint=(inch(12), inch(12)),
               # ** y=34'-0" IS A STUD BAY, AND 34'-8" WAS A STUD (2026-09-11). ** W-S-W1B
               # frames studs at y 400"/416"/430 3/4"; the hood and its duct sat at y=416"
-              # dead on `stud-001`, so the 6" penetration bored the middle out of a bearing
+              # dead on `stud-001`, so the then-6" penetration bored the middle out of a bearing
               # 2x6 — R602.6 allows 2 1/5" in a 5 1/2" stud. Nothing in the engine grades a
               # duct against a member, so it read 0 FAIL. y=34'-0" is the centre of the
               # 400 3/4"..415 1/4" bay: a 7" rough opening clears each stud by 3 15/16".
@@ -142,7 +144,7 @@ EQUIPMENT_ERV_HOODS_SECOND = [
               # capped at +19'-0"; the 12" box top is +17'-6", leaving 1'-6" of clearance.
               # This also centres the hood on AO-S-ERV-EA's +17'-0" opening and duct axis.
               # room=None, as above and as EQ-M-HP3-OD is authored.
-              room=None, type_ref="EQ-T-ERV-HOOD-6-EXH",
+              room=None, type_ref="EQ-T-ERV-HOOD-8-EXH",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-N3B", face="right", distance_from_start=inch(8.375),
@@ -164,9 +166,9 @@ EQUIPMENT_ERV_HOODS_SECOND = [
 # NO king/jack/header pack — so a 7" hole costs no phantom framing, which is also how it is
 # actually built.
 #
-# 7", not the duct's 6": 6 5/8" of flashed curb plus 3/16" a side to set it. The R-8 wrap
-# terminates at the wall line (see the hood note above), so the wrap's ~8" OD never enters
-# the opening.
+# 9" against the bare 8" duct: a 1/2" foam annulus a side, covered by the hood's plate. The
+# wrap stops in the stud bay (see the hood note above), so its 12" OD never enters the
+# opening; `mep.duct_penetration_fit` grades the bare duct plus the annulus.
 #
 # ** NEITHER ONE CUTS ANYTHING ANY MORE, AND THAT IS NEW. ** Measured off the resolved
 # strapping on 2026-09-15:
@@ -180,14 +182,6 @@ EQUIPMENT_ERV_HOODS_SECOND = [
 #   - `AO-S-ERV-EA` (discharge, +17'-0", z 199 1/2"..208 1/2") cuts nothing either, clearing
 #     courses at z=192" and z=216" by 4" and 7 1/2" and both studs by 2 3/4".
 #
-# Still NOT MODELLED, deliberately, and unchanged by this: the sealed hole's PRODUCT. A
-# framed-wall penetration is spelled `PipeAccessory(PENETRATION_SEAL)` here
-# (PA-M-PORCH-HYD-SEAL; `SleevePenetration` is cast concrete only), but
-# `resolve/mep._resolve_pipe_accessory` requires a resolved **PipeRun** host and raises
-# `integrity.pipe_accessory_host` without one — there is no duct-side spelling of the
-# element. Authoring one against an unrelated pipe to get the line item would be a lie about
-# what it sits on. The take-off still under-bills two escutcheon-and-foam kits; the hole
-# itself is no longer missing, only the kit that seals it.
 PENETRATIONS_ERV_MAIN = [
     # W-M-N3B runs N-M-MECH3 (x=6'-0") west to N-M-NW (x=0'-0"), studs at x 5'-4"/4'-0"/
     # 2'-8"/1'-4"/0'-6 3/4". DU-ERV-OA leaves at x=3'-4", so the 9" opening spans
@@ -204,6 +198,14 @@ PENETRATIONS_ERV_MAIN = [
                  position=from_node("N-M-MECH3", inch(27.5)),
                  width=inch(9), height=inch(9), sill_height=inch(55.5),
                  penetration_for=("DU-ERV-OA",)),
+    # The intake's wall seal: the band from the sheathing out, centred on the duct.
+    SleevePenetration(uid="D51H6TBG8C", tag="SP-M-ERV-OA-SEAL", host_ref="W-M-N3B",
+                      position=pt(ft(3, 4), ft(36, 3)), pipe_diameter=inch(8),
+                      sleeve_diameter=inch(9), serves_duct="DU-ERV-OA",
+                      purpose=Service.OUTDOOR_AIR, axis="horizontal",
+                      center_elevation=inch(60),
+                      seal="low-expansion PU foam (PROD-AIR-WALL-SEAL-FOAM) bonded to the duct through the sheathing hole, the 4in ccSPF sprayed tight to it; hood plate sealed over the RO",
+                      insulation="canned-foam annulus; the elastomeric wrap stops in the stud bay and is taped to the foam"),
 ]
 PENETRATIONS_ERV_SECOND = [
     # W-S-N3B runs N-S-CH2 (x=2'-9") west to N-S-NW (x=0'-0"). DU-ERV-EA leaves at x=2'-0",
@@ -226,4 +228,11 @@ PENETRATIONS_ERV_SECOND = [
                  position=from_node("N-S-CH2", inch(3.875)),
                  width=inch(9), height=inch(9), sill_height=inch(79.5),
                  penetration_for=("DU-ERV-EA",)),
+    SleevePenetration(uid="81ZSTRARVV", tag="SP-S-ERV-EA-SEAL", host_ref="W-S-N3B",
+                      position=pt(inch(24.625), ft(36, 3)), pipe_diameter=inch(8),
+                      sleeve_diameter=inch(9), serves_duct="DU-ERV-EA",
+                      purpose=Service.EXHAUST_AIR, axis="horizontal",
+                      center_elevation=inch(204),
+                      seal="low-expansion PU foam (PROD-AIR-WALL-SEAL-FOAM) bonded to the duct through the sheathing hole, the 4in ccSPF sprayed tight to it; hood plate sealed over the RO",
+                      insulation="canned-foam annulus; the elastomeric wrap stops in the stud bay and is taped to the foam"),
 ]

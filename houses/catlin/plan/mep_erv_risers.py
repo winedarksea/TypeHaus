@@ -213,10 +213,12 @@ DUCTS_ERV_RISERS = [
     # `mep.erv_outdoor_terminals` reads an OUTDOOR_AIR run from its hood inward and an
     # EXHAUST run outward to its hood, which is the direction the air goes and the direction
     # a plan reader traces.
-    # ** BOTH OUTDOOR LEGS STOP AT THE NW CHASE. ** See EQUIPMENT_ERV_HOODS_* above for why
-    # the north-gable route is not viable. Each is a riser out of the basement manifold and
-    # one straight penetration through the west wall: the intake at +4'-0" on the main
-    # storey, the discharge at +17'-0" on the second.
+    # ** BOTH OUTDOOR LEGS LEAVE THROUGH THE NORTH WALL. ** See plan/mep_erv_outdoor.py for
+    # why the gable route is not viable. Each is a riser off the machine and one straight
+    # penetration: the intake at +5'-0" on the main storey, the discharge at +17'-0" on the
+    # second. Both are wrapped end to end in 2" of closed-cell elastomeric (its own vapour
+    # retarder, two 1" layers so each is 25/50-rated), mastic-sealed under the wrap; the wrap
+    # stops in the stud bay (notes/air_distribution_products.md §9).
     #
     # ** THE HOOD VERTEX IS x = -0'-8", AND -0'-6" WAS SHORT (corrected 2026-09-11). **
     # -6" was picked to clear `mep.erv_outdoor_terminals`, which decides which EXHAUST run is
@@ -257,10 +259,9 @@ DUCTS_ERV_RISERS = [
             #   -2'-3"    — the basement radial layer, joined 4" short of the machine so the
             #               last leg is a straight east run onto the port.
             #
-            # ** IT IS SHORTER AND STRAIGHTER THAN WHAT IT REPLACED. ** 13'-9" and four
-            # elbows against the west-facade route's 14'-0" and six — which is why the 6" ->
-            # 8" step buys more here than the note's §7 priced it at, and why the governing
-            # side of the whole system moved back to extract when this landed.
+            # ** IT IS SHORTER THAN WHAT IT REPLACED. ** 18.07 ft on six elbows as built
+            # (the 2026-10-17 ERV move added the east leg), against the west-facade route's
+            # longer sweep — which is why the 6" -> 8" step bought what §7 priced it at.
             #
             # PR-M-S-BATH1-TUB-DRAIN looks like it is in this lane and is not: it drops at
             # (3'-3 1/4", 34'-1 1/2") but between +10'-0 3/4" and +9'-7 15/16", in the SECOND
@@ -285,7 +286,7 @@ DUCTS_ERV_RISERS = [
             # 0.0315, which took the governing side back to EXTRACT — so §7 is now spent and
             # the lever it named no longer exists.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='2" R-8 wrap, vapour-sealed', design_cfm=210),
+            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed', design_cfm=210),
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
             # Manifold first, hood last — the direction the air goes, and the direction
             # `erv_outdoor_terminals` reads an EXHAUST run.
@@ -341,7 +342,7 @@ DUCTS_ERV_RISERS = [
             # shaft was sized for THIS diameter months before it was bought.
             # `AO-S-ERV-EA` grows 7" -> 9" to match.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='2" R-8 wrap, vapour-sealed', design_cfm=210),
+            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed', design_cfm=210),
     # ================== THE TWO LEVEL-2 MANIFOLD FEEDS (2026-09-20) ==================
     #
     # ** THE TWO MAIN-STOREY PLENUMS HAD NO DRAWN FEED AT ALL, AND THAT WAS A HOLE IN THE

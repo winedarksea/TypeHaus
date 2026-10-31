@@ -265,6 +265,12 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
         soffit, long_is_x, run_origin, (span_low, span_high), (0.0, run_length))
     findings.extend(opening_findings)
 
+    def headed(across_at: float) -> bool:
+        """An edge takes a header only where one fits outboard of it, short of the rail;
+        nearer a rail than a header's width, the rail carries the stub."""
+        return (across_at - span_low > rung_depth + _RECT_TOLERANCE_M
+                and span_high - across_at > rung_depth + _RECT_TOLERANCE_M)
+
     # --- rungs: the bottom tie across the box at each interior station ----------
     # The two end stations are closed by end blocking instead — a rung there would sit in
     # the same square, which reads as two members where the carpenter cuts one.
@@ -277,7 +283,10 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
         # actually carries. A hole that reaches a rail leaves no stub on that side, which
         # is the ordinary full-width hatch and is why this returns a list rather than a
         # pair.
-        blocked = [(low, high) for _tag, (a0, a1), (low, high) in openings
+        # The outline is the CLEAR hole, so a headed edge also gives up the header's width.
+        blocked = [(low - (rung_depth if headed(low) else 0.0),
+                    high + (rung_depth if headed(high) else 0.0))
+                   for _tag, (a0, a1), (low, high) in openings
                    if a0 < station + rung_thickness / 2.0
                    and station - rung_thickness / 2.0 < a1]
         for suffix, (seg_low, seg_high) in _segments(span_low, span_high, blocked):
@@ -289,8 +298,9 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
 
     # --- opening headers: the member each cut rung bears on ---------------------
     # One per across-edge of the hole that lands inside the clear span, running ALONG the
-    # box from the last station south of the hole to the first station north of it. An
-    # edge sitting ON a rail gets no header — the rail is already there.
+    # box from the last station south of the hole to the first station north of it, and
+    # standing OUTBOARD of the edge so the hole stays clear. An edge on or within a
+    # header's width of a rail gets none — the rail is already there.
     all_stations = sorted(stations)
     for tag, (a0, a1), (low, high) in openings:
         below = [st for st in all_stations if st <= a0 + _RECT_TOLERANCE_M]
@@ -298,13 +308,13 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
         if not below or not above:
             continue  # already reported by _project_openings
         head_lo, head_hi = max(below), min(above)
-        for edge_key, across_at in (("lo", low), ("hi", high)):
-            if (across_at - span_low <= _RECT_TOLERANCE_M
-                    or span_high - across_at <= _RECT_TOLERANCE_M):
+        for edge_key, across_at, outward in (("lo", low, -1.0), ("hi", high, 1.0)):
+            if not headed(across_at):
                 continue
+            line = across_at + outward * rung_depth / 2.0
             members.append(FramedMember(
                 soffit.uid, f"{SOFFIT_HEADER_KEY_PREFIX}{tag}-{edge_key}", "blocking",
-                rung_profile, point(head_lo, across_at), point(head_hi, across_at),
+                rung_profile, point(head_lo, line), point(head_hi, line),
                 z_bottom, z_bottom + rung_thickness, head_hi - head_lo,
             ))
 

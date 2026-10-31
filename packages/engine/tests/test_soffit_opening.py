@@ -132,9 +132,10 @@ def test_the_rung_an_opening_crosses_is_cut_and_not_omitted() -> None:
     assert {"soffit-rung-002a", "soffit-rung-002b"} <= set(rungs)
     stubs = sorted(round(m.length_m / M_PER_IN, 3) for m in soffit.members
                    if m.child_key.startswith("soffit-rung-002"))
-    # The clear span is x 6 1/8"..41 7/8"; the hole runs x 12"..30", so the stubs are
-    # 12 - 6.125 = 5.875" west and 41.875 - 30 = 11.875" east.
-    assert stubs == [5.875, 11.875]
+    # The clear span is x 6 1/8"..41 7/8"; the hole runs x 12"..30" and each edge's 3 1/2"
+    # header stands outboard of it, so the stubs are 12 - 3.5 - 6.125 = 2.375" west and
+    # 41.875 - 30 - 3.5 = 8.375" east.
+    assert stubs == [2.375, 8.375]
     # Every other station is untouched and still spans the full width.
     assert all(
         round(m.length_m / M_PER_IN, 3) == 35.75 for m in soffit.members
@@ -160,7 +161,8 @@ def test_two_headers_run_along_the_box_between_the_bounding_stations() -> None:
         # The stations at y 28 5/8" and 60 5/8" bound the hole: a 32" header.
         assert header.length_m / M_PER_IN == pytest.approx(32.0, abs=1e-6)
     lines = sorted(round(m.p0[0] / M_PER_IN, 3) for m in headers)
-    assert lines == [12.0, 30.0], "a header sits on each across-edge of the hole"
+    # Outboard of each edge, so the outline stays the CLEAR hole (2026-10-31).
+    assert lines == [10.25, 31.75], "a header stands just outside each across-edge"
 
 
 def test_a_full_width_hole_takes_no_header_because_the_rails_carry_it() -> None:
@@ -233,7 +235,7 @@ def test_catlin_heads_off_one_rung_for_its_air_handler_hatch(catlin_model) -> No
     hole is a panel whose flange lands on the rungs; drawn smaller, it is a hole nobody closed.
     """
     soffit = next(s for s in catlin_model.soffits if s.tag == "SF-S-HP1")
-    assert [tag for tag, _ring in soffit.openings] == ["AO-S-HP1-AP"]
+    assert [tag for tag, _ring in soffit.openings] == ["AO-S-HP1-AP", "AO-S-HP1-RET"]
     _tag, ring = soffit.openings[0]
     hole = (round(min(x for x, _ in ring) / M_PER_IN, 3),
             round(max(x for x, _ in ring) / M_PER_IN, 3),
@@ -246,14 +248,15 @@ def test_catlin_heads_off_one_rung_for_its_air_handler_hatch(catlin_model) -> No
            round(max(y for _, y in panel.footprint) / M_PER_IN, 3))
     assert hole == lid, "the access panel and the framed opening are one rectangle"
 
-    # Exactly one rung is cut, into a 4 1/2" stub west and a 2" stub east, and the two
-    # headers span the 32" between the rungs either side of it.
+    # Exactly one rung is cut. The west edge is 4 1/2" off the rail, so its header stands
+    # outboard and leaves a 1" stub; the east edge is 2" off the rail, too close for a
+    # header, so the rail carries that 2" stub. One header spans the 32" between the rungs.
     stubs = sorted(round(m.length_m / M_PER_IN, 3) for m in soffit.members
                    if m.child_key.startswith("soffit-rung-004"))
-    assert stubs == [2.0, 4.5]
+    assert stubs == [1.0, 2.0]
     headers = [m for m in soffit.members
-               if m.child_key.startswith(SOFFIT_HEADER_KEY_PREFIX)]
-    assert len(headers) == 2
+               if m.child_key.startswith(f"{SOFFIT_HEADER_KEY_PREFIX}AO-S-HP1-AP")]
+    assert len(headers) == 1
     assert all(m.length_m / M_PER_IN == pytest.approx(32.0, abs=1e-6) for m in headers)
 
     # And the hole is under the machine it serves, in the closet a ladder stands in.

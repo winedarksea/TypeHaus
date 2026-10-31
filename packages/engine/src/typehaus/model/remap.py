@@ -270,7 +270,7 @@ UNCOVERED: dict[str, tuple[str, ...]] = {
     "PipeRun": ("wall_ref", "wall_refs", "serves"),
     "PipeAccessory": ("wall_ref", "serves"),
     "VentRun": ("wall_ref",),
-    "SleevePenetration": ("serves_fixture",),
+    "SleevePenetration": ("serves_fixture", "serves_duct"),
     "ShelfBank": ("host",),
     "Post": ("within_wall",),
     "Beam": ("start_node", "end_node", "bearing_refs"),

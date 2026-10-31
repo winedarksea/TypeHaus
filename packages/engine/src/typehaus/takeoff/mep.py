@@ -130,9 +130,12 @@ def duct_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     Diameter is a purchase axis; termination is a labour one, and they are only
     accidentally the same list.
     """
+    from typehaus.resolve.duct_sizing import rectangular_row
+
     registered = {register.duct_ref for register in model.plan.all_elements()
                   if register.element_kind == "Register" and register.duct_ref is not None}
     runs: dict[tuple[str, float, float, float, str, str, bool], dict[str, object]] = {}
+    gauges: dict[tuple[str, float, float, float, str, str, bool], int | None] = {}
     for duct in model.ducts:
         key = (duct.system,
                round(duct.diameter_m / M_PER_IN, 2) if duct.diameter_m is not None else 0.0,
@@ -144,15 +147,23 @@ def duct_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         tags = entry["tags"]
         assert isinstance(tags, list)
         tags.append(duct.tag)
-    return [
-        {"system": system, "diameter_in": diameter, "width_in": width, "depth_in": depth,
-         "routing": routing, "material": material, "terminal": terminal,
-         "runs": int(entry["count"]),
-         "length_ft": round(float(entry["length_m"]) * _M_TO_FT, 1),
-         "tags": sorted(entry["tags"])}
-        for (system, diameter, width, depth, routing, material, terminal), entry
-        in sorted(runs.items())
-    ]
+        if duct.diameter_m is None:  # a rectangular run prints its IRC M1601.1.1 gauge
+            band = rectangular_row(model.plan.library, duct.material, duct.width_m,
+                                   duct.depth_m)
+            gauges[key] = band.gauge if band is not None else None
+    rows: list[dict[str, object]] = []
+    for key, entry in sorted(runs.items()):
+        system, diameter, width, depth, routing, material, terminal = key
+        row: dict[str, object] = {
+            "system": system, "diameter_in": diameter, "width_in": width, "depth_in": depth,
+            "routing": routing, "material": material, "terminal": terminal}
+        if key in gauges:
+            row["gauge"] = gauges[key]
+        row.update({"runs": int(entry["count"]),
+                    "length_ft": round(float(entry["length_m"]) * _M_TO_FT, 1),
+                    "tags": sorted(entry["tags"])})
+        rows.append(row)
+    return rows
 
 
 def duct_insulation_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -201,8 +212,32 @@ def duct_fitting_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     part of the manifold.
     """
     rows = takeoff_rows(family_records(fitting_records(model), FAMILY_DUCT))
-    return [{"system": row["system"], "fitting": row["fitting"],
-             "count": row["count"], "tags": row["tags"]} for row in rows]
+    out = [{"system": row["system"], "fitting": row["fitting"],
+            "count": row["count"], "tags": row["tags"]} for row in rows]
+    return out + _duct_wall_seals(model)
+
+
+def _is_duct_wall_seal(sleeve) -> bool:
+    return bool(sleeve.serves_duct) and sleeve.host_category == "framed_wall"
+
+
+def _duct_wall_seals(model: ResolvedModel) -> list[dict[str, object]]:
+    """One ``wall-seal-<d>in`` kit per framed-wall duct crossing, by the duct's size.
+
+    The kit is what closes the hole around a bare duct — low-expansion foam in the annulus,
+    tape to the control layer — so it is keyed by the DUCT it seals, the size it is ordered
+    for, and billed where the duct's other loose parts are.
+    """
+    systems = {duct.tag: duct.system for duct in model.ducts}
+    groups: dict[tuple[str, str], list[str]] = {}
+    for sleeve in model.sleeves:
+        if not _is_duct_wall_seal(sleeve):
+            continue
+        size = f"wall-seal-{round(sleeve.pipe_d_m / M_PER_IN, 2):g}in"
+        system = systems.get(str(sleeve.serves_duct), "")
+        groups.setdefault((system, size), []).append(sleeve.tag)
+    return [{"system": system, "fitting": fitting, "count": len(tags), "tags": sorted(tags)}
+            for (system, fitting), tags in sorted(groups.items())]
 
 
 def sleeve_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -214,6 +249,8 @@ def sleeve_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """
     sleeves: dict[float, dict[str, object]] = {}
     for sleeve in model.sleeves:
+        if _is_duct_wall_seal(sleeve):
+            continue  # a seal kit, billed in duct_fittings
         key = round(sleeve.sleeve_d_m / M_PER_IN, 2)
         entry = sleeves.setdefault(key, {"count": 0, "length_m": 0.0, "tags": []})
         entry["count"] += 1

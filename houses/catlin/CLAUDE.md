@@ -1414,8 +1414,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **No proprietary tube anywhere.** The 160 mm/75 mm radial manifold and its semi-rigid
     tube had three US sellers and no Minnesota dealer, and the owner's decision is not to
     buy one. Every radial is **4" galvanized snap-lock** (`material="galvanized"`), every
-    trunk, riser and outdoor leg **6" galvanized**, every terminal a **4"-collar** commodity
-    diffuser or bath grille, and every manifold a **fabricated galvanized plenum** — 8" inlet
+    trunk and riser **6"/8" galvanized**, every terminal a **100 mm steel disc valve** on a 4"
+    collar (125 mm on `REG-B-SUP2`; 2 1/4x10 aluminium grilles in the five floors; one white
+    family with System 1's aluminium since 2026-10-31, `notes/air_distribution_products.md`,
+    types in `plan/air_terminal_types.py`), and every manifold a **fabricated galvanized plenum** — 8" inlet
     collar, N x 4" start collars each with a butterfly damper, mastic-sealed — from any
     sheet-metal shop, exactly as `EQ-T-ERV-MIXING-BOX` already is. Tags did not change
     (`EQ-T-ERV-MANIFOLD-6/-6-EXH/-10`); five `type_ref`s, the price rows and the goldens key
@@ -1430,10 +1432,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     keep — no real duct system lands under 0.2" w.g. The number that governs is MN 1322
     R403.5's **205**.
   - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
-    over the whole system and reads the curve at it: **0.369" w.g. worst path, 206.6 cfm
-    delivered**, on the EXTRACT side since the ERV moved east of the dry-fire lane
-    (2026-10-17); supply 0.349. The margin over 205 is 1.6 cfm. It reports the 3 cfm against the 210 design rate as
-    UNKNOWN, never a FAIL — whether 207 is ENOUGH is
+    over the whole system and reads the curve at it: **0.460" w.g. worst path, 203.0 cfm
+    delivered** (2026-10-31), on the EXTRACT side via the sauna radial; supply 0.439. It
+    counts the two 8" hoods now (RenewAire FA8, 23.3 / 22.7 Pa), which it never did, and the
+    valves' published curves. **203.0 is 2.0 cfm UNDER MN's 205**: accepted under the owner's
+    shortfall policy and left to commissioning; the 10" hood is the costed option
+    (`notes/erv_static_budget.md` §10). It reports the 7 cfm against the 210 design rate as
+    UNKNOWN, never a FAIL — whether 203 is ENOUGH is
     `code.N1103_6_whole_house_ventilation`'s question, asked against MN's 205 and not against
     a designer's hope. **The extract side was authored at 265 cfm against a 210 cfm machine
     until 2026-09-15** — summed per plenum and never per side, which is why nothing caught it.
@@ -1567,16 +1572,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       stations the duct can stand on — the other three are each inside a pipe.
     - Exhaust must stay the UPPER hood: `mep.erv_outdoor_terminals` measures 3-D distance and
       13' of rise alone clears its 10' rule (→ DESIGN-LOG.md, "Ventilation, ducts and
-      soffits"). Neither hood may turn and travel inside the wall: an R-8 wrapped 6" duct is
-      ~8" OD against a 5 1/2" stud cavity, so each must be a straight through-wall
-      penetration. `test_catlin_erv.py` pins this stack order.
+      soffits"). Neither hood may turn and travel inside the wall: an 8" duct in 2" of
+      elastomeric is 12" OD against a 5 1/2" stud cavity, so each must be a straight
+      through-wall penetration. `test_catlin_erv.py` pins this stack order.
     - **BOTH HOLES ARE MODELLED, AND THE DISCHARGE MOVED 8" TO GET ONE (2026-09-11).**
-      `AO-M-ERV-OA` and `AO-S-ERV-EA` are 7" `RoughOpening`s — 6 5/8" of flashed curb plus
-      3/16" a side — each naming its duct in `penetration_for`, which is what keeps
-      `mep.run_through_opening` from reporting the hole it exists for. Before them an
+      `AO-M-ERV-OA` and `AO-S-ERV-EA` are 9" `RoughOpening`s — the bare 8" duct plus a foam
+      annulus, the hood plate over it — each naming its duct in `penetration_for`, which keeps
+      `mep.run_through_opening` from reporting the hole and makes `mep.duct_penetration_fit`
+      grade the fit (bare OD + 1/4" annulus) instead. Before them an
       `Equipment` placeable resolved NO solid and the wall carried no void, so the hoods
       drew in no elevation, section or GLB and the cladding read unbroken across both ducts.
-      A 7" RO lands wholly inside a bay, so it takes no header, jack or king; it does pack
+      A 9" RO lands wholly inside a bay, so it takes no header, jack or king; it does pack
       girt blocks at its jambs (+9 house-wide, `test_hardware_takeoff.py`).
     - **The discharge is at y=34'-0" because 34'-8" was `stud-001`.** W-S-W1B frames studs at
       400"/416"/430 3/4" and the duct sat dead on the middle one, boring a bearing 2x6 that
@@ -1589,9 +1595,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       2x4 laid flat in free air carrying the panel's wind load into the blocks either side,
       not gravity — broken in one 14 1/2" bay with the curb screwed to the cut ends. The
       discharge cuts nothing, clearing every course by 5 3/16".
-    - Still NOT modelled: the seal PRODUCT. `PipeAccessory(PENETRATION_SEAL)` hard-requires a
-      resolved `PipeRun` host and there is no duct-side spelling, so the take-off still
-      under-bills two escutcheon-and-foam kits. The hole is no longer the missing part.
+    - **The wall line has no bare metal (2026-10-31).** Both legs wear two 1" layers of AP
+      Armaflex (R-8.4) end to end; the wrap stops in the stud bay, the sheathing annulus is
+      low-expansion foam and the ccSPF wraps the duct outboard. `SP-M-ERV-OA-SEAL` /
+      `SP-S-ERV-EA-SEAL` (`SleevePenetration.serves_duct`) model the seal and bill it as
+      `wall-seal-8in`; the wrap solid stops at the sheathing (`resolve/duct_wrap.py`).
+      Sequence and owner: `notes/air_distribution_products.md` §9.
 - **A duct or machine inside a `Soffit` NAMES IT via `soffit_ref`, and the clear section is
   DERIVED — never author a clear width.** `mep.duct_soffit_occupancy` derives the cavity from
   the soffit's own drop, `FramingSpec` member, 5/8" lining, and a 2" hanger gap; an authored
@@ -1694,9 +1703,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     - **`DU-S-ERV-HP-FEED` must name NO soffit.** It shares the box's y-band with the attic
       chase legs twenty feet west; naming the soffit would grade those as occupants of a
       cavity they never enter — a false FAIL.
-    - **`EQ-S-ERV-MIX` is a full return plenum** (12" x 29" x 18", x
-      20'-5 1/2"..21'-5 1/2", y 27'-11"..30'-4") — `REG-S-HP-RET`'s whole 336 in² face
-      must sit inside it, or part of the return face draws from the bare soffit cavity
+    - **`EQ-S-ERV-MIX` is a full return plenum** (12" x 29 1/4" x 18", x
+      20'-5 1/2"..21'-5 1/2", y 27'-11"..30'-4 1/4", 1/4" off the cabinet) — `REG-S-HP-RET`'s
+      whole 28 x 12 hole must sit inside it (`AO-S-HP1-RET` heads off the ladder rung that
+      crossed it; the 12x28x1 filter is a custom order, no stocked size fits), or part of the return face draws from the bare soffit cavity
       (IMC 601.5's building-cavity-as-plenum, which no check here catches — see
       DESIGN-LOG.md).
     - **BED1-3 use straight 6" side collars.** BED3 is at y=27'-6", centreline 100 1/8"
@@ -1715,8 +1725,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       wall mounts are checked against their host face and overhead surface. Duct elevations
       are storey-relative: subtract the floor build-up when aligning a wall grille to a duct.
       Author every ceiling terminal off its own room's ceiling, never a borrowed comment.
-    - `REG-S-HP-STAIR` is a SIDEWALL grille (`REG-T-HP-SUP-SIDE`) in `SF-S-DUCT`'s west
-      lining at 97 1/8" — do not revert it to a ceiling grille above the room's own return.
+    - `REG-S-HP-STAIR` is a SIDEWALL grille (`REG-T-HP-SIDE-1206`) in `SF-S-DUCT`'s west
+      lining at 96 1/4", y=23'-6 5/8" (between the ladder studs) — do not revert it to a
+      ceiling grille above the room's own return. **Every terminal's in-cavity part is a
+      `TerminalNeck` now and `mep.terminal_neck_fit` grades it** — move a register and that
+      check says whether its boot or collar still fits.
       `REG-A-HP-STUDY` floor boot sits at (18'-10", 3'-4"), rotated 90° beneath the
       desk near the centreline wall, clear of its chair. `DU-S-HP-SOUTH` ends east at
       x=19'-6", its riser station, carrying 175 cfm. `REG-S-HP-STUDY2` is an 8x6
@@ -1739,10 +1752,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     - Where the box passes under `ST-S2A`'s flight, `ledger-W-S-SS2-stringer-2` (the 2x10 on
       `W-S-SS2` at y 104 1/8"..105 5/8") may NOT be lapped — `structural.member_interference`
       excuses treads/stringers over a soffit but not that ledger.
-- **`REG-M-EXH2` stays OUTSIDE BATH2's shower, by design** (2026-10-12): at (4'-2", 15'-4"),
-  ~8" west of the front glass, on `DU-M-ERV-R-BATH2`'s 15'-4" bay leg. The front glass stops
+- **`REG-M-EXH2` stays OUTSIDE BATH2's shower, by design** (2026-10-12): at (4'-4", 15'-4") since 2026-10-31 (its valve collar
+  cleared the 8" exhaust trunk at 4'-2" by nothing), 6 5/8" west of the front glass, on `DU-M-ERV-R-BATH2`'s 15'-4" bay leg. The front glass stops
   at 90" under the 106" ceiling, and that open top is the steam path. The ERV has no headroom
-  to boost (206.6 vs 205 cfm), so position is the only lever. **Do not glass the front to the
+  to boost (203.0 vs 205 cfm), so position is the only lever. **Do not glass the front to the
   ceiling, add a transom, or move the grille back by the tub** without re-reading
   `notes/bath2_shower.md`.
   - **The stall-drying fan is a TRANSFER loop, not ventilation** (2026-10-12):

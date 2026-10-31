@@ -78,24 +78,24 @@ from typehaus.model import Location, WallAttachment
 # Total branch airflow and the suite's old ERV supply (REG-S-SUP6) are unchanged.
 REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH01AAAA", tag="REG-S-HP-BED1", kind=DuctSystem.SUPPLY, room="RM-S-BED1",
-             duct_ref="DU-S-HP-BED1", type_ref="REG-T-HP-SUP-SIDE", design_cfm=80,
-             mount=Mount(kind=MountKind.WALL, elevation=inch(95.875)),
+             duct_ref="DU-S-HP-BED1", type_ref="REG-T-HP-SIDE-1206", design_cfm=80,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(95)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-S-BW1", face="right", distance_from_start=inch(40),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
     Register(uid="CSRH02AAAA", tag="REG-S-HP-BED2", kind=DuctSystem.SUPPLY, room="RM-S-BED2",
-             duct_ref="DU-S-HP-BED2", type_ref="REG-T-HP-SUP-SIDE", design_cfm=80,
-             mount=Mount(kind=MountKind.WALL, elevation=inch(95.875)),
+             duct_ref="DU-S-HP-BED2", type_ref="REG-T-HP-SIDE-1206", design_cfm=80,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(95)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-S-BW2", face="right", distance_from_start=inch(24),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
     # Above D-S-BED3's header, with the collar north of its south king; the straight
     # branch passes south of the return plenum (see mep_hvac_branches.py).
     Register(uid="CSRH03AAAA", tag="REG-S-HP-BED3", kind=DuctSystem.SUPPLY, room="RM-S-BED3",
-             duct_ref="DU-S-HP-BED3", type_ref="REG-T-HP-SUP-SIDE", design_cfm=80,
-             mount=Mount(kind=MountKind.WALL, elevation=inch(95.875)),
+             duct_ref="DU-S-HP-BED3", type_ref="REG-T-HP-SIDE-1206", design_cfm=80,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(95)),
              location=Location(attachment=WallAttachment(
-                 wall_ref="W-S-BW3", face="right", distance_from_start=inch(10),
+                 wall_ref="W-S-BW3", face="right", distance_from_start=inch(12.75),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** IT IS A SIDEWALL GRILLE IN THE SOFFIT'S WEST FACE, AND IT WAS A SHORT CIRCUIT. **
     # Until 2026-09-04 this was a ceiling diffuser at (17'-6", 24'-0"), 6'-2" in plan from
@@ -113,25 +113,29 @@ REGISTERS_HVAC_SECOND = [
     #
     # x=18'-6" is the lining's room face (18'-6 1/2") less half the type's 1" body — the
     # convention REG-M-XFER-MUD and every wall device here uses; authored ON the face the
-    # centre reads outside RM-S-HALL and `integrity.placeable_room_mismatch` says so. y=24'-0"
-    # is unchanged, still 2'-0" south of the well. `rotation=deg(90)` turns REG-T-HP-SUP-SIDE's
-    # (12, 1) plan rectangle into (1, 12), which is what a y-running face wants.
+    # centre reads outside RM-S-HALL and `integrity.placeable_room_mismatch` says so. y is
+    # 23'-6 5/8" since 2026-10-31 (it was 24'-0"): the 12x6 register box behind the face has
+    # to land between SF-S-DUCT's ladder studs (`mep.terminal_neck_fit`); still south of the
+    # well. `rotation=deg(90)` turns the sidewall type's (face, projection) rectangle to face
+    # along y.
     #
-    # ** 97 1/8" IS DERIVED AND IS THE FACE'S BOTTOM: ** the trunk's centreline resolves at
-    # 100 1/8" (`ResolvedDuct.z_m`), so a 6" face centred on it runs 97 1/8"..103 1/8", inside
-    # the cavity's 96 1/8"..107 3/8". Change the trunk's depth or the drop and this moves.
+    # ** THE FACE IS CENTRED ON THE TRUNK: ** the trunk's centreline resolves at 100 1/8"
+    # (`ResolvedDuct.z_m`), so the 7 3/4" A220VO face is authored at 96 1/4" and runs to
+    # 104", inside the cavity's 96 1/8"..107 3/8". Change the trunk's depth or the drop and
+    # this moves.
     Register(uid="CSRH04AAAA", tag="REG-S-HP-STAIR", kind=DuctSystem.SUPPLY, room="RM-S-HALL",
-             position=pt(inch(218.76), ft(24)), duct_ref="DU-S-HP-SUP", rotation=deg(90),
-             type_ref="REG-T-HP-SUP-SIDE", design_cfm=50,
-             mount=Mount(kind=MountKind.WALL, elevation=inch(97.125))),
+             position=pt(inch(218.76), inch(282.625)), duct_ref="DU-S-HP-SUP", rotation=deg(90),
+             type_ref="REG-T-HP-SIDE-1206", design_cfm=50,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(96.25))),
     # The suite's high sidewall supply over D-S-SUITE, throwing west into RM-S-SUITE. Its
-    # mount elevation matches the bedroom side collars. The W-S-C2B station is the door centre
-    # at y=14'-1 7/8". `face="left"` is the suite side of this north-running wall.
+    # mount elevation matches the bedroom side collars. The W-S-C2B station is y=14'-8 7/8",
+    # 7" north of the door centre, in the clear cripple bay its branch crosses (2026-10-31).
+    # `face="left"` is the suite side of this north-running wall.
     Register(uid="CSRH06AAAA", tag="REG-S-HP-SUITE", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
-             duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SUP-SIDE", design_cfm=100,
-             mount=Mount(kind=MountKind.WALL, elevation=inch(95.875)),
+             duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SIDE-1206", design_cfm=100,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(95)),
              location=Location(attachment=WallAttachment(
-                 wall_ref="W-S-C2B", face="left", distance_from_start=inch(20.875),
+                 wall_ref="W-S-C2B", face="left", distance_from_start=inch(27.875),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
     # East face of the wall-width SF-S-DUCT (260 3/4"), throwing across the study.
     # The 8x6 grille and its 6" boot clear the ladder rails at a 99 1/8" centreline;
@@ -144,7 +148,7 @@ REGISTERS_HVAC_SECOND = [
     Register(uid="DMVENAN0DW", tag="REG-S-HP-STUDY2", kind=DuctSystem.SUPPLY, room="RM-S-STUDY2",
              position=pt(inch(261.25), inch(43.5)), rotation=deg(90),
              duct_ref="DU-S-HP-STUDY2", type_ref="REG-T-HP-STUDY-SIDE", design_cfm=75,
-             mount=Mount(kind=MountKind.WALL, elevation=inch(94.625))),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(93.75))),
     # RM-S-PLANT at (12'-0", 3'-4"): the branch's west terminus, moved 2'-8" east on
     # 2026-09-23 for that much less 10x6. The glass runs x 4'-0" / 9'-4" / 14'-8"; 9'-4" was
     # its centroid (and 6'-8" before 2026-09-04, which left the east window unwashed). 12'-0",
@@ -166,7 +170,7 @@ REGISTERS_HVAC_SECOND = [
     # says so out loud).
     Register(uid="CXDCYN7YQ2", tag="REG-S-HP-PLANT", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
              position=pt(ft(12), ft(3, 3)), duct_ref="DU-S-HP-SOUTH",
-             type_ref="REG-T-HP-SUP-DAMPERED", design_cfm=75,
+             type_ref="REG-T-HP-CEIL-DAMPERED", design_cfm=75,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # The plant room's extract. RM-S-PLANT was supply-only, so its own ventilation pushed
     # 70%-RH air into every crack in the envelope it is now lined to protect; slightly
@@ -208,10 +212,12 @@ REGISTERS_HVAC_SECOND = [
              # no legal riser station in that opening.
              room="RM-S-PLANT", duct_ref="DU-M-ERV-R-PLANT",
              type_ref="REG-T-ERV-PLANT-EXH", design_cfm=12,
-             mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6), recessed_into_host_surface=True),
+             # A surface disc valve on the liner since 2026-10-31: the collar crosses the
+             # liner, the face does not (it was a ceiling-style face let 2" into the wall).
+             mount=Mount(kind=MountKind.WALL, elevation=inch(98.75)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-S-C1", face="left", distance_from_start=inch(88),
-                 normal_gap=inch(-2.03125), rotation_offset=deg(-90)))),
+                 normal_gap=inch(0), rotation_offset=deg(0)))),
     # THE ONE RETURN, and since 2026-09-04 it opens into a BOX rather than into three
     # things at once. It is a filter-back grille in SF-S-HP1's underside at (20'-11 1/2",
     # 29'-1 1/4"), wholly inside EQ-S-ERV-MIX — the return plenum that fills the box's east
@@ -247,8 +253,8 @@ REGISTERS_HVAC_SECOND = [
     # for the air handler's emergency drain pan, and this line followed it by hand.
     Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN,
              room="RM-S-HALL", rotation=deg(90),
-             position=pt(inch(251.5), inch(349.25)), duct_ref="DU-S-HP-RET",
-             type_ref="REG-T-HP-RET", design_cfm=650,
+             position=pt(inch(251.5), inch(350.25)), duct_ref="DU-S-HP-RET",
+             type_ref="REG-T-HP-RET-FILTER", design_cfm=650,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1))),
 ]
 
@@ -259,9 +265,9 @@ REGISTERS_HVAC_ATTIC = [
     # inside the desk footprint. The room below takes its supply from the soffit
     # leg, so DU-S-HP-SOUTH ends at its riser station, x=19'-6".
     Register(uid="CARH01AAAA", tag="REG-A-HP-STUDY", kind=DuctSystem.SUPPLY,
-             room="RM-A-STUDY", position=pt(ft(18, 10), ft(3, 3)), rotation=deg(90),
+             room="RM-A-STUDY", position=pt(ft(18, 10), ft(3, 4)), rotation=deg(90),
              duct_ref="DU-S-HP-SOUTH",
-             type_ref="REG-T-HP-SUP", design_cfm=100,
+             type_ref="REG-T-HP-FLOOR-0612", design_cfm=100,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # Directly above the hall soffit: the boot rises straight through FS-ATTIC off the
     # x=19'-4" trunk below, no attic duct run needed. y=11'-4" is the next FS-ATTIC bay
@@ -270,7 +276,7 @@ REGISTERS_HVAC_ATTIC = [
     # stays inside RM-A-EAST-UNFIN and clear of FO-A-STAIR's walkway.
     Register(uid="CARH02AAAA", tag="REG-A-HP-EAST", kind=DuctSystem.SUPPLY,
              room="RM-A-EAST-UNFIN", position=pt(ft(19, 4), ft(11, 4)), duct_ref="DU-S-HP-SUP",
-             type_ref="REG-T-HP-SUP", design_cfm=35,
+             type_ref="REG-T-HP-FLOOR-0612", design_cfm=35,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # The west loft's supply: a floor boot straight up off DU-S-HP-SUITE through FS-ATTIC.
     # Shifted 6" west (2026-10-04), then 12" back east to x=17'-0" (2026-10-14), still rotated
@@ -286,8 +292,8 @@ REGISTERS_HVAC_ATTIC = [
     # MINI-SPLIT IS WANTED: reusing this boot is the whole reason the studio costs what it
     # costs.
     Register(uid="CARH03AAAA", tag="REG-A-HP-WEST", kind=DuctSystem.SUPPLY,
-             room="RM-A-STUDIO", position=pt(ft(17), ft(14, 1.875)), rotation=deg(90),
-             duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SUP", design_cfm=75,
+             room="RM-A-STUDIO", position=pt(ft(17), ft(14)), rotation=deg(90),
+             duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-FLOOR-0612", design_cfm=75,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
 
@@ -320,11 +326,11 @@ REGISTERS = [
     # INT_2X4_RC, whose 3 1/2" cavity takes no 4" riser without a shop-made stack.
     Register(uid="CMR903AAAA", tag="REG-S-RET-BED1", kind=DuctSystem.RETURN, room="RM-S-BED1",
             position=pt(ft(28, 1), ft(9, 9)), duct_ref="DU-M-ERV-R-BED1",
-            type_ref="REG-T-ERV-EXH", design_cfm=2,
+            type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=2,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR907AAAA", tag="REG-S-RET-BED2", kind=DuctSystem.RETURN, room="RM-S-BED2",
             position=pt(ft(28, 1), ft(18, 4)), duct_ref="DU-M-ERV-R-BED2",
-            type_ref="REG-T-ERV-EXH", design_cfm=2,
+            type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=2,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # BED3 IS A CEILING GRILLE, AND ITS TWO NEIGHBOURS ARE NOT: FO-S-STAIR blocks every
     # FS-S bay between y=26'-0 3/8" and y=35'-5 3/8" across x 10'-3 1/8"..17'-8 5/8", BED3
@@ -335,7 +341,7 @@ REGISTERS = [
     # asymmetry with BED1/BED2 is real and is the price of the stair well being where it is.
     Register(uid="CMR904AAAA", tag="REG-S-RET-BED3", kind=DuctSystem.RETURN, room="RM-S-BED3",
             position=pt(ft(29), ft(31, 4)), duct_ref="DU-A-ERV-R-BED3",
-            type_ref="REG-T-ERV-EXH", design_cfm=2,
+            type_ref="REG-T-ERV-VALVE-EXH", design_cfm=2,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # No REG-S-RET2 (the suite's own extract) — the owner's call, and defensible on the
     # model too: no check fires for its absence (BEDROOM is not in
@@ -346,15 +352,15 @@ REGISTERS = [
 REGISTERS_SECOND = [
     Register(uid="CSRV03AAAA", tag="REG-S-EXH3", kind=DuctSystem.EXHAUST, room="RM-S-SUITEBATH",
             position=pt(ft(14), ft(19, 4)), duct_ref="DU-M-ERV-R-SUITEBATH",
-            type_ref="REG-T-ERV-EXH", design_cfm=20,
+            type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=20,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CSRV04AAAA", tag="REG-S-EXH4", kind=DuctSystem.EXHAUST, room="RM-S-VANITY",
             position=pt(ft(3), ft(24, 8)), duct_ref="DU-M-ERV-R-VANITY",
-            type_ref="REG-T-ERV-EXH", design_cfm=20,
+            type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=20,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CSRV05AAAA", tag="REG-S-EXH1", kind=DuctSystem.EXHAUST, room="RM-S-BATH1",
             position=pt(ft(5), ft(32, 8)), duct_ref="DU-A-ERV-R-BATH1",
-            type_ref="REG-T-ERV-EXH", design_cfm=20,
+            type_ref="REG-T-ERV-VALVE-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9)), rotation=deg(90)),
 ]
 
@@ -369,7 +375,7 @@ REGISTERS_SECOND = [
 REGISTERS_MAIN = [
     Register(uid="CMRV01AAAA", tag="REG-M-SUP1", kind=DuctSystem.SUPPLY, room="RM-M-LIVING",
             position=pt(ft(27), ft(12, 8)), duct_ref="DU-M-ERV-R-LIVING",
-            type_ref="REG-T-ERV-SUP", design_cfm=20,
+            type_ref="REG-T-ERV-VALVE-SUP", design_cfm=20,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # No second living-room outlet: one ERV outlet is right for an open-plan room at the
     # whole-house rate; a pair would be sized as if this were a heating trunk.
@@ -381,7 +387,7 @@ REGISTERS_MAIN = [
     # leaves 2'-2" to the fan hub, so the 15 cfm supply is not blowing into the motor.
     Register(uid="CMRV03AAAA", tag="REG-M-SUP3", kind=DuctSystem.SUPPLY, room="RM-M-BED",
             position=pt(ft(7), ft(6)), duct_ref="DU-M-ERV-R-BED",
-            type_ref="REG-T-ERV-SUP", design_cfm=15,
+            type_ref="REG-T-ERV-VALVE-SUP", design_cfm=15,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # ================== RM-M-STUDY: THE CALL BOOTH'S TWO TERMINALS ==================
     #
@@ -414,7 +420,7 @@ REGISTERS_MAIN = [
     # face and 3 3/4" clear of its top plate.
     Register(uid="CMRV04AAAA", tag="REG-M-SUP4", kind=DuctSystem.SUPPLY, room="RM-M-STUDY",
             position=pt(ft(17, 2), ft(20, 8)), duct_ref="DU-M-ERV-R-STUDY",
-            type_ref="REG-T-ERV-SUP", design_cfm=15,
+            type_ref="REG-T-ERV-VALVE-SUP", design_cfm=15,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # -- the extract, low, and NOT on the east wall -----------------------------------
     #
@@ -477,16 +483,16 @@ REGISTERS_MAIN = [
     # which the host codemod could not choose between).
     Register(uid="H6C6RD9NED", tag="REG-M-RET-STUDY", kind=DuctSystem.RETURN, room="RM-M-STUDY",
             duct_ref="DU-M-ERV-R-LAUNDRY",
-            type_ref="REG-T-ERV-EXH-WALL", design_cfm=5,
+            type_ref="REG-T-ERV-VALVE-EXH-WALL", design_cfm=5,
             mount=Mount(kind=MountKind.WALL, elevation=inch(12)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-M-CLN2", face="left", distance_from_start=inch(7.4375),
+                wall_ref="W-M-CLN2", face="left", distance_from_start=inch(11.5),
                 normal_gap=inch(0), rotation_offset=deg(180)))),
     # The two baths are EXHAUST at 20 cfm each, like the second storey's — see the note over
     # REGISTERS_SECOND for why the whole wet-room set changed direction on 2026-08-01.
     Register(uid="CMRV05AAAA", tag="REG-M-EXH1", kind=DuctSystem.EXHAUST, room="RM-M-BATH1",
             position=pt(ft(1, 2), ft(24, 8)), duct_ref="DU-M-ERV-R-BATH1",
-            type_ref="REG-T-ERV-EXH", design_cfm=20,
+            type_ref="REG-T-ERV-VALVE-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # BATH2's moved 2026-10-12 from (4'-0", 18'-0") by the tub to the 15'-4" bay, ~8" west of
     # the shower's front glass (x 4'-10 5/8"). That glass stops at 90" under a 106" ceiling,
@@ -494,8 +500,8 @@ REGISTERS_MAIN = [
     # enclosure on purpose, at 20 cfm: the ERV has no headroom to boost
     # (notes/bath2_shower.md). Clear of ED-M-BATH2-CAN1 at (2'-6", 16'-0").
     Register(uid="CMRV06AAAA", tag="REG-M-EXH2", kind=DuctSystem.EXHAUST, room="RM-M-BATH2",
-            position=pt(ft(4, 2), ft(15, 4)), duct_ref="DU-M-ERV-R-BATH2",
-            type_ref="REG-T-ERV-EXH", design_cfm=20,
+            position=pt(ft(4, 4), ft(15, 4)), duct_ref="DU-M-ERV-R-BATH2",
+            type_ref="REG-T-ERV-VALVE-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # THE OWNER ASKED FOR THIS ONE TO GO, AND IT COULD NOT. RM-M-LAUNDRY is a 4'-3" x 4'-3"
     # closet with a CONDENSING dryer (APPL-LG-WASHTOWER, so M1502 does not reach it and
@@ -509,12 +515,12 @@ REGISTERS_MAIN = [
     # So it stays, at 5 cfm rather than a full pickup — the smallest rate that is both true
     # and passing, on its own radial at the 20'-8" bay centre that radial rides.
     Register(uid="CMRV07AAAA", tag="REG-M-RET3", kind=DuctSystem.RETURN, room="RM-M-LAUNDRY",
-            position=pt(ft(10, 6), ft(20, 8)), duct_ref="DU-M-ERV-R-LAUNDRY",
-            type_ref="REG-T-ERV-EXH", design_cfm=2,
+            position=pt(ft(10, 6), ft(20, 10)), duct_ref="DU-M-ERV-R-LAUNDRY",
+            type_ref="REG-T-ERV-VALVE-EXH", design_cfm=2,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     Register(uid="CMRV08AAAA", tag="REG-M-RET5", kind=DuctSystem.RETURN, room="RM-M-LIVING",
             position=pt(ft(20, 10.7), ft(21, 9.75)), duct_ref="DU-M-ERV-R-KITCH",
-            type_ref="REG-T-ERV-EXH", design_cfm=4,
+            type_ref="REG-T-ERV-VALVE-EXH", design_cfm=4,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # RM-M-MUDROOM is stale-pickup only, no fresh-air outlet (reversed 2026-07-29 from an
     # earlier fresh-air-intake call). A mudroom is the room that smells; pressurising it pushes
@@ -522,8 +528,8 @@ REGISTERS_MAIN = [
     # air moves toward the boots and the ERV recovers the heat. Same grille/hole/uid, direction
     # only — centred in the hallway strip between the two closets.
     Register(uid="CMRV09AAAA", tag="REG-M-RET-MUD", kind=DuctSystem.RETURN, room="RM-M-MUDROOM",
-            position=pt(ft(4, 0.4), ft(31, 4)), duct_ref="DU-M-ERV-R-MUD",
-            type_ref="REG-T-ERV-EXH", design_cfm=4,
+            position=pt(ft(4, 4), ft(31, 4)), duct_ref="DU-M-ERV-R-MUD",
+            type_ref="REG-T-ERV-VALVE-EXH", design_cfm=4,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # The one passive opening in the house (plans/TODO.md): a louver in W-M-STRW that lets
     # the mudroom share the stair's air. No duct/damper/fan — `duct_ref` is None (the first
@@ -547,7 +553,7 @@ REGISTERS_MAIN = [
     # 2026-09-24 (was 7'-6"), dropped with EQ-M-HP3-STAIR under ST-M2S's upper landing:
     # the top clears that landing's 2x10 ledger on this wall (bottom 4'-9 3/4") by 5 3/4".
     Register(uid="MW7W7SBZ65", tag="REG-M-XFER-MUD", kind=DuctSystem.TRANSFER, room="RM-M-LIVING",
-            type_ref="REG-T-TRANSFER-1210",
+            type_ref="REG-T-TRANSFER-PAIR-1210",
             mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-M-STRW", face="left", distance_from_start=inch(17.125),
@@ -562,9 +568,10 @@ REGISTERS_BASEMENT = [
             # 1 11/16" and 1/2" off the drag, both genuinely round stations, and near the
             # centre of the gym's 18' x 18' ceiling instead of tucked into its south-west
             # corner. DU-B-ERV-R-GYM's last leg follows it: a register and the duct that
-            # feeds it have to end at the same point.
-            position=pt(ft(19), ft(13)), duct_ref="DU-B-ERV-R-GYM",
-            type_ref="REG-T-ERV-SUP", design_cfm=18,
+            # feeds it have to end at the same point. 13'-4" since 2026-10-31: on 13'-0" the
+            # valve's collar stood on an FS-M-EAST joist (`mep.terminal_neck_fit`).
+            position=pt(ft(19), ft(13, 4)), duct_ref="DU-B-ERV-R-GYM",
+            type_ref="REG-T-ERV-VALVE-SUP", design_cfm=18,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # RM-B-PLAY-N is 324 sf of windowless habitable MEDIA space, legal only under R303.1
     # Exception 1, whose second half requires outdoor air supplied to *the room* — an
@@ -579,7 +586,7 @@ REGISTERS_BASEMENT = [
     # south bookcases (fronts y=19'-3 3/8", tops 7'-6") and the sectional, not over either.
     Register(uid="CBRV02AAAA", tag="REG-B-SUP2", kind=DuctSystem.SUPPLY, room="RM-B-PLAY-N",
             position=pt(ft(19), ft(20)), duct_ref="DU-B-ERV-R-PLAY",
-            type_ref="REG-T-ERV-SUP", design_cfm=30,
+            type_ref="REG-T-ERV-VALVE-SUP-125", design_cfm=30,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # THE WORKSHOP TERMINAL IS A BENCH HOOD, NOT A CEILING DIFFUSER: a diffuser eight feet
     # up does not capture solder fume, it dilutes it into the room and then extracts the
@@ -630,7 +637,7 @@ REGISTERS_BASEMENT = [
     # 1"; the base at 7'-1 1/4" centres the 7" face on the duct.
     Register(uid="CBRV05AAAA", tag="REG-B-EXH1", kind=DuctSystem.EXHAUST, room="RM-B-BATH",
             duct_ref="DU-B-ERV-R-BATH",
-            type_ref="REG-T-ERV-EXH-WALL", design_cfm=20,
+            type_ref="REG-T-ERV-VALVE-EXH-WALL", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=inch(85.25)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-B-STR3B", face="left", distance_from_start=inch(18),
@@ -655,7 +662,7 @@ REGISTERS_ATTIC = [
     # arrangement every other storey already has.
     Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-STUDIO",
             position=pt(ft(1), ft(20, 8)), duct_ref="DU-A-ERV-R-ATTIC",
-            type_ref="REG-T-ERV-EXH", design_cfm=5,
+            type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=5,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # ** THE BATH'S EXHAUST, AND ITS design_cfm IS NOT OPTIONAL. ** R303.3 accepts an operable
     # window OR a local exhaust; this room has no exterior wall, so it is the exhaust — and
@@ -687,8 +694,8 @@ REGISTERS_ATTIC = [
             # REG-T-ERV-EXH-WALL, not the ceiling REG-T-ERV-EXH: this is the house's only
             # WALL-mounted extract, and on the ceiling type the resolver read its 7" face as
             # 7" of projection into the room. See plan/mep_hvac.py.
-            type_ref="REG-T-ERV-EXH-WALL", design_cfm=20,
-            mount=Mount(kind=MountKind.WALL, elevation=ft(3)),
+            type_ref="REG-T-ERV-VALVE-EXH-WALL", design_cfm=20,
+            mount=Mount(kind=MountKind.WALL, elevation=inch(35)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-A-STU-W", face="right", distance_from_start=inch(52.5),
                  normal_gap=inch(0), rotation_offset=deg(0)))),

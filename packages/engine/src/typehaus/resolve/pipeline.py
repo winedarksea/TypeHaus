@@ -217,6 +217,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_placeables(plan, model))
         # After floors, roofs, soffits and ceilings: a hung fixture's cable runs to them.
         resolve_suspensions(model)
+        from typehaus.resolve.terminal_necks import emit_terminal_necks
+
+        emit_terminal_necks(model)  # a register's boot or spigot, behind its placed face
     # Apron cutouts use the resolved service leaves, including their final elevations.
     with _stage("paneling"):
         findings.extend(resolve_paneling(plan, model))

@@ -13,7 +13,6 @@
 # stair FloorOpening (x:11'-18', y:25'-36') and both cross the central bearing wall at
 # x=18'. The terminals on these trunks are in plan/mep_registers.py.
 
-from library.hvac import REG_T_HP_RET, REG_T_HP_SUP_DAMPERED
 from typehaus import (
     ClearancePolicy,
     ClearanceZone,
@@ -25,7 +24,6 @@ from typehaus import (
     EquipmentType,
     Footprint2D,
     PortCertainty,
-    RegisterType,
     Service,
     ServicePort,
     SleevePenetration,
@@ -36,122 +34,10 @@ from typehaus import (
 )
 from typehaus.model import m
 
-# Two terminal families: REG-T-ERV-SUP/EXH are ventilation terminals (small, continuous-
-# flow, ~197 cfm whole-house rate) replacing the old furnace-styled REG-T-SUPPLY/RETURN
-# (plans/TODO.md §HVAC) — old tags dropped, not aliased, so a schedule can't print both.
-# REG-T-HP-SUP/RET are the bigger conditioned-air terminals on System 1's ducted chase.
-# ** EVERY ERV TERMINAL TOOK A 4" COLLAR ON 2026-09-12 (BLD-08). ** The radials below them
-# went from 3" semi-rigid to 4" galvanized snap-lock, and a terminal is bought by its collar.
-# The 7" x 7" FACE does not move — it is the hole in the ceiling and the thing a clearance
-# check measures — and neither does any elevation; only the spigot the boot lands on.
-#
-# ** `static_loss_pa_at_cfm` IS DERIVED, NOT PUBLISHED. ** These are commodity bath-fan
-# grilles and diffusers; none of their makers publishes a pressure-drop curve at 20 cfm. The
-# three points on each row are K x (collar velocity pressure) at three flows, worked in
-# notes/erv_static_budget.md §5 from ASHRAE Fundamentals Ch. 21 terminal coefficients — K = 5
-# for a plain dampered diffuser, K = 8 where the face carries a closable or motorised damper
-# of its own. A submitted product with a real curve replaces the three points and nothing
-# else. They feed `mep.erv_static_budget` and are read by nothing else.
-REGISTER_TYPES = (
-    RegisterType(tag="REG-T-HP-STUDY-SIDE",
-                 name="Study heat-pump supply, 8x6 double-deflection sidewall with OBD",
-                 footprint=(inch(8), inch(1)), height=inch(6), plan_symbol="register",
-                 source="notes/system1_study_supply.md — Titus 300R 8x6 performance basis",
-                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
-    # REG-T-ERV-EXH-WALL below is the house's only wall-oriented ERV terminal type:
-    # `footprint` is a PLAN rectangle, so a ceiling grille authors (face, face) with
-    # `height` as its 1" thickness and a wall grille authors (face, DEPTH) with `height` as
-    # the face. Mount a ceiling type on a wall and 3" of it draws inside the studs.
-    # A CEILING diffuser lies in the plane it is cut into (7x7 face, 1" deep); mounting that
-    # type on a WALL tells the resolver the body reaches 7" off the wall into the room.
-    # ``_body_profile`` measures a wall mount's projection as the local y extent of its
-    # footprint, so REG-A-STUBATH-EXH — the house's one wall-hung extract — read as a 7"
-    # protrusion, past A117.1 §307.2's 4", obstructing FX-A-STUBATH-WC's required clear
-    # space. A sidewall grille is a 7" face 1" deep, which is what this type says.
-    # The sauna's own pair, small and dampered. A sauna is run in sessions, not
-    # continuously: during a session you want the room sealed and stratified, and after one
-    # you want it turned over hard. Both terminals are 4"x4" with an adjustable, closable
-    # damper at the face (plans/TODO.md §HVAC) so the room can be shut off the trunk and
-    # opened wide, which a fixed 6" round diffuser cannot do.
-    # The plant room's pair (notes/plant_room.md). The room is held at ~75 F / 70% RH
-    # year-round, which makes its ventilation a pressure question before it is an air
-    # question: natatorium practice holds such a room 0.05-0.15 in. w.g. NEGATIVE to the
-    # spaces around it, so house air leaks in (harmless) and room air never leaks into a
-    # stud bay (the failure this whole room is built to prevent).
-    #
-    # A dedicated, dampered branch off EQ-B-ERV rather than a separate machine — the house
-    # already owns a proper ERV with a condensate drain and real frost control, and
-    # "separate from the house ERV" is best had with an independent DAMPER, not an
-    # independent unit.
-    #
-    # RH-driven, not schedule-driven: no terminal and no ERV self-regulates humidity, and
-    # the setpoint resets from 70% down to ~55% as outdoor air falls to -15 F.
-    RegisterType(tag="REG-T-ERV-PLANT-EXH",
-                 name="Plant-room stale-air extract, 6x4, motorised RH-controlled damper",
-                 footprint=(inch(6), inch(4)), height=inch(1),
-                 plan_symbol="register", ventilation_terminal=True,
-                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
-                 source="notes/plant_room.md — dedicated dampered extract off EQ-B-ERV; holds RM-S-PLANT neutral-to-slightly-negative and is the room's only moisture removal path",
-                 ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
-    # System 1's terminal in the plant room needs to be shuttable, which the plain
-    # REG-T-HP-SUP is not. Two reasons, both fatal without it: DU-S-HP-SOUTH ties the room's
-    # air to the whole-house air handler and every other room on the branch, so an open
-    # damper carries the plant room's moisture house-wide; and a supply-only terminal in a
-    # closed room pressurises it. Motorised so the RH controller owns it, interlocked with
-    # REG-S-ERV-PLANT-EXH.
-    REG_T_HP_SUP_DAMPERED,
-    # The SIDEWALL twin of REG-T-HP-SUP, used by the bedrooms and stair. It was introduced
-    # for REG-S-HP-STAIR, which was a ceiling diffuser dumping
-    # 50 cfm straight down 6'-2" from a 650 cfm return in the same room — a short circuit that
-    # no size of grille fixes, because the fault is the DIRECTION.
-    #
-    # `footprint` is a PLAN rectangle, so a wall type authors (face, DEPTH) and puts the face
-    # height in `height` — the same swap REG-T-ERV-EXH-WALL and REG-T-TRANSFER-1210 make, and
-    # for the same reason: mount a ceiling type on a wall and 6" of it draws inside the
-    # framing. The 12" face runs along the wall, 1" of body reaches into the room, the 6" is
-    # vertical. On a y-running face (which SF-S-DUCT's west lining is) the instance carries
-    # `rotation=deg(90)`, exactly as REG-M-XFER-MUD does.
-    #
-    # DOUBLE DEFLECTION, and that is the whole point of the part: the horizontal blades set
-    # the spread and the vertical ones aim it, so 50 cfm can be thrown WEST across the hall
-    # instead of being handed to the return. 72 in2 gross / ~50 in2 free at 50 cfm is 144 fpm
-    # face velocity — silent — with the throw coming off the vane setting rather than off a
-    # starved face.
-    # REG-T-HP-RET is a filter-back return grille, and it is the only filter in this system:
-    # with the machine hung in SF-S-HP1 there is no filter cabinet anywhere else, and this
-    # grille is the serviceable face a person reaches from the hall floor.
-    #
-    # ** 28 x 12 SINCE 2026-09-04, DOWN FROM 30 x 16, AND THE GRILLE SHRANK TO FIT ITS OWN
-    # PLENUM. ** It was 480 in2 lapping three different things at once — 240 in2 into
-    # DU-S-HP-RET, 120 in2 into the old mixing box, and 120 in2 into bare soffit cavity,
-    # which is IMC 601.5's building-cavity-as-plenum and which no check in this engine
-    # grades. EQ-S-ERV-MIX is a full return plenum now (12" across the east lane by 29"
-    # along), and this face is sized to sit WHOLLY inside it: 12" across after the instance's
-    # deg(90), 28" along, 336 in2.
-    #
-    # 336 in2 at the 650 cfm of ROOM air it actually carries — the ERV puts the other 100
-    # into the same plenum through its own drop — is 279 fpm, under Manual D SS4-10's 300 fpm
-    # for a grille carrying the filter. At the full 750 it would be 321 fpm, under the 350
-    # for a plain return grille; either reading clears.
-    #
-    # ** THE FILTER AND THE FACE ARE NOW TYPED, NOT ONLY PROSE. ** `filter_nominal_size` /
-    # `filter_merv` / `service_face` (model/types.py::AirHandlingProductFacts) say in fields
-    # what the `source` string below has always said in a sentence: a 28 x 12 x 1 MERV 13
-    # filter behind a hinged face that opens DOWNWARD out of the ceiling. It is the only
-    # filter and the only serviceable face on System 1 — EQ-S-HP1-AH hangs in SF-S-HP1 with
-    # no filter cabinet of its own — so this is the row an owner's maintenance schedule is
-    # built from and the size that gets ordered four times a year.
-    REG_T_HP_RET,
-    # Third family: a passive transfer louver — no duct/fan/system, just a hole with a
-    # grille, moving air on pressure difference alone. `ports=()` is deliberate: nothing to
-    # connect it to. (`needs` still defaults to SUPPLY_AIR — unused by a register, and the
-    # dialect can't spell an empty frozenset, so it's left rather than worked around.)
-    # 12" face fits a 14 1/2" clear 2x6 bay without cutting a stud (10x8 free opening);
-    # wider needs a header. `footprint`/`height` are swapped vs. the ceiling diffusers above
-    # because this one mounts in a wall, not a ceiling — swap them back and it resolves flat.
-)
+# The air terminals' TYPES moved to plan/air_terminal_types.py on 2026-10-31 (one white
+# family at submittal sizes: 100 mm disc valves on the ERV, aluminium grilles on System 1),
+# with the plant-room extract and the study sidewall that lived here. Instances stay in
+# plan/mep_registers.py. Spec and sources: notes/air_distribution_products.md.
 
 
 
@@ -320,7 +206,7 @@ DUCTS_HVAC_SECOND = [
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 6), ft(30, 4.5)), pt(ft(19, 6), ft(9, 10))),
             width=inch(18), depth=inch(8), routing=DuctRouting.SOFFIT,
-            soffit_ref="SF-S-DUCT", design_cfm=750),
+            soffit_ref="SF-S-DUCT", design_cfm=750, material="galvanized"),
     # THE RETURN — a real one, up the east lane of SF-S-HP1. The old system had no return
     # duct worth the name: the machine breathed through RM-S-STUDY2's cased opening off a
     # 6" stub.
@@ -353,10 +239,11 @@ DUCTS_HVAC_SECOND = [
             path=(pt(ft(21), ft(29, 7)), pt(ft(21), ft(34, 8)),
                   pt(ft(19, 6), ft(34, 8)), pt(ft(19, 6), ft(34))),
             width=inch(10), depth=inch(18), routing=DuctRouting.SOFFIT,
-            soffit_ref="SF-S-HP1", design_cfm=750),
-    # West branch to RM-S-SUITE: tees off DU-S-HP-SUP at D-S-SUITE's centreline
-    # (y=14'-1 7/8"), crosses W-S-C2B above the door through the header/top-plate cripple
-    # zone, and ends at the loft boot 28" west of the tee. REG-S-HP-SUITE is a high sidewall
+            soffit_ref="SF-S-HP1", design_cfm=750, material="galvanized"),
+    # West branch to RM-S-SUITE: tees off DU-S-HP-SUP at y=14'-8 7/8", 7" north of
+    # D-S-SUITE's centreline, and crosses W-S-C2B above the door in the CLEAR bay between
+    # its header cripples (2026-10-31: on the door centre the 10x8 ran through the middle
+    # cripple, which `mep.terminal_neck_fit` found), ending at the loft boot 28" west. REG-S-HP-SUITE is a high sidewall
     # grille on W-S-C2B's suite face; REG-A-HP-WEST is the floor boot at the duct end in
     # RM-A-STUDIO. 175 cfm feeds both: 100 to the suite and 75 to the loft.
     # 315 fpm through 10x8, quiet.
@@ -372,9 +259,9 @@ DUCTS_HVAC_SECOND = [
     # Underside 8'-0 1/8" over the arm floor, against the 6'-8" headroom line the declaration
     # does not retire.
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 4), ft(14, 1.875)), pt(ft(17), ft(14, 1.875))),
+            path=(pt(ft(19, 4), ft(14, 8.875)), pt(ft(17), ft(14, 8.875))),
             width=inch(10), depth=inch(8), routing=DuctRouting.EXPOSED,
-            start_elevation=inch(100.125), end_elevation=inch(100.125), design_cfm=175),
+            start_elevation=inch(100.125), end_elevation=inch(100.125), design_cfm=175, material="galvanized"),
     # The plant room and attic study share FS-ATTIC's y=3'-4" I-joist bay.
     # RM-S-STUDY2 takes 75 cfm from the soffit leg below before it rises; this
     # bay run carries the remaining 175 cfm west across the x=18' bearing line.
@@ -416,7 +303,7 @@ DUCTS_HVAC_SECOND = [
     DuctRun(uid="NYRX7TBEGH", tag="DU-S-HP-SOUTH", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 6), ft(3, 3)), pt(ft(12), ft(3, 3))),
             width=inch(10), depth=inch(6), routing=DuctRouting.JOIST_BAY,
-            floor_ref="FS-ATTIC", design_cfm=175),
+            floor_ref="FS-ATTIC", design_cfm=175, material="galvanized"),
     # THE RISER — a repeated plan point at two elevations is the vertical leg, the idiom
     # DU-S-ERV-HP-FEED's drop already uses.
     #
@@ -464,7 +351,7 @@ DUCTS_HVAC_SECOND = [
                   pt(ft(19, 6), ft(3, 3))),
             elevations=(inch(99.125), inch(99.125), inch(111.125)),
             width=inch(10), depth=inch(6), routing=DuctRouting.SOFFIT,
-            soffit_ref="SF-S-DUCT", design_cfm=250),
+            soffit_ref="SF-S-DUCT", design_cfm=250, material="galvanized"),
     # DU-S-ERV-HP-FEED is in plan/mep_erv_l3.py: it comes off the attic sub-manifold and
     # drops straight onto EQ-S-ERV-MIX in SF-S-HP1; it never enters SF-S-DUCT. DU-S-PLANT-EXH is DU-M-ERV-R-PLANT there,
     # on the LEVEL-2 manifold, running in FS-S-WEST's open-web trusses and rising inside

@@ -45,6 +45,8 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   duct_dryer: "Dryer exhaust duct",
   duct_transfer: "Transfer opening",
   duct_outdoor_air: "Outdoor-air duct",
+  insulation_wrap: "Duct insulation",
+  terminal_neck: "Grille boot / valve collar",
   drain_tile: "Drain tile",
   french_drain: "French drain",
   drywell: "Drywell",

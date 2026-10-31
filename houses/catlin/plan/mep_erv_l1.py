@@ -238,7 +238,9 @@ DUCTS_ERV_BASEMENT = [
     # ** IT RISES 6 1/8" AT x=17'-0" AND CROSSES `W-B-CS3` OVER `D-B-GYM`'s HEADER. ** The
     # header tops out at -22.19" and the double top plate starts at -16.44"; centred at
     # -19 5/16" the duct passes between the cripples at y=12'-4 3/16" and 13'-7 7/16" with
-    # 7/8" to header and plate, and cuts nothing (`notes/framing_bore_limits.md` §6a is a
+    # 7/8" to header and plate, and cuts nothing. At y=13'-4" since 2026-10-31: REG-B-SUP1's
+    # valve collar has to stand in the FS-M-EAST bay north of the y=13'-0" joist, and 13'-4"
+    # is the one line clearing both the joist (3/4") and the north cripple (11/16") (`notes/framing_bore_limits.md` §6a is a
     # hole drilled IN a cripple; this is air between two). The cast sleeve through
     # `W-B-CS2` was the alternative and is not taken: a sleeve is a pre-pour commitment.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
@@ -246,7 +248,7 @@ DUCTS_ERV_BASEMENT = [
                   pt(ft(7, 3), ft(29, 6)), pt(ft(9), ft(29, 6)),
                   pt(ft(9), ft(18, 8)), pt(ft(9), ft(17, 4.75)),
                   pt(ft(17), ft(17, 4.75)),
-                  pt(ft(17), ft(13)), pt(ft(17), ft(13)), pt(ft(19), ft(13))),
+                  pt(ft(17), ft(13, 4)), pt(ft(17), ft(13, 4)), pt(ft(19), ft(13, 4))),
             elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(89),
                         inch(88.5), inch(84), inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=18),

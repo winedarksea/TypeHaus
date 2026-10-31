@@ -35,7 +35,8 @@ def test_the_sleeve_spans_the_sheathing_to_the_cladding_face(catlin_model_ro):
 
 
 def test_cast_sleeves_keep_their_concrete_hosts(catlin_model_ro):
-    cast = [s for s in catlin_model_ro.sleeves if s.tag != _TAG]
+    # The ERV hood legs' wall seals are framed-wall too, and seal a duct (serves_duct).
+    cast = [s for s in catlin_model_ro.sleeves if s.tag != _TAG and not s.serves_duct]
     assert cast and all(s.host_category != "framed_wall" for s in cast)
     assert all(s.seal is None and s.length_m is None for s in cast)
 

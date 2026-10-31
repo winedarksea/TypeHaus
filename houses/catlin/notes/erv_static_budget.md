@@ -9,11 +9,15 @@ by `tests/test_erv_static_oracle.py`.
 **Companions:** `notes/room_heat_loss_baths.md` — the radiant arithmetic from the same
 BLD-08 pass; `notes/system1_return_path.md` — the *other* air system's return path, which
 shares none of this machine's duct.
-**What is asked of the reviewer:** redo §6's two column sums, and say whether 2.0 cfm of
-margin over MN's 205 is enough to build on. Both of §7's 8" upsizes are now bought, so there
+**What is asked of the reviewer:** redo §6's two column sums and §10.4's additions, and say
+whether a 2.0 cfm residual UNDER MN's 205 is acceptable to build on and commission (§10.4). Both of §7's 8" upsizes are now bought, so there
 is no cheap lever left in this note — what remains is `DU-ERV-RISER-EXH`, which is 58 % of the
 governing column on its own. The friction arithmetic in §2–§5 is ordinary Darcy–Weisbach and
 is offered for checking, not for deciding.
+
+> ⚠ **2026-10-31: THE HOODS ARE COUNTED NOW, AND THE MACHINE DELIVERS 203.0 cfm** (§10):
+> extract governs at 0.460 in. w.g., 2.0 cfm under 205 — accepted per the owner's shortfall
+> policy and left to commissioning. Every 2026-09/-10 figure below is the pre-hood reading.
 
 > ⚠ **`ventilation_cfm = 210` IS A DESIGN INTENT, NOT A PROMISE THE CURVE CAN KEEP.** 210 is
 > the model-name number and it is the curve's value at 0.2 in. w.g. No duct system this size
@@ -573,6 +577,103 @@ measured one.
 - **The 6" ERV collars themselves.** Four collar transitions at the machine are inside its
   certified rating and are not double-counted here.
 
+## 10. Outdoor legs: thermal and hood losses (2026-10-31)
+
+Added with the air-distribution product pass (`notes/air_distribution_products.md`). It is
+§10 and not §9 because a dozen files cite §9 by number. Three things moved the governing
+figure, and each is a read off a published sheet or a defect fixed, not a guess.
+
+### 10.1 The hoods are in the budget now
+
+`mep.erv_static_budget` summed only the radial terminals; the two outdoor hoods each pass
+the whole side's 210 cfm and were never counted. They are 8" since this pass (typed 6" behind
+8" legs since 2026-09-15 — `mep.duct_connectivity` now FAILs that mismatch). RenewAire's
+FA8 chart is read at its end points and scaled as Q², which is how a screened hood behaves:
+
+| term | published reading | working | at 210 cfm |
+|---|---|---|---|
+| FA8 intake ("supply" mode) | 0.34 in. w.g. at 400 cfm | 0.34 × (210/400)² × 249.089 | **23.3 Pa** (0.0936 in.) |
+| FA8 discharge ("exhaust" mode) | 0.215 in. w.g. at 400 cfm | 0.215 × 0.2756 × 249.089 | 14.8 Pa |
+| BD8 inline damper, discharge only | 0.5 in. w.g. at ~830 cfm | 0.5 × (210/830)² × 249.089 | 8.0 Pa |
+| discharge total | | 14.8 + 8.0 | **22.7 Pa** (0.0912 in.) |
+
+The BD8 end point is a chart read to ±30 % at low flow; that is ±2.4 Pa, 0.01 in., 0.5 cfm.
+
+### 10.2 The terminals carry published curves
+
+The 100 mm disc valves carry Trox LVS 100's +5 mm (fully open) table, PD-02/2022: 8 / 19 /
+33 / 52 Pa at 10 / 15 / 20 / 25 L/s. Below 10 L/s (21.2 cfm), where most of this house's
+terminals run, the points are that row's own K = 8 / 21.2² = 0.0178 Pa/cfm². At 20 cfm a
+valve loses **7.3 Pa against the 4.0 Pa** §5 derived for a plain diffuser — the honest cost
+of a disc valve.
+
+`REG-B-SUP2` is the one 30 cfm terminal. On a 100 mm valve it lost **17.1 Pa** (linear
+between 21.2 and 31.8 cfm) and governed the machine at 0.475 in. w.g., 202 cfm. It takes the
+**125 mm** valve on a 4x5 increaser instead (LVS 125: 9 / 15 / 24 / 35 Pa at 15 / 20 / 25 /
+30 L/s): 30 cfm is 14.2 L/s, between (10 cfm 0.9, 31.8 cfm 9.0) → **8.2 Pa**.
+
+### 10.3 The level-2 extract plenum was read at 228 cfm
+
+`EQ-M-ERV-MAN-EXH` feeds one 8" trunk, and the ten branches tee off the trunk. The plenum's
+flow was the sum over everything that "lands" in it — the trunk's 114 cfm AND the ten
+branches' 114 again — so it read 228 cfm, past its own curve's last point (5.5 Pa at 210).
+It is read at what leaves it, 114 cfm: (60, 0.5)–(120, 1.8) → **1.67 Pa**. This is the
+"plenum at each port's own flow" lever, and it is a defect fix, not a reading: it moved the
+level-2 extract paths by 3.8 Pa and left the basement plenums (direct radials only) alone.
+
+### 10.4 The two columns
+
+| column | 2026-10-17 | + hood | + valves / plenum | now |
+|---|---|---|---|---|
+| extract, via `DU-B-ERV-R-SAUNA-EXH` | 0.3688 | + 0.0912 | sauna terminal unchanged | **0.4600** |
+| supply, via `DU-B-ERV-R-PLAY` | 0.3492 | + 0.0936 | terminal 17.1 → 8.2 Pa on 125 mm | **0.4392** |
+
+Extract governs. Delivered off the curve between (0.4, 206) and (0.5, 201):
+206 − 5 × 0.600 = **203.0 cfm**. The engine reports 0.460 in. w.g. and 203 cfm.
+
+**203.0 is 2.0 cfm under MN 1322 R403.5's 205.** The owner's shortfall policy
+(2026-10-30) accepts a residual of about 1-2 cfm rather than redesign, records it here, and
+leaves it to commissioning (§8: LoFlo-class hood, balanced at the plenum collar dampers, valves
+fully open). `code.N1103_6_whole_house_ventilation` reads the authored 210 and passes; the
+static budget stays UNKNOWN. **What would close it, for the owner to price:**
+
+- a 10" hood on an 8x10 increaser in the foam/girt zone, both sides. RenewAire lists FA10 but
+  publishes no curve; at equal hood K the loss scales as (8/10)⁴ = 0.41, so ~13 Pa a side,
+  extract 0.408 → ~205.6 cfm. **Unverified until RenewAire gives FA10 test data** (the chart
+  footer cites "RD20200402 Collected Test Data"), and the 10" back plate needs a fit check at
+  the HP3 cabinet and the disconnect's work space;
+- the BD8 off the discharge (−8 Pa, 204.6 cfm) — rejected here: a balanced ERV that stops
+  for defrost or service has nothing else keeping stack-driven backflow out of the leg;
+- reading the riser at its segmented flow (§9's 0.1139 in. of conservatism on the extract
+  riser alone) would put the graded figure well over 205, but the check grades one
+  `design_cfm` per run, and that is a modelling limit, not a lever.
+
+### 10.5 The thermal penalty of the legs (hand-worked)
+
+Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of
+AP Armaflex sheet, R-4.2 per 1" layer on the datasheet → R-8.4; with ~0.8 of surface films,
+R-9.2 overall). Per foot of 8" duct the mean wrap circumference is π × 10" =
+2.62 ft², so UA = 2.62 / 9.2 = **0.285 Btu/h·°F per ft**.
+
+| leg | length | air inside at −15 °F design | ΔT to 70 °F | Q |
+|---|---|---|---|---|
+| `DU-ERV-OA` | 18.07 ft (6 elbows) | −15 °F outdoor air | 85 °F | 0.285 × 18.07 × 85 = **438 Btu/h** |
+| `DU-ERV-EA` | 30.83 ft (7 elbows) | 70 − 0.65 × 85 = 14.8 °F (SRE 65 %) | 55 °F | 0.285 × 30.83 × 55 = **483 Btu/h** |
+| | | | | **~920 Btu/h** |
+
+The ERV's sensible recovery at design is 1.08 × 210 × 85 × 0.65 = 12,530 Btu/h; the legs
+take ~920 of it, so the effective recovery falls **65 % → ~60 %**. The A0 research pass read
+~770 Btu/h (a lower exhaust-leg ΔT); either way it is a few hundred watts at design and a
+few tens of dollars a year. Code asks R-3.3 and a vapour retarder (Minn. R. 1322 Table
+R403.2.1); R-8.4 is there for condensation, not for this arithmetic. More R on the riser is
+rejected: the EA riser has ~1" of chase clearance, and R-12 would buy ~$10/yr.
+
+**The wall line.** The wrap runs through the gypsum into the stud bay and stops 1-2" short of
+the sheathing; the bare 8" duct is foamed through the sheathing (low-expansion PU, bonded to
+the metal) and wrapped by the 4" ccSPF outboard. The exposed metal inboard of the foam is the
+sheathing's thickness plus the gap, a few inches of duct in a ~25 °F bay, with no air path to
+it. `SP-M-ERV-OA-SEAL` / `SP-S-ERV-EA-SEAL` carry the detail and bill it.
+
 ## Sources
 
 - ASHRAE *Handbook — Fundamentals*, Ch. 21 (Duct Design): Table 1 absolute roughness for
@@ -593,5 +694,9 @@ measured one.
 - HVI **Certified Products Directory**, HVI ID 2004940 — 206 cfm net supply at 0.4 in. w.g.
 - Minnesota Rules **1322** (MN amendments to IRC Ch. 11), R403.5 — the 205 cfm whole-house
   rate this building requires, graded by `code.N1103_6_whole_house_ventilation`.
+- RenewAire **Hoods and Dampers** sheet (renewaire.com, 2025-09) — FA8 supply/exhaust and BD8
+  pressure-drop charts (§10.1).
+- TROX **LVS** product data sheet PD-02/2022 — LVS 100 and LVS 125 quick-sizing tables (§10.2).
+- Armacell **AP Armaflex** sheet data — k 0.25 at 75 °F mean (§10.5).
 - TSI **Alnor LoFlo** balometer product literature — the low-flow instrument class §8 calls
   for, and the documented −25 to −30 % bias of ordinary capture hoods below 150 cfm.

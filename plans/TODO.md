@@ -250,7 +250,11 @@ the future.
 - Add the eased edges and rounded corners to the shown tabletop model.
 - D-B-PATIO has a MASA connector sprouting up in the middle, plus it's got some sort of awkward trim around the brick veneer (the brick IS the trim there, the door itself has a more utilitarian trim into the main house wall behind). Looks like previous door work accidentally bumped the brick arch up too high. It should partially obscure the door top.
 - Look up a guide to how plumbers and such route, then make sure the autorouter follows that, and also code for it
-- Specify the products for the ducts and duct vents. In particular the heat pump duct and ERV outlets and intakes
+- Air-distribution products (specified 2026-10-31, [note](../houses/catlin/notes/air_distribution_products.md)); still open:
+  - Owner: trimless for RM-M-LIVING / RM-M-BED / the stair hall (note §12), and whether "the heat pump over the stairway" includes the 28x12 return.
+  - Owner: the 2.0 cfm residual under 205, or the 10" hoods (needs RenewAire FA10 test data and a plate fit check) — `notes/erv_static_budget.md` §10.4.
+  - Supplier confirmations: Vents-US AM 100/125 loss curves; FA8 plate and projection; floor-boot and Snappy P13-204 heights; motorised damper body and actuator sizes; H&C 531SA 6x12 face; a 125 mm retail valve; prices marked "not read" in `prices.toml`.
+  - Engine, deferred: an insulation-vs-R403.2.1 check; per-segment duct insulation; M1506.3's 3 ft exception and the operable-opening distance; checking an insulation spec's thickness against its R-value; grading a damper actuator inside a duct.
 - Consider have the oven/range in the kitchen island across from the sink
 - Consider making W-M-BATH1-W operable. Switch that small operable window type we have to the Aluprof MB-Slimline / MB-79N CSF or Aliplast Max Light Modern ultra slim aluminum for maximum light area (looks like around 2.75" frame is possible there) triple glazed.
 - [x] Roof sheathing: 19/32" 40/20 plywood, CDX house and Structural I garage/canopy. [Assessment](../houses/catlin/notes/roof_sheathing_and_membranes.md): Image II acceptance, eave cantilevers, narrow/single-span panels and 24-1/8" transition engineering remain open.

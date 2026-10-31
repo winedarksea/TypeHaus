@@ -1966,6 +1966,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # "conduit_data" =    # 0.02 cy
 # "conduit_power" =    # 0.06 cy   # "connector" =    # 0.3 cy
 # "downspout" =    # 0.2 cy        # "fascia" =    # 0.09 cy
+# "insulation_wrap" — bills in [duct_insulation]  # "terminal_neck" — bills with its register
 # "flashing" =    # 0.16 cy
 # "glazing_trim" =    # 0.03 cy    # "gutter" =    # 0.17 cy
 # "pipe_drain" =    # 0.29 cy      # "pipe_sleeve" =    # 0.09 cy
@@ -2903,14 +2904,14 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # work, not a catalogue item: the material range is the metal and the damper, the labour is
 # the fabrication plus fitting it into a 30 3/4" soffit with an air handler already in it.
 "EQ-T-ERV-MIXING-BOX" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 1 ea
-# The two wall hoods, one row each since 2026-09-11 — they are stacked on the WEST face at the
-# NW chase, not on a gable, and the pair is one intake and one discharge. Same casting and the
-# same rate; two rows because the trunk's declared service IS the direction, and a single row
-# could not say which way the air goes. Cheap castings; the labour is the flashing and the
-# air-sealing of a 6" penetration through a truss wall with 4" of closed-cell foam in it,
-# which is most of it.
-"EQ-T-ERV-HOOD-6" = { material = { low = 35, high = 95 }, labour = { low = 140, high = 320 } }  # 1 ea — the intake
-"EQ-T-ERV-HOOD-6-EXH" = { material = { low = 35, high = 95 }, labour = { low = 140, high = 320 } }  # 1 ea — the discharge, same casting, damper reversed
+# The two north-face hoods, 8" since 2026-10-31 (RenewAire FA8-P basis, 1/4" screen,
+# notes/air_distribution_products.md §8). ESTIMATES: no retailer price was readable for the
+# FA8 (SupplyHouse/Young Supply refused the fetch); the band brackets the Fantech FML8 or-equal
+# class. The discharge adds the BD8 inline damper (Ferguson RBD8, price not read). The labour
+# is setting the hood plate over the 9" RO on the cladding and sealing it; the wall seal
+# itself is [duct_fittings] "wall-seal-8in".
+"EQ-T-ERV-HOOD-8" = { material = { low = 60, high = 140 }, labour = { low = 140, high = 320 } }  # 1 ea — the intake
+"EQ-T-ERV-HOOD-8-EXH" = { material = { low = 100, high = 210 }, labour = { low = 140, high = 320 } }  # 1 ea — the discharge, hood + BD8
 # 2026-10-29: EG4 WallMount Indoor 14.3 kWh street $3,109 (ShopSolarKits) to $3,431 (Signature Solar); the $2,400 in the header is
 # unsourced. One module (notes/backup_power.md). Labour: hang on W-B-N3 cast concrete, comms, commission.
 "EQ-T-ESS-BATT" = { material = { low = 2800, high = 3500 }, labour = { low = 700, high = 1500 } }  # 1 ea
@@ -3517,47 +3518,48 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # in the shower ceiling. ESTIMATES.
 "REG-T-FILTER-GRILLE-10" = { material = { low = 25, high = 60 }, labour = { low = 25, high = 60 } }  # 1 ea
 "REG-T-NOZZLE-DAMPER-4" = { material = { low = 40, high = 120 }, labour = { low = 30, high = 70 } }  # 1 ea
-# 2026-10-29: round-collar diffusers retail ~$10-30; high 45 keeps a decorative finish. Same on EXH-WALL and SUP. Was $25-80.
-"REG-T-ERV-EXH" = { material = { low = 15, high = 45 }, labour = { low = 18, high = 45 } }  # 12 ea
-# The sidewall extract (plan/mep_hvac.py) — the same 6" round product as REG-T-ERV-EXH
-# above, one field order apart, so the MATERIAL half is copied verbatim from it. The LABOUR
-# half carries a premium: cutting and boxing a grille into a stud bay costs more than
-# dropping one into a ceiling plane. Two of them since 2026-08-30 — REG-A-STUBATH-EXH and
-# RM-M-STUDY's low booth extract REG-M-RET-STUDY, whose boot also has to fall 8'-2" inside
-# W-M-CLN2's staggered cavity past a device box. Without this row the type is silently
-# struck from the bill and the total FALLS by the price of a register.
-"REG-T-ERV-EXH-WALL" = { material = { low = 15, high = 45 }, labour = { low = 28, high = 65 } }  # 3 ea
-# The workshop's over-bench capture hood (2026-08-25), which used to be a REG-T-ERV-EXH
-# ceiling diffuser. A 30" x 12" fabricated capture face on a drop, not a stamped grille: the
-# material is shop sheet metal and the labour is hanging it plumb 24" over a bench top.
+# ** THE AIR TERMINALS, AT THEIR NAMED PRODUCTS (2026-10-31). ** One white family:
+# 100 mm disc valves on the ERV, aluminium on System 1 (plan/air_terminal_types.py,
+# notes/air_distribution_products.md). ESTIMATES unless a price is quoted with its source.
+# Disc valve: Vents-US AM 100 VRF $19.00 with collar (hvacdirect.com, 2026-10-31); the high end
+# is an EU or-equal (Lindab/Trox ~EUR 46-54 + frame) landed. Labour is the ceiling cut, the
+# collar, mastic and tape — unchanged from the diffuser rows these replace.
+"REG-T-ERV-VALVE-SUP" = { material = { low = 19, high = 60 }, labour = { low = 18, high = 45 } }  # 4 ea
+"REG-T-ERV-VALVE-EXH" = { material = { low = 19, high = 60 }, labour = { low = 18, high = 45 } }  # 7 ea
+# 125 mm valve on a 4x5 increaser, the one 30 cfm terminal (REG-B-SUP2). Price not read.
+"REG-T-ERV-VALVE-SUP-125" = { material = { low = 30, high = 75 }, labour = { low = 22, high = 50 } }  # 1 ea
+# Same valve in a stud bay: the labour premium is cutting and blocking a wall for the collar.
+"REG-T-ERV-VALVE-EXH-WALL" = { material = { low = 19, high = 60 }, labour = { low = 28, high = 65 } }  # 3 ea
+# Floor extract: Reggio 412-AH 2 1/4x10 aluminium grille ~$30 (Ferguson Home) + a 2 1/4x10x4
+# stamped boot (Snappy P13-204, price not read).
+"REG-T-ERV-EXH-FLOOR" = { material = { low = 38, high = 70 }, labour = { low = 18, high = 45 } }  # 5 ea
+# The workshop's over-bench capture hood (2026-08-25): a 30" x 12" fabricated capture face on a
+# drop, not a stamped grille: the material is shop sheet metal and the labour is hanging it
+# plumb 24" over a bench top.
 "REG-T-ERV-BENCH-HOOD" = { material = { low = 140, high = 340 }, labour = { low = 90, high = 220 } }  # 1 ea
-# 2026-08-18, RM-S-PLANT. Both carry a MOTORISED damper rather than a manual face damper,
-# which is most of the price: a 6" motorised zone damper with an actuator is $90-220, and
-# the grille itself is the $15-50 the plain terminals cost. The RH controller that drives
-# the pair is not modelled and so is not in this file.
-"REG-T-ERV-PLANT-EXH" = { material = { low = 110, high = 280 }, labour = { low = 180, high = 420 } }  # 1 ea
+# RM-S-PLANT's extract: the valve plus an EWC 4RSD 24 VAC spring-return damper at the level-2
+# plenum ($176.72, SupplyHouse listing, 2026-10-31). The RH controller is not modelled and so is
+# not in this file.
+"REG-T-ERV-PLANT-EXH" = { material = { low = 195, high = 260 }, labour = { low = 180, high = 420 } }  # 1 ea
 # The sauna's closeable wood vents (2026-10-29): ProSaunas aspen air hatch, US$73.10 (thermo-aspen
 # ~US$88) plus US$22.95 shipping and a 4" round-to-rectangular boot - ESTIMATES. Labour is the
 # boot, the cutout and the trim. A shop-built sliding hatch from aspen offcuts is the DIY fallback.
 "REG-T-SAUNA-VENT-SUP" = { material = { low = 85, high = 120 }, labour = { low = 20, high = 50 } }  # 1 ea
 "REG-T-SAUNA-VENT-EXH" = { material = { low = 85, high = 120 }, labour = { low = 20, high = 50 } }  # 1 ea
-# 5 ea since 2026-08-30: REG-M-SUP4 came back out of W-M-LS into RM-M-STUDY's ceiling, and
-# the one-day-old sidewall variant REG-T-ERV-SUP-WALL was deleted with its row rather than
-# left priced with no user.
-"REG-T-ERV-SUP" = { material = { low = 15, high = 45 }, labour = { low = 18, high = 45 } }  # 5 ea
-"REG-T-HP-RET" = { material = { low = 30, high = 90 }, labour = { low = 18, high = 45 } }  # 1 ea
-"REG-T-HP-SUP" = { material = { low = 15, high = 50 }, labour = { low = 18, high = 45 } }  # 8 ea
-"REG-T-HP-SUP-DAMPERED" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 1 ea — 8" motorised zone damper
-# Dearer than the plain REG-T-HP-SUP face: a double-deflection sidewall core with an
-# opposed-blade damper behind it is a different part, and it is the one terminal in System 1
-# whose throw has to be aimed on site rather than left at the factory setting.
-"REG-T-HP-SUP-SIDE" = { material = { low = 30, high = 85 }, labour = { low = 25, high = 60 } }  # 1 ea — 12x6 sidewall, double deflection + OBD, side collar off the trunk
-"REG-T-HP-STUDY-SIDE" = { material = { low = 30, high = 85 }, labour = { low = 25, high = 60 } }  # 8x6 double deflection + OBD; sidewall family allowance
-# The passive transfer louver. Cheapest terminal in the house and it should be: a stamped
-# door/wall grille with no damper, no boot and no duct behind it. Bracketed against
-# REG-T-HP-SUP above, which is the same kind of stamped face with a duct collar on it.
-"REG-T-TRANSFER-1210" = { material = { low = 15, high = 55 }, labour = { low = 18, high = 45 } }  # 1 ea
-
+# System 1's aluminium sidewalls: TRUaire A220VO 12X06 $79.80 and 08X06 $68.60 (hvacquick,
+# 2026-10-31); Hart & Cooley HVD is the dearer or-equal. Aimed on site, hence the labour.
+"REG-T-HP-SIDE-1206" = { material = { low = 75, high = 115 }, labour = { low = 25, high = 60 } }  # 5 ea
+"REG-T-HP-STUDY-SIDE" = { material = { low = 65, high = 100 }, labour = { low = 25, high = 60 } }  # 1 ea
+# 6x12 aluminium floor register (H&C 531SA class; price not read — aluminium runs 2-3x steel).
+"REG-T-HP-FLOOR-0612" = { material = { low = 40, high = 95 }, labour = { low = 18, high = 45 } }  # 3 ea
+# The plant room's System 1 terminal: a 12x6 aluminium register plus a 6" 24 VAC zone damper
+# (Honeywell ARD6TZ class, price not read) on a 10x6-to-6 stub.
+"REG-T-HP-CEIL-DAMPERED" = { material = { low = 190, high = 320 }, labour = { low = 180, high = 420 } }  # 1 ea
+# 28x12 hinged filter-back return (H&C 673 class). The custom 12x28x1 MERV 13 filters are an
+# owner consumable, not in the build.
+"REG-T-HP-RET-FILTER" = { material = { low = 60, high = 130 }, labour = { low = 18, high = 45 } }  # 1 ea
+# The passive transfer: two 12x10 aluminium return grilles on a lined sleeve through the bay.
+"REG-T-TRANSFER-PAIR-1210" = { material = { low = 60, high = 110 }, labour = { low = 30, high = 70 } }  # 1 ea
 
 [floor_finishes]
 # RESEARCHED 2026-08-08 — [low, high] $/SF on the ORDER quantity (waste already in the
@@ -6035,18 +6037,22 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "outdoor_air:galvanized:8.0" = { material = { low = 6.25, high = 12.5 }, labour = { low = 5, high = 11 } }  # 13.7 LF — DU-ERV-OA
 "outdoor_air:galvanized" = { material = { low = 5, high = 10 }, labour = { low = 4.5, high = 10 } }  # fallback for a diameter not priced above; 0 LF since DU-ERV-OA went 8"
 "outdoor_air:semi_rigid" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # 0 LF since 2026-09-12 — was 37.6 LF of 6" insulated
-"return" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 0.5 LF of galvanized stub
+"return" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 0 LF since the trunks name their material
 "return:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 251.4 LF of 4" snap-lock radial, return side
 "return:galvanized:6.0" = { material = { low = 4.5, high = 9 }, labour = { low = 4, high = 9 } }  # 5.6 LF — DU-B-ERV-RET-TRUNK
-"return:galvanized" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # fallback for a diameter not priced above
+# ** RECTANGULAR SINCE 2026-10-31. ** The System 1 trunks state `material="galvanized"` now
+# (their gauge band is IRC M1601.1.1's, printed on the row), and a rectangular row's 0.0
+# diameter truncates the key here — so this row IS the shop-fabricated sheet-metal rate, the
+# one the bare `return`/`supply` rows carried. No round run falls through to it today.
+"return:galvanized" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 7.2 LF — DU-S-HP-RET, 10x18
 "return:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # 0 LF since 2026-09-12 — was 198.1 LF of 3" radial
-"supply" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 53.9 LF of galvanized trunk
+"supply" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 0 LF since the trunks name their material
 "supply:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 0 LF since 2026-09-12 — was 181.6 LF of 75 mm radial
 "supply:semi_rigid:6.0" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 8 } }  # 0 LF since 2026-09-12 — was 68.8 LF of 6" radial riser
 "supply:semi_rigid" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3, high = 7 } }  # fallback for a diameter not priced above
 "supply:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 198.2 LF of 4" snap-lock radial, supply side
 "supply:galvanized:6.0" = { material = { low = 4.5, high = 9 }, labour = { low = 4, high = 9 } }  # 76.9 LF — DU-ERV-RISER-SUP + DU-B-ERV-SUP-TRUNK + DU-S-ERV-HP-FEED
-"supply:galvanized" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # fallback for a diameter not priced above
+"supply:galvanized" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 37.9 LF — the four rectangular supply trunks (see return:galvanized)
 
 [duct_fittings]
 # NEW 2026-08-25, and it could not have existed a day earlier: a duct elbow is counted off
@@ -6063,6 +6069,10 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # elbow-90-8in retired 2026-08-30 with DU-A-HP-STUDY, the run whose rise it turned. The one
 # vertical System 1 has now is DU-S-HP-SOUTH-RISE's, and that branch is 10x6.
 "elbow-90-10in" = { low = 16, high = 36 }          # 1 ea — DU-S-HP-SOUTH-RISE's drawn rise
+# The OA/EA wall seals (SleevePenetration.serves_duct, 2026-10-31): low-expansion window-and-
+# door foam, Great Stuff Pro W&D $21-26/can (Hemlock Hardware, Walmart 3-pack), half a can
+# each, plus foil tape to the wrap end. ESTIMATES; the labour is the foaming and taping visit.
+"wall-seal-8in" = { low = 15, high = 35 }          # 2 ea
 
 [duct_insulation]
 # NEW 2026-08-25, the air-side mirror of [pipe_insulation]. Billed off the host run's
@@ -6072,7 +6082,12 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # through conditioned space sweats all winter, and an insulated-but-unsealed one sweats
 # inside the insulation, which is worse because nobody sees it.
 # $/LF, by spec
-'2" R-8 wrap, vapour-sealed' = { material = { low = 3.2, high = 6.5 }, labour = { low = 3.5, high = 8 } }  # 86.8 LF
+# ** 2026-10-31: two 1" layers of closed-cell elastomeric sheet (AP Armaflex or equal),
+# R-8.4, its own vapour retarder, on DU-ERV-OA/-EA end to end. ** About 5.3 SF of sheet per
+# foot of 8" duct over the two layers; at an ESTIMATED $3-5/SF plus 520 adhesive that is
+# $16-28/LF (no sheet price was readable online). It replaces the "2" R-8 wrap" that named no
+# real product (2" FRK is ~R-6). Owner checkpoint: about +$600-1,000 over the old row.
+'2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed' = { material = { low = 16, high = 28 }, labour = { low = 6, high = 14 } }  # 48.9 LF
 
 [sleeves]
 # RESEARCHED 2026-08-08 — [low, high] $ each, by sleeve diameter. Derived, not quoted: each

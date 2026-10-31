@@ -67,6 +67,8 @@ def sleeves(model: Any) -> list[HandoffItem]:
     """Cast-in block-outs, per pour host. The one item that cannot be fixed afterwards."""
     by_host: dict[str, list[Any]] = {}
     for sleeve in getattr(model, "sleeves", []) or []:
+        if getattr(sleeve, "serves_duct", None) and sleeve.host_category == "framed_wall":
+            continue  # a duct's wall seal is set by the mechanical trade, not cast
         by_host.setdefault(str(getattr(sleeve, "host_slab", "") or "unassigned"),
                            []).append(sleeve)
     if not by_host:

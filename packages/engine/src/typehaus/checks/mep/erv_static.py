@@ -40,8 +40,16 @@ the two places the graded figure is deliberately conservative.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import advisory, failed, not_applicable, passed, unknown
+from typehaus.checks._authoring import advisory, not_applicable, passed, unknown
 from typehaus.checks.mep.erv_network import connected_distribution
+from typehaus.checks.mep.erv_static_terms import (
+    hood_losses,
+    interpolate,
+    product_for,
+    radial_capacity,
+    terminal_loss,
+    type_for,
+)
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import DuctSystem, EquipmentKind
@@ -67,6 +75,11 @@ _SUPPLY_SIDE = frozenset({DuctSystem.SUPPLY.value, DuctSystem.OUTDOOR_AIR.value}
 _EXTRACT_SIDE = frozenset({DuctSystem.RETURN.value, DuctSystem.EXHAUST.value})
 
 _M_PER_IN = 0.0254
+
+# Old private names, kept for the oracle test and the network test.
+_interpolate = interpolate
+_product_for = product_for
+_type_for = type_for
 _M_TO_FT = 3.280839895013123
 
 
@@ -91,23 +104,6 @@ class _Leg:
         self.tag, self.drop_in_wg, self.gap = tag, drop_in_wg, gap
 
 
-def _product_for(ctx: CheckContext, material: str | None,
-                 diameter_m: float | None) -> object | None:
-    """The ``DuctProductType`` matching a run's (material, nominal diameter) pair.
-
-    The same pair ``prices.toml``'s ``[ducts]`` qualifies on, matched the same way — one
-    join, so a run that prices as 4" galvanized cannot resist as something else.
-    """
-    if material is None or diameter_m is None:
-        return None
-    for row in getattr(ctx.plan.library, "duct_product_types", ()):
-        if row.material != material:
-            continue
-        if abs(row.nominal_diameter.meters - diameter_m) <= 1e-6:
-            return row
-    return None
-
-
 def _duct_drop(ctx: CheckContext, duct, elbows: int) -> _Leg:
     """Darcy-Weisbach over developed length plus the elbows' equivalent length."""
     diameter_m = getattr(duct, "diameter_m", None)
@@ -126,18 +122,6 @@ def _duct_drop(ctx: CheckContext, duct, elbows: int) -> _Leg:
         None)
 
 
-def _interpolate(curve: tuple[tuple[float, float], ...], cfm: float) -> float:
-    """Linear interpolation of a component loss curve keyed on flow. Pa."""
-    if cfm <= curve[0][0]:
-        return curve[0][1]
-    if cfm >= curve[-1][0]:
-        return curve[-1][1]
-    for (q0, p0), (q1, p1) in zip(curve, curve[1:], strict=False):
-        if q0 <= cfm <= q1:
-            return p0 + (p1 - p0) * (cfm - q0) / (q1 - q0)
-    return curve[-1][1]
-
-
 def _delivered(curve: tuple[tuple[float, float], ...], static: float) -> float | None:
     """Net cfm off the fan curve at this static, or None past its last point.
 
@@ -153,13 +137,6 @@ def _delivered(curve: tuple[tuple[float, float], ...], static: float) -> float |
         if s0 <= static <= s1:
             return c0 + (c1 - c0) * (static - s0) / (s1 - s0)
     return None
-
-
-def _type_for(ctx: CheckContext, type_ref: str | None, collection: str) -> object | None:
-    if not type_ref:
-        return None
-    return next((row for row in getattr(ctx.plan.library, collection, ())
-                 if row.tag == type_ref), None)
 
 
 def _elbow_counts(ctx: CheckContext) -> dict[str, int]:
@@ -239,6 +216,26 @@ def radial_landings(ctx: CheckContext) -> dict[str, str]:
     return _through_trunks(ctx, plenums, out)
 
 
+def _direct(ctx: CheckContext, landings: dict[str, str]) -> set[str]:
+    """The landings whose own end is in the plenum: a branch off a trunk is not one."""
+    from typehaus.resolve.mep_soffit import ducts_are_joined
+
+    return {tag for tag in landings
+            if not any(other != tag and landings[other] == landings[tag]
+                       and ducts_are_joined(ctx.model, tag, other)
+                       and _diameter(ctx, other) > _diameter(ctx, tag) + 1e-9
+                       and _cfm(ctx, other) is not None
+                       for other in landings)}
+
+
+def _cfm(ctx: CheckContext, tag: str) -> float | None:
+    return next((d.design_cfm for d in ctx.model.ducts if d.tag == tag), None)
+
+
+def _diameter(ctx: CheckContext, tag: str) -> float:
+    return next((d.diameter_m or 0.0 for d in ctx.model.ducts if d.tag == tag), 0.0)
+
+
 def _through_trunks(ctx: CheckContext, plenums: dict, landings: dict[str, str]
                     ) -> dict[str, str]:
     """Branches that reach a plenum THROUGH a trunk, not by landing in its case.
@@ -287,13 +284,12 @@ def _network(ctx: CheckContext, machine_tag: str, landings: dict[str, str]) -> l
     Seed from radials and equipment landings, then follow compatible physical duct joints.
     Remote pieces of a split header contribute even when neither end touches equipment.
 
-    **A run that states no ``material`` is not in it, and that exclusion is the point.**
+    **A run that states no ``material``, or is rectangular, is not in it.**
     Catlin's System 1 shares the mixing box with this machine and its trunks are fabricated
-    rectangular sheet metal, which is not a typed round product and has no roughness anybody
-    read: pulling those five runs into an ERV pressure budget would report a gap in a system
-    this check has no business grading. A run that DOES state a material but matches no
-    ``DuctProductType`` is a different thing entirely and stays in, reported as a gap by its
-    own pair — that is a house that forgot to author a row.
+    rectangular sheet metal (a gauge row, not a friction row): pulling those five runs into
+    an ERV pressure budget would grade a system this check has no business grading. A round
+    run that DOES state a material but matches no ``DuctProductType`` stays in, reported as
+    a gap by its own pair — that is a house that forgot to author a row.
     """
     from typehaus.checks.mep.duct_connectivity import equipment_at_end
 
@@ -303,7 +299,7 @@ def _network(ctx: CheckContext, machine_tag: str, landings: dict[str, str]) -> l
                 if kind == EquipmentKind.MIXING_BOX.value}
     out: list[object] = []
     for duct in ctx.model.ducts:
-        if duct.material is None or not duct.path:
+        if duct.material is None or not duct.path or duct.diameter_m is None:
             continue
         if duct.tag in landings:
             out.append(duct)
@@ -367,11 +363,17 @@ def erv_static_budget(ctx: CheckContext) -> list[Finding]:
                     continue
                 trunk_total += leg.drop_in_wg
                 terms.append(f"{leg.tag} {leg.drop_in_wg:.3f}\"")
+                # The outdoor hood passes the whole side's air, so it rides with the trunk.
+                for hood, loss in hood_losses(ctx, duct, plenums, kinds):
+                    trunk_total += loss / PA_PER_IN_WG
+                    terms.append(f"{hood} {loss:.1f} Pa")
 
-            # Each plenum's flow is the sum of the radials landing in it.
+            # Each plenum's flow is what LEAVES it: a trunk-and-branch tree counts its trunk
+            # once, never the trunk plus the branches the trunk already carries.
             plenum_cfm: dict[str, float] = {}
+            direct = _direct(ctx, landings)
             for duct in radials:
-                if duct.design_cfm is not None:
+                if duct.design_cfm is not None and duct.tag in direct:
                     plenum_cfm[landings[duct.tag]] = (
                         plenum_cfm.get(landings[duct.tag], 0.0) + duct.design_cfm)
 
@@ -382,7 +384,7 @@ def erv_static_budget(ctx: CheckContext) -> list[Finding]:
                     continue
                 branch = leg.drop_in_wg
                 detail = [f"{leg.tag} {leg.drop_in_wg:.3f}\""]
-                terminal = _terminal_loss(ctx, duct)
+                terminal = terminal_loss(ctx, duct)
                 if terminal is not None:
                     branch += terminal / PA_PER_IN_WG
                     detail.append(f"terminal {terminal:.1f} Pa")
@@ -448,44 +450,5 @@ def erv_static_budget(ctx: CheckContext) -> list[Finding]:
         for gap in sorted(set(gaps)):
             out.append(unknown(cid, f"{machine.tag}: {gap}", (machine.tag,)))
 
-    out.extend(_radial_capacity(ctx, landings))
-    return out
-
-
-def _terminal_loss(ctx: CheckContext, duct) -> float | None:
-    """The loss of the terminal on this run, Pa at the run's design flow, or None."""
-    best: float | None = None
-    for element in ctx.plan.all_elements():
-        if element.element_kind != "Register" or element.duct_ref != duct.tag:
-            continue
-        product = _type_for(ctx, element.type_ref, "register_types")
-        curve = tuple(getattr(product, "static_loss_pa_at_cfm", ()) or ())
-        if not curve or duct.design_cfm is None:
-            continue
-        loss = _interpolate(curve, duct.design_cfm)
-        # A two-headed radial carries two terminals; the worse one is on the worst path.
-        best = loss if best is None else max(best, loss)
-    return best
-
-
-def _radial_capacity(ctx: CheckContext, landings: dict[str, str]) -> list[Finding]:
-    """One finding per radial: its design flow against what its product is used for."""
-    cid = "mep.erv_static_budget"
-    out: list[Finding] = []
-    for duct in sorted(ctx.model.ducts, key=lambda item: item.tag):
-        if duct.tag not in landings or duct.design_cfm is None:
-            continue
-        product = _product_for(ctx, duct.material, getattr(duct, "diameter_m", None))
-        if product is None or product.max_cfm is None:
-            continue
-        if duct.design_cfm > product.max_cfm + 1e-9:
-            out.append(failed(
-                cid, f"{duct.tag} carries {duct.design_cfm:.0f} cfm in {product.tag}, which "
-                     f"this house uses to {product.max_cfm:.0f} cfm",
-                (duct.tag,),
-                fix="split the terminal onto a second port, or take this run up a size"))
-        else:
-            out.append(passed(
-                cid, f"{duct.tag} carries {duct.design_cfm:.0f} cfm in {product.tag} "
-                     f"(<= {product.max_cfm:.0f} cfm)", ()))
+    out.extend(radial_capacity(ctx, landings))
     return out

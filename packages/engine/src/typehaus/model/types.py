@@ -7,6 +7,7 @@ from typing import Literal
 
 from pydantic import Field, model_validator
 
+from typehaus.model.air_products import DuctProductType, TerminalNeck
 from typehaus.model.base import HausModel
 from typehaus.model.built_in_bench import BENCH_ENVELOPE_TOLERANCE_M, BuiltInBenchSpec
 from typehaus.model.curtain_track import CurtainTrackSpec
@@ -918,47 +919,6 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
         return self
 
 
-class DuctProductType(HausModel):
-    """The duct itself as a purchased product: what a run is made of, and how it resists.
-
-    A ``DuctRun`` states a *material* and a *nominal diameter* and nothing else about the
-    pipe — which is right, because those two are what an estimator orders on and are exactly
-    the pair ``prices.toml``'s ``[ducts]`` qualifies its rows by. What they cannot tell a
-    pressure calculation is the **bore** (4" snap-lock is 4.0" inside; 4" semi-rigid
-    aluminium is not) or the **roughness**, and both move friction by more than the tolerance
-    of the answer. So the pair is the key and this row is the value, matched by
-    ``(material, nominal_diameter)`` — one join, the same join the price uses, and a run
-    whose pair names no row is reported UNKNOWN rather than given a default ε.
-
-    **The physics is the engine's; the coefficients are the house's.** Darcy-Weisbach with
-    the Colebrook friction factor is public and lives in ``checks/mep/erv_static.py``. The
-    absolute roughness of galvanized steel and of semi-rigid aluminium, and the equivalent
-    length of a bend, are readings off ASHRAE tables that belong to whoever authored the
-    row — the same division ``PublishedSpan`` makes between a table read and a calculation.
-    """
-
-    tag: str
-    name: str
-    #: Matches ``DuctRun.material`` exactly (``"galvanized"``, ``"semi_rigid"``, ``"flex"``).
-    material: str
-    #: Matches ``DuctRun.diameter`` — the size the run is drawn and ordered at.
-    nominal_diameter: Length
-    #: The actual inside diameter. Friction goes as roughly the fifth power of it, so the
-    #: nominal size is not close enough to stand in.
-    bore_diameter: Length
-    #: Absolute roughness ε, in metres, as the authoring note reads it off ASHRAE.
-    roughness_m: float
-    #: The most air the product is used for at the velocity the house designs to. Advisory:
-    #: ``mep.erv_static_budget`` grades each radial's ``design_cfm`` against it.
-    max_cfm: float | None = None
-    #: Equivalent length of one 90-degree bend in this product — authored, not derived. A
-    #: fitting loss is a measured coefficient, and deriving one from geometry would be the
-    #: engine inventing a number its sources publish.
-    bend_equivalent_length: Length | None = None
-    product_ref: str | None = None
-    source: str | None = None
-
-
 class RegisterType(FurnitureType, AirHandlingProductFacts):
     needs: frozenset[Service] = frozenset({Service.SUPPLY_AIR})
     # A ventilation terminal (the ERV's fresh-air/stale-air grilles) rather than a
@@ -966,6 +926,9 @@ class RegisterType(FurnitureType, AirHandlingProductFacts):
     # terminal is sized for the whole-house rate, a supply register for a heating CFM — and
     # the plan set/IFC handoff has to tell a reader which one it is looking at.
     ventilation_terminal: bool = False
+    #: The in-cavity part behind the face (boot, valve spigot, inline damper); None when the
+    #: face is all there is. See :class:`~typehaus.model.air_products.TerminalNeck`.
+    neck: TerminalNeck | None = None
 
 
 class ElectricalDeviceType(FurnitureType):

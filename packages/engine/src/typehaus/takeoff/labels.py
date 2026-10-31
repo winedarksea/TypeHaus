@@ -228,6 +228,8 @@ def _fitting(key: str, system: str) -> str | None:
     parts = key.split("-")
     if len(parts) == 3 and parts[0] in ("bend", "elbow") and parts[2].endswith("in"):
         return f"{parts[1]}° {parts[0]}, {_fraction_in(parts[2][:-2])} {system}".strip()
+    if len(parts) == 3 and parts[:2] == ["wall", "seal"] and parts[2].endswith("in"):
+        return f"Wall penetration seal kit, {_fraction_in(parts[2][:-2])} {system}".strip()
     if len(parts) == 2 and parts[0] == "wye" and parts[1].endswith("in"):
         a, _, b = parts[1][:-2].partition("x")
         return f"Wye {_fraction_in(a)} x {_fraction_in(b)} {system}".strip()
@@ -274,8 +276,9 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         size = _fraction_in(g("diameter_in")) if g("diameter_in") else \
             f"{g('width_in')}x{g('depth_in')}"
         material = str(g("material") or "").replace("_", "-")
+        gauge = f" {g('gauge')} ga" if g("gauge") else ""
         where = f" in {g('routing')}" if g("routing") else ""
-        return f"{system} duct, {size} {material}{where}".replace("  ", " ").strip()
+        return f"{system} duct, {size} {material}{gauge}{where}".replace("  ", " ").strip()
     if section == "duct_insulation":
         return f"{g('spec')}, {_fraction_in(g('diameter_in'))} duct" if g("diameter_in") else None
     if section == "sleeves":

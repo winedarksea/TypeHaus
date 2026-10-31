@@ -114,7 +114,8 @@ class DuctSize:
 
 
 def _rows(library: Any, material: str | None) -> list[Any]:
-    rows = list(getattr(library, "duct_product_types", ()) or ())
+    rows = [r for r in getattr(library, "duct_product_types", ()) or ()
+            if getattr(r, "section", "round") == "round"]
     if material is not None:
         rows = [r for r in rows if r.material == material]
     return sorted(rows, key=lambda r: r.nominal_diameter.meters)
@@ -168,3 +169,21 @@ def candidate_summary(library: Any, material: str | None = None) -> Iterable[str
     for row in _rows(library, material):
         yield (f'{row.nominal_diameter.meters / M_PER_IN:>5.3g}" {row.material:<12} '
                f'bore {row.bore_diameter.meters / M_PER_IN:.3g}"')
+
+
+def rectangular_row(library: Any, material: str | None, width_m: float,
+                    depth_m: float) -> Any | None:
+    """The gauge band a rectangular run of ``material`` falls in, or None.
+
+    IRC Table M1601.1.1 sets sheet thickness by a rectangular duct's LARGER side, so the row
+    is the smallest ``max_side`` at or above it. None when the material is unstated or no
+    band reaches the side — the schedule then prints no gauge rather than guessing one.
+    """
+    if not material:
+        return None
+    side = max(width_m, depth_m)
+    bands = sorted((r for r in getattr(library, "duct_product_types", ()) or ()
+                    if getattr(r, "section", "round") == "rectangular"
+                    and r.material == material and r.max_side.meters + 1e-6 >= side),
+                   key=lambda r: r.max_side.meters)
+    return bands[0] if bands else None

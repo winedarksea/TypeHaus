@@ -75,6 +75,15 @@ ROWS: tuple[C, ...] = (
     # Vent terminals and routed air.
     _trim("vent", "mechanical", ifc="IfcBuildingElementProxy"),
     *(_duct(s) for s in ("supply", "return", "exhaust", "dryer", "transfer", "outdoor_air")),
+    # A wrapped duct's insulation (resolve/duct_wrap.py); billed off the run in
+    # duct_insulation. Not hard: the run envelopes already grade that OD, and the wrap
+    # follows its duct into the machine it lands on, where the run itself is pardoned.
+    C("insulation_wrap", trade="mechanical", ifc_class=_COVER, ifc_predefined="INSULATION",
+      billed_elsewhere=True),
+    # An air terminal's in-cavity boot, spigot or damper (resolve/terminal_necks.py), billed
+    # with the terminal.
+    C("terminal_neck", trade="mechanical", ifc_class="IfcDuctFitting",
+      ifc_predefined="TRANSITION", billed_elsewhere=True),
     # Fenestration.
     _trim("glazing", "openings", ifc=_FOOTING, elevation="glaz"),
     _trim("glazing_trim", "openings", ifc=_FOOTING, elevation="sash"),

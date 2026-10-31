@@ -32,7 +32,7 @@ temperature). Disagree with one and redo the table.
 | Walls | marble-look panel to 7'-0" | solid-surface panel floor to ceiling (106"), 53.0 SF net |
 | Base | kit pan | matching 36x36 solid-surface base |
 | Glass | unspecified | tub (north) side floor to ceiling; front (west) stock Flex door, 72" above threshold (2026-10-22) |
-| Exhaust | `REG-M-EXH2` at (4'-0", 18'-0"), by the tub | (4'-2", 15'-4"), ~8" west of the front glass |
+| Exhaust | `REG-M-EXH2` at (4'-0", 18'-0"), by the tub | (4'-4", 15'-4"), 6 5/8" west of the front glass |
 
 **The thermostatic argument is about the tank, not about the outlet count.** A
 pressure-balance valve holds the hot-to-cold *ratio*. When the 80-gal heat-pump tank's outlet
@@ -136,8 +136,9 @@ The Broan B210E75RT delivers ~206.6 cfm against the 205 cfm the code requires
 BATH2's 20 cfm, so the grille's position is the only lever.
 
 - Warm, wet air rises and leaves the enclosure through the front's 28" open top.
-- `REG-M-EXH2` now sits at **(4'-2", 15'-4")**. The front glass is at x = 4'-10 5/8", so the
-  grille is **8 5/8" outside it**, right where the plume comes over. Before, it was ~4' away by
+- `REG-M-EXH2` now sits at **(4'-4", 15'-4")** (moved 2" east on 2026-10-31: the disc
+  valve's collar would have stood in the 8" exhaust trunk). The front glass is at x = 4'-10 5/8",
+  so the grille is **6 5/8" outside it**, right where the plume comes over. Before, it was ~4' away by
   the tub.
 - It stays **outside** the enclosure and **always on**. A grille inside a glassed stall needs
   a wet-rated, listed-for-shower terminal, and the stall would still need make-up air.

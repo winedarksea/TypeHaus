@@ -73,7 +73,7 @@ def test_deleting_the_supply_trunk_orphans_the_manifold(catlin_model):
 def test_the_discharge_hood_declares_the_direction_it_is_placed_in(catlin_model):
     """The house side of the same question, since 2026-09-11. EQ-S-ERV-HOOD-EA used to
     borrow EQ-T-ERV-HOOD-6 — one casting, one row, OUTDOOR_AIR stated once — and could only
-    read UNKNOWN. It is EQ-T-ERV-HOOD-6-EXH now: the same casting on a second catalog row at
+    read UNKNOWN. It is EQ-T-ERV-HOOD-8-EXH now (8" since 2026-10-31): a second catalog row at
     the same rate, declaring EXHAUST_AIR, which is the direction its damper is hung in."""
     hood = [f for f in _findings(catlin_model, "mep.equipment_port_service")
             if f.element_tags == ("EQ-S-ERV-HOOD-EA",)]
@@ -94,8 +94,8 @@ def test_a_reversible_casting_is_unknown_and_not_a_failure(catlin_model):
     house did about it; a house that has not may still hit this arm."""
     hood = next(el for el in catlin_model.plan.all_elements()
                 if el.tag == "EQ-S-ERV-HOOD-EA")
-    assert hood.type_ref == "EQ-T-ERV-HOOD-6-EXH"
-    reversed_casting = hood.model_copy(update={"type_ref": "EQ-T-ERV-HOOD-6"})
+    assert hood.type_ref == "EQ-T-ERV-HOOD-8-EXH"
+    reversed_casting = hood.model_copy(update={"type_ref": "EQ-T-ERV-HOOD-8"})
     plan = _plan_with(catlin_model.plan, hood.tag, reversed_casting)
     model = catlin_model.__class__(**{**catlin_model.__dict__, "plan": plan})
     finding = [f for f in _findings(model, "mep.equipment_port_service")
@@ -241,7 +241,7 @@ def test_the_only_serviceable_face_on_system_1_states_its_filter(catlin_plan):
     """EQ-S-HP1-AH hangs in SF-S-HP1 with no filter cabinet, so REG-T-HP-RET's hinged face
     is the only filter in the system — and until now that lived only in a prose ``source``."""
     grille = next(t for t in catlin_plan.library.register_types
-                  if t.tag == "REG-T-HP-RET")
+                  if t.tag == "REG-T-HP-RET-FILTER")
     assert grille.filter_nominal_size == "28x12x1"
     assert grille.filter_merv == 13
     assert grille.service_face == "bottom"

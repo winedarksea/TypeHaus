@@ -439,8 +439,11 @@ STALL_FAN_REGISTER_TYPES = (
     RegisterType(tag="REG-T-NOZZLE-DAMPER-4",
                  name="4in round adjustable nozzle diffuser with gravity backdraft damper",
                  footprint=(inch(4.2), inch(4.2)), height=inch(2), plan_symbol="register",
-                 source="Stall fan discharge in FX-M-BATH2-SH's ceiling: an aimable jet "
-                        "nozzle, and a gravity damper so stall steam does not back into the "
+                 product_ref="PROD-AIR-SPOT-NOZZLE-4",
+                 source="Stall fan discharge in FX-M-BATH2-SH's ceiling: an aimable aluminium "
+                        "spot nozzle (Shoemaker 1202-4 or equal), and a 4in gravity backdraft "
+                        "damper in the duct above it so stall steam does not back into the "
                         "duct when the fan is off. Passive: no electrics in the shower zone. "
-                        "Confirm a wet-location-suitable product."),
+                        "No maker publishes a wet rating; aluminium is the corrosion answer "
+                        "(notes/air_distribution_products.md §10)."),
 )

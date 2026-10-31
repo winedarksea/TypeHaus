@@ -165,6 +165,7 @@ def _resolve_sleeve(model: ResolvedModel, sleeve: SleevePenetration,
         purpose=sleeve.purpose.value,
         seal=sleeve.seal if framed else None,
         insulation=sleeve.insulation if framed else None,
+        serves_duct=sleeve.serves_duct,
     )
     if framed and sleeve.axis == "horizontal":
         bore = _sleeve_bore(model, resolved, outline)

@@ -221,6 +221,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "duct_dryer": (0.860, 0.680, 0.420, 1.0),       # its own system, its own colour (M1502)
     "duct_transfer": (0.700, 0.720, 0.700, 1.0),    # a louver, not a duct: muted
     "duct_outdoor_air": (0.360, 0.640, 0.780, 1.0),  # outdoor air, insulated and sealed
+    "insulation_wrap": (0.160, 0.165, 0.170, 1.0),  # closed-cell elastomeric is black
+    "terminal_neck": (0.700, 0.720, 0.740, 1.0),  # the stamped boot behind a grille
     "solar": (0.10, 0.14, 0.28, 1.0),      # PV module glass, deep blue
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # dropped soffit box / soffit skin member

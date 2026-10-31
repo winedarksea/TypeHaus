@@ -113,6 +113,7 @@
     "hanger": 1710620,
     "header": 10054466,
     "insulation": 15580508,
+    "insulation_wrap": 2697771,
     "jack": 11699540,
     "joist": 12094556,
     "king": 11699540,
@@ -190,6 +191,7 @@
     "stud": 11699540,
     "sub_slab": 9407623,
     "sump": 5001815,
+    "terminal_neck": 11712701,
     "thermal_break": 15895590,
     "tread": 11699540,
     "trellis": 9205852,
@@ -322,6 +324,7 @@
     "hanger": 1710620,
     "header": 10054466,
     "insulation": 15580508,
+    "insulation_wrap": 2697771,
     "jack": 11699540,
     "joist": 12094556,
     "king": 11699540,
@@ -399,6 +402,7 @@
     "stud": 11699540,
     "sub_slab": 9407623,
     "sump": 5001815,
+    "terminal_neck": 11712701,
     "thermal_break": 15895590,
     "tread": 11699540,
     "trellis": 9205852,
@@ -545,6 +549,9 @@
     "insulation": [
       "insulation"
     ],
+    "insulation_wrap": [
+      "mechanical"
+    ],
     "leader_extension": [
       "drainage"
     ],
@@ -665,6 +672,9 @@
     "sump": [
       "drainage"
     ],
+    "terminal_neck": [
+      "mechanical"
+    ],
     "thermal_break": [
       "concrete"
     ],
@@ -738,6 +748,7 @@
     "glazing_trim": "openings",
     "gutter": "drainage",
     "insulation": "insulation",
+    "insulation_wrap": "mechanical",
     "leader_extension": "drainage",
     "main_shutoff": "plumbing",
     "movement_joint": "masonry",
@@ -778,6 +789,7 @@
     "soffit": "drywall",
     "sub_slab": "earth",
     "sump": "drainage",
+    "terminal_neck": "mechanical",
     "thermal_break": "concrete",
     "trellis": "landscaping",
     "tub_batt": "insulation",

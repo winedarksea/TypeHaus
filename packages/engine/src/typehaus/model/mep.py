@@ -202,6 +202,11 @@ class SleevePenetration(Element):
     sheathing and everything outboard of it (a wall hydrant's barrel). That sleeve is an
     envelope crossing, so it states how it is ``seal``-ed to the air/water control layer and
     what ``insulation`` fills its annulus; ``mep.exterior_hydrant_protection`` reads both.
+
+    ``serves_duct`` names the ``DuctRun`` a framed-wall crossing is for (an ERV hood leg).
+    That one is not a purchased tube but the seal itself — foam annulus, taped to the
+    control layer — so it bills as a ``wall-seal`` kit in ``[duct_fittings]``, not as a
+    cast sleeve; ``mep.duct_penetration_fit`` grades it against the duct's bare OD.
     """
 
     host_ref: str  # Slab/Footing/Wall tag, e.g. "SL-M-DECK"
@@ -214,6 +219,7 @@ class SleevePenetration(Element):
     center_elevation: Length | None = None  # horizontal sleeves: project-frame center z
     seal: str | None = None  # framed-wall sleeve: how it is sealed to the control layer
     insulation: str | None = None  # framed-wall sleeve: what fills the annulus
+    serves_duct: str | None = None  # DuctRun tag this envelope crossing seals
 
 
 @register_element

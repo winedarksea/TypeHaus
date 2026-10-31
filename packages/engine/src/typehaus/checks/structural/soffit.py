@@ -254,12 +254,17 @@ def _bears_on(rung: FramedMember, header: FramedMember) -> bool:
     its opening, so pairing them by name would be a second encoding of a relationship the
     coordinates already state.
     """
+    from typehaus.resolve.framing.soffit import _stock_actual_m
+
     header_axis = 0 if abs(header.p1[0] - header.p0[0]) > abs(header.p1[1] - header.p0[1]) else 1
     across_axis = 1 - header_axis
     line = header.p0[across_axis]
+    # The header stands outboard of the hole, so a stub ends on its FACE, half its width
+    # off its centreline.
+    half = _stock_actual_m(header.profile)[1] / 2.0
     lo, hi = sorted((header.p0[header_axis], header.p1[header_axis]))
     for end in (rung.p0, rung.p1):
-        if (abs(end[across_axis] - line) <= 1e-6
+        if (abs(abs(end[across_axis] - line) - half) <= 1e-6
                 and lo - 1e-6 <= end[header_axis] <= hi + 1e-6):
             return True
     return False

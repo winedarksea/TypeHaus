@@ -456,7 +456,7 @@ def _duct_size_advice(model: ResolvedModel, duct: Any) -> tuple[str, ...]:
         return (f"sizing: {duct.tag} is the size {cfm:.0f} cfm wants — {basis}",)
     from typehaus.quantities import M_PER_IN
     row = next((r for r in model.plan.library.duct_product_types
-                if r.material == duct.material
+                if r.material == duct.material and r.nominal_diameter is not None
                 and abs(r.nominal_diameter.meters - duct.diameter_m) <= 1e-6), None)
     drawn = (None if row is None else friction_rate_in_wg_per_100ft(
         cfm, row.bore_diameter.meters, row.roughness_m))

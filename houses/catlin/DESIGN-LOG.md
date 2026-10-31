@@ -2326,6 +2326,37 @@ bearing wall, matching every other bearing wall in the house.
 
 ## Ventilation, ducts and soffits
 
+### Air-distribution products named; hoods counted; 203 cfm (2026-10-31)
+
+Every terminal, both hoods and the outdoor legs' insulation now name a basis-of-design part,
+"or equal" (`notes/air_distribution_products.md`). Decisions and what they cost:
+
+- **100 mm disc valves on the ERV**, one white family with System 1's aluminium. A valve loses
+  more than the open diffuser it replaced (7.3 vs 4.0 Pa at 20 cfm, Trox LVS published), and
+  on the one 30 cfm terminal (`REG-B-SUP2`) it governed the machine at 202 cfm: that one takes
+  a 125 mm valve (8.2 Pa). Five floor extracts are 2 1/4x10 aluminium grilles on boots.
+- **The hoods were never in the static budget.** `mep.erv_static_budget` summed only the
+  radial terminals. Counted, with RenewAire FA8 curves (23.3 / 22.7 Pa), the governing
+  extract column is 0.460 in. w.g. and the machine delivers **203.0 cfm, 2.0 under MN's 205**.
+  Accepted under the owner's 2026-10-30 shortfall policy and left to commissioning; the 10"
+  hood is costed for the owner (budget §10.4). The same pass found the level-2 extract plenum
+  read at 228 cfm (trunk plus its own branches) and fixed it.
+- **The hoods had been typed 6" behind 8" legs since 2026-09-15**; `mep.duct_connectivity`
+  now FAILs a run whose size differs from a one-collar machine's collar.
+- **"2" R-8 wrap" named no product** (2" FRK is ~R-6). It is two 1" layers of AP Armaflex
+  (R-8.4, 25/50 at each layer, its own vapour retarder), the same 12" OD. The wrap stops in
+  the stud bay; the sheathing annulus is low-expansion foam, sealed with the ccSPF
+  (`SP-*-ERV-*-SEAL`, billed as `wall-seal-8in`). Rejected: more R (no chase room, ~$10/yr),
+  moving the EA hood, moving the machine.
+- **The return filter stays 28x12, ordered as a custom 12x28x1.** No stocked size fits the
+  29 1/4" plenum under 300 fpm (12x24 is 347 fpm; 12x30 needs a 30" hole).
+- **Necks are modelled now and they found real conflicts** (`mep.terminal_neck_fit`):
+  `DU-S-HP-SUITE` ran through the cripple over D-S-SUITE and moved 7" north with its grille;
+  a SF-S-HP1 ladder rung ran across the return face (now headed off, and soffit headers stand
+  outboard of the clear hole engine-wide); eleven other terminals moved 1/2"-5 3/8" off
+  joists, studs, plates and other runs (note §13).
+- **Trimless is not decided.** The comparison is note §12 (~$400-1,100 for five terminals).
+
 ### Nothing crosses the basement stair any more (2026-09-22)
 
 The D3 lanes put four runs over `ST-B2M`: GYM and PLAY on the y=29'-6"/30'-6" belt then the

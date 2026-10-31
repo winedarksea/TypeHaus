@@ -142,6 +142,15 @@ ALL_DUCT_PRODUCT_TYPES = (
         bend_equivalent_length=inch(78),
         source=_SOURCE,
     ),
+    *(DuctProductType(
+        tag=f"DUCT-T-GALV-RECT-{side}", section="rectangular", material="galvanized",
+        name=f"Rectangular galvanized sheet-metal duct, largest side to {side}in, {gauge} ga",
+        max_side=inch(side), gauge=gauge, thickness=inch(thickness),
+        source=("IRC 2018 Table M1601.1.1, single dwelling units, 1/2 in. w.g. static "
+                f"column: {thickness} in. minimum galvanized for a largest side to {side} in.; "
+                f"{gauge} ga is the stock sheet that meets it"),
+    ) for side, gauge, thickness in ((10, 30, 0.013), (12, 28, 0.016), (18, 26, 0.019),
+                                     (20, 24, 0.024))),
     DuctProductType(
         tag="DUCT-T-FLEX-6",
         name="6in insulated flexible duct, R-8 jacket",

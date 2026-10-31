@@ -248,10 +248,11 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     elbows, 0.1338 -> 0.1685 (§6). Delivered 206.6 cfm, which still reads as 207.
     """
     message = _machine_finding(catlin_model_ro).message
-    # ERV east of the lane (note, 2026-10-17): extract governs at 0.3688, 206.62 cfm.
+    # Note §9 (2026-10-31): the 8" hoods' published losses join the trunk chain (extract
+    # 22.7 Pa with the BD8), and extract governs at 0.460 in. w.g., 203.0 cfm.
     assert "extract side" in message
-    assert "0.369 in. w.g." in message
-    assert "delivering 207 cfm" in message
+    assert "0.460 in. w.g." in message
+    assert "delivering 203 cfm" in message
 
 
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(

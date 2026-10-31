@@ -282,6 +282,7 @@ from typehaus.model.types import (
     ProductPart,
     RailingType,
     RegisterType,
+    TerminalNeck,
     WindowType,
 )
 from typehaus.model.views import (
@@ -390,7 +391,7 @@ __all__ = [
     "ApplianceType", "EquipmentType",
     "BuiltInBookcaseBay", "BuiltInBookcaseSpec",
     "HeatPumpRating",
-    "RegisterType", "RailingType", "DuctProductType", "ElectricalDeviceType",
+    "RegisterType", "RailingType", "DuctProductType", "TerminalNeck", "ElectricalDeviceType",
     "LuminaireType", "MeshRef", "TrackHeadProduct", "TrackHeadSpec", "TrackLightingSpec",
     "JoistSpec", "JoistReinforcement", "DeckLayer", "FloorSystem", "FloorOpening",
     "FloorOpeningEdgeInterval", "FloorOpeningPocketClosure",

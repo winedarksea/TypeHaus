@@ -1226,9 +1226,10 @@ SOFFITS = [
            #
            # 30" (x) x 29" (y), clear, at x 18'-10"..21'-4" by y 31'-10"..34'-3". It heads
            # off exactly ONE station (the rung at y=33'-0 5/8") between the rungs at
-           # 31'-8 5/8" and 34'-4 5/8", so the two headers span 32" along the box at
-           # x=18'-10" and x=21'-4" and the cut rung leaves a 4 1/2" stub west and a 2"
-           # stub east. `structural.soffit_opening` grades that header.
+           # 31'-8 5/8" and 34'-4 5/8". One header spans 32" along the box just west of
+           # x=18'-10" (outboard of the clear hole, since 2026-10-31), leaving a 1" stub;
+           # the east edge is 2" off the rail, which carries that stub. `structural.
+           # soffit_opening` grades the header.
            #
            # It is wholly inside RM-S-NCLOSET (y 30'-10"..36'-0") and it sits under the
            # air handler's north two-thirds AND its return face at y=34'-0", which is the
@@ -1237,7 +1238,13 @@ SOFFITS = [
            openings=(SoffitOpening(
                tag="AO-S-HP1-AP",
                outline=(pt(ft(18, 10), ft(31, 10)), pt(ft(21, 4), ft(31, 10)),
-                        pt(ft(21, 4), ft(34, 3)), pt(ft(18, 10), ft(34, 3)))),)),
+                        pt(ft(21, 4), ft(34, 3)), pt(ft(18, 10), ft(34, 3)))),
+                     # REG-S-HP-RET's 28 x 12 hole (2026-10-31): the rung at y=28'-10 5/8"
+                     # ran straight across the return face, and the hole cuts the next one.
+                     SoffitOpening(
+               tag="AO-S-HP1-RET",
+               outline=(pt(inch(245.5), inch(336.25)), pt(inch(257.5), inch(336.25)),
+                        pt(inch(257.5), inch(364.25)), pt(inch(245.5), inch(364.25)))),)),
     # --- SF-S-SUITE IS RETIRED (2026-09-13) -------------------------------------------
     #
     # It was the suite entry arm's ceiling: x 12'-0" (D-S-SUITEBATH's jamb) to 18'-6 1/2"
