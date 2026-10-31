@@ -86,8 +86,8 @@ floor, with **no back panel**. Bays are **35 1/2"** clear.
   `N-M-PAN3`: through the 1/8" scribe into the corner studs, low and high.
 - **The centre upright is tied by every shelf**, plus one steel angle at the top to a
   north-wall stud above the case top.
-- **No blocking anywhere, and no fasteners in the exterior wall**, apart from that one angle
-  and the receptacle box. Shelf heights no longer have to be fixed at framing.
+- **No blocking anywhere, and no shelf fasteners in the exterior wall** apart from that one
+  angle (the receptacle box and the driver, below, are electrical). Shelf heights no longer have to be fixed at framing.
 
 It is structure, not joinery: the centre upright must never be "opened up" later for a wider
 shelf.
@@ -106,8 +106,8 @@ stagger the screws so they cannot meet. There are **no back cleats**: the shelf 
 one-way between the uprights, which is what the calc above assumes.
 
 **Each shelf is screwed UP through its cleats**: a round hole at the front, a **3/8" slot at
-the rear**. Boards run the bay (grain along it), so the 18" of seasonal movement is front to
-back, roughly 1/4" in red oak over a Minnesota RH swing. The shelf stops **1/4" short of the
+the rear**. Boards run the bay (grain along it), so seasonal movement runs across the 18" depth,
+front to back, roughly 1/4" in red oak over a Minnesota RH swing. The shelf stops **1/4" short of the
 north wall**, which takes that movement, so nothing needs slotting into a wall. A solid shelf
 pinned hard on all sides splits in year two, not on the day it goes in.
 
@@ -194,11 +194,11 @@ of the uprights: west-E (`ED-M-PANTRY-LT`), centre-W (`-LT2`), centre-E (`-LT3`)
 every bay is lit from both sides.
 
 - **Channel:** Diode LED **S45** 45° aluminium channel (`DI-CHB-S45-96AL`, 96" bundle with a
-  frosted lens, cut to 72"), recorded as `PROD-DIODE-S45-CHANNEL`. It is fitted in the shop
+  frosted lens, end caps and clips, cut to 72"), recorded as `PROD-DIODE-S45-CHANNEL`. It is fitted in the shop
   on the ply, and each shelf's two front corners are notched so the channel runs straight
   through.
 - **Tape:** the house VALENT X at **1.9 W/ft** (3000 K, 95+ CRI). Four 6' runs are 45.6 W,
-  57 W with the 125% factor, inside one 60 W driver. The 2.8 W/ft step would need 80 W.
+  57 W with the 125% factor, inside one 60 W driver. The 2.8 W/ft step would need 84 W.
 - **Driver:** one 60 W OMNIDRIVE X (`ED-M-PANTRY-LT-PSU`, `ED-T-LT-PSU-60`), surface-mounted
   on `W-M-N1B` above the case top at **90"**, over the centre upright. The four leads are
   wired at the tops of the channels. It is reachable from the top shelf, ventilated, and

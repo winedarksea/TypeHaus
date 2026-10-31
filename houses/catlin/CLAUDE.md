@@ -1764,7 +1764,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   west backing and the existing east corner studs. Western storage remains a sideways reach.
   See `notes/pocket_frame_eclisse.md`.
 - **Pantry shelves (2026-10-30):** a floor-standing 3-panel maple-ply ladder, no back, no
-  blocking, nothing in the exterior wall; 6/4 oak shelves on bench-fixed cleats at explicit
+  blocking, one top angle its only fastener in the exterior wall; 6/4 oak shelves on bench-fixed cleats at explicit
   `board_tops`, 1/4" off the north wall. Four 24V jamb channels (`ED-M-PANTRY-LT`..`-LT4`) on
   one 60 W driver at 90" on `W-M-N1B`, all on the inside PIR `ED-M-PANTRY-SW` at 56" (no
   kitchen-side pantry switch; the 46" box there is the undercabinet dimmer). Built to be

@@ -2774,10 +2774,12 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-LT-GROW-BAR" = { material = { low = 230, high = 290 }, labour = { low = 45, high = 100 } }  # 2 ea — Barron AG90-W-001 $220-261 + cable hangers (researched 2026-10-28)
 "ED-T-LT-WALL-LINEAR" = { material = { low = 480, high = 552 }, labour = { low = 45, high = 100 } }  # 1 ea — WAC WS-6724-30-BK $480-552 (researched 2026-10-28)
 # RM-M-PANTRY's jamb channels (2026-10-30), replacing the one wall slot: per channel, 6 ft of
-# VALENT X 1.9 W/ft plus end caps and clips, shop-fitted to the ply. The S45 channel itself is
-# its own part row (PROD-DIODE-S45-CHANNEL) and the driver is ED-T-LT-PSU-60. Unresearched.
-"ED-T-LT-JAMB72" = { material = { low = 60, high = 110 }, labour = { low = 30, high = 70 } }  # 4 ea
-"PROD-DIODE-S45-CHANNEL" = { material = { low = 45, high = 90 }, labour = 0 }  # 4 ea, one 96 in. bundle per jamb; unresearched
+# VALENT X 1.9 W/ft (DI-24V-VLX2), shop-fitted to the ply. HomElectrical lists the 100 ft spool
+# at $2,700 (~$27/ft, read 2026-10-31), so 6 ft is ~$160 at list; the low end assumes a
+# distributor discount. The S45 bundle (channel, lens, caps, clips) is its own part row and the
+# driver is ED-T-LT-PSU-60.
+"ED-T-LT-JAMB72" = { material = { low = 110, high = 165 }, labour = { low = 30, high = 70 } }  # 4 ea
+"PROD-DIODE-S45-CHANNEL" = { material = { low = 70, high = 90 }, labour = 0 }  # 4 ea, one 96 in. bundle per jamb; HomElectrical $85.05 (read 2026-10-31)
 # ** REPRICED 2026-09-12 WITH THE CLASS 320 RETYPE. ** This is no longer a plain $70-200
 # meter socket: it is a Class 320 heavy-duty lever-bypass COMBINATION meter-main carrying the
 # two 200 A mains outdoors (Milbank/Eaton HD class, the Xcel MN residential standard above

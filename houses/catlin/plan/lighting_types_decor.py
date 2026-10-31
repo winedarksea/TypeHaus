@@ -2,7 +2,7 @@
 
 Split from ``lighting_types.py`` for the 500-line rule in ``AGENTS.md``. The split is by
 what a fixture IS rather than by where it goes: part 1 is the anonymous ambient and task
-layer (cans, the panel, the tapes, the grow bars, the vertical slots) and this file is the
+layer (cans, the panel, the tapes, the grow bars, the jamb channels) and this file is the
 fixtures somebody actually looks at, plus the fans and the exterior. ``LUMINAIRE_TYPES``
 concatenates the two, so the E-602 schedule and its mark-uniqueness test see one catalog.
 

@@ -347,7 +347,8 @@ class BuiltInBookcaseSpec(HausModel):
         for bay in self.bays:
             tops = [top.meters for top in bay.board_tops]
             if tops and (tops[0] - board < bay.closed_base_height.meters - 1e-9 or any(
-                    upper - lower < board for lower, upper in zip(tops, tops[1:], strict=False))):
+                    upper - lower < board - 1e-9
+                    for lower, upper in zip(tops, tops[1:], strict=False))):
                 raise ValueError("built-in bookcase board_tops overlap each other or the base")
         return self
 

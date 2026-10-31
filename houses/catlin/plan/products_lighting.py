@@ -194,7 +194,7 @@ DIODE_S45_CHANNEL = Product(
     url="https://www.diodeled.com/s45-channel.html", stock_length=inch(96),
     source="Diode LED S45 product page, read 2026-10-30: corner or surface mount, 48/96 in. "
            "bundles in aluminum, black or white, frosted lens. One 96 in. bundle per pantry "
-           "jamb, cut to 72 in.; end caps and clips from the DI-CHB-S45-ACC pack.",
+           "jamb, cut to 72 in.; the bundle carries its end caps and mounting clips.",
 )
 
 LIGHTING_PRODUCTS = (

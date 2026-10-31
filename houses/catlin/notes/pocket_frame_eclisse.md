@@ -77,10 +77,10 @@ that level. Keep every drywall fastener over the cassette at 1 inch maximum. Anc
 through the cassette's specified fixing points into the perpendicular framing; no
 cabinet, pipe, device box, shelf cleat, or added blocking may enter the cassette.
 
-The light moves to the actual west wall, in the 8-inch strip ahead of the shelves.
-Pantry and undercabinet controls share a two-gang installation on the east return at
-46 inches, with manual pantry control. The two shelf bays and structural gable remain;
-western storage is reached sideways from the east opening.
+The pantry lights are four jamb channels on the shelf uprights, switched by a PIR
+sensor inside on the east return at 56 inches (2026-10-30,
+`pantry_climbable_shelving.md`); the kitchen-side box at 46 inches is the undercabinet
+dimmer. Western storage is reached sideways from the east opening.
 
 ## Not modelled
 

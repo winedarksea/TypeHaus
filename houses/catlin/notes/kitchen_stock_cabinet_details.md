@@ -51,8 +51,8 @@ side and 1 7/8-inch clearance west. These are geometric clearances, not a mounti
 approval. Before fabrication, check the actual sink and supplied cutout template,
 corner radii, selected reveal, clip access, support, faucet hole and quartz webs;
 the rectangular schematic opening is not a fabrication template. No cabinet side cutting
-is specified. Pantry shelving is 73 1/4 wide, centred x=256, divided by a 3/4 middle
-gable into two 36 1/4 clear bays. See the updated climbable-shelf calculations.
+is specified. Pantry shelving is 73 1/4 wide, centred x=256: three 3/4 ply uprights and
+two 35 1/2 clear bays. See the updated climbable-shelf calculations.
 
 ## K2 — North/east wall frames and diagonal corner
 

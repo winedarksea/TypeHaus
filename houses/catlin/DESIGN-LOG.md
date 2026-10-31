@@ -6882,8 +6882,8 @@ shaded the east bay, which is the one the doorway shows.
 Owner's calls: a **3-panel ply ladder**, **vertical jamb light channels**, and the west
 bay kept at 18" with **pull-out bins**. Three 3/4" maple-ply uprights stand on the floor;
 the walls only hold them plumb. The ends screw to the corner framing and the centre is
-tied by the shelves and one top angle. There is no blocking and nothing in the exterior
-wall. Cleats are glued and screwed to the ply on the bench from a story stick. The back
+tied by the shelves and one top angle to a north-wall stud, the case's only fastener in
+the exterior wall. There is no blocking. Cleats are glued and screwed to the ply on the bench from a story stick. The back
 cleats are gone (the calc was always one-way), and each shelf screws up through its
 cleats, round hole front and slot rear, standing 1/4" off the north wall for its movement.
 
@@ -6896,7 +6896,7 @@ the deflection about doubles, to ≈0.10", right at L/360. That is the reason no
 below 6/4.
 
 Four channels (Diode LED S45, VALENT X at 1.9 W/ft) on one 60 W OMNIDRIVE X at 90" on
-`W-M-N1B`, all on the inside PIR. The 2.8 W/ft step would overload one driver. The centre
+`W-M-N1B`, all on the inside PIR. The 2.8 W/ft step would need 84 W, past one driver. The centre
 pair are FLOOR mounts at a stated height, because a WALL mount must bear on a wall face.
 The engine gained `BuiltInBookcaseBay.board_tops`, a zero `back_thickness`, and
 `board_material_ref` (oak boards in a ply carcass) for this. `notes/pantry_climbable_shelving.md`.

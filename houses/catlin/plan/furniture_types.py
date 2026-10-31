@@ -335,7 +335,8 @@ MEDIA_SECTIONAL_U = FurnitureType(
 # A 3-panel ply ladder (2026-10-30): west, centre and east uprights, 3/4" prefinished maple
 # ply, 18" x 84", on the floor, no back. Gravity goes to the floor through the ply, so the
 # walls only hold it plumb: the ends screw to the corner framing, the centre is tied by
-# every shelf and one angle at the top. NO blocking, nothing fastened into the exterior wall.
+# every shelf and one top angle to a north-wall stud. NO blocking; that angle is the case's
+# only fastener in the exterior wall.
 # Each 6/4 red oak shelf sits on two 1x3 oak cleats glued and screwed to the uprights on the
 # bench, screwed UP through them (round hole front, 3/8" slot rear), 1/4" off the north wall
 # so its ~1/4" of front-to-back movement needs no slot into a wall. Gabled to 35 1/2", a 250

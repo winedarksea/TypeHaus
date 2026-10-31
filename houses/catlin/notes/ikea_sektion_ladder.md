@@ -26,7 +26,7 @@ The garage upper reaches 106 and requires a field check of the remaining lift sp
 North, west to east: B12 + 24 dishwasher bay + sink B36 + B18 + NE carousel. Pantry
 kitchen face x=297 3/8; sink centre x=351 3/8 is the accepted 5/8 west of its fixed
 window. There is no kitchen filler. The partition grew 2 3/8 east and the pantry shelves
-are 73 1/4, two 36 1/4 bays separated by a 3/4 gable.
+are 73 1/4, two 35 1/2 bays between three 3/4 ply uprights.
 
 North upper course: W36 and its 20 stacker, W36 sink bridge, W30 and its 20 stacker.
 The diagonal corner meets the north flank and the new east W12 above the fixed window.
