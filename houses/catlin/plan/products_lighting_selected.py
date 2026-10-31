@@ -1,4 +1,4 @@
-"""Catlin luminaire selections of 2026-10-28 (plans/lighting-products.md §2).
+"""Catlin luminaire selections of 2026-10-28 (cans 2026-10-31) (plans/lighting-products.md §2).
 
 Owner goals: long life, solid quality, fair price; no overpriced brands except the signature
 pieces. "Sheet" in a source means the manufacturer spec sheet was read; anything else came
@@ -12,33 +12,79 @@ from typehaus.model import Product
 
 _READ = "Read 2026-10-28. "
 
-# --- A, A1, B, B2: one can SKU family, the LL4SRG (wet, TRIAC), in three fixed CCTs -----
-# The LL4SR named until 2026-10-28 is the 2nd generation and damp only; every can relinks.
-LOTUS_LL4SRG_30K = Product(
-    tag="PROD-LOTUS-LL4SRG-30K-WH", brand="Lotus LED Lights", model="LL4SRG-30K-WH",
-    name='4" deeply regressed canless LED downlight, white, 3000K',
-    source=_READ + "Lotus spec sheet: 14.5 W, 860 lm, 3000 K fixed, CRI 90+, IC rated, "
-           "airtight, WET listed, TRIAC dimming. Replaces the damp-only LL4SR, so marks A "
-           "and B are one SKU. CONFIRM the body is the LL4SR's 5 in. square x 2 in. deep.",
+# --- A-C: the recessed cans (2026-10-31) ---------------------------------------------------
+# One replaceable-lamp housing family for every can; the tier is the trim and the lamp, billed
+# as separate part lines. Replaces the Lotus LL4SRG canless set (listed as overstock, and an
+# integrated module is the whole fixture when it fails). Tape carries dimming and tunable CCT.
+_READ31 = "Read 2026-10-31. "
+NORA_NSIC_401QAT = Product(
+    tag="PROD-NORA-NSIC-401QAT", brand="Nora Lighting", model="NSIC-401QAT",
+    name='4" IC airtight line-voltage new-construction housing, double wall, E26',
+    source=_READ31 + "Nora spec sheet: housing height 6 in., cutout 4-3/8 in., frame 8-1/2 "
+           "in. long, IC, airtight, medium (E26) base, bar hangers. A 6 in. body needs a clear "
+           "joist bay (electrical.ceiling_can_framing).",
 )
-LOTUS_LL4SRG_41K = LOTUS_LL4SRG_30K.model_copy(update={
-    "tag": "PROD-LOTUS-LL4SRG-41K-WH", "model": "LL4SRG-41K-WH",
-    "name": '4" deeply regressed canless LED downlight, white, 4100K',
-    "source": _READ + "Lotus product page (not a sheet): 900 lm, 4100 K fixed, otherwise the "
-              "LL4SRG-30K. CONFIRM the -41K SKU and its lumens against a spec sheet."})
-LOTUS_LL4SRG_27K = LOTUS_LL4SRG_30K.model_copy(update={
-    "tag": "PROD-LOTUS-LL4SRG-27K-WH", "model": "LL4SRG-27K-WH",
-    "name": '4" deeply regressed canless LED downlight, white, 2700K',
-    "source": _READ + "Lotus LL4SRG family in a fixed 2700 K phosphor, 850 lm; BATH2's "
-              "evening shower can."})
-# --- B1: BATH2's day layer -------------------------------------------------------------
-LOTUS_LD4S_50K = Product(
-    tag="PROD-LOTUS-LD4S-50K-4S-WR-WT", brand="Lotus LED Lights", model="LD4S-50K-4S-WR-WT",
-    name='4" square slim LED downlight, white reflector, 5000K',
-    source=_READ + "Lotus spec sheet: fixed 5000 K, 1,420 lm, CRI 90+, IC, airtight, WET, "
-           "square, white reflector, no housing needed, 15 W (sheet and retailers agree). "
-           "~$102 at one seller (2026-10-28). CONFIRM: the 3\" vs 3.5\" ceiling "
-           "clearance, and R9 (the day layer is the >=5000 K, high-CRI hard requirement).",
+NORA_NS_40P = Product(
+    tag="PROD-NORA-NS-40P", brand="Nora Lighting", model="NS-40P",
+    name='4" stepped baffle trim, white, for PAR20',
+    source=_READ31 + "NS-40 series sheet: 50 W R20/PAR20 maximum, cULus damp with a "
+           "compatible housing. CONFIRM the -P suffix against the NSIC-401QAT compatibility "
+           "list.",
+)
+NORA_NS_12 = Product(
+    tag="PROD-NORA-NS-12", brand="Nora Lighting", model="NS-12",
+    name='4" adjustable gimbal trim, white, for PAR20',
+    source=_READ31 + "Not read: CONFIRM the NS-12 is the 4 in. PAR20 gimbal for this housing, "
+           "its tilt range, and its damp listing.",
+)
+NORA_NS_76W = Product(
+    tag="PROD-NORA-NS-76W", brand="Nora Lighting", model="NS-76W",
+    name='4" lensless shower baffle trim, white, wet location',
+    source=_READ31 + "Retailer pages only: 4 in. lensless white baffle, shower flange, 3.5 in. "
+           "tall. No sheet found. CONFIRM its wet listing with this housing and its lamp "
+           "requirement before ordering; the fallback is the lensed NS-22 for those openings.",
+)
+PAR20_90_30K = Product(
+    tag="PROD-BULBRITE-PAR20-90-30K", brand="Bulbrite", model="772262",
+    name="PAR20 LED lamp, 6.5 W, 3000K, 90 CRI, 40 degree, enclosed and wet rated",
+    source=_READ31 + "Retailer listing: 6.5 W, 500 lm, 3000 K, CRI 90, 40 deg, enclosed and "
+           "wet rated, dimmable. CONFIRM the SKU number. Any 90-CRI enclosed-rated PAR20 of "
+           "this output will do (PLT, Halco).",
+)
+PAR20_90_27K = PAR20_90_30K.model_copy(update={
+    "tag": "PROD-BULBRITE-PAR20-90-27K", "model": "PAR20 2700K",
+    "name": "PAR20 LED lamp, 2700K, 90 CRI, enclosed and wet rated",
+    "source": _READ31 + "The 3000 K lamp's 2700 K sibling, BATH2's evening shower can. CONFIRM "
+              "the SKU, its wet rating and its lumens (carried at 480)."})
+PAR20_90_40K = PAR20_90_30K.model_copy(update={
+    "tag": "PROD-BULBRITE-PAR20-90-40K", "model": "PAR20 4000K",
+    "name": "PAR20 LED lamp, 4000K, 90 CRI, enclosed rated",
+    "source": _READ31 + "The lounge's cool layer. CONFIRM a 4000 K enclosed-rated 90+ CRI "
+              "PAR20 (95 CRI if one exists) and its lumens (carried at 520)."})
+PAR20_90_50K = PAR20_90_30K.model_copy(update={
+    "tag": "PROD-PAR20-90-50K-WET", "brand": "Bulbrite", "model": "PAR20 5000K",
+    "name": "PAR20 LED lamp, 5000K, 90 CRI, wet rated",
+    "source": _READ31 + "BATH2's day layer (>= 5000 K, high CRI). Not found yet: CONFIRM a "
+              "wet-rated 5000 K PAR20 and its lumens (carried at 520). If none exists, those "
+              "openings take the lensed NS-22 with a damp-rated lamp."})
+SORAA_VIVID_PAR20 = Product(
+    tag="PROD-SORAA-VIVID-PAR20-30K-36", brand="Soraa", model="Vivid PAR20 3000K 36",
+    name="Vivid PAR20 LED lamp, 10.8 W, 3000K, 95 CRI, R9 95, 36 degree",
+    source=_READ31 + "Bulbrite (Soraa) listings: 10.8 W, 540 lm at 3000 K, CRI 95, R9 95, "
+           "enclosed rated, damp, dimmable leading and trailing edge. CONFIRM the ordering "
+           "code for the 36 deg beam.",
+)
+SORAA_VIVID_PAR20_25 = SORAA_VIVID_PAR20.model_copy(update={
+    "tag": "PROD-SORAA-VIVID-PAR20-30K-25", "model": "Vivid PAR20 3000K 25",
+    "name": "Vivid PAR20 LED lamp, 10.8 W, 3000K, 95 CRI, R9 95, 25 degree",
+    "source": _READ31 + "The 36 deg lamp's 25 deg beam, for the gimbals that light a wall or "
+              "the mantel. CONFIRM the ordering code."})
+JUNO_WF4_DREG = Product(
+    tag="PROD-JUNO-WF4-DREG-B", brand="Juno", model="WF4 DREG B ALO19 SWW5 90CRI MW M6",
+    name='4" deep-regressed wafer downlight, baffle, white, 90 CRI, set to 3000K',
+    source=_READ31 + "Juno sheet and retailers: 14.5 W, lumen selectable 700/900/1100 "
+           "(sources differ on the middle step), switchable 2700-5000 K set to 3000 K, about "
+           "2-1/4 in. tall, IC, airtight, wet, JA8. Only where a 6 in. housing cannot fit.",
 )
 # --- D: the flat panels ------------------------------------------------------------------
 WESTGATE_LP_2X4 = Product(
@@ -150,7 +196,9 @@ LIVEX_4451 = Product(
 )
 
 SELECTED_LIGHTING_PRODUCTS = (
-    LOTUS_LL4SRG_30K, LOTUS_LL4SRG_41K, LOTUS_LL4SRG_27K, LOTUS_LD4S_50K, WESTGATE_LP_2X4,
+    NORA_NSIC_401QAT, NORA_NS_40P, NORA_NS_12, NORA_NS_76W, PAR20_90_30K, PAR20_90_27K,
+    PAR20_90_40K, PAR20_90_50K, SORAA_VIVID_PAR20, SORAA_VIVID_PAR20_25, JUNO_WF4_DREG,
+    WESTGATE_LP_2X4,
     SCHLUTER_SNLT, BARRON_VARIUS_AG90, WAC_LINE_24, WAC_ROLAND, WAC_STRETCH, NUVO_BOWMAN_36,
     MODERN_FORMS_MYKONOS, WAC_TUBE_EXT, SLL_COB_IP67, MEANWELL_HLG_100H_24A, LIVEX_4451,
 )

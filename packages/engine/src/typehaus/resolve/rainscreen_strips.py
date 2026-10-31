@@ -6,7 +6,8 @@ end) the end sits on a flat perforated aluminium strip, seated directly on the t
 painted aluminium against Galvalume, as Metal Sales' PBR vented ridge bears (owner,
 2026-10-29; no EPDM pads). At the BBD75 band the lower panel stops 1" under the Transition
 Trim's seat and a strip across that slot is the cavity's vented outlet; the upper panel hangs
-1/4" over the seat on no strip, as Metal Sales draws it (``notes/metal_trim_kit.md``). Derived from the trim each one lands on.
+1/4" over the seat on no strip, as Metal Sales draws it (``notes/metal_trim_kit.md``).
+Derived from the trim each one lands on.
 
 Over a non-metal rainscreen's generic Z head flashing the strip closes the cavity's foot
 under the cladding's bottom edge, 1/4" up off the flashing (``opening_head_drip``).

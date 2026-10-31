@@ -20,7 +20,8 @@ Two wattages, deliberately different:
   includes the motor and for a 24V run's PSU is the supply's rating, not the tape's.
 
 Every installed type names its ``Product`` through ``product_ref`` (2026-10-28 selections:
-plan/products_lighting_selected.py), and E-602 prints its brand and model.
+plan/products_lighting_selected.py), and E-602 prints its brand and model. A can's
+``product_ref`` is its housing; its trim and lamp are ``parts``.
 """
 
 from __future__ import annotations
@@ -39,97 +40,77 @@ from typehaus.model import LuminaireType, ProductPart
 _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
                           position=(ft(0), ft(0), ft(0))),)
 
-# Mark B, held as a name so B1/B2 below are copies of it rather than restatements.
-_CAN4_WET = LuminaireType(
-    tag="ED-T-LT-CAN4-WET", name='4" recessed can, wet location, white regressed trim',
-    form=LuminaireForm.RECESSED_CAN, type_mark="B",
-    footprint=(inch(5), inch(5)), height=inch(2), plan_symbol="recessed-can",
-    lamp="LED integrated, canless, driver in its connection box", watts=14.5, lumens=860.0,
-    cct_k=3000, cri=90, dimmable=True, damp_rated=True, wet_rated=True,
-    load_va=14.5, ports=_POWER_120,
-    product_ref="PROD-LOTUS-LL4SRG-30K-WH",
-    source="Lotus LL4SRG-30K-WH, the SAME SKU as mark A (wet listed), so this is a "
-           "schedule row rather than a second product")
+# --- The recessed cans (2026-10-31) -----------------------------------------------------
+# ONE housing everywhere, the Nora NSIC-401QAT (4", IC, airtight, E26, 6" tall); a tier is a
+# trim and a lamp, billed as their own part lines. A replaceable lamp outlives the integrated
+# module it replaces, and dims for free. The cans light the walls, not the floor; dimming and
+# tunable CCT ride on the tape. Where a 6" body cannot fit (ccSPF roof bays, soffits, a run
+# the layout cannot dodge) the can is mark C, the 2 1/4" wafer.
+_HOUSING = "PROD-NORA-NSIC-401QAT"
+
+
+def _can(tag: str, mark: str, name: str, trim: str, lamp: str, watts: float, lumens: float,
+         cct_k: int, cri: int, source: str, **extra: object) -> LuminaireType:
+    return LuminaireType(
+        tag=tag, name=name, form=LuminaireForm.RECESSED_CAN, type_mark=mark,
+        footprint=(inch(5), inch(5)), height=inch(6), plan_symbol="recessed-can",
+        lamp="PAR20 LED, E26, replaceable", watts=watts, lumens=lumens, cct_k=cct_k,
+        cri=cri, dimmable=True, load_va=watts, ports=_POWER_120, product_ref=_HOUSING,
+        parts=(ProductPart(role="trim", product_ref=trim),
+               ProductPart(role="lamp", product_ref=lamp)),
+        source=source, **extra)
+
+
+_STEPPED, _GIMBAL, _SHOWER = "PROD-NORA-NS-40P", "PROD-NORA-NS-12", "PROD-NORA-NS-76W"
+_WET = {"damp_rated": True, "wet_rated": True}
 
 
 AMBIENT_LUMINAIRE_TYPES = (
-    # --- A/B/C: recessed cans (plans/electrical_notes.md, "Recessed cans") ------------
-    # ** THE BLACK BAFFLE WENT WHITE ON 2026-09-06, AND THE GLARE ARGUMENT SURVIVES INTACT —
-    # IT IS JUST SOLVED BY GEOMETRY INSTEAD. ** The old spec (ELCO EL49LDICA/EL39LDICA, black
-    # baffle) was buying glare control with a dark absorbing ring, and it costs three things
-    # this brief will not pay: a black trim in a white ceiling reads as a row of dark holes,
-    # a RIBBED baffle traps dust and shows a grey halo where it collects, and the trim
-    # announces itself in every room. A ** deeply regressed white reflector ** hides the
-    # source behind the aperture's own depth, so it controls glare at least as well, the trim
-    # disappears into the ceiling, and there is a smooth surface to wipe.
-    #
-    # Product is Lotus LL4SRG-30K-WH (2026-10-28): 14.5 W, 860 lm, 3000 K, 90+ CRI, IC,
-    # airtight, wet, TRIAC — ** which is what collapses mark B into the same SKU. ** The
-    # LL4SR named until then is the damp-only 2nd generation. Since 2026-10-28 the 4" can is
-    # also the circulation can: mark C (3") was retyped to A on the owner's one-SKU call, and
-    # every can is on a dimmer, so a hall that wants less than 860 lm is a trim setting.
-    # ** HEIGHT IS 2", NOT 6" — CORRECTED 2026-09-06 AGAINST THE PUBLISHED SHEET. ** All
-    # three marks below carried height=inch(6), a generic can housing, while the product
-    # they name has been a canless fixture since it was specified. Lotus's LL4SR sheet:
-    # "ID 4" OD 5" Sq", "2" Deep - Install Where Ceiling Space Is Limited", "Ceiling
-    # Clearance Required: 2"", "Type IC Rated - No Housing Required", "Driver Inside
-    # Connection Box - No Junction Box Needed", Approved Location "Insulated Ceilings, Open
-    # Plenum, Wet". ** THE 6" WAS NOT A ROUNDING ERROR, IT WAS A DIFFERENT PRODUCT, ** and
-    # it is what made thirteen cathedral cans read as unbuildable: a 6" housing eats the
-    # whole 6 7/8" batt zone of the ROOF assembly and lands on the 5" of ccSPF that is the
-    # only air barrier R806.5 compliance rests on, where a 2" one sits inside the batt and
-    # never reaches it. Nothing in the engine grades a ceiling-recessed body against its
-    # host's depth (resolve/placeables.py special-cases floor and wall mounts only), so the
-    # wrong number cost nothing and bought nothing until somebody measured it.
-    LuminaireType(tag="ED-T-LT-CAN4", name='4" recessed can, white regressed trim',
-                  form=LuminaireForm.RECESSED_CAN, type_mark="A",
-                  footprint=(inch(5), inch(5)), height=inch(2), plan_symbol="recessed-can",
-                  lamp="LED integrated, canless, driver in its connection box", watts=14.5,
-                  lumens=860.0, cct_k=3000, cri=90, dimmable=True, load_va=14.5,
-                  ports=_POWER_120, product_ref="PROD-LOTUS-LL4SRG-30K-WH",
-                  source="Lotus LL4SRG-30K-WH, 4\" deeply regressed white trim, IC airtight, "
-                         "wet, TRIAC, 14.5 W / 860 lm / 3000 K / 90+ CRI (spec sheet)"),
-    # A1 is mark A's housing with the field-selectable module set to 4000K instead of 3000K
-    # — same can, same trim, same load, same part number. It is a separate mark and not a
-    # per-can override because colour temperature is a *type* property everywhere it
-    # matters (Revit's Initial Color Temperature, IFC's light source, the E-602 schedule):
-    # two CCTs in one room have to read as two schedule rows or the electrician cannot tell
-    # which module goes in which can. Do not "deduplicate" these two into one entry.
-    #
-    # ** THE BAN IS ON INSTALL-TIME SELECTABLE MODULES, NOT ON ADJUSTABLE LIGHT ** (owner,
-    # 2026-10-12). A 5CCT DIP switch is set once, blind, by the electrician, and is wrong
-    # constantly. A user-adjustable fixture with a live control (tunable white, RGB) is
-    # allowed: it records its working CCT in `cct_k` and its range in `source`.
-    LuminaireType(tag="ED-T-LT-CAN4-4000", name='4" recessed can, white regressed trim, 4100K',
-                  form=LuminaireForm.RECESSED_CAN, type_mark="A1",
-                  footprint=(inch(5), inch(5)), height=inch(2), plan_symbol="recessed-can",
-                  lamp="LED integrated, canless, driver in its connection box", watts=14.5,
-                  lumens=900.0, cct_k=4100, cri=90, dimmable=True, load_va=14.5,
-                  ports=_POWER_120, product_ref="PROD-LOTUS-LL4SRG-41K-WH",
-                  source="Lotus LL4SRG-41K-WH, the 4100 K phosphor (product page, CONFIRM the "
-                         "SKU). ** A FIXED-CCT MODULE, NEVER AN INSTALL-SELECTABLE 5CCT ONE. ** "
-                         "Two schedule rows is how the electrician tells them apart."),
-    # Same housing, wet-listed: a can over a tub or inside a shower enclosure is in a wet
-    # location, and every bath can here is specified that way rather than sorting them by
-    # which side of the curtain they fall on.
-    _CAN4_WET,
-    # B1/B2: RM-M-BATH2's two layers (2026-10-12, notes/bath2_lighting.md). Same wet can as
-    # B, each in ONE fixed phosphor: B1 5000 K on the plain day toggle, B2 2700 K on the
-    # evening dimmer. Separate marks so the electrician knows which module goes where.
-    _CAN4_WET.model_copy(update={
-        "tag": "ED-T-LT-CAN4-WET-5000", "type_mark": "B1",
-        "name": '4" square slim downlight, wet location, white reflector, 5000K',
-        "lamp": "LED integrated, canless", "watts": 15.0, "load_va": 15.0,
-        "lumens": 1420.0, "cct_k": 5000, "dimmable": False,
-        "product_ref": "PROD-LOTUS-LD4S-50K-4S-WR-WT",
-        "source": "Lotus LD4S-50K-4S-WR-WT (spec sheet), fixed 5000 K, 1,420 lm, CRI 90+, on a "
-                  "plain toggle: BATH2's day layer. 15 W (sheet and retailers, 2026-10-28)."}),
-    _CAN4_WET.model_copy(update={
-        "tag": "ED-T-LT-CAN4-WET-2700", "type_mark": "B2",
-        "name": '4" recessed can, wet location, white regressed trim, 2700K',
-        "cct_k": 2700, "lumens": 850.0, "product_ref": "PROD-LOTUS-LL4SRG-27K-WH",
-        "source": "Lotus LL4SRG-27K-WH, fixed 2700 K, 850 lm, on BATH2's evening dimmer, "
-                  "inside the shower glass."}),
+    # --- A-C: recessed cans (plans/electrical_notes.md, "Recessed cans") ------------------
+    # A white stepped baffle, not black: the regress hides the lamp, the trim disappears in a
+    # white ceiling, and a smooth step wipes clean.
+    _can("ED-T-LT-CAN4", "A", '4" recessed can, white stepped baffle, PAR20 3000K',
+         _STEPPED, "PROD-BULBRITE-PAR20-90-30K", 6.5, 500.0, 3000, 90,
+         "Nora NSIC-401QAT + NS-40P + 90-CRI PAR20 40 deg: the cheap, efficient tier "
+         "(halls, closets, basement, bedrooms, kitchen, mudroom, mechanical).",
+         damp_rated=True),
+    # A1: the lounge's cool layer. CCT is a type property everywhere it matters (E-602, IFC),
+    # so two CCTs in one room are two schedule rows. Do not fold this into A.
+    _can("ED-T-LT-CAN4-4000", "A1", '4" recessed can, white stepped baffle, PAR20 4000K',
+         _STEPPED, "PROD-BULBRITE-PAR20-90-40K", 6.5, 520.0, 4000, 90,
+         "Mark A's housing and trim with a 4000 K lamp: RM-M-LIVING's day layer.",
+         damp_rated=True),
+    # A2/A3: the premium tier, RM-M-LIVING and RM-M-BED only. Same housing; the 95-CRI lamp.
+    _can("ED-T-LT-CAN4-PREM", "A2", '4" recessed can, white stepped baffle, 95-CRI PAR20',
+         _STEPPED, "PROD-SORAA-VIVID-PAR20-30K-36", 10.8, 540.0, 3000, 95,
+         "Nora NSIC-401QAT + NS-40P + Soraa Vivid PAR20 (95 CRI, R9 95, 36 deg).",
+         damp_rated=True),
+    _can("ED-T-LT-CAN4-PREM-GIMBAL", "A3", '4" recessed can, white gimbal, 95-CRI PAR20',
+         _GIMBAL, "PROD-SORAA-VIVID-PAR20-30K-25", 10.8, 540.0, 3000, 95,
+         "Nora NSIC-401QAT + NS-12 gimbal + Soraa Vivid PAR20 25 deg, aimed at a wall, "
+         "a bookcase or the mantel from 24-36 in. off it."),
+    # B/B1/B2: showers and tubs. The same housing behind the lensless wet trim.
+    _can("ED-T-LT-CAN4-WET", "B", '4" recessed can, wet, white shower baffle, PAR20 3000K',
+         _SHOWER, "PROD-BULBRITE-PAR20-90-30K", 6.5, 500.0, 3000, 90,
+         "Nora NSIC-401QAT + NS-76W + wet-rated 90-CRI PAR20 (CONFIRM the NS-76W listing).",
+         **_WET),
+    # B1/B2: RM-M-BATH2's two layers (notes/bath2_lighting.md): 5000 K on the day toggle,
+    # 2700 K on the evening dimmer. Separate marks so the electrician knows which lamp goes where.
+    _can("ED-T-LT-CAN4-WET-5000", "B1", '4" recessed can, wet, white shower baffle, 5000K',
+         _SHOWER, "PROD-PAR20-90-50K-WET", 6.5, 520.0, 5000, 90,
+         "Mark B with a wet-rated 5000 K lamp: BATH2's day layer (CONFIRM the lamp).", **_WET),
+    _can("ED-T-LT-CAN4-WET-2700", "B2", '4" recessed can, wet, white shower baffle, 2700K',
+         _SHOWER, "PROD-BULBRITE-PAR20-90-27K", 6.5, 480.0, 2700, 90,
+         "Mark B with a 2700 K lamp, on BATH2's evening dimmer inside the shower glass.",
+         **_WET),
+    LuminaireType(tag="ED-T-LT-WAFER4", name='4" wafer downlight, deep regressed, wet',
+                  form=LuminaireForm.RECESSED_CAN, type_mark="C",
+                  footprint=(inch(5), inch(5)), height=inch(2.25), plan_symbol="recessed-can",
+                  lamp="LED integrated, canless, set to 3000K", watts=14.5, lumens=900.0,
+                  cct_k=3000, cri=90, dimmable=True, damp_rated=True, wet_rated=True,
+                  load_va=14.5, ports=_POWER_120, product_ref="PROD-JUNO-WF4-DREG-B",
+                  source="Juno WF4 DREG: only where the 6 in. housing cannot fit (a ccSPF "
+                         "roof bay, a soffit, a run the layout cannot dodge)."),
 
     # --- D: flat panels (kitchen, fitness, workshop) ----------------------------------
     LuminaireType(tag="ED-T-LT-PANEL", name="2x4 LED flat panel, surface kit, 4000K",

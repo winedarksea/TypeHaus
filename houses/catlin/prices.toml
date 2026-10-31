@@ -2699,22 +2699,27 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "ED-T-FLOOR-STAT-WARMUP" = { material = { low = 200, high = 300 }, labour = { low = 150, high = 300 } }  # 3 ea, Warmup 7iE (2026-10-30 allowance)
 "ED-T-JBOX" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-JBOX-8X8" = { material = { low = 18, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea, 8x8x4 steel screw-cover pull box
-# ** REPRICED 2026-09-06 TO A NAMED PRODUCT. ** Lotus LL4SR-30K-WH at $64.40 (the LL4SRG
-# that replaced it 2026-10-28 is not yet re-quoted) -- a 4" deeply regressed WHITE trim, IC,
-# airtight, wet, 14.5 W / 860 lm / 3000 K / 90+ CRI. The old $25-75 was a class band for a black-baffle can. The same SKU serves the
-# wet locations (ED-T-LT-CAN4-WET), so mark B is a schedule row rather than a second
-# product and there is NO separate wet trim to colour-match or to price.
-# ** BUY FIXED 3000 K, NEVER A 5CCT SELECTABLE MODULE ** at any price: the DIP switch gets
-# set wrong constantly and one can at the wrong temperature in a run of eight is a visible
-# defect. A dedicated phosphor also gives better R9 than a warm/cool blend.
-# 2026-10-29: material 55-95 -> 60-75: every observed Lotus price is $64.40-72 (LL4SR-30K-WH $64.40, sibling $72); $95 exceeded all.
-"ED-T-LT-CAN4" = { material = { low = 60, high = 75 }, labour = { low = 52, high = 108 } }  # 62 ea (2026-10-28: the 21 mark-C 3" cans retyped to A)
-"ED-T-LT-CAN4-4000" = { material = { low = 60, high = 80 }, labour = { low = 52, high = 108 } }  # 4 ea — LL4SRG-41K: no dealer price found, LL4SR sibling $72 (researched 2026-10-28)
-"ED-T-LT-CAN4-WET" = { material = { low = 60, high = 95 }, labour = { low = 68, high = 130 } }  # 8 ea — same LL4SRG-30K as mark A (researched 2026-10-28)
-# B1/B2, BATH2's day (5000 K) and evening (2700 K) cans: the same wet LL4SR in a fixed
-# phosphor, so the same band as B. Confirm both SKUs (plan/products_lighting.py).
-"ED-T-LT-CAN4-WET-5000" = { material = { low = 100, high = 135 }, labour = { low = 68, high = 130 } }  # 3 ea — Lotus LD4S-50K-4S-WR-WT $101.64, one seller (researched 2026-10-28)
-"ED-T-LT-CAN4-WET-2700" = { material = { low = 60, high = 95 }, labour = { low = 68, high = 130 } }  # 1 ea — LL4SRG-27K, LL4SR sibling proxy (researched 2026-10-28)
+# ** THE CANS ARE ONE HOUSING, PRICED IN THREE LINES (2026-10-31). ** Each type key below is
+# the Nora NSIC-401QAT housing plus installing it; its trim and lamp are part rows priced by
+# product key, so a tier costs what its trim and lamp add. Allowances, not quotes: re-quote
+# before ordering. Mark C, the Juno wafer, is a whole fixture on its own key.
+"ED-T-LT-CAN4" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # @CAN4
+"ED-T-LT-CAN4-4000" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # @CAN4-4000
+"ED-T-LT-CAN4-PREM" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # @CAN4-PREM
+"ED-T-LT-CAN4-PREM-GIMBAL" = { material = { low = 22, high = 32 }, labour = { low = 60, high = 120 } }  # @CAN4-PREM-GIMBAL, aimed on site
+"ED-T-LT-CAN4-WET" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # @CAN4-WET
+"ED-T-LT-CAN4-WET-5000" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # @CAN4-WET-5000
+"ED-T-LT-CAN4-WET-2700" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # @CAN4-WET-2700
+"ED-T-LT-WAFER4" = { material = { low = 30, high = 40 }, labour = { low = 52, high = 108 } }  # @WAFER4
+"PROD-NORA-NS-40P" = { material = { low = 10, high = 16 }, labour = 0 }  # stepped baffle trim
+"PROD-NORA-NS-12" = { material = { low = 15, high = 25 }, labour = 0 }  # gimbal trim
+"PROD-NORA-NS-76W" = { material = { low = 15, high = 25 }, labour = 0 }  # wet shower trim
+"PROD-BULBRITE-PAR20-90-30K" = { material = { low = 7, high = 12 }, labour = 0 }
+"PROD-BULBRITE-PAR20-90-27K" = { material = { low = 7, high = 12 }, labour = 0 }
+"PROD-BULBRITE-PAR20-90-40K" = { material = { low = 7, high = 14 }, labour = 0 }
+"PROD-PAR20-90-50K-WET" = { material = { low = 8, high = 16 }, labour = 0 }  # not yet found
+"PROD-SORAA-VIVID-PAR20-30K-36" = { material = { low = 20, high = 32 }, labour = 0 }
+"PROD-SORAA-VIVID-PAR20-30K-25" = { material = { low = 20, high = 32 }, labour = 0 }
 # dolria PC0008-20T-G (Amazon B0B5G5PJDF); the same-looking Latitude Run is $500 at Wayfair.
 # ** THE LABOUR HIGH END IS A LIFT, NOT A LADDER: ** the canopy is on the rafters 27' up.
 "ED-T-LT-CHANDELIER" = { material = { low = 400, high = 550 }, labour = { low = 150, high = 450 } }  # 1 ea
@@ -4514,7 +4519,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # a recessed reveal rather than a batten. No rate change for any of them.
 #
 # ** PANEL LENGTH IS A REAL CONSTRAINT ON THIS PROFILE. ** B&B maxes at 20', and the N/S
-# gables run 31.4' base-to-peak, so they joint at the storey lines with Transition Trim
+# gables run 31.4' base-to-peak, so they joint at +19'-0" with Transition Trim
 # 55536XX — inside this rate, and the 11.1 ft max band is two panels out of one 20'-2" stock
 # length with no drop. PBR and 7/8" corrugated run to 45', which is why the E/W walls are
 # one-piece over 21'.
@@ -6458,7 +6463,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 "58138XX" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }   # PBR 1.25" Base ($3.1-4.3/LF)
 "55545XX" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }   # BBD75 Base Trim (vertical)
 "CORRUGATED_BASE" = { material = { low = 30, high = 42 }, labour = { low = 18, high = 30 } }  # no part number published
-"55536XX" = { material = { low = 40, high = 54 }, labour = { low = 24, high = 38 } }   # BBD75 Transition Trim at the +17'-4" band
+"55536XX" = { material = { low = 40, high = 54 }, labour = { low = 24, high = 38 } }   # BBD75 Transition Trim at the +19'-0" band, Linen White
 "58114XX" = { material = { low = 36, high = 50 }, labour = { low = 14, high = 24 } }   # 1.5" Sill/Head at every window head; 42 cuts pooled from 10'-2" stock = 10 sticks (2026-10-29)
 "58728XX" = { material = { low = 34, high = 46 }, labour = { low = 16, high = 28 } }   # BBD75 Panel Starter at door jambs
 "CORRUGATED_JAMB" = { material = { low = 30, high = 42 }, labour = { low = 16, high = 28 } }  # screen ends and garage door jambs
@@ -6496,7 +6501,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # 33%), 4x10 sheet at roughly $5-9/SF from a metals supplier, sheared and braked by the
 # siding sub or a sheet-metal shop. No firm quote: the screen supplier is an open RFQ.
 "BASE_SCREEN" = { material = { low = 2.5, high = 5 }, labour = { low = 1.5, high = 3 } }  # 2x2 inverted U, 6" girth, on the base Z; 149 LF
-"PANEL_END_STRIP" = { material = { low = 0.8, high = 1.6 }, labour = { low = 0.5, high = 1.2 } }  # 1-1/4" to 1-1/2" flat strip under each panel end: base, heads, band
+"PANEL_END_STRIP" = { material = { low = 0.8, high = 1.6 }, labour = { low = 0.5, high = 1.2 } }  # 1-1/4" to 1-1/2" flat strip under each panel end: base and heads
 "BAND_OUTLET_STRIP" = { material = { low = 0.8, high = 1.6 }, labour = { low = 0.5, high = 1.2 } }  # 1" strip over the lower panel's top at the BBD75 band
 
 [member_protection]

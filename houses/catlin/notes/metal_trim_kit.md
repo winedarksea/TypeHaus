@@ -34,10 +34,10 @@ otherwise stated; standard stock is 10 ft 2 in unless a different length is stat
 | Corrugated under soffit | 1.5 in Sill to Soffit | Corrugated manual |
 | Screen open ends | Corrugated Jamb candidate; 2.5 in back leg, 1 in throat and 1 in return; check against the actual two-face screen thickness | Corrugated manual p. P7/8-4 |
 
-The north and south BBD75 band is at +17 ft 4 in, supported by a girt. Lower and
-upper panel runs are approximately 18 ft 5 in and 14 ft, within the 20 ft maximum.
-The band is also the head drip where it meets the two north window heads and the
-D-S-DECK-E casing. PBR east and west panel runs are approximately 22 ft 2 in,
+The north and south BBD75 band is at +19 ft 0 in, supported by an added girt course.
+The lower panel runs 19 ft 11-7/16 in (base strip to 1 in under the trim) and the upper about
+11 ft 3 in, within the 20 ft recommended maximum. The band clears every N/S opening head
+(highest 17 ft 4-1/2 in), so each opening keeps its own head detail (owner, 2026-10-31). PBR east and west panel runs are approximately 22 ft 2 in,
 within the 45 ft maximum. Garage corners are approximately 8 ft 4 in high.
 
 ### Wall base stack
@@ -88,23 +88,23 @@ starter girt is −11 3/16" to −7 11/16".
 The garage has no separate cavity, because the corrugation is the rainscreen. There the
 vented corrugated closure on the aluminium stem Z closes both.
 
-### Band outlet (N/S walls, +17 ft 4 in)
+### Band outlet (N/S walls, +19 ft 0 in)
 
 The cavity breathes in at the base and out at the BBD75 band, the existing Transition Trim
-55536XX at +17'-4" (208 in) on the N/S walls. E/W walls stay bottom-vented only; eaves, rakes,
+55536XX at +19'-0" (228 in) on the N/S walls. E/W walls stay bottom-vented only; eaves, rakes,
 sills and heads are not outlets (owner, 2026-10-28).
 
-- The lower panel stops at least 1 in below the trim seat (implicit, hidden behind the trim's
-  2-1/2 in face leg).
+- The lower panel stops 1 in below the trim seat, hidden behind the trim's 2-1/2 in face leg.
 - A 1 in perforated strip spans from the girt plane to the trim's face leg under the seat,
   over the lower panel's top end (`BAND_OUTLET_STRIP`), cut 1/32 in short of the steel
   each side: 0.934 in x 2.54 x 0.326 x 100 = **77.4 cm2/m** (the edge gaps, open but under
   1/8 in, are not counted).
 - The 1/2 in gap behind the band girt stays open, so the upper cavity is fed from below.
-- The upper panel's batten ends open into the upper cavity at the seat, so they get the same
-  strip, on the seat (`PANEL_END_STRIP`).
-- Left out where an opening is framed through the trim's height (`WIN-S-HALL-N`,
-  `WIN-S-STAIR-N`, `AO-S-ERV-EA`): their heads govern there. Seven walls, 61.4 LF of outlet.
+- The upper panel hangs 1/4 in over the trim's shelf, as BBD75 p. 40 draws it, on no strip:
+  a strip there lay face-up on the shelf in the rain and held water under the panel's cut edge
+  (owner, 2026-10-31). The batten ends stay open.
+- Trim and strip both skip an opening framed through the trim's height; at +19'-0" none is.
+  Seven walls, 74.4 LF of outlet.
 
 ### Strip bearing (owner, 2026-10-29)
 
@@ -126,7 +126,7 @@ trim's leg laps the U (item 3). The model draws and bills no pads
 | Eaves and rakes | Closed by the deck oversail |
 | Outside corners | Closed |
 | ERV, hydrant and VR-M-STACK sleeves | Sealed |
-| `D-S-DECK-E` head | Its catalog unit's; hold point |
+| `D-S-DECK-E` head | Kit drip head over the casing, as `D-M-BALC` |
 
 ### Open with suppliers (not blocking)
 
@@ -248,10 +248,10 @@ What the model derives and bills, with the counts the tests pin
 | House K2 base | 0.040 in aluminium Z, 120 in stock with 2 in laps, continuous under each base screen; EPDM at the steel trim | 14 runs / 21 sticks; 148 LF isolation |
 | Wall tops | PBR inside closure 6460800; BBD75 Universal Closure 6411499; corrugated Sill to Soffit at garage eaves; corrugated outside closure at garage panel tops | 74.25 / 83.01 / 48.29 / 99.04 LF |
 | Outside corners | Wide corner (PBR↔BBD75), corrugated corner | 8 / 4 |
-| BBD75 band | Transition Trim at +17'-4", one run per N/S wall segment | 10 |
+| BBD75 band | Transition Trim at +19'-0", one run per N/S wall segment, Linen White | 10 |
 | Window head, jamb, sill | 1.5 in Sill/Head 58114XX at every head; PBR jamb 58208XX (unpriced); BBD75 and corrugated jambs and every sill: site-brake (`WINDOW_JAMB_CUSTOM` 146.9 LF, `WINDOW_SILL_CUSTOM` 87.3 LF) | 43 heads / 86 jambs / 43 sills; heads and PBR jambs pooled FFD from 10'-2" stock (heads 42 cuts, 91.5 LF, 10 sticks) |
 | Door jambs | Panel Starter 58728XX (BBD75); Corrugated Jamb at the garage door jambs (stock, no part number) | 6 + 4 |
-| Door heads | site-brake drip cap, legacy head section swept at stock; none on catalog unit D-S-DECK-E, whose head is the band | 5 |
+| Door heads | site-brake drip cap, legacy head section swept at stock, catalog unit D-S-DECK-E included | 6 |
 | Small rough openings | 4-side window kit on the niche and both ERV hoods; the two 2.5 in hydrant bores are closed by the fixture's flange and sealant | 3 |
 | Screen ends | Corrugated Jamb on both open ends of W-BW-SCREEN and its skirt | 4 |
 | Roof eaves | Extended Eave 52124XX, pan hemmed to its lip (no cleat) | 16 sticks |

@@ -156,11 +156,11 @@ def _run_limits(ctx, pieces):
         top = max(_top_at(face.wall, face, s) for face in faces for s in (face.lo, face.hi))
         joints = sorted({j.meters for face in faces if (spec := _spec(model, face))
                          for j in spec.panel_joint_elevations if bottom < j.meters < top})
-        runs, low = [], bottom
+        runs, start = [], bottom
         for joint in joints:
-            runs.append((low, joint - BAND_PANEL_GAP_IN * M_PER_IN))
-            low = joint + BAND_UPPER_GAP_IN * M_PER_IN
-        for low, high in [*runs, (low, top)]:
+            runs.append((start, joint - BAND_PANEL_GAP_IN * M_PER_IN))
+            start = joint + BAND_UPPER_GAP_IN * M_PER_IN
+        for low, high in [*runs, (start, top)]:
             checked += 1
             if high - low > _BBD_RUN_LIMIT_M + _TOL:
                 findings.append(failed(

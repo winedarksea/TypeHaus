@@ -365,7 +365,7 @@ class ProductPart(HausModel):
 
     role: Literal["basin", "faucet", "trap", "top", "drain",
                   "frame", "front", "drawer", "hinge", "damper", "leg", "toe_kick", "rail",
-                  "shelf", "knob", "pull", "cover_panel", "fitting"]
+                  "shelf", "knob", "pull", "cover_panel", "fitting", "trim", "lamp"]
     product_ref: str
     quantity: int = Field(default=1, gt=0)
     length: Length | None = None

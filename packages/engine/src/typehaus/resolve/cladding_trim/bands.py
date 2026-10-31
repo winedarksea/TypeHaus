@@ -80,7 +80,8 @@ def resolve_band_trim(model) -> None:
                 xs, ys, zs = zip(*mesh.positions, strict=True)
                 z_in = round(joint / M_PER_IN)
                 model.solids.append(ResolvedSolid(
-                    uid=f"{wall.uid}-band-{z_in}-{index}", tag=f"TRIM-{wall.tag}-BAND-{z_in}-{index + 1}",
+                    uid=f"{wall.uid}-band-{z_in}-{index}",
+                    tag=f"TRIM-{wall.tag}-BAND-{z_in}-{index + 1}",
                     storey=wall.storey, category="cladding_trim",
                     outline=((min(xs), min(ys)), (max(xs), min(ys)),
                              (max(xs), max(ys)), (min(xs), max(ys))),

@@ -1293,6 +1293,33 @@ the eave wall tops keep theirs). The panel bottoms are still drawn to the seat, 
 Galvalume as Metal Sales' PBR vented ridge does; the model draws no pads and the strip sits
 on its seat (no 1/16" lift). `EPDM_BASE_ISOLATION` at the steel-trim lap stays.
 
+### The BBD75 band moved to +19'-0", Linen White, upper panel 1/4" off the shelf (2026-10-31)
+
+Owner's review of the +17'-4" band. **It was not integrated with the heads; it clashed with
+them.** The trim was swept along the whole wall, so over `WIN-S-HALL-N`/`-STAIR-N` (heads at
+208") it sat on top of their own 58114XX heads and K6 caps, and over `AO-S-ERV-EA` on top of its
+head; only the strips skipped openings. `D-S-DECK-E` had no head of its own, "the band was its
+head", although the band's leg stopped 2 1/2" above the casing. A single band can't serve heads at
+200", 202 7/8", 208" and 208 1/2". Moving the band above all of them gives each opening its own
+head. `D-S-DECK-E` now takes the kit drip head, like `D-M-BALC`. The trim now runs over the
+strips' own spans (`cladding_trim/bands.band_spans`), so it can't cross an opening again.
+
+**Not at the gutter line.** The owner leaned towards gutter height (bottom 20'-7"), but the lower
+panel runs from the base strip (−12.41") to 1" under the joint. At the gutter that is ~21'-7",
+past p.13's 20'-0" recommended maximum. +19'-0" is the highest single band within it: 19'-11 7/16".
+`integrity.cladding_trim_fit` used to measure each storey's wall on its own and could not see this
+run. It now measures up each layout line.
+
+**The upper panel hangs 1/4" over the shelf, on no strip**, as BBD75 p.40 draws it. The
+2026-10-28 detail sat it on a perforated strip covering the whole 1" shelf. Between the battens,
+and 7/32" past their faces, that strip lay face-up in the rain and held water under the panel's
+cut edge. The batten ends are open now; the outlet below (downward, behind the 2 1/2" leg) is
+unchanged. The model draws both gaps (1" under, 1/4" over) where it used to draw the panels to
+the joint.
+
+**Colour:** the trim went to the exterior dark on 2026-10-30 (`a865ff8b`); it is Linen White
+again, the panel's own colour.
+
 ### Every interior partition top got a 3/4" deflection gap and an SDPW (2026-09-19)
 
 The attic's seven partitions resolved **11-7/8" too tall** — `apply_to_roof_wall_tops` rakes a

@@ -39701,6 +39701,18 @@
 80,
 "91b4b4660327"
 ],
+"geometry/CSD211AAAA-headstrip-0/body": [
+5.2426032,
+5.2437796,
+8,
+"4de1c0780c81"
+],
+"geometry/CSD211AAAA-trim-head-0/body": [
+5.201285,
+5.2948417,
+20,
+"3b9971dc439f"
+],
 "geometry/CSD211AAAA/frame": [
 3.057525,
 5.153025,
@@ -43541,41 +43553,29 @@
 2,
 "b5289d4c5666"
 ],
-"geometry/CSW101AAAA-band-208-0/body": [
-5.2174851,
-5.334,
+"geometry/CSW101AAAA-band-228-0/body": [
+5.7254851,
+5.842,
 16,
-"a0deda432cb6"
+"0d6d8d0a867e"
 ],
-"geometry/CSW101AAAA-band-208-1/body": [
-5.2174851,
-5.334,
+"geometry/CSW101AAAA-band-228-1/body": [
+5.7254851,
+5.842,
 16,
-"a0deda432cb6"
+"0d6d8d0a867e"
 ],
 "geometry/CSW101AAAA-bandstrip-lower-1-0/body": [
-5.2578,
-5.2586128,
+5.7658,
+5.7666128,
 8,
-"1d025a40bfcc"
+"fc9a10467dcb"
 ],
 "geometry/CSW101AAAA-bandstrip-lower-1-1/body": [
-5.2578,
-5.2586128,
+5.7658,
+5.7666128,
 8,
-"1d025a40bfcc"
-],
-"geometry/CSW101AAAA-bandstrip-upper-1-0/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
-],
-"geometry/CSW101AAAA-bandstrip-upper-1-1/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
+"fc9a10467dcb"
 ],
 "geometry/CSW101AAAA/layer:cladding": [
 3.048,
@@ -43740,88 +43740,88 @@
 "a99d17a7266a"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-004-01": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-004-02": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-004-03": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-004-04": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-004-05": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-004-06": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-005-02": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-005-03": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-005-04": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-005-05": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-005-06": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-006-00": [
 6.0071,
@@ -44490,16 +44490,16 @@
 "a99d17a7266a"
 ],
 "geometry/CSW101AAAA::framing/member:strapping-outer-girt-010": [
-5.2832,
-5.3721,
-8,
-"783ab56439e6"
-],
-"geometry/CSW101AAAA::framing/member:strapping-outer-girt-011": [
 5.4864,
 5.5753,
 8,
 "8673a785de16"
+],
+"geometry/CSW101AAAA::framing/member:strapping-outer-girt-011": [
+5.7912,
+5.8801,
+8,
+"11b621d52f85"
 ],
 "geometry/CSW101AAAA::framing/member:strapping-outer-girt-012": [
 6.0071,
@@ -44561,53 +44561,29 @@
 8,
 "2a1bbd60c968"
 ],
-"geometry/CSW102AAAA-band-208-0/body": [
-5.2174851,
-5.334,
+"geometry/CSW102AAAA-band-228-0/body": [
+5.7254851,
+5.842,
 16,
-"a0deda432cb6"
+"0d6d8d0a867e"
 ],
-"geometry/CSW102AAAA-band-208-1/body": [
-5.2174851,
-5.334,
+"geometry/CSW102AAAA-band-228-1/body": [
+5.7254851,
+5.842,
 16,
-"a0deda432cb6"
+"0d6d8d0a867e"
 ],
 "geometry/CSW102AAAA-bandstrip-lower-1-0/body": [
-5.2578,
-5.2586128,
+5.7658,
+5.7666128,
 8,
-"1d025a40bfcc"
+"fc9a10467dcb"
 ],
-"geometry/CSW102AAAA-bandstrip-lower-2-0/body": [
-5.2578,
-5.2586128,
+"geometry/CSW102AAAA-bandstrip-lower-1-1/body": [
+5.7658,
+5.7666128,
 8,
-"1d025a40bfcc"
-],
-"geometry/CSW102AAAA-bandstrip-lower-2-1/body": [
-5.2578,
-5.2586128,
-8,
-"1d025a40bfcc"
-],
-"geometry/CSW102AAAA-bandstrip-upper-1-0/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
-],
-"geometry/CSW102AAAA-bandstrip-upper-2-0/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
-],
-"geometry/CSW102AAAA-bandstrip-upper-2-1/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
+"fc9a10467dcb"
 ],
 "geometry/CSW102AAAA-d-s-deck-e-trim-jamb-left-0/body": [
 3.048,
@@ -44760,100 +44736,100 @@
 "a99d17a7266a"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-004-01": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-004-02": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-004-03": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-004-04": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-004-05": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-004-06": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-004-07": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-005-02": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-005-03": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-005-04": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-005-05": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-005-06": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-005-07": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-006-00": [
 6.0071,
@@ -45576,16 +45552,16 @@
 "a99d17a7266a"
 ],
 "geometry/CSW102AAAA::framing/member:strapping-outer-girt-012": [
-5.2832,
-5.3721,
-8,
-"783ab56439e6"
-],
-"geometry/CSW102AAAA::framing/member:strapping-outer-girt-013": [
 5.4864,
 5.5753,
 8,
 "8673a785de16"
+],
+"geometry/CSW102AAAA::framing/member:strapping-outer-girt-013": [
+5.7912,
+5.8801,
+8,
+"11b621d52f85"
 ],
 "geometry/CSW102AAAA::framing/member:strapping-outer-girt-014": [
 6.0071,
@@ -47309,53 +47285,29 @@
 8,
 "50ef2552dcd5"
 ],
-"geometry/CSW107AAAA-band-208-0/body": [
-5.2174851,
-5.334,
+"geometry/CSW107AAAA-band-228-0/body": [
+5.7254851,
+5.842,
 16,
-"a0deda432cb6"
+"0d6d8d0a867e"
 ],
-"geometry/CSW107AAAA-band-208-1/body": [
-5.2174851,
-5.334,
+"geometry/CSW107AAAA-band-228-1/body": [
+5.7254851,
+5.842,
 16,
-"a0deda432cb6"
+"0d6d8d0a867e"
 ],
 "geometry/CSW107AAAA-bandstrip-lower-1-0/body": [
-5.2578,
-5.2586128,
+5.7658,
+5.7666128,
 8,
-"1d025a40bfcc"
+"fc9a10467dcb"
 ],
 "geometry/CSW107AAAA-bandstrip-lower-1-1/body": [
-5.2578,
-5.2586128,
+5.7658,
+5.7666128,
 8,
-"1d025a40bfcc"
-],
-"geometry/CSW107AAAA-bandstrip-lower-2-0/body": [
-5.2578,
-5.2586128,
-8,
-"1d025a40bfcc"
-],
-"geometry/CSW107AAAA-bandstrip-upper-1-0/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
-],
-"geometry/CSW107AAAA-bandstrip-upper-1-1/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
-],
-"geometry/CSW107AAAA-bandstrip-upper-2-0/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
+"fc9a10467dcb"
 ],
 "geometry/CSW107AAAA/layer:cladding": [
 3.048,
@@ -47520,70 +47472,76 @@
 "a99d17a7266a"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-004-01": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-004-02": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-004-03": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-004-04": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
+],
+"geometry/CSW107AAAA::framing/member:block-2-004-05": [
+5.4864,
+5.5753,
+8,
+"8673a785de16"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-005-02": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-005-03": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-005-04": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-005-05": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW107AAAA::framing/member:block-2-006-00": [
 6.0071,
@@ -47952,24 +47910,18 @@
 "a99d17a7266a"
 ],
 "geometry/CSW107AAAA::framing/member:strapping-outer-girt-008": [
-5.2832,
-5.3721,
-8,
-"783ab56439e6"
-],
-"geometry/CSW107AAAA::framing/member:strapping-outer-girt-009": [
-5.2832,
-5.3721,
-8,
-"783ab56439e6"
-],
-"geometry/CSW107AAAA::framing/member:strapping-outer-girt-010": [
 5.4864,
 5.5753,
 8,
 "8673a785de16"
 ],
-"geometry/CSW107AAAA::framing/member:strapping-outer-girt-011": [
+"geometry/CSW107AAAA::framing/member:strapping-outer-girt-009": [
+5.7912,
+5.8801,
+8,
+"11b621d52f85"
+],
+"geometry/CSW107AAAA::framing/member:strapping-outer-girt-010": [
 6.0071,
 6.096,
 8,
@@ -48047,35 +47999,17 @@
 8,
 "2a1bbd60c968"
 ],
-"geometry/CSW108AAAA-band-208-0/body": [
-5.2174851,
-5.334,
+"geometry/CSW108AAAA-band-228-0/body": [
+5.7254851,
+5.842,
 16,
-"a0deda432cb6"
+"0d6d8d0a867e"
 ],
 "geometry/CSW108AAAA-bandstrip-lower-1-0/body": [
-5.2578,
-5.2586128,
+5.7658,
+5.7666128,
 8,
-"1d025a40bfcc"
-],
-"geometry/CSW108AAAA-bandstrip-lower-2-0/body": [
-5.2578,
-5.2586128,
-8,
-"1d025a40bfcc"
-],
-"geometry/CSW108AAAA-bandstrip-upper-1-0/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
-],
-"geometry/CSW108AAAA-bandstrip-upper-2-0/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
+"fc9a10467dcb"
 ],
 "geometry/CSW108AAAA/layer:cladding": [
 3.048,
@@ -48168,28 +48102,40 @@
 "a99d17a7266a"
 ],
 "geometry/CSW108AAAA::framing/member:block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
+],
+"geometry/CSW108AAAA::framing/member:block-2-004-01": [
+5.4864,
+5.5753,
+8,
+"8673a785de16"
+],
+"geometry/CSW108AAAA::framing/member:block-2-004-02": [
+5.4864,
+5.5753,
+8,
+"8673a785de16"
 ],
 "geometry/CSW108AAAA::framing/member:block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW108AAAA::framing/member:block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW108AAAA::framing/member:block-2-005-02": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW108AAAA::framing/member:block-2-006-00": [
 6.0071,
@@ -48408,24 +48354,18 @@
 "a99d17a7266a"
 ],
 "geometry/CSW108AAAA::framing/member:strapping-outer-girt-006": [
-5.2832,
-5.3721,
-8,
-"783ab56439e6"
-],
-"geometry/CSW108AAAA::framing/member:strapping-outer-girt-007": [
-5.2832,
-5.3721,
-8,
-"783ab56439e6"
-],
-"geometry/CSW108AAAA::framing/member:strapping-outer-girt-008": [
 5.4864,
 5.5753,
 8,
 "8673a785de16"
 ],
-"geometry/CSW108AAAA::framing/member:strapping-outer-girt-009": [
+"geometry/CSW108AAAA::framing/member:strapping-outer-girt-007": [
+5.7912,
+5.8801,
+8,
+"11b621d52f85"
+],
+"geometry/CSW108AAAA::framing/member:strapping-outer-girt-008": [
 6.0071,
 6.096,
 8,
@@ -48473,23 +48413,17 @@
 8,
 "2a1bbd60c968"
 ],
-"geometry/CSW109AAAA-band-208-0/body": [
-5.2174851,
-5.334,
+"geometry/CSW109AAAA-band-228-0/body": [
+5.7254851,
+5.842,
 16,
-"a0deda432cb6"
+"0d6d8d0a867e"
 ],
 "geometry/CSW109AAAA-bandstrip-lower-1-0/body": [
-5.2578,
-5.2586128,
+5.7658,
+5.7666128,
 8,
-"1d025a40bfcc"
-],
-"geometry/CSW109AAAA-bandstrip-upper-1-0/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
+"fc9a10467dcb"
 ],
 "geometry/CSW109AAAA/layer:cladding": [
 3.048,
@@ -48582,28 +48516,28 @@
 "a99d17a7266a"
 ],
 "geometry/CSW109AAAA::framing/member:block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW109AAAA::framing/member:block-2-004-01": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW109AAAA::framing/member:block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW109AAAA::framing/member:block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW109AAAA::framing/member:block-2-006-00": [
 6.0071,
@@ -48660,16 +48594,16 @@
 "a99d17a7266a"
 ],
 "geometry/CSW109AAAA::framing/member:strapping-outer-girt-004": [
-5.2832,
-5.3721,
-8,
-"783ab56439e6"
-],
-"geometry/CSW109AAAA::framing/member:strapping-outer-girt-005": [
 5.4864,
 5.5753,
 8,
 "8673a785de16"
+],
+"geometry/CSW109AAAA::framing/member:strapping-outer-girt-005": [
+5.7912,
+5.8801,
+8,
+"11b621d52f85"
 ],
 "geometry/CSW109AAAA::framing/member:strapping-outer-girt-006": [
 6.0071,
@@ -52439,23 +52373,17 @@
 8,
 "50ef2552dcd5"
 ],
-"geometry/CSW135AAAA-band-208-0/body": [
-5.2174851,
-5.334,
+"geometry/CSW135AAAA-band-228-0/body": [
+5.7254851,
+5.842,
 16,
-"a0deda432cb6"
+"0d6d8d0a867e"
 ],
 "geometry/CSW135AAAA-bandstrip-lower-1-0/body": [
-5.2578,
-5.2586128,
+5.7658,
+5.7666128,
 8,
-"1d025a40bfcc"
-],
-"geometry/CSW135AAAA-bandstrip-upper-1-0/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
+"fc9a10467dcb"
 ],
 "geometry/CSW135AAAA/layer:cladding": [
 3.048,
@@ -52554,28 +52482,28 @@
 "a99d17a7266a"
 ],
 "geometry/CSW135AAAA::framing/member:block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW135AAAA::framing/member:block-2-004-01": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
 ],
 "geometry/CSW135AAAA::framing/member:block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW135AAAA::framing/member:block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW135AAAA::framing/member:block-2-006-00": [
 6.0071,
@@ -52632,16 +52560,16 @@
 "a99d17a7266a"
 ],
 "geometry/CSW135AAAA::framing/member:strapping-outer-girt-004": [
-5.2832,
-5.3721,
-8,
-"783ab56439e6"
-],
-"geometry/CSW135AAAA::framing/member:strapping-outer-girt-005": [
 5.4864,
 5.5753,
 8,
 "8673a785de16"
+],
+"geometry/CSW135AAAA::framing/member:strapping-outer-girt-005": [
+5.7912,
+5.8801,
+8,
+"11b621d52f85"
 ],
 "geometry/CSW135AAAA::framing/member:strapping-outer-girt-006": [
 6.0071,
@@ -54185,23 +54113,17 @@
 8,
 "0dc10552628c"
 ],
-"geometry/CSW153AAAA-band-208-0/body": [
-5.2174851,
-5.334,
+"geometry/CSW153AAAA-band-228-0/body": [
+5.7254851,
+5.842,
 16,
-"a0deda432cb6"
+"0d6d8d0a867e"
 ],
 "geometry/CSW153AAAA-bandstrip-lower-1-0/body": [
-5.2578,
-5.2586128,
+5.7658,
+5.7666128,
 8,
-"1d025a40bfcc"
-],
-"geometry/CSW153AAAA-bandstrip-upper-1-0/body": [
-5.2810574,
-5.2839436,
-8,
-"c9460e46404f"
+"fc9a10467dcb"
 ],
 "geometry/CSW153AAAA/layer:cladding": [
 3.048,
@@ -54294,22 +54216,28 @@
 "a99d17a7266a"
 ],
 "geometry/CSW153AAAA::framing/member:block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 8,
-"783ab56439e6"
+"8673a785de16"
+],
+"geometry/CSW153AAAA::framing/member:block-2-004-01": [
+5.4864,
+5.5753,
+8,
+"8673a785de16"
 ],
 "geometry/CSW153AAAA::framing/member:block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW153AAAA::framing/member:block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 8,
-"8673a785de16"
+"11b621d52f85"
 ],
 "geometry/CSW153AAAA::framing/member:block-2-006-00": [
 6.0071,
@@ -54330,12 +54258,6 @@
 "191355b7261e"
 ],
 "geometry/CSW153AAAA::framing/member:block-2-jamb-000-0-01": [
-5.2832,
-5.3721,
-8,
-"783ab56439e6"
-],
-"geometry/CSW153AAAA::framing/member:block-2-jamb-000-0-02": [
 5.2959,
 5.3848,
 8,
@@ -54348,12 +54270,6 @@
 "191355b7261e"
 ],
 "geometry/CSW153AAAA::framing/member:block-2-jamb-000-1-01": [
-5.2832,
-5.3721,
-8,
-"783ab56439e6"
-],
-"geometry/CSW153AAAA::framing/member:block-2-jamb-000-1-02": [
 5.2959,
 5.3848,
 8,
@@ -54462,16 +54378,16 @@
 "a99d17a7266a"
 ],
 "geometry/CSW153AAAA::framing/member:strapping-outer-girt-004": [
-5.2832,
-5.3721,
-8,
-"783ab56439e6"
-],
-"geometry/CSW153AAAA::framing/member:strapping-outer-girt-005": [
 5.4864,
 5.5753,
 8,
 "8673a785de16"
+],
+"geometry/CSW153AAAA::framing/member:strapping-outer-girt-005": [
+5.7912,
+5.8801,
+8,
+"11b621d52f85"
 ],
 "geometry/CSW153AAAA::framing/member:strapping-outer-girt-006": [
 6.0071,
@@ -90324,88 +90240,88 @@
 "cd75a1598fe8"
 ],
 "member/CSW101AAAA/block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW101AAAA/block-2-004-01": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW101AAAA/block-2-004-02": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW101AAAA/block-2-004-03": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW101AAAA/block-2-004-04": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW101AAAA/block-2-004-05": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW101AAAA/block-2-004-06": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW101AAAA/block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW101AAAA/block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW101AAAA/block-2-005-02": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW101AAAA/block-2-005-03": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW101AAAA/block-2-005-04": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW101AAAA/block-2-005-05": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW101AAAA/block-2-005-06": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW101AAAA/block-2-006-00": [
 6.0071,
@@ -91074,16 +90990,16 @@
 "cd75a1598fe8"
 ],
 "member/CSW101AAAA/strapping-outer-girt-010": [
-5.2832,
-5.3721,
-2,
-"1f6523c639c5"
-],
-"member/CSW101AAAA/strapping-outer-girt-011": [
 5.4864,
 5.5753,
 2,
 "37ccea8542e9"
+],
+"member/CSW101AAAA/strapping-outer-girt-011": [
+5.7912,
+5.8801,
+2,
+"ea3fd2d65491"
 ],
 "member/CSW101AAAA/strapping-outer-girt-012": [
 6.0071,
@@ -91242,100 +91158,100 @@
 "cd75a1598fe8"
 ],
 "member/CSW102AAAA/block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW102AAAA/block-2-004-01": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW102AAAA/block-2-004-02": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW102AAAA/block-2-004-03": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW102AAAA/block-2-004-04": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW102AAAA/block-2-004-05": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW102AAAA/block-2-004-06": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW102AAAA/block-2-004-07": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW102AAAA/block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW102AAAA/block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW102AAAA/block-2-005-02": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW102AAAA/block-2-005-03": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW102AAAA/block-2-005-04": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW102AAAA/block-2-005-05": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW102AAAA/block-2-005-06": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW102AAAA/block-2-005-07": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW102AAAA/block-2-006-00": [
 6.0071,
@@ -92058,16 +91974,16 @@
 "cd75a1598fe8"
 ],
 "member/CSW102AAAA/strapping-outer-girt-012": [
-5.2832,
-5.3721,
-2,
-"1f6523c639c5"
-],
-"member/CSW102AAAA/strapping-outer-girt-013": [
 5.4864,
 5.5753,
 2,
 "37ccea8542e9"
+],
+"member/CSW102AAAA/strapping-outer-girt-013": [
+5.7912,
+5.8801,
+2,
+"ea3fd2d65491"
 ],
 "member/CSW102AAAA/strapping-outer-girt-014": [
 6.0071,
@@ -93840,70 +93756,76 @@
 "cd75a1598fe8"
 ],
 "member/CSW107AAAA/block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW107AAAA/block-2-004-01": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW107AAAA/block-2-004-02": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW107AAAA/block-2-004-03": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW107AAAA/block-2-004-04": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
+],
+"member/CSW107AAAA/block-2-004-05": [
+5.4864,
+5.5753,
+2,
+"37ccea8542e9"
 ],
 "member/CSW107AAAA/block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW107AAAA/block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW107AAAA/block-2-005-02": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW107AAAA/block-2-005-03": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW107AAAA/block-2-005-04": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW107AAAA/block-2-005-05": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW107AAAA/block-2-006-00": [
 6.0071,
@@ -94272,24 +94194,18 @@
 "cd75a1598fe8"
 ],
 "member/CSW107AAAA/strapping-outer-girt-008": [
-5.2832,
-5.3721,
-2,
-"1f6523c639c5"
-],
-"member/CSW107AAAA/strapping-outer-girt-009": [
-5.2832,
-5.3721,
-2,
-"1f6523c639c5"
-],
-"member/CSW107AAAA/strapping-outer-girt-010": [
 5.4864,
 5.5753,
 2,
 "37ccea8542e9"
 ],
-"member/CSW107AAAA/strapping-outer-girt-011": [
+"member/CSW107AAAA/strapping-outer-girt-009": [
+5.7912,
+5.8801,
+2,
+"ea3fd2d65491"
+],
+"member/CSW107AAAA/strapping-outer-girt-010": [
 6.0071,
 6.096,
 2,
@@ -94416,28 +94332,40 @@
 "cd75a1598fe8"
 ],
 "member/CSW108AAAA/block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
+],
+"member/CSW108AAAA/block-2-004-01": [
+5.4864,
+5.5753,
+2,
+"37ccea8542e9"
+],
+"member/CSW108AAAA/block-2-004-02": [
+5.4864,
+5.5753,
+2,
+"37ccea8542e9"
 ],
 "member/CSW108AAAA/block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW108AAAA/block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW108AAAA/block-2-005-02": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW108AAAA/block-2-006-00": [
 6.0071,
@@ -94656,24 +94584,18 @@
 "cd75a1598fe8"
 ],
 "member/CSW108AAAA/strapping-outer-girt-006": [
-5.2832,
-5.3721,
-2,
-"1f6523c639c5"
-],
-"member/CSW108AAAA/strapping-outer-girt-007": [
-5.2832,
-5.3721,
-2,
-"1f6523c639c5"
-],
-"member/CSW108AAAA/strapping-outer-girt-008": [
 5.4864,
 5.5753,
 2,
 "37ccea8542e9"
 ],
-"member/CSW108AAAA/strapping-outer-girt-009": [
+"member/CSW108AAAA/strapping-outer-girt-007": [
+5.7912,
+5.8801,
+2,
+"ea3fd2d65491"
+],
+"member/CSW108AAAA/strapping-outer-girt-008": [
 6.0071,
 6.096,
 2,
@@ -94770,28 +94692,28 @@
 "cd75a1598fe8"
 ],
 "member/CSW109AAAA/block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW109AAAA/block-2-004-01": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW109AAAA/block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW109AAAA/block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW109AAAA/block-2-006-00": [
 6.0071,
@@ -94848,16 +94770,16 @@
 "cd75a1598fe8"
 ],
 "member/CSW109AAAA/strapping-outer-girt-004": [
-5.2832,
-5.3721,
-2,
-"1f6523c639c5"
-],
-"member/CSW109AAAA/strapping-outer-girt-005": [
 5.4864,
 5.5753,
 2,
 "37ccea8542e9"
+],
+"member/CSW109AAAA/strapping-outer-girt-005": [
+5.7912,
+5.8801,
+2,
+"ea3fd2d65491"
 ],
 "member/CSW109AAAA/strapping-outer-girt-006": [
 6.0071,
@@ -98268,28 +98190,28 @@
 "cd75a1598fe8"
 ],
 "member/CSW135AAAA/block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW135AAAA/block-2-004-01": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
 ],
 "member/CSW135AAAA/block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW135AAAA/block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW135AAAA/block-2-006-00": [
 6.0071,
@@ -98346,16 +98268,16 @@
 "cd75a1598fe8"
 ],
 "member/CSW135AAAA/strapping-outer-girt-004": [
-5.2832,
-5.3721,
-2,
-"1f6523c639c5"
-],
-"member/CSW135AAAA/strapping-outer-girt-005": [
 5.4864,
 5.5753,
 2,
 "37ccea8542e9"
+],
+"member/CSW135AAAA/strapping-outer-girt-005": [
+5.7912,
+5.8801,
+2,
+"ea3fd2d65491"
 ],
 "member/CSW135AAAA/strapping-outer-girt-006": [
 6.0071,
@@ -99672,22 +99594,28 @@
 "cd75a1598fe8"
 ],
 "member/CSW153AAAA/block-2-004-00": [
-5.2832,
-5.3721,
+5.4864,
+5.5753,
 2,
-"1f6523c639c5"
+"37ccea8542e9"
+],
+"member/CSW153AAAA/block-2-004-01": [
+5.4864,
+5.5753,
+2,
+"37ccea8542e9"
 ],
 "member/CSW153AAAA/block-2-005-00": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW153AAAA/block-2-005-01": [
-5.4864,
-5.5753,
+5.7912,
+5.8801,
 2,
-"37ccea8542e9"
+"ea3fd2d65491"
 ],
 "member/CSW153AAAA/block-2-006-00": [
 6.0071,
@@ -99708,12 +99636,6 @@
 "58e807177894"
 ],
 "member/CSW153AAAA/block-2-jamb-000-0-01": [
-5.2832,
-5.3721,
-2,
-"1f6523c639c5"
-],
-"member/CSW153AAAA/block-2-jamb-000-0-02": [
 5.2959,
 5.3848,
 2,
@@ -99726,12 +99648,6 @@
 "58e807177894"
 ],
 "member/CSW153AAAA/block-2-jamb-000-1-01": [
-5.2832,
-5.3721,
-2,
-"1f6523c639c5"
-],
-"member/CSW153AAAA/block-2-jamb-000-1-02": [
 5.2959,
 5.3848,
 2,
@@ -99840,16 +99756,16 @@
 "cd75a1598fe8"
 ],
 "member/CSW153AAAA/strapping-outer-girt-004": [
-5.2832,
-5.3721,
-2,
-"1f6523c639c5"
-],
-"member/CSW153AAAA/strapping-outer-girt-005": [
 5.4864,
 5.5753,
 2,
 "37ccea8542e9"
+],
+"member/CSW153AAAA/strapping-outer-girt-005": [
+5.7912,
+5.8801,
+2,
+"ea3fd2d65491"
 ],
 "member/CSW153AAAA/strapping-outer-girt-006": [
 6.0071,
@@ -106276,6 +106192,10 @@
 "solids/D-M-ENTRY-TRIM-JAMB-RIGHT-1/z1_m": 2.193925,
 "solids/D-S-DECK-E-FLASH-PERIMETER/z0_m": 3.048,
 "solids/D-S-DECK-E-FLASH-PERIMETER/z1_m": 5.3456417,
+"solids/D-S-DECK-E-HEADSTRIP-1/z0_m": 5.2426032,
+"solids/D-S-DECK-E-HEADSTRIP-1/z1_m": 5.2437796,
+"solids/D-S-DECK-E-TRIM-HEAD-1/z0_m": 5.201285,
+"solids/D-S-DECK-E-TRIM-HEAD-1/z1_m": 5.2948417,
 "solids/D-S-DECK-E-TRIM-JAMB-LEFT-1/z0_m": 3.048,
 "solids/D-S-DECK-E-TRIM-JAMB-LEFT-1/z1_m": 5.241925,
 "solids/D-S-DECK-E-TRIM-JAMB-RIGHT-1/z0_m": 3.048,
@@ -110194,26 +110114,26 @@
 "solids/TRIM-W-S-E3-EAVE_TOP-13/z1_m": 6.4088364,
 "solids/TRIM-W-S-E4-EAVE_TOP-14/z0_m": 6.3897864,
 "solids/TRIM-W-S-E4-EAVE_TOP-14/z1_m": 6.4088364,
-"solids/TRIM-W-S-N1-BAND-208-1/z0_m": 5.2174851,
-"solids/TRIM-W-S-N1-BAND-208-1/z1_m": 5.334,
-"solids/TRIM-W-S-N1-BAND-208-2/z0_m": 5.2174851,
-"solids/TRIM-W-S-N1-BAND-208-2/z1_m": 5.334,
-"solids/TRIM-W-S-N1B-BAND-208-1/z0_m": 5.2174851,
-"solids/TRIM-W-S-N1B-BAND-208-1/z1_m": 5.334,
-"solids/TRIM-W-S-N2-BAND-208-1/z0_m": 5.2174851,
-"solids/TRIM-W-S-N2-BAND-208-1/z1_m": 5.334,
-"solids/TRIM-W-S-N3-BAND-208-1/z0_m": 5.2174851,
-"solids/TRIM-W-S-N3-BAND-208-1/z1_m": 5.334,
-"solids/TRIM-W-S-N3B-BAND-208-1/z0_m": 5.2174851,
-"solids/TRIM-W-S-N3B-BAND-208-1/z1_m": 5.334,
-"solids/TRIM-W-S-S1-BAND-208-1/z0_m": 5.2174851,
-"solids/TRIM-W-S-S1-BAND-208-1/z1_m": 5.334,
-"solids/TRIM-W-S-S1-BAND-208-2/z0_m": 5.2174851,
-"solids/TRIM-W-S-S1-BAND-208-2/z1_m": 5.334,
-"solids/TRIM-W-S-S2-BAND-208-1/z0_m": 5.2174851,
-"solids/TRIM-W-S-S2-BAND-208-1/z1_m": 5.334,
-"solids/TRIM-W-S-S2-BAND-208-2/z0_m": 5.2174851,
-"solids/TRIM-W-S-S2-BAND-208-2/z1_m": 5.334,
+"solids/TRIM-W-S-N1-BAND-228-1/z0_m": 5.7254851,
+"solids/TRIM-W-S-N1-BAND-228-1/z1_m": 5.842,
+"solids/TRIM-W-S-N1-BAND-228-2/z0_m": 5.7254851,
+"solids/TRIM-W-S-N1-BAND-228-2/z1_m": 5.842,
+"solids/TRIM-W-S-N1B-BAND-228-1/z0_m": 5.7254851,
+"solids/TRIM-W-S-N1B-BAND-228-1/z1_m": 5.842,
+"solids/TRIM-W-S-N2-BAND-228-1/z0_m": 5.7254851,
+"solids/TRIM-W-S-N2-BAND-228-1/z1_m": 5.842,
+"solids/TRIM-W-S-N3-BAND-228-1/z0_m": 5.7254851,
+"solids/TRIM-W-S-N3-BAND-228-1/z1_m": 5.842,
+"solids/TRIM-W-S-N3B-BAND-228-1/z0_m": 5.7254851,
+"solids/TRIM-W-S-N3B-BAND-228-1/z1_m": 5.842,
+"solids/TRIM-W-S-S1-BAND-228-1/z0_m": 5.7254851,
+"solids/TRIM-W-S-S1-BAND-228-1/z1_m": 5.842,
+"solids/TRIM-W-S-S1-BAND-228-2/z0_m": 5.7254851,
+"solids/TRIM-W-S-S1-BAND-228-2/z1_m": 5.842,
+"solids/TRIM-W-S-S2-BAND-228-1/z0_m": 5.7254851,
+"solids/TRIM-W-S-S2-BAND-228-1/z1_m": 5.842,
+"solids/TRIM-W-S-S2-BAND-228-2/z0_m": 5.7254851,
+"solids/TRIM-W-S-S2-BAND-228-2/z1_m": 5.842,
 "solids/TRIM-W-S-W1-EAVE_TOP-15/z0_m": 6.3897864,
 "solids/TRIM-W-S-W1-EAVE_TOP-15/z1_m": 6.4088364,
 "solids/TRIM-W-S-W1B-EAVE_TOP-16/z0_m": 6.3897864,
@@ -110466,58 +110386,26 @@
 "solids/W-M-W4-BUGSCREEN-1/z1_m": -0.2894963,
 "solids/W-M-W4-BUGSCREEN-2/z0_m": -0.3413546,
 "solids/W-M-W4-BUGSCREEN-2/z1_m": -0.2894963,
-"solids/W-S-N1-BANDSTRIP-LOWER-1-1/z0_m": 5.2578,
-"solids/W-S-N1-BANDSTRIP-LOWER-1-1/z1_m": 5.2586128,
-"solids/W-S-N1-BANDSTRIP-LOWER-1-2/z0_m": 5.2578,
-"solids/W-S-N1-BANDSTRIP-LOWER-1-2/z1_m": 5.2586128,
-"solids/W-S-N1-BANDSTRIP-LOWER-2-1/z0_m": 5.2578,
-"solids/W-S-N1-BANDSTRIP-LOWER-2-1/z1_m": 5.2586128,
-"solids/W-S-N1-BANDSTRIP-UPPER-1-1/z0_m": 5.2810574,
-"solids/W-S-N1-BANDSTRIP-UPPER-1-1/z1_m": 5.2839436,
-"solids/W-S-N1-BANDSTRIP-UPPER-1-2/z0_m": 5.2810574,
-"solids/W-S-N1-BANDSTRIP-UPPER-1-2/z1_m": 5.2839436,
-"solids/W-S-N1-BANDSTRIP-UPPER-2-1/z0_m": 5.2810574,
-"solids/W-S-N1-BANDSTRIP-UPPER-2-1/z1_m": 5.2839436,
-"solids/W-S-N1B-BANDSTRIP-LOWER-1-1/z0_m": 5.2578,
-"solids/W-S-N1B-BANDSTRIP-LOWER-1-1/z1_m": 5.2586128,
-"solids/W-S-N1B-BANDSTRIP-UPPER-1-1/z0_m": 5.2810574,
-"solids/W-S-N1B-BANDSTRIP-UPPER-1-1/z1_m": 5.2839436,
-"solids/W-S-N2-BANDSTRIP-LOWER-1-1/z0_m": 5.2578,
-"solids/W-S-N2-BANDSTRIP-LOWER-1-1/z1_m": 5.2586128,
-"solids/W-S-N2-BANDSTRIP-LOWER-2-1/z0_m": 5.2578,
-"solids/W-S-N2-BANDSTRIP-LOWER-2-1/z1_m": 5.2586128,
-"solids/W-S-N2-BANDSTRIP-UPPER-1-1/z0_m": 5.2810574,
-"solids/W-S-N2-BANDSTRIP-UPPER-1-1/z1_m": 5.2839436,
-"solids/W-S-N2-BANDSTRIP-UPPER-2-1/z0_m": 5.2810574,
-"solids/W-S-N2-BANDSTRIP-UPPER-2-1/z1_m": 5.2839436,
-"solids/W-S-N3-BANDSTRIP-LOWER-1-1/z0_m": 5.2578,
-"solids/W-S-N3-BANDSTRIP-LOWER-1-1/z1_m": 5.2586128,
-"solids/W-S-N3-BANDSTRIP-UPPER-1-1/z0_m": 5.2810574,
-"solids/W-S-N3-BANDSTRIP-UPPER-1-1/z1_m": 5.2839436,
-"solids/W-S-N3B-BANDSTRIP-LOWER-1-1/z0_m": 5.2578,
-"solids/W-S-N3B-BANDSTRIP-LOWER-1-1/z1_m": 5.2586128,
-"solids/W-S-N3B-BANDSTRIP-UPPER-1-1/z0_m": 5.2810574,
-"solids/W-S-N3B-BANDSTRIP-UPPER-1-1/z1_m": 5.2839436,
-"solids/W-S-S1-BANDSTRIP-LOWER-1-1/z0_m": 5.2578,
-"solids/W-S-S1-BANDSTRIP-LOWER-1-1/z1_m": 5.2586128,
-"solids/W-S-S1-BANDSTRIP-LOWER-1-2/z0_m": 5.2578,
-"solids/W-S-S1-BANDSTRIP-LOWER-1-2/z1_m": 5.2586128,
-"solids/W-S-S1-BANDSTRIP-UPPER-1-1/z0_m": 5.2810574,
-"solids/W-S-S1-BANDSTRIP-UPPER-1-1/z1_m": 5.2839436,
-"solids/W-S-S1-BANDSTRIP-UPPER-1-2/z0_m": 5.2810574,
-"solids/W-S-S1-BANDSTRIP-UPPER-1-2/z1_m": 5.2839436,
-"solids/W-S-S2-BANDSTRIP-LOWER-1-1/z0_m": 5.2578,
-"solids/W-S-S2-BANDSTRIP-LOWER-1-1/z1_m": 5.2586128,
-"solids/W-S-S2-BANDSTRIP-LOWER-2-1/z0_m": 5.2578,
-"solids/W-S-S2-BANDSTRIP-LOWER-2-1/z1_m": 5.2586128,
-"solids/W-S-S2-BANDSTRIP-LOWER-2-2/z0_m": 5.2578,
-"solids/W-S-S2-BANDSTRIP-LOWER-2-2/z1_m": 5.2586128,
-"solids/W-S-S2-BANDSTRIP-UPPER-1-1/z0_m": 5.2810574,
-"solids/W-S-S2-BANDSTRIP-UPPER-1-1/z1_m": 5.2839436,
-"solids/W-S-S2-BANDSTRIP-UPPER-2-1/z0_m": 5.2810574,
-"solids/W-S-S2-BANDSTRIP-UPPER-2-1/z1_m": 5.2839436,
-"solids/W-S-S2-BANDSTRIP-UPPER-2-2/z0_m": 5.2810574,
-"solids/W-S-S2-BANDSTRIP-UPPER-2-2/z1_m": 5.2839436,
+"solids/W-S-N1-BANDSTRIP-LOWER-1-1/z0_m": 5.7658,
+"solids/W-S-N1-BANDSTRIP-LOWER-1-1/z1_m": 5.7666128,
+"solids/W-S-N1-BANDSTRIP-LOWER-1-2/z0_m": 5.7658,
+"solids/W-S-N1-BANDSTRIP-LOWER-1-2/z1_m": 5.7666128,
+"solids/W-S-N1B-BANDSTRIP-LOWER-1-1/z0_m": 5.7658,
+"solids/W-S-N1B-BANDSTRIP-LOWER-1-1/z1_m": 5.7666128,
+"solids/W-S-N2-BANDSTRIP-LOWER-1-1/z0_m": 5.7658,
+"solids/W-S-N2-BANDSTRIP-LOWER-1-1/z1_m": 5.7666128,
+"solids/W-S-N3-BANDSTRIP-LOWER-1-1/z0_m": 5.7658,
+"solids/W-S-N3-BANDSTRIP-LOWER-1-1/z1_m": 5.7666128,
+"solids/W-S-N3B-BANDSTRIP-LOWER-1-1/z0_m": 5.7658,
+"solids/W-S-N3B-BANDSTRIP-LOWER-1-1/z1_m": 5.7666128,
+"solids/W-S-S1-BANDSTRIP-LOWER-1-1/z0_m": 5.7658,
+"solids/W-S-S1-BANDSTRIP-LOWER-1-1/z1_m": 5.7666128,
+"solids/W-S-S1-BANDSTRIP-LOWER-1-2/z0_m": 5.7658,
+"solids/W-S-S1-BANDSTRIP-LOWER-1-2/z1_m": 5.7666128,
+"solids/W-S-S2-BANDSTRIP-LOWER-1-1/z0_m": 5.7658,
+"solids/W-S-S2-BANDSTRIP-LOWER-1-1/z1_m": 5.7666128,
+"solids/W-S-S2-BANDSTRIP-LOWER-1-2/z0_m": 5.7658,
+"solids/W-S-S2-BANDSTRIP-LOWER-1-2/z1_m": 5.7666128,
 "solids/W-SG-ARCH/z0_m": -3.0845125,
 "solids/W-SG-ARCH/z1_m": -2.7797125,
 "solids/WIN-A-N1-FLASH-PERIMETER/z0_m": 6.604,

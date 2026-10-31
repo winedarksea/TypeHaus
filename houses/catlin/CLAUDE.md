@@ -445,7 +445,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   KDAT touches aluminium. Net free area 83 cm2/m (DIN 18516-1: 50). Heads: a steel K6 cap
   floors the cavity over every metal-wall window and laps the 58114XX by 1"; the panel end sits
   on a strip; heads are NOT outlets. Band: a 1" outlet strip under the Transition Trim at
-  +17'-4" (77 cm2/m). All DERIVED (`resolve/rainscreen_closures.py`, `rainscreen_strips.py`,
+  +19'-0" (77 cm2/m); the upper panel hangs 1/4" over the trim's shelf on no strip (BBD75 p.40). All DERIVED (`resolve/rainscreen_closures.py`, `rainscreen_strips.py`,
   `opening_head_cap.py`), graded by `integrity.rainscreen_cavity`, billed in `[bug_screens]`.
   Sills, eaves, rakes and corners stay closed; jamb buck returns are a hold point. **The top
   stays closed: the roof deck oversails to the girt face**, pinned by
@@ -563,7 +563,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `notes/metal_trim_kit.md`). A material's `trim_kit` (`model/cladding_trim.py`: `PBR_KIT`,
     `BBD_KIT`, `CORRUGATED_KIT`) names a `TrimProfile` per condition, and `resolve/cladding_trim/`
     sweeps it from the published section: base, wide/corrugated outside corners, the BBD75 band
-    (one run per N/S wall segment, at +17'-4"), window/door/small-RO opening trim, and the
+    (one run per N/S wall segment, at +19'-0", Linen White like the panel, clear of every
+    opening head), window/door/small-RO opening trim (every door takes the kit head), and the
     W-BW-SCREEN ends. The `TR-H-CORNER-*` runs are gone; `TR-G-STEMZ-*` stays (Metal Sales PVDF
     flat on the stem band). Every exterior dark is coloured from `plan/exterior_palette.py`
     (`METAL`, `WINDOW`; `notes/exterior_darks.md`). `takeoff/cladding_trim.py` bills it by part and stock length with closures,
@@ -580,8 +581,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     has always used. Structurally identical (both guides publish 43/58 psf at 2'-0"); BBD75
     is cheaper to install (~9% fewer panels, ~840 screws and no clips against ~2,000 and
     ~1,000). 12" is 3.0x PBR's panel count, which is why `prices.toml` labour sits near the
-    top of its band. **Panel length maxes at 20'**, so the 31.4' gables joint at the storey
-    lines with Transition Trim 55536XX; PBR and corrugated run to 45'.
+    top of its band. **Panel length maxes at 20'** (recommended, p.13), so the 31.4' gables
+    joint at +19'-0" with Transition Trim 55536XX: the lower panel is 19'-11 7/16", which is
+    why the band is not at the gutter line (21'-7"; owner, 2026-10-31).
+    `integrity.cladding_trim_fit` measures that run up the whole facade. PBR and corrugated run
+    to 45'.
   - A MANUFACTURER READ, not an engineered item, since 2026-09-22 — `wall_panel/W-A-N1` is
     RETIRED (DESIGN-LOG; note §8). The guide's p.13 row is authored as
     `Material.published_cladding` on `board-batten-24` and `structural.cladding_wind` grades
