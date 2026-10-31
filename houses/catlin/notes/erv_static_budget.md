@@ -9,15 +9,18 @@ by `tests/test_erv_static_oracle.py`.
 **Companions:** `notes/room_heat_loss_baths.md` — the radiant arithmetic from the same
 BLD-08 pass; `notes/system1_return_path.md` — the *other* air system's return path, which
 shares none of this machine's duct.
-**What is asked of the reviewer:** redo §6's two column sums and §10.4's additions, and say
-whether a 2.0 cfm residual UNDER MN's 205 is acceptable to build on and commission (§10.4). Both of §7's 8" upsizes are now bought, so there
+**What is asked of the reviewer:** redo §6's two column sums and §10.4/§10.6's additions, and
+say whether a 1.1 cfm residual UNDER 205 is acceptable to build on and commission (§10.6). Both of §7's 8" upsizes are now bought, so there
 is no cheap lever left in this note — what remains is `DU-ERV-RISER-EXH`, which is 58 % of the
 governing column on its own. The friction arithmetic in §2–§5 is ordinary Darcy–Weisbach and
 is offered for checking, not for deciding.
 
-> ⚠ **2026-10-31: THE HOODS ARE COUNTED NOW, AND THE MACHINE DELIVERS 203.0 cfm** (§10):
-> extract governs at 0.460 in. w.g., 2.0 cfm under 205 — accepted per the owner's shortfall
+> ⚠ **2026-10-31: THE HOODS ARE COUNTED NOW, AND THE MACHINE DELIVERS 203.9 cfm** (§10.6):
+> extract governs at 0.4413 in. w.g., 1.1 cfm under 205 — accepted per the owner's shortfall
 > policy and left to commissioning. Every 2026-09/-10 figure below is the pre-hood reading.
+> **205 is this note's target, not what the engine grades**: room areas moved to the finish
+> face on 2026-09-24 (decision #82), and `code.N1103_6_whole_house_ventilation` now requires
+> 195 (4,479 sf, §10.6).
 
 > ⚠ **`ventilation_cfm = 210` IS A DESIGN INTENT, NOT A PROMISE THE CURVE CAN KEEP.** 210 is
 > the model-name number and it is the curve's value at 0.2 in. w.g. No duct system this size
@@ -217,7 +220,8 @@ it never loosens it.**
 
 The machine's curve is an **external static per side**, so the governing figure is the worse
 of the two paths and never their sum. Each path is: worst radial + its terminal + the plenum
-that radial lands in (at the sum of that plenum's radial flows) + every trunk on that side.
+that radial lands in (at the sum of that plenum's radial flows; since §10.6, at its trunk's
+flow when that trunk runs to the machine) + every trunk on that side.
 
 **EXTRACT — `DU-B-ERV-R-SAUNA-EXH` → `EQ-B-ERV-MAN-EXH` → basement trunk → machine → `DU-ERV-EA`**
 
@@ -619,19 +623,19 @@ flow was the sum over everything that "lands" in it — the trunk's 114 cfm AND 
 branches' 114 again — so it read 228 cfm, past its own curve's last point (5.5 Pa at 210).
 It is read at what leaves it, 114 cfm: (60, 0.5)–(120, 1.8) → **1.67 Pa**. This is the
 "plenum at each port's own flow" lever, and it is a defect fix, not a reading: it moved the
-level-2 extract paths by 3.8 Pa and left the basement plenums (direct radials only) alone.
+level-2 extract paths by 3.8 Pa. (The basement plenums were left at their radials' 46/60 cfm here; §10.6 corrects that.)
 
 ### 10.4 The two columns
 
 | column | 2026-10-17 | + hood | + valves / plenum | now |
 |---|---|---|---|---|
 | extract, via `DU-B-ERV-R-SAUNA-EXH` | 0.3688 | + 0.0912 | sauna terminal unchanged | **0.4600** |
-| supply, via `DU-B-ERV-R-PLAY` | 0.3492 | + 0.0936 | terminal 17.1 → 8.2 Pa on 125 mm | **0.4392** |
+| supply, via `DU-B-ERV-R-PLAY` | 0.3492 | + 0.0936 | terminal 9.0 (derived K) → 8.2 Pa on 125 mm | **0.4392** |
 
 Extract governs. Delivered off the curve between (0.4, 206) and (0.5, 201):
 206 − 5 × 0.600 = **203.0 cfm**. The engine reports 0.460 in. w.g. and 203 cfm.
 
-**203.0 is 2.0 cfm under MN 1322 R403.5's 205.** The owner's shortfall policy
+**203.0 was 2.0 cfm under MN 1322 R403.5's 205; §10.6 corrects it to 203.9.** The owner's shortfall policy
 (2026-10-30) accepts a residual of about 1-2 cfm rather than redesign, records it here, and
 leaves it to commissioning (§8: LoFlo-class hood, balanced at the plenum collar dampers, valves
 fully open). `code.N1103_6_whole_house_ventilation` reads the authored 210 and passes; the
@@ -644,9 +648,54 @@ static budget stays UNKNOWN. **What would close it, for the owner to price:**
   the HP3 cabinet and the disconnect's work space;
 - the BD8 off the discharge (−8 Pa, 204.6 cfm) — rejected here: a balanced ERV that stops
   for defrost or service has nothing else keeping stack-driven backflow out of the leg;
-- reading the riser at its segmented flow (§9's 0.1139 in. of conservatism on the extract
-  riser alone) would put the graded figure well over 205, but the check grades one
-  `design_cfm` per run, and that is a modelling limit, not a lever.
+- (§10.6 takes the risers to their real flows; what is left of §9's segmented conservatism
+  is the 50 cfm above the level-2 tap.)
+
+### 10.6 Two errors that cancelled (review, 2026-10-31)
+
+Both were in the inputs, not the method, and they run in opposite directions.
+
+**The risers were authored at 210 cfm, which neither carries anywhere.** The extract riser
+takes the attic's 50 and, below the tap, level 2's 114: **164** at most; the basement's 46
+lands in the basement plenum and never enters it. The supply riser takes 210 less the
+basement plenum's 60: **150** at most. `design_cfm` is now each run's highest flow. Worked with
+§2 (6" bore, ε 0.0003 ft, ν 1.63e-4 ft²/s, a bend 4.5 ft):
+
+| riser | L_eff | Q | V (fpm) | P_v | Re | f | Δp at 210 → now |
+|---|---|---|---|---|---|---|---|
+| `DU-ERV-RISER-EXH` | 34.77 + 7 x 4.5 = 66.27 ft | 164 | 835 | 0.04349 | 42,702 | 0.0235 | 0.2131 → **0.1354** |
+| `DU-ERV-RISER-SUP` | 29.90 + 5 x 4.5 = 52.40 ft | 150 | 764 | 0.03638 | 39,056 | 0.0238 | 0.1685 → **0.0909** |
+
+**The basement plenums were read at their own radials' flow, on an 8" box's curve.** §4 keys
+a plenum's curve on its TRUNK collar's flow, because the expansion at the trunk is the larger
+term. Each basement box's 6" trunk runs straight to the machine and passes all 210 cfm, riser
+air included, so the check now reads such a box at that trunk's flow, not at 46/60. And the
+curve those two boxes carried was §4's 8" figure. On a 6" collar at 210 cfm, P_v = 0.07131 in.
+= 17.76 Pa; 0.80 x 17.76 = 14.21 Pa, plus §4's 1.02 Pa port term = **15.2 Pa**, so the curve is
+`((60, 1.24), (120, 4.96), (210, 15.2))`. Both boxes carry it, the extract one under §4's
+supply-direction coefficients (conservative, as §4 already is for the level-2 extract box).
+0.5 → 15.2 Pa is +0.0590 in. on every basement path.
+
+| column | §10.4 | risers | basement plenum | now |
+|---|---|---|---|---|
+| extract, via `DU-B-ERV-R-SAUNA-EXH` | 0.4600 | − 0.0777 | + 0.0590 | **0.4413** |
+| supply, via `DU-B-ERV-R-PLAY` | 0.4392 | − 0.0776 | + 0.0590 | **0.4206** |
+
+Extract governs. 206 − 5 x 0.413 = **203.9 cfm**; the engine reports 0.441 in. w.g. and 204.
+That is **1.1 cfm under 205**, inside the owner's 1-2 cfm band, so it is accepted and left to
+commissioning as §10.4 says. The 10" hood pair would now give ~0.387 in. and ~206 cfm.
+
+**The graded column is still conservative.** The sauna's own
+air never enters the extract riser or `DU-M-ERV-EXH-FEED` (0.147 of the 0.441, §6's whole-chain
+rule), and the riser's upper 16 ft carry 50 cfm, not 164. The worst series path (an attic or
+level-2 extract through the riser and both boxes) works out near 0.426 in., about 204.7 cfm.
+
+**What the code asks is not settled by this note.** 205 was the requirement on 2026-09-09,
+when room areas ran to wall centrelines (~5,000 sf). Since decision #82 (2026-09-24) they are
+measured at the finish face, and the engine's MN 1322 R403.5 figure is 0.02 x 4,479 + 15 x 7 =
+**195 cfm**, which 203.9 clears by 9. Measured over the exterior walls instead (5,455 sf), it
+is **214 cfm**, more than the machine's 210 rating. Which floor area R403.5's "conditioned
+floor area" means is for the owner and the AHJ to confirm; this note keeps 205 as its target.
 
 ### 10.5 The thermal penalty of the legs (hand-worked)
 

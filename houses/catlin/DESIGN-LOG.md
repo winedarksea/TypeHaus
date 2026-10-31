@@ -2337,10 +2337,17 @@ Every terminal, both hoods and the outdoor legs' insulation now name a basis-of-
   a 125 mm valve (8.2 Pa). Five floor extracts are 2 1/4x10 aluminium grilles on boots.
 - **The hoods were never in the static budget.** `mep.erv_static_budget` summed only the
   radial terminals. Counted, with RenewAire FA8 curves (23.3 / 22.7 Pa), the governing
-  extract column is 0.460 in. w.g. and the machine delivers **203.0 cfm, 2.0 under MN's 205**.
+  extract column is 0.460 in. w.g. and the machine delivers **203.0 cfm, 2.0 under MN's 205** (203.9 after the review below).
   Accepted under the owner's 2026-10-30 shortfall policy and left to commissioning; the 10"
   hood is costed for the owner (budget §10.4). The same pass found the level-2 extract plenum
   read at 228 cfm (trunk plus its own branches) and fixed it.
+- **Review (2026-10-31): two input errors had cancelled** (budget §10.6). Both risers were
+  authored at 210 cfm, which neither carries anywhere (extract 164, supply 150), and the two
+  basement plenums were read at their radials' 46/60 cfm on an 8" box's curve, where their 6"
+  trunk collars pass 210 (15.2 Pa, not 0.5). Corrected, the machine delivers **203.9 cfm, 1.1
+  under 205**, still inside the owner's band. The engine's own R403.5 figure is 195 since the
+  finish-face areas of decision #82; 205 stays the note's target until the owner or AHJ says
+  which floor area the rule means (exterior dimensions give 214).
 - **The hoods had been typed 6" behind 8" legs since 2026-09-15**; `mep.duct_connectivity`
   now FAILs a run whose size differs from a one-collar machine's collar.
 - **"2" R-8 wrap" named no product** (2" FRK is ~R-6). It is two 1" layers of AP Armaflex

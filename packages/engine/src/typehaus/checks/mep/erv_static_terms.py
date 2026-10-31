@@ -95,6 +95,29 @@ def hood_losses(ctx: CheckContext, duct, plenums: dict[str, object],
     return out
 
 
+def machine_trunk_flows(ctx: CheckContext, trunks, machine_tag: str,
+                        plenums: dict[str, object]) -> dict[str, float]:
+    """``{plenum: cfm}`` for each plenum a trunk joins straight to the machine.
+
+    Everything the box gathers or hands on (a riser's air too) passes that trunk's collar,
+    which is the flow its curve is keyed on, not the sum of its own radials.
+    """
+    from typehaus.checks.mep.duct_connectivity import equipment_at_end
+
+    out: dict[str, float] = {}
+    for duct in trunks:
+        if duct.design_cfm is None or not duct.path:
+            continue
+        ends = set()
+        for index in (0, -1):
+            z = duct.z_m[index] if duct.z_m and len(duct.z_m) == len(duct.path) else None
+            ends.add(equipment_at_end(ctx, z, duct.path[index]))
+        if machine_tag in ends:
+            for host in ends & plenums.keys():
+                out[host] = max(out.get(host, 0.0), duct.design_cfm)
+    return out
+
+
 def radial_capacity(ctx: CheckContext, landings: dict[str, str]) -> list[Finding]:
     """One finding per radial: its design flow against what its product is used for."""
     cid = "mep.erv_static_budget"

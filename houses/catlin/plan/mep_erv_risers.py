@@ -164,8 +164,10 @@ DUCTS_ERV_RISERS = [
                   pt(inch(15.4), inch(406.8))),
             elevations=(inch(-19.4375), inch(-19.4375), inch(-7.4), inch(-7.4),
                         inch(-17.9375), inch(-17.9375), inch(231.875)),
+            # 150 cfm: the 210 at its foot less the basement plenum's 60. Its highest flow
+            # anywhere (notes/erv_static_budget.md §10.6).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=210),
+            design_cfm=150),
     DuctRun(uid="GFTW5CBARX", tag="DU-ERV-RISER-EXH", system=DuctSystem.EXHAUST,
             # ** IT LEAVES THE PLENUM'S WEST END, NOT ITS CENTRE. ** The leg keeps the
             # box's own y=34'-6" centre line, and the station it starts from is what moved:
@@ -202,8 +204,10 @@ DUCTS_ERV_RISERS = [
             elevations=(inch(244), inch(244), inch(244), inch(-27.5),
                         inch(-27.5), inch(-25.9375), inch(-25.9375),
                         inch(-25.9375), inch(-23.4375)),
+            # 164 cfm below the level-2 tap (attic 50 + level-2 114), 50 above it: the
+            # basement's 46 never enters it (notes/erv_static_budget.md §10.6).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=210),
+            design_cfm=164),
     # The outdoor side, which did not exist at all before this pass. Both legs carry
     # outdoor-temperature air through conditioned space, so both are insulated AND vapour
     # sealed — an uninsulated intake duct sweats all winter and rains on whatever is under

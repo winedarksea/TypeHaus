@@ -252,7 +252,8 @@ the future.
 - Look up a guide to how plumbers and such route, then make sure the autorouter follows that, and also code for it
 - Air-distribution products (specified 2026-10-31, [note](../houses/catlin/notes/air_distribution_products.md)); still open:
   - Owner: trimless for RM-M-LIVING / RM-M-BED / the stair hall (note §12), and whether "the heat pump over the stairway" includes the 28x12 return.
-  - Owner: the 2.0 cfm residual under 205, or the 10" hoods (needs RenewAire FA10 test data and a plate fit check) — `notes/erv_static_budget.md` §10.4.
+  - Owner: the 1.1 cfm residual under 205, or the 10" hoods (needs RenewAire FA10 test data and a plate fit check) — `notes/erv_static_budget.md` §10.4, §10.6.
+  - Owner/AHJ: which floor area MN 1322 R403.5 means. The engine grades finish-face room area (195 cfm required); centreline gave 205, exterior dimensions give 214, past the 210 cfm machine — `notes/erv_static_budget.md` §10.6.
   - Supplier confirmations: Vents-US AM 100/125 loss curves; FA8 plate and projection; floor-boot and Snappy P13-204 heights; motorised damper body and actuator sizes; H&C 531SA 6x12 face; a 125 mm retail valve; prices marked "not read" in `prices.toml`.
   - Engine, deferred: an insulation-vs-R403.2.1 check; per-segment duct insulation; M1506.3's 3 ft exception and the operable-opening distance; checking an insulation spec's thickness against its R-value; grading a damper actuator inside a duct.
 - Consider have the oven/range in the kitchen island across from the sink

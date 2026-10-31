@@ -45,6 +45,7 @@ from typehaus.checks.mep.erv_network import connected_distribution
 from typehaus.checks.mep.erv_static_terms import (
     hood_losses,
     interpolate,
+    machine_trunk_flows,
     product_for,
     radial_capacity,
     terminal_loss,
@@ -368,14 +369,17 @@ def erv_static_budget(ctx: CheckContext) -> list[Finding]:
                     trunk_total += loss / PA_PER_IN_WG
                     terms.append(f"{hood} {loss:.1f} Pa")
 
-            # Each plenum's flow is what LEAVES it: a trunk-and-branch tree counts its trunk
-            # once, never the trunk plus the branches the trunk already carries.
+            # A plenum's curve is keyed on its trunk-collar flow (note §4). A trunk-and-branch
+            # tree counts its trunk once, never the trunk plus the branches it carries; and a
+            # box whose trunk runs to the machine passes that trunk's flow, riser air included.
             plenum_cfm: dict[str, float] = {}
             direct = _direct(ctx, landings)
             for duct in radials:
                 if duct.design_cfm is not None and duct.tag in direct:
                     plenum_cfm[landings[duct.tag]] = (
                         plenum_cfm.get(landings[duct.tag], 0.0) + duct.design_cfm)
+            for host, cfm in machine_trunk_flows(ctx, trunks, machine.tag, plenums).items():
+                plenum_cfm[host] = max(plenum_cfm.get(host, 0.0), cfm)
 
             for duct in radials:
                 leg = _duct_drop(ctx, duct, elbows.get(duct.tag, 0))
@@ -439,11 +443,11 @@ def erv_static_budget(ctx: CheckContext) -> list[Finding]:
             out.append(unknown(
                 cid, note + f", delivering {flow:.0f} cfm against a {design_cfm:.0f} cfm "
                             f"design rate — {design_cfm - flow:.0f} cfm short. Whether that "
-                            "is enough is the code's question, not this one: "
-                            "code.N1103_6_whole_house_ventilation grades the provided rate "
-                            "against what the building requires. This is UNKNOWN and not a "
-                            "FAIL because a design rate is a hope and a curve is a "
-                            "measurement",
+                            "is enough is the code's question, and "
+                            "code.N1103_6_whole_house_ventilation asks it of the type's "
+                            "rated ventilation_cfm, not of this delivered figure: compare "
+                            "this one to the code rate. This is UNKNOWN and not a FAIL "
+                            "because a design rate is a hope and a curve is a measurement",
                 (machine.tag,),
                 fix="measure it at commissioning with a low-flow hood, and take the trunk "
                     "up a size if it comes in under the code rate"))

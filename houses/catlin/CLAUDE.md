@@ -857,8 +857,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - `AL-A-COMBO` is in `RM-A-STUDY`, `AL-A-STUDIO` in the studio — reversed is a hard
     FAIL: `code.R315_co_every_sleeping_area` fails if every CO alarm on a storey is inside
     a bedroom.
-  - `code.N1103_6_whole_house_ventilation` sits at 210 cfm provided against 205 required
-    (MN 1322 R403.5) — a seventh bedroom or ~250 sf more conditioned floor fails it.
+  - `code.N1103_6_whole_house_ventilation` reads the rated 210 cfm against **195** required
+    (MN 1322 R403.5 on 4,479 sf of finish-face room area, since decision #82). The ERV notes'
+    205 is the old centreline-area figure; on exterior dimensions (5,455 sf) it is 214, past
+    the machine. Which area R403.5 means is open for the owner/AHJ (`notes/erv_static_budget.md` §10.6).
 
 - **`FO-A-STAIR`'s WEST edge is the stair head, `x=21'-4 3/8"`, not the source's 21'-2"**
   (moved 2026-09-15; one 3/4" head riser board past the top riser since 2026-09-28,
@@ -1432,15 +1434,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     keep — no real duct system lands under 0.2" w.g. The number that governs is MN 1322
     R403.5's **205**.
   - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
-    over the whole system and reads the curve at it: **0.460" w.g. worst path, 203.0 cfm
-    delivered** (2026-10-31), on the EXTRACT side via the sauna radial; supply 0.439. It
+    over the whole system and reads the curve at it: **0.441" w.g. worst path, 203.9 cfm
+    delivered** (2026-10-31, §10.6), on the EXTRACT side via the sauna radial; supply 0.421. It
     counts the two 8" hoods now (RenewAire FA8, 23.3 / 22.7 Pa), which it never did, and the
-    valves' published curves. **203.0 is 2.0 cfm UNDER MN's 205**: accepted under the owner's
+    valves' published curves; the risers carry their real flows (164/150 cfm) and the basement
+    plenums read their 6" trunk collar at 210. **203.9 is 1.1 cfm UNDER 205**: accepted under the owner's
     shortfall policy and left to commissioning; the 10" hood is the costed option
     (`notes/erv_static_budget.md` §10). It reports the 7 cfm against the 210 design rate as
     UNKNOWN, never a FAIL — whether 203 is ENOUGH is
-    `code.N1103_6_whole_house_ventilation`'s question, asked against MN's 205 and not against
-    a designer's hope. **The extract side was authored at 265 cfm against a 210 cfm machine
+    `code.N1103_6_whole_house_ventilation`'s question (195 as graded; it reads the rating, not
+    this figure). **The extract side was authored at 265 cfm against a 210 cfm machine
     until 2026-09-15** — summed per plenum and never per side, which is why nothing caught it.
     The governing side swapped three times that day: rebalancing took the worst path off
     DU-M-ERV-R-PLANT and the static 0.459 -> 0.417; `DU-ERV-EA` at 8" took extract to 0.355
@@ -1755,7 +1758,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **`REG-M-EXH2` stays OUTSIDE BATH2's shower, by design** (2026-10-12): at (4'-4", 15'-4") since 2026-10-31 (its valve collar
   cleared the 8" exhaust trunk at 4'-2" by nothing), 6 5/8" west of the front glass, on `DU-M-ERV-R-BATH2`'s 15'-4" bay leg. The front glass stops
   at 90" under the 106" ceiling, and that open top is the steam path. The ERV has no headroom
-  to boost (203.0 vs 205 cfm), so position is the only lever. **Do not glass the front to the
+  to boost (203.9 vs 205 cfm), so position is the only lever. **Do not glass the front to the
   ceiling, add a transom, or move the grille back by the tub** without re-reading
   `notes/bath2_shower.md`.
   - **The stall-drying fan is a TRANSFER loop, not ventilation** (2026-10-12):

@@ -222,7 +222,9 @@ EQUIPMENT_TYPES_ERV = (
                   name="Fabricated supply plenum, 6in trunk + 6in riser, 3 x 4in dampered collars",
                   footprint=(inch(36), inch(8)), height=inch(8), plan_symbol="erv",
                   duct_ports=3, port_diameter=inch(4),
-                  static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
+                  # Note §4's method on a 6in trunk collar (it was the 8in box's curve): 0.80 x
+                  # 17.76 Pa expansion + 1.02 Pa port = 15.2 Pa at 210 cfm, Q^2 (§10.6).
+                  static_loss_pa_at_cfm=((60.0, 1.24), (120.0, 4.96), (210.0, 15.2)),
                   source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in trunk inlet and a 6 in riser takeoff in the underside, and three 4 in dampered start collars at the stations below. The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
                   ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
                                      position=(inch(3), inch(0), inch(0))),
@@ -248,7 +250,7 @@ EQUIPMENT_TYPES_ERV = (
                   name="Fabricated extract plenum, 6in trunk + 6in riser, 3 x 4in dampered collars",
                   footprint=(inch(36), inch(8)), height=inch(8), plan_symbol="erv",
                   duct_ports=3, port_diameter=inch(4),
-                  static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
+                  static_loss_pa_at_cfm=((60.0, 1.24), (120.0, 4.96), (210.0, 15.2)),
                   source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in riser inlet and a 6 in trunk outlet in the underside, and three 4 in dampered start collars at the stations below. Same shell as EQ-T-ERV-PLENUM-B-SUP; a separate row because the declared services differ and the BOM should read which box is which.",
                   ports=(ServicePort(tag="trunk", service=Service.RETURN_AIR,
                                      position=(inch(10.5), inch(0), inch(0))),
