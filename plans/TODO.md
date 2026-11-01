@@ -4,6 +4,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 Sourcing quotes, construction todo doesn't belong in this document, this is just softwared and house design todo.
 We generally want exact products specified (or standard/commodity sizes) so we can verify everything works together correctly.
 Our general goals are decent longevity and quality at a reasonable price, avoiding premium items unless clearly a major improvement for our needs.
+Note that many of the pinned decisions in the code base here aren't as fixed as they sometimes claim, the "fixed" decisions were usually fixed in a narrower context, and can be changed for sufficiently good reasons.
 
 ## Needs your decision
 
@@ -256,6 +257,8 @@ the future.
   - [ ] 13 wall-light types state no `LuminaireType.canopy` (one combined `electrical.canopy_covers_box` UNKNOWN).
   - [ ] No check grades a run passing through a room's `ceiling_lining` layers (found at the sauna; design: `mep.run_in_ceiling_lining`, runs below the FURRING cavity bottom FAIL, terminal drops exempt, ~60 lines reusing `routing_ceiling._segment_rows`); no check grades a backing band's face against its body's side; BK-M-HS1-BASIN overlaps BK-M-HS1-GRAB.
   - [ ] Window stools pass through the buck jambs (`framing|window_stool`, 34 pairs): notch in `geometry_millwork.window_stool_ring`. ST-G-SERVICE riser-004 overlaps D-G-SERVICE's sill support (90 cm3).
+  - [ ] FB-B-CS bedding's drain-tile ring (CFB011AAAA-DT-00/02) runs under FT-B-S2/S3 to y=0: 1" clear before, 1" into them since S2/S3 went to 10" (`drain_tile|footing`, blessed as known). Clip a bedding ring at adjacent footing faces in `resolve/drain_tile.py`.
+  - [ ] `notes/garage_service_door_outswing.md` §2 pivot-inset table is the 90° sweep; at the 81° stop the insets read 0 → −0.114 (ties), 0.5 → 0.381, 1 → 0.876, 2 → 1.366.
   - [ ] BATH2 surround backer: the wall layer is `gwb-mr`; `notes/bath2_shower.md` §6 specifies glass-mat.
   - [ ] Over 500 lines: `resolve/framing/furring.py` (706), `checks/code/mn_residential/stairs.py` (522).
 - Supplier holds from the same pass:
@@ -337,7 +340,7 @@ the future.
 - O-S-VANITY and D-S-STUDY2, both openings (not true doors) seem to get ignored, improperly showing baseboard, sill plates, and non-continuous flooring, they likely just need to reuse some of the existing door handling logic which generally works
 - Edit the door swing icon in 2d so it shows a frame (right now the 2d door swing might be a bit too big, versus actual leaf swing)
 - Make SL-M-DECK a wood joist design. Use open web trusses (not I joists) at tighter OC for extra strength (and maybe ask for a 60 psf or 100 psf truss design, if that is easy to source). Make sure the joists are anchored properly using simpson connectors to the concrete. The structural concrete (BuildDeck) is kept in the library but retired from use. Perhaps 3/4" plywood as the theater ceiling
-- Aiming to keep floor transitions flush, looks like ~3/4" thickness makes this easiest. Ditra XL or Ditra Heat + Thinset + 3/8" Tile == 1/2" plywood (nominal) + 7 mm LVP == 1/2" gypsum underlayment (fiberrock or 1/2" exacor mgo) + 6.5 mm LVP == 5/8" actual underlayment + 3 mm sheet vinyl == 3/4" hardwood ~= 7/16" pad + 1/2" pile carpet (carpet squishes at edges)
+- Aiming to keep floor transitions flush, looks like ~3/4" thickness makes this easiest. Ditra XL or Ditra Heat + Thinset + 8 mm Tile (Ditra Heat PS 5.5 mm + 3.5 mm thinset (3/8" by 3/8" notch trowel) + 10 mm tile OR Ditra Heat Duo peel and stick (PS) + 2.5 mm thinset (1/4" x 3/8" trowel) + 9 mm tile OR 1.5 mm thinset (compressed by 1/4" by 1/4" trowel) + ditra heat 5.5 mm + 2.5 mm thinset + 9.5 mm tile) == 1/2" plywood (nominal) + 7 mm LVP == 1/2" exacor (12 mm actual) + 7 mm LVP == 1/2" gypsum underlayment (fiberrock) + 6.5 mm LVP == 5/8" actual (Fiberock) underlayment + 3 mm sheet vinyl == 16 mm exacor + feather finish + 2.8 to 3 mm sheet vinyl == 3/4" hardwood ~= 7/16" pad + 1/2" pile carpet (carpet squishes at edges)
 - Delete the shower blow dryer fan from RM-M-BATH2 (but keep in library)
 - Specify paint in detail
 - Specify leak detectors, in useful places, linked to Home Assitant

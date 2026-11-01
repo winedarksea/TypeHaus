@@ -36,7 +36,8 @@ def test_installed_base_has_no_covering_and_correct_bearing_plane(catlin_model_r
     assert placed.z_m / 0.0254 == pytest.approx(elevation_in)
     coating = room_tag == "RM-B-SAUNA"
     if coating:
-        assert room.field_area_m2 == pytest.approx(66.50372 / 10.7639104, abs=1e-6)
+        # The sealed slab stops at D-B-SAUNA's rubber mat reducer (doorway_transitions.py).
+        assert room.field_area_m2 == pytest.approx(66.16711 / 10.7639104, abs=1e-6)
     else:
         assert field.intersection(exclusion).area < 1e-10
         assert field.intersection(Polygon(placed.footprint)).area < 1e-10

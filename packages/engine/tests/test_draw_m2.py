@@ -236,9 +236,10 @@ def test_emit_fixtures_draws_the_generated_glyph_as_plain_polylines() -> None:
 
 
 def test_room_blocks_say_name_area_and_ceiling_height() -> None:
-    """A room label states name, area and ceiling height. 8'-10 9/16" is what the main
+    """A room label states name, area and ceiling height. 8'-10 3/4" is what the main
     floor's 9'-0" nominal resolves to under 5/8" gypsum on the second floor's deck
-    (``ResolvedCeiling`` carries it per deck region).
+    (``ResolvedCeiling`` carries it per deck region), measured off the cap: 8'-10 9/16"
+    until the cap came down 3/16" to +3/4" (decision #111).
     """
     from typehaus.emit.draw.plan_labels import room_display_name
 
@@ -249,7 +250,7 @@ def test_room_blocks_say_name_area_and_ceiling_height() -> None:
     assert room_display_name("RM-M-LIVING") == "LIVING"
     # 701 since the 1/2" walls (2026-10-23; 699 before, 1/8" each side).
     #  W-M-PAN-E moved 5/8" east into the room (2026-10-03).
-    assert {"LIVING", "701 SF", 'CLG 8\'-10 9/16"'} <= printed
+    assert {"LIVING", "701 SF", 'CLG 8\'-10 3/4"'} <= printed
 
 
 def test_a_room_over_two_ceiling_planes_labels_both() -> None:
@@ -279,7 +280,7 @@ def test_a_room_over_two_ceiling_planes_labels_both() -> None:
             if isinstance(node, Text) and node.layer == "A-AREA-IDEN"]
     # The per-region caption form (``CLG <height> / <area> SF``) is what a split looks like,
     # and no main-storey room has one: LIVING is one plane.
-    assert 'CLG 8\'-10 9/16"' in main
+    assert 'CLG 8\'-10 3/4"' in main
     assert not [c for c in main if c.startswith("CLG") and " / " in c], main
 
 

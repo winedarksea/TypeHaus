@@ -35,10 +35,11 @@ VENT_TEES = [
             serves=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # RM-S-BATH1's lavatory: off its arm 1" short of the drop, 1 3/4" toward the room face
     # so it rises W-S-BA-E1B clear of the lav supplies on the axis, and onto
-    # PR-S-BATH1-VENT's start.
+    # PR-S-BATH1-VENT's start. It rises at y=31'-2 1/2", midway between the two angle stops
+    # (y 371.5" / 377.5"); at y=31'-1" it ran through PA-S-BATH1-LAV-CW.
     PipeRun(uid="4HVPN3BWQG", tag="PR-S-BATH1-LAV-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(120), inch(373)), pt(inch(118.25), inch(373)),
-                  pt(inch(118.25), inch(373)), pt(inch(116.4), inch(372))),
+            path=(pt(inch(120), inch(373)), pt(inch(118.25), inch(374.5)),
+                  pt(inch(118.25), inch(374.5)), pt(inch(116.4), inch(372))),
             diameter=inch(1.5), material="pvc",
             elevations=(inch(141.4), inch(141.45), inch(230.9), inch(231.0)),
             serves=("FX-S-BATH1-LAV",)),

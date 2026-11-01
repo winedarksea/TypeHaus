@@ -274,10 +274,12 @@ def test_blocks_climb_an_outrigger_at_no_more_than_the_stated_spacing(swinburne_
 
 
 def test_the_buck_lines_the_rough_opening_out_to_the_truss_plane(swinburne_model):
-    """4 sides per opening, 3/8" plywood, sheathing face to the truss plane."""
+    """4 sides per opening, 3/8" plywood, sheathing face to the truss plane (the stud-zone
+    ``buck-fur-*`` rips behind a gypsum return are not buck sides)."""
     for wall in _truss_walls(swinburne_model):
         openings = [op for op in swinburne_model.openings if op.host_wall == wall.tag]
-        bucks = _by_category(wall, "buck")
+        bucks = [m for m in _by_category(wall, "buck")
+                 if not m.child_key.startswith("buck-fur-")]
         assert len(bucks) == 4 * len(openings), wall.tag
         assert all(m.profile == "5x0.375 panel" for m in bucks), wall.tag
 

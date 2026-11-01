@@ -114,12 +114,17 @@ def _service_sweep(model, **overrides):
 
 
 def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catlin_model_ro):
-    """At the authored 81deg stop the landing ties govern; the screen face is under 1"."""
+    """At the authored 81deg stop the landing ties govern; the screen face is about 1" off.
+
+    Re-pinned 2026-11-01 when the MMI frame was anchored flush with the sheathing
+    (``factory_frame_depth`` 6-9/16"), which moved the leaf plane: ties 0.320 -> 0.381",
+    hold-down 2.873 -> 2.865".
+    """
     results = _service_sweep(catlin_model_ro)
     anchor = [result for result in results if result.obstacle == "CN-G-BWHD-S-DR"]
-    assert min(result.clearance_m for result in anchor) / INCH == pytest.approx(2.873, abs=1e-3)
+    assert min(result.clearance_m for result in anchor) / INCH == pytest.approx(2.865, abs=1e-3)
     assert results[0].obstacle == "CN-BW-GWTIE-LO"
-    assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.320, abs=1e-3)
+    assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.381, abs=1e-3)
     assert any(result.obstacle == "W-BW-SCREEN" for result in results)
     assert any(result.obstacle == "PT-BW-CNW" for result in results)
     assert any(result.obstacle.startswith("TR-BW-BRICK-HEAD") for result in results)

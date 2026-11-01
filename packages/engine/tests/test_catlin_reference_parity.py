@@ -204,10 +204,14 @@ def test_framing_matches_the_reference(catlin_model):
 # beam W-SG-BRKBM. The set stays as the seam: a non-strip pour on this prefix must be named
 # here rather than quietly widening the rule.
 _NON_STRIP_FT_B: set[str] = {"FT-B-BRICK"}
+# Deepened past the reference, 8" -> 10" (owner, 2026-11-01): a 10" north toe under
+# GARDEN_CURB_6 broke R403.1.1's P <= T on an 8" strip (params/foundations.py `_DEEP_STRIP`).
+_DEEP_FT_B = {"FT-B-S2": 10.0, "FT-B-S3": 10.0}
 
 
 def test_house_footings_match_the_reference(catlin_model):
-    """20\"x8\" footing per IRC Table R403.1, as the reference and the notes both fix it.
+    """20\"x8\" footing per IRC Table R403.1, as the reference and the notes both fix it —
+    except the two deepened strips in ``_DEEP_FT_B``.
 
     Scoped to the house (``FT-B-*``): the freestanding sunken-garden structure carries its
     own heavier footing, which these basement params do not govern.
@@ -220,7 +224,7 @@ def test_house_footings_match_the_reference(catlin_model):
     assert footings, "catlin should resolve house footings"
     for footing in footings:
         assert (footing.z1_m - footing.z0_m) * 39.37007874015748 == pytest.approx(
-            depth_in, abs=0.01), footing.tag
+            _DEEP_FT_B.get(footing.tag, depth_in), abs=0.01), footing.tag
 
 
 def test_house_footing_width_matches_the_reference(catlin_model):

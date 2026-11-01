@@ -634,11 +634,14 @@ def test_the_buck_lines_the_rough_opening_out_to_the_mount_plane(catlin_model):
     """4 sides per opening, 3/8" plywood, sheathing face to the mount plane — 6" now, not 5".
 
     The profile string is derived from the stack (`BandFrame.buck`), so this is the assertion
-    that catches the mount plane moving without the buck following it.
+    that catches the mount plane moving without the buck following it. The 3/8" stud-zone
+    rips that fur a gypsum return out to the buck (``buck-fur-*``, resolve/window_returns.py)
+    share the category and are not the buck's four sides.
     """
     for wall in _girt_walls(catlin_model):
         openings = _openings(catlin_model, wall)
-        bucks = [m for m in wall.members if m.category == "buck"]
+        bucks = [m for m in wall.members
+                 if m.category == "buck" and not m.child_key.startswith("buck-fur-")]
         assert len(bucks) == 4 * len(openings), wall.tag
         assert all(m.profile == "6x0.375 panel" for m in bucks), wall.tag
 

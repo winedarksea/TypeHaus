@@ -2,7 +2,7 @@
 
 This document provides guidelines for agents working on the TypeHaus codebase.
 
-## Architectural Principles
+## Code Principles
 
 ### 1.1 Small Files & Single Responsibility (SRP)
 - **Aim to keep files < 500 lines.** Large files are difficult to reason about and cause merge conflicts.
@@ -55,3 +55,8 @@ This document provides guidelines for agents working on the TypeHaus codebase.
   convenience and never a quarantine. Earn it by measuring — `pytest --durations=40` — and
   un-mark a module that stops being slow, or it becomes a test nobody runs.
 - **Refactor When Useful:** Code base is not deployed in production. Breaking changes are fine when they add clear value.
+
+## 4. House Design Guidelines
+- We generally want exact products specified (or standard/commodity sizes) so we can verify everything works together correctly.
+- Our general goals are good longevity and quality at a reasonable price, avoiding premium items unless clearly a major improvement for our needs.
+- Note that many of the pinned decisions in the code base here aren't as fixed as they sometimes claim, the "fixed" decisions were usually fixed in a narrower context, and can be changed for sufficiently good reasons.

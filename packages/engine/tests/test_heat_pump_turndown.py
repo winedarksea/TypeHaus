@@ -56,7 +56,9 @@ _CATLIN = {
     # BBD75 layer depth correction (2026-10-25): the envelope area moves slightly.
     # The 19/32-inch roof deck changes the envelope load slightly (2026-10-28).
     # 14,652 before paint took no depth (2026-10-30): finish-face volumes grow 0.01".
-    "EQ-M-HP1-OD": (14_653, 14_000, 5.0, 0.96, -9.4, _ADVISED),
+    # 14,653 before the eave rework (61a49fee): -5.4 sf of HP1 wall, -10.6 Btu/h; then the
+    # mud closet's 2x6 STOS wall (2026-11-01) shrinks HP3's volume, +0.7 ventilation share.
+    "EQ-M-HP1-OD": (14_643, 14_000, 5.0, 0.96, -9.4, _ADVISED),
     # The living-east rework replaces two 27x48 windows with one 63x48 unit, adding 3 sf
     # of glass to System 2's main-storey zone (2026-10-16). 13,855 / 0.64 / 23.6 °F, and
     # HP3 910 / 3.08, before the 2026-10-21 bath 1 rework moved the powder room's walls.
@@ -68,9 +70,12 @@ _CATLIN = {
     # 14,291 before paint took no depth (2026-10-30).
     # 14,292 / 25.6 °F before one owner per rim band (ab6a8179, 2026-10-31): W-B-S2-FR/-S3-FR
     # no longer rise into the band W-M-S1/-S2 drop through, 2 x 8.17' x 1.12' = 18.3 sf less.
-    "EQ-M-HP2-OD": (14_261, 8_800, 5.0, 0.62, 25.5, not _ADVISED),
+    # 14,261 before the mud closet lost 0.88 sf to its 2x6 STOS wall (2026-11-01): +0.6
+    # ventilation share.
+    "EQ-M-HP2-OD": (14_262, 8_800, 5.0, 0.62, 25.5, not _ADVISED),
     # D-M-ENTRY's Therma-Tru unit replaces its 36x80 void (2026-10-29): 905 -> 921.
-    "EQ-M-HP3-OD": (921, 2_800, 17.0, 3.04, None, _ADVISED),
+    # 921 / 3.04 before RM-M-MUD-CLOSET went 13.84 -> 12.96 sf (2x6 STOS wall, 2026-11-01).
+    "EQ-M-HP3-OD": (919, 2_800, 17.0, 3.05, None, _ADVISED),
 }
 
 
@@ -162,12 +167,12 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
-    """0.80 as a ratio is a number nobody can act on; ``11,720 Btu/h against this zone's
-    14,652`` is one an equipment selector can shop against."""
+    """0.80 as a ratio is a number nobody can act on; ``11,714 Btu/h against this zone's
+    14,643`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
-    assert "11,722 Btu/h" in finding.message  # 0.80 x the unrounded design load
+    assert "11,714 Btu/h" in finding.message  # 0.80 x the unrounded design load
 
 
 # --- §3. the crossover ------------------------------------------------------------------------

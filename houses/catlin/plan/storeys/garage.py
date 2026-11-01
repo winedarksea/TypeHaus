@@ -330,7 +330,7 @@ OPENINGS = [
     # chord posts, and at 90deg the lever met its thin-brick face and the leaf the landing
     # tie's CN-BW-GWTIE-LO/-HI. 81deg is the largest stop the sweep clears at the 1/2" pivot
     # inset with the 1/8" allowance and 1/4" minimum (scripts/garage_service_door_clearance.py,
-    # 0.32" to the ties). Owner to revisit: slide the door or rebuild the screen face.
+    # 0.38" to the ties). Owner to revisit: slide the door or rebuild the screen face.
     # Its rough sill sits flush with the deck: KDAT under a sloped, back-dammed pan
     # (notes/opening_flashing_spec.md §6).
     #

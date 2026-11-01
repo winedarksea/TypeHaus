@@ -1830,9 +1830,19 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
             if member.child_key.startswith("backing-"):
                 structure = next(ly for ly in wall.layers if ly.function == "structure")
                 center_offset += (structure.thickness_m - cross_section(member.profile).width_m) / 2
+            structure = next(ly for ly in wall.layers if ly.function == "structure")
+            # The 2x8 sill (FramingSpec.sill_member, C3-E8) is flush with the stud band's
+            # OUTSIDE face, so its centre sits half its extra width off the stud line.
+            wider = (member.category == "plate"
+                     and cross_section(member.profile).depth_m > structure.thickness_m + 1e-6)
             for point in (member.p0, member.p1):
                 offset = (point[0] - start[0]) * normal_x + (point[1] - start[1]) * normal_y
-                assert offset == pytest.approx(center_offset, abs=1e-9)
+                if wider:
+                    assert abs(offset - center_offset) == pytest.approx(
+                        (cross_section(member.profile).depth_m - structure.thickness_m) / 2,
+                        abs=1e-9)
+                else:
+                    assert offset == pytest.approx(center_offset, abs=1e-9)
 
 
 def test_sunken_garden_structure_matches_redesign_spec(catlin_model):

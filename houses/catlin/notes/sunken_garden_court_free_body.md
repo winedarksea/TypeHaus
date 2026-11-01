@@ -2629,6 +2629,17 @@ D = 362,775.6;  friction 90,693.9;  capped 118,251.1 / 27,315.75 = 4.3290  ratio
                                     uncapped 118,251.1 / 42,074.2 = 2.8105  ratio 0.5337
 ```
 
+2026-11-01, later: `SL-M-DECK`'s cover goes 4 3/8" → 4 3/16" (decision #111), so the deck is
+14 3/16". The slab inside the take-down was 74,391 − 3,630 = 70,761 lb at 14 3/8":
+70,761 × 0.1875 / 14.375 = **−923.0 lb**, giving 361,852.6. The engine reads 361,672.6. The
+other 180 lb comes from the same day's other edits; this change accounts only for the 923.0.
+The thrust and the at-rest term are unchanged.
+
+```
+D = 361,672.6;  friction 90,418.1;  capped 117,975.3 / 27,315.75 = 4.3189  ratio 0.3473
+                                    uncapped 117,975.3 / 42,074.2 = 2.8040  ratio 0.5350
+```
+
 ### 12a. FT-SG-S's toe grows 1'-4" (2026-09-22) — the south strip row
 
 The owner squared the planted field (11'-0" x 11'-0") by paving its shaded south 16" with

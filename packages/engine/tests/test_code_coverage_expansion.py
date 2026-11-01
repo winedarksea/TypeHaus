@@ -572,8 +572,8 @@ def test_safety_glazing_near_a_stair_measures_the_bottom_edge_over_the_TREAD():
 
     def _ctx(tread_z_m):
         window_type = WindowType(tag="WT-1", width=ft(3), height=ft(4), tempered=False)
-        opening = SimpleNamespace(tag="WIN-1", is_door=False, type_ref="WT-1",
-                                  host_wall="W-1", width_m=0.9, height_m=1.2,
+        opening = SimpleNamespace(tag="WIN-1", kind="window", is_door=False,
+                                  type_ref="WT-1", host_wall="W-1", width_m=0.9, height_m=1.2,
                                   sill_m=ft(2, 6).meters, center_along_m=1.0)
         tread = FramedMember("S", "tread-000", "tread", "deck 11x1.5",
                              (0.0, 0.3), (0.9, 0.3), tread_z_m - 0.04, tread_z_m, 0.9)

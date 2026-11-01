@@ -72,11 +72,12 @@ def test_inspections_lists_the_profiles_own_list_plus_the_houses_extra(house: Pa
     records = payload["inspections"]
     from typehaus.checks.code.mn_residential.inspections import MN_INSPECTIONS
 
-    # + girt_screws, truss_mep_review, break_blockouts_stripped
-    assert len(records) == len(MN_INSPECTIONS) + 3
+    # + girt_screws, truss_mep_review, break_blockouts_stripped, frost_soil_replacement
+    assert len(records) == len(MN_INSPECTIONS) + 4
     assert records[0]["id"] == "erosion"
     assert sorted(r["id"] for r in records if r["extra"]) == [
-        "break_blockouts_stripped", "girt_screws", "truss_mep_review"]
+        "break_blockouts_stripped", "frost_soil_replacement", "girt_screws",
+        "truss_mep_review"]
     # The engine ships no phone numbers; the house does.
     assert payload["authorities"]["building"]["phone"]
 
