@@ -540,3 +540,48 @@ Pc,rigid = π² x 9.558e8 / (2.1 x 60.56)² = 9.4334e9 / 16,174 = 583,250
 Still arithmetic only (the landing piers left the register 2026-09-21). W, E and GW move by
 the same few percent of P_u (W 1.0817 -> 1.0813, 1.3382 -> 1.3361) and stay inside their
 pinned tolerances.
+
+## Addendum 2026-10-31b — every north-entry column one pack shorter (C3-E13)
+
+The landing piers and the cast canopy columns stop 3/4" under their soffits so the SS316 pack
+is a solid (`north_entry_piers.md` §12). Pads, pad tops and grade do not move, so each pole's
+buried profile is unchanged; the head comes 3/4" nearer grade (W/E/GW/GE 18.56" → **17.81"**
+= 1.48417'; RE/RNE 9.17708' → **9.11458'**) and the shaft loses 3/4". With §3a's integrals:
+
+```
+                 W           E           GW          GE          RE          RNE
+L (in)           91.2475     91.2475     59.81       59.81       197.375     197.375
+D / P_u (lb)     2,014.7 /   946.24 /    1,591.73 /  634.72 /    2,337.72 / as RE
+                 7,457.1     1,458.14    6,931.1     1,065.88    7,522.07
+β = 1.2D/P_u     0.3242      0.7787      0.2756      0.7146      0.3729
+EI (lb-in²)      2.2959e9    9.2258e8    2.3834e9    9.5710e8    1.1953e9
+Pc,rigid         617,114     247,985     1,491,103   598,782     68,666
+I1 / I2 / I3     31.777 /    28.656 /    15.146 /    12.125 /    38.639 /    42.556 /
+                 154.990 /   142.257 /   48.840 /    38.417 /    223.623 /   254.346 /
+                 846.721     788.278     173.768     135.016     1,446.943   1,688.253
+det              2,884.08    2,351.64    246.49      161.22      5,900.81    7,152.82
+Δ_base 0.25"     3.9781e-4   4.5134e-4   1.1904e-3   1.4253e-3   1.2334e-3   1.1487e-3
+k_θ 0.25"        2.0930e7    1.8448e7    3.0051e6    2.5098e6    3.1586e7    3.3913e7
+R 0.25" / 1.0"   0.8318 /    1.8245 /    0.0754 /    0.1568 /    5.2158 /    5.6000 /
+                 0.2080      0.4561      0.0189      0.0392      1.3040      1.4000
+Pc,flex          133,967 /   93,783 /    36,563 /    29,749 /    43,593 /    44,713 /
+                 40,005      32,729      9,312       7,725       20,804      21,848
+δ 0.25" / 1.0"   1.0802 /    1.0212 /    1.3382 /    1.0502 /    1.2988 /    1.2892 /
+                 1.3307      1.0632      131.95      1.2254      1.9309      1.8486
+```
+
+e.g. W at 0.25": `u0 = (846.721 + 154.990 x 1.48417)/(14,400 x 2,884.08) x 12 = 3.1112e-4 in`,
+`θ = (31.777 x 1.48417 + 154.990)/(14,400 x 2,884.08) = 4.8675e-6`, `Δ = 3.1112e-4 + 4.8675e-6
+x 1.48417 x 12 = 3.9781e-4`, `k_θ = 91.2475²/3.9781e-4 = 2.0930e7`, `R = 2.0930e7 x 91.2475 /
+2.2959e9 = 0.8318`, `Pc = 617,114/(1 + 3/0.8318) = 133,967`, `δ = 1/(1 − 7,457.1/100,475) = 1.0802`.
+
+**GW's soft end is no longer a mechanism**: 0.75 x 9,312 = 6,984 lb against P_u 6,931.1, so
+1/δ = 1 − 6,931.1/6,984 = 0.0076 (δ ≈ 132). It was 72 lb under; the shorter shaft is stiffer.
+Still OVER (δ 132 at the soft end is far past 1.4; the stiff end reads 1.338), and still
+arithmetic only.
+
+**§10 presumed n_h at RE/RNE** (b = 1 ft, head 9.11458'): `I1 34.722, I2 192.901, I3 1,205.63,
+det 4,651.4`; `u0 = (1,205.63 + 192.901 x 9.11458)/(14,000 x 4,651.4) x 12 = 5.4617e-4`, `θ =
+7.8223e-6`, `Δ = 1.4017e-3`, `k_θ = 197.375²/1.4017e-3 = 2.7792e7`, `R = 4.5893`, `Pc,flex =
+68,666/(1 + 3/4.5893) = 41,523`, `δ = 1/(1 − 7,522.07/31,142) = 1.3185`: increment 0.3185/0.40
+= **0.80**, OK (was 0.81). The garden rows move in their fourth figure (R 6.609 → 6.556 front).

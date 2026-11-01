@@ -34,7 +34,8 @@ _ROWS = {
     "W-BW-SCREEN top plate end bearing on a chord": (98.52, 251.25),
     "W-BW-SCREEN base plate and sill end bearing on a chord": (64.15, 251.25),
     "BM-BW-RW eave collector clips": (172.42, 450.0),
-    "W-BW-SCREEN chord hold-down, full height": (2217.4, 3060.0),
+    # The chord bases one pack lower, 2026-10-31: H 8.620 -> 8.6825' (amendment (2)).
+    "W-BW-SCREEN chord hold-down, full height": (2230.3, 3060.0),
     "W-BW-SCREEN chord base shear, one base": (1034.49, 1270.0),
     "diaphragm unit shear at W-BW-SCREEN": (172.42, 190.0),
     "LSTA24 end straps, chord force + across share": (260.488, 823.3333333333334),
@@ -64,7 +65,7 @@ def test_the_band_rows_reproduce_the_note(record) -> None:
 def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
     values = {q.name: q.value for q in record.inputs}
     assert values["band_height_W-BW-SCREEN"] == pytest.approx(2.34375, abs=1e-4)
-    assert values["overturning_height_W-BW-SCREEN"] == pytest.approx(8.62, abs=1e-3)
+    assert values["overturning_height_W-BW-SCREEN"] == pytest.approx(8.6825, abs=1e-3)
     assert values["joint_couple_lb_ft"] == pytest.approx(2064.20, abs=1.0)
     assert values["chord_force_open_front_lb"] == pytest.approx(88.072, abs=0.1)
 

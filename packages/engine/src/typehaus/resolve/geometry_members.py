@@ -168,54 +168,50 @@ def _ring_sweep(member: FramedMember,
 def _seated_sweep(member: FramedMember, seat: SeatCut) -> GSolid | None:
     """The notched rafter as a profile in its own vertical plane, swept across its width.
 
-    Six points: end-top, far-top, far-bottom, the plumb heel up from the seat to the
-    underside, the heel's foot, and the seat's far end. The underside is the straight line
-    from ``z0_m`` to ``z0_end_m``, and ``z0_m`` at the bearing end already *is* the seat
-    elevation — which is why nothing about the member's elevations has to change for the
-    notch to become real.
+    The member less one triangle: plumb heel cut down from the plate top on the plate's outer
+    face, flat seat inward along the plate top to where the underside meets it. Walking the
+    profile: bearing-end top, far top, far bottom, the seat's inner end, the heel's foot, the
+    heel's head on the underside, and the bearing-end bottom (the last two coincide when the
+    tail is cut at the heel, as on a zero-overhang eave). ``ui/src/three/memberBox.ts``
+    mirrors it.
     """
     (ax, ay), (bx, by) = member.p0, member.p1
-    dx, dy = bx - ax, by - ay
-    run = math.hypot(dx, dy)
+    run = math.hypot(bx - ax, by - ay)
     if run < 1e-9:
         return member_box(member)
     section = cross_section(member.profile)
     half = max(section.width_m, MINIMUM_EXTENT_M) / 2.0
-    # Which end bears: the one the heel sits nearer to.
     hx, hy = seat.heel
     near_p0 = math.hypot(hx - ax, hy - ay) <= math.hypot(hx - bx, hy - by)
-    near = (ax, ay) if near_p0 else (bx, by)
-    far = (bx, by) if near_p0 else (ax, ay)
-    z0_near = member.z0_m if near_p0 else (member.z0_end_m
-                                           if member.z0_end_m is not None else member.z0_m)
-    z1_near = member.z1_m if near_p0 else (member.z1_end_m
-                                           if member.z1_end_m is not None else member.z1_m)
-    z0_far = (member.z0_end_m if member.z0_end_m is not None else member.z0_m) if near_p0 \
-        else member.z0_m
-    z1_far = (member.z1_end_m if member.z1_end_m is not None else member.z1_m) if near_p0 \
-        else member.z1_m
-    # Unit vector from the bearing end toward the far end, and the underside's rise along it.
+    z0_end = member.z0_m if member.z0_end_m is None else member.z0_end_m
+    z1_end = member.z1_m if member.z1_end_m is None else member.z1_end_m
+    near, far = ((ax, ay), (bx, by)) if near_p0 else ((bx, by), (ax, ay))
+    z0_near, z1_near, z0_far, z1_far = ((member.z0_m, member.z1_m, z0_end, z1_end) if near_p0
+                                        else (z0_end, z1_end, member.z0_m, member.z1_m))
     ux, uy = (far[0] - near[0]) / run, (far[1] - near[1]) / run
     slope = (z0_far - z0_near) / run
-    heel_point = (near[0] + ux * seat.seat_run_m, near[1] + uy * seat.seat_run_m)
-    z_underside_at_heel = z0_near + slope * seat.seat_run_m
+    heel_s = math.hypot(hx - near[0], hy - near[1])
+    end_s = heel_s + seat.seat_run_m
     z_seat = seat.plate_top_z_m
-    if z_underside_at_heel <= z_seat + MINIMUM_EXTENT_M:
-        # The underside never rises clear of the seat over the run — no notch to cut.
-        return member_box(member)
+    if z0_near + slope * heel_s >= z_seat - MINIMUM_EXTENT_M or end_s >= run:
+        return member_box(member)  # nothing below the plate top to cut
+
+    def at(s: float, z: float) -> Vec3:
+        return (near[0] + ux * s, near[1] + uy * s, z)
+
+    points = [at(0.0, z1_near), at(run, z1_far), at(run, z0_far),
+              at(end_s, z0_near + slope * end_s), at(end_s, z_seat), at(heel_s, z_seat),
+              at(heel_s, z0_near + slope * heel_s), at(0.0, z0_near)]
+    ring: list[Vec3] = []
+    for point in points:
+        if not ring or math.dist(point, ring[-1]) > MINIMUM_EXTENT_M:
+            ring.append(point)
+    if math.dist(ring[0], ring[-1]) <= MINIMUM_EXTENT_M:
+        ring.pop()
     # The profile stands on one face of the member, not on its centreline, so that sweeping
     # it the full width lands the solid symmetrically about the axis.
     ox, oy = uy * half, -ux * half
-    profile = tuple(
-        (x + ox, y + oy, z) for (x, y, z) in (
-            (near[0], near[1], z1_near),
-            (far[0], far[1], z1_far),
-            (far[0], far[1], z0_far),
-            (heel_point[0], heel_point[1], z_underside_at_heel),
-            (heel_point[0], heel_point[1], z_seat),
-            (near[0], near[1], z_seat),
-        )
-    )
+    profile = tuple((x + ox, y + oy, z) for (x, y, z) in ring)
     return GSweep(profile=profile, extrude=(-2.0 * ox, -2.0 * oy, 0.0))
 
 

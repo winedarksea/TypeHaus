@@ -27,8 +27,10 @@ from typehaus.model.registry import constructor_names
 #: register; the band-end reproductions still run on them, the record tests do not.
 #: RE/RNE straddle the band and CLOSE on catlin's presumed n_h (§10), hence OK.
 _WORKED = {
-    "PT-BW-RE": (1.3019, 1.9431, Status.OK),
-    "PT-BW-RNE": (1.2922, 1.8592, Status.OK),
+    # Every north-entry column cast one 3/4" pack low, 2026-10-31 (addendum 2026-10-31b): the
+    # head 3/4" nearer grade, the shafts 3/4" shorter. GW's soft end closes at 1/δ 0.0076.
+    "PT-BW-RE": (1.2988, 1.9309, Status.OK),
+    "PT-BW-RNE": (1.2892, 1.8486, Status.OK),
     # ** RE-WORKED 2026-09-23 (note addendum 2026-09-23) ** with each deck beam on its own
     # half-bay strip: the landing's deck share fell 17.03 -> 9.93 ft2 (W/E), 9.60 (GW/GE).
     # Seat beams from the column's east face, 2026-09-23 (addendum 2026-09-23c): 3.3542' long.
@@ -39,11 +41,11 @@ _WORKED = {
     # makes L=60.56 inch and the soft-end magnifier 48.8372, still arithmetic only.
     # W-BW-SCREEN's thin brick and its full 6.57' run onto its chords (addendum
     # 2026-10-25): +176.9 lb D on W/GW after face-membrane removal; GW's soft end remains singular.
-    "PT-BW-W": (1.0816, 1.3377, Status.INCOMPLETE),
-    "PT-BW-E": (1.0220, 1.0658, Status.OK),
-    "PT-BW-GW": (1.3466, None, Status.OVER),
+    "PT-BW-W": (1.0802, 1.3307, Status.INCOMPLETE),
+    "PT-BW-E": (1.0212, 1.0632, Status.OK),
+    "PT-BW-GW": (1.3382, 131.95, Status.OVER),
     # GE's P_u fell 1,107.8 -> 1,074.7 lb when the landing came in 3 3/8" (2026-10-31).
-    "PT-BW-GE": (1.0513, 1.2315, Status.INCOMPLETE),
+    "PT-BW-GE": (1.0502, 1.2254, Status.INCOMPLETE),
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->
     # 4,855 lb (front), 4,877 (rear); wall-top k_θ unchanged. Front R 6.616 / 6.242.
     # 3" lower on 2026-09-23 (addendum 2026-09-23b): L 105.125", P_u 4,820.0; R 6.412 / 6.049.
@@ -150,8 +152,8 @@ def test_the_record_reproduces_the_notes_verdict(tag, catlin_cast_ctx) -> None:
 
 
 #: §10: Terzaghi's loose dry sand, 7 tons/ft³ = 8.10 pci, the pole at unit width.
-_PRESUMED = {"PT-BW-RE": (2.7764e7, 4.6046, 41_241.0, 1.3218),
-             "PT-BW-RNE": (2.7764e7, 4.6046, 41_241.0, 1.3218)}
+_PRESUMED = {"PT-BW-RE": (2.7792e7, 4.5893, 41_523.0, 1.3185),
+             "PT-BW-RNE": (2.7792e7, 4.5893, 41_523.0, 1.3185)}
 
 
 @pytest.mark.parametrize("tag", sorted(_PRESUMED))

@@ -18,9 +18,9 @@ _AT_PU = ((2.0, 2.749, 0.900, 24_669.0), (2.5, 2.866, 0.900, 24_649.0),
 #: §15d's envelope, 1.2D + 1.0W + L at P_u 3,689: (cover, phi*Mn).
 _ENVELOPE = ((2.0, 24_373.0), (2.5, 24_372.0), (3.0, 23_805.0))
 #: §15d's joint at 1.2D + 1.0W + L, PT-SG-BR1, at §16's guard: (cover, bearing C, φBn, T per bar).
-#: The dowel ring shrinks with the cage, so T rises 19% at 3".
-_JOINT = ((2.0, 9_510.0, 38_811.0, 5_182.0), (2.5, 9_926.0, 41_230.0, 5_633.0),
-          (3.0, 10_395.0, 43_608.0, 6_159.0))
+#: The dowel ring shrinks with the cage, so T rises 19% at 3". §17: one pack shorter.
+_JOINT = ((2.0, 9_480.0, 38_811.0, 5_163.0), (2.5, 9_894.0, 41_230.0, 5_612.0),
+          (3.0, 10_361.0, 43_608.0, 6_135.0))
 
 
 @pytest.fixture(scope="module")

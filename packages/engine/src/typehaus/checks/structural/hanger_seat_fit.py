@@ -34,6 +34,11 @@ _FLOAT_IN = 1e-6
 _Hanger = tuple[str, str, float | None, float | None, tuple[str, ...]]
 
 
+def seat_fits(slop_in: float) -> bool:
+    """Seat clear W less the member width, inside −1/32" / +1/8" (with float slack)."""
+    return -TIGHT_IN - _FLOAT_IN <= slop_in <= LOOSE_IN + _FLOAT_IN
+
+
 def _authored(model) -> list[_Hanger]:
     """``(label, part, member width in, member depth in, tags)`` per authored hanger."""
     from typehaus.model.enums import ConnectorKind
@@ -90,7 +95,7 @@ def hanger_seat_fit(ctx: CheckContext) -> list[Finding]:
             unknown.append(f"{label} ({part})")
             continue
         slop = row.clear_width_in - width
-        if -TIGHT_IN - _FLOAT_IN <= slop <= LOOSE_IN + _FLOAT_IN:
+        if seat_fits(slop):
             fit.append(tags[0] if label == tags[0] else label)
             continue
         verdict = ("is narrower than" if slop < 0 else "is wider than")

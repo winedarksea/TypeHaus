@@ -769,3 +769,16 @@ Total **6,586.0 lb / 1,125 pieces** (+58.1 / +17):
   note §6j).
 - Its dowels are laid at the authored 30" projection, and W2/E2's south verticals foot on
   FT-SG-S's #5 mat: foundation wall #5 **1,311.7** lb.
+
+## Addendum 2026-10-31b — eight cast columns one pack shorter (C3-E13)
+
+Total **6,581.8 lb / 1,123 pieces** (was 6,586.5 / 1,125). The four landing piers and the
+four garden corner columns stop 3/4" under their soffits for the SS316 pack:
+
+- **#5 verticals**: 8 columns x 4 bars x 0.75" = 24" = 2.0 LF x 1.043 plf = **−2.1 lb**, no piece
+  lost (column #5 470.3 lb, 80 pieces).
+- **#3 ties**, `fence(z0 + 5", z1 − 5", 10")` = ceil((L − 10)/10) + 1: `PT-BW-W`/`-E` 91.998" →
+  91.248" stay at ceil(8.12) + 1 = 10; the garden columns (93.875/95.708" → 93.125/94.958")
+  stay at 10; `PT-BW-GW`/`-GE` 60.56" → 59.81" go ceil(5.056) + 1 = 7 → ceil(4.981) + 1 = **6**.
+  One 14" ring (r 7 − 2 − 0.1875 = 4.8125", 30.24" round) and one 12" (r 3.8125", 23.96")
+  plus the D5 6" overlap and two hooks each: **−2 pieces, −2.6 lb** (column #3 118.5 lb, 91).

@@ -226,9 +226,9 @@ class UpliftTieRules:
     # for a schedule that ties each member of a lap separately.
     ties_per_bearing: int = 1
     # How far above a support's top face a member's underside may sit and still be bearing
-    # ON it. It has to admit two real conditions and reject a third: a birdsmouthed I-joist
-    # rafter's uncut underside stands ~3/4" proud of the plate, and a joist landing on a
-    # foundation wall sits a 1-1/2" sill plate above the concrete the wall solid stops at.
+    # ON it. It has to admit the real conditions and reject a third: a birdsmouthed rafter
+    # reads its seat, the plate top (``joints/bearing._member_ends``), and a joist landing on
+    # a foundation wall sits a 1-1/2" sill plate above the concrete the wall solid stops at.
     # A HUNG member's underside is ~11-7/8" *below* its carrier's top, and the test is
     # one-sided, so no tolerance in this range can confuse the two.
     bearing_seat_tolerance_in: float = 3.0

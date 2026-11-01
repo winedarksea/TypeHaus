@@ -156,17 +156,19 @@ class ResolvedJunction:
 
 @dataclass(frozen=True)
 class SeatCut:
-    """A birdsmouth: where a rafter's underside is cut flat to bear on a plate.
+    """A low-end birdsmouth: where a rafter's underside is cut flat to bear on a plate.
 
-    ``heel`` is the plan point of the plumb heel cut; the seat runs ``seat_run_m`` from there
-    toward the member's nearer end, flat at ``plate_top_z_m``. The notch depth is not a field
-    because it is not independent: it is ``seat_run_m`` times the rafter's slope, which is
-    why the reference's 3.5" seat and 1.17" birdsmouth are one fact written twice.
+    ``heel`` is the plan point of the plumb heel cut, on the plate's OUTER face. The seat runs
+    ``seat_run_m`` from there toward the member's far end, flat at ``plate_top_z_m``, to where
+    the underside meets the plate; the notch at the heel is that run times the slope.
+    ``bearing_run_m`` is the plate's own width along the rafter, heel to inside face — the
+    most the seat may run (``resolve/rafter_seat.py``, decision #109).
     """
 
     plate_top_z_m: float
     heel: tuple[float, float]
     seat_run_m: float
+    bearing_run_m: float | None = None
 
 
 @dataclass(frozen=True)

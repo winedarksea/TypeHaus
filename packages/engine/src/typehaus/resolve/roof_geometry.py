@@ -124,10 +124,19 @@ def roof_structure_depth_m(model: ResolvedModel, roof: ResolvedRoof) -> float:
     return cross_section(spec.member).depth_m
 
 
+def roof_structure_plumb_depth_m(model: ResolvedModel, roof: ResolvedRoof) -> float:
+    """The structure's depth measured straight up: perpendicular depth x the slope factor.
+
+    What an elevation subtracts. The perpendicular depth read vertically is 1.40" short on an
+    11 7/8" joist at 6:12 (decision #109).
+    """
+    return roof_structure_depth_m(model, roof) * roof_slope_factor(roof)
+
+
 def roof_underside_at(model: ResolvedModel, roof: ResolvedRoof,
                       point: tuple[float, float]) -> float:
     """Underside of the roof structure at a plan point — what a wall below must reach."""
-    return roof_height_at(roof, point) - roof_structure_depth_m(model, roof)
+    return roof_height_at(roof, point) - roof_structure_plumb_depth_m(model, roof)
 
 
 def roof_bearing_walls(model: ResolvedModel, roof: ResolvedRoof) -> tuple[RoofBearing, ...]:
@@ -368,7 +377,7 @@ def roof_headroom_region(roof: ResolvedRoof, elevation_m: float,
     roof never reaches the threshold.
 
     Measured to the roof PLANE — the deck top, not the ceiling anybody stands under. A
-    caller that wants clear head must add :func:`roof_structure_depth_m` to its threshold;
+    caller that wants clear head must add :func:`roof_structure_plumb_depth_m` to its threshold;
     :func:`room_head_limited_area_m2` is the one that does.
     """
     xs = [item[0] for item in roof.footprint]
@@ -447,7 +456,7 @@ def room_head_limited_area_m2(model: ResolvedModel, ring: list[tuple[float, floa
         if under.is_empty or under.area <= 1e-12:
             continue
         region = roof_headroom_region(
-            roof, elevation_m, threshold_m + roof_structure_depth_m(model, roof))
+            roof, elevation_m, threshold_m + roof_structure_plumb_depth_m(model, roof))
         qualifying = 0.0 if region.is_empty else under.intersection(region).area
         # A roof clearing the threshold over the whole room subtracts nothing — and must
         # subtract nothing *exactly*, or clipping noise leaves every flat-ceilinged room in

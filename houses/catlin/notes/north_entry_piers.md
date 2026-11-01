@@ -1516,3 +1516,9 @@ model draws it so. FL11473 Table 3 needs 12 nails for the pair, 6 per strap (not
 note 2 says which holes: the **lowest four**. Table 2 note 6's floor of **7** fasteners is the
 SINGLE anchor's lateral rule, and Table 3 note 6 replaces it for a pair. Uplift 2,560 / F1
 1,350 lb are unchanged.
+
+**12e. The `cast` variant's head joint (§9).** Cast one pack short, the canopy columns' N-S
+head force is `canopy_garage_diaphragm.md` §7's **332.81 lb** (was 333.06); the engine reads
+333.40 (0.18% over, as before). Connector lateral 332.81/1,350 = 0.247 (unchanged to three
+figures); column shear (332.81 + 167.16 − 93.06)/0.6 = 678.2 lb (engine 679.2); torsion
+332.81/0.6 x 2.75/12 = 127.1 lb-ft (engine 127.3) against 1,499.5, 0.085.

@@ -71,7 +71,8 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         # The birdsmouth, when this member has one, so the viewer can draw the notch rather
         # than a bounding box across the plate it bears on.
         "seat": ({"plate_top_z_m": m.seat.plate_top_z_m, "heel": list(m.seat.heel),
-                  "seat_run_m": m.seat.seat_run_m} if m.seat is not None else None),
+                  "seat_run_m": m.seat.seat_run_m, "bearing_run_m": m.seat.bearing_run_m}
+                 if m.seat is not None else None),
         # A formed section (the pitched drip edge): a ring in the run's (left-normal, up)
         # frame from the axis at ``z0_m``, which the viewer sweeps exactly as the engine does.
         "section_ring": ([list(point) for point in m.section_ring]

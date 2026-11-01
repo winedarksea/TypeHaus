@@ -28,6 +28,7 @@ from typehaus.checks.structural import (
     partition_fasteners,  # noqa: F401 - registers checks
     placeable_interference,  # noqa: F401 - registers checks
     post_base_interference,  # noqa: F401 - registers checks
+    rafter_birdsmouth,  # noqa: F401 - registers checks
     rake_overhang,  # noqa: F401 - registers checks
     ridge,  # noqa: F401 - registers checks
     sill_bearing,  # noqa: F401 - registers checks

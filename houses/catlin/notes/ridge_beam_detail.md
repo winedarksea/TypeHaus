@@ -127,7 +127,7 @@ rather than by a plumb cut should be 5 1/4" and take the full 2 1/2" nails.
 | part | count | rule |
 |---|---|---|
 | LSSR sloped/skewable hanger | 38 — one per rafter end | derived, `takeoff/hangers.py` |
-| beveled web stiffener pair, 23/32" ply x 4" | 38 at the ridge (+38 at the eave) | derived, `resolve/framing/roof_stiffeners.py` |
+| beveled web stiffener pair, 7/8" ply x 4" | 38 at the ridge (+38 at the eave) | derived, `resolve/framing/roof_stiffeners.py` |
 | LSTA24 strap over the peak | 19 — one per opposing **pair** | derived, `takeoff/hangers.py` |
 | H2.5A, beam to top plate | 10 — 4' o.c. plus both ends | derived, `takeoff/uplift.py` |
 | SDW22 3 3/4" ply screws | 4 per hanger, one face | spec, not modelled |
@@ -149,11 +149,14 @@ D710 10c. The house modelled them at the eave and none at the ridge for the same
 They sit *inboard* of the plumb cut, filling the joist's own web cavity with their outer
 face flush to it — which is also where the model now draws them.
 
-**They are PLYWOOD** — 23/32" CDX each side, ripped **4" wide** for the LSSR's "(4) nails
-each side". The cavity a stiffener fills is (2 5/16" flange - 3/8" web) / 2 = **15/16" a
-side**, so the 2x4 the model billed until 2026-09-02 was not a material error only: a 1 1/2"
-stick does not physically go in. One modelled member per rafter end stands for the pair;
-`prices.toml`'s `4x1.4375 stiffener panel` row prices it as two pieces.
+**They are PLYWOOD** — 7/8" each side (TJ-4000 Jul 2025 p.29: a TJI 230's minimum web
+stiffener is 7/8" x 2 5/16", PS1/PS2 sheathing, face grain vertical; the 23/32" carried until
+2026-10-31 was under it), ripped **4" wide** for the LSSR's "(4) nails each side", tight to
+the bottom flange and 1/8" short of the top. The cavity a stiffener fills is (2 5/16" flange -
+3/8" web) / 2 = **15/16" a side**, so 7/8" fits with 1/16" to spare, and the 2x4 the model
+billed until 2026-09-02 does not physically go in. One spec at both ends: the eave pair is
+TJ-4000 p.31 R5's (`roof_wall_eave_detail.md`). One modelled member per rafter end stands for
+the pair, billed as 7/8" rip on `struct-1-plywood:bearing stiffener rip`.
 
 ## 4. Ply stitching, and the two sticks
 
@@ -195,10 +198,11 @@ any of them is allowed.
   §3.2.2 sets different maximum moisture contents for the two (19% sawn, 16% engineered), so
   the sawn ply shrinks in depth away from the LVL over a 36' run with sheathing bearing on
   top. A spacer is a spacer; it is never a ply. There is also no 2x14 stock.
-- **A rafters-over-the-ridge detail.** It would make the beam's depth free, but at 4:12 it
-  needs a beveled bearing plate the full 36' (Weyerhaeuser: a beveled plate is mandatory past
-  1/4:12 at a 3 1/2" bearing), a birdsmouth is prohibited at the high end, and the Simpson
-  VPA alternative caps at 1,105-1,245 lb with *no* duration-of-load increase. Hanging is the
+- **A rafters-over-the-ridge detail.** It would make the beam's depth free, but at 6:12 it
+  needs a beveled bearing plate the full 36' (TJ-4000 Jul 2025 p.32: without one, 1/4:12 at
+  a 3 1/2" bearing), a birdsmouth is prohibited at the high end (p.31 R5, "allowed at low
+  end of joist only"; the EAVE seat is that low-end cut, `roof_wall_eave_detail.md`), and
+  the Simpson VPA alternative caps at 1,105-1,245 lb with *no* duration-of-load increase. Hanging is the
   detail the model draws and the cheaper one to build.
 
 ## Sources

@@ -750,7 +750,7 @@ SECOND_PLACEABLES = [
 # study, but the stair opening occupies the north side of the room.
 #
 # ** THE WHOLE PROGRAM SITS WEST, AND THE RAKE IS THE ONLY REASON. ** At 6:12 off a rafter
-# plate the roof underside east of the ridge is `1 1/2" + (36' - x)/2`, so a station near the
+# plate the roof underside east of the ridge is `(36' - x)/2`, so a station near the
 # east end has well under 1'-6" of roof over it. Furniture does not fit under a rake by
 # being pushed against it.
 #

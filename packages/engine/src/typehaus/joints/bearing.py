@@ -223,11 +223,17 @@ def _seat_z(point: tuple, support: BearingSupport) -> float:
 
 def _member_ends(member) -> list:
     """Both ends as ``(point, underside_z)``. A raked member carries its own end elevations,
-    which is what tells a rafter's eave seat from its ridge end."""
-    return [
+    which is what tells a rafter's eave seat from its ridge end. A birdsmouthed end bears at
+    its seat, the plate top, since its uncut underside runs below the plate it is notched over."""
+    ends = [
         (member.p0, member.z0_m),
         (member.p1, member.z0_m if member.z0_end_m is None else member.z0_end_m),
     ]
+    seat = getattr(member, "seat", None)
+    if seat is not None:
+        index = min((0, 1), key=lambda i: math.dist(ends[i][0], seat.heel))
+        ends[index] = (ends[index][0], seat.plate_top_z_m)
+    return ends
 
 
 def _crossing(member, support: BearingSupport):

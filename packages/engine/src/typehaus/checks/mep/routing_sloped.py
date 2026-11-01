@@ -22,6 +22,7 @@ from typehaus.resolve.roof_geometry import (
     roof_height_at,
     roof_ridge_coordinate,
     roof_slope_coordinate,
+    roof_slope_factor,
     roof_structure_depth_m,
 )
 
@@ -78,4 +79,6 @@ def sloped_plane(model: ResolvedModel, plan: Any, ceiling: ResolvedCeiling) -> S
     if roof is None or not roof.footprint:
         return None
     lining = sum(layer_depth_m(plan.library, layer) for layer in ceiling.layers)
-    return SlopedPlane(roof, roof_structure_depth_m(model, roof) + lining)
+    # Both are stacked perpendicular to the slope; the plane drops by them measured plumb.
+    return SlopedPlane(roof, (roof_structure_depth_m(model, roof) + lining)
+                       * roof_slope_factor(roof))

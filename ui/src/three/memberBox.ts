@@ -131,12 +131,13 @@ export function pushBoxIndices(indices: number[], base: number) {
 }
 
 /**
- * The corners of a birdsmouthed member: its six-point profile, twice, across its own width.
+ * The corners of a birdsmouthed member: its notched profile, twice, across its own width.
  *
- * Mirrors `resolve/geometry_members.py::_seated_sweep` — the profile is end-top, far-top,
- * far-bottom, the plumb heel's head, the heel's foot, and the seat's outboard end, and the
- * underside is the straight line between the member's two `z0` elevations. Null when the
- * member carries no seat, has no plan run, or its underside never rises clear of the seat.
+ * Mirrors `resolve/geometry_members.py::_seated_sweep` — the member less one triangle: the
+ * plumb heel cut on the plate's outer face, and the flat seat inward from it to where the
+ * underside meets the plate top. Walking: bearing-end top, far top, far bottom, seat's inner
+ * end, heel's foot, heel's head, bearing-end bottom, coincident points dropped. Null when the
+ * member carries no seat, has no plan run, or nothing lies below the plate top to cut.
  */
 export function seatedProfileVertices(
   m: Member, center: PlanCenter,
@@ -158,16 +159,26 @@ export function seatedProfileVertices(
   const z0Far = nearP0 ? (m.z0_end_m ?? m.z0_m) : m.z0_m;
   const z1Far = nearP0 ? (m.z1_end_m ?? m.z1_m) : m.z1_m;
   const ux = (far.x - near.x) / run, uz = (far.z - near.z) / run;
-  const heelX = near.x + ux * seat.seat_run_m, heelZ = near.z + uz * seat.seat_run_m;
-  const underside = z0Near + ((z0Far - z0Near) / run) * seat.seat_run_m;
-  if (underside <= seat.plate_top_z_m + MIN_EXTENT_M) return null;
+  const slope = (z0Far - z0Near) / run;
+  const heelS = Math.min(d0, d1);
+  const endS = heelS + seat.seat_run_m;
+  const top = seat.plate_top_z_m;
+  if (z0Near + slope * heelS >= top - MIN_EXTENT_M || endS >= run) return null;
+  const at = (s: number, y: number): [number, number, number] =>
+    [near.x + ux * s, y, near.z + uz * s];
+  const points = [
+    at(0, z1Near), at(run, z1Far), at(run, z0Far), at(endS, z0Near + slope * endS),
+    at(endS, top), at(heelS, top), at(heelS, z0Near + slope * heelS), at(0, z0Near),
+  ];
+  const profile: [number, number, number][] = [];
+  const apart = (p: number[], q: number[]) =>
+    Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]) > MIN_EXTENT_M;
+  for (const point of points) {
+    if (!profile.length || apart(point, profile[profile.length - 1])) profile.push(point);
+  }
+  if (!apart(profile[0], profile[profile.length - 1])) profile.pop();
   const half = crossWidth(m) / 2;
   const nx = -uz * half, nz = ux * half;
-  const profile: [number, number, number][] = [
-    [near.x, z1Near, near.z], [far.x, z1Far, far.z], [far.x, z0Far, far.z],
-    [heelX, underside, heelZ], [heelX, seat.plate_top_z_m, heelZ],
-    [near.x, seat.plate_top_z_m, near.z],
-  ];
   return [
     ...profile.map(([x, y, z]) => [x + nx, y, z + nz] as [number, number, number]),
     ...profile.map(([x, y, z]) => [x - nx, y, z - nz] as [number, number, number]),

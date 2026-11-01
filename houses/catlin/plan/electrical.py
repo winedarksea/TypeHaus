@@ -1127,7 +1127,7 @@ PV_JBOX = [
     # Offset per the can's true 3 1/4" depth (see ED-M-HP1-DISC's note on this convention).
     #
     # ** THE STATION HAS TO CLEAR BOTH THE RAKE AND A WINDOW, AND THE BAND IS NARROW. **
-    # The rake wants x >= 9'-1 1/4" (the gable plane is 20'-11 3/8" + x/2, and this box
+    # The rake wants x >= 9'-3 1/4" (the gable plane is 20'-10 3/8" + x/2, and this box
     # needs 25'-6" of cladding to grip); WIN-A-N1's rough opening (x 10'-9"..13'-3",
     # framing bumper 10'-7"..13'-5", sill +22'-0", head +25'-0") wants x <= 10'-7" or
     # x >= 13'-5". ** THE 2026-09-06 MOVE WEST CLOSED THE EASTWARD BAND AGAIN. ** The
@@ -1179,7 +1179,7 @@ CONDUIT_TRUNKS = [
     # Up the mechanical chase beside the radon vent to the PV junction box, at
     # (1'-6", 34'-2 3/8") — inside the enclosure, not out on the open mudroom floor.
     # ** THE RISER STOPS AT THE ATTIC DECK, AND CD-A-PV-EAST FINISHES IT. ** At 6:12 off a
-    # 20'-11 3/8" eave the roof plane at x=1'-6" is 21'-8 3/8", so a riser continuing to
+    # 20'-10 3/8" eave the roof plane at x=1'-6" is 21'-7 3/8", so a riser continuing to
     # 25'-6" there would run outside the building. The chase does NOT move — moving it would
     # drag the mechanical-room penetration through every storey below, which is the same
     # reason VR-M-STACK jogs in the attic instead of relocating (mep_venting.py). A
@@ -1212,17 +1212,24 @@ CONDUIT_TRUNKS = [
     # The riser follows ED-A-PV-JB west to x=10'-2" and down to 25'-0"; the box's own note
     # carries why that station.
     ConduitRun(uid="XJR4KE400J", tag="CD-A-PV-EAST", trade_size=inch(1.5),
-               # Up 7" off the riser head first (2026-09-23): DU-ERV-RISER-EXH's top leg runs
-               # east at 20'-4", and 21'-1" clears it and rides above FO-A-ERV-CHASE's deck band.
+               # Up 3" off the riser head first: DU-ERV-RISER-EXH's top leg runs east at 20'-4",
+               # and 20'-9" clears it under the roof, whose underside at x=1'-7.6" is 20'-10.6"
+               # since the heel-anchored plane (decision #109; 21'-1" stood 3.3" through it).
+               # Then 4" south onto the chase's south trimmer (y=33'-4"), where it can be
+               # strapped: 20'-9" is under a foot over the deck, so a leg east across the chase
+               # void would hang over nothing (`mep.run_over_void`).
                path=(pt(inch(19.6), inch(404)), pt(inch(19.6), inch(404)),
-                     pt(inch(104), inch(404)), pt(inch(104), ft(35, 10)),
+                     pt(inch(19.6), inch(400)),
+                     pt(inch(104), inch(400)), pt(inch(104), ft(35, 10)),
                      pt(ft(10, 2), ft(35, 10)), pt(ft(10, 2), ft(35, 10))),
                start_elevation=ft(20, 6), end_elevation=ft(25),
-               elevations=(ft(20, 6), ft(21, 1), ft(21, 1), ft(21, 1), ft(21, 1), ft(25)),
-               # Pull box at 2 (8'-8", 33'-8"), attic deck in RM-A-POCKET: the riser chains in.
+               elevations=(ft(20, 6), ft(20, 9), ft(20, 9), ft(20, 9), ft(20, 9), ft(20, 9),
+                           ft(25)),
+               # Pull box at 3 (8'-8", 33'-4"), attic deck in RM-A-POCKET: the riser chains in.
                # x=8'-8" since 2026-10-08: 9'-2" ran through VR-M-STACK's radon riser once the
-               # stack's pair went side by side across the gable.
-               pull_points=(2,),
+               # stack's pair went side by side across the gable. The trimmer jog's extra
+               # quarter bend takes a conduit body at 1, the riser head, to stay within 360°.
+               pull_points=(1, 3),
                from_ref="CD-B-ATTIC-RISER", to_ref="ED-A-PV-JB"),
     # --- the backup microgrid's three raceways ----------------------------------------
     #

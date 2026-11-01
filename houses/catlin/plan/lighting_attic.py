@@ -176,13 +176,13 @@ ATTIC_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C1", face="right", distance_from_start=inch(27),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Mount 3'-9": at x=27'-3 3/4" the south gable's rake gives 4'-5 5/8", and a 4'-0" mount
-    # would stand 3/8" through it. This fitting lights ST-S2A's landing, drawn against the
-    # flight.
+    # Mount 3'-7": the roof underside here came down 2 3/8" with the heel-anchored plane and
+    # the rafters' true plumb depth (decision #109), and 3'-9" stood 1 5/8" through it; 3'-7"
+    # clears it by 3/8". This fitting lights ST-S2A's landing, drawn against the flight.
     ElectricalDevice(uid="QTA0007AAA", tag="ED-A-STUDY-STAIR-SC", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-STAIR",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDY", controlled_by=("ED-A-STUDY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 9)),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 7)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-S3", face="left", distance_from_start=inch(111.75),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),

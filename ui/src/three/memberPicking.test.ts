@@ -113,7 +113,7 @@ function checkSeatedRafterIsNotchedAndPickable() {
   const seated = member({
     key: "rafter-000", category: "rafter", p0: [0, 0], p1: [3, 0],
     z0_m: 3, z1_m: 3.3, z0_end_m: 4, z1_end_m: 4.3, orient: null,
-    seat: { plate_top_z_m: 3, heel: [0.3, 0], seat_run_m: 0.3 },
+    seat: { plate_top_z_m: 3.2, heel: [0.3, 0], seat_run_m: 0.3 },
   });
   const plain = member({ key: "rafter-001", category: "rafter", p0: [0, 0.6], p1: [3, 0.6],
     z0_m: 3, z1_m: 3.3, z0_end_m: 4, z1_end_m: 4.3, orient: null });
@@ -129,10 +129,11 @@ function checkSeatedRafterIsNotchedAndPickable() {
   assert(resolveMemberPickUid(merged, null, starts[1]) === "RF1::rafter-001",
     "And the plain rafter starts exactly where the table says");
 
-  // The notch itself: a flat seat at the plate top, one seat run long.
+  // The notch itself: a heel cut 0.3 in from the tail, then a flat seat at the plate top,
+  // one seat run long, ending where the underside meets the plate.
   const verts = seatedProfileVertices(seated, CENTER);
-  assert(verts && verts.length === 12, "A seated member is a six-point profile, twice");
-  const onSeat = verts!.filter(([, y]) => Math.abs(y - 3) < 1e-9);
+  assert(verts && verts.length === 14, "A seated tail is a seven-point profile, twice");
+  const onSeat = verts!.filter(([, y]) => Math.abs(y - 3.2) < 1e-9);
   assert(onSeat.length === 4, "Two profile corners sit on the plate, on each face");
 }
 

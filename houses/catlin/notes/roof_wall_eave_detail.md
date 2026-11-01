@@ -27,7 +27,7 @@ source:
 - {wall_roof:INT_*} Partition stops 3/4" under rafters; SDPW19600 screw per crossing.
 
 ### Keyed
-- {wall_roof:EXT_2X6|*} [K1] Birdsmouth seat: beveled web stiffeners per APA D710 10h; H2.5A each rafter.
+- {wall_roof:EXT_2X6|*} [K1] Low-end birdsmouth: heel on plate outer face, 2-1/2" seat, 1-1/4" plumb cut (flange 1.40" plumb). 7/8" beveled web stiffeners both sides. TJ-4000 p.31 R5, D710 10h. H2.5A each rafter.
 - [K2] Foam first lift 1-1/2" min; lap ridge beam and hanger flanges in one pass.
 - {wall_roof:EXT_2X6|*} [K3] 2x6 eave block on edge on the plate, every bay. ccSPF over it.
 - {wall_roof:EXT_2X6|*} [K4] Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.
@@ -53,12 +53,45 @@ path that replaced the prior nailbase stack. **Read that note before
 changing anything here** — several of the rules it retired look like rules you would want to
 reinstate, and each of them was load-bearing only for the stack it belonged to.
 
-- Roof framing: 11-7/8" **TJI 230 at 24" o.c.** on the double top plate;
-  birdsmouth seat cut with beveled bearing stiffeners (APA D710
-  10h) or a beveled plate (D710 10q, extra uplift fasteners). Structural ridge beam per D710
-  10c — not a rafter-tie roof. **6:12**, zero overhang. The spacing is NOT FINAL: the printed
-  TJ-4000 table assumes bearing at the high end and these joists hang off the ridge on LSSR
-  hangers, so ForteWEB owns the last word. See `notes/roof_flash_and_batt.md` §8.
+- Roof framing: 11-7/8" **TJI 230 at 24" o.c.** on the flat 2x6 rafter plate. Structural
+  ridge beam per D710 10c — not a rafter-tie roof. **6:12**, zero overhang. The spacing is NOT
+  FINAL: the printed TJ-4000 table assumes bearing at the high end and these joists hang off
+  the ridge on LSSR hangers, so ForteWEB owns the last word. See `notes/roof_flash_and_batt.md` §8.
+
+- **Eave seat: TJ-4000's low-end birdsmouth** (owner, 2026-10-31; geometry review C3-E5,
+  decision #109). Weyerhaeuser TJ-4000 (Jul 2025) p.31 detail R5, and p.32's overhang
+  version: "Birdsmouth cut allowed at low end of joist only", "TJI joist flange must bear
+  fully on plate", "Birdsmouth cut must not overhang inside face of plate", "Beveled web
+  stiffeners required on both sides. Cut to match roof slope." APA D710A (2009) 10h says the
+  same ("Permitted on low end of I-joist only ... shall bear fully and not overhang the
+  inside face of plate", bearing stiffeners each side, 1/8" gap at top).
+
+  The heel (plumb cut) sits on the plate's OUTER face and the seat runs inward. The seat is
+  the one input; the rest follows, by hand at s = 6/12, d = 11.875", t = 1.25" (TJI 230
+  flange, low end of TJ-4000 p.6's 1-1/4"-1-3/8"):
+  - flange plumb depth t x sqrt(1 + s^2) = 1.25 x 1.1180 = **1.398"**; the cut at the heel is
+    seat x s, so it stays in the flange while seat <= 1.398 / 0.5 = **2.80"**;
+  - bearing: TJ-4000 p.32 requires **1-3/4"**, so the legal seat is 1.75"-2.80";
+  - **seat 2.50"**: cut 2.50 x 0.5 = **1.25"** (0.15" of flange left at the heel), bearing
+    2.50" on the 5-1/2" plate, inside face 3.00" clear.
+  - Plane: deck at the heel = plate + d x 1.1180 - 1.25 = 242.25 + 13.277 - 1.25 = 254.277"
+    (was 255.25": -0.973"); at the footprint edge, 7.75" outboard, 254.277 - 3.875 =
+    **250.402"** (was 251.375"); ridge 250.402 + 223.25 x 0.5 = **362.03"** (was 363.00").
+    The legal band moves it 0.60" (1.75") to 1.12" (2.80").
+  - Rafter underside at x from the house line: 241.0 + (x - 0.5)/2 = 240.75 + x/2, i.e.
+    `x/2` over the 3/4" attic subfloor (was `1 1/2" + x/2`, itself 1.40" optimistic:
+    the old model read d plumb).
+
+  Stiffeners: a pair per rafter end, two 7/8" plies ripped 4" (TJ-4000 p.29's minimum for a
+  TJI 230 is 7/8" x 2-5/16"; 4" is the ridge LSSR's), tight to the bottom flange, 1/8" short
+  of the top, beveled to 6:12, 3 8d each side (p.29).
+
+  **Code-approved alternatives**, not taken: a beveled bearing plate (TJ-4000 p.31 R1/R3/R7
+  and p.32 "Beveled Plate Requirements" — 1-3/4" bearing allows 1/2:12 without one; APA D710A
+  10a, and 10n for the flush bevel-cut end), which would raise the ridge about 4-1/2"; or a
+  variable-slope seat connector (TJ-4000 p.31 R3; Simpson VPA, the size for a 2-5/16" flange
+  to be read off Simpson's catalog). D710A 10q is the beveled-plate OVERHANG detail and is not
+  this eave.
 
 - Cavity, upper: **5" of closed-cell spray foam in direct contact with the deck underside.**
   Minimum 1.5" first lift, full adhesion, no voids. It laps continuously onto the ridge
@@ -136,5 +169,5 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
 - Eave references (2026-09-16), what set the drip and gutter:
   - Best Buy Metals, *Standing Seam Architectural Install Guide* p.26, "Eave Detail (with gutter)": extended eave drip edge on the deck, panel hemmed around its kick, gutter back flange up behind the drip face, hidden hanger fixed at the fascia line.
   - Western States Metal Roofing WSD-D4 "Eave with Gutter": pre-hung box gutter with an 8" back sheet whose 6" flange runs onto the deck, a gutter eave trim over it (6" flange, 3-1/8" face into the trough, 1/2" hem), joggle cleat, strap at 1/2" clear for thermal movement.
-  - Weyerhaeuser TJ-4000: beveled bearing plate and beveled web stiffeners both sides above 1/4:12; roof joists laterally restrained at end bearings (the 2x6 eave block).
+  - Weyerhaeuser TJ-4000 (Jul 2025): low-end birdsmouth p.31 R5 / p.32, web stiffener sizes p.29, beveled-plate requirements p.32; roof joists laterally restrained at end bearings (the 2x6 eave block).
   - Gutter hangers at 36" o.c. max is the common industry rule (SMACNA *Architectural Sheet Metal Manual* governs; not read directly). Catlin's 24" follows the standoffs.

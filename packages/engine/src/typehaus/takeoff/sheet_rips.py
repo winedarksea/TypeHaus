@@ -47,11 +47,13 @@ _KERF_FT = _KERF_IN / 12.0
 
 #: Nominal thicknesses a wood structural panel is sold in. A member whose profile thickness
 #: is an integer multiple of one of these is that many **plies** of it: the roof's beveled
-#: web stiffener is authored 1 7/16" thick precisely because one member stands for the PAIR
-#: of 23/32" plies that straddle the I-joist web (``framing/roof_stiffeners._STIFFENER_PROFILE``),
-#: and ordering it as one 1 7/16" sheet would be ordering a product that does not exist.
+#: web stiffener is authored 1 3/4" thick precisely because one member stands for the PAIR
+#: of 7/8" plies that straddle the I-joist web (``framing/roof_stiffeners._STIFFENER_PROFILE``;
+#: 7/8" PS1/PS2 sheathing is TJ-4000 p.29's TJI 230 minimum), and ordering it as one 1 3/4"
+#: sheet would be ordering a product that does not exist.
 _SHEET_THICKNESS_IN: tuple[float, ...] = (
-    0.25, 0.3125, 0.375, 0.4375, 0.46875, 0.5, 0.59375, 0.625, 0.71875, 0.75, 1.0, 1.125,
+    0.25, 0.3125, 0.375, 0.4375, 0.46875, 0.5, 0.59375, 0.625, 0.71875, 0.75, 0.875, 1.0,
+    1.125,
 )
 #: The most plies a panel member is read as. Four 3/4" plies is a 3" block; past that the
 #: thickness is a stated dimension, not a lamination, and the member bills at its own

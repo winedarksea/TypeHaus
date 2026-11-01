@@ -20,11 +20,12 @@ CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: couple needs MORE dowel and the block is a little shallower.
 #: §15c (2026-09-23): the balcony 3" lower — shorter columns, a little less axial and moment.
 #: §16 (2026-09-23): the guard's lever reaches the column base, so M_u and the couple rise.
+#: §17 (2026-10-31): the columns cast one 3/4" pack short — less wind lever and self weight.
 _ORACLE = {
-    "PT-SG-BR1": {"bearing": (9_510, 38_811), "tension": (5_182, 16_740),
-                  "shear": (410.3, 50_001), "development": (21.2, 24.0)},
-    "PT-SG-BF1": {"bearing": (9_436, 38_803), "tension": (5_135, 16_740),
-                  "shear": (410.3, 50_053), "development": (21.2, 24.0)},
+    "PT-SG-BR1": {"bearing": (9_480, 38_811), "tension": (5_163, 16_740),
+                  "shear": (410.3, 50_022), "development": (21.2, 24.0)},
+    "PT-SG-BF1": {"bearing": (9_407, 38_803), "tension": (5_117, 16_740),
+                  "shear": (410.3, 50_073), "development": (21.2, 24.0)},
 }
 _LABELS = {"bearing": "bearing on the wall top", "tension": "dowel tension across the joint",
            "shear": "shear friction across the cold joint",

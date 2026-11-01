@@ -31,8 +31,8 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: W-SG-BRKBM's cage, SL-M-DECK's BuildDeck schedule, dowels), and the deck cap is the one
 #: BLACK pour because DECK_CAP_MIX says so — a new scope, not a second coating in an old one.
 _SCHEDULE = {
-    ("column", "#3", "hdg-a767"): (93, 121.1),
-    ("column", "#5", "hdg-a767"): (80, 472.3),
+    ("column", "#3", "hdg-a767"): (91, 118.5),
+    ("column", "#5", "hdg-a767"): (80, 470.3),
     ("footing", "#4", "hdg-a767"): (48, 234.9),
     ("footing", "#5", "hdg-a767"): (179, 1465.9),
     ("foundation wall", "#3", "hdg-a767"): (12, 16.2),
@@ -86,8 +86,10 @@ _SCHEDULE = {
 # bars each lose 6" at the east bearing.
 # +26.3 lb the same day: SL-M-DECK's 22 rib bars hook 180° into both bearings
 # (rebar_layout_basis.md §5), 44 × 6.872".
-_TOTAL_LB = 6586.5
-_TOTAL_PIECES = 1125
+# −4.7 lb, −2 pieces the same day (C3-E13, note addendum): eight cast columns one 3/4" pack
+# shorter (32 #5 verticals x 3/4", −2.1) and PT-BW-GW/-GE each one #3 tie fewer (−2.6).
+_TOTAL_LB = 6581.8
+_TOTAL_PIECES = 1123
 
 @pytest.fixture(scope="module")
 def rows(catlin_model):

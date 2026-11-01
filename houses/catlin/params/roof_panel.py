@@ -4,6 +4,9 @@ import math
 from params.cladding import HOUSE_EW_OUTBOARD_IN, HOUSE_NS_OUTBOARD_IN
 from plan.assemblies.envelope_roofs import ROOF as HOUSE_ROOF
 from plan.assemblies.board_batten import EXT_2X6_BOARD_BATTEN
+from typehaus import inch
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.rafter_seat import eave_deck_z_m
 
 PITCH = 6 / 12
 PANEL_PITCH_IN = 16.0
@@ -15,9 +18,14 @@ ABOVE_DECK = HOUSE_ROOF.layers[STRUCTURE_INDEX + 1:]
 ROOFING = next(layer for layer in ABOVE_DECK if layer.name == 'roofing')
 ROOFING_BASE_IN = sum(layer.thickness.inches for layer in ABOVE_DECK[:ABOVE_DECK.index(ROOFING)])
 ROOFING_TOP_IN = ROOFING_BASE_IN + ROOFING.thickness.inches
-# The roof footprint is the cladding face; the bearing plate is 5.5 inches deep.
+# The roof footprint is the cladding face. The deck is anchored at the birdsmouth heel, the
+# rafter plate's outer face 1/2" in from the house line (storeys/attic.py's
+# face("plate-ext", inch(0.5))), by the engine's own formula (decision #109).
 EAVE_X_IN = -HOUSE_EW_OUTBOARD_IN
-EAVE_DECK_IN = PLATE_TOP_IN + STRUCTURE.thickness.inches - 5.5 * PITCH
+PLATE_OUTER_FACE_IN = 0.5
+EAVE_DECK_IN = eave_deck_z_m(
+    inch(PLATE_TOP_IN).meters, inch(PLATE_OUTER_FACE_IN - EAVE_X_IN).meters,
+    STRUCTURE.thickness.meters, PITCH) / M_PER_IN
 # Roof metal laps the outer furring face by .6 inch, independent of the profile height.
 RAKE_CLADDING_IN = next(layer.thickness.inches for layer in EXT_2X6_BOARD_BATTEN.layers
                        if layer.function.value == 'cladding')

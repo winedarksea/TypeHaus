@@ -51,17 +51,17 @@ from typehaus.resolve.model import (
     SeatCut,
 )
 from typehaus.resolve.roof_bearing import resolved_bearings
-from typehaus.resolve.roof_geometry import ridge_beam_top_m, roof_structure_framing
+from typehaus.resolve.roof_geometry import (
+    ridge_beam_top_m,
+    roof_slope_factor,
+    roof_structure_framing,
+)
 
 _RAFTER_CONNECTION = "ridge:adjustable-slope-hanger;eave:birdsmouth"
 # How much of a beam's run its declared bearing walls may miss and still read as
 # continuous support. A stud bay — below it the beam is bridging a gap no wider than
 # the plate already spans, above it there is a real span the refs are not describing.
 _SUPPORT_GAP_TOL_M = inch(16.0).meters
-# Reference birdsmouth seat (roof_wall_eave_detail_ifc.py): seated over the width of the top
-# plate the rafter bears on. Its notch depth is not a second constant — it is this run times
-# the rafter's slope (1.17" at the reference's 4:12, 1.75" at 6:12), never stated twice.
-_SEAT_LEN_M = inch(3.5).meters
 
 
 def frame_roofs(model: ResolvedModel) -> list[Finding]:
@@ -143,6 +143,9 @@ def _roof_rafters(model: ResolvedModel, roof: ResolvedRoof) -> tuple[FramedMembe
         halves = halves[:len(positions)]
     members: list[FramedMember] = []
     rise = roof.ridge_z_m - roof.eave_z_m
+    # The IR's vertical extent is the TRUE plumb depth, so every solid has the joist's real
+    # perpendicular depth and the birdsmouth notch is real (decision #109).
+    plumb = depth * roof_slope_factor(roof)
     span_ax = 1 if roof.ridge_direction == "x" else 0
     cut_lo, cut_hi = _eave_plumb_cuts(model, roof)
     for index, (eave, ridge_point) in enumerate(halves):
@@ -164,8 +167,8 @@ def _roof_rafters(model: ResolvedModel, roof: ResolvedRoof) -> tuple[FramedMembe
                             roof.ridge_z_m - z_eave_top)
         members.append(FramedMember(
             roof.uid, f"rafter-{index:03d}", "rafter", profile, eave, ridge_point,
-            z_eave_top - depth, z_eave_top, length,
-            z0_end_m=roof.ridge_z_m - depth, z1_end_m=roof.ridge_z_m,
+            z_eave_top - plumb, z_eave_top, length,
+            z0_end_m=roof.ridge_z_m - plumb, z1_end_m=roof.ridge_z_m,
         ))
     return tuple(members)
 
@@ -231,47 +234,50 @@ def _bearing_along_extent(model: ResolvedModel, roof: ResolvedRoof) -> tuple[flo
 def _seat_rafters(
     model: ResolvedModel, roof: ResolvedRoof, rafters: tuple[FramedMember, ...]
 ) -> tuple[FramedMember, ...]:
-    """Give every rafter its birdsmouth, as part of its own solid.
+    """Give every rafter its low-end birdsmouth, as part of its own solid.
 
-    A separate ``seat_cut`` member would double-claim the rafter's own volume — false
-    interference, a phantom takeoff line, a section drawn by re-parsing a string. A
-    ``SeatCut`` on the rafter says the same thing once, and
-    ``geometry_members.member_solid`` turns it into a real notched solid every emitter reads.
+    The heel is the bearing's outer face; the seat runs inward to where the rafter's
+    underside meets the plate top. Both are read off the rafter as resolved, so the seat is
+    what the plane (``rafter_seat.rafter_eave_z_m``) actually gives, not the input restated.
+    A ``SeatCut`` on the member, not a block beside it: ``member_solid`` notches it.
     """
     plate_top = _bearing_plate_top(model, roof)
-    if plate_top is None or not rafters:
-        return rafters
-    # Bearing-wall span coordinates: the seat starts where the rafter crosses its bearing
-    # line, not at ``rafter.p0`` (which sits out at the footprint edge in the cladding lap).
-    span_ax = 1 if roof.ridge_direction == "x" else 0
     element = _roof_element(model, roof)
-    bearing_coords: list[float] = []
-    if element is not None:
-        for tag in element.bearing_refs:
-            wall = model.wall(tag)
-            if wall is not None:
-                bearing_coords.append(wall.axis[0][span_ax])
+    if plate_top is None or not rafters or element is None:
+        return rafters
+    span_ax = 1 if roof.ridge_direction == "x" else 0
+    spans = [bearing.support_span(span_ax)
+             for bearing in resolved_bearings(model, element.bearing_refs)]
     seated: list[FramedMember] = []
     for rafter in rafters:
-        (ex, ey), (rx, ry) = rafter.p0, rafter.p1
-        dx, dy = rx - ex, ry - ey
-        run = math.hypot(dx, dy)
-        if run < 1e-9:
-            seated.append(rafter)
-            continue
-        start = rafter.p0
-        if bearing_coords:
-            bearing = min(bearing_coords, key=lambda value: abs(value - rafter.p0[span_ax]))
-            denominator = dx if span_ax == 0 else dy
-            if abs(denominator) > 1e-9:
-                fraction = (bearing - rafter.p0[span_ax]) / denominator
-                fraction = min(max(fraction, 0.0), 0.9)
-                start = (ex + dx * fraction, ey + dy * fraction)
-        seat = min(_SEAT_LEN_M, run * 0.5)
-        heel = (start[0] + dx / run * seat, start[1] + dy / run * seat)
-        seated.append(replace(rafter, seat=SeatCut(
-            plate_top_z_m=plate_top, heel=heel, seat_run_m=seat)))
+        seat = _rafter_seat(rafter, plate_top, spans, span_ax)
+        seated.append(rafter if seat is None else replace(rafter, seat=seat))
     return tuple(seated)
+
+
+def _rafter_seat(rafter: FramedMember, plate_top: float, spans, span_ax: int) -> SeatCut | None:
+    """The birdsmouth at ``rafter.p0`` (its eave end) on the support under it, or None."""
+    (ex, ey), (rx, ry) = rafter.p0, rafter.p1
+    run = math.hypot(rx - ex, ry - ey)
+    along = rafter.p1[span_ax] - rafter.p0[span_ax]
+    if run < 1e-9 or abs(along) < 1e-9 or rafter.z0_end_m is None or not spans:
+        return None
+    inward = along > 0
+    # The support whose outer face lies nearest the eave end: the heel sits on it.
+    lo, hi = min(spans, key=lambda span: abs(span[0 if inward else 1] - rafter.p0[span_ax]))
+    outer, inner = (lo, hi) if inward else (hi, lo)
+    heel_t = (outer - rafter.p0[span_ax]) / along
+    if not -1e-6 <= heel_t < 0.5:
+        return None
+    heel_t = max(heel_t, 0.0)
+    slope = (rafter.z0_end_m - rafter.z0_m) / run
+    underside_at_heel = rafter.z0_m + slope * run * heel_t
+    if slope <= 1e-9 or underside_at_heel >= plate_top - 1e-9:
+        return None  # the underside clears the plate: nothing to notch
+    heel = (ex + (rx - ex) * heel_t, ey + (ry - ey) * heel_t)
+    return SeatCut(plate_top_z_m=plate_top, heel=heel,
+                   seat_run_m=(plate_top - underside_at_heel) / slope,
+                   bearing_run_m=abs(inner - outer))
 
 
 def _bearing_plate_top(model: ResolvedModel, roof: ResolvedRoof) -> float | None:

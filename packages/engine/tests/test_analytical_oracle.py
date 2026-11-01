@@ -73,8 +73,8 @@ LEVER_TOLERANCE = 0.06
 
 @pytest.mark.parametrize("tag", BALCONY)
 def test_balcony_wind_base_moment_matches_the_note(solved, tag):
-    """§3a / balcony note §15a: 126.2 lb at the deck plane x the column = 1,105 lb-ft
-    (front), 1,125 (rear), since the balcony came down 3" (2026-09-23)."""
+    """§3a / balcony note §15a, §17: 126.2 lb at the deck plane x the column = 1,097 lb-ft
+    (front), 1,117 (rear), since the columns were cast one 3/4" pack short (2026-10-31)."""
     _, model, result, piers = solved
     reaction = result.reactions[(_support(model, tag).node, LoadCaseKind.WIND.value)]
     solved_moment = _moment_lb_ft(reaction)
@@ -82,7 +82,7 @@ def test_balcony_wind_base_moment_matches_the_note(solved, tag):
                                           rel=LEVER_TOLERANCE)
     assert solved_moment < piers[tag].wind_base_moment_lb_ft, "the record must err long"
     assert piers[tag].wind_base_moment_lb_ft == pytest.approx(
-        1105 if tag.startswith("PT-SG-BF") else 1125, abs=5)
+        1097 if tag.startswith("PT-SG-BF") else 1117, abs=5)
 
 
 @pytest.mark.parametrize("tag", BALCONY)

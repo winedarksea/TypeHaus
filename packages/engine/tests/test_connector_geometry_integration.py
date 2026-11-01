@@ -29,7 +29,7 @@ def test_every_displayed_simpson_connector_has_a_dimensioned_body(catlin_model_r
     # slab partitions and the run ends that were not exterior corners.
     assert len(solids) > 550
     assert all(solid.body_mesh and solid.body_mesh.triangles for solid in solids)
-    assert {"LUS", "LUSZ", "THA422", "ABU44", "LTP4", "THD50600H6SS", "MSTC52"} <= {
+    assert {"LUS26-2Z", "LUS28Z", "THA422", "ABU44", "LTP4", "THD50600H6SS", "MSTC52"} <= {
         solid.product for solid in solids}
 
 

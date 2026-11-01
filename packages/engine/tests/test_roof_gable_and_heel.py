@@ -28,7 +28,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.geometry import rect_between
 from typehaus.emit.gltf.emitter import is_roof_framing_member
-from typehaus.resolve.roof_geometry import roof_height_at
+from typehaus.resolve.roof_geometry import roof_height_at, roof_slope_factor
 
 HEEL = inch(9.25)
 CHORD = "2x4"
@@ -305,7 +305,8 @@ def _closures(model, wall_tag):
 def test_eave_wall_skin_carries_up_through_the_raised_heel(resolved):
     """The TODO's daylight band: the wall stopped at the plate, the roof started a heel up."""
     roof = _roof(resolved)
-    chord_depth = cross_section(CHORD).depth_m
+    # Measured plumb: the chord's depth x the slope factor (decision #109).
+    chord_depth = cross_section(CHORD).depth_m * roof_slope_factor(roof)
     wall = next(w for w in resolved.walls if w.tag == "W-S")
     closures = _closures(resolved, "W-S")
     assert {m.category for m in closures} == {"sheathing", "cladding"}
@@ -321,7 +322,8 @@ def test_eave_wall_skin_carries_up_through_the_raised_heel(resolved):
 
 def test_gable_wall_closure_splits_at_the_ridge_and_reaches_the_peak(resolved):
     roof = _roof(resolved)
-    chord_depth = cross_section(CHORD).depth_m
+    # Measured plumb: the chord's depth x the slope factor (decision #109).
+    chord_depth = cross_section(CHORD).depth_m * roof_slope_factor(roof)
     closures = _closures(resolved, "W-W")
     # Two segments (one per roof plane) x two skin layers.
     assert {m.child_key.split("-closure-")[1].split("-")[0] for m in closures} == {"0", "1"}
@@ -535,7 +537,8 @@ def test_an_overhung_eave_still_stops_at_the_structure_underside(stacked):
     """With an overhang the soffit closes the gap, so the skin must not climb into the stack —
     the two eave types are genuinely different details."""
     roof = _roof(stacked)
-    chord_depth = cross_section(CHORD).depth_m
+    # Measured plumb: the chord's depth x the slope factor (decision #109).
+    chord_depth = cross_section(CHORD).depth_m * roof_slope_factor(roof)
     for name in ("sheathing", "cladding"):
         member = _closure(stacked, "W-S", name)
         underside = roof_height_at(roof, (member.p0[0], 0.0)) - chord_depth

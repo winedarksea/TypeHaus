@@ -125,7 +125,7 @@ def main() -> None:
     y_wall_bot = y_top_plate_bot - wall_show_h
     
     # Compute wall foam top extent (where it meets roof foam)
-    flange_thk = 1.375  # I-joist flange thickness
+    flange_thk = 1.25  # TJI 230 flange, low end of TJ-4000 p.6's 1 1/4"-1 3/8"
     membrane_thk = 0.25
     
     # Roof geometry setup for wall foam calculation
@@ -133,9 +133,12 @@ def main() -> None:
     eave_x = x_bearing
     eave_outer_x = eave_x + overhang
 
-    birdsmouth_depth = 1.17
+    # Low-end birdsmouth (decision #109): the heel on the plate's outer face, a 2 1/2" seat
+    # inward, so the notch at the heel is seat x pitch and the TRUE plumb depth sets the rest.
+    seat_in = 2.5
+    birdsmouth_depth = seat_in * abs(pitch)
     y_joist_bot = y_top_plate_top - birdsmouth_depth
-    y_joist_center = y_joist_bot + depth_ijoist / 2
+    y_joist_center = y_joist_bot + depth_ijoist / 2 * np.hypot(1.0, pitch)
 
     x_inside = -34.0
     mid0 = np.array([x_inside, y_joist_center + roof_pitch * (x_inside - x_bearing)], dtype=float)
@@ -179,7 +182,7 @@ def main() -> None:
     _rect(ax, x_clad0, y_wall_bot, cladding, y_wall_ext - y_wall_bot, fc=COL.metal_dark, lw=1.0, z=6)
 
     # I-joist with birdsmouth cut
-    seat_x0 = x_stud0
+    seat_x0 = eave_x - seat_in
     seat_y = y_top_plate_top - 0.1
     
     top_offset = depth_ijoist / 2
@@ -210,7 +213,7 @@ def main() -> None:
             color="black", linewidth=0.9, linestyle=(0, (2.5, 2.5)), alpha=0.8)
     
     # Bearing stiffener
-    stiff_w = stud_depth
+    stiff_w = 4.0  # two 7/8" plies ripped 4" (TJ-4000 p.29 minimum 7/8" x 2 5/16")
     stiff_x0_pos = eave_x - stiff_w
     stiff_bot0 = _pt_at_x(bot_flange_seg0, bot_flange_seg1, stiff_x0_pos)
     stiff_bot1 = _pt_at_x(bot_flange_seg0, bot_flange_seg1, eave_x)

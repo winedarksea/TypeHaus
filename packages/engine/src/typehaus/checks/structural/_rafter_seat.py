@@ -10,8 +10,8 @@ birdsmouth", which is why catlin's attic partitions stood 11 7/8" inside their r
   R802.7.1 ("notches at the ends of the member shall not exceed one-fourth the depth") and
   NDS 4.4.3 for end notches in sawn bending members. The depth is read plumb at the deepest
   point of the shared plan region (the heel), and so is the rafter's depth, so the ratio is
-  the same as one measured square to the slope. Manufacturer I-joist limits (flange-only
-  cuts) are stricter and are not graded here.
+  the same as one measured square to the slope. The stricter I-joist limits (a cut inside
+  the flange) are :func:`ijoist_seat`'s, graded by ``structural.ijoist_birdsmouth``.
 * **ridge beam** — cleared only where one of its ENDS lands inside a wall it crosses (a
   pocket in a gable wall). A ridge passing through a wall, or sunk into a partition that
   runs along under it, has no seat at all.
@@ -179,3 +179,72 @@ def seat_findings(ctx, seats: dict, check_id: str) -> list:
             result=Result.FAIL,
         ))
     return out
+
+
+# --- the I-joist low-end birdsmouth (TJ-4000 p.31 R5, APA D710A 10h) -----------------
+
+#: TJ-4000 (Jul 2025) p.32 "Beveled Plate Requirements": 1 3/4" required bearing length.
+IJOIST_MIN_BEARING_M = 0.04445
+IJOIST_SEAT_CODE_REF = "TJ-4000 (Jul 2025) p.31 R5, p.29, p.32; APA D710A 10h"
+_IN = 0.0254
+_SEAT_TOL_M = 1e-5
+
+
+@dataclass(frozen=True)
+class IJoistSeat:
+    """One I-joist rafter's birdsmouth, measured off its resolved solid."""
+
+    notch_m: float  # plumb cut depth at the heel
+    flange_plumb_m: float  # the bottom flange's plumb depth
+    seat_m: float  # heel to where the underside meets the plate top
+    bearing_run_m: float | None  # the plate's width along the rafter
+    high_end: bool
+    problems: tuple[str, ...]
+
+
+def ijoist_seat(member, has_stiffeners: bool) -> IJoistSeat | None:
+    """Grade one seated I-joist rafter, or ``None`` when it has no seat or is not an I-joist.
+
+    Read from the member's elevations and plan points, not from the seat's own run, so a plane
+    that drifts from its seat input shows here. The flange is the LOW end of its published
+    band (``profiles._TJI_SERIES_IN``), the thickness a cut must stay inside.
+    """
+    import math
+
+    from typehaus.resolve.framing.profiles import cross_section
+
+    seat = member.seat
+    section = cross_section(member.profile)
+    if seat is None or section.shape != "i_joist":
+        return None
+    (ax, ay), (bx, by) = member.p0, member.p1
+    run = math.hypot(bx - ax, by - ay)
+    if run < 1e-9:
+        return None
+    z0_end = member.z0_m if member.z0_end_m is None else member.z0_end_m
+    hx, hy = seat.heel
+    near_p0 = math.hypot(hx - ax, hy - ay) <= math.hypot(hx - bx, hy - by)
+    z_near, z_far = (member.z0_m, z0_end) if near_p0 else (z0_end, member.z0_m)
+    near = (ax, ay) if near_p0 else (bx, by)
+    slope = (z_far - z_near) / run
+    high_end = slope < 0.0
+    underside = z_near + slope * math.hypot(hx - near[0], hy - near[1])
+    notch = max(seat.plate_top_z_m - underside, 0.0)
+    flange_plumb = section.flange_thickness_m * math.hypot(1.0, slope)
+    seat_m = notch / abs(slope) if abs(slope) > 1e-9 else float("inf")
+    bearing = seat_m if seat.bearing_run_m is None else min(seat_m, seat.bearing_run_m)
+    problems: list[str] = []
+    if high_end:
+        problems.append("a birdsmouth at the HIGH end (TJ-4000 allows the low end only)")
+    if notch > flange_plumb + _SEAT_TOL_M:
+        problems.append(f"a {notch / _IN:.2f}\" plumb cut, deeper than the bottom flange's "
+                        f"{flange_plumb / _IN:.2f}\"")
+    if seat.bearing_run_m is not None and seat_m > seat.bearing_run_m + _SEAT_TOL_M:
+        problems.append(f"a {seat_m / _IN:.2f}\" seat overhanging the plate's inside face "
+                        f"({seat.bearing_run_m / _IN:.2f}\" plate)")
+    if bearing < IJOIST_MIN_BEARING_M - _SEAT_TOL_M:
+        problems.append(f"{bearing / _IN:.2f}\" of bearing, under 1 3/4\"")
+    if not has_stiffeners:
+        problems.append("no beveled web stiffener pair at the seat")
+    return IJoistSeat(notch, flange_plumb, seat_m, seat.bearing_run_m, high_end,
+                      tuple(problems))

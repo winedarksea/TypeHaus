@@ -7,7 +7,7 @@ from dataclasses import replace
 
 from shapely.geometry import Polygon
 
-from typehaus.findings import Finding, Result, Severity, element_error
+from typehaus.findings import Finding, element_error
 from typehaus.model.enums import ConditionKind
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab, Soffit
 from typehaus.model.refs import ToRoof
@@ -35,6 +35,7 @@ from typehaus.resolve.model import (
     Ring,
     SolidSweep,
 )
+from typehaus.resolve.rafter_seat import rafter_eave_z_m
 from typehaus.resolve.roof_bearing import roof_bearings
 from typehaus.resolve.roof_edge_geometry import skin_layers, skin_stand_ins
 from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
@@ -553,22 +554,14 @@ def _resolve_roof(
         return None, [element_error("integrity.roof_footprint",
                                     f"roof {roof.tag} has zero run", roof.tag)]
     plate_top = max(wall.z1_m for wall in walls)
-    # ``eave_z_m`` is the rafter-top (deck) plane: a rafter-framed roof rises
-    # ``deck_rise_m`` above the plate (only the birdsmouth sinks below it, per the
-    # golden eave detail). Truss roofs keep eave == plate top here — ``_frame_trusses``
-    # self-corrects via its raised-heel delta.
-    roof_assembly = model.plan.library.resolve_assembly(roof.assembly)
-    # The birdsmouth is cut into the roof's structure against the BEARING wall's own
-    # structure depth, so which bearing wall answers has to be a decision, not the order
-    # somebody happened to type `bearing_refs` in. They agree on every roof here; where they
-    # would not, say so rather than let list position pick.
-    bearing_assemblies = sorted({wall.assembly for wall in walls if wall.assembly})
-    # Empty where every bearing is an assembly-less beam; ``deck_rise_m`` takes None and
-    # falls back to a nominal plate depth, which is the right answer for a canopy header.
-    bearing_assembly = (model.plan.library.resolve_assembly(bearing_assemblies[0])
-                        if bearing_assemblies else None)
-    rise_to_deck = deck_rise_m(roof_assembly, bearing_assembly, roof.pitch)
-    eave = plate_top + (rise_to_deck or 0.0)
+    # ``eave_z_m`` is the rafter-top (deck) plane at the footprint edge. A rafter roof is
+    # anchored at its heel on the plate's outer face (``rafter_seat``, decision #109); a
+    # truss roof keeps eave == plate top here and ``apply_truss_heel_lift`` moves it.
+    slope_ratio = roof.pitch.rise / roof.pitch.run
+    rise_to_deck = deck_rise_m(model.plan.library.resolve_assembly(roof.assembly), roof.pitch)
+    eave = (plate_top if rise_to_deck is None else rafter_eave_z_m(
+        footprint, roof.ridge_direction, roof.form.value, walls, plate_top, rise_to_deck,
+        slope_ratio))
     rise = roof.pitch.rise / roof.pitch.run * (run / 2 if roof.form.value == "gable" else run)
     slope = math.sqrt(1 + (roof.pitch.rise / roof.pitch.run) ** 2)
     resolved = ResolvedRoof(
@@ -579,17 +572,7 @@ def _resolve_roof(
     if rise_to_deck is not None:
         # Only rafter-framed roofs get the reference clip setbacks (garage/truss deferred).
         resolved = replace(resolved, layer_edge_setbacks=layer_edge_setbacks(model, resolved))
-    findings: list[Finding] = []
-    if len(bearing_assemblies) > 1:
-        findings.append(Finding(
-            severity=Severity.WARN, check_id="integrity.roof_bearing", result=Result.UNKNOWN,
-            message=(f"roof {roof.tag} bears on more than one wall assembly "
-                     f"({', '.join(bearing_assemblies)}); its birdsmouth is cut against "
-                     f"{bearing_assemblies[0]} alone, so the seat is right on that line only"),
-            element_tags=(roof.tag,),
-            fix_hint="bear the roof on one assembly, or split it into roofs that each do",
-        ))
-    return resolved, findings
+    return resolved, []
 
 
 # --- point + linear structural members (columns / beams) --------------------------

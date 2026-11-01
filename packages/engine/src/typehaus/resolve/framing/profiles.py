@@ -75,19 +75,16 @@ _RE_IJOIST = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+I-joist$")
 # above was added for.
 _RE_TJI = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+TJI\s+(?P<series>\d+)$")
 #: Trus Joist TJI flange and web geometry by series: (flange width, flange thickness, web
-#: thickness) in inches, from the TJ-4000 Specifier's Guide section properties. An unlisted
-#: series falls back to the generic depth-keyed I-joist below rather than to a rectangle —
-#: a joist of the wrong flange is a drawing error, a 1.5x5.5 stick is a quantity error.
+#: thickness) in inches, from TJ-4000 (Jul 2025) p.6. Flange thickness is the LOW end of the
+#: published band (1 1/4"-1 3/8" for 110/210/230, 1 3/8"-1 1/2" for 360/560), the value a
+#: cut "within the flange" must hold to. An unlisted series falls back to the generic
+#: depth-keyed I-joist below rather than to a rectangle.
 _TJI_SERIES_IN: dict[str, tuple[float, float, float]] = {
-    "110": (1.75, 1.375, 0.375),
-    "210": (2.3125, 1.375, 0.375),
-    # 1.25" flange, not 1.5": Weyerhaeuser TB-808 (July 2025) Table 1 publishes 1-1/4" for
-    # the TJI 110/210/230 and 1-3/8" only for the 360/560. The 1.5" carried here was not a
-    # published figure, and a guard answered off the resolved section — the SDPW's
-    # 1-1/8" minimum supporting-flange thickness — would have been answered off it.
+    "110": (1.75, 1.25, 0.375),
+    "210": (2.0625, 1.25, 0.375),
     "230": (2.3125, 1.25, 0.375),
-    "360": (2.3125, 2.3125, 0.4375),
-    "560": (3.5, 2.3125, 0.4375),
+    "360": (2.3125, 1.375, 0.375),
+    "560": (3.5, 1.375, 0.4375),
 }
 # Open-web trimmable floor truss, fabricated to depth: "11.875 floor truss".
 _RE_FLOOR_TRUSS = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+floor truss$")

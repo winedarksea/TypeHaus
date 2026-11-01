@@ -9,9 +9,9 @@ eave reference (``tests/fixtures/catlin_reference/scripts/roof_wall_eave_detail_
 and ``houses/catlin/notes/roof_wall_eave_detail.md``):
 
 * :func:`deck_rise_m` — how far the rafter-top (deck) plane sits **above** the bearing
-  plate top. Only the birdsmouth seat sinks below the plate; the rest of the structure
-  depth rises above it. ``ResolvedRoof.eave_z_m`` is the deck plane at the footprint
-  edge; ``ResolvedRoof.bearing_z_m`` is the plate top.
+  plate top at the HEEL, the birdsmouth's plumb cut on the plate's outer face
+  (``resolve/rafter_seat.py``, decision #109). ``ResolvedRoof.eave_z_m`` is the deck plane at
+  the footprint edge; ``ResolvedRoof.bearing_z_m`` is the plate top.
 * :func:`layer_edge_setbacks` — per-layer plan setbacks from the roof footprint edge
   (the wall cladding outer face) so each above-structure roof layer clips at its own
   wall-stack face: the deck at the wall-sheathing face, the foam at the wall-furring
@@ -20,9 +20,10 @@ and ``houses/catlin/notes/roof_wall_eave_detail.md``):
   emitters compensate for the horizontal drift the perpendicular (mitered) layer
   offsetting introduces at the eaves (see the emitter's ``_layer_inset_rect``).
 
-Vertical measurement convention: the birdsmouth depth is measured vertically (matching
-the member IR's vertical ``z0_m``/``z1_m``), ~0.6" from a strict perpendicular reading —
-accepted. Rake clip rules are extrapolated from the eave-only reference drawing.
+Depth is the TRUE plumb depth ``d x sqrt(1 + slope^2)``. It was read vertically (``d``), 1.40"
+short on an 11 7/8" joist at 6:12, and the error was hidden by anchoring the plane at the
+footprint edge instead of the heel. Rake clip rules are extrapolated from the eave-only
+reference drawing.
 """
 
 from __future__ import annotations
@@ -30,12 +31,8 @@ from __future__ import annotations
 from typehaus.model.enums import LayerFunction
 from typehaus.quantities import inch
 from typehaus.resolve.coatings import layer_depth_m
+from typehaus.resolve.rafter_seat import heel_deck_rise_m
 
-# Reference bearing-plate DEPTH for the birdsmouth when the bearing wall's own structure
-# layer cannot be read — a nominal 2x4 laid flat. Pitch is applied separately at the call
-# site and must never be fused into this constant, or a roof at any other pitch whose
-# bearing wall does not resolve gets a silently wrong seat cut.
-_BIRDSMOUTH_FALLBACK_PLATE_M = inch(3.5).meters
 # The metal roofing runs 0.6" past the wall furring's outer face (reference drip lap), except
 # on a wrapped Image II eave, where it reaches the Extended Eave's lip.
 _METAL_PROUD_M = inch(0.6).meters
@@ -89,33 +86,21 @@ def structure_datum_m(assembly, library) -> float:
                  if layer.function is LayerFunction.STRUCTURE), 0.0)
 
 
-def deck_rise_m(roof_assembly, bearing_wall_assembly, pitch) -> float | None:
-    """Deck-plane rise above the bearing plate top for a rafter-framed roof.
+def deck_rise_m(roof_assembly, pitch) -> float | None:
+    """Deck-plane rise above the bearing plate top at the heel, for a rafter-framed roof.
 
-    ``structure depth − birdsmouth`` where ``birdsmouth = bearing stud depth × (rise/run)``
-    (fallback depth: a nominal 2x4 plate, taken at the roof's own pitch). Returns ``None``
-    for truss-framed roofs, roofs without a framed STRUCTURE layer, and roofs with no pitch
-    — those keep ``eave_z_m == plate top`` (the truss framer self-corrects via its
-    raised-heel delta).
+    ``plumb depth - seat x slope`` (``rafter_seat.heel_deck_rise_m``). ``None`` for
+    truss-framed roofs, roofs without a framed STRUCTURE layer, and roofs with no pitch —
+    those keep ``eave_z_m == plate top`` (the truss heel lift moves them).
     """
-    if roof_assembly is None:
+    if roof_assembly is None or pitch is None:
         return None
     structure = next((layer for layer in roof_assembly.layers
                       if layer.function is LayerFunction.STRUCTURE
                       and layer.framing is not None), None)
-    if structure is None or structure.framing.roof_frame == "truss" or pitch is None:
-        # No pitch, no seat cut: the birdsmouth IS the plate depth times the slope, so a
-        # missing pitch cannot be defaulted without inventing one.
+    if structure is None or structure.framing.roof_frame == "truss":
         return None
-    slope = pitch.rise / pitch.run
-    depth = _BIRDSMOUTH_FALLBACK_PLATE_M
-    if bearing_wall_assembly is not None:
-        stud = next((layer for layer in bearing_wall_assembly.layers
-                     if layer.function is LayerFunction.STRUCTURE), None)
-        if stud is not None:
-            depth = stud.thickness.meters
-    birdsmouth = depth * slope
-    return max(structure.thickness.meters - birdsmouth, 0.0)
+    return heel_deck_rise_m(structure.thickness.meters, pitch.rise / pitch.run)
 
 
 # --- per-layer edge setbacks ---------------------------------------------------------

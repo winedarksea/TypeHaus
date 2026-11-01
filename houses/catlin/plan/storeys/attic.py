@@ -80,7 +80,7 @@ NODES = [
     Node(uid="P8A4ESTF04", tag="N-A-SN-EF", position=pt(ft(30, 11.125), ft(9))),
     # N-A-V2 (CAN013AAAA) and N-A-V3 (CAN014AAAA) DELETED 2026-08-29 with W-A-VE/W-A-VN.
     # The stair well's south closure — see W-A-GC-S for why the guard stops and a wall
-    # takes over at x=29'-4 1/2". Both axes are set by pinning a FACE to the well edge and
+    # takes over at x=28'-11". Both axes are set by pinning a FACE to the well edge and
     # growing INT_2X4_PARTITION's 4 3/4" AWAY from the opening, the same rule W-A-SN uses on
     # the north edge: 5'-9 5/8" - 2 3/8" = 5'-7 1/4" south, 35'-5 3/8" + 2 3/8" = 35'-7 3/4"
     # east. A wall centred ON the edge would hang half its thickness over the void.
@@ -91,7 +91,7 @@ NODES = [
     # plate. Neither terminus closes a polygon, so `integrity.wall_loop_open` is answering
     # correctly and the flag is the authored way to say so. N-A-GC3 (SDBE5SHZGH) existed for
     # a day to carry W-A-GC-E's north end and went with it.
-    Node(uid="BPSA3Z9JYP", tag="N-A-GC1", position=pt(ft(29, 4.5), inch(67.25)),
+    Node(uid="BPSA3Z9JYP", tag="N-A-GC1", position=pt(ft(28, 11), inch(67.25)),
          open_end=True),
     Node(uid="67H4TA4EDQ", tag="N-A-GC2", position=pt(ft(35, 5.375), inch(67.25)),
          open_end=True),
@@ -279,14 +279,15 @@ WALLS = [
     # ** THE STAIR WELL'S SOUTH-EAST CLOSURE. A GUARD CANNOT STAND HERE. **
     # RL-A-STAIR was drawn along the whole south edge, when the east end of
     # this storey was still being thought about as if it had a knee wall. It does not. The
-    # roof underside is `1 1/2" + (36' - x)/2` above the finished floor, so a 42" guard
-    # (top at 240" + 42" = 282") only fits while the underside clears 282", i.e. west of
-    # x=29'-4 1/2". East of that the guard was inside the roof — 3 of 5 posts, 20 of 40
+    # roof underside is `(36' - x)/2` above the finished floor, so a 42" guard
+    # (top at 240" + 42" = 282", its rail 3/4" more) only fits while the underside clears
+    # it, i.e. west of x=29'-0" since the heel-anchored plane (decision #109; it was 29'-4 1/2"
+    # on the old one). East of that the guard was inside the roof — 3 of 5 posts, 20 of 40
     # balusters and the whole east leg, ending 35 7/8" proud of the rafters at x=35'-5 3/8"
     # where there is 4 3/4" of clear height. `haus check` reported 0 FAIL through all of it
     # until `integrity.element_above_roof` was written; only the 3D view showed it.
     #
-    # So the guard stops at 29'-4 1/2" and a ToRoof partition closes the rest. That is not a
+    # So the guard stops at 28'-11" and a ToRoof partition closes the rest. That is not a
     # workaround, it is the construction: where a rake meets a floor you sheet the triangle,
     # and R312.1 is satisfied by a wall exactly as it is by a railing (`stairwell_guard`
     # reads the wall footprint union). The panel tapers from 3'-6" at its west end to
@@ -302,7 +303,7 @@ WALLS = [
     # 36" guard could. `code.R312_1_guard` says so out loud in its PASS message now rather
     # than being satisfied by a token wall.
     #
-    # This wall closes a face with nothing: the west end at x=29'-4 1/2" is open to
+    # This wall closes a face with nothing: the west end at x=28'-11" is open to
     # RM-A-STUDY where the railing continues, so no new room polygon is carved and no outward
     # sign flips. Non-bearing, no opening, and it stops 5/8" short of the rafter plate.
     Wall(uid="HKFW104YS3", tag="W-A-GC-S", start_node="N-A-GC1", end_node="N-A-GC2",
@@ -880,13 +881,13 @@ FLOOR = [
 ]
 
 # The attic deck's edge along the well's south side, y=5'-9 5/8" — the flight's own south
-# face: 42" metal fascia guard from the stair head east to x=29'-4 1/2", where the 6:12 rake
+# face: 42" metal fascia guard from the stair head east to x=28'-11", where the 6:12 rake
 # leaves no room for it and W-A-GC-S closes the rest (derivation on that wall). The well's east
 # edge has no walking surface to guard. West of the 25'-5 1/8" newel this rail also guards the
 # flight below it (see RL-A-FLIGHT-GUARD).
 STAIR_GUARD = Railing(
     uid="CARL01AAAA", tag="RL-A-STAIR", type_ref="RAILING-INT-STAIR-GUARD", path=(
-        pt(ft(29, 4.5), inch(67.125)),
+        pt(ft(28, 11), inch(67.125)),
         pt(inch(256.375), inch(67.125)),
     ),
     kind=RailingKind.METAL_SURFACE_MOUNT, height=ft(3.5),

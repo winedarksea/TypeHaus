@@ -27,7 +27,7 @@ from typehaus.takeoff.hardware_row import hardware_row
 EAVE_GIRT_BLOCK_SCREWS = 2
 EAVE_BLOCK_END_SCREWS = 4
 EAVE_BLOCK_PLATE_SCREWS = 2
-#: Toe screws, 0.220" SDWS: 3" at the ends (into a 1-7/16" stiffener pair), 4" down into the
+#: Toe screws, 0.220" SDWS: 3" at the ends (into a 1-3/4" stiffener pair), 4" down into the
 #: plate (a 45-degree drive loses about half its length to the block).
 _END_SCREW = "SDWS22300DB"
 _PLATE_SCREW = "SDWS22400DB"

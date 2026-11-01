@@ -545,8 +545,8 @@ ATTIC_DEVICES = [
 #   * ED-A-PV-JB          x  9'-11" ..10'-5"
 #   * WIN-A-N1's framing  x 10'-7" ..13'-5"  (rough opening 10'-9"..13'-3", head 25'-0")
 # — so the first clear cladding east of the window is x=13'-5", and 13'-10" centres a 6" box
-# 2" clear of that bumper. WEST IS NOT AN OPTION: the rake is `20'-11 3/8" + x/2`, so a
-# 25'-6" box needs x >= 9'-1 1/4" and the 1 1/2" between the riser and the PV box is the
+# 2" clear of that bumper. WEST IS NOT AN OPTION: the rake is `20'-10 3/8" + x/2`, so a
+# 25'-6" box needs x >= 9'-3 1/4" and the 1 1/2" between the riser and the PV box is the
 # whole of what is left there.
 #
 # Going over the window head instead would put the box at x=12'-7 1/2", a true 3'-0" east,
@@ -607,7 +607,7 @@ NEMA_CLAMP = []
 # `size=` change here and nothing more. The strap is sized on pipe OUTER diameter exactly
 # the way the ring was: a 4" round leader is 4.0" OD, hence **#13**, and `size` bills it
 # through `hardware_by_model`'s family-prefix match. ** THREE per leader at ~6' o.c.
-# (5'/11'/17'). ** The eave is 20'-11 3/8" (6:12 off a 1 1/2" rafter plate); the top strap
+# (5'/11'/17'). ** The eave is 20'-10 3/8" (6:12 off a 1 1/2" rafter plate); the top strap
 # at 17'-0" sits 3'-11" below the head, inside the same ~6' spacing the other three keep.
 # 6' apart is three 24" girt courses, so
 # every strap lands on a course and none of them needs its own blocking. Each on the wall

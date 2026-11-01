@@ -123,6 +123,7 @@ export interface MemberSeat {
   plate_top_z_m: number;
   heel: Vec2;
   seat_run_m: number;
+  bearing_run_m?: number | null;
 }
 
 export interface Member {
@@ -156,9 +157,9 @@ export interface Member {
   nosing_line?: [Vec2, Vec2] | null;
   stock_profile?: string | null;
   start_connection?: string | null;
-  // A birdsmouth: the member's underside is cut flat to bear on a plate at `plate_top_z_m`,
-  // over `seat_run_m` from the plumb `heel` toward the member's nearer end. Its depth is not
-  // carried because it is not independent — it is the run times the member's own slope.
+  // A low-end birdsmouth: a plumb `heel` cut on the plate's outer face, then a flat seat at
+  // `plate_top_z_m` running `seat_run_m` inward to where the underside meets the plate. Its
+  // depth is not carried because it is not independent — it is the run times the slope.
   seat?: MemberSeat | null;
   // A formed section (the pitched drip edge): a ring in the run's (left-normal, up) frame,
   // metres, from the axis at z0_m. Swept along p0->p1 with the run's rise; the box fields
